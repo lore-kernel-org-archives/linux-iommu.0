@@ -1,328 +1,371 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2082.outbound.protection.outlook.com [40.107.93.82])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3326720DCE
-	for <iommu@lists.linux.dev>; Wed, 20 Dec 2023 11:00:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC215219F9
+	for <iommu@lists.linux.dev>; Wed, 20 Dec 2023 11:23:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Jtv9mBmf"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B1aK0Uv4asJJuGPX40VPDH758pPPKuhlRDyiDyUDSV2n8IV1xHMjns+AWFsGsZ6UPsoY6dvN9vez2dXV6EqAb2YVZ9ghDDbQIOZccLDpgJGFKV62GOr3Z2kRqnpkIRXkLSJtYyx+AWq0T4KeF2nKJ5iqpVFug/ZXTFDLjo1BWeMC254BEnGWXyjux0zX61D2xVCkX0q9p5a0zOwb4qx4RumjUrcjNWoqAXJnYSAmG+rsctaX6fp6sFqS8ifrSpaAEl9eSgzscMpdDhwaTDu/WGC/+C+rae4hWlHMEy5i0FN4ypd/M1plXoYnIjrNPjZ9Slm0xHzoUMdKcPHUONfQyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FKJzX7hSVUPF07ngplK7Gz112DraB3GzY7BnxWtM+9M=;
- b=ofcOyl2xsCngN6PRVw/90IgLmpDPL2mRDggxHOzOe1KZ9VxAu7XsACZOcmy/MeEtUoIA+r96I9DzLVh5A9TqDATRxFXhql5hzcOHlmpHC0972lfDHfosqGt50OG7m1TqWj2jRMXaoCzqmchQCKX1ePt2cSGkkZEpDPsKq4szbbcslIlvCRIvRVzNf+IGTp+m0kqlQ3R4yN3CQhsVDoiWN0l+bcA4wZqFJbO2FYVrAzQZmezTUIsZhJEb830hSjhQPkXBgt/Eesct8m6D+dMN2m/WLca+4fU6U4K+G2YjcDsRZt6XNdRCOdUaaKB+BnVokPw/KH30UvsZbgKDr6KW0Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FKJzX7hSVUPF07ngplK7Gz112DraB3GzY7BnxWtM+9M=;
- b=Jtv9mBmfsehbKY+Z7E+8EwaEY+5j1gHkJDYqL2NIc3zmPKtZbR29gtt8ER8LobgJ6Vxj/e9kwx3KdsuDiejwwHFoXR7vC70vjejUxr0mnYgso3sEpnAy30Uo8dNH/pP9JAi+SMiShZgRB7Qij9h7Rw1W3hRynltUf77VTZvwaRw=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- IA1PR12MB6162.namprd12.prod.outlook.com (2603:10b6:208:3ea::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7091.38; Wed, 20 Dec
- 2023 11:00:10 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::481d:7627:c485:9cb]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::481d:7627:c485:9cb%2]) with mapi id 15.20.7113.016; Wed, 20 Dec 2023
- 11:00:10 +0000
-Message-ID: <faafdd49-0849-2004-0088-5b4aae49b129@amd.com>
-Date: Wed, 20 Dec 2023 16:30:02 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v3 05/12] iommu/amd: Initial SVA support for AMD IOMMU
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
- wei.huang2@amd.com, jsnitsel@redhat.com
-References: <20231016104351.5749-1-vasant.hegde@amd.com>
- <20231016104351.5749-6-vasant.hegde@amd.com> <20231106231831.GV4634@ziepe.ca>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20231106231831.GV4634@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0166.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:de::10) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="BNloz1m3"
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20231220112350euoutp01758346f86096a24c9cfbecdd734e7677~ihnFtyeju1448514485euoutp01K;
+	Wed, 20 Dec 2023 11:23:50 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20231220112350euoutp01758346f86096a24c9cfbecdd734e7677~ihnFtyeju1448514485euoutp01K
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1703071430;
+	bh=4akjfBCJKKXoR+QIu19ue40aOmTNewVIO6wTVVNkKfc=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+	b=BNloz1m3MwyTkjLlOs9VT5InPKxcmE3E+FmMMdknIzAfZAaMAcYYlWQLEGQw8MfkZ
+	 HtX6StQuKqclGUuGUhUqeHuTiWEtmZMG5UO3UNeUcYXXLCXlsfkHredQJClcv/GRvA
+	 zEtLOOsh7paOWaZkWmhWo3KDFTGCsj/hnbTPUUeg=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+	20231220112350eucas1p1a8f15635ff432678db8aaf25e560c9be~ihnFf0Dvk0589105891eucas1p1E;
+	Wed, 20 Dec 2023 11:23:50 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id 57.FC.09539.6CEC2856; Wed, 20
+	Dec 2023 11:23:50 +0000 (GMT)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+	20231220112350eucas1p11c553442f801dbe4c1eed5ba73c4077c~ihnE-rCur0588605886eucas1p1F;
+	Wed, 20 Dec 2023 11:23:50 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20231220112350eusmtrp14a88447a2572fad2550de4855fd0cfee~ihnE_v-Un2729827298eusmtrp1Q;
+	Wed, 20 Dec 2023 11:23:50 +0000 (GMT)
+X-AuditID: cbfec7f2-515ff70000002543-6c-6582cec6c0c7
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+	eusmgms2.samsung.com (EUCPMTA) with SMTP id F7.85.09274.5CEC2856; Wed, 20
+	Dec 2023 11:23:49 +0000 (GMT)
+Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
+	eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+	20231220112349eusmtip1d4934d75a4f0003aca49a8bea5304afd~ihnErjRA-3005230052eusmtip1q;
+	Wed, 20 Dec 2023 11:23:49 +0000 (GMT)
+Received: from localhost (106.210.248.220) by CAMSVWEXC02.scsc.local
+	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+	Wed, 20 Dec 2023 11:23:48 +0000
+Date: Wed, 20 Dec 2023 12:23:40 +0100
+From: Joel Granados <j.granados@samsung.com>
+To: Yi Liu <yi.l.liu@intel.com>
+CC: <joro@8bytes.org>, <alex.williamson@redhat.com>, <jgg@nvidia.com>,
+	<kevin.tian@intel.com>, <robin.murphy@arm.com>, <baolu.lu@linux.intel.com>,
+	<cohuck@redhat.com>, <eric.auger@redhat.com>, <nicolinc@nvidia.com>,
+	<kvm@vger.kernel.org>, <mjrosato@linux.ibm.com>,
+	<chao.p.peng@linux.intel.com>, <yi.y.sun@linux.intel.com>,
+	<peterx@redhat.com>, <jasowang@redhat.com>,
+	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
+	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+	<zhenzhong.duan@intel.com>, <joao.m.martins@oracle.com>,
+	<xin.zeng@intel.com>, <yan.y.zhao@intel.com>
+Subject: Re: [PATCH v6 0/6] iommufd: Add nesting infrastructure (part 2/2)
+Message-ID: <20231220112340.wtz3scdilr5m3ga6@localhost>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|IA1PR12MB6162:EE_
-X-MS-Office365-Filtering-Correlation-Id: 465508de-fea3-4bf9-35a9-08dc014ad568
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	CS/LrD+8r88xW66K4jKEJXUu9/w2d9c1bftl1C21Ez6TAcJ6HMXM9vRXJEm1POEHOlB8RPBJ/mHuLiasnwij4DwhtA4eOrXhb5o9ZlwnstYKdLEvQEDd0cmdnEFuqxeohjk0/JlRqjnZmujuoGT5dk1d+xXPjvxXCoLxf9914bS4dJgboBFVx9wnu6wtnNkdG81cA+DaSoxdYmjIHrbAzQVjzPC1ejC/++fWbhC8mird6eFlaUKIZOGjUR4LKe7fAF8bicOtzXMWWpun976yeUk61wSD9vndYyrx8lBOLM9dBQIdTyqpiEtPmP+elHm4wfTOnaCeQMmNvnhheNi1r4z7SW1Y1BolGPPPtFjVjH/SMDFn4Jk2S2s5omU6+rnj2xnjZVD1AaB4XRASl4H9qZBVIzzlPUlUMTWAwVrh3zeH4giRHZ8w9oWuEJfIznJo8b/QETh3RUEB1MNIrThv3v+a+xM5AVEr+ls0ppyaH2fpjWUberItCwCK5hf/ogVSfFuZKJgnPDu6NtBvru7Jn5qILP3kICOxYgRvf85f2Xs6dMLAi6dISPibkudT5vr83THjfiadTlgr7zNeyYVAGJrAycqYst5AdIiC9hajjWCcSAdKPxQ16lUDB9XNDbgcmrCovXFCZWyXvTe3pIOxTQ==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(396003)(136003)(366004)(376002)(346002)(230922051799003)(1800799012)(451199024)(64100799003)(186009)(36756003)(31686004)(66899024)(26005)(2906002)(6506007)(478600001)(6916009)(8936002)(53546011)(8676002)(66556008)(6512007)(66476007)(66946007)(6666004)(2616005)(4326008)(316002)(41300700001)(5660300002)(6486002)(966005)(44832011)(86362001)(83380400001)(31696002)(38100700002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UmRBbXpCck95WC9UaktXcFhoM2ZyVXNMRmtFb1B6QW1VcUw5M1czSWFtTTZS?=
- =?utf-8?B?RjB5NXhqSGp6S0Y3Q2E1MWNkZU50bUdhVDJ6K0FpU1gwWFovdXdaaGs4RktR?=
- =?utf-8?B?U25IbisxT3hqeTl2UWNJbTZOODc4dDh2T2JRUzgwc3ladTBFZzRtUHFFeHJ3?=
- =?utf-8?B?N2s0NlRHNXNuTlZPdm1RdklvQ2hlRTVQSzRZUUJRelpPSzVTMTMvZE1veHdi?=
- =?utf-8?B?cmhaT0R2byt4ZnJXR0twZXk0K2ltNnZ0N01TY0FEVXFIdE9XZEJyR243dFBP?=
- =?utf-8?B?enEzcnlaaUY5TCs3ZEhKKzF2cmVQbTVybHNPUmFhWDdrSWRsMURFZ25UOWVk?=
- =?utf-8?B?RGlTK2JBOTF6elhhejhIakc2V0RLSy9EeHcyYVpQYkVDN0xJMHhuK0czRlo0?=
- =?utf-8?B?aE5ubFdXbUU5QUdRTFJRbkZlUHdlRE5TZkI3ZERmcGNyM1VUdGtuN3VIZ0hj?=
- =?utf-8?B?cjZoSU9XMHh5SmlFOG9zNTRDTm1MbytVSS85RVgxaDF5UGRCUTVwSEtUNksy?=
- =?utf-8?B?ZnFzdmhkOXNIK0xXc3M3Vnk4ejVYSlEweVdOYWRNVlB2MjNRc3ByNUMrU1RD?=
- =?utf-8?B?SWlJY25wU0RqbGU4Y20xRWRDZ3E5by9aVFBjcmljblpQWEd3WU9JdnpMVjlq?=
- =?utf-8?B?REh3YldJS0QyY3NBVHRqVEtURTZNdVB1R0YvL3RabmRnS3VUbmdpQ212bmxJ?=
- =?utf-8?B?amRhY0RqaUZvc2RiWTMxR0sxUnAyaU5xTjhoWmxpQ1BBenhweWl1L2wwcU5a?=
- =?utf-8?B?SWFGTERnQkhjN20vQUdyZi9WK0ZLdk5pK2NmZTNZQ25NcjhDcThHdS8yWjZY?=
- =?utf-8?B?Q3lvb1l3ZWMwQ0xOS1ZMZHVPQlJudkZZaGhSK0paWXpxWW45N3VRUE5QMDBo?=
- =?utf-8?B?KzB3aEQyZ2Y3QkozVDVadXRQTXozWUpjZTgvZmMvb28wa0J1M1o2MGtBclpE?=
- =?utf-8?B?ODhXcENzbjJnalFSSFovazA3L1pFT2VzbVNpQkxvRHlkWDNpaCtkRzc4ZE8y?=
- =?utf-8?B?ZnFhWEg4dzVHTno3Sk9peFNjV1VMSW4wRVRKWFlzLzRXbTV3Wksrb0p6Mld4?=
- =?utf-8?B?Y2p6RUNVeHR5Q1h2WW5mRlZtcXlkd3lRQkJzNVQrc3p0VU9od0NzU21OOFBW?=
- =?utf-8?B?NDZGbE1xYlFSTkVRRmFkNmJBdnQ3dldkeUpFdzdQd2RlbVRTRjRSdGFiOTF3?=
- =?utf-8?B?MVM4ZVl6czhjL24wU291eFlYVnBFYk9WRm9pMzh4UjBYcExoeUhOeDdJS1Zi?=
- =?utf-8?B?L3N6eVZwRzdONWlaS0hsOTc3Slp0MGZKaGFpVTFoQnZoRXQwb1VqR001ZDFT?=
- =?utf-8?B?eEhuY2dJajJ3WGVDVUU0Q0hDdnNHRWVhbU02MkxCaWkvMUFVU21mUExmalRu?=
- =?utf-8?B?UEhpaWxEU1FpN3F1QlR6K1VmV3FOSDU2U2Y4YVFsNUFibzJXL1gwN3IrbWF1?=
- =?utf-8?B?Q3VKRkxQS0s0ZDExTDV0ZWRMT2NWNHpvZmJJN1U4a3BySDdGdDJqZTlhMFhu?=
- =?utf-8?B?ZFdacitjVWFKWmJSTFp0TXorb2xDNFZnUk40VlB2cCsyVERuQ1ZPZ3pLbE5F?=
- =?utf-8?B?ekpZY1FjNjFZOWpCcGtHaEZrOHFHT0liL2x3N0w4YTkvcEpiaUl3N1lOSmht?=
- =?utf-8?B?NEJWRXN3SDdsTmpBUGY4TUYxcWtvN09tdDlmWVk1d20wQ01POWNoZXU4eFdw?=
- =?utf-8?B?Tkx0MmlLNC9Kb3A3K3dmVTh2a05mSDk4eEhVbjJnNGIvM3pTVk0xcDNUNThz?=
- =?utf-8?B?bUlNdjN5bnVzQ3VsWCsrUmRXY0Z0MVFLOU80UjVmcTVSb0pETlNGL3oxK1Nn?=
- =?utf-8?B?NzZIelo5WG9jRmY5UzR2cTFlYmRpLzQ0a3BBclhpZWV6Uk5GZFAvWmFQN1hy?=
- =?utf-8?B?dmtXTTN2ckRwZHMxU1B1N3ZTank0alBocUk3Mzl0NWdLNkZqMVNhUVZCUHNL?=
- =?utf-8?B?c2QxZm04VkRrVWZlZUphVUtOVm1oNG9Idlc0NjJkNmErdlNNZTVMc1Zia0xQ?=
- =?utf-8?B?c1h4N3FPN2RGa3B5UTZCN281TXFDcWZheUJjT0lsYmtaelRndG5XOWVMb2V3?=
- =?utf-8?B?VW56SmhXYSttV050WkQvV2ZKUzVJditCYlhoRnM3TUlWZFhheEpqNGNHdkht?=
- =?utf-8?Q?zDZK90gSLXtCbZ3zt6b6ndU45?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 465508de-fea3-4bf9-35a9-08dc014ad568
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Dec 2023 11:00:10.2666
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tojeqodVP/WMGVODo0RqrANhC9ehsc8LF+s4ucRpK38OJk3ZcGjWBPs35MkhMMixBTI7qksF/w9n9zHwK2yuTQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6162
+Content-Type: multipart/signed; micalg="pgp-sha512";
+	protocol="application/pgp-signature"; boundary="53wom6cde5fkxq6o"
+Content-Disposition: inline
+In-Reply-To: <c6d88551-c480-4a89-ad2b-b873951fb181@intel.com>
+X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
+	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
+X-Brightmail-Tracker: H4sIAAAAAAAAA2WSf0xTVxTHc997fX00ljyKi3egc6MwE0CQuYwrgk63ZC+wMMjULW5TuvEC
+	BGi1pRvb4sagutGga4FKyk8RxY6qgPxSByoNo/JLfkgnYQhVa1Sw8hsGERjl4Way/z7ne84n
+	95zkUrionXSj4qRJrFwqSfAgBURt89ytzc23UtktJzrXo5mlDBJVaWtIZCsfIZGmaxiggZ43
+	0PwUQqU9kxjqXawH6OajSRyl51Xw0Vl7DR/l6w6j21fzSZQzMEqitoVWHqooycNRw8MHJKq+
+	PsNHjWM2HqqzpPKQ9u9TAFkMBgzd7R0EqGDuTwJZj9KopL8TvOvG2BoLMeZozwLJnC88DxhV
+	k53HlNQ/wRjN6RuAKWyJZB5X6QFzPO0ZyYw/7CeY0WsWkpm89FrEmv2C4Gg2Ie5rVu6/I0oQ
+	W6kfIg6diExeqH6OpwDNTjVwoiD9NhyZKcPVQECJaAOAVa1jPK6YAvBe1zSfKyYBXLqRx3uh
+	1BmWcAeL6HMADk87/zvU95d51agBMFt7jHRMEbQXzFbXEg4maV/Y+XRgxV5Lb4QdV/oJh4DT
+	xTyoUWVijoYrHQoz5k6vCEI6EM7N/0Zy7AJb9LaVHKeToXnq2TJTy+wOzy1SjtiJDoGVRXaS
+	21QMi7TNfI6PwNbqfszxFqQtAvg4p2y18T4c1FzAOHaFw+bq1Xw9bMvKIDghC8Dri2N8rjAC
+	WPrT9KqxHap6bavGLjirfw4cG0HaGfbZXbhFnWFmbQ7OxUL4yzERN/0mNA4+JTRAnPvSabkv
+	nZb732lc7Af7dNnk/2IfWFo8gnMcAi9eHCVOAX4ZWMcqFYkxrCJAyn7jp5AkKpTSGL+vZImX
+	wPInb1s0T1wGBcPjfiaAUcAEPJfl+xXGLuBGSGVS1mOtsCE9lRUJoyXffsfKZQflygRWYQLu
+	FOGxTugVvZEV0TGSJDaeZQ+x8hddjHJyS8E2dJ9cs6d4q0QWv8PsKrUdlyWndwhjTO+owq5+
+	ZqzcNSP89Xf/gi+97omBqXS2O/JCSXmQKSVV++SuUh1ertncFjj7aNv8p02baM+Acn8vS0uX
+	TnenLArkx6YJeBWGI9mHhypDnMMfHNh+p/WHifbQt7ZFeO/5ONogaPT1/CDUp0EZ+Yp+6x9N
+	pg8J3ZVrvqqo113iFDcPWK1BEcGJ7grZUF7qTrcv5lH75fesSfaO2SF1uLWocmhAaLz9CXE/
+	XjxxUJwZpn41NjD3xzNbNn3fkrPh57SP6ncH4Prx/WgvlWCmgqxhyvzxyGStU93kvmqfM94q
+	C5a1Ozj07Ih399TnsMKDUMRKArxxuULyD4IWDjNfBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrBKsWRmVeSWpSXmKPExsVy+t/xu7pHzzWlGryabWrx7X8Pm8XmiVvZ
+	LJ6sf81mMeHCK0aLO5cULX59sbBYdukzk8WVf3sYLU48/8xs0Tl7A7vF0rdb2S3mTC20uLxr
+	DpvF9Dvv2SxO/z3FarFh8Wxmi71PH7NZbNn/jd3i4IcnrBbbrzaxWkz8sYDR4uqKFUwWd6/c
+	Y7SY+/Mai8WDVgGLxbfOMzpIeTw5OI/Jo/XSXzaPNfPWMHq0HHnL6rF4z0smjwmLDjB6zDsZ
+	6PFi80xGj97md2weH5/eYvF4v+8qm8fnTXIBPFF6NkX5pSWpChn5xSW2StGGFkZ6hpYWekYm
+	lnqGxuaxVkamSvp2NimpOZllqUX6dgl6GWvfX2Ar6Ams2NR/mKmBsc++i5GTQ0LARGL7iv/M
+	XYxcHEICSxklPh+7zQiRkJHY+OUqK4QtLPHnWhcbRNFHRokr+85BdWxllDg6YzsLSBWLgKrE
+	lK5tYDabgI7E+Td3mEFsEQF5ibM7b7GANDALLGSVmNAyiQkkISzgJdHzcxFYA6+AucTPXyvZ
+	QGwhgTeMEhPu2ULEBSVOznwCVsMsUCZx8MlloJM4gGxpieX/OEDCnAK2Ehvnv2WDuFRZYv7E
+	Y+wQdq3E57/PGCcwCs9CMmkWkkmzECZBhHUkdm69w4YhrC2xbOFrZgjbVmLduvcsCxjZVzGK
+	pJYW56bnFhvpFSfmFpfmpesl5+duYgQms23Hfm7Zwbjy1Ue9Q4xMHIyHGFWAOh9tWH2BUYol
+	Lz8vVUmEd29nU6oQb0piZVVqUX58UWlOavEhRlNgKE5klhJNzgem2bySeEMzA1NDEzNLA1NL
+	M2MlcV7Pgo5EIYH0xJLU7NTUgtQimD4mDk6pBiYB9SAJa+l9BnNEvy8PmLlMQv6BXu8EpqmM
+	+3szTkrf8H1YVbcj1+uo9tMt0zOjE12eHVOcP/n99edPihML5h1Yv+JX/y13/li1pNU8/jWn
+	dj4x+fhHf+uDqrXO9/7ssKy8WfvgYnrgSpVvLLFO9614dy7vVuzMkXnqM0kgNmcJt2XfEiYG
+	v8wltR+iF6/In2PV8HRCayADU9gbhdW1DzuEjsu+CGOXZuk9u8bPx/tLTKCBibtqQs+STp2U
+	tgd7Tp++d6J2BwtPyClxjRS+i4V6EUafjnWH/3oUfP7DE7t3whzGnfYvi1Mlp97e/XbW1Lch
+	GkuSem7MfBJv+dPBoHjjhCuJbU9nhBZH7zKJPajEUpyRaKjFXFScCABmQ0Rb+wMAAA==
+X-CMS-MailID: 20231220112350eucas1p11c553442f801dbe4c1eed5ba73c4077c
+X-Msg-Generator: CA
+X-RootMTR: 20231217215720eucas1p2a590aca62ce8eb5ba81df6bc8b1a785d
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20231217215720eucas1p2a590aca62ce8eb5ba81df6bc8b1a785d
+References: <20231117130717.19875-1-yi.l.liu@intel.com>
+	<CGME20231217215720eucas1p2a590aca62ce8eb5ba81df6bc8b1a785d@eucas1p2.samsung.com>
+	<20231217112101.6mxn42dw62tbj6uw@localhost>
+	<c6d88551-c480-4a89-ad2b-b873951fb181@intel.com>
 
+--53wom6cde5fkxq6o
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Tue, Dec 19, 2023 at 05:26:21PM +0800, Yi Liu wrote:
+> On 2023/12/17 19:21, Joel Granados wrote:
+> > Hey Yi
+> >=20
+> > I have been working with https://protect2.fireeye.com/v1/url?k=3Db58750=
+ce-ea1c9eaa-b586db81-000babda0201-365207d33731a099&q=3D1&e=3Dee73b69d-5c35-=
+49ef-9e62-2355fb797f21&u=3Dhttps%3A%2F%2Fgithub.com%2Fyiliu1765%2Fqemu%2Ftr=
+ee%2Fzhenzhong%2Fwip%2Fiommufd_nesting_rfcv1
+>=20
+> good to know about it.
+>=20
+> > and have some questions regarding one of the commits in that series.
+> > I however cannot find it in lore.kernel.org. Can you please direct me to
+> > where the rfc was posted? If it has not been posted yet, do you have an
+> > alternate place for discussion?
+>=20
+> the qemu series has not been posted yet as kernel side is still changing.
+> It still needs some time to be ready for public review. Zhenzhong Duan
+> is going to post it when it's ready. If you have questions to discuss,
+> you can post your questions to Zhenzhong and me first. I guess it may be
+> fine to cc Alex Williamson, Eric Auger, Nicolin Chen, C=E9dric Le Goater,
+> Kevin Tian, Jason Gunthorpe and qemu mail list as this is discussion
+> something that is going to be posted in public.
+Thx for getting back to me. I'll direct my questions to these
+recipients.
 
-On 11/7/2023 4:48 AM, Jason Gunthorpe wrote:
-> On Mon, Oct 16, 2023 at 10:43:44AM +0000, Vasant Hegde wrote:
->> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
->> index da94dca1eb92..20961353460d 100644
->> --- a/drivers/iommu/amd/amd_iommu_types.h
->> +++ b/drivers/iommu/amd/amd_iommu_types.h
->> @@ -8,7 +8,9 @@
->>  #ifndef _ASM_X86_AMD_IOMMU_TYPES_H
->>  #define _ASM_X86_AMD_IOMMU_TYPES_H
->>  
->> +#include <linux/iommu.h>
->>  #include <linux/types.h>
->> +#include <linux/mmu_notifier.h>
->>  #include <linux/mutex.h>
->>  #include <linux/msi.h>
->>  #include <linux/list.h>
->> @@ -541,6 +543,16 @@ enum protection_domain_mode {
->>  	PD_MODE_V2,
->>  };
->>  
->> +/* Track PASID list for the protection domain */
->> +struct pdom_pasid_data {
->> +	/* PASID attached to the protection domain */
->> +	ioasid_t pasid;
->> +	/* Points to attached device data */
->> +	struct iommu_dev_data *dev_data;
->> +	/* Link to protection domain */
->> +	struct list_head pdom_link;
->> +};
->> +
->>  /*
->>   * This structure contains generic data for  IOMMU protection domains
->>   * independent of their use.
->> @@ -556,6 +568,9 @@ struct protection_domain {
->>  	enum protection_domain_mode pd_mode; /* Track page table type */
->>  	unsigned dev_cnt;	/* devices assigned to this domain */
->>  	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
->> +
->> +	struct mmu_notifier mn;	/* mmu notifier for the SVA domain */
->> +	struct list_head pasid_list; /* List of pdom_pasid_data */
->>  };
-> 
-> Oh, see here is the data structure I mentioned earlier, it just needs
-> to be done as part of the invalidation cleanup and replace the other
-> things I mentioned. Has nothing to do with SVA.
-> 
->> @@ -2432,6 +2428,8 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
->>  	case IOMMU_DOMAIN_UNMANAGED:
->>  		pgtable = AMD_IOMMU_V1;
->>  		break;
->> +	case IOMMU_DOMAIN_SVA:
->> +		return amd_iommu_sva_domain_alloc(domain);
-> 
-> Same remark as I gave intel, you should take my patch (strip the ARM
-> parts) to give this it's own op which significantly cleans up this
-> flow.
-> 
-> https://lore.kernel.org/linux-iommu/20-v2-16665a652079+5947-smmuv3_newapi_p2_jgg@nvidia.com/
+Best
 
-Ok. I have grabbed above patch (minus arm stuff) and added as separate patch in
-my series.
+>=20
+> >=20
+> > Best
+> >=20
+> > On Fri, Nov 17, 2023 at 05:07:11AM -0800, Yi Liu wrote:
+> > > Nested translation is a hardware feature that is supported by many mo=
+dern
+> > > IOMMU hardwares. It has two stages (stage-1, stage-2) address transla=
+tion
+> > > to get access to the physical address. stage-1 translation table is o=
+wned
+> > > by userspace (e.g. by a guest OS), while stage-2 is owned by kernel. =
+Changes
+> > > to stage-1 translation table should be followed by an IOTLB invalidat=
+ion.
+> > >=20
+> > > Take Intel VT-d as an example, the stage-1 translation table is I/O p=
+age
+> > > table. As the below diagram shows, guest I/O page table pointer in GPA
+> > > (guest physical address) is passed to host and be used to perform the=
+ stage-1
+> > > address translation. Along with it, modifications to present mappings=
+ in the
+> > > guest I/O page table should be followed with an IOTLB invalidation.
+> > >=20
+> > >      .-------------.  .---------------------------.
+> > >      |   vIOMMU    |  | Guest I/O page table      |
+> > >      |             |  '---------------------------'
+> > >      .----------------/
+> > >      | PASID Entry |--- PASID cache flush --+
+> > >      '-------------'                        |
+> > >      |             |                        V
+> > >      |             |           I/O page table pointer in GPA
+> > >      '-------------'
+> > > Guest
+> > > ------| Shadow |---------------------------|--------
+> > >        v        v                           v
+> > > Host
+> > >      .-------------.  .------------------------.
+> > >      |   pIOMMU    |  |  FS for GIOVA->GPA     |
+> > >      |             |  '------------------------'
+> > >      .----------------/  |
+> > >      | PASID Entry |     V (Nested xlate)
+> > >      '----------------\.----------------------------------.
+> > >      |             |   | SS for GPA->HPA, unmanaged domain|
+> > >      |             |   '----------------------------------'
+> > >      '-------------'
+> > > Where:
+> > >   - FS =3D First stage page tables
+> > >   - SS =3D Second stage page tables
+> > > <Intel VT-d Nested translation>
+> > >=20
+> > > This series adds the cache invalidation path for the userspace to inv=
+alidate
+> > > cache after modifying the stage-1 page table. This is based on the fi=
+rst part
+> > > of nesting [1]
+> > >=20
+> > > Complete code can be found in [2], QEMU could can be found in [3].
+> > >=20
+> > > At last, this is a team work together with Nicolin Chen, Lu Baolu. Th=
+anks
+> > > them for the help. ^_^. Look forward to your feedbacks.
+> > >=20
+> > > [1] https://lore.kernel.org/linux-iommu/20231026044216.64964-1-yi.l.l=
+iu@intel.com/ - merged
+> > > [2] https://protect2.fireeye.com/v1/url?k=3D38b56f01-672ea165-38b4e44=
+e-000babda0201-469ae350f21411ca&q=3D1&e=3Dee73b69d-5c35-49ef-9e62-2355fb797=
+f21&u=3Dhttps%3A%2F%2Fgithub.com%2Fyiliu1765%2Fiommufd%2Ftree%2Fiommufd_nes=
+ting
+> > > [3] https://protect2.fireeye.com/v1/url?k=3Dd6e01ed1-897bd0b5-d6e1959=
+e-000babda0201-bcf2b26a8dc8b34d&q=3D1&e=3Dee73b69d-5c35-49ef-9e62-2355fb797=
+f21&u=3Dhttps%3A%2F%2Fgithub.com%2Fyiliu1765%2Fqemu%2Ftree%2Fzhenzhong%2Fwi=
+p%2Fiommufd_nesting_rfcv1
+> > >=20
+> > > Change log:
+> > >=20
+> > > v6:
+> > >   - No much change, just rebase on top of 6.7-rc1 as part 1/2 is merg=
+ed
+> > >=20
+> > > v5: https://lore.kernel.org/linux-iommu/20231020092426.13907-1-yi.l.l=
+iu@intel.com/#t
+> > >   - Split the iommufd nesting series into two parts of alloc_user and
+> > >     invalidation (Jason)
+> > >   - Split IOMMUFD_OBJ_HW_PAGETABLE to IOMMUFD_OBJ_HWPT_PAGING/_NESTED=
+, and
+> > >     do the same with the structures/alloc()/abort()/destroy(). Rework=
+ed the
+> > >     selftest accordingly too. (Jason)
+> > >   - Move hwpt/data_type into struct iommu_user_data from standalone op
+> > >     arguments. (Jason)
+> > >   - Rename hwpt_type to be data_type, the HWPT_TYPE to be HWPT_ALLOC_=
+DATA,
+> > >     _TYPE_DEFAULT to be _ALLOC_DATA_NONE (Jason, Kevin)
+> > >   - Rename iommu_copy_user_data() to iommu_copy_struct_from_user() (K=
+evin)
+> > >   - Add macro to the iommu_copy_struct_from_user() to calculate min_s=
+ize
+> > >     (Jason)
+> > >   - Fix two bugs spotted by ZhaoYan
+> > >=20
+> > > v4: https://lore.kernel.org/linux-iommu/20230921075138.124099-1-yi.l.=
+liu@intel.com/
+> > >   - Separate HWPT alloc/destroy/abort functions between user-managed =
+HWPTs
+> > >     and kernel-managed HWPTs
+> > >   - Rework invalidate uAPI to be a multi-request array-based design
+> > >   - Add a struct iommu_user_data_array and a helper for driver to san=
+itize
+> > >     and copy the entry data from user space invalidation array
+> > >   - Add a patch fixing TEST_LENGTH() in selftest program
+> > >   - Drop IOMMU_RESV_IOVA_RANGES patches
+> > >   - Update kdoc and inline comments
+> > >   - Drop the code to add IOMMU_RESV_SW_MSI to kernel-managed HWPT in =
+nested translation,
+> > >     this does not change the rule that resv regions should only be ad=
+ded to the
+> > >     kernel-managed HWPT. The IOMMU_RESV_SW_MSI stuff will be added in=
+ later series
+> > >     as it is needed only by SMMU so far.
+> > >=20
+> > > v3: https://lore.kernel.org/linux-iommu/20230724110406.107212-1-yi.l.=
+liu@intel.com/
+> > >   - Add new uAPI things in alphabetical order
+> > >   - Pass in "enum iommu_hwpt_type hwpt_type" to op->domain_alloc_user=
+ for
+> > >     sanity, replacing the previous op->domain_alloc_user_data_len sol=
+ution
+> > >   - Return ERR_PTR from domain_alloc_user instead of NULL
+> > >   - Only add IOMMU_RESV_SW_MSI to kernel-managed HWPT in nested trans=
+lation (Kevin)
+> > >   - Add IOMMU_RESV_IOVA_RANGES to report resv iova ranges to userspac=
+e hence
+> > >     userspace is able to exclude the ranges in the stage-1 HWPT (e.g.=
+ guest I/O
+> > >     page table). (Kevin)
+> > >   - Add selftest coverage for the new IOMMU_RESV_IOVA_RANGES ioctl
+> > >   - Minor changes per Kevin's inputs
+> > >=20
+> > > v2: https://lore.kernel.org/linux-iommu/20230511143844.22693-1-yi.l.l=
+iu@intel.com/
+> > >   - Add union iommu_domain_user_data to include all user data structu=
+res to avoid
+> > >     passing void * in kernel APIs.
+> > >   - Add iommu op to return user data length for user domain allocation
+> > >   - Rename struct iommu_hwpt_alloc::data_type to be hwpt_type
+> > >   - Store the invalidation data length in iommu_domain_ops::cache_inv=
+alidate_user_data_len
+> > >   - Convert cache_invalidate_user op to be int instead of void
+> > >   - Remove @data_type in struct iommu_hwpt_invalidate
+> > >   - Remove out_hwpt_type_bitmap in struct iommu_hw_info hence drop pa=
+tch 08 of v1
+> > >=20
+> > > v1: https://lore.kernel.org/linux-iommu/20230309080910.607396-1-yi.l.=
+liu@intel.com/
+> > >=20
+> > > Thanks,
+> > > 	Yi Liu
+> > >=20
+> > > Lu Baolu (1):
+> > >    iommu: Add cache_invalidate_user op
+> > >=20
+> > > Nicolin Chen (4):
+> > >    iommu: Add iommu_copy_struct_from_user_array helper
+> > >    iommufd/selftest: Add mock_domain_cache_invalidate_user support
+> > >    iommufd/selftest: Add IOMMU_TEST_OP_MD_CHECK_IOTLB test op
+> > >    iommufd/selftest: Add coverage for IOMMU_HWPT_INVALIDATE ioctl
+> > >=20
+> > > Yi Liu (1):
+> > >    iommufd: Add IOMMU_HWPT_INVALIDATE
+> > >=20
+> > >   drivers/iommu/iommufd/hw_pagetable.c          | 35 ++++++++
+> > >   drivers/iommu/iommufd/iommufd_private.h       |  9 ++
+> > >   drivers/iommu/iommufd/iommufd_test.h          | 22 +++++
+> > >   drivers/iommu/iommufd/main.c                  |  3 +
+> > >   drivers/iommu/iommufd/selftest.c              | 69 +++++++++++++++
+> > >   include/linux/iommu.h                         | 84 ++++++++++++++++=
++++
+> > >   include/uapi/linux/iommufd.h                  | 35 ++++++++
+> > >   tools/testing/selftests/iommu/iommufd.c       | 75 +++++++++++++++++
+> > >   tools/testing/selftests/iommu/iommufd_utils.h | 63 ++++++++++++++
+> > >   9 files changed, 395 insertions(+)
+> > >=20
+> > > --=20
+> > > 2.34.1
+> > >=20
+> >=20
+>=20
+> --=20
+> Regards,
+> Yi Liu
 
-> 
->> +static void dev_pasid_remove(struct pdom_pasid_data *pasid_data)
->> +{
->> +	/* make it visible */
->> +	smp_wmb();
-> 
-> What is "it"? Don't put barriers like this, the barrier should
-> immediately follow whatever store it is protecting.
+--=20
 
-Fixed.
+Joel Granados
 
-> 
->> +static struct pdom_pasid_data *get_pdom_pasid_data(struct protection_domain *pdom,
->> +					   struct device *dev, ioasid_t pasid)
->> +{
->> +	struct pdom_pasid_data *pasid_data;
->> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
->> +
-> 
-> Add a lockdep assertion, but it seems strange a function like this
-> would even exist.. Better to call it "remove_pdom_pasid_data" and
-> include the list_del(). And then pull the locking into here too.
+--53wom6cde5fkxq6o
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-Ok. I have renamed these function names.
+iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmWCzrsACgkQupfNUreW
+QU8N8gv+JAauQGZJaMEm6OPs/J47+sm+ehXncbnx309pNrvE1VZfO4l6VYwuK0ic
+rGmgZoxQhqZS280dqGWxiyKLsqczKrRkDuyksa618ju7VwcglQybISvv2o324cpw
+snS7XxfqL9zBBkxng7+X/6Kr5/vIQfoiDwQUC9knNGh0zBK8Ldl9vxBwzFF4F5q0
+Kcc9TzozfPUsxHCtyWc0TXx9yAxI2nEo0ed07eQAtby+J4HqNO2HFzUJRydt4Dc0
+tRux4XZTTGdnyMd+fILHGpJGLbjjmG9dfR+gs3Cs4CN1eZEao3b8qkR8LwLGcvkx
+g5uTTyDVyHYTk11Ow6Cfvbo61CDPjl06fVtn54fKzdDB/c1NLuob+zvlk50Ej3MV
+BbZlT3eXohFh1gYvk/BV+5xTH1E6tfx78KO6fMvkYpLHuOWQ2rsyhusQBq7qxo9y
+oA/dcALHVFt8eSeMSaTXqVJtdyhL/xs1QjjyVTLkbI6/2SlrhCcXEjTZUrfQ+vWv
+t8jZDdx3
+=eK/f
+-----END PGP SIGNATURE-----
 
-> 
->> +static void sva_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
->> +				    struct mm_struct *mm,
->> +				    unsigned long start, unsigned long end)
->> +{
->> +	struct protection_domain *sva_pdom;
->> +	struct pdom_pasid_data *pasid_data;
->> +	struct iommu_dev_data *dev_data;
->> +	unsigned long flags;
->> +
->> +	sva_pdom = container_of(mn, struct protection_domain, mn);
->> +
->> +	spin_lock_irqsave(&sva_pdom->lock, flags);
->> +
->> +	list_for_each_entry(pasid_data, &sva_pdom->pasid_list, pdom_link) {
->> +		dev_data = pasid_data->dev_data;
->> +
->> +		spin_lock(&dev_data->lock);
->> +		amd_iommu_dev_flush_pasid_pages(dev_data, pasid_data->pasid,
->> +						start, end - start);
-> 
-> Nope, can't unlock while still holding the pointer. Use a mutex or a
-> rcu scheme. Again this should all be general non-SVA code to fix the
-> entire invalidation logic.
-> 
->> +static void sva_mn_release(struct mmu_notifier *mn, struct mm_struct *mm)
->> +{
->> +	struct pdom_pasid_data *pasid_data, *next;
->> +	struct protection_domain *sva_pdom;
->> +	unsigned long flags;
->> +
->> +	sva_pdom = container_of(mn, struct protection_domain, mn);
->> +
->> +	spin_lock_irqsave(&sva_pdom->lock, flags);
->> +
->> +	/* Assume pasid_list contains same PASID with different devices */
->> +	list_for_each_entry_safe(pasid_data, next,
->> +				 &sva_pdom->pasid_list, pdom_link) {
->> +		dev_pasid_remove(pasid_data);
->> +	}
-> 
-> Be mindful of any logging in other parts of the driver.. Ideally a
-> non-present PASID translation will generate a debugging log but a
-> released SVA will not.
-
-Ok.
-
-> 
->> +static int iommu_sva_set_dev_pasid(struct iommu_domain *domain,
->> +				   struct device *dev, ioasid_t pasid)
->> +{
->> +	struct pdom_pasid_data *pasid_data;
->> +	struct protection_domain *sva_pdom = to_pdomain(domain);
->> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
->> +	unsigned long flags;
->> +	int ret = -EINVAL;
->> +
->> +	/* PASID zero is used for requests from the I/O device without PASID */
->> +	if (pasid == 0 || pasid >= dev->iommu->max_pasids)
->> +		return ret;
->> +
->> +	/* Use SVA protection domain lock */
->> +	spin_lock_irqsave(&sva_pdom->lock, flags);
->> +
->> +	/* Add PASID to protection domain pasid list */
->> +	pasid_data = kzalloc(sizeof(*pasid_data), GFP_KERNEL);
-> 
-> GFP_KERNEL under a spinlock - did you test this with full debugging?
-
-Fixed.
-
-> 
->> +	if (pasid_data == NULL) {
->> +		ret = -ENOMEM;
->> +		goto out;
->> +	}
->> +
->> +	pasid_data->pasid = pasid;
->> +	pasid_data->dev_data = dev_data;
->> +
->> +	if (list_empty(&sva_pdom->pasid_list)) {
->> +		sva_pdom->mn.ops = &sva_mn;
->> +
->> +		ret = mmu_notifier_register(&sva_pdom->mn, domain->mm);
->> +		if (ret) {
->> +			sva_pdom->mn.ops = NULL;
->> +			goto out_free_pasid_data;
->> +		}
->> +	}
->> +
->> +	/* Setup GCR3 table */
->> +	ret = amd_iommu_set_gcr3(dev_data, pasid,
->> +				 iommu_virt_to_phys(domain->mm->pgd));
->> +	if (ret)
->> +		goto out_unreg_notifier;
-> 
-> Something looks missing, what if the RID domain hasn't installed a
-> GCR3? Eg it is a v1 domain or something?
-
-I do have check in next patch. Anyway I have re-arranged patches and its all
-part of single patch now.
-
-> 
->> +	list_add(&pasid_data->pdom_link, &sva_pdom->pasid_list);
->> +	spin_unlock_irqrestore(&sva_pdom->lock, flags);
->> +	return ret;
->> +
->> +out_unreg_notifier:
->> +	mmu_notifier_unregister(&sva_pdom->mn, domain->mm);
->> +	sva_pdom->mn.ops = NULL;
-> 
-> I'm pretty sure you can't actually unregister while holding the
-> spinlock without creating a deadlock.
-> 
-> Take my SVA patch and move notifier registration to alloc/free and out
-> of attach to fix this.
-
-mmu_notifier is moved to domain alloc/free.
-
--Vasant
+--53wom6cde5fkxq6o--
