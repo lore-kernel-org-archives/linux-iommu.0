@@ -1,123 +1,104 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B5DC168B2;
-	Wed, 20 Dec 2023 07:15:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71A0D1C6B1
+	for <iommu@lists.linux.dev>; Wed, 20 Dec 2023 08:08:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ReOHZhSj"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1d3e416f303so6914185ad.0;
-        Tue, 19 Dec 2023 23:15:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1703056501; x=1703661301; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=eJqWdKRl0UBq0Wj+r8chL9QmhrnrulM60eoe1tH98KY=;
-        b=ReOHZhSj/CKRCE1NE8InCmbK0WaycuRe2uaqObNOtdSObW/HFZNnvSMVv5yyS1vkYV
-         z4jNHSD9B46V/mgr1V0TSRB7+VJf4K3WC5tOp6VKPY9uu0lY2MK4jF5vXkz1LGWp8Fen
-         cGXglxZTKCRPlBg+DalhhSPQIoye4IjGBsBlx1bq7bI931NU7BJwvgUwXG16+Iwo4Rf3
-         1xgJ/qVlsDj3sMFYgVWHQNpEwKOOPGz10dEiTirqXumMz/RCNXPWSX7Bsoc4eFYbCdBV
-         cyEFXcaPsAAGBdOVjlMPlWu30WtF56VfM8bm1vUpGLdZ+IrxxT+/D189JD03XWAchk8D
-         RlYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703056501; x=1703661301;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=eJqWdKRl0UBq0Wj+r8chL9QmhrnrulM60eoe1tH98KY=;
-        b=fgZdHRaO/D72W8beskmbifi7vJCri4rIVDTd6b2j/xZ5LW6JJ/jWLERRrRqkuKlJsy
-         tpDGXKfu4AVS0pnMrQ7oS1bLjHIFT0HQlT1Y+9ieB5hbNi/M4FwVB7cCqy/kJaJ9KGHq
-         OQZsA5mt3d5GFhmy7o0YnVUsZOTZjUhQKHO8ZmpHOa6zqRofuf1s0/h2H/Z1hwRnYOSe
-         B3DvQJaCg9tyD45dQXSDiTuulR0VgiosWYBWoEUXGbS9WYemzivXC0F1Wl26ZyhbDHM1
-         9R+dScVHg+yR9tIZ3jCPGB5iAAmGBhf3bZFOBpW/dDj9z+gyP/ZTV1OalIWHpKRjHjF0
-         hhrw==
-X-Gm-Message-State: AOJu0YzAM2soUcUycwSN3XdgaOS0Epl+/CEs7dIGXyiAIuuW0AJGTVxl
-	FcMBcNriMY+januRWAla9OI=
-X-Google-Smtp-Source: AGHT+IH2/KQGWsEEIk+CfQb//I/X1FN9i9PYn0R8hU2YQDfX0MobECujamcRsnvnV4o1L8WIa9T7SQ==
-X-Received: by 2002:a17:903:947:b0:1d3:be34:7862 with SMTP id ma7-20020a170903094700b001d3be347862mr3583611plb.9.1703056501427;
-        Tue, 19 Dec 2023 23:15:01 -0800 (PST)
-Received: from localhost (dhcp-72-253-202-210.hawaiiantel.net. [72.253.202.210])
-        by smtp.gmail.com with ESMTPSA id m2-20020a170902bb8200b001cfd2cb1907sm22210314pls.206.2023.12.19.23.15.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Dec 2023 23:15:00 -0800 (PST)
-Sender: Tejun Heo <htejun@gmail.com>
-Date: Tue, 19 Dec 2023 21:14:59 -1000
-From: Tejun Heo <tj@kernel.org>
-To: Naohiro Aota <Naohiro.Aota@wdc.com>
-Cc: Lai Jiangshan <jiangshanlai@gmail.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-btrfs@vger.kernel.org" <linux-btrfs@vger.kernel.org>,
-	"ceph-devel@vger.kernel.org" <ceph-devel@vger.kernel.org>,
-	"cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
-	"coreteam@netfilter.org" <coreteam@netfilter.org>,
-	"dm-devel@lists.linux.dev" <dm-devel@lists.linux.dev>,
-	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-	"gfs2@lists.linux.dev" <gfs2@lists.linux.dev>,
-	"intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"linux-bcachefs@vger.kernel.org" <linux-bcachefs@vger.kernel.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"linux-cachefs@redhat.com" <linux-cachefs@redhat.com>,
-	"linux-cifs@vger.kernel.org" <linux-cifs@vger.kernel.org>,
-	"linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-	"linux-erofs@lists.ozlabs.org" <linux-erofs@lists.ozlabs.org>,
-	"linux-f2fs-devel@lists.sourceforge.net" <linux-f2fs-devel@lists.sourceforge.net>,
-	"linux-fscrypt@vger.kernel.org" <linux-fscrypt@vger.kernel.org>,
-	"linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-	"linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
-	"linux-mm@kvack.org" <linux-mm@kvack.org>,
-	"linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-	"linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-	"linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-	"linux-raid@vger.kernel.org" <linux-raid@vger.kernel.org>,
-	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-	"linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
-	"linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-	"linux-trace-kernel@vger.kernel.org" <linux-trace-kernel@vger.kernel.org>,
-	"linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-	"linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-	"linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>,
-	"nbd@other.debian.org" <nbd@other.debian.org>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"ntb@lists.linux.dev" <ntb@lists.linux.dev>,
-	"open-iscsi@googlegroups.com" <open-iscsi@googlegroups.com>,
-	"oss-drivers@corigine.com" <oss-drivers@corigine.com>,
-	"platform-driver-x86@vger.kernel.org" <platform-driver-x86@vger.kernel.org>,
-	"samba-technical@lists.samba.org" <samba-technical@lists.samba.org>,
-	"target-devel@vger.kernel.org" <target-devel@vger.kernel.org>,
-	"virtualization@lists.linux.dev" <virtualization@lists.linux.dev>,
-	"wireguard@lists.zx2c4.com" <wireguard@lists.zx2c4.com>
-Subject: Re: Performance drop due to alloc_workqueue() misuse and recent
- change
-Message-ID: <ZYKUc7MUGvre2lGQ@slm.duckdns.org>
-References: <dbu6wiwu3sdhmhikb2w6lns7b27gbobfavhjj57kwi2quafgwl@htjcc5oikcr3>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="JtYPMk6h"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BK6fKkU010398;
+	Wed, 20 Dec 2023 08:08:40 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=+6NBB2Pd6DfZEk1paBxij/oUAhxNpI8p5+8suGrbVLA=; b=Jt
+	YPMk6hPEgv6amvEngPC13CMUtrSw8FbiRbQziv7E8zFEa52LlLiLKtPiKr9qDxAH
+	wCjsaxu07/kmdyui7DZbZJSNi3gTRFadTNrTMAkLEhGj2WHmNNDkaVC8ECuR3AdD
+	W7xAFgsgc6+ircm6TA8jsdz5Ux2hmgl+dnNr5IWJ5dcLgoiQm09aMYf4FmVJQKQ1
+	I+yDUp65BjzDM3bFYhtaZ0E+WMc4iaQT3VaiLUBp9xj28tg8kTeCSLoTVf1HYsQz
+	sXbUZ8Vwan9fNtpKmZGxfDhVy7c2H4SW1NfY/Ujjr36DNVRt/iii8rODzeRPLnkC
+	TM4Um6zdzRMM0aQIHDUA==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v3rppggmk-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 20 Dec 2023 08:08:40 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BK88dCH027670
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 20 Dec 2023 08:08:39 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Wed, 20 Dec
+ 2023 00:08:33 -0800
+Message-ID: <ccd67437-39cb-4fea-98aa-4dfae5f4c1d0@quicinc.com>
+Date: Wed, 20 Dec 2023 13:38:23 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dbu6wiwu3sdhmhikb2w6lns7b27gbobfavhjj57kwi2quafgwl@htjcc5oikcr3>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 1/5] iommu/arm-smmu: re-enable context caching in smmu
+ reset operation
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <jsnitsel@redhat.com>,
+        <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>
+References: <20231219135947.1623-1-quic_bibekkum@quicinc.com>
+ <20231219135947.1623-2-quic_bibekkum@quicinc.com>
+ <810ee42b-49c9-4184-b5aa-a95261faf77a@linaro.org>
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <810ee42b-49c9-4184-b5aa-a95261faf77a@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: sydQix4L66O3NvKJ7H3PIi-q5GBgoixu
+X-Proofpoint-GUID: sydQix4L66O3NvKJ7H3PIi-q5GBgoixu
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_02,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxscore=0
+ priorityscore=1501 suspectscore=0 mlxlogscore=871 impostorscore=0
+ clxscore=1015 spamscore=0 phishscore=0 lowpriorityscore=0 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2312200055
 
-Hello, again.
 
-On Mon, Dec 04, 2023 at 04:03:47PM +0000, Naohiro Aota wrote:
-...
-> In summary, we misuse max_active, considering it is a global limit. And,
-> the recent commit introduced a huge performance drop in some cases.  We
-> need to review alloc_workqueue() usage to check if its max_active setting
-> is proper or not.
 
-Can you please test the following branch?
+On 12/19/2023 11:29 PM, Konrad Dybcio wrote:
+> On 19.12.2023 14:59, Bibek Kumar Patro wrote:
+>> Default MMU-500 reset operation disables context caching in
+>> prefetch buffer. It is however expected for context banks using
+>> the ACTLR register to retain their prefetch value during reset
+>> and runtime suspend.
+>>
+>> Replace default MMU-500 reset operation with Qualcomm specific reset
+>> operation which envelope the default reset operation and re-enables
+>> context caching in prefetch buffer for Qualcomm SoCs.
+>>
+>> Suggested-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> Suggested-by implies I came up with this being a solution to
+> an issue.. definitely not the case!
+> 
 
- https://git.kernel.org/pub/scm/linux/kernel/git/tj/wq.git unbound-system-wide-max_active
+Noted, will send v6 by removing the Suggested by tag
+and will address the return check as well.
 
-Thanks.
+Thanks,
+Bibek
 
--- 
-tejun
+> Konrad
