@@ -1,349 +1,206 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4194C38DD5
-	for <iommu@lists.linux.dev>; Wed, 20 Dec 2023 13:28:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D93E2D634
+	for <iommu@lists.linux.dev>; Wed, 20 Dec 2023 13:38:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JmiITibH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1703078929; x=1734614929;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=zbk8DUk6AVrOwj/yWHcoFKk6SEPSTMmsuNjz9utineQ=;
-  b=JmiITibHc/VSQuokn7sq3j0LlTcwXKYySdjRd5XhVQmD8BG0TRjDPCD0
-   3vsffm4aEasdfz/bovTZ3o0eVXwkQJiMpAHkIEDEr1YJMkfjXH91TVK/h
-   efgdlnrru64upw2zM2NYolmTvgEwbKrIPOoQdH7nmrnC5tuPs8Hq5oD2h
-   lQSkoozyjK7sW18KhW7EaQbkQXf32qw8BPARxZlEGLjmkR2i6FwmKA5WP
-   R/fB4+VCrSoU1apQ/RwfTvOpi1ud0nUZKaqRMxdc6fn9HSaahR2lKB8iS
-   RuB5dghcSGcAfjWTOCzPUTErwb8CkY8u5+EFyGFXSISGqXOFgfWNWkqGq
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10929"; a="17367459"
-X-IronPort-AV: E=Sophos;i="6.04,291,1695711600"; 
-   d="scan'208";a="17367459"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Dec 2023 05:28:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10929"; a="805258493"
-X-IronPort-AV: E=Sophos;i="6.04,291,1695711600"; 
-   d="scan'208";a="805258493"
-Received: from cascade.sh.intel.com ([10.239.48.35])
-  by orsmga008.jf.intel.com with ESMTP; 20 Dec 2023 05:28:45 -0800
-From: Jingqi Liu <Jingqi.liu@intel.com>
-To: iommu@lists.linux.dev,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Tian Kevin <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: linux-kernel@vger.kernel.org,
-	Jingqi Liu <Jingqi.liu@intel.com>
-Subject: [PATCH] Documentation: iommu/vt-d: Add the document for Intel IOMMU debugfs
-Date: Wed, 20 Dec 2023 21:25:19 +0800
-Message-Id: <20231220132519.11077-1-Jingqi.liu@intel.com>
-X-Mailer: git-send-email 2.21.3
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="bu7KCtlv"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 3BKDA8W2031091;
+	Wed, 20 Dec 2023 13:38:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	from:to:cc:subject:date:message-id:mime-version:content-type; s=
+	qcppdkim1; bh=pN4BHUhiNI6+9uqvMcSXwIU07/RDI9wrKIK5K3yeVVA=; b=bu
+	7KCtlv+RgFAZYzpF3hHI45i2DMX/yYJCM8TvgzBgOnx/acrfHPUTevpOgHydC7jL
+	8wNTLi7bSgp0XrdULOS05L6D5MzKpnd/8W1/qEippjRD/OF9r6cGlEZYwjeOvlkA
+	4bMOxV0ZwxGY+Es356HuKmuRAYW4DHU+QczRHtp1U/DDP8LJT8WkLRM8xLV6re7T
+	ntAN6Bnh358YPkoJQxuVkORPpcl4ZGY3qzwN1F+UIqDXA+BVSl5J4LXUuyyQ0vRs
+	XNbZoEKJ+GKLMVfQU3MvH7w6x8dRu71zRpRnErFIRATmy4aQFWQLwalCsOB+4EbT
+	UFXicKv4/6GhF0RX3pfw==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3v3tnw10s4-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 20 Dec 2023 13:38:33 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 3BKDcWkS021718
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 20 Dec 2023 13:38:32 GMT
+Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Wed, 20 Dec 2023 05:38:26 -0800
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
+        <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>,
+        Bibek Kumar Patro
+	<quic_bibekkum@quicinc.com>
+Subject: [PATCH v6 0/5] iommu/arm-smmu: introduction of ACTLR implementation for Qualcomm SoCs
+Date: Wed, 20 Dec 2023 19:08:03 +0530
+Message-ID: <20231220133808.5654-1-quic_bibekkum@quicinc.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: ZaJChor2nKTZJ6wRCweOi9d5ouyxV7fI
+X-Proofpoint-ORIG-GUID: ZaJChor2nKTZJ6wRCweOi9d5ouyxV7fI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 impostorscore=0 suspectscore=0 phishscore=0 bulkscore=0
+ clxscore=1015 mlxlogscore=999 lowpriorityscore=0 adultscore=0 mlxscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2312200097
 
-This document guides users to dump the Intel IOMMU internals by debugfs.
+This patch series consist of five parts and covers the following:
 
-Signed-off-by: Jingqi Liu <Jingqi.liu@intel.com>
----
- Documentation/ABI/testing/debugfs-intel-iommu | 278 ++++++++++++++++++
- 1 file changed, 278 insertions(+)
- create mode 100644 Documentation/ABI/testing/debugfs-intel-iommu
+1. Re-enable context caching for Qualcomm SoCs to retain prefetcher
+   settings during reset and runtime suspend.
 
-diff --git a/Documentation/ABI/testing/debugfs-intel-iommu b/Documentation/ABI/testing/debugfs-intel-iommu
-new file mode 100644
-index 000000000000..86b3f7f85db9
---- /dev/null
-+++ b/Documentation/ABI/testing/debugfs-intel-iommu
-@@ -0,0 +1,278 @@
-+What:		/sys/kernel/debug/iommu/intel/iommu_regset
-+Date:		December 2023
-+Contact:	Jingqi Liu <Jingqi.liu@intel.com>
-+Description:
-+		This file dumps all the register contents for each IOMMU device.
-+
-+		Example in Kabylake:
-+
-+		::
-+
-+		 $ sudo cat /sys/kernel/debug/iommu/intel/iommu_regset
-+
-+		 IOMMU: dmar0 Register Base Address: 26be37000
-+
-+		 Name                    Offset          Contents
-+		 VER                     0x00            0x0000000000000010
-+		 GCMD                    0x18            0x0000000000000000
-+		 GSTS                    0x1c            0x00000000c7000000
-+		 FSTS                    0x34            0x0000000000000000
-+		 FECTL                   0x38            0x0000000000000000
-+
-+		 [...]
-+
-+		 IOMMU: dmar1 Register Base Address: fed90000
-+
-+		 Name                    Offset          Contents
-+		 VER                     0x00            0x0000000000000010
-+		 GCMD                    0x18            0x0000000000000000
-+		 GSTS                    0x1c            0x00000000c7000000
-+		 FSTS                    0x34            0x0000000000000000
-+		 FECTL                   0x38            0x0000000000000000
-+
-+		 [...]
-+
-+		 IOMMU: dmar2 Register Base Address: fed91000
-+
-+		 Name                    Offset          Contents
-+		 VER                     0x00            0x0000000000000010
-+		 GCMD                    0x18            0x0000000000000000
-+		 GSTS                    0x1c            0x00000000c7000000
-+		 FSTS                    0x34            0x0000000000000000
-+		 FECTL                   0x38            0x0000000000000000
-+
-+		 [...]
-+
-+What:		/sys/kernel/debug/iommu/intel/ir_translation_struct
-+Date:		December 2023
-+Contact:	Jingqi Liu <Jingqi.liu@intel.com>
-+Description:
-+		This file dumps the table entries for Interrupt
-+		remapping and Interrupt posting.
-+
-+		Example in Kabylake:
-+
-+		::
-+
-+		 $ sudo cat /sys/kernel/debug/iommu/intel/ir_translation_struct
-+
-+		 Remapped Interrupt supported on IOMMU: dmar0
-+		 IR table address:100900000
-+
-+		 Entry SrcID   DstID    Vct IRTE_high           IRTE_low
-+		 0     00:0a.0 00000080 24  0000000000040050    000000800024000d
-+		 1     00:0a.0 00000001 ef  0000000000040050    0000000100ef000d
-+
-+		 Remapped Interrupt supported on IOMMU: dmar1
-+		 IR table address:100300000
-+		 Entry SrcID   DstID    Vct IRTE_high           IRTE_low
-+		 0     00:02.0 00000002 26  0000000000040010    000000020026000d
-+
-+		 [...]
-+
-+		 ****
-+
-+		 Posted Interrupt supported on IOMMU: dmar0
-+		 IR table address:100900000
-+		 Entry SrcID   PDA_high PDA_low  Vct IRTE_high          IRTE_low
-+
-+What:		/sys/kernel/debug/iommu/intel/dmar_translation_struct
-+Date:		December 2023
-+Contact:	Jingqi Liu <Jingqi.liu@intel.com>
-+Description:
-+		This file dumps Intel IOMMU DMA remapping tables, such
-+		as root table, context table, PASID directory and PASID
-+		table entries in debugfs. For legacy mode, it doesn't
-+		support PASID, and hence PASID field is defaulted to
-+		'-1' and other PASID related fields are invalid.
-+
-+		Example in Kabylake:
-+
-+		::
-+
-+		 $ sudo cat /sys/kernel/debug/iommu/intel/dmar_translation_struct
-+
-+		 IOMMU dmar1: Root Table Address: 0x103027000
-+		 B.D.F   Root_entry
-+		 00:02.0 0x0000000000000000:0x000000010303e001
-+
-+		 Context_entry
-+		 0x0000000000000102:0x000000010303f005
-+
-+		 PASID   PASID_table_entry
-+		 -1      0x0000000000000000:0x0000000000000000:0x0000000000000000
-+
-+		 IOMMU dmar0: Root Table Address: 0x103028000
-+		 B.D.F   Root_entry
-+		 00:0a.0 0x0000000000000000:0x00000001038a7001
-+
-+		 Context_entry
-+		 0x0000000000000000:0x0000000103220e7d
-+
-+		 PASID   PASID_table_entry
-+		 0       0x0000000000000000:0x0000000000800002:0x00000001038a5089
-+
-+		 [...]
-+
-+What:		/sys/kernel/debug/iommu/intel/invalidation_queue
-+Date:		December 2023
-+Contact:	Jingqi Liu <Jingqi.liu@intel.com>
-+Description:
-+		This file exports invalidation queue internals of each
-+		IOMMU device.
-+
-+		Example in Kabylake:
-+
-+		::
-+
-+		 $ sudo cat /sys/kernel/debug/iommu/intel/invalidation_queue
-+
-+		 Invalidation queue on IOMMU: dmar0
-+		 Base: 0x10022e000      Head: 20        Tail: 20
-+		 Index          qw0                    qw1                     qw2
-+		     0   0000000000000014        0000000000000000        0000000000000000
-+		     1   0000000200000025        0000000100059c04        0000000000000000
-+		     2   0000000000000014        0000000000000000        0000000000000000
-+
-+		      		qw3                  status
-+			 0000000000000000        0000000000000000
-+			 0000000000000000        0000000000000000
-+			 0000000000000000        0000000000000000
-+
-+		 [...]
-+
-+		 Invalidation queue on IOMMU: dmar1
-+		 Base: 0x10026e000      Head: 32        Tail: 32
-+		 Index           qw0                     qw1                   status
-+		     0   0000000000000004        0000000000000000         0000000000000000
-+		     1   0000000200000025        0000000100059804         0000000000000000
-+		     2   0000000000000011        0000000000000000         0000000000000000
-+
-+		 [...]
-+
-+What:		/sys/kernel/debug/iommu/intel/dmar_perf_latency
-+Date:		December 2023
-+Contact:	Jingqi Liu <Jingqi.liu@intel.com>
-+Description:
-+		This file is used to control and show counts of
-+		execution time ranges for various types per DMAR.
-+
-+		Firstly, write a value to
-+		/sys/kernel/debug/iommu/intel/dmar_perf_latency
-+		to enable sampling.
-+
-+		The possible values are as follows:
-+
-+		* 0 - disable sampling all latency data
-+
-+		* 1 - enable sampling IOTLB invalidation latency data
-+
-+		* 2 - enable sampling devTLB invalidation latency data
-+
-+		* 3 - enable sampling intr entry cache invalidation latency data
-+
-+		* 4 - enable sampling prq handling latency data
-+
-+		Next, read /sys/kernel/debug/iommu/intel/dmar_perf_latency gives
-+		a snapshot of sampling result of all enabled monitors.
-+
-+		Examples in Kabylake:
-+
-+		::
-+
-+		 1) Disable sampling all latency data:
-+
-+		 $ sudo echo 0 > /sys/kernel/debug/iommu/intel/dmar_perf_latency
-+
-+		 2) Enable sampling IOTLB invalidation latency data
-+
-+		 $ sudo echo 1 > /sys/kernel/debug/iommu/intel/dmar_perf_latency
-+
-+		 $ sudo cat /sys/kernel/debug/iommu/intel/dmar_perf_latency
-+
-+		 IOMMU: dmar0 Register Base Address: 26be37000
-+				 <0.1us   0.1us-1us    1us-10us  10us-100us   100us-1ms
-+		 inv_iotlb           0           0           0           0           0
-+
-+		 		 1ms-10ms      >=10ms     min(us)     max(us) average(us)
-+		 inv_iotlb           0           0           0           0           0
-+
-+		 [...]
-+
-+		 IOMMU: dmar2 Register Base Address: fed91000
-+		 		 <0.1us   0.1us-1us    1us-10us  10us-100us   100us-1ms
-+		 inv_iotlb           0           0          18           0           0
-+
-+				 1ms-10ms      >=10ms     min(us)     max(us) average(us)
-+		 inv_iotlb           0           0           2           2           2
-+
-+		 3) Enable sampling devTLB invalidation latency data
-+
-+		 $ sudo echo 2 > /sys/kernel/debug/iommu/intel/dmar_perf_latency
-+
-+		 $ sudo cat /sys/kernel/debug/iommu/intel/dmar_perf_latency
-+
-+		 IOMMU: dmar0 Register Base Address: 26be37000
-+				 <0.1us   0.1us-1us    1us-10us  10us-100us   100us-1ms
-+		 inv_devtlb           0           0           0           0           0
-+
-+				 >=10ms     min(us)     max(us) average(us)
-+		 inv_devtlb           0           0           0           0
-+
-+		 [...]
-+
-+What:		/sys/kernel/debug/iommu/intel/<bdf>/domain_translation_struct
-+Date:		December 2023
-+Contact:	Jingqi Liu <Jingqi.liu@intel.com>
-+Description:
-+		This file dumps a specified page table of Intel IOMMU
-+		in legacy mode or scalable mode.
-+
-+		For a device that only supports legacy mode, dump its
-+		page table by the debugfs file in the debugfs device
-+		directory. e.g.
-+		/sys/kernel/debug/iommu/intel/0000:00:02.0/domain_translation_struct.
-+
-+		For a device that supports scalable mode, dump the
-+		page table of specified pasid by the debugfs file in
-+		the debugfs pasid directory. e.g.
-+		/sys/kernel/debug/iommu/intel/0000:00:02.0/1/domain_translation_struct.
-+
-+		Examples in Kabylake:
-+
-+		::
-+
-+		 1) Dump the page table of device "0000:00:02.0" that only supports legacy mode.
-+
-+		 $ sudo cat /sys/kernel/debug/iommu/intel/0000:00:02.0/domain_translation_struct
-+
-+		 Device 0000:00:02.0 @0x1017f8000
-+		 IOVA_PFN                PML5E                   PML4E
-+		 0x000000008d800 |       0x0000000000000000      0x00000001017f9003
-+		 0x000000008d801 |       0x0000000000000000      0x00000001017f9003
-+		 0x000000008d802 |       0x0000000000000000      0x00000001017f9003
-+
-+		 PDPE                    PDE                     PTE
-+		 0x00000001017fa003      0x00000001017fb003      0x000000008d800003
-+		 0x00000001017fa003      0x00000001017fb003      0x000000008d801003
-+		 0x00000001017fa003      0x00000001017fb003      0x000000008d802003
-+
-+		 [...]
-+
-+		 2) Dump the page table of device "0000:00:0a.0" with PASID "1" that
-+		 supports scalable mode.
-+
-+		 $ sudo cat /sys/kernel/debug/iommu/intel/0000:00:0a.0/1/domain_translation_struct
-+
-+		 Device 0000:00:0a.0 with pasid 1 @0x10c112000
-+		 IOVA_PFN                PML5E                   PML4E
-+		 0x0000000000000 |       0x0000000000000000      0x000000010df93003
-+		 0x0000000000001 |       0x0000000000000000      0x000000010df93003
-+		 0x0000000000002 |       0x0000000000000000      0x000000010df93003
-+
-+		 PDPE                    PDE                     PTE
-+		 0x0000000106ae6003      0x0000000104b38003      0x0000000147c00803
-+		 0x0000000106ae6003      0x0000000104b38003      0x0000000147c01803
-+		 0x0000000106ae6003      0x0000000104b38003      0x0000000147c02803
-+
-+		 [...]
--- 
-2.21.3
+2. Remove cfg inside qcom_smmu structure and replace it with single
+   pointer to qcom_smmu_match_data avoiding replication of multiple
+   members from same.
+
+3. Introduce intital set of driver changes to implement ACTLR register
+   for custom prefetcher settings in Qualcomm SoCs.
+
+4. Add ACTLR data and implementation operations for SM8550.
+
+5. Add ACTLR data and implementation operations for SC7280.
+
+Changes in v6 from v5:
+ - Remove extra Suggested-by tags.
+ - Add return check for arm_mmu500_reset in 1/5 as discussed.
+Link to v5:
+https://lore.kernel.org/all/20231219135947.1623-1-quic_bibekkum@quicinc.com/
+
+Changes in v5 from v4:
+ New addition:
+ - Modify copyright year in arm-smmu-qcom.h to 2023 from 2022.
+ Changes to incorporate suggestions from Dmitry as follows:
+ - Modify the defines for prefetch in (foo << bar) format
+   as suggested.(FIELD_PREP could not be used in defines
+   is not inside any block/function)
+ Changes to incorporate suggestions from Konrad as follows:
+ - Shift context caching enablement patch as 1/5 instead of 5/5 to
+   be picked up as independent patch.
+ - Fix the codestyle to orient variables in reverse xmas tree format
+   for patch 1/5.
+ - Fix variable name in patch 1/5 as suggested.
+ Link to v3:
+https://lore.kernel.org/all/20231215101827.30549-1-quic_bibekkum@quicinc.com/
+
+Changes in v4 from v3:
+ New addition:
+ - Remove actlrcfg_size and use NULL end element instead to traverse
+   the actlr table, as this would be a cleaner approach by removing
+   redundancy of actlrcfg_size.
+ - Renaming of actlr set function to arm_smmu_qcom based proprietary
+   convention.
+ - break from loop once sid is found and ACTLR value is initialized
+   in qcom_smmu_set_actlr.
+ - Modify the GFX prefetch value separating into 2 sensible defines.
+ - Modify comments for prefetch defines as per SMMU-500 TRM.
+ Changes to incorporate suggestions from Konrad as follows:
+ - Use Reverse-Christmas-tree sorting wherever applicable.
+ - Pass arguments directly to arm_smmu_set_actlr instead of creating
+   duplicate variables.
+ - Use array indexing instead of direct pointer addressed by new
+   addition of eliminating actlrcfg_size.
+ - Switch the HEX value's case from upper to lower case in SC7280
+   actlrcfg table.
+ Changes to incorporate suggestions from Dmitry as follows:
+ - Separate changes not related to ACTLR support to different commit
+   with patch 5/5.
+ - Using pointer to struct for arguments in smr_is_subset().
+ Changes to incorporate suggestions from Bjorn as follows:
+ - fix the commit message for patch 2/5 to properly document the
+   value space to avoid confusion.
+ Fixed build issues reported by kernel test robot [1] for
+ arm64-allyesconfig [2].
+ [1]: https://lore.kernel.org/all/202312011750.Pwca3TWE-lkp@intel.com/
+ [2]:
+https://download.01.org/0day-ci/archive/20231201/202312011750.Pwca3TWE-lkp@intel.com/config
+ Link to v3:
+https://lore.kernel.org/all/20231127145412.3981-1-quic_bibekkum@quicinc.com/
+
+Changes in v3 from v2:
+ New addition:
+ - Include patch 3/4 for adding ACTLR support and data for SC7280.
+ - Add driver changes for actlr support in gpu smmu.
+ - Add target wise actlr data and implementation ops for gpu smmu.
+ Changes to incorporate suggestions from Robin as follows:
+ - Match the ACTLR values with individual corresponding SID instead
+   of assuming that any SMR will be programmed to match a superset of
+   the data.
+ - Instead of replicating each elements from qcom_smmu_match_data to
+   qcom_smmu structre during smmu device creation, replace the
+   replicated members with qcom_smmu_match_data structure inside
+   qcom_smmu structre and handle the dereference in places that
+   requires them.
+ Changes to incorporate suggestions from Dmitry and Konrad as follows:
+ - Maintain actlr table inside a single structure instead of
+   nested structure.
+ - Rename prefetch defines to more appropriately describe their
+   behavior.
+ - Remove SM8550 specific implementation ops and roll back to default
+   qcom_smmu_500_impl implementation ops.
+ - Add back the removed comments which are NAK.
+ - Fix commit description for patch 4/4.
+ Link to v2:
+https://lore.kernel.org/all/20231114135654.30475-1-quic_bibekkum@quicinc.com/
+
+Changes in v2 from v1:
+ - Incorporated suggestions on v1 from Dmitry,Konrad,Pratyush.
+ - Added defines for ACTLR values.
+ - Linked sm8550 implementation structure to corresponding
+   compatible string.
+ - Repackaged actlr value set implementation to separate function.
+ - Fixed indentation errors.
+ - Link to v1:
+https://lore.kernel.org/all/20231103215124.1095-1-quic_bibekkum@quicinc.com/
+
+Changes in v1 from RFC:
+ - Incorporated suggestion form Robin on RFC
+ - Moved the actlr data table into driver, instead of maintaining
+   it inside soc specific DT and piggybacking on exisiting iommus
+   property (iommu = <SID, MASK, ACTLR>) to set this value during
+   smmu probe.
+ - Link to RFC:
+https://lore.kernel.org/all/a01e7e60-6ead-4a9e-ba90-22a8a6bbd03f@quicinc.com/
+
+Bibek Kumar Patro (5):
+  iommu/arm-smmu: re-enable context caching in smmu reset operation
+  iommu/arm-smmu: refactor qcom_smmu structure to include single pointer
+  iommu/arm-smmu: introduction of ACTLR for custom prefetcher settings
+  iommu/arm-smmu: add ACTLR data and support for SM8550
+  iommu/arm-smmu: add ACTLR data and support for SC7280
+
+ .../iommu/arm/arm-smmu/arm-smmu-qcom-debug.c  |   2 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    | 189 +++++++++++++++++-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |   8 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c         |   5 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.h         |   5 +
+ 5 files changed, 199 insertions(+), 10 deletions(-)
+
+--
+2.17.1
 
