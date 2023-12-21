@@ -1,33 +1,31 @@
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [176.9.242.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71BD66ABAB
-	for <iommu@lists.linux.dev>; Thu, 21 Dec 2023 10:51:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 278516A33D
+	for <iommu@lists.linux.dev>; Thu, 21 Dec 2023 11:01:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
 	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
 	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
-	by bmailout2.hostsharing.net (Postfix) with ESMTPS id E7D5D28011472;
-	Thu, 21 Dec 2023 11:51:24 +0100 (CET)
+	by bmailout3.hostsharing.net (Postfix) with ESMTPS id 6D419101E3643;
+	Thu, 21 Dec 2023 12:01:38 +0100 (CET)
 Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id D9B971E5F; Thu, 21 Dec 2023 11:51:24 +0100 (CET)
-Date: Thu, 21 Dec 2023 11:51:24 +0100
+	id 400BA4BB67; Thu, 21 Dec 2023 12:01:38 +0100 (CET)
+Date: Thu, 21 Dec 2023 12:01:38 +0100
 From: Lukas Wunner <lukas@wunner.de>
 To: Ethan Zhao <haifeng.zhao@linux.intel.com>
 Cc: bhelgaas@google.com, baolu.lu@linux.intel.com, dwmw2@infradead.org,
 	will@kernel.org, robin.murphy@arm.com, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	Haorong Ye <yehaorong@bytedance.com>
-Subject: Re: [PATCH 1/2] PCI: make pci_dev_is_disconnected() helper public
- for other drivers
-Message-ID: <20231221105124.GC12714@wunner.de>
-References: <20231213034637.2603013-1-haifeng.zhao@linux.intel.com>
- <20231213034637.2603013-2-haifeng.zhao@linux.intel.com>
- <20231213104930.GB31964@wunner.de>
- <31bd82b6-6f7e-4dc4-8cbb-46fa806d699f@linux.intel.com>
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iommu/vt-d: don's issue devTLB flush request when
+ device is disconnected
+Message-ID: <20231221110138.GA27755@wunner.de>
+References: <20231220005153.3984502-1-haifeng.zhao@linux.intel.com>
+ <20231220005153.3984502-3-haifeng.zhao@linux.intel.com>
+ <20231221103940.GA12714@wunner.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,37 +34,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <31bd82b6-6f7e-4dc4-8cbb-46fa806d699f@linux.intel.com>
+In-Reply-To: <20231221103940.GA12714@wunner.de>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Thu, Dec 14, 2023 at 08:58:49AM +0800, Ethan Zhao wrote:
-> On 12/13/2023 6:49 PM, Lukas Wunner wrote:
-> > On Tue, Dec 12, 2023 at 10:46:36PM -0500, Ethan Zhao wrote:
-> > > move pci_dev_is_disconnected() from driver/pci/pci.h to public
-> > > include/linux/pci.h for other driver's reference.
-> > > no function change.
-> > 
-> > That's merely a prose description of the code.  A reader can already
-> > see from the code what it's doing.  You need to explain the *reason*
-> > for the change instead.  E.g.:  "Make pci_dev_is_disconnected() public
-> > so that it can be called from $DRIVER to speed up hot removal
-> > handling which may otherwise take seconds because of $REASONS."
+On Thu, Dec 21, 2023 at 11:39:40AM +0100, Lukas Wunner wrote:
+> On Tue, Dec 19, 2023 at 07:51:53PM -0500, Ethan Zhao wrote:
+> > For those endpoint devices connect to system via hotplug capable ports,
+> > users could request a warm reset to the device by flapping device's link
+> > through setting the slot's link control register, as pciehpt_ist() DLLSC
+> > interrupt sequence response, pciehp will unload the device driver and
+> > then power it off. thus cause an IOMMU devTLB flush request for device to
+> > be sent and a long time completion/timeout waiting in interrupt context.
 > 
-> Yup, why I made it public. then how about
-> 
-> "Make pci_dev_is_disconnected() public so that it can be called from
-> Intel vt-d driver to check the device's hotplug removal state when
-> issue devTLB flush request."
+> I think the problem is in the "waiting in interrupt context".
 
-Much better.
+I'm wondering whether Intel IOMMUs possibly have a (perhaps undocumented)
+capability to reduce the Invalidate Completion Timeout to a sane value?
+Could you check whether that's supported?
 
-You may optionally want to point out the location of the file in the
-source tree because not everyone may be familiar where to find the
-"Intel vt-d driver".  Also, not every reader may know where issuing
-of devTLB flush requests occurs, so it might make sense to name the
-function where that happens.  Finally, it is common to adhere to terms
-used in the PCIe Base Spec in commit messages, so "ATC Invalidate Request"
-might be preferable to "devTLB flush request".
+Granted, the Implementation Note you've pointed to allows 1 sec + 50%,
+but that's not even a "must", it's a "should".  So devices are free to
+take even longer.  We have to cut off at *some* point.
 
 Thanks,
 
