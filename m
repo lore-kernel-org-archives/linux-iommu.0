@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CB89539FC
-	for <iommu@lists.linux.dev>; Thu, 21 Dec 2023 15:39:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A828155E42
+	for <iommu@lists.linux.dev>; Thu, 21 Dec 2023 15:39:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dbVOXN8n"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D0RigUSS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1703173193; x=1734709193;
+  t=1703173194; x=1734709194;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=ACyB3LsHHf/Wts5HKxHSnZhN1nvrgZE85JRi/pf9wYs=;
-  b=dbVOXN8nxUdBmZ84ar3ytmtWo+cgbMeKYVr9YyYjM+SkPzUnkmrMr4aL
-   0QqHmuoQ3IIZdYq/rB3fInAvgeZ9wc9KjgtQrVzx2TFKtboGJNyuf0n+W
-   KRpLVqiX9mzLAEk0oGrhSEpcVHp7CbnOT3DY+32gNFkjrSWwXUV2ir5xR
-   UAYyUcDGHmGX4NxyKDFcwKRj7KBBfkU9F92MyPfSI7aIlkSQg6m5F+hp8
-   pFer1x0hGkbTeW4RtWk93xuHabaYWhXjcYdlrg0RpM+Kv5AsVgVefOu03
-   NdGFPoOcoYe9zbQwN1povBpcfnYD9BKAt+J4T5fV+G/2q1iZXDCOcb+T+
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10931"; a="393155493"
+  bh=2K+3oxZajPraUVN7JvkrWuHOXQ1B60y8EHJmVtjdI44=;
+  b=D0RigUSSw3qlBqv5sNRpPTALkFMxP+LdsNsN35BHIHHTlQYCA6tJwlmn
+   vRQHWnLkhkRtqricCLDdSeo/mLooPLIoncnr0eZNxq/2Jm22o/oC0XquU
+   6bfJ3SLs46wcLPmFNSBKh3krMnKm33wbXU+vwkQVLhvFZozVWtzZq16V9
+   PqsoeqIaFXHfOyeuU/CiGFRYu1AQNPbVT237e3+ODoALOx4QtxpHtD10J
+   JNBm6wS9J7IdYCy6TIe3sbjaeg68Uo3pkC112p/udEcSIQd5VljERgkk/
+   n6td3PzlKh3Ix7D2FfTsp79EDIrO8mQ1iuDkESJgCDBjnPiSz6HTHzYJZ
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10931"; a="393155517"
 X-IronPort-AV: E=Sophos;i="6.04,293,1695711600"; 
-   d="scan'208";a="393155493"
+   d="scan'208";a="393155517"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2023 07:39:51 -0800
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Dec 2023 07:39:53 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10931"; a="949957235"
+X-IronPort-AV: E=McAfee;i="6600,9927,10931"; a="949957244"
 X-IronPort-AV: E=Sophos;i="6.04,293,1695711600"; 
-   d="scan'208";a="949957235"
+   d="scan'208";a="949957244"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orsmga005.jf.intel.com with ESMTP; 21 Dec 2023 07:39:50 -0800
+  by orsmga005.jf.intel.com with ESMTP; 21 Dec 2023 07:39:52 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -59,9 +59,9 @@ Cc: cohuck@redhat.com,
 	xin.zeng@intel.com,
 	yan.y.zhao@intel.com,
 	j.granados@samsung.com
-Subject: [PATCH v7 1/9] iommu: Add cache_invalidate_user op
-Date: Thu, 21 Dec 2023 07:39:40 -0800
-Message-Id: <20231221153948.119007-2-yi.l.liu@intel.com>
+Subject: [PATCH v7 3/9] iommu: Add iommu_copy_struct_from_user_array helper
+Date: Thu, 21 Dec 2023 07:39:42 -0800
+Message-Id: <20231221153948.119007-4-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231221153948.119007-1-yi.l.liu@intel.com>
 References: <20231221153948.119007-1-yi.l.liu@intel.com>
@@ -73,77 +73,107 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+From: Nicolin Chen <nicolinc@nvidia.com>
 
-The updates of the PTEs in the nested page table will be propagated to the
-hardware caches on both IOMMU (IOTLB) and devices (DevTLB/ATC).
+Wrap up the data pointer/num sanity and __iommu_copy_struct_from_user
+call for iommu drivers to copy driver specific data at a specific location
+in the struct iommu_user_data_array, and iommu_respond_struct_to_user_array()
+to copy response to a specific location in the struct iommu_user_data_array.
 
-Add a new domain op cache_invalidate_user for the userspace to flush the
-hardware caches for a nested domain through iommufd. No wrapper for it,
-as it's only supposed to be used by iommufd. Then, pass in invalidation
-requests in form of a user data array conatining a number of invalidation
-data entries.
+And expect it to be used in cache_invalidate_user ops for example.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+Co-developed-by: Yi Liu <yi.l.liu@intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- include/linux/iommu.h | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ include/linux/iommu.h | 74 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 74 insertions(+)
 
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 6291aa7b079b..5c4a17f13761 100644
+index 5c4a17f13761..cfab934e71a2 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -284,6 +284,24 @@ struct iommu_user_data {
- 	size_t len;
- };
+@@ -342,6 +342,80 @@ static inline int __iommu_copy_struct_from_user(
+ 				      sizeof(*kdst),                      \
+ 				      offsetofend(typeof(*kdst), min_last))
  
 +/**
-+ * struct iommu_user_data_array - iommu driver specific user space data array
-+ * @type: The data type of all the entries in the user buffer array
-+ * @uptr: Pointer to the user buffer array for copy_from_user()
-+ * @entry_len: The fixed-width length of a entry in the array, in bytes
-+ * @entry_num: The number of total entries in the array
-+ *
-+ * A array having a @entry_num number of @entry_len sized entries, each entry is
-+ * user space data, an uAPI defined in include/uapi/linux/iommufd.h where @type
-+ * is also defined as enum iommu_xyz_data_type.
++ * __iommu_copy_struct_from_user_array - Copy iommu driver specific user space
++ *                                       data from an iommu_user_data_array
++ * @dst_data: Pointer to an iommu driver specific user data that is defined in
++ *            include/uapi/linux/iommufd.h
++ * @src_array: Pointer to a struct iommu_user_data_array for a user space array
++ * @data_type: The data type of the @dst_data. Must match with @src_array.type
++ * @index: Index to the location in the array to copy user data from
++ * @data_len: Length of current user data structure, i.e. sizeof(struct _dst)
++ * @min_len: Initial length of user data structure for backward compatibility.
++ *           This should be offsetofend using the last member in the user data
++ *           struct that was initially added to include/uapi/linux/iommufd.h
 + */
-+struct iommu_user_data_array {
-+	unsigned int type;
-+	void __user *uptr;
-+	size_t entry_len;
-+	u32 entry_num;
-+};
++static inline int
++__iommu_copy_struct_from_user_array(void *dst_data,
++				    const struct iommu_user_data_array *src_array,
++				    unsigned int data_type, unsigned int index,
++				    size_t data_len, size_t min_len)
++{
++	struct iommu_user_data src_data;
++
++	if (WARN_ON(!src_array || index >= src_array->entry_num))
++		return -EINVAL;
++	if (!src_array->entry_num)
++		return -EINVAL;
++	src_data.uptr = src_array->uptr + src_array->entry_len * index;
++	src_data.len = src_array->entry_len;
++	src_data.type = src_array->type;
++
++	return __iommu_copy_struct_from_user(dst_data, &src_data, data_type,
++					     data_len, min_len);
++}
++
++/**
++ * iommu_copy_struct_from_user_array - Copy iommu driver specific user space
++ *                                     data from an iommu_user_data_array
++ * @kdst: Pointer to an iommu driver specific user data that is defined in
++ *        include/uapi/linux/iommufd.h
++ * @user_array: Pointer to a struct iommu_user_data_array for a user space
++ *              array
++ * @data_type: The data type of the @kdst. Must match with @user_array->type
++ * @index: Index to the location in the array to copy user data from
++ * @min_last: The last memember of the data structure @kdst points in the
++ *            initial version.
++ * Return 0 for success, otherwise -error.
++ */
++#define iommu_copy_struct_from_user_array(kdst, user_array, data_type,   \
++					  index, min_last)                \
++	__iommu_copy_struct_from_user_array(kdst, user_array, data_type, \
++					    index, sizeof(*kdst),        \
++					    offsetofend(typeof(*kdst),   \
++							min_last))
++
++/**
++ * iommu_respond_struct_to_user_array - Copy the response in @ksrc back to
++ *                                      a specific entry of user array
++ * @user_array: Pointer to a struct iommu_user_data_array for a user space
++ *              array
++ * @index: Index to the location in the array to copy response
++ * @ksrc: Pointer to kernel structure
++ * @klen: Length of @ksrc struct
++ *
++ * This only copies response of one entry (@index) in @user_array.
++ */
++static inline int
++iommu_respond_struct_to_user_array(const struct iommu_user_data_array *array,
++				   unsigned int index, void *ksrc, size_t klen)
++{
++	if (copy_to_user(array->uptr + array->entry_len * index,
++			 ksrc, min_t(size_t, array->entry_len, klen)))
++		return -EFAULT;
++	return 0;
++}
 +
  /**
-  * __iommu_copy_struct_from_user - Copy iommu driver specific user space data
-  * @dst_data: Pointer to an iommu driver specific user data that is defined in
-@@ -440,6 +458,13 @@ struct iommu_ops {
-  * @iotlb_sync_map: Sync mappings created recently using @map to the hardware
-  * @iotlb_sync: Flush all queued ranges from the hardware TLBs and empty flush
-  *            queue
-+ * @cache_invalidate_user: Flush hardware cache for user space IO page table.
-+ *                         The @domain must be IOMMU_DOMAIN_NESTED. The @array
-+ *                         passes in the cache invalidation requests, in form
-+ *                         of a driver data structure. The driver must update
-+ *                         array->entry_num to report the number of handled
-+ *                         invalidation requests. The driver data structure
-+ *                         must be defined in include/uapi/linux/iommufd.h
-  * @iova_to_phys: translate iova to physical address
-  * @enforce_cache_coherency: Prevent any kind of DMA from bypassing IOMMU_CACHE,
-  *                           including no-snoop TLPs on PCIe or other platform
-@@ -465,6 +490,8 @@ struct iommu_domain_ops {
- 			      size_t size);
- 	void (*iotlb_sync)(struct iommu_domain *domain,
- 			   struct iommu_iotlb_gather *iotlb_gather);
-+	int (*cache_invalidate_user)(struct iommu_domain *domain,
-+				     struct iommu_user_data_array *array);
- 
- 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain,
- 				    dma_addr_t iova);
+  * struct iommu_ops - iommu ops and capabilities
+  * @capable: check capability
 -- 
 2.34.1
 
