@@ -1,260 +1,240 @@
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE2751843
-	for <iommu@lists.linux.dev>; Thu, 21 Dec 2023 00:37:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D5044419
+	for <iommu@lists.linux.dev>; Thu, 21 Dec 2023 03:19:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rshswsXT"
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-dbd721384c0so272256276.1
-        for <iommu@lists.linux.dev>; Wed, 20 Dec 2023 16:37:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="VWBtIXAg"
+Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-77f642b9a22so108207885a.0
+        for <iommu@lists.linux.dev>; Wed, 20 Dec 2023 19:19:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1703119057; x=1703723857; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=+IrKYx+61x6y4ycFCJpI/y8RywQ4b5ma5xpBgFan/CE=;
-        b=rshswsXTkwWD+AfyHxendEt4QlsNAS9LiVswvIb+H6HWP0JAMpYWjpsmRzLR9GTlt5
-         S/yIuNv2j5y9enbCyLu6ICNIhaCLJL1xz1qmwFwg3Pu8stVab7rp12yi8WzXcTJShEYX
-         V2PiqW0KJ2pU5kF1nCwSfxsVheqa1Abyb6Yg1EAvfAPi/2yVETdQyQvvWwK0SeL1GvBx
-         xEdmIX30N3FtYBMiYMUx80CGdEgE/NL2lhI8ZdPeDJf9ALAM88fOYDQEKdB1EjO3zj/c
-         rfqUIik+HQvK8MfOrDNDhR6ALtP2RdKdf4xLy126T2VTr+Xwmz/O3PY3nPLNDQOVZq/d
-         0g0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703119057; x=1703723857;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=soleen.com; s=google; t=1703128759; x=1703733559; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=+IrKYx+61x6y4ycFCJpI/y8RywQ4b5ma5xpBgFan/CE=;
-        b=UqjhPNQNIt6keXyWr3rNa4kNYXeGT4x68EDgIDc2Mwh609HYdCZqZ4dItArLk9xlBt
-         dF7uKiudPpzOBniy7Skghj3FvEf1TE5mlAquc6e+GXqbPk7qj+t7QcQy8/RnC/rRj66c
-         7YWFYux5Jbf1X917Z4NgRHE8vRUvxGQPkiT/zDthxVjTbjeRRW7RAb3Za0tXo9/7ijRS
-         1OjT+w+XsiMX8bJQqXmX+teSiMgKmUHVzFOZJ+2b4IXwFLRhBD2QCUYn86c3y2vu027+
-         HDCRdfAn1qF9Ycmf2N4BJpiFTLtHggWIiT87J1E+PHuJTGzg/JlWtYQTqjX1Eln0Xn75
-         QsFw==
-X-Gm-Message-State: AOJu0Yz2CXNHxkOwotNAMxNat/ls9vE+xsz6MI5O7XMS20oT9u4vF4bC
-	dPXQiUL8JH17MguwaChhJ0kW4oS/GxwuAVKCe0/0Nw==
-X-Google-Smtp-Source: AGHT+IGaLrf0AfM3kzZbvvGS7btJdvOyRJUCgpiv8MiQlI52ktO96npIlR02oHvL9RqIKYHNPgZoEISEyYuBV9Xu/qk=
-X-Received: by 2002:a25:6854:0:b0:db5:43e7:47b7 with SMTP id
- d81-20020a256854000000b00db543e747b7mr425688ybc.48.1703119056658; Wed, 20 Dec
- 2023 16:37:36 -0800 (PST)
+        bh=bHVoW/MSujJv5NIsFUvfttxthtWbl9YXxYuPhvKhYN4=;
+        b=VWBtIXAgfQASOQyo+HQBuMNV5nunahG4R7ggIElNlfBdLrwkfVm32yyScBZCSpqiTY
+         g+43Hiv8Y5aBqHpVQfVqnBMTLQV9R6/auNpSkbigoe6SrIiSvvtPxOLahF35wzxj3enx
+         GjIqsYuYa5NBkoLsFrs5FmGX6HyFidcjU3VCA6guyUKQo3dbp2APfhu0xij3K8wdXDEx
+         PWm4oiwRSmEO8jig3rbNL9JOMfZudXKxZLvOS3c8N2d3n+EV0ZwwrvtRHKsD8sE7Ac2o
+         yG48+UPPvLEKHi52Ilt3dBhdkZJGYfk29pWndaF2UyIs0aW45GkJO3BJW9sWK8CuPfPT
+         QWHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1703128759; x=1703733559;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=bHVoW/MSujJv5NIsFUvfttxthtWbl9YXxYuPhvKhYN4=;
+        b=d/RNTQMQSO2gzTZRvvTGYJg7kCQuSIa5RyLLg22mjb7yUBZRdIXYFP2TkwOUCUskp+
+         OnUjY6Fog8CBC6veRhE1A+vnvY+Ev5ZudpCpA57yS1afWbAtIE5spNQhuqyUglyimZGE
+         iWI8qDfTGzX9tJjkiIyRSiyMrqtmgUzz5sryOTSAD+H3gF/MwkeRIsVJTSFY+Gpa/B1G
+         LBxMeXRqNweTWi9V/3Gzwtxdh51W8uiaS17XahGIVDJlVecfUpDMCO9WJ1u41SvftRLu
+         QJKcyw9q4oxgWF6ZtMWEYKH1Q3LML0Srg+pSn42iIpe2F2mV0eFB7xuHOCtowROznhKw
+         +vDw==
+X-Gm-Message-State: AOJu0Yye5ZXb9EU2LsiYR/a50tz0srouNbDbjbasmYVOzDG2OmT5/Atv
+	nuk5qoi4Fjjfv5L9t9yhdicvjw==
+X-Google-Smtp-Source: AGHT+IHY+sU7XqrPzSe1RhsjN9sLabzyaNEAd3hCwu8MQn6FSl4jaGvTX3sXjbffBRHiVyH9teDPwg==
+X-Received: by 2002:a05:620a:461f:b0:781:97:fbc4 with SMTP id br31-20020a05620a461f00b007810097fbc4mr67467qkb.25.1703128759521;
+        Wed, 20 Dec 2023 19:19:19 -0800 (PST)
+Received: from soleen.c.googlers.com.com (55.87.194.35.bc.googleusercontent.com. [35.194.87.55])
+        by smtp.gmail.com with ESMTPSA id m18-20020a05620a221200b0077d85695db4sm371893qkh.99.2023.12.20.19.19.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Dec 2023 19:19:18 -0800 (PST)
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+To: akpm@linux-foundation.org,
+	linux-mm@kvack.org,
+	pasha.tatashin@soleen.com,
+	linux-kernel@vger.kernel.org,
+	rientjes@google.com,
+	dwmw2@infradead.org,
+	baolu.lu@linux.intel.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	iommu@lists.linux.dev
+Subject: [RFC 1/3] iommu/intel: Use page->refcount to count number of entries in IOMMU
+Date: Thu, 21 Dec 2023 03:19:13 +0000
+Message-ID: <20231221031915.619337-2-pasha.tatashin@soleen.com>
+X-Mailer: git-send-email 2.43.0.472.g3155946c3a-goog
+In-Reply-To: <20231221031915.619337-1-pasha.tatashin@soleen.com>
+References: <20231221031915.619337-1-pasha.tatashin@soleen.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231220133808.5654-1-quic_bibekkum@quicinc.com>
- <20231220133808.5654-4-quic_bibekkum@quicinc.com> <CAA8EJpo8X+jfi20N9P7kUshxe6_7pwQe8G0Q02JDuB8ozH7hLA@mail.gmail.com>
-In-Reply-To: <CAA8EJpo8X+jfi20N9P7kUshxe6_7pwQe8G0Q02JDuB8ozH7hLA@mail.gmail.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Thu, 21 Dec 2023 02:37:25 +0200
-Message-ID: <CAA8EJppypaVCBLV1rGPUgbVdtm9Zz9haJiYd=4ar+-bXLPh7DA@mail.gmail.com>
-Subject: Re: [PATCH v6 3/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
-	konrad.dybcio@linaro.org, jsnitsel@redhat.com, quic_bjorande@quicinc.com, 
-	mani@kernel.org, quic_eberman@quicinc.com, robdclark@chromium.org, 
-	u.kleine-koenig@pengutronix.de, robh@kernel.org, vladimir.oltean@nxp.com, 
-	quic_pkondeti@quicinc.com, quic_molvera@quicinc.com, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	qipl.kernel.upstream@quicinc.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 
-On Thu, 21 Dec 2023 at 02:36, Dmitry Baryshkov
-<dmitry.baryshkov@linaro.org> wrote:
->
-> On Wed, 20 Dec 2023 at 15:39, Bibek Kumar Patro
-> <quic_bibekkum@quicinc.com> wrote:
-> >
-> > Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
-> > the TLB to fetch just the next page table. MMU-500 features ACTLR
-> > register which is implementation defined and is used for Qualcomm SoCs
-> > to have a custom prefetch setting enabling TLB to prefetch the next set
-> > of page tables accordingly allowing for faster translations.
-> >
-> > ACTLR value is unique for each SMR (Stream matching register) and stored
-> > in a pre-populated table. This value is set to the register during
-> > context bank initialisation.
-> >
-> > Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 45 ++++++++++++++++++++++
-> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h |  6 ++-
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 ++-
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 +++
-> >  4 files changed, 58 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > index 20c9836d859b..1cefdd0ca110 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> > @@ -24,6 +24,12 @@
-> >  #define CPRE                   (1 << 1)
-> >  #define CMTLB                  (1 << 0)
-> >
-> > +struct actlr_config {
-> > +       u16 sid;
-> > +       u16 mask;
-> > +       u32 actlr;
-> > +};
-> > +
-> >  static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
-> >  {
-> >         return container_of(smmu, struct qcom_smmu, smmu);
-> > @@ -215,9 +221,38 @@ static bool qcom_adreno_can_do_ttbr1(struct arm_smmu_device *smmu)
-> >         return true;
-> >  }
-> >
-> > +static void qcom_smmu_set_actlr(struct device *dev, struct arm_smmu_device *smmu, int cbndx,
-> > +               const struct actlr_config *actlrcfg)
-> > +{
-> > +       struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
-> > +       struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> > +       struct arm_smmu_smr *smr;
-> > +       u16 mask;
-> > +       int idx;
-> > +       u16 id;
-> > +       int i;
-> > +
-> > +       for (; actlrcfg->sid || actlrcfg->mask || actlrcfg->actlr; actlrcfg++) {
-> > +               id = actlrcfg->sid;
-> > +               mask = actlrcfg->mask;
-> > +
-> > +               for_each_cfg_sme(cfg, fwspec, i, idx) {
-> > +                       smr = &smmu->smrs[idx];
-> > +                       if (smr_is_subset(smr, id, mask)) {
-> > +                               arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR,
-> > +                                               actlrcfg->actlr);
-> > +                               break;
-> > +                       }
-> > +               }
-> > +       }
-> > +}
-> > +
-> >  static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
-> >                 struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
-> >  {
-> > +       struct arm_smmu_device *smmu = smmu_domain->smmu;
-> > +       struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-> > +       int cbndx = smmu_domain->cfg.cbndx;
-> >         struct adreno_smmu_priv *priv;
-> >
-> >         smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
-> > @@ -248,6 +283,9 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
-> >         priv->set_stall = qcom_adreno_smmu_set_stall;
-> >         priv->resume_translation = qcom_adreno_smmu_resume_translation;
-> >
-> > +       if (qsmmu->data->actlrcfg_gfx)
-> > +               qcom_smmu_set_actlr(dev, smmu, cbndx, qsmmu->data->actlrcfg_gfx);
->
-> There was a feedback point against v4 that there can be more than two
-> (apps + gpu) SMMU devices. No, we can not use additional compat
-> strings, the SMMU units are compatible with each other. Please add
-> matching between the smmu and particular actlr table using the IO
-> address of the SMMU block.
->
-> > +
-> >         return 0;
-> >  }
-> >
-> > @@ -274,6 +312,13 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
-> >  static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
-> >                 struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
-> >  {
-> > +       struct arm_smmu_device *smmu = smmu_domain->smmu;
-> > +       struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-> > +       int cbndx = smmu_domain->cfg.cbndx;
-> > +
-> > +       if (qsmmu->data->actlrcfg)
-> > +               qcom_smmu_set_actlr(dev, smmu, cbndx, qsmmu->data->actlrcfg);
-> > +
->
-> One issue occured to me, while I was reviewing the patchset. The ACTLR
-> settings are related to the whole SMMU setup, but we are applying them
-> each time there is an SMMU context init (in other words, one per each
-> domain). Is that correct? Or it's just that there is no better place
-> for initialising the global register set? Would it be better to
-> reprogram the ACTLR registers which are related just to this
-> particular domain?
+In order to be able to efficiently free empty page table levels, count the
+number of entries in each page table my incremeanting and decremeanting
+refcount every time a PTE is inserted or removed form the page table.
 
-Ignore this, I went back to qcom_smmu_set_actlr() and understood that
-I failed to read it properly.
+For this to work correctly, add two helper function:
+dma_clear_pte and dma_set_pte where counting is performed,
 
->
-> >         smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
-> >
-> >         return 0;
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-> > index f3b91963e234..cb4cb402c202 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-> > @@ -1,6 +1,6 @@
-> >  /* SPDX-License-Identifier: GPL-2.0-only */
-> >  /*
-> > - * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
-> > + * Copyright (c) 2023, Qualcomm Innovation Center, Inc. All rights reserved.
-> >   */
-> >
-> >  #ifndef _ARM_SMMU_QCOM_H
-> > @@ -24,7 +24,11 @@ struct qcom_smmu_config {
-> >         const u32 *reg_offset;
-> >  };
-> >
-> > +struct actlr_config;
-> > +
-> >  struct qcom_smmu_match_data {
-> > +       const struct actlr_config *actlrcfg;
-> > +       const struct actlr_config *actlrcfg_gfx;
-> >         const struct qcom_smmu_config *cfg;
-> >         const struct arm_smmu_impl *impl;
-> >         const struct arm_smmu_impl *adreno_impl;
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > index d6d1a2a55cc0..0c7f700b27dd 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > @@ -990,9 +990,10 @@ static int arm_smmu_find_sme(struct arm_smmu_device *smmu, u16 id, u16 mask)
-> >                  * expect simply identical entries for this case, but there's
-> >                  * no harm in accommodating the generalisation.
-> >                  */
-> > -               if ((mask & smrs[i].mask) == mask &&
-> > -                   !((id ^ smrs[i].id) & ~smrs[i].mask))
-> > +
-> > +               if (smr_is_subset(&smrs[i], id, mask))
-> >                         return i;
-> > +
-> >                 /*
-> >                  * If the new entry has any other overlap with an existing one,
-> >                  * though, then there always exists at least one stream ID
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> > index 703fd5817ec1..2e4f65412c6b 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> > @@ -501,6 +501,11 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
-> >                 writeq_relaxed(val, arm_smmu_page(smmu, page) + offset);
-> >  }
-> >
-> > +static inline bool smr_is_subset(struct arm_smmu_smr *smrs, u16 id, u16 mask)
-> > +{
-> > +       return (mask & smrs->mask) == mask && !((id ^ smrs->id) & ~smrs->mask);
-> > +}
-> > +
-> >  #define ARM_SMMU_GR0           0
-> >  #define ARM_SMMU_GR1           1
-> >  #define ARM_SMMU_CB(s, n)      ((s)->numpage + (n))
-> > --
-> > 2.17.1
-> >
->
->
-> --
-> With best wishes
-> Dmitry
+Also, modify the code so every page table entry is always updated using the
+two new functions.
 
+Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+---
+ drivers/iommu/intel/iommu.c | 40 +++++++++++++++++++++---------------
+ drivers/iommu/intel/iommu.h | 41 +++++++++++++++++++++++++++++++------
+ 2 files changed, 58 insertions(+), 23 deletions(-)
 
-
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 897159dba47d..4688ef797161 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -949,7 +949,7 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+ 			if (domain->use_first_level)
+ 				pteval |= DMA_FL_PTE_XD | DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
+ 
+-			if (cmpxchg64(&pte->val, 0ULL, pteval))
++			if (dma_set_pte(pte, pteval))
+ 				/* Someone else set it while we were thinking; use theirs. */
+ 				free_pgtable_page(tmp_page);
+ 			else
+@@ -1021,7 +1021,8 @@ static void dma_pte_clear_range(struct dmar_domain *domain,
+ 			continue;
+ 		}
+ 		do {
+-			dma_clear_pte(pte);
++			if (dma_pte_present(pte))
++				dma_clear_pte(pte);
+ 			start_pfn += lvl_to_nr_pages(large_page);
+ 			pte++;
+ 		} while (start_pfn <= last_pfn && !first_pte_in_page(pte));
+@@ -1062,7 +1063,8 @@ static void dma_pte_free_level(struct dmar_domain *domain, int level,
+ 		 */
+ 		if (level < retain_level && !(start_pfn > level_pfn ||
+ 		      last_pfn < level_pfn + level_size(level) - 1)) {
+-			dma_clear_pte(pte);
++			if (dma_pte_present(pte))
++				dma_clear_pte(pte);
+ 			domain_flush_cache(domain, pte, sizeof(*pte));
+ 			free_pgtable_page(level_pte);
+ 		}
+@@ -1093,12 +1095,13 @@ static void dma_pte_free_pagetable(struct dmar_domain *domain,
+ 	}
+ }
+ 
+-/* When a page at a given level is being unlinked from its parent, we don't
+-   need to *modify* it at all. All we need to do is make a list of all the
+-   pages which can be freed just as soon as we've flushed the IOTLB and we
+-   know the hardware page-walk will no longer touch them.
+-   The 'pte' argument is the *parent* PTE, pointing to the page that is to
+-   be freed. */
++/*
++ * A given page at a given level is being unlinked from its parent.
++ * We need to make a list of all the pages which can be freed just as soon as
++ * we've flushed the IOTLB and we know the hardware page-walk will no longer
++ * touch them. The 'pte' argument is the *parent* PTE, pointing to the page
++ * that is to be freed.
++ */
+ static void dma_pte_list_pagetables(struct dmar_domain *domain,
+ 				    int level, struct dma_pte *pte,
+ 				    struct list_head *freelist)
+@@ -1106,17 +1109,20 @@ static void dma_pte_list_pagetables(struct dmar_domain *domain,
+ 	struct page *pg;
+ 
+ 	pg = pfn_to_page(dma_pte_addr(pte) >> PAGE_SHIFT);
+-	list_add_tail(&pg->lru, freelist);
+-
+-	if (level == 1)
+-		return;
+-
+ 	pte = page_address(pg);
++
+ 	do {
+-		if (dma_pte_present(pte) && !dma_pte_superpage(pte))
+-			dma_pte_list_pagetables(domain, level - 1, pte, freelist);
++		if (dma_pte_present(pte)) {
++			if (level > 1 && !dma_pte_superpage(pte)) {
++				dma_pte_list_pagetables(domain, level - 1, pte,
++							freelist);
++			}
++			dma_clear_pte(pte);
++		}
+ 		pte++;
+ 	} while (!first_pte_in_page(pte));
++
++	list_add_tail(&pg->lru, freelist);
+ }
+ 
+ static void dma_pte_clear_level(struct dmar_domain *domain, int level,
+@@ -2244,7 +2250,7 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 		/* We don't need lock here, nobody else
+ 		 * touches the iova range
+ 		 */
+-		tmp = cmpxchg64_local(&pte->val, 0ULL, pteval);
++		tmp = dma_set_pte(pte, pteval);
+ 		if (tmp) {
+ 			static int dumps = 5;
+ 			pr_crit("ERROR: DMA PTE for vPFN 0x%lx already set (to %llx not %llx)\n",
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index ce030c5b5772..f1ea508f45bd 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -802,11 +802,6 @@ struct dma_pte {
+ 	u64 val;
+ };
+ 
+-static inline void dma_clear_pte(struct dma_pte *pte)
+-{
+-	pte->val = 0;
+-}
+-
+ static inline u64 dma_pte_addr(struct dma_pte *pte)
+ {
+ #ifdef CONFIG_64BIT
+@@ -818,9 +813,43 @@ static inline u64 dma_pte_addr(struct dma_pte *pte)
+ #endif
+ }
+ 
++#define DMA_PTEVAL_PRESENT(pteval) (((pteval) & 3) != 0)
+ static inline bool dma_pte_present(struct dma_pte *pte)
+ {
+-	return (pte->val & 3) != 0;
++	return DMA_PTEVAL_PRESENT(pte->val);
++}
++
++static inline void dma_clear_pte(struct dma_pte *pte)
++{
++	u64 old_pteval;
++
++	old_pteval = xchg(&pte->val, 0ULL);
++	if (DMA_PTEVAL_PRESENT(old_pteval)) {
++		struct page *pg = virt_to_page(pte);
++		int rc = page_ref_dec_return(pg);
++
++		WARN_ON_ONCE(rc > 512 || rc < 1);
++	} else {
++		/* Ensure that we cleared a valid entry from the page table */
++		WARN_ON(1);
++	}
++}
++
++static inline u64 dma_set_pte(struct dma_pte *pte, u64 pteval)
++{
++	u64 old_pteval;
++
++	/* Ensure we about to set a valid entry to the page table */
++	WARN_ON(!DMA_PTEVAL_PRESENT(pteval));
++	old_pteval = cmpxchg64(&pte->val, 0ULL, pteval);
++	if (old_pteval == 0) {
++		struct page *pg = virt_to_page(pte);
++		int rc = page_ref_inc_return(pg);
++
++		WARN_ON_ONCE(rc > 513 || rc < 2);
++	}
++
++	return old_pteval;
+ }
+ 
+ static inline bool dma_sl_pte_test_and_clear_dirty(struct dma_pte *pte,
 -- 
-With best wishes
-Dmitry
+2.43.0.472.g3155946c3a-goog
+
