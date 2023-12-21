@@ -1,238 +1,114 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0C2C7D883;
-	Thu, 21 Dec 2023 13:41:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB1D2539FC;
+	Thu, 21 Dec 2023 14:06:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EWL92i9q"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01A31C433C8;
-	Thu, 21 Dec 2023 13:41:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1703166084;
-	bh=H803pCOnVRzLTkwi7WrVf5e9KXVx1NEUX1mWfvjGIKk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=EWL92i9q11/CdQ1biqmsQfoMd31YTUzHsXC8QGa98cFiinJ14ojXfgh4WSM4xXgZz
-	 3AMZ1gC1r5VFiQi4oNAX/87SmoKANqmipad/InOL04EIemIahTL82I2WFIe9kEvn0O
-	 YwA18GQAfR2OwfVpr0hKQNMt2YgVXrTCY70IlKVlZ/ktflg2NvfKo427Yx6n//FexM
-	 VS9HihpH4Ppzvc1xmTEWRDC79xGSVuqw8Ve3ZEFbVw/P8v/9Bu8mxzWhQLqq0nYIcS
-	 IpIgnP/Tn7MFA/mAp4PEoBeldBZdZ3332QvSnZaochYBP+m/FYSm27UM1aTHhl63WY
-	 e+XkH0PvM5MTA==
-Received: (nullmailer pid 3661002 invoked by uid 1000);
-	Thu, 21 Dec 2023 13:41:21 -0000
-Date: Thu, 21 Dec 2023 07:41:21 -0600
-From: Rob Herring <robh@kernel.org>
-To: David Heidelberg <david@ixit.cz>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, iommu@lists.linux.dev, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v6] dt-bindings: iommu: Convert msm,iommu-v0 to yaml
-Message-ID: <20231221134121.GA3660857-robh@kernel.org>
-References: <20231219202907.186381-1-david@ixit.cz>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="bZIVVC7v"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+	Sender:Reply-To:Content-ID:Content-Description;
+	bh=INzY/QT6atUS/BlSFmLSlk6lzsjHKIwMNfkkrynBCJg=; b=bZIVVC7v1vf6vYj48TvYaHjrbx
+	ZkZZ4WD32xzOnBaOLhtDpgrIhFWUsaTT+yYhwGdrhniEN0EBV1TB7+PbMDUOHOMNic+6wQFxBcXbA
+	b454QACHPdfjB3wJs48q6ftA3V/eZjqFsttl3DR2LpYWuXc74Ys9/HZrf3D0xobLYZFvNTW23us3E
+	apA2mPckdE+KDqQ1tKauphuRa405ibsf3zpCcXJJE9qbeF2Sk93zQ3r/c7S4qUye6v/njyrrtUPXy
+	YKdv9lfurmjPV7exUYRdt5CuB1PeAbpWLyaubFkGLtdeRf1NjiyiyKzPPUrvSrKDoGQM1NikCz/WU
+	ldEZXVCw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+	id 1rGJgY-005NPh-Fm; Thu, 21 Dec 2023 14:06:02 +0000
+Date: Thu, 21 Dec 2023 14:06:02 +0000
+From: Matthew Wilcox <willy@infradead.org>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: akpm@linux-foundation.org, linux-mm@kvack.org,
+	linux-kernel@vger.kernel.org, rientjes@google.com,
+	dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
+	will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev
+Subject: Re: [RFC 0/3] iommu/intel: Free empty page tables on unmaps
+Message-ID: <ZYRGSv0OzJknmVPY@casper.infradead.org>
+References: <20231221031915.619337-1-pasha.tatashin@soleen.com>
+ <ZYO8IqiHeqs8LktJ@casper.infradead.org>
+ <CA+CK2bBJuZPF5yC2Axo0S_P4ApjwgBWu9YwnDo+yOiOiL16Bhg@mail.gmail.com>
+ <CA+CK2bAHLpRWJfHCAPzAjSzF8Hue1wK_SW5GxSue9rOW6OtT5Q@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20231219202907.186381-1-david@ixit.cz>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CA+CK2bAHLpRWJfHCAPzAjSzF8Hue1wK_SW5GxSue9rOW6OtT5Q@mail.gmail.com>
 
-On Tue, Dec 19, 2023 at 09:28:27PM +0100, David Heidelberg wrote:
-> Convert Qualcomm IOMMU v0 implementation to yaml format.
+On Thu, Dec 21, 2023 at 12:42:41AM -0500, Pasha Tatashin wrote:
+> On Thu, Dec 21, 2023 at 12:13 AM Pasha Tatashin
+> <pasha.tatashin@soleen.com> wrote:
+> >
+> > On Wed, Dec 20, 2023 at 11:16 PM Matthew Wilcox <willy@infradead.org> wrote:
+> > >
+> > > On Thu, Dec 21, 2023 at 03:19:12AM +0000, Pasha Tatashin wrote:
+> > > > This series frees empty page tables on unmaps. It intends to be a
+> > > > low overhead feature.
+> > > >
+> > > > The read-writer lock is used to synchronize page table, but most of
+> > > > time the lock is held is reader. It is held as a writer for short
+> > > > period of time when unmapping a page that is bigger than the current
+> > > > iova request. For all other cases this lock is read-only.
+> > > >
+> > > > page->refcount is used in order to track number of entries at each page
+> > > > table.
+> > >
+> > > Have I not put enough DANGER signs up around the page refcount?
+> > >
+> > >  * If you want to use the refcount field, it must be used in such a way
+> > >  * that other CPUs temporarily incrementing and then decrementing the
+> > >  * refcount does not cause problems.  On receiving the page from
+> > >  * alloc_pages(), the refcount will be positive.
+> > >
+> > > You can't use refcount for your purpose, and honestly I'm shocked you
+> > > haven't seen any of your WARNings trigger.
+> >
+> > Hi Matthew,
+> >
+> > Thank you for looking at this.
+> >
+> > Could you please explain exactly why refcount can't be used like this?
+> >
+> > After alloc_page() refcount is set to 1, we never reduce it to 0,
+> > every new entry in a page table adds 1, so we get up-to 513, that is
+> > why I added warn like this: WARN_ON_ONCE(rc > 513 || rc < 2); to
 > 
-> iommus part being ommited for the other bindings, as mdp4 one.
-> 
-> Signed-off-by: David Heidelberg <david@ixit.cz>
-> ---
-> v6:
->  - clean iommu-cells description (thx @Robin)
-> v5:
->  - updated example (thx @Konrad)
->  - ordering of requirements + dropped > and | and reformatted (thx @Konrad)
-> v4:
->  - renamed to qcom,apq8064-iommu as Rob requested
->  - changed title to Qualcomm APQ8064 IOMMU
->  - dropped quotes around URLs
->  - dropped mdp node
->  - dropped unused mdp_port0 label
-> 
-> v3:
->  - I kept the name as -v0, since we have other binding -v1 and it look
->    good, I can change thou in v4 if requested.
->  - dropped non-existent smmu_clk part (and adjusted example, which was
->    using it)
->  - dropped iommu description
->  - moved iommu-cells description to the property #iommu-cells
-> 
-> v2:
->  - fix wrong path in binding $id
->  - comment qcom,mdp4 node example (we don't want to validate it yet)
-> Signed-off-by: David Heidelberg <david@ixit.cz>
-> 
->  .../bindings/iommu/msm,iommu-v0.txt           | 64 ----------------
->  .../bindings/iommu/qcom,apq8064-iommu.yaml    | 76 +++++++++++++++++++
->  2 files changed, 76 insertions(+), 64 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
->  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-> deleted file mode 100644
-> index 20236385f26e..000000000000
-> --- a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
-> +++ /dev/null
-> @@ -1,64 +0,0 @@
-> -* QCOM IOMMU
-> -
-> -The MSM IOMMU is an implementation compatible with the ARM VMSA short
-> -descriptor page tables. It provides address translation for bus masters outside
-> -of the CPU, each connected to the IOMMU through a port called micro-TLB.
-> -
-> -Required Properties:
-> -
-> -  - compatible: Must contain "qcom,apq8064-iommu".
-> -  - reg: Base address and size of the IOMMU registers.
-> -  - interrupts: Specifiers for the MMU fault interrupts. For instances that
-> -    support secure mode two interrupts must be specified, for non-secure and
-> -    secure mode, in that order. For instances that don't support secure mode a
-> -    single interrupt must be specified.
-> -  - #iommu-cells: The number of cells needed to specify the stream id. This
-> -		  is always 1.
-> -  - qcom,ncb:	  The total number of context banks in the IOMMU.
-> -  - clocks	: List of clocks to be used during SMMU register access. See
-> -		  Documentation/devicetree/bindings/clock/clock-bindings.txt
-> -		  for information about the format. For each clock specified
-> -		  here, there must be a corresponding entry in clock-names
-> -		  (see below).
-> -
-> -  - clock-names	: List of clock names corresponding to the clocks specified in
-> -		  the "clocks" property (above).
-> -		  Should be "smmu_pclk" for specifying the interface clock
-> -		  required for iommu's register accesses.
-> -		  Should be "smmu_clk" for specifying the functional clock
-> -		  required by iommu for bus accesses.
-> -
-> -Each bus master connected to an IOMMU must reference the IOMMU in its device
-> -node with the following property:
-> -
-> -  - iommus: A reference to the IOMMU in multiple cells. The first cell is a
-> -	    phandle to the IOMMU and the second cell is the stream id.
-> -	    A single master device can be connected to more than one iommu
-> -	    and multiple contexts in each of the iommu. So multiple entries
-> -	    are required to list all the iommus and the stream ids that the
-> -	    master is connected to.
-> -
-> -Example: mdp iommu and its bus master
-> -
-> -                mdp_port0: iommu@7500000 {
-> -			compatible = "qcom,apq8064-iommu";
-> -			#iommu-cells = <1>;
-> -			clock-names =
-> -			    "smmu_pclk",
-> -			    "smmu_clk";
-> -			clocks =
-> -			    <&mmcc SMMU_AHB_CLK>,
-> -			    <&mmcc MDP_AXI_CLK>;
-> -			reg = <0x07500000 0x100000>;
-> -			interrupts =
-> -			    <GIC_SPI 63 0>,
-> -			    <GIC_SPI 64 0>;
-> -			qcom,ncb = <2>;
-> -		};
-> -
-> -		mdp: qcom,mdp@5100000 {
-> -			compatible = "qcom,mdp";
-> -			...
-> -			iommus = <&mdp_port0 0
-> -				  &mdp_port0 2>;
-> -		};
-> diff --git a/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml b/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
-> new file mode 100644
-> index 000000000000..b9a2d02ed2e6
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
-> @@ -0,0 +1,76 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +
-> +$id: http://devicetree.org/schemas/iommu/qcom,apq8064-iommu.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Qualcomm APQ8064 IOMMU
-> +
-> +maintainers:
-> +  - Will Deacon <will@kernel.org>
+> I guess, what you mean is that other CPUs could temporarily
+> increase/decrease refcount outside of IOMMU management, do you have an
+> example of why that would happen? I could remove the above warning,
+> and in the worst case we would miss an opportunity to free a page
+> table during unmap, not a big deal, it can be freed during another
+> map/unmap event. Still better than today, where we never free them
+> during unmaps.
 
-This should be someone from QCom or that otherwise cares about this 
-device.
+Both GUP-fast and the page cache will find a page under RCU protection,
+inc it's refcount if not zero, check the page is still the one they were
+looking for, and if not will dec the refcount again.  That means if a
+page has been in the page cache or process page tables and you can't
+guarantee that all CPUs have been through the requisite grace periods,
+you might see the refcount increased.
 
-> +
-> +description:
-> +  The MSM IOMMU is an implementation compatible with the ARM VMSA short
-> +  descriptor page tables. It provides address translation for bus masters
-> +  outside of the CPU, each connected to the IOMMU through a port called micro-TLB.
-> +
-> +properties:
-> +  compatible:
-> +    const: qcom,apq8064-iommu
-> +
-> +  clocks:
-> +    items:
-> +      - description: interface clock for register accesses
-> +      - description: functional clock for bus accesses
-> +
-> +  clock-names:
-> +    items:
-> +      - const: smmu_pclk
-> +      - const: iommu_clk
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    description: Specifiers for the MMU fault interrupts.
-> +    minItems: 1
-> +    items:
-> +      - description: non-secure mode interrupt
-> +      - description: secure mode interrupt (for instances which supports it)
-> +
-> +  "#iommu-cells":
-> +    const: 1
-> +    description: Each IOMMU specifier describes a single Stream ID.
-> +
-> +  qcom,ncb:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    description: The total number of context banks in the IOMMU.
+I'm not prepared to make a guarantee that these are the only circumstances
+under which you'll see a temporarily higher refcount than you expect.
+Either currently or in the future.  If you use the refcount as anything
+other than a refcount, you're living dangerously.  And if you think that
+you'll be the one to do the last refcount put, you're not necessarily
+correct (see the saga around __free_pages() which ended up as commit
+e320d3012d25 fixed by 462a8e08e0e6 (which indicates the rare race does
+actually happen)).
 
-Is there a maximum? I assume it is not 2^32.
-
-> +
-> +required:
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +  - qcom,ncb
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/qcom,mmcc-msm8960.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +
-> +    iommu@7500000 {
-> +            compatible = "qcom,apq8064-iommu";
-> +            reg = <0x07500000 0x100000>;
-> +            interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>,
-> +                         <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
-> +            clocks = <&clk SMMU_AHB_CLK>,
-> +                     <&clk MDP_AXI_CLK>;
-> +            clock-names = "smmu_pclk",
-> +                          "iommu_clk";
-> +            #iommu-cells = <1>;
-> +            qcom,ncb = <2>;
-> +    };
-> -- 
-> 2.43.0
-> 
+Now, it seems like from your further explanation that the consequence
+of getting this wrong is simply that you fail to free the page early.
+That seems OK, but I insist that you insert some comments explaining
+what is going on and why it's safe so somebody auditing uses of refcount
+doesn't have to reanalyse the whole thing for themself.  Or worse that
+somebody working on the iommu sees this and thinks they can "improve"
+on it.
