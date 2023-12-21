@@ -1,298 +1,238 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 774EC6D1C2
-	for <iommu@lists.linux.dev>; Thu, 21 Dec 2023 11:20:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0C2C7D883;
+	Thu, 21 Dec 2023 13:41:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="xxGqjkyL"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e3RRaiHdwY9yYIpkmepgnXYGeCpREO/G13Gc9SsCKKP0RXJl1OUrceEnl3UQgAZRRye9H5OlskRLzD+AQnnvJwKn4d0K43nLTJlOZWXzLLoy1b8eK4i+qe7bkOXzW/9GuH4b0n/e0enMQc8fTZ8HC/RxMG82jV+x247WQ5fF1TH/AciCn4ZeMk4ZMT/f9bNwEQs8rW3BJjgLpUTkcibXEvTv+3vkvYU8bagl3dbCoHF1/iB0v4ou7D38fnuZHA1ntw/oY6yqIJS4yfBsuJf4yUUPX8JpSAKuWczCk/UyMA7KLjO3tTI1sMzt7g55KvRB71bLl9c8m27CYOv/BM0Z6g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vOSjCW27lsG00xEymIJ465E8R377+0DKtngYAdKus/A=;
- b=P2Fi8kKMMTKw16Jk7QfGD0ucXd3waWlIBGic2Iu20HOnunLKjyWTxq9xJ+RawZdsKX8S++fFva+7hQaCxQ0nQNLPMGYivCbx1eigiYCq6iIE/RHSZh+dYFnDlROKBOpRGClUxJifjKChqUyH9ZIbUr33KRucEBwb5wc9k8r2gGKlF1iw4xUWk5O/JRz6RnTs9cOacvTVOU6xSa+i+M4ZOlSJJsNwFFtU96rEBbtaVr8I4o6/86hZKPfe+Wt/+nkb5y8hkzJU1bDlH4o/OMzLuOcDx6ImlPgdrFVJ1ykPbMqqx/iG72Zc5YEUwniTDiI3dVLOTb5Kl8hpZGizyeHXbA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vOSjCW27lsG00xEymIJ465E8R377+0DKtngYAdKus/A=;
- b=xxGqjkyLPSREm97Hj/eVIPJsPn6WbHYn9Oi3EddZ5cZYDJSlDFZJ4XUZsO2Qt4Pf1iHlSyRlWsFkliro2janp1wQZ/IVvsmtWA5MqHd+ednTOYOX3BHZL8dYx89p96JTKncGfRepwZl4HhE7+yy72eMRfd/icWQwuiSFBVPo6DQ=
-Received: from MW4PR03CA0336.namprd03.prod.outlook.com (2603:10b6:303:dc::11)
- by SJ2PR12MB8876.namprd12.prod.outlook.com (2603:10b6:a03:539::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7113.21; Thu, 21 Dec
- 2023 11:20:24 +0000
-Received: from MWH0EPF000989E5.namprd02.prod.outlook.com
- (2603:10b6:303:dc:cafe::bb) by MW4PR03CA0336.outlook.office365.com
- (2603:10b6:303:dc::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7113.21 via Frontend
- Transport; Thu, 21 Dec 2023 11:20:24 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- MWH0EPF000989E5.mail.protection.outlook.com (10.167.241.132) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7113.14 via Frontend Transport; Thu, 21 Dec 2023 11:20:24 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Thu, 21 Dec
- 2023 05:20:21 -0600
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
-	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v4 14/14] iommu/amd: Add SVA domain support
-Date: Thu, 21 Dec 2023 11:15:58 +0000
-Message-ID: <20231221111558.64652-15-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231221111558.64652-1-vasant.hegde@amd.com>
-References: <20231221111558.64652-1-vasant.hegde@amd.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EWL92i9q"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01A31C433C8;
+	Thu, 21 Dec 2023 13:41:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1703166084;
+	bh=H803pCOnVRzLTkwi7WrVf5e9KXVx1NEUX1mWfvjGIKk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=EWL92i9q11/CdQ1biqmsQfoMd31YTUzHsXC8QGa98cFiinJ14ojXfgh4WSM4xXgZz
+	 3AMZ1gC1r5VFiQi4oNAX/87SmoKANqmipad/InOL04EIemIahTL82I2WFIe9kEvn0O
+	 YwA18GQAfR2OwfVpr0hKQNMt2YgVXrTCY70IlKVlZ/ktflg2NvfKo427Yx6n//FexM
+	 VS9HihpH4Ppzvc1xmTEWRDC79xGSVuqw8Ve3ZEFbVw/P8v/9Bu8mxzWhQLqq0nYIcS
+	 IpIgnP/Tn7MFA/mAp4PEoBeldBZdZ3332QvSnZaochYBP+m/FYSm27UM1aTHhl63WY
+	 e+XkH0PvM5MTA==
+Received: (nullmailer pid 3661002 invoked by uid 1000);
+	Thu, 21 Dec 2023 13:41:21 -0000
+Date: Thu, 21 Dec 2023 07:41:21 -0600
+From: Rob Herring <robh@kernel.org>
+To: David Heidelberg <david@ixit.cz>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, iommu@lists.linux.dev, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v6] dt-bindings: iommu: Convert msm,iommu-v0 to yaml
+Message-ID: <20231221134121.GA3660857-robh@kernel.org>
+References: <20231219202907.186381-1-david@ixit.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWH0EPF000989E5:EE_|SJ2PR12MB8876:EE_
-X-MS-Office365-Filtering-Correlation-Id: be0e9fd5-5bf0-4807-cec0-08dc0216d3f3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	dd+AARbOWlYNljVJAZSs+Tz+pi9ZpacfMlcQKvGJ2Qqe/7xH5OAmnvECnvoksk2jiygd7VlyvvTA5Wcv8eMU+xoQaVlyh7OxekotimDd89v8d46cyu28zUKaEf22H1Z0oJshDrtYg23Yo9vDXSfnMZOXHtTMjm2WuXIch6FyHJ+idg+iUZ6XR4rMeFBRxvhop06yJ8TTsPqhbUA43tjOjpQomqzAOOEW6MZfS9qxEEHpRRrqvROSQL8jZ5vJ2pdXab6sU3kqVE1ebvlbKVUt1fbyfa3Kd8ISibQepLhpJLILablDHwSdh9jOykMNeRDXSG48uwUbSjmuxSz13ImwNdoPmshJUQxNEfyt9cBMVSBjt4D3+8OndocHvXpHfxBoDyoW3NH06mkxvkJJN0lL8sl99RzHlRgpwguvOWfqjY6f+ADP14yQIffiKcXWeTQvF8b618QzInPBfIqgakf2F2F4bsxtqHuzTf0qnbRXGv/6UxfjOpYin5TlFgzUTLhRhl19dRZxtrZ3Gn05/JXVLbAgJJ0FPZVlUFt1YMHox5ESVvArvv+UusHUKIoC9Al1ga2QsI22NIKTaO2r1cFROWgx19I9SSyZaOgvGWeT1mBbHP96o3KicVPDNpXvbSddtVkqjBM0WSwepggC2IwV0OlRrS8AY+gfhUB41ox1Cds2n0kxeiAGJmWpV6P+xmD//R2R48fVzg+w4yvTdHW7BnvYwnCxAJxKXDx0xtDYdShNaNWhvnbOkAK8sEfFjs4N5iCFdG5/zxqfAAWTry/4yw==
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(136003)(376002)(39860400002)(346002)(396003)(230922051799003)(82310400011)(451199024)(186009)(1800799012)(64100799003)(46966006)(36840700001)(40470700004)(47076005)(86362001)(36860700001)(356005)(82740400003)(41300700001)(478600001)(81166007)(4326008)(2616005)(40480700001)(44832011)(8676002)(8936002)(5660300002)(1076003)(26005)(16526019)(426003)(336012)(36756003)(70586007)(70206006)(54906003)(110136005)(316002)(6666004)(7696005)(2906002)(83380400001)(40460700003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Dec 2023 11:20:24.6712
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: be0e9fd5-5bf0-4807-cec0-08dc0216d3f3
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MWH0EPF000989E5.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8876
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231219202907.186381-1-david@ixit.cz>
 
-- Allocate SVA domain and setup mmu notifier. In free path unregister
-  mmu notifier and free protection domain.
+On Tue, Dec 19, 2023 at 09:28:27PM +0100, David Heidelberg wrote:
+> Convert Qualcomm IOMMU v0 implementation to yaml format.
+> 
+> iommus part being ommited for the other bindings, as mdp4 one.
+> 
+> Signed-off-by: David Heidelberg <david@ixit.cz>
+> ---
+> v6:
+>  - clean iommu-cells description (thx @Robin)
+> v5:
+>  - updated example (thx @Konrad)
+>  - ordering of requirements + dropped > and | and reformatted (thx @Konrad)
+> v4:
+>  - renamed to qcom,apq8064-iommu as Rob requested
+>  - changed title to Qualcomm APQ8064 IOMMU
+>  - dropped quotes around URLs
+>  - dropped mdp node
+>  - dropped unused mdp_port0 label
+> 
+> v3:
+>  - I kept the name as -v0, since we have other binding -v1 and it look
+>    good, I can change thou in v4 if requested.
+>  - dropped non-existent smmu_clk part (and adjusted example, which was
+>    using it)
+>  - dropped iommu description
+>  - moved iommu-cells description to the property #iommu-cells
+> 
+> v2:
+>  - fix wrong path in binding $id
+>  - comment qcom,mdp4 node example (we don't want to validate it yet)
+> Signed-off-by: David Heidelberg <david@ixit.cz>
+> 
+>  .../bindings/iommu/msm,iommu-v0.txt           | 64 ----------------
+>  .../bindings/iommu/qcom,apq8064-iommu.yaml    | 76 +++++++++++++++++++
+>  2 files changed, 76 insertions(+), 64 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+>  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt b/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+> deleted file mode 100644
+> index 20236385f26e..000000000000
+> --- a/Documentation/devicetree/bindings/iommu/msm,iommu-v0.txt
+> +++ /dev/null
+> @@ -1,64 +0,0 @@
+> -* QCOM IOMMU
+> -
+> -The MSM IOMMU is an implementation compatible with the ARM VMSA short
+> -descriptor page tables. It provides address translation for bus masters outside
+> -of the CPU, each connected to the IOMMU through a port called micro-TLB.
+> -
+> -Required Properties:
+> -
+> -  - compatible: Must contain "qcom,apq8064-iommu".
+> -  - reg: Base address and size of the IOMMU registers.
+> -  - interrupts: Specifiers for the MMU fault interrupts. For instances that
+> -    support secure mode two interrupts must be specified, for non-secure and
+> -    secure mode, in that order. For instances that don't support secure mode a
+> -    single interrupt must be specified.
+> -  - #iommu-cells: The number of cells needed to specify the stream id. This
+> -		  is always 1.
+> -  - qcom,ncb:	  The total number of context banks in the IOMMU.
+> -  - clocks	: List of clocks to be used during SMMU register access. See
+> -		  Documentation/devicetree/bindings/clock/clock-bindings.txt
+> -		  for information about the format. For each clock specified
+> -		  here, there must be a corresponding entry in clock-names
+> -		  (see below).
+> -
+> -  - clock-names	: List of clock names corresponding to the clocks specified in
+> -		  the "clocks" property (above).
+> -		  Should be "smmu_pclk" for specifying the interface clock
+> -		  required for iommu's register accesses.
+> -		  Should be "smmu_clk" for specifying the functional clock
+> -		  required by iommu for bus accesses.
+> -
+> -Each bus master connected to an IOMMU must reference the IOMMU in its device
+> -node with the following property:
+> -
+> -  - iommus: A reference to the IOMMU in multiple cells. The first cell is a
+> -	    phandle to the IOMMU and the second cell is the stream id.
+> -	    A single master device can be connected to more than one iommu
+> -	    and multiple contexts in each of the iommu. So multiple entries
+> -	    are required to list all the iommus and the stream ids that the
+> -	    master is connected to.
+> -
+> -Example: mdp iommu and its bus master
+> -
+> -                mdp_port0: iommu@7500000 {
+> -			compatible = "qcom,apq8064-iommu";
+> -			#iommu-cells = <1>;
+> -			clock-names =
+> -			    "smmu_pclk",
+> -			    "smmu_clk";
+> -			clocks =
+> -			    <&mmcc SMMU_AHB_CLK>,
+> -			    <&mmcc MDP_AXI_CLK>;
+> -			reg = <0x07500000 0x100000>;
+> -			interrupts =
+> -			    <GIC_SPI 63 0>,
+> -			    <GIC_SPI 64 0>;
+> -			qcom,ncb = <2>;
+> -		};
+> -
+> -		mdp: qcom,mdp@5100000 {
+> -			compatible = "qcom,mdp";
+> -			...
+> -			iommus = <&mdp_port0 0
+> -				  &mdp_port0 2>;
+> -		};
+> diff --git a/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml b/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
+> new file mode 100644
+> index 000000000000..b9a2d02ed2e6
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/qcom,apq8064-iommu.yaml
+> @@ -0,0 +1,76 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +
+> +$id: http://devicetree.org/schemas/iommu/qcom,apq8064-iommu.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm APQ8064 IOMMU
+> +
+> +maintainers:
+> +  - Will Deacon <will@kernel.org>
 
-- Add mmu notifier callback function. It will retrieve SVA protection
-  domain and invalidates IO/TLB.
+This should be someone from QCom or that otherwise cares about this 
+device.
 
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
----
- drivers/iommu/amd/amd_iommu.h       |  5 ++
- drivers/iommu/amd/amd_iommu_types.h |  1 +
- drivers/iommu/amd/iommu.c           | 10 ++--
- drivers/iommu/amd/pasid.c           | 84 +++++++++++++++++++++++++++++
- 4 files changed, 97 insertions(+), 3 deletions(-)
+> +
+> +description:
+> +  The MSM IOMMU is an implementation compatible with the ARM VMSA short
+> +  descriptor page tables. It provides address translation for bus masters
+> +  outside of the CPU, each connected to the IOMMU through a port called micro-TLB.
+> +
+> +properties:
+> +  compatible:
+> +    const: qcom,apq8064-iommu
+> +
+> +  clocks:
+> +    items:
+> +      - description: interface clock for register accesses
+> +      - description: functional clock for bus accesses
+> +
+> +  clock-names:
+> +    items:
+> +      - const: smmu_pclk
+> +      - const: iommu_clk
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    description: Specifiers for the MMU fault interrupts.
+> +    minItems: 1
+> +    items:
+> +      - description: non-secure mode interrupt
+> +      - description: secure mode interrupt (for instances which supports it)
+> +
+> +  "#iommu-cells":
+> +    const: 1
+> +    description: Each IOMMU specifier describes a single Stream ID.
+> +
+> +  qcom,ncb:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: The total number of context banks in the IOMMU.
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index c21e7d64ad88..1bb93671aa76 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -45,6 +45,11 @@ extern enum io_pgtable_fmt amd_iommu_pgtable;
- extern int amd_iommu_gpt_level;
- 
- /* Protection domain ops */
-+struct protection_domain *protection_domain_alloc(unsigned int type);
-+void protection_domain_free(struct protection_domain *domain);
-+struct iommu_domain *amd_iommu_domain_alloc_sva(struct device *dev,
-+						struct mm_struct *mm);
-+void amd_iommu_domain_free(struct iommu_domain *dom);
- int iommu_sva_set_dev_pasid(struct iommu_domain *domain,
- 			    struct device *dev, ioasid_t pasid);
- void amd_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid);
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 9662a56a3a83..b60b1b0f780e 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -588,6 +588,7 @@ struct protection_domain {
- 	unsigned dev_cnt;	/* devices assigned to this domain */
- 	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
- 
-+	struct mmu_notifier mn;	/* mmu notifier for the SVA domain */
- 	struct list_head pasid_list; /* List of pdom_pasid_data */
- };
- 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 7aea652cebd8..87ea60160dc8 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2278,7 +2278,7 @@ static void cleanup_domain(struct protection_domain *domain)
- 	WARN_ON(domain->dev_cnt != 0);
- }
- 
--static void protection_domain_free(struct protection_domain *domain)
-+void protection_domain_free(struct protection_domain *domain)
- {
- 	if (!domain)
- 		return;
-@@ -2321,7 +2321,7 @@ static int protection_domain_init_v2(struct protection_domain *pdom)
- 	return 0;
- }
- 
--static struct protection_domain *protection_domain_alloc(unsigned int type)
-+struct protection_domain *protection_domain_alloc(unsigned int type)
- {
- 	struct io_pgtable_ops *pgtbl_ops;
- 	struct protection_domain *domain;
-@@ -2344,6 +2344,7 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
- 	switch (type) {
- 	/* No need to allocate io pgtable ops in passthrough mode */
- 	case IOMMU_DOMAIN_IDENTITY:
-+	case IOMMU_DOMAIN_SVA:
- 		return domain;
- 	case IOMMU_DOMAIN_DMA:
- 		pgtable = amd_iommu_pgtable;
-@@ -2463,7 +2464,7 @@ amd_iommu_domain_alloc_user(struct device *dev, u32 flags,
- 	return do_iommu_domain_alloc(type, dev, flags);
- }
- 
--static void amd_iommu_domain_free(struct iommu_domain *dom)
-+void amd_iommu_domain_free(struct iommu_domain *dom)
- {
- 	struct protection_domain *domain;
- 	unsigned long flags;
-@@ -2831,6 +2832,7 @@ static int amd_iommu_dev_enable_feature(struct device *dev,
- 
- 	switch (feat) {
- 	case IOMMU_DEV_FEAT_IOPF:
-+	case IOMMU_DEV_FEAT_SVA:
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -2846,6 +2848,7 @@ static int amd_iommu_dev_disable_feature(struct device *dev,
- 
- 	switch (feat) {
- 	case IOMMU_DEV_FEAT_IOPF:
-+	case IOMMU_DEV_FEAT_SVA:
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -2858,6 +2861,7 @@ const struct iommu_ops amd_iommu_ops = {
- 	.capable = amd_iommu_capable,
- 	.domain_alloc = amd_iommu_domain_alloc,
- 	.domain_alloc_user = amd_iommu_domain_alloc_user,
-+	.domain_alloc_sva = amd_iommu_domain_alloc_sva,
- 	.probe_device = amd_iommu_probe_device,
- 	.release_device = amd_iommu_release_device,
- 	.probe_finalize = amd_iommu_probe_finalize,
-diff --git a/drivers/iommu/amd/pasid.c b/drivers/iommu/amd/pasid.c
-index cf14ddbc2c4f..7e353189dac6 100644
---- a/drivers/iommu/amd/pasid.c
-+++ b/drivers/iommu/amd/pasid.c
-@@ -120,6 +120,53 @@ static void remove_pdom_dev_pasid(struct protection_domain *pdom,
- 	}
- }
- 
-+static void sva_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
-+				    struct mm_struct *mm,
-+				    unsigned long start, unsigned long end)
-+{
-+	struct pdom_pasid_data *pasid_data;
-+	struct protection_domain *sva_pdom;
-+	struct iommu_dev_data *dev_data;
-+	unsigned long flags;
-+
-+	sva_pdom = container_of(mn, struct protection_domain, mn);
-+
-+	spin_lock_irqsave(&sva_pdom->lock, flags);
-+
-+	list_for_each_entry(pasid_data, &sva_pdom->pasid_list, pdom_link) {
-+		dev_data = pasid_data->dev_data;
-+
-+		amd_iommu_dev_flush_pasid_pages(dev_data, pasid_data->pasid,
-+						start, end - start);
-+	}
-+
-+	spin_unlock_irqrestore(&sva_pdom->lock, flags);
-+}
-+
-+static void sva_mn_release(struct mmu_notifier *mn, struct mm_struct *mm)
-+{
-+	struct pdom_pasid_data *pasid_data, *next;
-+	struct protection_domain *sva_pdom;
-+	unsigned long flags;
-+
-+	sva_pdom = container_of(mn, struct protection_domain, mn);
-+
-+	spin_lock_irqsave(&sva_pdom->lock, flags);
-+
-+	/* Assume pasid_list contains same PASID with different devices */
-+	list_for_each_entry_safe(pasid_data, next,
-+				 &sva_pdom->pasid_list, pdom_link) {
-+		remove_dev_pasid(pasid_data);
-+	}
-+
-+	spin_unlock_irqrestore(&sva_pdom->lock, flags);
-+}
-+
-+static const struct mmu_notifier_ops sva_mn = {
-+	.arch_invalidate_secondary_tlbs = sva_arch_invalidate_secondary_tlbs,
-+	.release = sva_mn_release,
-+};
-+
- int iommu_sva_set_dev_pasid(struct iommu_domain *domain,
- 			    struct device *dev, ioasid_t pasid)
- {
-@@ -191,3 +238,40 @@ void amd_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
- 
- 	spin_unlock_irqrestore(&sva_pdom->lock, flags);
- }
-+
-+static void iommu_sva_domain_free(struct iommu_domain *domain)
-+{
-+	struct protection_domain *sva_pdom = to_pdomain(domain);
-+
-+	if (sva_pdom->mn.ops)
-+		mmu_notifier_unregister(&sva_pdom->mn, domain->mm);
-+
-+	amd_iommu_domain_free(domain);
-+}
-+
-+static const struct iommu_domain_ops amd_sva_domain_ops = {
-+	.set_dev_pasid = iommu_sva_set_dev_pasid,
-+	.free	       = iommu_sva_domain_free
-+};
-+
-+struct iommu_domain *amd_iommu_domain_alloc_sva(struct device *dev,
-+						struct mm_struct *mm)
-+{
-+	struct protection_domain *pdom;
-+	int ret;
-+
-+	pdom = protection_domain_alloc(IOMMU_DOMAIN_SVA);
-+	if (!pdom)
-+		return ERR_PTR(-ENOMEM);
-+
-+	pdom->domain.ops = &amd_sva_domain_ops;
-+	pdom->mn.ops = &sva_mn;
-+
-+	ret = mmu_notifier_register(&pdom->mn, mm);
-+	if (ret) {
-+		protection_domain_free(pdom);
-+		return ERR_PTR(ret);
-+	}
-+
-+	return &pdom->domain;
-+}
--- 
-2.31.1
+Is there a maximum? I assume it is not 2^32.
 
+> +
+> +required:
+> +  - reg
+> +  - interrupts
+> +  - clocks
+> +  - clock-names
+> +  - qcom,ncb
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/clock/qcom,mmcc-msm8960.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +    iommu@7500000 {
+> +            compatible = "qcom,apq8064-iommu";
+> +            reg = <0x07500000 0x100000>;
+> +            interrupts = <GIC_SPI 63 IRQ_TYPE_LEVEL_HIGH>,
+> +                         <GIC_SPI 64 IRQ_TYPE_LEVEL_HIGH>;
+> +            clocks = <&clk SMMU_AHB_CLK>,
+> +                     <&clk MDP_AXI_CLK>;
+> +            clock-names = "smmu_pclk",
+> +                          "iommu_clk";
+> +            #iommu-cells = <1>;
+> +            qcom,ncb = <2>;
+> +    };
+> -- 
+> 2.43.0
+> 
