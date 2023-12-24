@@ -1,83 +1,150 @@
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [83.223.78.240])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7325D20F8
-	for <iommu@lists.linux.dev>; Sun, 24 Dec 2023 10:47:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=wunner.de
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=h08.hostsharing.net
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-	 client-signature RSA-PSS (4096 bits) client-digest SHA256)
-	(Client CN "*.hostsharing.net", Issuer "RapidSSL TLS RSA CA G1" (verified OK))
-	by bmailout2.hostsharing.net (Postfix) with ESMTPS id 42C042800B1D7;
-	Sun, 24 Dec 2023 11:47:09 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-	id 30CFF10A64; Sun, 24 Dec 2023 11:47:09 +0100 (CET)
-Date: Sun, 24 Dec 2023 11:47:09 +0100
-From: Lukas Wunner <lukas@wunner.de>
-To: Ethan Zhao <haifeng.zhao@linux.intel.com>
-Cc: bhelgaas@google.com, baolu.lu@linux.intel.com, dwmw2@infradead.org,
-	will@kernel.org, robin.murphy@arm.com, linux-pci@vger.kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH v6 4/4] iommu/vt-d: break out devTLB invalidation if
- target device is gone
-Message-ID: <20231224104709.GB31197@wunner.de>
-References: <20231224050657.182022-1-haifeng.zhao@linux.intel.com>
- <20231224050657.182022-5-haifeng.zhao@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7CBC3EAE2
+	for <iommu@lists.linux.dev>; Sun, 24 Dec 2023 21:30:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="JfWBeJXX"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-1d3fde109f2so262695ad.1
+        for <iommu@lists.linux.dev>; Sun, 24 Dec 2023 13:30:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1703453452; x=1704058252; darn=lists.linux.dev;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7/MCgJrzTYbobYDGPWMaxVSPHC8aF5GoN3HBnQNC1yE=;
+        b=JfWBeJXXkXbfjZHtWk1ozKiBM2tK7tURvJZjwmu5wo9+GtLSE0GQlINAj+qSWuXDvJ
+         y7JL/gmazkzOH0VDID+P4kKvrc5TdRkf/TxGR9dB2nwGd0iIlForZxxHq+r9qmzvd/XM
+         WxjP7CrsbwwvZU9NaueXW+e5EP3X6AzDvbIGynLxCJoDw0StgNtD4bqmKHslTIE2Jaee
+         ZGL/KEH6RJENhyhTm/r8s5YgD7nRTp2jPctxZvXCVUu4ph9URWM4QnsQCLmDSrsL9n0M
+         P7ucXElbaLCMM4NTwRtKlePNzYqxXdflZ4AEFSK5btEwyXFEW8CCmFqy9N7ZhfoMaBQ8
+         3jOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1703453452; x=1704058252;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7/MCgJrzTYbobYDGPWMaxVSPHC8aF5GoN3HBnQNC1yE=;
+        b=Pu73Z/n4BdQorqvJ/q8D4yMxd+x6OsUAt8rZDSuiCcxKQjeZIuDEa3HkP2KlgFWejk
+         kem9MwPngmk35JYmf46RZbz7MBDvvzLPM+TjmO36wFIGIvAW1XNQnGROD1ESlLu5IxKs
+         iHnu/y9cx6ZvT/4qJO+hlDSB0VRMQq2bukRUJZung8wRr15GQMCRtloa1R4qeNdqjGNK
+         R5vSY7gUkX8ERnnqEol6hJvFQ6DsZvYryTZUPp9msLtH/mV8poNlpEhpHeLbkgpm2m8E
+         JPwcKzjKBLsM09kO9BO6Nw2CguYP1afVRh99RjJa2jd6mqEcCPyvuNimR/2fppyaukI7
+         bFJA==
+X-Gm-Message-State: AOJu0YzmgtmeAWWPbHnVgXOtG48g24Jz+ra77JeZ9XsDswwkQS8tOoZ2
+	+wItbhwR0jDPLxLIPETk1U1TpiDVN/Vc
+X-Google-Smtp-Source: AGHT+IGEdm29d6jmw+nANphFK7SbhaR7mM9JSy5/jGKgQinKhgDaZxXLk5PDheL/k90mn9Ft6aU5hg==
+X-Received: by 2002:a17:902:bb84:b0:1d4:55b3:45d9 with SMTP id m4-20020a170902bb8400b001d455b345d9mr28530pls.6.1703453451456;
+        Sun, 24 Dec 2023 13:30:51 -0800 (PST)
+Received: from [2620:0:1008:15:c723:e11e:854b:ac88] ([2620:0:1008:15:c723:e11e:854b:ac88])
+        by smtp.gmail.com with ESMTPSA id b14-20020a170902d50e00b001d3dacffde3sm6890413plg.226.2023.12.24.13.30.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Dec 2023 13:30:50 -0800 (PST)
+Date: Sun, 24 Dec 2023 13:30:50 -0800 (PST)
+From: David Rientjes <rientjes@google.com>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+cc: Andrew Morton <akpm@linux-foundation.org>, alim.akhtar@samsung.com, 
+    alyssa@rosenzweig.io, asahi@lists.linux.dev, baolu.lu@linux.intel.com, 
+    bhelgaas@google.com, cgroups@vger.kernel.org, corbet@lwn.net, 
+    david@redhat.com, dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de, 
+    iommu@lists.linux.dev, jernej.skrabec@gmail.com, jonathanh@nvidia.com, 
+    joro@8bytes.org, krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org, 
+    linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
+    linux-mm@kvack.org, linux-rockchip@lists.infradead.org, 
+    linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
+    linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st, 
+    mhiramat@kernel.org, m.szyprowski@samsung.com, paulmck@kernel.org, 
+    rdunlap@infradead.org, robin.murphy@arm.com, samuel@sholland.org, 
+    suravee.suthikulpanit@amd.com, sven@svenpeter.dev, 
+    thierry.reding@gmail.com, tj@kernel.org, tomas.mudrunka@gmail.com, 
+    vdumpa@nvidia.com, wens@csie.org, will@kernel.org, yu-cheng.yu@intel.com
+Subject: Re: [PATCH v2 01/10] iommu/vt-d: add wrapper functions for page
+ allocations
+In-Reply-To: <CA+CK2bA8iJ_w8CSx2Ed=d2cVSujrC0-TpO7U9j+Ow-gfk1nyfQ@mail.gmail.com>
+Message-ID: <1fd66377-030c-2e48-e658-4669bbf037e9@google.com>
+References: <20231130201504.2322355-1-pasha.tatashin@soleen.com> <20231130201504.2322355-2-pasha.tatashin@soleen.com> <776e17af-ae25-16a0-f443-66f3972b00c0@google.com> <CA+CK2bA8iJ_w8CSx2Ed=d2cVSujrC0-TpO7U9j+Ow-gfk1nyfQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20231224050657.182022-5-haifeng.zhao@linux.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: multipart/mixed; boundary="2003067076-655310594-1703453450=:2163178"
 
-On Sun, Dec 24, 2023 at 12:06:57AM -0500, Ethan Zhao wrote:
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -1423,6 +1423,13 @@ int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
->  	writel(qi->free_head << shift, iommu->reg + DMAR_IQT_REG);
->  
->  	while (qi->desc_status[wait_index] != QI_DONE) {
-> +		/*
-> +		 * if the devTLB invalidation target device is gone, don't wait
-> +		 * anymore, it might take up to 1min+50%, causes system hang.
-> +		 */
-> +		if (type == QI_DIOTLB_TYPE && iommu->flush_target_dev)
-> +			if (!pci_device_is_present(to_pci_dev(iommu->flush_target_dev)))
-> +				break;
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-As a general approach, this is much better now.
+--2003067076-655310594-1703453450=:2163178
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 
-Please combine the nested if-clauses into one.
+On Thu, 14 Dec 2023, Pasha Tatashin wrote:
 
-Please amend the code comment with a spec reference, i.e.
-"(see Implementation Note in PCIe r6.1 sec 10.3.1)"
-so that readers of the code know where the magic number "1min+50%"
-is coming from.
+> On Thu, Dec 14, 2023 at 12:58 PM David Rientjes <rientjes@google.com> wrote:
+> >
+> > On Thu, 30 Nov 2023, Pasha Tatashin wrote:
+> >
+> > > diff --git a/drivers/iommu/iommu-pages.h b/drivers/iommu/iommu-pages.h
+> > > new file mode 100644
+> > > index 000000000000..2332f807d514
+> > > --- /dev/null
+> > > +++ b/drivers/iommu/iommu-pages.h
+> > > @@ -0,0 +1,199 @@
+> > > +/* SPDX-License-Identifier: GPL-2.0-only */
+> > > +/*
+> > > + * Copyright (c) 2023, Google LLC.
+> > > + * Pasha Tatashin <pasha.tatashin@soleen.com>
+> > > + */
+> > > +
+> > > +#ifndef __IOMMU_PAGES_H
+> > > +#define __IOMMU_PAGES_H
+> > > +
+> > > +#include <linux/vmstat.h>
+> > > +#include <linux/gfp.h>
+> > > +#include <linux/mm.h>
+> > > +
+> > > +/*
+> > > + * All page allocation that are performed in the IOMMU subsystem must use one of
+> > > + * the functions below.  This is necessary for the proper accounting as IOMMU
+> > > + * state can be rather large, i.e. multiple gigabytes in size.
+> > > + */
+> > > +
+> > > +/**
+> > > + * __iommu_alloc_pages_node - allocate a zeroed page of a given order from
+> > > + * specific NUMA node.
+> > > + * @nid: memory NUMA node id
+> >
+> > NUMA_NO_NODE if no locality requirements?
+> 
+> If no locality is required, there is a better interface:
+> __iommu_alloc_pages(). That one will also take a look at the calling
+> process policies to determine the proper NUMA node when nothing is
+> specified. However, when policies should be ignored, and no locality
+> required, NUMA_NO_NODE can be passed.
+> 
 
-Is flush_target_dev guaranteed to always be a pci_dev?
+Gotcha, thanks!
 
-I'll let iommu maintainers comment on whether storing a flush_target_dev
-pointer is the right approach.  (May store a back pointer from
-struct intel_iommu to struct device_domain_info?)
+> >
+> > > + * @gfp: buddy allocator flags
+> > > + * @order: page order
+> > > + *
+> > > + * returns the head struct page of the allocated page.
+> > > + */
+> > > +static inline struct page *__iommu_alloc_pages_node(int nid, gfp_t gfp,
+> > > +                                                 int order)
+> > > +{
+> > > +     struct page *pages;
+> >
+> > s/pages/page/ here and later in this file.
+> 
+> In this file, where there a page with an "order", I reference it with
+> "pages", when no order (i.e. order = 0), I reference it with "page"
+> 
+> I.e.: __iommu_alloc_page vs. __iommu_alloc_pages
+> 
 
-Maybe move the "to_pci_dev(iommu->flush_target_dev)" lookup outside the
-loop to avoid doing this over and over again?
-
-I think we still have a problem here if the device is not removed
-but simply takes a long time to respond to Invalidate Requests
-(as it is permitted to do per the Implementation Note).  We'll
-busy-wait for the completion and potentially run into the watchdog's
-time limit again.  So I think you or someone else in your org should
-add OKRs to refactor the code so that it sleeps in-between polling
-for Invalidate Completions (instead of busy-waiting with interrupts
-disabled).
-
-Thanks,
-
-Lukas
+Eh, the struct page points to a (potentially compound) page, not a set or 
+list of pages.  I won't bikeshed on it, but "struct page *pages" never 
+makes sense unless it's **pages or *pages[] :)
+--2003067076-655310594-1703453450=:2163178--
