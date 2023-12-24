@@ -1,187 +1,241 @@
-Received: from mail-il1-f170.google.com (mail-il1-f170.google.com [209.85.166.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AAB5FBEF
-	for <iommu@lists.linux.dev>; Sun, 24 Dec 2023 21:49:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37BF2101D0;
+	Sun, 24 Dec 2023 22:43:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Yjkdeh2v"
-Received: by mail-il1-f170.google.com with SMTP id e9e14a558f8ab-35ffc781b3bso59905ab.1
-        for <iommu@lists.linux.dev>; Sun, 24 Dec 2023 13:49:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1703454581; x=1704059381; darn=lists.linux.dev;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=O0HiuPkhATpCWAkLMW05BPxTgagJyPS45hssBqZfyJY=;
-        b=Yjkdeh2vOu/tqzy5hNZxeoRAsWVyg1J9dMC9UM9X+JkvYUskf4+2ELqLhLRjFpS6A/
-         utYSz6BZibx6NhcFgL8o5SyHTNtHnYBTClC965TNPQc0rzvFc6pJ83Tp3sEO9zd7TN5O
-         OcTmp7qmN2vPCo+MSIfaeiNYpU4rweMLkVxjr1MBhLO0MA8waps1exoHZkQ+PZC6NFJd
-         A3xUCg1vHSMsZtmrPwhquMSl3FASY9Nc78oT51bDa4OGIJYqnBGXSzb0BnaW9b9oM4Lx
-         DUOXUQB4pnklsRXoKd7MCCn70PllmjDjftRjNhtSo7neEu7eZ9njPWuNS7nxw9pEPa3w
-         2kjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703454581; x=1704059381;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=O0HiuPkhATpCWAkLMW05BPxTgagJyPS45hssBqZfyJY=;
-        b=wMU0qSiA2+QxPsI3WQanAAzsH/8S6OcXd4B3/c4nKdwT+EFRbDZGqOAhyk9qtM4fgX
-         gKanV1BIDwrZhD0STt3cUTthUQ+Xye4Rjohr5wOX5ya0vE5ovauPvqHxwxY3yNtkaCEX
-         psPXfheKkz2Yeh2PknO6Yn+T83KvuemMFSG4WhtVVMXuvEICwWjJvKtAlzneIN0YpMAe
-         y5yTZzXTc5iqIrZiEscs6Pu34QrfOAWAHaPSl+ItXVSG2G1/2ewbAvOjXIXQNHWsGC6/
-         fOgJXvkGLPKQXVv5yW04XpmIjzmZsh7OgCoiNMaZJ2VrqgcS4xESOKPsFANsK48ED1Ss
-         gW2A==
-X-Gm-Message-State: AOJu0YxTH9M8bJL3lPTpd4xt7QJW9LStTMM/AFNRAly2lg2AnnF/EGtx
-	KNuSqSwOoCwgK9j5i7GSwBklppYSLkh/
-X-Google-Smtp-Source: AGHT+IHO1o4MpTmRsY4pG5iPw80zAps+6fJHAueY55ciRhpJtDvuIlpvxAKJ08/tY4qG55yyTyBfTQ==
-X-Received: by 2002:a05:6e02:3001:b0:35f:b200:2fb5 with SMTP id bd1-20020a056e02300100b0035fb2002fb5mr495955ilb.11.1703454581205;
-        Sun, 24 Dec 2023 13:49:41 -0800 (PST)
-Received: from [2620:0:1008:15:c723:e11e:854b:ac88] ([2620:0:1008:15:c723:e11e:854b:ac88])
-        by smtp.gmail.com with ESMTPSA id l18-20020a62be12000000b006ce95e37a40sm6824858pff.111.2023.12.24.13.49.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Dec 2023 13:49:40 -0800 (PST)
-Date: Sun, 24 Dec 2023 13:49:39 -0800 (PST)
-From: David Rientjes <rientjes@google.com>
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-cc: akpm@linux-foundation.org, alim.akhtar@samsung.com, alyssa@rosenzweig.io, 
-    asahi@lists.linux.dev, baolu.lu@linux.intel.com, bhelgaas@google.com, 
-    cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com, 
-    dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de, 
-    iommu@lists.linux.dev, jernej.skrabec@gmail.com, jonathanh@nvidia.com, 
-    joro@8bytes.org, krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org, 
-    linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-    linux-mm@kvack.org, linux-rockchip@lists.infradead.org, 
-    linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
-    linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st, 
-    mhiramat@kernel.org, m.szyprowski@samsung.com, paulmck@kernel.org, 
-    rdunlap@infradead.org, robin.murphy@arm.com, samuel@sholland.org, 
-    suravee.suthikulpanit@amd.com, sven@svenpeter.dev, 
-    thierry.reding@gmail.com, tj@kernel.org, tomas.mudrunka@gmail.com, 
-    vdumpa@nvidia.com, wens@csie.org, will@kernel.org, yu-cheng.yu@intel.com
-Subject: Re: [PATCH v2 00/10] IOMMU memory observability
-In-Reply-To: <20231130201504.2322355-1-pasha.tatashin@soleen.com>
-Message-ID: <2913539c-68f1-5597-df64-99a884a60e0a@google.com>
-References: <20231130201504.2322355-1-pasha.tatashin@soleen.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jb62IJA1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59514C433C8;
+	Sun, 24 Dec 2023 22:43:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1703457808;
+	bh=lJIHpByo7amVZ6jFjM6x1BS87wyLanlh8lKnsEytyIM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=Jb62IJA1KR1iTJaBr7AbpJuaXxlfiJyWbt16mhxBHCmSWSoMdiB1DEUCEjHaFwOSJ
+	 lTzZxr3TKVaHAnDggSKf/XJiWwYXgaYW2U21gzXGZuFSA8gsSBk5G1QGKxOwELM1Zg
+	 1M3NtZosyT9887P2cOqcKZPlFxiy7U/yogbb52PLJ1IGbL2CsUrkQf+DoucLVwEKcQ
+	 P6xuEnfnjJrQKszvBbPq84SZhrRymmiYyFewLYW5ATrAVzNQjTdgt0jR1tcxtnjxLr
+	 uRpC5rCt/HExpUp6SrcExr/8yBcQ6tkK0iYMPqkNS3NgVbMU+1II6mdVSbe/T0cOsn
+	 QS6aHWI4/6XRw==
+Date: Sun, 24 Dec 2023 16:43:26 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>
+Cc: bhelgaas@google.com, baolu.lu@linux.intel.com, dwmw2@infradead.org,
+	will@kernel.org, robin.murphy@arm.com, lukas@wunner.de,
+	linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v6 2/4] iommu/vt-d: don's issue devTLB flush request
+ when device is disconnected
+Message-ID: <20231224224326.GA1412095@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231224050657.182022-3-haifeng.zhao@linux.intel.com>
 
-On Thu, 30 Nov 2023, Pasha Tatashin wrote:
+On Sun, Dec 24, 2023 at 12:06:55AM -0500, Ethan Zhao wrote:
+> For those endpoint devices connect to system via hotplug capable ports,
+> users could request a warm reset to the device by flapping device's link
+> through setting the slot's link control register, as pciehpt_ist() DLLSC
+> interrupt sequence response, pciehp will unload the device driver and
+> then power it off. thus cause an IOMMU devTLB flush request for device to
+> be sent and a long time completion/timeout waiting in interrupt context.
 
-> IOMMU subsystem may contain state that is in gigabytes. Majority of that
-> state is iommu page tables. Yet, there is currently, no way to observe
-> how much memory is actually used by the iommu subsystem.
-> 
-> This patch series solves this problem by adding both observability to
-> all pages that are allocated by IOMMU, and also accountability, so
-> admins can limit the amount if via cgroups.
-> 
-> The system-wide observability is using /proc/meminfo:
-> SecPageTables:    438176 kB
-> 
-> Contains IOMMU and KVM memory.
-> 
-> Per-node observability:
-> /sys/devices/system/node/nodeN/meminfo
-> Node N SecPageTables:    422204 kB
-> 
-> Contains IOMMU and KVM memory memory in the given NUMA node.
-> 
-> Per-node IOMMU only observability:
-> /sys/devices/system/node/nodeN/vmstat
-> nr_iommu_pages 105555
-> 
-> Contains number of pages IOMMU allocated in the given node.
-> 
-> Accountability: using sec_pagetables cgroup-v2 memory.stat entry.
-> 
-> With the change, iova_stress[1] stops as limit is reached:
-> 
-> # ./iova_stress
-> iova space:     0T      free memory:   497G
-> iova space:     1T      free memory:   495G
-> iova space:     2T      free memory:   493G
-> iova space:     3T      free memory:   491G
-> 
-> stops as limit is reached.
-> 
+s/don's/don't/ (in subject)
+s/pciehpt_ist/pciehp_ist/
 
-I think this is *very* useful to provide visibility into a significant 
-amount of memory that we currently cannot observe on a host.  It can help 
-to uncover bugs and shed light onto a particularly large amount of memory 
-that would otherwise be mysterious.
+IIUC you are referring to a specific PCIe transaction, so unless
+there's another spec that defines "devTLB flush request", please use
+the actual PCIe transaction name ("ATS Invalidate Request") as Lukas
+suggested.
 
-Joerg, Will, Robin, I think this series would go through the 
-git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tree since it 
-depends on a common framework for all other IOMMU implementations to then 
-use?
+There's no point in using an informal name that we assume "all
+iommu/PCIe guys could understand."  It's better to use a term that
+anybody can find by searching the spec.
 
-Any concerns about this patch series?  It would be very useful for us to 
-create visibility into this memory.
+> That would cause following continuous hard lockup warning and system hang
+> 
+> [ 4211.433662] pcieport 0000:17:01.0: pciehp: Slot(108): Link Down
+> [ 4211.433664] pcieport 0000:17:01.0: pciehp: Slot(108): Card not present
+> [ 4223.822591] NMI watchdog: Watchdog detected hard LOCKUP on cpu 144
+> [ 4223.822622] CPU: 144 PID: 1422 Comm: irq/57-pciehp Kdump: loaded Tainted: G S
+>          OE    kernel version xxxx
+> [ 4223.822623] Hardware name: vendorname xxxx 666-106,
+> BIOS 01.01.02.03.01 05/15/2023
+> [ 4223.822623] RIP: 0010:qi_submit_sync+0x2c0/0x490
+> [ 4223.822624] Code: 48 be 00 00 00 00 00 08 00 00 49 85 74 24 20 0f 95 c1 48 8b
+>  57 10 83 c1 04 83 3c 1a 03 0f 84 a2 01 00 00 49 8b 04 24 8b 70 34 <40> f6 c6 1
+> 0 74 17 49 8b 04 24 8b 80 80 00 00 00 89 c2 d3 fa 41 39
+> [ 4223.822624] RSP: 0018:ffffc4f074f0bbb8 EFLAGS: 00000093
+> [ 4223.822625] RAX: ffffc4f040059000 RBX: 0000000000000014 RCX: 0000000000000005
+> [ 4223.822625] RDX: ffff9f3841315800 RSI: 0000000000000000 RDI: ffff9f38401a8340
+> [ 4223.822625] RBP: ffff9f38401a8340 R08: ffffc4f074f0bc00 R09: 0000000000000000
+> [ 4223.822626] R10: 0000000000000010 R11: 0000000000000018 R12: ffff9f384005e200
+> [ 4223.822626] R13: 0000000000000004 R14: 0000000000000046 R15: 0000000000000004
+> [ 4223.822626] FS:  0000000000000000(0000) GS:ffffa237ae400000(0000)
+> knlGS:0000000000000000
+> [ 4223.822627] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 4223.822627] CR2: 00007ffe86515d80 CR3: 000002fd3000a001 CR4: 0000000000770ee0
+> [ 4223.822627] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [ 4223.822628] DR3: 0000000000000000 DR6: 00000000fffe07f0 DR7: 0000000000000400
+> [ 4223.822628] PKRU: 55555554
+> [ 4223.822628] Call Trace:
+> [ 4223.822628]  qi_flush_dev_iotlb+0xb1/0xd0
+> [ 4223.822628]  __dmar_remove_one_dev_info+0x224/0x250
+> [ 4223.822629]  dmar_remove_one_dev_info+0x3e/0x50
+> [ 4223.822629]  intel_iommu_release_device+0x1f/0x30
+> [ 4223.822629]  iommu_release_device+0x33/0x60
+> [ 4223.822629]  iommu_bus_notifier+0x7f/0x90
+> [ 4223.822630]  blocking_notifier_call_chain+0x60/0x90
+> [ 4223.822630]  device_del+0x2e5/0x420
+> [ 4223.822630]  pci_remove_bus_device+0x70/0x110
+> [ 4223.822630]  pciehp_unconfigure_device+0x7c/0x130
+> [ 4223.822631]  pciehp_disable_slot+0x6b/0x100
+> [ 4223.822631]  pciehp_handle_presence_or_link_change+0xd8/0x320
+> [ 4223.822631]  pciehp_ist+0x176/0x180
+> [ 4223.822631]  ? irq_finalize_oneshot.part.50+0x110/0x110
+> [ 4223.822632]  irq_thread_fn+0x19/0x50
+> [ 4223.822632]  irq_thread+0x104/0x190
+> [ 4223.822632]  ? irq_forced_thread_fn+0x90/0x90
+> [ 4223.822632]  ? irq_thread_check_affinity+0xe0/0xe0
+> [ 4223.822633]  kthread+0x114/0x130
+> [ 4223.822633]  ? __kthread_cancel_work+0x40/0x40
+> [ 4223.822633]  ret_from_fork+0x1f/0x30
+> [ 4223.822633] Kernel panic - not syncing: Hard LOCKUP
+> [ 4223.822634] CPU: 144 PID: 1422 Comm: irq/57-pciehp Kdump: loaded Tainted: G S
+>          OE     kernel version xxxx
+> [ 4223.822634] Hardware name: vendorname xxxx 666-106,
+> BIOS 01.01.02.03.01 05/15/2023
+> [ 4223.822634] Call Trace:
+> [ 4223.822634]  <NMI>
+> [ 4223.822635]  dump_stack+0x6d/0x88
+> [ 4223.822635]  panic+0x101/0x2d0
+> [ 4223.822635]  ? ret_from_fork+0x11/0x30
+> [ 4223.822635]  nmi_panic.cold.14+0xc/0xc
+> [ 4223.822636]  watchdog_overflow_callback.cold.8+0x6d/0x81
+> [ 4223.822636]  __perf_event_overflow+0x4f/0xf0
+> [ 4223.822636]  handle_pmi_common+0x1ef/0x290
+> [ 4223.822636]  ? __set_pte_vaddr+0x28/0x40
+> [ 4223.822637]  ? flush_tlb_one_kernel+0xa/0x20
+> [ 4223.822637]  ? __native_set_fixmap+0x24/0x30
+> [ 4223.822637]  ? ghes_copy_tofrom_phys+0x70/0x100
+> [ 4223.822637]  ? __ghes_peek_estatus.isra.16+0x49/0xa0
+> [ 4223.822637]  intel_pmu_handle_irq+0xba/0x2b0
+> [ 4223.822638]  perf_event_nmi_handler+0x24/0x40
+> [ 4223.822638]  nmi_handle+0x4d/0xf0
+> [ 4223.822638]  default_do_nmi+0x49/0x100
+> [ 4223.822638]  exc_nmi+0x134/0x180
+> [ 4223.822639]  end_repeat_nmi+0x16/0x67
+> [ 4223.822639] RIP: 0010:qi_submit_sync+0x2c0/0x490
+> [ 4223.822639] Code: 48 be 00 00 00 00 00 08 00 00 49 85 74 24 20 0f 95 c1 48 8b
+>  57 10 83 c1 04 83 3c 1a 03 0f 84 a2 01 00 00 49 8b 04 24 8b 70 34 <40> f6 c6 10
+>  74 17 49 8b 04 24 8b 80 80 00 00 00 89 c2 d3 fa 41 39
+> [ 4223.822640] RSP: 0018:ffffc4f074f0bbb8 EFLAGS: 00000093
+> [ 4223.822640] RAX: ffffc4f040059000 RBX: 0000000000000014 RCX: 0000000000000005
+> [ 4223.822640] RDX: ffff9f3841315800 RSI: 0000000000000000 RDI: ffff9f38401a8340
+> [ 4223.822641] RBP: ffff9f38401a8340 R08: ffffc4f074f0bc00 R09: 0000000000000000
+> [ 4223.822641] R10: 0000000000000010 R11: 0000000000000018 R12: ffff9f384005e200
+> [ 4223.822641] R13: 0000000000000004 R14: 0000000000000046 R15: 0000000000000004
+> [ 4223.822641]  ? qi_submit_sync+0x2c0/0x490
+> [ 4223.822642]  ? qi_submit_sync+0x2c0/0x490
+> [ 4223.822642]  </NMI>
+> [ 4223.822642]  qi_flush_dev_iotlb+0xb1/0xd0
+> [ 4223.822642]  __dmar_remove_one_dev_info+0x224/0x250
+> [ 4223.822643]  dmar_remove_one_dev_info+0x3e/0x50
+> [ 4223.822643]  intel_iommu_release_device+0x1f/0x30
+> [ 4223.822643]  iommu_release_device+0x33/0x60
+> [ 4223.822643]  iommu_bus_notifier+0x7f/0x90
+> [ 4223.822644]  blocking_notifier_call_chain+0x60/0x90
+> [ 4223.822644]  device_del+0x2e5/0x420
+> [ 4223.822644]  pci_remove_bus_device+0x70/0x110
+> [ 4223.822644]  pciehp_unconfigure_device+0x7c/0x130
+> [ 4223.822644]  pciehp_disable_slot+0x6b/0x100
+> [ 4223.822645]  pciehp_handle_presence_or_link_change+0xd8/0x320
+> [ 4223.822645]  pciehp_ist+0x176/0x180
+> [ 4223.822645]  ? irq_finalize_oneshot.part.50+0x110/0x110
+> [ 4223.822645]  irq_thread_fn+0x19/0x50
+> [ 4223.822646]  irq_thread+0x104/0x190
+> [ 4223.822646]  ? irq_forced_thread_fn+0x90/0x90
+> [ 4223.822646]  ? irq_thread_check_affinity+0xe0/0xe0
+> [ 4223.822646]  kthread+0x114/0x130
+> [ 4223.822647]  ? __kthread_cancel_work+0x40/0x40
+> [ 4223.822647]  ret_from_fork+0x1f/0x30
+> [ 4223.822647] Kernel Offset: 0x6400000 from 0xffffffff81000000 (relocation
+> range: 0xffffffff80000000-0xffffffffbfffffff)
 
+The timestamps don't help understand the problem, so you could remove
+them so they aren't a distraction.
 
-Pasha: any chance of adding a selftest that can be run that will test the 
-value of nr_iommu_pages?  I could imagine in the future that a bug could 
-be introduced where either an allocation or free is done through 
-alloc_pages() directly and its paired alloc/free function now results in a 
-leak or underflow.
+> Fix it by checking the device's error_state in
+> devtlb_invalidation_with_pasid() to avoid sending meaningless devTLB flush
+> request to link down device that is set to pci_channel_io_perm_failure and
+> then powered off in
 
-> This series encorporates suggestions that came from the discussion
-> at LPC [2].
-> ----------------------------------------------------------------------
-> [1] https://github.com/soleen/iova_stress
-> [2] https://lpc.events/event/17/contributions/1466
-> ----------------------------------------------------------------------
-> Previous versions
-> v1: https://lore.kernel.org/all/20231128204938.1453583-1-pasha.tatashin@soleen.com
-> ----------------------------------------------------------------------
+A pci_dev_is_disconnected() is racy in this context, so this by itself
+doesn't look like a complete "fix".
+
+> pciehp_ist()
+>    pciehp_handle_presence_or_link_change()
+>      pciehp_disable_slot()
+>        remove_board()
+>          pciehp_unconfigure_device()
+
+There are some interesting steps missing here between
+pciehp_unconfigure_device() and devtlb_invalidation_with_pasid().
+
+devtlb_invalidation_with_pasid() is Intel-specific.  ATS Invalidate
+Requests are not Intel-specific, so all IOMMU drivers must have to
+deal with the case of an ATS Invalidate Request where we never receive
+a corresponding ATS Invalidate Completion.  Do other IOMMUs like AMD
+and ARM have a similar issue?
+
+> For SAVE_REMOVAL unplug, link is alive when iommu releases devcie and
+> issues devTLB invalidate request, wouldn't trigger such issue.
 > 
-> Pasha Tatashin (10):
->   iommu/vt-d: add wrapper functions for page allocations
->   iommu/amd: use page allocation function provided by iommu-pages.h
->   iommu/io-pgtable-arm: use page allocation function provided by
->     iommu-pages.h
->   iommu/io-pgtable-dart: use page allocation function provided by
->     iommu-pages.h
->   iommu/exynos: use page allocation function provided by iommu-pages.h
->   iommu/rockchip: use page allocation function provided by iommu-pages.h
->   iommu/sun50i: use page allocation function provided by iommu-pages.h
->   iommu/tegra-smmu: use page allocation function provided by
->     iommu-pages.h
->   iommu: observability of the IOMMU allocations
->   iommu: account IOMMU allocated memory
+> This patch works for all links of SURPPRISE_REMOVAL unplug operations.
+
+s/devcie/device/
+
+Writing "SAVE_REMOVAL" and "SURPPRISE_REMOVAL" in all caps with an
+underscore makes them look like identifiers.  But neither appears in
+the kernel source.  Write them as normal English words, e.g., "save
+removal" instead (though I suspect you mean "safe removal"?).
+
+s/surpprise/surprise/
+
+It's not completely obvious that a fix that works for the safe removal
+case also works for the surprise removal case.  Can you briefly
+explain why it does?
+
+> Tested-by: Haorong Ye <yehaorong@bytedance.com>
+> Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+> ---
+>  drivers/iommu/intel/pasid.c | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
->  Documentation/admin-guide/cgroup-v2.rst |   2 +-
->  Documentation/filesystems/proc.rst      |   4 +-
->  drivers/iommu/amd/amd_iommu.h           |   8 -
->  drivers/iommu/amd/init.c                |  91 +++++-----
->  drivers/iommu/amd/io_pgtable.c          |  13 +-
->  drivers/iommu/amd/io_pgtable_v2.c       |  20 +-
->  drivers/iommu/amd/iommu.c               |  13 +-
->  drivers/iommu/exynos-iommu.c            |  14 +-
->  drivers/iommu/intel/dmar.c              |  10 +-
->  drivers/iommu/intel/iommu.c             |  47 ++---
->  drivers/iommu/intel/iommu.h             |   2 -
->  drivers/iommu/intel/irq_remapping.c     |  10 +-
->  drivers/iommu/intel/pasid.c             |  12 +-
->  drivers/iommu/intel/svm.c               |   7 +-
->  drivers/iommu/io-pgtable-arm.c          |   7 +-
->  drivers/iommu/io-pgtable-dart.c         |  37 ++--
->  drivers/iommu/iommu-pages.h             | 231 ++++++++++++++++++++++++
->  drivers/iommu/rockchip-iommu.c          |  14 +-
->  drivers/iommu/sun50i-iommu.c            |   7 +-
->  drivers/iommu/tegra-smmu.c              |  18 +-
->  include/linux/mmzone.h                  |   5 +-
->  mm/vmstat.c                             |   3 +
->  22 files changed, 390 insertions(+), 185 deletions(-)
->  create mode 100644 drivers/iommu/iommu-pages.h
-> 
-> -- 
-> 2.43.0.rc2.451.g8631bc7472-goog
-> 
-> 
-> 
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index 74e8e4c17e81..7dbee9931eb6 100644
+> --- a/drivers/iommu/intel/pasid.c
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -481,6 +481,9 @@ devtlb_invalidation_with_pasid(struct intel_iommu *iommu,
+>  	if (!info || !info->ats_enabled)
+>  		return;
+>  
+> +	if (pci_dev_is_disconnected(to_pci_dev(dev)))
+> +		return;
+> +
+>  	sid = info->bus << 8 | info->devfn;
+>  	qdep = info->ats_qdep;
+>  	pfsid = info->pfsid;
+
+This goes on to call qi_submit_sync(), which contains a restart: loop.
+I don't know the programming model there, but it looks possible that 
+qi_submit_sync() and qi_check_fault() might not handle the case of an
+unreachable device correctly.  There should be a way to exit that
+restart: loop in cases where the device doesn't respond at all.
+
+Bjorn
