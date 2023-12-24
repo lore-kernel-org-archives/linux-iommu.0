@@ -1,46 +1,46 @@
-Received: from mail-il1-f171.google.com (mail-il1-f171.google.com [209.85.166.171])
+Received: from mail-il1-f182.google.com (mail-il1-f182.google.com [209.85.166.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8891410963
-	for <iommu@lists.linux.dev>; Sun, 24 Dec 2023 21:40:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 058B5107A0
+	for <iommu@lists.linux.dev>; Sun, 24 Dec 2023 21:44:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="TNrmlW8Y"
-Received: by mail-il1-f171.google.com with SMTP id e9e14a558f8ab-3600101e819so19095ab.0
-        for <iommu@lists.linux.dev>; Sun, 24 Dec 2023 13:40:29 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Ob7Izpl8"
+Received: by mail-il1-f182.google.com with SMTP id e9e14a558f8ab-36000a26f8aso26545ab.0
+        for <iommu@lists.linux.dev>; Sun, 24 Dec 2023 13:44:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1703454029; x=1704058829; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1703454245; x=1704059045; darn=lists.linux.dev;
         h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=0Ze3dFp7nuwLIlYyxkNcxvwY2+LEPIxqYIZFYJMGB88=;
-        b=TNrmlW8YQ7nsqzKmBKLGNRK6lOGa2iGBXcTohBVJuNRx/faAr9blV+4l0b1nmR5U0z
-         XplrORJMIws7zRTa1NeENPRq1i84KGWV32BYnMJZhwqIMavo+omts+UJxzjdXEnq5cM4
-         FbOmTjnv8uUGTJVRgTYI6TLlE94UDlOtd2DMdqXo5OYOtK827Waxy9iUpBrALZFgRrC6
-         +ajJkUEY3NrFLlx3CbQ5xkUsu2rHPtXTE2MrOFWMlSDJKobPG+193uPjL6CvkgYcAUir
-         IYPvSGIcSAeRWWow9zGFqNtmcPk2YbeH8VOHdzLrAQEwxJc0ZI0az//bIdisT2ifuDvq
-         GrHA==
+        bh=WCfzVP8j8LySAgZKEW6wfy9xuAGJ9Ouy6ckQlduRZH0=;
+        b=Ob7Izpl85WdNqaQhmSASk3fVhbN9DCgq7Cf9/BElqFXij/R6VHoDk4mO6+yKb7E6+Q
+         zpHXBNPZNN3OVjj0w/2dlYX5kF4MP2HsoxZzKGnc/lyeYOf+PHhlTuYDlzF/BS7v5b3P
+         U544E37IVJSzzq70WmQnBnRDJhkxmc/nquRsIoxZ4uq6wDMlAb4cEp5zycrplOHqcPlV
+         52Ci5AbV3cOpG5OuT6Odm/1zEDTNIwaYvvWlliNG55/tGRg+I461008rJB62uv15AGj8
+         GpxtI69VnEbtLh7b99MUdXjM30dB4oCK8Rg1rdaoaSGUdarbwMlrD0zaQo9dHXRMYZI2
+         fDog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703454029; x=1704058829;
+        d=1e100.net; s=20230601; t=1703454245; x=1704059045;
         h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=0Ze3dFp7nuwLIlYyxkNcxvwY2+LEPIxqYIZFYJMGB88=;
-        b=ZrGAc/KllI/wKUPoVwzVTWxagnCFMzc4VZe1oyvhfnHqVbA56DztkOE6vYz+VDpJSs
-         kQkuyZvykyQxp9UTwIJQS1nfUbQ+p9Im5zFqU5cZpOO34Ey0mCssOpFEt/iSTVo1tuzC
-         Ptf6DT67P/G6AATI66H2L/N08UOlk6keepuicmS6cae4erNVSVI5Vk5d5iX27J7Sn01n
-         jUumQLcSHOPuWOZ9Eb/aa/Atx3HQ3uU/6v8vaOo17BcLbKVtkAJEajppRSc5/sVyKnkF
-         puFeEpYobEpEjIKWuBE9mjEExvXNATC0XTajTHvPN1kSRpZpjGWIJOrNHxZt936iFXZf
-         9QuQ==
-X-Gm-Message-State: AOJu0YzG5Pk/FmaQjwFrsErZk0nUJftbqVvvzR1QN58+q9/HqDUZwKXk
-	HihgZS5csM47bm+FA4F2yztYJfw7oNq+
-X-Google-Smtp-Source: AGHT+IGVjH+txTkfFSMsBbhv6Zq0xwdPACuwyfbDHigrPlypESjKlpkGed7PeZwM+hfx5XjzT8YDrA==
-X-Received: by 2002:a05:6e02:492:b0:35f:addf:c08e with SMTP id b18-20020a056e02049200b0035faddfc08emr371465ils.19.1703454028683;
-        Sun, 24 Dec 2023 13:40:28 -0800 (PST)
+        bh=WCfzVP8j8LySAgZKEW6wfy9xuAGJ9Ouy6ckQlduRZH0=;
+        b=o4eNI+PydIIvDtQWiTDWrjGVh8fSEDpkA16A4C6uUTf4+jLyjy0orXPpH4aRGBpzFQ
+         B5Ya8RQgcnBprAgwdMAflkhobPylTk7MIyakq3LN2+uHsF++QA7gqoEslh83pUh2/YbV
+         QujlSuzCSvVJvStIrSQDiicdlZerxaAtkQwzbb1zyF39lhbxSlgAgR5/hfEl0o2Ku268
+         1bCOLskaF1Ni2Qyb9MYSoe6Gzw3+Vy5co243biddcHLnM7dU3jEkfsZsrxi3m6grbV07
+         0IsXKQU9Zcd0jhlNYSRqJMNsvJXpHp2QL75V8peV0bjTYj3XRBXvtqdvmrguyliwq3A5
+         sqbw==
+X-Gm-Message-State: AOJu0YwLla3SwbHClnMqD0nCjKZEeZuTVzxzHhSn7xdIWiIf72yN0z+p
+	CDP3xnyq5fdruL38vMp7IWJwutIZ+Kqd
+X-Google-Smtp-Source: AGHT+IHfKZUme1UezcYWHyTRRlZSLSoThXV3/HhZuf4mQ55yUvSKSE3jgK8NmLNN9oMH6ocZqVCboQ==
+X-Received: by 2002:a05:6e02:1786:b0:35f:e24a:36f7 with SMTP id y6-20020a056e02178600b0035fe24a36f7mr373370ilu.3.1703454245075;
+        Sun, 24 Dec 2023 13:44:05 -0800 (PST)
 Received: from [2620:0:1008:15:c723:e11e:854b:ac88] ([2620:0:1008:15:c723:e11e:854b:ac88])
-        by smtp.gmail.com with ESMTPSA id w22-20020a634756000000b005cd945c0399sm6737737pgk.80.2023.12.24.13.40.27
+        by smtp.gmail.com with ESMTPSA id n9-20020a056a000d4900b006d9a0c6ce2csm2974325pfv.54.2023.12.24.13.44.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Dec 2023 13:40:27 -0800 (PST)
-Date: Sun, 24 Dec 2023 13:40:27 -0800 (PST)
+        Sun, 24 Dec 2023 13:44:04 -0800 (PST)
+Date: Sun, 24 Dec 2023 13:44:03 -0800 (PST)
 From: David Rientjes <rientjes@google.com>
 To: Pasha Tatashin <pasha.tatashin@soleen.com>
 cc: akpm@linux-foundation.org, alim.akhtar@samsung.com, alyssa@rosenzweig.io, 
@@ -58,11 +58,10 @@ cc: akpm@linux-foundation.org, alim.akhtar@samsung.com, alyssa@rosenzweig.io,
     suravee.suthikulpanit@amd.com, sven@svenpeter.dev, 
     thierry.reding@gmail.com, tj@kernel.org, tomas.mudrunka@gmail.com, 
     vdumpa@nvidia.com, wens@csie.org, will@kernel.org, yu-cheng.yu@intel.com
-Subject: Re: [PATCH v2 08/10] iommu/tegra-smmu: use page allocation function
- provided by iommu-pages.h
-In-Reply-To: <20231130201504.2322355-9-pasha.tatashin@soleen.com>
-Message-ID: <2b7e2912-4be7-4b24-ee56-0378a3ac1d3d@google.com>
-References: <20231130201504.2322355-1-pasha.tatashin@soleen.com> <20231130201504.2322355-9-pasha.tatashin@soleen.com>
+Subject: Re: [PATCH v2 10/10] iommu: account IOMMU allocated memory
+In-Reply-To: <CA+CK2bD0Wz8mzB_BGKEYKCHRJKKVwr0CPK7OOC0tD_Sxi5Rp5g@mail.gmail.com>
+Message-ID: <b5b98667-06aa-8330-10f7-8dba3ac0566a@google.com>
+References: <20231130201504.2322355-1-pasha.tatashin@soleen.com> <20231130201504.2322355-11-pasha.tatashin@soleen.com> <c0d23d3e-39e6-57af-fd38-eb1b885d7da4@google.com> <CA+CK2bD0Wz8mzB_BGKEYKCHRJKKVwr0CPK7OOC0tD_Sxi5Rp5g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,11 +70,44 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 
-On Thu, 30 Nov 2023, Pasha Tatashin wrote:
+On Fri, 15 Dec 2023, Pasha Tatashin wrote:
 
-> Convert iommu/tegra-smmu.c to use the new page allocation functions
-> provided in iommu-pages.h.
+> > > diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
+> > > index 3f85254f3cef..e004e05a7cde 100644
+> > > --- a/Documentation/admin-guide/cgroup-v2.rst
+> > > +++ b/Documentation/admin-guide/cgroup-v2.rst
+> > > @@ -1418,7 +1418,7 @@ PAGE_SIZE multiple when read back.
+> > >         sec_pagetables
+> > >               Amount of memory allocated for secondary page tables,
+> > >               this currently includes KVM mmu allocations on x86
+> > > -             and arm64.
+> > > +             and arm64 and IOMMU page tables.
+> >
+> > Hmm, if existing users are parsing this field and alerting when it exceeds
+> > an expected value (a cloud provider, let's say), is it safe to add in a
+> > whole new set of page tables?
+> >
+> > I understand the documentation allows for it, but I think potential impact
+> > on userspace would be more interesting.
 > 
-> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> Hi David,
+> 
+> This is something that was discussed at LPC'23. I also was proposing a
+> separate counter for iommu page tables, but it was noted that we
+> specifically have sec_pagetables called this way to include all non
+> regular CPU page tables, and we should therefore account for them
+> together.
+> 
+> Please also see this discussion from the previous version of this patch series:
+> https://lore.kernel.org/all/CAJD7tkb1FqTqwONrp2nphBDkEamQtPCOFm0208H3tp0Gq2OLMQ@mail.gmail.com/
+> 
+
+Gotcha, I think that makes sense.  When sec_pagetables was introduced, I 
+can understand the need to account for non-primary pagetables separately 
+because of the long-standing behavior.  In that sense, sec_pagetables 
+becomes a dumping ground for "all other page tables" which IOMMU would 
+naturally include.
+
+So this looks good to me.
 
 Acked-by: David Rientjes <rientjes@google.com>
