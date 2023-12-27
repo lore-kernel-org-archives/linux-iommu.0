@@ -1,115 +1,117 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2066.outbound.protection.outlook.com [40.107.92.66])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D25647F72
-	for <iommu@lists.linux.dev>; Wed, 27 Dec 2023 20:58:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA2CC49F6F
+	for <iommu@lists.linux.dev>; Wed, 27 Dec 2023 23:31:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="eFv5YW7b"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Q1iuGMQhDmqNplVv3qQhxLxil8+fiO/JvnUEGHudV57I47pTjVryLrV8XF3uaVOqkdiWKeebyA6x45V/aryGkvwqfGQEr4BakO5JyGDFskmk5n52o1WX/CIO+um7k2LIeN5C4jBGm4eQnwGVZ1QDdTOtq1HShiVmW2sDuEEzRNk2p/P0PZymP8R3ebddN49iGiGVFHdUIs/o96mJ2fCOUrbbEoVxtTpeSMsbPC6QJx41fZ5eaXEK16bVzct3dpicbFxxp7PKuJfnrKez3h7zcmjHdRdWEaBeFCaiuydHXDEXHwa/FXOj+HhAk+GNLeQMCfPRiV5K6zTeXlDxaTmpfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lWfHZhRNNoK050z3FabuK22xbGjyx5w/opmiAJflg50=;
- b=j6pN1Krv1k6ZBCMVN4MVcgnRPzeLqkAXp4dzlv8L4nELFxi4pMewT/AfOFw+KR7dgdUsC3BZqNcxyf37vfz6i1fgKpZhaWzoJgsVBiW4tikon9BJmGA6xZs+NEsF7GGCFaJp4mV5DZYsx9xXCzYfALxH4CNl8/eSHWb/Yl0Ft5F6oAA5Pa/e5JyKzzYCkLqf2queEOje3uEHhUQHBjBXJNgW26vOkkqaX2ZezGvOhQKoYlPpa0s7cfSr2vkGPG7IijrbKRVpo4YglK5wvqwkwqFfEtkcu3RhgaOFyJH3aICzRSOtbK+GuSVGU48ynga503PiU+Y5Ts9gR4rhW0JcVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lWfHZhRNNoK050z3FabuK22xbGjyx5w/opmiAJflg50=;
- b=eFv5YW7bD5bEsuzYeJ1su43ZUuNk0HP6A8dgk3pm1iVwvfLJNUDEfxFwhJHSoU/aFaMWITtdkH4TlrmMedH41V/R9WshJ7AMZn+xKlPVgEhR8BUrkBIceRrvW1OFTB9bGaMwyxCWW+nBFBvDL4wTB6Z8kYRMz9CXkxdbSjnegrT/a+5e8ibD/FSYnoFUkxgJxyhPEiRxH8kU4ds9K8MFjGniGdjwc1iF6UMzwEwN0CZczGs/i57oaS24EGB8GD4fPfoLaxmTwq69oMWRODITzI9xyYtIrq/uUAsWY5Z+QsQSi/fX6xv5ztG0Xt8SmrE9gIbBUlqbXeFoBRnZtHsGqg==
-Received: from BL0PR02CA0136.namprd02.prod.outlook.com (2603:10b6:208:35::41)
- by LV3PR12MB9354.namprd12.prod.outlook.com (2603:10b6:408:211::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7113.27; Wed, 27 Dec
- 2023 20:58:37 +0000
-Received: from BL6PEPF0001AB52.namprd02.prod.outlook.com
- (2603:10b6:208:35:cafe::dd) by BL0PR02CA0136.outlook.office365.com
- (2603:10b6:208:35::41) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7135.20 via Frontend
- Transport; Wed, 27 Dec 2023 20:58:37 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- BL6PEPF0001AB52.mail.protection.outlook.com (10.167.241.4) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7135.14 via Frontend Transport; Wed, 27 Dec 2023 20:58:36 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 27 Dec
- 2023 12:58:17 -0800
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 27 Dec
- 2023 12:58:16 -0800
-Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Wed, 27 Dec 2023 12:58:14 -0800
-Date: Wed, 27 Dec 2023 12:58:12 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>
-CC: <joro@8bytes.org>, <alex.williamson@redhat.com>, <jgg@nvidia.com>,
-	<kevin.tian@intel.com>, <robin.murphy@arm.com>, <baolu.lu@linux.intel.com>,
-	<cohuck@redhat.com>, <eric.auger@redhat.com>, <kvm@vger.kernel.org>,
-	<mjrosato@linux.ibm.com>, <chao.p.peng@linux.intel.com>,
-	<yi.y.sun@linux.intel.com>, <peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<zhenzhong.duan@intel.com>, <joao.m.martins@oracle.com>,
-	<xin.zeng@intel.com>, <yan.y.zhao@intel.com>, <j.granados@samsung.com>
-Subject: Re: [PATCH v8 00/10] Add iommufd nesting (part 2/2)
-Message-ID: <ZYyP5OXxsIjIzhKt@Asurada-Nvidia>
-References: <20231227161354.67701-1-yi.l.liu@intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PwjEgEGk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1703719911; x=1735255911;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=sx4ii87qo8dLRfnk777qZjzpLyvbTgoLski5VtRe4j8=;
+  b=PwjEgEGkFis8rP+1vDY5/HfP0hH+FvnUfTUdcrzpNHW0SeEtHGxx0wbw
+   M15xeBNClhTdCr8KNFMshSCvTYXfyOYxhDkEaMIzdkQVGmLoW5h7YVzes
+   UdqDxZ0RiLQteNQ/bGjibaolMPnK5OWW2LT23rrN+wg6ooHye5dvdB6nG
+   j2NzbZaLw+E7N3MI4zGPh8zLXMPQtKVbKXyTnfocOq8iwJwRWqQSm/8DK
+   IEHCpY3QmP4iKyOMBMOw29rumxCPpdwDQNLCCblva7NvgM/m367eu2PRA
+   W8mMQMVZtBBOwrMmTXR0yAuFdwHIVgahsMI0NzfKBiLxjs+eDwMn8KwWU
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10936"; a="3576036"
+X-IronPort-AV: E=Sophos;i="6.04,310,1695711600"; 
+   d="scan'208";a="3576036"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Dec 2023 15:31:42 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.04,310,1695711600"; 
+   d="scan'208";a="20079157"
+Received: from meijunzh-mobl.ccr.corp.intel.com (HELO [10.249.169.31]) ([10.249.169.31])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Dec 2023 15:31:39 -0800
+Message-ID: <64c77298-dd3e-4102-a9d3-0433708d33ac@linux.intel.com>
+Date: Thu, 28 Dec 2023 07:31:35 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20231227161354.67701-1-yi.l.liu@intel.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB52:EE_|LV3PR12MB9354:EE_
-X-MS-Office365-Filtering-Correlation-Id: c434ebd3-9b35-4967-8ff0-08dc071e9876
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	iSAjYm/AbOB7Or5C8oEk7/aw9hzJ9i6zfuZ/zeUotzfTpzCZMTiL4ugTNPF96nJ189xtmh4iXwC6/e/RsLpIzdJma9MYo0yw693WklK1uMNkaGcsdgyVqdNpTXGKu5y+k6I7Hk9c0qJtl+Mv0IH0ppv3/1ghfzCcUI1q7KUNeZvWRd/SbK/9kedVSkCXX+Ilo9kp5ER01QVpys3N9csgbYbE6LYqgZqRwWZs3iRZ0Fh1OEEDZWWwrv+0tzU2kX5mFY/Plgm+ecU1j3wV9tgAnza0wLnUxdz1iT684EOJKCS7HPWjMDNbmTK6U+NyY5cQSatvEc/9c5uN8sjWHCTc9UXRDiODDtuL71dEKP8B6RiMQYfVLk9XCsho+er9W77pKeSUmrvMwocMWwfJcMWvkT5GpGjNJapxCvp+iCl7844GNjDIo+EIcd0xL2+zkDnllJs6kZIGRanYNONAgHoLM1hCNye1G/YM+W++P10nsUX50KRWjjIF3olRhPEFG4raJD19YxgQCgB6nNUvfG6vDfC6z27poNwixua8Yt23CMmPCMbDCIh+/stBuj3KF99WA9CKODjSSkost4SskSyJkVMo9Mbc+XP+8SFCoWf8Ggf3e8fRqsv/1LvsgMClbR8LjpxrF8fgZR872gMSDp9od7dv3IwmN4nCOBl6rpk9yJx2isrz+VP+IvViGdv9tMo8N4X0rNP+b9751YfzVy3U0E9dhMD7ytVghyI0enqtYSBUL9g23/K4Fjm/lfqhxOLlkNNimg+K9zvuXO3Z2IngOh4WChP09OgXvoCptYzNLTw=
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(346002)(376002)(136003)(39860400002)(396003)(230922051799003)(1800799012)(82310400011)(186009)(64100799003)(451199024)(46966006)(36840700001)(40470700004)(40480700001)(9686003)(83380400001)(36860700001)(966005)(33716001)(356005)(7636003)(336012)(70206006)(70586007)(316002)(6916009)(82740400003)(54906003)(86362001)(478600001)(47076005)(40460700003)(55016003)(426003)(8936002)(26005)(8676002)(4326008)(558084003)(7416002)(2906002)(5660300002)(41300700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Dec 2023 20:58:36.6213
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c434ebd3-9b35-4967-8ff0-08dc071e9876
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF0001AB52.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9354
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v8 4/5] iommu/vt-d: don't issue device-TLB invalidate
+ request when device is disconnected
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: bhelgaas@google.com, baolu.lu@linux.intel.com, dwmw2@infradead.org,
+ will@kernel.org, robin.murphy@arm.com, lukas@wunner.de,
+ linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20231227131151.GA1499234@bhelgaas>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <20231227131151.GA1499234@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Dec 27, 2023 at 08:13:44AM -0800, Yi Liu wrote:
- 
-> [2] https://github.com/yiliu1765/iommufd/tree/iommufd_nesting
 
-This branch is still pointing to v7's iommufd_nesting-12212023-yi.
-Likely you should update it to v8's iommufd_nesting-12272023-yi :)
+On 12/27/2023 9:11 PM, Bjorn Helgaas wrote:
+> I suggest using "ATS Invalidate Request" in the subject as well.
+> Otherwise we have to figure out whether "device-TLB invalidate
+> request" is the same as "ATS Invalidate Request".
+>
+> If they are the same, just use the same words.
+>
+> On Tue, Dec 26, 2023 at 09:59:22PM -0500, Ethan Zhao wrote:
+>> Except those aggressive hotplug cases - surprise remove a hotplug device
+>> while its safe removal is requested and handled in process by:
+>>
+>> 1. pull it out directly.
+>> 2. turn off its power.
+>> 3. bring the link down.
+>> 4. just died there that moment.
+>>
+>> etc, in a word, 'gone' or 'disconnected'.
+>>
+>> Mostly are regular normal safe removal and surprise removal unplug.
+>> these hot unplug handling process could be optimized for fix the ATS
+>> invalidation hang issue by calling pci_dev_is_disconnected() in function
+>> devtlb_invalidation_with_pasid() to check target device state to avoid
+>> sending meaningless ATS invalidation request to iommu when device is gone.
+>> (see IMPLEMENTATION NOTE in PCIe spec r6.1 section 10.3.1)
+> Suggest "ATS Invalidate Request", capitalized exactly that way so we
+> know it's a specific name of something defined in the PCIe spec.
+>
+>> For safe removal, device wouldn't be removed untill the whole software
+>> handling process is done, it wouldn't trigger the hard lock up issue
+>> caused by too long ATS invalidation timeout wait. in safe removal path,
+> Ditto.
+>
+> Capitalize "In the safe removal ..." since it starts a new sentence.
+>
+>> device state isn't set to pci_channel_io_perm_failure in
+>> pciehp_unconfigure_device() by checking 'presence' parameter, calling
+>> pci_dev_is_disconnected() in devtlb_invalidation_with_pasid() will return
+>> false there, wouldn't break the function.
+>>
+>> For surprise removal, device state is set to pci_channel_io_perm_failure in
+>> pciehp_unconfigure_device(), means device is already gone (disconnected)
+>> call pci_dev_is_disconnected() in devtlb_invalidation_with_pasid() will
+>> return true to break the function not to send ATS invalidation request to
+> Ditto.
 
-Thanks
-Nic
+Okay.
+
+
+Thanks,
+
+Ethan
+
+>> the disconnected device blindly, thus avoid the further long time waiting
+>> triggers the hard lockup.
+>>
+>> safe removal & surprise removal
+>>
+>> pciehp_ist()
+>>     pciehp_handle_presence_or_link_change()
+>>       pciehp_disable_slot()
+>>         remove_board()
+>>           pciehp_unconfigure_device(presence)
