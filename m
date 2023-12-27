@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6390F4645A
-	for <iommu@lists.linux.dev>; Wed, 27 Dec 2023 16:14:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 310F94655F
+	for <iommu@lists.linux.dev>; Wed, 27 Dec 2023 16:14:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BzvQWq4y"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ecz9Y7L6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1703693643; x=1735229643;
+  t=1703693646; x=1735229646;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=a0MtJfDdMrZSQXPjcVw/ypmtgFbBgW6CUZyjsKPTKtk=;
-  b=BzvQWq4ylseL8HXf1RswmyvgF0l8VR7e15wtV2leCVELn/kZejpDrfmi
-   aI10/IRPg4rvNa4frozSM7C+K7KQOavAw8wiPalLbP1J6C+GnuWOhjiSn
-   r3t/8qMVU8MSA0jipIEeudBdr3Ss60fT7lwcy5zmP7XLhvnxQEo1FsKvn
-   lt1RpqgO1KP3EGGc3rJN1bbZyd+1av2wVpZFzSGrUF+9eoyelNFDWS8iv
-   o+IQUKS2ZbhbttovwhxSYbMEhKS89zg6YZomvOi6wdK6pc+tyPbNYjEjF
-   0aEDtUGEsUvkRI9rfe0MdFF62GS85JC4P2UjDV0mMuXFunFwJ1EIi4ftG
+  bh=w9DQy+hnxhoJ51h3H6W2Kl69R5yaKXv0XDk0dB+JKAk=;
+  b=ecz9Y7L66mNdvRdpPuFM3InANsYjCU3QbztZaVvjt+kvbiWFE/ySXcvV
+   qMprjsmpcUb/bQfLM7jSaWnB6pXbF27Tj2kcDFDEoaSwRuGSoT24KRvyx
+   xV70kOLwvfS6KQ1Nvyt9VsCmtmhS+G3sVfdrpopQXFn2Ow3olXdTixSCN
+   1vy+qIAtqMvwcW0WRXUWsawhy9Q2asTtOhYvpjF3SFgFsqaTMBJ0F7wvO
+   xPT0pgJ5hGafAtzJrqaAANpPJ5ElB+mfwNu455rfXaAzw1cNVDRI/MM/g
+   gKj5fXXW2QPpWE7gi6WTvtPnTe57vVCiEwx+dlEdJWc9TQGRrk9UoPazN
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10936"; a="396186220"
+X-IronPort-AV: E=McAfee;i="6600,9927,10936"; a="396186244"
 X-IronPort-AV: E=Sophos;i="6.04,309,1695711600"; 
-   d="scan'208";a="396186220"
+   d="scan'208";a="396186244"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Dec 2023 08:14:02 -0800
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Dec 2023 08:14:05 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10936"; a="781775196"
+X-IronPort-AV: E=McAfee;i="6600,9927,10936"; a="781775210"
 X-IronPort-AV: E=Sophos;i="6.04,309,1695711600"; 
-   d="scan'208";a="781775196"
+   d="scan'208";a="781775210"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by fmsmga007.fm.intel.com with ESMTP; 27 Dec 2023 08:14:01 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 27 Dec 2023 08:14:04 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	alex.williamson@redhat.com,
@@ -59,9 +59,9 @@ Cc: cohuck@redhat.com,
 	xin.zeng@intel.com,
 	yan.y.zhao@intel.com,
 	j.granados@samsung.com
-Subject: [PATCH v8 03/10] iommu: Add iommu_copy_struct_from_user_array helper
-Date: Wed, 27 Dec 2023 08:13:47 -0800
-Message-Id: <20231227161354.67701-4-yi.l.liu@intel.com>
+Subject: [PATCH v8 05/10] iommufd/selftest: Add IOMMU_TEST_OP_MD_CHECK_IOTLB test op
+Date: Wed, 27 Dec 2023 08:13:49 -0800
+Message-Id: <20231227161354.67701-6-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20231227161354.67701-1-yi.l.liu@intel.com>
 References: <20231227161354.67701-1-yi.l.liu@intel.com>
@@ -75,106 +75,135 @@ Content-Transfer-Encoding: 8bit
 
 From: Nicolin Chen <nicolinc@nvidia.com>
 
-Wrap up the data pointer/num sanity and __iommu_copy_struct_from_user
-call for iommu drivers to copy driver specific data at a specific location
-in the struct iommu_user_data_array, and iommu_respond_struct_to_user_array()
-to copy response to a specific location in the struct iommu_user_data_array.
-
-And expect it to be used in cache_invalidate_user ops for example.
+Allow to test whether IOTLB has been invalidated or not.
 
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-Co-developed-by: Yi Liu <yi.l.liu@intel.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- include/linux/iommu.h | 74 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 74 insertions(+)
+ drivers/iommu/iommufd/iommufd_test.h          |  5 ++++
+ drivers/iommu/iommufd/selftest.c              | 26 +++++++++++++++++++
+ tools/testing/selftests/iommu/iommufd.c       |  4 +++
+ tools/testing/selftests/iommu/iommufd_utils.h | 24 +++++++++++++++++
+ 4 files changed, 59 insertions(+)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 93c0d12dd047..c3434c9eaa6d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -341,6 +341,80 @@ static inline int __iommu_copy_struct_from_user(
- 				      sizeof(*kdst),                      \
- 				      offsetofend(typeof(*kdst), min_last))
+diff --git a/drivers/iommu/iommufd/iommufd_test.h b/drivers/iommu/iommufd/iommufd_test.h
+index 2eef5afde711..1cedd6b5ba2b 100644
+--- a/drivers/iommu/iommufd/iommufd_test.h
++++ b/drivers/iommu/iommufd/iommufd_test.h
+@@ -21,6 +21,7 @@ enum {
+ 	IOMMU_TEST_OP_ACCESS_REPLACE_IOAS,
+ 	IOMMU_TEST_OP_MOCK_DOMAIN_FLAGS,
+ 	IOMMU_TEST_OP_DIRTY,
++	IOMMU_TEST_OP_MD_CHECK_IOTLB,
+ };
  
-+/**
-+ * __iommu_copy_struct_from_user_array - Copy iommu driver specific user space
-+ *                                       data from an iommu_user_data_array
-+ * @dst_data: Pointer to an iommu driver specific user data that is defined in
-+ *            include/uapi/linux/iommufd.h
-+ * @src_array: Pointer to a struct iommu_user_data_array for a user space array
-+ * @data_type: The data type of the @dst_data. Must match with @src_array.type
-+ * @index: Index to the location in the array to copy user data from
-+ * @data_len: Length of current user data structure, i.e. sizeof(struct _dst)
-+ * @min_len: Initial length of user data structure for backward compatibility.
-+ *           This should be offsetofend using the last member in the user data
-+ *           struct that was initially added to include/uapi/linux/iommufd.h
-+ */
-+static inline int
-+__iommu_copy_struct_from_user_array(void *dst_data,
-+				    const struct iommu_user_data_array *src_array,
-+				    unsigned int data_type, unsigned int index,
-+				    size_t data_len, size_t min_len)
+ enum {
+@@ -121,6 +122,10 @@ struct iommu_test_cmd {
+ 			__aligned_u64 uptr;
+ 			__aligned_u64 out_nr_dirty;
+ 		} dirty;
++		struct {
++			__u32 id;
++			__u32 iotlb;
++		} check_iotlb;
+ 	};
+ 	__u32 last;
+ };
+diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+index ebc6c15abf67..9528528cab27 100644
+--- a/drivers/iommu/iommufd/selftest.c
++++ b/drivers/iommu/iommufd/selftest.c
+@@ -853,6 +853,28 @@ static int iommufd_test_md_check_refs(struct iommufd_ucmd *ucmd,
+ 	return 0;
+ }
+ 
++static int iommufd_test_md_check_iotlb(struct iommufd_ucmd *ucmd,
++				       u32 mockpt_id, unsigned int iotlb_id,
++				       u32 iotlb)
 +{
-+	struct iommu_user_data src_data;
++	struct mock_iommu_domain_nested *mock_nested;
++	struct iommufd_hw_pagetable *hwpt;
++	int rc = 0;
 +
-+	if (WARN_ON(!src_array || index >= src_array->entry_num))
-+		return -EINVAL;
-+	if (!src_array->entry_num)
-+		return -EINVAL;
-+	src_data.uptr = src_array->uptr + src_array->entry_len * index;
-+	src_data.len = src_array->entry_len;
-+	src_data.type = src_array->type;
++	hwpt = get_md_pagetable_nested(ucmd, mockpt_id, &mock_nested);
++	if (IS_ERR(hwpt))
++		return PTR_ERR(hwpt);
 +
-+	return __iommu_copy_struct_from_user(dst_data, &src_data, data_type,
-+					     data_len, min_len);
++	mock_nested = container_of(hwpt->domain,
++				   struct mock_iommu_domain_nested, domain);
++
++	if (iotlb_id > MOCK_NESTED_DOMAIN_IOTLB_ID_MAX ||
++	    mock_nested->iotlb[iotlb_id] != iotlb)
++		rc = -EINVAL;
++	iommufd_put_object(ucmd->ictx, &hwpt->obj);
++	return rc;
 +}
 +
-+/**
-+ * iommu_copy_struct_from_user_array - Copy iommu driver specific user space
-+ *                                     data from an iommu_user_data_array
-+ * @kdst: Pointer to an iommu driver specific user data that is defined in
-+ *        include/uapi/linux/iommufd.h
-+ * @user_array: Pointer to a struct iommu_user_data_array for a user space
-+ *              array
-+ * @data_type: The data type of the @kdst. Must match with @user_array->type
-+ * @index: Index to the location in the array to copy user data from
-+ * @min_last: The last memember of the data structure @kdst points in the
-+ *            initial version.
-+ * Return 0 for success, otherwise -error.
-+ */
-+#define iommu_copy_struct_from_user_array(kdst, user_array, data_type,   \
-+					  index, min_last)                \
-+	__iommu_copy_struct_from_user_array(kdst, user_array, data_type, \
-+					    index, sizeof(*kdst),        \
-+					    offsetofend(typeof(*kdst),   \
-+							min_last))
+ struct selftest_access {
+ 	struct iommufd_access *access;
+ 	struct file *file;
+@@ -1334,6 +1356,10 @@ int iommufd_test(struct iommufd_ucmd *ucmd)
+ 		return iommufd_test_md_check_refs(
+ 			ucmd, u64_to_user_ptr(cmd->check_refs.uptr),
+ 			cmd->check_refs.length, cmd->check_refs.refs);
++	case IOMMU_TEST_OP_MD_CHECK_IOTLB:
++		return iommufd_test_md_check_iotlb(ucmd, cmd->id,
++						   cmd->check_iotlb.id,
++						   cmd->check_iotlb.iotlb);
+ 	case IOMMU_TEST_OP_CREATE_ACCESS:
+ 		return iommufd_test_create_access(ucmd, cmd->id,
+ 						  cmd->create_access.flags);
+diff --git a/tools/testing/selftests/iommu/iommufd.c b/tools/testing/selftests/iommu/iommufd.c
+index 6ed328c863c4..c8763b880a16 100644
+--- a/tools/testing/selftests/iommu/iommufd.c
++++ b/tools/testing/selftests/iommu/iommufd.c
+@@ -330,6 +330,10 @@ TEST_F(iommufd_ioas, alloc_hwpt_nested)
+ 					   &nested_hwpt_id[1],
+ 					   IOMMU_HWPT_DATA_SELFTEST, &data,
+ 					   sizeof(data));
++		test_cmd_hwpt_check_iotlb_all(nested_hwpt_id[0],
++					      IOMMU_TEST_IOTLB_DEFAULT);
++		test_cmd_hwpt_check_iotlb_all(nested_hwpt_id[1],
++					      IOMMU_TEST_IOTLB_DEFAULT);
+ 
+ 		/* Negative test: a nested hwpt on top of a nested hwpt */
+ 		test_err_hwpt_alloc_nested(EINVAL, self->device_id,
+diff --git a/tools/testing/selftests/iommu/iommufd_utils.h b/tools/testing/selftests/iommu/iommufd_utils.h
+index ad9202335656..fe0a0f566b67 100644
+--- a/tools/testing/selftests/iommu/iommufd_utils.h
++++ b/tools/testing/selftests/iommu/iommufd_utils.h
+@@ -195,6 +195,30 @@ static int _test_cmd_hwpt_alloc(int fd, __u32 device_id, __u32 pt_id,
+ 		     _test_cmd_hwpt_alloc(self->fd, device_id, pt_id, flags, \
+ 					  hwpt_id, data_type, data, data_len))
+ 
++#define test_cmd_hwpt_check_iotlb(hwpt_id, iotlb_id, expected)                 \
++	({                                                                     \
++		struct iommu_test_cmd test_cmd = {                             \
++			.size = sizeof(test_cmd),                              \
++			.op = IOMMU_TEST_OP_MD_CHECK_IOTLB,                    \
++			.id = hwpt_id,                                         \
++			.check_iotlb = {                                       \
++				.id = iotlb_id,                                \
++				.iotlb = expected,                             \
++			},                                                     \
++		};                                                             \
++		ASSERT_EQ(0,                                                   \
++			  ioctl(self->fd,                                      \
++				_IOMMU_TEST_CMD(IOMMU_TEST_OP_MD_CHECK_IOTLB), \
++				&test_cmd));                                   \
++	})
 +
-+/**
-+ * iommu_respond_struct_to_user_array - Copy the response in @ksrc back to
-+ *                                      a specific entry of user array
-+ * @user_array: Pointer to a struct iommu_user_data_array for a user space
-+ *              array
-+ * @index: Index to the location in the array to copy response
-+ * @ksrc: Pointer to kernel structure
-+ * @klen: Length of @ksrc struct
-+ *
-+ * This only copies response of one entry (@index) in @user_array.
-+ */
-+static inline int
-+iommu_respond_struct_to_user_array(const struct iommu_user_data_array *array,
-+				   unsigned int index, void *ksrc, size_t klen)
-+{
-+	if (copy_to_user(array->uptr + array->entry_len * index,
-+			 ksrc, min_t(size_t, array->entry_len, klen)))
-+		return -EFAULT;
-+	return 0;
-+}
++#define test_cmd_hwpt_check_iotlb_all(hwpt_id, expected)                       \
++	({                                                                     \
++		int i;                                                         \
++		for (i = 0; i < MOCK_NESTED_DOMAIN_IOTLB_NUM; i++)             \
++			test_cmd_hwpt_check_iotlb(hwpt_id, i, expected);       \
++	})
 +
- /**
-  * struct iommu_ops - iommu ops and capabilities
-  * @capable: check capability
+ static int _test_cmd_access_replace_ioas(int fd, __u32 access_id,
+ 					 unsigned int ioas_id)
+ {
 -- 
 2.34.1
 
