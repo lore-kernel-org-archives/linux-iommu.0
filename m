@@ -1,184 +1,264 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2056.outbound.protection.outlook.com [40.107.95.56])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE05645C06
-	for <iommu@lists.linux.dev>; Wed, 27 Dec 2023 15:46:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B212F46421
+	for <iommu@lists.linux.dev>; Wed, 27 Dec 2023 16:13:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="DQlAXRZN"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WfmzSyihbrewbMYaiA3j7rheLS/CrE1GGJVVKF/2FrYT+xXtRLxZfK1fo8wPE/O2RaPevS3sBxr3yOvujJexwfeAXqhy62sQ0+IBsYX0OMT0t8VXP/DcKQ6917nMOG77KUoxDRduGrezq9RZgntnolLjdtaQXFTbGmlaC6JDEKNNXpBLPgvfK4Sv8Fjbxu5YL+KCyLj4Ktj2K+Dmu9XAF9ud2cZHWVnOvxgamNGdm0vZjNta05Fx7154h6ZKEG6Vlht6ZGRGh8SUeq1326ln2Ko78qYBL5D35M6hp8ClVN6iw/qTKSri5eSXNqz2FeSv142V4jSsk8s2gZDHxpEHeA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8hsLnFDztnwoyuAl7RbaT6Anz5v1JHDVzciOOQh770A=;
- b=V5rB9a/7MeJDUypJdKYeCXt4pUN7B4LNjE8jlqezQkmi4S3YsB7auYXt018UetRIK9VUvweGTa3b8Lgi3o20xLxjyykXpO5KlJ9Q0KPV2gRTP8PH7Z8YV05YPOvXjWsXwV2R/g5B4UXET5yIKysdSi4LkEgj7n4pyyWkHx3+ihF7NcO6773Fs01vzgh/F/XRB3tG8+rnJG7sNPg4VdGnvZ4QX2f1CYuF55B5Ma3YNd6Ud+XkLo8HPPvqJK2LAxqn/Rp9a7205LYQe+rfD0ilUxNNO5+daBh28HC56coJc+56jYloTjz3HnFvidyidUG8Limnd31/qq9ZRQCV6MTK1A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8hsLnFDztnwoyuAl7RbaT6Anz5v1JHDVzciOOQh770A=;
- b=DQlAXRZNeaA/K8fHcguwTCpT7JpnsxhDTfPzSxdQOGguvn/SSHu03Yq7MYjx3WiqCGclcnh6ZRvW5Ymyz3Jmsa5qllI7Kao/uXMXu5n8MM3z95JB+/yQrv7K299PY+C1qZEJyYRJd2YoyPfqmydHvNmPb0aVokMlQhUIj6H7oTLhX5bf5ZDscHEKBBYW6J8GC2Pgpeg6rMs+LTz63zSJh29LjD3p6xKjcGGOBg6Wfo5DapzucMVAVvt+GRG4gXac57S7ywqvG/ugaGg8iXzXoZsCpXp64tgBDeq5AF08Cn2+qRFpy2Gqfo35cEsWcTEj/uSw+JX3LRAYFOz80imKAw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by IA0PR12MB8908.namprd12.prod.outlook.com (2603:10b6:208:48a::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7113.29; Wed, 27 Dec
- 2023 15:46:49 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::60d4:c1e3:e1aa:8f93%4]) with mapi id 15.20.7113.027; Wed, 27 Dec 2023
- 15:46:49 +0000
-Date: Wed, 27 Dec 2023 11:46:48 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [PATCH 04/19] iommu/arm-smmu-v3: Make STE programming
- independent of the callers
-Message-ID: <20231227154648.GB50406@nvidia.com>
-References: <20231012121616.GF3952@nvidia.com>
- <CAKHBV27G1PLZ5gkYkOOCZdD9waZOZypkWqk4_HSR4XXGFT-+LA@mail.gmail.com>
- <20231018130455.GU3952@nvidia.com>
- <CAKHBV270uJjdj4zeK-NNt+j3TiqoGDdLUQ5uRrLw9PN0ysCDbw@mail.gmail.com>
- <20231020113918.GD3952@nvidia.com>
- <CAKHBV274M-DDD+vJgO-k9s4MF=FLhKajPdphfBVofjyOS3vHbA@mail.gmail.com>
- <CAKHBV24nfdq1q76T+DRQGNYeA-kP7ONnSjDsRFGsQCJVSrSm0w@mail.gmail.com>
- <ZX7xu8jN/rBZ4A/d@nvidia.com>
- <CAKHBV26CRC8eWMuOk6EZYMHOZoR2FauP=NBazzOiWCmQYEa1vg@mail.gmail.com>
- <CAKHBV27qsgjgwPfn8OpSq30z1w203NDqBZ0s66bPgjp1XDnLOg@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKHBV27qsgjgwPfn8OpSq30z1w203NDqBZ0s66bPgjp1XDnLOg@mail.gmail.com>
-X-ClientProxiedBy: BL0PR02CA0086.namprd02.prod.outlook.com
- (2603:10b6:208:51::27) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F4Pmmh9q"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1703693638; x=1735229638;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xTJgE0p9toUjEJOEic8gw0nB9DFuuWGaGJ4ohPJqXiY=;
+  b=F4Pmmh9qvdq726zmqz/lrCjCYoJd0hw5ZhIFqEn36zuLuIKWzn6RR007
+   QSVeRxlOS2RFynxJIXFrArmo8FAmcctihoH8QUSXa7Vv4TYnKH55i+i78
+   zDE6qwPUkhdCzKsVTAGXZ46gFbhtogjfbI8SV6C5UOC2ZEufMbpoZomLV
+   C4fT/urYIGhickFNSaN3BlUz/BQbbyDiBz5uxx9F3Hf+QI4v9wUxsbtxS
+   xTjHqSHaPUXyh1q9yDzdn/Np+/TcHWDWJvehF9fYuB1rKcpsd8AWhDNJn
+   dRl0qEFFXnFrCIlehm3M0uc0i/W5mStRu22gXWf/x0J7GSIhMiIAZbXyk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10936"; a="396186169"
+X-IronPort-AV: E=Sophos;i="6.04,309,1695711600"; 
+   d="scan'208";a="396186169"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Dec 2023 08:13:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10936"; a="781775173"
+X-IronPort-AV: E=Sophos;i="6.04,309,1695711600"; 
+   d="scan'208";a="781775173"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by fmsmga007.fm.intel.com with ESMTP; 27 Dec 2023 08:13:56 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	alex.williamson@redhat.com,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	robin.murphy@arm.com,
+	baolu.lu@linux.intel.com
+Cc: cohuck@redhat.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	yi.y.sun@linux.intel.com,
+	peterx@redhat.com,
+	jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com,
+	lulu@redhat.com,
+	suravee.suthikulpanit@amd.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com,
+	joao.m.martins@oracle.com,
+	xin.zeng@intel.com,
+	yan.y.zhao@intel.com,
+	j.granados@samsung.com
+Subject: [PATCH v8 00/10] Add iommufd nesting (part 2/2)
+Date: Wed, 27 Dec 2023 08:13:44 -0800
+Message-Id: <20231227161354.67701-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|IA0PR12MB8908:EE_
-X-MS-Office365-Filtering-Correlation-Id: d0ed3447-03e8-47a6-02ce-08dc06f309b3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	o51kNmdmc4mPZNvJDywPVRodCIbcnjF0wWsdWVBljglmhPgNrx3BbngSJi+iltTOJVAX/KqUMrQclv1yK1asO8zTVEVXrxlttEqJ8wX/Qor7OHtcJ6Lb/cb8QXW/GUQoHZaboEKMEJ0iffqyVVngZV1zPZnKTrPYAlIFYceXObevL7aRSbkWUOevorMbLPNUv7Wy+tfB3R2LNiw4TOYNObiElzN/lCJ0hOGAApIXtKPpYfGAj4eTfiMmrq7qboaWKuIIA7QzGCziNNWWc1czHUqRLzeOo2UZ7DShjlrUrjkMZ0nDV8P9eUZxlKXlIyRdbmbvt9RegQCyKIK0ZpEWBLpV1KIoc5DYDKBElUQUn44/0tjGI1FpabGhtorog+kO4X1FlX8XcocrZ2GStkndKwd4srZivVBzQieCUyWIqrnT3VLfmeR8BURuAmsJlom4pOJsoWVmm0ViJvbhwvdApwdNsmtDppQHrdIZ3FeMal291E2t/DLjjXLrhr//lM8chB/ijmg8+p3gq9uQvCYBrXG/K8L5Us2/I2AxllErkEdLyYDh8Xa/4rjxqzljwA9b
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(346002)(136003)(376002)(366004)(39860400002)(230922051799003)(64100799003)(451199024)(186009)(1800799012)(83380400001)(41300700001)(2616005)(26005)(1076003)(107886003)(38100700002)(316002)(54906003)(4326008)(8936002)(8676002)(5660300002)(2906002)(478600001)(6512007)(6506007)(6916009)(66476007)(66556008)(66946007)(6486002)(86362001)(36756003)(33656002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?kbYVSTIhcTspgCE0UyBTmNm0q3+3mmeuZ231Ok5riNaMdEtCfe5ia51kTUCQ?=
- =?us-ascii?Q?qYAKT25lQdn23A3DBvz1G5GLoFIP3qXj/rTO6SArfisfg5mxcpXpgnk9fkFh?=
- =?us-ascii?Q?NGzwdUt/UkOfMmSUJTUbzsKwBuzjccUBNfxsmZoEO/i1Idx2osvezT8BdwOI?=
- =?us-ascii?Q?56w2OofViSv6wKJE3hVc0HkCMOuwoa/oBUCzvnYkzizazn56orGsmmc7AXrf?=
- =?us-ascii?Q?2h2ArjZqpaslx5CDl38DAES9ZcSD4D03TVWSlxvyV78Sz8Sgb6qu17QLq0ya?=
- =?us-ascii?Q?SfpH9ftfUmeA9ltSPzTnjWLy3K0cYCC8Ate7ShYAZFdirhPzeAqbX32+O0a4?=
- =?us-ascii?Q?eYVfusAvTPgzPCWRdE3yL0pMt1mvbe1iMt+0taUryFmb1Jj5GenMu8guJ4MW?=
- =?us-ascii?Q?OvIt3I0Fdmf4RjxLPiLrGpkq/DHhjSE4tWW6RYIXjZ6+cG51//rUIIrcxWTh?=
- =?us-ascii?Q?Gt+oA+a0Ms2XlCimCi2jAue9jG5/unWfW2lGav0H1wl6l9qjTMPrqX1qs0le?=
- =?us-ascii?Q?pETJb/sDi2S7w1QLR/rUMqMaBC8B9jyTlrJG2umBCEAzql39qkJKnO+iAmUw?=
- =?us-ascii?Q?XMZIAoeky6zqu5tKRSZKqmBgfIS+vV1GExQYNmL429PG1OmgARu1n6/rXmlv?=
- =?us-ascii?Q?8GdA1wV19rF+ocCz1n9bGI2TJyBBurxEV9unexIEePvNwg9LRfILlsY/E6pZ?=
- =?us-ascii?Q?KbS52nZwVqM7vVYxav06BHU9M+NpXUGFLpsep/CpyzRPMm1dd7C0ebz13HEF?=
- =?us-ascii?Q?HefpLJTyFP8imFihCme4XAjwIE5nhrLrlt0aM8evFAiYV9lY2xhlwVCQSomx?=
- =?us-ascii?Q?V8eKNvo6tn607vGwlGA1lBwnb2nd9EbAIKGL2p/a/3SSdOtPhMZoAIZTXJPj?=
- =?us-ascii?Q?vaUqiDNvduh0AHjO2mWn+Qq2TMYlLv29y+UyX5ZJYsFi/lph5rdQEjV7C9+1?=
- =?us-ascii?Q?lqOwTmkDUn6DzGJ0aIgldpukgxej5Vs1YDezHjQs0Ctz8AOyUBDoTJNdPuOM?=
- =?us-ascii?Q?TXdlwze/s72MFW9jqmVC0uYxkLMRBbymQXDIGsh5S71Cebtuzsf31t4IqIan?=
- =?us-ascii?Q?KfLw5HNq5TnFa+1H1jQ3Jj5lQ1tYZwKUO2GGzE2q5xkNJqhbkF31yM/PK5VM?=
- =?us-ascii?Q?E+VukelKnijnevEvvZlsF8UlgE7k0Ofz1bdAIZYONs4Zo0gE9XFpfoTCAjU0?=
- =?us-ascii?Q?wZOFMfDZmyejmc8dOiX4ilTXFfBF2suYEWA7YsT8QkatyQ5qKsS7rmu/H59P?=
- =?us-ascii?Q?1zEB42q2cWkALBUr2qrWm5qiocrVg1z2oAacRB9ApXA56aDFhY7Ss7GVr4wL?=
- =?us-ascii?Q?akIHsaYRieksMtUv6DeoAyzDbsjXYP6ksk6Deh4EUvLIUwX8QEnCXN9FpQs4?=
- =?us-ascii?Q?tDUrTRh0wOgw3pnzugq12t74lOq1ObdISR4yfUArHckxcWp26OVOEfCO58cL?=
- =?us-ascii?Q?erSsqYYZRZqBCxURxyDg1a72Tn9MmB6lEH7nubM+/NAN3Ct0tV1xN0TAqwFg?=
- =?us-ascii?Q?WIpKe0YrJ20KpwHOCF1XHLKZgh5KOfmiBxYcBhs66mBI6ozjhJBNjWI3AQ+0?=
- =?us-ascii?Q?fm7NXMe1Kh/ruh2HawQ=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0ed3447-03e8-47a6-02ce-08dc06f309b3
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Dec 2023 15:46:49.0707
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zdk9Q2XK4MT07V+vml9pZmIYJcbTu2X7rkt/IlGLFChVjqBzp/+AJBlL5/A/ou1P
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8908
+Content-Transfer-Encoding: 8bit
 
-On Tue, Dec 19, 2023 at 09:42:27PM +0800, Michael Shavit wrote:
+Nested translation is a hardware feature that is supported by many modern
+IOMMU hardwares. It has two stages (stage-1, stage-2) address translation
+to get access to the physical address. stage-1 translation table is owned
+by userspace (e.g. by a guest OS), while stage-2 is owned by kernel. Changes
+to stage-1 translation table should be followed by an IOTLB invalidation.
 
-> +static void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer,
-> +                                __le64 *cur, const __le64 *target,
-> +                                __le64 *staging_entry)
-> +{
-> +       bool cleanup_sync_required = false;
-> +       u8 entry_qwords_used_diff = 0;
-> +       int i = 0;
-> +
-> +       entry_qwords_used_diff =
-> +               writer->ops.get_used_qword_diff_indexes(cur, target);
-> +       if (WARN_ON_ONCE(entry_qwords_used_diff == 0))
-> +               return;
+Take Intel VT-d as an example, the stage-1 translation table is I/O page
+table. As the below diagram shows, guest I/O page table pointer in GPA
+(guest physical address) is passed to host and be used to perform the stage-1
+address translation. Along with it, modifications to present mappings in the
+guest I/O page table should be followed with an IOTLB invalidation.
 
-A no change update is actually API legal, eg we can set the same
-domain twice in a row. It should just do nothing.
+    .-------------.  .---------------------------.
+    |   vIOMMU    |  | Guest I/O page table      |
+    |             |  '---------------------------'
+    .----------------/
+    | PASID Entry |--- PASID cache flush --+
+    '-------------'                        |
+    |             |                        V
+    |             |           I/O page table pointer in GPA
+    '-------------'
+Guest
+------| Shadow |---------------------------|--------
+      v        v                           v
+Host
+    .-------------.  .------------------------.
+    |   pIOMMU    |  |  FS for GIOVA->GPA     |
+    |             |  '------------------------'
+    .----------------/  |
+    | PASID Entry |     V (Nested xlate)
+    '----------------\.----------------------------------.
+    |             |   | SS for GPA->HPA, unmanaged domain|
+    |             |   '----------------------------------'
+    '-------------'
+Where:
+ - FS = First stage page tables
+ - SS = Second stage page tables
+<Intel VT-d Nested translation>
 
-If the goal is to improve readability I'd split this into smaller
-functions and have the main function look like this:
+This series is based on the first part which was merged [1], this series is to
+add the cache invalidation interface or the userspace to invalidate cache after
+modifying the stage-1 page table. This includes both the iommufd changes and the
+VT-d driver changes.
 
-       compute_used(..)
-       if (hweight8(entry_qwords_used_diff) > 1) {
-             set_v_0(..);
-             set(qword_start=1,qword_end=N);
-	     set(qword_start=0,qword_end=1); // V=1
-       } else if (hweight8(entry_qwords_used_diff) == 1) {
-             set_unused(..);
-	     critical = ffs(..);
-             set(qword_start=critical,qword_end=critical+1);
-             set(qword_start=0,qword_end=N);
-       } else { // hweight8 == 0
-             set(qword_start=0,qword_end=N);
-       }
+Complete code can be found in [2], QEMU could can be found in [3].
 
-Then the three different programming algorithms are entirely clear in
-code. Make the generic set() function skip the sync if nothing
-changed.
+At last, this is a team work together with Nicolin Chen, Lu Baolu. Thanks
+them for the help. ^_^. Look forward to your feedbacks.
 
-> +       if (hweight8(entry_qwords_used_diff) > 1) {
-> +               /*
-> +                * If transitioning to the target entry with a single qword
-> +                * write isn't possible, then we must first transition to an
-> +                * intermediate entry. The intermediate entry may either be an
-> +                * entry that melds bits of the target entry into the current
-> +                * entry without disrupting the hardware, or a breaking entry if
-> +                * a hitless transition to the target is impossible.
-> +                */
-> +
-> +               /*
-> +                * Compute a staging entry that has all the bits currently
-> +                * unused by HW set to their target values, such that comitting
-> +                * it to the entry table woudn't disrupt the hardware.
-> +                */
-> +               memcpy(staging_entry, cur, writer->entry_length);
-> +               writer->ops.set_unused_bits(staging_entry, target);
-> +
-> +               entry_qwords_used_diff =
-> +                       writer->ops.get_used_qword_diff_indexes(staging_entry,
-> +                                                               target);
+[1] https://lore.kernel.org/linux-iommu/20231026044216.64964-1-yi.l.liu@intel.com/ - merged
+[2] https://github.com/yiliu1765/iommufd/tree/iommufd_nesting
+[3] https://github.com/yiliu1765/qemu/tree/zhenzhong/wip/iommufd_nesting_rfcv1
 
-Put the number qwords directly in the ops struct and don't make this
-an op.  Above will need N=number of qwords as well.
+Change log:
 
-Regrads,
-Jason
+v8:
+ - Pass invalidation hint to the cache invalidation helper in the cache_invalidate_user
+   op path (Kevin)
+ - Move the devTLB invalidation out of info->iommu loop (Kevin, Weijiang)
+ - Clear *fault per restart in qi_submit_sync() to avoid acroos submission error
+   accumulation. (Kevin)
+ - Define the vtd cache invalidation uapi structure in separate patch (Kevin)
+ - Rename inv_error to be hw_error (Kevin)
+ - Rename 'reqs_uptr', 'req_type', 'req_len' and 'req_num' to be 'data_uptr',
+   'data_type', "entry_len' and 'entry_num" (Kevin)
+ - Allow user to set IOMMU_TEST_INVALIDATE_FLAG_ALL and IOMMU_TEST_INVALIDATE_FLAG_TRIGGER_ERROR
+   in the same time (Kevin)
+
+v7: https://lore.kernel.org/linux-iommu/20231221153948.119007-1-yi.l.liu@intel.com/
+ - Remove domain->ops->cache_invalidate_user check in hwpt alloc path due
+   to failure in bisect (Baolu)
+ - Remove out_driver_error_code from struct iommu_hwpt_invalidate after
+   discussion in v6. Should expect per-entry error code.
+ - Rework the selftest cache invalidation part to report a per-entry error
+ - Allow user to pass in an empty array to have a try-and-fail mechanism for
+   user to check if a given req_type is supported by the kernel (Jason)
+ - Define a separate enum type for cache invalidation data (Jason)
+ - Fix the IOMMU_HWPT_INVALIDATE to always update the req_num field before
+   returning (Nicolin)
+ - Merge the VT-d nesting part 2/2
+   https://lore.kernel.org/linux-iommu/20231117131816.24359-1-yi.l.liu@intel.com/
+   into this series to avoid defining empty enum in the middle of the series.
+   The major difference is adding the VT-d related invalidation uapi structures
+   together with the generic data structures in patch 02 of this series.
+ - VT-d driver was refined to report ICE/ITE error from the bottom cache
+   invalidation submit helpers, hence the cache_invalidate_user op could
+   report such errors via the per-entry error field to user. VT-d driver
+   will not stop the invalidation array walking due to the ICE/ITE errors
+   as such errors are defined by VT-d spec, userspace should be able to
+   handle it and let the real user (say Virtual Machine) know about it.
+   But for other errors like invalid uapi data structure configuration,
+   memory copy failure, such errors should stop the array walking as it
+   may have more issues if go on.
+ - Minor fixes per Jason and Kevin's review comments
+
+v6: https://lore.kernel.org/linux-iommu/20231117130717.19875-1-yi.l.liu@intel.com/
+ - No much change, just rebase on top of 6.7-rc1 as part 1/2 is merged
+
+v5: https://lore.kernel.org/linux-iommu/20231020092426.13907-1-yi.l.liu@intel.com/#t
+ - Split the iommufd nesting series into two parts of alloc_user and
+   invalidation (Jason)
+ - Split IOMMUFD_OBJ_HW_PAGETABLE to IOMMUFD_OBJ_HWPT_PAGING/_NESTED, and
+   do the same with the structures/alloc()/abort()/destroy(). Reworked the
+   selftest accordingly too. (Jason)
+ - Move hwpt/data_type into struct iommu_user_data from standalone op
+   arguments. (Jason)
+ - Rename hwpt_type to be data_type, the HWPT_TYPE to be HWPT_ALLOC_DATA,
+   _TYPE_DEFAULT to be _ALLOC_DATA_NONE (Jason, Kevin)
+ - Rename iommu_copy_user_data() to iommu_copy_struct_from_user() (Kevin)
+ - Add macro to the iommu_copy_struct_from_user() to calculate min_size
+   (Jason)
+ - Fix two bugs spotted by ZhaoYan
+
+v4: https://lore.kernel.org/linux-iommu/20230921075138.124099-1-yi.l.liu@intel.com/
+ - Separate HWPT alloc/destroy/abort functions between user-managed HWPTs
+   and kernel-managed HWPTs
+ - Rework invalidate uAPI to be a multi-request array-based design
+ - Add a struct iommu_user_data_array and a helper for driver to sanitize
+   and copy the entry data from user space invalidation array
+ - Add a patch fixing TEST_LENGTH() in selftest program
+ - Drop IOMMU_RESV_IOVA_RANGES patches
+ - Update kdoc and inline comments
+ - Drop the code to add IOMMU_RESV_SW_MSI to kernel-managed HWPT in nested translation,
+   this does not change the rule that resv regions should only be added to the
+   kernel-managed HWPT. The IOMMU_RESV_SW_MSI stuff will be added in later series
+   as it is needed only by SMMU so far.
+
+v3: https://lore.kernel.org/linux-iommu/20230724110406.107212-1-yi.l.liu@intel.com/
+ - Add new uAPI things in alphabetical order
+ - Pass in "enum iommu_hwpt_type hwpt_type" to op->domain_alloc_user for
+   sanity, replacing the previous op->domain_alloc_user_data_len solution
+ - Return ERR_PTR from domain_alloc_user instead of NULL
+ - Only add IOMMU_RESV_SW_MSI to kernel-managed HWPT in nested translation (Kevin)
+ - Add IOMMU_RESV_IOVA_RANGES to report resv iova ranges to userspace hence
+   userspace is able to exclude the ranges in the stage-1 HWPT (e.g. guest I/O
+   page table). (Kevin)
+ - Add selftest coverage for the new IOMMU_RESV_IOVA_RANGES ioctl
+ - Minor changes per Kevin's inputs
+
+v2: https://lore.kernel.org/linux-iommu/20230511143844.22693-1-yi.l.liu@intel.com/
+ - Add union iommu_domain_user_data to include all user data structures to avoid
+   passing void * in kernel APIs.
+ - Add iommu op to return user data length for user domain allocation
+ - Rename struct iommu_hwpt_alloc::data_type to be hwpt_type
+ - Store the invalidation data length in iommu_domain_ops::cache_invalidate_user_data_len
+ - Convert cache_invalidate_user op to be int instead of void
+ - Remove @data_type in struct iommu_hwpt_invalidate
+ - Remove out_hwpt_type_bitmap in struct iommu_hw_info hence drop patch 08 of v1
+
+v1: https://lore.kernel.org/linux-iommu/20230309080910.607396-1-yi.l.liu@intel.com/
+
+Thanks,
+	Yi Liu
+
+Lu Baolu (4):
+  iommu: Add cache_invalidate_user op
+  iommu/vt-d: Allow qi_submit_sync() to return the QI faults
+  iommu/vt-d: Convert stage-1 cache invalidation to return QI fault
+  iommu/vt-d: Add iotlb flush for nested domain
+
+Nicolin Chen (4):
+  iommu: Add iommu_copy_struct_from_user_array helper
+  iommufd/selftest: Add mock_domain_cache_invalidate_user support
+  iommufd/selftest: Add IOMMU_TEST_OP_MD_CHECK_IOTLB test op
+  iommufd/selftest: Add coverage for IOMMU_HWPT_INVALIDATE ioctl
+
+Yi Liu (2):
+  iommufd: Add IOMMU_HWPT_INVALIDATE
+  iommufd: Add data structure for Intel VT-d stage-1 cache invalidation
+
+ drivers/iommu/intel/dmar.c                    |  38 ++--
+ drivers/iommu/intel/iommu.c                   |  12 +-
+ drivers/iommu/intel/iommu.h                   |   8 +-
+ drivers/iommu/intel/irq_remapping.c           |   2 +-
+ drivers/iommu/intel/nested.c                  | 118 ++++++++++++
+ drivers/iommu/intel/pasid.c                   |  14 +-
+ drivers/iommu/intel/svm.c                     |  14 +-
+ drivers/iommu/iommufd/hw_pagetable.c          |  41 ++++
+ drivers/iommu/iommufd/iommufd_private.h       |  10 +
+ drivers/iommu/iommufd/iommufd_test.h          |  39 ++++
+ drivers/iommu/iommufd/main.c                  |   3 +
+ drivers/iommu/iommufd/selftest.c              |  86 +++++++++
+ include/linux/iommu.h                         | 100 ++++++++++
+ include/uapi/linux/iommufd.h                  |  98 ++++++++++
+ tools/testing/selftests/iommu/iommufd.c       | 179 ++++++++++++++++++
+ tools/testing/selftests/iommu/iommufd_utils.h |  57 ++++++
+ 16 files changed, 781 insertions(+), 38 deletions(-)
+
+-- 
+2.34.1
+
