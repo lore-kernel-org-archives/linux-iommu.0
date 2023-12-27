@@ -1,36 +1,36 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0249E2114
-	for <iommu@lists.linux.dev>; Wed, 27 Dec 2023 03:01:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61C6E2100
+	for <iommu@lists.linux.dev>; Wed, 27 Dec 2023 03:01:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PsRUkh1+"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RnGK8gsF"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1703646069; x=1735182069;
+  t=1703646070; x=1735182070;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=WG21CSSwsE/85hwPEnEufidCuVnAVIKF6sagH3cxk1U=;
-  b=PsRUkh1+pk3uEIVTR+r2le7Tl5KFpQq/h10MdB6Y6WdqB4thqy2qZG0j
-   BLFsp73nPFwBTlQBNpE/yWDxTZMC+oVJdZJmujBdcYOCNGz1xs4K2SNsP
-   efSrfOj0Tj9+i17SSuUKnY/zP91+0mVo7s8+ImfqKahzTKLDHYkHxmX1H
-   SGw3wxZM7Jc0Lapm57ZuzRaoBZwfrN4uFxp8FJ1mglzURU5C+EEwxfmZ1
-   +fgmMnsli8+fKy1fIFgQvOMiPA4ThARTK9oBXrk5mD0Tfkx8Ai6TGseOR
-   kYUbrJMWXCo4emYEp7WNx2daOL8HilQ+3r+YilfZEhwSaJkpHS9qagw3O
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10935"; a="3705806"
+  bh=hQnJp+eM13DOwyfJjWurrjBjS1JKHANOk6XIz1d/krs=;
+  b=RnGK8gsFx/u2e+DnPODCtcyle+E2L/IlPaRloKYoy/20wa8wOIDIWxUn
+   +HVo6j1LMSzlSd/Ri9khurP0eBUfIloyP1WqPTpHBHxh24dwkBtRm2XHa
+   Dch+sLnfDMuYJSUFy3PWF0A56ngUfX0e0T1K4yNzk1GlWipyxQlU9TJcF
+   uABLxSYfqiQFWOg4x1NeZI/u24vMniHTerOZVKSWimANEB7JIUOaF916Y
+   G3boMUBkoFq+HeA6AgyrhZ/28RY70EfDJ63/N3e90JTW9FFOsLvq+HfnT
+   AsQ8R86SmM4EkqZ2aXkYRjwOYm7jEVhVcG0dTgL6rDeHk8yNZqtfWOE/d
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10935"; a="3705794"
 X-IronPort-AV: E=Sophos;i="6.04,307,1695711600"; 
-   d="scan'208";a="3705806"
+   d="scan'208";a="3705794"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Dec 2023 18:59:40 -0800
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Dec 2023 18:59:38 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10935"; a="951386099"
+X-IronPort-AV: E=McAfee;i="6600,9927,10935"; a="951386091"
 X-IronPort-AV: E=Sophos;i="6.04,307,1695711600"; 
-   d="scan'208";a="951386099"
+   d="scan'208";a="951386091"
 Received: from ply01-vm-store.bj.intel.com ([10.238.153.201])
-  by orsmga005.jf.intel.com with ESMTP; 26 Dec 2023 18:59:37 -0800
+  by orsmga005.jf.intel.com with ESMTP; 26 Dec 2023 18:59:34 -0800
 From: Ethan Zhao <haifeng.zhao@linux.intel.com>
 To: bhelgaas@google.com,
 	baolu.lu@linux.intel.com,
@@ -41,9 +41,9 @@ To: bhelgaas@google.com,
 Cc: linux-pci@vger.kernel.org,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v8 4/5] iommu/vt-d: don't issue device-TLB invalidate request when device is disconnected
-Date: Tue, 26 Dec 2023 21:59:22 -0500
-Message-Id: <20231227025923.536148-5-haifeng.zhao@linux.intel.com>
+Subject: [RFC PATCH v8 3/5] PCI: make pci_dev_is_disconnected() helper public for other drivers
+Date: Tue, 26 Dec 2023 21:59:21 -0500
+Message-Id: <20231227025923.536148-4-haifeng.zhao@linux.intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20231227025923.536148-1-haifeng.zhao@linux.intel.com>
 References: <20231227025923.536148-1-haifeng.zhao@linux.intel.com>
@@ -55,66 +55,54 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Except those aggressive hotplug cases - surprise remove a hotplug device
-while its safe removal is requested and handled in process by:
+Make pci_dev_is_disconnected() public so that it can be called from
+Intel vt-d driver to quickly fix/workaround the surprise removal
+unplug hang issue for those ATS capable devices on PCIe switch downstream
+hotplug capable ports.
 
-1. pull it out directly.
-2. turn off its power.
-3. bring the link down.
-4. just died there that moment.
-
-etc, in a word, 'gone' or 'disconnected'.
-
-Mostly are regular normal safe removal and surprise removal unplug.
-these hot unplug handling process could be optimized for fix the ATS
-invalidation hang issue by calling pci_dev_is_disconnected() in function
-devtlb_invalidation_with_pasid() to check target device state to avoid
-sending meaningless ATS invalidation request to iommu when device is gone.
-(see IMPLEMENTATION NOTE in PCIe spec r6.1 section 10.3.1)
-
-For safe removal, device wouldn't be removed untill the whole software
-handling process is done, it wouldn't trigger the hard lock up issue
-caused by too long ATS invalidation timeout wait. in safe removal path,
-device state isn't set to pci_channel_io_perm_failure in
-pciehp_unconfigure_device() by checking 'presence' parameter, calling
-pci_dev_is_disconnected() in devtlb_invalidation_with_pasid() will return
-false there, wouldn't break the function.
-
-For surprise removal, device state is set to pci_channel_io_perm_failure in
-pciehp_unconfigure_device(), means device is already gone (disconnected)
-call pci_dev_is_disconnected() in devtlb_invalidation_with_pasid() will
-return true to break the function not to send ATS invalidation request to
-the disconnected device blindly, thus avoid the further long time waiting
-triggers the hard lockup.
-
-safe removal & surprise removal
-
-pciehp_ist()
-   pciehp_handle_presence_or_link_change()
-     pciehp_disable_slot()
-       remove_board()
-         pciehp_unconfigure_device(presence)
+Beside pci_device_is_present() function, this one has no config space
+space access, so is light enough to optimize the normal pure surprise
+removal and safe removal flow.
 
 Tested-by: Haorong Ye <yehaorong@bytedance.com>
 Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
 ---
- drivers/iommu/intel/pasid.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/pci/pci.h   | 5 -----
+ include/linux/pci.h | 5 +++++
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 1c87fb1b1039..a08bdbec90eb 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -481,6 +481,9 @@ devtlb_invalidation_with_pasid(struct intel_iommu *iommu,
- 	if (!info || !info->ats_enabled)
- 		return;
+diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+index 5ecbcf041179..75fa2084492f 100644
+--- a/drivers/pci/pci.h
++++ b/drivers/pci/pci.h
+@@ -366,11 +366,6 @@ static inline int pci_dev_set_disconnected(struct pci_dev *dev, void *unused)
+ 	return 0;
+ }
  
-+	if (pci_dev_is_disconnected(to_pci_dev(dev)))
-+		return;
+-static inline bool pci_dev_is_disconnected(const struct pci_dev *dev)
+-{
+-	return dev->error_state == pci_channel_io_perm_failure;
+-}
+-
+ /* pci_dev priv_flags */
+ #define PCI_DEV_ADDED 0
+ #define PCI_DPC_RECOVERED 1
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index dea043bc1e38..4779eec8b267 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -2506,6 +2506,11 @@ static inline struct pci_dev *pcie_find_root_port(struct pci_dev *dev)
+ 	return NULL;
+ }
+ 
++static inline bool pci_dev_is_disconnected(const struct pci_dev *dev)
++{
++	return dev->error_state == pci_channel_io_perm_failure;
++}
 +
- 	sid = info->bus << 8 | info->devfn;
- 	qdep = info->ats_qdep;
- 	pfsid = info->pfsid;
+ void pci_request_acs(void);
+ bool pci_acs_enabled(struct pci_dev *pdev, u16 acs_flags);
+ bool pci_acs_path_enabled(struct pci_dev *start,
 -- 
 2.31.1
 
