@@ -1,208 +1,275 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 193E3F4E3
-	for <iommu@lists.linux.dev>; Thu, 28 Dec 2023 15:02:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D7A7EAFE
+	for <iommu@lists.linux.dev>; Thu, 28 Dec 2023 15:06:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen.com header.i=@soleen.com header.b="cFIVTkeL"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-427fa9ecd60so2798151cf.2
-        for <iommu@lists.linux.dev>; Thu, 28 Dec 2023 07:02:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1703775732; x=1704380532; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=L/6cBo3Wyb/38nIDe6ydYNszYPe9c+GQu22EYbo95bE=;
-        b=cFIVTkeLaTVNGOldVX7m/H2JnyZ4bHjTYTtR03HrADftIhyoVDQECaKLB1lrgt8erC
-         /V2JLrnk0tJynhWx9f4Glbah632yTC6NrN1vFZjoq9GcY1Rn1HYDYIz7pZxFsM+nMhzi
-         X3sB0QtWsquHhgzyrktyPjSFpoeqhqQLUAWmSOtqjychlh4/KA/aFWVCOoWwB33JerCW
-         4GSQwSKyYJMLjZEjY9zpnDGror8CiYg6QQpnj5xMps4xx2kD3ku9gaCtK9zxar5F67VI
-         5HnscgQZOuGE6E5Jq87oulds0+QBhrhh4nBe3/Vakib/EWn3toF+NrSDCq+cljGNpAnb
-         wzpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703775732; x=1704380532;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=L/6cBo3Wyb/38nIDe6ydYNszYPe9c+GQu22EYbo95bE=;
-        b=LB/1WOoo9u6+Bb8Ng9oz6PpJ3UGCC6vEAVGo5YC+qkNLTP+3ycIxGDcoVgbap0pe7T
-         3nXxFFdBcvQRh2Bch3Sy/xq4v9j+Fs2xauhxdPCt0hgAm11NaJrIiSXx17t6XFTMHl3m
-         pV83/i2dADQU5l12WcdEo7HujS85mz61edfNvbTvRAu/yOnHGM1DZkCpf7EEkU0gJLHx
-         Iq8BrA/FJqklkHoo44keoca/fW96fC0UVepXHl78BoysMEFugTAXmqxntbPfVEaj3ZhU
-         dGh3E7GjkWbPURF72JtBZ/2ftNQgwM2jAvw0q+vrVLrN56Ugn3rv9sET4uDpn7lh+Vam
-         BWyg==
-X-Gm-Message-State: AOJu0YydS3A8WKVNb+8Tfa0IpC4VF7eNUcRPiv5fTwY4FrMtaG0lS1L+
-	3OsJZGr8clirOx6awXF75ibY3o38VKemSczQ4JyMdH5C0+mEFQ==
-X-Google-Smtp-Source: AGHT+IGTWqap7OQo2+ut8dqdkZE0j9g7QmI6eM86JzAPMzCq4CrNH+GLlgUN27a0N+PUFgPy7ylZHp/70YRwqbaOozs=
-X-Received: by 2002:a05:622a:134a:b0:41e:453a:4dfe with SMTP id
- w10-20020a05622a134a00b0041e453a4dfemr15697224qtk.36.1703775731870; Thu, 28
- Dec 2023 07:02:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KVwT6BBz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1703775993; x=1735311993;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=7BX8tcvkrBKTtMnujExDayM6eM8qo04DaPgxr2ClBFc=;
+  b=KVwT6BBzaowD7bCuUoHnpD9/VsBOg4wuFMuhlZCiLlgDOtb4pxfJGhyG
+   EhWBXuTmuz8QH24d+7eY+gPP78wk1LCcA1thl78a16nGM2hsTJHfEqhCC
+   RPMnl9We7HIoWP6uvhNwNnYc6Fmy1sT+ytSAkGzp4R/VexfdPXcU3+u0q
+   T7jg4bNrlIukXucHGkViQYeDopjarQsRRXMD5vn5f7IaU9uEZ03Mz/TuO
+   qgxlleSwEN3jLyDlkXKOO6+IfG9Y0BPVHE73GDLqBJoq4JpOUpFUPL0C7
+   Z78tyzaaHLNJkcTo0+7y0pqWUFbHNb9k5KQg7MciH7JcWOZwtbD9CGSY9
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10936"; a="393701879"
+X-IronPort-AV: E=Sophos;i="6.04,312,1695711600"; 
+   d="scan'208";a="393701879"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Dec 2023 07:06:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10936"; a="869155147"
+X-IronPort-AV: E=Sophos;i="6.04,312,1695711600"; 
+   d="scan'208";a="869155147"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by FMSMGA003.fm.intel.com with ESMTP; 28 Dec 2023 07:06:31 -0800
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	alex.williamson@redhat.com,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	robin.murphy@arm.com,
+	baolu.lu@linux.intel.com
+Cc: cohuck@redhat.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	mjrosato@linux.ibm.com,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	yi.y.sun@linux.intel.com,
+	peterx@redhat.com,
+	jasowang@redhat.com,
+	shameerali.kolothum.thodi@huawei.com,
+	lulu@redhat.com,
+	suravee.suthikulpanit@amd.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-kselftest@vger.kernel.org,
+	zhenzhong.duan@intel.com,
+	joao.m.martins@oracle.com,
+	xin.zeng@intel.com,
+	yan.y.zhao@intel.com,
+	j.granados@samsung.com
+Subject: [PATCH v9 00/10] Add iommufd nesting (part 2/2)
+Date: Thu, 28 Dec 2023 07:06:19 -0800
+Message-Id: <20231228150629.13149-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231221031915.619337-1-pasha.tatashin@soleen.com>
- <20231221031915.619337-2-pasha.tatashin@soleen.com> <a77781a4-2d3c-403a-88a6-57242c7f0246@intel.com>
-In-Reply-To: <a77781a4-2d3c-403a-88a6-57242c7f0246@intel.com>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Thu, 28 Dec 2023 10:01:35 -0500
-Message-ID: <CA+CK2bACOdqYNTPO+EN90L5ZnCYT_UeKaLWp-xDrS8Jg3hMkHQ@mail.gmail.com>
-Subject: Re: [RFC 1/3] iommu/intel: Use page->refcount to count number of
- entries in IOMMU
-To: "Liu, Jingqi" <jingqi.liu@intel.com>
-Cc: akpm@linux-foundation.org, linux-mm@kvack.org, 
-	linux-kernel@vger.kernel.org, rientjes@google.com, dwmw2@infradead.org, 
-	baolu.lu@linux.intel.com, joro@8bytes.org, will@kernel.org, 
-	robin.murphy@arm.com, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Sun, Dec 24, 2023 at 9:59=E2=80=AFPM Liu, Jingqi <jingqi.liu@intel.com> =
-wrote:
->
-> On 12/21/2023 11:19 AM, Pasha Tatashin wrote:
-> > In order to be able to efficiently free empty page table levels, count =
-the
-> > number of entries in each page table my incremeanting and decremeanting
-> s/incremeanting/incrementing
-> s/decremeanting/decrementing
->
-> > refcount every time a PTE is inserted or removed form the page table.
-> s/form/from
->
-> >
-> > For this to work correctly, add two helper function:
-> > dma_clear_pte and dma_set_pte where counting is performed,
-> >
-> > Also, modify the code so every page table entry is always updated using=
- the
-> > two new functions.
-> >
-> > Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-> > ---
-> >   drivers/iommu/intel/iommu.c | 40 +++++++++++++++++++++---------------
-> >   drivers/iommu/intel/iommu.h | 41 +++++++++++++++++++++++++++++++-----=
--
-> >   2 files changed, 58 insertions(+), 23 deletions(-)
-> >
-> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> > index 897159dba47d..4688ef797161 100644
-> > --- a/drivers/iommu/intel/iommu.c
-> > +++ b/drivers/iommu/intel/iommu.c
-> > @@ -949,7 +949,7 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_d=
-omain *domain,
-> >                       if (domain->use_first_level)
-> >                               pteval |=3D DMA_FL_PTE_XD | DMA_FL_PTE_US=
- | DMA_FL_PTE_ACCESS;
-> >
-> > -                     if (cmpxchg64(&pte->val, 0ULL, pteval))
-> > +                     if (dma_set_pte(pte, pteval))
-> >                               /* Someone else set it while we were thin=
-king; use theirs. */
-> >                               free_pgtable_page(tmp_page);
-> >                       else
-> > @@ -1021,7 +1021,8 @@ static void dma_pte_clear_range(struct dmar_domai=
-n *domain,
-> >                       continue;
-> >               }
-> >               do {
-> > -                     dma_clear_pte(pte);
-> > +                     if (dma_pte_present(pte))
-> > +                             dma_clear_pte(pte);
-> >                       start_pfn +=3D lvl_to_nr_pages(large_page);
-> >                       pte++;
-> >               } while (start_pfn <=3D last_pfn && !first_pte_in_page(pt=
-e));
-> > @@ -1062,7 +1063,8 @@ static void dma_pte_free_level(struct dmar_domain=
- *domain, int level,
-> >                */
-> >               if (level < retain_level && !(start_pfn > level_pfn ||
-> >                     last_pfn < level_pfn + level_size(level) - 1)) {
-> > -                     dma_clear_pte(pte);
-> > +                     if (dma_pte_present(pte))
-> > +                             dma_clear_pte(pte);
-> >                       domain_flush_cache(domain, pte, sizeof(*pte));
-> >                       free_pgtable_page(level_pte);
-> >               }
-> > @@ -1093,12 +1095,13 @@ static void dma_pte_free_pagetable(struct dmar_=
-domain *domain,
-> >       }
-> >   }
-> >
-> > -/* When a page at a given level is being unlinked from its parent, we =
-don't
-> > -   need to *modify* it at all. All we need to do is make a list of all=
- the
-> > -   pages which can be freed just as soon as we've flushed the IOTLB an=
-d we
-> > -   know the hardware page-walk will no longer touch them.
-> > -   The 'pte' argument is the *parent* PTE, pointing to the page that i=
-s to
-> > -   be freed. */
-> > +/*
-> > + * A given page at a given level is being unlinked from its parent.
-> > + * We need to make a list of all the pages which can be freed just as =
-soon as
-> > + * we've flushed the IOTLB and we know the hardware page-walk will no =
-longer
-> > + * touch them. The 'pte' argument is the *parent* PTE, pointing to the=
- page
-> > + * that is to be freed.
-> > + */
-> >   static void dma_pte_list_pagetables(struct dmar_domain *domain,
-> >                                   int level, struct dma_pte *pte,
-> >                                   struct list_head *freelist)
-> > @@ -1106,17 +1109,20 @@ static void dma_pte_list_pagetables(struct dmar=
-_domain *domain,
-> >       struct page *pg;
-> >
-> >       pg =3D pfn_to_page(dma_pte_addr(pte) >> PAGE_SHIFT);
-> > -     list_add_tail(&pg->lru, freelist);
-> > -
-> > -     if (level =3D=3D 1)
-> > -             return;
-> > -
-> >       pte =3D page_address(pg);
-> > +
-> >       do {
-> > -             if (dma_pte_present(pte) && !dma_pte_superpage(pte))
-> > -                     dma_pte_list_pagetables(domain, level - 1, pte, f=
-reelist);
-> > +             if (dma_pte_present(pte)) {
-> > +                     if (level > 1 && !dma_pte_superpage(pte)) {
-> > +                             dma_pte_list_pagetables(domain, level - 1=
-, pte,
-> > +                                                     freelist);
-> > +                     }
-> > +                     dma_clear_pte(pte);
-> > +             }
-> >               pte++;
-> >       } while (!first_pte_in_page(pte));
-> > +
-> > +     list_add_tail(&pg->lru, freelist);
-> >   }
-> >
-> How about calculating the page decrement when the pages in the freelist
-> are really freed in iommu_free_pgtbl_pages() ?
+Nested translation is a hardware feature that is supported by many modern
+IOMMU hardwares. It has two stages (stage-1, stage-2) address translation
+to get access to the physical address. stage-1 translation table is owned
+by userspace (e.g. by a guest OS), while stage-2 is owned by kernel. Changes
+to stage-1 translation table should be followed by an IOTLB invalidation.
 
+Take Intel VT-d as an example, the stage-1 translation table is I/O page
+table. As the below diagram shows, guest I/O page table pointer in GPA
+(guest physical address) is passed to host and be used to perform the stage-1
+address translation. Along with it, modifications to present mappings in the
+guest I/O page table should be followed with an IOTLB invalidation.
 
-Hi Jingqi,
+    .-------------.  .---------------------------.
+    |   vIOMMU    |  | Guest I/O page table      |
+    |             |  '---------------------------'
+    .----------------/
+    | PASID Entry |--- PASID cache flush --+
+    '-------------'                        |
+    |             |                        V
+    |             |           I/O page table pointer in GPA
+    '-------------'
+Guest
+------| Shadow |---------------------------|--------
+      v        v                           v
+Host
+    .-------------.  .------------------------.
+    |   pIOMMU    |  |  FS for GIOVA->GPA     |
+    |             |  '------------------------'
+    .----------------/  |
+    | PASID Entry |     V (Nested xlate)
+    '----------------\.----------------------------------.
+    |             |   | SS for GPA->HPA, unmanaged domain|
+    |             |   '----------------------------------'
+    '-------------'
+Where:
+ - FS = First stage page tables
+ - SS = Second stage page tables
+<Intel VT-d Nested translation>
 
-Thank you for looking at this.
+This series is based on the first part which was merged [1], this series is to
+add the cache invalidation interface or the userspace to invalidate cache after
+modifying the stage-1 page table. This includes both the iommufd changes and the
+VT-d driver changes.
 
-My understanding is what you are suggesting is to count number of
-entries and subtract them from refcount only once before adding page
-to the freelist, is this correct?
+Complete code can be found in [2], QEMU could can be found in [3].
 
-We could do that, but having dma_clear_pte() for each entry is very
-beneficial, as we could extend IOMMU page tables with other debug
-technologies, such as page_table_check, if every single entry in the
-page table is added and removed via dma_clear_pte() and dma_set_pte(),
-since we are alreadying clearing pte, there is no reason not to change
-the refcount at the same time.
+At last, this is a team work together with Nicolin Chen, Lu Baolu. Thanks
+them for the help. ^_^. Look forward to your feedbacks.
 
-Pasha
+[1] https://lore.kernel.org/linux-iommu/20231026044216.64964-1-yi.l.liu@intel.com/ - merged
+[2] https://github.com/yiliu1765/iommufd/tree/iommufd_nesting
+[3] https://github.com/yiliu1765/qemu/tree/zhenzhong/wip/iommufd_nesting_rfcv1
+
+Change log:
+
+v9:
+ - Add a test case which sets both IOMMU_TEST_INVALIDATE_FLAG_ALL and
+   IOMMU_TEST_INVALIDATE_FLAG_TRIGGER_ERROR in flags, and expect to succeed
+   and see an 'error'. (Kevin)
+ - Returns -ETIMEOUT in qi_check_fault() if caller is interested with the
+   fault when timeout happens. If not, the qi_submit_sync() will keep retry
+   hence unable to report the error back to user. For now, only the user cache
+   invalidation path has interest on the time out error. So this change only
+   affects the user cache invalidation path. Other path will still hang in
+   qi_submit_sync() when timeout happens. (Kevin)
+
+v8: https://lore.kernel.org/linux-iommu/20231227161354.67701-1-yi.l.liu@intel.com/
+ - Pass invalidation hint to the cache invalidation helper in the cache_invalidate_user
+   op path (Kevin)
+ - Move the devTLB invalidation out of info->iommu loop (Kevin, Weijiang)
+ - Clear *fault per restart in qi_submit_sync() to avoid acroos submission error
+   accumulation. (Kevin)
+ - Define the vtd cache invalidation uapi structure in separate patch (Kevin)
+ - Rename inv_error to be hw_error (Kevin)
+ - Rename 'reqs_uptr', 'req_type', 'req_len' and 'req_num' to be 'data_uptr',
+   'data_type', "entry_len' and 'entry_num" (Kevin)
+ - Allow user to set IOMMU_TEST_INVALIDATE_FLAG_ALL and IOMMU_TEST_INVALIDATE_FLAG_TRIGGER_ERROR
+   in the same time (Kevin)
+
+v7: https://lore.kernel.org/linux-iommu/20231221153948.119007-1-yi.l.liu@intel.com/
+ - Remove domain->ops->cache_invalidate_user check in hwpt alloc path due
+   to failure in bisect (Baolu)
+ - Remove out_driver_error_code from struct iommu_hwpt_invalidate after
+   discussion in v6. Should expect per-entry error code.
+ - Rework the selftest cache invalidation part to report a per-entry error
+ - Allow user to pass in an empty array to have a try-and-fail mechanism for
+   user to check if a given req_type is supported by the kernel (Jason)
+ - Define a separate enum type for cache invalidation data (Jason)
+ - Fix the IOMMU_HWPT_INVALIDATE to always update the req_num field before
+   returning (Nicolin)
+ - Merge the VT-d nesting part 2/2
+   https://lore.kernel.org/linux-iommu/20231117131816.24359-1-yi.l.liu@intel.com/
+   into this series to avoid defining empty enum in the middle of the series.
+   The major difference is adding the VT-d related invalidation uapi structures
+   together with the generic data structures in patch 02 of this series.
+ - VT-d driver was refined to report ICE/ITE error from the bottom cache
+   invalidation submit helpers, hence the cache_invalidate_user op could
+   report such errors via the per-entry error field to user. VT-d driver
+   will not stop the invalidation array walking due to the ICE/ITE errors
+   as such errors are defined by VT-d spec, userspace should be able to
+   handle it and let the real user (say Virtual Machine) know about it.
+   But for other errors like invalid uapi data structure configuration,
+   memory copy failure, such errors should stop the array walking as it
+   may have more issues if go on.
+ - Minor fixes per Jason and Kevin's review comments
+
+v6: https://lore.kernel.org/linux-iommu/20231117130717.19875-1-yi.l.liu@intel.com/
+ - No much change, just rebase on top of 6.7-rc1 as part 1/2 is merged
+
+v5: https://lore.kernel.org/linux-iommu/20231020092426.13907-1-yi.l.liu@intel.com/#t
+ - Split the iommufd nesting series into two parts of alloc_user and
+   invalidation (Jason)
+ - Split IOMMUFD_OBJ_HW_PAGETABLE to IOMMUFD_OBJ_HWPT_PAGING/_NESTED, and
+   do the same with the structures/alloc()/abort()/destroy(). Reworked the
+   selftest accordingly too. (Jason)
+ - Move hwpt/data_type into struct iommu_user_data from standalone op
+   arguments. (Jason)
+ - Rename hwpt_type to be data_type, the HWPT_TYPE to be HWPT_ALLOC_DATA,
+   _TYPE_DEFAULT to be _ALLOC_DATA_NONE (Jason, Kevin)
+ - Rename iommu_copy_user_data() to iommu_copy_struct_from_user() (Kevin)
+ - Add macro to the iommu_copy_struct_from_user() to calculate min_size
+   (Jason)
+ - Fix two bugs spotted by ZhaoYan
+
+v4: https://lore.kernel.org/linux-iommu/20230921075138.124099-1-yi.l.liu@intel.com/
+ - Separate HWPT alloc/destroy/abort functions between user-managed HWPTs
+   and kernel-managed HWPTs
+ - Rework invalidate uAPI to be a multi-request array-based design
+ - Add a struct iommu_user_data_array and a helper for driver to sanitize
+   and copy the entry data from user space invalidation array
+ - Add a patch fixing TEST_LENGTH() in selftest program
+ - Drop IOMMU_RESV_IOVA_RANGES patches
+ - Update kdoc and inline comments
+ - Drop the code to add IOMMU_RESV_SW_MSI to kernel-managed HWPT in nested translation,
+   this does not change the rule that resv regions should only be added to the
+   kernel-managed HWPT. The IOMMU_RESV_SW_MSI stuff will be added in later series
+   as it is needed only by SMMU so far.
+
+v3: https://lore.kernel.org/linux-iommu/20230724110406.107212-1-yi.l.liu@intel.com/
+ - Add new uAPI things in alphabetical order
+ - Pass in "enum iommu_hwpt_type hwpt_type" to op->domain_alloc_user for
+   sanity, replacing the previous op->domain_alloc_user_data_len solution
+ - Return ERR_PTR from domain_alloc_user instead of NULL
+ - Only add IOMMU_RESV_SW_MSI to kernel-managed HWPT in nested translation (Kevin)
+ - Add IOMMU_RESV_IOVA_RANGES to report resv iova ranges to userspace hence
+   userspace is able to exclude the ranges in the stage-1 HWPT (e.g. guest I/O
+   page table). (Kevin)
+ - Add selftest coverage for the new IOMMU_RESV_IOVA_RANGES ioctl
+ - Minor changes per Kevin's inputs
+
+v2: https://lore.kernel.org/linux-iommu/20230511143844.22693-1-yi.l.liu@intel.com/
+ - Add union iommu_domain_user_data to include all user data structures to avoid
+   passing void * in kernel APIs.
+ - Add iommu op to return user data length for user domain allocation
+ - Rename struct iommu_hwpt_alloc::data_type to be hwpt_type
+ - Store the invalidation data length in iommu_domain_ops::cache_invalidate_user_data_len
+ - Convert cache_invalidate_user op to be int instead of void
+ - Remove @data_type in struct iommu_hwpt_invalidate
+ - Remove out_hwpt_type_bitmap in struct iommu_hw_info hence drop patch 08 of v1
+
+v1: https://lore.kernel.org/linux-iommu/20230309080910.607396-1-yi.l.liu@intel.com/
+
+Thanks,
+	Yi Liu
+
+Lu Baolu (4):
+  iommu: Add cache_invalidate_user op
+  iommu/vt-d: Allow qi_submit_sync() to return the QI faults
+  iommu/vt-d: Convert stage-1 cache invalidation to return QI fault
+  iommu/vt-d: Add iotlb flush for nested domain
+
+Nicolin Chen (4):
+  iommu: Add iommu_copy_struct_from_user_array helper
+  iommufd/selftest: Add mock_domain_cache_invalidate_user support
+  iommufd/selftest: Add IOMMU_TEST_OP_MD_CHECK_IOTLB test op
+  iommufd/selftest: Add coverage for IOMMU_HWPT_INVALIDATE ioctl
+
+Yi Liu (2):
+  iommufd: Add IOMMU_HWPT_INVALIDATE
+  iommufd: Add data structure for Intel VT-d stage-1 cache invalidation
+
+ drivers/iommu/intel/dmar.c                    |  49 +++--
+ drivers/iommu/intel/iommu.c                   |  12 +-
+ drivers/iommu/intel/iommu.h                   |   8 +-
+ drivers/iommu/intel/irq_remapping.c           |   2 +-
+ drivers/iommu/intel/nested.c                  | 107 ++++++++++
+ drivers/iommu/intel/pasid.c                   |  14 +-
+ drivers/iommu/intel/svm.c                     |  14 +-
+ drivers/iommu/iommufd/hw_pagetable.c          |  41 ++++
+ drivers/iommu/iommufd/iommufd_private.h       |  10 +
+ drivers/iommu/iommufd/iommufd_test.h          |  39 ++++
+ drivers/iommu/iommufd/main.c                  |   3 +
+ drivers/iommu/iommufd/selftest.c              |  86 ++++++++
+ include/linux/iommu.h                         | 100 +++++++++
+ include/uapi/linux/iommufd.h                  | 101 ++++++++++
+ tools/testing/selftests/iommu/iommufd.c       | 190 ++++++++++++++++++
+ tools/testing/selftests/iommu/iommufd_utils.h |  57 ++++++
+ 16 files changed, 794 insertions(+), 39 deletions(-)
+
+-- 
+2.34.1
+
