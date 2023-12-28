@@ -1,125 +1,169 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from wout3-smtp.messagingengine.com (wout3-smtp.messagingengine.com [64.147.123.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E12F463CD
-	for <iommu@lists.linux.dev>; Thu, 28 Dec 2023 10:18:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7CA98468
+	for <iommu@lists.linux.dev>; Thu, 28 Dec 2023 12:23:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=idosch.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=idosch.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EPk+Kjb/"
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-427b1bf1896so41164791cf.3
-        for <iommu@lists.linux.dev>; Thu, 28 Dec 2023 02:18:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1703758736; x=1704363536; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=76rIf+guTp5lw4RDD2pSw8InhFr5B3jeNbOCct2FRek=;
-        b=EPk+Kjb/jT4XRNvAUKdTCjP7J5RuQx3EDDKmh36uCNoAYVYoBiZASt8WWCbEO8ldoj
-         C2donlq1IHcIrm0wd4pYcBCbvF62fmj0eJ9gFTg2EeygbXSIU34OsRv3T0rYkE4ys13B
-         /m4DsZPpowaq9T+0S8YNSwKpOv2/svLVlv17fxLh/XeqVrXMVOUbqnHcZ6QwOFD2TgPp
-         gvg0Ol+n/Q0YU8h7blSdfM4V7aqHHXtShCdNeWMIonjhjhifmMtbBjnGCXQv2atnWFy5
-         WjErogQLyJJYxN+NAQi9Jh2U/1kyO8X2t+hkK26TXVCq0FWrxcuPb7FXQsJ7w3OV7jhW
-         KNUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703758736; x=1704363536;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=76rIf+guTp5lw4RDD2pSw8InhFr5B3jeNbOCct2FRek=;
-        b=jN/6+I5Sot1ZF6JreSLMZSeNaNLTPbm3RGQY5MGOuDnE9phSPrAXrS9Rm2mqmyx/l5
-         bSHCF2giO2d5mSTx9SfVAmhMqY0ddp6kHsvgO6QW1+eS8/KN68S+RpgBSqstabUYqvM5
-         sqDu84a7vHxOJn3PrAS40+xrZ6zZXqKHP0Ao1bsSy8mERjrB5BZIdtE/Mynjrm7ZqVJv
-         QvGLreEk3Xsm0vQlR8Gn2jDnhpwwdYW342DuaGTTGx0ZwfgXuUTTsRqddUl3T6VWnACo
-         1x/paVBpiMu/Rx+nBymCZduMxqoRMiOfabfbcWzQrUd39TI/STFHpZ3uTyRtu0r8rdgA
-         qJTA==
-X-Gm-Message-State: AOJu0YwXzRmEZQT/dFnnfGZ+bauwgrf4YZAHFAL15cpK6izki1wDwaof
-	hn7O9VbwBqysxNtUCn8AhYGu3XDUx6s31TrInuU=
-X-Google-Smtp-Source: AGHT+IGc5juyCyPvlpop20qPG41SPtHggp6E0LAvoyXGl9OdrSTesJK6ueLr8UHDG8CIjesk6/YLo24CrzHUZboLkkg=
-X-Received: by 2002:a05:622a:1813:b0:427:f931:bdbc with SMTP id
- t19-20020a05622a181300b00427f931bdbcmr860721qtc.111.1703758735612; Thu, 28
- Dec 2023 02:18:55 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="0ftsP2Xu"
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+	by mailout.west.internal (Postfix) with ESMTP id 4C6623200A89;
+	Thu, 28 Dec 2023 07:23:19 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Thu, 28 Dec 2023 07:23:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm2; t=1703766198; x=1703852598; bh=fM7/zGyEYysEvVHcUQj7FtYh0mju
+	iCiJQyKM0uIK+uM=; b=0ftsP2XuEmLwU8V0h9/o/T0KuJkFfVwRPR6PLFma+MHe
+	tPuUCSBUGfM2SBMjR8YlcPmM4sexOGMfmC8qpITHeM83X/FBdUEjNu9ddHabkl9w
+	dcww+miIjRbpH2JeQV6ftEjINVOJUSi2kxcS3cBZRseIeNDz4Fl1Euhl0xK8vWDJ
+	CbHizentF2ONsIQHFelerPETLMPm1Bxek7iVBoC+/Bd9yG+YWwOHOwZP0xGq4jPf
+	CrIHpU9iEq590nlaV+M6zSB5xuY6jOJY/D/A++IDCdVAZcJRHolptjBAgtKnCraW
+	gGkbi0BC0r15hsKBVWnl1HkeFDuW+zNNT/XjWhAm7w==
+X-ME-Sender: <xms:tmiNZeDgGcQ5x9A4F3-DpbNXaJY6ZWGRoXFXIg-nz57v_syP3ayOcg>
+    <xme:tmiNZYgbhJXD-bTYtC_d2AdVzEoC5n7KQcdzG3KknA3J57FbjbqjAiRsezX6JPMLa
+    pH57eMLTG5-uPI>
+X-ME-Received: <xmr:tmiNZRlBvKIsR9EwvYViUx14ONBha_EWgPnN1bpBMCmnVe8fuf4jDCbsnN_L>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrvdefuddgfeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhephefhtdejvdeiffefudduvdffgeetieeigeeugfduffdvffdtfeehieejtdfh
+    jeeknecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:tmiNZcyZk2Ic7Cwm8bAt1twt32DRNVBi8KqyXixUPtBxDwvhKouz0A>
+    <xmx:tmiNZTSIWYG99jQC7lIiBUDidLyo6MzJ3WxF5V412etRd_IlLR3VoQ>
+    <xmx:tmiNZXZSVKzZEgLHvFtaY0vIcZY9KPxJxqs8yGZ55TP8gcTjd012Zg>
+    <xmx:tmiNZSE-QY-5GesfR6MSIE1KrAiXIKP0z072gQcgiNpG9KKanSaqbQ>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 28 Dec 2023 07:23:17 -0500 (EST)
+Date: Thu, 28 Dec 2023 14:23:13 +0200
+From: Ido Schimmel <idosch@idosch.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, zhangzekun11@huawei.com,
+	john.g.garry@oracle.com, dheerajkumar.srivastava@amd.com,
+	jsnitsel@redhat.com
+Subject: Re: [PATCH v3 0/2] iommu/iova: Make the rcache depot properly
+ flexible
+Message-ID: <ZY1osaGLyT-sdKE8@shredder>
+References: <cover.1694535580.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CALf2hKsJjDY3OhtMCxhHh7rS=2S4Oq9Ns=t-NFq1MPD=f0K02Q@mail.gmail.com>
- <BN9PR11MB52761AA391479A55533BFE718C9EA@BN9PR11MB5276.namprd11.prod.outlook.com>
-In-Reply-To: <BN9PR11MB52761AA391479A55533BFE718C9EA@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Zhang Zhiyu <zhiyuzhang999@gmail.com>
-Date: Thu, 28 Dec 2023 18:18:44 +0800
-Message-ID: <CALf2hKvjrUFDqPnZxv9RVZ=cxgUUwUBoMv2TVTcZHuMmca+MPQ@mail.gmail.com>
-Subject: Re: A bug was found in Linux Kernel 6.6+: KASAN: slab-use-after-free
- in iommufd_test (with POC)
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "jgg@ziepe.ca" <jgg@ziepe.ca>, 
-	"joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, 
-	"robin.murphy@arm.com" <robin.murphy@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1694535580.git.robin.murphy@arm.com>
 
-Hi Kevin,
+On Tue, Sep 12, 2023 at 05:28:04PM +0100, Robin Murphy wrote:
+> v2: https://lore.kernel.org/linux-iommu/cover.1692641204.git.robin.murphy@arm.com/
+> 
+> Hi all,
+> 
+> I hope this is good to go now, just fixed the locking (and threw
+> lockdep at it to confirm, which of course I should have done to begin
+> with...) and picked up tags.
 
-Thanks for your advice.
+Hi,
 
-I check the patch which has been applied in Linux-6.7-rc5+, while not
-in the latest stable Linux-6.6.8. As a result, my poc is still
-reproducible on 6.6.8, but not on 6.7-rc5+. Maybe the stable line of
-Linux kernel should apply the patch asap.
+After pulling the v6.7 changes we started seeing the following memory
+leaks [1] of 'struct iova_magazine'. I'm not sure how to reproduce it,
+which is why I didn't perform bisection. However, looking at the
+mentioned code paths, they seem to have been changed in v6.7 as part of
+this patchset. I reverted both patches and didn't see any memory leaks
+when running a full regression (~10 hours), but I will repeat it to be
+sure.
 
-Seems that I am late to this bug. Although the call trace of my poc is
-slightly different from the disclosed "KASAN: slab-use-after-free Read
-in iommufd_vfio_ioas"
-(https://syzkaller.appspot.com/bug?extid=3Dd31adfb277377ef8fcba), they
-share the same root cause.
+Any idea what could be the problem?
 
-Best,
-Zhiyu
+Thanks
 
-Tian, Kevin <kevin.tian@intel.com> =E4=BA=8E2023=E5=B9=B412=E6=9C=8828=E6=
-=97=A5=E5=91=A8=E5=9B=9B 15:28=E5=86=99=E9=81=93=EF=BC=9A
->
-> > From: Zhang Zhiyu <zhiyuzhang999@gmail.com>
-> > Sent: Wednesday, December 27, 2023 5:03 PM
-> >
-> > Hi upstream community,
-> >
-> > I am fuzzing a LTS version of Linux kernel 6.6 with my modified
-> > syzkaller and I find a bug named "KASAN: slab-use-after-free in
-> > iommufd_test". By analyzing the call trace in bug report, I address
-> > the root cause of this bug at drivers/iommu/iommufd. An iommufd_object
-> > is allocated in one task through
-> > iommufd_fops_ioctl->iommufd_ioas_alloc_ioctl->iommufd_ioas_alloc and
-> > freed in another task through iommufd_fops_ioctl->iommufd_destroy.
-> > Then when the kernel invokes the calls
-> > iommufd_fops_ioctl->iommufd_test->iommufd_test_add_reserved-
-> > >iommufd_put_object,
-> > an use-after-free read will occur. Detailed report, log, repro, config
-> > can be found in this google drive link:
-> > https://drive.usercontent.google.com/download?id=3D1nDJWUstYJNcC1zJ6q1r
-> > hB5zB0uV2yGvg&export=3Ddownload&authuser=3D0&confirm=3Dt
-> >
-> > The steps to reproduce the bug:
-> > 1. compile the kernel 6.6 with provided Linux-6.6.config
-> > 2. boot a qemu vm that runs the compiled kernel
-> > 3. scp the repro.c (repro.prog is not recommended) to the vm and
-> > compile it with gcc -pthread repro.c -o repro
-> > 4. execute ./repro and you will see the output stucks for a while and
-> > then KASAN is triggered and kernel panic.
-> > 5. you can speed up the crash by setting up another ssh shell to
-> > execute ./repro again.
-> >
-> > I have reproduced it on 6.6 and 6.6.1 (but haven't verified on the
-> > latest ver 6.6.8 yet). I didn't find any related reports on the
-> > internet, which indicates that it may be a 0day. Hope the upstream can
-> > help check and fix it. And I'll be happy to assist if needed.
-> >
->
-> Could you try below fix? or just use latest kernel which already includes=
- it:
->
-> https://lore.kernel.org/all/2-v2-ca9e00171c5b+123-iommufd_syz4_jgg@nvidia=
-.com/
+[1]
+unreferenced object 0xffff8881a5301000 (size 1024): 
+  comm "softirq", pid 0, jiffies 4306297099 (age 462.991s) 
+  hex dump (first 32 bytes): 
+    00 00 00 00 00 00 00 00 e7 7d 05 00 00 00 00 00  .........}...... 
+    0f b4 05 00 00 00 00 00 b4 96 05 00 00 00 00 00  ................ 
+  backtrace: 
+    [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320 
+    [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60 
+    [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0 
+    [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310 
+    [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0 
+    [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0 
+    [<ffffffff813ea16b>] __run_timers+0x78b/0xb80 
+    [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0 
+    [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5 
+
+unreferenced object 0xffff8881392ec000 (size 1024): 
+  comm "softirq", pid 0, jiffies 4306326731 (age 433.359s) 
+  hex dump (first 32 bytes): 
+    00 10 30 a5 81 88 ff ff 50 ff 0f 00 00 00 00 00  ..0.....P....... 
+    f3 99 05 00 00 00 00 00 87 b7 05 00 00 00 00 00  ................ 
+  backtrace: 
+    [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320 
+    [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60 
+    [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0 
+    [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310 
+    [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0 
+    [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0 
+    [<ffffffff813ea16b>] __run_timers+0x78b/0xb80 
+    [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0 
+    [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5 
+
+unreferenced object 0xffff8881411f9000 (size 1024): 
+  comm "softirq", pid 0, jiffies 4306708887 (age 51.459s) 
+  hex dump (first 32 bytes): 
+    00 10 1c 26 81 88 ff ff 2c 96 05 00 00 00 00 00  ...&....,....... 
+    ac fe 0f 00 00 00 00 00 a6 fe 0f 00 00 00 00 00  ................ 
+  backtrace: 
+    [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320 
+    [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60 
+    [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0 
+    [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310 
+    [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0 
+    [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0 
+    [<ffffffff813ea16b>] __run_timers+0x78b/0xb80 
+    [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0 
+    [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5 
+
+unreferenced object 0xffff88812be26400 (size 1024): 
+  comm "softirq", pid 0, jiffies 4306710027 (age 50.319s) 
+  hex dump (first 32 bytes): 
+    00 c0 2e 39 81 88 ff ff 32 ab 05 00 00 00 00 00  ...9....2....... 
+    e3 ac 05 00 00 00 00 00 1f b6 05 00 00 00 00 00  ................ 
+  backtrace: 
+    [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320 
+    [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60 
+    [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0 
+    [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310 
+    [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0 
+    [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0 
+    [<ffffffff813ea16b>] __run_timers+0x78b/0xb80 
+    [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0 
+    [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5 
+
+unreferenced object 0xffff8881261c1000 (size 1024): 
+  comm "softirq", pid 0, jiffies 4306711547 (age 48.799s) 
+  hex dump (first 32 bytes): 
+    00 64 e2 2b 81 88 ff ff c0 7c 05 00 00 00 00 00  .d.+.....|...... 
+    87 a5 05 00 00 00 00 00 0e 9a 05 00 00 00 00 00  ................ 
+  backtrace: 
+    [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320 
+    [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60 
+    [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0 
+    [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310 
+    [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0 
+    [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0 
+    [<ffffffff813ea16b>] __run_timers+0x78b/0xb80 
+    [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0 
+    [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5 
