@@ -1,70 +1,51 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C392125B8
-	for <iommu@lists.linux.dev>; Thu, 28 Dec 2023 15:06:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69D2BF511
+	for <iommu@lists.linux.dev>; Thu, 28 Dec 2023 17:02:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BOLZvKdk"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JPFh8xcy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1703776008; x=1735312008;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=k8MfoxWF1GWpKLv7i4xBh341gPxN5h7L+16xXDYToqk=;
-  b=BOLZvKdkMAnHJj5Nh2WZHs4QgMGD32PaDf2WLI7ozSAd10Glb5szWbGP
-   1R7JZhUoXodM4kGkYS6ry0ZH6X3tLjSforQDBA0HIOse8AuvTRADjTcex
-   b/XS5ldfFdyTlZYPTl/LHF5HMaCEngF8x8p0lYWB2jV/2t8h7V8JcycQY
-   nzNpvzTmNyD8NaueYisrHViGE16+PRxxjmzSt1M84LPwR/Sf8eCw0MF2F
-   o6fYmFdLEgj1evZ1ufiW7+hohjMpkjNTnmCZ3ibDQMxOrXp7pMOBCU15r
-   DOQhnH+jtVZHXT/eL7QGAkloFPsmrws/ETSna+MXs1O7tR1NCWTkSqfWb
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10936"; a="393702040"
+  t=1703782934; x=1735318934;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=E4S700sBn75X/3Gsw0UEUvo6avxdYoT8g3X4kF0jwe0=;
+  b=JPFh8xcyiG24ADm0+bvT/B7kkwO8W0tJhNsD6QvQU4is2TaZd8ur5b6D
+   LGbR1ZkypHzyuQrsBK/T9MndjlQRJGXzxMU+R5h7cbxd3zWypj/58Z9/v
+   bTH7pkAozhkPEtGALT4Ne2gEpStHTY5tzal4WQ55ltoKQ0P0x1nx38uGI
+   Lc23nQMqfPyLU4dtJRm4aRY4iPVtftBeFYmApRHVzZwgVOZxQuN5nelaN
+   nyRirIYncwuEW22qW8oU7ULbIm0KyhbmREugJ3GFb7EXMXNCuz8pJfaVU
+   aN/EDjtiJY/w3yc20g07zRl3Osxv9X3cWY9hbzbGWfqrDXS8Iu2larFDx
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10937"; a="18119282"
 X-IronPort-AV: E=Sophos;i="6.04,312,1695711600"; 
-   d="scan'208";a="393702040"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Dec 2023 07:06:47 -0800
+   d="scan'208";a="18119282"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Dec 2023 09:02:12 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10936"; a="869155189"
+X-IronPort-AV: E=McAfee;i="6600,9927,10937"; a="771757391"
 X-IronPort-AV: E=Sophos;i="6.04,312,1695711600"; 
-   d="scan'208";a="869155189"
-Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by FMSMGA003.fm.intel.com with ESMTP; 28 Dec 2023 07:06:46 -0800
-From: Yi Liu <yi.l.liu@intel.com>
-To: joro@8bytes.org,
-	alex.williamson@redhat.com,
-	jgg@nvidia.com,
-	kevin.tian@intel.com,
+   d="scan'208";a="771757391"
+Received: from ply01-vm-store.bj.intel.com ([10.238.153.201])
+  by orsmga007.jf.intel.com with ESMTP; 28 Dec 2023 09:02:09 -0800
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+To: kevin.tian@intel.com,
+	bhelgaas@google.com,
+	baolu.lu@linux.intel.com,
+	dwmw2@infradead.org,
+	will@kernel.org,
 	robin.murphy@arm.com,
-	baolu.lu@linux.intel.com
-Cc: cohuck@redhat.com,
-	eric.auger@redhat.com,
-	nicolinc@nvidia.com,
-	kvm@vger.kernel.org,
-	mjrosato@linux.ibm.com,
-	chao.p.peng@linux.intel.com,
-	yi.l.liu@intel.com,
-	yi.y.sun@linux.intel.com,
-	peterx@redhat.com,
-	jasowang@redhat.com,
-	shameerali.kolothum.thodi@huawei.com,
-	lulu@redhat.com,
-	suravee.suthikulpanit@amd.com,
+	lukas@wunner.de
+Cc: linux-pci@vger.kernel.org,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-kselftest@vger.kernel.org,
-	zhenzhong.duan@intel.com,
-	joao.m.martins@oracle.com,
-	xin.zeng@intel.com,
-	yan.y.zhao@intel.com,
-	j.granados@samsung.com
-Subject: [PATCH v9 10/10] iommu/vt-d: Add iotlb flush for nested domain
-Date: Thu, 28 Dec 2023 07:06:29 -0800
-Message-Id: <20231228150629.13149-11-yi.l.liu@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20231228150629.13149-1-yi.l.liu@intel.com>
-References: <20231228150629.13149-1-yi.l.liu@intel.com>
+	linux-kernel@vger.kernel.org
+Subject: [RFC PATCH v10 0/5] fix vt-d hard lockup when hotplug ATS capable device
+Date: Thu, 28 Dec 2023 12:02:01 -0500
+Message-Id: <20231228170206.720675-1-haifeng.zhao@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -73,139 +54,88 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+This patchset is used to fix vt-d hard lockup reported when surprise
+unplug ATS capable endpoint device connects to system via PCIe switch
+as following topology.                                               
+                                                                    
+     +-[0000:15]-+-00.0  Intel Corporation Ice Lake Memory Map/VT-d 
+     |           +-00.1  Intel Corporation Ice Lake Mesh 2 PCIe     
+     |           +-00.2  Intel Corporation Ice Lake RAS             
+     |           +-00.4  Intel Corporation Device 0b23              
+     |           \-01.0-[16-1b]----00.0-[17-1b]--+-00.0-[18]----00.0 
+                                           NVIDIA Corporation Device 2324 
+     |                                           +-01.0-[19]----00.0    
+                          Mellanox Technologies MT2910 Family [ConnectX-7]
+                                                                          
+User brought endpoint device 19:00.0's link down by flapping it's hotplug 
+capable slot 17:01.0 link control register, as sequence DLLSC response, 
+pciehp_ist() will unload device driver and power it off, durning device 
+driver is unloading an iommu device-TLB invalidation (Intel VT-d spec, or 
+'ATS Invalidation' in PCIe spec) request issued to that link down device, 
+thus a long time completion/timeout waiting in interrupt context causes   
+continuous hard lockup warnning and system hang.                         
+                                                                         
+Other detail, see every patch commit log.                                
+                                                                         
+patch [3&4] were tested by yehaorong@bytedance.com on stable v6.7-rc4.   
+patch [1-5] passed compiling on stable v6.7-rc6.                    
+                                                                         
+                                                                         
+change log:  
+v10:
+- refactor qi_submit_sync() and its callers to get pci_dev instance, as
+  Kevin pointed out add target_flush_dev to iommu is not right.
+v9:
+- unify all spelling of ATS Invalidation adhere to PCIe spec per Bjorn's
+  suggestion.                                                         
+v8:
+- add a patch to break the loop for timeout device-TLB invalidation, as
+  Bjorn said there is possibility device just no response but not gone.  
+v7:                                                                      
+- reorder patches and revise commit log per Bjorn's guide.              
+- other code and commit log revise per Lukas' suggestion.               
+- rebased to stable v6.7-rc6.                                           
+v6:                                                                     
+- add two patches to break out device-TLB invalidation if device is gone. 
+v5:                                                                       
+- add a patch try to fix the rare case (surprise remove a device in       
+  safe removal process). not work because surprise removal handling can't 
+  re-enter when another safe removal is in process.                       
+v4:                                                                       
+- move the PCI device state checking after ATS per Baolu's suggestion.    
+v3:                                                                       
+- fix commit description typo.                                            
+v2:                                                                       
+- revise commit[1] description part according to Lukas' suggestion.       
+- revise commit[2] description to clarify the issue's impact.             
+v1:                                                                       
+- https://lore.kernel.org/lkml/20231213034637.2603013-1-haifeng.zhao@     
+linux.intel.com/T/                                                        
+                                                                          
+                                                                          
+Thanks,                                                                   
+Ethan                           
 
-This implements the .cache_invalidate_user() callback to support iotlb
-flush for nested domain.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Co-developed-by: Yi Liu <yi.l.liu@intel.com>
-Signed-off-by: Yi Liu <yi.l.liu@intel.com>
----
- drivers/iommu/intel/nested.c | 107 +++++++++++++++++++++++++++++++++++
- 1 file changed, 107 insertions(+)
+Ethan Zhao (5):
+  iommu/vt-d: add pci_dev parameter to qi_submit_sync and refactor
+    callers
+  iommu/vt-d: break out ATS Invalidation if target device is gone
+  PCI: make pci_dev_is_disconnected() helper public for other drivers
+  iommu/vt-d: don't issue ATS Invalidation request when device is
+    disconnected
+  iommu/vt-d: don't loop for timeout ATS Invalidation request forever
 
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index b5a5563ab32c..f1f86437939c 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -73,9 +73,116 @@ static void intel_nested_domain_free(struct iommu_domain *domain)
- 	kfree(to_dmar_domain(domain));
- }
- 
-+static void nested_flush_dev_iotlb(struct dmar_domain *domain, u64 addr,
-+				   unsigned mask, u32 *fault)
-+{
-+	struct device_domain_info *info;
-+	unsigned long flags;
-+	u16 sid, qdep;
-+
-+	spin_lock_irqsave(&domain->lock, flags);
-+	list_for_each_entry(info, &domain->devices, link) {
-+		if (!info->ats_enabled)
-+			continue;
-+		sid = info->bus << 8 | info->devfn;
-+		qdep = info->ats_qdep;
-+		qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
-+				   qdep, addr, mask, fault);
-+		quirk_extra_dev_tlb_flush(info, addr, mask,
-+					  IOMMU_NO_PASID, qdep);
-+	}
-+	spin_unlock_irqrestore(&domain->lock, flags);
-+}
-+
-+static void intel_nested_flush_cache(struct dmar_domain *domain, u64 addr,
-+				     unsigned long npages, bool ih, u32 *error)
-+{
-+	struct iommu_domain_info *info;
-+	unsigned long i;
-+	unsigned mask;
-+	u32 fault;
-+
-+	xa_for_each(&domain->iommu_array, i, info)
-+		qi_flush_piotlb(info->iommu,
-+				domain_id_iommu(domain, info->iommu),
-+				IOMMU_NO_PASID, addr, npages, ih, NULL);
-+
-+	if (!domain->has_iotlb_device)
-+		return;
-+
-+	if (npages == U64_MAX)
-+		mask = 64 - VTD_PAGE_SHIFT;
-+	else
-+		mask = ilog2(__roundup_pow_of_two(npages));
-+
-+	nested_flush_dev_iotlb(domain, addr, mask, &fault);
-+
-+	*error = 0;
-+	/*
-+	 * Invalidation queue error (i.e. IQE) will not be reported to user
-+	 * as it's caused only by driver internal bug.
-+	 */
-+	if (fault & DMA_FSTS_ICE)
-+		*error |= IOMMU_HWPT_INVALIDATE_VTD_S1_ICE;
-+	if (fault & DMA_FSTS_ITE)
-+		*error |= IOMMU_HWPT_INVALIDATE_VTD_S1_ITE;
-+}
-+
-+static int intel_nested_cache_invalidate_user(struct iommu_domain *domain,
-+					      struct iommu_user_data_array *array)
-+{
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct iommu_hwpt_vtd_s1_invalidate inv_entry;
-+	u32 processed = 0;
-+	int ret = 0;
-+	u32 index;
-+
-+	if (array->type != IOMMU_HWPT_INVALIDATE_DATA_VTD_S1) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	for (index = 0; index < array->entry_num; index++) {
-+		ret = iommu_copy_struct_from_user_array(&inv_entry, array,
-+							IOMMU_HWPT_INVALIDATE_DATA_VTD_S1,
-+							index, hw_error);
-+		if (ret)
-+			break;
-+
-+		if (inv_entry.flags & ~IOMMU_VTD_INV_FLAGS_LEAF) {
-+			ret = -EOPNOTSUPP;
-+			break;
-+		}
-+
-+		if (!IS_ALIGNED(inv_entry.addr, VTD_PAGE_SIZE) ||
-+		    ((inv_entry.npages == U64_MAX) && inv_entry.addr)) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+
-+		intel_nested_flush_cache(dmar_domain, inv_entry.addr,
-+					 inv_entry.npages,
-+					 inv_entry.flags & IOMMU_VTD_INV_FLAGS_LEAF,
-+					 &inv_entry.hw_error);
-+
-+		ret = iommu_respond_struct_to_user_array(array, index,
-+							 (void *)&inv_entry,
-+							 sizeof(inv_entry));
-+		if (ret)
-+			break;
-+
-+		processed++;
-+	}
-+
-+out:
-+	array->entry_num = processed;
-+	return ret;
-+}
-+
- static const struct iommu_domain_ops intel_nested_domain_ops = {
- 	.attach_dev		= intel_nested_attach_dev,
- 	.free			= intel_nested_domain_free,
-+	.cache_invalidate_user	= intel_nested_cache_invalidate_user,
- };
- 
- struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *parent,
+ drivers/iommu/intel/dmar.c          | 55 ++++++++++++++++++++++-------
+ drivers/iommu/intel/iommu.c         | 26 ++++----------
+ drivers/iommu/intel/iommu.h         | 17 +++++----
+ drivers/iommu/intel/irq_remapping.c |  2 +-
+ drivers/iommu/intel/pasid.c         | 13 +++----
+ drivers/iommu/intel/svm.c           | 13 ++++---
+ drivers/pci/pci.h                   |  5 ---
+ include/linux/pci.h                 |  5 +++
+ 8 files changed, 74 insertions(+), 62 deletions(-)
+
 -- 
-2.34.1
+2.31.1
 
