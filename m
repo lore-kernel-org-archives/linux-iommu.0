@@ -1,49 +1,38 @@
-Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48F96186E
-	for <iommu@lists.linux.dev>; Sun, 31 Dec 2023 00:48:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8884BA59
+	for <iommu@lists.linux.dev>; Mon,  1 Jan 2024 03:39:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OxukVxqN"
-Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2ccc7d7e399so47875791fa.0
-        for <iommu@lists.linux.dev>; Sat, 30 Dec 2023 16:48:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1703983693; x=1704588493; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=g7LyVOuEsI9PRtyYZaiHMTcUkVHkouuFw6JcSFaYF9Y=;
-        b=OxukVxqNYtpbuBJ57fj245f9FPSUmMUq58HsDXH+H7Ty4ZUSDRI2RmlfKo3JsbK+96
-         Hh4PL/alntaly7GZF30wxc2VV61b4iIST5tRBTEBttc7ymMN9tqX6RPZ9p7Is/5hcKHZ
-         qdwtsDHSiSrJ8qYVPwuEPsGUclrV3//FX5+a4mLoOeurJO5XqWa5aF1dnBBDd8Y2bliD
-         mGBxuPi49ocdh18Ve2KNP5mK2n+mBq9duKSRx/SVqbmQX7Cs78t54OOSyzZins+8lcee
-         KvqRHRVeCCyRQb5PZdujAouvXsAz8iFWpHVwzRybmIO3Aj+lO+Lz1I7dMcMV3Evj51cd
-         b6BQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1703983693; x=1704588493;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=g7LyVOuEsI9PRtyYZaiHMTcUkVHkouuFw6JcSFaYF9Y=;
-        b=W0Q3iqkAXaC2mJQJRnRBdmbIzC0Zy3xrcDACIlChW8/Tay7qZbscUofn9qniVczRBz
-         4yIS59jo7F5bjvS1I14ammZgc7XpSSMj3dLwmgR8a8XAsHH/AjGO9Py/BfLDdMZ1gxMd
-         sk8ene/E5Ft5RMqQh1g9Twa4T0ueVbZzz/qlH3hMt1rNHXHK37GnQclHFAp78aAl07SM
-         +Zalptu8drCWWEBe+PLp9NLCybhyMDm7P3r5TvvX1IViD1VdC2DOb0837Dhwwgh89e3U
-         NDpnd5EGFtQnApw/kqUBvNjd3e40RKt66a6fpb3L7XJkbqIP8wYYpNke+u7Q2H1LxaG4
-         uabQ==
-X-Gm-Message-State: AOJu0YwkkDuyZdEcCWkT7KS6FIi8I254K4LuzkwUNtXTnP3N1qUikFRG
-	FXJ26WaPQHmGnUGmE/D3wmazLdbS2lbPWQ==
-X-Google-Smtp-Source: AGHT+IFmpEejX/rrWOhfbfbbPGmg2BZWWE014xgmA5s5zEjRh9/e6LaV9fp1/CE3wIgp0lirhDeR0w==
-X-Received: by 2002:a2e:9b11:0:b0:2cc:eaf4:5c67 with SMTP id u17-20020a2e9b11000000b002cceaf45c67mr1952274lji.99.1703983693359;
-        Sat, 30 Dec 2023 16:48:13 -0800 (PST)
-Received: from ?IPV6:2001:14ba:a0db:1f00::227? (dzdqv0yyyyyyyyyyyykxt-3.rev.dnainternet.fi. [2001:14ba:a0db:1f00::227])
-        by smtp.gmail.com with ESMTPSA id cy22-20020a2e9a16000000b002cce9e771b2sm1182475ljb.71.2023.12.30.16.48.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 30 Dec 2023 16:48:12 -0800 (PST)
-Message-ID: <cb1129ca-6ee9-46cf-8ea7-77707f9d4edc@linaro.org>
-Date: Sun, 31 Dec 2023 02:48:12 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kTZTylDt"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1704080394; x=1735616394;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=TGBXTbeX8tde9ouDg3XSWCKQoZCnrld95jzC7rtlJzQ=;
+  b=kTZTylDtci4r9lxihY/c8bL5EONzJB7/jQJjnW5XZ0ShUTVpJjRp3fvS
+   7+KESNa29noghU2Br+MaPjnFt45fO2lFrf3wt1yfXU1rO16xSGUeIsSGi
+   Md1N5v1Dy+FKoRsd2U3wCG6iLRpXLMHqXFKlooSxZx0E801eqnoHB7X+w
+   78x+d5/lLIoGIChkS4aOI8Lg1oTubKQt2K6g8D4PzNVDqR7VHAZuAUqrN
+   lCC3dXaRjJ9YmpTrDOMi05rF+nKBCWLkLo+AqtTi9upJhiI9+8vCi6Jbm
+   w6XaMYlFkX5etbvdVUNL0l2OPa5wtYWMj1/LX7w8SxZSvb5orZA98f9nw
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10940"; a="15412203"
+X-IronPort-AV: E=Sophos;i="6.04,321,1695711600"; 
+   d="scan'208";a="15412203"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Dec 2023 19:39:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10940"; a="902785434"
+X-IronPort-AV: E=Sophos;i="6.04,321,1695711600"; 
+   d="scan'208";a="902785434"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by orsmga004.jf.intel.com with ESMTP; 31 Dec 2023 19:39:47 -0800
+Message-ID: <50098edc-2bbb-4c8f-9360-6990f0f5d88a@linux.intel.com>
+Date: Mon, 1 Jan 2024 11:34:45 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,52 +40,65 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/3] iommu/msm-iommu: don't limit the driver too much
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-Cc: linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
- iommu@lists.linux.dev, Russell King <linux@armlinux.org.uk>,
- Joerg Roedel <jroedel@suse.de>
-References: <20231216162700.863456-1-dmitry.baryshkov@linaro.org>
- <20231216162700.863456-2-dmitry.baryshkov@linaro.org>
-Content-Language: en-GB
-In-Reply-To: <20231216162700.863456-2-dmitry.baryshkov@linaro.org>
+Cc: baolu.lu@linux.intel.com, "cohuck@redhat.com" <cohuck@redhat.com>,
+ "eric.auger@redhat.com" <eric.auger@redhat.com>,
+ "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+ "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+ "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
+ "peterx@redhat.com" <peterx@redhat.com>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "shameerali.kolothum.thodi@huawei.com"
+ <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+ "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+ "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+ "joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
+ "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y" <yan.y.zhao@intel.com>,
+ "j.granados@samsung.com" <j.granados@samsung.com>
+Subject: Re: [PATCH v8 07/10] iommu/vt-d: Allow qi_submit_sync() to return the
+ QI faults
+To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "joro@8bytes.org" <joro@8bytes.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "jgg@nvidia.com" <jgg@nvidia.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
+References: <20231227161354.67701-1-yi.l.liu@intel.com>
+ <20231227161354.67701-8-yi.l.liu@intel.com>
+ <BN9PR11MB5276429906ED56258BB433068C9EA@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276429906ED56258BB433068C9EA@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 16/12/2023 18:26, Dmitry Baryshkov wrote:
-> In preparation of dropping most of ARCH_QCOM subtypes, stop limiting the
-> driver just to those machines. Allow it to be built for any 32-bit
-> Qualcomm platform (ARCH_QCOM).
-> 
-> Acked-by: Robin Murphy <robin.murphy@arm.com>
-> Acked-by: Joerg Roedel <jroedel@suse.de>
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+On 12/28/23 2:17 PM, Tian, Kevin wrote:
+>>   	raw_spin_lock_irqsave(&qi->q_lock, flags);
+>>   	/*
+>> @@ -1430,7 +1439,7 @@ int qi_submit_sync(struct intel_iommu *iommu,
+>> struct qi_desc *desc,
+>>   		 * a deadlock where the interrupt context can wait
+>> indefinitely
+>>   		 * for free slots in the queue.
+>>   		 */
+>> -		rc = qi_check_fault(iommu, index, wait_index);
+>> +		rc = qi_check_fault(iommu, index, wait_index, fault);
+>>   		if (rc)
+>>   			break;
+> and as replied in another thread let's change qi_check_fault to return
+> -ETIMEDOUT to break the restart loop when fault pointer is valid.
 
-Robin, Joerg, Will, is there any chance this can be picked up into 6.8? 
-We will proceed with merging the rest through qocm tree into 6.9.
+It's fine to break the retry loop when fault happens and the fault
+pointer is valid. Please don't forget to add an explanation comment
+around the code. Something like:
 
-> ---
->   drivers/iommu/Kconfig | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 9a29d742617e..0d6095290b6a 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -179,7 +179,7 @@ config FSL_PAMU
->   config MSM_IOMMU
->   	bool "MSM IOMMU Support"
->   	depends on ARM
-> -	depends on ARCH_MSM8X60 || ARCH_MSM8960 || COMPILE_TEST
-> +	depends on ARCH_QCOM || COMPILE_TEST
->   	select IOMMU_API
->   	select IOMMU_IO_PGTABLE_ARMV7S
->   	help
+/*
+  * The caller is able to handle the fault by itself. The IOMMU driver
+  * should not attempt to retry this request.
+  */
 
--- 
-With best wishes
-Dmitry
-
+Best regards,
+baolu
