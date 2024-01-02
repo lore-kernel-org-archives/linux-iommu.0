@@ -1,104 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8884BA59
-	for <iommu@lists.linux.dev>; Mon,  1 Jan 2024 03:39:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73DBE20F9
+	for <iommu@lists.linux.dev>; Tue,  2 Jan 2024 07:24:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=idosch.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=idosch.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kTZTylDt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1704080394; x=1735616394;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=TGBXTbeX8tde9ouDg3XSWCKQoZCnrld95jzC7rtlJzQ=;
-  b=kTZTylDtci4r9lxihY/c8bL5EONzJB7/jQJjnW5XZ0ShUTVpJjRp3fvS
-   7+KESNa29noghU2Br+MaPjnFt45fO2lFrf3wt1yfXU1rO16xSGUeIsSGi
-   Md1N5v1Dy+FKoRsd2U3wCG6iLRpXLMHqXFKlooSxZx0E801eqnoHB7X+w
-   78x+d5/lLIoGIChkS4aOI8Lg1oTubKQt2K6g8D4PzNVDqR7VHAZuAUqrN
-   lCC3dXaRjJ9YmpTrDOMi05rF+nKBCWLkLo+AqtTi9upJhiI9+8vCi6Jbm
-   w6XaMYlFkX5etbvdVUNL0l2OPa5wtYWMj1/LX7w8SxZSvb5orZA98f9nw
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10940"; a="15412203"
-X-IronPort-AV: E=Sophos;i="6.04,321,1695711600"; 
-   d="scan'208";a="15412203"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Dec 2023 19:39:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10940"; a="902785434"
-X-IronPort-AV: E=Sophos;i="6.04,321,1695711600"; 
-   d="scan'208";a="902785434"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orsmga004.jf.intel.com with ESMTP; 31 Dec 2023 19:39:47 -0800
-Message-ID: <50098edc-2bbb-4c8f-9360-6990f0f5d88a@linux.intel.com>
-Date: Mon, 1 Jan 2024 11:34:45 +0800
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="jQuDPbIO"
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+	by mailout.nyi.internal (Postfix) with ESMTP id 918FE5C020C;
+	Tue,  2 Jan 2024 02:24:41 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 02 Jan 2024 02:24:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm2; t=1704180281; x=1704266681; bh=2sRidRuJgpmzA3ok6Z8thcz4Si/E
+	71P3fem+BTaKpTg=; b=jQuDPbIOhXqcnl/2XjMpDaMcfl8xMb0wUs6rifmWfVnZ
+	CZyxvBfDg4CzNtJNfrNs4+dOmDN2ncCytkOjYcO8sCmEpGwsUPm4+YJUUPOAVj/c
+	1Pdv20ipeOaPJCDVwd4xl9BDleAvi9pF1dXCTJSP+GwGS5s4cUStlTvsXWwjArjd
+	8B4ajb/zsO5pS9vjG3tsbDSazawMBGIULVq9LMj5KUE6UgknAoo+2ovfgp5Q4duv
+	QS/cLYDgUJRzvms0uPwhCqfN2ncTrCDdaQoKBKUk3rslelsN/RifvBtrmxWFSx3E
+	EWX3JjrflNsJvDR7mFxphBRhPWWPrIoJzjdtMqmSPA==
+X-ME-Sender: <xms:OLqTZUqAZ-YFvGovg8iqU2bumziCYdVmWR2Wgkh7eiyeTWBGXlpGyQ>
+    <xme:OLqTZao3gs-XZFS3Z5E8oQ3eaw3wZp2s2Spjst4Rusgj7u9xEptqfuIHO2HuTgxpE
+    FDE5ucQOq_ZTtM>
+X-ME-Received: <xmr:OLqTZZPHjAyI0mpsJHA9ckF9qNuRpoLEV47SExMujYxI63b-fA3ZaUR0GhKf>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrvdeguddguddtlecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrg
+    htthgvrhhnpeehhfdtjedviefffeduuddvffegteeiieeguefgudffvdfftdefheeijedt
+    hfejkeenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhr
+    gh
+X-ME-Proxy: <xmx:OLqTZb53po1fN4Io2LSO_N0eEztCj_q1ImWDYwbbOY3ew-lL4Ht0Yw>
+    <xmx:OLqTZT504UKHqOCdIbj0j54Sixv7Z2KLuWhmT2IriPWpbR0Qk0B5mA>
+    <xmx:OLqTZbjOfHbkBgFDvLHHCaItpI0NaYi7uu3XRdZAt63uU3Yo3_EsiQ>
+    <xmx:ObqTZQuMPdwdPnnJtxkLqNynTDndagm2DAp9_OwGLHIchSsg8qiTmA>
+Feedback-ID: i494840e7:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 2 Jan 2024 02:24:40 -0500 (EST)
+Date: Tue, 2 Jan 2024 09:24:37 +0200
+From: Ido Schimmel <idosch@idosch.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, zhangzekun11@huawei.com,
+	john.g.garry@oracle.com, dheerajkumar.srivastava@amd.com,
+	jsnitsel@redhat.com
+Subject: Re: [PATCH v3 0/2] iommu/iova: Make the rcache depot properly
+ flexible
+Message-ID: <ZZO6NV-Kq-ktnyo5@shredder>
+References: <cover.1694535580.git.robin.murphy@arm.com>
+ <ZY1osaGLyT-sdKE8@shredder>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "cohuck@redhat.com" <cohuck@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
- "peterx@redhat.com" <peterx@redhat.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- "joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
- "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y" <yan.y.zhao@intel.com>,
- "j.granados@samsung.com" <j.granados@samsung.com>
-Subject: Re: [PATCH v8 07/10] iommu/vt-d: Allow qi_submit_sync() to return the
- QI faults
-To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-References: <20231227161354.67701-1-yi.l.liu@intel.com>
- <20231227161354.67701-8-yi.l.liu@intel.com>
- <BN9PR11MB5276429906ED56258BB433068C9EA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276429906ED56258BB433068C9EA@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZY1osaGLyT-sdKE8@shredder>
 
-On 12/28/23 2:17 PM, Tian, Kevin wrote:
->>   	raw_spin_lock_irqsave(&qi->q_lock, flags);
->>   	/*
->> @@ -1430,7 +1439,7 @@ int qi_submit_sync(struct intel_iommu *iommu,
->> struct qi_desc *desc,
->>   		 * a deadlock where the interrupt context can wait
->> indefinitely
->>   		 * for free slots in the queue.
->>   		 */
->> -		rc = qi_check_fault(iommu, index, wait_index);
->> +		rc = qi_check_fault(iommu, index, wait_index, fault);
->>   		if (rc)
->>   			break;
-> and as replied in another thread let's change qi_check_fault to return
-> -ETIMEDOUT to break the restart loop when fault pointer is valid.
+On Thu, Dec 28, 2023 at 02:23:20PM +0200, Ido Schimmel wrote:
+> On Tue, Sep 12, 2023 at 05:28:04PM +0100, Robin Murphy wrote:
+> > v2: https://lore.kernel.org/linux-iommu/cover.1692641204.git.robin.murphy@arm.com/
+> > 
+> > Hi all,
+> > 
+> > I hope this is good to go now, just fixed the locking (and threw
+> > lockdep at it to confirm, which of course I should have done to begin
+> > with...) and picked up tags.
+> 
+> Hi,
+> 
+> After pulling the v6.7 changes we started seeing the following memory
+> leaks [1] of 'struct iova_magazine'. I'm not sure how to reproduce it,
+> which is why I didn't perform bisection. However, looking at the
+> mentioned code paths, they seem to have been changed in v6.7 as part of
+> this patchset. I reverted both patches and didn't see any memory leaks
+> when running a full regression (~10 hours), but I will repeat it to be
+> sure.
 
-It's fine to break the retry loop when fault happens and the fault
-pointer is valid. Please don't forget to add an explanation comment
-around the code. Something like:
+FYI, we didn't see the leaks since reverting these two patches whereas
+before we saw them almost everyday, so I'm quite sure they introduced
+the leaks.
 
-/*
-  * The caller is able to handle the fault by itself. The IOMMU driver
-  * should not attempt to retry this request.
-  */
-
-Best regards,
-baolu
+Thanks
