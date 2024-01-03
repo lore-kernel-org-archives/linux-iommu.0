@@ -1,96 +1,185 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC69B17980
-	for <iommu@lists.linux.dev>; Wed,  3 Jan 2024 03:06:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5661A179A1;
+	Wed,  3 Jan 2024 04:55:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J5qYQCGY"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XdL/xiqH"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1704251189; x=1735787189;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=54mZ8lt3FIE0at3u9CpLbmAD6Xka6IeZtdwSydhjovE=;
-  b=J5qYQCGYYES4vGA0R3GOld6RKKdl+JukQRDUX8uAEnuiNkxxCbItz9k1
-   agEdGzZRkqAKQNkNFm9Fih8lidhufh4q7qyM3BDEyZsdaGkg9Yw+0vvOD
-   XDAwMEGq7bXBMRUiwtSzoRLrjCBXjrr/avvnl93UDAyA6KTu+OFoQYz1u
-   9ijANgwqRdiY/mW+OXgC8Bsp2YE/sSfrGgExWZ3Fi3xtvR/d5zmbSf5bu
-   XpitDnLUc6a4FtAA/PDB3ZZ/w8fpBMp6Q/28lHnrveNZIw5hxSF8K3xi7
-   0m6FTeCkpXZnTKDCNkGHi62/QlvFEWDrYP/HYVRoSLYkvSH5AmY6M+sya
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10941"; a="10578498"
+  t=1704257715; x=1735793715;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xwcgHyf2clMX/2mSlPKtbei8nLICIiRQRSs8SIsGMqc=;
+  b=XdL/xiqHRgXlMAju7Frhgvnnwad6msdl8avslyCXCXZj7W22s60ajgA8
+   8Olk1P4uhqj4Dn2/ypCcjjrHJ/qt4P6e6midPRrR2kF5wn5b7sOrwdet8
+   bbW0pJMorN17G+eRrY5QQrvdVVvPcx35vex+YJoAx9tPM9XO35tNE3Coz
+   Doei0ABhweutfUx/UdSbMgKxvI7X56skJwDeDWv4yEfvVHvQX5ETboxzB
+   i3qXddCFB8x5fns2/iAbJlhzghLhlPt5cOeiWzM/+GUrT9AEd5TARGEdu
+   ZDJvLF77DbccjrNAJSUDgsTr54VNapoiH6O6LtXHalY2FITay8dEPJq+S
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10941"; a="3774254"
 X-IronPort-AV: E=Sophos;i="6.04,326,1695711600"; 
-   d="scan'208";a="10578498"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jan 2024 19:06:28 -0800
+   d="scan'208";a="3774254"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jan 2024 20:55:10 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10941"; a="923403014"
+X-IronPort-AV: E=McAfee;i="6600,9927,10941"; a="1111248794"
 X-IronPort-AV: E=Sophos;i="6.04,326,1695711600"; 
-   d="scan'208";a="923403014"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.210.107]) ([10.254.210.107])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jan 2024 19:06:22 -0800
-Message-ID: <7486492a-d6ca-425d-9fbe-87107dbbecea@linux.intel.com>
-Date: Wed, 3 Jan 2024 11:06:19 +0800
+   d="scan'208";a="1111248794"
+Received: from ply01-vm-store.bj.intel.com ([10.238.153.201])
+  by fmsmga005.fm.intel.com with ESMTP; 02 Jan 2024 20:55:08 -0800
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+To: robin.murphy@arm.com
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	regressions@lists.linux.dev
+Subject: [Regression] [iommu/iova] iova_rbtree_lock contended seriously causing performance bottleneck (bisect done; commit found) 
+Date: Tue,  2 Jan 2024 23:55:06 -0500
+Message-Id: <20240103045506.1077586-1-haifeng.zhao@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, joro@8bytes.org, alex.williamson@redhat.com,
- kevin.tian@intel.com, robin.murphy@arm.com, cohuck@redhat.com,
- eric.auger@redhat.com, nicolinc@nvidia.com, kvm@vger.kernel.org,
- mjrosato@linux.ibm.com, chao.p.peng@linux.intel.com,
- yi.y.sun@linux.intel.com, peterx@redhat.com, jasowang@redhat.com,
- shameerali.kolothum.thodi@huawei.com, lulu@redhat.com,
- suravee.suthikulpanit@amd.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
- zhenzhong.duan@intel.com, joao.m.martins@oracle.com, xin.zeng@intel.com,
- yan.y.zhao@intel.com, j.granados@samsung.com
-Subject: Re: [PATCH v10 10/10] iommu/vt-d: Add iotlb flush for nested domain
-To: Yi Liu <yi.l.liu@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-References: <20240102143834.146165-1-yi.l.liu@intel.com>
- <20240102143834.146165-11-yi.l.liu@intel.com>
- <20240102184422.GI50406@nvidia.com>
- <ae271e08-f390-4ce7-914c-63668a46bc4b@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <ae271e08-f390-4ce7-914c-63668a46bc4b@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-On 2024/1/3 9:33, Yi Liu wrote:
-> On 2024/1/3 02:44, Jason Gunthorpe wrote:
->> On Tue, Jan 02, 2024 at 06:38:34AM -0800, Yi Liu wrote:
->>
->>> +static void intel_nested_flush_cache(struct dmar_domain *domain, u64 
->>> addr,
->>> +                     unsigned long npages, bool ih, u32 *error)
->>> +{
->>> +    struct iommu_domain_info *info;
->>> +    unsigned long i;
->>> +    unsigned mask;
->>> +    u32 fault;
->>> +
->>> +    xa_for_each(&domain->iommu_array, i, info)
->>> +        qi_flush_piotlb(info->iommu,
->>> +                domain_id_iommu(domain, info->iommu),
->>> +                IOMMU_NO_PASID, addr, npages, ih, NULL);
->>
->> This locking on the xarray is messed up throughout the driver. There
->> could be a concurrent detach at this point which will free info and
->> UAF this.
-> 
-> hmmm, xa_for_each() takes and releases rcu lock, and according to the
-> domain_detach_iommu(), info is freed after xa_erase(). For an existing
-> info stored in xarray, xa_erase() should return after rcu lock is released.
-> is it? Any idea? @Baolu
+flame graph
 
-I once thought locking for xarray is self-contained. I need more thought
-on this before taking further action.
 
-Best regards,
-baolu
+                                   queued_spin_lock_slowpath-------------\
+                                  do_raw_spin_lock                       \
+                                 _raw_spin_lock_irqsave                  \
+                                __alloc_and_insert_iova_range            \  
+                               alloc_iova_fast                           \
+                              iommu_dma_alloc_iova                       \
+                             __iommu_dma_map                             \
+                            iommu_dma_map_page                           \
+                           ice_tx_map.isra.0                             \
+                          ice_xmit_frame_ring                            \
+	                     dev_hard_start_xmit                             \
+                        sch_direct_xmit                                  \ 
+                       __dev_xmit_skb                                    \
+                      __dev_queue_xmit                                   \
+                     ip_finish_output2                                   \ 
+				     __ip_queue_xmit                                     \
+				    __tcp_transmit_skb                                   \ 
+				    tcp_write_xmit                                       \
+				   __tcp_push_pending_frames                             \
+				  tcp_sendmsg_locked                                     \
+                 tcp_sendmsg                                             \
+                tcp_sendmsg                                              \
+               sock_write_iter                                           \
+              do_iter_readv_writev                                       \
+             do_iter_write                                               \
+            vfs_writev                                                   \
+           do_writev                                                     \
+           do_syscall_64                                                 \
+          entry_SYSCALL_64_after_hwframe                                 \
+         __GI___writev                                                   \
+         [nginx]                                                         \
+        ngx_linux_sendfile_chain                                         \
+       ngx_http_write_filter                                             \
+      ngx_output_chain                                                   \
+     ngx_http_send_response                                              \
+    ngx_http_script_return_code                                          \
+  [nginx]                                                                \
+ ngx_http_core_run_phases                                                \
+ngx_http_process_request                                                 \
+
+Setup:                                          
+1. configure server nginx with following nginx.conf (appended to the tail)
+
+2. request server with WRK
+   ./wrk -t 64 -c 1024 -d 40 --latency http://$server_ip:10802/1KB.json
+
+Debugging summary:
+ Bisect identified "commit 371d7955e310 iommu/iova: Improve restart logic"
+ as cause.
+
+nginx.conf
+user nginx; 
+worker_processes 16;
+error_log /var/log/nginx/error.log crit;
+pid /var/run/nginx.pid; 
+events {
+worker_connections 4000;
+use epoll;
+multi_accept on;
+}
+http {
+include /etc/nginx/mime.types; 
+default_type application/octet-stream;
+log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+		'$status $body_bytes_sent "$http_referer" '
+		'"$http_user_agent" "$http_x_forwarded_for"';
+access_log off;
+sendfile on;
+tcp_nopush on;
+tcp_nodelay on;
+keepalive_timeout 65; 
+keepalive_requests 20480; 
+gzip_min_length 10240;
+gzip_comp_level 1;
+gzip_vary on;
+gzip_disable msie6;
+gzip_proxied expired no-cache no-store private auth; 
+gzip_types
+# text/html is always compressed by HttpGzipModule
+	text/css
+	text/javascript
+	text/xml
+	text/plain
+	text/x-component 
+	application/javascript 
+	application/x-javascript 
+	application/json 
+	application/xml 
+	application/rss+xml 
+	application/atom+xml 
+	font/truetype
+	font/opentype 
+	application/vnd.ms-fontobject 
+	image/svg+xml;
+
+reset_timedout_connection on;
+client_body_timeout 10;
+send_timeout 2;
+include /etc/nginx/conf.d/*.conf; 
+server {
+	listen 10802;
+    server_name  localhost;
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        #root   /usr/share/nginx/html;
+        root   /ramdisk;
+	}
+    location /1KB.json {
+               return 202 '{"status":"success","result":"\
+                           Hello from  NGINX, 2KB test\
+                           Nanchang, which was the capital of Yuzhang Prefecture during the HanDynasty, \
+                           now falls under the jurisdiction of Hongzhou. It straddles the borderof the \
+                           influence of the Ye and Zhen constellations , and is adjacent to theHeng \
+                           and the Lu mountains . The three rivers enfold it like the frontpart \
+                           of a garment and the five lakes encircle it like a girdle. Itcontrols \
+                           nature’s jewels. The radiance of its legendary sword shootsdirectly upward \
+                           between the constellations Niu and Dou. Its talented peopleare outstanding,\
+                           and the spirit of intelligence pervades the place. This wasthe place where Xu \
+                           Ru spent the night on his visit to Chen Fan (10). The mightyHongzhou spreads \
+                           meteors chasing one another.\
+                           "}';
+          }
+ }
+}
+-- 
+2.31.1
+
