@@ -1,59 +1,59 @@
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1531836082
-	for <iommu@lists.linux.dev>; Fri,  5 Jan 2024 19:22:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 622BB36093
+	for <iommu@lists.linux.dev>; Fri,  5 Jan 2024 19:22:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Xf8Hru/u"
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-68015293aa3so7881306d6.1
-        for <iommu@lists.linux.dev>; Fri, 05 Jan 2024 11:22:04 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="QFwwn5ad"
+Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-783045e88a6so117096085a.0
+        for <iommu@lists.linux.dev>; Fri, 05 Jan 2024 11:22:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1704482524; x=1705087324; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1704482545; x=1705087345; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8ju6RzmrIg7+r2kmHy1lMH3C5ek+CbXRDBgiJF/XUEs=;
-        b=Xf8Hru/uzlQtVzLbYr2DBhxvDsfQpBfPwhnOq3Yfc5x+arGCy15wxLxk428Ydda99Z
-         MJii7VfXJGq2cQVPrb7E0IJpy4H15qRYHy/9oYezholIoFHHbRl2gLpuzqAONsuKy42P
-         Vd2Vl3wdKzqFMcIkRQ5K54OSaabrH6ArOXuncvTWj5cyZy38hAMGhnjAloCTyJf3DLkk
-         21LDAEi5OCSNSJSqGROb6o/wpDu5x3B0XsVQ+TBapxlPmPBSG02EaLOZ3wztOXy/VChJ
-         a0nyzJoMXDDx/xNnj1XVlqYN9BVkrUYUc817+iF8/vBMbIlbgJs3nTtlRNfIvq/GsQ4X
-         Xbgw==
+        bh=eFYxPznrYDwPFeTL0EyC0fltoDSqr70+c91hOTw5kkw=;
+        b=QFwwn5adMFRIS5E1cSRELiY3uvC8RPVIG3Fj99v267fJMZeAJAkkFkA3q73ewy6xNS
+         TZEhtuZ+tT3SOdPQ8oNUqedgwcMDdbTrdnrx0pwC7sGNlsYM8tQZAs/aC3Y6snZZ7ATm
+         oImGIeA77cAjNvS14EPM6i5WqoRWbOiQ9s/POdHvIQ/XCuN5FOJ78l/ZWmaOA8kZDiB7
+         VbMULbuIFxlnbxHVlmcHxxqWfRXQUqLuOsOpFSoD8m/1lddFK5X1ai+sMHxExjcbUa7h
+         8uWugSv3igMB6SKmenZD39K1mubnLmZ/5IDszRPbwJI7NBm+bhdnD4nzhCEXDrDQPN05
+         NN4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704482524; x=1705087324;
+        d=1e100.net; s=20230601; t=1704482545; x=1705087345;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=8ju6RzmrIg7+r2kmHy1lMH3C5ek+CbXRDBgiJF/XUEs=;
-        b=ruBE+3tUrh/IO2F4gphB7CWOeIWL9+X0ZDArnMHyr97rIQ2vIy3n6uWgqUIkJBQipZ
-         8owWToNvtomoadwHDKRKgzSHCd9xoKkieVq78GDuZGDqfSLdgPo4Aui9s+RRgSqFwjMj
-         101lMkzbBtOrfpFK/I2Flea3b0gvqwCxsOZEKVfKzWzC4ym5i7xxzNe01O7PyNR99vKg
-         +KalFXKtW3oD6/HcHOflHKhZyISYTL2TMEuOarCih5x1tP0vh5+6115CuhsazJRgmha3
-         cbOuzliZBy3wWwBI+MtwnKho3idWzoWrQNDWQZc4ElNi3t+eqfCXSLjSOHdCYYqYRui4
-         rHIQ==
-X-Gm-Message-State: AOJu0YwIa5N+6V7AanCIcRxLbpDPKrH12EMC0ll4dTBFZRqH/s5zi2RE
-	VtvY9nFuKDRDOTW/n7vcKJcvUk/M+roXdPNaXscJgkkTd5Q=
-X-Google-Smtp-Source: AGHT+IHCxP63X6TGssxj3/CquQ9xnPrTwbDyUQCKmS1Xca9ur0bhpHNZGssaQG+lksonus1Nt3Ddvg==
-X-Received: by 2002:a05:6214:1c4e:b0:67f:6208:b0f with SMTP id if14-20020a0562141c4e00b0067f62080b0fmr2670262qvb.44.1704482524083;
-        Fri, 05 Jan 2024 11:22:04 -0800 (PST)
+        bh=eFYxPznrYDwPFeTL0EyC0fltoDSqr70+c91hOTw5kkw=;
+        b=nVeGUvT6I3Xblax8VegQro4ggr8t8NF+TMg29gCI4n0EAYkPTNqnQg/Za1jmlPo12P
+         UBZ4ezcPOt5LBc/CSmPjbqUzVoM2BzZxxjltZlXUSUMaW7fFx2GZ+NUq0+he5LeHpoX3
+         a/H7HZi0SBcM1Ov3IPDgBpPO3CwBz1AwOcHEYDMir79ruKGs6PZ9RuTEsczy2Tq8RN9b
+         G4qCvqZUJ1PPSZcyocvrOFate2ddOg1IYfdJkib7Vn+9DUICxfxdWZnHQzxgT9Z6tjfx
+         wCWhfPXTdhfyRSAlD6cUH5z01N7PYVLYA53nbTGaglzFCntfxU1rBBVRXYu57WscZldp
+         LEtA==
+X-Gm-Message-State: AOJu0YxUr5E2/zSdBToSnEXLjzZrC1dNjw4gnnwrHhPZZH+Yi+emCNIm
+	7ffy+2GmBa1FiO6in2t6l7HrSc7oZeD23A==
+X-Google-Smtp-Source: AGHT+IGOlM/awXt0sdNQv2O6OOQ3NukkUTtzI8DMH3kd9arocU2FRSpBTakTmmvy3zuQVh/7xaB8rQ==
+X-Received: by 2002:a05:620a:190b:b0:77b:d5d4:a105 with SMTP id bj11-20020a05620a190b00b0077bd5d4a105mr3302686qkb.38.1704482545287;
+        Fri, 05 Jan 2024 11:22:25 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id h13-20020a0562140dad00b00680cbea3c84sm823702qvh.84.2024.01.05.11.22.03
+        by smtp.gmail.com with ESMTPSA id c10-20020a37e10a000000b007815a43d297sm800697qkm.40.2024.01.05.11.22.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 05 Jan 2024 11:22:03 -0800 (PST)
+        Fri, 05 Jan 2024 11:22:24 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rLplb-001Vda-4y;
-	Fri, 05 Jan 2024 15:22:03 -0400
-Date: Fri, 5 Jan 2024 15:22:03 -0400
+	id 1rLplw-001Vdv-Cz;
+	Fri, 05 Jan 2024 15:22:24 -0400
+Date: Fri, 5 Jan 2024 15:22:24 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v4 14/16] iommu/amd: Remove unused flush pasid functions
-Message-ID: <20240105192203.GS50608@ziepe.ca>
+Subject: Re: [PATCH v4 15/16] iommu/amd: Rearrange device flush code
+Message-ID: <20240105192224.GT50608@ziepe.ca>
 References: <20231212085224.6985-1-vasant.hegde@amd.com>
- <20231212085224.6985-15-vasant.hegde@amd.com>
+ <20231212085224.6985-16-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,20 +62,21 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20231212085224.6985-15-vasant.hegde@amd.com>
+In-Reply-To: <20231212085224.6985-16-vasant.hegde@amd.com>
 
-On Tue, Dec 12, 2023 at 08:52:22AM +0000, Vasant Hegde wrote:
-> We have removed iommu_v2 module and converted v2 page table to use
-> common flush functions. Also we have moved GCR3 table to per device.
-> PASID related functions are not used. Hence remove these unused
-> functions.
+On Tue, Dec 12, 2023 at 08:52:23AM +0000, Vasant Hegde wrote:
+> Consolidate all flush related code in one place so that its easy
+> to maintain.
+> 
+> No functional changes intended.
 > 
 > Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 > ---
->  drivers/iommu/amd/amd_iommu.h |   3 -
->  drivers/iommu/amd/iommu.c     | 100 ----------------------------------
->  2 files changed, 103 deletions(-)
+>  drivers/iommu/amd/iommu.c | 92 ++++++++++++++++++---------------------
+>  1 file changed, 43 insertions(+), 49 deletions(-)
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+
+Usual remark about not moving code without good reason..
 
 Jason
