@@ -1,167 +1,104 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 649AA5466F
-	for <iommu@lists.linux.dev>; Mon,  8 Jan 2024 17:35:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BDBE3C15;
-	Mon,  8 Jan 2024 09:36:20 -0800 (PST)
-Received: from [10.57.42.133] (unknown [10.57.42.133])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6DE003F73F;
-	Mon,  8 Jan 2024 09:35:33 -0800 (PST)
-Message-ID: <c9cf02b5-7add-46ea-8db1-46fdce191c1c@arm.com>
-Date: Mon, 8 Jan 2024 17:35:26 +0000
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C031A54BC5;
+	Mon,  8 Jan 2024 17:55:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E77A9C433C8;
+	Mon,  8 Jan 2024 17:55:34 +0000 (UTC)
+Date: Mon, 8 Jan 2024 17:55:32 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Baruch Siach <baruch@tkos.co.il>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev, devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
+	Ramon Fried <ramon@neureality.ai>
+Subject: Re: [PATCH RFC 3/4] dma-direct: add offset to zone_dma_bits
+Message-ID: <ZZw3FDy8800NScEk@arm.com>
+References: <cover.1703683642.git.baruch@tkos.co.il>
+ <fae5b1180161a7d8cd626a96f5df80b0a0796b8b.1703683642.git.baruch@tkos.co.il>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/2] iommu/iova: Make the rcache depot properly
- flexible
-Content-Language: en-GB
-To: Ido Schimmel <idosch@idosch.org>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, zhangzekun11@huawei.com,
- john.g.garry@oracle.com, dheerajkumar.srivastava@amd.com, jsnitsel@redhat.com
-References: <cover.1694535580.git.robin.murphy@arm.com>
- <ZY1osaGLyT-sdKE8@shredder>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZY1osaGLyT-sdKE8@shredder>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fae5b1180161a7d8cd626a96f5df80b0a0796b8b.1703683642.git.baruch@tkos.co.il>
 
-On 2023-12-28 12:23 pm, Ido Schimmel wrote:
-> On Tue, Sep 12, 2023 at 05:28:04PM +0100, Robin Murphy wrote:
->> v2: https://lore.kernel.org/linux-iommu/cover.1692641204.git.robin.murphy@arm.com/
->>
->> Hi all,
->>
->> I hope this is good to go now, just fixed the locking (and threw
->> lockdep at it to confirm, which of course I should have done to begin
->> with...) and picked up tags.
+On Wed, Dec 27, 2023 at 05:04:27PM +0200, Baruch Siach wrote:
+> Current code using zone_dma_bits assume that all addresses range in the
+> bits mask are suitable for DMA. For some existing platforms this
+> assumption is not correct. DMA range might have non zero lower limit.
 > 
-> Hi,
+> Add 'zone_dma_off' for platform code to set base address for DMA zone.
 > 
-> After pulling the v6.7 changes we started seeing the following memory
-> leaks [1] of 'struct iova_magazine'. I'm not sure how to reproduce it,
-> which is why I didn't perform bisection. However, looking at the
-> mentioned code paths, they seem to have been changed in v6.7 as part of
-> this patchset. I reverted both patches and didn't see any memory leaks
-> when running a full regression (~10 hours), but I will repeat it to be
-> sure.
+> Rename the dma_direct_supported() local 'min_mask' variable to better
+> describe its use as limit.
 > 
-> Any idea what could be the problem?
+> Suggested-by: Catalin Marinas <catalin.marinas@arm.com>
 
-Hmm, we've got what looks to be a set of magazines forming a plausible 
-depot list (or at least the tail end of one):
+When I suggested taking the DMA offsets into account, that's not exactly
+what I meant. Based on patch 4, it looks like zone_dma_off is equivalent
+to the lower CPU address. Let's say a system has DRAM starting at 2GB
+and all 32-bit DMA-capable devices has a DMA offset of 0. We want
+ZONE_DMA32 to end at 4GB rather than 6GB.
 
-ffff8881411f9000 -> ffff8881261c1000
+> @@ -59,7 +60,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
+>  	 * zones.
+>  	 */
+>  	*phys_limit = dma_to_phys(dev, dma_limit);
+> -	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
+> +	if (*phys_limit <= zone_dma_off + DMA_BIT_MASK(zone_dma_bits))
+>  		return GFP_DMA;
+>  	if (*phys_limit <= DMA_BIT_MASK(32))
+>  		return GFP_DMA32;
 
-ffff8881261c1000 -> ffff88812be26400
+Ah, you ignore the zone_dma_off for 32-bit calculations. But the
+argument still stands, the start of DRAM does not necessarily mean that
+all non-64-bit devices have such DMA offset.
 
-ffff88812be26400 -> ffff8188392ec000
+The current dma_direct_optimal_gfp_mask() confuses me a bit, I think it
+gives the wrong flag if we have a zone_dma_bits of 30 and a device with
+a coherent_dma_mask of 31, it incorrectly ends up with GFP_DMA32 (I'm
+ignoring dma offsets in this example). Luckily I don't think we have any
+set up where this would fail. Basically if *phys_limit is strictly
+smaller than DMA_BIT_MASK(32), we want GFP_DMA rather than GFP_DMA32
+even if it is larger than DMA_BIT_MASK(zone_dma_bits).
 
-ffff8188392ec000 -> ffff8881a5301000
+Anyway, current mainline assumes that DMA_BIT_MASK(zone_dma_bits) and
+DMA_BIT_MASK(32) are CPU addresses. The problem is that we may have the
+start of RAM well above 4GB and neither ZONE_DMA nor ZONE_DMA32 upper
+limits would be a power-of-two. We could change the DMA_BIT_MASK(...) to
+be DMA address limits and we end up with something like:
 
-ffff8881a5301000 -> NULL
+static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
+{
+	u64 dma_limit = min_not_zero(
+		dev->coherent_dma_mask,
+		dev->bus_dma_limit);
+	u64 dma32_limit = dma_to_phys(dev, DMA_BIT_MASK(32));
 
-which I guess has somehow become detached from its rcache->depot without 
-being freed properly? However I'm struggling to see any conceivable way 
-that could happen which wouldn't already be more severely broken in 
-other ways as well (i.e. either general memory corruption or someone 
-somehow still trying to use the IOVA domain while it's being torn down).
+	*phys_limit = dma_to_phys(dev, dma_limit);
+	if (*phys_limit > dma_limit)
+		return 0;
+	if (*phys_limit = dma32_limit)
+		return GFP_DMA32;
+	return GFP_DMA;
+}
 
-Out of curiosity, does reverting just patch #2 alone make a difference? 
-And is your workload doing anything "interesting" in relation to IOVA 
-domain lifetimes, like creating and destroying SR-IOV virtual functions, 
-changing IOMMU domain types via sysfs, or using that horrible vdpa 
-thing, or are you seeing this purely from regular driver DMA API usage?
+The alternative is to get rid of the *_bits variants and go for
+zone_dma_limit and zone_dma32_limit in the generic code. For most
+architectures they would match the current DMA_BIT_MASK(32) etc. but
+arm64 would be able to set some higher values.
 
-Thanks,
-Robin.
+My preference would be to go for zone_dma{,32}_limit, it's easier to
+change all the places where DMA_BIT_MASK({zone_dma_bits,32}) is used.
 
-> 
-> Thanks
-> 
-> [1]
-> unreferenced object 0xffff8881a5301000 (size 1024):
->    comm "softirq", pid 0, jiffies 4306297099 (age 462.991s)
->    hex dump (first 32 bytes):
->      00 00 00 00 00 00 00 00 e7 7d 05 00 00 00 00 00  .........}......
->      0f b4 05 00 00 00 00 00 b4 96 05 00 00 00 00 00  ................
->    backtrace:
->      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
->      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
->      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
->      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
->      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
->      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
->      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
->      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
->      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
-> 
-> unreferenced object 0xffff8881392ec000 (size 1024):
->    comm "softirq", pid 0, jiffies 4306326731 (age 433.359s)
->    hex dump (first 32 bytes):
->      00 10 30 a5 81 88 ff ff 50 ff 0f 00 00 00 00 00  ..0.....P.......
->      f3 99 05 00 00 00 00 00 87 b7 05 00 00 00 00 00  ................
->    backtrace:
->      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
->      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
->      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
->      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
->      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
->      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
->      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
->      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
->      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
-> 
-> unreferenced object 0xffff8881411f9000 (size 1024):
->    comm "softirq", pid 0, jiffies 4306708887 (age 51.459s)
->    hex dump (first 32 bytes):
->      00 10 1c 26 81 88 ff ff 2c 96 05 00 00 00 00 00  ...&....,.......
->      ac fe 0f 00 00 00 00 00 a6 fe 0f 00 00 00 00 00  ................
->    backtrace:
->      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
->      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
->      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
->      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
->      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
->      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
->      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
->      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
->      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
-> 
-> unreferenced object 0xffff88812be26400 (size 1024):
->    comm "softirq", pid 0, jiffies 4306710027 (age 50.319s)
->    hex dump (first 32 bytes):
->      00 c0 2e 39 81 88 ff ff 32 ab 05 00 00 00 00 00  ...9....2.......
->      e3 ac 05 00 00 00 00 00 1f b6 05 00 00 00 00 00  ................
->    backtrace:
->      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
->      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
->      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
->      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
->      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
->      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
->      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
->      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
->      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
-> 
-> unreferenced object 0xffff8881261c1000 (size 1024):
->    comm "softirq", pid 0, jiffies 4306711547 (age 48.799s)
->    hex dump (first 32 bytes):
->      00 64 e2 2b 81 88 ff ff c0 7c 05 00 00 00 00 00  .d.+.....|......
->      87 a5 05 00 00 00 00 00 0e 9a 05 00 00 00 00 00  ................
->    backtrace:
->      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
->      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
->      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
->      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
->      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
->      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
->      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
->      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
->      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
+-- 
+Catalin
