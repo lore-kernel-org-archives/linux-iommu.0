@@ -1,38 +1,38 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F032D3FFF
-	for <iommu@lists.linux.dev>; Tue,  9 Jan 2024 03:41:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75AB48F42
+	for <iommu@lists.linux.dev>; Tue,  9 Jan 2024 05:54:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="agEMEu1T"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P8wIVdF6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1704771697; x=1736307697;
-  h=message-id:date:mime-version:cc:subject:to:references:
+  t=1704779675; x=1736315675;
+  h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=0LdLdd5VFFhLorx8pbQnlS22X5wJJoCIwyGO5I6Dq9A=;
-  b=agEMEu1TNril1O3jlbBCjBr6ne98c9odINZ2FWUST+vjAwn6MdnqMiBg
-   xoIp3BdOMd2ziVK14cKmRuEUl4knqkFw4Pz+zyiKKIhgRIFNAhHw2KOxc
-   M/dsnd0sncJkBW/g6C/EX3CTv3ofiXlXNy+70LD9LU2VSovKxjCl6J87T
-   OD0mK1qNC6pZzqRaLUwhc/eTOXy+LHmfbAsswL8hVkELA8QoXUfFxCCuM
-   Hhzw+Doz1zFMwNLmqlhRnxFio93vdumvO1BSenQrprpvkORhCy+pJSDGH
-   0NSANstjXGkJtkfb0hApieXATjvlAQGRsj6Rrbl9E3DG/UetUF+VZ0xJT
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="16667557"
+  bh=9cgQwI7g8cd64aO6IDwl4DiR8sizuP2sKWjwlnQwD4A=;
+  b=P8wIVdF6J8XOWo+LYPJvbZc2HKWCSRxpiLDU6CVnA6p1KStEk+5dizSW
+   i4wFN8fbnoLESFmo1Qtdm3lD3VtNcfmpmpJhNjjXK4nRlXzIBy5PfwJoK
+   Hy4FdEqG0Sljvi0nBfXfkq09KnJvw5Uvy7k9nJa8j1VpMmKQfgdCG+fZC
+   2+DixGZnluh8zATYjcPutcgiodfSIhaJcEjdKf2QtUqrXGdgIC3G52D3G
+   fq75dijV+ZK40WKe8lbYkrwXlPQFUZvHYTeJecabd7raM46jQ2r860A7Y
+   fD/FL0wq0TejVKJjg32nm0IkUxk/uUiPqovAwg0cdCGGJYy4PEXNAkAKy
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="396961979"
 X-IronPort-AV: E=Sophos;i="6.04,181,1695711600"; 
-   d="scan'208";a="16667557"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2024 19:41:36 -0800
+   d="scan'208";a="396961979"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2024 21:54:34 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="852024581"
+X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="925111147"
 X-IronPort-AV: E=Sophos;i="6.04,181,1695711600"; 
-   d="scan'208";a="852024581"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmsmga004.fm.intel.com with ESMTP; 08 Jan 2024 19:41:32 -0800
-Message-ID: <91c2add2-3015-4935-9dd5-d4e42aff473a@linux.intel.com>
-Date: Tue, 9 Jan 2024 11:36:19 +0800
+   d="scan'208";a="925111147"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.238.130.17]) ([10.238.130.17])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2024 21:54:30 -0800
+Message-ID: <15a058ba-3b51-46f3-bb1c-23792d100b55@linux.intel.com>
+Date: Tue, 9 Jan 2024 13:54:27 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,89 +40,167 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Longfang Liu <liulongfang@huawei.com>, Yan Zhao <yan.y.zhao@intel.com>,
- iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v9 13/14] iommu: Improve iopf_queue_remove_device()
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20231220012332.168188-1-baolu.lu@linux.intel.com>
- <20231220012332.168188-14-baolu.lu@linux.intel.com>
- <20240105162540.GH50608@ziepe.ca>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240105162540.GH50608@ziepe.ca>
+Subject: Re: [PATCH v3 0/2] iommu/iova: Make the rcache depot properly
+ flexible
+To: Robin Murphy <robin.murphy@arm.com>, Ido Schimmel <idosch@idosch.org>
+Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, zhangzekun11@huawei.com,
+ john.g.garry@oracle.com, dheerajkumar.srivastava@amd.com, jsnitsel@redhat.com
+References: <cover.1694535580.git.robin.murphy@arm.com>
+ <ZY1osaGLyT-sdKE8@shredder> <c9cf02b5-7add-46ea-8db1-46fdce191c1c@arm.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <c9cf02b5-7add-46ea-8db1-46fdce191c1c@arm.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 1/6/24 12:25 AM, Jason Gunthorpe wrote:
-> On Wed, Dec 20, 2023 at 09:23:31AM +0800, Lu Baolu wrote:
->> -int iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
->> +void iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
->>   {
->> -	int ret = 0;
->>   	struct iopf_fault *iopf, *next;
->> +	struct iommu_page_response resp;
->>   	struct dev_iommu *param = dev->iommu;
->>   	struct iommu_fault_param *fault_param;
->> +	const struct iommu_ops *ops = dev_iommu_ops(dev);
->>   
->>   	mutex_lock(&queue->lock);
->>   	mutex_lock(&param->lock);
->>   	fault_param = rcu_dereference_check(param->fault_param,
->>   					    lockdep_is_held(&param->lock));
->> -	if (!fault_param) {
->> -		ret = -ENODEV;
->> -		goto unlock;
->> -	}
->> -
->> -	if (fault_param->queue != queue) {
->> -		ret = -EINVAL;
->> -		goto unlock;
->> -	}
->>   
->> -	if (!list_empty(&fault_param->faults)) {
->> -		ret = -EBUSY;
->> +	if (WARN_ON(!fault_param || fault_param->queue != queue))
->>   		goto unlock;
->> -	}
->> -
->> -	list_del(&fault_param->queue_list);
->>   
->> -	/* Just in case some faults are still stuck */
->> +	mutex_lock(&fault_param->lock);
->>   	list_for_each_entry_safe(iopf, next, &fault_param->partial, list)
->>   		kfree(iopf);
->>   
->> +	list_for_each_entry_safe(iopf, next, &fault_param->faults, list) {
->> +		memset(&resp, 0, sizeof(struct iommu_page_response));
->> +		resp.pasid = iopf->fault.prm.pasid;
->> +		resp.grpid = iopf->fault.prm.grpid;
->> +		resp.code = IOMMU_PAGE_RESP_INVALID;
-> 
-> I would probably move the resp and iopf variables into here:
-> 
-> 		struct iopf_fault *iopf = &group->last_fault;
-> 		struct iommu_page_response resp = {
-> 			.pasid = iopf->fault.prm.pasid,
-> 			.grpid = iopf->fault.prm.grpid,
-> 			.code = IOMMU_PAGE_RESP_INVALID
-> 		};
-> 
-> (and call the other one partial_iopf)
 
-Yours looks better. Done.
+On 1/9/2024 1:35 AM, Robin Murphy wrote:
+> On 2023-12-28 12:23 pm, Ido Schimmel wrote:
+>> On Tue, Sep 12, 2023 at 05:28:04PM +0100, Robin Murphy wrote:
+>>> v2: 
+>>> https://lore.kernel.org/linux-iommu/cover.1692641204.git.robin.murphy@arm.com/
+>>>
+>>> Hi all,
+>>>
+>>> I hope this is good to go now, just fixed the locking (and threw
+>>> lockdep at it to confirm, which of course I should have done to begin
+>>> with...) and picked up tags.
+>>
+>> Hi,
+>>
+>> After pulling the v6.7 changes we started seeing the following memory
+>> leaks [1] of 'struct iova_magazine'. I'm not sure how to reproduce it,
+>> which is why I didn't perform bisection. However, looking at the
+>> mentioned code paths, they seem to have been changed in v6.7 as part of
+>> this patchset. I reverted both patches and didn't see any memory leaks
+>> when running a full regression (~10 hours), but I will repeat it to be
+>> sure.
+>>
+>> Any idea what could be the problem?
+>
+> Hmm, we've got what looks to be a set of magazines forming a plausible 
+> depot list (or at least the tail end of one):
+>
+> ffff8881411f9000 -> ffff8881261c1000
+>
+> ffff8881261c1000 -> ffff88812be26400
+>
+> ffff88812be26400 -> ffff8188392ec000
+>
+> ffff8188392ec000 -> ffff8881a5301000
+>
+> ffff8881a5301000 -> NULL
+>
+> which I guess has somehow become detached from its rcache->depot 
+> without being freed properly? However I'm struggling to see any 
+> conceivable way that could happen which wouldn't already be more 
+> severely broken in other ways as well (i.e. either general memory 
+> corruption or someone somehow still trying to use the IOVA domain 
+> while it's being torn down).
+>
+> Out of curiosity, does reverting just patch #2 alone make a 
+> difference? And is your workload doing anything "interesting" in 
+> relation to IOVA domain lifetimes, like creating and destroying SR-IOV 
+> virtual functions, changing IOMMU domain types via sysfs, or using 
+> that horrible vdpa thing, or are you seeing this purely from regular 
+> driver DMA API usage?
 
-> 
-> But this looks fine either way
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+There no lock held when free_iova_rcaches(), is it possible 
+free_iova_rcaches() race with the delayed iova_depot_work_func() ?
 
-Thank you very much!
+I don't know why not call cancel_delayed_work_sync(&rcache->work); first 
+in free_iova_rcaches() to avoid possible race.
 
-Best regards,
-baolu
+
+Thanks,
+
+Ethan
+
+>
+> Thanks,
+> Robin.
+>
+>>
+>> Thanks
+>>
+>> [1]
+>> unreferenced object 0xffff8881a5301000 (size 1024):
+>>    comm "softirq", pid 0, jiffies 4306297099 (age 462.991s)
+>>    hex dump (first 32 bytes):
+>>      00 00 00 00 00 00 00 00 e7 7d 05 00 00 00 00 00 .........}......
+>>      0f b4 05 00 00 00 00 00 b4 96 05 00 00 00 00 00 ................
+>>    backtrace:
+>>      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
+>>      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
+>>      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
+>>      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
+>>      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
+>>      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
+>>      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
+>>      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
+>>      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
+>>
+>> unreferenced object 0xffff8881392ec000 (size 1024):
+>>    comm "softirq", pid 0, jiffies 4306326731 (age 433.359s)
+>>    hex dump (first 32 bytes):
+>>      00 10 30 a5 81 88 ff ff 50 ff 0f 00 00 00 00 00 ..0.....P.......
+>>      f3 99 05 00 00 00 00 00 87 b7 05 00 00 00 00 00 ................
+>>    backtrace:
+>>      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
+>>      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
+>>      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
+>>      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
+>>      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
+>>      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
+>>      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
+>>      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
+>>      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
+>>
+>> unreferenced object 0xffff8881411f9000 (size 1024):
+>>    comm "softirq", pid 0, jiffies 4306708887 (age 51.459s)
+>>    hex dump (first 32 bytes):
+>>      00 10 1c 26 81 88 ff ff 2c 96 05 00 00 00 00 00 ...&....,.......
+>>      ac fe 0f 00 00 00 00 00 a6 fe 0f 00 00 00 00 00 ................
+>>    backtrace:
+>>      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
+>>      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
+>>      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
+>>      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
+>>      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
+>>      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
+>>      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
+>>      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
+>>      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
+>>
+>> unreferenced object 0xffff88812be26400 (size 1024):
+>>    comm "softirq", pid 0, jiffies 4306710027 (age 50.319s)
+>>    hex dump (first 32 bytes):
+>>      00 c0 2e 39 81 88 ff ff 32 ab 05 00 00 00 00 00 ...9....2.......
+>>      e3 ac 05 00 00 00 00 00 1f b6 05 00 00 00 00 00 ................
+>>    backtrace:
+>>      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
+>>      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
+>>      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
+>>      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
+>>      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
+>>      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
+>>      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
+>>      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
+>>      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
+>>
+>> unreferenced object 0xffff8881261c1000 (size 1024):
+>>    comm "softirq", pid 0, jiffies 4306711547 (age 48.799s)
+>>    hex dump (first 32 bytes):
+>>      00 64 e2 2b 81 88 ff ff c0 7c 05 00 00 00 00 00 .d.+.....|......
+>>      87 a5 05 00 00 00 00 00 0e 9a 05 00 00 00 00 00 ................
+>>    backtrace:
+>>      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
+>>      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
+>>      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
+>>      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
+>>      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
+>>      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
+>>      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
+>>      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
+>>      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
+>
