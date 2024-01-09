@@ -1,55 +1,44 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mail.tkos.co.il (guitar.tkos.co.il [84.110.109.230])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E24A3374E7
-	for <iommu@lists.linux.dev>; Tue,  9 Jan 2024 11:43:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51C7A39855
+	for <iommu@lists.linux.dev>; Tue,  9 Jan 2024 14:07:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tkos.co.il
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="hhbjaKjK"
-Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 409BKuD9003807;
-	Tue, 9 Jan 2024 11:43:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-type; s=qcppdkim1; bh=OjB3xQjydpXP4RYE27Y4
-	juUfQeiOmdLDzxj6GyA8JfE=; b=hhbjaKjKA/00zAr2KaH32vW1M0yEPuli/v25
-	z746i3ZN8CdWrBU1QeP0355mKFahDR18rG6aT+uoRxwxcKb4dUn+1OJHPytnoSXF
-	4jvMblAll38n+R4j8t5c1qfd56b4fojrvNUd297PgfxaSOxsBeNVR5bwWSO295rJ
-	MjrEdEUQj7CzZAul6Ph0L5aytspeskOmtNOalUPu2EYIaHLf8j+hESq1chzRew9O
-	8WVX1FwF9AxJXU4QcodlKhb9YiI1SFL8da3kBSLkER3AHUOZG7kaQTh3a28WKyDv
-	KqjTRvLeMg4ocGQVHb1Gkki1WiAnm/68TGGjjhHUriPnQDxNuQ==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vgwhs8xdm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 09 Jan 2024 11:43:13 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 409BhCYa020337
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 9 Jan 2024 11:43:12 GMT
-Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Tue, 9 Jan 2024 03:43:06 -0800
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
-        <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>, <mani@kernel.org>,
-        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
-        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
-        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
-        <quic_molvera@quicinc.com>
-CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        <qipl.kernel.upstream@quicinc.com>,
-        Bibek Kumar Patro
-	<quic_bibekkum@quicinc.com>
-Subject: [PATCH v7 5/5] iommu/arm-smmu: add ACTLR data and support for SC7280
-Date: Tue, 9 Jan 2024 17:12:20 +0530
-Message-ID: <20240109114220.30243-6-quic_bibekkum@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20240109114220.30243-1-quic_bibekkum@quicinc.com>
-References: <20240109114220.30243-1-quic_bibekkum@quicinc.com>
+	dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b="aAyidV3w"
+Received: from localhost (unknown [10.0.8.2])
+	by mail.tkos.co.il (Postfix) with ESMTP id A125F4403F1;
+	Tue,  9 Jan 2024 16:04:42 +0200 (IST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
+	s=default; t=1704809082;
+	bh=nWkMWvzxZARucV9BKvxgMiKFVZFgW9ZAI35CPkgiN1w=;
+	h=References:From:To:Cc:Subject:Date:In-reply-to:From;
+	b=aAyidV3wDfegVJgn3hj2aDw+IJDBsWlDNykw4JwSxDMX60QxAwvxku7WYwfhglKQX
+	 2r0YYJ4vBr+Je8oNZDOdl03Cx6gpEWss69lfGvbPCQRUa+su3KRCQ2L5JP5uk8NSsT
+	 gKR3SjuvtHwmVr93lXLKe85z8EGw5nJYRq2LITFBorKEpSQoWSM5eydLbl6TM5LuMc
+	 qXaOIwyps6aHgGJmM3j3vuH3oGosFp6h+DNn1Bl79twF0pH0Ke49ZYDFe/6A7k52C/
+	 2zLQhUqhtvbGT9bWpW1uWcR/oxlGh2ALKR9AqV8kfKCO+UVdQa2VwrxbqNbvbyDtKL
+	 AZGd+7diylz+Q==
+References: <cover.1703683642.git.baruch@tkos.co.il>
+ <fae5b1180161a7d8cd626a96f5df80b0a0796b8b.1703683642.git.baruch@tkos.co.il>
+ <ZZw3FDy8800NScEk@arm.com> <87msterf7b.fsf@tarshish>
+ <ZZ0mAxGupZKRPzWR@arm.com>
+User-agent: mu4e 1.10.8; emacs 29.1
+From: Baruch Siach <baruch@tkos.co.il>
+To: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Rob Herring <robh+dt@kernel.org>, Frank Rowand
+ <frowand.list@gmail.com>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, iommu@lists.linux.dev, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, Petr
+ =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>, Ramon Fried
+ <ramon@neureality.ai>, Elad
+ Nachman <enachman@marvell.com>
+Subject: Re: [PATCH RFC 3/4] dma-direct: add offset to zone_dma_bits
+Date: Tue, 09 Jan 2024 15:54:13 +0200
+In-reply-to: <ZZ0mAxGupZKRPzWR@arm.com>
+Message-ID: <871qaqr477.fsf@tarshish>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -57,84 +46,52 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 8KVstYxiO6XUYXPvKkATIU7waMDz1YzW
-X-Proofpoint-GUID: 8KVstYxiO6XUYXPvKkATIU7waMDz1YzW
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxlogscore=999
- suspectscore=0 lowpriorityscore=0 phishscore=0 mlxscore=0 adultscore=0
- spamscore=0 malwarescore=0 priorityscore=1501 impostorscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2311290000
- definitions=main-2401090095
 
-Add ACTLR data table for SC7280 along with support for
-same including SC7280 specific implementation operations.
+Hi Catalin,
 
-Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 30 +++++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
+On Tue, Jan 09 2024, Catalin Marinas wrote:
+> On Tue, Jan 09, 2024 at 12:03:43PM +0200, Baruch Siach wrote:
+>> On Mon, Jan 08 2024, Catalin Marinas wrote:
+>> > On Wed, Dec 27, 2023 at 05:04:27PM +0200, Baruch Siach wrote:
+>> >> Current code using zone_dma_bits assume that all addresses range in the
+>> >> bits mask are suitable for DMA. For some existing platforms this
+>> >> assumption is not correct. DMA range might have non zero lower limit.
+>> >> 
+>> >> Add 'zone_dma_off' for platform code to set base address for DMA zone.
+>> >> 
+>> >> Rename the dma_direct_supported() local 'min_mask' variable to better
+>> >> describe its use as limit.
+>> >> 
+>> >> Suggested-by: Catalin Marinas <catalin.marinas@arm.com>
+>> >
+>> > When I suggested taking the DMA offsets into account, that's not exactly
+>> > what I meant. Based on patch 4, it looks like zone_dma_off is equivalent
+>> > to the lower CPU address. Let's say a system has DRAM starting at 2GB
+>> > and all 32-bit DMA-capable devices has a DMA offset of 0. We want
+>> > ZONE_DMA32 to end at 4GB rather than 6GB.
+>> 
+>> Patch 4 sets zone_dma_off to the lower limit from 'dma-ranges' property
+>> that determines zone_dma_bits. This is not necessarily equivalent to
+>> start of DRAM, though it happens to be that way on my platform.
+>
+> A bit better but it still assumes that all devices have the same DMA
+> offset which may not be the case.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 24a289149cd3..a4dab3dd0b4e 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -36,6 +36,28 @@ struct actlr_config {
- 	u32 actlr;
- };
+Current code calculates zone_dma_bits based on the lowest high limit of
+all 'dma-ranges' properties. The assumption appears to be that this
+limit fits all devices. This series does not change this assumption. It
+only extends the logic to the lower limit of the "winning" 'dma-ranges'
+to set the base address for DMA zone.
 
-+static const struct actlr_config sc7280_apps_actlr_cfg[] = {
-+	{ 0x0800, 0x24e1, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x2000, 0x0163, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x2080, 0x0461, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x2100, 0x0161, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x0900, 0x0407, PREFETCH_SHALLOW | CPRE | CMTLB },
-+	{ 0x2180, 0x0027, PREFETCH_SHALLOW | CPRE | CMTLB },
-+	{ 0x1000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
-+	{},
-+};
-+
-+static const struct actlr_config sc7280_gfx_actlr_cfg[] = {
-+	{ 0x0000, 0x07ff, PREFETCH_SWITCH_GFX | PREFETCH_DEEP | CPRE | CMTLB },
-+	{},
-+};
-+
-+static const struct actlr_variant sc7280_actlr[] = {
-+	{ sc7280_apps_actlr_cfg, 0x15000000 },
-+	{ sc7280_gfx_actlr_cfg, 0x03da0000 },
-+	{},
-+};
-+
- static const struct actlr_config sm8550_apps_actlr_cfg[] = {
- 	{ 0x18a0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
- 	{ 0x18e0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
-@@ -673,6 +695,12 @@ static const struct qcom_smmu_match_data sdm845_smmu_500_data = {
- 	/* Also no debug configuration. */
- };
+Moving to dma_zone_limit would not change that logic. Unless I'm missing
+something.
 
-+static const struct qcom_smmu_match_data sc7280_smmu_500_impl0_data = {
-+	.impl = &qcom_smmu_500_impl,
-+	.adreno_impl = &qcom_adreno_smmu_500_impl,
-+	.cfg = &qcom_smmu_impl0_cfg,
-+	.actlrvar = sc7280_actlr,
-+};
+Breaking the "one DMA zone fits all devices" assumption as Petr
+suggested is a much larger change.
 
- static const struct qcom_smmu_match_data sm8550_smmu_500_impl0_data = {
- 	.impl = &qcom_smmu_500_impl,
-@@ -698,7 +726,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
- 	{ .compatible = "qcom,qdu1000-smmu-500", .data = &qcom_smmu_500_impl0_data  },
- 	{ .compatible = "qcom,sc7180-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sc7180-smmu-v2", .data = &qcom_smmu_v2_data },
--	{ .compatible = "qcom,sc7280-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sc7280-smmu-500", .data = &sc7280_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_v2_data },
---
-2.17.1
+baruch
 
+-- 
+                                                     ~. .~   Tk Open Systems
+=}------------------------------------------------ooO--U--Ooo------------{=
+   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
