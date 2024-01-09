@@ -1,104 +1,145 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C031A54BC5;
-	Mon,  8 Jan 2024 17:55:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E77A9C433C8;
-	Mon,  8 Jan 2024 17:55:34 +0000 (UTC)
-Date: Mon, 8 Jan 2024 17:55:32 +0000
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Baruch Siach <baruch@tkos.co.il>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
-	Ramon Fried <ramon@neureality.ai>
-Subject: Re: [PATCH RFC 3/4] dma-direct: add offset to zone_dma_bits
-Message-ID: <ZZw3FDy8800NScEk@arm.com>
-References: <cover.1703683642.git.baruch@tkos.co.il>
- <fae5b1180161a7d8cd626a96f5df80b0a0796b8b.1703683642.git.baruch@tkos.co.il>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D88E91873
+	for <iommu@lists.linux.dev>; Tue,  9 Jan 2024 01:24:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Dtf5FdSV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1704763450; x=1736299450;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=tztNPMuvQXiNw1r7vUmDEia96WTG9eqw7fOwv3oe8+k=;
+  b=Dtf5FdSVkuYo5mOXUe2Ei1or5b2KQU2LARRyDzgPz8et9JRP+YDcEc3D
+   bhOAcPjkyMy4eilmabBoMC9laZgbv551HMpd63Z8pSAiFeQFK62+64tnz
+   oeDf7Cke8UePACm6efud4aSSG8RKJYPgx1ttgnDg9xmafX5hK70Hnfvlo
+   M04cjnrLo3fDPOhi9elonZgIu/MjsszK/mbZzYxXuEcXuuccgKbf1pEgh
+   V16ah0EY8bJsuxueF2DDhlrBp+uwskOw5nANIWuOC8J+HoMb7HT0lTu+G
+   gpht8COcGjCambaWuitNgpzErbT88vxnZhkRo1NBe6Hj/nxkzzw5UQQ4k
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="11399749"
+X-IronPort-AV: E=Sophos;i="6.04,181,1695711600"; 
+   d="scan'208";a="11399749"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2024 17:24:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="904984767"
+X-IronPort-AV: E=Sophos;i="6.04,181,1695711600"; 
+   d="scan'208";a="904984767"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.93.19.162]) ([10.93.19.162])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2024 17:24:07 -0800
+Message-ID: <fb4f62a9-131d-4c3c-b290-e77041ee0019@linux.intel.com>
+Date: Tue, 9 Jan 2024 09:24:05 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fae5b1180161a7d8cd626a96f5df80b0a0796b8b.1703683642.git.baruch@tkos.co.il>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v10 0/5] fix vt-d hard lockup when hotplug ATS capable
+ device
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+To: kevin.tian@intel.com, bhelgaas@google.com, baolu.lu@linux.intel.com,
+ dwmw2@infradead.org, will@kernel.org, robin.murphy@arm.com, lukas@wunner.de
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20231228170206.720675-1-haifeng.zhao@linux.intel.com>
+In-Reply-To: <20231228170206.720675-1-haifeng.zhao@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Dec 27, 2023 at 05:04:27PM +0200, Baruch Siach wrote:
-> Current code using zone_dma_bits assume that all addresses range in the
-> bits mask are suitable for DMA. For some existing platforms this
-> assumption is not correct. DMA range might have non zero lower limit.
-> 
-> Add 'zone_dma_off' for platform code to set base address for DMA zone.
-> 
-> Rename the dma_direct_supported() local 'min_mask' variable to better
-> describe its use as limit.
-> 
-> Suggested-by: Catalin Marinas <catalin.marinas@arm.com>
 
-When I suggested taking the DMA offsets into account, that's not exactly
-what I meant. Based on patch 4, it looks like zone_dma_off is equivalent
-to the lower CPU address. Let's say a system has DRAM starting at 2GB
-and all 32-bit DMA-capable devices has a DMA offset of 0. We want
-ZONE_DMA32 to end at 4GB rather than 6GB.
+On 12/29/2023 1:02 AM, Ethan Zhao wrote:
+> This patchset is used to fix vt-d hard lockup reported when surprise
+> unplug ATS capable endpoint device connects to system via PCIe switch
+> as following topology.
+>                                                                      
+>       +-[0000:15]-+-00.0  Intel Corporation Ice Lake Memory Map/VT-d
+>       |           +-00.1  Intel Corporation Ice Lake Mesh 2 PCIe
+>       |           +-00.2  Intel Corporation Ice Lake RAS
+>       |           +-00.4  Intel Corporation Device 0b23
+>       |           \-01.0-[16-1b]----00.0-[17-1b]--+-00.0-[18]----00.0
+>                                             NVIDIA Corporation Device 2324
+>       |                                           +-01.0-[19]----00.0
+>                            Mellanox Technologies MT2910 Family [ConnectX-7]
+>                                                                            
+> User brought endpoint device 19:00.0's link down by flapping it's hotplug
+> capable slot 17:01.0 link control register, as sequence DLLSC response,
+> pciehp_ist() will unload device driver and power it off, durning device
+> driver is unloading an iommu device-TLB invalidation (Intel VT-d spec, or
+> 'ATS Invalidation' in PCIe spec) request issued to that link down device,
+> thus a long time completion/timeout waiting in interrupt context causes
+> continuous hard lockup warnning and system hang.
+>                                                                           
+> Other detail, see every patch commit log.
+>                                                                           
+> patch [3&4] were tested by yehaorong@bytedance.com on stable v6.7-rc4.
+> patch [1-5] passed compiling on stable v6.7-rc6.
+>                                                                           
+>                                                                           
+> change log:
+> v10:
+> - refactor qi_submit_sync() and its callers to get pci_dev instance, as
+>    Kevin pointed out add target_flush_dev to iommu is not right.
+> v9:
+> - unify all spelling of ATS Invalidation adhere to PCIe spec per Bjorn's
+>    suggestion.
+> v8:
+> - add a patch to break the loop for timeout device-TLB invalidation, as
+>    Bjorn said there is possibility device just no response but not gone.
+> v7:
+> - reorder patches and revise commit log per Bjorn's guide.
+> - other code and commit log revise per Lukas' suggestion.
+> - rebased to stable v6.7-rc6.
+> v6:
+> - add two patches to break out device-TLB invalidation if device is gone.
+> v5:
+> - add a patch try to fix the rare case (surprise remove a device in
+>    safe removal process). not work because surprise removal handling can't
+>    re-enter when another safe removal is in process.
+> v4:
+> - move the PCI device state checking after ATS per Baolu's suggestion.
+> v3:
+> - fix commit description typo.
+> v2:
+> - revise commit[1] description part according to Lukas' suggestion.
+> - revise commit[2] description to clarify the issue's impact.
+> v1:
+> - https://lore.kernel.org/lkml/20231213034637.2603013-1-haifeng.zhao@
+> linux.intel.com/T/
+>                                                                            
+>                                                                            
+> Thanks,
+> Ethan
+>
+>
+> Ethan Zhao (5):
+>    iommu/vt-d: add pci_dev parameter to qi_submit_sync and refactor
+>      callers
+>    iommu/vt-d: break out ATS Invalidation if target device is gone
+>    PCI: make pci_dev_is_disconnected() helper public for other drivers
+>    iommu/vt-d: don't issue ATS Invalidation request when device is
+>      disconnected
+>    iommu/vt-d: don't loop for timeout ATS Invalidation request forever
+>
+>   drivers/iommu/intel/dmar.c          | 55 ++++++++++++++++++++++-------
+>   drivers/iommu/intel/iommu.c         | 26 ++++----------
+>   drivers/iommu/intel/iommu.h         | 17 +++++----
+>   drivers/iommu/intel/irq_remapping.c |  2 +-
+>   drivers/iommu/intel/pasid.c         | 13 +++----
+>   drivers/iommu/intel/svm.c           | 13 ++++---
+>   drivers/pci/pci.h                   |  5 ---
+>   include/linux/pci.h                 |  5 +++
+>   8 files changed, 74 insertions(+), 62 deletions(-)
 
-> @@ -59,7 +60,7 @@ static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
->  	 * zones.
->  	 */
->  	*phys_limit = dma_to_phys(dev, dma_limit);
-> -	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
-> +	if (*phys_limit <= zone_dma_off + DMA_BIT_MASK(zone_dma_bits))
->  		return GFP_DMA;
->  	if (*phys_limit <= DMA_BIT_MASK(32))
->  		return GFP_DMA32;
+Any new comment for this patchset ?
 
-Ah, you ignore the zone_dma_off for 32-bit calculations. But the
-argument still stands, the start of DRAM does not necessarily mean that
-all non-64-bit devices have such DMA offset.
 
-The current dma_direct_optimal_gfp_mask() confuses me a bit, I think it
-gives the wrong flag if we have a zone_dma_bits of 30 and a device with
-a coherent_dma_mask of 31, it incorrectly ends up with GFP_DMA32 (I'm
-ignoring dma offsets in this example). Luckily I don't think we have any
-set up where this would fail. Basically if *phys_limit is strictly
-smaller than DMA_BIT_MASK(32), we want GFP_DMA rather than GFP_DMA32
-even if it is larger than DMA_BIT_MASK(zone_dma_bits).
+Thanks,
 
-Anyway, current mainline assumes that DMA_BIT_MASK(zone_dma_bits) and
-DMA_BIT_MASK(32) are CPU addresses. The problem is that we may have the
-start of RAM well above 4GB and neither ZONE_DMA nor ZONE_DMA32 upper
-limits would be a power-of-two. We could change the DMA_BIT_MASK(...) to
-be DMA address limits and we end up with something like:
+Ethan
 
-static gfp_t dma_direct_optimal_gfp_mask(struct device *dev, u64 *phys_limit)
-{
-	u64 dma_limit = min_not_zero(
-		dev->coherent_dma_mask,
-		dev->bus_dma_limit);
-	u64 dma32_limit = dma_to_phys(dev, DMA_BIT_MASK(32));
-
-	*phys_limit = dma_to_phys(dev, dma_limit);
-	if (*phys_limit > dma_limit)
-		return 0;
-	if (*phys_limit = dma32_limit)
-		return GFP_DMA32;
-	return GFP_DMA;
-}
-
-The alternative is to get rid of the *_bits variants and go for
-zone_dma_limit and zone_dma32_limit in the generic code. For most
-architectures they would match the current DMA_BIT_MASK(32) etc. but
-arm64 would be able to set some higher values.
-
-My preference would be to go for zone_dma{,32}_limit, it's easier to
-change all the places where DMA_BIT_MASK({zone_dma_bits,32}) is used.
-
--- 
-Catalin
