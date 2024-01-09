@@ -1,206 +1,257 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.120])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75AB48F42
-	for <iommu@lists.linux.dev>; Tue,  9 Jan 2024 05:54:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF07517C3
+	for <iommu@lists.linux.dev>; Tue,  9 Jan 2024 05:57:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P8wIVdF6"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jY6esJK/"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1704779675; x=1736315675;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9cgQwI7g8cd64aO6IDwl4DiR8sizuP2sKWjwlnQwD4A=;
-  b=P8wIVdF6J8XOWo+LYPJvbZc2HKWCSRxpiLDU6CVnA6p1KStEk+5dizSW
-   i4wFN8fbnoLESFmo1Qtdm3lD3VtNcfmpmpJhNjjXK4nRlXzIBy5PfwJoK
-   Hy4FdEqG0Sljvi0nBfXfkq09KnJvw5Uvy7k9nJa8j1VpMmKQfgdCG+fZC
-   2+DixGZnluh8zATYjcPutcgiodfSIhaJcEjdKf2QtUqrXGdgIC3G52D3G
-   fq75dijV+ZK40WKe8lbYkrwXlPQFUZvHYTeJecabd7raM46jQ2r860A7Y
-   fD/FL0wq0TejVKJjg32nm0IkUxk/uUiPqovAwg0cdCGGJYy4PEXNAkAKy
+  t=1704779852; x=1736315852;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=B2LoJHhZ6LpzdHgueqtWKZMssCqFCqcDqHXGWnDCjOQ=;
+  b=jY6esJK/jxMrl02i80y0BtW0NE39NvK6zdASXil54RKHmgL8D1BF4Cmt
+   Z4AdKO7sOVumfGs8Usab9dFECo0gnRUlA1g5DJezIE/KxiTHkXte6WaMU
+   8p0TaPxJlJ0OZ03eXbos3hw67TFLOZ7tkr6eva/XNtwiXiXN+533+8C2V
+   t/GjbL2Y7usa3tF9aGNhELsittZKFckvD4weaDD/knv1zGF0YfoWWCna6
+   Fbt6yGPgMnB2J0A9uCgVI0l0PC0+hJVkNwjm6rLjjv2xA3sv2qch40u54
+   ejXLOdCQ4/EJpn3GdA+U6iXJLRKaTerqIDnSgCwj4XycJ4RzQbLv3uZdv
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="396961979"
+X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="429275811"
 X-IronPort-AV: E=Sophos;i="6.04,181,1695711600"; 
-   d="scan'208";a="396961979"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2024 21:54:34 -0800
+   d="scan'208";a="429275811"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2024 21:57:31 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="925111147"
+X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="954899278"
 X-IronPort-AV: E=Sophos;i="6.04,181,1695711600"; 
-   d="scan'208";a="925111147"
-Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.238.130.17]) ([10.238.130.17])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Jan 2024 21:54:30 -0800
-Message-ID: <15a058ba-3b51-46f3-bb1c-23792d100b55@linux.intel.com>
-Date: Tue, 9 Jan 2024 13:54:27 +0800
+   d="scan'208";a="954899278"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orsmga005.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 08 Jan 2024 21:57:30 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Mon, 8 Jan 2024 21:57:30 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Mon, 8 Jan 2024 21:57:30 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Mon, 8 Jan 2024 21:57:30 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Mon, 8 Jan 2024 21:57:29 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jADmV+bkFlbqfkkvyPPDqwMCEPQ+CtIQ9qD+iKBjOeYKo4GaHCwLOPm7fKQToLqoEH/ZunfUgAYQUPiL0QvHISEnQQ9yQARJ7lo01TYvj2riJqf3RVqDRt+wl6z95fMuAwXnrwurTlCBvjmwC6FLEufhIeK6a4QWBqsgV8ddO3d7zxW+8RRGbI3PLAeWVH0rfz4O29EadVUekxzRPIuCdv2aKIo/VwEIH4HCWL4JvDv2k7kS5eZ4V9PkkFDxl+54cq+/JkuJ7rKa54m6swdW+4sLCM+s5YbEWEao4BhY3Bo6sD9pjT/qSeADF/1GgYVYxwn3mQ+fqlKnFJHEIISOBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XK1isnS9t5pmap9DjbW+lFN4gOnQRDlZX0hYAj84hLk=;
+ b=bqpm7OScPQPfdDYxd72eLBeYn1w0Okpn35D/1O1KphuNxJaJVoknqfX8wDYShfza09n6hNtO8r/Rxqh7omAQWnBZcBOZbYglCOLKx7Gv3MFCUcB7t67PTSDn5FsqO0LiZgL8GleEoVOJBWnGS4IQsS4VCwLARLFxlx6xwej/WM5vctBzF2E1bHX4R8ftWuJbzDQxUd2Pn/zC6n5CrW7pYSUFIRiVQR7OvaIbSYoXLarP5gAPvzBefrQgPB2QU0fVEBqh/xyt2mxsjyir82909ObOhySkyjo/KrC/pZXU6ODkOXKpAJY8csP0WEXN690eZgwPG1/58Vxv24sLGqwR1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from SN7PR11MB7540.namprd11.prod.outlook.com (2603:10b6:806:340::7)
+ by DM4PR11MB6093.namprd11.prod.outlook.com (2603:10b6:8:b0::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7159.23; Tue, 9 Jan
+ 2024 05:57:22 +0000
+Received: from SN7PR11MB7540.namprd11.prod.outlook.com
+ ([fe80::142b:924e:5300:e004]) by SN7PR11MB7540.namprd11.prod.outlook.com
+ ([fe80::142b:924e:5300:e004%6]) with mapi id 15.20.7159.020; Tue, 9 Jan 2024
+ 05:57:22 +0000
+Message-ID: <7c83d666-beef-4c4c-935b-2e8df1968561@intel.com>
+Date: Tue, 9 Jan 2024 14:00:14 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 1/3] iommufd: Add data structure for Intel VT-d stage-1
+ cache invalidation
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "alex.williamson@redhat.com"
+	<alex.williamson@redhat.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "cohuck@redhat.com"
+	<cohuck@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>, "kvm@vger.kernel.org"
+	<kvm@vger.kernel.org>, "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>, "peterx@redhat.com"
+	<peterx@redhat.com>, "jasowang@redhat.com" <jasowang@redhat.com>,
+	"shameerali.kolothum.thodi@huawei.com"
+	<shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
+	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>, "Duan,
+ Zhenzhong" <zhenzhong.duan@intel.com>, "joao.m.martins@oracle.com"
+	<joao.m.martins@oracle.com>, "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y"
+	<yan.y.zhao@intel.com>
+References: <20231117131816.24359-1-yi.l.liu@intel.com>
+ <20231117131816.24359-2-yi.l.liu@intel.com>
+ <c967e716-9112-4d1a-b6f7-9a005e28202d@intel.com>
+ <20240104143658.GX50406@nvidia.com>
+ <BN9PR11MB52769EEDAE2783426144E2588C662@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240105144516.GC50406@nvidia.com>
+ <BN9PR11MB52765C91893A28A7D21D324E8C6B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <BN9PR11MB52765C91893A28A7D21D324E8C6B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SG2PR06CA0190.apcprd06.prod.outlook.com (2603:1096:4:1::22)
+ To SN7PR11MB7540.namprd11.prod.outlook.com (2603:10b6:806:340::7)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/2] iommu/iova: Make the rcache depot properly
- flexible
-To: Robin Murphy <robin.murphy@arm.com>, Ido Schimmel <idosch@idosch.org>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, zhangzekun11@huawei.com,
- john.g.garry@oracle.com, dheerajkumar.srivastava@amd.com, jsnitsel@redhat.com
-References: <cover.1694535580.git.robin.murphy@arm.com>
- <ZY1osaGLyT-sdKE8@shredder> <c9cf02b5-7add-46ea-8db1-46fdce191c1c@arm.com>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <c9cf02b5-7add-46ea-8db1-46fdce191c1c@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN7PR11MB7540:EE_|DM4PR11MB6093:EE_
+X-MS-Office365-Filtering-Correlation-Id: c4c60cce-373a-4ca3-66ac-08dc10d7d8d9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5vMyMi1SYDJoIiaxKoxtqihBfUqEWIN1VzuV50yxtyROuF7eKw142/RSFZaL3/DICJdCpqgYF7bG6QQUdPz/NmMoFS/rjEyfgLc4yEFcaF027FRhs3smAhx9ynQ9Fiq9O/JGX2eD9g5UCOnUxBmCokLhPelHw6j5TbHSJuVwbEOHipMgseLss7VsGmcS7Fbea1i8lwD8f8emyzhr0ovsVJON+7oQGnxrbtf7NbN1x9bBo2JawMqDxchDHI9m1MEJahdyGmEkMcGJbHwHWMDq/0Zn1ucC5I+lmdkfzk3JHl1pcL2lyZWXGf/lXFJeruYDrCctfEXhck/AuWO/YnrOmEKMPv1HWy3TtmvTnxGLBJ1vp8HJMOsNUF3JLF48fdQAJr9DoKD6goXOL/m0/MfEFngZVt9h+9i9kbdZje2Wba4MBOiCZouuoY7Q938lbqy1EMKaT3rmO8P3OfwQqdx/03YREF14qWg0UR1HIcc/UH+L+S3HqtAAVO7KnN7qXhmtFWquWGI8Cahyj/LnLqg4k9/5rpiRCbUlHUgBbhJxWFlXDgimzLJeRO4tJnOSpeIzPPEaUtAYxgCXn0Wn9M2n6U5cKyLn+Wb9rWoQ6VUtIqREeGLd8Ze8EhdCEExudSmRlj0791J4Xyq0gSjYETsk8g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN7PR11MB7540.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(376002)(366004)(396003)(136003)(230922051799003)(451199024)(1800799012)(64100799003)(186009)(83380400001)(26005)(5660300002)(4326008)(6512007)(38100700002)(53546011)(2616005)(31686004)(82960400001)(6506007)(6486002)(31696002)(6666004)(478600001)(66946007)(110136005)(66476007)(66556008)(54906003)(316002)(8936002)(8676002)(36756003)(41300700001)(86362001)(7416002)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MkFpZUw0b2hLZXJIY24zTVdlclhxZTgzT3lndGh4MXJTU0NNdGw3T005dHh4?=
+ =?utf-8?B?ZmpUNGR1NTlnb0tjREMxVTk5MkVNeDBPSmtTNWdoR2svYTRXYW5JMEExYXEy?=
+ =?utf-8?B?SFN3MlgxQWJhTnRFYjhrSlNwU0NMU0J6Nk9jSG1xMmt2aThrakFyQTZlTTlJ?=
+ =?utf-8?B?ZzJhdG5qMXlHTUVrVEN5cUR1WDllVEZTQ3J0TGxNTmYxMittZ1R5d0lubnNy?=
+ =?utf-8?B?aVhSMzd0N0VVYzZidGk5dzNmbzFxYk9QTnJHOWtpOGg1Zy8xMmtmNmNFOG9m?=
+ =?utf-8?B?OHdBRi9Rb3JrZzA3b21paytsbk10a21EY1dqODZIYlF4Y1EwMDEwWFEvT2tW?=
+ =?utf-8?B?MForUFc2V29VTlY1eVpOS0lrdzBzZWZBNmJIdVF0K2FQQWtKTWlmb0oxS1Rh?=
+ =?utf-8?B?aG1VTVZvVVNTTFRtN2NEbWs0QjhUZHVtLzlhUFVvMU1iS09NZlpXSGN0L0pv?=
+ =?utf-8?B?Y1c2MmxzTFZaTU5kc2xTRkxoUENrQkJPYzRFSjBpQVl6K2hXb0NWY3JHeWgy?=
+ =?utf-8?B?TXRtdC9scFBDN3JMMG5FSy9UTVV2OEUvNE1OcmRlNkFqUkNaMUhSMEt6NXh0?=
+ =?utf-8?B?Z0Z6VHFqeXFPR0RRTS9jUmE5bk1KbHdkNHk5bms2cGVWNzBTam1NWHBzaU1r?=
+ =?utf-8?B?VmZMWjNsMkMwOGY1bEpNeWtBd1dONlZSK09jYnlZNTVSWElaK3h2VzA4MHMz?=
+ =?utf-8?B?SFNnY0RyNG5kSmNXU3A4VllVY0FhMnNnM0tCOG5IVFJ4UlVqaS9GeXkzTjdn?=
+ =?utf-8?B?cmd0SG91aEZkNjBqNjJPUGpEUC92d2hhbmp6ZjRBWkhSZ01oMlNwS0htcVkr?=
+ =?utf-8?B?dis5c3pjYU10amROUk54ZHZvQjR3R2xjbDJPV2ZvSU5KVDN6Ri9tQlBESlI4?=
+ =?utf-8?B?ek9JY0didFhGQTdpZ1NqUjBZYWpUZXVOamNhRTJxOXRPcDUxOHNOcmtmeGNs?=
+ =?utf-8?B?K3Z6ZDJxTCtzR2FCYkt4MEpoVld0TXMzNGV5YUo3VkJJc2ppRWIwZnhUdlph?=
+ =?utf-8?B?am9MajR3U0JTUGJ2VFNaV1FzbDdkM1o0YVhlRW90SXc0TmY2RHkyL2V5Kzgw?=
+ =?utf-8?B?UHczM2dNT0VUTHdPSlV4MzNhY2Q4Nk83UWliWWw3bkp0K1RKR3JkNkRDdGNX?=
+ =?utf-8?B?ZUVYK0Z5TXNmMlRlOWNIT2x3RE5pdktXcncva3Z5eXVqN0tyOWM1SVdWOFFo?=
+ =?utf-8?B?RDBrTVNOQXV0N2dUR1ZxSzJoRWxwOVI3S3NDQ01hRi9yUDFBcllWbHRKZDBI?=
+ =?utf-8?B?TjFzTWdyek9PREV0WlJjZ1M4Q2RBNEphbml1N1Z1c3ZXSU9GTlkrL0lydHZB?=
+ =?utf-8?B?T213bkNnL0EvYlV6QmtuTFVFL1JQUGtldVhna3BaZmZLMlk5akxkOVIybVpM?=
+ =?utf-8?B?QmJZSTgvMEd3WFVxZWU2K21YQXJPWGwyREpkZHdZM1NZVVRMZHQzUXkzKzEy?=
+ =?utf-8?B?ZFQzR2d3UkFQWnVxZXF2VmlQRHRRZGFESndacEVvZEtjbnB5ZE5VMkNXeHZS?=
+ =?utf-8?B?c3lER1NpY0lrdVg3YzZVN3dMU0NHKzR1OGh1L29FSUpCc1A0bEwyWWpZMkh2?=
+ =?utf-8?B?WG5sK3lkVFZud2I3T01rMXZIMXpHTzlkTmFmVDUwcThsZHdIMldGYURmS3Rh?=
+ =?utf-8?B?YkVmL1BFWS9GMUxqbUdmRGZaRWZncEpLb3c0L3M5TGpjMHkzVWZpWmdyaTFi?=
+ =?utf-8?B?WUZuOXRBV0tYWTN5eklRSmN4RzRIT3BuMWEva3FudVM2OGh2d2FLMkpWR0xy?=
+ =?utf-8?B?Sk90TzlhNVUzL0VKS1JmVDFjS042WS9nQ0lkeHFadDVWajh4M1RaSUkyS0Vo?=
+ =?utf-8?B?K0RqRDR4OG1GRG5hR1pzRjI0TkFJeTZnSzFaY3FibTFmcDZvNGNsYVl5dUZl?=
+ =?utf-8?B?UCtremhvbU4rTzM5QXJ6bkRTN2tuKyt4OWxOT29ybFZhU3lPcUlFOEpQKytW?=
+ =?utf-8?B?cnA4VEZnNXRPdW10QWhiVUFlSE5BRWJWTU11QkgwUVpuSitDQjN6S0s5aTFE?=
+ =?utf-8?B?UVB6YjI0T2dJQ3NuM1E3aTNUbjQwYXl6QmlzeXFYdUlkSnlURi9waCtPSGpL?=
+ =?utf-8?B?UEpyeDdpM2x5alBXVExTOGdsUWMwZVgwK1Q5MlhIR3pnRFlVU3hJVk5DME9G?=
+ =?utf-8?Q?KmbBGmOlMe27S8ms6pQSSJo/w?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c4c60cce-373a-4ca3-66ac-08dc10d7d8d9
+X-MS-Exchange-CrossTenant-AuthSource: SN7PR11MB7540.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jan 2024 05:57:22.5037
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tLSsJI/FKBYgpiDdrC0jzfbb99G7ntVCmEF4k0NwAQiE+lmNavCP2sbmMaHp6G+zFqYXHlS3TTDNJq6BMHsjvg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB6093
+X-OriginatorOrg: intel.com
 
-
-On 1/9/2024 1:35 AM, Robin Murphy wrote:
-> On 2023-12-28 12:23 pm, Ido Schimmel wrote:
->> On Tue, Sep 12, 2023 at 05:28:04PM +0100, Robin Murphy wrote:
->>> v2: 
->>> https://lore.kernel.org/linux-iommu/cover.1692641204.git.robin.murphy@arm.com/
+On 2024/1/8 12:07, Tian, Kevin wrote:
+>> From: Jason Gunthorpe <jgg@nvidia.com>
+>> Sent: Friday, January 5, 2024 10:45 PM
+>>
+>> On Fri, Jan 05, 2024 at 02:52:50AM +0000, Tian, Kevin wrote:
+>>>> but in reality the relation could be identified in an easy way due to a SIOV
+>>>> restriction which we discussed before - shared PASID space of PF
+>> disallows
+>>>> assigning sibling vdev's to a same VM (otherwise no way to identify which
+>>>> sibling vdev triggering an iopf when a pasid is used on both vdev's). That
+>>>> restriction implies that within an iommufd context every iommufd_device
+>>>> object should contain a unique struct device pointer. So PASID can be
+>>>> instead ignored in the lookup then just always do iommufd_get_dev_id()
+>>>> using struct device.
 >>>
->>> Hi all,
+>>> A bit more background.
 >>>
->>> I hope this is good to go now, just fixed the locking (and threw
->>> lockdep at it to confirm, which of course I should have done to begin
->>> with...) and picked up tags.
+>>> Previously we thought this restriction only applies to SIOV+vSVA, as
+>>> a guest process may bind to both sibling vdev's, leading to the same
+>>> pasid situation.
+>>>
+>>> In concept w/o vSVA it's still possible to assign sibling vdev's to
+>>> a same VM as each vdev is allocated with a unique pasid to mark vRID
+>>> so can be differentiated from each other in the fault/error path.
 >>
->> Hi,
+>> I thought the SIOV plan was that each "vdev" ie vpci function would
+>> get a slice of the pRID's PASID space statically selected at creation?
 >>
->> After pulling the v6.7 changes we started seeing the following memory
->> leaks [1] of 'struct iova_magazine'. I'm not sure how to reproduce it,
->> which is why I didn't perform bisection. However, looking at the
->> mentioned code paths, they seem to have been changed in v6.7 as part of
->> this patchset. I reverted both patches and didn't see any memory leaks
->> when running a full regression (~10 hours), but I will repeat it to be
->> sure.
+>> So SVA/etc doesn't matter, you reliably get a disjoint set of pRID &
+>> pPASID into each VM.
 >>
->> Any idea what could be the problem?
->
-> Hmm, we've got what looks to be a set of magazines forming a plausible 
-> depot list (or at least the tail end of one):
->
-> ffff8881411f9000 -> ffff8881261c1000
->
-> ffff8881261c1000 -> ffff88812be26400
->
-> ffff88812be26400 -> ffff8188392ec000
->
-> ffff8188392ec000 -> ffff8881a5301000
->
-> ffff8881a5301000 -> NULL
->
-> which I guess has somehow become detached from its rcache->depot 
-> without being freed properly? However I'm struggling to see any 
-> conceivable way that could happen which wouldn't already be more 
-> severely broken in other ways as well (i.e. either general memory 
-> corruption or someone somehow still trying to use the IOVA domain 
-> while it's being torn down).
->
-> Out of curiosity, does reverting just patch #2 alone make a 
-> difference? And is your workload doing anything "interesting" in 
-> relation to IOVA domain lifetimes, like creating and destroying SR-IOV 
-> virtual functions, changing IOMMU domain types via sysfs, or using 
-> that horrible vdpa thing, or are you seeing this purely from regular 
-> driver DMA API usage?
+>>  From that view you can't identify the iommufd dev_id without knowing
+>> both the pRID and pPASID which will disambiguate the different SIOV
+>> iommufd dev_id instances sharing a rid.
+> 
+> true when assigning those instances to different VMs.
+> 
+> Here I was talking about assigning them to a same VM being a problem.
+> with rid sharing plus same ENQCMD pPASID potentially used on both
+> instances there'd be ambiguity in vSVA e.g. iopf to identify dev_id.
+> 
+> we agreed before on preventing sibling vdev's in one VM for above
+> reason, but only as far as vSVA is concerned.
+> 
+> then given the new finding in err reporting I wondered whether this
+> restriction should be applied to all SIOV scenarios (but irrelevant now
+> with below explanation after another thinking)
+> 
+>>
+>>> But when looking at this err code issue with Yi closely, we found
+>>> there is another gap in the VT-d spec. Upon devtlb invalidation
+>>> timeout the hw doesn't report pasid in the error info register. this
+>>> makes it impossible to identify the source vdev if a hwpt invalidation
+>>> request involves sibling vdev's from a same PF.
+>>
+>> Don't you know which command timed out?
+> 
+> unfortunately no.
+> 
+> for errors related to descriptor fetch the driver can tell the command
+> by looking at the head pointer of the invalidation queue.
+> 
+> command completion is indirectly detected by inserting a wait descriptor
+> as fence. completion timeout error is reported in an error register. but
+> this register doesn't record pasid, nor does the command location. if there
+> are multiple pending devtlb invalidation commands upon timeout
+> error the spec suggests the driver to treat all of them timeout as the
+> register can only record one rid.
+> 
+> this is kind of moot. If the driver submits only one command (plus wait)
+> at a time it doesn't need hw's help to identify the timeout command.
+> If the driver batches invalidation commands it must treat all timeout if
+> an timeout error is reported.
+> 
+> from this angle whether to record pasid doesn't really matter.
+> 
+> intel-iommu driver doesn't batch commands. so it's possible for
+> the driver to figure out the timeout device itself and identify rid plus
+> pasid to find dev_id from iommufd.
 
-There no lock held when free_iova_rcaches(), is it possible 
-free_iova_rcaches() race with the delayed iova_depot_work_func() ?
+based on this, even RID is unnecessary. Software should know which device
+it has sent a devTLB invalidation.
 
-I don't know why not call cancel_delayed_work_sync(&rcache->work); first 
-in free_iova_rcaches() to avoid possible race.
-
-
-Thanks,
-
-Ethan
-
->
-> Thanks,
-> Robin.
->
->>
->> Thanks
->>
->> [1]
->> unreferenced object 0xffff8881a5301000 (size 1024):
->>    comm "softirq", pid 0, jiffies 4306297099 (age 462.991s)
->>    hex dump (first 32 bytes):
->>      00 00 00 00 00 00 00 00 e7 7d 05 00 00 00 00 00 .........}......
->>      0f b4 05 00 00 00 00 00 b4 96 05 00 00 00 00 00 ................
->>    backtrace:
->>      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
->>      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
->>      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
->>      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
->>      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
->>      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
->>      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
->>      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
->>      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
->>
->> unreferenced object 0xffff8881392ec000 (size 1024):
->>    comm "softirq", pid 0, jiffies 4306326731 (age 433.359s)
->>    hex dump (first 32 bytes):
->>      00 10 30 a5 81 88 ff ff 50 ff 0f 00 00 00 00 00 ..0.....P.......
->>      f3 99 05 00 00 00 00 00 87 b7 05 00 00 00 00 00 ................
->>    backtrace:
->>      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
->>      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
->>      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
->>      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
->>      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
->>      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
->>      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
->>      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
->>      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
->>
->> unreferenced object 0xffff8881411f9000 (size 1024):
->>    comm "softirq", pid 0, jiffies 4306708887 (age 51.459s)
->>    hex dump (first 32 bytes):
->>      00 10 1c 26 81 88 ff ff 2c 96 05 00 00 00 00 00 ...&....,.......
->>      ac fe 0f 00 00 00 00 00 a6 fe 0f 00 00 00 00 00 ................
->>    backtrace:
->>      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
->>      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
->>      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
->>      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
->>      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
->>      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
->>      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
->>      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
->>      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
->>
->> unreferenced object 0xffff88812be26400 (size 1024):
->>    comm "softirq", pid 0, jiffies 4306710027 (age 50.319s)
->>    hex dump (first 32 bytes):
->>      00 c0 2e 39 81 88 ff ff 32 ab 05 00 00 00 00 00 ...9....2.......
->>      e3 ac 05 00 00 00 00 00 1f b6 05 00 00 00 00 00 ................
->>    backtrace:
->>      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
->>      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
->>      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
->>      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
->>      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
->>      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
->>      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
->>      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
->>      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
->>
->> unreferenced object 0xffff8881261c1000 (size 1024):
->>    comm "softirq", pid 0, jiffies 4306711547 (age 48.799s)
->>    hex dump (first 32 bytes):
->>      00 64 e2 2b 81 88 ff ff c0 7c 05 00 00 00 00 00 .d.+.....|......
->>      87 a5 05 00 00 00 00 00 0e 9a 05 00 00 00 00 00 ................
->>    backtrace:
->>      [<ffffffff819f5f08>] __kmem_cache_alloc_node+0x1e8/0x320
->>      [<ffffffff818a239a>] kmalloc_trace+0x2a/0x60
->>      [<ffffffff8231d31e>] free_iova_fast+0x28e/0x4e0
->>      [<ffffffff82310860>] fq_ring_free_locked+0x1b0/0x310
->>      [<ffffffff8231225d>] fq_flush_timeout+0x19d/0x2e0
->>      [<ffffffff813e95ba>] call_timer_fn+0x19a/0x5c0
->>      [<ffffffff813ea16b>] __run_timers+0x78b/0xb80
->>      [<ffffffff813ea5bd>] run_timer_softirq+0x5d/0xd0
->>      [<ffffffff82f1d915>] __do_softirq+0x205/0x8b5
->
+-- 
+Regards,
+Yi Liu
