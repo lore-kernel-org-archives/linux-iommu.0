@@ -1,137 +1,164 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7506C37144
-	for <iommu@lists.linux.dev>; Tue,  9 Jan 2024 11:26:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5EF7FC15;
-	Tue,  9 Jan 2024 03:26:53 -0800 (PST)
-Received: from [10.57.44.233] (unknown [10.57.44.233])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 236E33F73F;
-	Tue,  9 Jan 2024 03:26:06 -0800 (PST)
-Message-ID: <7eaa0f41-a71b-43c1-8596-1df99584530a@arm.com>
-Date: Tue, 9 Jan 2024 11:26:04 +0000
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A50B381AF
+	for <iommu@lists.linux.dev>; Tue,  9 Jan 2024 11:42:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Yy1hbLYm"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 4094n3T5020115;
+	Tue, 9 Jan 2024 11:42:49 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	from:to:cc:subject:date:message-id:in-reply-to:references
+	:mime-version:content-type; s=qcppdkim1; bh=GoztlXCDEb5vrsVrMC6+
+	E6EshVMmGerVRldyGtTVCto=; b=Yy1hbLYmG4hrhHosEiMv6I/E8+MP+RtASEpR
+	m5TGcAHxG5q0u8z76PGPAaFubIricbu3uPuamorN/xJGaBrsqow3rPXZxkRnt364
+	kNlSn41C4c7XN/QkBYYycC69toUDHQzStua/0zl4feDt8tB3JSwGGQjJz4CBEjT3
+	MoICwfsutIxEQmtM6ar4ACKeEonDi2d8n6PMb6sPSVb50MBVf0rSI+l8WzsSFz5K
+	qPtyJtVsgXoqGtJ7K7GZba2Im2XmtIHGAbVAZvrzwfd+E6M+biFYUsqZtAgend3S
+	HivNphkrT0H+z4hH/hQ18LeBJGEbU22054ZTnhriLy/NGx8cwg==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vgwu78vm2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 09 Jan 2024 11:42:49 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 409BgmUI029786
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 9 Jan 2024 11:42:48 GMT
+Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Tue, 9 Jan 2024 03:42:41 -0800
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
+        <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        <qipl.kernel.upstream@quicinc.com>,
+        Bibek Kumar Patro
+	<quic_bibekkum@quicinc.com>
+Subject: [PATCH v7 1/5] iommu/arm-smmu: re-enable context caching in smmu reset operation
+Date: Tue, 9 Jan 2024 17:12:16 +0530
+Message-ID: <20240109114220.30243-2-quic_bibekkum@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20240109114220.30243-1-quic_bibekkum@quicinc.com>
+References: <20240109114220.30243-1-quic_bibekkum@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/2] iommu/iova: Make the rcache depot properly
- flexible
-Content-Language: en-GB
-To: Ethan Zhao <haifeng.zhao@linux.intel.com>,
- Ido Schimmel <idosch@idosch.org>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, zhangzekun11@huawei.com,
- john.g.garry@oracle.com, dheerajkumar.srivastava@amd.com, jsnitsel@redhat.com
-References: <cover.1694535580.git.robin.murphy@arm.com>
- <ZY1osaGLyT-sdKE8@shredder> <c9cf02b5-7add-46ea-8db1-46fdce191c1c@arm.com>
- <15a058ba-3b51-46f3-bb1c-23792d100b55@linux.intel.com>
- <d5ad4801-6061-42ee-aafb-129a78e5a2b8@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <d5ad4801-6061-42ee-aafb-129a78e5a2b8@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: ZV_kCIE3CnG1e3ri_pVV74b9lqFxxsPc
+X-Proofpoint-ORIG-GUID: ZV_kCIE3CnG1e3ri_pVV74b9lqFxxsPc
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
+ lowpriorityscore=0 clxscore=1015 phishscore=0 suspectscore=0
+ malwarescore=0 bulkscore=0 adultscore=0 mlxlogscore=999 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2401090095
 
-On 2024-01-09 6:23 am, Ethan Zhao wrote:
-> 
-> On 1/9/2024 1:54 PM, Ethan Zhao wrote:
->>
->> On 1/9/2024 1:35 AM, Robin Murphy wrote:
->>> On 2023-12-28 12:23 pm, Ido Schimmel wrote:
->>>> On Tue, Sep 12, 2023 at 05:28:04PM +0100, Robin Murphy wrote:
->>>>> v2: 
->>>>> https://lore.kernel.org/linux-iommu/cover.1692641204.git.robin.murphy@arm.com/
->>>>>
->>>>> Hi all,
->>>>>
->>>>> I hope this is good to go now, just fixed the locking (and threw
->>>>> lockdep at it to confirm, which of course I should have done to begin
->>>>> with...) and picked up tags.
->>>>
->>>> Hi,
->>>>
->>>> After pulling the v6.7 changes we started seeing the following memory
->>>> leaks [1] of 'struct iova_magazine'. I'm not sure how to reproduce it,
->>>> which is why I didn't perform bisection. However, looking at the
->>>> mentioned code paths, they seem to have been changed in v6.7 as part of
->>>> this patchset. I reverted both patches and didn't see any memory leaks
->>>> when running a full regression (~10 hours), but I will repeat it to be
->>>> sure.
->>>>
->>>> Any idea what could be the problem?
->>>
->>> Hmm, we've got what looks to be a set of magazines forming a 
->>> plausible depot list (or at least the tail end of one):
->>>
->>> ffff8881411f9000 -> ffff8881261c1000
->>>
->>> ffff8881261c1000 -> ffff88812be26400
->>>
->>> ffff88812be26400 -> ffff8188392ec000
->>>
->>> ffff8188392ec000 -> ffff8881a5301000
->>>
->>> ffff8881a5301000 -> NULL
->>>
->>> which I guess has somehow become detached from its rcache->depot 
->>> without being freed properly? However I'm struggling to see any 
->>> conceivable way that could happen which wouldn't already be more 
->>> severely broken in other ways as well (i.e. either general memory 
->>> corruption or someone somehow still trying to use the IOVA domain 
->>> while it's being torn down).
->>>
->>> Out of curiosity, does reverting just patch #2 alone make a 
->>> difference? And is your workload doing anything "interesting" in 
->>> relation to IOVA domain lifetimes, like creating and destroying 
->>> SR-IOV virtual functions, changing IOMMU domain types via sysfs, or 
->>> using that horrible vdpa thing, or are you seeing this purely from 
->>> regular driver DMA API usage?
->>
->> There no lock held when free_iova_rcaches(), is it possible 
->> free_iova_rcaches() race with the delayed cancel_delayed_work_sync() ?
->>
->> I don't know why not call cancel_delayed_work_sync(&rcache->work); 
->> first in free_iova_rcaches() to avoid possible race.
->>
-> between following functions pair, race possible ? if called cocurrently.
-> 
-> 1. free_iova_rcaches() with iova_depot_work_func()
-> 
->     free_iova_rcaches() holds no lock, iova_depot_work_func() holds 
-> rcache->lock.
+Default MMU-500 reset operation disables context caching in
+prefetch buffer. It is however expected for context banks using
+the ACTLR register to retain their prefetch value during reset
+and runtime suspend.
 
-Unless I've completely misunderstood the workqueue API, that can't 
-happen, since free_iova_rcaches() *does* synchronously cancel the work 
-before it starts freeing the depot list.
+Replace default MMU-500 reset operation with Qualcomm specific reset
+operation which envelope the default reset operation and re-enables
+context caching in prefetch buffer for Qualcomm SoCs.
 
-> 2. iova_cpuhp_dead() with iova_depot_work_func()
-> 
->    iova_cpuhp_dead() holds per cpu lock cpu_rcache->lock, 
-> iova_depot_work_func() holds rcache->lock.
+Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 37 ++++++++++++++++++++--
+ 1 file changed, 34 insertions(+), 3 deletions(-)
 
-That's not a race because those are touching completely different things 
-- the closest they come to interacting is where they both free IOVAs 
-back to the rbtree.
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 549ae4dba3a6..000e207346af 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -14,6 +14,16 @@
 
-> 3. iova_cpuhp_dead() with free_iova_rcaches()
-> 
->     iova_cpuhp_dead() holds per cpu lock cpu_rcache->lock, 
-> free_iova_rcaches() holds no lock.
+ #define QCOM_DUMMY_VAL	-1
 
-See iova_domain_free_rcaches() - by the time we call 
-free_iova_rcaches(), the hotplug handler has already been removed (and 
-either way it couldn't account for *this* issue since it doesn't touch 
-the depot at all).
++/*
++ * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
++ * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
++ * buffer). The remaining bits are implementation defined and vary across
++ * SoCs.
++ */
++
++#define CPRE			(1 << 1)
++#define CMTLB			(1 << 0)
++
+ static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+ {
+ 	return container_of(smmu, struct qcom_smmu, smmu);
+@@ -376,11 +386,32 @@ static int qcom_smmu_def_domain_type(struct device *dev)
+ 	return match ? IOMMU_DOMAIN_IDENTITY : 0;
+ }
 
-> 4. iova_cpuhp_dead() with free_global_cached_iovas()
-> 
->     iova_cpuhp_dead() holds per cpu lock cpu_rcache->lock and 
-> free_global_cached_iovas() holds rcache->lock.
++static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
++{
++	int ret;
++	u32 val;
++	int i;
++
++	ret = arm_mmu500_reset(smmu);
++
++	if (ret)
++		return ret;
++
++	/* arm_mmu500_reset() disables CPRE which is re-enabled here */
++	for (i = 0; i < smmu->num_context_banks; ++i) {
++		val = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
++		val |= CPRE;
++		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, val);
++	}
++
++	return 0;
++}
++
+ static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
+ {
+ 	int ret;
 
-Again, they hold different locks because they're touching unrelated things.
+-	arm_mmu500_reset(smmu);
++	qcom_smmu500_reset(smmu);
 
-Thanks,
-Robin.
+ 	/*
+ 	 * To address performance degradation in non-real time clients,
+@@ -407,7 +438,7 @@ static const struct arm_smmu_impl qcom_smmu_500_impl = {
+ 	.init_context = qcom_smmu_init_context,
+ 	.cfg_probe = qcom_smmu_cfg_probe,
+ 	.def_domain_type = qcom_smmu_def_domain_type,
+-	.reset = arm_mmu500_reset,
++	.reset = qcom_smmu500_reset,
+ 	.write_s2cr = qcom_smmu_write_s2cr,
+ 	.tlb_sync = qcom_smmu_tlb_sync,
+ };
+@@ -432,7 +463,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
+ static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
+ 	.init_context = qcom_adreno_smmu_init_context,
+ 	.def_domain_type = qcom_smmu_def_domain_type,
+-	.reset = arm_mmu500_reset,
++	.reset = qcom_smmu500_reset,
+ 	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
+ 	.write_sctlr = qcom_adreno_smmu_write_sctlr,
+ 	.tlb_sync = qcom_smmu_tlb_sync,
+--
+2.17.1
+
