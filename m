@@ -1,16 +1,39 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7252D482C4
-	for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 12:48:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 093B92F4;
-	Wed, 10 Jan 2024 04:49:05 -0800 (PST)
-Received: from [10.57.77.141] (unknown [10.57.77.141])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9B1643F64C;
-	Wed, 10 Jan 2024 04:48:16 -0800 (PST)
-Message-ID: <ab22c439-e7da-49b5-b20b-856daf376c02@arm.com>
-Date: Wed, 10 Jan 2024 12:48:06 +0000
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FD4948CD0
+	for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 12:55:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="pTKqrjD+"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40ACekq5010668;
+	Wed, 10 Jan 2024 12:55:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:from:to:cc:references
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=7vMT1hFktDJAz+gNb9eLyhKcykMUQ9DQvdKP5jgUOYE=; b=pT
+	KqrjD+iOnFyCEzjMKBY747zU++IgyPUaVXqCHy4E6ey2aWTyA2WYTtaSjkxXGBOw
+	BEXbvxFk6xRzD/aS5+gtvJva4/RKBepI+OJO107W7Nc6HQ2r7z3tBOWkQ1CHJkIj
+	k38b/G6Ghfyozl/ZGM9rrGJ1PlzzVWfJGwHYhxrPshBLil6ooJRop3yuCQRj0Xbk
+	4hfrz3pObkliri1w/C8z8cPYMYEdq1kUi4GqVfrz2cEiNSOY7FtG9R1Na5a5zu+y
+	3UEh8w1MHXZejkAgK0HVj2e5nHCoVPwZ84NLxZ7IHpcM4AdnAj8uqg6Ex4MThK9V
+	pze0+lLjwuRSLMjSoj8w==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vhkem15c9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 10 Jan 2024 12:55:34 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 40ACtXZ6007220
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 10 Jan 2024 12:55:33 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Wed, 10 Jan
+ 2024 04:55:27 -0800
+Message-ID: <4a595815-7fcc-47e2-b22c-dac349af6d79@quicinc.com>
+Date: Wed, 10 Jan 2024 18:25:24 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -18,91 +41,84 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/2] iommu/iova: Make the rcache depot properly
- flexible
-To: Ido Schimmel <idosch@idosch.org>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, zhangzekun11@huawei.com,
- john.g.garry@oracle.com, dheerajkumar.srivastava@amd.com,
- jsnitsel@redhat.com, Catalin Marinas <catalin.marinas@arm.com>
-References: <cover.1694535580.git.robin.murphy@arm.com>
- <ZY1osaGLyT-sdKE8@shredder> <c9cf02b5-7add-46ea-8db1-46fdce191c1c@arm.com>
- <ZZ2AqZT4dD-s01q9@shredder>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZZ2AqZT4dD-s01q9@shredder>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v7 3/5] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+To: Pavan Kondeti <quic_pkondeti@quicinc.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
+        <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_molvera@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <qipl.kernel.upstream@quicinc.com>
+References: <20240109114220.30243-1-quic_bibekkum@quicinc.com>
+ <20240109114220.30243-4-quic_bibekkum@quicinc.com>
+ <2ad70157-27d1-41df-8866-c226af690cf6@quicinc.com>
+ <ec31fafa-b912-454a-8b64-e0593911aaf2@quicinc.com>
+In-Reply-To: <ec31fafa-b912-454a-8b64-e0593911aaf2@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: hiHoHz-1KztRZSPuXEpqyxfs5P7xS_HR
+X-Proofpoint-GUID: hiHoHz-1KztRZSPuXEpqyxfs5P7xS_HR
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ mlxlogscore=940 impostorscore=0 phishscore=0 bulkscore=0 suspectscore=0
+ lowpriorityscore=0 spamscore=0 priorityscore=1501 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2401100106
 
-On 2024-01-09 5:21 pm, Ido Schimmel wrote:
-> Hi Robin,
-> 
-> Thanks for the reply.
-> 
-> On Mon, Jan 08, 2024 at 05:35:26PM +0000, Robin Murphy wrote:
->> Hmm, we've got what looks to be a set of magazines forming a plausible depot
->> list (or at least the tail end of one):
->>
->> ffff8881411f9000 -> ffff8881261c1000
->>
->> ffff8881261c1000 -> ffff88812be26400
->>
->> ffff88812be26400 -> ffff8188392ec000
->>
->> ffff8188392ec000 -> ffff8881a5301000
->>
->> ffff8881a5301000 -> NULL
->>
->> which I guess has somehow become detached from its rcache->depot without
->> being freed properly? However I'm struggling to see any conceivable way that
->> could happen which wouldn't already be more severely broken in other ways as
->> well (i.e. either general memory corruption or someone somehow still trying
->> to use the IOVA domain while it's being torn down).
-> 
-> The machine is running a debug kernel that among other things has KASAN
-> enabled, but there are no traces in the kernel log so there is no memory
-> corruption that I'm aware of.
-> 
->> Out of curiosity, does reverting just patch #2 alone make a difference?
-> 
-> Will try and let you know.
-> 
->> And is your workload doing anything "interesting" in relation to IOVA
->> domain lifetimes, like creating and destroying SR-IOV virtual
->> functions, changing IOMMU domain types via sysfs, or using that
->> horrible vdpa thing, or are you seeing this purely from regular driver
->> DMA API usage?
-> 
-> The machine is running networking related tests, but it is not using
-> SR-IOV, VMs or VDPA so there shouldn't be anything "interesting" as far
-> as IOMMU is concerned.
-> 
-> The two networking drivers on the machine are "igb" for the management
-> port and "mlxsw" for the data ports (the machine is a physical switch).
-> I believe the DMA API usage in the latter is quite basic and I don't
-> recall any DMA related problems with this driver since it was first
-> accepted upstream in 2015.
 
-Thanks for the clarifications, that seems to rule out all the most 
-confusingly impossible scenarios, at least.
 
-The best explanation I've managed to come up with is a false-positive 
-race dependent on the order in which kmemleak scans the relevant 
-objects. Say we have the list as depot -> A -> B -> C; the rcache object 
-is scanned and sees the pointer to magazine A, but then A is popped 
-*before* kmemleak scans it, such that when it is then scanned, its 
-"next" pointer has already been wiped, thus kmemleak never observes any 
-reference to B, so it appears that B and (transitively) C are "leaked". 
-If that is the case, then I'd expect it should be reproducible with 
-patch #1 alone (although patch #2 might make it slightly more likely if 
-the work ever does result in additional pops happening), but I'd expect 
-the leaked objects to be transient and not persist forever through 
-repeated scans (what I don't know is whether kmemleak automatically 
-un-leaks an object if it subsequently finds a new reference, or if it 
-needs manually clearing in between scans). I'm not sure if there's a 
-nice way to make that any better... unless maybe it might make sense to 
-call kmemleak_not_leak(mag->next) in iova_depot_pop() before that 
-reference disappears?
+On 1/10/2024 4:46 PM, Bibek Kumar Patro wrote:
+> 
+> 
+> On 1/10/2024 9:36 AM, Pavan Kondeti wrote:
+
+[...]
+
+>>> @@ -274,6 +321,21 @@ static const struct of_device_id 
+>>> qcom_smmu_client_of_match[] __maybe_unused = {
+>>>   static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>>           struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>>   {
+>>> +    struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>> +    struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>>> +    const struct actlr_variant *actlrvar;
+>>> +    int cbndx = smmu_domain->cfg.cbndx;
+>>> +
+>>> +    if (qsmmu->data->actlrvar) {
+>>> +        actlrvar = qsmmu->data->actlrvar;
+>>> +        for (; actlrvar->io_start; actlrvar++) {
+>>> +            if (actlrvar->io_start == smmu->ioaddr) {
+>>> +                qcom_smmu_set_actlr(dev, smmu, cbndx, 
+>>> actlrvar->actlrcfg);
+>>> +                break;
+>>> +            }
+>>> +        }
+>>> +    }
+>>> +
+>>
+>> This block and the one in qcom_adreno_smmu_init_context() are exactly
+>> the same. Possible to do some refactoring?
+>>
+> 
+> I will check if this repeated blocks can be accomodated this into 
+> qcom_smmu_set_actlr function if that would be fine.
+> 
+
+Also adding to this, this might increase the number of indentation 
+inside qcom_smmu_set_actlr as well, to around 5. So wouldn't this
+be an issue?
 
 Thanks,
-Robin.
+Bibek
