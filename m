@@ -1,201 +1,166 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8887802
-	for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 00:52:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8AAFF3C32
+	for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 04:07:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HYEa8Xcg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1704847932; x=1736383932;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=P1lrP9NOMqRhHmYOJ4SIwEz/KxAXtMJkZlm7Bn8S+QQ=;
-  b=HYEa8XcgC4peygMcUp/7CZFxbhnMMKvSmAVZPC8pXiGUWd0yJtHd4/tF
-   EwnK/eQ+W4Wl52gkxHL+dmwJQHOQ9JBNZdSocV8PK/Y9YRzyYILr3qXrM
-   55RrC1w107k0CDbixa8bcDTFP641Ire/8yh5nrhzYCi32GHEYFSkSKgv4
-   KmfIHKykHKaQEipaVJpaK+4bG1u5LoVfPAnnYvV9MVQCp0Ndtf6T1++Gj
-   /MTiBCU3v4b78RggJJri2oRzy81hmlEYIym+q4bR2jsvgeJGzmQqi0/FT
-   LWFblCoS1aB7U1PtnPA0hcs2W+CjSaAZjmkGco8QCO+8iLThdMeXb1AbX
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="462654467"
-X-IronPort-AV: E=Sophos;i="6.04,184,1695711600"; 
-   d="scan'208";a="462654467"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2024 16:52:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10947"; a="1028964191"
-X-IronPort-AV: E=Sophos;i="6.04,184,1695711600"; 
-   d="scan'208";a="1028964191"
-Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.93.19.162]) ([10.93.19.162])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2024 16:52:08 -0800
-Message-ID: <252396e4-bf9a-4655-8993-75a44d58febd@linux.intel.com>
-Date: Wed, 10 Jan 2024 08:52:06 +0800
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ZltpDA36"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40A2S8jq015649;
+	Wed, 10 Jan 2024 04:06:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	date:from:to:cc:subject:message-id:references:mime-version
+	:content-type:in-reply-to; s=qcppdkim1; bh=5V6c1LzqqYZg8TMxdl30r
+	TLW5Ff08OXxDu3yme8YK+0=; b=ZltpDA36jiTLkHsV4xikipJjp/scJIQjx8abb
+	ZcMVrpMGwNXf66QpHKCNcDazJQb9b9ykcuzfEwrwEAZr1gHnWMswVgZqx+MuugIB
+	VVp3IHH3fuRd4IxDx9JWkJSm5SPPOzDJ76+Lv7sBKDTkSthoiqBcecKlzrgytTfQ
+	oNtKkzzd+UKmJ+QVdyfghNcRuOgr7Yxv3OyfGGUqQr6PNaV3BOVIY7183yN7+J9a
+	BfrTwfvbf+KsW7KJQLJdM+MqP+CRhGlIYsiTWOWfXzLGinox0hv2qPOv3lXTbSIJ
+	nfvMUX3JwFqSewMlRiLq0d4XstYyrv3QfrxupNOnXoHdatGFQ==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vh9evsc0b-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 10 Jan 2024 04:06:44 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 40A46hFp026739
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 10 Jan 2024 04:06:43 GMT
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Tue, 9 Jan 2024 20:06:37 -0800
+Date: Wed, 10 Jan 2024 09:36:34 +0530
+From: Pavan Kondeti <quic_pkondeti@quicinc.com>
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
+        <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <qipl.kernel.upstream@quicinc.com>
+Subject: Re: [PATCH v7 3/5] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+Message-ID: <2ad70157-27d1-41df-8866-c226af690cf6@quicinc.com>
+References: <20240109114220.30243-1-quic_bibekkum@quicinc.com>
+ <20240109114220.30243-4-quic_bibekkum@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/2] iommu/iova: Make the rcache depot properly
- flexible
-To: Robin Murphy <robin.murphy@arm.com>, Ido Schimmel <idosch@idosch.org>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, zhangzekun11@huawei.com,
- john.g.garry@oracle.com, dheerajkumar.srivastava@amd.com, jsnitsel@redhat.com
-References: <cover.1694535580.git.robin.murphy@arm.com>
- <ZY1osaGLyT-sdKE8@shredder> <c9cf02b5-7add-46ea-8db1-46fdce191c1c@arm.com>
- <15a058ba-3b51-46f3-bb1c-23792d100b55@linux.intel.com>
- <d5ad4801-6061-42ee-aafb-129a78e5a2b8@linux.intel.com>
- <7eaa0f41-a71b-43c1-8596-1df99584530a@arm.com>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <7eaa0f41-a71b-43c1-8596-1df99584530a@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240109114220.30243-4-quic_bibekkum@quicinc.com>
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: Gn6vGfAZGqcs-xlk-Tqt3qmnR_DbkUtU
+X-Proofpoint-ORIG-GUID: Gn6vGfAZGqcs-xlk-Tqt3qmnR_DbkUtU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
+ mlxlogscore=999 lowpriorityscore=0 mlxscore=0 priorityscore=1501
+ adultscore=0 suspectscore=0 clxscore=1011 spamscore=0 phishscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2401100031
 
+On Tue, Jan 09, 2024 at 05:12:18PM +0530, Bibek Kumar Patro wrote:
+>  static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>  		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>  {
+> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+> +	const struct actlr_variant *actlrvar;
+> +	int cbndx = smmu_domain->cfg.cbndx;
+>  	struct adreno_smmu_priv *priv;
+> 
+>  	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+> @@ -248,6 +285,16 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>  	priv->set_stall = qcom_adreno_smmu_set_stall;
+>  	priv->resume_translation = qcom_adreno_smmu_resume_translation;
+> 
+> +	if (qsmmu->data->actlrvar) {
+> +		actlrvar = qsmmu->data->actlrvar;
+> +		for (; actlrvar->io_start; actlrvar++) {
+> +			if (actlrvar->io_start == smmu->ioaddr) {
+> +				qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar->actlrcfg);
+> +				break;
+> +			}
+> +		}
+> +	}
+> +
+>  	return 0;
+>  }
+> 
+> @@ -274,6 +321,21 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+>  static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>  		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>  {
+> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+> +	const struct actlr_variant *actlrvar;
+> +	int cbndx = smmu_domain->cfg.cbndx;
+> +
+> +	if (qsmmu->data->actlrvar) {
+> +		actlrvar = qsmmu->data->actlrvar;
+> +		for (; actlrvar->io_start; actlrvar++) {
+> +			if (actlrvar->io_start == smmu->ioaddr) {
+> +				qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar->actlrcfg);
+> +				break;
+> +			}
+> +		}
+> +	}
+> +
 
-On 1/9/2024 7:26 PM, Robin Murphy wrote:
-> On 2024-01-09 6:23 am, Ethan Zhao wrote:
->>
->> On 1/9/2024 1:54 PM, Ethan Zhao wrote:
->>>
->>> On 1/9/2024 1:35 AM, Robin Murphy wrote:
->>>> On 2023-12-28 12:23 pm, Ido Schimmel wrote:
->>>>> On Tue, Sep 12, 2023 at 05:28:04PM +0100, Robin Murphy wrote:
->>>>>> v2: 
->>>>>> https://lore.kernel.org/linux-iommu/cover.1692641204.git.robin.murphy@arm.com/
->>>>>>
->>>>>> Hi all,
->>>>>>
->>>>>> I hope this is good to go now, just fixed the locking (and threw
->>>>>> lockdep at it to confirm, which of course I should have done to 
->>>>>> begin
->>>>>> with...) and picked up tags.
->>>>>
->>>>> Hi,
->>>>>
->>>>> After pulling the v6.7 changes we started seeing the following memory
->>>>> leaks [1] of 'struct iova_magazine'. I'm not sure how to reproduce 
->>>>> it,
->>>>> which is why I didn't perform bisection. However, looking at the
->>>>> mentioned code paths, they seem to have been changed in v6.7 as 
->>>>> part of
->>>>> this patchset. I reverted both patches and didn't see any memory 
->>>>> leaks
->>>>> when running a full regression (~10 hours), but I will repeat it 
->>>>> to be
->>>>> sure.
->>>>>
->>>>> Any idea what could be the problem?
->>>>
->>>> Hmm, we've got what looks to be a set of magazines forming a 
->>>> plausible depot list (or at least the tail end of one):
->>>>
->>>> ffff8881411f9000 -> ffff8881261c1000
->>>>
->>>> ffff8881261c1000 -> ffff88812be26400
->>>>
->>>> ffff88812be26400 -> ffff8188392ec000
->>>>
->>>> ffff8188392ec000 -> ffff8881a5301000
->>>>
->>>> ffff8881a5301000 -> NULL
->>>>
->>>> which I guess has somehow become detached from its rcache->depot 
->>>> without being freed properly? However I'm struggling to see any 
->>>> conceivable way that could happen which wouldn't already be more 
->>>> severely broken in other ways as well (i.e. either general memory 
->>>> corruption or someone somehow still trying to use the IOVA domain 
->>>> while it's being torn down).
->>>>
->>>> Out of curiosity, does reverting just patch #2 alone make a 
->>>> difference? And is your workload doing anything "interesting" in 
->>>> relation to IOVA domain lifetimes, like creating and destroying 
->>>> SR-IOV virtual functions, changing IOMMU domain types via sysfs, or 
->>>> using that horrible vdpa thing, or are you seeing this purely from 
->>>> regular driver DMA API usage?
->>>
->>> There no lock held when free_iova_rcaches(), is it possible 
->>> free_iova_rcaches() race with the delayed cancel_delayed_work_sync() ?
->>>
->>> I don't know why not call cancel_delayed_work_sync(&rcache->work); 
->>> first in free_iova_rcaches() to avoid possible race.
->>>
->> between following functions pair, race possible ? if called cocurrently.
->>
->> 1. free_iova_rcaches() with iova_depot_work_func()
->>
->>     free_iova_rcaches() holds no lock, iova_depot_work_func() holds 
->> rcache->lock.
->
-> Unless I've completely misunderstood the workqueue API, that can't 
-> happen, since free_iova_rcaches() *does* synchronously cancel the work 
-> before it starts freeing the depot list.
+This block and the one in qcom_adreno_smmu_init_context() are exactly
+the same. Possible to do some refactoring?
 
-iova_depot_work_func() pop and free mag from depot. free_iova_rcaches() 
-frees loaded and previous mag before syncronously cancelled.
+>  	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+> 
+>  	return 0;
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+> index f3b91963e234..29d26dfa2ed9 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+> @@ -1,6 +1,6 @@
+>  /* SPDX-License-Identifier: GPL-2.0-only */
+>  /*
+> - * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
+> + * Copyright (c) 2023, Qualcomm Innovation Center, Inc. All rights reserved.
+>   */
+> 
 
-different thing. okay here.
+It should be 2022-2023 . 
 
->
->> 2. iova_cpuhp_dead() with iova_depot_work_func()
->>
->>    iova_cpuhp_dead() holds per cpu lock cpu_rcache->lock, 
->> iova_depot_work_func() holds rcache->lock.
->
-> That's not a race because those are touching completely different 
-> things - the closest they come to interacting is where they both free 
-> IOVAs back to the rbtree.
+>  #ifndef _ARM_SMMU_QCOM_H
+> @@ -24,8 +24,17 @@ struct qcom_smmu_config {
+>  	const u32 *reg_offset;
+>  };
+> 
+> +struct actlr_config;
+> +
+> +struct actlr_variant {
+> +	const struct actlr_config *actlrcfg;
+> +	const resource_size_t io_start;
+> +};
+> +
+>  struct qcom_smmu_match_data {
+> +	const struct actlr_variant *actlrvar;
+>  	const struct qcom_smmu_config *cfg;
+> +	const int num_smmu;
+>  	const struct arm_smmu_impl *impl;
+>  	const struct arm_smmu_impl *adreno_impl;
+>  };
 
-iova_cpuhp_dead() free pages with 
-iova_magazine_free_pfns(cpu_rcache->loaded, iovad);
-
-iova_depot_work_func() free mag from depot. iova_magazine_free_pfns() 
-hold rbtree lock.
-
-Okay, different thing.
-
->
->> 3. iova_cpuhp_dead() with free_iova_rcaches()
->>
->>     iova_cpuhp_dead() holds per cpu lock cpu_rcache->lock, 
->> free_iova_rcaches() holds no lock.
->
-> See iova_domain_free_rcaches() - by the time we call 
-> free_iova_rcaches(), the hotplug handler has already been removed (and 
-> either way it couldn't account for *this* issue since it doesn't touch 
-> the depot at all).
-Yes, iova_cpuhp_dead() was removed before free_iova_rcaches().
->
->> 4. iova_cpuhp_dead() with free_global_cached_iovas()
->>
->>     iova_cpuhp_dead() holds per cpu lock cpu_rcache->lock and 
->> free_global_cached_iovas() holds rcache->lock.
->
-> Again, they hold different locks because they're touching unrelated 
-> things.
-
-iova_cpuhp_dead() free loaded and previous pages. 
-free_global_cached_iovas() free mags from depot.
-
-Okay too.
-
-then free_global_cached_iovas() with iova_depot_work_func() ? they all 
-hold rcache->lock.
-
-So there is no race at all, perfect.  out of imagination, that memory 
-leak report.
-
-kmemleak not always right.
-
+qcom_smmu_match_data::num_smmu needs cleanup.
 
 Thanks,
-
-Ethan
-
->
-> Thanks,
-> Robin.
+Pavan
