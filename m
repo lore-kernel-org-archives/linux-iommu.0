@@ -1,49 +1,39 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 110D73FB36
-	for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 11:00:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 939AB47762
+	for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 11:17:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QC4MLtMk"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-50e5a9bcec9so4868251e87.3
-        for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 03:00:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1704884440; x=1705489240; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=RfeKeWELsUXSOsoX/4w9IRfss9fiLzU6vIaJLnkhKk8=;
-        b=QC4MLtMkm49imAMnEQKP29Fu7l6vJlPNA6xm2VmgbwB0O+GL3MnJHqZ7Cl5wWWMoxv
-         p52x5mIpv05OwWg6xBcizAlrzR3wTFV7F8/mosuMgWPkJQjpl0w9XMFN6fzpy7HAu5BG
-         lbQYyN7JTiJyPIcP4LStCR2Xie98BxOmonlyeVr5f3wTCuJd1dSTyTVQbcX5ogjOyFHD
-         1FmCKe23W7yo5ojIPKkdkSMyGhMtvxE14QBCpE64aLqsR+l2BuwPQKoxGdIN59E0yLLQ
-         eE0e7qpRxJY0h3nPrx/pZ9eEdiCVGBXf2EM11+JoOY0bMIJPUzFzQWu2QacD8iCqngQs
-         gW4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704884440; x=1705489240;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=RfeKeWELsUXSOsoX/4w9IRfss9fiLzU6vIaJLnkhKk8=;
-        b=UGDmZwmoATafxLn0j0xYikgXdIgAJkou2kzDIJDn1vB2A1CJuy6xPBpI5XOTU7X8zC
-         Cn42+ex/p3adGFLWw8RXqmDkrCmhndn3tggV72147PxrgBoASlvaOR3PeKxmT1LVpn3X
-         DjPIBbBhwFh6LctRNVl77g6eUup/86PQZ9POKwHeZYAp8CTatDjPXT8fnrPTaQEQYVJs
-         IjJVu79y1TYIR/EJpcOTqhr1FAglwTAnRsjtEd7ElfAT2awRVtsRalaYdhzXPWbltxYS
-         bSP8bg54Qw4TK84NpLFVVJtMmy0a7reJr66JceOTbPtaIao+9ELRoi96IAAcDOBWZvqt
-         CikQ==
-X-Gm-Message-State: AOJu0Yzn++TLhwOw7ef9RyLAS8TWt4hu08fsxs6gVK8e3xEE2ad9C59t
-	b0LRdg1nCNtaKbHisE8aZidli++qjg5xQA==
-X-Google-Smtp-Source: AGHT+IHxHBhrhaM+rqV9BsRHT6XAftzD06A/BcYSyyty/0KA0tCunnAFj1XF5aWGoLi7Er3fmNTdWg==
-X-Received: by 2002:a19:9117:0:b0:50e:7be9:52fb with SMTP id t23-20020a199117000000b0050e7be952fbmr326167lfd.82.1704884439955;
-        Wed, 10 Jan 2024 03:00:39 -0800 (PST)
-Received: from [172.30.205.119] (UNUSED.212-182-62-129.lubman.net.pl. [212.182.62.129])
-        by smtp.gmail.com with ESMTPSA id eo30-20020a056512481e00b0050e7ed9585asm617280lfb.233.2024.01.10.03.00.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jan 2024 03:00:39 -0800 (PST)
-Message-ID: <36f9eac0-3086-4d18-9879-02738e99d262@linaro.org>
-Date: Wed, 10 Jan 2024 12:00:35 +0100
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Lth6Jf8c"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40A9a4HY004758;
+	Wed, 10 Jan 2024 11:17:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=g9xuwmwnv77m6yLMd6UvlmhVtVKT1QYeO0gAErvBHgE=; b=Lt
+	h6Jf8cKFbWSHgYDouVDyTfFKZOJUsShEn4ZUpRZ5sAT5wtF4uI+TmwQ9WocGrEJz
+	wOL8zW+uzRvosXZ53soeRPYyfqVjjCRo+cQfE7ZKohEpmwd8VpdkOGphlVrA3I//
+	AZQ/GvWQg87genB1WIntjdL+cnrJqiXTH80sGmlWtHlu5C9il69Dd143BRO3pIue
+	ImiDECtTTHSgqwZ4A7IqGUejqjhAvDfkTiUMGwTLehkb3OM8EcSAdg8sFRja0hDl
+	iQbQ5Ex4Vg83uMNPIO6tt2eNqADxrcssKaxv8yHdnevkfP5QqPLFFJEzaQZT7QZJ
+	LjhinQgmk0ZrqfgM5aIA==
+Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vhg8g1844-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 10 Jan 2024 11:17:02 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 40ABH1IK009829
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 10 Jan 2024 11:17:01 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Wed, 10 Jan
+ 2024 03:16:54 -0800
+Message-ID: <ec31fafa-b912-454a-8b64-e0593911aaf2@quicinc.com>
+Date: Wed, 10 Jan 2024 16:46:46 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,79 +41,146 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 1/5] iommu/arm-smmu: re-enable context caching in smmu
- reset operation
-Content-Language: en-US
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, dmitry.baryshkov@linaro.org,
- jsnitsel@redhat.com, quic_bjorande@quicinc.com, mani@kernel.org,
- quic_eberman@quicinc.com, robdclark@chromium.org,
- u.kleine-koenig@pengutronix.de, robh@kernel.org, vladimir.oltean@nxp.com,
- quic_pkondeti@quicinc.com, quic_molvera@quicinc.com
-Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- qipl.kernel.upstream@quicinc.com
+Subject: Re: [PATCH v7 3/5] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+To: Pavan Kondeti <quic_pkondeti@quicinc.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
+        <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_molvera@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <qipl.kernel.upstream@quicinc.com>
 References: <20240109114220.30243-1-quic_bibekkum@quicinc.com>
- <20240109114220.30243-2-quic_bibekkum@quicinc.com>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <20240109114220.30243-2-quic_bibekkum@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+ <20240109114220.30243-4-quic_bibekkum@quicinc.com>
+ <2ad70157-27d1-41df-8866-c226af690cf6@quicinc.com>
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <2ad70157-27d1-41df-8866-c226af690cf6@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: SAGdCQf8fpU7gVcpiSgWX-iDG8BOwoaB
+X-Proofpoint-GUID: SAGdCQf8fpU7gVcpiSgWX-iDG8BOwoaB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 spamscore=0 mlxscore=0 adultscore=0 mlxlogscore=999
+ impostorscore=0 bulkscore=0 suspectscore=0 phishscore=0 priorityscore=1501
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2401100092
 
 
 
-On 1/9/24 12:42, Bibek Kumar Patro wrote:
-> Default MMU-500 reset operation disables context caching in
-> prefetch buffer. It is however expected for context banks using
-> the ACTLR register to retain their prefetch value during reset
-> and runtime suspend.
+On 1/10/2024 9:36 AM, Pavan Kondeti wrote:
+> On Tue, Jan 09, 2024 at 05:12:18PM +0530, Bibek Kumar Patro wrote:
+>>   static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>   		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>   {
+>> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>> +	const struct actlr_variant *actlrvar;
+>> +	int cbndx = smmu_domain->cfg.cbndx;
+>>   	struct adreno_smmu_priv *priv;
+>>
+>>   	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+>> @@ -248,6 +285,16 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>   	priv->set_stall = qcom_adreno_smmu_set_stall;
+>>   	priv->resume_translation = qcom_adreno_smmu_resume_translation;
+>>
+>> +	if (qsmmu->data->actlrvar) {
+>> +		actlrvar = qsmmu->data->actlrvar;
+>> +		for (; actlrvar->io_start; actlrvar++) {
+>> +			if (actlrvar->io_start == smmu->ioaddr) {
+>> +				qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar->actlrcfg);
+>> +				break;
+>> +			}
+>> +		}
+>> +	}
+>> +
+>>   	return 0;
+>>   }
+>>
+>> @@ -274,6 +321,21 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+>>   static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+>>   		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>   {
+>> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>> +	const struct actlr_variant *actlrvar;
+>> +	int cbndx = smmu_domain->cfg.cbndx;
+>> +
+>> +	if (qsmmu->data->actlrvar) {
+>> +		actlrvar = qsmmu->data->actlrvar;
+>> +		for (; actlrvar->io_start; actlrvar++) {
+>> +			if (actlrvar->io_start == smmu->ioaddr) {
+>> +				qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar->actlrcfg);
+>> +				break;
+>> +			}
+>> +		}
+>> +	}
+>> +
 > 
-> Replace default MMU-500 reset operation with Qualcomm specific reset
-> operation which envelope the default reset operation and re-enables
-> context caching in prefetch buffer for Qualcomm SoCs.
+> This block and the one in qcom_adreno_smmu_init_context() are exactly
+> the same. Possible to do some refactoring?
 > 
-> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> ---
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 37 ++++++++++++++++++++--
->   1 file changed, 34 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 549ae4dba3a6..000e207346af 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -14,6 +14,16 @@
-> 
->   #define QCOM_DUMMY_VAL	-1
-> 
-> +/*
-> + * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
-> + * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
-> + * buffer). The remaining bits are implementation defined and vary across
-> + * SoCs.
-> + */
-> +
-> +#define CPRE			(1 << 1)
-> +#define CMTLB			(1 << 0)
-> +
->   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
->   {
->   	return container_of(smmu, struct qcom_smmu, smmu);
-> @@ -376,11 +386,32 @@ static int qcom_smmu_def_domain_type(struct device *dev)
->   	return match ? IOMMU_DOMAIN_IDENTITY : 0;
->   }
-> 
-> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
-> +{
-> +	int ret;
-> +	u32 val;
-> +	int i;
-> +
-> +	ret = arm_mmu500_reset(smmu);
-> +
-> +	if (ret)
-Weird empty line.. Please remove it in the next revision since you're
-already going to send a new one..
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+I will check if this repeated blocks can be accomodated this into 
+qcom_smmu_set_actlr function if that would be fine.
 
-Konrad
+>>   	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+>>
+>>   	return 0;
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>> index f3b91963e234..29d26dfa2ed9 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
+>> @@ -1,6 +1,6 @@
+>>   /* SPDX-License-Identifier: GPL-2.0-only */
+>>   /*
+>> - * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
+>> + * Copyright (c) 2023, Qualcomm Innovation Center, Inc. All rights reserved.
+>>    */
+>>
+> 
+> It should be 2022-2023 .
+> 
+
+Ack
+
+>>   #ifndef _ARM_SMMU_QCOM_H
+>> @@ -24,8 +24,17 @@ struct qcom_smmu_config {
+>>   	const u32 *reg_offset;
+>>   };
+>>
+>> +struct actlr_config;
+>> +
+>> +struct actlr_variant {
+>> +	const struct actlr_config *actlrcfg;
+>> +	const resource_size_t io_start;
+>> +};
+>> +
+>>   struct qcom_smmu_match_data {
+>> +	const struct actlr_variant *actlrvar;
+>>   	const struct qcom_smmu_config *cfg;
+>> +	const int num_smmu;
+>>   	const struct arm_smmu_impl *impl;
+>>   	const struct arm_smmu_impl *adreno_impl;
+>>   };
+> 
+> qcom_smmu_match_data::num_smmu needs cleanup.
+> 
+
+Ack, thanks for pointing this out.
+
+Thanks & regards,
+Bibek
+
+> Thanks,
+> Pavan
