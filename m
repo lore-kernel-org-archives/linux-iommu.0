@@ -1,155 +1,102 @@
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E82214D589
-	for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 17:56:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JMN/2+4W"
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2cd5c55d6b8so35752591fa.3
-        for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 09:56:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1704909414; x=1705514214; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=YPUG8wGHjUncLfJR9e1hMbIghHR8x5XwILqQc+Upn/A=;
-        b=JMN/2+4WYhwM+vUGFHqjSNMMu5sl2MkobRL5V0V6Hut39PHk64OQqdknfoW2lat2zG
-         GPbx2NkbIacgHEndVZ7ImJm5irs4rbkTHnGlhseLblJhTjOs+f2RUtjJ1HO6xsuPpiYw
-         OMBju2QxhrYZQxJ8NO7Wb4BRThNI4Gt8a04j6ooCdBmZzEffXCYJ8R+IPxsrraa/KfQs
-         BpLvASkJrFYncdpErgu3bkS7V9zwhz49oCJzkVaaHV1IGo7JNs649EqQNFt0sDwz0g9l
-         AQG+ldW94YyzuTByaWe8CLEAgnj7slv1+caKeR/qJsXZHSgLCXz334fs3Lcf/5qLrfSn
-         JsYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704909414; x=1705514214;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=YPUG8wGHjUncLfJR9e1hMbIghHR8x5XwILqQc+Upn/A=;
-        b=uUj41Mv8RkG9tBFqN0tYiGJnkswfDC+UjzzDj+vAqMZMknaWWFpWql5tVp3CKP3nLv
-         1gmHRZ4UJ/UOCqIHuLDS1pQJMnPU/pcsLCqtWU+irCGfgFUNsrvHPRuHJZgtRWFb2X0U
-         B+xy543QHVEITvPEFOJPm3a1L4rpebmirLDl03ghy9S57NWiZ6XrcLPyszYiV9vMB9jJ
-         YdkE7gHdMP6A1P2AZZOSYBFCpoIzuRWyNEGEvHHae7J2mQVsoygliJhyBLGUyExdU7l7
-         /SEHaaAr61bEnYPEg0fG9hlsS/Bk39X5m6ELr0S3COUPcN55By2s50Jy7zhYc/B+kQjt
-         3PXQ==
-X-Gm-Message-State: AOJu0YxqTO8SZMUo/c6a546sGs3fQ3YJYd3hDMUyyPTP7ppeLrpg3+n3
-	5r0zmy4WhmXkQ0vTFke5auFQKl3iZLecZg==
-X-Google-Smtp-Source: AGHT+IHvrOZ0aqeCr586qVWcuhFyKWtM901HK7CwO0DiO3YJfPrWwlIUBPh0GgYU2a0lKt1fMyeUlQ==
-X-Received: by 2002:a05:651c:b23:b0:2cd:7fe1:39c with SMTP id b35-20020a05651c0b2300b002cd7fe1039cmr334267ljr.72.1704909413963;
-        Wed, 10 Jan 2024 09:56:53 -0800 (PST)
-Received: from [172.30.205.123] (UNUSED.212-182-62-129.lubman.net.pl. [212.182.62.129])
-        by smtp.gmail.com with ESMTPSA id v17-20020a2ea451000000b002cd1a3bdecbsm829614ljn.22.2024.01.10.09.56.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jan 2024 09:56:53 -0800 (PST)
-Message-ID: <492aeca3-a4df-47a3-9c77-02ea4235d736@linaro.org>
-Date: Wed, 10 Jan 2024 18:56:51 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 667DB4D584;
+	Wed, 10 Jan 2024 17:58:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8156C43399;
+	Wed, 10 Jan 2024 17:58:17 +0000 (UTC)
+Date: Wed, 10 Jan 2024 17:58:15 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Ido Schimmel <idosch@idosch.org>, joro@8bytes.org, will@kernel.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	zhangzekun11@huawei.com, john.g.garry@oracle.com,
+	dheerajkumar.srivastava@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v3 0/2] iommu/iova: Make the rcache depot properly
+ flexible
+Message-ID: <ZZ7atzgT6_kOvWnJ@arm.com>
+References: <cover.1694535580.git.robin.murphy@arm.com>
+ <ZY1osaGLyT-sdKE8@shredder>
+ <c9cf02b5-7add-46ea-8db1-46fdce191c1c@arm.com>
+ <ZZ2AqZT4dD-s01q9@shredder>
+ <ab22c439-e7da-49b5-b20b-856daf376c02@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 3/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-Content-Language: en-US
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>,
- Pavan Kondeti <quic_pkondeti@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
- dmitry.baryshkov@linaro.org, jsnitsel@redhat.com, quic_bjorande@quicinc.com,
- mani@kernel.org, quic_eberman@quicinc.com, robdclark@chromium.org,
- u.kleine-koenig@pengutronix.de, robh@kernel.org, vladimir.oltean@nxp.com,
- quic_molvera@quicinc.com, linux-arm-msm@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, qipl.kernel.upstream@quicinc.com
-References: <20240109114220.30243-1-quic_bibekkum@quicinc.com>
- <20240109114220.30243-4-quic_bibekkum@quicinc.com>
- <2ad70157-27d1-41df-8866-c226af690cf6@quicinc.com>
- <ec31fafa-b912-454a-8b64-e0593911aaf2@quicinc.com>
- <4a595815-7fcc-47e2-b22c-dac349af6d79@quicinc.com>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <4a595815-7fcc-47e2-b22c-dac349af6d79@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ab22c439-e7da-49b5-b20b-856daf376c02@arm.com>
 
-
-
-On 1/10/24 13:55, Bibek Kumar Patro wrote:
+On Wed, Jan 10, 2024 at 12:48:06PM +0000, Robin Murphy wrote:
+> On 2024-01-09 5:21 pm, Ido Schimmel wrote:
+> > On Mon, Jan 08, 2024 at 05:35:26PM +0000, Robin Murphy wrote:
+> > > Hmm, we've got what looks to be a set of magazines forming a plausible depot
+> > > list (or at least the tail end of one):
+> > > 
+> > > ffff8881411f9000 -> ffff8881261c1000
+> > > 
+> > > ffff8881261c1000 -> ffff88812be26400
+> > > 
+> > > ffff88812be26400 -> ffff8188392ec000
+> > > 
+> > > ffff8188392ec000 -> ffff8881a5301000
+> > > 
+> > > ffff8881a5301000 -> NULL
+> > > 
+> > > which I guess has somehow become detached from its rcache->depot without
+> > > being freed properly? However I'm struggling to see any conceivable way that
+> > > could happen which wouldn't already be more severely broken in other ways as
+> > > well (i.e. either general memory corruption or someone somehow still trying
+> > > to use the IOVA domain while it's being torn down).
+> > 
+> > The machine is running a debug kernel that among other things has KASAN
+> > enabled, but there are no traces in the kernel log so there is no memory
+> > corruption that I'm aware of.
+> > 
+> > > Out of curiosity, does reverting just patch #2 alone make a difference?
+> > 
+> > Will try and let you know.
+> > 
+> > > And is your workload doing anything "interesting" in relation to IOVA
+> > > domain lifetimes, like creating and destroying SR-IOV virtual
+> > > functions, changing IOMMU domain types via sysfs, or using that
+> > > horrible vdpa thing, or are you seeing this purely from regular driver
+> > > DMA API usage?
+> > 
+> > The machine is running networking related tests, but it is not using
+> > SR-IOV, VMs or VDPA so there shouldn't be anything "interesting" as far
+> > as IOMMU is concerned.
+> > 
+> > The two networking drivers on the machine are "igb" for the management
+> > port and "mlxsw" for the data ports (the machine is a physical switch).
+> > I believe the DMA API usage in the latter is quite basic and I don't
+> > recall any DMA related problems with this driver since it was first
+> > accepted upstream in 2015.
 > 
+> Thanks for the clarifications, that seems to rule out all the most
+> confusingly impossible scenarios, at least.
 > 
-> On 1/10/2024 4:46 PM, Bibek Kumar Patro wrote:
->>
->>
->> On 1/10/2024 9:36 AM, Pavan Kondeti wrote:
-> 
-> [...]
-> 
->>>> @@ -274,6 +321,21 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
->>>>   static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->>>>           struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
->>>>   {
->>>> +    struct arm_smmu_device *smmu = smmu_domain->smmu;
->>>> +    struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
->>>> +    const struct actlr_variant *actlrvar;
->>>> +    int cbndx = smmu_domain->cfg.cbndx;
->>>> +
->>>> +    if (qsmmu->data->actlrvar) {
->>>> +        actlrvar = qsmmu->data->actlrvar;
->>>> +        for (; actlrvar->io_start; actlrvar++) {
->>>> +            if (actlrvar->io_start == smmu->ioaddr) {
->>>> +                qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar->actlrcfg);
->>>> +                break;
->>>> +            }
->>>> +        }
->>>> +    }
->>>> +
->>>
->>> This block and the one in qcom_adreno_smmu_init_context() are exactly
->>> the same. Possible to do some refactoring?
->>>
->>
->> I will check if this repeated blocks can be accomodated this into qcom_smmu_set_actlr function if that would be fine.
->>
-> 
-> Also adding to this, this might increase the number of indentation inside qcom_smmu_set_actlr as well, to around 5. So wouldn't this
-> be an issue?
+> The best explanation I've managed to come up with is a false-positive race
+> dependent on the order in which kmemleak scans the relevant objects. Say we
+> have the list as depot -> A -> B -> C; the rcache object is scanned and sees
+> the pointer to magazine A, but then A is popped *before* kmemleak scans it,
+> such that when it is then scanned, its "next" pointer has already been
+> wiped, thus kmemleak never observes any reference to B, so it appears that B
+> and (transitively) C are "leaked".
 
-By the way, we can refactor this:
+Transient false positives are possible, especially as the code doesn't
+use a double-linked list (for the latter, kmemleak does checksumming and
+detects the prev/next change, defers the reporting until the object
+becomes stable). That said, if a new scan is forced (echo scan >
+/sys/kernel/debug/kmemleak), are the same objects still listed as leaks?
+If yes, they may not be transient.
 
-if (qsmmu->data->actlrvar) {
-	actlrvar = qsmmu->data->actlrvar;
-	for (; actlrvar->io_start; actlrvar++) {
-		if (actlrvar->io_start == smmu->ioaddr) {
-			qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar->actlrcfg);
-			break;
-		}
-	}
-}
+If it is indeed transient, I think a better fix than kmemleak_not_leak()
+is to add a new API, something like kmemleak_mark_transient() which
+resets the checksum, skips the object reporting for one scan.
 
-into
-
-// add const u8 num_actlrcfgs to struct actrl_variant to
-// save on sentinel space:
-//   sizeof(u8) < sizeof(ptr) + sizeof(resource_size_t)
-
-
-[declarations]
-const struct actlr_variant *actlrvar = qsmmu->data->actlrvar;
-int i;
-
-[rest of the functions]
-
-if (!actlrvar)
-	return 0;
-
-for (i = 0; i < actrlvar->num_actrlcfgs; i++) {
-	if (actlrvar[i].io_start == smmu->ioaddr) {
-		qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar->actlrcfg);
-		break;
-	}
-}
-
-Saving both on .TEXT size and indentation levels :)
-
-Konrad
+-- 
+Catalin
