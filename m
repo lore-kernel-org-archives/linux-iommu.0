@@ -1,49 +1,49 @@
-Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC72A46556
-	for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 10:49:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 110D73FB36
+	for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 11:00:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="i2PYrKAK"
-Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-50eaa8b447bso4238156e87.1
-        for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 02:49:33 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QC4MLtMk"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-50e5a9bcec9so4868251e87.3
+        for <iommu@lists.linux.dev>; Wed, 10 Jan 2024 03:00:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1704883772; x=1705488572; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=linaro.org; s=google; t=1704884440; x=1705489240; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=4HAwidvb0e6ayLYLy7I8ixYSx1g7DRV+B9kcqw/hieg=;
-        b=i2PYrKAKwrGPqppHxW/A3w5oRlpZkIzBYq77ff5YNIcAww+UtEUxyEn737gfohiEai
-         LHCao/5XXsnypN2Fvw9pB/F3UDDB6dH7veZ0QebbBd2AiIBVLf4Kq6QHoyA0j3UM+9Id
-         jqpkB5Ak+v7+g+maY6n8+HCGJrXytqUxDwKynuxCdQsMr/4IE9N+rgnJGb/Ut2Cj0vVn
-         M6de4apdfwe9zH9YfMx9Fyo5K39wnIQcX3LMybloOXPuzC9ebnnzK2V6bi0ceGhYRVHo
-         cSjzlKNoI1oTgRGTqWL7bl5dfeYJsWrUWPOOB8KhEC9Q0frdzOHYd9xecT5ZwUP2BFwF
-         FfAg==
+        bh=RfeKeWELsUXSOsoX/4w9IRfss9fiLzU6vIaJLnkhKk8=;
+        b=QC4MLtMkm49imAMnEQKP29Fu7l6vJlPNA6xm2VmgbwB0O+GL3MnJHqZ7Cl5wWWMoxv
+         p52x5mIpv05OwWg6xBcizAlrzR3wTFV7F8/mosuMgWPkJQjpl0w9XMFN6fzpy7HAu5BG
+         lbQYyN7JTiJyPIcP4LStCR2Xie98BxOmonlyeVr5f3wTCuJd1dSTyTVQbcX5ogjOyFHD
+         1FmCKe23W7yo5ojIPKkdkSMyGhMtvxE14QBCpE64aLqsR+l2BuwPQKoxGdIN59E0yLLQ
+         eE0e7qpRxJY0h3nPrx/pZ9eEdiCVGBXf2EM11+JoOY0bMIJPUzFzQWu2QacD8iCqngQs
+         gW4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704883772; x=1705488572;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+        d=1e100.net; s=20230601; t=1704884440; x=1705489240;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4HAwidvb0e6ayLYLy7I8ixYSx1g7DRV+B9kcqw/hieg=;
-        b=CCFwo1s8Zlr3xA2kFNhdWuiUtaOujUaKSQtdSZlWzJUR8IDIgWa52RpPMn+eBCnCox
-         YW9l61OZw1Cr+ij5qPHGB7Pl8V0bAFo5wdIxZNntP/Cdcc7QWAAd39uYV7qfiumtaZ1f
-         HWXfW4IU2giqAGM6c3OgrrNXi8Sjc+dxhc/5tfYQUZnF+vSZ2IviewXwmWa07GF3L1Bj
-         zaEDZFvENhgE1A23XjE9X0qlw4zGJt5NyawpKefer1DtJ20TWYla6798WUO5veSLNa3D
-         eTcu1/cQeq+RAHjcNy2UCVA6sPXDF79PpvK5DROjAygaSMZyWfk4MRZdMuRVRNGChMfm
-         85yw==
-X-Gm-Message-State: AOJu0YxFT25I3sDsue8uw7haF1/oZb+qOC3BNAQSrl88ZCE+yy08T44z
-	RG/TS31to7kw7iyIp69G3vf8399GYkw3SQ==
-X-Google-Smtp-Source: AGHT+IGH4Qz7/5tf/bBFWTnAs92jT0yCKBWnsVfiMJH5KiWKl3BVTMjQvfanZ3xGGYxdJZu1ZO+YtQ==
-X-Received: by 2002:a19:5f50:0:b0:50e:700:bdbb with SMTP id a16-20020a195f50000000b0050e0700bdbbmr145927lfj.21.1704883771729;
-        Wed, 10 Jan 2024 02:49:31 -0800 (PST)
+        bh=RfeKeWELsUXSOsoX/4w9IRfss9fiLzU6vIaJLnkhKk8=;
+        b=UGDmZwmoATafxLn0j0xYikgXdIgAJkou2kzDIJDn1vB2A1CJuy6xPBpI5XOTU7X8zC
+         Cn42+ex/p3adGFLWw8RXqmDkrCmhndn3tggV72147PxrgBoASlvaOR3PeKxmT1LVpn3X
+         DjPIBbBhwFh6LctRNVl77g6eUup/86PQZ9POKwHeZYAp8CTatDjPXT8fnrPTaQEQYVJs
+         IjJVu79y1TYIR/EJpcOTqhr1FAglwTAnRsjtEd7ElfAT2awRVtsRalaYdhzXPWbltxYS
+         bSP8bg54Qw4TK84NpLFVVJtMmy0a7reJr66JceOTbPtaIao+9ELRoi96IAAcDOBWZvqt
+         CikQ==
+X-Gm-Message-State: AOJu0Yzn++TLhwOw7ef9RyLAS8TWt4hu08fsxs6gVK8e3xEE2ad9C59t
+	b0LRdg1nCNtaKbHisE8aZidli++qjg5xQA==
+X-Google-Smtp-Source: AGHT+IHxHBhrhaM+rqV9BsRHT6XAftzD06A/BcYSyyty/0KA0tCunnAFj1XF5aWGoLi7Er3fmNTdWg==
+X-Received: by 2002:a19:9117:0:b0:50e:7be9:52fb with SMTP id t23-20020a199117000000b0050e7be952fbmr326167lfd.82.1704884439955;
+        Wed, 10 Jan 2024 03:00:39 -0800 (PST)
 Received: from [172.30.205.119] (UNUSED.212-182-62-129.lubman.net.pl. [212.182.62.129])
-        by smtp.gmail.com with ESMTPSA id o5-20020ac24bc5000000b0050ecae41c51sm590120lfq.135.2024.01.10.02.49.28
+        by smtp.gmail.com with ESMTPSA id eo30-20020a056512481e00b0050e7ed9585asm617280lfb.233.2024.01.10.03.00.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Jan 2024 02:49:31 -0800 (PST)
-Message-ID: <45314345-36ba-4d85-9d3b-298de26eb069@linaro.org>
-Date: Wed, 10 Jan 2024 11:49:27 +0100
+        Wed, 10 Jan 2024 03:00:39 -0800 (PST)
+Message-ID: <36f9eac0-3086-4d18-9879-02738e99d262@linaro.org>
+Date: Wed, 10 Jan 2024 12:00:35 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,8 +51,9 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 4/5] iommu/arm-smmu: add ACTLR data and support for
- SM8550
+Subject: Re: [PATCH v7 1/5] iommu/arm-smmu: re-enable context caching in smmu
+ reset operation
+Content-Language: en-US
 To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
  robin.murphy@arm.com, joro@8bytes.org, dmitry.baryshkov@linaro.org,
  jsnitsel@redhat.com, quic_bjorande@quicinc.com, mani@kernel.org,
@@ -63,29 +64,66 @@ Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
  qipl.kernel.upstream@quicinc.com
 References: <20240109114220.30243-1-quic_bibekkum@quicinc.com>
- <20240109114220.30243-5-quic_bibekkum@quicinc.com>
-Content-Language: en-US
+ <20240109114220.30243-2-quic_bibekkum@quicinc.com>
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <20240109114220.30243-5-quic_bibekkum@quicinc.com>
+In-Reply-To: <20240109114220.30243-2-quic_bibekkum@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 
 
 On 1/9/24 12:42, Bibek Kumar Patro wrote:
-> Add ACTLR data table for SM8550 along with support for
-> same including SM8550 specific implementation operations.
+> Default MMU-500 reset operation disables context caching in
+> prefetch buffer. It is however expected for context banks using
+> the ACTLR register to retain their prefetch value during reset
+> and runtime suspend.
+> 
+> Replace default MMU-500 reset operation with Qualcomm specific reset
+> operation which envelope the default reset operation and re-enables
+> context caching in prefetch buffer for Qualcomm SoCs.
 > 
 > Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
 > ---
-[...]
+>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 37 ++++++++++++++++++++--
+>   1 file changed, 34 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 549ae4dba3a6..000e207346af 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -14,6 +14,16 @@
+> 
+>   #define QCOM_DUMMY_VAL	-1
+> 
+> +/*
+> + * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
+> + * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
+> + * buffer). The remaining bits are implementation defined and vary across
+> + * SoCs.
+> + */
+> +
+> +#define CPRE			(1 << 1)
+> +#define CMTLB			(1 << 0)
+> +
+>   static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+>   {
+>   	return container_of(smmu, struct qcom_smmu, smmu);
+> @@ -376,11 +386,32 @@ static int qcom_smmu_def_domain_type(struct device *dev)
+>   	return match ? IOMMU_DOMAIN_IDENTITY : 0;
+>   }
+> 
+> +static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+> +{
+> +	int ret;
+> +	u32 val;
+> +	int i;
+> +
+> +	ret = arm_mmu500_reset(smmu);
+> +
+> +	if (ret)
+Weird empty line.. Please remove it in the next revision since you're
+already going to send a new one..
 
-> +static const struct actlr_variant sm8550_actlr[] = {
-> +	{ sm8550_apps_actlr_cfg, 0x15000000 },
-> +	{ sm8550_gfx_actlr_cfg, 0x03da0000 },
-> +	{},
-> +};
-
-Please use C99 designated initializers and put the address first.
+Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
 Konrad
