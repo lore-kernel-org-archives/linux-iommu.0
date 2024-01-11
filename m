@@ -1,118 +1,128 @@
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2068.outbound.protection.outlook.com [40.107.92.68])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 048BD4F20F
-	for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 15:56:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13B7850270
+	for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 16:50:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="B/JRuB8W"
-Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-3bd4f062aa2so529071b6e.1
-        for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 07:56:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1704988610; x=1705593410; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XzlSQgi5aMFQ6ZZbKcTjiWRQSktCc9jeFnSRbXOKzuI=;
-        b=B/JRuB8WPWzHVPEX5+QZ+ETZl8Xea57+hPkWkRMRjbNO7oy0QM4fMNJX2OhljgxQPg
-         Ijdpua5PcR417IOaZsK0bdad3LZtdwqcqAGElRSRKJHUApEbKdJN+zvJceYFCVoCpflr
-         aBxGPdHvvz/F1+r6mFNrCIExtYVW5sMPWC6xfMftGW0e7EA01Fc9TatjKUIqun6UjZ9N
-         KmgzUGAsPwMtGHRaJxMPoJ9AiJpfnUHd0wn3CDIt2BzQkAvjstteaqDhN4sBVwyi2/Ei
-         iM0q0Z3fjOYH8Da+6X+Dk5w1cuWKjKnWKAA1yYVy1V3GkLwoDEX9KiYeZHNX1XLUugKX
-         UM7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1704988610; x=1705593410;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XzlSQgi5aMFQ6ZZbKcTjiWRQSktCc9jeFnSRbXOKzuI=;
-        b=mFK9V8XzJ6Qs8EKYf0kl00XK2u4Tmn+Oi9QoyGe7gHYVM2vaTrGcluA9FWZ5HlJjmn
-         lJ70jzAFiacXc4rtvitcY59HRdQBLo5D7+ClhkwB/D6Jz9LiPQI+x2RAxyVts+xx3X3l
-         Fs9iOgFo7K4Oer2kp/5TmxBzGFnjY6FIXIPo5XUim1bumUilyjhcZv3aoFwtJtS4O3yE
-         GFgNnp6YTT8s/YAOupPODZovtx3lfpkVGjs+dv0zkE3WiVo+K0o5h3rl6y0sKBVun8uj
-         2XcSjANMExOj9WXDeZ/l3a25PL9og63XH8Xu41iuejRns4vucL47USnBSe7XJPLZfHUg
-         twJw==
-X-Gm-Message-State: AOJu0YxkQVzOm7YbHQiPcbrQDbLj/rL8zUEdD0GTwVfh9/flye1j3W2A
-	XOYjL0k3fw2yCzEyKzNYlyklSr6wJCdt/AzNAn/yYNVqhPNADw==
-X-Google-Smtp-Source: AGHT+IHYynUbRhLmuQVEz/Gn2c2nYnwGP0p6jJC5WKr54BT87sr0IvlKfK2tBXuiCnWCfqjPiMAcuQ==
-X-Received: by 2002:a05:6808:2e9a:b0:3bd:4b9f:7f5a with SMTP id gt26-20020a0568082e9a00b003bd4b9f7f5amr6897oib.23.1704988609940;
-        Thu, 11 Jan 2024 07:56:49 -0800 (PST)
-Received: from ziepe.ca ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id b14-20020aca220e000000b003bd4453e5d5sm204005oic.22.2024.01.11.07.56.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Jan 2024 07:56:49 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rNxQG-00326u-0o;
-	Thu, 11 Jan 2024 11:56:48 -0400
-Date: Thu, 11 Jan 2024 11:56:48 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommufd/selftest: Use right iommu_ops for mock device
-Message-ID: <20240111155648.GX50608@ziepe.ca>
-References: <20240111073213.180020-1-baolu.lu@linux.intel.com>
- <20240111144840.GW50608@ziepe.ca>
- <016e052e-8a99-4d60-b864-87c9859953f2@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="GqoYB0PR"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tv5+9/2B8rXt/viSX/MawHWJnqgjz+/DIcwxFI2mYV2kkxI9O97luJkQCvNgZxfS4+I+JgQVjp/8czFcUnvqztwYTRuxAr2X9t5M7Wqi/kv6QpKruhLWu8aBQxaW7pviw5xo/mZbWvWSW3gIeTjajYLpx+2CvamwN9qcDfQMsuBSnpo8yWOdPjUS6+SgjpTH/Ut7ogKjeMOaB3LyWrjLGjp9Ot0GgyF7EyHUqs8fxlRqX31X/FzwNgTsJxJDLJVbigS/BKB7UK34RTIJCi0GEKCuOvgFGGi583b9mFfGwRbTbsk8XhoElhH56Jfp+Aelb6MyS+Sa8cayGFU8PlK7yA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=43LlNCtu65PZ0WtH5CDq3vnqa74slCEv4Qab7RgO2NM=;
+ b=QhfNNEiZz+8n0Tgj3q2F3rTS9S9kMISFJCNPbQ16O1TwbBWztnyNzc5bBkD866RO8a9Ot1UIiJWmCjWy1M6vLmnDvk0M6r09WVw/FVd1Caw1umSONlb8mQoH2uiun1EzfA5+b8lpoVncutQ+n57UgSQzcBNRK7BPSKWf+l9wdjHY+Sraq47dXM8COV3iSoyHWwgt7QgnHbRyu6mb5H/QzsKRwP4Su5Mq829vjDvyawGKLnLfv8HtbIwD6f8TpezH7c9lTO5SESXNIfAhpYh5d8CnYDURqs48xu0IqL4JRagCW/Xk5nlCJz9/OBl3+IuulLmaGX3EXYksjdJh+r7jNw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=43LlNCtu65PZ0WtH5CDq3vnqa74slCEv4Qab7RgO2NM=;
+ b=GqoYB0PRrRk+QkJkzSYuVoHkngwAxlOtUCBSMxL7j89XLn/BUWrXD4QZkpgGsvz/aMFNKXT+y63EMjQZRrBAtTfWXmGiEaMXd8Vje5AGO80wpE5yhMOczJXcT4XyWXVUSbPCtV4S48lrEuU7Qpe1xzNHFElIT4yeGWp42oBtXKT5QbB0yt7csZyvZ+1TxXILssyHfzZ8TK2NgR9c/O5sAwoGaU8UVEy8zB6FYH2NR452exfVANRmJk42eYyBwzsIl6EC8NOGRL2YFVw7S4haz45OPyeVFsyWrupvWJKACOGc0iZdSWfSgFha4Q1mxosB66LBP3aUlXU3kjlZLNy+rw==
+Received: from DM5PR07CA0075.namprd07.prod.outlook.com (2603:10b6:4:ad::40) by
+ DS0PR12MB8246.namprd12.prod.outlook.com (2603:10b6:8:de::19) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7181.17; Thu, 11 Jan 2024 16:50:54 +0000
+Received: from DS3PEPF000099D3.namprd04.prod.outlook.com
+ (2603:10b6:4:ad:cafe::10) by DM5PR07CA0075.outlook.office365.com
+ (2603:10b6:4:ad::40) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7181.18 via Frontend
+ Transport; Thu, 11 Jan 2024 16:50:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ DS3PEPF000099D3.mail.protection.outlook.com (10.167.17.4) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7181.14 via Frontend Transport; Thu, 11 Jan 2024 16:50:54 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 11 Jan
+ 2024 08:50:47 -0800
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.41; Thu, 11 Jan 2024 08:50:47 -0800
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.181)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Thu, 11 Jan 2024 08:50:46 -0800
+Date: Thu, 11 Jan 2024 08:50:45 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+CC: <joro@8bytes.org>, <alex.williamson@redhat.com>, <jgg@nvidia.com>,
+	<kevin.tian@intel.com>, <robin.murphy@arm.com>, <baolu.lu@linux.intel.com>,
+	<cohuck@redhat.com>, <eric.auger@redhat.com>, <kvm@vger.kernel.org>,
+	<mjrosato@linux.ibm.com>, <chao.p.peng@linux.intel.com>,
+	<yi.y.sun@linux.intel.com>, <peterx@redhat.com>, <jasowang@redhat.com>,
+	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
+	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+	<zhenzhong.duan@intel.com>, <joao.m.martins@oracle.com>,
+	<xin.zeng@intel.com>, <yan.y.zhao@intel.com>, <j.granados@samsung.com>,
+	<binbin.wu@linux.intel.com>
+Subject: Re: [PATCH v11 6/8] iommufd/selftest: Add coverage for
+ IOMMU_HWPT_INVALIDATE ioctl
+Message-ID: <ZaAcZXrhhQPhKTHq@Asurada-Nvidia>
+References: <20240111041015.47920-1-yi.l.liu@intel.com>
+ <20240111041015.47920-7-yi.l.liu@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <016e052e-8a99-4d60-b864-87c9859953f2@arm.com>
+In-Reply-To: <20240111041015.47920-7-yi.l.liu@intel.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF000099D3:EE_|DS0PR12MB8246:EE_
+X-MS-Office365-Filtering-Correlation-Id: add25741-69e0-4c84-54d6-08dc12c579f8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	r1H9MrnJuAxe7xQinXwmTWAstQk9OXCVLjPEGuXQWuX5Plb6YCp3eIHIU8YgnaRmhICHsnjwT9/ZiKTrzrhSO1YrJpApU0aou/PS+E6sAuLPCh6IJTzPIZkKH0xWhzDbNjDU9VdPLqKfPpgShL+uepPVK1ylDr+If98+5mKZyDJNMy+8Wb2BE7AzHOX7SWqEOdVMM77XPsTdu5e+M3CLkctwmWh6OIzZ2QYHGwdVjMcyuu75h5BAfm1bLJj+JP1BSPhLCE27CUPeHX5NnPP2PtJoQeKZAeNPMLU0b7LytsOV9b2oGLf2ZDiBEJV8vVlFqAzhwdXaLQHTPZJdPcQyOdLp4hZKckdCZ/830gYxhBz6nCDEbh0DwweL1nCS+LOwrpZKsqcXNmVGZRDNNPbdjqnIeGoDwngCgfqwXn6ZRfoBHOpIetzioVD/h8StI7uesC7SrEyE+wod3KBCGSnJSeey9x5UuGp3Usd83kYx9ZgrfVN/Q207jbhFeJgWMdguQCbLED8arjRbjgRsVF624c88ohKrNlIK8vGdRee7rPC5U1aAoSSehrK4NQ79tbEeee1dX4EpPMfWNKx4btxjxRb6UbyC/s5iX3k8p5cc6dLSTB1lU7yx9ifUlFOHVcizAHYVIjbDMx0Y5Yv7qZe1dkh6osAu3N/HVEWkWM+tvMT2VcRrFqk1Dtl9gsZgLM2+fPfVcHO3uBm7oqV0F5gVjFZNqNoN9BC23w7esf+U7pWSCTzKdl+3c0OdMAe1cxat
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(346002)(376002)(136003)(39860400002)(396003)(230922051799003)(451199024)(186009)(82310400011)(64100799003)(1800799012)(46966006)(36840700001)(40470700004)(55016003)(40480700001)(40460700003)(83380400001)(9686003)(26005)(336012)(426003)(86362001)(7636003)(356005)(5660300002)(4326008)(47076005)(4744005)(7416002)(82740400003)(36860700001)(8936002)(6916009)(316002)(8676002)(70206006)(70586007)(41300700001)(33716001)(478600001)(54906003)(2906002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2024 16:50:54.2536
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: add25741-69e0-4c84-54d6-08dc12c579f8
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF000099D3.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8246
 
-On Thu, Jan 11, 2024 at 03:50:51PM +0000, Robin Murphy wrote:
-> On 11/01/2024 2:48 pm, Jason Gunthorpe wrote:
-> > On Thu, Jan 11, 2024 at 03:32:13PM +0800, Lu Baolu wrote:
-> > > In the iommu probe device path, __iommu_probe_device() gets the iommu_ops
-> > > for the device from dev->iommu->fwspec if this field has been initialized
-> > > before probing. Otherwise, it will lookup the global iommu device list
-> > > and use the iommu_ops of the first iommu device which has no
-> > > dev->iommu->fwspec. This causes the wrong iommu_ops to be used for the mock
-> > > device on x86 platforms where dev->iommu->fwspec is not used.
-> > > 
-> > > Preallocate the fwspec for the mock device so that the right iommu ops can
-> > > be used.
-> > 
-> > I really don't like this.
-> > 
-> > The lifecycle model for fwspec is already a bit confusing. Introducing
-> > a new case where a driver pre-allocates the fwspec is making it worse,
-> > not better.
-> > 
-> > eg iommu_init_device() error unwind will free this allocated fwspec
-> > leaving the device broken. We don't have the concept of a fwspec that
-> > is owned by the device, it is really owned by the probing code.
-> 
-> As I've tried to explain before, this is in fact the correct use of fwspec
-> as originally designed, i.e. being set up by *bus code* before device_add()
-> (remember this is not the "IOMMU driver" part of selftest.c).
+On Wed, Jan 10, 2024 at 08:10:13PM -0800, Yi Liu wrote:
+> +#define test_cmd_hwpt_invalidate(hwpt_id, reqs, data_type, lreq, nreqs)        \
+> +       ({                                                                    \
+> +               ASSERT_EQ(0,                                                  \
+> +                         _test_cmd_hwpt_invalidate(self->fd, hwpt_id, reqs,  \
+> +                                                   data_type,                 \
+> +                                                   lreq, nreqs));            \
+> +       })
+> +#define test_err_hwpt_invalidate(_errno, hwpt_id, reqs, data_type, lreq,    \
+> +                                nreqs)                                    \
+> +       ({                                                                 \
+> +               EXPECT_ERRNO(_errno,                                       \
+> +                            _test_cmd_hwpt_invalidate(self->fd, hwpt_id,  \
+> +                                                      reqs, data_type,     \
+> +                                                      lreq, nreqs));      \
+> +       })
 
-I understand it was the intention, but it doesn't relaly match how the
-code works today..
-
-> Indeed for perfect symmetry the bus code would free the fwspec after the
-> corresponding device_del() returns, but there's no harm in that being
-> factored into iommu_release_device() since the notifier call occurs
-> sufficiently late in device_del() itself as to make no practical difference.
-
-IIRC there were issues with leaking the dev_iommu :(
-
-> I'm working to get things back to that model (wherein the dev_iommu and
-> fwspec lifecycles become trivial), just with the slight tweak that these
-> days it's going to make more sense to have the initialisation factored into
-> device_add() itself (via iommu_probe_device()), rather than beforehand.
-
-I would prefer to simply remove fwspec as I've already shown patches
-for. You should give some comment on them.
-
-My main complaint is there is no full vision to remove the 'global
-drivers', we will always have some drivers doing FW parsing in probe
-and then this different fwspec thing on the side for other drivers.
-
-Jason
+Nit: spaces at the end of the four lines above that have string
+"data_type" are all misaligned, probably because of the previous
+replacement of "req_type".
