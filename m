@@ -1,102 +1,155 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 667DB4D584;
-	Wed, 10 Jan 2024 17:58:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8156C43399;
-	Wed, 10 Jan 2024 17:58:17 +0000 (UTC)
-Date: Wed, 10 Jan 2024 17:58:15 +0000
-From: Catalin Marinas <catalin.marinas@arm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Ido Schimmel <idosch@idosch.org>, joro@8bytes.org, will@kernel.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	zhangzekun11@huawei.com, john.g.garry@oracle.com,
-	dheerajkumar.srivastava@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v3 0/2] iommu/iova: Make the rcache depot properly
- flexible
-Message-ID: <ZZ7atzgT6_kOvWnJ@arm.com>
-References: <cover.1694535580.git.robin.murphy@arm.com>
- <ZY1osaGLyT-sdKE8@shredder>
- <c9cf02b5-7add-46ea-8db1-46fdce191c1c@arm.com>
- <ZZ2AqZT4dD-s01q9@shredder>
- <ab22c439-e7da-49b5-b20b-856daf376c02@arm.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77868804
+	for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 02:29:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DoDGYV8q"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1704940170; x=1736476170;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=iferbRpdeUhgnRlUu9J8+KBTyosmA5KQK2annn3GVaQ=;
+  b=DoDGYV8q4mxmR52ycOM1SlFEF3XBpoel2Pr/tX+QnUjsN+Q7yXmVrsUb
+   oDF2VjGePl8D/3Tm6g9S1ujoY01upfwVz1QjXS9LE2JDzLjRlDfINepB4
+   kv6fi5Bby5OqMgLftX5vUTU8f6/Rw88aW8aavK0HVYMV2oujuLjEk8W1k
+   89YEn/h03i3X56qGvDRpCoAb83WQ8b1dLVp07wXTg+GMzxahJjdqZS0Pd
+   mauvjkT36HdffrmFHq+cDxxbAQNRpX16mxtzIIQvyNhbCIVWVzxCZf5vf
+   XCpEZTh3kO61fIDAjwFtunG6++loTXjYJK2Fj/OnjyUDtC6I3iXfolYEq
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10949"; a="12204160"
+X-IronPort-AV: E=Sophos;i="6.04,185,1695711600"; 
+   d="scan'208";a="12204160"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2024 18:29:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.04,185,1695711600"; 
+   d="scan'208";a="24162309"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa002.jf.intel.com with ESMTP; 10 Jan 2024 18:29:22 -0800
+Message-ID: <1be246aa-4813-43df-af77-9a94f493374b@linux.intel.com>
+Date: Thu, 11 Jan 2024 10:24:06 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ab22c439-e7da-49b5-b20b-856daf376c02@arm.com>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, linux-pci@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v10 4/5] iommu/vt-d: don't issue ATS Invalidation
+ request when device is disconnected
+Content-Language: en-US
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>, kevin.tian@intel.com,
+ bhelgaas@google.com, dwmw2@infradead.org, will@kernel.org,
+ robin.murphy@arm.com, lukas@wunner.de
+References: <20231228170504.720794-1-haifeng.zhao@linux.intel.com>
+ <20231228170504.720794-2-haifeng.zhao@linux.intel.com>
+ <8e16ff9b-4dcd-4bec-a78b-61d90205841f@linux.intel.com>
+ <b077a691-5790-40a0-8539-0f5294d0fc28@linux.intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <b077a691-5790-40a0-8539-0f5294d0fc28@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jan 10, 2024 at 12:48:06PM +0000, Robin Murphy wrote:
-> On 2024-01-09 5:21 pm, Ido Schimmel wrote:
-> > On Mon, Jan 08, 2024 at 05:35:26PM +0000, Robin Murphy wrote:
-> > > Hmm, we've got what looks to be a set of magazines forming a plausible depot
-> > > list (or at least the tail end of one):
-> > > 
-> > > ffff8881411f9000 -> ffff8881261c1000
-> > > 
-> > > ffff8881261c1000 -> ffff88812be26400
-> > > 
-> > > ffff88812be26400 -> ffff8188392ec000
-> > > 
-> > > ffff8188392ec000 -> ffff8881a5301000
-> > > 
-> > > ffff8881a5301000 -> NULL
-> > > 
-> > > which I guess has somehow become detached from its rcache->depot without
-> > > being freed properly? However I'm struggling to see any conceivable way that
-> > > could happen which wouldn't already be more severely broken in other ways as
-> > > well (i.e. either general memory corruption or someone somehow still trying
-> > > to use the IOVA domain while it's being torn down).
-> > 
-> > The machine is running a debug kernel that among other things has KASAN
-> > enabled, but there are no traces in the kernel log so there is no memory
-> > corruption that I'm aware of.
-> > 
-> > > Out of curiosity, does reverting just patch #2 alone make a difference?
-> > 
-> > Will try and let you know.
-> > 
-> > > And is your workload doing anything "interesting" in relation to IOVA
-> > > domain lifetimes, like creating and destroying SR-IOV virtual
-> > > functions, changing IOMMU domain types via sysfs, or using that
-> > > horrible vdpa thing, or are you seeing this purely from regular driver
-> > > DMA API usage?
-> > 
-> > The machine is running networking related tests, but it is not using
-> > SR-IOV, VMs or VDPA so there shouldn't be anything "interesting" as far
-> > as IOMMU is concerned.
-> > 
-> > The two networking drivers on the machine are "igb" for the management
-> > port and "mlxsw" for the data ports (the machine is a physical switch).
-> > I believe the DMA API usage in the latter is quite basic and I don't
-> > recall any DMA related problems with this driver since it was first
-> > accepted upstream in 2015.
+On 1/10/24 4:37 PM, Ethan Zhao wrote:
 > 
-> Thanks for the clarifications, that seems to rule out all the most
-> confusingly impossible scenarios, at least.
+> On 1/10/2024 1:24 PM, Baolu Lu wrote:
+>> On 12/29/23 1:05 AM, Ethan Zhao wrote:
+>>> Except those aggressive hotplug cases - surprise remove a hotplug device
+>>> while its safe removal is requested and handled in process by:
+>>>
+>>> 1. pull it out directly.
+>>> 2. turn off its power.
+>>> 3. bring the link down.
+>>> 4. just died there that moment.
+>>>
+>>> etc, in a word, 'gone' or 'disconnected'.
+>>>
+>>> Mostly are regular normal safe removal and surprise removal unplug.
+>>> these hot unplug handling process could be optimized for fix the ATS
+>>> Invalidation hang issue by calling pci_dev_is_disconnected() in function
+>>> devtlb_invalidation_with_pasid() to check target device state to avoid
+>>> sending meaningless ATS Invalidation request to iommu when device is 
+>>> gone.
+>>> (see IMPLEMENTATION NOTE in PCIe spec r6.1 section 10.3.1)
+>>>
+>>> For safe removal, device wouldn't be removed untill the whole software
+>>> handling process is done, it wouldn't trigger the hard lock up issue
+>>> caused by too long ATS Invalidation timeout wait. In safe removal path,
+>>> device state isn't set to pci_channel_io_perm_failure in
+>>> pciehp_unconfigure_device() by checking 'presence' parameter, calling
+>>> pci_dev_is_disconnected() in devtlb_invalidation_with_pasid() will 
+>>> return
+>>> false there, wouldn't break the function.
+>>>
+>>> For surprise removal, device state is set to 
+>>> pci_channel_io_perm_failure in
+>>> pciehp_unconfigure_device(), means device is already gone (disconnected)
+>>> call pci_dev_is_disconnected() in devtlb_invalidation_with_pasid() will
+>>> return true to break the function not to send ATS Invalidation 
+>>> request to
+>>> the disconnected device blindly, thus avoid the further long time 
+>>> waiting
+>>> triggers the hard lockup.
+>>>
+>>> safe removal & surprise removal
+>>>
+>>> pciehp_ist()
+>>>     pciehp_handle_presence_or_link_change()
+>>>       pciehp_disable_slot()
+>>>         remove_board()
+>>>           pciehp_unconfigure_device(presence)
+>>>
+>>> Tested-by: Haorong Ye <yehaorong@bytedance.com>
+>>> Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+>>> ---
+>>>   drivers/iommu/intel/pasid.c | 2 ++
+>>>   1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+>>> index 715943531091..3d5ed27f39ef 100644
+>>> --- a/drivers/iommu/intel/pasid.c
+>>> +++ b/drivers/iommu/intel/pasid.c
+>>> @@ -480,6 +480,8 @@ devtlb_invalidation_with_pasid(struct intel_iommu 
+>>> *iommu,
+>>>       if (!info || !info->ats_enabled)
+>>>           return;
+>>>   +    if (pci_dev_is_disconnected(to_pci_dev(dev)))
+>>> +        return;
+>>
+>> Why do you need the above after changes in PATCH 2/5? It's unnecessary
+>> and not complete. We have other places where device TLB invalidation is
+>> issued, right?
 > 
-> The best explanation I've managed to come up with is a false-positive race
-> dependent on the order in which kmemleak scans the relevant objects. Say we
-> have the list as depot -> A -> B -> C; the rcache object is scanned and sees
-> the pointer to magazine A, but then A is popped *before* kmemleak scans it,
-> such that when it is then scanned, its "next" pointer has already been
-> wiped, thus kmemleak never observes any reference to B, so it appears that B
-> and (transitively) C are "leaked".
+> This one could be regarded as optimization, no need to trapped into rabbit
+> 
+> hole if we could predict the result. because the bad thing is we don't know
+> 
+> what response to us in the rabbit hole from third party switch (bridges 
+> will
+> 
+> feedback timeout to requester as PCIe spec mentioned if the endpoint is
+> 
+> gone).
 
-Transient false positives are possible, especially as the code doesn't
-use a double-linked list (for the latter, kmemleak does checksumming and
-detects the prev/next change, defers the reporting until the object
-becomes stable). That said, if a new scan is forced (echo scan >
-/sys/kernel/debug/kmemleak), are the same objects still listed as leaks?
-If yes, they may not be transient.
+The IOMMU hardware has its own timeout mechanism. This timeout might
+happen if:
 
-If it is indeed transient, I think a better fix than kmemleak_not_leak()
-is to add a new API, something like kmemleak_mark_transient() which
-resets the checksum, skips the object reporting for one scan.
+1) The link to the endpoint is broken, so the invalidation completion
+    message is lost on the way.
+2) The device has a longer timeout value, so the device is still busy
+    with handling the cache invalidation when IOMMU's timeout is
+    triggered.
 
--- 
-Catalin
+Here, we are doing the following:
+
+For Case 1, we return -ETIMEDOUT directly. For Case 2, we attempt to
+retry.
+
+Best regards,
+baolu
