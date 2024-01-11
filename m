@@ -1,148 +1,124 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14A7BDDA8
-	for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 07:14:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D7B2D287
+	for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 07:38:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PsxFlqiM"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N6FpV21f"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1704957264; x=1736493264;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=TwjCUuzwUOMo/dYEA4GwmnKF1gt7VZ+tjYe5DJBJoEM=;
-  b=PsxFlqiM25EHVaiQabPdmwbPVsYzFdepEUQIHN7hWX9FyX3YRFBTkXPs
-   y3j3T7impGSkxmopEmFzYP/9UwwT3ivW7USqw9Hd/23aUJeBIUTOJ70Ny
-   tHJpxPP29fJJBV5ftKyfFV2AP0wg8J71EYDTJOBXIAnI2YpHmtGpGAcew
-   VyDdHlv0AcHp9vcmPtkWN7LMIfre8ZtIdegGKjYrF752KCyshIhH8wUdD
-   V39xWHoA64c+XYvWGXKiuMu3xARI4tfWn2TNF8A2NpolNHAIgBFit8xfZ
-   h+/71UebPhobW0vAlstTdfkphgYpkz/g7yG/Swt3J5sEEj0auv5dOkb64
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10949"; a="395910239"
+  t=1704958705; x=1736494705;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1P8soOsSAg4WFnLHZTKMOzbTMCW8wETbL0uhEPdgccw=;
+  b=N6FpV21fHeJknRBKaPXaG/kKeWdYqsgJLMwDQ9ynSW7vShP1ZfLk/ALh
+   qG6wkO0yYKjDAWsF9bRuhR3XN6s1s7y6ZGXVyuJ4WO01Jn9h3isT/0o8m
+   fxi6OjbG3aR7OSMKIBQE9ZqR2+/5q1G5+4zZEIj5oDKmSz85nR+zOXdQE
+   jMCzIWVJvW8CoqG9OstXg82rIevgzuCHR55byhH+qakZGmPq0+78IDdxX
+   3RgwSEUOsZLRWq0iNkE37iaLbU4byEjW96Vx0K78ZQwOcDO2XLrA/hnvS
+   T0jmmRlpSl9CjMEgckV+eVnT/KwxIjHnWkAE2UOZ0K5YrzDt9t646UIe/
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10949"; a="463056666"
 X-IronPort-AV: E=Sophos;i="6.04,185,1695711600"; 
-   d="scan'208";a="395910239"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2024 23:14:23 -0800
+   d="scan'208";a="463056666"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2024 23:37:39 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10949"; a="732116839"
 X-IronPort-AV: E=Sophos;i="6.04,185,1695711600"; 
-   d="scan'208";a="732116839"
-Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.93.8.238]) ([10.93.8.238])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2024 23:14:15 -0800
-Message-ID: <4d50c00a-9718-4ec5-bdef-ea14c7727ff4@linux.intel.com>
-Date: Thu, 11 Jan 2024 15:14:12 +0800
+   d="scan'208";a="30909609"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orviesa001.jf.intel.com with ESMTP; 10 Jan 2024 23:37:35 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommufd/selftest: Use right iommu_ops for mock device
+Date: Thu, 11 Jan 2024 15:32:13 +0800
+Message-Id: <20240111073213.180020-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 07/10] iommu/vt-d: Allow qi_submit_sync() to return the
- QI faults
-To: Baolu Lu <baolu.lu@linux.intel.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "jgg@nvidia.com" <jgg@nvidia.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-Cc: "cohuck@redhat.com" <cohuck@redhat.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
- "peterx@redhat.com" <peterx@redhat.com>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "shameerali.kolothum.thodi@huawei.com"
- <shameerali.kolothum.thodi@huawei.com>, "lulu@redhat.com" <lulu@redhat.com>,
- "suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- "joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
- "Zeng, Xin" <xin.zeng@intel.com>, "Zhao, Yan Y" <yan.y.zhao@intel.com>,
- "j.granados@samsung.com" <j.granados@samsung.com>
-References: <20231227161354.67701-1-yi.l.liu@intel.com>
- <20231227161354.67701-8-yi.l.liu@intel.com>
- <BN9PR11MB5276429906ED56258BB433068C9EA@BN9PR11MB5276.namprd11.prod.outlook.com>
- <50098edc-2bbb-4c8f-9360-6990f0f5d88a@linux.intel.com>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <50098edc-2bbb-4c8f-9360-6990f0f5d88a@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+In the iommu probe device path, __iommu_probe_device() gets the iommu_ops
+for the device from dev->iommu->fwspec if this field has been initialized
+before probing. Otherwise, it will lookup the global iommu device list
+and use the iommu_ops of the first iommu device which has no
+dev->iommu->fwspec. This causes the wrong iommu_ops to be used for the mock
+device on x86 platforms where dev->iommu->fwspec is not used.
 
-On 1/1/2024 11:34 AM, Baolu Lu wrote:
-> On 12/28/23 2:17 PM, Tian, Kevin wrote:
->>> raw_spin_lock_irqsave(&qi->q_lock, flags);
->>>       /*
->>> @@ -1430,7 +1439,7 @@ int qi_submit_sync(struct intel_iommu *iommu,
->>> struct qi_desc *desc,
->>>            * a deadlock where the interrupt context can wait
->>> indefinitely
->>>            * for free slots in the queue.
->>>            */
->>> -        rc = qi_check_fault(iommu, index, wait_index);
->>> +        rc = qi_check_fault(iommu, index, wait_index, fault);
->>>           if (rc)
->>>               break;
->> and as replied in another thread let's change qi_check_fault to return
->> -ETIMEDOUT to break the restart loop when fault pointer is valid.
->
-> It's fine to break the retry loop when fault happens and the fault
-> pointer is valid. Please don't forget to add an explanation comment
-> around the code. Something like:
->
-> /*
->  * The caller is able to handle the fault by itself. The IOMMU driver
->  * should not attempt to retry this request.
->  */
+Preallocate the fwspec for the mock device so that the right iommu ops can
+be used.
 
-If caller could pass desc with mixed iotlb & devtlb invalidation request,
+Fixes: 17de3f5fdd35 ("iommu: Retire bus ops")
+Cc: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/iommufd/selftest.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-it would be problematic/difficult for caller or qi_submit_sync() to do
+diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
+index cf3e9fed039e..4eca67b8a5c6 100644
+--- a/drivers/iommu/iommufd/selftest.c
++++ b/drivers/iommu/iommufd/selftest.c
+@@ -611,6 +611,8 @@ static void mock_dev_release(struct device *dev)
+ 
+ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
+ {
++	struct iommu_fwspec *fwspec;
++	struct dev_iommu *param;
+ 	struct mock_dev *mdev;
+ 	int rc;
+ 
+@@ -621,10 +623,28 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
+ 	if (!mdev)
+ 		return ERR_PTR(-ENOMEM);
+ 
++	/* fwspec and param will be freed in the iommu core */
++	fwspec = kzalloc(sizeof(*fwspec), GFP_KERNEL);
++	if (!fwspec) {
++		kfree(mdev);
++		return ERR_PTR(-ENOMEM);
++	}
++	fwspec->ops = &mock_ops;
++
++	param = kzalloc(sizeof(*param), GFP_KERNEL);
++	if (!param) {
++		kfree(mdev);
++		kfree(fwspec);
++		return ERR_PTR(-ENOMEM);
++	}
++	mutex_init(&param->lock);
++	param->fwspec = fwspec;
++
+ 	device_initialize(&mdev->dev);
+ 	mdev->flags = dev_flags;
+ 	mdev->dev.release = mock_dev_release;
+ 	mdev->dev.bus = &iommufd_mock_bus_type.bus;
++	mdev->dev.iommu = param;
+ 
+ 	rc = dev_set_name(&mdev->dev, "iommufd_mock%u",
+ 			  atomic_inc_return(&mock_dev_num));
+@@ -638,6 +658,8 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
+ 
+ err_put:
+ 	put_device(&mdev->dev);
++	kfree(param);
++	kfree(fwspec);
+ 	return ERR_PTR(rc);
+ }
+ 
+-- 
+2.34.1
 
-error handling, imagine a case like,
-
-1. call qi_submit_sync() with iotlb & devltb.
-
-2. qi_submit_sync() detects the target device is dead.
-
-3.  break the loop, or will block other invalidation submitter / hang.
-
-4. it is hard for qi_submit_sync() to extract those iotlb invalidation 
-to retry.
-
-5. it is also difficult for caller to retry the iotlb invalidation, or
-
-     leave iotlb out-of-sync. ---there is no sync at all, device is gone.
-
-and if only ITE fault hit, but target device is there && configuration
-
-space reading okay, the ITE is probably left by previous request for
-
-other device, not triggered by this batch, the question is we couldn't
-
-identify the ITE device is just the same as current target ? if the same,
-
-then breaking out is reasonable, or just leave the problem to caller,
-
-something in the request batch is bad, some requests someone request
-
-befoere is bad, but the request is not from the same caller.
-
-
-Thanks,
-
-Ethan
-
-
->
-> Best regards,
-> baolu
->
