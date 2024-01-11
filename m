@@ -1,126 +1,204 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2072.outbound.protection.outlook.com [40.107.95.72])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B904050268
-	for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 16:55:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E1FE53E10
+	for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 18:10:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="nNiOZbv6"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MyIDGZTJ2s/7ogacWnFbw4OTgsDCkfFYrPbdTwcOt7FTSRU2fFCFm643hulwcylRrbObES33NfjgDTj7ZdojLxSLPeIHRDo3l21t7AePGJftFfaSSn6cWCisJg8dWKhfjws13I6sLzke+eWhPDcGXnZ1dqmsL2QxrPrxGAIJAqbC0NaSqD+7xaMFZrNvmuiwC4uZOBc2XsxU34QkwOMcPwNEuWrsM4GYhQnKJd6BFVx6x5bouhn8rVGiAOy6racbKfuciBFwj2kBpuqitNk8y5M3PU/6y57aNrEe2V2p//GL5o4NhXLt6Rr44iEUbGPQVmYBhOTM+SchRdBvK5PCXg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7KgiVcdlF3SvUWOo1CMyEdMY6v4IUUtsXG+FBDx6If0=;
- b=MBHtPUsMHbAMdZQwQnn1OLfkYsgQiab6/t80z86FXhFgwN4ZDSSNjCitt2gMJP8Bmhanhr4Q8xo07+83jr6A3M84YEYL7khy6bGCTDcdZ56sNOBS+Qj1w/xFM2aQL3q+NSuX38VIfnaTumLHaGfeKqMz0vrYFE7ONO0S7eldMSXTD9UtjadY/BRKTjU67P1hJchMDtqHdacRqG+l7f2zg3VGfialIuH0lWdUfmII6tnuqGRBAlE0HB4fKLsSVXY+XVmX53+r4pDwsaq/uCPMPvoaspYz8+44R2nbc3+2LzBzpsTkHMjxzzdVRJyhnlkcPwbjuxLmeta0joadsD2lSA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7KgiVcdlF3SvUWOo1CMyEdMY6v4IUUtsXG+FBDx6If0=;
- b=nNiOZbv6Mo44TdfO+4QvSDRcadGELHaIUHEDkaWZnqzyM+8XrzK2ejSoQBs0CLXCiqprUdSaLxGUApOuT3SqvNqao0ngz4TOjG1h5i3k5JwXhllKI54wHYdgPDFh30wN0igs00iqFV2pYkKdoDw+Q5AvF3s6KxXF2YV1XpjM6sc/3U8x9QYFmE3OxZJT4sEVam5Ohh5w0h26sBea1EtuKsyg+h/MWFTSa5jW4Y1pBXNXr/am8qMHWV1y2OZoIx5tPtnklmOM/806WM9oTkHEI2S0qJNmSWacIe8CsopUSuapObZiDT9rfYl1T5dXJUqAJacjwXyUC/ks8OBzvKvzBg==
-Received: from SA0PR11CA0098.namprd11.prod.outlook.com (2603:10b6:806:d1::13)
- by MN2PR12MB4423.namprd12.prod.outlook.com (2603:10b6:208:24f::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7181.18; Thu, 11 Jan
- 2024 16:55:23 +0000
-Received: from SN1PEPF000252A4.namprd05.prod.outlook.com
- (2603:10b6:806:d1:cafe::17) by SA0PR11CA0098.outlook.office365.com
- (2603:10b6:806:d1::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7181.19 via Frontend
- Transport; Thu, 11 Jan 2024 16:55:23 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SN1PEPF000252A4.mail.protection.outlook.com (10.167.242.11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7181.14 via Frontend Transport; Thu, 11 Jan 2024 16:55:23 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 11 Jan
- 2024 08:55:11 -0800
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 11 Jan
- 2024 08:55:11 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
- Transport; Thu, 11 Jan 2024 08:55:10 -0800
-Date: Thu, 11 Jan 2024 08:55:08 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>
-CC: <joro@8bytes.org>, <alex.williamson@redhat.com>, <jgg@nvidia.com>,
-	<kevin.tian@intel.com>, <robin.murphy@arm.com>, <baolu.lu@linux.intel.com>,
-	<cohuck@redhat.com>, <eric.auger@redhat.com>, <kvm@vger.kernel.org>,
-	<mjrosato@linux.ibm.com>, <chao.p.peng@linux.intel.com>,
-	<yi.y.sun@linux.intel.com>, <peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<zhenzhong.duan@intel.com>, <joao.m.martins@oracle.com>,
-	<xin.zeng@intel.com>, <yan.y.zhao@intel.com>, <j.granados@samsung.com>,
-	<binbin.wu@linux.intel.com>
-Subject: Re: [PATCH v11 3/8] iommu: Add iommu_copy_struct_from_user_array
- helper
-Message-ID: <ZaAdbHbV27msSxtV@Asurada-Nvidia>
-References: <20240111041015.47920-1-yi.l.liu@intel.com>
- <20240111041015.47920-4-yi.l.liu@intel.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="expIiGO9"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40B8B0AP005246;
+	Thu, 11 Jan 2024 18:09:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=d+FeWuF+MXwS6XPriMB52QuaXQMuGywYMW+thXPOIUg=; b=ex
+	pIiGO9C/W71ZqYtmNFcCSIzxKZ1ENrR14KKEUuDAIHpsuti0IV081lPG4NugJqw5
+	tkl0wyzU1zhDZrQtAHEjM+e/BztU6ku9WJxOvPOsvxkmiW9B8snheHcJ7XzamBEI
+	kn0+RWfONMJUB85tQ5S6gxaRzpExxEYSx3n/y5G1IP37S0RNU+/KYFQHzD1az9Y0
+	sOCli+8duMBFqlQA+0dchILx6JLJvkfjwQ8BXwUUuHIfYlizP91nMsuadINHb+K6
+	wgsa+ANep6EVN0XJmrd2pUb0TDpnHM7iJqC3I30OS4K+x74Ao4fKs84t+B0/49An
+	QEDbFdElmrXPTaqMtBTQ==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vjckh9c3u-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 11 Jan 2024 18:09:47 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 40BI9kcQ014233
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 11 Jan 2024 18:09:46 GMT
+Received: from [10.216.16.210] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Thu, 11 Jan
+ 2024 10:09:39 -0800
+Message-ID: <1a1f9b11-5a6d-41f7-8bcd-533a61a27a65@quicinc.com>
+Date: Thu, 11 Jan 2024 23:39:36 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240111041015.47920-4-yi.l.liu@intel.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF000252A4:EE_|MN2PR12MB4423:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7c0ec8a5-45c8-4faf-349e-08dc12c61a29
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	juWp5b0oRQZNRwdjSNOEkhltKU4nRoDjhcKRG//jp94gfOEz+M13Vm0KS5fKR0BVHnL089vCofu1Hhj6qHW30jWpW6I7zw8BbQszNYIKc9y7SkrrAkPN3D9RmA1RWFZib1A5hLe3Wet5oZtYVRAXoXMpob1inSGfcCDi4b8+Or/XiRrX4xabZJZMwUcHt1vkF3tUBltXs/EaIFs6eNIr5VA0Yu0paN7MQnyQJ+nBn47yHmzgokWkVm6UmGrTTJEmWZoAPXvl6omeG2GZUWJq5HXefMZLyrmfK39zDOhwwyzl+IDICvsrHGqrpS4KRqd488fUm9jAC4aTXI518QO+DJZi173CRKhjJ91Tzrr6Z0tvXj0V4rMhpEt6NvOWIbxj/oTnX/g9FQEJycheLpiaAMK5/MJGF3LKEHdeUb2jAUJO5RdNyXMjsnjIXNrI78HswtLgn2yIG5O7TN8DTCL8tZggWPAMCDnIYROXmfvM4Ms//2N1o0J3K7+YyrN/uDB5kaBJW6yUdXZsdsCafj0pdTdGuXY9EBUYZtqhjkBxyNPpKWetCJU06kulxBnx5WmtA7oaI2STTxd5fJ48OqcSETCdhDqAF0qXkBtiw73IVjrPuWMek3JwFq/Gq0/6aEi0yeSPSIaqeciX6h3tGtbN8SpocoTOQ3MEzblCKKhv3xz94txCCpg9Nkl7MoId30hkiuvUwsx6Fv+HEgE9DboLGTps98aw8mXO+Xfgu1HlR/2ENo/QcKZqWrUAxBHa/SsP
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(136003)(39860400002)(396003)(346002)(376002)(230922051799003)(64100799003)(186009)(82310400011)(451199024)(1800799012)(40470700004)(46966006)(36840700001)(336012)(4326008)(426003)(9686003)(47076005)(7416002)(26005)(36860700001)(4744005)(8676002)(82740400003)(5660300002)(478600001)(2906002)(33716001)(54906003)(8936002)(6916009)(316002)(70586007)(41300700001)(70206006)(7636003)(356005)(86362001)(55016003)(40480700001)(40460700003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2024 16:55:23.0093
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c0ec8a5-45c8-4faf-349e-08dc12c61a29
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SN1PEPF000252A4.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4423
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v7 3/5] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>,
+        Pavan Kondeti
+	<quic_pkondeti@quicinc.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <jsnitsel@redhat.com>,
+        <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_molvera@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>
+References: <20240109114220.30243-1-quic_bibekkum@quicinc.com>
+ <20240109114220.30243-4-quic_bibekkum@quicinc.com>
+ <2ad70157-27d1-41df-8866-c226af690cf6@quicinc.com>
+ <ec31fafa-b912-454a-8b64-e0593911aaf2@quicinc.com>
+ <4a595815-7fcc-47e2-b22c-dac349af6d79@quicinc.com>
+ <492aeca3-a4df-47a3-9c77-02ea4235d736@linaro.org>
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <492aeca3-a4df-47a3-9c77-02ea4235d736@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: zVFn-BH7dMnP9KgOwl_Wb9OjB68c8kxb
+X-Proofpoint-GUID: zVFn-BH7dMnP9KgOwl_Wb9OjB68c8kxb
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ priorityscore=1501 bulkscore=0 mlxlogscore=999 phishscore=0 mlxscore=0
+ adultscore=0 spamscore=0 impostorscore=0 lowpriorityscore=0 clxscore=1015
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2401110142
 
-On Wed, Jan 10, 2024 at 08:10:10PM -0800, Yi Liu wrote:
 
-> +#define iommu_copy_struct_from_user_array(kdst, user_array, data_type,   \
-> +                                         index, min_last)                \
-> +       __iommu_copy_struct_from_user_array(kdst, user_array, data_type, \
-> +                                           index, sizeof(*kdst),        \
-> +                                           offsetofend(typeof(*kdst),   \
-> +                                                       min_last))
- 
-There is an extra space before '\' at the 2nd line, making it:
 
-390 #define iommu_copy_struct_from_user_array(kdst, user_array, data_type,   \
-391                                           index, min_last)                \
-392         __iommu_copy_struct_from_user_array(kdst, user_array, data_type, \
-393                                             index, sizeof(*kdst),        \
-394                                             offsetofend(typeof(*kdst),   \
-395                                                         min_last))
+On 1/10/2024 11:26 PM, Konrad Dybcio wrote:
+> 
+> 
+> On 1/10/24 13:55, Bibek Kumar Patro wrote:
+>>
+>>
+>> On 1/10/2024 4:46 PM, Bibek Kumar Patro wrote:
+>>>
+>>>
+>>> On 1/10/2024 9:36 AM, Pavan Kondeti wrote:
+>>
+>> [...]
+>>
+>>>>> @@ -274,6 +321,21 @@ static const struct of_device_id 
+>>>>> qcom_smmu_client_of_match[] __maybe_unused = {
+>>>>>   static int qcom_smmu_init_context(struct arm_smmu_domain 
+>>>>> *smmu_domain,
+>>>>>           struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>>>>>   {
+>>>>> +    struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>>>> +    struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+>>>>> +    const struct actlr_variant *actlrvar;
+>>>>> +    int cbndx = smmu_domain->cfg.cbndx;
+>>>>> +
+>>>>> +    if (qsmmu->data->actlrvar) {
+>>>>> +        actlrvar = qsmmu->data->actlrvar;
+>>>>> +        for (; actlrvar->io_start; actlrvar++) {
+>>>>> +            if (actlrvar->io_start == smmu->ioaddr) {
+>>>>> +                qcom_smmu_set_actlr(dev, smmu, cbndx, 
+>>>>> actlrvar->actlrcfg);
+>>>>> +                break;
+>>>>> +            }
+>>>>> +        }
+>>>>> +    }
+>>>>> +
+>>>>
+>>>> This block and the one in qcom_adreno_smmu_init_context() are exactly
+>>>> the same. Possible to do some refactoring?
+>>>>
+>>>
+>>> I will check if this repeated blocks can be accomodated this into 
+>>> qcom_smmu_set_actlr function if that would be fine.
+>>>
+>>
+>> Also adding to this, this might increase the number of indentation 
+>> inside qcom_smmu_set_actlr as well, to around 5. So wouldn't this
+>> be an issue?
+> 
+> By the way, we can refactor this:
+> 
+> if (qsmmu->data->actlrvar) {
+>      actlrvar = qsmmu->data->actlrvar;
+>      for (; actlrvar->io_start; actlrvar++) {
+>          if (actlrvar->io_start == smmu->ioaddr) {
+>              qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar->actlrcfg);
+>              break;
+>          }
+>      }
+> }
+> 
+> into
+> 
+> // add const u8 num_actlrcfgs to struct actrl_variant to
+> // save on sentinel space:
+> //   sizeof(u8) < sizeof(ptr) + sizeof(resource_size_t)
+> 
+
+Git it, Would it be better to add this in struct qcom_smmu_match_data ?
+Posted a sample below.
+
+> 
+> [declarations]
+> const struct actlr_variant *actlrvar = qsmmu->data->actlrvar;
+> int i;
+> 
+> [rest of the functions]
+> 
+> if (!actlrvar)
+>      return 0;
+>  > for (i = 0; i < actrlvar->num_actrlcfgs; i++) {
+>      if (actlrvar[i].io_start == smmu->ioaddr) {
+>          qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar->actlrcfg);
+>          break;
+>      }
+> }
+>  > Saving both on .TEXT size and indentation levels :)
+> 
+Thanks for this suggestion Konrad, will try to implement this, as it 
+would reduce the indent levels to good extent.
+Would something like this be okay?
+
+static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+  	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
+  	const struct actlr_variant *actlrvar;
+  	int cbndx = smmu_domain->cfg.cbndx;
++	int i;
+
++	actlrvar = qsmmu->data->actlrvar;
++
++	if (!actlrvar)
++		goto end;
++
++	for (i = 0; i < qsmmu->data->num_smmu ; i++) {
++		if (actlrvar[i].io_start == smmu->ioaddr) {
++			qcom_smmu_set_actlr(dev, smmu, cbndx,
++						actlrvar[i].actlrcfg);
++			break;
+  		}
+  	}
+
++end:
+  	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
+
+  	return 0;
+
+Thanks & regards,
+Bibek
+
+> Konrad
