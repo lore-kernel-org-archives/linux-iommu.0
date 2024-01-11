@@ -1,124 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D7B2D287
-	for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 07:38:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05CCCDF69
+	for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 07:45:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="N6FpV21f"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="l85o4fNk"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1704958705; x=1736494705;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=1P8soOsSAg4WFnLHZTKMOzbTMCW8wETbL0uhEPdgccw=;
-  b=N6FpV21fHeJknRBKaPXaG/kKeWdYqsgJLMwDQ9ynSW7vShP1ZfLk/ALh
-   qG6wkO0yYKjDAWsF9bRuhR3XN6s1s7y6ZGXVyuJ4WO01Jn9h3isT/0o8m
-   fxi6OjbG3aR7OSMKIBQE9ZqR2+/5q1G5+4zZEIj5oDKmSz85nR+zOXdQE
-   jMCzIWVJvW8CoqG9OstXg82rIevgzuCHR55byhH+qakZGmPq0+78IDdxX
-   3RgwSEUOsZLRWq0iNkE37iaLbU4byEjW96Vx0K78ZQwOcDO2XLrA/hnvS
-   T0jmmRlpSl9CjMEgckV+eVnT/KwxIjHnWkAE2UOZ0K5YrzDt9t646UIe/
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10949"; a="463056666"
+  t=1704959104; x=1736495104;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=MSJWbLVfC2fCCQp18M9iUiX9jnEfcndJ21Mjt5OMNLw=;
+  b=l85o4fNkGHKLxppwDgyOPbMT7Y8UIEus+Ib/uZVlOY5/A1AR4ADH/wUq
+   jPhWD7fmfWVySII/bDWzW00Wwk/a2LgCsh+P8hpSCDtS5+W0B0/AEswQn
+   WtBubuVz9ObkKmlq17YXMYktV0b4SumLTUhMTJKyk0EO10MZMs+HqKgiW
+   3AxMfg2J42qixKzAR5DjqjsaOnM29Gu0TCbaDs2k4IACffiIxHB4R1KJe
+   fqewaud3KPYJlsjeS8pyrAe2qEnPoyVFL/GR52sFmw8dYUkln7b58Vv43
+   ssH1aatt391WP3GFDPrbh84bZux/pGvH4GKjFA2Xw8AXKBvpXX/M6Pj7/
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10949"; a="6128712"
 X-IronPort-AV: E=Sophos;i="6.04,185,1695711600"; 
-   d="scan'208";a="463056666"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2024 23:37:39 -0800
+   d="scan'208";a="6128712"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2024 23:45:01 -0800
 X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10949"; a="905859548"
 X-IronPort-AV: E=Sophos;i="6.04,185,1695711600"; 
-   d="scan'208";a="30909609"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orviesa001.jf.intel.com with ESMTP; 10 Jan 2024 23:37:35 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 1/1] iommufd/selftest: Use right iommu_ops for mock device
-Date: Thu, 11 Jan 2024 15:32:13 +0800
-Message-Id: <20240111073213.180020-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+   d="scan'208";a="905859548"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.93.8.238]) ([10.93.8.238])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2024 23:44:57 -0800
+Message-ID: <0c0458c2-2468-4591-8767-5e1f0a5b0e78@linux.intel.com>
+Date: Thu, 11 Jan 2024 15:44:54 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC PATCH v10 5/5] iommu/vt-d: don't loop for timeout ATS
+ Invalidation request forever
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+To: kevin.tian@intel.com, bhelgaas@google.com, baolu.lu@linux.intel.com,
+ dwmw2@infradead.org, will@kernel.org, robin.murphy@arm.com, lukas@wunner.de
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20231228170504.720794-1-haifeng.zhao@linux.intel.com>
+ <20231228170504.720794-3-haifeng.zhao@linux.intel.com>
+In-Reply-To: <20231228170504.720794-3-haifeng.zhao@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-In the iommu probe device path, __iommu_probe_device() gets the iommu_ops
-for the device from dev->iommu->fwspec if this field has been initialized
-before probing. Otherwise, it will lookup the global iommu device list
-and use the iommu_ops of the first iommu device which has no
-dev->iommu->fwspec. This causes the wrong iommu_ops to be used for the mock
-device on x86 platforms where dev->iommu->fwspec is not used.
 
-Preallocate the fwspec for the mock device so that the right iommu ops can
-be used.
+On 12/29/2023 1:05 AM, Ethan Zhao wrote:
+> When the ATS Invalidation request timeout happens, the qi_submit_sync()
+> will restart and loop for the invalidation request forever till it is
+> done, it will block another Invalidation thread such as the fq_timer
+> to issue invalidation request, cause the system lockup as following
+>
+> [exception RIP: native_queued_spin_lock_slowpath+92]
+>
+> RIP: ffffffffa9d1025c RSP: ffffb202f268cdc8 RFLAGS: 00000002
+>
+> RAX: 0000000000000101 RBX: ffffffffab36c2a0 RCX: 0000000000000000
+>
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffffffffab36c2a0
+>
+> RBP: ffffffffab36c2a0 R8: 0000000000000001 R9: 0000000000000000
+>
+> R10: 0000000000000010 R11: 0000000000000018 R12: 0000000000000000
+>
+> R13: 0000000000000004 R14: ffff9e10d71b1c88 R15: ffff9e10d71b1980
+>
+> ORIG_RAX: ffffffffffffffff CS: 0010 SS: 0018
+>
+> (the left part of exception see the hotplug case of ATS capable device)
+>
+> If one endpoint device just no response to the ATS Invalidation request,
+> but is not gone, it will bring down the whole system, to avoid such
+> case, don't try the timeout ATS Invalidation request forever.
+>
+> Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+> ---
+>   drivers/iommu/intel/dmar.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+> index 0a8d628a42ee..9edb4b44afca 100644
+> --- a/drivers/iommu/intel/dmar.c
+> +++ b/drivers/iommu/intel/dmar.c
+> @@ -1453,7 +1453,7 @@ int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
+>   	reclaim_free_desc(qi);
+>   	raw_spin_unlock_irqrestore(&qi->q_lock, flags);
+>   
+> -	if (rc == -EAGAIN)
+> +	if (rc == -EAGAIN && type !=QI_DIOTLB_TYPE && type != QI_DEIOTLB_TYPE)
+>   		goto restart;
+>   
+>   	if (iotlb_start_ktime)
 
-Fixes: 17de3f5fdd35 ("iommu: Retire bus ops")
-Cc: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/iommufd/selftest.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+mark, only break the loop when the sid of ITE is the same as current target
 
-diff --git a/drivers/iommu/iommufd/selftest.c b/drivers/iommu/iommufd/selftest.c
-index cf3e9fed039e..4eca67b8a5c6 100644
---- a/drivers/iommu/iommufd/selftest.c
-+++ b/drivers/iommu/iommufd/selftest.c
-@@ -611,6 +611,8 @@ static void mock_dev_release(struct device *dev)
- 
- static struct mock_dev *mock_dev_create(unsigned long dev_flags)
- {
-+	struct iommu_fwspec *fwspec;
-+	struct dev_iommu *param;
- 	struct mock_dev *mdev;
- 	int rc;
- 
-@@ -621,10 +623,28 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
- 	if (!mdev)
- 		return ERR_PTR(-ENOMEM);
- 
-+	/* fwspec and param will be freed in the iommu core */
-+	fwspec = kzalloc(sizeof(*fwspec), GFP_KERNEL);
-+	if (!fwspec) {
-+		kfree(mdev);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+	fwspec->ops = &mock_ops;
-+
-+	param = kzalloc(sizeof(*param), GFP_KERNEL);
-+	if (!param) {
-+		kfree(mdev);
-+		kfree(fwspec);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+	mutex_init(&param->lock);
-+	param->fwspec = fwspec;
-+
- 	device_initialize(&mdev->dev);
- 	mdev->flags = dev_flags;
- 	mdev->dev.release = mock_dev_release;
- 	mdev->dev.bus = &iommufd_mock_bus_type.bus;
-+	mdev->dev.iommu = param;
- 
- 	rc = dev_set_name(&mdev->dev, "iommufd_mock%u",
- 			  atomic_inc_return(&mock_dev_num));
-@@ -638,6 +658,8 @@ static struct mock_dev *mock_dev_create(unsigned long dev_flags)
- 
- err_put:
- 	put_device(&mdev->dev);
-+	kfree(param);
-+	kfree(fwspec);
- 	return ERR_PTR(rc);
- }
- 
--- 
-2.34.1
+pdev.  need check the target dev is pf or vf.
+
+The ITE is possible left by previous devtlb invalidation request for 
+other device.
+
+
+Thanks,
+
+Ethan
 
