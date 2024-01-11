@@ -1,198 +1,153 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2046.outbound.protection.outlook.com [40.107.223.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABF841FD6
-	for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 04:16:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F4E1184D
+	for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 05:18:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZBBrwwU1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1704946603; x=1736482603;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=c/2WysQqNYiZ6z0uAFyEIPglTGPbFgy884FxU0l/kto=;
-  b=ZBBrwwU1jbb0wklU7LFpn2XaiorYDDjZarhvk8RLDErhFRpLa8Dw/Z1s
-   b7NhPc+DXCOTr2I/cDSQukShbUgYp+a8fI8T4UhjtVaSNpU66+u/pGGDa
-   4zRCmpoMrFG/AwtVhrOMiKZ7EqrVqcu1KzdrSGj8VAWuRnnLi+a+u8l/O
-   U9agYg9i1qq8/7apTUMcWE+c0oGAMLldahCROI39VO7x8oX3lAHTWIFMj
-   G7DOk5i9vqNoM4VNBqRqFVBraZ2vnpeQGi+eYJGCWZ9kH9P55YIcqacyn
-   q1T4Yi6lrov4Nz1eZQ93GtoLfmv58d66AAMVtSfY6O5O+U6HgYtLL0HgO
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10949"; a="5500759"
-X-IronPort-AV: E=Sophos;i="6.04,185,1695711600"; 
-   d="scan'208";a="5500759"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2024 20:16:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10949"; a="1029397881"
-X-IronPort-AV: E=Sophos;i="6.04,185,1695711600"; 
-   d="scan'208";a="1029397881"
-Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.93.8.238]) ([10.93.8.238])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2024 20:16:38 -0800
-Message-ID: <d255424c-158c-4e6d-b0ef-2fd60c472753@linux.intel.com>
-Date: Thu, 11 Jan 2024 12:16:36 +0800
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="pm16AYJq"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kMJ3EWE/qy9+ywVJcZWmjHMYUmsL/jnuZ2tcJIv5KcOsaiHPF/ZIhVXVpUuwLXkItK+g8Pdxl+S7MAXRvFZhp+MahPSw6lRouAYzkRc5AnWG0n1DTE6oCB1oHO19uUkfGKcl71dODGcfqelH9aaSv5uINvotP80EDFayNkrb5P32OmnxLeVglW3zJjjgi76zBsS400pfG8GoDMyXRJs0iaWwloQbN4eSj2Qpimz0JDBWjUslov69VR9sPo02wwySRAYc1CyvcIvQ/hfbzz3n41tPveDKLpBE4sO5UGiugz830QQ4sLDhVIUtpCQhNLBClq+oaZYnLlLsMjjUKoQEmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MTnBT411xHNRLSYipqYyHlZMuLfClu84aXScsUAMxcQ=;
+ b=Q74Q0TrsdB3KHzbvOsMtOdzc+hkVBvpHd/3e5lMDdMnbMRjZUzA21ia6ha1MMIIFAWiP0aS3x/dUO75bmq78N7+KJO5djzLLvpicoTUeUJ2aqbRSuMavcpaNyhSdHMsxCv6KCrnmVbLJx1ardncPeFxhaO3IkZECi8TO4Vi29/WGty4PeG4Wy6kg/MAo0elchMkFrvsPGqq1LaXmU+M5RCoDxmw6aZd0Z8P361/WgEp0k63ZGyK3aDnYBEcCwchmhg0vDQhi0M1Su1HbbSVTWO5rbydV25AN2Vz7FlZ1Q690pKw0uBKb40/g0ObPZmzumDEg7WEYgdUQTf02YBFpYg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MTnBT411xHNRLSYipqYyHlZMuLfClu84aXScsUAMxcQ=;
+ b=pm16AYJqeaBSMqTWx1Rl3vySjrNO4yXUW47oVQfy2LD6DESuc5vYPTQ6X49SpSegVJmJ77iKQbO0G8sRjkk8AzN+4fQS75OiFAToZTdIaydpveu+2Uo5rto0lZZO+vc4RJlYih4M5cQ8738OlsBKi5sTSGFaqWEGZjIJfXxJx9I=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ MN2PR12MB4270.namprd12.prod.outlook.com (2603:10b6:208:1d9::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7181.18; Thu, 11 Jan
+ 2024 05:18:40 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::481d:7627:c485:9cb]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::481d:7627:c485:9cb%2]) with mapi id 15.20.7159.020; Thu, 11 Jan 2024
+ 05:18:39 +0000
+Message-ID: <aa148970-2664-5779-d761-2a3185d7e620@amd.com>
+Date: Thu, 11 Jan 2024 10:48:32 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v4 13/14] iommu: Add ops->domain_alloc_sva()
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+ wei.huang2@amd.com, jsnitsel@redhat.com
+References: <20231221111558.64652-1-vasant.hegde@amd.com>
+ <20231221111558.64652-14-vasant.hegde@amd.com>
+ <20240109175049.GA502542@nvidia.com>
+From: Vasant Hegde <vasant.hegde@amd.com>
+In-Reply-To: <20240109175049.GA502542@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: PN3PR01CA0046.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:98::22) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH v10 4/5] iommu/vt-d: don't issue ATS Invalidation
- request when device is disconnected
-To: Baolu Lu <baolu.lu@linux.intel.com>, kevin.tian@intel.com,
- bhelgaas@google.com, dwmw2@infradead.org, will@kernel.org,
- robin.murphy@arm.com, lukas@wunner.de
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20231228170504.720794-1-haifeng.zhao@linux.intel.com>
- <20231228170504.720794-2-haifeng.zhao@linux.intel.com>
- <8e16ff9b-4dcd-4bec-a78b-61d90205841f@linux.intel.com>
- <b077a691-5790-40a0-8539-0f5294d0fc28@linux.intel.com>
- <1be246aa-4813-43df-af77-9a94f493374b@linux.intel.com>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <1be246aa-4813-43df-af77-9a94f493374b@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|MN2PR12MB4270:EE_
+X-MS-Office365-Filtering-Correlation-Id: ec7f74b5-0b0e-451c-2ee3-08dc1264c542
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	QDsq2uu85xxlOq7FFLKNDtGApF8YCa4dP+k4iahZcWsu9LdEr9FJ1Bu4CHlaA049ZOnRhfXNGYshWEaGy8uE0hETuMfY3kV18U08S8klCxvjTW8ByW3WI5cJY05p1Z6VKu94qrgjzBlJGBRaR5GtJEs6DVPFoY6n5lvXy1E9BCrlRTAAmfH8qOzQ32osOZ2roJ1G4vuHff2pcIPWXTVQfTCycUKQUUMzT1pIOIKIEZVtObmQecOEVexbITcCaDIpWg0pkrFunEudbUM+8cZBqKsfLyVyeAHbz1cl1Sel4HpgBAlvjkHxZsnq0RpO3QYbOonqUUIjWGw1trbxH+jvcWU3TUb+OTcbf4++NuZAFs9wJkcAtVg/gmc60xITEbAExolT0+IIz6sXCn0Vt+2AI6+DiG/UT/wxxHaou+kd0XQj06qlwESxLlvpjm0DHcrOjj7l8SP0wjf58sXcUrcR2NpRrysFWBtNx4kumyKb8OHRARpb9u3RPQ14YpkiEY9TBGAovCFqib7XulujCpHusa9VQ9wH3yYkHCjp5aWCx5aR1+CHsDJP5UWiYjU9M4JjkIIzgZLfk7fDLI6GOSMg5hl/9SBriBaaPEW23e7eOLIApxaZ1/WwHhhHZ9TGuFXa98POY1hxoUuBbZDaRyUYag==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(39860400002)(346002)(376002)(396003)(136003)(230922051799003)(64100799003)(451199024)(186009)(1800799012)(31686004)(6512007)(478600001)(53546011)(6506007)(2616005)(26005)(6666004)(38100700002)(31696002)(86362001)(36756003)(41300700001)(2906002)(44832011)(5660300002)(4326008)(66946007)(6486002)(6916009)(66476007)(66556008)(8676002)(8936002)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SURLL3JpRVpPeWRROGtlVzBEUDdXenV4LzBUeVhPalU2Y0U2NHdoQ1lUVTJS?=
+ =?utf-8?B?T25iNWlSaEs5Z0Q0SUd3VWVaeGJqSzQvNUxKc3F5QWVFQWhzbU9VZERzWGNl?=
+ =?utf-8?B?SFRYNkZ5T1FaV1VJSUtHREpNRWZQNkcvRllaa2dGVmVqN0xoNldZbm9tRkdM?=
+ =?utf-8?B?KzlpZVozbEF6YURVQkV0VGJzRzd4TTVTNlFMOXh3czViMzhqc045UW1aTzZo?=
+ =?utf-8?B?bUpzMlM3bmhyeTE0c2N0eWx1TFFCRDUzdW5PVHdyc1NhOWR6WEhSMkZNS2lz?=
+ =?utf-8?B?TStrcERUeFpYNS9hUTBDalRzZ1J3SEd6U3YrZXA5Ynh3S2tUeUJIOUgvM1VZ?=
+ =?utf-8?B?ZitGZTIzcXpQU2UwR0VLMGJlSmptWmF5VG8rUTFJaHlKa1FwUzFXZkZVdTV4?=
+ =?utf-8?B?MkljVW84QzZhbWhsUmVaRUIxWUh1bi9NbTBJb0tWNkxiaFVJenI4MXQvLzlB?=
+ =?utf-8?B?di9La2hSOHY4NjJTdjBlZnd2UmJoelhzbFkzcVlHMWF4YWdpNVhMZmtwdlN5?=
+ =?utf-8?B?Z3lmc0ZJTHNVTlRxUnZCZWE0L0FaMzh4bE53OTdMM0lJcXlCRThKc09mNjNQ?=
+ =?utf-8?B?MnUyNkVYZ2YwQjBhVVlQOXQyZVRMUUVTV3Y3a3IrMlV0eGhYdVdWSzhGNmZr?=
+ =?utf-8?B?WkpwRU91aGpJWEFFUkRvL0N0TVE4cXl1MS9LbFdSZ0YyMHBSdmk4V2NmbmFQ?=
+ =?utf-8?B?TXVBVnJ3ZFMxS2JmUGtZaW16YkFObGRMdGRLOTZ0Ri95U1hWL0szNytoVko1?=
+ =?utf-8?B?Mlp1RkFzS0FyeU15Q1RTakJlNVlMd3dNUklIb1JiZ2NRRmFYczJyaGZyMlRh?=
+ =?utf-8?B?VzVuRDVPOW15MDZkQUdyMkYvdVhaaWVDME1tM3Q2NjFWK1cyWGZxVzJFdzAx?=
+ =?utf-8?B?UEtvZURYOTNkK2RYM2RBOXU4dHZNNFJGNUI5RUFESE8ySzMyekcvTFpjWjQy?=
+ =?utf-8?B?SzRrTU1GQVpnK3kxYnhUaytZR3ZqREpFeHBlbmtwU0VZaFZOeHdEdWsySFdH?=
+ =?utf-8?B?NVRndVZOMVNEK3F2WC9IZStVZHdmWWl3bkRIQndjZGtBTkhybVVlYkhOc21z?=
+ =?utf-8?B?TDIyeGhrZXptVjFPYUFaTVYwYWJNc09DZit5czhPdWVRMGlHZEVmUlRGQVNx?=
+ =?utf-8?B?UTFNYXFXUGNBc0hyWDBJNWhUVElaaTE1dFdVUlZTMjJXaEUreTBDeTNkd2xI?=
+ =?utf-8?B?VWJFUlBoenJ2K3JQbldPMmVzWTE4SWJpRWh0b3B0R1R5eDEzRUh5amlMeTVz?=
+ =?utf-8?B?TXVmWDRDV3BLNjFvZy9WRVUxZVFYalpKVldrZzlwdWlpb1hZQXkrc2htUFk3?=
+ =?utf-8?B?Q1AyY2ZyMWF1RkRUZUhlT3R1dWN4dHBXRE0zVnVmbzFheDc1Wld2UVZ5MXhv?=
+ =?utf-8?B?UEFtbTUyNDJYVDdMNVAwZGIrLzVwREZiNFBTY2Z0NWFYNitmb2RRd3JPU1ha?=
+ =?utf-8?B?cXQ4TEdPNXcxRyszUWdDalowOUJLVjBMUDVrN0RCZ3A2UENWajJ2emc0WUdi?=
+ =?utf-8?B?SWFrQzZXYll1Y1lOVDZHbU41WEQwSG4zV1psZHpqK2NEaWhnUE9wMDFicStz?=
+ =?utf-8?B?L2xXd3VFWHJCNGJwczhWM2ZmNnFFREVNR215MUM2TTd1UHh2SXBhcUxwWG5i?=
+ =?utf-8?B?QmZTd3VMS2cvQWtpZnBidVR4cExjclhZUDcva0lybUd6QzF4dUZvc2NDNUhW?=
+ =?utf-8?B?Ty9GSjIzeDJvamlPSnpDSDR1Y21MeEhsUW9KVS9scEdpQmZLSUM1ZU5lcHlO?=
+ =?utf-8?B?TzltS3Y5V1FyMmJuUFR3UEtPVUJ0M3A1T3lLMG4wbklCakdBTUVTWEZmS1FJ?=
+ =?utf-8?B?aVhnRXNrVHpZeUpCZFhzMHRYSVN1TGlZVmFzM3BxbTIrRk5vTFEvcHA1MjBC?=
+ =?utf-8?B?cGs4U2tYb0UxZ1llWGR0ZHBybzMyUGV1VVgrZzc2cHJPT1dSYWljNVExdVBr?=
+ =?utf-8?B?ZENnb1VGakZ2QlUyV0YrcnExcStZeVNVZllZcFZFbU4xYWFNY2gvK2VYNUpo?=
+ =?utf-8?B?cjIwQ1Nta0FqQXVSOGJyaWJwM25ESXFyVUVEc002dUZWMjdvczlWdVFXcWFR?=
+ =?utf-8?B?ZDd6b2s0bVJ6QnVZV3N3SW9MT0VFdmo0SjdsbVFrTTVQK2h4aTFVanlIWk0y?=
+ =?utf-8?Q?lNji2iEW0pEUrm8YiNoSZMC3O?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ec7f74b5-0b0e-451c-2ee3-08dc1264c542
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2024 05:18:39.8605
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: APHhdrivozUNxRqghtI8UAVxgFn5Vfp4mMCNl+dQdDmmJ/rHapvR9p7p6JPczkOS2f3K/1TljqlRlCNFP4+tfQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4270
 
 
-On 1/11/2024 10:24 AM, Baolu Lu wrote:
-> On 1/10/24 4:37 PM, Ethan Zhao wrote:
->>
->> On 1/10/2024 1:24 PM, Baolu Lu wrote:
->>> On 12/29/23 1:05 AM, Ethan Zhao wrote:
->>>> Except those aggressive hotplug cases - surprise remove a hotplug 
->>>> device
->>>> while its safe removal is requested and handled in process by:
->>>>
->>>> 1. pull it out directly.
->>>> 2. turn off its power.
->>>> 3. bring the link down.
->>>> 4. just died there that moment.
->>>>
->>>> etc, in a word, 'gone' or 'disconnected'.
->>>>
->>>> Mostly are regular normal safe removal and surprise removal unplug.
->>>> these hot unplug handling process could be optimized for fix the ATS
->>>> Invalidation hang issue by calling pci_dev_is_disconnected() in 
->>>> function
->>>> devtlb_invalidation_with_pasid() to check target device state to avoid
->>>> sending meaningless ATS Invalidation request to iommu when device 
->>>> is gone.
->>>> (see IMPLEMENTATION NOTE in PCIe spec r6.1 section 10.3.1)
->>>>
->>>> For safe removal, device wouldn't be removed untill the whole software
->>>> handling process is done, it wouldn't trigger the hard lock up issue
->>>> caused by too long ATS Invalidation timeout wait. In safe removal 
->>>> path,
->>>> device state isn't set to pci_channel_io_perm_failure in
->>>> pciehp_unconfigure_device() by checking 'presence' parameter, calling
->>>> pci_dev_is_disconnected() in devtlb_invalidation_with_pasid() will 
->>>> return
->>>> false there, wouldn't break the function.
->>>>
->>>> For surprise removal, device state is set to 
->>>> pci_channel_io_perm_failure in
->>>> pciehp_unconfigure_device(), means device is already gone 
->>>> (disconnected)
->>>> call pci_dev_is_disconnected() in devtlb_invalidation_with_pasid() 
->>>> will
->>>> return true to break the function not to send ATS Invalidation 
->>>> request to
->>>> the disconnected device blindly, thus avoid the further long time 
->>>> waiting
->>>> triggers the hard lockup.
->>>>
->>>> safe removal & surprise removal
->>>>
->>>> pciehp_ist()
->>>>     pciehp_handle_presence_or_link_change()
->>>>       pciehp_disable_slot()
->>>>         remove_board()
->>>>           pciehp_unconfigure_device(presence)
->>>>
->>>> Tested-by: Haorong Ye <yehaorong@bytedance.com>
->>>> Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
->>>> ---
->>>>   drivers/iommu/intel/pasid.c | 2 ++
->>>>   1 file changed, 2 insertions(+)
->>>>
->>>> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
->>>> index 715943531091..3d5ed27f39ef 100644
->>>> --- a/drivers/iommu/intel/pasid.c
->>>> +++ b/drivers/iommu/intel/pasid.c
->>>> @@ -480,6 +480,8 @@ devtlb_invalidation_with_pasid(struct 
->>>> intel_iommu *iommu,
->>>>       if (!info || !info->ats_enabled)
->>>>           return;
->>>>   +    if (pci_dev_is_disconnected(to_pci_dev(dev)))
->>>> +        return;
->>>
->>> Why do you need the above after changes in PATCH 2/5? It's unnecessary
->>> and not complete. We have other places where device TLB invalidation is
->>> issued, right?
->>
->> This one could be regarded as optimization, no need to trapped into 
->> rabbit
->>
->> hole if we could predict the result. because the bad thing is we 
->> don't know
->>
->> what response to us in the rabbit hole from third party switch 
->> (bridges will
->>
->> feedback timeout to requester as PCIe spec mentioned if the endpoint is
->>
->> gone).
->
-> The IOMMU hardware has its own timeout mechanism. This timeout might
-> happen if:
->
-> 1) The link to the endpoint is broken, so the invalidation completion
->    message is lost on the way.
-> 2) The device has a longer timeout value, so the device is still busy
->    with handling the cache invalidation when IOMMU's timeout is
->    triggered.
->
-> Here, we are doing the following:
->
-> For Case 1, we return -ETIMEDOUT directly. For Case 2, we attempt to
-> retry.
 
-Yes, Intel VT-d will setup a hardware timer if devtlb invalidation 
-issued and
+On 1/9/2024 11:20 PM, Jason Gunthorpe wrote:
+> On Thu, Dec 21, 2023 at 11:15:57AM +0000, Vasant Hegde wrote:
+>> @@ -270,11 +270,18 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+>>  	const struct iommu_ops *ops = dev_iommu_ops(dev);
+>>  	struct iommu_domain *domain;
+>>  
+>> -	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
+>> -	if (!domain)
+>> -		return NULL;
+>> +	if (ops->domain_alloc_sva) {
+>> +		domain = ops->domain_alloc_sva(dev, mm);
+>> +		if (IS_ERR(domain))
+>> +			return domain;
+>> +	} else {
+>> +		domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
+>> +		if (!domain)
+>> +			return ERR_PTR(-ENOMEM);
+>> +	}
+>>  
+>>  	domain->type = IOMMU_DOMAIN_SVA;
+>> +	domain->owner = ops;
+>>  	mmgrab(mm);
+>>  	domain->mm = mm;
+>>  	domain->iopf_handler = iommu_sva_iopf_handler;
+> 
+> This hunk is in commit 7be423336ecc ("iommu: Set owner token to SVA
+> domain") which is already merged to Joerg's tree. Make sure to drop it
+> from this patch when you rebase
 
-wait descripton submitted, that hardware timer is limited resource, will 
-tick
+Right. I will rebase and drop this hunk in next iteration.
 
-till gets the timeout if the endpoint is dead/broken etc.
-
-even we bail out in qi_submit_sync() for case #1, the hardware timer still
-
-ticks there, if many of such request issued, the iommu will run out of
-
-hardware resouce.  so we should avoid such case as possible as we could.
-
-though the Intel VT-d says the timeout value will not more than "
-
-PCIe read timeout", but in fact, we got more than 12 seconds before get
-
-ITE.
-
-
-for case #2, the retry has pre-conditon as I know, there is fault, cleared.
-
-So I call it "rabbit hole".
-
-To run into that rabbit hole is last choice, not best.
-
-
-Thanks,
-
-Ethan
-
->
-> Best regards,
-> baolu
+-Vasant
