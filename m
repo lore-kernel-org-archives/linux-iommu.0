@@ -1,50 +1,64 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2046.outbound.protection.outlook.com [40.107.212.46])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2063.outbound.protection.outlook.com [40.107.243.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F30E1AAA9
-	for <iommu@lists.linux.dev>; Fri, 12 Jan 2024 17:49:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46F5A15ADB
+	for <iommu@lists.linux.dev>; Fri, 12 Jan 2024 19:45:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="GuFsTHZY"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Qsy8GlkO"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d7E2GymxFq3uNY7RjqJdNLGAaxJLbDdeK8vwckkV8SC/FP2vbE5Bm1ULzpVWKlX6/Un7wkdFPSU/UufSGoSANx9it0RnOYXvT7aE7ZpFKvxmXldHtmoL74lpTBhlnQ5Hw3duXducxzjIBXOnfaP2L+W2PikBzgZPDJzTpggdyaq34NtL2TgnG5d7wcpFBjCSkK71XmmbFmLUdcx1yWChtP1I2KqrRNoyV5ZCeEKZunGQcPpvilHxlgU3VUsUOXh6VK9VE7D6RJzTKI4f70xUe2lIpRJza9xdaqkUES8Wnc0EZav5e3mcdFLRo9R58E0u1isXYogFtMit4Iiz4l+DIw==
+ b=f7Uu8RaX4JIO0/mwWVZ3o3GzSooDCqlYrWyE5khAjmxz4S1i52LJOSQ5ccuBbwd5nNdVyb3CkGCKKNGpzPPpzHjlcgfPLGp3hXFk3QkSy6Oz9F5FtJ9Pb6bx/S31KGSmp7wK2B1Cgl2bJwDXMYVxQ+/tMdFc5sMy14ROPp95ovYa3E3qdYX+ZyPm4wzzv72BiY39fID3S5c95OrMe9iectBz7knXxOyYi8cX6JYJSpFfv/O4qWHsIaNAGpFJjvUKp9/BCgBv4RmKRjBBD0r9t0t3PWtvrW8bNf7IZN2spIRaOgSOTXkbnQVa6RG9nwZ3wrWllZr4TBbbiqqWtwuFLQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=utpsbh3Ii3lnX3Ltoe0787VCsjROuxfkwNFy/HdsDMM=;
- b=kX2iSiC9gydkNABRQ607apNAyjqKR9IJLzh4luuz3YZWbC6AR2tczMu9CV096/XWqJfB5GLvUI2iruiTXzIcgtcZwfehOvuFZ+HgmVBPBAAHvz06YXRGUiNHPt3B8/1glbPj7uJPQH+DtZgIPVjFfJRKCnUg9JQiwiyUrm8AObpnfoGQFJ5z7M75QzCQkekCFPwm4FAOHIdZmVmYcCar74ufjEPMra6+lSjMvLMc4HMasHdMFs8yNhFJm3Z/fKOwfecX35k6xB4Vc/MAXamcT2z3AxiqxCtVZjXyIm29bfkzjiLGPMq1535t1kCvqSHRlEssSFUKP+Y+ntXQJrZmdw==
+ bh=3qSkOJARtG2jkF0HMWMsTaEYvw8wKFw3Bk6F681Udqs=;
+ b=ehscSxhq6qJay8C9r5bD7rewLxbU2C2oNrSl0HskhZNwMKm3Qqc9QPVku1i9GimRgniRrnTtv4Gy9rU9vDBC4FYSf8XQ5NaCTRjegE5ktAvqLK/FE5s+brYgq5BY4uxc4xbq63eIL5pbSJKaka4jfypCvoglutcpoNZMwWjR3C8wZVSl0v9kyMU+SQ9vVTz5ew+L3wVbSCMoBrCE4kPPG0AQf0nEl7sEXCerXXxA+C6O+2tQTpPMwxUQVi3EACKAo9TOmAVrdnshY5ukURXeumZF9x2zPclFXb5BzI7dqtmHcbOoSJj8EE5H8dv0y60ShCZiFL6MNMaUNvq87v55TQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=utpsbh3Ii3lnX3Ltoe0787VCsjROuxfkwNFy/HdsDMM=;
- b=GuFsTHZY6/aF7BIif0Z5H309BR/Iqp6H9T8oDWQb4XW7a4iWLd05flYKRcST06ihvDubI0RnzuNu7d0v8c1II0ml3cDUCnog1Yf02GlHWsted4AkOIWhExoqibgevCrm2/ymga9xF+FxEcRLWVlpX1B7A7ybJSOcLIckdpl1nYLHiva1/NQH3d2h/ik9fWRb083RgmBC3aEwSFL6NAaSXpJ82l5YDDMJKlXYLZH81+jw1yqnR6ThINWQGMEaR/V3TUwA3ebuTTkxUt8FgxAus4pcr/dJh5EHUoTC/a3t5ioDF87UiI450NnPsMRghbjQEnCy0sLF/+rDXVOXz6pwsg==
+ bh=3qSkOJARtG2jkF0HMWMsTaEYvw8wKFw3Bk6F681Udqs=;
+ b=Qsy8GlkOKyF4c6jL8SEijhGqEhsD4qJX+ru9xPcnBedD/bmB3aD2RZOSgjuJkq0SPPPWgD51F9ECJTd2/4fVUSed+sR6N2qD4WYTAFw90Ss/9/WX+Pa8IVSK60hPv3QsJ67q7fXZQwdC98uG8H9ynYLM5KjwuERTrlagQrfnbbGGZiKDoe3/8+Vw+/oK9ESuGuhhjw4CdIJZNiXDcefhmaJPh4zApV6D8Y/NBZUyU6DK3nPWKMQDclm0hNqWYfPnTW6Uo/9LqNjyMnd3GCzqbpImxDnR0ZI3nKAkhzEeKfkuj15kh0WdZ3pMxvqcS+3O/7ofsubDnub63wgXh82y+g==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by LV8PR12MB9264.namprd12.prod.outlook.com (2603:10b6:408:1e8::8) with
+ by MN0PR12MB5907.namprd12.prod.outlook.com (2603:10b6:208:37b::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7181.19; Fri, 12 Jan
- 2024 17:49:30 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7181.17; Fri, 12 Jan
+ 2024 19:45:54 +0000
 Received: from LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::96dd:1160:6472:9873]) by LV2PR12MB5869.namprd12.prod.outlook.com
  ([fe80::96dd:1160:6472:9873%6]) with mapi id 15.20.7181.020; Fri, 12 Jan 2024
- 17:49:30 +0000
-Date: Fri, 12 Jan 2024 13:49:28 -0400
+ 19:45:53 +0000
+Date: Fri, 12 Jan 2024 15:45:52 -0400
 From: Jason Gunthorpe <jgg@nvidia.com>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: iommu@lists.linux.dev, kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
-Subject: [GIT PULL] Please pull IOMMUFD subsystem changes
-Message-ID: <20240112174928.GA828978@nvidia.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Z4b8nnA/cAQCd4Ug"
+To: Michael Shavit <mshavit@google.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH 04/19] iommu/arm-smmu-v3: Make STE programming
+ independent of the callers
+Message-ID: <20240112194552.GD734935@nvidia.com>
+References: <CAKHBV24nfdq1q76T+DRQGNYeA-kP7ONnSjDsRFGsQCJVSrSm0w@mail.gmail.com>
+ <ZX7xu8jN/rBZ4A/d@nvidia.com>
+ <CAKHBV26CRC8eWMuOk6EZYMHOZoR2FauP=NBazzOiWCmQYEa1vg@mail.gmail.com>
+ <CAKHBV27qsgjgwPfn8OpSq30z1w203NDqBZ0s66bPgjp1XDnLOg@mail.gmail.com>
+ <20231227154648.GB50406@nvidia.com>
+ <CAKHBV26yjLu-EUoBJT8EL_EbLE5oqLUL-_hwh2YDp2JH1EyAMw@mail.gmail.com>
+ <20240102144814.GC50406@nvidia.com>
+ <CAKHBV26TD-gzv3dB8VkGSJ9T8rrynPa-DL48s_VzfF1xb7xQjA@mail.gmail.com>
+ <20240103175043.GS50406@nvidia.com>
+ <CAKHBV27FxaSsm7nPPR9RLSfVQy6X-b63ZN-Fg88iyStkJw+uHg@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-ClientProxiedBy: SN6PR01CA0030.prod.exchangelabs.com (2603:10b6:805:b6::43)
- To LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+In-Reply-To: <CAKHBV27FxaSsm7nPPR9RLSfVQy6X-b63ZN-Fg88iyStkJw+uHg@mail.gmail.com>
+X-ClientProxiedBy: DM6PR02CA0155.namprd02.prod.outlook.com
+ (2603:10b6:5:332::22) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,192 +66,159 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|LV8PR12MB9264:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8f4ade73-bd0a-413b-af6c-08dc1396d3d0
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN0PR12MB5907:EE_
+X-MS-Office365-Filtering-Correlation-Id: a7eb3d32-65f1-4bb5-370d-08dc13a71671
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	JNjpK2yFsox3cWYCGhbRBCplinnif5W67x8pOTI6BmDQ7BaLGYx7nqpf1l2LGFES8g5jn209juwYKhb3quDk0IYhSkIPrIo4njn97U5hU/7C6Ol2MK/efMDIU+GCwltfeSh43I4C1JamDm4A0svcElCk4j3hpxZKmy1dtOfUSsL0NI6qBImaGmHKgaRTsEJnqEh2+MqUK7VTBYKQHanwebNvA1TWIovOojNXtm64nW0Qew8Fqs6j6H4YUmWmff1XljZFI3TyutHASyCRFd3aecJMqwtOsVDtOLaYkMrGmTOmUVLqN0lPALtOJaS7FSLsAw/2jpkWRtIj1IHA1X4gMeVnhyAG5wDV/r9uj88YDMqOpJc44kw7uqc29ulUNi1omh3qihmSCMpSLLB70Y5kGv/iOgEAh9E6HwaxnCqCSMwJfRYgftZoj1Zvipilo53kk9oFhRKpy8Dgi+lF1DIW1pSyKtfXgwLMzHkJjZNv9C3DUyvtUmpqk4ndFsemb2WgXWcQ6mQo28Vy+tUu/W3+gmNO6i5+lrGCMwIE7S4qyqj/uVXL4fyOeOMeKcYp+/PCxvcvIV7L/vQGlxRDe+cqBPfPlr/uZkUWoE2tWwcYgfBZZi5wzvY6nNFzAIaLJt8v6sxDzDR3Zo7fBrS+zFIk/ODTra88rnk5A0+yFQE1kYBHusEuGN15sdA8xXiDN64M4E2dWlp+du+jEdtz7g2tbLe9mH7xtCUGZjdVmjERhHQ=
+	Lqsc4TXappc4I8nAls1jLBnulUn+KuzhFoq8/0YAS8JhmrULxiWsB/3CkiwTWsm9YahlWE6xqiOEK/sylzRTMlWTHJROO91A3Rwf6nAYI7LVBJum/LdRgIuBAREieQ2nF01qXqRhuzroI9MRbWaE+eGDhoXOC2CmmSIItV4//+BPgX+Ap/xYdOG5+JMGZ4Q9zu5K/8nsLQnCoPkyajKdf+bsYJ5Lnoq7IQJUJSGye+XehxnF9ow8bJ5L2d+RA148v2ynzc1VGMln8jELIBBaOqH6fibDSwBe174oCkD8uAbyssxtGGQ27g2LHH6LLbO/4YcvaB1JTzeNaDxFTJwmcwAxAJx8g69jk0PHny14hIx3NYLZeYugQF7PaI/+daTzfGQY8zFoieBVLxJguuRe1aoMUGLVqxRsXWLDnC9JKNehjjue4cXkAOJObeh+jl6QiVSs3DQLHtysFT3VK3tUwh4/9IrvuhaS0lFt97NvY60fsyoP5jvx8KIvvxcLBLK2SfXgSnM8Vtgw8GowflrfC+jRKzi2t2Or14aYdoDsH5LheauVmGrJlTk0tkEGA6By4c4kOmy/2caGMRT2pprJi/a97KCCaab14LrksvjB/WqH9A4pU8zRX6Wbj8Y01LEVxxodMtm/ZYSvdBuTveEtFA==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(376002)(39860400002)(366004)(136003)(346002)(230922051799003)(451199024)(186009)(64100799003)(1800799012)(21480400003)(83380400001)(41300700001)(86362001)(36756003)(33656002)(38100700002)(6506007)(6512007)(66476007)(5660300002)(44144004)(316002)(6916009)(6486002)(478600001)(8676002)(8936002)(4326008)(966005)(26005)(1076003)(2616005)(2906002)(4001150100001)(66556008)(66946007)(27376004)(2700100001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(396003)(376002)(366004)(346002)(136003)(230922051799003)(1800799012)(186009)(64100799003)(451199024)(66899024)(83380400001)(26005)(41300700001)(66946007)(33656002)(36756003)(86362001)(107886003)(6506007)(38100700002)(316002)(54906003)(6512007)(2616005)(8676002)(2906002)(6486002)(66556008)(966005)(6916009)(66476007)(478600001)(8936002)(1076003)(4326008)(5660300002)(27376004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?mj9UwKYFc+9HGF6wftsVjiBZVQsBZ38L7zf/W/SAKw0oxKoxIfE/LgjikAy+?=
- =?us-ascii?Q?5VGx9VPTp04H21X/pi232sgp9l/EP3pZdVsS4vAB8hsemBPvorl1br/dfRzL?=
- =?us-ascii?Q?WZNV5xQ5gGtaGZC3ZTNCdvpxDF8LCkGXWe2qBvx5rqeLVeSW/tFOOW1u1V9o?=
- =?us-ascii?Q?W8O8cXrlsELelv58V1qexlQvBlSVZQViKPhPdITft7/LRNeLfjef4u5lTl5o?=
- =?us-ascii?Q?w6oOf8rLDFfWz8HKD7Nk/P0EmFF+2suDi5ghiVL6GnSbLhA+nI2BUtO2a1E8?=
- =?us-ascii?Q?UPm44hqd8RRbK4CMIgsqd6MWcXCnHbQ9j6/TkOx4eMOIyPNafFoDq5gqPXE7?=
- =?us-ascii?Q?AeTgjs+6FPoIut2GnZVbLIyAJxRG/o/lay82iXE1ABHfSIAnw/oc9ilk94rK?=
- =?us-ascii?Q?ktgqyF5EoM3za+maND5tX3flYJ+kKsOFbWW52lwl66ksCVyRF1mZ/Uo7Kv8T?=
- =?us-ascii?Q?hw54P8FBx5V8sq95kKyVsQb9qNcGm2PGiLSyz9HYt5e8PRGamPujilUV+XrK?=
- =?us-ascii?Q?3QqO+IEH/DyNqqvUrl2Bv2LcliawtVhpAhtOyQNnZozWcTdD3sbHvTrBpbUv?=
- =?us-ascii?Q?EnQW0iz4Org+qZPNlbOJVYJCIHmz+wFLqsUa6sL4QDx4YW4+eVOZmWk0bQ3X?=
- =?us-ascii?Q?inkwofnOZ1eMYrlGLElBPHIlcVidTwJTlGbH8F8H2RN19fpbghflDCNKDKf7?=
- =?us-ascii?Q?+8p4ZwE8W4U0Gxr4fLDtnNpvQxQTyX/7I1di25OALhYSRh5MTEWq1TfC5jCo?=
- =?us-ascii?Q?gBhauTwIOu+hDqrn6Pv/swpAT20HMa/6gzbLUX/XItKv4kEnD1suk4OewBco?=
- =?us-ascii?Q?WRA+stQhiBorttwaNd58weCS4FqjN246ZaAonsfodZI+zrcEvTIYey4T/mVa?=
- =?us-ascii?Q?3rZgQq5iI0dMpMZ9JAgst8gTxvTFQBoxBmlgZdmBUOHoBRfoDEPWKbjSf+R/?=
- =?us-ascii?Q?nbzOIbKeY6VPuyIeK7yQwi50BKequRkX66lVLTeMEx8uqHjV8s0cI4zDX+Y+?=
- =?us-ascii?Q?UJ5w0tyrrdvHhBhlP1bL4WjiP8+79v8LwIPLFvyeWGYkvN7g5yr7ecWCCkqE?=
- =?us-ascii?Q?kPREu4mt8vMCl/16Lgk5RfLo/x54lDmFvp1EXeR8gBgeugI26ja8uSDYH4CV?=
- =?us-ascii?Q?Q1f22j/DydtFGfSG8oq4llTwlVZKSUGFKkZ+ATDwTF4Fj4kbj21YLwDLRo61?=
- =?us-ascii?Q?UFvn9P/vVBJ2oJvDz8eCdXsv1YjNLye+aSG4T8wuV/ohPNTXsaUu/gynAM02?=
- =?us-ascii?Q?EPJ8fo12L5LDsu5OhtphsO+p7QVi/EieB6tPOQxU8ufHyqhReJ0eArX9CCUd?=
- =?us-ascii?Q?vFPNXa29kgixCJjpDhcFqgiM6Z00xuA7JSY5lZDegbnS0WTjCSHlgWyCnuLF?=
- =?us-ascii?Q?MPjJeKoFdMFqNbY1LQt4lgFUIU1LxXylxTCvyZHYvDudmEjlF4LJ7XMg+an6?=
- =?us-ascii?Q?rqwT8QmO10BCt7R5JRuHvQA3p25uB/nG1NkC+x58itmD12TXx5SVqceZA5vx?=
- =?us-ascii?Q?56exWivrE0kqkhou9WzUT2k0WrJA8Q7cJ1MBT/Moh8ROzW78iufzfjTksPVI?=
- =?us-ascii?Q?Vv7JVbm/d8WK+YfKXMkZeOfy6hh5OBxYuyQGIa/n?=
+	=?us-ascii?Q?UOBTevgFx/e0Lbo+7b7WT2naNiSAoAvT3F7wWvINVIBn8RK1S6iXm/oXoZxL?=
+ =?us-ascii?Q?u1Slj7PEazwsurZduecVg5OmWc35SuoCkaLl+h0W8O3MZkyf8MDiImc1wUnu?=
+ =?us-ascii?Q?Gu9kYe2ETabEyVzrZMc1Rts1AgGILh5v8q7hTwKZL33KxEDsOc5YrAdvN7bo?=
+ =?us-ascii?Q?rJScovvmXfRtsMdGKWFEiK4vOf2roPoX9JKQprtzFANRJ7bxSMkTTi8/ZSmq?=
+ =?us-ascii?Q?vVvrWooLBUTLijBsJ2IeDXYg47gnds5q854fhsnND5RLYeP2DYvH39XvauCw?=
+ =?us-ascii?Q?kxLdorZqvSv/qnCCnXXRX5LVmPO08vLrOeEjvfZA+0lQ1vKmFaxoSilROeA1?=
+ =?us-ascii?Q?ZHJGrWLVtpQh3+uKfXromVb8OayBPYPZM3nFkkHB7FUjaV2LI+5Fu8OrPWpo?=
+ =?us-ascii?Q?d7qMc7BTv/PmkA0ROwOa8IJCXyXv65ET6dKL08Q57BALtOBbamjXRcb3hD0E?=
+ =?us-ascii?Q?jGy64x7XRDbft/XE9FUIk/yzBtQ7Rmmanfj8pBR37dxvvAQH+jc3GnDlbKY4?=
+ =?us-ascii?Q?Mb9OEwA4jQh6uXrtGhtej+WV6ZlFnr3gR1tetVy/z46aNDqUVhHh9KKy9Grx?=
+ =?us-ascii?Q?Lv2H4oMfYQ1I/TNlTXtV9ALglXdrSaA06eh3u6ST0O2+Z/judfeH+iYovML+?=
+ =?us-ascii?Q?dh/LHqYBN2E3gzFVdyemZqkS0HXARWq+Hjvy71FVw2Saws+XjQ/gNrYbx7al?=
+ =?us-ascii?Q?ghx7VThRI7Hm/aw02lpeoajCmFejXPKtHNNKZ4yL9s1aZqGoQU8F9BIhrFBa?=
+ =?us-ascii?Q?3tdjl7Uxoge+AakcyQN03jmAvan5dkWEO60xTyWkb6sw0PXNCIBH9gBdZhzV?=
+ =?us-ascii?Q?8bZblgGLh+LYCoWYhD7ONkzonTM0RfgJRpLUfR1BLoVsCS2o4Q53Bd8ZWb66?=
+ =?us-ascii?Q?M20nRPClD/MfmKCw//YOlyr85bUS2rNHkyV5ur+QPiOGLIpEWXB4mOxl3d6C?=
+ =?us-ascii?Q?Inf0HyZwYZKu5BXP5Ozn2ORkS2zUkhQxPfidWV2erFaSyBuH8A8NKlONUPr4?=
+ =?us-ascii?Q?721jcJg/zmS0/5ph77IbOWj/Yk3ybBgc5Sej6kg1D8Uv9UeocBwj9Yk9qBCI?=
+ =?us-ascii?Q?eN+STa6j4D/Ifmo1yzaVQlNjrhpqjgToyyXUeaKtTYB3uZHVJ4Wao6Vq4u5H?=
+ =?us-ascii?Q?ZBPvzn2Tkk8PC/yrnvBHTe4UiPewneC8pNSOeiX07LeNDZYBK9y72NFoRn16?=
+ =?us-ascii?Q?O9GV7fDHvlbZfGdpcJ1A4sRkwRlznBe2vwLWUZryLv0Ix3qND7adY5fC14Qf?=
+ =?us-ascii?Q?4a4tVVO+ewYKzchWFJyFEKqLA6uP45a8+yNw0n8FEVxboKdqaYNfc49ILxIU?=
+ =?us-ascii?Q?aK1ga14BC54pJ8/zUURQx4hfHpWp8Iq9K6/pF1lxYQ0RIHAiEhzyFaFj6YFy?=
+ =?us-ascii?Q?e8pB2k+YhjLrSFX8CUBedzska3Tp3GY+S6/qVH3CW1vLtUSjLj9qlBW4eNS2?=
+ =?us-ascii?Q?EMVOU4EedNGFfANeEOVdiEyJX+COBj+/GW0/i2h0xP08xDlJ7bg6J7y9kHJ2?=
+ =?us-ascii?Q?KDRrxa6IjGlRo6d60Zcob0SFRqYDjNg+dziXT+2TouhRDL1rQanK8lQu3ndK?=
+ =?us-ascii?Q?xEZoDS0uDRtrLaAso9cu9nuUtTr2SU1HC/Q5zjs/?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8f4ade73-bd0a-413b-af6c-08dc1396d3d0
+X-MS-Exchange-CrossTenant-Network-Message-Id: a7eb3d32-65f1-4bb5-370d-08dc13a71671
 X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2024 17:49:30.1002
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2024 19:45:53.7940
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: c/EUaGd+/96OE9jx/juFo3AGPrE4lS7SvleordZNA5yDGCenTwR10db8IqJrRFDm
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9264
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4w+AjMGwYp6NTLD81BkRSwN4oUmTXoaXbDc5TbtEHT8eMlKe2avLOn3slAUBqC5O
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB5907
 
---Z4b8nnA/cAQCd4Ug
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On Sat, Jan 06, 2024 at 04:50:48PM +0800, Michael Shavit wrote:
+> > I'm fine with this, if you think it is better please sort out the rest
+> > of the bits and send me a diff and I'll integrate it
+> >
+> > Thanks,
+> > Jason
+> 
+> Integrated and re-sent the 3 relevant patches; although git-send-email
+> gave two of them a different subject so they may appear as a different
+> thread depending on your email client.
+> 
+> Please note that I didn't update the commit description on the two
+> patches that you initially wrote. Also note that the Kunit test patch
+> does not yet add tests for any CD updates (outside of generic logic
+> which is shared with STE update). I'm on vacation for the next week
+> and haven't had a chance to expand the test coverage.
 
-Hi Linus,
+Okay, I took care of it all and got the branch rebased onto something
+closer to what v6.8-rc1 will look like. I made a bunch of cosmetic
+changes and checked the unit test still works. I'll post the three
+parts to the list when v6.8-rc1 comes out in a weeks time.
 
-There was a last minute doubt from Intel on their error handling
-plan. They decided to remove it since it has uAPI meaning this was
-delayed while they made that edit. The prior verions has been in
-linux-next for a while now but the update has only had a day.
+The update is on my github:
 
-This PR includes the second part of the nested translation items for
-iommufd, details in the tag.
+https://github.com/jgunthorpe/linux/commits/smmuv3_newapi/
 
-For those following, these series are still progressing:
+Here is the rewritten commit message:
 
-- User page table invalidation (non-Intel) has a roadmap:
- https://lore.kernel.org/linux-iommu/20231209014726.GA2945299@nvidia.com/
+iommu/arm-smmu-v3: Make STE programming independent of the callers
 
- There will be at least two more invalidation IOCTLs - IOMMU_DEVICE_INVALIDATE
- and IOMMU_VIOMMU_INVALIDATE in future.
+As the comment in arm_smmu_write_strtab_ent() explains, this routine has
+been limited to only work correctly in certain scenarios that the caller
+must ensure. Generally the caller must put the STE into ABORT or BYPASS
+before attempting to program it to something else.
 
-- ARM SMMUv3 nested translation:
- https://github.com/jgunthorpe/linux/commits/smmuv3_newapi
+The iommu core APIs would ideally expect the driver to do a hitless change
+of iommu_domain in a number of cases:
 
-- Draft AMD IOMMU nested translation:
- https://lore.kernel.org/linux-iommu/20240112000646.98001-1-suravee.suthikulpanit@amd.com
+ - RESV_DIRECT support wants IDENTITY -> DMA -> IDENTITY to be hitless
+   for the RESV ranges
 
-- ARM SMMUv3 Dirty tracking:
- https://lore.kernel.org/linux-iommu/20231128094940.1344-1-shameerali.kolothum.thodi@huawei.com/
+ - PASID upgrade has IDENTIY on the RID with no PASID then a PASID paging
+   domain installed. The RID should not be impacted
 
-- x86 KVM and IOMMU page table sharing (IOMMU_DOMAIN_KVM):
- https://lore.kernel.org/all/20231202091211.13376-1-yan.y.zhao@intel.com/
+ - PASID downgrade has IDENTIY on the RID and all PASID's removed.
+   The RID should not be impacted
 
-There is also a lot of ongoing work to consistently and generically enable
-PASID and SVA support in all the IOMMU drivers:
- SMMUv3:
-   https://lore.kernel.org/r/0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com
-   https://lore.kernel.org/r/0-v3-9083a9368a5c+23fb-smmuv3_newapi_p2_jgg@nvidia.com
- AMD:
-   https://lore.kernel.org/linux-iommu/20231212085224.6985-1-vasant.hegde@amd.com/
-   https://lore.kernel.org/linux-iommu/20231221111558.64652-1-vasant.hegde@amd.com/
- Intel:
-   https://lore.kernel.org/r/20231017032045.114868-1-tina.zhang@intel.com
+ - RID does PAGING -> BLOCKING with active PASID, PASID's should not be
+   impacted
 
-RFC patches for PASID support in iommufd & vfio:
- https://lore.kernel.org/all/20231127063428.127436-1-yi.l.liu@intel.com/
- https://lore.kernel.org/all/20231127063909.129153-1-yi.l.liu@intel.com/
+ - NESTING -> NESTING for carrying all the above hitless cases in a VM
+   into the hypervisor. To comprehensively emulate the HW in a VM we should
+   assume the VM OS is running logic like this and expecting hitless updates
+   to be relayed to real HW.
 
-IO page faults and events delivered to userspace through iommufd:
- https://lore.kernel.org/all/20231220012332.168188-1-baolu.lu@linux.intel.com/
- https://lore.kernel.org/all/20231026024930.382898-1-baolu.lu@linux.intel.com/
+For CD updates arm_smmu_write_ctx_desc() has a similar comment explaining
+how limited it is, and the driver does have a need for hitless CD updates:
 
-RFC patches exploring support for the first Intel Scalable IO Virtualization
-(SIOV r1) device are posted:
- https://lore.kernel.org/all/20231009085123.463179-1-yi.l.liu@intel.com/
+ - SMMUv3 BTM S1 ASID re-label
 
-A lot of the iommufd support has now been merged to qemu, though I think we
-are still needing dirty tracking and nesting stuff.
- https://lore.kernel.org/all/20231121084426.1286987-1-zhenzhong.duan@intel.com/
- https://lore.kernel.org/all/20230622214845.3980-1-joao.m.martins@oracle.com/
+ - SVA mm release should change the CD to answert not-present to all
+   requests without allowing logging (EPD0)
 
-A video of the iommufd session at LPC has been posted:
- https://youtu.be/IE_A8wSWV7g
+The next patches/series are going to start removing some of this logic
+from the callers, and add more complex state combinations than currently.
+At the end everything that can be hitless will be hitless, including all
+of the above.
 
-Thanks,
-Jason
+Introduce arm_smmu_write_entry() which will run through the multi-qword
+programming sequence to avoid creating an incoherent 'torn' STE in the HW
+caches. It automatically detects which of two algorithms to use:
 
-The following changes since commit 861deac3b092f37b2c5e6871732f3e11486f7082:
+1) The disruptive V=0 update described in the spec which disrupts the
+   entry and does three syncs to make the change:
+       - Write V=0 to QWORD 0
+       - Write the entire STE except QWORD 0
+       - Write QWORD 0
 
-  Linux 6.7-rc7 (2023-12-23 16:25:56 -0800)
+2) A hitless update algorithm that follows the same rational that the driver
+   already uses. It is safe to change IGNORED bits that HW doesn't use:
+       - Write the target value into all currently unused bits
+       - Write a single QWORD, this makes the new STE live atomically
+       - Ensure now unused bits are 0
 
-are available in the Git repository at:
+The detection of which path to use and the implementation of the hitless
+update rely on a "used bitmask" describing what bits the HW is actually
+using based on the V/CFG/etc bits. This flows from the spec language,
+typically indicated as IGNORED.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+Knowing which bits the HW is using we can update the bits it does not use
+and then compute how many QWORDS need to be changed. If only one qword
+needs to be updated the hitless algorithm is possible.
 
-for you to fetch changes up to 47f2bd2ff382e5fe766b1322e354558a8da4a470:
+Later patches will include CD updates in this mechanism so make the
+implementation generic using a struct arm_smmu_entry_writer and struct
+arm_smmu_entry_writer_ops to abstract the differences between STE and CD
+to be plugged in.
 
-  iommufd/selftest: Check the bus type during probe (2024-01-11 15:53:28 -0400)
+At this point it generates the same sequence of updates as the current
+code, except that zeroing the VMID on entry to BYPASS/ABORT will do an
+extra sync (this seems to be an existing bug).
 
-----------------------------------------------------------------
-iommufd for 6.8
-
-This brings the first of three planned user IO page table invalidation
-operations:
-
- - IOMMU_HWPT_INVALIDATE allows invalidating the IOTLB integrated into the
-   iommu itself. The Intel implementation will also generate an ATC
-   invalidation to flush the device IOTLB as it unambiguously knows the
-   device, but other HW will not.
-
-It goes along with the prior PR to implement userspace IO page tables (aka
-nested translation for VMs) to allow Intel to have full functionality for
-simple cases. An Intel implementation of the operation is provided.
-
-Fix a small bug in the selftest mock iommu driver probe.
-
-----------------------------------------------------------------
-Jason Gunthorpe (1):
-      iommufd/selftest: Check the bus type during probe
-
-Lu Baolu (2):
-      iommu: Add cache_invalidate_user op
-      iommu/vt-d: Add iotlb flush for nested domain
-
-Nicolin Chen (4):
-      iommu: Add iommu_copy_struct_from_user_array helper
-      iommufd/selftest: Add mock_domain_cache_invalidate_user support
-      iommufd/selftest: Add IOMMU_TEST_OP_MD_CHECK_IOTLB test op
-      iommufd/selftest: Add coverage for IOMMU_HWPT_INVALIDATE ioctl
-
-Yi Liu (2):
-      iommufd: Add IOMMU_HWPT_INVALIDATE
-      iommufd: Add data structure for Intel VT-d stage-1 cache invalidation
-
- drivers/iommu/intel/nested.c                  |  88 +++++++++++++++
- drivers/iommu/iommufd/hw_pagetable.c          |  41 +++++++
- drivers/iommu/iommufd/iommufd_private.h       |  10 ++
- drivers/iommu/iommufd/iommufd_test.h          |  23 ++++
- drivers/iommu/iommufd/main.c                  |   3 +
- drivers/iommu/iommufd/selftest.c              | 104 +++++++++++++++---
- include/linux/iommu.h                         |  77 +++++++++++++
- include/uapi/linux/iommufd.h                  |  79 +++++++++++++
- tools/testing/selftests/iommu/iommufd.c       | 152 ++++++++++++++++++++++++++
- tools/testing/selftests/iommu/iommufd_utils.h |  55 ++++++++++
- 10 files changed, 619 insertions(+), 13 deletions(-)
-
---Z4b8nnA/cAQCd4Ug
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRRRCHOFoQz/8F5bUaFwuHvBreFYQUCZaF7pwAKCRCFwuHvBreF
-YX3yAP0bCfw55km2i2uu5mAhuZK2r0J5+VlSgb6BW3+POQfdlgEA/cecY2rTJjpw
-u2hc5n+e2+p7OkqV37yWh4zVGm8OfAE=
-=PF9p
------END PGP SIGNATURE-----
-
---Z4b8nnA/cAQCd4Ug--
+Going forward this will use a V=0 transition instead of cycling through
+ABORT if a hitfull change is required. This seems more appropriate as ABORT
+will fail DMAs without any logging, but dropping a DMA due to transient
+V=0 is probably signaling a bug, so the C_BAD_STE is valuable.
