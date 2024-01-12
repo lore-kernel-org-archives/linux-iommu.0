@@ -1,203 +1,163 @@
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17F6C2AEEC
-	for <iommu@lists.linux.dev>; Fri, 12 Jan 2024 13:14:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A9316DD07
+	for <iommu@lists.linux.dev>; Fri, 12 Jan 2024 14:59:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="o1oO/7cf"
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-5f69383e653so68397737b3.1
-        for <iommu@lists.linux.dev>; Fri, 12 Jan 2024 05:14:58 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="KcfPFnl/"
+Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-3bc4f49a3b6so6968360b6e.1
+        for <iommu@lists.linux.dev>; Fri, 12 Jan 2024 06:59:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1705065298; x=1705670098; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=iDWt7qNI0NuDiSYcTfV6CD0Gy7BpMOi0Lg0E40nc3b8=;
-        b=o1oO/7cfTGK4EVJE4elJbFqlGq1NXF3XxtPS0KEWnkSbC4Q0iBwSP3qTzIfqoXrCr4
-         j7WVx1NXT0+Az1HEti7xGBIoa4vcaMwmplzwRS6/lZXuXQaFb+W3lTnMnfeIqverPIdU
-         7VpfsuwHj/M4CXGQt0PW8/MrxMBQji/Hmw42LUjn73mh2KQivAVEhLgTD3JuYDhIi0a0
-         MBDMbnFKKe2ZGHuUYPOn0QFdf2Ljch8+r0zSQ+52/42RtXHO6OfenKAMbTKpxuQOV0tn
-         CnxkM4Tjp4fvGaGKEknbHabK9QhbXQwwVW43qJfbl4x7Ha3pVyQep+lxW4x0Md97YS6O
-         62dA==
+        d=ziepe.ca; s=google; t=1705071576; x=1705676376; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=KZJijTlH6ZCHR8tBeqJ0Y2HgFz2mIGBuXHRJwRUztyg=;
+        b=KcfPFnl/oqMBshSeYQsRXNGkHu1cLNGbNYOaGXceOslLx09qhClMKVvp9Ro6jV5FX5
+         GeOGMfB5NdppHWMQk/cVTyx4ig0V7HIRdoz2lKvRPxsmeHDRtNNtlNLhw8STLHucyLwR
+         QjsnFPRjNnNVjnwDoYZeUIIAES7652Sou4b36XbPyUlGgny87tXS4MNva+9dMGU8WwPb
+         HLfbTWgTE2Yhk3bb6TjiK+INu/PdKAsc/AjOavWAy8aF2crztTjFRffkbeUUa1kIJVSQ
+         jDCgRZ2ySXjbFrFeSkI8qo0togOOoWwqhnQgnLT6fbJb/N2F5xiRK6Us9J0QDfb6pnby
+         XWQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705065298; x=1705670098;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=iDWt7qNI0NuDiSYcTfV6CD0Gy7BpMOi0Lg0E40nc3b8=;
-        b=OLNnhsMyLDNYck2wq+5PGe/mOQZF0NsXr9e2mnCwEfTnWKEH6Oxq/NHhVvILdLcyF+
-         54Fh6DxtMu/7W3R/rhM2SKUbdAHolPhw3ITSDIRplqocoACi/Otal0qP0ixBKvy/Opzp
-         MsFiTX1HvhE7FsyqXgI9mNpSsKwn6bCEp4x1yfkhG1G70TR9JGslh6c0/NiVEM9RKo07
-         uA4yEfZ79g8BJj6ESYuPp87gzoI5LWf434I825SNASjm44uRCpiP3iOKX7Bi2fbPSrEn
-         pTrQ478wQ6UCpyopXdeM3ltXJqtEyFQEdg5d4KtIfr3s/YNOF49yg2ks3hPUh3CBrIs5
-         nwWw==
-X-Gm-Message-State: AOJu0Yxyp8/6A6JthAAOezlNN1yZQTY/YGP4HBt2vwAl3hEH7DmBSDO1
-	DpHC4Ai/SL7TsnwNXS1Nakd6kohS5hZ0GzEoKUDsMKfztgdOPg==
-X-Google-Smtp-Source: AGHT+IH1RX2+oy5HazPnAb/xvxbNva+AvDgMRcaARltCKAQWsGN6VdkvcSbNWjOTJS9uBfPDKv4YUt2awYjUB1O3IEg=
-X-Received: by 2002:a25:d20f:0:b0:d9a:b9fe:a318 with SMTP id
- j15-20020a25d20f000000b00d9ab9fea318mr713671ybg.58.1705065297965; Fri, 12 Jan
- 2024 05:14:57 -0800 (PST)
+        d=1e100.net; s=20230601; t=1705071576; x=1705676376;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KZJijTlH6ZCHR8tBeqJ0Y2HgFz2mIGBuXHRJwRUztyg=;
+        b=Dij3YW9qb5saNke1K4Q6VHOKZLE1Xpi+OuKmNeJMcZCbW7Z8K3leBW6f5l+DG7SJWD
+         9eNFkSgqIE4JOO5qSzFy95+hJxfbD0UWUQjvYvHrTeEvCY8BLBDzsOK+Rnul8V0d2Hto
+         YOvWPty43cXfs+rTvcR0YwHuSaD0fse4Fj2uEiQO/aWTQEfPTZ08nwfnaxSfPEfFMZXa
+         ZBDwHNFhWi5i446hPurNTBn1PzOoRmE4dR7dLvmpZQALkmXC10o+a35Jad+nwz4o0rYG
+         iJq/mrtY3DCzOYNxl/oOBWCfChOZOxS9uh0c13Gt7cbhnX9VqP2iNHyaV62cSyCgBX9a
+         Yxlw==
+X-Gm-Message-State: AOJu0Yzj4DI7vrfirf1YoPs6yxHN5/mlWMDdhTffc2tBvP8D72yzJ0Bd
+	Wprsz6Y9pI3eyjG2OGC67+Hn8YWgbKlHtg==
+X-Google-Smtp-Source: AGHT+IH9w/pZb9ZmcDjPaY9IzMusr3uVNAhVDEAtskC+kKODbEt2XiCdfn4E97nfuN+IsZScpls+ng==
+X-Received: by 2002:a05:6808:148f:b0:3bd:5520:9046 with SMTP id e15-20020a056808148f00b003bd55209046mr1301072oiw.26.1705071576194;
+        Fri, 12 Jan 2024 06:59:36 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id dj17-20020a056808419100b003bd39c80e2bsm599264oib.38.2024.01.12.06.59.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Jan 2024 06:59:35 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rOJ0Q-003LuE-2e;
+	Fri, 12 Jan 2024 10:59:34 -0400
+Date: Fri, 12 Jan 2024 10:59:34 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com,
+	Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v4 07/16] iommu/amd: Introduce per-device domain ID to
+ workaround potential TLB aliasing issue
+Message-ID: <20240112145934.GY50608@ziepe.ca>
+References: <20231212085224.6985-1-vasant.hegde@amd.com>
+ <20231212085224.6985-8-vasant.hegde@amd.com>
+ <20240105185549.GM50608@ziepe.ca>
+ <d71a2bc0-ed07-53eb-faf1-bd36b6ff6ffb@amd.com>
+ <20240111135952.GV50608@ziepe.ca>
+ <0215990a-dff1-c6c3-bfa1-c90fa63b0c7b@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240109114220.30243-1-quic_bibekkum@quicinc.com>
- <20240109114220.30243-4-quic_bibekkum@quicinc.com> <2ad70157-27d1-41df-8866-c226af690cf6@quicinc.com>
- <ec31fafa-b912-454a-8b64-e0593911aaf2@quicinc.com> <4a595815-7fcc-47e2-b22c-dac349af6d79@quicinc.com>
- <492aeca3-a4df-47a3-9c77-02ea4235d736@linaro.org> <1a1f9b11-5a6d-41f7-8bcd-533a61a27a65@quicinc.com>
- <babd9514-6202-486f-a7c5-51ad793aaca6@linaro.org> <d7110cff-334f-40cd-9f11-62fafd8d722d@quicinc.com>
-In-Reply-To: <d7110cff-334f-40cd-9f11-62fafd8d722d@quicinc.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Fri, 12 Jan 2024 15:14:46 +0200
-Message-ID: <CAA8EJpqO2vEQP3B3gpGHvMSiaMQspz+63WVVXbkd0Hrx-AFeCQ@mail.gmail.com>
-Subject: Re: [PATCH v7 3/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: Konrad Dybcio <konrad.dybcio@linaro.org>, Pavan Kondeti <quic_pkondeti@quicinc.com>, will@kernel.org, 
-	robin.murphy@arm.com, joro@8bytes.org, jsnitsel@redhat.com, 
-	quic_bjorande@quicinc.com, mani@kernel.org, quic_eberman@quicinc.com, 
-	robdclark@chromium.org, u.kleine-koenig@pengutronix.de, robh@kernel.org, 
-	vladimir.oltean@nxp.com, quic_molvera@quicinc.com, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0215990a-dff1-c6c3-bfa1-c90fa63b0c7b@amd.com>
 
-On Fri, 12 Jan 2024 at 15:07, Bibek Kumar Patro
-<quic_bibekkum@quicinc.com> wrote:
->
->
->
-> On 1/12/2024 3:31 PM, Konrad Dybcio wrote:
-> >
-> >
-> > On 1/11/24 19:09, Bibek Kumar Patro wrote:
-> >>
-> >>
-> >> On 1/10/2024 11:26 PM, Konrad Dybcio wrote:
-> >>>
-> >>>
-> >>> On 1/10/24 13:55, Bibek Kumar Patro wrote:
-> >>>>
-> >>>>
-> >>>> On 1/10/2024 4:46 PM, Bibek Kumar Patro wrote:
-> >>>>>
-> >>>>>
-> >>>>> On 1/10/2024 9:36 AM, Pavan Kondeti wrote:
-> >>>>
-> >>>> [...]
-> >>>>
-> >>>>>>> @@ -274,6 +321,21 @@ static const struct of_device_id
-> >>>>>>> qcom_smmu_client_of_match[] __maybe_unused = {
-> >>>>>>>   static int qcom_smmu_init_context(struct arm_smmu_domain
-> >>>>>>> *smmu_domain,
-> >>>>>>>           struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
-> >>>>>>>   {
-> >>>>>>> +    struct arm_smmu_device *smmu = smmu_domain->smmu;
-> >>>>>>> +    struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-> >>>>>>> +    const struct actlr_variant *actlrvar;
-> >>>>>>> +    int cbndx = smmu_domain->cfg.cbndx;
-> >>>>>>> +
-> >>>>>>> +    if (qsmmu->data->actlrvar) {
-> >>>>>>> +        actlrvar = qsmmu->data->actlrvar;
-> >>>>>>> +        for (; actlrvar->io_start; actlrvar++) {
-> >>>>>>> +            if (actlrvar->io_start == smmu->ioaddr) {
-> >>>>>>> +                qcom_smmu_set_actlr(dev, smmu, cbndx,
-> >>>>>>> actlrvar->actlrcfg);
-> >>>>>>> +                break;
-> >>>>>>> +            }
-> >>>>>>> +        }
-> >>>>>>> +    }
-> >>>>>>> +
-> >>>>>>
-> >>>>>> This block and the one in qcom_adreno_smmu_init_context() are exactly
-> >>>>>> the same. Possible to do some refactoring?
-> >>>>>>
-> >>>>>
-> >>>>> I will check if this repeated blocks can be accomodated this into
-> >>>>> qcom_smmu_set_actlr function if that would be fine.
-> >>>>>
-> >>>>
-> >>>> Also adding to this, this might increase the number of indentation
-> >>>> inside qcom_smmu_set_actlr as well, to around 5. So wouldn't this
-> >>>> be an issue?
-> >>>
-> >>> By the way, we can refactor this:
-> >>>
-> >>> if (qsmmu->data->actlrvar) {
-> >>>      actlrvar = qsmmu->data->actlrvar;
-> >>>      for (; actlrvar->io_start; actlrvar++) {
-> >>>          if (actlrvar->io_start == smmu->ioaddr) {
-> >>>              qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar->actlrcfg);
-> >>>              break;
-> >>>          }
-> >>>      }
-> >>> }
-> >>>
-> >>> into
-> >>>
-> >>> // add const u8 num_actlrcfgs to struct actrl_variant to
-> >>> // save on sentinel space:
-> >>> //   sizeof(u8) < sizeof(ptr) + sizeof(resource_size_t)
-> >>>
-> >>
-> >> Git it, Would it be better to add this in struct qcom_smmu_match_data ?
-> >
-> > Yes, right.
-> >
->
-> Actually, I noticed now, we can do both the actlr_config (num_actlrcfg
-> is used) and actlr_var (num_smmu is used) in the similar by storing the
-> number of elements in each of them.
-> something like this:
->
-> +static const struct actlr_config sc7280_apps_actlr_cfg[] = {
-> +       { 0x0800, 0x24e1, PREFETCH_DEFAULT | CMTLB },
-> +       { 0x2000, 0x0163, PREFETCH_DEFAULT | CMTLB },
-> +       { 0x2080, 0x0461, PREFETCH_DEFAULT | CMTLB },
-> +       { 0x2100, 0x0161, PREFETCH_DEFAULT | CMTLB },
-> +       { 0x0900, 0x0407, PREFETCH_SHALLOW | CPRE | CMTLB },
-> +       { 0x2180, 0x0027, PREFETCH_SHALLOW | CPRE | CMTLB },
-> +       { 0x1000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
-> +};
-> +
-> +static const struct actlr_config sc7280_gfx_actlr_cfg[] = {
-> +       { 0x0000, 0x07ff, PREFETCH_SWITCH_GFX | PREFETCH_DEEP | CPRE | CMTLB },
-> +};
-> +
-> +static const struct actlr_variant sc7280_actlr[] = {
-> +       { .io_start = 0x15000000, .actlrcfg = sc7280_apps_actlr_cfg,
-> .num_actlrcfg = 7 },
-> +       { .io_start = 0x03da0000, .actlrcfg = sc7280_gfx_actlr_cfg,
-> .num_actlrcfg = 1 },
-> +};
-> +
->   static const struct actlr_config sm8550_apps_actlr_cfg[] = {
->         { 0x18a0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
->         { 0x18e0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
-> @@ -661,6 +680,13 @@ static const struct qcom_smmu_match_data
-> sdm845_smmu_500_data = {
->         /* Also no debug configuration. */
->   };
->
-> +static const struct qcom_smmu_match_data sc7280_smmu_500_impl0_data = {
-> +       .impl = &qcom_smmu_500_impl,
-> +       .adreno_impl = &qcom_adreno_smmu_500_impl,
-> +       .cfg = &qcom_smmu_impl0_cfg,
-> +       .actlrvar = sc7280_actlr,
-> +       .num_smmu = 2,
-> +};
->
-> Just for note , there's a small hiccup here as we have to manually
-> calculate and the number of elements in actlr_config size everytime we
-> add this info for a new target, won't be an issue though but just a
-> hindrance to automation (?)
+On Fri, Jan 12, 2024 at 06:15:07PM +0530, Vasant Hegde wrote:
 
-Just use ARRAY_SIZE(sc7280_actlr).
+> Right. It makes sense when using V2 page table. But when we are in V1 page table
+> we don't have GCR3. We will revisit once we finalize some of the vIOMMU stuff.
 
+But in v1 mode the domain_id comes from the iommu_domain struct, there
+is no case where it logically is part of the device.
 
--- 
-With best wishes
-Dmitry
+> > Invalidation is no different than any other V2 domain use case. The
+> > domain ops trigger invalidation. In AMD HW you need to record that an
+> > unmanaged domain is connected to a domain ID & PASID and push the
+> > right invalidate. The driver can't just assume the PASID is 0 for V2
+> > unmanaged domains.
+> > 
+> > So the implementation is to track the attacked devices, iommus and
+> > PASIDs in a linked list and use that linked list to generate
+> > invalidations. Intel and SMMU (after my patches) both have
+> > implementations of this. I would like to unify them to a helper
+> > because they are both kind of bad.
+> > 
+> > There are many use cases for PASID mappings without SVA, including
+> > SIOV-like devices and virtualization modes with non-SVA PRI.
+> 
+> What kind of page table will be attached with non zero PASID? like KVM page table?
+
+Probably at copy of the KVM page table in some for, certainly today
+starting with an UNAMANGED domain as is normal. I think people will
+want to do different things here..
+
+> >>   - iommu_ops->iotlb_sync_map/flush_iotlb_all will flush PASID zero.
+> >>     Looking into intel driver they seems to be invalidating all PASIDs in this
+> >> path. I didn't get why it has to flush all PASIDs here.
+> > 
+> > You iterate ove the list above and flush every PASID in the list. I
+> > don't know what Intel is doing, fush all PASID on domain invalidation
+> > sounds like overkill.
+> 
+> IIUC with UNMANAGED domain with PASID, we will have device/pasid list with
+> different PASIDs pointing to different page tables.
+>   ex: PASID 0 with DMA-API mode , PASID1 pointing to some other page table.
+
+The *device* has a list of PASID's that point to iommu_domains. This
+is stored in an xarray inside the iommu_group.
+
+The *iommu_domain* has a list of *devices & PASIDs* that can use this
+domain for translation (ie that it was attached to)
+
+The RID attach is just PASID 0.
+
+> This is where the confusion is. Current iommu ops doesn't take pasid as
+> parameter. So if we go over entire dev/pasid list and flush it becomes overkill
+> right?
+
+If I have a v2 paging iommu domain (unmanaged) and I change the IOPTE
+to effect a certain IOVA range then I have to invalidate it at every
+place that is caching it.
+
+For ATC that means I need to issue an invalidation to every
+(iommu, RID, PASID) combination that has it in cache.
+
+For V2 AMD IOTLB I need to issue an invalidation for every
+(iommu, device->gcr3->domain_id, PASID) that has it in the cache.
+
+For V1 AMD IOTLB I need to invalidate every
+(iommu, domain->domain_id) combination.
+
+It is a data structure problem to store a minimal list of those
+things off of the iommu_domain.
+
+No new op parameters are needed.
+
+ATC is a list of every attached struct device and PASID, populated by
+ops->attach_dev (PASID=0) or ops->set_dev_pasid.
+
+V2 IOTLB is that same list with duplicate device->gcr3->domain_id's
+removed
+
+IOMMU is that same list with duplicate device->amd_iommu's removed,
+which is the list V1 IOTLB needs.
+
+So, store one linked list for ATC in the iommu_domain.
+
+Sort it by (device->amd_iommu, device->gcr3->domain_id, device->id)
+
+Skip consecutive runs of same domain_id or same iommu when generating
+the invalidation sequences.
+
+Use RCU to lock the list so the invalidation fast path is
+lockless. (this is tricky)
+
+Jason
