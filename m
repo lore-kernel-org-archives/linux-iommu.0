@@ -1,427 +1,193 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B001228E2
-	for <iommu@lists.linux.dev>; Fri, 12 Jan 2024 00:07:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C03601DA31
+	for <iommu@lists.linux.dev>; Fri, 12 Jan 2024 05:52:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--vannapurve.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="rifU9/Ea"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SEMIl/xGuREu2T/aIn71vMrH7VypGdcb2evMYUrA4sfaWtHB3hFm8M5IWN5myXqt808OVA+ltz60qFQJlA4R5ONv9B5bBBtBU/BpiQ6F+exRMclbLZnIKVQd4UH3EAJhhUmUgipv9aH+4P0/5Viuabxrv2w238ZqBajMIim9MXfryz4y0RacTEIJUVGEhdDv8PSMQTjSs9E2BwnJUUGd1CPjtwe/BpEP1XZptG2W+DKNi7v1t1XaIjmnZx+wN72IGU3+L0W/IunxWuNWHkF4nlpyyupcmIrbKMD2hV1uYt5Cz26IeQiC55tzfgQhqT6IODejaY8JJSt3Vr8qSWEFwg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CDjOCBYRs3Bi6DGtMMHqdaftKbkEZWu3pN2q3tgL7Pk=;
- b=PCGDVd4qBrNX/LziCT/fBXQ71uiMIH8Cx+0rhrr3ktVTa/Iq+A9b3MVpGiO2XXB3NYNlGfFgATwxMt/pgb8fA/ylOu6GgFumr66pXF4R5phF5aIkervboV0hZXBWEq88EVyVilv/qeTIH9XxJGApTLrkjbEW9SeAt9ojXPDepf/pdloFe9gez1k3mqK5+JVU+M+v1jOD2xoFnRYHm2ZXm6lxij8KHHByx1SsVWp92gIZ5QBBJ31j14GKFlU+XBD1L9uTnvDCmn/IWN1/0bfuJI40yMg5nCGUAgfFERPEVmNJcdanKnRAXMEJrdUacV9cEJe8jdsaFULno8s3wHybwQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CDjOCBYRs3Bi6DGtMMHqdaftKbkEZWu3pN2q3tgL7Pk=;
- b=rifU9/EaLmFo65sD6wx3RST5Y4u/rd2gPp3x8szeodaa3qZ2QmuzsxyuYYwx3rMRK27eLSHIIHDCzBYOcdsYXWvb7jpxWEvSynLBt/uawnGjeoQVYm8v3dd6ZoYbkXqyu3yaXmaUOZzOCuOacA9FDbvnzAiJRsoDrmCtLcla3mE=
-Received: from MW4P223CA0007.NAMP223.PROD.OUTLOOK.COM (2603:10b6:303:80::12)
- by DM6PR12MB4387.namprd12.prod.outlook.com (2603:10b6:5:2ac::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7181.19; Fri, 12 Jan
- 2024 00:07:09 +0000
-Received: from MWH0EPF000971E2.namprd02.prod.outlook.com
- (2603:10b6:303:80:cafe::31) by MW4P223CA0007.outlook.office365.com
- (2603:10b6:303:80::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7181.19 via Frontend
- Transport; Fri, 12 Jan 2024 00:07:08 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- MWH0EPF000971E2.mail.protection.outlook.com (10.167.243.69) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7181.14 via Frontend Transport; Fri, 12 Jan 2024 00:07:08 +0000
-Received: from ruby-95f9host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Thu, 11 Jan
- 2024 18:07:06 -0600
-From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<joro@8bytes.org>, <jgg@nvidia.com>
-CC: <yi.l.liu@intel.com>, <kevin.tian@intel.com>, <nicolinc@nvidia.com>,
-	<eric.auger@redhat.com>, <vasant.hegde@amd.com>, <jon.grimm@amd.com>,
-	<santosh.shukla@amd.com>, <Dhaval.Giani@amd.com>, <pandoh@google.com>,
-	<loganodell@google.com>, Suravee Suthikulpanit
-	<suravee.suthikulpanit@amd.com>
-Subject: [RFCv2 PATCH 6/7] iommu/amd: Add nested domain allocation support
-Date: Thu, 11 Jan 2024 18:06:45 -0600
-Message-ID: <20240112000646.98001-7-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240112000646.98001-1-suravee.suthikulpanit@amd.com>
-References: <20240112000646.98001-1-suravee.suthikulpanit@amd.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ayZDybvw"
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-5e9a02c6d49so118018077b3.2
+        for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 21:52:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1705038777; x=1705643577; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Eek3/p9ES41h8PWH5gBdbupDvFtsA2EdHaKQWrImp7c=;
+        b=ayZDybvwH/4YTdhrSE5rfHKmR3L+Y7KWOh5UMRh6U/DKU5SECG7Mtgk4HOO0/FT6rW
+         DGhYO05lU+FIvZUP3NTW63fhYmn7btLbg5Ai85WQidgU+Tm3YalmT9gMv9r1jR9iSA5C
+         eUnqbP5TyC7eLX0zhB/45GdccWXQ4qUf4oyVgpjlFsZfYLCbT91oRIQqgwLBzHG5eNYJ
+         +DuPXap5a8Kplh7KaWOGwAGZUs6OkQfhXfnnwtiCEB08QCZz0tPJ0LBslsLlSwmB4VV/
+         I29h5jc3JecFgd8aOeuwXxwpoZf36EZ0qmU1UKN57V+kcIcCzNSLlOp5jqQnNs4O7NUC
+         WXyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705038777; x=1705643577;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Eek3/p9ES41h8PWH5gBdbupDvFtsA2EdHaKQWrImp7c=;
+        b=PMaEtPA9iWG/tr1T9LTCdzIgcKluLyFVbPR22qFABs1DqDgh4SxOtGcHWogF3QBpqt
+         Pr+nhzsSnvYoRXaIexRv8J69q3UQJmSsV/1eIfS3BKZxDYVyFEapu0P/70ApM6PdRgeb
+         7DluvwMb9p8gS9zWVnsEVNMCVVP3uVKcsEqo5JB61WeYvJ/1adgoqcJ6Mv6oIP1QNSco
+         EUsuw+2fE/Dn1mid04+KKBAEUVPchTHuC6XHt6j/mRn0KiCHH16pQZvIsvC3hHMoLQVY
+         NJ1WAWZ+W9CXsmKpslAuwl0hLUq8TTnnSeOOv7E5rJ1B8lElf2eWWD+6tkbzBkP0LDRt
+         b5CQ==
+X-Gm-Message-State: AOJu0YyS8Gw+75SpNCd0xuq40gRausTUphJKNPSa4ZU4TMavaFz/v8ew
+	whuHgdZlbhqkd6X0KrYpNW9rowWjRAFAcJfGA1Fe4y4=
+X-Google-Smtp-Source: AGHT+IHwTOdClhtUPbfkNLCqsrkV+DUCP10t3cc3JC0hHLwhlQAS7BqfEhb+YkVABN3l+xlef5DkGsoXndaAdE3b
+X-Received: from vannapurve2.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:43a4])
+ (user=vannapurve job=sendgmr) by 2002:a05:6902:e88:b0:dbd:ea33:cc2 with SMTP
+ id dg8-20020a0569020e8800b00dbdea330cc2mr138415ybb.12.1705038776754; Thu, 11
+ Jan 2024 21:52:56 -0800 (PST)
+Date: Fri, 12 Jan 2024 05:52:46 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: MWH0EPF000971E2:EE_|DM6PR12MB4387:EE_
-X-MS-Office365-Filtering-Correlation-Id: cc54c7fa-301e-43d4-7a26-08dc13026b2c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	b6qJnSQnKoUqEF8chQSMDMyhK+DwVXPCrZSDe4WfvmnfbOzLGYwUrYxkxlt6Roc8FmOLWZSbxgN47V9kscx4NCR88A6KbIVzDQwOlz74jYXraUlAVzoOg8JxDR5VBnJoDFkpAVS4PbJPFDw+QfBTaodLVbWlx2IppK4xUC5LvicBcYQr4L2naOW8QeW5HCGspxdi5E4UFO7yLQVq0DtOx3CIc4vXtixj6UttQUfBbvpqAcTuk3Foe6vSQ8Vz2VEWKD/l0FmcGUFluHQf8+K8FGyhQA90gRRb0qj8eyo41uHbWEOcsYJg4boXL540ZV/TjedsgsVFlAkVaBsfYzCSuX0hlEOzN5fEqpKIoPcDXrPsSxcDudhvK2YWgpNupAOREHAoh3wXsRJDg8piWQrJ7VFMMNv3B0iEe0BDrweOcl8FpR026K10nIjAhlS1rC65jUnDbGSLTQqBMMIIiTk8gR/SbgpVHIKCLpZfh66+YkRqrpXPBNB3y5t+jAVrY0RBoN0MNLR/FBn8JzbV2hodCn7051PuNJFlAGwfgAkZvTRUqgQhe7mMqIdH5OeeOFI2BpKlutjs6hjA+OzO8V9o+kIomEqVpoQ0p20Nr293ZvBh5sR9U4sWb/gQFFYZaYZAGQXw3SEHKO3cpnpRwaxvuXJf/+70k06IkqeYh8MHXrzI30sAbWRFCpi8h3XTf6Qz9f1lCYApAaWoTExnvMoE5oIHn7B0Ql+7AMZ6Vqw0V1eZB4r67MwjgUMIIavbnDBRQxU0KhKZ186JvNFePS09IMCYyovr3IBiqTF2+N1v7V0=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(346002)(396003)(376002)(39860400002)(136003)(230922051799003)(186009)(1800799012)(82310400011)(64100799003)(451199024)(46966006)(40470700004)(36840700001)(6666004)(83380400001)(316002)(47076005)(70206006)(110136005)(54906003)(70586007)(7696005)(16526019)(426003)(26005)(1076003)(336012)(2616005)(81166007)(44832011)(8936002)(8676002)(40480700001)(40460700003)(82740400003)(36756003)(356005)(4326008)(5660300002)(86362001)(36860700001)(7416002)(30864003)(41300700001)(478600001)(2906002)(36900700001)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2024 00:07:08.7144
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cc54c7fa-301e-43d4-7a26-08dc13026b2c
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	MWH0EPF000971E2.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4387
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.43.0.275.g3460e3d667-goog
+Message-ID: <20240112055251.36101-1-vannapurve@google.com>
+Subject: [RFC V1 0/5] x86: CVMs: Align memory conversions to 2M granularity
+From: Vishal Annapurve <vannapurve@google.com>
+To: x86@kernel.org, linux-kernel@vger.kernel.org
+Cc: pbonzini@redhat.com, rientjes@google.com, bgardon@google.com, 
+	seanjc@google.com, erdemaktas@google.com, ackerleytng@google.com, 
+	jxgao@google.com, sagis@google.com, oupton@google.com, peterx@redhat.com, 
+	vkuznets@redhat.com, dmatlack@google.com, pgonda@google.com, 
+	michael.roth@amd.com, kirill@shutemov.name, thomas.lendacky@amd.com, 
+	dave.hansen@linux.intel.com, linux-coco@lists.linux.dev, 
+	chao.p.peng@linux.intel.com, isaku.yamahata@gmail.com, andrew.jones@linux.dev, 
+	corbet@lwn.net, hch@lst.de, m.szyprowski@samsung.com, bp@suse.de, 
+	rostedt@goodmis.org, iommu@lists.linux.dev, 
+	Vishal Annapurve <vannapurve@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-To support nested translation, the parent domain is allocated with flag
-IOMMU_HWPT_ALLOC_NEST_PARENT, and stores information of the v1 page table
-for stage 2 (i.e. GPA->SPA), whereas the child domain stores information
-of the GCR3 root pointer table for stage 1 (i.e. GVA->GPA).
+Goal of this series is aligning memory conversion requests from CVMs to
+huge page sizes to allow better host side management of guest memory and
+optimized page table walks.
 
-Modify the current driver to handle the domain allocation with type
-IOMMU_DOMAIN_NESTED. Also, when allocating the child domain (with the
-parent domain is specified), keeps track the parent using the struct
-protection_domain.parent.
+This patch series is partially tested and needs more work, I am seeking
+feedback from wider community before making further progress.
 
-Note that current implementation requires AMD IOMMU GCR3TRPMode feature,
-which program DTE[GCR3 Table Root Pointer] with the GPA provided by the
-guest via struct iommu_hwpt_amd_v2, which is passed as a parameter of
-the struct iommu_ops.domain_alloc_user().
+Background
+=====================
+Confidential VMs(CVMs) support two types of guest memory ranges:
+1) Private Memory: Intended to be consumed/modified only by the CVM.
+2) Shared Memory: visible to both guest/host components, used for
+non-trusted IO.
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/Makefile          |  2 +-
- drivers/iommu/amd/amd_iommu.h       | 10 +++
- drivers/iommu/amd/amd_iommu_types.h |  6 ++
- drivers/iommu/amd/iommu.c           | 96 ++++++++++++++++++++++++++---
- drivers/iommu/amd/nested.c          | 75 ++++++++++++++++++++++
- 5 files changed, 181 insertions(+), 8 deletions(-)
- create mode 100644 drivers/iommu/amd/nested.c
+Guest memfd [1] support is set to be merged upstream to handle guest private
+memory isolation from host usersapace. Guest memfd approach allows following
+setup:
+* private memory backed using the guest memfd file which is not accessible
+  from host userspace.
+* Shared memory backed by tmpfs/hugetlbfs files that are accessible from
+  host userspace.
 
-diff --git a/drivers/iommu/amd/Makefile b/drivers/iommu/amd/Makefile
-index f454fbb1569e..447cb6bb48eb 100644
---- a/drivers/iommu/amd/Makefile
-+++ b/drivers/iommu/amd/Makefile
-@@ -1,3 +1,3 @@
- # SPDX-License-Identifier: GPL-2.0-only
--obj-$(CONFIG_AMD_IOMMU) += iommu.o init.o quirks.o io_pgtable.o io_pgtable_v2.o
-+obj-$(CONFIG_AMD_IOMMU) += iommu.o init.o quirks.o io_pgtable.o io_pgtable_v2.o nested.o
- obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += debugfs.o
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 4118129f4a24..bb25d7c3bff5 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -7,6 +7,7 @@
- #ifndef AMD_IOMMU_H
- #define AMD_IOMMU_H
- 
-+#include <uapi/linux/iommufd.h>
- #include <linux/iommu.h>
- 
- #include "amd_iommu_types.h"
-@@ -182,4 +183,13 @@ void amd_iommu_domain_set_pgtable(struct protection_domain *domain,
- struct dev_table_entry *get_dev_table(struct amd_iommu *iommu);
- 
- extern bool amd_iommu_snp_en;
-+
-+/* NESTED */
-+struct protection_domain *to_pdomain(struct iommu_domain *dom);
-+bool amd_iommu_domain_is_nested(struct protection_domain *pdom);
-+struct iommu_domain *
-+amd_iommu_nested_domain_alloc(struct device *dev, unsigned int type, u32 flags,
-+			      struct iommu_hwpt_amd_v2 *hwpt,
-+			      struct iommu_domain *parent);
-+
- #endif
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index f8baa8d88832..db77b050a496 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -110,6 +110,8 @@
- #define FEATURE_PASMAX_MASK	(0x1FULL << FEATURE_PASMAX_SHIFT)
- 
- /* Extended Feature 2 Bits */
-+#define FEATURE_GCR3TRPMODE	BIT_ULL(3)
-+
- #define FEATURE_SNPAVICSUP_SHIFT	5
- #define FEATURE_SNPAVICSUP_MASK		(0x07ULL << FEATURE_SNPAVICSUP_SHIFT)
- #define FEATURE_SNPAVICSUP_GAM(x) \
-@@ -535,6 +537,7 @@ struct amd_irte_ops;
- 
- struct gcr3_tbl_info {
- 	u64	*gcr3_tbl;	/* Guest CR3 table */
-+	u64	trp_gpa;	/* Guest CR3 TRP GPA for nested domain */
- 	int	glx;		/* Number of levels for GCR3 table */
- 	u32	pasid_cnt;	/* Track attached PASIDs */
- 	bool	giov;		/* Track DTE[GIOV] */
-@@ -569,6 +572,9 @@ struct protection_domain {
- 	bool dirty_tracking;	/* dirty tracking is enabled in the domain */
- 	unsigned dev_cnt;	/* devices assigned to this domain */
- 	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
-+	struct protection_domain *parent; /* Nested parent domain */
-+	u16 guest_paging_mode;	/* Guest paging mode */
-+	u16 guest_domain_id;	/* Guest domain ID */
- };
- 
- /*
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 134f4af921dc..51716fa5ccb5 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -77,11 +77,16 @@ struct iommu_cmd {
- 
- struct kmem_cache *amd_iommu_irq_cache;
- 
-+static int amd_iommu_attach_device(struct iommu_domain *dom,
-+				   struct device *dev);
-+
- static void detach_device(struct device *dev);
- 
- static void set_dte_entry(struct amd_iommu *iommu,
- 			  struct iommu_dev_data *dev_data);
- 
-+static void amd_iommu_domain_free(struct iommu_domain *dom);
-+
- /****************************************************************************
-  *
-  * Helper functions
-@@ -191,7 +196,7 @@ static struct amd_iommu *rlookup_amd_iommu(struct device *dev)
- 	return __rlookup_amd_iommu(seg, PCI_SBDF_TO_DEVID(devid));
- }
- 
--static struct protection_domain *to_pdomain(struct iommu_domain *dom)
-+struct protection_domain *to_pdomain(struct iommu_domain *dom)
- {
- 	return container_of(dom, struct protection_domain, domain);
- }
-@@ -2367,8 +2372,9 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
- 	domain->nid = NUMA_NO_NODE;
- 
- 	switch (type) {
--	/* No need to allocate io pgtable ops in passthrough mode */
-+	/* No need to allocate io pgtable ops in passthrough and nested mode */
- 	case IOMMU_DOMAIN_IDENTITY:
-+	case IOMMU_DOMAIN_NESTED:
- 		return domain;
- 	case IOMMU_DOMAIN_DMA:
- 		pgtable = amd_iommu_pgtable;
-@@ -2423,7 +2429,12 @@ static bool amd_iommu_hd_support(struct amd_iommu *iommu)
- 	return iommu && (iommu->features & FEATURE_HDSUP);
- }
- 
--static struct iommu_domain *do_iommu_domain_alloc(unsigned int type,
-+static const struct iommu_domain_ops nested_domain_ops = {
-+	.attach_dev = amd_iommu_attach_device,
-+	.free = amd_iommu_domain_free,
-+};
-+
-+struct iommu_domain *do_iommu_domain_alloc(unsigned int type,
- 						  struct device *dev, u32 flags)
- {
- 	bool dirty_tracking = flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
-@@ -2454,7 +2465,10 @@ static struct iommu_domain *do_iommu_domain_alloc(unsigned int type,
- 	if (iommu) {
- 		domain->domain.type = type;
- 		domain->domain.pgsize_bitmap = iommu->iommu.ops->pgsize_bitmap;
--		domain->domain.ops = iommu->iommu.ops->default_domain_ops;
-+		if (type == IOMMU_DOMAIN_NESTED)
-+			domain->domain.ops = &nested_domain_ops;
-+		else
-+			domain->domain.ops = iommu->iommu.ops->default_domain_ops;
- 
- 		if (dirty_tracking)
- 			domain->domain.dirty_ops = &amd_dirty_ops;
-@@ -2474,18 +2488,86 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned int type)
- 	return domain;
- }
- 
-+static int udata_to_iommu_hwpt_amd_v2(const struct iommu_user_data *user_data,
-+				       struct iommu_hwpt_amd_v2 *hwpt)
-+{
-+	if (!user_data)
-+		return -EINVAL;
-+
-+	if (user_data->type != IOMMU_HWPT_DATA_AMD_V2)
-+		return -EOPNOTSUPP;
-+
-+	return iommu_copy_struct_from_user(hwpt, user_data,
-+					   IOMMU_HWPT_DATA_AMD_V2,
-+					   __reserved);
-+}
-+
-+static bool check_nested_support(u32 flags)
-+{
-+	if (!(flags & IOMMU_HWPT_ALLOC_NEST_PARENT))
-+		return true;
-+
-+	if (!check_feature(FEATURE_GT) ||
-+	    !check_feature(FEATURE_GIOSUP) ||
-+	    !check_feature2(FEATURE_GCR3TRPMODE))
-+		return false;
-+
-+	return true;
-+}
-+
-+static u32 amd_iommu_hwpt_supported_flags =
-+	IOMMU_HWPT_ALLOC_DIRTY_TRACKING |
-+	IOMMU_HWPT_ALLOC_NEST_PARENT;
-+
- static struct iommu_domain *
- amd_iommu_domain_alloc_user(struct device *dev, u32 flags,
- 			    struct iommu_domain *parent,
- 			    const struct iommu_user_data *user_data)
--
- {
-+	struct iommu_domain *dom;
-+	struct iommu_dev_data *dev_data;
- 	unsigned int type = IOMMU_DOMAIN_UNMANAGED;
-+	bool nested_parent = flags & IOMMU_HWPT_ALLOC_NEST_PARENT;
-+
-+	if (parent) {
-+		int ret;
-+		struct iommu_hwpt_amd_v2 hwpt;
-+
-+		if (parent->ops != amd_iommu_ops.default_domain_ops)
-+			return ERR_PTR(-EINVAL);
-+
-+		ret = udata_to_iommu_hwpt_amd_v2(user_data, &hwpt);
-+		if (ret)
-+			return ERR_PTR(ret);
- 
--	if ((flags & ~IOMMU_HWPT_ALLOC_DIRTY_TRACKING) || parent || user_data)
-+		return amd_iommu_nested_domain_alloc(dev, type, flags,
-+						     &hwpt, parent);
-+	}
-+
-+	/* Check supported flags */
-+	if ((flags & ~amd_iommu_hwpt_supported_flags) ||
-+	    !check_nested_support(flags))
- 		return ERR_PTR(-EOPNOTSUPP);
- 
--	return do_iommu_domain_alloc(type, dev, flags);
-+	dev_data = dev_iommu_priv_get(dev);
-+
-+	/*
-+	 * When allocated nested parent domain, the device may already
-+	 * have been attached to a domain. For example, a device is already
-+	 * attached to the domain allocated by VFIO, which contains GPA->SPA mapping.
-+	 * In such case, return reference to the same domain.
-+	 */
-+	if (dev_data->domain && nested_parent) {
-+		pr_debug("%s: Found exist: protection domain id=%#x\n",
-+			 __func__, dev_data->domain->id);
-+		dom = &dev_data->domain->domain;
-+	} else {
-+		dom = do_iommu_domain_alloc(type, dev, flags);
-+		if (!dom)
-+			return ERR_PTR(-ENOMEM);
-+	}
-+
-+	return dom;
- }
- 
- static void amd_iommu_domain_free(struct iommu_domain *dom)
-diff --git a/drivers/iommu/amd/nested.c b/drivers/iommu/amd/nested.c
-new file mode 100644
-index 000000000000..1addcb21a38c
---- /dev/null
-+++ b/drivers/iommu/amd/nested.c
-@@ -0,0 +1,75 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (C) 2023 Advanced Micro Devices, Inc.
-+ * Author: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-+ */
-+
-+#define pr_fmt(fmt)     "AMD-Vi: " fmt
-+#define dev_fmt(fmt)    pr_fmt(fmt)
-+
-+#include <linux/iommu.h>
-+#include <uapi/linux/iommufd.h>
-+
-+#include "amd_iommu.h"
-+
-+bool amd_iommu_domain_is_nested(struct protection_domain *pdom)
-+{
-+	return (pdom && pdom->parent != NULL);
-+}
-+
-+static int nested_gcr3_update(struct iommu_hwpt_amd_v2 *hwpt,
-+			      struct protection_domain *pdom,
-+			      struct protection_domain *ppdom,
-+			      struct device *dev)
-+{
-+	struct pci_dev *pdev;
-+	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
-+
-+	pdev = to_pci_dev(dev);
-+	if (!pdev)
-+		return -EINVAL;
-+
-+	/* Note: Currently only support GCR3TRPMode with nested translation */
-+	if (!check_feature2(FEATURE_GCR3TRPMODE))
-+		return -EOPNOTSUPP;
-+
-+	pdom->parent = ppdom;
-+	pdom->guest_domain_id = hwpt->gdom_id;
-+	pdom->guest_paging_mode = hwpt->flags.guest_paging_mode;
-+
-+	dev_data->gcr3_info.trp_gpa = hwpt->gcr3;
-+	dev_data->gcr3_info.glx = hwpt->flags.glx;
-+	dev_data->gcr3_info.giov = hwpt->flags.giov;
-+
-+	return 0;
-+}
-+
-+struct iommu_domain *do_iommu_domain_alloc(unsigned int type,
-+						  struct device *dev, u32 flags);
-+struct iommu_domain *
-+amd_iommu_nested_domain_alloc(struct device *dev, unsigned int type, u32 flags,
-+			      struct iommu_hwpt_amd_v2 *hwpt,
-+			      struct iommu_domain *parent)
-+{
-+	int ret;
-+	struct iommu_domain *dom;
-+	struct protection_domain *pdom;
-+
-+	pr_debug("%s: Allocating nested domain with parent domid=%#x\n",
-+		 __func__, to_pdomain(parent)->id);
-+
-+	dom = do_iommu_domain_alloc(IOMMU_DOMAIN_NESTED, dev, flags);
-+	if (IS_ERR(dom))
-+		return ERR_PTR(-ENOMEM);
-+
-+	pdom = to_pdomain(dom);
-+	ret = nested_gcr3_update(hwpt, pdom, to_pdomain(parent), dev);
-+	if (ret)
-+		goto err_out;
-+
-+	return dom;
-+
-+err_out:
-+	iommu_domain_free(dom);
-+	return ERR_PTR(-EINVAL);
-+}
+Userspace VMM needs to register two backing stores for all of the guest
+memory ranges:
+* HVA for shared memory
+* Guest memfd ranges for private memory
+
+KVM keeps track of shared/private guest memory ranges that can be updated at
+runtime using IOCTLs. This allows KVM to back the guest memory using either HVA
+(shared) or guest memfd file offsets (private) based on the attributes of the
+guest memory ranges.
+
+In this setup, there is possibility of "double allocation" i.e. scenarios where
+both shared and private memory backing stores mapped to the same guest memory
+ranges have memory allocated.
+
+Guest issues an hypercall to convert the memory types which is forwarded by KVM
+to the host userspace.
+Userspace VMM is supposed to handle conversion as follows:
+1) Private to shared conversion:
+  * Update guest memory attributes for the range to be shared using KVM
+    supported IOCTLs.
+    - While handling this IOCTL, KVM will unmap EPT/NPT entries corresponding
+      to the guest memory being converted.
+  * Unback the guest memfd range.
+2) Shared to private conversion:
+  * Update guest memory attributes for the range to be private using KVM
+    supported IOCTLs.
+    - While handling this IOCTL, KVM will unmap EPT/NPT entries corresponding
+      to the guest memory being converted.
+  * Unback the shared memory file.
+
+Note that unbacking needs to be done for both kinds of conversions in order to
+avoid double allocation.
+
+Problem
+=====================
+CVMs can convert memory between these two types at 4K granularity. Conversion
+done at 4K granularity causes issues when using guest memfd support
+with hugetlb/Hugepage backed guest private memory:
+1) Hugetlb fs doesn't allow freeing subpage ranges when punching holes,
+causing all the private to shared memory conversions to result in double
+allocation.
+2) Even if a new fs is implemented for guest memfd that allows splitting
+hugepages, punching holes at 4K will cause:
+   - loss of vmemmmap optimization [2]
+   - more memory for EPT/NPT entries and extra pagetable walks for guest
+     side accesses.
+   - Shared memory mappings to consume more host pagetable entries and
+     extra pagetalble walks for host side access.
+   - Higher number of conversions with additional overhead of VM exits
+     serviced by host userspace.
+
+Memory conversion scenarios in the guest that are of major concern:
+- SWIOTLB area conversion early during boot.
+   * dma_map_* API invocations for CVMs result in using bounce buffers
+     from SWIOTLB region which is already marked as shared.
+- Device drivers allocating memory using dma_alloc_* APIs at runtime
+  that bypass SWIOTLB.
+
+Proposal
+=====================
+To counter above issues, this series proposes following:
+1) Use boot time allocated SWIOTLB pools for all DMA memory allocated
+using dma_alloc_* APIs.
+2) Increase memory allocated at boot for SWIOTLB from 6% to 8% for CVMs.
+3) Enable dynamic SWIOTLB [4] by default for CVMs so that SWITLB can be
+scaled up as needed.
+4) Ensure SWIOTLB pool is 2MB aligned so that all the conversions happen at
+2M granularity once during boot.
+5) Add a check to ensure all conversions happen at 2M granularity.
+
+** This series leaves out some of the conversion sites which might not
+be 2M aligned but should be easy to fix once the approach is finalized. **
+
+1G alignment for conversion:
+* Using 1G alignment may cause over-allocated SWIOTLB buffers but might
+  be acceptable for CVMs depending on more considerations.
+* It might be challenging to use 1G aligned conversion in OVMF. 2M
+  alignment should be achievable with OVMF changes [3].
+
+Alternatives could be:
+1) Separate hugepage aligned DMA pools setup by individual device drivers in
+case of CVMs.
+
+[1] https://lore.kernel.org/linux-mips/20231105163040.14904-1-pbonzini@redhat.com/
+[2] https://www.kernel.org/doc/html/next/mm/vmemmap_dedup.html
+[3] https://github.com/tianocore/edk2/pull/3784
+[4] https://lore.kernel.org/lkml/20230908080031.GA7848@lst.de/T/
+
+Vishal Annapurve (5):
+  swiotlb: Support allocating DMA memory from SWIOTLB
+  swiotlb: Allow setting up default alignment of SWIOTLB region
+  x86: CVMs: Enable dynamic swiotlb by default for CVMs
+  x86: CVMs: Allow allocating all DMA memory from SWIOTLB
+  x86: CVMs: Ensure that memory conversions happen at 2M alignment
+
+ arch/x86/Kconfig             |  2 ++
+ arch/x86/kernel/pci-dma.c    |  2 +-
+ arch/x86/mm/mem_encrypt.c    |  8 ++++++--
+ arch/x86/mm/pat/set_memory.c |  6 ++++--
+ include/linux/swiotlb.h      | 22 ++++++----------------
+ kernel/dma/direct.c          |  4 ++--
+ kernel/dma/swiotlb.c         | 17 ++++++++++++-----
+ 7 files changed, 33 insertions(+), 28 deletions(-)
+
 -- 
-2.34.1
+2.43.0.275.g3460e3d667-goog
 
