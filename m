@@ -1,44 +1,44 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B39205C905
-	for <iommu@lists.linux.dev>; Fri, 12 Jan 2024 05:53:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C763C5C918
+	for <iommu@lists.linux.dev>; Fri, 12 Jan 2024 05:53:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--vannapurve.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="yWYsYYmo"
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-5f8ffd9fb8aso76656117b3.3
-        for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 21:53:06 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tTMbSBjR"
+Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-dbf3d102221so2919984276.1
+        for <iommu@lists.linux.dev>; Thu, 11 Jan 2024 21:53:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1705038786; x=1705643586; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1705038789; x=1705643589; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=lgNchHS++prR/h3S2HHor+FAVbRKiDRX1egmYCByUjw=;
-        b=yWYsYYmo5HWmoVhvQRn1kgLhfHNbzfbmKk+D+bEblRK0oAMzQ1A0ixhvr7U6vq4cd1
-         6lBLQIzi4ilAR/hFNy051JkBSCSmyCzEXg5sLv3eKm8DZdlhw3V97t3BnfZboEI6OPD+
-         unEPIXhI21hrnF3BVVrr1TOKWHbvOtotl2ntR+JQGHeDLbA1GnvpULbmM2clqjLW1Evw
-         OW5KtRydXTgSww7etX05RN2w6FVpwYlAX9QGRJjk90w84Lig8HsGZKCw0c8r/BG6mR7E
-         do7NNA3j0xG7y2qP6Rjb4hmOoXnet1GPPiM7eghlVtp9ZD6hE+1w3+LnT6QItyWPP9DN
-         1fJw==
+        bh=3jQidOKSMiiXlthXl3syuEmjTW2A6fx8EoTn/KG4frI=;
+        b=tTMbSBjRrP4IeDqQDUWRiMotQ1FDjzVruufNxCo8sKp3ZNj3JvbPf6naWAjsLA0l/l
+         WHjlY4Yx5JXrlznksmmrgyUxj9jZNLV6ue9nNeQ7AgAslEH5aiR4HPU0Z04Baiqc0jME
+         myJFRQCQA+EDba6UxPg2MyRfjx7H/tOjr4ZAJOZISZc8awpTDLS2NmbWUuPnPd48t/gi
+         RvEaLmSilky8RXgsvzfaHuUGLJ47ZI6rpCK+/LHHZ48UiFIVNM1m1U8uSdu00prr8dvt
+         UKawUhYJ1nWKX04VWfHFW0filn6F693KetEheJmhxW/XIF3CqdksZQv0nzBc9ZSOjtsX
+         8IiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705038786; x=1705643586;
+        d=1e100.net; s=20230601; t=1705038789; x=1705643589;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lgNchHS++prR/h3S2HHor+FAVbRKiDRX1egmYCByUjw=;
-        b=qKX45nQRB8qx2tWqIwAR58sMiLjeXlV9wqo0Ba1HrMZECFzomcvGil1kY6367ZhZIT
-         EzRMS/QZEt2P7JKCYkgXnMK55DLqzux3UWtsJzKtG7v9llkw2NrUoBN4Arf9wpRplNIt
-         UeKe681tzupdWUgHglw9k6X+BT8sypjYHwFVsRERL1/g0BOwMrITwpsJQzJAEJRHQdVn
-         hYLUjJz3pPZIqXuU3RXVb5ZV/o6Ap9UkWRBXsK9W3/ryCKMmN6fmSRV05Or0DwMlqSaf
-         if/vaguCF1gSItXs/mBGtaaFe582IpQKQ5BUU2eTrY3G4X57LdX9bfSGAM288zFocQrP
-         UqYA==
-X-Gm-Message-State: AOJu0YzH9/r9Qe3PJFgQPexN841/m98zXAKYLrJP6jHKR8PnI2/7W/J0
-	RMQ3Z4Z5alSCHH2TL3P4juzLXi4so3RPPOD8B0gfu5M=
-X-Google-Smtp-Source: AGHT+IHuDn+1jvl5KUmKWmyATHHZ4Buh8nYfelV4isyKtZemvMzYuO4uYtBD4xP91JEeDNYKvgt54kGnaY4QS31H
+        bh=3jQidOKSMiiXlthXl3syuEmjTW2A6fx8EoTn/KG4frI=;
+        b=uR9GZGcgIPGVcVNCSfXQm/n6IO8vpSEWHAXOzogcRrjzqpCssJi/MnH4qibjqtSFyi
+         2GOtpfOajNS1AlqunceCHNLBhySW0cQr8At+uBGA9hgz5KBa0b5p8Mk25rCoEGJhuUuX
+         /DXicdrMxZbRfBiAp1MX2bFvWJfYGqadL1+1UM845g/TAq8ljO6VsbI71OX6ZlkPHP67
+         ZiJZPlyE1EGFK14Il9eZTCxsdiPa0ShtoCG9eo145lc1qe8a3fVM/wxSj0mxj0X2+sLE
+         P1R9yv8h4qP4c2cmwJpbBEHuZWky74ovQX2ZFv/OQy1AF/miLrg1fLuPWJ0nduzpMdKF
+         bl/A==
+X-Gm-Message-State: AOJu0YyN2YgR/4BW1vccTXG6BkISA17DRTOuV5MDVt68845URoLLOMK/
+	bGRxFgM/jc7sorgtQE1Y6UPX5Dgoflx8N89maMOMX18=
+X-Google-Smtp-Source: AGHT+IHKtqhJvPuX99AmjEPzIekAgNij/RFYGidlE8shwCwScd2W0RcK+2eNPVzJk4tEIt4roua9lsBYL0xT4CjS
 X-Received: from vannapurve2.c.googlers.com ([fda3:e722:ac3:cc00:20:ed76:c0a8:43a4])
- (user=vannapurve job=sendgmr) by 2002:a05:6902:1081:b0:dbd:b6cd:92cf with
- SMTP id v1-20020a056902108100b00dbdb6cd92cfmr144861ybu.11.1705038785851; Thu,
- 11 Jan 2024 21:53:05 -0800 (PST)
-Date: Fri, 12 Jan 2024 05:52:48 +0000
+ (user=vannapurve job=sendgmr) by 2002:a05:6902:168c:b0:dbd:4683:21da with
+ SMTP id bx12-20020a056902168c00b00dbd468321damr154755ybb.8.1705038789001;
+ Thu, 11 Jan 2024 21:53:09 -0800 (PST)
+Date: Fri, 12 Jan 2024 05:52:49 +0000
 In-Reply-To: <20240112055251.36101-1-vannapurve@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -48,8 +48,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20240112055251.36101-1-vannapurve@google.com>
 X-Mailer: git-send-email 2.43.0.275.g3460e3d667-goog
-Message-ID: <20240112055251.36101-3-vannapurve@google.com>
-Subject: [RFC V1 2/5] swiotlb: Allow setting up default alignment of SWIOTLB region
+Message-ID: <20240112055251.36101-4-vannapurve@google.com>
+Subject: [RFC V1 3/5] x86: CVMs: Enable dynamic swiotlb by default for CVMs
 From: Vishal Annapurve <vannapurve@google.com>
 To: x86@kernel.org, linux-kernel@vger.kernel.org
 Cc: pbonzini@redhat.com, rientjes@google.com, bgardon@google.com, 
@@ -64,83 +64,42 @@ Cc: pbonzini@redhat.com, rientjes@google.com, bgardon@google.com,
 	Vishal Annapurve <vannapurve@google.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Allow adjusting alignment of SWIOTLB memory. CVMs can use this framework
-to align the shared memory regions as needed.
+CVMs used SWIOTLB for non-trusted IO using dma_map_* APIs. This series
+will ensure that dma_alloc_* API to also allocate from SWIOTLB pools.
+Initial size of SWIOTLB pool is decided using heuristics and has been
+working with CVM usecases so far.
+
+It's better to allow SWIOTLB to scale up on demand rather than keeping
+the size fixed to avoid failures with possibly increased usage of
+SWIOTLB with dma_alloc_* APIs allocating from SWIOTLB pools. This should
+also help in future with more devices getting used from CVMs for
+non-trusted IO.
 
 Signed-off-by: Vishal Annapurve <vannapurve@google.com>
 ---
- include/linux/swiotlb.h |  5 +++++
- kernel/dma/swiotlb.c    | 12 +++++++++---
- 2 files changed, 14 insertions(+), 3 deletions(-)
+ arch/x86/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 058901313405..450bd82cdb9f 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -206,6 +206,7 @@ size_t swiotlb_max_mapping_size(struct device *dev);
- bool is_swiotlb_allocated(void);
- bool is_swiotlb_active(struct device *dev);
- void __init swiotlb_adjust_size(unsigned long size);
-+void __init swiotlb_adjust_alignment(unsigned long alignment);
- phys_addr_t default_swiotlb_base(void);
- phys_addr_t default_swiotlb_limit(void);
- #else
-@@ -247,6 +248,10 @@ static inline void swiotlb_adjust_size(unsigned long size)
- {
- }
- 
-+void __init swiotlb_adjust_alignment(unsigned long alignment)
-+{
-+}
-+
- static inline phys_addr_t default_swiotlb_base(void)
- {
- 	return 0;
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index a056d2f8b9ee..eeab0607a028 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -97,6 +97,7 @@ static struct io_tlb_mem io_tlb_default_mem;
- #endif	/* CONFIG_SWIOTLB_DYNAMIC */
- 
- static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
-+static unsigned long default_alignment = PAGE_SIZE;
- static unsigned long default_nareas;
- 
- /**
-@@ -223,6 +224,11 @@ void __init swiotlb_adjust_size(unsigned long size)
- 	pr_info("SWIOTLB bounce buffer size adjusted to %luMB", size >> 20);
- }
- 
-+void __init swiotlb_adjust_alignment(unsigned long alignment)
-+{
-+	default_alignment = alignment;
-+}
-+
- void swiotlb_print_info(void)
- {
- 	struct io_tlb_pool *mem = &io_tlb_default_mem.defpool;
-@@ -315,7 +321,7 @@ static void __init *swiotlb_memblock_alloc(unsigned long nslabs,
- 		unsigned int flags,
- 		int (*remap)(void *tlb, unsigned long nslabs))
- {
--	size_t bytes = PAGE_ALIGN(nslabs << IO_TLB_SHIFT);
-+	size_t bytes = ALIGN(nslabs << IO_TLB_SHIFT, default_alignment);
- 	void *tlb;
- 
- 	/*
-@@ -324,9 +330,9 @@ static void __init *swiotlb_memblock_alloc(unsigned long nslabs,
- 	 * memory encryption.
- 	 */
- 	if (flags & SWIOTLB_ANY)
--		tlb = memblock_alloc(bytes, PAGE_SIZE);
-+		tlb = memblock_alloc(bytes, default_alignment);
- 	else
--		tlb = memblock_alloc_low(bytes, PAGE_SIZE);
-+		tlb = memblock_alloc_low(bytes, default_alignment);
- 
- 	if (!tlb) {
- 		pr_warn("%s: Failed to allocate %zu bytes tlb structure\n",
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 1566748f16c4..035c8a022c4c 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -884,6 +884,7 @@ config INTEL_TDX_GUEST
+ 	select X86_MEM_ENCRYPT
+ 	select X86_MCE
+ 	select UNACCEPTED_MEMORY
++	select SWIOTLB_DYNAMIC
+ 	help
+ 	  Support running as a guest under Intel TDX.  Without this support,
+ 	  the guest kernel can not boot or run under TDX.
+@@ -1534,6 +1535,7 @@ config AMD_MEM_ENCRYPT
+ 	select ARCH_HAS_CC_PLATFORM
+ 	select X86_MEM_ENCRYPT
+ 	select UNACCEPTED_MEMORY
++	select SWIOTLB_DYNAMIC
+ 	help
+ 	  Say yes to enable support for the encryption of system memory.
+ 	  This requires an AMD processor that supports Secure Memory
 -- 
 2.43.0.275.g3460e3d667-goog
 
