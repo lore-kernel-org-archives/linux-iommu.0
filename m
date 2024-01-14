@@ -1,109 +1,133 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8406623BC
-	for <iommu@lists.linux.dev>; Sun, 14 Jan 2024 13:13:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8487B23BD;
+	Sun, 14 Jan 2024 14:36:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UStKnDil"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1705238006; x=1736774006;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=H1A4/qffyCpAVBjkSooDaLmud7wmIzZtJsCV04rZkQE=;
-  b=UStKnDilTLIvxyPoajOFx+Th129kBs4YYquNw0rn6Vr8ufWYuJaLc7lr
-   AY0mBPF7NhIDJAfsPYHW4RJaK8yoG6Xgh2Pz/wJ+CnlClOL3gcrCnm8/v
-   LWc3de5oXYpkZJDAj8Zq4Mmabnj7JBUuJYGJ+yy8cg1z5gFu6qEnAiNnr
-   Kw8lDzk12TvPC3hLTkKecJYAkfanZ0O9h7bTT+zrvG1CvhkhY6xvpKt0y
-   e9qNsjOn9KqH3Is2MNzwlhwb+gabOBBhZwH3TBDhm9Vw+/LVzx4V5zi6J
-   MFsjGFTEtFd3X/JakHtRhSrLxmuoDxTPb5Zvqf/Wp5heyLNNQDFnNe7j2
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10952"; a="20936365"
-X-IronPort-AV: E=Sophos;i="6.04,194,1695711600"; 
-   d="scan'208";a="20936365"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2024 05:13:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10952"; a="786838999"
-X-IronPort-AV: E=Sophos;i="6.04,194,1695711600"; 
-   d="scan'208";a="786838999"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.17]) ([10.254.215.17])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2024 05:13:22 -0800
-Message-ID: <293a5643-ef36-4a34-9b6b-0f5b47061c2e@linux.intel.com>
-Date: Sun, 14 Jan 2024 21:13:19 +0800
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qFZabdzF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFAB7C433C7;
+	Sun, 14 Jan 2024 14:36:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1705242966;
+	bh=2PtpfqJ1Dl46SH4Umiey2RyYGOKuTs63MJB/h3a4M90=;
+	h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+	b=qFZabdzF5pOjQs656gKVK0gH+mgP3pEf+4EeaIwow7aSlieh5afrXBG1eX3Uumz5k
+	 1onuNWe2M3kKUT2hexzcOiDFUslI4eY+tOdszeL3Nk/5WwKAbZKCaJK+i7k5jYXYSX
+	 JZGwJ3tzaACb7BgdKoY49gVTrvo4u+kaPFjuhiXWdUshnJjAyBETSRZWVC394EGdJ+
+	 u2/5kyNEchoXCUKcLt8mMKgrnYpu7AOJhoqlOMtrvoI6P2bzoXBFZkDNz3MpLpdclx
+	 XQQEUWeX6Gx69nGH18ADbUIY9fzZryD05CVtinNaisoE7G0rPjdSrxrEz+zm4sAbKM
+	 0Sb7NlSrBz/3A==
+From: Kalle Valo <kvalo@kernel.org>
+To: Baochen Qiang <quic_bqiang@quicinc.com>
+Cc: James Prestwood <prestwoj@gmail.com>,  <linux-wireless@vger.kernel.org>,
+  <ath11k@lists.infradead.org>,
+    David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux.dev
+Subject: Re: ath11k and vfio-pci support
+References: <adcb785e-4dc7-4c4a-b341-d53b72e13467@gmail.com>
+	<8734v5zhol.fsf@kernel.org>
+	<87fa5220-6fd9-433d-879b-c55ac67a0748@gmail.com>
+	<87r0ipcn7j.fsf@kernel.org>
+	<356e0b05-f396-4ad7-9b29-c492b54af834@gmail.com>
+	<26119c3f-9012-47bb-948e-7e976d4773a7@quicinc.com>
+	<87mstccmk6.fsf@kernel.org>
+	<df9fd970-5af3-468c-b1f1-18f91215cf44@gmail.com>
+	<8734v4auc4.fsf@kernel.org>
+	<e8878979-1f3f-4635-a716-9ac381c617d9@gmail.com>
+	<285b84d0-229c-4c83-a7d6-4c3c23139597@quicinc.com>
+	<4607fb37-8227-49a3-9e8c-10c9b117ec7b@gmail.com>
+	<3d22a730-aee5-4f2a-9ddc-b4b5bd4d62fe@quicinc.com>
+Date: Sun, 14 Jan 2024 16:36:02 +0200
+In-Reply-To: <3d22a730-aee5-4f2a-9ddc-b4b5bd4d62fe@quicinc.com> (Baochen
+	Qiang's message of "Sun, 14 Jan 2024 20:37:03 +0800")
+Message-ID: <87il3w7zjh.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.2 (gnu/linux)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, iommu@lists.linux.dev,
- linux-kselftest@vger.kernel.org, virtualization@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/6] IOMMUFD: Deliver IO page faults to user space
-To: Joel Granados <j.granados@samsung.com>
-References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
- <CGME20240112215609eucas1p1eedeeee8e1cca2c935b41816a50f56f6@eucas1p1.samsung.com>
- <20240112215606.36sth724y6zcj43k@localhost>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240112215606.36sth724y6zcj43k@localhost>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-On 2024/1/13 5:56, Joel Granados wrote:
-> On Thu, Oct 26, 2023 at 10:49:24AM +0800, Lu Baolu wrote:
->> Hi folks,
->>
->> This series implements the functionality of delivering IO page faults to
->> user space through the IOMMUFD framework for nested translation. Nested
->> translation is a hardware feature that supports two-stage translation
->> tables for IOMMU. The second-stage translation table is managed by the
->> host VMM, while the first-stage translation table is owned by user
->> space. This allows user space to control the IOMMU mappings for its
->> devices.
->>
->> When an IO page fault occurs on the first-stage translation table, the
->> IOMMU hardware can deliver the page fault to user space through the
->> IOMMUFD framework. User space can then handle the page fault and respond
->> to the device top-down through the IOMMUFD. This allows user space to
->> implement its own IO page fault handling policies.
->>
->> User space indicates its capability of handling IO page faults by
->> setting the IOMMU_HWPT_ALLOC_IOPF_CAPABLE flag when allocating a
->> hardware page table (HWPT). IOMMUFD will then set up its infrastructure
->> for page fault delivery. On a successful return of HWPT allocation, the
->> user can retrieve and respond to page faults by reading and writing to
->> the file descriptor (FD) returned in out_fault_fd.
->>
->> The iommu selftest framework has been updated to test the IO page fault
->> delivery and response functionality.
->>
->> This series is based on the latest implementation of nested translation
->> under discussion [1] and the page fault handling framework refactoring in
->> the IOMMU core [2].
->>
->> The series and related patches are available on GitHub: [3]
->>
->> [1]https://lore.kernel.org/linux-iommu/20230921075138.124099-1-yi.l.liu@intel.com/
->> [2]https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
->> [3]https://github.com/LuBaolu/intel-iommu/commits/iommufd-io-pgfault-delivery-v2
-> I was working with this branch that included Yi Liu's
-> wip/iommufd_nesting branch. Now Yi Lui has updated his work in this post
-> https://lore.kernel.org/all/20240102143834.146165-1-yi.l.liu@intel.com.
-> Is there an updated version of the page fault work that is rebased on
-> top of Liu's new version?
+Baochen Qiang <quic_bqiang@quicinc.com> writes:
 
-Yes. I am preparing the new version and will post it for discussion
-after the merge window.
+>>> Strange that still fails. Are you now seeing this error in your
+>>> host or your Qemu? or both?
+>>> Could you share your test steps? And if you can share please be as
+>>> detailed as possible since I'm not familiar with passing WLAN
+>>> hardware to a VM using vfio-pci.
+>>
+>> Just in Qemu, the hardware works fine on my host machine.
+>> I basically follow this guide to set it up, its written in the
+>> context of GPUs/libvirt but the host setup is exactly the same. By
+>> no means do you need to read it all, once you set the vfio-pci.ids
+>> and see your unclaimed adapter you can stop:
+>> https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF
+>> In short you should be able to set the following host kernel options
+>> and reboot (assuming your motherboard/hardware is compatible):
+>> intel_iommu=on iommu=pt vfio-pci.ids=17cb:1103
+>> Obviously change the device/vendor IDs to whatever ath11k hw you
+>> have. Once the host is rebooted you should see your wlan adapter as
+>> UNCLAIMED, showing the driver in use as vfio-pci. If not, its likely
+>> your motherboard just isn't compatible, the device has to be in its
+>> own IOMMU group (you could try switching PCI ports if this is the
+>> case).
+>> I then build a "kvm_guest.config" kernel with the driver/firmware
+>> for ath11k and boot into that with the following Qemu options:
+>> -enable-kvm -device -vfio-pci,host=<PCI address>
+>> If it seems easier you could also utilize IWD's test-runner which
+>> handles launching the Qemu kernel automatically, detecting any
+>> vfio-devices and passes them through and mounts some useful host
+>> folders into the VM. Its actually a very good general purpose tool
+>> for kernel testing, not just for IWD:
+>> https://git.kernel.org/pub/scm/network/wireless/iwd.git/tree/doc/test-runner.txt
+>> Once set up you can just run test-runner with a few flags and you'll
+>> boot into a shell:
+>> ./tools/test-runner -k <kernel-image> --hw --start /bin/bash
+>> Please reach out if you have questions, thanks for looking into
+>> this.
+>
+> Thanks for these details. I reproduced this issue by following your guide.
+>
+> Seems the root cause is that the MSI vector assigned to WCN6855 in
+> qemu is different with that in host. In my case the MSI vector in qemu
+> is [Address: fee00000  Data: 0020] while in host it is [Address:
+> fee00578 Data: 0000]. So in qemu ath11k configures MSI vector
+> [Address: fee00000 Data: 0020] to WCN6855 hardware/firmware, and
+> firmware uses that vector to fire interrupts to host/qemu. However
+> host IOMMU doesn't know that vector because the real vector is
+> [Address: fee00578  Data: 0000], as a result host blocks that
+> interrupt and reports an error, see below log:
+>
+> [ 1414.206069] DMAR: DRHD: handling fault status reg 2
+> [ 1414.206081] DMAR: [INTR-REMAP] Request device [02:00.0] fault index
+> 0x0 [fault reason 0x25] Blocked a compatibility format interrupt
+> request
+> [ 1414.210334] DMAR: DRHD: handling fault status reg 2
+> [ 1414.210342] DMAR: [INTR-REMAP] Request device [02:00.0] fault index
+> 0x0 [fault reason 0x25] Blocked a compatibility format interrupt
+> request
+> [ 1414.212496] DMAR: DRHD: handling fault status reg 2
+> [ 1414.212503] DMAR: [INTR-REMAP] Request device [02:00.0] fault index
+> 0x0 [fault reason 0x25] Blocked a compatibility format interrupt
+> request
+> [ 1414.214600] DMAR: DRHD: handling fault status reg 2
+>
+> While I don't think there is a way for qemu/ath11k to get the real MSI
+> vector from host, I will try to read the vfio code to check further.
+> Before that, to unblock you, a possible hack is to hard code the MSI
+> vector in qemu to the same as in host, on condition that the MSI
+> vector doesn't change.
 
-Best regards,
-baolu
+Baochen, awesome that you were able to debug this further. Now we at
+least know what's the problem.
+
+I'll add David Woodhouse and the iommu list in hopes that they could
+give us ideas how to solve this. Full thread here:
+
+https://lore.kernel.org/all/adcb785e-4dc7-4c4a-b341-d53b72e13467@gmail.com/
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
