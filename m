@@ -1,187 +1,210 @@
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46F782C68E
-	for <iommu@lists.linux.dev>; Mon, 15 Jan 2024 12:05:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.163.252])
-	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4TD9Lz0VXbzNlC3;
-	Mon, 15 Jan 2024 19:45:47 +0800 (CST)
-Received: from kwepemd100006.china.huawei.com (unknown [7.221.188.47])
-	by mail.maildlp.com (Postfix) with ESMTPS id 40844180071;
-	Mon, 15 Jan 2024 19:46:30 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemd100006.china.huawei.com
- (7.221.188.47) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.1258.28; Mon, 15 Jan
- 2024 19:46:29 +0800
-From: Zhang Zekun <zhangzekun11@huawei.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<jgg@ziepe.ca>, <nicolinc@nvidia.com>, <mshavit@google.com>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-CC: <zhangzekun11@huawei.com>
-Subject: [PATCH] iommu/arm-smmu-v3: Add a threshold to avoid potential soft lockup
-Date: Mon, 15 Jan 2024 19:40:40 +0800
-Message-ID: <20240115114040.6279-1-zhangzekun11@huawei.com>
-X-Mailer: git-send-email 2.17.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 427D410795
+	for <iommu@lists.linux.dev>; Mon, 15 Jan 2024 14:33:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="xcWZocRL"
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-50edf4f4aa4so4896e87.0
+        for <iommu@lists.linux.dev>; Mon, 15 Jan 2024 06:33:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1705329233; x=1705934033; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3074nJdUxwGh74if2bgwl0WhHx2TaEYyKeVYnV6RTR0=;
+        b=xcWZocRLI3k5HRa5K+3rEdQrq0+AayP1RsS2nS0DXHVP6zOFUdOf4aH8kPFrV3m/tj
+         vdJXXi3VdYiW3NvgnyTryd5M0YpKUMMsbzKg69fuhrLkwOI/32pIqI60oZun3Cx4zdHG
+         /RxMn+8EK7IewV6Qdk3TufKQsj45fZuN2XtNVhmxdTKAsz3LYwX+xuyWYpdCNCcUm79C
+         kZd55cg4okY7lTX4xv/m0SqAqt956dNJ7ID+D35mO4EAg58XEiO6Vx5y7yIQtIl59d9l
+         SkB7mOd5dw9JH7vnMOUL/z0/mtcTQg8GgdLVBaVK42k4tW2qOoIfuiUS0AoFXnCe+q2b
+         +FKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705329233; x=1705934033;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3074nJdUxwGh74if2bgwl0WhHx2TaEYyKeVYnV6RTR0=;
+        b=r8s28kCy4/L3uFa3yCW9zKinV+s/mDJaYO2tKHuI5fKAyg77dl5aefi2GzN8VFYeS1
+         qOu6NsjXkEJUFUdigLKVXsozh30IWhx9/doJ/OWGxx+7MwUTc1+9t6PRpjrQW5Y5cZwt
+         UQoIXJAjemtzYAbK6C4UwoWzCy8c7jYtypb8hSlOjoh7z4hUy4+6NIDrSrKkM6RrL3rh
+         QtoiJP8/+Jz99jI+qF00bM+FM6RQv3abtq1aYpI0qaJX6CcmK96+SE05HOH3TIdFOFCe
+         jH3xaoOiswtx3t/saSsIvSLhHSP/UKqtwVO2oG9N5W7G6c0KDI0uNRciSADSRopV5E3M
+         Ua8g==
+X-Gm-Message-State: AOJu0YzFF2eXnosSi65nUinGPCsV12ArbPl0f7L9dveUVdJsfc0qXyL1
+	gCQi5s0DvPb2WaI+MUJGaI5Zr7/DDKZf
+X-Google-Smtp-Source: AGHT+IGLIGAhu4rPYAOpIuokHbTPnSZ1UJer5j1S0DwMiyemD4L6ZtwfZq6sG9jJNINcYk8Ix1hLhg==
+X-Received: by 2002:a05:6512:3b09:b0:50e:78fa:5193 with SMTP id f9-20020a0565123b0900b0050e78fa5193mr424562lfv.2.1705329233127;
+        Mon, 15 Jan 2024 06:33:53 -0800 (PST)
+Received: from google.com (185.83.140.34.bc.googleusercontent.com. [34.140.83.185])
+        by smtp.gmail.com with ESMTPSA id i6-20020adff306000000b003377e22ffdcsm12038621wro.85.2024.01.15.06.33.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Jan 2024 06:33:52 -0800 (PST)
+Date: Mon, 15 Jan 2024 14:33:50 +0000
+From: Sebastian Ene <sebastianene@google.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
+	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
+	suzuki.poulose@arm.com, oliver.upton@linux.dev,
+	yuzenghui@huawei.com, smostafa@google.com, dbrazdil@google.com,
+	ryan.roberts@arm.com, linux-arm-kernel@lists.infradead.org,
+	kvmarm@lists.linux.dev, iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 12/45] KVM: arm64: pkvm: Unify
+ pkvm_pkvm_teardown_donated_memory()
+Message-ID: <ZaVCTuM7KDSWqqaE@google.com>
+References: <20230201125328.2186498-1-jean-philippe@linaro.org>
+ <20230201125328.2186498-13-jean-philippe@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemd100006.china.huawei.com (7.221.188.47)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20230201125328.2186498-13-jean-philippe@linaro.org>
 
-The commit d5afb4b47e13 ("iommu/arm-smmu-v3: Fix soft lockup triggered
-by arm_smmu_mm_invalidate_range") has fix a soft lockup problem when
-running SVA case, but code paths from iommu_unmap and dma APIs still
-remain unfixed which could also cause potential soft lockup.
+On Wed, Feb 01, 2023 at 12:52:56PM +0000, Jean-Philippe Brucker wrote:
 
-When cmdq is quite busy and don't have much space for batch submitting
-cmds, and size passed to __arm_smmu_tlb_inv_range() is large (1G in this
-case), the following softlockup is triggered.
+Hi Jean,
 
-WARN: soft lockup - CPU#71 stuck for 12s! [qemu-kvm:1303]
-...
-Call trace:
- dump_backtrace+0x0/0x200
- show_stack+0x20/0x30
- dump_stack+0xf0/0x138
- watchdog_print_info+0x48/0x54
- watchdog_process_before_softlockup+0x9c/0xa0
- watchdog_timer_fn+0x1ac/0x2f0
- __run_hrtimer+0x98/0x2b4
- __hrtimer_run_queues+0xc0/0x13c
- hrtimer_interrupt+0x150/0x3e4
- arch_timer_handler_phys+0x3c/0x50
- handle_percpu_devid_irq+0x90/0x1f4
- __handle_domain_irq+0x84/0xfc
- gic_handle_irq+0x88/0x2b0
- el1_irq+0xb8/0x140
- arm_smmu_cmdq_issue_cmdlist+0x184/0x5f4
- __arm_smmu_tlb_inv_range+0x114/0x22c
- arm_smmu_tlb_inv_walk+0x88/0x120
- __arm_lpae_unmap+0x188/0x2c0
- __arm_lpae_unmap+0x104/0x2c0
- arm_lpae_unmap+0x68/0x80
- arm_smmu_unmap+0x24/0x40
- __iommu_unmap+0xd8/0x210
- iommu_unmap+0x44/0x9c
-...
+> Tearing down donated memory requires clearing the memory, pushing the
+> pages into the reclaim memcache, and moving the mapping into the host
+> stage-2. Keep these operations in a single function.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+>  arch/arm64/kvm/hyp/include/nvhe/mem_protect.h |  2 +
+>  arch/arm64/kvm/hyp/nvhe/mem_protect.c         |  3 +-
+>  arch/arm64/kvm/hyp/nvhe/pkvm.c                | 50 +++++++------------
+>  3 files changed, 22 insertions(+), 33 deletions(-)
+> 
+> diff --git a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> index d4f4ffbb7dbb..021825aee854 100644
+> --- a/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> +++ b/arch/arm64/kvm/hyp/include/nvhe/mem_protect.h
+> @@ -86,6 +86,8 @@ void reclaim_guest_pages(struct pkvm_hyp_vm *vm, struct kvm_hyp_memcache *mc);
+>  
+>  void *pkvm_map_donated_memory(unsigned long host_va, size_t size);
+>  void pkvm_unmap_donated_memory(void *va, size_t size);
+> +void pkvm_teardown_donated_memory(struct kvm_hyp_memcache *mc, void *addr,
+> +				  size_t dirty_size);
+>  
+>  static __always_inline void __load_host_stage2(void)
+>  {
+> diff --git a/arch/arm64/kvm/hyp/nvhe/mem_protect.c b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> index 410361f41e38..cad5736026d5 100644
+> --- a/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> +++ b/arch/arm64/kvm/hyp/nvhe/mem_protect.c
+> @@ -314,8 +314,7 @@ void reclaim_guest_pages(struct pkvm_hyp_vm *vm, struct kvm_hyp_memcache *mc)
+>  	addr = hyp_alloc_pages(&vm->pool, 0);
+>  	while (addr) {
+>  		memset(hyp_virt_to_page(addr), 0, sizeof(struct hyp_page));
+> -		push_hyp_memcache(mc, addr, hyp_virt_to_phys);
+> -		WARN_ON(__pkvm_hyp_donate_host(hyp_virt_to_pfn(addr), 1));
+> +		pkvm_teardown_donated_memory(mc, addr, 0);
+>  		addr = hyp_alloc_pages(&vm->pool, 0);
+>  	}
+>  }
+> diff --git a/arch/arm64/kvm/hyp/nvhe/pkvm.c b/arch/arm64/kvm/hyp/nvhe/pkvm.c
+> index a3711979bbd3..c51a8a592849 100644
+> --- a/arch/arm64/kvm/hyp/nvhe/pkvm.c
+> +++ b/arch/arm64/kvm/hyp/nvhe/pkvm.c
+> @@ -602,27 +602,28 @@ void *pkvm_map_donated_memory(unsigned long host_va, size_t size)
+>  	return va;
+>  }
+>  
+> -static void __unmap_donated_memory(void *va, size_t size)
+> +void pkvm_teardown_donated_memory(struct kvm_hyp_memcache *mc, void *va,
+> +				  size_t dirty_size)
+>  {
+> -	WARN_ON(__pkvm_hyp_donate_host(hyp_virt_to_pfn(va),
+> -				       PAGE_ALIGN(size) >> PAGE_SHIFT));
+> -}
+> +	size_t size = max(PAGE_ALIGN(dirty_size), PAGE_SIZE);
+>  
+> -void pkvm_unmap_donated_memory(void *va, size_t size)
+> -{
+>  	if (!va)
+>  		return;
+>  
+> -	memset(va, 0, size);
+> -	__unmap_donated_memory(va, size);
+> +	memset(va, 0, dirty_size);
+> +
+> +	if (mc) {
+> +		for (void *start = va; start < va + size; start += PAGE_SIZE)
+> +			push_hyp_memcache(mc, start, hyp_virt_to_phys);
+> +	}
+> +
+> +	WARN_ON(__pkvm_hyp_donate_host(hyp_virt_to_pfn(va),
+> +				       size >> PAGE_SHIFT));
+>  }
+>  
+> -static void unmap_donated_memory_noclear(void *va, size_t size)
+> +void pkvm_unmap_donated_memory(void *va, size_t size)
+>  {
+> -	if (!va)
+> -		return;
+> -
+> -	__unmap_donated_memory(va, size);
+> +	pkvm_teardown_donated_memory(NULL, va, size);
+>  }
+>  
+>  /*
+> @@ -759,18 +760,6 @@ int __pkvm_init_vcpu(pkvm_handle_t handle, struct kvm_vcpu *host_vcpu,
+>  	return ret;
+>  }
+>  
+> -static void
+> -teardown_donated_memory(struct kvm_hyp_memcache *mc, void *addr, size_t size)
+> -{
+> -	size = PAGE_ALIGN(size);
+> -	memset(addr, 0, size);
+> -
+> -	for (void *start = addr; start < addr + size; start += PAGE_SIZE)
+> -		push_hyp_memcache(mc, start, hyp_virt_to_phys);
+> -
+> -	unmap_donated_memory_noclear(addr, size);
+> -}
+> -
+>  int __pkvm_teardown_vm(pkvm_handle_t handle)
+>  {
+>  	size_t vm_size, last_ran_size;
+> @@ -813,19 +802,18 @@ int __pkvm_teardown_vm(pkvm_handle_t handle)
+>  		vcpu_mc = &hyp_vcpu->vcpu.arch.pkvm_memcache;
+>  		while (vcpu_mc->nr_pages) {
+>  			addr = pop_hyp_memcache(vcpu_mc, hyp_phys_to_virt);
+> -			push_hyp_memcache(mc, addr, hyp_virt_to_phys);
+> -			unmap_donated_memory_noclear(addr, PAGE_SIZE);
+> +			pkvm_teardown_donated_memory(mc, addr, 0);
 
-The basic idea is use the actual granual size instead of PAGE_SIZE used
-in SVA scenarios to calculate a threshold. When smmu without
-ARM_SMMU_FEAT_RANGE_INV need to invalid a TLB range larger than the
-threshold, we use the granularity of asid or vmid to invalid the TLB. The
-calculation logic is similar to calculate 'bits_per_level' when allocating
-io-pgtable, which could also been applyed to calculate the existing
-threshold in SVA scenarios. Besides, change the comment "MAX_TLBI_OPS" to
-"MAX_DVM_OPS", because it is has been renamed in commit ec1c3b9ff160
-("arm64: tlbflush: Rename MAX_TLBI_OPS")
+Here we probably need to pass PAGE_SIZE as an argument instead of "0"
+to make sure that we clear out the content of the page before tearing it
+down.
 
-Signed-off-by: Zhang Zekun <zhangzekun11@huawei.com>
----
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 11 +--------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 23 +++++++++++++++----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 10 ++++++++
- 3 files changed, 30 insertions(+), 14 deletions(-)
+>  		}
+>  
+> -		teardown_donated_memory(mc, hyp_vcpu, sizeof(*hyp_vcpu));
+> +		pkvm_teardown_donated_memory(mc, hyp_vcpu, sizeof(*hyp_vcpu));
+>  	}
+>  
+>  	last_ran_size = pkvm_get_last_ran_size();
+> -	teardown_donated_memory(mc, hyp_vm->kvm.arch.mmu.last_vcpu_ran,
+> -				last_ran_size);
+> +	pkvm_teardown_donated_memory(mc, hyp_vm->kvm.arch.mmu.last_vcpu_ran,
+> +				     last_ran_size);
+>  
+>  	vm_size = pkvm_get_hyp_vm_size(hyp_vm->kvm.created_vcpus);
+> -	teardown_donated_memory(mc, hyp_vm, vm_size);
+> +	pkvm_teardown_donated_memory(mc, hyp_vm, vm_size);
+>  	hyp_unpin_shared_mem(host_kvm, host_kvm + 1);
+>  	return 0;
+>  
+> -- 
+> 2.39.0
+>
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 05722121f00e..164a218a4d41 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -203,15 +203,6 @@ static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
- 	}
- }
- 
--/*
-- * Cloned from the MAX_TLBI_OPS in arch/arm64/include/asm/tlbflush.h, this
-- * is used as a threshold to replace per-page TLBI commands to issue in the
-- * command queue with an address-space TLBI command, when SMMU w/o a range
-- * invalidation feature handles too many per-page TLBI commands, which will
-- * otherwise result in a soft lockup.
-- */
--#define CMDQ_MAX_TLBI_OPS		(1 << (PAGE_SHIFT - 3))
--
- static void arm_smmu_mm_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
- 						struct mm_struct *mm,
- 						unsigned long start,
-@@ -228,7 +219,7 @@ static void arm_smmu_mm_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
- 	 */
- 	size = end - start;
- 	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_RANGE_INV)) {
--		if (size >= CMDQ_MAX_TLBI_OPS * PAGE_SIZE)
-+		if (size >= CMDQ_MAX_TLBI_OPS(PAGE_SIZE) * PAGE_SIZE)
- 			size = 0;
- 	} else {
- 		if (size == ULONG_MAX)
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 0ffb1cf17e0b..cecccba17511 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1997,6 +1997,14 @@ static void arm_smmu_tlb_inv_page_nosync(struct iommu_iotlb_gather *gather,
- static void arm_smmu_tlb_inv_walk(unsigned long iova, size_t size,
- 				  size_t granule, void *cookie)
- {
-+	struct arm_smmu_domain *smmu_domain = cookie;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+
-+	if (!(smmu->features & ARM_SMMU_FEAT_RANGE_INV) &&
-+	    size >= CMDQ_MAX_TLBI_OPS(granule) * granule) {
-+		arm_smmu_tlb_inv_context(cookie);
-+		return;
-+	}
- 	arm_smmu_tlb_inv_range_domain(iova, size, granule, false, cookie);
- }
- 
-@@ -2502,13 +2510,20 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain,
- 				struct iommu_iotlb_gather *gather)
- {
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	size_t size = gather->end - gather->start + 1;
-+	size_t granule = gather->pgsize;
- 
--	if (!gather->pgsize)
-+	if (!granule)
- 		return;
- 
--	arm_smmu_tlb_inv_range_domain(gather->start,
--				      gather->end - gather->start + 1,
--				      gather->pgsize, true, smmu_domain);
-+	if (!(smmu->features & ARM_SMMU_FEAT_RANGE_INV) &&
-+	    size >= CMDQ_MAX_TLBI_OPS(granule) * granule) {
-+		arm_smmu_tlb_inv_context(smmu_domain);
-+		return;
-+	}
-+	arm_smmu_tlb_inv_range_domain(gather->start, size,
-+				      granule, true, smmu_domain);
- }
- 
- static phys_addr_t
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 65fb388d5173..a9a7376c0437 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -431,6 +431,16 @@ struct arm_smmu_ste {
- #define MSI_IOVA_BASE			0x8000000
- #define MSI_IOVA_LENGTH			0x100000
- 
-+/*
-+ * Similar to MAX_DVM_OPS in arch/arm64/include/asm/tlbflush.h, this is used
-+ * as a threshold to replace per-page TLBI commands to issue in the command
-+ * queue with an address-space TLBI command, when SMMU w/o a range invalidation
-+ * feature handles too many per-page TLBI commands, which will otherwise result
-+ * in a soft lockup.
-+ */
-+
-+#define CMDQ_MAX_TLBI_OPS(granule)    (1 << (ilog2(granule) - 3))
-+
- enum pri_resp {
- 	PRI_RESP_DENY = 0,
- 	PRI_RESP_FAIL = 1,
--- 
-2.17.1
-
+Thanks,
+Seb
