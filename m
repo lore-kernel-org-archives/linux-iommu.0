@@ -1,107 +1,102 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.31])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2D1618048
-	for <iommu@lists.linux.dev>; Mon, 15 Jan 2024 17:59:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37D9F210F8
+	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 01:12:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="d3Xy418x"
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-67fa018c116so48404716d6.3
-        for <iommu@lists.linux.dev>; Mon, 15 Jan 2024 09:59:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1705341540; x=1705946340; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=1wGaOr22tAz8ZsKDr+cBOsYsgD9Gp6tmTN5qVEUIqRw=;
-        b=d3Xy418xe2wAFTIlHMqP28uPFvfjMD6i+bR98rgUvPY6ljHyGccZ+GnjoPL1qh54BU
-         QkQUN3C16npToH7xs8+wdafojFZuIFWISExIMnn1byNpM40A/k8lj3wFkDin+izCaiM7
-         /nawWUmrh+6P3J24MIGaKzwFPPZvR0f7TJPTAAqO+7i9+QENBAqGnliq/yirlxio+rHa
-         ffKcVMd9fgHZhroefA/w2ZtvRf9a5Orj9QTysz4z6m+sL0G1SW+tQTYpfyhKqroC+95g
-         4uqqAHi3npK6JKSn2yzIgT+7Flnw6KhTiAhPQG/Ozwv1pXG9imuWfJpNu0uvCeG3LHQ/
-         bziA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705341540; x=1705946340;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1wGaOr22tAz8ZsKDr+cBOsYsgD9Gp6tmTN5qVEUIqRw=;
-        b=mXEaOWKNRrYua5GeU6IGbeqBP9yf6kCUXCCEsfzmlbVjcmnUtjNo7r2CCtSzEvud2q
-         51r29ogsRgUe58uIsjAytMUS3Y3og4LBGROdfYL0ku1cDnF7PP7+NIz6yq6SFThvgs2F
-         hEtoEFeWfZR4LxDQVEncw61hcSi5wAlOQ6BDBtcNCVi4AiA2YyROkzuoNVdNNvdKO7hL
-         CfvkWCvSLrMSwhlDkV2z/mheZmfW6GpsxOQX2mbB6y7x6nKKM7K0gO8H23+C8lNxqrj7
-         udNb6DHIznJ4AvB778qc5BSJfukZsfY8clinKkEsSSlkFOzWhkGl66DWc/fRBZ5eWzxH
-         EunA==
-X-Gm-Message-State: AOJu0YxfWmzLw2vQcwATy+f7HJw0SXRWwVuT3fSFpawQNT9r7hm63lOl
-	+inFQkvtcgvlrjXOboOYicEC3qgPdmk+9g==
-X-Google-Smtp-Source: AGHT+IH3qvjmHpS/20mUo+xR0imhTBslJ6twopYzo9p1d1flQYlhOLrwJcWYbmGWgldNtbhvIF7Uzw==
-X-Received: by 2002:a05:6214:518c:b0:67f:d236:5c0f with SMTP id kl12-20020a056214518c00b0067fd2365c0fmr7596556qvb.90.1705341540583;
-        Mon, 15 Jan 2024 09:59:00 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id d10-20020a0cfe8a000000b0067f454b5307sm3452291qvs.108.2024.01.15.09.59.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Jan 2024 09:59:00 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rPREh-003u0V-Kj;
-	Mon, 15 Jan 2024 13:58:59 -0400
-Date: Mon, 15 Jan 2024 13:58:59 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"virtualization@lists.linux-foundation.org" <virtualization@lists.linux-foundation.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 4/6] iommufd: Deliver fault messages to user space
-Message-ID: <20240115175859.GC50608@ziepe.ca>
-References: <20231026024930.382898-1-baolu.lu@linux.intel.com>
- <20231026024930.382898-5-baolu.lu@linux.intel.com>
- <b822096cc3b441309d99832c587be25a@huawei.com>
- <20240115164723.GB50608@ziepe.ca>
- <b1663110e1ca4301834f403270357bea@huawei.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NJDrr41b"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1705367572; x=1736903572;
+  h=from:to:cc:subject:date:message-id;
+  bh=6G6DWi+fWxdzJGxa8imBUVBT7V5kya5gX30l1HNS6xI=;
+  b=NJDrr41bes/yuK7UE88XRKfC1J2tCS4OrML/tOLlBRdtTdx+AxoFpnLb
+   SD85sWIJsGtfDxdNEpnxhnA2palFzwJVDWGpjfZEYCO+6YUFeYOjjr8y4
+   EcpXvJI8lRRcwlqt9S7+dux/ElJa6KG+zSVgkn9eENDU+ZQ3lRYDKsxHI
+   TYZQ/tGzPCrYCNB0Yn9fQbqHnAuYXAjiZsWuGK1kGzwwpikmbjB35ZPSD
+   1zRZC27BXr9PB7tGsTPoe0w4wCJm0pyl4QFp4p7rykpwMVUa7lQgrbfOj
+   Lve7G/SDaHhMmSCfRCfB4J7Lr5vCqnbPn3edUWY9Y0KAMMQN+JDVJHO7K
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10954"; a="464004374"
+X-IronPort-AV: E=Sophos;i="6.04,197,1695711600"; 
+   d="scan'208";a="464004374"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jan 2024 17:12:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10954"; a="733427227"
+X-IronPort-AV: E=Sophos;i="6.04,197,1695711600"; 
+   d="scan'208";a="733427227"
+Received: from kechen-optiplex-9020.bj.intel.com ([10.238.157.62])
+  by orsmga003.jf.intel.com with ESMTP; 15 Jan 2024 17:12:50 -0800
+From: Tina Zhang <tina.zhang@intel.com>
+To: iommu@lists.linux.dev
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Tina Zhang <tina.zhang@intel.com>
+Subject: [PATCH 00/11] iommu/vt-d: Remove superfluous IOMMU IOTLB invalidations
+Date: Tue, 16 Jan 2024 09:11:35 +0800
+Message-Id: <20240116011146.18645-1-tina.zhang@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <b1663110e1ca4301834f403270357bea@huawei.com>
 
-On Mon, Jan 15, 2024 at 05:44:13PM +0000, Shameerali Kolothum Thodi wrote:
+This series based on "Share sva" patch-set[1], aims to remove superfluous
+IOMMU IOTLB invalidations in VT-d driver.
 
-> > If it is valid when userspace does read() then it should be valid when
-> > userspace does write() too.
-> > 
-> > It is the only way the kernel can actually match request and response
-> > here.
-> 
-> The kernel currently checks the pasid only if IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID
-> is set.
-> 
-> https://lore.kernel.org/linux-iommu/20200616144712.748818-1-jean-philippe@linaro.org/
-> 
-> > So, I think you have a userspace issue to not provide the right
-> > pasid??
-> 
-> This is not just ARM stall resume case, but for some PCI devices as well as per
-> the above commit log. So do we really need to track this in userspace ?
+In the current VT-d driver, IOMMU IOTLB invalidation commands and
+device-TLB commands are performed per device, which leads to superfluous
+IOTLB invalidations. For example, if there are four devices behind a IOMMU
+are attached to one sva domain (which could be a common case in
+virtualization scenarios where one virtual IOMMU working for all the
+virtual devices), four IOTLB invalidation commands and four device-IOTLB
+invalidation commands will be issued. However, only one IOTLB invalidation
+command and four device-IOTLB invalidation commands are necessary.
+Superfluous IOMMU IOTLB invalidations impact run-time performance.
 
-Yes, these weird HW details should not leak into userspace.
+The first 11 patches of this patch-set are for refactoring:
+1) Retire struct intel_svm_set_dev_pasid and struct intel_svm_dev to
+avoid duplicating code for sva domain.
+2) Reuse intel_iommu_set/remove_dev_pasid functions for both sva domain
+and dmar_domain.
 
-The PASID is required on the read() side, userspace should provide it
-on the write() side. It is trivial for it to do, there is no reason to
-accommodate anything else.
+The last patch removes the superfluous IOMMU IOTLB invalidations.
 
-Alternatively I'm wondering if we should supply a serial number to
-userspace so it can match the request/response instead of relying on
-guessing based on pasid/grpid?
+[1]: https://lore.kernel.org/linux-iommu/ZXgj49cY2PEAwHsB@8bytes.org/
 
-Jason
+
+Change log:
+RFC: https://lore.kernel.org/linux-iommu/20231017032045.114868-1-tina.zhang@intel.com/
+
+Jason Gunthorpe (1):
+  iommu: Add ops->domain_alloc_sva()
+
+Tina Zhang (10):
+  iommu/vt-d: Retire the treatment for revoking PASIDs with pending
+    pgfaults
+  iommu/vt-d: Remove initialization for dynamically heap-allocated
+    rcu_head
+  iommu/vt-d: Refactor intel_svm_set_dev_pasid function
+  iommu/vt-d: Retire struct intel_svm_dev
+  iommu/vt-d: Retire struct intel_svm
+  iommu/vt-d: Use RCU for dev_pasids list updates in
+    set/remove_dev_pasid()
+  iommu/vt-d: Add domain_type_is_sva helper function
+  iommu/vt-d: Reuse intel_iommu_set_dev_pasid function
+  iommu/vt-d: Retire intel_svm_remove_dev_pasid function
+  iommu/vt-d: Remove superfluous IOMMU IOTLB invalidations
+
+ drivers/iommu/intel/iommu.c |  76 ++++++----
+ drivers/iommu/intel/iommu.h |  31 ++--
+ drivers/iommu/intel/svm.c   | 288 ++++++++----------------------------
+ drivers/iommu/iommu-sva.c   |  16 +-
+ include/linux/iommu.h       |   3 +
+ 5 files changed, 134 insertions(+), 280 deletions(-)
+
+-- 
+2.39.3
+
