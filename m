@@ -1,127 +1,133 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECF521CA92
-	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 17:22:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5228B1D6BE
+	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 18:19:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705425736; cv=none; b=rNgtk9cAk012gvygXY1YG+xKmHHig0SXskPXHQ5exBAhrtdbwa+dL/Dex5Yp8CWlKZ0A6niNQMQJKTqoj7gj2PfrY3DBx3FCIZA6PvOt0Ba7F5+coTXguVscw3a/kHmOwN5X3dlewI3oR4zbUFZokvuCQJsDiIx5No8HA1mgWTw=
+	t=1705429148; cv=none; b=fyFh/aNu9vSpX9hPjbhn0C6kq54DGVv4x8u8ghgetl9vdMlapQQE/3mdqER0ACR+hqN6czZC8G8HLB65d4OQPT01Hx44mjYV8ZB8CQpwPQJEhH5V9AxGB/mAehxlYNtVELepPNn80qUzfyctP2vdN9XyQMc+OpNHbKF9RHUQtX4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705425736; c=relaxed/simple;
-	bh=aYK0pXUCQDuWqK9h1FN+gk+wNlGZ4DmYNR3Rcj4LiQM=;
-	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To; b=g6yQBbHlb3nEOVtO2EDzZXoxKOWP6btTJfiIkc/vFaBGwNaMd+TakOh+5XsolI52QlyHorH/Sc5ASSnqnsn3VEnqj7GdkjMut3hRGCOC89f7I+rUTIB5444/z7UNtx1ArZAjRkFnRmfFcAoVcahorKxbMlcn0gywoD2KHqwwPpc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=AnAVyu03; arc=none smtp.client-ip=209.85.160.182
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="AnAVyu03"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-429be9fe952so38207711cf.0
-        for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 09:22:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1705425733; x=1706030533; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5/brWcTdNs+6S2k/yrCHCfUU2lKmPGBcNCKNqgF66R0=;
-        b=AnAVyu03g8T2Ebw2gntEOq+sy3lpz67jFSrsbsqoljt92lY4mXyDhtRt+EQaQgT6lr
-         1rE2PtDQbM/VYe/7YY1G14HPgrj/mif1MerlxrThUyW62MPwkYBEX9nhLabCpri+sduN
-         uOhCYIp0ls2HhzfI7R2ivnqB9dS+O2J/y3WN6mTEC7DsW9A+XYtrqaYOCaKTHuGupv/Z
-         v7An6fIVWNLgo67LZJcWoKF4vQYE7OnKTzQpOLQoIJlo7Ty61G+L70/K4+DdvyFYz6l6
-         pVFUkfG/bXSBhs++mIyjzMw2akI6sAI8Tv09rLGa8vDktmHk7EJb4eCEaXZ5Ec2hP6KE
-         4ZZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705425733; x=1706030533;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5/brWcTdNs+6S2k/yrCHCfUU2lKmPGBcNCKNqgF66R0=;
-        b=JnUtQZpCXaLqHKbRD/h7uVVFOnH7TLtS4i+XRS8/U5jUNAgs9tx10OXfZ0chxDxOz1
-         9C+igpVRyOjpvse4keE3EXS0Z/5Ahvr7TDPVfIHajz4tLDY30YC3s33mx2QzFoS8xaRT
-         Ebq1CB8rIfOIQFe2ERJuVGFPc8V8JKVzrVbKnLIJ4VewyqdclbHlCNYMl7T2yG/aybx3
-         6rcP8JrWRchiUIqU+K+Gz3AjAyo6ZfZLOzpCL8hf2Sgqsx3vOZ7+9RGUu9IimQ+U3Ttr
-         66q5cdvwXMDFIjJCFdI97PVEbfhFKHUrSpO4eJ/esYp7ULkl9CExGg/Df8sTR1k5pCwc
-         baww==
-X-Gm-Message-State: AOJu0YxcmzSJn/PFjH5rZr5NNwLroUHsU5n/wmF0upOiNZ3m7SWPJ7W3
-	RuZMV+U0qMcCEs/kLtMPuQ9jGYC1PnZ3BA==
-X-Google-Smtp-Source: AGHT+IEqX6FBlJcqIURQNWdMB4Pjrd+85tT1vjPWzBCDLpIX3WTAFh+m0WiWcCtR2bz4jTiceZxLKg==
-X-Received: by 2002:ac8:5b8a:0:b0:42a:c2b:adc6 with SMTP id a10-20020ac85b8a000000b0042a0c2badc6mr324639qta.40.1705425733751;
-        Tue, 16 Jan 2024 09:22:13 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id r13-20020a05620a03cd00b0078326257ab7sm3872984qkm.37.2024.01.16.09.22.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jan 2024 09:22:13 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rPn8e-0046hz-P7;
-	Tue, 16 Jan 2024 13:22:12 -0400
-Date: Tue, 16 Jan 2024 13:22:12 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com,
-	Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v4 07/16] iommu/amd: Introduce per-device domain ID to
- workaround potential TLB aliasing issue
-Message-ID: <20240116172212.GG50608@ziepe.ca>
-References: <20231212085224.6985-1-vasant.hegde@amd.com>
- <20231212085224.6985-8-vasant.hegde@amd.com>
- <20240105185549.GM50608@ziepe.ca>
- <d71a2bc0-ed07-53eb-faf1-bd36b6ff6ffb@amd.com>
- <20240111135952.GV50608@ziepe.ca>
- <0215990a-dff1-c6c3-bfa1-c90fa63b0c7b@amd.com>
- <20240112145934.GY50608@ziepe.ca>
- <5d0f4146-fb57-d700-1263-881e2ec3ded7@amd.com>
- <20240116140049.GD50608@ziepe.ca>
- <2fa63c4c-28bb-246d-300b-852db447a3c7@amd.com>
+	s=arc-20240116; t=1705429148; c=relaxed/simple;
+	bh=Rz3I1lH5RQdCuuVTAh4WddpjwYP/Y3NtCklm/FBIa68=;
+	h=Received:Received:Message-ID:Date:MIME-Version:User-Agent:Subject:
+	 Content-Language:To:Cc:References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding; b=adIbT6DCTVYJgvwpiHQJydFW+hygzWFneJ8yloyBvad9b69W61vICeFsuhCZyNGkBHViediZ6RNlLvnTHwGmzROv/OAqDK2nAD0b6zT/YMcSjaDgPSiiVbr5gI4mLzFuCLH6XZLgZ4s4XhHLQBFoV+SHgc/1WlMO1i+5IlXzOXI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 253B52F4;
+	Tue, 16 Jan 2024 10:19:49 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D9D023F5A1;
+	Tue, 16 Jan 2024 10:19:01 -0800 (PST)
+Message-ID: <e08cd3b3-7ce0-47c9-b2f3-28095987f46b@arm.com>
+Date: Tue, 16 Jan 2024 18:19:00 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2fa63c4c-28bb-246d-300b-852db447a3c7@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] iommufd/selftest: Use right iommu_ops for mock device
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240111073213.180020-1-baolu.lu@linux.intel.com>
+ <20240111144840.GW50608@ziepe.ca>
+ <016e052e-8a99-4d60-b864-87c9859953f2@arm.com>
+ <20240111155648.GX50608@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240111155648.GX50608@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jan 16, 2024 at 10:38:16PM +0530, Vasant Hegde wrote:
-> Joson,
+On 11/01/2024 3:56 pm, Jason Gunthorpe wrote:
+> On Thu, Jan 11, 2024 at 03:50:51PM +0000, Robin Murphy wrote:
+>> On 11/01/2024 2:48 pm, Jason Gunthorpe wrote:
+>>> On Thu, Jan 11, 2024 at 03:32:13PM +0800, Lu Baolu wrote:
+>>>> In the iommu probe device path, __iommu_probe_device() gets the iommu_ops
+>>>> for the device from dev->iommu->fwspec if this field has been initialized
+>>>> before probing. Otherwise, it will lookup the global iommu device list
+>>>> and use the iommu_ops of the first iommu device which has no
+>>>> dev->iommu->fwspec. This causes the wrong iommu_ops to be used for the mock
+>>>> device on x86 platforms where dev->iommu->fwspec is not used.
+>>>>
+>>>> Preallocate the fwspec for the mock device so that the right iommu ops can
+>>>> be used.
+>>>
+>>> I really don't like this.
+>>>
+>>> The lifecycle model for fwspec is already a bit confusing. Introducing
+>>> a new case where a driver pre-allocates the fwspec is making it worse,
+>>> not better.
+>>>
+>>> eg iommu_init_device() error unwind will free this allocated fwspec
+>>> leaving the device broken. We don't have the concept of a fwspec that
+>>> is owned by the device, it is really owned by the probing code.
+>>
+>> As I've tried to explain before, this is in fact the correct use of fwspec
+>> as originally designed, i.e. being set up by *bus code* before device_add()
+>> (remember this is not the "IOMMU driver" part of selftest.c).
 > 
+> I understand it was the intention, but it doesn't relaly match how the
+> code works today..
+
+The fact that some things aren't following the pattern, and are broken 
+and problematic in several ways as a result, does not mean that other 
+things that *can* follow the pattern correctly shouldn't.
+
+>> Indeed for perfect symmetry the bus code would free the fwspec after the
+>> corresponding device_del() returns, but there's no harm in that being
+>> factored into iommu_release_device() since the notifier call occurs
+>> sufficiently late in device_del() itself as to make no practical difference.
 > 
-> On 1/16/2024 7:30 PM, Jason Gunthorpe wrote:
-> > On Tue, Jan 16, 2024 at 04:22:16PM +0530, Vasant Hegde wrote:
-> > 
-> >>> The *device* has a list of PASID's that point to iommu_domains. This
-> >>> is stored in an xarray inside the iommu_group.
-> >>>
-> >>> The *iommu_domain* has a list of *devices & PASIDs* that can use this
-> >>> domain for translation (ie that it was attached to)
-> >>
-> >> IIUC domain will be having device/PASID combination something like below:
-> >>
-> >> UNMANAGED_DOMAIN_A with IO Page table :
-> >>   - DevA + PASID zero (say non PASID capable device)
-> >>   - devB + PASID <M>
-> >>   - devC + PASID <N>
-> >>
-> >> We will *not* have same device with different PASID in same domain like
-> >>   - DevB + PASID M
-> >>   - DevB + PASID N
-> >>
-> >> Is that correct?
-> > 
-> > No, all combinations are allowed in the API.
+> IIRC there were issues with leaking the dev_iommu :(
+
+AFAICS there was only an issue introduced last year when some unrelated 
+stuff added an erroneous early return to iommu_release_device() if no 
+group was assigned, thus subtly broke the existing code (and it did end 
+up getting fixed in a roundabout manner a couple of months later).
+
+>> I'm working to get things back to that model (wherein the dev_iommu and
+>> fwspec lifecycles become trivial), just with the slight tweak that these
+>> days it's going to make more sense to have the initialisation factored into
+>> device_add() itself (via iommu_probe_device()), rather than beforehand.
 > 
-> What is the use case for same device with two or more different PASID to point
-> to same page table?
+> I would prefer to simply remove fwspec as I've already shown patches
+> for. You should give some comment on them.
 
-Possibly something with SIOV like techniques where you have two
-virtual functions, each being DMA isolated with PASID, installed into
-the same VM. The guest physical map would be the same iommu_domain but
-the PASID would be different.
+You mean the 1600 lines of churn which did nothing to address any real 
+problem (but did at least acknowledge so in the cover letter)? I thought 
+I had responded to that, but it must have been one of the many drafts 
+which end up getting deleted out of utter exasperation. Needless to say, 
+the response was a NAK. For the last time, any fwspec lifetime issues 
+are a *symptom* of a well-understood problem which exists, and not a 
+problem in themselves. Yes, due to the evolution of the API there is 
+also now some stuff being carried around in iommu_fwspec that really 
+shouldn't need to be, but once probing is properly fixed it will get 
+stripped back down to the useful shared abstraction of stored firmware 
+data that has always been its true spirit. In the meantime, adding a 
+load more complexity to unabstract it and support 2 or 3 different ways 
+of drivers all individually open-coding storage of the same data is not 
+helpful now, and even less helpful in future.
 
-Regardless, the API doesn't require this and I don't want to see
-drivers inventing their own restrictions without a reason..
+> My main complaint is there is no full vision to remove the 'global
+> drivers', we will always have some drivers doing FW parsing in probe
+> and then this different fwspec thing on the side for other drivers.
 
-Jason
+Honestly I would love to see the DMAR/IVRS parsing decoupled a bit more 
+from the Intel/AMD drivers, not least in the hope that it might allow 
+cleaner separation of the IRQ remapping drivers from the IOMMU API 
+drivers. However I don't have my hopes up since in practice it's 
+probably a non-trivial amount of work with no real functional benefit in 
+the end, and it's certainly not something I'd ever have the time or 
+inclination to attempt myself. The SoC drivers doing their own weird 
+things to parse DT bindings will get cleaned up once arch/arm 
+understands groups, and that *is* all on my to-do list (and as for the 
+arm-smmu legacy binding, if it still gets in the way at all by that 
+point I'll be inclined to call it obsolete and drop support).
+
+Thanks,
+Robin.
