@@ -1,114 +1,196 @@
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7A06125B2
-	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 09:23:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FA62168BB
+	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 10:09:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="c1zsH7oI"
-Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-429d2ebdf05so671811cf.0
-        for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 01:23:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1705397018; x=1706001818; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NVDvc2YdfIW5PTsIFTj5H+ZdE03DaXP+CZ34CLDMbmM=;
-        b=c1zsH7oIteHoYsFJeoZUhJSeQxqNM398A+dpq7pITQ3dxS7odHqwT6W7p6/6xQjHla
-         /n5RUSZt7/x6LHy0r705vMHGY8HHdZLMELeXR82v/PcWWw8MwLuFnwkrXl7cF65qmagv
-         KfcWL1GpntJg1hjs4B0vMKqQ5NTxr4pBYvajXrnhewmLASA4jc9EmRcKdaPu/Oo4oN7M
-         Cyk3F9sOTgrnxSh+0YNW4BMXw7ary7wBM/8apC2IgD170yQkHiaJHKizP9F8OxYlvUKe
-         3cwZigcC2hjlUCfgZO2SPPPlWT3X4ilMmegIEye3oJIVjspZroWXBs8HcfOkgLgbqrot
-         haTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705397018; x=1706001818;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NVDvc2YdfIW5PTsIFTj5H+ZdE03DaXP+CZ34CLDMbmM=;
-        b=pj3kN6rpaHODRyakoztpMBQfJSVkKDJ0F0od5IL5nmyV6sJVSwC3W02ZltmppVpoIY
-         SreMfiTSCHVlrCrklhGvEqIXc/g4ElNb8rFb2PWtCXSRwU8V3isYLsAxNjl0WDQnPPmY
-         pq0YaAH39HKnHeB/bZxveLieLC8gEU/2TczGAw1gsg4CF00YvsWvlBMxmFj/TMFNg3aq
-         H5Cii5eWiYtKxCjmoM/UfBHUhx9MPUfBojbssW/COF73li1vDInX6qCwTSaVrSgoJ+B2
-         uKLYqAcvVkCO1ABqyIw8uOh5rgXtrcaYPfeLmzAAucNKeQlXh6HyGn3dU66w7eB10MaG
-         fu9g==
-X-Gm-Message-State: AOJu0Yz1f69noYEchtDK/jVfSImnjHWlrbSHFCUgfU71r/U8dJEd1TnF
-	gwwIZUMiZgAQN1ZwlVa0HneeGQJti1pg0BrtDt2TBdqfIMaN
-X-Google-Smtp-Source: AGHT+IF3z/aE5y9g/FprLplZDYlaZbp+EvR1Ntz9NPLb2uz3IxrTBA37o/iYp1LHId8PZJqVNlOVhOkbij+WsOP0EAU=
-X-Received: by 2002:a05:622a:4d4:b0:429:bd26:1f6 with SMTP id
- q20-20020a05622a04d400b00429bd2601f6mr1100241qtx.3.1705397018366; Tue, 16 Jan
- 2024 01:23:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Hxq29RwQ"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40G7aMuQ028637;
+	Tue, 16 Jan 2024 10:08:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=VvhLdr6mFFAFGIuY+ynkPyjKy181Xyr5JNpzaPSlpkQ=; b=Hx
+	q29RwQBr+6bjeNr9JaIUYEr9ABY95bNbWAC+3RB5WJ0O6TcNt/bZtaL9+1rMRXk7
+	mxEjOSsEaT5Xg/1lqZbxuD0Ix2Kvvk61G0JnVysx13C5JviI/yUWZrxvZ3LLFSZ/
+	291MPwHtJFgK/LqXL8kR/2/aa5wvpcBkD7hWYfWsC00KygEnqN+W2JO7HCEGmhPn
+	cBoejM2VsS7FMhGL2qhUwVQGtD9D1qSMaAMq9htdYiQHMFt5JbAsJugphIbUFCz5
+	Otj982ZiWfu3ro17EnhniXe8jw4W/6ji5Y5AItgk4667Lee+Jh1ZPVe4j+wR64ji
+	pmfbQjWCPV28imyuBRkA==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vnnhmra6t-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 16 Jan 2024 10:08:40 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 40GA8dqs027134
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 16 Jan 2024 10:08:40 GMT
+Received: from [10.231.195.68] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Tue, 16 Jan
+ 2024 02:08:37 -0800
+Message-ID: <543d9d2f-e132-4fdb-8454-68595cd20515@quicinc.com>
+Date: Tue, 16 Jan 2024 18:08:35 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240103175043.GS50406@nvidia.com> <20240106083617.1173871-1-mshavit@google.com>
- <20240106083617.1173871-3-mshavit@google.com> <20240112163651.GA815670@nvidia.com>
-In-Reply-To: <20240112163651.GA815670@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Tue, 16 Jan 2024 17:23:02 +0800
-Message-ID: <CAKHBV26mYYZ78MgRvsCk5S3iRu2Bdgn2XwJ0uyj9vE6cpiq3DQ@mail.gmail.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Add unit tests for arm_smmu_write_entry
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, 
-	linux-arm-kernel@lists.infradead.org, robin.murphy@arm.com, will@kernel.org, 
-	nicolinc@nvidia.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Sat, Jan 13, 2024 at 12:36=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> w=
-rote:
->
-> On Sat, Jan 06, 2024 at 04:36:16PM +0800, Michael Shavit wrote:
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers=
-/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-> > new file mode 100644
-> > index 0000000000000..59ffcafb575fb
-> > --- /dev/null
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
-> > @@ -0,0 +1,329 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include <kunit/test.h>
->
-> I added
->
-> * Copyright 2024 Google LLC.
->
-> Here, let me know if it should be something else
-
-Thanks!
-
->
-> > +     arm_smmu_get_ste_used(ops, ste->data, used_bits.data);
-> > +     pr_debug("STE used bits: ");
-> > +     print_hex_dump_debug(
-> > +             "    ", DUMP_PREFIX_NONE, 16, 8, used_bits.data,
-> > +             ARRAY_SIZE(used_bits.data) * sizeof(*used_bits.data), fal=
-se);
->
-> I fixed up alot of these weird sizeof things all over the three patches
->
-> sizeof(struct arm_smmu_ste) is the correct way to get the size of the
-> HW structure, no need to peek into data. This is because we use the
-> struct as the pointer to an array so the whole struct must be
-> correctly sized.
->
-> ARRAY_SIZE(x.data)*(sizeof(*x.data)) =3D=3D sizeof(x)
->
-> Sadly there is no ARRAY_SIZE_FIELD()
-
-Makes sense.
+User-Agent: Mozilla Thunderbird
+Subject: Re: ath11k and vfio-pci support
+Content-Language: en-US
+To: Alex Williamson <alex.williamson@redhat.com>,
+        Kalle Valo
+	<kvalo@kernel.org>
+CC: James Prestwood <prestwoj@gmail.com>, <linux-wireless@vger.kernel.org>,
+        <ath11k@lists.infradead.org>, David Woodhouse <dwmw2@infradead.org>,
+        <iommu@lists.linux.dev>
+References: <adcb785e-4dc7-4c4a-b341-d53b72e13467@gmail.com>
+ <8734v5zhol.fsf@kernel.org> <87fa5220-6fd9-433d-879b-c55ac67a0748@gmail.com>
+ <87r0ipcn7j.fsf@kernel.org> <356e0b05-f396-4ad7-9b29-c492b54af834@gmail.com>
+ <26119c3f-9012-47bb-948e-7e976d4773a7@quicinc.com>
+ <87mstccmk6.fsf@kernel.org> <df9fd970-5af3-468c-b1f1-18f91215cf44@gmail.com>
+ <8734v4auc4.fsf@kernel.org> <e8878979-1f3f-4635-a716-9ac381c617d9@gmail.com>
+ <285b84d0-229c-4c83-a7d6-4c3c23139597@quicinc.com>
+ <4607fb37-8227-49a3-9e8c-10c9b117ec7b@gmail.com>
+ <3d22a730-aee5-4f2a-9ddc-b4b5bd4d62fe@quicinc.com>
+ <87il3w7zjh.fsf@kernel.org>
+ <20240115104658.0b56bd35.alex.williamson@redhat.com>
+From: Baochen Qiang <quic_bqiang@quicinc.com>
+In-Reply-To: <20240115104658.0b56bd35.alex.williamson@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: F5zuezsJmQD0kiDrR1kv3POnn8LDAfrY
+X-Proofpoint-GUID: F5zuezsJmQD0kiDrR1kv3POnn8LDAfrY
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_02,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ lowpriorityscore=0 clxscore=1011 priorityscore=1501 impostorscore=0
+ bulkscore=0 malwarescore=0 mlxscore=0 mlxlogscore=999 phishscore=0
+ spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2401160079
 
 
->
-> I also made some hacky patches so smmuv3 would compile on x86 and ran
-> this kunit on x86 - looks fine to me
->
-> I'm going to put it in part 3, just because it is new and doesn't have
-> any RB/TB tags like the rest of part 1.
->
-> Thanks,
-> Jason
+
+On 1/16/2024 1:46 AM, Alex Williamson wrote:
+> On Sun, 14 Jan 2024 16:36:02 +0200
+> Kalle Valo <kvalo@kernel.org> wrote:
+> 
+>> Baochen Qiang <quic_bqiang@quicinc.com> writes:
+>>
+>>>>> Strange that still fails. Are you now seeing this error in your
+>>>>> host or your Qemu? or both?
+>>>>> Could you share your test steps? And if you can share please be as
+>>>>> detailed as possible since I'm not familiar with passing WLAN
+>>>>> hardware to a VM using vfio-pci.
+>>>>
+>>>> Just in Qemu, the hardware works fine on my host machine.
+>>>> I basically follow this guide to set it up, its written in the
+>>>> context of GPUs/libvirt but the host setup is exactly the same. By
+>>>> no means do you need to read it all, once you set the vfio-pci.ids
+>>>> and see your unclaimed adapter you can stop:
+>>>> https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF
+>>>> In short you should be able to set the following host kernel options
+>>>> and reboot (assuming your motherboard/hardware is compatible):
+>>>> intel_iommu=on iommu=pt vfio-pci.ids=17cb:1103
+>>>> Obviously change the device/vendor IDs to whatever ath11k hw you
+>>>> have. Once the host is rebooted you should see your wlan adapter as
+>>>> UNCLAIMED, showing the driver in use as vfio-pci. If not, its likely
+>>>> your motherboard just isn't compatible, the device has to be in its
+>>>> own IOMMU group (you could try switching PCI ports if this is the
+>>>> case).
+>>>> I then build a "kvm_guest.config" kernel with the driver/firmware
+>>>> for ath11k and boot into that with the following Qemu options:
+>>>> -enable-kvm -device -vfio-pci,host=<PCI address>
+>>>> If it seems easier you could also utilize IWD's test-runner which
+>>>> handles launching the Qemu kernel automatically, detecting any
+>>>> vfio-devices and passes them through and mounts some useful host
+>>>> folders into the VM. Its actually a very good general purpose tool
+>>>> for kernel testing, not just for IWD:
+>>>> https://git.kernel.org/pub/scm/network/wireless/iwd.git/tree/doc/test-runner.txt
+>>>> Once set up you can just run test-runner with a few flags and you'll
+>>>> boot into a shell:
+>>>> ./tools/test-runner -k <kernel-image> --hw --start /bin/bash
+>>>> Please reach out if you have questions, thanks for looking into
+>>>> this.
+>>>
+>>> Thanks for these details. I reproduced this issue by following your guide.
+>>>
+>>> Seems the root cause is that the MSI vector assigned to WCN6855 in
+>>> qemu is different with that in host. In my case the MSI vector in qemu
+>>> is [Address: fee00000  Data: 0020] while in host it is [Address:
+>>> fee00578 Data: 0000]. So in qemu ath11k configures MSI vector
+>>> [Address: fee00000 Data: 0020] to WCN6855 hardware/firmware, and
+>>> firmware uses that vector to fire interrupts to host/qemu. However
+>>> host IOMMU doesn't know that vector because the real vector is
+>>> [Address: fee00578  Data: 0000], as a result host blocks that
+>>> interrupt and reports an error, see below log:
+>>>
+>>> [ 1414.206069] DMAR: DRHD: handling fault status reg 2
+>>> [ 1414.206081] DMAR: [INTR-REMAP] Request device [02:00.0] fault index
+>>> 0x0 [fault reason 0x25] Blocked a compatibility format interrupt
+>>> request
+>>> [ 1414.210334] DMAR: DRHD: handling fault status reg 2
+>>> [ 1414.210342] DMAR: [INTR-REMAP] Request device [02:00.0] fault index
+>>> 0x0 [fault reason 0x25] Blocked a compatibility format interrupt
+>>> request
+>>> [ 1414.212496] DMAR: DRHD: handling fault status reg 2
+>>> [ 1414.212503] DMAR: [INTR-REMAP] Request device [02:00.0] fault index
+>>> 0x0 [fault reason 0x25] Blocked a compatibility format interrupt
+>>> request
+>>> [ 1414.214600] DMAR: DRHD: handling fault status reg 2
+>>>
+>>> While I don't think there is a way for qemu/ath11k to get the real MSI
+>>> vector from host, I will try to read the vfio code to check further.
+>>> Before that, to unblock you, a possible hack is to hard code the MSI
+>>> vector in qemu to the same as in host, on condition that the MSI
+>>> vector doesn't change.
+>>
+>> Baochen, awesome that you were able to debug this further. Now we at
+>> least know what's the problem.
+> 
+> It's an interesting problem, I don't think we've seen another device
+> where the driver reads the MSI register in order to program another
+> hardware entity to match the MSI address and data configuration.
+> 
+> When assigning a device, the host and guest use entirely separate
+> address spaces for MSI interrupts.  When the guest enables MSI, the
+> operation is trapped by the VMM and triggers an ioctl to the host to
+> perform an equivalent configuration.  Generally the physical device
+> will interrupt within the host where it may be directly attached to KVM
+> to signal the interrupt, trigger through the VMM, or where
+> virtualization hardware supports it, the interrupt can directly trigger
+> the vCPU.   From the VM perspective, the guest address/data pair is used
+> to signal the interrupt, which is why it makes sense to virtualize the
+> MSI registers.
+Hi Alex, could you help elaborate more? why from the VM perspective MSI 
+virtualization is necessary?
+
+And, maybe a stupid question, is that possible VM/KVM or vfio only 
+virtualize write operation to MSI register but leave read operation 
+un-virtualized? I am asking this because in that way ath11k may get a 
+chance to run in VM after getting the real vector.
+
+> 
+> Off hand I don't have a good solution for this, the hardware is
+> essentially imposing a unique requirement for MSI programming that the
+> driver needs visibility of the physical MSI address and data.  It's
+> conceivable that device specific code could either make the physical
+> address/data pair visible to the VM or trap the firmware programming to
+> inject the correct physical values.  Is there somewhere other than the
+> standard MSI capability in config space that the driver could learn the
+> physical values, ie. somewhere that isn't virtualized?  Thanks,
+I don't think we have such capability in configuration space.
+
+> 
+> Alex
+> 
