@@ -1,98 +1,163 @@
-Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E03211C2AE
-	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 14:00:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 430CD1C283
+	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 15:04:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="mv05wFXB"
-Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-7833a51a1aaso559644985a.0
-        for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 06:00:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1705413651; x=1706018451; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KOuNVOVXORCvY2aDTKNJEXN0vs/stvoH39eXEuacNQ0=;
-        b=mv05wFXBvFTkEYFqdMgmGe2AbUIpKCiYTtuDmpc/tW7yzCSmFcVK4zrA2TuwSp3pHd
-         lxgyzR6YjvR35Yr+oGMyr1gEX8ailRN78MRrTODslIJcuHI0iSe/40XtF8hNGcStxbTH
-         ut1Vzcv4dEt9PddZ9Kd4spREMulhvc3Kv9RYRRxrZFER4L/GMs8usH0dqG9yPtKYoqDM
-         pCPwChIKSU7tamK+GIPDPwzd3G+jzRL+UvmusfhQBWELzDs1IhAc3iZcAbNZbOBC0X1E
-         EhcVWnwsDoJQRlB8GkVwS7Z3UlBzRihgLpy02zyxBlt0Hp8XpACS8fuqIZaATdhmj47/
-         rRgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705413651; x=1706018451;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KOuNVOVXORCvY2aDTKNJEXN0vs/stvoH39eXEuacNQ0=;
-        b=HkfWdZ3jzN+T8pE1sprbyp6l32PgXroG6p/1/uZox8StWWqUcfgH1uWULCwdvWZc+s
-         uXiJmeq2beEkfb5oCpGGorbBWuRGByRnxAo9ZKjBt8Y+nEwfIekaGEcJKTLA+4xka4CI
-         r4N6i7h1YknrISJGhv8StiqnsDTTeMKqlpfhwK6MfAduqtXdm53DEY811tFYA3wQv0f+
-         UYnOVYY9JIjBmxt5/ra58c8xnTTODKbZvCrKXare3KpvcEfsu5xhTG7a8dRP6smrZB5c
-         CQxtUFxAjJ8XcvarVbwjtY4K1xxLGZ+k5YnQdlpyN6TOv7mr3MZ4WJHX9ypCTcBlXdiv
-         WXqA==
-X-Gm-Message-State: AOJu0YzkYIRdONyQb1ZXSdbo7M2Ukei1OZb7CwMGEV07Zwir78XNn6KS
-	q/u6P9Hk31NWF9/fHBfZ7ICHX8H1edJFuQ==
-X-Google-Smtp-Source: AGHT+IGqsYr6wdBWfdWtAB5ISaZXuJ6fkFIV3c5VV02zqNT6k6aF3E8/hH2gFZCkIsCFamzDNDBIBg==
-X-Received: by 2002:ad4:5de2:0:b0:681:55c1:3bd5 with SMTP id jn2-20020ad45de2000000b0068155c13bd5mr5533229qvb.93.1705413651529;
-        Tue, 16 Jan 2024 06:00:51 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id jh23-20020a0562141fd700b00681645ec98fsm1247560qvb.15.2024.01.16.06.00.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jan 2024 06:00:50 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rPjzl-0044xi-11;
-	Tue, 16 Jan 2024 10:00:49 -0400
-Date: Tue, 16 Jan 2024 10:00:49 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com,
-	Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v4 07/16] iommu/amd: Introduce per-device domain ID to
- workaround potential TLB aliasing issue
-Message-ID: <20240116140049.GD50608@ziepe.ca>
-References: <20231212085224.6985-1-vasant.hegde@amd.com>
- <20231212085224.6985-8-vasant.hegde@amd.com>
- <20240105185549.GM50608@ziepe.ca>
- <d71a2bc0-ed07-53eb-faf1-bd36b6ff6ffb@amd.com>
- <20240111135952.GV50608@ziepe.ca>
- <0215990a-dff1-c6c3-bfa1-c90fa63b0c7b@amd.com>
- <20240112145934.GY50608@ziepe.ca>
- <5d0f4146-fb57-d700-1263-881e2ec3ded7@amd.com>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="NiBn3p7I"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40GDmEPn018976;
+	Tue, 16 Jan 2024 15:04:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	from:to:cc:subject:date:message-id:in-reply-to:references
+	:mime-version:content-type; s=qcppdkim1; bh=U5PLBym+lB74aH4+z1oq
+	nztVitfqjwoz3FAlJGCWR7w=; b=NiBn3p7IQ+OStYLhFH2LEPIaO3+RlHwAj2mc
+	8hQ0/tTqW40+h8WWcSeOsifeLbxg75Tlh9zjKdqL7T73MvPciVHKANNeadGtKM8U
+	t7NcxlRIIcStl7imqStwOXISTROrMVkudkUU2mZRIZdS1sXdnW5m4AyVUeYKYoDa
+	Y6n0no5UlmYDD7snkPDJNDKwENPsDtHw5Ipr+kvDA54M5vVj1yCeHwU1nABzCSWd
+	X9sVuKWuPe+291UH1XngbL+6C8kkZ1wDehHE7pzjJiPUAVloGB5/duqOyXR0og0x
+	tmoGVitSxk7vGCX9DcaQEYnNjz5wja4DQQZIf04QjZ7kWq61ew==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vns4m8gbu-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 16 Jan 2024 15:04:41 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 40GF4ebg026484
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 16 Jan 2024 15:04:40 GMT
+Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Tue, 16 Jan 2024 07:04:34 -0800
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
+        <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
+        Bibek Kumar Patro
+	<quic_bibekkum@quicinc.com>
+Subject: [PATCH v8 1/5] iommu/arm-smmu: re-enable context caching in smmu reset operation
+Date: Tue, 16 Jan 2024 20:34:07 +0530
+Message-ID: <20240116150411.23876-2-quic_bibekkum@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20240116150411.23876-1-quic_bibekkum@quicinc.com>
+References: <20240116150411.23876-1-quic_bibekkum@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5d0f4146-fb57-d700-1263-881e2ec3ded7@amd.com>
+Content-Type: text/plain
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: ohV5SPXN-oOVHcMEVASvj2FksmsarubZ
+X-Proofpoint-ORIG-GUID: ohV5SPXN-oOVHcMEVASvj2FksmsarubZ
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2023-12-09_02,2023-12-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
+ bulkscore=0 phishscore=0 malwarescore=0 priorityscore=1501 mlxlogscore=999
+ spamscore=0 mlxscore=0 lowpriorityscore=0 impostorscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2311290000
+ definitions=main-2401160118
 
-On Tue, Jan 16, 2024 at 04:22:16PM +0530, Vasant Hegde wrote:
+Default MMU-500 reset operation disables context caching in
+prefetch buffer. It is however expected for context banks using
+the ACTLR register to retain their prefetch value during reset
+and runtime suspend.
 
-> > The *device* has a list of PASID's that point to iommu_domains. This
-> > is stored in an xarray inside the iommu_group.
-> > 
-> > The *iommu_domain* has a list of *devices & PASIDs* that can use this
-> > domain for translation (ie that it was attached to)
-> 
-> IIUC domain will be having device/PASID combination something like below:
-> 
-> UNMANAGED_DOMAIN_A with IO Page table :
->   - DevA + PASID zero (say non PASID capable device)
->   - devB + PASID <M>
->   - devC + PASID <N>
-> 
-> We will *not* have same device with different PASID in same domain like
->   - DevB + PASID M
->   - DevB + PASID N
-> 
-> Is that correct?
+Replace default MMU-500 reset operation with Qualcomm specific reset
+operation which envelope the default reset operation and re-enables
+context caching in prefetch buffer for Qualcomm SoCs.
 
-No, all combinations are allowed in the API.
+Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 36 ++++++++++++++++++++--
+ 1 file changed, 33 insertions(+), 3 deletions(-)
 
-Jason
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 549ae4dba3a6..c432e80a69fc 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -14,6 +14,16 @@
+
+ #define QCOM_DUMMY_VAL	-1
+
++/*
++ * SMMU-500 TRM defines BIT(0) as CMTLB (Enable context caching in the
++ * macro TLB) and BIT(1) as CPRE (Enable context caching in the prefetch
++ * buffer). The remaining bits are implementation defined and vary across
++ * SoCs.
++ */
++
++#define CPRE			(1 << 1)
++#define CMTLB			(1 << 0)
++
+ static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
+ {
+ 	return container_of(smmu, struct qcom_smmu, smmu);
+@@ -376,11 +386,31 @@ static int qcom_smmu_def_domain_type(struct device *dev)
+ 	return match ? IOMMU_DOMAIN_IDENTITY : 0;
+ }
+
++static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
++{
++	int ret;
++	u32 val;
++	int i;
++
++	ret = arm_mmu500_reset(smmu);
++	if (ret)
++		return ret;
++
++	/* arm_mmu500_reset() disables CPRE which is re-enabled here */
++	for (i = 0; i < smmu->num_context_banks; ++i) {
++		val = arm_smmu_cb_read(smmu, i, ARM_SMMU_CB_ACTLR);
++		val |= CPRE;
++		arm_smmu_cb_write(smmu, i, ARM_SMMU_CB_ACTLR, val);
++	}
++
++	return 0;
++}
++
+ static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
+ {
+ 	int ret;
+
+-	arm_mmu500_reset(smmu);
++	qcom_smmu500_reset(smmu);
+
+ 	/*
+ 	 * To address performance degradation in non-real time clients,
+@@ -407,7 +437,7 @@ static const struct arm_smmu_impl qcom_smmu_500_impl = {
+ 	.init_context = qcom_smmu_init_context,
+ 	.cfg_probe = qcom_smmu_cfg_probe,
+ 	.def_domain_type = qcom_smmu_def_domain_type,
+-	.reset = arm_mmu500_reset,
++	.reset = qcom_smmu500_reset,
+ 	.write_s2cr = qcom_smmu_write_s2cr,
+ 	.tlb_sync = qcom_smmu_tlb_sync,
+ };
+@@ -432,7 +462,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
+ static const struct arm_smmu_impl qcom_adreno_smmu_500_impl = {
+ 	.init_context = qcom_adreno_smmu_init_context,
+ 	.def_domain_type = qcom_smmu_def_domain_type,
+-	.reset = arm_mmu500_reset,
++	.reset = qcom_smmu500_reset,
+ 	.alloc_context_bank = qcom_adreno_smmu_alloc_context_bank,
+ 	.write_sctlr = qcom_adreno_smmu_write_sctlr,
+ 	.tlb_sync = qcom_smmu_tlb_sync,
+--
+2.17.1
+
