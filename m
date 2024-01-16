@@ -1,136 +1,114 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6339F12B60
-	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 08:59:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7A06125B2
+	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 09:23:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="f2lOTeVG"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-428405a0205so507921cf.1
-        for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 00:59:54 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="c1zsH7oI"
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-429d2ebdf05so671811cf.0
+        for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 01:23:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1705395593; x=1706000393; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1705397018; x=1706001818; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/igkgCyA152m1fzCehtUHeYlu0mhCasrXV541Dw4cvc=;
-        b=f2lOTeVGfd8anclzjN3wwHqZ1ohqed3/YEUZ/BE/JezKVinqA1vtrDLbsdx44NKvor
-         qhm2JfmGs2cer+zwkJky6a8e7xpSC4nNLmKhfXS3QZn/wlaSTKDqQoeAVJpPorECujk9
-         lyuXAyJqvGSXb7EqbavGDSkII1/HhhQ1gtx01PVBHypSicxAvldvJDY4uqcW/kiWi+Tp
-         itWbr8vy8jfVgh6uGTBsxQXTEE3crOgohVDKly7jZVC2+la4v2P5znv0ITrBxSgqnOuX
-         3HxfCcCyHRs/cP6FZwAVUJpO4//V7k73ZhOmCPdyN/T3d1eT8eezKl1qbEjEeywgqFit
-         TNOg==
+        bh=NVDvc2YdfIW5PTsIFTj5H+ZdE03DaXP+CZ34CLDMbmM=;
+        b=c1zsH7oIteHoYsFJeoZUhJSeQxqNM398A+dpq7pITQ3dxS7odHqwT6W7p6/6xQjHla
+         /n5RUSZt7/x6LHy0r705vMHGY8HHdZLMELeXR82v/PcWWw8MwLuFnwkrXl7cF65qmagv
+         KfcWL1GpntJg1hjs4B0vMKqQ5NTxr4pBYvajXrnhewmLASA4jc9EmRcKdaPu/Oo4oN7M
+         Cyk3F9sOTgrnxSh+0YNW4BMXw7ary7wBM/8apC2IgD170yQkHiaJHKizP9F8OxYlvUKe
+         3cwZigcC2hjlUCfgZO2SPPPlWT3X4ilMmegIEye3oJIVjspZroWXBs8HcfOkgLgbqrot
+         haTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705395593; x=1706000393;
+        d=1e100.net; s=20230601; t=1705397018; x=1706001818;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=/igkgCyA152m1fzCehtUHeYlu0mhCasrXV541Dw4cvc=;
-        b=vqfXm67WaixgMwl2rbI+ipQccHmmcDBSGCBZcAISm2qJ38rpB4fErnpxrjwpYveCYL
-         1MT4CHxcSVuhWj+qGhkCR7BU5+Ee4Zrb84Ya9lK70Ebfr0o3sPa/NTL/g63+AssC3b6m
-         cVhPr8KRhD7EWNu6h1dWed+1YjJAUIE5cIsE5YaL9VARYW1wohFHxvwQY0e/A7mWOje+
-         CCFOc3tvFR68RxgRlcjYtBlOixUaCPdtX035wfUvHKWC6hxIOw0AFe88mPFn59xzeh9g
-         WnARdXGVbTs4GWzHNJ5oQBAVEm0QdqLZtdNW2BzweHceujszLGZZBQeyVS4ClIZ3L7K8
-         zeyQ==
-X-Gm-Message-State: AOJu0Yx+86hCvPuBOaDWlHb/Pvz7WSL/tB9e0jLvQzWDOGpwayG0pzdh
-	sSVx+lXM0Bvte7KHxYxG4ncFkDG2d7Kz2xfqRRFFVeF+z68c
-X-Google-Smtp-Source: AGHT+IFqW6pcSkRl+kNnNA6UxnwDzJDioCsXMI2eqdzhDZzh6KY/0DXg2WWhBI5TtTkUDNvwGw5V/d5icdBQrzQcI5M=
-X-Received: by 2002:a05:622a:608e:b0:429:e35c:e3b7 with SMTP id
- hf14-20020a05622a608e00b00429e35ce3b7mr294775qtb.18.1705395593175; Tue, 16
- Jan 2024 00:59:53 -0800 (PST)
+        bh=NVDvc2YdfIW5PTsIFTj5H+ZdE03DaXP+CZ34CLDMbmM=;
+        b=pj3kN6rpaHODRyakoztpMBQfJSVkKDJ0F0od5IL5nmyV6sJVSwC3W02ZltmppVpoIY
+         SreMfiTSCHVlrCrklhGvEqIXc/g4ElNb8rFb2PWtCXSRwU8V3isYLsAxNjl0WDQnPPmY
+         pq0YaAH39HKnHeB/bZxveLieLC8gEU/2TczGAw1gsg4CF00YvsWvlBMxmFj/TMFNg3aq
+         H5Cii5eWiYtKxCjmoM/UfBHUhx9MPUfBojbssW/COF73li1vDInX6qCwTSaVrSgoJ+B2
+         uKLYqAcvVkCO1ABqyIw8uOh5rgXtrcaYPfeLmzAAucNKeQlXh6HyGn3dU66w7eB10MaG
+         fu9g==
+X-Gm-Message-State: AOJu0Yz1f69noYEchtDK/jVfSImnjHWlrbSHFCUgfU71r/U8dJEd1TnF
+	gwwIZUMiZgAQN1ZwlVa0HneeGQJti1pg0BrtDt2TBdqfIMaN
+X-Google-Smtp-Source: AGHT+IF3z/aE5y9g/FprLplZDYlaZbp+EvR1Ntz9NPLb2uz3IxrTBA37o/iYp1LHId8PZJqVNlOVhOkbij+WsOP0EAU=
+X-Received: by 2002:a05:622a:4d4:b0:429:bd26:1f6 with SMTP id
+ q20-20020a05622a04d400b00429bd2601f6mr1100241qtx.3.1705397018366; Tue, 16 Jan
+ 2024 01:23:38 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20230201125328.2186498-1-jean-philippe@linaro.org> <20230201125328.2186498-25-jean-philippe@linaro.org>
-In-Reply-To: <20230201125328.2186498-25-jean-philippe@linaro.org>
-From: Mostafa Saleh <smostafa@google.com>
-Date: Tue, 16 Jan 2024 08:59:41 +0000
-Message-ID: <CAFgf54qcTAru0Nvy1wH_tJMadOSW7Y3zEip5RTm+mtSa54Bymg@mail.gmail.com>
-Subject: Re: [RFC PATCH 24/45] KVM: arm64: smmu-v3: Setup stream table
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org, joro@8bytes.org, 
-	robin.murphy@arm.com, james.morse@arm.com, suzuki.poulose@arm.com, 
-	oliver.upton@linux.dev, yuzenghui@huawei.com, dbrazdil@google.com, 
-	ryan.roberts@arm.com, linux-arm-kernel@lists.infradead.org, 
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev
+References: <20240103175043.GS50406@nvidia.com> <20240106083617.1173871-1-mshavit@google.com>
+ <20240106083617.1173871-3-mshavit@google.com> <20240112163651.GA815670@nvidia.com>
+In-Reply-To: <20240112163651.GA815670@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Tue, 16 Jan 2024 17:23:02 +0800
+Message-ID: <CAKHBV26mYYZ78MgRvsCk5S3iRu2Bdgn2XwJ0uyj9vE6cpiq3DQ@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Add unit tests for arm_smmu_write_entry
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, 
+	linux-arm-kernel@lists.infradead.org, robin.murphy@arm.com, will@kernel.org, 
+	nicolinc@nvidia.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Hi Jean,
+On Sat, Jan 13, 2024 at 12:36=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> w=
+rote:
+>
+> On Sat, Jan 06, 2024 at 04:36:16PM +0800, Michael Shavit wrote:
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c b/drivers=
+/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> > new file mode 100644
+> > index 0000000000000..59ffcafb575fb
+> > --- /dev/null
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c
+> > @@ -0,0 +1,329 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +#include <kunit/test.h>
+>
+> I added
+>
+> * Copyright 2024 Google LLC.
+>
+> Here, let me know if it should be something else
 
-On Wed, Feb 1, 2023 at 12:59=E2=80=AFPM Jean-Philippe Brucker
-<jean-philippe@linaro.org> wrote:
->
-> Map the stream table allocated by the host into the hypervisor address
-> space. When the host mappings are finalized, the table is unmapped from
-> the host. Depending on the host configuration, the stream table may have
-> one or two levels. Populate the level-2 stream table lazily.
->
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
->  include/kvm/arm_smmu_v3.h                   |   4 +
->  arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c | 133 +++++++++++++++++++-
->  2 files changed, 136 insertions(+), 1 deletion(-)
->
-> diff --git a/include/kvm/arm_smmu_v3.h b/include/kvm/arm_smmu_v3.h
-> index da36737bc1e0..fc67a3bf5709 100644
-> --- a/include/kvm/arm_smmu_v3.h
-> +++ b/include/kvm/arm_smmu_v3.h
-> @@ -24,6 +24,10 @@ struct hyp_arm_smmu_v3_device {
->         u32                     cmdq_prod;
->         u64                     *cmdq_base;
->         size_t                  cmdq_log2size;
-> +       u64                     *strtab_base;
-> +       size_t                  strtab_num_entries;
-> +       size_t                  strtab_num_l1_entries;
-> +       u8                      strtab_split;
->  };
->
->  extern size_t kvm_nvhe_sym(kvm_hyp_arm_smmu_v3_count);
-> diff --git a/arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c b/arch/arm64/kvm=
-/hyp/nvhe/iommu/arm-smmu-v3.c
-> index 36ee5724f36f..021bebebd40c 100644
-> --- a/arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c
-> +++ b/arch/arm64/kvm/hyp/nvhe/iommu/arm-smmu-v3.c
-> @@ -141,7 +141,6 @@ static int smmu_sync_cmd(struct hyp_arm_smmu_v3_devic=
-e *smmu)
->         return smmu_wait_event(smmu, smmu_cmdq_empty(smmu));
->  }
->
-> -__maybe_unused
->  static int smmu_send_cmd(struct hyp_arm_smmu_v3_device *smmu,
->                          struct arm_smmu_cmdq_ent *cmd)
->  {
-> @@ -153,6 +152,82 @@ static int smmu_send_cmd(struct hyp_arm_smmu_v3_devi=
-ce *smmu,
->         return smmu_sync_cmd(smmu);
->  }
->
-> +__maybe_unused
-> +static int smmu_sync_ste(struct hyp_arm_smmu_v3_device *smmu, u32 sid)
-> +{
-> +       struct arm_smmu_cmdq_ent cmd =3D {
-> +               .opcode =3D CMDQ_OP_CFGI_STE,
-> +               .cfgi.sid =3D sid,
-> +               .cfgi.leaf =3D true,
-> +       };
-> +
-> +       return smmu_send_cmd(smmu, &cmd);
-> +}
-> +
-I see the page tables are properly configured for ARM_SMMU_FEAT_COHERENCY b=
-ut no
-handling for the STE or CMDQ, I believe here we should have something as:
-if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY))
-        kvm_flush_dcache_to_poc(step, STRTAB_STE_DWORDS << 3);
+Thanks!
 
-Similarly in "smmu_add_cmd" for the command queue. Or use NC mapping
-(which doesn't exist
-upstream as far as I can see)
+>
+> > +     arm_smmu_get_ste_used(ops, ste->data, used_bits.data);
+> > +     pr_debug("STE used bits: ");
+> > +     print_hex_dump_debug(
+> > +             "    ", DUMP_PREFIX_NONE, 16, 8, used_bits.data,
+> > +             ARRAY_SIZE(used_bits.data) * sizeof(*used_bits.data), fal=
+se);
+>
+> I fixed up alot of these weird sizeof things all over the three patches
+>
+> sizeof(struct arm_smmu_ste) is the correct way to get the size of the
+> HW structure, no need to peek into data. This is because we use the
+> struct as the pointer to an array so the whole struct must be
+> correctly sized.
+>
+> ARRAY_SIZE(x.data)*(sizeof(*x.data)) =3D=3D sizeof(x)
+>
+> Sadly there is no ARRAY_SIZE_FIELD()
 
-Thanks,
-Mostafa
+Makes sense.
+
+
+>
+> I also made some hacky patches so smmuv3 would compile on x86 and ran
+> this kunit on x86 - looks fine to me
+>
+> I'm going to put it in part 3, just because it is new and doesn't have
+> any RB/TB tags like the rest of part 1.
+>
+> Thanks,
+> Jason
