@@ -1,246 +1,109 @@
-Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23D9B1BF55
-	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 15:22:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CBF11C287
+	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 15:29:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ao9u/n0y"
-Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-680a9796b38so68927956d6.0
-        for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 07:22:17 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="KCyHEfwF"
+Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-3bd902f6b7aso143383b6e.2
+        for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 07:29:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1705418537; x=1706023337; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=QVNYnSflADKfn6Wa9x8SjlhLp4T/UgcF3P1M8bBqp2w=;
-        b=Ao9u/n0yxzpFfkQq+x5bRQvRhDkZWIiSEspfgfaaSwwHvuJ6SzmHKW1Kj60pbyxnyM
-         f7urvy8Nq2wAHMtCiTxLwTKsVzahnpOKThou8UNyPfo7wBqYI+5zR2bnyQMM67ktjK38
-         9dvt1Bwdh2b4+0HV3hJM7h8oDQL0LcMh3SpdGwIQOpS/uGV1IviJ34Qgofz/7dX5gfKR
-         KrPJrPlRmk0e9J00ZENVejWi18J1Zc3Uc/YZ3XbzkGH4/kN/DWFziJDtwBgNV0sa0ORA
-         9yD89NGll8/gVEKY818q6U30t7sZb2nY2X96ZGWiXyMvQNcArlt4+nDhmXDEgwYZczEg
-         FprQ==
+        d=ziepe.ca; s=google; t=1705418969; x=1706023769; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=iJ8kDv4NT77wbV/RUW9AhIRHKupbHjNRdeQr3Ppsnl0=;
+        b=KCyHEfwFp6fSTGb+zPBty+qQaQXS46Hf1qvidewDxSEQydfbu5Hm6t0Aa9AMKx7/Kn
+         woI42ijM+2VQWShAFnrMS9HoWQHI7KvpFY+ymNr8TTs3M/idvDjLK2Se12mlhFbB24K7
+         BIeDHMwkMI9g4kQ6chHpl3ZLrlHIER99kkMQWcJrojQi+4wwZKBcVD4HXoxop0fERHPo
+         AkBJOKw+bouBqZL513uWiVKEcGQ0q1oITHz0fbhzkYHyuo8o620P3NWK8I2AD0pPfLr/
+         Vch3dzQm1ERG7ksx7JBHm6cYizf7xzksPwE6DaE/8SJ9GYmJupCe7uHpbRuZNKxknf4S
+         gUqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705418537; x=1706023337;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QVNYnSflADKfn6Wa9x8SjlhLp4T/UgcF3P1M8bBqp2w=;
-        b=v8hsSSRzUZkcBtBI0EeVc5L0N4punQrJ1fG3gY4zBxmOFBmHqTU/xXHV5YESL/BrvH
-         tjqZGYbaAt2qyjX9Ej6NVwrTF9aGjTxAeLZ3UKg/ZXdT26799n9x1MvcoD3Y6d4sg9uy
-         arsb5sD906C91/+VKbpWr2AZruD1qCXSo7nNe+a5uEAXW4YI/tDvlGvdPo+uAPyiCGmh
-         ZnRyqdt2+UXFFHk1dEeYMGx+BEgAyc4c06nHh42anULBiGRMPB3xkHWHj3gXcPuVljqU
-         iRYxgljnMTK7d6UjxSz8/DLYW5oLgxamDRUspToX/z6jVMoSuB/7Cn7OM6lBb/O1l3OB
-         LwKw==
-X-Gm-Message-State: AOJu0YxtDRnSR6k9o7bR9YyH9aSVPQYCC8/B64BdPVIW6/oLITieQzZJ
-	H4Aa86MO1G3qwi5e16PovEpZpYRYVYe0CQ==
-X-Google-Smtp-Source: AGHT+IEueIiMfcoD8DOK4/6L5RoUPXk+O1mWcGM/B2o2NMVvvFcM55yhCNSeNwQe7/xXJ5jt56/QAw==
-X-Received: by 2002:a05:6214:dcd:b0:680:a1c:9c46 with SMTP id 13-20020a0562140dcd00b006800a1c9c46mr9465367qvt.33.1705418536859;
-        Tue, 16 Jan 2024 07:22:16 -0800 (PST)
+        d=1e100.net; s=20230601; t=1705418969; x=1706023769;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=iJ8kDv4NT77wbV/RUW9AhIRHKupbHjNRdeQr3Ppsnl0=;
+        b=Lj5zzKv8/Fxnw+7xhhZu4mYMc5MroG3jr7kQisQ+kQ7nSWJjeiDAyRnXBrS4I2mFej
+         yDh7H63xwOMjjhPYMJEQLUXb9wQse/68JH1MAWB66zh0WglhGloHWTxdg0jvSsnroMU0
+         Cq2x1QVXLbh0XwbifxhMS8YiiK6p/AznhwFeHAPQRi2vffRysjIhpQG8c3TLQOCxIMXH
+         DSZvoEdSoFIjp5HxWVxnFOVfIZVe0lPJugIUH0/TgKIsIHQKUT9u4T/mCW5DBoMZQP4M
+         /pRG0qyRq4zSTz2n+P7j71vs84DUVv2mcdJhGKbRAQ/kwmrbawUeBsrFLGMYFR58Z9ns
+         k6nA==
+X-Gm-Message-State: AOJu0YyBavU+oZkpLfQr9IlyjrYlQdVNHoYmihRGX+ZzOhCkBxm4fnnQ
+	KE6NSS/LwYGgsOHORxmG4Fjd48jkb4vShg==
+X-Google-Smtp-Source: AGHT+IGBWdHLHlu+WKmrXxmyfAaya9jZa+J4uJQ5YBat9EhQgRdlPfVABfpR7u3rUy/Ip3xt+opsKg==
+X-Received: by 2002:a05:6808:2e91:b0:3bd:72dc:65a6 with SMTP id gt17-20020a0568082e9100b003bd72dc65a6mr3757509oib.58.1705418969400;
+        Tue, 16 Jan 2024 07:29:29 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id i12-20020a056214030c00b0067f812c4a58sm4199799qvu.60.2024.01.16.07.22.16
+        by smtp.gmail.com with ESMTPSA id q16-20020a05620a0c9000b007815844a295sm3800321qki.116.2024.01.16.07.29.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jan 2024 07:22:16 -0800 (PST)
+        Tue, 16 Jan 2024 07:29:28 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rPlGZ-0045lK-Sc;
-	Tue, 16 Jan 2024 11:22:15 -0400
-Date: Tue, 16 Jan 2024 11:22:15 -0400
+	id 1rPlNY-0045nl-7f;
+	Tue, 16 Jan 2024 11:29:28 -0400
+Date: Tue, 16 Jan 2024 11:29:28 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Eric Badger <ebadger@purestorage.com>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	"open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iommu/vt-d: Check for non-NULL domain on device release
-Message-ID: <20240116152215.GE50608@ziepe.ca>
-References: <20240113181713.1817855-1-ebadger@purestorage.com>
+To: David Woodhouse <dwmw2@infradead.org>
+Cc: Baochen Qiang <quic_bqiang@quicinc.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Kalle Valo <kvalo@kernel.org>, James Prestwood <prestwoj@gmail.com>,
+	linux-wireless@vger.kernel.org, ath11k@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: Re: ath11k and vfio-pci support
+Message-ID: <20240116152928.GF50608@ziepe.ca>
+References: <df9fd970-5af3-468c-b1f1-18f91215cf44@gmail.com>
+ <8734v4auc4.fsf@kernel.org>
+ <e8878979-1f3f-4635-a716-9ac381c617d9@gmail.com>
+ <285b84d0-229c-4c83-a7d6-4c3c23139597@quicinc.com>
+ <4607fb37-8227-49a3-9e8c-10c9b117ec7b@gmail.com>
+ <3d22a730-aee5-4f2a-9ddc-b4b5bd4d62fe@quicinc.com>
+ <87il3w7zjh.fsf@kernel.org>
+ <20240115104658.0b56bd35.alex.williamson@redhat.com>
+ <543d9d2f-e132-4fdb-8454-68595cd20515@quicinc.com>
+ <57d20bd812ccf8d1a5815ad41b5dcea3925d4fe1.camel@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240113181713.1817855-1-ebadger@purestorage.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <57d20bd812ccf8d1a5815ad41b5dcea3925d4fe1.camel@infradead.org>
 
-On Sat, Jan 13, 2024 at 10:17:13AM -0800, Eric Badger wrote:
-> In the kdump kernel, the IOMMU will operate in deferred_attach mode. In
-> this mode, info->domain may not yet be assigned by the time the
-> release_device function is called, which leads to the following crash in
-> the crashkernel:
+On Tue, Jan 16, 2024 at 11:41:19AM +0100, David Woodhouse wrote:
 
-This never worked right? But why are you getting to release in a crash
-kernel in the first place, that seems kinda weird..
+> If we had had this posted interrupt support from the beginning, perhaps
+> we could have have a much simpler model — we just let the guest write
+> its intended (v)CPU#/vector *directly* to the MSI table in the device,
+> and let the IOMMU fix it up by having a table pointing to the
+> appropriate set of vCPUs. But that isn't how it happened. The model we
+> have is that the VMM has to *emulate* the config space and handle the
+> interrupts as described above.
 
->     BUG: kernel NULL pointer dereference, address: 000000000000003c
->     ...
->     RIP: 0010:do_raw_spin_lock+0xa/0xa0
->     ...
->     _raw_spin_lock_irqsave+0x1b/0x30
->     intel_iommu_release_device+0x96/0x170
->     iommu_deinit_device+0x39/0xf0
->     __iommu_group_remove_device+0xa0/0xd0
->     iommu_bus_notifier+0x55/0xb0
->     notifier_call_chain+0x5a/0xd0
->     blocking_notifier_call_chain+0x41/0x60
->     bus_notify+0x34/0x50
->     device_del+0x269/0x3d0
->     pci_remove_bus_device+0x77/0x100
->     p2sb_bar+0xae/0x1d0
->     ...
->     i801_probe+0x423/0x740
-> 
-> Signed-off-by: Eric Badger <ebadger@purestorage.com>
+I do have a strong desire to rework things to be more like this, just
+not time yet :)
 
-It should have a fixes line, but I'm not sure what it is..
+We have enough real problems related to the fake interrupt data in
+the guest.
 
-> ---
->  drivers/iommu/intel/iommu.c | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
+This ath11k thing sounds more like IMS really - it makes zero sense
+that a device would be designed where the MSI vector has to be copied
+to another location - most likely the other location is another
+interrupt source that can be programmed independently, with its own
+irqchip, etc? Linux supports this now. Thomas and Intel did it to
+support SIOV IMS.
 
-Unfortunately this issue is likely systemic in all the drivers.
+Are you sure you have implemented your Linux driver correctly? :)
 
-Something I've been thinking about for a while now is to have the
-option for the core code release to set the driver to a specific
-releasing domain (probably a blocking or identity global static)
+Of course IMS doesn't work in VMs, but that is a big motivation to fix
+the irq organizing. At least you'd know why the device is broken :)
 
-A lot of drivers are open coding this internally in their release
-functions, like Intel. But it really doesn't deserve to be special.
+Jason
 
-Obviously if we structure things like that then this problem goes away
-too. It looks to me like domain_context_clear_one() is doing BLOCKED
-to me..
-
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 6fb5f6fceea1..26e450259889 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -3750,7 +3750,6 @@ static void domain_context_clear(struct device_domain_info *info)
->  static void dmar_remove_one_dev_info(struct device *dev)
->  {
->  	struct device_domain_info *info = dev_iommu_priv_get(dev);
-> -	struct dmar_domain *domain = info->domain;
->  	struct intel_iommu *iommu = info->iommu;
->  	unsigned long flags;
->  
-> @@ -3763,11 +3762,14 @@ static void dmar_remove_one_dev_info(struct device *dev)
->  		domain_context_clear(info);
->  	}
->  
-> -	spin_lock_irqsave(&domain->lock, flags);
-> +	if (!info->domain)
-> +		return;
-> +
-> +	spin_lock_irqsave(&info->domain->lock, flags);
->  	list_del(&info->link);
-> -	spin_unlock_irqrestore(&domain->lock, flags);
-> +	spin_unlock_irqrestore(&info->domain->lock, flags);
->  
-> -	domain_detach_iommu(domain, iommu);
-> +	domain_detach_iommu(info->domain, iommu);
->  	info->domain = NULL;
->  }
-
-This function is almost a copy of device_block_translation(), with
-some bugs added :\
-
-Lu can they be made the same? It seems to me BLOCKED could always
-clear the domain context, even in scalable mode?
-
-Anyhow, my suggestion is more like:
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 15699fe5418e3d..6c683fd4bc05ec 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3747,30 +3747,6 @@ static void domain_context_clear(struct device_domain_info *info)
- 			       &domain_context_clear_one_cb, info);
- }
- 
--static void dmar_remove_one_dev_info(struct device *dev)
--{
--	struct device_domain_info *info = dev_iommu_priv_get(dev);
--	struct dmar_domain *domain = info->domain;
--	struct intel_iommu *iommu = info->iommu;
--	unsigned long flags;
--
--	if (!dev_is_real_dma_subdevice(info->dev)) {
--		if (dev_is_pci(info->dev) && sm_supported(iommu))
--			intel_pasid_tear_down_entry(iommu, info->dev,
--					IOMMU_NO_PASID, false);
--
--		iommu_disable_pci_caps(info);
--		domain_context_clear(info);
--	}
--
--	spin_lock_irqsave(&domain->lock, flags);
--	list_del(&info->link);
--	spin_unlock_irqrestore(&domain->lock, flags);
--
--	domain_detach_iommu(domain, iommu);
--	info->domain = NULL;
--}
--
- /*
-  * Clear the page table pointer in context or pasid table entries so that
-  * all DMA requests without PASID from the device are blocked. If the page
-@@ -4284,7 +4260,6 @@ static void intel_iommu_release_device(struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 
--	dmar_remove_one_dev_info(dev);
- 	intel_pasid_free_table(dev);
- 	intel_iommu_debugfs_remove_dev(info);
- 	kfree(info);
-@@ -4743,6 +4718,7 @@ static const struct iommu_dirty_ops intel_dirty_ops = {
- 
- const struct iommu_ops intel_iommu_ops = {
- 	.blocked_domain		= &blocking_domain,
-+	.release_domain		= &blocking_domain,
- 	.capable		= intel_iommu_capable,
- 	.hw_info		= intel_iommu_hw_info,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 068f6508e57c9b..9fbbd83a82d4e9 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -442,6 +442,8 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
- err_unlink:
- 	iommu_device_unlink(iommu_dev, dev);
- err_release:
-+	if (ops->release_domain)
-+		ops->release_domain->ops->attach_dev(ops->release_domain, dev);
- 	if (ops->release_device)
- 		ops->release_device(dev);
- err_module_put:
-@@ -461,6 +463,15 @@ static void iommu_deinit_device(struct device *dev)
- 
- 	iommu_device_unlink(dev->iommu->iommu_dev, dev);
- 
-+	/*
-+	 * If the iommu driver provides release_domain then the core code
-+	 * ensures that domain is attached prior to calling release_device.
-+	 * Drivers can use this to enforce a translation on the idle iommu.
-+	 * Usually the global static blocked_domain is a good choice.
-+	 */
-+	if (ops->release_domain)
-+		ops->release_domain->ops->attach_dev(ops->release_domain, dev);
-+
- 	/*
- 	 * release_device() must stop using any attached domain on the device.
- 	 * If there are still other devices in the group they are not effected
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index c34d0ef1703d68..1e8be165c878d8 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -511,6 +511,7 @@ struct iommu_ops {
- 	struct module *owner;
- 	struct iommu_domain *identity_domain;
- 	struct iommu_domain *blocked_domain;
-+	struct iommu_domain *release_domain;
- 	struct iommu_domain *default_domain;
- };
- 
