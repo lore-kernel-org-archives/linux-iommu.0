@@ -1,139 +1,246 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC4231C691
-	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 15:05:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23D9B1BF55
+	for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 15:22:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="HYL2NKlT"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40GE094g027663;
-	Tue, 16 Jan 2024 15:05:06 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-type; s=qcppdkim1; bh=Zgkx62l4rcyEtBTq+CoX
-	3k8529VHNxyha1vXQuEWPjg=; b=HYL2NKlTOCoKy8WpNo6UOtkfyLjUErKazk8u
-	Gy4e9vfgX2S6Qtcme5GI8P0j1mVVkRI8fYBE7NoeRWEScIqztl1C6C8qcdpfCHrx
-	hfoGAUaZFck0QJHmfFboKp2T49TVYDjYrUc+wSsgKDLCGCC+PhiXquL9UNC98ix7
-	KTVeQmAse/iXUq1LqS5071uvOpIR8B3Jc1daQ/aTv8si0tnZTd7ucXie2re//QRc
-	yq8k/gCdkfzzNlzkOOOc5OjDxme0k+TFOO+i+JmQ8bkwPHNwIksW54JMBr79zqN5
-	PwXfnHlap1KC5yuGSB/qgwXSuRqEb5opumEHiGl6BTnG43ACTA==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vnrnd8jjv-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 16 Jan 2024 15:05:05 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 40GF54FE015128
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 16 Jan 2024 15:05:04 GMT
-Received: from hu-bibekkum-hyd.qualcomm.com (10.80.80.8) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Tue, 16 Jan 2024 07:04:58 -0800
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
-        <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>, <mani@kernel.org>,
-        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
-        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
-        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
-        <quic_molvera@quicinc.com>
-CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>,
-        Bibek Kumar Patro
-	<quic_bibekkum@quicinc.com>
-Subject: [PATCH v8 5/5] iommu/arm-smmu: add ACTLR data and support for SC7280
-Date: Tue, 16 Jan 2024 20:34:11 +0530
-Message-ID: <20240116150411.23876-6-quic_bibekkum@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20240116150411.23876-1-quic_bibekkum@quicinc.com>
-References: <20240116150411.23876-1-quic_bibekkum@quicinc.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ao9u/n0y"
+Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-680a9796b38so68927956d6.0
+        for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 07:22:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1705418537; x=1706023337; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=QVNYnSflADKfn6Wa9x8SjlhLp4T/UgcF3P1M8bBqp2w=;
+        b=Ao9u/n0yxzpFfkQq+x5bRQvRhDkZWIiSEspfgfaaSwwHvuJ6SzmHKW1Kj60pbyxnyM
+         f7urvy8Nq2wAHMtCiTxLwTKsVzahnpOKThou8UNyPfo7wBqYI+5zR2bnyQMM67ktjK38
+         9dvt1Bwdh2b4+0HV3hJM7h8oDQL0LcMh3SpdGwIQOpS/uGV1IviJ34Qgofz/7dX5gfKR
+         KrPJrPlRmk0e9J00ZENVejWi18J1Zc3Uc/YZ3XbzkGH4/kN/DWFziJDtwBgNV0sa0ORA
+         9yD89NGll8/gVEKY818q6U30t7sZb2nY2X96ZGWiXyMvQNcArlt4+nDhmXDEgwYZczEg
+         FprQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705418537; x=1706023337;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QVNYnSflADKfn6Wa9x8SjlhLp4T/UgcF3P1M8bBqp2w=;
+        b=v8hsSSRzUZkcBtBI0EeVc5L0N4punQrJ1fG3gY4zBxmOFBmHqTU/xXHV5YESL/BrvH
+         tjqZGYbaAt2qyjX9Ej6NVwrTF9aGjTxAeLZ3UKg/ZXdT26799n9x1MvcoD3Y6d4sg9uy
+         arsb5sD906C91/+VKbpWr2AZruD1qCXSo7nNe+a5uEAXW4YI/tDvlGvdPo+uAPyiCGmh
+         ZnRyqdt2+UXFFHk1dEeYMGx+BEgAyc4c06nHh42anULBiGRMPB3xkHWHj3gXcPuVljqU
+         iRYxgljnMTK7d6UjxSz8/DLYW5oLgxamDRUspToX/z6jVMoSuB/7Cn7OM6lBb/O1l3OB
+         LwKw==
+X-Gm-Message-State: AOJu0YxtDRnSR6k9o7bR9YyH9aSVPQYCC8/B64BdPVIW6/oLITieQzZJ
+	H4Aa86MO1G3qwi5e16PovEpZpYRYVYe0CQ==
+X-Google-Smtp-Source: AGHT+IEueIiMfcoD8DOK4/6L5RoUPXk+O1mWcGM/B2o2NMVvvFcM55yhCNSeNwQe7/xXJ5jt56/QAw==
+X-Received: by 2002:a05:6214:dcd:b0:680:a1c:9c46 with SMTP id 13-20020a0562140dcd00b006800a1c9c46mr9465367qvt.33.1705418536859;
+        Tue, 16 Jan 2024 07:22:16 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id i12-20020a056214030c00b0067f812c4a58sm4199799qvu.60.2024.01.16.07.22.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Jan 2024 07:22:16 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rPlGZ-0045lK-Sc;
+	Tue, 16 Jan 2024 11:22:15 -0400
+Date: Tue, 16 Jan 2024 11:22:15 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Eric Badger <ebadger@purestorage.com>
+Cc: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
+	open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iommu/vt-d: Check for non-NULL domain on device release
+Message-ID: <20240116152215.GE50608@ziepe.ca>
+References: <20240113181713.1817855-1-ebadger@purestorage.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: e5NiOR4LKf5dTI5jVxNGOc6hni5EtNfZ
-X-Proofpoint-ORIG-GUID: e5NiOR4LKf5dTI5jVxNGOc6hni5EtNfZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2023-12-09_01,2023-12-07_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
- lowpriorityscore=0 mlxscore=0 suspectscore=0 mlxlogscore=999 clxscore=1015
- adultscore=0 impostorscore=0 malwarescore=0 bulkscore=0 phishscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2311290000 definitions=main-2401160118
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240113181713.1817855-1-ebadger@purestorage.com>
 
-Add ACTLR data table for SC7280 along with support for
-same including SC7280 specific implementation operations.
+On Sat, Jan 13, 2024 at 10:17:13AM -0800, Eric Badger wrote:
+> In the kdump kernel, the IOMMU will operate in deferred_attach mode. In
+> this mode, info->domain may not yet be assigned by the time the
+> release_device function is called, which leads to the following crash in
+> the crashkernel:
 
-Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 30 +++++++++++++++++++++-
- 1 file changed, 29 insertions(+), 1 deletion(-)
+This never worked right? But why are you getting to release in a crash
+kernel in the first place, that seems kinda weird..
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 26acfbdafd0f..8e52176b4108 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -36,6 +36,27 @@ struct actlr_config {
- 	u32 actlr;
+>     BUG: kernel NULL pointer dereference, address: 000000000000003c
+>     ...
+>     RIP: 0010:do_raw_spin_lock+0xa/0xa0
+>     ...
+>     _raw_spin_lock_irqsave+0x1b/0x30
+>     intel_iommu_release_device+0x96/0x170
+>     iommu_deinit_device+0x39/0xf0
+>     __iommu_group_remove_device+0xa0/0xd0
+>     iommu_bus_notifier+0x55/0xb0
+>     notifier_call_chain+0x5a/0xd0
+>     blocking_notifier_call_chain+0x41/0x60
+>     bus_notify+0x34/0x50
+>     device_del+0x269/0x3d0
+>     pci_remove_bus_device+0x77/0x100
+>     p2sb_bar+0xae/0x1d0
+>     ...
+>     i801_probe+0x423/0x740
+> 
+> Signed-off-by: Eric Badger <ebadger@purestorage.com>
+
+It should have a fixes line, but I'm not sure what it is..
+
+> ---
+>  drivers/iommu/intel/iommu.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+
+Unfortunately this issue is likely systemic in all the drivers.
+
+Something I've been thinking about for a while now is to have the
+option for the core code release to set the driver to a specific
+releasing domain (probably a blocking or identity global static)
+
+A lot of drivers are open coding this internally in their release
+functions, like Intel. But it really doesn't deserve to be special.
+
+Obviously if we structure things like that then this problem goes away
+too. It looks to me like domain_context_clear_one() is doing BLOCKED
+to me..
+
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 6fb5f6fceea1..26e450259889 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -3750,7 +3750,6 @@ static void domain_context_clear(struct device_domain_info *info)
+>  static void dmar_remove_one_dev_info(struct device *dev)
+>  {
+>  	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> -	struct dmar_domain *domain = info->domain;
+>  	struct intel_iommu *iommu = info->iommu;
+>  	unsigned long flags;
+>  
+> @@ -3763,11 +3762,14 @@ static void dmar_remove_one_dev_info(struct device *dev)
+>  		domain_context_clear(info);
+>  	}
+>  
+> -	spin_lock_irqsave(&domain->lock, flags);
+> +	if (!info->domain)
+> +		return;
+> +
+> +	spin_lock_irqsave(&info->domain->lock, flags);
+>  	list_del(&info->link);
+> -	spin_unlock_irqrestore(&domain->lock, flags);
+> +	spin_unlock_irqrestore(&info->domain->lock, flags);
+>  
+> -	domain_detach_iommu(domain, iommu);
+> +	domain_detach_iommu(info->domain, iommu);
+>  	info->domain = NULL;
+>  }
+
+This function is almost a copy of device_block_translation(), with
+some bugs added :\
+
+Lu can they be made the same? It seems to me BLOCKED could always
+clear the domain context, even in scalable mode?
+
+Anyhow, my suggestion is more like:
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 15699fe5418e3d..6c683fd4bc05ec 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -3747,30 +3747,6 @@ static void domain_context_clear(struct device_domain_info *info)
+ 			       &domain_context_clear_one_cb, info);
+ }
+ 
+-static void dmar_remove_one_dev_info(struct device *dev)
+-{
+-	struct device_domain_info *info = dev_iommu_priv_get(dev);
+-	struct dmar_domain *domain = info->domain;
+-	struct intel_iommu *iommu = info->iommu;
+-	unsigned long flags;
+-
+-	if (!dev_is_real_dma_subdevice(info->dev)) {
+-		if (dev_is_pci(info->dev) && sm_supported(iommu))
+-			intel_pasid_tear_down_entry(iommu, info->dev,
+-					IOMMU_NO_PASID, false);
+-
+-		iommu_disable_pci_caps(info);
+-		domain_context_clear(info);
+-	}
+-
+-	spin_lock_irqsave(&domain->lock, flags);
+-	list_del(&info->link);
+-	spin_unlock_irqrestore(&domain->lock, flags);
+-
+-	domain_detach_iommu(domain, iommu);
+-	info->domain = NULL;
+-}
+-
+ /*
+  * Clear the page table pointer in context or pasid table entries so that
+  * all DMA requests without PASID from the device are blocked. If the page
+@@ -4284,7 +4260,6 @@ static void intel_iommu_release_device(struct device *dev)
+ {
+ 	struct device_domain_info *info = dev_iommu_priv_get(dev);
+ 
+-	dmar_remove_one_dev_info(dev);
+ 	intel_pasid_free_table(dev);
+ 	intel_iommu_debugfs_remove_dev(info);
+ 	kfree(info);
+@@ -4743,6 +4718,7 @@ static const struct iommu_dirty_ops intel_dirty_ops = {
+ 
+ const struct iommu_ops intel_iommu_ops = {
+ 	.blocked_domain		= &blocking_domain,
++	.release_domain		= &blocking_domain,
+ 	.capable		= intel_iommu_capable,
+ 	.hw_info		= intel_iommu_hw_info,
+ 	.domain_alloc		= intel_iommu_domain_alloc,
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 068f6508e57c9b..9fbbd83a82d4e9 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -442,6 +442,8 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
+ err_unlink:
+ 	iommu_device_unlink(iommu_dev, dev);
+ err_release:
++	if (ops->release_domain)
++		ops->release_domain->ops->attach_dev(ops->release_domain, dev);
+ 	if (ops->release_device)
+ 		ops->release_device(dev);
+ err_module_put:
+@@ -461,6 +463,15 @@ static void iommu_deinit_device(struct device *dev)
+ 
+ 	iommu_device_unlink(dev->iommu->iommu_dev, dev);
+ 
++	/*
++	 * If the iommu driver provides release_domain then the core code
++	 * ensures that domain is attached prior to calling release_device.
++	 * Drivers can use this to enforce a translation on the idle iommu.
++	 * Usually the global static blocked_domain is a good choice.
++	 */
++	if (ops->release_domain)
++		ops->release_domain->ops->attach_dev(ops->release_domain, dev);
++
+ 	/*
+ 	 * release_device() must stop using any attached domain on the device.
+ 	 * If there are still other devices in the group they are not effected
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index c34d0ef1703d68..1e8be165c878d8 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -511,6 +511,7 @@ struct iommu_ops {
+ 	struct module *owner;
+ 	struct iommu_domain *identity_domain;
+ 	struct iommu_domain *blocked_domain;
++	struct iommu_domain *release_domain;
+ 	struct iommu_domain *default_domain;
  };
-
-+static const struct actlr_config sc7280_apps_actlr_cfg[] = {
-+	{ 0x0800, 0x24e1, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x2000, 0x0163, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x2080, 0x0461, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x2100, 0x0161, PREFETCH_DEFAULT | CMTLB },
-+	{ 0x0900, 0x0407, PREFETCH_SHALLOW | CPRE | CMTLB },
-+	{ 0x2180, 0x0027, PREFETCH_SHALLOW | CPRE | CMTLB },
-+	{ 0x1000, 0x07ff, PREFETCH_DEEP | CPRE | CMTLB },
-+};
-+
-+static const struct actlr_config sc7280_gfx_actlr_cfg[] = {
-+	{ 0x0000, 0x07ff, PREFETCH_SWITCH_GFX | PREFETCH_DEEP | CPRE | CMTLB },
-+};
-+
-+static const struct actlr_variant sc7280_actlr[] = {
-+	{ .io_start = 0x15000000, .actlrcfg = sc7280_apps_actlr_cfg,
-+			.num_actlrcfg = ARRAY_SIZE(sc7280_apps_actlr_cfg) },
-+	{ .io_start = 0x03da0000, .actlrcfg = sc7280_gfx_actlr_cfg,
-+			.num_actlrcfg = ARRAY_SIZE(sc7280_gfx_actlr_cfg) },
-+};
-+
- static const struct actlr_config sm8550_apps_actlr_cfg[] = {
- 	{ 0x18a0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
- 	{ 0x18e0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
-@@ -676,6 +697,13 @@ static const struct qcom_smmu_match_data sdm845_smmu_500_data = {
- 	/* Also no debug configuration. */
- };
-
-+static const struct qcom_smmu_match_data sc7280_smmu_500_impl0_data = {
-+	.impl = &qcom_smmu_500_impl,
-+	.adreno_impl = &qcom_adreno_smmu_500_impl,
-+	.cfg = &qcom_smmu_impl0_cfg,
-+	.actlrvar = sc7280_actlr,
-+	.num_smmu = ARRAY_SIZE(sc7280_actlr),
-+};
-
- static const struct qcom_smmu_match_data sm8550_smmu_500_impl0_data = {
- 	.impl = &qcom_smmu_500_impl,
-@@ -702,7 +730,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
- 	{ .compatible = "qcom,qdu1000-smmu-500", .data = &qcom_smmu_500_impl0_data  },
- 	{ .compatible = "qcom,sc7180-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sc7180-smmu-v2", .data = &qcom_smmu_v2_data },
--	{ .compatible = "qcom,sc7280-smmu-500", .data = &qcom_smmu_500_impl0_data },
-+	{ .compatible = "qcom,sc7280-smmu-500", .data = &sc7280_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sc8180x-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sc8280xp-smmu-500", .data = &qcom_smmu_500_impl0_data },
- 	{ .compatible = "qcom,sdm630-smmu-v2", .data = &qcom_smmu_v2_data },
---
-2.17.1
-
+ 
