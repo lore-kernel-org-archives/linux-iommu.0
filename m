@@ -1,135 +1,153 @@
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCE915CB0
-	for <iommu@lists.linux.dev>; Wed, 17 Jan 2024 02:20:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0572D1C05
+	for <iommu@lists.linux.dev>; Wed, 17 Jan 2024 03:24:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705458024; cv=none; b=IcP1jWnKB+bESPEnDW7EOL6oM7cvW9n0Ux7sE6IuDSH4KHVJmfFxeNe96Pw/5+gEeBhPhNskTiVQ8gS/4w7+UtwFsGGoYIq7UlpzeLVi8KDIubWz6EMU86gDdXl7gp3z4wLSkr1xwOxku9u9MqgheXpMYldxpLCyaE2jJJByt/4=
+	t=1705461858; cv=none; b=ptTUPdQiEdVMasb54B65fl5UvngllMior0EPqc1rV0aucuAfKchboknC1gPClebcxWyBBsTaBLGOEoSlz+SbKMuGd0Az1RKf+bDapZXmaiwQO07ueLXdHUONQKSDHFUXW4PXRI240BAxaUM9sVvAV5xm8NjAy+kz3a9s36RV7ew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705458024; c=relaxed/simple;
-	bh=7CVCiHmkWEtjZaOJE+H1yk91VAqzvFxUdjW7LQYfSRc=;
-	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:In-Reply-To; b=ddfrj51tAEJQEZGGUxi6O2PI3PEwLrKJIpxpgO6O1GpRDIkYnl+G6iALxpnWDUTSZ1sQMtdWRw+lbSct+m7LwaJEaPR5LCma9NBpOIYlnYkRJVIde5fHfv96hec7NPmvrETFaipGqVzbyYU/QJsIOO/FHs2rAcAEpSwOydK8eIQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=TzFveDS3; arc=none smtp.client-ip=209.85.222.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1705461858; c=relaxed/simple;
+	bh=lQVzJfW4PzGfq9ar+uuKtn+tGVuy7nvv+1dL8Gzr7hw=;
+	h=DKIM-Signature:X-IronPort-AV:X-IronPort-AV:Received:X-ExtLoop1:
+	 X-IronPort-AV:X-IronPort-AV:Received:Message-ID:Date:MIME-Version:
+	 User-Agent:Cc:Subject:Content-Language:To:References:From:
+	 In-Reply-To:Content-Type:Content-Transfer-Encoding; b=lxgBoEw/DS3Ng6854cFOEE+QDMdygkxZeRX7IOdki71gWOBXtL7/I93cPoHgpuY+qhtz4vNjnovO3FRED0MTS1/60WjVoS//SReNGTt8FJSVfh4aG4u8Axzej9rmMT3pWsMBi2tunVLC9lmbby26iPY6mzkVSD+9GZiCoSHZg9U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dIlBgVMk; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="TzFveDS3"
-Received: by mail-qk1-f175.google.com with SMTP id af79cd13be357-7831b3a48e7so631913385a.3
-        for <iommu@lists.linux.dev>; Tue, 16 Jan 2024 18:20:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1705458021; x=1706062821; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=pYVZPcyXo7q2SktZ2+i1Gh7El+Ql5ZT8EyFJ+5OtVjg=;
-        b=TzFveDS3cmBKBlF6PDNjiWvisGhEEYwYijPei/g3h2yUg+EsGSB/eHBLfMwWbapFcr
-         8AkNKRSO5hE4CjnTMRgFoMjSlapbzpvfMn4yDYG67anDIgr8UnSgR877+JVYBxJ0+Q3Z
-         F8HjAGvhXhKZ/RPD4rJQqA9V/3uu92svSjYHda6fudnkSTQDEm60chkVGA7DHiXf4xUu
-         I54KrBLLKiI/TDurptFW8Hn8ndwt36WySmaetZO7s40HEJsWM67hk2ZoHRz9svW46SaW
-         dJ94+f0WMYfDRIN7M8jZRqJZzXBNLtKpj/fcd9m1XvztTHDVrwuffQFAtd18yz14M3gJ
-         1qDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705458021; x=1706062821;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pYVZPcyXo7q2SktZ2+i1Gh7El+Ql5ZT8EyFJ+5OtVjg=;
-        b=OBco11ai17V0+t9T93S/B19LiWkPG1JTN5gX+7KTGSsuXMHT3yBtc1CvgjTfg+Can2
-         324H6lxSUZX8XVUcDYL3KZw5tU31bKVPCy8J207bTbGgA0WhMNEKhiGGDRY3lKjKnNvW
-         ZtBPaq5/hqRF5dXZKUigzgm/rDyYCxaCAUdz4JOHajdNRtLmgGPMthl3ZtHDcHeVfj1j
-         G8k8a8anFEbgWbj0pbOD3SgsoX1uY0eLKOKYBz4bB8T54Ki2dTm3LEbd9vOH0UVO2gOe
-         7BEF3PX4GzWcCeHD6i/A5InHP675VTXi7uIfuzK55qYe/CYmjLF9LN5umiZLbvgRPET3
-         eYtQ==
-X-Gm-Message-State: AOJu0YxotopzVoqxdLa3xnXZfII+MoQIIGoF7DvtvnO2Q8EqwsKvZhrR
-	fejz0jDjjwFQPRVO4zko/9KNUIFVgeczUQ==
-X-Google-Smtp-Source: AGHT+IFaky36LUNJ0WdGHSeGcJ+zHWWfUOIMulY4AsqbXvuDUu75qz5IBEXI5urAHMTEk+MnU6c9iQ==
-X-Received: by 2002:a05:620a:4554:b0:783:539a:f319 with SMTP id u20-20020a05620a455400b00783539af319mr7292948qkp.13.1705458021691;
-        Tue, 16 Jan 2024 18:20:21 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id wa12-20020a05620a4d0c00b0078321f3e7c7sm4172575qkn.114.2024.01.16.18.20.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Jan 2024 18:20:21 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rPvXQ-004Zr6-Fb;
-	Tue, 16 Jan 2024 22:20:20 -0400
-Date: Tue, 16 Jan 2024 22:20:20 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Eric Badger <ebadger@purestorage.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	"open list:INTEL IOMMU (VT-d)" <iommu@lists.linux.dev>,
-	open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iommu/vt-d: Check for non-NULL domain on device release
-Message-ID: <20240117022020.GH50608@ziepe.ca>
-References: <20240113181713.1817855-1-ebadger@purestorage.com>
- <20240116152215.GE50608@ziepe.ca>
- <46a61123-dd22-46cb-8b2a-15431fcc03f1@arm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dIlBgVMk"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1705461857; x=1736997857;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=lQVzJfW4PzGfq9ar+uuKtn+tGVuy7nvv+1dL8Gzr7hw=;
+  b=dIlBgVMke2GYF8Gx931wPR1AS887YNQdJIUrm8vNL7oGaA1lbfIZ+f0O
+   BSYkOKM+2zl+N+aRh86Vi6n4wbcmgynCEJbBWSRBMezAvmFK7wQOAAlGv
+   f56nc/q8NnW5t41Lwpg5kwfTGVPlYfwFicdIlvlSZrDQ5Q9TnvVHOdp6N
+   Q0lQasFHcqnTlZAqIh/vXbzzhVLT2ng/cy+SIR45J0A/3csoDt70sq+nx
+   JuWYLAEaS4niRs7RKKGmVCJlKgIX5Hz9/JvHJnEr9JJgmeoeiyoAKjpCr
+   4CBWLeGlmvSKOwDf1obvdmaUyxZws2AQnCkTxkNOnHPRWUCd6oUXbnIMO
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10955"; a="6814148"
+X-IronPort-AV: E=Sophos;i="6.05,200,1701158400"; 
+   d="scan'208";a="6814148"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2024 19:24:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10955"; a="777303816"
+X-IronPort-AV: E=Sophos;i="6.05,200,1701158400"; 
+   d="scan'208";a="777303816"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.171.146]) ([10.249.171.146])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2024 19:24:12 -0800
+Message-ID: <3ee904e9-8a93-4bd9-8df7-6294885589e4@linux.intel.com>
+Date: Wed, 17 Jan 2024 11:24:10 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <46a61123-dd22-46cb-8b2a-15431fcc03f1@arm.com>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, linux-pci@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v10 0/5] fix vt-d hard lockup when hotplug ATS capable
+ device
+Content-Language: en-US
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>, kevin.tian@intel.com,
+ bhelgaas@google.com, dwmw2@infradead.org, will@kernel.org,
+ robin.murphy@arm.com, lukas@wunner.de
+References: <20231228170206.720675-1-haifeng.zhao@linux.intel.com>
+ <1a2a4069-c737-4a3c-a2f6-cce06823331b@linux.intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <1a2a4069-c737-4a3c-a2f6-cce06823331b@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Jan 17, 2024 at 01:57:34AM +0000, Robin Murphy wrote:
-> > > ---
-> > >   drivers/iommu/intel/iommu.c | 10 ++++++----
-> > >   1 file changed, 6 insertions(+), 4 deletions(-)
-> > 
-> > Unfortunately this issue is likely systemic in all the drivers.
+On 2024/1/15 15:58, Ethan Zhao wrote:
+> -static int qi_check_fault(struct intel_iommu *iommu, int index, int 
+> wait_index)
+> +static int qi_check_fault(struct intel_iommu *iommu, int index, int 
+> wait_index,
+> +                  pci_dev *target_pdev)
+>   {
+>          u32 fault;
+>          int head, tail;
+> +       u64 iqe_err, ice_sid;
+>          struct q_inval *qi = iommu->qi;
+>          int shift = qi_shift(iommu);
 > 
-> All two of the drivers which support deferred attach, that is.
-
-We could call release_device on an unlikely error unwind path with a
-NULL domain for all drivers.
-
-> > Something I've been thinking about for a while now is to have the
-> > option for the core code release to set the driver to a specific
-> > releasing domain (probably a blocking or identity global static)
-> > 
-> > A lot of drivers are open coding this internally in their release
-> > functions, like Intel. But it really doesn't deserve to be special.
+>          if (qi->desc_status[wait_index] == QI_ABORT)
+>                  return -EAGAIN;
 > 
-> Either way it shouldn't apply in this case, though. Crash kernels *are*
-> special. The whole point of deferred attach is that we don't disturb
-> anything unless we've got as far as definitely using a given default domain
-> (from which we can infer the relevant client device should have been reset
-> and quiesced). 
+> +       /*
+> +        * If the ATS invalidation target device is gone this moment 
+> (surprise
+> +        * removed, died, no response) don't try this request again. this
+> +        * request will not get valid result anymore. but the request was
+> +        * already submitted to hardware and we predict to get a ITE in
+> +        * followed batch of request, if so, it will get handled then.
+> +        */
 
-If only it were so simple.. It assumes drivers are structured to reset
-their devices using only MMIO before doing anything to setup DMA and
-trigger an iommu attach. A lot of drivers aren't and this whole scheme
-turns a bit sketchy.
+We can't leave the ITE triggered by this request for the next one, which
+has no context about why this happened. Perhaps move below code down to
+the segment that handles ITEs.
 
-Some devices can't even do it at all. eg mlx5 has the crashing kernel
-quiet the device before passing over to the crash kernel because there
-is no way beyond FLR to regain control of a mlx5 device.
+Another concern is about qi_dump_fault(), which pr_err's the fault
+message as long as the register is set. Some faults are predictable,
+such as cache invalidation for surprise-removed devices. Unconditionally
+reporting errors with pr_err() may lead the user to believe that a more
+serious hardware error has occurred. Probably we can refine this part of
+the code as well.
 
-> Thus regardless of why release might get called, if a
-> deferred attach never happened then the release should still avoid touching
-> any hardware configuration either.
+Others look sane to me.
 
-Interesting point.. Makes sense to me
+> +       if (target_pdev && !pci_device_is_present(target_pdev))
+> +               return -EINVAL;
+> +
+>          fault = readl(iommu->reg + DMAR_FSTS_REG);
+>          if (fault & (DMA_FSTS_IQE | DMA_FSTS_ITE | DMA_FSTS_ICE))
+>                  qi_dump_fault(iommu, fault);
+> @@ -1315,6 +1327,13 @@ static int qi_check_fault(struct intel_iommu 
+> *iommu, int index, int wait_index)
+>                  tail = readl(iommu->reg + DMAR_IQT_REG);
+>                  tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
+> 
+> +               /*
+> +                * SID field is valid only when the ITE field is Set in 
+> FSTS_REG
+> +                * see Intel VT-d spec r4.1, section 11.4.9.9
+> +                */
+> +               iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
+> +               ice_sid = DMAR_IQER_REG_ITESID(iqe_err);
+> +
+>                  writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
+>                  pr_info("Invalidation Time-out Error (ITE) cleared\n");
+> 
+> @@ -1324,6 +1343,16 @@ static int qi_check_fault(struct intel_iommu 
+> *iommu, int index, int wait_index)
+>                          head = (head - 2 + QI_LENGTH) % QI_LENGTH;
+>                  } while (head != tail);
+> 
+> +               /*
+> +                * If got ITE, we need to check if the sid of ITE is the 
+> same as
+> +                * current ATS invalidation target device, if yes, don't 
+> try this
+> +                * request anymore, the target device has a response 
+> time beyound
+> +                * expected. 0 value of ice_sid means old device, no 
+> ice_sid value.
+> +                */
+> +               if (target_pdev && ice_sid && ice_sid ==
+> +                   pci_dev_id(pci_physfn(target_pdev))
+> +                               return -ETIMEDOUT;
+> +
+>                  if (qi->desc_status[wait_index] == QI_ABORT)
+>                          return -EAGAIN;
+>          }
 
-> I'd suggest using dev->iommu->attach_deferred as the condition rather than a
-> NULL domain, to be clear that it's the *only* valid reason to not have a
-> domain at this point.
-
-So if we take this release_domain approach and we have the core code
-not call it for the defered attach case then the driver's
-release_device should just free memory allocated by probe and not
-touch the data structures?
-
-Then the idea is that drivers would only manipulate their STE/DTE/etc
-under attach and never in probe/release.
-
-Jason
+Best regards,
+baolu
