@@ -1,59 +1,89 @@
-Received: from gentwo.org (gentwo.org [62.72.0.81])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E44728699
-	for <iommu@lists.linux.dev>; Wed, 17 Jan 2024 22:23:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.72.0.81
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2925184C
+	for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 00:52:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.93
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705530216; cv=none; b=n790X1ns78zFpIqbzy3pkq1OC7CKVzAf3jQWaOx3Aq/T2AWPPiqW+/KfZuAS7qLhx5jMXnmAhrEJwqtwPrHaJC7+Csz7D46KzaNw3yPwdi+QGtXx0xRv2lO06NFPRSiT3tBgskq1JiYsO+/fq7uGLPhL/BQaPdxuL0O3m257F4A=
+	t=1705539142; cv=none; b=U5Fv0RZitgAtfwKAWit43T6X15sipTXUjRo46lNxarA0/hDp0KikwvJ+3sAsGTcScCMg1Utq7sE3hGqgwfP3WjoybZvTta9HqzvKsQNgzvE40Tem9uGm152urt3bvpulFGj4FfVyvwbXdhAy55hkVL4dxQbSqWYMNzK71glcaIo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705530216; c=relaxed/simple;
-	bh=GzgtWrsrVSTETm0Nq6miwtI3r6kYiPkoq9PTnzBbi7A=;
-	h=Received:Received:Date:From:To:cc:Subject:In-Reply-To:Message-ID:
-	 References:MIME-Version:Content-Type; b=Z6/dNY5kRDD5kDLxgH3Ad/WAobhS+fwSoitB1EwEGj4nawavohSRjtseDs+DqQERDsbSPn87D264PYOKBE+9w3RqkLnRAGtNljO6GMaLfE8I3qNo1zJG+ioBqt+T/TG7oHXOyFMwlqmciT/OE/0IRZJ9lujG+s+aXuK6rrOOQXg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com; spf=fail smtp.mailfrom=linux.com; arc=none smtp.client-ip=62.72.0.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=linux.com
-Received: by gentwo.org (Postfix, from userid 1003)
-	id 614C940A8B; Wed, 17 Jan 2024 14:23:33 -0800 (PST)
-Received: from localhost (localhost [127.0.0.1])
-	by gentwo.org (Postfix) with ESMTP id 5A16540A85;
-	Wed, 17 Jan 2024 14:23:33 -0800 (PST)
-Date: Wed, 17 Jan 2024 14:23:33 -0800 (PST)
-From: "Christoph Lameter (Ampere)" <cl@linux.com>
-To: Baruch Siach <baruch@tkos.co.il>
-cc: Christoph Hellwig <hch@lst.de>, 
-    Marek Szyprowski <m.szyprowski@samsung.com>, 
-    Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, 
-    Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>, 
-    Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
-    devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-    linux-kernel@vger.kernel.org, 
-    =?ISO-8859-2?Q?Petr_Tesa=F8=EDk?= <petr@tesarici.cz>, 
-    Ramon Fried <ramon@neureality.ai>
-Subject: Re: [PATCH RFC 1/4] of: get dma area lower limit
-In-Reply-To: <be71fbb0963584b8c401423d9dd2fba2511bd5b4.1703683642.git.baruch@tkos.co.il>
-Message-ID: <30d81f73-e27e-6cc4-5458-686e3ddd2e5c@linux.com>
-References: <cover.1703683642.git.baruch@tkos.co.il> <be71fbb0963584b8c401423d9dd2fba2511bd5b4.1703683642.git.baruch@tkos.co.il>
+	s=arc-20240116; t=1705539142; c=relaxed/simple;
+	bh=FirjylFd2MCTFO58V4vn7pDh9CrJrYnIJwrr78O9IR8=;
+	h=DKIM-Signature:X-IronPort-AV:X-IronPort-AV:Received:X-ExtLoop1:
+	 X-IronPort-AV:Received:Message-ID:Date:MIME-Version:User-Agent:Cc:
+	 Subject:Content-Language:To:References:From:In-Reply-To:
+	 Content-Type:Content-Transfer-Encoding; b=b3wxl5qVTvQD5Im5RuCP7Ww+WFD1xFTQqVedgVVgj6dUnHrgXbzJg6gD7VCtN+8E4sFrPB+fhvuGOOXo9CzpMiN3Ol9tuLC4IA3o8hM72fDu37HLJPHudJfAwabuLUxcw2xRyMiPhlIn7yoPF0/soV4coj94CwEmLNwZUcHlzO8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=U17CO2b+; arc=none smtp.client-ip=192.55.52.93
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="U17CO2b+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1705539141; x=1737075141;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FirjylFd2MCTFO58V4vn7pDh9CrJrYnIJwrr78O9IR8=;
+  b=U17CO2b+PAZoZLRfRXr5ILSxGFwyOyAj2MFpqs1MvTBVQsFoAvGFP+Yu
+   kYYuKXXsDB1h7txbiOU3zAQRZJj5QO07hV9S9sjsLom5KORJXUh3+GspM
+   nfNcKJMAYK581U7/008Ou7/VLyrWJ/5HlLjITjeKUv7boIaZe0vseh4Mw
+   bI5Jl/5mPqnUur8Rzhfd5v3dzM62l5uvgjavOj3m1yYepG3y17hvVR89S
+   e1YXexN/6yatSE0nV4Uy0x5ROymB+3DrpDTUCII3m0MUm/TScAt7xfV/C
+   +6pMdiYgfCYZ38dx/tOdtJD11B7/Xe6wvyyDbGalBK7myMbtqwl/8M53y
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10956"; a="397467485"
+X-IronPort-AV: E=Sophos;i="6.05,201,1701158400"; 
+   d="scan'208";a="397467485"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2024 16:52:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,201,1701158400"; 
+   d="scan'208";a="186466"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa003.jf.intel.com with ESMTP; 17 Jan 2024 16:52:17 -0800
+Message-ID: <5a9c38ec-1dc2-40d3-99eb-02b87be660a6@linux.intel.com>
+Date: Thu, 18 Jan 2024 08:46:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII; format=flowed
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, linux-pci@vger.kernel.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v10 0/5] fix vt-d hard lockup when hotplug ATS capable
+ device
+Content-Language: en-US
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>, kevin.tian@intel.com,
+ bhelgaas@google.com, dwmw2@infradead.org, will@kernel.org,
+ robin.murphy@arm.com, lukas@wunner.de
+References: <20231228170206.720675-1-haifeng.zhao@linux.intel.com>
+ <1a2a4069-c737-4a3c-a2f6-cce06823331b@linux.intel.com>
+ <3ee904e9-8a93-4bd9-8df7-6294885589e4@linux.intel.com>
+ <42f7848a-0262-4871-b5dc-0e87beebfd11@linux.intel.com>
+ <dcd27bc8-5eca-41ae-bb86-fd8e657ccfed@linux.intel.com>
+ <d72d0a12-f3a4-4b4d-8b3b-5e59937a21d3@linux.intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <d72d0a12-f3a4-4b4d-8b3b-5e59937a21d3@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, 27 Dec 2023, Baruch Siach wrote:
+On 1/17/24 5:00 PM, Ethan Zhao wrote:
+> +       /*
+> +        * If the ATS invalidation target device is gone this moment 
+> (surprise
+> +        * removed, died, no response) don't try this request again. this
+> +        * request will not get valid result anymore. but the request was
+> +        * already submitted to hardware and we predict to get a ITE in
+> +        * followed batch of request, if so, it will get handled then.
+> +        */
+> +       if (target_pdev && !pci_device_is_present(target_pdev))
+> +               return -EINVAL;
 
-> of_dma_get_max_cpu_address() returns the highest CPU address that
-> devices can use for DMA. The implicit assumption is that all CPU
-> addresses below that limit are suitable for DMA. However the
-> 'dma-ranges' property this code uses also encodes a lower limit for DMA
-> that is potentially non zero.
+Again, we should not ignore the error triggered by the current request.
+Do not leave it to the next one. The WAIT descriptor is a fence. Handle
+everything within its boundary.
 
-All of memory can be used for DMA by default (==ZONE_NORMAL). ZONE_DMA 
-defines a special range for devices that are unable to perform DMA to all 
-of memory. Usually due to the lack of address bit support.
-
-So I guess that the platform in question here has as a general limit as to 
-what address spaces I/O devices can do DMA to?
+Best regards,
+baolu
