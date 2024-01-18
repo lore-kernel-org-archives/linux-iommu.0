@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 811415390
-	for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 02:26:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79E9C5665
+	for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 02:32:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=134.134.136.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705544781; cv=none; b=VwJ1psJm409/7ifyuA6YLbbbCb4KjjDM/rNkbC6Zmu5DwkOuzlaq1E5Ym+YAJFgtTVk1+fVHXyQxLzKB5hPcC0OLoBFvgcy75Dq/IfVrDLN+6rKUIJtRGB64GkNMT0guBlLFasju9h+tfu/i1qCensdhlU12QCC+pCcX+45OJs8=
+	t=1705545152; cv=none; b=jzkVxGtNky9tR3RZfLc5kSh1eEMv9vxc6c7RY/OrG8rjDsLbtTVKnNHFD3gF3wCcAtKyU8qWHbB0/jRFbJjv9OfiXeg3YzboQ/4JmOFS3lIkmaBRWg/Klf+ibykX8H1DXVbbVHv376XfPFD+X9pBj8EZeVDPOOmRcD0aTJvEoTc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705544781; c=relaxed/simple;
-	bh=5Bw7dRRUpNawFEvYMYeCuZvjZQTPeDem38vHl1yuut8=;
+	s=arc-20240116; t=1705545152; c=relaxed/simple;
+	bh=rZUgRK/6bWCbmtxrq6/nPe4yEvZHLPc6MjZDysW0tkE=;
 	h=DKIM-Signature:X-IronPort-AV:X-IronPort-AV:Received:X-ExtLoop1:
 	 X-IronPort-AV:X-IronPort-AV:Received:Message-ID:Date:MIME-Version:
-	 User-Agent:Subject:To:Cc:References:From:In-Reply-To:Content-Type:
-	 Content-Transfer-Encoding; b=Eer+dDJE5/qtEtdw/4kKq31FY/R9oRGIZAcdnHOAYigwnLcOs3saupzujNCpVOJ/N40HY7G8GMgHLexunhw2MpZuEoSJq/VTv9SHz4bEO0xJkJbT8Y29fwVsmJylS/NauSvB/OKT+BcNdl3TzoOFovYy/lA5GrRqXFEMMlxxrmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LbA6c1Ez; arc=none smtp.client-ip=198.175.65.12
+	 User-Agent:Subject:From:To:Cc:References:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding; b=DA6xrga9l93x+RMgVkdPtb3Zdenvm30SQZgiPmmG6MD4FcdyN98IFxr7/0THdFO2QB8XQeIBpwkWpuDsCJXrKjeURkAyCyReOi60EIKOoq+SANpiYt1+nukxJCYcRP9TpdnV6cRKCvKQHDNaPhBrW/N0KAzz4xG11Mh8628ykpI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hPpofyRm; arc=none smtp.client-ip=134.134.136.65
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LbA6c1Ez"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hPpofyRm"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1705544781; x=1737080781;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=5Bw7dRRUpNawFEvYMYeCuZvjZQTPeDem38vHl1yuut8=;
-  b=LbA6c1Ezu0JEaItnNUq8W7kB6myyuREYsUwShHI/0QxquHBTT3dGP8c6
-   XKDGEKPQbEwEcaw5X2cTIZXdL9tEHsTAl4RQmclutlGd29HvTLwlml5yk
-   vXWtxzd5rTpIYfkJO94+CtYIDUbvOZwbqldz0T/NGEqf6khqLfPnenTXg
-   78sH2mpHSkszSWGqjSIWCoirGLOkDmVlb0cUMmHq73t+/C1qfr7+/EtpL
-   o3B+3cNyxldzCrcb8lA/mPs6ZCq337ACKZSvRaA1IQs/zPHId8e9uX67w
-   arlazk51hNwW7/DAZW3OOKrjucMBvWrAoSkA1afFJTgzFAvgkQn8Tds5A
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10956"; a="7701021"
+  t=1705545151; x=1737081151;
+  h=message-id:date:mime-version:subject:from:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=rZUgRK/6bWCbmtxrq6/nPe4yEvZHLPc6MjZDysW0tkE=;
+  b=hPpofyRmxHCrQnpU01ON8tKaiNIDueaQGHJjar6HVBgLLiBpU3ny/nsw
+   kmj7CSrMdHFCaI15TjGDZP3PSyBA9HCW1nT7lxjvlfY+jw7Nf2PrWi8Zk
+   MyjgNQgusdgBzuVQtcAQtyQYwolvDqiJ3qYp+yKfwsp1EyoalvLh7C007
+   faa3WUB1lHsSqU8FUeGH3w7YRxiChr5xTsRk5JVu5OOFG3LjuUGZ/qLq7
+   Bu5kSYPHZSYPN/br/28BFyhlmJsm9z377FWp3/WvcHSMT15P7gtvB3Bhl
+   n/Cw4w2T+5W9FIGF27C4NCNF1cXpWOvbaG2YxT0u9f0YKG4nS+6LaBgFe
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10956"; a="404096614"
 X-IronPort-AV: E=Sophos;i="6.05,201,1701158400"; 
-   d="scan'208";a="7701021"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2024 18:26:21 -0800
+   d="scan'208";a="404096614"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2024 18:32:29 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10956"; a="874947974"
+X-IronPort-AV: E=McAfee;i="6600,9927,10956"; a="854865851"
 X-IronPort-AV: E=Sophos;i="6.05,201,1701158400"; 
-   d="scan'208";a="874947974"
+   d="scan'208";a="854865851"
 Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.254.215.192]) ([10.254.215.192])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2024 18:26:16 -0800
-Message-ID: <9cc2010f-269c-4d23-b284-6fe4162f8810@linux.intel.com>
-Date: Thu, 18 Jan 2024 10:26:14 +0800
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2024 18:32:23 -0800
+Message-ID: <f6e57309-be5a-4a84-a280-6ed00a550548@linux.intel.com>
+Date: Thu, 18 Jan 2024 10:32:20 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,6 +53,7 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [RFC PATCH v10 0/5] fix vt-d hard lockup when hotplug ATS capable
  device
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
 To: Baolu Lu <baolu.lu@linux.intel.com>, kevin.tian@intel.com,
  bhelgaas@google.com, dwmw2@infradead.org, will@kernel.org,
  robin.murphy@arm.com, lukas@wunner.de
@@ -65,44 +66,58 @@ References: <20231228170206.720675-1-haifeng.zhao@linux.intel.com>
  <dcd27bc8-5eca-41ae-bb86-fd8e657ccfed@linux.intel.com>
  <d72d0a12-f3a4-4b4d-8b3b-5e59937a21d3@linux.intel.com>
  <5a9c38ec-1dc2-40d3-99eb-02b87be660a6@linux.intel.com>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <5a9c38ec-1dc2-40d3-99eb-02b87be660a6@linux.intel.com>
+ <9cc2010f-269c-4d23-b284-6fe4162f8810@linux.intel.com>
+In-Reply-To: <9cc2010f-269c-4d23-b284-6fe4162f8810@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
 
-On 1/18/2024 8:46 AM, Baolu Lu wrote:
-> On 1/17/24 5:00 PM, Ethan Zhao wrote:
->> +       /*
->> +        * If the ATS invalidation target device is gone this moment 
->> (surprise
->> +        * removed, died, no response) don't try this request again. 
->> this
->> +        * request will not get valid result anymore. but the request 
->> was
->> +        * already submitted to hardware and we predict to get a ITE in
->> +        * followed batch of request, if so, it will get handled then.
->> +        */
->> +       if (target_pdev && !pci_device_is_present(target_pdev))
->> +               return -EINVAL;
+On 1/18/2024 10:26 AM, Ethan Zhao wrote:
 >
-> Again, we should not ignore the error triggered by the current request.
-> Do not leave it to the next one. The WAIT descriptor is a fence. Handle
-> everything within its boundary.
+> On 1/18/2024 8:46 AM, Baolu Lu wrote:
+>> On 1/17/24 5:00 PM, Ethan Zhao wrote:
+>>> +       /*
+>>> +        * If the ATS invalidation target device is gone this moment 
+>>> (surprise
+>>> +        * removed, died, no response) don't try this request again. 
+>>> this
+>>> +        * request will not get valid result anymore. but the 
+>>> request was
+>>> +        * already submitted to hardware and we predict to get a ITE in
+>>> +        * followed batch of request, if so, it will get handled then.
+>>> +        */
+>>> +       if (target_pdev && !pci_device_is_present(target_pdev))
+>>> +               return -EINVAL;
+>>
+>> Again, we should not ignore the error triggered by the current request.
+>> Do not leave it to the next one. The WAIT descriptor is a fence. Handle
+>> everything within its boundary.
+>
+>  We didn't set fence bit to every ATS invalidation wait descriptor,
+>
+> only the intel_drain_pasid_prq() queue a drain page requests with FN
+>
+> sit, but that is not called in hotplug removal path.
 
-  We didn't set fence bit to every ATS invalidation wait descriptor,
+So, in fact so far, it doesn't act as a fence except the 
+intel_drain_pasid_prq() ,
 
-only the intel_drain_pasid_prq() queue a drain page requests with FN
-
-sit, but that is not called in hotplug removal path.
+and it never handle everthing within its border.
 
 
 Thanks,
 
 Ethan
 
-
-
 >
-> Best regards,
-> baolu
+>
+> Thanks,
+>
+> Ethan
+>
+>
+>
+>>
+>> Best regards,
+>> baolu
+>
