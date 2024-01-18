@@ -1,211 +1,174 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2065.outbound.protection.outlook.com [40.107.92.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE35A184C
-	for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 13:39:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.65
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705585146; cv=fail; b=X1T8Rzd3LdaMvaRy2r+CRlpHcQyyfMyFtmqH/uAmxh5IH7qLgsu9O1hhL8JB+P3Mnhketh4hLRjo7Ccg8de5+B+ee7x7NKSk0+FQgWk7I4uQoACL4ZyE35a/I4I68vkhPt3ltD90ip05dhv+LbfIDgB17R+2afnxTGoFDZljdwk=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705585146; c=relaxed/simple;
-	bh=gKBhwESUlvwISQPJEqAffvAIPKDwfZpjdnVffAE6evY=;
-	h=ARC-Message-Signature:ARC-Authentication-Results:DKIM-Signature:
-	 Received:Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 Content-Type:Content-Disposition:In-Reply-To:X-ClientProxiedBy:
-	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-SenderADCheck:X-MS-Exchange-AntiSpam-Relay:
-	 X-Microsoft-Antispam:X-Microsoft-Antispam-Message-Info:
-	 X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:
-	 X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped; b=tBmYEvqz1kS282gmQ1J3kwVva9ZKLj+JNCCZxzEaMqU6VciUqCyEeolL9dq6R9uOAqWWvqN2RY1D04fz4gWcC2OcP1tPG0Plq+2nNQOZkkwAWEcCP8D0if2eLowxdkSjUvHBLkqzYZypWN+Z+3rKwkJYzxyEIV9oV46zvWn1jYc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=LJtXqLfG; arc=fail smtp.client-ip=40.107.92.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9352628DDA
+	for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 14:22:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.177
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705587768; cv=none; b=BOnXYNxo3htmdtbE1axrtvFr30o7ZhYL9VylC3UBLNSxlLLOPiP8IFvkl/0PdNnW2u69GlqFThpgkNfP65eBODCY9WxPGkm1+vAQJn0yLTRmcVr1e6l2UU3h/8rlYbg0Zrb7wF9lo89t3SHQ2UID2xIJ2/mapOcZH16JrCNzX7w=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705587768; c=relaxed/simple;
+	bh=49cNhVsuBMgtJHArJcV1m7agcOAtGe87ch9+R4pb5zg=;
+	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:
+	 Received:Date:From:To:Cc:Subject:Message-ID:References:
+	 MIME-Version:Content-Type:Content-Disposition:
+	 Content-Transfer-Encoding:In-Reply-To; b=K+zW8I6f9ivi7U6F5XTrV31DSefc9ewX+STDy4Qu373H+T+k4gFL3GSbEDDptHZpvkv+ETzGb2xFVN8EHfcW/oKcyr0IU9/BTAXe6N8THTt6DSNc5gVeD20nM0AFjkdyYKSNC2Iv/OnqA6vZkLZaQkZscurMj0O3AvBDPC7z7xs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=cJMwkt0X; arc=none smtp.client-ip=209.85.167.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="LJtXqLfG"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SqJcQn2mQdO/BxubneKI2rHtrTSF2tyIRf7P7mHe4Q8oSlAkq8pj4D1r84y47vZb2/vhlzheGOsS3xygneQNfaR83yK8FZm72u1NvFFCpCqPQoSyvfUwxV7hbNEijd1YGRmrT1IZfbtz6N9GLYpeMGERNNHArEoCI68DeTR/LYA1jIhV5jN8VjSPFX5FdQOb0EPu9KC1U/lWyXvfXIfmruHBv21hua4HdeJryFiBIw/kGRlZaWh25Gfi7G6x7VRgxHNBtNRW+Z5nfDqSb0VaM+6LROrLr02M2gvADSHE2dk1dOgPxFXXxoQQJCMe65+bDHolH9EH7t9vg3r1v8Cklw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vwmONdVFu7N6vk8TQP9vS0tPUqnwvIPQ0EK9idtzBAE=;
- b=mAHDCNuaXQDDydjQ1qyU0YaKTbHcjwsIM2Pttg4f4+dvG1QVe5iS4jUvxuSwUr1kNCp3qR1rAd4WkyaAri+LyYjZXJzbUS8QNfIrJEUSTlEkKVk8Z4NQxnfHLrUHrhIPAfBHdZkhZ6u+QKl8CJwD4W4aVzcgNHMOHjYcjk6SOTYjtVdgJvptGx7bImm4/W5No7j+qyWbHYqwqz0M+PX7U9fuM0vLzFqunlcaY/n3tav/XebsJx1ZsFiyyPjf7okJaNr3JB1fn8lq6aD1j9xuNcNeqK9sGrs8EYkD3XPb+L97B7gaA1p2Th7l5CV0M3jpqoEPCsHaeXW0xCuT85CZfw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vwmONdVFu7N6vk8TQP9vS0tPUqnwvIPQ0EK9idtzBAE=;
- b=LJtXqLfG64hO+aWpZvHy+msTylu1DePlW716AtwyZ8aBAe5Ov8aCzJPMG2GO7l4HFcNs8KzjzewC8FL+8CgF+6I3Fq3RjjcXu8ynWJ5fmsjh1ijM4R47qh2DruBTDjn93A3jgZgHSC7Umrp6hrDJujxaADGyWwJzG19EB55J/YlpofEyqr7rh1SbxEg5KXaDMSBY4My9WVwf0AOSQ6fxcR0LoftqBe51BvKuMlw3S+gFi0Pt/QULIM7fopSnF3syVCECQ3hkA24CFA3I1wumJUp+2TGpFPuRQO2Y2ZLLCcbI4h1chJ1vrm88Ixu0JmkIaTEbPPh4jLzDg3dKbM6jxw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by MN2PR12MB4062.namprd12.prod.outlook.com (2603:10b6:208:1d0::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7181.23; Thu, 18 Jan
- 2024 13:38:59 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873%6]) with mapi id 15.20.7202.024; Thu, 18 Jan 2024
- 13:38:59 +0000
-Date: Thu, 18 Jan 2024 09:38:57 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
-	"peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
-	"joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
-	"Zeng, Xin" <xin.zeng@intel.com>,
-	"Zhao, Yan Y" <yan.y.zhao@intel.com>
-Subject: Re: [PATCH 3/8] iommufd: Support attach/replace hwpt per pasid
-Message-ID: <20240118133857.GK734935@nvidia.com>
-References: <20231127063428.127436-1-yi.l.liu@intel.com>
- <20231127063428.127436-4-yi.l.liu@intel.com>
- <20240115172430.GN734935@nvidia.com>
- <BN9PR11MB52761349DFB5DAD2797C3EBF8C732@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240116125756.GB734935@nvidia.com>
- <BN9PR11MB52763DDDE39C211E761A05168C722@BN9PR11MB5276.namprd11.prod.outlook.com>
- <88e46f6c-4d64-4357-be2a-833797e6de15@intel.com>
- <20240117125625.GF734935@nvidia.com>
- <459d6a3a-0ad9-4980-be37-103211e927c2@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <459d6a3a-0ad9-4980-be37-103211e927c2@intel.com>
-X-ClientProxiedBy: SN4PR0501CA0059.namprd05.prod.outlook.com
- (2603:10b6:803:41::36) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="cJMwkt0X"
+Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-3bbc649c275so5619067b6e.0
+        for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 06:22:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1705587765; x=1706192565; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=MQmQ57jhPNOOjCerNM6q5F9m10YHH8SVIWhIL9dMZTE=;
+        b=cJMwkt0XMZtpRUS/H3QmmzgQcoKAUl3/w1KqlyLivkQRkM7pRbk20ae4gceUvv5+SW
+         tY1UWv2cfhG54Q2hU7pNDsg7cjtByKDxASzRy7kpeAQFH5WUWp4yxi6JT1XU6CkwU5+s
+         32qrbYWEul8DdNjsqpUev2GPv1uaum/YURnIIB1pCdn2bdMSbcKUfFNcE7unUDTOO6qy
+         nPUOXCEQP5l8U8vLAlvgOHHwUpYqr+j+Wdqy3ZhxZbYeHKXwKCJRKmLtx0JZPYse0GkW
+         SPmT3cvouSOJYnKZQOBKV+71M0i8rUYe0Q1SFIATwZb/dVUYTzovO7Kj2TeX1XxQuWs5
+         yv6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705587765; x=1706192565;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=MQmQ57jhPNOOjCerNM6q5F9m10YHH8SVIWhIL9dMZTE=;
+        b=oZefSZkpJ5l1Kv4XxRxnAGE6BQ/GKkqAy5kC+Wk7UC4EylzDLVpDGeUNiOmxH4TB4e
+         T7X9k3KOeb2ouJ/6d0vTM+EyYKEA6uF/l35c9mCnIo74KEBaKWpIUJtJjcpPshWV000d
+         ueaw4ZP9OP20JaL6Uh2ox3ugsXAwY7lbdVZUOldl1wI2tiS2OWkBczNyudb8TldGEPI5
+         DjZoJcrI3AuGmfmUa50SUgDtJxFtDmEz/bXzcWrpaHKNzTAmfQmAMWRspaqCi1oMinbT
+         u20+h7/1chDRmF/1LbxooM5+FQleJ8E6TZ6deC+ZBXEm8FEdjfCysgM0k65zKEAvkjvh
+         LCCw==
+X-Gm-Message-State: AOJu0YyceSST/ZdIkAAaX9IlMicQVSoeIMPwmC0VcLinwFMbm5p6ovLb
+	mGpsvIR+xcTPA2ojdAqfDzutDxK4QKCMUNEuDk6Yenc00CXKoOaluRXlZu385uQ=
+X-Google-Smtp-Source: AGHT+IEAZqGHugP6SSHGhmnB2UTe2rde66vWr8xnTZZd44KtjGiA2gbMs46TD4AdmZ56Y+ynbP+VDg==
+X-Received: by 2002:a05:6808:1190:b0:3bd:9c61:7d41 with SMTP id j16-20020a056808119000b003bd9c617d41mr982809oil.12.1705587765526;
+        Thu, 18 Jan 2024 06:22:45 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id t8-20020a05680800c800b003bd3c878a99sm261380oic.13.2024.01.18.06.22.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Jan 2024 06:22:44 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rQTI3-0051dq-ET;
+	Thu, 18 Jan 2024 10:22:43 -0400
+Date: Thu, 18 Jan 2024 10:22:43 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "zhangzekun (A)" <zhangzekun11@huawei.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	nicolinc@nvidia.com, mshavit@google.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Add a threshold to avoid potential
+ soft lockup
+Message-ID: <20240118142243.GI50608@ziepe.ca>
+References: <20240115114040.6279-1-zhangzekun11@huawei.com>
+ <20240115153152.GA50608@ziepe.ca>
+ <e74ea905-d107-4202-97ca-c2c509e7aa1e@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MN2PR12MB4062:EE_
-X-MS-Office365-Filtering-Correlation-Id: 17a89a60-47a2-46b3-7dea-08dc182ad337
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	g20uboAKcV+PKdIfzws/0bKm4iIJEtqBL6euzy6uIev40oJ93bAv/AJCYQBL+S7JqSLS9VWhHHt5OaOmTIfB1y2E6LvsE+imOiyonNqOz2AwSGG3LnvRIMATs3wWGV7fgQ4wXNCvJ3D2ceLs+eKwPR3bNSnr61NbfWkVs1zimtEMA9WdPH4OL6qSiFh/Bhw66DIyrc8JEmJy8VGtk3wxLrBFDTyQ4FJLUUvsEiemte0f4H5Da241FlXRAiDW1e4CQkh3g7qX4+JWx/MQM64iP/9kDYBuNNBKMWdGRIlJgAX2mKt13wYosXX8XbR+EJ8/BApIUp3AkJhj8OGo+fMI0AD1aIZJcvP4XgUUW9TlDlkTevloil1955LLF5PQYkGYnFWIt0D830dha5+TgHMrg1O0LL4MwhH6uVP/IJEEXeTC8DLmh1gRPcU39h/B5T+rIw25DVdUQ5fr0nH/kkzvu82DRXHFYs9DYMgBqxJ9ShOR0BqUG5ZEfGg1IWlkt+qaKgIfnFjse3vRaqNuRR69ALIzfe3WYIpg6yRCe40n6C6Bn6iqg3peS/hgTBTUyxEFU0d8r7EAbqob59gp4unOyFSvI6QQubEWaZgZAijohy7gmEwa8Pi0Aj3XPtV3uBJA
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(396003)(376002)(136003)(366004)(346002)(230922051799003)(186009)(1800799012)(451199024)(64100799003)(38100700002)(36756003)(86362001)(2616005)(1076003)(83380400001)(26005)(54906003)(6486002)(66476007)(66946007)(8936002)(478600001)(6512007)(6506007)(53546011)(316002)(66556008)(8676002)(6916009)(33656002)(2906002)(5660300002)(7416002)(4326008)(41300700001)(27376004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?b0+sbh6bRhFXqlOWvZh0LDHFK1o2HEyH+X7jDy7zN5rlZURnB8j/E684fccz?=
- =?us-ascii?Q?AlQv0y9m58XjSIDu9G9W3L6bAA8oS7uddM5R9ffyJ3jIXV3owtLIl2s57DT2?=
- =?us-ascii?Q?2jpylfnk2p+8te5pApmVz4KzgIwnB3JvroNPR+ojR8zuP3RBnB18urpy0V1N?=
- =?us-ascii?Q?4Gl8CgDBRpKKAGgYCcz22xDvnhTKswBDSMbIB97wgwD2eyM+QEo9z1oM1weV?=
- =?us-ascii?Q?gQ7vlm7jBxGqkK7ClAwPqKsb1v2XICdVOF39AvaiGb7qR7vljlsq7TcAhv4I?=
- =?us-ascii?Q?o5vDo5cAu7bYg19DiBlN5RIuCSUjD73I9w0pzZvkS9bkcAHuEiisYIz4AJKb?=
- =?us-ascii?Q?kVwTZGNDnGKXiGwMvdspgE3L3v93s5ubRmBC9bKxha9eRIHT2v8TsPH1qco/?=
- =?us-ascii?Q?PolKovq+cvsnancmehaC16nJIctbFSI/Y9dCp9TxFkRDszXwYwSQqA0GftI0?=
- =?us-ascii?Q?EN/UbM/5zuOfQmmde6wRlUVbuXFmI0fbLud2Rh/WuRcFYBsxa+YuG/YINNG9?=
- =?us-ascii?Q?CzBygWpErbU4IjjwmLCVpO81/nn156rfc70SJCl98ApXWCwFKwGr9A30eLir?=
- =?us-ascii?Q?Rq4dCnQT0IjWes/gQCX4K6PREmG8HJaevVnzgClneXos41CIjTfHOSq/bFQS?=
- =?us-ascii?Q?8q0LiPu8FwK2TSbhps6P4iKqlq45LqujDhI021qylIn/unGGcQ1NBObrIeUI?=
- =?us-ascii?Q?RigyphcPPYw/fDYa+BuWLXYHlDzmtUJ+3GZZnOQa+ODmHl4NsMKvSKVtrBR6?=
- =?us-ascii?Q?9orLG9jToqmGInRDFfjGDwuCdmWrVqLHUoHUg+Wf07YeUd4u2VssJ2r0mSXI?=
- =?us-ascii?Q?gMMAkGGtOttWL83S9Tzf+tw+worqAe/OtLxHkVNyAV2aJ4sI3jnDFNIk9vFX?=
- =?us-ascii?Q?IoIEa98jRDxF7XB5rch8a/nKkzjgrAPyZfw0QL7eiAgaFoCb88P78ZHpsI8L?=
- =?us-ascii?Q?gclV5nos3afkDZPl5WYowUv7k7+kkDRj5G00CtV4w0Brps8x2ajFelT9VRD/?=
- =?us-ascii?Q?AA5BO8jd0Gtfvvb7GUqoabIJ0//XNAf2yiJlGO6oQqcjJinrvbBOp5nYEq/M?=
- =?us-ascii?Q?q9oD/Z3BrBSwq3pi3V67TdpxAivofTtuDVvUcvwBks2VZGYqJ1kLdpHknq6c?=
- =?us-ascii?Q?UJCRFXTQw6j2BH6PUHjD0rJqPSisyPCk68XMT+2ft8K44eCehULVm3v/gvV9?=
- =?us-ascii?Q?8r2qAeM3rlOv3K03M0EcHYxxUXAHxD8eonsYeGhuwZSJWaDuaV2hratsMxsn?=
- =?us-ascii?Q?G5j1XZ5Cyx367a6ktOhV2hVSMDlVw0zFLn+C+2JjcjM5Bz2BfSmaGncNbvhn?=
- =?us-ascii?Q?fibKCzt/rXAnrcMKqIpHMlLh0I24vCUqCaSjbAmgUthAU3g3+myyG3kSoLY7?=
- =?us-ascii?Q?ddEwQIKoOdN/YsFuHmIiRY3BiBWylylXZbNbQxBBVHfB24wVG61/bHaSKI4A?=
- =?us-ascii?Q?ahllO4PLJs4RNpHayLyWLCag8RxngbTJdzqIkK9DHrAptabgtdhN+2TCcGcI?=
- =?us-ascii?Q?ElaKtnIRcIFgb0xDugOfsLbwOWlp8BONV5Nqwjw1UHhzKp5Wmzcas4xqqg51?=
- =?us-ascii?Q?XNQHnlOEkQ8CpK/eMZM=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 17a89a60-47a2-46b3-7dea-08dc182ad337
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2024 13:38:59.2166
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: E4cFMC4kOvlsnw3/UHHioj1Atsq8oRgtb4+8toLs3TaEsx1E+Ut5sg1Yoh3BurX2
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4062
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <e74ea905-d107-4202-97ca-c2c509e7aa1e@huawei.com>
 
-On Thu, Jan 18, 2024 at 05:28:01PM +0800, Yi Liu wrote:
-> On 2024/1/17 20:56, Jason Gunthorpe wrote:
-> > On Wed, Jan 17, 2024 at 04:24:24PM +0800, Yi Liu wrote:
-> > > Above indeed makes more sense if there can be concurrent attach/replace/detach
-> > > on a single pasid. Just have one doubt should we add lock to protect the
-> > > whole attach/replace/detach paths. In the attach/replace path[1] [2], the
-> > > xarray entry is verified firstly, and then updated after returning from
-> > > iommu attach/replace API. It is uneasy to protect the xarray operations only
-> > > with xa_lock as a detach path can acquire xa_lock right after attach/replace
-> > > path checks the xarray. To avoid it, may need a mutex to protect the whole
-> > > attach/replace/detach path to avoid race. Or maybe the attach/replace path
-> > > should mark the corresponding entry as a special state that can block the
-> > > other path like detach until the attach/replace path update the final hwpt to
-> > > the xarray. Is there such state in xarray?
-> > 
-> > If the caller is not allowed to make concurrent attaches/detaches to
-> > the same pasid then you can document that in a comment,
+On Thu, Jan 18, 2024 at 07:21:10PM +0800, zhangzekun (A) wrote:
+> > What is the rest of the call chain? How did you get into such a large
+> > invalidation?
+> we are doing some test with qemu virtual machines. The testing platform has
+> 96 cores and 960GB memories. It will enable 64 virtual machines and every
+> virtual machine will cost 8G memories. When batching closing these 64
+> virtaul machine concurrently, we will get soft lockup.
 > 
-> yes. I can document it. Otherwise, we may need a mutex for pasid to allow
-> concurrent attaches/detaches.
-> 
-> > but it is
-> > still better to use xarray in a self-consistent way.
-> 
-> sure. I'll try. At least in the detach path, xarray should be what you've
-> suggested in prior email. Currently in the attach path, the logic is as
-> below. Perhaps I can skip the check on old_hwpt since
-> iommu_attach_device_pasid() should fail if there is an existing domain
-> attached on the pasid. Then the xarray should be more consistent. what
-> about your opinion?
-> 
-> 	old_hwpt = xa_load(&idev->pasid_hwpts, pasid);
-> 	if (old_hwpt) {
-> 		/* Attach does not allow overwrite */
-> 		if (old_hwpt == hwpt)
-> 			return NULL;
-> 		else
-> 			return ERR_PTR(-EINVAL);
-> 	}
-> 
-> 	rc = iommu_attach_device_pasid(hwpt->domain, idev->dev, pasid);
-> 	if (rc)
-> 		return ERR_PTR(rc);
-> 
-> 	refcount_inc(&hwpt->obj.users);
-> 	xa_store(&idev->pasid_hwpts, pasid, hwpt, GFP_KERNEL);
+>  WARN: soft lockup - CPU#18 stuck for 11s! [worker:3219]
+> ....
+> Call trace:
+>  dump_backtrace+0x0/0x200
+>  show_stack+0x20/0x30
+>  dump_stack+0xf0/0x138
+>  watchdog_print_info+0x48/0x54
+>  watchdog_process_before_softlockup+0x9c/0xa0
+>  watchdog_timer_fn+0x1ac/0x2f0
+>  __run_hrtimer+0x98/0x2b4
+>  __hrtimer_run_queues+0xc0/0x13c
+>  hrtimer_interrupt+0x150/0x3e4
+>  arch_timer_handler_phys+0x3c/0x50
+>  handle_percpu_devid_irq+0x90/0x1f4
+>  __handle_domain_irq+0x84/0xfc
+>  gic_handle_irq+0x88/0x2b0
+>  el1_irq+0xb8/0x140
+>  ktime_get+0x3c/0xac
+>  arm_smmu_cmdq_poll_until_not_full+0xb0/0x1a0
+>  arm_smmu_cmdq_issue_cmdlist+0x194/0x5f4
+>  __arm_smmu_tlb_inv_range+0x114/0x22c
+>  arm_smmu_tlb_inv_walk+0x88/0x120
+>  __arm_lpae_unmap+0x188/0x2c0
+>  __arm_lpae_unmap+0x104/0x2c0
+>  arm_lpae_unmap+0x68/0x80
+>  arm_smmu_unmap+0x24/0x40
+>  __iommu_unmap+0xd8/0x210
+>  iommu_unmap_fast+0x18/0x24
+>  unmap_unpin_fast+0x7c/0x140 [vfio_iommu_type1]
+>  vfio_unmap_unpin+0x14c/0x3ac [vfio_iommu_type1]
+>  vfio_remove_dma+0x38/0x124 [vfio_iommu_type1]
+>  vfio_iommu_type1_detach_group+0x4b8/0x4e0 [vfio_iommu_type1]
+>  __vfio_group_unset_container+0x58/0x18c [vfio]
+>  vfio_group_try_dissolve_container+0x80/0x94 [vfio]
+>  vfio_group_put_external_user+0x20/0x54 [vfio]
+>  kvm_vfio_destroy+0xa8/0x12c
+>  kvm_destroy_vm+0x20c/0x300
+>  kvm_put_kvm+0x74/0xa0
+>  kvm_vcpu_release+0x20/0x30
+>  __fput+0xc4/0x270
+>  ____fput+0x18/0x24
+>  task_work_run+0xd0/0x1a0
+>  do_exit+0x1d8/0x480
+>  do_group_exit+0x40/0x130
+>  get_signal+0x1f8/0x744
+>  do_signal+0x98/0x204
+>  do_notify_resume+0x15c/0x1e0
+>  work_pending+0xc/0xa4
 
-Use xa_cmpxchg()
+I see, that is interesting. 
+
+I think iommufd is close to substantialy improving this. It already
+has the domain destruction ordering:
+ - Remove all domain attachments
+ - Read back phys addrs, unmap and unpin
+ - iommu_domain_free()
+
+Currently smmu continues to issue ASID invalidations for the domain
+even though there no references to it. However this is pretty
+pointless here as we are going to free the ASID right away.
+
+I'm going to make a series to allow smmu to support multi-instances on
+a single domain. In this case when the domain looses all its
+attachments it looses all its instances too and it won't have to do
+*anything* for invalidation in this workflow.
+
+Ie your flow will boil down to a single ASID invalidation once the
+domain attachments are all removed, then on invalidations during unmap
+and no invaludation at free. This would be a significantly faster
+teardown I suspect.
+
+> Thanks for your patch, the patch described below make sense to me. After
+> spliting TLB invalidate operations according to domain stage,
+> arm_smmu_tlb_inv_*_s1() can be used both in SVA codes and original smmu
+> codes, and can implement arm_smmu_tlb_inv_all_s1() just using
+> arm_smmu_tlb_inv_range_s1() by passing a special size. But the current
+> smmu-v3 driver has not move "asid" into "struct smmu_domain", we still need
+> to pass the exact asid from SVA.
+
+Yes, it is not intended to be applied on the current kernel, there are
+a lot of structural problems with how SVA works there..
 
 Jason
