@@ -1,174 +1,125 @@
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9352628DDA
-	for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 14:22:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 903632C68C
+	for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 17:55:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705587768; cv=none; b=BOnXYNxo3htmdtbE1axrtvFr30o7ZhYL9VylC3UBLNSxlLLOPiP8IFvkl/0PdNnW2u69GlqFThpgkNfP65eBODCY9WxPGkm1+vAQJn0yLTRmcVr1e6l2UU3h/8rlYbg0Zrb7wF9lo89t3SHQ2UID2xIJ2/mapOcZH16JrCNzX7w=
+	t=1705600537; cv=none; b=YT+9ZOb2fsGXVe78dz7xs9oz9pe1nOROmtj8cYBALHnUxT9zafPkN+Pe/AO1xXpqBjFlRoKFevCM1cCMtG8RuEcvoERzwpfF/pj68656M3gPlUItQVT+BT4XPgL4ogEwXp6JVzgpzMCWcM06vR4MCRYNpuOiqLvuOkywz10IrCQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705587768; c=relaxed/simple;
-	bh=49cNhVsuBMgtJHArJcV1m7agcOAtGe87ch9+R4pb5zg=;
-	h=Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Google-Smtp-Source:X-Received:Received:
-	 Received:Date:From:To:Cc:Subject:Message-ID:References:
-	 MIME-Version:Content-Type:Content-Disposition:
-	 Content-Transfer-Encoding:In-Reply-To; b=K+zW8I6f9ivi7U6F5XTrV31DSefc9ewX+STDy4Qu373H+T+k4gFL3GSbEDDptHZpvkv+ETzGb2xFVN8EHfcW/oKcyr0IU9/BTAXe6N8THTt6DSNc5gVeD20nM0AFjkdyYKSNC2Iv/OnqA6vZkLZaQkZscurMj0O3AvBDPC7z7xs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=cJMwkt0X; arc=none smtp.client-ip=209.85.167.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1705600537; c=relaxed/simple;
+	bh=aisBVFiczj/jDzFOQ/gAkAjn85FMrdiPrHE0pnY7fXI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=MX7y84x1HKuD2hrL7iAVll+QtJg2hs/E97jcvWfaWsE9zArETg8t78JddI/JzmqRgNt/7DdjMNgCUOuKdh18t/bmdwnWuF/JhV3ouSkI2W1K5DtEfqPZIMpk+UypM8ULj6lHp9AjL97EPMQPzNR89n9VWMChCRhGLpkDvgYAChM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=v+BIW7P5; arc=none smtp.client-ip=209.85.167.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="cJMwkt0X"
-Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-3bbc649c275so5619067b6e.0
-        for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 06:22:46 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="v+BIW7P5"
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-50e7d6565b5so15228924e87.0
+        for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 09:55:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1705587765; x=1706192565; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=MQmQ57jhPNOOjCerNM6q5F9m10YHH8SVIWhIL9dMZTE=;
-        b=cJMwkt0XMZtpRUS/H3QmmzgQcoKAUl3/w1KqlyLivkQRkM7pRbk20ae4gceUvv5+SW
-         tY1UWv2cfhG54Q2hU7pNDsg7cjtByKDxASzRy7kpeAQFH5WUWp4yxi6JT1XU6CkwU5+s
-         32qrbYWEul8DdNjsqpUev2GPv1uaum/YURnIIB1pCdn2bdMSbcKUfFNcE7unUDTOO6qy
-         nPUOXCEQP5l8U8vLAlvgOHHwUpYqr+j+Wdqy3ZhxZbYeHKXwKCJRKmLtx0JZPYse0GkW
-         SPmT3cvouSOJYnKZQOBKV+71M0i8rUYe0Q1SFIATwZb/dVUYTzovO7Kj2TeX1XxQuWs5
-         yv6Q==
+        d=linaro.org; s=google; t=1705600534; x=1706205334; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ij3Aid6rc3/+qPxyjn4VOAO9ySy7PRtD3+5FtjfYAss=;
+        b=v+BIW7P5XhHI1GdnheWn46seB0UCUUMPbaXlPWPJ1e/44FLD6pO0BlmYqFdxBPe0vA
+         TW7u5LzD6Yp3cirdhIV8HzfcLAEAAHePPEArqJgAdjJSfV+3yHrzLWRqlgeFcOe0PV/b
+         gDbBM8HClh6244cXtNDNGIh9Dk5/8lJ/Z0K/P7DRsuIHomfQpgcXe4RoSzQZyhYxH0xZ
+         POABF3sDIyv56+0bheX4ym/EYHXOPnZIBduEA5L9cqlA/zK0JvYKUSKUv8FT3wQzaNZ4
+         fTG/jEaFARe4NAlKpJw0uFclXURKDaiH9gDafrnJrHAP0jPZee81Xn/+BOppLc/92umq
+         UZ/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705587765; x=1706192565;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        d=1e100.net; s=20230601; t=1705600534; x=1706205334;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MQmQ57jhPNOOjCerNM6q5F9m10YHH8SVIWhIL9dMZTE=;
-        b=oZefSZkpJ5l1Kv4XxRxnAGE6BQ/GKkqAy5kC+Wk7UC4EylzDLVpDGeUNiOmxH4TB4e
-         T7X9k3KOeb2ouJ/6d0vTM+EyYKEA6uF/l35c9mCnIo74KEBaKWpIUJtJjcpPshWV000d
-         ueaw4ZP9OP20JaL6Uh2ox3ugsXAwY7lbdVZUOldl1wI2tiS2OWkBczNyudb8TldGEPI5
-         DjZoJcrI3AuGmfmUa50SUgDtJxFtDmEz/bXzcWrpaHKNzTAmfQmAMWRspaqCi1oMinbT
-         u20+h7/1chDRmF/1LbxooM5+FQleJ8E6TZ6deC+ZBXEm8FEdjfCysgM0k65zKEAvkjvh
-         LCCw==
-X-Gm-Message-State: AOJu0YyceSST/ZdIkAAaX9IlMicQVSoeIMPwmC0VcLinwFMbm5p6ovLb
-	mGpsvIR+xcTPA2ojdAqfDzutDxK4QKCMUNEuDk6Yenc00CXKoOaluRXlZu385uQ=
-X-Google-Smtp-Source: AGHT+IEAZqGHugP6SSHGhmnB2UTe2rde66vWr8xnTZZd44KtjGiA2gbMs46TD4AdmZ56Y+ynbP+VDg==
-X-Received: by 2002:a05:6808:1190:b0:3bd:9c61:7d41 with SMTP id j16-20020a056808119000b003bd9c617d41mr982809oil.12.1705587765526;
-        Thu, 18 Jan 2024 06:22:45 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id t8-20020a05680800c800b003bd3c878a99sm261380oic.13.2024.01.18.06.22.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Jan 2024 06:22:44 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rQTI3-0051dq-ET;
-	Thu, 18 Jan 2024 10:22:43 -0400
-Date: Thu, 18 Jan 2024 10:22:43 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "zhangzekun (A)" <zhangzekun11@huawei.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	nicolinc@nvidia.com, mshavit@google.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Add a threshold to avoid potential
- soft lockup
-Message-ID: <20240118142243.GI50608@ziepe.ca>
-References: <20240115114040.6279-1-zhangzekun11@huawei.com>
- <20240115153152.GA50608@ziepe.ca>
- <e74ea905-d107-4202-97ca-c2c509e7aa1e@huawei.com>
+        bh=ij3Aid6rc3/+qPxyjn4VOAO9ySy7PRtD3+5FtjfYAss=;
+        b=FNEBwU/nFkNY5fWteFV6n3Hjrolk5QyhODn9XuYNw539BS5ZsznEmMU4PoF4+2ZtZ9
+         i8X1eE3sJUuxSS9B16bdvfwcngDpUM1f1wggKxfAVQsKOdQZVpyCBF6Or9ia7zQgZTXL
+         1OU4yZc1bvcjFBEbMNnG67FknrmONq6+m/k308tacaORme+H8q9fmcCxUPs7UJcJ2jZy
+         sNagPeFcu6skhJKN3uPVtp+zEVy/Ife1O/xzw3Cv2I1nxBQMHR37737PxWEmChqkX+ku
+         FIw9NeNQbQF/EUYJ9PooPE2X7sikIdDi3XFXr8J1mwe3lTA+3McZrd9F2yWQguP3/s6G
+         Q5cA==
+X-Gm-Message-State: AOJu0YxHRghjDARCV9NVGttE626Hcw9JBlp/F6FxxYmROKmFwrkQGcS+
+	voG+28hy8Le0aIhrTKLMcZN8m6YPGwHpC9bTOSb8P305Mok83VKcwZS7QI3BCeU=
+X-Google-Smtp-Source: AGHT+IGG228V8tanAnesngcf1mfWcLrYcU8aze9RSKB7jrVY3whXoAFZhO5z1Rmk8AJAf+oAZfApwQ==
+X-Received: by 2002:ac2:4c48:0:b0:50e:2f46:1111 with SMTP id o8-20020ac24c48000000b0050e2f461111mr6414lfk.97.1705600533660;
+        Thu, 18 Jan 2024 09:55:33 -0800 (PST)
+Received: from [172.30.205.26] (UNUSED.212-182-62-129.lubman.net.pl. [212.182.62.129])
+        by smtp.gmail.com with ESMTPSA id v4-20020ac25604000000b0050f0dc3a08esm644932lfd.151.2024.01.18.09.55.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Jan 2024 09:55:33 -0800 (PST)
+Message-ID: <f25b7a0d-28b7-428f-a88f-2ceecc208f85@linaro.org>
+Date: Thu, 18 Jan 2024 18:55:29 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <e74ea905-d107-4202-97ca-c2c509e7aa1e@huawei.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 3/5] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+Content-Language: en-US
+To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>, will@kernel.org,
+ robin.murphy@arm.com, joro@8bytes.org, dmitry.baryshkov@linaro.org,
+ jsnitsel@redhat.com, quic_bjorande@quicinc.com, mani@kernel.org,
+ quic_eberman@quicinc.com, robdclark@chromium.org,
+ u.kleine-koenig@pengutronix.de, robh@kernel.org, vladimir.oltean@nxp.com,
+ quic_pkondeti@quicinc.com, quic_molvera@quicinc.com
+Cc: linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240116150411.23876-1-quic_bibekkum@quicinc.com>
+ <20240116150411.23876-4-quic_bibekkum@quicinc.com>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <20240116150411.23876-4-quic_bibekkum@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Jan 18, 2024 at 07:21:10PM +0800, zhangzekun (A) wrote:
-> > What is the rest of the call chain? How did you get into such a large
-> > invalidation?
-> we are doing some test with qemu virtual machines. The testing platform has
-> 96 cores and 960GB memories. It will enable 64 virtual machines and every
-> virtual machine will cost 8G memories. When batching closing these 64
-> virtaul machine concurrently, we will get soft lockup.
+
+
+On 1/16/24 16:04, Bibek Kumar Patro wrote:
+> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
+> the TLB to fetch just the next page table. MMU-500 features ACTLR
+> register which is implementation defined and is used for Qualcomm SoCs
+> to have a custom prefetch setting enabling TLB to prefetch the next set
+> of page tables accordingly allowing for faster translations.
 > 
->  WARN: soft lockup - CPU#18 stuck for 11s! [worker:3219]
-> ....
-> Call trace:
->  dump_backtrace+0x0/0x200
->  show_stack+0x20/0x30
->  dump_stack+0xf0/0x138
->  watchdog_print_info+0x48/0x54
->  watchdog_process_before_softlockup+0x9c/0xa0
->  watchdog_timer_fn+0x1ac/0x2f0
->  __run_hrtimer+0x98/0x2b4
->  __hrtimer_run_queues+0xc0/0x13c
->  hrtimer_interrupt+0x150/0x3e4
->  arch_timer_handler_phys+0x3c/0x50
->  handle_percpu_devid_irq+0x90/0x1f4
->  __handle_domain_irq+0x84/0xfc
->  gic_handle_irq+0x88/0x2b0
->  el1_irq+0xb8/0x140
->  ktime_get+0x3c/0xac
->  arm_smmu_cmdq_poll_until_not_full+0xb0/0x1a0
->  arm_smmu_cmdq_issue_cmdlist+0x194/0x5f4
->  __arm_smmu_tlb_inv_range+0x114/0x22c
->  arm_smmu_tlb_inv_walk+0x88/0x120
->  __arm_lpae_unmap+0x188/0x2c0
->  __arm_lpae_unmap+0x104/0x2c0
->  arm_lpae_unmap+0x68/0x80
->  arm_smmu_unmap+0x24/0x40
->  __iommu_unmap+0xd8/0x210
->  iommu_unmap_fast+0x18/0x24
->  unmap_unpin_fast+0x7c/0x140 [vfio_iommu_type1]
->  vfio_unmap_unpin+0x14c/0x3ac [vfio_iommu_type1]
->  vfio_remove_dma+0x38/0x124 [vfio_iommu_type1]
->  vfio_iommu_type1_detach_group+0x4b8/0x4e0 [vfio_iommu_type1]
->  __vfio_group_unset_container+0x58/0x18c [vfio]
->  vfio_group_try_dissolve_container+0x80/0x94 [vfio]
->  vfio_group_put_external_user+0x20/0x54 [vfio]
->  kvm_vfio_destroy+0xa8/0x12c
->  kvm_destroy_vm+0x20c/0x300
->  kvm_put_kvm+0x74/0xa0
->  kvm_vcpu_release+0x20/0x30
->  __fput+0xc4/0x270
->  ____fput+0x18/0x24
->  task_work_run+0xd0/0x1a0
->  do_exit+0x1d8/0x480
->  do_group_exit+0x40/0x130
->  get_signal+0x1f8/0x744
->  do_signal+0x98/0x204
->  do_notify_resume+0x15c/0x1e0
->  work_pending+0xc/0xa4
+> ACTLR value is unique for each SMR (Stream matching register) and stored
+> in a pre-populated table. This value is set to the register during
+> context bank initialisation.
+> 
+> Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-I see, that is interesting. 
+Since it's your idea with Dmitry's review suggestions, I don't think
+this tag makes sense.
 
-I think iommufd is close to substantialy improving this. It already
-has the domain destruction ordering:
- - Remove all domain attachments
- - Read back phys addrs, unmap and unpin
- - iommu_domain_free()
+It's normally used for situations like:
 
-Currently smmu continues to issue ASID invalidations for the domain
-even though there no references to it. However this is pretty
-pointless here as we are going to free the ASID right away.
+Colleague X: "Hey Bibek, I noticed x broke on y, can you fix it?"
+"Sure!" <proceeds to make a commit with suggested-by Colleague X>
 
-I'm going to make a series to allow smmu to support multi-instances on
-a single domain. In this case when the domain looses all its
-attachments it looses all its instances too and it won't have to do
-*anything* for invalidation in this workflow.
+Just a nit below:
 
-Ie your flow will boil down to a single ASID invalidation once the
-domain attachments are all removed, then on invalidations during unmap
-and no invaludation at free. This would be a significantly faster
-teardown I suspect.
+> +struct actlr_config {
+> +	u16 sid;
+> +	u16 mask;
+> +	u32 actlr;
+> +};
 
-> Thanks for your patch, the patch described below make sense to me. After
-> spliting TLB invalidate operations according to domain stage,
-> arm_smmu_tlb_inv_*_s1() can be used both in SVA codes and original smmu
-> codes, and can implement arm_smmu_tlb_inv_all_s1() just using
-> arm_smmu_tlb_inv_range_s1() by passing a special size. But the current
-> smmu-v3 driver has not move "asid" into "struct smmu_domain", we still need
-> to pass the exact asid from SVA.
+This, can go here, in the header:
 
-Yes, it is not intended to be applied on the current kernel, there are
-a lot of structural problems with how SVA works there..
+> +struct actlr_config;
+> +
+> +struct actlr_variant {
+> +	const resource_size_t io_start;
+> +	const struct actlr_config * const actlrcfg;
+> +	const size_t num_actlrcfg;
+> +};
+> +
 
-Jason
+Otherwise, this looks good!
+
+Konrad
