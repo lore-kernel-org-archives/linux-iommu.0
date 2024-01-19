@@ -1,63 +1,147 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711D75664;
-	Fri, 19 Jan 2024 01:08:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFA8C3C470
+	for <iommu@lists.linux.dev>; Fri, 19 Jan 2024 10:05:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705626527; cv=none; b=GEdY9fmD1ZF2IP5puwDa47/pApLNrn92/PPgvh7DDuss66CYQ/Tv/X0h9vFxl1lrcHUMSB4LFxiRFhzhVeViTsSELpbOPczJJBb3DhzewWkl9x5m20LlJMY0FkUDRtDE+76OS7dF6bRw+A7k9aMf75nrBUQfJRM2Ux9FQCEmSw8=
+	t=1705658743; cv=none; b=nzDjYMZGhw4DbcxXzsbMu+qJh9ngmyTh3gG8VnvYuzWR4732afsCBcOYIDZQJevTySngwitG9KuMVBsyHaKXQG63eC3Bz5upaCV3kgfhOEBz+OoVpcnSmptnk/5UV81I/WMMMho+PSBIL/JfadXvlEOWLcavUvWE2Zqcx9Gro2U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705626527; c=relaxed/simple;
-	bh=8kV433EpnX1489IMm2QY+ikqK/G0cWYEbDb2olixkRk=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=XzUrkQPn4Rir2dnboHsx6uAjgbTwJ/e78ILshSSa326jSD4W//WD1sAlpbiZy8x6BXtJCGekNzUh+YLzQWRn7wUSQ2pJkgd3Drzk2m4oBSlOvyxOTGhojDDgrcDTBMoxmurB9+OujvN5lVQsiDG9GZZ4CmCE2hEXon5yUl8omDs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qMjdnj4B; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1705658743; c=relaxed/simple;
+	bh=u8p9mCUVfkz0WU9cO8UB76nso42+7Zw/S0jK9+Wpv3Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=bvvJzUU+pRSuV4+6b8yg0sFxBiXhkNS0qX/OwvNX9woBNeIFjFG8Rf/4KAhnhxxK1B405S4VIHByZrpEGyptG9l6XOgV6gnKh9X4wZySnDnixVi5w7I3ION/u1TDsd8EKRE2fQUbWXnEvc/esTP7YNGc/Y9yWhINKxkX/zvC8Og=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=fSJYvA/a; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qMjdnj4B"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 438CFC43141;
-	Fri, 19 Jan 2024 01:08:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1705626527;
-	bh=8kV433EpnX1489IMm2QY+ikqK/G0cWYEbDb2olixkRk=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=qMjdnj4Bgn9u8KXRgNpTqmnqVTqrzAqVwvYzAI9zO9hac6JSHseZhVkURwXi6CgCx
-	 tPyI1ylA3KXFOycLUVOTbJQUPQMYE/G43ma9ZM5NiRMu0SDSQvbLvwLCHqQOCfq/au
-	 9wjNZMFsqtSNilYCWRccTaa9L2D1WBRH1PkYq83+nqhNuoPxCEdu8Koelt4/oqG9m4
-	 QtUKxII7sOeaBXp5IBS9gAAFPtOLti/5BWmnpM4mXOzWBn6G7zMjamF1RQQgkJetOy
-	 r5wGiw/k+/2UYxydUPvXdOwMGGLtQA/US6XlF3HqjbWvykPeYxsqhWFSdZmltL5Ou5
-	 LVmgQaAB+SWlQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 32EA4D8C970;
-	Fri, 19 Jan 2024 01:08:47 +0000 (UTC)
-Subject: Re: Re: [GIT PULL] dma-mapping fixes for Linux 6.8
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <CAHk-=wj18aK9-4yydL=T8WtwEKW2S78U5e=9YA+O4VCxYZopLw@mail.gmail.com>
-References: <ZajTpGRSCJkhPEKk@infradead.org> <CAHk-=wj18aK9-4yydL=T8WtwEKW2S78U5e=9YA+O4VCxYZopLw@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAHk-=wj18aK9-4yydL=T8WtwEKW2S78U5e=9YA+O4VCxYZopLw@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping tags/dma-mapping-6.8-2024-01-18
-X-PR-Tracked-Commit-Id: 7c65aa3cc072cee76f577262fbe381a111a98774
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 17e232b6d2feddd0285e59dbe641c0efe67a5ee6
-Message-Id: <170562652720.16604.2876131930196768961.pr-tracker-bot@kernel.org>
-Date: Fri, 19 Jan 2024 01:08:47 +0000
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Christoph Hellwig <hch@infradead.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="fSJYvA/a"
+Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40J9tOFD003598;
+	Fri, 19 Jan 2024 10:05:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=KRVA1UuE/kzOpSKsLsQz6w/DMtoThu8NzoYWjfs0PFw=; b=fS
+	JYvA/aIT7ZSkxMz9tWYq2Ij+OAgi1KL8QTmWb5Y3M46oim2GW1cfTI1q/3vpahOP
+	smnDNWZU2+jlg4oYnV7QdhWT/59V776dy2TqrTQyXrkU6OumlhNX2TC2Z2DmKKrK
+	R1quiNbfFgtJI7Br36Enrcm7XHf87Kcu3LXycCmNx2po9j6/IItikyaD3/vTzUbY
+	OfNgvATiJGgdohuajPWz4e5YDScqw2ZRLAr65k6U0s2A3LxjF3DfRClqN+QKatTc
+	d+/UwP3DAfW1W89rPy3ezno0b472npV3QTCcXz5LCQuN24XahNYMZDfcVIa+CFQZ
+	64Z8IlTnOQwIw184vlZg==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vq6uba2jq-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 19 Jan 2024 10:05:29 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 40JA5Rs5003868
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 19 Jan 2024 10:05:28 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 19 Jan
+ 2024 02:05:21 -0800
+Message-ID: <c091e857-9bdd-4114-947f-afa7b1206de8@quicinc.com>
+Date: Fri, 19 Jan 2024 15:35:14 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 3/5] iommu/arm-smmu: introduction of ACTLR for custom
+ prefetcher settings
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, <will@kernel.org>,
+        <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <dmitry.baryshkov@linaro.org>, <jsnitsel@redhat.com>,
+        <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>
+CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+References: <20240116150411.23876-1-quic_bibekkum@quicinc.com>
+ <20240116150411.23876-4-quic_bibekkum@quicinc.com>
+ <f25b7a0d-28b7-428f-a88f-2ceecc208f85@linaro.org>
+Content-Language: en-US
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+In-Reply-To: <f25b7a0d-28b7-428f-a88f-2ceecc208f85@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: 5_WUllb4VAkzDADCg50QtQu2C5YizFyf
+X-Proofpoint-GUID: 5_WUllb4VAkzDADCg50QtQu2C5YizFyf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-01-19_04,2024-01-19_02,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ suspectscore=0 clxscore=1015 adultscore=0 malwarescore=0 mlxlogscore=999
+ phishscore=0 lowpriorityscore=0 mlxscore=0 spamscore=0 bulkscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2311290000 definitions=main-2401190044
 
-The pull request you sent on Thu, 18 Jan 2024 16:52:17 -0800:
 
-> git://git.infradead.org/users/hch/dma-mapping tags/dma-mapping-6.8-2024-01-18
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/17e232b6d2feddd0285e59dbe641c0efe67a5ee6
+On 1/18/2024 11:25 PM, Konrad Dybcio wrote:
+> 
+> 
+> On 1/16/24 16:04, Bibek Kumar Patro wrote:
+>> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
+>> the TLB to fetch just the next page table. MMU-500 features ACTLR
+>> register which is implementation defined and is used for Qualcomm SoCs
+>> to have a custom prefetch setting enabling TLB to prefetch the next set
+>> of page tables accordingly allowing for faster translations.
+>>
+>> ACTLR value is unique for each SMR (Stream matching register) and stored
+>> in a pre-populated table. This value is set to the register during
+>> context bank initialisation.
+>>
+>> Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> 
+> Since it's your idea with Dmitry's review suggestions, I don't think
+> this tag makes sense.
+> 
+> It's normally used for situations like:
+> 
+> Colleague X: "Hey Bibek, I noticed x broke on y, can you fix it?"
+> "Sure!" <proceeds to make a commit with suggested-by Colleague X>
+> 
 
-Thank you!
+Got it, thanks for the inputs. Will remove this tag as it won't make 
+sense in this case as explained by you.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+> Just a nit below:
+> 
+>> +struct actlr_config {
+>> +    u16 sid;
+>> +    u16 mask;
+>> +    u32 actlr;
+>> +};
+> 
+> This, can go here, in the header:
+> 
+
+Sure, Noted. Will add this to the header.
+Initially made it local, since it is only being used
+in the tables.
+
+Thanks,
+Bibek
+
+>> +struct actlr_config;
+>> +
+>> +struct actlr_variant {
+>> +    const resource_size_t io_start;
+>> +    const struct actlr_config * const actlrcfg;
+>> +    const size_t num_actlrcfg;
+>> +};
+>> +
+> 
+> Otherwise, this looks good!
+> 
+> Konrad
