@@ -1,15 +1,15 @@
 Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2305551C3D
-	for <iommu@lists.linux.dev>; Fri, 19 Jan 2024 13:00:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 998824EB5B
+	for <iommu@lists.linux.dev>; Fri, 19 Jan 2024 14:45:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=141.14.17.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705669208; cv=none; b=N3fk9VvbJxIStPsKeDtahb3w3YZ9vsJL9NwKHiWS12C2poV9RV07yspvnL/1ovPbbnQQq8EchpkhcudrW3lmtdDHoWykzjF3DIxX5AnULZGFSHZrQatfpDVxmUO+EWlu/4728vG0vW1PdSRHYpvGNKSJUzUxUAuS+yfk6CVp9xc=
+	t=1705675529; cv=none; b=XUP+FHvPI6p9EZuQ4BRlAwZZUKYZ3VhxzbqJsmDbPRnJwLB+a5gbVhjRXburR3lt87fecNQREN/l0WkL748hoXcyj2yrZcXgHpvatz65BVH3PbjosJ+VMz8Gj1VS+9BXXeNlebpmYhG2+R3t1KUtZ2Rsl7Lw4TKbz096KeU+6Hc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705669208; c=relaxed/simple;
-	bh=RfsB6dImUMAIVO4QqyyrJgsOMiWIHkochUdkCQyws40=;
-	h=Content-Type:Message-ID:Date:MIME-Version:From:Subject:To:Cc; b=XX80jx5hHkZy45LypBeAPkV01n+tyZImE5GmPO5WBDRVz8aA3H5LMxXZts/bkQoPoe531QkSFA/7ixlx41MzabC7nxUFg+chq/CSH+t4P2+HLsjUiYvMkZC6Nl9Y0+QAp5AzeB0Gvm2kICA52n2OGdHiJyDyxNQRmxejrzuFBE0=
+	s=arc-20240116; t=1705675529; c=relaxed/simple;
+	bh=jn/V6jzIwU1rFa9q6XN8DJemyJh2Cr5/FgSdn/VQrGg=;
+	h=Content-Type:Message-ID:Date:MIME-Version:From:Subject:To:Cc; b=HgBUV2ZHfWyAhSKr4zS+rkmaKruzYxNuiWGoafB+VZn0YoFDMM+xteiPhPcJvXON2tCm62QIc20bPpeLaUIdw5onyiKNau93t06AAppojItpY9joOL34Dog1VULJAQfPob2f3IWJz4kMfTj4H6W+sfrv6KA3RJ0tV+LKvwzTTIY=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de; spf=pass smtp.mailfrom=molgen.mpg.de; arc=none smtp.client-ip=141.14.17.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=molgen.mpg.de
@@ -18,11 +18,11 @@ Received: from [141.14.220.34] (g34.guest.molgen.mpg.de [141.14.220.34])
 	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
 	(Authenticated sender: pmenzel)
-	by mx.molgen.mpg.de (Postfix) with ESMTPSA id AA57761E5FE06;
-	Fri, 19 Jan 2024 13:59:29 +0100 (CET)
-Content-Type: multipart/mixed; boundary="------------FeZSmGy3pxP4ZJHzBW38EJo2"
-Message-ID: <9a24c335-8ec5-48c9-9bdd-b0dac5ecbca8@molgen.mpg.de>
-Date: Fri, 19 Jan 2024 13:59:29 +0100
+	by mx.molgen.mpg.de (Postfix) with ESMTPSA id 5407361E5FE06;
+	Fri, 19 Jan 2024 15:45:04 +0100 (CET)
+Content-Type: multipart/mixed; boundary="------------t3bX2VEfBcXnvgNlS0mcYG2k"
+Message-ID: <5517f76a-94ad-452c-bae6-34ecc0ec4831@molgen.mpg.de>
+Date: Fri, 19 Jan 2024 15:45:03 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -31,127 +31,48 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 From: Paul Menzel <pmenzel@molgen.mpg.de>
-Subject: Dell XPS 13 9360: DMAR errors `DRHD: handling fault status reg 2` and
- `[INTR-REMAP] Request device [f0:1f.0] fault index 0x0`
-Content-Language: en-US
+Subject: DMAR-IR: IRQ remapping was enabled on dmar6 but we are not in kdump
+ mode
 To: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
  Will Deacon <will@kernel.org>
 Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Language: en-US
 
 This is a multi-part message in MIME format.
---------------FeZSmGy3pxP4ZJHzBW38EJo2
+--------------t3bX2VEfBcXnvgNlS0mcYG2k
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
 Dear Linux folks,
 
 
-On a Dell XPS 13 9360 Linux 6.6.8, 6.6.11 and 6.7 (and earlier versions) 
-log the lines below when resuming from ACPI S3 (deep):
+On a Dell PowerEdge T640, Linux 5.9 and 6.6.12 warn about kdump:
 
-     [    0.000000] Linux version 6.7-amd64 
-(debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-13 (Debian 
-13.2.0-9) 13.2.0, GNU ld (GNU Binutils for Debian) 2.41.50.20231227) #1 
-SMP PREEMPT_DYNAMIC Debian 6.7-1~exp1 (2024-01-08)
-     [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-6.7-amd64 
-root=UUID=32e29882-d94d-4a92-9ee4-4d03002bfa29 ro quiet pci=noaer 
-mem_sleep_default=deep log_buf_len=8M
-     […]
-     [    0.000000] DMI: Dell Inc. XPS 13 9360/0596KF, BIOS 2.21.0 
-06/02/2022
-     […]
-     [   99.711230] PM: suspend entry (deep)
-     […]
-     [   99.722101] printk: Suspending console(s) (use 
-no_console_suspend to debug)
-     [  100.285178] ACPI: EC: interrupt blocked
-     [  100.319908] ACPI: PM: Preparing to enter system sleep state S3
-     [  100.331793] ACPI: EC: event blocked
-     [  100.331798] ACPI: EC: EC stopped
-     [  100.331800] ACPI: PM: Saving platform NVS memory
-     [  100.335224] Disabling non-boot CPUs ...
-     [  100.337412] smpboot: CPU 1 is now offline
-     [  100.341065] smpboot: CPU 2 is now offline
-     [  100.346441] smpboot: CPU 3 is now offline
-     [  100.353086] ACPI: PM: Low-level resume complete
-     [  100.353129] ACPI: EC: EC started
-     [  100.353129] ACPI: PM: Restoring platform NVS memory
-     [  100.355219] Enabling non-boot CPUs ...
-     [  100.355244] smpboot: Booting Node 0 Processor 1 APIC 0x2
-     [  100.355954] CPU1 is up
-     [  100.355972] smpboot: Booting Node 0 Processor 2 APIC 0x1
-     [  100.356698] CPU2 is up
-     [  100.356716] smpboot: Booting Node 0 Processor 3 APIC 0x3
-     [  100.357371] CPU3 is up
-     [  100.360217] ACPI: PM: Waking up from system sleep state S3
-     [  100.668380] ACPI: EC: interrupt unblocked
-     [  100.668598] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS 
-workaround enabled
-     [  100.668606] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS 
-workaround enabled
-     [  100.668643] pcieport 0000:00:1d.0: Intel SPT PCH root port ACS 
-workaround enabled
-     [  100.690996] DMAR: DRHD: handling fault status reg 2
-     [  100.691001] DMAR: [INTR-REMAP] Request device [f0:1f.0] fault 
-index 0x0 [fault reason 0x25] Blocked a compatibility format interrupt 
-request
+     [    2.728445] DMAR-IR: IRQ remapping was enabled on dmar6 but we 
+are not in kdump mode
+     [    2.736544] DMAR-IR: IRQ remapping was enabled on dmar5 but we 
+are not in kdump mode
+     [    2.744620] DMAR-IR: IRQ remapping was enabled on dmar4 but we 
+are not in kdump mode
+     [    2.752695] DMAR-IR: IRQ remapping was enabled on dmar3 but we 
+are not in kdump mode
+     [    2.760774] DMAR-IR: IRQ remapping was enabled on dmar2 but we 
+are not in kdump mode
+     [    2.768847] DMAR-IR: IRQ remapping was enabled on dmar1 but we 
+are not in kdump mode
+     [    2.776922] DMAR-IR: IRQ remapping was enabled on dmar0 but we 
+are not in kdump mode
+     [    2.784999] DMAR-IR: IRQ remapping was enabled on dmar7 but we 
+are not in kdump mode
 
-But I am unable to find the device f0:1f.0:
-
-     $ lspci -nn
-     00:00.0 Host bridge [0600]: Intel Corporation Xeon E3-1200 v6/7th 
-Gen Core Processor Host Bridge/DRAM Registers [8086:5904] (rev 02)
-     00:02.0 VGA compatible controller [0300]: Intel Corporation HD 
-Graphics 620 [8086:5916] (rev 02)
-     00:04.0 Signal processing controller [1180]: Intel Corporation Xeon 
-E3-1200 v5/E3-1500 v5/6th Gen Core Processor Thermal Subsystem 
-[8086:1903] (rev 02)
-     00:14.0 USB controller [0c03]: Intel Corporation Sunrise Point-LP 
-USB 3.0 xHCI Controller [8086:9d2f] (rev 21)
-     00:14.2 Signal processing controller [1180]: Intel Corporation 
-Sunrise Point-LP Thermal subsystem [8086:9d31] (rev 21)
-     00:15.0 Signal processing controller [1180]: Intel Corporation 
-Sunrise Point-LP Serial IO I2C Controller #0 [8086:9d60] (rev 21)
-     00:15.1 Signal processing controller [1180]: Intel Corporation 
-Sunrise Point-LP Serial IO I2C Controller #1 [8086:9d61] (rev 21)
-     00:16.0 Communication controller [0780]: Intel Corporation Sunrise 
-Point-LP CSME HECI #1 [8086:9d3a] (rev 21)
-     00:1c.0 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI 
-Express Root Port #1 [8086:9d10] (rev f1)
-     00:1c.4 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI 
-Express Root Port #5 [8086:9d14] (rev f1)
-     00:1d.0 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI 
-Express Root Port #9 [8086:9d18] (rev f1)
-     00:1f.0 ISA bridge [0601]: Intel Corporation Sunrise Point-LP LPC 
-Controller [8086:9d58] (rev 21)
-     00:1f.2 Memory controller [0580]: Intel Corporation Sunrise 
-Point-LP PMC [8086:9d21] (rev 21)
-     00:1f.3 Audio device [0403]: Intel Corporation Sunrise Point-LP HD 
-Audio [8086:9d71] (rev 21)
-     00:1f.4 SMBus [0c05]: Intel Corporation Sunrise Point-LP SMBus 
-[8086:9d23] (rev 21)
-     01:00.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3 
-Bridge [Alpine Ridge 2C 2015] [8086:1576]
-     02:00.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3 
-Bridge [Alpine Ridge 2C 2015] [8086:1576]
-     02:01.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3 
-Bridge [Alpine Ridge 2C 2015] [8086:1576]
-     02:02.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3 
-Bridge [Alpine Ridge 2C 2015] [8086:1576]
-     39:00.0 USB controller [0c03]: Intel Corporation DSL6340 USB 3.1 
-Controller [Alpine Ridge] [8086:15b5]
-     3a:00.0 Network controller [0280]: Qualcomm Atheros QCA6174 
-802.11ac Wireless Network Adapter [168c:003e] (rev 32)
-     3b:00.0 Non-Volatile memory controller [0108]: SK hynix PC300 NVMe 
-Solid State Drive 512GB [1c5c:1284]
-
-As this is logged as an error, can this be fixed somehow?
+Looking through the logs, this only happens when using kexec to restart 
+the system.
 
 
 Kind regards,
 
 Paul
---------------FeZSmGy3pxP4ZJHzBW38EJo2
+--------------t3bX2VEfBcXnvgNlS0mcYG2k
 Content-Type: text/plain; charset=UTF-8;
  name="=?UTF-8?Q?202401197=E2=80=93dell-xps-13-9360=E2=80=93linux-6=2E7-mes?=
  =?UTF-8?Q?sages=2Etxt?="
@@ -1946,4 +1867,4 @@ ZyByZXNlZWRlZCBvbiBzeXN0ZW0gcmVzdW1wdGlvbgpbICAxMDMuMTUwMzcyXSBQTTogc3Vz
 cGVuZCBleGl0ClsgIDEwMy4yMTE3NDddIFByb2Nlc3MgYWNjb3VudGluZyByZXN1bWVkCg==
 
 
---------------FeZSmGy3pxP4ZJHzBW38EJo2--
+--------------t3bX2VEfBcXnvgNlS0mcYG2k--
