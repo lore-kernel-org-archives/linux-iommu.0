@@ -1,63 +1,93 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA1681E4BD;
-	Thu, 18 Jan 2024 23:35:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E541EC2
+	for <iommu@lists.linux.dev>; Fri, 19 Jan 2024 00:52:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705620943; cv=none; b=oVX4jJ3aKfE/BHIiJSj9OC+858GrOVSrjDgD5X4IGr6kVD43ljQ1w7Sw79cniRxaHHFkLBFCHs6sWnlbrd/5urtOoBxp1kD+A2uJTxXQT9PvvpsE9ybM9XoWNXFQexA/Rj2uFlN6WDcsjxLECiAjTdjB8WUKJ1EP6MItEaEvtOs=
+	t=1705625559; cv=none; b=P657l4TzDTFBpwT88AMFI43xFpjpukysJwAoBHbS0z0PQZFMv7yxewXFtgoB1sR+oODWJzBbiou5nsnJs67lb4qDNpZRQYxOnDi2W3Z+3ZApaXP/WrzH/HYR/aSd+eRycRX91ZNHXuJ2MaPU6UDjMjD2k6eD8N5N9HmlewpwQp8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705620943; c=relaxed/simple;
-	bh=wFRSluolQH99ztHRxbO31KKEpcLA/48Rhskk4mHCbpM=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=KH/o11RMBBu/6fMA/fJcMWAVUz+sbytuX2yd6eGhsZjse/Zc5iSjaCfXx/xLAl8qPoD1WBH52LK6sfUgmeMJ8c4lhh0jpI++VcukU6zi/ePAAKw2HzREh4gimIWTfYEW/eVqfA//l4+fEZwfzfArGxf5nv9kcV4/AhvkQ74ujWY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aPE+TvdR; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1705625559; c=relaxed/simple;
+	bh=PkyL9kPj4Rmx4AQjC/j654aCNR8JQmTLIY+FPsN7SM0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZpNFsBOCFe6QlwUZ8LU7oAICnwl5yfk54yTJXbUgfz6FP4djbPONVhXrsFYZAxcI9mcZfDKWGZfju6ORcCuhLuNmwgoS8lKs3LJ79VSvB/jE0DcEYg2il65Ye+NSpPTLEqQINoeFi+GQlqz7KsRybSXEvQZ/RcTK9dsIEL13O1w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org; spf=pass smtp.mailfrom=linuxfoundation.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=boK31MMV; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-foundation.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linuxfoundation.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aPE+TvdR"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A260CC43390;
-	Thu, 18 Jan 2024 23:35:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1705620943;
-	bh=wFRSluolQH99ztHRxbO31KKEpcLA/48Rhskk4mHCbpM=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=aPE+TvdRQNJIL5ehb6u/heMLqXAAt2lOZtfwIj1srKTiK49o+gqrR+PjLfE3VC2Ya
-	 7gM+Xy1sYOeMM2HS/+/Ln+9HrQUWRFPejaX+XM1F0gL9srTVfUWvLUEx3lRB3S+GQK
-	 ejavQ+CvBMm6wvhes+vaerpcLLhjtIlaTTupsalDnqgQ82oLn1GtCwJXiacO2HVDDX
-	 qfmwX1tGROCdOkV/NUkW3e6QeqAJfi/dXrzwMb3e3zv9B6jpKWeFyj95qN3BdXH4CY
-	 G5uqA+3eR8j2K/eB8vIJWXZCSCmkUYS74Og+DI4Q1CFRMQ/gf1iIBefFj2Gt8+pBMn
-	 AqAPxra8NtJ2g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9216DD8C970;
-	Thu, 18 Jan 2024 23:35:43 +0000 (UTC)
-Subject: Re: [GIT PULL] Please pull IOMMUFD subsystem changes
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20240112174928.GA828978@nvidia.com>
-References: <20240112174928.GA828978@nvidia.com>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20240112174928.GA828978@nvidia.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
-X-PR-Tracked-Commit-Id: 47f2bd2ff382e5fe766b1322e354558a8da4a470
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 86c4d58a99ab1ccfa03860d4dead157be51eb2b6
-Message-Id: <170562094359.32628.11758373488382686307.pr-tracker-bot@kernel.org>
-Date: Thu, 18 Jan 2024 23:35:43 +0000
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="boK31MMV"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-40e884ac5c8so2585745e9.2
+        for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 16:52:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google; t=1705625555; x=1706230355; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=H61ilH2n5k1xI8w1q2NilzT5SPyyPAjMQ5rem1ZRbqI=;
+        b=boK31MMV96MSob07YgaUCrjkUaJfPduVDWiR2q4gi/X306wq81kOCQ/I8fPCvLztw0
+         TrgdGvWBl28y2T5ZG/3Q6BClxlurwSGkGk3WOKfqUQKM+AGSp5SQzpA+yJBmiQLhyS2A
+         sZ+sqDndlNCc5aD2UjzCJ73Sb7L9tK2pOQNEI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1705625555; x=1706230355;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=H61ilH2n5k1xI8w1q2NilzT5SPyyPAjMQ5rem1ZRbqI=;
+        b=tlWm0H/UkB80+LYW49DbdbFQzexCzZqIcdWvld8HUX/J8fce0M0CgoMzPnq1eW7M3M
+         GKgmMVe2Lq3hFzfkuZTBxkJ3SdEzwim8rFawM6SJ6tOdBCauuRh6x9FrZNJtu0WovpNO
+         jE8RPVs3FVi8MqhYHbY7RfKax7LdIr82sL9DgUdKjSGJ6MFaf41ALJyzN5JepJbAu/2h
+         BuhQiuZJbUMkLvMq0oLFR2gRnpCDKr4Fh0Tb9Ozq6nBdsm/aSA0qeLCfiMZODZf3vfjD
+         oGcXIDokxc097zV7GEOXw9gBtf+4tqKRp/9dlNy/IvC1CiOwsz4Z7xA5tBDzS1WE11iJ
+         bQCQ==
+X-Gm-Message-State: AOJu0Yz1yqy8k+OZvimUxtHKkgu16AbFy8L+mgrZxsKZpeBw3UgQk2zu
+	gCO3uiWzIIXbGAFBLzhFbpiZmKN8C0Soujg1sw4LVwRVHN/yCBbm9FdWUIJ1qGVFyvcrCz7s/UL
+	QIyk=
+X-Google-Smtp-Source: AGHT+IGGzojT4yjiCnJAIOrd86amLHx11iU+dBlE7isocYkbsV1zUPbAd9/c8erK4j87fK3MhLtbnw==
+X-Received: by 2002:a05:600c:1d20:b0:40d:5a41:52e with SMTP id l32-20020a05600c1d2000b0040d5a41052emr459728wms.161.1705625555209;
+        Thu, 18 Jan 2024 16:52:35 -0800 (PST)
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com. [209.85.128.50])
+        by smtp.gmail.com with ESMTPSA id hy7-20020a1709068a6700b00a280944f775sm9681824ejc.153.2024.01.18.16.52.34
+        for <iommu@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 18 Jan 2024 16:52:34 -0800 (PST)
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-40e800461baso2566965e9.3
+        for <iommu@lists.linux.dev>; Thu, 18 Jan 2024 16:52:34 -0800 (PST)
+X-Received: by 2002:a05:600c:2d8a:b0:40e:423c:954d with SMTP id
+ i10-20020a05600c2d8a00b0040e423c954dmr456581wmg.276.1705625554320; Thu, 18
+ Jan 2024 16:52:34 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+References: <ZajTpGRSCJkhPEKk@infradead.org>
+In-Reply-To: <ZajTpGRSCJkhPEKk@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
+Date: Thu, 18 Jan 2024 16:52:17 -0800
+X-Gmail-Original-Message-ID: <CAHk-=wj18aK9-4yydL=T8WtwEKW2S78U5e=9YA+O4VCxYZopLw@mail.gmail.com>
+Message-ID: <CAHk-=wj18aK9-4yydL=T8WtwEKW2S78U5e=9YA+O4VCxYZopLw@mail.gmail.com>
+Subject: Re: [GIT PULL] dma-mapping fixes for Linux 6.8
+To: Christoph Hellwig <hch@infradead.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-The pull request you sent on Fri, 12 Jan 2024 13:49:28 -0400:
+On Wed, 17 Jan 2024 at 23:30, Christoph Hellwig <hch@infradead.org> wrote:
+>
+> are available in the Git repository at:
+>
+>   git.infradead.org:public_git/dma-mapping.git tags/dma-mapping-6.8-2024-01-18
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+Yeah, that doesn't work at all.  Please fix your scripts to use the
+proper public facing side like
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/86c4d58a99ab1ccfa03860d4dead157be51eb2b6
+   git://git.infradead.org/users/hch/dma-mapping tags/dma-mapping-6.8-2024-01-18
 
-Thank you!
+instead of the ssh address you use to upload there.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+I've pulled from the proper place, but please don't make me do that
+for all your pulls.
+
+In fact, this is the first time this happened, so you must have
+changed some workflow for the worse..
+
+             Linus
