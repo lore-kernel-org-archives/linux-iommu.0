@@ -1,48 +1,48 @@
 Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFA8C3C470
-	for <iommu@lists.linux.dev>; Fri, 19 Jan 2024 10:05:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A522C3C46A
+	for <iommu@lists.linux.dev>; Fri, 19 Jan 2024 10:12:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705658743; cv=none; b=nzDjYMZGhw4DbcxXzsbMu+qJh9ngmyTh3gG8VnvYuzWR4732afsCBcOYIDZQJevTySngwitG9KuMVBsyHaKXQG63eC3Bz5upaCV3kgfhOEBz+OoVpcnSmptnk/5UV81I/WMMMho+PSBIL/JfadXvlEOWLcavUvWE2Zqcx9Gro2U=
+	t=1705659155; cv=none; b=nzMwlJ2xAYVTBt9Sx6+EUkB61ywpstBEdT+r6nEDZwHL3KEJ3hTTZa5P4AZjGta5IkVrtjMdLN3aRFkXZJ6AJ/+ogqKBeYo5UjyVXMHiiwGKE/NvV5SUagi1G570IoDAYN+4QJDMvk7Ct+yFZvPXWeFjt4xQnUQnCs39zfX/bHw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705658743; c=relaxed/simple;
-	bh=u8p9mCUVfkz0WU9cO8UB76nso42+7Zw/S0jK9+Wpv3Y=;
+	s=arc-20240116; t=1705659155; c=relaxed/simple;
+	bh=HuEMCJS9G0VJ8qDiv6qy19PqibIaS3UKkvvAZAJp5No=;
 	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=bvvJzUU+pRSuV4+6b8yg0sFxBiXhkNS0qX/OwvNX9woBNeIFjFG8Rf/4KAhnhxxK1B405S4VIHByZrpEGyptG9l6XOgV6gnKh9X4wZySnDnixVi5w7I3ION/u1TDsd8EKRE2fQUbWXnEvc/esTP7YNGc/Y9yWhINKxkX/zvC8Og=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=fSJYvA/a; arc=none smtp.client-ip=205.220.180.131
+	 In-Reply-To:Content-Type; b=CQrHihSyxnDgJOVXdjCFe22yGgwvaDJIxOzVoPv9Kja96BRXVTGlb6VZHpJqeU9LPx1VNBXPFKjcDsLqhTF1kcIAz/UnbW2qOnGefgases9eQ68SNvHEG2sH90iwPqvDDtDlIChX8Odn3MfjCxbiWB/xfI2U5/26jcuRB7wzXsg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=pXzz3agU; arc=none smtp.client-ip=205.220.180.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="fSJYvA/a"
-Received: from pps.filterd (m0279869.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40J9tOFD003598;
-	Fri, 19 Jan 2024 10:05:29 GMT
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="pXzz3agU"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40J8gi4I021328;
+	Fri, 19 Jan 2024 10:12:23 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
 	message-id:date:mime-version:subject:to:cc:references:from
 	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=KRVA1UuE/kzOpSKsLsQz6w/DMtoThu8NzoYWjfs0PFw=; b=fS
-	JYvA/aIT7ZSkxMz9tWYq2Ij+OAgi1KL8QTmWb5Y3M46oim2GW1cfTI1q/3vpahOP
-	smnDNWZU2+jlg4oYnV7QdhWT/59V776dy2TqrTQyXrkU6OumlhNX2TC2Z2DmKKrK
-	R1quiNbfFgtJI7Br36Enrcm7XHf87Kcu3LXycCmNx2po9j6/IItikyaD3/vTzUbY
-	OfNgvATiJGgdohuajPWz4e5YDScqw2ZRLAr65k6U0s2A3LxjF3DfRClqN+QKatTc
-	d+/UwP3DAfW1W89rPy3ezno0b472npV3QTCcXz5LCQuN24XahNYMZDfcVIa+CFQZ
-	64Z8IlTnOQwIw184vlZg==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vq6uba2jq-1
+	qcppdkim1; bh=U7EBF2ywQsmJhbqBYQAuBlZReDesIt1cR6QYeVj2qDU=; b=pX
+	zz3agUjyGjr0eUj/sFep1xt9BIbVn2y+9rZldpYKXAKGkTFbf3smNecKL6cRyJkF
+	/IT7qHDifSLCrnOy18uIjLPnNzBYfN/+JDHTjdxWQKW9HrIsvCMLRN0Y4YbjdG0z
+	hxBi+siMwTk3Wxe/n6EJj0oMjJcKkw1knEc6fC0jGCVFPf3ngyhAv53GAC6Kiqpy
+	ONGFZ966DtfYadqLBKfmA5eTVnFgVA3IR3Z6rOB5PnhiNNzY8l65sGAh+GppXFuf
+	x5ODX87ZzuQYMy5WMPCF0JHeGifodl+ft630xaMWtVNEha6LCKefXJCzlP1eYTCl
+	XzduEUp0+8sfWX3Aq0pg==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3vqn89g7wx-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 19 Jan 2024 10:05:29 +0000 (GMT)
+	Fri, 19 Jan 2024 10:12:23 +0000 (GMT)
 Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 40JA5Rs5003868
+	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 40JACMed005039
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 19 Jan 2024 10:05:28 GMT
+	Fri, 19 Jan 2024 10:12:22 GMT
 Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
  (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 19 Jan
- 2024 02:05:21 -0800
-Message-ID: <c091e857-9bdd-4114-947f-afa7b1206de8@quicinc.com>
-Date: Fri, 19 Jan 2024 15:35:14 +0530
+ 2024 02:12:16 -0800
+Message-ID: <d2cf0179-03d4-4766-b93e-f29e284e1048@quicinc.com>
+Date: Fri, 19 Jan 2024 15:42:12 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,8 +50,9 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v8 3/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
+Subject: Re: [PATCH v8 4/5] iommu/arm-smmu: add ACTLR data and support for
+ SM8550
+Content-Language: en-US
 To: Konrad Dybcio <konrad.dybcio@linaro.org>, <will@kernel.org>,
         <robin.murphy@arm.com>, <joro@8bytes.org>,
         <dmitry.baryshkov@linaro.org>, <jsnitsel@redhat.com>,
@@ -63,85 +64,65 @@ To: Konrad Dybcio <konrad.dybcio@linaro.org>, <will@kernel.org>,
 CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
         <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
 References: <20240116150411.23876-1-quic_bibekkum@quicinc.com>
- <20240116150411.23876-4-quic_bibekkum@quicinc.com>
- <f25b7a0d-28b7-428f-a88f-2ceecc208f85@linaro.org>
-Content-Language: en-US
+ <20240116150411.23876-5-quic_bibekkum@quicinc.com>
+ <7d012b9f-b1ca-4633-8dc2-03d90c418e7d@linaro.org>
 From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <f25b7a0d-28b7-428f-a88f-2ceecc208f85@linaro.org>
+In-Reply-To: <7d012b9f-b1ca-4633-8dc2-03d90c418e7d@linaro.org>
 Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
  nalasex01c.na.qualcomm.com (10.47.97.35)
 X-QCInternal: smtphost
 X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 5_WUllb4VAkzDADCg50QtQu2C5YizFyf
-X-Proofpoint-GUID: 5_WUllb4VAkzDADCg50QtQu2C5YizFyf
+X-Proofpoint-GUID: A6zI8AaFwg0jpvyWzYPvukxFto6Y1_IC
+X-Proofpoint-ORIG-GUID: A6zI8AaFwg0jpvyWzYPvukxFto6Y1_IC
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.997,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2024-01-19_04,2024-01-19_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- suspectscore=0 clxscore=1015 adultscore=0 malwarescore=0 mlxlogscore=999
- phishscore=0 lowpriorityscore=0 mlxscore=0 spamscore=0 bulkscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=912 clxscore=1015
+ suspectscore=0 phishscore=0 priorityscore=1501 lowpriorityscore=0
+ mlxscore=0 malwarescore=0 impostorscore=0 adultscore=0 bulkscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.19.0-2311290000 definitions=main-2401190044
 
 
 
-On 1/18/2024 11:25 PM, Konrad Dybcio wrote:
+On 1/18/2024 11:28 PM, Konrad Dybcio wrote:
 > 
 > 
 > On 1/16/24 16:04, Bibek Kumar Patro wrote:
->> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
->> the TLB to fetch just the next page table. MMU-500 features ACTLR
->> register which is implementation defined and is used for Qualcomm SoCs
->> to have a custom prefetch setting enabling TLB to prefetch the next set
->> of page tables accordingly allowing for faster translations.
+>> Add ACTLR data table for SM8550 along with support for
+>> same including SM8550 specific implementation operations.
 >>
->> ACTLR value is unique for each SMR (Stream matching register) and stored
->> in a pre-populated table. This value is set to the register during
->> context bank initialisation.
->>
->> Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>> ---
 > 
-> Since it's your idea with Dmitry's review suggestions, I don't think
-> this tag makes sense.
+> [...]
 > 
-> It's normally used for situations like:
-> 
-> Colleague X: "Hey Bibek, I noticed x broke on y, can you fix it?"
-> "Sure!" <proceeds to make a commit with suggested-by Colleague X>
-> 
-
-Got it, thanks for the inputs. Will remove this tag as it won't make 
-sense in this case as explained by you.
-
-> Just a nit below:
-> 
->> +struct actlr_config {
->> +    u16 sid;
->> +    u16 mask;
->> +    u32 actlr;
+>> +static const struct actlr_variant sm8550_actlr[] = {
+>> +    { .io_start = 0x15000000, .actlrcfg = sm8550_apps_actlr_cfg,
+>> +            .num_actlrcfg = ARRAY_SIZE(sm8550_apps_actlr_cfg) },
+>> +    { .io_start = 0x03da0000, .actlrcfg = sm8550_gfx_actlr_cfg,
+>> +            .num_actlrcfg = ARRAY_SIZE(sm8550_gfx_actlr_cfg) },
 >> +};
+> Just a nit again, but if struct definitions need to be wrapped, this looks
+> better:
 > 
-> This, can go here, in the header:
+> {
+>      .io_start = 0...,
+>      .aclrcfg = ...,
+>      .num_actlrcfg = ARR..,
+> }, {
+>      .io_start = 0..,
+>      .aclrcfg = ...,
+>      .num_actlrcfg = ARR..,
+> };
 > 
 
-Sure, Noted. Will add this to the header.
-Initially made it local, since it is only being used
-in the tables.
+Noted, will wrap this to keep each member in a new line as shown.
+This looks much cleaner. Thanks for this suggestion.
 
-Thanks,
+Regards,
 Bibek
 
->> +struct actlr_config;
->> +
->> +struct actlr_variant {
->> +    const resource_size_t io_start;
->> +    const struct actlr_config * const actlrcfg;
->> +    const size_t num_actlrcfg;
->> +};
->> +
-> 
-> Otherwise, this looks good!
-> 
 > Konrad
