@@ -1,101 +1,198 @@
-Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2064.outbound.protection.outlook.com [40.107.93.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 412DA3CF45
-	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 14:53:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=141.14.17.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705935223; cv=none; b=PSNkHM8xW1e1Tfq4Jy8HRPB+gA+6M8jngTw7IjCCKGsPaxxxF7j6pJ0cwY3aRVCUCjZUVvFSPdGFEnsb+q9W3jcN6C3Cw75nn19r42KID0z7CyJ8ZDSYRTk7oJ1C/H0StcOEdy53zy0BMWEXD1gblspOnvIDqMqZ7pvIZaKKJz8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705935223; c=relaxed/simple;
-	bh=DJ7/RrpeA0Yew/X0+eJI2TzQgnjpIpDMQYJRlwg56Mw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UwM7x3WJzN2TM2SeFFJmBKJFE4XW3knirFFUmmGB96cH/xIRq01eryDTtU6qXZ4jyuxKN6lhLBXV4PJELKoxQDGZQpO6CSw/gq88waBmGHMF564ImCHocKXrxrfLL0fl/IbiFh3RkCIVPlXVygm5CpWuk8l5gah9Vb52Yy4lpCQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de; spf=pass smtp.mailfrom=molgen.mpg.de; arc=none smtp.client-ip=141.14.17.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=molgen.mpg.de
-Received: from [141.14.220.34] (g34.guest.molgen.mpg.de [141.14.220.34])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: pmenzel)
-	by mx.molgen.mpg.de (Postfix) with ESMTPSA id A007B61E646EB;
-	Mon, 22 Jan 2024 15:53:06 +0100 (CET)
-Message-ID: <24bf9a11-6abd-4ccf-9ca1-3cf75c45d374@molgen.mpg.de>
-Date: Mon, 22 Jan 2024 15:53:06 +0100
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E31F753E18
+	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 17:24:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.64
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705944275; cv=fail; b=U/o+qxQ+GAO24HgzOQONiAPDAYlhlgJNAaQ9DMEF6WE8h/Md0K2RjiX2Gk1bIi1XeWl90xz8Fth9HkcgeHZ1RubjItpyx26fTVt3zhJKOEcVzJ3npvMFzUMLTYM6i/Ofka/J21ESAZEtTsjEw9aGs08w8f9iu3jaG5YqzKWg/1k=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705944275; c=relaxed/simple;
+	bh=KT1D4ey727PULoBrq+lq320gVtYRgnDTQBaSuQ56zz8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=j1COvZi5IgsRP1QJ+ysz512kfT+VgQAty9zg4jIFKl7XBMOG1NgVtZyvWUj1+tq32RfTGsEr7D11QJ6g9n87YkRhS5Rmq25IEPw1rywPaMXnpfFSHKKphrMky2HLV7FccPX17gGFGmqYIDsowjur8NjCf4vrEDWMyzmiUFgNiKg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=G94cixVc; arc=fail smtp.client-ip=40.107.93.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="G94cixVc"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lsxECND+U9e49N2p7znM8BSL3EQ3TWQwDhAuECyMcu388MsmSjNAgLIsDWfzDSIdvOVHDwayGIZUH6yDSqlw1dvz4hClj4geyIE4Gz3MvLHSIYjeEXc6VAVS1OsXjAcvHiGJdIvHS0zp9psCYmFTxGBAMUXExt36qrZgtaqbSCUZho5xsd2JKmZt+x7yRSdkpXQ2QWyQtaPAQ9B0dp0JTokQsbx59U3true1qRynSjzxinUHgvRVwE4wc03ras1kkdyLpL5gvJmGIaaTFF6OOBbICxEwAN72RfH6Ft1Ed7twSd0v3zmGWoFnKbjzNRFSSYLadrkGAF8/y5xKEHOdTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Pt5Pu7g/cHBNi6wldpBk3S+6XSSffMb7qnU8ZeDEIRA=;
+ b=IVciDouQZfYtaohIXhLVMps1S2SVEPl3Q/QEIQVA1exIICoxSwBfYJdsvjBIpKtKN8FxTISJh8voxdLDfaqgJm6kpRqbi3/bNQfGLDYBvdetOL/7uXa2b/lob51Xw7CtXvgYC2p3ekYTC0f1/F+j30XQUBAGZqslyj94N/WeQBy4kQHUoJCnnHVOG0evJ4yamctv4mpWMB5bKddF0pwgLF8ArgZ1rBKimeTY9zerjICfmUY21VHbhYrrv8Mdz3Igb8SVBMReY3g9zjwyv8pwhYHnlalwJN+TaevObgFl1pNSAzor4AC14BTOI+GxSlc2oHiXgb+gAEpOlIM6U266mg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.160) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Pt5Pu7g/cHBNi6wldpBk3S+6XSSffMb7qnU8ZeDEIRA=;
+ b=G94cixVcWDJvLMW8VxRbKszaHpKeatVFwXP33Ldbio7B3Ld8r0C1o9d5VburJdYtTfbcMv+pftgR5ipUiTvitC0SGjtRmfiRWHg7/kK5KPWd0CF8fR8yt9PPdqnm3kANTe6PbEysZf1GlmDY2kE4u02J5Hyp8UEjx67hIuEUQlKUOLzsbAxXMs1imn/M4Y3P2/tfMxn8kJpj9Rd7YMbMC9k/ek6xqlbNMHmzf0iddz9bR+pvHyZtpR/eo/vi7lH7HpnEjbfVGQpKqVtAfL7R7Ae9upTGTKPJoJL9WCPT9tKtqFE4OM3elp4wPlJXK92Rc4kmLrqe/V56JviFDDgIUA==
+Received: from SJ0PR03CA0004.namprd03.prod.outlook.com (2603:10b6:a03:33a::9)
+ by PH0PR12MB8174.namprd12.prod.outlook.com (2603:10b6:510:298::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.34; Mon, 22 Jan
+ 2024 17:24:30 +0000
+Received: from SJ1PEPF00001CE3.namprd05.prod.outlook.com
+ (2603:10b6:a03:33a:cafe::bb) by SJ0PR03CA0004.outlook.office365.com
+ (2603:10b6:a03:33a::9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.33 via Frontend
+ Transport; Mon, 22 Jan 2024 17:24:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.160) by
+ SJ1PEPF00001CE3.mail.protection.outlook.com (10.167.242.11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7202.16 via Frontend Transport; Mon, 22 Jan 2024 17:24:30 +0000
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by mail.nvidia.com
+ (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 22 Jan
+ 2024 09:24:10 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail205.nvidia.com
+ (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 22 Jan
+ 2024 09:24:10 -0800
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41 via Frontend
+ Transport; Mon, 22 Jan 2024 09:24:09 -0800
+Date: Mon, 22 Jan 2024 09:24:08 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: "will@kernel.org" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "jean-philippe@linaro.org"
+	<jean-philippe@linaro.org>, Alistair Popple <apopple@nvidia.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>
+Subject: Re: [PATCH 1/3] iommu/io-pgtable-arm: Add nents_per_pgtable in
+ struct io_pgtable_cfg
+Message-ID: <Za6kuE4KUPuwk7+j@Asurada-Nvidia>
+References: <cover.1692693557.git.nicolinc@nvidia.com>
+ <0fe68babdb3a07adf024ed471fead4e3eb7e703f.1692693557.git.nicolinc@nvidia.com>
+ <f468b461-b203-5179-eb6d-9432b9911329@arm.com>
+ <ZOTlcFs2NG6nJEPN@Asurada-Nvidia>
+ <61f9b371-7c45-26b1-ec0f-600765280c89@arm.com>
+ <ZO5R5i4n2WI2GnKQ@Asurada-Nvidia>
+ <d234fa8d-d945-3f7f-1110-fe55bea88587@arm.com>
+ <ZawmMd6BVqQpfbB5@Asurada-Nvidia>
+ <20240122130152.GP734935@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: DMAR-IR: IRQ remapping was enabled on dmar6 but we are not in
- kdump mode
-Content-Language: en-US
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <5517f76a-94ad-452c-bae6-34ecc0ec4831@molgen.mpg.de>
- <433452d0-589a-49c8-8044-dcc93d5be90a@linux.intel.com>
-From: Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <433452d0-589a-49c8-8044-dcc93d5be90a@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240122130152.GP734935@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE3:EE_|PH0PR12MB8174:EE_
+X-MS-Office365-Filtering-Correlation-Id: bda83114-0a4f-45f0-5c90-08dc1b6efe48
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	SxkrbkbmD5cPncWs3EI/Drh9/CaR4YHQx6TbCFyketlZ2mJFXeFuObLGibZhrqlMEp+g+FaGHeiVn+lBHjm6dlD9rJVTCOdK7FqU5ollwD/DUUETZgpoGXTMxiLsb1s8ZK6gaXEfxrUarYr1NMZ1UXmJKm5jL/9jhWE+HT2lPa4GADC4pBJir5H57Y7HRrkH4ihK7U4MRduDm6ayphe7m4PchxETwiwuCT9JygZb2gc0KVAFvWVg0T3FTy4WDfMNs10GT/DieE2ugKYnd0ImhTXba8YMzuCBxYouLE0vJCA96iynzFkiINaYYYY5b96jLu341RakMC8WPLS1tUJVb2AWiYAF98325+XVadhA+m9hkKTniFZ1WFnSwW5ZkSW4uX1m/l9xHmhLGhIVY+qUjTczc0kOuc3y7sDFSp2/z164SzqvMjYUP97v7XcVm9AgTf8zBTKnkLTA0Qu8Wn6K6bcmL9R3Ro4NspV/+aPKLmUJ2NJ1nPDh9M3T7PgBO1eezx1ucTd6BJz46ASREg/e8FPpq5j7a/CfD4ti4YgrU4TfXC3llGwZMEwPs8SpNgSffr9dIk8R33D/hPX6OC+BOnBoVrGBFZfps0xHsONao6P7nPbLyM+TbKqDKS/i3InuQ2xJYj59n/MFV9sdIzOe1JiOkuxEWvLJJDH5oYqcGVvBK0GiD5/Rnanf9i/MX4s0EoGXyveKF3ABVppU6of3vD7qG7CgVhw0QjvdkGfjjySZ7vnTVWl1c2qIsBSc1T6yWXtOA3uksYvDRMsXn+h870ijTtTkQKiuqOyRlmdAeU/aKcBGXVOADTKLVhA22xuQahc8OKqzhSLjzlJeMtwxX4h5JhWFM6mk9rdd8S8RjIU=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(346002)(136003)(396003)(39860400002)(230922051799003)(64100799003)(186009)(1800799012)(82310400011)(451199024)(40470700004)(36840700001)(46966006)(66899024)(86362001)(54906003)(6636002)(316002)(7636003)(70206006)(70586007)(356005)(33716001)(9686003)(41300700001)(4326008)(6862004)(5660300002)(8936002)(8676002)(47076005)(83380400001)(336012)(426003)(82740400003)(2906002)(26005)(36860700001)(40480700001)(40460700003)(55016003)(478600001)(966005)(67856001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2024 17:24:30.5025
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: bda83114-0a4f-45f0-5c90-08dc1b6efe48
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF00001CE3.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8174
 
-Dear Baolu,
+Hi Jason,
 
+Thank you for the ideas!
 
-Than you for your reply.
-
-
-Am 22.01.24 um 13:38 schrieb Baolu Lu:
-> On 2024/1/19 22:45, Paul Menzel wrote:
->>
->> On a Dell PowerEdge T640, Linux 5.9 and 6.6.12 warn about kdump:
->>
->>      [    2.728445] DMAR-IR: IRQ remapping was enabled on dmar6 but we are not in kdump mode
->>      [    2.736544] DMAR-IR: IRQ remapping was enabled on dmar5 but we are not in kdump mode
->>      [    2.744620] DMAR-IR: IRQ remapping was enabled on dmar4 but we are not in kdump mode
->>      [    2.752695] DMAR-IR: IRQ remapping was enabled on dmar3 but we are not in kdump mode
->>      [    2.760774] DMAR-IR: IRQ remapping was enabled on dmar2 but we are not in kdump mode
->>      [    2.768847] DMAR-IR: IRQ remapping was enabled on dmar1 but we are not in kdump mode
->>      [    2.776922] DMAR-IR: IRQ remapping was enabled on dmar0 but we are not in kdump mode
->>      [    2.784999] DMAR-IR: IRQ remapping was enabled on dmar7 but we are not in kdump mode
->>
->> Looking through the logs, this only happens when using kexec to 
->> restart the system.
+On Mon, Jan 22, 2024 at 09:01:52AM -0400, Jason Gunthorpe wrote:
+> On Sat, Jan 20, 2024 at 11:59:45AM -0800, Nicolin Chen wrote:
+> > Hi Robin/Will,
+> > 
+> > On Tue, Aug 29, 2023 at 02:25:10PM -0700, Robin Murphy wrote:
+> > > > Also, what we need is actually an arbitrary number for max_tlbi_ops.
+> > > > And I think it could be irrelevant to the page size, i.e. either a
+> > > > 4K pgsize or a 64K pgsize could use the same max_tlbi_ops number,
+> > > > because what eventually impacts the latency is the number of loops
+> > > > of building/issuing commands.
+> > > 
+> > > Although there is perhaps a counter-argument for selective invalidation,
+> > > that if you're using 64K pages to improve TLB hit rates vs. 4K, then you
+> > > have more to lose from overinvalidation, so maybe a single threshold
+> > > isn't so appropriate for both.
+> > > 
+> > > Yes, ultimately it all comes down to picking an arbitrary number, but
+> > > the challenge is that we want to pick a *good* one, and ideally have
+> > > some reasoning behind it. As Will suggested, copying what the mm layer
+> > > does gives us an easy line of reasoning, even if it's just in the form
+> > > of passing the buck. And that's actually quite attractive, since
+> > > otherwise we'd then have to get into the question of what really is the
+> > > latency of building and issuing commands, since that clearly depends on
+> > > how fast the CPU is, and how fast the SMMU is, and how busy the SMMU is,
+> > > and how large the command queue is, and how many other CPUs are also
+> > > contending for the command queue... and very quickly it becomes hard to
+> > > believe that any simple constant can be good for all possible systems.
+> > 
+> > So, here we have another request to optimize this number further,
+> > though the merged arbitrary number copied from MMU side could fix
+> > the soft lockup. The iommu_unmap delay with a 500MB buffer is not
+> > quite satisfying on our testing chip, since the threshold now for
+> > max_tlbi_ops is at 512MB for 64K pgsize (8192 * 64KB).
+> > 
+> > As Robin remarked, this could be really a case-by-case situation.
+> > So, I wonder if we can rethink of adding a configurable threshold
+> > that has a default value at its current setup matching MMU side.
+> > 
+> > If this is acceptable, what can be the preferable way of having a
+> > configuration: a per-SMMU or a per-IOMMU-group sysfs node? I am
+> > open for any other option too.
 > 
-> The code that warned this is,
+> Maybe it should be more dynamic and you get xx ms to push
+> invalidations otherwise it gives up and does invalidate all?
 > 
->   599         if (ir_pre_enabled(iommu)) {
->   600                 if (!is_kdump_kernel()) {
->   601                         pr_warn("IRQ remapping was enabled on %s but we are not in kdump mode\n",
->   602                                 iommu->name);
->   603                         clear_ir_pre_enabled(iommu);
->   604                         iommu_disable_irq_remapping(iommu);
->   605                 }
-> 
-> The VT-d interrupt remapping is enabled during boot, but this is not a
-> kdump kernel.
-> 
-> Do you mind checking whether the disable interrupt remapping callback
-> was called during kexec reboot?
-> 
-> 1121 struct irq_remap_ops intel_irq_remap_ops = {
-> 1122         .prepare                = intel_prepare_irq_remapping,
-> 1123         .enable                 = intel_enable_irq_remapping,
-> 1124         .disable                = disable_irq_remapping,
-> 1125         .reenable               = reenable_irq_remapping,
-> 1126         .enable_faulting        = enable_drhd_fault_handling,
-> 1127 };
+> The busier the system the broader the invalidation?
 
-Is there a way to check this without rebuilding the Linux kernel?
+Yea, I think this could be good one.
 
-Do you have access to server hardware and are able to test kexec?
+> Or do we need to measure at boot time invalidation performance and set
+> a threshold that way?
 
+I see. We can run an invalidation at default max_tlbi_ops to
+get its delay in msec or usec, and then set as the threshold
+"xx ms" in the idea one.
 
-Kind regards,
+> Also, it seems to me that SVA use cases and, say, DMA API cases are
+> somewhat different where we may be willing to wait longer for DMA API.
 
-Paul
+Hmm, the lockup that my patch fixed was for an SVA case that
+doesn't seem to involve DMA API:
+https://lore.kernel.org/linux-iommu/20230901203904.4073-1-nicolinc@nvidia.com/
+
+And the other lockup fix for a non-SVA case from Zhang doesn't
+seem to involve DMA API either:
+https://lore.kernel.org/linux-iommu/e74ea905-d107-4202-97ca-c2c509e7aa1e@huawei.com/
+
+Maybe we can treat DMA API a bit different. But I am not sure
+about the justification of leaving it to wait longer. Mind
+elaborating?
+
+Thanks
+Nicolin
