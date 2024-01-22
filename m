@@ -1,70 +1,70 @@
-Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A8C151023
-	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 18:00:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E78554D10E
+	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 18:26:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705946414; cv=none; b=D5Cbk+hyWbPdFVeTf1FMcZNRh5PXRz/I4HcGPKX0wPdOUvpG6g9v9aG8enCqgkR8hVgWx1ozQ6xjGNfCuG16SjbObs7LzSPU8gh/VZmh3sd3HKaB5rREZoatdHuJA8jo499C9wMs03Z6qGsvtGMYgbzw0DEZd60qyClyxSUvmnQ=
+	t=1705947972; cv=none; b=V3Hl1+eoyUtX7OX7tr9GC6IfpB9AJIXHNDrRGaMeNrC6BwJep3msLwDSRce5yMN011JeRaORORtNIpzTqOs9qtVX13S3DMftOxJkgqYUEXAgE9NJNq6McmY3K/BKCywmuRMF4FSuEtq2domE+Mk9q0m1+erZxJpDaNcF07HTIaM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705946414; c=relaxed/simple;
-	bh=emEYyaoft+mj559a2nWavURaoE0Q7pX9ocKF3h0Gs1I=;
+	s=arc-20240116; t=1705947972; c=relaxed/simple;
+	bh=uSfLoEh/Kxw/2WUjFfpCEtMLO2VA5+zXILz0XUtfoOQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pN31+sdwrWAonDZpcJVIdFNpsu5sJW/www3LyX2Iubl+njoXWwG8t6r+BjJUl35vEEyCobYgS3/2Svb1Qnyv6MuOZbfFoWNvjiBC1jzobwsCAUO6fOrw1G+3o9nsoL+bIFYAECtFQm7JM/20tTUWhMfpnxMCW685pHtzH2NtAH8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=C0HtvZ2B; arc=none smtp.client-ip=209.85.161.41
+	 Content-Type:Content-Disposition:In-Reply-To; b=MATk9Rfh2/bKmM4gnJD0I0dnQBJUqCKVQKu3HSFPMRA3JqeNiABtZ2A2Cs29TmZIAePoRmNR9BbxZKca06k8SYMogETI/+XYVMCA+UY47xwoYZISJUypi+fJb6cBS7QmpIOdUwd/wUK3fc8qgyhfcTf5ywFTK+0jAGQvA3PIYBw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=mpjxt9CU; arc=none smtp.client-ip=209.85.210.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="C0HtvZ2B"
-Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-5986cb7bb61so1947650eaf.2
-        for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 10:00:12 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="mpjxt9CU"
+Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-6e0a64d9449so2245387a34.2
+        for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 10:26:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1705946411; x=1706551211; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1705947969; x=1706552769; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kb+RWVktgE8OHhHTF0ToEEFBFKQS1T9lY0yNb5W2cZI=;
-        b=C0HtvZ2BxGbbB+gbqW5uZEjRpYcvH7/Z1NYqSc0qf3CJlrsQGEffDwPcJUj5jzndLF
-         fHY2G1XTE9mg2YZt0fl1S/858tIGshZH/sBEDMLVjKkpgG/cO0Vk//yRXODqANErr5RC
-         dk57PisKKoQJRaIRWc0RoNbruVYPpCsP371C6VU+ooIgU3xLBBhoSyY5ktP/KuZom/KW
-         c7fHnREOIGW9uEjnLJlnK2gITSsxhzmejA+Ws0uipK2qoUgedCwkNkGeW1y/4ZMMB3SF
-         f2r0JcjdFBlH8zjdSSTVamjb32eipL1U8srHv3S5JhDUUf8QdXIrzlyFHKF2EKW/mE8H
-         oL/Q==
+        bh=MYin2r9qBO3Rf5FKRY7mx/rCMz+uKJgc4bTRwjAV754=;
+        b=mpjxt9CUu3EnsSUTTxyAfu6gVP2U308QL+iHB9TkKcobOYFGp6b3jo6tMGgvyINjaK
+         OJ3Jdz5MRWYhStC0FpR3otlBdqm9c2ifMxjRI/VZafKv5AntKLaDvefTVKgAghGjMre+
+         TO/aTK4jaxKyxXg6DvURnqH3k7Uw/4zC+SWEgSvwRv3V9N5jUfjzbykHkfhfiTLM2xMO
+         M3o+iI7kITQ+sbIhTo2yYoIsKU1xU3X+o/oYgmIj0cJmJBv0JGiGVnTPTwTWTgBuy+Jw
+         VgxafoSGgruPgpWSgmPTKv7ZgJw1ddMbA4eeESrsjOOgalc8p9lI9Zm0QuVzXlBdMjoR
+         9uHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1705946411; x=1706551211;
+        d=1e100.net; s=20230601; t=1705947969; x=1706552769;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Kb+RWVktgE8OHhHTF0ToEEFBFKQS1T9lY0yNb5W2cZI=;
-        b=KZvaxJgl7toImgA9H4dQAjbDODQ9q8HPI++2U2sPL848qKvXBHiWqdHe1+IpYG7eCZ
-         sTWNjGe6vOmRQzh+/11HnXgYi95VXW5yh9lISIM8KbJcUq05JnEw97vEebxy+6vluV5w
-         AMXHEDN0t9b1pqBbqjJlHcBYM36jDQFTjCcg+FB1RRvTEdqi7VvniQUnWETDIYv95P+v
-         rzCf4u0wM7T4WeLT+FliNQALnc9xg+9t/oY51y3baZ3w+P2YOMDBa7UgC9UPilgwIKs+
-         45n6e8L5CRIArhsglTXPSrimDfAvQjl1ndOK1C43BG1Km1kyURUoV6UiH4lSgEXjdHYs
-         SL/A==
-X-Gm-Message-State: AOJu0Yz4m/Dty/YEsRw4ma1npbhDBn+O51iKtTI3Uq4BcFybUH1UbsQA
-	FQ2L5kg0GnkNPWYgPc3nzSNi72Q2Wv75DmJZZ2HPTzij7yfx7EUG+8kJQo4Kxgo=
-X-Google-Smtp-Source: AGHT+IF2E9XImglTP3NY2pCKyj/FI7FMhn5zj61373AEXiogqenvzjENVucK6qCCQV1ED1a5+HN+OQ==
-X-Received: by 2002:a05:6820:345:b0:599:698d:a470 with SMTP id m5-20020a056820034500b00599698da470mr2336039ooe.2.1705946411263;
-        Mon, 22 Jan 2024 10:00:11 -0800 (PST)
+        bh=MYin2r9qBO3Rf5FKRY7mx/rCMz+uKJgc4bTRwjAV754=;
+        b=Xxwp25kVjEHGOaTOzRo0s+OPlhFCDl434zDT76hXs6OSZFIRN0GE645gqWad2oXqdj
+         KxczZl940+meWxdbRz7v1V1/aJfztNbqZwPQSaJoFsiQWLGYP9PM890mKgJJwjFE6IYC
+         Lod+Kcc99lhQKKyZ+0Hvmva/wm39c/p+0cShJTgLecTzTw78iEN7fbQzcJe1k8xAoY+x
+         Bg/67nY5KZF7Ky8LCiKymjQvZrn9YjKk27UmBgRr2k3RAMOZBhPgzci+J0vpB5EKmr3e
+         3in/VBwIubb1QYK55ptsiS49fcby3k/zOgsanvQDB1/MWMGx/odRXz7xPXpb0tJIz0p4
+         2otg==
+X-Gm-Message-State: AOJu0Yzg2a2ve9uO6Oes2fT8FsGjoox1rm/xy3K4JP8HATAKjojCq2Is
+	xygL3wz/1uTv/lrogYl3WbVK09oXWWLcTFqFDmFEGrd7nfnKCbZI27S7EaQzpkg=
+X-Google-Smtp-Source: AGHT+IFeY9y2TeMkrAQHo74R+h7/iR8jY6Rh0h/L3MWA/kPr9/fzEj9pj/xDRjMYEvRUgi9mjiijbw==
+X-Received: by 2002:a05:6871:5c4d:b0:214:7e6b:db13 with SMTP id os13-20020a0568715c4d00b002147e6bdb13mr315217oac.47.1705947968678;
+        Mon, 22 Jan 2024 10:26:08 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id k9-20020a4ab089000000b00591d271c95fsm4118990oon.4.2024.01.22.10.00.10
+        by smtp.gmail.com with ESMTPSA id e10-20020a056870450a00b00210e313ee4fsm1552679oao.8.2024.01.22.10.26.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Jan 2024 10:00:10 -0800 (PST)
+        Mon, 22 Jan 2024 10:26:08 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rRyaf-006xc8-EV;
-	Mon, 22 Jan 2024 14:00:09 -0400
-Date: Mon, 22 Jan 2024 14:00:09 -0400
+	id 1rRyzn-006xkq-93;
+	Mon, 22 Jan 2024 14:26:07 -0400
+Date: Mon, 22 Jan 2024 14:26:07 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v5 10/17] iommu: Introduce iommu_group_mutex_assert()
-Message-ID: <20240122180009.GO50608@ziepe.ca>
+Subject: Re: [PATCH v5 14/17] iommu/amd: Refactor GCR3 table helper functions
+Message-ID: <20240122182607.GP50608@ziepe.ca>
 References: <20240116165335.6043-1-vasant.hegde@amd.com>
- <20240116165335.6043-11-vasant.hegde@amd.com>
- <20240119190955.GM50608@ziepe.ca>
- <c5be6a3f-bb45-58b1-a832-82c140299ac3@amd.com>
+ <20240116165335.6043-15-vasant.hegde@amd.com>
+ <20240119195907.GN50608@ziepe.ca>
+ <e8f2c380-acb9-bafa-c2b5-5445c0f06a4e@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -73,64 +73,127 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c5be6a3f-bb45-58b1-a832-82c140299ac3@amd.com>
+In-Reply-To: <e8f2c380-acb9-bafa-c2b5-5445c0f06a4e@amd.com>
 
-On Mon, Jan 22, 2024 at 11:54:39AM +0530, Vasant Hegde wrote:
+On Mon, Jan 22, 2024 at 03:53:18PM +0530, Vasant Hegde wrote:
 > Jason,
 > 
 > 
-> On 1/20/2024 12:39 AM, Jason Gunthorpe wrote:
-> > On Tue, Jan 16, 2024 at 04:53:28PM +0000, Vasant Hegde wrote:
+> On 1/20/2024 1:29 AM, Jason Gunthorpe wrote:
+> > On Tue, Jan 16, 2024 at 04:53:32PM +0000, Vasant Hegde wrote:
 > > 
-> >> +/**
-> >> + * iommu_group_mutex_assert - Check device group mutex lock
-> >> + * @dev: the device that has group param set
-> >> + *
-> >> + * This function is called by an iommu driver to check whether it holds
-> >> + * group mutex lock for the given device or not.
-> >> + *
-> >> + * Note that this function must be called after device group param is set.
-> >> + */
-> >> +void iommu_group_mutex_assert(struct device *dev)
-> >> +{
-> >> +	struct iommu_group *group = dev->iommu_group;
-> >> +
-> >> +	lockdep_assert_held(&group->mutex);
-> >> +}
-> >> +EXPORT_SYMBOL_GPL(iommu_group_mutex_assert);
-> >> +
-> >>  static struct device *iommu_group_first_dev(struct iommu_group *group)
+> >> @@ -1738,22 +1744,22 @@ static int get_gcr3_levels(int pasids)
+> >>  	return levels ? (DIV_ROUND_UP(levels, 9) - 1) : levels;
+> >>  }
+> >>  
+> >> -/* Note: This function expects iommu_domain->lock to be held prior calling the function. */
+> >> -static int setup_gcr3_table(struct protection_domain *domain, int pasids)
+> >> +static int setup_gcr3_table(struct gcr3_tbl_info *gcr3_info,
+> >> +			    int nid, int pasids)
 > >>  {
-> >>  	lockdep_assert_held(&group->mutex);
-> >> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> >> index 7f6342bc71c3..c983b6a1ebce 100644
-> >> --- a/include/linux/iommu.h
-> >> +++ b/include/linux/iommu.h
-> >> @@ -751,6 +751,7 @@ extern int iommu_group_set_name(struct iommu_group *group, const char *name);
-> >>  extern int iommu_group_add_device(struct iommu_group *group,
-> >>  				  struct device *dev);
-> >>  extern void iommu_group_remove_device(struct device *dev);
-> >> +extern void iommu_group_mutex_assert(struct device *dev);
+> >>  	int levels = get_gcr3_levels(pasids);
+> >>  
+> >>  	if (levels > amd_iommu_max_glx_val)
+> >>  		return -EINVAL;
+> >>  
+> >> -	domain->gcr3_tbl = alloc_pgtable_page(domain->nid, GFP_ATOMIC);
+> >> -	if (domain->gcr3_tbl == NULL)
+> >> -		return -ENOMEM;
+> >> +	if (gcr3_info->gcr3_tbl)
+> >> +		return -EBUSY;
+> >>  
+> >> -	domain->glx      = levels;
+> >> -	domain->flags   |= PD_IOMMUV2_MASK;
+> >> +	gcr3_info->gcr3_tbl = alloc_pgtable_page(nid, GFP_KERNEL);
+> >> +	if (gcr3_info->gcr3_tbl == NULL)
+> >> +		return -ENOMEM;
+> >>  
+> >> -	amd_iommu_domain_update(domain);
+> >> +	gcr3_info->glx = levels;
 > > 
-> > This shouldn't be unconditional. Like this outside the other ifdefs:
-> > 
-> > #if IS_ENABLED(CONFIG_LOCKDEP) && IS_ENABLED(CONFIG_IOMMU)
+> > I think this patch should also move the domain_id
+> > allocation/deallocation into setup_gcr3_table()/free_gcr3_table()
 > 
-> This is already covered by `CONFIG_IOMMU_API` check.
-> Also lockdep_assert_held() is already covered by LOCKDEP config check in
-> lockdep.h file.
+> We do domain allocation in device attach path only. But GCR3 table
+> allocation/setup can happen while enabling SVA (like passthrough -> SVA path).
+> Hence I have kept it in attach() path itself.
+
+Huh? That doesn't sound right. Any time you install a GCR3 table into
+a DTE you need to get a domain_id *for that GCR3 table*. There is no
+other place to get a domain id!?
+
+All this logic should be shared between the pasid and rid attach
+paths.
+
+The passthrough thing is only an issue of DTE construction.
+
+If you build a DTE with a GCR3 table and RID=IDENTITY then you set
+some bits, and that is it. Detect that case directly when you build
+the DTE. It should have no effect on what domain ID is used to tag
+translations retrived from a GCR3 table.
+
+(I say that with some trepidation because it isn't clear to me how the
+AMD IOMMU caches the DTE entries themselves)
+
+I've said before the DTE construction should be fixed up before making
+things more complicated :\
+
+> > It is missing some error handling too
 > 
-> So I think another explicit check in redundant.
+> Where?
+
+See my diff I sent, it was error unwinds around gcr3 table failure.
+ 
+> > And domain_id_is_per_dev() is pretty redundant once you do that. See below
 > 
-> Is there  any other reason to have explicit check?
+> We need to handle passthrough as well. It doesn't make sense to allocate and
+> keep GCR3 table when we are not going to use it.
 
-We don't want the out of line function call overhead even when lockdep
-is not turned on.
+Then don't, and my diff didn't - but check for the passthrough case
+directly against the attached domain as identity.
 
-The point is that without lockdep the inline stub should be the
-only thing present and the compiler simply does nothing at all.
+> > @@ -1902,7 +1911,7 @@ static void set_dte_entry(struct amd_iommu *iommu,
+> >  	struct dev_table_entry *dev_table = get_dev_table(iommu);
+> >  	struct gcr3_tbl_info *gcr3_info = &dev_data->gcr3_info;
+> >  
+> > -	if (domain_id_is_per_dev(domain))
+> > +	if (gcr3_info && gcr3_info->gcr3_tbl) {
+> >  		domid = dev_data->gcr3_info.domid;
+> >  	else
+> >  		domid = domain->id;
 
-What you have here will generate an function call and a stack frame
-push to do nothing.
+Because here it already has the (gcr3_info && gcr3_info->gcr3_tbl)
+test below to decide if the gcr3 will be written to the DTE, so of
+course it should be the same test to decide where the domain id comes
+from.
+
+> > @@ -2018,15 +2027,10 @@ static int do_attach(struct iommu_dev_data *dev_data,
+> >  	domain->dev_iommu[iommu->index] += 1;
+> >  	domain->dev_cnt                 += 1;
+> >  
+> > -	/* Allocate per device domain ID */
+> > -	if (domain_id_is_per_dev(domain))
+> > -		dev_data->gcr3_info.domid = domain_id_alloc();
+> > -
+
+And this gets moved into this test:
+
+> >  	/* Init GCR3 table and update device table */
+> >  	if (domain->pd_mode == PD_MODE_V2) {
+
+Here, which is obviously correct at this point as you only need a GCR3
+table when installing a V2 table on the RID.
+
+> > @@ -2073,10 +2077,6 @@ static void do_detach(struct iommu_dev_data *dev_data)
+> >  	/* decrease reference counters - needs to happen after the flushes */
+> >  	domain->dev_iommu[iommu->index] -= 1;
+> >  	domain->dev_cnt                 -= 1;
+> > -
+> > -	/* Free per device domain ID */
+> > -	if (domain_id_is_per_dev(domain))
+> > -		domain_id_free(dev_data->gcr3_info.domid);
+
+And this got moved into the gcr3 free a few lines up that checked the
+pd_mode.
 
 Jason
