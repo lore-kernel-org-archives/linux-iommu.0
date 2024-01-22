@@ -1,114 +1,154 @@
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com [66.111.4.25])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2068.outbound.protection.outlook.com [40.107.243.68])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A542F48CD6
-	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 20:44:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=66.111.4.25
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705956275; cv=none; b=WnmPpz8YlxnGeA+Z5rzL0gwGpdx1N0+gkaTTCpqwACQcOis30XhC1B8nesUrDTWhb7uNa9dY27LA4OlePXbqWEaWUtOGihIEHkKioxNbo/1Wa6jghvUxuQrivID+AnC20ls+8NzDGosgGe4x6uvkexdppshQMURnNk6ViZT6o0g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705956275; c=relaxed/simple;
-	bh=HTfVJjeKPMLdJ2VK7VUKQP9eFDr8nmzwZ1hMuarqhpA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QP5tSXl3VZsrNUzfTwr3WQcgdcnSifFnoEXVqCieowbxAzcDHfXbtAhYpXtWX4OLhVx2PlE5+Ml8KQkKf5PYq12tCP4xDUUZ1hAzM549qxpYF8M8R1r0Y2NchnnGH51QoxquMdZZHyRwbeFErJ73UOMrE1QvsT5HqCj9v3oKeJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kroah.com; spf=pass smtp.mailfrom=kroah.com; dkim=pass (2048-bit key) header.d=kroah.com header.i=@kroah.com header.b=Odv6hbDj; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=fa7i8sq5; arc=none smtp.client-ip=66.111.4.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kroah.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kroah.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D2034D59A
+	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 23:34:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.68
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705966463; cv=fail; b=I+xmvECRCLXb3eLhCQRLZGA1ED8Njp4TUBs0n00Eyah4YX5y6h5SmKF1V2JGUWeNib09qkXnWhp69dtcFUl9Ux/Z3gOR+9ujMVfyL1w8oJN4uZCShubIZ9nSMAvKDhD/Z2Gg7rg3hSQUN4XQoXl68a+1CH0h19+NRTVYUREzUHA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705966463; c=relaxed/simple;
+	bh=i+fGfV1iKzd4P2HVtc5fY8RpyxEYmysiupZzf0YpwxU=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=WallW0DKwCJ6zs5cpl0CPd25kstmgSqNjZTA80RGqUgkYpRjgnsSSEAUWhj4k9ZAxh7wgrdt0tz8GfBHbe2K+E2y4Zc2qw09dNS8V66cbPs6seOz0ct0iLlH3VEGpSLOdvNoEhCurY/3vDLLLsCgjygtN+s9eON5cjLdDb9w9gs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=fos0+rK3; arc=fail smtp.client-ip=40.107.243.68
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kroah.com header.i=@kroah.com header.b="Odv6hbDj";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="fa7i8sq5"
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-	by mailout.nyi.internal (Postfix) with ESMTP id 98BFE5C01C4;
-	Mon, 22 Jan 2024 15:44:32 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Mon, 22 Jan 2024 15:44:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-	:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:subject
-	:subject:to:to; s=fm3; t=1705956272; x=1706042672; bh=NknfBqxyeA
-	rB5sr9Kwtp3IMv27vftUekDkOawLRCvOs=; b=Odv6hbDjNwnNeBzNZA1T1Q6POa
-	P0Qju2BklHfroy3YCvN/BsKzfC8slpmP1wUDxnhD43LN7TO7ss3jHqqqIJBDR7bh
-	LFrZsBxnaUnI4D8nzT+76au3MDVaonZnkdK9sclw+cEBW9sCbq+3ICKnhd+2upd0
-	NBH6J/01cX/5IDXem2sM8KUSb5YShpWwXcjHzynGDBRogwCaM5+GU2gQcQqVqbSi
-	eHhvt8DHNHV5AYQrSJvqRGTlRaXK/IdDM/CwXecnJjV2E+LO8xOMIdWDQ4l8Xsnf
-	ERPZ1jPlToEQQK0BMBg02F3FJtz3bDqh11BLH0SQY+ru5bMqDJ9FN3+tvJyw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm3; t=1705956272; x=1706042672; bh=NknfBqxyeArB5sr9Kwtp3IMv27vf
-	tUekDkOawLRCvOs=; b=fa7i8sq52tXBq5GIfOXxG2FGFNnFyTWaysLu48akDagj
-	C/9sSpaTu2KcmPuDBAcfoGtXOX3y12svVkhsvKBSTwWNjMBcnqhPWa6+qJ3218n6
-	a3q0QI/Chn69g8QUB/+z+BtIyhPTXg8JAlBIoHQPSo/SqoFaWFcp7pzM78y7sDp1
-	1/PaiWunj3Ydnsr4Ql0pCIFGCUowG6PUfzXS+KDQU6qe76KrjPZ0FnuhzmGVJIBo
-	eK/k0Bo7A4SwepSDXt9tA5I1Pls/AhvqFsDHeSgxmONeI3UfD0v3jKUem62WV8hs
-	ze/UATIkrzdiyR+bDtO4s3S07N9+Kss/mbmz6uvepQ==
-X-ME-Sender: <xms:sNOuZSS1cRASSKtlBipwLlR809YlCkjabFzRnQvL-IL89zBbJSDGLA>
-    <xme:sNOuZXyUTqYq5doEUzyWI7KN4CtTcsXoQK8EBadV-JOO3vKnXO_Zk-_6Gl_lhMUuV
-    GMMOBG7CKmTZQ>
-X-ME-Received: <xmr:sNOuZf34jMpD1J0hqBF9vJdGewB8AKGBr2wBptqjU9uE0AgFuhSZbdK26322>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvkedrvdekiedgudefkecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgv
-    ghcumffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeeghe
-    euhefgtdeluddtleekfeegjeetgeeikeehfeduieffvddufeefleevtddtvdenucffohhm
-    rghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrg
-    hmpehmrghilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
-X-ME-Proxy: <xmx:sNOuZeC92Bm5JEhCVGbybAffmfkaHnuMWaE8tjYyP5mNBD7TfHx15g>
-    <xmx:sNOuZbjco0Jod66T7yP5hAikXE8xT3ejD_tG-MgR-rRT8utWhWSFBQ>
-    <xmx:sNOuZarmmCI6InqB6TmNPy5KLHOik8Pqf1EKybemgmrXTBXnOWrIOg>
-    <xmx:sNOuZWQxvNHkE2MgBWtwKeXASFQc7CgWqKf30lQeREy6-IRXfXM7LQ>
-Feedback-ID: i787e41f1:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 22 Jan 2024 15:44:31 -0500 (EST)
-Date: Mon, 22 Jan 2024 12:44:28 -0800
-From: Greg KH <greg@kroah.com>
-To: "Isaac J. Manjarres" <isaacmanjarres@google.com>
-Cc: stable@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>,
-	Tom Murphy <murphyt7@tcd.ie>,
-	Saravana Kannan <saravanak@google.com>,
-	Joerg Roedel <jroedel@suse.de>, kernel-team@android.com,
-	iommu@lists.linux-foundation.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5.15.y] iommu/dma: Trace bounce buffer usage when mapping
- buffers
-Message-ID: <2024012219-mushiness-implement-4fb5@gregkh>
-References: <2024012226-unmanned-marshy-5819@gregkh>
- <20240122203758.1435127-1-isaacmanjarres@google.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="fos0+rK3"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hLYCp8UC5SMB3o5DoTGTVBYDtraw/kqTzXn8SqxcKkspi4oRzJqb7RluoMxZESL1ObROgqSW19I3AdwK/AVlleIGMr+fxbrl+0TQtLwd6hHcI7/g857vZ9hw/hhgVqmqHiAx5EnZVaP9xosv0zHHTqkhwGajdsc7FoZXuyRASN1ib/YLAo2JIGfDQJCYTdSqKlsRZZLbyxLNTv2FwmEThXbGdyv8KIyHIPYm/IDFYAqpqUkyGrGPUiUn8vL4+n9TMqwMYeXW09QVmEd4gT3QMR+QPHzfFjWm1DLbrk0W7NIL9LJ089ovko5SHkr+mJvYb7AygeHvzSWhF5p6p9w3zg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7fKlV/EM0/bnJ2JznlbEW8mLgjj8l1TFF1Ra0adSE9Y=;
+ b=YGDifNLXzwut+yoBimBN13wH7So0sIK+Q8NFMcAnlUOZqiJTSIyrCg03CIkNWZqNAG4sRd1H6cq/pfo/34ubv1a3Q3XedE9z2oSQle2XLYjfooWW1esLD49qDiGAdqG4N7NGQMXeDGBjfgXkFXjVKya4k8pW/WDscvuXie2lM434FpoEjbREgwDj2dZwJdvgJ9xnhKQ2OXq8NfHmwhtJzrDzZixZ3aQD4aOXA1IW+tc0uYrlJqYXqC3QFb2QRbGZVdimSbzPQ1l4wLck0A6owB8kz6Y3Gm45Y3uSCjNG2yhGSuEp++bNW4hckxfirP84dwY22Xi9gwDDITO+sCiekQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=8bytes.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7fKlV/EM0/bnJ2JznlbEW8mLgjj8l1TFF1Ra0adSE9Y=;
+ b=fos0+rK3OJ2KioeedGkmaZECuFMaqOEKgRtNYVaVa/ltGZ41rdj+mO1sAO+z7sILYI5umdEh/PJTVBHm2ncYKrynhgD9nsLDhaHuZYoSWFvWQPlQEP5Dc3oYVPMIZ/ySzZD+pn9Vn9d1q2yz/IcduAoFLP+NkcG5zp325am8a7Q=
+Received: from SA1P222CA0182.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:3c4::20)
+ by BL1PR12MB5900.namprd12.prod.outlook.com (2603:10b6:208:398::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.32; Mon, 22 Jan
+ 2024 23:34:19 +0000
+Received: from SN1PEPF00026369.namprd02.prod.outlook.com
+ (2603:10b6:806:3c4:cafe::8) by SA1P222CA0182.outlook.office365.com
+ (2603:10b6:806:3c4::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.33 via Frontend
+ Transport; Mon, 22 Jan 2024 23:34:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ SN1PEPF00026369.mail.protection.outlook.com (10.167.241.134) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7202.16 via Frontend Transport; Mon, 22 Jan 2024 23:34:18 +0000
+Received: from AUS-P9-MLIMONCI.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Mon, 22 Jan
+ 2024 17:34:16 -0600
+From: Mario Limonciello <mario.limonciello@amd.com>
+To: <joro@8bytes.org>, <suravee.suthikulpanit@amd.com>, <Vasant.Hegde@amd.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, Mario Limonciello <mario.limonciello@amd.com>
+Subject: [PATCH] iommu/amd: Mark interrupt as managed
+Date: Mon, 22 Jan 2024 17:34:00 -0600
+Message-ID: <20240122233400.1802-1-mario.limonciello@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240122203758.1435127-1-isaacmanjarres@google.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SN1PEPF00026369:EE_|BL1PR12MB5900:EE_
+X-MS-Office365-Filtering-Correlation-Id: b5e79ceb-9970-46ff-fc24-08dc1ba2a78d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	mnenekLSYFpbvs6/rG0R44cKa5nkEzv68ApkwSInoBDDa1/WRdf5xpPAPV8kP+3WDytd45GbQYkrD5cljTFWz3z5sfyCbVPhMidkyloimIKOCTBIYaJ+Kema7YxWpMzIOnS1kE2MDvFH6YWPXdVjQce9vzXSIIezRZDz5N2gmZgGxpVdq53whH1HpdauvpbICH1Fnf7rE+JVG5qJLqb+bk6Of7zIT25OVwjoW1A9y2mROV5YYZdxK46v5r8LpR4H2CXBiNMbwQG9UItAUKVKscxiXEq3i5cD7QAKFnXLh1N3YO8RRr7UKtRlQ8Q6CyYVNYPkkIhqfGzcY1bnCADehP6nu6m2RtUR8g2RhWUfflQ/EG8+lkELc+g4Genb2Le51Jj2frns6QRWnpEkVYWC7f6T10DfneAti4Nc9FDRm0v7hKGndSbc5kLYWy/O1T4SCLpukXmA6yMfgSeEwYRGtLcWF7RP296MVVAbvCvslLoWRxJQNJSRiv2/j8O+PhDQU1v24ONIwZXdn56533WUx6u56V5EtK+vAORgA54DNSR8iC1vtPd4LMcNYP+QX/fReykzucFbszJRykgl6M7PuWY3bd9rWbCSH8lkaWs4gUuK+QPWE9DW+HlQWE5mmHEV9ty6oCfp9dtZvS9UWhKvvjUAXeJS6hEAt9hBXnk1C/CaAymKjvfvfDAbCnABWbCg4LljqiVKlb/HDBe/HQn1sb+c82lqfoWO8BbQ7RfPJyuZWmRas/DG8z+Av5u5QvRPF3ExVbuxSP8ZNwOlDX93a5G8zm65vzccyFDlXkLX9dhr63U9pyraKHy+ZcwKn42m
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(396003)(346002)(376002)(136003)(230922051799003)(230273577357003)(230173577357003)(1800799012)(64100799003)(186009)(82310400011)(451199024)(46966006)(40470700004)(36840700001)(86362001)(40460700003)(40480700001)(81166007)(356005)(36756003)(26005)(1076003)(2616005)(47076005)(82740400003)(36860700001)(83380400001)(336012)(16526019)(426003)(110136005)(70586007)(8936002)(70206006)(8676002)(7696005)(316002)(6666004)(6636002)(966005)(54906003)(44832011)(5660300002)(4326008)(2906002)(478600001)(41300700001)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2024 23:34:18.7019
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: b5e79ceb-9970-46ff-fc24-08dc1ba2a78d
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SN1PEPF00026369.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5900
 
-On Mon, Jan 22, 2024 at 12:37:54PM -0800, Isaac J. Manjarres wrote:
-> When commit 82612d66d51d ("iommu: Allow the dma-iommu api to
-> use bounce buffers") was introduced, it did not add the logic
-> for tracing the bounce buffer usage from iommu_dma_map_page().
-> 
-> All of the users of swiotlb_tbl_map_single() trace their bounce
-> buffer usage, except iommu_dma_map_page(). This makes it difficult
-> to track SWIOTLB usage from that function. Thus, trace bounce buffer
-> usage from iommu_dma_map_page().
-> 
-> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
-> Cc: stable@vger.kernel.org # v5.15+
-> Cc: Tom Murphy <murphyt7@tcd.ie>
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> Cc: Saravana Kannan <saravanak@google.com>
-> Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
-> Link: https://lore.kernel.org/r/20231208234141.2356157-1-isaacmanjarres@google.com
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
-> (cherry picked from commit a63c357b9fd56ad5fe64616f5b22835252c6a76a)
-> Signed-off-by: Isaac J. Manjarres <isaacmanjarres@google.com>
+On many systems that have an AMD IOMMU the following sequence of
+warnings is observed during bootup.
 
-Now queued up, thanks.
+```
+pci 0000:00:00.2  can't derive routing for PCI INT A
+pci 0000:00:00.2: PCI INT A: not connected
+```
 
-greg k-h
+This series of events happens because of the IOMMU initialization
+sequence order and the lack of _PRT entries for the IOMMU.
+
+During initialization the IOMMU driver first enables the PCI device
+using pci_enable_device().  This will call acpi_pci_irq_enable()
+which will check if the interrupt is declared in a PCI routing table
+(_PRT) entry. According to the PCI spec [1] these routing entries
+are only required under PCI root bridges:
+	The _PRT object is required under all PCI root bridges
+
+The IOMMU is directly connected to the root complex, so there is no
+parent bridge to look for a _PRT entry. The first warning is emitted
+since no entry could be found in the hierarchy. The second warning is
+then emitted because the interrupt hasn't yet been configured to any
+value.  The pin was configured in pci_read_irq() but the byte in
+PCI_INTERRUPT_LINE return 0xff which means "Unknown".
+
+After that sequence of events pci_enable_msi() is called and this
+will allocate an interrupt.
+
+That is both of these warnings are totally harmless because the IOMMU
+uses MSI for interrupts.  To avoid even trying to probe for a _PRT
+entry mark the IOMMU as IRQ managed. This avoids both warnings.
+
+Link: https://uefi.org/htmlspecs/ACPI_Spec_6_4_html/06_Device_Configuration/Device_Configuration.html?highlight=_prt#prt-pci-routing-table [1]
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+---
+ drivers/iommu/amd/init.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index c83bd0c2a1c9..40979b0f5250 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -2068,6 +2068,9 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ 	/* Prevent binding other PCI device drivers to IOMMU devices */
+ 	iommu->dev->match_driver = false;
+ 
++	/* ACPI _PRT won't have an IRQ for IOMMU */
++	iommu->dev->irq_managed = 1;
++
+ 	pci_read_config_dword(iommu->dev, cap_ptr + MMIO_CAP_HDR_OFFSET,
+ 			      &iommu->cap);
+ 
+
+base-commit: 75f74f85a42eb294b657f847c33e1bb7921dbec9
+-- 
+2.34.1
+
