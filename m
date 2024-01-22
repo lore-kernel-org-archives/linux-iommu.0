@@ -1,189 +1,159 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2063.outbound.protection.outlook.com [40.107.237.63])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E103610D
-	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 06:24:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.63
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705904691; cv=fail; b=k3LwPmAxjoGE8zz6Fqx+N7KuzYdJcNrSYXSrZo3AkfYwRPkQEB5OFYVuP5ZTAm0ldc+jd6qJYdP1ytOUnSz8Z4cbQLBSFDPOyaT/pMWwm005aZp5Pl29YgoYWLm3j1eGkOVAjRI2LPD0XYveIUeQGxwcK97RgcpWol+JQonopxo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705904691; c=relaxed/simple;
-	bh=nAcG17cTLOXPjfU4Y86sh8Q0KTm4M/FrRPvVhD+o/eY=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=n28HPaz4ZfKuEp5zua82p8vJ/wBpKOfLvVS+wwbQJgBZN+nwAR9kAQc0KQCYvWtAY9i7GEUhRsXrLjz73f8gbbfaMvnafJhFqlakRjZDgY8tfvzsNq0MJ8aQOBcx43M7CRJ6Re24RelqS4nfkahL38LyZ9lyTthn9qBJoaZKP28=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=uMTleFpU; arc=fail smtp.client-ip=40.107.237.63
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40AF916410
+	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 07:44:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705909475; cv=none; b=pSy272iCv7sX/NG9DrSMF26+8yfT8CnQLTx4x03hr2IKTsAVFv00RCgKOQr2vcr6f6FVYS0RXRxqi4WxVoOX4vJqTX0CABcAdFZaUoJkRA0n7TTQPA7LvIoiZCXBrWuh63mxN7zWjGu+H3bKYX7zjyl1eCCmAdwFPVCwS5Rq04E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705909475; c=relaxed/simple;
+	bh=WaeZbozXHzble1W02cueiTjc38Ii0RT3AX9RzeBAuRA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=tuvkSravgmnkj4psD+SKlixnLPkaNUyVQ1lb3dSK0XtaLa/jyeytfs7zlQ0i4T3a5iOJlqevjv20XHREM18f8PQSUiwyfK7P7NrnLMFglHSEVI6JYPPK7llVpiwgD8H3PFDQfaB0X3zi3O5juZygQVN7fbgWxq8nrNGCscYQGZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iJngVLvI; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="uMTleFpU"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U8Mclc8t24SmONQVpwHhZz/FWoiNUYXCoVD5gre+7YDg4Tzh3TQArb9WvPLfn0ou3Z2PZR0ZfIocjxODDH+iuKxTfSzFv+K+omdoEHZSCEoNLVSaBuu8UGZ9oKc0vCr+THvcwLT1W3iWSvSxW8iDQIo5klFSRbgOOMB7e7eMsDm3TlSgY2f1CvzzrbJ7QOdG4NIMMRtOba4kfKcNQLRT20Ozop9Uz/K3RilmDMcQyN3x7NYdbLEOJmbXzcGe1D1Q/x7qlUqTGmhHNZdsHv3rVyYIk07Jw9YF44HUFC8gBZyILU7ILzEtn5mPjLvupl/CBrnmSvr4weeSl+ENZ3Pi0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D2o22umQMf5QWri3K8RfsKsG2la1L9uWEO8pwlJyVr0=;
- b=R9Zr3/Re4uiigesV1nTrIXFo1xGgE+1SiL5AnrgVvNNH8Ya1GIAC42rChsgkvd1fgEtr5Vko0GL3YMILed5qNLmO8Au7HxP1i62zGAOT1GUvb8+9T3FcbkvhmRj0erLF01Y6G6rgrXnOx7u2d7mCL7XQUx6A9OoXDxxORJVEcCHfQREPeVrxxoqEgr/y/XzoSv3NvpeLK3rPU1kqRUvNp+CJSSw1sy0VM2CdXdXe52gp3SKRBEeMpLHP+LYc5dCBPINRd7o+zgY5qurLX8mS6EEk/NbPoHQuVs2gI/e4F+XtAvtbaOFL7nl7XhRgNDCLZV1B3eVZBvL2BeB0ZoegoQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D2o22umQMf5QWri3K8RfsKsG2la1L9uWEO8pwlJyVr0=;
- b=uMTleFpUfCJelWdtpFJk4qKVJvI34Ri0kz746O8QeCjiTUF8X9V+hA6U3l09nfPJ1Df/o4qNonNq4jgKYEDMUNy/hdm60amdTvPRjun+REnUMVO+sherWwLzqiTV8SITL2I7UUzwZl00cxWIKgs9zaWBGaJor119dxEdemlfuUU=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- DS0PR12MB7727.namprd12.prod.outlook.com (2603:10b6:8:135::5) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7202.31; Mon, 22 Jan 2024 06:24:46 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::481d:7627:c485:9cb]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::481d:7627:c485:9cb%2]) with mapi id 15.20.7202.031; Mon, 22 Jan 2024
- 06:24:46 +0000
-Message-ID: <c5be6a3f-bb45-58b1-a832-82c140299ac3@amd.com>
-Date: Mon, 22 Jan 2024 11:54:39 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v5 10/17] iommu: Introduce iommu_group_mutex_assert()
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
- wei.huang2@amd.com, jsnitsel@redhat.com
-References: <20240116165335.6043-1-vasant.hegde@amd.com>
- <20240116165335.6043-11-vasant.hegde@amd.com>
- <20240119190955.GM50608@ziepe.ca>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20240119190955.GM50608@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2P287CA0002.INDP287.PROD.OUTLOOK.COM
- (2603:1096:c01:21b::10) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iJngVLvI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1705909473; x=1737445473;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=WaeZbozXHzble1W02cueiTjc38Ii0RT3AX9RzeBAuRA=;
+  b=iJngVLvILBFpjOQVM9vO+sOS12IBRx2dgRLz8k8leq5dXUZ2VX4uK6Nc
+   d48mMD8aPqd+ftoScUlV2YpaI5d4USkPrPIp9Z+VPMYKQDNvkhshIxvUc
+   N9mscpKBVNyvwqSFc4QmwE4gcrPob72fuLm++69fRNDeIMiDriTtQ5Rng
+   emzn3Ms4JNgWX/4EK5jPsPQm23zeQ9lNeuiRyhKDFtxb9Rf9z2+K8noeB
+   4fMBE2Gemmfj8UAAvKpDeESIvZizSsryf7Lq9YX8tG/wDMR+TIRzV7Olo
+   +CwVNK4k09KaZkS37oAI0/5prU5BnToGrlUx1CP6741bHw/3Zdk9xKH+L
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10960"; a="22611484"
+X-IronPort-AV: E=Sophos;i="6.05,211,1701158400"; 
+   d="scan'208";a="22611484"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2024 23:44:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10960"; a="778504953"
+X-IronPort-AV: E=Sophos;i="6.05,211,1701158400"; 
+   d="scan'208";a="778504953"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orsmga007.jf.intel.com with ESMTP; 21 Jan 2024 23:44:27 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Joel Granados <j.granados@samsung.com>
+Cc: iommu@lists.linux.dev,
+	virtualization@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v3 0/8] IOMMUFD: Deliver IO page faults to user space
+Date: Mon, 22 Jan 2024 15:38:55 +0800
+Message-Id: <20240122073903.24406-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DS0PR12MB7727:EE_
-X-MS-Office365-Filtering-Correlation-Id: a04bf535-d3aa-4693-f360-08dc1b12d43a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	vV0z4FfuVgK4clbGFJM3+ibA+dH/ATq0v2C4atMqWnpmYqhJqrNI5OStMBZTzZxBaq+wuhvefsonB93VKDLkQHltoMzoKGUsz4L7w774H/x6zYEqISLZRr9ORXRZuT7FCdUtg2lZk5U1NqE8/AyiaWfml6KWazD42rZHuV69+NuIs7pVuvLIUeZIqHKnfL8DnBKQDhNGtQAMdrigUZgV2EVuzmZXgVH/jGkQvhSy9PK9wOd+hxrigiHIX8DvuJuZMTq9vdXyM7vBTzB/eXUEEPmqHeBBluSG2op4HvJ9Jdg5gEKPsEpPzaA3fn9sErmM4LrN/V8kOPQNdzHBbAbBEyEsV8mUBkR7JerMvlc9kXZzydPlsdkIJO57RXCL2HeXgKjYeZZQ2JkxdOzIA2oBhPDQKRTlhkmITmMZVlpgOC5V/BbKCsmuvfLyFCFfGLprEfequQcghGY1eYrPTtNsmYcRBmNM0ushWIxaRYE8QeuOMfuA8LJqB+CRZq1vgpSfrdln/TcFR9+Ti6FDeLJIJ34Z9gVJNPtmetdsRRvM6wmEmCq8WrZrwXGL5E3a91PjjFXMsGSA4KvmsoA+zlDxMXeQFAmt/g+vSqrOTbp30h7WZdLXLV4zjylXglq45pCKiU3/tdAHMAWn9QlMcD2KUg==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(396003)(376002)(136003)(39860400002)(366004)(230922051799003)(451199024)(186009)(64100799003)(1800799012)(53546011)(6506007)(6512007)(6666004)(6916009)(478600001)(66476007)(66946007)(66556008)(8676002)(8936002)(316002)(6486002)(26005)(2616005)(83380400001)(4326008)(5660300002)(44832011)(41300700001)(2906002)(36756003)(38100700002)(31696002)(86362001)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?eTV0SWRtYmtCQmxyRlRyd2UwbTM1MllJcDhnWXlYSGxPWHluSXplR1JMcTlr?=
- =?utf-8?B?VmY1bzhtZjZ0Y0RTaDNmS0p3dmxydDdjMy8vN20xcVlrS0JyeEtTQUh6QUJj?=
- =?utf-8?B?SjJWcTNoZ2RWWHJ3ZDA5V3lJWXJJdWdGSHdjM0RoZHlZZlZNaTdFTkxjdWdq?=
- =?utf-8?B?K0tPSU9KMFpzdUIxb1hXR2RtcmthQkZ5dnRiRFhObE1iTmErdWYzSUY4SmRU?=
- =?utf-8?B?YW1NMzQ5Y0FsWkIzRkZ0bDhLVzIvK3ZVRkZIM3QzQWRhVWRyUmNUeXVuQ1pX?=
- =?utf-8?B?WDdpY1RmT3RJbGxVL1pyckt3d2JHbFhaQnAxZFJEU3dkeVhmT2lDVFNudXJK?=
- =?utf-8?B?SVhFUkx5SVJQdlBBQXJOWUtqdlJvenhYN1QxYW11dlR1TG9Tam9FNmJQUFRt?=
- =?utf-8?B?Zm1qN0pERGF5bDQzak1ockNPWVNUZHlMTFhQNnlQMUhlS1RybllTbE9XUEI4?=
- =?utf-8?B?Vk1QOXJtUEtDOTZxYzBoalBJY2Y1SVNMUStjNlRiaTNDOHVKNXZaKzBwZ3Vu?=
- =?utf-8?B?SlJFaEtMVjQwMkw2dGRlVEJOZW02OWxNRXhPU21JQS9OWlRnVC9SVXd3VkMy?=
- =?utf-8?B?cVliTCtJbUxseW5ZZTRpakM1NVlWWGZvYVlHWVhlUzZZdzN0bmx0dE40Y2tF?=
- =?utf-8?B?V0lydUQzK1pvd3lmdzFiVU8vOTdFdjdHcFp0RnBCQzlGSDBPS01xRmRaWXZY?=
- =?utf-8?B?dmJ4cWN3aDYydVJRL1RJMm43YVNsWGZuOTBzZnRPZWJkcGo1eCtvN3UzTndp?=
- =?utf-8?B?NE13TDNBSEJLSHZiOWlFSWRPUXVKWTc2VTdhU3NHSlJrM1dWKzJpTVBEbDRP?=
- =?utf-8?B?ak00bklGR1JYMGNUZ2VtbExlRnZFTjdKYWdkclp0YjRmYXhYY0tydklEYUJk?=
- =?utf-8?B?dTFUNWs3Z1BHMUcrOVQvVXZhdzhBNnpMRDdRMFZqUjZWYzJRQUQvRjAwQ2ZM?=
- =?utf-8?B?TzZ1Y01HNlRQMWRKVTNRTUxUVEdBVzh6L0ExSjlkWjVnQTRNVlZMa09sYnFZ?=
- =?utf-8?B?eWxBL29WdVNzcjYzbnQzNXJOeVpHd0ZjUFlHVzBRZ25NL2krZkJMdE5PSXNm?=
- =?utf-8?B?NVNLc01MYk5TKzRhUzRnVUwra2YzMkovbWhwazhmcTZEQVdOb1hWWWJZVDZs?=
- =?utf-8?B?bE9XdEVNN2VaSklBMWk5c2tXMEQrL3Y2UXo5WVQyYjNnL2FNejY3eVAvL3dF?=
- =?utf-8?B?UnBxeW9neUxwSlI2MWNhTDhFV0lwZWJZTVA4ckNJZiswcVpaSGFWQmFhL2FJ?=
- =?utf-8?B?QWtKRnRzUStmUEpSdzFBUzFhZG5GYzErNkNWUzZEVnJ4MVQ1a2lYbFFDdTZK?=
- =?utf-8?B?cTh3ekY5TElYc1UrRzQ4RVQxVXc0MEZtZ1U5MFREVEdXMWhNS1NRTHJWZ0hy?=
- =?utf-8?B?Q1lxSTlZZGFLTVhBeUNOdlZTRWE5Nk9MQVhuZDltMGpDRG1vdnVmaXNnRFc0?=
- =?utf-8?B?WFdhTHludEcyaWp2SXdWMzRnaktRN2RjR3J1RTJVckU0SmpPRWUrdVZIK3N1?=
- =?utf-8?B?RHVseFlvejFsYW5UM1F6Y2Q0TzNubDVSNXdKVVEwUXp2Q21aMG5lQjJPVHNF?=
- =?utf-8?B?ZmtqeUJKK2NqQmVUMDhINHl4aUN5RFVhZDdQQU9DS3RWZDRIZUVKcjV1WW84?=
- =?utf-8?B?VndBNWtUdWtTMmJuU0o5UkpLUitrenZZdkp5dndUZkVsNnNPYTFCZ3ZoWUly?=
- =?utf-8?B?ZTgyc2MwVldlck84UDhEa1ZYVjZQUVZiWC81UVNQbjhLUmcvMU9JK1BMTldL?=
- =?utf-8?B?ak81R25YZ2o3RmlnU1hubEU2RzVRM01PUkpNM1FBZllodFBqVU80alZMZEk0?=
- =?utf-8?B?Y1NjekEwUTVmNVhoZE04VlEwM09kbTZUS0JFK2Z5SmFxUTZOM25EaGxDc0Ru?=
- =?utf-8?B?NnNRbDkzYkdpMjNleFVtcFJXWEMrS2l4YTNycldNNlIya0l6QUNXMlNFeVVy?=
- =?utf-8?B?VVEzTkFyb01qOFNONDBQNUhtT0ZoaloxcjRnREZSckxwMjV4M1JXc2pqMGw1?=
- =?utf-8?B?QUlBL0J2a2o3dmdrTUxTbjE4LzN2RUJCMGkveWpMYjdWZ0ZwZVdrdlZibE5t?=
- =?utf-8?B?b1l1ZGdiNkpWdGpsQi9NTFlZOWVPbVZMdzNuMjRoRVpDYWMxbkw0T0RzR0xP?=
- =?utf-8?Q?BJMidEcbKjSkcCRvvMbCWcQJo?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a04bf535-d3aa-4693-f360-08dc1b12d43a
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2024 06:24:46.6959
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MVbBtPTNAqod6idnl8H8jn2ZWf8sFMBLkwIuP6+D0hHsOy1wxr+RlSboaUllTwBYafMrhKYQ25gk69qJN8UhGA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7727
+Content-Transfer-Encoding: 8bit
 
-Jason,
+This series implements the functionality of delivering IO page faults to
+user space through the IOMMUFD framework. One feasible use case is the
+nested translation. Nested translation is a hardware feature that
+supports two-stage translation tables for IOMMU. The second-stage
+translation table is managed by the host VMM, while the first-stage
+translation table is owned by user space. This allows user space to
+control the IOMMU mappings for its devices.
 
+When an IO page fault occurs on the first-stage translation table, the
+IOMMU hardware can deliver the page fault to user space through the
+IOMMUFD framework. User space can then handle the page fault and respond
+to the device top-down through the IOMMUFD. This allows user space to
+implement its own IO page fault handling policies.
 
-On 1/20/2024 12:39 AM, Jason Gunthorpe wrote:
-> On Tue, Jan 16, 2024 at 04:53:28PM +0000, Vasant Hegde wrote:
-> 
->> +/**
->> + * iommu_group_mutex_assert - Check device group mutex lock
->> + * @dev: the device that has group param set
->> + *
->> + * This function is called by an iommu driver to check whether it holds
->> + * group mutex lock for the given device or not.
->> + *
->> + * Note that this function must be called after device group param is set.
->> + */
->> +void iommu_group_mutex_assert(struct device *dev)
->> +{
->> +	struct iommu_group *group = dev->iommu_group;
->> +
->> +	lockdep_assert_held(&group->mutex);
->> +}
->> +EXPORT_SYMBOL_GPL(iommu_group_mutex_assert);
->> +
->>  static struct device *iommu_group_first_dev(struct iommu_group *group)
->>  {
->>  	lockdep_assert_held(&group->mutex);
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 7f6342bc71c3..c983b6a1ebce 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -751,6 +751,7 @@ extern int iommu_group_set_name(struct iommu_group *group, const char *name);
->>  extern int iommu_group_add_device(struct iommu_group *group,
->>  				  struct device *dev);
->>  extern void iommu_group_remove_device(struct device *dev);
->> +extern void iommu_group_mutex_assert(struct device *dev);
-> 
-> This shouldn't be unconditional. Like this outside the other ifdefs:
-> 
-> #if IS_ENABLED(CONFIG_LOCKDEP) && IS_ENABLED(CONFIG_IOMMU)
+User space application that is capable of handling IO page faults should
+allocate a fault object, and bind the fault object to any domain that it
+is willing to handle the fault generatd for them. On a successful return
+of fault object allocation, the user can retrieve and respond to page
+faults by reading or writing to the file descriptor (FD) returned.
 
-This is already covered by `CONFIG_IOMMU_API` check.
-Also lockdep_assert_held() is already covered by LOCKDEP config check in
-lockdep.h file.
+The iommu selftest framework has been updated to test the IO page fault
+delivery and response functionality.
 
-So I think another explicit check in redundant.
+This series is based on the page fault handling framework refactoring
+in the IOMMU core [1].
 
-Is there  any other reason to have explicit check?
+The series and related patches are available on GitHub: [2]
 
+[1] https://lore.kernel.org/linux-iommu/20240122054308.23901-1-baolu.lu@linux.intel.com/
+[2] https://github.com/LuBaolu/intel-iommu/commits/iommufd-io-pgfault-delivery-v3
 
--Vasant
+Best regards,
+baolu
 
+Change log:
 
-> void iommu_group_mutex_assert(struct device *dev);
-> #else
-> static inline void iommu_group_mutex_assert(struct device *dev)
-> {
-> }
-> #endif
-> 
-> And a similar ifdef around the implementation I suppose.
-> 
-> Jason
+v3:
+ - Add iopf domain attach/detach/replace interfaces to manage the
+   reference counters of hwpt and device, ensuring that both can only be
+   destroyed after all outstanding IOPFs have been responded to. 
+ - Relocate the fault handling file descriptor from hwpt to a fault
+   object to enable a single fault handling object to be utilized
+   across multiple domains.
+ - Miscellaneous cleanup and performance improvements.
+
+v2: https://lore.kernel.org/linux-iommu/20231026024930.382898-1-baolu.lu@linux.intel.com/
+ - Move all iommu refactoring patches into a sparated series and discuss
+   it in a different thread. The latest patch series [v6] is available at
+   https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
+ - We discussed the timeout of the pending page fault messages. We
+   agreed that we shouldn't apply any timeout policy for the page fault
+   handling in user space.
+   https://lore.kernel.org/linux-iommu/20230616113232.GA84678@myrica/
+ - Jason suggested that we adopt a simple file descriptor interface for
+   reading and responding to I/O page requests, so that user space
+   applications can improve performance using io_uring.
+   https://lore.kernel.org/linux-iommu/ZJWjD1ajeem6pK3I@ziepe.ca/
+
+v1: https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/
+
+Lu Baolu (8):
+  iommu: Add iopf domain attach/detach/replace interface
+  iommu/sva: Use iopf domain attach/detach interface
+  iommufd: Add fault and response message definitions
+  iommufd: Add iommufd fault object
+  iommufd: Associate fault object with iommufd_hw_pgtable
+  iommufd: IOPF-capable hw page table attach/detach/replace
+  iommufd/selftest: Add IOPF support for mock device
+  iommufd/selftest: Add coverage for IOPF test
+
+ include/linux/iommu.h                         |  40 +-
+ drivers/iommu/iommufd/iommufd_private.h       |  41 ++
+ drivers/iommu/iommufd/iommufd_test.h          |   8 +
+ include/uapi/linux/iommufd.h                  |  91 ++++
+ tools/testing/selftests/iommu/iommufd_utils.h |  83 +++-
+ drivers/iommu/io-pgfault.c                    | 215 ++++++++--
+ drivers/iommu/iommu-sva.c                     |  48 ++-
+ drivers/iommu/iommufd/device.c                |  16 +-
+ drivers/iommu/iommufd/fault.c                 | 391 ++++++++++++++++++
+ drivers/iommu/iommufd/hw_pagetable.c          |  36 +-
+ drivers/iommu/iommufd/main.c                  |   6 +
+ drivers/iommu/iommufd/selftest.c              |  63 +++
+ tools/testing/selftests/iommu/iommufd.c       |  17 +
+ .../selftests/iommu/iommufd_fail_nth.c        |   2 +-
+ drivers/iommu/iommufd/Makefile                |   1 +
+ 15 files changed, 1001 insertions(+), 57 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/fault.c
+
+-- 
+2.34.1
+
