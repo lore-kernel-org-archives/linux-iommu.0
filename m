@@ -1,174 +1,182 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2049.outbound.protection.outlook.com [40.107.237.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 925691E4A9
-	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 12:53:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705928029; cv=none; b=iQKjKOOWv7BHJYMzcnmnnN52e05TfStPdEbapZeDueSS0tGSm/SKXAOrz5ayHSjsXlOdZ47NsvxVwqW9oCENbvfq1DSoH0oDTPIBskD5cDeMyhHz5y7b4nZ0KUt2NTV3baFMkoW2D/rFPGrIrta2QikmgEJWgIIcz5TDXrHuwdM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705928029; c=relaxed/simple;
-	bh=MazwQ8q2pvfnwQPhUg2bHX9ShgaH8lEI34lE9fmmHEY=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=SL3FOujAyof72fMc8e5iQo32toGc2Syi3jx5ENbzSgnXQTlw02XMdSkzaksVSsO1ZVUWI19dNwFgcw9t0U0Czwuj4yMrVXtCLFMxo/n+3RqFWlXZTryxpS0X1bl0iXxn0WcSQC71gihTD+7p31bCu4AZ/n6LxW7nB6p7bCTMI1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bORKlVmd; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73DE73A1DE
+	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 13:01:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705928519; cv=fail; b=qWqinOeqqeFJ1yZpqJJtBrGAP0slFyT1vikRvtF0pUm5TlJDsCl5Cec4pzdLeAmh6peCU7gJNNy0MECmonIx6F2ylebCZxfBG/7jED8s14C4/9jbnK+Eb27gY5nNZbDmNFCcL0T4AereZooctNDrf6l8BjW+ToiQ6eMsSyk91eU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705928519; c=relaxed/simple;
+	bh=WZoog5oIEx1V/8etxSAeGE/FG3r42fgIGiS+qxbQaSw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=JM/1udJOaKGFvochv3xhCSb6Qfad/HlFUpAtfXPHwqzmx5jDk4c09BNwStqS5/zZERUFXmvzpkxCp0lWAhiUajjpdnlGrG5NCHKUqiItNQNkJg37v4fK2qMDsDnIqia0zTit8NisCFCcfoqy280w/0JYAViwvpcQ/vhXxyEN/mQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=J+Q+4xSE; arc=fail smtp.client-ip=40.107.237.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bORKlVmd"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1705928028; x=1737464028;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=MazwQ8q2pvfnwQPhUg2bHX9ShgaH8lEI34lE9fmmHEY=;
-  b=bORKlVmdqMz8enXx5xslxEV0XoxvGO14N+ywcNXwqUIdSPRyRE+MYEkF
-   NtHr4OcfQTKatqb3AinOSmw25Xb6Ux7zMwhEkB3xFQqs80XPtNgRyvpGA
-   MbhWv7zgJsrPGpi6Jjc/eAAE7I9GXi69ia3CWC+iAStL34Dh8U8SzOaOa
-   AcskGSSoducaySGlhj5fBJu6dfWISLxb2l+W02yHGnsGmh8dmkv3vFNtM
-   KMiJ974kgbqiPmOHKgXKviHi5KWXxawhihcbTklWjJk/Qjd13WCtZoVSu
-   Lpqz7YWM3mtFrphhqRIGLXsYW22lAZasyWqPgISDG4N3tdhw7UMW+bK2E
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10960"; a="1086419"
-X-IronPort-AV: E=Sophos;i="6.05,211,1701158400"; 
-   d="scan'208";a="1086419"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2024 04:53:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.05,211,1701158400"; 
-   d="scan'208";a="1203527"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.173.139]) ([10.249.173.139])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2024 04:53:46 -0800
-Message-ID: <cb71c806-b100-4673-a131-faac77344002@linux.intel.com>
-Date: Mon, 22 Jan 2024 20:53:43 +0800
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="J+Q+4xSE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Zu3uPEQsbXgd2azPL51BKTZ6KKoj+bR6e/FMYPrLUZGAXhEJswXJ9eUixOCTCrt/fzxtuWXZcu5ko8R6DsaMKvp4mC7XsXaGo8xzScvl06cYuf8nOejfnH5rR3IxRR83E5xJ2UC22pp+TlqrT2tz05F7JxSsXfO25+VAxLanAKxFanb5TbvTsD30ML5vgem0S7oOhmfqwGEL8p+vYXu/UeQj2a0g7tWTJWFXYOKF0ZXk4HduEvzw18bsYTvNf2eKIAfby2cbiA15daYPBVpDv8G7iWKwJ4iFxcoNg9HpBj9PQya1vDSA/g99Rmjl4g8PPLrHjdubQ8EyV0waFJdgSQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NOpBZvD5bjNAbvcBhTtdcc2sOlJkzNsgspsLOgl4YPU=;
+ b=nyTpXRopB3iyMpYTasSKIkDAzUPRxDwLBCDLh+Fq3rlv9mXAfiwERxmIghvvMTGwDNwmBYnylpoAk1jW+6ZC8rK5pBxFb9EijY0qlOBmU3ZkT0VZWOw4i9r6j948OrHOas4Aj+AA5lDekq/oLbN6A6yd6+msXTRNNBKexQ7zWEJCWskQSgX6R3QmueP2TjZGXzknmkwO/JtDkBQPu29GrRpzVd1YJRNStqaAFeM9X0kTtewtevY5AqLuWt2GLTUrMxJ1E62idUy4oCRVX4nsbFJf5svZU9JRnRoi7IgHUpcWIOJ/wdhj3KM4DE7RMmh6X7pFnGOD46sK3HihEFU+lA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NOpBZvD5bjNAbvcBhTtdcc2sOlJkzNsgspsLOgl4YPU=;
+ b=J+Q+4xSE7HO3oG+XFlEqcvm+85C3GIRjKD5xUAFV9ZBpqs8crOgspb7rwGfizlqHGMAdUGssVt8VsjhAScy2tAVOl/+SZ9WMF48uRKlAqeV2h8pKR5Pk+M9ID4UiyVkOLLP7VtiC+Ivdr8Yc9gsWM24ftu9I4T3e4WSwXqZxX2E1ipaBgEgO4pMqXDbDOs3UlCqIcrmLikdxxSu53vuB61fDFP4A4cYGea42gCmWWKPNjBbHTFaNiR3EOKCn/xr7h8IGluJ/0N2TtmaazFlOtTn3X2ubF8l0svJBfRVSVoen72YFdl79iqK5g2cgOUStStj0eot4sT9Vw6F0BmDVvA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by MW3PR12MB4508.namprd12.prod.outlook.com (2603:10b6:303:5b::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.32; Mon, 22 Jan
+ 2024 13:01:54 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::96dd:1160:6472:9873]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::96dd:1160:6472:9873%6]) with mapi id 15.20.7202.031; Mon, 22 Jan 2024
+ 13:01:54 +0000
+Date: Mon, 22 Jan 2024 09:01:52 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: "will@kernel.org" <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+	Alistair Popple <apopple@nvidia.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH 1/3] iommu/io-pgtable-arm: Add nents_per_pgtable in
+ struct io_pgtable_cfg
+Message-ID: <20240122130152.GP734935@nvidia.com>
+References: <cover.1692693557.git.nicolinc@nvidia.com>
+ <0fe68babdb3a07adf024ed471fead4e3eb7e703f.1692693557.git.nicolinc@nvidia.com>
+ <f468b461-b203-5179-eb6d-9432b9911329@arm.com>
+ <ZOTlcFs2NG6nJEPN@Asurada-Nvidia>
+ <61f9b371-7c45-26b1-ec0f-600765280c89@arm.com>
+ <ZO5R5i4n2WI2GnKQ@Asurada-Nvidia>
+ <d234fa8d-d945-3f7f-1110-fe55bea88587@arm.com>
+ <ZawmMd6BVqQpfbB5@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZawmMd6BVqQpfbB5@Asurada-Nvidia>
+X-ClientProxiedBy: SA1P222CA0118.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:806:3c5::6) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: Dell XPS 13 9360: DMAR errors `DRHD: handling fault status reg 2`
- and `[INTR-REMAP] Request device [f0:1f.0] fault index 0x0`
-Content-Language: en-US
-To: Paul Menzel <pmenzel@molgen.mpg.de>, =?UTF-8?B?SsO2cmcgUsO2ZGVs?=
- <joro@8bytes.org>, Will Deacon <will@kernel.org>
-References: <9a24c335-8ec5-48c9-9bdd-b0dac5ecbca8@molgen.mpg.de>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <9a24c335-8ec5-48c9-9bdd-b0dac5ecbca8@molgen.mpg.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|MW3PR12MB4508:EE_
+X-MS-Office365-Filtering-Correlation-Id: d160f608-e69d-401f-2aa7-08dc1b4a4ed2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	9BoBn6Pf3hNFk8Vo0r5AynxTpcv+HIKcvfaxVK3El6SVMlCK3F3l5hCPzqP3dJFVoisanATjiD2PfpjHotwFOgxhXCh9oM3nEdPqc/L+eHI6HPYPeRaM7PHLACjkufWfPVoK//OwZvD89Spey0G+xGNQUOd9Nk3r/o4OXHZBGuf3IEKDSxMxVeTnpgze4UI52rXRxrc5LL2goZebON8jtQ7R+P02GN+BslJwECP1IMlUcqmHwBmTkkkd2xqfua98B6kdvbEAk495A5RbwnsbNkfdzIyCEP0C4d6WtH9HJ09KhIX43zH1xzx7nUQGXyziVPVFXYXFxjGnXyG7Gde0F3krQ78vhee3RGzuQZ46GBRS4rsCF0/TulDNOEBVavV9upKrfxmsiC9lGkzcR8uRgCCN+lgET49kM3xfGrwqF92LeiFH4HcNdZR4xvexQfcofrhzNJbGiFNmNekH0Au0Lq+87Wq8OA5ojlXF2JdGsXYqsg0mzzVvY7DK+XZIQEvFXGyN8OTKWILipyAUgQAmFs37i7PrJ250qGIw99Z0ET8dKadxBnVXvzEQJ3Y5CJi35jp7jKgX7AfhO5+Ik0KawFyg8PO0vepgRn01j0reuNVGhcvzOkepJv8bHIONEboa
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(346002)(396003)(136003)(39860400002)(366004)(230922051799003)(451199024)(64100799003)(1800799012)(186009)(41300700001)(26005)(66899024)(1076003)(36756003)(2616005)(6506007)(478600001)(83380400001)(38100700002)(6512007)(86362001)(54906003)(6486002)(66476007)(33656002)(5660300002)(37006003)(66556008)(66946007)(6636002)(316002)(8676002)(2906002)(6862004)(8936002)(4326008)(27376004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?HdaB3srEul6WXc7T7hzTJKPxJ5iTjXfZ1wDz0gt8JzdAZpmwzhg1maQvDqm2?=
+ =?us-ascii?Q?bzgfyuIpsGBfoZBxTM0TKRmgV5JmzkweojQ4bPyb/nQe3JDMTn1WByulShHo?=
+ =?us-ascii?Q?0GMSFDwk8CP4CHkNOBW6yDQ/MVoML9ZtwA11vIv7zuvJLWhMH9GCo51ap7et?=
+ =?us-ascii?Q?OszQGECGoGg+Bg9ptN0pXwo6f5jK0GeicmX5KK5RMAKH1oGng0iGR0ma4z7O?=
+ =?us-ascii?Q?+TVYyh267wpuGB7bgO+pdrQpLD94u7P2jJbCpnbjcssJ8xChovbRANBRVUfD?=
+ =?us-ascii?Q?Rx2i6VfUhYB2mUWYRs/A4vouDtMf1bXVP3LbZBjnSRJ+Hk7K1G8J8hMWgip0?=
+ =?us-ascii?Q?Q4uuhCsNfpkCLnyVOp71HY3X94sBnbeKd8ULbqEgTcAwKFMK2OO9a0D15403?=
+ =?us-ascii?Q?A5Zn1rnlQbPrgK6HZk9mmXoAuIHnBuNdFe3/V10PbdoMUocisOI0uRObkWIv?=
+ =?us-ascii?Q?fGI+gG+j162ri1jc6YI5NWDsqp1pQjc6PsdtK2uuvStOv10uAK17baMgJo7/?=
+ =?us-ascii?Q?7isfwGHFpr7LeAPm3WaEDjYGMDBG4heOb65wejLgkS+yJKKzKeT5gSh/V/x6?=
+ =?us-ascii?Q?KADwfFuaX9zHwR6YnO3s1D4IZj0iG/q/ETEDCx9LoFtuCDv9fjgLs/34307/?=
+ =?us-ascii?Q?eYqv424QGikqch9iAonZiA7A4ALJuIYQ64gFGr+99GO+4EXwwaG8yTTWc04u?=
+ =?us-ascii?Q?HfbqYP4RzoZXTLtlXchNNZQ1koJN1iaV4XZwSpyzuUITF2FOYqLAwnds/2lE?=
+ =?us-ascii?Q?5ImqTVrIgLJT8pD/hjZ1JpJMDrzck11msaZDAw7h+1guKIC8vu2y2e70//B4?=
+ =?us-ascii?Q?88RLJuiR8kR1MAa17l1O1sPR9oC/f5UoTx+DDUVwvKU1uWnBv0zyhNwxl76t?=
+ =?us-ascii?Q?r8nnLFQQj8hjVE4en/FrsmOf5vrOdhgKWqTP99jWtsWeAz5HR7d5MMyJjY2f?=
+ =?us-ascii?Q?qGBKx6MguAbcDROmq+yLo8Vc5EUk89wlEawmxO3aGZThy4isaqUgvA/MEtam?=
+ =?us-ascii?Q?0oWL6VN+96BeArKTgm08nBVBN+xXKFKumcfmAkafKPmgQSIw+fUCCKpfJ8oa?=
+ =?us-ascii?Q?A4TcosjSdlV23kX2XMrvY0VbFQ1Di//buHekhshF85BKsLun7lTA2uuWlZ+T?=
+ =?us-ascii?Q?PiknruP/2mXVW2Q+W1GbDL3Kt5SiFRqkkXUNjY+xDVz+W8akanVXKsM10XiL?=
+ =?us-ascii?Q?mokk15sNlqqV8BRN+BT8TjTkmQjzSpkJy+ZRp8sr9IlYQlVaUeOYnH5CaAPY?=
+ =?us-ascii?Q?TV8coYU18SPDfH1k4HCz6snWvv955BeDxS4kFOZ1Q/Lqh4cBrv0Id5x89wG5?=
+ =?us-ascii?Q?6dOLDTuupThkHtE5R/0k+vK1OSTIX1A9Mjag0209S7Ck89joCiE+TbL3uzf0?=
+ =?us-ascii?Q?SnDvHA/0+KXinhRZT4A+qy91zdMwDQIjNAbKYsh+Zr1cZtvjugGZmKRDTK5R?=
+ =?us-ascii?Q?eoOW+35/Qqx3yXQ+mU3RTxQ4Bgk04bvBKN6Kgh4FL7f4B6et/oc4qytPWVKl?=
+ =?us-ascii?Q?SoKeJ3VR/ePYsN0ahAL0leF2nh7288CnONVLGKunNQDcnxkjgKy87Wr1Ij1f?=
+ =?us-ascii?Q?y3PvPn4K4f0fOgTwbs4=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d160f608-e69d-401f-2aa7-08dc1b4a4ed2
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2024 13:01:54.4910
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: OtO0bIfG56TzHwbJSLJ12HL76j6DTRpZ5ijpF9YGqYqMBcJVfJyRzX0pB2xJq40W
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4508
 
-On 2024/1/19 20:59, Paul Menzel wrote:
-> Dear Linux folks,
+On Sat, Jan 20, 2024 at 11:59:45AM -0800, Nicolin Chen wrote:
+> Hi Robin/Will,
 > 
+> On Tue, Aug 29, 2023 at 02:25:10PM -0700, Robin Murphy wrote:
+> > > Also, what we need is actually an arbitrary number for max_tlbi_ops.
+> > > And I think it could be irrelevant to the page size, i.e. either a
+> > > 4K pgsize or a 64K pgsize could use the same max_tlbi_ops number,
+> > > because what eventually impacts the latency is the number of loops
+> > > of building/issuing commands.
+> > 
+> > Although there is perhaps a counter-argument for selective invalidation,
+> > that if you're using 64K pages to improve TLB hit rates vs. 4K, then you
+> > have more to lose from overinvalidation, so maybe a single threshold
+> > isn't so appropriate for both.
+> > 
+> > Yes, ultimately it all comes down to picking an arbitrary number, but
+> > the challenge is that we want to pick a *good* one, and ideally have
+> > some reasoning behind it. As Will suggested, copying what the mm layer
+> > does gives us an easy line of reasoning, even if it's just in the form
+> > of passing the buck. And that's actually quite attractive, since
+> > otherwise we'd then have to get into the question of what really is the
+> > latency of building and issuing commands, since that clearly depends on
+> > how fast the CPU is, and how fast the SMMU is, and how busy the SMMU is,
+> > and how large the command queue is, and how many other CPUs are also
+> > contending for the command queue... and very quickly it becomes hard to
+> > believe that any simple constant can be good for all possible systems.
 > 
-> On a Dell XPS 13 9360 Linux 6.6.8, 6.6.11 and 6.7 (and earlier versions) 
-> log the lines below when resuming from ACPI S3 (deep):
+> So, here we have another request to optimize this number further,
+> though the merged arbitrary number copied from MMU side could fix
+> the soft lockup. The iommu_unmap delay with a 500MB buffer is not
+> quite satisfying on our testing chip, since the threshold now for
+> max_tlbi_ops is at 512MB for 64K pgsize (8192 * 64KB).
 > 
->      [    0.000000] Linux version 6.7-amd64 
-> (debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-13 (Debian 
-> 13.2.0-9) 13.2.0, GNU ld (GNU Binutils for Debian) 2.41.50.20231227) #1 
-> SMP PREEMPT_DYNAMIC Debian 6.7-1~exp1 (2024-01-08)
->      [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-6.7-amd64 
-> root=UUID=32e29882-d94d-4a92-9ee4-4d03002bfa29 ro quiet pci=noaer 
-> mem_sleep_default=deep log_buf_len=8M
->      […]
->      [    0.000000] DMI: Dell Inc. XPS 13 9360/0596KF, BIOS 2.21.0 
-> 06/02/2022
->      […]
->      [   99.711230] PM: suspend entry (deep)
->      […]
->      [   99.722101] printk: Suspending console(s) (use 
-> no_console_suspend to debug)
->      [  100.285178] ACPI: EC: interrupt blocked
->      [  100.319908] ACPI: PM: Preparing to enter system sleep state S3
->      [  100.331793] ACPI: EC: event blocked
->      [  100.331798] ACPI: EC: EC stopped
->      [  100.331800] ACPI: PM: Saving platform NVS memory
->      [  100.335224] Disabling non-boot CPUs ...
->      [  100.337412] smpboot: CPU 1 is now offline
->      [  100.341065] smpboot: CPU 2 is now offline
->      [  100.346441] smpboot: CPU 3 is now offline
->      [  100.353086] ACPI: PM: Low-level resume complete
->      [  100.353129] ACPI: EC: EC started
->      [  100.353129] ACPI: PM: Restoring platform NVS memory
->      [  100.355219] Enabling non-boot CPUs ...
->      [  100.355244] smpboot: Booting Node 0 Processor 1 APIC 0x2
->      [  100.355954] CPU1 is up
->      [  100.355972] smpboot: Booting Node 0 Processor 2 APIC 0x1
->      [  100.356698] CPU2 is up
->      [  100.356716] smpboot: Booting Node 0 Processor 3 APIC 0x3
->      [  100.357371] CPU3 is up
->      [  100.360217] ACPI: PM: Waking up from system sleep state S3
->      [  100.668380] ACPI: EC: interrupt unblocked
->      [  100.668598] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS 
-> workaround enabled
->      [  100.668606] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS 
-> workaround enabled
->      [  100.668643] pcieport 0000:00:1d.0: Intel SPT PCH root port ACS 
-> workaround enabled
->      [  100.690996] DMAR: DRHD: handling fault status reg 2
->      [  100.691001] DMAR: [INTR-REMAP] Request device [f0:1f.0] fault 
-> index 0x0 [fault reason 0x25] Blocked a compatibility format interrupt 
-> request
+> As Robin remarked, this could be really a case-by-case situation.
+> So, I wonder if we can rethink of adding a configurable threshold
+> that has a default value at its current setup matching MMU side.
 > 
-> But I am unable to find the device f0:1f.0:
-> 
->      $ lspci -nn
->      00:00.0 Host bridge [0600]: Intel Corporation Xeon E3-1200 v6/7th 
-> Gen Core Processor Host Bridge/DRAM Registers [8086:5904] (rev 02)
->      00:02.0 VGA compatible controller [0300]: Intel Corporation HD 
-> Graphics 620 [8086:5916] (rev 02)
->      00:04.0 Signal processing controller [1180]: Intel Corporation Xeon 
-> E3-1200 v5/E3-1500 v5/6th Gen Core Processor Thermal Subsystem 
-> [8086:1903] (rev 02)
->      00:14.0 USB controller [0c03]: Intel Corporation Sunrise Point-LP 
-> USB 3.0 xHCI Controller [8086:9d2f] (rev 21)
->      00:14.2 Signal processing controller [1180]: Intel Corporation 
-> Sunrise Point-LP Thermal subsystem [8086:9d31] (rev 21)
->      00:15.0 Signal processing controller [1180]: Intel Corporation 
-> Sunrise Point-LP Serial IO I2C Controller #0 [8086:9d60] (rev 21)
->      00:15.1 Signal processing controller [1180]: Intel Corporation 
-> Sunrise Point-LP Serial IO I2C Controller #1 [8086:9d61] (rev 21)
->      00:16.0 Communication controller [0780]: Intel Corporation Sunrise 
-> Point-LP CSME HECI #1 [8086:9d3a] (rev 21)
->      00:1c.0 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI 
-> Express Root Port #1 [8086:9d10] (rev f1)
->      00:1c.4 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI 
-> Express Root Port #5 [8086:9d14] (rev f1)
->      00:1d.0 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI 
-> Express Root Port #9 [8086:9d18] (rev f1)
->      00:1f.0 ISA bridge [0601]: Intel Corporation Sunrise Point-LP LPC 
-> Controller [8086:9d58] (rev 21)
->      00:1f.2 Memory controller [0580]: Intel Corporation Sunrise 
-> Point-LP PMC [8086:9d21] (rev 21)
->      00:1f.3 Audio device [0403]: Intel Corporation Sunrise Point-LP HD 
-> Audio [8086:9d71] (rev 21)
->      00:1f.4 SMBus [0c05]: Intel Corporation Sunrise Point-LP SMBus 
-> [8086:9d23] (rev 21)
->      01:00.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3 
-> Bridge [Alpine Ridge 2C 2015] [8086:1576]
->      02:00.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3 
-> Bridge [Alpine Ridge 2C 2015] [8086:1576]
->      02:01.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3 
-> Bridge [Alpine Ridge 2C 2015] [8086:1576]
->      02:02.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3 
-> Bridge [Alpine Ridge 2C 2015] [8086:1576]
->      39:00.0 USB controller [0c03]: Intel Corporation DSL6340 USB 3.1 
-> Controller [Alpine Ridge] [8086:15b5]
->      3a:00.0 Network controller [0280]: Qualcomm Atheros QCA6174 
-> 802.11ac Wireless Network Adapter [168c:003e] (rev 32)
->      3b:00.0 Non-Volatile memory controller [0108]: SK hynix PC300 NVMe 
-> Solid State Drive 512GB [1c5c:1284]
-> 
-> As this is logged as an error, can this be fixed somehow?
+> If this is acceptable, what can be the preferable way of having a
+> configuration: a per-SMMU or a per-IOMMU-group sysfs node? I am
+> open for any other option too.
 
-This appears to be a platform problem. The hidden device (f0:1f.0) is
-not visible to the OS, so no driver can program the interrupt remapping
-table for the device's interrupts.
+Maybe it should be more dynamic and you get xx ms to push
+invalidations otherwise it gives up and does invalidate all?
 
-Best regards,
-baolu
+The busier the system the broader the invalidation?
+
+Or do we need to measure at boot time invalidation performance and set
+a threshold that way?
+
+Also, it seems to me that SVA use cases and, say, DMA API cases are
+somewhat different where we may be willing to wait longer for DMA API.
+
+Jason
