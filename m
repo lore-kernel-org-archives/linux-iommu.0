@@ -1,291 +1,289 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2067.outbound.protection.outlook.com [40.107.94.67])
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E000E3A8D7
-	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 10:23:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.67
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705919010; cv=fail; b=jYKXJgK0FVeEhDvwVK/4PMr/EuOL6+at1C1RhJ2xh41N6PFL8Thx36D4AfHe2TyVbT50VaI+u+dMMOWtyuCdKCVvOhqYIA9u7QJAyESV9biwrf4Ual+cRUDi6zqxZWkp9alZgtuOG4o6FYPqNng8Wk8xKBFnhZPZ37bhFnY1MIU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705919010; c=relaxed/simple;
-	bh=/e7f/srtGL9beFja+lgnpZh+Q5jMdvV/Lsn4ChvHByw=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=LJKOF+2hxciOYsJuMvqxhydiAb2+Q/x8jqZlRIn6sTVATXvXWnJfllhjSN8V8GDXES4Uz4En9uPgSW1SoJf101OaDFCwCSgXrahy+9PftFgd49RSbDvLisi4M66wULI5Zvljd4x7GC41yY5Vo1xL75AHWAxF1QLmlcAhP8KqUvo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=eqUTAgAF; arc=fail smtp.client-ip=40.107.94.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="eqUTAgAF"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XnkGLnZ7faNIYqY6k706d8CBBcprxThVxlDXTok9InUOiJ8YdNrD+7bcY9kAC3Z52XEcka/Fuu4CT+w9fyAdu3tYFEpFgfWQ12qtLC2Ph0DQdWvKv7NdWFkLEixdIpZQ26ZGQyBV3EbyMFjmLV2+jLcrTWA387jbmFgJO3O+VGfOWu200OtxtnPRTSbs8q4pocv5LpniY0WEFbjpBvLgbWMAee0nIY3bFcxQ5wRcHIcYvgueRJJKfX9Aba2SsGhwf1/S9EWrlmAgCVX4qnGBcs78xz6H/WhXWmbyy5L9Q9WOVNB5CoaT0bGRoCBIB9pevlTxIArrlcMbwNhpxDq0rA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1WZmZ1Qj4kp0DQOx20n7PGuYWMDjoHKxRweTY1ylZ9g=;
- b=jUDIVG214ZPevhzzKkT2lQv/0V9AqNtscHSbHRlUzPdgIjv0+sB7m95l8jSZkG/mFu0ykU4Pb9ueqn/h5jnm/ja9R+gznLAFEJwbCwtO8elLLHtkeS2+rI/GVu7SRTj8HN7OVY6G7tTSRlw54lUO+2k57EZIWL5Dm70QZ11xoTx4c9+HesbdEVyKnckK2OYo7+00fkoZeU3ErnODPq1iYUrRXJVhyFq2ZAz+8krwKBb8bDk4+jwSo785DgrFyz3dBmrGDqcgtsYf51SdP6fqS+sRnVcijrnC14B6+BOyQNsDhRVjmcnhxJ5LZZechJ7hgNxsLIYHyqbTxX115z4jSQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1WZmZ1Qj4kp0DQOx20n7PGuYWMDjoHKxRweTY1ylZ9g=;
- b=eqUTAgAFnspAToxPXYED0EhxtcZ0nTXFzqbkHg7PTgHJHIs9AyKaoDwtUuZ3xGYrZhLi7kvoF0LS3O8dirARPLd1ZXj8GgKVlICbP7nMHydjG5VPNnwhJSjhf5IzynsE9b8/bQc7vHOFBX9HcjA0gQ6YRJLC/n2DSVmYYv/JJms=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- CY8PR12MB8243.namprd12.prod.outlook.com (2603:10b6:930:78::15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7202.32; Mon, 22 Jan 2024 10:23:26 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::481d:7627:c485:9cb]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::481d:7627:c485:9cb%2]) with mapi id 15.20.7202.031; Mon, 22 Jan 2024
- 10:23:26 +0000
-Message-ID: <e8f2c380-acb9-bafa-c2b5-5445c0f06a4e@amd.com>
-Date: Mon, 22 Jan 2024 15:53:18 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v5 14/17] iommu/amd: Refactor GCR3 table helper functions
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
- wei.huang2@amd.com, jsnitsel@redhat.com
-References: <20240116165335.6043-1-vasant.hegde@amd.com>
- <20240116165335.6043-15-vasant.hegde@amd.com>
- <20240119195907.GN50608@ziepe.ca>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20240119195907.GN50608@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0088.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:9a::23) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21CC53B282
+	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 12:17:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=141.14.17.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1705925826; cv=none; b=lHTSJCUCJWUOd5/5x806Z+S/x3n7W9ZthzWjIQ3zYolleMDYG7+78bOyh0/F//MyKMUYXasloFNTfNEdSHHkNq+blPEl5+YTG+JWD4WZm8Di1C5uBL0Gf6zCcOmlUBNSSujGvqSL/fYm5Zg0o/ZgEBQk6rGVd3lkovlkhxV16gA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1705925826; c=relaxed/simple;
+	bh=7aKVXurem33k/1z2Bwp/iO5Bd28myCRdPoS1dST9u/s=;
+	h=Content-Type:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To; b=kNkDWxg+gNvN3Oh3HGwD8+x9UJ7geD+FCiLfwvlvLEUSPYT3qbT382m86ow/XEtAlyo3zZqW2HmDdTP1MOAoSJu0ZD9Lgp4Oc9A3yBhsmqacmHbdHBiN0JKwdnq8QBcDMCBvCSbCzP/Ax8SP/xXQD2exUyVr9uaW77QcT3Rr6u8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de; spf=pass smtp.mailfrom=molgen.mpg.de; arc=none smtp.client-ip=141.14.17.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=molgen.mpg.de
+Received: from [192.168.0.53] (ip5f5ae9f4.dynamic.kabel-deutschland.de [95.90.233.244])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: pmenzel)
+	by mx.molgen.mpg.de (Postfix) with ESMTPSA id 32BEE61E646C7;
+	Mon, 22 Jan 2024 13:16:26 +0100 (CET)
+Content-Type: multipart/mixed; boundary="------------EBz23e30HntQKxViUq8E5TGn"
+Message-ID: <f1658459-1b77-41b1-9e58-99c16a83e1d1@molgen.mpg.de>
+Date: Mon, 22 Jan 2024 13:16:25 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CY8PR12MB8243:EE_
-X-MS-Office365-Filtering-Correlation-Id: 776213c4-e1ba-47bc-a694-08dc1b342b89
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	OEjB+1MGWEhH2+lXCBnhnlXtrAjGVmj6P1kmTHIj4tX1WZP9iX/yBPkSru9zJLyb5umwVy+gvqwh5jitUEbDnxw4wHSLT4DU+3UFpeJzALAv2ykPnaBs7SQkQBSHt6OxQu1+WsL8Q+YLKFcLCpsbaxMXgxyvILe/+cbp5WL1vPtA7EBjm05SJ9hEf/HGipd4YxOnFOxePqrfOTGGAPyyj8eT0u1ze74oELhR7G6IrHvAlNH6ydpxMPNadsLylX5+Fnze7oO2gnyw4jFL28DFKjmmISbB9MIv0Fslj9GwFBrnsn39BE3+BbcOihQEqySkrs+Mv96/e/ZC6MZV/Uvv6lRwFv0hJ038I/Maqbhwxej3/ZQcyQPB0KFZYIkEWzZinSy+2P3np123sp6TbXB5jMgOJN/nSR+JgD2Bx9c2Jp5jA7CSuR11a7gsM7JHgvS4IrXmhAwGz6kZhEbVGdSWSSuqyo+ylSnDHfh7uslT2V77EvlkaGVZKPd9Apr1VHxjQ4Y91orcXqNjeO+olE2R/SIJ0lAxbJ34TQyO6Gzvi3GjghkYEBksLnMWAh3LnUv3QrMWGPy04XqNiF0XS8eQdcMtWdJU25FmYrirCcfZ7vWt7VwvO4IqTULEjSnZoQWzgTqUOP1baSnnDiFNhosw+w==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(39860400002)(346002)(396003)(136003)(376002)(230922051799003)(64100799003)(1800799012)(451199024)(186009)(83380400001)(38100700002)(66556008)(26005)(53546011)(4326008)(8676002)(8936002)(41300700001)(2616005)(44832011)(2906002)(5660300002)(478600001)(316002)(6512007)(6666004)(6506007)(6486002)(6916009)(66946007)(66476007)(36756003)(86362001)(31696002)(31686004)(66899024)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TTZKL0U0YVZuR3ZtakFaenJTZDN6NFVyVjJINTQ2QmF6Yzk2bkZTQTZZZEZ6?=
- =?utf-8?B?YXhLckNzRUFYYTNVazhZeWx3RzJjaEtPaStTMmloQnNvbDJtaU5XMUVPb0VT?=
- =?utf-8?B?T21tY3N0aWdndjQ1Tk5vdTRFMXpwVEg4UC9seXNSZElnS3J1NnNHSUFSRHNh?=
- =?utf-8?B?UjVwdUJuOS9ScjVlME16Y0JRdklWS3ZuOTlDVlZuWXVmTk41SmlwTjRUd0U4?=
- =?utf-8?B?TUp6RXl6Qmg5UVBtTEczVTgydjV1UlpMYkRScDFEZ2ozVUNnWlZCRkdaWmM1?=
- =?utf-8?B?NVVINDBPbUdJbTVsT3J5SGxKanR2WWc5L0FmUUxDMjJaTmFkSDFHakp6Y0w3?=
- =?utf-8?B?ZXpUZFJ5R2p0NG1lcXNyZnpEL1RCUzdGNStac1ZhV2ZhZkFTOTdHRzF5dGVM?=
- =?utf-8?B?WG0rb0pwMCs1anBVZXNaZmZsbXhFdFYvWE12RnMweWRmWk5mZlBhVGcwRHVl?=
- =?utf-8?B?NTV1Y21md2FXZHFyb0dIaWErTEFnRHl4N2JTbktXWXUwejNKZnpNaFoyaVY4?=
- =?utf-8?B?Y3ovR3ZUUFlOWGtzbXR3STFib2o2a1prTjZPcTBwUXRmL0VpMzNtbnBMU05w?=
- =?utf-8?B?aEdhVUl3dmNhOGFKbDAvemk1dGRDdGl2M3lnZm1oMDlyOGFTRWNyZ0tLSU9n?=
- =?utf-8?B?MlRVUkgzMWNObllwOXVMOFNENlFIR204TXZaUVVhM285bS9yb2haSE4yRGx1?=
- =?utf-8?B?eW41MVFNdE5rMGVLN3hJaXFvd3dxditSOGt1ak51eGZGMmlobDVJYVVqSEFX?=
- =?utf-8?B?K24ydGl0R2RTOWlzS0hsWFRYNGt5aEZXU1oxOUJaaHpmVGdYb1Jkb0NDaVBo?=
- =?utf-8?B?MVJUcUVkSDhSbW1TR2cwVUxZUTdFdEVuL0FyR3Nsck10RWl1RG1VNWc4YnY4?=
- =?utf-8?B?N1ZsQjNqT1hFUnRnNklXNm9GSW0yREJTUE80aGhTVmZhdDh1bnRRdGg5NDha?=
- =?utf-8?B?ZFlSbGtnN29WU0ZjVU55RFIrdVc0VDVzakxKbWRqdWsxVnpUaWF2ZnIwS1dq?=
- =?utf-8?B?SzJBUDhzY3owSkJJQkxTNlIxZ0hxRExCdXRJWjdRbW1jeW1ETUJEMTExYzVr?=
- =?utf-8?B?VWRQNXBQVzJJb09rSEg4UTlpYnE5RG1uZzNtK3FSdnY5VEhoa0Z3UmQ4U1lU?=
- =?utf-8?B?NEJQVEpwTmFJdVQzWXd3SXc5dUVrd2xEK1hLQXVQMmpGN1pycG14dWgxT0I2?=
- =?utf-8?B?S1RIQXduNDBqbE1tL1ZBWnJQS3NDbytjTkZOQVB0V01XWW5sbDdmaHREWTVa?=
- =?utf-8?B?YnJBb2FXMmsxSGZjVVczL2pFZXpyZGJ1QnJQclFjRWUzb2JVSDc4SWZSZ1hi?=
- =?utf-8?B?M2h3Mk1kQlBkV1M4d000ek1jNTdIcFcwczVwZzNON3doOWgrNTh5ODVLVVhV?=
- =?utf-8?B?UllBM1FHZnhwSFBBZFYwRU4rV0dQRk1udzdVeHdSRkFXeHQ5TGNFVElHeHBi?=
- =?utf-8?B?UXc5Z3FpaUlCNW1BanN4dzJOT2tRcndzSURBUTVJazZuZzhuUktLWnpVTXo3?=
- =?utf-8?B?MjBOcENEemxHb2ZoRGZBZlFBSkRJWHJ3cHc1UTJ5WjRWeVozTTlPTjJPbGhO?=
- =?utf-8?B?WVgwNlYrYy9kbEJxcEdqekpKR0JMbkljb1d0VXBQRmt1Y3Iyb3FocEFrQTJY?=
- =?utf-8?B?S0xXdzlKSHQzNlZlMDFLbkFlaHB4cVR1VERUSHMwR2daeVlPOVZVMDRRSU5U?=
- =?utf-8?B?MzJFR0N3WkJodzVIQVQ5TWpLSXpuRVY3UjczclJYRmhhUlRCQzRMa3RkZUgv?=
- =?utf-8?B?QU4weUxzRVg1VG9SMGQwNmxiN0pnM2hUNkRINUoyT3RRQmFoZVVVWCtTSGNK?=
- =?utf-8?B?c0tldzlXMXJxNHVTK0E1NXRETDFaYm05dEZQd0ZuQ3FHQVVvVElNL09sTkJ1?=
- =?utf-8?B?Y0NQN1VhQ1RYUkd6K2orMGdzSVhnaDRibjVmM2wxQTFjaGFaT3FNcEdUQW55?=
- =?utf-8?B?Slh2b3VVNDY2Y3l3czUzL3BoaW5MUjc0M29BTENqU2FHMFZMdEtBZDh0eWdE?=
- =?utf-8?B?OENTV25mcnk1b2tucjlQTWhDLzFOSVIybGdQaU4vZGtVbXJOSUY0QmhUZkFL?=
- =?utf-8?B?OVF4MWFxMS8xb2o1eVpqUmgxVWdQMno5cC9tbmtBQlB1SkZIMW8wNmw1d1RU?=
- =?utf-8?Q?ZbHYBeSimt1fHhZRJ+K3AFL2X?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 776213c4-e1ba-47bc-a694-08dc1b342b89
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2024 10:23:26.5651
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PxV9uiVMq8kUyqhNUBZpdptDlrZHHPTwUH3m5rUiP2uBI9USpoU7lKtk9il/eeDoor8H0m6o+bfZuA54DUiz9A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB8243
+User-Agent: Mozilla Thunderbird
+Subject: Re: Dell XPS 13 9360: DMAR errors `DRHD: handling fault status reg 2`
+ and `[INTR-REMAP] Request device [f0:1f.0] fault index 0x0`
+Content-Language: en-US
+To: "Christian A. Ehrhardt" <lk@c--e.de>
+Cc: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Mike Jones <mike@mjones.io>,
+ linux-i2c@vger.kernel.org, linux-acpi@vger.kernel.org,
+ Hans de Goede <hdegoede@redhat.com>
+References: <9a24c335-8ec5-48c9-9bdd-b0dac5ecbca8@molgen.mpg.de>
+ <Zaq4Gv2SWhd12Lx0@cae.in-ulm.de>
+From: Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <Zaq4Gv2SWhd12Lx0@cae.in-ulm.de>
 
-Jason,
+This is a multi-part message in MIME format.
+--------------EBz23e30HntQKxViUq8E5TGn
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+
+[Cc: +linux-i2c, +linux-acpi, +Hans, cf original message [1]]
+
+Dear Christian,
 
 
-On 1/20/2024 1:29 AM, Jason Gunthorpe wrote:
-> On Tue, Jan 16, 2024 at 04:53:32PM +0000, Vasant Hegde wrote:
+Thank you for your reply.
+
+Am 19.01.24 um 18:57 schrieb Christian A. Ehrhardt:
+
+> On Fri, Jan 19, 2024 at 01:59:29PM +0100, Paul Menzel wrote:
+>> On a Dell XPS 13 9360 Linux 6.6.8, 6.6.11 and 6.7 (and earlier versions) log
+>> the lines below when resuming from ACPI S3 (deep):
+>>
+>>      [    0.000000] Linux version 6.7-amd64 (debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-13 (Debian 13.2.0-9) 13.2.0, GNU ld (GNU Binutils for Debian) 2.41.50.20231227) #1 SMP PREEMPT_DYNAMIC Debian 6.7-1~exp1 (2024-01-08)
+>>      [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-6.7-amd64 root=UUID=32e29882-d94d-4a92-9ee4-4d03002bfa29 ro quiet pci=noaer mem_sleep_default=deep log_buf_len=8M
+>>      […]
+>>      [    0.000000] DMI: Dell Inc. XPS 13 9360/0596KF, BIOS 2.21.0 06/02/2022
+>>      […]
+>>      [   99.711230] PM: suspend entry (deep)
+>>      […]
+>>      [   99.722101] printk: Suspending console(s) (use no_console_suspend to debug)
+>>      [  100.285178] ACPI: EC: interrupt blocked
+>>      [  100.319908] ACPI: PM: Preparing to enter system sleep state S3
+>>      [  100.331793] ACPI: EC: event blocked
+>>      [  100.331798] ACPI: EC: EC stopped
+>>      [  100.331800] ACPI: PM: Saving platform NVS memory
+>>      [  100.335224] Disabling non-boot CPUs ...
+>>      [  100.337412] smpboot: CPU 1 is now offline
+>>      [  100.341065] smpboot: CPU 2 is now offline
+>>      [  100.346441] smpboot: CPU 3 is now offline
+>>      [  100.353086] ACPI: PM: Low-level resume complete
+>>      [  100.353129] ACPI: EC: EC started
+>>      [  100.353129] ACPI: PM: Restoring platform NVS memory
+>>      [  100.355219] Enabling non-boot CPUs ...
+>>      [  100.355244] smpboot: Booting Node 0 Processor 1 APIC 0x2
+>>      [  100.355954] CPU1 is up
+>>      [  100.355972] smpboot: Booting Node 0 Processor 2 APIC 0x1
+>>      [  100.356698] CPU2 is up
+>>      [  100.356716] smpboot: Booting Node 0 Processor 3 APIC 0x3
+>>      [  100.357371] CPU3 is up
+>>      [  100.360217] ACPI: PM: Waking up from system sleep state S3
+>>      [  100.668380] ACPI: EC: interrupt unblocked
+>>      [  100.668598] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS workaround enabled
+>>      [  100.668606] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS workaround enabled
+>>      [  100.668643] pcieport 0000:00:1d.0: Intel SPT PCH root port ACS workaround enabled
+>>      [  100.690996] DMAR: DRHD: handling fault status reg 2
+>>      [  100.691001] DMAR: [INTR-REMAP] Request device [f0:1f.0] fault index 0x0 [fault reason 0x25] Blocked a compatibility format interrupt request
+>>
+>> But I am unable to find the device f0:1f.0:
 > 
->> @@ -1738,22 +1744,22 @@ static int get_gcr3_levels(int pasids)
->>  	return levels ? (DIV_ROUND_UP(levels, 9) - 1) : levels;
->>  }
->>  
->> -/* Note: This function expects iommu_domain->lock to be held prior calling the function. */
->> -static int setup_gcr3_table(struct protection_domain *domain, int pasids)
->> +static int setup_gcr3_table(struct gcr3_tbl_info *gcr3_info,
->> +			    int nid, int pasids)
->>  {
->>  	int levels = get_gcr3_levels(pasids);
->>  
->>  	if (levels > amd_iommu_max_glx_val)
->>  		return -EINVAL;
->>  
->> -	domain->gcr3_tbl = alloc_pgtable_page(domain->nid, GFP_ATOMIC);
->> -	if (domain->gcr3_tbl == NULL)
->> -		return -ENOMEM;
->> +	if (gcr3_info->gcr3_tbl)
->> +		return -EBUSY;
->>  
->> -	domain->glx      = levels;
->> -	domain->flags   |= PD_IOMMUV2_MASK;
->> +	gcr3_info->gcr3_tbl = alloc_pgtable_page(nid, GFP_KERNEL);
->> +	if (gcr3_info->gcr3_tbl == NULL)
->> +		return -ENOMEM;
->>  
->> -	amd_iommu_domain_update(domain);
->> +	gcr3_info->glx = levels;
+> This is probably an ACPI enumerated device. These are platform
+> devices that pose as a PCI device for the purpose of interrupt
+> remapping but do not enumerate via PCI. The PCI ID assigned to
+> these hidden devices is enumerated via ANDD entries in the
+> DMAR table. You can decode this table with from
+> /sys/firmware/acpi/tables/DMAR with iasl to verify.
+
+I disassembled it with `iasl -d` (attached), and there are indeed two 
+devices:
+
+     [058h 0088 001h]           Device Scope Type : 03 [IOAPIC Device]
+     [059h 0089 001h]                Entry Length : 08
+     [05Ah 0090 002h]                    Reserved : 0000
+     [05Ch 0092 001h]              Enumeration ID : 02
+     [05Dh 0093 001h]              PCI Bus Number : F0
+
+     [05Eh 0094 002h]                    PCI Path : 1F,00
+
+
+     [060h 0096 001h]           Device Scope Type : 04 [Message-capable 
+HPET Device]
+     [061h 0097 001h]                Entry Length : 08
+     [062h 0098 002h]                    Reserved : 0000
+     [064h 0100 001h]              Enumeration ID : 00
+     [065h 0101 001h]              PCI Bus Number : 00
+
+     [066h 0102 002h]                    PCI Path : 1F,00
+
+     $ grep Name DMAR.dsl
+      * Format: [HexOffset DecimalOffset ByteLength]  FieldName : 
+FieldValue (in hex)
+     [068h 0104 001h]           Device Scope Type : 05 [Namespace Device]
+     [070h 0112 001h]           Device Scope Type : 05 [Namespace Device]
+     [0B8h 0184 002h]               Subtable Type : 0004 [ACPI Namespace 
+Device Declaration]
+     [0C0h 0192 00Fh]                 Device Name : "\_SB.PCI0.I2C0"
+     [0D4h 0212 002h]               Subtable Type : 0004 [ACPI Namespace 
+Device Declaration]
+     [0DCh 0220 00Fh]                 Device Name : "\_SB.PCI0.I2C1"
+
+> Your dmesg shows two ANDD records for your I2C controllers,
+> so somehow the I2C controller is sending interrupts that DMAR
+> doesn't like (probably because the I2C controller is not yet
+> resumed properly).
 > 
-> I think this patch should also move the domain_id
-> allocation/deallocation into setup_gcr3_table()/free_gcr3_table()
+> Thus my guess is that this is an issue with the suspend/resume hooks
+> of the I2C controllers not with the IOMMU.
 
-We do domain allocation in device attach path only. But GCR3 table
-allocation/setup can happen while enabling SVA (like passthrough -> SVA path).
-Hence I have kept it in attach() path itself.
+I am adding the Linux I2C and ACPI folks. Maybe they have an idea.
 
 
-> 
-> But it would really be better to move patch 7 to after the gcr3 layer
-> is cleaned and seperated from protection_domain so you don't have to
-> move it in the first place..
+Kind regards,
 
-Fine I can do that.
-
-> 
-> It is missing some error handling too
-
-Where?
-
-> 
-> And domain_id_is_per_dev() is pretty redundant once you do that. See below
-
-We need to handle passthrough as well. It doesn't make sense to allocate and
-keep GCR3 table when we are not going to use it.
-
--Vasant
+Paul
 
 
-> 
->> @@ -1974,14 +1982,15 @@ static int do_attach(struct iommu_dev_data *dev_data,
->>  	/* Init GCR3 table and update device table */
->>  	if (domain->pd_mode == PD_MODE_V2) {
->>  		/* By default, setup GCR3 table to support single PASID */
->> -		ret = setup_gcr3_table(dev_data->domain, 1);
->> +		ret = setup_gcr3_table(&dev_data->gcr3_info,
->> +				       dev_to_node(dev_data->dev), 1);
-> 
-> IMO it is better to pass the struct amd_iommu * to setup_gcr3_table()
-> and then it can get the NUMA locality more sensibly via
-> 
->  dev_to_node(&iommu->dev->dev)
-> 
-> The iommu is the thing that will walk the table and needs the
-> locality, not the end point device. Locality should flow from
-> the affiliated amd_iommu always.
-> 
-> Jason
-> 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 256b5507272ff9..fb94ffa269717b 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -1769,6 +1769,8 @@ static void free_gcr3_table(struct gcr3_tbl_info *gcr3_info)
->  
->  	free_page((unsigned long)gcr3_info->gcr3_tbl);
->  	gcr3_info->gcr3_tbl = NULL;
-> +
-> +	domain_id_free(gcr3_info.domid);
->  }
->  
->  /*
-> @@ -1788,7 +1790,7 @@ static int get_gcr3_levels(int pasids)
->  }
->  
->  static int setup_gcr3_table(struct gcr3_tbl_info *gcr3_info,
-> -			    int nid, int pasids)
-> +			    struct amd_iommu *iommu, int pasids)
->  {
->  	int levels = get_gcr3_levels(pasids);
->  
-> @@ -1798,12 +1800,19 @@ static int setup_gcr3_table(struct gcr3_tbl_info *gcr3_info,
->  	if (gcr3_info->gcr3_tbl)
->  		return -EBUSY;
->  
-> -	gcr3_info->gcr3_tbl = alloc_pgtable_page(nid, GFP_KERNEL);
-> +	gcr3_info->gcr3_tbl = alloc_pgtable_page(
-> +		iommu ? dev_to_node(&iommu->dev->dev) : 1, GFP_KERNEL);
->  	if (gcr3_info->gcr3_tbl == NULL)
->  		return -ENOMEM;
->  
->  	gcr3_info->glx = levels;
->  
-> +	gcr3_info.domid = domain_id_alloc();
-> +	if (!gcr3_info.domid) {
-> +		free_page((unsigned long)gcr3_info->gcr3_tbl);
-> +		return -ENOMEM;
-> +	}
-> +
->  	return 0;
->  }
->  
-> @@ -1902,7 +1911,7 @@ static void set_dte_entry(struct amd_iommu *iommu,
->  	struct dev_table_entry *dev_table = get_dev_table(iommu);
->  	struct gcr3_tbl_info *gcr3_info = &dev_data->gcr3_info;
->  
-> -	if (domain_id_is_per_dev(domain))
-> +	if (gcr3_info && gcr3_info->gcr3_tbl) {
->  		domid = dev_data->gcr3_info.domid;
->  	else
->  		domid = domain->id;
-> @@ -2018,15 +2027,10 @@ static int do_attach(struct iommu_dev_data *dev_data,
->  	domain->dev_iommu[iommu->index] += 1;
->  	domain->dev_cnt                 += 1;
->  
-> -	/* Allocate per device domain ID */
-> -	if (domain_id_is_per_dev(domain))
-> -		dev_data->gcr3_info.domid = domain_id_alloc();
-> -
->  	/* Init GCR3 table and update device table */
->  	if (domain->pd_mode == PD_MODE_V2) {
->  		/* By default, setup GCR3 table to support single PASID */
-> -		ret = setup_gcr3_table(&dev_data->gcr3_info,
-> -				       dev_to_node(dev_data->dev), 1);
-> +		ret = setup_gcr3_table(&dev_data->gcr3_info, iommu, 1);
->  		if (ret)
->  			return ret;
->  
-> @@ -2073,10 +2077,6 @@ static void do_detach(struct iommu_dev_data *dev_data)
->  	/* decrease reference counters - needs to happen after the flushes */
->  	domain->dev_iommu[iommu->index] -= 1;
->  	domain->dev_cnt                 -= 1;
-> -
-> -	/* Free per device domain ID */
-> -	if (domain_id_is_per_dev(domain))
-> -		domain_id_free(dev_data->gcr3_info.domid);
->  }
->  
->  /*
+[1]: 
+https://lore.kernel.org/all/5517f76a-94ad-452c-bae6-34ecc0ec4831@molgen.mpg.de/
+--------------EBz23e30HntQKxViUq8E5TGn
+Content-Type: text/x-dsl; charset=UTF-8; name="DMAR.dsl"
+Content-Disposition: attachment; filename="DMAR.dsl"
+Content-Transfer-Encoding: base64
+
+LyoKICogSW50ZWwgQUNQSSBDb21wb25lbnQgQXJjaGl0ZWN0dXJlCiAqIEFNTC9BU0wrIERp
+c2Fzc2VtYmxlciB2ZXJzaW9uIDIwMjMwNjI4ICg2NC1iaXQgdmVyc2lvbikKICogQ29weXJp
+Z2h0IChjKSAyMDAwIC0gMjAyMyBJbnRlbCBDb3Jwb3JhdGlvbgogKiAKICogRGlzYXNzZW1i
+bHkgb2YgRE1BUiwgU2F0IEphbiAyMCAwOTozNDoyMCAyMDI0CiAqCiAqIEFDUEkgRGF0YSBU
+YWJsZSBbRE1BUl0KICoKICogRm9ybWF0OiBbSGV4T2Zmc2V0IERlY2ltYWxPZmZzZXQgQnl0
+ZUxlbmd0aF0gIEZpZWxkTmFtZSA6IEZpZWxkVmFsdWUgKGluIGhleCkKICovCgpbMDAwaCAw
+MDAwIDAwNGhdICAgICAgICAgICAgICAgICAgIFNpZ25hdHVyZSA6ICJETUFSIiAgICBbRE1B
+IFJlbWFwcGluZyBUYWJsZV0KWzAwNGggMDAwNCAwMDRoXSAgICAgICAgICAgICAgICBUYWJs
+ZSBMZW5ndGggOiAwMDAwMDBGMApbMDA4aCAwMDA4IDAwMWhdICAgICAgICAgICAgICAgICAg
+ICBSZXZpc2lvbiA6IDAxClswMDloIDAwMDkgMDAxaF0gICAgICAgICAgICAgICAgICAgIENo
+ZWNrc3VtIDogMDgKWzAwQWggMDAxMCAwMDZoXSAgICAgICAgICAgICAgICAgICAgICBPZW0g
+SUQgOiAiSU5URUwgIgpbMDEwaCAwMDE2IDAwOGhdICAgICAgICAgICAgICAgIE9lbSBUYWJs
+ZSBJRCA6ICJLQkwgIgpbMDE4aCAwMDI0IDAwNGhdICAgICAgICAgICAgICAgIE9lbSBSZXZp
+c2lvbiA6IDAwMDAwMDAxClswMUNoIDAwMjggMDA0aF0gICAgICAgICAgICAgQXNsIENvbXBp
+bGVyIElEIDogIklOVEwiClswMjBoIDAwMzIgMDA0aF0gICAgICAgQXNsIENvbXBpbGVyIFJl
+dmlzaW9uIDogMDAwMDAwMDEKClswMjRoIDAwMzYgMDAxaF0gICAgICAgICAgSG9zdCBBZGRy
+ZXNzIFdpZHRoIDogMjYKWzAyNWggMDAzNyAwMDFoXSAgICAgICAgICAgICAgICAgICAgICAg
+RmxhZ3MgOiAwMQpbMDI2aCAwMDM4IDAwQWhdICAgICAgICAgICAgICAgICAgICBSZXNlcnZl
+ZCA6IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwCgpbMDMwaCAwMDQ4IDAwMmhdICAg
+ICAgICAgICAgICAgU3VidGFibGUgVHlwZSA6IDAwMDAgW0hhcmR3YXJlIFVuaXQgRGVmaW5p
+dGlvbl0KWzAzMmggMDA1MCAwMDJoXSAgICAgICAgICAgICAgICAgICAgICBMZW5ndGggOiAw
+MDE4CgpbMDM0aCAwMDUyIDAwMWhdICAgICAgICAgICAgICAgICAgICAgICBGbGFncyA6IDAw
+ClswMzVoIDAwNTMgMDAxaF0gICAgICAgICAgICAgICAgICAgIFJlc2VydmVkIDogMDAKWzAz
+NmggMDA1NCAwMDJoXSAgICAgICAgICBQQ0kgU2VnbWVudCBOdW1iZXIgOiAwMDAwClswMzho
+IDAwNTYgMDA4aF0gICAgICAgUmVnaXN0ZXIgQmFzZSBBZGRyZXNzIDogMDAwMDAwMDBGRUQ5
+MDAwMAoKWzA0MGggMDA2NCAwMDFoXSAgICAgICAgICAgRGV2aWNlIFNjb3BlIFR5cGUgOiAw
+MSBbUENJIEVuZHBvaW50IERldmljZV0KWzA0MWggMDA2NSAwMDFoXSAgICAgICAgICAgICAg
+ICBFbnRyeSBMZW5ndGggOiAwOApbMDQyaCAwMDY2IDAwMmhdICAgICAgICAgICAgICAgICAg
+ICBSZXNlcnZlZCA6IDAwMDAKWzA0NGggMDA2OCAwMDFoXSAgICAgICAgICAgICAgRW51bWVy
+YXRpb24gSUQgOiAwMApbMDQ1aCAwMDY5IDAwMWhdICAgICAgICAgICAgICBQQ0kgQnVzIE51
+bWJlciA6IDAwCgpbMDQ2aCAwMDcwIDAwMmhdICAgICAgICAgICAgICAgICAgICBQQ0kgUGF0
+aCA6IDAyLDAwCgoKWzA0OGggMDA3MiAwMDJoXSAgICAgICAgICAgICAgIFN1YnRhYmxlIFR5
+cGUgOiAwMDAwIFtIYXJkd2FyZSBVbml0IERlZmluaXRpb25dClswNEFoIDAwNzQgMDAyaF0g
+ICAgICAgICAgICAgICAgICAgICAgTGVuZ3RoIDogMDAzMAoKWzA0Q2ggMDA3NiAwMDFoXSAg
+ICAgICAgICAgICAgICAgICAgICAgRmxhZ3MgOiAwMQpbMDREaCAwMDc3IDAwMWhdICAgICAg
+ICAgICAgICAgICAgICBSZXNlcnZlZCA6IDAwClswNEVoIDAwNzggMDAyaF0gICAgICAgICAg
+UENJIFNlZ21lbnQgTnVtYmVyIDogMDAwMApbMDUwaCAwMDgwIDAwOGhdICAgICAgIFJlZ2lz
+dGVyIEJhc2UgQWRkcmVzcyA6IDAwMDAwMDAwRkVEOTEwMDAKClswNThoIDAwODggMDAxaF0g
+ICAgICAgICAgIERldmljZSBTY29wZSBUeXBlIDogMDMgW0lPQVBJQyBEZXZpY2VdClswNTlo
+IDAwODkgMDAxaF0gICAgICAgICAgICAgICAgRW50cnkgTGVuZ3RoIDogMDgKWzA1QWggMDA5
+MCAwMDJoXSAgICAgICAgICAgICAgICAgICAgUmVzZXJ2ZWQgOiAwMDAwClswNUNoIDAwOTIg
+MDAxaF0gICAgICAgICAgICAgIEVudW1lcmF0aW9uIElEIDogMDIKWzA1RGggMDA5MyAwMDFo
+XSAgICAgICAgICAgICAgUENJIEJ1cyBOdW1iZXIgOiBGMAoKWzA1RWggMDA5NCAwMDJoXSAg
+ICAgICAgICAgICAgICAgICAgUENJIFBhdGggOiAxRiwwMAoKClswNjBoIDAwOTYgMDAxaF0g
+ICAgICAgICAgIERldmljZSBTY29wZSBUeXBlIDogMDQgW01lc3NhZ2UtY2FwYWJsZSBIUEVU
+IERldmljZV0KWzA2MWggMDA5NyAwMDFoXSAgICAgICAgICAgICAgICBFbnRyeSBMZW5ndGgg
+OiAwOApbMDYyaCAwMDk4IDAwMmhdICAgICAgICAgICAgICAgICAgICBSZXNlcnZlZCA6IDAw
+MDAKWzA2NGggMDEwMCAwMDFoXSAgICAgICAgICAgICAgRW51bWVyYXRpb24gSUQgOiAwMApb
+MDY1aCAwMTAxIDAwMWhdICAgICAgICAgICAgICBQQ0kgQnVzIE51bWJlciA6IDAwCgpbMDY2
+aCAwMTAyIDAwMmhdICAgICAgICAgICAgICAgICAgICBQQ0kgUGF0aCA6IDFGLDAwCgoKWzA2
+OGggMDEwNCAwMDFoXSAgICAgICAgICAgRGV2aWNlIFNjb3BlIFR5cGUgOiAwNSBbTmFtZXNw
+YWNlIERldmljZV0KWzA2OWggMDEwNSAwMDFoXSAgICAgICAgICAgICAgICBFbnRyeSBMZW5n
+dGggOiAwOApbMDZBaCAwMTA2IDAwMmhdICAgICAgICAgICAgICAgICAgICBSZXNlcnZlZCA6
+IDAwMDAKWzA2Q2ggMDEwOCAwMDFoXSAgICAgICAgICAgICAgRW51bWVyYXRpb24gSUQgOiAw
+MQpbMDZEaCAwMTA5IDAwMWhdICAgICAgICAgICAgICBQQ0kgQnVzIE51bWJlciA6IDAwCgpb
+MDZFaCAwMTEwIDAwMmhdICAgICAgICAgICAgICAgICAgICBQQ0kgUGF0aCA6IDE1LDAwCgoK
+WzA3MGggMDExMiAwMDFoXSAgICAgICAgICAgRGV2aWNlIFNjb3BlIFR5cGUgOiAwNSBbTmFt
+ZXNwYWNlIERldmljZV0KWzA3MWggMDExMyAwMDFoXSAgICAgICAgICAgICAgICBFbnRyeSBM
+ZW5ndGggOiAwOApbMDcyaCAwMTE0IDAwMmhdICAgICAgICAgICAgICAgICAgICBSZXNlcnZl
+ZCA6IDAwMDAKWzA3NGggMDExNiAwMDFoXSAgICAgICAgICAgICAgRW51bWVyYXRpb24gSUQg
+OiAwMgpbMDc1aCAwMTE3IDAwMWhdICAgICAgICAgICAgICBQQ0kgQnVzIE51bWJlciA6IDAw
+CgpbMDc2aCAwMTE4IDAwMmhdICAgICAgICAgICAgICAgICAgICBQQ0kgUGF0aCA6IDE1LDAx
+CgoKWzA3OGggMDEyMCAwMDJoXSAgICAgICAgICAgICAgIFN1YnRhYmxlIFR5cGUgOiAwMDAx
+IFtSZXNlcnZlZCBNZW1vcnkgUmVnaW9uXQpbMDdBaCAwMTIyIDAwMmhdICAgICAgICAgICAg
+ICAgICAgICAgIExlbmd0aCA6IDAwMjAKClswN0NoIDAxMjQgMDAyaF0gICAgICAgICAgICAg
+ICAgICAgIFJlc2VydmVkIDogMDAwMApbMDdFaCAwMTI2IDAwMmhdICAgICAgICAgIFBDSSBT
+ZWdtZW50IE51bWJlciA6IDAwMDAKWzA4MGggMDEyOCAwMDhoXSAgICAgICAgICAgICAgICBC
+YXNlIEFkZHJlc3MgOiAwMDAwMDAwMDY0RUMyMDAwClswODhoIDAxMzYgMDA4aF0gICAgICAg
+ICBFbmQgQWRkcmVzcyAobGltaXQpIDogMDAwMDAwMDA2NEVFMUZGRgoKWzA5MGggMDE0NCAw
+MDFoXSAgICAgICAgICAgRGV2aWNlIFNjb3BlIFR5cGUgOiAwMSBbUENJIEVuZHBvaW50IERl
+dmljZV0KWzA5MWggMDE0NSAwMDFoXSAgICAgICAgICAgICAgICBFbnRyeSBMZW5ndGggOiAw
+OApbMDkyaCAwMTQ2IDAwMmhdICAgICAgICAgICAgICAgICAgICBSZXNlcnZlZCA6IDAwMDAK
+WzA5NGggMDE0OCAwMDFoXSAgICAgICAgICAgICAgRW51bWVyYXRpb24gSUQgOiAwMApbMDk1
+aCAwMTQ5IDAwMWhdICAgICAgICAgICAgICBQQ0kgQnVzIE51bWJlciA6IDAwCgpbMDk2aCAw
+MTUwIDAwMmhdICAgICAgICAgICAgICAgICAgICBQQ0kgUGF0aCA6IDE0LDAwCgoKWzA5OGgg
+MDE1MiAwMDJoXSAgICAgICAgICAgICAgIFN1YnRhYmxlIFR5cGUgOiAwMDAxIFtSZXNlcnZl
+ZCBNZW1vcnkgUmVnaW9uXQpbMDlBaCAwMTU0IDAwMmhdICAgICAgICAgICAgICAgICAgICAg
+IExlbmd0aCA6IDAwMjAKClswOUNoIDAxNTYgMDAyaF0gICAgICAgICAgICAgICAgICAgIFJl
+c2VydmVkIDogMDAwMApbMDlFaCAwMTU4IDAwMmhdICAgICAgICAgIFBDSSBTZWdtZW50IE51
+bWJlciA6IDAwMDAKWzBBMGggMDE2MCAwMDhoXSAgICAgICAgICAgICAgICBCYXNlIEFkZHJl
+c3MgOiAwMDAwMDAwMDdBMDAwMDAwClswQThoIDAxNjggMDA4aF0gICAgICAgICBFbmQgQWRk
+cmVzcyAobGltaXQpIDogMDAwMDAwMDA3QzdGRkZGRgoKWzBCMGggMDE3NiAwMDFoXSAgICAg
+ICAgICAgRGV2aWNlIFNjb3BlIFR5cGUgOiAwMSBbUENJIEVuZHBvaW50IERldmljZV0KWzBC
+MWggMDE3NyAwMDFoXSAgICAgICAgICAgICAgICBFbnRyeSBMZW5ndGggOiAwOApbMEIyaCAw
+MTc4IDAwMmhdICAgICAgICAgICAgICAgICAgICBSZXNlcnZlZCA6IDAwMDAKWzBCNGggMDE4
+MCAwMDFoXSAgICAgICAgICAgICAgRW51bWVyYXRpb24gSUQgOiAwMApbMEI1aCAwMTgxIDAw
+MWhdICAgICAgICAgICAgICBQQ0kgQnVzIE51bWJlciA6IDAwCgpbMEI2aCAwMTgyIDAwMmhd
+ICAgICAgICAgICAgICAgICAgICBQQ0kgUGF0aCA6IDAyLDAwCgoKWzBCOGggMDE4NCAwMDJo
+XSAgICAgICAgICAgICAgIFN1YnRhYmxlIFR5cGUgOiAwMDA0IFtBQ1BJIE5hbWVzcGFjZSBE
+ZXZpY2UgRGVjbGFyYXRpb25dClswQkFoIDAxODYgMDAyaF0gICAgICAgICAgICAgICAgICAg
+ICAgTGVuZ3RoIDogMDAxQwoKWzBCQ2ggMDE4OCAwMDNoXSAgICAgICAgICAgICAgICAgICAg
+UmVzZXJ2ZWQgOiAwMDAwMDAKWzBCRmggMDE5MSAwMDFoXSAgICAgICAgICAgICAgIERldmlj
+ZSBOdW1iZXIgOiAwMQpbMEMwaCAwMTkyIDAwRmhdICAgICAgICAgICAgICAgICBEZXZpY2Ug
+TmFtZSA6ICJcX1NCLlBDSTAuSTJDMCIKClswRDRoIDAyMTIgMDAyaF0gICAgICAgICAgICAg
+ICBTdWJ0YWJsZSBUeXBlIDogMDAwNCBbQUNQSSBOYW1lc3BhY2UgRGV2aWNlIERlY2xhcmF0
+aW9uXQpbMEQ2aCAwMjE0IDAwMmhdICAgICAgICAgICAgICAgICAgICAgIExlbmd0aCA6IDAw
+MUMKClswRDhoIDAyMTYgMDAzaF0gICAgICAgICAgICAgICAgICAgIFJlc2VydmVkIDogMDAw
+MDAwClswREJoIDAyMTkgMDAxaF0gICAgICAgICAgICAgICBEZXZpY2UgTnVtYmVyIDogMDIK
+WzBEQ2ggMDIyMCAwMEZoXSAgICAgICAgICAgICAgICAgRGV2aWNlIE5hbWUgOiAiXF9TQi5Q
+Q0kwLkkyQzEiCgpSYXcgVGFibGUgRGF0YTogTGVuZ3RoIDI0MCAoMHhGMCkKCiAgICAwMDAw
+OiA0NCA0RCA0MSA1MiBGMCAwMCAwMCAwMCAwMSAwOCA0OSA0RSA1NCA0NSA0QyAyMCAgLy8g
+RE1BUi4uLi4uLklOVEVMIAogICAgMDAxMDogNEIgNDIgNEMgMjAgMDAgMDAgMDAgMDAgMDEg
+MDAgMDAgMDAgNDkgNEUgNTQgNEMgIC8vIEtCTCAuLi4uLi4uLklOVEwKICAgIDAwMjA6IDAx
+IDAwIDAwIDAwIDI2IDAxIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwICAvLyAuLi4u
+Ji4uLi4uLi4uLi4uCiAgICAwMDMwOiAwMCAwMCAxOCAwMCAwMCAwMCAwMCAwMCAwMCAwMCBE
+OSBGRSAwMCAwMCAwMCAwMCAgLy8gLi4uLi4uLi4uLi4uLi4uLgogICAgMDA0MDogMDEgMDgg
+MDAgMDAgMDAgMDAgMDIgMDAgMDAgMDAgMzAgMDAgMDEgMDAgMDAgMDAgIC8vIC4uLi4uLi4u
+Li4wLi4uLi4KICAgIDAwNTA6IDAwIDEwIEQ5IEZFIDAwIDAwIDAwIDAwIDAzIDA4IDAwIDAw
+IDAyIEYwIDFGIDAwICAvLyAuLi4uLi4uLi4uLi4uLi4uCiAgICAwMDYwOiAwNCAwOCAwMCAw
+MCAwMCAwMCAxRiAwMCAwNSAwOCAwMCAwMCAwMSAwMCAxNSAwMCAgLy8gLi4uLi4uLi4uLi4u
+Li4uLgogICAgMDA3MDogMDUgMDggMDAgMDAgMDIgMDAgMTUgMDEgMDEgMDAgMjAgMDAgMDAg
+MDAgMDAgMDAgIC8vIC4uLi4uLi4uLi4gLi4uLi4KICAgIDAwODA6IDAwIDIwIEVDIDY0IDAw
+IDAwIDAwIDAwIEZGIDFGIEVFIDY0IDAwIDAwIDAwIDAwICAvLyAuIC5kLi4uLi4uLmQuLi4u
+CiAgICAwMDkwOiAwMSAwOCAwMCAwMCAwMCAwMCAxNCAwMCAwMSAwMCAyMCAwMCAwMCAwMCAw
+MCAwMCAgLy8gLi4uLi4uLi4uLiAuLi4uLgogICAgMDBBMDogMDAgMDAgMDAgN0EgMDAgMDAg
+MDAgMDAgRkYgRkYgN0YgN0MgMDAgMDAgMDAgMDAgIC8vIC4uLnouLi4uLi4ufC4uLi4KICAg
+IDAwQjA6IDAxIDA4IDAwIDAwIDAwIDAwIDAyIDAwIDA0IDAwIDFDIDAwIDAwIDAwIDAwIDAx
+ICAvLyAuLi4uLi4uLi4uLi4uLi4uCiAgICAwMEMwOiA1QyA1RiA1MyA0MiAyRSA1MCA0MyA0
+OSAzMCAyRSA0OSAzMiA0MyAzMCAwMCAwMCAgLy8gXF9TQi5QQ0kwLkkyQzAuLgogICAgMDBE
+MDogMDAgMDAgMDAgMDAgMDQgMDAgMUMgMDAgMDAgMDAgMDAgMDIgNUMgNUYgNTMgNDIgIC8v
+IC4uLi4uLi4uLi4uLlxfU0IKICAgIDAwRTA6IDJFIDUwIDQzIDQ5IDMwIDJFIDQ5IDMyIDQz
+IDMxIDAwIDAwIDAwIDAwIDAwIDAwICAvLyAuUENJMC5JMkMxLi4uLi4uCg==
+
+--------------EBz23e30HntQKxViUq8E5TGn--
