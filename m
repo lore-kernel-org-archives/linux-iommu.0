@@ -1,157 +1,101 @@
-Received: from cae.in-ulm.de (cae.in-ulm.de [217.10.14.231])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EA5773CF59
-	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 13:45:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.10.14.231
+Received: from mx3.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 412DA3CF45
+	for <iommu@lists.linux.dev>; Mon, 22 Jan 2024 14:53:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=141.14.17.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1705931107; cv=none; b=Shr4xKlw9wmEo+g3SdZ6lw/MUmyEnSDcVrsBmkLp3RbGYarKstSKZ870r0yWSb3/875JooTJDAKlEwllFBVTLEAfggOHZZEZz8eXUCMdwteDEhU8qtKDGVhV2gT9W5Pv88pS2Xyv5N9s2NNAbOA8zaqKiTCYcsupdPy246rXn7M=
+	t=1705935223; cv=none; b=PSNkHM8xW1e1Tfq4Jy8HRPB+gA+6M8jngTw7IjCCKGsPaxxxF7j6pJ0cwY3aRVCUCjZUVvFSPdGFEnsb+q9W3jcN6C3Cw75nn19r42KID0z7CyJ8ZDSYRTk7oJ1C/H0StcOEdy53zy0BMWEXD1gblspOnvIDqMqZ7pvIZaKKJz8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1705931107; c=relaxed/simple;
-	bh=rlj/uOhX+2J2TcdtyX2fpOBJZMek3HcpcJSp2zX5UAU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lkeDFdBsxWjJmpMY/Azcl5fu8b+ekDd6VwfLI7CA+dTngTmVKJmJ8pDetKzdfHGOI6POhXI1/Qr+fukADGByX30xFstaoDzAeT5duc9bzUuG1tXHH7wf2ISjRi0QLuaUm1Z8LyJdbpcBLqS01f9+PbUgs3yuXL4zqAx4hl/s7gU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=c--e.de; spf=pass smtp.mailfrom=c--e.de; arc=none smtp.client-ip=217.10.14.231
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=c--e.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=c--e.de
-Received: by cae.in-ulm.de (Postfix, from userid 1000)
-	id 21E1614033C; Mon, 22 Jan 2024 14:45:05 +0100 (CET)
-Date: Mon, 22 Jan 2024 14:45:05 +0100
-From: "Christian A. Ehrhardt" <lk@c--e.de>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Paul Menzel <pmenzel@molgen.mpg.de>,
-	=?iso-8859-1?Q?J=F6rg_R=F6del?= <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: Dell XPS 13 9360: DMAR errors `DRHD: handling fault status reg
- 2` and `[INTR-REMAP] Request device [f0:1f.0] fault index 0x0`
-Message-ID: <Za5xYauQDe8xcVGr@cae.in-ulm.de>
-References: <9a24c335-8ec5-48c9-9bdd-b0dac5ecbca8@molgen.mpg.de>
- <cb71c806-b100-4673-a131-faac77344002@linux.intel.com>
+	s=arc-20240116; t=1705935223; c=relaxed/simple;
+	bh=DJ7/RrpeA0Yew/X0+eJI2TzQgnjpIpDMQYJRlwg56Mw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=UwM7x3WJzN2TM2SeFFJmBKJFE4XW3knirFFUmmGB96cH/xIRq01eryDTtU6qXZ4jyuxKN6lhLBXV4PJELKoxQDGZQpO6CSw/gq88waBmGHMF564ImCHocKXrxrfLL0fl/IbiFh3RkCIVPlXVygm5CpWuk8l5gah9Vb52Yy4lpCQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de; spf=pass smtp.mailfrom=molgen.mpg.de; arc=none smtp.client-ip=141.14.17.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=molgen.mpg.de
+Received: from [141.14.220.34] (g34.guest.molgen.mpg.de [141.14.220.34])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: pmenzel)
+	by mx.molgen.mpg.de (Postfix) with ESMTPSA id A007B61E646EB;
+	Mon, 22 Jan 2024 15:53:06 +0100 (CET)
+Message-ID: <24bf9a11-6abd-4ccf-9ca1-3cf75c45d374@molgen.mpg.de>
+Date: Mon, 22 Jan 2024 15:53:06 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: DMAR-IR: IRQ remapping was enabled on dmar6 but we are not in
+ kdump mode
+Content-Language: en-US
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <5517f76a-94ad-452c-bae6-34ecc0ec4831@molgen.mpg.de>
+ <433452d0-589a-49c8-8044-dcc93d5be90a@linux.intel.com>
+From: Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <433452d0-589a-49c8-8044-dcc93d5be90a@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <cb71c806-b100-4673-a131-faac77344002@linux.intel.com>
+
+Dear Baolu,
 
 
-Hi,
+Than you for your reply.
 
-On Mon, Jan 22, 2024 at 08:53:43PM +0800, Baolu Lu wrote:
-> On 2024/1/19 20:59, Paul Menzel wrote:
-> > Dear Linux folks,
-> > 
-> > 
-> > On a Dell XPS 13 9360 Linux 6.6.8, 6.6.11 and 6.7 (and earlier versions)
-> > log the lines below when resuming from ACPI S3 (deep):
-> > 
-> >      [    0.000000] Linux version 6.7-amd64
-> > (debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-13 (Debian
-> > 13.2.0-9) 13.2.0, GNU ld (GNU Binutils for Debian) 2.41.50.20231227) #1
-> > SMP PREEMPT_DYNAMIC Debian 6.7-1~exp1 (2024-01-08)
-> >      [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-6.7-amd64
-> > root=UUID=32e29882-d94d-4a92-9ee4-4d03002bfa29 ro quiet pci=noaer
-> > mem_sleep_default=deep log_buf_len=8M
-> >      […]
-> >      [    0.000000] DMI: Dell Inc. XPS 13 9360/0596KF, BIOS 2.21.0
-> > 06/02/2022
-> >      […]
-> >      [   99.711230] PM: suspend entry (deep)
-> >      […]
-> >      [   99.722101] printk: Suspending console(s) (use
-> > no_console_suspend to debug)
-> >      [  100.285178] ACPI: EC: interrupt blocked
-> >      [  100.319908] ACPI: PM: Preparing to enter system sleep state S3
-> >      [  100.331793] ACPI: EC: event blocked
-> >      [  100.331798] ACPI: EC: EC stopped
-> >      [  100.331800] ACPI: PM: Saving platform NVS memory
-> >      [  100.335224] Disabling non-boot CPUs ...
-> >      [  100.337412] smpboot: CPU 1 is now offline
-> >      [  100.341065] smpboot: CPU 2 is now offline
-> >      [  100.346441] smpboot: CPU 3 is now offline
-> >      [  100.353086] ACPI: PM: Low-level resume complete
-> >      [  100.353129] ACPI: EC: EC started
-> >      [  100.353129] ACPI: PM: Restoring platform NVS memory
-> >      [  100.355219] Enabling non-boot CPUs ...
-> >      [  100.355244] smpboot: Booting Node 0 Processor 1 APIC 0x2
-> >      [  100.355954] CPU1 is up
-> >      [  100.355972] smpboot: Booting Node 0 Processor 2 APIC 0x1
-> >      [  100.356698] CPU2 is up
-> >      [  100.356716] smpboot: Booting Node 0 Processor 3 APIC 0x3
-> >      [  100.357371] CPU3 is up
-> >      [  100.360217] ACPI: PM: Waking up from system sleep state S3
-> >      [  100.668380] ACPI: EC: interrupt unblocked
-> >      [  100.668598] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS
-> > workaround enabled
-> >      [  100.668606] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS
-> > workaround enabled
-> >      [  100.668643] pcieport 0000:00:1d.0: Intel SPT PCH root port ACS
-> > workaround enabled
-> >      [  100.690996] DMAR: DRHD: handling fault status reg 2
-> >      [  100.691001] DMAR: [INTR-REMAP] Request device [f0:1f.0] fault
-> > index 0x0 [fault reason 0x25] Blocked a compatibility format interrupt
-> > request
-> > 
-> > But I am unable to find the device f0:1f.0:
-> > 
-> >      $ lspci -nn
-> >      00:00.0 Host bridge [0600]: Intel Corporation Xeon E3-1200 v6/7th
-> > Gen Core Processor Host Bridge/DRAM Registers [8086:5904] (rev 02)
-> >      00:02.0 VGA compatible controller [0300]: Intel Corporation HD
-> > Graphics 620 [8086:5916] (rev 02)
-> >      00:04.0 Signal processing controller [1180]: Intel Corporation Xeon
-> > E3-1200 v5/E3-1500 v5/6th Gen Core Processor Thermal Subsystem
-> > [8086:1903] (rev 02)
-> >      00:14.0 USB controller [0c03]: Intel Corporation Sunrise Point-LP
-> > USB 3.0 xHCI Controller [8086:9d2f] (rev 21)
-> >      00:14.2 Signal processing controller [1180]: Intel Corporation
-> > Sunrise Point-LP Thermal subsystem [8086:9d31] (rev 21)
-> >      00:15.0 Signal processing controller [1180]: Intel Corporation
-> > Sunrise Point-LP Serial IO I2C Controller #0 [8086:9d60] (rev 21)
-> >      00:15.1 Signal processing controller [1180]: Intel Corporation
-> > Sunrise Point-LP Serial IO I2C Controller #1 [8086:9d61] (rev 21)
-> >      00:16.0 Communication controller [0780]: Intel Corporation Sunrise
-> > Point-LP CSME HECI #1 [8086:9d3a] (rev 21)
-> >      00:1c.0 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI
-> > Express Root Port #1 [8086:9d10] (rev f1)
-> >      00:1c.4 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI
-> > Express Root Port #5 [8086:9d14] (rev f1)
-> >      00:1d.0 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI
-> > Express Root Port #9 [8086:9d18] (rev f1)
-> >      00:1f.0 ISA bridge [0601]: Intel Corporation Sunrise Point-LP LPC
-> > Controller [8086:9d58] (rev 21)
-> >      00:1f.2 Memory controller [0580]: Intel Corporation Sunrise
-> > Point-LP PMC [8086:9d21] (rev 21)
-> >      00:1f.3 Audio device [0403]: Intel Corporation Sunrise Point-LP HD
-> > Audio [8086:9d71] (rev 21)
-> >      00:1f.4 SMBus [0c05]: Intel Corporation Sunrise Point-LP SMBus
-> > [8086:9d23] (rev 21)
-> >      01:00.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3
-> > Bridge [Alpine Ridge 2C 2015] [8086:1576]
-> >      02:00.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3
-> > Bridge [Alpine Ridge 2C 2015] [8086:1576]
-> >      02:01.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3
-> > Bridge [Alpine Ridge 2C 2015] [8086:1576]
-> >      02:02.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3
-> > Bridge [Alpine Ridge 2C 2015] [8086:1576]
-> >      39:00.0 USB controller [0c03]: Intel Corporation DSL6340 USB 3.1
-> > Controller [Alpine Ridge] [8086:15b5]
-> >      3a:00.0 Network controller [0280]: Qualcomm Atheros QCA6174
-> > 802.11ac Wireless Network Adapter [168c:003e] (rev 32)
-> >      3b:00.0 Non-Volatile memory controller [0108]: SK hynix PC300 NVMe
-> > Solid State Drive 512GB [1c5c:1284]
-> > 
-> > As this is logged as an error, can this be fixed somehow?
+
+Am 22.01.24 um 13:38 schrieb Baolu Lu:
+> On 2024/1/19 22:45, Paul Menzel wrote:
+>>
+>> On a Dell PowerEdge T640, Linux 5.9 and 6.6.12 warn about kdump:
+>>
+>>      [    2.728445] DMAR-IR: IRQ remapping was enabled on dmar6 but we are not in kdump mode
+>>      [    2.736544] DMAR-IR: IRQ remapping was enabled on dmar5 but we are not in kdump mode
+>>      [    2.744620] DMAR-IR: IRQ remapping was enabled on dmar4 but we are not in kdump mode
+>>      [    2.752695] DMAR-IR: IRQ remapping was enabled on dmar3 but we are not in kdump mode
+>>      [    2.760774] DMAR-IR: IRQ remapping was enabled on dmar2 but we are not in kdump mode
+>>      [    2.768847] DMAR-IR: IRQ remapping was enabled on dmar1 but we are not in kdump mode
+>>      [    2.776922] DMAR-IR: IRQ remapping was enabled on dmar0 but we are not in kdump mode
+>>      [    2.784999] DMAR-IR: IRQ remapping was enabled on dmar7 but we are not in kdump mode
+>>
+>> Looking through the logs, this only happens when using kexec to 
+>> restart the system.
 > 
-> This appears to be a platform problem. The hidden device (f0:1f.0) is
-> not visible to the OS, so no driver can program the interrupt remapping
-> table for the device's interrupts.
+> The code that warned this is,
+> 
+>   599         if (ir_pre_enabled(iommu)) {
+>   600                 if (!is_kdump_kernel()) {
+>   601                         pr_warn("IRQ remapping was enabled on %s but we are not in kdump mode\n",
+>   602                                 iommu->name);
+>   603                         clear_ir_pre_enabled(iommu);
+>   604                         iommu_disable_irq_remapping(iommu);
+>   605                 }
+> 
+> The VT-d interrupt remapping is enabled during boot, but this is not a
+> kdump kernel.
+> 
+> Do you mind checking whether the disable interrupt remapping callback
+> was called during kexec reboot?
+> 
+> 1121 struct irq_remap_ops intel_irq_remap_ops = {
+> 1122         .prepare                = intel_prepare_irq_remapping,
+> 1123         .enable                 = intel_enable_irq_remapping,
+> 1124         .disable                = disable_irq_remapping,
+> 1125         .reenable               = reenable_irq_remapping,
+> 1126         .enable_faulting        = enable_drhd_fault_handling,
+> 1127 };
 
-The hidden device has been identified as the IO-APIC. It is visible
-and properly declared to use 0f:1f.0 in the DMAR table.
+Is there a way to check this without rebuilding the Linux kernel?
 
-     regards  Christian
+Do you have access to server hardware and are able to test kexec?
 
+
+Kind regards,
+
+Paul
