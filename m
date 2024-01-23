@@ -1,137 +1,114 @@
-Received: from smtp2.tecnico.ulisboa.pt (smtp2.tecnico.ulisboa.pt [193.136.128.22])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AC8E7FBB5;
-	Tue, 23 Jan 2024 18:44:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.136.128.22
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FBB482D65
+	for <iommu@lists.linux.dev>; Tue, 23 Jan 2024 19:45:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706035492; cv=none; b=AXfwBfCT+MmEko6kaJ0iJsgqlNYYrMlg8ui9xHf/MM1lTFVJ3LE9XLm0YfeLgX5EzK9T+/izsrOv60I9OGpz9DczXJXfefjCNmNg/Te9LPCnMQlQIOwW5iouiM8zftCIZeEHItrCeSFajnGNoleYXUg/AVXxWnaJGHLfVuosxX8=
+	t=1706039125; cv=none; b=O+1XcyAZw9S6QLSOmcxJidiqcZyPUab+fXMp2DIzwELQqg1+hq0qkm1N2RwMH3+dIKzZNLT7v/IEf52WZlIDf6RTix8p44gVKcBI0HtjBSTQewwsmJ5w+aLrXyYpEJ2DTVEnx2Ew2qBWN0zJyD3lm1RpgEo4WLQwH0GJnAm2blI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706035492; c=relaxed/simple;
-	bh=1GQUsvqnD7ki3+q+Mte4ST6dHAMYoyOeCXJ4KSZA/IA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=s2UQcQL+dHgEo779NDzYdlNafGTZ/eQ6fCU7YdhNJxGZNz18xWsEWN5schzgYzD5HL9Qdf50/f8yj3JYQQmXxGBd15s+1UWgkAc8XoOuUVIenmqSkN2KzJp2ro+CMUa0CytR6PB/LUoETuN9MRhE0OQsyC+e58F/W/ZbMeUtF+I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tecnico.ulisboa.pt; spf=pass smtp.mailfrom=tecnico.ulisboa.pt; dkim=pass (1024-bit key) header.d=tecnico.ulisboa.pt header.i=@tecnico.ulisboa.pt header.b=IcvNrLTf; arc=none smtp.client-ip=193.136.128.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tecnico.ulisboa.pt
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tecnico.ulisboa.pt
+	s=arc-20240116; t=1706039125; c=relaxed/simple;
+	bh=eNJqhlR1mz1XoQIjA0PMEXMtohRUtBsqnl5wrTcpQE0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=a1jp5rLsS2qvhjiCdn0rmZkch4dBkdEeHPQ27hVITT/lW26WPRXZuMMunO5A8qwUBgPWljusuHewf8t56TDzDEySi32rA4UTAvBwPDHyPpXtjeI0AGnyKO+fq9Fo/9ycqMDKeRC6cGWyhdFb/r+njq+qVb6W4pBU+cy6yaYdPb4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=F7vIajqc; arc=none smtp.client-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=tecnico.ulisboa.pt header.i=@tecnico.ulisboa.pt header.b="IcvNrLTf"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by smtp2.tecnico.ulisboa.pt (Postfix) with ESMTP id 27B5B2454AD;
-	Tue, 23 Jan 2024 18:44:47 +0000 (WET)
-X-Virus-Scanned: by amavis-2.13.0 (20230106) (Debian) at tecnico.ulisboa.pt
-Received: from smtp2.tecnico.ulisboa.pt ([127.0.0.1])
- by localhost (smtp2.tecnico.ulisboa.pt [127.0.0.1]) (amavis, port 10025)
- with LMTP id KaZPH6XeHymn; Tue, 23 Jan 2024 18:44:44 +0000 (WET)
-Received: from mail1.tecnico.ulisboa.pt (mail1.ist.utl.pt [193.136.128.10])
-	by smtp2.tecnico.ulisboa.pt (Postfix) with ESMTPS id 44DC024546D;
-	Tue, 23 Jan 2024 18:44:44 +0000 (WET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tecnico.ulisboa.pt;
-	s=mail; t=1706035484;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=av4xgo/FzhL82OIN/3Jo0uMARulxHMhiAFEqBnLnyD8=;
-	b=IcvNrLTfYzTStmDeWDPj6nrwFeNkBKfqyqOR/fZH9PL97AB62mImdHGw/f6WKSSxThN7tf
-	WghnsRbOvMcfy+vN24BSBspHo99k3OuTdijaK6TXlMEAfQrio2fjcQBAN6KuDJ7rphRpUq
-	/XvxDxpzZG1KtFQqTmnb3eRcmb5pZ7M=
-Received: from [IPV6:2001:8a0:7ae3:e700:a921:1147:531c:b1e7] (unknown [IPv6:2001:8a0:7ae3:e700:a921:1147:531c:b1e7])
-	(Authenticated sender: ist187313)
-	by mail1.tecnico.ulisboa.pt (Postfix) with ESMTPSA id D917136007B;
-	Tue, 23 Jan 2024 18:44:42 +0000 (WET)
-Message-ID: <1754c86c-704e-4c80-93c3-1b75a9a247df@tecnico.ulisboa.pt>
-Date: Tue, 23 Jan 2024 18:44:42 +0000
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="F7vIajqc"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-3392d417a9fso1886841f8f.1
+        for <iommu@lists.linux.dev>; Tue, 23 Jan 2024 11:45:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1706039122; x=1706643922; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=i7dwQrVQjuGrZ7V6sgd9fGyyi43Z5qftzJ/GAk7ai4s=;
+        b=F7vIajqc7lhWGaBMq+UOyAW+U+uW+GjFzcHaC/bWBAsWdVr/27wVOOlqKUIsK3TRWq
+         41Dlv8Gh/bLQz2jRi7cKKMWDqLd2lQhFU78Eogput0DtY3MYJPnfDduaNOsUmn23chXP
+         CI515f1mDz1eZ/5winor9qTl2YmvImtsfDq0XB7p2kqnzDXk0AmLH5kwR6wD0pz3QXke
+         KCw3MOxQMU0kknZEyjr01QjdSOYnBbwGXHRve+Fe77O2HUEtsp+sSYxTh995nWxf8ezd
+         ENpi2CA6aSB4OOivJS/xel7RVfCOsA20SbGnVkRlh4VU3PsSAFlYlSFgTGVneWp7mQZR
+         DvoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706039122; x=1706643922;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=i7dwQrVQjuGrZ7V6sgd9fGyyi43Z5qftzJ/GAk7ai4s=;
+        b=um9ljk3wu+KvyejqBpjY+dyU0XtwxzTJr2yy1Oh6zWHmrULd3UDmwe9rUZxM+ql0A+
+         j44RFUuSDYcPtmPmO57q9iuCIosUtFd+swLGYAdjOaoD2J6Yorpav7uGQ2iY0zDruzo4
+         CNiZrqyCEcr3GkLoL1ATsJnHSfnin2KlfqaBVbcpNdFdB7weh57mwosSE4ihSQ6/MzCo
+         +/DplEkEvYaLjJbnYYrxiipF14JhTGjk8Zt0AcCRnI1ZsNDn6YAV/Pvr1YjznEo7LaoS
+         uulTqEtptyzL73ebOKLDJta5B4mb+RYg/ycjdZvayYpehRrcvNvcwNYZ/TqHvOegv7Bc
+         16pA==
+X-Gm-Message-State: AOJu0YyitPuncdeRrq7ZgnbJHczSfEbd08f2QbAv79Uue/bR2G5AVj8z
+	8ZohproHrY51dk1Z/IHI1xK467OxoVvuhgX7/QDPZfwIGtUJ04hgQwpUEK8V3xc=
+X-Google-Smtp-Source: AGHT+IHSC3czTD9DuPppBHvZE6fNTJXWMdah36NgM0rGQW3ZtaCxIuIBOl7kJLUASIBgn4YRMx4xaw==
+X-Received: by 2002:adf:f2c5:0:b0:337:c4ea:3023 with SMTP id d5-20020adff2c5000000b00337c4ea3023mr3144642wrp.38.1706039121651;
+        Tue, 23 Jan 2024 11:45:21 -0800 (PST)
+Received: from myrica ([2.221.137.100])
+        by smtp.gmail.com with ESMTPSA id b1-20020a5d4b81000000b0033920dfd287sm11958305wrt.19.2024.01.23.11.45.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jan 2024 11:45:21 -0800 (PST)
+Date: Tue, 23 Jan 2024 19:45:30 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Mostafa Saleh <smostafa@google.com>
+Cc: maz@kernel.org, catalin.marinas@arm.com, will@kernel.org,
+	joro@8bytes.org, robin.murphy@arm.com, james.morse@arm.com,
+	suzuki.poulose@arm.com, oliver.upton@linux.dev,
+	yuzenghui@huawei.com, dbrazdil@google.com, ryan.roberts@arm.com,
+	linux-arm-kernel@lists.infradead.org, kvmarm@lists.linux.dev,
+	iommu@lists.linux.dev
+Subject: Re: [RFC PATCH 24/45] KVM: arm64: smmu-v3: Setup stream table
+Message-ID: <20240123194530.GA40099@myrica>
+References: <20230201125328.2186498-1-jean-philippe@linaro.org>
+ <20230201125328.2186498-25-jean-philippe@linaro.org>
+ <CAFgf54qcTAru0Nvy1wH_tJMadOSW7Y3zEip5RTm+mtSa54Bymg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [REGRESSION] Failed buffer allocation in Tegra fbdev
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: thierry.reding@gmail.com, vdumpa@nvidia.com, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, jonathanh@nvidia.com,
- baolu.lu@linux.intel.com, jsnitsel@redhat.com, jroedel@suse.de,
- linux-tegra@vger.kernel.org, iommu@lists.linux.dev,
- regressions@lists.linux.dev
-References: <bbmhcoghrprmbdibnjum6lefix2eoquxrde7wyqeulm4xabmlm@b6jy32saugqh>
- <20240123151508.GR50608@ziepe.ca>
-Content-Language: en-US
-From: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
-In-Reply-To: <20240123151508.GR50608@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFgf54qcTAru0Nvy1wH_tJMadOSW7Y3zEip5RTm+mtSa54Bymg@mail.gmail.com>
 
+Hi Mostafa,
 
-On 1/23/24 15:15, Jason Gunthorpe wrote:
-> On Tue, Jan 23, 2024 at 02:33:15PM +0000, diogo.ivo@tecnico.ulisboa.pt wrote:
->> Commit c8cc2655cc6c in the recent IOMMU changes breaks Tegra fbdev
->> at least on the Pixel C with the following error message reporting
->> a failed buffer allocation:
->>
->> [    1.857660] drm drm: failed to allocate buffer of size 18432000
->>
->> This error message is printed from tegra_bo_alloc() which is called by
->> tegra_bo_create() in tegra_fbdev_probe(), which may indicate that other
->> allocations would fail as well, not just the framebuffer.
-> Presumably this is because iommu_map_sgtable() under
-> tegra_bo_iommu_map() fails?
->
-> Which I suspect is because of the logic in
-> host1x_client_iommu_attach().
->
-> After c8cc2655cc6c iommu_get_domain_for_dev() will never return NULL.
->
-> So this:
->
-> 	if (domain && domain != tegra->domain)
-> 		return 0;
->
-> Will happen and the domain will be left at IDENTITY, while I suppose
-> the tegra_bo_iommu_map() assumes the domain was switched to tegra->domain.
->
-> Does this solve your issue?
->
-> diff --git a/drivers/gpu/drm/tegra/drm.c b/drivers/gpu/drm/tegra/drm.c
-> index ff36171c8fb700..15c7910b2e1c76 100644
-> --- a/drivers/gpu/drm/tegra/drm.c
-> +++ b/drivers/gpu/drm/tegra/drm.c
-> @@ -960,7 +960,7 @@ int host1x_client_iommu_attach(struct host1x_client *client)
->           * not the shared IOMMU domain, don't try to attach it to a different
->           * domain. This allows using the IOMMU-backed DMA API.
->           */
-> -       if (domain && domain != tegra->domain)
-> +       if (domain && domain->type != IOMMU_DOMAIN_IDENTITY && domain != tegra->domain)
->                  return 0;
->   
->          if (tegra->domain) {
->
->> This may be connected with an error in of_iommu_configure() that
->> became visible after commit 6ff6e184f1f4d:
->>
->> [    1.200004] host1x drm: iommu configuration for device failed with -ENOENT
-> Hmmm
->
-> This is a new logging, so it doesn't necessarily mean something has
-> changed in the code flow.
->
-> It seems the issue is something in there is returning ENOENT when it
-> probably should be ENODEV, but I haven't been able to guess where it
-> comes from.
->
-> Can you do some tracing and figure out where under
-> of_iommu_configure() this ENOENT return code is from?
->
-> Jason
+On Tue, Jan 16, 2024 at 08:59:41AM +0000, Mostafa Saleh wrote:
+> > +__maybe_unused
+> > +static int smmu_sync_ste(struct hyp_arm_smmu_v3_device *smmu, u32 sid)
+> > +{
+> > +       struct arm_smmu_cmdq_ent cmd = {
+> > +               .opcode = CMDQ_OP_CFGI_STE,
+> > +               .cfgi.sid = sid,
+> > +               .cfgi.leaf = true,
+> > +       };
+> > +
+> > +       return smmu_send_cmd(smmu, &cmd);
+> > +}
+> > +
+> I see the page tables are properly configured for ARM_SMMU_FEAT_COHERENCY but no
+> handling for the STE or CMDQ, I believe here we should have something as:
+> if (!(smmu->features & ARM_SMMU_FEAT_COHERENCY))
+>         kvm_flush_dcache_to_poc(step, STRTAB_STE_DWORDS << 3);
+> 
+> Similarly in "smmu_add_cmd" for the command queue. Or use NC mapping
+> (which doesn't exist
+> upstream as far as I can see)
 
-Yes, this does fix the issue!
+Right, the host driver seems to do this. If I'm following correctly we end
+up with dma_direct_alloc() calling pgprot_dmacoherent() and get
+MT_NORMAL_NC, when the SMMU is declared non-coherent in DT/IORT.
 
-As for the -ENOENT I will do the tracing and get back with the results.
+So we'd get mismatched attributes if hyp is then mapping these structures
+cacheable, but I don't remember how that works exactly. Might be fine
+since host donates the pages to hyp and we'd have a cache flush in
+between. I'll have to read up on that.
 
+Regardless, mapping NC seems cleaner, more readable. I'll see if I can add
+that attribute to kvm_pgtable_hyp_map().
 
-Thank you for your time,
-
-Diogo
-
+Thanks,
+Jean
