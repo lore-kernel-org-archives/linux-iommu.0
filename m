@@ -1,183 +1,158 @@
-Received: from mx0b-0064b401.pphosted.com (mx0b-0064b401.pphosted.com [205.220.178.238])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8EC375733D;
-	Tue, 23 Jan 2024 16:58:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.178.238
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706029121; cv=fail; b=i51Vm//pwKWof4NOzkAtkN7ii343y1iDz361iidCH+SXncqv3qKTI5IhObi6XX8rTy/Z1Ykklon10ts42t8ASYMLCBT0vrIbtIq7CdpBmEwLsS6OCMFsn//U8rLPwHl32WvXe1pnVRP2rrKBaA88fMjRAbGdFrGxsfn8WneZtCQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706029121; c=relaxed/simple;
-	bh=CQiCnAxw1xDXewOhwWsa9qehGPz5SGyAJIcjvko12ok=;
-	h=From:To:Cc:Subject:Date:Message-Id:Content-Type:MIME-Version; b=WsIxq5bBYs1Dg8zLWYyZlht7I9c5NrvZK7McRauHfS7KAusYJpqwkSa4kuo5Vx5p7mIunlaTn837e1DQLi04BiXQE/7XJWTSDe6M5zz6ZUKs0NUEQ9bcacWWQyfK+kmJL4zlanamluCe++UM15vk5HEo0k3NX/dICWjMraTcS4M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com; spf=pass smtp.mailfrom=windriver.com; dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b=b2CMzWLR; arc=fail smtp.client-ip=205.220.178.238
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=windriver.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08C8B823A9
+	for <iommu@lists.linux.dev>; Tue, 23 Jan 2024 17:49:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706032150; cv=none; b=kjTjPj69kTr2teDdBf0mUs4/WcH+tsUKi0gw52IFoqbwOoL1M4bct4cNUlnvyROBTPPmgG2UdGKyE4vxEBANdvzseEphnlYJywtNLVtXy16stp1qa0OSA5u4AB76Up8/Xtmuor4Dk0N8Zn9e9jGLSsTBWv2WMOzovhZ4v0Ir2Mw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706032150; c=relaxed/simple;
+	bh=ldYuq7Lt/RjB+rbs9K+UJX/SUyAcwFnHAk8K23hdMB8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fpprgbFjrIyzW5OSDmlAuLQW4nv0YVVyhmVnBYJFEvN5tTmPZJ7xKdVCFoir3pogKpNE0hTMtGwg+jZCdn+SZUPZ8betRURvsapafaT5eZmH8cjXV2+s9+IqqELikNO3Klm+whoXrk5nAMTSmEtm4G2c1wtFcSr3hp4vvFIPDLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=BY2tLo1G; arc=none smtp.client-ip=209.85.161.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b="b2CMzWLR"
-Received: from pps.filterd (m0250812.ppops.net [127.0.0.1])
-	by mx0a-0064b401.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40N3fC8g011365;
-	Tue, 23 Jan 2024 16:58:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com;
-	 h=from:to:cc:subject:date:message-id:content-transfer-encoding
-	:content-type:mime-version; s=PPS06212021; bh=PgpiAsCyPf7QfY4KVH
-	XMKIX8PHx94TGuao87xzS9gn8=; b=b2CMzWLR1soylWsTTgTcCyylI4D5kR4kim
-	8p0X+dytWmCA2/UIZM5LREOt4hzEkmpr3GQAWHH5nWdNXp8SbTwi6+cJAdO4Z61d
-	3YHDmivRUI+gJ7Qacdo1Ir/YOwTIzx1bs9muTM/E541CJuZXXcSSOCQN6AVuINDP
-	SnpZjqcClUUTI4tDZizFpJjhlpokuT3X1TM4NIqzlLu1JVp9JuQFl9wHl8zDpSa8
-	Giz+lsCEaGQ7nWTAm1FsAOemm7MDQU85zBoy1q8+kBD22Ilf7SKnLdOykhUjW3St
-	y4IFwal0D+TJYkWd5QoXhMGo+hpjUo4gUtqXoFyF6I7KQ1SJivjw==
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2168.outbound.protection.outlook.com [104.47.57.168])
-	by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3vr5573mec-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 23 Jan 2024 16:58:15 +0000 (GMT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BLTLKbOB8hWx/RdN033IAOrrkMUN7SCeSHTD8UyODkrXb/Wv0/+Xqrt7LOHIe/xfpIqQi1D5YjFXYXeiP2QD42T3eEc6hatEWsGVC8qdBgz5jK+viusmhlEINct+OoN7e228WrdGBnPJMoO26bhxowX41IV5OjaxIqYD5X+BqiXhbHcaSBpsCVDQzPyUG/OHDov7fqjUFT1oFbHH/5hk7uzDtNttuxy6CQTNfS1SPIocbtGL121tALnunNaDU+fokhej9glYbKjEIWygkQRfXblJoHnltFEL5jj7qDk1jk/JA/YNM16GJIN3Tj5UbvQZBq//hNBjpmmalvaSXNcw/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PgpiAsCyPf7QfY4KVHXMKIX8PHx94TGuao87xzS9gn8=;
- b=VChOY839FXYjQS93aVmKhTK/9Ys5umWRcqMIVIj7zzZJtx8pvcP0Iy54tDMS5RieS8NI7aFLow8U/DgsHf5wiZUNJZZ0XUueI9+zPsGaGchdCMKWTsgEIWRSlKpcCg55ofqf4kbu51MOo0p+K/NAWUlncPWFphlxX4aTzYovWs2G3DMneDGWuAI4vK4a5OnFu2vv9vs9pHsK0No3xa1GRbkLEtnMgbNqCNO51Pnwe83oX7ycXvjgBFUAi8fw9j7eHJLnw/v9EwA/siFwoRY/oUw2oMDozfzsBrSVW/ORdppNbiNl4XFUUbM9e6fZwjgA8RuiQ/mnffizgiYZiCvJYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-Received: from DM4PR11MB5327.namprd11.prod.outlook.com (2603:10b6:5:392::22)
- by DM6PR11MB4673.namprd11.prod.outlook.com (2603:10b6:5:2a4::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7202.37; Tue, 23 Jan
- 2024 16:58:12 +0000
-Received: from DM4PR11MB5327.namprd11.prod.outlook.com
- ([fe80::7c2e:5b95:fdc2:30e]) by DM4PR11MB5327.namprd11.prod.outlook.com
- ([fe80::7c2e:5b95:fdc2:30e%3]) with mapi id 15.20.7202.035; Tue, 23 Jan 2024
- 16:58:12 +0000
-From: ovidiu.panait@windriver.com
-To: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Cc: robin.murphy@arm.com, will@kernel.org, joro@8bytes.org, jgg@ziepe.ca,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH] iommu: iommu_group_alloc_default_domain: Fix ops->default_domain codepath
-Date: Tue, 23 Jan 2024 18:58:29 +0200
-Message-Id: <20240123165829.630276-1-ovidiu.panait@windriver.com>
-X-Mailer: git-send-email 2.34.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR04CA0048.eurprd04.prod.outlook.com
- (2603:10a6:802:2::19) To DM4PR11MB5327.namprd11.prod.outlook.com
- (2603:10b6:5:392::22)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="BY2tLo1G"
+Received: by mail-oo1-f48.google.com with SMTP id 006d021491bc7-58e256505f7so2305326eaf.3
+        for <iommu@lists.linux.dev>; Tue, 23 Jan 2024 09:49:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1706032147; x=1706636947; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=fWjeJyn0CywpF872L1BG3qw+k7bbvDqxkePP+937fmU=;
+        b=BY2tLo1GEz7tOvrRN3or7kxqAXZ9i6GiKHvCG3Z8fhRsCcl5zEfhlJg9uRnmmzOMYP
+         NFZCyrgeLFPNotGpJFmBvhy38FFM86WsoQaK6cEMPk6JX//d8ALjDou7sWJsJ3Ed4Kwn
+         OEbkNwUiSdcwsZ0DCZ99AHRqdknqfEbpRkY5qXA1XrGgR7AGOJqDUPQqXy+wU0E2QWUG
+         g05CrkKXCblzVqvGSr5130E06brroKHQg++26kGCXXpT/N0W3gngpfLfZVFGFqqDsfKI
+         S3Qm4Lagg5lmdrcfxi6hxyPm7soYCs6mYdHxHgScuucCtVq1JCMN3HtksyXZ7BgYRJnI
+         SRmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706032147; x=1706636947;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=fWjeJyn0CywpF872L1BG3qw+k7bbvDqxkePP+937fmU=;
+        b=HzVQEOSOkuQbuG5goRsS1uk7tRC259cQASKeFrhekasEObRUUQxmhDNcn3dEcq3ar1
+         S2RwN5W4inAZOLGDLudb6Q2NB6SbmtdpUl/TbIsYDNKqTiaZ4byvgpIFZBZ4I38SWwJK
+         sYpIytrgHLfiyXE0LjnYBywgxxb/vAnxB+ZnZWIeV//gxLYuy8/GQmfko2PrA2PPSWZp
+         7EtMi3POzOIpAfnJQn8J798mMJtN1GRPY+QemKptC7xS9oDhLMLBUQ0Vgb7EAW+yDr7X
+         fbVGMaS/fg/KAHwYBdfa07XnPw9HXKy1Tx7knFHQC8cVtXey0ke0GxjDs/VAeHGijBH2
+         UJJA==
+X-Gm-Message-State: AOJu0YyB7Fixc2qR9d7W+K0kPCWERVPtRSiPPQRchWbYf6ruZVI+20wr
+	nqn5H1XDVWQiRpe6JAwLlowSDN9+XOBBWEQXfTumA8T2vsitecJTMdZdFkOH/CY=
+X-Google-Smtp-Source: AGHT+IH6W3JG0GancI79tmoYyAsVmtzeInW8Ee9IwcjHB86NWQplVJmmV+pUrWxeClqJMK0CoA4W/g==
+X-Received: by 2002:a4a:d00b:0:b0:599:b548:e5f6 with SMTP id h11-20020a4ad00b000000b00599b548e5f6mr275607oor.4.1706032146980;
+        Tue, 23 Jan 2024 09:49:06 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id h6-20020a4ad746000000b00599aa7f4d79sm223882oot.8.2024.01.23.09.49.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 23 Jan 2024 09:49:06 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rSKtV-008KJy-7z;
+	Tue, 23 Jan 2024 13:49:05 -0400
+Date: Tue, 23 Jan 2024 13:49:05 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: ovidiu.panait@windriver.com
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	robin.murphy@arm.com, will@kernel.org, joro@8bytes.org
+Subject: Re: [PATCH] iommu: iommu_group_alloc_default_domain: Fix
+ ops->default_domain codepath
+Message-ID: <20240123174905.GS50608@ziepe.ca>
+References: <20240123165829.630276-1-ovidiu.panait@windriver.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM4PR11MB5327:EE_|DM6PR11MB4673:EE_
-X-MS-Office365-Filtering-Correlation-Id: 67a91ff2-739d-41ff-5458-08dc1c347ba5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	rKruvXK+aBmxToO145Jp90vUhcI8/ro8Lr8XyD7L4oOr/uv8gCjR0Q+uBkeignve3jqEJKkZa2ePWU19fTfpLZaZBdU++UprQ9OVOU8R9tXlv4AuH5s+ST74GLBzWGdZInwK8/skqW7L5bHlcEzvvb7yH7GVLpUxGmrVxl6k3nbVSIfHeeAxJ7HEqiG+EeJapg9ExJyhyRP3jEWUOz5LoTDanp99spPoxF3UTXrJGAG0Heb9iTdP1yYtQukuhIez61FqReFeyReJ8dthbwlXNTmQPxBgh/otmHMn4PRou9ymQkV63ao4FBGoHjKXk1WBAuKgadFkD2RYExp+OG78j9UtSAlDtQ/23oPFDW3QUeyznJJ7fxc8lbSI1+i9ITtx7NKisor3a1AqIJWKgVNX4Zg9xk+pbE0zeUVSpr5Q3JBd/cx/8gsu7XsGedLrPZB6XdC7gZ60ydzY37V4EGUByX0QyrSvqVhg29IPhte5HgGP7urLZyLfpwUpRsr8EjaAigNwx5fC55jmedEF+ZVz/i9P2fSjqMJ6yhhcLx9lnZhmuKD1aQ5UBdAicAd79rgEZnypqwaS/29DRYNtjIftxKOt7nMTu6jWG//3PjS6czo=
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5327.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(39850400004)(396003)(136003)(376002)(346002)(230922051799003)(451199024)(1800799012)(64100799003)(186009)(66946007)(66476007)(316002)(66556008)(36756003)(38350700005)(6486002)(4326008)(8676002)(38100700002)(8936002)(86362001)(52116002)(26005)(6506007)(478600001)(6512007)(9686003)(1076003)(2616005)(6666004)(83380400001)(107886003)(41300700001)(5660300002)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?us-ascii?Q?B8Sv03r8R8xOS/ZFFJvqyTcH5S2KQqn/o+RIMbYVnbG3wxYdsVVO2PLyYry1?=
- =?us-ascii?Q?oBVjGx3/bWm/OSYbAQqDiYjGpeE/1ltDfhCKJLw1sQ1Wv9uvnrHd5vWGtTKn?=
- =?us-ascii?Q?GdvjAagaacEYK8AC1AqdmQ+bD776kFyQj72rY2nlSJL8bmQNopCT2e+IFJJY?=
- =?us-ascii?Q?QU0FtAoM4vVUMcatuKP9nly9hYlkAUaZnqZjmJ8Ny3I0GAk0LdJGsuK43dxm?=
- =?us-ascii?Q?JSHoTsrRi5g/MfMeXXygQEfs0Q+LkzORKlaOkd+Dohl0zhoIoLadt0n4WpVi?=
- =?us-ascii?Q?AES5miDiRwez4gMv69YBn2KmzsC03B98YWrn03pydreGqwPYsHPJyYpHtdf4?=
- =?us-ascii?Q?4q0B7GSh6ccb4Pw95vy2l8ByaD2zpIVeYZ86IIEu53V2yzqsufbpt/n2SGRC?=
- =?us-ascii?Q?Vyv6kiC9BVHDU5sEEO0MwrmQwwAPgOrLj7gLXj5I1IvpREZWVn3tGJwcf2No?=
- =?us-ascii?Q?HUEWuTqNgDaynBVl8he5whnUA14Uva3SqYE+x7fv3ha2qZX2WsIaKnHVkVjr?=
- =?us-ascii?Q?67UC6atKEk4l3Cc+Z2xOfc16vZxpJmYFq+BtV8jXDLsW3FHL+FLVn0tmN5jW?=
- =?us-ascii?Q?JbOezlL3QPCQh2eDmUFKNwyyWZSVCAOjJY0XxN/kftFzP9NkyJ9r0rMKaToZ?=
- =?us-ascii?Q?i3zG1FSqnYXiUCargZiDyv6UWy8E2UtuLsetaoPhQiIMLqPgAQHx71K6n5gc?=
- =?us-ascii?Q?NpImvHxVrE/J9KOZOFer2EwTxnO++S42fbZ283+R3b93zhiCv20rXFeinH6l?=
- =?us-ascii?Q?Nymm2rxLk7VM5BRUy5O/O2uFEVNlgFSG9dtxAhhqN9QidaxnAKbNz3Cm75ar?=
- =?us-ascii?Q?ufomMx9YzHm9AUN3sGsG5LG7vgbFQO0pGCM3UqVNWGkNMcVo9coWuTH5Fkjm?=
- =?us-ascii?Q?2JdtEShZD9WdiN7u2exadEPGKCo5I40NIz9y0SwPnabciYC1GVW6lV7IpziQ?=
- =?us-ascii?Q?dISlbGZb30N7TvTQP6+XQKrQ606Yf4hlIdTnl85vX1rQWotY+ENN4zA+2Ptp?=
- =?us-ascii?Q?8WqB9JDpZATo2xcvSJ6R8ApkRladrlN1WFTkwX562FCt8uV4kSa8IBcRLAwM?=
- =?us-ascii?Q?a9xOvBlB9gTlPa0SZzRALnh6H2arlmtou0q96SjWPAgCHw9wh8pOgKFkLk3W?=
- =?us-ascii?Q?viohKCVukvwTHNtAgqRBEwFyM6sDpaAM6fbXHwFlp2c1FplFAUSYpQU/HjBE?=
- =?us-ascii?Q?WXIHjTVizUCSCHQwGb9DkEEz/M9xQqATEnrbhq1WzUl8KHIJxYlTil9ia4et?=
- =?us-ascii?Q?LcmQNESs+rfXERNpcIhH2H5IAbkWo4FxkV0p2VuozcFfeV7B5g8mAn+vPZNL?=
- =?us-ascii?Q?AMen171SynFYZLD1qxjqATQgcMPLJog9KS5E+Pyum78PiajB91v59g68cbQS?=
- =?us-ascii?Q?YVKGv81IXnQCMrjMpgZCvR/tGOBxZV0N57u99zcM90Jqxp0QpMBxvoghB0ZW?=
- =?us-ascii?Q?MmNfC3S2rH86IJLqiY58HZkftpPCNc51DSub2dVLisnOtvOOfAgc6BJEb13d?=
- =?us-ascii?Q?BJhFFF0qhw4j8zcgTUoFEul2gTSIIUWU409uNxVDv3X4564npNwpon6MfqNY?=
- =?us-ascii?Q?DflZeZFiyrjmPClewZZHzat8nxZsPCBodU+AojIBJDWBI7IX0msqhG5IADGe?=
- =?us-ascii?Q?MQ=3D=3D?=
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67a91ff2-739d-41ff-5458-08dc1c347ba5
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5327.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jan 2024 16:58:12.0793
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LiIex2dwKUaCEUB8/jR4EOMo4iBSJjRt+WPysJcv5GlqZh/aRz4enp9/KHWUbTNoqznisPlFUxeuRXFVJJc7Sa5frlWwm1tnA+JUValtdQw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4673
-X-Proofpoint-GUID: Gk2lxkVcu14qDdMBdgsZpSoSfN80qxHV
-X-Proofpoint-ORIG-GUID: Gk2lxkVcu14qDdMBdgsZpSoSfN80qxHV
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-01-23_09,2024-01-23_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxscore=0
- mlxlogscore=906 adultscore=0 malwarescore=0 spamscore=0 suspectscore=0
- priorityscore=1501 phishscore=0 clxscore=1011 impostorscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2311290000 definitions=main-2401230124
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240123165829.630276-1-ovidiu.panait@windriver.com>
 
-From: Ovidiu Panait <ovidiu.panait@windriver.com>
+On Tue, Jan 23, 2024 at 06:58:29PM +0200, ovidiu.panait@windriver.com wrote:
+> From: Ovidiu Panait <ovidiu.panait@windriver.com>
+> 
+> Since commit [1], FSL_PAMU initialization on t4240rdb board fails
+> with: "fsl-pamu-domain: pamu_domain_init: Can't register iommu device".
+> 
+> Commit [1] changed the behavior for drivers that set ops->default_domain,
+> as the function iommu_group_alloc_default_domain() is now called with
+> "req_type == IOMMU_DOMAIN_IDENTITY", rather than "req_type == 0". This
+> causes the following EINVAL condition to be hit during FSL_PAMU
+> initialization:
+>   ...
+>        if (ops->default_domain) {
+>                if (req_type)
+>                        return ERR_PTR(-EINVAL);
+>                return ops->default_domain;
+>        }
+>   ...
+> 
+> To avoid this issue when ops->default_domain != NULL, remove the check for
+> non-zero req_type and always return the proper default domain, as set in
+> the driver.
+> 
+>   [1] 0f6a90436a57 ("iommu: Do not use IOMMU_DOMAIN_DMA [...]")
+> 
+> Fixes: 0f6a90436a57 ("iommu: Do not use IOMMU_DOMAIN_DMA if CONFIG_IOMMU_DMA is not enabled")
+> Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+> ---
+>  drivers/iommu/iommu.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
 
-Since commit [1], FSL_PAMU initialization on t4240rdb board fails
-with: "fsl-pamu-domain: pamu_domain_init: Can't register iommu device".
+Oh, that is a neat combination of things
 
-Commit [1] changed the behavior for drivers that set ops->default_domain,
-as the function iommu_group_alloc_default_domain() is now called with
-"req_type == IOMMU_DOMAIN_IDENTITY", rather than "req_type == 0". This
-causes the following EINVAL condition to be hit during FSL_PAMU
-initialization:
-  ...
-       if (ops->default_domain) {
-               if (req_type)
-                       return ERR_PTR(-EINVAL);
-               return ops->default_domain;
-       }
-  ...
+Removing the test will cause problems for the sys flow - I think the
+right thing is to get the correct req_type earlier. paml wants to use
+a specific domain type so it should not be switching to identity at
+all.
 
-To avoid this issue when ops->default_domain != NULL, remove the check for
-non-zero req_type and always return the proper default domain, as set in
-the driver.
+Does the below work for you?
 
-  [1] 0f6a90436a57 ("iommu: Do not use IOMMU_DOMAIN_DMA [...]")
+Also, what is your interest here? I have been wanting to delete this
+driver, would your system still be OK for your usage if it was
+removed?
 
-Fixes: 0f6a90436a57 ("iommu: Do not use IOMMU_DOMAIN_DMA if CONFIG_IOMMU_DMA is not enabled")
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
----
- drivers/iommu/iommu.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+Thanks,
+Jason
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 68e648b55767..8e79a074e560 100644
+index 68e648b5576706..7fa3ccdc3286e6 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -1798,11 +1798,8 @@ iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
- 	 * domain. This should always be either an IDENTITY/BLOCKED/PLATFORM
+@@ -1799,7 +1799,7 @@ iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
  	 * domain. Do not use in new drivers.
  	 */
--	if (ops->default_domain) {
+ 	if (ops->default_domain) {
 -		if (req_type)
--			return ERR_PTR(-EINVAL);
-+	if (ops->default_domain)
++		if (req_type != ops->default_domain->type)
+ 			return ERR_PTR(-EINVAL);
  		return ops->default_domain;
--	}
+ 	}
+@@ -1871,10 +1871,18 @@ static int iommu_get_def_domain_type(struct iommu_group *group,
+ 	const struct iommu_ops *ops = dev_iommu_ops(dev);
+ 	int type;
  
- 	if (req_type)
- 		return __iommu_group_alloc_default_domain(group, req_type);
--- 
-2.34.1
-
+-	if (!ops->def_domain_type)
+-		return cur_type;
+-
+-	type = ops->def_domain_type(dev);
++	if (ops->default_domain) {
++		/*
++		 * Drivers that declare a global static default_domain will
++		 * always choose that.
++		 */
++		type = ops->default_domain->type;
++	} else {
++		if (ops->def_domain_type)
++			type = ops->def_domain_type(dev);
++		else
++			type = cur_type;
++	}
+ 	if (!type || cur_type == type)
+ 		return cur_type;
+ 	if (!cur_type)
