@@ -1,58 +1,73 @@
-Received: from smtp1.tecnico.ulisboa.pt (smtp1.tecnico.ulisboa.pt [193.136.128.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ACF577647;
-	Wed, 24 Jan 2024 13:04:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.136.128.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17AD27C0AE
+	for <iommu@lists.linux.dev>; Wed, 24 Jan 2024 16:28:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706101462; cv=none; b=r2vwuhj6Oqh/EVvOxRsFgRw+iXQdlO4Xu8UjZfDjWQDOlydoLAFX7fUCqL37jiy8tQQDonWSqM7M/QllrW+ZzHzfelLoT4/FpMiL/S50wwM85fIQZg07Z3UxVRn6w3BF2zx050VtPzaFBoNcrw8WLJ7hJ4m7KGvdTQViR5WsCII=
+	t=1706113692; cv=none; b=TRAgf3Ks2mswXPDKueQUVi/fopSPZq/xJlWaVXf+K6G2qAgQcHVzgV8lb9CML+DEKOwuTjEA2Vybbn5DDIZTzUuFGdhrQVietm/rECVUv6qbfawH+w9IFKnfAO+rjMM5AILKAhRzJhShigld0qTJkZDm/UQ1Uw/sTBEOf12q6oY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706101462; c=relaxed/simple;
-	bh=GZkJ+QeMKJNqZBgYX+y1qwEAQJjghDN2AgFfR74bdH4=;
+	s=arc-20240116; t=1706113692; c=relaxed/simple;
+	bh=gLHkSQWpkbD1hmnLgTICPpcir4dWz8DwxnNhev1K+hc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MHJPLDgiSRdAHOYfsgEhZn2/eSutrgQYUbwoJTuQUpnFfese0/+q6YshqHZCSLc9PmzUt8fItgBT6edefs8ubNCHiYnDIGkrE1NFfmtV2YJq/1j7Xu5hDXhf5hJw/oEzuQGTCWN3FQU0PlscmkXTQdNYbw3/AHytznXu6kMXA/M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tecnico.ulisboa.pt; spf=pass smtp.mailfrom=tecnico.ulisboa.pt; dkim=pass (1024-bit key) header.d=tecnico.ulisboa.pt header.i=@tecnico.ulisboa.pt header.b=BUH732Ef; arc=none smtp.client-ip=193.136.128.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tecnico.ulisboa.pt
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tecnico.ulisboa.pt
+	 Content-Type:Content-Disposition:In-Reply-To; b=l9ozQJYyYi+neaoLbd+9NM8Ez99miL/Yaf20kfv50gOcUlmlRjYe6HG/3lxShjnzAAzTvbInW/CeOeIQ3lXlAcRtGteY6TTtxr81AvDSHa1C/g9h6ngn9wKkLHqg64HXiussgFKCcb7jJ5fjiIE1WmzmnvvCzefihRh/XvEpSx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jdDmeUka; arc=none smtp.client-ip=209.85.167.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=tecnico.ulisboa.pt header.i=@tecnico.ulisboa.pt header.b="BUH732Ef"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by smtp1.tecnico.ulisboa.pt (Postfix) with ESMTP id B20B060022F7;
-	Wed, 24 Jan 2024 12:56:55 +0000 (WET)
-X-Virus-Scanned: by amavis-2.13.0 (20230106) (Debian) at tecnico.ulisboa.pt
-Received: from smtp1.tecnico.ulisboa.pt ([127.0.0.1])
- by localhost (smtp1.tecnico.ulisboa.pt [127.0.0.1]) (amavis, port 10025)
- with LMTP id ajMDtZ95vwAa; Wed, 24 Jan 2024 12:56:53 +0000 (WET)
-Received: from mail1.tecnico.ulisboa.pt (mail1.ist.utl.pt [IPv6:2001:690:2100:1::b3dd:b9ac])
-	by smtp1.tecnico.ulisboa.pt (Postfix) with ESMTPS id 646A660022F2;
-	Wed, 24 Jan 2024 12:56:53 +0000 (WET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tecnico.ulisboa.pt;
-	s=mail; t=1706101013;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9eOQRiZQC0U4e8V4bKlkhm5RMXXl+uFAIdIpnZe1j2E=;
-	b=BUH732EfZ07SrO0LtlTr+fTBGTq+bE88F8Oz0riOwX/xxJNWOHQs9pqnWHcTMAZQHxkljc
-	aZC94hmRzp6+s2Lb2h6ItxQdvgaTXm3Gu5BozKdJ6pcDU48XfdO+zFVc5CYY1vMzECHLGh
-	IDwSVUvQdj4/V3PgivHmc6EscQAOPkU=
-Received: from diogo-gram (unknown [IPv6:2001:8a0:7ae3:e700:a921:1147:531c:b1e7])
-	(Authenticated sender: ist187313)
-	by mail1.tecnico.ulisboa.pt (Postfix) with ESMTPSA id 1EABE36008F;
-	Wed, 24 Jan 2024 12:56:52 +0000 (WET)
-Date: Wed, 24 Jan 2024 12:56:48 +0000
-From: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jdDmeUka"
+Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-3bdca4f495cso874091b6e.3
+        for <iommu@lists.linux.dev>; Wed, 24 Jan 2024 08:28:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1706113690; x=1706718490; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=KB2zplKZXZmwEaf35sIS9GHJDUJDfzr6dvv7piAnaEg=;
+        b=jdDmeUka35ichHO+Efma+fN+0vF61GusI49FxZEQWx+WyBX31FE5nR/auosZnfqhUY
+         XkAccbnNqVLtf3dl1i1tWnALP1G7oQDsTcoAlPN+x0rDIYmqIdnofEfHUEu3jGWuV6aY
+         clV9iCeVO93dV49NPKW+5u5sklwlyXf3NiTrQCtRmqwgAR/dNuFQSjIkLAdktFDg4TaE
+         /PZbrSsewFw05Q+75+T/ITffKjETra6nnz6MFAlf59z1zTPWj0RlPnVBxohF0WHh9kja
+         436MwN0iLizTPU05POaxh7kYPyTGDOC592gFIYusPPqkq/wUWPuXX2HOcSpwizMZ+UsJ
+         kiiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706113690; x=1706718490;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KB2zplKZXZmwEaf35sIS9GHJDUJDfzr6dvv7piAnaEg=;
+        b=nYncNq8lvj2+4GCdLxTqlRSScTZh6+yHerVRl6MdW06fa+9MIK58JWWI/FPJOJb7wJ
+         P98cesMk0xcd5lhbXj2tJX88zJlsm3PfIhtwIbsFx/w2KZaYv70eWrR15rCYLpRO7y3n
+         U5emGeiSSoKGQTnEasJQEwethhLkQOHpvpA5KBEGmYtPabwXgXbhrWCCKzxaYrLW8+V4
+         AS2cJXs3GQlXNtnUKEszTruoqsHsKhsFGu63DpSzyHPyUh86yFdK0WMaTADB0XQreKaS
+         iPVb5KH7Ml0UlEgv2/i3OYX9OGlRKYXi7g/iNAKPXg89Voy9pUYYj+H8wEa24MMlLjEf
+         pzRw==
+X-Gm-Message-State: AOJu0YzxhTGigNjFQIsNRTJic+EFZ8DPpdIxSSfKKKwZqbaa6rLi2E9L
+	mVpCmHwh9M9AI3ZdxshxB9MRYc6D0Gq5wW5QTBtrkUPOlkk/R2DB5FQSzm82DC8=
+X-Google-Smtp-Source: AGHT+IEi7HTUXH3vmWl30/1TUyQz5MURf/7khn5w6ICtjrdySxkJ4o7FVdQYk67VDlULKCkNAAcMjg==
+X-Received: by 2002:a05:6808:3c85:b0:3bd:36fc:1c1e with SMTP id gs5-20020a0568083c8500b003bd36fc1c1emr2302861oib.44.1706113690073;
+        Wed, 24 Jan 2024 08:28:10 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id g50-20020a0568080df200b003bdb4a17d4bsm1614959oic.16.2024.01.24.08.28.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Jan 2024 08:28:09 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rSg6i-008pwi-AR;
+	Wed, 24 Jan 2024 12:28:08 -0400
+Date: Wed, 24 Jan 2024 12:28:08 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, thierry.reding@gmail.com, 
-	vdumpa@nvidia.com, joro@8bytes.org, will@kernel.org, jonathanh@nvidia.com, 
-	baolu.lu@linux.intel.com, jsnitsel@redhat.com, jroedel@suse.de, 
-	linux-tegra@vger.kernel.org, iommu@lists.linux.dev, regressions@lists.linux.dev, 
-	diogo.ivo@tecnico.ulisboa.pt
-Subject: Re: Re: [REGRESSION] Failed buffer allocation in Tegra fbdev
-Message-ID: <r46zhd52g3w3kpu4jjca3vihmv5ahp3jcwge3rvg42dupxf2g4@p2u5mbdyypw3>
-References: <bbmhcoghrprmbdibnjum6lefix2eoquxrde7wyqeulm4xabmlm@b6jy32saugqh>
- <20240123151508.GR50608@ziepe.ca>
- <pgund4coabp5pdlmwze5o2d7ogrdncktqz267yzukjcvmikudc@7svrwdci7ujl>
- <55cab5e0-0abf-47d0-becc-05cdf1d22fac@arm.com>
+Cc: "zhangzekun (A)" <zhangzekun11@huawei.com>, will@kernel.org,
+	joro@8bytes.org, nicolinc@nvidia.com, mshavit@google.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Add a threshold to avoid potential
+ soft lockup
+Message-ID: <20240124162808.GT50608@ziepe.ca>
+References: <20240115114040.6279-1-zhangzekun11@huawei.com>
+ <20240115153152.GA50608@ziepe.ca>
+ <e74ea905-d107-4202-97ca-c2c509e7aa1e@huawei.com>
+ <20240118142243.GI50608@ziepe.ca>
+ <10c1980a-df07-4f69-93e5-c1c50b106a13@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,90 +76,27 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <55cab5e0-0abf-47d0-becc-05cdf1d22fac@arm.com>
+In-Reply-To: <10c1980a-df07-4f69-93e5-c1c50b106a13@arm.com>
 
-On Wed, Jan 24, 2024 at 11:46:59AM +0000, Robin Murphy wrote:
-> On 2024-01-24 9:13 am, Diogo Ivo wrote:
-> > On Tue, Jan 23, 2024 at 11:15:08AM -0400, Jason Gunthorpe wrote:
-> > > On Tue, Jan 23, 2024 at 02:33:15PM +0000, diogo.ivo@tecnico.ulisboa.pt wrote:
-> > > > Commit c8cc2655cc6c in the recent IOMMU changes breaks Tegra fbdev
-> > > > at least on the Pixel C with the following error message reporting
-> > > > a failed buffer allocation:
-> > > > 
-> > > > [    1.857660] drm drm: failed to allocate buffer of size 18432000
-> > > > 
-> > > > This error message is printed from tegra_bo_alloc() which is called by
-> > > > tegra_bo_create() in tegra_fbdev_probe(), which may indicate that other
-> > > > allocations would fail as well, not just the framebuffer.
-> > > 
-> > > Presumably this is because iommu_map_sgtable() under
-> > > tegra_bo_iommu_map() fails?
-> > > 
-> > > Which I suspect is because of the logic in
-> > > host1x_client_iommu_attach().
-> > > 
-> > > After c8cc2655cc6c iommu_get_domain_for_dev() will never return NULL.
-> > > 
-> > > So this:
-> > > 
-> > > 	if (domain && domain != tegra->domain)
-> > > 		return 0;
-> > > 
-> > > Will happen and the domain will be left at IDENTITY, while I suppose
-> > > the tegra_bo_iommu_map() assumes the domain was switched to tegra->domain.
-> > > 
-> > > Does this solve your issue?
-> > > 
-> > > diff --git a/drivers/gpu/drm/tegra/drm.c b/drivers/gpu/drm/tegra/drm.c
-> > > index ff36171c8fb700..15c7910b2e1c76 100644
-> > > --- a/drivers/gpu/drm/tegra/drm.c
-> > > +++ b/drivers/gpu/drm/tegra/drm.c
-> > > @@ -960,7 +960,7 @@ int host1x_client_iommu_attach(struct host1x_client *client)
-> > >           * not the shared IOMMU domain, don't try to attach it to a different
-> > >           * domain. This allows using the IOMMU-backed DMA API.
-> > >           */
-> > > -       if (domain && domain != tegra->domain)
-> > > +       if (domain && domain->type != IOMMU_DOMAIN_IDENTITY && domain != tegra->domain)
-> > >                  return 0;
-> > >          if (tegra->domain) {
-> > > 
-> > > > This may be connected with an error in of_iommu_configure() that
-> > > > became visible after commit 6ff6e184f1f4d:
-> > > > 
-> > > > [    1.200004] host1x drm: iommu configuration for device failed with -ENOENT
-> > > 
-> > > Hmmm
-> > > 
-> > > This is a new logging, so it doesn't necessarily mean something has
-> > > changed in the code flow.
-> > > 
-> > > It seems the issue is something in there is returning ENOENT when it
-> > > probably should be ENODEV, but I haven't been able to guess where it
-> > > comes from.
-> > > 
-> > > Can you do some tracing and figure out where under
-> > > of_iommu_configure() this ENOENT return code is from?
-> > > 
-> > > Jason
-> > 
-> > I did the tracing and found that the ENOENT is coming from
-> > sysfs_do_create_link_sd() in the following function call chain:
-> > 
-> > of_iommu_configure() -> iommu_probe_device() -> __iommu_probe_device() ->
-> 
-> What's the call path leading up to that? If it's the one from
-> host1x_device_add() then it's expected and benign - for fiddly reasons,
-> iommu_probe_device() ends up being called too early, but will soon be run
-> again in the correct circumstances once we proceed into
-> host1x_subdev_register()->device_add(). That will have been happening for
-> years, we just never reported errors in that spot before (and frankly I'm
-> not convinced it's valuable to have added it now).
-> 
-> Thanks,
-> Robin.
+On Wed, Jan 24, 2024 at 12:17:43PM +0000, Robin Murphy wrote:
 
-Yes, it is the one called from host1x_device_add(), so this
-is solved and only the patch sent above needs to be merged.
+> I don't think the story here has changed from when I first remember this
+> being discussed probably 7 or 8 years ago - what VFIO has always really
+> wanted for this situation is to know when it's doing a complete teardown and
+> just detach and free the domain, then unpin the pages afterwards, without
+> wasting any time at all on frivolous unmapping. 
 
-Thanks,
-Diogo
+What VFIO/iommufd really wants is a fast way to to read back and unmap
+the PFNs from the domain. Today it has to call iommu_iova_to_phys()
+and then unmap which ends up walking the radix many times.
+
+Ideally we'd batch read and unmap in a single call with a single radix
+walk.
+
+This is because the domain is used to store the 'struct page *' which
+is needed to unpin the memory.
+
+Combined with the no-attachments optimization I described it could be
+pretty close to optimal.
+
+Jason
