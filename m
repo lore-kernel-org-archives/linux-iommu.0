@@ -1,73 +1,73 @@
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+Received: from mail-oa1-f41.google.com (mail-oa1-f41.google.com [209.85.160.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17AD27C0AE
-	for <iommu@lists.linux.dev>; Wed, 24 Jan 2024 16:28:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A68A7F7C2
+	for <iommu@lists.linux.dev>; Wed, 24 Jan 2024 17:03:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706113692; cv=none; b=TRAgf3Ks2mswXPDKueQUVi/fopSPZq/xJlWaVXf+K6G2qAgQcHVzgV8lb9CML+DEKOwuTjEA2Vybbn5DDIZTzUuFGdhrQVietm/rECVUv6qbfawH+w9IFKnfAO+rjMM5AILKAhRzJhShigld0qTJkZDm/UQ1Uw/sTBEOf12q6oY=
+	t=1706115785; cv=none; b=kNo37D5lJnXjYg6ScrAoo/FFL2VbEZo9G8Tx6eAU2tlxjokoUeJd0oExU8VYezF6oM2h358YMg2+H3lIqVONxm2zb1X75RjNxtEu5lk8zjq0Gjjr6ro/VsHSBfljzTGFSmd5idaVXvAziIS4NnyeF7W7VGEOHrj269j7j7Wg0xQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706113692; c=relaxed/simple;
-	bh=gLHkSQWpkbD1hmnLgTICPpcir4dWz8DwxnNhev1K+hc=;
+	s=arc-20240116; t=1706115785; c=relaxed/simple;
+	bh=OckWe4XG0ixqeMakKtCo9WUR9ythXnbH2cRxgj0L6AY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l9ozQJYyYi+neaoLbd+9NM8Ez99miL/Yaf20kfv50gOcUlmlRjYe6HG/3lxShjnzAAzTvbInW/CeOeIQ3lXlAcRtGteY6TTtxr81AvDSHa1C/g9h6ngn9wKkLHqg64HXiussgFKCcb7jJ5fjiIE1WmzmnvvCzefihRh/XvEpSx4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jdDmeUka; arc=none smtp.client-ip=209.85.167.173
+	 Content-Type:Content-Disposition:In-Reply-To; b=tqTUuWHBqQc4itoSsJEMMyHCgsD5SUfgww3DCKhh3tAon00oyjbGqF5XZ5rQpoKcAcUHfAeeUy8YsvGTR8l+ECX96eTfoNgyF/+5wwcey8z+8JYXqT8prrOPzOTVpI6uX8Yf8bhUD9eSHjkVZqKbMlp8QHcFs4Ey1l5z5tTMyFo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JggpQALN; arc=none smtp.client-ip=209.85.160.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jdDmeUka"
-Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-3bdca4f495cso874091b6e.3
-        for <iommu@lists.linux.dev>; Wed, 24 Jan 2024 08:28:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JggpQALN"
+Received: by mail-oa1-f41.google.com with SMTP id 586e51a60fabf-2144ce7ff41so1603595fac.3
+        for <iommu@lists.linux.dev>; Wed, 24 Jan 2024 09:03:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1706113690; x=1706718490; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1706115782; x=1706720582; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=KB2zplKZXZmwEaf35sIS9GHJDUJDfzr6dvv7piAnaEg=;
-        b=jdDmeUka35ichHO+Efma+fN+0vF61GusI49FxZEQWx+WyBX31FE5nR/auosZnfqhUY
-         XkAccbnNqVLtf3dl1i1tWnALP1G7oQDsTcoAlPN+x0rDIYmqIdnofEfHUEu3jGWuV6aY
-         clV9iCeVO93dV49NPKW+5u5sklwlyXf3NiTrQCtRmqwgAR/dNuFQSjIkLAdktFDg4TaE
-         /PZbrSsewFw05Q+75+T/ITffKjETra6nnz6MFAlf59z1zTPWj0RlPnVBxohF0WHh9kja
-         436MwN0iLizTPU05POaxh7kYPyTGDOC592gFIYusPPqkq/wUWPuXX2HOcSpwizMZ+UsJ
-         kiiQ==
+        bh=46DW82ZGTZFbq/v3xqfovKBaw5pAkplLqD4lqGmbUT4=;
+        b=JggpQALNLHa0IEwQ0Tp1V41R8wbNxJ4Y6vYj6F3R5Pdy7Q79r7tHibfgdGBUzpn/3B
+         V1GEIsfEqQMug353iM66MBxgGgxqQLFhaH6AGkGr0DSW6HC4eN0Lk4AI2vvDp2Yvap2t
+         lRR9TDJRAyh0zsby9Ftb8GxGC826FkAZRETDgDo6v9xz5ExxmyW3CJmpHNZ0+3shdWku
+         yUm/TOxYwznV9o7v5za0oPO6NtP7sOKFNVKTK11eidss3b+ylVoY8+nK4WuGcwYuzhr+
+         6STNUV9tKoYf/2NJ+vbT2PZMX8OmidzorLXiOrkHexhN902G5zQW8Vx/K+Y2rzolvqVN
+         mesw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706113690; x=1706718490;
+        d=1e100.net; s=20230601; t=1706115782; x=1706720582;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=KB2zplKZXZmwEaf35sIS9GHJDUJDfzr6dvv7piAnaEg=;
-        b=nYncNq8lvj2+4GCdLxTqlRSScTZh6+yHerVRl6MdW06fa+9MIK58JWWI/FPJOJb7wJ
-         P98cesMk0xcd5lhbXj2tJX88zJlsm3PfIhtwIbsFx/w2KZaYv70eWrR15rCYLpRO7y3n
-         U5emGeiSSoKGQTnEasJQEwethhLkQOHpvpA5KBEGmYtPabwXgXbhrWCCKzxaYrLW8+V4
-         AS2cJXs3GQlXNtnUKEszTruoqsHsKhsFGu63DpSzyHPyUh86yFdK0WMaTADB0XQreKaS
-         iPVb5KH7Ml0UlEgv2/i3OYX9OGlRKYXi7g/iNAKPXg89Voy9pUYYj+H8wEa24MMlLjEf
-         pzRw==
-X-Gm-Message-State: AOJu0YzxhTGigNjFQIsNRTJic+EFZ8DPpdIxSSfKKKwZqbaa6rLi2E9L
-	mVpCmHwh9M9AI3ZdxshxB9MRYc6D0Gq5wW5QTBtrkUPOlkk/R2DB5FQSzm82DC8=
-X-Google-Smtp-Source: AGHT+IEi7HTUXH3vmWl30/1TUyQz5MURf/7khn5w6ICtjrdySxkJ4o7FVdQYk67VDlULKCkNAAcMjg==
-X-Received: by 2002:a05:6808:3c85:b0:3bd:36fc:1c1e with SMTP id gs5-20020a0568083c8500b003bd36fc1c1emr2302861oib.44.1706113690073;
-        Wed, 24 Jan 2024 08:28:10 -0800 (PST)
+        bh=46DW82ZGTZFbq/v3xqfovKBaw5pAkplLqD4lqGmbUT4=;
+        b=L7cxtCPBJmiX5aMXFpfDRJB3i/f0D1d3BnVuhYEbFxnlhStTcoGdbFYhjw/xrcwZp7
+         ce/+QnuIwEgjGiXcdWYnznnZN5Qdnt9UTyKcpsO7sf6i89ojvcBisSjFLcHyADLLMYTV
+         cyJCSDHjcyqTNL96dCYBpsTPhTuS7qrFQhWUj93f6QVfS9GkAI+alVxJ05JGEaFiY9Ea
+         PyKOfEjLj03rRnDlcjO9ZbrJQnFT6MkWNpP3q0XaEAssoQ94UsD/5XPLOOQ8gti/s8t8
+         MAfG2vqaZ8Msr2hd2YHXgRccw3oo3xFCX0SzhC+sBakspzfB8pesN1YjJapBXvGTkscs
+         TqvA==
+X-Gm-Message-State: AOJu0YymoellfBietWsQ17zFhGVC6S8bjWc0Mrn5LHLeFjvVOQM3Ft+K
+	BlkDyDnEt+5luzyWFxmSIhbZem7XT5bMUEWwuDB6Yfogk4s+6vBo2lM9SUpuH3Y=
+X-Google-Smtp-Source: AGHT+IEFELpRVBGWhMjKivd//Up4NeyH4XQb924O+IsJi62S9Y4yx3cDs6tr3yd1JgyFgpvf+uHklw==
+X-Received: by 2002:a05:6870:7d16:b0:214:24ca:1cd6 with SMTP id os22-20020a0568707d1600b0021424ca1cd6mr3852737oab.18.1706115782357;
+        Wed, 24 Jan 2024 09:03:02 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id g50-20020a0568080df200b003bdb4a17d4bsm1614959oic.16.2024.01.24.08.28.09
+        by smtp.gmail.com with ESMTPSA id qa12-20020a056871e70c00b00210d2c251cbsm2878811oac.39.2024.01.24.09.03.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Jan 2024 08:28:09 -0800 (PST)
+        Wed, 24 Jan 2024 09:03:01 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rSg6i-008pwi-AR;
-	Wed, 24 Jan 2024 12:28:08 -0400
-Date: Wed, 24 Jan 2024 12:28:08 -0400
+	id 1rSgeS-008q7W-2p;
+	Wed, 24 Jan 2024 13:03:00 -0400
+Date: Wed, 24 Jan 2024 13:03:00 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: "zhangzekun (A)" <zhangzekun11@huawei.com>, will@kernel.org,
-	joro@8bytes.org, nicolinc@nvidia.com, mshavit@google.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Add a threshold to avoid potential
- soft lockup
-Message-ID: <20240124162808.GT50608@ziepe.ca>
-References: <20240115114040.6279-1-zhangzekun11@huawei.com>
- <20240115153152.GA50608@ziepe.ca>
- <e74ea905-d107-4202-97ca-c2c509e7aa1e@huawei.com>
- <20240118142243.GI50608@ziepe.ca>
- <10c1980a-df07-4f69-93e5-c1c50b106a13@arm.com>
+Cc: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>, thierry.reding@gmail.com,
+	vdumpa@nvidia.com, joro@8bytes.org, will@kernel.org,
+	jonathanh@nvidia.com, baolu.lu@linux.intel.com, jsnitsel@redhat.com,
+	jroedel@suse.de, linux-tegra@vger.kernel.org, iommu@lists.linux.dev,
+	regressions@lists.linux.dev
+Subject: Re: [REGRESSION] Failed buffer allocation in Tegra fbdev
+Message-ID: <20240124170300.GU50608@ziepe.ca>
+References: <bbmhcoghrprmbdibnjum6lefix2eoquxrde7wyqeulm4xabmlm@b6jy32saugqh>
+ <20240123151508.GR50608@ziepe.ca>
+ <pgund4coabp5pdlmwze5o2d7ogrdncktqz267yzukjcvmikudc@7svrwdci7ujl>
+ <55cab5e0-0abf-47d0-becc-05cdf1d22fac@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,27 +76,79 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <10c1980a-df07-4f69-93e5-c1c50b106a13@arm.com>
+In-Reply-To: <55cab5e0-0abf-47d0-becc-05cdf1d22fac@arm.com>
 
-On Wed, Jan 24, 2024 at 12:17:43PM +0000, Robin Murphy wrote:
+On Wed, Jan 24, 2024 at 11:46:59AM +0000, Robin Murphy wrote:
+> > > > This may be connected with an error in of_iommu_configure() that
+> > > > became visible after commit 6ff6e184f1f4d:
+> > > > 
+> > > > [    1.200004] host1x drm: iommu configuration for device failed with -ENOENT
+> > > 
+> > > Hmmm
+> > > 
+> > > This is a new logging, so it doesn't necessarily mean something has
+> > > changed in the code flow.
+> > > 
+> > > It seems the issue is something in there is returning ENOENT when it
+> > > probably should be ENODEV, but I haven't been able to guess where it
+> > > comes from.
+> > > 
+> > > Can you do some tracing and figure out where under
+> > > of_iommu_configure() this ENOENT return code is from?
+> > 
+> > I did the tracing and found that the ENOENT is coming from
+> > sysfs_do_create_link_sd() in the following function call chain:
+> > 
+> > of_iommu_configure() -> iommu_probe_device() -> __iommu_probe_device() ->
+> 
+> What's the call path leading up to that? If it's the one from
+> host1x_device_add() then it's expected and benign - for fiddly reasons,
+> iommu_probe_device() ends up being called too early, but will soon be run
+> again in the correct circumstances once we proceed into
+> host1x_subdev_register()->device_add(). That will have been happening for
+> years, we just never reported errors in that spot before (and frankly I'm
+> not convinced it's valuable to have added it now).
 
-> I don't think the story here has changed from when I first remember this
-> being discussed probably 7 or 8 years ago - what VFIO has always really
-> wanted for this situation is to know when it's doing a complete teardown and
-> just detach and free the domain, then unpin the pages afterwards, without
-> wasting any time at all on frivolous unmapping. 
+Hmm. Prior to
 
-What VFIO/iommufd really wants is a fast way to to read back and unmap
-the PFNs from the domain. Today it has to call iommu_iova_to_phys()
-and then unmap which ends up walking the radix many times.
+commit 14891af3799e ("iommu: Move the iommu driver sysfs setup into
+iommu_init/deinit_device()")
 
-Ideally we'd batch read and unmap in a single call with a single radix
-walk.
+The error from iommu_device_link() was ignored. It seems like for most
+of the years the probe actually succeeded, just with a mangled sysfs?
 
-This is because the domain is used to store the 'struct page *' which
-is needed to unpin the memory.
+Though that host1x_device_add() ignored the return code does make me
+wonder..
 
-Combined with the no-attachments optimization I described it could be
-pretty close to optimal.
+This is the only clue I see:
+
+commit c95469aa5a188384ccf8ac520ece931c66caf8aa
+Author: Alexandre Courbot <acourbot@nvidia.com>
+Date:   Fri Feb 26 18:06:53 2016 +0900
+
+    gpu: host1x: Set DMA ops on device creation
+    
+    Currently host1x-instanciated devices have their dma_ops left to NULL,
+    which makes any DMA operation (like buffer import) on ARM64 fallback
+    to the dummy_dma_ops and fail with an error.
+    
+    This patch calls of_dma_configure() with the host1x node when creating
+    such a device, so the proper DMA operations are set.
+    
+    Suggested-by: Thierry Reding <thierry.reding@gmail.com>
+    Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
+    Signed-off-by: Thierry Reding <treding@nvidia.com>
+
+Which is no longer happening anymore as failure of
+iommu_probe_device() will not cause the dma ops to be setup.
+
+So, if everything still works and something else is calling
+of_dma_configure() prior to using the struct device for any DMA
+operations (eg because a driver is always probed?) then we should just
+delete this call.
+
+Robin do you know more? Specifically where is the "soon be run again"?
+Was the above issue fixed in commit 07397df29e57 ("dma-mapping: move
+dma configuration to bus infrastructure") ?
 
 Jason
