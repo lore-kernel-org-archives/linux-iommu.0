@@ -1,161 +1,150 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6282D6311B
-	for <iommu@lists.linux.dev>; Wed, 24 Jan 2024 12:17:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp1.tecnico.ulisboa.pt (smtp1.tecnico.ulisboa.pt [193.136.128.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ACF577647;
+	Wed, 24 Jan 2024 13:04:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.136.128.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706098668; cv=none; b=NWsqKVoA8Y7H9gy7Z7ebXiiCkcOlcRoplZ0fAA8X3o4wOzaaBAuvvKwzPA19RCmSAiwHb3e3qX3lTzp7iAFRylGOMNqQbSi+lweHqk2mzAozzPeYax553ioBLpUNNDIcUJCLpRFagqDmbu36ennB4/wq1/CwnZ6oqzMlrVih4RM=
+	t=1706101462; cv=none; b=r2vwuhj6Oqh/EVvOxRsFgRw+iXQdlO4Xu8UjZfDjWQDOlydoLAFX7fUCqL37jiy8tQQDonWSqM7M/QllrW+ZzHzfelLoT4/FpMiL/S50wwM85fIQZg07Z3UxVRn6w3BF2zx050VtPzaFBoNcrw8WLJ7hJ4m7KGvdTQViR5WsCII=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706098668; c=relaxed/simple;
-	bh=7ik0T6h7iohciMw8WCAm0dXcdceLY6GB4Rx+mKnSQUg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=g400jpP/SNg78/nOC+bnvomspnC775DSzBuTNDkH1+zIZ8A0NN5kaa4TD4triBG0m4uEJfhmwrNvqEkb6v3yEH2IifwIIDfivwWaNCtUOjEbUivpjuvwVEtGlYEd6BkmHxygl6etAziLg1Ko2jeiiIPFWFHy+q/FuYIhdN6eV4s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E644A1FB;
-	Wed, 24 Jan 2024 04:18:30 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E96873F5A1;
-	Wed, 24 Jan 2024 04:17:44 -0800 (PST)
-Message-ID: <10c1980a-df07-4f69-93e5-c1c50b106a13@arm.com>
-Date: Wed, 24 Jan 2024 12:17:43 +0000
+	s=arc-20240116; t=1706101462; c=relaxed/simple;
+	bh=GZkJ+QeMKJNqZBgYX+y1qwEAQJjghDN2AgFfR74bdH4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MHJPLDgiSRdAHOYfsgEhZn2/eSutrgQYUbwoJTuQUpnFfese0/+q6YshqHZCSLc9PmzUt8fItgBT6edefs8ubNCHiYnDIGkrE1NFfmtV2YJq/1j7Xu5hDXhf5hJw/oEzuQGTCWN3FQU0PlscmkXTQdNYbw3/AHytznXu6kMXA/M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tecnico.ulisboa.pt; spf=pass smtp.mailfrom=tecnico.ulisboa.pt; dkim=pass (1024-bit key) header.d=tecnico.ulisboa.pt header.i=@tecnico.ulisboa.pt header.b=BUH732Ef; arc=none smtp.client-ip=193.136.128.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tecnico.ulisboa.pt
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tecnico.ulisboa.pt
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=tecnico.ulisboa.pt header.i=@tecnico.ulisboa.pt header.b="BUH732Ef"
+Received: from localhost (localhost.localdomain [127.0.0.1])
+	by smtp1.tecnico.ulisboa.pt (Postfix) with ESMTP id B20B060022F7;
+	Wed, 24 Jan 2024 12:56:55 +0000 (WET)
+X-Virus-Scanned: by amavis-2.13.0 (20230106) (Debian) at tecnico.ulisboa.pt
+Received: from smtp1.tecnico.ulisboa.pt ([127.0.0.1])
+ by localhost (smtp1.tecnico.ulisboa.pt [127.0.0.1]) (amavis, port 10025)
+ with LMTP id ajMDtZ95vwAa; Wed, 24 Jan 2024 12:56:53 +0000 (WET)
+Received: from mail1.tecnico.ulisboa.pt (mail1.ist.utl.pt [IPv6:2001:690:2100:1::b3dd:b9ac])
+	by smtp1.tecnico.ulisboa.pt (Postfix) with ESMTPS id 646A660022F2;
+	Wed, 24 Jan 2024 12:56:53 +0000 (WET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tecnico.ulisboa.pt;
+	s=mail; t=1706101013;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=9eOQRiZQC0U4e8V4bKlkhm5RMXXl+uFAIdIpnZe1j2E=;
+	b=BUH732EfZ07SrO0LtlTr+fTBGTq+bE88F8Oz0riOwX/xxJNWOHQs9pqnWHcTMAZQHxkljc
+	aZC94hmRzp6+s2Lb2h6ItxQdvgaTXm3Gu5BozKdJ6pcDU48XfdO+zFVc5CYY1vMzECHLGh
+	IDwSVUvQdj4/V3PgivHmc6EscQAOPkU=
+Received: from diogo-gram (unknown [IPv6:2001:8a0:7ae3:e700:a921:1147:531c:b1e7])
+	(Authenticated sender: ist187313)
+	by mail1.tecnico.ulisboa.pt (Postfix) with ESMTPSA id 1EABE36008F;
+	Wed, 24 Jan 2024 12:56:52 +0000 (WET)
+Date: Wed, 24 Jan 2024 12:56:48 +0000
+From: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, thierry.reding@gmail.com, 
+	vdumpa@nvidia.com, joro@8bytes.org, will@kernel.org, jonathanh@nvidia.com, 
+	baolu.lu@linux.intel.com, jsnitsel@redhat.com, jroedel@suse.de, 
+	linux-tegra@vger.kernel.org, iommu@lists.linux.dev, regressions@lists.linux.dev, 
+	diogo.ivo@tecnico.ulisboa.pt
+Subject: Re: Re: [REGRESSION] Failed buffer allocation in Tegra fbdev
+Message-ID: <r46zhd52g3w3kpu4jjca3vihmv5ahp3jcwge3rvg42dupxf2g4@p2u5mbdyypw3>
+References: <bbmhcoghrprmbdibnjum6lefix2eoquxrde7wyqeulm4xabmlm@b6jy32saugqh>
+ <20240123151508.GR50608@ziepe.ca>
+ <pgund4coabp5pdlmwze5o2d7ogrdncktqz267yzukjcvmikudc@7svrwdci7ujl>
+ <55cab5e0-0abf-47d0-becc-05cdf1d22fac@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Add a threshold to avoid potential
- soft lockup
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@ziepe.ca>, "zhangzekun (A)" <zhangzekun11@huawei.com>
-Cc: will@kernel.org, joro@8bytes.org, nicolinc@nvidia.com,
- mshavit@google.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240115114040.6279-1-zhangzekun11@huawei.com>
- <20240115153152.GA50608@ziepe.ca>
- <e74ea905-d107-4202-97ca-c2c509e7aa1e@huawei.com>
- <20240118142243.GI50608@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240118142243.GI50608@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <55cab5e0-0abf-47d0-becc-05cdf1d22fac@arm.com>
 
-On 18/01/2024 2:22 pm, Jason Gunthorpe wrote:
-> On Thu, Jan 18, 2024 at 07:21:10PM +0800, zhangzekun (A) wrote:
->>> What is the rest of the call chain? How did you get into such a large
->>> invalidation?
->> we are doing some test with qemu virtual machines. The testing platform has
->> 96 cores and 960GB memories. It will enable 64 virtual machines and every
->> virtual machine will cost 8G memories. When batching closing these 64
->> virtaul machine concurrently, we will get soft lockup.
->>
->>   WARN: soft lockup - CPU#18 stuck for 11s! [worker:3219]
->> ....
->> Call trace:
->>   dump_backtrace+0x0/0x200
->>   show_stack+0x20/0x30
->>   dump_stack+0xf0/0x138
->>   watchdog_print_info+0x48/0x54
->>   watchdog_process_before_softlockup+0x9c/0xa0
->>   watchdog_timer_fn+0x1ac/0x2f0
->>   __run_hrtimer+0x98/0x2b4
->>   __hrtimer_run_queues+0xc0/0x13c
->>   hrtimer_interrupt+0x150/0x3e4
->>   arch_timer_handler_phys+0x3c/0x50
->>   handle_percpu_devid_irq+0x90/0x1f4
->>   __handle_domain_irq+0x84/0xfc
->>   gic_handle_irq+0x88/0x2b0
->>   el1_irq+0xb8/0x140
->>   ktime_get+0x3c/0xac
->>   arm_smmu_cmdq_poll_until_not_full+0xb0/0x1a0
->>   arm_smmu_cmdq_issue_cmdlist+0x194/0x5f4
->>   __arm_smmu_tlb_inv_range+0x114/0x22c
->>   arm_smmu_tlb_inv_walk+0x88/0x120
->>   __arm_lpae_unmap+0x188/0x2c0
->>   __arm_lpae_unmap+0x104/0x2c0
->>   arm_lpae_unmap+0x68/0x80
->>   arm_smmu_unmap+0x24/0x40
->>   __iommu_unmap+0xd8/0x210
->>   iommu_unmap_fast+0x18/0x24
->>   unmap_unpin_fast+0x7c/0x140 [vfio_iommu_type1]
->>   vfio_unmap_unpin+0x14c/0x3ac [vfio_iommu_type1]
->>   vfio_remove_dma+0x38/0x124 [vfio_iommu_type1]
->>   vfio_iommu_type1_detach_group+0x4b8/0x4e0 [vfio_iommu_type1]
->>   __vfio_group_unset_container+0x58/0x18c [vfio]
->>   vfio_group_try_dissolve_container+0x80/0x94 [vfio]
->>   vfio_group_put_external_user+0x20/0x54 [vfio]
->>   kvm_vfio_destroy+0xa8/0x12c
->>   kvm_destroy_vm+0x20c/0x300
->>   kvm_put_kvm+0x74/0xa0
->>   kvm_vcpu_release+0x20/0x30
->>   __fput+0xc4/0x270
->>   ____fput+0x18/0x24
->>   task_work_run+0xd0/0x1a0
->>   do_exit+0x1d8/0x480
->>   do_group_exit+0x40/0x130
->>   get_signal+0x1f8/0x744
->>   do_signal+0x98/0x204
->>   do_notify_resume+0x15c/0x1e0
->>   work_pending+0xc/0xa4
+On Wed, Jan 24, 2024 at 11:46:59AM +0000, Robin Murphy wrote:
+> On 2024-01-24 9:13 am, Diogo Ivo wrote:
+> > On Tue, Jan 23, 2024 at 11:15:08AM -0400, Jason Gunthorpe wrote:
+> > > On Tue, Jan 23, 2024 at 02:33:15PM +0000, diogo.ivo@tecnico.ulisboa.pt wrote:
+> > > > Commit c8cc2655cc6c in the recent IOMMU changes breaks Tegra fbdev
+> > > > at least on the Pixel C with the following error message reporting
+> > > > a failed buffer allocation:
+> > > > 
+> > > > [    1.857660] drm drm: failed to allocate buffer of size 18432000
+> > > > 
+> > > > This error message is printed from tegra_bo_alloc() which is called by
+> > > > tegra_bo_create() in tegra_fbdev_probe(), which may indicate that other
+> > > > allocations would fail as well, not just the framebuffer.
+> > > 
+> > > Presumably this is because iommu_map_sgtable() under
+> > > tegra_bo_iommu_map() fails?
+> > > 
+> > > Which I suspect is because of the logic in
+> > > host1x_client_iommu_attach().
+> > > 
+> > > After c8cc2655cc6c iommu_get_domain_for_dev() will never return NULL.
+> > > 
+> > > So this:
+> > > 
+> > > 	if (domain && domain != tegra->domain)
+> > > 		return 0;
+> > > 
+> > > Will happen and the domain will be left at IDENTITY, while I suppose
+> > > the tegra_bo_iommu_map() assumes the domain was switched to tegra->domain.
+> > > 
+> > > Does this solve your issue?
+> > > 
+> > > diff --git a/drivers/gpu/drm/tegra/drm.c b/drivers/gpu/drm/tegra/drm.c
+> > > index ff36171c8fb700..15c7910b2e1c76 100644
+> > > --- a/drivers/gpu/drm/tegra/drm.c
+> > > +++ b/drivers/gpu/drm/tegra/drm.c
+> > > @@ -960,7 +960,7 @@ int host1x_client_iommu_attach(struct host1x_client *client)
+> > >           * not the shared IOMMU domain, don't try to attach it to a different
+> > >           * domain. This allows using the IOMMU-backed DMA API.
+> > >           */
+> > > -       if (domain && domain != tegra->domain)
+> > > +       if (domain && domain->type != IOMMU_DOMAIN_IDENTITY && domain != tegra->domain)
+> > >                  return 0;
+> > >          if (tegra->domain) {
+> > > 
+> > > > This may be connected with an error in of_iommu_configure() that
+> > > > became visible after commit 6ff6e184f1f4d:
+> > > > 
+> > > > [    1.200004] host1x drm: iommu configuration for device failed with -ENOENT
+> > > 
+> > > Hmmm
+> > > 
+> > > This is a new logging, so it doesn't necessarily mean something has
+> > > changed in the code flow.
+> > > 
+> > > It seems the issue is something in there is returning ENOENT when it
+> > > probably should be ENODEV, but I haven't been able to guess where it
+> > > comes from.
+> > > 
+> > > Can you do some tracing and figure out where under
+> > > of_iommu_configure() this ENOENT return code is from?
+> > > 
+> > > Jason
+> > 
+> > I did the tracing and found that the ENOENT is coming from
+> > sysfs_do_create_link_sd() in the following function call chain:
+> > 
+> > of_iommu_configure() -> iommu_probe_device() -> __iommu_probe_device() ->
 > 
-> I see, that is interesting.
+> What's the call path leading up to that? If it's the one from
+> host1x_device_add() then it's expected and benign - for fiddly reasons,
+> iommu_probe_device() ends up being called too early, but will soon be run
+> again in the correct circumstances once we proceed into
+> host1x_subdev_register()->device_add(). That will have been happening for
+> years, we just never reported errors in that spot before (and frankly I'm
+> not convinced it's valuable to have added it now).
 > 
-> I think iommufd is close to substantialy improving this. It already
-> has the domain destruction ordering:
->   - Remove all domain attachments
->   - Read back phys addrs, unmap and unpin
->   - iommu_domain_free()
+> Thanks,
+> Robin.
 
-I don't think the story here has changed from when I first remember this 
-being discussed probably 7 or 8 years ago - what VFIO has always really 
-wanted for this situation is to know when it's doing a complete teardown 
-and just detach and free the domain, then unpin the pages afterwards, 
-without wasting any time at all on frivolous unmapping. However so far 
-it's worked out that minor low-level tweaks like the unmap_fast API have 
-kept kept the overhead tolerable enough that nobody's been inspired to 
-attempt the bigger task.
-
-However for SMMU in particular it's almost certainly confounded by 
-io_pgtable_tlb_flush_walk() being a bit rubbish for the situation that I 
-bet is happening here - if we don't have range invalidate, then 
-pessimistically invalidating a 1GB table at 4KB granularity without even 
-looking isn't likely to save much time over doing a more accurate 
-recursive invalidation even in the worst case that the whole thing 
-*does* turn out to be mapped as pages. But in the likely case that there 
-are at least some intermediate-level block mappings in there, it's an 
-instant win. I recall I had along-standing to-do item to get rid of 
-.tlb_flush_walk from io-pgtable altogether, although that may have been 
-tied in to the freelist stuff; I'd need to find time to page it all back 
-in to remember exactly why...
+Yes, it is the one called from host1x_device_add(), so this
+is solved and only the patch sent above needs to be merged.
 
 Thanks,
-Robin.
-
-> Currently smmu continues to issue ASID invalidations for the domain
-> even though there no references to it. However this is pretty
-> pointless here as we are going to free the ASID right away.
-> 
-> I'm going to make a series to allow smmu to support multi-instances on
-> a single domain. In this case when the domain looses all its
-> attachments it looses all its instances too and it won't have to do
-> *anything* for invalidation in this workflow.
-> 
-> Ie your flow will boil down to a single ASID invalidation once the
-> domain attachments are all removed, then on invalidations during unmap
-> and no invaludation at free. This would be a significantly faster
-> teardown I suspect.
-> 
->> Thanks for your patch, the patch described below make sense to me. After
->> spliting TLB invalidate operations according to domain stage,
->> arm_smmu_tlb_inv_*_s1() can be used both in SVA codes and original smmu
->> codes, and can implement arm_smmu_tlb_inv_all_s1() just using
->> arm_smmu_tlb_inv_range_s1() by passing a special size. But the current
->> smmu-v3 driver has not move "asid" into "struct smmu_domain", we still need
->> to pass the exact asid from SVA.
-> 
-> Yes, it is not intended to be applied on the current kernel, there are
-> a lot of structural problems with how SVA works there..
-> 
-> Jason
+Diogo
