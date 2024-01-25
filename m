@@ -1,122 +1,115 @@
-Received: from lynxeye.de (ns.lynxeye.de [87.118.118.114])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CA6D42C69E
-	for <iommu@lists.linux.dev>; Thu, 25 Jan 2024 11:49:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=87.118.118.114
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E06972D630
+	for <iommu@lists.linux.dev>; Thu, 25 Jan 2024 12:08:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706183372; cv=none; b=u9YIfKO1UjN5Be6h6lfQ8JjxbqkCxgiPRt5WIwfOAVDOEvRoVjqh5YX6pbPtqYebNBPOoT+7YUHtUoLb2Vj8c/iB2cWlIvLnD628Sj3deE/hG5vxb1RVsZRjCnC6LFut5Ap/JrBCmQy3aE8/0uvu5xkiJ4jUHYwxya7OZO6QgaU=
+	t=1706184531; cv=none; b=N/j12H/a2NaRsNcs5QzN42PoFnozlQfm7ZG6zg8V9/YnXRv98yzesLdh4kYUnlvan+5W0F7wmPPE6B61UYMLW4OmEQBvF7vbTtoO+4xn3ijINEdwW1SKllAGeUVMf4iXyMy9l2JqdAQDRIJHIQhutG1dcJBUjpdEHHLKJg5TqJM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706183372; c=relaxed/simple;
-	bh=dv/ZAmJ8jFBOK84zvjccOr+eXdiyXOi0lb0TC/laEzY=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=L5ou4d1RDTD0j78rLkwDzf9UiGuP1pi4rmNeATyCDtKqhV/asc4vmXcmjTPbhPBF7YNdhrPIKw8a8jsB+jqUf98/MTwcTJCoOp8Mr8aK8zHca4jhtF5L5I7Zg2xWMwuuPH0lJXNBr4PEmCxJr+OhAgVdEcgFr8CGvupgRy8EV4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lynxeye.de; spf=none smtp.mailfrom=lynxeye.de; arc=none smtp.client-ip=87.118.118.114
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lynxeye.de
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=lynxeye.de
-Received: by lynxeye.de (Postfix, from userid 501)
-	id 3EB2EE74016; Thu, 25 Jan 2024 12:41:03 +0100 (CET)
-X-Spam-Level: 
-Received: from [192.168.178.22] (a89-183-231-186.net-htp.de [89.183.231.186])
-	by lynxeye.de (Postfix) with ESMTPSA id 98AD8E74012;
-	Thu, 25 Jan 2024 12:41:01 +0100 (CET)
-Message-ID: <d2ff8df896d8a167e9abf447ae184ce2f5823852.camel@lynxeye.de>
-Subject: Re: Uncached buffers from CMA DMA heap on some Arm devices?
-From: Lucas Stach <dev@lynxeye.de>
-To: Milan Zamazal <mzamazal@redhat.com>, Christoph Hellwig <hch@lst.de>
-Cc: iommu@lists.linux.dev, Will Deacon <will@kernel.org>, 
- catalin.marinas@arm.com, Bryan O'Donoghue <bryan.odonoghue@linaro.org>, 
- Andrey Konovalov <andrey.konovalov.ynk@gmail.com>, Pavel Machek
- <pavel@ucw.cz>, Maxime Ripard <mripard@redhat.com>,  Laurent Pinchart
- <laurent.pinchart@ideasonboard.com>, kieran.bingham@ideasonboard.com, Hans
- de Goede <hdegoede@redhat.com>
-Date: Thu, 25 Jan 2024 12:41:01 +0100
-In-Reply-To: <87bk9ahex7.fsf@redhat.com>
-References: <87bk9ahex7.fsf@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
+	s=arc-20240116; t=1706184531; c=relaxed/simple;
+	bh=hW38eYKoD5Ps9w/tN9+u5C3X6PtP5pJcfVA7FxvEGEM=;
+	h=Subject:From:To:Cc:Date:Message-ID:MIME-Version:Content-Type; b=XAyuSVmE1uK/D6t04hxp4jQqcc/FWrRV8aed+8CHqxIXWOXGJBV/bZcUpC5egWxMRCmroq/zEjBvHGBUSJ8qi52xJetGT3CzOJ9wmfJamHugmIRSOHvo9eS5kZbBTUSSUKVQpQA2uYz9+ONGteNH7gBfgfIUWrBlsEtyhKGdvsM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Kk1TANLx; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Kk1TANLx"
+Received: from pps.filterd (m0353724.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 40PARGr1023178;
+	Thu, 25 Jan 2024 12:08:34 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : from : to : cc
+ : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=pp1;
+ bh=b8dPyaQz/h6jJXdKMDdubzJRSxNKRomIcG79SDz6Jxs=;
+ b=Kk1TANLxMlycgaRODkTjR9x1ZwAt0x//Gt36ek9IJWxfVNnx8rEbaY4bjYQmNiPDj/wQ
+ SEh7xLyUiwnlQXN+QexvumuoGXIpkzi1Msj7FOoLvJO3gFSnUCh4AHRyzdAE/1Yqa11Y
+ y5TWK8TNHX18ZEI0sv132QWtvwTIaPm2ZgySTL7mpNhADXWVh7/Q5IRU4UPYEsgRuijB
+ FUsr4yhNdw/MCfvA/lbyGrMeY8/EidYJRhJSkSMhNki0ko4wdpob99adMg83Hn9G+YgJ
+ dyTXE4YeMDJfPv1tISt3YPny3LdEKXlVHr6/JOk6Pe2hht1bL/JMl0ZVa1lPL5mwG4m7 Ww== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vunwc2fd7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 25 Jan 2024 12:08:33 +0000
+Received: from m0353724.ppops.net (m0353724.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 40PC0QwY017059;
+	Thu, 25 Jan 2024 12:08:33 GMT
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vunwc2fc2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 25 Jan 2024 12:08:33 +0000
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 40PAOPrf025268;
+	Thu, 25 Jan 2024 12:08:32 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 3vrtqkkvt2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 25 Jan 2024 12:08:32 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 40PC8T2w7602828
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 25 Jan 2024 12:08:29 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 29E5A20043;
+	Thu, 25 Jan 2024 12:08:29 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 9096F20040;
+	Thu, 25 Jan 2024 12:08:26 +0000 (GMT)
+Received: from ltcd48-lp2.aus.stglab.ibm.com (unknown [9.3.101.175])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Thu, 25 Jan 2024 12:08:26 +0000 (GMT)
+Subject: [PATCH 0/2] powerpc: iommu: Fix the vfio-pci bind and unbind issues
+From: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+To: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org
+Cc: linux-kernel@vger.kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
+        christophe.leroy@csgroup.eu, aneesh.kumar@kernel.org,
+        naveen.n.rao@linux.ibm.com, jgg@ziepe.ca, jroedel@suse.de,
+        tpearson@raptorengineering.com, aik@amd.com, bgray@linux.ibm.com,
+        gregkh@linuxfoundation.org, sbhat@linux.ibm.com,
+        gbatra@linux.vnet.ibm.com, vaibhav@linux.ibm.com
+Date: Thu, 25 Jan 2024 06:08:25 -0600
+Message-ID: 
+ <170618450592.3805.8216395093813382208.stgit@ltcd48-lp2.aus.stglab.ibm.com>
+User-Agent: StGit/1.5
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: LC7nRvPzH-Kt8toPgx8QCQGBERAvb_dp
+X-Proofpoint-GUID: Hcp7wE1MLHbbbko411CUT4UzxRGgmrXe
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-01-25_06,2024-01-25_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=790 spamscore=0
+ phishscore=0 adultscore=0 mlxscore=0 lowpriorityscore=0 priorityscore=1501
+ clxscore=1011 suspectscore=0 bulkscore=0 impostorscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311290000
+ definitions=main-2401250084
 
-Hi Milan,
+On PowerNV and pSeries machines, the bind and unbind of vfio-pci is
+broken with the below commits.
 
-Am Mittwoch, dem 24.01.2024 um 19:27 +0100 schrieb Milan Zamazal:
-> Hello,
->=20
-> in the libcamera project, we experience a major performance problem relat=
-ed to
-> DMA buffers while working on camera image processing using CPU.  This hap=
-pens
-> only with some Arm boards, we have observed it on Debix Model A (NXP i.MX=
- 8M
-> Plus) and PinePhone.  We use /dev/dma_heap/linux,cma (or reserved) DMA bu=
-ffer
-> heap on Arm.
->=20
-> Reading V4L2 camera data from buffers is very slow.  When we memcpy the d=
-ata
-> from the buffer to a malloc'ed memory before working with it (reading eac=
-h byte
-> multiple times, without any big non-sequential jumps across the data), we=
- get
-> more than 10 times speed up.  It looks like the input buffer is uncached.
->=20
-That's right and a reality you have to deal with on those small ARM
-systems. The ARM architecture allows for systems that don't enforce
-hardware coherency across the whole SoC and many of the small/cheap SoC
-variants make use of this architectural feature.
+2ad56efa80db ("powerpc/iommu: Setup a default domain and remove set_platform_dma_ops")
+0f6a90436a57 ("iommu: Do not use IOMMU_DOMAIN_DMA if CONFIG_IOMMU_DMA is not enabled")
 
-What this means is that the CPU caches aren't coherent when it comes to
-DMA from other masters like the video capture units. There are two ways
-to enforce DMA coherency on such systems:
-1. map the DMA buffers uncached on the CPU
-2. require explicit cache maintenance when touching DMA buffers with
-the CPU
+Details of the same are in the following patch descriptions.
 
-Option 1 is what you see is happening in your setup, as it is simple,
-straight-forward and doesn't require any synchronization points.
+---
 
-Option 2 could be implemented by allocating cached DMA buffers in the
-V4L2 device and then executing the necessary cache synchronization in
-qbuf/dqbuf when ownership of the DMA buffer changes between CPU and DMA
-master. However this isn't guaranteed to be any faster, as the cache
-synchronization itself is a pretty heavy-weight operation when you are
-dealing with buffer that are potentially multi-megabytes in size.
+Shivaprasad G Bhat (2):
+      powerpc: iommu: Bring back table group release_ownership() call
+      iommu: Fix the domain type checks when default_domain is set
 
-> We experience slow down also when writing to output buffers.  It doesn't =
-seem to
-> matter whether we write to the output byte-by-byte or memcpy larger chunk=
-s.
->=20
-For DMA coherency it's sufficient to map the DMA buffers as write-
-combined, which should at least give you okay-ish write performance,
-depending on the specific micro-architecture of your system.
 
-> We are having trouble to understand what's the problem with the buffers o=
-n some
-> hardware and what we can realistically do about it.  Could you please hel=
-p us
-> clarify this?  Is it possible to force the DMA buffer CMA heap to be cach=
-ed?
-> Or is there anything else we can do or try?
+ arch/powerpc/kernel/iommu.c | 16 +++++++++++++---
+ drivers/iommu/iommu.c       | 14 ++++++++++----
+ 2 files changed, 23 insertions(+), 7 deletions(-)
 
-See above. You can work with cached buffers, but that is moving the
-cost elsewhere and is not guaranteed to yield better performance. There
-is no panacea on systems that don't enforce coherency at the hardware
-level.
+--
+Signature
 
-When working on uncached buffers directly, your best option is to try
-to access the buffers in as large chunks as possible, using vector
-loads or similar facilities. You certainly don't want to access a
-single memory location multiple times. If that is what your algorithm
-requires then copying the content into a cached buffer might be your
-best option, as it might have similar performance to explicit cache
-maintenance on cached DMA buffers and doesn't require another
-maintenance operation when transitioning the buffer back to DMA master
-ownership.
-
-Regards,
-Lucas
