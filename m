@@ -1,278 +1,249 @@
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
+Received: from mx0b-0064b401.pphosted.com (mx0b-0064b401.pphosted.com [205.220.178.238])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AA171CA81
-	for <iommu@lists.linux.dev>; Thu, 25 Jan 2024 10:23:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706178213; cv=none; b=H5t9mX4lI4IPavL65hAQsRywjtVRriUri/f9UZM+GYwdaffko7vI1rA5sUlXaMpOY8tJrtIZegO3Hs4Emn168N4zIW4h41ut8aqosTR7UljG7Y0HAKly8ofJt2Be2NnwYmMejTiOgPocsYdyQl/bg5ym0ql0gRFU76wrzZE2Tb4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706178213; c=relaxed/simple;
-	bh=Ly0PqbW2oN2Opyh9CU4T7uFbAhstoUyNcMUmv9bejv0=;
-	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:References; b=YA6LbgZkq2wwEhMVfQWKWOgi0diEjTrZLvoNQq5QPYjnR8vCrt1v1b11LzRxVsNSMqIBEUqwQXwU9NI4O2UBx6gfhhsf8jVFeLt3iO5F5/Tjb96wNjl11Mrabw8P4mhJ/blJqFAj+zSZ0BMKqBOUwA6pCZNjty9n2B9KvAM/sx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=QDl9h4cW; arc=none smtp.client-ip=210.118.77.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFC9F1C16;
+	Thu, 25 Jan 2024 11:02:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.178.238
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706180539; cv=fail; b=T3pg/CChZ9ICUTldWSkhsDbOqM5iHRYh6yLh07Qg0vlzJspPtvYaHxYIlBGXuzCbEYU8prQeAradzqaIln6zmp0BycOP1xzKp07tjzTMPXMXTrvvK+tTu9uRBNmFNCj02RDFhhj/TgJVLuzZhkXrGR0qE3AAvqpRPvy1cW+2sls=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706180539; c=relaxed/simple;
+	bh=HJ8f4/z7q9igcCAgKEQYvDxvL4zoBrPqJPfqtmnYu+s=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=iRbcAJETbUnYO48rheDwb31rU9fAcvVesTkwevWLfNIwHwp2bDHzuasnYBBW/5Gl5d06WJ6b7RcZPKDTOhLuS1LKW1fyxOh+6ml1SIr/ynFgLQIrCPEwSS1/NX+yFFKi2oMBZAYzqDbulazLZ6N5rHL1FO4Hi/gf6NjamemU6Pg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com; spf=pass smtp.mailfrom=windriver.com; dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b=WoUQR6y8; arc=fail smtp.client-ip=205.220.178.238
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=windriver.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=windriver.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="QDl9h4cW"
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240125102329euoutp0137eef922e1df916568b2d7683d0e2f8b~tkAqfmrpb1687616876euoutp01d;
-	Thu, 25 Jan 2024 10:23:29 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240125102329euoutp0137eef922e1df916568b2d7683d0e2f8b~tkAqfmrpb1687616876euoutp01d
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1706178209;
-	bh=Ncm394Ii3OYDiiNg4FkBaNLChaaJ1n7sSj+vagiflN0=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=QDl9h4cWUW3wnts/KO5svoxURrJQvmv+r+Wj+gGwxZd4vhuk3jSuKEi3VTgDl73t3
-	 HO4xnWTHrYCfnsxIrkdKaHzbdulAMexZR2Ztf8bRKid8hlZQo7KXcLaHFRY3hJRCOM
-	 fzxOmd0dE7V3BPf3pGcDGjpBRe7TwwtvuQcgfx4M=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-	20240125102328eucas1p2f4be424c5e16ea6c48eef02eb1676f52~tkAqQUE0t2319823198eucas1p2b;
-	Thu, 25 Jan 2024 10:23:28 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-	eusmges1new.samsung.com (EUCPMTA) with SMTP id 59.33.09539.0A632B56; Thu, 25
-	Jan 2024 10:23:28 +0000 (GMT)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20240125102328eucas1p288a2c65df13b1f60d60f363447bb8e5c~tkApwnWYS1923419234eucas1p2E;
-	Thu, 25 Jan 2024 10:23:28 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20240125102328eusmtrp13cbab7d9d9bccfe35f7e068ca9461055~tkApvjrdn1016510165eusmtrp1n;
-	Thu, 25 Jan 2024 10:23:28 +0000 (GMT)
-X-AuditID: cbfec7f2-52bff70000002543-78-65b236a0feab
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms1.samsung.com (EUCPMTA) with SMTP id 26.C2.09146.0A632B56; Thu, 25
-	Jan 2024 10:23:28 +0000 (GMT)
-Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240125102328eusmtip276b916752f476bcb1a639b8cb39af250~tkApik6bW1219912199eusmtip2Q;
-	Thu, 25 Jan 2024 10:23:28 +0000 (GMT)
-Received: from localhost (106.210.248.232) by CAMSVWEXC02.scsc.local
-	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-	Thu, 25 Jan 2024 10:23:27 +0000
-Date: Thu, 25 Jan 2024 11:23:26 +0100
-From: Joel Granados <j.granados@samsung.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
-	Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
-	<kevin.tian@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>, Jacob Pan
-	<jacob.jun.pan@linux.intel.com>, Longfang Liu <liulongfang@huawei.com>, Yan
-	Zhao <yan.y.zhao@intel.com>, <iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v10 04/16] iommu: Cleanup iopf data structure
- definitions
-Message-ID: <20240125102326.rgos2wizh273rteq@localhost>
+	dkim=pass (2048-bit key) header.d=windriver.com header.i=@windriver.com header.b="WoUQR6y8"
+Received: from pps.filterd (m0250811.ppops.net [127.0.0.1])
+	by mx0a-0064b401.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 40P9HLkA004362;
+	Thu, 25 Jan 2024 11:01:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=windriver.com;
+	 h=message-id:date:subject:to:cc:references:from:in-reply-to
+	:content-type:content-transfer-encoding:mime-version; s=
+	PPS06212021; bh=GO9WRaVX6/+nJi8HfTszljmrC7VJB15wwwINaqu7qW0=; b=
+	WoUQR6y8gpz8JkcWJsXZTvBiN9Z2CZvs3bjrJfIm1jhtlFX+/akw2rphYYagAjr6
+	XYB4MsuqZwDzu+ktRu8ebe4YDt0Ofk57KySUEulOOVBuLOkeyw5mLINgQKT9TXq2
+	j7RI+MYmgXSSuJ9LkUZwprZbWwFjAeO7IMejDnvD2V4jq5LGiI8YPg6PoHUJr9xL
+	SWJ6rLI6TUOTW04jpMNgf1n+K3eXe9HWDNsmtdbsH8Lfmhw1VxXEbmutGSrQXZbr
+	d4CJ43/H4qXUi0Zf87mubezbOdPPNVeSZbFZbkHw/sVUvot8nNcxsrkIbPhRfcaV
+	8kjTg3LxealIVCuWsBB0/A==
+Received: from nam10-bn7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2101.outbound.protection.outlook.com [104.47.70.101])
+	by mx0a-0064b401.pphosted.com (PPS) with ESMTPS id 3vucv20e4w-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 25 Jan 2024 11:01:54 +0000 (GMT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B6DnVtGmworZO5gYBRYm7PDPJOHMWrc0fO+tXslNEUXH5ItqoHRcEIEwCw7JX5rw6nqvM4aEKeQbZnG9wy14xyaSmoXfajvx4+ZRfHu/O+GJyR9HH6/KEiNuziWghuNgQN1hqkTRWQ8yFlWNhSllUteXlWHN40UBZhI1HeLXerWOdtiAhnUVPaYORBsT9pPaEJM8b0glAhooaIWP+3BMpXpWWA74aH9r25qzSK1nKwO19+ftYIy6gwZopdP7j65Ko1JJs29M5krRyGxte3kEHDm7dhkrbc0m/go44yL54ZkpZBAAOq6Njz+m7tVgwML5c+Yw9p2Uh0RBbzbtt+ZloA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GO9WRaVX6/+nJi8HfTszljmrC7VJB15wwwINaqu7qW0=;
+ b=e83vuh4EfKOtUgTgxQxWbT9d8q9xMrWUc/IRrpAlJhz8rLOOsp5RoGQhqa0lnRlbdp4WXnmXiYZq+yq7YSQKS58RTRp8uWpbw21P85hN0t2XgM0ACTTkjkNGqjG6wayWFdTZFrRMsrXNI9D/a4QDQgrc8abHekUI+b5nSA0Amh+jMFsX8PpffHwDBSc3Kg9ycN1B/xsx32pczID7R1x4aYJwlp+mL2HilWS3h6SuuiR6PF/CIMrGUiFILkTnJkAtbqtYvNSrImmIllmHhSQP34jfGNuTzKkSheNYQizJ4arLcqs7j6nBhej3ANcni03JCNCtV3YpkI3EVc8eQj7+cg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+Received: from DM4PR11MB5327.namprd11.prod.outlook.com (2603:10b6:5:392::22)
+ by DS0PR11MB6423.namprd11.prod.outlook.com (2603:10b6:8:c5::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.26; Thu, 25 Jan
+ 2024 11:01:50 +0000
+Received: from DM4PR11MB5327.namprd11.prod.outlook.com
+ ([fe80::7c2e:5b95:fdc2:30e]) by DM4PR11MB5327.namprd11.prod.outlook.com
+ ([fe80::7c2e:5b95:fdc2:30e%3]) with mapi id 15.20.7228.022; Thu, 25 Jan 2024
+ 11:01:50 +0000
+Message-ID: <0aa0664a-21fc-48d6-bc88-c752f5a10ebe@windriver.com>
+Date: Thu, 25 Jan 2024 12:56:08 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu: iommu_group_alloc_default_domain: Fix
+ ops->default_domain codepath
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, robin.murphy@arm.com,
+        will@kernel.org, joro@8bytes.org
+References: <20240123165829.630276-1-ovidiu.panait@windriver.com>
+ <20240123174905.GS50608@ziepe.ca>
+From: Ovidiu Panait <ovidiu.panait@windriver.com>
+In-Reply-To: <20240123174905.GS50608@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: VI1PR07CA0273.eurprd07.prod.outlook.com
+ (2603:10a6:803:b4::40) To DM4PR11MB5327.namprd11.prod.outlook.com
+ (2603:10b6:5:392::22)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="g7md5qdsafvmcjsg"
-Content-Disposition: inline
-In-Reply-To: <20240122054308.23901-5-baolu.lu@linux.intel.com>
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprEJsWRmVeSWpSXmKPExsWy7djP87oLzDalGtyerGuxeeJWNotfXyws
-	lh5cz2LRsPoCq8WVf3sYLWbOOMFo0Tl7A7vF0rdb2S3mTC20uLxrDpvFpoZki71PH7NZHPzw
-	hNWi5Y6pxd0r9xgt5v68xuIg4PHk4DwmjzXz1jB6tBx5y+qxeM9LJo9NqzrZPO5c28PmMe9k
-	oMeLzTMZPXqb37F5fN4k57H1822WAO4oLpuU1JzMstQifbsErozLPzrZCpo1K+4ecWlgnKXU
-	xcjJISFgInFu+3d2EFtIYAWjxNN3El2MXED2F0aJ1f1bWSGcz4wSKybPY4HpWPR4MiNEx3JG
-	iVuHpeCKtuybzQzhbGWUWHJ8DhNIFYuAqsSCdSfBdrAJ6Eicf3MHqIiDQ0RAXeLZlwCQemaB
-	XhaJ5s0PwaYKC/hLTF16AKyeV8Bc4suEU2wQtqDEyZlPwK5gFqiQ+Lr8IQvIHGYBaYnl/zhA
-	wpwCdhIfLtxggzhUWeL6zBdMEHatxKktt5hAdkkItHFJPL86gxEi4SKxrHsfVJGwxKvjW9gh
-	bBmJ05N7WCAaJjNK7P/3gR3CWc0osazxK1SHtUTLlSdQHY4SVz8/ZwS5SEKAT+LGW0GIQ/kk
-	Jm2bzgwR5pXoaBOCqFaTWH3vDcsERuVZSF6bheS1WQivQYR1JBbs/sSGIawtsWzha2YI21Zi
-	3br3LAsY2VcxiqeWFuempxYb5qWW6xUn5haX5qXrJefnbmIEJtXT/45/2sE499VHvUOMTByM
-	hxhVgJofbVh9gVGKJS8/L1VJhNfEdGOqEG9KYmVValF+fFFpTmrxIUZpDhYlcV7VFPlUIYH0
-	xJLU7NTUgtQimCwTB6dUA1NW4t8D+1/K3hdutd2vZGQi9HNF+srlmquU5UJX9rutjn1WFdV1
-	R+ufx8EIJdninD3+klaawlyNwd98L71fJtB+bp9HnRS3tnbpw4Nv2E9VxV7nu7amp+BHZdmP
-	syLrZp+T/hT15b6Q6ZwfUVolumkcZrcb/qWridx4kemeZei/4fJhxXKftC0dPH/vzOW8/tAs
-	sdzKkWXNMb4NB4Q8I/YYM/Qk2vw5ssOMYenHmAV6h7Y93bc+9PnzFZsfpB6vVoroLL0ZeLVm
-	wSTRv2HMcfMu1K5Kc91lc+/BMqGPc9l3RTP0vn736nxVTfzS9TM2nFasXOi/dUWQjebNP1V6
-	ndsMP8WsLi5clhW6qdutaZ4SS3FGoqEWc1FxIgDuZuJ5JQQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrAKsWRmVeSWpSXmKPExsVy+t/xe7oLzDalGpzexm+xeeJWNotfXyws
-	lh5cz2LRsPoCq8WVf3sYLWbOOMFo0Tl7A7vF0rdb2S3mTC20uLxrDpvFpoZki71PH7NZHPzw
-	hNWi5Y6pxd0r9xgt5v68xuIg4PHk4DwmjzXz1jB6tBx5y+qxeM9LJo9NqzrZPO5c28PmMe9k
-	oMeLzTMZPXqb37F5fN4k57H1822WAO4oPZui/NKSVIWM/OISW6VoQwsjPUNLCz0jE0s9Q2Pz
-	WCsjUyV9O5uU1JzMstQifbsEvYxZdxewFDRqVjycv5mlgXGGUhcjJ4eEgInEoseTGbsYuTiE
-	BJYySmx50cACkZCR2PjlKiuELSzx51oXG0TRR0aJr6ufMUM4Wxkldm2azA5SxSKgKrFg3Ukw
-	m01AR+L8mztARRwcIgLqEs++BIDUMwv0skg8mNkHtkFYwFfiSO8TJhCbV8Bc4suEU2wgtpBA
-	ocSuvS9ZIeKCEidnPgGrZxYokziwbRU7yExmAWmJ5f84QMKcAnYSHy7cYIM4VFni+swXTBB2
-	rcTnv88YJzAKz0IyaRaSSbMQJkGEtSRu/HvJhCGsLbFs4WtmCNtWYt269ywLGNlXMYqklhbn
-	pucWG+oVJ+YWl+al6yXn525iBCaXbcd+bt7BOO/VR71DjEwcjIcYVYA6H21YfYFRiiUvPy9V
-	SYTXxHRjqhBvSmJlVWpRfnxRaU5q8SFGU2AgTmSWEk3OB6a9vJJ4QzMDU0MTM0sDU0szYyVx
-	Xs+CjkQhgfTEktTs1NSC1CKYPiYOTqkGprTbedt/h0dbz7/DqZ6499HZ/qDn0u8tj3+bI5Y2
-	g+HpsZd1hbF5k1KTI7ZwWjhrHcg4au4eWZU5ceuCADUl9bApHy6dvrbcbXW12mplo9ucB75N
-	Obc5WKZ607bbfhnzpy6+LjFJWTTn4uKj2znO5y1+kKBvqtH27Wm63oT3S4uPynTK/TFoy6oI
-	n3j+T9qqX9dPv+NdEj8noPjXFq5i7hvP3kqdEPXZLtUr/qzsQN1ct0OH11S2rL57Qo7f9MUl
-	XpO/k8x2CjnuT4w6NEtVJWriFvnzC5fMaN/KJCxzQjN7SUok03u9qa8lj3y7ba2/5FmEQc/X
-	htAp6r9WfGlR9Lup/zs//ssmztffXH2ZyhmVWIozEg21mIuKEwGcclQ2wwMAAA==
-X-CMS-MailID: 20240125102328eucas1p288a2c65df13b1f60d60f363447bb8e5c
-X-Msg-Generator: CA
-X-RootMTR: 20240125102328eucas1p288a2c65df13b1f60d60f363447bb8e5c
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240125102328eucas1p288a2c65df13b1f60d60f363447bb8e5c
-References: <20240122054308.23901-1-baolu.lu@linux.intel.com>
-	<20240122054308.23901-5-baolu.lu@linux.intel.com>
-	<CGME20240125102328eucas1p288a2c65df13b1f60d60f363447bb8e5c@eucas1p2.samsung.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB5327:EE_|DS0PR11MB6423:EE_
+X-MS-Office365-Filtering-Correlation-Id: c9c5b240-c84d-46e4-a068-08dc1d950819
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	FKGoFgnCStnVuTe1VNILp3SYIH+EJsYTI+wO1MY5CiFGGOvJ6wJiSl8Ki3p5iZOsVmZFSe4RiMdlYrEW7CaIcpFYasN4a0RgsFYVljeZ6tYcnwALcVnCJL/9pi/P4Rw1xVMzfaHu76R+Bdit5PoIG1+7L66ll2QEbKo+vRr0scpxLh3qN8R2aTyHICeO/AKw3FtvzDdegsDHNOwq+2o3dp8skUxy6sy6dbFiH3tN1GzAKL8ixw3MinoMsGOzZlE7vl2KItCxGpa+si3XUzva9csrm2BpIayVhV4GuHuZYRxXUukxY+Phcfn9jrTmGHfZFB0gYZZXjd35eJgFNliKaYwULaS+UhgBNHgvASf9G6/gkDqhPYNICkv6DBtYJCJqOiseI9WLYzOR82W+PLiwaC/pvjMt/eRnlRCMhWL0JTbMQYPWiWbpcvsC0gEXui+2awZmk0aKL6gmPzxMIjCv5q6kkoe18gnk2U1ekvvYZXSkK8f9ZCBsJ1o5JpMHHHADiWLVk3uQ0yNeP9y+kGe7NBWISxBmraur3hs1rnOnHBdZqgMvpIkZcfqtZo0+CARAWOcb3RM2zowDuCKjse2Y065Ld/wOqqjUyijKM9O4VJT+iWhkMy3SZ7KOG05x2dMlRnw3AOFjtRuAfU2JBUTucrvJflKGFOfoz75vHgnIxozVEGA7zVKqNh3cTWRy1aqt
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5327.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(39850400004)(376002)(346002)(136003)(230273577357003)(230173577357003)(230922051799003)(186009)(64100799003)(451199024)(1800799012)(2616005)(26005)(53546011)(6506007)(6512007)(83380400001)(4326008)(8676002)(8936002)(44832011)(6486002)(66946007)(478600001)(6666004)(316002)(66476007)(66556008)(86362001)(31696002)(6916009)(38100700002)(31686004)(41300700001)(5660300002)(2906002)(36756003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?utf-8?B?ZFVkbU9vYXltUTBPQThNWDdvS2QrL2Zuei9kaG81c01YTUVNYU9ZWmM3UmVR?=
+ =?utf-8?B?OE5vZXIwRU50ZUs2RXBNb0xVaW1HRmh6b2JqOGQwU3VRV2lvWC9uc3p1Ui9E?=
+ =?utf-8?B?K2V6MWh2LzAwRG05SlhQK0MwKytqYWoxZld4cEFhQUY1YW9UaDRucnVJVm14?=
+ =?utf-8?B?TDFpbHVZMWlVRDU0VWc1STk3QzZrbU8rMmR5SUJhUE5LNUdDbW1nRlRwaEd4?=
+ =?utf-8?B?VDNqQTNOR1drYXFNd1VOYUU1M2c1WTlZTjA4a1NyM3Q0SThwSGVDQS9EQUk0?=
+ =?utf-8?B?Y3VPL2dTWmRDYkRTZ0VLVGJmNjZEMEhTd29teTNtcEwwT2lBdEJ0Rm13SGc0?=
+ =?utf-8?B?d0VWUktWSXU3WE04K2FISGlDVTd6citwQ2hJVUhXZ1puQlRXMDh3NnZ4Qjkv?=
+ =?utf-8?B?enBLZnNiZjFLMHdGNDFwMVk0Qjh6dkV4S2RQdEI4VHA0eWlPWlEzdk5mWkFP?=
+ =?utf-8?B?OHhINTBPU3AxU2hwTmxGa1ZDL0xuZjJtQnJ0V3lCZlUyckhTMHJzaU5Pa1Q4?=
+ =?utf-8?B?aUZaeklJQUJzay8rQ1p4YjlPS0dYZ1hUdXNBa1R0NHBvKzlHL3c5RnZnblFV?=
+ =?utf-8?B?UkNnZHZJWE9PeEZ6RWNHQk9jaGVXRytaNElBQ0ZDQmhUZHNFNHFkdkp2OE9N?=
+ =?utf-8?B?MTFNZW01YVBFazlSazJoVmVMblI1ajRJckVrTitOeGtyOTJlODNrQ3RMKzJq?=
+ =?utf-8?B?NnVXR3hVaktUalh1ZVJLaTdiMzZhaGt3MWUyRkQ0MWx4anpsYlRNSDlBMVl5?=
+ =?utf-8?B?c2VEa1FIYWNpY0VmMUszY3hQWmhEOWdKYUxLelNLU0ZjOHdwSFBKRDlCTUNo?=
+ =?utf-8?B?VndpVmhuV3IwaVpmTkdQTWJyTFNMdFg0WW50OENVL3MvdlJoQjAwN0UvRmRl?=
+ =?utf-8?B?bVhZVmIwQ1NlWXFlc0UwWjJyeUJ5RnFaYjVrOEdyVHFWMVF0OVNSYVQ0Tm50?=
+ =?utf-8?B?SDBqYzJLczFTQjhQSEpuRXlkdnRGK1IxMkpHUkFpa0dhL2cwb3JxdE1XN0RF?=
+ =?utf-8?B?WUcvZmM4VlRLVGNHSXd0R1MxZzRzSG0zaGRNQzgwL3RnTjRlcXRRNkVQLzls?=
+ =?utf-8?B?UEU2N3ZHOWxra1Jjc0w3eWRRQ1lsb3o3NlZXbVdYd1g2NFB4NVlOSlZ0WWJJ?=
+ =?utf-8?B?cjFkT25oM04wL1NNbGVkNXFuR0RYcTBxNnI1NXBjZ3RYa21MSEp1VUoyVVFx?=
+ =?utf-8?B?UUppMGRRTmp5SmlGS1E5UnhuR3U0U3hFYlR0cFVNdkJ0Lzl0UzIvaGw0RjFB?=
+ =?utf-8?B?eUNRRExzRFlnZDR5OElUV3hlN2hVbmMxN01mbmlVQXBDQjVMTXQ5R3BKTVZU?=
+ =?utf-8?B?NGw4bnJUak1kbjNhQk8xMzFDaTRjTzM2cGFnZnp0T2FBVFBVMmt5d2VPL2c0?=
+ =?utf-8?B?S3VnQlBHd09mLzdIb2I5Um1kaWc0UEE5TElDeUw4anhmMmtsMzY0N2VRTlRP?=
+ =?utf-8?B?NU9GYnFZbEVLaTZYMGR6Qi9oL050RXBkNnByclBHYWdiNkdTYW85RzBpZ0ZX?=
+ =?utf-8?B?RFpKYW81WUN2dCsrb2FBbEw1Z3VETHhrekhXNDdYeFN5cFd2eGl0T0VkMWI5?=
+ =?utf-8?B?Y0owQmJTVTF3c001WXAzYnAxSHdlZmZxWm9YazN6ZEdLei94anR0QVFXcWVX?=
+ =?utf-8?B?YjdkNjZuR1FOWXRXU3hub2FoUXlEQkZIeklIU2FLa3VEbGJqRHpoMnloNG9o?=
+ =?utf-8?B?WlN4YU1tb3dRUS9XNHhBUVBWbjQ0YTV3cXVZTWJqWnZJR2YwcUUzbTlLOHhU?=
+ =?utf-8?B?aGc4Y2tQcHBlVVk2T20vbjBFM2NJcmhmZk1zbHd1eitKRlllZEt4V1JmTFlB?=
+ =?utf-8?B?U1dtcktMWUEzZldMNEREQnA0NXJhMUVlOU02bngrU3U0cTFaRyt5dDNXR2Zy?=
+ =?utf-8?B?cCtKYXhyS2RtanBHeTdHVEdNWENrTlVVN2Y3LzllZVN6dDU4NEw1RVp5UTk4?=
+ =?utf-8?B?Yk1UdFE0d0NGNE84L2hJNDJ3dmlxRUEzc09IMk5VOW5Mb2didXo1UG1uMVhP?=
+ =?utf-8?B?Uk9jdmVnaE1PekwybUZUNit0SXRTeXc0c1EzTWs4UXBLVWRSdDh5R25wNzA4?=
+ =?utf-8?B?Z3N1cXRuai9mQ0ZyZGdSMnM2bzZkQmlzZ2Q5QzFGQXNpdkkzbWpBVSsrZXE2?=
+ =?utf-8?B?SVJEblozU2o0QS9LM05iMmt3RzA5K0tNWm9rdFlSdkpsYkNwdDdkWHI4VFpk?=
+ =?utf-8?B?eXc9PQ==?=
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c9c5b240-c84d-46e4-a068-08dc1d950819
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5327.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2024 11:01:50.6001
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LqvUSrsZAUjxQUPnXaVjgCFGBqDI7OM0KrBVA46QstGKODLhp8eiadhKZfQIbBpOfe5+TyFzaWORXBf/24RFOrIDglIEvpZj/joeZroZ860=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB6423
+X-Proofpoint-GUID: rQtY41uuo8ZqzruOwId8QdDaD90Qo5hU
+X-Proofpoint-ORIG-GUID: rQtY41uuo8ZqzruOwId8QdDaD90Qo5hU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-01-25_06,2024-01-25_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
+ bulkscore=0 adultscore=0 mlxscore=0 malwarescore=0 phishscore=0
+ impostorscore=0 mlxlogscore=999 priorityscore=1501 lowpriorityscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2401190000 definitions=main-2401250075
 
---g7md5qdsafvmcjsg
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Jason,
 
-On Mon, Jan 22, 2024 at 01:42:56PM +0800, Lu Baolu wrote:
-> struct iommu_fault_page_request and struct iommu_page_response are not
-> part of uAPI anymore. Convert them to data structures for kAPI.
->=20
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Reviewed-by: Yi Liu <yi.l.liu@intel.com>
-> Tested-by: Yan Zhao <yan.y.zhao@intel.com>
-> Tested-by: Longfang Liu <liulongfang@huawei.com>
-> ---
->  include/linux/iommu.h      | 27 +++++++++++----------------
->  drivers/iommu/io-pgfault.c |  1 -
->  drivers/iommu/iommu.c      |  4 ----
->  3 files changed, 11 insertions(+), 21 deletions(-)
->=20
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index c960c4fae3bc..829bcb5a8e23 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -71,12 +71,12 @@ struct iommu_fault_page_request {
->  #define IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE	(1 << 1)
->  #define IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA	(1 << 2)
->  #define IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID	(1 << 3)
-> -	__u32	flags;
-> -	__u32	pasid;
-> -	__u32	grpid;
-> -	__u32	perm;
-> -	__u64	addr;
-> -	__u64	private_data[2];
-> +	u32	flags;
-> +	u32	pasid;
-> +	u32	grpid;
-> +	u32	perm;
-> +	u64	addr;
-> +	u64	private_data[2];
->  };
-> =20
->  /**
-> @@ -85,7 +85,7 @@ struct iommu_fault_page_request {
->   * @prm: Page Request message, when @type is %IOMMU_FAULT_PAGE_REQ
->   */
->  struct iommu_fault {
-> -	__u32	type;
-> +	u32 type;
->  	struct iommu_fault_page_request prm;
->  };
-> =20
-> @@ -106,8 +106,6 @@ enum iommu_page_response_code {
-> =20
->  /**
->   * struct iommu_page_response - Generic page response information
-> - * @argsz: User filled size of this data
-> - * @version: API version of this structure
->   * @flags: encodes whether the corresponding fields are valid
->   *         (IOMMU_FAULT_PAGE_RESPONSE_* values)
->   * @pasid: Process Address Space ID
-> @@ -115,14 +113,11 @@ enum iommu_page_response_code {
->   * @code: response code from &enum iommu_page_response_code
->   */
->  struct iommu_page_response {
-> -	__u32	argsz;
-> -#define IOMMU_PAGE_RESP_VERSION_1	1
-> -	__u32	version;
->  #define IOMMU_PAGE_RESP_PASID_VALID	(1 << 0)
-> -	__u32	flags;
-> -	__u32	pasid;
-> -	__u32	grpid;
-> -	__u32	code;
-> +	u32	flags;
-> +	u32	pasid;
-> +	u32	grpid;
-> +	u32	code;
->  };
-> =20
-> =20
-> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-> index e5b8b9110c13..24b5545352ae 100644
-> --- a/drivers/iommu/io-pgfault.c
-> +++ b/drivers/iommu/io-pgfault.c
-> @@ -56,7 +56,6 @@ static int iopf_complete_group(struct device *dev, stru=
-ct iopf_fault *iopf,
->  			       enum iommu_page_response_code status)
->  {
->  	struct iommu_page_response resp =3D {
-> -		.version		=3D IOMMU_PAGE_RESP_VERSION_1,
->  		.pasid			=3D iopf->fault.prm.pasid,
->  		.grpid			=3D iopf->fault.prm.grpid,
->  		.code			=3D status,
+On 23.01.2024 19:49, Jason Gunthorpe wrote:
+> CAUTION: This email comes from a non Wind River email account!
+> Do not click links or open attachments unless you recognize the sender and know the content is safe.
+>
+> On Tue, Jan 23, 2024 at 06:58:29PM +0200, ovidiu.panait@windriver.com wrote:
+>> From: Ovidiu Panait <ovidiu.panait@windriver.com>
+>>
+>> Since commit [1], FSL_PAMU initialization on t4240rdb board fails
+>> with: "fsl-pamu-domain: pamu_domain_init: Can't register iommu device".
+>>
+>> Commit [1] changed the behavior for drivers that set ops->default_domain,
+>> as the function iommu_group_alloc_default_domain() is now called with
+>> "req_type == IOMMU_DOMAIN_IDENTITY", rather than "req_type == 0". This
+>> causes the following EINVAL condition to be hit during FSL_PAMU
+>> initialization:
+>>    ...
+>>         if (ops->default_domain) {
+>>                 if (req_type)
+>>                         return ERR_PTR(-EINVAL);
+>>                 return ops->default_domain;
+>>         }
+>>    ...
+>>
+>> To avoid this issue when ops->default_domain != NULL, remove the check for
+>> non-zero req_type and always return the proper default domain, as set in
+>> the driver.
+>>
+>>    [1] 0f6a90436a57 ("iommu: Do not use IOMMU_DOMAIN_DMA [...]")
+>>
+>> Fixes: 0f6a90436a57 ("iommu: Do not use IOMMU_DOMAIN_DMA if CONFIG_IOMMU_DMA is not enabled")
+>> Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+>> ---
+>>   drivers/iommu/iommu.c | 5 +----
+>>   1 file changed, 1 insertion(+), 4 deletions(-)
+> Oh, that is a neat combination of things
+>
+> Removing the test will cause problems for the sys flow - I think the
+> right thing is to get the correct req_type earlier. paml wants to use
+> a specific domain type so it should not be switching to identity at
+> all.
+>
+> Does the below work for you?
+Yes, this works, thanks a lot!
+> Also, what is your interest here? I have been wanting to delete this
+> driver, would your system still be OK for your usage if it was
+> removed?
+CONFIG_FSL_PAMU is enabled by default in corenet64_smp_defconfig, and it 
+looks
+like many platforms are based on this config. I actually noticed this issue
+while boot testing the mainline kernel on the t4240rdb board with the 
+default
+corenet64_smp_defconfig.
+
+In this particular case, the board still boots fine with CONFIG_FSL_PAMU 
+disabled,
+but I'm not sure how/if removing the PAMU driver will impact other 
+platforms.
+
+Ovidiu
+> Thanks,
+> Jason
+>
 > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 68e648b55767..b88dc3e0595c 100644
+> index 68e648b5576706..7fa3ccdc3286e6 100644
 > --- a/drivers/iommu/iommu.c
 > +++ b/drivers/iommu/iommu.c
-> @@ -1494,10 +1494,6 @@ int iommu_page_response(struct device *dev,
->  	if (!param || !param->fault_param)
->  		return -EINVAL;
-> =20
-> -	if (msg->version !=3D IOMMU_PAGE_RESP_VERSION_1 ||
-> -	    msg->flags & ~IOMMU_PAGE_RESP_PASID_VALID)
-> -		return -EINVAL;
+> @@ -1799,7 +1799,7 @@ iommu_group_alloc_default_domain(struct iommu_group *group, int req_type)
+>           * domain. Do not use in new drivers.
+>           */
+>          if (ops->default_domain) {
+> -               if (req_type)
+> +               if (req_type != ops->default_domain->type)
+>                          return ERR_PTR(-EINVAL);
+>                  return ops->default_domain;
+>          }
+> @@ -1871,10 +1871,18 @@ static int iommu_get_def_domain_type(struct iommu_group *group,
+>          const struct iommu_ops *ops = dev_iommu_ops(dev);
+>          int type;
+>
+> -       if (!ops->def_domain_type)
+> -               return cur_type;
 > -
-I see that this function `iommu_page_response` eventually lands in
-drivers/iommu/io-pgfault.c as `iopf_group_response`. But it seems that
-the check for IOMMU_PAGE_RESP_PASID_VALID is dropped.
-
-I see that after applying [1] and [2] there are only three places where
-IOMMU_PAGE_RESP_PASID_VALID appears in the code: One is the definition
-and the other two are just setting the value. We effectively dropped the
-check. Is the drop intended? and if so, should we just get rid of
-IOMMU_PAGE_RESP_PASID_VALID?
-
-Best
-
-[1] https://lore.kernel.org/all/20240122054308.23901-1-baolu.lu@linux.intel=
-=2Ecom
-[2] https://lore.kernel.org/all/20240122073903.24406-1-baolu.lu@linux.intel=
-=2Ecom
-
->  	/* Only send response if there is a fault report pending */
->  	mutex_lock(&param->fault_param->lock);
->  	if (list_empty(&param->fault_param->faults)) {
-> --=20
-> 2.34.1
->=20
-
---=20
-
-Joel Granados
-
---g7md5qdsafvmcjsg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmWyNpsACgkQupfNUreW
-QU+6hwv/TaKF2IQiTXor9rKsoUWbb18zSHY+9a6gb2JXmoq36LeghRmGq08Fqlhe
-sfWpsfisZ1vQyMisJpmGYUjvADZAwz58CzPuJg5/mvYIQ92MzOdw9uuYtEhQ8NCn
-2aBCirkZqnmgs9PT+LeOiZI27SqnJ20BYxHziHwKImO00xdF0ATVYJ0WPrC1bBrQ
-2AyluVYBnJBf6eD1aBRyJhd2p+n+Vz5Khjwccg4gHD2wtlHhfaw+bxvHYG/LaTN2
-GtPZlIxvszLugo10D0dJPvQT/UyWPok58qV0vs7j7n66xtQYRFC72aV2PgydIvy0
-BlQd6ekUVDGKiJ3hCrelfmngenwkO7nEA3IMZizb5jFm7fJTshVyOKJ73cB9AKtr
-BVfFbPV+D3a5q5hojISFuouMA0TCXjcbAVxD06LhPly6r6YqC6F2teQK2NzPmZwr
-5FN7CR+oA8kYi/BNa7cjX0CWPorJZuJnNT+UEv38+EzuKfLZ3RjCpcN4iHDTorCf
-ZknArIcN
-=QScI
------END PGP SIGNATURE-----
-
---g7md5qdsafvmcjsg--
+> -       type = ops->def_domain_type(dev);
+> +       if (ops->default_domain) {
+> +               /*
+> +                * Drivers that declare a global static default_domain will
+> +                * always choose that.
+> +                */
+> +               type = ops->default_domain->type;
+> +       } else {
+> +               if (ops->def_domain_type)
+> +                       type = ops->def_domain_type(dev);
+> +               else
+> +                       type = cur_type;
+> +       }
+>          if (!type || cur_type == type)
+>                  return cur_type;
+>          if (!cur_type)
