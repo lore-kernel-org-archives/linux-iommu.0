@@ -1,209 +1,278 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 691041C2A1
-	for <iommu@lists.linux.dev>; Thu, 25 Jan 2024 09:38:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AA171CA81
+	for <iommu@lists.linux.dev>; Thu, 25 Jan 2024 10:23:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706175486; cv=none; b=Rfn4XnRYFnbVdY5kWzhdLcobD/WabJ/0eBv5EBtTacF0H10zbwTh0TBGgzBKE9dxlMVxWhxrw7HbHrXzH2OqJVz57RP/KVVjCnrlQInrvL0qm/J3oXT9LD4FeXoDGKtlsxZVEby8Kv/+czVdhEjfgpz8tqytOXInWaTAwD+oiD0=
+	t=1706178213; cv=none; b=H5t9mX4lI4IPavL65hAQsRywjtVRriUri/f9UZM+GYwdaffko7vI1rA5sUlXaMpOY8tJrtIZegO3Hs4Emn168N4zIW4h41ut8aqosTR7UljG7Y0HAKly8ofJt2Be2NnwYmMejTiOgPocsYdyQl/bg5ym0ql0gRFU76wrzZE2Tb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706175486; c=relaxed/simple;
-	bh=yG81cTllFEjaTu43SogQYuhthByCM+AVIe1A6soPGns=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=OAcQtbZSRmfB1KCJVkUWxp6HQV4kIi5kYqWg+GjQdu2ZLR+AZwVh1pmu+K06BULvCJNCS8o6daV2UVDHOUTiMtzdwekmegQDBQBuHh2nTxPC1T712EVjtp3rl2mufAx0V5JpaiZW8MrmP5W7yv+/jfPuvjGXfhnWkIBpeRZIRHU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hxtb5kt/; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1706178213; c=relaxed/simple;
+	bh=Ly0PqbW2oN2Opyh9CU4T7uFbAhstoUyNcMUmv9bejv0=;
+	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To:References; b=YA6LbgZkq2wwEhMVfQWKWOgi0diEjTrZLvoNQq5QPYjnR8vCrt1v1b11LzRxVsNSMqIBEUqwQXwU9NI4O2UBx6gfhhsf8jVFeLt3iO5F5/Tjb96wNjl11Mrabw8P4mhJ/blJqFAj+zSZ0BMKqBOUwA6pCZNjty9n2B9KvAM/sx0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=QDl9h4cW; arc=none smtp.client-ip=210.118.77.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hxtb5kt/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706175484; x=1737711484;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=yG81cTllFEjaTu43SogQYuhthByCM+AVIe1A6soPGns=;
-  b=Hxtb5kt/gmHI0OU3rRwCyWoo9GYYmZy4ZSyGHqgGK2VB1EsqHyDs2e5X
-   G8bFaz8v2H5T9RsegBD1jEmCo/7RbUEnb11tdZUPe97yNBexAl1kEiGrG
-   r6CsRo/GcJEEyKRaf86B86q0iFiWLsGEGSG1db3GivbwsXSQVVITwUU3m
-   EwZfaAE6AFx7oodJQAli2hvCWv6D4ZGqVVOEeVr3/BkwWsubLY7Uk94yv
-   8hK0FYxC1/aSBX8NmYKk77MF5RuXZTaAizpAibOXMgnAcZ1G0h2g+dmyI
-   Kr7ClksOU7xH13eaZLvqM6EBYMBZB9Q6NpiUk2+ccHma+L/1bVyah9Rqi
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10962"; a="2004930"
-X-IronPort-AV: E=Sophos;i="6.05,216,1701158400"; 
-   d="scan'208";a="2004930"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2024 01:38:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10962"; a="905904562"
-X-IronPort-AV: E=Sophos;i="6.05,216,1701158400"; 
-   d="scan'208";a="905904562"
-Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.254.212.253]) ([10.254.212.253])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2024 01:38:01 -0800
-Message-ID: <a6e18e0a-2721-4126-aa8a-ae650fa86edb@linux.intel.com>
-Date: Thu, 25 Jan 2024 17:37:58 +0800
+	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="QDl9h4cW"
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+	by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20240125102329euoutp0137eef922e1df916568b2d7683d0e2f8b~tkAqfmrpb1687616876euoutp01d;
+	Thu, 25 Jan 2024 10:23:29 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20240125102329euoutp0137eef922e1df916568b2d7683d0e2f8b~tkAqfmrpb1687616876euoutp01d
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+	s=mail20170921; t=1706178209;
+	bh=Ncm394Ii3OYDiiNg4FkBaNLChaaJ1n7sSj+vagiflN0=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
+	b=QDl9h4cWUW3wnts/KO5svoxURrJQvmv+r+Wj+gGwxZd4vhuk3jSuKEi3VTgDl73t3
+	 HO4xnWTHrYCfnsxIrkdKaHzbdulAMexZR2Ztf8bRKid8hlZQo7KXcLaHFRY3hJRCOM
+	 fzxOmd0dE7V3BPf3pGcDGjpBRe7TwwtvuQcgfx4M=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+	20240125102328eucas1p2f4be424c5e16ea6c48eef02eb1676f52~tkAqQUE0t2319823198eucas1p2b;
+	Thu, 25 Jan 2024 10:23:28 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+	eusmges1new.samsung.com (EUCPMTA) with SMTP id 59.33.09539.0A632B56; Thu, 25
+	Jan 2024 10:23:28 +0000 (GMT)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+	20240125102328eucas1p288a2c65df13b1f60d60f363447bb8e5c~tkApwnWYS1923419234eucas1p2E;
+	Thu, 25 Jan 2024 10:23:28 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+	20240125102328eusmtrp13cbab7d9d9bccfe35f7e068ca9461055~tkApvjrdn1016510165eusmtrp1n;
+	Thu, 25 Jan 2024 10:23:28 +0000 (GMT)
+X-AuditID: cbfec7f2-52bff70000002543-78-65b236a0feab
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+	eusmgms1.samsung.com (EUCPMTA) with SMTP id 26.C2.09146.0A632B56; Thu, 25
+	Jan 2024 10:23:28 +0000 (GMT)
+Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
+	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+	20240125102328eusmtip276b916752f476bcb1a639b8cb39af250~tkApik6bW1219912199eusmtip2Q;
+	Thu, 25 Jan 2024 10:23:28 +0000 (GMT)
+Received: from localhost (106.210.248.232) by CAMSVWEXC02.scsc.local
+	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+	Thu, 25 Jan 2024 10:23:27 +0000
+Date: Thu, 25 Jan 2024 11:23:26 +0100
+From: Joel Granados <j.granados@samsung.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
+	Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
+	<kevin.tian@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>, Jacob Pan
+	<jacob.jun.pan@linux.intel.com>, Longfang Liu <liulongfang@huawei.com>, Yan
+	Zhao <yan.y.zhao@intel.com>, <iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v10 04/16] iommu: Cleanup iopf data structure
+ definitions
+Message-ID: <20240125102326.rgos2wizh273rteq@localhost>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Dell XPS 13 9360: DMAR errors `DRHD: handling fault status reg 2`
- and `[INTR-REMAP] Request device [f0:1f.0] fault index 0x0`
-To: "Christian A. Ehrhardt" <lk@c--e.de>, Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Paul Menzel <pmenzel@molgen.mpg.de>, =?UTF-8?B?SsO2cmcgUsO2ZGVs?=
- <joro@8bytes.org>, Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <9a24c335-8ec5-48c9-9bdd-b0dac5ecbca8@molgen.mpg.de>
- <cb71c806-b100-4673-a131-faac77344002@linux.intel.com>
- <Za5xYauQDe8xcVGr@cae.in-ulm.de>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <Za5xYauQDe8xcVGr@cae.in-ulm.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg="pgp-sha512";
+	protocol="application/pgp-signature"; boundary="g7md5qdsafvmcjsg"
+Content-Disposition: inline
+In-Reply-To: <20240122054308.23901-5-baolu.lu@linux.intel.com>
+X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
+	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprEJsWRmVeSWpSXmKPExsWy7djP87oLzDalGtyerGuxeeJWNotfXyws
+	lh5cz2LRsPoCq8WVf3sYLWbOOMFo0Tl7A7vF0rdb2S3mTC20uLxrDpvFpoZki71PH7NZHPzw
+	hNWi5Y6pxd0r9xgt5v68xuIg4PHk4DwmjzXz1jB6tBx5y+qxeM9LJo9NqzrZPO5c28PmMe9k
+	oMeLzTMZPXqb37F5fN4k57H1822WAO4oLpuU1JzMstQifbsErozLPzrZCpo1K+4ecWlgnKXU
+	xcjJISFgInFu+3d2EFtIYAWjxNN3El2MXED2F0aJ1f1bWSGcz4wSKybPY4HpWPR4MiNEx3JG
+	iVuHpeCKtuybzQzhbGWUWHJ8DhNIFYuAqsSCdSfBdrAJ6Eicf3MHqIiDQ0RAXeLZlwCQemaB
+	XhaJ5s0PwaYKC/hLTF16AKyeV8Bc4suEU2wQtqDEyZlPwK5gFqiQ+Lr8IQvIHGYBaYnl/zhA
+	wpwCdhIfLtxggzhUWeL6zBdMEHatxKktt5hAdkkItHFJPL86gxEi4SKxrHsfVJGwxKvjW9gh
+	bBmJ05N7WCAaJjNK7P/3gR3CWc0osazxK1SHtUTLlSdQHY4SVz8/ZwS5SEKAT+LGW0GIQ/kk
+	Jm2bzgwR5pXoaBOCqFaTWH3vDcsERuVZSF6bheS1WQivQYR1JBbs/sSGIawtsWzha2YI21Zi
+	3br3LAsY2VcxiqeWFuempxYb5qWW6xUn5haX5qXrJefnbmIEJtXT/45/2sE499VHvUOMTByM
+	hxhVgJofbVh9gVGKJS8/L1VJhNfEdGOqEG9KYmVValF+fFFpTmrxIUZpDhYlcV7VFPlUIYH0
+	xJLU7NTUgtQimCwTB6dUA1NW4t8D+1/K3hdutd2vZGQi9HNF+srlmquU5UJX9rutjn1WFdV1
+	R+ufx8EIJdninD3+klaawlyNwd98L71fJtB+bp9HnRS3tnbpw4Nv2E9VxV7nu7amp+BHZdmP
+	syLrZp+T/hT15b6Q6ZwfUVolumkcZrcb/qWridx4kemeZei/4fJhxXKftC0dPH/vzOW8/tAs
+	sdzKkWXNMb4NB4Q8I/YYM/Qk2vw5ssOMYenHmAV6h7Y93bc+9PnzFZsfpB6vVoroLL0ZeLVm
+	wSTRv2HMcfMu1K5Kc91lc+/BMqGPc9l3RTP0vn736nxVTfzS9TM2nFasXOi/dUWQjebNP1V6
+	ndsMP8WsLi5clhW6qdutaZ4SS3FGoqEWc1FxIgDuZuJ5JQQAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrAKsWRmVeSWpSXmKPExsVy+t/xe7oLzDalGpzexm+xeeJWNotfXyws
+	lh5cz2LRsPoCq8WVf3sYLWbOOMFo0Tl7A7vF0rdb2S3mTC20uLxrDpvFpoZki71PH7NZHPzw
+	hNWi5Y6pxd0r9xgt5v68xuIg4PHk4DwmjzXz1jB6tBx5y+qxeM9LJo9NqzrZPO5c28PmMe9k
+	oMeLzTMZPXqb37F5fN4k57H1822WAO4oPZui/NKSVIWM/OISW6VoQwsjPUNLCz0jE0s9Q2Pz
+	WCsjUyV9O5uU1JzMstQifbsEvYxZdxewFDRqVjycv5mlgXGGUhcjJ4eEgInEoseTGbsYuTiE
+	BJYySmx50cACkZCR2PjlKiuELSzx51oXG0TRR0aJr6ufMUM4Wxkldm2azA5SxSKgKrFg3Ukw
+	m01AR+L8mztARRwcIgLqEs++BIDUMwv0skg8mNkHtkFYwFfiSO8TJhCbV8Bc4suEU2wgtpBA
+	ocSuvS9ZIeKCEidnPgGrZxYokziwbRU7yExmAWmJ5f84QMKcAnYSHy7cYIM4VFni+swXTBB2
+	rcTnv88YJzAKz0IyaRaSSbMQJkGEtSRu/HvJhCGsLbFs4WtmCNtWYt269ywLGNlXMYqklhbn
+	pucWG+oVJ+YWl+al6yXn525iBCaXbcd+bt7BOO/VR71DjEwcjIcYVYA6H21YfYFRiiUvPy9V
+	SYTXxHRjqhBvSmJlVWpRfnxRaU5q8SFGU2AgTmSWEk3OB6a9vJJ4QzMDU0MTM0sDU0szYyVx
+	Xs+CjkQhgfTEktTs1NSC1CKYPiYOTqkGprTbedt/h0dbz7/DqZ6499HZ/qDn0u8tj3+bI5Y2
+	g+HpsZd1hbF5k1KTI7ZwWjhrHcg4au4eWZU5ceuCADUl9bApHy6dvrbcbXW12mplo9ucB75N
+	Obc5WKZ607bbfhnzpy6+LjFJWTTn4uKj2znO5y1+kKBvqtH27Wm63oT3S4uPynTK/TFoy6oI
+	n3j+T9qqX9dPv+NdEj8noPjXFq5i7hvP3kqdEPXZLtUr/qzsQN1ct0OH11S2rL57Qo7f9MUl
+	XpO/k8x2CjnuT4w6NEtVJWriFvnzC5fMaN/KJCxzQjN7SUok03u9qa8lj3y7ba2/5FmEQc/X
+	htAp6r9WfGlR9Lup/zs//ssmztffXH2ZyhmVWIozEg21mIuKEwGcclQ2wwMAAA==
+X-CMS-MailID: 20240125102328eucas1p288a2c65df13b1f60d60f363447bb8e5c
+X-Msg-Generator: CA
+X-RootMTR: 20240125102328eucas1p288a2c65df13b1f60d60f363447bb8e5c
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20240125102328eucas1p288a2c65df13b1f60d60f363447bb8e5c
+References: <20240122054308.23901-1-baolu.lu@linux.intel.com>
+	<20240122054308.23901-5-baolu.lu@linux.intel.com>
+	<CGME20240125102328eucas1p288a2c65df13b1f60d60f363447bb8e5c@eucas1p2.samsung.com>
 
+--g7md5qdsafvmcjsg
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 1/22/2024 9:45 PM, Christian A. Ehrhardt wrote:
-> Hi,
->
-> On Mon, Jan 22, 2024 at 08:53:43PM +0800, Baolu Lu wrote:
->> On 2024/1/19 20:59, Paul Menzel wrote:
->>> Dear Linux folks,
->>>
->>>
->>> On a Dell XPS 13 9360 Linux 6.6.8, 6.6.11 and 6.7 (and earlier versions)
->>> log the lines below when resuming from ACPI S3 (deep):
->>>
->>>       [    0.000000] Linux version 6.7-amd64
->>> (debian-kernel@lists.debian.org) (x86_64-linux-gnu-gcc-13 (Debian
->>> 13.2.0-9) 13.2.0, GNU ld (GNU Binutils for Debian) 2.41.50.20231227) #1
->>> SMP PREEMPT_DYNAMIC Debian 6.7-1~exp1 (2024-01-08)
->>>       [    0.000000] Command line: BOOT_IMAGE=/vmlinuz-6.7-amd64
->>> root=UUID=32e29882-d94d-4a92-9ee4-4d03002bfa29 ro quiet pci=noaer
->>> mem_sleep_default=deep log_buf_len=8M
->>>       […]
->>>       [    0.000000] DMI: Dell Inc. XPS 13 9360/0596KF, BIOS 2.21.0
->>> 06/02/2022
->>>       […]
->>>       [   99.711230] PM: suspend entry (deep)
->>>       […]
->>>       [   99.722101] printk: Suspending console(s) (use
->>> no_console_suspend to debug)
->>>       [  100.285178] ACPI: EC: interrupt blocked
->>>       [  100.319908] ACPI: PM: Preparing to enter system sleep state S3
->>>       [  100.331793] ACPI: EC: event blocked
->>>       [  100.331798] ACPI: EC: EC stopped
->>>       [  100.331800] ACPI: PM: Saving platform NVS memory
->>>       [  100.335224] Disabling non-boot CPUs ...
->>>       [  100.337412] smpboot: CPU 1 is now offline
->>>       [  100.341065] smpboot: CPU 2 is now offline
->>>       [  100.346441] smpboot: CPU 3 is now offline
->>>       [  100.353086] ACPI: PM: Low-level resume complete
->>>       [  100.353129] ACPI: EC: EC started
->>>       [  100.353129] ACPI: PM: Restoring platform NVS memory
->>>       [  100.355219] Enabling non-boot CPUs ...
->>>       [  100.355244] smpboot: Booting Node 0 Processor 1 APIC 0x2
->>>       [  100.355954] CPU1 is up
->>>       [  100.355972] smpboot: Booting Node 0 Processor 2 APIC 0x1
->>>       [  100.356698] CPU2 is up
->>>       [  100.356716] smpboot: Booting Node 0 Processor 3 APIC 0x3
->>>       [  100.357371] CPU3 is up
->>>       [  100.360217] ACPI: PM: Waking up from system sleep state S3
->>>       [  100.668380] ACPI: EC: interrupt unblocked
->>>       [  100.668598] pcieport 0000:00:1c.0: Intel SPT PCH root port ACS
->>> workaround enabled
->>>       [  100.668606] pcieport 0000:00:1c.4: Intel SPT PCH root port ACS
->>> workaround enabled
->>>       [  100.668643] pcieport 0000:00:1d.0: Intel SPT PCH root port ACS
->>> workaround enabled
->>>       [  100.690996] DMAR: DRHD: handling fault status reg 2
->>>       [  100.691001] DMAR: [INTR-REMAP] Request device [f0:1f.0] fault
->>> index 0x0 [fault reason 0x25] Blocked a compatibility format interrupt
->>> request
->>>
->>> But I am unable to find the device f0:1f.0:
->>>
->>>       $ lspci -nn
->>>       00:00.0 Host bridge [0600]: Intel Corporation Xeon E3-1200 v6/7th
->>> Gen Core Processor Host Bridge/DRAM Registers [8086:5904] (rev 02)
->>>       00:02.0 VGA compatible controller [0300]: Intel Corporation HD
->>> Graphics 620 [8086:5916] (rev 02)
->>>       00:04.0 Signal processing controller [1180]: Intel Corporation Xeon
->>> E3-1200 v5/E3-1500 v5/6th Gen Core Processor Thermal Subsystem
->>> [8086:1903] (rev 02)
->>>       00:14.0 USB controller [0c03]: Intel Corporation Sunrise Point-LP
->>> USB 3.0 xHCI Controller [8086:9d2f] (rev 21)
->>>       00:14.2 Signal processing controller [1180]: Intel Corporation
->>> Sunrise Point-LP Thermal subsystem [8086:9d31] (rev 21)
->>>       00:15.0 Signal processing controller [1180]: Intel Corporation
->>> Sunrise Point-LP Serial IO I2C Controller #0 [8086:9d60] (rev 21)
->>>       00:15.1 Signal processing controller [1180]: Intel Corporation
->>> Sunrise Point-LP Serial IO I2C Controller #1 [8086:9d61] (rev 21)
->>>       00:16.0 Communication controller [0780]: Intel Corporation Sunrise
->>> Point-LP CSME HECI #1 [8086:9d3a] (rev 21)
->>>       00:1c.0 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI
->>> Express Root Port #1 [8086:9d10] (rev f1)
->>>       00:1c.4 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI
->>> Express Root Port #5 [8086:9d14] (rev f1)
->>>       00:1d.0 PCI bridge [0604]: Intel Corporation Sunrise Point-LP PCI
->>> Express Root Port #9 [8086:9d18] (rev f1)
->>>       00:1f.0 ISA bridge [0601]: Intel Corporation Sunrise Point-LP LPC
->>> Controller [8086:9d58] (rev 21)
->>>       00:1f.2 Memory controller [0580]: Intel Corporation Sunrise
->>> Point-LP PMC [8086:9d21] (rev 21)
->>>       00:1f.3 Audio device [0403]: Intel Corporation Sunrise Point-LP HD
->>> Audio [8086:9d71] (rev 21)
->>>       00:1f.4 SMBus [0c05]: Intel Corporation Sunrise Point-LP SMBus
->>> [8086:9d23] (rev 21)
->>>       01:00.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3
->>> Bridge [Alpine Ridge 2C 2015] [8086:1576]
->>>       02:00.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3
->>> Bridge [Alpine Ridge 2C 2015] [8086:1576]
->>>       02:01.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3
->>> Bridge [Alpine Ridge 2C 2015] [8086:1576]
->>>       02:02.0 PCI bridge [0604]: Intel Corporation DSL6340 Thunderbolt 3
->>> Bridge [Alpine Ridge 2C 2015] [8086:1576]
->>>       39:00.0 USB controller [0c03]: Intel Corporation DSL6340 USB 3.1
->>> Controller [Alpine Ridge] [8086:15b5]
->>>       3a:00.0 Network controller [0280]: Qualcomm Atheros QCA6174
->>> 802.11ac Wireless Network Adapter [168c:003e] (rev 32)
->>>       3b:00.0 Non-Volatile memory controller [0108]: SK hynix PC300 NVMe
->>> Solid State Drive 512GB [1c5c:1284]
->>>
->>> As this is logged as an error, can this be fixed somehow?
->> This appears to be a platform problem. The hidden device (f0:1f.0) is
->> not visible to the OS, so no driver can program the interrupt remapping
->> table for the device's interrupts.
-> The hidden device has been identified as the IO-APIC. It is visible
-> and properly declared to use 0f:1f.0 in the DMAR table.
+On Mon, Jan 22, 2024 at 01:42:56PM +0800, Lu Baolu wrote:
+> struct iommu_fault_page_request and struct iommu_page_response are not
+> part of uAPI anymore. Convert them to data structures for kAPI.
+>=20
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> Reviewed-by: Yi Liu <yi.l.liu@intel.com>
+> Tested-by: Yan Zhao <yan.y.zhao@intel.com>
+> Tested-by: Longfang Liu <liulongfang@huawei.com>
+> ---
+>  include/linux/iommu.h      | 27 +++++++++++----------------
+>  drivers/iommu/io-pgfault.c |  1 -
+>  drivers/iommu/iommu.c      |  4 ----
+>  3 files changed, 11 insertions(+), 21 deletions(-)
+>=20
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index c960c4fae3bc..829bcb5a8e23 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -71,12 +71,12 @@ struct iommu_fault_page_request {
+>  #define IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE	(1 << 1)
+>  #define IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA	(1 << 2)
+>  #define IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID	(1 << 3)
+> -	__u32	flags;
+> -	__u32	pasid;
+> -	__u32	grpid;
+> -	__u32	perm;
+> -	__u64	addr;
+> -	__u64	private_data[2];
+> +	u32	flags;
+> +	u32	pasid;
+> +	u32	grpid;
+> +	u32	perm;
+> +	u64	addr;
+> +	u64	private_data[2];
+>  };
+> =20
+>  /**
+> @@ -85,7 +85,7 @@ struct iommu_fault_page_request {
+>   * @prm: Page Request message, when @type is %IOMMU_FAULT_PAGE_REQ
+>   */
+>  struct iommu_fault {
+> -	__u32	type;
+> +	u32 type;
+>  	struct iommu_fault_page_request prm;
+>  };
+> =20
+> @@ -106,8 +106,6 @@ enum iommu_page_response_code {
+> =20
+>  /**
+>   * struct iommu_page_response - Generic page response information
+> - * @argsz: User filled size of this data
+> - * @version: API version of this structure
+>   * @flags: encodes whether the corresponding fields are valid
+>   *         (IOMMU_FAULT_PAGE_RESPONSE_* values)
+>   * @pasid: Process Address Space ID
+> @@ -115,14 +113,11 @@ enum iommu_page_response_code {
+>   * @code: response code from &enum iommu_page_response_code
+>   */
+>  struct iommu_page_response {
+> -	__u32	argsz;
+> -#define IOMMU_PAGE_RESP_VERSION_1	1
+> -	__u32	version;
+>  #define IOMMU_PAGE_RESP_PASID_VALID	(1 << 0)
+> -	__u32	flags;
+> -	__u32	pasid;
+> -	__u32	grpid;
+> -	__u32	code;
+> +	u32	flags;
+> +	u32	pasid;
+> +	u32	grpid;
+> +	u32	code;
+>  };
+> =20
+> =20
+> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
+> index e5b8b9110c13..24b5545352ae 100644
+> --- a/drivers/iommu/io-pgfault.c
+> +++ b/drivers/iommu/io-pgfault.c
+> @@ -56,7 +56,6 @@ static int iopf_complete_group(struct device *dev, stru=
+ct iopf_fault *iopf,
+>  			       enum iommu_page_response_code status)
+>  {
+>  	struct iommu_page_response resp =3D {
+> -		.version		=3D IOMMU_PAGE_RESP_VERSION_1,
+>  		.pasid			=3D iopf->fault.prm.pasid,
+>  		.grpid			=3D iopf->fault.prm.grpid,
+>  		.code			=3D status,
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 68e648b55767..b88dc3e0595c 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1494,10 +1494,6 @@ int iommu_page_response(struct device *dev,
+>  	if (!param || !param->fault_param)
+>  		return -EINVAL;
+> =20
+> -	if (msg->version !=3D IOMMU_PAGE_RESP_VERSION_1 ||
+> -	    msg->flags & ~IOMMU_PAGE_RESP_PASID_VALID)
+> -		return -EINVAL;
+> -
+I see that this function `iommu_page_response` eventually lands in
+drivers/iommu/io-pgfault.c as `iopf_group_response`. But it seems that
+the check for IOMMU_PAGE_RESP_PASID_VALID is dropped.
 
-Didn't see the warning
+I see that after applying [1] and [2] there are only three places where
+IOMMU_PAGE_RESP_PASID_VALID appears in the code: One is the definition
+and the other two are just setting the value. We effectively dropped the
+check. Is the drop intended? and if so, should we just get rid of
+IOMMU_PAGE_RESP_PASID_VALID?
 
-          "Compatibility-format IRQs enabled despite intr remapping;\n"
+Best
 
-          "you are vulnerable to IRQ injection.\n");
+[1] https://lore.kernel.org/all/20240122054308.23901-1-baolu.lu@linux.intel=
+=2Ecom
+[2] https://lore.kernel.org/all/20240122073903.24406-1-baolu.lu@linux.intel=
+=2Ecom
 
-So assume the DMA_GSTS_CFIS bit of GSTS_REG shows the interrupt
+>  	/* Only send response if there is a fault report pending */
+>  	mutex_lock(&param->fault_param->lock);
+>  	if (list_empty(&param->fault_param->faults)) {
+> --=20
+> 2.34.1
+>=20
 
-remapping was programmed to the right behaviour -- Compatibility
+--=20
 
-format interrupts are blocked.
+Joel Granados
 
-But the device f0:1f.0 is still armed to inject compatible format interrupt
+--g7md5qdsafvmcjsg
+Content-Type: application/pgp-signature; name="signature.asc"
 
-that is dangerous mistake if not be blocked, so far no such exception
+-----BEGIN PGP SIGNATURE-----
 
-that should be passed through, appears not iommu issue per my
+iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmWyNpsACgkQupfNUreW
+QU+6hwv/TaKF2IQiTXor9rKsoUWbb18zSHY+9a6gb2JXmoq36LeghRmGq08Fqlhe
+sfWpsfisZ1vQyMisJpmGYUjvADZAwz58CzPuJg5/mvYIQ92MzOdw9uuYtEhQ8NCn
+2aBCirkZqnmgs9PT+LeOiZI27SqnJ20BYxHziHwKImO00xdF0ATVYJ0WPrC1bBrQ
+2AyluVYBnJBf6eD1aBRyJhd2p+n+Vz5Khjwccg4gHD2wtlHhfaw+bxvHYG/LaTN2
+GtPZlIxvszLugo10D0dJPvQT/UyWPok58qV0vs7j7n66xtQYRFC72aV2PgydIvy0
+BlQd6ekUVDGKiJ3hCrelfmngenwkO7nEA3IMZizb5jFm7fJTshVyOKJ73cB9AKtr
+BVfFbPV+D3a5q5hojISFuouMA0TCXjcbAVxD06LhPly6r6YqC6F2teQK2NzPmZwr
+5FN7CR+oA8kYi/BNa7cjX0CWPorJZuJnNT+UEv38+EzuKfLZ3RjCpcN4iHDTorCf
+ZknArIcN
+=QScI
+-----END PGP SIGNATURE-----
 
-understanding.
-
-Thanks,
-
-Ethan
-
-
->
->       regards  Christian
->
->
+--g7md5qdsafvmcjsg--
