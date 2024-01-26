@@ -1,45 +1,45 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 723BE60242
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECE7A604A6
 	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 23:37:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706312251; cv=none; b=V/bWaVm8TuVvJ1G2iujW9VUAfXJL3OEzylRarzlp9T9mdXCKwSZ/nOzbK9wE9cNJ1c/k5JVaBygUd3xTSHRDHz7HhN6CYN03qFe/uc5scjkHxyN6jQ3bI2V9saup97tTOVN/CCGZAG0BP9Nh3fAEWSJ+5HcOXTe6W4uozCPxho8=
+	t=1706312251; cv=none; b=iHwGo22kxEGb/cOaSTw0MhEZTF7CrgnQi9dCF6WVo0yibmvibyuIFhAbjs5Zj+Q9f3ZGY8tgTlhgvvRLiw215/ZzLrikehNFoifhEuJvCby6h6At711LsQqKBkhPkOtFbppNks63mcmoUxll64GWZMfFXYHKH80XgX1NSSS1HIE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1706312251; c=relaxed/simple;
-	bh=+q6Ng6aZ31M15sxzv7j/zcb8dlMqz5ufayt8TldTJ+8=;
+	bh=tBMxqVMHu63G2rJ3nBVSuahDnZ+Xdu27rPnRP82vOHs=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=WLaACy7xyc+/1b1++MOdzJozGpRbtJmXbTHOe+4AE+GDJwEE2rXZBg4uu7+jgQTFArDMUA6q9fQrrXMn5+Ve8f2Y8D8BTzRObs9/00vj3kIE4wCb+SRwskOofUYj+GrtoaL+F25oPcOYlX89/K+CTG7q7QkBSc0iQZWXTsWCB8k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=M4s1VDIq; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version; b=s4uDHG/PafZ40GqZde4UHsf8nK/QEneUDRCgynXSnTsZtTYn9+38zeZGDH4eD7wl+phaH1jsLTuNavvEgDiONyQDO7VGxhY4/ueM7+2gqQ+PkjZJAhELAGD9EvwolS/SPgwz1maJGg1n9olYBRPeu9pnJhCowxzPu7+4PKY0Da4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DC+wwmuA; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="M4s1VDIq"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DC+wwmuA"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706312249; x=1737848249;
+  t=1706312250; x=1737848250;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=+q6Ng6aZ31M15sxzv7j/zcb8dlMqz5ufayt8TldTJ+8=;
-  b=M4s1VDIqwqP6kUSdbWa7Qoz84J/+HXFUW8516Uiu5TakjCG7qey8dgT9
-   H5AdGmF9tw7M9fMxZH3CNZgkRWFFtkRaXu0/3qaXuW4vR+UJ/vHphsfim
-   CyMCzoR7Z6cW28Gc9+yflNJwIOB460aSgDKaLrhCDMUd3+i1prK5qN2Bb
-   lu8Coo6ITBW0w+z9ALHUFL23QAtlHHu+/bpQMD510aES3V7wXBfkUrTZq
-   zuxK5EMPCf/HjAiMXIrh6ibDLV/XvIL2la1nXFgOK8UD/sfO0daWe1Rcz
-   kWkDhiQ+bOPL3XOhMOAkAeD7WjtFa0D+SPeAVDp52Stmp30LkMNHGdXWh
+  bh=tBMxqVMHu63G2rJ3nBVSuahDnZ+Xdu27rPnRP82vOHs=;
+  b=DC+wwmuAS174UoxC0ft0CesHSxFTwiwDRpgn5KYAr/sJHO9b3zIVtc9H
+   k7AyndIRG/y2uxHMS95x949lAzlyj3E7pGIds/iiI7Bg9PHLwZjX3b0+h
+   dQraCoG8s5rm64SyKcyzkqopadTE9wKJfDRnEkoEKOuSLmSZbHZraD4GR
+   TGhR7PH3m9rWPUwVQZRnlGT7D4JTmyBeuhe0lieUYQeBRwcZsE3nSWgav
+   tUgjAoLSR14RrzLHuuvkQbH6Nv6OpsLMNVo5Fidf3AJ3E1SuXLCaaGzJv
+   I6XqrHhB1jDTDlmTXSciyCfvnZmx3i458TnLDe36dEGsgIAF+eD16q9+w
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="9990769"
+X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="9990776"
 X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
-   d="scan'208";a="9990769"
+   d="scan'208";a="9990776"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2024 15:37:23 -0800
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2024 15:37:24 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="821290748"
+X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="821290752"
 X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
-   d="scan'208";a="821290748"
+   d="scan'208";a="821290752"
 Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.116])
-  by orsmga001.jf.intel.com with ESMTP; 26 Jan 2024 15:37:22 -0800
+  by orsmga001.jf.intel.com with ESMTP; 26 Jan 2024 15:37:23 -0800
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: LKML <linux-kernel@vger.kernel.org>,
 	X86 Kernel <x86@kernel.org>,
@@ -62,9 +62,9 @@ Cc: Paul Luse <paul.e.luse@intel.com>,
 	seanjc@google.com,
 	"Robin Murphy" <robin.murphy@arm.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH 12/15] iommu/vt-d: Make posted MSI an opt-in cmdline option
-Date: Fri, 26 Jan 2024 15:42:34 -0800
-Message-Id: <20240126234237.547278-13-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 13/15] iommu/vt-d: Add an irq_chip for posted MSIs
+Date: Fri, 26 Jan 2024 15:42:35 -0800
+Message-Id: <20240126234237.547278-14-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
 References: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
@@ -76,83 +76,90 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add a command line opt-in option for posted MSI if CONFIG_X86_POSTED_MSI=y.
+Introduce a new irq_chip for posted MSIs, the key difference is in
+irq_ack where EOI is performed by the notification handler.
 
-Also introduce a helper function for testing if posted MSI is supported on
-the platform.
+When posted MSI is enabled, MSI domain/chip hierarchy will look like
+this example:
+
+domain:  IR-PCI-MSIX-0000:50:00.0-12
+ hwirq:   0x29
+ chip:    IR-PCI-MSIX-0000:50:00.0
+  flags:   0x430
+             IRQCHIP_SKIP_SET_WAKE
+             IRQCHIP_ONESHOT_SAFE
+ parent:
+    domain:  INTEL-IR-10-13
+     hwirq:   0x2d0000
+     chip:    INTEL-IR-POST
+      flags:   0x0
+     parent:
+        domain:  VECTOR
+         hwirq:   0x77
+         chip:    APIC
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- Documentation/admin-guide/kernel-parameters.txt |  1 +
- arch/x86/include/asm/irq_remapping.h            | 11 +++++++++++
- drivers/iommu/irq_remapping.c                   | 13 ++++++++++++-
- 3 files changed, 24 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/irq_remapping.c | 46 +++++++++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-index 31b3a25680d0..35feefc0bdb0 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -2212,6 +2212,7 @@
- 			no_x2apic_optout
- 				BIOS x2APIC opt-out request will be ignored
- 			nopost	disable Interrupt Posting
-+			posted_msi enable MSIs delivered as posted interrupts
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index 566297bc87dd..fa719936b44e 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -1233,6 +1233,52 @@ static struct irq_chip intel_ir_chip = {
+ 	.irq_set_vcpu_affinity	= intel_ir_set_vcpu_affinity,
+ };
  
- 	iomem=		Disable strict checking of access to MMIO memory
- 		strict	regions from userspace.
-diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
-index 7a2ed154a5e1..e46bde61029b 100644
---- a/arch/x86/include/asm/irq_remapping.h
-+++ b/arch/x86/include/asm/irq_remapping.h
-@@ -50,6 +50,17 @@ static inline struct irq_domain *arch_get_ir_parent_domain(void)
- 	return x86_vector_domain;
- }
- 
-+#ifdef CONFIG_X86_POSTED_MSI
-+extern int enable_posted_msi;
-+
-+static inline bool posted_msi_supported(void)
++static void dummy(struct irq_data *d)
 +{
-+	return enable_posted_msi && irq_remapping_cap(IRQ_POSTING_CAP);
 +}
-+#else
-+static inline bool posted_msi_supported(void) { return false; };
-+#endif
 +
- #else  /* CONFIG_IRQ_REMAP */
- 
- static inline bool irq_remapping_cap(enum irq_remap_cap cap) { return 0; }
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 83314b9d8f38..4047ac396728 100644
---- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -24,6 +24,10 @@ int no_x2apic_optout;
- 
- int disable_irq_post = 0;
- 
-+#ifdef CONFIG_X86_POSTED_MSI
-+int enable_posted_msi;
-+#endif
++/*
++ * With posted MSIs, all vectors are multiplexed into a single notification
++ * vector. Devices MSIs are then dispatched in a demux loop where
++ * EOIs can be coalesced as well.
++ *
++ * "INTEL-IR-POST" IRQ chip does not do EOI on ACK, thus the dummy irq_ack()
++ * function. Instead EOI is performed by the posted interrupt notification
++ * handler.
++ *
++ * For the example below, 3 MSIs are coalesced into one CPU notification. Only
++ * one apic_eoi() is needed.
++ *
++ * __sysvec_posted_msi_notification()
++ *	irq_enter();
++ *		handle_edge_irq()
++ *			irq_chip_ack_parent()
++ *				dummy(); // No EOI
++ *			handle_irq_event()
++ *				driver_handler()
++ *	irq_enter();
++ *		handle_edge_irq()
++ *			irq_chip_ack_parent()
++ *				dummy(); // No EOI
++ *			handle_irq_event()
++ *				driver_handler()
++ *	irq_enter();
++ *		handle_edge_irq()
++ *			irq_chip_ack_parent()
++ *				dummy(); // No EOI
++ *			handle_irq_event()
++ *				driver_handler()
++ *	apic_eoi()
++ * irq_exit()
++ */
++static struct irq_chip intel_ir_chip_post_msi = {
++	.name			= "INTEL-IR-POST",
++	.irq_ack		= dummy,
++	.irq_set_affinity	= intel_ir_set_affinity,
++	.irq_compose_msi_msg	= intel_ir_compose_msi_msg,
++	.irq_set_vcpu_affinity	= intel_ir_set_vcpu_affinity,
++};
 +
- static int disable_irq_remap;
- static struct irq_remap_ops *remap_ops;
- 
-@@ -70,7 +74,14 @@ static __init int setup_irqremap(char *str)
- 			no_x2apic_optout = 1;
- 		else if (!strncmp(str, "nopost", 6))
- 			disable_irq_post = 1;
--
-+#ifdef CONFIG_X86_POSTED_MSI
-+		else if (!strncmp(str, "posted_msi", 10)) {
-+			if (disable_irq_post || disable_irq_remap)
-+				pr_warn("Posted MSI not enabled due to conflicting options!");
-+			else
-+				enable_posted_msi = 1;
-+		}
-+#endif
- 		str += strcspn(str, ",");
- 		while (*str == ',')
- 			str++;
+ static void fill_msi_msg(struct msi_msg *msg, u32 index, u32 subhandle)
+ {
+ 	memset(msg, 0, sizeof(*msg));
 -- 
 2.25.1
 
