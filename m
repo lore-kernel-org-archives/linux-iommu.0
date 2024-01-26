@@ -1,38 +1,38 @@
 Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AC6B1D559
-	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 16:21:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D9981DDF4
+	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 16:23:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706286068; cv=none; b=jBH+ixUX6NyG79OAu0K0ctaWbU3UKHQ2+ytUmplyjbHwshNte6kW+qaqwqdeoW8MqSQvOeObRmqLfieGLB0DioBQhPjW+XoPm8a0XcrjfIvNL2kF26GZyMlRJFLUi7q4gjYxgIF7JDnFdpuU9oGgTeWAgzAHWvW9LqrODijlat4=
+	t=1706286240; cv=none; b=owDRfobW+pM6404r9zVmu80Ki5HzApInE0GejdAWtIsiCTlLmcpJ8Nea8AZ1G0hfr7ZRvPcyYIQaDITUr+U9WZYT54EEKTvrA0FeaQ3tjqJSAAsAQwEwdh42L4Vo2BuBYAMh0Gn5+g1nvweLQ66wdo8emk1GPUL5PVZU+AMRYBo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706286068; c=relaxed/simple;
-	bh=XbFTSyVW06Iaz2yZpMZPpFNnQ89qLLom1HMrMNtKv1M=;
+	s=arc-20240116; t=1706286240; c=relaxed/simple;
+	bh=HWHECrUxEnAXknABC0345RvphuEoZt5S3gPRLijbfak=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VH0L9ge5wNrzphCH47da4uQ00+YBj/VlXaLvGvR+BqmnKboqKWixi8/z2XB8svZOkA16s/rjRfnLd9r5sOm3OA7y1QptQWHYJxQcI8QuBVbPTKb5AsakaraWgj7hjNNP7ORrl4AKvbJ4UcviK9JmEUAdTWAf45SxpIjWil6pYPo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=L+pJ0gQW; arc=none smtp.client-ip=77.93.223.253
+	 MIME-Version:Content-Type; b=VOwEcuCBFzOwODm9VBgcqWNZlE4WiCy5dJb2omwnK+qT6WVUl351GLducyPXdiq8Oc5HijZW1mpjkluwLvikUUokXHKhSshF6XbGp/ImOvAoQHMwnFQq2yBtKkMtTQWKpt7G50RQAyk+YB9p4lQ6K+3ok3X3WEaHYl5D4BULcyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=gGq0G6Ro; arc=none smtp.client-ip=77.93.223.253
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="L+pJ0gQW"
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="gGq0G6Ro"
 Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id DBF8618C8FB;
-	Fri, 26 Jan 2024 17:21:00 +0100 (CET)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 50C5B18D336;
+	Fri, 26 Jan 2024 17:23:56 +0100 (CET)
 Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1706286061; bh=XbFTSyVW06Iaz2yZpMZPpFNnQ89qLLom1HMrMNtKv1M=;
+	t=1706286236; bh=HWHECrUxEnAXknABC0345RvphuEoZt5S3gPRLijbfak=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=L+pJ0gQWzLC5yCJtUQqqH9mAvCH4/F462d1zWXlEM++WR33kntMzS6tLrRn2K8PIq
-	 FI7tFkAAnLFa5HKSI9TNRkivufjpN72EYx6pa5HxKYbtzFIqVRNog1C8Lk7NE4g8H2
-	 ODQe1OqjOQFWg4JldbY6TATkm8np0jzjvjJasCKW+VO+OD0IB+zs08h621FeOIIxvA
-	 dnZc2VcVNtK+qEA1jNGADY78yxUOS+LdBRYW+3p3Czqxgfo4sscfMZMjMFmKfU8jh3
-	 p1WboComAH7QjDtX6700UxTKqVU+cHmKW5j3fdwKC9W4f0z6s7VJjubxl22CXhuRpo
-	 +uaVEZ5TicAuQ==
-Date: Fri, 26 Jan 2024 17:20:59 +0100
+	b=gGq0G6Roj85qDR2Ro+IDlZrvafFDPbSBEuSRgblf82c8pOMeu1VK+X/R1gX4F6x/Q
+	 +rmjbEuZVB1F66+lttX2g6ywm24XFY0eIyvfZ101NBg6bPo5+zGbIKSoDTRgRwtcp3
+	 dAr6+nKnEzKkH7G1Uoc1aJniogfkbcohQYT+BXgTpLDC0ZETGEDP29PLlkzvJERAPt
+	 rgZt3AtlyLvdFCr/BmY2r+mCXcp2esmmwgs2G+qdU7snj06FTyPjnZI4SqxC/Bv5mH
+	 WkSLugQdOpQ7LHZTfcwSz6GZ2dhHGgtSuSfn2Ij1nlaE/dnXK6NJcRYf4Y+9RScuS1
+	 QTSMjard6I8IA==
+Date: Fri, 26 Jan 2024 17:23:55 +0100
 From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
 To: Will Deacon <will@kernel.org>
 Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
@@ -40,10 +40,11 @@ Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
  <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
  Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
  <decui@microsoft.com>
-Subject: Re: [PATCH 0/2] Fix double allocation in swiotlb_alloc()
-Message-ID: <20240126172059.48ad7b9f@meshulam.tesarici.cz>
-In-Reply-To: <20240126151956.10014-1-will@kernel.org>
+Subject: Re: [PATCH 2/2] swiotlb: Enforce page alignment in swiotlb_alloc()
+Message-ID: <20240126172355.22a03d13@meshulam.tesarici.cz>
+In-Reply-To: <20240126151956.10014-3-will@kernel.org>
 References: <20240126151956.10014-1-will@kernel.org>
+	<20240126151956.10014-3-will@kernel.org>
 X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -54,60 +55,47 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Hi Will,
-
-On Fri, 26 Jan 2024 15:19:54 +0000
+On Fri, 26 Jan 2024 15:19:56 +0000
 Will Deacon <will@kernel.org> wrote:
 
-> Hi folks,
+> When allocating pages from a restricted DMA pool in swiotlb_alloc(),
+> the buffer address is blindly converted to a 'struct page *' that is
+> returned to the caller. In the unlikely event of an allocation bug,
+> page-unaligned addresses are not detected and slots can silently be
+> double-allocated.
 > 
-> These two patches fix a nasty double allocation problem in swiotlb_alloc()
-> and add a diagnostic to help catch any similar issues in future. This was
-> a royal pain to track down and I've had to make a bit of a leap at the
-> correct alignment semantics (i.e. iotlb_align_mask vs alloc_align_mask).
-
-Welcome to the club. I believe you had to re-discover what I described here:
-
-  https://lore.kernel.org/linux-iommu/20231108101347.77cab795@meshulam.tesarici.cz/
-
-The relevant part would be this:
-
-  To sum it up, there are two types of alignment:
-
-  1. specified by a device's min_align_mask; this says how many low
-     bits of a buffer's physical address must be preserved,
-
-  2. specified by allocation size and/or the alignment parameter;
-     this says how many low bits in the first IO TLB slot's physical
-     address must be zero.  
-
-Fix for that has been sitting on my TODO list for too long. :-(
-
-Petr T
-
-> Without these changes, we've been observing random vsock hangs when
-> communicating with virtual machines in Android.
+> Add a simple check of the buffer alignment in swiotlb_alloc() to make
+> debugging a little easier if something has gone wonky.
 > 
-> Please have a look!
-> 
-> Cheers,
-> 
-> Will
-> 
-> Cc: iommu@lists.linux.dev
 > Cc: Christoph Hellwig <hch@lst.de>
 > Cc: Marek Szyprowski <m.szyprowski@samsung.com>
 > Cc: Robin Murphy <robin.murphy@arm.com>
 > Cc: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 > Cc: Dexuan Cui <decui@microsoft.com>
+> Signed-off-by: Will Deacon <will@kernel.org>
+> ---
+>  kernel/dma/swiotlb.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> --->8  
-> 
-> Will Deacon (2):
->   swiotlb: Fix allocation alignment requirement when searching slots
->   swiotlb: Enforce page alignment in swiotlb_alloc()
-> 
->  kernel/dma/swiotlb.c | 32 ++++++++++++++++++++++----------
->  1 file changed, 22 insertions(+), 10 deletions(-)
-> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 25febb9e670c..92433ea9f2d2 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -1647,6 +1647,12 @@ struct page *swiotlb_alloc(struct device *dev, size_t size)
+>  		return NULL;
+>  
+>  	tlb_addr = slot_addr(pool->start, index);
+> +	if (!PAGE_ALIGNED(tlb_addr)) {
+> +		dev_WARN_ONCE(dev, 1, "Cannot return 'struct page *' for non page-aligned swiotlb addr 0x%pa.\n",
+> +			      &tlb_addr);
+> +		swiotlb_release_slots(dev, tlb_addr);
+> +		return NULL;
+> +	}
 
+Is there a reason not to use BUG_ON()? If yes, I would at least go for:
+
++	if (unlikely(!PAGE_ALIGNED(tlb_addr))) {
+
+Other than that, yes, such cheap sanity checking looks like a good idea.
+
+Petr T
