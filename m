@@ -1,148 +1,84 @@
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 020161CF81
-	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 15:19:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BD5B1DA37;
+	Fri, 26 Jan 2024 15:20:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706282365; cv=none; b=aVxAKp1+P7IysxQyiMPgLe7Wm2BzCKeK0dWUQN/OKqpsJ+HZLYV5S/vOTDVBnyg7vsjk7+o2YmUMqfEuPDw/HgISl9NystLGK3TLRgbwqalfLuUqj2+QfBrX3IR1WyQryBUaATuXp8N4kCc2DvkvLcRe8xq0rhBuHpDj9ST8xfg=
+	t=1706282403; cv=none; b=dfX9YXr3+vrZTwVHLJX6NFM7JvMdtDzKw7IMvzJ9EaAYsWMHFT5U97CL5f4/0pRybqIpHJT83Wr/mQe5fW2TDfoO9UwGqVdyJKqAHG7jiA89XHNPtcCCeyoGgGj7NLAJJTiy3a2o2/NHlhpWxPrWzIgj28O8SqxeyVke3iBAduc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706282365; c=relaxed/simple;
-	bh=nYnL08UkXChtBP5jgdIKm7nTSD5MHk7dz2CCVHK8gIE=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=DRgLcxz3ZilwKXW2xQZifBhRPXd0EeNQXWBs4lD6+8wxSr/4hk0i+UFUpuueMWyVmrvthnv3NZCNv7uVuI42UUKMRYIrQDhsWf0nbf72c8DZRzrL80RwA0Ja3PPQXWPtjQZzHl4edCVYCkM9jrVNyOm8/tAe7bjXM/dENBD5wJM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=WbCFRpYo; arc=none smtp.client-ip=148.163.158.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1706282403; c=relaxed/simple;
+	bh=SC9QwQMbCTIJBA+ynOBg9aULds/BrGb1X+P+U7Xcrr8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=kh0l3Ky3xDUr633ENjBf/hgkmJ/z0KDte2K+H50EalJ/DH1ZI9Pao2ZflAvm6BMd04WttLJzJACkOponmmba4SALgZwFT1Hlb7SXrXtDeRxpmTVb8Ocxqq1Vzg6+Hup6QQJNpNwhFPhrt1Fc+Iye74P8jV70OIATZH+QM1pMJnQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XDZD4lLp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="WbCFRpYo"
-Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 40QF2DcZ006856;
-	Fri, 26 Jan 2024 15:19:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=V5LjmVGdzbJgz18a5DWViGzLHhFurvsunSeYcuKPsjs=;
- b=WbCFRpYoR0SMUpTyr4yZQ15GGHaNY3SD/MaN0AE/direuhl9CmKTKSnJ8BGIj1a4hTLT
- zuG3ySe9KOyFovBnYlFf88QElSch9MoQJm/EAMo0CxZOVDeQX5LsENuatc4GkRbadQTj
- GtXxzAJo2DYGEjODDaJmV+gqIKQrJetBivW5c3ciNPEgpNFT1+TVkTpmuBAZw843cKHy
- s3PnyjxHTDmcDN24hjdB13KLd2Xl3SKaTyNfPYOo2oU36Kj79yuSCZ6LLF9I6RAzS4Qy
- vSF/Kka+Gun1qaD/aco9VQGoh61UX5ewRXtJSagVUoQb35tEuemSr1GZXQtO4NfZ2r5H CQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vveeuhdyk-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 26 Jan 2024 15:19:13 +0000
-Received: from m0360072.ppops.net (m0360072.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 40QFBR58012048;
-	Fri, 26 Jan 2024 15:19:12 GMT
-Received: from ppma12.dal12v.mail.ibm.com (dc.9e.1632.ip4.static.sl-reverse.com [50.22.158.220])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vveeuhdy4-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 26 Jan 2024 15:19:12 +0000
-Received: from pps.filterd (ppma12.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma12.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 40QDaFVO026475;
-	Fri, 26 Jan 2024 15:19:12 GMT
-Received: from smtprelay06.fra02v.mail.ibm.com ([9.218.2.230])
-	by ppma12.dal12v.mail.ibm.com (PPS) with ESMTPS id 3vrrgturbm-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 26 Jan 2024 15:19:12 +0000
-Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
-	by smtprelay06.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 40QFJ9hC40501952
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 26 Jan 2024 15:19:09 GMT
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2920220049;
-	Fri, 26 Jan 2024 15:19:09 +0000 (GMT)
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B0EAF20040;
-	Fri, 26 Jan 2024 15:19:05 +0000 (GMT)
-Received: from [9.43.53.156] (unknown [9.43.53.156])
-	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 26 Jan 2024 15:19:05 +0000 (GMT)
-Message-ID: <c03f81bb-3a50-4191-9884-25a914e60672@linux.ibm.com>
-Date: Fri, 26 Jan 2024 20:49:04 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iommu: Fix the domain type checks when default_domain
- is set
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
-        christophe.leroy@csgroup.eu, aneesh.kumar@kernel.org,
-        naveen.n.rao@linux.ibm.com, jroedel@suse.de,
-        tpearson@raptorengineering.com, aik@amd.com, bgray@linux.ibm.com,
-        gregkh@linuxfoundation.org, gbatra@linux.vnet.ibm.com,
-        vaibhav@linux.ibm.com
-References: <170618450592.3805.8216395093813382208.stgit@ltcd48-lp2.aus.stglab.ibm.com>
- <170618452753.3805.4425669653666211728.stgit@ltcd48-lp2.aus.stglab.ibm.com>
- <20240125155257.GX50608@ziepe.ca>
-From: Shivaprasad G Bhat <sbhat@linux.ibm.com>
-In-Reply-To: <20240125155257.GX50608@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Yx0JUC79HWRFCurxWhU3gNr5kY8QHd-K
-X-Proofpoint-ORIG-GUID: c2je4RH8m4kTZROvYF205gx-VdNobq8C
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XDZD4lLp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A419C433F1;
+	Fri, 26 Jan 2024 15:20:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706282403;
+	bh=SC9QwQMbCTIJBA+ynOBg9aULds/BrGb1X+P+U7Xcrr8=;
+	h=From:To:Cc:Subject:Date:From;
+	b=XDZD4lLpST9dO7xQN8icGOSn7s5rAjsEivyUrxvSbP4FFiijQ+ZX++/WjaCjut9/e
+	 pB8M+gfX/AuCItmYkloBZW/s2Y/NCKLzCyvAsYRTAmwJjVumpgtaPVeu8jeDPN/SrA
+	 yrHrcQTphj73gruYO9EQ+uwEfejq0gb6qCejssjVkiDZN69W67VUncIq4v5NX4R6L2
+	 DWNTajyuXJIKHjzzhCcXPFKCOfuelOVF63Mj48Y0Z0qGW+uxn6/doYHXBhKewHjduA
+	 2xQ0yMZbZp3C/3biVe3oOCn/fVG93zCOsu4d+pn+5H3x9St4yY6PED3iROSuJTHBMr
+	 SFp176CFmhmtQ==
+From: Will Deacon <will@kernel.org>
+To: linux-kernel@vger.kernel.org
+Cc: kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	iommu@lists.linux.dev,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Dexuan Cui <decui@microsoft.com>
+Subject: [PATCH 0/2] Fix double allocation in swiotlb_alloc()
+Date: Fri, 26 Jan 2024 15:19:54 +0000
+Message-Id: <20240126151956.10014-1-will@kernel.org>
+X-Mailer: git-send-email 2.20.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-01-25_14,2024-01-25_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
- clxscore=1015 suspectscore=0 bulkscore=0 priorityscore=1501
- impostorscore=0 adultscore=0 phishscore=0 lowpriorityscore=0
- mlxlogscore=987 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2311290000 definitions=main-2401260112
+Content-Transfer-Encoding: 8bit
 
-On 1/25/24 21:22, Jason Gunthorpe wrote:
-> On Thu, Jan 25, 2024 at 06:08:52AM -0600, Shivaprasad G Bhat wrote:
->> On PPC64, the iommu_ops.def_domain_type() is not defined and
->> CONFIG_IOMMU_DMA not enabled. With commit 0f6a90436a57 ("iommu: Do not
->> use IOMMU_DOMAIN_DMA if CONFIG_IOMMU_DMA is not enabled"), the
->> iommu_get_default_domain_type() return IOMMU_DOMAIN_IDENTITY. With
->> commit 2ad56efa80db ("powerpc/iommu: Setup a default domain and remove
->> set_platform_dma_ops"), the defaule_domain is set wih the type being
->> PLATFORM. With these two changes, iommu_group_alloc_default_domain()
->> ends up returning the NULL(with recent changes, ERR_PTR(-EINVAL))
->> leading to iommu_probe_device() failure and the device has no
->> iommu_group set in effect. Subsequently, the bind to vfio(VFIO_IOMMU)
->> fail as the iommu_group is not set for the device.
->>
->> Make the iommu_get_default_domain_type() to take default_domain->type
->> into consideration along with default_domain_type() and fix
->> iommu_group_alloc_default_domain() to not error out if the requested
->> type is same as default domain type.
->>
->> Fixes: 2ad56efa80db ("powerpc/iommu: Setup a default domain and remove set_platform_dma_ops")
->> Fixes: 0f6a90436a57 ("iommu: Do not use IOMMU_DOMAIN_DMA if CONFIG_IOMMU_DMA is not enabled")
->> Signed-off-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
->> ---
->>   drivers/iommu/iommu.c |   14 ++++++++++----
->>   1 file changed, 10 insertions(+), 4 deletions(-)
-> Are you OK with this version?
->
-> https://lore.kernel.org/linux-iommu/20240123174905.GS50608@ziepe.ca/
->
-> ?
->
-> I think it does the same thing
+Hi folks,
 
-Yes, This works. I see a very minor difference of default_domain->type 
-is given
+These two patches fix a nasty double allocation problem in swiotlb_alloc()
+and add a diagnostic to help catch any similar issues in future. This was
+a royal pain to track down and I've had to make a bit of a leap at the
+correct alignment semantics (i.e. iotlb_align_mask vs alloc_align_mask).
 
-precedence over def_domain_type(). Please keep me CC when you post this 
-fix, I'll
+Without these changes, we've been observing random vsock hangs when
+communicating with virtual machines in Android.
 
-test it with any(?) other changes if coming along with it.
+Please have a look!
 
+Cheers,
 
-Thanks,
+Will
 
-Shivaprasad
+Cc: iommu@lists.linux.dev
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+Cc: Dexuan Cui <decui@microsoft.com>
 
-> Jason
+--->8
+
+Will Deacon (2):
+  swiotlb: Fix allocation alignment requirement when searching slots
+  swiotlb: Enforce page alignment in swiotlb_alloc()
+
+ kernel/dma/swiotlb.c | 32 ++++++++++++++++++++++----------
+ 1 file changed, 22 insertions(+), 10 deletions(-)
+
+-- 
+2.43.0.429.g432eaa2c6b-goog
+
