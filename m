@@ -1,160 +1,162 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2CCC17E
-	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 00:19:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.40
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706228358; cv=fail; b=DN7QeBjhADVhoXzvdepnjedhpHCKclVfe+SDKjmQIBZOlDBarzm84Rbzki530Ot/sG+i4smvNo5GmVjmq3Vc/U/6snR3Zyu4J3wN0qTYkomxi2i70+XACdCXZDTpD+eqeNt82W6zzc8w6h3j5seXoADUyZOJTFY7fv+92RFNjpw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706228358; c=relaxed/simple;
-	bh=TFbuAxYhc1U6i4gZeFHHBemeUJ76xa+Z3H7wmh8MwQ8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=JYeoULqQ0i6Ik+vdTbqMHFLchb2jfyHY9Z/Z4vYlIK1DWRtcPqFipjag1iux9JmpbNZryMVpK8/+6I2k3OAOOUP9z6Kr+CLD6P6Kr7SRgE3S6i8hWDrRhO1hxjXcDRB42VbRnt0ShEjBxXm9zam3BglO1giT61//D2gVdqZpBnU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ej0FPzqj; arc=fail smtp.client-ip=40.107.236.40
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7189F64F
+	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 01:40:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706233225; cv=none; b=jPAkGOpqRj8PVZmBFwLLyGuGNI2mywM3wxyKntasNJJ4XfjY4HOp3P5MiAvjeUlS1jI0SVGp0jcaCmCUcrWGB7swz+olVcx0tYBIdh6qXY22ZtmNHc/RR9mNki3N5i3DWlhuzFi7Zp9aRTTzo6fAV6fNtH2x1vZVdQ3Z1fD2DBo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706233225; c=relaxed/simple;
+	bh=4dlBSbHCmNEO4tqCGXWVdwuxmbBaTOw3I9YxMiM23sY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=eXOf4j7aiQBhzmr7/ILb/zd1dEvPnkAJYQKCy78i/UdaVlkJe55I2G7a6M+phWJXjpHSmPZmsvNqAMY30EALD8LD9/0S6DRpiaau36OQMTpyH3zgww/ixkZMjQMvzDl1NhJhiIdz4wLYcGCK2N8eaJ5jMf+4WxTsy2c3lP7fLKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oJZxwOJh; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ej0FPzqj"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CTMWO1u7TKsclXbtrDoEvNyKejL9WDlVGj3VFKU6E1n2pkGw7Xc/XrCBUFFnGcZXsgvpladbAfZcfOOdZ5x2rXbMTv8nFFe8zxQ1btrydrjzjrlH4xJuFVzmdZVorziwF5gFR42GTWIbfW9pjBjm/uXpcRRdbjABGTIqWiF0hxBTrznoA1tA/bpSaN1Y5Q2mRxKvXXxtwSVYt2xOCCUMPYNBRbQW0XzYbqr30ghEDwo9lo4mDaxNikZLkSCZet0oVJZl2y8WpLp16ps3COFkpEzWycQNX1xBQFQs+GE/L86PG2//L7jcLCjtwYmqJqxu32NLdiRB4vE/fqqF8/V9Yw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ifzVQbcDFlBdFGJxKqqZ2Ebsi1uOW7vi1pC7+Tk623g=;
- b=LTjiCyK4YGhqiOzFoKB1ul4GJEYnhn2uOeynSn5pl3zyvZC1cUNxKhF7nhdLAvmbrjE2LdK+OSsrtwMLHxrq2Y3lt7a+4LvYgsli/as1czw8kP41Yx3qqrc7xLM9u0dpeQyjAubXVSM6K0waArg0kC83/LiZwXWsmS7gdaH+xfTBTmrEJINPI2bAIeyf7p9hgmrzBgogGRB/YMOB3NPL9s1Hv3RFVQSaHhFt3OojM5FmE8QbB3l9N7bG3avJ6tci7xvNo6BRK4jSQFAx05z5DSNBQQUXVWkWNUTQg6Idq7T/Br/OUn61zj/oOpvOEtt99zwAaLP2WUspjvS59Da8Mg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ifzVQbcDFlBdFGJxKqqZ2Ebsi1uOW7vi1pC7+Tk623g=;
- b=ej0FPzqjh4+93y49UjGTDJQPMD9fgCCBSCwIwsWtbiAnyFBklPHoV5uy5H6voO7oIAUQLfxEtTQmDfzWs4Xsjto4xd3tfqBvYXdQmPzOwY+jpHP8F+gI9Z0CppiNnLZhO895z6hIIjedXZeXpBbaPp3v634SzRcy1xKdivDz4bLuMj4M6n4V8ZQHeN70ln8HzhNX8/ePOLpdCcWu98sGZ8WVIwXvm05EMFbIHR9Yd9k8SB4YGYDUrg2uRthjT9Yg9QSekHj8QaG0MN/th9hR8y3lOgK+9IgUOa6qJ7ozps4QEXEI+lVE2lGLachwJIdabszxYiZj346vdjgQVkNB4Q==
-Received: from BL1PR12MB5969.namprd12.prod.outlook.com (2603:10b6:208:398::7)
- by MW4PR12MB7165.namprd12.prod.outlook.com (2603:10b6:303:21b::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.22; Fri, 26 Jan
- 2024 00:19:12 +0000
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by BL1PR12MB5969.namprd12.prod.outlook.com (2603:10b6:208:398::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.26; Fri, 26 Jan
- 2024 00:19:11 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873%6]) with mapi id 15.20.7228.022; Fri, 26 Jan 2024
- 00:19:10 +0000
-Date: Thu, 25 Jan 2024 20:19:09 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Subject: Re: About unmap pages and set dirty tracking on nested parent domain
-Message-ID: <20240126001909.GU1455070@nvidia.com>
-References: <92f8aaca-093d-4161-b8f2-5ab1680df769@intel.com>
- <20240125140331.GQ1455070@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240125140331.GQ1455070@nvidia.com>
-X-ClientProxiedBy: SN1PR12CA0070.namprd12.prod.outlook.com
- (2603:10b6:802:20::41) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oJZxwOJh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706233223; x=1737769223;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4dlBSbHCmNEO4tqCGXWVdwuxmbBaTOw3I9YxMiM23sY=;
+  b=oJZxwOJhsAqNhJVm4g3ruRTDE6g42ggsxbm8+cC/Kl+t1ipTODVQNMsh
+   veENgtfDmqJcXIciRD9SQoMrzT52yohmm4EfpmJAHW0ZbBSFu9cJUS+jo
+   9UYgxwPhie0L6WlYTanE3dOFeKb3gMJ9jcjT9gb62Hwii2sNa0xPBXanb
+   NX85HazPbPEZy3LlNlJzjsdAU4LL673buAt9QjgqEa1+tn2P8yIKpvBtt
+   dCpcDvcouUzkh6JwnX1GP9LYq7evz1yP3AkJsFBwx3NNv1/EBjzB3gE/A
+   KDiUaZy4C8zwgGGuwGzZ+91AxQqKd1whORPhuq3kj+jrxU+fxSVr6XUIe
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="15718427"
+X-IronPort-AV: E=Sophos;i="6.05,216,1701158400"; 
+   d="scan'208";a="15718427"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2024 17:40:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,216,1701158400"; 
+   d="scan'208";a="2533076"
+Received: from unknown (HELO ply01-vm-store.amr.corp.intel.com) ([10.238.153.201])
+  by fmviesa003.fm.intel.com with ESMTP; 25 Jan 2024 17:40:19 -0800
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+To: baolu.lu@linux.intel.com,
+	bhelgaas@google.com,
+	robin.murphy@arm.com,
+	jgg@ziepe.ca
+Cc: kevin.tian@intel.com,
+	dwmw2@infradead.org,
+	will@kernel.org,
+	lukas@wunner.de,
+	yi.l.liu@intel.com,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-pci@vger.kernel.org,
+	Ethan Zhao <haifeng.zhao@linux.intel.com>
+Subject: [PATCH v11 0/5] fix vt-d hard lockup when hotplug ATS capable device
+Date: Thu, 25 Jan 2024 20:39:57 -0500
+Message-Id: <20240126014002.481294-1-haifeng.zhao@linux.intel.com>
+X-Mailer: git-send-email 2.31.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic:
-	LV2PR12MB5869:EE_|BL1PR12MB5969:EE_|MW4PR12MB7165:EE_
-X-MS-Office365-Filtering-Correlation-Id: 534751be-79f6-4341-2b2f-08dc1e046b24
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ggp58T/aK+sID7eDXOp0AEZ5lEN3Nwq2hJ6nRtws0N+zir461A03Knf3D8rYFqcTFpo7h4EgrrC3MpVJVqBsukDUFR5jZeNgFRfje9UKPuOKOBo152x0XLaT0gdmIFznDQAKv80yjVRpE0u+UYR58WvTuXJ+jnciZqM8N+UgTg38YWD3AshzzCUGsSWj7gcpai08wJvCrSvMXhSPwz0JVEeH8WmV2odn6JKGGmuUtR32cOmoGr8ai5UxmwiF562g7XC4K/X58QIex9qaHne+JFiFTWaM9ASYpKB/CVsk2tToU1twLZ8L7xmcu2zm/Pb26O3gNjgH4y9rYh8DR6HkoFDxfh/wQyuL8U0cN9F40auf93vHu8cn4xWZPNI/YB8seiG1AIBJvclgwQXqzTQrs/mS6bVxg/4VK05s2LGZpGxI3dG8gZo6W45C3j2bMTh/zZ2LwMzdcOK2lz4yJgeUteXDaPOgZpGgbc6KzGNTiXLAFeBh+0HYxkSMwdtwUW9KXhkF3C3SGhfnYIbuvIGDmlJDTY8aGIyMtcukpB1akDlV4lUwe9+86g7DKY3CZlCiG4TlTmm0ifM2+OClK3Z6vYNCql9Q+05G08ZVv5YGI68=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR12MB5969.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(346002)(39860400002)(376002)(136003)(230922051799003)(64100799003)(186009)(1800799012)(451199024)(54906003)(2616005)(6512007)(66476007)(66946007)(316002)(66556008)(110136005)(1076003)(5660300002)(6506007)(478600001)(26005)(966005)(6486002)(41300700001)(36756003)(2906002)(38100700002)(86362001)(8676002)(8936002)(4326008)(33656002)(14143004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?RbBgOpfyJ+jxZJK/bxYFUv1gEZe7T/rKZzbt7gW3KSDyRFgDPBFVagSeLRFu?=
- =?us-ascii?Q?35y+9DenzWuzTMhSwVsOwMe3CGL7gyVb3H1k5VPcEoryt9VWKrZxETh6RJFu?=
- =?us-ascii?Q?wH5RYQQ4R+IGAGy7DV6krWy59xcm5AdgsmcIznIf0kkKOR4wPPbcRlZS1dtl?=
- =?us-ascii?Q?KiBblkzeihEOv06T7tBwRU4TFYFk6QcQ+Ieokpy8a46Z8ANazMxK/MaZ55XO?=
- =?us-ascii?Q?eCsgzbfVo9mJWM3KxJdEvfpc/J3E65qLtWmNy4BVwbC41wy6B94dLq01f3Y8?=
- =?us-ascii?Q?9HhNIaxtWttsV2XPgnYZ3aUuDQ3ZfuJXHFUQkJPfiBM6+MA1lYYebLgiIcSS?=
- =?us-ascii?Q?lF/RLDaZm289Pr6IoBFTlr4YQLFW/nzwJjTy1y1ud45HLeIGlMnoOPPW6qqv?=
- =?us-ascii?Q?lY9UbqIL2CEUD1CChacxTZLEk7mGIDVBi85lSfCyAtHoYyq/OKqL2CeAh5dY?=
- =?us-ascii?Q?lR73ULFaokyhgl6w5etbQqagkFXM+F0Pe2Bt4lcjkFWJcF7lIjP4ckamdgWd?=
- =?us-ascii?Q?O0yyiNWjSrcYegNjja5wL1PvTKks04lKkFFhdp+ZJEAqW2x01urGCn9+FUM/?=
- =?us-ascii?Q?nbuoJBzJYsjh+NfASE5x0dDW/mlsiXKNTx+uy/cxdRrciV5h5o+t7PDoN9iR?=
- =?us-ascii?Q?UrGQx25n0xopYNJ/HiEFzf57rKcwAJhlVAUAX1hV9wKwtC/IDOW0Olwm7QhP?=
- =?us-ascii?Q?6gxsaOJyZ3MQBgqoTTWmk5r6nbLZU4/lfn7ADfaDFVKb5rjNHetbSDoC2D+F?=
- =?us-ascii?Q?Kk/N/duJAAi0voTCY34MwSMfazdrmmXrTVwFVGLMRTRvhkMfcq7pBQetCcUg?=
- =?us-ascii?Q?Ja3cGsZ+8AbP4cZuP4RKTIsD9T61uU7O7AJ2hKL70dO/NOHVEyCOYkcIS1t5?=
- =?us-ascii?Q?w8lcbyFQmSPw+ybn3Ue6RtjNrZELeUYrcIHHjO6KmP7s5j84z4EafbESImXX?=
- =?us-ascii?Q?tllRFhyK7t9yjYenVyqdhC1nlh+/CE89/eFwz2B07VwIA/4eVhpxnHO5rKP6?=
- =?us-ascii?Q?KKGEBM2y6pAJY8EZVfYpA5APDwEHb7mwu9TMBWUCxWVo80QX5akNu1Y7ai/B?=
- =?us-ascii?Q?7+cpqJQ7AXvgS/wM89YdywSGkBKpq8TdxTOVbTwzV6NK1UsjTI0SKArelxEV?=
- =?us-ascii?Q?MD1eM8X8s5RudYRF2KgPkGSS7lNPOeYpztj5XlvE++aBC8qaHGIjrh9alU0v?=
- =?us-ascii?Q?j/k5bkRTmmq+mWh82ijwGp7H5704HQUWlteeScdpqzMG5PctJ9izXWu47b4b?=
- =?us-ascii?Q?ojlXb5jm15osnyWFxOhK2+PdRsT9fx6Er8gkGVXVZMInaZZaNxbjCOH0J6E3?=
- =?us-ascii?Q?XWlSf/nTt3KTC/k+DA2KAG8R9e8iuZ7lU3F9gKxJprT1T+9hvm2kLPZ4/lIe?=
- =?us-ascii?Q?2xSO6CjsD2PJS5hgIDC26T/ovlc9e+xEVpfMwBmJ6b3X2B51pW4r/RRAZhzv?=
- =?us-ascii?Q?oFQ+Qn8GI30Qha04EYq18aHTWxIos1157W3iiMF4tzK0RDbqjCMS7TzEN4s2?=
- =?us-ascii?Q?OQmTBqgDO1sH3rVo+gp7ZHq7Fn4GoUQ0HG7E6JtrgLL8KeGmA7tnpsitnjLb?=
- =?us-ascii?Q?AFmH3CJHdf7AWggTMm8W9Rfqe+k6qV+7Ev4vSRvI?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 534751be-79f6-4341-2b2f-08dc1e046b24
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2024 00:19:10.6818
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iGRnoFIW1CTUQNxsP9cs0ve3BTtzv6sWaOsh5NVaiH2iWV5crWCr0s1peAfJn+Wu
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7165
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jan 25, 2024 at 10:03:31AM -0400, Jason Gunthorpe wrote:
-> On Thu, Jan 25, 2024 at 09:55:46PM +0800, Yi Liu wrote:
-> > Hi Jason, Kevin,
-> > 
-> > Today, Intel iommu driver only tracks attached devices/iommus in the nested
-> > domain. While the nested parent domain does not.
-> 
-> Heh, I was just looking at this bug on my ARM implemention too :)
+This patchset is used to fix vt-d hard lockup reported when surprise
+unplug ATS capable endpoint device connects to system via PCIe switch
+as following topology.
 
-What I did for SMMU is on my github how:
+     +-[0000:15]-+-00.0  Intel Corporation Ice Lake Memory Map/VT-d
+     |           +-00.1  Intel Corporation Ice Lake Mesh 2 PCIe
+     |           +-00.2  Intel Corporation Ice Lake RAS
+     |           +-00.4  Intel Corporation Device 0b23
+     |           \-01.0-[16-1b]----00.0-[17-1b]--+-00.0-[18]----00.0
+                                           NVIDIA Corporation Device 2324
+     |                                           +-01.0-[19]----00.0
+                          Mellanox Technologies MT2910 Family [ConnectX-7]
 
-https://github.com/jgunthorpe/linux/commits/smmuv3_newapi/
+User brought endpoint device 19:00.0's link down by flapping it's hotplug
+capable slot 17:01.0 link control register, as sequence DLLSC response,
+pciehp_ist() will unload device driver and power it off, durning device
+driver is unloading an iommu device-TLB invalidation (Intel VT-d spec, or
+'ATS Invalidation' in PCIe spec) request issued to that link down device,
+thus a long time completion/timeout waiting in interrupt context causes
+continuous hard lockup warnning and system hang.
 
-See iommu/arm-smmu-v3: Support IOMMU_DOMAIN_NESTED
+Other detail, see every patch commit log.
 
-The list that tracks where the iommu domain sends its invalidations
-gets a flag indicating that ATC has to be a full flush
+patch [1&2] were tested by yehaorong@bytedance.com on stable v6.7-rc4.
+patch [1-5] passed compiling on stable v6.8rc1.
 
-The domain gets a flag that says the IOTLB has to be a full flush (to
-wipe the nest child entries too)
+change log:
+v11: 
+- update per latest comment and suggestion from Baolu and YiLiu.
+- split refactoring patch into two patches, [3/5] for simplify parameters
+  and [4/5] for pdev parameter passing.
+- re-order patches.
+- fold target device presence check into qi_check_fault().
+- combine patch[2][5] in v10 into one patch[5].
+- some commit description correctness.
+- add fixes tag to patch[2/5].
+- rebased on 6.8rc1
+v10:
+- refactor qi_submit_sync() and its callers to get pci_dev instance, as
+  Kevin pointed out add target_flush_dev to iommu is not right.
+v9:
+- unify all spelling of ATS Invalidation adhere to PCIe spec per Bjorn's
+  suggestion.
+v8:
+- add a patch to break the loop for timeout device-TLB invalidation, as
+  Bjorn said there is possibility device just no response but not gone.
+v7:
+- reorder patches and revise commit log per Bjorn's guide.
+- other code and commit log revise per Lukas' suggestion.
+- rebased to stable v6.7-rc6.
+v6:
+- add two patches to break out device-TLB invalidation if device is gone.
+v5:
+- add a patch try to fix the rare case (surprise remove a device in
+  safe removal process). not work because surprise removal handling can't
+  re-enter when another safe removal is in process.
+v4:
+- move the PCI device state checking after ATS per Baolu's suggestion.
+v3:
+- fix commit description typo.
+v2:
+- revise commit[1] description part according to Lukas' suggestion.
+- revise commit[2] description to clarify the issue's impact.
+v1:
+- https://lore.kernel.org/lkml/20231213034637.2603013-1-haifeng.zhao@
+linux.intel.com/T/
 
-Also note that if the VM is being relied on to generate ATC
-invalidations then the hypervisor must also track the VM's ATS
-state. If the VM thinks ATS is off then it will not issue ATC flushes.
 
-ARM has a convenient STE bit that makes this simple, otherwise the VMM
-will have to trap the PCI-E ATS config write and forward it through
-iommufd somehow.
+Thanks,
+Ethan 
 
-Tracking all the ATS stuff was a big PITA, I think the approach I got
-for SMMU is pretty good though.
 
-Jason
+Ethan Zhao (5):
+  PCI: make pci_dev_is_disconnected() helper public for other drivers
+  iommu/vt-d: don't issue ATS Invalidation request when device is
+    disconnected
+  iommu/vt-d: simplify parameters of qi_submit_sync() ATS invalidation
+    callers
+  iommu/vt-d: pass pdev parameter for qi_check_fault() and refactor
+    callers
+  iommu/vt-d: improve ITE fault handling if target device isn't present
+
+ drivers/iommu/intel/dmar.c          | 71 +++++++++++++++++++++++------
+ drivers/iommu/intel/iommu.c         | 26 +++--------
+ drivers/iommu/intel/iommu.h         | 20 ++++----
+ drivers/iommu/intel/irq_remapping.c |  2 +-
+ drivers/iommu/intel/nested.c        |  9 +---
+ drivers/iommu/intel/pasid.c         | 12 ++---
+ drivers/iommu/intel/svm.c           | 13 +++---
+ drivers/pci/pci.h                   |  5 --
+ include/linux/pci.h                 |  5 ++
+ 9 files changed, 93 insertions(+), 70 deletions(-)
+
+-- 
+2.31.1
+
