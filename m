@@ -1,152 +1,100 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D268D1CFB5
-	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 15:13:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECA0D1CF98
+	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 15:17:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706282026; cv=none; b=HzKBFnxx8KPqN4SygrQxEVlTwpiEt7EnMP7ICG7lZGLkbuvATL3NbbUmJQTp5lft1YMJxMLnPNtYDSFqnQ54XUpvqi5Z0KAV8RXRx2nj6r5OSdz3Hjk+hrhT3hjAt2UBpUZ0MdhwjB1K67XYkRZz0yrQ1vt7WjhZv9Gn0WsNKEg=
+	t=1706282225; cv=none; b=RQSVXtBpbmq8AB4XFi3T7YrGNOIvAW1aGjZn4f8I8YEqPvp8rB2zzKQZeBSU31GS2YGr/dV51PQ20gbnBv2MhymPxCkFi1sPnCOO8mScPCJv7ChL0f72F3g8jGApJRnL0itpNxHeeC1itjaZfRj4sLoWpuZ/QkHPiMKxpD03GXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706282026; c=relaxed/simple;
-	bh=kfyjj8jHYy8SocUrDeOnNWkukYdcDA211mctNyn6EFA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hex6cr3Y1yTP1WqCe5bIrDu3wcu+bO6QdaQVcTDvYz4gGsVDp+xucXE9/8lnfPVNFMPUTJe+V4GVPD61/F9VMD1XOR01n898z+QvR2MTsFaUuljxNSrjmxsZPfZ/ruCGTWUvqR71P8xJW9vsUJUMSWWd/qSFbCK2YWQD0idBadw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=XC+xYVUn; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
+	s=arc-20240116; t=1706282225; c=relaxed/simple;
+	bh=ycK1Stg6RqUITxTiNF6zYf2SsEC1R2ya33fUNr0wo3M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZfU+FT8VJbV5Gsoj2aTqWeXDIo528J0f4UyscW8Yjrr0JxTE3KrRdsbLYj0lMYMo4hwqiN38fiFuMTmVSAboWc9bBPl9bt0pQfxE/4YXk2Bfjw/B3q7dWjyxQoHTxDLBkAfurWrNJVoYJmpOy7DlXD+fvU4Go8NY7qrtpitG1Mg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=K55Q8KlR; arc=none smtp.client-ip=209.85.167.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="XC+xYVUn"
-Received: from pps.filterd (m0353728.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 40QEThEh012122;
-	Fri, 26 Jan 2024 15:13:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=sYJj3Lxyxkh7Odj2MxxHOdVdCf9KKsefqAtu7UyDJHM=;
- b=XC+xYVUnTlJBI9/nRLlPHw6Ngkk3/8IQeAUOlQfKSz3q+JS8IgnuiCsPfc3QAJLTLWOd
- 88KrtrBWeur4hr0BajKn4KGKoTrWhCmTbUvbThidBhhNki3bazS/jTSC9uwvtH+NcYvZ
- +PrMCxs2F5CWqHi0wq22QhDD/Bb85Vdb2xWWuiFHpL2/oUs+gRNh6bvmbjWEuYEGJiv5
- /HHDXu45easPDbh3OUogd1jNQmlOghx6qVVx3gh5zUtLPRzoSWR/QAwlByRsYYac65+p
- aVB50NzUleHNk8BictuskAfiZCNKRUpjkjUAmzflBCjsohQoceeKvyOIAdzQAQVr3quJ qQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vvb9pe1ja-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 26 Jan 2024 15:13:22 +0000
-Received: from m0353728.ppops.net (m0353728.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 40QEuvTK011199;
-	Fri, 26 Jan 2024 15:13:21 GMT
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vvb9pe1hj-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 26 Jan 2024 15:13:21 +0000
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 40QDJKe0028225;
-	Fri, 26 Jan 2024 15:13:20 GMT
-Received: from smtprelay04.fra02v.mail.ibm.com ([9.218.2.228])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3vru732ydx-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 26 Jan 2024 15:13:20 +0000
-Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
-	by smtprelay04.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 40QFDHOn36176202
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 26 Jan 2024 15:13:18 GMT
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id D39A720049;
-	Fri, 26 Jan 2024 15:13:17 +0000 (GMT)
-Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id ED3A520040;
-	Fri, 26 Jan 2024 15:13:13 +0000 (GMT)
-Received: from [9.43.53.156] (unknown [9.43.53.156])
-	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Fri, 26 Jan 2024 15:13:13 +0000 (GMT)
-Message-ID: <b825dd04-3d32-4fbd-91e3-523ddf96fc7a@linux.ibm.com>
-Date: Fri, 26 Jan 2024 20:43:12 +0530
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="K55Q8KlR"
+Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-3bd4e6a7cb0so293187b6e.3
+        for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 07:17:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1706282223; x=1706887023; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ycK1Stg6RqUITxTiNF6zYf2SsEC1R2ya33fUNr0wo3M=;
+        b=K55Q8KlREHjsL/C3PNvf/8e+kpIKtZkj4WRQ+xZTUSKSlLh0MkOwuLQFe08mku1Ys6
+         8nGUc5KgOTzRsGdWVq+W+iZ9bD9XxQoKYZUZeqSqa+aGWAl0jM/E6qz4i/pWK+nKE6nE
+         v8dOFPKIQCsE/vxW0uGZv9758QD2NkffWf/d1dB3FcO/wppsPQ8NitXya0kpUs2hSUc3
+         o4X77zD4st/OSCgnIifuIC0EHkvjYL8KGBGmDXEdYQoRcQ/HdfQwZ9l8LXOcnVcHweIP
+         +zwe5MHbN//yrMjN7hOyb4fsCMabaZLxHTdZ/DE36lfSuWlLsIfqAdnBpswo7ogZCT8y
+         1eCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706282223; x=1706887023;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ycK1Stg6RqUITxTiNF6zYf2SsEC1R2ya33fUNr0wo3M=;
+        b=mTxSVLolk5czz7gdOhIV/ds+h/UNx80aIrCk3GXeD8jn/Wq4NSxq613YEUoGRJOq4T
+         hCpGKT9bYIG+zTliKmuk1zwj9IVq4sjC4qMSIjZueiIo5wU+Zf79nPrAsqvEG43HrrmC
+         yT3eIo1QfYnIEXw+PMpEY0TdlpweV0sK8ObhDCm9HGMD3cQWrVzSuQukAhrKxwJ75J/G
+         ad8vUZ+T6E+AlGwjUTR8R5vujTLjoKM7X79BH6nb9JcTxi0Ob6WDk/O70tA1P3oUufAR
+         wm5DSC9kq6dvSH/0hYfrcdzRlBMJ4trcS/AMk9UMviRZCS1rVr/QPdPY5k+Y+Mlga9qp
+         WzGg==
+X-Gm-Message-State: AOJu0YyPO7qppjZY3/8nvNwmnmT5Sm/gqVMCuQ/2dj8Zf6l6yFjRpkiz
+	rqNkGcxGSgzmOOY5tiFO5xujoweoDvkaYhNbrDwuVzV2oH+pDJeM8klQw5pjXiI=
+X-Google-Smtp-Source: AGHT+IFrt9nryZjWKK5XB8rdZZQ0ZLiVll/0WhFtuhH2eLFjwwzfbOmZXs5b/TpVTrjEAEXhJyZ8jA==
+X-Received: by 2002:a05:6870:b1c4:b0:210:e14a:7a9c with SMTP id x4-20020a056870b1c400b00210e14a7a9cmr1359195oak.58.1706282222837;
+        Fri, 26 Jan 2024 07:17:02 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id ns26-20020a056870ac9a00b00210cc6cc9eesm385454oab.33.2024.01.26.07.17.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 26 Jan 2024 07:17:02 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rTNwz-009S0o-4e;
+	Fri, 26 Jan 2024 11:17:01 -0400
+Date: Fri, 26 Jan 2024 11:17:01 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+Cc: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
+	linux-kernel@vger.kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
+	christophe.leroy@csgroup.eu, aneesh.kumar@kernel.org,
+	naveen.n.rao@linux.ibm.com, jroedel@suse.de,
+	tpearson@raptorengineering.com, aik@amd.com, bgray@linux.ibm.com,
+	gregkh@linuxfoundation.org, gbatra@linux.vnet.ibm.com,
+	vaibhav@linux.ibm.com
+Subject: Re: [PATCH 1/2] powerpc: iommu: Bring back table group
+ release_ownership() call
+Message-ID: <20240126151701.GZ50608@ziepe.ca>
+References: <170618450592.3805.8216395093813382208.stgit@ltcd48-lp2.aus.stglab.ibm.com>
+ <170618451433.3805.9015493852395837391.stgit@ltcd48-lp2.aus.stglab.ibm.com>
+ <20240125155017.GW50608@ziepe.ca>
+ <b825dd04-3d32-4fbd-91e3-523ddf96fc7a@linux.ibm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] powerpc: iommu: Bring back table group
- release_ownership() call
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
-        christophe.leroy@csgroup.eu, aneesh.kumar@kernel.org,
-        naveen.n.rao@linux.ibm.com, jroedel@suse.de,
-        tpearson@raptorengineering.com, aik@amd.com, bgray@linux.ibm.com,
-        gregkh@linuxfoundation.org, gbatra@linux.vnet.ibm.com,
-        vaibhav@linux.ibm.com
-References: <170618450592.3805.8216395093813382208.stgit@ltcd48-lp2.aus.stglab.ibm.com>
- <170618451433.3805.9015493852395837391.stgit@ltcd48-lp2.aus.stglab.ibm.com>
- <20240125155017.GW50608@ziepe.ca>
-From: Shivaprasad G Bhat <sbhat@linux.ibm.com>
-In-Reply-To: <20240125155017.GW50608@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: TT-kCwoKaQRQRNZltl0PGeSZu0KO1M2s
-X-Proofpoint-ORIG-GUID: y9E3c62hkdA1WHVDC7FqAteGfiDhjO7W
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-01-25_14,2024-01-25_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 spamscore=0 mlxlogscore=999 clxscore=1015 bulkscore=0
- priorityscore=1501 impostorscore=0 adultscore=0 mlxscore=0 suspectscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311290000 definitions=main-2401260112
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b825dd04-3d32-4fbd-91e3-523ddf96fc7a@linux.ibm.com>
 
+On Fri, Jan 26, 2024 at 08:43:12PM +0530, Shivaprasad G Bhat wrote:
+> > Also, is there any chance someone can work on actually fixing this to
+> > be a proper iommu driver? I think that will become important for power
+> > to use the common dma_iommu code in the next year...
+> We are looking into it.
 
-On 1/25/24 21:20, Jason Gunthorpe wrote:
-> On Thu, Jan 25, 2024 at 06:08:39AM -0600, Shivaprasad G Bhat wrote:
->> The commit 2ad56efa80db ("powerpc/iommu: Setup a default domain and
-[snip]
->> +		/*
->> +		 * The domain being set to PLATFORM from earlier
->> +		 * BLOCKED. The table_group ownership has to be released.
->> +		 */
->> +		table_group->ops->release_ownership(table_group);
->> +	} else if (platform_domain->type == IOMMU_DOMAIN_BLOCKED) {
->> +		table_group = iommu_group_get_iommudata(grp);
->> +		ret = table_group->ops->take_ownership(table_group);
->> +		iommu_group_put(grp);
->> +	}
-> Sure, but please split the function, don't test on the
-> platform->domain_type.
-Sure.
-> Also, is there any chance someone can work on actually fixing this to
-> be a proper iommu driver? I think that will become important for power
-> to use the common dma_iommu code in the next year...
-We are looking into it.
-> Sort of like this:
->
-> diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
-> index ebe259bdd46298..0d6a7fea2bd9a5 100644
-> --- a/arch/powerpc/kernel/iommu.c
-> +++ b/arch/powerpc/kernel/iommu.c
-> @@ -1287,20 +1287,20 @@ spapr_tce_platform_iommu_attach_dev(struct iommu_domain *platform_domain,
->   	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->   	struct iommu_group *grp = iommu_group_get(dev);
-[snip]
-> +static const struct iommu_domain_ops spapr_tce_blocked_domain_ops = {
-> +	.attach_dev = spapr_tce_blocked_iommu_attach_dev,
-> +};
-> +
-> +static struct iommu_domain spapr_tce_blocked_domain = {
-> +	.type = IOMMU_DOMAIN_BLOCKED,
-> +	.ops = &spapr_tce_blocked_domain_ops,
->   };
->   
->   static bool spapr_tce_iommu_capable(struct device *dev, enum iommu_cap cap)
+Okay, let me know, I can possibly help make parts of this happen
 
-I have posted the next version as suggested.
+power is the last still-current architecture to be outside the modern
+IOMMU and DMA API design and I'm going to start proposing things that
+will not be efficient on power because of this.
 
-Thanks for the quick review!
+I think a basic iommu driver using the dma API would not be so hard.
 
-Regards,
+I don't know what to do about the SPAPR VFIO mess though. :(
 
-Shivaprasad
-
-
+Jason
