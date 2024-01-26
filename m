@@ -1,473 +1,355 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CC78C8DE
-	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 06:44:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB88F20DF7
+	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 06:55:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=134.134.136.65
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706251448; cv=none; b=RTMKwCfJRQRQZAbzjAAN6E8dOlGLETCQOivgxTWp9AMv1H6Gx6mwQvk/eJ8zZ23upchs19q9sc5PknOkliNFKLMmUIxeifbTboErIg2JK28+MfgTzBmsGeTLaqLjPylWHAEpWPUFJ60M88Pkf1mnLAPjyY+YXHpycEywSFjxYms=
+	t=1706252143; cv=none; b=pu8EtWWhyZXsQHx2iuv2ovcAVKruSDAtxuJ9TXOQTHdcAFhH/4BT/CGa7yVij/zRKTYCh2Rzbl9hosLOL6nn2000gBQTW6b+mk7mSbym73VeX5Iphxib62lYHKsjTYvuo6UxPQZitvtsn/0zePDHVT0iSj+grvZT1AQp7g3v3sc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706251448; c=relaxed/simple;
-	bh=y5wLNN7Z3zsHAdRNaCAGJxPKA+oPlN1uoRNwzgksWtU=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=R1Y+qJdObEP3rs6Xy9RQbdS1EzFjh7qboPLZ1ahQ7WSMZWn4nwsIjuhDMETu8sRc0fG4dRIVdow5FuzrD5NAb58L798nqFuyUGsD0BeTVNVpl7Ce+TynlIr7RdifE6R5QFWQto1r3NrnD2JtCfks8IGb4raasvaFEn3sdrkWze8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AvviNS2i; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1706252143; c=relaxed/simple;
+	bh=J0vtX0qiYjjv/gvWeWrYsnqKGhBgKUexuBCwtcnJmcY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=QxAH97UHWeZN+mwlykxAy/18U+IFiDKPycxFxzGfI0Vb7af8y1wesC/wc1L3U7eguZveF1sHYVsqTrP4SP3kJ8J2qou0lOoQaO04FlqD+LRcG6EPXnOC38MF9sfMS8eQD6vSNGnFQbiv2k2pw2HMjr9ZpWbzcoYG4TXTj+oBs+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Xd0wNFw2; arc=none smtp.client-ip=134.134.136.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AvviNS2i"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Xd0wNFw2"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706251446; x=1737787446;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=y5wLNN7Z3zsHAdRNaCAGJxPKA+oPlN1uoRNwzgksWtU=;
-  b=AvviNS2iywgCC0prxd78zGNbgtK5e1FLq+sPaEjToFXWn8X5yVLnQ07e
-   5gDarWXsvJQa8PT/mvs2VTYQxr6VGhjofK1gjQPN0FE/iv4DX0gMy6Pxe
-   /jHvKpSl5nW8ijbGNU/DDLIghzkjlH8PgXyCDV6Kp/v4j99C1Rx+w3i5K
-   jVDtbb7r89VXKUGPym64Ta7RjJh4RVPaFEiXTmfAnr9s2SvbO4+RDMDPD
-   qa27cSwiWGuJ0xsBhCmRD6DBNTAifVC5lARA53neL2nYwcYZvrQUY5r/w
-   EPJ7Kec3HXo8Hf2pns4MnisxfFxSBPzU5DW2qx7U7gQh0Ls+Gdkam50cN
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="9155722"
+  t=1706252141; x=1737788141;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=J0vtX0qiYjjv/gvWeWrYsnqKGhBgKUexuBCwtcnJmcY=;
+  b=Xd0wNFw29/6vZ/bOqrqL+fpeV6bdsYX8QR+H7VGMz+kvQZwT+t2104s1
+   dfrq+iIWzG9dRgAjofHm37bUULKPqFir58J65zRl0yJCTtzGyfZ2xFyFm
+   G5n/1w9yyzl60arYfs8Bi8T5j1ObwZVB862PPaZ+WT+4jC5/lr0hRYGtk
+   qL8RYU9K/XnhRZCJFGidM6yDZpCt2cTwRHhhtU6qtVsrzhRvb2O6OT2ia
+   btw4r5UHHBc2WvwsnGVD5Vk0BtzO7dnsEkSTziFDBSxEHUFdcrQoHvW3o
+   Jb/TylSBktsm+PzTAGWc26QzhrlEwqEpj6Xvh/mBFBpv5a8fT0p30N6OI
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="406139494"
 X-IronPort-AV: E=Sophos;i="6.05,216,1701158400"; 
-   d="scan'208";a="9155722"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2024 22:44:00 -0800
+   d="scan'208";a="406139494"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2024 22:55:41 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="877304497"
+X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="906230383"
 X-IronPort-AV: E=Sophos;i="6.05,216,1701158400"; 
-   d="scan'208";a="877304497"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.174.176]) ([10.249.174.176])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2024 22:43:56 -0800
-Message-ID: <2f583fda-aebc-41c2-898c-d4f46eaa1ab4@linux.intel.com>
-Date: Fri, 26 Jan 2024 14:43:56 +0800
+   d="scan'208";a="906230383"
+Received: from cascade.sh.intel.com ([10.239.48.35])
+  by fmsmga002.fm.intel.com with ESMTP; 25 Jan 2024 22:55:38 -0800
+From: Jingqi Liu <Jingqi.liu@intel.com>
+To: iommu@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Tian Kevin <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: linux-kernel@vger.kernel.org,
+	Jingqi Liu <Jingqi.liu@intel.com>
+Subject: [PATCH v2] Documentation: iommu/vt-d: Add the document for Intel IOMMU debugfs
+Date: Fri, 26 Jan 2024 14:47:04 +0800
+Message-Id: <20240126064704.14292-1-Jingqi.liu@intel.com>
+X-Mailer: git-send-email 2.21.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Longfang Liu <liulongfang@huawei.com>, Yan Zhao <yan.y.zhao@intel.com>,
- iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
- Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v10 15/16] iommu: Make iopf_group_response() return void
-Content-Language: en-US
-To: Joel Granados <j.granados@samsung.com>
-References: <20240122054308.23901-1-baolu.lu@linux.intel.com>
- <20240122054308.23901-16-baolu.lu@linux.intel.com>
- <CGME20240125162723eucas1p2cc7562a22b8af9b46076e1c7b616531b@eucas1p2.samsung.com>
- <20240125162721.yd2xejowbri5fg5r@localhost>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240125162721.yd2xejowbri5fg5r@localhost>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2024/1/26 0:27, Joel Granados wrote:
-> On Mon, Jan 22, 2024 at 01:43:07PM +0800, Lu Baolu wrote:
->> The iopf_group_response() should return void, as nothing can do anything
->> with the failure. This implies that ops->page_response() must also return
->> void; this is consistent with what the drivers do. The failure paths,
->> which are all integrity validations of the fault, should be WARN_ON'd,
->> not return codes.
->>
->> If the iommu core fails to enqueue the fault, it should respond the fault
->> directly by calling ops->page_response() instead of returning an error
->> number and relying on the iommu drivers to do so. Consolidate the error
->> fault handling code in the core.
->>
->> Co-developed-by: Jason Gunthorpe<jgg@nvidia.com>
->> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>   include/linux/iommu.h                       |  14 +--
->>   drivers/iommu/intel/iommu.h                 |   4 +-
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  50 +++-----
->>   drivers/iommu/intel/svm.c                   |  18 +--
->>   drivers/iommu/io-pgfault.c                  | 132 +++++++++++---------
->>   5 files changed, 99 insertions(+), 119 deletions(-)
->>
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index 48196efc9327..d7b6f4017254 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -578,9 +578,8 @@ struct iommu_ops {
->>   	int (*dev_enable_feat)(struct device *dev, enum iommu_dev_features f);
->>   	int (*dev_disable_feat)(struct device *dev, enum iommu_dev_features f);
->>   
->> -	int (*page_response)(struct device *dev,
->> -			     struct iopf_fault *evt,
->> -			     struct iommu_page_response *msg);
->> +	void (*page_response)(struct device *dev, struct iopf_fault *evt,
->> +			      struct iommu_page_response *msg);
->>   
->>   	int (*def_domain_type)(struct device *dev);
->>   	void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
->> @@ -1551,8 +1550,8 @@ void iopf_queue_free(struct iopf_queue *queue);
->>   int iopf_queue_discard_partial(struct iopf_queue *queue);
->>   void iopf_free_group(struct iopf_group *group);
->>   int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
->> -int iopf_group_response(struct iopf_group *group,
->> -			enum iommu_page_response_code status);
->> +void iopf_group_response(struct iopf_group *group,
->> +			 enum iommu_page_response_code status);
->>   #else
->>   static inline int
->>   iopf_queue_add_device(struct iopf_queue *queue, struct device *dev)
->> @@ -1594,10 +1593,9 @@ iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
->>   	return -ENODEV;
->>   }
->>   
->> -static inline int iopf_group_response(struct iopf_group *group,
->> -				      enum iommu_page_response_code status)
->> +static inline void iopf_group_response(struct iopf_group *group,
->> +				       enum iommu_page_response_code status)
->>   {
->> -	return -ENODEV;
->>   }
->>   #endif /* CONFIG_IOMMU_IOPF */
->>   #endif /* __LINUX_IOMMU_H */
->> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
->> index 696d95293a69..cf9a28c7fab8 100644
->> --- a/drivers/iommu/intel/iommu.h
->> +++ b/drivers/iommu/intel/iommu.h
->> @@ -1079,8 +1079,8 @@ struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *parent,
->>   void intel_svm_check(struct intel_iommu *iommu);
->>   int intel_svm_enable_prq(struct intel_iommu *iommu);
->>   int intel_svm_finish_prq(struct intel_iommu *iommu);
->> -int intel_svm_page_response(struct device *dev, struct iopf_fault *evt,
->> -			    struct iommu_page_response *msg);
->> +void intel_svm_page_response(struct device *dev, struct iopf_fault *evt,
->> +			     struct iommu_page_response *msg);
->>   struct iommu_domain *intel_svm_domain_alloc(void);
->>   void intel_svm_remove_dev_pasid(struct device *dev, ioasid_t pasid);
->>   void intel_drain_pasid_prq(struct device *dev, u32 pasid);
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> index 4e93e845458c..42eb59cb99f4 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> @@ -920,31 +920,29 @@ static int arm_smmu_cmdq_batch_submit(struct arm_smmu_device *smmu,
->>   	return arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, true);
->>   }
->>   
->> -static int arm_smmu_page_response(struct device *dev,
->> -				  struct iopf_fault *unused,
->> -				  struct iommu_page_response *resp)
->> +static void arm_smmu_page_response(struct device *dev, struct iopf_fault *unused,
->> +				   struct iommu_page_response *resp)
->>   {
->>   	struct arm_smmu_cmdq_ent cmd = {0};
->>   	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
->>   	int sid = master->streams[0].id;
->>   
->> -	if (master->stall_enabled) {
->> -		cmd.opcode		= CMDQ_OP_RESUME;
->> -		cmd.resume.sid		= sid;
->> -		cmd.resume.stag		= resp->grpid;
->> -		switch (resp->code) {
->> -		case IOMMU_PAGE_RESP_INVALID:
->> -		case IOMMU_PAGE_RESP_FAILURE:
->> -			cmd.resume.resp = CMDQ_RESUME_0_RESP_ABORT;
->> -			break;
->> -		case IOMMU_PAGE_RESP_SUCCESS:
->> -			cmd.resume.resp = CMDQ_RESUME_0_RESP_RETRY;
->> -			break;
->> -		default:
->> -			return -EINVAL;
->> -		}
->> -	} else {
->> -		return -ENODEV;
->> +	if (WARN_ON(!master->stall_enabled))
->> +		return;
->> +
->> +	cmd.opcode		= CMDQ_OP_RESUME;
->> +	cmd.resume.sid		= sid;
->> +	cmd.resume.stag		= resp->grpid;
->> +	switch (resp->code) {
->> +	case IOMMU_PAGE_RESP_INVALID:
->> +	case IOMMU_PAGE_RESP_FAILURE:
->> +		cmd.resume.resp = CMDQ_RESUME_0_RESP_ABORT;
->> +		break;
->> +	case IOMMU_PAGE_RESP_SUCCESS:
->> +		cmd.resume.resp = CMDQ_RESUME_0_RESP_RETRY;
->> +		break;
->> +	default:
->> +		break;
->>   	}
->>   
->>   	arm_smmu_cmdq_issue_cmd(master->smmu, &cmd);
->> @@ -954,8 +952,6 @@ static int arm_smmu_page_response(struct device *dev,
->>   	 * terminated... at some point in the future. PRI_RESP is fire and
->>   	 * forget.
->>   	 */
->> -
->> -	return 0;
->>   }
->>   
->>   /* Context descriptor manipulation functions */
->> @@ -1516,16 +1512,6 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
->>   	}
->>   
->>   	ret = iommu_report_device_fault(master->dev, &fault_evt);
->> -	if (ret && flt->type == IOMMU_FAULT_PAGE_REQ) {
->> -		/* Nobody cared, abort the access */
->> -		struct iommu_page_response resp = {
->> -			.pasid		= flt->prm.pasid,
->> -			.grpid		= flt->prm.grpid,
->> -			.code		= IOMMU_PAGE_RESP_FAILURE,
->> -		};
->> -		arm_smmu_page_response(master->dev, &fault_evt, &resp);
->> -	}
->> -
->>   out_unlock:
->>   	mutex_unlock(&smmu->streams_mutex);
->>   	return ret;
->> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
->> index e1cbcb9515f0..2f8716636dbb 100644
->> --- a/drivers/iommu/intel/svm.c
->> +++ b/drivers/iommu/intel/svm.c
->> @@ -740,9 +740,8 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->>   	return IRQ_RETVAL(handled);
->>   }
->>   
->> -int intel_svm_page_response(struct device *dev,
->> -			    struct iopf_fault *evt,
->> -			    struct iommu_page_response *msg)
->> +void intel_svm_page_response(struct device *dev, struct iopf_fault *evt,
->> +			     struct iommu_page_response *msg)
->>   {
->>   	struct device_domain_info *info = dev_iommu_priv_get(dev);
->>   	struct intel_iommu *iommu = info->iommu;
->> @@ -751,7 +750,6 @@ int intel_svm_page_response(struct device *dev,
->>   	bool private_present;
->>   	bool pasid_present;
->>   	bool last_page;
->> -	int ret = 0;
->>   	u16 sid;
->>   
->>   	prm = &evt->fault.prm;
->> @@ -760,16 +758,6 @@ int intel_svm_page_response(struct device *dev,
->>   	private_present = prm->flags & IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA;
->>   	last_page = prm->flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
->>   
->> -	if (!pasid_present) {
->> -		ret = -EINVAL;
->> -		goto out;
->> -	}
->> -
->> -	if (prm->pasid == 0 || prm->pasid >= PASID_MAX) {
->> -		ret = -EINVAL;
->> -		goto out;
->> -	}
->> -
->>   	/*
->>   	 * Per VT-d spec. v3.0 ch7.7, system software must respond
->>   	 * with page group response if private data is present (PDP)
->> @@ -798,8 +786,6 @@ int intel_svm_page_response(struct device *dev,
->>   
->>   		qi_submit_sync(iommu, &desc, 1, 0);
->>   	}
->> -out:
->> -	return ret;
->>   }
->>   
->>   static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
->> diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
->> index c22e13df84c2..6e63e5a02884 100644
->> --- a/drivers/iommu/io-pgfault.c
->> +++ b/drivers/iommu/io-pgfault.c
->> @@ -39,7 +39,7 @@ static void iopf_put_dev_fault_param(struct iommu_fault_param *fault_param)
->>   		kfree_rcu(fault_param, rcu);
->>   }
->>   
->> -void iopf_free_group(struct iopf_group *group)
->> +static void __iopf_free_group(struct iopf_group *group)
->>   {
->>   	struct iopf_fault *iopf, *next;
->>   
->> @@ -50,6 +50,11 @@ void iopf_free_group(struct iopf_group *group)
->>   
->>   	/* Pair with iommu_report_device_fault(). */
->>   	iopf_put_dev_fault_param(group->fault_param);
->> +}
->> +
->> +void iopf_free_group(struct iopf_group *group)
->> +{
->> +	__iopf_free_group(group);
->>   	kfree(group);
->>   }
->>   EXPORT_SYMBOL_GPL(iopf_free_group);
->> @@ -97,14 +102,49 @@ static int report_partial_fault(struct iommu_fault_param *fault_param,
->>   	return 0;
->>   }
->>   
->> +static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
->> +					   struct iopf_fault *evt,
->> +					   struct iopf_group *abort_group)
->> +{
->> +	struct iopf_fault *iopf, *next;
->> +	struct iopf_group *group;
->> +
->> +	group = kzalloc(sizeof(*group), GFP_KERNEL);
->> +	if (!group) {
->> +		/*
->> +		 * We always need to construct the group as we need it to abort
->> +		 * the request at the driver if it cfan't be handled.
->> +		 */
->> +		group = abort_group;
->> +	}
->> +
->> +	group->fault_param = iopf_param;
->> +	group->last_fault.fault = evt->fault;
->> +	INIT_LIST_HEAD(&group->faults);
->> +	INIT_LIST_HEAD(&group->pending_node);
->> +	list_add(&group->last_fault.list, &group->faults);
->> +
->> +	/* See if we have partial faults for this group */
->> +	mutex_lock(&iopf_param->lock);
->> +	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list) {
->> +		if (iopf->fault.prm.grpid == evt->fault.prm.grpid)
->> +			/* Insert*before*  the last fault */
->> +			list_move(&iopf->list, &group->faults);
->> +	}
->> +	list_add(&group->pending_node, &iopf_param->faults);
->> +	mutex_unlock(&iopf_param->lock);
->> +
->> +	return group;
->> +}
->> +
->>   /**
->>    * iommu_report_device_fault() - Report fault event to device driver
->>    * @dev: the device
->>    * @evt: fault event data
->>    *
->>    * Called by IOMMU drivers when a fault is detected, typically in a threaded IRQ
->> - * handler. When this function fails and the fault is recoverable, it is the
->> - * caller's responsibility to complete the fault.
->> + * handler. If this function fails then ops->page_response() was called to
->> + * complete evt if required.
->>    *
->>    * This module doesn't handle PCI PASID Stop Marker; IOMMU drivers must discard
->>    * them before reporting faults. A PASID Stop Marker (LRW = 0b100) doesn't
->> @@ -143,22 +183,18 @@ int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
->>   {
->>   	struct iommu_fault *fault = &evt->fault;
->>   	struct iommu_fault_param *iopf_param;
->> -	struct iopf_fault *iopf, *next;
->> -	struct iommu_domain *domain;
->> +	struct iopf_group abort_group = {};
->>   	struct iopf_group *group;
->>   	int ret;
->>   
->> -	if (fault->type != IOMMU_FAULT_PAGE_REQ)
->> -		return -EOPNOTSUPP;
->> -
->>   	iopf_param = iopf_get_dev_fault_param(dev);
->> -	if (!iopf_param)
->> +	if (WARN_ON(!iopf_param))
->>   		return -ENODEV;
->>   
->>   	if (!(fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)) {
->>   		ret = report_partial_fault(iopf_param, fault);
->>   		iopf_put_dev_fault_param(iopf_param);
->> -
->> +		/* A request that is not the last does not need to be ack'd */
->>   		return ret;
->>   	}
->>   
->> @@ -170,56 +206,33 @@ int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
->>   	 * will send a response to the hardware. We need to clean up before
->>   	 * leaving, otherwise partial faults will be stuck.
->>   	 */
->> -	domain = get_domain_for_iopf(dev, fault);
->> -	if (!domain) {
->> +	group = iopf_group_alloc(iopf_param, evt, &abort_group);
->> +	if (group == &abort_group) {
->> +		ret = -ENOMEM;
->> +		goto err_abort;
->> +	}
->> +
->> +	group->domain = get_domain_for_iopf(dev, fault);
->> +	if (!group->domain) {
->>   		ret = -EINVAL;
->> -		goto cleanup_partial;
->> +		goto err_abort;
->>   	}
->>   
->> -	group = kzalloc(sizeof(*group), GFP_KERNEL);
->> -	if (!group) {
->> -		ret = -ENOMEM;
->> -		goto cleanup_partial;
->> -	}
->> -
->> -	group->fault_param = iopf_param;
->> -	group->last_fault.fault = *fault;
->> -	INIT_LIST_HEAD(&group->faults);
->> -	INIT_LIST_HEAD(&group->pending_node);
->> -	group->domain = domain;
->> -	list_add(&group->last_fault.list, &group->faults);
->> -
->> -	/* See if we have partial faults for this group */
->> -	mutex_lock(&iopf_param->lock);
->> -	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list) {
->> -		if (iopf->fault.prm.grpid == fault->prm.grpid)
->> -			/* Insert*before*  the last fault */
->> -			list_move(&iopf->list, &group->faults);
->> -	}
->> -	list_add(&group->pending_node, &iopf_param->faults);
->> -	mutex_unlock(&iopf_param->lock);
->> +	/*
->> +	 * On success iopf_handler must call iopf_group_response() and
->> +	 * iopf_free_group()
->> +	 */
->> +	ret = group->domain->iopf_handler(group);
->> +	if (ret)
->> +		goto err_abort;
->> +	return 0;
->>   
->> -	ret = domain->iopf_handler(group);
->> -	if (ret) {
->> -		mutex_lock(&iopf_param->lock);
->> -		list_del_init(&group->pending_node);
->> -		mutex_unlock(&iopf_param->lock);
->> +err_abort:
->> +	iopf_group_response(group, IOMMU_PAGE_RESP_FAILURE);
->> +	if (group == &abort_group)
->> +		__iopf_free_group(group);
->> +	else
->>   		iopf_free_group(group);
->> -	}
->> -
->> -	return ret;
->> -
->> -cleanup_partial:
->> -	mutex_lock(&iopf_param->lock);
->> -	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list) {
->> -		if (iopf->fault.prm.grpid == fault->prm.grpid) {
->> -			list_del(&iopf->list);
->> -			kfree(iopf);
->> -		}
->> -	}
->> -	mutex_unlock(&iopf_param->lock);
->> -	iopf_put_dev_fault_param(iopf_param);
->> -
->>   	return ret;
->>   }
->>   EXPORT_SYMBOL_GPL(iommu_report_device_fault);
->> @@ -262,8 +275,8 @@ EXPORT_SYMBOL_GPL(iopf_queue_flush_dev);
->>    *
->>    * Return 0 on success and <0 on error.
->>    */
-> Should you adjust the docs as well?
+This document guides users to dump the Intel IOMMU internals by debugfs.
 
-Yes. Will do.
+Signed-off-by: Jingqi Liu <Jingqi.liu@intel.com>
+---
+ Documentation/ABI/testing/debugfs-intel-iommu | 276 ++++++++++++++++++
+ 1 file changed, 276 insertions(+)
+ create mode 100644 Documentation/ABI/testing/debugfs-intel-iommu
 
-Best regards,
-baolu
+diff --git a/Documentation/ABI/testing/debugfs-intel-iommu b/Documentation/ABI/testing/debugfs-intel-iommu
+new file mode 100644
+index 000000000000..6c17e55c3379
+--- /dev/null
++++ b/Documentation/ABI/testing/debugfs-intel-iommu
+@@ -0,0 +1,276 @@
++What:		/sys/kernel/debug/iommu/intel/iommu_regset
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file dumps all the register contents for each IOMMU device.
++
++		Example in Kabylake:
++
++		::
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/iommu_regset
++
++		 IOMMU: dmar0 Register Base Address: 26be37000
++
++		 Name                    Offset          Contents
++		 VER                     0x00            0x0000000000000010
++		 GCMD                    0x18            0x0000000000000000
++		 GSTS                    0x1c            0x00000000c7000000
++		 FSTS                    0x34            0x0000000000000000
++		 FECTL                   0x38            0x0000000000000000
++
++		 [...]
++
++		 IOMMU: dmar1 Register Base Address: fed90000
++
++		 Name                    Offset          Contents
++		 VER                     0x00            0x0000000000000010
++		 GCMD                    0x18            0x0000000000000000
++		 GSTS                    0x1c            0x00000000c7000000
++		 FSTS                    0x34            0x0000000000000000
++		 FECTL                   0x38            0x0000000000000000
++
++		 [...]
++
++		 IOMMU: dmar2 Register Base Address: fed91000
++
++		 Name                    Offset          Contents
++		 VER                     0x00            0x0000000000000010
++		 GCMD                    0x18            0x0000000000000000
++		 GSTS                    0x1c            0x00000000c7000000
++		 FSTS                    0x34            0x0000000000000000
++		 FECTL                   0x38            0x0000000000000000
++
++		 [...]
++
++What:		/sys/kernel/debug/iommu/intel/ir_translation_struct
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file dumps the table entries for Interrupt
++		remapping and Interrupt posting.
++
++		Example in Kabylake:
++
++		::
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/ir_translation_struct
++
++		 Remapped Interrupt supported on IOMMU: dmar0
++		 IR table address:100900000
++
++		 Entry SrcID   DstID    Vct IRTE_high           IRTE_low
++		 0     00:0a.0 00000080 24  0000000000040050    000000800024000d
++		 1     00:0a.0 00000001 ef  0000000000040050    0000000100ef000d
++
++		 Remapped Interrupt supported on IOMMU: dmar1
++		 IR table address:100300000
++		 Entry SrcID   DstID    Vct IRTE_high           IRTE_low
++		 0     00:02.0 00000002 26  0000000000040010    000000020026000d
++
++		 [...]
++
++		 ****
++
++		 Posted Interrupt supported on IOMMU: dmar0
++		 IR table address:100900000
++		 Entry SrcID   PDA_high PDA_low  Vct IRTE_high          IRTE_low
++
++What:		/sys/kernel/debug/iommu/intel/dmar_translation_struct
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file dumps Intel IOMMU DMA remapping tables, such
++		as root table, context table, PASID directory and PASID
++		table entries in debugfs. For legacy mode, it doesn't
++		support PASID, and hence PASID field is defaulted to
++		'-1' and other PASID related fields are invalid.
++
++		Example in Kabylake:
++
++		::
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/dmar_translation_struct
++
++		 IOMMU dmar1: Root Table Address: 0x103027000
++		 B.D.F   Root_entry
++		 00:02.0 0x0000000000000000:0x000000010303e001
++
++		 Context_entry
++		 0x0000000000000102:0x000000010303f005
++
++		 PASID   PASID_table_entry
++		 -1      0x0000000000000000:0x0000000000000000:0x0000000000000000
++
++		 IOMMU dmar0: Root Table Address: 0x103028000
++		 B.D.F   Root_entry
++		 00:0a.0 0x0000000000000000:0x00000001038a7001
++
++		 Context_entry
++		 0x0000000000000000:0x0000000103220e7d
++
++		 PASID   PASID_table_entry
++		 0       0x0000000000000000:0x0000000000800002:0x00000001038a5089
++
++		 [...]
++
++What:		/sys/kernel/debug/iommu/intel/invalidation_queue
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file exports invalidation queue internals of each
++		IOMMU device.
++
++		Example in Kabylake:
++
++		::
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/invalidation_queue
++
++		 Invalidation queue on IOMMU: dmar0
++		 Base: 0x10022e000      Head: 20        Tail: 20
++		 Index          qw0                    qw1                     qw2
++		     0   0000000000000014        0000000000000000        0000000000000000
++		     1   0000000200000025        0000000100059c04        0000000000000000
++		     2   0000000000000014        0000000000000000        0000000000000000
++
++		      		qw3                  status
++			 0000000000000000        0000000000000000
++			 0000000000000000        0000000000000000
++			 0000000000000000        0000000000000000
++
++		 [...]
++
++		 Invalidation queue on IOMMU: dmar1
++		 Base: 0x10026e000      Head: 32        Tail: 32
++		 Index           qw0                     qw1                   status
++		     0   0000000000000004        0000000000000000         0000000000000000
++		     1   0000000200000025        0000000100059804         0000000000000000
++		     2   0000000000000011        0000000000000000         0000000000000000
++
++		 [...]
++
++What:		/sys/kernel/debug/iommu/intel/dmar_perf_latency
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file is used to control and show counts of
++		execution time ranges for various types per DMAR.
++
++		Firstly, write a value to
++		/sys/kernel/debug/iommu/intel/dmar_perf_latency
++		to enable sampling.
++
++		The possible values are as follows:
++
++		* 0 - disable sampling all latency data
++
++		* 1 - enable sampling IOTLB invalidation latency data
++
++		* 2 - enable sampling devTLB invalidation latency data
++
++		* 3 - enable sampling intr entry cache invalidation latency data
++
++		Next, read /sys/kernel/debug/iommu/intel/dmar_perf_latency gives
++		a snapshot of sampling result of all enabled monitors.
++
++		Examples in Kabylake:
++
++		::
++
++		 1) Disable sampling all latency data:
++
++		 $ sudo echo 0 > /sys/kernel/debug/iommu/intel/dmar_perf_latency
++
++		 2) Enable sampling IOTLB invalidation latency data
++
++		 $ sudo echo 1 > /sys/kernel/debug/iommu/intel/dmar_perf_latency
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/dmar_perf_latency
++
++		 IOMMU: dmar0 Register Base Address: 26be37000
++				 <0.1us   0.1us-1us    1us-10us  10us-100us   100us-1ms
++		 inv_iotlb           0           0           0           0           0
++
++		 		 1ms-10ms      >=10ms     min(us)     max(us) average(us)
++		 inv_iotlb           0           0           0           0           0
++
++		 [...]
++
++		 IOMMU: dmar2 Register Base Address: fed91000
++		 		 <0.1us   0.1us-1us    1us-10us  10us-100us   100us-1ms
++		 inv_iotlb           0           0          18           0           0
++
++				 1ms-10ms      >=10ms     min(us)     max(us) average(us)
++		 inv_iotlb           0           0           2           2           2
++
++		 3) Enable sampling devTLB invalidation latency data
++
++		 $ sudo echo 2 > /sys/kernel/debug/iommu/intel/dmar_perf_latency
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/dmar_perf_latency
++
++		 IOMMU: dmar0 Register Base Address: 26be37000
++				 <0.1us   0.1us-1us    1us-10us  10us-100us   100us-1ms
++		 inv_devtlb           0           0           0           0           0
++
++				 >=10ms     min(us)     max(us) average(us)
++		 inv_devtlb           0           0           0           0
++
++		 [...]
++
++What:		/sys/kernel/debug/iommu/intel/<bdf>/domain_translation_struct
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file dumps a specified page table of Intel IOMMU
++		in legacy mode or scalable mode.
++
++		For a device that only supports legacy mode, dump its
++		page table by the debugfs file in the debugfs device
++		directory. e.g.
++		/sys/kernel/debug/iommu/intel/0000:00:02.0/domain_translation_struct.
++
++		For a device that supports scalable mode, dump the
++		page table of specified pasid by the debugfs file in
++		the debugfs pasid directory. e.g.
++		/sys/kernel/debug/iommu/intel/0000:00:02.0/1/domain_translation_struct.
++
++		Examples in Kabylake:
++
++		::
++
++		 1) Dump the page table of device "0000:00:02.0" that only supports legacy mode.
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/0000:00:02.0/domain_translation_struct
++
++		 Device 0000:00:02.0 @0x1017f8000
++		 IOVA_PFN                PML5E                   PML4E
++		 0x000000008d800 |       0x0000000000000000      0x00000001017f9003
++		 0x000000008d801 |       0x0000000000000000      0x00000001017f9003
++		 0x000000008d802 |       0x0000000000000000      0x00000001017f9003
++
++		 PDPE                    PDE                     PTE
++		 0x00000001017fa003      0x00000001017fb003      0x000000008d800003
++		 0x00000001017fa003      0x00000001017fb003      0x000000008d801003
++		 0x00000001017fa003      0x00000001017fb003      0x000000008d802003
++
++		 [...]
++
++		 2) Dump the page table of device "0000:00:0a.0" with PASID "1" that
++		 supports scalable mode.
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/0000:00:0a.0/1/domain_translation_struct
++
++		 Device 0000:00:0a.0 with pasid 1 @0x10c112000
++		 IOVA_PFN                PML5E                   PML4E
++		 0x0000000000000 |       0x0000000000000000      0x000000010df93003
++		 0x0000000000001 |       0x0000000000000000      0x000000010df93003
++		 0x0000000000002 |       0x0000000000000000      0x000000010df93003
++
++		 PDPE                    PDE                     PTE
++		 0x0000000106ae6003      0x0000000104b38003      0x0000000147c00803
++		 0x0000000106ae6003      0x0000000104b38003      0x0000000147c01803
++		 0x0000000106ae6003      0x0000000104b38003      0x0000000147c02803
++
++		 [...]
+-- 
+2.21.3
+
