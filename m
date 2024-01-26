@@ -1,43 +1,43 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A2635B20C
-	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 23:37:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07F9E5BAC0
+	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 23:37:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706312247; cv=none; b=U64inpSf/l1OoA0buk6wfi4+evwA94VF49zuMcSi5LucSedt1363hiPjcnStW960XEoDFz7aDBwiiHBdHj08WUjkUvVwu0cx/XVHB0pGbsNhhlrgHf2LjM22FgcQWXUwzgh1fr/CDurtr5ZS4g+XlKa+Hg+y7UMEXzlm0CpRgL8=
+	t=1706312248; cv=none; b=bFguG/rcomEZq4sG2oSitEr20vQXD3dwYIZLULLyRgZPPqiSJJhKi+AZmMaU3K1u45zwMfH5ZJ9izDQ9oMNhU72XXYZ0wPX2NEUKtf1/VN5ABIxm8iPj4JRf/d4t2YxaSe/9dfMzZakHNkRs3KxuXZznwCG/1mdM8Xo8YkzHbg4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706312247; c=relaxed/simple;
-	bh=MqzYCPV34vdfoVMKAgtS0juqP6fLnnDqzn4F90K69Xk=;
+	s=arc-20240116; t=1706312248; c=relaxed/simple;
+	bh=KVXuQfj6u+U1cGUQ3TC+vIVsCaW1LZRHuP8dLBZSJDg=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=IwGnumhqUV8qyXaKCrojVb9AsHYEMtaUW/8x1E+UGN13LosEbtGP2RRekFMV2gp0/XebvthZpgKaUsGFCBw7XhMvsPKf48ap6FVxAPWO7zT+QkXtlycC4jjqoismxGZO+RJvysIXotOhaIBAG6+DTghx0zld1bAjWL4e0iweoVc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=St21S41b; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version; b=OJrwMewnQzfBe6FzCp+2W0tRIq1FNRGAkIryDXmFMatcIb9YXQWiiFXBUPO7sfJmsRITyIp4pDx1h852KzR29FOaagAhMvV+JaRgnUFM7x3jcBl33em3Gih8yVKC15Y5zWTQ2XXdIFT61vmFyVRetGw3E+4N/gcDv3lkMvwsG2w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=C29OPemK; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="St21S41b"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C29OPemK"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706312246; x=1737848246;
+  t=1706312247; x=1737848247;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=MqzYCPV34vdfoVMKAgtS0juqP6fLnnDqzn4F90K69Xk=;
-  b=St21S41btEPMxtTBxralZWC6YIhDPetPhBMp7zDBzbhuOpUMr8X1zsnI
-   TVRW20+1IEPPbmprKElYCD6atqMEyWOR3VNXXnO/gGlI35+Wa8UlDR6zl
-   QMG6xMJUslUr0/QFzBfjkvodJ5CjncH2OJb78uhVyFALbyUKbER1Dgyw7
-   FRfSLbsuGidgt9w5skQr1sYYzhwgZAoErKYx/wfn7qtc0HgSyXL9Lzy3N
-   YXmMq0/7KfhcILLK1F7/y8BE53oQPBpxuvBf0ydQb3lK4F5FWog35WosJ
-   /De1gyBCNfSxusHcoxxSlGWYNhTJzmBSMzDs4tzO/EfPoRYlvdxsH2cFW
+  bh=KVXuQfj6u+U1cGUQ3TC+vIVsCaW1LZRHuP8dLBZSJDg=;
+  b=C29OPemK69sUEqZ5YqG1SPKtJ6oq7BI/i4/iEI8MpbixrHi0PBZl/esW
+   6UBK+DpCQvaKTa5uCt6vSYK/TouECldQ0Wi5Ht27mKi6XRXiQ4G+Na0+b
+   zXFob5a0XUnTEhaJ8wY+gbtb0E/i2URzSxRXWBbZqRMAwnfzzWo55Kmpq
+   L0iynktu+yxOn63kNiwinuz1d3Qx8cjDoHRfPRBjpr9AdyCSHrB/DfGBP
+   jBu7uO+n9Q8ruMG8QrsxDst40ke5uJX9hQ173RaW2GJMT6BfoCSUlN3wl
+   T0KpNmV+2Ufaa2xQyqM+ww0CuuRZEUkf6LHIUUgjTI9Q/gL+tcB4SlN/X
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="9990705"
+X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="9990722"
 X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
-   d="scan'208";a="9990705"
+   d="scan'208";a="9990722"
 Received: from orsmga001.jf.intel.com ([10.7.209.18])
   by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2024 15:37:22 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="821290731"
+X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="821290734"
 X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
-   d="scan'208";a="821290731"
+   d="scan'208";a="821290734"
 Received: from srinivas-otcpl-7600.jf.intel.com (HELO jacob-builder.jf.intel.com) ([10.54.39.116])
   by orsmga001.jf.intel.com with ESMTP; 26 Jan 2024 15:37:21 -0800
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -62,9 +62,9 @@ Cc: Paul Luse <paul.e.luse@intel.com>,
 	seanjc@google.com,
 	"Robin Murphy" <robin.murphy@arm.com>,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH 07/15] x86/irq: Add accessors for posted interrupt descriptors
-Date: Fri, 26 Jan 2024 15:42:29 -0800
-Message-Id: <20240126234237.547278-8-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 08/15] x86/irq: Factor out calling ISR from common_interrupt
+Date: Fri, 26 Jan 2024 15:42:30 -0800
+Message-Id: <20240126234237.547278-9-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
 References: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
@@ -76,56 +76,60 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Posted interrupts are controlled by and pending interrupts are marked in
-the posted interrupt descriptor. The upcoming support for host side posted
-interrupts requires accessors to check for pending vectors.
-
-This patch adds a helper function to check individual vector status.
+Prepare for calling external IRQ handlers directly from the posted MSI
+demultiplexing loop. Extract the common code with common interrupt to
+avoid code duplication.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- arch/x86/include/asm/posted_intr.h | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ arch/x86/kernel/irq.c | 23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
-diff --git a/arch/x86/include/asm/posted_intr.h b/arch/x86/include/asm/posted_intr.h
-index a36cc971ea13..eb939f630b02 100644
---- a/arch/x86/include/asm/posted_intr.h
-+++ b/arch/x86/include/asm/posted_intr.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- #ifndef _X86_POSTED_INTR_H
- #define _X86_POSTED_INTR_H
-+#include <asm/irq_vectors.h>
- 
- #define POSTED_INTR_ON  0
- #define POSTED_INTR_SN  1
-@@ -89,9 +90,26 @@ static inline bool pi_test_sn(struct pi_desc *pi_desc)
+diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+index f6546f83d616..1a1762baf85f 100644
+--- a/arch/x86/kernel/irq.c
++++ b/arch/x86/kernel/irq.c
+@@ -242,18 +242,10 @@ static __always_inline void handle_irq(struct irq_desc *desc,
+ 		__handle_irq(desc, regs);
  }
  
- #ifdef CONFIG_X86_POSTED_MSI
-+/*
-+ * Not all external vectors are subject to interrupt remapping, e.g. IOMMU's
-+ * own interrupts. Here we do not distinguish them since those vector bits in
-+ * PIR will always be zero.
-+ */
-+static inline bool pi_pending_this_cpu(unsigned int vector)
-+{
-+	struct pi_desc *pid = this_cpu_ptr(&posted_interrupt_desc);
-+
-+	if (WARN_ON_ONCE(vector > NR_VECTORS || vector < FIRST_EXTERNAL_VECTOR))
-+		return false;
-+
-+	return test_bit(vector, (unsigned long *)pid->pir);
+-/*
+- * common_interrupt() handles all normal device IRQ's (the special SMP
+- * cross-CPU interrupts have their own entry points).
+- */
+-DEFINE_IDTENTRY_IRQ(common_interrupt)
++static __always_inline void call_irq_handler(int vector, struct pt_regs *regs)
+ {
+-	struct pt_regs *old_regs = set_irq_regs(regs);
+ 	struct irq_desc *desc;
+ 
+-	/* entry code tells RCU that we're not quiescent.  Check it. */
+-	RCU_LOCKDEP_WARN(!rcu_is_watching(), "IRQ failed to wake up RCU");
+-
+ 	desc = __this_cpu_read(vector_irq[vector]);
+ 	if (likely(!IS_ERR_OR_NULL(desc))) {
+ 		handle_irq(desc, regs);
+@@ -268,7 +260,20 @@ DEFINE_IDTENTRY_IRQ(common_interrupt)
+ 			__this_cpu_write(vector_irq[vector], VECTOR_UNUSED);
+ 		}
+ 	}
 +}
 +
- extern void intel_posted_msi_init(void);
- 
- #else
-+static inline bool pi_pending_this_cpu(unsigned int vector) { return false; }
++/*
++ * common_interrupt() handles all normal device IRQ's (the special SMP
++ * cross-CPU interrupts have their own entry points).
++ */
++DEFINE_IDTENTRY_IRQ(common_interrupt)
++{
++	struct pt_regs *old_regs = set_irq_regs(regs);
 +
- static inline void intel_posted_msi_init(void) {};
++	/* entry code tells RCU that we're not quiescent.  Check it. */
++	RCU_LOCKDEP_WARN(!rcu_is_watching(), "IRQ failed to wake up RCU");
  
- #endif /* X86_POSTED_MSI */
++	call_irq_handler(vector, regs);
+ 	set_irq_regs(old_regs);
+ }
+ 
 -- 
 2.25.1
 
