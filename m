@@ -1,96 +1,159 @@
-Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CFFF224D7
-	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 19:51:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FA422375D
+	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 23:25:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.88
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706298707; cv=none; b=CemN3q06AyOQJ55B9uvIy2/rEBL3hUCC1L6sz11IdQwGzXsuByL5XjkIjMpGZSWqMo9ScJHw83cap5LowAivP++gdxMyLwpLOLexbMfFR1tbXv6SFgj7qC/b3WR62lnghVlZUP6sjn0P9OkvoKWWab1ZJkRWmEYGP+qy+hZ2SX0=
+	t=1706311531; cv=none; b=WqMLGZD2ai380SCqmbYmG3IIeSZEBq5g9RcB/zpEimH5gxxgBsAJDotjiPF/49NzvwbQv7N2yxc8wUiSnn5afrrCIcLsMOfJSTmQRPzEeWx6+5xo+GkO1BRLIt+CgH5qpQ27XDu1aGGhr3XhsAyLzpPt6D8w3Xx2Ac8pxbB6jm8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706298707; c=relaxed/simple;
-	bh=UM9NHqrhFW/qXab9JXefHaDvEQZR/UkcaOA0AKHOLys=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IHXf75zY7TCytj91oanZ9dlCBfLtYChLwmyC2ofQtWU8ApWXpQedkbKB/SJLnL234DurwK1jMXGxjjRTEURFo369B4I37ewIjJ/j4vPflaYjD59H4ys6EEvlAt20O9Rbu1bZdqkW6Wi4xnrlndHbXZOTIBl9b8ia3fCYd/wurcA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=e+GRm1sd; arc=none smtp.client-ip=209.85.210.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1706311531; c=relaxed/simple;
+	bh=kMFx64NyVo89pOPt8/Nbt5gcEmGFIJLK+tf/jeK7Gjw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=GE1BoQM7fCTHbuLvEStGeHug6CCtNktACwiQ5GqnLNE2w76ZvIKgGv/1+gKuiINQaCuz+ecnl5zxc5wX9Dp0MXFER3J9FY3yP6q3P4QV3jlKaTzlGRJouEc19olNJI+/cyaqx1wDOGxjoJP66fqUPASWGKcDDyQ0sK+520QSamE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cIDa0FZb; arc=none smtp.client-ip=192.55.52.88
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="e+GRm1sd"
-Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-6e11283948eso242336a34.3
-        for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 11:51:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1706298704; x=1706903504; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=p7t/Jfk6r6ijlM1clfxfASnElihaegtuTeqvVJDZ0W4=;
-        b=e+GRm1sdzUloPM4SzuV5AcSHmXHb21SxPCz95vZaYjr2oaUsaoTAYatC9YK5MTBCUi
-         +rqPhzKHe7ue6HBYC29C4hriuzRNeG7IDvE8g4bQbndfZRmKCX+kwjrZsTlUDl9VbOKr
-         1sD02kYym851wBSbo4qSVUal4zU5kRqb7ug4qBX/ZlQf5i3Cp6R9Vv6tWLAG8rIA/qRj
-         JO0Bfg7X8NVskG+TVWhpdDBI1oUo5z04Kcc6rqKba73t7JIp2NJQxDnMsdzm4N0PcdA4
-         L0tQ06pJl1+fDXtTODxHZ7arRYLXMOGJuIOBpiQs4qD6nSjrp3H5P60k2lg7xm64+rFB
-         OSwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706298704; x=1706903504;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=p7t/Jfk6r6ijlM1clfxfASnElihaegtuTeqvVJDZ0W4=;
-        b=NvuJJd1bwXBWvAGfp5XpzPp0+lRPGY/3No1yPV/KahtoCl0wPq1alJEPoxcgvSMyeB
-         fcfStK8qkqOD638dFIgtfdqeI7vJp+AokebLujd2AwYEpSCUob/ygwPYc9t9YAo+sUh4
-         ZuGd4qtoK2Yc2qlYzPutHfOHRpBMvT2jEHYRWZnaRv437fGp6is49IERcgBYqyzTnr4N
-         GgZCcIIVu3zC+a6E3Eyfd/QJS9IXkFvqkV9k254gVPKg1yCRXVhmUjMI+A9Bdh1J7tvw
-         cT/gtM6NAhHRISWu+6ArdlG6IZwKLirpl7t+m0VFGpXxYo6ya0shU85JlSL9r4vWu5xR
-         j89A==
-X-Gm-Message-State: AOJu0YyFMzXRQ15Hy9DmdSjaE4Z6DxlDWKnWK0qnqjfywGVIxyVAr1iL
-	fLZR3U+HnaDzD5Z92nTTV13AidiVPc3OM4wlmAslIrsmkymHeFZJSvfODePoPII=
-X-Google-Smtp-Source: AGHT+IG8No9TGeuDaqJJWT31lKXoJHAtaVdjCbPNccV/GnexH2LwAmZYe5309O0/wi7ytsY7bDXiFQ==
-X-Received: by 2002:a9d:61cd:0:b0:6dd:e6d3:d393 with SMTP id h13-20020a9d61cd000000b006dde6d3d393mr233513otk.55.1706298704640;
-        Fri, 26 Jan 2024 11:51:44 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id p26-20020a9d695a000000b006dc87c016e4sm386606oto.60.2024.01.26.11.51.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Jan 2024 11:51:44 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rTSEo-009eo3-TV;
-	Fri, 26 Jan 2024 15:51:42 -0400
-Date: Fri, 26 Jan 2024 15:51:42 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
-Cc: thierry.reding@gmail.com, vdumpa@nvidia.com, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com, jonathanh@nvidia.com,
-	baolu.lu@linux.intel.com, jsnitsel@redhat.com, jroedel@suse.de,
-	linux-tegra@vger.kernel.org, iommu@lists.linux.dev,
-	regressions@lists.linux.dev
-Subject: Re: [REGRESSION] Failed buffer allocation in Tegra fbdev
-Message-ID: <20240126195142.GC50608@ziepe.ca>
-References: <bbmhcoghrprmbdibnjum6lefix2eoquxrde7wyqeulm4xabmlm@b6jy32saugqh>
- <20240123151508.GR50608@ziepe.ca>
- <1754c86c-704e-4c80-93c3-1b75a9a247df@tecnico.ulisboa.pt>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cIDa0FZb"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706311529; x=1737847529;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=kMFx64NyVo89pOPt8/Nbt5gcEmGFIJLK+tf/jeK7Gjw=;
+  b=cIDa0FZbbRqIAejkd8C5NhI+Nqc2IqNR2jPZ0WV0xdumvH4HShgfJfNw
+   xOhealDOGLReky3lKvcN5oW/LA9ZcoQiYWyRDgWh2l6j98KofTduT1vnw
+   3b4U7YKIrl5+EldFlszL5jwoFiteqnMEQs0a5zZdjsG0AhmBqoC4CYsOt
+   PmghdwHj/AQCFYIKikJ2O55DoHnEBSny1jN6VaAdxpOwth4tq/dLaFNlJ
+   VUWHfxfDwFmLExmqMuhPdRnOw8VeYh9XnZRduhHOihMwmsUIKxwKpwOKe
+   aRImZgpm8PdtKIdr7gwHMNHLrKAGFGNO3t0ZiiaQdH1yLniElTsgboSw/
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="433757808"
+X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
+   d="scan'208";a="433757808"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2024 15:25:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="910489711"
+X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
+   d="scan'208";a="910489711"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2024 15:25:28 -0800
+Date: Fri, 26 Jan 2024 15:30:47 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
+ iommu@lists.linux.dev, Lu Baolu <baolu.lu@linux.intel.com>,
+ kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
+ <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
+ <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ maz@kernel.org, peterz@infradead.org, seanjc@google.com, Robin Murphy
+ <robin.murphy@arm.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH RFC 12/13] iommu/vt-d: Add a helper to retrieve PID
+ address
+Message-ID: <20240126153047.5e42e5d0@jacob-builder>
+In-Reply-To: <874jgvuls0.ffs@tglx>
+References: <20231112041643.2868316-1-jacob.jun.pan@linux.intel.com>
+ <20231112041643.2868316-13-jacob.jun.pan@linux.intel.com>
+ <874jgvuls0.ffs@tglx>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1754c86c-704e-4c80-93c3-1b75a9a247df@tecnico.ulisboa.pt>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Jan 23, 2024 at 06:44:42PM +0000, Diogo Ivo wrote:
+Hi Thomas,
 
-> Yes, this does fix the issue!
+On Wed, 06 Dec 2023 21:19:11 +0100, Thomas Gleixner <tglx@linutronix.de>
+wrote:
 
-Thanks, just trying to pin down how the fix should be..
+> On Sat, Nov 11 2023 at 20:16, Jacob Pan wrote:
+> > From: Thomas Gleixner <tglx@linutronix.de>
+> >
+> > When programming IRTE for posted mode, we need to retrieve the
+> > physical  
+> 
+> we need .... I surely did not write this changelog.
+> 
+Will delete this.
 
-What kind of kernel are you running, 
+> > address of the posted interrupt descriptor (PID) that belongs to it's
+> > target CPU.
+> >
+> > This per CPU PID has already been set up during cpu_init().  
+> 
+> This information is useful because?
+ditto.
 
-Is this 32 bit?
+> > +static u64 get_pi_desc_addr(struct irq_data *irqd)
+> > +{
+> > +	int cpu =
+> > cpumask_first(irq_data_get_effective_affinity_mask(irqd));  
+> 
+> The effective affinity mask is magically correct when this is called?
+> 
+My understanding is that remappable device MSIs have the following
+hierarchy,e.g.
 
-Is CONFIG_ARM_DMA_USE_IOMMU set?
+parent:                              
+    domain:  INTEL-IR-5-13            
+     hwirq:   0x20000                 
+     chip:    INTEL-IR-POST           
+      flags:   0x0                    
+     parent:                          
+        domain:  VECTOR            
+         hwirq:   0x3c             
+         chip:    APIC         
 
-Is CONFIG_IOMMU_DMA set?
+When irqs are allocated and activated, parents domain op is always called
+first. Effective affinity mask is set up by the parent domain, i.e. VECTOR.
+Example call stack for alloc:
+	irq_data_update_effective_affinity
+	apic_update_irq_cfg
+	x86_vector_alloc_irqs
+	intel_irq_remapping_alloc
+	msi_domain_alloc
 
-I'm guessing yes/yes/no?
+x86_vector_activate also changes the effective affinity mask before calling
+intel_irq_remapping_activate() where a posted interrupt is configured for
+its destination CPU.
 
-Jason
+At runtime, when IRQ affinity is changed by userspace Intel interrupt
+remapping code also calls parent data/chip to update the effective affinity
+map before changing IRTE.
+
+intel_ir_set_affinity(struct irq_data *data, const struct cpumask *mask,
+		      bool force)
+{
+	ret = parent->chip->irq_set_affinity(parent, mask, force);
+
+...
+}
+Here the parent APIC chip does apic_set_affinity() which will set up
+effective mask before posted MSI affinity change.
+
+Maybe I missed some cases?
+
+I will also add a check if the effective affinity mask is not set up.
+
+static phys_addr_t get_pi_desc_addr(struct irq_data *irqd)
+{
+	int cpu = cpumask_first(irq_data_get_effective_affinity_mask(irqd));
+
+	if (WARN_ON(cpu >= nr_cpu_ids))
+		return 0;
+
+	return __pa(per_cpu_ptr(&posted_interrupt_desc, cpu));
+}
+
+
+Thanks,
+
+Jacob
