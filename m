@@ -1,116 +1,143 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 188991A723
-	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 12:19:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0440D14A84
+	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 13:55:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706271575; cv=none; b=eVSQigLTQqoqf9V3L5aGob3PI3WDfTIhJh8P+kWnBIh145SPxy3H52LJcCGCpfkmOvYmbHYcp8rBM6ojhM0Rm+xY3FgE3X1eNqK3iApj/Bu/vSoRGzUGHarh+lXYkTcjREv14Y6+dqkmlYWw+BClOtM0xjzpa3ZrLKd8A8cWppo=
+	t=1706277355; cv=none; b=nrFgEUXjSmc5gCSbJGzllf2ylhd6yECDLuP4SapIYJhon+JZ+/EOnPjU7aF5uHQHewB8r/F60lRFBlYgPbedJNFpFAHZxAmQ4asvRAnGt0AMBeUOPoWgRpzS5w9UcTOytQATcCZMC7h4b1so3VoLCiSYNX3pOiTRmIOULMRGZqM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706271575; c=relaxed/simple;
-	bh=5H56HWqn/deHln62wrFoByopGDwD6ea2LZ8SD5fSyng=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k3WGaIyOVJOprSEXHBuD1fw4vb3031iBTKzLN63SRtD51gu+kQTSVzqK6Ihni8dMA9mfARuTvWoNmraasoXIu3QxjvYEDefQLdXsnpzfUP6GFHktFE7sfRMw5Gsh8IIg2DcE1I1j7oAbGOKCnzM7BYRtyr2eCrezE0OUGOn9sMc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=DloErF6F; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1706277355; c=relaxed/simple;
+	bh=imVjlmmk3YaSrnGHNgfVdxJTZcpjli9usBMpCEom9t8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AHFPjEO0nujdGmjuy76JkD85ZjKjMu479ahW+kODmePv4hcXJcEuX/bu9Etoq4IKV0rUrKoQhYM4EegqO4yhwdiIIeRlWY6NNKsa+DS1jQEfDBtsDu/t6oAapmAbn0D6edgPqI5ualuTeQEsvXI/XOUDnhvfoFiKjgrM1IOy8lA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GgwJmQ2g; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="DloErF6F"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1706271573;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=5H56HWqn/deHln62wrFoByopGDwD6ea2LZ8SD5fSyng=;
-	b=DloErF6FWYymgX8idet3dDCA6VifCpuWLMezWbBqf98dXWVqtX0U3xyisI1Ft+Dd4aoHr2
-	EcIAa9u2+OIA+jY4Grw4B4j3n2eNhD23c2wnXF2LZYCbg6c7yb75xUToY+aBAldRwrQhay
-	+TCR0Qyxc8aPqNMEer+7jBbWGzHcKlI=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-694-lRlVvv05MBOSm7wMsTjiNA-1; Fri, 26 Jan 2024 07:19:31 -0500
-X-MC-Unique: lRlVvv05MBOSm7wMsTjiNA-1
-Received: by mail-wr1-f71.google.com with SMTP id ffacd0b85a97d-337d2ccaab0so242430f8f.0
-        for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 04:19:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706271570; x=1706876370;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5H56HWqn/deHln62wrFoByopGDwD6ea2LZ8SD5fSyng=;
-        b=gMOsXZ2Z5ZLQKr1XXw96EtkrstXjjYcFnyUrzqDxZzq0Fh9DdTxzkhczfagkAeew9F
-         4h4NR/nBIJsOaUoJHjihEZ4D4jf5Uv0L5UodtEzzGG6PFwwDwqEdxuxE1oW7otzMQ6MX
-         joG0e5ciBVLHiSXqlwhYzzxvDppbP29LuR6oRwcxQD6QIb7Ial83THUeHf+GIbboxQ2E
-         FQJWBdaKM4WbF/dsJ5qen94ZFHJ/ghi75Hsmaqu4JRzQUtEz+ZsEWYUV7GNfIE9m+NVV
-         APIeyuXCaBbAiYFEcaI2HLJzuuARPtM0QVtM83FIOdv8G2FueNdU5dcaPZlm8o6Yk4v+
-         1xaw==
-X-Gm-Message-State: AOJu0YxgSEtwKFBej/je32+VTz173/2jnbJuAUDR43Im8RSnzRHJhEXR
-	QwtnRqQwPirdlIUdTlIETV2TX1KJqfGEzdYIcHz0BXWnZVO1OFwSrp5l2LB8JSqqDE6ZOB/uW9K
-	qdkeGRrODjxrXGFyagWKI2h3gh/nK5ewgDXfeShHesOLSe3m5GmIP
-X-Received: by 2002:a05:6000:1047:b0:336:5f08:bbe0 with SMTP id c7-20020a056000104700b003365f08bbe0mr877237wrx.101.1706271570356;
-        Fri, 26 Jan 2024 04:19:30 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IEvk/to6kqjgd6CII/na2g3CQsYKiEqQRao5gUrE4jSuNLIpBgDU8UkmEp/mV+zKAcyqALNYw==
-X-Received: by 2002:a05:6000:1047:b0:336:5f08:bbe0 with SMTP id c7-20020a056000104700b003365f08bbe0mr877224wrx.101.1706271570032;
-        Fri, 26 Jan 2024 04:19:30 -0800 (PST)
-Received: from localhost ([2a01:e0a:b25:f902::ff])
-        by smtp.gmail.com with ESMTPSA id bo17-20020a056000069100b0033930068ca8sm1167700wrb.21.2024.01.26.04.19.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 26 Jan 2024 04:19:29 -0800 (PST)
-Date: Fri, 26 Jan 2024 13:19:29 +0100
-From: Maxime Ripard <mripard@redhat.com>
-To: Milan Zamazal <mzamazal@redhat.com>
-Cc: Lucas Stach <dev@lynxeye.de>, Christoph Hellwig <hch@lst.de>, 
-	iommu@lists.linux.dev, Will Deacon <will@kernel.org>, catalin.marinas@arm.com, 
-	Bryan O'Donoghue <bryan.odonoghue@linaro.org>, Andrey Konovalov <andrey.konovalov.ynk@gmail.com>, 
-	Pavel Machek <pavel@ucw.cz>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
-	kieran.bingham@ideasonboard.com, Hans de Goede <hdegoede@redhat.com>
-Subject: Re: Re: Uncached buffers from CMA DMA heap on some Arm devices?
-Message-ID: <4tu76zlfsowltb6nu2dg5uftcztado27zburavsnmbkhursitr@cqot5cz4b7ms>
-References: <87bk9ahex7.fsf@redhat.com>
- <d2ff8df896d8a167e9abf447ae184ce2f5823852.camel@lynxeye.de>
- <874jf05og9.fsf@redhat.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GgwJmQ2g"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706277354; x=1737813354;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=imVjlmmk3YaSrnGHNgfVdxJTZcpjli9usBMpCEom9t8=;
+  b=GgwJmQ2ge/TptGQGtLvgssofIs7/MImcTQj7eqOaaiGMmYPRUeyYSOGY
+   7vtpIjTWsFxzRwAcvmrRm2sMKARTio1iRt6Ut/53hwSl5HanlGkpmSiJJ
+   Q+s6suqqk2XJkLjIOWBSvwy9kjqR3MZ2qpjQ5p6Hy/uWLPltHSkesWiWE
+   efojdEUvt8KZJ736OGRXl8A1PvH2ftuZ8B94dBosk5/6gKvwEK4apvebf
+   l0QOaJE2vBXIar/HpG8Zi64FcagKGVfoIcKTb1uYmuLTe8J5kSeyW5tC4
+   ZJ7rUYX8ZgH4GcVOJbNoRBuFm6XG81+LtEMz6aiiPpgFZDsykUksXd7RN
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="15998395"
+X-IronPort-AV: E=Sophos;i="6.05,216,1701158400"; 
+   d="scan'208";a="15998395"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2024 05:55:53 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10964"; a="821142817"
+X-IronPort-AV: E=Sophos;i="6.05,216,1701158400"; 
+   d="scan'208";a="821142817"
+Received: from newjersey.igk.intel.com ([10.102.20.203])
+  by orsmga001.jf.intel.com with ESMTP; 26 Jan 2024 05:55:47 -0800
+From: Alexander Lobakin <aleksander.lobakin@intel.com>
+To: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>
+Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Magnus Karlsson <magnus.karlsson@intel.com>,
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+	Alexander Duyck <alexanderduyck@fb.com>,
+	bpf@vger.kernel.org,
+	netdev@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/7] dma: skip calling no-op sync ops when possible
+Date: Fri, 26 Jan 2024 14:54:49 +0100
+Message-ID: <20240126135456.704351-1-aleksander.lobakin@intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="ntfm2yy47zkwtyn5"
-Content-Disposition: inline
-In-Reply-To: <874jf05og9.fsf@redhat.com>
+Content-Transfer-Encoding: 8bit
 
+The series grew from Eric's idea and patch at [0]. The idea of using the
+shortcut for direct DMA as well belongs to Chris.
 
---ntfm2yy47zkwtyn5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+When an architecture doesn't need DMA synchronization and the buffer is
+not an SWIOTLB buffer, most of times the kernel and the drivers end up
+calling DMA sync operations for nothing.
+Even when DMA is direct, this involves a good non-inline call ladder and
+eats a bunch of CPU time. With IOMMU, this results in calling indirect
+calls on hotpath just to check what is already known and return.
+XSk is been using a custom shortcut for that for quite some time.
+I recently wanted to introduce a similar one for Page Pool. Let's combine
+all this into one generic shortcut, which would cover all DMA sync ops
+and all types of DMA (direct, IOMMU, ...).
 
-On Fri, Jan 26, 2024 at 12:22:30PM +0100, Milan Zamazal wrote:
-> > However this isn't guaranteed to be any faster, as the cache synchroniz=
-ation
-> > itself is a pretty heavy-weight operation when you are dealing with buf=
-fer
-> > that are potentially multi-megabytes in size.
->=20
-> Yes, it would be best to measure it if the mechanism was available.
+* #1 adds stub inlines to be able to skip DMA sync ops or even compile
+     them out when not needed.
+* #2 adds the generic shortcut and enables it for direct DMA.
+* #3 adds ability to skip DMA syncs behind an IOMMU.
+* #4-5 are just cleanups for Page Pool to avoid merge conflicts in future.
+* #6 checks for the shortcut as early as possible in the Page Pool code to
+     make sure no cycles wasted.
+* #7 replaces XSk's shortcut with the generic one.
 
-AFAIK, perf exposes all kinds of metrics related to cache management. It
-would be a good idea to measure all our scenario with perf and see what
-comes up.
+On 100G NIC, the result is +3-5% for direct DMA and +10-11% for IOMMU.
+As a bonus, XSk core now allows batched buffer allocations for IOMMU
+setups.
+If the shortcut is not available on some system, there should be no
+visible performance regressions.
 
-Maxime
+[0] https://lore.kernel.org/netdev/20221115182841.2640176-1-edumazet@google.com
 
---ntfm2yy47zkwtyn5
-Content-Type: application/pgp-signature; name="signature.asc"
+Alexander Lobakin (5):
+  dma: compile-out DMA sync op calls when not used
+  page_pool: make sure frag API fields don't span between cachelines
+  page_pool: don't use driver-set flags field directly
+  page_pool: check for DMA sync shortcut earlier
+  xsk: use generic DMA sync shortcut instead of a custom one
 
------BEGIN PGP SIGNATURE-----
+Eric Dumazet (2):
+  dma: avoid expensive redundant calls for sync operations
+  iommu/dma: avoid expensive indirect calls for sync operations
 
-iHUEABYKAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCZbOjUAAKCRDj7w1vZxhR
-xaMIAQC8TIZy+27aCCm7ZwP/fIrRdx2Dp39pEo10pIb/qigBLAD/ZZ4BzS42S3aU
-H1v9aM/rnDifKjmJxlksv5HOM1XzvwE=
-=DwAp
------END PGP SIGNATURE-----
+ kernel/dma/Kconfig                            |   4 +
+ include/net/page_pool/types.h                 |  21 +++-
+ include/linux/device.h                        |   5 +
+ include/linux/dma-map-ops.h                   |  17 +++
+ include/linux/dma-mapping.h                   | 100 +++++++++++++-----
+ include/net/xdp_sock_drv.h                    |   7 +-
+ include/net/xsk_buff_pool.h                   |  13 +--
+ drivers/base/dd.c                             |   2 +
+ drivers/iommu/dma-iommu.c                     |   1 +
+ drivers/net/ethernet/engleder/tsnep_main.c    |   2 +-
+ .../net/ethernet/freescale/dpaa2/dpaa2-xsk.c  |   2 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    |   2 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c      |   2 +-
+ drivers/net/ethernet/intel/igc/igc_main.c     |   2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   2 +-
+ drivers/net/ethernet/netronome/nfp/nfd3/xsk.c |   2 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |   2 +-
+ kernel/dma/mapping.c                          |  60 ++++++++---
+ kernel/dma/swiotlb.c                          |  14 +++
+ net/core/page_pool.c                          |  67 +++++++-----
+ net/xdp/xsk_buff_pool.c                       |  29 +----
+ 23 files changed, 237 insertions(+), 125 deletions(-)
 
---ntfm2yy47zkwtyn5--
+-- 
+2.43.0
 
