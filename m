@@ -1,177 +1,193 @@
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DFBA1D530
-	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 14:26:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.118.77.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEAD61B7F2
+	for <iommu@lists.linux.dev>; Fri, 26 Jan 2024 15:09:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706279196; cv=none; b=sGcgI9fvPMXeeFAvec/nE60gNYmOFMY0MltgaoPZqtmTLms4WjIP/ThzGlOs7EVcsFuL1qjZ2dsZc9ALrmotennO6uU3PAdNNkJNDxpKyyQ+EX+OyWZXQ4sV01agZlFCoJUYuAZBqM70vAuAzAJzq0drVe5vMtkjLH0Cafs2s/8=
+	t=1706281786; cv=none; b=XvwtJTDEgTWj7czPVxLmHzlA523v2XWgQcSBLXLyohdBm9e6KqzHK2G0emtQsjHTEMEKHlutLk1973WiG/COVTk9WCVFNzC25dlgg4US5qthW0TQj2s77FmPjDEj3biyyjZZQkv8Ar5wf1YIRsR32537joZEY6RVR7fQYoCL/+c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706279196; c=relaxed/simple;
-	bh=G2PhmLGC98EiARj7Dtek1UJ7RlcAx2g1L2bzRMsqHgk=;
-	h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To:References; b=Y02nzsH1nFY6dF7r7uTpPedU7pDI9rczmwLLiDDKkOV7bEbwjs2/rLTXh7AyiCRq1iz9GgU2GEsVhLLzvBuLedKu0aMHM3flX+vIIkUdfC/8ipL5dXPy/ecvTXO8rtZ9bEr0FX/taOFpjECZHHBO/MfqsUsOhm/F0sGpXR7+rmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com; spf=pass smtp.mailfrom=samsung.com; dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b=uZHTa48E; arc=none smtp.client-ip=210.118.77.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=samsung.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=samsung.com
+	s=arc-20240116; t=1706281786; c=relaxed/simple;
+	bh=eVJOccb+zS20vYhXESd5lUpidtZyc+x1M67JNbou9XA=;
+	h=Subject:From:To:Cc:Date:Message-ID:Content-Type:MIME-Version; b=FXmx+xHibBFzC22Cs9R2U5QqhC8RFFyzneBY5qxJ/TrOKkiNbSTe5In2pc0y9apL5YscZNziT9/8juqFhA8L43aYBTrVFnzrnXmRu4krmjxDs32DTvAOdpDZsZtS8dBhACCIjnbSObbOUK6e3GoQJsxYF+ma7GmDCcbvqzoblOQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=dSDx1zsx; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="uZHTa48E"
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-	by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20240126142632euoutp023ed9cc1e9f041986eb2f8019a0510b32~t6_K_JJLJ0059100591euoutp02j;
-	Fri, 26 Jan 2024 14:26:32 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20240126142632euoutp023ed9cc1e9f041986eb2f8019a0510b32~t6_K_JJLJ0059100591euoutp02j
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-	s=mail20170921; t=1706279192;
-	bh=G2PhmLGC98EiARj7Dtek1UJ7RlcAx2g1L2bzRMsqHgk=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:From;
-	b=uZHTa48EQyVxbnhzXGg2se1NMizjrTELw0jspKXqNbkgG8sgYbOg40PqjU8DFXe3v
-	 cnJdZ4uRedf8LiAhzrWD4zJen6UZq2rZiWKjiLMnbu1Yr/2fxxlT5M63FrNoWHx78+
-	 9WEaTmJPr46Oye6Mg11tc8APXahQ0RNiDc9wR574=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-	eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-	20240126142632eucas1p1e0e24ee5769474568123e0654afdafd3~t6_KxPAli0191701917eucas1p16;
-	Fri, 26 Jan 2024 14:26:32 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-	eusmges2new.samsung.com (EUCPMTA) with SMTP id CF.CC.09814.811C3B56; Fri, 26
-	Jan 2024 14:26:32 +0000 (GMT)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-	eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-	20240126142632eucas1p2bb5ce29b7e1d3010cfbbbc5bfac87d5c~t6_KM54tE1797917979eucas1p2k;
-	Fri, 26 Jan 2024 14:26:32 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-	eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-	20240126142632eusmtrp197cdadfdd4dc1da64f6b5924aa4e8cee~t6_KMMYch0459904599eusmtrp1S;
-	Fri, 26 Jan 2024 14:26:32 +0000 (GMT)
-X-AuditID: cbfec7f4-711ff70000002656-0c-65b3c1182350
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-	eusmgms2.samsung.com (EUCPMTA) with SMTP id 83.0B.10702.711C3B56; Fri, 26
-	Jan 2024 14:26:32 +0000 (GMT)
-Received: from CAMSVWEXC02.scsc.local (unknown [106.1.227.72]) by
-	eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-	20240126142631eusmtip23e649b5d8741ca8d101f43e689fd83d1~t6_J-p2Os2792127921eusmtip2l;
-	Fri, 26 Jan 2024 14:26:31 +0000 (GMT)
-Received: from localhost (106.210.248.232) by CAMSVWEXC02.scsc.local
-	(2002:6a01:e348::6a01:e348) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
-	Fri, 26 Jan 2024 14:26:30 +0000
-Date: Fri, 26 Jan 2024 15:26:26 +0100
-From: Joel Granados <j.granados@samsung.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-CC: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
-	Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian
-	<kevin.tian@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>, Jacob Pan
-	<jacob.jun.pan@linux.intel.com>, Longfang Liu <liulongfang@huawei.com>, Yan
-	Zhao <yan.y.zhao@intel.com>, <iommu@lists.linux.dev>, <kvm@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v10 01/16] iommu: Move iommu fault data to linux/iommu.h
-Message-ID: <20240126142626.4apu4wxmc3ypqmhz@localhost>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="dSDx1zsx"
+Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 40QEWUt0016460;
+	Fri, 26 Jan 2024 15:09:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : from : to : cc
+ : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=pp1; bh=EMfDROFbgJEi008tLRtRfT5S/vVzIQIrctpoV9Kn3Kk=;
+ b=dSDx1zsxQ7vx+0ifKCtclKF1SH3AuEsQzf0vjxAhom2XNuLpwk/SVB0C4lwCV+USmygd
+ twrkr745XknJkghyH0974ZZpMZ1A+EPU7l+DorkdVAU2z3Ahei88CYFyeBWzVnUIuuXB
+ TLHc0kQPGvoJbd9W9BVbFgLRgtubddA2Pg6QINrPUpyq1KIhTWwlNOuQo45YKl4BYORR
+ GV60paUIHtCOW2pb6cx5c6PAG3BrpWSm7dCxMjaXCF4/mK6pYBiKq1PfVg+T4HbVleQO
+ dTHobHKLofwZKH1JKk9WkuIsK9NMe78OkK3Wg8lpBnX7HDhsguKh7DFjYrg6TnnoPu/O zg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vvek90wjm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 26 Jan 2024 15:09:26 +0000
+Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 40QF7XKX006293;
+	Fri, 26 Jan 2024 15:09:26 GMT
+Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vvek90wja-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 26 Jan 2024 15:09:26 +0000
+Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 40QD78IV028239;
+	Fri, 26 Jan 2024 15:09:25 GMT
+Received: from smtprelay07.fra02v.mail.ibm.com ([9.218.2.229])
+	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3vru732xwe-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 26 Jan 2024 15:09:25 +0000
+Received: from smtpav06.fra02v.mail.ibm.com (smtpav06.fra02v.mail.ibm.com [10.20.54.105])
+	by smtprelay07.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 40QF9MJK27460100
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 26 Jan 2024 15:09:22 GMT
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 348192004B;
+	Fri, 26 Jan 2024 15:09:22 +0000 (GMT)
+Received: from smtpav06.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id A624320049;
+	Fri, 26 Jan 2024 15:09:19 +0000 (GMT)
+Received: from ltcd48-lp2.aus.stglab.ibm.com (unknown [9.3.101.175])
+	by smtpav06.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Fri, 26 Jan 2024 15:09:19 +0000 (GMT)
+Subject: [PATCH v2] powerpc: iommu: Bring back table group release_ownership()
+ call
+From: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+To: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org
+Cc: linux-kernel@vger.kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
+        christophe.leroy@csgroup.eu, aneesh.kumar@kernel.org,
+        naveen.n.rao@linux.ibm.com, jgg@ziepe.ca, jroedel@suse.de,
+        tpearson@raptorengineering.com, aik@amd.com, bgray@linux.ibm.com,
+        gregkh@linuxfoundation.org, sbhat@linux.ibm.com,
+        gbatra@linux.vnet.ibm.com, vaibhav@linux.ibm.com
+Date: Fri, 26 Jan 2024 09:09:18 -0600
+Message-ID: 
+ <170628173462.3742.18330000394415935845.stgit@ltcd48-lp2.aus.stglab.ibm.com>
+User-Agent: StGit/1.5
+Content-Type: text/plain; charset="utf-8"
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: YFJalwNzOQy4a9hjiadrOA2gTSIYVP95
+X-Proofpoint-ORIG-GUID: W4cEKw2h2TRDXchVH7azbDxp1mZ68xEa
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="kepxqkqwvuznsvic"
-Content-Disposition: inline
-In-Reply-To: <95ff904c-4731-46e2-ad3b-313811a3c2f2@linux.intel.com>
-X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
-	CAMSVWEXC02.scsc.local (2002:6a01:e348::6a01:e348)
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprCJsWRmVeSWpSXmKPExsWy7djPc7oSBzenGvSfU7LYPHErm8WvLxYW
-	Sw+uZ7FoWH2B1eLKvz2MFjNnnGC06Jy9gd1i6dut7BZzphZaXN41h81iU0Oyxd6nj9ksDn54
-	wmrRcsfU4u6Ve4wWc39eY3EQ8HhycB6Tx5p5axg9Wo68ZfVYvOclk8emVZ1sHneu7WHzmHcy
-	0OPF5pmMHr3N79g8Pm+S89j6+TZLAHcUl01Kak5mWWqRvl0CV8ajWawFK/krenZfYGtgnMrb
-	xcjBISFgIvHqn00XIxeHkMAKRomD3x6xQjhfGCV6Js9jgnA+M0qsbPvM0sXICdbxfeocqMRy
-	RokZR+6ywFX1PP4P1b+VUeLP7WdMIC0sAqoS588cBrPZBHQkzr+5wwxiiwioSzQ17mUDaWAW
-	6GWRaN78kBEkISzgI/Fu10pWEJtXwFxixfyVLBC2oMTJmU/AbGaBColpk9Ywg3zBLCAtsfwf
-	B0iYU8BZYvLVTWwQpypLXJ/5ggnCrpU4teUW2NkSAv84JXqmfGKESLhITHjxkR3CFpZ4dXwL
-	lC0jcXpyDwtEw2RGif3/PrBDOKsZJZY1foUaay3RcuUJVIejRNPHQ6yQcOWTuPFWEOJQPolJ
-	26YzQ4R5JTrahCCq1SRW33vDMoFReRaS12YheW0WwmsQYR2JBbs/sWEIa0ssW/iaGcK2lVi3
-	7j3LAkb2VYziqaXFuempxUZ5qeV6xYm5xaV56XrJ+bmbGIGJ9fS/4192MC5/9VHvECMTB+Mh
-	RhWg5kcbVl9glGLJy89LVRLhNTHdmCrEm5JYWZValB9fVJqTWnyIUZqDRUmcVzVFPlVIID2x
-	JDU7NbUgtQgmy8TBKdXA1DQr36Ylouhq4id347JnkkmLX0+8qnD9zLGpe5Z5TOR8UiGvyqq4
-	kbnYeM68ZU3JnfyzAx76PtKZeJv5a/atCLP3sq4lJYGvfrAZHJvgJv5reljZ83/Bzse23xDz
-	mVI1gyc1Z1ryAWkOKznr5NNVe87GvpY/EZJpEbbvKm+9ml7aioMlbUuSipSnt5x87X+3bsbN
-	pGNTO3UEXYVlbl56s66Xf0OIqav6Mbk5efud05Ikn1/+xaM+8yxryiFPNm1Df5mJQpNYt4ns
-	j/i64u6Tx9Pd4qwZb7wId1o8PXx/1dHb1RdKS8LTlbzT1vHraSyxY5cwPaC0MeptRKTr/Wd3
-	Yv64CjwuE1fxPfHU6JewEktxRqKhFnNRcSIAdH8KeicEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrIKsWRmVeSWpSXmKPExsVy+t/xe7oSBzenGsx9zWixeeJWNotfXyws
-	lh5cz2LRsPoCq8WVf3sYLWbOOMFo0Tl7A7vF0rdb2S3mTC20uLxrDpvFpoZki71PH7NZHPzw
-	hNWi5Y6pxd0r9xgt5v68xuIg4PHk4DwmjzXz1jB6tBx5y+qxeM9LJo9NqzrZPO5c28PmMe9k
-	oMeLzTMZPXqb37F5fN4k57H1822WAO4oPZui/NKSVIWM/OISW6VoQwsjPUNLCz0jE0s9Q2Pz
-	WCsjUyV9O5uU1JzMstQifbsEvYzNT9azFyznr1i5+Rl7A+Nk3i5GTg4JAROJ71PnMIHYQgJL
-	GSWudmRCxGUkNn65ygphC0v8udbF1sXIBVTzkVFi/ckPjBDOVkaJqWvPs4BUsQioSpw/cxhs
-	EpuAjsT5N3eYQWwRAXWJpsa9YN3MAr0sEg9m9oE1CAv4SLzbtRJsBa+AucSK+StZIKauYZJo
-	/T2ZBSIhKHFy5hMwm1mgTOLaqj9AqzmAbGmJ5f84QMKcAs4Sk69uYoM4VVni+swXTBB2rcTn
-	v88YJzAKz0IyaRaSSbMQJkGEtSRu/HvJhCGsLbFs4WtmCNtWYt269ywLGNlXMYqklhbnpucW
-	G+kVJ+YWl+al6yXn525iBKaXbcd+btnBuPLVR71DjEwcjIcYVYA6H21YfYFRiiUvPy9VSYTX
-	xHRjqhBvSmJlVWpRfnxRaU5q8SFGU2AwTmSWEk3OBya+vJJ4QzMDU0MTM0sDU0szYyVxXs+C
-	jkQhgfTEktTs1NSC1CKYPiYOTqkGJiWxLXOaCiwel96fuPFYaYF/o+Uulrg1cYJKHG4rRB93
-	vprGy2dQfubzeUXfufxRL0OE43Wv62TWKEz/tzVPqKPKiGnm2y33pmYu7RVJib/Gv/m43aO9
-	V6YcTtM/JBr1dvnOI8Fy5sv5ii0XxAe8+tUh9UMslM2s5z77c/Yn5gpMhkbZdrPP8/ZqrPv+
-	V+rw/u2sxxuVPT/1JLIfDf2384e7z6c1thYTa98nW19gXjSL+63mEmN25438aw2MPi04tWSF
-	+NyQr14Gqvunvg746/nz2VFpK60bR7V1Juev5zBsP5Gdx32seoEng4LelNwNK37+fx3AonNE
-	2PZifQBXiqVSnstH29SdYScmf6lhVWIpzkg01GIuKk4EAC0w9IjEAwAA
-X-CMS-MailID: 20240126142632eucas1p2bb5ce29b7e1d3010cfbbbc5bfac87d5c
-X-Msg-Generator: CA
-X-RootMTR: 20240125091737eucas1p2091d853e27e669b3b12cea8ee3bbe34e
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20240125091737eucas1p2091d853e27e669b3b12cea8ee3bbe34e
-References: <20240122054308.23901-1-baolu.lu@linux.intel.com>
-	<20240122054308.23901-2-baolu.lu@linux.intel.com>
-	<CGME20240125091737eucas1p2091d853e27e669b3b12cea8ee3bbe34e@eucas1p2.samsung.com>
-	<20240125091734.chekvxgof2d5zpcg@localhost>
-	<95ff904c-4731-46e2-ad3b-313811a3c2f2@linux.intel.com>
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-01-25_14,2024-01-25_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 bulkscore=0
+ clxscore=1015 lowpriorityscore=0 malwarescore=0 phishscore=0 adultscore=0
+ priorityscore=1501 mlxlogscore=999 mlxscore=0 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311290000 definitions=main-2401260111
 
---kepxqkqwvuznsvic
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The commit 2ad56efa80db ("powerpc/iommu: Setup a default domain and
+remove set_platform_dma_ops") refactored the code removing the
+set_platform_dma_ops(). It missed out the table group
+release_ownership() call which would have got called otherwise
+during the guest shutdown via vfio_group_detach_container(). On
+PPC64, this particular call actually sets up the 32-bit TCE table,
+and enables the 64-bit DMA bypass etc. Now after guest shutdown,
+the subsequent host driver (e.g megaraid-sas) probe post unbind
+from vfio-pci fails like,
 
-On Thu, Jan 25, 2024 at 07:21:53PM +0800, Baolu Lu wrote:
-> On 2024/1/25 17:17, Joel Granados wrote:
-> > On Mon, Jan 22, 2024 at 01:42:53PM +0800, Lu Baolu wrote:
-> >> The iommu fault data is currently defined in uapi/linux/iommu.h, but is
-> >> only used inside the iommu subsystem. Move it to linux/iommu.h, where =
-it
-> >> will be more accessible to kernel drivers.
-> >>
-> >> With this done, uapi/linux/iommu.h becomes empty and can be removed fr=
-om
-> >> the tree.
-> > The reason for removing this [1] is that it is only being used by
-> > internal code in the kernel. What happens with usespace code that have
-> > used these definitions? Should we deprecate instead of just removing?
->=20
-> The interfaces to deliver I/O page faults to user space have never been
-> implemented in the Linux kernel before. Therefore, from a uAPI point of
-> view, this definition is actually dead code.
-thx for the explanation.
-I was thinking it was something like that. Just wanted to make sure.
+megaraid_sas 0031:01:00.0: Warning: IOMMU dma not supported: mask 0x7fffffffffffffff, table unavailable
+megaraid_sas 0031:01:00.0: Warning: IOMMU dma not supported: mask 0xffffffff, table unavailable
+megaraid_sas 0031:01:00.0: Failed to set DMA mask
+megaraid_sas 0031:01:00.0: Failed from megasas_init_fw 6539
 
-Best
+The patch brings back the call to table_group release_ownership()
+call when switching back to PLATFORM domain from BLOCKED, while
+also separates the domain_ops for both.
 
---=20
+Fixes: 2ad56efa80db ("powerpc/iommu: Setup a default domain and remove set_platform_dma_ops")
+Signed-off-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+---
+Changelog:
+v1: https://lore.kernel.org/linux-iommu/170618451433.3805.9015493852395837391.stgit@ltcd48-lp2.aus.stglab.ibm.com/
+ - Split the common attach_dev call to platform and blocked attach_dev
+   calls as suggested.
 
-Joel Granados
+ arch/powerpc/kernel/iommu.c |   37 ++++++++++++++++++++++++++++---------
+ 1 file changed, 28 insertions(+), 9 deletions(-)
 
---kepxqkqwvuznsvic
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
+index ebe259bdd462..d71eac3b2887 100644
+--- a/arch/powerpc/kernel/iommu.c
++++ b/arch/powerpc/kernel/iommu.c
+@@ -1287,20 +1287,20 @@ spapr_tce_platform_iommu_attach_dev(struct iommu_domain *platform_domain,
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+ 	struct iommu_group *grp = iommu_group_get(dev);
+ 	struct iommu_table_group *table_group;
+-	int ret = -EINVAL;
 
------BEGIN PGP SIGNATURE-----
+ 	/* At first attach the ownership is already set */
+ 	if (!domain)
+ 		return 0;
 
-iQGzBAABCgAdFiEErkcJVyXmMSXOyyeQupfNUreWQU8FAmWzwRIACgkQupfNUreW
-QU8AIAv/U/z6MVZy+cyG1NCYzxkxy8xooBuWMOZCurDu0a7SdV6un/4KU9r5sFyb
-mdt3SKwOc86g9Zn0ZAGpxaXxAjCKCq67OqSp3sz3MPUeADEPGDYd0ousIF+W/ABq
-R/NB6SF5ZGLad7tYNcbZPLtugUAz7piU75kPYY68L0/Oj4HkZ/oiXdeFYPJA4O1N
-hm4Pv/4X73kq/EpWGcWGxDg7RVffwFFnaep5OFgB/39zNyZjfvT7VMMuacGAeZ0p
-kCeqjKu+TsyKl+qaQJBv3oLvtSuFw6fqkPEASxRYX6Of+YI+Bx6Tqnkw/alpaWyA
-tWR1U8pgunDIflngqdQN65gBhWSIJNRc4qHQP+fpG62Z2AxtzgZIJ3UMxsshA8F3
-JOgewm/BMVQZBOGA5RwdidhHsgNlzDy/YkSP7e02U7dHmrwxAeb5am3QuBmxLkLQ
-vgVM+k36EJGQmApfroICCsThRVsAkaeWWXUMimY11M71P0GzGiKs2ytL4t+rrWrR
-mEQ5YGOe
-=1qb4
------END PGP SIGNATURE-----
+-	if (!grp)
+-		return -ENODEV;
+-
+ 	table_group = iommu_group_get_iommudata(grp);
+-	ret = table_group->ops->take_ownership(table_group);
++	/*
++	 * The domain being set to PLATFORM from earlier
++	 * BLOCKED. The table_group ownership has to be released.
++	 */
++	table_group->ops->release_ownership(table_group);
+ 	iommu_group_put(grp);
 
---kepxqkqwvuznsvic--
+-	return ret;
++	return 0;
+ }
+
+ static const struct iommu_domain_ops spapr_tce_platform_domain_ops = {
+@@ -1312,13 +1312,32 @@ static struct iommu_domain spapr_tce_platform_domain = {
+ 	.ops = &spapr_tce_platform_domain_ops,
+ };
+
+-static struct iommu_domain spapr_tce_blocked_domain = {
+-	.type = IOMMU_DOMAIN_BLOCKED,
++static int
++spapr_tce_blocked_iommu_attach_dev(struct iommu_domain *platform_domain,
++				     struct device *dev)
++{
++	struct iommu_group *grp = iommu_group_get(dev);
++	struct iommu_table_group *table_group;
++	int ret = -EINVAL;
++
+ 	/*
+ 	 * FIXME: SPAPR mixes blocked and platform behaviors, the blocked domain
+ 	 * also sets the dma_api ops
+ 	 */
+-	.ops = &spapr_tce_platform_domain_ops,
++	table_group = iommu_group_get_iommudata(grp);
++	ret = table_group->ops->take_ownership(table_group);
++	iommu_group_put(grp);
++
++	return ret;
++}
++
++static const struct iommu_domain_ops spapr_tce_blocked_domain_ops = {
++	.attach_dev = spapr_tce_blocked_iommu_attach_dev,
++};
++
++static struct iommu_domain spapr_tce_blocked_domain = {
++	.type = IOMMU_DOMAIN_BLOCKED,
++	.ops = &spapr_tce_blocked_domain_ops,
+ };
+
+ static bool spapr_tce_iommu_capable(struct device *dev, enum iommu_cap cap)
+
+
