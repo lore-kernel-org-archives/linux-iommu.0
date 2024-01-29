@@ -1,86 +1,91 @@
-Received: from smtp1.tecnico.ulisboa.pt (smtp1.tecnico.ulisboa.pt [193.136.128.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 049A5605B1;
-	Mon, 29 Jan 2024 12:08:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.136.128.21
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E3D10604A9
+	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 12:15:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706530089; cv=none; b=hFSx1fo1tdnBQz4sBOJL9XV3I9KCoWicZ/gQ7m6wJMez+8ftKlKzAexzSZfI5iruh7C5ZwKNp+Aa0zN02YF3z/9iC6mDx/B8DW4E2T392N4vtLlMJpn0GS9DuEx54aheptlqzNu0Uhw+V3mvxXU8KBsG6YLawA1AdxJdeSpSbjM=
+	t=1706530515; cv=none; b=IZgxLHMzDgv3r/05X8r8EGrKylVueSHcZbgaKMsMwkvN2m4ldyYqpJtwKVrXHpLQfQ1/v0bBwsangE1nSBc+2vjdXSyM3qtQC96ZowzRdlNX5dkyLSZ7jJylBfPfHcBaE84ACz0UN4H7oYnp3WZmVjjbn8Tf9KVFNsw3UpvpEJU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706530089; c=relaxed/simple;
-	bh=ZSgQnY9x+TGPud1UGSLreEOuvi81q1Su0LFZw4pMw10=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qYMxkq+3c6b4I8ghhoDtGsE3DR0RV7HmyjfDOyuufvysRKqUBU6ulPS4FVAEOGEBFE2HM19AgIdTJWeg/3jED8qMN2qG7kPynR6eLjNYL0T1zUtPUJKEioWikojwiV+W5CH6CNZlKR7kvTHqYym0VVE2nwXlAYO7SJUcLwMO3a8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tecnico.ulisboa.pt; spf=pass smtp.mailfrom=tecnico.ulisboa.pt; dkim=pass (1024-bit key) header.d=tecnico.ulisboa.pt header.i=@tecnico.ulisboa.pt header.b=lVBXrR3H; arc=none smtp.client-ip=193.136.128.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tecnico.ulisboa.pt
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tecnico.ulisboa.pt
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=tecnico.ulisboa.pt header.i=@tecnico.ulisboa.pt header.b="lVBXrR3H"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by smtp1.tecnico.ulisboa.pt (Postfix) with ESMTP id 54B6E600023E;
-	Mon, 29 Jan 2024 12:07:58 +0000 (WET)
-X-Virus-Scanned: by amavis-2.13.0 (20230106) (Debian) at tecnico.ulisboa.pt
-Received: from smtp1.tecnico.ulisboa.pt ([127.0.0.1])
- by localhost (smtp1.tecnico.ulisboa.pt [127.0.0.1]) (amavis, port 10025)
- with LMTP id ztBAk7UiNGkb; Mon, 29 Jan 2024 12:07:56 +0000 (WET)
-Received: from mail1.tecnico.ulisboa.pt (mail1.ist.utl.pt [IPv6:2001:690:2100:1::b3dd:b9ac])
-	by smtp1.tecnico.ulisboa.pt (Postfix) with ESMTPS id 0C93E600140A;
-	Mon, 29 Jan 2024 12:07:56 +0000 (WET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tecnico.ulisboa.pt;
-	s=mail; t=1706530076;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XIZnwvHWrs2uKG8rpNN8P8JARGZ80yJYLIetzHJw+Zg=;
-	b=lVBXrR3H6iICavTeTmDVrYPMSmc6K45SAGHoMCxz1l6cEswtFHuY63BVMfwAOvL/YPvZ8X
-	XVQe2Wnh2N6UpFoj0w4m12VPqdkmyNwkIFyWWXEZImcbD6ijm5kblfh8fdtvthBOcVSLvQ
-	xqkeYARM8j5CRY6wmfvVskcKl0YynXc=
-Received: from diogo-gram (unknown [IPv6:2001:8a0:7ae3:e700:6be7:1f41:6784:a78])
-	(Authenticated sender: ist187313)
-	by mail1.tecnico.ulisboa.pt (Postfix) with ESMTPSA id 63AFD36007E;
-	Mon, 29 Jan 2024 12:07:54 +0000 (WET)
-Date: Mon, 29 Jan 2024 12:07:43 +0000
-From: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: thierry.reding@gmail.com, vdumpa@nvidia.com, joro@8bytes.org, 
-	will@kernel.org, robin.murphy@arm.com, jonathanh@nvidia.com, 
-	baolu.lu@linux.intel.com, jsnitsel@redhat.com, jroedel@suse.de, 
-	linux-tegra@vger.kernel.org, iommu@lists.linux.dev, regressions@lists.linux.dev, 
-	diogo.ivo@tecnico.ulisboa.pt
-Subject: Re: Re: [REGRESSION] Failed buffer allocation in Tegra fbdev
-Message-ID: <h3sokjn23q2xco2aje36ypz6ffcmmcz24qdyjj5madq4xeqbln@sjooz3ale3k6>
-References: <bbmhcoghrprmbdibnjum6lefix2eoquxrde7wyqeulm4xabmlm@b6jy32saugqh>
- <20240123151508.GR50608@ziepe.ca>
- <1754c86c-704e-4c80-93c3-1b75a9a247df@tecnico.ulisboa.pt>
- <20240126195142.GC50608@ziepe.ca>
+	s=arc-20240116; t=1706530515; c=relaxed/simple;
+	bh=CI2SITbEyDMK/SnfUcFawfQgI/5HdPELOd7hdQeM9Fw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=JyBtK3dhVPMRPjrPx5YkOOceEqP7zIUoF2Nrx3VVJDBV2ZsPnNj23sZNogPv9JwX1+HhAyF6uDOql2sPphm8luDfaVf0rBk53FiE/woxpg+CzEgwH/6epgIAg2dttyOD0eiqLc6Mhm/9jNF61+KxbFGH2Zp0d5UN+6MGTwbfNNs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 296821FB;
+	Mon, 29 Jan 2024 04:15:56 -0800 (PST)
+Received: from [10.57.77.253] (unknown [10.57.77.253])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A8F643F5A1;
+	Mon, 29 Jan 2024 04:15:09 -0800 (PST)
+Message-ID: <df8f1bf4-819a-4b2a-927d-e97fe196cdf6@arm.com>
+Date: Mon, 29 Jan 2024 12:15:07 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240126195142.GC50608@ziepe.ca>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next 1/7] dma: compile-out DMA sync op calls when not
+ used
+Content-Language: en-GB
+To: Alexander Lobakin <aleksander.lobakin@intel.com>,
+ Christoph Hellwig <hch@lst.de>
+Cc: "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Magnus Karlsson <magnus.karlsson@intel.com>,
+ Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+ Alexander Duyck <alexanderduyck@fb.com>, bpf@vger.kernel.org,
+ netdev@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240126135456.704351-1-aleksander.lobakin@intel.com>
+ <20240126135456.704351-2-aleksander.lobakin@intel.com>
+ <20240129061136.GD19258@lst.de>
+ <4e23d103-ea1c-4fd3-852e-f7e2ec9170ad@intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <4e23d103-ea1c-4fd3-852e-f7e2ec9170ad@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Jan 26, 2024 at 03:51:42PM -0400, Jason Gunthorpe wrote:
-> On Tue, Jan 23, 2024 at 06:44:42PM +0000, Diogo Ivo wrote:
+On 2024-01-29 11:07 am, Alexander Lobakin wrote:
+> From: Christoph Hellwig <hch@lst.de>
+> Date: Mon, 29 Jan 2024 07:11:36 +0100
 > 
-> > Yes, this does fix the issue!
+>> On Fri, Jan 26, 2024 at 02:54:50PM +0100, Alexander Lobakin wrote:
+>>> Some platforms do have DMA, but DMA there is always direct and coherent.
+>>> Currently, even on such platforms DMA sync operations are compiled and
+>>> called.
+>>> Add a new hidden Kconfig symbol, DMA_NEED_SYNC, and set it only when
+>>> either sync operations are needed or there is DMA ops or swiotlb
+>>> enabled. Set dma_need_sync() and dma_skip_sync() (stub for now)
+>>> depending on this symbol state and don't call sync ops when
+>>> dma_skip_sync() is true.
+>>> The change allows for future optimizations of DMA sync calls depending
+>>> on compile-time or runtime conditions.
+>>
+>> So the idea of compiling out the calls sounds fine to me.  But what
+>> is the point of the extra indirection through the __-prefixed calls?
 > 
-> Thanks, just trying to pin down how the fix should be..
+> Because dma_sync_* ops are external functions, not inlines, and in the
+> next patch I'm adding a check there.
 > 
-> What kind of kernel are you running, 
-> 
-> Is this 32 bit?
-> 
-> Is CONFIG_ARM_DMA_USE_IOMMU set?
-> 
-> Is CONFIG_IOMMU_DMA set?
-> 
-> I'm guessing yes/yes/no?
+>>
+>> And if we need that (please document it in the commit log), please
+>> make the wrappers proper inline functions and not macros.
 
-It is a 64-bit kernel, CONFIG_ARM_DMA_USE_IOMMU=n and
-CONFIG_IOMMU_DMA=y.
+In fact those wrappers could perhaps subsume the existing stub 
+definitions, by starting with a refactor along these lines:
 
-Diogo
+static inline dma_sync_x(...)
+{
+	if (IS_ENABLED(CONFIG_NEED_DMA_SYNC))
+		__dma_sync_x(...);
+}
+
+Cheers,
+Robin.
