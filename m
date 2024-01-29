@@ -1,73 +1,48 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA5587602C
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 20:48:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1775B3C463;
+	Mon, 29 Jan 2024 22:05:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706561333; cv=none; b=JlHAPhyE91Tc+NsHOnVNeBGg+mrA5cSbkOzGgYO/sH6fv+jhtWb2JFaW0/ongOheCuSI1lgbU0C3BtyanvoU+Is8wb2aaRS4pyLu02skZQ2XHyJNEWCIiR3cFdhT22KbHd4FqBzi23sxVKzdUVs8cF2Z1CSVUqc9OgBqN6elckM=
+	t=1706565922; cv=none; b=uxZxtJHUwNJukajeNtKR8PgdxbAPLwiKdDi2P82hxcHPboo1ZO7S6lP7nJvO1RNbzX8Dn/Gk4i9Tode5NxL+m8UcPJZhT/V4BxET4rXzSP9BaUWAK0LVkSHFcN11eje2/nRBc3mYZql8cf+GQ/G6qriFmSQAAVeNyIceUWtbnng=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706561333; c=relaxed/simple;
-	bh=B1MBniST+Sbm632DxSlCrgPWJ+R8kBkamS8NNRHZp2E=;
+	s=arc-20240116; t=1706565922; c=relaxed/simple;
+	bh=GE+ipPS+Akwq8xvWGQYr0R9LHwbwVo+fTLwIpkdrwvY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gH7jKJz8KARvUKT2J/M8DxkM4CyulIHEJMds3mjRycBvOmjuTn1m7NHXGpJwitPQVzYe4/JeT3G+3o7Aqtn6wD+57g/p+txgNNGEKmNT41aOmerOThqH1v8qLOuMEq5O8pZeZjFvvhKPVZr6lkD2qC0JPUYbFnqbM/k5bjVb9o4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=yEffboQ/; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=iBni4z/YW4HhETS+BdvwsTJwKIwOL8MF1ZfDqIleRNHeEhDW1ljDQCBiH+oQS+BAt6YqGpV4DpPx9xCK04FWyEwMEdRnn+9Wxr7NmNbVFRkI+ePwo2Zsbe0BAfKLov67aPaWOOUz8EIzIrB5hvsBPILTmqWlogZJuRWOXl5SZFw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YFFELB86; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="yEffboQ/"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-40ef9382752so16475e9.0
-        for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 12:48:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1706561330; x=1707166130; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=3F5GnN+/IUcj+Z4ZqTBAvOJiZgoZ51JVzcjoKvSrxe4=;
-        b=yEffboQ/3z+W22N22WTT3gALJYTgkU5pf0JwBt99aLXN5uFECascZtk9elyzcJ3bMq
-         u3y0WD84caUIWLCc9Yifvd5N8o3KEkKmUWrVHzLPF+hgJThu1VdZtCbrnASrNl9e+kou
-         HqP8OlW6ujC/wEqizKtev6yNanoAw1Ia/hLkhtJzS2E2jk80KiyUzppkHGcd3lIelO0Z
-         mlhH4blOWNIZrxrT3ygCI1pdR/a2nnxDzvcnRDBtkMpYWeEvde95H0KfAqF4hqc/tp4V
-         rMq+rWvZa+jEzIqjyewlB1i/h2AYE03V0pqGW9ZfiWLEgkmHjqSt19228D5Rp/k0/ahu
-         8CrQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706561330; x=1707166130;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=3F5GnN+/IUcj+Z4ZqTBAvOJiZgoZ51JVzcjoKvSrxe4=;
-        b=Dh4H730n/gYKHMieedNIZcKESeezTifQmxpN6evD2f+CJwZMz7D5KjXn8RPUESiFN4
-         hqomRccpKBEXvwHntm//BEEHGlxXnxsEdp+U5hq1AZHQfA5AHmNhiMc7JY1xxxRi8fpP
-         Ma0e81hVku3v3tbPRMl9jLULHxyxd+Y8zoiFV6RsGA8Qiz3N5gLHCC6/D9h2aJe5tRN4
-         Na4hM0+0UqzAf+jDovZnZgDE0q81uKjJdM1VGWp4Y+X3A1IvIsLM5wwBahxjtdC5jkW0
-         e3EjGxy3HON148LBpBAQobXCIxUYcRqq/NqGz1gLID9mrwJQnOqDXxBPmwMAzq0peVkP
-         s1Cw==
-X-Gm-Message-State: AOJu0YwsHT6axcpDyaJn4ePAK8r5NoomNXCn960T5+QwVGYMd8PZOU0Z
-	ii8m33SLlLX+ow/LsUDiujdp4dfvE/QR1vL+VUsOeoCRPhoFDeXEgWTjMAukyA==
-X-Google-Smtp-Source: AGHT+IHMWYdgXgD2GKGEzHM894wvJ2P8FKS33Rz60s4bE7e1Ubef8mLiFyC5armNDk7XxF9hl+mAtw==
-X-Received: by 2002:a05:600c:3d8a:b0:40d:87df:92ca with SMTP id bi10-20020a05600c3d8a00b0040d87df92camr33647wmb.3.1706561330024;
-        Mon, 29 Jan 2024 12:48:50 -0800 (PST)
-Received: from google.com (185.83.140.34.bc.googleusercontent.com. [34.140.83.185])
-        by smtp.gmail.com with ESMTPSA id m21-20020a05600c3b1500b0040efa513540sm2647263wms.22.2024.01.29.12.48.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jan 2024 12:48:49 -0800 (PST)
-Date: Mon, 29 Jan 2024 20:48:45 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v3 04/19] iommu/arm-smmu-v3: Make STE programming
- independent of the callers
-Message-ID: <ZbgPLYN30I1V3axi@google.com>
-References: <0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
- <4-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
- <Zbf4NyiZtmjslDFf@google.com>
- <20240129194910.GB1455070@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YFFELB86"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B5F4C433C7;
+	Mon, 29 Jan 2024 22:05:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706565921;
+	bh=GE+ipPS+Akwq8xvWGQYr0R9LHwbwVo+fTLwIpkdrwvY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=YFFELB86mwfB7vGhV62Wkut02615w/PTVUMsP7wzyzH4NHB/aWs0VMgUhLrqEc9xl
+	 OhkLgHPMZJ5jL9FX53054Im717pEp6uXWeaueKFbpGhyW2NoiXgE3Pc/TB3HKj99lA
+	 sqVqy9qtJA/LfqCKGzq5/fJYQwBI5gz+yWCk4qGcl2ZCwaeUlDHaINCmH7C9r2VkTk
+	 Ri/vzfKj3GdlBjH+WypVHNZZpY1JNnV/TwqvxqmMF88rbYdS6xdVyTwv9lsYLTM+oh
+	 HkDS2nRKjL2Gv53ooJrJxSmKOLNeUq2nbaV73GGsjloniVtKju/Xp6YQfyNDFnIMXA
+	 phi4SM/Rjzcsg==
+Date: Mon, 29 Jan 2024 22:05:16 +0000
+From: Will Deacon <will@kernel.org>
+To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
+	iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Dexuan Cui <decui@microsoft.com>
+Subject: Re: [PATCH 1/2] swiotlb: Fix allocation alignment requirement when
+ searching slots
+Message-ID: <20240129220516.GA12808@willie-the-truck>
+References: <20240126151956.10014-1-will@kernel.org>
+ <20240126151956.10014-2-will@kernel.org>
+ <20240126180127.1a3fc4e6@meshulam.tesarici.cz>
+ <20240129193250.GB12631@willie-the-truck>
+ <20240129214034.4beb4258@meshulam.tesarici.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -77,90 +52,100 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240129194910.GB1455070@nvidia.com>
+In-Reply-To: <20240129214034.4beb4258@meshulam.tesarici.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Mon, Jan 29, 2024 at 03:49:10PM -0400, Jason Gunthorpe wrote:
-> On Mon, Jan 29, 2024 at 07:10:47PM +0000, Mostafa Saleh wrote:
+On Mon, Jan 29, 2024 at 09:40:34PM +0100, Petr Tesařík wrote:
+> On Mon, 29 Jan 2024 19:32:50 +0000
+> Will Deacon <will@kernel.org> wrote:
 > 
-> > > Going forward this will use a V=0 transition instead of cycling through
-> > > ABORT if a hitfull change is required. This seems more appropriate as ABORT
-> > > will fail DMAs without any logging, but dropping a DMA due to transient
-> > > V=0 is probably signaling a bug, so the C_BAD_STE is valuable.
-> > Would the driver do anything in that case, or would just print the log message?
-> 
-> Just log, AFAIK.
->  
-> > > +static bool arm_smmu_write_entry_step(__le64 *cur, const __le64 *cur_used,
-> > > +				      const __le64 *target,
-> > > +				      const __le64 *target_used, __le64 *step,
-> > > +				      __le64 v_bit,
-> > I think this is confusing here, I believe we have this as an argument as this
-> > function would be used for CD later, however for this series it is unnecessary,
-> > IMHO, this should be removed and added in another patch for the CD rework.
-> 
-> It is alot of code churn to do that, even more on the new version.
-> 
-> > > +	used_bits->data[0] |= cpu_to_le64(STRTAB_STE_0_CFG);
-> > > +	switch (FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(ent->data[0]))) {
-> > > +	case STRTAB_STE_0_CFG_ABORT:
-> > > +		break;
-> > > +	case STRTAB_STE_0_CFG_BYPASS:
-> > > +		used_bits->data[1] |= cpu_to_le64(STRTAB_STE_1_SHCFG);
-> > > +		break;
-> > > +	case STRTAB_STE_0_CFG_S1_TRANS:
-> > > +		used_bits->data[0] |= cpu_to_le64(STRTAB_STE_0_S1FMT |
-> > > +						  STRTAB_STE_0_S1CTXPTR_MASK |
-> > > +						  STRTAB_STE_0_S1CDMAX);
-> > > +		used_bits->data[1] |=
-> > > +			cpu_to_le64(STRTAB_STE_1_S1DSS | STRTAB_STE_1_S1CIR |
-> > > +				    STRTAB_STE_1_S1COR | STRTAB_STE_1_S1CSH |
-> > > +				    STRTAB_STE_1_S1STALLD | STRTAB_STE_1_STRW);
-> > > +		used_bits->data[1] |= cpu_to_le64(STRTAB_STE_1_EATS);
-> > > +		break;
-> > AFAIU, this is missing something like (while passing smmu->features)
-> > 	used_bits->data[2] |= features & ARM_SMMU_FEAT_NESTING ?
-> > 			      cpu_to_le64(STRTAB_STE_2_S2VMID) : 0;
+> > On Fri, Jan 26, 2024 at 06:01:27PM +0100, Petr Tesařík wrote:
+> > > On Fri, 26 Jan 2024 15:19:55 +0000
+> > > Will Deacon <will@kernel.org> wrote:  
+> > > > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> > > > index b079a9a8e087..25febb9e670c 100644
+> > > > --- a/kernel/dma/swiotlb.c
+> > > > +++ b/kernel/dma/swiotlb.c
+> > > > @@ -982,7 +982,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+> > > >  		phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
+> > > >  	unsigned long max_slots = get_max_slots(boundary_mask);
+> > > >  	unsigned int iotlb_align_mask =
+> > > > -		dma_get_min_align_mask(dev) | alloc_align_mask;
+> > > > +		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);  
+> > > 
+> > > Good. So, iotlb_align_mask now specifies how many low bits of orig_addr
+> > > should be preserved in the bounce buffer address, ignoring the offset
+> > > within the TLB slot...  
 > > 
-> > As the SMMUv3 manual says:
-> > “ For a Non-secure STE when stage 2 is implemented (SMMU_IDR0.S2P == 1)
-> >   translations resulting from a StreamWorld == NS-EL1 configuration are
-> >   VMID-tagged with S2VMID when either of stage 1 (Config[0] == 1) or stage 2
-> >   (Config[1] == 1) provide translation.“
+> > Yup, this is basically restoring the old behaviour.
 > > 
-> > Which means in case of S1=>S2 switch or vice versa this algorithm will ignore
-> > VMID while it is used.
-Yes, In that case we would consider S2VMID even for stage-1 instances only,
-even though it should never change and in that case the algorithm will have
-the same steps. I guess it might still look confusing, but no strong opinion.
+> > > >  	unsigned int nslots = nr_slots(alloc_size), stride;
+> > > >  	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+> > > >  	unsigned int index, slots_checked, count = 0, i;
+> > > > @@ -998,14 +998,13 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+> > > >  	 * allocations.
+> > > >  	 */
+> > > >  	if (alloc_size >= PAGE_SIZE)
+> > > > -		iotlb_align_mask |= ~PAGE_MASK;
+> > > > -	iotlb_align_mask &= ~(IO_TLB_SIZE - 1);
+> > > > +		alloc_align_mask |= ~PAGE_MASK;  
+> > > 
+> > > ...and alloc_align_mask specifies the desired TLB slot alignment.  
+> > 
+> > Yes, although actually I'm now wondering whether there's another bug here
+> > in that we don't return naturally aligned buffers for allocations bigger
+> > than a page. I think that was broken in 0eee5ae10256 ("swiotlb: fix slot
+> > alignment checks") because that stopped aligning the initial search index
+> > to the stride (which was in turn previously aligned to the allocation size).
+> 
+> The question is whether there is any NEED that allocations bigger than
+> a page are naturally aligned. For my part, I don't see why there should
+> be, but I might be missing something.
 
+I think some drivers rely on that. As per core-api/dma-api-howto.rst:
+
+  (Using Consistent DMA mappings::dma_alloc_coherent())
+  | The CPU virtual address and the DMA address are both guaranteed to
+  | be aligned to the smallest PAGE_SIZE order which is greater than or
+  | equal to the requested size.
+
+I've certainly written code that relies on it and the swiotlb logic used
+to honour that requirement.
+
+> > > >  	/*
+> > > >  	 * For mappings with an alignment requirement don't bother looping to
+> > > >  	 * unaligned slots once we found an aligned one.
+> > > >  	 */
+> > > > -	stride = (iotlb_align_mask >> IO_TLB_SHIFT) + 1;
+> > > > +	stride = (max(alloc_align_mask, iotlb_align_mask) >> IO_TLB_SHIFT) + 1;  
+> > > 
+> > > I'm not quite sure about this one.
+> > > 
+> > > And I'm not even sure all combinations make sense!
+> > > 
+> > > For example, take these values:
+> > > 
+> > > *         TLB_SIZE ==              0x800  (2K)
+> > > * alloc_align_mask == 0xffffffffffffc000  (16K alignment, could be page size)
+> > > * iotlb_align_mask == 0xffffffffffff0000  (64K alignment)
+> > > *        orig_addr == 0x0000000000001234
+> > > 
+> > > Only the lowest 16 bits are relevant for the alignment check.
+> > > Device alignment requires 0x1000.
+> > > Alloc alignment requires one of 0x0000, 0x4000, 0x8000, or 0xc000.
+> > > Obviously, such allocation must always fail...  
+> > 
+> > Having an iotlb_align_mask with all those upper bits set looks wrong to me.
+> > Is that the same "braino" as bbb73a103fbb?
 > 
-> Ah, yes, that is a small miss, thanks. I don't think we need the
-> features test though, s2vmid doesn't mean something different if the
-> feature is not present..
+> I must always stop and think at least twice before I can be sure
+> whether a "mask" has the high bits set, or the low bits set...
 > 
-> > > +static void arm_smmu_write_ste(struct arm_smmu_device *smmu, u32 sid,
-> > > +			       struct arm_smmu_ste *ste,
-> > > +			       const struct arm_smmu_ste *target)
-> > > +{
-> > > +	struct arm_smmu_ste target_used;
-> > > +	int i;
-> > > +
-> > > +	arm_smmu_get_ste_used(target, &target_used);
-> > > +	/* Masks in arm_smmu_get_ste_used() are up to date */
-> > > +	for (i = 0; i != ARRAY_SIZE(target->data); i++)
-> > > +		WARN_ON_ONCE(target->data[i] & ~target_used.data[i]);
-> > In what situation this would be triggered, is that for future proofing,
-> > maybe we can move it to arm_smmu_get_ste_used()?
-> 
-> Yes, prevent people from making an error down the road.
-> 
-> It can't be in ste_used due to how this specific algorithm works
-> iteratively
-> 
-> And in the v4 version it still wouldn't be a good idea at this point
-> due to how the series slowly migrates STE and CD programming
-> over. There are cases where the current STE will not have been written
-> by this code and may not pass this test.
-> 
-> Thanks,
-> Jason
+> On an x86, PAGE_SHIFT is 12, PAGE_SIZE is 1UL << PAGE_SHIFT or 0x1000,
+> PAGE_MASK is ~(PAGE_SIZE-1)) or 0xfffffffffffff000, and there's one
+> more bitwise negation, so you're right. Both masks above should be
+> inverted, and using max() to find the stride is correct.
+
+Heh. It's not straightforward, is it?
+
+Will
