@@ -1,114 +1,156 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADB026F06D
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 19:26:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 620E02E834;
+	Mon, 29 Jan 2024 19:32:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706556386; cv=none; b=gz8q6rc4p+RWMGlxYg+RzzHw/r47FtQnWArYIos7R+VhKPHpn69I6h4EjL4xH06wA7ofB1gPMUi0TRB94OFjkI62OJ9jQ0v16Rt7P20GAgKGlPBiq9iZma+9VGkPZO7f0yV+FTIEBcxBaD4n89DF5zUgXzkdAoLm/SwKL5s/Gbw=
+	t=1706556776; cv=none; b=g5v5DPkZN2TyXPoZxq/DcxXQ7y8k09/QmIQ3c1JUNN0RDlcCQI7XeAs7iR6vJRklpJlL+9pHCcMqYvOqRetjKRtp6PaB6sJhUVvCXxvJvdRKAHX+xHhoQmU8R2iYCbwc8FPuuz8BIhXMRBH7kCeLfuY8JrHFfjP0a+ZOnW8EtOQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706556386; c=relaxed/simple;
-	bh=eRPRewGUYrmJB7VHNVS88AqNYzIaeHgFC2AnrKWWbtQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JGG6tgTVqPIgmwskbbJuduoKTtjwvZf27ETcVdyNXRbbCWFdP8x8W2rNAxb2EKNvHRCdRS3KtmwbqsZp7juTR6Fdfwug40gvLLoPzdV/dTf3k5gnhk8VkekoPmO4mjGmOPI8xPKrsiwMhHgHvVxoTb1eiEpR+Bl1joNY7CEZNGY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=UJeR+Nt0; arc=none smtp.client-ip=77.93.223.253
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1706556776; c=relaxed/simple;
+	bh=e6mp+P1n+MD3N4nOABL2qLlj5/FDmrpQ5T8NP6dsLAU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=al38AKnJv+VgylHAd6mZeBKetqQFmLkXK/BHef9/Sh5h81LyJjpj7Qo20zdtMhOh9LmWN8NO3l0KwNFz9b7mpG2dqMiJ/tjvXKtIjb3Swxr95BaFWrD3vJlUBu+qsLFsHTSjfeIdtLq7bFEh6j/81ycRyo0Q/hrYITMq5XNQ3Nc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TSrkougg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="UJeR+Nt0"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 26A9619A629;
-	Mon, 29 Jan 2024 20:26:21 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1706556381; bh=eRPRewGUYrmJB7VHNVS88AqNYzIaeHgFC2AnrKWWbtQ=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=UJeR+Nt0DKoETJWrxdRAiyM+J2e/o9p+yX33ckYyEr8foaq6h/iqk49xDD5wY1o73
-	 TOoE9f9UM4Eb6Fai5OB2pvYXq1CXCyQ+uWMgncQjJuogOkW8kor58smy3fc9nw9WfG
-	 9XajgC+9R1MweY7RZjUvPxXTktk0GtGgBEulK+G00D1GVr0c4mry4oj3r5dWIPyL2f
-	 6XiK30IvAedqtMWiP5JE6EruLql3lv+MslXQlz3HCmB0WY9XNhHYc3uBOQs948QDEp
-	 HS7lbubyUCoi0H9zn1wHXDHA8A2mFoWrkGtZhJOOflBSqhk40TciR5sZlujSklBC8Z
-	 eIqL0S7QG/FhA==
-Date: Mon, 29 Jan 2024 20:26:19 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Will Deacon <will@kernel.org>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TSrkougg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21208C433C7;
+	Mon, 29 Jan 2024 19:32:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706556775;
+	bh=e6mp+P1n+MD3N4nOABL2qLlj5/FDmrpQ5T8NP6dsLAU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=TSrkouggTFEUXeQ71Ee9FWeMZdrxJjzRsuL00L3YVYyj6gghEHzuZYXqAWTK05daP
+	 LLuAsjzb6T5apHAOvfw5kf5W+gPYVrNWH2lmAlZ2EeyAzi31G6sF7MUy66q064RoDo
+	 0PfvxxQ9DPyopyj7GFrbQWM1InrOIw4HpAs921KICZbSs/mCNBb3SK2++inuTAnWnO
+	 JG5u4xyYypRe4pmfURBa3/ltpksLaH7Akmp3U4Z7GryeHZRRgz5tlKOk/rq8l7WwiV
+	 NZ0KXXXHLQPCXQTSk9+h0FNVxgRAbkJX1v0X9ONu73xnsYy+M6tDyJnfDz2q7A/pVT
+	 wdzkU9GD8RICw==
+Date: Mon, 29 Jan 2024 19:32:50 +0000
+From: Will Deacon <will@kernel.org>
+To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
 Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
- iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
- Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
- <decui@microsoft.com>
-Subject: Re: [PATCH 0/2] Fix double allocation in swiotlb_alloc()
-Message-ID: <20240129202619.69178dea@meshulam.tesarici.cz>
-In-Reply-To: <20240129184255.GA12631@willie-the-truck>
+	iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Dexuan Cui <decui@microsoft.com>
+Subject: Re: [PATCH 1/2] swiotlb: Fix allocation alignment requirement when
+ searching slots
+Message-ID: <20240129193250.GB12631@willie-the-truck>
 References: <20240126151956.10014-1-will@kernel.org>
-	<20240126172059.48ad7b9f@meshulam.tesarici.cz>
-	<20240129184255.GA12631@willie-the-truck>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+ <20240126151956.10014-2-will@kernel.org>
+ <20240126180127.1a3fc4e6@meshulam.tesarici.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240126180127.1a3fc4e6@meshulam.tesarici.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Mon, 29 Jan 2024 18:42:55 +0000
-Will Deacon <will@kernel.org> wrote:
+On Fri, Jan 26, 2024 at 06:01:27PM +0100, Petr Tesařík wrote:
+> On Fri, 26 Jan 2024 15:19:55 +0000
+> Will Deacon <will@kernel.org> wrote:
+> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> > index b079a9a8e087..25febb9e670c 100644
+> > --- a/kernel/dma/swiotlb.c
+> > +++ b/kernel/dma/swiotlb.c
+> > @@ -982,7 +982,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+> >  		phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
+> >  	unsigned long max_slots = get_max_slots(boundary_mask);
+> >  	unsigned int iotlb_align_mask =
+> > -		dma_get_min_align_mask(dev) | alloc_align_mask;
+> > +		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
+> 
+> Good. So, iotlb_align_mask now specifies how many low bits of orig_addr
+> should be preserved in the bounce buffer address, ignoring the offset
+> within the TLB slot...
 
-> On Fri, Jan 26, 2024 at 05:20:59PM +0100, Petr Tesa=C5=99=C3=ADk wrote:
-> > On Fri, 26 Jan 2024 15:19:54 +0000
-> > Will Deacon <will@kernel.org> wrote:
-> >  =20
-> > > Hi folks,
-> > >=20
-> > > These two patches fix a nasty double allocation problem in swiotlb_al=
-loc()
-> > > and add a diagnostic to help catch any similar issues in future. This=
- was
-> > > a royal pain to track down and I've had to make a bit of a leap at the
-> > > correct alignment semantics (i.e. iotlb_align_mask vs alloc_align_mas=
-k). =20
-> >=20
-> > Welcome to the club. I believe you had to re-discover what I described =
-here:
-> >=20
-> >   https://lore.kernel.org/linux-iommu/20231108101347.77cab795@meshulam.=
-tesarici.cz/ =20
->=20
-> Lucky me...
->=20
-> > The relevant part would be this:
-> >=20
-> >   To sum it up, there are two types of alignment:
-> >=20
-> >   1. specified by a device's min_align_mask; this says how many low
-> >      bits of a buffer's physical address must be preserved,
-> >=20
-> >   2. specified by allocation size and/or the alignment parameter;
-> >      this says how many low bits in the first IO TLB slot's physical
-> >      address must be zero. =20
-> >=20
-> > Fix for that has been sitting on my TODO list for too long. :-( =20
->=20
-> FWIW, it did _used_ to work (or appear to work), so it would be good to
-> at least get it back to the old behaviour if nothing else.
+Yup, this is basically restoring the old behaviour.
 
-Yes, now that I look at the code, it was probably misunderstanding on
-my side as to how the three different alignment requirements are
-supposed to work together.
+> >  	unsigned int nslots = nr_slots(alloc_size), stride;
+> >  	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+> >  	unsigned int index, slots_checked, count = 0, i;
+> > @@ -998,14 +998,13 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+> >  	 * allocations.
+> >  	 */
+> >  	if (alloc_size >= PAGE_SIZE)
+> > -		iotlb_align_mask |= ~PAGE_MASK;
+> > -	iotlb_align_mask &= ~(IO_TLB_SIZE - 1);
+> > +		alloc_align_mask |= ~PAGE_MASK;
+> 
+> ...and alloc_align_mask specifies the desired TLB slot alignment.
 
-AFAICT your patch addresses everything that has ever worked. The rest
-needs some more thought, and before I touch this loop again, I'll write
-a proper test case.
+Yes, although actually I'm now wondering whether there's another bug here
+in that we don't return naturally aligned buffers for allocations bigger
+than a page. I think that was broken in 0eee5ae10256 ("swiotlb: fix slot
+alignment checks") because that stopped aligning the initial search index
+to the stride (which was in turn previously aligned to the allocation size).
 
-Petr T
+> >  	/*
+> >  	 * For mappings with an alignment requirement don't bother looping to
+> >  	 * unaligned slots once we found an aligned one.
+> >  	 */
+> > -	stride = (iotlb_align_mask >> IO_TLB_SHIFT) + 1;
+> > +	stride = (max(alloc_align_mask, iotlb_align_mask) >> IO_TLB_SHIFT) + 1;
+> 
+> I'm not quite sure about this one.
+> 
+> And I'm not even sure all combinations make sense!
+> 
+> For example, take these values:
+> 
+> *         TLB_SIZE ==              0x800  (2K)
+> * alloc_align_mask == 0xffffffffffffc000  (16K alignment, could be page size)
+> * iotlb_align_mask == 0xffffffffffff0000  (64K alignment)
+> *        orig_addr == 0x0000000000001234
+> 
+> Only the lowest 16 bits are relevant for the alignment check.
+> Device alignment requires 0x1000.
+> Alloc alignment requires one of 0x0000, 0x4000, 0x8000, or 0xc000.
+> Obviously, such allocation must always fail...
 
-> Anyway, cheers for reviewing the patches. I'll go through your
-> comments now...
->=20
-> Will
+Having an iotlb_align_mask with all those upper bits set looks wrong to me.
+Is that the same "braino" as bbb73a103fbb?
 
+> >  	spin_lock_irqsave(&area->lock, flags);
+> >  	if (unlikely(nslots > pool->area_nslabs - area->used))
+> > @@ -1015,15 +1014,18 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+> >  	index = area->index;
+> >  
+> >  	for (slots_checked = 0; slots_checked < pool->area_nslabs; ) {
+> > +		phys_addr_t tlb_addr;
+> > +
+> >  		slot_index = slot_base + index;
+> > +		tlb_addr = slot_addr(tbl_dma_addr, slot_index);
+> > +
+> > +		if (tlb_addr & alloc_align_mask)
+> > +			goto next_slot;
+> 
+> Awww, come on. So your code jumps to a label and then inserts an
+> unconditional continue just before that label? I'm sure we'll find a
+> cleaner way to convey the loop logic. What about this:
+> 
+> 		if ((tlb_addr & alloc_align_mask) != 0 ||
+> 		    (orig_addr && (tlb_addr & io_tlb_align_mask !=
+> 				   orig_addr & iotlb_align_mask))) {
+> 			index = wrap_area_index(pool, index + 1);
+> 			slots_checked++;
+> 			continue;
+> 		}
+
+I'm hoping I can drop the alloc_align_mask check entirely if I restore
+the alignment of the index.
+
+> But yes, this patch looks like it should finally do the right thing.
+
+I don't think we're quite there yet. I'll spin a v2.
+
+Thanks for the review,
+
+Will
