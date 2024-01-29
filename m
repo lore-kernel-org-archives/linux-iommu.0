@@ -1,98 +1,207 @@
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B855B152E0F
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 14:57:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4486152E0E
+	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 14:58:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706540256; cv=none; b=tpl9M1ZQ9ZfYeIDK+Qpl43sLWc4oARtufmr3H0n9rub/JiwTZXa81IfHzxYieq0KOXFRrEnk0/QM5Msd7LkRSv4ZVshUxoDPs5pF2St3A8nbYB8FI/u4PuoTOYzqXpweTU0KNTB7fWkAiV6TbVH4Hixe4zxrEeUNuTvkBGvpTRA=
+	t=1706540292; cv=none; b=V8XgwLrGVq1PNyCjQTNsLuIATXbqsGUBKQgEP455o0PZ+KhCZO7xhVnx/nm7uQ3LCjfOJfPds36vX0HNZRSeAQxUh5g9IX06sGHVRZyYlu663noWpbay1WkjhwaqHLlFb0zyMnCgDuehXa0pTPrKxSuUv7xnaVF3fqlnMiWb5qM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706540256; c=relaxed/simple;
-	bh=YHpJANTxleXUQc7Etefu3WOAFvTm2NiP/au00SDkl2k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kVBqANrmaWGaaI5OLYr0iSbgmEKTUFXd545hYlcraprMqJCsISKANQS0Y0DgQN40C7Q8j4whFF3ck1krlxg2aJpUXzhPm698EopVLSi6djLyOdJ6okU6ZTwENK2MEPLIMYL74OGiDL/Hya2A14G7iVHMI2xqm0V38Rx24glAMAE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=njgsyWvp; arc=none smtp.client-ip=209.85.210.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="njgsyWvp"
-Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-6e11cd97960so890641a34.0
-        for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 06:57:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1706540253; x=1707145053; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tVF4k3bK1tmVpRSxaU3/SMcZMqTGWrDu+a1szTYxZBs=;
-        b=njgsyWvpwaq2X00H+Y1v5GNxpKVb4cQQXRn71/KSmgoxBRx+3PNyLVpz6wjyDZWm6n
-         CL6xnk9faqISC/ED/wQvDuGCTi1m0+AicXH7d25RzDX+laulKK5C3HwQ+9rfZ0oACTYU
-         FV6VqVrkM7d6ltJzetfgSVnaAQiotkNNBF0Tcp/f3FvPzgImS33bB1I++M0JgTI4awsH
-         99tyIgQ9S9GG+Me6zwpB90DWPRWI5de6fqzpR+CbBWCm0W+uRjDneYah9M8i59k193m6
-         9ccQwQhRBsblGAiWNNL8kQsMGLPyMIJI6Yk9bOuSCiiGzp91e1IS4jN9beerrsRnh4C0
-         Fapw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706540254; x=1707145054;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tVF4k3bK1tmVpRSxaU3/SMcZMqTGWrDu+a1szTYxZBs=;
-        b=TN3owObxRf/kt1/LjMptJ7GC8CJu5+H/d7jv/eIzurxs6D9/7WIvG8+MoHl4de0b1G
-         kAA0T//iM8MsI0Pt8DY8QG+DdqOoog+k0KMfR8NwFJFQAm6NCWYgG9jcGX1ffLTv+XdZ
-         pcJ4FBvzgmVuD35Q9xnTRlvRjssU52X3klXrn02UNxYCDs2nQ6dES6PyCxgq5dGN3v1y
-         PwPmqU6MHuBXsztCKPjdOAADC67hRtx/n1Dodd8G1LDQ3D7otHVYBeW4Kv4UACEa+mnI
-         /4x5PNCiEiAUIBt5GIjkdvHwvVAkIKsD1c0Sueq/ARQE/WQvAU7tYCXmUcCfVpJw1N74
-         Sibw==
-X-Gm-Message-State: AOJu0Yx40+xLk+18AzyTvkeneJicsoUBrrexuYBkRqLZoxL7Uh0gP8GP
-	FkV94aU4lNDBUfzOnm4+EvY6fHPf36CWzyBnB4Xkim0njUUijUErH+dxfAf9i+8=
-X-Google-Smtp-Source: AGHT+IHM0UgiqzxE42+B8o1wd1JtnMkZnMEzc9DwbMI9lJHOkViPkWLsfI2IUYUXYItE3p/l6Rn1Ag==
-X-Received: by 2002:a05:6870:d287:b0:210:a68b:7066 with SMTP id d7-20020a056870d28700b00210a68b7066mr4254363oae.43.1706540253754;
-        Mon, 29 Jan 2024 06:57:33 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id ry11-20020a056871208b00b002149bb5d09asm2064275oab.56.2024.01.29.06.57.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jan 2024 06:57:33 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rUT4l-00A9ie-VM;
-	Mon, 29 Jan 2024 10:57:31 -0400
-Date: Mon, 29 Jan 2024 10:57:31 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2] iommu: Use mutex instead of spinlock for
- iommu_device_list
-Message-ID: <20240129145731.GD50608@ziepe.ca>
-References: <20240126105341.78086-1-baolu.lu@linux.intel.com>
- <20240126105341.78086-2-baolu.lu@linux.intel.com>
- <BN9PR11MB5276E9618612DCF4DAE0CAE68C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	s=arc-20240116; t=1706540292; c=relaxed/simple;
+	bh=dUXxx5YwYdIUiP+yNNH4SbAazb+SQA7QJdosJHirv1w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=S1gaSRu8UoB7LTK5EsSmouemy/lqAgmnDMpYkSKP8YFSK0sCXWF4LH4FYulTHPTb6AU97cW06UyW8q+8oPzwA/oX3ONIqzYZUdx0LK/7OfsKcvwPfCQRiV6EGuD46ProueXI5R7nXUtG7m0FytZXS67OdDqutnUwey5jSLE9nEU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EF5FADA7;
+	Mon, 29 Jan 2024 06:58:53 -0800 (PST)
+Received: from [10.57.77.253] (unknown [10.57.77.253])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BC9FA3F738;
+	Mon, 29 Jan 2024 06:58:08 -0800 (PST)
+Message-ID: <e5ab27ab-05b4-40d5-aaba-245259d325ea@arm.com>
+Date: Mon, 29 Jan 2024 14:58:07 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276E9618612DCF4DAE0CAE68C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/2] iommu: Probe right iommu_ops for device
+Content-Language: en-GB
+To: Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240126105341.78086-1-baolu.lu@linux.intel.com>
+ <20240126105341.78086-3-baolu.lu@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240126105341.78086-3-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jan 29, 2024 at 08:04:35AM +0000, Tian, Kevin wrote:
-> > From: Lu Baolu <baolu.lu@linux.intel.com>
-> > Sent: Friday, January 26, 2024 6:54 PM
-> > 
-> > The iommu_device_lock spinlock was used to protect the iommu device
-> > list. However, there is no requirement to access the iommu device
-> > list in interrupt context. Therefore, a mutex is sufficient.
+On 2024-01-26 10:53 am, Lu Baolu wrote:
+> Previously, in the iommu probe device path, __iommu_probe_device() gets
+> the iommu_ops for the device from dev->iommu->fwspec if this field has
+> been initialized before probing. Otherwise, it is assumed that only one
+> of Intel, AMD, s390, PAMU or legacy SMMUv2 can be present, hence it's
+> feasible to lookup the global iommu device list and use the iommu_ops of
+> the first iommu device which has no dev->iommu->fwspec.
 > 
-> I don't think that interrupt is the reason for spinlock otherwise
-> spin_lock_irqsave() should be used instead.
+> The assumption mentioned above is no longer correct with the introduction
+> of the IOMMUFD mock device on x86 platforms. There might be multiple
+> instances of iommu drivers, none of which have the dev->iommu->fwspec
+> field populated.
+> 
+> Probe the right iommu_ops for device by iterating over all the global
+> drivers and call their probe function to find a match.
 
-Right, there is no touch of this from an interrupt
+This will now break several drivers which are no longer expecting to see 
+a ->probe_device call without having seen the corresponding ->of_xlate 
+call first.
 
-I suspect it is following the the general kernel wisdom that a
-spinlock is better if the critical sections are very small.
+Can we please just do the trivial fix to iommufd itself? At this point I 
+don't mind if it's your v1, the even simpler one I proposed 2 months 
+ago[1], or anything else similarly self-contained.
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Thanks,
+Robin.
 
-Jason
+[1] 
+https://lore.kernel.org/linux-iommu/e365c08b21a8d0b60e6f5d1411be6701c1a06a53.1701165201.git.robin.murphy@arm.com/
+
+> Fixes: 17de3f5fdd35 ("iommu: Retire bus ops")
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>   drivers/iommu/iommu.c | 76 +++++++++++++++++++++++++++----------------
+>   1 file changed, 48 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 0af0b5544072..2cdb01e411fa 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -396,30 +396,69 @@ void dev_iommu_priv_set(struct device *dev, void *priv)
+>   }
+>   EXPORT_SYMBOL_GPL(dev_iommu_priv_set);
+>   
+> +static struct iommu_device *
+> +__iommu_do_probe_device(struct device *dev, const struct iommu_ops *ops)
+> +{
+> +	struct iommu_device *iommu_dev;
+> +
+> +	if (!try_module_get(ops->owner))
+> +		return ERR_PTR(-EINVAL);
+> +
+> +	iommu_dev = ops->probe_device(dev);
+> +	if (IS_ERR(iommu_dev))
+> +		module_put(ops->owner);
+> +
+> +	return iommu_dev;
+> +}
+> +
+> +static struct iommu_device *iommu_probe_device_ops(struct device *dev)
+> +{
+> +	struct iommu_device *iter, *iommu_dev = ERR_PTR(-ENODEV);
+> +	struct iommu_fwspec *fwspec;
+> +
+> +	/*
+> +	 * For FDT-based systems and ACPI IORT/VIOT, drivers register IOMMU
+> +	 * instances with non-NULL fwnodes, and client devices should have been
+> +	 * identified with a fwspec by this point. Otherwise, we will iterate
+> +	 * over all the global drivers and call their probe function to find a
+> +	 * match.
+> +	 */
+> +	fwspec = dev_iommu_fwspec_get(dev);
+> +	if (fwspec && fwspec->ops)
+> +		return __iommu_do_probe_device(dev, fwspec->ops);
+> +
+> +	mutex_lock(&iommu_device_lock);
+> +	list_for_each_entry(iter, &iommu_device_list, list) {
+> +		iommu_dev = __iommu_do_probe_device(dev, iter->ops);
+> +		if (!IS_ERR(iommu_dev))
+> +			break;
+> +	}
+> +	mutex_unlock(&iommu_device_lock);
+> +
+> +	return iommu_dev;
+> +}
+> +
+>   /*
+>    * Init the dev->iommu and dev->iommu_group in the struct device and get the
+>    * driver probed
+>    */
+> -static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
+> +static int iommu_init_device(struct device *dev)
+>   {
+>   	struct iommu_device *iommu_dev;
+> +	const struct iommu_ops *ops;
+>   	struct iommu_group *group;
+>   	int ret;
+>   
+>   	if (!dev_iommu_get(dev))
+>   		return -ENOMEM;
+>   
+> -	if (!try_module_get(ops->owner)) {
+> -		ret = -EINVAL;
+> -		goto err_free;
+> -	}
+> -
+> -	iommu_dev = ops->probe_device(dev);
+> +	iommu_dev = iommu_probe_device_ops(dev);
+>   	if (IS_ERR(iommu_dev)) {
+>   		ret = PTR_ERR(iommu_dev);
+> -		goto err_module_put;
+> +		goto err_free;
+>   	}
+>   	dev->iommu->iommu_dev = iommu_dev;
+> +	ops = dev_iommu_ops(dev);
+>   
+>   	ret = iommu_device_link(iommu_dev, dev);
+>   	if (ret)
+> @@ -444,7 +483,6 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
+>   err_release:
+>   	if (ops->release_device)
+>   		ops->release_device(dev);
+> -err_module_put:
+>   	module_put(ops->owner);
+>   err_free:
+>   	dev->iommu->iommu_dev = NULL;
+> @@ -499,28 +537,10 @@ DEFINE_MUTEX(iommu_probe_device_lock);
+>   
+>   static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
+>   {
+> -	const struct iommu_ops *ops;
+> -	struct iommu_fwspec *fwspec;
+>   	struct iommu_group *group;
+>   	struct group_device *gdev;
+>   	int ret;
+>   
+> -	/*
+> -	 * For FDT-based systems and ACPI IORT/VIOT, drivers register IOMMU
+> -	 * instances with non-NULL fwnodes, and client devices should have been
+> -	 * identified with a fwspec by this point. Otherwise, we can currently
+> -	 * assume that only one of Intel, AMD, s390, PAMU or legacy SMMUv2 can
+> -	 * be present, and that any of their registered instances has suitable
+> -	 * ops for probing, and thus cheekily co-opt the same mechanism.
+> -	 */
+> -	fwspec = dev_iommu_fwspec_get(dev);
+> -	if (fwspec && fwspec->ops)
+> -		ops = fwspec->ops;
+> -	else
+> -		ops = iommu_ops_from_fwnode(NULL);
+> -
+> -	if (!ops)
+> -		return -ENODEV;
+>   	/*
+>   	 * Serialise to avoid races between IOMMU drivers registering in
+>   	 * parallel and/or the "replay" calls from ACPI/OF code via client
+> @@ -534,7 +554,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+>   	if (dev->iommu_group)
+>   		return 0;
+>   
+> -	ret = iommu_init_device(dev, ops);
+> +	ret = iommu_init_device(dev);
+>   	if (ret)
+>   		return ret;
+>   
