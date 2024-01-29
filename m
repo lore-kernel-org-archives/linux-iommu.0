@@ -1,148 +1,96 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08D0876048
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 20:40:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 858D57602C
+	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 20:45:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706560847; cv=none; b=XbvObtfu79Dd0Zmts0tR6w/Hld4rvgpe7Dz4n8JoV/dCf1H+mzufNFUElS6yOmeF8Ni1Bo7JGKnks9niWbdp0sLcHUvWHoT96jX8eUYbO0FytNsLBCL3kfOpUlj7CAFSTFbtxYFRwoyFtUyYBWcXA1lEo7/o6F0YuY73hGEMqOo=
+	t=1706561157; cv=none; b=YFaRCKI7pp3DAoAJBS/ZKjK0bm2J9fqv9UnGE6jzn7+U06epO0dYUfhG6t2WP7e1ji21DdhtTH48Mo9CYsbVT+ij7DkVWOBn+5yuv7zsukXM88J2sLVSaAuVbswfX6RVACi3wy+hxLrQc0iwCAf1115Ums6iFjK+mhv02VLMMyk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706560847; c=relaxed/simple;
-	bh=X94dGa34Rf3Z09DyoMy9dmXSi/7nIr2uv+Gk9hHR6M4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=duK0IrLo3T/Ns+vwfArGHGPIQ4QAQye2EHwZWqA4nnYROn+HIbeYSVGWZIUYjuSfAM/cEA76aA96/lCrpJ5b+C6E6UtE7iOXVo2D6lv7U1RPencxFxNzXqvbeLMvTkf/ArbF7GcRiMEX+kvJq0Odk7vl//mA11eFtz3GqkwRjv0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=ww9/TFV5; arc=none smtp.client-ip=77.93.223.253
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1706561157; c=relaxed/simple;
+	bh=QEewFaELR8jT5HeqihIe7emzjPRsef1SZlefk2lboWI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hryGLCCj41INbfVpTuqRcK78xx4w0dt4WPhYFENw0zkcmFT0r3xCNJ01yotObXN1WVvzM6RGh5iM3beigrKoXb+JzLmVsNVm7HR0i2Y0SYMELIG8jbJkfmtSryiTqg4cGsOpEBSLl8MMAxAJ4D4id+Y9IDePBLRVxwZfko3VmdY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SL//DsUz; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="ww9/TFV5"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id A903D19A95A;
-	Mon, 29 Jan 2024 21:40:35 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
-	t=1706560835; bh=X94dGa34Rf3Z09DyoMy9dmXSi/7nIr2uv+Gk9hHR6M4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ww9/TFV5fUcxiukvGOoTG5n2TOqGizqBfmZsJscPACNQ3VmqHsfHectbJPlczMy/n
-	 qdTYRpdC40n7vyb5lHp0ukcRWzLQMKuMJVydulUg3gWQZcRQ+FAk0HT4Z4fhBxT4en
-	 0yGRMYq+s8rvW3rJexPk8Uacbxhl73hJ4qEtm+tAeu4EoGMV0/PRucGbUlSBkg/tlK
-	 QKosgEi19mJiQ5u/+QiAh+qPqmchtsU68vwpZlivo0FEcqKhM3p/hrUkvY/Mj1DaXo
-	 gYnu29dX60KEyBoEfIGRl1Xb15fIuPm4SQ421Mo/7OzuxGwnobXpD+DuNbPCRc078u
-	 HW/3tCvd4AhHw==
-Date: Mon, 29 Jan 2024 21:40:34 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Will Deacon <will@kernel.org>
-Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
- iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
- Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
- <decui@microsoft.com>
-Subject: Re: [PATCH 1/2] swiotlb: Fix allocation alignment requirement when
- searching slots
-Message-ID: <20240129214034.4beb4258@meshulam.tesarici.cz>
-In-Reply-To: <20240129193250.GB12631@willie-the-truck>
-References: <20240126151956.10014-1-will@kernel.org>
-	<20240126151956.10014-2-will@kernel.org>
-	<20240126180127.1a3fc4e6@meshulam.tesarici.cz>
-	<20240129193250.GB12631@willie-the-truck>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SL//DsUz"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-40f00adacfeso715e9.1
+        for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 12:45:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1706561154; x=1707165954; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=2UV3MAZ8RdW/0YVS6qjgV0z5XXsM6lhtJe9UOEZ4rJ4=;
+        b=SL//DsUzHw6oawQiVeTh6ytE8Ou0S1+uxcWQtVsFUJStYlUwG1egUajAO0T+kZRO7w
+         Ni+hHmk8Osn3hcF1Z9i86FuPCIjy7NFsUpmo4jBH3EbMFpAasENW2mBGH3Ml/8d3GArr
+         UAvfQN7fBSvNztxHeafr28TS+bQ1Wq2Rbn3i2XX4zYper1BUYrXEMUQMD22MXS0btge6
+         abJGf8v6cpSpJkcLKcRcvKqptomTQiNhzChP6W4E9h+49jvTxoAdUGdaBty5eIXXK+cS
+         dTUEAPyzD/y94HR0a3gOMG37JDE38+53nWFq1tAZSCdm82IXUmUMPNDUP061cwsXDagx
+         E7sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706561154; x=1707165954;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=2UV3MAZ8RdW/0YVS6qjgV0z5XXsM6lhtJe9UOEZ4rJ4=;
+        b=CjSry2/ZN6zTCL61ZGKCEfcOK7bKzEHjBA6oscW9+n5LUBnOkJh2Hvepk51ka2x+Bc
+         kMvTI+seDK1JjJ8wp3My9ha/RPwJ7v/nc3UZcKa6cruhqQhfpGKD7h4ucQqQ64Cz5AaM
+         QdL0mIb4tlF9v2jso5HPDKcdgeKyJT43fcZbMfwi2zOjghACh3skQVhksIcnRcNyehKC
+         wFmhqsRNZb84Bx0N47zd6mKxPpQ+ORehTui6fAzph/W8THCMxg0EvbktCYELPznhYPI3
+         Vnbcn58OKMO4dHYtluUwVJw7wpQe2IY6g7XvnwY+Obr1eNnm91286HURAdh48Q/+Enn4
+         J8MQ==
+X-Gm-Message-State: AOJu0YxnRdtBNCpVSgo6mo0wRZI4dzQhIdU6MbjE8QwoSbnjeqAdDuLt
+	oV9mKm6tUwqsbV+whEPfv9ozEiIZfKk8iHQlK5oiUH4CLibS//MxwtKLuTL3pA==
+X-Google-Smtp-Source: AGHT+IEVpOHf509H3Rk/eCsw3H2jxU+JiPIn9K2pgQRaGycSddCvc/9A7ZM4kLfBGD0LPRqcsRKq6w==
+X-Received: by 2002:a05:600c:4a96:b0:40e:61cf:af91 with SMTP id b22-20020a05600c4a9600b0040e61cfaf91mr30230wmp.7.1706561153654;
+        Mon, 29 Jan 2024 12:45:53 -0800 (PST)
+Received: from google.com (185.83.140.34.bc.googleusercontent.com. [34.140.83.185])
+        by smtp.gmail.com with ESMTPSA id l22-20020a05600c1d1600b0040ef95e1c78sm2996776wms.3.2024.01.29.12.45.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Jan 2024 12:45:53 -0800 (PST)
+Date: Mon, 29 Jan 2024 20:45:49 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v3 00/19] Update SMMUv3 to the modern iommu API (part 1/3)
+Message-ID: <ZbgOfek7vvqrUjSq@google.com>
+References: <0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
+ <Zbf4ySDT0bAMXXwO@google.com>
+ <20240129194245.GA1455070@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240129194245.GA1455070@nvidia.com>
 
-On Mon, 29 Jan 2024 19:32:50 +0000
-Will Deacon <will@kernel.org> wrote:
+On Mon, Jan 29, 2024 at 03:42:45PM -0400, Jason Gunthorpe wrote:
+> On Mon, Jan 29, 2024 at 07:13:13PM +0000, Mostafa Saleh wrote:
+> 
+> > > All parts are on github:
+> > > 
+> > >  https://github.com/jgunthorpe/linux/commits/smmuv3_newapi
+> > I added some comments/questions for this series, but didn’t review it
+> > thoroughly as I see the code on github is quite different from these patches,
+> > and it seems to be targeted for v4. Do you have any plans to send it soon?
+> 
+> The part 1 didn't change too, much aside from patch 4, but v4 is already posted:
+> 
+> https://lore.kernel.org/linux-iommu/0-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com/
 
-> On Fri, Jan 26, 2024 at 06:01:27PM +0100, Petr Tesa=C5=99=C3=ADk wrote:
-> > On Fri, 26 Jan 2024 15:19:55 +0000
-> > Will Deacon <will@kernel.org> wrote: =20
-> > > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> > > index b079a9a8e087..25febb9e670c 100644
-> > > --- a/kernel/dma/swiotlb.c
-> > > +++ b/kernel/dma/swiotlb.c
-> > > @@ -982,7 +982,7 @@ static int swiotlb_search_pool_area(struct device=
- *dev, struct io_tlb_pool *pool
-> > >  		phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
-> > >  	unsigned long max_slots =3D get_max_slots(boundary_mask);
-> > >  	unsigned int iotlb_align_mask =3D
-> > > -		dma_get_min_align_mask(dev) | alloc_align_mask;
-> > > +		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1); =20
-> >=20
-> > Good. So, iotlb_align_mask now specifies how many low bits of orig_addr
-> > should be preserved in the bounce buffer address, ignoring the offset
-> > within the TLB slot... =20
->=20
-> Yup, this is basically restoring the old behaviour.
->=20
-> > >  	unsigned int nslots =3D nr_slots(alloc_size), stride;
-> > >  	unsigned int offset =3D swiotlb_align_offset(dev, orig_addr);
-> > >  	unsigned int index, slots_checked, count =3D 0, i;
-> > > @@ -998,14 +998,13 @@ static int swiotlb_search_pool_area(struct devi=
-ce *dev, struct io_tlb_pool *pool
-> > >  	 * allocations.
-> > >  	 */
-> > >  	if (alloc_size >=3D PAGE_SIZE)
-> > > -		iotlb_align_mask |=3D ~PAGE_MASK;
-> > > -	iotlb_align_mask &=3D ~(IO_TLB_SIZE - 1);
-> > > +		alloc_align_mask |=3D ~PAGE_MASK; =20
-> >=20
-> > ...and alloc_align_mask specifies the desired TLB slot alignment. =20
->=20
-> Yes, although actually I'm now wondering whether there's another bug here
-> in that we don't return naturally aligned buffers for allocations bigger
-> than a page. I think that was broken in 0eee5ae10256 ("swiotlb: fix slot
-> alignment checks") because that stopped aligning the initial search index
-> to the stride (which was in turn previously aligned to the allocation siz=
-e).
-
-The question is whether there is any NEED that allocations bigger than
-a page are naturally aligned. For my part, I don't see why there should
-be, but I might be missing something.
-
-> > >  	/*
-> > >  	 * For mappings with an alignment requirement don't bother looping =
-to
-> > >  	 * unaligned slots once we found an aligned one.
-> > >  	 */
-> > > -	stride =3D (iotlb_align_mask >> IO_TLB_SHIFT) + 1;
-> > > +	stride =3D (max(alloc_align_mask, iotlb_align_mask) >> IO_TLB_SHIFT=
-) + 1; =20
-> >=20
-> > I'm not quite sure about this one.
-> >=20
-> > And I'm not even sure all combinations make sense!
-> >=20
-> > For example, take these values:
-> >=20
-> > *         TLB_SIZE =3D=3D              0x800  (2K)
-> > * alloc_align_mask =3D=3D 0xffffffffffffc000  (16K alignment, could be =
-page size)
-> > * iotlb_align_mask =3D=3D 0xffffffffffff0000  (64K alignment)
-> > *        orig_addr =3D=3D 0x0000000000001234
-> >=20
-> > Only the lowest 16 bits are relevant for the alignment check.
-> > Device alignment requires 0x1000.
-> > Alloc alignment requires one of 0x0000, 0x4000, 0x8000, or 0xc000.
-> > Obviously, such allocation must always fail... =20
->=20
-> Having an iotlb_align_mask with all those upper bits set looks wrong to m=
-e.
-> Is that the same "braino" as bbb73a103fbb?
-
-I must always stop and think at least twice before I can be sure
-whether a "mask" has the high bits set, or the low bits set...
-
-On an x86, PAGE_SHIFT is 12, PAGE_SIZE is 1UL << PAGE_SHIFT or 0x1000,
-PAGE_MASK is ~(PAGE_SIZE-1)) or 0xfffffffffffff000, and there's one
-more bitwise negation, so you're right. Both masks above should be
-inverted, and using max() to find the stride is correct.
-
-Petr T
+Oh, I missed it, thanks, I will move to reviewing v4.
+> Thanks,
+> Jason
