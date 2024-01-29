@@ -1,159 +1,148 @@
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2084.outbound.protection.outlook.com [40.107.94.84])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55F63154435
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 15:37:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706542678; cv=none; b=Ft27UZUtYfSqQxg6oXXNfhbxPfWeXA7AHtqKPuM+zc9OG6VgDJA4qNVYITnU0ltWoBrhJ/M9RenelPziR/OiOySwbGhsJCytdG6Uu17qFhWnwp3h4LOSbKcXoZT3Ilq+MPPbIjzEKr14Q0ldfEiSAyNjXQV1j7NUE+Jljt/5Oss=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706542678; c=relaxed/simple;
-	bh=dv7rvRTXCssC2Ucy3ETYL9O+pACUSn657yVE+v0ZMSE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RN2b8fHUatVo1LP5oWd3c3elb2Ufhk2qVZECqQ1qBHOeIpQaMRETtzfNqHuaMjwgSuFxlCDb6LJxi+KNhJsJw5zYCMLSjlhGN0byXY3FEDWOgdxyP7HylKA6XZMGt9sU/TczMlMsdw96Zy9UvfHXP+j/pAnxhD0b3kR/gSzSdao=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=difZJS+H; arc=none smtp.client-ip=209.85.210.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3293E154448;
+	Mon, 29 Jan 2024 15:44:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.84
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706543043; cv=fail; b=HsKJl50bqxxUYZNzIz/tFv0RvEK/etREryzoqdEKy5n0omvti37DIby4c1C2cTlb1WY8vFb70CUC4T+AVQ9BzyuicoCEZY42qqQI9aVaBHnm1MfCiaLsT/bNAVpcmLFpvkX9v51cD0LW48Fk/5GOGK1/qSqqRZeBFJTTfzh/w0w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706543043; c=relaxed/simple;
+	bh=mD+kDuo/fltlv2p3cqxCVgko9OzrbT6hInnmEX9zGsk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=iQHimuRbZpJtojdn1NYYztC829jFaRjoCw0TBr1ZM6sofyW3FBgbFvjsJP++wljaBp1OR/6Cjh1Lyd2gmvRfbDc+F3CjErDZWcPOsGNIl8V6+l8R/qxYsUcqrzENX3PywG+ewZk62GtZp4hRbP0sBNeK8jZ8ZFNGMYBIU/hGA0Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=UVvyj654; arc=fail smtp.client-ip=40.107.94.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="difZJS+H"
-Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-6e118b528aeso611706a34.1
-        for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 07:37:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1706542674; x=1707147474; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+u6y5RGZUaOEJts7DaeBk/aybPKOo63QfRuk7QPhhAo=;
-        b=difZJS+HSURUMoZHlj4E9fklrIHtQwLsGMzBFuIrArmyCLhOMSiybmYltmzv9HNDXD
-         BTG3EMxgYk+z+zQRpIoALnQTIZI9AAeHTzlXPK/6Wh1rdF2rsbdiEgiZaQH8qmKa7Jfd
-         JqrOmZUIhDVW+Tvnt3ozbDVYADYCRgdn5bw0vdF/hTXAtvQ8TkyDisp3UleC9fCJ1qGv
-         e9heM3LjadjbPyVW8QfeG6GjG2UBF0dLV+BOiO5acRpNXz03eNbVV43kLR2bYEa3+H2Q
-         g88guwUj7HO4lj3qWNjnHbPzU78m2+AETlu4+sZkfmBorWSrA9/W890s8h1r0+GBEhrO
-         41YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706542674; x=1707147474;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+u6y5RGZUaOEJts7DaeBk/aybPKOo63QfRuk7QPhhAo=;
-        b=BoBI6+UtV4NrqqfTjqMOcixNXfS2fYyARQYuSAYMI3FZDN+IqAiAYqFo/VJm42cwdb
-         Ewi4cBLUVwPUz4sz6xMi+FP/JgE2N3IyzeBoR5U48jsdPr9b8M8qnq/tvow0LpxJW8Ko
-         c/8V4OF1YIYJZdWcFSZTTjmCa6y0ZxwQhnVzZKGeNdmupx3VSOq2BQ0GABfsaTDmrOyb
-         7iAjfwUzSt/noZOh5KKzztmV+DwuwdEjv5sfvAyTVL7q/sgrA97Vv2aF9gRaGK/7/Vb7
-         i5Dg2hh8n9S4o+B2dbvZ1nZxU4w74VY99Zx3nway+nE/s0k+ywyn5KLn9OSfn5v1L8BB
-         oqag==
-X-Gm-Message-State: AOJu0YzATf3QH9L+dyRLVMdYJmLDFoPpPdI8fAjAnTmb9+JTtjyHERH/
-	5PpfLKaUtJGBHYeYtNBgz+P1zwxJZdCQy8/+7v9CbLh2RCbCPNzEC1A/i7iOuOZ7bEbbms4RA4x
-	T
-X-Google-Smtp-Source: AGHT+IFioboZVLN9aAQFM+uMw6SK0ubssSHwws7ioYqVN5+2ra53qkjqKoRzZcZNHc4r/BPxL4LaUg==
-X-Received: by 2002:a9d:685a:0:b0:6e0:ba7c:4203 with SMTP id c26-20020a9d685a000000b006e0ba7c4203mr5515941oto.1.1706542674389;
-        Mon, 29 Jan 2024 07:37:54 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id z21-20020a05683008d500b006e12266433csm750687otg.27.2024.01.29.07.37.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jan 2024 07:37:53 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rUTho-00A9vk-Ij;
-	Mon, 29 Jan 2024 11:37:52 -0400
-Date: Mon, 29 Jan 2024 11:37:52 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iommu: Probe right iommu_ops for device
-Message-ID: <20240129153752.GE50608@ziepe.ca>
-References: <20240126105341.78086-1-baolu.lu@linux.intel.com>
- <20240126105341.78086-3-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UVvyj654"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A90laNsUE7p56cQZxWYi+CrdWXj7/rSXEvPbPzFIdNKcObA65g2bj/fknndRUx8VPjqdZz3MaJdSjlO1mFiWUbsfiFp63xy7CMqIgZeAw5aPSSa8mL2u2HE9+IzBqw5F79Co6DMkjrgCdnDxtlG0RLapTsx9D2yZEo8sskeH8VTJDoRQiVRFbtP/VZcA9WxW9dif4XQRfYmTwsBt4HUfGbfRMArD2P8mQQ+FmVBC4/6D3vLD/0XCz82v+tQxcBz1EwSO5UsKtB9QhXqkISZnRXFfuKxnSN9cVzzRsi4yaArX+uVmbgBPYB4XcJr1uhiBOgmkFlGQqwZqLkUaIqmPUA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pS8XhJUUtgkn+Sx9b4dNYgDeelrmVQpo8VjTFf9EFyY=;
+ b=TWXdrWIH1Hf55bBn2c73Rfwj1X+e+8I9pc5dtZrm0o9OyHXzM5mlj+YbxbIGzSgFbhTxnnrEu5APnsNn/nASUgxZkZcO+Q3DESYlL34yynCMnkDfWHNzFICXwp5b+byIUipTzM+LLzbmNpn3wEFwyRZhj7sjMRPE1sAOUSHUHlRh4CwCEL4Vy0nF+LM9MzL3SczFIJhEUBf5qJ5By1k3sMZhJwIFp1aaVwK4udl8zwZT586WC/+cacARiNe4b4alDu2HF1gu7qxBc9DgaQESw39jvWsyHVmWAHKN/lAeWi21khHJ6dQxl9WlWfXA7N4u7rpehNWiSuD8J2Kt/aAvzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pS8XhJUUtgkn+Sx9b4dNYgDeelrmVQpo8VjTFf9EFyY=;
+ b=UVvyj654zjHv3ERUM/tYGwtwdo+IDpBLVkeMJjiMfRop7woK6+wvyz0KYOCPB5LwnkNDBPPxZshZSiugRcDI8VrKyFytm2di4HOGVjtUmyevvq+9XHNRv8A9hZq0Xdd6T1V6HnO98lpLsjNnSyx/VPq9Geh+LMeFZMrIyUKOq3oA5T4uGy8Z57Eo+qk4AAqgOYwsmm4bXcavfqsNDIyF1OSSXB1ifojj4xwI5TD/sTZ3fUrDFWt7EvKt01NZB9d1Ji2wgpoIcxJdZEH+QM2eqpNB0N8s/pz/Fm/PcMXgLB8EP+EOvAzLImSi0iiSmtPHRLsyQEcfY8P/6q8AkHJdvA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by SJ2PR12MB8064.namprd12.prod.outlook.com (2603:10b6:a03:4cc::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.34; Mon, 29 Jan
+ 2024 15:43:58 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::96dd:1160:6472:9873]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::96dd:1160:6472:9873%6]) with mapi id 15.20.7228.029; Mon, 29 Jan 2024
+ 15:43:58 +0000
+Date: Mon, 29 Jan 2024 11:43:56 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Joerg Roedel <joro@8bytes.org>,
+	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"patches@lists.linux.dev" <patches@lists.linux.dev>
+Subject: Re: [PATCH v4 03/16] iommu/arm-smmu-v3: Move
+ arm_smmu_rmr_install_bypass_ste()
+Message-ID: <20240129154356.GA2421628@nvidia.com>
+References: <0-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
+ <3-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
+ <e1b1a2fbaf3f4312a6d6c27afdfaf7fd@huawei.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e1b1a2fbaf3f4312a6d6c27afdfaf7fd@huawei.com>
+X-ClientProxiedBy: SN6PR08CA0021.namprd08.prod.outlook.com
+ (2603:10b6:805:66::34) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240126105341.78086-3-baolu.lu@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ2PR12MB8064:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3f3efb3a-427d-4e34-094e-08dc20e11bc1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	wSv6wc8yQhWtyYLKef+0+BwHXGjq5rg6RZn7lXUKoUnKvieG4XTfPY1tCPld6h/4FtZT70MiNXgFCbWFWqO1L+/lCGHbrkKiI9zWoYZLNC99IKmmesGv5sTKmLH2iyWl2EwhdTdTeBU9vpkmYRSm8xtyrFr1F0rzsu9KwjpmQ9ow/wQl8MHPkjk2PMIqONk2B8JNkqb/WsobfamsC41raX4MzHQ+9p0YIBAAah+UhHFLHs+dtbE6sWukqxSLPLw7sbEfT06fXUQSeSmVBOot5BU2nioD8D3IwF4rdWDf3UtdK4ffA1JylZL7QdzARbCjK7J4lkQ9G6bHTPaEfbE0CSWTF69d+4Tytyv9joP+wgxS5iHUbNqH2ByI1PYK5A7eYwFffxke2CHuZ7/IOPl8MNxMojkKn8n2yWPSBo+QvU7QPt8wezS75NryvMq3KXaAY0yZY2kfGV82q0Cl0UgQ8UaZ00BXtMcpsqI2BpWXx/kpazNyjZJvsHG8sakCXSoeqD6MdZSDhQ+iJIhgWRMwM7a3CIfoqJsbVzgquVnbuOGkQwBR5sPnU8C9fe3Mk1nE
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(39860400002)(346002)(396003)(376002)(230922051799003)(1800799012)(186009)(64100799003)(451199024)(86362001)(316002)(2616005)(83380400001)(6512007)(6506007)(66476007)(66556008)(66946007)(6916009)(54906003)(1076003)(8676002)(38100700002)(4326008)(6486002)(26005)(8936002)(478600001)(2906002)(4744005)(5660300002)(33656002)(41300700001)(7416002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?m7queZKIRKAsn6Ka6HS+WOFemSHbRisbm0dRP7EMv+TH2EraVQPb/zhesKbG?=
+ =?us-ascii?Q?S/Od7G8eg+MZZKDBYFIlzEC0LiP0YBfL9c2jRCiT6AntQ7IGTd0weAMCopBt?=
+ =?us-ascii?Q?4uQOF13K2GTna+mzT8ASZJu3YDyEleQK5ZbnffeaFSdZ+M3FJA+hT9CNOfwf?=
+ =?us-ascii?Q?Nv/EGw8J7B+UOaIVtqBaQbBrog/vOxN2US2rzejJD0dMExhI2c1/KEVZ4lH7?=
+ =?us-ascii?Q?+NQexJns+92JC1VceiGWBWoUASwp+RZq4NYPi7G/agnWb+NIubKB7cUkpTAV?=
+ =?us-ascii?Q?Y9QxWL4WHJa5i1PDlE+Ug0yS5QAHbyeS2Gw9XPEecOeKAQXPkDEiGfTZoL1H?=
+ =?us-ascii?Q?RLxXMYgPN+FujeSagUgIAxBbt+R+ZNfsLvfGGeG5cJehoODvymU/8FDSZ14+?=
+ =?us-ascii?Q?JXuUSNwodRDOsvK3oaoI+FGJ4nDtZSOoaSGqFSJqeCjxPXa+uMOuKiqWTEkd?=
+ =?us-ascii?Q?Ck0Yl3gJMfslobCHoJVSLV3oEcmADDNP6AHMHRcUlqa8uESahHwCfsValo56?=
+ =?us-ascii?Q?YN8Zb6M55k1FOcgMHWOKe+nAnyGgR8d7WHkHm6Qy+oFaK/+0LuRFk1BJTNnu?=
+ =?us-ascii?Q?AJwS1/Jg3RhKID6gEq8q4Jq7+8m0QS976QoR3MWnlK21VLT4uQ/z3RknyxV2?=
+ =?us-ascii?Q?TuLH3grrBv4iAe/XCmB9caQaUYNaCDPSzfpo9b487WEexlFtCUCyRuxkq2bZ?=
+ =?us-ascii?Q?flYijD6MBYE7p7m20a9m8JilKdYO3y+wc3vZKUC8zD9dQmXIeLcKz1vu4yvp?=
+ =?us-ascii?Q?/oLz5/Ui6cFuO3CAhw5zgLvjxTAqXopwRreD8h8pCPmmI+sf7BmQ0Acrdw31?=
+ =?us-ascii?Q?hIo3CE6IAsEYeeaz4+jnXw0T5YX95hsJL9nDQE+0mqwYySBYnr20cuIH58Qz?=
+ =?us-ascii?Q?iuQEUPfQCmWWC9fACFaw//iedEbtpFWciiWXygVIUn8NGlq2JxbL1fwkgmz7?=
+ =?us-ascii?Q?qKdDWiyAIzmSor0lG8no2NJjUoUwXb+XDckfPJdlq8BqG3Mk7rVtXwr3ERn6?=
+ =?us-ascii?Q?bZK4dbplx+4b6HgQhlTIce9Joj3gVN8Vh79C9beitkib/d/n24jdWyJVXm9G?=
+ =?us-ascii?Q?m35CdpI7Xt2bAjNTGONGC+msHge8IpeONBETVLKnFFa0pPedd6jxq1eD1Wta?=
+ =?us-ascii?Q?6on5PL12B0c/pfSOdZhPVSqbNBMJ+WD1BsGu46KjbuCNsJ7UjW+3WmtyL0AZ?=
+ =?us-ascii?Q?UJFecCO7OmB0aNjEnV1ls8YZT+8G0qd3aBF61AtrZ+dXKGsN2AWo3UaYQVLw?=
+ =?us-ascii?Q?p0Snevbm0fxURSCe8LmpL0f5dlezjBaPxU0mejamwWL5zPZHkAIkobfwjEr/?=
+ =?us-ascii?Q?eiM27DYcibRxnEJb2uWgcEXyvIzNiRYBSqvACm86seNfkHz1wMgaCsKuIqqS?=
+ =?us-ascii?Q?WdYZdHlYh5+7nlT+u1/KiEq1BN/4v7Gr+n0t3eK1WuPKNvs7A+eBWZK50P7J?=
+ =?us-ascii?Q?Y5mKdwKOVw25uZ8r7EVHZ6S0u13YzF6fW6OMz8i0ne3hae08bf6+TLsl6Yl3?=
+ =?us-ascii?Q?e8Qi0vr0P/cqov5ahac5Cqxk/6Nfy/o9zkb7yt+Ni1ACSMrHBj2UZlNtElAn?=
+ =?us-ascii?Q?aza44c0X574mdprasSE=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3f3efb3a-427d-4e34-094e-08dc20e11bc1
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jan 2024 15:43:58.6296
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: b5UydIpZCJgo/SGfVi6JoEM3z/Q6kgCaYObFfIlUzGWqSWdJfQOKXyTSFS3NN7Ko
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8064
 
-On Fri, Jan 26, 2024 at 06:53:41PM +0800, Lu Baolu wrote:
-> Previously, in the iommu probe device path, __iommu_probe_device() gets
-> the iommu_ops for the device from dev->iommu->fwspec if this field has
-> been initialized before probing. Otherwise, it is assumed that only one
-> of Intel, AMD, s390, PAMU or legacy SMMUv2 can be present, hence it's
-> feasible to lookup the global iommu device list and use the iommu_ops of
-> the first iommu device which has no dev->iommu->fwspec.
+On Mon, Jan 29, 2024 at 03:07:21PM +0000, Shameerali Kolothum Thodi wrote:
+
+> > Logically arm_smmu_init_strtab_linear() is the function that allocates and
+> > populates the stream table with the initial value of the STEs. After this
+> > function returns the stream table should be fully ready.
+> > 
+> > arm_smmu_rmr_install_bypass_ste() adjusts the initial stream table to force
+> > any SIDs that the FW says have IOMMU_RESV_DIRECT to use bypass. This
+> > ensures there is no disruption to the identity mapping during boot.
+> > 
+> > Put arm_smmu_rmr_install_bypass_ste() into arm_smmu_init_strtab_linear(),
+> > it already executes immediately after arm_smmu_init_strtab_linear().
+> > 
+> > No functional change intended.
 > 
-> The assumption mentioned above is no longer correct with the introduction
-> of the IOMMUFD mock device on x86 platforms. There might be multiple
-> instances of iommu drivers, none of which have the dev->iommu->fwspec
-> field populated.
-> 
-> Probe the right iommu_ops for device by iterating over all the global
-> drivers and call their probe function to find a match.
-> 
-> Fixes: 17de3f5fdd35 ("iommu: Retire bus ops")
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/iommu.c | 76 +++++++++++++++++++++++++++----------------
->  1 file changed, 48 insertions(+), 28 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 0af0b5544072..2cdb01e411fa 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -396,30 +396,69 @@ void dev_iommu_priv_set(struct device *dev, void *priv)
->  }
->  EXPORT_SYMBOL_GPL(dev_iommu_priv_set);
->  
-> +static struct iommu_device *
-> +__iommu_do_probe_device(struct device *dev, const struct iommu_ops *ops)
-> +{
-> +	struct iommu_device *iommu_dev;
-> +
-> +	if (!try_module_get(ops->owner))
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	iommu_dev = ops->probe_device(dev);
-> +	if (IS_ERR(iommu_dev))
-> +		module_put(ops->owner);
+> I think this actually changes the behavior and will cause regression as we
+> now install rmr  sids only for linear stream table not for SMMUv3 with 
+> 2-level stream table supported.
 
-This doesn't really do enough to protect against races, to do that
-fully we need to have iommu_device_unregister() do some better
-locking, and fix fwspec->ops lifecycle somehow.. Remember that module
-ref counts don't prevent iommu_device_unregister_bus() concurrency.
+Oh you are right, it should be in arm_smmu_init_strtab()
 
-So, it would be simpler to leave the try_module_get in the
-iommu_init_device(), just move it after the probe_device call.
-
-> +static struct iommu_device *iommu_probe_device_ops(struct device *dev)
-> +{
-> +	struct iommu_device *iter, *iommu_dev = ERR_PTR(-ENODEV);
-> +	struct iommu_fwspec *fwspec;
-> +
-> +	/*
-> +	 * For FDT-based systems and ACPI IORT/VIOT, drivers register IOMMU
-> +	 * instances with non-NULL fwnodes, and client devices should have been
-> +	 * identified with a fwspec by this point. Otherwise, we will iterate
-> +	 * over all the global drivers and call their probe function to find a
-> +	 * match.
-> +	 */
-> +	fwspec = dev_iommu_fwspec_get(dev);
-> +	if (fwspec && fwspec->ops)
-> +		return __iommu_do_probe_device(dev, fwspec->ops);
-> +
-> +	mutex_lock(&iommu_device_lock);
-> +	list_for_each_entry(iter, &iommu_device_list, list) {
-> +		iommu_dev = __iommu_do_probe_device(dev, iter->ops);
-> +		if (!IS_ERR(iommu_dev))
-> +			break;
-
-This does need to skip duplicate ops though (see my version), we don't
-want to call the same driver many times. And Kevin and Robin are
-right, since we recently removed a bunch of fwpsec checks from drivers
-the core code must now never call a fwspec expecting driver without a
-fwspec. (check for !iommu->fwnode)
-
-Otherwise this looks fine for me, thanks
-
+Thanks!
 Jason
