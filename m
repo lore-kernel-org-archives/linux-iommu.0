@@ -1,101 +1,96 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D20E4E1C5
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 07:25:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.88
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BE124EB22
+	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 07:43:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706513107; cv=none; b=FAVXkckluQYcfRokSjdq5zp6BKzuCtJ5AWiyIl8Isjdf86jEfK2BAKZmhVw/ypXFo5+gJp24wFiffkEL52BbHeYjfSpsuhafvjp8DAWHCi6EomP0Hs6gz/52gfulg6UEyEV9toBxGqT85Dl6a3p6xBFzf2bSsCWZK/Zs5jW89zM=
+	t=1706514215; cv=none; b=fg/DQGZlY0L638jqFT33Vome/7loDNQQnVxYbxB0hpyUOXzja4eKMmJcJrwh9MZrh5r4N0oqmQgN5JXKaFi4g7AVI24io1AsoPu9DE+zHntHMHARlPWmxYfvBgflp/pKq1KMOreOHZtzky36bHZdNXea+bPI2PYUtJzeHABsPYY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706513107; c=relaxed/simple;
-	bh=oYcxImTQq+1tjT/wwyYicNP+ut2AE6+9OGh0Vd1KEv4=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Nzyhfmi0n1bTZrM2egIX71QISo3YrusGdr/+YGmTgJLn6tFj1NUO4iDkhm2ti/9x2wd0clokUmae9nC3LJ3I8mcOOWlpekFYVwdnWtjptW4V0v3emvL6GYYn+z5qrzsNam1X+PdEZ+6wTXSbgF3EY6j7nyx165a7WWoOaaroqNc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mbYV9foc; arc=none smtp.client-ip=192.55.52.88
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1706514215; c=relaxed/simple;
+	bh=PfhvtgDD3AmzalLTRpYnRygPfaJzOhGOT0f1zwC+1+4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=NEMBh89N+k0WAd+XTPAEwQNMG9TIOD3ZVaFa346StkBR6t24XybaFVGVoMRI788U7S5UjZ4CLTkggfJ+aj1Z7jLCqBflo8WErrdl3eQbSdK8hDVCGV/jIOt6mKyCe3Nc6pNbkOkt87n1xmp7Mu8VD1Wzhhg4GiUzvP3pSs6KGvg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=396NALZi; arc=none smtp.client-ip=77.93.223.253
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mbYV9foc"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706513105; x=1738049105;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=oYcxImTQq+1tjT/wwyYicNP+ut2AE6+9OGh0Vd1KEv4=;
-  b=mbYV9foctAZHUYmBnvPpoGjCcR39ZtweXlKbaR95NKgz/2HS8JAB2LZZ
-   IfOI8uCD22UK1B/JOV6nfmt2ORtr91q8gJQ/us7gixDFwXxCzVwtO2kR3
-   1O19v0gJaQMtrQoY4y8E16gfnRz2QCo4TX5WLfNsrTUr2FDoyFs4+3tAi
-   G+lGdrwfEXYvCbtXs8viSpt4QK+SYlqGuvkGQljfbFd5GeF84SVq8Kgft
-   isPiMlcPvGJQMz1Vbh09ChbmHoCkambp50IqOwAB+gewTChn3YiBGCsAx
-   veUr3uO0ba0WoiZ1480pBki3kly5A4KClBT409nWKOHacEJpjevHzkko/
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10967"; a="434033274"
-X-IronPort-AV: E=Sophos;i="6.05,226,1701158400"; 
-   d="scan'208";a="434033274"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 23:24:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.05,226,1701158400"; 
-   d="scan'208";a="3288660"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.174.51]) ([10.249.174.51])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 23:24:42 -0800
-Message-ID: <abc6771f-fafe-4ca7-898a-aecbe017b3c7@linux.intel.com>
-Date: Mon, 29 Jan 2024 15:24:39 +0800
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="396NALZi"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 3D0DF198C58;
+	Mon, 29 Jan 2024 08:43:28 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1706514208; bh=PfhvtgDD3AmzalLTRpYnRygPfaJzOhGOT0f1zwC+1+4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=396NALZi9bz0Hc3HaCVtYWxpKsv86czZ2xXWoAOID5ZJIJZQRwyRZ3zTl0zDRv5WS
+	 Q8U4X0w4p739RKhe4B7YW4Et80YDlgYMJ3j4qEgawYI0mEA8m8pbN0vLR8hCyf5SHe
+	 xwbz8xnpuce/8Eax6iJFQCXMwVEkr9ATHNz3+GYeb4MV0DsijTUIUpZzFnxchYigsH
+	 SW4LVvP8CX2gaDw8m2Wc2P98H77hsRT5rmznZDlHED2HbgfZVq93q9ibl0UpymFNDV
+	 bfLTcucxEZ27l9nn5B6OPcSHwM8cU7obOm7Chd9SP0WMjo6z8cwSK3iIZBXRnlmuzY
+	 bSZF9Gm6w27zg==
+Date: Mon, 29 Jan 2024 08:43:26 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ kernel-team@android.com, iommu@lists.linux.dev, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
+ Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
+ <decui@microsoft.com>
+Subject: Re: [PATCH 2/2] swiotlb: Enforce page alignment in swiotlb_alloc()
+Message-ID: <20240129084326.4667af6a@meshulam.tesarici.cz>
+In-Reply-To: <20240129060853.GB19258@lst.de>
+References: <20240126151956.10014-1-will@kernel.org>
+	<20240126151956.10014-3-will@kernel.org>
+	<20240129060853.GB19258@lst.de>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Remove INTEL_IOMMU_BROKEN_GFX_WA
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- Christoph Hellwig <hch@infradead.org>
-References: <20240127064512.16744-1-baolu.lu@linux.intel.com>
- <Zbc_mdOYxMIxWAdd@infradead.org>
- <BN9PR11MB5276D63FAC442A415018ACB58C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276D63FAC442A415018ACB58C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 2024/1/29 14:08, Tian, Kevin wrote:
->> From: Christoph Hellwig <hch@infradead.org>
->> Sent: Monday, January 29, 2024 2:03 PM
->>
->> On Sat, Jan 27, 2024 at 02:45:12PM +0800, Lu Baolu wrote:
->>> Commit 62edf5dc4a524 ("intel-iommu: Restore DMAR_BROKEN_GFX_WA
->> option for
->>> broken graphics drivers") was introduced 24 years ago as a temporary
->>> workaround for graphics drivers that used physical addresses for DMA and
->>> avoided DMA APIs. This workaround was disabled by default.
->>>
->>> As 24 years have passed, it is expected that graphics driver developers
->>> have migrated their drivers to use kernel DMA APIs. Therefore, this
->>> workaround is no longer required and could been removed.
->>
->> How about you Cc the intel graphics maintainers and get a confirmation?
->>
-> 
-> in the worst case there is still "igfx_off" option available to achieve the
-> same effect.
-> 
-> there is really no good reason to keep this config option so long while it
-> was intended to be removed in 2.6.32.
-> 
-> but yes the Intel graphics maintainers should be CCed.
-> 
+On Mon, 29 Jan 2024 07:08:53 +0100
+Christoph Hellwig <hch@lst.de> wrote:
 
-You both are right.
+> On Fri, Jan 26, 2024 at 03:19:56PM +0000, Will Deacon wrote:
+> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> > index 25febb9e670c..92433ea9f2d2 100644
+> > --- a/kernel/dma/swiotlb.c
+> > +++ b/kernel/dma/swiotlb.c
+> > @@ -1647,6 +1647,12 @@ struct page *swiotlb_alloc(struct device *dev, size_t size)
+> >  		return NULL;
+> >  
+> >  	tlb_addr = slot_addr(pool->start, index);
+> > +	if (!PAGE_ALIGNED(tlb_addr)) {
+> > +		dev_WARN_ONCE(dev, 1, "Cannot return 'struct page *' for non page-aligned swiotlb addr 0x%pa.\n",
+> > +			      &tlb_addr);
+> > +		swiotlb_release_slots(dev, tlb_addr);
+> > +		return NULL;
+> > +	}
+> >  
+> >  	return pfn_to_page(PFN_DOWN(tlb_addr));  
+> 
+> So PFN_DOWN aligns the address and thus per se converting the unaligned
+> address isn't a problem.  That being said swiotlb obviously should never
+> allocate unaligned addresses, but the placement of this check feels
+> odd to me.  Also because it only catches swiotlb_alloc and not the
+> map side.
 
-I will add above in the commit message and Cc graphic guys with a new
-upgraded version.
+We may have to rethink how alignment constraints are interpreted. See
+also my reply to PATCH 1/2.
 
-Best regards,
-baolu
+> Maybe just throw a WARN_ON_ONCE into slot_addr() ?
+
+Yes.
+
+Or, what if I write a KUnit test suite for swiotlb to combat this
+constant stream of various regressions?
+
+Petr T
