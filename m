@@ -1,241 +1,155 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C92FE153504
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 14:37:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706539033; cv=fail; b=qTr9/GLGO5iJlefAPPmMECH4b4xfrX79suIqGkz2kfGtXVQThRujUyeyk+j6MXanVJw0jogExmBaqg8E/XmaBpjMje7itqCgoyZto5CUkmPn48zXoNa8cMLGLKpdcmTNGb5n5Ay1B2u3MFcum7pvzOlBxjxl0X4uxawRUFQ7MF0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706539033; c=relaxed/simple;
-	bh=zyyHSHJg+bH6MvfX6fOJ9jk32YgQWRG3/wxgH7kViyw=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=eQvYvlhyidETBzs5qYNYGmAc7mQHFf67a5NnkylwtKecmAJdLu3hVDJWmE+urjuRppSf6Mvyi0v7pRN/PpRa0nbgfs7TzBpWaOaUXqWwtE6bGVDSdD5O1idCr7jxKGaI7ORJuQ/CGoQsMBubAwkM8ki2j2BjmD8h7djOMb5EwBc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZsBvMid/; arc=fail smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8238A152DE4
+	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 14:49:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.115
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706539745; cv=none; b=WCaXSJGZ7MwN8MmS+VC8rf8qROrv8zQaDOqvDSTM/jonSppwFZX1NDNmXggxtli4jhagROI/cD6r27teTzW7NPwma+BLb2HhpTkv3lTzVfprLcrW7eAzemb5vV4FhpkwERLD/8ru9TwSZpRw80jqLjBdG5gP4wZZyJuIhXaZkxc=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706539745; c=relaxed/simple;
+	bh=B+Q7J9j4jl1343Xufi5xIgruTezV/90wo8FCib5ZR9U=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=P6aq+1/OQ9IZdVgPGvyBL6h5fWX08HU7OpCHmD5PsGNHwWZ8TkTQPuA3QcGT9hJ7Y7z47FFx7FJrH9cMXE/kRCcaRqPKNzUDjqalL35iNXv+QQuvkd8J4dUpdQxF+4/IHsLd2YYzj3LgBzQBYE2LP3TH1pzCLdvQzcqVdckiqSY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NARfMgzI; arc=none smtp.client-ip=192.55.52.115
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZsBvMid/"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NARfMgzI"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706539031; x=1738075031;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=zyyHSHJg+bH6MvfX6fOJ9jk32YgQWRG3/wxgH7kViyw=;
-  b=ZsBvMid/uSaYLCap9AV5R0LyniWTlzPbK8FakN8IjvGuctvjHMx5e7Ul
-   F2tGM2rYgq3IMvM/7fk6XVQ1Zu7DzeDUjDaXf8+0ueKsT0ST9QEAexyzu
-   Qo75dUwz2E7euF6Aez7cAmvizZb7NmrcfFi+qb42H3kSECXga+tDFUVH/
-   ibXsPLG2OXFktXEhaTFnkyvOhbCoLWN4n8/98Y7KdwPrvx8yxjGfLeeRQ
-   9WIZrsrAzkoBHqMV1YCDt+OQf2gdK/+CHIIf6I2Orcgg4SrUQ4miLIUXS
-   5eBw4w9YEbago5tkkBn1KDO1fPJXMjGaWmbDZxdI9m/NQ/aoLPXv0sVGJ
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="2828667"
+  t=1706539743; x=1738075743;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=B+Q7J9j4jl1343Xufi5xIgruTezV/90wo8FCib5ZR9U=;
+  b=NARfMgzI18WTFMR551Rxnos7Bp5cFdzf/QnyUxiCCmpnc4okQPWIMLFZ
+   pjb1vHE7Gt/fl/i6wgkspX1G3bGdEkoPGEbhU/fmgaaVZ436PMrsrgKYn
+   gXsW5cBZRasot6oGuREfX0hNjlFGw2Br12BFx5u46NfXUv5jhGaBczCDE
+   rTOijaXPCFk9HKtK99r5mGBjLrjCTe7Z7sKgu3ISRXf9JIRkvm3iYW24k
+   1Kn7PBFuSqV/pZR+Eu3bsdoOcrb/bAeV6SRLzBXkFaKF38gwRLMEbYx/o
+   ZDnenzYfnAYGacaQjcq06Dm/so7r/1ve6ip0LDDPHd6CabP8BBIq5ll6x
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="402609504"
 X-IronPort-AV: E=Sophos;i="6.05,227,1701158400"; 
-   d="scan'208";a="2828667"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 06:37:10 -0800
+   d="scan'208";a="402609504"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 06:49:02 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="821868502"
+X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="960907268"
 X-IronPort-AV: E=Sophos;i="6.05,227,1701158400"; 
-   d="scan'208";a="821868502"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga001.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 29 Jan 2024 06:37:10 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 29 Jan 2024 06:37:09 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 29 Jan 2024 06:37:09 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Mon, 29 Jan 2024 06:37:09 -0800
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.41) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Mon, 29 Jan 2024 06:37:08 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P51YS3iBN6nDzcUn6/1UzH9UnS9CshfoSysxggEf0GN7T7xU12y5C+SjQG3M/m3J6LalE/RRwioSlUdxMVSKgvW/GcG730IDJnO+aH/iga6Q0w0jO8MhGLGCuzJ/kT9CVKemkzXJS3nwWZjGcGUX3PyBp5YkShNheWuqHAPORfwxRW7GoxDPmHii/4Qxpvx4e7vpP6A0pj51UP0ysqFavqLgCKROr3eT+joYfUzntHjcyM8wG33H+3k72QhrTQUg3XTFyTCebHzFv0fhUV78K77P724TSKpHvH6c75vmWPSHx4VxKDbapbFDsULDsKKYVssBFGgc+mLct8DLqJhyPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MKMFAGvmU3dGWTbFviwvOIbT/kHZu5d5W5wnQSnaJCA=;
- b=Kdtq/gJZzJSMNCi//bxB6pKUZAF1elTpgmtHCKpuQsvLoXXd70GBnpM+RW98RPSRuNbQVcv1gYh4lTHjWCqeSN97igRFgSOK1q9843CzR2PEhfjC1d52foC0xgfrApbtkrD4TqJup4JmZjp16xvmowEJyBr1Ok2Lz2d5YYIsKF08R3uTMcXF74NtsqFuEzHiw8jHNwdUJDjCxMYlLNZuynRhojm1v/gKS4sHc80tlnytCK56JtLcd3xqEpMCeMivWejJdE7/QvL8GaNfYwEDIQcwQohHM6I4zdDRqSveQ+jRmveSrGoZyC9LEm9UQMUP92BO1Zl2LfmSvgqcQhD03A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB8718.namprd11.prod.outlook.com (2603:10b6:8:1b9::20)
- by PH0PR11MB5144.namprd11.prod.outlook.com (2603:10b6:510:3e::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.34; Mon, 29 Jan
- 2024 14:37:07 +0000
-Received: from DS0PR11MB8718.namprd11.prod.outlook.com
- ([fe80::8760:b5ec:92af:7769]) by DS0PR11MB8718.namprd11.prod.outlook.com
- ([fe80::8760:b5ec:92af:7769%6]) with mapi id 15.20.7228.029; Mon, 29 Jan 2024
- 14:37:07 +0000
-Message-ID: <6059bf0c-cfe6-41dd-8672-584c9c13b902@intel.com>
-Date: Mon, 29 Jan 2024 15:36:35 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next 2/7] dma: avoid expensive redundant calls for
- sync operations
-Content-Language: en-US
-To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>, Robin Murphy
-	<robin.murphy@arm.com>
-CC: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
- J. Wysocki" <rafael@kernel.org>, Magnus Karlsson <magnus.karlsson@intel.com>,
-	Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Alexander Duyck
-	<alexanderduyck@fb.com>, <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-References: <20240126135456.704351-1-aleksander.lobakin@intel.com>
- <20240126135456.704351-3-aleksander.lobakin@intel.com>
- <0f6f550c-3eee-46dc-8c42-baceaa237610@arm.com>
- <7ff3cf5d-b3ff-4b52-9031-30a1cb71c0c9@intel.com>
- <0cf72c00-21d9-4f1a-be14-80336da5dff4@arm.com>
- <20240126194819.147cb4e2@meshulam.tesarici.cz>
-From: Alexander Lobakin <aleksander.lobakin@intel.com>
-In-Reply-To: <20240126194819.147cb4e2@meshulam.tesarici.cz>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0364.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:f8::12) To DS0PR11MB8718.namprd11.prod.outlook.com
- (2603:10b6:8:1b9::20)
+   d="scan'208";a="960907268"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.174.51]) ([10.249.174.51])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 06:48:58 -0800
+Message-ID: <46e0c704-cc77-4d23-9503-0d6d5d07bb26@linux.intel.com>
+Date: Mon, 29 Jan 2024 22:48:56 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB8718:EE_|PH0PR11MB5144:EE_
-X-MS-Office365-Filtering-Correlation-Id: 06c893fd-9be4-4918-13f0-08dc20d7c491
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1UOv1NQCPU0ny6SWr436/oH0ZhhN3u+BnMAeyn3cH+xADUpJsWGMUJ8iwItZMdUqd+utBBzakQCwHYQUtRs5YOPy67f2WYvF9awlKcdz2F28kBFV8WNYRNIsS+AKwFNk91iplpXOaDYpi4FVlFc8p9dmylj63uAXnct/SEbJHtm1JWABxKkhQF1JiFQFVwCj2g6jaxEuC43+au0xuEV+hLnUTJxcLx7QNXUYc4DSTLv1Yf23A6oguj21UHSVEwkxyOZYCN0feJ0OANLH2MvileGPGQfvwHY1cNy863E1rXK+mIsyjDHmoTvXOtm03UdRPR6zMypZZ4xIrSY3qvbYNKRxkDWVYGkd42xhI1rjReB4iGTTbpBj9QzxN+1iMEMq1XsDmHvbaUNNtytmEgyfKwoKE05VI0fwGQLOjPSjZ3W743scVM68kI5ZAThvONbGj1qX5lpDexEuKpJ1avxTb9viHEJ19EjmEpRwPkl1W7dwaLqTZOt+xTxrgqAE/2vJPN34/Jb6s/6HlwrQNqW7n3Wz1jez1CrUsajYE/jWEWqRgIg7M3Wph2OZVlE1o8Z9Vc7S+An3OBGuAQV8RAA3hPQ5rmNokG2Pjw71+v95HOz7jvE3cv15gSA3Fn32Zvm819n9Pm/uHFGBe7rir8wYKg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB8718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(39860400002)(396003)(346002)(376002)(136003)(230922051799003)(186009)(64100799003)(451199024)(1800799012)(82960400001)(31696002)(86362001)(41300700001)(36756003)(38100700002)(478600001)(6486002)(8936002)(8676002)(316002)(4326008)(54906003)(110136005)(66556008)(66476007)(26005)(66946007)(7416002)(2906002)(6506007)(53546011)(2616005)(6666004)(5660300002)(6512007)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SHdVbjVHMGFVaGpYM2ZKSGdjQkp4YklHaHp2ajJLeVlld0piZmFGcGsya1Av?=
- =?utf-8?B?VGRoTUhvMThLSWlMR2t4TmhIOHQrcDZEeWRMZ21YQmFRcFMrc3V2QUVYVE1u?=
- =?utf-8?B?c2xUaXJQSDNCOGlXbnBFNzIyUytsdkZ1RWx5Zkdob25Gc1NpWUMrU01RWnBt?=
- =?utf-8?B?QWpqQ0k3TWF2aWx4b0RZYWRnTEFWS0o0VFRvekZwakZaZUNNNUdBOXd2Q2M2?=
- =?utf-8?B?ck5NMkNjWm1OOCtxOUZ4NTlpeENPeUQ1ZEQwMnVxYjREMU9JUmVHU25QRmlK?=
- =?utf-8?B?TFhkaTFSNEdzUXZNZE1OT2VUUWJxVW8yOWpJalVGRmYwL29abzRQRWRHUTll?=
- =?utf-8?B?MjR5WnlvTDNwTHhrMktVN0J4NkhKQ0xScXd2ZVlLNWlRWi9HTzN5M29oRlVB?=
- =?utf-8?B?aVh5L3BuTVpMejhqaENsTHBKVXBXUjhyUytaMVdueS90eXc4U2NYTjYvMEVN?=
- =?utf-8?B?b2s0eEJJQlpIUklCbk1xeTA5QXJSck1ISlYyenhkV1JGRGs0VU40d3BWYlRu?=
- =?utf-8?B?Wmx1dlY2QzZiUW85bXF2a3NFVk1aQU43cTZTRHg3d0U0N1NuT3VLZTBxM2tB?=
- =?utf-8?B?bnRlaXFiYWJHMXJZV1ZoU252V2p5YzA1SzNRVTI1RWxiYjk1U1M3Q1I3eHYw?=
- =?utf-8?B?TThrcFJ5ejh2alFralc5c2VuV3ZSTTNERWRvUWNkZWhsM1ZCeTNIcFpvalg2?=
- =?utf-8?B?RlNDSlQ0QzJNOWxrNDdVR3EwZlhMT1AvS3J5S2NuUVNBaFROeEVzNE5KOEdv?=
- =?utf-8?B?TlNyVWUvOFhuU3Z3V0liQ1dBZ1k5Ti9ORk9OckFFSW9lZythdEV2N3NReWI5?=
- =?utf-8?B?SFIzUnZVdlhHTGN3WG9tU2lwS3YwWUltbHpyTWVsOGNqclNXbTkxYUUwc3dv?=
- =?utf-8?B?czlRQ1lPa1puSGpJNlpZWit0STViYjVmaFNVOWQ1NSthQjExTHQxbVJ5dk1M?=
- =?utf-8?B?clZobGJlbjhEYnpjRXgyN05PZFNXUFZodXRZMW1ETlozdkJaYmg4SDZrd05L?=
- =?utf-8?B?L21vTXdXNFVlNkhMdmZvT0dZcjBtYnRlZGZMaFA4cTRrRzBqYnVwT0psWHRl?=
- =?utf-8?B?SWlNQVR3akQ1TGo4K0UxakJYRmREYXVoWVNoeEQvMnl5VFRKZUFFSHpyNStp?=
- =?utf-8?B?THQwcjdUUUoreWtEZ244WGRVU3VXOUF4UldKL0gzdCtjV0hkVk5oRlVvS1V5?=
- =?utf-8?B?LzRURU1VNTJnMjFXUytxVGlycVVGUTlJVmJVaFcyb2lNVUdNVktmclJaQkRj?=
- =?utf-8?B?a2IzRVo0dWVuQXI1SmU5YkFvaVFqSHRYbHp2U29qNjBNaWJGYXkxT281RlhJ?=
- =?utf-8?B?TFZUeUVBZE56VXBwZSthRlY5NVR5bmRSTm1ZK1hLNHE2MmY0TjhVWml0ZXNr?=
- =?utf-8?B?NDVSWXJuYjZSQ2kvZEtOM3FjR3ErVFUyN21STmwxRHJnay9GTDF5UVZPWURM?=
- =?utf-8?B?ZlVPdEFCOERGUDh1QXFJcy81OCswd1BWZlNYMnduNmpEbGJPK1VUTHljbjQ1?=
- =?utf-8?B?bnRLQnFGVjBOOUtWemdJWWxpbkhtaTdlRUVPOHV1V1g1dTliV3AzSEl3bVRM?=
- =?utf-8?B?WUJvcW8wTEhzcmIrc1BIL2ZpYUtHV00zb2N3ckJhUWQ1MER6WEZOellTTXhx?=
- =?utf-8?B?NHNnZXV5Mi9ZaGZFcGpRcUVLb2FoWEpaVVkwRllLSXF0dSs1UEF1aXhKKzhP?=
- =?utf-8?B?cHBJMGpQZXlrYnMvYWJ4WkRJY2pMSW8vMVgrZm9PaHlhcDRYdjhWanlXM0U3?=
- =?utf-8?B?WnE0VnZNWWF3VGYwMElnL2dmZWtYWXJDOHhwMHFDT1FiMmtqSVlZMXI5VE1z?=
- =?utf-8?B?VXBleDBOeTlZdHJEUDhDdm9SN09QSTR5QlBTT0d2akZFSDB6WHRXNTdwcDly?=
- =?utf-8?B?WlpuVnRCREZiWjUrY01WZjJidS8xbVFpNlQ2Y3lDWW5BOU53TUd4OXViQXR5?=
- =?utf-8?B?WFpjLyttTUFBRnB2d1IwRGdOMFZnelhkV2pjOFIxcXBaYkw3VU5NdUErQ1ZQ?=
- =?utf-8?B?eEtwSWF6SVpYRU4rM0hrT0lwaERsdDNBT1gzaTFTWGNyd2tJMjJDTlpjbFUz?=
- =?utf-8?B?ckRVY2xncFBiSnR0bzI1R0NxSjVpVVBEVXpKOUo3V1BTVi9Yb01UdU9WZDV0?=
- =?utf-8?B?aDNRMHdOMDUvWVJsZXVXZFNleUxWVzBmTkJxNU12RUR5UWRyK0VSa1hLTFBR?=
- =?utf-8?B?YkE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 06c893fd-9be4-4918-13f0-08dc20d7c491
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB8718.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jan 2024 14:37:06.9712
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gvhUxPaZqiQKYXf9hXoSK3iBJ37we4vXjScmuVuLy5Q7pHcjfpX4Vbw/Qyn/OosM5CX26QRnIkMHD1FPJM2HT2/PiEFX+OfKLZwJCpNt1Nk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR11MB5144
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "dwmw2@infradead.org" <dwmw2@infradead.org>,
+ "will@kernel.org" <will@kernel.org>, "lukas@wunner.de" <lukas@wunner.de>,
+ "Liu, Yi L" <yi.l.liu@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH v12 5/5] iommu/vt-d: improve ITE fault handling if target
+ device isn't present
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+ Ethan Zhao <haifeng.zhao@linux.intel.com>,
+ "bhelgaas@google.com" <bhelgaas@google.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>
+References: <20240129034924.817005-1-haifeng.zhao@linux.intel.com>
+ <20240129034924.817005-6-haifeng.zhao@linux.intel.com>
+ <BN9PR11MB52761CC3E5F08D4B7BAD7F918C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52761CC3E5F08D4B7BAD7F918C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Petr Tesařík <petr@tesarici.cz>
-Date: Fri, 26 Jan 2024 19:48:19 +0100
-
-> On Fri, 26 Jan 2024 17:21:24 +0000
-> Robin Murphy <robin.murphy@arm.com> wrote:
-> 
->> On 26/01/2024 4:45 pm, Alexander Lobakin wrote:
->>> From: Robin Murphy <robin.murphy@arm.com>
->>> Date: Fri, 26 Jan 2024 15:48:54 +0000
->>>   
->>>> On 26/01/2024 1:54 pm, Alexander Lobakin wrote:  
->>>>> From: Eric Dumazet <edumazet@google.com>
->>>>>
->>>>> Quite often, NIC devices do not need dma_sync operations on x86_64
->>>>> at least.
->>>>> Indeed, when dev_is_dma_coherent(dev) is true and
->>>>> dev_use_swiotlb(dev) is false, iommu_dma_sync_single_for_cpu()
->>>>> and friends do nothing.
->>>>>
->>>>> However, indirectly calling them when CONFIG_RETPOLINE=y consumes about
->>>>> 10% of cycles on a cpu receiving packets from softirq at ~100Gbit rate.
->>>>> Even if/when CONFIG_RETPOLINE is not set, there is a cost of about 3%.
->>>>>
->>>>> Add dev->skip_dma_sync boolean which is set during the device
->>>>> initialization depending on the setup: dev_is_dma_coherent() for direct
->>>>> DMA, !(sync_single_for_device || sync_single_for_cpu) or positive result
->>>>> from the new callback, dma_map_ops::can_skip_sync for non-NULL DMA ops.
->>>>> Then later, if/when swiotlb is used for the first time, the flag
->>>>> is turned off, from swiotlb_tbl_map_single().  
->>>>
->>>> I think you could probably just promote the dma_uses_io_tlb flag from
->>>> SWIOTLB_DYNAMIC to a general SWIOTLB thing to serve this purpose now.  
->>>
->>> Nice catch!
->>>   
->>>>
->>>> Similarly I don't think a new op is necessary now that we have
->>>> dma_map_ops.flags. A simple static flag to indicate that sync may be> skipped under the same conditions as implied for dma-direct - i.e.
->>>> dev_is_dma_coherent(dev) && !dev->dma_use_io_tlb - seems like it ought
->>>> to suffice.  
->>>
->>> In my initial implementation, I used a new dma_map_ops flag, but then I
->>> realized different DMA ops may require or not require syncing under
->>> different conditions, not only dev_is_dma_coherent().
->>> Or am I wrong and they would always be the same?  
+On 2024/1/29 17:06, Tian, Kevin wrote:
+>> From: Ethan Zhao<haifeng.zhao@linux.intel.com>
+>> Sent: Monday, January 29, 2024 11:49 AM
 >>
->> I think it's safe to assume that, as with P2P support, this will only 
->> matter for dma-direct and iommu-dma for the foreseeable future, and 
->> those do currently share the same conditions as above. Thus we may as 
->> well keep things simple for now, and if anything ever does have cause to 
->> change, it can be the future's problem to keep this mechanism working as 
->> intended.
+>> Because surprise removal could happen anytime, e.g. user could request safe
+>> removal to EP(endpoint device) via sysfs and brings its link down to do
+>> surprise removal cocurrently. such aggressive cases would cause ATS
+>> invalidation request issued to non-existence target device, then deadly
+>> loop to retry that request after ITE fault triggered in interrupt context.
+>> this patch aims to optimize the ITE handling by checking the target device
+>> presence state to avoid retrying the timeout request blindly, thus avoid
+>> hard lockup or system hang.
+>>
+>> Signed-off-by: Ethan Zhao<haifeng.zhao@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/dmar.c | 18 ++++++++++++++++++
+>>   1 file changed, 18 insertions(+)
+>>
+>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+>> index 814134e9aa5a..2e214b43725c 100644
+>> --- a/drivers/iommu/intel/dmar.c
+>> +++ b/drivers/iommu/intel/dmar.c
+>> @@ -1272,6 +1272,7 @@ static int qi_check_fault(struct intel_iommu
+>> *iommu, int index, int wait_index,
+>>   {
+>>   	u32 fault;
+>>   	int head, tail;
+>> +	u64 iqe_err, ite_sid;
+>>   	struct q_inval *qi = iommu->qi;
+>>   	int shift = qi_shift(iommu);
+>>
+>> @@ -1316,6 +1317,13 @@ static int qi_check_fault(struct intel_iommu
+>> *iommu, int index, int wait_index,
+>>   		tail = readl(iommu->reg + DMAR_IQT_REG);
+>>   		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
+>>
+>> +		/*
+>> +		 * SID field is valid only when the ITE field is Set in FSTS_REG
+>> +		 * see Intel VT-d spec r4.1, section 11.4.9.9
+>> +		 */
+>> +		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
+>> +		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
+>> +
+>>   		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
+>>   		pr_info("Invalidation Time-out Error (ITE) cleared\n");
+>>
+>> @@ -1325,6 +1333,16 @@ static int qi_check_fault(struct intel_iommu
+>> *iommu, int index, int wait_index,
+>>   			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
+>>   		} while (head != tail);
+>>
+>> +		/*
+>> +		 * If got ITE, we need to check if the sid of ITE is the same as
+>> +		 * current ATS invalidation target device, if yes, don't try this
+>> +		 * request anymore if the target device isn't present.
+>> +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
+>> +		 */
+>> +		if (pdev && ite_sid && !pci_device_is_present(pdev) &&
+>> +			ite_sid == pci_dev_id(pci_physfn(pdev)))
+>> +			return -ETIMEDOUT;
+>> +
+> since the hardware already reports source id leading to timeout, can't we
+> just find the pci_dev according to reported ite_sid? this is a slow path (either
+> due to device in bad state or removed) hence it's not necessary to add more
+> intelligence to pass the pci_dev in, leading to only a partial fix can be backported.
 > 
-> Can we have a comment that states this assumption along with the flag?
-> Because when it breaks, it will keep someone cursing for days why DMA
-> sometimes fails on their device before they find out it's not synced.
+> It's also more future-proof, say if one day the driver allows batching invalidation
+> requests for multiple devices then no need to pass in a list of devices.
 
-BTW, dma_skip_sync is set right before driver->probe(), so that if any
-problematic device appears, it could easily be fixed by adding one line
-to its probe callback.
+I have ever thought about this solution and gave up in the end due to
+the locking issue.
 
-> And then wondering why the code makes such silly assumptions...
-> 
-> My two cents
-> Petr T
+A batch of qi requests must be handled in the spin lock critical region
+to enforce that only one batch of requests is submitted at a time.
+Searching pci_dev in this locking region might result in nested locking
+issues, and I haven't found a good solution for this yet.
 
-Thanks,
-Olek
+Unless someone can bring up a better solution, perhaps we have to live
+in a world where only single device TLB invalidation request in a batch
+could be submitted to the queue.
+
+Best regards,
+baolu
