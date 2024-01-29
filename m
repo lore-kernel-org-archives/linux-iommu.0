@@ -1,89 +1,122 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1C60B5FB89
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 11:24:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C352660253
+	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 12:05:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.167.242.64
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706527456; cv=none; b=ZtbqNKoDG9Dfsq9hsq4F2FIotBKY2DVESnvqqRqVyvSiNU8+wffxtwmur+Jxde+AAMWHXxhCrNBi0jlvyf5QsfEpZv/A0li0G2UgiWnQdT7bEWh0j57/spa9Z8GCunOaPg8+fT17PWK+BKPaLR6DD9DrNXlHQVGs9J7ZPDkQhnc=
+	t=1706529930; cv=none; b=KPZA4i7VIcLgeSwBILfbb1HEfHH5vZsGH8NswbkoijXURgpoXaiWekcy3/PlBp2JKU5xuHG3vlT/4/Mfq0EgZIBb5T8D/zCK8ntxHyCHphg38XraRzZ93WNmSw0CMVgvw2e9Xm2wehdKPe5CmOno80R6yxwXZMGWfeAdiJGwkgU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706527456; c=relaxed/simple;
-	bh=WH7PYjaSBNnuD+pJLor2J13V+w5N5SZnUqFkJocu1Hk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HtWQpW3v98H+YG+A9fUiK7YM3pGUFWYfv9uXsX+xvopdJNuQYKYuzPCuPYd0meMd+fctO+tCafiYQY+j3HbsnizCk/B9B4w9wRsB4J/mOaSq2Et4jIFT+CwIDG739xLUjibHZi2KGj6EktsTeVDEYfSlPqhx7VdzgYSGkK216r8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 478D91FB;
-	Mon, 29 Jan 2024 03:24:58 -0800 (PST)
-Received: from [10.57.77.253] (unknown [10.57.77.253])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3DAF23F7D8;
-	Mon, 29 Jan 2024 03:24:13 -0800 (PST)
-Message-ID: <e8b8f470-f7f9-4238-a473-a6ed764353a4@arm.com>
-Date: Mon, 29 Jan 2024 11:24:10 +0000
+	s=arc-20240116; t=1706529930; c=relaxed/simple;
+	bh=fe7fWuR8CZcckqpXBcvwxnGl25xTfb4ZA+w7PhvWzjU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Xk0bn3dqnNRy2eFmQ8gANyHCJPsDMP/W2T6l5d6rBupbg9GorwvLMbBgG4oxPGlbzkENF5maBGV+Tgjr8Kq9LulfMBUtzj05SgCsAmCVGoL0J3uRfUY1QZ5DhqNqt6TYm0zsmcVWr8N6blIs2ZAQ2cXvrB8DwS1JMobAO3TjiXE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com; spf=pass smtp.mailfrom=ideasonboard.com; dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b=i35PccJE; arc=none smtp.client-ip=213.167.242.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ideasonboard.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=ideasonboard.com header.i=@ideasonboard.com header.b="i35PccJE"
+Received: from pendragon.ideasonboard.com (117.145-247-81.adsl-dyn.isp.belgacom.be [81.247.145.117])
+	by perceval.ideasonboard.com (Postfix) with ESMTPSA id 538A11803;
+	Mon, 29 Jan 2024 13:04:02 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+	s=mail; t=1706529842;
+	bh=fe7fWuR8CZcckqpXBcvwxnGl25xTfb4ZA+w7PhvWzjU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=i35PccJEFHeXR9FJe6HRoq2FHZwexbE7G4k7+MMsEuYkoU8tY9U8nVmesgF5JN0SM
+	 9qy+y6rUK4z1lXbif+37pJUtUzTjWHmEINuCbXd9q6Xm0AwN+ajVE2Amf9lPmCoDEw
+	 xB9rPr2BRV8mAGyM7zACIZ31L87PqjmSzCMaf2Lk=
+Date: Mon, 29 Jan 2024 14:05:20 +0200
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To: Maxime Ripard <mripard@redhat.com>
+Cc: Lucas Stach <dev@lynxeye.de>, Milan Zamazal <mzamazal@redhat.com>,
+	Christoph Hellwig <hch@lst.de>, iommu@lists.linux.dev,
+	Will Deacon <will@kernel.org>, catalin.marinas@arm.com,
+	Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+	Andrey Konovalov <andrey.konovalov.ynk@gmail.com>,
+	Pavel Machek <pavel@ucw.cz>, kieran.bingham@ideasonboard.com,
+	Hans de Goede <hdegoede@redhat.com>
+Subject: Re: Re: Uncached buffers from CMA DMA heap on some Arm devices?
+Message-ID: <20240129120520.GA8131@pendragon.ideasonboard.com>
+References: <87bk9ahex7.fsf@redhat.com>
+ <d2ff8df896d8a167e9abf447ae184ce2f5823852.camel@lynxeye.de>
+ <rhfec3v57xeoliukqxaives3uerb6phbxphgcua6mvxkdnzrzr@xm5zvoevxf4v>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] iommu/vt-d: Remove INTEL_IOMMU_BROKEN_GFX_WA
-Content-Language: en-GB
-To: Baolu Lu <baolu.lu@linux.intel.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Christoph Hellwig <hch@infradead.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20240127064512.16744-1-baolu.lu@linux.intel.com>
- <Zbc_mdOYxMIxWAdd@infradead.org>
- <BN9PR11MB5276D63FAC442A415018ACB58C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <abc6771f-fafe-4ca7-898a-aecbe017b3c7@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <abc6771f-fafe-4ca7-898a-aecbe017b3c7@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <rhfec3v57xeoliukqxaives3uerb6phbxphgcua6mvxkdnzrzr@xm5zvoevxf4v>
 
-On 2024-01-29 7:24 am, Baolu Lu wrote:
-> On 2024/1/29 14:08, Tian, Kevin wrote:
->>> From: Christoph Hellwig <hch@infradead.org>
->>> Sent: Monday, January 29, 2024 2:03 PM
->>>
->>> On Sat, Jan 27, 2024 at 02:45:12PM +0800, Lu Baolu wrote:
->>>> Commit 62edf5dc4a524 ("intel-iommu: Restore DMAR_BROKEN_GFX_WA
->>> option for
->>>> broken graphics drivers") was introduced 24 years ago as a temporary
->>>> workaround for graphics drivers that used physical addresses for DMA 
->>>> and
->>>> avoided DMA APIs. This workaround was disabled by default.
->>>>
->>>> As 24 years have passed, it is expected that graphics driver developers
->>>> have migrated their drivers to use kernel DMA APIs. Therefore, this
->>>> workaround is no longer required and could been removed.
->>>
->>> How about you Cc the intel graphics maintainers and get a confirmation?
->>>
->>
->> in the worst case there is still "igfx_off" option available to 
->> achieve the
->> same effect.
->>
->> there is really no good reason to keep this config option so long 
->> while it
->> was intended to be removed in 2.6.32.
->>
->> but yes the Intel graphics maintainers should be CCed.
->>
+Hi Maxime,
+
+On Fri, Jan 26, 2024 at 01:17:50PM +0100, Maxime Ripard wrote:
+> On Thu, Jan 25, 2024 at 12:41:01PM +0100, Lucas Stach wrote:
+> > Am Mittwoch, dem 24.01.2024 um 19:27 +0100 schrieb Milan Zamazal:
+> > > Hello,
+> > > 
+> > > in the libcamera project, we experience a major performance problem related to
+> > > DMA buffers while working on camera image processing using CPU.  This happens
+> > > only with some Arm boards, we have observed it on Debix Model A (NXP i.MX 8M
+> > > Plus) and PinePhone.  We use /dev/dma_heap/linux,cma (or reserved) DMA buffer
+> > > heap on Arm.
+> > > 
+> > > Reading V4L2 camera data from buffers is very slow.  When we memcpy the data
+> > > from the buffer to a malloc'ed memory before working with it (reading each byte
+> > > multiple times, without any big non-sequential jumps across the data), we get
+> > > more than 10 times speed up.  It looks like the input buffer is uncached.
+> > > 
+> > That's right and a reality you have to deal with on those small ARM
+> > systems. The ARM architecture allows for systems that don't enforce
+> > hardware coherency across the whole SoC and many of the small/cheap SoC
+> > variants make use of this architectural feature.
+> > 
+> > What this means is that the CPU caches aren't coherent when it comes to
+> > DMA from other masters like the video capture units. There are two ways
+> > to enforce DMA coherency on such systems:
+> > 1. map the DMA buffers uncached on the CPU
+> > 2. require explicit cache maintenance when touching DMA buffers with
+> > the CPU
+> > 
+> > Option 1 is what you see is happening in your setup, as it is simple,
+> > straight-forward and doesn't require any synchronization points.
+> > 
+> > Option 2 could be implemented by allocating cached DMA buffers in the
+> > V4L2 device and then executing the necessary cache synchronization in
+> > qbuf/dqbuf when ownership of the DMA buffer changes between CPU and DMA
+> > master. However this isn't guaranteed to be any faster, as the cache
+> > synchronization itself is a pretty heavy-weight operation when you are
+> > dealing with buffer that are potentially multi-megabytes in size.
 > 
-> You both are right.
-> 
-> I will add above in the commit message and Cc graphic guys with a new
-> upgraded version.
+> My understanding was that the CMA DMA Heap is already allocating
+> cacheable buffers,
 
-Right, you're not removing the actual workaround at all, you're only 
-removing the Kconfig option to force it on by default, which clearly 
-nobody is using since it's been dead code since 2009 with 0c02a20ff769 
-("intel-iommu: Kill DMAR_BROKEN_GFX_WA option.")
+I'll be a bit pedantic here. As far as I understand, the CMA heap
+doesn't allocate "cacheable" buffers. It allocates pages, and they are
+not inherently cached or uncached. Whether a page is mapped to the CPU
+as cached or uncached is a decision made at mapping time. Unless I'm
+mistaken, the CMA heap maps pages to userspace cached.
 
-Cheers,
-Robin.
+> with the expectation that you need to call the dma-buf cache
+> management ioctl. Is it not?
+
+Someone has to manage the cache, yes. It can be done explicitly by
+userspace through the dmabuf sync ioctl, or implicitly within the
+kernel. For instance, when queueing a dmabuf to a V4L2 device that uses
+videobuf2-dma-contig, the QBUF ioctl ends up calling
+flush_kernel_vmap_range() and dma_sync_sgtable_for_device() (see
+vb2_dc_prepare()). videobuf2-vmalloc, on the other hand, has no cache
+handling, which is a known issue when sharing buffers with the display.
+
+On a side note, the cache handling in videobuf2-dma-contig.c seems
+problematic to me, as vb2 shouldn't assume much about imported dmabufs.
+It should instead use the operations exposed by dmabuf to delegate cache
+handling to the exporter.
+
+-- 
+Regards,
+
+Laurent Pinchart
