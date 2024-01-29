@@ -1,146 +1,186 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64DD82375A;
-	Sun, 28 Jan 2024 13:52:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.88
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706449954; cv=none; b=IwlxgEtuoKnkoTZ2pM7SSjAzBH2R6jxc6hsmmxZC56YyM3VY1orz0smzeFzBSXbGP5mu8tZKER2IL/OnNv+4BCNU6EpL6Jzqp3L5GXDu1HDlxA7MBw6jtVZJ5kEqQFiYbrbz1iiCQ6O6cjgxHTA7xMwRPMpdxPNyuHSEJN5y8sQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706449954; c=relaxed/simple;
-	bh=nhYuGtXnAaux4ynleUMyAtLpgnH96e3BLASb8XhVvhs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lWM38jD83sLtnK+l5sMpAsf1xmii5o83JTDKQ8ncrWJxTqMdEhBtdc7ZicjG+83LoP7gl1eiTyrK3h+ZF8/gvchhp6G9iGoJRL1fIQaYt2uoMVg9uWV78H2mGumnFFokXW6nTVR3DcH7Xefs2e+9Eg+kj5oPfsZsSUc9xU7vIPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OIS7DMfX; arc=none smtp.client-ip=192.55.52.88
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 205DAF9DA
+	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 01:34:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.10
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706492054; cv=fail; b=o3P2QEOuBf2gWf45TfAu4/5ds3QD1wWYHzjQx1+Z7jBNTsBux79iTrgMSMCr7aoDJJDsbNnhex7UVIbyC0THcSMpM7QAKOShoCDAkh378+mvskVI2rNcPTB+2R/R9n1wP9XgCL+DESMtmGDC6QkJMAGZE1Xt/YVhPdpAzns4SD4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706492054; c=relaxed/simple;
+	bh=OWUhrqmDgCvCRVabDsQywqL+6xbvX4BlY//SysZmbf4=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Wx5S8amJJkiBVnX93nwpVmtYhKtWoevGpQlRgx5qwLJAc2n240g8WC2/U+09xd/V0steOfCzYaMPLJWyecLItR4K8D95wlLULXYj+k97bqDq28k6M1xUFW8YHUtHOAuzyIVhMiWpnc/8RFEcCoy+B53w8QpbL25NoSIgbVA7ftU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ISm6P5l3; arc=fail smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OIS7DMfX"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ISm6P5l3"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706449952; x=1737985952;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nhYuGtXnAaux4ynleUMyAtLpgnH96e3BLASb8XhVvhs=;
-  b=OIS7DMfXjcnOTHT/WpP4Hvkau9tTj0THpARi3gZC8Eu4ZH1p/nsniPBu
-   fuEqiEBu9WfqGQSJHyy5dkOZUc27zYmXfJM9yReBmgwJfjRvMXARqVvMQ
-   CQxIkz7+iK8g4AWWw+uull5IwguPN83+HCc8T3FYQ6cy28Nbw7U2b+OkX
-   FEfW7W8sktWacwJdcXC+g7Qls+qJsY5PlhiY0u0IDnCJ7XFDCrFsPorsj
-   5NbdtB4Xl0tujvLe7M2JsrLkqWosYllg1Z1pMkLo6kGkKiE/Rdv0MQ+8h
-   0MUkI9HtiMtj6NMKfFthvoOkQEvzpCJpPOAXZjinGYgDbMIKu11gpUHQf
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10966"; a="433937187"
-X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
-   d="scan'208";a="433937187"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 05:52:31 -0800
+  t=1706492053; x=1738028053;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=OWUhrqmDgCvCRVabDsQywqL+6xbvX4BlY//SysZmbf4=;
+  b=ISm6P5l3OHJWbG8mkRJo7C51sNcGos3zGZfy4Jo+tn5JVcbCWwg47kIv
+   0sDEqJCHdzE97CBPYCHQ9tq3Ot9UTgWfUxAFNEV6ZzN0QgmgJm0I1i5aA
+   pO3XBGaYNUVsekbCdgy3DcsqQDmCWuiWKycKKqumN90KqOf/LaoEt0BXp
+   Kx+taowN+OzIjet1hJX3QfoW4pHwwdBgs9ni38/N16yjJcd+khAZxch32
+   IiAB5Gl2fmF5Wvr+cbEu2gt2s2fvnhHvM1rv1OiUYxqn1XvA+OLLWl4pN
+   57lxpgPJYLA693fKf2Wigpt8LOQYbSQXw2VFFIwCrn/8GfkQouHccZQ7Z
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10967"; a="10211918"
+X-IronPort-AV: E=Sophos;i="6.05,226,1701158400"; 
+   d="scan'208";a="10211918"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2024 17:34:12 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.05,220,1701158400"; 
-   d="scan'208";a="21848575"
-Received: from lkp-server01.sh.intel.com (HELO 370188f8dc87) ([10.239.97.150])
-  by fmviesa002.fm.intel.com with ESMTP; 28 Jan 2024 05:52:28 -0800
-Received: from kbuild by 370188f8dc87 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rU5aE-0003Qo-0X;
-	Sun, 28 Jan 2024 13:52:26 +0000
-Date: Sun, 28 Jan 2024 21:52:14 +0800
-From: kernel test robot <lkp@intel.com>
-To: Ethan Zhao <haifeng.zhao@linux.intel.com>, baolu.lu@linux.intel.com,
-	bhelgaas@google.com, robin.murphy@arm.com, jgg@ziepe.ca
-Cc: oe-kbuild-all@lists.linux.dev, kevin.tian@intel.com,
-	dwmw2@infradead.org, will@kernel.org, lukas@wunner.de,
-	yi.l.liu@intel.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
-	Ethan Zhao <haifeng.zhao@linux.intel.com>
-Subject: Re: [PATCH v11 3/5] iommu/vt-d: simplify parameters of
- qi_submit_sync() ATS invalidation callers
-Message-ID: <202401282130.cXuwGvQq-lkp@intel.com>
-References: <20240126014002.481294-4-haifeng.zhao@linux.intel.com>
+X-IronPort-AV: E=McAfee;i="6600,9927,10967"; a="787675859"
+X-IronPort-AV: E=Sophos;i="6.05,226,1701158400"; 
+   d="scan'208";a="787675859"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by orsmga002.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 28 Jan 2024 17:34:11 -0800
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Sun, 28 Jan 2024 17:34:11 -0800
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Sun, 28 Jan 2024 17:34:10 -0800
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Sun, 28 Jan 2024 17:34:10 -0800
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.41) by
+ edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Sun, 28 Jan 2024 17:34:10 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ncZ+E/QRIoqJUf9Jd2LFD8JCU/CLHdoNSIqCLuaAdbshHvJgr3/dNUOhpjaWmr2mhdSk6qgpK7+2/jPQ7ACXkwvmKekA+Sg0BxqoZkeroB5VnFRIL1waciigBt6BMaVSMpXvJ9JNQdjmAQBMj7FBBoRAAZ84VuBu75CskK+G/5bpRydBqgi1WbEAxdxL5zAS1YGgCekvSFFEgbWWWxaqDxYZ3EQBDxFhp4jWdsXFLyqODeW368iGF7Wct2ABjfcvLysjuZi5TgBWoDdna7lEN342aoEmdbGNL8hCNt8rB5kqaOfTaeEyi6EW/NX1gP7c7eZV3lFB05j6LvchbWJImg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xcMSWHl9Fx6YVbCh0XZCfckxfm2n82/6n7FzD+Fwaeo=;
+ b=IyqCnX+OASLojXve8cNHAU6u136FSiRDWAjTcUmv1eDao3EPWoN00Ne1dRTVV0SJFEh/k6fiqVOKsy9pJl4cQvYYADj7nXr14lFIhPzG+c0D1N0gjbbzsF3a71NTkUUsoUeS1JreyRYGg25uD1yIhxj9VtLH2IagIOqCJZwTe5ZWXLQ1TVqjf7xBSBw5VoPWDb0rDPY3062MG9R8AwZmIud89Gkkhdws9Aj7MzqAI/RlKXLfjPZ6uCcVOWv5yIOIK4cznh2Qc5LEUEghEM3/t4mzA0Ywjnc6C0LjCtWWqfGu03bYFtxrKDeE4el0Dx4QzgWxK7WWhQY/464hF54/rw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DM4PR11MB5469.namprd11.prod.outlook.com (2603:10b6:5:399::13)
+ by SJ0PR11MB5865.namprd11.prod.outlook.com (2603:10b6:a03:428::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.32; Mon, 29 Jan
+ 2024 01:34:08 +0000
+Received: from DM4PR11MB5469.namprd11.prod.outlook.com
+ ([fe80::9692:ab94:5995:2f35]) by DM4PR11MB5469.namprd11.prod.outlook.com
+ ([fe80::9692:ab94:5995:2f35%5]) with mapi id 15.20.7228.029; Mon, 29 Jan 2024
+ 01:34:08 +0000
+Message-ID: <2422b6d3-2534-4751-9f75-f8b0c40e7bc4@intel.com>
+Date: Mon, 29 Jan 2024 09:33:52 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] Documentation: iommu/vt-d: Add the document for Intel
+ IOMMU debugfs
+Content-Language: en-US
+To: Baolu Lu <baolu.lu@linux.intel.com>, <iommu@lists.linux.dev>, Tian Kevin
+	<kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+CC: <linux-kernel@vger.kernel.org>
+References: <20240126064704.14292-1-Jingqi.liu@intel.com>
+ <34eaf7d6-72e7-4f72-a42a-dd2922d9b8b8@linux.intel.com>
+From: "Liu, Jingqi" <jingqi.liu@intel.com>
+In-Reply-To: <34eaf7d6-72e7-4f72-a42a-dd2922d9b8b8@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SG2PR02CA0020.apcprd02.prod.outlook.com
+ (2603:1096:3:17::32) To DM4PR11MB5469.namprd11.prod.outlook.com
+ (2603:10b6:5:399::13)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240126014002.481294-4-haifeng.zhao@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM4PR11MB5469:EE_|SJ0PR11MB5865:EE_
+X-MS-Office365-Filtering-Correlation-Id: 36f3d979-839e-4f24-b465-08dc206a631e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: T5XCKb94IJpW7ctQHI3bvU2rGX1iqUh/gmrZZkBMc0VZzQ6CFVKZLtlVN16vPsepbX8Tlow/RgkhW6D1gxxNhDM9GtB/4GSwNVl5+pcGTEEeNZgiHG8akvV+BCLwuyzXqfa7wkjElfJtJf5zOS15GoZQDO2C0jgrOPWfWpQiNJ1FlWre52JpZkS/Jwbi5+fOVoHnqNMQUP7NvE0Wam/AISKkE/2z7Sux/TNQ1uaU/QNRmYFLBkbg8BZ3jo+6oZ+G0NyxgXD1byf4epY9WuAudE+WkY5B1TWxonPGeGY8lF56tuhUYERz03H9cjfXSRnaKBo8G/BThi2qVD7s21HULNeecUYvQgHXSEW6UXu0ShF+5MzWutsHI0zVvyMH/MVsQDEIl2abU395sH7nDhAqkoyi9zAZ/OE8ve32Lv+6DVO8btA/BoKbGgZMdttxS7EKDkeSBJ6LrUnXpeZe9tqZxccvEmXugsVAJ6TyDN5acHqoH89UFpUjGMP1xke2r4aEpW9SMyDHMZdIU9zYuA9b77+1xmMEwvcK/pGbTSolCNwOwxCqnNsP4cIbH61mP4TW3rUxcqCX4bS9pMYFM7s6/8zZgIQPO2AQBQxkWumy6DrsZ0TPjpnq0WFIAkUVuPBJGzLUXOhB7II39Nh66ZKIJw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR11MB5469.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(136003)(396003)(366004)(346002)(376002)(230922051799003)(451199024)(186009)(1800799012)(64100799003)(36756003)(316002)(66946007)(53546011)(66556008)(110136005)(6506007)(86362001)(66476007)(8936002)(8676002)(6486002)(478600001)(31696002)(6666004)(4326008)(26005)(4744005)(2906002)(6512007)(2616005)(5660300002)(41300700001)(82960400001)(38100700002)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Rzl2ck0xV0NQWkx0a2d4eDZ3cUxoQW9CTVVhL2ppZ0xtZzNzYm1UOWZSNWlO?=
+ =?utf-8?B?blFFenZlN2pRczEvcFRFcC9vcWo3WHc5ZUZNL21JU0xBaHR4Yk9PcS9kQkNS?=
+ =?utf-8?B?dnZrdTRaTnFrQTQ3VFJvNE1SRnVDL2V0dERuRXdBWkpmbmJNV251bnROODUw?=
+ =?utf-8?B?ZmRJUUJYUFFFNDEycjF4STdXM2w0a1Nrc3NZZFJ6Y0hhTDN1bVgzTlR1N0lE?=
+ =?utf-8?B?VFRXYkYwUXFDQlVaamtIQ0lKYmwxa2JHZ1ljQmZUYm5rLzUrbnE0alZnSm1J?=
+ =?utf-8?B?WTAyRk0zcVdPSTVBZllCWlpUODFLSnN2eXRRU3JoOE0zcmF2bzVPMnAxRWhJ?=
+ =?utf-8?B?clBYQkh0STczZFFIdkhsZVFpTm4wUVpQUit3bUlTaWJrZFpvTGRWbkIwZkRS?=
+ =?utf-8?B?YWZObit5cmJVcGZ0WFJzaVRVT1JJdmVMQUMyY1Z5bFZxKzNJRnozOCtKTDN4?=
+ =?utf-8?B?aldZVTRHVDdmZFNhMjgzQzRGS0RjdEtFRmZNcHJoZ1kwNDZLQVcwM3Vjb1hR?=
+ =?utf-8?B?YTFyY0NHcWlPZXlMRzRGRkNqNUw1VXBFb2p0SnkxZWplR2tMSDVvT3g3M0pu?=
+ =?utf-8?B?ckQ5ZGorcGtnSUpZdUdZSVBUT3I2a1BURWt4VVJ6VzJFMDVMQ1orVVVyc0tj?=
+ =?utf-8?B?ekdpcldwWXFVZ2tGb2l2ZEloOGd1UUxrME9KUjVHSURuVWo1Z3A0Q3Q2M29E?=
+ =?utf-8?B?ckFFU0MzcEFOTHhsa1dxeU8yMjNqbkhxL2pSd3hVTllZWENTaTZZNVJDZ2U1?=
+ =?utf-8?B?dzI3Y1J1SU9kWEJoVzNSeHhvTE9tVDBaYXd2cWtNYUw0alQ4R3M1alYxRHp2?=
+ =?utf-8?B?bnlLL1JhNUs5NTRlaTE1eHcwNlhOUXRRbi9SdzdXcTBKQmlUSEp1NjBDWU1C?=
+ =?utf-8?B?N2JoRDNUR0RPUHF3eUdwR2VFTGZyeU1sMTBtcldmZXRPNGNwYURQbUM5L3dq?=
+ =?utf-8?B?SlBQZWRuR0xIQmV6clFUdmEycXVSVytKcXJyUklsR25LVU1MWjMybzY1aHBT?=
+ =?utf-8?B?K21lcVg4YkdST3lmR0w5SlZYb204Q3B5cFFlU1c4V0F3ajNyUDVtcFRUMjQ3?=
+ =?utf-8?B?OFNxaXZNdGFvR1FzamZ3Nk5tbi9icU1BeW9veFZNQUQrUllrOFhQM1FibWMz?=
+ =?utf-8?B?bVBsamFabmxSYjk1Z1ZrL0lqSlpLTWlCWWhvdHh4NWxHOGl6andTS2lVeUhM?=
+ =?utf-8?B?NjQ3SUptTng2MlJQZm5CRnRwUHF2T1BCTUsxWld1MnFqOGxrZTR2QmVLQVo0?=
+ =?utf-8?B?elBQdENEakpHdUVaLzBURXNaTUFQVStjU2FLbTVzNHFlSGJHZDBKRFJwOVRO?=
+ =?utf-8?B?TFhURWZNQis1ekwyWGlFc01VYUN3bSszc2VmOWtsajhpa3R5Z21xR1hneW92?=
+ =?utf-8?B?QWMwWUtnZXUxVUYrNlR5ZmV2YW5uZjZrOFJwdU5QbS9mQVRJNDA5L0ZrZmo0?=
+ =?utf-8?B?cXR1bWJQdjRWRW9PckZUSTdLQk9OaXdqT01RS2RlMHZ0OU9kUGVoZmZaaFhk?=
+ =?utf-8?B?RUN5NE5vU3ZXd29OcEFhQzFKd2Q0T2VkaG01TnB2cmh3WXZBVFNIVlV5a2Vp?=
+ =?utf-8?B?ZHVTR2tVNkF6cG54MU1tTFN3Z0xBcmtCY0xvQUVrTDd1RVJZcWxCczFHWU1r?=
+ =?utf-8?B?OXgrQ3hNQStDQTl4VXc1ZUhKRGpWeS95TlowbzRlZHRJdUxBbEpCMXBOaVVV?=
+ =?utf-8?B?cHorMHFocWl3Y3BXN2dlM1NFUFBpOEtCVnExdTBYVXZwWVAvRU01VEplYVRC?=
+ =?utf-8?B?V1NsTmNycHN1M2hIa250b3ZxelMyRnp3d2JiSVR0aEtYV0FONHBxc2VmU1k2?=
+ =?utf-8?B?TVAwTlV5L1FlUUFjZ1RNeUNYUlptY0EwV0dNOHZTcnl5bS8xejN0ZUVHdk9U?=
+ =?utf-8?B?ZmEzSW5kc0t1ak1TeTROTkExbE9YRnlGNm5nek4yb3pMMjVuZTRFM2kvT0Fz?=
+ =?utf-8?B?RHFoRnZLcFUxbG42TGF4UVI5Vm10WXNhWHNiOUtQVCtJL01jRGRlTkxnVkVQ?=
+ =?utf-8?B?TTNPMFd0MHI4YnZHSlFIMWlUVk5qdlJ5dGFJbzV3b0tpdTFxWUtSNDBlRjlD?=
+ =?utf-8?B?MXVaU0hwemlIZGMra0EzVGMwQ05DdHA2TTFVSjJqVGxPQWJuQ1g4aU9tSm0w?=
+ =?utf-8?Q?QSfCXCJ4PtdKatFc9vW1yD3Xa?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 36f3d979-839e-4f24-b465-08dc206a631e
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR11MB5469.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jan 2024 01:34:08.4376
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: aNB0yC/EohL5m+9Xa0qb3Eu8+t2Fcqe2M/josXFEXHBplE+GSTMXQIs5n3UZdDwqDH3Ah7L6DOFyvxqbspxecQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB5865
+X-OriginatorOrg: intel.com
 
-Hi Ethan,
-
-kernel test robot noticed the following build errors:
-
-[auto build test ERROR on pci/next]
-[also build test ERROR on pci/for-linus linus/master v6.8-rc1 next-20240125]
-[cannot apply to joro-iommu/next]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Ethan-Zhao/PCI-make-pci_dev_is_disconnected-helper-public-for-other-drivers/20240126-094305
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/pci/pci.git next
-patch link:    https://lore.kernel.org/r/20240126014002.481294-4-haifeng.zhao%40linux.intel.com
-patch subject: [PATCH v11 3/5] iommu/vt-d: simplify parameters of qi_submit_sync() ATS invalidation callers
-config: x86_64-randconfig-005-20240128 (https://download.01.org/0day-ci/archive/20240128/202401282130.cXuwGvQq-lkp@intel.com/config)
-compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240128/202401282130.cXuwGvQq-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202401282130.cXuwGvQq-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   drivers/iommu/intel/svm.c: In function 'intel_flush_svm_all':
-   drivers/iommu/intel/svm.c:229:67: warning: passing argument 2 of 'qi_flush_dev_iotlb_pasid' makes pointer from integer without a cast [-Wint-conversion]
-     229 |                         qi_flush_dev_iotlb_pasid(sdev->iommu, sdev->sid, info->pfsid,
-         |                                                               ~~~~^~~~~
-         |                                                                   |
-         |                                                                   u16 {aka short unsigned int}
-   In file included from drivers/iommu/intel/svm.c:22:
-   drivers/iommu/intel/iommu.h:1047:58: note: expected 'struct device_domain_info *' but argument is of type 'u16' {aka 'short unsigned int'}
-    1047 |                               struct device_domain_info *info, u64 addr,
-         |                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~
->> drivers/iommu/intel/svm.c:229:25: error: too many arguments to function 'qi_flush_dev_iotlb_pasid'
-     229 |                         qi_flush_dev_iotlb_pasid(sdev->iommu, sdev->sid, info->pfsid,
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/intel/iommu.h:1046:6: note: declared here
-    1046 | void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu,
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/iommu/intel/svm.c:232:25: error: too many arguments to function 'quirk_extra_dev_tlb_flush'
-     232 |                         quirk_extra_dev_tlb_flush(info, 0, 64 - VTD_PAGE_SHIFT,
-         |                         ^~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iommu/intel/iommu.h:1049:6: note: declared here
-    1049 | void quirk_extra_dev_tlb_flush(struct device_domain_info *info, u32 pasid,
-         |      ^~~~~~~~~~~~~~~~~~~~~~~~~
 
 
-vim +/qi_flush_dev_iotlb_pasid +229 drivers/iommu/intel/svm.c
+On 1/26/2024 5:16 PM, Baolu Lu wrote:
+> On 2024/1/26 14:47, Jingqi Liu wrote:
+>> This document guides users to dump the Intel IOMMU internals by debugfs.
+>>
+>> Signed-off-by: Jingqi Liu<Jingqi.liu@intel.com>
+>> ---
+>>   Documentation/ABI/testing/debugfs-intel-iommu | 276 ++++++++++++++++++
+>>   1 file changed, 276 insertions(+)
+>>   create mode 100644 Documentation/ABI/testing/debugfs-intel-iommu
+> 
+> Next time when submitting an incremental version of a patch, please add
+> a change log after the tear line, so that people know what has been
+> changed from the previous version.
 
-2f26e0a9c9860db drivers/iommu/intel-svm.c David Woodhouse 2015-09-09  217  
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  218  static void intel_flush_svm_all(struct intel_svm *svm)
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  219  {
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  220  	struct device_domain_info *info;
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  221  	struct intel_svm_dev *sdev;
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  222  
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  223  	rcu_read_lock();
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  224  	list_for_each_entry_rcu(sdev, &svm->devs, list) {
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  225  		info = dev_iommu_priv_get(sdev->dev);
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  226  
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  227  		qi_flush_piotlb(sdev->iommu, sdev->did, svm->pasid, 0, -1UL, 0);
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  228  		if (info->ats_enabled) {
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22 @229  			qi_flush_dev_iotlb_pasid(sdev->iommu, sdev->sid, info->pfsid,
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  230  						 svm->pasid, sdev->qdep,
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  231  						 0, 64 - VTD_PAGE_SHIFT);
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22 @232  			quirk_extra_dev_tlb_flush(info, 0, 64 - VTD_PAGE_SHIFT,
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  233  						  svm->pasid, sdev->qdep);
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  234  		}
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  235  	}
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  236  	rcu_read_unlock();
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  237  }
-e7ad6c2a4b1aa71 drivers/iommu/intel/svm.c Lu Baolu        2023-11-22  238  
+Got it. Thanks for your review.
+I'll add the change log after the tear line in next version.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Thanks,
+Jingqi
+
+> 
+> Best regards,
+> baolu
