@@ -1,155 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.115])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8238A152DE4
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 14:49:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.115
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B855B152E0F
+	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 14:57:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706539745; cv=none; b=WCaXSJGZ7MwN8MmS+VC8rf8qROrv8zQaDOqvDSTM/jonSppwFZX1NDNmXggxtli4jhagROI/cD6r27teTzW7NPwma+BLb2HhpTkv3lTzVfprLcrW7eAzemb5vV4FhpkwERLD/8ru9TwSZpRw80jqLjBdG5gP4wZZyJuIhXaZkxc=
+	t=1706540256; cv=none; b=tpl9M1ZQ9ZfYeIDK+Qpl43sLWc4oARtufmr3H0n9rub/JiwTZXa81IfHzxYieq0KOXFRrEnk0/QM5Msd7LkRSv4ZVshUxoDPs5pF2St3A8nbYB8FI/u4PuoTOYzqXpweTU0KNTB7fWkAiV6TbVH4Hixe4zxrEeUNuTvkBGvpTRA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706539745; c=relaxed/simple;
-	bh=B+Q7J9j4jl1343Xufi5xIgruTezV/90wo8FCib5ZR9U=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=P6aq+1/OQ9IZdVgPGvyBL6h5fWX08HU7OpCHmD5PsGNHwWZ8TkTQPuA3QcGT9hJ7Y7z47FFx7FJrH9cMXE/kRCcaRqPKNzUDjqalL35iNXv+QQuvkd8J4dUpdQxF+4/IHsLd2YYzj3LgBzQBYE2LP3TH1pzCLdvQzcqVdckiqSY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NARfMgzI; arc=none smtp.client-ip=192.55.52.115
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1706540256; c=relaxed/simple;
+	bh=YHpJANTxleXUQc7Etefu3WOAFvTm2NiP/au00SDkl2k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kVBqANrmaWGaaI5OLYr0iSbgmEKTUFXd545hYlcraprMqJCsISKANQS0Y0DgQN40C7Q8j4whFF3ck1krlxg2aJpUXzhPm698EopVLSi6djLyOdJ6okU6ZTwENK2MEPLIMYL74OGiDL/Hya2A14G7iVHMI2xqm0V38Rx24glAMAE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=njgsyWvp; arc=none smtp.client-ip=209.85.210.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NARfMgzI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706539743; x=1738075743;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=B+Q7J9j4jl1343Xufi5xIgruTezV/90wo8FCib5ZR9U=;
-  b=NARfMgzI18WTFMR551Rxnos7Bp5cFdzf/QnyUxiCCmpnc4okQPWIMLFZ
-   pjb1vHE7Gt/fl/i6wgkspX1G3bGdEkoPGEbhU/fmgaaVZ436PMrsrgKYn
-   gXsW5cBZRasot6oGuREfX0hNjlFGw2Br12BFx5u46NfXUv5jhGaBczCDE
-   rTOijaXPCFk9HKtK99r5mGBjLrjCTe7Z7sKgu3ISRXf9JIRkvm3iYW24k
-   1Kn7PBFuSqV/pZR+Eu3bsdoOcrb/bAeV6SRLzBXkFaKF38gwRLMEbYx/o
-   ZDnenzYfnAYGacaQjcq06Dm/so7r/1ve6ip0LDDPHd6CabP8BBIq5ll6x
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="402609504"
-X-IronPort-AV: E=Sophos;i="6.05,227,1701158400"; 
-   d="scan'208";a="402609504"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 06:49:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="960907268"
-X-IronPort-AV: E=Sophos;i="6.05,227,1701158400"; 
-   d="scan'208";a="960907268"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.174.51]) ([10.249.174.51])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 06:48:58 -0800
-Message-ID: <46e0c704-cc77-4d23-9503-0d6d5d07bb26@linux.intel.com>
-Date: Mon, 29 Jan 2024 22:48:56 +0800
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="njgsyWvp"
+Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-6e11cd97960so890641a34.0
+        for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 06:57:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1706540253; x=1707145053; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=tVF4k3bK1tmVpRSxaU3/SMcZMqTGWrDu+a1szTYxZBs=;
+        b=njgsyWvpwaq2X00H+Y1v5GNxpKVb4cQQXRn71/KSmgoxBRx+3PNyLVpz6wjyDZWm6n
+         CL6xnk9faqISC/ED/wQvDuGCTi1m0+AicXH7d25RzDX+laulKK5C3HwQ+9rfZ0oACTYU
+         FV6VqVrkM7d6ltJzetfgSVnaAQiotkNNBF0Tcp/f3FvPzgImS33bB1I++M0JgTI4awsH
+         99tyIgQ9S9GG+Me6zwpB90DWPRWI5de6fqzpR+CbBWCm0W+uRjDneYah9M8i59k193m6
+         9ccQwQhRBsblGAiWNNL8kQsMGLPyMIJI6Yk9bOuSCiiGzp91e1IS4jN9beerrsRnh4C0
+         Fapw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706540254; x=1707145054;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tVF4k3bK1tmVpRSxaU3/SMcZMqTGWrDu+a1szTYxZBs=;
+        b=TN3owObxRf/kt1/LjMptJ7GC8CJu5+H/d7jv/eIzurxs6D9/7WIvG8+MoHl4de0b1G
+         kAA0T//iM8MsI0Pt8DY8QG+DdqOoog+k0KMfR8NwFJFQAm6NCWYgG9jcGX1ffLTv+XdZ
+         pcJ4FBvzgmVuD35Q9xnTRlvRjssU52X3klXrn02UNxYCDs2nQ6dES6PyCxgq5dGN3v1y
+         PwPmqU6MHuBXsztCKPjdOAADC67hRtx/n1Dodd8G1LDQ3D7otHVYBeW4Kv4UACEa+mnI
+         /4x5PNCiEiAUIBt5GIjkdvHwvVAkIKsD1c0Sueq/ARQE/WQvAU7tYCXmUcCfVpJw1N74
+         Sibw==
+X-Gm-Message-State: AOJu0Yx40+xLk+18AzyTvkeneJicsoUBrrexuYBkRqLZoxL7Uh0gP8GP
+	FkV94aU4lNDBUfzOnm4+EvY6fHPf36CWzyBnB4Xkim0njUUijUErH+dxfAf9i+8=
+X-Google-Smtp-Source: AGHT+IHM0UgiqzxE42+B8o1wd1JtnMkZnMEzc9DwbMI9lJHOkViPkWLsfI2IUYUXYItE3p/l6Rn1Ag==
+X-Received: by 2002:a05:6870:d287:b0:210:a68b:7066 with SMTP id d7-20020a056870d28700b00210a68b7066mr4254363oae.43.1706540253754;
+        Mon, 29 Jan 2024 06:57:33 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id ry11-20020a056871208b00b002149bb5d09asm2064275oab.56.2024.01.29.06.57.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Jan 2024 06:57:33 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rUT4l-00A9ie-VM;
+	Mon, 29 Jan 2024 10:57:31 -0400
+Date: Mon, 29 Jan 2024 10:57:31 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/2] iommu: Use mutex instead of spinlock for
+ iommu_device_list
+Message-ID: <20240129145731.GD50608@ziepe.ca>
+References: <20240126105341.78086-1-baolu.lu@linux.intel.com>
+ <20240126105341.78086-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276E9618612DCF4DAE0CAE68C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "dwmw2@infradead.org" <dwmw2@infradead.org>,
- "will@kernel.org" <will@kernel.org>, "lukas@wunner.de" <lukas@wunner.de>,
- "Liu, Yi L" <yi.l.liu@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH v12 5/5] iommu/vt-d: improve ITE fault handling if target
- device isn't present
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- Ethan Zhao <haifeng.zhao@linux.intel.com>,
- "bhelgaas@google.com" <bhelgaas@google.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>
-References: <20240129034924.817005-1-haifeng.zhao@linux.intel.com>
- <20240129034924.817005-6-haifeng.zhao@linux.intel.com>
- <BN9PR11MB52761CC3E5F08D4B7BAD7F918C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52761CC3E5F08D4B7BAD7F918C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276E9618612DCF4DAE0CAE68C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
 
-On 2024/1/29 17:06, Tian, Kevin wrote:
->> From: Ethan Zhao<haifeng.zhao@linux.intel.com>
->> Sent: Monday, January 29, 2024 11:49 AM
->>
->> Because surprise removal could happen anytime, e.g. user could request safe
->> removal to EP(endpoint device) via sysfs and brings its link down to do
->> surprise removal cocurrently. such aggressive cases would cause ATS
->> invalidation request issued to non-existence target device, then deadly
->> loop to retry that request after ITE fault triggered in interrupt context.
->> this patch aims to optimize the ITE handling by checking the target device
->> presence state to avoid retrying the timeout request blindly, thus avoid
->> hard lockup or system hang.
->>
->> Signed-off-by: Ethan Zhao<haifeng.zhao@linux.intel.com>
->> ---
->>   drivers/iommu/intel/dmar.c | 18 ++++++++++++++++++
->>   1 file changed, 18 insertions(+)
->>
->> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
->> index 814134e9aa5a..2e214b43725c 100644
->> --- a/drivers/iommu/intel/dmar.c
->> +++ b/drivers/iommu/intel/dmar.c
->> @@ -1272,6 +1272,7 @@ static int qi_check_fault(struct intel_iommu
->> *iommu, int index, int wait_index,
->>   {
->>   	u32 fault;
->>   	int head, tail;
->> +	u64 iqe_err, ite_sid;
->>   	struct q_inval *qi = iommu->qi;
->>   	int shift = qi_shift(iommu);
->>
->> @@ -1316,6 +1317,13 @@ static int qi_check_fault(struct intel_iommu
->> *iommu, int index, int wait_index,
->>   		tail = readl(iommu->reg + DMAR_IQT_REG);
->>   		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
->>
->> +		/*
->> +		 * SID field is valid only when the ITE field is Set in FSTS_REG
->> +		 * see Intel VT-d spec r4.1, section 11.4.9.9
->> +		 */
->> +		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
->> +		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
->> +
->>   		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
->>   		pr_info("Invalidation Time-out Error (ITE) cleared\n");
->>
->> @@ -1325,6 +1333,16 @@ static int qi_check_fault(struct intel_iommu
->> *iommu, int index, int wait_index,
->>   			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
->>   		} while (head != tail);
->>
->> +		/*
->> +		 * If got ITE, we need to check if the sid of ITE is the same as
->> +		 * current ATS invalidation target device, if yes, don't try this
->> +		 * request anymore if the target device isn't present.
->> +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
->> +		 */
->> +		if (pdev && ite_sid && !pci_device_is_present(pdev) &&
->> +			ite_sid == pci_dev_id(pci_physfn(pdev)))
->> +			return -ETIMEDOUT;
->> +
-> since the hardware already reports source id leading to timeout, can't we
-> just find the pci_dev according to reported ite_sid? this is a slow path (either
-> due to device in bad state or removed) hence it's not necessary to add more
-> intelligence to pass the pci_dev in, leading to only a partial fix can be backported.
+On Mon, Jan 29, 2024 at 08:04:35AM +0000, Tian, Kevin wrote:
+> > From: Lu Baolu <baolu.lu@linux.intel.com>
+> > Sent: Friday, January 26, 2024 6:54 PM
+> > 
+> > The iommu_device_lock spinlock was used to protect the iommu device
+> > list. However, there is no requirement to access the iommu device
+> > list in interrupt context. Therefore, a mutex is sufficient.
 > 
-> It's also more future-proof, say if one day the driver allows batching invalidation
-> requests for multiple devices then no need to pass in a list of devices.
+> I don't think that interrupt is the reason for spinlock otherwise
+> spin_lock_irqsave() should be used instead.
 
-I have ever thought about this solution and gave up in the end due to
-the locking issue.
+Right, there is no touch of this from an interrupt
 
-A batch of qi requests must be handled in the spin lock critical region
-to enforce that only one batch of requests is submitted at a time.
-Searching pci_dev in this locking region might result in nested locking
-issues, and I haven't found a good solution for this yet.
+I suspect it is following the the general kernel wisdom that a
+spinlock is better if the critical sections are very small.
 
-Unless someone can bring up a better solution, perhaps we have to live
-in a world where only single device TLB invalidation request in a batch
-could be submitted to the queue.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Best regards,
-baolu
+Jason
