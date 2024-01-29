@@ -1,207 +1,152 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C4486152E0E
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 14:58:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45272152DEC;
+	Mon, 29 Jan 2024 15:07:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706540292; cv=none; b=V8XgwLrGVq1PNyCjQTNsLuIATXbqsGUBKQgEP455o0PZ+KhCZO7xhVnx/nm7uQ3LCjfOJfPds36vX0HNZRSeAQxUh5g9IX06sGHVRZyYlu663noWpbay1WkjhwaqHLlFb0zyMnCgDuehXa0pTPrKxSuUv7xnaVF3fqlnMiWb5qM=
+	t=1706540850; cv=none; b=cg4ospYoJJQQyRGxu16qypP1EBkLMzA4ztavAPZLescfBlz2FNGOo9Rh28sG8KJ+JBiDBDlX3/rDh4CVbG4urptSl0EsDrKnEq/dEYMEf3V6ehdnGC/1Hk8sldMl8OfyD7KN/jr1dDIQdR5tYGj5irx28MT8n9ztIhebUhmVo90=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706540292; c=relaxed/simple;
-	bh=dUXxx5YwYdIUiP+yNNH4SbAazb+SQA7QJdosJHirv1w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=S1gaSRu8UoB7LTK5EsSmouemy/lqAgmnDMpYkSKP8YFSK0sCXWF4LH4FYulTHPTb6AU97cW06UyW8q+8oPzwA/oX3ONIqzYZUdx0LK/7OfsKcvwPfCQRiV6EGuD46ProueXI5R7nXUtG7m0FytZXS67OdDqutnUwey5jSLE9nEU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EF5FADA7;
-	Mon, 29 Jan 2024 06:58:53 -0800 (PST)
-Received: from [10.57.77.253] (unknown [10.57.77.253])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BC9FA3F738;
-	Mon, 29 Jan 2024 06:58:08 -0800 (PST)
-Message-ID: <e5ab27ab-05b4-40d5-aaba-245259d325ea@arm.com>
-Date: Mon, 29 Jan 2024 14:58:07 +0000
+	s=arc-20240116; t=1706540850; c=relaxed/simple;
+	bh=MOVnGTNVe1IORp4sptKL0gw7MufMThZhvd70TOeOF9A=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=cxXb9bQgfLDLnVfofP5MSZOOrHH/Ek0/dkx3H+HAIZuVCAyRosVdrM5LtVS4yYRe0Ug8mosNSTqyeBMQM80vqcF9rgx+/0qDWxTIcYkUPtswFiCeAMsFl6fM1nWkGH0zPuGgcnGszR3GwelWRU+2m9TiYP6dr2kNvkYq/U5uhoQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.231])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4TNs5M0FRmz6JBRK;
+	Mon, 29 Jan 2024 23:04:07 +0800 (CST)
+Received: from lhrpeml100005.china.huawei.com (unknown [7.191.160.25])
+	by mail.maildlp.com (Postfix) with ESMTPS id BC9A4140136;
+	Mon, 29 Jan 2024 23:07:21 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ lhrpeml100005.china.huawei.com (7.191.160.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Mon, 29 Jan 2024 15:07:21 +0000
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
+ Mon, 29 Jan 2024 15:07:21 +0000
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>
+CC: Moritz Fischer <mdf@kernel.org>, Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
+	"patches@lists.linux.dev" <patches@lists.linux.dev>
+Subject: RE: [PATCH v4 03/16] iommu/arm-smmu-v3: Move
+ arm_smmu_rmr_install_bypass_ste()
+Thread-Topic: [PATCH v4 03/16] iommu/arm-smmu-v3: Move
+ arm_smmu_rmr_install_bypass_ste()
+Thread-Index: AQHaT+pKiKkHv/nblEGt84Ts1FQwm7Dw5+zw
+Date: Mon, 29 Jan 2024 15:07:21 +0000
+Message-ID: <e1b1a2fbaf3f4312a6d6c27afdfaf7fd@huawei.com>
+References: <0-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
+ <3-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
+In-Reply-To: <3-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] iommu: Probe right iommu_ops for device
-Content-Language: en-GB
-To: Lu Baolu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240126105341.78086-1-baolu.lu@linux.intel.com>
- <20240126105341.78086-3-baolu.lu@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240126105341.78086-3-baolu.lu@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 2024-01-26 10:53 am, Lu Baolu wrote:
-> Previously, in the iommu probe device path, __iommu_probe_device() gets
-> the iommu_ops for the device from dev->iommu->fwspec if this field has
-> been initialized before probing. Otherwise, it is assumed that only one
-> of Intel, AMD, s390, PAMU or legacy SMMUv2 can be present, hence it's
-> feasible to lookup the global iommu device list and use the iommu_ops of
-> the first iommu device which has no dev->iommu->fwspec.
-> 
-> The assumption mentioned above is no longer correct with the introduction
-> of the IOMMUFD mock device on x86 platforms. There might be multiple
-> instances of iommu drivers, none of which have the dev->iommu->fwspec
-> field populated.
-> 
-> Probe the right iommu_ops for device by iterating over all the global
-> drivers and call their probe function to find a match.
 
-This will now break several drivers which are no longer expecting to see 
-a ->probe_device call without having seen the corresponding ->of_xlate 
-call first.
 
-Can we please just do the trivial fix to iommufd itself? At this point I 
-don't mind if it's your v1, the even simpler one I proposed 2 months 
-ago[1], or anything else similarly self-contained.
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, January 25, 2024 11:57 PM
+> To: iommu@lists.linux.dev; Joerg Roedel <joro@8bytes.org>; linux-arm-
+> kernel@lists.infradead.org; Robin Murphy <robin.murphy@arm.com>; Will
+> Deacon <will@kernel.org>
+> Cc: Moritz Fischer <mdf@kernel.org>; Moritz Fischer <moritzf@google.com>;
+> Michael Shavit <mshavit@google.com>; Nicolin Chen <nicolinc@nvidia.com>;
+> patches@lists.linux.dev; Shameerali Kolothum Thodi
+> <shameerali.kolothum.thodi@huawei.com>
+> Subject: [PATCH v4 03/16] iommu/arm-smmu-v3: Move
+> arm_smmu_rmr_install_bypass_ste()
+>=20
+> Logically arm_smmu_init_strtab_linear() is the function that allocates an=
+d
+> populates the stream table with the initial value of the STEs. After this
+> function returns the stream table should be fully ready.
+>=20
+> arm_smmu_rmr_install_bypass_ste() adjusts the initial stream table to for=
+ce
+> any SIDs that the FW says have IOMMU_RESV_DIRECT to use bypass. This
+> ensures there is no disruption to the identity mapping during boot.
+>=20
+> Put arm_smmu_rmr_install_bypass_ste() into arm_smmu_init_strtab_linear(),
+> it already executes immediately after arm_smmu_init_strtab_linear().
+>=20
+> No functional change intended.
+
+I think this actually changes the behavior and will cause regression as we
+now install rmr  sids only for linear stream table not for SMMUv3 with=20
+2-level stream table supported.
+
+Please check.
 
 Thanks,
-Robin.
+Shameer
 
-[1] 
-https://lore.kernel.org/linux-iommu/e365c08b21a8d0b60e6f5d1411be6701c1a06a53.1701165201.git.robin.murphy@arm.com/
-
-> Fixes: 17de3f5fdd35 ("iommu: Retire bus ops")
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>=20
+> Reviewed-by: Michael Shavit <mshavit@google.com>
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Tested-by: Moritz Fischer <moritzf@google.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->   drivers/iommu/iommu.c | 76 +++++++++++++++++++++++++++----------------
->   1 file changed, 48 insertions(+), 28 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 0af0b5544072..2cdb01e411fa 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -396,30 +396,69 @@ void dev_iommu_priv_set(struct device *dev, void *priv)
->   }
->   EXPORT_SYMBOL_GPL(dev_iommu_priv_set);
->   
-> +static struct iommu_device *
-> +__iommu_do_probe_device(struct device *dev, const struct iommu_ops *ops)
-> +{
-> +	struct iommu_device *iommu_dev;
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 38bcb4ed1fccc1..df8fc7b87a7907 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -102,6 +102,8 @@ static struct arm_smmu_option_prop
+> arm_smmu_options[] =3D {
+>  	{ 0, NULL},
+>  };
+>=20
+> +static void arm_smmu_rmr_install_bypass_ste(struct arm_smmu_device
+> *smmu);
 > +
-> +	if (!try_module_get(ops->owner))
-> +		return ERR_PTR(-EINVAL);
+>  static void parse_driver_options(struct arm_smmu_device *smmu)
+>  {
+>  	int i =3D 0;
+> @@ -3250,6 +3252,9 @@ static int arm_smmu_init_strtab_linear(struct
+> arm_smmu_device *smmu)
+>  	cfg->strtab_base_cfg =3D reg;
+>=20
+>  	arm_smmu_init_bypass_stes(strtab, cfg->num_l1_ents);
 > +
-> +	iommu_dev = ops->probe_device(dev);
-> +	if (IS_ERR(iommu_dev))
-> +		module_put(ops->owner);
-> +
-> +	return iommu_dev;
-> +}
-> +
-> +static struct iommu_device *iommu_probe_device_ops(struct device *dev)
-> +{
-> +	struct iommu_device *iter, *iommu_dev = ERR_PTR(-ENODEV);
-> +	struct iommu_fwspec *fwspec;
-> +
-> +	/*
-> +	 * For FDT-based systems and ACPI IORT/VIOT, drivers register IOMMU
-> +	 * instances with non-NULL fwnodes, and client devices should have been
-> +	 * identified with a fwspec by this point. Otherwise, we will iterate
-> +	 * over all the global drivers and call their probe function to find a
-> +	 * match.
-> +	 */
-> +	fwspec = dev_iommu_fwspec_get(dev);
-> +	if (fwspec && fwspec->ops)
-> +		return __iommu_do_probe_device(dev, fwspec->ops);
-> +
-> +	mutex_lock(&iommu_device_lock);
-> +	list_for_each_entry(iter, &iommu_device_list, list) {
-> +		iommu_dev = __iommu_do_probe_device(dev, iter->ops);
-> +		if (!IS_ERR(iommu_dev))
-> +			break;
-> +	}
-> +	mutex_unlock(&iommu_device_lock);
-> +
-> +	return iommu_dev;
-> +}
-> +
->   /*
->    * Init the dev->iommu and dev->iommu_group in the struct device and get the
->    * driver probed
->    */
-> -static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
-> +static int iommu_init_device(struct device *dev)
->   {
->   	struct iommu_device *iommu_dev;
-> +	const struct iommu_ops *ops;
->   	struct iommu_group *group;
->   	int ret;
->   
->   	if (!dev_iommu_get(dev))
->   		return -ENOMEM;
->   
-> -	if (!try_module_get(ops->owner)) {
-> -		ret = -EINVAL;
-> -		goto err_free;
-> -	}
+> +	/* Check for RMRs and install bypass STEs if any */
+> +	arm_smmu_rmr_install_bypass_ste(smmu);
+>  	return 0;
+>  }
+>=20
+> @@ -4063,9 +4068,6 @@ static int arm_smmu_device_probe(struct
+> platform_device *pdev)
+>  	/* Record our private device structure */
+>  	platform_set_drvdata(pdev, smmu);
+>=20
+> -	/* Check for RMRs and install bypass STEs if any */
+> -	arm_smmu_rmr_install_bypass_ste(smmu);
 > -
-> -	iommu_dev = ops->probe_device(dev);
-> +	iommu_dev = iommu_probe_device_ops(dev);
->   	if (IS_ERR(iommu_dev)) {
->   		ret = PTR_ERR(iommu_dev);
-> -		goto err_module_put;
-> +		goto err_free;
->   	}
->   	dev->iommu->iommu_dev = iommu_dev;
-> +	ops = dev_iommu_ops(dev);
->   
->   	ret = iommu_device_link(iommu_dev, dev);
->   	if (ret)
-> @@ -444,7 +483,6 @@ static int iommu_init_device(struct device *dev, const struct iommu_ops *ops)
->   err_release:
->   	if (ops->release_device)
->   		ops->release_device(dev);
-> -err_module_put:
->   	module_put(ops->owner);
->   err_free:
->   	dev->iommu->iommu_dev = NULL;
-> @@ -499,28 +537,10 @@ DEFINE_MUTEX(iommu_probe_device_lock);
->   
->   static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
->   {
-> -	const struct iommu_ops *ops;
-> -	struct iommu_fwspec *fwspec;
->   	struct iommu_group *group;
->   	struct group_device *gdev;
->   	int ret;
->   
-> -	/*
-> -	 * For FDT-based systems and ACPI IORT/VIOT, drivers register IOMMU
-> -	 * instances with non-NULL fwnodes, and client devices should have been
-> -	 * identified with a fwspec by this point. Otherwise, we can currently
-> -	 * assume that only one of Intel, AMD, s390, PAMU or legacy SMMUv2 can
-> -	 * be present, and that any of their registered instances has suitable
-> -	 * ops for probing, and thus cheekily co-opt the same mechanism.
-> -	 */
-> -	fwspec = dev_iommu_fwspec_get(dev);
-> -	if (fwspec && fwspec->ops)
-> -		ops = fwspec->ops;
-> -	else
-> -		ops = iommu_ops_from_fwnode(NULL);
-> -
-> -	if (!ops)
-> -		return -ENODEV;
->   	/*
->   	 * Serialise to avoid races between IOMMU drivers registering in
->   	 * parallel and/or the "replay" calls from ACPI/OF code via client
-> @@ -534,7 +554,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
->   	if (dev->iommu_group)
->   		return 0;
->   
-> -	ret = iommu_init_device(dev, ops);
-> +	ret = iommu_init_device(dev);
->   	if (ret)
->   		return ret;
->   
+>  	/* Reset the device */
+>  	ret =3D arm_smmu_device_reset(smmu, bypass);
+>  	if (ret)
+> --
+> 2.43.0
+
