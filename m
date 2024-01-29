@@ -1,91 +1,126 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id E3D10604A9
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 12:15:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from lynxeye.de (ns.lynxeye.de [87.118.118.114])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1B79F64CEE
+	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 13:12:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=87.118.118.114
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706530515; cv=none; b=IZgxLHMzDgv3r/05X8r8EGrKylVueSHcZbgaKMsMwkvN2m4ldyYqpJtwKVrXHpLQfQ1/v0bBwsangE1nSBc+2vjdXSyM3qtQC96ZowzRdlNX5dkyLSZ7jJylBfPfHcBaE84ACz0UN4H7oYnp3WZmVjjbn8Tf9KVFNsw3UpvpEJU=
+	t=1706533981; cv=none; b=WsRi/uTREszhq0yQ9OHde9L+DN9y5KI512UrKEqyIL3803/PK2X14ZwmvKSw9wBiawkYUPxdkobMNyvH8DagUXDUxupbqebKBC1hd3AVmORwDreL02SHOsNngAs9gkqaSsMXKjfURa2gvYBTADmEj/omtSdcwydQfpPFa8Olu4I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706530515; c=relaxed/simple;
-	bh=CI2SITbEyDMK/SnfUcFawfQgI/5HdPELOd7hdQeM9Fw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JyBtK3dhVPMRPjrPx5YkOOceEqP7zIUoF2Nrx3VVJDBV2ZsPnNj23sZNogPv9JwX1+HhAyF6uDOql2sPphm8luDfaVf0rBk53FiE/woxpg+CzEgwH/6epgIAg2dttyOD0eiqLc6Mhm/9jNF61+KxbFGH2Zp0d5UN+6MGTwbfNNs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 296821FB;
-	Mon, 29 Jan 2024 04:15:56 -0800 (PST)
-Received: from [10.57.77.253] (unknown [10.57.77.253])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A8F643F5A1;
-	Mon, 29 Jan 2024 04:15:09 -0800 (PST)
-Message-ID: <df8f1bf4-819a-4b2a-927d-e97fe196cdf6@arm.com>
-Date: Mon, 29 Jan 2024 12:15:07 +0000
+	s=arc-20240116; t=1706533981; c=relaxed/simple;
+	bh=EFeyZNe55OkGXa/T1yJqXJ+LwYv80+YyvZ1pwixNL8Y=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=l5stKfa1/IqpHB7YyCzOxDyMHp+VtVjUiC/zA/DgiiRaLnDF7gNjbwCOdEtwqxh3lzQgI/JzDs0AOxYQp3oUlKdRaQb702pB5jH4yUc+lLRgCcqRKTzfdSvUWnGTZVK9n2mgzzh/nojC2HoaaZsIZA/PzKM6nGuXxYFbo1Zai/w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lynxeye.de; spf=none smtp.mailfrom=lynxeye.de; arc=none smtp.client-ip=87.118.118.114
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lynxeye.de
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=lynxeye.de
+Received: by lynxeye.de (Postfix, from userid 501)
+	id 1492CE74016; Mon, 29 Jan 2024 14:12:52 +0100 (CET)
+X-Spam-Level: 
+Received: from [192.168.178.22] (a89-183-231-132.net-htp.de [89.183.231.132])
+	by lynxeye.de (Postfix) with ESMTPSA id 813FDE74012;
+	Mon, 29 Jan 2024 14:12:50 +0100 (CET)
+Message-ID: <8b56a3fa53435d7ad634d87b98bbebe80df337ef.camel@lynxeye.de>
+Subject: Re: Re: Uncached buffers from CMA DMA heap on some Arm devices?
+From: Lucas Stach <dev@lynxeye.de>
+To: Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Maxime Ripard
+	 <mripard@redhat.com>
+Cc: Pavel Machek <pavel@ucw.cz>, kernel list <linux-kernel@vger.kernel.org>,
+  Milan Zamazal <mzamazal@redhat.com>, Christoph Hellwig <hch@lst.de>,
+ iommu@lists.linux.dev, Will Deacon <will@kernel.org>,
+ catalin.marinas@arm.com, Bryan O'Donoghue <bryan.odonoghue@linaro.org>,
+ Andrey Konovalov <andrey.konovalov.ynk@gmail.com>, 
+ kieran.bingham@ideasonboard.com, Hans de Goede <hdegoede@redhat.com>
+Date: Mon, 29 Jan 2024 14:12:50 +0100
+In-Reply-To: <20240129120723.GB8131@pendragon.ideasonboard.com>
+References: <87bk9ahex7.fsf@redhat.com>
+	 <d2ff8df896d8a167e9abf447ae184ce2f5823852.camel@lynxeye.de>
+	 <Zbd8lOgVqfCrGUL7@duo.ucw.cz>
+	 <xd5ofun26gfdgn7hig3gipj5rgojqyuouwmii7xecgrbzyliil@y6rufxtwdmrc>
+	 <20240129120723.GB8131@pendragon.ideasonboard.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.48.4 (3.48.4-1.fc38) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next 1/7] dma: compile-out DMA sync op calls when not
- used
-Content-Language: en-GB
-To: Alexander Lobakin <aleksander.lobakin@intel.com>,
- Christoph Hellwig <hch@lst.de>
-Cc: "David S. Miller" <davem@davemloft.net>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Magnus Karlsson <magnus.karlsson@intel.com>,
- Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
- Alexander Duyck <alexanderduyck@fb.com>, bpf@vger.kernel.org,
- netdev@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240126135456.704351-1-aleksander.lobakin@intel.com>
- <20240126135456.704351-2-aleksander.lobakin@intel.com>
- <20240129061136.GD19258@lst.de>
- <4e23d103-ea1c-4fd3-852e-f7e2ec9170ad@intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <4e23d103-ea1c-4fd3-852e-f7e2ec9170ad@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 
-On 2024-01-29 11:07 am, Alexander Lobakin wrote:
-> From: Christoph Hellwig <hch@lst.de>
-> Date: Mon, 29 Jan 2024 07:11:36 +0100
-> 
->> On Fri, Jan 26, 2024 at 02:54:50PM +0100, Alexander Lobakin wrote:
->>> Some platforms do have DMA, but DMA there is always direct and coherent.
->>> Currently, even on such platforms DMA sync operations are compiled and
->>> called.
->>> Add a new hidden Kconfig symbol, DMA_NEED_SYNC, and set it only when
->>> either sync operations are needed or there is DMA ops or swiotlb
->>> enabled. Set dma_need_sync() and dma_skip_sync() (stub for now)
->>> depending on this symbol state and don't call sync ops when
->>> dma_skip_sync() is true.
->>> The change allows for future optimizations of DMA sync calls depending
->>> on compile-time or runtime conditions.
->>
->> So the idea of compiling out the calls sounds fine to me.  But what
->> is the point of the extra indirection through the __-prefixed calls?
-> 
-> Because dma_sync_* ops are external functions, not inlines, and in the
-> next patch I'm adding a check there.
-> 
->>
->> And if we need that (please document it in the commit log), please
->> make the wrappers proper inline functions and not macros.
+Am Montag, dem 29.01.2024 um 14:07 +0200 schrieb Laurent Pinchart:
+> On Mon, Jan 29, 2024 at 11:32:08AM +0100, Maxime Ripard wrote:
+> > On Mon, Jan 29, 2024 at 11:23:16AM +0100, Pavel Machek wrote:
+> > > Hi!
+> > >=20
+> > > > That's right and a reality you have to deal with on those small ARM
+> > > > systems. The ARM architecture allows for systems that don't enforce
+> > > > hardware coherency across the whole SoC and many of the small/cheap=
+ SoC
+> > > > variants make use of this architectural feature.
+> > > >=20
+> > > > What this means is that the CPU caches aren't coherent when it come=
+s to
+> > > > DMA from other masters like the video capture units. There are two =
+ways
+> > > > to enforce DMA coherency on such systems:
+> > > > 1. map the DMA buffers uncached on the CPU
+> > > > 2. require explicit cache maintenance when touching DMA buffers wit=
+h
+> > > > the CPU
+> > > >=20
+> > > > Option 1 is what you see is happening in your setup, as it is simpl=
+e,
+> > > > straight-forward and doesn't require any synchronization points.
+> > >=20
+> > > Yeah, and it also does not work :-).
+> > >=20
+> > > Userspace gets the buffers, and it is not really equipped to work wit=
+h
+> > > them. For example, on pinephone, memcpy() crashes on uncached
+> > > memory. I'm pretty sure user could have some kind of kernel-crashing
+> > > fun if he passed the uncached memory to futex or something similar.
+> >=20
+> > Uncached buffers are ubiquitous on arm/arm64 so there must be something
+> > else going on. And there's nothing to equip for, it's just a memory
+> > array you can access in any way you want (but very slowly).
+> >=20
+> > How does it not work?
+>=20
+> I agree, this should just work (albeit possibly slowly). A crash is a
+> sign something needs to be fixed.
+>=20
+Optimized memcpy implementations might use unligned access at the edges
+of the copy regions, which will in fact not work with uncached memory,
+as hardware unaligned access support on ARM(64) requires the bufferable
+memory attribute, so you might see aborts in this case.
 
-In fact those wrappers could perhaps subsume the existing stub 
-definitions, by starting with a refactor along these lines:
+write-combined mappings are bufferable and thus don't exhibit this
+issue.
 
-static inline dma_sync_x(...)
-{
-	if (IS_ENABLED(CONFIG_NEED_DMA_SYNC))
-		__dma_sync_x(...);
-}
+> > > > Option 2 could be implemented by allocating cached DMA buffers in t=
+he
+> > > > V4L2 device and then executing the necessary cache synchronization =
+in
+> > > > qbuf/dqbuf when ownership of the DMA buffer changes between CPU and=
+ DMA
+> > > > master. However this isn't guaranteed to be any faster, as the cach=
+e
+> > > > synchronization itself is a pretty heavy-weight operation when you =
+are
+> > > > dealing with buffer that are potentially multi-megabytes in size.
+> > >=20
+> > > Yes, cache synchronization can be slow, but IIRC it was on order of
+> > > milisecond in the worst case.. and copying megayte images is still
+> > > slower than that.
+>=20
+> Those numbers are platform-specific, you can't assume this to be true
+> everywhere.
+>=20
+Last time I looked at this was on a pretty old platform (Cortex-A9).
+There the TLB walks caused by the cache maintenance by virtual address
+was causing severe slowdowns, to the point where actually copying the
+data performs similar to the cache maintenance within noise margins,
+with the significant difference that copying actually causes the data
+to be cache hot for the following operations.
 
-Cheers,
-Robin.
+Regards,
+Lucas
