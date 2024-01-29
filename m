@@ -1,148 +1,150 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2084.outbound.protection.outlook.com [40.107.94.84])
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3293E154448;
-	Mon, 29 Jan 2024 15:44:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.84
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706543043; cv=fail; b=HsKJl50bqxxUYZNzIz/tFv0RvEK/etREryzoqdEKy5n0omvti37DIby4c1C2cTlb1WY8vFb70CUC4T+AVQ9BzyuicoCEZY42qqQI9aVaBHnm1MfCiaLsT/bNAVpcmLFpvkX9v51cD0LW48Fk/5GOGK1/qSqqRZeBFJTTfzh/w0w=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706543043; c=relaxed/simple;
-	bh=mD+kDuo/fltlv2p3cqxCVgko9OzrbT6hInnmEX9zGsk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=iQHimuRbZpJtojdn1NYYztC829jFaRjoCw0TBr1ZM6sofyW3FBgbFvjsJP++wljaBp1OR/6Cjh1Lyd2gmvRfbDc+F3CjErDZWcPOsGNIl8V6+l8R/qxYsUcqrzENX3PywG+ewZk62GtZp4hRbP0sBNeK8jZ8ZFNGMYBIU/hGA0Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=UVvyj654; arc=fail smtp.client-ip=40.107.94.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0EA3155A3F
+	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 16:15:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706544936; cv=none; b=Pngrw7KrJdrp78WWff13oERzFq9ISFZN6NqgUb2q3pwiYnptBTwlPLf8iEiFg81+8B8szkz61YcB4gQ4X1ZkZg5lCLrB7fvNHoFmQpev9vWCZhmCBiXcnqh+nI49OAsPj/VxK8o6K/4X210WC3l50CiPKuG5SeTCb3jWO7CKeqQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706544936; c=relaxed/simple;
+	bh=XAncuxs4rWD0OgmCqhjg24NGRyoTVI4B/LGYumcx7eU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WP08A5KD6b8vun3bEBQxV0k9gYJZ1sz60SjCS9qJaCMDrevcTxsCGeKuEUV8TuabNxru0GPYSRPMjFKvFAi98FyokaqH1EYzUN9kWlNPT/pgAVLt21YQAPp//xVdap8LayxPa2SNY9kJd4jpz3twKk2uYjXQ4vkn0RR92dhqeW8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=dsleu72F; arc=none smtp.client-ip=77.93.223.253
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="UVvyj654"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A90laNsUE7p56cQZxWYi+CrdWXj7/rSXEvPbPzFIdNKcObA65g2bj/fknndRUx8VPjqdZz3MaJdSjlO1mFiWUbsfiFp63xy7CMqIgZeAw5aPSSa8mL2u2HE9+IzBqw5F79Co6DMkjrgCdnDxtlG0RLapTsx9D2yZEo8sskeH8VTJDoRQiVRFbtP/VZcA9WxW9dif4XQRfYmTwsBt4HUfGbfRMArD2P8mQQ+FmVBC4/6D3vLD/0XCz82v+tQxcBz1EwSO5UsKtB9QhXqkISZnRXFfuKxnSN9cVzzRsi4yaArX+uVmbgBPYB4XcJr1uhiBOgmkFlGQqwZqLkUaIqmPUA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pS8XhJUUtgkn+Sx9b4dNYgDeelrmVQpo8VjTFf9EFyY=;
- b=TWXdrWIH1Hf55bBn2c73Rfwj1X+e+8I9pc5dtZrm0o9OyHXzM5mlj+YbxbIGzSgFbhTxnnrEu5APnsNn/nASUgxZkZcO+Q3DESYlL34yynCMnkDfWHNzFICXwp5b+byIUipTzM+LLzbmNpn3wEFwyRZhj7sjMRPE1sAOUSHUHlRh4CwCEL4Vy0nF+LM9MzL3SczFIJhEUBf5qJ5By1k3sMZhJwIFp1aaVwK4udl8zwZT586WC/+cacARiNe4b4alDu2HF1gu7qxBc9DgaQESw39jvWsyHVmWAHKN/lAeWi21khHJ6dQxl9WlWfXA7N4u7rpehNWiSuD8J2Kt/aAvzA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pS8XhJUUtgkn+Sx9b4dNYgDeelrmVQpo8VjTFf9EFyY=;
- b=UVvyj654zjHv3ERUM/tYGwtwdo+IDpBLVkeMJjiMfRop7woK6+wvyz0KYOCPB5LwnkNDBPPxZshZSiugRcDI8VrKyFytm2di4HOGVjtUmyevvq+9XHNRv8A9hZq0Xdd6T1V6HnO98lpLsjNnSyx/VPq9Geh+LMeFZMrIyUKOq3oA5T4uGy8Z57Eo+qk4AAqgOYwsmm4bXcavfqsNDIyF1OSSXB1ifojj4xwI5TD/sTZ3fUrDFWt7EvKt01NZB9d1Ji2wgpoIcxJdZEH+QM2eqpNB0N8s/pz/Fm/PcMXgLB8EP+EOvAzLImSi0iiSmtPHRLsyQEcfY8P/6q8AkHJdvA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by SJ2PR12MB8064.namprd12.prod.outlook.com (2603:10b6:a03:4cc::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.34; Mon, 29 Jan
- 2024 15:43:58 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873%6]) with mapi id 15.20.7228.029; Mon, 29 Jan 2024
- 15:43:58 +0000
-Date: Mon, 29 Jan 2024 11:43:56 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Joerg Roedel <joro@8bytes.org>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Moritz Fischer <mdf@kernel.org>,
-	Moritz Fischer <moritzf@google.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"patches@lists.linux.dev" <patches@lists.linux.dev>
-Subject: Re: [PATCH v4 03/16] iommu/arm-smmu-v3: Move
- arm_smmu_rmr_install_bypass_ste()
-Message-ID: <20240129154356.GA2421628@nvidia.com>
-References: <0-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
- <3-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
- <e1b1a2fbaf3f4312a6d6c27afdfaf7fd@huawei.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e1b1a2fbaf3f4312a6d6c27afdfaf7fd@huawei.com>
-X-ClientProxiedBy: SN6PR08CA0021.namprd08.prod.outlook.com
- (2603:10b6:805:66::34) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="dsleu72F"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 99EDE19B10F;
+	Mon, 29 Jan 2024 17:15:30 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=none dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1706544931; bh=XAncuxs4rWD0OgmCqhjg24NGRyoTVI4B/LGYumcx7eU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=dsleu72FyCpv2CVdZyOQ4qDP2dZxSOW2DxhiwEuIAxvWK2xXzcttGrNMuyn8VEXrj
+	 vF+F3MH82nP2XXx3t99+8r32fIBfyWy4gJjX6z+MGy1Aa1qV9PmnC1nuUNyQi6r6Ip
+	 EBkj3x+443gUm2azpuoNmXFwcDSHesZf6ETCscfiUi9cUSnrj2wpHRfMoA/ATMfSGs
+	 6QYnTA43RJlBVMt4i5+iY+BX9qMYMK5yhvH0Cxqs1P936iNBTE3RMslIm4Cgng+l9U
+	 syNNzLeprlQ30L+LIWVhFi5ZhSIEAMFx9bv0UaopqEx6iWtXj9NwG/07Oy94+WX7iY
+	 vSgKH1payk+Bw==
+Date: Mon, 29 Jan 2024 17:15:29 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, "David S. Miller"
+ <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+ <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Christoph Hellwig
+ <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
+ Magnus Karlsson <magnus.karlsson@intel.com>, Maciej Fijalkowski
+ <maciej.fijalkowski@intel.com>, Alexander Duyck <alexanderduyck@fb.com>,
+ <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <iommu@lists.linux.dev>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/7] dma: avoid expensive redundant calls for
+ sync operations
+Message-ID: <20240129171529.09cf6b65@meshulam.tesarici.cz>
+In-Reply-To: <6059bf0c-cfe6-41dd-8672-584c9c13b902@intel.com>
+References: <20240126135456.704351-1-aleksander.lobakin@intel.com>
+	<20240126135456.704351-3-aleksander.lobakin@intel.com>
+	<0f6f550c-3eee-46dc-8c42-baceaa237610@arm.com>
+	<7ff3cf5d-b3ff-4b52-9031-30a1cb71c0c9@intel.com>
+	<0cf72c00-21d9-4f1a-be14-80336da5dff4@arm.com>
+	<20240126194819.147cb4e2@meshulam.tesarici.cz>
+	<6059bf0c-cfe6-41dd-8672-584c9c13b902@intel.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|SJ2PR12MB8064:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3f3efb3a-427d-4e34-094e-08dc20e11bc1
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	wSv6wc8yQhWtyYLKef+0+BwHXGjq5rg6RZn7lXUKoUnKvieG4XTfPY1tCPld6h/4FtZT70MiNXgFCbWFWqO1L+/lCGHbrkKiI9zWoYZLNC99IKmmesGv5sTKmLH2iyWl2EwhdTdTeBU9vpkmYRSm8xtyrFr1F0rzsu9KwjpmQ9ow/wQl8MHPkjk2PMIqONk2B8JNkqb/WsobfamsC41raX4MzHQ+9p0YIBAAah+UhHFLHs+dtbE6sWukqxSLPLw7sbEfT06fXUQSeSmVBOot5BU2nioD8D3IwF4rdWDf3UtdK4ffA1JylZL7QdzARbCjK7J4lkQ9G6bHTPaEfbE0CSWTF69d+4Tytyv9joP+wgxS5iHUbNqH2ByI1PYK5A7eYwFffxke2CHuZ7/IOPl8MNxMojkKn8n2yWPSBo+QvU7QPt8wezS75NryvMq3KXaAY0yZY2kfGV82q0Cl0UgQ8UaZ00BXtMcpsqI2BpWXx/kpazNyjZJvsHG8sakCXSoeqD6MdZSDhQ+iJIhgWRMwM7a3CIfoqJsbVzgquVnbuOGkQwBR5sPnU8C9fe3Mk1nE
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(136003)(39860400002)(346002)(396003)(376002)(230922051799003)(1800799012)(186009)(64100799003)(451199024)(86362001)(316002)(2616005)(83380400001)(6512007)(6506007)(66476007)(66556008)(66946007)(6916009)(54906003)(1076003)(8676002)(38100700002)(4326008)(6486002)(26005)(8936002)(478600001)(2906002)(4744005)(5660300002)(33656002)(41300700001)(7416002)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?m7queZKIRKAsn6Ka6HS+WOFemSHbRisbm0dRP7EMv+TH2EraVQPb/zhesKbG?=
- =?us-ascii?Q?S/Od7G8eg+MZZKDBYFIlzEC0LiP0YBfL9c2jRCiT6AntQ7IGTd0weAMCopBt?=
- =?us-ascii?Q?4uQOF13K2GTna+mzT8ASZJu3YDyEleQK5ZbnffeaFSdZ+M3FJA+hT9CNOfwf?=
- =?us-ascii?Q?Nv/EGw8J7B+UOaIVtqBaQbBrog/vOxN2US2rzejJD0dMExhI2c1/KEVZ4lH7?=
- =?us-ascii?Q?+NQexJns+92JC1VceiGWBWoUASwp+RZq4NYPi7G/agnWb+NIubKB7cUkpTAV?=
- =?us-ascii?Q?Y9QxWL4WHJa5i1PDlE+Ug0yS5QAHbyeS2Gw9XPEecOeKAQXPkDEiGfTZoL1H?=
- =?us-ascii?Q?RLxXMYgPN+FujeSagUgIAxBbt+R+ZNfsLvfGGeG5cJehoODvymU/8FDSZ14+?=
- =?us-ascii?Q?JXuUSNwodRDOsvK3oaoI+FGJ4nDtZSOoaSGqFSJqeCjxPXa+uMOuKiqWTEkd?=
- =?us-ascii?Q?Ck0Yl3gJMfslobCHoJVSLV3oEcmADDNP6AHMHRcUlqa8uESahHwCfsValo56?=
- =?us-ascii?Q?YN8Zb6M55k1FOcgMHWOKe+nAnyGgR8d7WHkHm6Qy+oFaK/+0LuRFk1BJTNnu?=
- =?us-ascii?Q?AJwS1/Jg3RhKID6gEq8q4Jq7+8m0QS976QoR3MWnlK21VLT4uQ/z3RknyxV2?=
- =?us-ascii?Q?TuLH3grrBv4iAe/XCmB9caQaUYNaCDPSzfpo9b487WEexlFtCUCyRuxkq2bZ?=
- =?us-ascii?Q?flYijD6MBYE7p7m20a9m8JilKdYO3y+wc3vZKUC8zD9dQmXIeLcKz1vu4yvp?=
- =?us-ascii?Q?/oLz5/Ui6cFuO3CAhw5zgLvjxTAqXopwRreD8h8pCPmmI+sf7BmQ0Acrdw31?=
- =?us-ascii?Q?hIo3CE6IAsEYeeaz4+jnXw0T5YX95hsJL9nDQE+0mqwYySBYnr20cuIH58Qz?=
- =?us-ascii?Q?iuQEUPfQCmWWC9fACFaw//iedEbtpFWciiWXygVIUn8NGlq2JxbL1fwkgmz7?=
- =?us-ascii?Q?qKdDWiyAIzmSor0lG8no2NJjUoUwXb+XDckfPJdlq8BqG3Mk7rVtXwr3ERn6?=
- =?us-ascii?Q?bZK4dbplx+4b6HgQhlTIce9Joj3gVN8Vh79C9beitkib/d/n24jdWyJVXm9G?=
- =?us-ascii?Q?m35CdpI7Xt2bAjNTGONGC+msHge8IpeONBETVLKnFFa0pPedd6jxq1eD1Wta?=
- =?us-ascii?Q?6on5PL12B0c/pfSOdZhPVSqbNBMJ+WD1BsGu46KjbuCNsJ7UjW+3WmtyL0AZ?=
- =?us-ascii?Q?UJFecCO7OmB0aNjEnV1ls8YZT+8G0qd3aBF61AtrZ+dXKGsN2AWo3UaYQVLw?=
- =?us-ascii?Q?p0Snevbm0fxURSCe8LmpL0f5dlezjBaPxU0mejamwWL5zPZHkAIkobfwjEr/?=
- =?us-ascii?Q?eiM27DYcibRxnEJb2uWgcEXyvIzNiRYBSqvACm86seNfkHz1wMgaCsKuIqqS?=
- =?us-ascii?Q?WdYZdHlYh5+7nlT+u1/KiEq1BN/4v7Gr+n0t3eK1WuPKNvs7A+eBWZK50P7J?=
- =?us-ascii?Q?Y5mKdwKOVw25uZ8r7EVHZ6S0u13YzF6fW6OMz8i0ne3hae08bf6+TLsl6Yl3?=
- =?us-ascii?Q?e8Qi0vr0P/cqov5ahac5Cqxk/6Nfy/o9zkb7yt+Ni1ACSMrHBj2UZlNtElAn?=
- =?us-ascii?Q?aza44c0X574mdprasSE=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f3efb3a-427d-4e34-094e-08dc20e11bc1
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jan 2024 15:43:58.6296
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: b5UydIpZCJgo/SGfVi6JoEM3z/Q6kgCaYObFfIlUzGWqSWdJfQOKXyTSFS3NN7Ko
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8064
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 29, 2024 at 03:07:21PM +0000, Shameerali Kolothum Thodi wrote:
+On Mon, 29 Jan 2024 15:36:35 +0100
+Alexander Lobakin <aleksander.lobakin@intel.com> wrote:
 
-> > Logically arm_smmu_init_strtab_linear() is the function that allocates and
-> > populates the stream table with the initial value of the STEs. After this
-> > function returns the stream table should be fully ready.
-> > 
-> > arm_smmu_rmr_install_bypass_ste() adjusts the initial stream table to force
-> > any SIDs that the FW says have IOMMU_RESV_DIRECT to use bypass. This
-> > ensures there is no disruption to the identity mapping during boot.
-> > 
-> > Put arm_smmu_rmr_install_bypass_ste() into arm_smmu_init_strtab_linear(),
-> > it already executes immediately after arm_smmu_init_strtab_linear().
-> > 
-> > No functional change intended.
-> 
-> I think this actually changes the behavior and will cause regression as we
-> now install rmr  sids only for linear stream table not for SMMUv3 with 
-> 2-level stream table supported.
+> From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz>
+> Date: Fri, 26 Jan 2024 19:48:19 +0100
+>=20
+> > On Fri, 26 Jan 2024 17:21:24 +0000
+> > Robin Murphy <robin.murphy@arm.com> wrote:
+> >  =20
+> >> On 26/01/2024 4:45 pm, Alexander Lobakin wrote: =20
+> >>> From: Robin Murphy <robin.murphy@arm.com>
+> >>> Date: Fri, 26 Jan 2024 15:48:54 +0000
+> >>>    =20
+> >>>> On 26/01/2024 1:54 pm, Alexander Lobakin wrote:   =20
+> >>>>> From: Eric Dumazet <edumazet@google.com>
+> >>>>>
+> >>>>> Quite often, NIC devices do not need dma_sync operations on x86_64
+> >>>>> at least.
+> >>>>> Indeed, when dev_is_dma_coherent(dev) is true and
+> >>>>> dev_use_swiotlb(dev) is false, iommu_dma_sync_single_for_cpu()
+> >>>>> and friends do nothing.
+> >>>>>
+> >>>>> However, indirectly calling them when CONFIG_RETPOLINE=3Dy consumes=
+ about
+> >>>>> 10% of cycles on a cpu receiving packets from softirq at ~100Gbit r=
+ate.
+> >>>>> Even if/when CONFIG_RETPOLINE is not set, there is a cost of about =
+3%.
+> >>>>>
+> >>>>> Add dev->skip_dma_sync boolean which is set during the device
+> >>>>> initialization depending on the setup: dev_is_dma_coherent() for di=
+rect
+> >>>>> DMA, !(sync_single_for_device || sync_single_for_cpu) or positive r=
+esult
+> >>>>> from the new callback, dma_map_ops::can_skip_sync for non-NULL DMA =
+ops.
+> >>>>> Then later, if/when swiotlb is used for the first time, the flag
+> >>>>> is turned off, from swiotlb_tbl_map_single().   =20
+> >>>>
+> >>>> I think you could probably just promote the dma_uses_io_tlb flag from
+> >>>> SWIOTLB_DYNAMIC to a general SWIOTLB thing to serve this purpose now=
+.   =20
+> >>>
+> >>> Nice catch!
+> >>>    =20
+> >>>>
+> >>>> Similarly I don't think a new op is necessary now that we have
+> >>>> dma_map_ops.flags. A simple static flag to indicate that sync may be=
+> skipped under the same conditions as implied for dma-direct - i.e.
+> >>>> dev_is_dma_coherent(dev) && !dev->dma_use_io_tlb - seems like it oug=
+ht
+> >>>> to suffice.   =20
+> >>>
+> >>> In my initial implementation, I used a new dma_map_ops flag, but then=
+ I
+> >>> realized different DMA ops may require or not require syncing under
+> >>> different conditions, not only dev_is_dma_coherent().
+> >>> Or am I wrong and they would always be the same?   =20
+> >>
+> >> I think it's safe to assume that, as with P2P support, this will only=
+=20
+> >> matter for dma-direct and iommu-dma for the foreseeable future, and=20
+> >> those do currently share the same conditions as above. Thus we may as=
+=20
+> >> well keep things simple for now, and if anything ever does have cause =
+to=20
+> >> change, it can be the future's problem to keep this mechanism working =
+as=20
+> >> intended. =20
+> >=20
+> > Can we have a comment that states this assumption along with the flag?
+> > Because when it breaks, it will keep someone cursing for days why DMA
+> > sometimes fails on their device before they find out it's not synced. =
+=20
+>=20
+> BTW, dma_skip_sync is set right before driver->probe(), so that if any
+> problematic device appears, it could easily be fixed by adding one line
+> to its probe callback.
 
-Oh you are right, it should be in arm_smmu_init_strtab()
+Ah, perfect!
 
-Thanks!
-Jason
+Petr T
