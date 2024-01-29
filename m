@@ -1,212 +1,114 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E9AE335B5
-	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 19:13:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADB026F06D
+	for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 19:26:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706555601; cv=none; b=VnjqV6U+EdIVNlt1pbj30phj2S+wkDLTItfUfNwWZ5+i/ArHMKm9JQmFEFQgNe03Zw3bHCctokwkq8/hPdAJ05VhvebcdCAbiMQ/sZKpTlVlhd+9QXwvnFgkihAp3C+6s7QRVea+en4ka1/rMuUTanMCpSSAZHzxM7eaYdxUnQc=
+	t=1706556386; cv=none; b=gz8q6rc4p+RWMGlxYg+RzzHw/r47FtQnWArYIos7R+VhKPHpn69I6h4EjL4xH06wA7ofB1gPMUi0TRB94OFjkI62OJ9jQ0v16Rt7P20GAgKGlPBiq9iZma+9VGkPZO7f0yV+FTIEBcxBaD4n89DF5zUgXzkdAoLm/SwKL5s/Gbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706555601; c=relaxed/simple;
-	bh=k+rFaP2hx6Dhtbm5NmnswHdaELq6UccwTB1MNQilwlo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LncKq538kN/J4QWSgjRxxY2cJxk9Ql2V1TcK+H1pmsG1aN8YVsJ137xDTy+iS4+1iMBY0tSnYmXskZt6mGOVSPEvKovw+MGUG6njxLf9QdzIHDRgYAV8Qc5FJlVfg0kOfhKmr/qlGQ9t/0NAvqn1ZdyMtuxMik4C7cKmzhhcBGs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=R2cjUdKe; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1706556386; c=relaxed/simple;
+	bh=eRPRewGUYrmJB7VHNVS88AqNYzIaeHgFC2AnrKWWbtQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JGG6tgTVqPIgmwskbbJuduoKTtjwvZf27ETcVdyNXRbbCWFdP8x8W2rNAxb2EKNvHRCdRS3KtmwbqsZp7juTR6Fdfwug40gvLLoPzdV/dTf3k5gnhk8VkekoPmO4mjGmOPI8xPKrsiwMhHgHvVxoTb1eiEpR+Bl1joNY7CEZNGY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=UJeR+Nt0; arc=none smtp.client-ip=77.93.223.253
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="R2cjUdKe"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-40ef9382752so9125e9.0
-        for <iommu@lists.linux.dev>; Mon, 29 Jan 2024 11:13:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1706555598; x=1707160398; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=8BI/hrl4gqaMRwJZbaZdSazD5aJZfh2xP9rdDosVdXM=;
-        b=R2cjUdKeM0d6p6TSm+UrdzlUMlzpTpIE7k/rWzh4xshERR+jaWADnm1xSbPeTXyAvQ
-         mbRVSgqUmrO/gayPmTujFhygm+pSpKMJFtZx0j7uz2Rtd9Ezj++iAd7PXX34gzRD+OfH
-         7LKEPy1Zr4nMPKX5diC0eER87/AX/r0zN4Rs9sFM0gy1hylPRaLd0+0UEWuDMf/chV9/
-         63s9yBwjyp1nSFk7RzGOR6PM461YxQZg0H4DdE+gvlJR6ZNI6hcHLpAt0VdRDaXI00f4
-         OeaJkaRjX3gYYIhbG+proXs8vMnsMEw9+U7pfsB2um51L+Y2Hliv17KURLOlFdoLX8c5
-         BrRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706555598; x=1707160398;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8BI/hrl4gqaMRwJZbaZdSazD5aJZfh2xP9rdDosVdXM=;
-        b=kuteY6ZM/U9zEzVmRsOgk8Zqmp6wAETFZA9w5q9nxCm3WLnwsypdEW7Uju3Arwh6Uk
-         wMRLQQhkh8IzAD5wLRMEFAl46iwJvqSvr9j4tR0Z8SupsRdKrzfOPD7HlEz4Ux+9xCrQ
-         fLJWk65uLrQI/L6VcnGzlGN2epKjnak5c9VeznFKVifurn89nDwnJZ8+SQOrFZ4G2Cs4
-         3Ub42wh+sEVpzMRR17+azwoojduKZuYEialHP4HWVwCsUqLv9GXbbU4gD0MLRgDR5Y1d
-         UnjVtqglNVdsOHf3V7ju7mObbzKIis6rlKlvFHo1n/UTqo6MMlmyoavGe/+hpBeeWjRz
-         zDPg==
-X-Gm-Message-State: AOJu0YyXf+aLBLQwDZdIKxCICWYXH/ku8cp4dJroPSf1DWCH2gnKPRd5
-	hgE+N+NS0c2hNGMWvdC+FabW7KcwwhL6FpWtN7RQlqNhgUoagXyL1ztuPboYEA==
-X-Google-Smtp-Source: AGHT+IH+hlBD7FN2bCsw/rzLuOPSHSMxINUDaY8nxAT10J4O4msNXPrRQpqMAB1wNW9m55yczjCuDA==
-X-Received: by 2002:a05:600c:6020:b0:40e:5274:e2ba with SMTP id az32-20020a05600c602000b0040e5274e2bamr17162wmb.4.1706555597705;
-        Mon, 29 Jan 2024 11:13:17 -0800 (PST)
-Received: from google.com (185.83.140.34.bc.googleusercontent.com. [34.140.83.185])
-        by smtp.gmail.com with ESMTPSA id i3-20020a05600c354300b0040efcec0a6asm477834wmq.42.2024.01.29.11.13.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Jan 2024 11:13:17 -0800 (PST)
-Date: Mon, 29 Jan 2024 19:13:13 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v3 00/19] Update SMMUv3 to the modern iommu API (part 1/3)
-Message-ID: <Zbf4ySDT0bAMXXwO@google.com>
-References: <0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="UJeR+Nt0"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 26A9619A629;
+	Mon, 29 Jan 2024 20:26:21 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tesarici.cz; s=mail;
+	t=1706556381; bh=eRPRewGUYrmJB7VHNVS88AqNYzIaeHgFC2AnrKWWbtQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=UJeR+Nt0DKoETJWrxdRAiyM+J2e/o9p+yX33ckYyEr8foaq6h/iqk49xDD5wY1o73
+	 TOoE9f9UM4Eb6Fai5OB2pvYXq1CXCyQ+uWMgncQjJuogOkW8kor58smy3fc9nw9WfG
+	 9XajgC+9R1MweY7RZjUvPxXTktk0GtGgBEulK+G00D1GVr0c4mry4oj3r5dWIPyL2f
+	 6XiK30IvAedqtMWiP5JE6EruLql3lv+MslXQlz3HCmB0WY9XNhHYc3uBOQs948QDEp
+	 HS7lbubyUCoi0H9zn1wHXDHA8A2mFoWrkGtZhJOOflBSqhk40TciR5sZlujSklBC8Z
+	 eIqL0S7QG/FhA==
+Date: Mon, 29 Jan 2024 20:26:19 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Will Deacon <will@kernel.org>
+Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
+ iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
+ Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
+ <decui@microsoft.com>
+Subject: Re: [PATCH 0/2] Fix double allocation in swiotlb_alloc()
+Message-ID: <20240129202619.69178dea@meshulam.tesarici.cz>
+In-Reply-To: <20240129184255.GA12631@willie-the-truck>
+References: <20240126151956.10014-1-will@kernel.org>
+	<20240126172059.48ad7b9f@meshulam.tesarici.cz>
+	<20240129184255.GA12631@willie-the-truck>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0-v3-d794f8d934da+411a-smmuv3_newapi_p1_jgg@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Hi Jason,
+On Mon, 29 Jan 2024 18:42:55 +0000
+Will Deacon <will@kernel.org> wrote:
 
-On Tue, Dec 05, 2023 at 03:14:32PM -0400, Jason Gunthorpe wrote:
-> The SMMUv3 driver was originally written in 2015 when the iommu driver
-> facing API looked quite different. The API has evolved, especially lately,
-> and the driver has fallen behind.
-> 
-> This work aims to bring make the SMMUv3 driver the best IOMMU driver with
-> the most comprehensive implementation of the API. After all parts it
-> addresses:
-> 
->  - Global static BLOCKED and IDENTITY domains with 'never fail' attach
->    semantics. BLOCKED is desired for efficient VFIO.
-> 
->  - Support map before attach for PAGING iommu_domains.
-> 
->  - attach_dev failure does not change the HW configuration.
-> 
->  - Fully hitless transitions between IDENTITY -> DMA -> IDENTITY.
->    The API has IOMMU_RESV_DIRECT which is expected to be
->    continuously translating.
-> 
->  - Safe transitions between PAGING -> BLOCKED, do not ever temporarily
->    do IDENTITY. This is required for iommufd security.
-> 
->  - Full PASID API support including:
->     - S1/SVA domains attached to PASIDs
->     - IDENTITY/BLOCKED/S1 attached to RID
->     - Change of the RID domain while PASIDs are attached
-> 
->  - Streamlined SVA support using the core infrastructure
-> 
->  - Hitless, whenever possible, change between two domains
-> 
->  - iommufd IOMMU_GET_HW_INFO, IOMMU_HWPT_ALLOC_NEST_PARENT, and
->    IOMMU_DOMAIN_NESTED support
-> 
-> Over all these things are going to become more accessible to iommufd, and
-> exposed to VMs, so it is important for the driver to have a robust
-> implementation of the API.
-> 
-> The work is split into three parts, with this part largely focusing on the
-> STE and building up to the BLOCKED & IDENTITY global static domains.
-> 
-> The second part largely focuses on the CD and builds up to having a common
-> PASID infrastructure that SVA and S1 domains equally use.
-> 
-> The third part has some random cleanups and the iommufd related parts.
-> 
-> Overall this takes the approach of turning the STE/CD programming upside
-> down where the CD/STE value is computed right at a driver callback
-> function and then pushed down into programming logic. The programming
-> logic hides the details of the required CD/STE tear-less update. This
-> makes the CD/STE functions independent of the arm_smmu_domain which makes
-> it fairly straightforward to untangle all the different call chains, and
-> add news ones.
-> 
-> Further, this frees the arm_smmu_domain related logic from keeping track
-> of what state the STE/CD is currently in so it can carefully sequence the
-> correct update. There are many new update pairs that are subtly introduced
-> as the work progresses.
-> 
-> The locking to support BTM via arm_smmu_asid_lock is a bit subtle right
-> now and patches throughout this work adjust and tighten this so that it is
-> clearer and doesn't get broken.
-> 
-> Once the lower STE layers no longer need to touch arm_smmu_domain we can
-> isolate struct arm_smmu_domain to be only used for PAGING domains, audit
-> all the to_smmu_domain() calls to be only in PAGING domain ops, and
-> introduce the normal global static BLOCKED/IDENTITY domains using the new
-> STE infrastructure. Part 2 will ultimately migrate SVA over to use
-> arm_smmu_domain as well.
-> 
-> All parts are on github:
-> 
->  https://github.com/jgunthorpe/linux/commits/smmuv3_newapi
-I added some comments/questions for this series, but didn’t review it
-thoroughly as I see the code on github is quite different from these patches,
-and it seems to be targeted for v4. Do you have any plans to send it soon?
+> On Fri, Jan 26, 2024 at 05:20:59PM +0100, Petr Tesa=C5=99=C3=ADk wrote:
+> > On Fri, 26 Jan 2024 15:19:54 +0000
+> > Will Deacon <will@kernel.org> wrote:
+> >  =20
+> > > Hi folks,
+> > >=20
+> > > These two patches fix a nasty double allocation problem in swiotlb_al=
+loc()
+> > > and add a diagnostic to help catch any similar issues in future. This=
+ was
+> > > a royal pain to track down and I've had to make a bit of a leap at the
+> > > correct alignment semantics (i.e. iotlb_align_mask vs alloc_align_mas=
+k). =20
+> >=20
+> > Welcome to the club. I believe you had to re-discover what I described =
+here:
+> >=20
+> >   https://lore.kernel.org/linux-iommu/20231108101347.77cab795@meshulam.=
+tesarici.cz/ =20
+>=20
+> Lucky me...
+>=20
+> > The relevant part would be this:
+> >=20
+> >   To sum it up, there are two types of alignment:
+> >=20
+> >   1. specified by a device's min_align_mask; this says how many low
+> >      bits of a buffer's physical address must be preserved,
+> >=20
+> >   2. specified by allocation size and/or the alignment parameter;
+> >      this says how many low bits in the first IO TLB slot's physical
+> >      address must be zero. =20
+> >=20
+> > Fix for that has been sitting on my TODO list for too long. :-( =20
+>=20
+> FWIW, it did _used_ to work (or appear to work), so it would be good to
+> at least get it back to the old behaviour if nothing else.
 
-> 
-> v3:
->  - Use some local variables in arm_smmu_get_step_for_sid() for clarity
->  - White space and spelling changes
->  - Commit message updates
->  - Keep master->domain_head initialized to avoid a list_del corruption
-> v2: https://lore.kernel.org/r/0-v2-de8b10590bf5+400-smmuv3_newapi_p1_jgg@nvidia.com
->  - Rebased on v6.7-rc1
->  - Improve the comment for arm_smmu_write_entry_step()
->  - Fix the botched memcmp
->  - Document the spec justification for the SHCFG exclusion in used
->  - Include STRTAB_STE_1_SHCFG for STRTAB_STE_0_CFG_S2_TRANS in used
->  - WARN_ON for unknown STEs in used
->  - Fix error unwind in arm_smmu_attach_dev()
->  - Whitespace, spelling, and checkpatch related items
-> v1: https://lore.kernel.org/r/0-v1-e289ca9121be+2be-smmuv3_newapi_p1_jgg@nvidia.com
-> 
-> Jason Gunthorpe (19):
->   iommu/arm-smmu-v3: Add a type for the STE
->   iommu/arm-smmu-v3: Master cannot be NULL in
->     arm_smmu_write_strtab_ent()
->   iommu/arm-smmu-v3: Remove ARM_SMMU_DOMAIN_NESTED
->   iommu/arm-smmu-v3: Make STE programming independent of the callers
->   iommu/arm-smmu-v3: Consolidate the STE generation for abort/bypass
->   iommu/arm-smmu-v3: Move arm_smmu_rmr_install_bypass_ste()
->   iommu/arm-smmu-v3: Move the STE generation for S1 and S2 domains into
->     functions
->   iommu/arm-smmu-v3: Build the whole STE in
->     arm_smmu_make_s2_domain_ste()
->   iommu/arm-smmu-v3: Hold arm_smmu_asid_lock during all of attach_dev
->   iommu/arm-smmu-v3: Compute the STE only once for each master
->   iommu/arm-smmu-v3: Do not change the STE twice during
->     arm_smmu_attach_dev()
->   iommu/arm-smmu-v3: Put writing the context descriptor in the right
->     order
->   iommu/arm-smmu-v3: Pass smmu_domain to arm_enable/disable_ats()
->   iommu/arm-smmu-v3: Remove arm_smmu_master->domain
->   iommu/arm-smmu-v3: Add a global static IDENTITY domain
->   iommu/arm-smmu-v3: Add a global static BLOCKED domain
->   iommu/arm-smmu-v3: Use the identity/blocked domain during release
->   iommu/arm-smmu-v3: Pass arm_smmu_domain and arm_smmu_device to
->     finalize
->   iommu/arm-smmu-v3: Convert to domain_alloc_paging()
-> 
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 729 +++++++++++++-------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  12 +-
->  2 files changed, 477 insertions(+), 264 deletions(-)
-> 
-> 
-> base-commit: ca7fcaff577c92d85f0e05cc7be79759155fe328
-> -- 
-> 2.43.0
->
-Thanks,
-Mostafa
+Yes, now that I look at the code, it was probably misunderstanding on
+my side as to how the three different alignment requirements are
+supposed to work together.
+
+AFAICT your patch addresses everything that has ever worked. The rest
+needs some more thought, and before I touch this loop again, I'll write
+a proper test case.
+
+Petr T
+
+> Anyway, cheers for reviewing the patches. I'll go through your
+> comments now...
+>=20
+> Will
+
