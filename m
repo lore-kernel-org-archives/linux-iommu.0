@@ -1,231 +1,125 @@
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78CF438DE0
-	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 16:43:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4A4612839E;
+	Tue, 30 Jan 2024 17:11:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706632991; cv=none; b=SabpEaf0Nm2Zn3MkWltbPly5OQLX5J11+jofBQkTZRrwg805QfQIRxsAe8QsKr4Dvm4kUlDzKBiWaUJoCxI5VnjWYTow39OjyHlfKa/fGaDDYuJSM7EYO3MK7axceYn9K8SVri+mKiHX7/4ca9itzwe/vjDICUruvcDPbZi1jkQ=
+	t=1706634703; cv=none; b=sPh8uRG6MaMIXJmV2ihFhVTG43hX2LBUasl7fdx2tuqcpR/Zs86+NQ71/PTNrQvHn/7awoqG9p74bUJv80ozPNpwwjD7dWRDH0mttXOdQ5La0bGlz6pKzPR5fNBa3FF4x0LtsIlr6FTC9JsBwj5A4gN9U+dK8ozQO0jAvI2Ufss=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706632991; c=relaxed/simple;
-	bh=Kb5PrKiPOgqplZ89pZOWEqk6h7d4LV1jujZTZpIvh4k=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Y64IH2mg/squJDs/R2VR0CZW64x7N9ZoFR6fEeWopALCu1gV0uEKJQeCrKDLVzvyd7GToRS0VCWXzmUEfRsUE+IQDMnkpYtRfy8mBo9vra8g9uxFZ65NJSX4IAvLYlF8/SvbqU/3fkJ0t+q8/QkmWEbGpYKcHSzr+mYa7uOIP60=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SxCv7gQO; arc=none smtp.client-ip=209.85.222.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SxCv7gQO"
-Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-783cd265c76so239690585a.2
-        for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 08:43:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1706632988; x=1707237788; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=afivU5ukzroUUjSv6dIA62TuQmhqdbJqObxkN1yxecQ=;
-        b=SxCv7gQO3WOLffcU2taoNslUowV/yUDSwG8AJGY9ueyMoiMtIIBvgKMrcmlcCwBD3Q
-         2StU2/CuuFWfEKx6mmZcNgVIZBDfhC66ve62aoC99cd/tJfKVNVvNS1MkhviNeZn8KWA
-         r+ugWdCjYCr3yXiqp2WHVDZbBzx6O8gfHIZIlGp2sKWHQD3Gs5w/j0IM+l0BbbDD5LiF
-         FmHk1ezq5WOvRdjleiwaoWyuWeZokOR2ZrMV0vpaJIItsQaK6FkbJl17+gD28fr/P8+d
-         aJKjz97v+NuCMBkdfQHOhObqn42J/ULJuj3PgZnmrVAPn3aBVvVqZWVCQhyVDsp0cnPn
-         B37w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706632988; x=1707237788;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=afivU5ukzroUUjSv6dIA62TuQmhqdbJqObxkN1yxecQ=;
-        b=bSxr3P1O5f7wLgj5Ue3TlkZAS9kSlLEVqoz+J3v99x62JbyppUWe05uYUAPni5yPwB
-         bxuZA539o8JWDyD9HcbJqu5D7MeMBbArvLGCcc1g+3Rwlcrm7jVVA5WJ/BBOq9CotQsT
-         +CrcekVcdKj01BWRPEKRgiUMkq9Sk0P00no4sfzUOcO/885kxn8gMrq+vhx1PV4pp1hc
-         6O/s4Yb50Uw4vg/UyP+vzBLpvgGVzSpNdTKbotlzpt8jczWbV1RIWOcY4kh7TREDaz0I
-         oRGB7qvpWCN/XpVEMlz9gFLbWTGTwBhJPx8LRr/c53xOGATodJZWHc4BBF2gSL6+3pw+
-         5J9Q==
-X-Gm-Message-State: AOJu0YyyOwRqgimrsUEAZA8WOBrK4w9dp4H9CS84fCA+CWGlVMmtyapV
-	QOYrxSbGLw7iIolzXS3TJPMTXPMQGlNlwKCRY09oxfJq8RUVgLbWKbH6skfFB3bNHZERzgj9qD8
-	CUjDucEBupSI9iBy5s5VIZmbTEFhgW9+1MrOi
-X-Google-Smtp-Source: AGHT+IGCcD7PVaq/cz09ZQVjo9JbEtUXpAooRm0ZDYVkjI4/fdo/VvkMg1PDcsBy+2LIz+Ukv1U3YQPLDOpR5Jivfxc=
-X-Received: by 2002:a05:6214:194e:b0:685:4bd7:8bb3 with SMTP id
- q14-20020a056214194e00b006854bd78bb3mr9344578qvk.2.1706632987877; Tue, 30 Jan
- 2024 08:43:07 -0800 (PST)
+	s=arc-20240116; t=1706634703; c=relaxed/simple;
+	bh=JQcNQuaaB+nXiA7OcisbVo1daD8zQuNELXoIue+oNzw=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=Ty/u0X4A254vgxA5mx5PkoBCjnDv5xfcif75YGrmTgQV1qPd1ov/UCUAWaKDVanstfODmT7g3bdIIhUUimR5OJ02SX+bijorDtWj5oFDmN1A14yqfhPYC57pJmSWaEkUJa7c7maE/+dEupOH/1g6cIQRWNdy7kT+leqCuw2f8Ls=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.31])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4TPWpC5YCMz6JB5c;
+	Wed, 31 Jan 2024 01:08:19 +0800 (CST)
+Received: from lhrpeml100005.china.huawei.com (unknown [7.191.160.25])
+	by mail.maildlp.com (Postfix) with ESMTPS id 338D21400D3;
+	Wed, 31 Jan 2024 01:11:37 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ lhrpeml100005.china.huawei.com (7.191.160.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Tue, 30 Jan 2024 17:11:36 +0000
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
+ Tue, 30 Jan 2024 17:11:36 +0000
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Joerg Roedel
+	<joro@8bytes.org>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer
+	<mdf@kernel.org>, Michael Shavit <mshavit@google.com>, Nicolin Chen
+	<nicolinc@nvidia.com>, "patches@lists.linux.dev" <patches@lists.linux.dev>
+Subject: RE: [PATCH v4 01/27] iommu/arm-smmu-v3: Check that the RID domain is
+ S1 in SVA
+Thread-Topic: [PATCH v4 01/27] iommu/arm-smmu-v3: Check that the RID domain is
+ S1 in SVA
+Thread-Index: AQHaUIOwEvsu/yJdMEqnvQfiRYY9c7DyDZ2ggAB9XwCAABCyEA==
+Date: Tue, 30 Jan 2024 17:11:36 +0000
+Message-ID: <c8cf99b2532644de9b38c44019bf83a2@huawei.com>
+References: <0-v4-e7091cdd9e8d+43b1-smmuv3_newapi_p2_jgg@nvidia.com>
+ <1-v4-e7091cdd9e8d+43b1-smmuv3_newapi_p2_jgg@nvidia.com>
+ <b3a7b564dcef4b518af0493155b67cc6@huawei.com>
+ <20240130160430.GC1455070@nvidia.com>
+In-Reply-To: <20240130160430.GC1455070@nvidia.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240112055251.36101-1-vannapurve@google.com>
-In-Reply-To: <20240112055251.36101-1-vannapurve@google.com>
-From: Vishal Annapurve <vannapurve@google.com>
-Date: Tue, 30 Jan 2024 22:12:54 +0530
-Message-ID: <CAGtprH9FA3-RetE=6i7ezxfV0qEV-8z3HLgPEPY=pzuxSiOD+w@mail.gmail.com>
-Subject: Re: [RFC V1 0/5] x86: CVMs: Align memory conversions to 2M granularity
-To: x86@kernel.org, linux-kernel@vger.kernel.org, hch@lst.de, 
-	petrtesarik@huaweicloud.com, Dave Hansen <dave.hansen@linux.intel.com>, 
-	Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
-	m.szyprowski@samsung.com, robin.murphy@arm.com
-Cc: pbonzini@redhat.com, rientjes@google.com, seanjc@google.com, 
-	erdemaktas@google.com, ackerleytng@google.com, jxgao@google.com, 
-	sagis@google.com, oupton@google.com, peterx@redhat.com, vkuznets@redhat.com, 
-	dmatlack@google.com, pgonda@google.com, michael.roth@amd.com, 
-	kirill@shutemov.name, thomas.lendacky@amd.com, linux-coco@lists.linux.dev, 
-	chao.p.peng@linux.intel.com, isaku.yamahata@gmail.com, andrew.jones@linux.dev, 
-	corbet@lwn.net, rostedt@goodmis.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jan 12, 2024 at 11:22=E2=80=AFAM Vishal Annapurve <vannapurve@googl=
-e.com> wrote:
->
-> Goal of this series is aligning memory conversion requests from CVMs to
-> huge page sizes to allow better host side management of guest memory and
-> optimized page table walks.
->
-> This patch series is partially tested and needs more work, I am seeking
-> feedback from wider community before making further progress.
->
-> Background
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> Confidential VMs(CVMs) support two types of guest memory ranges:
-> 1) Private Memory: Intended to be consumed/modified only by the CVM.
-> 2) Shared Memory: visible to both guest/host components, used for
-> non-trusted IO.
->
-> Guest memfd [1] support is set to be merged upstream to handle guest priv=
-ate
-> memory isolation from host usersapace. Guest memfd approach allows follow=
-ing
-> setup:
-> * private memory backed using the guest memfd file which is not accessibl=
-e
->   from host userspace.
-> * Shared memory backed by tmpfs/hugetlbfs files that are accessible from
->   host userspace.
->
-> Userspace VMM needs to register two backing stores for all of the guest
-> memory ranges:
-> * HVA for shared memory
-> * Guest memfd ranges for private memory
->
-> KVM keeps track of shared/private guest memory ranges that can be updated=
- at
-> runtime using IOCTLs. This allows KVM to back the guest memory using eith=
-er HVA
-> (shared) or guest memfd file offsets (private) based on the attributes of=
- the
-> guest memory ranges.
->
-> In this setup, there is possibility of "double allocation" i.e. scenarios=
- where
-> both shared and private memory backing stores mapped to the same guest me=
-mory
-> ranges have memory allocated.
->
-> Guest issues an hypercall to convert the memory types which is forwarded =
-by KVM
-> to the host userspace.
-> Userspace VMM is supposed to handle conversion as follows:
-> 1) Private to shared conversion:
->   * Update guest memory attributes for the range to be shared using KVM
->     supported IOCTLs.
->     - While handling this IOCTL, KVM will unmap EPT/NPT entries correspon=
-ding
->       to the guest memory being converted.
->   * Unback the guest memfd range.
-> 2) Shared to private conversion:
->   * Update guest memory attributes for the range to be private using KVM
->     supported IOCTLs.
->     - While handling this IOCTL, KVM will unmap EPT/NPT entries correspon=
-ding
->       to the guest memory being converted.
->   * Unback the shared memory file.
->
-> Note that unbacking needs to be done for both kinds of conversions in ord=
-er to
-> avoid double allocation.
->
-> Problem
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> CVMs can convert memory between these two types at 4K granularity. Conver=
-sion
-> done at 4K granularity causes issues when using guest memfd support
-> with hugetlb/Hugepage backed guest private memory:
-> 1) Hugetlb fs doesn't allow freeing subpage ranges when punching holes,
-> causing all the private to shared memory conversions to result in double
-> allocation.
-> 2) Even if a new fs is implemented for guest memfd that allows splitting
-> hugepages, punching holes at 4K will cause:
->    - loss of vmemmmap optimization [2]
->    - more memory for EPT/NPT entries and extra pagetable walks for guest
->      side accesses.
->    - Shared memory mappings to consume more host pagetable entries and
->      extra pagetalble walks for host side access.
->    - Higher number of conversions with additional overhead of VM exits
->      serviced by host userspace.
->
-> Memory conversion scenarios in the guest that are of major concern:
-> - SWIOTLB area conversion early during boot.
->    * dma_map_* API invocations for CVMs result in using bounce buffers
->      from SWIOTLB region which is already marked as shared.
-> - Device drivers allocating memory using dma_alloc_* APIs at runtime
->   that bypass SWIOTLB.
->
-> Proposal
-> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> To counter above issues, this series proposes following:
-> 1) Use boot time allocated SWIOTLB pools for all DMA memory allocated
-> using dma_alloc_* APIs.
-> 2) Increase memory allocated at boot for SWIOTLB from 6% to 8% for CVMs.
-> 3) Enable dynamic SWIOTLB [4] by default for CVMs so that SWITLB can be
-> scaled up as needed.
-> 4) Ensure SWIOTLB pool is 2MB aligned so that all the conversions happen =
-at
-> 2M granularity once during boot.
-> 5) Add a check to ensure all conversions happen at 2M granularity.
->
-> ** This series leaves out some of the conversion sites which might not
-> be 2M aligned but should be easy to fix once the approach is finalized. *=
-*
->
-> 1G alignment for conversion:
-> * Using 1G alignment may cause over-allocated SWIOTLB buffers but might
->   be acceptable for CVMs depending on more considerations.
-> * It might be challenging to use 1G aligned conversion in OVMF. 2M
->   alignment should be achievable with OVMF changes [3].
->
-> Alternatives could be:
-> 1) Separate hugepage aligned DMA pools setup by individual device drivers=
- in
-> case of CVMs.
->
-> [1] https://lore.kernel.org/linux-mips/20231105163040.14904-1-pbonzini@re=
-dhat.com/
-> [2] https://www.kernel.org/doc/html/next/mm/vmemmap_dedup.html
-> [3] https://github.com/tianocore/edk2/pull/3784
-> [4] https://lore.kernel.org/lkml/20230908080031.GA7848@lst.de/T/
->
-> Vishal Annapurve (5):
->   swiotlb: Support allocating DMA memory from SWIOTLB
->   swiotlb: Allow setting up default alignment of SWIOTLB region
->   x86: CVMs: Enable dynamic swiotlb by default for CVMs
->   x86: CVMs: Allow allocating all DMA memory from SWIOTLB
->   x86: CVMs: Ensure that memory conversions happen at 2M alignment
->
->  arch/x86/Kconfig             |  2 ++
->  arch/x86/kernel/pci-dma.c    |  2 +-
->  arch/x86/mm/mem_encrypt.c    |  8 ++++++--
->  arch/x86/mm/pat/set_memory.c |  6 ++++--
->  include/linux/swiotlb.h      | 22 ++++++----------------
->  kernel/dma/direct.c          |  4 ++--
->  kernel/dma/swiotlb.c         | 17 ++++++++++++-----
->  7 files changed, 33 insertions(+), 28 deletions(-)
->
-> --
-> 2.43.0.275.g3460e3d667-goog
->
 
-Ping for review of this series.
+
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Tuesday, January 30, 2024 4:05 PM
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> Cc: iommu@lists.linux.dev; Joerg Roedel <joro@8bytes.org>; linux-arm-
+> kernel@lists.infradead.org; Robin Murphy <robin.murphy@arm.com>; Will
+> Deacon <will@kernel.org>; Eric Auger <eric.auger@redhat.com>; Jean-
+> Philippe Brucker <jean-philippe@linaro.org>; Moritz Fischer
+> <mdf@kernel.org>; Michael Shavit <mshavit@google.com>; Nicolin Chen
+> <nicolinc@nvidia.com>; patches@lists.linux.dev
+> Subject: Re: [PATCH v4 01/27] iommu/arm-smmu-v3: Check that the RID
+> domain is S1 in SVA
+>=20
+> On Tue, Jan 30, 2024 at 08:46:10AM +0000, Shameerali Kolothum Thodi
+> wrote:
+>=20
+> > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> > > b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> > > index 05722121f00e70..b4549d698f3569 100644
+> > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> > > @@ -387,7 +387,13 @@ static int __arm_smmu_sva_bind(struct device
+> *dev,
+> > > struct mm_struct *mm)
+> > >  	struct arm_smmu_bond *bond;
+> > >  	struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
+> > >  	struct iommu_domain *domain =3D iommu_get_domain_for_dev(dev);
+> > > -	struct arm_smmu_domain *smmu_domain =3D
+> > > to_smmu_domain(domain);
+> > > +	struct arm_smmu_domain *smmu_domain;
+> > > +
+> > > +	if (!(domain->type & __IOMMU_DOMAIN_PAGING))
+> > > +		return -ENODEV;
+> > > +	smmu_domain =3D
+> to_smmu_domain(iommu_get_domain_for_dev(dev));
+> >
+> > We already have the iommu_domain from above.
+>=20
+> Yep
+>=20
+> > > +	if (smmu_domain->stage !=3D ARM_SMMU_DOMAIN_S1)
+> > > +		return -ENODEV;
+> >
+> > I think we need to do the above checks in
+> arm_smmu_sva_remove_dev_pasid()
+> > as well.
+>=20
+> The core won't call that unless a PASID is already attached, meaning
+> we already passed the above check in bind. So it shouldn't need to be
+> duplicated.
+
+I think it does in the error path.  See __iommu_set_group_pasid() call.
+I haven't tested what happens if that returns error because of identity=20
+domain and then __iommu_remove_group_pasid() is called.
+
+So as an exported function, still think it is better to check for domain
+type before accessing smmu_domain there.
 
 Thanks,
-Vishal
+Shameer
