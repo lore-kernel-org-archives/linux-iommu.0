@@ -1,233 +1,196 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6D91374D2
-	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 03:28:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.12
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706585319; cv=fail; b=AbHE/593mKftyqnHpetcejszIrHJtgtZo9k54Tt2HXV5Fr/jBiv88wZ49PeanG8FoKmOwhtLIqVfvBUfi++2JtOKjy7up29bk66Dwk8GG4LUrdOSZAYL+ce5QBl7odv+o+g/JZAEznifAcW47FSdW6B4/IoztdCdBHUioDd6+Rg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706585319; c=relaxed/simple;
-	bh=nNMikOuKwgpC7wdOPKk/mKNPkb9aSk/ebvNeegK98nU=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=gq9OJclTVuBT7/cY1SyPBvVhRb3XrojqSLbUSEX182grGAI8mP6psE1y1xn1dTBlr48LRyVOJZFVtamxWoH4vu5ioSIVEpMeHWLsRAQPepYMmtqa13H9n3redyPtUSLXPVfxfPJ+1DeVDYexk9sLonYPSJMFdiXkxJhsD9tfRBI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CnRkgXEw; arc=fail smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F6AB381AB
+	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 05:12:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1706591569; cv=none; b=q8guHjR+vM6pm5DHFofhWXrwunlcX2IqDQsLqSzNhpbPwBgUliHnSz45oCZSDMIQGdmsjZ8xrWCDOU3QDmK3EELPX8KAtJf0rhqbjVVqSDiaBU92nLwvIKVFUOTJ0K6rUUF2EIZ2tPZKPQF7/md1FGKh9k0WSQ2N+agpHL7biPU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1706591569; c=relaxed/simple;
+	bh=Ab2x+RjnadAuhoF56GiPfWyJFkxamyXXz4zU9qJcU7o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=BrJup3p1jwsi1Z2UjqwgG8TBlobRcWrEU5uGCcqFiegBp2bUCZU+B/cWi+PvsdLMcd2tPmXiJVNCf41lStsVs8YAahDn+BF8n+lhnUQeztcfPUrhKUo5n/9EcU2V1tQIuzCVatxL//0ipdOP//Umy9+huohhF3UvEo9aWyD0i5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lXMxQMcE; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CnRkgXEw"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lXMxQMcE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706585316; x=1738121316;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=nNMikOuKwgpC7wdOPKk/mKNPkb9aSk/ebvNeegK98nU=;
-  b=CnRkgXEwSkheeybfQczVhYcNFcuQpX6KZ3FccD4cWxDiQ3ypzTV2H6Tq
-   ShvoJccKFjAS283hAcBczvAV7AHwdZpHoZRb+Y9pYkFkLWgklS4sskPF8
-   j7pHVdvllgMldIS+vPbw3WXan/Pl6klOwXBRfSEyCOyabonhhIDZ1lM9t
-   3Ftik02LeG02ii8XGlcQpPRBsSz4yaVB+tQ+hxWTccQR5qWMoA3gx2lfR
-   p8Iyll/pSEgsOZAX6GsREAOaFfVspW42054MZurrPJJqTAMLW87uWyzuN
-   +QHlOkafHDXtIuDrdHKIPBjTcy97kD5joZcg2gWb3OtLFcSG9qY/h3mqD
+  t=1706591567; x=1738127567;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Ab2x+RjnadAuhoF56GiPfWyJFkxamyXXz4zU9qJcU7o=;
+  b=lXMxQMcEwOSU6WYKFhMnB+Zs0KpYH8Xn2LO07enS3sufs0o9jWPjMVCc
+   b+d1i3vq/Mbw1/LEPfsTXHA9GqK0bAy40TLmLiVl8CBTRQaRfV2ddyLvf
+   xEQL1yKr/V+uAYxRfVR2MYLkhWkm43zmYticBKkRjbSiaSxAYAoY4fYrL
+   Hm+P5BlGNTKN0Vh2/gL+x8akzCcmaVz3Y1zMkYYla0UAobmQdYG6QNOrU
+   7C5Qnb5tFY3bYzySVPG4sjmxB3s0ZLiS+IZ2P3dyARaVEuT0WFK5oVB6T
+   PBiIsc0UB9JjUjUd758j9YD+nUP0dYW5kImLUVhY7flfZjNFu62Zast9J
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="10542026"
+X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="24650456"
 X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
-   d="scan'208";a="10542026"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 19:28:35 -0800
+   d="scan'208";a="24650456"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 21:12:46 -0800
 X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="737656154"
 X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
-   d="scan'208";a="3522541"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by fmviesa005.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 29 Jan 2024 19:28:32 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 29 Jan 2024 19:28:31 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Mon, 29 Jan 2024 19:28:31 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.40) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Mon, 29 Jan 2024 19:28:31 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aW08PGy8UwSZc28PyQp+SMYQbATuZ3Xh7g/2vdiD45+LXTYB4NC4zMLNveFGzYDaM9vgz9OYm+z75WH6z/VnTsoQUd/b8elEIuyzvDkSWIrDEixxqNLbPt/T3LVyz8SUqj85r41zVHIRNtb6dEetD3qoe20HEiPjGzLL7+RAhpa1GayE40r9TIwSRHdHNIX9Yq8TQHeWz5o4/uTWHgViWrxVE5S2zdoagAFg0V3JBKV3GRC6hhNUi6WfpcRKMMUFNrjKpzA4F6fZAmGIuFIN+DzT3jz/wHH2iQVG9NETUOux1SlPvbQCh0bthrNzpxDF53fM5fzCj+J6J3O9DJhBzA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nNMikOuKwgpC7wdOPKk/mKNPkb9aSk/ebvNeegK98nU=;
- b=SEXB1440Y9NrdBu/nOuZK7vffaHqkXCu64Pl2F4EzzdQVUn3m9CaabAkvwfC79t0uYmHwo1xtrsKqA4yJ11fsgMy7/U1SdspJ3bjRwCfMwP1KtWibe418PuXgW/TXdepcNfgjNZ8PzzVbB6XZl9Ddyzgg+G1IOuwn53cCRzW7bdHc4UO+vvrg/gCX8yIhNxkEQ3fyM4SFZQp6CeabF9CZ1GLFxkrPVvZz4LdTQM3GGQB7qHpu/XhB5fP8gfIO1U3Vh1sFJ3aq9zb8O7T9kIvZJ1CVSXDbJsRc0hhACgzhuNf7N8G6N2ZdD2X1B3wpmF6EO1ALc0vMU+fu3xXZ21g9A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH7PR11MB5862.namprd11.prod.outlook.com (2603:10b6:510:134::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7228.34; Tue, 30 Jan
- 2024 03:28:29 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::a8e9:c80f:9484:f7cb]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::a8e9:c80f:9484:f7cb%3]) with mapi id 15.20.7228.029; Tue, 30 Jan 2024
- 03:28:29 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>, Ethan Zhao
-	<haifeng.zhao@linux.intel.com>, "bhelgaas@google.com" <bhelgaas@google.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>
-CC: "dwmw2@infradead.org" <dwmw2@infradead.org>, "will@kernel.org"
-	<will@kernel.org>, "lukas@wunner.de" <lukas@wunner.de>, "Liu, Yi L"
-	<yi.l.liu@intel.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-Subject: RE: [PATCH v12 5/5] iommu/vt-d: improve ITE fault handling if target
- device isn't present
-Thread-Topic: [PATCH v12 5/5] iommu/vt-d: improve ITE fault handling if target
- device isn't present
-Thread-Index: AQHaUmY538BcsBx6UEOae7WqjB1D5LDweayAgABmGQCAAM7uAA==
-Date: Tue, 30 Jan 2024 03:28:29 +0000
-Message-ID: <BN9PR11MB52762D214863D3054083856E8C7D2@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240129034924.817005-1-haifeng.zhao@linux.intel.com>
- <20240129034924.817005-6-haifeng.zhao@linux.intel.com>
- <BN9PR11MB52761CC3E5F08D4B7BAD7F918C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <46e0c704-cc77-4d23-9503-0d6d5d07bb26@linux.intel.com>
-In-Reply-To: <46e0c704-cc77-4d23-9503-0d6d5d07bb26@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH7PR11MB5862:EE_
-x-ms-office365-filtering-correlation-id: ac138f2c-209b-42aa-d0ce-08dc21438704
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: hu0iKaVI9naP+T4X1zKInRJxakF51xuXrKTGKtLUokKGG2cXmWEqgDMn4hPrUSrD2+Hh7y3MUt29+iDESsevn9iUhuLr6/Ts/nnf0bw2JNRtlPIbfWbYKHnNiUH7pWz8RXNgO3TDkiKi4LlS/TRXnOc8IfyVnf2jkkM5TYOXY+VHws61b7IUkDkpww1WvuAgZuf5q2BgTc3gHJUqyyON0yCg27KH8lmF94zWpMWw1YjsYVIOcN2g5ai1wzMdNiKAjwchsqg0EmQ89aDvw4mIce/rusE3VOsdx3lj6ykOXBB65wBqKPQ13gpLRf/UBMKqtlU41rCbBrDwQ4yaifX75ExSwBJKPsvl7UJDVB4lI2hCH4QuqkmsRK1sj28UngMuB25obu9/ITcvDfNzAfsgN4c9OPjm7AvOMAnLkCDEKPASQBpCSD4isggKG7U44XVPocubwGshUptfmAL8C3Sd2uwCoMroyq3m9SeMAA4eYlGDaWYXgP6BzRMrbcJJqc4pbRLJLiNyqleNR1lAgd6DzMivVA7nY7GwyR5GZ6o6OIuS51h02r8pn1hcvT9MfJ+pNqB5r1svs8LBnTcaYIT5vPDxDq6au8p9mGxEh0EdNCw=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(376002)(39860400002)(136003)(346002)(366004)(230922051799003)(186009)(1800799012)(64100799003)(451199024)(38070700009)(55016003)(26005)(5660300002)(316002)(71200400001)(7416002)(6506007)(66446008)(7696005)(9686003)(66556008)(53546011)(66476007)(66946007)(76116006)(110136005)(52536014)(64756008)(4326008)(54906003)(2906002)(8676002)(38100700002)(33656002)(122000001)(41300700001)(86362001)(83380400001)(478600001)(8936002)(82960400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VUd0RVNSeG5FamQ2aU9lbHFiRkdVUDRLKy9mR1VmdzNMQ2ZBQ3lTZTY3dEJ0?=
- =?utf-8?B?K0RLc0lidVQrMFZoSmJBUmNXbnRYVmt6SjB0NzNTaTdMN1ArcFJNb0JSR3ht?=
- =?utf-8?B?K00yaUZDTG5vVVF2ZGk0NWE0TGlFUXVmaGRLbE5oTWorU0oyZmhiSU1OeEdl?=
- =?utf-8?B?SlpVbWc1aEV2dFFBd0FtaDRZcVZVay9zSWJHbDZHUktjMUJOUWpwaVlKaVY0?=
- =?utf-8?B?dVNqMGhPMW5SYXFuYU13cXVDZ0JzdTlKNjVlT3FqcVhEYkVIdHhDMmJMQ284?=
- =?utf-8?B?eWo3VmdBUC9vdCttTzViNW5ZUnBndW9PTlB5UkEwd09KdnRnQXFqdkFlU29J?=
- =?utf-8?B?M0xYcmhucVV1NlpSQWJ5UkxXeFZVdndPQ2RBQUQrZ2JFTjcxLzgwaHExcWxa?=
- =?utf-8?B?WUtyZlY5THBhQVV1RktTOFJuNTNlMzlnUDlCbmNTQTZpRVlsM0c3R0d6ZGtU?=
- =?utf-8?B?VzRGTC9qR3RyMU9tS3NXM0xvSkJzZ1MvWGlWUmJqaWJDRWtNcUV3YlNtUy9u?=
- =?utf-8?B?QkQyZWxQT1pEK3E1MFowL3R6bjBITVhFUUEvUGRGS2dENTlPMmJaSkg2YkRz?=
- =?utf-8?B?TzJZcXZOZ2lzVXN4a2hMcmxXUHk2UzZJdjA2U1NIR3hKRFNVc0R1c3pOUjV4?=
- =?utf-8?B?ck9EdEpsVHM2eDNWOVg4cGlKSVhOeWhEWHlrWkR6eE5mYmkvWFBhWmh2MGZj?=
- =?utf-8?B?N20rOFpHcktmZkdtNFk5YUEwVVZEL0NvTE9SakVZUy9GUTlub3RkTmp3NWdG?=
- =?utf-8?B?akNGRlpOY3VzVFZyWlJpOVVqRktTZkFSWE0wVm1JUStCSkd5K3VVQ21iOWw4?=
- =?utf-8?B?K2RRSUs5a2pOL3dEbVhJUi9rRTJBSUtGbzFQQzQvOE9OaVk2aTRLeUlKYkJl?=
- =?utf-8?B?c3pjS1d3M3RsNlh6K2dFQmRsKzBscVgrcXBXZDBiVm5LOGV2Z1JmUVBORTBp?=
- =?utf-8?B?Z0d2eTQ2dzJ3M3V6K3NjSmlUR0d1OERpSmNNMExCckFNOTd0dHJXendSUWRx?=
- =?utf-8?B?TkRaVEJnZGl3OW14OVZjckJQd3h1QTFGTVorMTFkWm9ZZnVSa1p3cTFhRWpS?=
- =?utf-8?B?cVhrNyt2VTdoU3RXVEQ4VkRreGdncTBkMTFMb0FyUUNnaXl0Qm9OVndLeEJJ?=
- =?utf-8?B?M0x2OTNGOUZhNXZ4MUUya0d1WndLMER6VjlkbVB0QzY2ZERBSmhPS2lZVk9y?=
- =?utf-8?B?eVhZeHI3cHAxSk9zc0ZlbUtremZ5RkxhQ0doYXdQOHFVMVRDRTE1dHB1VU1z?=
- =?utf-8?B?VzhRRFlrLzBHQlFuZVk3VW8zeFlCeks4S2VYT0FIK0NhODZVcXFZeGp0RmE4?=
- =?utf-8?B?cFRLUEFpTFBGSUhvaXgrOVhzTUlGTnpWNno0SUoxRmNSVm9VbkdvL2krTGJo?=
- =?utf-8?B?TTB6YjEyNFZERXJ0UmFpS3JmOHBUeUhnVkoxd1pRbzFubW9lWFRjdDRGcENy?=
- =?utf-8?B?M3VhUzR5RkUzVGxTU2VzS05VWjNzZC9HZmVYV3hNeWFRczJkM1B3ZXY0a3c3?=
- =?utf-8?B?REREcDdvY25iNGxzanBSQUVyL3dBUHByVllnVFZMY2gzTk9GVXFuc0EzR2hC?=
- =?utf-8?B?N2NHL0FuLzZJbG9XRnhVTEdJMDAySTFvS2FqNnhYZDNleHBRaUdVbENPaEo0?=
- =?utf-8?B?T3ZvZ1JaTGJYMEVPaUs1QTd4cU9yeFEvRGlDTXoxdTVHWXU2aE80SVVKQ0Zu?=
- =?utf-8?B?V2lXOEZtc2M3Z2hpWmp4a29uTy9BNmVSVGc5V2szNTVwUVRacVhidHlWVXJi?=
- =?utf-8?B?NUo5QzhZZVdKVy91Uy9QNFJkQUhxY29tRGdkSEk0R0J2WnA4amp5YTRvbDZT?=
- =?utf-8?B?cmJnVDJJbnFRSXdCanJXM25vSG5pajZZOXowTEM0MERIaEJrNUxQdCtpdzJU?=
- =?utf-8?B?YjZqVVQ0eTRFd1B6QjFKdjNiMGp0Mk9iajdEbEpNK20zRG1xdFVmemJSUHBR?=
- =?utf-8?B?SzRqWE9OMnBZYVY5akhrdHZlRlMybUh2MjJldC9NemcydDgzMW5jWkR6ZkpT?=
- =?utf-8?B?MEdReDVkQUZVbUlRZDlDU01QYnBDdzEwdmNPaXhwNFhMc3M2b3FvYzhTT3dS?=
- =?utf-8?B?Z05NUXMyakV4SmRsWGZiZno0M0dPNUpEbGVrSVNUWm54eXZycVdDOFBXU0xN?=
- =?utf-8?Q?hcZWz7u8Zoytl9VEcz0T2Dj9O?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+   d="scan'208";a="737656154"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.238.130.190]) ([10.238.130.190])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 21:12:42 -0800
+Message-ID: <0aee453c-e98f-4b72-8107-31d4731abcdb@linux.intel.com>
+Date: Tue, 30 Jan 2024 13:12:39 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ac138f2c-209b-42aa-d0ce-08dc21438704
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jan 2024 03:28:29.1146
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NzBFyZksXH2Mx2hDVzRJ4y+PWVY5Ylx2PSO6MJaYqaGqdrq0zLLpoxl7dxINPJCJt+DB+443Hn6u8GuzsAkW+g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB5862
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v12 5/5] iommu/vt-d: improve ITE fault handling if target
+ device isn't present
+To: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+ "bhelgaas@google.com" <bhelgaas@google.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>
+Cc: "dwmw2@infradead.org" <dwmw2@infradead.org>,
+ "will@kernel.org" <will@kernel.org>, "lukas@wunner.de" <lukas@wunner.de>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
+References: <20240129034924.817005-1-haifeng.zhao@linux.intel.com>
+ <20240129034924.817005-6-haifeng.zhao@linux.intel.com>
+ <BN9PR11MB52761CC3E5F08D4B7BAD7F918C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <7adec292-9d38-41ab-a982-bd840b24f3ab@intel.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <7adec292-9d38-41ab-a982-bd840b24f3ab@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBNb25k
-YXksIEphbnVhcnkgMjksIDIwMjQgMTA6NDkgUE0NCj4gDQo+IE9uIDIwMjQvMS8yOSAxNzowNiwg
-VGlhbiwgS2V2aW4gd3JvdGU6DQo+ID4+IEZyb206IEV0aGFuIFpoYW88aGFpZmVuZy56aGFvQGxp
-bnV4LmludGVsLmNvbT4NCj4gPj4gU2VudDogTW9uZGF5LCBKYW51YXJ5IDI5LCAyMDI0IDExOjQ5
-IEFNDQo+ID4+DQo+ID4+IEJlY2F1c2Ugc3VycHJpc2UgcmVtb3ZhbCBjb3VsZCBoYXBwZW4gYW55
-dGltZSwgZS5nLiB1c2VyIGNvdWxkIHJlcXVlc3QNCj4gc2FmZQ0KPiA+PiByZW1vdmFsIHRvIEVQ
-KGVuZHBvaW50IGRldmljZSkgdmlhIHN5c2ZzIGFuZCBicmluZ3MgaXRzIGxpbmsgZG93biB0byBk
-bw0KPiA+PiBzdXJwcmlzZSByZW1vdmFsIGNvY3VycmVudGx5LiBzdWNoIGFnZ3Jlc3NpdmUgY2Fz
-ZXMgd291bGQgY2F1c2UgQVRTDQo+ID4+IGludmFsaWRhdGlvbiByZXF1ZXN0IGlzc3VlZCB0byBu
-b24tZXhpc3RlbmNlIHRhcmdldCBkZXZpY2UsIHRoZW4gZGVhZGx5DQo+ID4+IGxvb3AgdG8gcmV0
-cnkgdGhhdCByZXF1ZXN0IGFmdGVyIElURSBmYXVsdCB0cmlnZ2VyZWQgaW4gaW50ZXJydXB0IGNv
-bnRleHQuDQo+ID4+IHRoaXMgcGF0Y2ggYWltcyB0byBvcHRpbWl6ZSB0aGUgSVRFIGhhbmRsaW5n
-IGJ5IGNoZWNraW5nIHRoZSB0YXJnZXQgZGV2aWNlDQo+ID4+IHByZXNlbmNlIHN0YXRlIHRvIGF2
-b2lkIHJldHJ5aW5nIHRoZSB0aW1lb3V0IHJlcXVlc3QgYmxpbmRseSwgdGh1cyBhdm9pZA0KPiA+
-PiBoYXJkIGxvY2t1cCBvciBzeXN0ZW0gaGFuZy4NCj4gPj4NCj4gPj4gU2lnbmVkLW9mZi1ieTog
-RXRoYW4gWmhhbzxoYWlmZW5nLnpoYW9AbGludXguaW50ZWwuY29tPg0KPiA+PiAtLS0NCj4gPj4g
-ICBkcml2ZXJzL2lvbW11L2ludGVsL2RtYXIuYyB8IDE4ICsrKysrKysrKysrKysrKysrKw0KPiA+
-PiAgIDEgZmlsZSBjaGFuZ2VkLCAxOCBpbnNlcnRpb25zKCspDQo+ID4+DQo+ID4+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL2lvbW11L2ludGVsL2RtYXIuYyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvZG1h
-ci5jDQo+ID4+IGluZGV4IDgxNDEzNGU5YWE1YS4uMmUyMTRiNDM3MjVjIDEwMDY0NA0KPiA+PiAt
-LS0gYS9kcml2ZXJzL2lvbW11L2ludGVsL2RtYXIuYw0KPiA+PiArKysgYi9kcml2ZXJzL2lvbW11
-L2ludGVsL2RtYXIuYw0KPiA+PiBAQCAtMTI3Miw2ICsxMjcyLDcgQEAgc3RhdGljIGludCBxaV9j
-aGVja19mYXVsdChzdHJ1Y3QgaW50ZWxfaW9tbXUNCj4gPj4gKmlvbW11LCBpbnQgaW5kZXgsIGlu
-dCB3YWl0X2luZGV4LA0KPiA+PiAgIHsNCj4gPj4gICAJdTMyIGZhdWx0Ow0KPiA+PiAgIAlpbnQg
-aGVhZCwgdGFpbDsNCj4gPj4gKwl1NjQgaXFlX2VyciwgaXRlX3NpZDsNCj4gPj4gICAJc3RydWN0
-IHFfaW52YWwgKnFpID0gaW9tbXUtPnFpOw0KPiA+PiAgIAlpbnQgc2hpZnQgPSBxaV9zaGlmdChp
-b21tdSk7DQo+ID4+DQo+ID4+IEBAIC0xMzE2LDYgKzEzMTcsMTMgQEAgc3RhdGljIGludCBxaV9j
-aGVja19mYXVsdChzdHJ1Y3QgaW50ZWxfaW9tbXUNCj4gPj4gKmlvbW11LCBpbnQgaW5kZXgsIGlu
-dCB3YWl0X2luZGV4LA0KPiA+PiAgIAkJdGFpbCA9IHJlYWRsKGlvbW11LT5yZWcgKyBETUFSX0lR
-VF9SRUcpOw0KPiA+PiAgIAkJdGFpbCA9ICgodGFpbCA+PiBzaGlmdCkgLSAxICsgUUlfTEVOR1RI
-KSAlIFFJX0xFTkdUSDsNCj4gPj4NCj4gPj4gKwkJLyoNCj4gPj4gKwkJICogU0lEIGZpZWxkIGlz
-IHZhbGlkIG9ubHkgd2hlbiB0aGUgSVRFIGZpZWxkIGlzIFNldCBpbiBGU1RTX1JFRw0KPiA+PiAr
-CQkgKiBzZWUgSW50ZWwgVlQtZCBzcGVjIHI0LjEsIHNlY3Rpb24gMTEuNC45LjkNCj4gPj4gKwkJ
-ICovDQo+ID4+ICsJCWlxZV9lcnIgPSBkbWFyX3JlYWRxKGlvbW11LT5yZWcgKyBETUFSX0lRRVJf
-UkVHKTsNCj4gPj4gKwkJaXRlX3NpZCA9IERNQVJfSVFFUl9SRUdfSVRFU0lEKGlxZV9lcnIpOw0K
-PiA+PiArDQo+ID4+ICAgCQl3cml0ZWwoRE1BX0ZTVFNfSVRFLCBpb21tdS0+cmVnICsgRE1BUl9G
-U1RTX1JFRyk7DQo+ID4+ICAgCQlwcl9pbmZvKCJJbnZhbGlkYXRpb24gVGltZS1vdXQgRXJyb3Ig
-KElURSkgY2xlYXJlZFxuIik7DQo+ID4+DQo+ID4+IEBAIC0xMzI1LDYgKzEzMzMsMTYgQEAgc3Rh
-dGljIGludCBxaV9jaGVja19mYXVsdChzdHJ1Y3QgaW50ZWxfaW9tbXUNCj4gPj4gKmlvbW11LCBp
-bnQgaW5kZXgsIGludCB3YWl0X2luZGV4LA0KPiA+PiAgIAkJCWhlYWQgPSAoaGVhZCAtIDIgKyBR
-SV9MRU5HVEgpICUgUUlfTEVOR1RIOw0KPiA+PiAgIAkJfSB3aGlsZSAoaGVhZCAhPSB0YWlsKTsN
-Cj4gPj4NCj4gPj4gKwkJLyoNCj4gPj4gKwkJICogSWYgZ290IElURSwgd2UgbmVlZCB0byBjaGVj
-ayBpZiB0aGUgc2lkIG9mIElURSBpcyB0aGUgc2FtZSBhcw0KPiA+PiArCQkgKiBjdXJyZW50IEFU
-UyBpbnZhbGlkYXRpb24gdGFyZ2V0IGRldmljZSwgaWYgeWVzLCBkb24ndCB0cnkgdGhpcw0KPiA+
-PiArCQkgKiByZXF1ZXN0IGFueW1vcmUgaWYgdGhlIHRhcmdldCBkZXZpY2UgaXNuJ3QgcHJlc2Vu
-dC4NCj4gPj4gKwkJICogMCB2YWx1ZSBvZiBpdGVfc2lkIG1lYW5zIG9sZCBWVC1kIGRldmljZSwg
-bm8gaXRlX3NpZCB2YWx1ZS4NCj4gPj4gKwkJICovDQo+ID4+ICsJCWlmIChwZGV2ICYmIGl0ZV9z
-aWQgJiYgIXBjaV9kZXZpY2VfaXNfcHJlc2VudChwZGV2KSAmJg0KPiA+PiArCQkJaXRlX3NpZCA9
-PSBwY2lfZGV2X2lkKHBjaV9waHlzZm4ocGRldikpKQ0KPiA+PiArCQkJcmV0dXJuIC1FVElNRURP
-VVQ7DQo+ID4+ICsNCj4gPiBzaW5jZSB0aGUgaGFyZHdhcmUgYWxyZWFkeSByZXBvcnRzIHNvdXJj
-ZSBpZCBsZWFkaW5nIHRvIHRpbWVvdXQsIGNhbid0IHdlDQo+ID4ganVzdCBmaW5kIHRoZSBwY2lf
-ZGV2IGFjY29yZGluZyB0byByZXBvcnRlZCBpdGVfc2lkPyB0aGlzIGlzIGEgc2xvdyBwYXRoDQo+
-IChlaXRoZXINCj4gPiBkdWUgdG8gZGV2aWNlIGluIGJhZCBzdGF0ZSBvciByZW1vdmVkKSBoZW5j
-ZSBpdCdzIG5vdCBuZWNlc3NhcnkgdG8gYWRkDQo+IG1vcmUNCj4gPiBpbnRlbGxpZ2VuY2UgdG8g
-cGFzcyB0aGUgcGNpX2RldiBpbiwgbGVhZGluZyB0byBvbmx5IGEgcGFydGlhbCBmaXggY2FuIGJl
-DQo+IGJhY2twb3J0ZWQuDQo+ID4NCj4gPiBJdCdzIGFsc28gbW9yZSBmdXR1cmUtcHJvb2YsIHNh
-eSBpZiBvbmUgZGF5IHRoZSBkcml2ZXIgYWxsb3dzIGJhdGNoaW5nDQo+IGludmFsaWRhdGlvbg0K
-PiA+IHJlcXVlc3RzIGZvciBtdWx0aXBsZSBkZXZpY2VzIHRoZW4gbm8gbmVlZCB0byBwYXNzIGlu
-IGEgbGlzdCBvZiBkZXZpY2VzLg0KPiANCj4gSSBoYXZlIGV2ZXIgdGhvdWdodCBhYm91dCB0aGlz
-IHNvbHV0aW9uIGFuZCBnYXZlIHVwIGluIHRoZSBlbmQgZHVlIHRvDQo+IHRoZSBsb2NraW5nIGlz
-c3VlLg0KPiANCj4gQSBiYXRjaCBvZiBxaSByZXF1ZXN0cyBtdXN0IGJlIGhhbmRsZWQgaW4gdGhl
-IHNwaW4gbG9jayBjcml0aWNhbCByZWdpb24NCj4gdG8gZW5mb3JjZSB0aGF0IG9ubHkgb25lIGJh
-dGNoIG9mIHJlcXVlc3RzIGlzIHN1Ym1pdHRlZCBhdCBhIHRpbWUuDQo+IFNlYXJjaGluZyBwY2lf
-ZGV2IGluIHRoaXMgbG9ja2luZyByZWdpb24gbWlnaHQgcmVzdWx0IGluIG5lc3RlZCBsb2NraW5n
-DQo+IGlzc3VlcywgYW5kIEkgaGF2ZW4ndCBmb3VuZCBhIGdvb2Qgc29sdXRpb24gZm9yIHRoaXMg
-eWV0Lg0KPiANCg0KaW4gc3Bpbi1sb2NrIHlvdSBqdXN0IGdldCB0aGUgc2lkLg0KDQpzZWFyY2hp
-bmcgcGNpX2RldiBjYW4gYmUgZG9uZSBvdXRzaWRlIG9mIHRoZSBjcml0aWNhbCByZWdpb24uIGFu
-eXdheQ0KdGhlIGhhbmRsaW5nIG9mIC1FQUdBSU4gaXMgYWxyZWFkeSBhZnRlciBzcGluX3VubG9j
-ay4NCg==
+
+On 1/29/2024 5:21 PM, Yi Liu wrote:
+> On 2024/1/29 17:06, Tian, Kevin wrote:
+>>> From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+>>> Sent: Monday, January 29, 2024 11:49 AM
+>>>
+>>> Because surprise removal could happen anytime, e.g. user could 
+>>> request safe
+>>> removal to EP(endpoint device) via sysfs and brings its link down to do
+>>> surprise removal cocurrently. such aggressive cases would cause ATS
+>>> invalidation request issued to non-existence target device, then deadly
+>>> loop to retry that request after ITE fault triggered in interrupt 
+>>> context.
+>>> this patch aims to optimize the ITE handling by checking the target 
+>>> device
+>>> presence state to avoid retrying the timeout request blindly, thus 
+>>> avoid
+>>> hard lockup or system hang.
+>>>
+>>> Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+>>> ---
+>>>   drivers/iommu/intel/dmar.c | 18 ++++++++++++++++++
+>>>   1 file changed, 18 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+>>> index 814134e9aa5a..2e214b43725c 100644
+>>> --- a/drivers/iommu/intel/dmar.c
+>>> +++ b/drivers/iommu/intel/dmar.c
+>>> @@ -1272,6 +1272,7 @@ static int qi_check_fault(struct intel_iommu
+>>> *iommu, int index, int wait_index,
+>>>   {
+>>>       u32 fault;
+>>>       int head, tail;
+>>> +    u64 iqe_err, ite_sid;
+>>>       struct q_inval *qi = iommu->qi;
+>>>       int shift = qi_shift(iommu);
+>>>
+>>> @@ -1316,6 +1317,13 @@ static int qi_check_fault(struct intel_iommu
+>>> *iommu, int index, int wait_index,
+>>>           tail = readl(iommu->reg + DMAR_IQT_REG);
+>>>           tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
+>>>
+>>> +        /*
+>>> +         * SID field is valid only when the ITE field is Set in 
+>>> FSTS_REG
+>>> +         * see Intel VT-d spec r4.1, section 11.4.9.9
+>>> +         */
+>>> +        iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
+>>> +        ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
+>>> +
+>>>           writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
+>>>           pr_info("Invalidation Time-out Error (ITE) cleared\n");
+>>>
+>>> @@ -1325,6 +1333,16 @@ static int qi_check_fault(struct intel_iommu
+>>> *iommu, int index, int wait_index,
+>>>               head = (head - 2 + QI_LENGTH) % QI_LENGTH;
+>>>           } while (head != tail);
+>>>
+>>> +        /*
+>>> +         * If got ITE, we need to check if the sid of ITE is the 
+>>> same as
+>>> +         * current ATS invalidation target device, if yes, don't 
+>>> try this
+>>> +         * request anymore if the target device isn't present.
+>>> +         * 0 value of ite_sid means old VT-d device, no ite_sid value.
+>>> +         */
+>>> +        if (pdev && ite_sid && !pci_device_is_present(pdev) &&
+>>> +            ite_sid == pci_dev_id(pci_physfn(pdev)))
+>>> +            return -ETIMEDOUT;
+>>> +
+>>
+>> since the hardware already reports source id leading to timeout, 
+>> can't we
+>> just find the pci_dev according to reported ite_sid? this is a slow 
+>> path (either
+>> due to device in bad state or removed) hence it's not necessary to 
+>> add more
+>> intelligence to pass the pci_dev in, leading to only a partial fix 
+>> can be backported.
+>>
+>> It's also more future-proof, say if one day the driver allows 
+>> batching invalidation
+>> requests for multiple devices then no need to pass in a list of devices.
+>>
+>> Then it's easier to backport a full fix.
+>
+> May consider pci_get_domain_bus_and_slot() or
+> pci_find_bus()/pci_get_slot(). But I doubt if the pci_dev is still 
+> tracked
+> in the bus or a kind of dev list in the device hot removal case. So Ethan
+> may need to check.
+
+Perhaps it is too late to call pci_find_bus() or 
+pci_get_domain_bus_and_slot() to get the
+
+device instance from this notifier registered as BUS_NOTIFY_REMOVED_DEVICE
+
+action. if the device is still there in bus list, *must* be a bug of 
+device subsystem as
+
+*removed* device.
+
+but if we call iommu_release_device() in iommu_bus_notifier() for 
+BUS_NOTIFY_DEL_DEVICE
+
+action, there should be opportuniy to get the device instance, but that 
+change need
+
+more evaluation about side effect.
+
+furthermore, iommu never cross domain number per context table 
+defination in VT-d
+
+spec, not mean, domain number in a system never will be !0, per my 
+understanding.
+
+
+Thanks,
+
+Ethan
+
+>
+> Regards,
+> Yi Liu
+>
