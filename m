@@ -1,358 +1,134 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08ED438387
-	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 05:44:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 204FF383A6
+	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 06:13:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706593445; cv=none; b=vCqiaQEvpd2pJ0XPfr7m5mlqSXvrO+m5r41ELAaaoZzGQmqnY8xUF9JMmFjEg5ceekE7nm30OX7cdpgqn74mKYLMglIINrvCpBgwXn/4Hy/kdWYs7IaF6+g5KZydD32NGk1gO7pxbMiWIs4TODxduj87owQWGaPcSJJXWG4xTmU=
+	t=1706595241; cv=none; b=qond+gh2jNM6Av7ASmEF8yV/igYvdkfUwI+rOJE9MLaH0phodbB9GPb7ZsXSaP9a2Y2wIfZnmXyZXBx40TbNxPyn2enBQt5UbmgTi4vMHxaZ04ydiRYvryeMVJ0sFEiv3pt8oaNN4BMLosh1TQ18c7xWdwXAXdVybOqnqwLcWgA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706593445; c=relaxed/simple;
-	bh=2MihMSUV1KZty6KaBSKGV4CSIGIOSbuQNquwReYMTPI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=i8etrTmuch6CjiKeSog/sjHg/MulQFbpZ7C1jvka54Z609bFwM/0NPTcakr6dvK9MZV8DZFeLexIqCR3rpuZSKtz6CaTMO/wdzJ+uwWIbd0xrbox3UAmhRC+oMYOjv/WE+V46AgG96r0nI1AHrv7gn0dNtCzen0WXez3wo5UrDQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KffBaLEd; arc=none smtp.client-ip=198.175.65.15
+	s=arc-20240116; t=1706595241; c=relaxed/simple;
+	bh=mbAJ/zTviPWkO8LHJ1tHYgfZ4TkYmkoH7kPNS0Gfjmc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=YJMla9MMLejoQwKJKBxNifZkEVD3bu8EPgGQP0jD6SqUorUrm0s+Z81Z8DhrW2I+J8s2JPW3g1bLj+999crAaoSDmFcSy4qK4ZgmDcCFYgWwGsO1XopNCNqVCKMlcdA3TerlzgEMW+z7IB6/Evv5y5H+h03AyTeF0k5SYlKvQk4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hTvbDsNF; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KffBaLEd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hTvbDsNF"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706593444; x=1738129444;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=2MihMSUV1KZty6KaBSKGV4CSIGIOSbuQNquwReYMTPI=;
-  b=KffBaLEddpx1UzteEubaNr0Ifmwase6xhg9aENkGODAviGMAX4iFLPfM
-   qZpwwpXlSQfjWbMD3ucfSS3tHBkJxjmzfV/7JrumgREI8JO6gFfHAcErf
-   UDtZEl2PQjk8glHngeUznxVaQ/WDR3Hoqh5ODZaE6RvNHiFZQZO4hRshL
-   cknXe7llZw6Tt84KyIOL9CHLk9eTkL6HhNqAyp3LK3ZMsI58VkLppHnOP
-   kh11/ZoYOab34iHkL11vB2WIF6qrBq2gVcxHVjlU4uHgJrIwqZanGuw7n
-   ZQbHgPVWXTUxalyk04DJRJ0M4mjeylPdBYmzUl4fWDY1vCsFcuzut7Qun
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="3035413"
+  t=1706595239; x=1738131239;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=mbAJ/zTviPWkO8LHJ1tHYgfZ4TkYmkoH7kPNS0Gfjmc=;
+  b=hTvbDsNFCn/m7I7+0xP7Y77bZuaEssL2M9Aa43MYkbSGADHRhl9LAXY6
+   XJQCtzstH7vCJXUtDvqaiLft6pTCzTnTCMNx2ZYmzOc9qZj5YU3XPeBMH
+   U+WxA0kd5UuT49zpoHLiwlEObMB0jDfnNmkVnhPR1EhDR3UWG8YK8V/OB
+   6gtJN9l9pLbplSIbFWi7gP5jEFGrEMiT/VgWFP37Bqm2yyKsuB4NteveW
+   vuyNMASBUcFkE39q5ixyvJODRhg0ZlrNHsBNx0vJ/s858hmoJCJAiYy9T
+   vA0be23kvYJhzUP3Mfz2Iup5Ko1Lu6xh3lhLA7VfBzKKJEfVXaKF7HxeO
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="10570672"
 X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
-   d="scan'208";a="3035413"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 21:44:03 -0800
+   d="scan'208";a="10570672"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 22:13:57 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
-   d="scan'208";a="22328960"
-Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.238.130.190]) ([10.238.130.190])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 21:44:00 -0800
-Message-ID: <34237bc1-732c-46ef-a27a-a787381abd2d@linux.intel.com>
-Date: Tue, 30 Jan 2024 13:43:58 +0800
+   d="scan'208";a="3706925"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orviesa004.jf.intel.com with ESMTP; 29 Jan 2024 22:13:54 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: Jani Nikula <jani.nikula@linux.intel.com>,
+	Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+	Rodrigo Vivi <rodrigo.vivi@intel.com>,
+	Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+	iommu@lists.linux.dev,
+	intel-gfx@lists.freedesktop.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 1/1] iommu/vt-d: Remove INTEL_IOMMU_BROKEN_GFX_WA
+Date: Tue, 30 Jan 2024 14:08:23 +0800
+Message-Id: <20240130060823.57990-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v12 3/5] iommu/vt-d: simplify parameters of
- qi_submit_sync() ATS invalidation callers
-To: Yi Liu <yi.l.liu@intel.com>, baolu.lu@linux.intel.com,
- bhelgaas@google.com, robin.murphy@arm.com, jgg@ziepe.ca
-Cc: kevin.tian@intel.com, dwmw2@infradead.org, will@kernel.org,
- lukas@wunner.de, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-pci@vger.kernel.org
-References: <20240129034924.817005-1-haifeng.zhao@linux.intel.com>
- <20240129034924.817005-4-haifeng.zhao@linux.intel.com>
- <b7a8ee11-7fa7-4240-9d52-651f17bfe213@intel.com>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <b7a8ee11-7fa7-4240-9d52-651f17bfe213@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
+Commit 62edf5dc4a524 ("intel-iommu: Restore DMAR_BROKEN_GFX_WA option for
+broken graphics drivers") was introduced 24 years ago as a temporary
+workaround for graphics drivers that used physical addresses for DMA and
+avoided DMA APIs. This workaround was disabled by default.
 
-On 1/29/2024 5:37 PM, Yi Liu wrote:
-> On 2024/1/29 11:49, Ethan Zhao wrote:
->> fold parameters back to struct device_domain_info *info instead of 
->> extract
->> and pass them, thus decrease the number of the parameter passed for
->> following functions
->>
->> qi_flush_dev_iotlb()
->> qi_flush_dev_iotlb_pasid()
->> quirk_extra_dev_tlb_flush()
->>
->> no function change.
->>
->> Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
->> ---
->>   drivers/iommu/intel/dmar.c   | 26 ++++++++++++++++++++++----
->>   drivers/iommu/intel/iommu.c  | 29 +++++++----------------------
->>   drivers/iommu/intel/iommu.h  | 17 ++++++++---------
->>   drivers/iommu/intel/nested.c |  9 ++-------
->>   drivers/iommu/intel/pasid.c  |  9 ++-------
->>   drivers/iommu/intel/svm.c    | 17 ++++++++---------
->>   6 files changed, 49 insertions(+), 58 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
->> index 23cb80d62a9a..ab5e1760bd59 100644
->> --- a/drivers/iommu/intel/dmar.c
->> +++ b/drivers/iommu/intel/dmar.c
->> @@ -1517,11 +1517,20 @@ void qi_flush_iotlb(struct intel_iommu 
->> *iommu, u16 did, u64 addr,
->>       qi_submit_sync(iommu, &desc, 1, 0);
->>   }
->>   -void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 
->> pfsid,
->> -            u16 qdep, u64 addr, unsigned mask)
->> +void qi_flush_dev_iotlb(struct intel_iommu *iommu,
->> +            struct device_domain_info *info, u64 addr,
->
-> If you want to fold the parameters, why iommu is left? info also includes
-> iommu pointer.
+As 24 years have passed, it is expected that graphics driver developers
+have migrated their drivers to use kernel DMA APIs. Therefore, this
+workaround is no longer required and could been removed.
 
-Good catch.
+The Intel iommu driver also provides a "igfx_off" option to turn off
+the DAM translation for the graphic dedicated IOMMU. Hence, there is
+really no good reason to keep this config option.
 
-No reason to leave it there.
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+---
+ drivers/iommu/intel/iommu.c |  4 ----
+ drivers/iommu/intel/Kconfig | 11 -----------
+ 2 files changed, 15 deletions(-)
 
+Change log:
+v2:
+ - Add igfx_off option to commit message and Cc Intel graphic
+   maintainers.
 
-Thanks,
+v1: https://lore.kernel.org/linux-iommu/20240127064512.16744-1-baolu.lu@linux.intel.com/
 
-Ethan
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 6fb5f6fceea1..fc52fcd786aa 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2660,10 +2660,6 @@ static int __init init_dmars(void)
+ 		iommu_set_root_entry(iommu);
+ 	}
+ 
+-#ifdef CONFIG_INTEL_IOMMU_BROKEN_GFX_WA
+-	dmar_map_gfx = 0;
+-#endif
+-
+ 	if (!dmar_map_gfx)
+ 		iommu_identity_mapping |= IDENTMAP_GFX;
+ 
+diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+index 012cd2541a68..d2d34eb28d94 100644
+--- a/drivers/iommu/intel/Kconfig
++++ b/drivers/iommu/intel/Kconfig
+@@ -64,17 +64,6 @@ config INTEL_IOMMU_DEFAULT_ON
+ 	  one is found. If this option is not selected, DMAR support can
+ 	  be enabled by passing intel_iommu=on to the kernel.
+ 
+-config INTEL_IOMMU_BROKEN_GFX_WA
+-	bool "Workaround broken graphics drivers (going away soon)"
+-	depends on BROKEN && X86
+-	help
+-	  Current Graphics drivers tend to use physical address
+-	  for DMA and avoid using DMA APIs. Setting this config
+-	  option permits the IOMMU driver to set a unity map for
+-	  all the OS-visible memory. Hence the driver can continue
+-	  to use physical addresses for DMA, at least until this
+-	  option is removed in the 2.6.32 kernel.
+-
+ config INTEL_IOMMU_FLOPPY_WA
+ 	def_bool y
+ 	depends on X86
+-- 
+2.34.1
 
->
->> +            unsigned int mask)
->>   {
->> +    u16 sid, qdep, pfsid;
->>       struct qi_desc desc;
->>   +    if (!info || !info->ats_enabled)
->> +        return;
->> +
->> +    sid = info->bus << 8 | info->devfn;
->> +    qdep = info->ats_qdep;
->> +    pfsid = info->pfsid;
->> +
->>       /*
->>        * VT-d spec, section 4.3:
->>        *
->> @@ -1590,11 +1599,20 @@ void qi_flush_piotlb(struct intel_iommu 
->> *iommu, u16 did, u32 pasid, u64 addr,
->>   }
->>     /* PASID-based device IOTLB Invalidate */
->> -void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, 
->> u16 pfsid,
->> -                  u32 pasid,  u16 qdep, u64 addr, unsigned int 
->> size_order)
->> +void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu,
->> +                  struct device_domain_info *info, u64 addr, u32 pasid,
->> +                  unsigned int size_order)
->>   {
->>       unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size_order - 1);
->>       struct qi_desc desc = {.qw1 = 0, .qw2 = 0, .qw3 = 0};
->> +    u16 sid, qdep, pfsid;
->> +
->> +    if (!info || !dev_is_pci(info->dev))
->> +        return;
->> +
->> +    sid = info->bus << 8 | info->devfn;
->> +    qdep = info->ats_qdep;
->> +    pfsid = info->pfsid;
->>         /*
->>        * VT-d spec, section 4.3:
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 6fb5f6fceea1..e5902944b3db 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -1310,16 +1310,11 @@ static void iommu_disable_pci_caps(struct 
->> device_domain_info *info)
->>   static void __iommu_flush_dev_iotlb(struct device_domain_info *info,
->>                       u64 addr, unsigned int mask)
->>   {
->> -    u16 sid, qdep;
->> -
->>       if (!info || !info->ats_enabled)
->>           return;
->>   -    sid = info->bus << 8 | info->devfn;
->> -    qdep = info->ats_qdep;
->> -    qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
->> -               qdep, addr, mask);
->> -    quirk_extra_dev_tlb_flush(info, addr, mask, IOMMU_NO_PASID, qdep);
->> +    qi_flush_dev_iotlb(info->iommu, info, addr, mask);
->> +    quirk_extra_dev_tlb_flush(info, addr, IOMMU_NO_PASID, mask);
->>   }
->>     static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
->> @@ -1342,11 +1337,7 @@ static void iommu_flush_dev_iotlb(struct 
->> dmar_domain *domain,
->>           if (!info->ats_enabled)
->>               continue;
->>   -        qi_flush_dev_iotlb_pasid(info->iommu,
->> -                     PCI_DEVID(info->bus, info->devfn),
->> -                     info->pfsid, dev_pasid->pasid,
->> -                     info->ats_qdep, addr,
->> -                     mask);
->> +        qi_flush_dev_iotlb_pasid(info->iommu, info, addr, 
->> dev_pasid->pasid, mask);
->>       }
->>       spin_unlock_irqrestore(&domain->lock, flags);
->>   }
->> @@ -4990,22 +4981,16 @@ static void __init check_tylersburg_isoch(void)
->>    *
->>    * As a reminder, #6 will *NEED* this quirk as we enable nested 
->> translation.
->>    */
->> -void quirk_extra_dev_tlb_flush(struct device_domain_info *info,
->> -                   unsigned long address, unsigned long mask,
->> -                   u32 pasid, u16 qdep)
->> +void quirk_extra_dev_tlb_flush(struct device_domain_info *info, u32 
->> pasid,
->> +                   unsigned long address, unsigned long mask)
->>   {
->> -    u16 sid;
->> -
->>       if (likely(!info->dtlb_extra_inval))
->>           return;
->>   -    sid = PCI_DEVID(info->bus, info->devfn);
->>       if (pasid == IOMMU_NO_PASID) {
->> -        qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
->> -                   qdep, address, mask);
->> +        qi_flush_dev_iotlb(info->iommu, info, address, mask);
->>       } else {
->> -        qi_flush_dev_iotlb_pasid(info->iommu, sid, info->pfsid,
->> -                     pasid, qdep, address, mask);
->> +        qi_flush_dev_iotlb_pasid(info->iommu, info, address, pasid, 
->> mask);
->>       }
->>   }
->>   diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
->> index d02f916d8e59..f68f17476d85 100644
->> --- a/drivers/iommu/intel/iommu.h
->> +++ b/drivers/iommu/intel/iommu.h
->> @@ -1037,18 +1037,17 @@ void qi_flush_context(struct intel_iommu 
->> *iommu, u16 did,
->>                 u16 sid, u8 fm, u64 type);
->>   void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
->>               unsigned int size_order, u64 type);
->> -void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
->> -            u16 qdep, u64 addr, unsigned mask);
->> -
->> +void qi_flush_dev_iotlb(struct intel_iommu *iommu,
->> +            struct device_domain_info *info, u64 addr,
->> +            unsigned int mask);
->>   void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, 
->> u64 addr,
->>                unsigned long npages, bool ih);
->>   -void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, 
->> u16 pfsid,
->> -                  u32 pasid, u16 qdep, u64 addr,
->> -                  unsigned int size_order);
->> -void quirk_extra_dev_tlb_flush(struct device_domain_info *info,
->> -                   unsigned long address, unsigned long pages,
->> -                   u32 pasid, u16 qdep);
->> +void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu,
->> +                  struct device_domain_info *info, u64 addr,
->> +                  u32 pasid, unsigned int size_order);
->> +void quirk_extra_dev_tlb_flush(struct device_domain_info *info, u32 
->> pasid,
->> +                   unsigned long address, unsigned long mask);
->>   void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 
->> granu,
->>                 u32 pasid);
->>   diff --git a/drivers/iommu/intel/nested.c 
->> b/drivers/iommu/intel/nested.c
->> index f26c7f1c46cc..d15f72b55940 100644
->> --- a/drivers/iommu/intel/nested.c
->> +++ b/drivers/iommu/intel/nested.c
->> @@ -78,18 +78,13 @@ static void nested_flush_dev_iotlb(struct 
->> dmar_domain *domain, u64 addr,
->>   {
->>       struct device_domain_info *info;
->>       unsigned long flags;
->> -    u16 sid, qdep;
->>         spin_lock_irqsave(&domain->lock, flags);
->>       list_for_each_entry(info, &domain->devices, link) {
->>           if (!info->ats_enabled)
->>               continue;
->> -        sid = info->bus << 8 | info->devfn;
->> -        qdep = info->ats_qdep;
->> -        qi_flush_dev_iotlb(info->iommu, sid, info->pfsid,
->> -                   qdep, addr, mask);
->> -        quirk_extra_dev_tlb_flush(info, addr, mask,
->> -                      IOMMU_NO_PASID, qdep);
->> +        qi_flush_dev_iotlb(info->iommu, info, addr, mask);
->> +        quirk_extra_dev_tlb_flush(info, IOMMU_NO_PASID, addr, mask);
->>       }
->>       spin_unlock_irqrestore(&domain->lock, flags);
->>   }
->> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
->> index 953592125e4a..5dacdea3cab7 100644
->> --- a/drivers/iommu/intel/pasid.c
->> +++ b/drivers/iommu/intel/pasid.c
->> @@ -208,7 +208,6 @@ devtlb_invalidation_with_pasid(struct intel_iommu 
->> *iommu,
->>                      struct device *dev, u32 pasid)
->>   {
->>       struct device_domain_info *info;
->> -    u16 sid, qdep, pfsid;
->>         info = dev_iommu_priv_get(dev);
->>       if (!info || !info->ats_enabled)
->> @@ -217,10 +216,6 @@ devtlb_invalidation_with_pasid(struct 
->> intel_iommu *iommu,
->>       if (pci_dev_is_disconnected(to_pci_dev(dev)))
->>           return;
->>   -    sid = info->bus << 8 | info->devfn;
->> -    qdep = info->ats_qdep;
->> -    pfsid = info->pfsid;
->> -
->>       /*
->>        * When PASID 0 is used, it indicates RID2PASID(DMA request w/o 
->> PASID),
->>        * devTLB flush w/o PASID should be used. For non-zero PASID under
->> @@ -228,9 +223,9 @@ devtlb_invalidation_with_pasid(struct intel_iommu 
->> *iommu,
->>        * efficient to flush devTLB specific to the PASID.
->>        */
->>       if (pasid == IOMMU_NO_PASID)
->> -        qi_flush_dev_iotlb(iommu, sid, pfsid, qdep, 0, 64 - 
->> VTD_PAGE_SHIFT);
->> +        qi_flush_dev_iotlb(iommu, info, 0, 64 - VTD_PAGE_SHIFT);
->>       else
->> -        qi_flush_dev_iotlb_pasid(iommu, sid, pfsid, pasid, qdep, 0, 
->> 64 - VTD_PAGE_SHIFT);
->> +        qi_flush_dev_iotlb_pasid(iommu, info, 0, pasid, 64 - 
->> VTD_PAGE_SHIFT);
->>   }
->>     void intel_pasid_tear_down_entry(struct intel_iommu *iommu, 
->> struct device *dev,
->> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
->> index 40edd282903f..89168b31bf31 100644
->> --- a/drivers/iommu/intel/svm.c
->> +++ b/drivers/iommu/intel/svm.c
->> @@ -181,11 +181,10 @@ static void __flush_svm_range_dev(struct 
->> intel_svm *svm,
->>         qi_flush_piotlb(sdev->iommu, sdev->did, svm->pasid, address, 
->> pages, ih);
->>       if (info->ats_enabled) {
->> -        qi_flush_dev_iotlb_pasid(sdev->iommu, sdev->sid, info->pfsid,
->> -                     svm->pasid, sdev->qdep, address,
->> +        qi_flush_dev_iotlb_pasid(sdev->iommu, info, address, 
->> svm->pasid,
->>                        order_base_2(pages));
->> -        quirk_extra_dev_tlb_flush(info, address, order_base_2(pages),
->> -                      svm->pasid, sdev->qdep);
->> +        quirk_extra_dev_tlb_flush(info, svm->pasid, address,
->> +                      order_base_2(pages));
->>       }
->>   }
->>   @@ -227,11 +226,11 @@ static void intel_flush_svm_all(struct 
->> intel_svm *svm)
->>             qi_flush_piotlb(sdev->iommu, sdev->did, svm->pasid, 0, 
->> -1UL, 0);
->>           if (info->ats_enabled) {
->> -            qi_flush_dev_iotlb_pasid(sdev->iommu, sdev->sid, 
->> info->pfsid,
->> -                         svm->pasid, sdev->qdep,
->> -                         0, 64 - VTD_PAGE_SHIFT);
->> -            quirk_extra_dev_tlb_flush(info, 0, 64 - VTD_PAGE_SHIFT,
->> -                          svm->pasid, sdev->qdep);
->> +            qi_flush_dev_iotlb_pasid(sdev->iommu, info, 0,
->> +                         svm->pasid,
->> +                         64 - VTD_PAGE_SHIFT);
->> +            quirk_extra_dev_tlb_flush(info, svm->pasid, 0,
->> +                          64 - VTD_PAGE_SHIFT);
->>           }
->>       }
->>       rcu_read_unlock();
->
