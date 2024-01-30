@@ -1,102 +1,211 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F3174EB41
-	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 07:30:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6584B54BF7
+	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 08:14:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706599847; cv=none; b=QeNrtp7EHkDKx6JivBO+tTYhrioc2eYBTj1zHTtpwNiSQ8TACp6ocrTNl6ba6Osk0B4ooWred39f6si/WrpcVOrudPfJB3HUq5jwM2jKZ9+7kKXxTwCNVEsDF6KXy+l1709TIDC/A1pHoJD3PCYqMGGKTRp9HTn+XCiXUnJHVIE=
+	t=1706602453; cv=none; b=ecznz5cyhJQkRMyJeut4YgsA9jtDJ9Nb4euZBUEVF0fGxESz2y1G/2VHcbrzplxmyLfpdKmbt2xEXawlPAQzd0Vns78DaOxPn8JcVrYueug6DRuwfYaPzKfIMKzBFDn2qm8hBv644rgO7qhlTOGgwAxORIawmy3hVD+YBZ/59MA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706599847; c=relaxed/simple;
-	bh=foOvR8njiSdEDNybt1uvmEL+bBp2j5RmuiwsLhRfcE8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QOR0OR3g40y3unNVw1lgYPcxsS07nS1ucc6r5RsxhzHJP9GP6zwiEzMXyuIyqX01x6W6uwBdvgnexttYISe0iyTqhrKb7C2PpzRpl00CR58PWHsH28Z5pHiEgzvruaTBMKAf1DpWBUk1rMJ7CFloqzB/sFXnaURemdn44R/hs2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=A+uQvlLt; arc=none smtp.client-ip=192.198.163.12
+	s=arc-20240116; t=1706602453; c=relaxed/simple;
+	bh=Vkkm7eI+FQb9tjyFWA5cjIGrz/9K5eWn2wuTyYs6H10=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=H84bIbcoqZqe7WSMZLmBpcgRqCAfWUXIRyz8FSD8z9oV/Wxa79YOIWVe37KRgONFYmKtFsESj1ErsxDl9slTvgvJv3Z+nN+ePShaCtf6bbJB0RVeGc0u9mz36J5M9DIQkEDzxtFIo1EW6v/tymzzpeLHXS8dXAciXTFCz/l3mw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YdoCsnJZ; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="A+uQvlLt"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YdoCsnJZ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706599846; x=1738135846;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=foOvR8njiSdEDNybt1uvmEL+bBp2j5RmuiwsLhRfcE8=;
-  b=A+uQvlLtHwGlNOMpjlM3NlUcmhAMhzSaexY2fKLoUwjSv/mEcjNeTy7C
-   zn1xZetU7vhMBVJr9Sl72z60iSJwaFd6dh5nBQPPoMYj3l/jLkZWZw5zT
-   FiLJuRHv8u/T116DwBzqZiRZIfNgqgZeDGcL1mNeUvLs/n5v8eQuQ9t3q
-   DO+S/F4Wu5K72EN9Q2yUlhGXmC0rfK7fm91oFZETP5kjeWHyCql6CcRaP
-   s5pcWzFxpjUqkpVfdlRRYGUO3YmWXqfZfshUyOViWZQnLVRvL+PSAKbmg
-   ZxDuKdB3MbbWHF8788ZzijE3awvX3JoWx6L34oBLxNMZdPtIp9ksUXbBg
+  t=1706602452; x=1738138452;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Vkkm7eI+FQb9tjyFWA5cjIGrz/9K5eWn2wuTyYs6H10=;
+  b=YdoCsnJZGGy+fOM8gItdgw98k9iumowfThkLRGRXY8Y4bp3K67UQuo4m
+   16s7/1me24U3C0R+3TwBx/3Y4uLF+bhLSvnsb+e84sAficSSyC5bcu9NK
+   +sKURt/HToTVjusQOrcSurMtip/rE0LGqOQelPxGLmPBeEiuUz9zL8eo8
+   /hu1rM9OtKivn2HlH/q7jFkzPglsf7dzSn/1yLp0WvmBrQuKDRDSebmcj
+   oQLQ1Pcjc/g+GsF2MCQSUkKKTHJGTAmvOGUEE72qNp3f7j350N6GILqkd
+   cWAzyFCIBPaMoqiz1kn3YJVPO0W8t+xsuqTqltIkvjm9ZD66eejA7KX9j
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="3029062"
+X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="10588182"
 X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
-   d="scan'208";a="3029062"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 23:30:45 -0800
+   d="scan'208";a="10588182"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2024 00:14:11 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="931352719"
 X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
-   d="scan'208";a="931352719"
-Received: from hexu1-mobl1.ccr.corp.intel.com (HELO [10.249.174.131]) ([10.249.174.131])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2024 23:30:42 -0800
-Message-ID: <b3af83cf-b6c7-4543-b793-f2a9547ca9d2@linux.intel.com>
-Date: Tue, 30 Jan 2024 15:30:39 +0800
+   d="scan'208";a="3633703"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmviesa003.fm.intel.com with ESMTP; 30 Jan 2024 00:14:06 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Cc: Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Longfang Liu <liulongfang@huawei.com>,
+	Yan Zhao <yan.y.zhao@intel.com>,
+	Joel Granados <j.granados@samsung.com>,
+	iommu@lists.linux.dev,
+	kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v11 00/16] iommu: Prepare to deliver page faults to user space
+Date: Tue, 30 Jan 2024 16:08:19 +0800
+Message-Id: <20240130080835.58921-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v12 4/5] iommu/vt-d: pass pdev parameter for
- qi_check_fault() and refactor callers
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
- "bhelgaas@google.com" <bhelgaas@google.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>
-Cc: "dwmw2@infradead.org" <dwmw2@infradead.org>,
- "will@kernel.org" <will@kernel.org>, "lukas@wunner.de" <lukas@wunner.de>,
- "Liu, Yi L" <yi.l.liu@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-References: <20240129034924.817005-1-haifeng.zhao@linux.intel.com>
- <20240129034924.817005-5-haifeng.zhao@linux.intel.com>
- <BN9PR11MB5276BAB9620D3A7B07B24F328C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276BAB9620D3A7B07B24F328C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
+When a user-managed page table is attached to an IOMMU, it is necessary
+to deliver IO page faults to user space so that they can be handled
+appropriately. One use case for this is nested translation, which is
+currently being discussed in the mailing list.
 
-On 1/29/2024 4:58 PM, Tian, Kevin wrote:
->> From: Ethan Zhao <haifeng.zhao@linux.intel.com>
->> Sent: Monday, January 29, 2024 11:49 AM
->>
->> to check state of ATS capable pci device in qi_check_fault() for surprise
->> removal case, we need to pass the target pci device of ATS invalidation
->> request to qi_check_fault(). if pdev is valid, means current request is for
->> ATS invalidation, vice vesa.
->>
->> no function change.
-> qi_submit_sync() is used for all kinds of iotlb/cache/devtlb invalidations.
-> it's a bit weird to see a device pointer (even being NULL) in places where
-> a device doesn't even matter.
->
-> having a new qi_submit_sync_devtlb() wrapper sounds cleaner to me,
-> with an internal __qi_submit_sync() helper to accept a device pointer.
->
-> qi_submit_sync() calls __qi_submit_sync() with a null device pointer then
-> non-devtlb paths are intact.
+I have posted a RFC series [1] that describes the implementation of
+delivering page faults to user space through IOMMUFD. This series has
+received several comments on the IOMMU refactoring, which I am trying to
+address in this series.
 
-Make sense !
+The major refactoring includes:
 
-That way, could keep about 10 qi_submit_sync() calling intact, while
+- [PATCH 01 ~ 04] Move include/uapi/linux/iommu.h to
+  include/linux/iommu.h. Remove the unrecoverable fault data definition.
+- [PATCH 05 ~ 06] Remove iommu_[un]register_device_fault_handler().
+- [PATCH 07 ~ 10] Separate SVA and IOPF. Make IOPF a generic page fault
+  handling framework.
+- [PATCH 11 ~ 16] Improve iopf framework.
 
-only 2-3 qi_submit_sync_devtlb() wrapper calling needed.
+This is also available at github [2].
 
-Thanks,
+[1] https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/
+[2] https://github.com/LuBaolu/intel-iommu/commits/preparatory-io-pgfault-delivery-v11
 
-Ethan
+Change log:
+v11:
+ - Cleanup IOMMU_PAGE_RESP_PASID_VALID flag bit.
+ - Cleanup code comments.
+
+v10: https://lore.kernel.org/linux-iommu/20240122054308.23901-1-baolu.lu@linux.intel.com/
+  - Make iopf_group_response() return void, as nobody can do anything
+    with the failure.
+  - Make iommu_report_device_fault() automatically respond to
+    unhandleable faults and change its return type to void.
+  - PATCH 01 ~ 14 are in good shapes now.
+
+v9: https://lore.kernel.org/linux-iommu/20231220012332.168188-1-baolu.lu@linux.intel.com/
+  - Protecting the assignment of dev->iommu->fault_param with RCU.
+  - Extending the fault parameter's lifetime to the entire path of iopf
+    handling.
+  - Since iopf_queue_flush_dev() can only be called before
+    iopf_queue_remove_device(), there's no need to hold a reference
+    count.
+  - Improve iopf_queue_remove_device() as per Jason's comments on the
+    device removal sequence from the iopf queue. This will likely
+    require changes to the iommu drivers, which are supposed to be
+    addressed in separate series.
+  - Track the iopf_group as a whole instead of the last fault within the
+    group to simplify the fault report and response paths.
+  - PATCH 01 ~ 11 are in good shapes now.
+
+v8: https://lore.kernel.org/linux-iommu/20231207064308.313316-1-baolu.lu@linux.intel.com/
+ - Drop PATCH 12/12 as it is no longer necessary to drain page requests
+   page requests during PASID translation changes.
+ - Separate PATCH 11/12 into two distinct patches. The first patch
+   refines locking scheme for protecting per-device fault data, while
+   the second patch replaces mutex with RCU to enhance locking
+   efficiency.
+ - PATCH 01 ~ 10 are in good shapes now.
+
+v7: https://lore.kernel.org/linux-iommu/20231115030226.16700-1-baolu.lu@linux.intel.com/
+ - Rebase to v6.7-rc1.
+ - Export iopf_group_response() for global use.
+ - Release lock when calling iopf handler.
+ - The whole series has been verified to work for SVA case on Intel
+   platforms by Zhao Yan. Add her Tested-by to affected patches.
+
+v6: https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
+ - [PATCH 09/12] Check IS_ERR() against the iommu domain. [Jingqi/Jason]
+ - [PATCH 12/12] Rename the comments and name of iopf_queue_flush_dev(),
+   no functionality changes. [Kevin]
+ - All patches rebased on the latest iommu/core branch.
+
+v5: https://lore.kernel.org/linux-iommu/20230914085638.17307-1-baolu.lu@linux.intel.com/
+ - Consolidate per-device fault data management. (New patch 11)
+ - Improve iopf_queue_flush_dev(). (New patch 12)
+
+v4: https://lore.kernel.org/linux-iommu/20230825023026.132919-1-baolu.lu@linux.intel.com/
+ - Merge iommu_fault_event and iopf_fault. They are duplicate.
+ - Move iommu_report_device_fault() and iommu_page_response() to
+   io-pgfault.c.
+ - Move iommu_sva_domain_alloc() to iommu-sva.c.
+ - Add group->domain and use it directly in sva fault handler.
+ - Misc code refactoring and refining.
+
+v3: https://lore.kernel.org/linux-iommu/20230817234047.195194-1-baolu.lu@linux.intel.com/
+ - Convert the fault data structures from uAPI to kAPI.
+ - Merge iopf_device_param into iommu_fault_param.
+ - Add debugging on domain lifetime for iopf.
+ - Remove patch "iommu: Change the return value of dev_iommu_get()".
+ - Remove patch "iommu: Add helper to set iopf handler for domain".
+ - Misc code refactoring and refining.
+
+v2: https://lore.kernel.org/linux-iommu/20230727054837.147050-1-baolu.lu@linux.intel.com/
+ - Remove unrecoverable fault data definition as suggested by Kevin.
+ - Drop the per-device fault cookie code considering that doesn't make
+   much sense for SVA.
+ - Make the IOMMU page fault handling framework generic. So that it can
+   available for use cases other than SVA.
+
+v1: https://lore.kernel.org/linux-iommu/20230711010642.19707-1-baolu.lu@linux.intel.com/
+
+Lu Baolu (16):
+  iommu: Move iommu fault data to linux/iommu.h
+  iommu/arm-smmu-v3: Remove unrecoverable faults reporting
+  iommu: Remove unrecoverable fault data
+  iommu: Cleanup iopf data structure definitions
+  iommu: Merge iopf_device_param into iommu_fault_param
+  iommu: Remove iommu_[un]register_device_fault_handler()
+  iommu: Merge iommu_fault_event and iopf_fault
+  iommu: Prepare for separating SVA and IOPF
+  iommu: Make iommu_queue_iopf() more generic
+  iommu: Separate SVA and IOPF
+  iommu: Refine locking for per-device fault data management
+  iommu: Use refcount for fault data access
+  iommu: Improve iopf_queue_remove_device()
+  iommu: Track iopf group instead of last fault
+  iommu: Make iopf_group_response() return void
+  iommu: Make iommu_report_device_fault() return void
+
+ include/linux/iommu.h                         | 262 +++++++---
+ drivers/iommu/intel/iommu.h                   |   4 +-
+ drivers/iommu/iommu-sva.h                     |  71 ---
+ include/uapi/linux/iommu.h                    | 161 ------
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  14 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 103 ++--
+ drivers/iommu/intel/iommu.c                   |  28 +-
+ drivers/iommu/intel/svm.c                     |  41 +-
+ drivers/iommu/io-pgfault.c                    | 473 ++++++++++--------
+ drivers/iommu/iommu-sva.c                     |  71 ++-
+ drivers/iommu/iommu.c                         | 233 ---------
+ MAINTAINERS                                   |   1 -
+ drivers/iommu/Kconfig                         |   4 +
+ drivers/iommu/Makefile                        |   3 +-
+ drivers/iommu/intel/Kconfig                   |   1 +
+ 15 files changed, 583 insertions(+), 887 deletions(-)
+ delete mode 100644 drivers/iommu/iommu-sva.h
+ delete mode 100644 include/uapi/linux/iommu.h
+
+-- 
+2.34.1
 
