@@ -1,256 +1,239 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [134.134.136.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02CA95821B
-	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 08:15:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ABBA59169
+	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 08:16:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=134.134.136.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706602518; cv=none; b=DdWFYdvEwwTMW6abo6fAAdVFya5DD0cOzvmKCkb5To5c14HJSU+gwpkmnQ4wEyCWgg3XN1z5ccSF6+pndeIwLR7W1vEyH1M/mrdR0PtquCSTl4/j1+ey4kkgdCDUZdbAXCSI4hMYCoWFT8+TWkO0d5hkBtHC6fiAaYCCaio5u2o=
+	t=1706602563; cv=none; b=lkI3uhJl/dgkKh/lLSjcX3wveM17/59IfxQB4NORU76Ahrk7h8T/YohXZ6u5Nj71xovDIxYdQ8UtrrZ6tpjZOVREU7yTBkzK2mucufzllF3hrc3kVc8GTk4AS6zbiDKwPv4/qroJ6wt6aFcRyxZexHVW/1MyIT6kroTmL9KVyuk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706602518; c=relaxed/simple;
-	bh=xAXFWXbfZ0fCyVjEm8a/lDKedHKzBbgMHiYFrctbvM8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=kd4oK3UV1E1PD/z1SFYnch3UB7oQ0Kgdrp+5R2rYjaADx+py2VJFgI4zTBTPOE1hDBAhghSg0EOpO9NuuHEw2eOO4bg69djpMw1+UPpmgQVv2ssDuQBTiHdG8iAXyZToateO4LuXOukBY8vDNiDK6iIXl4I+A3+KQ1AwOUo9ri4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XIftHMrP; arc=none smtp.client-ip=198.175.65.12
+	s=arc-20240116; t=1706602563; c=relaxed/simple;
+	bh=w/ipZ2tpfckUhU8OSONcLchNKVSsXi2i9jMUEnMCFas=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZkdRzm4uXzSi6favNLH/yeH9zr2sAOb9IAIMkrvD5G0ooP+coZeHT9YMR7Q0JML6XEy5Tfytzd05bympcfTxhAAs6OqjZaSQgrdnJFD3COY62dTGkbQMg/AmWdIMCFlJD9o/ltVvsVEqE63+ZAuDXkiQPTanI+ZvEG67v68JgUs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TJw+jw2M; arc=none smtp.client-ip=134.134.136.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XIftHMrP"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TJw+jw2M"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706602517; x=1738138517;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=xAXFWXbfZ0fCyVjEm8a/lDKedHKzBbgMHiYFrctbvM8=;
-  b=XIftHMrP6a6PKuJmWKeZIMtNv02xG4p1NB6wk3GX5lx928gcX1Eh+xCt
-   9EXqBsI87aLB+o4OP37hffAorjUKuAFhUOnuXv1WIpW+wx3jK+MYUwUWf
-   riVlAl4kT3dBXMPV8nO/BI6/wQGNQ83N3tNc1lamwGTZJimuB2aQGiZcE
-   8o68YQj5/gHKw2y4+RXiQ/JErkBvrMMMJFvJbIL4dTNwsr9VL9+0/cCrY
-   0pqGEwAehVEzoiBvzqLqK9RVdByAj2zV7S8zJNHGOCgPvr0ZMoRhBG7T9
-   PFn/25iKNU3QODkQ/dMWitEgqIFLtY2lBDXwGkuYOE4aTgMldN440C175
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="10588588"
+  t=1706602560; x=1738138560;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=w/ipZ2tpfckUhU8OSONcLchNKVSsXi2i9jMUEnMCFas=;
+  b=TJw+jw2MFES57TqWfwIi88sfnnQPyWfMVW2aIR7RBv8rMKZU0x2XN+ZX
+   6PSla4Cgtfdfv7MJzLf5hiFikUTK+fgzcK+nNN3zC4R7NFmWHHKVjpDgG
+   bW/r/PT9d6TJ4uPHPcHT+mZcQ17/qtZYdBZ98+pw/phVIZZtWQqHD99dO
+   fJnCMKHV2UNkC/5dahilNA9MjC5UIU1YKdbpYT/6iQN2z3gqsf9aFvf9T
+   wtKq58WlPqFnnnmDXCs5RIyS5OxQSTTp7TEEyMfV3pvCMpk7HpV+RlBIU
+   cwtYEcIQ+C642jzsVtrEL+otI66H8K8oCYKVj19fQ1+6YGbYyopKuWrbA
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="393635838"
 X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
-   d="scan'208";a="10588588"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2024 00:15:17 -0800
+   d="scan'208";a="393635838"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2024 00:15:39 -0800
 X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="961181350"
 X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
-   d="scan'208";a="3634053"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmviesa003.fm.intel.com with ESMTP; 30 Jan 2024 00:15:13 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Cc: Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Longfang Liu <liulongfang@huawei.com>,
-	Yan Zhao <yan.y.zhao@intel.com>,
-	Joel Granados <j.granados@samsung.com>,
-	iommu@lists.linux.dev,
-	kvm@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v11 16/16] iommu: Make iommu_report_device_fault() return void
-Date: Tue, 30 Jan 2024 16:08:35 +0800
-Message-Id: <20240130080835.58921-17-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240130080835.58921-1-baolu.lu@linux.intel.com>
-References: <20240130080835.58921-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="961181350"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.249.174.131]) ([10.249.174.131])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2024 00:15:36 -0800
+Message-ID: <500c4582-ec05-4a9e-9b68-d2ae19aed49b@linux.intel.com>
+Date: Tue, 30 Jan 2024 16:15:33 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v12 5/5] iommu/vt-d: improve ITE fault handling if target
+ device isn't present
+To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+ "bhelgaas@google.com" <bhelgaas@google.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>
+Cc: "dwmw2@infradead.org" <dwmw2@infradead.org>,
+ "will@kernel.org" <will@kernel.org>, "lukas@wunner.de" <lukas@wunner.de>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
+References: <20240129034924.817005-1-haifeng.zhao@linux.intel.com>
+ <20240129034924.817005-6-haifeng.zhao@linux.intel.com>
+ <BN9PR11MB52761CC3E5F08D4B7BAD7F918C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <7adec292-9d38-41ab-a982-bd840b24f3ab@intel.com>
+ <0aee453c-e98f-4b72-8107-31d4731abcdb@linux.intel.com>
+ <BN9PR11MB5276D3372267CE9246170FA78C7D2@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276D3372267CE9246170FA78C7D2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-As the iommu_report_device_fault() has been converted to auto-respond a
-page fault if it fails to enqueue it, there's no need to return a code
-in any case. Make it return void.
 
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/iommu.h                       |  5 ++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  4 ++--
- drivers/iommu/intel/svm.c                   | 19 ++++++----------
- drivers/iommu/io-pgfault.c                  | 25 +++++++--------------
- 4 files changed, 19 insertions(+), 34 deletions(-)
+On 1/30/2024 2:22 PM, Tian, Kevin wrote:
+>> From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+>> Sent: Tuesday, January 30, 2024 1:13 PM
+>>
+>> On 1/29/2024 5:21 PM, Yi Liu wrote:
+>>> On 2024/1/29 17:06, Tian, Kevin wrote:
+>>>>> From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+>>>>> Sent: Monday, January 29, 2024 11:49 AM
+>>>>>
+>>>>> Because surprise removal could happen anytime, e.g. user could
+>>>>> request safe
+>>>>> removal to EP(endpoint device) via sysfs and brings its link down to do
+>>>>> surprise removal cocurrently. such aggressive cases would cause ATS
+>>>>> invalidation request issued to non-existence target device, then deadly
+>>>>> loop to retry that request after ITE fault triggered in interrupt
+>>>>> context.
+>>>>> this patch aims to optimize the ITE handling by checking the target
+>>>>> device
+>>>>> presence state to avoid retrying the timeout request blindly, thus
+>>>>> avoid
+>>>>> hard lockup or system hang.
+>>>>>
+>>>>> Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+>>>>> ---
+>>>>>    drivers/iommu/intel/dmar.c | 18 ++++++++++++++++++
+>>>>>    1 file changed, 18 insertions(+)
+>>>>>
+>>>>> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+>>>>> index 814134e9aa5a..2e214b43725c 100644
+>>>>> --- a/drivers/iommu/intel/dmar.c
+>>>>> +++ b/drivers/iommu/intel/dmar.c
+>>>>> @@ -1272,6 +1272,7 @@ static int qi_check_fault(struct intel_iommu
+>>>>> *iommu, int index, int wait_index,
+>>>>>    {
+>>>>>        u32 fault;
+>>>>>        int head, tail;
+>>>>> +    u64 iqe_err, ite_sid;
+>>>>>        struct q_inval *qi = iommu->qi;
+>>>>>        int shift = qi_shift(iommu);
+>>>>>
+>>>>> @@ -1316,6 +1317,13 @@ static int qi_check_fault(struct intel_iommu
+>>>>> *iommu, int index, int wait_index,
+>>>>>            tail = readl(iommu->reg + DMAR_IQT_REG);
+>>>>>            tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
+>>>>>
+>>>>> +        /*
+>>>>> +         * SID field is valid only when the ITE field is Set in
+>>>>> FSTS_REG
+>>>>> +         * see Intel VT-d spec r4.1, section 11.4.9.9
+>>>>> +         */
+>>>>> +        iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
+>>>>> +        ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
+>>>>> +
+>>>>>            writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
+>>>>>            pr_info("Invalidation Time-out Error (ITE) cleared\n");
+>>>>>
+>>>>> @@ -1325,6 +1333,16 @@ static int qi_check_fault(struct intel_iommu
+>>>>> *iommu, int index, int wait_index,
+>>>>>                head = (head - 2 + QI_LENGTH) % QI_LENGTH;
+>>>>>            } while (head != tail);
+>>>>>
+>>>>> +        /*
+>>>>> +         * If got ITE, we need to check if the sid of ITE is the
+>>>>> same as
+>>>>> +         * current ATS invalidation target device, if yes, don't
+>>>>> try this
+>>>>> +         * request anymore if the target device isn't present.
+>>>>> +         * 0 value of ite_sid means old VT-d device, no ite_sid value.
+>>>>> +         */
+>>>>> +        if (pdev && ite_sid && !pci_device_is_present(pdev) &&
+>>>>> +            ite_sid == pci_dev_id(pci_physfn(pdev)))
+>>>>> +            return -ETIMEDOUT;
+>>>>> +
+>>>> since the hardware already reports source id leading to timeout,
+>>>> can't we
+>>>> just find the pci_dev according to reported ite_sid? this is a slow
+>>>> path (either
+>>>> due to device in bad state or removed) hence it's not necessary to
+>>>> add more
+>>>> intelligence to pass the pci_dev in, leading to only a partial fix
+>>>> can be backported.
+>>>>
+>>>> It's also more future-proof, say if one day the driver allows
+>>>> batching invalidation
+>>>> requests for multiple devices then no need to pass in a list of devices.
+>>>>
+>>>> Then it's easier to backport a full fix.
+>>> May consider pci_get_domain_bus_and_slot() or
+>>> pci_find_bus()/pci_get_slot(). But I doubt if the pci_dev is still
+>>> tracked
+>>> in the bus or a kind of dev list in the device hot removal case. So Ethan
+>>> may need to check.
+>> Perhaps it is too late to call pci_find_bus() or
+>> pci_get_domain_bus_and_slot() to get the
+>>
+>> device instance from this notifier registered as
+>> BUS_NOTIFY_REMOVED_DEVICE
+>>
+>> action. if the device is still there in bus list, *must* be a bug of
+>> device subsystem as
+>>
+>> *removed* device.
+>>
+> Ethan, looks your reply is not formatted well. Can you fix your mail
+> client like how you write the commit msg?
+Sorry for the mail format.
+> Here we need consider two situations.
+>
+> One is that the device is not bound to a driver or bound to a driver
+> which doesn't do active work to the device when it's removed. In
+> that case one may observe the timeout situation only in the removal
+> path as the stack dump in your patch02 shows.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index ceadbeaffd98..6ab90cb93da9 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1545,7 +1545,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name);
- void iopf_queue_free(struct iopf_queue *queue);
- int iopf_queue_discard_partial(struct iopf_queue *queue);
- void iopf_free_group(struct iopf_group *group);
--int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
-+void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt);
- void iopf_group_response(struct iopf_group *group,
- 			 enum iommu_page_response_code status);
- #else
-@@ -1583,10 +1583,9 @@ static inline void iopf_free_group(struct iopf_group *group)
- {
- }
- 
--static inline int
-+static inline void
- iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- {
--	return -ENODEV;
- }
- 
- static inline void iopf_group_response(struct iopf_group *group,
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 42eb59cb99f4..02580364acda 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1455,7 +1455,7 @@ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
- /* IRQ and event handlers */
- static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
- {
--	int ret;
-+	int ret = 0;
- 	u32 perm = 0;
- 	struct arm_smmu_master *master;
- 	bool ssid_valid = evt[0] & EVTQ_0_SSV;
-@@ -1511,7 +1511,7 @@ static int arm_smmu_handle_evt(struct arm_smmu_device *smmu, u64 *evt)
- 		goto out_unlock;
- 	}
- 
--	ret = iommu_report_device_fault(master->dev, &fault_evt);
-+	iommu_report_device_fault(master->dev, &fault_evt);
- out_unlock:
- 	mutex_unlock(&smmu->streams_mutex);
- 	return ret;
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 2f8716636dbb..b644d57da841 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -561,14 +561,11 @@ static int prq_to_iommu_prot(struct page_req_dsc *req)
- 	return prot;
- }
- 
--static int intel_svm_prq_report(struct intel_iommu *iommu, struct device *dev,
--				struct page_req_dsc *desc)
-+static void intel_svm_prq_report(struct intel_iommu *iommu, struct device *dev,
-+				 struct page_req_dsc *desc)
- {
- 	struct iopf_fault event = { };
- 
--	if (!dev || !dev_is_pci(dev))
--		return -ENODEV;
--
- 	/* Fill in event data for device specific processing */
- 	event.fault.type = IOMMU_FAULT_PAGE_REQ;
- 	event.fault.prm.addr = (u64)desc->addr << VTD_PAGE_SHIFT;
-@@ -601,7 +598,7 @@ static int intel_svm_prq_report(struct intel_iommu *iommu, struct device *dev,
- 		event.fault.prm.private_data[0] = ktime_to_ns(ktime_get());
- 	}
- 
--	return iommu_report_device_fault(dev, &event);
-+	iommu_report_device_fault(dev, &event);
- }
- 
- static void handle_bad_prq_event(struct intel_iommu *iommu,
-@@ -704,12 +701,10 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 		if (!pdev)
- 			goto bad_req;
- 
--		if (intel_svm_prq_report(iommu, &pdev->dev, req))
--			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
--		else
--			trace_prq_report(iommu, &pdev->dev, req->qw_0, req->qw_1,
--					 req->priv_data[0], req->priv_data[1],
--					 iommu->prq_seq_number++);
-+		intel_svm_prq_report(iommu, &pdev->dev, req);
-+		trace_prq_report(iommu, &pdev->dev, req->qw_0, req->qw_1,
-+				 req->priv_data[0], req->priv_data[1],
-+				 iommu->prq_seq_number++);
- 		pci_dev_put(pdev);
- prq_advance:
- 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
-diff --git a/drivers/iommu/io-pgfault.c b/drivers/iommu/io-pgfault.c
-index e932ab5e8dc9..f70a09149b95 100644
---- a/drivers/iommu/io-pgfault.c
-+++ b/drivers/iommu/io-pgfault.c
-@@ -176,26 +176,22 @@ static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
-  * freed after the device has stopped generating page faults (or the iommu
-  * hardware has been set to block the page faults) and the pending page faults
-  * have been flushed.
-- *
-- * Return: 0 on success and <0 on error.
-  */
--int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
-+void iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- {
- 	struct iommu_fault *fault = &evt->fault;
- 	struct iommu_fault_param *iopf_param;
- 	struct iopf_group abort_group = {};
- 	struct iopf_group *group;
--	int ret;
- 
- 	iopf_param = iopf_get_dev_fault_param(dev);
- 	if (WARN_ON(!iopf_param))
--		return -ENODEV;
-+		return;
- 
- 	if (!(fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)) {
--		ret = report_partial_fault(iopf_param, fault);
-+		report_partial_fault(iopf_param, fault);
- 		iopf_put_dev_fault_param(iopf_param);
- 		/* A request that is not the last does not need to be ack'd */
--		return ret;
- 	}
- 
- 	/*
-@@ -207,25 +203,21 @@ int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- 	 * leaving, otherwise partial faults will be stuck.
- 	 */
- 	group = iopf_group_alloc(iopf_param, evt, &abort_group);
--	if (group == &abort_group) {
--		ret = -ENOMEM;
-+	if (group == &abort_group)
- 		goto err_abort;
--	}
- 
- 	group->domain = get_domain_for_iopf(dev, fault);
--	if (!group->domain) {
--		ret = -EINVAL;
-+	if (!group->domain)
- 		goto err_abort;
--	}
- 
- 	/*
- 	 * On success iopf_handler must call iopf_group_response() and
- 	 * iopf_free_group()
- 	 */
--	ret = group->domain->iopf_handler(group);
--	if (ret)
-+	if (group->domain->iopf_handler(group))
- 		goto err_abort;
--	return 0;
-+
-+	return;
- 
- err_abort:
- 	iopf_group_response(group, IOMMU_PAGE_RESP_FAILURE);
-@@ -233,7 +225,6 @@ int iommu_report_device_fault(struct device *dev, struct iopf_fault *evt)
- 		__iopf_free_group(group);
- 	else
- 		iopf_free_group(group);
--	return ret;
- }
- EXPORT_SYMBOL_GPL(iommu_report_device_fault);
- 
--- 
-2.34.1
+When iommu_bus_notifier() got called for hotplug removal cases to
+flush devTLB (ATS invalidation), driver was already unloaded.
+whatever safe removal or surprise removal. so in theory no active
+driver working there.
 
+pciehp_ist()
+  pciehp_disable_slot()
+   remove_board()
+    pciehp_unconfigure_device()
+     pci_stop_and_remove_bus_device()
+      pci_stop_bus_device()--->here unload driver
+      pci_remove_bus_device()->here qi_flush_dev_iotlb() got called.
+
+>
+> patch02 can fix that case by checking whether the device is present
+> to skip sending the invalidation requests. So the logic being discussed
+> here doesn't matter.
+>
+> The 2nd situation is more tricky. The device might be bound to
+> a driver which is doing active work to the device with in-fly
+> ATS invalidation requests. In this case in-fly requests must be aborted
+> before the driver can be detached from the removed device. Conceptually
+> a device is removed from the bus only after its driver is detached.
+
+Some tricky situations:
+
+1. The ATS invalidation request is issued from driver driver, while it is
+in handling, device is removed. this momment, the device instance still
+exists in the bus list. yes, if searching it by BDF, could get it.
+
+2. The ATS invalidation request is issued from iommu_bus_notifier()
+for surprise removal reason, as shown in above calltrace, device was
+already removed from bus list. if searching it by BDF, return NULL.
+
+3. The ATS invlidation request is issued from iommu_bus_notifier()
+for safe removal, when is in handling, device is removed or link
+is down. also as #2, device was already removed from bus list.
+if searching it by BDF. got NULL.
+...
+
+so, searching device by BDF, only works for the ATS invalidation
+request is from device driver.
+
+Thanks,
+Ethan
+
+>
+>  From this angle you can still find the pci_dev from the bus when handling
+> timeout error for in-fly invalidation requests. But I'm not a PCI person
+> so let's wait for the inputs from Bjorn  and Lukas.
+>
+>
