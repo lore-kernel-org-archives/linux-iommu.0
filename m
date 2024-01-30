@@ -1,115 +1,176 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAB3C57864;
-	Tue, 30 Jan 2024 08:46:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 643825B5CE
+	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 09:13:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.93
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706604376; cv=none; b=p17RVQ0L989Mtom/ivfN11OJGvNOgJ4TcvibiAKs/8b3WBdMGdc7Rj7WnCqtxNJTsFqd4UMFD2FYcNdLTQOVCkzibH0UPExaY9GNfI5BWc365IDf/YQ46FfduSGTHi0Jw8KHfcvSB7remxmutatNknbwX8cCy8XzDJWwkAZO2RY=
+	t=1706606017; cv=none; b=lKHj5gj3mhpn9M6dPayGU74pxiEzN2xvjbz+F5SEYunlyQ00lGMHF++XS+EJNQAJQbkdHC3FFVRUauDlayG0SCa68xsPfvFTkqIkbOGX9JyfnkP6fqLDRCK1HEsmL0tk1QISDkiWdR/EgneiTuYMO2BUCDMk2fSHnfT3By8kEUI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706604376; c=relaxed/simple;
-	bh=KGcaW18+wdP+tuNGfWjZaKNswZI7TQLnbQDs5XXUCP8=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=jCQzmzCTFK0VrVUUcqsxO7SLeSOa8mZk+He4hsW0u3hxwOaHVgOYYl3/ktrtkFr8vnoDFJdrhpePP8NuRaF1tI/Z4urr6tNumJrngQ6RlCdnuw9Q3GLvQSmwx7Pd8N75Bkl/5OvD+TdIV/EoA2iX4dTuNu0UBQ5QBFB9ZL2bOU4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.216])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4TPJb23HMJz6JB1k;
-	Tue, 30 Jan 2024 16:42:54 +0800 (CST)
-Received: from lhrpeml500006.china.huawei.com (unknown [7.191.161.198])
-	by mail.maildlp.com (Postfix) with ESMTPS id D17E7140C98;
-	Tue, 30 Jan 2024 16:46:10 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- lhrpeml500006.china.huawei.com (7.191.161.198) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Tue, 30 Jan 2024 08:46:10 +0000
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
- Tue, 30 Jan 2024 08:46:10 +0000
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>
-CC: Eric Auger <eric.auger@redhat.com>, Jean-Philippe Brucker
-	<jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, Michael Shavit
-	<mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>,
-	"patches@lists.linux.dev" <patches@lists.linux.dev>
-Subject: RE: [PATCH v4 01/27] iommu/arm-smmu-v3: Check that the RID domain is
- S1 in SVA
-Thread-Topic: [PATCH v4 01/27] iommu/arm-smmu-v3: Check that the RID domain is
- S1 in SVA
-Thread-Index: AQHaUIOwEvsu/yJdMEqnvQfiRYY9c7DyDZ2g
-Date: Tue, 30 Jan 2024 08:46:10 +0000
-Message-ID: <b3a7b564dcef4b518af0493155b67cc6@huawei.com>
-References: <0-v4-e7091cdd9e8d+43b1-smmuv3_newapi_p2_jgg@nvidia.com>
- <1-v4-e7091cdd9e8d+43b1-smmuv3_newapi_p2_jgg@nvidia.com>
-In-Reply-To: <1-v4-e7091cdd9e8d+43b1-smmuv3_newapi_p2_jgg@nvidia.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1706606017; c=relaxed/simple;
+	bh=Y4nDFYjUZfzurJ80YZ+gps4Y0inJ3LqS/yvK9HXgBPo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=d8SzHYaL7FQEhohrjfUDEUxT0QUbBS//X+cZLXmBfNZ0aLod56KdqwSQCGVn11yX+nKDBO39wUJmPYlKFfCku58pRSDr8PtSU0TsArE/yUG2poBIREAIJS3ufvndk1V/TAUSjBbZY9NrPsNN/j4DeHWRAVM9Yex9jI6QkX28YsE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gbt/b/Wl; arc=none smtp.client-ip=192.55.52.93
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gbt/b/Wl"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706606015; x=1738142015;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Y4nDFYjUZfzurJ80YZ+gps4Y0inJ3LqS/yvK9HXgBPo=;
+  b=gbt/b/WloVmYr9ROvIJHlmxfeeGLge8uZR6emF/tk4s/JJbM49xKk7kx
+   /kxoKkmcgD40Tn04tuwLq21dkZM+64wDqNL6Sg3VG59ASdhZXAe+kOnnz
+   GcghLZsuqsvb3snh6LpH012HnaICGJDx4SRgjbDrl+f4xD08P0aKhLw5f
+   LFTJZvLLmgTrbgoc3oAUKCWlS9i8SMi1MwcSn9QX0w9WxxDIMEvCa+ZvF
+   LASI8eLKtacIOdkfAQhLknCAvRMumbO8DlY74BGl+Y5BbS7a+6VKpVdqR
+   IFNZaabwQTSRy5Qm087K00xpegnAOXG2w+oZkB798eyFtqsVjBdbl2x0G
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="400356513"
+X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
+   d="scan'208";a="400356513"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2024 01:13:34 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10968"; a="858412928"
+X-IronPort-AV: E=Sophos;i="6.05,707,1701158400"; 
+   d="scan'208";a="858412928"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.249.174.131]) ([10.249.174.131])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Jan 2024 01:13:31 -0800
+Message-ID: <56a9971e-7015-4584-89c7-80056b7ec547@linux.intel.com>
+Date: Tue, 30 Jan 2024 17:13:29 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v12 5/5] iommu/vt-d: improve ITE fault handling if target
+ device isn't present
+To: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+ "bhelgaas@google.com" <bhelgaas@google.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "jgg@ziepe.ca" <jgg@ziepe.ca>
+Cc: "dwmw2@infradead.org" <dwmw2@infradead.org>,
+ "will@kernel.org" <will@kernel.org>, "lukas@wunner.de" <lukas@wunner.de>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
+References: <20240129034924.817005-1-haifeng.zhao@linux.intel.com>
+ <20240129034924.817005-6-haifeng.zhao@linux.intel.com>
+ <BN9PR11MB52761CC3E5F08D4B7BAD7F918C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <7adec292-9d38-41ab-a982-bd840b24f3ab@intel.com>
+ <0aee453c-e98f-4b72-8107-31d4731abcdb@linux.intel.com>
+ <BN9PR11MB5276D3372267CE9246170FA78C7D2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <500c4582-ec05-4a9e-9b68-d2ae19aed49b@linux.intel.com>
+ <BN9PR11MB527674172BBA9BDC49A004D08C7D2@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <BN9PR11MB527674172BBA9BDC49A004D08C7D2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
 
+On 1/30/2024 4:43 PM, Tian, Kevin wrote:
+>> From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+>> Sent: Tuesday, January 30, 2024 4:16 PM
+>>
+>> On 1/30/2024 2:22 PM, Tian, Kevin wrote:
+>>> Here we need consider two situations.
+>>>
+>>> One is that the device is not bound to a driver or bound to a driver
+>>> which doesn't do active work to the device when it's removed. In
+>>> that case one may observe the timeout situation only in the removal
+>>> path as the stack dump in your patch02 shows.
+>> When iommu_bus_notifier() got called for hotplug removal cases to
+>> flush devTLB (ATS invalidation), driver was already unloaded.
+>> whatever safe removal or surprise removal. so in theory no active
+>> driver working there.
+>>
+>> pciehp_ist()
+>>    pciehp_disable_slot()
+>>     remove_board()
+>>      pciehp_unconfigure_device()
+>>       pci_stop_and_remove_bus_device()
+>>        pci_stop_bus_device()--->here unload driver
+>>        pci_remove_bus_device()->here qi_flush_dev_iotlb() got called.
+> yes, so patch02 can fix this case.
+>
+>>> patch02 can fix that case by checking whether the device is present
+>>> to skip sending the invalidation requests. So the logic being discussed
+>>> here doesn't matter.
+>>>
+>>> The 2nd situation is more tricky. The device might be bound to
+>>> a driver which is doing active work to the device with in-fly
+>>> ATS invalidation requests. In this case in-fly requests must be aborted
+>>> before the driver can be detached from the removed device. Conceptually
+>>> a device is removed from the bus only after its driver is detached.
+>> Some tricky situations:
+>>
+>> 1. The ATS invalidation request is issued from driver driver, while it is
+>> in handling, device is removed. this momment, the device instance still
+>> exists in the bus list. yes, if searching it by BDF, could get it.
+> it's searchable between the point where the device is removed and the
+> point where the driver is unloaded:
+>
+>          CPU0                                CPU1
+>    (Driver is active)                    (pciehp handler)
+>    qi_submit_sync()                      pciehp_ist()
+>      ...                                   ...
+>      loop for completion() {               pciehp_unconfigure_device()
+>        ...                                   pci_dev_set_disconnected()
+>        if (ITE) {                            ...
+>          //find pci_dev from sid             pci_remove_bus_device()
+>          if (pci_dev_is_connected())           device_del()
+>            break;                                bus_remove_device()
+>        }                                           device_remove_driver()
 
-> -----Original Message-----
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Friday, January 26, 2024 6:15 PM
-> To: iommu@lists.linux.dev; Joerg Roedel <joro@8bytes.org>; linux-arm-
-> kernel@lists.infradead.org; Robin Murphy <robin.murphy@arm.com>; Will
-> Deacon <will@kernel.org>
-> Cc: Eric Auger <eric.auger@redhat.com>; Jean-Philippe Brucker <jean-
-> philippe@linaro.org>; Moritz Fischer <mdf@kernel.org>; Michael Shavit
-> <mshavit@google.com>; Nicolin Chen <nicolinc@nvidia.com>;
-> patches@lists.linux.dev; Shameerali Kolothum Thodi
-> <shameerali.kolothum.thodi@huawei.com>
-> Subject: [PATCH v4 01/27] iommu/arm-smmu-v3: Check that the RID domain is
-> S1 in SVA
->=20
-> This code only works if the RID domain is a S1 domain and has already
-> installed the cdtable.
->=20
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index 05722121f00e70..b4549d698f3569 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -387,7 +387,13 @@ static int __arm_smmu_sva_bind(struct device *dev,
-> struct mm_struct *mm)
->  	struct arm_smmu_bond *bond;
->  	struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
->  	struct iommu_domain *domain =3D iommu_get_domain_for_dev(dev);
-> -	struct arm_smmu_domain *smmu_domain =3D
-> to_smmu_domain(domain);
-> +	struct arm_smmu_domain *smmu_domain;
-> +
-> +	if (!(domain->type & __IOMMU_DOMAIN_PAGING))
-> +		return -ENODEV;
-> +	smmu_domain =3D to_smmu_domain(iommu_get_domain_for_dev(dev));
+If the device was hot plugin or re-scanned, the device has a PCI_DEV_ADDED flag,
+if so the driver unloading work isn't defered to the tail of device_del(), it
+is unloaded before pci_remove_bus_device()->device_del(), in pci_stop_dev
 
-We already have the iommu_domain from above.
+pci_stop_bus_device()
+  pci_stop_dev()
+  {
+   if (pci_dev_is_added(dev)) {
+       device_release_driver(&dev->dev);
+  }
 
-> +	if (smmu_domain->stage !=3D ARM_SMMU_DOMAIN_S1)
-> +		return -ENODEV;
+So the interval the device is searchable, only applied to those devices
+not hot plugged, or never be scanned.
 
-I think we need to do the above checks in arm_smmu_sva_remove_dev_pasid()
-as well.
 
 Thanks,
-Shameer
+Ethan
+
+>        ..                                            //wait for driver unload
+>      }
+>      ..
+>      return;
+>
+>                                                    BUS_NOTIFY_REMOVED_DEVICE;
+>                                                list_del(&dev->bus_list);
+>
+> (I didn’t draw the full calling stack on the right hand side)
+
+>
+>> 2. The ATS invalidation request is issued from iommu_bus_notifier()
+>> for surprise removal reason, as shown in above calltrace, device was
+>> already removed from bus list. if searching it by BDF, return NULL.
+>>
+>> 3. The ATS invlidation request is issued from iommu_bus_notifier()
+>> for safe removal, when is in handling, device is removed or link
+>> is down. also as #2, device was already removed from bus list.
+>> if searching it by BDF. got NULL.
+>> ...
+>>
+>> so, searching device by BDF, only works for the ATS invalidation
+>> request is from device driver.
+>>
+> anything related to bus notifier has been fixed by patch02.
+>
+> the remaining logic is really for fixing the race invalidation from
+> device driver.
