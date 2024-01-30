@@ -1,136 +1,231 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com [209.85.222.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82CCE1272B3
-	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 16:30:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78CF438DE0
+	for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 16:43:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706632203; cv=none; b=r+40OCXucuGLmMFm3M4SZLwfVgjDlHiFWSwpxjFWuPIABSOJFtpzJ2dB1W04g9AUGoL/Vxr4B83z7sC7hG0ZyFtSTEf5+wjw24GPo8cBxN5sLzf6DO3gDEEEjAEPsbmORDtxqZBHsckoLB08m6j/RiOEgHVt3ZoZDOWQBWwKWjE=
+	t=1706632991; cv=none; b=SabpEaf0Nm2Zn3MkWltbPly5OQLX5J11+jofBQkTZRrwg805QfQIRxsAe8QsKr4Dvm4kUlDzKBiWaUJoCxI5VnjWYTow39OjyHlfKa/fGaDDYuJSM7EYO3MK7axceYn9K8SVri+mKiHX7/4ca9itzwe/vjDICUruvcDPbZi1jkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706632203; c=relaxed/simple;
-	bh=HGUrBCzw44fCvpMm/PJWRDlmh/Lag6HIgqKwNA9HrWw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qQK766U3kRZ5Mxx2nCvA/inPnulg/nJdPhTq2PeQG+lmJORlCayYLqV37RrStBw1XcMxPFIPLFxdRKCTHfL9kKjW2Dnn2tYxELfr06kjxdtXGK1n4N9oMOydKj6MG4DOzzDXZS/rAPVNaB/vEiME936M3oHroQ4UIG4SlkQ4uKg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=SGk4ron3; arc=none smtp.client-ip=209.85.160.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1706632991; c=relaxed/simple;
+	bh=Kb5PrKiPOgqplZ89pZOWEqk6h7d4LV1jujZTZpIvh4k=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Y64IH2mg/squJDs/R2VR0CZW64x7N9ZoFR6fEeWopALCu1gV0uEKJQeCrKDLVzvyd7GToRS0VCWXzmUEfRsUE+IQDMnkpYtRfy8mBo9vra8g9uxFZ65NJSX4IAvLYlF8/SvbqU/3fkJ0t+q8/QkmWEbGpYKcHSzr+mYa7uOIP60=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=SxCv7gQO; arc=none smtp.client-ip=209.85.222.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SGk4ron3"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-42a99202ae0so17486961cf.1
-        for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 08:30:01 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="SxCv7gQO"
+Received: by mail-qk1-f173.google.com with SMTP id af79cd13be357-783cd265c76so239690585a.2
+        for <iommu@lists.linux.dev>; Tue, 30 Jan 2024 08:43:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1706632200; x=1707237000; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5Zcz0g1eKRHdqCkK9hAt9D66pTC6Kq1KClFa9gGBswE=;
-        b=SGk4ron3fv0suol//zIJxUi2g+tJJnY5JK+06QvFoqzh7bgl5HsBcgD1uuFoJTuUWA
-         avYZKVocp/S1hZP0i3F1Q+t9s69iAO39qexKPq6wqJ4wp7FyLaN5fH6Vh1BJDeOHgmi9
-         lykVHF3XwbiA01esq+aLb29ytAosxE/QWLujX/Dr2HqhrtNK5mkXJGHYR/NiIjVlf+py
-         o8AkK24MW78NMOV+HXMyKozwgpb+w3I9bqVVoxSRimHAY1BLYW7/qTcCoor6G9jIEKYF
-         KSmBc/mMw0L2AbbPAu9VIzKDOMn2ukjs0N341XHhxeO3sysbvSZ+v/lZesFFueOo1T4v
-         MQyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706632200; x=1707237000;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=google.com; s=20230601; t=1706632988; x=1707237788; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=5Zcz0g1eKRHdqCkK9hAt9D66pTC6Kq1KClFa9gGBswE=;
-        b=XytvAM/HJYXROwv6auO0VVxW7dn+sviesKoKQnqy1yKCk5J0hyl7FtBRX4TbV/mE0i
-         HWl58KXHk4CGYHLfmJ/Y0i4WeFUvV1RPv697bcjKGQ4uhO5wKLQsnKfXGONDQ9O+kElJ
-         aOUKk+pMv1dQwvI0KQoMNmUmF56zHMrJXYhQhz1Ic8UnfKeuCOcopTeGnPw4GMv7KiMS
-         JW1HRwmcOYl5l7d8ZQzKMjEx9z/QH9DnyEkPP0YUlKdi4TnhboOjgIx+sjzvCKXrGLyz
-         W+L0zF70Lc5/Fin6JasGosqclfHXI+gYWy2w9zocXBuItByQ0DsmPefZYKv9BxO0XPFU
-         44Ug==
-X-Gm-Message-State: AOJu0YyDu4e7LnGhVbJR1EQl8E5B92OaEn75q0+XH9MOBqQLTyBh1NuK
-	wAgGTUurEIQSAuSD729qIKUpBz2n80pxlHSVGbJLmCrRgFTEs+tD6+MKjisQnmU=
-X-Google-Smtp-Source: AGHT+IHJ22nh+Fe0GzCkeJR6CbigdX/oZbOW5Ogqo3y2IKf/Ji393IFIDhCodz601kwxWiAWl4jxrQ==
-X-Received: by 2002:a05:622a:1454:b0:42a:ad6b:cf92 with SMTP id v20-20020a05622a145400b0042aad6bcf92mr255081qtx.10.1706632200418;
-        Tue, 30 Jan 2024 08:30:00 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id fb21-20020a05622a481500b0042796ee2fb4sm4144162qtb.30.2024.01.30.08.29.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 30 Jan 2024 08:29:59 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rUqzm-00AJVf-T4;
-	Tue, 30 Jan 2024 12:29:58 -0400
-Date: Tue, 30 Jan 2024 12:29:58 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Ethan Zhao <haifeng.zhao@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"bhelgaas@google.com" <bhelgaas@google.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"dwmw2@infradead.org" <dwmw2@infradead.org>,
-	"will@kernel.org" <will@kernel.org>,
-	"lukas@wunner.de" <lukas@wunner.de>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH v12 5/5] iommu/vt-d: improve ITE fault handling if target
- device isn't present
-Message-ID: <20240130162958.GF50608@ziepe.ca>
-References: <20240129034924.817005-1-haifeng.zhao@linux.intel.com>
- <20240129034924.817005-6-haifeng.zhao@linux.intel.com>
- <BN9PR11MB52761CC3E5F08D4B7BAD7F918C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <7adec292-9d38-41ab-a982-bd840b24f3ab@intel.com>
- <0aee453c-e98f-4b72-8107-31d4731abcdb@linux.intel.com>
- <BN9PR11MB5276D3372267CE9246170FA78C7D2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <500c4582-ec05-4a9e-9b68-d2ae19aed49b@linux.intel.com>
+        bh=afivU5ukzroUUjSv6dIA62TuQmhqdbJqObxkN1yxecQ=;
+        b=SxCv7gQO3WOLffcU2taoNslUowV/yUDSwG8AJGY9ueyMoiMtIIBvgKMrcmlcCwBD3Q
+         2StU2/CuuFWfEKx6mmZcNgVIZBDfhC66ve62aoC99cd/tJfKVNVvNS1MkhviNeZn8KWA
+         r+ugWdCjYCr3yXiqp2WHVDZbBzx6O8gfHIZIlGp2sKWHQD3Gs5w/j0IM+l0BbbDD5LiF
+         FmHk1ezq5WOvRdjleiwaoWyuWeZokOR2ZrMV0vpaJIItsQaK6FkbJl17+gD28fr/P8+d
+         aJKjz97v+NuCMBkdfQHOhObqn42J/ULJuj3PgZnmrVAPn3aBVvVqZWVCQhyVDsp0cnPn
+         B37w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706632988; x=1707237788;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=afivU5ukzroUUjSv6dIA62TuQmhqdbJqObxkN1yxecQ=;
+        b=bSxr3P1O5f7wLgj5Ue3TlkZAS9kSlLEVqoz+J3v99x62JbyppUWe05uYUAPni5yPwB
+         bxuZA539o8JWDyD9HcbJqu5D7MeMBbArvLGCcc1g+3Rwlcrm7jVVA5WJ/BBOq9CotQsT
+         +CrcekVcdKj01BWRPEKRgiUMkq9Sk0P00no4sfzUOcO/885kxn8gMrq+vhx1PV4pp1hc
+         6O/s4Yb50Uw4vg/UyP+vzBLpvgGVzSpNdTKbotlzpt8jczWbV1RIWOcY4kh7TREDaz0I
+         oRGB7qvpWCN/XpVEMlz9gFLbWTGTwBhJPx8LRr/c53xOGATodJZWHc4BBF2gSL6+3pw+
+         5J9Q==
+X-Gm-Message-State: AOJu0YyyOwRqgimrsUEAZA8WOBrK4w9dp4H9CS84fCA+CWGlVMmtyapV
+	QOYrxSbGLw7iIolzXS3TJPMTXPMQGlNlwKCRY09oxfJq8RUVgLbWKbH6skfFB3bNHZERzgj9qD8
+	CUjDucEBupSI9iBy5s5VIZmbTEFhgW9+1MrOi
+X-Google-Smtp-Source: AGHT+IGCcD7PVaq/cz09ZQVjo9JbEtUXpAooRm0ZDYVkjI4/fdo/VvkMg1PDcsBy+2LIz+Ukv1U3YQPLDOpR5Jivfxc=
+X-Received: by 2002:a05:6214:194e:b0:685:4bd7:8bb3 with SMTP id
+ q14-20020a056214194e00b006854bd78bb3mr9344578qvk.2.1706632987877; Tue, 30 Jan
+ 2024 08:43:07 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <500c4582-ec05-4a9e-9b68-d2ae19aed49b@linux.intel.com>
+References: <20240112055251.36101-1-vannapurve@google.com>
+In-Reply-To: <20240112055251.36101-1-vannapurve@google.com>
+From: Vishal Annapurve <vannapurve@google.com>
+Date: Tue, 30 Jan 2024 22:12:54 +0530
+Message-ID: <CAGtprH9FA3-RetE=6i7ezxfV0qEV-8z3HLgPEPY=pzuxSiOD+w@mail.gmail.com>
+Subject: Re: [RFC V1 0/5] x86: CVMs: Align memory conversions to 2M granularity
+To: x86@kernel.org, linux-kernel@vger.kernel.org, hch@lst.de, 
+	petrtesarik@huaweicloud.com, Dave Hansen <dave.hansen@linux.intel.com>, 
+	Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	m.szyprowski@samsung.com, robin.murphy@arm.com
+Cc: pbonzini@redhat.com, rientjes@google.com, seanjc@google.com, 
+	erdemaktas@google.com, ackerleytng@google.com, jxgao@google.com, 
+	sagis@google.com, oupton@google.com, peterx@redhat.com, vkuznets@redhat.com, 
+	dmatlack@google.com, pgonda@google.com, michael.roth@amd.com, 
+	kirill@shutemov.name, thomas.lendacky@amd.com, linux-coco@lists.linux.dev, 
+	chao.p.peng@linux.intel.com, isaku.yamahata@gmail.com, andrew.jones@linux.dev, 
+	corbet@lwn.net, rostedt@goodmis.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jan 30, 2024 at 04:15:33PM +0800, Ethan Zhao wrote:
-> Some tricky situations:
-> 
-> 1. The ATS invalidation request is issued from driver driver, while it is
-> in handling, device is removed. this momment, the device instance still
-> exists in the bus list. yes, if searching it by BDF, could get it.
-> 
-> 2. The ATS invalidation request is issued from iommu_bus_notifier()
-> for surprise removal reason, as shown in above calltrace, device was
-> already removed from bus list. if searching it by BDF, return NULL.
-> 
-> 3. The ATS invlidation request is issued from iommu_bus_notifier()
-> for safe removal, when is in handling, device is removed or link
-> is down. also as #2, device was already removed from bus list.
-> if searching it by BDF. got NULL.
-> ...
-> 
-> so, searching device by BDF, only works for the ATS invalidation
-> request is from device driver.
+On Fri, Jan 12, 2024 at 11:22=E2=80=AFAM Vishal Annapurve <vannapurve@googl=
+e.com> wrote:
+>
+> Goal of this series is aligning memory conversion requests from CVMs to
+> huge page sizes to allow better host side management of guest memory and
+> optimized page table walks.
+>
+> This patch series is partially tested and needs more work, I am seeking
+> feedback from wider community before making further progress.
+>
+> Background
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> Confidential VMs(CVMs) support two types of guest memory ranges:
+> 1) Private Memory: Intended to be consumed/modified only by the CVM.
+> 2) Shared Memory: visible to both guest/host components, used for
+> non-trusted IO.
+>
+> Guest memfd [1] support is set to be merged upstream to handle guest priv=
+ate
+> memory isolation from host usersapace. Guest memfd approach allows follow=
+ing
+> setup:
+> * private memory backed using the guest memfd file which is not accessibl=
+e
+>   from host userspace.
+> * Shared memory backed by tmpfs/hugetlbfs files that are accessible from
+>   host userspace.
+>
+> Userspace VMM needs to register two backing stores for all of the guest
+> memory ranges:
+> * HVA for shared memory
+> * Guest memfd ranges for private memory
+>
+> KVM keeps track of shared/private guest memory ranges that can be updated=
+ at
+> runtime using IOCTLs. This allows KVM to back the guest memory using eith=
+er HVA
+> (shared) or guest memfd file offsets (private) based on the attributes of=
+ the
+> guest memory ranges.
+>
+> In this setup, there is possibility of "double allocation" i.e. scenarios=
+ where
+> both shared and private memory backing stores mapped to the same guest me=
+mory
+> ranges have memory allocated.
+>
+> Guest issues an hypercall to convert the memory types which is forwarded =
+by KVM
+> to the host userspace.
+> Userspace VMM is supposed to handle conversion as follows:
+> 1) Private to shared conversion:
+>   * Update guest memory attributes for the range to be shared using KVM
+>     supported IOCTLs.
+>     - While handling this IOCTL, KVM will unmap EPT/NPT entries correspon=
+ding
+>       to the guest memory being converted.
+>   * Unback the guest memfd range.
+> 2) Shared to private conversion:
+>   * Update guest memory attributes for the range to be private using KVM
+>     supported IOCTLs.
+>     - While handling this IOCTL, KVM will unmap EPT/NPT entries correspon=
+ding
+>       to the guest memory being converted.
+>   * Unback the shared memory file.
+>
+> Note that unbacking needs to be done for both kinds of conversions in ord=
+er to
+> avoid double allocation.
+>
+> Problem
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> CVMs can convert memory between these two types at 4K granularity. Conver=
+sion
+> done at 4K granularity causes issues when using guest memfd support
+> with hugetlb/Hugepage backed guest private memory:
+> 1) Hugetlb fs doesn't allow freeing subpage ranges when punching holes,
+> causing all the private to shared memory conversions to result in double
+> allocation.
+> 2) Even if a new fs is implemented for guest memfd that allows splitting
+> hugepages, punching holes at 4K will cause:
+>    - loss of vmemmmap optimization [2]
+>    - more memory for EPT/NPT entries and extra pagetable walks for guest
+>      side accesses.
+>    - Shared memory mappings to consume more host pagetable entries and
+>      extra pagetalble walks for host side access.
+>    - Higher number of conversions with additional overhead of VM exits
+>      serviced by host userspace.
+>
+> Memory conversion scenarios in the guest that are of major concern:
+> - SWIOTLB area conversion early during boot.
+>    * dma_map_* API invocations for CVMs result in using bounce buffers
+>      from SWIOTLB region which is already marked as shared.
+> - Device drivers allocating memory using dma_alloc_* APIs at runtime
+>   that bypass SWIOTLB.
+>
+> Proposal
+> =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> To counter above issues, this series proposes following:
+> 1) Use boot time allocated SWIOTLB pools for all DMA memory allocated
+> using dma_alloc_* APIs.
+> 2) Increase memory allocated at boot for SWIOTLB from 6% to 8% for CVMs.
+> 3) Enable dynamic SWIOTLB [4] by default for CVMs so that SWITLB can be
+> scaled up as needed.
+> 4) Ensure SWIOTLB pool is 2MB aligned so that all the conversions happen =
+at
+> 2M granularity once during boot.
+> 5) Add a check to ensure all conversions happen at 2M granularity.
+>
+> ** This series leaves out some of the conversion sites which might not
+> be 2M aligned but should be easy to fix once the approach is finalized. *=
+*
+>
+> 1G alignment for conversion:
+> * Using 1G alignment may cause over-allocated SWIOTLB buffers but might
+>   be acceptable for CVMs depending on more considerations.
+> * It might be challenging to use 1G aligned conversion in OVMF. 2M
+>   alignment should be achievable with OVMF changes [3].
+>
+> Alternatives could be:
+> 1) Separate hugepage aligned DMA pools setup by individual device drivers=
+ in
+> case of CVMs.
+>
+> [1] https://lore.kernel.org/linux-mips/20231105163040.14904-1-pbonzini@re=
+dhat.com/
+> [2] https://www.kernel.org/doc/html/next/mm/vmemmap_dedup.html
+> [3] https://github.com/tianocore/edk2/pull/3784
+> [4] https://lore.kernel.org/lkml/20230908080031.GA7848@lst.de/T/
+>
+> Vishal Annapurve (5):
+>   swiotlb: Support allocating DMA memory from SWIOTLB
+>   swiotlb: Allow setting up default alignment of SWIOTLB region
+>   x86: CVMs: Enable dynamic swiotlb by default for CVMs
+>   x86: CVMs: Allow allocating all DMA memory from SWIOTLB
+>   x86: CVMs: Ensure that memory conversions happen at 2M alignment
+>
+>  arch/x86/Kconfig             |  2 ++
+>  arch/x86/kernel/pci-dma.c    |  2 +-
+>  arch/x86/mm/mem_encrypt.c    |  8 ++++++--
+>  arch/x86/mm/pat/set_memory.c |  6 ++++--
+>  include/linux/swiotlb.h      | 22 ++++++----------------
+>  kernel/dma/direct.c          |  4 ++--
+>  kernel/dma/swiotlb.c         | 17 ++++++++++++-----
+>  7 files changed, 33 insertions(+), 28 deletions(-)
+>
+> --
+> 2.43.0.275.g3460e3d667-goog
+>
 
-In the good path, where the hot removal is expected and this is about
-coordinating, the IOMMU driver should do an orderly shutdown of the
-ATS mechanism:
+Ping for review of this series.
 
- 1 Write to PCI config space to disable the ATS
- 2 Make the IOMMU respond to ATS requests with UR and set it to BLOCKED
- 3 Issue a flush of the ATC
- 4 Wait for all outstanding ATC flushes to complete
-
-If it is a bad/surprise path where the device is already gone then:
-
- 1 should automatically not do anything, possibly timing out
- 2 must succeed
- 3 should time out
- 4 should "complete" in that the ATC flushes are all timed out
-
-IMHO all you need to do is not crash/lockup while processing the ATC
-timeouts. If this is a surprise path then the ATC timeout might
-already happened before the iommu driver remove notifier event happens.
-
-If the driver needs to translate from the IOMMU device table index
-into a struct device it is probably best to do that inside the driver.
-
-eg ARM maintains a rbtree in the iommu dev data. (see
-arm_smmu_insert_master)
-
-Jason
+Thanks,
+Vishal
