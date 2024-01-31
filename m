@@ -1,47 +1,47 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.93])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5698255785;
-	Wed, 31 Jan 2024 16:17:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E8A9CA7D;
+	Wed, 31 Jan 2024 16:33:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.93
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706717840; cv=none; b=okfK757/urOMeCElkyYrQS00TP9c8FHoXz1UkimNdWdK6ui0NpFX7BF869cKPwBWakBgUJDJH8/iJJBgpN2P4NXp65x0DbFWLj0oYIovAVEXINB5E5FaLSLFV22k9fzlHpD1ympEU3wsV8e30dzJDafhzB7+62CFqMG+p7sXjuk=
+	t=1706718792; cv=none; b=a6p/1BJztBqdCrgrtfGg0PepxuwdpuqhEAsVksAubgZ8gblBC2ZVnHLukMRUzOBPkjUvEWGNYVDScKiloTRxVlKoiCQOXVAdEwWztSM/9v8peHEbMAw7TBW8VLoHTt2Q5yktWTH425U2xKXyHEX/3xTUYR69NOAVW62icX8NLsU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706717840; c=relaxed/simple;
-	bh=ZBvftZEA8h+jPKNWGdCM8l+DDEkktcde2JqVYxQKRIU=;
+	s=arc-20240116; t=1706718792; c=relaxed/simple;
+	bh=QWDq0A863bmtoFjRx3k/dC+YwBlL22liPpTOfNOnU+U=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=quJ8aJamyPn/xQOr9+2VSTnVSpT7802MFRpRpp+dkgR3h/UWAccQ1Iq+7esvqLIzy2w3OkTWzWhoPj1jSJf679QP/MrQ0jtyh2lu0K51oAvvfu9jKOEY6vVvd2GiQzv5c1koxmKu30ijutuKPKU7pZ8Y4i35fyQfWZrDbHkVr4g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DA9zV1fd; arc=none smtp.client-ip=192.198.163.13
+	 In-Reply-To:Content-Type; b=mzTaJoHRh+U9XsJHC9YrXNdmqtQ2nfnwjl5pGnfEFHDRbKP61OXgsIuHb4r4a48FMJcba/J6JdJcz137e/k6IhkZpnM2jBYvXH0PZIt3RbamG4l5iihG2FLjAFoIUdysz7K2QKKd4nC/XsUtThdgElTwIEdeUcdf8mtCo5fX4Eg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fTh9EJrR; arc=none smtp.client-ip=192.55.52.93
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DA9zV1fd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fTh9EJrR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706717838; x=1738253838;
+  t=1706718790; x=1738254790;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=ZBvftZEA8h+jPKNWGdCM8l+DDEkktcde2JqVYxQKRIU=;
-  b=DA9zV1fdsGd1ty+1wGc4B6ac1Kpd1V03m0ZfTxgIUbeYSGoJe2vcL7d+
-   Vwv+dS3OEvkDRLmAVHSfP9GRy43C/nrozgUARAp5Ry8PANPlqFR0Kd4qT
-   gvgc+oSQkxmdzpOH2XT4VIMQVNT0N5VFAF0CfqQdkXmTDw/0j/TxtsQ9L
-   7qinvr7m66kPNYEMdyFQVRJkvPD4SURPZ4bohfEJSNLLqPlXWrMJpShHu
-   annkB+g1KOQej7EPgf9XgeXMLiE/0IZ8KtKeGEpR7cRcJNLofk6v5s8Tf
-   27yWx2LxMPKoXa3HpugHGbjQJ2F3EzC58qR/uE6YF3W0doA6smPZQCfHW
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="2583362"
+  bh=QWDq0A863bmtoFjRx3k/dC+YwBlL22liPpTOfNOnU+U=;
+  b=fTh9EJrRvwXBMTP2VVsPhZw66xb6+MsxvqEQfhdS1pS0ZgqDznC9/5eu
+   P15SUZeRagMAwU0NVA5DuIvPvi3w42IIlcasQZvVp7bskvKWtqe14Iyhb
+   ZU3WQW2yY4oRDaso4mMD3LQiXxrHsupId8FpxUTNFNpEDWxMw7Wb7mEa0
+   JEdcfchvZL3SgWQLTfnjqtfCYu/I+uGnrzR1wZfzQJiU3KWiZCGTevKPE
+   QCHlFUNXb3PfJwi2tu7MFrMDi1R0CVZJ5FJnEvi2GQvK9qYmVR7kORKCf
+   Hk4eZna627e1U78E4CnfJ1GHOG8gOk1uSwP61YJmQthRXByaT70ON1s+I
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="400785590"
 X-IronPort-AV: E=Sophos;i="6.05,231,1701158400"; 
-   d="scan'208";a="2583362"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2024 08:17:17 -0800
+   d="scan'208";a="400785590"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2024 08:33:09 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="822613711"
+X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="907940266"
 X-IronPort-AV: E=Sophos;i="6.05,231,1701158400"; 
-   d="scan'208";a="822613711"
+   d="scan'208";a="907940266"
 Received: from dspeerx-mobl.amr.corp.intel.com (HELO [10.212.131.185]) ([10.212.131.185])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2024 08:17:16 -0800
-Message-ID: <db477cef-f63b-4950-82b0-275bd10dbe5c@intel.com>
-Date: Wed, 31 Jan 2024 08:17:15 -0800
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2024 08:33:08 -0800
+Message-ID: <6709a57c-48a0-4ddd-b64e-a1e34ae2b763@intel.com>
+Date: Wed, 31 Jan 2024 08:33:07 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,8 +49,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC V1 4/5] x86: CVMs: Allow allocating all DMA memory from
- SWIOTLB
+Subject: Re: [RFC V1 5/5] x86: CVMs: Ensure that memory conversions happen at
+ 2M alignment
 Content-Language: en-US
 To: Vishal Annapurve <vannapurve@google.com>, x86@kernel.org,
  linux-kernel@vger.kernel.org
@@ -65,7 +65,7 @@ Cc: pbonzini@redhat.com, rientjes@google.com, bgardon@google.com,
  m.szyprowski@samsung.com, bp@suse.de, rostedt@goodmis.org,
  iommu@lists.linux.dev
 References: <20240112055251.36101-1-vannapurve@google.com>
- <20240112055251.36101-5-vannapurve@google.com>
+ <20240112055251.36101-6-vannapurve@google.com>
 From: Dave Hansen <dave.hansen@intel.com>
 Autocrypt: addr=dave.hansen@intel.com; keydata=
  xsFNBE6HMP0BEADIMA3XYkQfF3dwHlj58Yjsc4E5y5G67cfbt8dvaUq2fx1lR0K9h1bOI6fC
@@ -110,29 +110,25 @@ Autocrypt: addr=dave.hansen@intel.com; keydata=
  MTsCeQDdjpgHsj+P2ZDeEKCbma4m6Ez/YWs4+zDm1X8uZDkZcfQlD9NldbKDJEXLIjYWo1PH
  hYepSffIWPyvBMBTW2W5FRjJ4vLRrJSUoEfJuPQ3vW9Y73foyo/qFoURHO48AinGPZ7PC7TF
  vUaNOTjKedrqHkaOcqB185ahG2had0xnFsDPlx5y
-In-Reply-To: <20240112055251.36101-5-vannapurve@google.com>
+In-Reply-To: <20240112055251.36101-6-vannapurve@google.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 1/11/24 21:52, Vishal Annapurve wrote:
-> --- a/arch/x86/mm/mem_encrypt.c
-> +++ b/arch/x86/mm/mem_encrypt.c
-> @@ -112,10 +112,14 @@ void __init mem_encrypt_setup_arch(void)
->  	 * The percentage of guest memory used here for SWIOTLB buffers
->  	 * is more of an approximation of the static adjustment which
->  	 * 64MB for <1G, and ~128M to 256M for 1G-to-4G, i.e., the 6%
-> +	 *
-> +	 * Extra 2% is added to accommodate the requirement of DMA allocations
-> +	 * done using dma_alloc_* APIs.
->  	 */
-> -	size = total_mem * 6 / 100;
-> -	size = clamp_val(size, IO_TLB_DEFAULT_SIZE, SZ_1G);
-> +	size = total_mem * 8 / 100;
-> +	size = clamp_val(size, IO_TLB_DEFAULT_SIZE, (SZ_1G + SZ_256M));
->  	swiotlb_adjust_size(size);
-> +	swiotlb_adjust_alignment(SZ_2M);
+> @@ -2133,8 +2133,10 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+>  	int ret;
+>  
+>  	/* Should not be working on unaligned addresses */
+> -	if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n", addr))
+> -		addr &= PAGE_MASK;
+> +	if (WARN_ONCE(addr & ~HPAGE_MASK, "misaligned address: %#lx\n", addr)
+> +		|| WARN_ONCE((numpages << PAGE_SHIFT) & ~HPAGE_MASK,
+> +			"misaligned numpages: %#lx\n", numpages))
+> +		return -EINVAL;
 
-FWIW, this appears superficially to just be fiddling with random
-numbers.  The changelog basically says: "did stuff".
+This series is talking about swiotlb and DMA, then this applies a
+restriction to what I *thought* was a much more generic function:
+__set_memory_enc_pgtable().  What prevents this function from getting
+used on 4k mappings?
 
-What *are* "the requirement of DMA allocations done using dma_alloc_* APIs"?
+
