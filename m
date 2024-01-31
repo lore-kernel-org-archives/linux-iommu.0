@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B91001292DB
-	for <iommu@lists.linux.dev>; Wed, 31 Jan 2024 15:54:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B299484A2D
+	for <iommu@lists.linux.dev>; Wed, 31 Jan 2024 16:03:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706716450; cv=none; b=Oh3th15T6F+fwEqB6xJsVmwXXEK3449Bnkg7hhoC9yJuzOlVpW0PCP+xz5z3s5A/+I3YDgO8ybTMyGy0ff2VzzzbWmQrmjuyNkUIN68Ac5YiFl5VeyEN6aph46Fn8cTrTUjz7DUHnKLkXGsCSfj2Ldf62lMpQksxPIaH62/+JWw=
+	t=1706717022; cv=none; b=OWSQIioVjjdkivA5MlxnYUltSmbi07iJA8XeaANNFIJZbBr9RgdSYKActGINaGQqrWIAisoWcs3mAw2EwwdbShvt037d9LWWR/DufQqTeNh02yaX049Cjkqfr4mIroF6MaUk0QxT6ghTkmUmoNBGx+oDBQ9s6wZ5mQ/c44AiI04=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706716450; c=relaxed/simple;
-	bh=mldqjE1Pc7pvM56+X+UXfoNDx5BOel/dXPvqQok+9yg=;
+	s=arc-20240116; t=1706717022; c=relaxed/simple;
+	bh=6hiDNbhb/+VDQF3BwWp275eYEH+NUPFv+MUhFzE56uY=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=d7+dxi2EHJmSD16DB2kOvpcjwMfOmmxh4Gk+RGXwgDvP87zsGULu0kycDDjuI22D9fFPZuJljHWeY4eAWCUJMa4Fd0SnCQJds7UTyEZsiQX75OgkoqTWMFkCrXxGKvYyLU9fbtAz+zpejHQeGT/hjUcx9MVe6VDWndEYUpPvkqc=
+	 In-Reply-To:Content-Type; b=GP2NKvR5cG2K1ah0mAf61TXV+7SVrVG86cczSIyedFaSGZvkk35R5luwxRwT/Pe7gc8bnrebx3fO4/vLQ0A0ILTBCzBmp2YYRECiEvkI2xL62ci6OP9U5QJQ/gxt7W5UTaJYsGORgd3Xb6rPhCM+CK95prnRczbkfeZR6RnFR7A=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 71801DA7;
-	Wed, 31 Jan 2024 07:54:49 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7E52ADA7;
+	Wed, 31 Jan 2024 08:04:23 -0800 (PST)
 Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2DEAA3F762;
-	Wed, 31 Jan 2024 07:54:05 -0800 (PST)
-Message-ID: <4c9f50d2-05f9-4a37-ac50-dcd98e40e87f@arm.com>
-Date: Wed, 31 Jan 2024 15:54:03 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3CB803F762;
+	Wed, 31 Jan 2024 08:03:39 -0800 (PST)
+Message-ID: <82f03af0-6505-4c1a-8002-272fa5a7a7d5@arm.com>
+Date: Wed, 31 Jan 2024 16:03:38 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,8 +27,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/3] swiotlb: Fix allocation alignment requirement when
- searching slots
+Subject: Re: [PATCH v2 3/3] swiotlb: Honour dma_alloc_coherent() alignment in
+ swiotlb_alloc()
 Content-Language: en-GB
 To: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
 Cc: kernel-team@android.com, iommu@lists.linux.dev,
@@ -36,48 +36,36 @@ Cc: kernel-team@android.com, iommu@lists.linux.dev,
  Petr Tesarik <petr.tesarik1@huawei-partners.com>,
  Dexuan Cui <decui@microsoft.com>
 References: <20240131122543.14791-1-will@kernel.org>
- <20240131122543.14791-2-will@kernel.org>
+ <20240131122543.14791-4-will@kernel.org>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240131122543.14791-2-will@kernel.org>
+In-Reply-To: <20240131122543.14791-4-will@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 31/01/2024 12:25 pm, Will Deacon wrote:
-> Commit bbb73a103fbb ("swiotlb: fix a braino in the alignment check fix"),
-> which was a fix for commit 0eee5ae10256 ("swiotlb: fix slot alignment
-> checks"), causes a functional regression with vsock in a virtual machine
-> using bouncing via a restricted DMA SWIOTLB pool.
+> core-api/dma-api-howto.rst states the following properties of
+> dma_alloc_coherent():
 > 
-> When virtio allocates the virtqueues for the vsock device using
-> dma_alloc_coherent(), the SWIOTLB search fails to take into account the
-> 8KiB buffer size and returns page-unaligned allocations if 'area->index'
-> was left unaligned by a previous allocation from the buffer:
+>    | The CPU virtual address and the DMA address are both guaranteed to
+>    | be aligned to the smallest PAGE_SIZE order which is greater than or
+>    | equal to the requested size.
+> 
+> However, swiotlb_alloc() passes zero for the 'alloc_align_mask'
+> parameter of swiotlb_find_slots() and so this property is not upheld.
+> Instead, allocations larger than a page are aligned to PAGE_SIZE,
+> 
+> Calculate the mask corresponding to the page order suitable for holding
+> the allocation and pass that to swiotlb_find_slots().
 
-Hmm, but isn't this fundamentally swiotlb_alloc()'s fault for assuming 
-it's going to get a page-aligned address back despite asking for 0 
-alignment in the first place? I'm not sure SWIOTLB has ever promised 
-implicit size-alignment, so it feels somewhat misplaced to be messing 
-with the algorithm before fixing the obvious issue in the caller :/
+I guess this goes back to at least e81e99bacc9f ("swiotlb: Support 
+aligned swiotlb buffers") when the explicit argument was added - not 
+sure what we do about 5.15 LTS though (unless the answer is to not care...)
+
+As before, though, how much of patch #1 is needed if this comes first?
 
 Cheers,
 Robin.
 
->   # Final address in brackets is the SWIOTLB address returned to the caller
->   | virtio-pci 0000:00:07.0: orig_addr 0x0 alloc_size 0x2000, iotlb_align_mask 0x800 stride 0x2: got slot 1645-1649/7168 (0x98326800)
->   | virtio-pci 0000:00:07.0: orig_addr 0x0 alloc_size 0x2000, iotlb_align_mask 0x800 stride 0x2: got slot 1649-1653/7168 (0x98328800)
->   | virtio-pci 0000:00:07.0: orig_addr 0x0 alloc_size 0x2000, iotlb_align_mask 0x800 stride 0x2: got slot 1653-1657/7168 (0x9832a800)
-> 
-> This ends in tears (typically buffer corruption and/or a hang) because
-> swiotlb_alloc() blindly returns a pointer to the 'struct page'
-> corresponding to the allocation and therefore the first half of the page
-> ends up being allocated twice.
-> 
-> Fix the problem by treating the allocation alignment separately to any
-> additional alignment requirements from the device, using the maximum
-> of the two as the stride to search the buffer slots.
-> 
-> Fixes: bbb73a103fbb ("swiotlb: fix a braino in the alignment check fix")
-> Fixes: 0eee5ae10256 ("swiotlb: fix slot alignment checks")
 > Cc: Christoph Hellwig <hch@lst.de>
 > Cc: Marek Szyprowski <m.szyprowski@samsung.com>
 > Cc: Robin Murphy <robin.murphy@arm.com>
@@ -85,68 +73,26 @@ Robin.
 > Cc: Dexuan Cui <decui@microsoft.com>
 > Signed-off-by: Will Deacon <will@kernel.org>
 > ---
->   kernel/dma/swiotlb.c | 29 +++++++++++++++--------------
->   1 file changed, 15 insertions(+), 14 deletions(-)
+>   kernel/dma/swiotlb.c | 4 +++-
+>   1 file changed, 3 insertions(+), 1 deletion(-)
 > 
 > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index b079a9a8e087..56cc08b1fbd6 100644
+> index 4485f216e620..8ec37006ac70 100644
 > --- a/kernel/dma/swiotlb.c
 > +++ b/kernel/dma/swiotlb.c
-> @@ -982,7 +982,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
->   		phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
->   	unsigned long max_slots = get_max_slots(boundary_mask);
->   	unsigned int iotlb_align_mask =
-> -		dma_get_min_align_mask(dev) | alloc_align_mask;
-> +		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
->   	unsigned int nslots = nr_slots(alloc_size), stride;
->   	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
->   	unsigned int index, slots_checked, count = 0, i;
-> @@ -993,19 +993,18 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
->   	BUG_ON(!nslots);
->   	BUG_ON(area_index >= pool->nareas);
+> @@ -1632,12 +1632,14 @@ struct page *swiotlb_alloc(struct device *dev, size_t size)
+>   	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+>   	struct io_tlb_pool *pool;
+>   	phys_addr_t tlb_addr;
+> +	unsigned int align;
+>   	int index;
 >   
-> +	/*
-> +	 * For mappings with an alignment requirement don't bother looping to
-> +	 * unaligned slots once we found an aligned one.
-> +	 */
-> +	stride = get_max_slots(max(alloc_align_mask, iotlb_align_mask));
-> +
->   	/*
->   	 * For allocations of PAGE_SIZE or larger only look for page aligned
->   	 * allocations.
->   	 */
->   	if (alloc_size >= PAGE_SIZE)
-> -		iotlb_align_mask |= ~PAGE_MASK;
-> -	iotlb_align_mask &= ~(IO_TLB_SIZE - 1);
-> -
-> -	/*
-> -	 * For mappings with an alignment requirement don't bother looping to
-> -	 * unaligned slots once we found an aligned one.
-> -	 */
-> -	stride = (iotlb_align_mask >> IO_TLB_SHIFT) + 1;
-> +		stride = max(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
+>   	if (!mem)
+>   		return NULL;
 >   
->   	spin_lock_irqsave(&area->lock, flags);
->   	if (unlikely(nslots > pool->area_nslabs - area->used))
-> @@ -1015,14 +1014,16 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
->   	index = area->index;
+> -	index = swiotlb_find_slots(dev, 0, size, 0, &pool);
+> +	align = (1 << (get_order(size) + PAGE_SHIFT)) - 1;
+> +	index = swiotlb_find_slots(dev, 0, size, align, &pool);
+>   	if (index == -1)
+>   		return NULL;
 >   
->   	for (slots_checked = 0; slots_checked < pool->area_nslabs; ) {
-> -		slot_index = slot_base + index;
-> +		phys_addr_t tlb_addr;
->   
-> -		if (orig_addr &&
-> -		    (slot_addr(tbl_dma_addr, slot_index) &
-> -		     iotlb_align_mask) != (orig_addr & iotlb_align_mask)) {
-> +		slot_index = slot_base + index;
-> +		tlb_addr = slot_addr(tbl_dma_addr, slot_index);
-> +
-> +		if ((tlb_addr & alloc_align_mask) ||
-> +		    (orig_addr && (tlb_addr & iotlb_align_mask) !=
-> +				  (orig_addr & iotlb_align_mask))) {
->   			index = wrap_area_index(pool, index + 1);
->   			slots_checked++;
-> -			continue;
->   		}
->   
->   		if (!iommu_is_span_boundary(slot_index, nslots,
