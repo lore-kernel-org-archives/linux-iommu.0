@@ -1,25 +1,47 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B299484A2D
-	for <iommu@lists.linux.dev>; Wed, 31 Jan 2024 16:03:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5698255785;
+	Wed, 31 Jan 2024 16:17:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706717022; cv=none; b=OWSQIioVjjdkivA5MlxnYUltSmbi07iJA8XeaANNFIJZbBr9RgdSYKActGINaGQqrWIAisoWcs3mAw2EwwdbShvt037d9LWWR/DufQqTeNh02yaX049Cjkqfr4mIroF6MaUk0QxT6ghTkmUmoNBGx+oDBQ9s6wZ5mQ/c44AiI04=
+	t=1706717840; cv=none; b=okfK757/urOMeCElkyYrQS00TP9c8FHoXz1UkimNdWdK6ui0NpFX7BF869cKPwBWakBgUJDJH8/iJJBgpN2P4NXp65x0DbFWLj0oYIovAVEXINB5E5FaLSLFV22k9fzlHpD1ympEU3wsV8e30dzJDafhzB7+62CFqMG+p7sXjuk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706717022; c=relaxed/simple;
-	bh=6hiDNbhb/+VDQF3BwWp275eYEH+NUPFv+MUhFzE56uY=;
+	s=arc-20240116; t=1706717840; c=relaxed/simple;
+	bh=ZBvftZEA8h+jPKNWGdCM8l+DDEkktcde2JqVYxQKRIU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GP2NKvR5cG2K1ah0mAf61TXV+7SVrVG86cczSIyedFaSGZvkk35R5luwxRwT/Pe7gc8bnrebx3fO4/vLQ0A0ILTBCzBmp2YYRECiEvkI2xL62ci6OP9U5QJQ/gxt7W5UTaJYsGORgd3Xb6rPhCM+CK95prnRczbkfeZR6RnFR7A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7E52ADA7;
-	Wed, 31 Jan 2024 08:04:23 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3CB803F762;
-	Wed, 31 Jan 2024 08:03:39 -0800 (PST)
-Message-ID: <82f03af0-6505-4c1a-8002-272fa5a7a7d5@arm.com>
-Date: Wed, 31 Jan 2024 16:03:38 +0000
+	 In-Reply-To:Content-Type; b=quJ8aJamyPn/xQOr9+2VSTnVSpT7802MFRpRpp+dkgR3h/UWAccQ1Iq+7esvqLIzy2w3OkTWzWhoPj1jSJf679QP/MrQ0jtyh2lu0K51oAvvfu9jKOEY6vVvd2GiQzv5c1koxmKu30ijutuKPKU7pZ8Y4i35fyQfWZrDbHkVr4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DA9zV1fd; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DA9zV1fd"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706717838; x=1738253838;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ZBvftZEA8h+jPKNWGdCM8l+DDEkktcde2JqVYxQKRIU=;
+  b=DA9zV1fdsGd1ty+1wGc4B6ac1Kpd1V03m0ZfTxgIUbeYSGoJe2vcL7d+
+   Vwv+dS3OEvkDRLmAVHSfP9GRy43C/nrozgUARAp5Ry8PANPlqFR0Kd4qT
+   gvgc+oSQkxmdzpOH2XT4VIMQVNT0N5VFAF0CfqQdkXmTDw/0j/TxtsQ9L
+   7qinvr7m66kPNYEMdyFQVRJkvPD4SURPZ4bohfEJSNLLqPlXWrMJpShHu
+   annkB+g1KOQej7EPgf9XgeXMLiE/0IZ8KtKeGEpR7cRcJNLofk6v5s8Tf
+   27yWx2LxMPKoXa3HpugHGbjQJ2F3EzC58qR/uE6YF3W0doA6smPZQCfHW
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="2583362"
+X-IronPort-AV: E=Sophos;i="6.05,231,1701158400"; 
+   d="scan'208";a="2583362"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2024 08:17:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="822613711"
+X-IronPort-AV: E=Sophos;i="6.05,231,1701158400"; 
+   d="scan'208";a="822613711"
+Received: from dspeerx-mobl.amr.corp.intel.com (HELO [10.212.131.185]) ([10.212.131.185])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Jan 2024 08:17:16 -0800
+Message-ID: <db477cef-f63b-4950-82b0-275bd10dbe5c@intel.com>
+Date: Wed, 31 Jan 2024 08:17:15 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,72 +49,90 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/3] swiotlb: Honour dma_alloc_coherent() alignment in
- swiotlb_alloc()
-Content-Language: en-GB
-To: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
-Cc: kernel-team@android.com, iommu@lists.linux.dev,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Petr Tesarik <petr.tesarik1@huawei-partners.com>,
- Dexuan Cui <decui@microsoft.com>
-References: <20240131122543.14791-1-will@kernel.org>
- <20240131122543.14791-4-will@kernel.org>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240131122543.14791-4-will@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [RFC V1 4/5] x86: CVMs: Allow allocating all DMA memory from
+ SWIOTLB
+Content-Language: en-US
+To: Vishal Annapurve <vannapurve@google.com>, x86@kernel.org,
+ linux-kernel@vger.kernel.org
+Cc: pbonzini@redhat.com, rientjes@google.com, bgardon@google.com,
+ seanjc@google.com, erdemaktas@google.com, ackerleytng@google.com,
+ jxgao@google.com, sagis@google.com, oupton@google.com, peterx@redhat.com,
+ vkuznets@redhat.com, dmatlack@google.com, pgonda@google.com,
+ michael.roth@amd.com, kirill@shutemov.name, thomas.lendacky@amd.com,
+ dave.hansen@linux.intel.com, linux-coco@lists.linux.dev,
+ chao.p.peng@linux.intel.com, isaku.yamahata@gmail.com,
+ andrew.jones@linux.dev, corbet@lwn.net, hch@lst.de,
+ m.szyprowski@samsung.com, bp@suse.de, rostedt@goodmis.org,
+ iommu@lists.linux.dev
+References: <20240112055251.36101-1-vannapurve@google.com>
+ <20240112055251.36101-5-vannapurve@google.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ xsFNBE6HMP0BEADIMA3XYkQfF3dwHlj58Yjsc4E5y5G67cfbt8dvaUq2fx1lR0K9h1bOI6fC
+ oAiUXvGAOxPDsB/P6UEOISPpLl5IuYsSwAeZGkdQ5g6m1xq7AlDJQZddhr/1DC/nMVa/2BoY
+ 2UnKuZuSBu7lgOE193+7Uks3416N2hTkyKUSNkduyoZ9F5twiBhxPJwPtn/wnch6n5RsoXsb
+ ygOEDxLEsSk/7eyFycjE+btUtAWZtx+HseyaGfqkZK0Z9bT1lsaHecmB203xShwCPT49Blxz
+ VOab8668QpaEOdLGhtvrVYVK7x4skyT3nGWcgDCl5/Vp3TWA4K+IofwvXzX2ON/Mj7aQwf5W
+ iC+3nWC7q0uxKwwsddJ0Nu+dpA/UORQWa1NiAftEoSpk5+nUUi0WE+5DRm0H+TXKBWMGNCFn
+ c6+EKg5zQaa8KqymHcOrSXNPmzJuXvDQ8uj2J8XuzCZfK4uy1+YdIr0yyEMI7mdh4KX50LO1
+ pmowEqDh7dLShTOif/7UtQYrzYq9cPnjU2ZW4qd5Qz2joSGTG9eCXLz5PRe5SqHxv6ljk8mb
+ ApNuY7bOXO/A7T2j5RwXIlcmssqIjBcxsRRoIbpCwWWGjkYjzYCjgsNFL6rt4OL11OUF37wL
+ QcTl7fbCGv53KfKPdYD5hcbguLKi/aCccJK18ZwNjFhqr4MliQARAQABzUVEYXZpZCBDaHJp
+ c3RvcGhlciBIYW5zZW4gKEludGVsIFdvcmsgQWRkcmVzcykgPGRhdmUuaGFuc2VuQGludGVs
+ LmNvbT7CwXgEEwECACIFAlQ+9J0CGwMGCwkIBwMCBhUIAgkKCwQWAgMBAh4BAheAAAoJEGg1
+ lTBwyZKwLZUP/0dnbhDc229u2u6WtK1s1cSd9WsflGXGagkR6liJ4um3XCfYWDHvIdkHYC1t
+ MNcVHFBwmQkawxsYvgO8kXT3SaFZe4ISfB4K4CL2qp4JO+nJdlFUbZI7cz/Td9z8nHjMcWYF
+ IQuTsWOLs/LBMTs+ANumibtw6UkiGVD3dfHJAOPNApjVr+M0P/lVmTeP8w0uVcd2syiaU5jB
+ aht9CYATn+ytFGWZnBEEQFnqcibIaOrmoBLu2b3fKJEd8Jp7NHDSIdrvrMjYynmc6sZKUqH2
+ I1qOevaa8jUg7wlLJAWGfIqnu85kkqrVOkbNbk4TPub7VOqA6qG5GCNEIv6ZY7HLYd/vAkVY
+ E8Plzq/NwLAuOWxvGrOl7OPuwVeR4hBDfcrNb990MFPpjGgACzAZyjdmYoMu8j3/MAEW4P0z
+ F5+EYJAOZ+z212y1pchNNauehORXgjrNKsZwxwKpPY9qb84E3O9KYpwfATsqOoQ6tTgr+1BR
+ CCwP712H+E9U5HJ0iibN/CDZFVPL1bRerHziuwuQuvE0qWg0+0SChFe9oq0KAwEkVs6ZDMB2
+ P16MieEEQ6StQRlvy2YBv80L1TMl3T90Bo1UUn6ARXEpcbFE0/aORH/jEXcRteb+vuik5UGY
+ 5TsyLYdPur3TXm7XDBdmmyQVJjnJKYK9AQxj95KlXLVO38lczsFNBFRjzmoBEACyAxbvUEhd
+ GDGNg0JhDdezyTdN8C9BFsdxyTLnSH31NRiyp1QtuxvcqGZjb2trDVuCbIzRrgMZLVgo3upr
+ MIOx1CXEgmn23Zhh0EpdVHM8IKx9Z7V0r+rrpRWFE8/wQZngKYVi49PGoZj50ZEifEJ5qn/H
+ Nsp2+Y+bTUjDdgWMATg9DiFMyv8fvoqgNsNyrrZTnSgoLzdxr89FGHZCoSoAK8gfgFHuO54B
+ lI8QOfPDG9WDPJ66HCodjTlBEr/Cwq6GruxS5i2Y33YVqxvFvDa1tUtl+iJ2SWKS9kCai2DR
+ 3BwVONJEYSDQaven/EHMlY1q8Vln3lGPsS11vSUK3QcNJjmrgYxH5KsVsf6PNRj9mp8Z1kIG
+ qjRx08+nnyStWC0gZH6NrYyS9rpqH3j+hA2WcI7De51L4Rv9pFwzp161mvtc6eC/GxaiUGuH
+ BNAVP0PY0fqvIC68p3rLIAW3f97uv4ce2RSQ7LbsPsimOeCo/5vgS6YQsj83E+AipPr09Caj
+ 0hloj+hFoqiticNpmsxdWKoOsV0PftcQvBCCYuhKbZV9s5hjt9qn8CE86A5g5KqDf83Fxqm/
+ vXKgHNFHE5zgXGZnrmaf6resQzbvJHO0Fb0CcIohzrpPaL3YepcLDoCCgElGMGQjdCcSQ+Ci
+ FCRl0Bvyj1YZUql+ZkptgGjikQARAQABwsFfBBgBAgAJBQJUY85qAhsMAAoJEGg1lTBwyZKw
+ l4IQAIKHs/9po4spZDFyfDjunimEhVHqlUt7ggR1Hsl/tkvTSze8pI1P6dGp2XW6AnH1iayn
+ yRcoyT0ZJ+Zmm4xAH1zqKjWplzqdb/dO28qk0bPso8+1oPO8oDhLm1+tY+cOvufXkBTm+whm
+ +AyNTjaCRt6aSMnA/QHVGSJ8grrTJCoACVNhnXg/R0g90g8iV8Q+IBZyDkG0tBThaDdw1B2l
+ asInUTeb9EiVfL/Zjdg5VWiF9LL7iS+9hTeVdR09vThQ/DhVbCNxVk+DtyBHsjOKifrVsYep
+ WpRGBIAu3bK8eXtyvrw1igWTNs2wazJ71+0z2jMzbclKAyRHKU9JdN6Hkkgr2nPb561yjcB8
+ sIq1pFXKyO+nKy6SZYxOvHxCcjk2fkw6UmPU6/j/nQlj2lfOAgNVKuDLothIxzi8pndB8Jju
+ KktE5HJqUUMXePkAYIxEQ0mMc8Po7tuXdejgPMwgP7x65xtfEqI0RuzbUioFltsp1jUaRwQZ
+ MTsCeQDdjpgHsj+P2ZDeEKCbma4m6Ez/YWs4+zDm1X8uZDkZcfQlD9NldbKDJEXLIjYWo1PH
+ hYepSffIWPyvBMBTW2W5FRjJ4vLRrJSUoEfJuPQ3vW9Y73foyo/qFoURHO48AinGPZ7PC7TF
+ vUaNOTjKedrqHkaOcqB185ahG2had0xnFsDPlx5y
+In-Reply-To: <20240112055251.36101-5-vannapurve@google.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 31/01/2024 12:25 pm, Will Deacon wrote:
-> core-api/dma-api-howto.rst states the following properties of
-> dma_alloc_coherent():
-> 
->    | The CPU virtual address and the DMA address are both guaranteed to
->    | be aligned to the smallest PAGE_SIZE order which is greater than or
->    | equal to the requested size.
-> 
-> However, swiotlb_alloc() passes zero for the 'alloc_align_mask'
-> parameter of swiotlb_find_slots() and so this property is not upheld.
-> Instead, allocations larger than a page are aligned to PAGE_SIZE,
-> 
-> Calculate the mask corresponding to the page order suitable for holding
-> the allocation and pass that to swiotlb_find_slots().
+On 1/11/24 21:52, Vishal Annapurve wrote:
+> --- a/arch/x86/mm/mem_encrypt.c
+> +++ b/arch/x86/mm/mem_encrypt.c
+> @@ -112,10 +112,14 @@ void __init mem_encrypt_setup_arch(void)
+>  	 * The percentage of guest memory used here for SWIOTLB buffers
+>  	 * is more of an approximation of the static adjustment which
+>  	 * 64MB for <1G, and ~128M to 256M for 1G-to-4G, i.e., the 6%
+> +	 *
+> +	 * Extra 2% is added to accommodate the requirement of DMA allocations
+> +	 * done using dma_alloc_* APIs.
+>  	 */
+> -	size = total_mem * 6 / 100;
+> -	size = clamp_val(size, IO_TLB_DEFAULT_SIZE, SZ_1G);
+> +	size = total_mem * 8 / 100;
+> +	size = clamp_val(size, IO_TLB_DEFAULT_SIZE, (SZ_1G + SZ_256M));
+>  	swiotlb_adjust_size(size);
+> +	swiotlb_adjust_alignment(SZ_2M);
 
-I guess this goes back to at least e81e99bacc9f ("swiotlb: Support 
-aligned swiotlb buffers") when the explicit argument was added - not 
-sure what we do about 5.15 LTS though (unless the answer is to not care...)
+FWIW, this appears superficially to just be fiddling with random
+numbers.  The changelog basically says: "did stuff".
 
-As before, though, how much of patch #1 is needed if this comes first?
-
-Cheers,
-Robin.
-
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-> Cc: Dexuan Cui <decui@microsoft.com>
-> Signed-off-by: Will Deacon <will@kernel.org>
-> ---
->   kernel/dma/swiotlb.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 4485f216e620..8ec37006ac70 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -1632,12 +1632,14 @@ struct page *swiotlb_alloc(struct device *dev, size_t size)
->   	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
->   	struct io_tlb_pool *pool;
->   	phys_addr_t tlb_addr;
-> +	unsigned int align;
->   	int index;
->   
->   	if (!mem)
->   		return NULL;
->   
-> -	index = swiotlb_find_slots(dev, 0, size, 0, &pool);
-> +	align = (1 << (get_order(size) + PAGE_SHIFT)) - 1;
-> +	index = swiotlb_find_slots(dev, 0, size, align, &pool);
->   	if (index == -1)
->   		return NULL;
->   
+What *are* "the requirement of DMA allocations done using dma_alloc_* APIs"?
