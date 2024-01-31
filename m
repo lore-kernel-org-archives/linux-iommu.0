@@ -1,310 +1,215 @@
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B263464AA5;
-	Wed, 31 Jan 2024 09:18:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05E7351004
+	for <iommu@lists.linux.dev>; Wed, 31 Jan 2024 09:19:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706692741; cv=none; b=FFso/NRVWMSqK4+K3V3wWrE90lduRdhRgsoZ7aH5xBSlFV8sDnQl1ISyBPtJRPr28R+AjKwqHtdoVYfU2zq6u4/pFIZX0BJ87+sL3apB6wCpwOa3tCLr10ZCT1+qObTwwZ8ixqhv8+c0x9pj5v1rVFv1spoPiuZXS1o8gHjXwsQ=
+	t=1706692802; cv=none; b=QmaZX+0z5sdSUTsZdYe4YdazFGo2qPyNFZ+nKydZVWzgTARewZA1aj4qqiWbgqZsb34Yzz2xnyaRg20g+Lr2XR+JKiOC72sOb5++CZnEvyJNzGXCDRywZ5YR5YXZ52iQ8UCPL5L1SaaIWpiYHRlSuFQ6ApHt7RxUAzlU3PKYy/s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706692741; c=relaxed/simple;
-	bh=Is+qBPwFtOIVWPYNnH2Nd84gzktZD85WZOFWQa8Tkq0=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=L4uHx0t5mmxAQl8cY7unyBXROBOsb3wUHuzOlm7hcx/bsJ8nymh5kjHvrgikshvi+GoTjZTVG1lM5w10SjO8b60pRn+m/pAPigyEZ48/HR9p3Pl4sn8aAINHziOILEmBkuEvZJwgrZ/LR1+7/J4QBF1lVyJSkNtKbbWoyAD0ckM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net; spf=pass smtp.mailfrom=gmx.net; dkim=pass (2048-bit key) header.d=gmx.net header.i=arthur_mueller@gmx.net header.b=kr3ki+VJ; arc=none smtp.client-ip=212.227.17.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.net
+	s=arc-20240116; t=1706692802; c=relaxed/simple;
+	bh=cUccCHMJcbLqkHWYPPl73IQeF9SdeJZjheb+hKOLEpQ=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:Content-Type; b=Iqbexy/JePDm1DkDkMvCmKsTMvG2SrQ1bgc5VfSaRArw0eXZxWT6c5h+YRiiAr0bjT+ke/Z5gwrogKQ9kSiH8P7ZXB18TWZYvXmMKdW/YwFal2PfPyVqNCAPt+Vyni/x3dQfEHq3LTr5m7l+cf6S2jFntQAnj12LkLigwTUFJfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com; spf=none smtp.mailfrom=linux.vnet.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=UpnJtnxg; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.vnet.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmx.net header.i=arthur_mueller@gmx.net header.b="kr3ki+VJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-	s=s31663417; t=1706692718; x=1707297518; i=arthur_mueller@gmx.net;
-	bh=Is+qBPwFtOIVWPYNnH2Nd84gzktZD85WZOFWQa8Tkq0=;
-	h=X-UI-Sender-Class:Subject:From:To:Cc:Date:In-Reply-To:
-	 References;
-	b=kr3ki+VJUFsRE4DWkQlITNS9HCkYHH5CAGHOpGWAJc0M61Q1m/rS6qcaMdyMd7Nq
-	 ymzLE7OvVjtLnYaRwZOnKBRn4fSLtl9Udwa+qShgWxumiyhaxKD/yQARXNL20ZHNc
-	 y+6D0QeP1bZe/uQSc6W2FstGhrIRlZGh0vqLdf/QpUSAh1OTXokFY/aqIlbRKt2BT
-	 ys6i6akNkhRESJMw2rAaE7MoGvuagG4JwIDB+VbIyTisWkyXyC4ImYmzHXbBILJWz
-	 ckDX1+2p4J/7VNxrdCIW36XMBr2HOAy4NVzk1/Q7DhAKLjPRZYQquRFEK7aRewYn+
-	 C8kTrTmLLl7A+JfZ2g==
-X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
-Received: from [192.168.178.20] ([82.135.83.88]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MG9kC-1rGq3O2pxs-00GWPl; Wed, 31
- Jan 2024 10:18:38 +0100
-Message-ID: <8a270b75f4ed67e27c2ca3cbb9d1103de6a49b7e.camel@gmx.net>
-Subject: Re: Error when running fio against nvme-of rdma target (mlx5 driver)
-From: Arthur Muller <arthur_mueller@gmx.net>
-To: Martin Oliveira <Martin.Oliveira@eideticom.com>, 
-	"linux-nvme@lists.infradead.org"
-	 <linux-nvme@lists.infradead.org>, iommu@lists.linux.dev, 
-	"linux-rdma@vger.kernel.org"
-	 <linux-rdma@vger.kernel.org>
-Cc: Kelly Ursenbach <Kelly.Ursenbach@eideticom.com>, "Lee, Jason"
-	 <jasonlee@lanl.gov>, Logan Gunthorpe <Logan.Gunthorpe@eideticom.com>
-Date: Wed, 31 Jan 2024 10:18:37 +0100
-In-Reply-To: <MW3PR19MB42505C41C2BA3F425A5CB606E42D9@MW3PR19MB4250.namprd19.prod.outlook.com>
-References:
-	  <MW3PR19MB42505C41C2BA3F425A5CB606E42D9@MW3PR19MB4250.namprd19.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4-0ubuntu2 
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="UpnJtnxg"
+Received: from pps.filterd (m0353724.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 40V8jfoS006431;
+	Wed, 31 Jan 2024 09:19:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : from : subject : to : cc : content-type :
+ content-transfer-encoding; s=pp1;
+ bh=AsNCJw4pDsxCUYHDc6nqwEmroGRj4bkBo1xDKOnvKTk=;
+ b=UpnJtnxgZlHPGTs/0/fve/XM/LYotrPn3dbXJZc7cw5iHdfqS/59AJfRZfhOq5nH6k22
+ oSZVzPj4+1uFvH6w2oz1hDvBUvQUH681h/PqnvRHit6Rw5lYwd4r/EnozUaCMtgtmW0o
+ j5QbjYKvZlcAvRLEDwSTsU2/YCieh3YFBvk+VHlSNwXMs/dMgX74D2zjgU/90cpUe68M
+ BetrZa+p1XWxDo4JB6ljIakCi4TDpnFBBehOIndqVGXK5OoR+PrlyFG+8mIVBMHF2QY8
+ xdBXzgjCmRcYe/QKQysBgcssw1qa12Rd9QARTWY82PxhxH0uRmGZQpSB6x3C5K5TRvSx CA== 
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3vyhyu2c72-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 31 Jan 2024 09:19:52 +0000
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 40V6mI5c010884;
+	Wed, 31 Jan 2024 09:19:50 GMT
+Received: from smtprelay01.wdc07v.mail.ibm.com ([172.16.1.68])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 3vweckm4ye-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 31 Jan 2024 09:19:50 +0000
+Received: from smtpav02.dal12v.mail.ibm.com (smtpav02.dal12v.mail.ibm.com [10.241.53.101])
+	by smtprelay01.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 40V9Jn5X21693026
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 31 Jan 2024 09:19:50 GMT
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C1ABE5805A;
+	Wed, 31 Jan 2024 09:19:49 +0000 (GMT)
+Received: from smtpav02.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6348458051;
+	Wed, 31 Jan 2024 09:19:46 +0000 (GMT)
+Received: from [9.43.112.67] (unknown [9.43.112.67])
+	by smtpav02.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 31 Jan 2024 09:19:46 +0000 (GMT)
+Message-ID: <b7e18415-c04d-412e-8129-22a144d736b9@linux.vnet.ibm.com>
+Date: Wed, 31 Jan 2024 14:49:45 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Provags-ID: V03:K1:81dOa/Q9nhl7O376VpDWVmdo1q+CKggEqubLkis+LTOtNIQv4uf
- kAe9j1wdadSdmwtsQlWtip6DFE7QyUY1jc2hvcTQyNZO/IkBYUetDwDOmR8sxT1t8s36sX6
- qJTH16L4FnPItBEkw0fIAzz1sMv7PNuf5WxXBH+UM0LWevSMSUJvgYe22Vv8a2W9WBnDtWX
- u1AxCnboo4XDFNhF9Ib4Q==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:p9VtA68N3qc=;tKOlhYLaiM7G4hizjRGVx8f2Yw2
- Af1ZABWpqsxm6Ip6x8svOkRx5E7Nyt3FUCr2C7WgxrzbzoiHbJWTIACPXX/AXyL0yPlVJqgID
- TxYpkpY/w+AYaUlbkfS60dkYMw0TXkuIabP2/PTGulw2OfSvriMkK4I5K+rK1jQ/P/TRSSvPV
- 2AwHhT9Y2TrG4naaZHPtUs2czKZt4/AlabbtKLxDoAgU+U1ODr5CSfRqJQA0XPw4Kohx/wnna
- nIU3Bpf/Moq9Yaan1jPlyYOmPo2vY1K5n2UdPNrdRSrtz8OJyry0c4OrCVA3LGaYvbQlTftbV
- MFATkt7cNyCM1Sj1mUVcqiyfWh4XC81mMX/fcc5KgfJsamhA9hQzmifZ3B7C3En023Cw579Op
- xJsleoe1r3AF/WRQH/XME6K3q0rqZqbK5joM7KXlSgyMcDekTXHrDAPbhz+6c8drH/H8+eycp
- iaFCGXQK1w9LB0wbi+N2DsLGHChUaoKXt1ZsRXLmADWotebD3qInmXjOczMPwbgKYkx1xfqN2
- ZzU7AQXDgpMN1zy6kf3e6CsImBsCNMf4w8E2IdIrY6EKrdDuG5VszrN/CZBFhanenya7h0T6v
- lRMps/28Pjj0X0KqKcXdV2NkXALA0km4iJNSOFTHDS3tskQwZKB86TuDF64XyI3OWsiv2Jwcy
- UJkTGmOwh3jL/UJYLB+PKm3IAfz16WrR5QF0ooEIAWOpE8tHKIhFoPxxb8gOGJiZ81aXDpze+
- M6I9r0SuTgmggc9LczAeNIVki6GGO54u6dJOFK6ydb47mmpTtI7UgLSZV+IeB70kOi4H+x0fI
- L6j+GhsRGW/Ctkyt8/HexyAiHB7HOcAxB8wE6fWrkfRMA=
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+From: Tasmiya Nalatwad <tasmiya@linux.vnet.ibm.com>
+Subject: [mainline] [linux-next] [6.8-rc1] [FC] [DLPAR] OOps kernel crash
+ after performing dlpar remove test
+To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-next@vger.kernel.org" <linux-next@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
+Cc: iommu@lists.linux.dev, robin.murphy@arm.com, will@kernel.org,
+        joro@8bytes.org, "sachinp@linux.vnet.com" <sachinp@linux.vnet.com>,
+        "abdhalee@linux.vnet.ibm.com" <abdhalee@linux.vnet.ibm.com>,
+        "mputtash@linux.vnet.com" <mputtash@linux.vnet.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: qEe62f3oLJUvt2o7fLHocch0crVOHHBT
+X-Proofpoint-ORIG-GUID: qEe62f3oLJUvt2o7fLHocch0crVOHHBT
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-01-31_03,2024-01-30_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 malwarescore=0
+ priorityscore=1501 phishscore=0 bulkscore=0 adultscore=0
+ lowpriorityscore=0 clxscore=1011 impostorscore=0 mlxscore=0
+ mlxlogscore=748 suspectscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2311290000 definitions=main-2401310070
 
-This is a re-sending of an email due to iommu old list bounce. Now
-including new iommu@lists.linux.dev instead. First message was
-submitted to LORE and is published at:
+Greetings,
 
-https://lore.kernel.org/all/9a40e66eb8ffc48a2e3765cf77f49914d57c55e7.camel@=
-gmx.net/
+[mainline] [linux-next] [6.8-rc1] [DLPAR] OOps kernel crash after 
+performing dlpar remove test
 
+--- Traces ---
 
+[58563.146236] BUG: Unable to handle kernel data access at 
+0x6b6b6b6b6b6b6b83
+[58563.146242] Faulting instruction address: 0xc0000000009c0e60
+[58563.146248] Oops: Kernel access of bad area, sig: 11 [#1]
+[58563.146252] LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=8192 NUMA pSeries
+[58563.146258] Modules linked in: isofs cdrom dm_snapshot dm_bufio 
+dm_round_robin dm_queue_length exfat vfat fat btrfs blake2b_generic xor 
+raid6_pq zstd_compress loop xfs libcrc32c raid0 nvram rpadlpar_io rpaphp 
+nfnetlink xsk_diag bonding tls rfkill sunrpc dm_service_time 
+dm_multipath dm_mod pseries_rng vmx_crypto binfmt_misc ext4 mbcache jbd2 
+sd_mod sg ibmvscsi scsi_transport_srp ibmveth lpfc nvmet_fc nvmet 
+nvme_fc nvme_fabrics nvme_core t10_pi crc64_rocksoft crc64 
+scsi_transport_fc fuse
+[58563.146326] CPU: 0 PID: 1071247 Comm: drmgr Kdump: loaded Not tainted 
+6.8.0-rc1-auto-gecb1b8288dc7 #1
+[58563.146332] Hardware name: IBM,9009-42A POWER9 (raw) 0x4e0202 
+0xf000005 of:IBM,FW950.A0 (VL950_141) hv:phyp pSeries
+[58563.146337] NIP:  c0000000009c0e60 LR: c0000000009c0e28 CTR: 
+c0000000009c1584
+[58563.146342] REGS: c00000007960f260 TRAP: 0380   Not tainted 
+(6.8.0-rc1-auto-gecb1b8288dc7)
+[58563.146347] MSR:  8000000000009033 <SF,EE,ME,IR,DR,RI,LE>  CR: 
+24822424  XER: 20040006
+[58563.146360] CFAR: c0000000009c0e74 IRQMASK: 0
+[58563.146360] GPR00: c0000000009c0e28 c00000007960f500 c000000001482600 
+c000000003050540
+[58563.146360] GPR04: 0000000000000000 c00000089a6870c0 0000000000000001 
+fffffffffffe0000
+[58563.146360] GPR08: c000000002bac020 6b6b6b6b6b6b6b6b 6b6b6b6b6b6b6b6b 
+0000000000000220
+[58563.146360] GPR12: 0000000000002000 c000000003080000 0000000000000000 
+0000000000000000
+[58563.146360] GPR16: 0000000000000000 0000000000000000 0000000000000000 
+0000000000000001
+[58563.146360] GPR20: c000000001281478 0000000000000000 c000000001281490 
+c000000002bfed80
+[58563.146360] GPR24: c00000089a6870c0 0000000000000000 0000000000000000 
+c000000002b9ffb8
+[58563.146360] GPR28: 0000000000000000 c000000002bac0e8 0000000000000000 
+0000000000000000
+[58563.146421] NIP [c0000000009c0e60] iommu_ops_from_fwnode+0x68/0x118
+[58563.146430] LR [c0000000009c0e28] iommu_ops_from_fwnode+0x30/0x118
+[58563.146437] Call Trace:
+[58563.146439] [c00000007960f500] [c00000007960f560] 0xc00000007960f560 
+(unreliable)
+[58563.146446] [c00000007960f530] [c0000000009c0fd0] 
+__iommu_probe_device+0xc0/0x5c0
+[58563.146454] [c00000007960f5a0] [c0000000009c151c] 
+iommu_probe_device+0x4c/0xb4
+[58563.146462] [c00000007960f5e0] [c0000000009c15d0] 
+iommu_bus_notifier+0x4c/0x8c
+[58563.146469] [c00000007960f600] [c00000000019e3d0] 
+notifier_call_chain+0xb8/0x1a0
+[58563.146476] [c00000007960f660] [c00000000019eea0] 
+blocking_notifier_call_chain+0x64/0x94
+[58563.146483] [c00000007960f6a0] [c0000000009d3c5c] bus_notify+0x50/0x7c
+[58563.146491] [c00000007960f6e0] [c0000000009cfba4] device_add+0x774/0x9bc
+[58563.146498] [c00000007960f7a0] [c0000000008abe9c] 
+pci_device_add+0x2f4/0x864
+[58563.146506] [c00000007960f850] [c00000000007d5a0] 
+of_create_pci_dev+0x390/0xa08
+[58563.146514] [c00000007960f930] [c00000000007de68] 
+__of_scan_bus+0x250/0x328
+[58563.146520] [c00000007960fa10] [c00000000007a680] 
+pcibios_scan_phb+0x274/0x3c0
+[58563.146527] [c00000007960fae0] [c000000000105d58] 
+init_phb_dynamic+0xb8/0x110
+[58563.146535] [c00000007960fb50] [c0080000217b0380] 
+dlpar_add_slot+0x170/0x3b4 [rpadlpar_io]
+[58563.146544] [c00000007960fbf0] [c0080000217b0ca0] 
+add_slot_store+0xa4/0x140 [rpadlpar_io]
+[58563.146551] [c00000007960fc80] [c000000000f3dbec] 
+kobj_attr_store+0x30/0x4c
+[58563.146559] [c00000007960fca0] [c0000000006931fc] 
+sysfs_kf_write+0x68/0x7c
+[58563.146566] [c00000007960fcc0] [c000000000691b2c] 
+kernfs_fop_write_iter+0x1c8/0x278
+[58563.146573] [c00000007960fd10] [c000000000599f54] vfs_write+0x340/0x4cc
+[58563.146580] [c00000007960fdc0] [c00000000059a2bc] ksys_write+0x7c/0x140
+[58563.146587] [c00000007960fe10] [c000000000035d74] 
+system_call_exception+0x134/0x330
+[58563.146595] [c00000007960fe50] [c00000000000d6a0] 
+system_call_common+0x160/0x2e4
+[58563.146602] --- interrupt: c00 at 0x200004470cb4
+[58563.146606] NIP:  0000200004470cb4 LR: 00002000043e7d04 CTR: 
+0000000000000000
+[58563.146611] REGS: c00000007960fe80 TRAP: 0c00   Not tainted 
+(6.8.0-rc1-auto-gecb1b8288dc7)
+[58563.146616] MSR:  800000000280f033 
+<SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 24000282  XER: 00000000
+[58563.146632] IRQMASK: 0
+[58563.146632] GPR00: 0000000000000004 00007fffd3993420 0000200004557300 
+0000000000000007
+[58563.146632] GPR04: 000001000d8a5270 0000000000000006 fffffffffbad2c80 
+000001000d8a02a0
+[58563.146632] GPR08: 0000000000000001 0000000000000000 0000000000000000 
+0000000000000000
+[58563.146632] GPR12: 0000000000000000 000020000422bb50 0000000000000000 
+0000000000000000
+[58563.146632] GPR16: 0000000000000000 0000000000000000 0000000000000000 
+0000000000000000
+[58563.146632] GPR20: 0000000000000000 0000000000000000 0000000000000000 
+0000000000000000
+[58563.146632] GPR24: 0000000106b41668 0000000000000000 0000000000000006 
+000001000d8a5270
+[58563.146632] GPR28: 0000000000000006 000001000d8a02a0 000001000d8a5270 
+0000000000000006
+[58563.146690] NIP [0000200004470cb4] 0x200004470cb4
+[58563.146694] LR [00002000043e7d04] 0x2000043e7d04
+[58563.146698] --- interrupt: c00
+[58563.146701] Code: e9299a20 3d020173 39089a20 7fa94000 419e0038 
+e9490018 7fbf5000 409e0020 48000070 60000000 60000000 60000000 
+<e9490018> 7faaf840 419e0058 e9290000
+[58563.146722] ---[ end trace 0000000000000000 ]---
 
-
-Dear all,
-
-We've encountered a similar issue. In our case, we are using the Lustre
-file system instead of NVMe-oF to connect our storage over the network.
-Our setup involves an AMD EPYC 7282 machine paired with Mellanox
-MT28908 cards. Following the guidelines in the Nvidia documentation:
-
-https://docs.nvidia.com/networking/display/mlnxenv584150lts/installing+mlnx=
-_en#src-2477565014_InstallingMLNX_EN-InstallationModes
-
-we compiled the MLNX_EN 5.8 LTS driver using VMA. Additionally, we
-experimented with the latest MLNX_EN 23.10 driver, encountering the
-same issue.=20
-
-We use kernel 5.15.0 now. This problems first appered after upgrading
-our systems from Ubuntu 20.04 LTS to Ubuntu 22.04 LTS and, thus, from
-kernel 5.4 to 5.15. Unfortunately, we are not completely sure about the
-MLNX_EN driver version prior to the upgrade, but strongly assume <=3D
-5.8.
-
-The error process appears to be initiated by the following error
-message:
-
-mlx5_core 0000:63:00.0: AMD-Vi: Event logged [IO_PAGE_FAULT
-domain=3D0x0003 address=3D0x200020f758 flags=3D0x0020]
-
-This error results in timeouts and read operation faults within the
-Lustre file system on both the client and storage ends, potentially
-leading to a complete storage failure.=20
-
-Subsequently, the IO_PAGE_FAULT error is often followed by a "local
-protection error," although this is not consistent. The error tends to
-manifest after a prolonged period of constant network operation,
-typically after approximately one day of continuous read and write
-operations involving a Postgres database on the file system.=20
-
-Regrettably, we have been unable to trigger this error by a manual
-action.
-
-Kind regards,
-Arthur M=C3=BCller
-
-
-On Wed, 2022-02-09 at 02:50 +0000, Martin Oliveira wrote:
-> Hello,
->=20
-> We have been hitting an error when running IO over our nvme-of setup,
-> using the mlx5 driver and we are wondering if anyone has seen
-> anything similar/has any suggestions.
->=20
-> Both initiator and target are AMD EPYC 7502 machines connected over
-> RDMA using a Mellanox MT28908. Target has 12 NVMe SSDs which are
-> exposed as a single NVMe fabrics device, one physical SSD per
-> namespace.
->=20
-> When running an fio job targeting directly the fabrics devices (no
-> filesystem, see script at the end), within a minute or so we start
-> seeing errors like this:
->=20
-> [=C2=A0 408.368677] mlx5_core 0000:c1:00.0: AMD-Vi: Event logged
-> [IO_PAGE_FAULT domain=3D0x002f address=3D0x24d08000 flags=3D0x0000]
-> [=C2=A0 408.372201] infiniband mlx5_0: mlx5_handle_error_cqe:332:(pid 0):
-> WC error: 4, Message: local protection error
-> [=C2=A0 408.380181] infiniband mlx5_0: dump_cqe:272:(pid 0): dump error
-> cqe
-> [=C2=A0 408.380187] 00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0=
-0
-> 00
-> [=C2=A0 408.380189] 00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0=
-0
-> 00
-> [=C2=A0 408.380191] 00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0=
-0
-> 00
-> [=C2=A0 408.380192] 00000030: 00 00 00 00 a9 00 56 04 00 00 01 e9 00 54 e=
-8
-> e2
-> [=C2=A0 408.380230] nvme nvme15: RECV for CQE 0x00000000ce392ed9 failed
-> with status local protection error (4)
-> [=C2=A0 408.380235] nvme nvme15: starting error recovery
-> [=C2=A0 408.380238] nvme_ns_head_submit_bio: 726 callbacks suppressed
-> [=C2=A0 408.380246] block nvme15n2: no usable path - requeuing I/O
-> [=C2=A0 408.380284] block nvme15n5: no usable path - requeuing I/O
-> [=C2=A0 408.380298] block nvme15n1: no usable path - requeuing I/O
-> [=C2=A0 408.380304] block nvme15n11: no usable path - requeuing I/O
-> [=C2=A0 408.380304] block nvme15n11: no usable path - requeuing I/O
-> [=C2=A0 408.380330] block nvme15n1: no usable path - requeuing I/O
-> [=C2=A0 408.380350] block nvme15n2: no usable path - requeuing I/O
-> [=C2=A0 408.380371] block nvme15n6: no usable path - requeuing I/O
-> [=C2=A0 408.380377] block nvme15n6: no usable path - requeuing I/O
-> [=C2=A0 408.380382] block nvme15n4: no usable path - requeuing I/O
-> [=C2=A0 408.380472] mlx5_core 0000:c1:00.0: AMD-Vi: Event logged
-> [IO_PAGE_FAULT domain=3D0x002f address=3D0x24d09000 flags=3D0x0000]
-> [=C2=A0 408.391265] mlx5_core 0000:c1:00.0: AMD-Vi: Event logged
-> [IO_PAGE_FAULT domain=3D0x002f address=3D0x24d0a000 flags=3D0x0000]
-> [=C2=A0 415.125967] nvmet: ctrl 1 keep-alive timer (5 seconds) expired!
-> [=C2=A0 415.131898] nvmet: ctrl 1 fatal error occurred!
->=20
-> Occasionally, we've seen the following stack trace:
->=20
-> [ 1158.152464] kernel BUG at drivers/iommu/amd/io_pgtable.c:485!
-> [ 1158.427696] invalid opcode: 0000 [#1] SMP NOPTI
-> [ 1158.432228] CPU: 51 PID: 796 Comm: kworker/51:1H Tainted:
-> P=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 OE=C2=A0=C2=
-=A0=C2=A0=C2=A0 5.13.0-eid-athena-g6fb4e704d11c-dirty #14
-> [ 1158.443867] Hardware name: GIGABYTE R272-Z32-00/MZ32-AR0-00, BIOS
-> R21 10/08/2020
-> [ 1158.451252] Workqueue: ib-comp-wq ib_cq_poll_work [ib_core]
-> [ 1158.456884] RIP: 0010:iommu_v1_unmap_page+0xed/0x100
-> [ 1158.461849] Code: 48 8b 45 d0 65 48 33 04 25 28 00 00 00 75 1d 48
-> 83 c4 10 4c 89 f0 5b 41 5c 41 5d 41 5e 41 5f 5d c3 49 8d 46 ff 4c 85
-> f0 74 d6 <0f> 0b e8 1c 38 46 00 66 66 2e 0f 1f 84 00 00 00 00 00 90
-> 0f 1f 44
-> [ 1158.480589] RSP: 0018:ffffabb520587bd0 EFLAGS: 00010206
-> [ 1158.485812] RAX: 0001000000061fff RBX: 0000000000100000 RCX:
-> 0000000000000027
-> [ 1158.492938] RDX: 0000000030562000 RSI: ffff000000000000 RDI:
-> 0000000000000000
-> [ 1158.500071] RBP: ffffabb520587c08 R08: ffffabb520587bd0 R09:
-> 0000000000000000
-> [ 1158.507202] R10: 0000000000000001 R11: 000ffffffffff000 R12:
-> ffff9984abd9e318
-> [ 1158.514326] R13: ffff9984abd9e310 R14: 0001000000062000 R15:
-> 0001000000000000
-> [ 1158.521452] FS:=C2=A0 0000000000000000(0000) GS:ffff99a36c8c0000(0000)
-> knlGS:0000000000000000
-> [ 1158.529540] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 1158.535286] CR2: 00007f75b04f1000 CR3: 00000001eddd8000 CR4:
-> 0000000000350ee0
-> [ 1158.542419] Call Trace:
-> [ 1158.544877]=C2=A0 amd_iommu_unmap+0x2c/0x40
-> [ 1158.548653]=C2=A0 __iommu_unmap+0xc4/0x170
-> [ 1158.552344]=C2=A0 iommu_unmap_fast+0xe/0x10
-> [ 1158.556100]=C2=A0 __iommu_dma_unmap+0x85/0x120
-> [ 1158.560115]=C2=A0 iommu_dma_unmap_sg+0x95/0x110
-> [ 1158.564213]=C2=A0 dma_unmap_sg_attrs+0x42/0x50
-> [ 1158.568225]=C2=A0 rdma_rw_ctx_destroy+0x6e/0xc0 [ib_core]
-> [ 1158.573201]=C2=A0 nvmet_rdma_rw_ctx_destroy+0xa7/0xc0 [nvmet_rdma]
-> [ 1158.578944]=C2=A0 nvmet_rdma_read_data_done+0x5c/0xf0 [nvmet_rdma]
-> [ 1158.584683]=C2=A0 __ib_process_cq+0x8e/0x150 [ib_core]
-> [ 1158.589398]=C2=A0 ib_cq_poll_work+0x2b/0x80 [ib_core]
-> [ 1158.594027]=C2=A0 process_one_work+0x220/0x3c0
-> [ 1158.598038]=C2=A0 worker_thread+0x4d/0x3f0
-> [ 1158.601696]=C2=A0 kthread+0x114/0x150
-> [ 1158.604928]=C2=A0 ? process_one_work+0x3c0/0x3c0
-> [ 1158.609114]=C2=A0 ? kthread_park+0x90/0x90
-> [ 1158.612783]=C2=A0 ret_from_fork+0x22/0x30
->=20
-> We first saw this on a 5.13 kernel but could reproduce with 5.17-rc2.
->=20
-> We found a possibly related bug report [1] that suggested disabling
-> the IOMMU could help, but even after I disabled it (amd_iommu=3Doff
-> iommu=3Doff) I still get errors (nvme IO timeouts). Another thread from
-> 2016[2] suggested that disabling some kernel debug options could
-> workaround the "local protection error" but that didn't help either.
->=20
-> As far as I can tell, the disks are fine, as running the same fio job
-> targeting the real physical devices works fine.
->=20
-> Any suggestions are appreciated.
->=20
-> Thanks,
-> Martin
->=20
-> [1]: https://bugzilla.kernel.org/show_bug.cgi?id=3D210177
-> [2]:
-> https://lore.kernel.org/all/6BBFD126-877C-4638-BB91-ABF715E29326@oracle.c=
-om/
->=20
-> fio script:
-> [global]
-> name=3Dfio-seq-write
-> rw=3Dwrite
-> bs=3D1M
-> direct=3D1
-> numjobs=3D32
-> time_based
-> group_reporting=3D1
-> runtime=3D18000
-> end_fsync=3D1
-> size=3D10G
-> ioengine=3Dlibaio
-> iodepth=3D16
->=20
-> [file1]
-> filename=3D/dev/nvme0n1
->=20
-> [file2]
-> filename=3D/dev/nvme0n2
->=20
-> [file3]
-> filename=3D/dev/nvme0n3
->=20
-> [file4]
-> filename=3D/dev/nvme0n4
->=20
-> [file5]
-> filename=3D/dev/nvme0n5
->=20
-> [file6]
-> filename=3D/dev/nvme0n6
->=20
-> [file7]
-> filename=3D/dev/nvme0n7
->=20
-> [file8]
-> filename=3D/dev/nvme0n8
->=20
-> [file9]
-> filename=3D/dev/nvme0n9
->=20
-> [file10]
-> filename=3D/dev/nvme0n10
->=20
-> [file11]
-> filename=3D/dev/nvme0n11
->=20
-> [file12]
-> filename=3D/dev/nvme0n12
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
+-- 
+Regards,
+Tasmiya Nalatwad
+IBM Linux Technology Center
 
