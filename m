@@ -1,99 +1,119 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8891479938;
-	Wed, 31 Jan 2024 12:25:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97DD67866D
+	for <iommu@lists.linux.dev>; Wed, 31 Jan 2024 12:35:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706703956; cv=none; b=phvaHaEcwLKqBV2fiNoGuOD/ucxEQvoY0bd+Xy23s5ZZ64kfb2y2C/ODJBwmEDlyjAw59+ezHOsO1YuwIa2ocu2mVgmeSqAwBsuecNLLAeWLmV+AfPCbjnHGW5hUWIeOnqZakIQNyARAGkx8R9qcC60VaD/4DTOVOOh+AAAwAXE=
+	t=1706704535; cv=none; b=p6Tsf+J2RDYFXnSmHkB0MBsB9a2OidboKbOIDeGMP1z4FCMM6tten/QRvv/gViBQyLOhhoFUHuAkVvbDmk5IIUEeKGDeIGVE6pFFBj1PQUCl3Yw/3UPZNqV0z0XK1GL+u15XJgXyTkW9PDWAjv/vJ05zvgmGVNuedkNpdkeLuOQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706703956; c=relaxed/simple;
-	bh=97FSX4oU5s9ZlUZoIaV1rFcSltgv+fl+Z/Ia3ZsihrQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=jdgpoiukA4FV2jxJ4idtvsyjbiE5U9LLtO5VxEEPlNbG0ecZljKTvoEjT51/r27YjA8Q4j7oOxXVSqzJC1soqCnrnaOPm1d6VWkfWY4+Ha035OXis+IdrEVNepm27wmE/c3RWPEX/a/Lb8mSGoElS4W7AR+6ty9yNtKWv8LYFTg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PS8Lt+3J; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1706704535; c=relaxed/simple;
+	bh=w2bmAJ0nzsqoalBpGmsMLOmE/qsljTRmZBe5Nbchf/4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=cpUAR10hXWiPdaJO8YtMBGJlDIvv3z0lvVMoUe0qUIIL6Klm1rlB2T/jcodM0tQDViBSzsPJ8V5qJ6Rjy/xwhAMvWdje6OGjdKwLJQ9i+8d/pPPUZnqvExnnjsQT7pLJhn1Zcgt1EX4Iv1HHVhBaLTpj7r/qoMRW1x20owhw4qs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=dsh9fbx0; arc=none smtp.client-ip=209.85.208.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PS8Lt+3J"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AAD9C43390;
-	Wed, 31 Jan 2024 12:25:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1706703956;
-	bh=97FSX4oU5s9ZlUZoIaV1rFcSltgv+fl+Z/Ia3ZsihrQ=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=PS8Lt+3J3Xs0kHh+rJD0hfTP0DSeJUPH7CN4ilOfxfaxEBTtABTQKFhU1Vt6Fpl2h
-	 SXSdHDwsTGoxoDqLkFJctSVVpGe6bcg8D+ruZJSMQ9FtOZvbd2j6ArIUmJTydEP6Vq
-	 EtyOYy0RIbZaKV+hZb32fZ/s5BBWwSM3KYRey7qNdeHvVKj0KOC2C77zkelgMAGfM6
-	 f1BcJFsEuDj8878ZiNGUZ8oz51mPpdupW5+NYpRewfsMIkoqZRWfkwondppd3ymkBO
-	 vNd4nflHvdfxun1SphQ32VxWLLgyY6a49tQ2rU989y6BJ5OHpugMz8mm/PWTuiVa8W
-	 nJvTjeNIafLhA==
-From: Will Deacon <will@kernel.org>
-To: linux-kernel@vger.kernel.org
-Cc: kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
-	Dexuan Cui <decui@microsoft.com>
-Subject: [PATCH v2 3/3] swiotlb: Honour dma_alloc_coherent() alignment in swiotlb_alloc()
-Date: Wed, 31 Jan 2024 12:25:43 +0000
-Message-Id: <20240131122543.14791-4-will@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20240131122543.14791-1-will@kernel.org>
-References: <20240131122543.14791-1-will@kernel.org>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dsh9fbx0"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-55f0b2c79cdso4699780a12.3
+        for <iommu@lists.linux.dev>; Wed, 31 Jan 2024 04:35:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1706704532; x=1707309332; darn=lists.linux.dev;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=RzoNtv4zjMbI5M4GmQ/IM20349q4pSFjUG8rhyBeLJU=;
+        b=dsh9fbx0DDk53Yl+1Qk1jSMLmzD/wQgGUN+9+K4DjLEey08ArB8PudgcJ+8n+MK80f
+         Joq63G4dDvUxq99vfhlv1Ga0yxTncsciJB+04QmByHyPz7+SalQMNmoQ/rcAhV6zaVRc
+         4B0spIs4Ey3h1vY2LkeJZF5eDY69jsLl77fTyEeTTsrjqtwnnqcEnRhHAstbkGwk58tA
+         AbI+byVccfuzjC/AZz/30OiqVZwcNO2GQbo94EUZllcLXdkJ2XwIyYFkrLr6cUd7NJP8
+         85aCrBy124viyAh1A8a4L/6bfd9ZKR0npW6gGeAnwAnGhnBL1R7V3U+qR3oe2h8cJGn+
+         FQJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706704532; x=1707309332;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=RzoNtv4zjMbI5M4GmQ/IM20349q4pSFjUG8rhyBeLJU=;
+        b=qN58sXkpxumCpr7Az7iPU6nh2Czx4v03QYE48zZqeMKnHARvl4QZAQZIEIQ2fSU574
+         z0wWWSHajjUYbFu3jsSL3z/tRHX8wQItkvKwNhLFnqwFx8h8/+8nAE44cuzK0cdKnHl3
+         We3x8FY9OCG0iAMJ5zFkszVuWfU/o+HdiGbIa56d68aQtPPuOp9yvx7IDAV05H4Tc1+U
+         xlU3mAS4EeH+Y0j/9dMVwYM8v5IpScezs6KsYXlZV6/l0NwdkVAd16Su8Xf1byKC/F84
+         kJ/EeKcZ49Mw15pgS2DjfoHiIEsnCvZn0azdPMBYBbJSItB7rGptELN/3k4Lmq8qH4HF
+         u9nw==
+X-Gm-Message-State: AOJu0YwZ+mqMzWe7gL//EK9tWAQxYlAF2d8zYnBKscsUVpsDiTrRCWXL
+	B6JdMU6AXg3/DLe3BMzIzPB65ZclSJJfGALehl10hb5ROHSIbFtJVyPXTCqz6MVCQA1UILo75U3
+	d
+X-Google-Smtp-Source: AGHT+IGtZS9N7CtUcW94pZVB02sVlRqtHadz6/z4++B0mGuFkpEeSYmXbulfAuMGIbzsIH+m53utjQ==
+X-Received: by 2002:a05:6402:1803:b0:55f:7b91:cbcf with SMTP id g3-20020a056402180300b0055f7b91cbcfmr1086694edy.6.1706704531735;
+        Wed, 31 Jan 2024 04:35:31 -0800 (PST)
+Received: from [127.0.1.1] ([79.115.23.25])
+        by smtp.gmail.com with ESMTPSA id k4-20020a50cb84000000b0055c97f940fcsm5797004edi.81.2024.01.31.04.35.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 31 Jan 2024 04:35:31 -0800 (PST)
+From: Abel Vesa <abel.vesa@linaro.org>
+Date: Wed, 31 Jan 2024 14:35:16 +0200
+Subject: [PATCH] iommu/arm-smmu-qcom: Add X1E80100 MDSS compatible
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240131-x1e80100-iommu-arm-smmu-qcom-v1-1-c1240419c718@linaro.org>
+X-B4-Tracking: v=1; b=H4sIAIM+umUC/x2NQQrCMBBFr1Jm7cBMgli8irhI48QONIlmqBRK7
+ 250999fvLeDSVMxuA47NPmoaS0d+DRAnEN5CuqjMzhynh0xbiwjMRFqzXnF0DLab7xjzZiIz+P
+ FJfbOQ1dMwQSnFkqcu6Ssy9LPV5Ok2795ux/HF1hs+byDAAAA
+To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ Abel Vesa <abel.vesa@linaro.org>
+X-Mailer: b4 0.12.4
+X-Developer-Signature: v=1; a=openpgp-sha256; l=945; i=abel.vesa@linaro.org;
+ h=from:subject:message-id; bh=w2bmAJ0nzsqoalBpGmsMLOmE/qsljTRmZBe5Nbchf/4=;
+ b=owEBbQKS/ZANAwAKARtfRMkAlRVWAcsmYgBluj6IwzyXy3eNlLeiHej5D5hRWuRN8IiqUkwP3
+ WIeTnQmr+OJAjMEAAEKAB0WIQRO8+4RTnqPKsqn0bgbX0TJAJUVVgUCZbo+iAAKCRAbX0TJAJUV
+ VqxVD/43QDc1w17onfyvHi3K12ydFg+Of5vdAS2Ya4Y7er6pJenrPlY1FKUEQtHQAqc7hfjEbXh
+ QmUyjzcsAJn+Bfb6GfuPVfwrb+uCi3WUcKrMfNeTf/4ON6QHRN067/RAdpKjEov9ppo8fXUuv0b
+ z8IaHDM4Ze8Yd20A3sA1Oy9oH6wW9AYplCvSxLkhjKe2c0Qs8w04rRM+nY9vM9j4i3KWHQZqfeF
+ 9fdza0YW+FycnQYs6A3SRFLA1xz5Fc3puYx2gULfk8quYGa5lyxm/11bE7QlPsQRXhD6g3U9LCq
+ hIlR4ftRLl/TXndWjl/UZKrI6Klz2aviVIcHdRWS5hpRFavbFJxZzcHYllxNE9XIgqn0ZG10WbU
+ XHXxnEHNQx0RgF69vaWWIK2oS9E0604Kd9l7RKBUB8F3W05Up55lytuVwJ+R4YhGieMFeWc2TmL
+ nlMhaub1zn934mvz44Lc9FjSNdBJmk3BDheJ9GKJ+wG+2NvUrw2cqxVGx1kMMDqKOljdrw6WDxB
+ K1r0fbei8nT5L9B3v0lLDLymD9Lrh8z/9tjXpdekmgWUGEvtwyQzlOY9t828MRxn6hUEOID+IOT
+ k7oBVrfqnBS/pIVVyo6AwdimgPNW1RF0UJUBma3JtXFQYw1R74MsZV88W/wV4+13tYuFh5k0PjD
+ uv3PKP8qumiiTfw==
+X-Developer-Key: i=abel.vesa@linaro.org; a=openpgp;
+ fpr=6AFF162D57F4223A8770EF5AF7BF214136F41FAE
 
-core-api/dma-api-howto.rst states the following properties of
-dma_alloc_coherent():
+Add the X1E80100 MDSS compatible to clients compatible list, as it also
+needs the workarounds.
 
-  | The CPU virtual address and the DMA address are both guaranteed to
-  | be aligned to the smallest PAGE_SIZE order which is greater than or
-  | equal to the requested size.
-
-However, swiotlb_alloc() passes zero for the 'alloc_align_mask'
-parameter of swiotlb_find_slots() and so this property is not upheld.
-Instead, allocations larger than a page are aligned to PAGE_SIZE,
-
-Calculate the mask corresponding to the page order suitable for holding
-the allocation and pass that to swiotlb_find_slots().
-
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-Cc: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
 ---
- kernel/dma/swiotlb.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 4485f216e620..8ec37006ac70 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -1632,12 +1632,14 @@ struct page *swiotlb_alloc(struct device *dev, size_t size)
- 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	struct io_tlb_pool *pool;
- 	phys_addr_t tlb_addr;
-+	unsigned int align;
- 	int index;
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 8b04ece00420..5c7cfc51b57c 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -260,6 +260,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+ 	{ .compatible = "qcom,sm6375-mdss" },
+ 	{ .compatible = "qcom,sm8150-mdss" },
+ 	{ .compatible = "qcom,sm8250-mdss" },
++	{ .compatible = "qcom,x1e80100-mdss" },
+ 	{ }
+ };
  
- 	if (!mem)
- 		return NULL;
- 
--	index = swiotlb_find_slots(dev, 0, size, 0, &pool);
-+	align = (1 << (get_order(size) + PAGE_SHIFT)) - 1;
-+	index = swiotlb_find_slots(dev, 0, size, align, &pool);
- 	if (index == -1)
- 		return NULL;
- 
+
+---
+base-commit: 596764183be8ebb13352b281a442a1f1151c9b06
+change-id: 20231201-x1e80100-iommu-arm-smmu-qcom-f015872f1323
+
+Best regards,
 -- 
-2.43.0.429.g432eaa2c6b-goog
+Abel Vesa <abel.vesa@linaro.org>
 
