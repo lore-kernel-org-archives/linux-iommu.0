@@ -1,123 +1,104 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2279B15DBB7
-	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 12:18:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4552F15DBA4;
+	Thu,  1 Feb 2024 12:20:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706789917; cv=none; b=c2+7y69VsZY3pqnjhausu4VK33AbucG/lQ8c1/fxWhUEjeNdaYAeFzYdVQw7dEhdMHfxQ4qpJKP6SqFejhPZUXu9w8i6zjflrybgDrOjKwqg5CBfBRCmK70DhEZCbpRTZLB1yhdLA3nmra9A2P1Dyh5t52UYHYqxr/gq66VS/T8=
+	t=1706790012; cv=none; b=MigbesTYSP4HDbUtXjE35NlC9lAj5AXg7EFtMGndDEV7e014wy+TFCQzh29KU9hFIEAfe/DQvo7cwkU3ljzVG9DvE8ebEBnZvxo1Ndp4qh2nzbjHbV45ppQfUUAetOx3Zm8xAierVJH5n6xfuId+4R2iXoGiVDI8YzZG4zehjaU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706789917; c=relaxed/simple;
-	bh=tnkgq6TKhw0S3njLm0h1cwvz40mQDRsV6+RyXmbSQ+I=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=tEznQueypXY5GtMU0gkHSi45QQd3uYiDQ1mOkKrxBoE3thlmR5c56pIjFzDG2S0e3UKF5UzE8i2XLhsdmoFiYKn44giv4ebLUr8wa1fvZl5+TxDq8DgDpji1FYsevfq/V5m/sBGQ0uHkoJVxrHi1MGZambj+kjJHsyQIfgFSDc4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=JdM96a+5; arc=none smtp.client-ip=209.85.218.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1706790012; c=relaxed/simple;
+	bh=mkpPJwo8nkKG5bpESYi5qYl29ciuB88ElRNBgkzAMv8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=YANVtpVsMF9KkhQ4zgZbqrbrjB8nfG2OEKMIlcn5lt102+ENKFZjOHqH7K/+juVu4+Z9MCw2mqHwM4Vq5sliIantLsFSREVcI/7xgYeGqZ9XZtEEKMsvlU4Pt6y39c8GDwioUvAfsctPyCxdZMcQffnAb5u45Xoij7P6wAvIBC4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=THozEcgT; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JdM96a+5"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-a36126e7459so95291566b.2
-        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 04:18:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1706789914; x=1707394714; darn=lists.linux.dev;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HmcS61wt3WiZJ7MSNdyDaYLcvloghrXIqXKRqKc7Nhc=;
-        b=JdM96a+5CKJ9wDQemAjwAEfhi0fmZvsV8Ez0Kt9N+w9SIQlydWzX2TT382C50e1FHU
-         xZVe0Mz7UmhA37RfqFYmfoWudg7mt8bU+Zq9OWsFokT7Hh1WZSgwOIxF4Vez9IYzsDjF
-         ZP8bPXmePhSOyc3SqgiVvrV+9aKrkfCXQfk5TtdzJPg2XgN8lJD+3mX+1m4NWdWi+eCI
-         /jDOB4qiYUVbQT53v3ZDk/iYMEhJdV9fKXEVcBEBDQvBjkahQzrVi59WSsuvb9S50FHe
-         /Qfylw26ixryUFfbzyKV+h8n7q96E5/72D7x+0+GZkK7qbDXm1tKfd0v/NvKvK2WG2Zo
-         fwMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706789914; x=1707394714;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=HmcS61wt3WiZJ7MSNdyDaYLcvloghrXIqXKRqKc7Nhc=;
-        b=c8nogNkaj7BTVhWENFzqgGG8GssvY5x9j2Yq9OmVlwPM19YWW8lFNUanvBbRunkyYw
-         kPNeWrZ/zfoVvVvYq/b17tkJPDuJuwQ0KC9zjFDpv8SE3r1mqgE0RiqvHMF7Tp/uWnFz
-         GMHHxPgEzSfes1IKTbD+SNb8X8lkSfR0Ddz2H0jDXlDXwaoGNf32gIy0yWcGD9U4+nAW
-         qxEjNLLjAX5QIamW3JsESNITMMe4MRLMf+1fnnNCG50WmqVgBucQp9f7zJ/cGahiR2S8
-         zLjJ/Zt1PBDO3HkK/+bplumoBENCAmi3qcRJ/D2ansirEB8JcFPPspcuWKLAQG6o+4S5
-         tihg==
-X-Gm-Message-State: AOJu0YzUQYrau5VwlUGXGTh8Enrkgpw3sYTmx4NY+RjKhhJV372RBnYf
-	KpuYz4rsqc0fRyNOTGDA53XmsfFUH7tEklborgjigE0w16U+ceij9YBAulz9P6k=
-X-Google-Smtp-Source: AGHT+IEDkSSbjMmmgzAaURkB6gKbzEJbQatolne5XPLdfpnCfCWuNmo//HmDTbeIqf70E8J9mHQG4g==
-X-Received: by 2002:a17:907:1110:b0:a35:b808:8f1d with SMTP id qu16-20020a170907111000b00a35b8088f1dmr3743707ejb.67.1706789914418;
-        Thu, 01 Feb 2024 04:18:34 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCUVTkpZpUHaSymXExsv7jyIzN5inNnQ5LIptWi4/qmBBXZs9s/ETpfIj2m9qZ4AZiIQls5wLo/4lprabOg7HAny2VUdWs5lKQo=
-Received: from localhost ([102.222.70.76])
-        by smtp.gmail.com with ESMTPSA id p14-20020a170906784e00b00a365c673251sm1860912ejm.216.2024.02.01.04.18.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Feb 2024 04:18:34 -0800 (PST)
-Date: Thu, 1 Feb 2024 15:18:30 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: mshavit@google.com
-Cc: iommu@lists.linux.dev
-Subject: [bug report] iommu/arm-smmu-v3: Refactor write_ctx_desc
-Message-ID: <4e25d161-0cf8-4050-9aa3-dfa21cd63e56@moroto.mountain>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="THozEcgT"
+Received: from [100.66.96.10] (unknown [108.143.43.187])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 47181206FCCE;
+	Thu,  1 Feb 2024 04:20:05 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 47181206FCCE
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1706790010;
+	bh=DoGkwwTfNrBvre86yV2tHsglFQXvOb9/ZoWRaatJS54=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=THozEcgTrrRliYGkmJpSosuyTA8Ufby2M+CKXOrYTUpK3cTluLWnEniWX84AjNaJE
+	 nNw6UOATefXyM8Y+odJnBinFjc4pIBOzS6/T81BmAVl2xgcr4AtoNnISj/ZKfVXytv
+	 cfGCdqpmGjXFLpaONbOJJrTBwWPnlIvrASA6KzPw=
+Message-ID: <0fda610f-a8ae-4133-a9d5-e9084c88ba7b@linux.microsoft.com>
+Date: Thu, 1 Feb 2024 13:20:03 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC V1 3/5] x86: CVMs: Enable dynamic swiotlb by default for
+ CVMs
+Content-Language: en-US
+To: Vishal Annapurve <vannapurve@google.com>, x86@kernel.org,
+ linux-kernel@vger.kernel.org
+Cc: pbonzini@redhat.com, rientjes@google.com, bgardon@google.com,
+ seanjc@google.com, erdemaktas@google.com, ackerleytng@google.com,
+ jxgao@google.com, sagis@google.com, oupton@google.com, peterx@redhat.com,
+ vkuznets@redhat.com, dmatlack@google.com, pgonda@google.com,
+ michael.roth@amd.com, kirill@shutemov.name, thomas.lendacky@amd.com,
+ dave.hansen@linux.intel.com, linux-coco@lists.linux.dev,
+ chao.p.peng@linux.intel.com, isaku.yamahata@gmail.com,
+ andrew.jones@linux.dev, corbet@lwn.net, hch@lst.de,
+ m.szyprowski@samsung.com, bp@suse.de, rostedt@goodmis.org,
+ iommu@lists.linux.dev
+References: <20240112055251.36101-1-vannapurve@google.com>
+ <20240112055251.36101-4-vannapurve@google.com>
+From: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+In-Reply-To: <20240112055251.36101-4-vannapurve@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hello Michael Shavit,
+On 12/01/2024 06:52, Vishal Annapurve wrote:
+> CVMs used SWIOTLB for non-trusted IO using dma_map_* APIs. This series
+> will ensure that dma_alloc_* API to also allocate from SWIOTLB pools.
+> Initial size of SWIOTLB pool is decided using heuristics and has been
+> working with CVM usecases so far.
+> 
+> It's better to allow SWIOTLB to scale up on demand rather than keeping
+> the size fixed to avoid failures with possibly increased usage of
+> SWIOTLB with dma_alloc_* APIs allocating from SWIOTLB pools. This should
+> also help in future with more devices getting used from CVMs for
+> non-trusted IO.
+> 
+> Signed-off-by: Vishal Annapurve <vannapurve@google.com>
+> ---
+>  arch/x86/Kconfig | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> index 1566748f16c4..035c8a022c4c 100644
+> --- a/arch/x86/Kconfig
+> +++ b/arch/x86/Kconfig
+> @@ -884,6 +884,7 @@ config INTEL_TDX_GUEST
+>  	select X86_MEM_ENCRYPT
+>  	select X86_MCE
+>  	select UNACCEPTED_MEMORY
+> +	select SWIOTLB_DYNAMIC
+>  	help
+>  	  Support running as a guest under Intel TDX.  Without this support,
+>  	  the guest kernel can not boot or run under TDX.
+> @@ -1534,6 +1535,7 @@ config AMD_MEM_ENCRYPT
+>  	select ARCH_HAS_CC_PLATFORM
+>  	select X86_MEM_ENCRYPT
+>  	select UNACCEPTED_MEMORY
+> +	select SWIOTLB_DYNAMIC
+>  	help
+>  	  Say yes to enable support for the encryption of system memory.
+>  	  This requires an AMD processor that supports Secure Memory
 
-The patch 24503148c545: "iommu/arm-smmu-v3: Refactor write_ctx_desc"
-from Sep 15, 2023 (linux-next), leads to the following Smatch static
-checker warning:
+What this does is unconditionally enable SWIOTLB_DYNAMIC for every kernel compiled
+to support memory encryption, regardless of whether it runs inside a confidential guest.
+I don't think that is what you intended.
 
-	drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:1036 arm_smmu_get_cd_ptr()
-	warn: sleeping in atomic context
-
-drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-    1022 static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
-    1023 {
-    1024         __le64 *l1ptr;
-    1025         unsigned int idx;
-    1026         struct arm_smmu_l1_ctx_desc *l1_desc;
-    1027         struct arm_smmu_device *smmu = master->smmu;
-    1028         struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
-    1029 
-    1030         if (cd_table->s1fmt == STRTAB_STE_0_S1FMT_LINEAR)
-    1031                 return cd_table->cdtab + ssid * CTXDESC_CD_DWORDS;
-    1032 
-    1033         idx = ssid >> CTXDESC_SPLIT;
-    1034         l1_desc = &cd_table->l1_desc[idx];
-    1035         if (!l1_desc->l2ptr) {
-                     ^^^^^^^^^^^^^^^
-I don't know if l1_desc->l2ptr can be NULL for the call trees in
-question so this might be a false positive.  You'd need to enable
-CONFIG_DEBUG_ATOMIC_SLEEP=y to see these warnings at runtime.
+Best wishes,
+Jeremi
 
 
---> 1036                 if (arm_smmu_alloc_cd_leaf_table(smmu, l1_desc))
-                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Sleeping allocation.
-
-    1037                         return NULL;
-    1038 
-    1039                 l1ptr = cd_table->cdtab + idx * CTXDESC_L1_DESC_DWORDS;
-    1040                 arm_smmu_write_cd_l1_desc(l1ptr, l1_desc);
-    1041                 /* An invalid L1CD can be cached */
-    1042                 arm_smmu_sync_cd(master, ssid, false);
-    1043         }
-    1044         idx = ssid & (CTXDESC_L2_ENTRIES - 1);
-    1045         return l1_desc->l2ptr + idx * CTXDESC_CD_DWORDS;
-    1046 }
-
-The call trees which trigger this warning are:
-
-arm_smmu_update_ctx_desc_devices() <- disables preempt
-arm_smmu_mmu_notifier_get() <- disables preempt
--> arm_smmu_write_ctx_desc()
-   -> arm_smmu_get_cd_ptr()
-
-The patch adds new spinlocks to disable preemption.
-
-regards,
-dan carpenter
