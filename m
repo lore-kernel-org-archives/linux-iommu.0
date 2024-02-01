@@ -1,217 +1,111 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1736E3EA93
-	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 21:23:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E05912B9B7
+	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 21:46:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706822628; cv=none; b=S7LQ1i1ZUWKpqZYFqE5ibM4adjgQBK9j9caS10Bf7uF06VEGRG2Y1K2PsVj2ppG2h6ucapgIIrnEzELSkECJr7pylW1mMHhfXwiX3CQjtDvaj0s9nsedHKwRfJtcCYa6CA01AkhFHq90Zw1DK0tmyFhcRyQh9J80E4iXMqpmx/I=
+	t=1706823987; cv=none; b=Bayj1YXQDlYXwJFGqZXqnlu+9Gnct/QY0zwvfwKYQbC05q7T/bC53NJdlbzu7FF/KpGCwyY86NJEUaAVI/js1kUaVsKcN1uEUlm4OYLevhCXntEyUgTrXtKyI+jEKRkSa462KBrlOZ2zhsEN+z2Xs5rwFUj8D2L04ucI/1qbCq8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706822628; c=relaxed/simple;
-	bh=pdLzd5pCn/ZovlNRU+1noSY/9vcQcHI7CqK+Ey3Bb/4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NAtDFuf3nNNsCbRDguIG3g0u9E/kr6rSmEfZEqoxrsIJxFPeJ+Z65ZfwB+o+PSxVu50jVKVaS/ray75eZgCtLu8Pe9LYqE47u5y9zF0K/8aD9gVx4sxAivIRViN1IygL4IPBXKh5PiG02eT6octYKA3VSPATORUseJw/XA0MSA4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1AE03DA7;
-	Thu,  1 Feb 2024 13:24:28 -0800 (PST)
-Received: from [10.57.47.101] (unknown [10.57.47.101])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 311563F762;
-	Thu,  1 Feb 2024 13:23:44 -0800 (PST)
-Message-ID: <84c7e816-f749-48d8-a429-8b0ef799cdbb@arm.com>
-Date: Thu, 1 Feb 2024 21:23:42 +0000
+	s=arc-20240116; t=1706823987; c=relaxed/simple;
+	bh=+1m2ongThExBW6chW6hqirwbsRItFrfpy9PygBmrcqU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=bJs7Pzu411jppwoa3lPe3qj7oSVnalkdeDlPROEBR/liDCQt6HkmkIT6bI4SYcss2EqLoChAiUtwVPpyT94rUahWJTIAzrgAxvX6ZZYbQaQyBGbujhH7pctnxj7wU5NyV8sY5J1leMt26IM50gPtFNYWkJQgfAxFjolDsG+E3j8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JL/kV+Fv; arc=none smtp.client-ip=209.85.219.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JL/kV+Fv"
+Received: by mail-yb1-f182.google.com with SMTP id 3f1490d57ef6-dc6d9a8815fso1275601276.3
+        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 13:46:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1706823984; x=1707428784; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=+wa+4/tUPwChckEewEY9UOhV9U17Ptq1+QIQi0LNOBg=;
+        b=JL/kV+Fvy0cEJyGWHO23Opg1Qf8tNl8PD5ULtQmHWA5E8kZmqh+4/3po8yY3o7zkAM
+         UeYxgqeHlAOo7k5mE+GCNIQTu2s+BqS+VfUKiYaJ5Y6C4ECO95ky3eruqkp84ndQrzQ3
+         INnphRDnHvjxACwuD+RGX1DwZzcAV1TrFjcC/JoCeEJaiT1hSuFUTfgVcAY3spCZv37+
+         a3wC5FmA0pfsE79miWbG8znab5x+rd7tXcWYVE1+V9wQwvBdt06PCrv+6Vt73WyWuU7c
+         JBpuZaiGeflKK/kRJUG3sIW1w3xm48Zuj6/Nvrhw8XeTJ6oBtpWLj7lknhy8THKjNfXK
+         Codg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706823984; x=1707428784;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+wa+4/tUPwChckEewEY9UOhV9U17Ptq1+QIQi0LNOBg=;
+        b=pTQr8k1nw+w2M3bfzHKI2DKnt3LExUZUPAo4wg/LphFsu45bzR6qboMEqRl/tAAo75
+         1BVZqlzh1KNeddfwcjKJVB2zC9Hww6YKLr5qtM8ykxV6wztvpjWimq8EHdw1xL+M60tE
+         dKBDuhJWZhyiR5B8GMV94FxGlIlyWIkgUhkmsfgQriE0fTFEGh1iPPVLrvOU71vMww5x
+         7LiFugWjyMFcIDm+zKCuajAZuKhqxzUGnafUOwln/eQQkyN/dfLEDW2ZyHf1+Ns4DDrT
+         t1Nc3VD6jhCeqP849jOL5d6dasXz2CtTnPzthDAWT9hiwDj5FhDD0zWEvqLdWwMyDuFw
+         11jw==
+X-Gm-Message-State: AOJu0Yxqxwr8oV6mFZNzQ1O2jVgsBJsykyNIsciJPAP3ruLmcX4kSdcj
+	zeoQDbpIQvCdVlP4gas9Ir8g8nPkroTLcEjBcR1Lvllula+X2JySYP3PsIBf92o=
+X-Google-Smtp-Source: AGHT+IEwJjQJQi3Xdu746AkX/siR1AL08z8U89g8SyrtVJZrwSoernlTSftFOQ3f1eS8XtbmRI+Uzw==
+X-Received: by 2002:a25:3ac3:0:b0:dc6:ba11:6edd with SMTP id h186-20020a253ac3000000b00dc6ba116eddmr6857928yba.8.1706823983782;
+        Thu, 01 Feb 2024 13:46:23 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCXMx5pVB/D1kXuWoAWP7RHPZNRUy2kaF05Ogj+v1cW2YcHLPTtI+ZxKM3vgwm6lLqHTnM1Gotq8gRIWDJkYbaZJiwe2osj+q9RNQIqQFmtrfp+oDdjMogTDNlGV3tgKM7BZrXx/E0QpWNYEZZZ5dF1Zv3yDLV0kGuKejQ6xFBmtxjxAd+vUwPg=
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id pd3-20020a056214490300b006817d42eac6sm160452qvb.53.2024.02.01.13.46.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Feb 2024 13:46:23 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rVet4-00ApME-Md;
+	Thu, 01 Feb 2024 17:46:22 -0400
+Date: Thu, 1 Feb 2024 17:46:22 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v5 08/14] iommu/amd: Add support for add/remove device
+ for IOPF
+Message-ID: <20240201214622.GS50608@ziepe.ca>
+References: <20240118073339.6978-1-vasant.hegde@amd.com>
+ <20240118073339.6978-9-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/iova: use named kmem_cache for iova magazines
-Content-Language: en-GB
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-mm@kvack.org, rientjes@google.com
-References: <20240201193014.2785570-1-tatashin@google.com>
- <02610629-05ef-4956-a122-36b6ac98fbc2@arm.com>
- <CA+CK2bD_q3pnThtLVSzFCjyevBEaG6Ad+1o2=1tVZsYg35UMmg@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <CA+CK2bD_q3pnThtLVSzFCjyevBEaG6Ad+1o2=1tVZsYg35UMmg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240118073339.6978-9-vasant.hegde@amd.com>
 
-On 2024-02-01 9:06 pm, Pasha Tatashin wrote:
-> On Thu, Feb 1, 2024 at 3:56 PM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 2024-02-01 7:30 pm, Pasha Tatashin wrote:
->>> From: Pasha Tatashin <pasha.tatashin@soleen.com>
->>>
->>> The magazine buffers can take gigabytes of kmem memory, dominating all
->>> other allocations. For observability prurpose create named slab cache so
->>> the iova magazine memory overhead can be clearly observed.
->>>
->>> With this change:
->>>
->>>> slabtop -o | head
->>>    Active / Total Objects (% used)    : 869731 / 952904 (91.3%)
->>>    Active / Total Slabs (% used)      : 103411 / 103974 (99.5%)
->>>    Active / Total Caches (% used)     : 135 / 211 (64.0%)
->>>    Active / Total Size (% used)       : 395389.68K / 411430.20K (96.1%)
->>>    Minimum / Average / Maximum Object : 0.02K / 0.43K / 8.00K
->>>
->>> OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
->>> 244412 244239 99%    1.00K  61103       4    244412K iommu_iova_magazine
->>>    91636  88343 96%    0.03K    739     124      2956K kmalloc-32
->>>    75744  74844 98%    0.12K   2367      32      9468K kernfs_node_cache
->>>
->>> On this machine it is now clear that magazine use 242M of kmem memory.
->>
->> Hmm, something smells there...
->>
->> In the "worst" case there should be a maximum of 6 * 2 *
->> num_online_cpus() empty magazines in the iova_cpu_rcache structures,
->> i.e., 12KB per CPU. Under normal use those will contain at least some
->> PFNs, but mainly every additional magazine stored in a depot is full
->> with 127 PFNs, and each one of those PFNs is backed by a 40-byte struct
->> iova, i.e. ~5KB per 1KB magazine. Unless that machine has many thousands
->> of CPUs, if iova_magazine allocations are the top consumer of memory
->> then something's gone wrong.
+On Thu, Jan 18, 2024 at 07:33:33AM +0000, Vasant Hegde wrote:
+> From: Wei Huang <wei.huang2@amd.com>
 > 
-> This is an upstream kernel  + few drivers that is booted on AMD EPYC,
-> with 128 CPUs.
-> 
-> It has allocations stacks like these:
-> init_iova_domain+0x1ed/0x230 iommu_setup_dma_ops+0xf8/0x4b0
-> amd_iommu_probe_finalize.
-> And also init_iova_domain() calls for Google's TPU drivers 242M is
-> actually not that much, compared to the size of the system.
+> Which adds/removes the device to the corresponding per-IOMMU iopf_queue.
+> It also registers device fault handler. These interfaces are called
+> from IOPF feature enable/disable path.
 
-Hmm, I did misspeak slightly (it's late and I really should have left 
-this for tomorrow...) - that's 12KB per CPU *per domain*, but still that 
-would seem to imply well over 100 domains if you have 242MB of magazine 
-allocations while the iommu_iova cache isn't even on the charts... what 
-the heck is that driver doing?
+"fault handler"? Not anymore right?
 
-(I don't necessarily disagree with the spirit of the patch BTW, I just 
-really want to understand the situation that prompted it, and make sure 
-we don't actually have a subtle leak somewhere.)
+They should not be called from the iopf feature path :(
+ 
+> diff --git a/drivers/iommu/amd/ppr.c b/drivers/iommu/amd/ppr.c
+> index b1751eb495fd..6b1fdda95514 100644
+> --- a/drivers/iommu/amd/ppr.c
+> +++ b/drivers/iommu/amd/ppr.c
+> @@ -163,3 +163,38 @@ int amd_iommu_page_response(struct device *dev,
+>  	return amd_iommu_complete_ppr(pdev, resp->pasid, resp->code,
+>  				      resp->grpid);
+>  }
+> +
+> +int amd_iommu_iopf_add_device(struct amd_iommu *iommu, struct device *dev)
+> +{
+> +	unsigned long flags;
+> +	int ret = -EINVAL;
+> +
+> +	raw_spin_lock_irqsave(&iommu->lock, flags);
+> +
+> +	if (!iommu->iopf_queue) {
+> +		raw_spin_unlock_irqrestore(&iommu->lock, flags);
+> +		return ret;
 
-Thanks,
-Robin.
+goto out_unlock if you are going to write it like that
 
-> 
-> Pasha
-> 
->>
->> Thanks,
->> Robin.
->>
->>> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
->>> ---
->>>    drivers/iommu/iova.c | 57 +++++++++++++++++++++++++++++++++++++++++---
->>>    1 file changed, 54 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->>> index d30e453d0fb4..617bbc2b79f5 100644
->>> --- a/drivers/iommu/iova.c
->>> +++ b/drivers/iommu/iova.c
->>> @@ -630,6 +630,10 @@ EXPORT_SYMBOL_GPL(reserve_iova);
->>>
->>>    #define IOVA_DEPOT_DELAY msecs_to_jiffies(100)
->>>
->>> +static struct kmem_cache *iova_magazine_cache;
->>> +static unsigned int iova_magazine_cache_users;
->>> +static DEFINE_MUTEX(iova_magazine_cache_mutex);
->>> +
->>>    struct iova_magazine {
->>>        union {
->>>                unsigned long size;
->>> @@ -654,11 +658,51 @@ struct iova_rcache {
->>>        struct delayed_work work;
->>>    };
->>>
->>> +static int iova_magazine_cache_init(void)
->>> +{
->>> +     int ret = 0;
->>> +
->>> +     mutex_lock(&iova_magazine_cache_mutex);
->>> +
->>> +     iova_magazine_cache_users++;
->>> +     if (iova_magazine_cache_users > 1)
->>> +             goto out_unlock;
->>> +
->>> +     iova_magazine_cache = kmem_cache_create("iommu_iova_magazine",
->>> +                                             sizeof(struct iova_magazine),
->>> +                                             0, SLAB_HWCACHE_ALIGN, NULL);
->>> +
->>> +     if (!iova_magazine_cache) {
->>> +             pr_err("Couldn't create iova magazine cache\n");
->>> +             ret = -ENOMEM;
->>> +     }
->>> +
->>> +out_unlock:
->>> +     mutex_unlock(&iova_magazine_cache_mutex);
->>> +
->>> +     return ret;
->>> +}
->>> +
->>> +static void iova_magazine_cache_fini(void)
->>> +{
->>> +     mutex_lock(&iova_magazine_cache_mutex);
->>> +
->>> +     if (WARN_ON(!iova_magazine_cache_users))
->>> +             goto out_unlock;
->>> +
->>> +     iova_magazine_cache_users--;
->>> +     if (!iova_magazine_cache_users)
->>> +             kmem_cache_destroy(iova_magazine_cache);
->>> +
->>> +out_unlock:
->>> +     mutex_unlock(&iova_magazine_cache_mutex);
->>> +}
->>> +
->>>    static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
->>>    {
->>>        struct iova_magazine *mag;
->>>
->>> -     mag = kmalloc(sizeof(*mag), flags);
->>> +     mag = kmem_cache_alloc(iova_magazine_cache, flags);
->>>        if (mag)
->>>                mag->size = 0;
->>>
->>> @@ -667,7 +711,7 @@ static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
->>>
->>>    static void iova_magazine_free(struct iova_magazine *mag)
->>>    {
->>> -     kfree(mag);
->>> +     kmem_cache_free(iova_magazine_cache, mag);
->>>    }
->>>
->>>    static void
->>> @@ -766,11 +810,17 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
->>>        unsigned int cpu;
->>>        int i, ret;
->>>
->>> +     ret = iova_magazine_cache_init();
->>> +     if (ret)
->>> +             return -ENOMEM;
->>> +
->>>        iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
->>>                                 sizeof(struct iova_rcache),
->>>                                 GFP_KERNEL);
->>> -     if (!iovad->rcaches)
->>> +     if (!iovad->rcaches) {
->>> +             iova_magazine_cache_fini();
->>>                return -ENOMEM;
->>> +     }
->>>
->>>        for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
->>>                struct iova_cpu_rcache *cpu_rcache;
->>> @@ -948,6 +998,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
->>>
->>>        kfree(iovad->rcaches);
->>>        iovad->rcaches = NULL;
->>> +     iova_magazine_cache_fini();
->>>    }
->>>
->>>    /*
+Jason
