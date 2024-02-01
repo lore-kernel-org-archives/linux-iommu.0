@@ -1,169 +1,103 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE0DA15DBA3;
-	Thu,  1 Feb 2024 12:20:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFB3286625;
+	Thu,  1 Feb 2024 12:46:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706790017; cv=none; b=ggRHrTjVCdo/iuNKKznZ25RgZtheLO0+If9lx4gd4E1WCe4s6eSgjHp/JPPqZjT/WSnZtZWrR/8xnKn3WNxKZvHmmjPq+VI3/jKwY6D3queQ/Pi+9azExDu5fqrFQHj+ntyrc6bFmxhELNMXEYthNWzjKXLPR5ARF+l6IzOceNU=
+	t=1706791600; cv=none; b=pGAIdHjw7bGxMMqm0+iipA1fIIWcFboHoL1wn8u2560aM3SqauGUOFRUv8TjhTCxxZ2JRL0gFKqLcurrh3YTsyIhV9GxJwlYHQIFs8/uBaZfkk8oNdElXwUFOmD3qz87cABIg2R2tj7p31VHzBbVYDx67Hhmb5i6T1uGeH9NaDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706790017; c=relaxed/simple;
-	bh=4Ie/Xg9QQEqyC2kxqWucXLJeiNGuC9Hw4zqNth8MMjw=;
+	s=arc-20240116; t=1706791600; c=relaxed/simple;
+	bh=Ozs8J41000u00dB2ZIw83RqiiLRy3YYbyXOG40NYRg4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZeofF81mhBZMCSYCiOMVPvkyJggGpi/3byf16ILgqLP5P8winilac7HrfuEuuuCM/qiPQcQ9R7dU1Mtp2CiuU/CaH3FvCiZtVLQn/JCzUQ3gt1iqRYOz/TeFac9fVla76pnO5GUo6I9KK4oa2mVxjTVJd8dWUakZs2pCBm9LZAY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=VWloXmoR; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=KZTJza10; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=VWloXmoR; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=KZTJza10; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
+	 Content-Type:Content-Disposition:In-Reply-To; b=kPrt9CRVsahKGthiPmGpULgSi5YiN1SgyCInAizN4d3tQvX53FztfVH8WqmjRmz9k22ZHMX8smjG2hnPnApLOItxR490aXpzXMUsaAfhcWRDKUaoF07FAaUV6s2HXASmtlWQxqH2OX6aq4NG8zRYjByrWD9fjQN7VoQ66myqWKg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gV3GV92r; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="VWloXmoR";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="KZTJza10";
-	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="VWloXmoR";
-	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="KZTJza10"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id BC3061F385;
-	Thu,  1 Feb 2024 12:20:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1706790013; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JssJGLbLgFS02T1cBcMNp6vFTJ8g7xVb7dNEyUQ0OIU=;
-	b=VWloXmoRKF3dAKUVIquLVO+zZeyZV5UaT9BzycDvRR+1QWft8UjmxOH6BfRGq9mlPW5bj5
-	OdQa5nxlAICAU6bibkp9BmMTkkcdlRzdqOOgUFtf7YSVClNCQs2ECTER+szNKFJ+PB8Jm6
-	re0IIAA5G83+vDNlNcoGlfVfhfyOabc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1706790013;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JssJGLbLgFS02T1cBcMNp6vFTJ8g7xVb7dNEyUQ0OIU=;
-	b=KZTJza10mdB8bGuc9v33q5ogfMs3YhfX8edGzaRFnLN8g73mQ0sa3QSvf+lQTrUirQZuOy
-	ySQ7hLZK0+WBcbDA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-	t=1706790013; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JssJGLbLgFS02T1cBcMNp6vFTJ8g7xVb7dNEyUQ0OIU=;
-	b=VWloXmoRKF3dAKUVIquLVO+zZeyZV5UaT9BzycDvRR+1QWft8UjmxOH6BfRGq9mlPW5bj5
-	OdQa5nxlAICAU6bibkp9BmMTkkcdlRzdqOOgUFtf7YSVClNCQs2ECTER+szNKFJ+PB8Jm6
-	re0IIAA5G83+vDNlNcoGlfVfhfyOabc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-	s=susede2_ed25519; t=1706790013;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JssJGLbLgFS02T1cBcMNp6vFTJ8g7xVb7dNEyUQ0OIU=;
-	b=KZTJza10mdB8bGuc9v33q5ogfMs3YhfX8edGzaRFnLN8g73mQ0sa3QSvf+lQTrUirQZuOy
-	ySQ7hLZK0+WBcbDA==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 5783D13672;
-	Thu,  1 Feb 2024 12:20:13 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id qVwbFH2Mu2WRMwAAD6G6ig
-	(envelope-from <jroedel@suse.de>); Thu, 01 Feb 2024 12:20:13 +0000
-Date: Thu, 1 Feb 2024 13:20:12 +0100
-From: Joerg Roedel <jroedel@suse.de>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Jerry Snitselaar <jsnitsel@redhat.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gV3GV92r"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D524C433C7;
+	Thu,  1 Feb 2024 12:46:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1706791600;
+	bh=Ozs8J41000u00dB2ZIw83RqiiLRy3YYbyXOG40NYRg4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=gV3GV92rSzety+2LaA+j5pbLeIEYqtkmO44ZOu0MTkg0cPMuXy3hjhnzAzwjvq29p
+	 4X0bOmPvXzEmQE1svyww0as4u0/Laz6fcso/6LKZP+Y5geI9NnWrw1NTuI8fkY/Smc
+	 XFsocQFRcqGXoKTP2kK6pVSnS9ANsA4wmbm0n+m1xBF41xMj6c0VZBp7YTuRLNmM3C
+	 oMQqtUNq+6PXFVTjAhrP+EPKD1Jw4V3FS4lWWbpgfZD25hwFYPGUMsSmp+id9FgMjL
+	 m51uTRmObMJGlBaC2ZfDd43Os6eBTMGnEliRPo+FFvJFqNxQgapyGPHC+QbdcffhVW
+	 J7JTpEWbx4mRg==
+Date: Thu, 1 Feb 2024 12:46:34 +0000
+From: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
+	iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Ovidiu Panait <ovidiu.panait@windriver.com>,
-	patches@lists.linux.dev, Shivaprasad G Bhat <sbhat@linux.ibm.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Steven Price <steven.price@arm.com>
-Subject: Re: [PATCH rc] iommu: Allow ops->default_domain to work when
- !CONFIG_IOMMU_DMA
-Message-ID: <ZbuMfDOuZwTQsm4r@suse.de>
-References: <0-v1-755bd21c4a64+525b8-iommu_def_dom_fix_jgg@nvidia.com>
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Dexuan Cui <decui@microsoft.com>
+Subject: Re: [PATCH v2 1/3] swiotlb: Fix allocation alignment requirement
+ when searching slots
+Message-ID: <20240201124634.GA15707@willie-the-truck>
+References: <20240131122543.14791-1-will@kernel.org>
+ <20240131122543.14791-2-will@kernel.org>
+ <4c9f50d2-05f9-4a37-ac50-dcd98e40e87f@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <0-v1-755bd21c4a64+525b8-iommu_def_dom_fix_jgg@nvidia.com>
-Authentication-Results: smtp-out2.suse.de;
-	none
-X-Spamd-Result: default: False [-1.07 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 BAYES_HAM(-0.97)[86.87%];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 TO_MATCH_ENVRCPT_ALL(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
-	 SUBJECT_HAS_EXCLAIM(0.00)[];
-	 RCPT_COUNT_TWELVE(0.00)[16];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:url,suse.de:email];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 RCVD_TLS_ALL(0.00)[];
-	 MID_RHS_MATCH_FROM(0.00)[]
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Spam-Score: -1.07
+In-Reply-To: <4c9f50d2-05f9-4a37-ac50-dcd98e40e87f@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Tue, Jan 30, 2024 at 12:12:53PM -0400, Jason Gunthorpe wrote:
-> The ops->default_domain flow used a 0 req_type to select the default
-> domain and this was enforced by iommu_group_alloc_default_domain().
+Hey Robin,
+
+Cheers for having a look.
+
+On Wed, Jan 31, 2024 at 03:54:03PM +0000, Robin Murphy wrote:
+> On 31/01/2024 12:25 pm, Will Deacon wrote:
+> > Commit bbb73a103fbb ("swiotlb: fix a braino in the alignment check fix"),
+> > which was a fix for commit 0eee5ae10256 ("swiotlb: fix slot alignment
+> > checks"), causes a functional regression with vsock in a virtual machine
+> > using bouncing via a restricted DMA SWIOTLB pool.
+> > 
+> > When virtio allocates the virtqueues for the vsock device using
+> > dma_alloc_coherent(), the SWIOTLB search fails to take into account the
+> > 8KiB buffer size and returns page-unaligned allocations if 'area->index'
+> > was left unaligned by a previous allocation from the buffer:
 > 
-> When !CONFIG_IOMMU_DMA started forcing the old ARM32 drivers into IDENTITY
-> it also overroad the 0 req_type of the ops->default_domain drivers to
-> IDENTITY which ends up causing failures during device probe.
-> 
-> Make iommu_group_alloc_default_domain() accept a req_type that matches the
-> ops->default_domain and have iommu_group_alloc_default_domain() generate a
-> req_type that matches the default_domain.
-> 
-> This way the req_type always describes what kind of domain should be
-> attached and ops->default_domain overrides all other mechanisms to choose
-> the default domain.
-> 
-> Fixes: 2ad56efa80db ("powerpc/iommu: Setup a default domain and remove set_platform_dma_ops")
-> Fixes: 0f6a90436a57 ("iommu: Do not use IOMMU_DOMAIN_DMA if CONFIG_IOMMU_DMA is not enabled")
-> Reported-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-> Closes: https://lore.kernel.org/linux-iommu/20240123165829.630276-1-ovidiu.panait@windriver.com/
-> Reported-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
-> Closes: https://lore.kernel.org/linux-iommu/170618452753.3805.4425669653666211728.stgit@ltcd48-lp2.aus.stglab.ibm.com/
-> Tested-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-> Tested-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/iommu.c | 18 +++++++++++++-----
->  1 file changed, 13 insertions(+), 5 deletions(-)
+> Hmm, but isn't this fundamentally swiotlb_alloc()'s fault for assuming it's
+> going to get a page-aligned address back despite asking for 0 alignment in
+> the first place? I'm not sure SWIOTLB has ever promised implicit
+> size-alignment, so it feels somewhat misplaced to be messing with the
+> algorithm before fixing the obvious issue in the caller :/
 
-Applied, thanks.
+It's hard to tell which guarantees are intentional here given that this
+interface is all internal to swiotlb.c, but the 'alloc_align_mask'
+parameter didn't even exist prior to e81e99bacc9f ("swiotlb: Support
+aligned swiotlb buffers") and practically the implementation has ensured
+page-aligned allocations for buffers >= PAGE_SIZE prior to 0eee5ae10256
+("swiotlb: fix slot alignment checks") by virtue of aligning the search
+index to the stride.
 
--- 
-Jörg Rödel
-jroedel@suse.de
+In any case, this patch is required because the current state of
+swiotlb_search_pool_area() conflates the DMA alignment mask, the
+allocation alignment mask and the stride so that even if a non-zero
+'alloc_align_mask' is passed in, it won't necessarily be honoured.
 
-SUSE Software Solutions Germany GmbH
-Frankenstraße 146
-90461 Nürnberg
-Germany
-https://www.suse.com/
+For example, I just gave it a spin with only patch #3 and then this log:
 
-Geschäftsführer: Ivo Totev, Andrew McDonald, Werner Knoblich
-(HRB 36809, AG Nürnberg)
+> >   # Final address in brackets is the SWIOTLB address returned to the caller
+> >   | virtio-pci 0000:00:07.0: orig_addr 0x0 alloc_size 0x2000, iotlb_align_mask 0x800 stride 0x2: got slot 1645-1649/7168 (0x98326800)
+
+Becomes:
+
+  | virtio-pci 0000:00:07.0: alloc_size 0x2000, iotlb_align_mask 0x1800 stride 0x4: got slot 1645-1649/7168 (0x98326800)
+
+So even though the stride is correct, we still end up with a 2KiB aligned
+allocation.
+
+Cheers,
+
+Will
