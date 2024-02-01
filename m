@@ -1,90 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E36B415D5C6
-	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 11:49:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF47D15B984;
+	Thu,  1 Feb 2024 12:02:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706788182; cv=none; b=OZ93wwPmn+g8BpRmA9sObv8sgqgsF0E3zWwveeMkzgJYKsVzPGWjlRy7x2sUuQSNKlHPAGKDhAv05lJEk+54WS+/1JoOHbhvC8j7t4pa8bt1QYxx+9gpZGhuMFOz8OnaxY13JlU9+gqGKTCzKsOA3NOVZ9ypnb7WLEC/kNtHH9s=
+	t=1706788967; cv=none; b=OucXdQRig5OdO4r47IHC5IddWwxxwtY0QbujzSOs1N/qeNfqTYhqPKXA7KWAE66Au/nZPKlFVcXfQyVXieP+0Fiwr/aEIartx4a3P0V7BUKPMaWoQ4zdcxnzMUmeizwhCce7KdrxbkZrJdG9ot0zoCdAwK1BUi19uLcgyeeDvcw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706788182; c=relaxed/simple;
-	bh=LW71KuuAIUVJWedR4aaeNff0Yio4Rtb4Pgs9MRUCuiw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kHaulLR44wHTTMYP69dPncZxSqVW7IviACOzgawIaeWHTuP2lvDdeOqv0753/3Be32ZA4f5sOPQ8+90kMEC8IxGSJjxMA04JpovcrFnFT/jlC0bzsg18RoN2EZDvwhBkLtymM0JYjVCmEjONmYAiVdvK00mN3Ut2uZACi7R1tcY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aDnq5z06; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1706788967; c=relaxed/simple;
+	bh=U1QgTx/gonDu/uoDj6Yhkj7Mk5lTXdQzwCSaXC26Vq0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SYYA/lb7cSMDkp2BPGCqQDV2evigCigkKhY6JBKoi1FBYbPbMp2mrYM+1FC6VQsl/f77NED3X30D8y/vaJENWi2tI+WuknCNon5/OpSxMHgsy6DQAQUVaqD6IYmwB6XrgrkheY4n5CRFU3S+SrsZ+0DgY2vjlkMkXpvXT47c6aQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=WRELC0PS; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aDnq5z06"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706788181; x=1738324181;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=LW71KuuAIUVJWedR4aaeNff0Yio4Rtb4Pgs9MRUCuiw=;
-  b=aDnq5z065oSCfgp8BoAdye7n7nuDxYdlMLuj02MfVIv1PWdBpCJCclww
-   PzuxVU3zJn0YSJNZKvgllQQx1YmAMWwLh7DhYBvg+kUtOtjV/0NCtM6Ph
-   8FxrdMUJ6cWC4Wmo+7dGqhF7RbKwvMoBZuZwk0LIRsRvjH0JTG/tcf1Dt
-   FmNJctxGXoriHUeWwXuDG1YlrYorkPZ0hY+1D0B1hP8rYIijfMJ6ja1+W
-   Q6AMKMHUHd+LYV+IBBg8Td5PAW5hwi0/ApRK4igXDayxnFjo8pDkNIcE5
-   tPZ1mAP3m/0VNi55LPxcqe3Az0TLnuRJN602MNubfwjQorD1hVN31bXSE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="3709680"
-X-IronPort-AV: E=Sophos;i="6.05,234,1701158400"; 
-   d="scan'208";a="3709680"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2024 03:49:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="1119923610"
-X-IronPort-AV: E=Sophos;i="6.05,234,1701158400"; 
-   d="scan'208";a="1119923610"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2024 03:49:36 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rVVVQ-00000000oza-0W5b;
-	Thu, 01 Feb 2024 13:45:20 +0200
-Date: Thu, 1 Feb 2024 13:45:19 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Howard Yen <howardyen@google.com>, hch@lst.de, m.szyprowski@samsung.com,
-	gregkh@linuxfoundation.org, petr.tesarik.ext@huawei.com,
-	rafael@kernel.org, broonie@kernel.org, james@equiv.tech,
-	james.clark@arm.com, masahiroy@kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [PATCH] dma-coherent: add support for multi coherent rmems per
- dev
-Message-ID: <ZbuETxd_MfFN45C8@smile.fi.intel.com>
-References: <20240201093515.849873-1-howardyen@google.com>
- <f5b626ae-bda1-479f-bc14-b1fd7ba043cf@arm.com>
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="WRELC0PS"
+Received: from [192.168.1.212] (181-28-144-85.ftth.glasoperator.nl [85.144.28.181])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 6F789206FCD0;
+	Thu,  1 Feb 2024 04:02:40 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6F789206FCD0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1706788965;
+	bh=qjw0e01e5zFmjwwo4oUZmNAjRO4lcWWRzjpiHATsHPU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=WRELC0PSaLUMEtlRV/S8ryd5KvNa58lt15AZNRro2BSnLpzOJFyou7LW6Nv9NfFoY
+	 GfOyTslatpxy2VeYebidLaHHNzfydmCyJHoEFt05OPTOV7uPHkCYu3eKXWmFLFCLPf
+	 B3mXpPQSaXrvqobr5rXV0qztr8Dn4f4Mc1IWSzhk=
+Message-ID: <1d9d3372-825a-417a-8811-ffa501c83936@linux.microsoft.com>
+Date: Thu, 1 Feb 2024 13:02:38 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f5b626ae-bda1-479f-bc14-b1fd7ba043cf@arm.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC V1 5/5] x86: CVMs: Ensure that memory conversions happen at
+ 2M alignment
+To: Vishal Annapurve <vannapurve@google.com>,
+ Dave Hansen <dave.hansen@intel.com>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org, pbonzini@redhat.com,
+ rientjes@google.com, seanjc@google.com, erdemaktas@google.com,
+ ackerleytng@google.com, jxgao@google.com, sagis@google.com,
+ oupton@google.com, peterx@redhat.com, vkuznets@redhat.com,
+ dmatlack@google.com, pgonda@google.com, michael.roth@amd.com,
+ kirill@shutemov.name, thomas.lendacky@amd.com, dave.hansen@linux.intel.com,
+ linux-coco@lists.linux.dev, chao.p.peng@linux.intel.com,
+ isaku.yamahata@gmail.com, andrew.jones@linux.dev, corbet@lwn.net,
+ hch@lst.de, m.szyprowski@samsung.com, rostedt@goodmis.org,
+ iommu@lists.linux.dev
+References: <20240112055251.36101-1-vannapurve@google.com>
+ <20240112055251.36101-6-vannapurve@google.com>
+ <6709a57c-48a0-4ddd-b64e-a1e34ae2b763@intel.com>
+ <CAGtprH_ANUVU+Dh1KOq0vpT7BGbCEvD2ab9B=sxjzHYsKxFGeA@mail.gmail.com>
+Content-Language: en-US
+From: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+In-Reply-To: <CAGtprH_ANUVU+Dh1KOq0vpT7BGbCEvD2ab9B=sxjzHYsKxFGeA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Thu, Feb 01, 2024 at 10:45:30AM +0000, Robin Murphy wrote:
-> On 2024-02-01 9:35 am, Howard Yen wrote:
-
-...
-
-> >   	struct dma_coherent_mem	*dma_mem; /* internal for coherent mem
-> >   					     override */
-> > +	struct list_head	dma_mem_list;
+On 01/02/2024 04:46, Vishal Annapurve wrote:
+> On Wed, Jan 31, 2024 at 10:03 PM Dave Hansen <dave.hansen@intel.com> wrote:
+>>
+>> On 1/11/24 21:52, Vishal Annapurve wrote:
+>>> @@ -2133,8 +2133,10 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+>>>       int ret;
+>>>
+>>>       /* Should not be working on unaligned addresses */
+>>> -     if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n", addr))
+>>> -             addr &= PAGE_MASK;
+>>> +     if (WARN_ONCE(addr & ~HPAGE_MASK, "misaligned address: %#lx\n", addr)
+>>> +             || WARN_ONCE((numpages << PAGE_SHIFT) & ~HPAGE_MASK,
+>>> +                     "misaligned numpages: %#lx\n", numpages))
+>>> +             return -EINVAL;
+>>
+>> This series is talking about swiotlb and DMA, then this applies a
+>> restriction to what I *thought* was a much more generic function:
+>> __set_memory_enc_pgtable().  What prevents this function from getting
+>> used on 4k mappings?
+>>
+>>
 > 
-> I'm not necessarily against the idea, but only if it's implemented sensibly.
-> If we're going to have a list of these it should *replace* the existing
-> pointer, not do this weird thing with both.
+> The end goal here is to limit the conversion granularity to hugepage
+> sizes. SWIOTLB allocations are the major source of unaligned
+> allocations(and so the conversions) that need to be fixed before
+> achieving this goal.
+> 
+> This change will ensure that conversion fails for unaligned ranges, as
+> I don't foresee the need for 4K aligned conversions apart from DMA
+> allocations.
 
-+1 on the comment.
+Hi Vishal,
 
--- 
-With Best Regards,
-Andy Shevchenko
+This assumption is wrong. set_memory_decrypted is called from various
+parts of the kernel: kexec, sev-guest, kvmclock, hyperv code. These conversions
+are for non-DMA allocations that need to be done at 4KB granularity
+because the data structures in question are page sized.
 
-
+Thanks,
+Jeremi
