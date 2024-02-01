@@ -1,72 +1,62 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BB7915CD7B
-	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 11:34:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E36B415D5C6
+	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 11:49:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706787275; cv=none; b=PPEGihqZkAmvZsyrvQWWEvE1NVRgqu1XB7DrEcCz9FQtDZAyHTyi95FIUOFQzWUNSDlKDKWaRH1En+8kajWMJmGG5tawDOkUTockbeI5LtVKQqFQeialLzvHNSN5bZS5psHAydCdkrzHBtqG2eawddEGFbVJXM7jQc2TD4Feul0=
+	t=1706788182; cv=none; b=OZ93wwPmn+g8BpRmA9sObv8sgqgsF0E3zWwveeMkzgJYKsVzPGWjlRy7x2sUuQSNKlHPAGKDhAv05lJEk+54WS+/1JoOHbhvC8j7t4pa8bt1QYxx+9gpZGhuMFOz8OnaxY13JlU9+gqGKTCzKsOA3NOVZ9ypnb7WLEC/kNtHH9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706787275; c=relaxed/simple;
-	bh=kScjRLEoGqNkrK4BtVa8jvKYt1MquXz244qrDNAk5c4=;
+	s=arc-20240116; t=1706788182; c=relaxed/simple;
+	bh=LW71KuuAIUVJWedR4aaeNff0Yio4Rtb4Pgs9MRUCuiw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=E5yBGWnWCleFKStjTY4Cd2i/jBx5cB8+TyFkS2bZgeusmwyckjzwgmRd2iCRI/Fcn5RQsFmio9OwgPF+ZRLhZnV26tJNYrAJkHyUzhGJSXIGGngyIkahE31iqSXfz0L21WG47ur1lETDPI7/NoJ6/9lCdBNAEjkZiwtYLtDm2As=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QVzSBAaL; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=kHaulLR44wHTTMYP69dPncZxSqVW7IviACOzgawIaeWHTuP2lvDdeOqv0753/3Be32ZA4f5sOPQ8+90kMEC8IxGSJjxMA04JpovcrFnFT/jlC0bzsg18RoN2EZDvwhBkLtymM0JYjVCmEjONmYAiVdvK00mN3Ut2uZACi7R1tcY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aDnq5z06; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QVzSBAaL"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-55f63fd3dd8so10755a12.0
-        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 03:34:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1706787271; x=1707392071; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cwdhwoJv0upsGTffobk3GyaXqxANI4HVSiNrgLd7H9g=;
-        b=QVzSBAaLIxpU2Zoblf0U0QbH3lkGBE06pYkTUZdA4KR7vAw4mHdYtjjHz6ivhr8h7v
-         lQJjyu4e68cPY+ysA/1DOJroOK+fv494iSmmMVy+OdnWgqRhqhor5IYnyBOG3V8yCyic
-         gw9nvgZKbokLBosxxh/73WTi89DZe3ixet5aYD0TSRtyqZWp8Y3WWhX30unbP34ZEfuS
-         WR5WcmRQri0LVeiGegRgNvL7we7g5XmJRKwSczQT86QLTnzM2+JxTR9R/uKHH6h6MuMa
-         PQ4rvvorDdUQT7YP0cf8bm8hLjUfepIJXO9P8hSxtDbLuS30s481l4oaSfjOaIdtjRTN
-         CBog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706787271; x=1707392071;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cwdhwoJv0upsGTffobk3GyaXqxANI4HVSiNrgLd7H9g=;
-        b=oMbfRF4Do4/GshMnR039jcN9LCQ+RCBUVo4elhAoC2gCTCXdcuolnHeGmDbHZgIFY9
-         zWUamUI4ipeHymjtS2AjRyyJK3HaKS4DWKc+SxZh+4dfSgv9HleyFB3w48NjrTCOzASe
-         0w+ZtyXh/kNTMYdbj8ex4sKT1nStRz3ayFdBSXjt191s3TigGpZUzWRsl45Rltnp69ge
-         D3YUnxT/fxxEfDUXxrHO77A9wwpVI7okwGfgoQ8KraMXJPc9rzMVHOp83hUHo0ojylJA
-         XOqfwOEduM7oLkEUEJTiPlmybPf9+7awwkZ8zT2nfGWc8cB+tlDoz0NIBLnKw+qyRZhK
-         QsdQ==
-X-Gm-Message-State: AOJu0YwtkhVU9tbU1aEqrHG2fF7gzZAMmzYnEXxaCSh42vhOqkp78O+P
-	kG53juPeZUQLOAPcENOopXGGM6dqpSGpXgdJjADk7idV6o6OG0X/+R1cimgz4w==
-X-Google-Smtp-Source: AGHT+IHp5KhXwzylECbOOpOhQgHLxeXsk2Ap6Wjl+iEgu9HBxMQJVprXeZaZFPB6vmtvWPHYHrFh1g==
-X-Received: by 2002:a50:cd02:0:b0:55f:a1af:bade with SMTP id z2-20020a50cd02000000b0055fa1afbademr67546edi.4.1706787271265;
-        Thu, 01 Feb 2024 03:34:31 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCWAD8h6GWYLmNJCBgNGsd4RS5rEIsQag4qHjia+2wpx664broHgisk+OeTTNFckjiuhJS4TUh5vFoXBXkDseAh/A8mDgB+tQuikvIp8BMcgAMUT1D08hlA1X6+CCb+qx/umIkx0TKfb/aZZKMzyMVMhVfLhi5XrJFYp4aPKZesnKnAw2g501AIcxKhG/YOmOUg+I6EDYlcA1Gvv9+iu7NJm65BfosmbJTArtuI9ng8bDGtsknglNnxgQufrTpkcTLEJAQbLiVdNxCLutniMAl7f8xGbHVlKdyqILAT8N1Y9wwVDAHXSHXe1vZsFT5Vlkd7H5zOQHELLclSp4swBEH1SluQWgEzsIkJJS+yyc73tp6TodAGLzrsu
-Received: from google.com (185.83.140.34.bc.googleusercontent.com. [34.140.83.185])
-        by smtp.gmail.com with ESMTPSA id w16-20020a05600c475000b0040e549c77a1sm4165318wmo.32.2024.02.01.03.34.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Feb 2024 03:34:30 -0800 (PST)
-Date: Thu, 1 Feb 2024 11:34:25 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Moritz Fischer <mdf@kernel.org>,
-	Moritz Fischer <moritzf@google.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v4 05/16] iommu/arm-smmu-v3: Build the whole STE in
- arm_smmu_make_s2_domain_ste()
-Message-ID: <ZbuBwSvDEowh4vjr@google.com>
-References: <0-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
- <5-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aDnq5z06"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706788181; x=1738324181;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LW71KuuAIUVJWedR4aaeNff0Yio4Rtb4Pgs9MRUCuiw=;
+  b=aDnq5z065oSCfgp8BoAdye7n7nuDxYdlMLuj02MfVIv1PWdBpCJCclww
+   PzuxVU3zJn0YSJNZKvgllQQx1YmAMWwLh7DhYBvg+kUtOtjV/0NCtM6Ph
+   8FxrdMUJ6cWC4Wmo+7dGqhF7RbKwvMoBZuZwk0LIRsRvjH0JTG/tcf1Dt
+   FmNJctxGXoriHUeWwXuDG1YlrYorkPZ0hY+1D0B1hP8rYIijfMJ6ja1+W
+   Q6AMKMHUHd+LYV+IBBg8Td5PAW5hwi0/ApRK4igXDayxnFjo8pDkNIcE5
+   tPZ1mAP3m/0VNi55LPxcqe3Az0TLnuRJN602MNubfwjQorD1hVN31bXSE
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="3709680"
+X-IronPort-AV: E=Sophos;i="6.05,234,1701158400"; 
+   d="scan'208";a="3709680"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2024 03:49:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10969"; a="1119923610"
+X-IronPort-AV: E=Sophos;i="6.05,234,1701158400"; 
+   d="scan'208";a="1119923610"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Feb 2024 03:49:36 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rVVVQ-00000000oza-0W5b;
+	Thu, 01 Feb 2024 13:45:20 +0200
+Date: Thu, 1 Feb 2024 13:45:19 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Howard Yen <howardyen@google.com>, hch@lst.de, m.szyprowski@samsung.com,
+	gregkh@linuxfoundation.org, petr.tesarik.ext@huawei.com,
+	rafael@kernel.org, broonie@kernel.org, james@equiv.tech,
+	james.clark@arm.com, masahiroy@kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH] dma-coherent: add support for multi coherent rmems per
+ dev
+Message-ID: <ZbuETxd_MfFN45C8@smile.fi.intel.com>
+References: <20240201093515.849873-1-howardyen@google.com>
+ <f5b626ae-bda1-479f-bc14-b1fd7ba043cf@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,113 +65,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
+In-Reply-To: <f5b626ae-bda1-479f-bc14-b1fd7ba043cf@arm.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-Hi Jason,
+On Thu, Feb 01, 2024 at 10:45:30AM +0000, Robin Murphy wrote:
+> On 2024-02-01 9:35 am, Howard Yen wrote:
 
-On Thu, Jan 25, 2024 at 07:57:15PM -0400, Jason Gunthorpe wrote:
-> Half the code was living in arm_smmu_domain_finalise_s2(), just move it
-> here and take the values directly from the pgtbl_ops instead of storing
-> copies.
+...
+
+> >   	struct dma_coherent_mem	*dma_mem; /* internal for coherent mem
+> >   					     override */
+> > +	struct list_head	dma_mem_list;
 > 
-> Reviewed-by: Michael Shavit <mshavit@google.com>
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Tested-by: Moritz Fischer <moritzf@google.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 27 ++++++++++++---------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 --
->  2 files changed, 15 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 910156881423e0..9a95d0f1494223 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1552,6 +1552,11 @@ static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
->  					struct arm_smmu_domain *smmu_domain)
->  {
->  	struct arm_smmu_s2_cfg *s2_cfg = &smmu_domain->s2_cfg;
-> +	const struct io_pgtable_cfg *pgtbl_cfg =
-> +		&io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops)->cfg;
-> +	typeof(&pgtbl_cfg->arm_lpae_s2_cfg.vtcr) vtcr =
-> +		&pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
-> +	u64 vtcr_val;
->  
->  	memset(target, 0, sizeof(*target));
->  	target->data[0] = cpu_to_le64(
-> @@ -1562,9 +1567,16 @@ static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
->  		FIELD_PREP(STRTAB_STE_1_EATS,
->  			   master->ats_enabled ? STRTAB_STE_1_EATS_TRANS : 0));
->  
-> +	vtcr_val = FIELD_PREP(STRTAB_STE_2_VTCR_S2T0SZ, vtcr->tsz) |
-> +		   FIELD_PREP(STRTAB_STE_2_VTCR_S2SL0, vtcr->sl) |
-> +		   FIELD_PREP(STRTAB_STE_2_VTCR_S2IR0, vtcr->irgn) |
-> +		   FIELD_PREP(STRTAB_STE_2_VTCR_S2OR0, vtcr->orgn) |
-> +		   FIELD_PREP(STRTAB_STE_2_VTCR_S2SH0, vtcr->sh) |
-> +		   FIELD_PREP(STRTAB_STE_2_VTCR_S2TG, vtcr->tg) |
-> +		   FIELD_PREP(STRTAB_STE_2_VTCR_S2PS, vtcr->ps);
->  	target->data[2] = cpu_to_le64(
->  		FIELD_PREP(STRTAB_STE_2_S2VMID, s2_cfg->vmid) |
-> -		FIELD_PREP(STRTAB_STE_2_VTCR, s2_cfg->vtcr) |
-> +		FIELD_PREP(STRTAB_STE_2_VTCR, vtcr_val) |
->  		STRTAB_STE_2_S2AA64 |
->  #ifdef __BIG_ENDIAN
->  		STRTAB_STE_2_S2ENDI |
-> @@ -1572,7 +1584,8 @@ static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
->  		STRTAB_STE_2_S2PTW |
->  		STRTAB_STE_2_S2R);
->  
-> -	target->data[3] = cpu_to_le64(s2_cfg->vttbr & STRTAB_STE_3_S2TTB_MASK);
-> +	target->data[3] = cpu_to_le64(pgtbl_cfg->arm_lpae_s2_cfg.vttbr &
-> +				      STRTAB_STE_3_S2TTB_MASK);
->  }
->  
->  static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
-> @@ -2328,7 +2341,6 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
->  	int vmid;
->  	struct arm_smmu_device *smmu = smmu_domain->smmu;
->  	struct arm_smmu_s2_cfg *cfg = &smmu_domain->s2_cfg;
-> -	typeof(&pgtbl_cfg->arm_lpae_s2_cfg.vtcr) vtcr;
->  
->  	/* Reserve VMID 0 for stage-2 bypass STEs */
->  	vmid = ida_alloc_range(&smmu->vmid_map, 1, (1 << smmu->vmid_bits) - 1,
-> @@ -2336,16 +2348,7 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
->  	if (vmid < 0)
->  		return vmid;
->  
-> -	vtcr = &pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
->  	cfg->vmid	= (u16)vmid;
-> -	cfg->vttbr	= pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
-> -	cfg->vtcr	= FIELD_PREP(STRTAB_STE_2_VTCR_S2T0SZ, vtcr->tsz) |
-> -			  FIELD_PREP(STRTAB_STE_2_VTCR_S2SL0, vtcr->sl) |
-> -			  FIELD_PREP(STRTAB_STE_2_VTCR_S2IR0, vtcr->irgn) |
-> -			  FIELD_PREP(STRTAB_STE_2_VTCR_S2OR0, vtcr->orgn) |
-> -			  FIELD_PREP(STRTAB_STE_2_VTCR_S2SH0, vtcr->sh) |
-> -			  FIELD_PREP(STRTAB_STE_2_VTCR_S2TG, vtcr->tg) |
-> -			  FIELD_PREP(STRTAB_STE_2_VTCR_S2PS, vtcr->ps);
->  	return 0;
->  }
->  
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 65fb388d51734d..eb669121f1954d 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -609,8 +609,6 @@ struct arm_smmu_ctx_desc_cfg {
->  
->  struct arm_smmu_s2_cfg {
->  	u16				vmid;
-> -	u64				vttbr;
-> -	u64				vtcr;
->  };
->  
->  struct arm_smmu_strtab_cfg {
-> -- 
-> 2.43.0
->
+> I'm not necessarily against the idea, but only if it's implemented sensibly.
+> If we're going to have a list of these it should *replace* the existing
+> pointer, not do this weird thing with both.
 
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
++1 on the comment.
 
-Thanks,
-Mostafa
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
