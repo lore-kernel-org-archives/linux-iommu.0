@@ -1,186 +1,154 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2753336B04
-	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 20:56:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AAEC12FB12;
+	Thu,  1 Feb 2024 21:05:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706820970; cv=none; b=gDp3RRv+prhg50KBhSJjhj/PhOL1Qj719Ad6sMqeZo0z869E4g/Vc9AstbdTKJdGJi6Z9Q8gvZDEeG+s2Js5w+MGW30O6ImzP/4pgn+JJiDTH/8Hd/HGDQMmxXwoeNF5eUnxaRuo/4wMX6i+CC/mZIpsYa/y+jvlyhwPaUveFzs=
+	t=1706821560; cv=none; b=tpT+jRdCHYFRXmUfepsjTPwsP0Wu2LIoPPuf/vJaIO1Dx1UOgix1tjwVyAfzSf54iDhDfr9wnnrHLNfKhFe1Ypj5gvK5SXnUpFVk6QbplIVQUYcPxiaAXxr/rXarOhuLLBZH6bNABcgZ4DBRI8D49mu+y0LUmO9nyvop6KvYm3w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706820970; c=relaxed/simple;
-	bh=hV2Pa9TpTnqHiwHmL171NsgT80DhhsKgfd2bCkMYvCA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=BiFofCKxTXzpGYVX4z491AnKQrGitxX7uGCQowRGfYH30VRA0rx5bfKlpT0lw1mQBy5uHR7yxf7iF68Rhc9sPqwzJwHG8rzl5nMp7ieIfhEZifjyK1CKjUP6v1pfn9XPYpO5hX8rYLWZJYjpQyrwdHGiissriNAc8fjCjur7Zek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C4886DA7;
-	Thu,  1 Feb 2024 12:56:49 -0800 (PST)
-Received: from [10.57.47.101] (unknown [10.57.47.101])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id AF6AB3F762;
-	Thu,  1 Feb 2024 12:56:05 -0800 (PST)
-Message-ID: <02610629-05ef-4956-a122-36b6ac98fbc2@arm.com>
-Date: Thu, 1 Feb 2024 20:56:04 +0000
+	s=arc-20240116; t=1706821560; c=relaxed/simple;
+	bh=/+/FVvxYw1m3V4PhXzToj3z3g3YjB/Ca5+UW7tj+rmI=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=HT+taFTJ8Eb5WdGPMy9YnhT4jwOxy2CNWDJVelNqfHNNMHtCLg6l/2R+jtJdnbeUQahJIPdkUbeOE03+L5c1UA9xeRTcdbsBXIhPvYgOJ1bq1oeQqW2jO1OH9ccE1RunSSkr3ymBqQBDVOiYre8TXvfYaFPMtyn+N1OwdVNqlRo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=CCsN8STO; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="CCsN8STO"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 411Jmb1u032191;
+	Thu, 1 Feb 2024 21:05:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	from:to:cc:subject:date:message-id:in-reply-to:references
+	:mime-version:content-type; s=qcppdkim1; bh=iNUFl+O4Q+nSOF+40pkC
+	YbU/d8xhFCc4glTBr+0sDes=; b=CCsN8STOuOQydrW2DiW9sLzAgCcnWBlTWOxH
+	8pO3bAmGbIR/FtkFFmjwZ60zscEnNvuMDHNGHWohrAUI4me7/oliDb+f/GRUj8XL
+	XngxdUgNdraRY21pNBrTVczEXmYcV92nqOblcD/Jo9G8+JOk467HUtRFaMG7JYAI
+	plSG00FDcw1ySYghtEl1RWbDuaYw1H/BI/VXZSM6WFBJG80n5k6mf41WfsScBSYE
+	ZzEVR1J8TpgqsPFh1rcCTo71Gq94XUx+XpuhQdEDi5mklmxwrajqnwblikmO/WkN
+	xX+wLYZoRDww66GeEFI4Mqg62dQ9iemVT0q722EYhBY4quGVJA==
+Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3w0b4y16vh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 01 Feb 2024 21:05:41 +0000 (GMT)
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 411L5eZv028370
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 1 Feb 2024 21:05:40 GMT
+Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Thu, 1 Feb 2024 13:05:39 -0800
+From: Georgi Djakov <quic_c_gdjako@quicinc.com>
+To: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <iommu@lists.linux.dev>
+CC: <devicetree@vger.kernel.org>, <andersson@kernel.org>,
+        <konrad.dybcio@linaro.org>, <robdclark@gmail.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <quic_cgoldswo@quicinc.com>,
+        <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
+        <quic_sudaraja@quicinc.com>, <djakov@kernel.org>
+Subject: [PATCH v4 01/10] dt-bindings: iommu: Add Translation Buffer Unit bindings
+Date: Thu, 1 Feb 2024 13:05:20 -0800
+Message-ID: <20240201210529.7728-2-quic_c_gdjako@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20240201210529.7728-1-quic_c_gdjako@quicinc.com>
+References: <20240201210529.7728-1-quic_c_gdjako@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/iova: use named kmem_cache for iova magazines
-Content-Language: en-GB
-To: Pasha Tatashin <pasha.tatashin@soleen.com>, joro@8bytes.org,
- will@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, rientjes@google.com
-References: <20240201193014.2785570-1-tatashin@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240201193014.2785570-1-tatashin@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-ORIG-GUID: BDMj7KM5nmqU7Ej7G0k1JUIEKGi1vezK
+X-Proofpoint-GUID: BDMj7KM5nmqU7Ej7G0k1JUIEKGi1vezK
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-01_06,2024-01-31_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ bulkscore=0 priorityscore=1501 impostorscore=0 suspectscore=0
+ lowpriorityscore=0 spamscore=0 adultscore=0 phishscore=0 mlxscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2401190000 definitions=main-2402010163
 
-On 2024-02-01 7:30 pm, Pasha Tatashin wrote:
-> From: Pasha Tatashin <pasha.tatashin@soleen.com>
-> 
-> The magazine buffers can take gigabytes of kmem memory, dominating all
-> other allocations. For observability prurpose create named slab cache so
-> the iova magazine memory overhead can be clearly observed.
-> 
-> With this change:
-> 
->> slabtop -o | head
->   Active / Total Objects (% used)    : 869731 / 952904 (91.3%)
->   Active / Total Slabs (% used)      : 103411 / 103974 (99.5%)
->   Active / Total Caches (% used)     : 135 / 211 (64.0%)
->   Active / Total Size (% used)       : 395389.68K / 411430.20K (96.1%)
->   Minimum / Average / Maximum Object : 0.02K / 0.43K / 8.00K
-> 
-> OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
-> 244412 244239 99%    1.00K  61103       4    244412K iommu_iova_magazine
->   91636  88343 96%    0.03K    739     124      2956K kmalloc-32
->   75744  74844 98%    0.12K   2367      32      9468K kernfs_node_cache
-> 
-> On this machine it is now clear that magazine use 242M of kmem memory.
+Add common bindings for the TBUs to describe their properties. The
+TBUs are modelled as child devices of the IOMMU and each of them is
+described with their compatible, reg and stream-id-range properties.
+There could be other implementation specific properties to describe
+any resources like clocks, regulators, power-domains, interconnects
+that would be needed for TBU operation. Such properties will be
+documented in a separate vendor-specific TBU schema.
 
-Hmm, something smells there...
+Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+---
+ .../devicetree/bindings/iommu/arm,smmu.yaml   | 14 ++++++++++
+ .../devicetree/bindings/iommu/tbu-common.yaml | 28 +++++++++++++++++++
+ 2 files changed, 42 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/tbu-common.yaml
 
-In the "worst" case there should be a maximum of 6 * 2 * 
-num_online_cpus() empty magazines in the iova_cpu_rcache structures, 
-i.e., 12KB per CPU. Under normal use those will contain at least some 
-PFNs, but mainly every additional magazine stored in a depot is full 
-with 127 PFNs, and each one of those PFNs is backed by a 40-byte struct 
-iova, i.e. ~5KB per 1KB magazine. Unless that machine has many thousands 
-of CPUs, if iova_magazine allocations are the top consumer of memory 
-then something's gone wrong.
-
-Thanks,
-Robin.
-
-> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-> ---
->   drivers/iommu/iova.c | 57 +++++++++++++++++++++++++++++++++++++++++---
->   1 file changed, 54 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index d30e453d0fb4..617bbc2b79f5 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -630,6 +630,10 @@ EXPORT_SYMBOL_GPL(reserve_iova);
->   
->   #define IOVA_DEPOT_DELAY msecs_to_jiffies(100)
->   
-> +static struct kmem_cache *iova_magazine_cache;
-> +static unsigned int iova_magazine_cache_users;
-> +static DEFINE_MUTEX(iova_magazine_cache_mutex);
-> +
->   struct iova_magazine {
->   	union {
->   		unsigned long size;
-> @@ -654,11 +658,51 @@ struct iova_rcache {
->   	struct delayed_work work;
->   };
->   
-> +static int iova_magazine_cache_init(void)
-> +{
-> +	int ret = 0;
-> +
-> +	mutex_lock(&iova_magazine_cache_mutex);
-> +
-> +	iova_magazine_cache_users++;
-> +	if (iova_magazine_cache_users > 1)
-> +		goto out_unlock;
-> +
-> +	iova_magazine_cache = kmem_cache_create("iommu_iova_magazine",
-> +						sizeof(struct iova_magazine),
-> +						0, SLAB_HWCACHE_ALIGN, NULL);
-> +
-> +	if (!iova_magazine_cache) {
-> +		pr_err("Couldn't create iova magazine cache\n");
-> +		ret = -ENOMEM;
-> +	}
-> +
-> +out_unlock:
-> +	mutex_unlock(&iova_magazine_cache_mutex);
-> +
-> +	return ret;
-> +}
-> +
-> +static void iova_magazine_cache_fini(void)
-> +{
-> +	mutex_lock(&iova_magazine_cache_mutex);
-> +
-> +	if (WARN_ON(!iova_magazine_cache_users))
-> +		goto out_unlock;
-> +
-> +	iova_magazine_cache_users--;
-> +	if (!iova_magazine_cache_users)
-> +		kmem_cache_destroy(iova_magazine_cache);
-> +
-> +out_unlock:
-> +	mutex_unlock(&iova_magazine_cache_mutex);
-> +}
-> +
->   static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
->   {
->   	struct iova_magazine *mag;
->   
-> -	mag = kmalloc(sizeof(*mag), flags);
-> +	mag = kmem_cache_alloc(iova_magazine_cache, flags);
->   	if (mag)
->   		mag->size = 0;
->   
-> @@ -667,7 +711,7 @@ static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
->   
->   static void iova_magazine_free(struct iova_magazine *mag)
->   {
-> -	kfree(mag);
-> +	kmem_cache_free(iova_magazine_cache, mag);
->   }
->   
->   static void
-> @@ -766,11 +810,17 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
->   	unsigned int cpu;
->   	int i, ret;
->   
-> +	ret = iova_magazine_cache_init();
-> +	if (ret)
-> +		return -ENOMEM;
-> +
->   	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
->   				 sizeof(struct iova_rcache),
->   				 GFP_KERNEL);
-> -	if (!iovad->rcaches)
-> +	if (!iovad->rcaches) {
-> +		iova_magazine_cache_fini();
->   		return -ENOMEM;
-> +	}
->   
->   	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
->   		struct iova_cpu_rcache *cpu_rcache;
-> @@ -948,6 +998,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
->   
->   	kfree(iovad->rcaches);
->   	iovad->rcaches = NULL;
-> +	iova_magazine_cache_fini();
->   }
->   
->   /*
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index a4042ae24770..ba3237023b39 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -235,6 +235,20 @@ properties:
+       enabled for any given device.
+     $ref: /schemas/types.yaml#/definitions/phandle
+ 
++  '#address-cells':
++    enum: [ 1, 2 ]
++
++  '#size-cells':
++    enum: [ 1, 2 ]
++
++  ranges: true
++
++patternProperties:
++  "^tbu@[0-9a-f]+$":
++    description: TBU child nodes
++    type: object
++    $ref: tbu-common.yaml#
++
+ required:
+   - compatible
+   - reg
+diff --git a/Documentation/devicetree/bindings/iommu/tbu-common.yaml b/Documentation/devicetree/bindings/iommu/tbu-common.yaml
+new file mode 100644
+index 000000000000..3e95b356e572
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/tbu-common.yaml
+@@ -0,0 +1,28 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/tbu-common.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Translation Buffer Unit (TBU) common properties
++
++maintainers:
++  - Georgi Djakov <quic_c_gdjako@quicinc.com>
++
++description:
++  The SMMU implements a TBU for system masters. It consists if a
++  Translation Lookaside Buffer (TLB) that caches page tables.
++
++properties:
++  reg:
++    maxItems: 1
++
++  stream-id-range:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    description: Stream ID range (address and size) that is assigned by the TBU
++    items:
++      minItems: 2
++      maxItems: 2
++
++additionalProperties: true
++...
