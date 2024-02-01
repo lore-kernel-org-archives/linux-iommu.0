@@ -1,100 +1,236 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id EF47D15B984;
-	Thu,  1 Feb 2024 12:02:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 487EE15D5AC
+	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 12:16:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706788967; cv=none; b=OucXdQRig5OdO4r47IHC5IddWwxxwtY0QbujzSOs1N/qeNfqTYhqPKXA7KWAE66Au/nZPKlFVcXfQyVXieP+0Fiwr/aEIartx4a3P0V7BUKPMaWoQ4zdcxnzMUmeizwhCce7KdrxbkZrJdG9ot0zoCdAwK1BUi19uLcgyeeDvcw=
+	t=1706789762; cv=none; b=AtgtWn+d329lCSXCtXmi3fQ7g2M7m+AMuTrLoEgeBTwT/kRacyenGmiqTmc62zVvNCp7neJiiqVJwoLqF/4uAZTVI/JADAOKYQ3MxG+am4V9r3Ee2VF+bFUHFYZ+o3CrHiHIjzdHdb3RYGknhaS/uuSkhnznmJXYyN6EFsGGe7o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706788967; c=relaxed/simple;
-	bh=U1QgTx/gonDu/uoDj6Yhkj7Mk5lTXdQzwCSaXC26Vq0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=SYYA/lb7cSMDkp2BPGCqQDV2evigCigkKhY6JBKoi1FBYbPbMp2mrYM+1FC6VQsl/f77NED3X30D8y/vaJENWi2tI+WuknCNon5/OpSxMHgsy6DQAQUVaqD6IYmwB6XrgrkheY4n5CRFU3S+SrsZ+0DgY2vjlkMkXpvXT47c6aQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=WRELC0PS; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1706789762; c=relaxed/simple;
+	bh=SFsL/oGqWpgc6lFN1WEaTjkfK9CV44kWOLq3bM4OCYI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nC6YIh7IjTslGetVQwWbAeP3Rtl+Y9mL8Az4b7mgIAMR40AHBwqgp57Asojwo7RRPONjoqoLJ4ZoHPRUtgM2K4X76220hSa51f9knH1Ha3Ed9fxyLK7aMLYENbjA2CsVsW0rna3O6sOcIdFICvEDDNh/ohbHg3iD8zD0OmKPryA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=OUpHUfrA; arc=none smtp.client-ip=209.85.208.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="WRELC0PS"
-Received: from [192.168.1.212] (181-28-144-85.ftth.glasoperator.nl [85.144.28.181])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 6F789206FCD0;
-	Thu,  1 Feb 2024 04:02:40 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6F789206FCD0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1706788965;
-	bh=qjw0e01e5zFmjwwo4oUZmNAjRO4lcWWRzjpiHATsHPU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=WRELC0PSaLUMEtlRV/S8ryd5KvNa58lt15AZNRro2BSnLpzOJFyou7LW6Nv9NfFoY
-	 GfOyTslatpxy2VeYebidLaHHNzfydmCyJHoEFt05OPTOV7uPHkCYu3eKXWmFLFCLPf
-	 B3mXpPQSaXrvqobr5rXV0qztr8Dn4f4Mc1IWSzhk=
-Message-ID: <1d9d3372-825a-417a-8811-ffa501c83936@linux.microsoft.com>
-Date: Thu, 1 Feb 2024 13:02:38 +0100
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="OUpHUfrA"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-55f63fd3dd8so11269a12.0
+        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 04:16:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1706789758; x=1707394558; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=cve+q1TZtCVqvyVnUQyH2Cq09HKM/U+2tnIu1KSKKcg=;
+        b=OUpHUfrAHVNXUjx+oBZSJcTYxZUb3mfIRzdOs/qAWa17GtLKs//fuxgWrJAap5XBsO
+         f+r8DBVRr53LNg534XClqRTadIEeri7X0MfycIpkYd0Pd47sEQoeNFkx7AhaIu//7e4I
+         yPuLplMf4koPXHt80PtrK0/5AER+ef+7XGcvpVGb53ZkPl/csnSkbSpDqoRCSVxmG4ez
+         +mrJTAZQsBUdWrTdujvfWCVKABoHB6mH7S98807JbsAdrBAUW/lvY+NxgmKxM2zhYcEk
+         OXEvUGC+rA4IlUUzPFqe1UfSOwaZYxvL0oYM48p9TcGTdjyQxZg0iq2imXWljOEldDZ3
+         mP0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706789758; x=1707394558;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=cve+q1TZtCVqvyVnUQyH2Cq09HKM/U+2tnIu1KSKKcg=;
+        b=NlcbwYcuxVEYxADpUaqa0uo/HXbeV06kGmunQ7V3zPMeXyYvC58lxwyuPPhGj5/g4J
+         /Tbz/xPdYsd7xIkJCwOnT8wKkr5ePDwYDLOU+Urldtxjy+RxWphsnv5tfFhk/RQYcpx7
+         E6NQ3UrJ/w6KC6I+QoRx9YcIQv4bf1LrPh0jpWwgxVj+PDQCD+yCy89dw8QvAbIKA25p
+         xQOSMv4WgLaUQFzq5zRr5Fe3rStpKoNNE98r3HRSsXmWzYBX/00lIOqrESXfmeR+6SMu
+         MDLSHvtwDl0p+eUfj749xUslZv5frYTVn5+JF4slo2FWqIUHj7vHTCKVCxkpwhllKc+R
+         7U4A==
+X-Gm-Message-State: AOJu0Yx9IFBqfnUnaQVw9fDUQrfedl/lk3ZrZ5l1VCPHxFsVuUPWDeIz
+	lJwLk+pHL+zEkgENMuEuB+n6SGkWB2AL5Otv4IFyNBpjE/7owB91wReu6CpiPA==
+X-Google-Smtp-Source: AGHT+IHy1BHTCsh/42eBIgRQC6BQGnV05xiXKU8/nomBidZfv5pBBsK0ygZYeANcbrgw5sK9uzanEg==
+X-Received: by 2002:a50:d54e:0:b0:55f:b5a3:e2b4 with SMTP id f14-20020a50d54e000000b0055fb5a3e2b4mr122757edj.7.1706789758212;
+        Thu, 01 Feb 2024 04:15:58 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCWgcgdkyotuywgnji7Lsr9mrvbMtY2+6Pmuodeoib/LTzKufe2dpr7/6JVlZPI9S/1LXXZaPqQ8egGQBtwyrvrh9AdpIuW9LjrWJLgLXNLP6pOBgWjRYSKM/dzZ5KNzJG4V6/BltYOhve+IVvASamxZXLnkf01ojn+jqb/YHU/TAFMjCImrpqRe+cXrmIaSiEucMQVQ7sUTxdCbzev8oePxvX3LG8hYiQIgrgQNkfKbS8tHvkfDyX0jg0TPEffckSHbFGN9NauYv4OpOTdM+hkIWFU84CnGguuPopMs/V0jEW+uxMWy1tlJAkgJCoRo5pVl7+UEMtlZd0Sxp9uPPduiI0zyOJ49tXJxBuU/yX0t+bQ1+RHsi5Qg
+Received: from google.com (185.83.140.34.bc.googleusercontent.com. [34.140.83.185])
+        by smtp.gmail.com with ESMTPSA id t15-20020a05600c198f00b0040ee51f1025sm4283470wmq.43.2024.02.01.04.15.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Feb 2024 04:15:57 -0800 (PST)
+Date: Thu, 1 Feb 2024 12:15:53 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v4 06/16] iommu/arm-smmu-v3: Hold arm_smmu_asid_lock
+ during all of attach_dev
+Message-ID: <ZbuLeWDvhhufT7Pa@google.com>
+References: <0-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
+ <6-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC V1 5/5] x86: CVMs: Ensure that memory conversions happen at
- 2M alignment
-To: Vishal Annapurve <vannapurve@google.com>,
- Dave Hansen <dave.hansen@intel.com>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, pbonzini@redhat.com,
- rientjes@google.com, seanjc@google.com, erdemaktas@google.com,
- ackerleytng@google.com, jxgao@google.com, sagis@google.com,
- oupton@google.com, peterx@redhat.com, vkuznets@redhat.com,
- dmatlack@google.com, pgonda@google.com, michael.roth@amd.com,
- kirill@shutemov.name, thomas.lendacky@amd.com, dave.hansen@linux.intel.com,
- linux-coco@lists.linux.dev, chao.p.peng@linux.intel.com,
- isaku.yamahata@gmail.com, andrew.jones@linux.dev, corbet@lwn.net,
- hch@lst.de, m.szyprowski@samsung.com, rostedt@goodmis.org,
- iommu@lists.linux.dev
-References: <20240112055251.36101-1-vannapurve@google.com>
- <20240112055251.36101-6-vannapurve@google.com>
- <6709a57c-48a0-4ddd-b64e-a1e34ae2b763@intel.com>
- <CAGtprH_ANUVU+Dh1KOq0vpT7BGbCEvD2ab9B=sxjzHYsKxFGeA@mail.gmail.com>
-Content-Language: en-US
-From: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
-In-Reply-To: <CAGtprH_ANUVU+Dh1KOq0vpT7BGbCEvD2ab9B=sxjzHYsKxFGeA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <6-v4-c93b774edcc4+42d2b-smmuv3_newapi_p1_jgg@nvidia.com>
 
-On 01/02/2024 04:46, Vishal Annapurve wrote:
-> On Wed, Jan 31, 2024 at 10:03 PM Dave Hansen <dave.hansen@intel.com> wrote:
->>
->> On 1/11/24 21:52, Vishal Annapurve wrote:
->>> @@ -2133,8 +2133,10 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
->>>       int ret;
->>>
->>>       /* Should not be working on unaligned addresses */
->>> -     if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n", addr))
->>> -             addr &= PAGE_MASK;
->>> +     if (WARN_ONCE(addr & ~HPAGE_MASK, "misaligned address: %#lx\n", addr)
->>> +             || WARN_ONCE((numpages << PAGE_SHIFT) & ~HPAGE_MASK,
->>> +                     "misaligned numpages: %#lx\n", numpages))
->>> +             return -EINVAL;
->>
->> This series is talking about swiotlb and DMA, then this applies a
->> restriction to what I *thought* was a much more generic function:
->> __set_memory_enc_pgtable().  What prevents this function from getting
->> used on 4k mappings?
->>
->>
+Hi Jason,
+
+On Thu, Jan 25, 2024 at 07:57:16PM -0400, Jason Gunthorpe wrote:
+> The BTM support wants to be able to change the ASID of any smmu_domain.
+> When it goes to do this it holds the arm_smmu_asid_lock and iterates over
+> the target domain's devices list.
 > 
-> The end goal here is to limit the conversion granularity to hugepage
-> sizes. SWIOTLB allocations are the major source of unaligned
-> allocations(and so the conversions) that need to be fixed before
-> achieving this goal.
+> During attach of a S1 domain we must ensure that the devices list and
+> CD are in sync, otherwise we could miss CD updates or a parallel CD update
+> could push an out of date CD.
 > 
-> This change will ensure that conversion fails for unaligned ranges, as
-> I don't foresee the need for 4K aligned conversions apart from DMA
-> allocations.
+> This is pretty complicated, and almost works today because
+> arm_smmu_detach_dev() removes the master from the linked list before
+> working on the CD entries, preventing parallel update of the CD.
+> 
+> However, it does have an issue where the CD can remain programed while the
+> domain appears to be unattached. arm_smmu_share_asid() will then not clear
+> any CD entriess and install its own CD entry with the same ASID
+> concurrently. This creates a small race window where the IOMMU can see two
+> ASIDs pointing to different translations.
 
-Hi Vishal,
+I don’t see the race condition.
 
-This assumption is wrong. set_memory_decrypted is called from various
-parts of the kernel: kexec, sev-guest, kvmclock, hyperv code. These conversions
-are for non-DMA allocations that need to be done at 4KB granularity
-because the data structures in question are page sized.
+The current flow is as follows,
+For SVA, if the asid was used by domain_x, it will do:
+
+lock(arm_smmu_asid_lock)
+Alloc new asid and set cd->asid.
+lock(domain_x->devices_lock)
+Write new CD with the new asid
+unlock(domain_x->devices_lock)
+unlock(arm_smmu_asid_lock)
+
+For attach_dev (domain_y), if the device was attached to domain_z
+//Detach old domain
+lock(domain_z->devices_lock)
+Remove master from old domain
+unlock(domain_z->devices_lock)
+Clear CD
+//Attach new domain
+lock(arm_smmu_asid_lock)
+Allocate ASID
+unlock(arm_smmu_asid_lock)
+
+lock(domain_y->devices_lock)
+Insert new master.
+unlock(domain_y->devices_lock)
+
+lock(arm_smmu_asid_lock)
+Write CD
+unlock(arm_smmu_asid_lock)
+
+
+In case
+1) domain_x == domain_z(old domain)
+Write to the CD is protected by domain_x->devices_lock, so either:
+    a) The device will be removed, so SVA code will not touch it, and the
+    detach will clear the CD.
+    b) The device CD will be updated from the SVA with the new code, but then
+    it will be removed from the domain and cleared.
+
+I don’t see any case where we end with a programmed CD.
+
+2) domain_x == domain_y(new domain)
+
+Similarly the device would either see the new CD(new asid) or the old CD
+then the new CD.
+
+Can you please clarify the race condition? as it seems I am missing something.
+
+> Solve this by wrapping most of the attach flow in the
+> arm_smmu_asid_lock. This locks more than strictly needed to prepare for
+> the next patch which will reorganize the order of the linked list, STE and
+> CD changes.
+> 
+> Move arm_smmu_detach_dev() till after we have initialized the domain so
+> the lock can be held for less time.
+> 
+> Reviewed-by: Michael Shavit <mshavit@google.com>
+> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Tested-by: Moritz Fischer <moritzf@google.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 22 ++++++++++++---------
+>  1 file changed, 13 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 9a95d0f1494223..539ef380f457fa 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2612,8 +2612,6 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  		return -EBUSY;
+>  	}
+>  
+> -	arm_smmu_detach_dev(master);
+> -
+>  	mutex_lock(&smmu_domain->init_mutex);
+>  
+>  	if (!smmu_domain->smmu) {
+> @@ -2628,6 +2626,16 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  	if (ret)
+>  		return ret;
+>  
+> +	/*
+> +	 * Prevent arm_smmu_share_asid() from trying to change the ASID
+> +	 * of either the old or new domain while we are working on it.
+> +	 * This allows the STE and the smmu_domain->devices list to
+> +	 * be inconsistent during this routine.
+> +	 */
+> +	mutex_lock(&arm_smmu_asid_lock);
+> +
+> +	arm_smmu_detach_dev(master);
+> +
+>  	master->domain = smmu_domain;
+>  
+>  	/*
+> @@ -2653,13 +2661,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  			}
+>  		}
+>  
+> -		/*
+> -		 * Prevent SVA from concurrently modifying the CD or writing to
+> -		 * the CD entry
+> -		 */
+> -		mutex_lock(&arm_smmu_asid_lock);
+>  		ret = arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID, &smmu_domain->cd);
+> -		mutex_unlock(&arm_smmu_asid_lock);
+>  		if (ret) {
+>  			master->domain = NULL;
+>  			goto out_list_del;
+> @@ -2669,13 +2671,15 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  	arm_smmu_install_ste_for_dev(master);
+>  
+>  	arm_smmu_enable_ats(master);
+> -	return 0;
+> +	goto out_unlock;
+>  
+>  out_list_del:
+>  	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+>  	list_del(&master->domain_head);
+>  	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+>  
+> +out_unlock:
+> +	mutex_unlock(&arm_smmu_asid_lock);
+>  	return ret;
+>  }
+>  
+> -- 
+> 2.43.0
+> 
 
 Thanks,
-Jeremi
+Mostafa
