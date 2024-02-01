@@ -1,160 +1,142 @@
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F53A405D4
-	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 22:11:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20BFD3FB32
+	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 22:29:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706825498; cv=none; b=clnDlYEcy2fr6gJvbiB/bV9eKESRK/mssfJpTme4jl1Q7/io+7mGYEjOM/V1/9ogp5C4t16BW8VQgGK3b4i1IRE4ce7pUsP0l2NzExN/E+TqxammrQN3/zTqYWxrmiGtQQ6tygD/pFu1yLLeXpV86I5tiLxrff6Virpu1l6jT6g=
+	t=1706826579; cv=none; b=W1QQBlrwpDtPiO4ZYE2PKndWUkJoFt6iE4i2fHSWFzLzqbZT3mqBMPjD6zb98sfTrsUn8PDRuUg3AcTWNm2XVC+V8Vlo7PRe2qSrEzoEiAgYyb6uXGtqooExHBNwkrIG+bT2L61QCBcJnZ2fSde/iwlSKfSwahf2cV6G8S5ltDs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706825498; c=relaxed/simple;
-	bh=86g+qEoenkm0oeTQiA6yz/w3YphkvvGPQnWrjxXicGM=;
+	s=arc-20240116; t=1706826579; c=relaxed/simple;
+	bh=dEloljQr9NL2fQj+p5tojv6uWV6NH/+lSQT7Nh2TvXc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Kt+FtaWYEaUaooeXEjd2S32kHXa78nsgL+lJoW84xEkh/1XEiZRZPQr/QOumow0vXsvtOPJ7zMq9K+/FCSEusqZHMd7cgpqA5gFLR/ZZr14zk2KiU5TYSveBi4zIedy3KmtnGioIBrA20xKHi6VjPA7VhU8QPN5Ngv3WRo+Y3U0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com; spf=none smtp.mailfrom=soleen.com; dkim=fail (0-bit key) header.d=soleen.com header.i=@soleen.com header.b=avXHEFiD reason="key not found in DNS"; arc=none smtp.client-ip=209.85.167.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=soleen.com
+	 To:Cc:Content-Type; b=rIRQboZYupUvdAgA94FO+dJDqRh1XxIPhC9qegnc8IaT3LCfGf1Aauc3q6ZqZx66QKMFp6COD6mDkizJ5gxbHa2q/AuLRTMGEWE+BXwpNTQco5k3QXgVS819vn7MvbhUxVeh1HKVPzk6/M12uRuiNtOOSWMirBiFjOLczf473w8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=eu4dV9AA; arc=none smtp.client-ip=209.85.218.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=soleen.com header.i=@soleen.com header.b="avXHEFiD"
-Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-3bec19b893aso821770b6e.0
-        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 14:11:36 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="eu4dV9AA"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-a354408e6bfso444360466b.1
+        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 14:29:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1706825496; x=1707430296; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1706826576; x=1707431376; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7CCoiRTZe5/e8MNjxiyM/onfHMZyM22m6CAEHOZonNo=;
-        b=avXHEFiD0wlFPI5LBRA5TlHcz+oXRx5OuQoth7QdpBA9sICRonxGZ25mJiK7+zxVJM
-         aQqiwxjEvG2B7LRfIPO1WB/3ZXhySulrDp1jGgoynTnr+DH7bVoGKDr0GgxOxI3P4qF7
-         bVVwu3EPq0K2z9pMmb8gEpSVOazIWgSqdySgpUYKSOp4Al8AO1WcTyvNyNYE/Snacf8E
-         j4++Te+ydnXFhJZNAaN03TBcxOx3L732Zt2RISzXL7djD7yPWT4lg7mTmaBHVK4yKMrN
-         bhTu1MiVj+MzjH1jJnDcYgqv/AnzaTeLcB5aSpUHSefLxyTrpp/yg/U4y+CXNstCDElA
-         CqHQ==
+        bh=fGDKw/IQ4kdSzFRMSnxN+nzueWWpVC66gEX7pOJuy80=;
+        b=eu4dV9AAhMS0LtPxgoFptC7k7hfLizajvQtcYL38aAQh7OfWnKw1rB6ghSDnXpHXeH
+         Qonm2eFNeeh0fZG33FZPFs9Vmo/VKr10mdoyILoJP5/eH6Sk7o2XbD5msoBsIzbr32nV
+         RkN08vjsP01Z404RmFtGV7H1TphWLCHc5onYHZu+HviE274aWuconkLmGL2bocjDjFE7
+         YP1MZSiI/vkBA/QGQLOrQWL1/bNQ8i1wpA3qdQpIVPzYzzdST8MZVxrl0tT4KkEvAMmW
+         R9ZtMYcQeF70s+zgEhfR09xfPVJo7QZkpsaI8LNjFxV1uicfHJ/YSSq1gRTFMckr4/tg
+         ZdfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706825496; x=1707430296;
+        d=1e100.net; s=20230601; t=1706826576; x=1707431376;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=7CCoiRTZe5/e8MNjxiyM/onfHMZyM22m6CAEHOZonNo=;
-        b=cvYvsT4l6SFi//o1OJAFuQU99mtbbINgLmfdQqiA6ieBiEwsGeND61YW8/jMII3evP
-         VcJc1URPOlMY+XWvARVWOprO7pUtOyDLPVqryPc4OxLX1rTSm1v7k02pSFbXlbV4Rv2C
-         osyAKAmKyOXSDg6nComfU97HrTjBlffunbs5TLTRA2UPEwKscoOdQ3vVAcQ/70SpjWaG
-         iffhCcQ904Zebsxdf0nYhBshfwmOd59vkL6V59PcxtYuIwLpASK8rrECpMfz0PhJpS5o
-         +gEtqb4seeIdaNxUF3+Bz5TkD4r9o+//lib4naFTIeN+V+dPc4WnWR/L2p1EBgWK5u0v
-         j1gQ==
-X-Gm-Message-State: AOJu0YyZLYHpwpLLLWhYBLeo7EJAxuEeGJePF87/ooioRpCqnkk4MZRU
-	GXUYfEIiXOR3qCA5838PT1clx2k/MkYgHLUcTNklHnlDMA8rhcmP7t7AgdKOAjxeUv4lGEIVoS6
-	5drDEByIcSo5tse69QwpKldr4SD73l9ljGeD8rg==
-X-Google-Smtp-Source: AGHT+IHEBN97pDgrEcfxjhjtW1XJtpXigPPu4lYtbTbUci4Hva6kibJ+lbK2oPolooQmP44UMPBQalm+wnWgnFLvZqI=
-X-Received: by 2002:a05:6808:13ce:b0:3bf:ba1b:e9c7 with SMTP id
- d14-20020a05680813ce00b003bfba1be9c7mr2080294oiw.55.1706825496199; Thu, 01
- Feb 2024 14:11:36 -0800 (PST)
+        bh=fGDKw/IQ4kdSzFRMSnxN+nzueWWpVC66gEX7pOJuy80=;
+        b=G2ru9hX4nlKtrOq+tvGacDdejoTXzoc/RMoU7RkdkJTEowvHZ7Tk+F2xjwo5DLECdg
+         KPwb/UxUO9IZbxhoVnGu+PknfaHi5mDoOLChLDPUXR5xyTiuHEhmyelSK3QLOiN5Tmyt
+         4YeNE+sGu8ca1Xx0yVnU5Oo3nG2ixhm5o64a0DFEmH3MJHZ1PwvhpcKjrLIzSwsQx5KK
+         kvU2M/Sm2jgwPesxgBlrOG6OgXC2iQDiqNbS3n+DxWGLLSJqdVNtELNY7+ZscndAFRa7
+         hNx/zen7SiDxQoq40PAiw8k76UM0fAmdIO32uQ0xSQaWSIkW4P0Ax58ajO6sb2XOG9xL
+         2/Cg==
+X-Gm-Message-State: AOJu0YxtGSTyOe3B3LHbG7YrmzGAULfOH/OwtAzczui6RCHwh2ZQINC2
+	vOyBviY5zW+EU9yhY0yDZi1lVl/oLOidjNAlxN7RKQdjNAqec2Mj9wsKmIdTA9l7CZtBPu/vHpM
+	S587DQyQDC+qPIeAcLlz/cIlIxewOXJejF88z
+X-Google-Smtp-Source: AGHT+IEuhiZvixWFGymGW7m4qj1dTBRZUXAhAcduL9snVjgqkWJ4xtPr92++LvjpCa9nwtPiSV2wXnbN3Xjfiu/tP6M=
+X-Received: by 2002:a17:906:43:b0:a36:c8fa:45a2 with SMTP id
+ 3-20020a170906004300b00a36c8fa45a2mr320163ejg.1.1706826576073; Thu, 01 Feb
+ 2024 14:29:36 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240201193014.2785570-1-tatashin@google.com> <02610629-05ef-4956-a122-36b6ac98fbc2@arm.com>
- <CA+CK2bD_q3pnThtLVSzFCjyevBEaG6Ad+1o2=1tVZsYg35UMmg@mail.gmail.com> <84c7e816-f749-48d8-a429-8b0ef799cdbb@arm.com>
-In-Reply-To: <84c7e816-f749-48d8-a429-8b0ef799cdbb@arm.com>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Thu, 1 Feb 2024 17:10:59 -0500
-Message-ID: <CA+CK2bBRK=cDe5a-TuLMUs6DWRO06FzL6JDmoMmnwFfdt+Z-kg@mail.gmail.com>
+References: <20240201193014.2785570-1-tatashin@google.com>
+In-Reply-To: <20240201193014.2785570-1-tatashin@google.com>
+From: Yosry Ahmed <yosryahmed@google.com>
+Date: Thu, 1 Feb 2024 14:28:58 -0800
+Message-ID: <CAJD7tkbDwwzTfm5h6v5f8XSN8KduBy6h7EVuQt0CAfX--Nb0gQ@mail.gmail.com>
 Subject: Re: [PATCH] iommu/iova: use named kmem_cache for iova magazines
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, rientjes@google.com
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+	rientjes@google.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 1, 2024 at 4:23=E2=80=AFPM Robin Murphy <robin.murphy@arm.com> =
-wrote:
+On Thu, Feb 1, 2024 at 11:30=E2=80=AFAM Pasha Tatashin
+<pasha.tatashin@soleen.com> wrote:
 >
-> On 2024-02-01 9:06 pm, Pasha Tatashin wrote:
-> > On Thu, Feb 1, 2024 at 3:56=E2=80=AFPM Robin Murphy <robin.murphy@arm.c=
-om> wrote:
-> >>
-> >> On 2024-02-01 7:30 pm, Pasha Tatashin wrote:
-> >>> From: Pasha Tatashin <pasha.tatashin@soleen.com>
-> >>>
-> >>> The magazine buffers can take gigabytes of kmem memory, dominating al=
-l
-> >>> other allocations. For observability prurpose create named slab cache=
- so
-> >>> the iova magazine memory overhead can be clearly observed.
-> >>>
-> >>> With this change:
-> >>>
-> >>>> slabtop -o | head
-> >>>    Active / Total Objects (% used)    : 869731 / 952904 (91.3%)
-> >>>    Active / Total Slabs (% used)      : 103411 / 103974 (99.5%)
-> >>>    Active / Total Caches (% used)     : 135 / 211 (64.0%)
-> >>>    Active / Total Size (% used)       : 395389.68K / 411430.20K (96.1=
-%)
-> >>>    Minimum / Average / Maximum Object : 0.02K / 0.43K / 8.00K
-> >>>
-> >>> OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
-> >>> 244412 244239 99%    1.00K  61103       4    244412K iommu_iova_magaz=
-ine
-> >>>    91636  88343 96%    0.03K    739     124      2956K kmalloc-32
-> >>>    75744  74844 98%    0.12K   2367      32      9468K kernfs_node_ca=
-che
-> >>>
-> >>> On this machine it is now clear that magazine use 242M of kmem memory=
-.
-> >>
-> >> Hmm, something smells there...
-> >>
-> >> In the "worst" case there should be a maximum of 6 * 2 *
-> >> num_online_cpus() empty magazines in the iova_cpu_rcache structures,
-> >> i.e., 12KB per CPU. Under normal use those will contain at least some
-> >> PFNs, but mainly every additional magazine stored in a depot is full
-> >> with 127 PFNs, and each one of those PFNs is backed by a 40-byte struc=
-t
-> >> iova, i.e. ~5KB per 1KB magazine. Unless that machine has many thousan=
-ds
-> >> of CPUs, if iova_magazine allocations are the top consumer of memory
-> >> then something's gone wrong.
-> >
-> > This is an upstream kernel  + few drivers that is booted on AMD EPYC,
-> > with 128 CPUs.
-> >
-> > It has allocations stacks like these:
-> > init_iova_domain+0x1ed/0x230 iommu_setup_dma_ops+0xf8/0x4b0
-> > amd_iommu_probe_finalize.
-> > And also init_iova_domain() calls for Google's TPU drivers 242M is
-> > actually not that much, compared to the size of the system.
+> From: Pasha Tatashin <pasha.tatashin@soleen.com>
 >
-> Hmm, I did misspeak slightly (it's late and I really should have left
-> this for tomorrow...) - that's 12KB per CPU *per domain*, but still that
-> would seem to imply well over 100 domains if you have 242MB of magazine
-> allocations while the iommu_iova cache isn't even on the charts... what
-> the heck is that driver doing?
-
-I am not sure what the driver is doing. However, I can check the
-actual allocation sizes for each init_iova_domain() and report on that
-later.
-
+> The magazine buffers can take gigabytes of kmem memory, dominating all
+> other allocations. For observability prurpose create named slab cache so
+> the iova magazine memory overhead can be clearly observed.
 >
-> (I don't necessarily disagree with the spirit of the patch BTW, I just
-> really want to understand the situation that prompted it, and make sure
-> we don't actually have a subtle leak somewhere.)
+> With this change:
+>
+> > slabtop -o | head
+>  Active / Total Objects (% used)    : 869731 / 952904 (91.3%)
+>  Active / Total Slabs (% used)      : 103411 / 103974 (99.5%)
+>  Active / Total Caches (% used)     : 135 / 211 (64.0%)
+>  Active / Total Size (% used)       : 395389.68K / 411430.20K (96.1%)
+>  Minimum / Average / Maximum Object : 0.02K / 0.43K / 8.00K
+>
+> OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
+> 244412 244239 99%    1.00K  61103       4    244412K iommu_iova_magazine
+>  91636  88343 96%    0.03K    739     124      2956K kmalloc-32
+>  75744  74844 98%    0.12K   2367      32      9468K kernfs_node_cache
+>
+> On this machine it is now clear that magazine use 242M of kmem memory.
+>
+> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> ---
+>  drivers/iommu/iova.c | 57 +++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 54 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index d30e453d0fb4..617bbc2b79f5 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -630,6 +630,10 @@ EXPORT_SYMBOL_GPL(reserve_iova);
+>
+>  #define IOVA_DEPOT_DELAY msecs_to_jiffies(100)
+>
+> +static struct kmem_cache *iova_magazine_cache;
+> +static unsigned int iova_magazine_cache_users;
+> +static DEFINE_MUTEX(iova_magazine_cache_mutex);
+> +
+>  struct iova_magazine {
+>         union {
+>                 unsigned long size;
+> @@ -654,11 +658,51 @@ struct iova_rcache {
+>         struct delayed_work work;
+>  };
+>
+> +static int iova_magazine_cache_init(void)
+> +{
+> +       int ret =3D 0;
+> +
+> +       mutex_lock(&iova_magazine_cache_mutex);
+> +
+> +       iova_magazine_cache_users++;
+> +       if (iova_magazine_cache_users > 1)
+> +               goto out_unlock;
+> +
+> +       iova_magazine_cache =3D kmem_cache_create("iommu_iova_magazine",
+> +                                               sizeof(struct iova_magazi=
+ne),
+> +                                               0, SLAB_HWCACHE_ALIGN, NU=
+LL);
 
-Yes, the observability is needed here, because there were several
-optimizations that reduced the size of these magazines, and they still
-can be large. For example, for a while we had 1032-bytes per-magazine
-instead of 1024, this caused wasting almost half of magazine memroy
-with 2K slabs. This was fixed with: b4c9bf178ace iommu/iova: change
-IOVA_MAG_SIZE to 127 to save memory
+Could this slab cache be merged with a compatible one in the slab
+code? If this happens, do we still get a separate entry in
+/proc/slabinfo?
 
- Also, earlier there was another optimization "32e92d9f6f87
-iommu/iova: Separate out rcache init" that reduced cases when
-magazines need to be allocated. That  also reduced overhead on our
-systems by a factor of 10.
-
-Yet, the magazines are still large, and I think it is time to improve
-observability for the future optimizations, and avoiding future
-regressions.
-
-Pasha
+It may be useful to use SLAB_NO_MERGE if the purpose is to
+specifically have observability into this slab cache, but the comments
+above the flag make me think I may be misunderstanding it.
