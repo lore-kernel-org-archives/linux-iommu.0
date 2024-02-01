@@ -1,71 +1,70 @@
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9D9C7E0F0
-	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 16:23:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBAFC5B04A
+	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 17:26:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706804601; cv=none; b=gZhXA48lBHEnVVEF8YXErHlk9IG1nA2bwZNkP1VCGqd2izbPrwg6G3z7EdRZAI+jbEkrXNUR3ewavd2RaB6dymFF3e9oDWvKgJhZbt9+qA/34A67Jd7jYmN6ulLRI18VbTy11jjxQY0usDWTP4/mVy5y41f0jaci/SvcShxKsiU=
+	t=1706808376; cv=none; b=p2Z9y4vCZpEFDwsVTg6RmDqiKL6W/J+BogrE3cBSivmUWh2Ql7jgyI63g3LkVK/n4DoHq8h7eBdLDeIlZlRT2nL1cV2/oby5nYM/nFZQZBWY4a2rHvOOkhXRwbkl2WAPJ9bwGSB0arE7JaL308cg3b1gchEtgxBWpzB8wJYUsAU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706804601; c=relaxed/simple;
-	bh=CcTsJRuBV7FsnKfKzyIU75uXHMZOKiQnJvCybgMg5QM=;
+	s=arc-20240116; t=1706808376; c=relaxed/simple;
+	bh=MzmY3SBI2br29d1VFVbDoofUufC8pLV6DU+n28wFuJ0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Hne1awESp49tmaZJtTH9fqa+0zIzMwyaJbDFeL48Lj0j3F5yj+oOvMfSLySyUXE2GMIrkWjNj8/8XDmTGZPdEmYmgVOCCgRj2L4zkoeP0BnppGg+XN2ZYyrg6p8j3JbXMfM9/VYVUq+FhXvVbm+sdRkmhyCuZBjjD1Goyr+9MPA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=oG23djQE; arc=none smtp.client-ip=209.85.222.170
+	 Content-Type:Content-Disposition:In-Reply-To; b=GEWBOsco/trhKpM/yayD8lygrQx5Ipf1x/RIZVmv/6+rtbKjxtpiyMdjmOfEoNOh+qNLCg6oY7OCCC4+CQtd5lfHWn97EFyOVS14tZMcaS8TsbicjxGVf7VcBkm18LsOIK3GxmAEIWIFCeRk3S4ZkBEQVA2+9XZOT66hsWJ9VQY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Idh3Q/Fk; arc=none smtp.client-ip=209.85.222.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="oG23djQE"
-Received: by mail-qk1-f170.google.com with SMTP id af79cd13be357-7838af983c1so83716385a.3
-        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 08:23:19 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Idh3Q/Fk"
+Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-78406c22dc7so85600585a.0
+        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 09:26:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1706804599; x=1707409399; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1706808372; x=1707413172; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=CcTsJRuBV7FsnKfKzyIU75uXHMZOKiQnJvCybgMg5QM=;
-        b=oG23djQEy3xEUqp6r8fmhouAyi0LwKSaFjdesQM8KXcPAkLpnkv29mTMp1r/G67P8D
-         V7S6lNkxOfZEIWsEj53d4xjlq5YKm/VZ8O3AMrXt7JMXV1JLEt3U0JSKrdP65N3BeKeU
-         OvwGf8vD5Y+dgZnGUxGi5pmZGf9cHLfXDeqbjW94MUpjOu4wiuHWvbLVpMhDoG+alRSf
-         l9DYxADo+v9MVTHrxRxBUdP2DTlexpED7eAvZBdl1j/HvziXQLPT5FXr3y4JL9a/7890
-         tSEvc3DIvo7nkO3hAVCizPjszWS1yfii7vphwu35zdVB2YfUce09io2D6STqW8oHJEWQ
-         zfng==
+        bh=5c0EpU350iBDFSATyuSG1CD8ky34ufQHjzsSSk6jEA8=;
+        b=Idh3Q/Fk+Si80EFDVJJK5yQ93jzFw90dtMigmcJNDo0G7uN4CcYnNKFy4Jf4lbobEn
+         FVUn2LTRctcUzGU6joREDXciiItH+9Zw+iy3IU5ke8ZqAEIaLv3AQuWflulXTNdc3dCJ
+         VmJvB1NfMEwbXtX0xSXk9mAh+QhClkKWyRsqKKfViYi/S7DS/VyQ4QJKAndy5Y2BSj0g
+         ShPxA9g/py3j5e0qEn6RDBtXopDOWXO4VE5DNyE+pQ1MFztU01sKQNvH3xJac7dR4Csf
+         brn4HiA+XzjqnvNQr0qJijqSXtY1Z/lwnBzd1djZ7pGLdMW3maXcWl/oz7Bh66oLfcwN
+         n8KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706804599; x=1707409399;
+        d=1e100.net; s=20230601; t=1706808372; x=1707413172;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=CcTsJRuBV7FsnKfKzyIU75uXHMZOKiQnJvCybgMg5QM=;
-        b=rJwXqg8d4wy3qZvW6ryJmMlWkvn5ZVh8vzvlRhLexEn6KKjJrW+0XO6uX6lzWtOl1c
-         GdfvAbKRGjc9euNTJvI1eMzhxoeBeR9WPzyAXrix4/KUlOSdzyHzHCUECQOmKRiqpMyO
-         MnWWXXBBEHG6vWD3udCL5SvXB29vmjMAZpIz36gMnZvLQrPGyoobf9RwFEJPODOGS8np
-         NjxxxecguThZWBFa5+HAVCjpId4exF+1C2SCpIwu7kjTS5HDAs/wwpuiM5EB+QON429j
-         k/MYRged1IV4YgQf46Pp3smLSjRkut/DPQkBHzMBnw8mSEouuN+wypV2VvJCfQzGe+Aa
-         fSyw==
-X-Gm-Message-State: AOJu0YyDHwjIB7oNdJG6rOBiBmCQnXw2yPvPUEga4aY4QecOzyDKFIE7
-	urFpufHZfMHrD38U6agTuGantHftWT8vYle0X8I/QQCTfQQBheH2CdcdcX2NItk=
-X-Google-Smtp-Source: AGHT+IFi4KZwaIGRm3q47w7BjMsKmiX4fpOGOKit+SVa9n3QbWQY3Wl0wBNYNELUTfzSXr2sJraYZg==
-X-Received: by 2002:a05:620a:2491:b0:785:501c:2bd2 with SMTP id i17-20020a05620a249100b00785501c2bd2mr1035299qkn.38.1706804598763;
-        Thu, 01 Feb 2024 08:23:18 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCU87vsPNAg+pZEP5zUOh6/YC+YRKj4IweuYEznAwhlkaHTekFELvGEStc9E8xPfg6fdFoHbklzzDDEyWsQEF68iOX77q3SltmJfpPNZaLSf4Q5bmL9RMxTq1lt8kN+kEiP8o3PZzz3GzB0VtEY1vjmTkktIMB3EgdsUDAXX+roW0AYz77LG0s654wnd8RyTj2TsWgPGQBHsbf2kpVNp2bBCVaa6tg8=
+        bh=5c0EpU350iBDFSATyuSG1CD8ky34ufQHjzsSSk6jEA8=;
+        b=hdXDSPeLAjgcKHzOD16VjcSWRzIIR7zsp8/FGzULkq0y/PaOYf3KXimfdi+HzXlWvO
+         TIeLDfGtUgQEiqh1RG+gHA18wkDtTvBvLOJo5bycANjuPHCAuUG0NKVtvZ4mV8YlBen3
+         BFZGPujA17FiEG6vvoTvTCsagih5cCdmf4rx0ThjW7+9XRUuPthSVQEwqUx/162lYIle
+         JGq1kGSP0HCiV9WcofbjRh7oD08kdKP4oI3AaDYquAaGqi8P9Dnyf/WjnNp2pfumnsjy
+         TrR8qu4NK9ttrZkeS0fzhSwcPWAuwF6hUy1xO+zkBUfKcn17AotdHNZMgkCrpkXc7ze/
+         ht6g==
+X-Gm-Message-State: AOJu0Yx0jTKlMnKpdTqQaLsC/2yvvY9mHGxeG9da+nPoHlQx8h7CF3Hu
+	jAg4VLjPtZ931X9jlMOwFSAbaQSAKevYqg3t0/E8/la1S7knMd+37vVniH0G671bmnV7sim8Pmn
+	z
+X-Google-Smtp-Source: AGHT+IFIs+RLxvPW5tvKZw9UujLhIIQ4eFppwe2+OQxIbST3DC+mW+SuNbUAbGBK+HQtS5LTwaicbw==
+X-Received: by 2002:a0c:f2d2:0:b0:68c:40d2:2031 with SMTP id c18-20020a0cf2d2000000b0068c40d22031mr2863905qvm.19.1706808372628;
+        Thu, 01 Feb 2024 09:26:12 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCWOWCbuimZlua4rAexgABJh73dYcsjmoHR5F39ZP4FtYJt+8dFGIHqLHJ72nsxSywIRFZTIF3Jricno3gLlX0r5lXiY1MnxqfqsoVl7Ljhvjizi0BrTpooiaaKKlC0/NGDEnmG95y8I11kgX0clJZ5hvlDyyJ9FNFWK9UNFqbcQ+EpeKAsrk1M=
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id d23-20020a05620a205700b00783f77b968fsm4034200qka.109.2024.02.01.08.23.18
+        by smtp.gmail.com with ESMTPSA id md18-20020a056214589200b0068c520c310esm3871181qvb.88.2024.02.01.09.26.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Feb 2024 08:23:18 -0800 (PST)
+        Thu, 01 Feb 2024 09:26:12 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rVZqP-00Ammc-N5;
-	Thu, 01 Feb 2024 12:23:17 -0400
-Date: Thu, 1 Feb 2024 12:23:17 -0400
+	id 1rVapH-00An7W-DE;
+	Thu, 01 Feb 2024 13:26:11 -0400
+Date: Thu, 1 Feb 2024 13:26:11 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Nikhil V <quic_nprakash@quicinc.com>
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Charan Teja Kalla <quic_charante@quicinc.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iommu: Avoid races around default domain allocations
-Message-ID: <20240201162317.GI50608@ziepe.ca>
-References: <e605b38a2d40b1e7589e10110c6d3ece35f6af4e.1705571894.git.quic_nprakash@quicinc.com>
- <139a9abe-75d8-3bda-3ec9-a14a493eb2a9@quicinc.com>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v6 09/17] iommu: Introduce iommu_group_mutex_assert()
+Message-ID: <20240201172611.GJ50608@ziepe.ca>
+References: <20240125121135.8217-1-vasant.hegde@amd.com>
+ <20240125121135.8217-10-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,17 +73,26 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <139a9abe-75d8-3bda-3ec9-a14a493eb2a9@quicinc.com>
+In-Reply-To: <20240125121135.8217-10-vasant.hegde@amd.com>
 
-On Mon, Jan 29, 2024 at 01:29:12PM +0530, Nikhil V wrote:
+On Thu, Jan 25, 2024 at 12:11:27PM +0000, Vasant Hegde wrote:
+> Add function to check iommu group mutex lock. So that device drivers can
+> rely on group mutex lock instead of adding another driver level lock
+> before modifying driver specific device data structure.
+> 
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+> ---
+>  drivers/iommu/iommu.c | 19 +++++++++++++++++++
+>  include/linux/iommu.h |  8 ++++++++
+>  2 files changed, 27 insertions(+)
 
-> Gentle ping to have your valuable feedback. This fix is helping us
-> downstream without which we see a bunch of kernel crashes.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-What are you expecting here? This was fixed in Linus's tree some time
-ago now
+> +#if IS_ENABLED(CONFIG_LOCKDEP) && IS_ENABLED(CONFIG_IOMMU_API)
+> +extern void iommu_group_mutex_assert(struct device *dev);
 
-Are you asking for the stable team to put something weird in 6.1? I
-don't think they generally do that?
+The extern is not necessary, there is a general shift away from using
+it, not a reason for a v7, but FYI
 
 Jason
