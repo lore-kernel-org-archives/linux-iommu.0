@@ -1,208 +1,216 @@
-Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4453284FD0
-	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 19:30:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F41BB7C6C1
+	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 19:34:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706815819; cv=none; b=PWSde0BD1uXhN4E+RuN2GWi0h9l+mhF/fhuPKGTrBSXqvgFpXau15Mk7SbP5WnioMEB6JHawyEvM3AqNBZYfyzr45R5OYxjNMoD7FJTqP2tN6pzWGN9k1mU0WmFSCA+5HLKFf8vpw3sCuEc2n4E3cTzyji6PC9SAo/n4Ub6L2is=
+	t=1706816071; cv=none; b=Hgds6uZU6czxmQ+sbI8/sKuuT+rOAq+rbMYY4dFPJVfvk9D6R7uHsLU3hU1NmzXRDTYjTrPmsHlWL+QoXoHFC1leDmqROvidB36ZMuVqL5upHVoiz+Sh8DNKEAJj9a62f7YzCH5oU/Cy1RTxJobdq9tgxg6oeuRqZxnmQqHsSnQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706815819; c=relaxed/simple;
-	bh=7loz5bo6hwRwp9fF34CU0TwzHWopBNAJLtAZsKpdYJY=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version; b=SnvQtQBqbeTKlMeSudAakaBA4iRdrkOd2JidFR3pBNR2XR75yy0B7IaN8zcicBE/jrD6AQpPvUvGFi4wkbmKfhYHhnFHZFOj/qnamdyZD938zuqZUqly65fuCNul0FLCqmhPJxB7wme508PqhOpHvi0EQ5BCmM2Ovv8LNDeYgD4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com; spf=none smtp.mailfrom=soleen.com; dkim=fail (0-bit key) header.d=soleen.com header.i=@soleen.com header.b=OEva0KPh reason="key not found in DNS"; arc=none smtp.client-ip=209.85.217.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=soleen.com
+	s=arc-20240116; t=1706816071; c=relaxed/simple;
+	bh=azrHQn5NRzloniAve6lH8WYk89pATs5I0qI/dcR5hT0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=FSq9TL8fQP8LJ4VKqDlMMksaKU9j4GDltmdi8ZvRZscOC5kFd+6DmDNrxV0O1Jr789zlOojJYHN1Ju6/Er7Jv8BYJFmyyxpexejOsUDfGFpWS3OO0sIOSxtWMmfB6+NyTaNVQoxUBK2VtDnesi5d7RkWn1+9fa0uAsQqvOI3Txw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ICWFZaNy; arc=none smtp.client-ip=209.85.219.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=soleen.com header.i=@soleen.com header.b="OEva0KPh"
-Received: by mail-vs1-f50.google.com with SMTP id ada2fe7eead31-46b38271013so416232137.3
-        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 11:30:17 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ICWFZaNy"
+Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-68c81d2fd26so2875076d6.1
+        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 11:34:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1706815817; x=1707420617; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=BSEQBUwLYtDyX8SfM7b6fTPQYYyhCXu8tsAp9rUSiMw=;
-        b=OEva0KPhajcm/lnGPzi/ybD0X3KIi4vgfJsYyOoXGLjuPSSanfVrfv1a7L/lNk3R/z
-         JWcccgy0P9zAG2f3G5UzQLrs1OVxatlNNyAZ61XNFWydMyOCShP16Fx4HI4+07SYHRb0
-         iULVDOd1AtInxuP1ggYj5t/03zE1rP7jww5duIWLlTTr5MGR1S9DeLSOL2lfI2VREVjK
-         nrzH75drf7FrArm/uc0JcEsE+2+v6Y5d2kmtB4TmU/4N9SqnPCsnF9uB8/TkuRnv9XZ8
-         01YKFqJs1wnzGHa9Sp5Sh04mP9lutBYLPJEPHeU6eivjtGdJZFy1RyGJNMZTKSa2URa0
-         Hd9Q==
+        d=ziepe.ca; s=google; t=1706816069; x=1707420869; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=27QC2KxXWf1pwp+Uy5SzOL0al7IZt0TnuDDgoIUMSOo=;
+        b=ICWFZaNy5s0DpVSwi/UDYSJCwNFlikzIdNHAI594ibwm04XKfsLP8WVh2PqFr9eiXx
+         Rjy4fKa52e3/VAsDRSgze2hT3LoVw15CgtV/ZXe4JJFzA9p8m/A5+gHgsQ8/apWPW+CL
+         yKmTGFy/bz+RkVaSpzSoUams3FnOCoxTgF9uiLm30QkeK3zyK8IzZIkXi/6FfhI2sCPy
+         Iy/2Ykj72my/dvtF/C9pVyAls6OkgJLhKL3nyWh0tNH7kOOxW/oQBqmnSCFld2BLjn3m
+         DTUb98PTqoDh10vo/7tI5+j9/b1+NrdGs8Zc0NQchgF0o4/bmxPk8Jas1IeCbBCO334d
+         8EmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706815817; x=1707420617;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=BSEQBUwLYtDyX8SfM7b6fTPQYYyhCXu8tsAp9rUSiMw=;
-        b=DgiGbZ+/W+tJk/44CxHylCfevgPy6AEt/DyDfp0R20AVLfayhYmZ6fHUe5o3XE7H/S
-         4759/slWsnQq/tGyepG76GvdXF/GS/ZSBGb/AwGwnq2vmPz/YQ9nI+JbhWvGyGEFswV+
-         e68dUUGImdri/1XF9SCvOcF0mfzNnEGQGdel0w5DKoPmjbrWmFjtMph7P9WFhYuBIrT5
-         FEH9ihYYatx/UvWgt3ezX+xKEwn06PZVMoe3EE4sEdNa35igqAQpkoJsw+ZBTZmdv0t8
-         4JKLHUmhFlZlRTfLkh5ZEVAF5XxHPlT/BLn8xtxhnONnTMGwevOqIAdX5uPYcjEu31R3
-         zU2A==
-X-Gm-Message-State: AOJu0YyC2R1oYNNUCIpQVgyz/95iyzdK7z3/dc9jzvPNDvvBv99fmy+C
-	Dtc2if9QoLjpUHBxc5Brpg5B2m6apV08/thQvFLXC0IL0D3BceeBr22njzdrN3uYhj7Cxn6lJSK
-	D
-X-Google-Smtp-Source: AGHT+IET93Vs0eqCzQUdFrwgDKKIhEbJwk6iAT2cMBeQIiq6TG6SVpcwALrgdlhKSo1JBgLLU5iGkA==
-X-Received: by 2002:a05:6102:316c:b0:46b:159e:bf04 with SMTP id l12-20020a056102316c00b0046b159ebf04mr6285592vsm.2.1706815816873;
-        Thu, 01 Feb 2024 11:30:16 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCUbTUU/Nlcj6oufqZ9IAZI/9jykB57i+q5vJUcSyMfSXMQRX5nRq/VbOwv5We1qFiKsHSdD7s8/MjqeEFVGLMNwkff7T4Qgj0EeVt9bhyeAoHbv04nlO5LFzIBdsHmNbQf7Vfm2vhlhVWweFrQWRpVA2xQwu/P49MiyEL6Zh1pCk+/vUADBYM2rLeMH8HVCkvoXZJh06/iCgcSd+ue6+o/VG/zOyn/T3mgonWNQ2MjM7t3t27PsCbTZIWLixNH5U5jl/XZH76hxYbE=
-Received: from soleen.c.googlers.com.com (249.240.85.34.bc.googleusercontent.com. [34.85.240.249])
-        by smtp.gmail.com with ESMTPSA id r18-20020ad44052000000b0068c50dec857sm58648qvp.128.2024.02.01.11.30.16
+        d=1e100.net; s=20230601; t=1706816069; x=1707420869;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=27QC2KxXWf1pwp+Uy5SzOL0al7IZt0TnuDDgoIUMSOo=;
+        b=opIr477gfy69UAsUCIM58uRA0uftlQgln5bowWUgbBKoA4aLafPKx749Yg4XX74hh4
+         NitLSGay4vqo0ZROjCFwlG1Rk4/uXegyUS8JCWQmopE9SDJmBTGi66v+QDqzTY/LruNR
+         98UD0OnTJ4PQm+o0jw9cps7hWmlSHEknK+Q/DWZ9H5Y16xERIZT42CPPjwXqOCKEGXog
+         CUYs7Fg4GsEbV+1FxGL/j2UwZ3J95sIRIZwhCH2FeHT9n9aClT7lALk8jUriT73lSxsP
+         eL8td+cWyUNmr7cr9MDk+baA6wrhxSJTgUEhqyHZBkBP/FePpUMwiHv0o6Wa14/lh6LI
+         8E7Q==
+X-Gm-Message-State: AOJu0YzwQ6ttz+GYhl5mkUPLboiC6hfHmlXMkQPByGKeycn5aFZib9DJ
+	Ny2Rnnta5LEWuP1gvdt5gCZMg6i703rmJYcfParr88reyIxY5/0n9UTSTxLWAF8=
+X-Google-Smtp-Source: AGHT+IFJvj4DtYD8GbuWKqJRSEbmY0qhb1v/YCGOdt98bAnNJl49tIasu3xQLSRVIi4ugxyxoKbq3g==
+X-Received: by 2002:a05:6214:f63:b0:68c:7f6f:2d9 with SMTP id iy3-20020a0562140f6300b0068c7f6f02d9mr3180586qvb.6.1706816068946;
+        Thu, 01 Feb 2024 11:34:28 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCUOTKhvn23O8MoIzJe4VL2yxzCphW1meyPvWhVVaDhxZ2f4PKX7FWacO5zfm7VIbsjDCCGckv6IRbNc85dURbbjvUMZCiAlif3X3IvQ9vZLauO8zZknxh1HewOfUL9yKrmMN4kdwNdaChP5xKKLvwt/yC2Qm+p48Youy3MWY1xmbdsKaGYAml+JtvAq86ICgr80GNL//qKUtXI+NTuw+9FSAz7M+C+FeyMy3Xz7iHO4Qnv4XBSXn1btWfHcS4i3WBsiuwhBZAYRWMouS38wLuhPoD7R5rYvqPNEDqn0N7oUau0HK4UlfiIW+GEeIIiBhuwqbcehauiTZ/QctutL871fY5D4dGZ6AxI/kw==
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id mz9-20020a0562142d0900b0068c4b6000ccsm61796qvb.121.2024.02.01.11.34.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Feb 2024 11:30:16 -0800 (PST)
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-X-Google-Original-From: Pasha Tatashin <tatashin@google.com>
-To: robin.murphy@arm.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-mm@kvack.org,
-	pasha.tatashin@soleen.com,
-	rientjes@google.com
-Subject: [PATCH] iommu/iova: use named kmem_cache for iova magazines
-Date: Thu,  1 Feb 2024 19:30:14 +0000
-Message-ID: <20240201193014.2785570-1-tatashin@google.com>
-X-Mailer: git-send-email 2.43.0.594.gd9cf4e227d-goog
+        Thu, 01 Feb 2024 11:34:28 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rVcpP-00AoUU-Ju;
+	Thu, 01 Feb 2024 15:34:27 -0400
+Date: Thu, 1 Feb 2024 15:34:27 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: Ethan Zhao <haifeng.zhao@linux.intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	"bhelgaas@google.com" <bhelgaas@google.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"dwmw2@infradead.org" <dwmw2@infradead.org>,
+	"will@kernel.org" <will@kernel.org>,
+	"lukas@wunner.de" <lukas@wunner.de>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
+Subject: Re: [PATCH v12 5/5] iommu/vt-d: improve ITE fault handling if target
+ device isn't present
+Message-ID: <20240201193427.GQ50608@ziepe.ca>
+References: <20240129034924.817005-1-haifeng.zhao@linux.intel.com>
+ <20240129034924.817005-6-haifeng.zhao@linux.intel.com>
+ <BN9PR11MB52761CC3E5F08D4B7BAD7F918C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <7adec292-9d38-41ab-a982-bd840b24f3ab@intel.com>
+ <0aee453c-e98f-4b72-8107-31d4731abcdb@linux.intel.com>
+ <BN9PR11MB5276D3372267CE9246170FA78C7D2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <500c4582-ec05-4a9e-9b68-d2ae19aed49b@linux.intel.com>
+ <20240130162958.GF50608@ziepe.ca>
+ <6a48f023-2701-4f2f-8077-14fe348794dd@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6a48f023-2701-4f2f-8077-14fe348794dd@linux.intel.com>
 
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
+On Wed, Jan 31, 2024 at 02:21:20PM +0800, Baolu Lu wrote:
+> An rbtree for IOMMU device data for the VT-d driver would be beneficial.
+> It also benefits other paths of fault handling, such as the I/O page
+> fault handling path, where it currently still relies on the PCI
+> subsystem to convert a RID value into a pci_device structure.
+> 
+> Given that such an rbtree would be helpful for multiple individual
+> drivers that handle PCI devices, it seems valuable to implement it in
+> the core?
 
-The magazine buffers can take gigabytes of kmem memory, dominating all
-other allocations. For observability prurpose create named slab cache so
-the iova magazine memory overhead can be clearly observed.
+rbtree is already supposed to be a re-usable library.
 
-With this change:
+There is already good helper support in rbtree to make things easy to
+implement. I see arm hasn't used them yet, it should look something
+like this:
 
-> slabtop -o | head
- Active / Total Objects (% used)    : 869731 / 952904 (91.3%)
- Active / Total Slabs (% used)      : 103411 / 103974 (99.5%)
- Active / Total Caches (% used)     : 135 / 211 (64.0%)
- Active / Total Size (% used)       : 395389.68K / 411430.20K (96.1%)
- Minimum / Average / Maximum Object : 0.02K / 0.43K / 8.00K
-
-OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
-244412 244239 99%    1.00K  61103       4    244412K iommu_iova_magazine
- 91636  88343 96%    0.03K    739     124      2956K kmalloc-32
- 75744  74844 98%    0.12K   2367      32      9468K kernfs_node_cache
-
-On this machine it is now clear that magazine use 242M of kmem memory.
-
-Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
----
- drivers/iommu/iova.c | 57 +++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 54 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index d30e453d0fb4..617bbc2b79f5 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -630,6 +630,10 @@ EXPORT_SYMBOL_GPL(reserve_iova);
- 
- #define IOVA_DEPOT_DELAY msecs_to_jiffies(100)
- 
-+static struct kmem_cache *iova_magazine_cache;
-+static unsigned int iova_magazine_cache_users;
-+static DEFINE_MUTEX(iova_magazine_cache_mutex);
-+
- struct iova_magazine {
- 	union {
- 		unsigned long size;
-@@ -654,11 +658,51 @@ struct iova_rcache {
- 	struct delayed_work work;
- };
- 
-+static int iova_magazine_cache_init(void)
-+{
-+	int ret = 0;
-+
-+	mutex_lock(&iova_magazine_cache_mutex);
-+
-+	iova_magazine_cache_users++;
-+	if (iova_magazine_cache_users > 1)
-+		goto out_unlock;
-+
-+	iova_magazine_cache = kmem_cache_create("iommu_iova_magazine",
-+						sizeof(struct iova_magazine),
-+						0, SLAB_HWCACHE_ALIGN, NULL);
-+
-+	if (!iova_magazine_cache) {
-+		pr_err("Couldn't create iova magazine cache\n");
-+		ret = -ENOMEM;
-+	}
-+
-+out_unlock:
-+	mutex_unlock(&iova_magazine_cache_mutex);
-+
-+	return ret;
-+}
-+
-+static void iova_magazine_cache_fini(void)
-+{
-+	mutex_lock(&iova_magazine_cache_mutex);
-+
-+	if (WARN_ON(!iova_magazine_cache_users))
-+		goto out_unlock;
-+
-+	iova_magazine_cache_users--;
-+	if (!iova_magazine_cache_users)
-+		kmem_cache_destroy(iova_magazine_cache);
-+
-+out_unlock:
-+	mutex_unlock(&iova_magazine_cache_mutex);
-+}
-+
- static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
- {
- 	struct iova_magazine *mag;
- 
--	mag = kmalloc(sizeof(*mag), flags);
-+	mag = kmem_cache_alloc(iova_magazine_cache, flags);
- 	if (mag)
- 		mag->size = 0;
- 
-@@ -667,7 +711,7 @@ static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
- 
- static void iova_magazine_free(struct iova_magazine *mag)
- {
--	kfree(mag);
-+	kmem_cache_free(iova_magazine_cache, mag);
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index f58e77b99d476b..ebf86c6a8787c4 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1673,26 +1673,37 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ 	return 0;
  }
  
- static void
-@@ -766,11 +810,17 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
- 	unsigned int cpu;
- 	int i, ret;
- 
-+	ret = iova_magazine_cache_init();
-+	if (ret)
-+		return -ENOMEM;
++static int arm_smmu_streams_cmp_key(const void *lhs, const struct rb_node *rhs)
++{
++	struct arm_smmu_stream *stream_rhs =
++		rb_entry(rhs, struct arm_smmu_stream, node);
++	const u32 *sid_lhs = lhs;
 +
- 	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
- 				 sizeof(struct iova_rcache),
- 				 GFP_KERNEL);
--	if (!iovad->rcaches)
-+	if (!iovad->rcaches) {
-+		iova_magazine_cache_fini();
- 		return -ENOMEM;
-+	}
++	if (*sid_lhs < stream_rhs->id)
++		return -1;
++	if (*sid_lhs > stream_rhs->id)
++		return 1;
++	return 0;
++}
++
++static int arm_smmu_streams_cmp_node(struct rb_node *lhs,
++				     const struct rb_node *rhs)
++{
++	return arm_smmu_streams_cmp_key(
++		&rb_entry(lhs, struct arm_smmu_stream, node)->id, rhs);
++}
++
+ static struct arm_smmu_master *
+ arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
+ {
+ 	struct rb_node *node;
+-	struct arm_smmu_stream *stream;
  
- 	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
- 		struct iova_cpu_rcache *cpu_rcache;
-@@ -948,6 +998,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
+ 	lockdep_assert_held(&smmu->streams_mutex);
  
- 	kfree(iovad->rcaches);
- 	iovad->rcaches = NULL;
-+	iova_magazine_cache_fini();
+-	node = smmu->streams.rb_node;
+-	while (node) {
+-		stream = rb_entry(node, struct arm_smmu_stream, node);
+-		if (stream->id < sid)
+-			node = node->rb_right;
+-		else if (stream->id > sid)
+-			node = node->rb_left;
+-		else
+-			return stream->master;
+-	}
+-
+-	return NULL;
++	node = rb_find(&sid, &smmu->streams, arm_smmu_streams_cmp_key);
++	if (!node)
++		return NULL;
++	return rb_entry(node, struct arm_smmu_stream, node)->master;
  }
  
- /*
--- 
-2.43.0.594.gd9cf4e227d-goog
-
+ /* IRQ and event handlers */
+@@ -3324,8 +3335,6 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+ {
+ 	int i;
+ 	int ret = 0;
+-	struct arm_smmu_stream *new_stream, *cur_stream;
+-	struct rb_node **new_node, *parent_node = NULL;
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(master->dev);
+ 
+ 	master->streams = kcalloc(fwspec->num_ids, sizeof(*master->streams),
+@@ -3336,6 +3345,7 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+ 
+ 	mutex_lock(&smmu->streams_mutex);
+ 	for (i = 0; i < fwspec->num_ids; i++) {
++		struct arm_smmu_stream *new_stream;
+ 		u32 sid = fwspec->ids[i];
+ 
+ 		new_stream = &master->streams[i];
+@@ -3347,28 +3357,13 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+ 			break;
+ 
+ 		/* Insert into SID tree */
+-		new_node = &(smmu->streams.rb_node);
+-		while (*new_node) {
+-			cur_stream = rb_entry(*new_node, struct arm_smmu_stream,
+-					      node);
+-			parent_node = *new_node;
+-			if (cur_stream->id > new_stream->id) {
+-				new_node = &((*new_node)->rb_left);
+-			} else if (cur_stream->id < new_stream->id) {
+-				new_node = &((*new_node)->rb_right);
+-			} else {
+-				dev_warn(master->dev,
+-					 "stream %u already in tree\n",
+-					 cur_stream->id);
+-				ret = -EINVAL;
+-				break;
+-			}
+-		}
+-		if (ret)
++		if (rb_find_add(&new_stream->node, &smmu->streams,
++				arm_smmu_streams_cmp_node)) {
++			dev_warn(master->dev, "stream %u already in tree\n",
++				 sid);
++			ret = -EINVAL;
+ 			break;
+-
+-		rb_link_node(&new_stream->node, parent_node, new_node);
+-		rb_insert_color(&new_stream->node, &smmu->streams);
++		}
+ 	}
+ 
+ 	if (ret) {
