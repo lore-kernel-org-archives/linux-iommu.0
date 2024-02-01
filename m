@@ -1,104 +1,169 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4552F15DBA4;
-	Thu,  1 Feb 2024 12:20:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE0DA15DBA3;
+	Thu,  1 Feb 2024 12:20:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706790012; cv=none; b=MigbesTYSP4HDbUtXjE35NlC9lAj5AXg7EFtMGndDEV7e014wy+TFCQzh29KU9hFIEAfe/DQvo7cwkU3ljzVG9DvE8ebEBnZvxo1Ndp4qh2nzbjHbV45ppQfUUAetOx3Zm8xAierVJH5n6xfuId+4R2iXoGiVDI8YzZG4zehjaU=
+	t=1706790017; cv=none; b=ggRHrTjVCdo/iuNKKznZ25RgZtheLO0+If9lx4gd4E1WCe4s6eSgjHp/JPPqZjT/WSnZtZWrR/8xnKn3WNxKZvHmmjPq+VI3/jKwY6D3queQ/Pi+9azExDu5fqrFQHj+ntyrc6bFmxhELNMXEYthNWzjKXLPR5ARF+l6IzOceNU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706790012; c=relaxed/simple;
-	bh=mkpPJwo8nkKG5bpESYi5qYl29ciuB88ElRNBgkzAMv8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YANVtpVsMF9KkhQ4zgZbqrbrjB8nfG2OEKMIlcn5lt102+ENKFZjOHqH7K/+juVu4+Z9MCw2mqHwM4Vq5sliIantLsFSREVcI/7xgYeGqZ9XZtEEKMsvlU4Pt6y39c8GDwioUvAfsctPyCxdZMcQffnAb5u45Xoij7P6wAvIBC4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=THozEcgT; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1706790017; c=relaxed/simple;
+	bh=4Ie/Xg9QQEqyC2kxqWucXLJeiNGuC9Hw4zqNth8MMjw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZeofF81mhBZMCSYCiOMVPvkyJggGpi/3byf16ILgqLP5P8winilac7HrfuEuuuCM/qiPQcQ9R7dU1Mtp2CiuU/CaH3FvCiZtVLQn/JCzUQ3gt1iqRYOz/TeFac9fVla76pnO5GUo6I9KK4oa2mVxjTVJd8dWUakZs2pCBm9LZAY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de; spf=pass smtp.mailfrom=suse.de; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=VWloXmoR; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=KZTJza10; dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b=VWloXmoR; dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b=KZTJza10; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=suse.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="THozEcgT"
-Received: from [100.66.96.10] (unknown [108.143.43.187])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 47181206FCCE;
-	Thu,  1 Feb 2024 04:20:05 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 47181206FCCE
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1706790010;
-	bh=DoGkwwTfNrBvre86yV2tHsglFQXvOb9/ZoWRaatJS54=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=THozEcgTrrRliYGkmJpSosuyTA8Ufby2M+CKXOrYTUpK3cTluLWnEniWX84AjNaJE
-	 nNw6UOATefXyM8Y+odJnBinFjc4pIBOzS6/T81BmAVl2xgcr4AtoNnISj/ZKfVXytv
-	 cfGCdqpmGjXFLpaONbOJJrTBwWPnlIvrASA6KzPw=
-Message-ID: <0fda610f-a8ae-4133-a9d5-e9084c88ba7b@linux.microsoft.com>
-Date: Thu, 1 Feb 2024 13:20:03 +0100
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="VWloXmoR";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="KZTJza10";
+	dkim=pass (1024-bit key) header.d=suse.de header.i=@suse.de header.b="VWloXmoR";
+	dkim=permerror (0-bit key) header.d=suse.de header.i=@suse.de header.b="KZTJza10"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id BC3061F385;
+	Thu,  1 Feb 2024 12:20:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1706790013; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=JssJGLbLgFS02T1cBcMNp6vFTJ8g7xVb7dNEyUQ0OIU=;
+	b=VWloXmoRKF3dAKUVIquLVO+zZeyZV5UaT9BzycDvRR+1QWft8UjmxOH6BfRGq9mlPW5bj5
+	OdQa5nxlAICAU6bibkp9BmMTkkcdlRzdqOOgUFtf7YSVClNCQs2ECTER+szNKFJ+PB8Jm6
+	re0IIAA5G83+vDNlNcoGlfVfhfyOabc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1706790013;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=JssJGLbLgFS02T1cBcMNp6vFTJ8g7xVb7dNEyUQ0OIU=;
+	b=KZTJza10mdB8bGuc9v33q5ogfMs3YhfX8edGzaRFnLN8g73mQ0sa3QSvf+lQTrUirQZuOy
+	ySQ7hLZK0+WBcbDA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+	t=1706790013; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=JssJGLbLgFS02T1cBcMNp6vFTJ8g7xVb7dNEyUQ0OIU=;
+	b=VWloXmoRKF3dAKUVIquLVO+zZeyZV5UaT9BzycDvRR+1QWft8UjmxOH6BfRGq9mlPW5bj5
+	OdQa5nxlAICAU6bibkp9BmMTkkcdlRzdqOOgUFtf7YSVClNCQs2ECTER+szNKFJ+PB8Jm6
+	re0IIAA5G83+vDNlNcoGlfVfhfyOabc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+	s=susede2_ed25519; t=1706790013;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=JssJGLbLgFS02T1cBcMNp6vFTJ8g7xVb7dNEyUQ0OIU=;
+	b=KZTJza10mdB8bGuc9v33q5ogfMs3YhfX8edGzaRFnLN8g73mQ0sa3QSvf+lQTrUirQZuOy
+	ySQ7hLZK0+WBcbDA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 5783D13672;
+	Thu,  1 Feb 2024 12:20:13 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id qVwbFH2Mu2WRMwAAD6G6ig
+	(envelope-from <jroedel@suse.de>); Thu, 01 Feb 2024 12:20:13 +0000
+Date: Thu, 1 Feb 2024 13:20:12 +0100
+From: Joerg Roedel <jroedel@suse.de>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Ovidiu Panait <ovidiu.panait@windriver.com>,
+	patches@lists.linux.dev, Shivaprasad G Bhat <sbhat@linux.ibm.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Steven Price <steven.price@arm.com>
+Subject: Re: [PATCH rc] iommu: Allow ops->default_domain to work when
+ !CONFIG_IOMMU_DMA
+Message-ID: <ZbuMfDOuZwTQsm4r@suse.de>
+References: <0-v1-755bd21c4a64+525b8-iommu_def_dom_fix_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC V1 3/5] x86: CVMs: Enable dynamic swiotlb by default for
- CVMs
-Content-Language: en-US
-To: Vishal Annapurve <vannapurve@google.com>, x86@kernel.org,
- linux-kernel@vger.kernel.org
-Cc: pbonzini@redhat.com, rientjes@google.com, bgardon@google.com,
- seanjc@google.com, erdemaktas@google.com, ackerleytng@google.com,
- jxgao@google.com, sagis@google.com, oupton@google.com, peterx@redhat.com,
- vkuznets@redhat.com, dmatlack@google.com, pgonda@google.com,
- michael.roth@amd.com, kirill@shutemov.name, thomas.lendacky@amd.com,
- dave.hansen@linux.intel.com, linux-coco@lists.linux.dev,
- chao.p.peng@linux.intel.com, isaku.yamahata@gmail.com,
- andrew.jones@linux.dev, corbet@lwn.net, hch@lst.de,
- m.szyprowski@samsung.com, bp@suse.de, rostedt@goodmis.org,
- iommu@lists.linux.dev
-References: <20240112055251.36101-1-vannapurve@google.com>
- <20240112055251.36101-4-vannapurve@google.com>
-From: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
-In-Reply-To: <20240112055251.36101-4-vannapurve@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0-v1-755bd21c4a64+525b8-iommu_def_dom_fix_jgg@nvidia.com>
+Authentication-Results: smtp-out2.suse.de;
+	none
+X-Spamd-Result: default: False [-1.07 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 BAYES_HAM(-0.97)[86.87%];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 TO_MATCH_ENVRCPT_ALL(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 DKIM_SIGNED(0.00)[suse.de:s=susede2_rsa,suse.de:s=susede2_ed25519];
+	 SUBJECT_HAS_EXCLAIM(0.00)[];
+	 RCPT_COUNT_TWELVE(0.00)[16];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:url,suse.de:email];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 RCVD_TLS_ALL(0.00)[];
+	 MID_RHS_MATCH_FROM(0.00)[]
+X-Spam-Level: 
+X-Spam-Flag: NO
+X-Spam-Score: -1.07
 
-On 12/01/2024 06:52, Vishal Annapurve wrote:
-> CVMs used SWIOTLB for non-trusted IO using dma_map_* APIs. This series
-> will ensure that dma_alloc_* API to also allocate from SWIOTLB pools.
-> Initial size of SWIOTLB pool is decided using heuristics and has been
-> working with CVM usecases so far.
+On Tue, Jan 30, 2024 at 12:12:53PM -0400, Jason Gunthorpe wrote:
+> The ops->default_domain flow used a 0 req_type to select the default
+> domain and this was enforced by iommu_group_alloc_default_domain().
 > 
-> It's better to allow SWIOTLB to scale up on demand rather than keeping
-> the size fixed to avoid failures with possibly increased usage of
-> SWIOTLB with dma_alloc_* APIs allocating from SWIOTLB pools. This should
-> also help in future with more devices getting used from CVMs for
-> non-trusted IO.
+> When !CONFIG_IOMMU_DMA started forcing the old ARM32 drivers into IDENTITY
+> it also overroad the 0 req_type of the ops->default_domain drivers to
+> IDENTITY which ends up causing failures during device probe.
 > 
-> Signed-off-by: Vishal Annapurve <vannapurve@google.com>
+> Make iommu_group_alloc_default_domain() accept a req_type that matches the
+> ops->default_domain and have iommu_group_alloc_default_domain() generate a
+> req_type that matches the default_domain.
+> 
+> This way the req_type always describes what kind of domain should be
+> attached and ops->default_domain overrides all other mechanisms to choose
+> the default domain.
+> 
+> Fixes: 2ad56efa80db ("powerpc/iommu: Setup a default domain and remove set_platform_dma_ops")
+> Fixes: 0f6a90436a57 ("iommu: Do not use IOMMU_DOMAIN_DMA if CONFIG_IOMMU_DMA is not enabled")
+> Reported-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+> Closes: https://lore.kernel.org/linux-iommu/20240123165829.630276-1-ovidiu.panait@windriver.com/
+> Reported-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+> Closes: https://lore.kernel.org/linux-iommu/170618452753.3805.4425669653666211728.stgit@ltcd48-lp2.aus.stglab.ibm.com/
+> Tested-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+> Tested-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  arch/x86/Kconfig | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 1566748f16c4..035c8a022c4c 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -884,6 +884,7 @@ config INTEL_TDX_GUEST
->  	select X86_MEM_ENCRYPT
->  	select X86_MCE
->  	select UNACCEPTED_MEMORY
-> +	select SWIOTLB_DYNAMIC
->  	help
->  	  Support running as a guest under Intel TDX.  Without this support,
->  	  the guest kernel can not boot or run under TDX.
-> @@ -1534,6 +1535,7 @@ config AMD_MEM_ENCRYPT
->  	select ARCH_HAS_CC_PLATFORM
->  	select X86_MEM_ENCRYPT
->  	select UNACCEPTED_MEMORY
-> +	select SWIOTLB_DYNAMIC
->  	help
->  	  Say yes to enable support for the encryption of system memory.
->  	  This requires an AMD processor that supports Secure Memory
+>  drivers/iommu/iommu.c | 18 +++++++++++++-----
+>  1 file changed, 13 insertions(+), 5 deletions(-)
 
-What this does is unconditionally enable SWIOTLB_DYNAMIC for every kernel compiled
-to support memory encryption, regardless of whether it runs inside a confidential guest.
-I don't think that is what you intended.
+Applied, thanks.
 
-Best wishes,
-Jeremi
+-- 
+Jörg Rödel
+jroedel@suse.de
 
+SUSE Software Solutions Germany GmbH
+Frankenstraße 146
+90461 Nürnberg
+Germany
+https://www.suse.com/
 
+Geschäftsführer: Ivo Totev, Andrew McDonald, Werner Knoblich
+(HRB 36809, AG Nürnberg)
