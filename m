@@ -1,69 +1,70 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0940A364D5
-	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 18:02:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 432EA5A4E0
+	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 18:51:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706810550; cv=none; b=uMBkX4pFRSbtCiYPOiHmhf8C84XnE0ZHa3eGBCIXVY9iEfwM8Lw1xcZTLyKpINqlke/maL3I8N9JpEQvwv2vfMgsbR9Px0wYd4NmTcuSSfFeMy0ZyqLvk1qWOuyetMccSGDqJwHr0Cq2yPG6m2xsiY7q114sS7iZW5f0OBP1oiI=
+	t=1706813486; cv=none; b=sstgzSiC7go17dxbei5KwrIBzewvoGpDh1jP2x12P2takJq448BW3GS9tLgS6RKUnBYBMjs04zJGFar0jd7zk3mTmL2H6Xt7JydtIhTKrSs2lfChEKqPduW2sQL+S5O20f6c0hasomGdzNBSIaBzkKIJ9TBtUErOXfABvPrfG6Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706810550; c=relaxed/simple;
-	bh=LjUvzK38BjXgqC9AEEPWhEc68CiG1UUjHeslwXrZX9o=;
+	s=arc-20240116; t=1706813486; c=relaxed/simple;
+	bh=VHcJ6xWs04hidmGsT73m/Y3i4DiuzfZWRtIb+3lpzok=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Hn6WmySQzHIzey1c/RrDAFuajsnC4OJm63ss1DeAyHgt7ZFC9elB4uzvKWrJCI9ikwwThp7oQwLYHC7qDFftmZj0o7rEXR8GQN0VCVxEcuJtJSpehLtizAMJIUWj8WUm19zxN/rg+pUs7PW1oFcShj9Rls5LnL/FZftiwn0xk8M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=R6z9qPhU; arc=none smtp.client-ip=209.85.222.171
+	 Content-Type:Content-Disposition:In-Reply-To; b=kSLI2ZyxFAAkQ1dKuafKzD+qtIJ3Hi4UmYf1y60m1Ppo/ReERiebUDup8+6XdcQ9O1F2Cii2W6mKx8AlzUWpsU9rLNsI6rX6HVsE72KS/BNO0f9dnqgRFzsI+t6WlW2iEuLjjG9MNn0hZp+eBwYW7+91jD/atn3QAfCJxUPTYCc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=WaSG7SQc; arc=none smtp.client-ip=209.85.161.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="R6z9qPhU"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-783f49812aeso53527385a.2
-        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 10:02:28 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="WaSG7SQc"
+Received: by mail-oo1-f48.google.com with SMTP id 006d021491bc7-59a29a93f38so568911eaf.0
+        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 10:51:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1706810547; x=1707415347; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1706813483; x=1707418283; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/1LEFP848wI0Z7rMsRyDSzKHhkYnEw1rfZ/5sroHKA4=;
-        b=R6z9qPhU45XP79xky3hCub3Yc+CvSVV8xj6z5zWW+4gnDyMNkwjQpbLOGxvm+lxZse
-         NS+sSXKJCoO9M2CuwIzguja/D/2/XvKKoXaC6Z+9mkV1tcnjFW9qDEpwVfG5uuf1tSug
-         ZMb3IebUJ1yywhpD0StvupWgwZmK+xArIrUvH9ZeW3NxDYhK/OcKVvYroBInryeQGPJS
-         Ef2FE9G8O13NjhZxhogQh3a81+a9fXwrfTMSROUFthffxLtm14Dj6bxGVKx7Wnwlf9DH
-         LkzmJSW/S7JZvPyfbQlqxBGfRBpzufdbhm2Cs8wfX5PCZsXtbSm7x2IZidIndWZxmyxH
-         D9ZA==
+        bh=p77+Yb3dKsfvXmR3TewTKl3c26QKWo2vZBB8I3U+sHQ=;
+        b=WaSG7SQcVGAQEhnJdeG8CXAwQQ2iWxaLChbPqDFRIR4KZRl1ri9bhOI8qbdG4mvhdF
+         aglmFUVqN+x95VpvMbX3jiHwW7n5opy65SR/2IUhuB/nNPTy3t1nnXNnDkhQgTZLDLFY
+         OldY60sSsw6J779zw7zlLnawMqieSu+vMq3AXagaxZ28hvuzzRMtpY3NUgk1QHB5xY0p
+         jTBIsTM4CZRIH98W0t2KssW3Zec4f9ynqRojqDmHs49Xt8peYlpAlDI+Qfbd4YTD9wOE
+         AXePXlDLKx8qsv5aCdlhZi1RL6/x2xJVJOO4C8xexYtgfdcLTPWlbLY4131mHxSdhEhl
+         oblg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706810547; x=1707415347;
+        d=1e100.net; s=20230601; t=1706813483; x=1707418283;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/1LEFP848wI0Z7rMsRyDSzKHhkYnEw1rfZ/5sroHKA4=;
-        b=JNZs0tIxqjrWANWNYcMoV3QO1f+XZqRvAje5ZLbuSKZF1Byr67h092j770oVxuXjCi
-         zvVRtPPzbmAOssyi6q+yx4VV3RqwmafzctaDOJae2TIBaaX4sAsrWGYb6aYoRDuv6Gyj
-         uvIYfWKReE2Y8PcwPYt3aU/SpwLLISVYtj6k0yRksGSR/LLqur7EPvzAkeP5SlQooA/y
-         tlzylLCwv+28Xf1nrU1sQmXsojeygZPERJzjeIrgPf4yeDKKJLCmc0Xpl2resDIJWNKd
-         dsxc3oTXBUIgISanNeRKECgKqi79nQmiuemo5PI0ltJIhTh3TSsx70BHEHMvfImZpIOV
-         MKFA==
-X-Gm-Message-State: AOJu0YziKELjazalS/QA8QKf+c292676cszY3NOunQp7C2YSakgnZRCY
-	FBjU3x0voVXHLtKe8TpPD1zEtSVGnG11SomXRuc3Jb4EdYaNkXaVIzOSS4G4APo=
-X-Google-Smtp-Source: AGHT+IHqqb+uF8uGy8haT3Z4vsF5/DJRnR3yfWDt/MUTRiULykvAyIpvRx/e48WvhJ2Ux4q7P0kdyg==
-X-Received: by 2002:ae9:e905:0:b0:785:3b47:ffd0 with SMTP id x5-20020ae9e905000000b007853b47ffd0mr3589854qkf.53.1706810547710;
-        Thu, 01 Feb 2024 10:02:27 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCWdKnNd5CZ8/r1mLM1p+fQb2hVxxJPuxOZmhBRczdZGaBUAAHCJkkVaTJIlmkjZtfmKUKtRzo9NP6kpA/hQJ9LfwJAghIY1EbpNsdmVcrIio6AmYK6eqnCOVZxTEE7alSR2gAPt7Tw3PRfWWUx9ji2oXkukwhzZb4kOgut3hKqN6KSNrseWW/c=
+        bh=p77+Yb3dKsfvXmR3TewTKl3c26QKWo2vZBB8I3U+sHQ=;
+        b=ZJpCpJI2cxYeZ7rEsdCiGTC0ELSBo4jKjqOQ41l9plA1XP3odtVG30ChDdYaeLePy/
+         nL2EoiP9x9JPYmfPplxSs+xdK+Oz0pXsUNrQB14R3lbu5eJTnGJm0W5VoAKh9uCr+2DR
+         SGkxu3xYo9wsK6vlQTKkPQFZ381zEt5W+9c4IyvEHHHf5xi1N1XLPPkQQqR3YgCQHBIo
+         Lcp0HsDfqoQB/UN/E6rW9V5sE2h9vpVFMjAFi7/pJCwaTTfKMiDzJLH2YVfxVt1VdvFp
+         sH9K4EWdUfx2BlxAYpVB6SVBUEuXKvn7ult38rzcP4m6PkNPhGoZXCzyQwXU0LEjFDJH
+         P6Ow==
+X-Gm-Message-State: AOJu0Yy9MgmA8rdefptqRGQpGn/iqsTc6K8B01k2/dv9+XeZe3a5dy06
+	iG5yY9QMga4HLTPM4BNb6JmXYxE/iVYkib2gvd+UGCldWJk6j5iw+on9z96Q5HY=
+X-Google-Smtp-Source: AGHT+IFMoAnxKULi39aO7m6BPM1fTLc5B019ybyIeNNDcLE+XSsH8m2hpgDDe1/J6g4PiNvRN7POLA==
+X-Received: by 2002:a05:6358:d5a9:b0:176:9e92:8e4 with SMTP id ms41-20020a056358d5a900b001769e9208e4mr6679494rwb.10.1706813482939;
+        Thu, 01 Feb 2024 10:51:22 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCVgrqUZUdVz/RpmagFWDqxEhYhk1n4VUeCRx9qSXBwQxtTPdAJbprqahZFqc1pH0i+YUK3bEMafVb01GoPynAn+44kPJDahDHT4ugduYQBbuliMhK7ybXZ9BW0wYClJLJUZCqP4j9ls0NHSPul72EUqecwQCPlyNnDQorDlwZZoD0ZNlPm2NFQ=
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id u2-20020a05620a120200b00783de6b5ccfsm16145qkj.88.2024.02.01.10.02.27
+        by smtp.gmail.com with ESMTPSA id qj9-20020a056214320900b0068c67a3647dsm33796qvb.76.2024.02.01.10.51.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Feb 2024 10:02:27 -0800 (PST)
+        Thu, 01 Feb 2024 10:51:22 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rVbOM-00AnPT-Mo;
-	Thu, 01 Feb 2024 14:02:26 -0400
-Date: Thu, 1 Feb 2024 14:02:26 -0400
+	id 1rVc9h-00AntZ-An;
+	Thu, 01 Feb 2024 14:51:21 -0400
+Date: Thu, 1 Feb 2024 14:51:21 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v6 13/17] iommu/amd: Refactor GCR3 table helper functions
-Message-ID: <20240201180226.GN50608@ziepe.ca>
+Subject: Re: [PATCH v6 17/17] iommu/amd: Introduce per-device domain ID to
+ workaround potential TLB aliasing issue
+Message-ID: <20240201185121.GO50608@ziepe.ca>
 References: <20240125121135.8217-1-vasant.hegde@amd.com>
- <20240125121135.8217-14-vasant.hegde@amd.com>
+ <20240125121135.8217-18-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,42 +73,61 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240125121135.8217-14-vasant.hegde@amd.com>
+In-Reply-To: <20240125121135.8217-18-vasant.hegde@amd.com>
 
-On Thu, Jan 25, 2024 at 12:11:31PM +0000, Vasant Hegde wrote:
-> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> 
-> To use the new per-device struct gcr3_tbl_info. Use GFP_KERNEL flag
-> instead of GFP_ATOMIC for GCR3 table allocation. Also modify
-> set_dte_entry() to use new per device GCR3 table.
-> 
-> Also in free_gcr3_table() path replace BUG_ON with WARN_ON_ONCE().
-> 
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> ---
->  drivers/iommu/amd/iommu.c | 53 +++++++++++++++++++++++----------------
->  1 file changed, 31 insertions(+), 22 deletions(-)
+On Thu, Jan 25, 2024 at 12:11:35PM +0000, Vasant Hegde wrote:
 
-The code looks OK after this so
+> Hence, avoid the TLB aliasing issue with v2 page table by allocating unique
+> domain ID for each device even when multiple devices are sharing the same v1
+> page table. Please note that this workaround would result in multiple
+> INVALIDATE_IOMMU_PAGES commands (one per domain id) when unmapping a
+> translation.
+
+I think the bigger downside is that it causes V2 domains to become
+IOTLB unsharable even in simple cases with no possible PASID.
+
+BTW "workaround" is not quite right, this is "fix", and it is a
+security problem to get this wrong.
+
+Anyhow:
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-> @@ -1924,14 +1933,14 @@ static int do_attach(struct iommu_dev_data *dev_data,
->  	/* Init GCR3 table and update device table */
->  	if (domain->pd_mode == PD_MODE_V2) {
->  		/* By default, setup GCR3 table to support single PASID */
-> -		ret = setup_gcr3_table(dev_data->domain, 1);
-> +		ret = setup_gcr3_table(&dev_data->gcr3_info, iommu, 1);
->  		if (ret)
->  			return ret;
+> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+> index 79a07a2e4bec..d5786c33aee6 100644
+> --- a/drivers/iommu/amd/amd_iommu_types.h
+> +++ b/drivers/iommu/amd/amd_iommu_types.h
+> @@ -536,6 +536,7 @@ struct gcr3_tbl_info {
+>  	u64	*gcr3_tbl;	/* Guest CR3 table */
+>  	int	glx;		/* Number of levels for GCR3 table */
+>  	u32	pasid_cnt;	/* Track attached PASIDs */
+> +	u16	domid;		/* Per device domain ID */
 
-But the patch order is off here. The above showing this was using
-dev_data->domain for a few patches is not perfectly bisection-correct.
+It is minor, but per-table domain ID, not per device.
 
-Patches 11/12/13 are all sort of entangled together so I can see how
-it ended up like this. You could probably squash them together and be
-fine if someone prefers to be sticky on this.
+Same-gcr3 tables can always safely share the domain id.
+
+> -static void __domain_flush_pages(struct protection_domain *domain,
+> +static int domain_flush_pages_v2(struct protection_domain *pdom,
+>  				 u64 address, size_t size)
+>  {
+>  	struct iommu_dev_data *dev_data;
+>  	struct iommu_cmd cmd;
+> -	int ret = 0, i;
+> -	ioasid_t pasid = IOMMU_NO_PASID;
+> -	bool gn = false;
+> +	int ret = 0;
+>  
+> -	if (pdom_is_v2_pgtbl_mode(domain))
+> -		gn = true;
+> +	list_for_each_entry(dev_data, &pdom->dev_list, list) {
+
+Suggest a future patch to add
+
+lockdep_assert_held(&pdom->lock);
+
+To all functions touching dev_list.. That locking is a bit obscure.
+Also, I'm not sure using a spinlock with such a wide scope makes
+sense. :|
 
 Jason
