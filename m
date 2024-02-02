@@ -1,229 +1,137 @@
-Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 057E11474A2
-	for <iommu@lists.linux.dev>; Fri,  2 Feb 2024 16:22:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36FF9148315;
+	Fri,  2 Feb 2024 16:36:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706890962; cv=none; b=kiceFoUxd8VLsTZCjpyeNmsadILy0QWwnVvuZmKFu5Oti39yu3v4kVxqD1Hqw+N1CUEWtVfbKD9LJhyL18koOBDBkyFhnuEr/KQPNWhFJvuuaxdp1gXQKiJ/lFSSUQcbjy6xnUeP5vkZDFn1Ngu6ryP4wIoF/JNweVP7TxA7yAM=
+	t=1706891761; cv=none; b=CPz+NE80w26USwR2fpjcAoQZ3GuloGzuR3kxDsFGv82LeRGCxGNhqmwb+7iKxy86spPXSwAUtMVd2BdPcJLvd2KA47KRkrVeNoAozzc6m8hWy8yKx5pj9yJ1ynyEpdajY17G7W2i80KWpN/FpKQsyw0GBl5JpZ7AEpXPYHsPE3Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706890962; c=relaxed/simple;
-	bh=+HK3TCtP7QCQZPyoTqhbwad/Bt2qOpO6afXcp1KlkLk=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ozfOSPGAuCiZQZbZYKCD0KzrwbQUjnEdU33yD/bWcPoTuuqMa7X0RfOHYRnEFhg1vNYNihajj8WDXil8MoZUID4H3fk8iePhkBzs5xjYQKqYuheCF0vkgbY7Gfr2p8FodUx0kELWZTW8pgSGbJ020cpmLw/3IhsMFuGGS8qTs0o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=gEXGzKI8; arc=none smtp.client-ip=209.85.160.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1706891761; c=relaxed/simple;
+	bh=NvkwA1jk/5kaJF3W/uYQ89LSQ+kOKTgXko1D4t7m/78=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nMWRpIoEdcbxTogsLfBiDmk0z4X2GNfkzVaWHZvK1GKyfUQiAzlK9MZDBUM5J/3x4111TvqS2PvuSjc+Rf50Jr0X+usjnauRcQte11wKNiGDXcKFWMO+uoQPJ9pWwxH/wZzFeN5fDN3GlE/ZEQXz8lcfos3lqh5DHpCPBk7u0jo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=i5Qiz51h; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="gEXGzKI8"
-Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-42a8900bb93so17254931cf.1
-        for <iommu@lists.linux.dev>; Fri, 02 Feb 2024 08:22:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1706890956; x=1707495756; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/K3Nq70zFGvyKDwU3ZY65DWbsfqM8JJCUVupC8As58c=;
-        b=gEXGzKI8I6J3ooAM83RYGJd5A0jgdC4HQ77ykP0YdVNi4FYb/iNFaslwYXNSNPew+T
-         Hs26xK6tg++gChVv2nJ3ESH+PTYDgojW/WAFqLJtMeVoO68AHOUVSRJpurU/hJqlBrJn
-         AIAS3pOXU52gSGPuNzjAkjHoJ0pp5H+FxRUtdaTpha6D9Q5AJ7fbVhQQJzfEoAjvEWce
-         awAnutHeGyA0cRNMceCTZkZY2pwjHPyblUSfGR0VLxBqDvUhSTnTpZVuWNJfddufqpy4
-         sk9dQ9y3oTQIQufSsMMJaLBwY+LUSXEiCCzkQnkMECFHoC2VmCUmqk27QrPn2Oik1zyv
-         10Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706890956; x=1707495756;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/K3Nq70zFGvyKDwU3ZY65DWbsfqM8JJCUVupC8As58c=;
-        b=gq5F8iIOfGzELcgZK1WQF6bY5XCn9HEAfV3j2tR1n/2HDhfor04oM16ffjlCuvjRPk
-         tx/8Du6Td5tVNx0aGyA0znQdZ9omYTNdlVWz+kosZsbMFUVxZv6L3J+CvzVPiKvZcPea
-         r2DO37oYl5QzVP2dDyYWx/ga074EocmtPlF8ATBiz9+14Js4L6q0RETl9fID0UudBC6n
-         5qD4jdM5HdVmE4eTCRxdqh5Spvz3GNOOG4ZXFyZGOD+scUvcVbbgehxzwR26cyw/A/V2
-         g1usdZWL41TTGoC1yM1Fx84zD5BDqCwKyoCGlel45KfBT4Y0oaxQBnRqDWCyXaa6DdlJ
-         Ll0g==
-X-Gm-Message-State: AOJu0YxEEWH1znwOkuD4vanqIwqtiuwB69vO/yJd95diz1ySQ2JSIeYd
-	xNggbmKI60lDozBsvCd/GxL2XDKU4CUNaohTStGOk2e4eUAoGBR1Y73W8U/t9U1aVBiWLjiqjG3
-	sRbPYQo/a01O/jGIf4Hp5YgDBjJIqr57MRceJ
-X-Google-Smtp-Source: AGHT+IEE5ISkbNXS6VfuxQo8VaEvgYlkPxi3PutlXh2ql5op0O+Q2FYYlI8Syviuws5w/gDm1/LIWZi6AuNnpgHXhRU=
-X-Received: by 2002:a05:6214:2f08:b0:68c:8ae0:b413 with SMTP id
- od8-20020a0562142f0800b0068c8ae0b413mr1374192qvb.30.1706890955573; Fri, 02
- Feb 2024 08:22:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="i5Qiz51h"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706891760; x=1738427760;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=NvkwA1jk/5kaJF3W/uYQ89LSQ+kOKTgXko1D4t7m/78=;
+  b=i5Qiz51hD4MikrTOzHTwgScjko3N3kPLIPl5AgxhG2BxbvMEi3uNUz5P
+   bpQ048ZLKB2typmYxwACKjD5Nc/jGLffAqJr6PuK19ntq09ViCY++iAjT
+   5oyPWN4vnlQn0OgBQh31BamxBr8JTurW7m4lxqPj4gBjJHBi/fHoORFDF
+   ixgx8iBvTitzb2VW21xfSJWySu3i/iwGOZbL1bqL6YSdBWE+LF6OEK23h
+   68AjWkC5XCIHhIcJ3MOGR3tEPu22nD5xZwecQ1bM97ltbIHFuJBfLmEie
+   I9fh5zwipaKap8cP8jXHN51SFnmR43EPLvUIylyGUvekMqRytlZIkM6Vc
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10971"; a="22673855"
+X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
+   d="scan'208";a="22673855"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2024 08:35:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
+   d="scan'208";a="4715525"
+Received: from adcimmar-mobl.amr.corp.intel.com (HELO [10.212.206.109]) ([10.212.206.109])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2024 08:35:59 -0800
+Message-ID: <746d2448-3adc-467b-a39c-5585f33bd740@intel.com>
+Date: Fri, 2 Feb 2024 08:35:58 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240112055251.36101-1-vannapurve@google.com> <20240112055251.36101-6-vannapurve@google.com>
- <6709a57c-48a0-4ddd-b64e-a1e34ae2b763@intel.com> <CAGtprH_ANUVU+Dh1KOq0vpT7BGbCEvD2ab9B=sxjzHYsKxFGeA@mail.gmail.com>
- <1d9d3372-825a-417a-8811-ffa501c83936@linux.microsoft.com>
- <CAGtprH8r0kYYqGoumsVeZq42cX8CN3cchkuRYhQULqtb-1nKww@mail.gmail.com> <3313c886-e964-48c3-8277-b47cb1955de9@linux.microsoft.com>
-In-Reply-To: <3313c886-e964-48c3-8277-b47cb1955de9@linux.microsoft.com>
-From: Vishal Annapurve <vannapurve@google.com>
-Date: Fri, 2 Feb 2024 21:52:21 +0530
-Message-ID: <CAGtprH9X0Yz_Z+QaYcLpLNXtY_Ye68aqvx-G1pOWZxv9SiRRoQ@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
 Subject: Re: [RFC V1 5/5] x86: CVMs: Ensure that memory conversions happen at
  2M alignment
-To: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
-Cc: Dave Hansen <dave.hansen@intel.com>, x86@kernel.org, linux-kernel@vger.kernel.org, 
-	pbonzini@redhat.com, rientjes@google.com, seanjc@google.com, 
-	erdemaktas@google.com, ackerleytng@google.com, jxgao@google.com, 
-	sagis@google.com, oupton@google.com, peterx@redhat.com, vkuznets@redhat.com, 
-	dmatlack@google.com, pgonda@google.com, michael.roth@amd.com, 
-	kirill@shutemov.name, thomas.lendacky@amd.com, dave.hansen@linux.intel.com, 
-	linux-coco@lists.linux.dev, chao.p.peng@linux.intel.com, 
-	isaku.yamahata@gmail.com, andrew.jones@linux.dev, corbet@lwn.net, hch@lst.de, 
-	m.szyprowski@samsung.com, rostedt@goodmis.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+To: Vishal Annapurve <vannapurve@google.com>,
+ Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org, pbonzini@redhat.com,
+ rientjes@google.com, seanjc@google.com, erdemaktas@google.com,
+ ackerleytng@google.com, jxgao@google.com, sagis@google.com,
+ oupton@google.com, peterx@redhat.com, vkuznets@redhat.com,
+ dmatlack@google.com, pgonda@google.com, michael.roth@amd.com,
+ kirill@shutemov.name, thomas.lendacky@amd.com, dave.hansen@linux.intel.com,
+ linux-coco@lists.linux.dev, chao.p.peng@linux.intel.com,
+ isaku.yamahata@gmail.com, andrew.jones@linux.dev, corbet@lwn.net,
+ hch@lst.de, m.szyprowski@samsung.com, rostedt@goodmis.org,
+ iommu@lists.linux.dev
+References: <20240112055251.36101-1-vannapurve@google.com>
+ <20240112055251.36101-6-vannapurve@google.com>
+ <6709a57c-48a0-4ddd-b64e-a1e34ae2b763@intel.com>
+ <CAGtprH_ANUVU+Dh1KOq0vpT7BGbCEvD2ab9B=sxjzHYsKxFGeA@mail.gmail.com>
+ <1d9d3372-825a-417a-8811-ffa501c83936@linux.microsoft.com>
+ <CAGtprH8r0kYYqGoumsVeZq42cX8CN3cchkuRYhQULqtb-1nKww@mail.gmail.com>
+ <3313c886-e964-48c3-8277-b47cb1955de9@linux.microsoft.com>
+ <CAGtprH9X0Yz_Z+QaYcLpLNXtY_Ye68aqvx-G1pOWZxv9SiRRoQ@mail.gmail.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+In-Reply-To: <CAGtprH9X0Yz_Z+QaYcLpLNXtY_Ye68aqvx-G1pOWZxv9SiRRoQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Feb 2, 2024 at 1:30=E2=80=AFPM Jeremi Piotrowski
-<jpiotrowski@linux.microsoft.com> wrote:
->
-> On 02/02/2024 06:08, Vishal Annapurve wrote:
-> > On Thu, Feb 1, 2024 at 5:32=E2=80=AFPM Jeremi Piotrowski
-> > <jpiotrowski@linux.microsoft.com> wrote:
-> >>
-> >> On 01/02/2024 04:46, Vishal Annapurve wrote:
-> >>> On Wed, Jan 31, 2024 at 10:03=E2=80=AFPM Dave Hansen <dave.hansen@int=
-el.com> wrote:
-> >>>>
-> >>>> On 1/11/24 21:52, Vishal Annapurve wrote:
-> >>>>> @@ -2133,8 +2133,10 @@ static int __set_memory_enc_pgtable(unsigned=
- long addr, int numpages, bool enc)
-> >>>>>       int ret;
-> >>>>>
-> >>>>>       /* Should not be working on unaligned addresses */
-> >>>>> -     if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n"=
-, addr))
-> >>>>> -             addr &=3D PAGE_MASK;
-> >>>>> +     if (WARN_ONCE(addr & ~HPAGE_MASK, "misaligned address: %#lx\n=
-", addr)
-> >>>>> +             || WARN_ONCE((numpages << PAGE_SHIFT) & ~HPAGE_MASK,
-> >>>>> +                     "misaligned numpages: %#lx\n", numpages))
-> >>>>> +             return -EINVAL;
-> >>>>
-> >>>> This series is talking about swiotlb and DMA, then this applies a
-> >>>> restriction to what I *thought* was a much more generic function:
-> >>>> __set_memory_enc_pgtable().  What prevents this function from gettin=
-g
-> >>>> used on 4k mappings?
-> >>>>
-> >>>>
-> >>>
-> >>> The end goal here is to limit the conversion granularity to hugepage
-> >>> sizes. SWIOTLB allocations are the major source of unaligned
-> >>> allocations(and so the conversions) that need to be fixed before
-> >>> achieving this goal.
-> >>>
-> >>> This change will ensure that conversion fails for unaligned ranges, a=
-s
-> >>> I don't foresee the need for 4K aligned conversions apart from DMA
-> >>> allocations.
-> >>
-> >> Hi Vishal,
-> >>
-> >> This assumption is wrong. set_memory_decrypted is called from various
-> >> parts of the kernel: kexec, sev-guest, kvmclock, hyperv code. These co=
-nversions
-> >> are for non-DMA allocations that need to be done at 4KB granularity
-> >> because the data structures in question are page sized.
-> >>
-> >> Thanks,
-> >> Jeremi
-> >
-> > Thanks Jeremi for pointing out these usecases.
-> >
-> > My brief analysis for these call sites:
-> > 1) machine_kexec_64.c, realmode/init.c, kvm/mmu/mmu.c - shared memory
-> > allocation/conversion happens when host side memory encryption
-> > (CC_ATTR_HOST_MEM_ENCRYPT) is enabled.
-> > 2) kernel/kvmclock.c -  Shared memory allocation can be made to align
-> > 2M even if the memory needed is lesser.
-> > 3) drivers/virt/coco/sev-guest/sev-guest.c,
-> > drivers/virt/coco/tdx-guest/tdx-guest.c - Shared memory allocation can
-> > be made to align 2M even if the memory needed is lesser.
-> >
-> > I admit I haven't analyzed hyperv code in context of these changes,
-> > but will take a better look to see if the calls for memory conversion
-> > here can fit the category of "Shared memory allocation can be made to
-> > align 2M even if the memory needed is lesser".
-> >
-> > Agree that this patch should be modified to look something like
-> > (subject to more changes on the call sites)
->
-> No, this patch is still built on the wrong assumptions. You're trying
-> to alter a generic function in the guest for the constraints of a very
-> specific hypervisor + host userspace + memory backend combination.
-> That's not right.
+On 2/2/24 08:22, Vishal Annapurve wrote:
+>> If you must - focus on getting swiotlb conversions to happen at the desired
+>> granularity but don't try to force every single conversion to be >4K.
+> If any conversion within a guest happens at 4K granularity, then this
+> will effectively cause non-hugepage aligned EPT/NPT entries. This
+> series is trying to get all private and shared memory regions to be
+> hugepage aligned to address the problem statement.
 
-Agree on the fact that I focussed on a KVM for these changes. I plan
-to spend some time understanding guest memfd relevance for other
-hypervisors when dealing with CoCo VMs.
+Yeah, but the series is trying to do that by being awfully myopic at
+this stage and without being _declared_ to be so myopic.
 
->
-> Is the numpages check supposed to ensure that the guest *only* toggles
-> visibility in chunks of 2MB?
-
-Yes.
-
-> Then you're exposing more memory to the host than the guest intends.
-
-The goal of the series is to ensure that the CoCo VMs convert memory
-at hugepage granularity. So such guests would need to allocate any
-memory to be converted to shared, at hugepage granularity. This would
-not expose any guest memory that needs to be used privately.
-
-I agree about the fact that extra memory that needs to be allocated
-for 2M alignment is effectively  getting wasted. Optimizing this extra
-memory usage can be pursued further depending on how significant this
-wastage is. One possible way could be to preallocate large enough
-shared memory and use it to back smaller allocations from these call
-sites (very similar to SWIOTLB).
-
->
-> If you must - focus on getting swiotlb conversions to happen at the desir=
-ed
-> granularity but don't try to force every single conversion to be >4K.
-
-If any conversion within a guest happens at 4K granularity, then this
-will effectively cause non-hugepage aligned EPT/NPT entries. This
-series is trying to get all private and shared memory regions to be
-hugepage aligned to address the problem statement.
-
->
-> Thanks,
-> Jeremi
->
->
-> >
-> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.=
-c
-> > index e9b448d1b1b7..8c608d6913c4 100644
-> > --- a/arch/x86/mm/pat/set_memory.c
-> > +++ b/arch/x86/mm/pat/set_memory.c
-> > @@ -2132,10 +2132,15 @@ static int __set_memory_enc_pgtable(unsigned
-> > long addr, int numpages, bool enc)
-> >         struct cpa_data cpa;
-> >         int ret;
-> >
-> >         /* Should not be working on unaligned addresses */
-> >         if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n", =
-addr))
-> >                 addr &=3D PAGE_MASK;
-> >
-> > +       if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
-> > +               (WARN_ONCE(addr & ~HPAGE_MASK, "misaligned address:
-> > %#lx\n", addr)
-> > +                       || WARN_ONCE((numpages << PAGE_SHIFT) & ~HPAGE_=
-MASK,
-> > +                               "misaligned numpages: %#lx\n", numpages=
-)))
-> > +               return -EINVAL;
-> > +
-> >         memset(&cpa, 0, sizeof(cpa));
-> >         cpa.vaddr =3D &addr;
-> >         cpa.numpages =3D numpages;
->
+Take a look at all of the set_memory_decrypted() calls.  How many of
+them even operate on the part of the guest address space rooted in the
+memfd where splits matter?  They're not doing conversions.  They're just
+setting up shared mappings in the page tables of gunk that was never
+private in the first place.
