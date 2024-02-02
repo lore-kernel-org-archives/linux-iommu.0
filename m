@@ -1,142 +1,152 @@
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20BFD3FB32
-	for <iommu@lists.linux.dev>; Thu,  1 Feb 2024 22:29:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70E89F4F0
+	for <iommu@lists.linux.dev>; Fri,  2 Feb 2024 04:41:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706826579; cv=none; b=W1QQBlrwpDtPiO4ZYE2PKndWUkJoFt6iE4i2fHSWFzLzqbZT3mqBMPjD6zb98sfTrsUn8PDRuUg3AcTWNm2XVC+V8Vlo7PRe2qSrEzoEiAgYyb6uXGtqooExHBNwkrIG+bT2L61QCBcJnZ2fSde/iwlSKfSwahf2cV6G8S5ltDs=
+	t=1706848874; cv=none; b=QyKcukuJVyoJq8LsXuVxmx0Yl9LbCZQ6ZN5KaLkVMdUKB8X4kcG50YHXbM2HG+ysi+hhE+JWzjvpTIxt6guBtwFKiS3JsS6Y/nJGBROjPAqEeQ1au1XzHAW3RePU6D7mOUQuOoy+aUE//z0V33U/vLDV6Ue09PT5EvkUqBlCDMw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706826579; c=relaxed/simple;
-	bh=dEloljQr9NL2fQj+p5tojv6uWV6NH/+lSQT7Nh2TvXc=;
+	s=arc-20240116; t=1706848874; c=relaxed/simple;
+	bh=tcEH8y9ILQRfJEiztnFPBtbL/SdrVqxuQ6BXuMiY/J8=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rIRQboZYupUvdAgA94FO+dJDqRh1XxIPhC9qegnc8IaT3LCfGf1Aauc3q6ZqZx66QKMFp6COD6mDkizJ5gxbHa2q/AuLRTMGEWE+BXwpNTQco5k3QXgVS819vn7MvbhUxVeh1HKVPzk6/M12uRuiNtOOSWMirBiFjOLczf473w8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=eu4dV9AA; arc=none smtp.client-ip=209.85.218.48
+	 To:Cc:Content-Type; b=d4+B0klEUa9Q4YCa4nwYJB5w3y0O+zajAxsZkNMkCIVwHdqePpxe9XURGVzk7+GBjaQF9BUx44cyy0qAZy2Y2D5b8JP6vdM6szQ0HyVzzU9RlVcJn6cfCR8/mW6xUrqNC8AicUEvz3Tw6OJtnG+J0dvN94CAlG3BqlJngoTm29g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=4LIz2VSK; arc=none smtp.client-ip=209.85.219.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="eu4dV9AA"
-Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-a354408e6bfso444360466b.1
-        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 14:29:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="4LIz2VSK"
+Received: by mail-yb1-f182.google.com with SMTP id 3f1490d57ef6-dc6c3902a98so1297151276.1
+        for <iommu@lists.linux.dev>; Thu, 01 Feb 2024 20:41:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1706826576; x=1707431376; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1706848871; x=1707453671; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fGDKw/IQ4kdSzFRMSnxN+nzueWWpVC66gEX7pOJuy80=;
-        b=eu4dV9AAhMS0LtPxgoFptC7k7hfLizajvQtcYL38aAQh7OfWnKw1rB6ghSDnXpHXeH
-         Qonm2eFNeeh0fZG33FZPFs9Vmo/VKr10mdoyILoJP5/eH6Sk7o2XbD5msoBsIzbr32nV
-         RkN08vjsP01Z404RmFtGV7H1TphWLCHc5onYHZu+HviE274aWuconkLmGL2bocjDjFE7
-         YP1MZSiI/vkBA/QGQLOrQWL1/bNQ8i1wpA3qdQpIVPzYzzdST8MZVxrl0tT4KkEvAMmW
-         R9ZtMYcQeF70s+zgEhfR09xfPVJo7QZkpsaI8LNjFxV1uicfHJ/YSSq1gRTFMckr4/tg
-         ZdfA==
+        bh=MR2/y2vEPhv8eBcksIZP96OOa1fhQ1JeijHES+W35BI=;
+        b=4LIz2VSKNPXbyMWuJ2V8YlWFeigb8WvMNo7+hc6P4jYUOAnhEsPw3rpIAUMetvkQvp
+         a3MmXaOG1qnFxZPV7zoQfAWYIcpvTVOrx0hdDPPQ4CmVIsLpQYGXkszwoJQMEQQEQtRZ
+         oDfkUm1XwhqEz67VZuQOwfu6zTvnfQ/+0TJ1CHSJSyeKG0mjT+LzcttKAAVTlqDRL5ru
+         lawaxll3zn/gPVsfS0dlN2HjoWVAVvL9s3czrO60a5JnIIfb1BD3oLiVo1vr/n9yLnvo
+         LJkiTea0MGldFI+FuyxAkss2on3hppvK1bBBKNKNuuHiaNnBNfN1zayFHs8X3Y52vqQP
+         1rRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706826576; x=1707431376;
+        d=1e100.net; s=20230601; t=1706848871; x=1707453671;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=fGDKw/IQ4kdSzFRMSnxN+nzueWWpVC66gEX7pOJuy80=;
-        b=G2ru9hX4nlKtrOq+tvGacDdejoTXzoc/RMoU7RkdkJTEowvHZ7Tk+F2xjwo5DLECdg
-         KPwb/UxUO9IZbxhoVnGu+PknfaHi5mDoOLChLDPUXR5xyTiuHEhmyelSK3QLOiN5Tmyt
-         4YeNE+sGu8ca1Xx0yVnU5Oo3nG2ixhm5o64a0DFEmH3MJHZ1PwvhpcKjrLIzSwsQx5KK
-         kvU2M/Sm2jgwPesxgBlrOG6OgXC2iQDiqNbS3n+DxWGLLSJqdVNtELNY7+ZscndAFRa7
-         hNx/zen7SiDxQoq40PAiw8k76UM0fAmdIO32uQ0xSQaWSIkW4P0Ax58ajO6sb2XOG9xL
-         2/Cg==
-X-Gm-Message-State: AOJu0YxtGSTyOe3B3LHbG7YrmzGAULfOH/OwtAzczui6RCHwh2ZQINC2
-	vOyBviY5zW+EU9yhY0yDZi1lVl/oLOidjNAlxN7RKQdjNAqec2Mj9wsKmIdTA9l7CZtBPu/vHpM
-	S587DQyQDC+qPIeAcLlz/cIlIxewOXJejF88z
-X-Google-Smtp-Source: AGHT+IEuhiZvixWFGymGW7m4qj1dTBRZUXAhAcduL9snVjgqkWJ4xtPr92++LvjpCa9nwtPiSV2wXnbN3Xjfiu/tP6M=
-X-Received: by 2002:a17:906:43:b0:a36:c8fa:45a2 with SMTP id
- 3-20020a170906004300b00a36c8fa45a2mr320163ejg.1.1706826576073; Thu, 01 Feb
- 2024 14:29:36 -0800 (PST)
+        bh=MR2/y2vEPhv8eBcksIZP96OOa1fhQ1JeijHES+W35BI=;
+        b=wlSEuJI5wj9exmo4Ttay0YI/EqMD59E5ReTFAVkEmlJEiJ/4BNsvU5md7Sc8Cmedqv
+         5nSeAICT78w50Tisma+wxqBDb+Zertyxv84YgS0Tcq0s7A6Ma6v+JCRPS52SfbAAjcEB
+         DDyR2VIwV0uUciip8CI6BmWYhPsf27qkan2mgke3acMS2MT2pUt0mq5U5CmfT+CXOuMr
+         xb8/GNDgJ1Xl+pV7nglMMY8xlRUpOrq5xq6NwwHx3NhSpIWMSkDYE1KIzLJvfrxsPfiM
+         o/UySux1ZrrNktZA0BolPgHt7iBTTYlDntSybASsLQAvW7lfDMDwBAtJzvGQ9tE8B93+
+         3R+g==
+X-Gm-Message-State: AOJu0YzXotEZQe7sfOmi7pW7BzSDIWK7OMTUNqpDHiB79zDbJMD5BuIw
+	/0PXtfZ0mRfboQPBC0q/evUsFXdTUdPLBWcV3uBhE+FagwaRluOwbx7Y0q8xX6tluoO1mTmNkWD
+	VL4B2INcBgIWC1wc9ZGCfO9Kb5TTCNNzsws+G
+X-Google-Smtp-Source: AGHT+IEeBKezZDIqBQF7eHwuYqAvCJ8nw+dAXcKn3tJnFoqaYeczMg4ET2n7H9b6PoIbYlxV8PzaiVJxGLGJ2vWoXDo=
+X-Received: by 2002:a25:9701:0:b0:dc6:bb86:ea11 with SMTP id
+ d1-20020a259701000000b00dc6bb86ea11mr4583776ybo.19.1706848871267; Thu, 01 Feb
+ 2024 20:41:11 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240201193014.2785570-1-tatashin@google.com>
-In-Reply-To: <20240201193014.2785570-1-tatashin@google.com>
-From: Yosry Ahmed <yosryahmed@google.com>
-Date: Thu, 1 Feb 2024 14:28:58 -0800
-Message-ID: <CAJD7tkbDwwzTfm5h6v5f8XSN8KduBy6h7EVuQt0CAfX--Nb0gQ@mail.gmail.com>
-Subject: Re: [PATCH] iommu/iova: use named kmem_cache for iova magazines
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-	rientjes@google.com
+References: <20240201093515.849873-1-howardyen@google.com> <f5b626ae-bda1-479f-bc14-b1fd7ba043cf@arm.com>
+ <2024020156-reshuffle-salvaging-8161@gregkh>
+In-Reply-To: <2024020156-reshuffle-salvaging-8161@gregkh>
+From: Howard Yen <howardyen@google.com>
+Date: Fri, 2 Feb 2024 12:40:59 +0800
+Message-ID: <CAJDAHvZ=XVZ-Ea1LVqfTnDXJ+J=PLbZNCZkuSpvdOtEsreguWw@mail.gmail.com>
+Subject: Re: [PATCH] dma-coherent: add support for multi coherent rmems per dev
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, hch@lst.de, m.szyprowski@samsung.com, 
+	andriy.shevchenko@linux.intel.com, petr.tesarik.ext@huawei.com, 
+	rafael@kernel.org, broonie@kernel.org, james@equiv.tech, james.clark@arm.com, 
+	masahiroy@kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 1, 2024 at 11:30=E2=80=AFAM Pasha Tatashin
-<pasha.tatashin@soleen.com> wrote:
+On Thu, Feb 1, 2024 at 11:41=E2=80=AFPM Greg KH <gregkh@linuxfoundation.org=
+> wrote:
 >
-> From: Pasha Tatashin <pasha.tatashin@soleen.com>
+> On Thu, Feb 01, 2024 at 10:45:30AM +0000, Robin Murphy wrote:
+> > On 2024-02-01 9:35 am, Howard Yen wrote:
+> > > Add support for multiple coherent rmems per device. This patch addes
+> > > dma_mem_list to device structure to store multiple rmems.
+> > >
+> > > These multiple rmems can be assigned to the device one by one by
+> > > of_reserved_mem_device_init_by_idx() with the memory-region
+> > > declaration in device tree as below and store the rmem to the dma_mem=
+_list.
+> > >
+> > >     device1@0 {
+> > >             ...
+> > >             memory-region =3D <&reserved_mem0>, <&reserved_mem1>;
+> > >             ...
+> > >     };
+> > >
+> > > When driver tries to allocate memory from the rmems, looks for the fi=
+rst
+> > > available rmem and allocates the memory from this rmem.
+> > >
+> > > Then if driver removed, of_reserved_mem_device_release() needs to be
+> > > invoked to release all the rmems assigned to the device.
+> > >
+> > > Signed-off-by: Howard Yen <howardyen@google.com>
+> > > ---
+> > >   include/linux/device.h |  1 +
+> > >   kernel/dma/coherent.c  | 66 +++++++++++++++++++++++++++++++++++----=
+---
+> > >   2 files changed, 56 insertions(+), 11 deletions(-)
+> > >
+> > > diff --git a/include/linux/device.h b/include/linux/device.h
+> > > index 97c4b046c09d..c8682ee507cf 100644
+> > > --- a/include/linux/device.h
+> > > +++ b/include/linux/device.h
+> > > @@ -751,6 +751,7 @@ struct device {
+> > >   #ifdef CONFIG_DMA_DECLARE_COHERENT
+> > >     struct dma_coherent_mem *dma_mem; /* internal for coherent mem
+> > >                                          override */
+> > > +   struct list_head        dma_mem_list;
+> >
+> > I'm not necessarily against the idea, but only if it's implemented sens=
+ibly.
+> > If we're going to have a list of these it should *replace* the existing
+> > pointer, not do this weird thing with both.
 >
-> The magazine buffers can take gigabytes of kmem memory, dominating all
-> other allocations. For observability prurpose create named slab cache so
-> the iova magazine memory overhead can be clearly observed.
+> Agreed, it should be one pointer max for this structure for this type of
+> thing.  Why not move it into the dma_coherent_mem structure?
 >
-> With this change:
+> thanks,
 >
-> > slabtop -o | head
->  Active / Total Objects (% used)    : 869731 / 952904 (91.3%)
->  Active / Total Slabs (% used)      : 103411 / 103974 (99.5%)
->  Active / Total Caches (% used)     : 135 / 211 (64.0%)
->  Active / Total Size (% used)       : 395389.68K / 411430.20K (96.1%)
->  Minimum / Average / Maximum Object : 0.02K / 0.43K / 8.00K
->
-> OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
-> 244412 244239 99%    1.00K  61103       4    244412K iommu_iova_magazine
->  91636  88343 96%    0.03K    739     124      2956K kmalloc-32
->  75744  74844 98%    0.12K   2367      32      9468K kernfs_node_cache
->
-> On this machine it is now clear that magazine use 242M of kmem memory.
->
-> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-> ---
->  drivers/iommu/iova.c | 57 +++++++++++++++++++++++++++++++++++++++++---
->  1 file changed, 54 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index d30e453d0fb4..617bbc2b79f5 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -630,6 +630,10 @@ EXPORT_SYMBOL_GPL(reserve_iova);
->
->  #define IOVA_DEPOT_DELAY msecs_to_jiffies(100)
->
-> +static struct kmem_cache *iova_magazine_cache;
-> +static unsigned int iova_magazine_cache_users;
-> +static DEFINE_MUTEX(iova_magazine_cache_mutex);
-> +
->  struct iova_magazine {
->         union {
->                 unsigned long size;
-> @@ -654,11 +658,51 @@ struct iova_rcache {
->         struct delayed_work work;
->  };
->
-> +static int iova_magazine_cache_init(void)
-> +{
-> +       int ret =3D 0;
-> +
-> +       mutex_lock(&iova_magazine_cache_mutex);
-> +
-> +       iova_magazine_cache_users++;
-> +       if (iova_magazine_cache_users > 1)
-> +               goto out_unlock;
-> +
-> +       iova_magazine_cache =3D kmem_cache_create("iommu_iova_magazine",
-> +                                               sizeof(struct iova_magazi=
-ne),
-> +                                               0, SLAB_HWCACHE_ALIGN, NU=
-LL);
+> greg k-h
 
-Could this slab cache be merged with a compatible one in the slab
-code? If this happens, do we still get a separate entry in
-/proc/slabinfo?
+I'm considering to modify the change to
 
-It may be useful to use SLAB_NO_MERGE if the purpose is to
-specifically have observability into this slab cache, but the comments
-above the flag make me think I may be misunderstanding it.
+1. Move it into the dma_coherent_mem structure, like
+
+     HEAD
+mem0->node
+
+This case, if I check list_empty(mem0->node), it would give me the
+list is empty, but actually there is one rmem.
+
+2. Replace the pointer to a list_head.
+
+    HEAD
+dma_mems ---> mem0->node
+
+This case, if I check list_empty(dma_mems), it would give me the list
+is non-empty, it matches the actual status.
+
+So, the 2nd looks reasonable, I'm going to upload a v2 patch with the
+2nd approach, does that make sense?
+
+--=20
+Regards,
+
+Howard
