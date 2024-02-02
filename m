@@ -1,62 +1,61 @@
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+Received: from mail-qv1-f43.google.com (mail-qv1-f43.google.com [209.85.219.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38550146900
-	for <iommu@lists.linux.dev>; Fri,  2 Feb 2024 15:36:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39C081872
+	for <iommu@lists.linux.dev>; Fri,  2 Feb 2024 15:39:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706888193; cv=none; b=EjJz8wleHCQXRgQoosy8H5VuzoqkIjZYVKBr8mdmPPIQ0Gm3iskAW3J7rkt+nqylkdcVbQxdISuDZzdquLQaP+ses1uMppl6ymeC5muvcEu+W2oEo9fMPJRCrM7nuLnM05gln7/yrSoWSQ3C5lMRDfOQmgP3q9be6mo+Sx6a3I8=
+	t=1706888378; cv=none; b=dR48QyRheo9yV9Bpx6E1G3dNZJvbSA2t3PyONY56dQJWNQe2O3MJK70njav5MeiD3lsFeDCZhG6OpYuop4kKVa4UZbZ52Ex1h0VKFizfkjLLPkvYw/AdwRefpb8snODFMzIRiCT5LKczvLppuBpIUjwREVfS/xp4/CpOfsWhYYM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706888193; c=relaxed/simple;
-	bh=Fg0vF/DKGnFKdPAxtNJWEsCiIanMISLov5rth1azicY=;
+	s=arc-20240116; t=1706888378; c=relaxed/simple;
+	bh=4ZWofalsuZmb/ntmgNIW+GtgsDeiz2TAm4x47GB9Y40=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tuYh+gwsS1Ha1N1QnLZN0QB8vKfwa69qxzTomvFE1nX2W7Ehv0xEsP/VEHid6A5JXEzf1JUoELErDCeF6UtV1U6JZz753LUX54Xa1KYVLx691T06elvZddh9twHdC42RdjMMS6Z9LPRfq4A/15nYgKT9udr7JoENTnHHfZ5G0j0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=gUV4K+nf; arc=none smtp.client-ip=209.85.222.182
+	 Content-Type:Content-Disposition:In-Reply-To; b=dBv0O+2nMzpPmE+wKQujWwKASnvDf/OBI+Q+bug187MfCN0dZxm5zjRrlBvqZB6CqyDKXxzWEisRTEJP8KeavieHdwuWUCJLGsWLxLmugOtQ5oXL1SQDs/wXvWyAfA/q1plzFOMJ+pVtcsFjyKclVVPh17nLWgyo9rpUcmZndZ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=auHbB8SS; arc=none smtp.client-ip=209.85.219.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="gUV4K+nf"
-Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-78405c9a152so147578585a.1
-        for <iommu@lists.linux.dev>; Fri, 02 Feb 2024 07:36:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="auHbB8SS"
+Received: by mail-qv1-f43.google.com with SMTP id 6a1803df08f44-6818a9fe3d4so11738266d6.0
+        for <iommu@lists.linux.dev>; Fri, 02 Feb 2024 07:39:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1706888185; x=1707492985; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1706888375; x=1707493175; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jRSa4TT8HVH8576bDhqIPmdbLRM9nyjGP0P+K9geus8=;
-        b=gUV4K+nfLi4hF5jkcme6NqI9tAGM/0NFMQpgERB1/tfGikTSHeXsTkzW5X4mefnuot
-         iQU4LsB2JKtAfkY/wsmDMw6smenCuDNdUDqn0MrHygVXy+AvfZTGf8OlaBRvcBKxQlIb
-         SGOvjF0VqJOv2kw6RxDjnSqVvdQQljHSEDUKtnMxQvhBEJjn9TBmHocyg9hL2enXzcOJ
-         4VXEDOw4xHzNVYxCrAJywtuw80sLOtLdZ+B1VEYy2TAlJ1wovfIigsE4xu3J9+aUeF03
-         mk4BGxSq7GACDD7l3yd1i0pFOrGed4PjS89UJwl9ji0wtCZD7GUDY0gFJGI+M+jTatjD
-         j/GQ==
+        bh=lU39QnoNXjcBC7nfuMXyZD80hgMpGm0/TrjMwiAD348=;
+        b=auHbB8SS48tGemZWw5Zt3BtfzdqibAenfgfSUMMiPSOMVEpMLqhCsx2OBWe5SR1Zh3
+         V4CF+Eqqrt+r5RuO/nU5FitiugOLyMSVfN4VXn+3lVYP5nqhJnKh8Gav3wnKjcEQeTsV
+         OknLEZB7D8le2Ch4UXsYtEj59pV27KkR3nJkpt/XTu5/QQJD7VZlh3I/ODxnEroQnbto
+         6nXU408PZThOW3jOGkzeDMm1AYNHL93Poly4EF3spJXJsq4soXRYcvIP5dw72aG5L89q
+         80iT/c+8PglFHdvZylfVC63aKK4MziQmNQg6O7bnRnirZWbC6MzdPAQEde0K7IRMpbl/
+         jtxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706888185; x=1707492985;
+        d=1e100.net; s=20230601; t=1706888375; x=1707493175;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=jRSa4TT8HVH8576bDhqIPmdbLRM9nyjGP0P+K9geus8=;
-        b=aOpbMahvp/iHdSeVFeThVB1F9wwh04nrLfhLdp6XIAZhJJqBKp2XCVQqZm4VlE7fl3
-         kKh4ImIrOabFmbjKxuWwZukEvM9t2zTOdVXVcYKfruuNAfne66BRSdVnnTNZtNko3nJt
-         ZiF+JQahkTeBvPVPmQ6yj48bAzfxT8lFXK9xtR9bTNJAdcUrem3eSxuWgOyYZ00/SJsm
-         463XiYb2G+y/ILF6bUL2ViUC1jtr7Qz0ogh83a7wCKIwjPp+EalYe6KVPJH0u3rYnko1
-         OgiHkNLmrPV3bE8VbjdPILvL6hTAdxZ/4m3NbTo36FgHFB57Mh91JWByPXx3Z3tFXqhK
-         5zNA==
-X-Gm-Message-State: AOJu0YzLh+nV9gIVVACPwh0t7WaN/ariQzOmOS1bOKjnNaoSSAscx31Y
-	ft0GvJG0NAhrVt9wPvrU3d3YIvxbN5+GibdE8a/Y1jNgEhsKG8bPyl4nm2Rlt9ljpREvtH0/WES
-	r
-X-Google-Smtp-Source: AGHT+IHgoLTjDGqcVBJHeDO/+4xepghxs6zy3yXbqAEo9+eksg5MPspO+NnPRp35JWUiTkmwcplNIA==
-X-Received: by 2002:a05:620a:1447:b0:785:43d7:cd0d with SMTP id i7-20020a05620a144700b0078543d7cd0dmr5503107qkl.27.1706888185060;
-        Fri, 02 Feb 2024 07:36:25 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCUFwKseQX4Qsq/U7oliva32huh0WpnlP9H2RmmN32JeZGOlrWJLaJZWLc9ppObbDwYDQV4sN7pUUZMCsO8tSFXSQJmcRGn+0ufquLHbJD1n5fzINj6sjjJv3dkjJOrN1QEsZiBVWFkYzeqnXqMwOqEHyIymkSi3B0oCOc5x9B6RE9X0hh8jrCLAS/PANjfoSo/rRgMRJGBcFJUCufODDCXB9jPLvby/TOw6PDi/PiXXaNWf6dsKiH+LDw3kiKrGVwerK4/DkUHol9QZWPHWp5Omyx0ca2rOvsUYk+OUWtuGlc7B0eOG3a6RzgWhdK8dYHm0gscYJwdfLAiXXgZ7SzzLyziu3DsqSb/YsxwTsJLPwdREaYfhXn96czeFqnVrIVcsWxSSIWpVfPCraGXpvS0VTC8bFw6Xzg4VBcDrwgor7MFt03tk
+        bh=lU39QnoNXjcBC7nfuMXyZD80hgMpGm0/TrjMwiAD348=;
+        b=i+4IF86z8Nz5GQOXW9xHyxa3NOYoi3y6lcty+ksNFx0lICNZ+1N4LHFHuul8HjJqlI
+         XCMb1i8vFzDV6/PyL+kdlR0lS9bbjWTRRqy+7V9+hc79N3vaJjw0yu8j8lLRzlkQC0ta
+         ewHD9k5zmZ07ZNi3Th0RxKdjJAlQDMVa5tu4lcZJzcViHZ8Mdfjqn7gti7yz87b7fwoy
+         lwICCjYeWm6Sgm0qz1CEy9KHHTUMsWCCK1II5Wldg+9nEe7YdmQncF+YqITAp5a+G9/F
+         qvJ0OUoauPOmiPhVfz5e7b9Dp5aNtjIsZ3rcFaVBJaZKLqtM/Mytf/MTKbUDp/DWLKFu
+         F++Q==
+X-Gm-Message-State: AOJu0Yzp4UUEEpi+P28LZTVv8GD5fhZAuVd5vNMUEV7VUTe1cHKB3R+h
+	qdSv6xywRLQ6UDPTdk7Zlf5KJFju0+noyD9TTTXrEmgh3QBRzo37QAN+Vn3CZ54=
+X-Google-Smtp-Source: AGHT+IHiw+AEztOJJqEv+FuIsKu3uPT1wuYZJmWuQWWrW1zNDN04EQCohZ3acbfSojrNbGI++36prA==
+X-Received: by 2002:a0c:f38f:0:b0:68c:83f9:fa3c with SMTP id i15-20020a0cf38f000000b0068c83f9fa3cmr2468777qvk.65.1706888375070;
+        Fri, 02 Feb 2024 07:39:35 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCVAceCf+KoqRHjUTfSYwJrnQ15qAFsD6FwrGJ2OFm83JtDL7BCcZ/JsXY/5AxhcVyY4PpqDhCNhmskIo4bnmfKFlnH1gdyuljk9N9A6RnVbD7VFgPyIBMiqoE7i3je93SXXFLHvDaNhqHmcMAJHesqukN2bjxRk80vE9JnS8KH13l3/qeMgcXk5+9R0/zQz9GPCOSwQuXjSJt5A57Jx00cSKDI7wE+ak37jQMuUKmDmKDWRbBaAwyoy/zwmAwHto2S4SNtSHUVKoA3T4Dx/Fk8HPdodxFAAcwWVoODL7tzBMw6nO4Hoe+jHcs3lTw158b5TQWmXQ9KoSlg3gamJsCzztQ3HoAMsji5xXx5ui9rJ7AmYnYSUazsT258mSUBa4rhB/BL5gpgyom1msg+dVxRl/otZiHF9Fy3QcRq1SV9hbIB6vHMa
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id vu21-20020a05620a561500b0078552f53b85sm724769qkn.86.2024.02.02.07.36.24
+        by smtp.gmail.com with ESMTPSA id d5-20020a05620a240500b007840a2586cbsm760828qkn.110.2024.02.02.07.39.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Feb 2024 07:36:24 -0800 (PST)
+        Fri, 02 Feb 2024 07:39:34 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rVvaZ-00AwH2-RL;
-	Fri, 02 Feb 2024 11:36:23 -0400
-Date: Fri, 2 Feb 2024 11:36:23 -0400
+	id 1rVvde-00AwI7-14;
+	Fri, 02 Feb 2024 11:39:34 -0400
+Date: Fri, 2 Feb 2024 11:39:34 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -68,10 +67,11 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Longfang Liu <liulongfang@huawei.com>,
 	Yan Zhao <yan.y.zhao@intel.com>, iommu@lists.linux.dev,
 	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v10 15/16] iommu: Make iopf_group_response() return void
-Message-ID: <20240202153623.GA50608@ziepe.ca>
+Subject: Re: [PATCH v10 16/16] iommu: Make iommu_report_device_fault() reutrn
+ void
+Message-ID: <20240202153934.GB50608@ziepe.ca>
 References: <20240122054308.23901-1-baolu.lu@linux.intel.com>
- <20240122054308.23901-16-baolu.lu@linux.intel.com>
+ <20240122054308.23901-17-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,47 +80,24 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240122054308.23901-16-baolu.lu@linux.intel.com>
+In-Reply-To: <20240122054308.23901-17-baolu.lu@linux.intel.com>
 
-On Mon, Jan 22, 2024 at 01:43:07PM +0800, Lu Baolu wrote:
-> The iopf_group_response() should return void, as nothing can do anything
-> with the failure. This implies that ops->page_response() must also return
-> void; this is consistent with what the drivers do. The failure paths,
-> which are all integrity validations of the fault, should be WARN_ON'd,
-> not return codes.
+On Mon, Jan 22, 2024 at 01:43:08PM +0800, Lu Baolu wrote:
+> As the iommu_report_device_fault() has been converted to auto-respond a
+> page fault if it fails to enqueue it, there's no need to return a code
+> in any case. Make it return void.
 > 
-> If the iommu core fails to enqueue the fault, it should respond the fault
-> directly by calling ops->page_response() instead of returning an error
-> number and relying on the iommu drivers to do so. Consolidate the error
-> fault handling code in the core.
-> 
-> Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  include/linux/iommu.h                       |  14 +--
->  drivers/iommu/intel/iommu.h                 |   4 +-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  50 +++-----
->  drivers/iommu/intel/svm.c                   |  18 +--
->  drivers/iommu/io-pgfault.c                  | 132 +++++++++++---------
->  5 files changed, 99 insertions(+), 119 deletions(-)
+>  include/linux/iommu.h                       |  5 ++---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  4 ++--
+>  drivers/iommu/intel/svm.c                   | 19 +++++++----------
+>  drivers/iommu/io-pgfault.c                  | 23 +++++++--------------
+>  4 files changed, 19 insertions(+), 32 deletions(-)
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
->  
-> +static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
-> +					   struct iopf_fault *evt,
-> +					   struct iopf_group *abort_group)
-> +{
-> +	struct iopf_fault *iopf, *next;
-> +	struct iopf_group *group;
-> +
-> +	group = kzalloc(sizeof(*group), GFP_KERNEL);
-> +	if (!group) {
-> +		/*
-> +		 * We always need to construct the group as we need it to abort
-> +		 * the request at the driver if it cfan't be handled.
-                                                  ^^^^^^ can't
-
+Typo in subject 'reutrn' -> 'return'
 
 Jason
