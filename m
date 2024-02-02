@@ -1,212 +1,109 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 175461872
-	for <iommu@lists.linux.dev>; Fri,  2 Feb 2024 15:17:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18DE67E5
+	for <iommu@lists.linux.dev>; Fri,  2 Feb 2024 15:21:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706887063; cv=none; b=kZJvj0CoaXLonz/7r2HEFFSEfdZU02UTjFW0K+NO6PRiY8mh0di4FWXwOnkBsUVhlS7olR0BJI6Ei3oFFzRRNlxJtPvm9sQqDn9S9jQzeI5EDvu0IYm649AySADPqSCrZViTA9WzA7qq3RITJ6q1fE+z4ZEHaxJ/RXo32bNpY6k=
+	t=1706887314; cv=none; b=hQbUeKMTEE3UsYp1Dw2M4XjNYmH+3rfxeFX72cnK/yvrmbUwYwxq3Ewpfm+djZrGAqr6LD+6o7VZ7E4051RVv+JLtsNCzuPXXYN9tf5BjDymjraKb+sgG+0MvtE6PKKxGDE7N+uMZ0VH/6Yq5JfYXEjigiDb89dg2ZNfQ8jD3ZU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706887063; c=relaxed/simple;
-	bh=OWlLQ9vouatLshPCxfsw92f5stKWigHHvZ4vUeAwWEk=;
+	s=arc-20240116; t=1706887314; c=relaxed/simple;
+	bh=OHzDeyprsO4Ikj8LZKs0XiL2LcvBfyP0eAmz3bYx7Ms=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SaMrzgqCS/U+jP1Cccc7wUOkpmHsbzcw7IlDZeQa1bVpl1sPahsMrZGPu8buTUM41nwEqeMq/qR3q5JXUCDy9hUE5xwrV3HEOggtu8g5rA1QJKWCaXLr2Jrv6vVx8WjNnukngQCxLCtv+ChGhBdzfuobtrjV0AitfV9xt/Ud2LE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=R6eQF/7x; arc=none smtp.client-ip=209.85.222.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=fRzvdc6ZmwlxIS2Gu54uJTB5lKIF8MV1DlGqp/KKvE2UYmPrJjS/BnnYoPgeuzrlac80/a0GEzcI52vp5gG48yU0Ik/th4fcYWNs/6IGv0eFOSmjVG5BdV7/f6Q9FgKljQzGWJiA/ZxAOvOda016ehQpWl+yssXb+q9sucop6L8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aRKhDbVF; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="R6eQF/7x"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-783e22a16d4so245500785a.0
-        for <iommu@lists.linux.dev>; Fri, 02 Feb 2024 07:17:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1706887060; x=1707491860; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+UIsmd3tMYZto4C+9by9gvac1oOfflqYYlLmAhYvdwI=;
-        b=R6eQF/7xF6erls2kwQao9QeZfYwWxecLot+ed7wMY3Y8/db3F/CKWKVlA565W+PjGk
-         kEbXiH87dicfPPhi4iIGl1I2H0BtvRpTS0HOrQ7JFtvDDFXRiSL/vwFDNJHN9X8jhTZR
-         uPT1LVvn4wUwU7Z9tQMt6MyKWg2eGKfP4ckwI/LwfBl9MrzP2XGSZbLdYLHUNGc/ua8k
-         NnTZmklIVwl3pbWJtAODR7IjCKLQlBqDUPrjS0NrFk7rTuiU6VWG557NTRd1mxkmgNJn
-         HOIgLFI0c0Lv3PA7ElR/Ziur0iGx1U21Bupb9mQxD1G0C/CXABftx955auy11F4Kq+tB
-         xwSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706887060; x=1707491860;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+UIsmd3tMYZto4C+9by9gvac1oOfflqYYlLmAhYvdwI=;
-        b=K/ZQeYzSI+dYl5661QaMAMuaywhpbwZPYhZzacYfQOz3zrV2DeCQmVeM88kJfKVE2L
-         DQT4nBRebbgsgOArSnAWHz2KcmKmbbj30bGzZUbD4sothkF2oiJcZooEC2hhT3iqm5vy
-         YlqZqtpM3YIlYGycfUd6icHhHMt5Hh5w4SNRMvBnJ0x6ToQFWxIKBTEtvA9r/Pw6U9Aq
-         KzXbp6GcgtBJg4470wzXp739bTt4HKSyYZxRhKU4WHV+gEHElbVIF8pXB3mKKh2pLtoA
-         7XWJvhNGPRyYJNeu5Pc7/mzL9dk78dLsPyfbEzcol5RH3AFnVZga9JikYxEhZS6t+YXP
-         Edow==
-X-Gm-Message-State: AOJu0YymyU7nfAoAveFG5CLTEQsRBcK8FT+HacIPaIYtAf1b4iLLIcya
-	2j5UR/DkevIs/SfPuanzjpIX+BP4uDIHgMx+6EHvrhubmwPHHiFOLAb1MyvFQYU=
-X-Google-Smtp-Source: AGHT+IH8htGbuJ9nVDGmfGrbGHdd+l6est77g+TDXkp4/gkcIf1IJF0DTBWej6QHkX9D/bhFds9TVA==
-X-Received: by 2002:a05:620a:178e:b0:785:3ffa:68a5 with SMTP id ay14-20020a05620a178e00b007853ffa68a5mr4687099qkb.5.1706887059899;
-        Fri, 02 Feb 2024 07:17:39 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCWUsNAbF0NwQbNOCFPg3Xu0ERFPl/ib7bx6U3XIInxY5MMl9k3ph40F0f0b5mQx4lq+ts4HxcPvwv8lnTMdMXA+dxEg2Q1c8XdUHoZYfYyd3PMR7dp3n9yf25NN+aVMYXuus7ksA1n6Bw9cNEaVi+OAGjPc1b4E5iCJ0Ky3TA9jUheB8FOo/qM=
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id z13-20020a05620a100d00b00783f290c8f2sm749512qkj.9.2024.02.02.07.17.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Feb 2024 07:17:39 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rVvIQ-00AwAT-KQ;
-	Fri, 02 Feb 2024 11:17:38 -0400
-Date: Fri, 2 Feb 2024 11:17:38 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v5 11/14] iommu/amd: Add GCR3 [un]initialization function
-Message-ID: <20240202151738.GU50608@ziepe.ca>
-References: <20240118073339.6978-1-vasant.hegde@amd.com>
- <20240118073339.6978-12-vasant.hegde@amd.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aRKhDbVF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1706887313; x=1738423313;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=OHzDeyprsO4Ikj8LZKs0XiL2LcvBfyP0eAmz3bYx7Ms=;
+  b=aRKhDbVFOjh5hgJ8KzW3bUwi5N+nbNJlumbjAP06qjoSdSjO8Rqyj1x+
+   DZjmD9b4Ssoy+2iSywp5dm8RduXmCq2cNBrRkh/RYhoJWMt9gzd1lyABt
+   6eWTeqHhVLsJ14YkKuQVU3wysId9rdCJ0Om3yjFeNr6hrYfnfVOp2bW7b
+   zT2ODv+qu+XXh6gwcGEC80Vtz/Mz8VJ/AgO5YAq+fk5jw0RiQXDkpSn5D
+   kPLGuvBXLaugWG0yBH6rako2c5zI7qb/I2nHTo9+k5cqrTad4gkUZXubi
+   4XBJbK1CBq1ZwscxEtC2xJNV1FzowebjWGWa2912swE08wseILdJNUkGj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10971"; a="403349"
+X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
+   d="scan'208";a="403349"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2024 07:21:52 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10971"; a="908599841"
+X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
+   d="scan'208";a="908599841"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2024 07:21:49 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rVvAN-00000001IhH-1eWB;
+	Fri, 02 Feb 2024 17:09:19 +0200
+Date: Fri, 2 Feb 2024 17:09:18 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Howard Yen <howardyen@google.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, hch@lst.de,
+	m.szyprowski@samsung.com, petr.tesarik.ext@huawei.com,
+	rafael@kernel.org, broonie@kernel.org, james@equiv.tech,
+	james.clark@arm.com, masahiroy@kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH] dma-coherent: add support for multi coherent rmems per
+ dev
+Message-ID: <Zb0Fng6g-PjNznCH@smile.fi.intel.com>
+References: <20240201093515.849873-1-howardyen@google.com>
+ <f5b626ae-bda1-479f-bc14-b1fd7ba043cf@arm.com>
+ <2024020156-reshuffle-salvaging-8161@gregkh>
+ <CAJDAHvZ=XVZ-Ea1LVqfTnDXJ+J=PLbZNCZkuSpvdOtEsreguWw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240118073339.6978-12-vasant.hegde@amd.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJDAHvZ=XVZ-Ea1LVqfTnDXJ+J=PLbZNCZkuSpvdOtEsreguWw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Thu, Jan 18, 2024 at 07:33:36AM +0000, Vasant Hegde wrote:
-> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+On Fri, Feb 02, 2024 at 12:40:59PM +0800, Howard Yen wrote:
+> On Thu, Feb 1, 2024 at 11:41 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > On Thu, Feb 01, 2024 at 10:45:30AM +0000, Robin Murphy wrote:
+> > > On 2024-02-01 9:35 am, Howard Yen wrote:
+
+...
+
+> I'm considering to modify the change to
 > 
-> These functions are used in PASID to device bind path. In this path
-> it checks whether device GCR3 table is setup or not. If not it will
-> setup GCR3 table.
+> 1. Move it into the dma_coherent_mem structure, like
 > 
-> Also in attach device path change default GCR3 table to use MAX
-> supported PASIDs. Ideally it should use 1 level PASID table as its
-> using PASID zero only. But we don't have support to extend PASID table
-> yet. We will fix this later.
+>      HEAD
+> mem0->node
 > 
-> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-> Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> ---
->  drivers/iommu/amd/amd_iommu.h |  3 ++
->  drivers/iommu/amd/iommu.c     | 52 +++++++++++++++++++++++++++++++++--
->  2 files changed, 53 insertions(+), 2 deletions(-)
+> This case, if I check list_empty(mem0->node), it would give me the
+> list is empty, but actually there is one rmem.
 > 
-> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-> index d5e6315ef9dd..2d099c54b941 100644
-> --- a/drivers/iommu/amd/amd_iommu.h
-> +++ b/drivers/iommu/amd/amd_iommu.h
-> @@ -44,7 +44,10 @@ extern int amd_iommu_guest_ir;
->  extern enum io_pgtable_fmt amd_iommu_pgtable;
->  extern int amd_iommu_gpt_level;
->  
-> +/* SVA/PASID */
->  bool amd_iommu_pasid_supported(void);
-> +int amd_iommu_gcr3_init(struct iommu_dev_data *dev_data, ioasid_t pasids);
-> +void amd_iommu_gcr3_uninit(struct iommu_dev_data *dev_data);
->  
->  /* IOPF */
->  int amd_iommu_iopf_init(struct amd_iommu *iommu);
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 36a5458a7946..6f5900333946 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -93,6 +93,11 @@ static inline bool pdom_is_v2_pgtbl_mode(struct protection_domain *pdom)
->  	return (pdom && (pdom->pd_mode == PD_MODE_V2));
->  }
->  
-> +static inline bool pdom_is_in_pt_mode(struct protection_domain *pdom)
-> +{
-> +	return (pdom->domain.type == IOMMU_DOMAIN_IDENTITY);
-> +}
+> 2. Replace the pointer to a list_head.
+> 
+>     HEAD
+> dma_mems ---> mem0->node
+> 
+> This case, if I check list_empty(dma_mems), it would give me the list
+> is non-empty, it matches the actual status.
+> 
+> So, the 2nd looks reasonable, I'm going to upload a v2 patch with the
+> 2nd approach, does that make sense?
 
-Why? And what about blocking someday?
+I believe this is exactly what Robin told about "list to replace the pointer".
 
-Just use dev_data->gcr3_info.gcr3_tbl == NULL to indicate if GCR3 is
-loaded or not?
-
->  /*
->   * Allocate per device domain ID when using V2 page table
->   */
-> @@ -1837,6 +1842,46 @@ int amd_iommu_clear_gcr3(struct iommu_dev_data *dev_data, ioasid_t pasid)
->  	return ret;
->  }
->  
-> +int amd_iommu_gcr3_init(struct iommu_dev_data *dev_data, ioasid_t pasids)
-> +{
-> +	struct protection_domain *pdom = dev_data->domain;
-> +	int ret = 0;
-> +
-> +	lockdep_assert_held(&dev_data->lock);
-> +
-> +	/*
-> +	 * We cannot support PASID w/ existing v1 page table in the same domain
-> +	 * since it will be nested. However, existing domain w/ v2 page table
-> +	 * can be used for PASID.
-> +	 */
-> +	if (!pdom_is_v2_pgtbl_mode(pdom) && !pdom_is_in_pt_mode(pdom))
-> +		return -EOPNOTSUPP;
-
-Put the test directly in the set dev pasid op and it should be more
-like
-
-if (!dev_data->gcr3_info.gcr3_tbl && dev_data->domain->type & _IOMMU_DOMAIN_PAGING)
-    return -EINVAL;
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-And you need the mirroring test in alloc_dev to prevent changing the
-RID to things the driver does not yet support, I didn't notice that?
-
-> +	/* Allocate GCR3 table */
-> +	if (pdom_is_in_pt_mode(pdom) && dev_data->gcr3_info.gcr3_tbl == NULL) {
-> +		ret = setup_gcr3_table(&dev_data->gcr3_info,
-> +				       dev_to_node(dev_data->dev), pasids);
-> +
-> +		/* Update device table */
-> +		amd_iommu_dev_update_dte(dev_data, true);
-> +	}
-
-This shouldn't be any different from do_attach()
-
-> +
-> +	return ret;
-
-success oritened flow please
-
-> +void amd_iommu_gcr3_uninit(struct iommu_dev_data *dev_data)
-> +{
-> +	lockdep_assert_held(&dev_data->lock);
-> +
-> +	/* Free GCR3 table */
-> +	if (pdom_is_in_pt_mode(dev_data->domain)) {
-> +		free_gcr3_table(&dev_data->gcr3_info);
-> +
-> +		/* Update device table */
-> +		amd_iommu_dev_update_dte(dev_data, true);
-> +	}
-> +}
-
-Is it really worth freeing it?
-
->  static void set_dte_entry(struct amd_iommu *iommu,
->  			  struct iommu_dev_data *dev_data)
->  {
-> @@ -1986,9 +2031,12 @@ static int do_attach(struct iommu_dev_data *dev_data,
->  
->  	/* Init GCR3 table and update device table */
->  	if (domain->pd_mode == PD_MODE_V2) {
-> -		/* By default, setup GCR3 table to support single PASID */
-> +		/*
-> +		 * By default, setup GCR3 table to support MAX PASIDs
-> +		 * supported by the IOMMU HW.
-> +		 */
->  		ret = setup_gcr3_table(&dev_data->gcr3_info,
-> -				       dev_to_node(dev_data->dev), 1);
-> +				       dev_to_node(dev_data->dev), -1);
-
--1 should be dev->iommu->max_pasids, but better would be this specific
-device's max pasid size, cached from pci_max_pasids()
-
-Jason
