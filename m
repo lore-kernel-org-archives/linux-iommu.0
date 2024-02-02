@@ -1,393 +1,168 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBA961774E
-	for <iommu@lists.linux.dev>; Fri,  2 Feb 2024 07:12:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8994717C74;
+	Fri,  2 Feb 2024 08:00:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706857944; cv=none; b=mej61na5TTu21+Vp6jESdTwg1Ep698HMEqALuTUNscnBbpyBcfNayYw2Zwi2DT/7rTIclqhS0DXZxt2hS7zbis3ekYLapRMbiJdLGRPT61lDY9uoGjEeldKfG+6zYLgSBEfdtPEkYUVo8wknQFvupzJN0TwjCfaYDDyCF9xZRRg=
+	t=1706860816; cv=none; b=o1b1IhwKsv23gY1sShzWn56GyoU2pOuQf5SctIWYrYybWiPogTjLummPyhC3vaK2x2XH8fUdRr3APhSpuDfJ90Axcx+WVPYQ+lnoOfTbQorvmPgXpfzD4Hl0JQ6oFLg/o6TVObop9QdJDO6nBsp+ieZfRwwELLpqPcB30W+Xehc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706857944; c=relaxed/simple;
-	bh=2ndIOo4dz39N8cfPZUVmr/uUpT7HyLVecz4QxHeRM1c=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ZU7EBlqKIh3o/uJvYQwL+zM3mVAf6lpSK9qaC61hsAFomU+dOduprMzfT+fgzowRQ2ritzm/rv/kFXWhNKZvyjdFGenu2bqs3FOH5QrHQdJPCLkcN0ecuXfEfaxXYxzh9C/I59Nqd+CC9vuVVth/SYTwIRP8kSmsM8DBqt4WB0A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com; spf=none smtp.mailfrom=linux.vnet.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=tJ3YRqvO; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.vnet.ibm.com
+	s=arc-20240116; t=1706860816; c=relaxed/simple;
+	bh=qAV6GtNsepGCPpFh+XTiXiUUx7nFRuxFN5rMv9Jj/Zw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SrSBWxE5CFDGxaGf1jrZrjiHDGoKUSTzfjhR/J8pAO6ELEoluibGUG/Kd/ml/SL0kBoZh5UNYrpxRQ1+w1DrBoXFUi8FxEh7xkIcW0ZhC/r/WrDGdMqHtPDFS6QcY305fvwZUsG4kbQ7A+XBiw+uzb46TPFetJJzdfI8as6AJy8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=AJ71sJ5J; arc=none smtp.client-ip=13.77.154.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="tJ3YRqvO"
-Received: from pps.filterd (m0353727.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 4126b7GM028627;
-	Fri, 2 Feb 2024 07:12:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=5fFvED8ovugYDHfdqALce2nQfCQVcglfqjLqvKLd6ME=;
- b=tJ3YRqvOwI5f+LdTMluTOfYn5aML6N3hJLPBrL9mDl+HMoI/OVj5e/Zu/d9ds4nQJno1
- odRayBoTHH0HTKY6WVbMgpTWHB25WdLAc8agv2dG1uBJCkPMcsGHvV0+omq3fnByV9eH
- IC/rZlu2mpzFN1tu3De9Agj50SibYu74+TIiCfGhE3haXRUZVlkS1sj/mLb6dC6BoSj5
- ZLWNv0SsuqiDQmsVPNk4pbjvMmkEDS5HAFWSCSxf+TnbzIGCNeS3gmLEOdQNNSkpSulB
- ZVddGk539u2620auXrzFzA3QfuQhqE8UrMtD2gcLRA24N/XitPG9C1sxrH3oUcVsrNYR fA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w0u9erxd2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 02 Feb 2024 07:12:09 +0000
-Received: from m0353727.ppops.net (m0353727.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 4126c01N029658;
-	Fri, 2 Feb 2024 07:12:08 GMT
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w0u9erxas-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 02 Feb 2024 07:12:08 +0000
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 4124aupW007295;
-	Fri, 2 Feb 2024 07:12:01 GMT
-Received: from smtprelay03.dal12v.mail.ibm.com ([172.16.1.5])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3vwev2sb9s-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 02 Feb 2024 07:12:01 +0000
-Received: from smtpav06.wdc07v.mail.ibm.com (smtpav06.wdc07v.mail.ibm.com [10.39.53.233])
-	by smtprelay03.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 4127C0089306706
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Fri, 2 Feb 2024 07:12:00 GMT
-Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 8A9945804E;
-	Fri,  2 Feb 2024 07:12:00 +0000 (GMT)
-Received: from smtpav06.wdc07v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id AAF3958056;
-	Fri,  2 Feb 2024 07:11:54 +0000 (GMT)
-Received: from [9.43.107.173] (unknown [9.43.107.173])
-	by smtpav06.wdc07v.mail.ibm.com (Postfix) with ESMTP;
-	Fri,  2 Feb 2024 07:11:54 +0000 (GMT)
-Message-ID: <37666b87-0065-4717-b825-387a2bb96d82@linux.vnet.ibm.com>
-Date: Fri, 2 Feb 2024 12:41:53 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [mainline] [linux-next] [6.8-rc1] [FC] [DLPAR] OOps kernel crash
- after performing dlpar remove test
-Content-Language: en-US
-To: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-next@vger.kernel.org" <linux-next@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        iommu@lists.linux.dev
-Cc: will@kernel.org, joro@8bytes.org,
-        "sachinp@linux.vnet.com" <sachinp@linux.vnet.com>,
-        "abdhalee@linux.vnet.ibm.com" <abdhalee@linux.vnet.ibm.com>,
-        "mputtash@linux.vnet.com" <mputtash@linux.vnet.com>,
-        rafael.j.wysocki@intel.com, hch@lst.de, gregkh@linuxfoundation.org,
-        baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
-        jsnitsel@redhat.com, Robin Murphy <robin.murphy@arm.com>
-References: <b7e18415-c04d-412e-8129-22a144d736b9@linux.vnet.ibm.com>
- <01234ac0-f96d-4a18-8dfa-557020818215@arm.com>
-From: Tasmiya Nalatwad <tasmiya@linux.vnet.ibm.com>
-In-Reply-To: <01234ac0-f96d-4a18-8dfa-557020818215@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: IjMS4gbgQ4TnmfbHm25ohwNIZ_i-mstN
-X-Proofpoint-ORIG-GUID: DVKvbpkcqYffpQOkoOzm0u4j1v3Eta_7
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="AJ71sJ5J"
+Received: from [192.168.1.212] (181-28-144-85.ftth.glasoperator.nl [85.144.28.181])
+	by linux.microsoft.com (Postfix) with ESMTPSA id 3ED96206FCE8;
+	Fri,  2 Feb 2024 00:00:09 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 3ED96206FCE8
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+	s=default; t=1706860814;
+	bh=RqUi2YKVIPIVpKZeVHQdI0tcMqtjf4bjUPs1EOgyNYg=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=AJ71sJ5JN8uXSZuReh5V+cL3ujgCSEmUULo9BvKyylvOPfpDY7gUr8dOMVw/+yFFP
+	 7dEH4H48l9TKMi6RZlmFMwMyOvGkAUvoNH9Zsfl3Leu42vXL9TAoucT7uSh/sxJSTT
+	 sjX6s8rCPdRc6UWJqWO4TObjk4q/Y7vvckDv60PU=
+Message-ID: <3313c886-e964-48c3-8277-b47cb1955de9@linux.microsoft.com>
+Date: Fri, 2 Feb 2024 09:00:07 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-02_01,2024-01-31_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
- bulkscore=0 priorityscore=1501 phishscore=0 mlxscore=0 clxscore=1011
- impostorscore=0 malwarescore=0 mlxlogscore=999 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311290000 definitions=main-2402020051
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC V1 5/5] x86: CVMs: Ensure that memory conversions happen at
+ 2M alignment
+Content-Language: en-US
+To: Vishal Annapurve <vannapurve@google.com>
+Cc: Dave Hansen <dave.hansen@intel.com>, x86@kernel.org,
+ linux-kernel@vger.kernel.org, pbonzini@redhat.com, rientjes@google.com,
+ seanjc@google.com, erdemaktas@google.com, ackerleytng@google.com,
+ jxgao@google.com, sagis@google.com, oupton@google.com, peterx@redhat.com,
+ vkuznets@redhat.com, dmatlack@google.com, pgonda@google.com,
+ michael.roth@amd.com, kirill@shutemov.name, thomas.lendacky@amd.com,
+ dave.hansen@linux.intel.com, linux-coco@lists.linux.dev,
+ chao.p.peng@linux.intel.com, isaku.yamahata@gmail.com,
+ andrew.jones@linux.dev, corbet@lwn.net, hch@lst.de,
+ m.szyprowski@samsung.com, rostedt@goodmis.org, iommu@lists.linux.dev
+References: <20240112055251.36101-1-vannapurve@google.com>
+ <20240112055251.36101-6-vannapurve@google.com>
+ <6709a57c-48a0-4ddd-b64e-a1e34ae2b763@intel.com>
+ <CAGtprH_ANUVU+Dh1KOq0vpT7BGbCEvD2ab9B=sxjzHYsKxFGeA@mail.gmail.com>
+ <1d9d3372-825a-417a-8811-ffa501c83936@linux.microsoft.com>
+ <CAGtprH8r0kYYqGoumsVeZq42cX8CN3cchkuRYhQULqtb-1nKww@mail.gmail.com>
+From: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>
+In-Reply-To: <CAGtprH8r0kYYqGoumsVeZq42cX8CN3cchkuRYhQULqtb-1nKww@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Greetings,
-
-I have tried reverting some latest commits and tested the issue. I see
-reverting below commit hits to some other problem which was reported
-earlier and the patch for fixing that issue is under review
-
-1. Reverted commit :
-
-      commit 17de3f5fdd35676b0e3d41c7c9bf4e3032eb3673
-      iommu: Retire bus ops
-
-2. Below are the traces of other issue that was seen after reverting
-above commit, And below is the patch which fixes this issue is that is 
-under review
-
-Patch :
-https://www.mail-archive.com/linuxppc-dev@lists.ozlabs.org/msg225210.html
-
---- Traces ---
-
-[  981.124047] Kernel attempted to read user page (30) - exploit
-attempt? (uid: 0)
-[  981.124053] BUG: Kernel NULL pointer dereference on read at 0x00000030
-[  981.124056] Faulting instruction address: 0xc000000000689864
-[  981.124060] Oops: Kernel access of bad area, sig: 11 [#1]
-[  981.124063] LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=8192 NUMA pSeries
-[  981.124067] Modules linked in: sit tunnel4 ip_tunnel rpadlpar_io
-rpaphp xsk_diag nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib
-nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct
-nft_chain_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 bonding
-tls ip_set rfkill nf_tables libcrc32c nfnetlink pseries_rng vmx_crypto
-binfmt_misc ext4 mbcache jbd2 dm_service_time sd_mod t10_pi
-crc64_rocksoft crc64 sg ibmvfc scsi_transport_fc ibmveth mlx5_core mlxfw
-psample dm_multipath dm_mirror dm_region_hash dm_log dm_mod fuse
-[  981.124111] CPU: 24 PID: 78294 Comm: drmgr Kdump: loaded Not tainted
-6.5.0-rc6-next-20230817-auto #1
-[  981.124115] Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200
-0xf000006 of:IBM,FW1030.30 (NH1030_062) hv:phyp pSeries
-[  981.124118] NIP:  c000000000689864 LR: c0000000009bd05c CTR:
-c00000000005fb90
-[  981.124121] REGS: c0000000a878b1e0 TRAP: 0300   Not tainted
-(6.5.0-rc6-next-20230817-auto)
-[  981.124125] MSR:  8000000000009033 <SF,EE,ME,IR,DR,RI,LE>  CR:
-44822422  XER: 20040006
-[  981.124132] CFAR: c0000000009bd058 DAR: 0000000000000030 DSISR:
-40000000 IRQMASK: 0
-[  981.124132] GPR00: c0000000009bd05c c0000000a878b480 c000000001451400
-0000000000000000
-[  981.124132] GPR04: c00000000128d510 0000000000000000 c00000000eeccf50
-c0000000a878b420
-[  981.124132] GPR08: 0000000000000001 c00000000eed76e0 c000000002c24c28
-0000000000000220
-[  981.124132] GPR12: c00000000005fb90 c000001837969300 0000000000000000
-0000000000000000
-[  981.124132] GPR16: 0000000000000000 0000000000000000 0000000000000000
-0000000000000000
-[  981.124132] GPR20: c00000000125cef0 0000000000000000 c00000000125cf08
-c000000002bce500
-[  981.124132] GPR24: c0000000573e90c0 fffffffffffff000 c0000000573e93c0
-c0000000a877d2a0
-[  981.124132] GPR28: c00000000128d510 c00000000eeccf50 c0000000a877d2a0
-c0000000573e90c0
-[  981.124171] NIP [c000000000689864] sysfs_add_link_to_group+0x34/0x90
-[  981.124178] LR [c0000000009bd05c] iommu_device_link+0x5c/0x110
-[  981.124184] Call Trace:
-[  981.124186] [c0000000a878b480] [c00000000048d630]
-kmalloc_trace+0x50/0x140 (unreliable)
-[  981.124193] [c0000000a878b4c0] [c0000000009bd05c]
-iommu_device_link+0x5c/0x110
-[  981.124198] [c0000000a878b500] [c0000000009ba050]
-__iommu_probe_device+0x250/0x5c0
-[  981.124203] [c0000000a878b570] [c0000000009ba9e0]
-iommu_probe_device_locked+0x30/0x90
-[  981.124207] [c0000000a878b5a0] [c0000000009baa80]
-iommu_probe_device+0x40/0x70
-[  981.124212] [c0000000a878b5d0] [c0000000009baaf0]
-iommu_bus_notifier+0x40/0x80
-[  981.124217] [c0000000a878b5f0] [c00000000019aad0]
-notifier_call_chain+0xc0/0x1b0
-[  981.124221] [c0000000a878b650] [c00000000019b604]
-blocking_notifier_call_chain+0x64/0xa0
-[  981.124226] [c0000000a878b690] [c0000000009cd870] bus_notify+0x50/0x80
-[  981.124230] [c0000000a878b6d0] [c0000000009c8f04] device_add+0x744/0x9b0
-[  981.124235] [c0000000a878b790] [c00000000089f2ec]
-pci_device_add+0x2fc/0x880
-[  981.124240] [c0000000a878b840] [c00000000007ef90]
-of_create_pci_dev+0x390/0xa10
-[  981.124245] [c0000000a878b920] [c00000000007f858]
-__of_scan_bus+0x248/0x320
-[  981.124249] [c0000000a878ba00] [c00000000007c1f0]
-pcibios_scan_phb+0x2d0/0x3c0
-[  981.124254] [c0000000a878bad0] [c000000000107f08]
-init_phb_dynamic+0xb8/0x110
-[  981.124259] [c0000000a878bb40] [c008000002cc03b4]
-dlpar_add_slot+0x18c/0x380 [rpadlpar_io]
-[  981.124265] [c0000000a878bbe0] [c008000002cc0bec]
-add_slot_store+0xa4/0x150 [rpadlpar_io]
-[  981.124270] [c0000000a878bc70] [c000000000f2f800]
-kobj_attr_store+0x30/0x50
-[  981.124274] [c0000000a878bc90] [c000000000687368]
-sysfs_kf_write+0x68/0x80
-[  981.124278] [c0000000a878bcb0] [c000000000685d3c]
-kernfs_fop_write_iter+0x1cc/0x280
-[  981.124283] [c0000000a878bd00] [c0000000005909c8] vfs_write+0x358/0x4b0
-[  981.124288] [c0000000a878bdc0] [c000000000590cfc] ksys_write+0x7c/0x140
-[  981.124293] [c0000000a878be10] [c000000000036554]
-system_call_exception+0x134/0x330
-[  981.124298] [c0000000a878be50] [c00000000000d6a0]
-system_call_common+0x160/0x2e4
-[  981.124303] --- interrupt: c00 at 0x200013f21594
-[  981.124306] NIP:  0000200013f21594 LR: 0000200013e97bf4 CTR:
-0000000000000000
-[  981.124309] REGS: c0000000a878be80 TRAP: 0c00   Not tainted
-(6.5.0-rc6-next-20230817-auto)
-[  981.124312] MSR:  800000000280f033
-<SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 22000282  XER: 00000000
-[  981.124321] IRQMASK: 0
-[  981.124321] GPR00: 0000000000000004 00007ffff3a55c70 0000200014007300
-0000000000000007
-[  981.124321] GPR04: 000000013aff5750 0000000000000008 fffffffffbad2c80
-000000013afd02a0
-[  981.124321] GPR08: 0000000000000001 0000000000000000 0000000000000000
-0000000000000000
-[  981.124321] GPR12: 0000000000000000 0000200013b7bc30 0000000000000000
-0000000000000000
-[  981.124321] GPR16: 0000000000000000 0000000000000000 0000000000000000
-0000000000000000
-[  981.124321] GPR20: 0000000000000000 0000000000000000 0000000000000000
-0000000000000000
-[  981.124321] GPR24: 000000010ef61668 0000000000000000 0000000000000008
-000000013aff5750
-[  981.124321] GPR28: 0000000000000008 000000013afd02a0 000000013aff5750
-0000000000000008
-[  981.124356] NIP [0000200013f21594] 0x200013f21594
-[  981.124358] LR [0000200013e97bf4] 0x200013e97bf4
-[  981.124361] --- interrupt: c00
-[  981.124362] Code: 38427bd0 7c0802a6 60000000 7c0802a6 fba1ffe8
-fbc1fff0 fbe1fff8 7cbf2b78 38a00000 7cdd3378 f8010010 f821ffc1
-<e8630030> 4bff95d1 60000000 7c7e1b79
-[  981.124374] ---[ end trace 0000000000000000 ]---
-
-
-Thanks and Regards
-
-On 1/31/24 16:18, Robin Murphy wrote:
-> On 2024-01-31 9:19 am, Tasmiya Nalatwad wrote:
->> Greetings,
+On 02/02/2024 06:08, Vishal Annapurve wrote:
+> On Thu, Feb 1, 2024 at 5:32 PM Jeremi Piotrowski
+> <jpiotrowski@linux.microsoft.com> wrote:
 >>
->> [mainline] [linux-next] [6.8-rc1] [DLPAR] OOps kernel crash after 
->> performing dlpar remove test
+>> On 01/02/2024 04:46, Vishal Annapurve wrote:
+>>> On Wed, Jan 31, 2024 at 10:03 PM Dave Hansen <dave.hansen@intel.com> wrote:
+>>>>
+>>>> On 1/11/24 21:52, Vishal Annapurve wrote:
+>>>>> @@ -2133,8 +2133,10 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
+>>>>>       int ret;
+>>>>>
+>>>>>       /* Should not be working on unaligned addresses */
+>>>>> -     if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n", addr))
+>>>>> -             addr &= PAGE_MASK;
+>>>>> +     if (WARN_ONCE(addr & ~HPAGE_MASK, "misaligned address: %#lx\n", addr)
+>>>>> +             || WARN_ONCE((numpages << PAGE_SHIFT) & ~HPAGE_MASK,
+>>>>> +                     "misaligned numpages: %#lx\n", numpages))
+>>>>> +             return -EINVAL;
+>>>>
+>>>> This series is talking about swiotlb and DMA, then this applies a
+>>>> restriction to what I *thought* was a much more generic function:
+>>>> __set_memory_enc_pgtable().  What prevents this function from getting
+>>>> used on 4k mappings?
+>>>>
+>>>>
+>>>
+>>> The end goal here is to limit the conversion granularity to hugepage
+>>> sizes. SWIOTLB allocations are the major source of unaligned
+>>> allocations(and so the conversions) that need to be fixed before
+>>> achieving this goal.
+>>>
+>>> This change will ensure that conversion fails for unaligned ranges, as
+>>> I don't foresee the need for 4K aligned conversions apart from DMA
+>>> allocations.
 >>
->> --- Traces ---
+>> Hi Vishal,
 >>
->> [58563.146236] BUG: Unable to handle kernel data access at 
->> 0x6b6b6b6b6b6b6b83
->> [58563.146242] Faulting instruction address: 0xc0000000009c0e60
->> [58563.146248] Oops: Kernel access of bad area, sig: 11 [#1]
->> [58563.146252] LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=8192 NUMA pSeries
->> [58563.146258] Modules linked in: isofs cdrom dm_snapshot dm_bufio 
->> dm_round_robin dm_queue_length exfat vfat fat btrfs blake2b_generic 
->> xor raid6_pq zstd_compress loop xfs libcrc32c raid0 nvram rpadlpar_io 
->> rpaphp nfnetlink xsk_diag bonding tls rfkill sunrpc dm_service_time 
->> dm_multipath dm_mod pseries_rng vmx_crypto binfmt_misc ext4 mbcache 
->> jbd2 sd_mod sg ibmvscsi scsi_transport_srp ibmveth lpfc nvmet_fc 
->> nvmet nvme_fc nvme_fabrics nvme_core t10_pi crc64_rocksoft crc64 
->> scsi_transport_fc fuse
->> [58563.146326] CPU: 0 PID: 1071247 Comm: drmgr Kdump: loaded Not 
->> tainted 6.8.0-rc1-auto-gecb1b8288dc7 #1
->> [58563.146332] Hardware name: IBM,9009-42A POWER9 (raw) 0x4e0202 
->> 0xf000005 of:IBM,FW950.A0 (VL950_141) hv:phyp pSeries
->> [58563.146337] NIP:  c0000000009c0e60 LR: c0000000009c0e28 CTR: 
->> c0000000009c1584
->> [58563.146342] REGS: c00000007960f260 TRAP: 0380   Not tainted 
->> (6.8.0-rc1-auto-gecb1b8288dc7)
->> [58563.146347] MSR:  8000000000009033 <SF,EE,ME,IR,DR,RI,LE>  CR: 
->> 24822424  XER: 20040006
->> [58563.146360] CFAR: c0000000009c0e74 IRQMASK: 0
->> [58563.146360] GPR00: c0000000009c0e28 c00000007960f500 
->> c000000001482600 c000000003050540
->> [58563.146360] GPR04: 0000000000000000 c00000089a6870c0 
->> 0000000000000001 fffffffffffe0000
->> [58563.146360] GPR08: c000000002bac020 6b6b6b6b6b6b6b6b 
->> 6b6b6b6b6b6b6b6b 0000000000000220
->> [58563.146360] GPR12: 0000000000002000 c000000003080000 
->> 0000000000000000 0000000000000000
->> [58563.146360] GPR16: 0000000000000000 0000000000000000 
->> 0000000000000000 0000000000000001
->> [58563.146360] GPR20: c000000001281478 0000000000000000 
->> c000000001281490 c000000002bfed80
->> [58563.146360] GPR24: c00000089a6870c0 0000000000000000 
->> 0000000000000000 c000000002b9ffb8
->> [58563.146360] GPR28: 0000000000000000 c000000002bac0e8 
->> 0000000000000000 0000000000000000
->> [58563.146421] NIP [c0000000009c0e60] iommu_ops_from_fwnode+0x68/0x118
->> [58563.146430] LR [c0000000009c0e28] iommu_ops_from_fwnode+0x30/0x118
->
-> This implies that iommu_device_list has become corrupted. Looks like 
-> spapr_tce_setup_phb_iommus_initcall() registers an iommu_device which 
-> pcibios_free_controller() could free if a PCI controller is removed, 
-> but there's no path anywhere to ever unregister any of those IOMMUs. 
-> Presumably this also means that is a PCI controller is dynamically 
-> added after init, its IOMMU won't be set up properly either.
->
-> Thanks,
-> Robin.
->
->> [58563.146437] Call Trace:
->> [58563.146439] [c00000007960f500] [c00000007960f560] 
->> 0xc00000007960f560 (unreliable)
->> [58563.146446] [c00000007960f530] [c0000000009c0fd0] 
->> __iommu_probe_device+0xc0/0x5c0
->> [58563.146454] [c00000007960f5a0] [c0000000009c151c] 
->> iommu_probe_device+0x4c/0xb4
->> [58563.146462] [c00000007960f5e0] [c0000000009c15d0] 
->> iommu_bus_notifier+0x4c/0x8c
->> [58563.146469] [c00000007960f600] [c00000000019e3d0] 
->> notifier_call_chain+0xb8/0x1a0
->> [58563.146476] [c00000007960f660] [c00000000019eea0] 
->> blocking_notifier_call_chain+0x64/0x94
->> [58563.146483] [c00000007960f6a0] [c0000000009d3c5c] 
->> bus_notify+0x50/0x7c
->> [58563.146491] [c00000007960f6e0] [c0000000009cfba4] 
->> device_add+0x774/0x9bc
->> [58563.146498] [c00000007960f7a0] [c0000000008abe9c] 
->> pci_device_add+0x2f4/0x864
->> [58563.146506] [c00000007960f850] [c00000000007d5a0] 
->> of_create_pci_dev+0x390/0xa08
->> [58563.146514] [c00000007960f930] [c00000000007de68] 
->> __of_scan_bus+0x250/0x328
->> [58563.146520] [c00000007960fa10] [c00000000007a680] 
->> pcibios_scan_phb+0x274/0x3c0
->> [58563.146527] [c00000007960fae0] [c000000000105d58] 
->> init_phb_dynamic+0xb8/0x110
->> [58563.146535] [c00000007960fb50] [c0080000217b0380] 
->> dlpar_add_slot+0x170/0x3b4 [rpadlpar_io]
->> [58563.146544] [c00000007960fbf0] [c0080000217b0ca0] 
->> add_slot_store+0xa4/0x140 [rpadlpar_io]
->> [58563.146551] [c00000007960fc80] [c000000000f3dbec] 
->> kobj_attr_store+0x30/0x4c
->> [58563.146559] [c00000007960fca0] [c0000000006931fc] 
->> sysfs_kf_write+0x68/0x7c
->> [58563.146566] [c00000007960fcc0] [c000000000691b2c] 
->> kernfs_fop_write_iter+0x1c8/0x278
->> [58563.146573] [c00000007960fd10] [c000000000599f54] 
->> vfs_write+0x340/0x4cc
->> [58563.146580] [c00000007960fdc0] [c00000000059a2bc] 
->> ksys_write+0x7c/0x140
->> [58563.146587] [c00000007960fe10] [c000000000035d74] 
->> system_call_exception+0x134/0x330
->> [58563.146595] [c00000007960fe50] [c00000000000d6a0] 
->> system_call_common+0x160/0x2e4
->> [58563.146602] --- interrupt: c00 at 0x200004470cb4
->> [58563.146606] NIP:  0000200004470cb4 LR: 00002000043e7d04 CTR: 
->> 0000000000000000
->> [58563.146611] REGS: c00000007960fe80 TRAP: 0c00   Not tainted 
->> (6.8.0-rc1-auto-gecb1b8288dc7)
->> [58563.146616] MSR:  800000000280f033 
->> <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 24000282  XER: 00000000
->> [58563.146632] IRQMASK: 0
->> [58563.146632] GPR00: 0000000000000004 00007fffd3993420 
->> 0000200004557300 0000000000000007
->> [58563.146632] GPR04: 000001000d8a5270 0000000000000006 
->> fffffffffbad2c80 000001000d8a02a0
->> [58563.146632] GPR08: 0000000000000001 0000000000000000 
->> 0000000000000000 0000000000000000
->> [58563.146632] GPR12: 0000000000000000 000020000422bb50 
->> 0000000000000000 0000000000000000
->> [58563.146632] GPR16: 0000000000000000 0000000000000000 
->> 0000000000000000 0000000000000000
->> [58563.146632] GPR20: 0000000000000000 0000000000000000 
->> 0000000000000000 0000000000000000
->> [58563.146632] GPR24: 0000000106b41668 0000000000000000 
->> 0000000000000006 000001000d8a5270
->> [58563.146632] GPR28: 0000000000000006 000001000d8a02a0 
->> 000001000d8a5270 0000000000000006
->> [58563.146690] NIP [0000200004470cb4] 0x200004470cb4
->> [58563.146694] LR [00002000043e7d04] 0x2000043e7d04
->> [58563.146698] --- interrupt: c00
->> [58563.146701] Code: e9299a20 3d020173 39089a20 7fa94000 419e0038 
->> e9490018 7fbf5000 409e0020 48000070 60000000 60000000 60000000 
->> <e9490018> 7faaf840 419e0058 e9290000
->> [58563.146722] ---[ end trace 0000000000000000 ]---
+>> This assumption is wrong. set_memory_decrypted is called from various
+>> parts of the kernel: kexec, sev-guest, kvmclock, hyperv code. These conversions
+>> are for non-DMA allocations that need to be done at 4KB granularity
+>> because the data structures in question are page sized.
 >>
->
--- 
-Regards,
-Tasmiya Nalatwad
-IBM Linux Technology Center
+>> Thanks,
+>> Jeremi
+> 
+> Thanks Jeremi for pointing out these usecases.
+> 
+> My brief analysis for these call sites:
+> 1) machine_kexec_64.c, realmode/init.c, kvm/mmu/mmu.c - shared memory
+> allocation/conversion happens when host side memory encryption
+> (CC_ATTR_HOST_MEM_ENCRYPT) is enabled.
+> 2) kernel/kvmclock.c -  Shared memory allocation can be made to align
+> 2M even if the memory needed is lesser.
+> 3) drivers/virt/coco/sev-guest/sev-guest.c,
+> drivers/virt/coco/tdx-guest/tdx-guest.c - Shared memory allocation can
+> be made to align 2M even if the memory needed is lesser.
+> 
+> I admit I haven't analyzed hyperv code in context of these changes,
+> but will take a better look to see if the calls for memory conversion
+> here can fit the category of "Shared memory allocation can be made to
+> align 2M even if the memory needed is lesser".
+> 
+> Agree that this patch should be modified to look something like
+> (subject to more changes on the call sites)
+
+No, this patch is still built on the wrong assumptions. You're trying
+to alter a generic function in the guest for the constraints of a very
+specific hypervisor + host userspace + memory backend combination.
+That's not right.
+
+Is the numpages check supposed to ensure that the guest *only* toggles
+visibility in chunks of 2MB? Then you're exposing more memory to the host
+than the guest intends.
+
+If you must - focus on getting swiotlb conversions to happen at the desired
+granularity but don't try to force every single conversion to be >4K.
+
+Thanks,
+Jeremi
+
+
+> 
+> =============
+> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+> index e9b448d1b1b7..8c608d6913c4 100644
+> --- a/arch/x86/mm/pat/set_memory.c
+> +++ b/arch/x86/mm/pat/set_memory.c
+> @@ -2132,10 +2132,15 @@ static int __set_memory_enc_pgtable(unsigned
+> long addr, int numpages, bool enc)
+>         struct cpa_data cpa;
+>         int ret;
+> 
+>         /* Should not be working on unaligned addresses */
+>         if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n", addr))
+>                 addr &= PAGE_MASK;
+> 
+> +       if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT) &&
+> +               (WARN_ONCE(addr & ~HPAGE_MASK, "misaligned address:
+> %#lx\n", addr)
+> +                       || WARN_ONCE((numpages << PAGE_SHIFT) & ~HPAGE_MASK,
+> +                               "misaligned numpages: %#lx\n", numpages)))
+> +               return -EINVAL;
+> +
+>         memset(&cpa, 0, sizeof(cpa));
+>         cpa.vaddr = &addr;
+>         cpa.numpages = numpages;
 
