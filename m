@@ -1,63 +1,102 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A16A83A09;
-	Fri,  2 Feb 2024 21:00:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FA2518049;
+	Fri,  2 Feb 2024 21:17:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706907621; cv=none; b=HjnSXon2TZPlnV13GmNODFPPvIE0/J/KzD5c6J+86yhZxvvvzHC9i05AEBU/Ky0JoNjBLHM+RTLUBwNoAbg9hUf5/5E4IwF8WtY0PCD6y8KovAvzZ0/bNOqqbL9LlSQVQRHfvVQyphvPd7uGOTgjRHEbqcXBLPJTIsB2uafDvoM=
+	t=1706908672; cv=none; b=oUvP8UO8r5qhJmdkuNG0kCd+SMHOzUEIsoAAhwKY90owW0ljocQxrAIYRBsCd+QHYaNriqneTashk+JZdY9ne1VeiSro9/8fuWRq7Gf6geBtl88SizbIwMyRwiNOTT8Oa2niDsui4DmO6f8jxPvhkzHFl/b4uy3g/fEFviFNJ+g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706907621; c=relaxed/simple;
-	bh=fpsrycZWlW4RGEmSVWv995Cc9qn8ddAmB8Sry2i2gko=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=OqsbaqdyewWWd5BQt1TgLQojyuXdB46CR5qe3ykT0lbk4I39jPFZDgrgPL0EasHQNfvzZvklgZsh0rNoEARzlVbOEqxc8i+mqkPjZPf4SWLZDTAuLBqzzZFal6jBOUBLpHegrzLVioVbW9qhwBKQnkH96L0Cu1Kfl9qHpK/dmrs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b05PbVVm; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1706908672; c=relaxed/simple;
+	bh=/VCh0+HPTFG2lAHl8Ir63vVbaWY0czUg4EndhAmsGSQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sMJF2dFq6SfyqIbmqDFnncc9ZWvuG/RnyzaJmeuLBXwx2XTX0jXv8aj/qP4bTUEZO2Afj9uYByN3ed/ppxuLEVPZoHNdj45IAdX8oh+oJPWtnBXXXyM/AltjEiBp9Dojuh7BOLL8RCSprx4RCviilOnQJXprme+qYu77GDWHq9Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Yvjzg8v2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b05PbVVm"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6058DC43330;
-	Fri,  2 Feb 2024 21:00:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Yvjzg8v2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BB59C433F1;
+	Fri,  2 Feb 2024 21:17:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1706907621;
-	bh=fpsrycZWlW4RGEmSVWv995Cc9qn8ddAmB8Sry2i2gko=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=b05PbVVmXGsskLnyUp86GjcmQgyoUocHaDLGiamY2YCW+R6REA+lXcP4ioa3WNfNH
-	 uEPh+xWfoYxzzrhSjgp2vBL3p2nJfgw67ZnbnQB+ddIi1/ydnTM5hPsABvhiyjQO78
-	 DhFb6XKimpLR2dJydFiyEhPYO8kGGbVa6bxc/9amK0QdGZOEizqPEQdM5ppMDZxTh+
-	 tjuDqX0eKGQ55itggxgC0xxpp8yNITjm975hTUyP6nPcPL2/VqWzKCze3zDjapWNy4
-	 p05rZ/byY0Q+8jn+LVxtrUNBjSNb5+buR238WFiviVaT4Mq6VV4aH7Dw+7uyF49KYI
-	 9WFDbB3Cbf+Ww==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 4BE6CD8C978;
-	Fri,  2 Feb 2024 21:00:21 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v6.8-rc2
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <Zbz4DdrTl4js-w9H@8bytes.org>
-References: <Zbz4DdrTl4js-w9H@8bytes.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Zbz4DdrTl4js-w9H@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.8-rc2
-X-PR-Tracked-Commit-Id: d2d00e15808c37ec476a5c040ee2cdd23854ef18
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 4f18d3fd2975c943be91522d86257806374881b9
-Message-Id: <170690762130.8980.2695905021405938896.pr-tracker-bot@kernel.org>
-Date: Fri, 02 Feb 2024 21:00:21 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	s=k20201202; t=1706908671;
+	bh=/VCh0+HPTFG2lAHl8Ir63vVbaWY0czUg4EndhAmsGSQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Yvjzg8v2QAYg2UYrB+Vbpmh7MiYTumX0/jy0ou8L09dgeEe2AjOeKOVCL38zLtq2B
+	 3EnMHuQG6hAXgLSwJmtknf63d9V5i8YDh1rpVTeUYLV61yKuBCTvLG3v29pLYY4rV8
+	 1P322vsYsiW3VWtNnWfWTGjTrJMC5ANbMAwJuWvxAlIok42ADCt793YIY9Rkc9FWM1
+	 Coy70l89C4Rk6R5vGd1Uae0XVtfzACT+rF9BkzunQi0BL38hPlS2lFsw1sVmTQNW3I
+	 lcnCjL5AZ6qLnoamq/rh7NtQ+GQ91Erg9DYlSvDHqRKq0zW9fJoHt5VUEd+3kcWvYl
+	 CKI3HeTmiZgZg==
+Date: Fri, 2 Feb 2024 15:17:49 -0600
+From: Rob Herring <robh@kernel.org>
+To: Georgi Djakov <quic_c_gdjako@quicinc.com>
+Cc: krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, will@kernel.org,
+	robin.murphy@arm.com, joro@8bytes.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org, andersson@kernel.org,
+	konrad.dybcio@linaro.org, robdclark@gmail.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com,
+	quic_sukadev@quicinc.com, quic_pdaly@quicinc.com,
+	quic_sudaraja@quicinc.com, djakov@kernel.org
+Subject: Re: [PATCH v4 01/10] dt-bindings: iommu: Add Translation Buffer Unit
+ bindings
+Message-ID: <20240202211749.GA1467077-robh@kernel.org>
+References: <20240201210529.7728-1-quic_c_gdjako@quicinc.com>
+ <20240201210529.7728-2-quic_c_gdjako@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240201210529.7728-2-quic_c_gdjako@quicinc.com>
 
-The pull request you sent on Fri, 2 Feb 2024 15:11:25 +0100:
+On Thu, Feb 01, 2024 at 01:05:20PM -0800, Georgi Djakov wrote:
+> Add common bindings for the TBUs to describe their properties. The
+> TBUs are modelled as child devices of the IOMMU and each of them is
+> described with their compatible, reg and stream-id-range properties.
+> There could be other implementation specific properties to describe
+> any resources like clocks, regulators, power-domains, interconnects
+> that would be needed for TBU operation. Such properties will be
+> documented in a separate vendor-specific TBU schema.
+> 
+> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+> ---
+>  .../devicetree/bindings/iommu/arm,smmu.yaml   | 14 ++++++++++
+>  .../devicetree/bindings/iommu/tbu-common.yaml | 28 +++++++++++++++++++
+>  2 files changed, 42 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/tbu-common.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> index a4042ae24770..ba3237023b39 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+> @@ -235,6 +235,20 @@ properties:
+>        enabled for any given device.
+>      $ref: /schemas/types.yaml#/definitions/phandle
+>  
+> +  '#address-cells':
+> +    enum: [ 1, 2 ]
+> +
+> +  '#size-cells':
+> +    enum: [ 1, 2 ]
+> +
+> +  ranges: true
+> +
+> +patternProperties:
+> +  "^tbu@[0-9a-f]+$":
+> +    description: TBU child nodes
+> +    type: object
+> +    $ref: tbu-common.yaml#
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.8-rc2
+       additionalProperties: false
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/4f18d3fd2975c943be91522d86257806374881b9
 
-Thank you!
+However, that's going to break with the extra QCom properties. In 
+json-schema, you can't have 2 schemas and extend the properties of 
+their child nodes. The validator doesn't "see" the child node schemas at 
+the same time. You are going to have to move QCom SMMU to its own schema 
+and remove it from arm,smmu.yaml.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Rob
