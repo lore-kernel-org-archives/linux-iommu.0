@@ -1,109 +1,222 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18DE67E5
-	for <iommu@lists.linux.dev>; Fri,  2 Feb 2024 15:21:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C72613F001
+	for <iommu@lists.linux.dev>; Fri,  2 Feb 2024 15:25:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706887314; cv=none; b=hQbUeKMTEE3UsYp1Dw2M4XjNYmH+3rfxeFX72cnK/yvrmbUwYwxq3Ewpfm+djZrGAqr6LD+6o7VZ7E4051RVv+JLtsNCzuPXXYN9tf5BjDymjraKb+sgG+0MvtE6PKKxGDE7N+uMZ0VH/6Yq5JfYXEjigiDb89dg2ZNfQ8jD3ZU=
+	t=1706887528; cv=none; b=J2J2oie3DUut5a5KXu+ugSt3cIwxNBdDJIhsxzHurn0OqzI6NV/UR5PdjKlAIBCexy5MnbuFHxfSqGZWv4+RbYHmEKclJ3lIksoJGDUChPogtumEH9PWSb8NxM9z2DgXbMFrchx4/6eFSKQynSxkealiuUCH5sKOARMThK/5cPY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706887314; c=relaxed/simple;
-	bh=OHzDeyprsO4Ikj8LZKs0XiL2LcvBfyP0eAmz3bYx7Ms=;
+	s=arc-20240116; t=1706887528; c=relaxed/simple;
+	bh=fd5Fm5mndfJ8RH4PZODx22Pds+xpA0FGaYrAPc9LlQk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fRzvdc6ZmwlxIS2Gu54uJTB5lKIF8MV1DlGqp/KKvE2UYmPrJjS/BnnYoPgeuzrlac80/a0GEzcI52vp5gG48yU0Ik/th4fcYWNs/6IGv0eFOSmjVG5BdV7/f6Q9FgKljQzGWJiA/ZxAOvOda016ehQpWl+yssXb+q9sucop6L8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aRKhDbVF; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=jSxyN1y3JX8GvDCPejqMxfRv+fNAIRGglpa2GrO+xUXDDfH4yzTlHWNNOmIOUjAgVgQgXZjdUPHCiNch3B5H4850pYUIiM7kabz60kDkqGvO5Wu2pl4KELI5RftMcmkmQ09RwyF4k7IWs0Lz6B9GhntpE8cbF5fZ36jIJmAK+5k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=P4QdQDJ8; arc=none smtp.client-ip=209.85.160.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aRKhDbVF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1706887313; x=1738423313;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=OHzDeyprsO4Ikj8LZKs0XiL2LcvBfyP0eAmz3bYx7Ms=;
-  b=aRKhDbVFOjh5hgJ8KzW3bUwi5N+nbNJlumbjAP06qjoSdSjO8Rqyj1x+
-   DZjmD9b4Ssoy+2iSywp5dm8RduXmCq2cNBrRkh/RYhoJWMt9gzd1lyABt
-   6eWTeqHhVLsJ14YkKuQVU3wysId9rdCJ0Om3yjFeNr6hrYfnfVOp2bW7b
-   zT2ODv+qu+XXh6gwcGEC80Vtz/Mz8VJ/AgO5YAq+fk5jw0RiQXDkpSn5D
-   kPLGuvBXLaugWG0yBH6rako2c5zI7qb/I2nHTo9+k5cqrTad4gkUZXubi
-   4XBJbK1CBq1ZwscxEtC2xJNV1FzowebjWGWa2912swE08wseILdJNUkGj
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10971"; a="403349"
-X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
-   d="scan'208";a="403349"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2024 07:21:52 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10971"; a="908599841"
-X-IronPort-AV: E=Sophos;i="6.05,238,1701158400"; 
-   d="scan'208";a="908599841"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Feb 2024 07:21:49 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1rVvAN-00000001IhH-1eWB;
-	Fri, 02 Feb 2024 17:09:19 +0200
-Date: Fri, 2 Feb 2024 17:09:18 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Howard Yen <howardyen@google.com>
-Cc: Greg KH <gregkh@linuxfoundation.org>,
-	Robin Murphy <robin.murphy@arm.com>, hch@lst.de,
-	m.szyprowski@samsung.com, petr.tesarik.ext@huawei.com,
-	rafael@kernel.org, broonie@kernel.org, james@equiv.tech,
-	james.clark@arm.com, masahiroy@kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [PATCH] dma-coherent: add support for multi coherent rmems per
- dev
-Message-ID: <Zb0Fng6g-PjNznCH@smile.fi.intel.com>
-References: <20240201093515.849873-1-howardyen@google.com>
- <f5b626ae-bda1-479f-bc14-b1fd7ba043cf@arm.com>
- <2024020156-reshuffle-salvaging-8161@gregkh>
- <CAJDAHvZ=XVZ-Ea1LVqfTnDXJ+J=PLbZNCZkuSpvdOtEsreguWw@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="P4QdQDJ8"
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-218f4589f0cso920707fac.3
+        for <iommu@lists.linux.dev>; Fri, 02 Feb 2024 07:25:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1706887525; x=1707492325; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=kJn6Pun0u0IrpGUGH5bJmCoKGF2zOr8GqkkxvoOV3gw=;
+        b=P4QdQDJ82wTZC9LH572lB9MRIUQJ6vV0d7WIdFtrKZWcLdvveN/CWvcv2yFDeyWJmq
+         dR/3ZYGTvGMBLO4qHdR2Y8o+VLSaX6gtvbxjJXinQsWYEAUS8KGh5ll6vuareg8LRPMm
+         B77WPibKRy5PozFVnQ3eREPFPi7ZeFHntYm29BDtHnWKVvyNefSTxSG2AW6VCJZb4g2X
+         1qKm78DoEL9RnCswooF4uOHIty6PbTa+F0mF2IleH2S2pVSvSBjpfKlrhYXWnFPEu94p
+         eY9sZp4X9VxstZJthvby+GMQ/ydmg4FDEp3U2SAqpCxkeRI+WQoPhMXIfLTwgBhddhm8
+         Ugow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706887525; x=1707492325;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kJn6Pun0u0IrpGUGH5bJmCoKGF2zOr8GqkkxvoOV3gw=;
+        b=MzX6I66nuKPVd2M5j0GS7lu3dhMogDwNNY3Qo/kFanMBW58QPqeiA334Sg+FSK5khH
+         nHVMMvGSxwbj2VoS1KztfZDpUOpPTfl/IK54qIrnwJSPxnwjmZWXjKdC4MtMJfpVvNm/
+         t5yusxqhcor6QQZmCw1c/oegrJwpegrn0tC0GVZzdsg+gMQzffpuGQAkYTUpWvr/+3of
+         oM8QOcuoZK6YFsgtktaW9Si8qwlf4lYmBwBy57wKGggQ/exV1CZkfYYNgIpmud0u4F96
+         gC7ba4a8SfYkic9rQ7JdW094jur3/MIDqhoBlRQoS0xqhjC1lkyo+Xs7UD8TnYY5ssw0
+         iI1g==
+X-Gm-Message-State: AOJu0YxRVN9MGjUI9f+Ce7GfFtQE1VNcYSHdTvkEDEs6auaTbrQJ8K9P
+	1m+wclM4OETzv1TiIh1AXW8ThdN7+NwsU3dSPJ0u/leoteZL0ENTTcbtplGK1zM=
+X-Google-Smtp-Source: AGHT+IFjtEtmhw7tyVHqXgOMPARhUKPjbqN6RvRWIQJPbUoXMSgZc6WtzIRi7SY109oNtzPGSkXSTQ==
+X-Received: by 2002:a05:6870:d208:b0:219:3993:1b15 with SMTP id g8-20020a056870d20800b0021939931b15mr869011oac.39.1706887525191;
+        Fri, 02 Feb 2024 07:25:25 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCVL7TLlDSQcdbFst+eOoVLPjGDM+2b7ZqWaYc3tMI/jdhTRLkvMvtueEIYALWWNzOCM3unCF9ACmjHEL5yMwxfv8eSbaekz+Guqe2W8x76SAhxIA6B/JZvU4TGoE082acvKFJuJXO7R5rNqSUN8BAbxG1bMqCdP6EzOy07teJKzrV4VypVfIG8=
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id d13-20020a0cfe8d000000b0068c510634d1sm875653qvs.108.2024.02.02.07.25.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Feb 2024 07:25:24 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rVvPw-00AwC6-3F;
+	Fri, 02 Feb 2024 11:25:24 -0400
+Date: Fri, 2 Feb 2024 11:25:24 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vasant.hegde@amd.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v5 12/14] iommu/amd: Initial SVA support for AMD IOMMU
+Message-ID: <20240202152524.GA2606743@ziepe.ca>
+References: <20240118073339.6978-1-vasant.hegde@amd.com>
+ <20240118073339.6978-13-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJDAHvZ=XVZ-Ea1LVqfTnDXJ+J=PLbZNCZkuSpvdOtEsreguWw@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <20240118073339.6978-13-vasant.hegde@amd.com>
 
-On Fri, Feb 02, 2024 at 12:40:59PM +0800, Howard Yen wrote:
-> On Thu, Feb 1, 2024 at 11:41 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > On Thu, Feb 01, 2024 at 10:45:30AM +0000, Robin Murphy wrote:
-> > > On 2024-02-01 9:35 am, Howard Yen wrote:
+On Thu, Jan 18, 2024 at 07:33:37AM +0000, Vasant Hegde wrote:
 
-...
+> +static int iommu_pasid_enable(struct iommu_dev_data *dev_data)
+> +{
+> +	struct device *dev = dev_data->dev;
+> +	int ret = 0;
+> +
+> +	spin_lock(&dev_data->lock);
+> +
+> +	if (is_pasid_enabled(dev_data))
+> +		goto out;
+> +
+> +	if (!amd_iommu_pasid_supported()) {
+> +		ret = -ENODEV;
+> +		goto out;
+> +	}
+> +
+> +	/* attach_device path enables device PASID feature */
+> +	if (!dev_data->pasid_enabled) {
 
-> I'm considering to modify the change to
-> 
-> 1. Move it into the dma_coherent_mem structure, like
-> 
->      HEAD
-> mem0->node
-> 
-> This case, if I check list_empty(mem0->node), it would give me the
-> list is empty, but actually there is one rmem.
-> 
-> 2. Replace the pointer to a list_head.
-> 
->     HEAD
-> dma_mems ---> mem0->node
-> 
-> This case, if I check list_empty(dma_mems), it would give me the list
-> is non-empty, it matches the actual status.
-> 
-> So, the 2nd looks reasonable, I'm going to upload a v2 patch with the
-> 2nd approach, does that make sense?
+How many times are we testing for this? Just check if the gcr3 table
+is installed once
 
-I believe this is exactly what Robin told about "list to replace the pointer".
+> +		ret = -EINVAL;
+> +		goto out;
+> +	}
+> +
+> +	ret = amd_iommu_gcr3_init(dev_data, dev->iommu->max_pasids);
+> +
+> +out:
+> +	spin_unlock(&dev_data->lock);
+> +	return ret;
+> +}
 
--- 
-With Best Regards,
-Andy Shevchenko
+This seems like too much, and it doesn't need to be in a function..
 
+1) Check directly if the gcr3 table is installed otherwise try to
+install it. That might be a usefull function
 
+2) Precompute the max pasids during device probe and store it in
+iommu_dev_data. Just check if PASID >= max_pasid and fail
+
+> +static void iommu_pasid_disable(struct iommu_dev_data *dev_data)
+> +{
+> +	spin_lock(&dev_data->lock);
+> +
+> +	if (!is_gcr3_table_empty(dev_data))
+> +		goto out;
+
+Caller already checked this
+
+> +
+> +	if (dev_data->gcr3_info.gcr3_tbl == NULL)
+> +		goto out;
+
+Can't happen, right?
+
+> +
+> +	amd_iommu_gcr3_uninit(dev_data);
+
+Just write it out clearly in remove dev pasid
+
+if (is_gcr3_table_empty(dev_data))
+   amd_iommu_gcr3_uninit(dev_data);
+
+> +static int iommu_setup_pasid_pri(struct iommu_dev_data *dev_data)
+> +{
+> +	struct pci_dev *pdev;
+> +	int ret;
+> +
+> +	if (is_pasid_enabled(dev_data))
+> +		return 0;
+> +
+> +	ret = iommu_pasid_enable(dev_data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	pdev = dev_is_pci(dev_data->dev) ? to_pci_dev(dev_data->dev) : NULL;
+> +	if (!pdev || !amd_iommu_pdev_pri_supported(pdev))
+> +		return 0;
+> +
+> +	if (!dev_data->pri_enabled)
+> +		return -EINVAL;
+> +
+> +	ret = amd_iommu_iopf_enable_device(dev_data->dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static void remove_dev_pasid(struct pdom_dev_data *pdom_dev_data)
+> +{
+> +	/* Update GCR3 table and flush IOTLB */
+> +	amd_iommu_clear_gcr3(pdom_dev_data->dev_data, pdom_dev_data->pasid);
+
+This is in the wrong place, there is only one DTE/GCR3 remove_dev is
+touching. The list iteration below is just to clean up the tracking
+list it should not touch HW. Move this up into
+amd_iommu_remove_dev_pasid.
+
+And these functions related to the tracking list should be more
+general and called in more places. Just the tracking list itself
+should have a few patches to create it and situate it generically in
+the driver. Even the RID should be using the same mechanism.
+
+> +int iommu_sva_set_dev_pasid(struct iommu_domain *domain,
+> +			    struct device *dev, ioasid_t pasid)
+> +{
+> +	struct pdom_dev_data *pdom_dev_data;
+> +	struct protection_domain *sva_pdom = to_pdomain(domain);
+> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
+> +	unsigned long flags;
+> +	int ret = -EINVAL;
+> +
+> +	/* PASID zero is used for requests from the I/O device without PASID */
+> +	if (pasid == 0 || pasid >= dev->iommu->max_pasids)
+> +		return ret;
+> +
+> +	/* Make sure PASID/PRI is enabled */
+> +	ret = iommu_setup_pasid_pri(dev_data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Add PASID to protection domain pasid list */
+> +	pdom_dev_data = kzalloc(sizeof(*pdom_dev_data), GFP_KERNEL);
+> +	if (pdom_dev_data == NULL)
+> +		return ret;
+> +
+> +	pdom_dev_data->pasid = pasid;
+> +	pdom_dev_data->dev_data = dev_data;
+> +
+> +	/* Setup GCR3 table */
+> +	ret = amd_iommu_set_gcr3(dev_data, pasid,
+> +				 iommu_virt_to_phys(domain->mm->pgd));
+> +	if (ret) {
+> +		kfree(pdom_dev_data);
+> +		return ret;
+> +	}
+> +
+> +	spin_lock_irqsave(&sva_pdom->lock, flags);
+> +	list_add(&pdom_dev_data->list, &sva_pdom->dev_data_list);
+> +	spin_unlock_irqrestore(&sva_pdom->lock, flags);
+
+This doesn't seem right? The tracking list should be loaded before any
+change is made visible to the HW, or at least under the same lock.
+
+Jason
