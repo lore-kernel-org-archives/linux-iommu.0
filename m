@@ -1,97 +1,115 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-qk1-f181.google.com (mail-qk1-f181.google.com [209.85.222.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C161E23A8
-	for <iommu@lists.linux.dev>; Sat,  3 Feb 2024 02:30:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 426EE10A22
+	for <iommu@lists.linux.dev>; Sat,  3 Feb 2024 05:19:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706927423; cv=none; b=jVDdf5c0fb3OxiM1iOLBnYEVjZQEE6fNFUklsFm3Y08DAB9hSbMelW0o+62VrXGpQ3ZXzPLstDoKspbZPcCHwEOb8iJ1WZ9QHgAIYFZ91edOZuBGx/DEtLk+eTkkBIE+hDi3krsfIlp2KSFta8NrmXNc4z3qtYFTajh4Bbjxx0Y=
+	t=1706937594; cv=none; b=JSpux2FjzwJrFFcy3cN3mM/AT3D8fjea+WoP4/sIgxPRRLfYmw1efc4cbP9rzdjzWQR/7qpJlI1uwVXWlTWJI53LSx3H6ijHn4aozDqnorg+eGAFaun5+hqDp3FI79YPGfc4hIgfh+vwCRxn5u23K0b0/XfoqYM5/vSiCN7CpBs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706927423; c=relaxed/simple;
-	bh=31MALDMSUlwza8Dx/4jdfU0IQzumSFSUtKLVbEOi408=;
-	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
-	 MIME-Version:Content-Type; b=gYp6ifBV+84N9Xm3uOCmoldBiclVGCkosYPgR6B1URqqa23odl3darSmCag8NCoUcOAi9j/b0PvEAHZ9BlDgdD9ws0LbY8DlZfb5uh/tATcYlIM/pM9SPU/Rmfwnd7GmBLQVh0ZJ2qsukNYOHu+yJP+9KcpnpSL6Mm28vvq0xiA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bUWHeEWe; arc=none smtp.client-ip=209.85.214.170
+	s=arc-20240116; t=1706937594; c=relaxed/simple;
+	bh=aV3RAoxJAIIl/L41qxXGSFWaFYi0w5bCiFnptXPK/IE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=NGi4lGlYEaEMhSLNGWuD8ab6JD6GdCZ/qqK7gjBxOBP/qmnMlw2D/whXAJVqjVxL8pZp7aH/dD1NWG5gfbj+tEbi7OHSQk85zfS0yxmz6txo1Cj8G6HC8wARXAfkcRzVWbLSlNyr7F11BAHmM6J+C786Y4WtiODzjJECauDso/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aoPP5Gta; arc=none smtp.client-ip=209.85.222.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bUWHeEWe"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-1d5ce88b51cso105035ad.0
-        for <iommu@lists.linux.dev>; Fri, 02 Feb 2024 18:30:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aoPP5Gta"
+Received: by mail-qk1-f181.google.com with SMTP id af79cd13be357-7853a9eb5daso132044885a.2
+        for <iommu@lists.linux.dev>; Fri, 02 Feb 2024 21:19:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1706927421; x=1707532221; darn=lists.linux.dev;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XiG6CHWcYdWsI51hB+FTszglKDybzSu63LtpZjDM7i0=;
-        b=bUWHeEWeLgknVRwJrlUBIZ40h+nOWSOTJVNZdvvn6cVuam08Ok34l/GpYhucuZ5jWD
-         HtjIS8b0S76Z+dcSbTfHxcVbXVfw4TREvA3MP41hKlwHqhNWwwrZlBbCfxuWoZlGZN1e
-         7b/3MA312N8Evw6Vbg0ruuLxFVBt0hcuTjzlZ5fsA2dILW63gxycRfp09lX0DVUwZDlk
-         V9q69eNn4PcJWlbpApQnQ695eydO/xEkXl6B7GwcrunVBVUQaHPbdcV8kZiCP2ZVL7lD
-         rhKudILINiXsO2tzoVut2cA0pmHjwwKVwUJ9VqeY/EwBJgcwOr5dNuVeHNec53s4aztb
-         vLwg==
+        d=google.com; s=20230601; t=1706937592; x=1707542392; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hxZUisTRnkCHmoXtIIiIE5AFQkxg9hNXueoX4FT1IyU=;
+        b=aoPP5Gta8BfLWm0Qt7dmjXgoxspZEczBfWiSNw4p7nBKPxvsZx2kUMMisAxrZakBT0
+         ea480dfiCnBK3pd4JqUSwM69iX29ox5VGGPtvuqS+lhiVqTKmVKB/Vc0VFyktuMH48Lr
+         SrGZop3lveKkSmGoDLVH6aQZNUENvOOkI/NWcay7qMvWQgkV9R26p34LOQXDqIqBCFOW
+         SnsQ8DRwz+XcmIWkCtdJ3XcaCi4eGck8pXu5x4QhjLDmXK/8LZSP3vOrr9p9MsO9qJmG
+         n2Ql1o6ZkNlsIpSSZdSLTJ9d1/Ja0rZwxHoJDZGimE4t3cTl0Y8jRf1yn9cJVNdzN+YH
+         F6KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1706927421; x=1707532221;
-        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XiG6CHWcYdWsI51hB+FTszglKDybzSu63LtpZjDM7i0=;
-        b=dIGJgOnuwM9LKxaZh9uEwK4lhHU8Z0sYcoHQVPasWx450xGkWrpvFhBMmP88dCxcyI
-         Uc9RXTCAUQTfqqKFn3X0/a49SlC5ZC6U7k0CL9/Sa06Crra1/R6EHflGUbEhAe446RVf
-         SVmcl81Y7/Xv2cOmNAVaVNETwFI7QmdrUNwuCKE6wzgDtJdUaMJYksxqd92KLN0Cfy8/
-         1LMgpG8lKtMN1tASTUVWRk3WNcAspCDgOn1St+OaE7VEmkSncnJr1Bl3uQDXtVaIeGQt
-         H75nCFj3I5Xsz8QqpV0upmUDNyp6yXLyNhQ1KPW9Po9+tpnzPA4oOnkfR4OBuBs4UUTp
-         iTWg==
-X-Gm-Message-State: AOJu0YwZlyrIAREdbmD19kxmTOwI5GL39JvB8/NynGn3anIoHQmcqKUG
-	xMSWXr2CkO9DiQssiU/JuCBabU7L3GT03iQq2SVvTT99f/Xj3dPCwzGd06dRQQ==
-X-Google-Smtp-Source: AGHT+IHg996dygyt9LnIiSvyqK9FLVoUTcVkp9Miw1CYvlt+COnosUlv02z5yOlwrNv7Cbz2O6gz9w==
-X-Received: by 2002:a17:902:fccc:b0:1d9:8e37:56cc with SMTP id mi12-20020a170902fccc00b001d98e3756ccmr24869plb.10.1706927420652;
-        Fri, 02 Feb 2024 18:30:20 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCVTJg+AEeBfOkpo/qJURUeu9o91x/nT1ZbAlXanN+fx4CgxYbFsH5DaRxefHDJLKAYgGLQ9IF9TOBbXgio9d1sxnArAMI62kfjIQwVRJFFH1C9Ih6WTB1vIMmmUJuIENK0KKVsZQ4f704yNfhvb8lj6P0i5wwsr5hTBgf/Qp63kzfRV9uhpKaPlEc3BSUA1ANE+aU210RCJmd+3VGAQMclintHIwqZRC6nPSf5y5OBzfg==
-Received: from [2620:0:1008:15:5706:ac37:6d6d:7587] ([2620:0:1008:15:5706:ac37:6d6d:7587])
-        by smtp.gmail.com with ESMTPSA id t11-20020a17090ad50b00b0029658c7bd53sm747960pju.5.2024.02.02.18.30.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 02 Feb 2024 18:30:20 -0800 (PST)
-Date: Fri, 2 Feb 2024 18:30:19 -0800 (PST)
-From: David Rientjes <rientjes@google.com>
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, 
-    iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
-    yosryahmed@google.com
-Subject: Re: [PATCH v2] iommu/iova: use named kmem_cache for iova magazines
-In-Reply-To: <20240202192820.536408-1-pasha.tatashin@soleen.com>
-Message-ID: <d506a467-8af7-dc26-709a-ba49e6c5a3a6@google.com>
-References: <20240202192820.536408-1-pasha.tatashin@soleen.com>
+        d=1e100.net; s=20230601; t=1706937592; x=1707542392;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hxZUisTRnkCHmoXtIIiIE5AFQkxg9hNXueoX4FT1IyU=;
+        b=uwb1HOIPv7TFPWG4+sn3bIBi9lZi4CtcZAKPk6Xrzrz4lRvCNNZW0ajBViN7UfFY5x
+         EK5Y6BHOgrWdNBY/VA7rkQX8M34MX0YJ60on5RiluRdh3VW6OQYYcBUxa1B6DSDp5+S7
+         /O12kHrF6F6qBRA0tXm38uLyb9qwHU2LOEfV6U6GVIRTP+ckZd5yQsHeefThkGMzOacg
+         yVIdtsuoFkxaq09pCxrTXKGWGg8DBvGY5ME3iVAPzX6p9vx83qfctBCG5cdYBk9n+J3v
+         c2VmMqWO8C4SLJXjh5kYk2XUhvdEzUAOFtu7Y4K9X52tIaE/FlUYcuQfDYW2vEoyvm2x
+         Mk3A==
+X-Gm-Message-State: AOJu0YysBCRlhqFC2jcaMC+/MAb3LKokYbJznzI79AGDU8FEMKt9G4Qm
+	lF/RTKZJ8RJiSXbCWYrld6jfsADGAPUJ0vNYiGbN+s6/BbVUukS8fLX2yFJRZRxbBD/PGuO9IMw
+	N8spdyWo+MdRJkdxDX2P3jVhBO4XfKm6k0VPa
+X-Google-Smtp-Source: AGHT+IEZAAPF64V9fhwb83mtq8fxx2bw72Ju+9SxlvorBwmV39Npwwn5YZ+MgV2PpJ35mYdpTaZi8VMsqxbbJHCx/cY=
+X-Received: by 2002:a0c:aa1a:0:b0:685:edc7:62c0 with SMTP id
+ d26-20020a0caa1a000000b00685edc762c0mr285138qvb.30.1706937591794; Fri, 02 Feb
+ 2024 21:19:51 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20240112055251.36101-1-vannapurve@google.com> <20240112055251.36101-6-vannapurve@google.com>
+ <6709a57c-48a0-4ddd-b64e-a1e34ae2b763@intel.com> <CAGtprH_ANUVU+Dh1KOq0vpT7BGbCEvD2ab9B=sxjzHYsKxFGeA@mail.gmail.com>
+ <1d9d3372-825a-417a-8811-ffa501c83936@linux.microsoft.com>
+ <CAGtprH8r0kYYqGoumsVeZq42cX8CN3cchkuRYhQULqtb-1nKww@mail.gmail.com>
+ <3313c886-e964-48c3-8277-b47cb1955de9@linux.microsoft.com>
+ <CAGtprH9X0Yz_Z+QaYcLpLNXtY_Ye68aqvx-G1pOWZxv9SiRRoQ@mail.gmail.com> <746d2448-3adc-467b-a39c-5585f33bd740@intel.com>
+In-Reply-To: <746d2448-3adc-467b-a39c-5585f33bd740@intel.com>
+From: Vishal Annapurve <vannapurve@google.com>
+Date: Sat, 3 Feb 2024 10:49:38 +0530
+Message-ID: <CAGtprH8X96enAOmgu60q0N6L=NEB29PBu_0yEuS8u1U=C4VO3g@mail.gmail.com>
+Subject: Re: [RFC V1 5/5] x86: CVMs: Ensure that memory conversions happen at
+ 2M alignment
+To: Dave Hansen <dave.hansen@intel.com>
+Cc: Jeremi Piotrowski <jpiotrowski@linux.microsoft.com>, x86@kernel.org, 
+	linux-kernel@vger.kernel.org, pbonzini@redhat.com, rientjes@google.com, 
+	seanjc@google.com, erdemaktas@google.com, ackerleytng@google.com, 
+	jxgao@google.com, sagis@google.com, oupton@google.com, peterx@redhat.com, 
+	vkuznets@redhat.com, dmatlack@google.com, pgonda@google.com, 
+	michael.roth@amd.com, kirill@shutemov.name, thomas.lendacky@amd.com, 
+	dave.hansen@linux.intel.com, linux-coco@lists.linux.dev, 
+	chao.p.peng@linux.intel.com, isaku.yamahata@gmail.com, andrew.jones@linux.dev, 
+	corbet@lwn.net, hch@lst.de, m.szyprowski@samsung.com, rostedt@goodmis.org, 
+	iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 2 Feb 2024, Pasha Tatashin wrote:
+On Fri, Feb 2, 2024 at 10:06=E2=80=AFPM Dave Hansen <dave.hansen@intel.com>=
+ wrote:
+>
+> On 2/2/24 08:22, Vishal Annapurve wrote:
+> >> If you must - focus on getting swiotlb conversions to happen at the de=
+sired
+> >> granularity but don't try to force every single conversion to be >4K.
+> > If any conversion within a guest happens at 4K granularity, then this
+> > will effectively cause non-hugepage aligned EPT/NPT entries. This
+> > series is trying to get all private and shared memory regions to be
+> > hugepage aligned to address the problem statement.
+>
+> Yeah, but the series is trying to do that by being awfully myopic at
+> this stage and without being _declared_ to be so myopic.
+>
 
-> The magazine buffers can take gigabytes of kmem memory, dominating all
-> other allocations. For observability purpose create named slab cache so
-> the iova magazine memory overhead can be clearly observed.
-> 
-> With this change:
-> 
-> > slabtop -o | head
->  Active / Total Objects (% used)    : 869731 / 952904 (91.3%)
->  Active / Total Slabs (% used)      : 103411 / 103974 (99.5%)
->  Active / Total Caches (% used)     : 135 / 211 (64.0%)
->  Active / Total Size (% used)       : 395389.68K / 411430.20K (96.1%)
->  Minimum / Average / Maximum Object : 0.02K / 0.43K / 8.00K
-> 
-> OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
-> 244412 244239 99%    1.00K  61103       4    244412K iommu_iova_magazine
->  91636  88343 96%    0.03K    739     124      2956K kmalloc-32
->  75744  74844 98%    0.12K   2367      32      9468K kernfs_node_cache
-> 
-> On this machine it is now clear that magazine use 242M of kmem memory.
-> 
-> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+Agreed. I was being overly optimistic when I mentioned following in
+the cover message:
+"** This series leaves out some of the conversion sites which might not
+be 2M aligned but should be easy to fix once the approach is finalized. **"
 
-Very impressive!
+> Take a look at all of the set_memory_decrypted() calls.  How many of
+> them even operate on the part of the guest address space rooted in the
+> memfd where splits matter?  They're not doing conversions.  They're just
+> setting up shared mappings in the page tables of gunk that was never
+> private in the first place.
 
-Acked-by: David Rientjes <rientjes@google.com>
+Thinking it over again, yeah the conversions that are happening
+outside SWIOTLB should be impacting significantly less memory ranges.
+As Jeremi and you are suggesting, it would be a big step forward if
+memory conversions happening for just DMA requests are aligned to
+hugepage sizes.
