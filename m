@@ -1,102 +1,97 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FA2518049;
-	Fri,  2 Feb 2024 21:17:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C161E23A8
+	for <iommu@lists.linux.dev>; Sat,  3 Feb 2024 02:30:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1706908672; cv=none; b=oUvP8UO8r5qhJmdkuNG0kCd+SMHOzUEIsoAAhwKY90owW0ljocQxrAIYRBsCd+QHYaNriqneTashk+JZdY9ne1VeiSro9/8fuWRq7Gf6geBtl88SizbIwMyRwiNOTT8Oa2niDsui4DmO6f8jxPvhkzHFl/b4uy3g/fEFviFNJ+g=
+	t=1706927423; cv=none; b=jVDdf5c0fb3OxiM1iOLBnYEVjZQEE6fNFUklsFm3Y08DAB9hSbMelW0o+62VrXGpQ3ZXzPLstDoKspbZPcCHwEOb8iJ1WZ9QHgAIYFZ91edOZuBGx/DEtLk+eTkkBIE+hDi3krsfIlp2KSFta8NrmXNc4z3qtYFTajh4Bbjxx0Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1706908672; c=relaxed/simple;
-	bh=/VCh0+HPTFG2lAHl8Ir63vVbaWY0czUg4EndhAmsGSQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sMJF2dFq6SfyqIbmqDFnncc9ZWvuG/RnyzaJmeuLBXwx2XTX0jXv8aj/qP4bTUEZO2Afj9uYByN3ed/ppxuLEVPZoHNdj45IAdX8oh+oJPWtnBXXXyM/AltjEiBp9Dojuh7BOLL8RCSprx4RCviilOnQJXprme+qYu77GDWHq9Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Yvjzg8v2; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1706927423; c=relaxed/simple;
+	bh=31MALDMSUlwza8Dx/4jdfU0IQzumSFSUtKLVbEOi408=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=gYp6ifBV+84N9Xm3uOCmoldBiclVGCkosYPgR6B1URqqa23odl3darSmCag8NCoUcOAi9j/b0PvEAHZ9BlDgdD9ws0LbY8DlZfb5uh/tATcYlIM/pM9SPU/Rmfwnd7GmBLQVh0ZJ2qsukNYOHu+yJP+9KcpnpSL6Mm28vvq0xiA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bUWHeEWe; arc=none smtp.client-ip=209.85.214.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Yvjzg8v2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BB59C433F1;
-	Fri,  2 Feb 2024 21:17:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1706908671;
-	bh=/VCh0+HPTFG2lAHl8Ir63vVbaWY0czUg4EndhAmsGSQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Yvjzg8v2QAYg2UYrB+Vbpmh7MiYTumX0/jy0ou8L09dgeEe2AjOeKOVCL38zLtq2B
-	 3EnMHuQG6hAXgLSwJmtknf63d9V5i8YDh1rpVTeUYLV61yKuBCTvLG3v29pLYY4rV8
-	 1P322vsYsiW3VWtNnWfWTGjTrJMC5ANbMAwJuWvxAlIok42ADCt793YIY9Rkc9FWM1
-	 Coy70l89C4Rk6R5vGd1Uae0XVtfzACT+rF9BkzunQi0BL38hPlS2lFsw1sVmTQNW3I
-	 lcnCjL5AZ6qLnoamq/rh7NtQ+GQ91Erg9DYlSvDHqRKq0zW9fJoHt5VUEd+3kcWvYl
-	 CKI3HeTmiZgZg==
-Date: Fri, 2 Feb 2024 15:17:49 -0600
-From: Rob Herring <robh@kernel.org>
-To: Georgi Djakov <quic_c_gdjako@quicinc.com>
-Cc: krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, will@kernel.org,
-	robin.murphy@arm.com, joro@8bytes.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, andersson@kernel.org,
-	konrad.dybcio@linaro.org, robdclark@gmail.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com,
-	quic_sukadev@quicinc.com, quic_pdaly@quicinc.com,
-	quic_sudaraja@quicinc.com, djakov@kernel.org
-Subject: Re: [PATCH v4 01/10] dt-bindings: iommu: Add Translation Buffer Unit
- bindings
-Message-ID: <20240202211749.GA1467077-robh@kernel.org>
-References: <20240201210529.7728-1-quic_c_gdjako@quicinc.com>
- <20240201210529.7728-2-quic_c_gdjako@quicinc.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bUWHeEWe"
+Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-1d5ce88b51cso105035ad.0
+        for <iommu@lists.linux.dev>; Fri, 02 Feb 2024 18:30:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1706927421; x=1707532221; darn=lists.linux.dev;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=XiG6CHWcYdWsI51hB+FTszglKDybzSu63LtpZjDM7i0=;
+        b=bUWHeEWeLgknVRwJrlUBIZ40h+nOWSOTJVNZdvvn6cVuam08Ok34l/GpYhucuZ5jWD
+         HtjIS8b0S76Z+dcSbTfHxcVbXVfw4TREvA3MP41hKlwHqhNWwwrZlBbCfxuWoZlGZN1e
+         7b/3MA312N8Evw6Vbg0ruuLxFVBt0hcuTjzlZ5fsA2dILW63gxycRfp09lX0DVUwZDlk
+         V9q69eNn4PcJWlbpApQnQ695eydO/xEkXl6B7GwcrunVBVUQaHPbdcV8kZiCP2ZVL7lD
+         rhKudILINiXsO2tzoVut2cA0pmHjwwKVwUJ9VqeY/EwBJgcwOr5dNuVeHNec53s4aztb
+         vLwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1706927421; x=1707532221;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XiG6CHWcYdWsI51hB+FTszglKDybzSu63LtpZjDM7i0=;
+        b=dIGJgOnuwM9LKxaZh9uEwK4lhHU8Z0sYcoHQVPasWx450xGkWrpvFhBMmP88dCxcyI
+         Uc9RXTCAUQTfqqKFn3X0/a49SlC5ZC6U7k0CL9/Sa06Crra1/R6EHflGUbEhAe446RVf
+         SVmcl81Y7/Xv2cOmNAVaVNETwFI7QmdrUNwuCKE6wzgDtJdUaMJYksxqd92KLN0Cfy8/
+         1LMgpG8lKtMN1tASTUVWRk3WNcAspCDgOn1St+OaE7VEmkSncnJr1Bl3uQDXtVaIeGQt
+         H75nCFj3I5Xsz8QqpV0upmUDNyp6yXLyNhQ1KPW9Po9+tpnzPA4oOnkfR4OBuBs4UUTp
+         iTWg==
+X-Gm-Message-State: AOJu0YwZlyrIAREdbmD19kxmTOwI5GL39JvB8/NynGn3anIoHQmcqKUG
+	xMSWXr2CkO9DiQssiU/JuCBabU7L3GT03iQq2SVvTT99f/Xj3dPCwzGd06dRQQ==
+X-Google-Smtp-Source: AGHT+IHg996dygyt9LnIiSvyqK9FLVoUTcVkp9Miw1CYvlt+COnosUlv02z5yOlwrNv7Cbz2O6gz9w==
+X-Received: by 2002:a17:902:fccc:b0:1d9:8e37:56cc with SMTP id mi12-20020a170902fccc00b001d98e3756ccmr24869plb.10.1706927420652;
+        Fri, 02 Feb 2024 18:30:20 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCVTJg+AEeBfOkpo/qJURUeu9o91x/nT1ZbAlXanN+fx4CgxYbFsH5DaRxefHDJLKAYgGLQ9IF9TOBbXgio9d1sxnArAMI62kfjIQwVRJFFH1C9Ih6WTB1vIMmmUJuIENK0KKVsZQ4f704yNfhvb8lj6P0i5wwsr5hTBgf/Qp63kzfRV9uhpKaPlEc3BSUA1ANE+aU210RCJmd+3VGAQMclintHIwqZRC6nPSf5y5OBzfg==
+Received: from [2620:0:1008:15:5706:ac37:6d6d:7587] ([2620:0:1008:15:5706:ac37:6d6d:7587])
+        by smtp.gmail.com with ESMTPSA id t11-20020a17090ad50b00b0029658c7bd53sm747960pju.5.2024.02.02.18.30.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 02 Feb 2024 18:30:20 -0800 (PST)
+Date: Fri, 2 Feb 2024 18:30:19 -0800 (PST)
+From: David Rientjes <rientjes@google.com>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, 
+    iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+    yosryahmed@google.com
+Subject: Re: [PATCH v2] iommu/iova: use named kmem_cache for iova magazines
+In-Reply-To: <20240202192820.536408-1-pasha.tatashin@soleen.com>
+Message-ID: <d506a467-8af7-dc26-709a-ba49e6c5a3a6@google.com>
+References: <20240202192820.536408-1-pasha.tatashin@soleen.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240201210529.7728-2-quic_c_gdjako@quicinc.com>
+Content-Type: text/plain; charset=US-ASCII
 
-On Thu, Feb 01, 2024 at 01:05:20PM -0800, Georgi Djakov wrote:
-> Add common bindings for the TBUs to describe their properties. The
-> TBUs are modelled as child devices of the IOMMU and each of them is
-> described with their compatible, reg and stream-id-range properties.
-> There could be other implementation specific properties to describe
-> any resources like clocks, regulators, power-domains, interconnects
-> that would be needed for TBU operation. Such properties will be
-> documented in a separate vendor-specific TBU schema.
+On Fri, 2 Feb 2024, Pasha Tatashin wrote:
+
+> The magazine buffers can take gigabytes of kmem memory, dominating all
+> other allocations. For observability purpose create named slab cache so
+> the iova magazine memory overhead can be clearly observed.
 > 
-> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
-> ---
->  .../devicetree/bindings/iommu/arm,smmu.yaml   | 14 ++++++++++
->  .../devicetree/bindings/iommu/tbu-common.yaml | 28 +++++++++++++++++++
->  2 files changed, 42 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/tbu-common.yaml
+> With this change:
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> index a4042ae24770..ba3237023b39 100644
-> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> @@ -235,6 +235,20 @@ properties:
->        enabled for any given device.
->      $ref: /schemas/types.yaml#/definitions/phandle
->  
-> +  '#address-cells':
-> +    enum: [ 1, 2 ]
-> +
-> +  '#size-cells':
-> +    enum: [ 1, 2 ]
-> +
-> +  ranges: true
-> +
-> +patternProperties:
-> +  "^tbu@[0-9a-f]+$":
-> +    description: TBU child nodes
-> +    type: object
-> +    $ref: tbu-common.yaml#
+> > slabtop -o | head
+>  Active / Total Objects (% used)    : 869731 / 952904 (91.3%)
+>  Active / Total Slabs (% used)      : 103411 / 103974 (99.5%)
+>  Active / Total Caches (% used)     : 135 / 211 (64.0%)
+>  Active / Total Size (% used)       : 395389.68K / 411430.20K (96.1%)
+>  Minimum / Average / Maximum Object : 0.02K / 0.43K / 8.00K
+> 
+> OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
+> 244412 244239 99%    1.00K  61103       4    244412K iommu_iova_magazine
+>  91636  88343 96%    0.03K    739     124      2956K kmalloc-32
+>  75744  74844 98%    0.12K   2367      32      9468K kernfs_node_cache
+> 
+> On this machine it is now clear that magazine use 242M of kmem memory.
+> 
+> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
 
-       additionalProperties: false
+Very impressive!
 
-
-However, that's going to break with the extra QCom properties. In 
-json-schema, you can't have 2 schemas and extend the properties of 
-their child nodes. The validator doesn't "see" the child node schemas at 
-the same time. You are going to have to move QCom SMMU to its own schema 
-and remove it from arm,smmu.yaml.
-
-Rob
+Acked-by: David Rientjes <rientjes@google.com>
