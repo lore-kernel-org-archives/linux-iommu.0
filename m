@@ -1,102 +1,118 @@
-Received: from mout.web.de (mout.web.de [212.227.17.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58BAE1401D;
-	Mon,  5 Feb 2024 10:42:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60AA51758F
+	for <iommu@lists.linux.dev>; Mon,  5 Feb 2024 10:57:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707129760; cv=none; b=ZZ5nY8vOoUeRrBTYCSjaT+BsJtzQDrvJX4d7RLnMM9Bce7yPJhXVtfuRZjQNqAI2oxvhVcHsCR1T//eUF3pAwtG3AwVG7+5EHSDyFUOWdxx5JmgC3QL7nmcym9X0Tf+UpiFKkzUEU0pE0UD6e079PWQcz1ojvVMnjzwQtSCKh2E=
+	t=1707130622; cv=none; b=BZ9mz/wYB/TSHvkAy7cEuA6kH2WLUTyZy4nKHsVSmwhtQiNzUwOeZrJwdVOPJrPw03GKv0rWRfmgE//2UydNiVc5X270rmNMJfrqSZ8EZtqDANfrRu3HpsflNC7O2F64p4BUfhZmi3G11tikzT/8HF8kZPzuM943tYWGAre4TFQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707129760; c=relaxed/simple;
-	bh=/lTk+9N9Tl9ISnjaDgaHVZl0B7sj4vhWjLvyKn2MSww=;
-	h=Message-ID:Date:MIME-Version:To:Cc:From:Subject:Content-Type; b=mFiUxF60VRyl3abBEiZ0sj0lZyB2AmqW5gIMqdyTYNIHAwkAdjGtA6OfpWhq57F/IAYfNKq6VyAAntYYiF6M/7IfHyRcYfmD8T7RN4arnfg6JElSTe0jcDtEMRBf/w3N7khi8m0i1jZ4zKHYeI9qe01UsZ+LcLUfI38SX0VeRJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=b4Qlzh7r; arc=none smtp.client-ip=212.227.17.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+	s=arc-20240116; t=1707130622; c=relaxed/simple;
+	bh=jDCr5ifs2jFyUCR8Wlikob41awnwZSkFKxOVNboyzDg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ofm4hPufu6uaZ7F1klJMvhN3tvKc2HVQRlZVII8SmUDOnFVNorazvg5daMWdzUa+hnVzmX5PZAP4iNArR7zS95MEEAPL1BAtyVWjWkt7J85DDQ7NrcuH3pomwGkoTqpMHeXY8i+zinORsrYr9f2QRvX5fo/Dou20Uu87I49utv8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=PHydSbId; arc=none smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="b4Qlzh7r"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
-	t=1707129749; x=1707734549; i=markus.elfring@web.de;
-	bh=/lTk+9N9Tl9ISnjaDgaHVZl0B7sj4vhWjLvyKn2MSww=;
-	h=X-UI-Sender-Class:Date:To:Cc:From:Subject;
-	b=b4Qlzh7rW8etxiqQ9lFmx5NbG2L6gB43ieV6ucFBlc4PY/yoE/EAqvhDitmqxorp
-	 7xUMny9yfrpTjl3tQvFeFdzRxpP5S1pyJgDB8FFyHYutm9VfzSzdPoS/49VeBv2Ky
-	 KkLN1X9vpYetfvec1ojdNjkifo6dVdv16gA7YixdCIvklth66i+f0jdKjl5gCgPr0
-	 IBWUZlmhW43hGzzXv3v2ll6xH2qh3fi/7fhBDM1AgyfJpVwEfYo6lUyqgi7CRuNhW
-	 H55+AEHTQfB4KtRaJjgmFAtYyM9VhIEKN+x3YdHP5iOCuHptgJguwWep7W92T4yze
-	 +r1KT/g3tmYvvx8qeQ==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.21] ([94.31.85.95]) by smtp.web.de (mrweb106
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1N5CQh-1qqDeC1oTV-01140j; Mon, 05
- Feb 2024 11:42:29 +0100
-Message-ID: <e01cdb99-8497-4fec-b423-a0bfb483ac75@web.de>
-Date: Mon, 5 Feb 2024 11:42:28 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PHydSbId"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a30e445602cso1094716766b.0
+        for <iommu@lists.linux.dev>; Mon, 05 Feb 2024 02:57:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1707130618; x=1707735418; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=EHuHF9Obfsev/lyEPMBOyVJSSPAo2wmNIcg9snCOcj0=;
+        b=PHydSbIdK7y7mHIJ1JHEi5O08egiwNHVdzPJ5bYMeXeFYTv5veApQIYZadX2ozI/K7
+         rP05y6d/WZ4YFtUPLwn0157DdS0QSi5axu1B4mEWUvf1hMlYtwDb69Dyfgk5/P1J1D+H
+         a4z89nEwSonKzD7SYnKR/ElIjbpZ86+H49qiRr3aI5y9BKlHhigjbV2WfpuugQHOtBkd
+         J5zqYfagXD7YWcADkCpIobECsFUmiDfwoYHrgh+HT1qRFmgxyto6dez+8adSoN0iZjH4
+         CmvHzsaCe73n2AMu4ep/FVUo+gfSJu0yED2KBAe8D3j33ab5o89DU2hq1PIs0ia/XlqA
+         gqPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707130618; x=1707735418;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EHuHF9Obfsev/lyEPMBOyVJSSPAo2wmNIcg9snCOcj0=;
+        b=kY9AyWi6FzD0cfJm8oq68cvBb4/psV4uHi8W3tHi2AgltVujrVL6r3x/wYgsrBz1pI
+         vhr2SWRTceZInfSw1eTV+EaXwhRosdhSv0fPZwTvvSrIcbFozskapM/nL22swvhzLNeO
+         8uHV0zDB9lGPRDTJ2jesG3IC8HQfGYL4XW4Qzs2fSjEfgzHsbFmF/lsFG3qiIASAb540
+         TmZFaaBXiFuQNxSwRbZVHG1xw+QZ6X2btOWscK1KH90IxP3z2w3ktHVlj9lIeI/rvrho
+         Jn7f6QVWDxjSMG3TPDtWqyl14x4GSceIFr5ydn7JZ6fweCYQMhIUfAMSVcnXkMTCaciG
+         TtOg==
+X-Gm-Message-State: AOJu0YzY/dcOeXMgvhuidtngFGJNtdYJAYB86d9WDsPyu0xrNL8nfx/6
+	OZz/IXBtwjlT/k6RPzKWZtVlgljGPAg6N/NUGkEUnJOgTdwRk3Yy4UgJpiR5vno=
+X-Google-Smtp-Source: AGHT+IFmIPVEmAYqqtOtPZb03iOGqGY79yQzdRB9o8BeYriazP1ZzLdKyIsRE3fnekbsIPTwyMF6Dw==
+X-Received: by 2002:a17:906:358e:b0:a37:e065:43be with SMTP id o14-20020a170906358e00b00a37e06543bemr1024366ejb.23.1707130618489;
+        Mon, 05 Feb 2024 02:56:58 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCU75PKw4rpfkBsBugGVg2B5XhD9EXoGKAJTguZG+EhTywKZb8TwRbdl8DXBMaJ/shIdLOEGWkHfRiZLZGkO5mvxc0u7yc9ZHohDNBxFYre2rS6E2sHvlL/TzKBhPzdtJARFxTbBN5nGWqFpDLH/n97HI26UHA==
+Received: from localhost ([102.222.70.76])
+        by smtp.gmail.com with ESMTPSA id mm30-20020a170906cc5e00b00a3543718f5bsm4180413ejb.221.2024.02.05.02.56.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Feb 2024 02:56:57 -0800 (PST)
+Date: Mon, 5 Feb 2024 13:56:53 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Michael Shavit <mshavit@google.com>, iommu@lists.linux.dev,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [bug report] iommu/arm-smmu-v3: Refactor write_ctx_desc
+Message-ID: <73295c7c-f371-4d70-8a7d-c54ca9be6cbb@moroto.mountain>
+References: <4e25d161-0cf8-4050-9aa3-dfa21cd63e56@moroto.mountain>
+ <CAKHBV24oM7JpenJfGXymcxkRdW=49dVWS72oCuTxt-FEguSueA@mail.gmail.com>
+ <20240202133557.GR1455070@nvidia.com>
+ <46d7086c-36fc-4668-b95b-454e339b94c0@moroto.mountain>
+ <20240202145907.GT1455070@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: iommu@lists.linux.dev, kernel-janitors@vger.kernel.org,
- =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>
-Content-Language: en-GB
-Cc: LKML <linux-kernel@vger.kernel.org>
-From: Markus Elfring <Markus.Elfring@web.de>
-Subject: [PATCH] iommu/ipmmu-vmsa: Use
- devm_platform_get_and_ioremap_resource() in ipmmu_probe()
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:pFkITfov5VDizKB661GXtaC2oOZeKctSayG3VAgdcSyTzXkOzU1
- HmdfJ8l3C9QNGlAT5M6Tn/wfC1X1Orhck5s229OEHQQ4Tco4fRQC+sZ0BxPcC64cE4yDmam
- 5k3PdgvJ4J3X0D8JVFclnuKepZxQgvuqT0Ql8eOVdiQZlq9HFNVa8/m+SVNug+ioqidd7wP
- ED9vCEcPL1pZUg7FLFzqw==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:kEpDxHbnr7o=;w9Qz3MztgeXwbrCdkYQbthc/jXJ
- 3U+0P71vSLLNiy5vXIgerarSjIG1qGqfTle8nC9ZRrXqyK1Q2SUA+oi1a1Za24Hk8VZ2fXRKX
- Bq9kQrsM5rAohCyiehpShGP6KU6siFZ4vqGmTDcyiimM0sOy/32QJ0MeErDc7bXGT8Nen9Mto
- HEP4eCSVMvO7nByKSULoHEg0Lju1KzI8+LPro93hEclqb4H+fW4tawQ2BG4XpFD0ECW7l8Ece
- jGxm2xKPAv7rDwVx5CIFvsrJSmbLlJzxicz085EpzqMAOXYCbN3/KQKjm3yErc4PQkO16UP66
- RiId4r+9g0jhCjfq9nlv5/5eU200aMud3FTdlGNRoWokamIetbJ7u7GQdFibdvU+w5JNfA3Ya
- vHJ2+jVvpPL2oeUeEb5mgTLJFewZ0slAEUzGtYgZteh1ULNUhYSRrNufHWJBU4vqfhd+dl/0o
- cjhP9uds+72TzOdAmQ2xk/LCXW4tHffvMlfGdWCqtcSQ34S/3ts6KacJovXixNeOGOaFe/U0A
- eDDNu26zNEVaZHqmvN/wA98sT52hQGTO6lGd5xH5C/tUvsfmmM+ESSxBcYzpS5PVjS9yOSTvo
- UyQ8IUsIl4ISkqijr/2g3XWIWlYXE8bbIjrOGAMvUdEuJGc+Oya4KMqg35jbjICgII4ayOuDE
- bJ1XKtlzlzBt5oEZFIFyEcxykQB60VknmGpIaTgmrErDtAL4Y9aEowUMMxrUNDRO/tgyPa2Tc
- 025Q/bYTfg9UCV5iRki0befzjPK4bYEGesA/QOT8CprNS1jrH9eP/+Blm4shnZQ7gN16oM9AT
- G2yFLq0VfLosfLK1eaLV4uuL6thFYahOkvv3B0OxVuSlY=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240202145907.GT1455070@nvidia.com>
 
-From: Markus Elfring <elfring@users.sourceforge.net>
-Date: Mon, 5 Feb 2024 11:36:51 +0100
+On Fri, Feb 02, 2024 at 10:59:07AM -0400, Jason Gunthorpe wrote:
+> On Fri, Feb 02, 2024 at 05:45:43PM +0300, Dan Carpenter wrote:
+> > On Fri, Feb 02, 2024 at 09:35:57AM -0400, Jason Gunthorpe wrote:
+> > > It won't silence Dan's warning warning but it will correct the bug for
+> > > now.
+> > 
+> > I could just modify the database to say that
+> > arm_smmu_update_ctx_desc_devices() doesn't call arm_smmu_write_ctx_desc()
+> > with preempt disabled.  I don't think it will silence any true
+> > positives.  That's a one liner for me.
+> 
+> But it does and it found this bug :)
+> 
 
-A wrapper function is available since the commit 890cc39a879906b63912482df=
-c41944579df2dc6
-("drivers: provide devm_platform_get_and_ioremap_resource()").
-Thus reuse existing functionality instead of keeping duplicate source code=
-.
+No, it would just remove the one link between arm_smmu_update_ctx_desc_devices()
+and arm_smmu_write_ctx_desc().  The other path would still warn.
 
-This issue was detected by using the Coccinelle software.
+Actually, I think even after you patch there is still a warning...  To
+be honest, I don't normally stress about false positivives.  I report
+all new warnings and everything that doesn't get fixed is a false
+positive.  If this false posotive becomes an issue then I can spend time
+on it at that point.
 
-Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
-=2D--
- drivers/iommu/ipmmu-vmsa.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+> After my series we have things like this:
+> 
+> 		cdptr = arm_smmu_get_cd_ptr(master, master_domain->ssid);
+> 		if (WARN_ON(!cdptr))
+> 			continue;
+> 
+> Which indicates the paths that expect to have been pre-allocated. We
+> could also have a no_alloc parameter to really make the checker happy?
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index ace1fc4bd34b..12685dd2dd31 100644
-=2D-- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -1025,8 +1025,7 @@ static int ipmmu_probe(struct platform_device *pdev)
- 		return ret;
+I don't think so, although I could write a custom function to handle
+that parameter.
 
- 	/* Map I/O memory and request IRQ. */
--	res =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	mmu->base =3D devm_ioremap_resource(&pdev->dev, res);
-+	mmu->base =3D devm_platform_get_and_ioremap_resource(pdev, 0, &res);
- 	if (IS_ERR(mmu->base))
- 		return PTR_ERR(mmu->base);
+You're talking about relationships between variables.  If a is foo that
+means b is bar.  And there are tons and tons of possible relationships
+and it's difficult to know which relationships matter.  Inside a
+function Smatch tries to track everything and then at the function
+boundary almost all the relationship information is lost.
 
-=2D-
-2.43.0
-
+regards,
+dan carpenter
