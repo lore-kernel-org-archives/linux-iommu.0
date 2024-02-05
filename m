@@ -1,84 +1,92 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 665C1487AE
-	for <iommu@lists.linux.dev>; Mon,  5 Feb 2024 18:52:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1548A48CC1;
+	Mon,  5 Feb 2024 19:01:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707159152; cv=none; b=NlOp54hX+IBc9i8CqDxtgMlQvCTgTBztmuIYc4Yf01NYlkGJrrrfC9LpgunG85z04E8VNyi4nDUWgmezSJRCv99TnIIsvqIiJgl8ZoAtNe7nHreFT2PLLgjUMlT4BMAIEt0bVYkx9ZnpnD8ad5N28RMORarWo2LGd1eoL8aFrog=
+	t=1707159697; cv=none; b=V5ygstYHT5PElL75cOVOoNEvuebOX6VqLCQhLiIVn79FnCRD09QHwtnsIsiaG/jY+aXHADOjSdcZV4MK3vq+sERVSiaLcYFzVbDftxyjuXbtXr+ibm5o10jsDDG3O+ly0AAarWfKTmYpTqogz8J+7N3c3izDDxJd6b1S/awEjeo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707159152; c=relaxed/simple;
-	bh=2n6NEhyvuJ5E4qoevj89tVssjIMXhF/xuHE6hgy21vA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=aVMFNTihy3KM0dRBfRL7brMShtS5zTl+zKkf66bDiIambdySgy4HLw37Ks/4AfStvUPWaa6/G4HdTEgaotvYSZNHDD9WMM8T5MXMGHDI+rOZTAVNvzkDIu8Ry1SzfBExgIDHMO75M6IFpEgTk9TgeGbJ1YK2V+kIsPzI+iIKoPs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com; spf=none smtp.mailfrom=soleen.com; dkim=fail (0-bit key) header.d=soleen.com header.i=@soleen.com header.b=iM39xAvf reason="key not found in DNS"; arc=none smtp.client-ip=209.85.160.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=soleen.com
+	s=arc-20240116; t=1707159697; c=relaxed/simple;
+	bh=qXT6n/Xz8TGqf2KpHYW4visUF18bBDgbINzKQ8xLz0s=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=teUpLMaG8odHKBDXA8rfRhIhnXo8/2kYNTC8Zrog6Ys6MsEPEliD2gzwqVABAR5laelnu+qC6mXs0Rd7HbDRXq39QdhM+fcAJFQ0q5U7oPTatSHcNnOA+Lt9qqiWySWjRL34raQI66EITgxueo+beLEkD+2WwSeVeSIP7Jts28k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AEtdUvhm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=soleen.com header.i=@soleen.com header.b="iM39xAvf"
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-42aadddeaf8so35458301cf.3
-        for <iommu@lists.linux.dev>; Mon, 05 Feb 2024 10:52:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google; t=1707159150; x=1707763950; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2n6NEhyvuJ5E4qoevj89tVssjIMXhF/xuHE6hgy21vA=;
-        b=iM39xAvfg36OIYB4pPtI9IZezX0Mv4bWJ8LmWno9geG23ddzl5OYOmkz58zf5+tmQE
-         p2jV1ebhMbIreg0KbeBlRK10bZOCnFvlxSfGIb/qLYZLO51b3C7l7/rYNz6giutp8qkT
-         OxQchl5TKRYAUVw6r3BA+T5cdj/agSJaeViOeVH0aE+eLCjLSf81PUqBceld28menahb
-         /VSh37Div9PVpqtTfIFOrdlVRgJHDIogx+QP9OdzY6t9xV9e2TX0ZSF3HVoXy/aeyWoA
-         tuVf344UCoRZKuBbigEQh9gf5NMpGcfISMCD7fwhSbl01dUfoWhy+s96vhP7GlzG2Z+X
-         RAAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707159150; x=1707763950;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2n6NEhyvuJ5E4qoevj89tVssjIMXhF/xuHE6hgy21vA=;
-        b=kviufMazSFX27AuuNNXev8cia3+Ec6+2nnvOC/afwkRfKJtox0840pSQiLM7DBmqcs
-         m0ePKayicdfvU4TV2mt1lYLIk5wu2ymlUOiC9hySiON4Hu+zQhWquLdZ9nhfX0S56UNQ
-         3UHPZ6kLEui4g5t+F9SdCv2WGZa5WpCX2pUSSK52wGW1RLdaP7rAp3EoFThE/i+SA1MW
-         Et2YehRltc3O3qJ2UkQrEFk8eONw6ADh4zhlKv8BkG9AzmtPXn1CzTkNz621NAtzjzHG
-         4QsJ27izKfZtAQ6IYcFEDi0/604KS4dEe1lnk0wfsN6OtrfeuSAmNzsMN2cJPbCWeU+f
-         LLSA==
-X-Gm-Message-State: AOJu0Yy8RVO+sQadZP5nKlKrxLy38Q03V+kmMkRQxpf8mG1yTCVpXR3O
-	4f/TtW++UOC6C/ZCqS75Ancm9tNMw4F8ZfxvcJRqWAWPAtLRjIIG7QTC8bA2bogsbXSt8RtZ1gM
-	sEDwJz2XqqJazCPj4uySV3WMny018LXM6V7SLtw==
-X-Google-Smtp-Source: AGHT+IFxRoPhnX4DyHfg++GDzqZOWUaU4rz9EjS5TCdYAUo2klND3ypyEOGm+jgA5KG6nSjESvNT8+z3Yqb557Gbebc=
-X-Received: by 2002:ac8:72d7:0:b0:42a:96cb:c726 with SMTP id
- o23-20020ac872d7000000b0042a96cbc726mr260946qtp.33.1707159149991; Mon, 05 Feb
- 2024 10:52:29 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AEtdUvhm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA939C4166B;
+	Mon,  5 Feb 2024 19:01:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1707159696;
+	bh=qXT6n/Xz8TGqf2KpHYW4visUF18bBDgbINzKQ8xLz0s=;
+	h=From:To:Cc:Subject:Date:From;
+	b=AEtdUvhmlT6Q4z2ceE1S+VpZHbA1rQEw8LO+Bf9ETCZgbd5ufIs6vM741g/Q1erY3
+	 iMGw6ItvBEer3EgK3/IjPwBqeUyC0wFxJKJi0BEDpfeCs7dT2SMFjBkmzKcYwnUthQ
+	 WhFfz5iTvetNX+ZxtVlfj7t4egZ8PyHbQmkHyLVeII7nobppWisVcBQOZMDByw/Jkb
+	 qPLCTlbjBlSBSTy4ss5xYgKC3b5E0kaXBuKNu5cwCBpZKrs4crm/8AR/BZQl4XTORR
+	 p7Sxw9/iybUH35eJgPdaYL+6/igMauYf/6XDG8mUy/tmLL8nCpYXoYbE3WM8+Id2o6
+	 MaepARhHxl+og==
+From: Will Deacon <will@kernel.org>
+To: linux-kernel@vger.kernel.org
+Cc: kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	iommu@lists.linux.dev,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Dexuan Cui <decui@microsoft.com>
+Subject: [PATCH v3 0/3] Fix double allocation in swiotlb_alloc()
+Date: Mon,  5 Feb 2024 19:01:24 +0000
+Message-Id: <20240205190127.20685-1-will@kernel.org>
+X-Mailer: git-send-email 2.20.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1707144953.git.robin.murphy@arm.com> <d4753562f4faa0e6b3aeebcbf88fdb60cc22d715.1707144953.git.robin.murphy@arm.com>
-In-Reply-To: <d4753562f4faa0e6b3aeebcbf88fdb60cc22d715.1707144953.git.robin.murphy@arm.com>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Mon, 5 Feb 2024 13:51:53 -0500
-Message-ID: <CA+CK2bDFboGQD1YaZix7O_10F3K8bbxwXuJTVK40sNQWxmek_A@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] iommu/iova: Reorganise some code
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, linux-mm@kvack.org, rientjes@google.com, 
-	yosryahmed@google.com, john.g.garry@oracle.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Mon, Feb 5, 2024 at 10:32=E2=80=AFAM Robin Murphy <robin.murphy@arm.com>=
- wrote:
->
-> The iova_cache_{get,put}() calls really represent top-level lifecycle
-> management for the whole IOVA library, so it's long been rather
-> confusing to have them buried right in the middle of the allocator
-> implementation details. Move them to a more expected position at the end
-> of the file, where it will then also be easier to expand them. With
-> this, we can also move the rcache hotplug handler (plus another stray
-> function) into the rcache portion of the file.
->
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Hi all,
 
-Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+This is version three of the patches I posted recently:
+
+v1: https://lore.kernel.org/r/20240126151956.10014-1-will@kernel.org
+v2: https://lore.kernel.org/r/20240131122543.14791-1-will@kernel.org
+
+Thanks to Robin for the comments on the most recent version.
+
+Changes since v2 include:
+
+  - Restore missing 'continue' statement that got accidentally dropped
+    while addressing the initial round of review feedback.
+
+  - Reword the commit message in patch #1
+
+  - Add a Fixes: tag to the last patch
+
+Cheers,
+
+Will
+
+Cc: iommu@lists.linux.dev
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+Cc: Dexuan Cui <decui@microsoft.com>
+
+--->8
+
+Will Deacon (3):
+  swiotlb: Fix double-allocation of slots due to broken alignment
+    handling
+  swiotlb: Enforce page alignment in swiotlb_alloc()
+  swiotlb: Honour dma_alloc_coherent() alignment in swiotlb_alloc()
+
+ kernel/dma/swiotlb.c | 38 ++++++++++++++++++++++++--------------
+ 1 file changed, 24 insertions(+), 14 deletions(-)
+
+-- 
+2.43.0.594.gd9cf4e227d-goog
+
