@@ -1,106 +1,136 @@
-Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F125A47F53
-	for <iommu@lists.linux.dev>; Mon,  5 Feb 2024 17:45:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.46
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 05CF245971
+	for <iommu@lists.linux.dev>; Mon,  5 Feb 2024 18:03:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707155110; cv=none; b=o4vN9btYgPNgQt9dj6O2CfB+/q4US8fuw2FMr6kv3gqSBFGRusZTy64XuHF02UKTb1p7IXZehzAnowK0/HNOqJCFKd/Ws3GMkL+xU0K7F8FRIalAcM4UUTJkIix0BtdBZP+RKN+UjdEkqw98kcq3kYT2ZohYMkOa/ZxJ5FZuvHA=
+	t=1707156238; cv=none; b=ryxgz9hIBqma+lqCGiiLkqPLfBRmAUmIihWezwA//rAggDGBBB2nbh8obcFZ1wAah2fNhG1TsTwoTvBgjOuJKVhS0r/or2sPEVzli6Fj0FYeRSdqD/bd04QbfDyl/yw1wpf3oihq/g53f4zaLxpiTNB8jI/x0rmX6wvn6W3ptxE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707155110; c=relaxed/simple;
-	bh=Kr2vrWVlUyntHvMw7Si5zE2PHtWM0mT+einhFyctsMw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=shC0KE4KeCKzYxdgrloo36NZSPllljBSxnBuROtmlURmKnU07iviwBY0/g1aq5MQMYqG0bYzOm9Oy4HxLk4PVB/QShY8ps4NlaB0IYyKpECnKljqAatnPkcNzLn5cM+UJWOuJzn6ud1wbc4LVx6wEYmcXhcrK/bbbhVFp9hr+/g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=FbTKQdzh; arc=none smtp.client-ip=209.85.219.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="FbTKQdzh"
-Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-68c427136b0so22940096d6.1
-        for <iommu@lists.linux.dev>; Mon, 05 Feb 2024 09:45:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1707155108; x=1707759908; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Kr2vrWVlUyntHvMw7Si5zE2PHtWM0mT+einhFyctsMw=;
-        b=FbTKQdzhlvFm+QE+y1X4vKuG6O+LLnBKXpEuWJVlTtG+Xenm0wNpuVTfiSek0dRwCC
-         g1D0VCzWiHwm+ARuXfjNxsxlIClW+hzNf/Pro/POJhjLh6XDQrP0byBiX4k+Z0qS9vnl
-         acb7y5HBJ/5uBRplqm6ZhUnG3srIfDj/0vMSNoTg98M0RUJ9RnpDGGIdxNrqsYHIHHgn
-         kEjZtSGQ7jXfZoMfQWJnWY1SkVnZttS81Xrn7+ID039UIFzFLYq2edpw+/ksnVw42GNP
-         U9jNfiQuioFU6gxXt8/CcrqGnYmFad3RvnqH2jd1iW2NK1bBPdldlJLFkWSGvzpfwlVu
-         sHXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707155108; x=1707759908;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Kr2vrWVlUyntHvMw7Si5zE2PHtWM0mT+einhFyctsMw=;
-        b=G1Xo4n/uhBoOQUot0o4+PBqsrdJo2r0bhp2fhg7Vu2yjLpPRjnZ5r5+3eOt16OMnLS
-         nqNuJXhjFgpRVfC4gIVSjLGKsKIhvL9ZQIrb3J37vYTBAuVWefiJ5ZGPW4lFTH03+sH0
-         Hs7yhYQSw3F/iruf7xa/AHLYzlu8rZEbmpUJbDBl5WTuP4PRVrRBXKqLNz4HONz+UwgA
-         tHuwou8FAf1wvcI3aRc7GZPvJPrHt9fEHMVIsclr9kcOfkLwgY1Jk7ME4cWs1eKwpQkx
-         Bqx+dHX9hoIn+NKV6RgWhk4mULApVLImCN3S8pQyLm1LZhchGZ2R2W6CxYoPfBx8qQkG
-         ye3g==
-X-Gm-Message-State: AOJu0Yz61ppQ35EgXx+j8+4SVKyKgSwsGayC66zIg7rxLCcXzNlNA49L
-	Z9ItpXWB/vWaOZeuKBgocE+aMhbDZH7tFQyf8qpUsz00HU0Z/njkZkrhNexXFhg=
-X-Google-Smtp-Source: AGHT+IHYMw0vd64OVr0zEMte3BX2BoxkRkfAfpiJiAxhjtbWihbl0rcbbYsuxMOB9Sysr++MU/eDAQ==
-X-Received: by 2002:a0c:e14b:0:b0:68c:850d:7e12 with SMTP id c11-20020a0ce14b000000b0068c850d7e12mr85628qvl.50.1707155107926;
-        Mon, 05 Feb 2024 09:45:07 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCWYPsWNFHv61exg+gMCQoag7gBZCOBqvyfZr1G9u+oPjqyrOwq3LYPfZ8DHnZ3lXGCW2H019rMJwKaxvLdC5XJN8bQPMtNx4sk0ynWnOH6QQ0slFrl5Ptdld6MfH+LsWOHXY6wGQ6IS12X4C5mk7za1Dt+B8lfZb10uQeB7pc/qZi7KKSgE4gi5/CGlXF+4KBrVRqMRlkZd5pnzVvhMFtp+/ID8YmfxZrrlM0m4QZoS0fYfjZl2v7d6XT0Gx8rUoXS0m9BTSzGFi8JG1cntWWEOJqGd7n7hHxxx4nUep3NwoA6HXavGEL5rXEZrdH+4UAd5sTZupOuxdbJV7A27rTBK67ACC96kircN6b9iBI1gGhtBpK9vNzQrHhudWql3BnS1EE1AS6aSX0WJ9rQHdrdmf3f9tnqcPEtENeciOx5OKeqVX5FAJReENYnTCNdQvPLNQer06oyzN3teSNcXQ48e1ehHBdIWISjJ7sB2lCzU73LG6HbNiR6oXT2JmXEqVaaiqtvL9iLUZ27KHPnSmSugFdYit9jQu51JSiHQgMtqIEKWj8uDuoLdyqhILWFR2ijsYJiEOHPgbH/hy+qkOlatgS3FAMrr+S/UgXx1wrJIAxxRZPk41WEdoxjJjHo8C0dZRbsUwVnhWcFMQZxRkFnSxxmnzmE6FnjNBZzNic9S6vFkSUtAKElK/+YSZSgxAevXVtsRW/5Env/IJqiTts//EICbFYy2RiY+TC0rAd9SM2NM
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id lx13-20020a0562145f0d00b006819bb31533sm176462qvb.99.2024.02.05.09.45.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Feb 2024 09:45:07 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rX31n-000fbS-19;
-	Mon, 05 Feb 2024 13:45:07 -0400
-Date: Mon, 5 Feb 2024 13:45:07 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: James Gowans <jgowans@amazon.com>
-Cc: linux-kernel@vger.kernel.org, Eric Biederman <ebiederm@xmission.com>,
-	kexec@lists.infradead.org, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>,
-	linux-fsdevel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-	Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-	Alexander Graf <graf@amazon.com>,
-	David Woodhouse <dwmw@amazon.co.uk>,
-	"Jan H . Schoenherr" <jschoenh@amazon.de>,
-	Usama Arif <usama.arif@bytedance.com>,
-	Anthony Yznaga <anthony.yznaga@oracle.com>,
-	Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>,
-	madvenka@linux.microsoft.com, steven.sistare@oracle.com,
-	yuleixzhang@tencent.com
-Subject: Re: [RFC 11/18] dma-iommu: Always enable deferred attaches for
- liveupdate
-Message-ID: <20240205174507.GD31743@ziepe.ca>
-References: <20240205120203.60312-1-jgowans@amazon.com>
- <20240205120203.60312-12-jgowans@amazon.com>
+	s=arc-20240116; t=1707156238; c=relaxed/simple;
+	bh=acHH8lLMt/+fXy9cDtqL91wGghvqnB/fGWuddTkpbls=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=E9MxgkVwGqbCDQmOIM3nGaVzFD8R8W0msNUxrZI1BtWGcMxg5mlkVZDjLhLHUpGKDUEEypAFp22x5kHMsmkIA9KRpF4aSmPdl8oGmWm5abh8L4476nlyP/Q7Ge6DL6ZBKO9lpjUXv1W/kGxmyR6tpoHXZT0kgBF86Ay29Su8Zic=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1D0E212FC;
+	Mon,  5 Feb 2024 10:04:39 -0800 (PST)
+Received: from [10.57.48.140] (unknown [10.57.48.140])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 651753F5A1;
+	Mon,  5 Feb 2024 10:03:54 -0800 (PST)
+Message-ID: <ee19a95d-fe1e-4f3f-bc81-bdef38475469@arm.com>
+Date: Mon, 5 Feb 2024 18:03:53 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240205120203.60312-12-jgowans@amazon.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 05/12] bcm2835-dma: Derive slave DMA addresses correctly
+Content-Language: en-GB
+To: Andrea della Porta <andrea.porta@suse.com>, Vinod Koul
+ <vkoul@kernel.org>, Florian Fainelli <florian.fainelli@broadcom.com>,
+ Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+ Broadcom internal kernel review list
+ <bcm-kernel-feedback-list@broadcom.com>, dmaengine@vger.kernel.org,
+ linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Cc: Maxime Ripard <maxime@cerno.tech>, Dom Cobley <popcornmix@gmail.com>,
+ Phil Elwell <phil@raspberrypi.com>
+References: <cover.1706948717.git.andrea.porta@suse.com>
+ <30da53ebdf43b712da790fd2ae0f0040f71762b8.1706948717.git.andrea.porta@suse.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <30da53ebdf43b712da790fd2ae0f0040f71762b8.1706948717.git.andrea.porta@suse.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Feb 05, 2024 at 12:01:56PM +0000, James Gowans wrote:
-> Seeing as translations are pre-enabled, all devices will be set for
-> deferred attach. The deferred attached actually has to be done when
-> doing DMA mapping for devices to work.
+On 2024-02-04 6:59 am, Andrea della Porta wrote:
+> From: Phil Elwell <phil@raspberrypi.com>
+> 
+> Slave addresses for DMA are meant to be supplied as physical addresses
+> (contrary to what struct snd_dmaengine_dai_dma_data does). It is up to
+> the DMA controller driver to perform the translation based on its own
+> view of the world, as described in Device Tree.
+> 
+> Now that the Pi Device Trees have the correct peripheral mappings,
+> replace the hacky address munging with phys_to_dma().
+> 
+> Signed-off-by: Phil Elwell <phil@raspberrypi.com>
+> ---
+>   drivers/dma/bcm2835-dma.c | 23 +++++------------------
+>   1 file changed, 5 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/dma/bcm2835-dma.c b/drivers/dma/bcm2835-dma.c
+> index 237dcdb8d726..077812eda609 100644
+> --- a/drivers/dma/bcm2835-dma.c
+> +++ b/drivers/dma/bcm2835-dma.c
+> @@ -18,6 +18,7 @@
+>    *	Copyright 2012 Marvell International Ltd.
+>    */
+>   #include <linux/dmaengine.h>
+> +#include <linux/dma-direct.h>
 
-This shouldn't be part of your solution..
+Please read the comment at the top of that file; this driver is 
+definitely not a DMA API implementation, and should not be including it.
 
-A DMA API using driver should never be attached to a device that is
-being persisted across a kexec. If it does then the device should be
-fully reset and re-attached to the normal DMA API iommu domain.
+>   #include <linux/dma-mapping.h>
+>   #include <linux/dmapool.h>
+>   #include <linux/err.h>
+> @@ -980,22 +981,12 @@ static struct dma_async_tx_descriptor *bcm2835_dma_prep_slave_sg(
+>   	if (direction == DMA_DEV_TO_MEM) {
+>   		if (c->cfg.src_addr_width != DMA_SLAVE_BUSWIDTH_4_BYTES)
+>   			return NULL;
+> -		src = c->cfg.src_addr;
+> -		/*
+> -		 * One would think it ought to be possible to get the physical
+> -		 * to dma address mapping information from the dma-ranges DT
+> -		 * property, but I've not found a way yet that doesn't involve
+> -		 * open-coding the whole thing.
+> -		 */
+> -		if (c->is_40bit_channel)
+> -			src |= 0x400000000ull;
+> +		src = phys_to_dma(chan->device->dev, c->cfg.src_addr);
 
-You should be striving to have an iommu_domain to represent the
-special post-kexec translation regime.
+FWIW I'd argue that abusing DMA API internals like this is even more 
+hacky than bypassing it entirely. The appropriate public API for setting 
+up the device end of a transfer is dma_map_resource(). Now, it *is* the 
+case currently that the dma-direct implementation of that does not take 
+dma_range_map into account, but that's already an open question:
 
-Jason
+https://lore.kernel.org/linux-iommu/20220610080802.11147-1-Sergey.Semin@baikalelectronics.ru/
+
+Thanks,
+Robin.
+
+>   		info |= BCM2835_DMA_S_DREQ | BCM2835_DMA_D_INC;
+>   	} else {
+>   		if (c->cfg.dst_addr_width != DMA_SLAVE_BUSWIDTH_4_BYTES)
+>   			return NULL;
+> -		dst = c->cfg.dst_addr;
+> -		if (c->is_40bit_channel)
+> -			dst |= 0x400000000ull;
+> +		dst = phys_to_dma(chan->device->dev, c->cfg.dst_addr);
+>   		info |= BCM2835_DMA_D_DREQ | BCM2835_DMA_S_INC;
+>   	}
+>   
+> @@ -1064,17 +1055,13 @@ static struct dma_async_tx_descriptor *bcm2835_dma_prep_dma_cyclic(
+>   	if (direction == DMA_DEV_TO_MEM) {
+>   		if (c->cfg.src_addr_width != DMA_SLAVE_BUSWIDTH_4_BYTES)
+>   			return NULL;
+> -		src = c->cfg.src_addr;
+> -		if (c->is_40bit_channel)
+> -			src |= 0x400000000ull;
+> +		src = phys_to_dma(chan->device->dev, c->cfg.src_addr);
+>   		dst = buf_addr;
+>   		info |= BCM2835_DMA_S_DREQ | BCM2835_DMA_D_INC;
+>   	} else {
+>   		if (c->cfg.dst_addr_width != DMA_SLAVE_BUSWIDTH_4_BYTES)
+>   			return NULL;
+> -		dst = c->cfg.dst_addr;
+> -		if (c->is_40bit_channel)
+> -			dst |= 0x400000000ull;
+> +		dst = phys_to_dma(chan->device->dev, c->cfg.dst_addr);
+>   		src = buf_addr;
+>   		info |= BCM2835_DMA_D_DREQ | BCM2835_DMA_S_INC;
+>   
