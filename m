@@ -1,46 +1,38 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mout.web.de (mout.web.de [212.227.15.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 670E718EB1
-	for <iommu@lists.linux.dev>; Mon,  5 Feb 2024 11:46:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FFC21B7E4;
+	Mon,  5 Feb 2024 11:53:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707133616; cv=none; b=c0U5gQ17fneRabv8hf7ah89MXODxVtHKS1dDHxqpBrD8bjb1I73IrhuDX79pz6tNdfUkiAis5yNeilAHF/YYKwSPODC5Tl1H2aUMilksx1Pf1exN7BDTnKtjO07T3De2clMJYxFOsi4dw2gzRHIx4Ne56oSIWTQA5ouhjM6ixTo=
+	t=1707134024; cv=none; b=BtOIUF4yi3udh1K8uLrP7j8IztpXeL4O41M44ztrluUJJ/wCqZaWiDyUHtf/cHLYRHKmnvroLgLh2F2QS+7pTdxDHy/VnmA9V5lt4rVk649kZXmXKvbmmQvLWswY6fx+VfqEqjdze+SDfOeEdoSENKoViXl+4qMfB/ZhEUk4AkY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707133616; c=relaxed/simple;
-	bh=HFCq9wu6W08QNaLCx54DPS2en/X1Oy8pyJpYJABA99U=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=AKEzGtcEeHsayS7LIIQ85AYVfUWuBAywzm+4MB2Ecf7KAUYcAJE0/UjAvUnFW0BsekLJADKIwMQonc2+Qix34ur5JMAydHQt+UmYBRM+hez+AkdId/vU3SR4CEOga+ftyNY8D3Ba5ZiEU9itIRYvGyUa1TxDBsKeBOnz1cUcfno=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P8kq9JFG; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1707134024; c=relaxed/simple;
+	bh=mZgak3wd7sP/8YP0PUhMwClPhbg0YKX/cOYKWUE+Bq0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HGn5WzOD4q1neg+QFOJk4fcGyaWHXse9vBXVVmU01z+t/Y1DwiOXwel5erSDvTyqyN38LnWBT6im4f2sE9AdKJ+P3YwEhlwn6LfZ4FT3FefLNOaqAigvjNpBaFDBM1Ag+Jxvk+pSXNzgldibYjN5brAXfMS4x4gyl80gMpOvZe4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=siqK75NV; arc=none smtp.client-ip=212.227.15.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P8kq9JFG"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707133613; x=1738669613;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=HFCq9wu6W08QNaLCx54DPS2en/X1Oy8pyJpYJABA99U=;
-  b=P8kq9JFG1NV2tkTWFZAScWzZmLigJbHRoZ7WUiS+Jprdv0lip5b4reJh
-   d3Gb3c/9fgft+DodLnBGLe5CPkMUAW1isxg78cI3q9ycFQK6Aqnd5fzBz
-   hvgfBeyTAUORAzUiPW3uqMvbXZwwPK1fJmDLDMvrtzKSmHCwMnb8asnJn
-   58HTmL2WVHA8NDHjsYNO7HiDTdsZ22YcltSxdyootacyHbQstQAARNa3G
-   lYfne//bEl1NyD2NMY3lp8PyP3eijT2/PZ6ETHQzvM+n+JACddbylKpGD
-   Wv1TcOmx5kPlBJZx5P+sErnj+IPODnxlPcNCoQ5w37mnOXG1uuqUQNWxo
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10974"; a="18030063"
-X-IronPort-AV: E=Sophos;i="6.05,245,1701158400"; 
-   d="scan'208";a="18030063"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2024 03:46:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.05,245,1701158400"; 
-   d="scan'208";a="706293"
-Received: from bixichen-mobl.ccr.corp.intel.com (HELO [10.254.215.64]) ([10.254.215.64])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2024 03:46:49 -0800
-Message-ID: <e41bbed5-fb22-43c3-9354-d797a2c7aaaa@linux.intel.com>
-Date: Mon, 5 Feb 2024 19:46:46 +0800
+	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="siqK75NV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
+	t=1707133999; x=1707738799; i=markus.elfring@web.de;
+	bh=mZgak3wd7sP/8YP0PUhMwClPhbg0YKX/cOYKWUE+Bq0=;
+	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
+	 In-Reply-To;
+	b=siqK75NVVacoNo9yPVF8GnsraFLx/dbc4H4kAlsCj/m/IyfxJOXzegY3npA+YDzH
+	 9c3O6KCKdyk07svNfJUbjU5ARHD5zwJUDMQlwT4zIQra/2ybpj+Ln27C7jUGyXKFE
+	 cWEXPhQoTuMVZbnWyxY/txucnG+pmzFoxrpc1K0tEARG7dJFsci3LPrambXRktWLL
+	 22gdxHRcc+hS33NanawtvHEYA7cB7kYMS7dcNk5Pw3L97fOT7r1ZcajZEt0qccMcc
+	 l/QQs7X7To3huXELl8iCOSj3flzYnZRWMj+yo4CjKsWFROnharXcYSw45+QIolzu8
+	 L6aULQTQrDKu/Sz4JA==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.21] ([94.31.85.95]) by smtp.web.de (mrweb006
+ [213.165.67.108]) with ESMTPSA (Nemesis) id 1My6lX-1qoUOP3r0Z-00zZsa; Mon, 05
+ Feb 2024 12:53:18 +0100
+Message-ID: <49fc6a59-2c07-4366-b32f-0599c2418916@web.de>
+Date: Mon, 5 Feb 2024 12:52:58 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,74 +40,46 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Longfang Liu <liulongfang@huawei.com>, "Zhao, Yan Y" <yan.y.zhao@intel.com>,
- Joel Granados <j.granados@samsung.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v11 12/16] iommu: Use refcount for fault data access
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20240130080835.58921-1-baolu.lu@linux.intel.com>
- <20240130080835.58921-13-baolu.lu@linux.intel.com>
- <BN9PR11MB52764927C3C56127F4B9B9DE8C472@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52764927C3C56127F4B9B9DE8C472@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: iommu/ipmmu-vmsa: Use devm_platform_get_and_ioremap_resource() in
+ ipmmu_probe()
+To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ kernel-janitors@vger.kernel.org, =?UTF-8?B?SsO2cmcgUsO2ZGVs?=
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>
+References: <e01cdb99-8497-4fec-b423-a0bfb483ac75@web.de>
+ <324d4e02-6a5a-4112-a3a7-d7aeb5876acc@arm.com>
+Content-Language: en-GB
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <324d4e02-6a5a-4112-a3a7-d7aeb5876acc@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:+826gXMyLcStg3Xy/PzCqSu6s3UWOFdtPyMNHhZPcTyAcapjuwc
+ hY2bkVLsGjiA45FLXmNuKyQhl3KxJeizwFMw8ZZKb8x/OlgRTI3ady07tT8N2d68XozXEoY
+ lUgGr0kBYXOPJlpHgIXobTVC04TJRVRPgzEg/dNBKTrRzR9YmQoka6IJ08ne1koDwZ7H+52
+ Vi0+T7POPR5LTfklD+q8g==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:PPzBUwye1A4=;yZje3G6p8eaUY9thc/9Y8vZXB31
+ vmpZ815y67a0ftY9N8F39Pid+ttPfQXWICaCnm7/f6LrGxbh1Fo7CM/bCNpkq2ml7KyPsvKWv
+ hwp62fK+FEmdGWmoAw1xQ6n4Albd1f8O320e19jYNLBrPzRPJimBPLU6i3XWtHodnsFas9WuE
+ bhWmYS14GT/yiioM5/76+yzxPnaFVZi8ezvZBbpSTHLEly3J7Af3GAaATThZXF89NYyZlGhlL
+ fja3XHGqvO76kqX7k2BGuG+6zjcoubPg6lpnKJHZEVdmzzsyNUF7VJXXsda4fkTWlMAF4W6yY
+ Kkv3dSEDQNZ25poFldyfmvmOuXcYTL0WQN1hnwlu+6+Bt6b/mgqJskromvcZ1BkuY9DR1gNQM
+ JNU5ho6HeA+vYDi18HrPHfWJCe22zQoW2XhTN8oXU5JxA8I6YMsm4qXr7XZk7yVU30R++wYqt
+ AhjEWw4QdMTSDUNXRUMA8tKtp59RN+SplrdJLTnlyfzYcRjps7BUI4D9Wl+5ANkzkeXZzWf1+
+ a9SxeUKza99awL6LDpC7XWVGf/P6t597i3xolPz9VbU3hhVr/4dTd7nAx3/Fw8s3M9ZZG9Jfk
+ zkgm4KLGIFSN/cEfLh8sZ8Llnp9FAUyLHzPoZt4Up7YT0UZoqjPoigj/aywmWMNvawHiwQ7t7
+ Zu8epuMjD2hILWBh2Ir6sFvVwEdqg444+H2ZaNpVHNnW5/OxGhLYMz5lQEplX9Q7vlyTTddTo
+ 2NzmLB0E+nwVVzPU405z3Z9usNgE2wv6jOHUp5n7iDuysZdPNmmJxgedstIorf3GLVPQvoLNh
+ eU9DJhYSDgztxPHQYwU934c2nN3BTXvn5HDjiKZexDy9w=
 
-On 2024/2/5 16:37, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Tuesday, January 30, 2024 4:09 PM
->>
->> The per-device fault data structure stores information about faults
->> occurring on a device. Its lifetime spans from IOPF enablement to
->> disablement. Multiple paths, including IOPF reporting, handling, and
->> responding, may access it concurrently.
->>
->> Previously, a mutex protected the fault data from use after free. But
->> this is not performance friendly due to the critical nature of IOPF
->> handling paths.
->>
->> Refine this with a refcount-based approach. The fault data pointer is
->> obtained within an RCU read region with a refcount. The fault data
->> pointer is returned for usage only when the pointer is valid and a
->> refcount is successfully obtained. The fault data is freed with
->> kfree_rcu(), ensuring data is only freed after all RCU critical regions
->> complete.
->>
->> An iopf handling work starts once an iopf group is created. The handling
->> work continues until iommu_page_response() is called to respond to the
->> iopf and the iopf group is freed. During this time, the device fault
->> parameter should always be available. Add a pointer to the device fault
->> parameter in the iopf_group structure and hold the reference until the
->> iopf_group is freed.
->>
->> Make iommu_page_response() static as it is only used in io-pgfault.c.
->>
->> Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
->> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
->> Tested-by: Yan Zhao <yan.y.zhao@intel.com>
-> 
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> 
->>    * struct iommu_fault_param - per-device IOMMU fault data
->>    * @lock: protect pending faults list
->> + * @users: user counter to manage the lifetime of the data
->> + * @ruc: rcu head for kfree_rcu()
-> 
-> s/ruc/rcu
+>> Thus reuse existing functionality instead of keeping duplicate source c=
+ode.
+>
+> Much as I detest the get_and_ioremap_resource obfuscator, it's not even =
+appropriate here since nothing else is using "res".
 
-Fixed. Thank you!
+I got the impression that this local variable is needed to perform
+a desired function call.
 
-Best regards,
-baolu
+Regards,
+Markus
