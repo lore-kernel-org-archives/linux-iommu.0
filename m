@@ -1,38 +1,46 @@
-Received: from mout.web.de (mout.web.de [212.227.15.3])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FFC21B7E4;
-	Mon,  5 Feb 2024 11:53:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.15.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D29F199BE
+	for <iommu@lists.linux.dev>; Mon,  5 Feb 2024 11:55:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707134024; cv=none; b=BtOIUF4yi3udh1K8uLrP7j8IztpXeL4O41M44ztrluUJJ/wCqZaWiDyUHtf/cHLYRHKmnvroLgLh2F2QS+7pTdxDHy/VnmA9V5lt4rVk649kZXmXKvbmmQvLWswY6fx+VfqEqjdze+SDfOeEdoSENKoViXl+4qMfB/ZhEUk4AkY=
+	t=1707134132; cv=none; b=oyxBRv0azSXP5M4Gcnzx3vhjpTTgQxotOVtm5IgKf22LVpOLTFj+nK7gSRYCXHe4BDVS3AlU9khrGC9hsdKheP1F3otd9gmwqjqIKNlyzXNFtaQcHw3k9jHId11rYkWCfmNwOD4+3TD9A0QkKir+ezbgoJcz/JYf2QVHQVO0a54=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707134024; c=relaxed/simple;
-	bh=mZgak3wd7sP/8YP0PUhMwClPhbg0YKX/cOYKWUE+Bq0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HGn5WzOD4q1neg+QFOJk4fcGyaWHXse9vBXVVmU01z+t/Y1DwiOXwel5erSDvTyqyN38LnWBT6im4f2sE9AdKJ+P3YwEhlwn6LfZ4FT3FefLNOaqAigvjNpBaFDBM1Ag+Jxvk+pSXNzgldibYjN5brAXfMS4x4gyl80gMpOvZe4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=siqK75NV; arc=none smtp.client-ip=212.227.15.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+	s=arc-20240116; t=1707134132; c=relaxed/simple;
+	bh=0OuYU2PvqAucFifuB0MnY2hFRDJRhjMbT+oPpt/BoeA=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=YfDsHJV06sB+Amk9keIHayTmmXc8BrlTAhgyb3tLYRvcGiU2U/+7lEO44t8LKHq4qP7EO3++cI+UK9xl2JhG6km5Sta1Z4RPo8q2O/y/BGWldFuxkRRTEGlwluxgQ84rg/UJe3zSSZQQ5YKgDHCWR1S1ZUY9iNmTn4QCPDLuNoI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VcuUk5o5; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="siqK75NV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
-	t=1707133999; x=1707738799; i=markus.elfring@web.de;
-	bh=mZgak3wd7sP/8YP0PUhMwClPhbg0YKX/cOYKWUE+Bq0=;
-	h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:
-	 In-Reply-To;
-	b=siqK75NVVacoNo9yPVF8GnsraFLx/dbc4H4kAlsCj/m/IyfxJOXzegY3npA+YDzH
-	 9c3O6KCKdyk07svNfJUbjU5ARHD5zwJUDMQlwT4zIQra/2ybpj+Ln27C7jUGyXKFE
-	 cWEXPhQoTuMVZbnWyxY/txucnG+pmzFoxrpc1K0tEARG7dJFsci3LPrambXRktWLL
-	 22gdxHRcc+hS33NanawtvHEYA7cB7kYMS7dcNk5Pw3L97fOT7r1ZcajZEt0qccMcc
-	 l/QQs7X7To3huXELl8iCOSj3flzYnZRWMj+yo4CjKsWFROnharXcYSw45+QIolzu8
-	 L6aULQTQrDKu/Sz4JA==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.21] ([94.31.85.95]) by smtp.web.de (mrweb006
- [213.165.67.108]) with ESMTPSA (Nemesis) id 1My6lX-1qoUOP3r0Z-00zZsa; Mon, 05
- Feb 2024 12:53:18 +0100
-Message-ID: <49fc6a59-2c07-4366-b32f-0599c2418916@web.de>
-Date: Mon, 5 Feb 2024 12:52:58 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VcuUk5o5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707134131; x=1738670131;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=0OuYU2PvqAucFifuB0MnY2hFRDJRhjMbT+oPpt/BoeA=;
+  b=VcuUk5o5LUI0apkMLQklZ3v6IIvYWzIIGW7OEOd6ZRSkirTS2qEZlcDP
+   YxWJDYb2vE+/bLKM2r5ygVDWkMYApkcGQPTFdN1b3TrcRVHya9xhNK2Zq
+   AEtz9aNafM8b96hlDNklfsWSlib7cTpoOMz1LeCCd/S5t0woZqNDxgB5l
+   Bf7LxS4msleTwJWmpeyaCyZ9mCtuW2E5BmY2ljdRu7PZ264jtZBOzie4F
+   00P61cyTSiGTKacag6TOzsSO6FNxwjoFFlrx1qv0svQAkgsdRP6S4/viC
+   fECtpsgFkiOXQBne1eyvkJbm6IDSfruxHpVpGvpQKK/KhK/pvVscpnYBB
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10974"; a="413514"
+X-IronPort-AV: E=Sophos;i="6.05,245,1701158400"; 
+   d="scan'208";a="413514"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2024 03:55:30 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,245,1701158400"; 
+   d="scan'208";a="706125"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.64]) ([10.254.215.64])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2024 03:55:27 -0800
+Message-ID: <416b19fa-bc7a-4ffd-a4c4-9440483fc039@linux.intel.com>
+Date: Mon, 5 Feb 2024 19:55:23 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -40,46 +48,82 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: iommu/ipmmu-vmsa: Use devm_platform_get_and_ioremap_resource() in
- ipmmu_probe()
-To: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
- kernel-janitors@vger.kernel.org, =?UTF-8?B?SsO2cmcgUsO2ZGVs?=
- <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>
-References: <e01cdb99-8497-4fec-b423-a0bfb483ac75@web.de>
- <324d4e02-6a5a-4112-a3a7-d7aeb5876acc@arm.com>
-Content-Language: en-GB
-From: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <324d4e02-6a5a-4112-a3a7-d7aeb5876acc@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:+826gXMyLcStg3Xy/PzCqSu6s3UWOFdtPyMNHhZPcTyAcapjuwc
- hY2bkVLsGjiA45FLXmNuKyQhl3KxJeizwFMw8ZZKb8x/OlgRTI3ady07tT8N2d68XozXEoY
- lUgGr0kBYXOPJlpHgIXobTVC04TJRVRPgzEg/dNBKTrRzR9YmQoka6IJ08ne1koDwZ7H+52
- Vi0+T7POPR5LTfklD+q8g==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:PPzBUwye1A4=;yZje3G6p8eaUY9thc/9Y8vZXB31
- vmpZ815y67a0ftY9N8F39Pid+ttPfQXWICaCnm7/f6LrGxbh1Fo7CM/bCNpkq2ml7KyPsvKWv
- hwp62fK+FEmdGWmoAw1xQ6n4Albd1f8O320e19jYNLBrPzRPJimBPLU6i3XWtHodnsFas9WuE
- bhWmYS14GT/yiioM5/76+yzxPnaFVZi8ezvZBbpSTHLEly3J7Af3GAaATThZXF89NYyZlGhlL
- fja3XHGqvO76kqX7k2BGuG+6zjcoubPg6lpnKJHZEVdmzzsyNUF7VJXXsda4fkTWlMAF4W6yY
- Kkv3dSEDQNZ25poFldyfmvmOuXcYTL0WQN1hnwlu+6+Bt6b/mgqJskromvcZ1BkuY9DR1gNQM
- JNU5ho6HeA+vYDi18HrPHfWJCe22zQoW2XhTN8oXU5JxA8I6YMsm4qXr7XZk7yVU30R++wYqt
- AhjEWw4QdMTSDUNXRUMA8tKtp59RN+SplrdJLTnlyfzYcRjps7BUI4D9Wl+5ANkzkeXZzWf1+
- a9SxeUKza99awL6LDpC7XWVGf/P6t597i3xolPz9VbU3hhVr/4dTd7nAx3/Fw8s3M9ZZG9Jfk
- zkgm4KLGIFSN/cEfLh8sZ8Llnp9FAUyLHzPoZt4Up7YT0UZoqjPoigj/aywmWMNvawHiwQ7t7
- Zu8epuMjD2hILWBh2Ir6sFvVwEdqg444+H2ZaNpVHNnW5/OxGhLYMz5lQEplX9Q7vlyTTddTo
- 2NzmLB0E+nwVVzPU405z3Z9usNgE2wv6jOHUp5n7iDuysZdPNmmJxgedstIorf3GLVPQvoLNh
- eU9DJhYSDgztxPHQYwU934c2nN3BTXvn5HDjiKZexDy9w=
+Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Longfang Liu <liulongfang@huawei.com>, "Zhao, Yan Y" <yan.y.zhao@intel.com>,
+ Joel Granados <j.granados@samsung.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v11 13/16] iommu: Improve iopf_queue_remove_device()
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>
+References: <20240130080835.58921-1-baolu.lu@linux.intel.com>
+ <20240130080835.58921-14-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276E70CAB272B212977F0C98C472@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276E70CAB272B212977F0C98C472@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
->> Thus reuse existing functionality instead of keeping duplicate source c=
-ode.
->
-> Much as I detest the get_and_ioremap_resource obfuscator, it's not even =
-appropriate here since nothing else is using "res".
+On 2024/2/5 17:00, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, January 30, 2024 4:09 PM
+>>    *
+>> - * Caller makes sure that no more faults are reported for this device.
+>> + * Removing a device from an iopf_queue. It's recommended to follow
+>> these
+>> + * steps when removing a device:
+>>    *
+>> - * Return: 0 on success and <0 on error.
+>> + * - Disable new PRI reception: Turn off PRI generation in the IOMMU
+>> hardware
+>> + *   and flush any hardware page request queues. This should be done
+>> before
+>> + *   calling into this helper.
+> 
+> this 1st step is already not followed by intel-iommu driver. The Page
+> Request Enable (PRE) bit is set in the context entry when a device
+> is attached to the default domain and cleared only in
+> intel_iommu_release_device().
+> 
+> but iopf_queue_remove_device() is called when IOMMU_DEV_FEAT_IOPF
+> is disabled e.g. when idxd driver is unbound from the device.
+> 
+> so the order is already violated.
+> 
+>> + * - Acknowledge all outstanding PRQs to the device: Respond to all
+>> outstanding
+>> + *   page requests with IOMMU_PAGE_RESP_INVALID, indicating the device
+>> should
+>> + *   not retry. This helper function handles this.
+>> + * - Disable PRI on the device: After calling this helper, the caller could
+>> + *   then disable PRI on the device.
+> 
+> intel_iommu_disable_iopf() disables PRI cap before calling this helper.
 
-I got the impression that this local variable is needed to perform
-a desired function call.
+You are right. The individual drivers should be adjusted accordingly in
+separated patches. Here we just define the expected behaviors of the
+individual iommu driver from the core's perspective.
 
-Regards,
-Markus
+> 
+>> + * - Tear down the iopf infrastructure: Calling iopf_queue_remove_device()
+>> + *   essentially disassociates the device. The fault_param might still exist,
+>> + *   but iommu_page_response() will do nothing. The device fault parameter
+>> + *   reference count has been properly passed from
+>> iommu_report_device_fault()
+>> + *   to the fault handling work, and will eventually be released after
+>> + *   iommu_page_response().
+> 
+> it's unclear what 'tear down' means here.
+
+It's the same as calling iopf_queue_remove_device(). Perhaps I could
+remove the confusing "tear down the iopf infrastructure"?
+
+Best regards,
+baolu
