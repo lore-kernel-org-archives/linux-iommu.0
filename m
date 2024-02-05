@@ -1,136 +1,84 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 05CF245971
-	for <iommu@lists.linux.dev>; Mon,  5 Feb 2024 18:03:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10F5247F70
+	for <iommu@lists.linux.dev>; Mon,  5 Feb 2024 18:15:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707156238; cv=none; b=ryxgz9hIBqma+lqCGiiLkqPLfBRmAUmIihWezwA//rAggDGBBB2nbh8obcFZ1wAah2fNhG1TsTwoTvBgjOuJKVhS0r/or2sPEVzli6Fj0FYeRSdqD/bd04QbfDyl/yw1wpf3oihq/g53f4zaLxpiTNB8jI/x0rmX6wvn6W3ptxE=
+	t=1707156929; cv=none; b=Mr24A7C5EO1JBv7zknv2tMiRBFwAqeyVWuTZp4m0evAXRjCD4t8iCFdD9rDMMSROASaqbjmiq9PuptqwRhojIvX4w+8uNots589hMxE+9tdoHlWtUDPsuBhsOVM8/wKTeicJQ/bw8KbdrcItLBEdOzdohNtcnlHN60ZW7Dm6c60=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707156238; c=relaxed/simple;
-	bh=acHH8lLMt/+fXy9cDtqL91wGghvqnB/fGWuddTkpbls=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=E9MxgkVwGqbCDQmOIM3nGaVzFD8R8W0msNUxrZI1BtWGcMxg5mlkVZDjLhLHUpGKDUEEypAFp22x5kHMsmkIA9KRpF4aSmPdl8oGmWm5abh8L4476nlyP/Q7Ge6DL6ZBKO9lpjUXv1W/kGxmyR6tpoHXZT0kgBF86Ay29Su8Zic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1D0E212FC;
-	Mon,  5 Feb 2024 10:04:39 -0800 (PST)
-Received: from [10.57.48.140] (unknown [10.57.48.140])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 651753F5A1;
-	Mon,  5 Feb 2024 10:03:54 -0800 (PST)
-Message-ID: <ee19a95d-fe1e-4f3f-bc81-bdef38475469@arm.com>
-Date: Mon, 5 Feb 2024 18:03:53 +0000
+	s=arc-20240116; t=1707156929; c=relaxed/simple;
+	bh=FyCREsOOqtnuvOoqGa+Thr/EI1MAjxJC1gzLyFekjtk=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=DIWBP46NgW+Ts9DVOy4Cpws3merVnnM362+mMLpoziBnSxiF3EoI4l5C/AblPK60xj1I782iHHWoY3ZLPsNtIwGLvF3kewBkUrNL4uQKXX6HXFmlaJrUdhASecY8bmvyqFbuw+PTVi6wTCunGpN5SuTlECqPurc/cXgr3IaiX8g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=1vwOmWqK; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="1vwOmWqK"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1d93b982761so32825ad.0
+        for <iommu@lists.linux.dev>; Mon, 05 Feb 2024 10:15:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1707156927; x=1707761727; darn=lists.linux.dev;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=hMMhCHPdnY6a53r0AdRn2ZwMuoekqmZTBFnKYjfzR8k=;
+        b=1vwOmWqKlevXvYu/jeswEA03Auc+C0uJRcLNd9evw4V7CNF/e4c8bU4r15/2EsrEyw
+         ymQ50/ix+EOKbZJiHjnYl9NONsewtXmd/qnzOSj5KpZdLFA1WZOgc2XmU6w5RWFQnqxk
+         9HMSKmEw0ap2YWzT53Sv4L3ddp2sRQPbpsfLJ8v17CTIJ/FVH/aR46Ky4RTt2CDZg5t8
+         rjqNduoYQPR7k8LuaAgThYgsBwNcq8OX6wZRxxgmi79ZbmSK/zj4XiGmzCt2F2F2SPVc
+         mtgc4zu0Rq1xQZ5jB3Ovre6Fi2jxJkIIR+dUzWcALvtI9Shf7tW3wPO5K6CQR+UpCffC
+         YnDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707156927; x=1707761727;
+        h=mime-version:references:message-id:in-reply-to:subject:cc:to:from
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hMMhCHPdnY6a53r0AdRn2ZwMuoekqmZTBFnKYjfzR8k=;
+        b=dLpYZGr9cu+daxniXnJi8jh/kAf8VEV9tR74UJOqGY1J+aOSXgIurkgLTpB+s9SLj6
+         YqHWmI4vAGlinY2V/1TZKnCN8WJX2L4I+eQTpVCJzbr/9R27dW1zF8wcKx8H+SbEH7s/
+         G/bAvdhnnUwi1sWvAGk9uGu6epZRMPefDrBtuM2/gMhLuZ1ThmmuRZK5zvmSIPzD4eAF
+         q6Rp39cqq7NTKGNExWBVhYVPU8NYD+hFY1i47RGJx/7DAbBQ5cL4jry0f8epA6PQO80+
+         ORvDcqIgFnvGT4O3QAb010xAc20C55ulkJYqH/L9BkIXTKazNXxCPO1xUdchCVJN7Hf8
+         JNLQ==
+X-Gm-Message-State: AOJu0YwkuQXNYYCYCbO61L1gw/3/Dx+A+zLxCB2LBXoyZETnJPZMsg21
+	WK8GW5We3QaYuTQYBiNQwbjtQaOLuYnclj4z2ol3ErrEWwO+7mToKMSwliX2EQ==
+X-Google-Smtp-Source: AGHT+IFmTazqpWxkymD9klp2+KFfWCRx+EupD0mFw2cWZMoCAXLe/HcNB61W1KMXdPfJpDeeBspVlQ==
+X-Received: by 2002:a17:903:22c4:b0:1d9:7a7a:3cf6 with SMTP id y4-20020a17090322c400b001d97a7a3cf6mr27342plg.12.1707156927140;
+        Mon, 05 Feb 2024 10:15:27 -0800 (PST)
+X-Forwarded-Encrypted: i=0; AJvYcCUpktWhh0NPQ9FcoM14zHXRSVA+RTqr1vPpQx8XPTdbH/a9BsBmFFWsoICE46TUKEz2jnUcs0RApYUBIZO3cT84iftmz8MttslQPRRdCYheYhXIe6a8hD1DwQlwkCsTYZnlHAbBRnlI8tntWDUXpCoiJ4Ken8Pr+/0KjyKOIAhjGiomQTQRlXCWtaCsPPcC+JIrdNOLcNagrcQTtqRKcttUEj55yLcKaYXkHiEgvvcHdB6EAdtODlFokODt1vWmC2pvRz7B0RQhLIpQYdsQbc8WLgjK
+Received: from [2620:0:1008:15:1e99:232a:d721:3dff] ([2620:0:1008:15:1e99:232a:d721:3dff])
+        by smtp.gmail.com with ESMTPSA id ka5-20020a170903334500b001d8edfec673sm159673plb.214.2024.02.05.10.15.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Feb 2024 10:15:26 -0800 (PST)
+Date: Mon, 5 Feb 2024 10:15:25 -0800 (PST)
+From: David Rientjes <rientjes@google.com>
+To: Robin Murphy <robin.murphy@arm.com>
+cc: joro@8bytes.org, will@kernel.org, pasha.tatashin@soleen.com, 
+    iommu@lists.linux.dev, linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+    yosryahmed@google.com, john.g.garry@oracle.com
+Subject: Re: [PATCH v3 1/3] iommu/iova: Tidy up iova_cache_get() failure
+In-Reply-To: <ae4a3bda2d6a9b738221553c838d30473bd624e7.1707144953.git.robin.murphy@arm.com>
+Message-ID: <9a779ae8-c965-b2b0-6f94-865f49ed0e9b@google.com>
+References: <cover.1707144953.git.robin.murphy@arm.com> <ae4a3bda2d6a9b738221553c838d30473bd624e7.1707144953.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 05/12] bcm2835-dma: Derive slave DMA addresses correctly
-Content-Language: en-GB
-To: Andrea della Porta <andrea.porta@suse.com>, Vinod Koul
- <vkoul@kernel.org>, Florian Fainelli <florian.fainelli@broadcom.com>,
- Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
- Broadcom internal kernel review list
- <bcm-kernel-feedback-list@broadcom.com>, dmaengine@vger.kernel.org,
- linux-rpi-kernel@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-Cc: Maxime Ripard <maxime@cerno.tech>, Dom Cobley <popcornmix@gmail.com>,
- Phil Elwell <phil@raspberrypi.com>
-References: <cover.1706948717.git.andrea.porta@suse.com>
- <30da53ebdf43b712da790fd2ae0f0040f71762b8.1706948717.git.andrea.porta@suse.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <30da53ebdf43b712da790fd2ae0f0040f71762b8.1706948717.git.andrea.porta@suse.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=US-ASCII
 
-On 2024-02-04 6:59 am, Andrea della Porta wrote:
-> From: Phil Elwell <phil@raspberrypi.com>
+On Mon, 5 Feb 2024, Robin Murphy wrote:
+
+> Failure handling in iova_cache_get() is a little messy, and we'd like
+> to add some more to it, so let's tidy up a bit first. By leaving the
+> hotplug handler until last we can take advantage of kmem_cache_destroy()
+> being NULL-safe to have a single cleanup label. We can also improve the
+> error reporting, noting that kmem_cache_create() already screams if it
+> fails, so that one is redundant.
 > 
-> Slave addresses for DMA are meant to be supplied as physical addresses
-> (contrary to what struct snd_dmaengine_dai_dma_data does). It is up to
-> the DMA controller driver to perform the translation based on its own
-> view of the world, as described in Device Tree.
-> 
-> Now that the Pi Device Trees have the correct peripheral mappings,
-> replace the hacky address munging with phys_to_dma().
-> 
-> Signed-off-by: Phil Elwell <phil@raspberrypi.com>
-> ---
->   drivers/dma/bcm2835-dma.c | 23 +++++------------------
->   1 file changed, 5 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/dma/bcm2835-dma.c b/drivers/dma/bcm2835-dma.c
-> index 237dcdb8d726..077812eda609 100644
-> --- a/drivers/dma/bcm2835-dma.c
-> +++ b/drivers/dma/bcm2835-dma.c
-> @@ -18,6 +18,7 @@
->    *	Copyright 2012 Marvell International Ltd.
->    */
->   #include <linux/dmaengine.h>
-> +#include <linux/dma-direct.h>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Please read the comment at the top of that file; this driver is 
-definitely not a DMA API implementation, and should not be including it.
+Much easier to follow :)
 
->   #include <linux/dma-mapping.h>
->   #include <linux/dmapool.h>
->   #include <linux/err.h>
-> @@ -980,22 +981,12 @@ static struct dma_async_tx_descriptor *bcm2835_dma_prep_slave_sg(
->   	if (direction == DMA_DEV_TO_MEM) {
->   		if (c->cfg.src_addr_width != DMA_SLAVE_BUSWIDTH_4_BYTES)
->   			return NULL;
-> -		src = c->cfg.src_addr;
-> -		/*
-> -		 * One would think it ought to be possible to get the physical
-> -		 * to dma address mapping information from the dma-ranges DT
-> -		 * property, but I've not found a way yet that doesn't involve
-> -		 * open-coding the whole thing.
-> -		 */
-> -		if (c->is_40bit_channel)
-> -			src |= 0x400000000ull;
-> +		src = phys_to_dma(chan->device->dev, c->cfg.src_addr);
-
-FWIW I'd argue that abusing DMA API internals like this is even more 
-hacky than bypassing it entirely. The appropriate public API for setting 
-up the device end of a transfer is dma_map_resource(). Now, it *is* the 
-case currently that the dma-direct implementation of that does not take 
-dma_range_map into account, but that's already an open question:
-
-https://lore.kernel.org/linux-iommu/20220610080802.11147-1-Sergey.Semin@baikalelectronics.ru/
-
-Thanks,
-Robin.
-
->   		info |= BCM2835_DMA_S_DREQ | BCM2835_DMA_D_INC;
->   	} else {
->   		if (c->cfg.dst_addr_width != DMA_SLAVE_BUSWIDTH_4_BYTES)
->   			return NULL;
-> -		dst = c->cfg.dst_addr;
-> -		if (c->is_40bit_channel)
-> -			dst |= 0x400000000ull;
-> +		dst = phys_to_dma(chan->device->dev, c->cfg.dst_addr);
->   		info |= BCM2835_DMA_D_DREQ | BCM2835_DMA_S_INC;
->   	}
->   
-> @@ -1064,17 +1055,13 @@ static struct dma_async_tx_descriptor *bcm2835_dma_prep_dma_cyclic(
->   	if (direction == DMA_DEV_TO_MEM) {
->   		if (c->cfg.src_addr_width != DMA_SLAVE_BUSWIDTH_4_BYTES)
->   			return NULL;
-> -		src = c->cfg.src_addr;
-> -		if (c->is_40bit_channel)
-> -			src |= 0x400000000ull;
-> +		src = phys_to_dma(chan->device->dev, c->cfg.src_addr);
->   		dst = buf_addr;
->   		info |= BCM2835_DMA_S_DREQ | BCM2835_DMA_D_INC;
->   	} else {
->   		if (c->cfg.dst_addr_width != DMA_SLAVE_BUSWIDTH_4_BYTES)
->   			return NULL;
-> -		dst = c->cfg.dst_addr;
-> -		if (c->is_40bit_channel)
-> -			dst |= 0x400000000ull;
-> +		dst = phys_to_dma(chan->device->dev, c->cfg.dst_addr);
->   		src = buf_addr;
->   		info |= BCM2835_DMA_D_DREQ | BCM2835_DMA_S_INC;
->   
+Acked-by: David Rientjes <rientjes@google.com>
