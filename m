@@ -1,118 +1,162 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60AA51758F
-	for <iommu@lists.linux.dev>; Mon,  5 Feb 2024 10:57:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9215E17C96
+	for <iommu@lists.linux.dev>; Mon,  5 Feb 2024 11:05:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707130622; cv=none; b=BZ9mz/wYB/TSHvkAy7cEuA6kH2WLUTyZy4nKHsVSmwhtQiNzUwOeZrJwdVOPJrPw03GKv0rWRfmgE//2UydNiVc5X270rmNMJfrqSZ8EZtqDANfrRu3HpsflNC7O2F64p4BUfhZmi3G11tikzT/8HF8kZPzuM943tYWGAre4TFQ=
+	t=1707131109; cv=none; b=V7Zz1LA8lzFYb+Hqvw7RDalPY+Q0jRC5jIny2rykmGHikvNtC4PBvkDnHmYSO5ZKZiGM4jgWM+QtmUxnjNTc8IY4Vygud8dokut9SPFt/lw127A3ZSx0K7zByg7S7OYpTn5RuBhDhQEfYG1Rf4oYnP07+sY3MwF0qO+/cmM3P/w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707130622; c=relaxed/simple;
-	bh=jDCr5ifs2jFyUCR8Wlikob41awnwZSkFKxOVNboyzDg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ofm4hPufu6uaZ7F1klJMvhN3tvKc2HVQRlZVII8SmUDOnFVNorazvg5daMWdzUa+hnVzmX5PZAP4iNArR7zS95MEEAPL1BAtyVWjWkt7J85DDQ7NrcuH3pomwGkoTqpMHeXY8i+zinORsrYr9f2QRvX5fo/Dou20Uu87I49utv8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=PHydSbId; arc=none smtp.client-ip=209.85.218.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1707131109; c=relaxed/simple;
+	bh=VJyxnHmRqLuTEtU8FAarFurtgv+O3sQGbnrzjvXqxLE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DdnlZbl8/dRWsKBvsWfAjsntz3G4XomW6JIDMzoOnALheVm76C6PQDqg8MUw2HMkk2U8Kj12iQtL8MgAhJSWUmvlxukxLYsJg0ThE4Z8Re0jeVbquQ4FX0KBOuaFu1jvso/0gGLP0gTbfmJEd75PmwboZhRlCfVojhpElSMcC/c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AR+4G5fV; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PHydSbId"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a30e445602cso1094716766b.0
-        for <iommu@lists.linux.dev>; Mon, 05 Feb 2024 02:57:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707130618; x=1707735418; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=EHuHF9Obfsev/lyEPMBOyVJSSPAo2wmNIcg9snCOcj0=;
-        b=PHydSbIdK7y7mHIJ1JHEi5O08egiwNHVdzPJ5bYMeXeFYTv5veApQIYZadX2ozI/K7
-         rP05y6d/WZ4YFtUPLwn0157DdS0QSi5axu1B4mEWUvf1hMlYtwDb69Dyfgk5/P1J1D+H
-         a4z89nEwSonKzD7SYnKR/ElIjbpZ86+H49qiRr3aI5y9BKlHhigjbV2WfpuugQHOtBkd
-         J5zqYfagXD7YWcADkCpIobECsFUmiDfwoYHrgh+HT1qRFmgxyto6dez+8adSoN0iZjH4
-         CmvHzsaCe73n2AMu4ep/FVUo+gfSJu0yED2KBAe8D3j33ab5o89DU2hq1PIs0ia/XlqA
-         gqPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707130618; x=1707735418;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=EHuHF9Obfsev/lyEPMBOyVJSSPAo2wmNIcg9snCOcj0=;
-        b=kY9AyWi6FzD0cfJm8oq68cvBb4/psV4uHi8W3tHi2AgltVujrVL6r3x/wYgsrBz1pI
-         vhr2SWRTceZInfSw1eTV+EaXwhRosdhSv0fPZwTvvSrIcbFozskapM/nL22swvhzLNeO
-         8uHV0zDB9lGPRDTJ2jesG3IC8HQfGYL4XW4Qzs2fSjEfgzHsbFmF/lsFG3qiIASAb540
-         TmZFaaBXiFuQNxSwRbZVHG1xw+QZ6X2btOWscK1KH90IxP3z2w3ktHVlj9lIeI/rvrho
-         Jn7f6QVWDxjSMG3TPDtWqyl14x4GSceIFr5ydn7JZ6fweCYQMhIUfAMSVcnXkMTCaciG
-         TtOg==
-X-Gm-Message-State: AOJu0YzY/dcOeXMgvhuidtngFGJNtdYJAYB86d9WDsPyu0xrNL8nfx/6
-	OZz/IXBtwjlT/k6RPzKWZtVlgljGPAg6N/NUGkEUnJOgTdwRk3Yy4UgJpiR5vno=
-X-Google-Smtp-Source: AGHT+IFmIPVEmAYqqtOtPZb03iOGqGY79yQzdRB9o8BeYriazP1ZzLdKyIsRE3fnekbsIPTwyMF6Dw==
-X-Received: by 2002:a17:906:358e:b0:a37:e065:43be with SMTP id o14-20020a170906358e00b00a37e06543bemr1024366ejb.23.1707130618489;
-        Mon, 05 Feb 2024 02:56:58 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCU75PKw4rpfkBsBugGVg2B5XhD9EXoGKAJTguZG+EhTywKZb8TwRbdl8DXBMaJ/shIdLOEGWkHfRiZLZGkO5mvxc0u7yc9ZHohDNBxFYre2rS6E2sHvlL/TzKBhPzdtJARFxTbBN5nGWqFpDLH/n97HI26UHA==
-Received: from localhost ([102.222.70.76])
-        by smtp.gmail.com with ESMTPSA id mm30-20020a170906cc5e00b00a3543718f5bsm4180413ejb.221.2024.02.05.02.56.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Feb 2024 02:56:57 -0800 (PST)
-Date: Mon, 5 Feb 2024 13:56:53 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Michael Shavit <mshavit@google.com>, iommu@lists.linux.dev,
-	Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [bug report] iommu/arm-smmu-v3: Refactor write_ctx_desc
-Message-ID: <73295c7c-f371-4d70-8a7d-c54ca9be6cbb@moroto.mountain>
-References: <4e25d161-0cf8-4050-9aa3-dfa21cd63e56@moroto.mountain>
- <CAKHBV24oM7JpenJfGXymcxkRdW=49dVWS72oCuTxt-FEguSueA@mail.gmail.com>
- <20240202133557.GR1455070@nvidia.com>
- <46d7086c-36fc-4668-b95b-454e339b94c0@moroto.mountain>
- <20240202145907.GT1455070@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AR+4G5fV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707131107; x=1738667107;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=VJyxnHmRqLuTEtU8FAarFurtgv+O3sQGbnrzjvXqxLE=;
+  b=AR+4G5fVCeyOLUA9Z2hBvuTVJsj6m49pIoAjNnXPSNtzD8eWtO/QYDfd
+   /EDsJSK0e9IYECO8BFTGjg7deASi+AF4wSuziuNEqSR8WF43kpZ8Qa6c6
+   l8lrgW3ZJ7woGrahgNg6eaYHoGTtV/RAsa1X6XFTkEHx6U6ta7Rr6TQdl
+   ixSM9PYTByHTCd20ckOzD4imklNiX9e+x0buKXAgwsUzrLjwBTew8zsEg
+   f+RBofpKMc178NxEUG6JfbfbuNdR6Ho9R6mn3YoOe+YEyoM1LGvRDCyXE
+   Go7pLzAyGh6FOCY4Emb7XLVach3s6uVGUHFOPN1xK79DLZnO81K8YeLJA
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10974"; a="25945190"
+X-IronPort-AV: E=Sophos;i="6.05,245,1701158400"; 
+   d="scan'208";a="25945190"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2024 03:05:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,245,1701158400"; 
+   d="scan'208";a="5327463"
+Received: from newjersey.igk.intel.com ([10.102.20.203])
+  by fmviesa004.fm.intel.com with ESMTP; 05 Feb 2024 03:05:02 -0800
+From: Alexander Lobakin <aleksander.lobakin@intel.com>
+To: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>
+Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Magnus Karlsson <magnus.karlsson@intel.com>,
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+	Alexander Duyck <alexanderduyck@fb.com>,
+	bpf@vger.kernel.org,
+	netdev@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/7] dma: skip calling no-op sync ops when possible
+Date: Mon,  5 Feb 2024 12:04:19 +0100
+Message-ID: <20240205110426.764393-1-aleksander.lobakin@intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240202145907.GT1455070@nvidia.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Feb 02, 2024 at 10:59:07AM -0400, Jason Gunthorpe wrote:
-> On Fri, Feb 02, 2024 at 05:45:43PM +0300, Dan Carpenter wrote:
-> > On Fri, Feb 02, 2024 at 09:35:57AM -0400, Jason Gunthorpe wrote:
-> > > It won't silence Dan's warning warning but it will correct the bug for
-> > > now.
-> > 
-> > I could just modify the database to say that
-> > arm_smmu_update_ctx_desc_devices() doesn't call arm_smmu_write_ctx_desc()
-> > with preempt disabled.  I don't think it will silence any true
-> > positives.  That's a one liner for me.
-> 
-> But it does and it found this bug :)
-> 
+The series grew from Eric's idea and patch at [0]. The idea of using the
+shortcut for direct DMA as well belongs to Chris.
 
-No, it would just remove the one link between arm_smmu_update_ctx_desc_devices()
-and arm_smmu_write_ctx_desc().  The other path would still warn.
+When an architecture doesn't need DMA synchronization and the buffer is
+not an SWIOTLB buffer, most of times the kernel and the drivers end up
+calling DMA sync operations for nothing.
+Even when DMA is direct, this involves a good non-inline call ladder and
+eats a bunch of CPU time. With IOMMU, this results in calling indirect
+calls on hotpath just to check what is already known and return.
+XSk is been using a custom shortcut for that for quite some time.
+I recently wanted to introduce a similar one for Page Pool. Let's combine
+all this into one generic shortcut, which would cover all DMA sync ops
+and all types of DMA (direct, IOMMU, ...).
 
-Actually, I think even after you patch there is still a warning...  To
-be honest, I don't normally stress about false positivives.  I report
-all new warnings and everything that doesn't get fixed is a false
-positive.  If this false posotive becomes an issue then I can spend time
-on it at that point.
+* #1 adds stub inlines to be able to skip DMA sync ops or even compile
+     them out when not needed.
+* #2 adds the generic shortcut and enables it for direct DMA.
+* #3 adds ability to skip DMA syncs behind an IOMMU.
+* #4-5 are just cleanups for Page Pool to avoid merge conflicts in future.
+* #6 checks for the shortcut as early as possible in the Page Pool code to
+     make sure no cycles wasted.
+* #7 replaces XSk's shortcut with the generic one.
 
-> After my series we have things like this:
-> 
-> 		cdptr = arm_smmu_get_cd_ptr(master, master_domain->ssid);
-> 		if (WARN_ON(!cdptr))
-> 			continue;
-> 
-> Which indicates the paths that expect to have been pre-allocated. We
-> could also have a no_alloc parameter to really make the checker happy?
+On 100G NIC, the result is +3-5% for direct DMA and +10-11% for IOMMU.
+As a bonus, XSk core now allows batched buffer allocations for IOMMU
+setups.
+If the shortcut is not available on some system, there should be no
+visible performance regressions.
 
-I don't think so, although I could write a custom function to handle
-that parameter.
+[0] https://lore.kernel.org/netdev/20221115182841.2640176-1-edumazet@google.com
 
-You're talking about relationships between variables.  If a is foo that
-means b is bar.  And there are tons and tons of possible relationships
-and it's difficult to know which relationships matter.  Inside a
-function Smatch tries to track everything and then at the function
-boundary almost all the relationship information is lost.
+Alexander Lobakin (7):
+  dma: compile-out DMA sync op calls when not used
+  dma: avoid redundant calls for sync operations
+  iommu/dma: avoid expensive indirect calls for sync operations
+  page_pool: make sure frag API fields don't span between cachelines
+  page_pool: don't use driver-set flags field directly
+  page_pool: check for DMA sync shortcut earlier
+  xsk: use generic DMA sync shortcut instead of a custom one
 
-regards,
-dan carpenter
+ kernel/dma/Kconfig                            |   4 +
+ include/net/page_pool/types.h                 |  21 ++-
+ include/linux/device.h                        |   5 +
+ include/linux/dma-map-ops.h                   |  20 +++
+ include/linux/dma-mapping.h                   | 122 ++++++++++++++----
+ include/net/xdp_sock_drv.h                    |   7 +-
+ include/net/xsk_buff_pool.h                   |  13 +-
+ drivers/base/dd.c                             |   2 +
+ drivers/iommu/dma-iommu.c                     |   3 +-
+ drivers/net/ethernet/engleder/tsnep_main.c    |   2 +-
+ .../net/ethernet/freescale/dpaa2/dpaa2-xsk.c  |   2 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    |   2 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c      |   2 +-
+ drivers/net/ethernet/intel/igc/igc_main.c     |   2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   2 +-
+ drivers/net/ethernet/netronome/nfp/nfd3/xsk.c |   2 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |   2 +-
+ kernel/dma/mapping.c                          |  70 +++++++---
+ kernel/dma/swiotlb.c                          |  14 ++
+ net/core/page_pool.c                          |  67 ++++++----
+ net/xdp/xsk_buff_pool.c                       |  29 +----
+ 23 files changed, 276 insertions(+), 123 deletions(-)
+
+---
+From v1[1]:
+* #1:
+  * use static inlines instead of macros (Chris);
+  * move CONFIG_DMA_NEED_SYNC check into dma_skip_sync() (Robin);
+* #2:
+  * use a new dma_map_ops flag instead of new callback, assume the same
+    conditions as for direct DMA are enough (Petr, Robin);
+  * add more code comments to make sure the whole idea and path are
+    clear (Petr, Robin, Chris);
+* #2, #3: correct the Git tags and the authorship a bit.
+
+Not addressed:
+* #1:
+  * dma_sync_*range_*() are still wrapped, as some subsystems may want
+    to call the underscored versions directly (e.g. Page Pool);
+* #2:
+  * the new dev->dma_skip_sync bit is still preferred over checking for
+    READ_ONCE(dev->dma_uses_io_tlb) + dev_is_dma_coherent() on hotpath
+    as a faster solution.
+
+[1] https://lore.kernel.org/netdev/20240126135456.704351-1-aleksander.lobakin@intel.com
+-- 
+2.43.0
+
