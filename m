@@ -1,154 +1,91 @@
-Received: from mail.alien8.de (mail.alien8.de [65.109.113.108])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CD9812F36F
-	for <iommu@lists.linux.dev>; Tue,  6 Feb 2024 11:31:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=65.109.113.108
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B5F3F132482
+	for <iommu@lists.linux.dev>; Tue,  6 Feb 2024 11:32:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707219111; cv=none; b=siQno69sAkcZZrzjoyuP1BOAwhliJiHwYY5N6rgaonscnAMHoRApdRIaOa4pEY0JcM8wntnwBSoUMIB1AmotQZU4SR9rH/E2sZzVtrbQ+aAtgFNqd/FANahiY/ZUFfjM09nVmmhM/9p3c9EoKtWffVubXAhEDt0LwI0ECfw7hjM=
+	t=1707219144; cv=none; b=Q6D6L9cW9fp/gQETQVmbNsuOcXpNeYWPvMQVLwBtETcSexsGVM/s+Cn+Z8J8btXMsMPcbAK3vzUFNJrZZiBBmLI5Q6HABLp5Pg9RCmiQb/guVpEtcxh3OKrJ4eFAGbbPGIqhsIktMmDOKyFvx8je4KZUr1pwjKtOJ5qK+j41G9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707219111; c=relaxed/simple;
-	bh=oF0oOuWCeALtmTqDD/togNYAEXQEnWbeMH0vNBLK25E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UE3y3FuZBqvRH8jwaMBzYZN8pr6ZOVlpgMKpnzApNvh2doajN1v4h25B92VEEbJuC+fbbYEwxSm4Kg0KsjvWSSDm+XwRszeAF5MubHjBZa4OySG/0MSBtsk97T1WcrVdCOZ9v5tq/OGoewunfdcsj2KFlVIVqn41RMjzAX77aPs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de; spf=pass smtp.mailfrom=alien8.de; dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b=ewN44thG; arc=none smtp.client-ip=65.109.113.108
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alien8.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alien8.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (4096-bit key) header.d=alien8.de header.i=@alien8.de header.b="ewN44thG"
-Received: from localhost (localhost.localdomain [127.0.0.1])
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTP id 5D07E40E01A2;
-	Tue,  6 Feb 2024 11:31:40 +0000 (UTC)
-X-Virus-Scanned: Debian amavisd-new at mail.alien8.de
-Authentication-Results: mail.alien8.de (amavisd-new); dkim=pass (4096-bit key)
-	header.d=alien8.de
-Received: from mail.alien8.de ([127.0.0.1])
-	by localhost (mail.alien8.de [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id HqBmGk6PA-fs; Tue,  6 Feb 2024 11:31:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=alien8;
-	t=1707219097; bh=PVIQ6wTS4WSiS9R42snOSTVuDFtWhoimgMWTvV+IG58=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ewN44thGght3UNOd7qm9F3lPT0auZoL3mNbzYi+6Qo4r6IKjZmq7R8dy1N4EjU/s3
-	 RbNkcCBF+cZXB+gMsYpDEJbvPusjqi5IVzCaAEyCkKIai3fXaMjjPl5TYLbUJVG9Qs
-	 26NzPzSPAkuglZtI1xLd/iDuu2ZoOF8PfDkOuts29mxEQUwLB4wFekorJENMdo0gLT
-	 G12WBKKGVeJfKui82IrCCAfyN7ePH7J7qLVjEIJSaEFZyLv6RcGeA3PcsoREvBqAy4
-	 XNdrsslHHen3RCa4Lpxb8+4wnMKtb6GGOOy2tIEM/PQZ573VNboRSZDBTRlQzIf7X6
-	 KjlVzTJLaV3s88FkBl1gHpCvgMv2PxeCWkftBLLIVt3CIy2ISREc2XL7shq/J+rYQ/
-	 XOM8uCR7XPGIbWmQrtzchqHVGDjO0ppHcPCnqW+GfYXY+2paKobDBq0d3vPkdincpW
-	 E2miXiMBn8fRI1nIstVQWVvMsHEePnUA7BWefzthhkl24B5ClJKNK4SOW5wlff6MSx
-	 4+6XARp1L1vfPwtFJQRrhrvfv/7PqT3LzoouYLlRF0N7pJXWXU3h0sGJ/S3KnZVtlt
-	 Vqw3Bbtr07U2WGggHLluDqISvc7aBLmplTDzK1QMaCTNEj+cnM3ubF3Ag6nQsgT9Sw
-	 qZU/BDberx1R8x4uMzqDt8pQ=
-Received: from zn.tnic (pd953021b.dip0.t-ipconnect.de [217.83.2.27])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature ECDSA (P-256) server-digest SHA256)
-	(No client certificate requested)
-	by mail.alien8.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 622A240E00B2;
-	Tue,  6 Feb 2024 11:31:30 +0000 (UTC)
-Date: Tue, 6 Feb 2024 12:31:25 +0100
-From: Borislav Petkov <bp@alien8.de>
-To: Ashish Kalra <Ashish.Kalra@amd.com>
-Cc: x86@kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	thomas.lendacky@amd.com, michael.roth@amd.com,
-	dan.carpenter@linaro.org
-Subject: Re: [PATCH] iommu/amd: Fix failure return from snp_lookup_rmpentry().
-Message-ID: <20240206113125.GCZcIYjYFz_LGJLTU5@fat_crate.local>
-References: <20240205210654.219442-1-Ashish.Kalra@amd.com>
+	s=arc-20240116; t=1707219144; c=relaxed/simple;
+	bh=/IMGTCxErD0wgwGqZAwjLejE+uSkhLispC8aFwiGNqg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nel5vRH7Mtwa1VTvFxyS8Ps1TeuS5AKgDmznIR4Jj39aZhHco51sJjBfQSk6oa/Kve2ujMB1g+jvn2FadgzTyXn8bMg7ym+/Rz42kzuIsE9SZ7TBvY+LS7en2YNP3hpHrScOFRNH9Sk4/0ZISVtmT53/fpL/cGSeQ5JPMesag7M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C2CE51FB;
+	Tue,  6 Feb 2024 03:33:02 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 306B03F762;
+	Tue,  6 Feb 2024 03:32:19 -0800 (PST)
+Message-ID: <0d1f81a8-999e-459d-9e5c-7efff665646e@arm.com>
+Date: Tue, 6 Feb 2024 11:32:17 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20240205210654.219442-1-Ashish.Kalra@amd.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 3/3] iommu/iova: use named kmem_cache for iova
+ magazines
+Content-Language: en-GB
+To: John Garry <john.g.garry@oracle.com>, joro@8bytes.org
+Cc: will@kernel.org, pasha.tatashin@soleen.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org, rientjes@google.com,
+ yosryahmed@google.com
+References: <cover.1707144953.git.robin.murphy@arm.com>
+ <dc5c51aaba50906a92b9ba1a5137ed462484a7be.1707144953.git.robin.murphy@arm.com>
+ <83a0aafc-8a9c-48ce-a203-96b901489d41@oracle.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <83a0aafc-8a9c-48ce-a203-96b901489d41@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Feb 05, 2024 at 09:06:54PM +0000, Ashish Kalra wrote:
-> From: Ashish Kalra <ashish.kalra@amd.com>
+On 06/02/2024 11:24 am, John Garry wrote:
+> On 05/02/2024 15:32, Robin Murphy wrote:
+>> From: Pasha Tatashin <pasha.tatashin@soleen.com>
+>>
+>> The magazine buffers can take gigabytes of kmem memory, dominating all
+>> other allocations. For observability purpose create named slab cache so
+>> the iova magazine memory overhead can be clearly observed.
+>>
+>> With this change:
+>>
+>>> slabtop -o | head
+>>   Active / Total Objects (% used)    : 869731 / 952904 (91.3%)
+>>   Active / Total Slabs (% used)      : 103411 / 103974 (99.5%)
+>>   Active / Total Caches (% used)     : 135 / 211 (64.0%)
+>>   Active / Total Size (% used)       : 395389.68K / 411430.20K (96.1%)
+>>   Minimum / Average / Maximum Object : 0.02K / 0.43K / 8.00K
+>>
+>> OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
+>> 244412 244239 99%    1.00K  61103       4    244412K iommu_iova_magazine
+>>   91636  88343 96%    0.03K    739     124      2956K kmalloc-32
+>>   75744  74844 98%    0.12K   2367      32      9468K kernfs_node_cache
+>>
+>> On this machine it is now clear that magazine use 242M of kmem memory.
 > 
-> The patch f366a8dac1b8: "iommu/amd: Clean up RMP entries for IOMMU
-> pages during SNP shutdown" (linux-next), leads to the following
+> Those caches could do with a trimming ...
 
-Add this:
+See the discussion on v1 for more details:
 
-[alias]
-        one = show -s --pretty='format:%h (\"%s\")'
+https://lore.kernel.org/linux-iommu/20240201193014.2785570-1-tatashin@google.com/
 
-to your .git/config so that when you do
+but it seems this really is the idle baseline for lots of CPUs * lots of 
+domains - if all those devices get going in anger it's likely that 
+combined iova + iova_magazine usage truly will blow up into gigabytes.
 
-$ git one f366a8dac1b8
+Cheers,
+Robin.
 
-it can give you the proper formatting for commit references:
-
-f366a8dac1b8 ("iommu/amd: Clean up RMP entries for IOMMU pages during SNP shutdown")
-
-> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-> index 88bb08ae39b2..11340380111d 100644
-> --- a/drivers/iommu/amd/init.c
-> +++ b/drivers/iommu/amd/init.c
-> @@ -3813,9 +3813,11 @@ static int iommu_page_make_shared(void *page)
->  		bool assigned;
->  
->  		ret = snp_lookup_rmpentry(pfn, &assigned, &level);
-> -		if (ret)
-> +		if (ret) {
->  			pr_warn("IOMMU PFN %lx RMP lookup failed, ret %d\n",
->  				pfn, ret);
-> +			return ret;
-> +		}
-
-This one is incomplete and we should've caught this in review: any of
-those failure cases here should return an error and not attempt to make
-a pfn shared again.
-
-Diff ontop:
-
----
-
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 11340380111d..480e7681f4f3 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -3814,24 +3814,27 @@ static int iommu_page_make_shared(void *page)
- 
- 		ret = snp_lookup_rmpentry(pfn, &assigned, &level);
- 		if (ret) {
--			pr_warn("IOMMU PFN %lx RMP lookup failed, ret %d\n",
--				pfn, ret);
-+			pr_warn("IOMMU PFN %lx RMP lookup failed, ret %d\n", pfn, ret);
- 			return ret;
- 		}
- 
--		if (!assigned)
--			pr_warn("IOMMU PFN %lx not assigned in RMP table\n",
--				pfn);
-+		if (!assigned) {
-+			pr_warn("IOMMU PFN %lx not assigned in RMP table\n", pfn);
-+			return -EINVAL;
-+		}
- 
- 		if (level > PG_LEVEL_4K) {
- 			ret = psmash(pfn);
--			if (ret) {
--				pr_warn("IOMMU PFN %lx had a huge RMP entry, but attempted psmash failed, ret: %d, level: %d\n",
--					pfn, ret, level);
--			}
-+			if (!ret)
-+				goto done;
-+
-+			pr_warn("PSMASH failed for IOMMU PFN %lx huge RMP entry, ret: %d, level: %d\n",
-+				pfn, ret, level);
-+			return ret;
- 		}
- 	}
- 
-+done:
- 	return rmp_make_shared(pfn, PG_LEVEL_4K);
- }
- 
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+> 
+>>
+>> Acked-by: David Rientjes <rientjes@google.com>
+>> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+>> [ rm: adjust to rework of iova_cache_{get,put} ]
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+> 
+> FWIW:
+> Reviewed-by: John Garry <john.g.garry@oracle.com>
