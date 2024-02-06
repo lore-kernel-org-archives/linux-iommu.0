@@ -1,200 +1,154 @@
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78915DF49
-	for <iommu@lists.linux.dev>; Tue,  6 Feb 2024 17:58:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707242308; cv=none; b=bY+UJEoaam54Ey5sHtFi3QDg3PcdWYVJGL4xUTIn0Vqiu0gRJg7z3+leGS+++Dm/Zku+HeLE9mB8Z1v0YYagMnueTShKnm+70b0V4o/+n7g+B4ohPeVYgiC3KLMdaOV8yWxk5jFPONL9W52OO4CC8MS4Uw8pz2hDz2ncrRcDEiE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707242308; c=relaxed/simple;
-	bh=7951GW6Xp9z97Qmg4nwA2H48FMQiXW6i55JHRPyygFY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eSxtTaN5JuaNI+XRlBnP0dKJh+E9L3ODo1JQrxGGL+hI2fOyFUuTDND/YODTtIyhEKrk7iYp+zBLvbRIv074sP1B525XXVPgjKpDletC83A4ZsZWOrZa9eDFya/0eV3npE+d+oIppYwpqLi9h+kQ9C3SgJuoo/vbVu0/XWkuBrs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=bo1Of9+t; arc=none smtp.client-ip=209.85.167.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C501134A5
+	for <iommu@lists.linux.dev>; Tue,  6 Feb 2024 18:13:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.40
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707243222; cv=fail; b=BhsZaP7egYj1ZlDbHvG0GFFnYy/7h11HRWkn6QcO361T5tJ0h77C8RtHD9J6qUUSOd8BH9LoV7vkGFjdkoQiAVseYJmW2Obt9Il9BKn9dHibg+9WmIMgx17YSRMZd4e9ipkZb5bSHzy1cUrH+g7qdzQHtYtokbEkpeLik/HNZlI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707243222; c=relaxed/simple;
+	bh=woIb6OBYwcGlovru9RlXeGC1E9q8BkNV7asZfjSRr70=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=V83rdrLKov51qQFXx2X1HQA67AEwjqOmgbhLUnu0EnWfsuMXL8wKRJ/Pv+UjT6gLJjQdpxmdsITVzFSX1qk0yfl/cc2k0LHE7j/+OaJdUYeGHB3I1v0eXaVuj9P1Ij2iL7N+Yq0X5k84TeSJKNlKBvZ1/m0xC5aEtMlel/lXHto=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=QMXpWaKv; arc=fail smtp.client-ip=40.107.236.40
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="bo1Of9+t"
-Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-3bb9d54575cso4259047b6e.2
-        for <iommu@lists.linux.dev>; Tue, 06 Feb 2024 09:58:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1707242305; x=1707847105; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cJL53zKCMRe3rZTEyHPFHRTiYb20tj8XiC5zITZ7zHM=;
-        b=bo1Of9+tceTl8QMJvxnBvJTPFVXt0TBVU67ZLpuhW3+x8yAbAtYXBqbLxm1HLrL4xv
-         RIv+XNvCqgsKpEg33XqS8gn2+gRHSh8dnGaXvTV4SxZt83h/vLyjIPr/m/gUJADIQpJ6
-         Tz68Osd5Awgv+xmMp5yOk0wvlUv3+5S7yzR28CEQXdZh7l6crAlzCy4lykk2uyoZBNlW
-         V4IMQHMGTJ5Fj6fjHOD+tvo91aIWZXn44gTENSBywxEFSjtsRXokwq5sHnvGhyvJ15eh
-         LRwu30ceOXID3f1ZatqvHqKQ1cmH+9TUJirYXXOXm9vT4770Nbd4uzEwnA7nwDFWdtG0
-         NzeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707242305; x=1707847105;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cJL53zKCMRe3rZTEyHPFHRTiYb20tj8XiC5zITZ7zHM=;
-        b=TB/rjZvZSeGZO2L2x7B5PNltcDS90CxpxDCITJ19NuYaZxYtf3vY/ik+i9vNw8ARa4
-         AD9df9f/YIRzFBSrKsdcb40LJYneVkP0YeJBItXnoikAOoVKhcUhoFhFapmQYbiKdygq
-         Ql5w+nSgxHHACVQNG8DhCX4b4/Jo672zpTM5VbhjNMTpSWI2I4HJDWaR2HJWbQxv0BPp
-         UziBPT4kAyD0ARyCi/OOz/I3saADh+AaQJny/3o/whutRuRZ6I5fI+GTl47FnuWE6xjf
-         i9ArZZ1wpSleMV3hrF4yf4UkVjwlflS3dLU30cQJz5bsZNcsGZgz2Eva2eFMhtYh2cTo
-         1f7A==
-X-Gm-Message-State: AOJu0YzCJKz7FnUuP0NjkwaYgWt05n7aynGk5DTG/qfc8IiLeg8mJdy/
-	XI++tY6irQINBV/WOreFTkv4vHTfe0fkDKIx1Ud4LqLhlNa4xK14GVqNyUpF474=
-X-Google-Smtp-Source: AGHT+IHIxjSwRq4awxvzbsyCit5HdkjVc2G/Sq25Nyy8GCii+cQ8pGaqFQNhH4SVRAO+2x/musOiOw==
-X-Received: by 2002:a05:6808:13c5:b0:3bf:cf6c:8de2 with SMTP id d5-20020a05680813c500b003bfcf6c8de2mr4009432oiw.40.1707242305518;
-        Tue, 06 Feb 2024 09:58:25 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCWPJSrrv1Ey9epUQ5cYk+pOO+yktLog0NOU1G3AjTx3/ww5sQ40gWDR7MvUdtO++23mbNZN/edZU6IRT92bHdh+22sY7RROAgU9MstTA9xiIZzQ0fugGpqXd1CAL70NrUKiJH00A1WrqrOG67Xgg3uPpJ17e0s2QyAqCwIivJMw6FKq4itUIhg=
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id cf11-20020a05680833cb00b003bfba9e47a6sm387812oib.3.2024.02.06.09.58.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Feb 2024 09:58:25 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rXPiC-002uMB-13;
-	Tue, 06 Feb 2024 13:58:24 -0400
-Date: Tue, 6 Feb 2024 13:58:24 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v5 10/14] iommu/amd: Introduce logic to enable/disable
- IOPF
-Message-ID: <20240206175824.GI31743@ziepe.ca>
-References: <20240118073339.6978-1-vasant.hegde@amd.com>
- <20240118073339.6978-11-vasant.hegde@amd.com>
- <20240201214949.GT50608@ziepe.ca>
- <9d3579c7-66c3-3752-bad8-a8a8ebc5c74c@amd.com>
- <20240206163657.GG31743@ziepe.ca>
- <873201d4-57d1-e856-87c8-08e2ca71f0a2@amd.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="QMXpWaKv"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Zb6rjrlPRZuIol3U9P4AJ0/sLxgtP6FoMQhkAJfpr+LMaoDYIDbI+DgvwFNslbcXPQLvcvDTD3FJ5YQsuwzIGLXwcQiUOFdWRote8+Ze5TcmNFmGPBWgeJdYXsyq1tUn6nAKZDdaCqQ7UV0wZ6f55Nflgsxap1ZB0qq41Acb4SispY4Y4AsBdYIQ1E0lpU3KU/BzrgA+xapcJj8W1UqRbx0noVWE/8iWXeT4/LVvk2ejZSTKI+9DxLZZm7tyKc+f0LGjFBuJjJKCizlCR3PVvC7Xw5LD9LOJrMVtY6ET0NawRm6Pp6aWKc5f9MvXxWhiLm6pOR1/w8c3HDtNg4me2w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=l+N2Vu270WiRczgSdWgpg5aDRuw1AbovRZJMDyOC2no=;
+ b=N0TUv3TgUO5ImnLIGmnNvobF1Ej9j5SHra/L53bYH6+vrOVAZLHRMVW3+FqOcpGFbuO7rU4T9GX8WGqZ3IVTqi7U1XQ/qm8AiycSkoRQl2rMUvi1UqeBU2uIqZEMYsP7GS9NQeb7wcGlJuoFrv0LqcG1oMNHOdFUmUGM7mGZaERehzxqSgJYhOI4E6pJwLZ7o3rbMSS+nuUaP9sdcYEC6G/kpuEII+qyuXB3xwrKYqVPDkgCSxm2h5QeKGpEnZ2N+nntWvqZ+IK0GR8vCj4ral5m2eMVcBAoBh50Y+jIy1GMErifUQtP91mwKR3adc4phB//7lSVGtkxEWw/mCVxRw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l+N2Vu270WiRczgSdWgpg5aDRuw1AbovRZJMDyOC2no=;
+ b=QMXpWaKvfvJ/ganNbqqka6Hc+3YbRXYOW53vOzTjKqMMGJrQLrIQ+XqTV7O3GwywRvjWVUCrYSdan/TQpjfodDVpvxzNaE3kBGvVmJa4lc7q6K2uF4GHzmslP/xWRjxPgzeEU51OaPQyWdoLo3cww/AJoHcOPPwA+Q/ZT/x9Ftr+/z2mJnC8LHyHf9DX/8UTITSEwF4FLCFQ8ddiFXlXHxg+cPNGHb1nt5OvJ8a8ZEGmls6mi48zu53xS5PUr8ZI6FkO63VESNwxkpW+3CJuhM1+pS3FyVo/4j8TC7UJUs8MvxFGGCkHwbBmXzrI9VnKMCCL5u7RxLPq17cnRvcb2w==
+Received: from PH7PR12MB6979.namprd12.prod.outlook.com (2603:10b6:510:1b9::20)
+ by SJ2PR12MB9212.namprd12.prod.outlook.com (2603:10b6:a03:563::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.11; Tue, 6 Feb
+ 2024 18:13:37 +0000
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
+ by PH7PR12MB6979.namprd12.prod.outlook.com (2603:10b6:510:1b9::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.14; Tue, 6 Feb
+ 2024 18:13:36 +0000
+Received: from LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::96dd:1160:6472:9873]) by LV2PR12MB5869.namprd12.prod.outlook.com
+ ([fe80::96dd:1160:6472:9873%6]) with mapi id 15.20.7270.012; Tue, 6 Feb 2024
+ 18:13:35 +0000
+Date: Tue, 6 Feb 2024 14:13:33 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Joao Martins <joao.m.martins@oracle.com>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Avihai Horon <avihaih@nvidia.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v1 0/9] iommufd/iova_bitmap: Bug fixes for IOMMU dirty
+ tracking
+Message-ID: <20240206181333.GE10476@nvidia.com>
+References: <20240202133415.23819-1-joao.m.martins@oracle.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240202133415.23819-1-joao.m.martins@oracle.com>
+X-ClientProxiedBy: SN7PR04CA0096.namprd04.prod.outlook.com
+ (2603:10b6:806:122::11) To LV2PR12MB5869.namprd12.prod.outlook.com
+ (2603:10b6:408:176::16)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <873201d4-57d1-e856-87c8-08e2ca71f0a2@amd.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic:
+	LV2PR12MB5869:EE_|PH7PR12MB6979:EE_|SJ2PR12MB9212:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9aa51479-929d-4b79-8dda-08dc273f5585
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	+dpBdTw7N6sjDrLstIuEEZyECPT/klsDlPftGc6giOWcihBlPCoRJui96R+oStu8TxR4khQ2JVchu1E95DivXV9epFGptn8VsUIiuw+rxSM+V6CsHAUuGGb4cxnm9C6fTCx6XKj9zNw6TMzyov31lWxtVp19qAdG+B0BH0pcpqZEtC9zKTk89LqskLprohwxsPMoiJhbEkeKNvjEXb5NpPoRB38kWzG5fskC9xUkRLoClqtorohW/QRvtRIWbu+BrsaPxJgLPliniJDEP4pOsFV0MMnJk7kNjOJCBoV203GEGl4vYs9LQRKXzNpfIqdWXp8jaEwSIOKhfLuvahjSzjtXpjuR44Vbs2MOPyFjCCH2J6hR6vykK4VdnGGl17SGqUbdwDnQMa+XUVf9Oo+9B5npKBGe/4hRXfhuHEuLJnuZBTUeWg1g8Dai1JJBkJXlKT0uemsXDlPtvvPrueREK9nisN4fGWd1oBDgTUtKC59IcAVSXnzT0Ifx1bVu7/TvqTmDT0rBfUzYaj8wQIneYgq9PfF03mV+sm0INQylQ6n7SICt4UdE1KzykCW2mPBG
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR12MB6979.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(366004)(346002)(376002)(136003)(39860400002)(230922051799003)(186009)(451199024)(1800799012)(64100799003)(478600001)(83380400001)(1076003)(26005)(8936002)(41300700001)(2616005)(316002)(66946007)(38100700002)(5660300002)(6506007)(4326008)(6916009)(66476007)(66556008)(54906003)(8676002)(2906002)(6486002)(6512007)(86362001)(33656002)(36756003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?GbkH5XA3VpqJaaQKa34oolpTbayJCm2nLWrpF7y/7JgL12YHQpkcEOuqzCMD?=
+ =?us-ascii?Q?Vnl2VKhK3PT8bM7LnxfPg23Pnyv7NsXFPMiROykDNKp7ceA5c/aren8MoHqi?=
+ =?us-ascii?Q?507L92afy8uc6NPTnFRN7+A5h43DoXk4/pLzHq6I1lMWPf/+amlYjnZepAZf?=
+ =?us-ascii?Q?CD186t0WVtClIsRU+JDFTL21tPPnpIUkkxtlWVXoiIvEfgKu5r5eTxTD2+s0?=
+ =?us-ascii?Q?JGB1V0dXnuOE5yj/Y11fHCWnfFkw2dIhTpN6uXAaXraWPLw17+L9buPugJ5u?=
+ =?us-ascii?Q?+IUriKefKsP77UOUFYTnsV68TZl3uvhWfDgpihQjq6EbyOriT84TD3F9kqJQ?=
+ =?us-ascii?Q?3dTdz281eJ8oiiFfs40hj7415vZn0Y0iIhJwxsVoTfG4Bf4tYLkFyZy7oZwN?=
+ =?us-ascii?Q?mGcovbb6BvUU9ROCSlIk5xIedRRVC6XNlfR16rSdOnoixLYBanjAAlWlrzUX?=
+ =?us-ascii?Q?Mw08w0KSy58A0aNA9vhHCiuseNqDPPy1XAVYkQ25CN/1Uz0iOImFaanexsSr?=
+ =?us-ascii?Q?2/D0qY2uDZF1Dge3if0qitORlxCeIBqIj3NWI2e1jCieW8cLWlcTB89Pl/Xr?=
+ =?us-ascii?Q?+Tm95GTX/OhFo0lkwi81oaUUBC0vSUHMS2zqvQweHJ8CtclrMvmfXqCKXoi5?=
+ =?us-ascii?Q?GFHIgOgxGT6KL1o6/p8tJ7J4fqwjncNnFH6GE3BV41ZbuyneOOcSZ+gsH2eQ?=
+ =?us-ascii?Q?Cjz2JpEJt/jYrMV2VOiU6/vlBoVXrhpByFhGk+tkREC2kSj7zZ53EAWJ+6FX?=
+ =?us-ascii?Q?X9QYhVytAhOPCUuC2rdX4fM7oD+0P+vyq6MgjP8Y4TEm+NP1X0erssya3LtC?=
+ =?us-ascii?Q?8x+X7e+167FDgyVNIlas9wSDzt2dQiVbOJ3TjVPqBdiQCwIK+AY5cAZYC/cX?=
+ =?us-ascii?Q?2yhLIZui5S6MVv/P/fpVdVupNW4MDntiKVr4hJ+P2jBeZEdC2LgIzAspPWw2?=
+ =?us-ascii?Q?SAVd8uriyy3chrEV+rzWQMfvEyHkDZY8XhGxjvRvMUapMnDW6gul6kEW8J7c?=
+ =?us-ascii?Q?aTxhdjsXJ593bYjpqM5T+H95NMdFa6bzxlKWE8G/6OdMpzNkdcdEzGdTMXg1?=
+ =?us-ascii?Q?RqECET+WePme1luoynVy6I/e3Iy5jftvNYNZMg4iMlNWXNRzlpG+um0ZbiEF?=
+ =?us-ascii?Q?7exW3oe8devAHzFeMY1VLvftzH3JaY4eLdB9Eqokg3BrzRTru2OoKCLSEt4H?=
+ =?us-ascii?Q?AqTxfOfnc/vkDXdNmjzo4fSJdFLR1Xs40L9Z7wCHvXyuW04pRADRdxO9ck2M?=
+ =?us-ascii?Q?QbjFrL0uO1TeCsk3+AOsKgCl7FZSxhvuHOZcq78AuYJRdG6aCzzcvXuuSkXs?=
+ =?us-ascii?Q?nWQd8FfqRtNeWShTswqwgKk6DZzTHIAx4mACatGMeYOokM6RFH7byFmRME1x?=
+ =?us-ascii?Q?/6BVwuwkYjhkeqs3Xpog9wzPVd7dqPgAcU2WJJE7sSX+6pjRLOWcjCBDysV4?=
+ =?us-ascii?Q?3aEPTfsdqwvHEzS9BYDWpFpJRnuPMS5w0ibWi/vIerY9QV7F7mGwxRd/wqnW?=
+ =?us-ascii?Q?3t5YeBnHrJ1qZBwdvOWkskuo8oZHvyjJrJkc4xqxrwdPqp26SyT2EfOndlav?=
+ =?us-ascii?Q?p29BWNPlNnduEQj7/ZvhUoQe3jH8WX4kPIgZI+5q?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9aa51479-929d-4b79-8dda-08dc273f5585
+X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2024 18:13:35.2495
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: X3cbIwwc1rp4ksMk1ugQVthDpqZaaxyiiJ9Ox9YjaiS//Fj5/6ECkuZqpolhb0mg
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB9212
 
-On Tue, Feb 06, 2024 at 10:59:03PM +0530, Vasant Hegde wrote:
-> On 2/6/2024 10:06 PM, Jason Gunthorpe wrote:
-> > On Tue, Feb 06, 2024 at 09:49:36PM +0530, Vasant Hegde wrote:
-> > 
-> >>> This dte change is in the wrong place. When the domain is first
-> >>> attached we know if it requires PRI or not. At that moment the DTE
-> >>> should be set properly, it should not be set wrong and then changed
-> >>> later.
-> >>
-> >> We want to enable PPR support only after setting up the handler.
-> > 
-> > That's backwards. It means error handling can't really be sane..
+On Fri, Feb 02, 2024 at 01:34:06PM +0000, Joao Martins wrote:
+
+> I have a separate set of changes, that proved also instrumental in
+> reproducing some of these corner cases in a more predictable manner but
+> with IOMMU drivers instead, rather than IOMMUFD mock IOMMU driver...
+> without relying on VF specific behaviour. Though, it relies on being
+> able to map IOVAs as dirty. This is not included in this series, as I
+> am not sure yet if such direction would make sense (outside of testing).
+> Comments, appreciated.
+
+I would love to have a test suite that could drive real HW. I think
+that would make a big improvement to iommu driver quality.
+ 
+> The selftests in this series (a large majority of the series changes)
+> are meant to be kept in this order to be more clear in history that the
+> selftests exercise a given fix added earlier in the series.
+> The last patch is an efficiency improvement, but can act as workaround if
+> the IOVA ranges are smaller than 64G, which is why it is placed last.
 > 
-> Why do you think enabling feature only when we are really going to
-> use it backwards?
+> [I think this should be targetted for -rc rather than -next]
 
-Because you touch the DTE twice, it means the domain is installed in
-an inconsistent state where it is not actually working
-properly. Domain updates should not "tear" like that.
+OK, I took it for -rc
 
-You already know what is going to happen at the very start of attach,
-you don't need to "enable it after" just do it right the first time
-through.
-
-There is a clear protocol and ordering requirement for the PRI
-enablement. Lu described it in a comment, make sure you follow it.
-
-You also have to think about what happens during detach and what
-happens on all the pairs of attach -> attach.
-
-The error unwinds are tricky, the only way I could make it all be
-correct for ARM was to fix the attach handling so that there is no
-failure scenario after the DTE is updated. ie the attach functions
-either do nothing or fully succeed.
-
-The situation where attach fails and leaves the HW in an unknown state
-is really hard to deal with - and without the reliable global blocked
-domain the core code can't 100% rescue it either.
-
-> >>> (and again the whole dte setting flow needs cleaning, I think you
-> >>> should do that before trying to build more complex stuff on top)
-> >>
-> >> Yeah. I want to fix few things in that path. But that's outside this series.
-> > 
-> > I was looking at it and there are many security bugs in here now that
-> > iommufd can change the DTE at any time. The current design assumes DMA
-> > will be stopped and ignores the spec guidance on how to do a safe DTE
-> > update :(
-> 
-> What security issues are you referring? Can you elaborate?
-
-The DTE is not updated correctly. The HW can read inconsistent
-versions of it with unpredictable - and possibly security bad -
-results.
-
-Like it doesn't even write the two qwords of the DTE in a predicatble
-order! Let alone worrying about the 3 qw update or being correct with
-races during an ITE touch :(
-
-This doesn't matter so much if there is no DMA active while the DTE is
-being changed, which could sort of reasonably be assumed up till
-iommufd allowed it to happen under userspace control.
-
-Now a driver cannot make the assumption that DMA is halted. It must
-follow all the protocols to ensure that HW observes only exactly the
-DTEs/etc it is trying to build and not something random.
-
-The documentation is pretty clear how this is supposed to work. It is
-the same as ARM. Use atomic 64/128 bit stores, rely on 'ignored
-behavior' or use the valid bit.
-
-This also means, broadly, you can't allow the DTE to evolve during the
-operation of attach/detach as the in-between states may become
-userspace visible and may be harmful in some way.
-
-> > I'm really not comfortable with adding more stuff here until the
-> > security issue is solved. Especially if the more stuff is drifting
-> > further from being correct. If you can keep the updates in set_dte
-> > then maybe with some reluctance. But not like this with random touches
-> > to the DTE all over the place.
->
-> Currently all DTE update is happening inside set_dte only (dirty bit enable is
-> an exception that may need to moved inside set_dte). This patch just invokes
-> that set_dte and invalidates cache.
-
-So then why all this strangeness?? Just set dev_data->ppr earlier in
-attach and order the handler setup properly.
-
-It should be really simple:
-
- // All protected by the core's group mutex
-
- if (domain->needs_pri)  {
-     dev_data->ppr = true;
-     if (!dev_data->num_pri_domains)
-       // enable fault queues for the device
-     dev_data->num_pri_domains++
- }
-
- if (old_domain->needs_pri) {
-     dev_data->num_pri_domains--;
-     if (!dev_data->num_pri_domains) {
-         dev_data->ppr = false;
-         disable pri at PCI()
-     }
- }
-
- set_dte()
-
- if (domain->needs_pr)
-    enable pri at PCI()
-
-The order here is really important too!
-
-Since PRI can only be supported when a GCR3 is present, this should
-all be part of some generic 'install GCR3 table DTE' routine that is
-called on all the attach paths.
+It is bit unfortunate that the number of huge pages needed to run the
+test has increased but it seems necessary to reach all of those
+corners...
 
 Jason
