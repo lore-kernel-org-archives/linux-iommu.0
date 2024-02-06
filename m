@@ -1,109 +1,144 @@
-Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A9D048CF2
-	for <iommu@lists.linux.dev>; Mon,  5 Feb 2024 23:34:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08A731361
+	for <iommu@lists.linux.dev>; Tue,  6 Feb 2024 00:35:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707176091; cv=none; b=OltAq2uYu872Js4OdPCklpl9it6lRJsQaLgaxxUdgXtVsoUgZeHU2/dUi5+xXuaxX45I03lTCXEEw+5g6wlyDGLxPkg2q5YnbJ9Sh974DJpv8a8I4syQm0I/PGY8t0oKH3Vci5zHgrX2mTqdEeB0kcdwMx7GyXNOp6Far9bvuf4=
+	t=1707179715; cv=none; b=f35Tqt2G9/tlIAwq5grIVTmYPO5Pzix0UWFMAZMWiEh2WY2Osr0ujmqTFipd/e/xUZWmcexyruB2tsYRgQAAKtNHOYQemnwnS3recBclE6yCxCY2UKYyCZN1HEI0Qf3hTAYsKdZfeWY87HsFPmf0ONjN7jPZFT5x578SdJl1bWk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707176091; c=relaxed/simple;
-	bh=ldhxU/uh8jcnenclWs1IUZtu/99DL4r26fBNY3JoSIc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KVAtbjJzijQEokgaByVQmy1DAkOEw9PFd9Zfz45Qq18/2AtUWSlxFFF1Ocol/tossrlFFgJ+/KwWEECa0UYpd/zotTlHPYLlqxpnRYJ3n9XZo39axmgbBFCTBkay+hCxQnK4XNV8+gr2eQktq07MAP6OAs05kBm79PY4+402/Xk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com; spf=pass smtp.mailfrom=fromorbit.com; dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b=ptNusNww; arc=none smtp.client-ip=209.85.215.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fromorbit.com
+	s=arc-20240116; t=1707179715; c=relaxed/simple;
+	bh=i6IgYdSK47NjqrE0DfFtF9g60c6Y3zPVvJqi8tx5m+o=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=iPlzyhGjYIg1rpslk0/qam37up9RIwVSnCPMmFH8zl2V10GG4SL8Wd5HwfXPORrVSrm/XF+G6uV/PNKqmfUYy8R5E0o7o+dqo4+c5seoLnW0U/stynAYsxI9kWLVuHZGCt97CFqEg9/J3/S/BB5TK98rZqAPVrhkahnOYN03ox0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SaTdpMxy; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b="ptNusNww"
-Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-5dc11fdddd6so1952185a12.1
-        for <iommu@lists.linux.dev>; Mon, 05 Feb 2024 15:34:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fromorbit-com.20230601.gappssmtp.com; s=20230601; t=1707176089; x=1707780889; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gtL3jvJTvpjem+XLSIljDmdaRNW3JxGajKR4+xmGq/g=;
-        b=ptNusNwws2joHQUQITm5C4kGnFWjaEdER4jQbgn0nuzDFaVGfdjtF4wJJyXdPspuuk
-         7neqTiNiO/esSSdNV5BoHAPVPcJAtDR1mof3/TkFl955UrNfiVJnhCV1vt9537jxyIbt
-         pGdfTo/2kGKZRWUeGA9FFkUoO4v8KZ2zwXj/T7yQDxz9leDbKWcQKrtu07VYu5imxhpE
-         23T6vGTBrHE48eJPK/VZNy6ijRGnUZpgs6kE95kdhSf/tG/h62UadOorqBaMtRyHvIMw
-         7qZHZNWgUexrMSBAfEJalrZ1pLAK0CVPfOj6k2pXiQEUFqOGpwagod2mLDZovWFN1LyW
-         jW3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707176089; x=1707780889;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gtL3jvJTvpjem+XLSIljDmdaRNW3JxGajKR4+xmGq/g=;
-        b=o6f0DM2xEY94/lVzSU23YmCl4dW7ouWa26M+GeV6j6UVsxRt8Pz04sNbCHeHPLi57L
-         Leli8NKvN0W1RlK4/4mOO9bs4ey+OdTrX0MNaFAwTc3Fdj21TWj0DzVDxfxugG7NcVW6
-         RXXBkDJohimaTCCk/6HosqIgz7HZJ17uW2BfFWummq2uGFdBzgGM2jyi+VjMwd/iOMHX
-         MSlmh7Z+hfvre6fbFmFz8y6LnoLevkX5DtopdZ6yMQbCiqtFZQoxxx29EPsVjg4yyNa0
-         6l6sY31NZyabpPgBt8JC+X1KBiPzb4BVksGQVKuoH6gCj7ny0WqQILVIBG75i3BZEtMQ
-         T+xA==
-X-Gm-Message-State: AOJu0Yz8FX8QEyWKrqrwnM904Mc51bXBm5KNnwk5T80v6BW8vDhY4zJ0
-	tnkctaV2G6qd1dbasBkGdxE1x964SPpvxDlDb4wHb0XQCEfMr1ks6DsDcJZLR9Sv5NAU0CzsS/y
-	L
-X-Google-Smtp-Source: AGHT+IERWsgnVzcArUkK0ONx3MiZk4r16tHisF/C0B+IjOUSmMRlRCaxDntU0A4X2gmwb0jbKeI/4g==
-X-Received: by 2002:a05:6a20:5a23:b0:19c:6994:8913 with SMTP id jz35-20020a056a205a2300b0019c69948913mr18604pzb.7.1707176089472;
-        Mon, 05 Feb 2024 15:34:49 -0800 (PST)
-X-Forwarded-Encrypted: i=0; AJvYcCV0CEkV2IfB4OmDyzaC+v8m2BH8FR7RhAj08DN4ZCHOpokDj9NS3wCXNVRfk7DG1CgufYqK8wHCWHs/PTSMiUjOuQSYNN6ZB+aTscx7+cznoZDT8F2Z+x8Fq3mxFfB9Q2jg/LH2Xu5A+NenLIQoUHD99PduRSLqa/iSmtJqGUFocP6eazRhZvFPA9oDPPOrGfymNqdHw0h/nxszHDIMLLBz29NGLa3hIDKXa0S4z53eR2lqqcuHECKUht7VhUHfbFimSw7QRk7cn4BKB3os4xsrqwiVMkY7NRCwcGUSArF2DNAxABXpngViCgO/vzS6NOCH8aVzjxa+p7AcjKWz6oTuWjyOTrBZ8G63OPDI6g9B3Y9ih4iHTfBED1X+kcrAoyJpINXQ5q4bBt5dYYppH+8WNNuWMz2CNZCklGzQk9dJuoE2ItM4zSqmfovYw3ID101Lnd3kUjofr8ibkxgD8K3q6WDRUDbueTuqDCvzRQDSW98rcWllaXDIoFd2YDIC4WD/pL8BWmhBnN8pJ6k6aTgCMvz90BDChV469mYLup57WhnQyVmsE3Qc8hAeKEEGLeNjV2ax1UH2rK7sI8BbI4uqpLjJUj6kEP6G3Awmmm0ngNCcknaIUFOysIxxB9aT2a3JhYMHnRxYt1Ck/1I805Fl85lKwmRr4/1P9deiddme4xe2eCvJLYL3JVcbTYiI3Vs+wFW6KG3VQaHK+PxspiH1JWWW2QHFdaRaiqgAgi3xQs8I
-Received: from dread.disaster.area (pa49-181-38-249.pa.nsw.optusnet.com.au. [49.181.38.249])
-        by smtp.gmail.com with ESMTPSA id k18-20020a170902c41200b001d8f12b0009sm423859plk.293.2024.02.05.15.34.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Feb 2024 15:34:48 -0800 (PST)
-Received: from dave by dread.disaster.area with local (Exim 4.96)
-	(envelope-from <david@fromorbit.com>)
-	id 1rX8UA-002agH-2H;
-	Tue, 06 Feb 2024 10:34:46 +1100
-Date: Tue, 6 Feb 2024 10:34:46 +1100
-From: Dave Chinner <david@fromorbit.com>
-To: James Gowans <jgowans@amazon.com>
-Cc: linux-kernel@vger.kernel.org, Eric Biederman <ebiederm@xmission.com>,
-	kexec@lists.infradead.org, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, iommu@lists.linux.dev,
-	Alexander Viro <viro@zeniv.linux.org.uk>,
-	Christian Brauner <brauner@kernel.org>,
-	linux-fsdevel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-	Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
-	Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-	Alexander Graf <graf@amazon.com>,
-	David Woodhouse <dwmw@amazon.co.uk>,
-	"Jan H . Schoenherr" <jschoenh@amazon.de>,
-	Usama Arif <usama.arif@bytedance.com>,
-	Anthony Yznaga <anthony.yznaga@oracle.com>,
-	Stanislav Kinsburskii <skinsburskii@linux.microsoft.com>,
-	madvenka@linux.microsoft.com, steven.sistare@oracle.com,
-	yuleixzhang@tencent.com
-Subject: Re: [RFC 05/18] pkernfs: add file mmap callback
-Message-ID: <ZcFwlu9+LQQWWOz4@dread.disaster.area>
-References: <20240205120203.60312-1-jgowans@amazon.com>
- <20240205120203.60312-6-jgowans@amazon.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SaTdpMxy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707179714; x=1738715714;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=i6IgYdSK47NjqrE0DfFtF9g60c6Y3zPVvJqi8tx5m+o=;
+  b=SaTdpMxytShS0hzLyK0I1xvmXReVXUpSSwrT4rSFOpqEejPnN31aVkFr
+   iERyEh+VlKIA5uliMbUmGexNj8mWUHqon2zxffukab26A+cmBALR78vql
+   FZNGX9M0G5wxAfpwkzvM0G9nmb8l1Uwngb496eOfEsZMfRI08wOCub9cZ
+   F9fpXeUmnuKLmJXKOXtq69/ZzP/CVF3SlBkT5yeeUpSnVKM36PaSAOaCg
+   AFNY7dG4Oskza97cdy8Y+3XVDBCz3Z1Xf1jFt2LIGqtfjuinqICXK82uo
+   IgQKmAXtg59jXv5ClqDDs5xjCeuJgV0dgt/x4hIItcZKrO9pPEMRTPuxC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10975"; a="802966"
+X-IronPort-AV: E=Sophos;i="6.05,245,1701158400"; 
+   d="scan'208";a="802966"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2024 16:35:13 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,245,1701158400"; 
+   d="scan'208";a="5466919"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2024 16:35:11 -0800
+Date: Mon, 5 Feb 2024 16:40:35 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Sean Christopherson <seanjc@google.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
+ Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev, Thomas Gleixner
+ <tglx@linutronix.de>, Lu Baolu <baolu.lu@linux.intel.com>,
+ kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
+ <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
+ <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Paul Luse
+ <paul.e.luse@intel.com>, Dan Williams <dan.j.williams@intel.com>, Jens
+ Axboe <axboe@kernel.dk>, Raj Ashok <ashok.raj@intel.com>, Kevin Tian
+ <kevin.tian@intel.com>, maz@kernel.org, Robin Murphy
+ <robin.murphy@arm.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 03/15] x86/irq: Use bitfields exclusively in posted
+ interrupt descriptor
+Message-ID: <20240205164035.79d10122@jacob-builder>
+In-Reply-To: <Zbmm1DZPmbFm8gan@google.com>
+References: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
+	<20240126234237.547278-4-jacob.jun.pan@linux.intel.com>
+	<Zbmm1DZPmbFm8gan@google.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240205120203.60312-6-jgowans@amazon.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Feb 05, 2024 at 12:01:50PM +0000, James Gowans wrote:
-> Make the file data useable to userspace by adding mmap. That's all that
-> QEMU needs for guest RAM, so that's all be bother implementing for now.
+Hi Sean,
+
+On Tue, 30 Jan 2024 17:48:04 -0800, Sean Christopherson <seanjc@google.com>
+wrote:
+
+> On Fri, Jan 26, 2024, Jacob Pan wrote:
+> > From: Thomas Gleixner <tglx@linutronix.de>
+> > 
+> > Mixture of bitfields and types is weird and really not intuitive, remove
+> > types and use bitfields exclusively.  
 > 
-> When mmaping the file the VMA is marked as PFNMAP to indicate that there
-> are no struct pages for the memory in this VMA. Remap_pfn_range() is
-> used to actually populate the page tables. All PTEs are pre-faulted into
-> the pgtables at mmap time so that the pgtables are useable when this
-> virtual address range is given to VFIO's MAP_DMA.
+> I agree it's weird, and maybe not immediately intuitive, but that doesn't
+> mean there's no a good reason for the code being the way it is, i.e.
+> "it's weird" isn't sufficient justification for touching this type of
+> code.
+> 
+> Bitfields almost always generate inferior code when accessing a subset of
+> the overall thing.  And even worse, there are subtle side effects that I
+> really don't want to find out whether or not they are benign.
+> 
+> E.g. before this change, setting the notification vector is:
+> 
+> 	movb   $0xf2,0x62(%rsp)
+> 
+> whereas after this change it becomes:
+> 
+> 	mov    %eax,%edx
+>    	and    $0xff00fffd,%edx
+> 	or     $0xf20000,%edx
+>    	mov    %edx,0x60(%rsp)
+> 
+hmm, that is weird. However, my kernel build with the patch does not
+exhibit such code. I am getting the same as before for setting up NV:
+ 112:   75 06                   jne    11a <vmx_vcpu_pi_load+0xaa>
+...
+ 135:   c6 44 24 22 f2          movb   $0xf2,0x22(%rsp)
 
-And so what happens when this file is truncated whilst it is mmap()d
-by an application? Ain't that just a great big UAF waiting to be
-exploited?
+However, I do agree having types is more robust, we can also use
+this_cpu_write() and friends if needed.
 
--Dave.
--- 
-Dave Chinner
-david@fromorbit.com
+> Writing extra bytes _shouln't_ be a problem, as KVM needs to atomically
+> write the entire control chunk no matter what, but changing this without
+> very good cause scares me.
+> 
+> If we really want to clean things up, my very strong vote is to remove the
+> bitfields entirely.  SN is the only bit that's accessed without going
+> through an accessor, and those should be easy enough to fixup one by one
+> (and we can add more non-atomic accessors/mutators if it makes sense to
+> do so).
+> 
+> E.g. end up with
+> 
+> /* Posted-Interrupt Descriptor */
+> struct pi_desc {
+> 	u32 pir[8];     /* Posted interrupt requested */
+> 	union {
+> 		struct {
+> 			u16	notification_bits;
+> 			u8	nv;
+> 			u8	rsvd_2;
+> 			u32	ndst;
+> 		};
+> 		u64 control;
+> 	};
+> 	u32 rsvd[6];
+> } __aligned(64);
+
+Sounds good to me.
+
+Thanks,
+
+Jacob
