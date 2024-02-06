@@ -1,63 +1,63 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2086.outbound.protection.outlook.com [40.107.93.86])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2061.outbound.protection.outlook.com [40.107.243.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2D076FA9
-	for <iommu@lists.linux.dev>; Tue,  6 Feb 2024 17:00:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.86
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42BB56FA9
+	for <iommu@lists.linux.dev>; Tue,  6 Feb 2024 17:17:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.61
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707238843; cv=fail; b=Q/XtwQuWDHqmvIYS9D86W1kejugCE6fhdIuDcggopNTdoZ6PkdRDLGjKa+WBLOgng6yRA1vuoR340V5xdrpgz9t3NzKzxkTvJiii+qEx4ZbOyBC4GJjuwSVUfExsHg0Qtts7w+LXPdtU1DI2DNUXWoTYewy+C+ZGZOsfBpOQeBE=
+	t=1707239830; cv=fail; b=afsVy58iVAr+QxyEfaAXwhXYt7tD+yWW0AduzpPKzihaslHkaGgzbjsPXLsz+cBiVm0J5GXZPtYwjglFE8X7WiEcYkOK+RvqZ2ebbHwSvIgvNKaenNsvDyanyNmqguaADGjsvIoJn5ZZoRbm8Dr2GjNsTOc/fBRQJxZ2sPL3Bvc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707238843; c=relaxed/simple;
-	bh=PEAIiQkAdOfXCURIoCLsxr21++ig94DMS7zpYgyfvrc=;
+	s=arc-20240116; t=1707239830; c=relaxed/simple;
+	bh=04AwV5EJI82MqONn1WD1TeTICOJcEuBy5dwKlhVmKf0=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=pGETr/nEKvleEN6L2+9C/YFTBrweIwFx8w/0Z9rToUz974zm8QUIaN9XvGybY7x83d+zfJzf7xABwEgyUK2pTIsjj4piv7FenqklYIdZ+dXVOnaJy9Yvtcu1/ihP0F2E4/lx5l4qwXFtdBjM2M9L3hj2Dx7VKAxcwp1fGwqLkR4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=3fNC8uY2; arc=fail smtp.client-ip=40.107.93.86
+	 Content-Type:MIME-Version; b=m6idURQUfo0yTHiUwf9pWXLoXX5nyzfGc5g0rplkNzo9bOSZ6v1LcAuF9xfe5H0vALms+e1vi4oSNfBCR8YErILFuXlFvXwddlJXil6L2YzA/ZtYiYyFhnoe8UtxOuar6OenPpmZdrUqbrupU4Y3YtCOWjp6JS/aP2sxoMpGztE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=W9oqXmH+; arc=fail smtp.client-ip=40.107.243.61
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="3fNC8uY2"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="W9oqXmH+"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DIQHeEXZRuYE/xoux0LJKhMOMHkHqcbfz2jbJOH9l8O/kWuOWYnAGTCf9Q/AT6lmCPRqiCiYAbT0Wfk7/ZK6xIhVnf3qEQXS60L9VruCGmM6hwb5UlsJfAcQ5k3zma3AnFSBCMakX0AX3opGRaVxW85dFiVQlOGo5PGwt+7ss05hePY2/qqsd3Vs/eVoGcnL+3Ikz+MITZy7KJ+xteRoq1N1XGnU3HTA9E8IUUYM7OpEMbHWeN0UYNTMPHp2HmLrQWbaoVRIkHw5fYqWt1gjjt47rxUHGyOXE1etLUfC7B/BvdYR5SXpdYSdH+bzs8z6oQRGDw3UCrde1S966u+1pw==
+ b=kgT3gk5w0B/Rue0pS/P0xoQldiwyVVfeNM8M3E2tmFlBNCp23SPkVVrs0YoM/+kQtdNNTCJxhNAqBQ1umsSPEq2AN5mmJ42oIXNYEj9WnixQKXf5VVZpnv+5TVu3GgsEiQGhEVNBzycMz3XbhvrtIBBnnVIUsh2NlDbcuN0UFBp7O2Zz30aJ2NFBXi9VEs65IQJDO6xdv+TWR1CJB0PpPxY6R/C3wuppCPJ+hM+2tDPLColY/aELvBPAevVewSLzL/2c3vpJFMc5+3JqbysD6v9Co45WkLJrxQQDMev61yu1Xa+RjJOoWhVzCR5ZfLzRwXgJGAkBM3DNb4YgpVazIQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=io7bXLeE2eToYXBnuCjXWJ9efYm6RCsm4+uBch4JI8M=;
- b=lVOSkIJuz8XsOo+UFDapW8ZE88wnIGfPil7xWWJzsA1VFoySQaiQlei/7fP6LZar4YsQJJQuGrT1ayCo71Kn+5AYgubV0K3SP+MB9Dnn2u9qYNixqoalwUa4xg8hgFywHhutSNkZmTWoeridb0C9zP/SVG5APjOhE/rOf2VtIm1tVuZ3+Z03aBy3qlNt2TQmx+mO8b5lwC/uqcg+W+5AzArqlUQLtD+GsO4i4WlWUd4yAvLUjAOLQHopjqs8T2GEBOfJbXyWQ8AETNYlf9B1Oh9IVjxn17Z/DO9adqVIWgO/MjCRGoZ2mtjAoIZ6u5dzqMCeMDH/LdfAdKmzX1ybNA==
+ bh=xlPZE0miLiXsY+qyCxpTTNFFM3NIO7iDoU4fZ7jDEkM=;
+ b=SGFpU0/bqLIkc7LiklEIdeqJP/yff0E33lD3WQKU+c57US2E8KXLeJYlploxSzIKkMBQxzu2aRJT4rGttih19puynG2xhIGWI2D8W6CRSVE/LARJsZR6vu1O0TadM+SQxgQG4dYK4JfjpL5gF/FgfFrlKbzBanM/27no8J1upeLfMkcIPBbtS0DdWTl0imFAJcaPOFdWrmssuIOSQzsWVn2C0qY8/hVZaAA42ydSdPFoWgAID2RHzROi1OuQVrOBdpBne4l2fgbmEqkP2v162T24vmMXnJxhTTK97NQS2zTzuwT/Lg+Vi9jm6CeajZEV2WcBcS03KOBhqkhTuBQ7tw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=io7bXLeE2eToYXBnuCjXWJ9efYm6RCsm4+uBch4JI8M=;
- b=3fNC8uY2+c/4dInGYHLOKgo+rQNwOMX69hX+ozDNaqFYg5qkgfbdj7bgROe2VJc68K1DC6N3Pm5URN8hc6nrjub97mw6bBjfxT9GLJegmuElat/3KYgeWKRoghNGj8e636pgC0AcQyGk3kloOwydejSe806/8BDD6fRklMqel/k=
+ bh=xlPZE0miLiXsY+qyCxpTTNFFM3NIO7iDoU4fZ7jDEkM=;
+ b=W9oqXmH+zzgF4ipapgb627DBcmat5vqVuTLirLK7OMv9wmTTN66aCeFD6kmdJd/+qN4T3wVt8Yq0wovA6bW/DMwbdEzerbtloCi1dIta2f2o/8Q8Mbr4Z/VH1w0eHUBmv/XY4QY5GSIAltm/kia19WiTgmOUdx5OPthmolk0Ayw=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=amd.com;
 Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- DM4PR12MB5087.namprd12.prod.outlook.com (2603:10b6:5:38a::17) with Microsoft
+ DM4PR12MB6231.namprd12.prod.outlook.com (2603:10b6:8:a6::18) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7270.16; Tue, 6 Feb 2024 17:00:39 +0000
+ 15.20.7270.12; Tue, 6 Feb 2024 17:17:05 +0000
 Received: from DS7PR12MB6048.namprd12.prod.outlook.com
  ([fe80::481d:7627:c485:9cb]) by DS7PR12MB6048.namprd12.prod.outlook.com
  ([fe80::481d:7627:c485:9cb%2]) with mapi id 15.20.7270.012; Tue, 6 Feb 2024
- 17:00:39 +0000
-Message-ID: <b67e0505-ec89-a849-a3cf-14fc1b3e5804@amd.com>
-Date: Tue, 6 Feb 2024 22:30:31 +0530
+ 17:17:05 +0000
+Message-ID: <f36ea0af-23db-7653-32e0-0a7b3941f801@amd.com>
+Date: Tue, 6 Feb 2024 22:46:58 +0530
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH v5 11/14] iommu/amd: Add GCR3 [un]initialization function
+Subject: Re: [PATCH v5 12/14] iommu/amd: Initial SVA support for AMD IOMMU
 Content-Language: en-US
 To: Jason Gunthorpe <jgg@ziepe.ca>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
  wei.huang2@amd.com, jsnitsel@redhat.com
 References: <20240118073339.6978-1-vasant.hegde@amd.com>
- <20240118073339.6978-12-vasant.hegde@amd.com>
- <20240202151738.GU50608@ziepe.ca>
+ <20240118073339.6978-13-vasant.hegde@amd.com>
+ <20240202152524.GA2606743@ziepe.ca>
 From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20240202151738.GU50608@ziepe.ca>
+In-Reply-To: <20240202152524.GA2606743@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0040.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:98::9) To DS7PR12MB6048.namprd12.prod.outlook.com
+X-ClientProxiedBy: PN3PR01CA0031.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:97::20) To DS7PR12MB6048.namprd12.prod.outlook.com
  (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -66,229 +66,248 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DM4PR12MB5087:EE_
-X-MS-Office365-Filtering-Correlation-Id: 33fe07bb-6f60-45cd-ae2f-08dc2735254c
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|DM4PR12MB6231:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4dc6d306-4152-4647-d669-08dc2737710d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	cHxjHR51mtHF0t8zRnFnZ6l1nc+h49plJGby43DHSUpCcy0HkoPBJaPSY25r9ypbVhux41bpEgGPuwNVuqt0ye2n4ZaQFXROdZJRK0sBzF7l5i155SZ2Y8O5emRoJtDcCCMFaUkGElIq7p/byItt2TfXmq+d1gn3W2mlHJhFZDjOCX16qs+rVF5Qy4nxSg89mtbZidqnF/7aQC83p9uBvag9vYZD5mTaCoaibdnScFQH4jv5Z/LNGtsgEEIHBj2MM+LQJuQuRp4HqOW5Tyor/N8EgukxDMqFTqAhR6I3GBN9yhDMU19W8eWTDAZ7faxksMC2KDspkmTnbdKKD8AXnA/A2tikSod9qj4fPIcCK8j7JkU9u8RWKbsfIKbIqRnzTTGY6PCloh0fz68HHv/eMNpvbBahHvPxcTnt2PQZX8i0/KMcXvjNr+hBDzcAKP8lrnlUxixiseRDvSiF5cklTtZuH24E2c1AQa8gtqBKz3gNFe14S/TE4gZLNBANGJHsu26TE5bMtnAlNavg2LJcbtt9WTPZ76fPc1cKDWDQxgrYqQTlOO4X5eDg1vGEBT3TjaBWrfhrByanavdlWnpYtzZHeZauUEcC1mrMzIu5mVL/YD5Z4nMEblY0njsZvuvfY/uJbxSELaumeeT1vltbUw==
+	cOaMsdfoyVDSTcrIHK+bR34zRwRulxh2C1CShWUW2ZfDUAioMw0oJNYBcU2tZniMg4xRDqYUVtZXoAQg8i32+mZLtD/fYNiGYipHWBHeEKmZn5K/gByDwoYDQO6osOINFl/ztAcgLdPsjoUfof6hXBzEUAGcJ9YLWd5kb9MHz1OlbZQRmY/GGihP21udEGK3E84aSRa1KI0cNiG8NzNh9xcf4HoDdSMfjU4RwfjcQx5/FXDGouN4TNrCGYQz72ok35IlMhuCndgt5jOKN3W4y3qogmbXY09ZRyVrL1Q+DQUahBc3gSlPPg6E3YUTL8hV1gkgiFDIhje1E2TRTnNK48Aao3TDU+B+1/5wRQ18v9hEMJ3TkacpnNA4GEkrDOhUm9Ydf4ytJeVQQFmZC56WvFc++CSjXDBwQuQVmTXH7Cl9s4OK8IwQJh3jNy9JQbAuczkOZzw6lBeJy5DhanqkcAP1FxoyKMbvqgT8Ez0i8/UVkFdUB718T1L+zi7FoCeGR/nJHLC25wvvFGSvyViQjmxhOw2QWZyuXR5h1JgDzbCu8CXmJRg6ZvAIBAHybreCvBxdEUHNNuCq55PokL12HH0+1bnwGJRIhoouPnF5F56t5zOVxDPpu1vK5pXhDmKQHi/ifuoIELAJCZlxQcuQ2w==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(39860400002)(366004)(346002)(376002)(396003)(230922051799003)(1800799012)(186009)(451199024)(64100799003)(44832011)(5660300002)(2906002)(31686004)(26005)(31696002)(66899024)(83380400001)(38100700002)(86362001)(2616005)(53546011)(6506007)(6512007)(6666004)(66476007)(66946007)(66556008)(478600001)(41300700001)(8936002)(6916009)(6486002)(36756003)(4326008)(8676002)(316002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(396003)(39860400002)(346002)(366004)(136003)(376002)(230922051799003)(64100799003)(186009)(1800799012)(451199024)(31686004)(41300700001)(6512007)(83380400001)(31696002)(86362001)(6486002)(36756003)(53546011)(2616005)(26005)(4326008)(66556008)(66476007)(8936002)(38100700002)(6916009)(66946007)(44832011)(478600001)(6666004)(316002)(2906002)(6506007)(5660300002)(8676002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Ylh3OEhoKzFjRTIwUEtYWngvTWpGYW5rTDhxYno5OGY4UUtmK2FkUzl0ZDVF?=
- =?utf-8?B?bm5JRnNmZGZxbFdTVW00bUg5Y2pZZHl6TlFRdUF2VVAzYk5xTllxSUt4UlVt?=
- =?utf-8?B?ZkR3OHNUVzRJYWRFeHhmUWFYT3lLTU5LYnRoSXZyekgxL3Q5UXNYeklnVEdh?=
- =?utf-8?B?Y1JxSDRnZXZvWTNDeGg1RXdkMTRXOWRMQkxxMS82YzRjVWljeDRWcjYyVk5U?=
- =?utf-8?B?VnZyQ1gzM1gxZHM3RUZWVXprTk1WSTlEdUpoYUYvcVh2U1ZqL2pxN0Nwc01X?=
- =?utf-8?B?M003UnVING9ZR0hwdUlsS1AyVS81VEtZaGFOT3ZwSlVrcHRtbC96NnZWN1Mx?=
- =?utf-8?B?dzY2bk9qVG83em5zTVRmcy9KR3ZTVFlhZXBHMUJrQmdHUU5UUC80am5mN0dj?=
- =?utf-8?B?cysxeDNQejRjaHJZVnc4Ry9rL2wyMWRaZzJITUx6eXc5c0M0WjIyUEsvUnow?=
- =?utf-8?B?djdBbnNoQXRTcFdSdkpXdnd6ZTdiNVkyaGlrdlFheEhLV212ZHp4Tm91UVh6?=
- =?utf-8?B?ek1GRlpwMWhTbHJQYThCSUx5ZjhTRno2SjZhY1NjNWtTdlIxM0ZkbkVBaFFG?=
- =?utf-8?B?dHZoM0FUQ2p2SC8xYjYzSmRxYjVEeG8wMkxkYlhOTDVzNDhETGxaMjI0VUtD?=
- =?utf-8?B?Z2hRU2lqYzZhdWlYamZQdGp2dENLWWYwTG5WRVdMVGNlS1JoM3ZoQmMzMzBW?=
- =?utf-8?B?SllMNVRwb3NOL2V5bTU1NVp1OHI0Yzhidi9NcVBxRndkMGpJbjdlVTNxZGFl?=
- =?utf-8?B?Uy9ZQWdoNmdJd3MydzFjc282UEJEYWNIckNwN0cxY3Zzb0xvaWJCWG50Q2JQ?=
- =?utf-8?B?REFyM0lLclFmeGNNQXAxSkN4UHB1UDhRUGJVbkRMYnNlZ1hoVTFTQ1JEZFlt?=
- =?utf-8?B?WnlzTEtCMDZJWWw5R2tBbFNTVEdtdzNocHY5WVVSSnBTSHkxd3dYQmNCVGJa?=
- =?utf-8?B?MmJYUXV6cmZOWUhOS1FYTFZSbzl5NUJyZ3VnRSsxbnFmVDR2SC9MSWx4UDJj?=
- =?utf-8?B?eFo1UWtGRElidGNvT1UxSTNNaEVjTkdEZ3V5bjZHQVROdEk3eDN5ZE5BZ3Vl?=
- =?utf-8?B?NzBSOHVaOWE4eG9pYi9Ud2E1RkhwaE9CU0MrM01idUxKV3JCeTNjT09SQVF1?=
- =?utf-8?B?MjQ0MU5vUEZvNlpoOTdwVHc2MXVSb1hXQy9FVU9YMzB3VjJEb0FnK0xWZzhW?=
- =?utf-8?B?YmMvWTloY2RJcUNPWTlMUHlZYk5pV0VJVTJjd3FSU3NRVWgrWU5wZGh6TUk3?=
- =?utf-8?B?SXh6dHhBa1h5amx2cEIvd0I3VFhaQndaejlESC91SnJvaWFZSjBPRnhQSDlj?=
- =?utf-8?B?S005ZS9Tb3F4cVJuNkZXYitTKytNeDU2ZUhTZFRWbHdZc2NZWHZwZWhYblFh?=
- =?utf-8?B?RDViTDVqcTZaMUVod01lZENDQWtWdDF3WDg3cHlQMXdRcWtJQUpmSkN2VnZk?=
- =?utf-8?B?aEJlcmRXcWNhV1h2aXJJMmg2YzJsUW4xcGJFZld1TmNtZGhmQ2tTVUVhdU1Y?=
- =?utf-8?B?ZjE0aEVyRk9wK1Y2eTFna1VGcEd6SlNQOXhETVRGaWw2UUJEazdYbzVLUTJK?=
- =?utf-8?B?NnFxMXBEcEFMcDJ0WVpCY3ZUcmtjeW45UWxYN1grRk9XWU9aTnNrcTBET09J?=
- =?utf-8?B?Uk84UkwyS0ZBM3VGRUlEWDJraWlsOCs0S2lHNmk5MkJmSEY2Y05YYTVRenBi?=
- =?utf-8?B?ZmVrZ29rck5LQ2ZWQ0xhMjBoNFMreEVjODlmdENyWUtFTUhKd1pyUU16SWZL?=
- =?utf-8?B?SWlLdkJMSTJpaGE0bGxMMGJLR0lRS0pPR3EvQ2V5R3lvM2lJTTFLRXZHc3pS?=
- =?utf-8?B?SFNJOFhEaFk2K3JidUtVNzk5V2lzWGhIdVJ5eUdwS0ppTlZ4aXAzSFhvNkxz?=
- =?utf-8?B?UjhucENhdnpZRVkvUzFVbkc3eVlqSEkzSnJ1VHQxMFB6M0ZGM2l2Z2dBdDht?=
- =?utf-8?B?ekcrMTVDYXhNZUhqNjBkRzZCWWFacUM2ZHpkcTNUL0tKTVVKbEl2ZGRMMWI5?=
- =?utf-8?B?Tzd2SHR1NUFpOExXLzRoaExESTQ4SllBeE9DdG9DN3oremVyeEJuQWovUG1j?=
- =?utf-8?B?bThwMGNoc0Jza2p0OXkzMWtsUlIyU1BiQWY2NGFFbnhnUHk4Z1BlTXZYa2x6?=
- =?utf-8?Q?T4xSoON2TYVCmPpFBKFdcNtmG?=
+	=?utf-8?B?YzZZNnVwaGNQdTNoMEhhbWY5WXVtbSt4YTEzYUprTjRFSUZBWDdPN21FOXUr?=
+ =?utf-8?B?cnZJb3hwUmRUK016SFZaTUxVMVFUaVNobjMyVGZjakRUc0IvTWtlUWFndE5O?=
+ =?utf-8?B?STVvem5yQk56WVRhRVFidlJXYXVUYWFKeGJmNkVzQ0hmTTF1dUVuZVRXd25P?=
+ =?utf-8?B?WFVwa1VRQXRvQjhrdXp0aElXaUFZV1BhWFlHeGd6OXJyMnJVV3ArTUJqUkNx?=
+ =?utf-8?B?VytOMzQreVJNaHRFdGszNzlMNVZPa0szekFCYjhoRDMxZGJmbU9uaisvNmVS?=
+ =?utf-8?B?K3RISnZCbVh5cGpPaHZYR2Raa2IxKys1MzN4Q3NmUTNGZTBHRlo1SWs2alk2?=
+ =?utf-8?B?UHVvNW5pOG85cHJzMVVoTjArRU05eDVsaXYzaksvbVhic1hnMW9hUXBLcU80?=
+ =?utf-8?B?T3d0azFoczJxaFZrNjJ5MkFLWEVpYlE2Ui85S0tPN0ROdURkejViTmJrY0NE?=
+ =?utf-8?B?T3VBb3ZxZHZyWlRURTJGNmxTZEwzayszTWlGY2MyRUdjTWN0Y1l6QVphQTlL?=
+ =?utf-8?B?bU5XTm9XcFlnZXVmRzEyZElrdkUvWTNIbzVTTHY0Smxrbk5XeVVTdm1qclhi?=
+ =?utf-8?B?VjRIVHFmanR2UkVXYlUzaTZaMWlsZW9UVFpBL2NveDJyczFqLzUxbWp4OTNk?=
+ =?utf-8?B?NGJCakdXcDc0cDdYbG9PaHFRVXVSVmsxWFB1VDJCR1U2QnViTGs0cWpaQ2hj?=
+ =?utf-8?B?NXVKKzdCUExZL3lIMFBpN2tyVHRhaFE2dFZaTnhFeGR2eHVpd3JHVmxlRmJ1?=
+ =?utf-8?B?cDUvWExkaHZWRWNUZzJYQXlUVXgvTHpMamFEbE9pejIwdlNoaVpSOTF5VzBH?=
+ =?utf-8?B?bGw2ay9vZENHa0t5cUZhVVpqaW4vZjRoeldXdWFFTEpXUGN5a2wvMWdGZ0pD?=
+ =?utf-8?B?UFBBb2tiL3VJOGlMT3RVK21CSFpUMzBLVHFieHhlVXprMDl6TFJneEQyV3hi?=
+ =?utf-8?B?VExPc3Jtem9KWkhHUTBZZ1ozV1NaclI0SytWWk9YT0dOamZiSitTcEFISnps?=
+ =?utf-8?B?TlpGZFBnZCsvQVVhRENmaDZNTit2eUQ1a2RTZW5JUnNHeTdFclFWUGpTeFhJ?=
+ =?utf-8?B?Mk4vdkkyV3ZWYmJGanpPait4L3B0SnNmT090L0FWaEFSVDVHdFBiNEJ4VmhN?=
+ =?utf-8?B?ZzV5SVZzNFdLUWJsdHljblVkMVh0RnVFWkFwd2w4eGFvaFZ3UWlmcUl4ekx1?=
+ =?utf-8?B?RFpOYmNFYk5aN3U5M0Ryb0hnTnUzUFc5U0hZZ1R2RytzRk5mbXJJYVhEM01h?=
+ =?utf-8?B?R081Unk2cWhrMnc1bEYrRHdzb2lVbUJ5TTVHVTMrY3JnME13T0MxWmV2RVho?=
+ =?utf-8?B?aytoendxRzVudi9xbk42RTdsQmp0Ry95N09POHQvbG5QNXNUdTJpMFR4T1Nz?=
+ =?utf-8?B?TDV4aUZKNGhZRHFYRlJHUSsyU2RFc2YycWZ1anpMakllcWhCa0RVaDdGWlQy?=
+ =?utf-8?B?QjBqOGQ2TklCM3FvVkRGV0UxVm5ubThjOTlXQ0JDdFlzL1laMSt5Nms5YzVk?=
+ =?utf-8?B?S2xWK2gyUFRrV2UvUU9lWklYK01lK2locEs1cTRTT2J6ZjVMMzZENGtNNit3?=
+ =?utf-8?B?WnlYVlJPRWxPK01ZRlNEZTliNElaUkZ0dmd2eU5QSkNmVjVLZnJ5eDdwRTBE?=
+ =?utf-8?B?YUlVaHhWczFJUmVKYlBMeC9EdTc4TWdjTU02S3M0NGgyQnBCUkVaZ1lwVTNi?=
+ =?utf-8?B?UVdSWGFYMDJMMFdYSGlIOXhzdU04NnJrQ0pQMGRndjBPWnE3T2l5TnhlSlE5?=
+ =?utf-8?B?TU9vb3BmN0hPNHM1NHlSRUN6RDZWRzdYTlpKbmx4a0NSWmMxYnNSTXJsekVM?=
+ =?utf-8?B?KzM2STN1NFZEWDNucVFiczRnVjQrL2xGd2xwZU5qcnUydkJpMWF6QkxPQXY2?=
+ =?utf-8?B?M002a2hTQ1FUZzd4L0I0K29CRUk2WDVKSjNNb0Jmb0Z5cEFIdVpjNDg3U2xy?=
+ =?utf-8?B?cEZXL2h3WjFnR1lGemtCQlVLelN4TFZPd2FuWVhSSUZqUWUyMnk4S01aYXc5?=
+ =?utf-8?B?ZzZXQW02TjU3UURTaDFjWkZKczVpWi9TaExSYnFpYmU0bmFMZWQyOFhkNEM0?=
+ =?utf-8?B?WFJzWCtzWkNEQkh4M0thK0lPeXZqYmFmNjY2UWVMZ0k2QkYzdVJlS2dxa0tI?=
+ =?utf-8?Q?T8dKVTCAQ2269C3Q7pneDOqBx?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 33fe07bb-6f60-45cd-ae2f-08dc2735254c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4dc6d306-4152-4647-d669-08dc2737710d
 X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2024 17:00:39.5798
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2024 17:17:05.6462
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9rBo5k/KnFije3ehrLSprsHU+QzQqDv+OcMCSdv7x6L+kYPh1BU35XSvJww+32Y5dJsKFZQruXiP4zlqy9v2tA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5087
+X-MS-Exchange-CrossTenant-UserPrincipalName: pPGfSZAcMlhW0tuBUsQaXIR3asxWlXLVYWetjYnuXse4S5wJ27SVPl51tsA3VXV1VHhyRTXX9itdVuOOQKg5aQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6231
 
 Jason,
 
 
-On 2/2/2024 8:47 PM, Jason Gunthorpe wrote:
-> On Thu, Jan 18, 2024 at 07:33:36AM +0000, Vasant Hegde wrote:
->> From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
->>
->> These functions are used in PASID to device bind path. In this path
->> it checks whether device GCR3 table is setup or not. If not it will
->> setup GCR3 table.
->>
->> Also in attach device path change default GCR3 table to use MAX
->> supported PASIDs. Ideally it should use 1 level PASID table as its
->> using PASID zero only. But we don't have support to extend PASID table
->> yet. We will fix this later.
->>
->> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
->> Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
->> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
->> ---
->>  drivers/iommu/amd/amd_iommu.h |  3 ++
->>  drivers/iommu/amd/iommu.c     | 52 +++++++++++++++++++++++++++++++++--
->>  2 files changed, 53 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
->> index d5e6315ef9dd..2d099c54b941 100644
->> --- a/drivers/iommu/amd/amd_iommu.h
->> +++ b/drivers/iommu/amd/amd_iommu.h
->> @@ -44,7 +44,10 @@ extern int amd_iommu_guest_ir;
->>  extern enum io_pgtable_fmt amd_iommu_pgtable;
->>  extern int amd_iommu_gpt_level;
->>  
->> +/* SVA/PASID */
->>  bool amd_iommu_pasid_supported(void);
->> +int amd_iommu_gcr3_init(struct iommu_dev_data *dev_data, ioasid_t pasids);
->> +void amd_iommu_gcr3_uninit(struct iommu_dev_data *dev_data);
->>  
->>  /* IOPF */
->>  int amd_iommu_iopf_init(struct amd_iommu *iommu);
->> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
->> index 36a5458a7946..6f5900333946 100644
->> --- a/drivers/iommu/amd/iommu.c
->> +++ b/drivers/iommu/amd/iommu.c
->> @@ -93,6 +93,11 @@ static inline bool pdom_is_v2_pgtbl_mode(struct protection_domain *pdom)
->>  	return (pdom && (pdom->pd_mode == PD_MODE_V2));
->>  }
->>  
->> +static inline bool pdom_is_in_pt_mode(struct protection_domain *pdom)
+On 2/2/2024 8:55 PM, Jason Gunthorpe wrote:
+> On Thu, Jan 18, 2024 at 07:33:37AM +0000, Vasant Hegde wrote:
+> 
+>> +static int iommu_pasid_enable(struct iommu_dev_data *dev_data)
 >> +{
->> +	return (pdom->domain.type == IOMMU_DOMAIN_IDENTITY);
->> +}
-> 
-> Why? And what about blocking someday?
-
-Today model allocates GCR3 if its in PT mode only. If we support PASID with
-BLOCKing domain then I will add that support.
-
-> 
-> Just use dev_data->gcr3_info.gcr3_tbl == NULL to indicate if GCR3 is
-> loaded or not?
-
-Given number of combination (like v2, v1, pt) above check is not sufficient.
-
-> 
->>  /*
->>   * Allocate per device domain ID when using V2 page table
->>   */
->> @@ -1837,6 +1842,46 @@ int amd_iommu_clear_gcr3(struct iommu_dev_data *dev_data, ioasid_t pasid)
->>  	return ret;
->>  }
->>  
->> +int amd_iommu_gcr3_init(struct iommu_dev_data *dev_data, ioasid_t pasids)
->> +{
->> +	struct protection_domain *pdom = dev_data->domain;
+>> +	struct device *dev = dev_data->dev;
 >> +	int ret = 0;
 >> +
->> +	lockdep_assert_held(&dev_data->lock);
+>> +	spin_lock(&dev_data->lock);
 >> +
->> +	/*
->> +	 * We cannot support PASID w/ existing v1 page table in the same domain
->> +	 * since it will be nested. However, existing domain w/ v2 page table
->> +	 * can be used for PASID.
->> +	 */
->> +	if (!pdom_is_v2_pgtbl_mode(pdom) && !pdom_is_in_pt_mode(pdom))
->> +		return -EOPNOTSUPP;
-> 
-> Put the test directly in the set dev pasid op and it should be more
-> like
-> 
-> if (!dev_data->gcr3_info.gcr3_tbl && dev_data->domain->type & _IOMMU_DOMAIN_PAGING)
->     return -EINVAL;
-
-I don't think that's right place. sev_dev pasid doesn't need to know all domain
-combination, setting up gcr3 table, etc.
-
-> 
-> 
-> And you need the mirroring test in alloc_dev to prevent changing the
-> RID to things the driver does not yet support, I didn't notice that?
-
-You mean attach_dev() path?
-
-> 
->> +	/* Allocate GCR3 table */
->> +	if (pdom_is_in_pt_mode(pdom) && dev_data->gcr3_info.gcr3_tbl == NULL) {
->> +		ret = setup_gcr3_table(&dev_data->gcr3_info,
->> +				       dev_to_node(dev_data->dev), pasids);
+>> +	if (is_pasid_enabled(dev_data))
+>> +		goto out;
 >> +
->> +		/* Update device table */
->> +		amd_iommu_dev_update_dte(dev_data, true);
+>> +	if (!amd_iommu_pasid_supported()) {
+>> +		ret = -ENODEV;
+>> +		goto out;
 >> +	}
+>> +
+>> +	/* attach_device path enables device PASID feature */
+>> +	if (!dev_data->pasid_enabled) {
 > 
-> This shouldn't be any different from do_attach()
+> How many times are we testing for this? Just check if the gcr3 table
+> is installed once
 
-We have allocated new GCR3 table and DTE needs to be updated.
+One time for IOMMU capability (amd_iommu_pasid_supported()) and one time for
+device capability.
+
+is_pasid_enabled() is checked twice (once without lock, so that we can avoid
+lock in most cases and one inside lock to be sure no one else entered and
+enabled gcr3).
+
+> 
+>> +		ret = -EINVAL;
+>> +		goto out;
+>> +	}
+>> +
+>> +	ret = amd_iommu_gcr3_init(dev_data, dev->iommu->max_pasids);
+>> +
+>> +out:
+>> +	spin_unlock(&dev_data->lock);
+>> +	return ret;
+>> +}
+> 
+> This seems like too much, and it doesn't need to be in a function..
+> 
+> 1) Check directly if the gcr3 table is installed otherwise try to
+> install it. That might be a usefull function
+
+We need other checks to make sure both IOMMU and device is capable of PASID.
+Hence its a separate function.
+
+
+> 
+> 2) Precompute the max pasids during device probe and store it in
+> iommu_dev_data. Just check if PASID >= max_pasid and fail
+
+This is not required .. as set_dev_pasid() can directly check
+dev->iommu->max_pasids.
+
+> 
+>> +static void iommu_pasid_disable(struct iommu_dev_data *dev_data)
+>> +{
+>> +	spin_lock(&dev_data->lock);
+>> +
+>> +	if (!is_gcr3_table_empty(dev_data))
+>> +		goto out;
+> 
+> Caller already checked this
+
+Yes. Will drop this check.
 
 > 
 >> +
->> +	return ret;
+>> +	if (dev_data->gcr3_info.gcr3_tbl == NULL)
+>> +		goto out;
 > 
-> success oritened flow please
+> Can't happen, right?
+
+Yes. Will drop.
+
+> 
+>> +
+>> +	amd_iommu_gcr3_uninit(dev_data);
+> 
+> Just write it out clearly in remove dev pasid
+> 
+> if (is_gcr3_table_empty(dev_data))
+>    amd_iommu_gcr3_uninit(dev_data);
+> 
 
 Ok.
 
-> 
->> +void amd_iommu_gcr3_uninit(struct iommu_dev_data *dev_data)
+>> +static int iommu_setup_pasid_pri(struct iommu_dev_data *dev_data)
 >> +{
->> +	lockdep_assert_held(&dev_data->lock);
+>> +	struct pci_dev *pdev;
+>> +	int ret;
 >> +
->> +	/* Free GCR3 table */
->> +	if (pdom_is_in_pt_mode(dev_data->domain)) {
->> +		free_gcr3_table(&dev_data->gcr3_info);
+>> +	if (is_pasid_enabled(dev_data))
+>> +		return 0;
 >> +
->> +		/* Update device table */
->> +		amd_iommu_dev_update_dte(dev_data, true);
->> +	}
+>> +	ret = iommu_pasid_enable(dev_data);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	pdev = dev_is_pci(dev_data->dev) ? to_pci_dev(dev_data->dev) : NULL;
+>> +	if (!pdev || !amd_iommu_pdev_pri_supported(pdev))
+>> +		return 0;
+>> +
+>> +	if (!dev_data->pri_enabled)
+>> +		return -EINVAL;
+>> +
+>> +	ret = amd_iommu_iopf_enable_device(dev_data->dev);
+>> +
+>> +	return ret;
 >> +}
+>> +
+>> +static void remove_dev_pasid(struct pdom_dev_data *pdom_dev_data)
+>> +{
+>> +	/* Update GCR3 table and flush IOTLB */
+>> +	amd_iommu_clear_gcr3(pdom_dev_data->dev_data, pdom_dev_data->pasid);
 > 
-> Is it really worth freeing it?
+> This is in the wrong place, there is only one DTE/GCR3 remove_dev is
+> touching. The list iteration below is just to clean up the tracking
+> list it should not touch HW. Move this up into
+> amd_iommu_remove_dev_pasid.
 
-Why not? But I don't like the domain ID changes every time. So may be OK to drop
-the uninit. Will look into it.
+This is used in remove_dev_pasid and sva_mn_release path.
 
+This just clears GCR3[pasid] entry. Its not updating DTE.
 
 > 
->>  static void set_dte_entry(struct amd_iommu *iommu,
->>  			  struct iommu_dev_data *dev_data)
->>  {
->> @@ -1986,9 +2031,12 @@ static int do_attach(struct iommu_dev_data *dev_data,
->>  
->>  	/* Init GCR3 table and update device table */
->>  	if (domain->pd_mode == PD_MODE_V2) {
->> -		/* By default, setup GCR3 table to support single PASID */
->> +		/*
->> +		 * By default, setup GCR3 table to support MAX PASIDs
->> +		 * supported by the IOMMU HW.
->> +		 */
->>  		ret = setup_gcr3_table(&dev_data->gcr3_info,
->> -				       dev_to_node(dev_data->dev), 1);
->> +				       dev_to_node(dev_data->dev), -1);
-> 
-> -1 should be dev->iommu->max_pasids, but better would be this specific
-> device's max pasid size, cached from pci_max_pasids()
+> And these functions related to the tracking list should be more
+> general and called in more places. Just the tracking list itself
+> should have a few patches to create it and situate it generically in
+> the driver. Even the RID should be using the same mechanism.
 
-Ok will fix it.
+That's after reworking protection domain structure. Not in this series.
+
+> 
+>> +int iommu_sva_set_dev_pasid(struct iommu_domain *domain,
+>> +			    struct device *dev, ioasid_t pasid)
+>> +{
+>> +	struct pdom_dev_data *pdom_dev_data;
+>> +	struct protection_domain *sva_pdom = to_pdomain(domain);
+>> +	struct iommu_dev_data *dev_data = dev_iommu_priv_get(dev);
+>> +	unsigned long flags;
+>> +	int ret = -EINVAL;
+>> +
+>> +	/* PASID zero is used for requests from the I/O device without PASID */
+>> +	if (pasid == 0 || pasid >= dev->iommu->max_pasids)
+>> +		return ret;
+>> +
+>> +	/* Make sure PASID/PRI is enabled */
+>> +	ret = iommu_setup_pasid_pri(dev_data);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	/* Add PASID to protection domain pasid list */
+>> +	pdom_dev_data = kzalloc(sizeof(*pdom_dev_data), GFP_KERNEL);
+>> +	if (pdom_dev_data == NULL)
+>> +		return ret;
+>> +
+>> +	pdom_dev_data->pasid = pasid;
+>> +	pdom_dev_data->dev_data = dev_data;
+>> +
+>> +	/* Setup GCR3 table */
+>> +	ret = amd_iommu_set_gcr3(dev_data, pasid,
+>> +				 iommu_virt_to_phys(domain->mm->pgd));
+>> +	if (ret) {
+>> +		kfree(pdom_dev_data);
+>> +		return ret;
+>> +	}
+>> +
+>> +	spin_lock_irqsave(&sva_pdom->lock, flags);
+>> +	list_add(&pdom_dev_data->list, &sva_pdom->dev_data_list);
+>> +	spin_unlock_irqrestore(&sva_pdom->lock, flags);
+> 
+> This doesn't seem right? The tracking list should be loaded before any
+> change is made visible to the HW, or at least under the same lock.
+
+Ok. I can move that up and then have error handler path to remove it.
 
 -Vasant
