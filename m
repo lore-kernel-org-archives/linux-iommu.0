@@ -1,112 +1,362 @@
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 825612232B
-	for <iommu@lists.linux.dev>; Wed,  7 Feb 2024 09:13:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68B942231F
+	for <iommu@lists.linux.dev>; Wed,  7 Feb 2024 09:18:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707297231; cv=none; b=lzQxDlD3xHeBmAvWQATiekIc/G3aSL2M7Am01wcmvHJWXg6+QmmYwzuXc8RsAUxpFtwoW1UU+iww/V/9b6UUBxTasWSRt6S5F7zvDbNjuyGIhn2ZbE+nWPQiL841e8f4gMvR6a7BeiFtYdX9cpxXTT8ydv+oSUmKB0sN40O5I7Q=
+	t=1707297483; cv=none; b=gBzj1EA2vicRdJPO8dDOYtjZoo8n6xLie5z9hHocUpt1VC7IvHombk/qH5aHiRUO0feBUHinsVHeCopABovtYmf1yN4addVrQHYwSBp0VX42sPOlgAAZm+PNwZBEg0A+At1wI6SnrGAv5xCjiSdCouJOLrrPYgSQ8nUVt52g15g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707297231; c=relaxed/simple;
-	bh=TqmxnL7LhKGRFaus9OcZ6Eu3Xvu+lsumuH85X4Jj9qg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MfMZRAbKdWy1PmrS9mtqOu3x2HbVHL0laiBrH5UXYCh/Pp/JHrPM93qNmkcBVDChbORB74g9Dk0U/Yr4CJQ63vYOAweWHWpEPrL7DQfYJJ7gInUBM1xm+wFtsYvQ97e+zUZ1SypgkRlMjtvrnvPg3UzqEgM/N+sk9Yxv39+DUqs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-60480ce9933so3652977b3.0
-        for <iommu@lists.linux.dev>; Wed, 07 Feb 2024 01:13:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707297227; x=1707902027;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=eg3v7z1mB1AjuBlJK36dadneR0u0gyBpWirpxI2xans=;
-        b=i7HFFzNg6aktbQmps/Es0Sc7+vdp6VHtimkPDnMkazQ2h9pzcbK+y1RMtMRDWe9HFF
-         rx+Af5Gj33BwsLIUeGXWhes8pYP/Zpnte3Pl3A2u1hu5OJ9dfNIhJ/n0a079LZymE5Zg
-         PLyRtIpw05UO+w9RYpLzfiAq3+bX5e6/BBBsiAiFUyQeoj98n0VzY8aTdJIM6sxzYkK6
-         7G+IzRReuBZcK2ZAbNY3fIClKaaxlHlGWmH7pCZaRjBRWvyGWSMjTNok/xlSwF4rLGzB
-         CfOvtu/zEDnz9tCHPuxIzTtHAd8WDD9KNrxEISvNUSV1lc6aoIIGpo/DEpP3t29pYWXx
-         7cqQ==
-X-Gm-Message-State: AOJu0YyHkjNNX0FOASzm6rXQAImIFx9utNvy6B0mkjJyXXKE2h373oNt
-	nRzffJyWEW77vt8q2ckv8i6a1d0oLIWBhpi71/kHJX2TXdr2gnOvnHAuMl5f2Qo=
-X-Google-Smtp-Source: AGHT+IG9rzZrTRI4HWyl5DffZq/YJUrzzTew2rl4YFjdWwy0SZMZ/1GyjJP3K+Abw+jP9MjICTiMXQ==
-X-Received: by 2002:a81:7309:0:b0:5e7:4cd7:7449 with SMTP id o9-20020a817309000000b005e74cd77449mr4615010ywc.49.1707297227380;
-        Wed, 07 Feb 2024 01:13:47 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCX09EB/PXSCNY7SEamMGPCTwS6ZOsuz2sVZUWPDXwo64MxDBZA7s5RjXQfY4+4FcuUb0Wnc3imDEJX9fGde3CX7KSbvEWI=
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
-        by smtp.gmail.com with ESMTPSA id w192-20020a8149c9000000b006029c00d1d4sm188730ywa.43.2024.02.07.01.13.46
-        for <iommu@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Feb 2024 01:13:46 -0800 (PST)
-Received: by mail-yb1-f178.google.com with SMTP id 3f1490d57ef6-dc6d5206e96so369577276.0
-        for <iommu@lists.linux.dev>; Wed, 07 Feb 2024 01:13:46 -0800 (PST)
-X-Received: by 2002:a25:84c3:0:b0:dc2:65da:d3af with SMTP id
- x3-20020a2584c3000000b00dc265dad3afmr3965372ybm.65.1707297226259; Wed, 07 Feb
- 2024 01:13:46 -0800 (PST)
+	s=arc-20240116; t=1707297483; c=relaxed/simple;
+	bh=xxqwmCtdSOQ8HwhQdcaUMV68d83/A1sp/EE2WLfT7EY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Do1SNRmeU7zFaZlVDZqtLftsD5YUd3z0IHrcX735rQwRurxdQwMtaDTmPcrWOS44g4iOVW9hVuUg9BHwKRBeAuorKJG6wd7//nzRj1Uvgdct/j+GtZC0fQ8RXK9nBYWRq0z+y9BhzaYsTe+T/oguzZ7zggqBi3IcTWoI7Ltep5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P2FRDo8z; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P2FRDo8z"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707297482; x=1738833482;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xxqwmCtdSOQ8HwhQdcaUMV68d83/A1sp/EE2WLfT7EY=;
+  b=P2FRDo8z8F1Bl4a+JLT2JXIHX8LVdewA9lodqQgiymo6VIT2B2S5Gibf
+   CWnD/SfKzR5J8E44w9zlYheMZoMQexExOlqP1Q+f8LfIDJOekPYaUPU2C
+   cdkaIqqbN5gdoQ+MxX5L692gt4tBqoQfiIDGFBadmfzr8wd5ZHajd8qXD
+   6iR+uLPpb0TSL/9wKtTwCtlIq1EE2rX1n3KYRUxKSedyfLx/aaKbC5wdE
+   sIvtT04e4v0zqFYJtmCR3KYNcbn4xxE3zi60D3EnGv1lOFxxlhcwx9+9u
+   2R9hgNIMkASAayVz6Y7hvuods+E3qtqD414VMpkUgqgyqRLF8OIMFRzjZ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10976"; a="1102852"
+X-IronPort-AV: E=Sophos;i="6.05,250,1701158400"; 
+   d="scan'208";a="1102852"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 01:18:01 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,250,1701158400"; 
+   d="scan'208";a="38701838"
+Received: from cascade.sh.intel.com ([10.239.48.35])
+  by orviesa001.jf.intel.com with ESMTP; 07 Feb 2024 01:17:58 -0800
+From: Jingqi Liu <Jingqi.liu@intel.com>
+To: iommu@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Tian Kevin <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Cc: linux-kernel@vger.kernel.org,
+	Jingqi Liu <Jingqi.liu@intel.com>
+Subject: [PACTH v3] Documentation: iommu/vt-d: Add the document for Intel IOMMU debugfs
+Date: Wed,  7 Feb 2024 17:07:42 +0800
+Message-Id: <20240207090742.23857-1-Jingqi.liu@intel.com>
+X-Mailer: git-send-email 2.21.3
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <e01cdb99-8497-4fec-b423-a0bfb483ac75@web.de> <324d4e02-6a5a-4112-a3a7-d7aeb5876acc@arm.com>
- <596b3bda-3bef-4e28-b9dd-08b96da97097@web.de>
-In-Reply-To: <596b3bda-3bef-4e28-b9dd-08b96da97097@web.de>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 7 Feb 2024 10:13:34 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXiszyYM0kc0iqSTDLAXKg_AKmYdc51_8oNwpQUbOWcVg@mail.gmail.com>
-Message-ID: <CAMuHMdXiszyYM0kc0iqSTDLAXKg_AKmYdc51_8oNwpQUbOWcVg@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/ipmmu-vmsa: Use devm_platform_ioremap_resource()
- in ipmmu_probe()
-To: Markus Elfring <Markus.Elfring@web.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev, 
-	kernel-janitors@vger.kernel.org, =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, Feb 6, 2024 at 3:16=E2=80=AFPM Markus Elfring <Markus.Elfring@web.d=
-e> wrote:
-> From: Markus Elfring <elfring@users.sourceforge.net>
-> Date: Tue, 6 Feb 2024 15:00:23 +0100
->
-> A wrapper function is available since the commit 7945f929f1a77a1c8887a97c=
-a07f87626858ff42
-> ("drivers: provide devm_platform_ioremap_resource()").
->
-> * Thus reuse existing functionality instead of keeping duplicate source c=
-ode.
->
-> * Delete a local variable which became unnecessary with this refactoring.
->
->
-> This issue was transformed by using the Coccinelle software.
->
-> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
-> ---
->
-> v2:
-> The transformation pattern was adjusted based on advices by known contrib=
-utors.
->
-> Examples:
-> * Doug Anderson
-> * Geert Uytterhoeven
-> * Robin Murphy
+This document guides users to dump the Intel IOMMU internals by debugfs.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Jingqi Liu <Jingqi.liu@intel.com>
+---
+Change log:
+ v3:
+  - Add this change log per Baolu's comments.
+ v2: http://lore.kernel.org/lkml/20240126064704.14292-1-Jingqi.liu@intel.com
+  - Remove the use of private data field according to VT-d specification
+    changes in v4.0.
+ v1: http://lore.kernel.org/lkml/20231220132519.11077-1-Jingqi.liu@intel.com
+---
+ Documentation/ABI/testing/debugfs-intel-iommu | 276 ++++++++++++++++++
+ 1 file changed, 276 insertions(+)
+ create mode 100644 Documentation/ABI/testing/debugfs-intel-iommu
 
-Gr{oetje,eeting}s,
+diff --git a/Documentation/ABI/testing/debugfs-intel-iommu b/Documentation/ABI/testing/debugfs-intel-iommu
+new file mode 100644
+index 000000000000..2ab8464504a9
+--- /dev/null
++++ b/Documentation/ABI/testing/debugfs-intel-iommu
+@@ -0,0 +1,276 @@
++What:		/sys/kernel/debug/iommu/intel/iommu_regset
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file dumps all the register contents for each IOMMU device.
++
++		Example in Kabylake:
++
++		::
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/iommu_regset
++
++		 IOMMU: dmar0 Register Base Address: 26be37000
++
++		 Name                    Offset          Contents
++		 VER                     0x00            0x0000000000000010
++		 GCMD                    0x18            0x0000000000000000
++		 GSTS                    0x1c            0x00000000c7000000
++		 FSTS                    0x34            0x0000000000000000
++		 FECTL                   0x38            0x0000000000000000
++
++		 [...]
++
++		 IOMMU: dmar1 Register Base Address: fed90000
++
++		 Name                    Offset          Contents
++		 VER                     0x00            0x0000000000000010
++		 GCMD                    0x18            0x0000000000000000
++		 GSTS                    0x1c            0x00000000c7000000
++		 FSTS                    0x34            0x0000000000000000
++		 FECTL                   0x38            0x0000000000000000
++
++		 [...]
++
++		 IOMMU: dmar2 Register Base Address: fed91000
++
++		 Name                    Offset          Contents
++		 VER                     0x00            0x0000000000000010
++		 GCMD                    0x18            0x0000000000000000
++		 GSTS                    0x1c            0x00000000c7000000
++		 FSTS                    0x34            0x0000000000000000
++		 FECTL                   0x38            0x0000000000000000
++
++		 [...]
++
++What:		/sys/kernel/debug/iommu/intel/ir_translation_struct
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file dumps the table entries for Interrupt
++		remapping and Interrupt posting.
++
++		Example in Kabylake:
++
++		::
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/ir_translation_struct
++
++		 Remapped Interrupt supported on IOMMU: dmar0
++		 IR table address:100900000
++
++		 Entry SrcID   DstID    Vct IRTE_high           IRTE_low
++		 0     00:0a.0 00000080 24  0000000000040050    000000800024000d
++		 1     00:0a.0 00000001 ef  0000000000040050    0000000100ef000d
++
++		 Remapped Interrupt supported on IOMMU: dmar1
++		 IR table address:100300000
++		 Entry SrcID   DstID    Vct IRTE_high           IRTE_low
++		 0     00:02.0 00000002 26  0000000000040010    000000020026000d
++
++		 [...]
++
++		 ****
++
++		 Posted Interrupt supported on IOMMU: dmar0
++		 IR table address:100900000
++		 Entry SrcID   PDA_high PDA_low  Vct IRTE_high          IRTE_low
++
++What:		/sys/kernel/debug/iommu/intel/dmar_translation_struct
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file dumps Intel IOMMU DMA remapping tables, such
++		as root table, context table, PASID directory and PASID
++		table entries in debugfs. For legacy mode, it doesn't
++		support PASID, and hence PASID field is defaulted to
++		'-1' and other PASID related fields are invalid.
++
++		Example in Kabylake:
++
++		::
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/dmar_translation_struct
++
++		 IOMMU dmar1: Root Table Address: 0x103027000
++		 B.D.F   Root_entry
++		 00:02.0 0x0000000000000000:0x000000010303e001
++
++		 Context_entry
++		 0x0000000000000102:0x000000010303f005
++
++		 PASID   PASID_table_entry
++		 -1      0x0000000000000000:0x0000000000000000:0x0000000000000000
++
++		 IOMMU dmar0: Root Table Address: 0x103028000
++		 B.D.F   Root_entry
++		 00:0a.0 0x0000000000000000:0x00000001038a7001
++
++		 Context_entry
++		 0x0000000000000000:0x0000000103220e7d
++
++		 PASID   PASID_table_entry
++		 0       0x0000000000000000:0x0000000000800002:0x00000001038a5089
++
++		 [...]
++
++What:		/sys/kernel/debug/iommu/intel/invalidation_queue
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file exports invalidation queue internals of each
++		IOMMU device.
++
++		Example in Kabylake:
++
++		::
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/invalidation_queue
++
++		 Invalidation queue on IOMMU: dmar0
++		 Base: 0x10022e000      Head: 20        Tail: 20
++		 Index          qw0                    qw1                     qw2
++		     0   0000000000000014        0000000000000000        0000000000000000
++		     1   0000000200000025        0000000100059c04        0000000000000000
++		     2   0000000000000014        0000000000000000        0000000000000000
++
++				qw3                  status
++			 0000000000000000        0000000000000000
++			 0000000000000000        0000000000000000
++			 0000000000000000        0000000000000000
++
++		 [...]
++
++		 Invalidation queue on IOMMU: dmar1
++		 Base: 0x10026e000      Head: 32        Tail: 32
++		 Index           qw0                     qw1                   status
++		     0   0000000000000004        0000000000000000         0000000000000000
++		     1   0000000200000025        0000000100059804         0000000000000000
++		     2   0000000000000011        0000000000000000         0000000000000000
++
++		 [...]
++
++What:		/sys/kernel/debug/iommu/intel/dmar_perf_latency
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file is used to control and show counts of
++		execution time ranges for various types per DMAR.
++
++		Firstly, write a value to
++		/sys/kernel/debug/iommu/intel/dmar_perf_latency
++		to enable sampling.
++
++		The possible values are as follows:
++
++		* 0 - disable sampling all latency data
++
++		* 1 - enable sampling IOTLB invalidation latency data
++
++		* 2 - enable sampling devTLB invalidation latency data
++
++		* 3 - enable sampling intr entry cache invalidation latency data
++
++		Next, read /sys/kernel/debug/iommu/intel/dmar_perf_latency gives
++		a snapshot of sampling result of all enabled monitors.
++
++		Examples in Kabylake:
++
++		::
++
++		 1) Disable sampling all latency data:
++
++		 $ sudo echo 0 > /sys/kernel/debug/iommu/intel/dmar_perf_latency
++
++		 2) Enable sampling IOTLB invalidation latency data
++
++		 $ sudo echo 1 > /sys/kernel/debug/iommu/intel/dmar_perf_latency
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/dmar_perf_latency
++
++		 IOMMU: dmar0 Register Base Address: 26be37000
++				 <0.1us   0.1us-1us    1us-10us  10us-100us   100us-1ms
++		 inv_iotlb           0           0           0           0           0
++
++				 1ms-10ms      >=10ms     min(us)     max(us) average(us)
++		 inv_iotlb           0           0           0           0           0
++
++		 [...]
++
++		 IOMMU: dmar2 Register Base Address: fed91000
++				 <0.1us   0.1us-1us    1us-10us  10us-100us   100us-1ms
++		 inv_iotlb           0           0          18           0           0
++
++				 1ms-10ms      >=10ms     min(us)     max(us) average(us)
++		 inv_iotlb           0           0           2           2           2
++
++		 3) Enable sampling devTLB invalidation latency data
++
++		 $ sudo echo 2 > /sys/kernel/debug/iommu/intel/dmar_perf_latency
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/dmar_perf_latency
++
++		 IOMMU: dmar0 Register Base Address: 26be37000
++				 <0.1us   0.1us-1us    1us-10us  10us-100us   100us-1ms
++		 inv_devtlb           0           0           0           0           0
++
++				 >=10ms     min(us)     max(us) average(us)
++		 inv_devtlb           0           0           0           0
++
++		 [...]
++
++What:		/sys/kernel/debug/iommu/intel/<bdf>/domain_translation_struct
++Date:		December 2023
++Contact:	Jingqi Liu <Jingqi.liu@intel.com>
++Description:
++		This file dumps a specified page table of Intel IOMMU
++		in legacy mode or scalable mode.
++
++		For a device that only supports legacy mode, dump its
++		page table by the debugfs file in the debugfs device
++		directory. e.g.
++		/sys/kernel/debug/iommu/intel/0000:00:02.0/domain_translation_struct.
++
++		For a device that supports scalable mode, dump the
++		page table of specified pasid by the debugfs file in
++		the debugfs pasid directory. e.g.
++		/sys/kernel/debug/iommu/intel/0000:00:02.0/1/domain_translation_struct.
++
++		Examples in Kabylake:
++
++		::
++
++		 1) Dump the page table of device "0000:00:02.0" that only supports legacy mode.
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/0000:00:02.0/domain_translation_struct
++
++		 Device 0000:00:02.0 @0x1017f8000
++		 IOVA_PFN                PML5E                   PML4E
++		 0x000000008d800 |       0x0000000000000000      0x00000001017f9003
++		 0x000000008d801 |       0x0000000000000000      0x00000001017f9003
++		 0x000000008d802 |       0x0000000000000000      0x00000001017f9003
++
++		 PDPE                    PDE                     PTE
++		 0x00000001017fa003      0x00000001017fb003      0x000000008d800003
++		 0x00000001017fa003      0x00000001017fb003      0x000000008d801003
++		 0x00000001017fa003      0x00000001017fb003      0x000000008d802003
++
++		 [...]
++
++		 2) Dump the page table of device "0000:00:0a.0" with PASID "1" that
++		 supports scalable mode.
++
++		 $ sudo cat /sys/kernel/debug/iommu/intel/0000:00:0a.0/1/domain_translation_struct
++
++		 Device 0000:00:0a.0 with pasid 1 @0x10c112000
++		 IOVA_PFN                PML5E                   PML4E
++		 0x0000000000000 |       0x0000000000000000      0x000000010df93003
++		 0x0000000000001 |       0x0000000000000000      0x000000010df93003
++		 0x0000000000002 |       0x0000000000000000      0x000000010df93003
++
++		 PDPE                    PDE                     PTE
++		 0x0000000106ae6003      0x0000000104b38003      0x0000000147c00803
++		 0x0000000106ae6003      0x0000000104b38003      0x0000000147c01803
++		 0x0000000106ae6003      0x0000000104b38003      0x0000000147c02803
++
++		 [...]
+-- 
+2.21.3
 
-                        Geert
-
---=20
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k=
-.org
-
-In personal conversations with technical people, I call myself a hacker. Bu=
-t
-when I'm talking to journalists I just say "programmer" or something like t=
-hat.
-                                -- Linus Torvalds
