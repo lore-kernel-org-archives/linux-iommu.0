@@ -1,201 +1,114 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2057.outbound.protection.outlook.com [40.107.220.57])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BBB476C64;
-	Wed,  7 Feb 2024 13:05:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.57
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707311140; cv=fail; b=ciqpNXzHElm8Z8z5i7TF/bvPnx1ACpFzJ04cI+FqY4wEtII+mPbpYxdEseCszvE2zN+t2zEvlDoxcAWiDXXU48lWPLUV5LfIffCUHMDo91wz74DhVTLoZyN2NN+2i9c8iXO8KTpk7ZNNQBaL/mptF79Q1eNHA/PPOATXdctKtvs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707311140; c=relaxed/simple;
-	bh=acO8i6Ky3GhuJ+QrgB5kjtCGSexZh8wp/P2HsWpdwZs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=vCIKAEtUjZ10tsLjLrB71fMf06M0dA90jdLkU+8bE6ULXN1KLMaHwH4QYO73B5neB6stelEpyWfAV636/Z15XXGals6NTGX4HqdjCBGBabwM5DO8i6CasZPxo12HeTleSEbeWgtvNBAnGHMak9dExZw+ePJ+RjBFwM8ODXni0Dg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=JM1ORoPO; arc=fail smtp.client-ip=40.107.220.57
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E92657CF24;
+	Wed,  7 Feb 2024 14:27:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707316026; cv=none; b=mvZZZTotqZetveKzdvn8mKX8rFpG+WYNj4+rrkOSgdpq/max1UGbmpJLjPAh/hp2xQu8Wr3xszx37B9WrMf9i8b7P4OUF8KKjo9SROaDxYW7yKCqIZBxuHEIUrHquD5ESrWy0XuAOhrqqnF9odHPEdAtnHSepPdCVwCsqR96a1M=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707316026; c=relaxed/simple;
+	bh=2RU6ecwvwpj7XkTwgh+rq7eFoMgidQfwzGpuxMhjwCU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=cLfYqCzdEhDsyfbp+kmNYxgGQhktnM8YFF1ykZAzTxb//9ZJu+8l9r6bzOUTCsuIrrPnUc/5cA68kdfUe1ke+eZlgF0O2eTn9mInYX7IicRslS5xh41yI8/+nnNnp4be53GQ89SIvtvMDH8joDLuSAbMxN9WM4sKsHSB27wVfJo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=lI5a/wVj; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="JM1ORoPO"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QZ1pfEHVQqtPJ6rEJqG1MMc/8kMd2LMeQI8od9HJX9w2FJAbgQjXZeZPnlYJQL+j272ibHmCm17zkWjx+m6gTV27Gy2vWpBncETSYhBNxRP1ySct0tOX7Xk3DCgCEkLjF6kBRkUnzbmAdQNzWU10K2QexH0jPwcPyaNO11WkOO/MD0UtaoKSxhzBJk1ixs8FtSX1nKR7hoIdBFbBJUH6pO4cpAjvmtESNn/qgmhQ8YdT+8Xab8nVsP7eWPCOkVsr40e7teKRUkLaECqjPeT5lAJXmwfurb5xoMTrzbVdLyJkzA1Tum+gmBgv54mJ5SbIjXWFU+n/dM/Z/UaF3pMFXQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=EQk5WxfSZam0H04DLfTPnYYKdMrgt+GK9LurTEhA+S0=;
- b=Ybzd0ciuPGV9aL7eUPJgkkka95mpNNHK8DYmtYydx5tDt1mumFg9R9dfWIV22fLlHmO6Auw83MJ4A591xODAG4UTMkVOCu/XCxrD1TRCptFOcg7Iq4GXquUj70MweOn3Bly9KuDeldlrmH+2Zp0yKhN2rKL7veQpCOmmTH2PWSMQCN0l2cNMnTdwNYfrSNQHkNJqMfIasnXGYytQ0onBNupDUPV1vhlj2P7yE294/3YWAMCHBNqapiZBnpEHHxeMfqKJ/HaMurVPguKatrTfOrrQJ63Xlq6DuRwc+BWnUMQKAHzkZ2JZLKuKSNqFMWgk/XFnu/xf+ZLuzl5jkRvwnQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EQk5WxfSZam0H04DLfTPnYYKdMrgt+GK9LurTEhA+S0=;
- b=JM1ORoPOXoA1zscd33p2owuHOK9hryLqVgJXFWWRCvL4+jd189Yxlk2tiu9hAJ99My3uKuDzMcwZIvdMQRj2UmjyjfZw8gfw5mE31wLJCopWudrzz9K/wdRuJnJqP3KjF+1tw/ifgm2jgIGVNWmEj6KZnO2x36978K3W6R4mDOTccs55mSv8lQicaucozpzxcsm3cGZ+cwBvj4hsWyOf/ibyNzbUnZN0s1OQGIJNACrDr/BZfLf7R0ShZixydViQKEzHRTOAPhxQgRSa7KX1JtIqobICldxsUIljHp+arQnQRHXQSPrLv1aTrf71CEKcmRINxQbVd6FMMo2SnjMMDg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by PH0PR12MB8049.namprd12.prod.outlook.com (2603:10b6:510:28f::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.17; Wed, 7 Feb
- 2024 13:05:35 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873%6]) with mapi id 15.20.7270.012; Wed, 7 Feb 2024
- 13:05:34 +0000
-Date: Wed, 7 Feb 2024 09:05:32 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jon Hunter <jonathanh@nvidia.com>
-Cc: David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-	dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org,
-	iommu@lists.linux.dev, Mikko Perttunen <mperttunen@nvidia.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>, patches@lists.linux.dev
-Subject: Re: [PATCH] drm/tegra: Remove of_dma_configure() from
- host1x_device_add()
-Message-ID: <20240207130532.GA1833900@nvidia.com>
-References: <0-v1-c76c50cd425e+15298-host1x_no_iommu_conf_jgg@nvidia.com>
- <583b9145-cbbe-4a03-8120-e2a66a6093c7@nvidia.com>
- <20240131153312.GM1455070@nvidia.com>
- <a1597113-3ec9-445c-90d1-62df97406fb2@nvidia.com>
- <20240201200212.GQ1455070@nvidia.com>
- <96bc6d37-1000-4651-9a26-a8446dd64803@nvidia.com>
- <20240202143518.GS1455070@nvidia.com>
- <361dcaf5-352e-4162-a952-c690783a2251@nvidia.com>
- <20240202161540.GU1455070@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240202161540.GU1455070@nvidia.com>
-X-ClientProxiedBy: DS7PR06CA0012.namprd06.prod.outlook.com
- (2603:10b6:8:2a::22) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="lI5a/wVj"
+Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 417B9FXi003395;
+	Wed, 7 Feb 2024 14:26:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=56dI8angvNGkFV+K065e/Uxx2IJmqo4mMZ34YBNZr30=; b=lI
+	5a/wVjbqCPP96LWur9ehj7i41QxTOGGdQDnEAI1r56P1TZYIp1+ozoVNVePt2g5F
+	aWNKF+q8NSF2XTlfZedvV2rVw99j62NRheN14UNtVCOXlFcqRr/gIX2lKClieIMh
+	hhf1QkFkkOIblW/06Dj9Z3dWiD7fzU+RTGHxgut5Abnf9lxsNKWsvNUPIAa+FhYw
+	73zIFO1Z7Udu2n0dbI4Yz/KpcpkL8644IoJqWYTrmUw22BSw+arV8ZKQ8x36cd8Q
+	bqrROU0Xw2zIQNf0ZNMc8pGL209HTPfpF9caHaGthvKqe8K4pMLbeEREwUxZ71DV
+	HDOHHbG4jCng+yjmbzEA==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3w46r80mka-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 07 Feb 2024 14:26:50 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 417EQo2P029635
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 7 Feb 2024 14:26:50 GMT
+Received: from [10.216.9.205] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Wed, 7 Feb
+ 2024 06:26:47 -0800
+Message-ID: <9ba9c4fa-3fa9-c6c4-ce77-0c6cd5e23680@quicinc.com>
+Date: Wed, 7 Feb 2024 19:56:25 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|PH0PR12MB8049:EE_
-X-MS-Office365-Filtering-Correlation-Id: 96ef72e1-d99a-4eaa-20b8-08dc27dd7862
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	/HcrIdeFRtmDEWTPgkFTih2dM1a6TRUF4dEzaOpEvMWkShPz7ztMBm1pQGpWLyGm6p1NHjAS+s51m7dN7M+euTNdcxvMb6FL2W+3JaA/wyaBEszXhnmPrQRAFTdtiBKpoV6BjWUB0ssFxtbgd05dOpCE8l2SwLaaw4pFy1SSXP26eNYfngHG88CraiCpkl+/NICeXdixhIO1l93IriA+mYb5NFFPzNgOh+ujqnryWEM/ain4ghxLe1b6FndC1O3URr9pPZqmol/i3LFiS/BEEqmTejeNy8r5eoH9h7/iFc/gJczoPiGd06xm5XWd60yIjw6FtnahuNFD9qBclMylIY8WxQ/0kyKYeRQF3TYzPq9R12y1s63oQmk+BDRrJ3WD10mBCTpXimGuB9nGNGJZnT6ttVa6Uy2jA+XzYkuEtL9IgKb5oFBJZKF9kj03SkNleYbpsBguUMEuQP7UjmqQ+WnpBio0XzL21DoTO+oGhswxb7JZIcr6FMQkdPXEgioirgAVEzv3g9xglDrbehR5Quk2sC/YgYF0CCP927/VijN8YKmZuRfrGObToTUx5lwZ
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(346002)(396003)(136003)(366004)(230922051799003)(186009)(451199024)(1800799012)(64100799003)(66899024)(2616005)(6512007)(1076003)(36756003)(6506007)(478600001)(41300700001)(38100700002)(86362001)(26005)(83380400001)(33656002)(6486002)(8676002)(6862004)(4326008)(8936002)(2906002)(5660300002)(37006003)(66946007)(66556008)(66476007)(54906003)(6636002)(316002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?3tkpBnwOZ+BjUiAvGHw3yZtcmbzc1OKHcslEyvJvsK9ZBLlIsIgmeFUhgGao?=
- =?us-ascii?Q?3RpiulTvgcphJURYMaPVQcsV56sNCQ2VPI2Qc3zBBBdfBAI9p/7/9x6vPxYX?=
- =?us-ascii?Q?XHIDBNKrYJPrACGYK6Ux+Cs9PuaR2A330qfuVPNtX7eRbE1XsB02P7o+RwDL?=
- =?us-ascii?Q?ZNM5qoHrvfXQlYyUG0qtTg4m6OY2aa4dxEgk6rLQrsDQlv/0QdKB5X/HgjmW?=
- =?us-ascii?Q?2hgB6XDLHZKKDYO9vsufxDdMK9rhmxBvlS9AmdSWc/3fBIxwUpMNXrtdmxBw?=
- =?us-ascii?Q?3vwDIY+4BAhDCtrl6B6DLV+LU7moWQfAKuWHZy5AijkAZxao/jv4fPQUoFZ+?=
- =?us-ascii?Q?0b7tJNVIxhUpogCpxqaxsIhfHscPaa8CDQuTefD9S2GNAKDvRRDO1tEZSeOK?=
- =?us-ascii?Q?hZvzcekjxiI4e7+rNlVeKya18IlXrRlmGKiyn8gtVY3mrddEn76AKcVO69bT?=
- =?us-ascii?Q?m9LBHq+zXxWSU+bEIrYaeMHr3zrsvBy0F8C0n01Nl/5NEfzRNesirvbp6X8v?=
- =?us-ascii?Q?7k9ZO3j9s904q9vywL8O/hG4vggDzZLyiscY0uElqtNsKDig5yNsdk2npPZ/?=
- =?us-ascii?Q?a5IsHB2G+XKmqiLy3q8CdaYNgAMsSPb5cFb+RZJBH4I+q5rCj9o/X22CU2Rw?=
- =?us-ascii?Q?V+7o+YUZpIwpVPaiO2YPTKVtc5U9wSYDg4iNZYM0LAc1HTA6vk5hohJzJnTr?=
- =?us-ascii?Q?JyJ8Nb2OVfAn2qIPlwdEOX1vNd4t7l0OheabBgJgOh7/zVHJ6yPsahJ5AHBF?=
- =?us-ascii?Q?4lSW+vcT1Qf4oLzibpnX3qmkKjM69y+/vbc5IwO+jANGRFo0lPXKDsEPpeeY?=
- =?us-ascii?Q?q+rc9rib90AxyUN/GQYoVCJk6Dh0gavOddXWTJUsxBG27L+AWkiHEuXo2rPp?=
- =?us-ascii?Q?8vR4CNrj/5BYI/h8eiDE7wRhYSRay/oyy7ZCdpvVosdLBzc1U9ePzSPmC1YT?=
- =?us-ascii?Q?5QrId4mY/u8ALvou1WBLcfo8nY3qCw+PH2Jv1lgRT/zMTytczLO+oMkNDDwJ?=
- =?us-ascii?Q?BpPkLnSw26isW82ydoUWiFEw4YCRch1r4gKWpUYNpr47KUJ/Jk9PLjnRSxmu?=
- =?us-ascii?Q?JXNa0CWxeac72ULoxYi3w6WDvgYkXbCrv0G7CBnas8207iKykchZ5i/X9LvX?=
- =?us-ascii?Q?dDA8WrknTj3InHFRpiCR95ZDmMA73HZywHK9+b7JG6GpREaL8ojcSahj5cRR?=
- =?us-ascii?Q?FzjTZUUwEKuYodxW2+FOJ+0Y20LxBL6EpCD9eXWMg2/o3bEBh7nvEoRVLwwN?=
- =?us-ascii?Q?A5TBjDCdzl17oRGSQ+273tMR3vGnOXOc60H7q+ZrfYzFhY34tBzyAKXQ4T01?=
- =?us-ascii?Q?PUwtQSIFOKfbU5tYWUCG5n2qLBQBe42bEkqcGYqFlMBxsjj/eUQrS5maf7/q?=
- =?us-ascii?Q?hJzJX0El7H6i8KSyvK387OG5Qe73toYbc2GTBUzb2f3rO1B7C3YgLilj44uF?=
- =?us-ascii?Q?20vdu0KGYda/QTGz/NeFyQnGP+Eg9C0ZEi0ETCwJ7jD4ExPNVGKHzgMFCPUx?=
- =?us-ascii?Q?OotA0KdGQ3sB5iRBy8o7OEx1ITpHcUXLRvy8bnONHLHdamKbyi9iY/rmyoh/?=
- =?us-ascii?Q?AHdj5N8DF+QCebTX68d40dpIquH/hU5g5fmn+NqS?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 96ef72e1-d99a-4eaa-20b8-08dc27dd7862
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2024 13:05:34.3294
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gioTwllKi0Geja197wZd12K2oSL7weQgCaY4OqZAMDsVzBdhln2aww/hR39CtyeS
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB8049
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+Subject: Re: [PATCH 1/1] iommu: Avoid races around default domain allocations
+To: Jason Gunthorpe <jgg@ziepe.ca>
+CC: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        "Robin
+ Murphy" <robin.murphy@arm.com>,
+        Charan Teja Kalla
+	<quic_charante@quicinc.com>,
+        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+References: <e605b38a2d40b1e7589e10110c6d3ece35f6af4e.1705571894.git.quic_nprakash@quicinc.com>
+ <139a9abe-75d8-3bda-3ec9-a14a493eb2a9@quicinc.com>
+ <20240201162317.GI50608@ziepe.ca>
+Content-Language: en-US
+From: Nikhil V <quic_nprakash@quicinc.com>
+In-Reply-To: <20240201162317.GI50608@ziepe.ca>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: XS2JtNc24MCAbwrtdj1SJiyuNZV7xRJ9
+X-Proofpoint-ORIG-GUID: XS2JtNc24MCAbwrtdj1SJiyuNZV7xRJ9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-07_05,2024-01-31_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=773
+ spamscore=0 mlxscore=0 adultscore=0 malwarescore=0 bulkscore=0
+ priorityscore=1501 suspectscore=0 lowpriorityscore=0 clxscore=1011
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2401310000 definitions=main-2402070107
 
-On Fri, Feb 02, 2024 at 12:15:40PM -0400, Jason Gunthorpe wrote:
 
-> > Yes looks like a race of some sort. Adding a bit of debug also makes the
-> > issue go away so difficult to see what is happening.
+
+On 2/1/2024 9:53 PM, Jason Gunthorpe wrote:
+> On Mon, Jan 29, 2024 at 01:29:12PM +0530, Nikhil V wrote:
 > 
-> I'm wondering if it is racing with iommu driver probing? I looked but
-> didn't notice anything obviously wrong there that would cause this
-> though.
-
-Oh there is at least one racy thing here..
-
-The of_xlate hackjob is out of order and is racy if you have multiple instances:
-
-struct tegra_smmu *tegra_smmu_probe(struct device *dev,
-				    const struct tegra_smmu_soc *soc,
-				    struct tegra_mc *mc)
-{
-	/*
-	 * This is a bit of a hack. Ideally we'd want to simply return this
-	 * value. However iommu_device_register() will attempt to add
-	 * all devices to the IOMMU before we get that far. In order
-	 * not to rely on global variables to track the IOMMU instance, we
-	 * set it here so that it can be looked up from the .probe_device()
-	 * callback via the IOMMU device's .drvdata field.
-	 */
-	mc->smmu = smmu;
-         ^^^^^^^^^^^^^
-           After this of_xlate and probe_device will succeed
-
-        [...]
-       	err = iommu_device_sysfs_add(&smmu->iommu, dev, NULL, dev_name(dev));               
-	err = iommu_device_register(&smmu->iommu, &tegra_smmu_ops, dev);
-        ^^^^^^^^^
-        But the iommu instance is not fully initialized yet.
-
-So:
-
-static int tegra_smmu_of_xlate(struct device *dev,
-			       struct of_phandle_args *args)
-{
-	struct platform_device *iommu_pdev = of_find_device_by_node(args->np);
-	struct tegra_mc *mc = platform_get_drvdata(iommu_pdev);
-
-	dev_iommu_priv_set(dev, mc->smmu);
-                            ^^^^^^^^^^^^
-                             Gets the partially initialized iommu
-			     instance
+>> Gentle ping to have your valuable feedback. This fix is helping us
+>> downstream without which we see a bunch of kernel crashes.
+> 
+> What are you expecting here? This was fixed in Linus's tree some time
+> ago now
+> 
+> Are you asking for the stable team to put something weird in 6.1? I
+> don't think they generally do that?
+> 
+> Jason
 
 
-static struct iommu_device *tegra_smmu_probe_device(struct device *dev)
-{
-	smmu = dev_iommu_priv_get(dev);
-	if (!smmu)
-		return ERR_PTR(-ENODEV);
-               ^^^^^^^^^^^^^
-                  Allows the driver to bind to a partially setup instance
+Hi @Jason,
 
-ie if you have multiple instances of tegra-smmu and you manage to do
-concurrent probe where the iommu instance is probing concurrently with
-the failing device_add flow then you can a situation like you have
-described where the sysfs is not fully setup.
+Considering that the issue is reported on 6.1, which is an __LTS 
+kernel__, any suggestion to fix this issue cleanly would help us a lot. 
+Right thing here would have been propagating the changes from 6.6 (like 
+for any stability issue), but considering the intrusiveness of them, is 
+it even possible?
 
-Is this making sense to you? Add a sleep after the mc->smmu store and
-confirm with printing?
+Just to be open about reproducibility of the issue, a bunch of them are 
+reported, both internally and by customers.
 
-I think this is all an insane design. I fixed this race and removed
-all this hackery in my fwspec removal series. There the iommu instance
-only ever comes out of the locked list that iommu_device_register()
-populates and drivers have a safe and simple flow.
-
-Maybe just moving the store to mc->smmu later would improve it? I
-didn't look closely..
-
-Jason
+Thanks
+Nikhil V
