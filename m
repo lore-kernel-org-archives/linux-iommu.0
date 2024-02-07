@@ -1,152 +1,245 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2084.outbound.protection.outlook.com [40.107.212.84])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5658D81ABA
-	for <iommu@lists.linux.dev>; Wed,  7 Feb 2024 16:52:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.84
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707324750; cv=fail; b=n8g8qm8VrVziMY4D/iKYL9l0NTxqkELY7Yu2ypyYLs0PU4oKRGsuOm0bjN2r4HgESJ6rFpqYSgty7QOHt7YSOd6vTZFxOcqtviML+MCTxnX7JV1qx5OnBMSZUEENuKT4UudXbPjfKr3yZA+ZoWXC0kL21RLeQGjt1hq565zXbcw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707324750; c=relaxed/simple;
-	bh=mXRtyx/E3CVxLSmZMQMX2FygwE1h1HNUu5yMRzCrFuM=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=K+o3+I1FDvk6L0sxdhYVikQJilMhqEgC6m9+98BzPKJk5Pgf+5QaUOfP+A9/Dn10noEqD6SMUQkZnOvX6vjYf28Mx8PwcsQDzlTodiyMPGVzxt6krsX01p8A2f1m6N9CxbAcMZCDq2OxC10sbQODzUrP0jWxby6phnAt++pCai8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=YRpe3HLr; arc=fail smtp.client-ip=40.107.212.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A36A6823D9
+	for <iommu@lists.linux.dev>; Wed,  7 Feb 2024 17:41:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.181
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707327669; cv=none; b=On00djGNWUaPJVP8KruuoseCIUpKFkg1tYgxq/7Dvvfii/ZV+55bo0Mkr3lWsCL+9Vq3KO5YpFyJqZAL+emDa3UzJF6dn3NjfL6oK9nTd1n9/LHWq02RDMkga3+37SjDNthrNq3AWv3cDnx2JiEem73ZBWImPIXjLAIDaFQ+SyU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707327669; c=relaxed/simple;
+	bh=Pts1Ollg+kHIJn7gcBTh60hwuP/+5EbYctTIjn8gNGo=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=W7wBDLLSlCgvjwOdzy+HxXRk4u73rmr4FTaVXSTrwQwyjkVZ6kPvs04zihMp3VxJQDjB8/uuI1YXLMnt5FAVrppJO3dJRYNkvoETea2Ri+yzZEFKFeCp5OZab5F5n2uf85aUA/AhI5CefP8oZUJjetQmcBKOEemV+QiRH3VQHC8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com; spf=none smtp.mailfrom=soleen.com; dkim=fail (0-bit key) header.d=soleen.com header.i=@soleen.com header.b=IJlxrJ5f reason="key not found in DNS"; arc=none smtp.client-ip=209.85.128.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="YRpe3HLr"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R8bfk5CtUw2dlr1nMMuenvVm7n/IAuWrV07M2b1Hmf3tuDTTnpE6YdYN71A9WNVQHmgprjpiDjVZfARHjUEJkxDVFYcZSR113YJHOupaYDuQJueTeIkOwJd1sM/nLa+y5S1DzQMzoybpfsWgN0cVVxS4XGkOdhPm2ZxWRBw1f0WYrHwMKQJdPLUkPob0ceTUQTBfwjT/QodRYItpnO80821f7jBbv1QwF2+F0rHYX7te+XtKsIf3PrmZisy34GCmWsR1K0A3cNkLJ8Ge1xZxnC2hFtu004g89a/XPpFuRggTl2bksre7pw1uAjUTS/MhhQ1amWKrD+CzczzhvngW/Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mXRtyx/E3CVxLSmZMQMX2FygwE1h1HNUu5yMRzCrFuM=;
- b=ZzHF5kyS0dadrq/fb53kzJ11i7D8BmdoWHP8z3vwzNzUq2gP71sYd3+f8qHK/2LSAJ1sgL6MWBM4d9TalJqLmxOrkfsvijhas0QgoLaR4SmSQM9xh4NCXETEilkQYiNeXB6SX/LWmhrQWdfcb5fe7zT2M9OIMz2/hJXaF8/S+pY4HL5yReYeTNdtnV0V9rtvAQj0vuH+t7a3gCGWqDukb602c7NmaUVkNYd7xzm7NqevjlyD8culEQ6ijmgkYvm8hQOEpjEGJpSyigpUlDwmN5zbdtQxfhM/ZSHFXW/Yy6FlRw1FmYsEHamuPvzQ35joV/65+xqlNjTdNl7skR+y/Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mXRtyx/E3CVxLSmZMQMX2FygwE1h1HNUu5yMRzCrFuM=;
- b=YRpe3HLrKTDaknsqIBqqSqjQShILR5v8cSeIdqZE4rYzaTMYhNFqysM8AQ66Jr64vOmXymwNeThfVflVc+YyU/9ShfGKyLpnqDmJVZv0rztyQD6wE4uXTo9znrfz4QS616dynHpcTiFbGTLImuIi5RatR9UHXqfVUr+8mH/4klrZlq+XhRUcFYJTfSvE6Oc5x7fvcJXBKRLR+GJXgQgfuMNd5ISVozsDZGd2MPXK2d9p3w6ljA8n0IDKfWKkpb6rBv7g8Vt/HTC0EEXjTZUu+8DUp1gfMyxPvy2NgehCkuvy6uGR0G2P+YELwvTFBRc51hgQ4CtfCrO7rj7RPkgDpQ==
-Received: from IA1PR12MB8405.namprd12.prod.outlook.com (2603:10b6:208:3d8::10)
- by SJ2PR12MB9138.namprd12.prod.outlook.com (2603:10b6:a03:565::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.17; Wed, 7 Feb
- 2024 16:52:24 +0000
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB5549.namprd12.prod.outlook.com (2603:10b6:5:209::13)
- by IA1PR12MB8405.namprd12.prod.outlook.com (2603:10b6:208:3d8::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.13; Wed, 7 Feb
- 2024 16:52:22 +0000
-Received: from DM6PR12MB5549.namprd12.prod.outlook.com
- ([fe80::c444:5cde:d19a:c73e]) by DM6PR12MB5549.namprd12.prod.outlook.com
- ([fe80::c444:5cde:d19a:c73e%7]) with mapi id 15.20.7270.016; Wed, 7 Feb 2024
- 16:52:22 +0000
-Message-ID: <256ad499-ae45-4b0e-a61d-2cd97fdc82a0@nvidia.com>
-Date: Wed, 7 Feb 2024 18:52:20 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 9/9] iommufd/iova_bitmap: Consider page offset for the
- pages to be pinned
-Content-Language: en-US
-To: Joao Martins <joao.m.martins@oracle.com>, iommu@lists.linux.dev
-Cc: Jason Gunthorpe <jgg@nvidia.com>, Kevin Tian <kevin.tian@intel.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Lu Baolu <baolu.lu@linux.intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-References: <20240202133415.23819-1-joao.m.martins@oracle.com>
- <20240202133415.23819-10-joao.m.martins@oracle.com>
-From: Avihai Horon <avihaih@nvidia.com>
-In-Reply-To: <20240202133415.23819-10-joao.m.martins@oracle.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO0P123CA0015.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:354::12) To DM6PR12MB5549.namprd12.prod.outlook.com
- (2603:10b6:5:209::13)
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=soleen.com header.i=@soleen.com header.b="IJlxrJ5f"
+Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-604a184703bso1086407b3.3
+        for <iommu@lists.linux.dev>; Wed, 07 Feb 2024 09:41:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen.com; s=google; t=1707327665; x=1707932465; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=si3iSYQzW/wS10JKxA6PCTvsO4f4p9drxSnRwVUScZU=;
+        b=IJlxrJ5fRYpbhvHQsePmeudcV08XSyz134sq4C4MQ416rNB99/iQIK4i18mstXjo36
+         xMfjEOmwOCYwMIOtgOcXILBacfw3D2muGyTYB2BKFwWhukNCwv+3/yw3aM4gY3kGHM/S
+         ku36rKthjGsl9sSS1qaEQiZDqXaCPeGsyniA5CIBMdmDiFGD13Bedf+CSz3u2kd9EyQP
+         oKeEXbI1UenS1dAi7F7b//5hNjdqf55F5NVu2K/MrdhIO/uhh86fsKxBeX4qaYpgyDG3
+         wgklFtPklTOZm8aiH2OjrVITryLJBcCKgk0fmxNQqbzYBSN/wbftJeugvDobHER/8LQ/
+         KdGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707327665; x=1707932465;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=si3iSYQzW/wS10JKxA6PCTvsO4f4p9drxSnRwVUScZU=;
+        b=AI1dbaSFW+Ob8rQJeW7q/EqUXEysN2+GhlTwmVzXA9yDo3u6RCY/GUiMmeL2x1mmfI
+         9wxvUTgDy+M3xzpZP0SjuxoHahMuuziA4UbJQLxLidOblaX3srXftPn0DEwR8u1uyUtz
+         s9URmXe9x+YjUtw742b4Yd2fnqK+11ALSOGoXoTBHuQGkBwYxeu2q+BoSmD/l3ygdFSf
+         yrcUcUqUqyk03u9VJ/wOcnRWhRZbYDwLZvGpFi+ooBF3jzJsZN+2ZUPBK3NpBNcrQz2a
+         qLVZ6TIH6/1hT/VDMFVVe6RSxgFTtyjsroepJqXmiVdmY08i4NKScJMSERfW2NKzkinj
+         2juw==
+X-Forwarded-Encrypted: i=1; AJvYcCU3gDvNEWegy7HYXktDiajqedG2oqxuyL3H/fWoyYIKvXmodhZtpZNiUaDkyvzhCkaLvJrbsX99aehqAPF43c95jqJzfis=
+X-Gm-Message-State: AOJu0Yw05CQKDIt9/V9RR71XMteY4tZVI/vo+FWhzw78RzyB12vSP94B
+	jHbBM4/+ZTLk3CfVi883EnHGTpgQk6mB4902AN4V2VpE5ZWLoj/PsDLmGdYCxMA=
+X-Google-Smtp-Source: AGHT+IEEHU0Zq486UjgccXih/doHmjMJ7ii4hv+46i8KhFxxFLmJqhnzWQ3qz8k37AV1xp4vGAJu6A==
+X-Received: by 2002:a0d:d641:0:b0:604:9fd4:a0ec with SMTP id y62-20020a0dd641000000b006049fd4a0ecmr668771ywd.5.1707327665531;
+        Wed, 07 Feb 2024 09:41:05 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUkpA1e8or7NcUr/WsWjrzjdXlKnYP7Brox9OXywH4gDbvfn48o3nQvHRI3pVbQX4O+aXkOe6P1Hn3x8IUM5XVB16c5XA7JXuzZH5fDUuhC3U9N1bfEbkfjgV7/xqboIkaeaOm372F/MkZZVEq0wEc2DJuJkyXvpBTbqVylv+rD5YWo0/G+Kg3OD5182kxWb9kzCZ+UE/n0vaD+CRG2C1kuzz4SmrQ6NdqQbHPuKYn6WxVgQS1Scls5HHdhjkF410H1Jnetb2wUH9Vej4DTNp8scc0RM4g+s3dGiuedxcYwU/O4lWzNLDnUo/WA9DCIOYKmjzvnmxeBED3dOwxSJ7FMF3P7X+3ERyu7sWGAfJMo4dSW5siDWi6HZiZ5MqA9leEV73ZV1Xm1wucVQ9wsQHZulJm4UYSoAVTYaQ9clHXTJ+boA8TvSi+pQFaIkTmzILrZcCnP/v9+gZF2G3b2d2KFGmqYSgG0gGaeKeptMhY5zBZ5TXiR5vMzoVLgPLdposs2r8L4pNbOEWF0zi6izX845ny9/Y8ba709mNUr9BsTXTdpXOH32jdwZUB1rRUPT4dFPtw6nyl8BmXWI3DBiZnpBu47RgCKYnZfBSXFi2q0ZTfGpY6vkE0+pNUelxzhMwP9YImd8mz8ORz8gfk0sj2DMsm151dgQmX/uC9RcMuoN0PSwo42yRz7KspGOG5eic/E2f2nSxwgMyWgDE8l4BZ6AqGYqlwpCJ66J1Li+1ikKsc722qVzr+fdFigDGJDZehHFCM8B1EdQjx8ub/jH9/P26lDifl1VjFAc3AA4Kvvsyo6yhiOJofANrUTNPO6SqS0jzDMXufYMQZIoY+HTiBjvj6aFjyMPao63IIQYiOrKr6uAeYBxKTyEUYAz6+FQVqHMG28i+uK+/VCIFl4wemd2x3yQ34RfasOYy5M2vSNaEUDOn3DeO3cOzE+rNZYkpbwNh
+ uQLZgO5OgShpDB5RC7nx4T4vJMHBLV4gdTrXKpcq5xKTKPg4L5nfJnheTA51MSe4dZHDfknxqft58Yp2qBaw3tvo3OmilhNVPPJyw5F7OKhNnu0H7PXSEV9GbfUQKNfMuv2lOfWpHHyZl+skgBoEfMVKO2/jKOJPnWm8ioObQVd6L2344T1EtRFasW0zYPwG9TQRQE+RZfpHFZr/v5NAy7nVe2HWfQmZ+TNHgtBJ8saOFbD+lqsTZ7loaKSaE51S/rACmqjiUEXw9S+tAJKyFQ8s6HaQikjgoPGoTP71vIid3a11OqK/EgMvScjkeqG0vU9tuvtXKomcd+gn/P3WY+qXKHpd9ClUllsbc/g4f39izeoO+NuBgrOyc8DAKyHdSA7OvsYgwTXHlopChDAFWRMic7m+I6ke8MGRJUTc5D9/kmWyxIE8uXkDBqWdSKuVjeQqEFojdrrbHmALXwMRaHOqgrUm+TD21Sq/eQwjWSfH+Z
+Received: from soleen.c.googlers.com.com (249.240.85.34.bc.googleusercontent.com. [34.85.240.249])
+        by smtp.gmail.com with ESMTPSA id e10-20020a37db0a000000b007854018044bsm696310qki.134.2024.02.07.09.41.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Feb 2024 09:41:05 -0800 (PST)
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+To: akpm@linux-foundation.org,
+	alim.akhtar@samsung.com,
+	alyssa@rosenzweig.io,
+	asahi@lists.linux.dev,
+	baolu.lu@linux.intel.com,
+	bhelgaas@google.com,
+	cgroups@vger.kernel.org,
+	corbet@lwn.net,
+	david@redhat.com,
+	dwmw2@infradead.org,
+	hannes@cmpxchg.org,
+	heiko@sntech.de,
+	iommu@lists.linux.dev,
+	jernej.skrabec@gmail.com,
+	jonathanh@nvidia.com,
+	joro@8bytes.org,
+	krzysztof.kozlowski@linaro.org,
+	linux-doc@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org,
+	lizefan.x@bytedance.com,
+	marcan@marcan.st,
+	mhiramat@kernel.org,
+	m.szyprowski@samsung.com,
+	pasha.tatashin@soleen.com,
+	paulmck@kernel.org,
+	rdunlap@infradead.org,
+	robin.murphy@arm.com,
+	samuel@sholland.org,
+	suravee.suthikulpanit@amd.com,
+	sven@svenpeter.dev,
+	thierry.reding@gmail.com,
+	tj@kernel.org,
+	tomas.mudrunka@gmail.com,
+	vdumpa@nvidia.com,
+	wens@csie.org,
+	will@kernel.org,
+	yu-cheng.yu@intel.com,
+	rientjes@google.com,
+	bagasdotme@gmail.com,
+	mkoutny@suse.com
+Subject: [PATCH v4 00/10] IOMMU memory observability
+Date: Wed,  7 Feb 2024 17:40:52 +0000
+Message-ID: <20240207174102.1486130-1-pasha.tatashin@soleen.com>
+X-Mailer: git-send-email 2.43.0.594.gd9cf4e227d-goog
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic:
-	DM6PR12MB5549:EE_|IA1PR12MB8405:EE_|SJ2PR12MB9138:EE_
-X-MS-Office365-Filtering-Correlation-Id: 17eaf4bc-fb0a-4542-55b2-08dc27fd27a5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	vlRadj9fgbUPOYzQvu/PHv38uiTxX6JYs1r8c/NddaJK71UXsWuCE4I+N5sCTIwJ3eU7kPEAqa8hd7ZzBE1zNxrWKjwhTGLALlygKtUNRrnNv72J4fHVwErHyJxJeOcixMm5wZyZ27mzRW65Z616dPiCymoMM/jiZjvkDu1QtOmQRieU7MwEfi3HMjzyY0QqPAF4/RGwQm6Je4t3Gig1BLPatiqimNK7zCqm19wQxL+vHWQA8KUJp2VI/AH/J3gpNbrdQTv5VSteTWdVCx5wahpeRJKgXITEBKgjpTCldJBKdU6Yc5r06V2WzEfThhfgYPcb1RlSi5++OCo3MiRxBWFUOhTSMt8KRmernupJyOjUUD0fXZ093/ik0AoICoHkJx+vQysN3Uag8ruk+ckUtgy4valhAsUnajLjl0TL8PpP3v6g41oTb8bwt6jtdPkekxQvG7ht0aHRuy06lxD47/VYMpS3gMnHFSeAi6F5YflKLh37RUTISF12CwqAsC6zkVG3dQjjcPSgj3N8L2SMkDtm2INlajTsvblWaeYlqQUnA+TgMRxO5KVvhKOVYi7HarGyyDiKlChabW75OshzXS24iP8Hobcy0DBSDpwSIEf+4xWLjWdlWP59vyveKDklxAOZP/llvWEy+H0g83L67g==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:IA1PR12MB8405.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(376002)(136003)(366004)(396003)(230273577357003)(230922051799003)(1800799012)(64100799003)(186009)(451199024)(54906003)(41300700001)(2906002)(316002)(36756003)(8936002)(6486002)(4326008)(8676002)(66476007)(66946007)(66556008)(53546011)(5660300002)(31696002)(86362001)(2616005)(478600001)(38100700002)(4744005)(6506007)(6512007)(26005)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NnhzdGtoSGowamx1TFdpVDE1UHg0T2hMb0dOcDNabFZOUGpZRUh3V2lNZWFW?=
- =?utf-8?B?WHdVRytRcGhQUmgvNTUxbnF6eWhmZmZ1Umd0Q24xTmdDbk9PT1lEL1F0VE5P?=
- =?utf-8?B?ZGoyMTlzWkZCVm5laW0xNHFNWmgxVit2UzErQ0dJSVQxaVVadkplRC9pYVJy?=
- =?utf-8?B?eWxMdWVrNjhTQmV4bThNZ0ZxcCtxUkVnM3pKZ0JuRzZxT0paWlp1U2kwWTQv?=
- =?utf-8?B?OW1DZ2VPMzQ2YXl1dzgrRWdMaEV0WUJGYTJuQk1MbTlEazIrMnEwZ2g1RS8r?=
- =?utf-8?B?azdxaE1hbVJNOXNoQmw2UDI5eVpJQ0FJa1lTQmR5QjhyUjdBNlV2Q3NnRnNl?=
- =?utf-8?B?U2trQ1Q5cHVOVStHbm5MYUNWclROMnlCWXIxaU5mUXBhZDNxdjB5UEtld0Yw?=
- =?utf-8?B?LzYzQ2t5OFJ1bjUxeFBhR0VKLy9Rc0FydWZvMmdwWkRvdEZ1Q0pyckpEdC9V?=
- =?utf-8?B?R2Y3Sk5uaE9RTzAvWmpLWVFlOHd4ZituanhKQkNjb0hXbU5TWmlQM0M5TzhT?=
- =?utf-8?B?eVFXYlZtTFE1NksrVVhGQWp4cHpRU09lYUdPdWVPOWw5OWpEUHJCemVmUkNu?=
- =?utf-8?B?ektLN3lsOEpueTFpT0ZoM2FlYXhDYmlLVFZpMnNwWnB1VTJ2WGp5R2todVJk?=
- =?utf-8?B?eTNxSWF2Z3Q3eVpSeUgxZ2hleFFkU2tkWTRJWXMxMUpONEx6NnVDR2RGbW9m?=
- =?utf-8?B?VzhUN3k3VWtadVBoa0RrODVTTEw1MGlUWWFCRC9qeHdoWTZ5ZnFjWWJ5YlJz?=
- =?utf-8?B?aDg2MVlRdGlGazNIRWtCTHJpMy9WZUhnLzh6ZHBLWGhBd0lSdHFSVzUxam1l?=
- =?utf-8?B?b2RJYkZyVTVvK2V0VWhMdmM0blZTM1V2L3JIZTA3VzBNeEZLOEE1Ny9YUXo4?=
- =?utf-8?B?OVRCb0FCbFJWb1o1NWs2eG1EYXhEcmdWamtwSHhRODZib0QxSXJoSUljaWQ5?=
- =?utf-8?B?RVpFUXljZDhRVDdkOHY3YUd6UGhTak1DTmVPbXVaSlV6cnlJbHE4YnlKNUdF?=
- =?utf-8?B?bkpWM2I3Q2JFVjNqSU5PR1M0WFBmbnRKakxoejg3YTN6ZS81Nk5IWi9kdlVm?=
- =?utf-8?B?RDV6cGlIOVJDMnVscFExcUpvU1RvK1kybUovUjFaMkp4RVhzTnNETkJtbWxL?=
- =?utf-8?B?bjhwdk8ybEFOV1F6NFAvcHE2VklNcXM0TWJ1VnB3c2o3MkZnVWJRYlNHd1FE?=
- =?utf-8?B?eFJLK2VtNFdDQ2J5OEplWWVRWFUvczRoYkJyWHMrVWxlMGQ0eU52MFB5Q2kw?=
- =?utf-8?B?YzRISWtlc3NmZXRGUk16MHgxc0cxeTNaVmJwamxuRmlTclZJd2VrWTJuc0o4?=
- =?utf-8?B?SDJNVnZRLzRFTFVSZGRLRmVIMjJNUy9sWFNneFhaa2E2U2VVeHowY1l0R0F5?=
- =?utf-8?B?YUd2cFg1K1d5Y24wbFB4RzhnM2xTNURsdDBLQTliRHpwdUpSK3hubGxncXFT?=
- =?utf-8?B?SDJ3VG9yY1dXbXlNdkRjdng5SFp0QnJpYnZoZUZ4akFBUUhEVW1XcUJZRXFI?=
- =?utf-8?B?TTYwTmJoL1FHUlk4cUtkNjNVdkdLTmFPcndrZnNCNkF1SmIxUHdEaC8yZXlp?=
- =?utf-8?B?Ly9Wd2RXVE1Fc25GeGFXNzk1R2I1MW40NnFEVkhhelVpRldQTGlMZmo4RjRV?=
- =?utf-8?B?R1AycThrZUx0R2YvcVAzY0NhRHBGMGhFVzZMZnBUZzM4azF4QngvUGJCcGhm?=
- =?utf-8?B?Sk9YTEhhOHhDZFZVRkcvNkFaY05mZTJtVGJMRE1IbXRsdlRIY1BvMXlJR0tq?=
- =?utf-8?B?NjUrN2RJMDRZSUhqZG9mOTdYVGFVZVVnMkxWMUl6S2g3R2o4dFZaa1k1b21M?=
- =?utf-8?B?TUV1VnFuYWFOQzc3SCtsT20vRzhmQ0h2eThFc2ZTL0hxKzR6cHE0QUtxMzJD?=
- =?utf-8?B?ZzZLYjZZN1FKT0pzVmJCQ1doVWJtQUFWS285Z2xaZlVUYnI1NzgxcWc3b05B?=
- =?utf-8?B?VXYrd3dmalRjN3ZSNnl0SUQxUHYwUXNVbnNQemxWMFdqWktrMHZIWVVJM1lq?=
- =?utf-8?B?UXVJb2ZZeU5HYlJLLzY1eG1IYkl0aHpwVEY0bUthenpSVmZybjRqWWt5aGxE?=
- =?utf-8?B?Q2o1eG9vS2ZkNTlsa2ltdmdzbFV3bVdvVDBQM2RCK3Z5NnljaFRLRlF4Wkc5?=
- =?utf-8?Q?yFbRqshwRO6OTvOFsNiqXdiRw?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 17eaf4bc-fb0a-4542-55b2-08dc27fd27a5
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB5549.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2024 16:52:22.7430
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xNvCVY4GYSU8YIFB4LRXy6Tedn9RrEetMbuAES/dvsMulO4l5Qz0/TEnKfMLg6f8TeJJ6sZHU94SGArcfGeSPw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB9138
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
+----------------------------------------------------------------------
+Changelog
+----------------------------------------------------------------------
+v4:
+- Synced with v6.8-rc3 
+- Updated commit log for "iommu: account IOMMU allocated memory" as
+  suggested by Michal Koutný
+- Added more Acked-bys David Rientjes and Thierry Reding
+- Added Tested-by Bagas Sanjaya.
 
-On 02/02/2024 15:34, Joao Martins wrote:
-> External email: Use caution opening links or attachments
->
->
-> For small bitmaps that aren't PAGE_SIZE aligned *and* that are less than
-> 512 pages in bitmap length, use an extra page to be able to cover the
-> entire range e.g. [1M..3G] would be iterated more efficiently in a
-> single iteration, rather than two.
->
-> Fixes: b058ea3ab5af ("vfio/iova_bitmap: refactor iova_bitmap_set() to better handle page boundaries")
-> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+v3:
+- Sync with v6.7-rc7
+- Addressed comments from David Rientjes: s/pages/page/, added
+  unlikely() into the branches, expanded comment for
+  iommu_free_pages_list().
+- Added Acked-bys: David Rientjes
 
-Tested-by: Avihai Horon <avihaih@nvidia.com>
+v2:
+- Added Reviewed-by Janne Grunau
+- Sync with 6.7.0-rc3
+- Separated form the series patches:
+vhost-vdpa: account iommu allocations
+https://lore.kernel.org/all/20231130200447.2319543-1-pasha.tatashin@soleen.com
+vfio: account iommu allocations
+https://lore.kernel.org/all/20231130200900.2320829-1-pasha.tatashin@soleen.com
+as suggested by Jason Gunthorpe
+- Fixed SPARC build issue detected by kernel test robot
+- Drop the following patches as they do account iommu page tables:
+iommu/dma: use page allocation function provided by iommu-pages.h
+iommu/fsl: use page allocation function provided by iommu-pages.h
+iommu/iommufd: use page allocation function provided by iommu-pages.h
+as suggested by Robin Murphy. These patches are not related to IOMMU
+page tables. We might need to do a separate work to support DMA
+observability.
+- Remove support iommu/io-pgtable-arm-v7s as the 2nd level pages are
+under a page size, thanks Robin Murphy for pointing this out.
+
+----------------------------------------------------------------------
+Description
+----------------------------------------------------------------------
+IOMMU subsystem may contain state that is in gigabytes. Majority of that
+state is iommu page tables. Yet, there is currently, no way to observe
+how much memory is actually used by the iommu subsystem.
+
+This patch series solves this problem by adding both observability to
+all pages that are allocated by IOMMU, and also accountability, so
+admins can limit the amount if via cgroups.
+
+The system-wide observability is using /proc/meminfo:
+SecPageTables:    438176 kB
+
+Contains IOMMU and KVM memory.
+
+Per-node observability:
+/sys/devices/system/node/nodeN/meminfo
+Node N SecPageTables:    422204 kB
+
+Contains IOMMU and KVM memory in the given NUMA node.
+
+Per-node IOMMU only observability:
+/sys/devices/system/node/nodeN/vmstat
+nr_iommu_pages 105555
+
+Contains number of pages IOMMU allocated in the given node.
+
+Accountability: using sec_pagetables cgroup-v2 memory.stat entry.
+
+With the change, iova_stress[1] stops as limit is reached:
+
+$ ./iova_stress
+iova space:     0T      free memory:   497G
+iova space:     1T      free memory:   495G
+iova space:     2T      free memory:   493G
+iova space:     3T      free memory:   491G
+
+stops as limit is reached.
+
+This series encorporates suggestions that came from the discussion
+at LPC [2].
+----------------------------------------------------------------------
+[1] https://github.com/soleen/iova_stress
+[2] https://lpc.events/event/17/contributions/1466
+----------------------------------------------------------------------
+Previous versions
+v1: https://lore.kernel.org/all/20231128204938.1453583-1-pasha.tatashin@soleen.com
+v2: https://lore.kernel.org/linux-mm/20231130201504.2322355-1-pasha.tatashin@soleen.com
+v3: https://lore.kernel.org/all/20231226200205.562565-1-pasha.tatashin@soleen.com
+----------------------------------------------------------------------
+
+Pasha Tatashin (10):
+  iommu/vt-d: add wrapper functions for page allocations
+  iommu/amd: use page allocation function provided by iommu-pages.h
+  iommu/io-pgtable-arm: use page allocation function provided by
+    iommu-pages.h
+  iommu/io-pgtable-dart: use page allocation function provided by
+    iommu-pages.h
+  iommu/exynos: use page allocation function provided by iommu-pages.h
+  iommu/rockchip: use page allocation function provided by iommu-pages.h
+  iommu/sun50i: use page allocation function provided by iommu-pages.h
+  iommu/tegra-smmu: use page allocation function provided by
+    iommu-pages.h
+  iommu: observability of the IOMMU allocations
+  iommu: account IOMMU allocated memory
+
+ Documentation/admin-guide/cgroup-v2.rst |   2 +-
+ Documentation/filesystems/proc.rst      |   4 +-
+ drivers/iommu/amd/amd_iommu.h           |   8 -
+ drivers/iommu/amd/init.c                |  91 +++++----
+ drivers/iommu/amd/io_pgtable.c          |  13 +-
+ drivers/iommu/amd/io_pgtable_v2.c       |  20 +-
+ drivers/iommu/amd/iommu.c               |  13 +-
+ drivers/iommu/exynos-iommu.c            |  14 +-
+ drivers/iommu/intel/dmar.c              |  10 +-
+ drivers/iommu/intel/iommu.c             |  47 ++---
+ drivers/iommu/intel/iommu.h             |   2 -
+ drivers/iommu/intel/irq_remapping.c     |  10 +-
+ drivers/iommu/intel/pasid.c             |  12 +-
+ drivers/iommu/intel/svm.c               |   7 +-
+ drivers/iommu/io-pgtable-arm.c          |  15 +-
+ drivers/iommu/io-pgtable-dart.c         |  37 ++--
+ drivers/iommu/iommu-pages.h             | 236 ++++++++++++++++++++++++
+ drivers/iommu/rockchip-iommu.c          |  14 +-
+ drivers/iommu/sun50i-iommu.c            |   7 +-
+ drivers/iommu/tegra-smmu.c              |  18 +-
+ include/linux/mmzone.h                  |   5 +-
+ mm/vmstat.c                             |   3 +
+ 22 files changed, 397 insertions(+), 191 deletions(-)
+ create mode 100644 drivers/iommu/iommu-pages.h
+
+-- 
+2.43.0.594.gd9cf4e227d-goog
 
