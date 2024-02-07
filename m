@@ -1,114 +1,104 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E92657CF24;
-	Wed,  7 Feb 2024 14:27:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84D837A713
+	for <iommu@lists.linux.dev>; Wed,  7 Feb 2024 14:38:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707316026; cv=none; b=mvZZZTotqZetveKzdvn8mKX8rFpG+WYNj4+rrkOSgdpq/max1UGbmpJLjPAh/hp2xQu8Wr3xszx37B9WrMf9i8b7P4OUF8KKjo9SROaDxYW7yKCqIZBxuHEIUrHquD5ESrWy0XuAOhrqqnF9odHPEdAtnHSepPdCVwCsqR96a1M=
+	t=1707316713; cv=none; b=n0sdV3On0gfi7RqIMyP5HBdto6ckH9cvNMe3wfrBv1qhyFxtJzSYlta88VKgGdnRf/Z/PJqHf8/s/ZwZgl34zucHeSv4ATMSDJ+NIrrN+ZoM3PB3HH1ZQigkIthReIX7MqKHe8jVFNBL165azROVHxsPvHzppdKtPPKKHVR4ooE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707316026; c=relaxed/simple;
-	bh=2RU6ecwvwpj7XkTwgh+rq7eFoMgidQfwzGpuxMhjwCU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=cLfYqCzdEhDsyfbp+kmNYxgGQhktnM8YFF1ykZAzTxb//9ZJu+8l9r6bzOUTCsuIrrPnUc/5cA68kdfUe1ke+eZlgF0O2eTn9mInYX7IicRslS5xh41yI8/+nnNnp4be53GQ89SIvtvMDH8joDLuSAbMxN9WM4sKsHSB27wVfJo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=lI5a/wVj; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1707316713; c=relaxed/simple;
+	bh=Y42qZrTeT1zrticJCI2eB78hvcGQgoC9z0KtHukNgEk=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=Gu5nnZwBWdaT1wE0dSkSShDAvED+04Bu880XNlVq67iB9TQ53T6xSrLa35hRvZxs6t7ACOsuHeWBguXtx/cGnX3BZ5Cd3h2CSOnJnB0oXoBZzqaQL6DF4Wim1KoNG0zWZROXNmq48Y25mRr4JyEGtIaojk2gEIqPeb57+cTMpE0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZgRvyHMQ; arc=none smtp.client-ip=209.85.218.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="lI5a/wVj"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 417B9FXi003395;
-	Wed, 7 Feb 2024 14:26:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=56dI8angvNGkFV+K065e/Uxx2IJmqo4mMZ34YBNZr30=; b=lI
-	5a/wVjbqCPP96LWur9ehj7i41QxTOGGdQDnEAI1r56P1TZYIp1+ozoVNVePt2g5F
-	aWNKF+q8NSF2XTlfZedvV2rVw99j62NRheN14UNtVCOXlFcqRr/gIX2lKClieIMh
-	hhf1QkFkkOIblW/06Dj9Z3dWiD7fzU+RTGHxgut5Abnf9lxsNKWsvNUPIAa+FhYw
-	73zIFO1Z7Udu2n0dbI4Yz/KpcpkL8644IoJqWYTrmUw22BSw+arV8ZKQ8x36cd8Q
-	bqrROU0Xw2zIQNf0ZNMc8pGL209HTPfpF9caHaGthvKqe8K4pMLbeEREwUxZ71DV
-	HDOHHbG4jCng+yjmbzEA==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3w46r80mka-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 07 Feb 2024 14:26:50 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 417EQo2P029635
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 7 Feb 2024 14:26:50 GMT
-Received: from [10.216.9.205] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Wed, 7 Feb
- 2024 06:26:47 -0800
-Message-ID: <9ba9c4fa-3fa9-c6c4-ce77-0c6cd5e23680@quicinc.com>
-Date: Wed, 7 Feb 2024 19:56:25 +0530
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZgRvyHMQ"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a2a17f3217aso86098366b.2
+        for <iommu@lists.linux.dev>; Wed, 07 Feb 2024 06:38:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1707316709; x=1707921509; darn=lists.linux.dev;
+        h=message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=lE++2qVcHW+CEBtsbdN8eH8qiiSu+9Mbj56gyVDwMac=;
+        b=ZgRvyHMQy+0eVARmsLZs3g2LApjXozy2TVrautuWL6umzmMl/qvyPxa+NrFInWrebv
+         C15Oe4RJXZbsXIQqDv6GhKoS/qFQFPELtTMpv2NywhstWfhdxEJw01nY4b+rRJxk9JWW
+         p8+Eu0+yxbjTJO3Rk+9WhvMFNWP7VASsC6N970gEeNIWHJGUOYnbNJnwaIE2evnEksQ4
+         0k+eaLmdjo6KhRY5KQInIbuqrNF+rzoOIFrI6wqfDUtyMBVS+GpjQxgbDiGV5KKcAqQG
+         kNaI2jfSUgymYI9XB12Wc4wfGBH6Za+jiNUH4rCswOHzkK7UwCHeNB+oIluREFs61onX
+         Rqlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707316709; x=1707921509;
+        h=message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=lE++2qVcHW+CEBtsbdN8eH8qiiSu+9Mbj56gyVDwMac=;
+        b=kTKbZp4Z/vhEt81A337Xvy033t+edel5CcpZGget9KcFV704Pa/cRek7mvliI7Kpy3
+         1UIKIP3qu+/DoKD0iJHvBXAUUGCLrE1amY4PUwzBDpgBppfk2deUBkxBO9aKDVC4B49A
+         z4CGtyGy7lpe6UwCKCJ7YYx+CjYCvhdh4Rt8Eaj3Tqh16QkGP0ttwxhky6A6aOqBYrer
+         KdJ+kDcMKyqFeIy4y+lASRjeV3TdHVG/2TuSMFSr+NIi/gCRgcvyCQbhFML3m+GiRkZv
+         bdIaQdwu/FCLQOEJjdecgtziYfeRpmKVJdDmSEzeWPAMc8FesiQBrURdgVU4YxeiZz1n
+         E2Eg==
+X-Gm-Message-State: AOJu0YzCzTu5PGziJuWY6ac28PqbdIrC0ylbxsDbqhWrCd1C70HwggJg
+	SH9LnUzRsQyMJGGxYz31tVQblgCOf9g3Cj8uO0iipOFq79UF61Rb
+X-Google-Smtp-Source: AGHT+IHZ/o2nyrH1w9/WKrRaDNSV5U88ds7/ilsdYSb4FQ5tw2TG25fyjXJ5DGd3biDOaR4ubXWj8Q==
+X-Received: by 2002:a17:906:1c5:b0:a35:103e:3614 with SMTP id 5-20020a17090601c500b00a35103e3614mr3841031ejj.52.1707316708889;
+        Wed, 07 Feb 2024 06:38:28 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCV1SGCkbFbH5np12iRMTSf3C23VaNyd1pFuBYbaAmdRdkAf7nHEAwZSaqxOWBF+hPrdUQunP/Th/RSqYO6stTgL9/XL6PoB08KvQruhpOOGgEDUM4vK/OtGz/ebYpuGnLUW4K432aGsSTX3ADljRzcFogfQUNj8mzlxV39Szh2T3A9bDoJAI1M2vAxWNRzR/JHpfnREjymvB0B/VuhOLvpEN9uB8IHL48zDAqxlFAfM4baOKxYFfMYmtnXECNQqGBNCpVgxOWeAepvc+Regj52iX2ez
+Received: from felia.fritz.box ([2a02:810d:7e40:14b0:81be:a476:88e2:db23])
+        by smtp.gmail.com with ESMTPSA id s12-20020a17090699cc00b00a35200615d7sm820909ejn.1.2024.02.07.06.38.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Feb 2024 06:38:28 -0800 (PST)
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To: Anshuman Khandual <anshuman.khandual@arm.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev
+Cc: kernel-janitors@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH] dma-contiguous: remove debug code to removed CONFIG_CMA_DEBUG
+Date: Wed,  7 Feb 2024 15:38:25 +0100
+Message-Id: <20240207143825.986-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH 1/1] iommu: Avoid races around default domain allocations
-To: Jason Gunthorpe <jgg@ziepe.ca>
-CC: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        "Robin
- Murphy" <robin.murphy@arm.com>,
-        Charan Teja Kalla
-	<quic_charante@quicinc.com>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-References: <e605b38a2d40b1e7589e10110c6d3ece35f6af4e.1705571894.git.quic_nprakash@quicinc.com>
- <139a9abe-75d8-3bda-3ec9-a14a493eb2a9@quicinc.com>
- <20240201162317.GI50608@ziepe.ca>
-Content-Language: en-US
-From: Nikhil V <quic_nprakash@quicinc.com>
-In-Reply-To: <20240201162317.GI50608@ziepe.ca>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: XS2JtNc24MCAbwrtdj1SJiyuNZV7xRJ9
-X-Proofpoint-ORIG-GUID: XS2JtNc24MCAbwrtdj1SJiyuNZV7xRJ9
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-07_05,2024-01-31_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=773
- spamscore=0 mlxscore=0 adultscore=0 malwarescore=0 bulkscore=0
- priorityscore=1501 suspectscore=0 lowpriorityscore=0 clxscore=1011
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2401310000 definitions=main-2402070107
 
+Commit acc2f3e42d4a ("mm/cma: drop CONFIG_CMA_DEBUG") removes the config
+CMA_DEBUG and the debug code in cma.c, but misses debug code in
+kernel/dma/contiguous.c.
 
+Remove this dead code from this removed config option.
 
-On 2/1/2024 9:53 PM, Jason Gunthorpe wrote:
-> On Mon, Jan 29, 2024 at 01:29:12PM +0530, Nikhil V wrote:
-> 
->> Gentle ping to have your valuable feedback. This fix is helping us
->> downstream without which we see a bunch of kernel crashes.
-> 
-> What are you expecting here? This was fixed in Linus's tree some time
-> ago now
-> 
-> Are you asking for the stable team to put something weird in 6.1? I
-> don't think they generally do that?
-> 
-> Jason
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+Andrew, please pick this minor clean-up patch of top of the commit above.
 
+ kernel/dma/contiguous.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-Hi @Jason,
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index f005c66f378c..055da410ac71 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -37,12 +37,6 @@
+ 
+ #define pr_fmt(fmt) "cma: " fmt
+ 
+-#ifdef CONFIG_CMA_DEBUG
+-#ifndef DEBUG
+-#  define DEBUG
+-#endif
+-#endif
+-
+ #include <asm/page.h>
+ 
+ #include <linux/memblock.h>
+-- 
+2.17.1
 
-Considering that the issue is reported on 6.1, which is an __LTS 
-kernel__, any suggestion to fix this issue cleanly would help us a lot. 
-Right thing here would have been propagating the changes from 6.6 (like 
-for any stability issue), but considering the intrusiveness of them, is 
-it even possible?
-
-Just to be open about reproducibility of the issue, a bunch of them are 
-reported, both internally and by customers.
-
-Thanks
-Nikhil V
