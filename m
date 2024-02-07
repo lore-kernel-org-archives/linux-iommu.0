@@ -1,223 +1,216 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4CF61B80F
-	for <iommu@lists.linux.dev>; Tue,  6 Feb 2024 20:58:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707253086; cv=fail; b=l+q1+1sscoi3IJPBtMiA/2Wq0fiYoA7ONOJkJ0jSEeHyr1xV2IEKzI7g+Q3MYH03/7etLlMvJZT+MP2FuKVW7cgw49ZGph+aJocu9FvUXm2unqf8V+FiJbztPtobrO86qJJ7W7X0e0zd25PpHSXLgKkrPgZgf4nniICIGcbQwJI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707253086; c=relaxed/simple;
-	bh=62Zar/1ABtJpj0vajVwKAYJkKQwKOEZUwemEbGwSIzg=;
-	h=Message-ID:Date:Subject:From:To:Cc:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=EN96wnEwnblg8HMNyECIai4zoFxDzmuP/P+EJdkQMiglqP06rhBCMPDFz9bBh6cTukL95GpJqA1Xb8AHwsKQvC4rGGRkefhSgD8FuzkizE9HPsvscdxHwNgNnii/GJE8oU+pf6kHKF6+jjSPZaZPNx4rNgQFYvRHyDDDmnVC4Vg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=fkHHh6mw; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=fpjG2Sjj; arc=fail smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D35CD27E
+	for <iommu@lists.linux.dev>; Wed,  7 Feb 2024 01:39:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707269950; cv=none; b=EfYarH71E6j2cWoyiAd77ET00M8tVQ/yrPinBl44AwNkytQyk8hqFKrVg40LfL4IzJNy1M8VeWAog/B39U77d7QKmcfIkBvb+200vIyA5W+jrEqKupBtWA/KQuvF2srk4EH23JthwzaRVqDCcp5+feP6Ie/TIg2IA+Qf8T5qtGU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707269950; c=relaxed/simple;
+	bh=6oaC1YUxCH9GQjn6gnonmhGsI7UoDOmJjPUCm9v5DgU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ipSoy2hKUB2hN0Gx0hg85y0CykaR/mizyp+pydIwicNFd21fNsyX7UvTIEh+FsPqIBuO4XRMmgTSow1TFV0Bt8KrBZEhuTJ6co/O1JTC1s1ZhLgeFAbnfT7n2Pm3ItETISouE2MEtVj7RSsg0KB1qTjhjJNxW3QbSB3d+VxhU+U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GnX8esHo; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="fkHHh6mw";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="fpjG2Sjj"
-Received: from pps.filterd (m0333520.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 416K6fm8020262;
-	Tue, 6 Feb 2024 20:57:53 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : from : to : cc : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2023-11-20;
- bh=bzrXVWdFwz/bG49n4fSaaLPwAlpQuKzFwdhxO78npCY=;
- b=fkHHh6mwqctIfuGICapIrcz4JMs2HTqu+AaW9k6+qzcY/RcnpDQMLPr5J3iCKiPzJ9lN
- tBOrnJj5Ng68KEncxBBdOli+ZmJQXXLMyV0WEfthgZEMDM/E/w3Lx/7CVaSo3wKbqp41
- M7NGUqVtwe7+wGiUmaEqYvKfXULPr0jz6t0he4l8qoWF3j8QA0WFN1h6HUPYVyGIYrll
- VLqcIWaVTumvce1Ntrfbh4vrpgITDxAjvta8lJGaHGG462Mc4na4okmwOiXHCLaKq19C
- S8Jyu6OPIE0HlHzy2yVtosVdtWBKKQ5O+mQdfegr5bcC6oXdQ0+QHkK2vpFCxtCycKJ0 HQ== 
-Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3w1dhdg2gk-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 06 Feb 2024 20:57:53 +0000
-Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 416K45O0038290;
-	Tue, 6 Feb 2024 20:57:52 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2100.outbound.protection.outlook.com [104.47.55.100])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3w1bx7yepc-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Tue, 06 Feb 2024 20:57:52 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cioMVEOvM12fHHA7HYhCMo4FnT4ePbZSZtpQuNlZuV1DEQH++L+dGZsn+HbXOes7wuU2WLL9fpzA4pxscHKRqwzNjT94KYKb6766At75+2lIATafVNzFktaCwVMAVVEAMzlh+GMYvlykt2pW8gulJ6LaXFlk9CiNnErfxU1b8Css6YVpF7aNeQX7o/qz6uppetGrO8FLgH5E7hXgj/hfH7Gc0gxr+Heah2gzTwBrSMrj2Sqa12j1oG9Sp1lnuKly576iD+23f24MwVpskyD/HkAmXToyjJypLAz7x6A8nBBdFBqg80DAgTswbk2T9uqtWA+hG6Q+ZcEeOLtcD4jyBg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bzrXVWdFwz/bG49n4fSaaLPwAlpQuKzFwdhxO78npCY=;
- b=h+XJnxUUZzh/nZ4btpAE4BW9ggxWd26LvURyvGI9/p5aIYYQh4I5BFhn40kCgY8f0ZWtuXUUJAjyofNE51VHIKB3N6wso6OmaoSL1CDSSGq0rj50bfZtS87xGllscK1JLGht77H4K+4Abt9LrKVqnHU702Ri2NeJPC7l2zVAyeqetJiXQMkEbxs3q1itH+kqYb4hJexRigt3Hs0mlyyIHb7eFwk5zLCpwkvpZ9vEsQTWjmCWcOnFhsrmAbP3SOAsY9rDmcEToJ7VWyQIMi+23O+nsvYovfvUl+MhI7kQ/9cMR+ncd44NeCTNI2ZLkRbhGzritofuciXMXzBrT9UVeA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bzrXVWdFwz/bG49n4fSaaLPwAlpQuKzFwdhxO78npCY=;
- b=fpjG2SjjcJESIyVl8A2uWHXpvPobf+S5Zh2bUumtlVFZTmqo2kAWDVfcNrSK+19Z235FZ2G2+3TWtsZewdStM+CQHj45PUGT0PZBY5a1yUZGbnaoRElKFWY53vjXziF5G0PJOAfw7yYrgJSgERq6ttYIm52N7/d2V4U62DxQlPU=
-Received: from PH0PR10MB5893.namprd10.prod.outlook.com (2603:10b6:510:149::11)
- by MW4PR10MB6395.namprd10.prod.outlook.com (2603:10b6:303:1ea::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7249.36; Tue, 6 Feb
- 2024 20:57:49 +0000
-Received: from PH0PR10MB5893.namprd10.prod.outlook.com
- ([fe80::b787:9523:eb1b:4413]) by PH0PR10MB5893.namprd10.prod.outlook.com
- ([fe80::b787:9523:eb1b:4413%7]) with mapi id 15.20.7249.035; Tue, 6 Feb 2024
- 20:57:45 +0000
-Message-ID: <c07f0734-f2c5-4110-8b6a-d2ba87e2cd6f@oracle.com>
-Date: Tue, 6 Feb 2024 20:57:40 +0000
-Subject: Re: [PATCH v1 0/9] iommufd/iova_bitmap: Bug fixes for IOMMU dirty
- tracking
-Content-Language: en-US
-From: Joao Martins <joao.m.martins@oracle.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Avihai Horon <avihaih@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-References: <20240202133415.23819-1-joao.m.martins@oracle.com>
- <20240206181333.GE10476@nvidia.com>
- <91aee5f5-82ce-476a-bb53-cc65c369db2c@oracle.com>
-In-Reply-To: <91aee5f5-82ce-476a-bb53-cc65c369db2c@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PAZP264CA0080.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:102:1fa::11) To PH0PR10MB5893.namprd10.prod.outlook.com
- (2603:10b6:510:149::11)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GnX8esHo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707269948; x=1738805948;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=6oaC1YUxCH9GQjn6gnonmhGsI7UoDOmJjPUCm9v5DgU=;
+  b=GnX8esHo2JnogYEanGc4UM+/kQpfi2YdjwhDhsMwh07VoEVBq7W9HQhz
+   553EYjRIfYZg048B9N2PTjYi7u9XNqVZYkTRn6xzsDs0VV1Y4ZapBCJFi
+   uO/GE8WbHUxf8f2iEJlj8MUNuQSXsbT7YELWZTpexWURDudwxRNb0jUYq
+   7grBQAHvm+PPMUIjApGGiiDVqdbVDtBc640hsdoKdPDdPqv+gMscuGy8d
+   d2Bq/mFEhdPGxFv8i5yRaEJmtrwoVIcqig+28AcKCcNw+WddfiOnuKw+8
+   FihEK0G+rv0IQIXNIUFvE+N3Zj9LokduuE+pq8ZBhKFdutvoQHgjvhOM+
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10976"; a="11533957"
+X-IronPort-AV: E=Sophos;i="6.05,248,1701158400"; 
+   d="scan'208";a="11533957"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2024 17:39:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,248,1701158400"; 
+   d="scan'208";a="1190525"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmviesa010.fm.intel.com with ESMTP; 06 Feb 2024 17:39:03 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Cc: Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Longfang Liu <liulongfang@huawei.com>,
+	Yan Zhao <yan.y.zhao@intel.com>,
+	Joel Granados <j.granados@samsung.com>,
+	iommu@lists.linux.dev,
+	kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v12 00/16] iommu: Prepare to deliver page faults to user space
+Date: Wed,  7 Feb 2024 09:33:09 +0800
+Message-Id: <20240207013325.95182-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR10MB5893:EE_|MW4PR10MB6395:EE_
-X-MS-Office365-Filtering-Correlation-Id: e9c0192f-15ff-4202-7577-08dc275644c4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 
-	HvYOLQDvsvVb/uzLpJp+wQDMnRALi2GDTGMClcJKwcBHemg+abp3BsX/FTGMSx1O1P/DXF1+kPTN56F2YfmsPzm6b3000gkSKFUJPehEhS5LOvlR1XSqURBoep/BQ6Rq8flB2fgglWP9/pbfY/pj2L/HYnGRmcUPkFyPptPTdvsgorsaydKH2+smVgWU4Qc4+fYwRalUiZoTMmts7LaWcnr5wrsbqYQuys/HkjonoVnY2aa8DlP8IFz7cOG03qH3trVInywuLs0g3g/FwimF5EkxAlsR3CxYMlWLaBgkJi3IiZnud74AsMnAhkS8lrQvNrjQs/2w52CSr4pcf9XMMS9iZ00I1wlxG5xkNMpHOW8dFuTCGzu3VfyrBTnKt+aZc/NEYNx7zoKzC24993Pq524FxXnqSt2dhD6bJlF7HjmO3I982660ElRy7PlAf6lgcRWlnkOwdIb09Yhbop7CQjA+wR03h2FqiQr1fG7vd9/jqx3bE+aXOLCBj7R/0I8ro+5mpuAT1qfSGE8DvWQnuegR9Z+yugefGQj1OfcqQaNX/+DItUhclphfF1gw7dkCrPkcfAe/Z0peuCTkKs+r6hesgIX0InIIssauEcDXIDo=
-X-Forefront-Antispam-Report: 
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB5893.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(376002)(136003)(396003)(366004)(346002)(230922051799003)(451199024)(186009)(64100799003)(1800799012)(31686004)(38100700002)(53546011)(6666004)(83380400001)(66899024)(41300700001)(31696002)(6506007)(2616005)(86362001)(6512007)(26005)(4326008)(8676002)(36756003)(8936002)(5660300002)(966005)(2906002)(6486002)(478600001)(316002)(66556008)(66476007)(6916009)(66946007)(54906003)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: 
-	=?utf-8?B?UitiM0hHbzFkTjI5bEU0TWozT1VXY0RmUUMwc1UxaS9kb3pKQTRLUWgxYm1Z?=
- =?utf-8?B?QlAwVHhhNlB1TW9IUHFJeTNWN0JCcXRvcjVRcWpHOUlJcmhHaVVWam44Qit5?=
- =?utf-8?B?SlZuRjB4ZEV4Z1c4azBHaTBUZCsrd2U4TmNNK05kUEl3Q2NUYWNXZ3VxaHg3?=
- =?utf-8?B?ZjM0cXJnRmUySlFZeCt5cUk0aHVTekdJZTdUenZjVDNhUnFkQzlYM2RHU0ZQ?=
- =?utf-8?B?cXNTY2V5blVpT0ZycU1uSm5sZllVN2Y1bk0wS3NySGFodHFvWTBSNittR3JZ?=
- =?utf-8?B?WXB5R2lSMWhTdm0wSWhBUzc2dGVqT0JIVDRSazd2Qk1HcSttaEJqd0dBZktv?=
- =?utf-8?B?RmxudndCbSt5c0EycUlUaXRGc0gzbEVFQWxweEt1emVGSmtZQUlyVlMxZHVC?=
- =?utf-8?B?Q2RBZFdLbEVzeEFFaHdBUjZ6aGtkOFc2Mi9HWlBPYUNRN3h1TnRVaHdhSGhp?=
- =?utf-8?B?cEZJeXZuL1F2dlM2azVOeUJyNnNEcEo1SVpveUx5d0J1dkVWSzc0ekMvejN5?=
- =?utf-8?B?cjFleUs2dGt0ckI3V2VocTJ6YmFDbVMvMzk5bmZ5ZlRJc1hwTEVERDl4ZDlV?=
- =?utf-8?B?N1hHWDd4TnBwUzRxWUtWTDdUeWE2TEZNQXZ5SmZVbUxrM0hOQWxYL3VRQThz?=
- =?utf-8?B?KzlKR29kVlRYblhNN3gwY1FqaE1FMVRZNkpqY20zclFJVUNrV3orUzhaei9Y?=
- =?utf-8?B?Nk5lUXVhelRLUFBLcE54NmUzVjdqS0p6SUJZc211SkJ0bUI4alN4ZVhFc3Iw?=
- =?utf-8?B?WTY5ZVVLdnkwZDk2dmFTWDhoZnRXQlpOMjQ3d29IeWx3WnZkWEtWY0FETy9a?=
- =?utf-8?B?LytORW5mTDg0d2k1cWU4TlJUcDYySHRIRUYwU3lSRVBGNGZBaldsZVNQV05V?=
- =?utf-8?B?S1MwUVpoTVNoQlkxalFyT2QwWjJsczIvVW9WZnBRanBKbllSdnF4RnNqTjc5?=
- =?utf-8?B?ZjJTSCtkV0xqem9MYUlGMDdScFdPSi9TcDZ6aU1qN29vTHI5NnVkblV6YXVu?=
- =?utf-8?B?ejJmdzJCS3FUY2V2dEh2RTBFZExjYnpVd0I4d3hxQjBvMkNMZzNROHNIaXBk?=
- =?utf-8?B?RVFDZHpUZUdoV2FTNnFwQms1NlhpQzdueGN5ZmdzMmdMdjRxLy9hcndpNXJ2?=
- =?utf-8?B?K3dwVnl4TnJNTzhTcDJkSkZNbEh1cnVBU3BJSFdwTmtUdEkycEppZEVtNXJp?=
- =?utf-8?B?TnZYMHJrcW1QYm41SG4zaVpEaEV2Vll6dUZFMHh3T0FzV1A0ZTVlTGNWcXI2?=
- =?utf-8?B?VzZMUTIrM2NqbkprbGxEMkd6N21RSWpLNmR6T0RMWFlPaWxYdmxTZHF1dWpp?=
- =?utf-8?B?UitZaDlTblpOLzAzV0hoMDY2ZUZCeUxHcU8yRGl6V2JiaG5YY1ZKZ3FaZGZj?=
- =?utf-8?B?WDI2SEhpRERBK3NxcHZQY2czVU5EK1ExNitzN1A4UlpqcE5WUmNXSmRScXhs?=
- =?utf-8?B?MmdEU21uYy9xNldrcmpnbmNtbWlTejlQZFA3ZExGNkUyRVUzMStzZFMxbS9H?=
- =?utf-8?B?MG13Y0tTaVlhM3cvUkZ3SHFFQnlwVFlXTi9ja1EvMlQrZmJjbUVHaXM1T1d0?=
- =?utf-8?B?eG85TFVBRmRpc3FTK3JEdzN2RWduM0RwT2ZOZGFvcUtHWC8xb2ZZSm0rNTBW?=
- =?utf-8?B?WTRmK0JWYTRjdmZjVTM1bEhvVGw1WHBTaXdkWHJDTnM5MzJFUTJicUhJM1JY?=
- =?utf-8?B?d1I1VVp3ZFgyMDhoU0xCV3BpRnNXZTlNdGpCV3FzVzVmdDJlUitsKytWV1oz?=
- =?utf-8?B?d0FxZVRkK3pCK1RnQVBXYTkzejR3eGNKeGZXRU01SzJScE1mbDR3T0J0SEh1?=
- =?utf-8?B?Q0JzQzdBWVpYcnN5T1p0ek00TmhpaTFia05NUTF3NEsydjIwcWVaemJ2RXNx?=
- =?utf-8?B?ZysyamRscEpZRDk0WFZzRzVTZTBsd2JzYmNydkdWTnd0ZlhzNUlTU3oxdXB6?=
- =?utf-8?B?YVBIa0Q0TzJwZzJnZ3l2WE1RV3F6dGEzRlNiOTFzVm1HRllFaDZMeFBQSzJ4?=
- =?utf-8?B?dVRZMDNpYWJsSXkxMCs3elZUUHQwdzdhYmpxOGRSSmpGOVphMUwzT1FZTzd3?=
- =?utf-8?B?eXJlTzJ2QlZtK3FaaTViSDZIRDVveXgyT1crYm12Q3JDcXB3NmIxYStndmhw?=
- =?utf-8?B?U09vdi92SkZaOUh5VFhMRTQyeGZGSkV4a0ZaZXJ3OFBmWG1zSXV6bWpEVTNh?=
- =?utf-8?B?WFE9PQ==?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
-	DBs/QERKM2Brd0RWeDf+rXvZlqnbGfk11pRH+YGzWjZdtGLxoF9dw4qBRf3fuUB8wDbhf4RUVJtnD9W6/15/O14eUtyiJBFxsSt9LYYheO/Piwd17GV4TZwNFbOxyifYVWs0hSvGW9zppJi17xu05kMbUCVeh5p8gKT/IQRscsxYXM23+ToNwrqTYPK/WLHJwbnUFmuG/54vxMxvurGcJw6kjKmAlI5CXK4OV/zjb417ZLCXGj1bTsPgBa9jwOhpmrVXiaDTCzFygtNzNIdbDLymRT+JO6vyegXTbB9RBCq8s3rF+nzSUKnbz9B7+LPULDanxaS6F2Iqb9xLhhvmT84ml97AwKxtgeTZ71FJemBoYwIfmczeJeNZe8N+tDnwMd4YQ/xnhe7yKLQvvspEu6i3W75fZflPMr8QZldkiygAs0yWWy5u4Y92fOFgYeqmr36qiL4iDJ9slqjQxiacnDMOgrQGi3qylsDF6ks02bwEifQl1zIqJjUd382rbtR8G6hBmnzDmJJIzxIL/d7fse3/yhIrXa0Khxbx92CFRdqp61xUkGYqbARwc35iX2AfO+UG4vh8Z7BkI5rxD5eOl5DfHbHmbBlsLakEaadupuM=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e9c0192f-15ff-4202-7577-08dc275644c4
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB5893.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2024 20:57:45.7036
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: p0t0d6AUTHzs+TySwQcft0g6chngGf4vDwc67iUOEkwx3j4f+BpYdOFbSQdqkIVDLKCEMJ1YtswCnWkmmHfS2IR0roc+es959S8LXzRyDDA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR10MB6395
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-06_14,2024-01-31_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0
- mlxlogscore=471 phishscore=0 spamscore=0 mlxscore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311290000 definitions=main-2402060146
-X-Proofpoint-GUID: m7-evC2u6ze5_5MrUbVQEkLqEE79WDLL
-X-Proofpoint-ORIG-GUID: m7-evC2u6ze5_5MrUbVQEkLqEE79WDLL
+Content-Transfer-Encoding: 8bit
 
-On 06/02/2024 18:32, Joao Martins wrote:
-> On 06/02/2024 18:13, Jason Gunthorpe wrote:
->> On Fri, Feb 02, 2024 at 01:34:06PM +0000, Joao Martins wrote:
->>
->>> I have a separate set of changes, that proved also instrumental in
->>> reproducing some of these corner cases in a more predictable manner but
->>> with IOMMU drivers instead, rather than IOMMUFD mock IOMMU driver...
->>> without relying on VF specific behaviour. Though, it relies on being
->>> able to map IOVAs as dirty. This is not included in this series, as I
->>> am not sure yet if such direction would make sense (outside of testing).
->>> Comments, appreciated.
->>
->> I would love to have a test suite that could drive real HW. I think
->> that would make a big improvement to iommu driver quality.
->>  
-> 
-> Ideally we would merge the selftests to use real hw domain rather than mock
-> domain, and skip what's not supported when hardware lacks. Specially as we add
-> more and more features (IOPF, DPT, nesting) and underlying testing, it seems the
-> most natural point of consolidation.
-> 
-> Dirty tracking is a little strange because one needs some sort of block/packet
-> I/O done to hit the path of having something allocated, which usually requires
-> some driver operating to mark things dirty plus page allocator luck in picking
-> the right pages. So the straightforward way to manipulate all this without any
-> of this complexity on real hardware is this is to "map as dirty" and check if
-> something is missing. It proved useful in these bugs as I couldn't reproduce
-> this by just using the thing (even sharing the same test as Avihai). In any
-> case, the gotcha is consuming a new perm bit.
-> 
->>> The selftests in this series (a large majority of the series changes)
->>> are meant to be kept in this order to be more clear in history that the
->>> selftests exercise a given fix added earlier in the series.
->>> The last patch is an efficiency improvement, but can act as workaround if
->>> the IOVA ranges are smaller than 64G, which is why it is placed last.
->>>
->>> [I think this should be targetted for -rc rather than -next]
->>
->> OK, I took it for -rc
->>
+When a user-managed page table is attached to an IOMMU, it is necessary
+to deliver IO page faults to user space so that they can be handled
+appropriately. One use case for this is nested translation, which is
+currently being discussed in the mailing list.
 
-I should note that, I have been testing this series on top of this patch:
+I have posted a RFC series [1] that describes the implementation of
+delivering page faults to user space through IOMMUFD. This series has
+received several comments on the IOMMU refactoring, which I am trying to
+address in this series.
 
-https://lore.kernel.org/linux-iommu/20240111073213.180020-1-baolu.lu@linux.intel.com/
+The major refactoring includes:
 
-.. because otherwise the selftests wouldn't run (though it is all fine in v6.7).
-But maybe that got resolved in some other way that I missed?
+- [PATCH 01 ~ 04] Move include/uapi/linux/iommu.h to
+  include/linux/iommu.h. Remove the unrecoverable fault data definition.
+- [PATCH 05 ~ 06] Remove iommu_[un]register_device_fault_handler().
+- [PATCH 07 ~ 10] Separate SVA and IOPF. Make IOPF a generic page fault
+  handling framework.
+- [PATCH 11 ~ 16] Improve iopf framework.
 
->> It is bit unfortunate that the number of huge pages needed to run the
->> test has increased but it seems necessary to reach all of those
->> corners...
->>
-> 
-> One thing that I have here as TODO is to make sure we check if the necessary
-> amount of hugepages is set and instead of 'scarying' the user with 'test failed'
-> we SKIP("...") with some reporting of how many are missing for the test.
+This is also available at github [2].
+
+[1] https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/
+[2] https://github.com/LuBaolu/intel-iommu/commits/preparatory-io-pgfault-delivery-v12
+
+Change log:
+v12:
+ - Add Jason and Kevin's Reviewed-by tags.
+ - Fix some minor comments.
+ - No code change.
+
+v11: https://lore.kernel.org/linux-iommu/20240130080835.58921-1-baolu.lu@linux.intel.com/
+ - Cleanup IOMMU_PAGE_RESP_PASID_VALID flag bit.
+ - Cleanup code comments.
+
+v10: https://lore.kernel.org/linux-iommu/20240122054308.23901-1-baolu.lu@linux.intel.com/
+  - Make iopf_group_response() return void, as nobody can do anything
+    with the failure.
+  - Make iommu_report_device_fault() automatically respond to
+    unhandleable faults and change its return type to void.
+  - PATCH 01 ~ 14 are in good shapes now.
+
+v9: https://lore.kernel.org/linux-iommu/20231220012332.168188-1-baolu.lu@linux.intel.com/
+  - Protecting the assignment of dev->iommu->fault_param with RCU.
+  - Extending the fault parameter's lifetime to the entire path of iopf
+    handling.
+  - Since iopf_queue_flush_dev() can only be called before
+    iopf_queue_remove_device(), there's no need to hold a reference
+    count.
+  - Improve iopf_queue_remove_device() as per Jason's comments on the
+    device removal sequence from the iopf queue. This will likely
+    require changes to the iommu drivers, which are supposed to be
+    addressed in separate series.
+  - Track the iopf_group as a whole instead of the last fault within the
+    group to simplify the fault report and response paths.
+  - PATCH 01 ~ 11 are in good shapes now.
+
+v8: https://lore.kernel.org/linux-iommu/20231207064308.313316-1-baolu.lu@linux.intel.com/
+ - Drop PATCH 12/12 as it is no longer necessary to drain page requests
+   page requests during PASID translation changes.
+ - Separate PATCH 11/12 into two distinct patches. The first patch
+   refines locking scheme for protecting per-device fault data, while
+   the second patch replaces mutex with RCU to enhance locking
+   efficiency.
+ - PATCH 01 ~ 10 are in good shapes now.
+
+v7: https://lore.kernel.org/linux-iommu/20231115030226.16700-1-baolu.lu@linux.intel.com/
+ - Rebase to v6.7-rc1.
+ - Export iopf_group_response() for global use.
+ - Release lock when calling iopf handler.
+ - The whole series has been verified to work for SVA case on Intel
+   platforms by Zhao Yan. Add her Tested-by to affected patches.
+
+v6: https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
+ - [PATCH 09/12] Check IS_ERR() against the iommu domain. [Jingqi/Jason]
+ - [PATCH 12/12] Rename the comments and name of iopf_queue_flush_dev(),
+   no functionality changes. [Kevin]
+ - All patches rebased on the latest iommu/core branch.
+
+v5: https://lore.kernel.org/linux-iommu/20230914085638.17307-1-baolu.lu@linux.intel.com/
+ - Consolidate per-device fault data management. (New patch 11)
+ - Improve iopf_queue_flush_dev(). (New patch 12)
+
+v4: https://lore.kernel.org/linux-iommu/20230825023026.132919-1-baolu.lu@linux.intel.com/
+ - Merge iommu_fault_event and iopf_fault. They are duplicate.
+ - Move iommu_report_device_fault() and iommu_page_response() to
+   io-pgfault.c.
+ - Move iommu_sva_domain_alloc() to iommu-sva.c.
+ - Add group->domain and use it directly in sva fault handler.
+ - Misc code refactoring and refining.
+
+v3: https://lore.kernel.org/linux-iommu/20230817234047.195194-1-baolu.lu@linux.intel.com/
+ - Convert the fault data structures from uAPI to kAPI.
+ - Merge iopf_device_param into iommu_fault_param.
+ - Add debugging on domain lifetime for iopf.
+ - Remove patch "iommu: Change the return value of dev_iommu_get()".
+ - Remove patch "iommu: Add helper to set iopf handler for domain".
+ - Misc code refactoring and refining.
+
+v2: https://lore.kernel.org/linux-iommu/20230727054837.147050-1-baolu.lu@linux.intel.com/
+ - Remove unrecoverable fault data definition as suggested by Kevin.
+ - Drop the per-device fault cookie code considering that doesn't make
+   much sense for SVA.
+ - Make the IOMMU page fault handling framework generic. So that it can
+   available for use cases other than SVA.
+
+v1: https://lore.kernel.org/linux-iommu/20230711010642.19707-1-baolu.lu@linux.intel.com/
+
+Lu Baolu (16):
+  iommu: Move iommu fault data to linux/iommu.h
+  iommu/arm-smmu-v3: Remove unrecoverable faults reporting
+  iommu: Remove unrecoverable fault data
+  iommu: Cleanup iopf data structure definitions
+  iommu: Merge iopf_device_param into iommu_fault_param
+  iommu: Remove iommu_[un]register_device_fault_handler()
+  iommu: Merge iommu_fault_event and iopf_fault
+  iommu: Prepare for separating SVA and IOPF
+  iommu: Make iommu_queue_iopf() more generic
+  iommu: Separate SVA and IOPF
+  iommu: Refine locking for per-device fault data management
+  iommu: Use refcount for fault data access
+  iommu: Improve iopf_queue_remove_device()
+  iommu: Track iopf group instead of last fault
+  iommu: Make iopf_group_response() return void
+  iommu: Make iommu_report_device_fault() return void
+
+ include/linux/iommu.h                         | 262 +++++++---
+ drivers/iommu/intel/iommu.h                   |   4 +-
+ drivers/iommu/iommu-sva.h                     |  71 ---
+ include/uapi/linux/iommu.h                    | 161 ------
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  14 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 103 ++--
+ drivers/iommu/intel/iommu.c                   |  28 +-
+ drivers/iommu/intel/svm.c                     |  41 +-
+ drivers/iommu/io-pgfault.c                    | 473 ++++++++++--------
+ drivers/iommu/iommu-sva.c                     |  71 ++-
+ drivers/iommu/iommu.c                         | 233 ---------
+ MAINTAINERS                                   |   1 -
+ drivers/iommu/Kconfig                         |   4 +
+ drivers/iommu/Makefile                        |   3 +-
+ drivers/iommu/intel/Kconfig                   |   1 +
+ 15 files changed, 583 insertions(+), 887 deletions(-)
+ delete mode 100644 drivers/iommu/iommu-sva.h
+ delete mode 100644 include/uapi/linux/iommu.h
+
+-- 
+2.34.1
 
