@@ -1,46 +1,46 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 658715A10A
-	for <iommu@lists.linux.dev>; Wed,  7 Feb 2024 12:29:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95FE31D689
+	for <iommu@lists.linux.dev>; Wed,  7 Feb 2024 12:36:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707308994; cv=none; b=gLJwaN/5PNxKopRmWutbEHCRzO5O8kmtBOrnsgLrkzQXLReQm3LMONiOVoWa5K3qKapsXvRlTulvifMszs5lmaiv1YIBwAl+qBLRHgoqHxwvxaumT4RHq5jiL4PzJa5WQj+75fepM6K1MKijGK36+WLKwpUqoP/au8Nsm22LGlc=
+	t=1707309373; cv=none; b=E+GCkPkgftVlm1g9WkPcwt4SUeIP6riuh02Jg11AhszNuMs5olHaYooLlhthIpTmTyOYrGyMOAZ6Jqul8xIxws9LnuI9AUS/xvGVhGaYFT/tzPj7hHG9eThVD3+MzDSE2S0wsSIExDVFG5doR+T8GKtyFkC8wuvP0lvZNV6LhYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707308994; c=relaxed/simple;
-	bh=khJSx+sRKXLZUupDrn2ywNGOHTSvykattMG1rSkvEOk=;
+	s=arc-20240116; t=1707309373; c=relaxed/simple;
+	bh=/aSQYSLxrLeu9wss3UTRsqDFvugqNLhxf8Z1gNmWPqE=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=El2WA0+0AkS+hTu48N7ZzUVMDxUUDqdGPDwk6td/1mynMFfC1XXiyOyazcaWQ6IrJjy3MfKhkYwEMkv+0eygs/joXKNvBYJjyOgq/iSFIvje9z3Y90NZSXfuMeka8jnbH3oNkG0vVdEixRQlMQcOQLkOQTW2DkayjRh1W9ulMUE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q3vJ7KWR; arc=none smtp.client-ip=192.198.163.16
+	 In-Reply-To:Content-Type; b=K3ixSFZtZqkgCe5cY1gNrfTLC9zM0/55jC6bVKwRU1tEecZPloDCL1cP8E6fi9p9qFEEsIbUPxa6bgJvLC9nCStwcJWfSFYbek0BU52tOe31TswWFdZZZ/h0ZIIUc5QC4qfT5j1DtkefUZibljKKc3aTawHp05lilhBYlfK9SFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hRw1YULW; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q3vJ7KWR"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hRw1YULW"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707308992; x=1738844992;
+  t=1707309371; x=1738845371;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=khJSx+sRKXLZUupDrn2ywNGOHTSvykattMG1rSkvEOk=;
-  b=Q3vJ7KWRQytrL0y9+0K7Ii2yCrE7EAb7ozLHmjddU3zKm4iXnM2jFMLD
-   UmT3xCeAZOz9aLPY3FhcG+qQfkUi1iSnkeY+T3aSpuD7QQVGrJunU5iLH
-   Oicewx5Fxla0rH37GzNUMhzZpoy++uPTiubYzK4Gfy1XOuuKvUPmo0Uim
-   T5yaVxsYsCLuLk6Mq48vCow5wn5yVegYcIEazlZ9fUiYb+9iffFQUNHmk
-   BR3TPnO5qYmsHrLsUIsnH6DIzR+QaYPkS1yvX0krDYlCNghja7ctrNtU3
-   yxFupu+FYXSXXg+JWGTCktC6HpVlz6aOdWk3WFDSF3kZU+1R+/FgXsu0Y
+  bh=/aSQYSLxrLeu9wss3UTRsqDFvugqNLhxf8Z1gNmWPqE=;
+  b=hRw1YULW6ltdx7VzEQ7Ve/a1dG1y/3GXo6sSCbPvcupAWyd4TqBvi+83
+   TufyFZNxyZ1GBiMjsNoduA38kC5szgS9S+sdaeokd1yQXv7gpecuA6FVX
+   s+E4YDNoEKvsPoMUvBcewgGhxpYGwYtQ3pXQ78S751sUJ9N36SWmm7x69
+   5PRDJJ4CjjnrZQn+Ya8Vc85ewQywaCRRXfQxTdocbkAzkybN7Eif5H2s8
+   HOIEUlqvWyjcwftZgFNE5PvPbPYnzVCbH2e8NWz3xVux6IOmM0eGfy6XP
+   8LFhhmcs4MPSCJdIoa2kupuMybKtmBENOGEBxO1A0eN8by9UTMiuiSMk4
    w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10976"; a="1254980"
-X-IronPort-AV: E=Sophos;i="6.05,250,1701158400"; 
-   d="scan'208";a="1254980"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 04:29:51 -0800
+X-IronPort-AV: E=McAfee;i="6600,9927,10976"; a="18491031"
+X-IronPort-AV: E=Sophos;i="6.05,251,1701158400"; 
+   d="scan'208";a="18491031"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 04:36:10 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.05,250,1701158400"; 
-   d="scan'208";a="1319731"
+   d="scan'208";a="1354854"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.215.224]) ([10.254.215.224])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 04:29:47 -0800
-Message-ID: <693ee23d-30c6-4824-9bb2-1cfbf2eccfef@linux.intel.com>
-Date: Wed, 7 Feb 2024 20:29:45 +0800
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 04:36:09 -0800
+Message-ID: <04df4081-b99d-4f87-9d20-bf97f7619040@linux.intel.com>
+Date: Wed, 7 Feb 2024 20:36:06 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,84 +48,36 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Longfang Liu <liulongfang@huawei.com>, "Zhao, Yan Y" <yan.y.zhao@intel.com>,
- Joel Granados <j.granados@samsung.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v12 13/16] iommu: Improve iopf_queue_remove_device()
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev, joro@8bytes.org,
+ suravee.suthikulpanit@amd.com, wei.huang2@amd.com, jsnitsel@redhat.com
+Subject: Re: [PATCH v5 10/14] iommu/amd: Introduce logic to enable/disable
+ IOPF
 Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>
-References: <20240207013325.95182-1-baolu.lu@linux.intel.com>
- <20240207013325.95182-14-baolu.lu@linux.intel.com>
- <BN9PR11MB527603AB5685FF3ED21647958C452@BN9PR11MB5276.namprd11.prod.outlook.com>
+To: Vasant Hegde <vasant.hegde@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240118073339.6978-1-vasant.hegde@amd.com>
+ <20240118073339.6978-11-vasant.hegde@amd.com>
+ <20240201214949.GT50608@ziepe.ca>
+ <9d3579c7-66c3-3752-bad8-a8a8ebc5c74c@amd.com>
+ <20240206163657.GG31743@ziepe.ca>
+ <873201d4-57d1-e856-87c8-08e2ca71f0a2@amd.com>
+ <20240206175824.GI31743@ziepe.ca>
+ <0d626c74-aba5-bbb1-5fb4-b9be5577d71f@amd.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB527603AB5685FF3ED21647958C452@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <0d626c74-aba5-bbb1-5fb4-b9be5577d71f@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2024/2/7 10:50, Tian, Kevin wrote:
->> From: Lu Baolu<baolu.lu@linux.intel.com>
->> Sent: Wednesday, February 7, 2024 9:33 AM
->>
->> Convert iopf_queue_remove_device() to return void instead of an error code,
->> as the return value is never used. This removal helper is designed to be
->> never-failed, so there's no need for error handling.
->>
->> Ack all outstanding page requests from the device with the response code of
->> IOMMU_PAGE_RESP_INVALID, indicating device should not attempt any retry.
->>
->> Add comments to this helper explaining the steps involved in removing a
->> device from the iopf queue and disabling its PRI. The individual drivers
->> are expected to be adjusted accordingly. Here we just define the expected
->> behaviors of the individual iommu driver from the core's perspective.
->>
->> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
->> Tested-by: Yan Zhao<yan.y.zhao@intel.com>
-> Reviewed-by: Kevin Tian<kevin.tian@intel.com>, with one nit:
+On 2024/2/7 16:58, Vasant Hegde wrote:
+>> There is a clear protocol and ordering requirement for the PRI
+>> enablement. Lu described it in a comment, make sure you follow it.
+> Where? in intel driver? (they seems to be using feature_enable() path)
 > 
->> + * Removing a device from an iopf_queue. It's recommended to follow
->> these
->> + * steps when removing a device:
->>    *
->> - * Return: 0 on success and <0 on error.
->> + * - Disable new PRI reception: Turn off PRI generation in the IOMMU
->> hardware
->> + *   and flush any hardware page request queues. This should be done
->> before
->> + *   calling into this helper.
->> + * - Acknowledge all outstanding PRQs to the device: Respond to all
->> outstanding
->> + *   page requests with IOMMU_PAGE_RESP_INVALID, indicating the device
->> should
->> + *   not retry. This helper function handles this.
-> this implies calling iopf_queue_remove_device() here.
-> 
->> + * - Disable PRI on the device: After calling this helper, the caller could
->> + *   then disable PRI on the device.
->> + * - Call iopf_queue_remove_device(): Calling iopf_queue_remove_device()
->> + *   essentially disassociates the device. The fault_param might still exist,
->> + *   but iommu_page_response() will do nothing. The device fault parameter
->> + *   reference count has been properly passed from
->> iommu_report_device_fault()
->> + *   to the fault handling work, and will eventually be released after
->> + *   iommu_page_response().
->>    */
-> but here it suggests calling iopf_queue_remove_device() again. If the comment
-> is just about to detail the behavior with that invocation shouldn't it be merged
-> with the previous one instead of pretending to be the final step for driver
-> to call?
+> I did look into latest "iommu: Prepare to deliver page faults to user space"
+> series. I don't see anything specific to PRI enablement flow.
 
-Above just explains the behavior of calling iopf_queue_remove_device().
+The latest version is here.
+
+https://lore.kernel.org/linux-iommu/20240207013325.95182-14-baolu.lu@linux.intel.com/
 
 Best regards,
 baolu
