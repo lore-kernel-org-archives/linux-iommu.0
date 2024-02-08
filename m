@@ -1,44 +1,44 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD8326BFB8
-	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 08:23:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33C906A357
+	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 08:23:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707380598; cv=none; b=nxyjcA4Yxj5Bd/RLaTTejbkFnfTdia0c+Zp8WqmNzOFtgNlIfEu+9bZYSOdhOjV9iSuK/WSo/GKOOnvt8UfgzIYf2Gpccb3d+XvZGnhyfe/2teRMfzmvvdjPIGz8nQPPsA+xmzfStCqnJ9aO/CdtEn3s5hYtejbK5CACCXuVoWs=
+	t=1707380598; cv=none; b=tAP1G5rT/HktWO3qybus0K07EsQ+DmwbGcYykEDff9xr0YYZTaHzRodoPD/LPbU2+WMk/krSaYgKYxcMtXuQq+kdWjrXkduq43KXR6l/nNorU48raCs9wdAQvC4hBgUUaVT62kS9E0N2NKL7bPfLZtHKaFZK++e7i/8DzUykTOM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1707380598; c=relaxed/simple;
-	bh=E5vqPNymMiBaUwgno+gdspERLQZxZHNPzxdUdl6DYtw=;
+	bh=PKyfNmIGpOnyrWFOlTJVA1L/Yj9yssKddjjlBkd/VSU=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=RoUk1qnYe8se+yzOGRY7nDGq4/wH6LcxLcCS9hiS2cRzYj2+DsXpotZyC4M7RFduZPboDUSmI+AcBjhDcNaSpIve0rXgZKmi9g8S6Rnc692H3Bikp6m2SmUv3K1RHWcX6hmAgZA7E4aN1FyAUqGXkOTpp4eb684EhNrCdPUniic=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ctn59+PP; arc=none smtp.client-ip=198.175.65.15
+	 MIME-Version; b=r6ewDYlftZYsxf1o1eyoWSI4ttizdKPGNM2bTexkXTzQccJwL/ArB8iuPOl2iHbdzsoSKJ/SZNhZg91TP0yB9jNdgp/hRSpoPwi86Z7NJdaZDEio/3Xw6t66bFqrj6appiQGpyOO2mHn166qvgHH+FZthfM7PtAcfKKVXJvLZNA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=keqLM81w; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ctn59+PP"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="keqLM81w"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707380597; x=1738916597;
+  t=1707380596; x=1738916596;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=E5vqPNymMiBaUwgno+gdspERLQZxZHNPzxdUdl6DYtw=;
-  b=Ctn59+PPCl7yPs/4fKewQM9CkYzA2CNXLP2QIapjy/uGeWvLL1FbZTap
-   /tUkPRNFzhxtnZiA+4skETRApuFEsiswvQUwxtlrUG+mB1GX00pCBOxov
-   ygwUxSVJjtt9BsyJGot2pk6HpuKGpbHNvxBzv4tHLWicCHekpxvsbrFpg
-   l6SAaNEmPXWgNlF+DKz9/+ZmLkhe5Pt5Wa6hHCCRF/xqSKwpZ8V7umcIx
-   Hd/ZPlT29n2kNT4+YrgvVNE1XVy1TW3GBEAVo+SRdWxT3pwDXrLUibrqq
-   joXTrZkep0RBt4fekhCmWEeumtdnnjKgGEsEDU3p3ar5Eja6AUXNTz16X
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10977"; a="5036354"
+  bh=PKyfNmIGpOnyrWFOlTJVA1L/Yj9yssKddjjlBkd/VSU=;
+  b=keqLM81w+/CWeZL/PAbdWyMheeLRHjRA3pzHocKg4iX/llvyeNhqKNHN
+   wmX0bSG/F84wU5aO88W2GroJJpNxV4GQlzSjlvf35HUdVWY8zgKxguTPN
+   lfYbB1r1EixDJuDq3wYAcmcr+RGIQYCEjDagrDq8HpTNS97vhnaEJbRQs
+   BC6Ncw319hLq203GiZfRTd2Ep8aj+ZDe3CyD5DjELYtYmiMijyUhSRfJO
+   +Rw3icsSapjOZXw0lIUNdFc6rWqPbXKv4D22LahJVJmE/CUyoActJw27M
+   Hi7o4oXNAUoRLxzT5ny9F7zZlpuae7LVDMXtYmtjTwgRDW3JDsuNh/SfI
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10977"; a="5036338"
 X-IronPort-AV: E=Sophos;i="6.05,253,1701158400"; 
-   d="scan'208";a="5036354"
+   d="scan'208";a="5036338"
 Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2024 00:23:15 -0800
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2024 00:23:14 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.05,253,1701158400"; 
-   d="scan'208";a="6252137"
+   d="scan'208";a="6252124"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa003.jf.intel.com with ESMTP; 08 Feb 2024 00:23:15 -0800
+  by orviesa003.jf.intel.com with ESMTP; 08 Feb 2024 00:23:13 -0800
 From: Yi Liu <yi.l.liu@intel.com>
 To: joro@8bytes.org,
 	jgg@nvidia.com,
@@ -57,9 +57,9 @@ Cc: alex.williamson@redhat.com,
 	linux-kselftest@vger.kernel.org,
 	zhenzhong.duan@intel.com,
 	joao.m.martins@oracle.com
-Subject: [PATCH rc 7/8] iommu/vt-d: Wrap the dirty tracking loop to be a helper
-Date: Thu,  8 Feb 2024 00:23:06 -0800
-Message-Id: <20240208082307.15759-8-yi.l.liu@intel.com>
+Subject: [PATCH rc 5/8] iommu/vt-d: Add missing device iotlb flush for parent domain
+Date: Thu,  8 Feb 2024 00:23:04 -0800
+Message-Id: <20240208082307.15759-6-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240208082307.15759-1-yi.l.liu@intel.com>
 References: <20240208082307.15759-1-yi.l.liu@intel.com>
@@ -71,73 +71,60 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add device_set_dirty_tracking() to loop all the devices and set the dirty
-tracking per the @enable parameter.
+ATS-capable devices cache the result of nested translation. This result
+relies on the mappings in s2 domain (a.k.a. parent). When there are
+modifications in the s2 domain, the related nested translation caches on
+the device should be flushed. This includes the devices that are attached
+to the s1 domain. However, the existing code ignores this fact to only
+loops its own devices.
 
+As there is no easy way to identify the exact set of nested translations
+affected by the change of s2 domain. So, this just flushes the entire
+device iotlb on the device.
+
+As above, driver loops the s2 domain's s1_domains list and loops the devices
+list of each s1_domain to flush the entire device iotlb on the devices.
+
+Fixes: b41e38e22539 ("iommu/vt-d: Add nested domain allocation")
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/iommu/intel/iommu.c | 32 +++++++++++++++++++++-----------
- 1 file changed, 21 insertions(+), 11 deletions(-)
+ drivers/iommu/intel/iommu.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index dae20991e036..7636d3f03905 100644
+index b1ceebe13107..c5a0275697cb 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -4730,23 +4730,35 @@ static void *intel_iommu_hw_info(struct device *dev, u32 *length, u32 *type)
- 	return vtd;
- }
+@@ -1462,12 +1462,30 @@ static void parent_domain_flush(struct dmar_domain *domain,
  
-+static int
-+device_set_dirty_tracking(struct list_head *devices, bool enable)
-+{
-+	struct device_domain_info *info;
-+	int ret = 0;
+ 	spin_lock(&domain->s1_lock);
+ 	list_for_each_entry(s1_domain, &domain->s1_domains, s2_link) {
++		struct device_domain_info *device_info;
+ 		struct iommu_domain_info *info;
++		unsigned long flags;
+ 		unsigned long i;
+ 
+ 		xa_for_each(&s1_domain->iommu_array, i, info)
+ 			__iommu_flush_iotlb_psi(info->iommu, info->did,
+ 						pfn, pages, ih);
 +
-+	list_for_each_entry(info, devices, link) {
-+		ret = intel_pasid_setup_dirty_tracking(info->iommu, info->dev,
-+						       IOMMU_NO_PASID, enable);
-+		if (ret)
-+			break;
-+	}
++		if (!s1_domain->has_iotlb_device)
++			continue;
 +
-+	return ret;
-+}
-+
- static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
- 					  bool enable)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
--	struct device_domain_info *info;
- 	int ret;
- 
- 	spin_lock(&dmar_domain->lock);
- 	if (dmar_domain->dirty_tracking == enable)
- 		goto out_unlock;
- 
--	list_for_each_entry(info, &dmar_domain->devices, link) {
--		ret = intel_pasid_setup_dirty_tracking(info->iommu, info->dev,
--						       IOMMU_NO_PASID, enable);
--		if (ret)
--			goto err_unwind;
--	}
-+	ret = device_set_dirty_tracking(&dmar_domain->devices, enable);
-+	if (ret)
-+		goto err_unwind;
- 
- 	dmar_domain->dirty_tracking = enable;
- out_unlock:
-@@ -4755,10 +4767,8 @@ static int intel_iommu_set_dirty_tracking(struct iommu_domain *domain,
- 	return 0;
- 
- err_unwind:
--	list_for_each_entry(info, &dmar_domain->devices, link)
--		intel_pasid_setup_dirty_tracking(info->iommu, info->dev,
--						 IOMMU_NO_PASID,
--						 dmar_domain->dirty_tracking);
-+	device_set_dirty_tracking(&dmar_domain->devices,
-+				  dmar_domain->dirty_tracking);
- 	spin_unlock(&dmar_domain->lock);
- 	return ret;
++		spin_lock_irqsave(&s1_domain->lock, flags);
++		list_for_each_entry(device_info, &s1_domain->devices, link)
++			/*
++			 * Address translation cache in device side caches the
++			 * result of nested translation. There is no easy way
++			 * to identify the exact set of nested translations
++			 * affected by a change in S2. So just flush the entire
++			 * device cache.
++			 */
++			__iommu_flush_dev_iotlb(device_info, 0,
++						MAX_AGAW_PFN_WIDTH);
++		spin_unlock_irqrestore(&s1_domain->lock, flags);
+ 	}
+ 	spin_unlock(&domain->s1_lock);
  }
 -- 
 2.34.1
