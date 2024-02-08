@@ -1,194 +1,275 @@
-Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0619D534
-	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 02:31:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C171B1D524
+	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 02:59:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.158.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707359520; cv=none; b=ROA4iut4iyjO4aUGYPJ3psSRGFnnoug2k1jrAzTUy8B0Dnlh1oTeDFiNtb4E29Zird9PAuHRRJWudepLrlF8giQ6zDmtsWuZcwLFfwwO9zy+A+Va6OtoZGfTfkQoE0Z2eDZUjgqDezG2LqoDMpw8lZkjBSmnNyXj6zT1sfsQKiM=
+	t=1707361181; cv=none; b=GPbPf7X4ZnxEuyg8CnCVJC93xq/Ha1lDlMXw2rlPnhllDjbVI9VDjvgEPB3eJolaHytYRluXUmgEHWtD/YcGiVwmh4SyFHhqtaOuDGZ+VydCztcuNnBb8/+rgehYcwdLF2BWIfwmlw73sLdpg3wksHzcT9SL1ZPGuaqzU8iYXU4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707359520; c=relaxed/simple;
-	bh=yuEhedvxSEPhM/c5pCd3h8DUyGdchu0AOMthWvP9TRg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t9FvbpyYSgmEEsa1Glxi5skOwNXbCHc2vijvSNqjmwkeRJhww+cT8nvb/qADqnq8kNaZb7UeFeE0QdkxQW4cOWmZVjLV3KahF8T5Ny2sTby4rBwbhTDMKwa5GzczTJl8BiUtLz8S/BTo39YOIg6nZa6xPd1mTtR0pJADRyPBH4g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=L4o22vvj; arc=none smtp.client-ip=209.85.161.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1707361181; c=relaxed/simple;
+	bh=JA/Bk7eHL8jj0qT55K6d6G4HlnU5ZywGY49dqehvk9g=;
+	h=Message-ID:Date:MIME-Version:Subject:References:To:Cc:From:
+	 In-Reply-To:Content-Type; b=cJgPL1/LmqEE10Fg8A6LXvk3/MeXTUG42aA2vDggoDbEytz0l5qsLYhqj8YlTxsVdBNGSW4QyF8Q7+Uz/0G1Vtuu6ZZr/igLiCvh8c0XTHYCZfK/V3BLNibkM3fsF+rtaxpIi4oPS5KdhuTOaFt1H4KY46LWk7EB9h5QG4KlOvY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com; spf=none smtp.mailfrom=linux.vnet.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=UmOr/kRo; arc=none smtp.client-ip=148.163.158.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.vnet.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="L4o22vvj"
-Received: by mail-oo1-f48.google.com with SMTP id 006d021491bc7-59612e4a21eso692317eaf.3
-        for <iommu@lists.linux.dev>; Wed, 07 Feb 2024 18:31:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1707359517; x=1707964317; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=mqi2UC9d75ipUBmZVL8vxv2HsB7JT096rJI7lC+Kbh8=;
-        b=L4o22vvji2yMA/4VCqeZgYMrygYC4rzxw4W/c70I6/vooJdW98DvW0otPVCjhj0Q8o
-         6mqy04BRwsG2RxEei2FJwn39YeZ9Akh68STneuRZx9II/s2RWbNvuya4lM0owmBeUAKS
-         ptA1jS4/cS1YEKwMcmsj1bJUSXNQ6zM+6HwzjFJCg2CWzMF0l4GZX0gGBhadyXXZk1df
-         HOSHOGJYI89B6MpBUSk24zi8pICjhSMRnZpFuGxW8sE0jbl/Z/gApbevGoHTcM4Ty9g1
-         XErMIQpg9zWWegcxVd9HqJQLA/oBDaT23W/j5TgJsCu9x3gsqUSYQB47dZxLHnE9TYLb
-         J12g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707359517; x=1707964317;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mqi2UC9d75ipUBmZVL8vxv2HsB7JT096rJI7lC+Kbh8=;
-        b=xC1B3NdNYnvyAb3DwlZpKrmS9qjFHhxplD3QkcBPL0A9ea/45zcFZz1+P0NHFUoh/0
-         P6mrJF/gz7HTdsG6xqzGpUHoDQGwjbEiqlL9brc5C1QpOAb7aenkxuJgvA92TuJ5MBxX
-         /FUcj3hMfuVywCbkuBnkql+MeZ54veb1GD1IAjP9km+eqKXVEqQV7I7g47evOm+uh4+i
-         dZ+AqM1P9u8BRYuztyxl8d9dRm0VrpUXamB3pwJI8FkET+yt3LS2Z+R6XBxd9tmeyrNJ
-         s/AKtqh4NguOTAl53m6n1VbyRNf6mXiEXoxDE27LPZKg/t3wTkddARwMZgBdJozlMOHV
-         YkPw==
-X-Forwarded-Encrypted: i=1; AJvYcCWNjx0nkpcIzRmr7wAaJYzkgXj6sYwkm4Eym+4RIxM3kYHgIPpo41sPQLpXF3PO9zT+hHwJFWT4YHO1ILKw8GqlBwsP674=
-X-Gm-Message-State: AOJu0YzZGWZE5JAPexLJzScquLbkRTUYGUIOc1ACXCw4ZtFmMn/so0FH
-	fl2Cvm5xsc5/ukQYoc616Dep0U8iCaLfH4dCYYSIUd5dRWBSc877GmdF2uhzYc8=
-X-Google-Smtp-Source: AGHT+IEUWOIitBePYuoLkPihaT0+7zTN/28jdj6JQ4NASEHa4+olFD/etoob3nb/95BBzrkrNxDnrA==
-X-Received: by 2002:a4a:9c83:0:b0:59a:15d2:ba0d with SMTP id z3-20020a4a9c83000000b0059a15d2ba0dmr7299809ooj.2.1707359517507;
-        Wed, 07 Feb 2024 18:31:57 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCXn6IaFZw+jAAhqmLErMQqYv+LnmTwFRkDvkGVns/+3VI8gGJZOvLxNC3fDN6jfAxVEPe22cSRTXM98NBDXCxGn4EFVg+62XLHwjRcvOMtHLKFipQp7aCeN2wEItyv9+EXanbBVXf6kSG7ocOqVWKh1b9eKhvd7fDGB93JaYpzE20Hei0W0Pmbfhw5hjFQRNwR6jMtG3Jv2Fe0Ilfu1BZhx75dmIiQquJjun02TLffpimR3gTFLHTBkx1lApfjPO4RYmYYWBBfWOomrUCj8XDJcQibgCbOwHm6Q1cuTxr69GCYsssdT0CQQ1VI4zwgrXTmGUaOsLOrVQIxPz+rJaeq4XAdCti78+enafADM5cgEF1Ugi1JiQGy7ElAlKVwNw+wKgvnA
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id h20-20020a4ad754000000b0059cfbbbfd0dsm414256oot.15.2024.02.07.18.31.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Feb 2024 18:31:56 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rXuCh-00C6sS-KF;
-	Wed, 07 Feb 2024 22:31:55 -0400
-Date: Wed, 7 Feb 2024 22:31:55 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>, thierry.reding@gmail.com,
-	vdumpa@nvidia.com, joro@8bytes.org, will@kernel.org,
-	jonathanh@nvidia.com, baolu.lu@linux.intel.com, jsnitsel@redhat.com,
-	jroedel@suse.de, linux-tegra@vger.kernel.org, iommu@lists.linux.dev,
-	regressions@lists.linux.dev
-Subject: Re: [REGRESSION] Failed buffer allocation in Tegra fbdev
-Message-ID: <20240208023155.GN31743@ziepe.ca>
-References: <bbmhcoghrprmbdibnjum6lefix2eoquxrde7wyqeulm4xabmlm@b6jy32saugqh>
- <20240123151508.GR50608@ziepe.ca>
- <pgund4coabp5pdlmwze5o2d7ogrdncktqz267yzukjcvmikudc@7svrwdci7ujl>
- <55cab5e0-0abf-47d0-becc-05cdf1d22fac@arm.com>
- <20240124170300.GU50608@ziepe.ca>
- <d5074c11-b03a-4a24-9e3a-dfa5743d80bb@arm.com>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="UmOr/kRo"
+Received: from pps.filterd (m0360072.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 4182Rv27023325;
+	Thu, 8 Feb 2024 02:59:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : references : to : cc : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=acJtmzQultR369RyhddMkdpqqLO7IX464mjdeQMkfv0=;
+ b=UmOr/kRoTdPUtGCX3HCJBhuCr63C84ytdopk48ahFmo1pryQ9FnLyCiawUvzCsKkXCc9
+ RxNCyTWqlEuV/eG1LwimhOSDvZq8NNajGEEfrTiNTZtXiAXhuUpiKv/3KalqcfPiWWcI
+ CPfNZPzyxZSndOs+2VBuuBYlacG4nieYWzqqaKHt1ksng/YXYb9+/O+xG7s2b6eZhYbo
+ FUCH+QjyxJpDhvzS5IKhVXWm6M9UfY5WMk7mthFX1JoQXRxbabVC5LklOtFYzteogGVM
+ 5HE1W4EYAUnyc+N8ERngugOVqDCa2RjPYbBdOvnW7/pt96bdkzthyIFlhYpG8z41gkKI wQ== 
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w4p6j0em5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 08 Feb 2024 02:59:26 +0000
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 4180O01j008515;
+	Thu, 8 Feb 2024 02:57:00 GMT
+Received: from smtprelay07.dal12v.mail.ibm.com ([172.16.1.9])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 3w221k9fxn-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 08 Feb 2024 02:57:00 +0000
+Received: from smtpav04.dal12v.mail.ibm.com (smtpav04.dal12v.mail.ibm.com [10.241.53.103])
+	by smtprelay07.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 4182v0SQ48759372
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 8 Feb 2024 02:57:00 GMT
+Received: from smtpav04.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 7CA2558056;
+	Thu,  8 Feb 2024 02:57:00 +0000 (GMT)
+Received: from smtpav04.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id CF31758052;
+	Thu,  8 Feb 2024 02:56:58 +0000 (GMT)
+Received: from [9.43.110.69] (unknown [9.43.110.69])
+	by smtpav04.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Thu,  8 Feb 2024 02:56:58 +0000 (GMT)
+Message-ID: <274e0d2b-b5cc-475e-94e6-8427e88e271d@linux.vnet.ibm.com>
+Date: Thu, 8 Feb 2024 08:26:57 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d5074c11-b03a-4a24-9e3a-dfa5743d80bb@arm.com>
+User-Agent: Mozilla Thunderbird
+Subject: [revert commit 83b3836bf83f09beea5f592b126cfdd1bc921e48] [mainline]
+ [6.8.0-rc3]kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
+Content-Language: en-GB
+References: <8d75ebd3-85c2-4a05-8eca-08f66f9411dc@linux.vnet.ibm.com>
+To: iommu@lists.linux.dev, jgg@nvidia.com
+Cc: sbhat@linux.ibm.com, robin.murphy@arm.com, will@kernel.org
+From: Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com>
+In-Reply-To: <8d75ebd3-85c2-4a05-8eca-08f66f9411dc@linux.vnet.ibm.com>
+X-Forwarded-Message-Id: <8d75ebd3-85c2-4a05-8eca-08f66f9411dc@linux.vnet.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: W8Bcp4PbVrolLVLyZ2vSwAuFksPtY_y2
+X-Proofpoint-ORIG-GUID: W8Bcp4PbVrolLVLyZ2vSwAuFksPtY_y2
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-08_01,2024-02-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 spamscore=0
+ mlxscore=0 malwarescore=0 bulkscore=0 mlxlogscore=716 lowpriorityscore=0
+ phishscore=0 priorityscore=1501 impostorscore=0 adultscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311290000
+ definitions=main-2402080013
 
-On Thu, Feb 08, 2024 at 01:22:47AM +0000, Robin Murphy wrote:
-> > So, if everything still works and something else is calling
-> > of_dma_configure() prior to using the struct device for any DMA
-> > operations (eg because a driver is always probed?) then we should just
-> > delete this call.
-> 
-> I've considered that before - arguably it could have been removed when Mikko
-> implemented the full bus model, but now I kind of don't want to since it's
-> one of the remaining few that *is* still in the right place where it's
-> always meant to be. The correct fix to meet the original expectations
-> *should* be simply:
 
-It is a bit jarring to hear you call a rare place, where it doesn't
-even actually work right, "meet the original expectations". :\
+Resending as earlier one bounced.
 
-It is pretty clear the function doesn't do what it was originally
-expected too anymore, and there are now so many call sites doing
-different things I don't think that past is so relevant.
+Greetings!!!
 
-> ----->8-----
-> diff --git a/drivers/gpu/host1x/bus.c b/drivers/gpu/host1x/bus.c
-> index 84d042796d2e..6cab950690a0 100644
-> --- a/drivers/gpu/host1x/bus.c
-> +++ b/drivers/gpu/host1x/bus.c
-> @@ -455,11 +455,11 @@ static int host1x_device_add(struct host1x *host1x,
->  	device->dev.dma_mask = &device->dev.coherent_dma_mask;
->  	dev_set_name(&device->dev, "%s", driver->driver.name);
->  	device->dev.release = host1x_device_release;
-> -	device->dev.bus = &host1x_bus_type;
->  	device->dev.parent = host1x->dev;
-> 
->  	of_dma_configure(&device->dev, host1x->dev->of_node, true);
-> 
-> +	device->dev.bus = &host1x_bus_type;
->  	device->dev.dma_parms = &device->dma_parms;
->  	dma_set_max_seg_size(&device->dev, UINT_MAX);
-> 
-> -----8<-----
-> 
-> ...except you've now also broken that at the same time by removing the
-> dev->bus check from of_iommu_configure() :(
 
-Umm. Is there examples in the tree of this ordering? I looked for a
-while and I only found a bunch of counter examples..
+[revert commit 83b3836bf83f09beea5f592b126cfdd1bc921e48] [mainline] 
+[6.8.0-rc3]kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
 
-Trying to order it before the bus is set feels like a big hack,
-something so subtle should not be part of a driver facing API.
 
-At this point, if it is to stay here, the functionality it needs
-probably wants a new function name and no entanglement with the iommu
-layer.
+By Reverting below commit id, issue is not seen.
 
-> Frankly, for all you protest whenever I call you out for demonstrating a
-> lack of understanding of this tangled mess, I sure do seem to spend a lot of
-> time explaining it to you... :/
 
-You never do actually explain it though. You throw some insults and
-make a few statements and often don't answer any followup
-questions.
+83b3836bf83f09beea5f592b126cfdd1bc921e48
+      iommu: Allow ops->default_domain to work when !CONFIG_IOMMU_DMA
 
-The code itself is not enlightening, there are no comments explaining
-these entanglements, these patterns you point to as "right" are not
-really followed. The designs you explain as "right" don't fully
-work. There are lots of little accumulated hacks to trip on.
 
-It is a huge red flag that something so important as probing the iommu
-is so completely baroque.
+--- Traces ---
 
-> I've never claimed it's *not* a horrible mess, but at the risk of repeating
-> myself, it *is* fragile, and the consequences of mucking about with it are
-> tricky to reason about even when one does understand all the history of how
-> it's intended to work vs. what actually happens. To coin a phrase I find
-> enjoyable, this is definitely "F around and find out" code; as this and
-> other threads show, now you're well into the finding out part.
+KernelBug: Kernel bug in state 'None': kernel BUG at 
+arch/powerpc/platforms/pseries/iommu.c:100!
+[ 7843.148980] Oops: Exception in kernel mode, sig: 5 [#1]
+[ 7843.148984] LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=8192 NUMA pSeries
+[ 7843.148988] Modules linked in: nft_compat nf_tables libcrc32c 
+nfnetlink bridge stp llc tls sit tunnel4 ip_tunnel nvram rpadlpar_io 
+rpaphp xsk_diag rfkill binfmt_misc mlx5_ib ib_uverbs ib_core pseries_rng 
+drm drm_panel_orientation_quirks ext4 mbcache jbd2 dm_service_time 
+sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft crc64 sg ibmvfc 
+scsi_transport_fc ibmveth mlx5_core mlxfw vmx_crypto psample 
+dm_multipath dm_mirror dm_region_hash dm_log dm_mod fuse [last unloaded: 
+tls]
+[ 7843.149041] CPU: 17 PID: 218444 Comm: drmgr Kdump: loaded Tainted: 
+G          I        6.8.0-rc3-autotest-g99bd3cb0d12e #1
+[ 7843.149047] Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200 
+0xf000006 of:IBM,FW1060.00 (NH1060_016) hv:phyp pSeries
+[ 7843.149051] NIP:  c0000000000ff4d4 LR: c0000000000ff4cc CTR: 
+0000000000000000
+[ 7843.149055] REGS: c0000013aed5f840 TRAP: 0700   Tainted: G          
+I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
+[ 7843.149060] MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 
+44002402  XER: 20040000
+[ 7843.149069] CFAR: c000000000a0d170 IRQMASK: 0
+[ 7843.149069] GPR00: c0000000000ff4cc c0000013aed5fae0 c000000001512700 
+c0000013aa362138
+[ 7843.149069] GPR04: 0000000000000000 0000000000000000 0000000000000000 
+0000000119c8afd0
+[ 7843.149069] GPR08: 0000000000000000 c000001284442b00 0000000000000001 
+0000000000001003
+[ 7843.149069] GPR12: 0000000300000000 c0000018ffff2f00 0000000000000000 
+0000000000000000
+[ 7843.149069] GPR16: 0000000000000000 0000000000000000 0000000000000000 
+0000000000000000
+[ 7843.149069] GPR20: 0000000000000000 0000000000000000 0000000000000000 
+0000000000000000
+[ 7843.149069] GPR24: c0000013aed5fc40 0000000000000002 0000000000000000 
+c000000002757d90
+[ 7843.149069] GPR28: c0000000000ff440 c000000002757cb8 c00000183799c1a0 
+c0000013aa362b00
+[ 7843.149112] NIP [c0000000000ff4d4] iommu_reconfig_notifier+0x94/0x200
+[ 7843.149123] LR [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200
+[ 7843.149129] Call Trace:
+[ 7843.149131] [c0000013aed5fae0] [c0000000000ff4cc] 
+iommu_reconfig_notifier+0x8c/0x200 (unreliable)
+[ 7843.149138] [c0000013aed5fb10] [c0000000001a27b0] 
+notifier_call_chain+0xb8/0x19c
+[ 7843.149146] [c0000013aed5fb70] [c0000000001a2a78] 
+blocking_notifier_call_chain+0x64/0x98
+[ 7843.149152] [c0000013aed5fbb0] [c000000000c4a898] 
+of_reconfig_notify+0x44/0xdc
+[ 7843.149160] [c0000013aed5fc20] [c000000000c4add4] 
+of_detach_node+0x78/0xb0
+[ 7843.149165] [c0000013aed5fc70] [c0000000000f96a8] 
+ofdt_write.part.0+0x86c/0xbb8
+[ 7843.149171] [c0000013aed5fce0] [c00000000069b4bc] 
+proc_reg_write+0xf4/0x150
+[ 7843.149178] [c0000013aed5fd10] [c0000000005bfeb4] vfs_write+0xf8/0x488
+[ 7843.149184] [c0000013aed5fdc0] [c0000000005c0570] ksys_write+0x84/0x140
+[ 7843.149189] [c0000013aed5fe10] [c000000000033358] 
+system_call_exception+0x138/0x330
+[ 7843.149196] [c0000013aed5fe50] [c00000000000d05c] 
+system_call_vectored_common+0x15c/0x2ec
+[ 7843.149203] --- interrupt: 3000 at 0x20000433acb4
+[ 7843.149208] NIP:  000020000433acb4 LR: 0000000000000000 CTR: 
+0000000000000000
+[ 7843.149212] REGS: c0000013aed5fe80 TRAP: 3000   Tainted: G          
+I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
+[ 7843.149217] MSR:  800000000280f033 
+<SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 42002408  XER: 00000000
+[ 7843.149227] IRQMASK: 0
+[ 7843.149227] GPR00: 0000000000000004 00007fffcde2d2c0 000000013a707f00 
+0000000000000006
+[ 7843.149227] GPR04: 00007fffcde2d368 0000000000000020 0000000000000000 
+0000000000000001
+[ 7843.149227] GPR08: 0000000000000020 0000000000000000 0000000000000000 
+0000000000000000
+[ 7843.149227] GPR12: 0000000000000000 000020000403b1e0 000000013a6df668 
+0000000000000006
+[ 7843.149227] GPR16: 0000000000000000 0000000000000002 0000000000000004 
+0000000000000005
+[ 7843.149227] GPR20: 000000013a700018 000000013a6df360 000000013a6dcb20 
+000000013a6dd918
+[ 7843.149227] GPR24: 000000013a6db178 00000001722028c8 00007fffcde2d7f8 
+00000001722028c8
+[ 7843.149227] GPR28: 000000013a6dc340 00007fffcde2d368 0000000000000006 
+0000000000000020
+[ 7843.149268] NIP [000020000433acb4] 0x20000433acb4
+[ 7843.149271] LR [0000000000000000] 0x0
+[ 7843.149274] --- interrupt: 3000
+[ 7843.149277] Code: 4082016c 2c3f0000 41820060 ebff0028 2c3f0000 
+41820054 e87f0018 2c230000 41820014 4890dc75 60000000 e93f0018 
+<0b090000> e87f0020 2c230000 4182000c
+[ 7843.149292] ---[ end trace 0000000000000000 ]---
 
-Well sure, fragile is how this kind of kernel work usually goes. How
-many times has Thomas broke Xen refactoring x86 stuff? This is normal.
-
-It is impossible to know what every crazy driver has done, and stuff
-is getting broken. The point is to slowly make progress toward a
-robust and understandable design in the core layer and facing the
-drivers, especially one that releases the drivers of any complex
-understanding.
-
-We've made good progress on this front. The iommu drivers especially
-are slowly getting more uniform.
-
-Here we got a log message that points to something really WTF going
-on. John's case is different and seems to have identified a real
-race. I think we are doing pretty good on this.
-
-It would be nice to come to conclusion on what should be done here
-that improves and makes the driver facing API more robust. But it is
-just a log message so maybe it is fine to leave it.
-
-> > Was the above issue fixed in commit 07397df29e57 ("dma-mapping: move
-> > dma configuration to bus infrastructure") ?
-> 
-> Um, no. That commit was no more than code movement essentially separating
-> PCI from non-PCI configuration; merely host1x didn't need to share the full
-> path which ended up as platform_dma_configure() since host1x doesn't support
-> ACPI. Once again the fact that I've had to explain that drives me to utter
-> despair...
-
-Okay, I didn't go through the whole patch, I was only looking at the
-hunks in drivers/gpu/host1x/bus.c that added a new of_dma_configure()
-call.
 
 Regards,
-Jason
+
+Venkat.
+
+
+> Greetings!!!
+>
+>
+> [revert commit 83b3836bf83f09beea5f592b126cfdd1bc921e48] [mainline] 
+> [6.8.0-rc3]kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
+>
+>
+> Reverting below commit id issue is not seen.
+>
+> 83b3836bf83f09beea5f592b126cfdd1bc921e48
+>       iommu: Allow ops->default_domain to work when !CONFIG_IOMMU_DMA
+>
+>
+> Traces:
+>
+>
+> KernelBug: Kernel bug in state 'None': kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
+> [ 7843.148980] Oops: Exception in kernel mode, sig: 5 [#1]
+> [ 7843.148984] LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=8192 NUMA pSeries
+> [ 7843.148988] Modules linked in: nft_compat nf_tables libcrc32c nfnetlink bridge stp llc tls sit tunnel4 ip_tunnel nvram rpadlpar_io rpaphp xsk_diag rfkill binfmt_misc mlx5_ib ib_uverbs ib_core pseries_rng drm drm_panel_orientation_quirks ext4 mbcache jbd2 dm_service_time sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft crc64 sg ibmvfc scsi_transport_fc ibmveth mlx5_core mlxfw vmx_crypto psample dm_multipath dm_mirror dm_region_hash dm_log dm_mod fuse [last unloaded: tls]
+> [ 7843.149041] CPU: 17 PID: 218444 Comm: drmgr Kdump: loaded Tainted: G          I        6.8.0-rc3-autotest-g99bd3cb0d12e #1
+> [ 7843.149047] Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200 0xf000006 of:IBM,FW1060.00 (NH1060_016) hv:phyp pSeries
+> [ 7843.149051] NIP:  c0000000000ff4d4 LR: c0000000000ff4cc CTR: 0000000000000000
+> [ 7843.149055] REGS: c0000013aed5f840 TRAP: 0700   Tainted: G          I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
+> [ 7843.149060] MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 44002402  XER: 20040000
+> [ 7843.149069] CFAR: c000000000a0d170 IRQMASK: 0
+> [ 7843.149069] GPR00: c0000000000ff4cc c0000013aed5fae0 c000000001512700 c0000013aa362138
+> [ 7843.149069] GPR04: 0000000000000000 0000000000000000 0000000000000000 0000000119c8afd0
+> [ 7843.149069] GPR08: 0000000000000000 c000001284442b00 0000000000000001 0000000000001003
+> [ 7843.149069] GPR12: 0000000300000000 c0000018ffff2f00 0000000000000000 0000000000000000
+> [ 7843.149069] GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+> [ 7843.149069] GPR20: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+> [ 7843.149069] GPR24: c0000013aed5fc40 0000000000000002 0000000000000000 c000000002757d90
+> [ 7843.149069] GPR28: c0000000000ff440 c000000002757cb8 c00000183799c1a0 c0000013aa362b00
+> [ 7843.149112] NIP [c0000000000ff4d4] iommu_reconfig_notifier+0x94/0x200
+> [ 7843.149123] LR [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200
+> [ 7843.149129] Call Trace:
+> [ 7843.149131] [c0000013aed5fae0] [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200 (unreliable)
+> [ 7843.149138] [c0000013aed5fb10] [c0000000001a27b0] notifier_call_chain+0xb8/0x19c
+> [ 7843.149146] [c0000013aed5fb70] [c0000000001a2a78] blocking_notifier_call_chain+0x64/0x98
+> [ 7843.149152] [c0000013aed5fbb0] [c000000000c4a898] of_reconfig_notify+0x44/0xdc
+> [ 7843.149160] [c0000013aed5fc20] [c000000000c4add4] of_detach_node+0x78/0xb0
+> [ 7843.149165] [c0000013aed5fc70] [c0000000000f96a8] ofdt_write.part.0+0x86c/0xbb8
+> [ 7843.149171] [c0000013aed5fce0] [c00000000069b4bc] proc_reg_write+0xf4/0x150
+> [ 7843.149178] [c0000013aed5fd10] [c0000000005bfeb4] vfs_write+0xf8/0x488
+> [ 7843.149184] [c0000013aed5fdc0] [c0000000005c0570] ksys_write+0x84/0x140
+> [ 7843.149189] [c0000013aed5fe10] [c000000000033358] system_call_exception+0x138/0x330
+> [ 7843.149196] [c0000013aed5fe50] [c00000000000d05c] system_call_vectored_common+0x15c/0x2ec
+> [ 7843.149203] --- interrupt: 3000 at 0x20000433acb4
+> [ 7843.149208] NIP:  000020000433acb4 LR: 0000000000000000 CTR: 0000000000000000
+> [ 7843.149212] REGS: c0000013aed5fe80 TRAP: 3000   Tainted: G          I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
+> [ 7843.149217] MSR:  800000000280f033 <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 42002408  XER: 00000000
+> [ 7843.149227] IRQMASK: 0
+> [ 7843.149227] GPR00: 0000000000000004 00007fffcde2d2c0 000000013a707f00 0000000000000006
+> [ 7843.149227] GPR04: 00007fffcde2d368 0000000000000020 0000000000000000 0000000000000001
+> [ 7843.149227] GPR08: 0000000000000020 0000000000000000 0000000000000000 0000000000000000
+> [ 7843.149227] GPR12: 0000000000000000 000020000403b1e0 000000013a6df668 0000000000000006
+> [ 7843.149227] GPR16: 0000000000000000 0000000000000002 0000000000000004 0000000000000005
+> [ 7843.149227] GPR20: 000000013a700018 000000013a6df360 000000013a6dcb20 000000013a6dd918
+> [ 7843.149227] GPR24: 000000013a6db178 00000001722028c8 00007fffcde2d7f8 00000001722028c8
+> [ 7843.149227] GPR28: 000000013a6dc340 00007fffcde2d368 0000000000000006 0000000000000020
+> [ 7843.149268] NIP [000020000433acb4] 0x20000433acb4
+> [ 7843.149271] LR [0000000000000000] 0x0
+> [ 7843.149274] --- interrupt: 3000
+> [ 7843.149277] Code: 4082016c 2c3f0000 41820060 ebff0028 2c3f0000 41820054 e87f0018 2c230000 41820014 4890dc75 60000000 e93f0018 <0b090000> e87f0020 2c230000 4182000c
+> [ 7843.149292] ---[ end trace 0000000000000000 ]---
+>
+>
+> Regards,
+> Venkat.
