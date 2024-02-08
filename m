@@ -1,25 +1,46 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C0DA91D55F;
-	Thu,  8 Feb 2024 01:22:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEB1A1E87C
+	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 01:32:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707355374; cv=none; b=Uv7jGco7pASDEVU3mYdeD7mBvXfXDm8QB3q6+tqG4bC/cY5Y4yQvr5Zffz0D24tglyBt+R0+W1LayaEWcvv249+5Naw7I5rmznm8pAAkL7//N+uyOVrPbFSbg7pNHGc/n7WeGwZ33QFQtceMOf+muKBfPdkvDW6xBL7TESRjqS4=
+	t=1707355936; cv=none; b=kSUWKllYcQUefQr9hMVkjVW38MqFJotG6SGvbr1F8d1hqMLV6iIZ6hfEst3JV0as6d7MoQca8jYm8m0kQE9W+fYw38mnAQfqmfjBynsTIYmPDDiVPkHE31LfYyqfSDPdY49KXrgtGPp1lSSsqXrLYQB9nlR2wmN8CO5/T2w4OYo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707355374; c=relaxed/simple;
-	bh=uJkl8rQIIVzke3d5r1OPVklBSLEAlrL8ULekb9pG0xc=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=kMFzGScfb13wNSvp8BYh8dzWYAdi5WGl3ckgQBxck5Y6P8TshvMSXoaHLVjENGO4EIvJUaUwITrFL+K9Gna8TK6zoks3wIHz5lQ15Yjtuax9514BSSIkyfIakdPoSDRY72lp8iZJwDyDpJ/nX/kl3hDhGk0uJi08JB0xNUDY6As=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F17871FB;
-	Wed,  7 Feb 2024 17:23:32 -0800 (PST)
-Received: from [10.57.49.110] (unknown [10.57.49.110])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E628A3F762;
-	Wed,  7 Feb 2024 17:22:48 -0800 (PST)
-Message-ID: <d5074c11-b03a-4a24-9e3a-dfa5743d80bb@arm.com>
-Date: Thu, 8 Feb 2024 01:22:47 +0000
+	s=arc-20240116; t=1707355936; c=relaxed/simple;
+	bh=3GYmPNV941sCNT9l4UOqAlQJiyzxjbIc9airZ677Slw=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=mSOPqGWcfrvkvK2LCdxIzxIOxjtbSbBWVbXaR9nRu7DbzdHZA1ah6VwKzrEJ+q5N2PqxhR/4EmxEKw3N3wwwlA51VpdLb7Rff5J25dTR4rFZ/quWFmtaf7LJIbGcCcOfFyKdsnfLP3I3TLBaTpePQwpqTn4OX6XmQCU8SJ535ko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JoJpx/nY; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JoJpx/nY"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707355935; x=1738891935;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=3GYmPNV941sCNT9l4UOqAlQJiyzxjbIc9airZ677Slw=;
+  b=JoJpx/nY5UBYsK9nA3KmaGKII5IOHrIP3TAIGZoqcS6lkc7mWDfyvw7C
+   3K4OL8WP4KMkv3sqbLuRsFLie2D02GolO71KxCUlTegVf8gt0YeVoBgEU
+   nG7KWJxHhZS3F4AGFZYK67uiAdhioFhymvus8NNr6vUtq7Wa0brDkw5v6
+   M7BltKfY7JuMUZOaVsgInjifS6mlsK18X/VcU+08tex57PGYKQIYtntj/
+   Vhm7rD45UhM7jlnnNTewSV7g878aG98xK8MZAQjlcxooRFW/pEXxc1L8Q
+   RrRxxnJ8WfEbsIsmOrwGNz1I4eHpWTD83LLDBu+wL1G6WPQWEnn+9AZP3
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10977"; a="4939041"
+X-IronPort-AV: E=Sophos;i="6.05,252,1701158400"; 
+   d="scan'208";a="4939041"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 17:32:14 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.05,252,1701158400"; 
+   d="scan'208";a="6159021"
+Received: from kailinz1-mobl2.ccr.corp.intel.com (HELO [10.249.169.136]) ([10.249.169.136])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2024 17:32:08 -0800
+Message-ID: <9577ec59-fa05-4eea-b0ae-312d9531ce61@linux.intel.com>
+Date: Thu, 8 Feb 2024 09:32:05 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,155 +48,124 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-From: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [REGRESSION] Failed buffer allocation in Tegra fbdev
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Diogo Ivo <diogo.ivo@tecnico.ulisboa.pt>, thierry.reding@gmail.com,
- vdumpa@nvidia.com, joro@8bytes.org, will@kernel.org, jonathanh@nvidia.com,
- baolu.lu@linux.intel.com, jsnitsel@redhat.com, jroedel@suse.de,
- linux-tegra@vger.kernel.org, iommu@lists.linux.dev,
- regressions@lists.linux.dev
-References: <bbmhcoghrprmbdibnjum6lefix2eoquxrde7wyqeulm4xabmlm@b6jy32saugqh>
- <20240123151508.GR50608@ziepe.ca>
- <pgund4coabp5pdlmwze5o2d7ogrdncktqz267yzukjcvmikudc@7svrwdci7ujl>
- <55cab5e0-0abf-47d0-becc-05cdf1d22fac@arm.com>
- <20240124170300.GU50608@ziepe.ca>
-Content-Language: en-GB
-In-Reply-To: <20240124170300.GU50608@ziepe.ca>
+Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Longfang Liu <liulongfang@huawei.com>, "Zhao, Yan Y" <yan.y.zhao@intel.com>,
+ Joel Granados <j.granados@samsung.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v12 13/16] iommu: Improve iopf_queue_remove_device()
+To: Vasant Hegde <vasant.hegde@amd.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>
+References: <20240207013325.95182-1-baolu.lu@linux.intel.com>
+ <20240207013325.95182-14-baolu.lu@linux.intel.com>
+ <BN9PR11MB527603AB5685FF3ED21647958C452@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <693ee23d-30c6-4824-9bb2-1cfbf2eccfef@linux.intel.com>
+ <f856519f-419c-1901-b8bc-3e338873157f@amd.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <f856519f-419c-1901-b8bc-3e338873157f@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 24/01/2024 5:03 pm, Jason Gunthorpe wrote:
-> On Wed, Jan 24, 2024 at 11:46:59AM +0000, Robin Murphy wrote:
->>>>> This may be connected with an error in of_iommu_configure() that
->>>>> became visible after commit 6ff6e184f1f4d:
->>>>>
->>>>> [    1.200004] host1x drm: iommu configuration for device failed with -ENOENT
+On 2024/2/8 1:59, Vasant Hegde wrote:
+> Hi Baolu,
+> 
+> On 2/7/2024 5:59 PM, Baolu Lu wrote:
+>> On 2024/2/7 10:50, Tian, Kevin wrote:
+>>>> From: Lu Baolu<baolu.lu@linux.intel.com>
+>>>> Sent: Wednesday, February 7, 2024 9:33 AM
 >>>>
->>>> Hmmm
+>>>> Convert iopf_queue_remove_device() to return void instead of an error code,
+>>>> as the return value is never used. This removal helper is designed to be
+>>>> never-failed, so there's no need for error handling.
 >>>>
->>>> This is a new logging, so it doesn't necessarily mean something has
->>>> changed in the code flow.
+>>>> Ack all outstanding page requests from the device with the response code of
+>>>> IOMMU_PAGE_RESP_INVALID, indicating device should not attempt any retry.
 >>>>
->>>> It seems the issue is something in there is returning ENOENT when it
->>>> probably should be ENODEV, but I haven't been able to guess where it
->>>> comes from.
+>>>> Add comments to this helper explaining the steps involved in removing a
+>>>> device from the iopf queue and disabling its PRI. The individual drivers
+>>>> are expected to be adjusted accordingly. Here we just define the expected
+>>>> behaviors of the individual iommu driver from the core's perspective.
 >>>>
->>>> Can you do some tracing and figure out where under
->>>> of_iommu_configure() this ENOENT return code is from?
+>>>> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
+>>>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>>>> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
+>>>> Tested-by: Yan Zhao<yan.y.zhao@intel.com>
+>>> Reviewed-by: Kevin Tian<kevin.tian@intel.com>, with one nit:
 >>>
->>> I did the tracing and found that the ENOENT is coming from
->>> sysfs_do_create_link_sd() in the following function call chain:
+>>>> + * Removing a device from an iopf_queue. It's recommended to follow
+>>>> these
+>>>> + * steps when removing a device:
+>>>>     *
+>>>> - * Return: 0 on success and <0 on error.
+>>>> + * - Disable new PRI reception: Turn off PRI generation in the IOMMU
+>>>> hardware
+>>>> + *   and flush any hardware page request queues. This should be done
+>>>> before
+>>>> + *   calling into this helper.
+>>>> + * - Acknowledge all outstanding PRQs to the device: Respond to all
+>>>> outstanding
+>>>> + *   page requests with IOMMU_PAGE_RESP_INVALID, indicating the device
+>>>> should
+>>>> + *   not retry. This helper function handles this.
+>>> this implies calling iopf_queue_remove_device() here.
 >>>
->>> of_iommu_configure() -> iommu_probe_device() -> __iommu_probe_device() ->
+>>>> + * - Disable PRI on the device: After calling this helper, the caller could
+>>>> + *   then disable PRI on the device.
+>>>> + * - Call iopf_queue_remove_device(): Calling iopf_queue_remove_device()
+>>>> + *   essentially disassociates the device. The fault_param might still exist,
+>>>> + *   but iommu_page_response() will do nothing. The device fault parameter
+>>>> + *   reference count has been properly passed from
+>>>> iommu_report_device_fault()
+>>>> + *   to the fault handling work, and will eventually be released after
+>>>> + *   iommu_page_response().
+>>>>     */
+>>> but here it suggests calling iopf_queue_remove_device() again. If the comment
+>>> is just about to detail the behavior with that invocation shouldn't it be merged
+>>> with the previous one instead of pretending to be the final step for driver
+>>> to call?
 >>
->> What's the call path leading up to that? If it's the one from
->> host1x_device_add() then it's expected and benign - for fiddly reasons,
->> iommu_probe_device() ends up being called too early, but will soon be run
->> again in the correct circumstances once we proceed into
->> host1x_subdev_register()->device_add(). That will have been happening for
->> years, we just never reported errors in that spot before (and frankly I'm
->> not convinced it's valuable to have added it now).
+>> Above just explains the behavior of calling iopf_queue_remove_device().
 > 
-> Hmm. Prior to
-> 
-> commit 14891af3799e ("iommu: Move the iommu driver sysfs setup into
-> iommu_init/deinit_device()")
-> 
-> The error from iommu_device_link() was ignored. It seems like for most
-> of the years the probe actually succeeded, just with a mangled sysfs?
+> Can you please leave a line -OR- move this to previous para? Otherwise we will
+> get confused.
 
-Hmm, yeah, I suppose the iommu_group/<n>/devices/ dir just didn't get 
-populated and nobody noticed or cared (which TBH doesn't really surprise 
-me for a case where a kernel driver is expected to manage the IOMMU 
-anyway such that it's pretty much irrelevant to userspace).
+Sure. I will make it look like below.
 
-> Though that host1x_device_add() ignored the return code does make me
-> wonder..
-> 
-> This is the only clue I see:
-> 
-> commit c95469aa5a188384ccf8ac520ece931c66caf8aa
-> Author: Alexandre Courbot <acourbot@nvidia.com>
-> Date:   Fri Feb 26 18:06:53 2016 +0900
-> 
->      gpu: host1x: Set DMA ops on device creation
->      
->      Currently host1x-instanciated devices have their dma_ops left to NULL,
->      which makes any DMA operation (like buffer import) on ARM64 fallback
->      to the dummy_dma_ops and fail with an error.
->      
->      This patch calls of_dma_configure() with the host1x node when creating
->      such a device, so the proper DMA operations are set.
->      
->      Suggested-by: Thierry Reding <thierry.reding@gmail.com>
->      Signed-off-by: Alexandre Courbot <acourbot@nvidia.com>
->      Signed-off-by: Thierry Reding <treding@nvidia.com>
-> 
-> Which is no longer happening anymore as failure of
-> iommu_probe_device() will not cause the dma ops to be setup.
-> 
-> So, if everything still works and something else is calling
-> of_dma_configure() prior to using the struct device for any DMA
-> operations (eg because a driver is always probed?) then we should just
-> delete this call.
+/**
+  * iopf_queue_remove_device - Remove producer from fault queue
+  * @queue: IOPF queue
+  * @dev: device to remove
+  *
+  * Removing a device from an iopf_queue. It's recommended to follow these
+  * steps when removing a device:
+  *
+  * - Disable new PRI reception: Turn off PRI generation in the IOMMU 
+hardware
+  *   and flush any hardware page request queues. This should be done before
+  *   calling into this helper.
+  * - Acknowledge all outstanding PRQs to the device: Respond to all 
+outstanding
+  *   page requests with IOMMU_PAGE_RESP_INVALID, indicating the device 
+should
+  *   not retry. This helper function handles this.
+  * - Disable PRI on the device: After calling this helper, the caller could
+  *   then disable PRI on the device.
+  *
+  * Calling iopf_queue_remove_device() essentially disassociates the device.
+  * The fault_param might still exist, but iommu_page_response() will do
+  * nothing. The device fault parameter reference count has been properly
+  * passed from iommu_report_device_fault() to the fault handling work, and
+  * will eventually be released after iommu_page_response().
+  */
 
-I've considered that before - arguably it could have been removed when 
-Mikko implemented the full bus model, but now I kind of don't want to 
-since it's one of the remaining few that *is* still in the right place 
-where it's always meant to be. The correct fix to meet the original 
-expectations *should* be simply:
+Best regards,
+baolu
 
------>8-----
-diff --git a/drivers/gpu/host1x/bus.c b/drivers/gpu/host1x/bus.c
-index 84d042796d2e..6cab950690a0 100644
---- a/drivers/gpu/host1x/bus.c
-+++ b/drivers/gpu/host1x/bus.c
-@@ -455,11 +455,11 @@ static int host1x_device_add(struct host1x *host1x,
-  	device->dev.dma_mask = &device->dev.coherent_dma_mask;
-  	dev_set_name(&device->dev, "%s", driver->driver.name);
-  	device->dev.release = host1x_device_release;
--	device->dev.bus = &host1x_bus_type;
-  	device->dev.parent = host1x->dev;
-
-  	of_dma_configure(&device->dev, host1x->dev->of_node, true);
-
-+	device->dev.bus = &host1x_bus_type;
-  	device->dev.dma_parms = &device->dma_parms;
-  	dma_set_max_seg_size(&device->dev, UINT_MAX);
-
------8<-----
-
-...except you've now also broken that at the same time by removing the 
-dev->bus check from of_iommu_configure() :(
-
-> Robin do you know more? Specifically where is the "soon be run again"?
-
-I can't say why it's done in quite such a roundabout manner by 
-host1x_subdev_register(), but as I called out, we quickly get to the 
-actual device_add() call, wherein things proceed as normal. The only 
-thing going wrong here is that we "replay" the iommu_probe_device() call 
-*before* it ever could have happened normally.
-
-Frankly, for all you protest whenever I call you out for demonstrating a 
-lack of understanding of this tangled mess, I sure do seem to spend a 
-lot of time explaining it to you... :/
-
-I've never claimed it's *not* a horrible mess, but at the risk of 
-repeating myself, it *is* fragile, and the consequences of mucking about 
-with it are tricky to reason about even when one does understand all the 
-history of how it's intended to work vs. what actually happens. To coin 
-a phrase I find enjoyable, this is definitely "F around and find out" 
-code; as this and other threads show, now you're well into the finding 
-out part.
-
-> Was the above issue fixed in commit 07397df29e57 ("dma-mapping: move
-> dma configuration to bus infrastructure") ?
-
-Um, no. That commit was no more than code movement essentially 
-separating PCI from non-PCI configuration; merely host1x didn't need to 
-share the full path which ended up as platform_dma_configure() since 
-host1x doesn't support ACPI. Once again the fact that I've had to 
-explain that drives me to utter despair...
-
-Robin.
