@@ -1,142 +1,100 @@
-Received: from mail-oo1-f41.google.com (mail-oo1-f41.google.com [209.85.161.41])
+Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27C1B7CF31
-	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 16:07:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6F907D40D
+	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 16:09:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707408451; cv=none; b=G/IXkqVNhQh6fxgr/T0diivYJNsndKpp8SZj6Yd+yt8ZLeHyWZRnbzRhMgvuOHKv50gTo7e1XEm3se//2BtXJqsnG4pf4pkXAJMZYaqV8hlNEww/Ffpn7so3r1KIa1TGwkU0ewGhwIMTbwbd+eFLiOFloKhdj91qdM01Uikn1Ik=
+	t=1707408576; cv=none; b=WA9pBU9KxeNLafeMT6mU43hgA/ImkqGuBDwd/1KteyBiGWA4RZiRhTq8j9SuxtcwftzQTTTzlb+h/CfathzFyv3Vl3dyXh1zd9RqJGskDAZljw26hkp2T7gYT8F4N1hsE/VNmO8DUVHLEqt982yf75zVnOzqOU4nzsyxa/nL0N4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707408451; c=relaxed/simple;
-	bh=g6TG9tOauKZ8BpiDJn7CSG4iNbEKj1ciS146rzGvjU4=;
+	s=arc-20240116; t=1707408576; c=relaxed/simple;
+	bh=aA68IYVKcNH83wAWFAiDF7WtWkrD2FpXaZIUMkfZUgc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OMx3cteeQ6MdZzeQBQUgAZJRzJOE/8g/Us+stYdFWSAq6OZyRm3XqltpI9rvGAIO0AHdq7fHtt4BX5OpvXdOVS3/TPXHVVLZztEu7ViqkAyxktkZ5M5ZNv0pOBTWkW7oEKiIB1Xgz/t1hRdGtDzhXNR6Z3YqZGSUHNUtsWMpEOY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=H7BmAxBc; arc=none smtp.client-ip=209.85.161.41
+	 Content-Type:Content-Disposition:In-Reply-To; b=ucXBfXhCxDkQ0w1Tc3wRT6bwmWEe3ADbEuK6n2eoP4GUNC/NGQLy9KkvKcNzlRwApmGsuDcNJjVTbSA/z3ZHr5CDOdISQJVZ/xwHG72L1K+1NcZRvs+IQkzVDDw7ki1KDn8TRXXgjcvGiJyPyi3fDhmHno1dX3Fdm6xNZI6lfV0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=FUunC66R; arc=none smtp.client-ip=209.85.160.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="H7BmAxBc"
-Received: by mail-oo1-f41.google.com with SMTP id 006d021491bc7-599f5e71d85so1042202eaf.3
-        for <iommu@lists.linux.dev>; Thu, 08 Feb 2024 08:07:29 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="FUunC66R"
+Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-2191b085639so771746fac.0
+        for <iommu@lists.linux.dev>; Thu, 08 Feb 2024 08:09:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1707408449; x=1708013249; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=efRxNeADBIxIA9tcHLUK3qQ/MulYKJQHDKvL8EF8Vn0=;
-        b=H7BmAxBcbY6ynnXPcDw1+cK7gBXKxpx73GLE6Uoo2zEebgBAxofIn8X28tjfcPp6nQ
-         E260G7Ky5FPdgvLfTmFi/yZt0sEXHgQoIb65WAMr9pWP8V2f7RQ/lGbBouhM3oT+7+wt
-         nlOvu5WwDfQtiSAb8YVqkWBmoYITWWWW8bUJLlpa47Vs/BC5+5IdmvNcSVFtzi/pbWFF
-         N1Gv6JCGHCV09qW7VmSReeW+/BJkOaifChx7c9QpRTh1BcIJw/ccbZ/IumkPrd/XqeT7
-         n53RPojUQHfKNqPtSPslD0U5ZDywPuQakK3j9aUE5bvjG1iD1ee+fzXcO8G1kffBhN8B
-         OM5Q==
+        d=ziepe.ca; s=google; t=1707408573; x=1708013373; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=aA68IYVKcNH83wAWFAiDF7WtWkrD2FpXaZIUMkfZUgc=;
+        b=FUunC66RhYgArHO3oQ/cFniGfd51utTnjZ90QCmQGlj4usiBt34mPAJdvb1hrYBlDF
+         pW9wHv/gxWwE6JqmXklc045W7N2D68JwqijQ4RkVa8lknMvJEqI7XqM8zVlAsai1n3IY
+         1tZZOGrmn4AiVzFH3+tl/eyKCpeiovYOGD7LTYKSyqc8Q8kK1l+tEVuu1oztMpFsRA3/
+         3hpeEL1Oj2PxeMbuU25C7umylQReeLhO1FTb4gLebhhRMmksRFBrMZmnP4vHS0grve9M
+         R+SfKkA3d6h4wm4rXtYrVRm9Sz0VLQRB7gsOhu714XKxzuzuaA29h0bp72cORwQI2jKJ
+         aGJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707408449; x=1708013249;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=efRxNeADBIxIA9tcHLUK3qQ/MulYKJQHDKvL8EF8Vn0=;
-        b=Gb8Mz7dA83JVRkr/idiT6CGVeuRzAbVLTYCIFEJ+4mkS5+rncc2hMkGC/JdYmFl8tY
-         djH3LRtCGmrpuubinYjriYLA8Wc5rIXYFY/tye+O9angKUUYkyD93Kl9aOhZOPBAL7pi
-         o1mreMhaZcGy0CKKgHJbng4bKSYGx1xK4Ko0P58Ev1PiDNrDmowN43Gr+wpKmcu72vdj
-         0LLw48jKqhwkX+Lyd8lzgzH6/iLgwwaM9x+C3nAxqU5+cmYeOa4MrP1KN+//UK78gC3K
-         hj+C10zq+nvS0mcx/Av8s5kiYMSFQBy5xxJld2P7rLwxXB0lhwSNTxpKyjz0owOHIfJe
-         t4vw==
-X-Forwarded-Encrypted: i=1; AJvYcCUyMo8kbFLUmvlh3PGqqfvHllEqrNSN9Sh6/UfnrKCic9iZorYAcH52zH17miEsD4j/kswxOLhKTZWS5LutWTeOa3XtvZI=
-X-Gm-Message-State: AOJu0Yxm7xr6Bz/G2nHWR0bU73xW73Rs9h5i85MvqEDs/oKnpgGTuOvc
-	yicm7V6Tc9S805khOmBrB2zcrD6NNftkp7hFkm4+unQYOKXx7jHtxIN1PtPn7KY=
-X-Google-Smtp-Source: AGHT+IEXKYsO42nxhmzaN7rxdYD+Mb102jIrs8Ywh1fTKgu3Paga7tcZZUObDYHcPgIKVZSm9jhMXw==
-X-Received: by 2002:a4a:9217:0:b0:59c:b57a:5746 with SMTP id f23-20020a4a9217000000b0059cb57a5746mr10164403ooh.4.1707408449174;
-        Thu, 08 Feb 2024 08:07:29 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVvgoXVG3seSA31s1LZwK8Xhs7X2vtJDLemU5iaTtTg3NLGxY1j/WZI497ShONFfzst1cao6S9XwlYEfXeGM5CkwkjWz+Fjt2/rhCsyHcd/P10lkWcUy6wQp9xhmNWSBjQlitIy2tluo+67PPiChWYvuZOFZSLqvqWbpMD4WCRBFN1ND0OsCpK9ZKxyjefxBS9W1O5KPv4MTGbAcdZEfjVfDnrxp7fPySX4kY3WqSl8rp4JUjtCfID8Ryc50ZYF1slaVKGPGynMcH56RocCzfOZikm7aBVp+wKAlaQ+5Go0vLTjp2lXXbihu+VOjba3cn8AIJJY8cgLKq+THAQyYWxbjmDaQUQyCGaBobjKPQmciTvKepTyP+e4TWc1ljnsS/ECu0Q=
+        d=1e100.net; s=20230601; t=1707408573; x=1708013373;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aA68IYVKcNH83wAWFAiDF7WtWkrD2FpXaZIUMkfZUgc=;
+        b=gTaYWVTsTh853ggotUVP8qNZDyWaHJeD3EtPUGGcwtbBCFH0b9A4UzdhUnqg/MeiLJ
+         TEKaZdmBOwv4ag0iLpJm05Xioly9kBex6LeNG3unTpgr2rrNy3Pl8C4Z7pfKVq9NVP+b
+         kE9YdK5xnt4RpQNqR4JIDOYH355Ea/GnLYFbT+0KY2aaAq2blRHgFIouy+YVdKeNzUQo
+         PoskUSe1bC7XKroQp7IVdSeo3ihYVxXfKy1kzLMYm98H1hQXh9LIDqe0BbhRydkBk38D
+         IE9AJqlI1pO6ZV7hCb6nAdQ1bBmPMZZnqYcFFItWmHaIsQSU4qmV2P7gU4SlfF84OFhD
+         57/w==
+X-Forwarded-Encrypted: i=1; AJvYcCWmh8sooGc8F0gjEtL3Vw2ptC0jjLm4TlPqzd/V+I/XH0kGl+lExpLMgINhK9SfWrSVKbXwqt1NVbuq76uZFdWGpZtYLFQ=
+X-Gm-Message-State: AOJu0YxImbv4ykK8M1zNvu8OchcCoWZRsOPMrdLfe11KUpMZTcKO/wOc
+	Ehp/MFQcVmCizPBfHD/5QByhRFoFXJXWlpvL6fOZZGUIKANBppaiaQL8Lv7z1Li7l85uMboItr6
+	x
+X-Google-Smtp-Source: AGHT+IErIu5NJVT0hLIHW0fj+It0NY8NAUd0q2LBBL3NnmeMbz2sfYWipPYkByL/AMAQc/lEsNvDeQ==
+X-Received: by 2002:a05:6870:1696:b0:210:a32e:e7d5 with SMTP id j22-20020a056870169600b00210a32ee7d5mr10283269oae.36.1707408573724;
+        Thu, 08 Feb 2024 08:09:33 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUBsHol45yKoashMGQhkc/ZTmzPGkNoZ++2p0ShvaFoPWGrfOelckT9dqTmS4wjjoV/hOiM4t6sQarfrrhhe5BCELoSeiyNUaH+VdQhpIE5DK+KmZb2oYkGgB6Y5WpSyct9kOkpP/kiP2V8XTobJYBqawgaXmM1zL+BDYvKAkRA6MnquX3Sm+I8vC1Qzn7GWAQXAaB0vetnk7b00v3T9H9f
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id y13-20020a4ae7cd000000b0059d1cdc150esm69257oov.37.2024.02.08.08.07.28
+        by smtp.gmail.com with ESMTPSA id mt15-20020a0568706b0f00b00219a1bf0e44sm792408oab.47.2024.02.08.08.09.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Feb 2024 08:07:28 -0800 (PST)
+        Thu, 08 Feb 2024 08:09:33 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rY6vv-00EzEy-Nb;
-	Thu, 08 Feb 2024 12:07:27 -0400
-Date: Thu, 8 Feb 2024 12:07:27 -0400
+	id 1rY6xw-00Ezhm-Gh;
+	Thu, 08 Feb 2024 12:09:32 -0400
+Date: Thu, 8 Feb 2024 12:09:32 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Cc: "kvmarm@lists.linux.dev" <kvmarm@lists.linux.dev>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"maz@kernel.org" <maz@kernel.org>,
-	"oliver.upton@linux.dev" <oliver.upton@linux.dev>,
-	"will@kernel.org" <will@kernel.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"jean-philippe@linaro.org" <jean-philippe@linaro.org>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>
-Subject: Re: [RFC PATCH v2 0/7] iommu/arm-smmu-v3: Use pinned KVM VMID for
- stage 2
-Message-ID: <20240208160727.GS31743@ziepe.ca>
-References: <20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com>
- <20240208153532.GO31743@ziepe.ca>
- <416d8150d3ce4a67901a3ff7a596e4e8@huawei.com>
+To: Nikhil V <quic_nprakash@quicinc.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Charan Teja Kalla <quic_charante@quicinc.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu: Avoid races around default domain allocations
+Message-ID: <20240208160932.GT31743@ziepe.ca>
+References: <e605b38a2d40b1e7589e10110c6d3ece35f6af4e.1705571894.git.quic_nprakash@quicinc.com>
+ <139a9abe-75d8-3bda-3ec9-a14a493eb2a9@quicinc.com>
+ <20240201162317.GI50608@ziepe.ca>
+ <9ba9c4fa-3fa9-c6c4-ce77-0c6cd5e23680@quicinc.com>
+ <20240207145656.GJ31743@ziepe.ca>
+ <37ab8689-5e0d-4166-bad6-84d3c51446ca@arm.com>
+ <20240208011305.GM31743@ziepe.ca>
+ <a93e93dd-5cb8-48ee-bf8d-b3bbb19507d6@arm.com>
+ <1cb6a33f-57e8-f3d0-9098-755af70cda41@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <416d8150d3ce4a67901a3ff7a596e4e8@huawei.com>
+In-Reply-To: <1cb6a33f-57e8-f3d0-9098-755af70cda41@quicinc.com>
 
-On Thu, Feb 08, 2024 at 03:49:20PM +0000, Shameerali Kolothum Thodi wrote:
-> > On Thu, Feb 08, 2024 at 03:18:30PM +0000, Shameer Kolothum wrote:
-> > > Hi,
-> > >
-> > > On an ARM64 system with a SMMUv3 implementation that fully supports
-> > > Broadcast TLB Maintenance(BTM) feature as part of the Distributed
-> > > Virtual Memory(DVM) protocol, the CPU TLB invalidate instructions are
-> > > received by SMMUv3. This is very useful when the SMMUv3 shares the
-> > > page tables with the CPU(eg: Guest SVA use case). For this to work,
-> > > the SMMUv3 must use the same VMID that is allocated by KVM to configure
-> > > the nested stage 2(S2) translations.
-> > 
-> > Ah so you are going all the way and looking to enable BTM within a
-> > vSVA environment too?
-> 
-> Yes, eager to get the vSVA support 😊 Its been ages and tired of rebasing for our
-> private git for the vSVA cases!.
-> 
-> Also for Host SVA, since we are using S1 now, I don’t think this matters that much.
-> 
-> (I do have some questions on the iommufd based vSVA , but I will come back to it,
-> once I cleanup my Qemu branch for that.)
+On Thu, Feb 08, 2024 at 08:47:42PM +0530, Nikhil V wrote:
 
-Oh, I think I left a comment someplace that you also need to signal to the
-VMM that the kernel supports vBTM, probably via new flag in the
-iommu_hw_info_arm_smmuv3
+> Also, as Jason pointed out, this fix would not allow changing the
+> default domain for an iommu group. We didn't have any usecase for
+> changing default domain, hence couldn't see any issues with the fix
+> proposed. So, we would have to rework the patch for it to be
+> upstream ready. Any suggestions for this would be really helpful and
+> appreciated. Thanks!!!
 
-+ *
-+ * Note that these values reflect the raw HW capability, without any insight if
-+ * any required kernel driver support is present. Bits may be set indicating the
-+ * HW has functionality that is lacking kernel software support, such as BTM. If
-+ * a VMM is using this information to construct emulated copies of these
-+ * registers it should only forward bits that it knows it can support.
-+ *
-+ * In future, presence of required kernel support will be indicated in flags.
-+ */
-
-> > If someone is using it I wonder if we need to get a more solid answer
-> > on the races with invalidation an ASID reassign.. I added some notes
-> > in comments in part 2 after I audited all of it.
-> 
-> I saw that one. The main point here is, if we guarantee that BTM is only used
-> for a nested S2 case and there will be a pinned KVM VMID for that, I am 
-> not sure we need to worry about any S2 related conflicts in TLBIs.
-
-Sure for the S2, aside my other note, but my remark here was about the
-S1 ASID reassign logic. I was sort of OK to leave it as it was under
-the idea that BTM support wasn't turned on.
-
-I'm concerned it is another iommufd triggerable security problem..
+I think you can lift and duplicate the check into the callers and that
+way restrict it only to the probe paths.
 
 Jason
