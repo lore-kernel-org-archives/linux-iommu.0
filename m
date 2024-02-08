@@ -1,75 +1,78 @@
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68FC22556D
-	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 18:48:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F249623769
+	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 19:03:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707418131; cv=none; b=oP72rlFIk+c/jSJps2j6/bqEf/yGVjKX6trnMwvssR6b6cv/I+3GXHhejGk4lu3s/COA9jXVV7QbOzBpsDz+sSQdEPdW+tCJmajUunkvVzEv2nZdemH7c2bA92QtT6dOo6s9zR2ribkxe7GrYY17Bwmp3FMlbGUDulEiu4uaLLE=
+	t=1707419018; cv=none; b=PJmID8KwLTqvZF4pPkF8ZWRhxra44TZE4d7KRGI+1SVLHCU/00nxkJnzurpp/D+IvpkV/61TlHLtlQqFrrNrpoXHA1mThgSxJSowG9eGWrBiFutmbFdGG9s0CkTcaTXyhGLRltVfiC//U6AVAIgtiv6JCLuLbRgeWbGM1lbwHgA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707418131; c=relaxed/simple;
-	bh=l9B1crtLmC8wr94sgdwoGZm1rqiFKvSV4wQ1AznO9ik=;
+	s=arc-20240116; t=1707419018; c=relaxed/simple;
+	bh=xSrEmq7LX/mf7kjRVCcVqE63nqybsIK3WEDZXrLn2I8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FpfDtEtsFcP664JJFF5Wpc3CNHxBuYSjDF3DRYQKGIA5AkAJRb+w04enFYUg/v4x1dcr7cMDH8W4kvSWp7QMdp4D8TsX1b20FHIPPE+iG7vRq4OZc8/FlcGqCaslnmRKj6KMmrX31JDKkNIGp2ccl/85dhCfmIEB4lTMGvqNTa4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=YNd+jSHn; arc=none smtp.client-ip=209.85.167.169
+	 Content-Type:Content-Disposition:In-Reply-To; b=OM424AWwNyhjbPhe3DCytoYLnd8BP+1vw96PwA8h5VAE2mUXrE233h1zEtiRgaXhBv3cTqj2HzaoP8Y6r7HJJ0ZBXRYZc2eCbasltNPXoLUiDoVdHjDvwjQPkHpN7FQiS3LDby4kU6X1VpDx4ozOvZ4C4dtrT0dO2RyW8V5Ctzk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Do/e6v+R; arc=none smtp.client-ip=209.85.210.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="YNd+jSHn"
-Received: by mail-oi1-f169.google.com with SMTP id 5614622812f47-3bbd6ea06f5so103346b6e.1
-        for <iommu@lists.linux.dev>; Thu, 08 Feb 2024 10:48:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Do/e6v+R"
+Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-6ddca59e336so110949a34.0
+        for <iommu@lists.linux.dev>; Thu, 08 Feb 2024 11:03:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1707418128; x=1708022928; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1707419015; x=1708023815; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ygDu3YQbx1Ne0PocB+h0nvt6wtOoJUNDCVnZeH/e2rg=;
-        b=YNd+jSHnNY0CiPL0Wu1wrnODDXkhpP99Awa9ryT/Gagn2ICDuAoJvSxtT2skdhfJpe
-         1/RnpfeHG6whpucQjIGKjfz5rfsEwvmo27EssBcuwE+a7EvkrAyeHHp5jfotjXdtw7pX
-         zPVAzFTc/0X7f0pEtfS+h3Aj+HYE+Qdt4TSxxh7ByB4MC57GNzSyi7X5UtAJEXBNjxUr
-         R94gUOpAOOj5ZYA0hBSmA+jqaPG6PxCnxa5IDvrXrDtDrSpjFAyWzBrGG6syQFRIAJnB
-         me2uzSAi9NlX9x1R2kzhiVcoCGJxgsv5XjKHvn7vZ3PMFbUEKXXnRE2zvbP7tZsoc4Et
-         5tqw==
+        bh=KdDcEqWuIINSVR+jw/L+DPVNK94k2ebjg86/lqBzhHY=;
+        b=Do/e6v+R8mBCila1cnKriSoZKlry6FNOpkxydQZgl6xcH6c0ikdOaCSqz+LlS0mMMo
+         ec0w3HI/h2in6EMzASxZWS6i4Y8Qt+IJEJuNNqkFBdup4J+Lie/oWaO5yZperH6P8Npi
+         VbKp8Tbh8zMVsbH325giDvDrqFJtup4v67CcJ9wnVdayxARUKgkooGSfZ8Alm4wa6eO5
+         mvSqvzLkPJzpzPm01zkaOB23FmL+RPe0AAjuq32CH+4fR1bTm+udlzElndpMxyPgiCyu
+         UyHy1qAxR8rhHrqeuVziFZ6gpDK1goCspuAMhB13VtFMCuv64haw73LIV32B5usiJ1x2
+         kpWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707418128; x=1708022928;
+        d=1e100.net; s=20230601; t=1707419015; x=1708023815;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ygDu3YQbx1Ne0PocB+h0nvt6wtOoJUNDCVnZeH/e2rg=;
-        b=JpSOPM2k97UuM7FnCwIehgzqy9H1NaWk7RIToXDw5RdK9QXv0+bD+JLy+3J2dNuyJA
-         ttU3lJa1S+zNCO9T7VKbbbhUVlppJrAdqjA+OsX4zZJznDKGyV/tjtHJKmONHNsCJS3G
-         e1cGEUHwtARp4StwXfwaw6NFgO0vFnhfojUxT+JCIt/3Cvn2X4ZIH2IUFfmvtmKAR7tB
-         IclskJNsyPZh6QRkxR+vMvxvSwhgkUdZJkNbBBTOEvPfeQFpnR/Nl8cmpw2KhhfT4bDk
-         DC5nq/zepJJUB+HR5cD+m/dKsr0mWHg+AkSv/4A1Ep1fdW/soO1vLbDdrNjFPsMnoBn0
-         P8PQ==
-X-Gm-Message-State: AOJu0Yx0x/RmTZcn4URhDZGig89bKGjLkxRs+21mOR0PTsdYGiPThJf9
-	DthavbaZwgoQjY7SJRpTxPowr/EH/H+dOdtn2yTw5F0Vv1Y2Fx7dmHMPPdDhJzE=
-X-Google-Smtp-Source: AGHT+IHxy7gzmE9dPDC8F9T9CEaV7UqE0w0nlb6lhoVRDluH1ero9UeM9+phpD2kuQ5tdUVnkoRw9A==
-X-Received: by 2002:a05:6808:2802:b0:3bf:f53a:cc66 with SMTP id et2-20020a056808280200b003bff53acc66mr983689oib.14.1707418128305;
-        Thu, 08 Feb 2024 10:48:48 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCV2jMI7COXOI38WMIrOo1fY1mbJ5wnoQD3EzkVY31IMRaPiwgCG16DQGrXx8xxx5/e616/CZN2e/MiC/NYet+Mz9Y95o0AmzEGdQUWRYGxDsG1HULtpOqU0EILd0fhiLLKRzs2FhyymmBtJNQilv4srxW3LjnWhgFFbFuc/Hjhty+D/W3CdWDk=
+        bh=KdDcEqWuIINSVR+jw/L+DPVNK94k2ebjg86/lqBzhHY=;
+        b=Og4Yn+oOIvYF9OARf0Gs7dovJrt5M2KtVb7+tZbp8DRSnxTTIQVIkT5SWrBeUNtP+S
+         VhArrvsY00+3dc0hJJBHwGKskF8c43QjjTVn8QE/wzkh02ahhcg8wAlu7suChs69zkQw
+         TyzGuunfw2wbQl87S8jm6JjYDdRq+w1FQUkNAswsR2yNVa18BDAjtkF0zylP7e6eMWxN
+         MMUc1qlDmrBKjZpCDRJXaxTNSqY4q1Y5ghHuCbM/qozaeVctcyPXjrjKKIFH2W1VTHZ4
+         q26T1aUx7Fz4ugeI1Ja9jKZLKpmbIoZorAuypZje4jQ7yNN7FW4JSexiEY7x+gRVluLL
+         wDdg==
+X-Gm-Message-State: AOJu0YyY/cUjtVYhl1g1bmWLO3Peel0bHHvw5CCVvqTTcoYAPfWM+SVe
+	J+3ZcjoN6+eBHVLawMcZ7panAgZRr6wyDtXcEF3ILcCX16AEwAlBZSiyWoDUAA0=
+X-Google-Smtp-Source: AGHT+IF8xr6EocmnY9pso64hQgt8n5zwoOdzh1jKZtwVPNts5tr9JCA8oKLdj7IdktAxBCQZirFf4w==
+X-Received: by 2002:a9d:618b:0:b0:6e1:213a:e551 with SMTP id g11-20020a9d618b000000b006e1213ae551mr1889618otk.3.1707419014790;
+        Thu, 08 Feb 2024 11:03:34 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCW2sA9muWueHg42OR5m2fYtdgsz1zmzUWO6LhYtV5UqaAB4bx9V4gfwaXnswJX0D3egHuk2/NpGbap4B4ueS01/n29VMSBGhwkr5xQGD4M3AuOIViGxhI3hBJpsS/VC8ToPMeot5AuvEePQCXdx0mgFAcgcdFpSu5Lgfv76qTdNXlVcncBeCs4=
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id na23-20020a0568706c1700b002064d200143sm41140oab.12.2024.02.08.10.48.47
+        by smtp.gmail.com with ESMTPSA id bf14-20020a056830354e00b006e2c189c93dsm16987otb.2.2024.02.08.11.03.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Feb 2024 10:48:47 -0800 (PST)
+        Thu, 08 Feb 2024 11:03:34 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rY9S3-00Ffu7-13;
-	Thu, 08 Feb 2024 14:48:47 -0400
-Date: Thu, 8 Feb 2024 14:48:47 -0400
+	id 1rY9gL-00FiyW-IP;
+	Thu, 08 Feb 2024 15:03:33 -0400
+Date: Thu, 8 Feb 2024 15:03:33 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v5 12/14] iommu/amd: Initial SVA support for AMD IOMMU
-Message-ID: <20240208184847.GX31743@ziepe.ca>
+Subject: Re: [PATCH v5 10/14] iommu/amd: Introduce logic to enable/disable
+ IOPF
+Message-ID: <20240208190333.GY31743@ziepe.ca>
 References: <20240118073339.6978-1-vasant.hegde@amd.com>
- <20240118073339.6978-13-vasant.hegde@amd.com>
- <20240202152524.GA2606743@ziepe.ca>
- <f36ea0af-23db-7653-32e0-0a7b3941f801@amd.com>
- <20240206173457.GH31743@ziepe.ca>
- <0af9b44f-c78a-7e79-5c10-fe8d6e92f5bc@amd.com>
- <20240208174159.GW31743@ziepe.ca>
- <5ce55e42-d158-1675-f906-58b545e2b2b6@amd.com>
+ <20240118073339.6978-11-vasant.hegde@amd.com>
+ <20240201214949.GT50608@ziepe.ca>
+ <9d3579c7-66c3-3752-bad8-a8a8ebc5c74c@amd.com>
+ <20240206163657.GG31743@ziepe.ca>
+ <873201d4-57d1-e856-87c8-08e2ca71f0a2@amd.com>
+ <20240206175824.GI31743@ziepe.ca>
+ <0d626c74-aba5-bbb1-5fb4-b9be5577d71f@amd.com>
+ <20240208173158.GV31743@ziepe.ca>
+ <beee7947-9c1a-95b6-66d7-88e130fd2956@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -78,54 +81,70 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5ce55e42-d158-1675-f906-58b545e2b2b6@amd.com>
+In-Reply-To: <beee7947-9c1a-95b6-66d7-88e130fd2956@amd.com>
 
-On Thu, Feb 08, 2024 at 11:53:58PM +0530, Vasant Hegde wrote:
-> >> We are doing 1 SVA domain : 1 PASID : N devices model. That means we need to
-> >> check all these things while attaching *first* PASID to device. (That's what we
-> >> had discussed sometime back when I had all these things in feature_enable(SVA)
-> >> path).
+On Fri, Feb 09, 2024 at 12:07:16AM +0530, Vasant Hegde wrote:
+> On 2/8/2024 11:01 PM, Jason Gunthorpe wrote:
+> > On Wed, Feb 07, 2024 at 02:28:08PM +0530, Vasant Hegde wrote:
 > > 
-> > I thought I said you 1 PASID is not technically correct, but you could
-> > get away it it for a short term. You should be planning to support N
-> > PASIDs because that is what the API defines.
+> >>> You already know what is going to happen at the very start of attach,
+> >>> you don't need to "enable it after" just do it right the first time
+> >>> through.
+> >>
+> >> First time we will not know whether device will actually use fault handler or
+> >> not. All we will know is whether IOMMU and device is capable of PRI or not.
+> > 
+> > I don't understand this, you should know all of this before you get to
+> > setting the DTE. What is missing?
 > 
-> I am describing API in SVA context only. In that flow once we allocate a SVA
-> domain for a PASID, then all devices for that PASID is attached to
-> same domain.
+> In attach path we will know the device capabilities (like PRI) but we will not
+> know whether device is going to use it or not. Its like device has capability,
+> let us enable it without assuming device may use it.
 
-It is OK to take a shortcut here if it helps, but that is not the API
-model. Domains, SVA or not, do not have PASIDs. The only place a PASID
-comes is via the set_dev_pasid() argument and any domain should be
-attachable to any combination of PASIDs.
+I don't understand "device may use it"
 
-So the only place a PASID should be stored is in the elements of the
-invalidation tracking list of the domain. When you get that all
-completed it should all be uniform and a limitation like this should
-go away. But this is fine to hold over for a followup that completes
-the PASID support.
+At domain pasid attach time you have the domain being attached and
+information the device capabilities.
 
-> > You just trivially check these conditions at the top of set_dev_pasid, look at
-> > what I did for ARM:
+The decision is simple, if the domain is using PRI and the device
+supports PRI you enable PRI.
+
+This means you enable PRI when you attach the first PRI domain to the
+GCR3, which will require rewriting the DTE during set_dev_pasid.
+
+This is part of the same logical flow where you'd rewrite the DTE
+during set_dev_pasid to do things like IDENTITY and BLOCKING RID
+support.
+
+> >> If I have to enable PRI in attach path then I don't need to track number of
+> >> domain stuff. I can simply do something like
+> >> 	if (pdom_is_sva_capable(pdom))
+> >> 		// enable PRI in IOMMU
+> >> 		// enable device PRI
+> >>
+> >> and in detach path,
+> >> 	if (PRI is enabled)
+> >> 		// disable IOMMU/device PRI stuff
 > > 
-> > 	if (smmu_domain->smmu != master->smmu || pasid == IOMMU_NO_PASID)
-> > 		return -EINVAL;
+> > Each PASID can have PRI on or not, so you need to keep track of how
+> > many PASIDs are using PRI at any moment and keep things in sync that
+> > way.
 > > 
-> > 	if (!master->cd_table.in_ste &&
-> > 	    sid_domain->type != IOMMU_DOMAIN_IDENTITY &&
-> > 	    sid_domain->type != IOMMU_DOMAIN_BLOCKED)
-> > 		return -EINVAL;
-> > 
-> > For AMD "cd_table in_ste" means that the DTE points to a GCR3 table
-> > already. This is trivially tracked in the DTE programming in set_dte
-> > because you know if the dte is being configured with a GCR3 or not.
-> > 
-> > The other cases represent the situations where we know how to upgrade a DTE
-> > for those domains to one with a GCR3. Everything else is blocked.
+> > If there are no PRI handlers installed then the PCI config space
+> > should disable PRI and all the PRI bits flushed and disabled.
 > 
-> I got something similar. I have reworked set/remove pasid path completely.
-> I will try to post it soon.
+> If we don't have handler then PRI is disabled in attach device path only.
+>
+> So in detach path, if number of PASIDs are zero then we are good to disable PRI
+> (at least for the current usage model).
 
-Nice!
+So this is why you are having the problem above, the PRI logic should
+not be in the attach_dev path because that does not take in a PRI
+capable domaine (currently only SVA)
+
+It should be triggered in set_dev_pasid and remove_dev_pasid.
+
+I'm trying to get you to organize things so they are ready for the
+next steps and things are not in the wrong spot.
 
 Jason
