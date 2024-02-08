@@ -1,313 +1,133 @@
-Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
+Received: from mail-io1-f42.google.com (mail-io1-f42.google.com [209.85.166.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD4E7B3FB
-	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 15:28:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 868F67BAE7
+	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 15:34:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707406096; cv=none; b=Fgi0aE6ZCy1YTeB+XIBAMu68/6LLRh5joeI0kUGtofDI3JW90WMPmZ2d4yWA+gakLj7x19CdfVc4Wx7TGxZOIiIM5FcOIFH6yd7yiqNkPzM5xSbl1giPaDdFXc5WavhYGY4hcwKtUjI8fM5dOp6IEBWc1jDSRexG8k/4J5+yVrE=
+	t=1707406501; cv=none; b=W42IGT+fcUCEGDJtcuY7EmfkBf9pU3OxLfzgSpMjoEdk/hG/9CkZ47Ms5PHsZhRp1EwO7NOkC7scMIhdl4UaalxugTdjQGpXcJtOx4Uj8kHANBUcGOgAyit/UDbo2PajFgarz0dQYHjr7Uz3l5tdAgfgq0+SnYaP4VudTTvttuQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707406096; c=relaxed/simple;
-	bh=+xzuVSPNcfqZpWPZWSPx0KpSUax/mWHJAZ2oIVWTTRQ=;
-	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=NMz9fodzUp5fdzC9vE96OoazCSpEP99ZiAg7BBcPp15WceySZF7Fy3qPi+DjG9VMv0MlPQg7AYY9RTbgHXD89OchFqkZz8nbWJZLYm3rUg/3Nzw1GjzJy+w80ap2PLGQBW+F3hfHNdtd2AHpFn/DV6/cqBaO/jnsnJ+NaCwS8nY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--howardyen.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=oW38ibyG; arc=none smtp.client-ip=209.85.219.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--howardyen.bounces.google.com
+	s=arc-20240116; t=1707406501; c=relaxed/simple;
+	bh=t+l40GmP0QAn/4c0/ghq4xN+7pA+v/SJsg3gMQcxNKA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=mc3MKnn/Hk6HjyBqajIVFOA6GNHO+4YNe3h6PS/nUQEByZIRPMGN9cq0xdXP3uf1kIrTE3LU1AMMa8Smc7H0sf/sKTClaSS134ljCCZy90pkFuNYgLWTgqoHUcSQkpJLXG7/BKtsGk+d8cxFY4JTczGOOKkvB9VJZzXOm0GRO4M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk; spf=pass smtp.mailfrom=kernel.dk; dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b=MQ3HBP29; arc=none smtp.client-ip=209.85.166.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel.dk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="oW38ibyG"
-Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-dc6b269b172so1272155276.1
-        for <iommu@lists.linux.dev>; Thu, 08 Feb 2024 07:28:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b="MQ3HBP29"
+Received: by mail-io1-f42.google.com with SMTP id ca18e2360f4ac-7c3d923f7cbso9947439f.0
+        for <iommu@lists.linux.dev>; Thu, 08 Feb 2024 07:34:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1707406094; x=1708010894; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=4lN8ZSpv/Qf9hEb4poLR5IQ8TShLqeRG5AmsS5NPlec=;
-        b=oW38ibyGZwEfIz1x3EmsNUIPxsVSnZf2+B86Qf5bOWThyXj2dWZuGm91zp6AeiBP+g
-         MMDpKRZZmbCMB4zUqlWowVeeaSVamkdvfznyCPV23z8XS5Y/RRs7gAmpCixNahyro11h
-         RBq0sx9jBGA4b1QJRsljKoSmNkUbVuVcjq+Z463iZua1xA608AqdHGZQBt9oVoS4ZC4F
-         4wdezcR+1nfQ89OFJo3PUJSmV4EAblhNTu2mIbqsM9xohwnhfwy2fKRE3h5UOzHnVHDU
-         n1WuNDWoVAv0Qm2PN8oVctlp2161ri1QgCZ+o7zoj06BxKaCTqjpcWP74H9EGN+kp14T
-         FIrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707406094; x=1708010894;
-        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+        d=kernel-dk.20230601.gappssmtp.com; s=20230601; t=1707406498; x=1708011298; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=4lN8ZSpv/Qf9hEb4poLR5IQ8TShLqeRG5AmsS5NPlec=;
-        b=djhvtKecYROSkSWaN4bYIJU+liceN/ym+qhDf+Hh43EkRSLJTxdGBOB3r9EUuO8e0o
-         yUy0dQzrQKQTmKXdOSkKFugKSI/JhRf8Nj+aJ4Zv5PDInI4ICw4wEzZqzUd1WnMc/AWw
-         xKsHhtTSGejbkZFwpyoIbV2xqxEO3SWDOP2rli/ZfHHRrtQo7qnZdJHEwXIq8g7J6qgX
-         7QYjtglId4ycxxYeVxTZBJ233bxTH04HPphvVubhcnAZjNBnvdydxaC9Yb/KdspLIlt9
-         aBOUL+BrfVhJzhaXyP8fm8hnc5rSsSfXi5n9JuSm4CtErZz/B2BIoW1STk2xx1ws8SEX
-         hfpA==
-X-Gm-Message-State: AOJu0Yz/3YVE4ci2Z6OIqpRzW3jbg1GXt5O1k2FqeFbYEJBJbVX60qKo
-	Q5qOY7dQL55LS7F5pjrWRE/7CcG7seBf+SPb3HW4PiAQr9b40Ca0jEgeFG3Eio/fUdaRri7Su7s
-	vFeWu6Uc4jrgfcA==
-X-Google-Smtp-Source: AGHT+IHVUmyalJUCdZjLumECz5f9xJlVA1uZnP4NPy50JtvAQFP2+hD71xzoIMQJWXPH7V0bMrhOS//AsmQ0L38=
-X-Received: from howardyen2.c.googlers.com ([fda3:e722:ac3:cc00:3:22c1:c0a8:16f7])
- (user=howardyen job=sendgmr) by 2002:a05:6902:10c1:b0:dc2:2e5c:a21d with SMTP
- id w1-20020a05690210c100b00dc22e5ca21dmr750802ybu.6.1707406094054; Thu, 08
- Feb 2024 07:28:14 -0800 (PST)
-Date: Thu,  8 Feb 2024 15:28:05 +0000
+        bh=SOzmztXeA4vVietcHAXayN5BtLIUIC76hlExobZmwgk=;
+        b=MQ3HBP29aO3Mm1EO6tdE5/BgD5/pgNteuRUi30l3mj3J2mQMWKPeggR5CdS9plRIlX
+         SsF3N+80uZQnH7GSlranueSBCOfNsTIeK9WGCeglx46zg5TjrJ8E2MH5bdFw7pcR+Pg4
+         z+k7FaowW79eu5gFzQy3BTr7auOXd2d61PBhJ8G7Eq4uS8kIyN7hUVnjL5Py8yA2VBdD
+         oteVPKpO8ap3CbGDVfP7ZJYxkvo1Sq303MIzvOncVvRra9KEyZx18C/sjr2MOi3oWXjF
+         UIGbu4hru8hSuyKHjpJ0JUAHY5yTl0klDp0CgH8CZg0V54CSIM7JsLWU7A1b6RDtczNQ
+         JSNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707406498; x=1708011298;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=SOzmztXeA4vVietcHAXayN5BtLIUIC76hlExobZmwgk=;
+        b=lk7zSBkLw9SZWDBA6kLH5/JrhUKe7iqyEasguAfCdWqQSSl1jHHX+sYQ5F03HEclkn
+         A+/qnQJ9RBy6NPnaEgh+q2RnXl1D1cqCsJT294jbFah3w8nWmRKrOW3zIavnvGhM/1Yg
+         PfRGTWyBIpcEspN5dVrH7sA+zIemC81JenmsO/GO91guRysuuBrsGhNLZATLuQBXW1TJ
+         FQXflBDjAQVGMDWn0PBdPwjkZ5Es5naYNihtY6R/FDieolo9vsToMs8w/PcfAZxMXzwf
+         LdFedwghUUkvo5mahTshWDSPx3VnfUdJu46vP8+fkW9NgCYuB9oNg4lD+c4ZdPj0bV6e
+         Fuzg==
+X-Forwarded-Encrypted: i=1; AJvYcCXp0YAhRu2D+7yp7pBWLIn1ZbFhanheMMCARZ1WnxEGqsLnVRQ12nkJ18neNZWYPARDtGT6R+LGDY+HYHSrLk+eZes0vHE=
+X-Gm-Message-State: AOJu0YyERjv3fFZUGKMX7+3mgM29DZ/CglNnsFQIuUOZ6Kz4wXSjGkd7
+	V27nKzdxyqWAEDa+ddj69isB084IzgZqTH+ErXPyMsoD+JXT7darrEOtsni83PY=
+X-Google-Smtp-Source: AGHT+IHn9i2CgaP03XL4C5VjNlfh9cv9fEuXGoSUlZWXwvdVd3yXnN23oHf7awYJ910wLOD7Lx/Azw==
+X-Received: by 2002:a5e:a91a:0:b0:7c4:965:f8c0 with SMTP id c26-20020a5ea91a000000b007c40965f8c0mr2635453iod.2.1707406498571;
+        Thu, 08 Feb 2024 07:34:58 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWW8tQLvEMAj/grMaWGPmQmAMGh5cYxnsOdG4uvYmJGCac7GRDVOJwfsKEvGz5if4/9yK7dYDtf9hPPRJHxFXxok6n3WsgGi8Rt93Jbr8dfR8r5BFWHn4raXhpg0ELi/MDW6qFlWiHld0X8ST3xdEj8MJD90k5BfdHMdESgb5ezCJFiZJ73Wkcu5jPGJn6VoZL2QoxT3ia8K5jVSECD72xh0cWiqW2aLNuyUWEEYX7+tY0S86apKmV0QLNe+QnmRfovw3RbroS/7YZSVCMEgRWUZ/q4HVi8wj20nwAsj/ZP6qjCTVVNAw/gVlDJRIz3fGUT5ZzY6SqvXwo+6Y/0fo+MMHIZlWO6y2zi6BLpBQxip12WWosZI8dVjqWVbVpLukMN4N/2r4XoYmhKB5MaZRE0KVzTXeII7o7FaY1Cf8YcVzfvL5q/4r1fCqEqksHW3ZBD6sgFjJJvspuZEB97CCG8VXJulLewpMWAr6qkeUqFz2rayWGxLFUzcU0EVyt2yVroWvSQWpKVw7iMqJ4XF9T9Mq26D+TErzD3oLY1FPXiVkw=
+Received: from [192.168.1.116] ([96.43.243.2])
+        by smtp.gmail.com with ESMTPSA id hl8-20020a0566020f0800b007c3f4c29570sm987484iob.39.2024.02.08.07.34.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Feb 2024 07:34:58 -0800 (PST)
+Message-ID: <051cf099-9ecf-4f5a-a3ac-ee2d63a62fa6@kernel.dk>
+Date: Thu, 8 Feb 2024 08:34:55 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.43.0.594.gd9cf4e227d-goog
-Message-ID: <20240208152808.3712149-1-howardyen@google.com>
-Subject: [PATCH v3] dma-coherent: add support for multi coherent rmems per dev
-From: Howard Yen <howardyen@google.com>
-To: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com, 
-	rafael@kernel.org, broonie@kernel.org, james@equiv.tech, james.clark@arm.com, 
-	masahiroy@kernel.org
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	Howard Yen <howardyen@google.com>
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/15] Coalesced Interrupt Delivery with posted MSI
+Content-Language: en-US
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
+ Peter Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev,
+ Thomas Gleixner <tglx@linutronix.de>, Lu Baolu <baolu.lu@linux.intel.com>,
+ kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>,
+ Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>
+Cc: Paul Luse <paul.e.luse@intel.com>, Dan Williams
+ <dan.j.williams@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ "Tian, Kevin" <kevin.tian@intel.com>, maz@kernel.org, seanjc@google.com,
+ Robin Murphy <robin.murphy@arm.com>
+References: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
+From: Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Add support for multiple coherent rmems per device. This patch replaces
-original dma_mem with dma_mems list in device structure to store multiple
-rmems.
+Hi Jacob,
 
-These multiple rmems can be assigned to the device one by one by
-of_reserved_mem_device_init_by_idx() with the memory-region
-declaration in device tree as below and store the rmem to the dma_mems
-list.
+I gave this a quick spin, using 4 gen2 optane drives. Basic test, just
+IOPS bound on the drive, and using 1 thread per drive for IO. Random
+reads, using io_uring.
 
-	device1@0 {
-		...
-		memory-region = <&reserved_mem0>, <&reserved_mem1>;
-		...
-	};
+For reference, using polled IO:
 
-When driver tries to allocate memory from the rmems, looks for the first
-available rmem and allocates the memory from this rmem.
+IOPS=20.36M, BW=9.94GiB/s, IOS/call=31/31
+IOPS=20.36M, BW=9.94GiB/s, IOS/call=31/31
+IOPS=20.37M, BW=9.95GiB/s, IOS/call=31/31
 
-Then if driver removed, of_reserved_mem_device_release() needs to be
-invoked to release all the rmems assigned to the device.
+which is abount 5.1M/drive, which is what they can deliver.
 
-Signed-off-by: Howard Yen <howardyen@google.com>
----
-Changelog since v2:
-(suggested by Andy Shevchenko <andriy.shevchenko@linux.intel.com>)
-- Re-org the members of struct dma_coherent_mem to avoid additional
-  pointer arithmetics and the holes inside the structure.
-- Use consistent naming of return value.
-- Re-write the dev checking statement to be more clear.
+Before your patches, I see:
 
- drivers/base/core.c    |  3 ++
- include/linux/device.h |  5 +--
- kernel/dma/coherent.c  | 92 +++++++++++++++++++++++++++---------------
- 3 files changed, 64 insertions(+), 36 deletions(-)
+IOPS=14.37M, BW=7.02GiB/s, IOS/call=32/32
+IOPS=14.38M, BW=7.02GiB/s, IOS/call=32/31
+IOPS=14.38M, BW=7.02GiB/s, IOS/call=32/31
+IOPS=14.37M, BW=7.02GiB/s, IOS/call=32/32
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 14d46af40f9a..d9af38d7b870 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -3108,6 +3108,9 @@ void device_initialize(struct device *dev)
-     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU) || \
-     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
- 	dev->dma_coherent = dma_default_coherent;
-+#endif
-+#ifdef CONFIG_DMA_DECLARE_COHERENT
-+	INIT_LIST_HEAD(&dev->dma_mems);
- #endif
- 	swiotlb_dev_init(dev);
- }
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 97c4b046c09d..5fa15e5adbdc 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -648,7 +648,7 @@ struct device_physical_location {
-  * @dma_parms:	A low level driver may set these to teach IOMMU code about
-  * 		segment limitations.
-  * @dma_pools:	Dma pools (if dma'ble device).
-- * @dma_mem:	Internal for coherent mem override.
-+ * @dma_mems:	Internal for coherent mems.
-  * @cma_area:	Contiguous memory area for dma allocations
-  * @dma_io_tlb_mem: Software IO TLB allocator.  Not for driver use.
-  * @dma_io_tlb_pools:	List of transient swiotlb memory pools.
-@@ -749,8 +749,7 @@ struct device {
- 	struct list_head	dma_pools;	/* dma pools (if dma'ble) */
+at 2.82M ints/sec. With the patches, I see:
+
+IOPS=14.73M, BW=7.19GiB/s, IOS/call=32/31
+IOPS=14.90M, BW=7.27GiB/s, IOS/call=32/31
+IOPS=14.90M, BW=7.27GiB/s, IOS/call=31/32
+
+at 2.34M ints/sec. So a nice reduction in interrupt rate, though not
+quite at the extent I expected. Booted with 'posted_msi' and I do see
+posted interrupts increasing in the PMN in /proc/interrupts, 
+
+Probably want to fold this one in:
  
- #ifdef CONFIG_DMA_DECLARE_COHERENT
--	struct dma_coherent_mem	*dma_mem; /* internal for coherent mem
--					     override */
-+	struct list_head	dma_mems; /* Internal for coherent mems */
- #endif
- #ifdef CONFIG_DMA_CMA
- 	struct cma *cma_area;		/* contiguous memory area for dma
-diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-index ff5683a57f77..f6748a3a5eb1 100644
---- a/kernel/dma/coherent.c
-+++ b/kernel/dma/coherent.c
-@@ -11,22 +11,16 @@
- #include <linux/dma-map-ops.h>
- 
- struct dma_coherent_mem {
--	void		*virt_base;
--	dma_addr_t	device_base;
--	unsigned long	pfn_base;
--	int		size;
--	unsigned long	*bitmap;
--	spinlock_t	spinlock;
--	bool		use_dev_dma_pfn_offset;
-+	struct list_head	node;
-+	void			*virt_base;
-+	dma_addr_t		device_base;
-+	unsigned long		pfn_base;
-+	int			size;
-+	spinlock_t		spinlock;
-+	unsigned long		*bitmap;
-+	bool			use_dev_dma_pfn_offset;
- };
- 
--static inline struct dma_coherent_mem *dev_get_coherent_memory(struct device *dev)
--{
--	if (dev && dev->dma_mem)
--		return dev->dma_mem;
--	return NULL;
--}
--
- static inline dma_addr_t dma_get_device_base(struct device *dev,
- 					     struct dma_coherent_mem * mem)
- {
-@@ -61,6 +55,7 @@ static struct dma_coherent_mem *dma_init_coherent_memory(phys_addr_t phys_addr,
- 	dma_mem->pfn_base = PFN_DOWN(phys_addr);
- 	dma_mem->size = pages;
- 	dma_mem->use_dev_dma_pfn_offset = use_dma_pfn_offset;
-+	INIT_LIST_HEAD(&dma_mem->node);
- 	spin_lock_init(&dma_mem->spinlock);
- 
- 	return dma_mem;
-@@ -90,10 +85,8 @@ static int dma_assign_coherent_memory(struct device *dev,
- 	if (!dev)
- 		return -ENODEV;
- 
--	if (dev->dma_mem)
--		return -EBUSY;
-+	list_add_tail(&mem->node, &dev->dma_mems);
- 
--	dev->dma_mem = mem;
- 	return 0;
- }
- 
-@@ -118,23 +111,28 @@ int dma_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
- 				dma_addr_t device_addr, size_t size)
- {
- 	struct dma_coherent_mem *mem;
--	int ret;
-+	int retval;
- 
- 	mem = dma_init_coherent_memory(phys_addr, device_addr, size, false);
- 	if (IS_ERR(mem))
- 		return PTR_ERR(mem);
- 
--	ret = dma_assign_coherent_memory(dev, mem);
--	if (ret)
-+	retval = dma_assign_coherent_memory(dev, mem);
-+	if (retval)
- 		_dma_release_coherent_memory(mem);
--	return ret;
-+	return retval;
- }
- 
- void dma_release_coherent_memory(struct device *dev)
- {
--	if (dev) {
--		_dma_release_coherent_memory(dev->dma_mem);
--		dev->dma_mem = NULL;
-+	struct dma_coherent_mem *mem_tmp, *q;
-+
-+	if (!dev)
-+		return;
-+
-+	list_for_each_entry_safe(mem_tmp, q, &dev->dma_mems, node) {
-+		list_del_init(&mem_tmp->node);
-+		_dma_release_coherent_memory(mem_tmp);
- 	}
- }
- 
-@@ -187,12 +185,17 @@ static void *__dma_alloc_from_coherent(struct device *dev,
- int dma_alloc_from_dev_coherent(struct device *dev, ssize_t size,
- 		dma_addr_t *dma_handle, void **ret)
- {
--	struct dma_coherent_mem *mem = dev_get_coherent_memory(dev);
-+	struct dma_coherent_mem *mem_tmp;
- 
--	if (!mem)
-+	if (list_empty(&dev->dma_mems))
- 		return 0;
- 
--	*ret = __dma_alloc_from_coherent(dev, mem, size, dma_handle);
-+	list_for_each_entry(mem_tmp, &dev->dma_mems, node) {
-+		*ret = __dma_alloc_from_coherent(dev, mem_tmp, size, dma_handle);
-+		if (*ret)
-+			break;
-+	}
-+
- 	return 1;
- }
- 
-@@ -226,9 +229,16 @@ static int __dma_release_from_coherent(struct dma_coherent_mem *mem,
+diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+index 8e09d40ea928..a289282f1cf9 100644
+--- a/arch/x86/kernel/irq.c
++++ b/arch/x86/kernel/irq.c
+@@ -393,7 +393,7 @@ void intel_posted_msi_init(void)
+  * instead of:
+  *		read, xchg, read, xchg, read, xchg, read, xchg
   */
- int dma_release_from_dev_coherent(struct device *dev, int order, void *vaddr)
+-static __always_inline inline bool handle_pending_pir(u64 *pir, struct pt_regs *regs)
++static __always_inline bool handle_pending_pir(u64 *pir, struct pt_regs *regs)
  {
--	struct dma_coherent_mem *mem = dev_get_coherent_memory(dev);
-+	struct dma_coherent_mem *mem_tmp;
-+	int retval = 0;
-+
-+	list_for_each_entry(mem_tmp, &dev->dma_mems, node) {
-+		retval = __dma_release_from_coherent(mem_tmp, order, vaddr);
-+		if (retval == 1)
-+			break;
-+	}
- 
--	return __dma_release_from_coherent(mem, order, vaddr);
-+	return retval;
- }
- 
- static int __dma_mmap_from_coherent(struct dma_coherent_mem *mem,
-@@ -271,9 +281,16 @@ static int __dma_mmap_from_coherent(struct dma_coherent_mem *mem,
- int dma_mmap_from_dev_coherent(struct device *dev, struct vm_area_struct *vma,
- 			   void *vaddr, size_t size, int *ret)
- {
--	struct dma_coherent_mem *mem = dev_get_coherent_memory(dev);
-+	struct dma_coherent_mem *mem_tmp;
-+	int retval = 0;
- 
--	return __dma_mmap_from_coherent(mem, vma, vaddr, size, ret);
-+	list_for_each_entry(mem_tmp, &dev->dma_mems, node) {
-+		retval = __dma_mmap_from_coherent(mem_tmp, vma, vaddr, size, ret);
-+		if (retval == 1)
-+			break;
-+	}
-+
-+	return retval;
- }
- 
- #ifdef CONFIG_DMA_GLOBAL_POOL
-@@ -351,8 +368,17 @@ static int rmem_dma_device_init(struct reserved_mem *rmem, struct device *dev)
- static void rmem_dma_device_release(struct reserved_mem *rmem,
- 				    struct device *dev)
- {
--	if (dev)
--		dev->dma_mem = NULL;
-+	struct dma_coherent_mem *mem_tmp, *q;
-+
-+	if (!dev)
-+		return;
-+
-+	list_for_each_entry_safe(mem_tmp, q, &dev->dma_mems, node) {
-+		if (mem_tmp == rmem->priv) {
-+			list_del_init(&mem_tmp->node);
-+			break;
-+		}
-+	}
- }
- 
- static const struct reserved_mem_ops rmem_dma_ops = {
+ 	int i, vec = FIRST_EXTERNAL_VECTOR;
+ 	unsigned long pir_copy[4];
+
 -- 
-2.43.0.594.gd9cf4e227d-goog
+Jens Axboe
 
