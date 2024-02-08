@@ -1,73 +1,60 @@
-Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B0A882D65
-	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 17:42:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1B7882D8F
+	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 18:02:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707414123; cv=none; b=Ct7v8iLDwoVfLXtRErnH0iZbgByXF8y9fv5OBM9+Xc35kIOD5SNe5vdvxzrWZ4aPUFYHHDZkn2Tt6Grs3xyMciL8jD5zZ6nWGx+Iv7B+OpkFS5H93Sq+NRB5lYdxg7TMSVv/kV7alI/tuLAUwoRGypB4urxYbNsryYNvtQd1DK0=
+	t=1707415369; cv=none; b=ei7bCTJgNpRYT+kIFrlSCzvFRi1OB9jfLspttcqbx9RkKNRJ6ikLJsR+01WQeKJJ+gQhsrjsvk5elCfTbqKZ5wquwx1Z8negTmUrf1N1ONkDbL+h/la3YahUCIcOtMHasGM4EtQVa940oND2T9vOmLnOUhzq1dELYDWj50cW0EQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707414123; c=relaxed/simple;
-	bh=r4fat6B4yH0ovyam02B3ZCQCmIKM9Ggo6UqmKZ649Vo=;
+	s=arc-20240116; t=1707415369; c=relaxed/simple;
+	bh=FuQ27L0U872pyEj2Fitay1U8Ho3dI8X/cvhNZEhe4Lg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EUV3Paw/Z1aiGvjkocZ+jBQDv1i9IGAnxekoJeqEtdo/ng98RXFPGicdwCEsVjhg+zmI8Cgs2GY74ZOVr/06d0zT9c5HIQWCkIK2FuEt6/yuAjTze77V+h5R0M1OLB7BP7jXBahAo4+7MOhuh/6bJu3WwkS4pD1jgBPdj/vAW3Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dK1snU3t; arc=none smtp.client-ip=209.85.161.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=ocaHtHvzaJpq84k3CZSTRMbv5MWzatSHCOAomor1Rt1D4Eg2t4F/P58MYCpk4/j6iWxj5nsEbPjvcfoxt9wdfGEyfyzDTZWlUnji8kTGJ2wfdukU6ywF20YHw3BwIUekAlMV6fbBZwGKsmt/slzIMGFarw9qJFmvAwgnFRmFDjM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IWndM+lg; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dK1snU3t"
-Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-595b3644acbso521361eaf.1
-        for <iommu@lists.linux.dev>; Thu, 08 Feb 2024 09:42:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1707414120; x=1708018920; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ju0dQeyZLQE8P97uXThaBlttCLmdzcSF7glU4KjKvTA=;
-        b=dK1snU3tSlrlE8ZjD8vYKpcyGDzhzNwAWYPalab0NV56/DKXeyyz7faTQewcRCJ3YO
-         w07WDUouiFayJuiBg6dO/7gH7DbkZ7NfojWy7NeHKPOP8YqQ81ZMfQU43bGh7nocob/Q
-         IABMESh9vg8RXq/34vnqzvFoLiC2vCg5VUsx8DuieqJRc5tkPbcxmSSz2JXY8tBOU6q3
-         Mwcy0fyCwH6vDQZRTRMIW+z959ERICrHFj+usvIY+UhTMsqNhR7w163OIBmFmJmHJxvb
-         OHtDsxvPfZJSWyYnD499ip2IpgZ4CQmZBnfa7cVi885q8rr54s4zyW96w67W+iMEvGOu
-         9vdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707414120; x=1708018920;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ju0dQeyZLQE8P97uXThaBlttCLmdzcSF7glU4KjKvTA=;
-        b=XtzY2n3s0VbZyjpYVZJ0t1vh7fC2HRLHAH+KnralRLtYpcH2DhYu98LPec+t3ElyOt
-         jjVc4UNVu4ppgxBVVAlhQGP+KPOEnyMEISBHLfTBZHZDtP8f1XoHLw2V4fv+VfDcGfdU
-         LfvfizQGob2UBMVjQksgplh/ApUSfzjdnFLch12KKmkTxcVjC4UUk2LXy6MSz4XfRxDY
-         tpuZipQe5IgZI88O1RYmN9X9dQpJf72YCfqrmo+sETbPQuQh4uUQzfakoPhkKvkL8qsV
-         kEZ3sY6ayiR/rqUGjEa6lM13oU3HQ2ARGcfX8CgDBCVKMs1RUyB1crmdatCcUicIKiR3
-         2+2g==
-X-Gm-Message-State: AOJu0YyI3WF18ZRarBUSejR7cTcG0/ltM1A7dlT1OviacgBv4SalYf8e
-	NoK/QbQKiFuq4kW2SqHW3KP97HiiVOpJ9GRsdjs9yaTErlgIXPvwTp6aXUMJj0M=
-X-Google-Smtp-Source: AGHT+IF+dwKt/IxDbhZHi+ZIc5w0rgYHg2odtPDAW3ZS4AteLq7jZ9BZ2MHt2JtGq0uGaSNR/l1NNw==
-X-Received: by 2002:a05:6870:2b12:b0:219:8a03:e671 with SMTP id ld18-20020a0568702b1200b002198a03e671mr164540oab.4.1707414120466;
-        Thu, 08 Feb 2024 09:42:00 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVhEuRhmMzp6GJFGt1hDJxMzhfyZUciDrohJ93/xYs5lKDDlEQkmql0ugw6oB0t82vOnusZ5lNg1cZrSqUpJrp8xcOPJxDglz9w+ziW4y6jY+oZLGIXeaIRed6qXZ2GPzTIEfrCYvWa5+ZDmsMDrNzX1CFBg113RjopDSr0Z/WnNLcsZ3G7SE0=
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id oo26-20020a0568715a9a00b0021998dc2bf1sm10599oac.36.2024.02.08.09.41.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Feb 2024 09:42:00 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rY8PP-00FJfW-6i;
-	Thu, 08 Feb 2024 13:41:59 -0400
-Date: Thu, 8 Feb 2024 13:41:59 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v5 12/14] iommu/amd: Initial SVA support for AMD IOMMU
-Message-ID: <20240208174159.GW31743@ziepe.ca>
-References: <20240118073339.6978-1-vasant.hegde@amd.com>
- <20240118073339.6978-13-vasant.hegde@amd.com>
- <20240202152524.GA2606743@ziepe.ca>
- <f36ea0af-23db-7653-32e0-0a7b3941f801@amd.com>
- <20240206173457.GH31743@ziepe.ca>
- <0af9b44f-c78a-7e79-5c10-fe8d6e92f5bc@amd.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IWndM+lg"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707415368; x=1738951368;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FuQ27L0U872pyEj2Fitay1U8Ho3dI8X/cvhNZEhe4Lg=;
+  b=IWndM+lgICKuzzFwitzEK+yXK8O0e1DWtf9szOyJzjzlyalukp7enxPJ
+   6GyjsbhY+Q5/7wJj2nt8SIujM4NG6U7eAYLP/fEwGXX3t5qblHQpfChUS
+   SWGOruL640CbsjcEyDGjQGKT0Gc2dKUvdDu2xOF3+1ukI3kPi6HJ4iKGM
+   RwB6kWFOWk+T75MKyRoh+J7uga8abl+ghRR9rDVsv2sWFQDrSl4oO3eGQ
+   Ek46YcvXXBo+scOnTLdAO0ORK2Hxg5GLr9UWkGBA8jeNY7cokhZ/T6Dcj
+   lBnnDpT4jqn2On3q+d3CAew8thg6apUn8rcKK3pssYufbAOglK8jEpvA8
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10978"; a="1436680"
+X-IronPort-AV: E=Sophos;i="6.05,254,1701158400"; 
+   d="scan'208";a="1436680"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2024 10:02:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10978"; a="910449233"
+X-IronPort-AV: E=Sophos;i="6.05,254,1701158400"; 
+   d="scan'208";a="910449233"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2024 10:02:43 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.97)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1rY8jQ-00000002wZp-0qwz;
+	Thu, 08 Feb 2024 20:02:40 +0200
+Date: Thu, 8 Feb 2024 20:02:39 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Howard Yen <howardyen@google.com>
+Cc: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
+	gregkh@linuxfoundation.org, rafael@kernel.org, broonie@kernel.org,
+	james@equiv.tech, james.clark@arm.com, masahiroy@kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: Re: [PATCH v3] dma-coherent: add support for multi coherent rmems
+ per dev
+Message-ID: <ZcUXP14Ng8g5vw1j@smile.fi.intel.com>
+References: <20240208152808.3712149-1-howardyen@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,111 +63,133 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0af9b44f-c78a-7e79-5c10-fe8d6e92f5bc@amd.com>
+In-Reply-To: <20240208152808.3712149-1-howardyen@google.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 
-On Wed, Feb 07, 2024 at 03:01:22PM +0530, Vasant Hegde wrote:
-> Jason,
+On Thu, Feb 08, 2024 at 03:28:05PM +0000, Howard Yen wrote:
+> Add support for multiple coherent rmems per device. This patch replaces
+> original dma_mem with dma_mems list in device structure to store multiple
+> rmems.
 > 
+> These multiple rmems can be assigned to the device one by one by
+> of_reserved_mem_device_init_by_idx() with the memory-region
+> declaration in device tree as below and store the rmem to the dma_mems
+> list.
 > 
-> On 2/6/2024 11:04 PM, Jason Gunthorpe wrote:
-> > On Tue, Feb 06, 2024 at 10:46:58PM +0530, Vasant Hegde wrote:
-> >> Jason,
-> >>
-> >>
-> >> On 2/2/2024 8:55 PM, Jason Gunthorpe wrote:
-> >>> On Thu, Jan 18, 2024 at 07:33:37AM +0000, Vasant Hegde wrote:
-> >>>
-> >>>> +static int iommu_pasid_enable(struct iommu_dev_data *dev_data)
-> >>>> +{
-> >>>> +	struct device *dev = dev_data->dev;
-> >>>> +	int ret = 0;
-> >>>> +
-> >>>> +	spin_lock(&dev_data->lock);
-> >>>> +
-> >>>> +	if (is_pasid_enabled(dev_data))
-> >>>> +		goto out;
-> >>>> +
-> >>>> +	if (!amd_iommu_pasid_supported()) {
-> >>>> +		ret = -ENODEV;
-> >>>> +		goto out;
-> >>>> +	}
-> >>>> +
-> >>>> +	/* attach_device path enables device PASID feature */
-> >>>> +	if (!dev_data->pasid_enabled) {
-> >>>
-> >>> How many times are we testing for this? Just check if the gcr3 table
-> >>> is installed once
-> >>
-> >> One time for IOMMU capability (amd_iommu_pasid_supported()) and one time for
-> >> device capability.
-> > 
-> > Again I think this whole thing is out of sequence. The main focus
-> > should be on the gcr3 table. You should dirctly know if it has been
-> > installed or not via some direct means. Test all this stuff when you
-> > go to install it the first time.
+> 	device1@0 {
+> 		...
+> 		memory-region = <&reserved_mem0>, <&reserved_mem1>;
+> 		...
+> 	};
 > 
-> We are doing 1 SVA domain : 1 PASID : N devices model. That means we need to
-> check all these things while attaching *first* PASID to device. (That's what we
-> had discussed sometime back when I had all these things in feature_enable(SVA)
-> path).
-
-I thought I said you 1 PASID is not technically correct, but you could
-get away it it for a short term. You should be planning to support N
-PASIDs because that is what the API defines.
-
-> Ex: If device is in domain with V1 page table tries to attach PASID it should fail
->    If device is in domain of PT mode, then we should setup gcr3.
-
-Yes
- 
-> So I don't see how we can infer these things unless we have something like
-> enable_feature(PASID).. which would have taken care of setting up things.
-
-You just trivially check these conditions at the top of set_dev_pasid, look at
-what I did for ARM:
-
-	if (smmu_domain->smmu != master->smmu || pasid == IOMMU_NO_PASID)
-		return -EINVAL;
-
-	if (!master->cd_table.in_ste &&
-	    sid_domain->type != IOMMU_DOMAIN_IDENTITY &&
-	    sid_domain->type != IOMMU_DOMAIN_BLOCKED)
-		return -EINVAL;
-
-For AMD "cd_table in_ste" means that the DTE points to a GCR3 table
-already. This is trivially tracked in the DTE programming in set_dte
-because you know if the dte is being configured with a GCR3 or not.
-
-The other cases represent the situations where we know how to upgrade a DTE
-for those domains to one with a GCR3. Everything else is blocked.
-
-> >> is_pasid_enabled() is checked twice (once without lock, so that we can avoid
-> >> lock in most cases and one inside lock to be sure no one else entered and
-> >> enabled gcr3).
-> > 
-> > That never works, don't do that.
+> When driver tries to allocate memory from the rmems, looks for the first
+> available rmem and allocates the memory from this rmem.
 > 
-> It does work as second one is lock protected. And the intention was to avoid
-> locking for attaching second PASID onwards. Only for first time attaching PASID
-> to device we will have check for two times.
+> Then if driver removed, of_reserved_mem_device_release() needs to be
+> invoked to release all the rmems assigned to the device.
 
-You can get racy false negatives, that are hard to reason about.
+...
 
- CPU0                               CPU 1
-                                    lock()
-                                    change state to !a
-if (!a)
-  forget it
-                                    a = false
-                                    unlock()
-lock()
-if (!a)
-   forget it
-change state to a
-a = true
-unlock()
+>  	struct dma_coherent_mem *mem;
+> -	int ret;
+> +	int retval;
+>  
+>  	mem = dma_init_coherent_memory(phys_addr, device_addr, size, false);
+>  	if (IS_ERR(mem))
+>  		return PTR_ERR(mem);
+>  
+> -	ret = dma_assign_coherent_memory(dev, mem);
+> -	if (ret)
+> +	retval = dma_assign_coherent_memory(dev, mem);
+> +	if (retval)
+>  		_dma_release_coherent_memory(mem);
+> -	return ret;
+> +	return retval;
 
-There are ways with atomics you can build those kinds of lockless
-patterns, but they are tricky and not justified here.
+This is unrelated change.
 
-Jason
+But why? Do you have retval in the _existing_ code elsewhere?
+
+
+...
+
+>  int dma_alloc_from_dev_coherent(struct device *dev, ssize_t size,
+>  		dma_addr_t *dma_handle, void **ret)
+>  {
+> -	struct dma_coherent_mem *mem = dev_get_coherent_memory(dev);
+> +	struct dma_coherent_mem *mem_tmp;
+>  
+> -	if (!mem)
+> +	if (list_empty(&dev->dma_mems))
+>  		return 0;
+>  
+> -	*ret = __dma_alloc_from_coherent(dev, mem, size, dma_handle);
+> +	list_for_each_entry(mem_tmp, &dev->dma_mems, node) {
+> +		*ret = __dma_alloc_from_coherent(dev, mem_tmp, size, dma_handle);
+> +		if (*ret)
+> +			break;
+
+This bails out on the first success. Moreover, if one calls this function
+again, it will rewrite the existing allocation. Is this all expected?
+
+OTOH, if you add multiple entries and bailing out on error condition it should
+be clear if the previous allocations have to be released.
+
+> +	}
+
+>  	return 1;
+
+>  }
+
+...
+
+>  int dma_release_from_dev_coherent(struct device *dev, int order, void *vaddr)
+>  {
+> -	struct dma_coherent_mem *mem = dev_get_coherent_memory(dev);
+> +	struct dma_coherent_mem *mem_tmp;
+> +	int retval = 0;
+> +
+> +	list_for_each_entry(mem_tmp, &dev->dma_mems, node) {
+> +		retval = __dma_release_from_coherent(mem_tmp, order, vaddr);
+> +		if (retval == 1)
+> +			break;
+
+Same Q here.
+
+> +	}
+>  
+> -	return __dma_release_from_coherent(mem, order, vaddr);
+> +	return retval;
+>  }
+
+...
+
+>  int dma_mmap_from_dev_coherent(struct device *dev, struct vm_area_struct *vma,
+>  			   void *vaddr, size_t size, int *ret)
+>  {
+> -	struct dma_coherent_mem *mem = dev_get_coherent_memory(dev);
+> +	struct dma_coherent_mem *mem_tmp;
+> +	int retval = 0;
+>  
+> -	return __dma_mmap_from_coherent(mem, vma, vaddr, size, ret);
+> +	list_for_each_entry(mem_tmp, &dev->dma_mems, node) {
+> +		retval = __dma_mmap_from_coherent(mem_tmp, vma, vaddr, size, ret);
+> +		if (retval == 1)
+> +			break;
+
+And here.
+
+> +	}
+> +
+> +	return retval;
+>  }
+
+...
+
+With the above Q in mind, here is another one: Why can't we allocate all at once?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
