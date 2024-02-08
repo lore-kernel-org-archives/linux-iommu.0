@@ -1,328 +1,125 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FDB367C56
-	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 05:53:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5D1067E82
+	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 07:15:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707371602; cv=none; b=CeiB6TH42f5Zs2WizB0KHQicWBT4pu/mRKoFOr5lKqwOipvq3i7u7xiumcOTGFVVgc0WEmxp22tqHvsLkT695qQz1KEAgFMR4YWnkiGZCc7jvdAvc0TlhVROmZBKf4p93eCIWE++EeKaKiknFOhIMoYMC+Wej2Ro1qplP9owVU4=
+	t=1707376513; cv=none; b=NGGypXhezMG++7NM+Ig3a1Hi2KUXYQcNu3Q9lutZzgDFfURT0sKfHyP4Ef3OHZEbkKuRiXxokUskf7Z3Y/nLVIlpYi1E9ijc0NH50lAb89GsyJHv/NE0GS3IbL4N3i6o5MXkfkjvPtehRBp0tVgeZ55AnaPYbuIAhg578FGpOQ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707371602; c=relaxed/simple;
-	bh=xVb0C3dbyq1xbserUKHoovA7zf1xTE34Kb2AhThIueM=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=gvKXUMchKRUPdQi3YGVV5bQy+3aT4GzQG/dCct5JXoajaJ7GnpBnGTPzPX+4r/EFxTPFE7yak11FwuiczRdNfNdWjT7Qj7VHQj+PWSJ0vP3VxsRP+B2K3pPFt+i/f1hOetiC7Zx2lWelLXeDjwvjPV0nV31t6Jxvz3A8mAjiYMU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com; spf=none smtp.mailfrom=linux.vnet.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Xbmkv5wN; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.vnet.ibm.com
+	s=arc-20240116; t=1707376513; c=relaxed/simple;
+	bh=vK/5Gz1QSwmxYzRM+M3atdSA7U9sTy/frFNKMtYClAM=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=K8hkaGUtPKRO1gSnqlXOHgIBayJvHT4EAHDIMbvTPSiPEboHBWVUmy3HSNvXC6hdclM5grVBU2D95kmaFbrpd9Wa8rw7EaDquDJ5H3+mTKwm0e6+msJyjCYIISq50OQ4gm89KllO8I+SApy+kE8f5J5+4d2vtHSCoNbQzWL0b5Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=yqGG4Jf0; arc=none smtp.client-ip=209.85.208.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Xbmkv5wN"
-Received: from pps.filterd (m0353728.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 4183MTtW017376;
-	Thu, 8 Feb 2024 05:53:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : from : to : cc : references : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=ZztR+92YMRjspZGkSCWD3w8VBnmbNuBtLEscOQCBG8c=;
- b=Xbmkv5wNTJTkP7zcJb3Pl/YJt43MSlX3Vin8YSvhjejAVoNs+2Ag6Ww6ZkbPlUCw63Gq
- b/cQzhIedvPAgbTO2ySI5rAzaUjcApb2Vw4pP5FDA3jZ+ChaUO3yihOYbN8/E1ZaIjYG
- Wfou19IMfcQ6fCwMDMQ/NCrhOYdnzK/46kqnwHzWSSfcVehFsfukjz+/FtGUasbKvbdz
- m2BWIiJfkDvcpx+MhdGNjhpysWV1tghwtihTLC7RPP7yNGHNfEdkNRDLktO/9CxMQPI8
- c9IS8tEpEK1IXP2muTj96DJ/e1y5mG7/sz+0nvVCY33/CKAKE4Ye63qB1pq3dCUSdevV vQ== 
-Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w4q00tkg9-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 08 Feb 2024 05:53:14 +0000
-Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma22.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 418512a0008758;
-	Thu, 8 Feb 2024 05:53:13 GMT
-Received: from smtprelay06.dal12v.mail.ibm.com ([172.16.1.8])
-	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3w206ytp0e-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 08 Feb 2024 05:53:13 +0000
-Received: from smtpav05.dal12v.mail.ibm.com (smtpav05.dal12v.mail.ibm.com [10.241.53.104])
-	by smtprelay06.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 4185rC8O3015548
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 8 Feb 2024 05:53:12 GMT
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id ABBA35805D;
-	Thu,  8 Feb 2024 05:53:12 +0000 (GMT)
-Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 16C0758052;
-	Thu,  8 Feb 2024 05:53:09 +0000 (GMT)
-Received: from [9.43.110.69] (unknown [9.43.110.69])
-	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Thu,  8 Feb 2024 05:53:08 +0000 (GMT)
-Message-ID: <82a4d9a0-06c9-4152-9845-a261238b2833@linux.vnet.ibm.com>
-Date: Thu, 8 Feb 2024 11:23:07 +0530
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="yqGG4Jf0"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-560c696ccffso1100457a12.1
+        for <iommu@lists.linux.dev>; Wed, 07 Feb 2024 23:15:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1707376510; x=1707981310; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
+         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=Y5RJhuVckeXbSoDSHqZK4xAbBIVthUC0MdjCe3vhbYQ=;
+        b=yqGG4Jf0gZIfNxjXtbkR+hEgsmNdCZ23q8/e0zNHiKQHu8/q3KJwtuTOIyzcQfIGrl
+         /ZYHeDRMyQYYGopa+L8TiX3zmQzFNy0yEfz+HrYmoAfIZ4b6dwnByOD1Cn3hRmytY58j
+         +DHsnZr8/lzs7YgjVmCXOPdlUCTiRYvxHGhNB3U1/x4/TBwOfcGbwNAWrkUmiRlfbn04
+         0eLnH67zYwISstZN6WnhPVM6OL5Q42m6gAyxYDRdqh365s7ITLAKayy6UymnN0cOl3VX
+         ecLkaEXQKpJ4O058cSwI5emw+qmynOPRGZgEqsY5dyLTGyDowb2xXK22K0p3fmWCqabF
+         63XA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707376510; x=1707981310;
+        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
+         :to:from:date:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Y5RJhuVckeXbSoDSHqZK4xAbBIVthUC0MdjCe3vhbYQ=;
+        b=eE9rzmZPSOA1fh1Nq9x03ZczjjAUEnoc7RCOH95bJf2oXqUMpWRrxcmXHbZpkyVfQL
+         FoKU6P2XgkBCVYJTIKlihRIk2zw+o5h/N5AD4WAWztW4q494COjOQtzWedbaXJjGw0Gi
+         mwnu4oAsr8pTUfz9Gs/jog0B2c2EsaH4c6lWFJuCgdkIex9myBrZjs8urK6o3Ne9/5B1
+         c+7uo2ct2oqWjWzq9fMLoT1ftiELw8T9QOdIHUtANtR461g22JLrNbRfStUPhzmGyfhX
+         VYYL9mrL0kd97dyTSwL8wxWu50IuNJWo7nXWmniVttEQkBeTR0tvkc+nfNi4p+j23ZQD
+         Cigw==
+X-Forwarded-Encrypted: i=1; AJvYcCUNJbyLVY2dCiBq+Bbi3SBODKkw33pJEg/T8Xb+68cmPKzVZUFTZHwczg4jEOX4FBzeWZ8vQbqFpsk0zYaW81WK651TrH0=
+X-Gm-Message-State: AOJu0YyZ2HadzO4lGyg2mKXQCGlU/o/HBRCztqasWpnEJ+JSfjNUWfI3
+	JhWDi7xsSNalRbt1ZjCszqN2u43QQUnXEW5V/k0SR42nZdHjatJk5vM1FD2+Bj8=
+X-Google-Smtp-Source: AGHT+IE4WyGx5+NrWJrNDbHiwts0XIOSGoJrDUDfeCg4GYwug22ZiFtQVShwh8Q0Vv/ctnQ5MLpqmQ==
+X-Received: by 2002:a05:6402:27c9:b0:561:123d:ed8c with SMTP id c9-20020a05640227c900b00561123ded8cmr431557ede.2.1707376509857;
+        Wed, 07 Feb 2024 23:15:09 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCW/5RW8GSuoXDIAlEWg7ccUX02G0LTAdoI9PvgnWCVnJUhkL4NYhlR+A/nuYNj13NEpDSSDb0h3CZsyf8rDSG5W3cqDBYw5dpIu8gEavLXiLqdQIQczCtsFoFs//XPDItH5TdG1ZQtqK2JUo+oXwCPJOi7OlDG8HdW6CvtZq/dUaWhGrDRszxT1yy5LGJeXaoMwn/ILyW+aQCTKZUCJiF4o5J0i1noq+8zyLAbV6cN8+cOk9Z0GSJnklCB3uEb+mA+Te3oG3iJA6Ez1jMuc+t3O+rdgKxfEyZ4Q1MVfCkiiopbf6M3bItpV9PdABDoFXlrmqKwhVN20XW+kMWak7iwVxCKcz910CK4mAYSOTHbUFwi6xOrPYojHudMVFKbOE69ZBKdveTfeOYvNiJ9Wshy2/1HLuD0lXWaCjij2TcgthPF3FXgCbcqt63ajk4IQuCJXW2U9ngxJYFFUmpzfmKwrATNcpfXMlFUMeuY+TDBK5UjGCUeUoPsy8M9IpUs7UzA/eqZ8yfF2f2Y=
+Received: from localhost ([102.222.70.76])
+        by smtp.gmail.com with ESMTPSA id cs4-20020a0564020c4400b005609619be04sm529701edb.41.2024.02.07.23.15.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Feb 2024 23:15:09 -0800 (PST)
+Date: Thu, 8 Feb 2024 10:15:06 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: oe-kbuild@lists.linux.dev, Ethan Zhao <haifeng.zhao@linux.intel.com>,
+	baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
+	jgg@ziepe.ca
+Cc: lkp@intel.com, oe-kbuild-all@lists.linux.dev, kevin.tian@intel.com,
+	dwmw2@infradead.org, will@kernel.org, lukas@wunner.de,
+	yi.l.liu@intel.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+	Ethan Zhao <haifeng.zhao@linux.intel.com>
+Subject: Re: [PATCH v12 4/5] iommu/vt-d: pass pdev parameter for
+ qi_check_fault() and refactor callers
+Message-ID: <b0b45e40-7510-4107-92a0-27fafb5d7bf7@moroto.mountain>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [revert commit 83b3836bf83f09beea5f592b126cfdd1bc921e48]
- [mainline] [6.8.0-rc3]kernel BUG at
- arch/powerpc/platforms/pseries/iommu.c:100!
-From: Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com>
-To: iommu@lists.linux.dev, jgg@nvidia.com, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org
-Cc: sbhat@linux.ibm.com, robin.murphy@arm.com, will@kernel.org,
-        sachinp@linux.vnet.com, mputtash@linux.vnet.com,
-        abdhalee@linux.vnet.ibm.com, tasmiya@linux.vnet.ibm.com
-References: <8d75ebd3-85c2-4a05-8eca-08f66f9411dc@linux.vnet.ibm.com>
- <274e0d2b-b5cc-475e-94e6-8427e88e271d@linux.vnet.ibm.com>
-Content-Language: en-GB
-In-Reply-To: <274e0d2b-b5cc-475e-94e6-8427e88e271d@linux.vnet.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 5EBQxb3T7Ykl6x1FpawtU1Z1YiEs3K2t
-X-Proofpoint-GUID: 5EBQxb3T7Ykl6x1FpawtU1Z1YiEs3K2t
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-08_01,2024-02-07_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
- phishscore=0 clxscore=1011 bulkscore=0 mlxlogscore=687 lowpriorityscore=0
- mlxscore=0 adultscore=0 spamscore=0 impostorscore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311290000
- definitions=main-2402080028
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240129034924.817005-5-haifeng.zhao@linux.intel.com>
 
-Adding more people
+Hi Ethan,
 
-On 08/02/24 8:26 am, Venkat Rao Bagalkote wrote:
->
-> Resending as earlier one bounced.
->
-> Greetings!!!
->
->
-> [revert commit 83b3836bf83f09beea5f592b126cfdd1bc921e48] [mainline] 
-> [6.8.0-rc3]kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
->
->
-> By Reverting below commit id, issue is not seen.
->
->
-> 83b3836bf83f09beea5f592b126cfdd1bc921e48
->      iommu: Allow ops->default_domain to work when !CONFIG_IOMMU_DMA
->
->
-> --- Traces ---
->
-> KernelBug: Kernel bug in state 'None': kernel BUG at 
-> arch/powerpc/platforms/pseries/iommu.c:100!
-> [ 7843.148980] Oops: Exception in kernel mode, sig: 5 [#1]
-> [ 7843.148984] LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=8192 NUMA pSeries
-> [ 7843.148988] Modules linked in: nft_compat nf_tables libcrc32c 
-> nfnetlink bridge stp llc tls sit tunnel4 ip_tunnel nvram rpadlpar_io 
-> rpaphp xsk_diag rfkill binfmt_misc mlx5_ib ib_uverbs ib_core 
-> pseries_rng drm drm_panel_orientation_quirks ext4 mbcache jbd2 
-> dm_service_time sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft 
-> crc64 sg ibmvfc scsi_transport_fc ibmveth mlx5_core mlxfw vmx_crypto 
-> psample dm_multipath dm_mirror dm_region_hash dm_log dm_mod fuse [last 
-> unloaded: tls]
-> [ 7843.149041] CPU: 17 PID: 218444 Comm: drmgr Kdump: loaded Tainted: 
-> G          I        6.8.0-rc3-autotest-g99bd3cb0d12e #1
-> [ 7843.149047] Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200 
-> 0xf000006 of:IBM,FW1060.00 (NH1060_016) hv:phyp pSeries
-> [ 7843.149051] NIP:  c0000000000ff4d4 LR: c0000000000ff4cc CTR: 
-> 0000000000000000
-> [ 7843.149055] REGS: c0000013aed5f840 TRAP: 0700   Tainted: G          
-> I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
-> [ 7843.149060] MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 
-> 44002402  XER: 20040000
-> [ 7843.149069] CFAR: c000000000a0d170 IRQMASK: 0
-> [ 7843.149069] GPR00: c0000000000ff4cc c0000013aed5fae0 
-> c000000001512700 c0000013aa362138
-> [ 7843.149069] GPR04: 0000000000000000 0000000000000000 
-> 0000000000000000 0000000119c8afd0
-> [ 7843.149069] GPR08: 0000000000000000 c000001284442b00 
-> 0000000000000001 0000000000001003
-> [ 7843.149069] GPR12: 0000000300000000 c0000018ffff2f00 
-> 0000000000000000 0000000000000000
-> [ 7843.149069] GPR16: 0000000000000000 0000000000000000 
-> 0000000000000000 0000000000000000
-> [ 7843.149069] GPR20: 0000000000000000 0000000000000000 
-> 0000000000000000 0000000000000000
-> [ 7843.149069] GPR24: c0000013aed5fc40 0000000000000002 
-> 0000000000000000 c000000002757d90
-> [ 7843.149069] GPR28: c0000000000ff440 c000000002757cb8 
-> c00000183799c1a0 c0000013aa362b00
-> [ 7843.149112] NIP [c0000000000ff4d4] iommu_reconfig_notifier+0x94/0x200
-> [ 7843.149123] LR [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200
-> [ 7843.149129] Call Trace:
-> [ 7843.149131] [c0000013aed5fae0] [c0000000000ff4cc] 
-> iommu_reconfig_notifier+0x8c/0x200 (unreliable)
-> [ 7843.149138] [c0000013aed5fb10] [c0000000001a27b0] 
-> notifier_call_chain+0xb8/0x19c
-> [ 7843.149146] [c0000013aed5fb70] [c0000000001a2a78] 
-> blocking_notifier_call_chain+0x64/0x98
-> [ 7843.149152] [c0000013aed5fbb0] [c000000000c4a898] 
-> of_reconfig_notify+0x44/0xdc
-> [ 7843.149160] [c0000013aed5fc20] [c000000000c4add4] 
-> of_detach_node+0x78/0xb0
-> [ 7843.149165] [c0000013aed5fc70] [c0000000000f96a8] 
-> ofdt_write.part.0+0x86c/0xbb8
-> [ 7843.149171] [c0000013aed5fce0] [c00000000069b4bc] 
-> proc_reg_write+0xf4/0x150
-> [ 7843.149178] [c0000013aed5fd10] [c0000000005bfeb4] vfs_write+0xf8/0x488
-> [ 7843.149184] [c0000013aed5fdc0] [c0000000005c0570] 
-> ksys_write+0x84/0x140
-> [ 7843.149189] [c0000013aed5fe10] [c000000000033358] 
-> system_call_exception+0x138/0x330
-> [ 7843.149196] [c0000013aed5fe50] [c00000000000d05c] 
-> system_call_vectored_common+0x15c/0x2ec
-> [ 7843.149203] --- interrupt: 3000 at 0x20000433acb4
-> [ 7843.149208] NIP:  000020000433acb4 LR: 0000000000000000 CTR: 
-> 0000000000000000
-> [ 7843.149212] REGS: c0000013aed5fe80 TRAP: 3000   Tainted: G          
-> I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
-> [ 7843.149217] MSR:  800000000280f033 
-> <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 42002408  XER: 00000000
-> [ 7843.149227] IRQMASK: 0
-> [ 7843.149227] GPR00: 0000000000000004 00007fffcde2d2c0 
-> 000000013a707f00 0000000000000006
-> [ 7843.149227] GPR04: 00007fffcde2d368 0000000000000020 
-> 0000000000000000 0000000000000001
-> [ 7843.149227] GPR08: 0000000000000020 0000000000000000 
-> 0000000000000000 0000000000000000
-> [ 7843.149227] GPR12: 0000000000000000 000020000403b1e0 
-> 000000013a6df668 0000000000000006
-> [ 7843.149227] GPR16: 0000000000000000 0000000000000002 
-> 0000000000000004 0000000000000005
-> [ 7843.149227] GPR20: 000000013a700018 000000013a6df360 
-> 000000013a6dcb20 000000013a6dd918
-> [ 7843.149227] GPR24: 000000013a6db178 00000001722028c8 
-> 00007fffcde2d7f8 00000001722028c8
-> [ 7843.149227] GPR28: 000000013a6dc340 00007fffcde2d368 
-> 0000000000000006 0000000000000020
-> [ 7843.149268] NIP [000020000433acb4] 0x20000433acb4
-> [ 7843.149271] LR [0000000000000000] 0x0
-> [ 7843.149274] --- interrupt: 3000
-> [ 7843.149277] Code: 4082016c 2c3f0000 41820060 ebff0028 2c3f0000 
-> 41820054 e87f0018 2c230000 41820014 4890dc75 60000000 e93f0018 
-> <0b090000> e87f0020 2c230000 4182000c
-> [ 7843.149292] ---[ end trace 0000000000000000 ]---
->
->
-> Regards,
->
-> Venkat.
->
->
->> Greetings!!!
->>
->>
->> [revert commit 83b3836bf83f09beea5f592b126cfdd1bc921e48] [mainline] 
->> [6.8.0-rc3]kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
->>
->>
->> Reverting below commit id issue is not seen.
->>
->> 83b3836bf83f09beea5f592b126cfdd1bc921e48
->>       iommu: Allow ops->default_domain to work when !CONFIG_IOMMU_DMA
->>
->>
->> Traces:
->>
->>
->> KernelBug: Kernel bug in state 'None': kernel BUG at 
->> arch/powerpc/platforms/pseries/iommu.c:100!
->> [ 7843.148980] Oops: Exception in kernel mode, sig: 5 [#1]
->> [ 7843.148984] LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=8192 NUMA pSeries
->> [ 7843.148988] Modules linked in: nft_compat nf_tables libcrc32c 
->> nfnetlink bridge stp llc tls sit tunnel4 ip_tunnel nvram rpadlpar_io 
->> rpaphp xsk_diag rfkill binfmt_misc mlx5_ib ib_uverbs ib_core 
->> pseries_rng drm drm_panel_orientation_quirks ext4 mbcache jbd2 
->> dm_service_time sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft 
->> crc64 sg ibmvfc scsi_transport_fc ibmveth mlx5_core mlxfw vmx_crypto 
->> psample dm_multipath dm_mirror dm_region_hash dm_log dm_mod fuse 
->> [last unloaded: tls]
->> [ 7843.149041] CPU: 17 PID: 218444 Comm: drmgr Kdump: loaded Tainted: 
->> G          I        6.8.0-rc3-autotest-g99bd3cb0d12e #1
->> [ 7843.149047] Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200 
->> 0xf000006 of:IBM,FW1060.00 (NH1060_016) hv:phyp pSeries
->> [ 7843.149051] NIP:  c0000000000ff4d4 LR: c0000000000ff4cc CTR: 
->> 0000000000000000
->> [ 7843.149055] REGS: c0000013aed5f840 TRAP: 0700   Tainted: 
->> G          I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
->> [ 7843.149060] MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 
->> 44002402  XER: 20040000
->> [ 7843.149069] CFAR: c000000000a0d170 IRQMASK: 0
->> [ 7843.149069] GPR00: c0000000000ff4cc c0000013aed5fae0 
->> c000000001512700 c0000013aa362138
->> [ 7843.149069] GPR04: 0000000000000000 0000000000000000 
->> 0000000000000000 0000000119c8afd0
->> [ 7843.149069] GPR08: 0000000000000000 c000001284442b00 
->> 0000000000000001 0000000000001003
->> [ 7843.149069] GPR12: 0000000300000000 c0000018ffff2f00 
->> 0000000000000000 0000000000000000
->> [ 7843.149069] GPR16: 0000000000000000 0000000000000000 
->> 0000000000000000 0000000000000000
->> [ 7843.149069] GPR20: 0000000000000000 0000000000000000 
->> 0000000000000000 0000000000000000
->> [ 7843.149069] GPR24: c0000013aed5fc40 0000000000000002 
->> 0000000000000000 c000000002757d90
->> [ 7843.149069] GPR28: c0000000000ff440 c000000002757cb8 
->> c00000183799c1a0 c0000013aa362b00
->> [ 7843.149112] NIP [c0000000000ff4d4] iommu_reconfig_notifier+0x94/0x200
->> [ 7843.149123] LR [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200
->> [ 7843.149129] Call Trace:
->> [ 7843.149131] [c0000013aed5fae0] [c0000000000ff4cc] 
->> iommu_reconfig_notifier+0x8c/0x200 (unreliable)
->> [ 7843.149138] [c0000013aed5fb10] [c0000000001a27b0] 
->> notifier_call_chain+0xb8/0x19c
->> [ 7843.149146] [c0000013aed5fb70] [c0000000001a2a78] 
->> blocking_notifier_call_chain+0x64/0x98
->> [ 7843.149152] [c0000013aed5fbb0] [c000000000c4a898] 
->> of_reconfig_notify+0x44/0xdc
->> [ 7843.149160] [c0000013aed5fc20] [c000000000c4add4] 
->> of_detach_node+0x78/0xb0
->> [ 7843.149165] [c0000013aed5fc70] [c0000000000f96a8] 
->> ofdt_write.part.0+0x86c/0xbb8
->> [ 7843.149171] [c0000013aed5fce0] [c00000000069b4bc] 
->> proc_reg_write+0xf4/0x150
->> [ 7843.149178] [c0000013aed5fd10] [c0000000005bfeb4] 
->> vfs_write+0xf8/0x488
->> [ 7843.149184] [c0000013aed5fdc0] [c0000000005c0570] 
->> ksys_write+0x84/0x140
->> [ 7843.149189] [c0000013aed5fe10] [c000000000033358] 
->> system_call_exception+0x138/0x330
->> [ 7843.149196] [c0000013aed5fe50] [c00000000000d05c] 
->> system_call_vectored_common+0x15c/0x2ec
->> [ 7843.149203] --- interrupt: 3000 at 0x20000433acb4
->> [ 7843.149208] NIP:  000020000433acb4 LR: 0000000000000000 CTR: 
->> 0000000000000000
->> [ 7843.149212] REGS: c0000013aed5fe80 TRAP: 3000   Tainted: 
->> G          I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
->> [ 7843.149217] MSR:  800000000280f033 
->> <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 42002408  XER: 00000000
->> [ 7843.149227] IRQMASK: 0
->> [ 7843.149227] GPR00: 0000000000000004 00007fffcde2d2c0 
->> 000000013a707f00 0000000000000006
->> [ 7843.149227] GPR04: 00007fffcde2d368 0000000000000020 
->> 0000000000000000 0000000000000001
->> [ 7843.149227] GPR08: 0000000000000020 0000000000000000 
->> 0000000000000000 0000000000000000
->> [ 7843.149227] GPR12: 0000000000000000 000020000403b1e0 
->> 000000013a6df668 0000000000000006
->> [ 7843.149227] GPR16: 0000000000000000 0000000000000002 
->> 0000000000000004 0000000000000005
->> [ 7843.149227] GPR20: 000000013a700018 000000013a6df360 
->> 000000013a6dcb20 000000013a6dd918
->> [ 7843.149227] GPR24: 000000013a6db178 00000001722028c8 
->> 00007fffcde2d7f8 00000001722028c8
->> [ 7843.149227] GPR28: 000000013a6dc340 00007fffcde2d368 
->> 0000000000000006 0000000000000020
->> [ 7843.149268] NIP [000020000433acb4] 0x20000433acb4
->> [ 7843.149271] LR [0000000000000000] 0x0
->> [ 7843.149274] --- interrupt: 3000
->> [ 7843.149277] Code: 4082016c 2c3f0000 41820060 ebff0028 2c3f0000 
->> 41820054 e87f0018 2c230000 41820014 4890dc75 60000000 e93f0018 
->> <0b090000> e87f0020 2c230000 4182000c
->> [ 7843.149292] ---[ end trace 0000000000000000 ]---
->>
->>
->> Regards,
->> Venkat.
+kernel test robot noticed the following build warnings:
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Ethan-Zhao/PCI-make-pci_dev_is_disconnected-helper-public-for-other-drivers/20240129-115259
+base:   41bccc98fb7931d63d03f326a746ac4d429c1dd3
+patch link:    https://lore.kernel.org/r/20240129034924.817005-5-haifeng.zhao%40linux.intel.com
+patch subject: [PATCH v12 4/5] iommu/vt-d: pass pdev parameter for qi_check_fault() and refactor callers
+config: x86_64-randconfig-161-20240207 (https://download.01.org/0day-ci/archive/20240208/202402080321.n77hu71Y-lkp@intel.com/config)
+compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+| Closes: https://lore.kernel.org/r/202402080321.n77hu71Y-lkp@intel.com/
+
+smatch warnings:
+drivers/iommu/intel/dmar.c:1533 qi_flush_dev_iotlb() error: we previously assumed 'info->dev' could be null (see line 1533)
+
+vim +1533 drivers/iommu/intel/dmar.c
+
+20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1522  void qi_flush_dev_iotlb(struct intel_iommu *iommu,
+20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1523  			struct device_domain_info *info, u64 addr,
+20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1524  			unsigned int mask)
+6ba6c3a4cacfd6 drivers/pci/dmar.c         Yu Zhao      2009-05-18  1525  {
+c830e699e08a6c drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1526  	struct pci_dev *pdev = NULL;
+20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1527  	u16 sid, qdep, pfsid;
+6ba6c3a4cacfd6 drivers/pci/dmar.c         Yu Zhao      2009-05-18  1528  	struct qi_desc desc;
+6ba6c3a4cacfd6 drivers/pci/dmar.c         Yu Zhao      2009-05-18  1529  
+20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1530  	if (!info || !info->ats_enabled)
+20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1531  		return;
+20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1532  
+c830e699e08a6c drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28 @1533  	if (info->dev || !dev_is_pci(info->dev))
+
+Missing ! character.  if (!info->dev
+
+c830e699e08a6c drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1534  		return;
+c830e699e08a6c drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1535  
+c830e699e08a6c drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1536  	pdev = to_pci_dev(info->dev);
+20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1537  	sid = info->bus << 8 | info->devfn;
+20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1538  	qdep = info->ats_qdep;
+20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1539  	pfsid = info->pfsid;
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
+
