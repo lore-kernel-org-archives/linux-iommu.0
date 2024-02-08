@@ -1,108 +1,125 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15E561E87C
-	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 00:04:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9336D1D6AA
+	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 01:13:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707350690; cv=none; b=HR+g8YvPXakH7tjXSPrQQWw8+or1scw+Cf7e3BGiBkkq+Vy3yWOL7TsKeGwPrOhd3QKcesQzO6Zfu5c3iiOerr/vdFG8sgY3lP9qOQH+T7fvqkEqpID1EsgCY1Ht4UmXCWf3yWhvrIOau5ZtuPWjk6wcMkpB8QvqZ9CrmGFichY=
+	t=1707354790; cv=none; b=uOK91hEaf/2oxlQSQPQ9cTjtyip3+k+9BHF+NyxEu7psDgfYcONlNQ3iUadGdD+/544MfE6uODyrKId7zYUxtznfoZoEdDgTv8/f3MEfrXGKNtW2ZV8FHw/7FEGvA7/X49G5uQ8e9NhrDRarFUCOnWKgTVh3yeEhdAQZIcXp9d4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707350690; c=relaxed/simple;
-	bh=p5zVpNRV/Kw4RpQSuCTfGevl+nGajRGf+VhjwPTrxzo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Lgkc6sXF9L8WfUICr86HQuoVs4yWuDTUlolVq6KgOPIsiMMtvoDZezW600huzeHJBUcnUv0ROctPuAGxgLQPskKrC80gPKdEubyO9rsbrS/h5ltJwRik45DeE+uPBpdGTqQiJeZ5g8Z7Vw94qi1U+biQlikIYwpt4bpY1Fjk3+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 889451FB;
-	Wed,  7 Feb 2024 16:05:29 -0800 (PST)
-Received: from [10.57.49.110] (unknown [10.57.49.110])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 372A83F64C;
-	Wed,  7 Feb 2024 16:04:46 -0800 (PST)
-Message-ID: <37ab8689-5e0d-4166-bad6-84d3c51446ca@arm.com>
-Date: Thu, 8 Feb 2024 00:04:44 +0000
+	s=arc-20240116; t=1707354790; c=relaxed/simple;
+	bh=yScPOF8WrSenAGTUkyEQRqEcunLC5CJdwIIrDEnpy+g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Em63SlnIsrXDPlvOzf69MEzn/1OI+itl5KtoIgF22h/3C+/I7g/8BhxJT8uXy1hpNQXKrFlC3G9S3la0sMpsyqk56+evWSZZVVDuqauITruO4yQHku/2AL4KmDtH44WIZPTU2JAd8jQDhwjEUpT2Zrnbw8mK1XVt93XGcDqoWTQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=oZZKCgC7; arc=none smtp.client-ip=209.85.210.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="oZZKCgC7"
+Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-6ddca59e336so230174a34.0
+        for <iommu@lists.linux.dev>; Wed, 07 Feb 2024 17:13:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1707354787; x=1707959587; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3MLv8CAUfSagrlhodaWKNWgVzAaOQjo0pM5UtQzgUUQ=;
+        b=oZZKCgC7mucpmOwrfYkoZ2aXRL8TsZetBlRQMph6N4IiJGOl0Bwi38aQbiHLKSParj
+         dPbl7gjGKrRvVLX9Xt3xloHM5TjouLJKme2dkXyAvUurpKwReWuPGfHE/YutxPRt+w5R
+         pRsrIj/zc7DAygjSaOUSkhtihMFJfR4NsIOvtENLrpakibddmFd6Q1wdN4RTKmhQ0IAS
+         8mDAQ4sEH4sogeqimj3RcdMjLQVQ3Eusex/IISgYnIQw/2rhrSxZyzpF58hNUqfiiKuJ
+         noDXhpyNTl3ivfCzKFDEe7plYYYyfyNPxgS5UPIWx6VMiZGA29u1j8W+20Ulkk27C12J
+         HqvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707354787; x=1707959587;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3MLv8CAUfSagrlhodaWKNWgVzAaOQjo0pM5UtQzgUUQ=;
+        b=ECXmxyRWE/4coKyRJPHgrOzarKgMcGmBFEg0n2kKPf+bjN/DghnGAudAdJ/LNy2qQq
+         yhiIvApRRYJT3r0icBvJ+gZQRCXuLGnKsm2oOxIlyDelmvv/IPHz0lQ1FTZqCZQGwoPl
+         JYaTlmnlE0BaRzz2v0HAZVrwZl+58A9krLHnjFf3Qm3Dfcv4OOm/OL1oENfZWazUH8xw
+         kBi0wtcIj40D9ULB60XFOKF8E+M33QmWXdCWdUGiNfMM7BAeXeuTI8X5bZ7ItyW/7ETR
+         E3QCSCxDFvIntx58rc2kkfzyXrK+4eDhfGnCh1TTEY8WfYWuKEt9utjWRVl/oV2BHvZS
+         yItg==
+X-Gm-Message-State: AOJu0YyMBpBnNrBSVcyBeR/Ks5rsLSoTnGAPi41KfZXgWS0ftD3Ko8KC
+	NGiCiO3eJhptmuzxAitcXERon5fZCZ1VEgPc4Mww3AT+/Z/cV7kfSJBfBwWoNoQ=
+X-Google-Smtp-Source: AGHT+IHmcvbcyMlsNym9pH4+Y3ZNvq/GkFWDijh2Czdvifds6S6RPwX3FfVNGCZYcZuAG0BmRv+ebg==
+X-Received: by 2002:a05:6830:4107:b0:6e2:b00c:8d78 with SMTP id w7-20020a056830410700b006e2b00c8d78mr675168ott.1.1707354787569;
+        Wed, 07 Feb 2024 17:13:07 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCX5oA7olDzl/Cnv75qmNczwOe9W3QaJ/QKpsDbETKMj7yZ2DK+dXE3LSHpxq2XUcGA4+SAeSGPVU43vzi/aoll+xULrfmtTvE+X0u0WaZV7+GtnUUhJ43vqiwaiFKNCyhqXau+vPyIHT8ArVQJ3/swiv/bb+ooC/S+XfJc22Dd8qE3YJfukMsYb5smlctLZ7omLPHIHZt2MN+qlK/4K38Yg
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id d8-20020a9d51c8000000b006e2c026aa59sm99665oth.72.2024.02.07.17.13.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Feb 2024 17:13:06 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rXsyP-00BpUM-Hs;
+	Wed, 07 Feb 2024 21:13:05 -0400
+Date: Wed, 7 Feb 2024 21:13:05 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Nikhil V <quic_nprakash@quicinc.com>, Will Deacon <will@kernel.org>,
+	Joerg Roedel <joro@8bytes.org>,
+	Charan Teja Kalla <quic_charante@quicinc.com>,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] iommu: Avoid races around default domain allocations
+Message-ID: <20240208011305.GM31743@ziepe.ca>
+References: <e605b38a2d40b1e7589e10110c6d3ece35f6af4e.1705571894.git.quic_nprakash@quicinc.com>
+ <139a9abe-75d8-3bda-3ec9-a14a493eb2a9@quicinc.com>
+ <20240201162317.GI50608@ziepe.ca>
+ <9ba9c4fa-3fa9-c6c4-ce77-0c6cd5e23680@quicinc.com>
+ <20240207145656.GJ31743@ziepe.ca>
+ <37ab8689-5e0d-4166-bad6-84d3c51446ca@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/1] iommu: Avoid races around default domain allocations
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@ziepe.ca>, Nikhil V <quic_nprakash@quicinc.com>
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Charan Teja Kalla <quic_charante@quicinc.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <e605b38a2d40b1e7589e10110c6d3ece35f6af4e.1705571894.git.quic_nprakash@quicinc.com>
- <139a9abe-75d8-3bda-3ec9-a14a493eb2a9@quicinc.com>
- <20240201162317.GI50608@ziepe.ca>
- <9ba9c4fa-3fa9-c6c4-ce77-0c6cd5e23680@quicinc.com>
- <20240207145656.GJ31743@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240207145656.GJ31743@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <37ab8689-5e0d-4166-bad6-84d3c51446ca@arm.com>
 
-On 2024-02-07 2:56 pm, Jason Gunthorpe wrote:
-> On Wed, Feb 07, 2024 at 07:56:25PM +0530, Nikhil V wrote:
->>
->>
->> On 2/1/2024 9:53 PM, Jason Gunthorpe wrote:
->>> On Mon, Jan 29, 2024 at 01:29:12PM +0530, Nikhil V wrote:
->>>
->>>> Gentle ping to have your valuable feedback. This fix is helping us
->>>> downstream without which we see a bunch of kernel crashes.
->>>
->>> What are you expecting here? This was fixed in Linus's tree some time
->>> ago now
->>>
->>> Are you asking for the stable team to put something weird in 6.1? I
->>> don't think they generally do that?
->>>
->>> Jason
->>
->>
->> Hi @Jason,
->>
->> Considering that the issue is reported on 6.1, which is an __LTS kernel__,
->> any suggestion to fix this issue cleanly would help us a lot. Right thing
->> here would have been propagating the changes from 6.6 (like for any
->> stability issue), but considering the intrusiveness of them, is it even
->> possible?
->>
->> Just to be open about reproducibility of the issue, a bunch of them are
->> reported, both internally and by customers.
+On Thu, Feb 08, 2024 at 12:04:44AM +0000, Robin Murphy wrote:
+> > Frankly, I'd suggest just proposing the necessary (and tested)
+> > upstream patches to 6.1, however large they are, and see what Greg and
+> > Sasha say. This is the usual working model they have, as I understand
+> > it.
 > 
-> I think you need to talk to the stable maintainers not the iommu
-> upstream folks. I don't well know their policy.
-> 
-> Frankly, I'd suggest just proposing the necessary (and tested)
-> upstream patches to 6.1, however large they are, and see what Greg and
-> Sasha say. This is the usual working model they have, as I understand
-> it.
+> To be blunt, hell no. Stable is far enough from its namesake already; the
+> ongoing bordering-on-ridiculous brokenness of your mainline changes where
 
-To be blunt, hell no. Stable is far enough from its namesake already; 
-the ongoing bordering-on-ridiculous brokenness of your mainline changes 
-where each "fix" keeps affecting something else is a massive NAK to 
-backporting any of it, let alone 43+ patches to achieve a 2-line fix.
+What on earth are you even talking about? POWER?
 
-Nikhil, if this is truly sufficient to resolve the issues you see 
-(AFAICS things end up serialised by the group mutex so probably should 
-be robust enough), then I'm OK with you proposing it as a dedicated 
-stable-only fix, as an "equivalent" patch per Option 3 of 
-stable-kernel-rules.rst - I reckon your commit message is already pretty 
-good with regards to the final point there, but I'll be happy to help 
-argue the case if necessary. Just one point - is it genuinely not 
-relevant to 5.15 and earlier or is it just the case that 6.1 is the 
-oldest thing you're actively testing? (Apologies, I've already forgotten 
-where things were that far back).
+> That said, I also don't think there would be any harm in applying this to
+> mainline as a belt-and-braces thing either,
 
-That said, I also don't think there would be any harm in applying this 
-to mainline as a belt-and-braces thing either, if it helps makes a 
-backport easier and Joerg doesn't mind. There's already a bunch of stuff 
-I'll be cleaning up once the underlying issue behind all of this is 
-properly fixed, so adding a couple more lines of code to that list is no 
-big deal as far as I'm concerned.
+Really?
 
-Thanks,
-Robin.
+Now that you've made me look, this patch breaks the
+iommu_group_store_type() flow both on latest and on v6.1 from what I
+can see.
+
+On v6.1:
+
+iommu_change_dev_def_domain():
+  
+        prev_dom = group->default_domain;
+        if (!prev_dom) {
+                ret = -EINVAL;
+                goto out;
+        }
+[..]
+        /* Sets group->default_domain to the newly allocated domain */
+        ret = iommu_group_alloc_default_domain(dev->bus, group, type);
+        if (ret)
+                goto out;
+
+But this patch changes iommu_group_alloc_default_domain() to succeed
+always without doing anythiing.
+
+So this patch needs some fixing.
+
+There is a very good reason the stable people don't like boutique patches..
+
+Jason
