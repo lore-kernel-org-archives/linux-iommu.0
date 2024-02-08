@@ -1,238 +1,328 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2081.outbound.protection.outlook.com [40.107.93.81])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62B68679F8
-	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 05:06:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.81
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707368818; cv=fail; b=Ywmeza0Hip/voGAl5pA4mmFwrHfGYQKqnq8mj+37zpfyKiaD+NU1vxwNcQBXQp3NXOwDHkN057sYkQVWRDp+9Xw5JMBqrUh43kRECu7oWInPHXM4nIvqnzDwXjptAFj6cG6g6KC9m/VrBlNWz19HcRenkdSwaBMiAg60r0ZVDNs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707368818; c=relaxed/simple;
-	bh=7AfGx5ZV+JkocDH7Tq9hOyuq6vA1yUuZm8DXtGhsEYM=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=TVS65llHICeu/sVrCd9hu2hUOP3xw0oBz+iP/8EYgJukz1+zdUkRlJ1F/kGEKlWOb9wjsTVTx51noxDWvr286mf7X6k56jzaqCC3Z5Bol3Doy0H2KsPR0gvOkYF6jL0IGWHN9zFyqoUi/o4QfQSGWEUc9U/5/W4tyutUuhqVbuQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=gXZj+1vR; arc=fail smtp.client-ip=40.107.93.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FDB367C56
+	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 05:53:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707371602; cv=none; b=CeiB6TH42f5Zs2WizB0KHQicWBT4pu/mRKoFOr5lKqwOipvq3i7u7xiumcOTGFVVgc0WEmxp22tqHvsLkT695qQz1KEAgFMR4YWnkiGZCc7jvdAvc0TlhVROmZBKf4p93eCIWE++EeKaKiknFOhIMoYMC+Wej2Ro1qplP9owVU4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707371602; c=relaxed/simple;
+	bh=xVb0C3dbyq1xbserUKHoovA7zf1xTE34Kb2AhThIueM=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=gvKXUMchKRUPdQi3YGVV5bQy+3aT4GzQG/dCct5JXoajaJ7GnpBnGTPzPX+4r/EFxTPFE7yak11FwuiczRdNfNdWjT7Qj7VHQj+PWSJ0vP3VxsRP+B2K3pPFt+i/f1hOetiC7Zx2lWelLXeDjwvjPV0nV31t6Jxvz3A8mAjiYMU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com; spf=none smtp.mailfrom=linux.vnet.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=Xbmkv5wN; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.vnet.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="gXZj+1vR"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dPX0bvVwJ+cVyfI+2rdps+/aooElk4WfK89LqgzWALx/o9+YlGTng2y+xFDONOwpg0t39dG7e8lkKd57mlQK/oyOeQTGu3GEGh50W0M7Vmiqd8bSsLd3PUKai3Jmg68uNDQeI2Lwy+rnRZwcSRRAiObvJdwH0iGfMfBSjMXH7Ky1GEocTp3gDLftZR7ZRnpRP6H+V1VqBSATNSKUG8NUXPIMiph4iP7nyeqnoQyYfI3jpYHOB+RUPtLEkvMW0+E4HX7obgzVIFZsjTovZUG17R6Wpk6W+Qid4Tdx8zIZNPSL7QGtfk/L5CV6P1YFfNl+MoKufE5uL0eAC+UhlVGTjA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kwZJYmjNgOQJmyS5s/Ep1T3LVXG7d1yceViAVOtHoQo=;
- b=H38DJL/K3t0jDhn4V85RqCJ8foeBh/24BqxOgKVK+uqBfw8owxdpz07vQSisUez7EIjIjBikzcgJxBqagxYdEK4zkms7sAjQLdaUubb9D1pvsBfvzRD1715JMxD3xfJ8XrZ2K4yyE3x7lhIhM+KJqxZoaSe0yb3AVOvVTo93I7js2KAxQ5270UJ6znkKVGWlTXMqPbnkk5+aeqp8vdgYbukIerCIIDvXoZDTSqKYP7Ya5cG313dj2aimO3l1Kns2l6DzvdCuhCwvOx0Ip5aFHkruzGl5zILvTVUXaQOuJnhONUOil6iTPfQV4tKNYEYCL4WquCT2NpqSgH/xtdKWEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kwZJYmjNgOQJmyS5s/Ep1T3LVXG7d1yceViAVOtHoQo=;
- b=gXZj+1vRSbQ4Few+ogNrvEqaTrkFrRgSQjipe4H+PN5KVeyguC+H/HZJKfO6AJA/j894AOXMm0ZNlUlxIg6winiap+Ytmm4eI6X8nEDafa9RCRfAji8m6/3aQ4pEf9RKrNHIwSp3S/KxQm0pN7vLvNu/RZbrvuHw02tTBApbIs4=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- IA0PR12MB7529.namprd12.prod.outlook.com (2603:10b6:208:431::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.10; Thu, 8 Feb
- 2024 05:06:53 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::481d:7627:c485:9cb]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::481d:7627:c485:9cb%2]) with mapi id 15.20.7270.012; Thu, 8 Feb 2024
- 05:06:53 +0000
-Message-ID: <de8ad0b0-1fa3-8e32-57ac-5e3e8841d884@amd.com>
-Date: Thu, 8 Feb 2024 10:36:42 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v12 13/16] iommu: Improve iopf_queue_remove_device()
-Content-Language: en-US
-To: Baolu Lu <baolu.lu@linux.intel.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>
-Cc: "Liu, Yi L" <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Longfang Liu <liulongfang@huawei.com>, "Zhao, Yan Y" <yan.y.zhao@intel.com>,
- Joel Granados <j.granados@samsung.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Jason Gunthorpe <jgg@nvidia.com>
-References: <20240207013325.95182-1-baolu.lu@linux.intel.com>
- <20240207013325.95182-14-baolu.lu@linux.intel.com>
- <BN9PR11MB527603AB5685FF3ED21647958C452@BN9PR11MB5276.namprd11.prod.outlook.com>
- <693ee23d-30c6-4824-9bb2-1cfbf2eccfef@linux.intel.com>
- <f856519f-419c-1901-b8bc-3e338873157f@amd.com>
- <9577ec59-fa05-4eea-b0ae-312d9531ce61@linux.intel.com>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <9577ec59-fa05-4eea-b0ae-312d9531ce61@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: PN2P287CA0015.INDP287.PROD.OUTLOOK.COM
- (2603:1096:c01:21b::14) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="Xbmkv5wN"
+Received: from pps.filterd (m0353728.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 4183MTtW017376;
+	Thu, 8 Feb 2024 05:53:15 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : from : to : cc : references : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=ZztR+92YMRjspZGkSCWD3w8VBnmbNuBtLEscOQCBG8c=;
+ b=Xbmkv5wNTJTkP7zcJb3Pl/YJt43MSlX3Vin8YSvhjejAVoNs+2Ag6Ww6ZkbPlUCw63Gq
+ b/cQzhIedvPAgbTO2ySI5rAzaUjcApb2Vw4pP5FDA3jZ+ChaUO3yihOYbN8/E1ZaIjYG
+ Wfou19IMfcQ6fCwMDMQ/NCrhOYdnzK/46kqnwHzWSSfcVehFsfukjz+/FtGUasbKvbdz
+ m2BWIiJfkDvcpx+MhdGNjhpysWV1tghwtihTLC7RPP7yNGHNfEdkNRDLktO/9CxMQPI8
+ c9IS8tEpEK1IXP2muTj96DJ/e1y5mG7/sz+0nvVCY33/CKAKE4Ye63qB1pq3dCUSdevV vQ== 
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w4q00tkg9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 08 Feb 2024 05:53:14 +0000
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 418512a0008758;
+	Thu, 8 Feb 2024 05:53:13 GMT
+Received: from smtprelay06.dal12v.mail.ibm.com ([172.16.1.8])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3w206ytp0e-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 08 Feb 2024 05:53:13 +0000
+Received: from smtpav05.dal12v.mail.ibm.com (smtpav05.dal12v.mail.ibm.com [10.241.53.104])
+	by smtprelay06.dal12v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 4185rC8O3015548
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 8 Feb 2024 05:53:12 GMT
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id ABBA35805D;
+	Thu,  8 Feb 2024 05:53:12 +0000 (GMT)
+Received: from smtpav05.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 16C0758052;
+	Thu,  8 Feb 2024 05:53:09 +0000 (GMT)
+Received: from [9.43.110.69] (unknown [9.43.110.69])
+	by smtpav05.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Thu,  8 Feb 2024 05:53:08 +0000 (GMT)
+Message-ID: <82a4d9a0-06c9-4152-9845-a261238b2833@linux.vnet.ibm.com>
+Date: Thu, 8 Feb 2024 11:23:07 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|IA0PR12MB7529:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5420289d-3179-4f80-b678-08dc2863c3d6
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	BBIWniAxvnPyWSooR7rTXj78ifGR0k5A0Z6XsI5yq6UhRYea01oMem5wcHXE5+w26j4Ty5Q5Wfd8TWbm3wmVBhb9394IfH7ZbhdjWKbIo1cHZMpoREzWR9/NKtNiQXeu0mXKLzulf2iksTOLleIV2Jr6bq2rUZHGkEoNUKqaziEK3i1m+36eD3EEB5uUyLNlJTprZrsgbvZIj3ZaHvFzPfedAihfDqX5TzNIIgSCiGg80MKoSqPAxUat9eQA9u6AG69RzLESZ8M6ciCwuIVsb16hSsDyQIH1Q7lc7ZJy+Jjkr2JxMhx9fOec9KPuWwd71f9oSEYreLAwVXtdtEkQoHcZJ1oD9WFibeNNba7CyrLjnK6I40zrgzbeKCoWTHtyCRwobyo4HWOUr23Ty3dCND4GwOwijWYggqN9LuE24Mpj2N7AT8o5pFjleH8UDw5f9vN0W9JuIxGDBnNZxVIUiJHGQrcYJ1ve3yOwNmbdKgLmFgbOQSME09XQA7PbLih6xN9FuIkNlwWSS4QHVlYpvBSIMzPYEoelkYPFTmdaEGw3TrBg7PX38ZzF7uJl41lv
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(39860400002)(136003)(346002)(376002)(230922051799003)(451199024)(64100799003)(1800799012)(186009)(36756003)(31696002)(6666004)(86362001)(38100700002)(31686004)(6512007)(110136005)(54906003)(26005)(2616005)(83380400001)(6506007)(478600001)(53546011)(6486002)(66946007)(316002)(8676002)(66476007)(66556008)(4326008)(8936002)(44832011)(41300700001)(2906002)(7416002)(5660300002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?c0h4SmpMRVIxQ3NXTE9JS0FZS2NqTUpJTHlkWStqbkJ3cmk4UnBzOE8wbnQ1?=
- =?utf-8?B?dHVWdEFPRWlTajZIM2Ewa2svMzFyYldKTG45STIzY1c0eXBFMGhXV1oxc1kx?=
- =?utf-8?B?VUh6Y2cxazNvbmwvMHR1WmNhV2dwSzJOVUFuMjNnUzVmOElzalpOWU5kUUlD?=
- =?utf-8?B?T3VtTk1Hc0JWOHVVbVFxK2hBNm4xamR1a0hVZnpValoyRTZtTUdkbTQ5djFN?=
- =?utf-8?B?b2R0a1c3U0M3R081TUM0R2VObjlWMHZZc1hkUnVXa0ovL0JaZnk1dEFSM1NZ?=
- =?utf-8?B?YWd0Qjk3M2JhaGtOeVRNd2QxUWZXQWhUb1pNcXVHZXlzYmhPTHZwNkdDaElX?=
- =?utf-8?B?eFJzazBWMGlPdzRWd2prbjJNaTFmWVJkS1ZPNVJZdGpVczI4YXRQN21OeEN6?=
- =?utf-8?B?RG1hZ0JxUm1zMU13d0g4V3J1cDhBcUJRdm82Wi8ybWdGRGxQOUFJcGpNVEk0?=
- =?utf-8?B?TlNqMGtKVDQ0WVN1ZWFSMW9VN0xHRkdFMjFET3FpZ014MUdid3lqakhnYzJk?=
- =?utf-8?B?ekRuSWRma3FMdG5HUlhnT01BcGV1QnpzT1o4NHNyRnkyUWZQWUp3MGtkUHZ5?=
- =?utf-8?B?c1h1dk9jYWprOHFqRWlVNUF0SUxUd3FoTjlTVFh4a1kxTk84SFdkaWZVNEsz?=
- =?utf-8?B?N1lKZXFlSktiK0NyM2g4ZDh0TExXTEp5TzZ6MHpyc0E0azVCTXdvdkwxL0J6?=
- =?utf-8?B?T1oxTXdoeFdSbFNwcWp5bmZzcm8wVTlyQ2VPclpqZFV0SEVkZ2tWTmRXd1JW?=
- =?utf-8?B?aXRUK3NwMUtRK1dLMitIVjRZK1paZUhPUTZvdXduY0FrbUVURVN3ZmJhc0xO?=
- =?utf-8?B?eS81T0MzQ0NqU0J3ZUpEYm9ybEhPVHkyV2RvSTF3ZnZob3NocW5sSDZYRlpJ?=
- =?utf-8?B?SmhKdGVBZ1lYeURMVmFvTmpWc2tFdFNrQjF3NHdqV2hhczEzL1BPYjUyVE1w?=
- =?utf-8?B?UWJQR3U2eTRkUEQvVUVNeWxXYkpCMERGVVh6ejNuUjVhVFlPdFBtNDk4ajl3?=
- =?utf-8?B?K2FNcEZXclV4UFVrZmgvc1pEMiszUlpjV09DZGQ0REpoRGNqWExvT01jN3g5?=
- =?utf-8?B?Z3EzSkV2ZWQ3UWc3NTJoVWN4WlJUdGxFeTU1SFRXblpMcnpHR093OTM4dmd0?=
- =?utf-8?B?bzNtMFc0VXZLZjZZck5DNzJmOGt3b1htMm5lemtQaTBRUUtQTW15MmNjVlJC?=
- =?utf-8?B?QlM0cHNEdHZKeTJ4Z0p4YnR0bTk0ZFpoWVp3dGE4eWtSVEhTT3BOQWs4eFBh?=
- =?utf-8?B?QWFDYlEyaGYyTDM3Z2hoRzVjRHl6WG9aSENjTzRkdXY2TzFXVjQ1YUJWcG9q?=
- =?utf-8?B?VUR2U0ZFM25na2tGQ0VabWMzWE9SaXFCR2wzMWNlZUI5V1lWWHNSMHc0TUZT?=
- =?utf-8?B?a0xneWgrWkZIeUZJQnVhakZsenY1d053SEZHU3RxaUR5UGNJbmQ3V21qTnFH?=
- =?utf-8?B?a01sdDNpMTVJUGdJQlBlb0FnMTJiL2FXZVRJNFZvWFlRK1JTWTJGSkNRVXM0?=
- =?utf-8?B?bU9PYlBPbWJHZWZKSitvZHFSWExDZUxHd3FIWDBoOHRmR2Z1ZzVFWVlnNjU1?=
- =?utf-8?B?cjZpSmpVV04rb092bmx4UnRFTmlpaXgwTFZpUENIYldlWU9nS0YxYUJ6cURQ?=
- =?utf-8?B?UzM2YkI1SmZQeXNDNTFjVjF4NnRkRldEdit6d3VIUStHWFl6MGZXNEZkMFhZ?=
- =?utf-8?B?Um1EcWxXbmpBSDhzNW5DRk1YNFFGV2tIaFJLMUM5Y09BUFVCbkt1V2RiYWdW?=
- =?utf-8?B?R1QzeDlod3pVVWdBMS9ObDh3RUNNMWkrY3VQSFJxWEE5bjJib0lZZFQ1dlZi?=
- =?utf-8?B?TklNZUxZRGdZOEo1UUticlMwbm5nWjU2RFBNNnhwQkNrYWdDOUM1YXpQTHpD?=
- =?utf-8?B?U2Vud3RXS0Q5OC9EeVEzMDBMU2d2V2hYbzZ6cW50RFNDQ2w1K1RwUEMzSU5V?=
- =?utf-8?B?d3FjQzdYZUtmZVV4MXZ1ZzEvcDZnWFNRUURlelFKdS9oaTFnc0xydXhyb3V4?=
- =?utf-8?B?SHh0YnA3ZmpZKzE3OHMvVDAyN0w4Q21CMkdwY2VTaUxJZVEzNHh1akd3Vloy?=
- =?utf-8?B?dlhweUhkd3pZbFFYbWQ0M1ZSNGNHdkNHVnNRcXYvNXhncEowRUFHVVVhYjg1?=
- =?utf-8?Q?M7dnIpxgwF0SYEuYBnvzGxD7R?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5420289d-3179-4f80-b678-08dc2863c3d6
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Feb 2024 05:06:53.5662
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eqPBpPWUzpTAL69F0jIDZxZTz4vQMGlHlBMEyogRhrwqBJ49ZQ+X1SiCfaEfBFsw0OoFgG5g5ZFVlT8QRUtSdg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7529
+User-Agent: Mozilla Thunderbird
+Subject: Re: [revert commit 83b3836bf83f09beea5f592b126cfdd1bc921e48]
+ [mainline] [6.8.0-rc3]kernel BUG at
+ arch/powerpc/platforms/pseries/iommu.c:100!
+From: Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com>
+To: iommu@lists.linux.dev, jgg@nvidia.com, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Cc: sbhat@linux.ibm.com, robin.murphy@arm.com, will@kernel.org,
+        sachinp@linux.vnet.com, mputtash@linux.vnet.com,
+        abdhalee@linux.vnet.ibm.com, tasmiya@linux.vnet.ibm.com
+References: <8d75ebd3-85c2-4a05-8eca-08f66f9411dc@linux.vnet.ibm.com>
+ <274e0d2b-b5cc-475e-94e6-8427e88e271d@linux.vnet.ibm.com>
+Content-Language: en-GB
+In-Reply-To: <274e0d2b-b5cc-475e-94e6-8427e88e271d@linux.vnet.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 5EBQxb3T7Ykl6x1FpawtU1Z1YiEs3K2t
+X-Proofpoint-GUID: 5EBQxb3T7Ykl6x1FpawtU1Z1YiEs3K2t
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-08_01,2024-02-07_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
+ phishscore=0 clxscore=1011 bulkscore=0 mlxlogscore=687 lowpriorityscore=0
+ mlxscore=0 adultscore=0 spamscore=0 impostorscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311290000
+ definitions=main-2402080028
 
+Adding more people
 
-
-On 2/8/2024 7:02 AM, Baolu Lu wrote:
-> On 2024/2/8 1:59, Vasant Hegde wrote:
->> Hi Baolu,
+On 08/02/24 8:26 am, Venkat Rao Bagalkote wrote:
+>
+> Resending as earlier one bounced.
+>
+> Greetings!!!
+>
+>
+> [revert commit 83b3836bf83f09beea5f592b126cfdd1bc921e48] [mainline] 
+> [6.8.0-rc3]kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
+>
+>
+> By Reverting below commit id, issue is not seen.
+>
+>
+> 83b3836bf83f09beea5f592b126cfdd1bc921e48
+>      iommu: Allow ops->default_domain to work when !CONFIG_IOMMU_DMA
+>
+>
+> --- Traces ---
+>
+> KernelBug: Kernel bug in state 'None': kernel BUG at 
+> arch/powerpc/platforms/pseries/iommu.c:100!
+> [ 7843.148980] Oops: Exception in kernel mode, sig: 5 [#1]
+> [ 7843.148984] LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=8192 NUMA pSeries
+> [ 7843.148988] Modules linked in: nft_compat nf_tables libcrc32c 
+> nfnetlink bridge stp llc tls sit tunnel4 ip_tunnel nvram rpadlpar_io 
+> rpaphp xsk_diag rfkill binfmt_misc mlx5_ib ib_uverbs ib_core 
+> pseries_rng drm drm_panel_orientation_quirks ext4 mbcache jbd2 
+> dm_service_time sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft 
+> crc64 sg ibmvfc scsi_transport_fc ibmveth mlx5_core mlxfw vmx_crypto 
+> psample dm_multipath dm_mirror dm_region_hash dm_log dm_mod fuse [last 
+> unloaded: tls]
+> [ 7843.149041] CPU: 17 PID: 218444 Comm: drmgr Kdump: loaded Tainted: 
+> G          I        6.8.0-rc3-autotest-g99bd3cb0d12e #1
+> [ 7843.149047] Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200 
+> 0xf000006 of:IBM,FW1060.00 (NH1060_016) hv:phyp pSeries
+> [ 7843.149051] NIP:  c0000000000ff4d4 LR: c0000000000ff4cc CTR: 
+> 0000000000000000
+> [ 7843.149055] REGS: c0000013aed5f840 TRAP: 0700   Tainted: G          
+> I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
+> [ 7843.149060] MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 
+> 44002402  XER: 20040000
+> [ 7843.149069] CFAR: c000000000a0d170 IRQMASK: 0
+> [ 7843.149069] GPR00: c0000000000ff4cc c0000013aed5fae0 
+> c000000001512700 c0000013aa362138
+> [ 7843.149069] GPR04: 0000000000000000 0000000000000000 
+> 0000000000000000 0000000119c8afd0
+> [ 7843.149069] GPR08: 0000000000000000 c000001284442b00 
+> 0000000000000001 0000000000001003
+> [ 7843.149069] GPR12: 0000000300000000 c0000018ffff2f00 
+> 0000000000000000 0000000000000000
+> [ 7843.149069] GPR16: 0000000000000000 0000000000000000 
+> 0000000000000000 0000000000000000
+> [ 7843.149069] GPR20: 0000000000000000 0000000000000000 
+> 0000000000000000 0000000000000000
+> [ 7843.149069] GPR24: c0000013aed5fc40 0000000000000002 
+> 0000000000000000 c000000002757d90
+> [ 7843.149069] GPR28: c0000000000ff440 c000000002757cb8 
+> c00000183799c1a0 c0000013aa362b00
+> [ 7843.149112] NIP [c0000000000ff4d4] iommu_reconfig_notifier+0x94/0x200
+> [ 7843.149123] LR [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200
+> [ 7843.149129] Call Trace:
+> [ 7843.149131] [c0000013aed5fae0] [c0000000000ff4cc] 
+> iommu_reconfig_notifier+0x8c/0x200 (unreliable)
+> [ 7843.149138] [c0000013aed5fb10] [c0000000001a27b0] 
+> notifier_call_chain+0xb8/0x19c
+> [ 7843.149146] [c0000013aed5fb70] [c0000000001a2a78] 
+> blocking_notifier_call_chain+0x64/0x98
+> [ 7843.149152] [c0000013aed5fbb0] [c000000000c4a898] 
+> of_reconfig_notify+0x44/0xdc
+> [ 7843.149160] [c0000013aed5fc20] [c000000000c4add4] 
+> of_detach_node+0x78/0xb0
+> [ 7843.149165] [c0000013aed5fc70] [c0000000000f96a8] 
+> ofdt_write.part.0+0x86c/0xbb8
+> [ 7843.149171] [c0000013aed5fce0] [c00000000069b4bc] 
+> proc_reg_write+0xf4/0x150
+> [ 7843.149178] [c0000013aed5fd10] [c0000000005bfeb4] vfs_write+0xf8/0x488
+> [ 7843.149184] [c0000013aed5fdc0] [c0000000005c0570] 
+> ksys_write+0x84/0x140
+> [ 7843.149189] [c0000013aed5fe10] [c000000000033358] 
+> system_call_exception+0x138/0x330
+> [ 7843.149196] [c0000013aed5fe50] [c00000000000d05c] 
+> system_call_vectored_common+0x15c/0x2ec
+> [ 7843.149203] --- interrupt: 3000 at 0x20000433acb4
+> [ 7843.149208] NIP:  000020000433acb4 LR: 0000000000000000 CTR: 
+> 0000000000000000
+> [ 7843.149212] REGS: c0000013aed5fe80 TRAP: 3000   Tainted: G          
+> I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
+> [ 7843.149217] MSR:  800000000280f033 
+> <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 42002408  XER: 00000000
+> [ 7843.149227] IRQMASK: 0
+> [ 7843.149227] GPR00: 0000000000000004 00007fffcde2d2c0 
+> 000000013a707f00 0000000000000006
+> [ 7843.149227] GPR04: 00007fffcde2d368 0000000000000020 
+> 0000000000000000 0000000000000001
+> [ 7843.149227] GPR08: 0000000000000020 0000000000000000 
+> 0000000000000000 0000000000000000
+> [ 7843.149227] GPR12: 0000000000000000 000020000403b1e0 
+> 000000013a6df668 0000000000000006
+> [ 7843.149227] GPR16: 0000000000000000 0000000000000002 
+> 0000000000000004 0000000000000005
+> [ 7843.149227] GPR20: 000000013a700018 000000013a6df360 
+> 000000013a6dcb20 000000013a6dd918
+> [ 7843.149227] GPR24: 000000013a6db178 00000001722028c8 
+> 00007fffcde2d7f8 00000001722028c8
+> [ 7843.149227] GPR28: 000000013a6dc340 00007fffcde2d368 
+> 0000000000000006 0000000000000020
+> [ 7843.149268] NIP [000020000433acb4] 0x20000433acb4
+> [ 7843.149271] LR [0000000000000000] 0x0
+> [ 7843.149274] --- interrupt: 3000
+> [ 7843.149277] Code: 4082016c 2c3f0000 41820060 ebff0028 2c3f0000 
+> 41820054 e87f0018 2c230000 41820014 4890dc75 60000000 e93f0018 
+> <0b090000> e87f0020 2c230000 4182000c
+> [ 7843.149292] ---[ end trace 0000000000000000 ]---
+>
+>
+> Regards,
+>
+> Venkat.
+>
+>
+>> Greetings!!!
 >>
->> On 2/7/2024 5:59 PM, Baolu Lu wrote:
->>> On 2024/2/7 10:50, Tian, Kevin wrote:
->>>>> From: Lu Baolu<baolu.lu@linux.intel.com>
->>>>> Sent: Wednesday, February 7, 2024 9:33 AM
->>>>>
->>>>> Convert iopf_queue_remove_device() to return void instead of an error code,
->>>>> as the return value is never used. This removal helper is designed to be
->>>>> never-failed, so there's no need for error handling.
->>>>>
->>>>> Ack all outstanding page requests from the device with the response code of
->>>>> IOMMU_PAGE_RESP_INVALID, indicating device should not attempt any retry.
->>>>>
->>>>> Add comments to this helper explaining the steps involved in removing a
->>>>> device from the iopf queue and disabling its PRI. The individual drivers
->>>>> are expected to be adjusted accordingly. Here we just define the expected
->>>>> behaviors of the individual iommu driver from the core's perspective.
->>>>>
->>>>> Suggested-by: Jason Gunthorpe<jgg@nvidia.com>
->>>>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->>>>> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
->>>>> Tested-by: Yan Zhao<yan.y.zhao@intel.com>
->>>> Reviewed-by: Kevin Tian<kevin.tian@intel.com>, with one nit:
->>>>
->>>>> + * Removing a device from an iopf_queue. It's recommended to follow
->>>>> these
->>>>> + * steps when removing a device:
->>>>>     *
->>>>> - * Return: 0 on success and <0 on error.
->>>>> + * - Disable new PRI reception: Turn off PRI generation in the IOMMU
->>>>> hardware
->>>>> + *   and flush any hardware page request queues. This should be done
->>>>> before
->>>>> + *   calling into this helper.
->>>>> + * - Acknowledge all outstanding PRQs to the device: Respond to all
->>>>> outstanding
->>>>> + *   page requests with IOMMU_PAGE_RESP_INVALID, indicating the device
->>>>> should
->>>>> + *   not retry. This helper function handles this.
->>>> this implies calling iopf_queue_remove_device() here.
->>>>
->>>>> + * - Disable PRI on the device: After calling this helper, the caller could
->>>>> + *   then disable PRI on the device.
->>>>> + * - Call iopf_queue_remove_device(): Calling iopf_queue_remove_device()
->>>>> + *   essentially disassociates the device. The fault_param might still exist,
->>>>> + *   but iommu_page_response() will do nothing. The device fault parameter
->>>>> + *   reference count has been properly passed from
->>>>> iommu_report_device_fault()
->>>>> + *   to the fault handling work, and will eventually be released after
->>>>> + *   iommu_page_response().
->>>>>     */
->>>> but here it suggests calling iopf_queue_remove_device() again. If the comment
->>>> is just about to detail the behavior with that invocation shouldn't it be
->>>> merged
->>>> with the previous one instead of pretending to be the final step for driver
->>>> to call?
->>>
->>> Above just explains the behavior of calling iopf_queue_remove_device().
 >>
->> Can you please leave a line -OR- move this to previous para? Otherwise we will
->> get confused.
-> 
-> Sure. I will make it look like below.
-> 
-> /**
->  * iopf_queue_remove_device - Remove producer from fault queue
->  * @queue: IOPF queue
->  * @dev: device to remove
->  *
->  * Removing a device from an iopf_queue. It's recommended to follow these
->  * steps when removing a device:
->  *
->  * - Disable new PRI reception: Turn off PRI generation in the IOMMU hardware
->  *   and flush any hardware page request queues. This should be done before
->  *   calling into this helper.
->  * - Acknowledge all outstanding PRQs to the device: Respond to all outstanding
->  *   page requests with IOMMU_PAGE_RESP_INVALID, indicating the device should
->  *   not retry. This helper function handles this.
->  * - Disable PRI on the device: After calling this helper, the caller could
->  *   then disable PRI on the device.
->  *
->  * Calling iopf_queue_remove_device() essentially disassociates the device.
->  * The fault_param might still exist, but iommu_page_response() will do
->  * nothing. The device fault parameter reference count has been properly
->  * passed from iommu_report_device_fault() to the fault handling work, and
->  * will eventually be released after iommu_page_response().
->  */
-
-Looks good. Thank you.
-
--Vasant
+>> [revert commit 83b3836bf83f09beea5f592b126cfdd1bc921e48] [mainline] 
+>> [6.8.0-rc3]kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
+>>
+>>
+>> Reverting below commit id issue is not seen.
+>>
+>> 83b3836bf83f09beea5f592b126cfdd1bc921e48
+>>       iommu: Allow ops->default_domain to work when !CONFIG_IOMMU_DMA
+>>
+>>
+>> Traces:
+>>
+>>
+>> KernelBug: Kernel bug in state 'None': kernel BUG at 
+>> arch/powerpc/platforms/pseries/iommu.c:100!
+>> [ 7843.148980] Oops: Exception in kernel mode, sig: 5 [#1]
+>> [ 7843.148984] LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=8192 NUMA pSeries
+>> [ 7843.148988] Modules linked in: nft_compat nf_tables libcrc32c 
+>> nfnetlink bridge stp llc tls sit tunnel4 ip_tunnel nvram rpadlpar_io 
+>> rpaphp xsk_diag rfkill binfmt_misc mlx5_ib ib_uverbs ib_core 
+>> pseries_rng drm drm_panel_orientation_quirks ext4 mbcache jbd2 
+>> dm_service_time sd_mod t10_pi crc64_rocksoft_generic crc64_rocksoft 
+>> crc64 sg ibmvfc scsi_transport_fc ibmveth mlx5_core mlxfw vmx_crypto 
+>> psample dm_multipath dm_mirror dm_region_hash dm_log dm_mod fuse 
+>> [last unloaded: tls]
+>> [ 7843.149041] CPU: 17 PID: 218444 Comm: drmgr Kdump: loaded Tainted: 
+>> G          I        6.8.0-rc3-autotest-g99bd3cb0d12e #1
+>> [ 7843.149047] Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200 
+>> 0xf000006 of:IBM,FW1060.00 (NH1060_016) hv:phyp pSeries
+>> [ 7843.149051] NIP:  c0000000000ff4d4 LR: c0000000000ff4cc CTR: 
+>> 0000000000000000
+>> [ 7843.149055] REGS: c0000013aed5f840 TRAP: 0700   Tainted: 
+>> G          I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
+>> [ 7843.149060] MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 
+>> 44002402  XER: 20040000
+>> [ 7843.149069] CFAR: c000000000a0d170 IRQMASK: 0
+>> [ 7843.149069] GPR00: c0000000000ff4cc c0000013aed5fae0 
+>> c000000001512700 c0000013aa362138
+>> [ 7843.149069] GPR04: 0000000000000000 0000000000000000 
+>> 0000000000000000 0000000119c8afd0
+>> [ 7843.149069] GPR08: 0000000000000000 c000001284442b00 
+>> 0000000000000001 0000000000001003
+>> [ 7843.149069] GPR12: 0000000300000000 c0000018ffff2f00 
+>> 0000000000000000 0000000000000000
+>> [ 7843.149069] GPR16: 0000000000000000 0000000000000000 
+>> 0000000000000000 0000000000000000
+>> [ 7843.149069] GPR20: 0000000000000000 0000000000000000 
+>> 0000000000000000 0000000000000000
+>> [ 7843.149069] GPR24: c0000013aed5fc40 0000000000000002 
+>> 0000000000000000 c000000002757d90
+>> [ 7843.149069] GPR28: c0000000000ff440 c000000002757cb8 
+>> c00000183799c1a0 c0000013aa362b00
+>> [ 7843.149112] NIP [c0000000000ff4d4] iommu_reconfig_notifier+0x94/0x200
+>> [ 7843.149123] LR [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200
+>> [ 7843.149129] Call Trace:
+>> [ 7843.149131] [c0000013aed5fae0] [c0000000000ff4cc] 
+>> iommu_reconfig_notifier+0x8c/0x200 (unreliable)
+>> [ 7843.149138] [c0000013aed5fb10] [c0000000001a27b0] 
+>> notifier_call_chain+0xb8/0x19c
+>> [ 7843.149146] [c0000013aed5fb70] [c0000000001a2a78] 
+>> blocking_notifier_call_chain+0x64/0x98
+>> [ 7843.149152] [c0000013aed5fbb0] [c000000000c4a898] 
+>> of_reconfig_notify+0x44/0xdc
+>> [ 7843.149160] [c0000013aed5fc20] [c000000000c4add4] 
+>> of_detach_node+0x78/0xb0
+>> [ 7843.149165] [c0000013aed5fc70] [c0000000000f96a8] 
+>> ofdt_write.part.0+0x86c/0xbb8
+>> [ 7843.149171] [c0000013aed5fce0] [c00000000069b4bc] 
+>> proc_reg_write+0xf4/0x150
+>> [ 7843.149178] [c0000013aed5fd10] [c0000000005bfeb4] 
+>> vfs_write+0xf8/0x488
+>> [ 7843.149184] [c0000013aed5fdc0] [c0000000005c0570] 
+>> ksys_write+0x84/0x140
+>> [ 7843.149189] [c0000013aed5fe10] [c000000000033358] 
+>> system_call_exception+0x138/0x330
+>> [ 7843.149196] [c0000013aed5fe50] [c00000000000d05c] 
+>> system_call_vectored_common+0x15c/0x2ec
+>> [ 7843.149203] --- interrupt: 3000 at 0x20000433acb4
+>> [ 7843.149208] NIP:  000020000433acb4 LR: 0000000000000000 CTR: 
+>> 0000000000000000
+>> [ 7843.149212] REGS: c0000013aed5fe80 TRAP: 3000   Tainted: 
+>> G          I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
+>> [ 7843.149217] MSR:  800000000280f033 
+>> <SF,VEC,VSX,EE,PR,FP,ME,IR,DR,RI,LE>  CR: 42002408  XER: 00000000
+>> [ 7843.149227] IRQMASK: 0
+>> [ 7843.149227] GPR00: 0000000000000004 00007fffcde2d2c0 
+>> 000000013a707f00 0000000000000006
+>> [ 7843.149227] GPR04: 00007fffcde2d368 0000000000000020 
+>> 0000000000000000 0000000000000001
+>> [ 7843.149227] GPR08: 0000000000000020 0000000000000000 
+>> 0000000000000000 0000000000000000
+>> [ 7843.149227] GPR12: 0000000000000000 000020000403b1e0 
+>> 000000013a6df668 0000000000000006
+>> [ 7843.149227] GPR16: 0000000000000000 0000000000000002 
+>> 0000000000000004 0000000000000005
+>> [ 7843.149227] GPR20: 000000013a700018 000000013a6df360 
+>> 000000013a6dcb20 000000013a6dd918
+>> [ 7843.149227] GPR24: 000000013a6db178 00000001722028c8 
+>> 00007fffcde2d7f8 00000001722028c8
+>> [ 7843.149227] GPR28: 000000013a6dc340 00007fffcde2d368 
+>> 0000000000000006 0000000000000020
+>> [ 7843.149268] NIP [000020000433acb4] 0x20000433acb4
+>> [ 7843.149271] LR [0000000000000000] 0x0
+>> [ 7843.149274] --- interrupt: 3000
+>> [ 7843.149277] Code: 4082016c 2c3f0000 41820060 ebff0028 2c3f0000 
+>> 41820054 e87f0018 2c230000 41820014 4890dc75 60000000 e93f0018 
+>> <0b090000> e87f0020 2c230000 4182000c
+>> [ 7843.149292] ---[ end trace 0000000000000000 ]---
+>>
+>>
+>> Regards,
+>> Venkat.
