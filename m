@@ -1,173 +1,118 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C73047C08A;
-	Thu,  8 Feb 2024 15:18:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7FFD76908;
+	Thu,  8 Feb 2024 15:20:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707405501; cv=none; b=pmgaj3/bUUfrD7PofyGifqk67dhF+h3f/JnWt3SAg0gDAvL32oTuv7PpbEUMBCDQmUOA78jXPItQ6GsSPaaUL2En3P6jb8gRNZOrJMY2TTJlzm8VhqfFGoHrsM5HCEG5reM4Y0g7ECyHzcNME49GsGEauKwOUjIiAcPVqUwedSs=
+	t=1707405646; cv=none; b=l+oCscE6EjT1+TWWkD8jQywr8+Bz0ftALO5U1UNXoDLeAEHHKwZOLBr+NK+mAfcij36lTt+1FVmHLWZsndhmsn+KMuyb9m3Vs1Dl5GupFBOajYH2+b8DeJ3nOx2OuyE3dOpSiGFRJy0LYpveCsm9TePbpEuzNl79+be6HEes71Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707405501; c=relaxed/simple;
-	bh=7FHpLsml/xrkJsAoY6Cfp+BIiPZFRxSXlyhhfCApqt4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=lvLyGBtAzU2bYez+mLq19kqqec59yln3jg2ofF7By0p5topI5CxAg1c5AkCoF2bFvPCc+swTWfq5YnBcecheHGBmLBqDGBIgtnPqWsaw8lDYFii33TuqRutcjXvnmvJwbflftPArcQeGEaxrZrIneFxWOkNr/3M9GdVoS9pls4Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=e8s3+zAE; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="e8s3+zAE"
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 418FG4uo008555;
-	Thu, 8 Feb 2024 15:18:11 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=xJSY7K7wKqMS50bCqgU7kI6Mf7K1mbRsWl+vQYNi4Q4=; b=e8
-	s3+zAEszMyNcJM0J8FuoEQxEraXVRkIq9qWkwo6rICcywwZwtdRAxD2mzJ5l76Lq
-	A40uobPwuShNpl7zTJMN3+uThyO8jZ+LRQuWrljlt1FEOpt/fHTDPuk3aCqlpe5J
-	hePkWhM0PbQBW3v62PuKzMGBbE5+OTtKPh23x2i4KMpIzC3tR7n5qH91AUmZHvsa
-	pNVCToOk7X9qahlGNEXzdAAl4VCpMx/ZIgqBlIfxdE9Cy/VNyxbfZIQ15/XnlwKF
-	YmNlO/dusj8HUxU2KYuwLLVjDnEkVC2067fwZybX80jmdvgOpfRnxBanWpEQrYir
-	AvkfR36F/ilNALmvCfHQ==
-Received: from nalasppmta04.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3w4frwtg5m-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 08 Feb 2024 15:18:10 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 418FIAcD019950
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 8 Feb 2024 15:18:10 GMT
-Received: from [10.216.3.128] (10.80.80.8) by nalasex01b.na.qualcomm.com
- (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Thu, 8 Feb
- 2024 07:18:07 -0800
-Message-ID: <1cb6a33f-57e8-f3d0-9098-755af70cda41@quicinc.com>
-Date: Thu, 8 Feb 2024 20:47:42 +0530
+	s=arc-20240116; t=1707405646; c=relaxed/simple;
+	bh=8BfyqnrLs4LwrLAGTMIGN2PpFP3Ol1yzVSrwSbGQez4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=RiM4EByV7xpQChN2OAMkWdluiFSKezmb9droY2b8FPGC7WB2qUufntQYY3f55ERC/hCjb7v0reTCdFUiMTmY4r/yeuM8bINScL4l2Nvea8CU+bq76kKARE64f4ELtJZOGQMOfsjZ31wt8T+Z7hQR5juIaGg7NepLkF7o4trUuwI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.31])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4TW0vy00GNz67nmT;
+	Thu,  8 Feb 2024 23:17:17 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
+	by mail.maildlp.com (Postfix) with ESMTPS id E33C9140595;
+	Thu,  8 Feb 2024 23:20:39 +0800 (CST)
+Received: from A2303104131.china.huawei.com (10.202.227.28) by
+ lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Thu, 8 Feb 2024 15:20:33 +0000
+From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To: <kvmarm@lists.linux.dev>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linuxarm@huawei.com>
+CC: <kevin.tian@intel.com>, <jgg@ziepe.ca>, <alex.williamson@redhat.com>,
+	<maz@kernel.org>, <oliver.upton@linux.dev>, <will@kernel.org>,
+	<robin.murphy@arm.com>, <jean-philippe@linaro.org>,
+	<jonathan.cameron@huawei.com>
+Subject: [RFC PATCH v2 0/7] iommu/arm-smmu-v3: Use pinned KVM VMID for stage 2
+Date: Thu, 8 Feb 2024 15:18:30 +0000
+Message-ID: <20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.1.0
-Subject: Re: [PATCH 1/1] iommu: Avoid races around default domain allocations
-To: Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>
-CC: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-        "Charan
- Teja Kalla" <quic_charante@quicinc.com>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-References: <e605b38a2d40b1e7589e10110c6d3ece35f6af4e.1705571894.git.quic_nprakash@quicinc.com>
- <139a9abe-75d8-3bda-3ec9-a14a493eb2a9@quicinc.com>
- <20240201162317.GI50608@ziepe.ca>
- <9ba9c4fa-3fa9-c6c4-ce77-0c6cd5e23680@quicinc.com>
- <20240207145656.GJ31743@ziepe.ca>
- <37ab8689-5e0d-4166-bad6-84d3c51446ca@arm.com>
- <20240208011305.GM31743@ziepe.ca>
- <a93e93dd-5cb8-48ee-bf8d-b3bbb19507d6@arm.com>
-Content-Language: en-US
-From: Nikhil V <quic_nprakash@quicinc.com>
-In-Reply-To: <a93e93dd-5cb8-48ee-bf8d-b3bbb19507d6@arm.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: V_wrRmnuYUYs1H_6fl4F0M1x38iqtUAN
-X-Proofpoint-GUID: V_wrRmnuYUYs1H_6fl4F0M1x38iqtUAN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-08_05,2024-02-08_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 spamscore=0 suspectscore=0 bulkscore=0 phishscore=0
- clxscore=1015 lowpriorityscore=0 mlxlogscore=868 adultscore=0
- priorityscore=1501 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.19.0-2401310000 definitions=main-2402080081
+Content-Type: text/plain
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
 
+Hi,
 
+On an ARM64 system with a SMMUv3 implementation that fully supports
+Broadcast TLB Maintenance(BTM) feature as part of the Distributed
+Virtual Memory(DVM) protocol, the CPU TLB invalidate instructions are
+received by SMMUv3. This is very useful when the SMMUv3 shares the
+page tables with the CPU(eg: Guest SVA use case). For this to work,
+the SMMUv3 must use the same VMID that is allocated by KVM to configure
+the nested stage 2(S2) translations.
 
-On 2/8/2024 7:07 AM, Robin Murphy wrote:
-> On 2024-02-08 1:13 am, Jason Gunthorpe wrote:
->> On Thu, Feb 08, 2024 at 12:04:44AM +0000, Robin Murphy wrote:
->>>> Frankly, I'd suggest just proposing the necessary (and tested)
->>>> upstream patches to 6.1, however large they are, and see what Greg and
->>>> Sasha say. This is the usual working model they have, as I understand
->>>> it.
->>>
->>> To be blunt, hell no. Stable is far enough from its namesake already; 
->>> the
->>> ongoing bordering-on-ridiculous brokenness of your mainline changes 
->>> where
->>
->> What on earth are you even talking about? POWER?
-> 
-> I mean you're literally getting bug reports for your fix for your fix 
-> for your grand idea, so what should we figure, that reality not aligning 
-> with your expectations is all reality's fault?
-> 
->>> That said, I also don't think there would be any harm in applying 
->>> this to
->>> mainline as a belt-and-braces thing either,
->>
->> Really?
-> 
-> "at 12:04:44AM +0000, Robin Murphy wrote:"
-> 
-> It's late, I should have gone to bed hours ago, so I apologise for any 
-> lack of clarity; that was very much meant to be an implication of 
-> agreement with the overall approach, not the exact patch as is, which if 
-> you read the rest of my response you will see I still had questions 
-> about and did not formally ack or review.
-> 
->> Now that you've made me look, this patch breaks the
->> iommu_group_store_type() flow both on latest and on v6.1 from what I
->> can see.
->>
->> On v6.1:
->>
->> iommu_change_dev_def_domain():
->>          prev_dom = group->default_domain;
->>          if (!prev_dom) {
->>                  ret = -EINVAL;
->>                  goto out;
->>          }
->> [..]
->>          /* Sets group->default_domain to the newly allocated domain */
->>          ret = iommu_group_alloc_default_domain(dev->bus, group, type);
->>          if (ret)
->>                  goto out;
->>
->> But this patch changes iommu_group_alloc_default_domain() to succeed
->> always without doing anythiing.
->>
->> So this patch needs some fixing.
-> 
-> Hurrah! Please apply that kind of rigour to your own patches also.
-> 
-> Thanks,
-> Robin.
-> 
-> [ you get two responses this week since I admit I ran out of patience 
-> and motivation to finish last week's on time ]
+An earlier proposal sent out[1] a while back resulted in changing the
+ARM64/KVM VMID allocator similar to the ASID allocator to make it
+better suited for this.
 
+This RFC adds,
+ -Support for pinned KVM VMID.
+ -Support associating KVM pointer and iommufd ctx.
+ -Changes to domain_alloc_user() to receive a kvm pointer.
+ -Configure SMMUV3 S2 using KVM VMID
+ -Finally enable BTM only if SMMUV3 supports S1 translation. This
+  is to make sure that PAGING domains always use S1 and S2 is only
+  used for nested domains with a valid KVM. The idea is to make sure
+  when BTM is enabled in Guest, we use KVM VMID for S2.
 
-Hi Robin,
+Not sure I miss any explicit TLB invalidations with any use case
+that may configure a S2 with a private VMID that matches a KVM
+one.
 
-Bunch of issues were reported on 6.1 because that is where we do master 
-testing. The change proposed was fixing the reported issues.
+This is based on Jason's ongoing SMMUv3 refactor series[2].
 
-On your query regarding 5.15, from code perspective, looks like this fix 
-is applicable on 5.15 as well. However, as mentioned, we have done 
-master testings on 6.1 codebase and hence could see the issues there only.
+Please take a look and let me know.
 
-Also, as Jason pointed out, this fix would not allow changing the 
-default domain for an iommu group. We didn't have any usecase for 
-changing default domain, hence couldn't see any issues with the fix 
-proposed. So, we would have to rework the patch for it to be upstream 
-ready. Any suggestions for this would be really helpful and
-appreciated. Thanks!!!
+Thanks,
+Shameer
 
-Thanks
-Nikhil V
+1. https://lore.kernel.org/linux-arm-kernel/20210222155338.26132-1-shameerali.kolothum.thodi@huawei.com/
+2. https://lore.kernel.org/linux-arm-kernel/0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com/
+
+Jean-Philippe Brucker (1):
+  iommu/arm-smmu-v3: Enable broadcast TLB maintenance
+
+Shameer Kolothum (6):
+  KVM: Add generic infrastructure to support pinned VMIDs
+  KVM: arm64: Introduce support to pin VMIDs
+  KVM: arm64: Add interfaces for pinned VMID support
+  iommufd: Associate kvm pointer to iommufd ctx
+  iommu: Pass in kvm pointer to domain_alloc_user
+  iommu/arm-smmu-v3: Use KVM VMID for s2 stage
+
+ arch/arm64/include/asm/kvm_host.h           |  3 +
+ arch/arm64/kvm/Kconfig                      |  1 +
+ arch/arm64/kvm/arm.c                        | 14 ++++
+ arch/arm64/kvm/vmid.c                       | 84 ++++++++++++++++++++-
+ drivers/iommu/amd/iommu.c                   |  1 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 42 +++++++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +
+ drivers/iommu/intel/iommu.c                 |  1 +
+ drivers/iommu/iommufd/hw_pagetable.c        |  5 +-
+ drivers/iommu/iommufd/iommufd_private.h     |  3 +
+ drivers/iommu/iommufd/main.c                | 14 ++++
+ drivers/iommu/iommufd/selftest.c            |  1 +
+ drivers/vfio/device_cdev.c                  |  3 +
+ include/linux/iommu.h                       |  3 +-
+ include/linux/iommufd.h                     |  7 ++
+ include/linux/kvm_host.h                    | 18 +++++
+ virt/kvm/Kconfig                            |  3 +
+ virt/kvm/kvm_main.c                         | 23 ++++++
+ 18 files changed, 218 insertions(+), 11 deletions(-)
+
+-- 
+2.34.1
 
