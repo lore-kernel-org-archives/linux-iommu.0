@@ -1,153 +1,108 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2084.outbound.protection.outlook.com [40.107.220.84])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 942732E856
-	for <iommu@lists.linux.dev>; Wed,  7 Feb 2024 18:00:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.84
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707328851; cv=fail; b=tFa8gJQQgRxxt8RpXg5q60guBz6OH2k2mpfe9f0gAFCYEFLjoG98Zl2sZwTuI7vM/ria+YkHAOa+67UKmbqrr6Hovizso3+fkRbA2L+e0JYjLJJul4ZLW0TqYm2OJASjBJ470PE5olekAwRzSePEi3fDWC376Vpq+pbCH0B2k5M=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707328851; c=relaxed/simple;
-	bh=EWo5JpuVWtgY0hUqqZhFq+67/C0/qqDJnQY36Q/kb/w=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=U+FWwUy3EPG6DDXSrCc7rHlN8ASpEDPegjUOmCxCItmYvRBmUUhAJnntjg53l+AmAjbwmfP+NkhVYnRtsPDbdqOO2F/Rtw90ddMdAu9TyhEw9OPXJh4ZBc1zRO+pz/GG7fvItNWM+L3Nvg8krctslGJgs4qN1w+C/k2IhGK4kPY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=ieI3qmD6; arc=fail smtp.client-ip=40.107.220.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="ieI3qmD6"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M4/ORWrtUK6K4e3g8Hhg/hGsOgzpsunM5u0DHnVbnoCe7OeGqXVtVgNpNWEuajS/om0bzFMSbc1MHF7fhuahvt/D1j3PrCGSXAh+hK6oBH0Ju6xY7zXM4CDTxNiVTzr5y/ctjLew/TjFUiJv7vFwva8iqGPDQWliCalyINdTwtvruTMT1WbsBLdzF2yARm40OK/2cCpnzocdQ0GSnWcZCGMU4Mp5U30ZGAwQtffHETJZU0T7WCuOfaKOSem7zu61hZSu/HOtHplDkE/0hTABqt/VCZ6LWeu+aC1YTrvCsfp8Y1k4kem/rEScX2ft6tM5VnIYfL0GXnJkZlmx3p6GeQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nk5sqw1y2jOVY2iuFdIJc7jvEb129WJ4W49Sld652MA=;
- b=m1Eh/FmbI15qpW5Y8icMV6esZTnNb8fFBDnmZ05qlxakdw3VtVdTevq7Ki6lzqdXXXHVkrO/IvqCf3XN92zw78DuxGiiMrAyZNkYxy4xoUvchGmY7w2wnjEsU9baS93bYnLDK5XPfHRtptTY0xl8GXvo86mnO4PnShx+WzBmzwlbAVMhehUKvKQ/bp4rM1twgEaeLSXaq4Ex9d63xcXKSM+S9nVxO/810FBn6TZrkRVCp+7clTb2d7DOmFIM4wpYM9Px7q4xDMxtPbuhFF8KZlwaH5/rT3GVIS6zljh0z962n08LGtmGY5n7hwlHsIFbqOvWn5BNf98JyBnKvX61Mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nk5sqw1y2jOVY2iuFdIJc7jvEb129WJ4W49Sld652MA=;
- b=ieI3qmD6cZhiYCB/MbKOuj++1MkH/tq87TVw77n/1oenWGgDF7oeS/4mWEYevlaYMzwdNzA1rX7uLj8uKh65SAEga927wNa0H2f2lw41o3L1nYfWTAC2TtZ0GD2ryc7S0mby7pPVlsuV4ch1Lxxu1MAjm+6bFpI3nA3uZ8sqBMc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- CH0PR12MB5123.namprd12.prod.outlook.com (2603:10b6:610:be::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7270.17; Wed, 7 Feb 2024 18:00:47 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::481d:7627:c485:9cb]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::481d:7627:c485:9cb%2]) with mapi id 15.20.7270.012; Wed, 7 Feb 2024
- 18:00:47 +0000
-Message-ID: <d852455b-aea0-5484-fedf-4ff4a0a6c731@amd.com>
-Date: Wed, 7 Feb 2024 23:30:38 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v5 10/14] iommu/amd: Introduce logic to enable/disable
- IOPF
-Content-Language: en-US
-To: Baolu Lu <baolu.lu@linux.intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
- wei.huang2@amd.com, jsnitsel@redhat.com
-References: <20240118073339.6978-1-vasant.hegde@amd.com>
- <20240118073339.6978-11-vasant.hegde@amd.com>
- <20240201214949.GT50608@ziepe.ca>
- <9d3579c7-66c3-3752-bad8-a8a8ebc5c74c@amd.com>
- <20240206163657.GG31743@ziepe.ca>
- <873201d4-57d1-e856-87c8-08e2ca71f0a2@amd.com>
- <20240206175824.GI31743@ziepe.ca>
- <0d626c74-aba5-bbb1-5fb4-b9be5577d71f@amd.com>
- <04df4081-b99d-4f87-9d20-bf97f7619040@linux.intel.com>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <04df4081-b99d-4f87-9d20-bf97f7619040@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0039.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:22::14) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 15E561E87C
+	for <iommu@lists.linux.dev>; Thu,  8 Feb 2024 00:04:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707350690; cv=none; b=HR+g8YvPXakH7tjXSPrQQWw8+or1scw+Cf7e3BGiBkkq+Vy3yWOL7TsKeGwPrOhd3QKcesQzO6Zfu5c3iiOerr/vdFG8sgY3lP9qOQH+T7fvqkEqpID1EsgCY1Ht4UmXCWf3yWhvrIOau5ZtuPWjk6wcMkpB8QvqZ9CrmGFichY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707350690; c=relaxed/simple;
+	bh=p5zVpNRV/Kw4RpQSuCTfGevl+nGajRGf+VhjwPTrxzo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Lgkc6sXF9L8WfUICr86HQuoVs4yWuDTUlolVq6KgOPIsiMMtvoDZezW600huzeHJBUcnUv0ROctPuAGxgLQPskKrC80gPKdEubyO9rsbrS/h5ltJwRik45DeE+uPBpdGTqQiJeZ5g8Z7Vw94qi1U+biQlikIYwpt4bpY1Fjk3+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 889451FB;
+	Wed,  7 Feb 2024 16:05:29 -0800 (PST)
+Received: from [10.57.49.110] (unknown [10.57.49.110])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 372A83F64C;
+	Wed,  7 Feb 2024 16:04:46 -0800 (PST)
+Message-ID: <37ab8689-5e0d-4166-bad6-84d3c51446ca@arm.com>
+Date: Thu, 8 Feb 2024 00:04:44 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|CH0PR12MB5123:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2a518567-b88b-4911-584b-08dc2806b5dc
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	bobMTgvI3gJt+4KQr92cDfWJlMeHdXQp0YdGxn72FBPgLmNtHaVid7v1JRJiO7tZBpkEGx6ZrEp0SRAtx0YBTu+OzTxKLYSCe+RgfGZTXXlSG60FL0JZ9P1G2769izOIAICs8NBhX82wpbBQ3FglSP46DLrKL27DX/nvLX7ZWgpjErqZ9vX+4XVxVkBXLzK16T3AkhgxKX/jHAVohnLY2YsHs9CdbGoO3esRT+VOu+i4mX7K93W9O2Zc8076+OEkwtr/kL43wsJqTwC6w5dV6iUregqTFAoWCSEXOr4VrLI/n6YXJCdTs2SlvUM4/hbE74PXm8lannyyw8gW5IP2SaVixGXN2Ibr69x+fPr9Yz3V8uDcxyEI2Sz2VPg++0v+IHnpU5c8XZt+PMgmOfZe56n2uom0x1rkQ3rIQqdborAQ3EQnzIWVqpqiHOYz8Gt1PZADgfeiQfe6CtsiQh5q63dkPK4fnmgsx/QtTP9yudUjsik1MZebmjO/GpQJDhnvz50AvneDS53UsT69WdhtWvFB7oG8fCfvalTMlQJLBzn81N+WqvGN/f6m4n3ojPbDTCICBuLgc1YgtIjT9KjAaAAZznBifHRRqSmvPNmXkv5EUUiQJUYnTm6L+n3kZDM/o0w71IOlHRKmZcGZnAASkw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(39860400002)(346002)(136003)(396003)(366004)(376002)(230922051799003)(186009)(451199024)(1800799012)(64100799003)(6666004)(26005)(316002)(53546011)(66476007)(66946007)(2616005)(6506007)(6512007)(83380400001)(31686004)(38100700002)(110136005)(8676002)(66556008)(8936002)(4326008)(44832011)(36756003)(5660300002)(4744005)(2906002)(478600001)(6486002)(966005)(31696002)(86362001)(41300700001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?YVJTZlFhY25iN0x0T083WEJNelJlMFQxMVVpdThPek4xTmUwYm5mNTVQeEhx?=
- =?utf-8?B?d1Avc2xia0wzSDB3akg5MS9vaDZPckRLK1pTVHE4a2dKUndiWTQxNktnNUxK?=
- =?utf-8?B?bG50QzBML1F6azdoaVAzOFBJdVlQQzh0VW1NdmlvTkxGZnpjSkRPSXU3Mlho?=
- =?utf-8?B?T2VNdi9KdXNHSmFOUWx1T2N3SlhnVXpmWjBFTkZueEV5Z0dZK3V6VjZWdkhs?=
- =?utf-8?B?bWxoNm5LV203YTZEWDBza090QkhzSmNvYXVDdHdsemovQ2J3aFFHSHA1ZjZr?=
- =?utf-8?B?bGJISFBQNHJoaWpvS0x1MDU3b3UvcDdHYXlGaUFhZHJhNGJGRjJhYjVlM1dt?=
- =?utf-8?B?NjQzMnljbUlxRFE1L2RTVk5ERlJ2OXR4QURXNmdUd1VPNXZFd2hlUEZyRGU1?=
- =?utf-8?B?am4wN3JYbkN5UTkxbVVFYm5UMlVtQjExeTZBaWNEaENFZGZ5eWtveWdPeWxr?=
- =?utf-8?B?a25XL1VITytoVTIvVlRQa1cyZjFTWXdId2F2WUVrSjdXYytTMDlJd1hHaEFH?=
- =?utf-8?B?Q2swRzdSMmpDMS8wMW8xZlZoSFRIMmg5QjRFYWk2Zm9PVUxzL3FyMXQyeDNR?=
- =?utf-8?B?OGwzN2htU0ZkMWZ2UlY4S2NHbGtGV0tOeDdGOTdva1gvU3l1N3dDcmMzWUVX?=
- =?utf-8?B?WS84eFcyV3dyNWpHSFNCaDcyK3FCWXRuZUFlRklsRjE4SlhIQXJSTjVMeXNk?=
- =?utf-8?B?b1BsT2Y3OUEyRnZPNGVDbjBIOWdkZVhlNVJnRVByejJtbG1iYzdFblNEZUJM?=
- =?utf-8?B?NGdvdUJXVEV5akc4bFB3b0tHVng1MDM2Mm5ibkZYNjdRNGhrQ1JUWmEwdHFm?=
- =?utf-8?B?SlR5TnFTYTVDZTZkQjc0S2k3MWhlb2FoRWVoeVl2TDEzUFh2Wkg2TU92a3Bw?=
- =?utf-8?B?WGNvZGhNMUlXUTFkc0kxQkdVbXI2QVJKT0NvaStEOVdxcm5ucTZzV3hMaWo0?=
- =?utf-8?B?STJWTlUxMWd6UzdCVWF0N0dTd0dBSWpYQlBvTFZTNWZRM0ptbzZTMEpMS00y?=
- =?utf-8?B?NlpxaDF4R05rYXVuQU5HcVFiUTdOTDFiRkZPSFJaSVY1NjRVY29RdzNEczQx?=
- =?utf-8?B?RDM3cC9MdTVVYnhmOHVIWEVPSkpadXlRdlg0Z0kzZE8xKzM5UUxQRHFFS3U1?=
- =?utf-8?B?OGx4eHZiU3B5a29INXJ6NmhUVjd2dFBHU1BrYnNYTEN6Uzh1OUdNWFZMNzBD?=
- =?utf-8?B?T0JReEdSUVM2REMxTnpacjV1UkkwOTNkSG1KSjhIRytobjFFSE5SbU1xYWZr?=
- =?utf-8?B?RVNQVmxGUzZ2ZU9wN2F1WFdCclV2d2Z5OXNvb0dNRmFEUzR3dm1DTCs4TmJI?=
- =?utf-8?B?T3ZGQVhpK3UrVGJPUHVxSzVCaUp6VGpESnpha2t6WGJUd1YxdDZTeTluSFJL?=
- =?utf-8?B?K2k0V09WV1NXNkNhYVdRQ2VpblVYLy9LbUxHelpyTXdudU1sOTdQM2VuNFRQ?=
- =?utf-8?B?UzN0dWxwU0VabC9yY2xpT24yV0MyNXkxWmdqVVJMbDRuNHNiaHFsb3MzQjBq?=
- =?utf-8?B?QkFCZHRUczY4bnJtenBXaTRoYURFVy9DaDJLRzJQMFVNVElXMmRxMDZjWkpB?=
- =?utf-8?B?cnZHNkM0NDBKdHZtemtpYkJoRDRlSi9UWHJtdGZXOHFXVko5ZWJ3cWlRUEJW?=
- =?utf-8?B?OHltWE84QVQ2TzB1eWh3UHMyaFk4RU0rSkRFR1FkeFYxUjR4cXRIVnh0cEow?=
- =?utf-8?B?REFRNHI3NEdObzJTVkdnM2xBeklweWl0WjN3dndwSm5Za1hFOWRnTDFjK011?=
- =?utf-8?B?ZVJSYlBNakNVRHBRZ1BYaFMydTVTWjFxcTFpR05hSzhoSjNHM0g2cERZUzgw?=
- =?utf-8?B?RW8rWk54VXZUWW5Ra0J4ckZ2dXdhaGszbFNWYnA4aTV3V1IyR2dldHZrYjNu?=
- =?utf-8?B?ejFFajExemxIMUNTTjVDKzR1dk9HRGFtd2NpZlFDcmtkNFlsMnRTdGhJcDB2?=
- =?utf-8?B?TTQyRm56MlpqMUlJN0xMUjhIeEc4YXUxQTZQN1ZmNlB4VlczWUR1K0Q1OVAy?=
- =?utf-8?B?Z24xZ29kaElkcy9XZm5aWkp0QVBNOHViSG1Ha0d6NUIzeWsrZ3c5TGFtdGxk?=
- =?utf-8?B?cndKdlhCc1pFVXJXNTBJOWhsRTZRZUxIQ05xR1p5Q3l3UDNqT05ka3UzeG5s?=
- =?utf-8?Q?6pHfrJ8DjeTjJK8uIu69Cx+GK?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2a518567-b88b-4911-584b-08dc2806b5dc
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Feb 2024 18:00:47.0128
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1gfpWR5XVSK5PwsZgYq6VwyBRlQaezbQy6ci5NKWagRf11cZjQB8BKF80Ohyd81qnw3i7Agg4DbSGeiYj6Auog==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5123
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] iommu: Avoid races around default domain allocations
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@ziepe.ca>, Nikhil V <quic_nprakash@quicinc.com>
+Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Charan Teja Kalla <quic_charante@quicinc.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <e605b38a2d40b1e7589e10110c6d3ece35f6af4e.1705571894.git.quic_nprakash@quicinc.com>
+ <139a9abe-75d8-3bda-3ec9-a14a493eb2a9@quicinc.com>
+ <20240201162317.GI50608@ziepe.ca>
+ <9ba9c4fa-3fa9-c6c4-ce77-0c6cd5e23680@quicinc.com>
+ <20240207145656.GJ31743@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240207145656.GJ31743@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Baolu,
-
-On 2/7/2024 6:06 PM, Baolu Lu wrote:
-> On 2024/2/7 16:58, Vasant Hegde wrote:
->>> There is a clear protocol and ordering requirement for the PRI
->>> enablement. Lu described it in a comment, make sure you follow it.
->> Where? in intel driver? (they seems to be using feature_enable() path)
+On 2024-02-07 2:56 pm, Jason Gunthorpe wrote:
+> On Wed, Feb 07, 2024 at 07:56:25PM +0530, Nikhil V wrote:
 >>
->> I did look into latest "iommu: Prepare to deliver page faults to user space"
->> series. I don't see anything specific to PRI enablement flow.
+>>
+>> On 2/1/2024 9:53 PM, Jason Gunthorpe wrote:
+>>> On Mon, Jan 29, 2024 at 01:29:12PM +0530, Nikhil V wrote:
+>>>
+>>>> Gentle ping to have your valuable feedback. This fix is helping us
+>>>> downstream without which we see a bunch of kernel crashes.
+>>>
+>>> What are you expecting here? This was fixed in Linus's tree some time
+>>> ago now
+>>>
+>>> Are you asking for the stable team to put something weird in 6.1? I
+>>> don't think they generally do that?
+>>>
+>>> Jason
+>>
+>>
+>> Hi @Jason,
+>>
+>> Considering that the issue is reported on 6.1, which is an __LTS kernel__,
+>> any suggestion to fix this issue cleanly would help us a lot. Right thing
+>> here would have been propagating the changes from 6.6 (like for any
+>> stability issue), but considering the intrusiveness of them, is it even
+>> possible?
+>>
+>> Just to be open about reproducibility of the issue, a bunch of them are
+>> reported, both internally and by customers.
 > 
-> The latest version is here.
+> I think you need to talk to the stable maintainers not the iommu
+> upstream folks. I don't well know their policy.
 > 
-> https://lore.kernel.org/linux-iommu/20240207013325.95182-14-baolu.lu@linux.intel.com/
-> 
+> Frankly, I'd suggest just proposing the necessary (and tested)
+> upstream patches to 6.1, however large they are, and see what Greg and
+> Sasha say. This is the usual working model they have, as I understand
+> it.
 
-Thanks!
+To be blunt, hell no. Stable is far enough from its namesake already; 
+the ongoing bordering-on-ridiculous brokenness of your mainline changes 
+where each "fix" keeps affecting something else is a massive NAK to 
+backporting any of it, let alone 43+ patches to achieve a 2-line fix.
 
--Vasant
+Nikhil, if this is truly sufficient to resolve the issues you see 
+(AFAICS things end up serialised by the group mutex so probably should 
+be robust enough), then I'm OK with you proposing it as a dedicated 
+stable-only fix, as an "equivalent" patch per Option 3 of 
+stable-kernel-rules.rst - I reckon your commit message is already pretty 
+good with regards to the final point there, but I'll be happy to help 
+argue the case if necessary. Just one point - is it genuinely not 
+relevant to 5.15 and earlier or is it just the case that 6.1 is the 
+oldest thing you're actively testing? (Apologies, I've already forgotten 
+where things were that far back).
+
+That said, I also don't think there would be any harm in applying this 
+to mainline as a belt-and-braces thing either, if it helps makes a 
+backport easier and Joerg doesn't mind. There's already a bunch of stuff 
+I'll be cleaning up once the underlying issue behind all of this is 
+properly fixed, so adding a couple more lines of code to that list is no 
+big deal as far as I'm concerned.
+
+Thanks,
+Robin.
