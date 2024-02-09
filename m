@@ -1,275 +1,209 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 888DF67E60
-	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 09:56:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707472568; cv=none; b=oh92Dd1eppKoT+fG66yAihJrUKvzNx6jiEzpTy1ZaIfrCCts+aRTv8qkB4CdCzDKu8sg9ckiMTZgnxZGSU6V3Q0X19OfOpeL93QzmtX1rtg9mrQUBdUl7HLOh/8Mk8n6jhlVuEKmOofpIO8oC2cuwo46bODnHa6SB42cxyXecxc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707472568; c=relaxed/simple;
-	bh=Ab0aSbiPb2khyeqF9YW1Uju3/+zaoMUW5Nbhzd/nTQY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=b2Dg5U6UWvugmqvye+fymo5P3F/vfE8OPDenQ4KqTdbkOuJihObUgebVUR9z5brBCAOIO5Db/GWLHhKiJlSRRk8W0DBBp+uqKrGAMpTAgMP+G5Dstpp630+7qljLrSFyK4+7CQi3/g0ApySUMDVhDSvGa4gGDkziqZC6RSdzMzQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=VBQm3cIV; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 316C91DA59
+	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 10:36:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707475006; cv=fail; b=a/JTfgQHf0yBat5jeo1eSU5DQiFf2mucyx+7waIFv9ugEYsJQIX/KHERTw1+LTk55FQjuB6yoJjgo/vjCjapxN1vmh3u4Ui1StRBdvwnwo7zpRYlTzacjcf88nh7u/nsFIfIbWN5p73B6xpU0cKjMCybqz84rN7Ooh12EizMfs4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707475006; c=relaxed/simple;
+	bh=BmJhKW2GtcwS+olqjny9CYaNSOfV+CULL3bmQWg4ir8=;
+	h=Message-ID:Date:Subject:From:To:Cc:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=DNFPLRF9DbT/UJYjw4fPt7jG+gLi7VhQ/RY9+IRUKhI9y8oHwOqFNH0PzGoKmfUpeEJPG1Z2dUlGG6ajcZcHY9aAfmJth9sO9aPk2j5e53nj+ieo30g+tViHHOkxJYz3wFFJ6EqtFJjLE8z+fKTJjAC6Tw11BRVT3tbx9tQkJTc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=FjRINCT0; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=fb3kIIfB; arc=fail smtp.client-ip=205.220.177.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="VBQm3cIV"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 4199lbCs021745;
-	Fri, 9 Feb 2024 09:55:45 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=a1t7rpfOsO9mP/Kmt4UFW+Uw3U2oSsxMrMCk0RwcIR8=; b=VB
-	Qm3cIV27J2OG6XnAJ355I29lQ8OjTNE8IjvbQnOMcoJnK7584f8dHvFM9hhKxJd1
-	boP4fUJyLqojkhVylv1JG6Mw5XGhjiJeTrzKu2c3IQ8s3XH3wg4EkOG1aYg6MDer
-	plwvYHXZ0TVZqriDyuucQzszjIBh2zVhBNQ3jfqjnFhTkOTtv297BEwo5tz8HTPd
-	UZbFKmaC2j2lsoqgO8YxFAT3wbXoGqGSrMoCItoTDE4uS3pw7u7Xy+FuiPoCv+xJ
-	uZiFLomnwPgC485Tdh2fVc5/kF1Rp/DQuRFtcix4KzOXI8x+OrgJrnOtvIvm5EVO
-	/k21GsHAHRgh5yVjKRLA==
-Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3w4stxkcpn-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 09 Feb 2024 09:55:45 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 4199tiFs030318
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 9 Feb 2024 09:55:44 GMT
-Received: from [10.214.227.50] (10.80.80.8) by nalasex01c.na.qualcomm.com
- (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 9 Feb
- 2024 01:55:37 -0800
-Message-ID: <292d65e5-909a-4db6-996b-c2f9be9bcc24@quicinc.com>
-Date: Fri, 9 Feb 2024 15:25:12 +0530
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="FjRINCT0";
+	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="fb3kIIfB"
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 4194wmtR019295;
+	Fri, 9 Feb 2024 10:36:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ subject : from : to : cc : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2023-11-20;
+ bh=Rr2zq3Vj0lyZGKt6twW0N8axTeJ5BUwcrkdf35cogAw=;
+ b=FjRINCT0LrGgcDv0xSInDWFsQibx0Xcy/liTTilbReMl4nmfqrN/GPHgNCugpBL0SpyW
+ l8sDVXCaaKdGRpbnNoZ9tZHw4WNkbfmg4hjjv8uWmMyzd0WoXCS2M5q/7V67K0AAC4Bg
+ hTBkX6uxfV2lwYorzM5wd4AAuwjDyKMEHOUsspzPyITBxU3c4C19cNbdNHN93qnrE5JZ
+ nfcOJoMY+6BgGwa4kE1vIL3w0a1WB4uHLfM2RkZqRv0T7/ViVnF/fkIGFo5fyLGWb9o/
+ aVuL1wOcXvYC8sWb3gei25wA7juc3IHLYqje4GvOdbKUIGpv4scZ0sYfWVMiTRxPbl7S jw== 
+Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3w1c9476hp-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 09 Feb 2024 10:36:34 +0000
+Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.17.1.19/8.17.1.19) with ESMTP id 4199A0xO038306;
+	Fri, 9 Feb 2024 10:36:33 GMT
+Received: from nam04-mw2-obe.outbound.protection.outlook.com (mail-mw2nam04lp2168.outbound.protection.outlook.com [104.47.73.168])
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 3w1bxby5sx-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 09 Feb 2024 10:36:33 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VRXLENSUOr2+pNtzowm4ccR5lIwk/vXkRj72MubRb/7et9++qhHT6n1FBza3J7MfGtk+gzUIGHuQ/ZFYJlBVDrYIPMXiJKCwjTVz3up4+xE6hzdpMM0fDt/8W0RH9Tz8uCKy68eYaKR9V9OtXoGn9Rog7FxSMN/On4EU4nKgCDE8j6b4fYr++PHo8zuE7ACq8kvI/l1bzxaqBocwA+eXmGD+RJ3O5X01KTi8vKzOpbXgwa/3upifUHH4t89N0Ci7sn+wz7nVcZMRTTYv5yt/I7g7DvEYrYhWzCWLqxXKe2y5KiVwZ6lfmby6eYi1NXTYhXt174i4uQmNqvHuqbrrVw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Rr2zq3Vj0lyZGKt6twW0N8axTeJ5BUwcrkdf35cogAw=;
+ b=QlPSl94rnco0+OV/2+uexR1/bSs66xdHSVWKVGItIMm+Dra1ImUjMygkNh5opQ0tamzq2OAS8wYkdScKr0gMEOuqiuqaqxuxqZGzeYcWozlDEa/IUvpLCsKzn/XabcVCEmZxlIgFLbE2asGo5l9ftjvsQJ8bvCG/CN4XGJVQMYTPLUos68NU968+oFndKqJ5WGDXNCRYatm6/ecRq7QWMfnE3yCr0195z952ajl6FrGPuTe6WpXkAhrhsj9tCSt+xNdqa/vpx9KtGHddZZrFUMoLVOHW3MoyV6/Hdz1g9kkLzd30x/UzilB+sp1mKeDK8W8pdVj4LhcvU4WjPxlkAw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Rr2zq3Vj0lyZGKt6twW0N8axTeJ5BUwcrkdf35cogAw=;
+ b=fb3kIIfBhIW9m1cEF19C7W2g05GzHk84kLGVDnKw+L9JNm2mfUfyFLlBAHHxqTjqs9GTc+7OjY6nx/m1hEkUBhnL3JG7VXonMGmIi4MejK6oRyOJvRGCoig14rqCbwiwt4ApZT47jSbLCLoPqMldFj7+qcXN6899mKhte3oba5g=
+Received: from PH0PR10MB5893.namprd10.prod.outlook.com (2603:10b6:510:149::11)
+ by DM4PR10MB7402.namprd10.prod.outlook.com (2603:10b6:8:182::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.24; Fri, 9 Feb
+ 2024 10:36:31 +0000
+Received: from PH0PR10MB5893.namprd10.prod.outlook.com
+ ([fe80::3356:4cc1:701e:dde3]) by PH0PR10MB5893.namprd10.prod.outlook.com
+ ([fe80::3356:4cc1:701e:dde3%4]) with mapi id 15.20.7249.041; Fri, 9 Feb 2024
+ 10:36:31 +0000
+Message-ID: <324a1c52-359c-44c4-9872-0ad712d9f610@oracle.com>
+Date: Fri, 9 Feb 2024 10:36:24 +0000
+Subject: Re: [PATCH] iommu/vt-d: Set SSADE when attaching to a parent with
+ dirty tracking
+Content-Language: en-US
+From: Joao Martins <joao.m.martins@oracle.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: alex.williamson@redhat.com, robin.murphy@arm.com, eric.auger@redhat.com,
+        nicolinc@nvidia.com, kvm@vger.kernel.org, chao.p.peng@linux.intel.com,
+        yi.y.sun@linux.intel.com, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        zhenzhong.duan@intel.com, jgg@nvidia.com, joro@8bytes.org,
+        kevin.tian@intel.com, baolu.lu@linux.intel.com
+References: <20240208091414.28133-1-yi.l.liu@intel.com>
+ <a945cd6c-7737-4d66-a319-613e1dbc3798@oracle.com>
+In-Reply-To: <a945cd6c-7737-4d66-a319-613e1dbc3798@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0450.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:1a9::23) To PH0PR10MB5893.namprd10.prod.outlook.com
+ (2603:10b6:510:149::11)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v9 3/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-Content-Language: en-US
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <dmitry.baryshkov@linaro.org>, <konrad.dybcio@linaro.org>,
-        <jsnitsel@redhat.com>, <quic_bjorande@quicinc.com>, <mani@kernel.org>,
-        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
-        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
-        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
-        <quic_molvera@quicinc.com>
-CC: <linux-arm-msm@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-References: <20240123144543.9405-1-quic_bibekkum@quicinc.com>
- <20240123144543.9405-4-quic_bibekkum@quicinc.com>
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <20240123144543.9405-4-quic_bibekkum@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: FLXBrfEi_m75POgFeA9bHqKEJASaxaa7
-X-Proofpoint-ORIG-GUID: FLXBrfEi_m75POgFeA9bHqKEJASaxaa7
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: PH0PR10MB5893:EE_|DM4PR10MB7402:EE_
+X-MS-Office365-Filtering-Correlation-Id: dd81f68f-0284-4fd2-eb7c-08dc295afaf8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 
+	YI2WuWUBKH6SONuAbtYAUod3UBsbotLven9pK2j+n2BCxQNJAW9KVMq5XF2v5sThlj5+QMc3iJUKPGP8PoQ7tZbl+floxlndMRGzcNvHmrAUYpBwpf1LdFs8BdriTte7AAumoLQIN21BNamzxV0f9qhQhaiqObLo/WBULtF91giC/6aM4Wr5ZQssyKYeIU7TZws1v257cVDC7NfQb2+gsZFpVU5Fnm7EjfyuwojKqfJ8boXmwKT0o+Iuf6TX+nq+PAGrbC7kS7PRloshQGJWeInI0E/KoxEOLpAgvMjTW/T5wyVDyjiR9g+G18GVWE/C1T8DgB8SZ+ftWDvmXQoXji44mAMOiyKcbgFFLA6x2CoJruy12TMCsyjkF72YgMTTxnrBMY0mbrluuqryRNhwMAPq1IsmLB1fdaAi6jWXxbvEtqkRKZzPzKcbbLV1HDQrH9bPXBABWdNND8SLjKmoGvmR+hjsDkas9IfS5PdgJ84K1EljHQjQovRx8WlJivzxH56i2plfNe0HbmFhr8ATsXZ89I7s7jZmY58pKYq4Nt4=
+X-Forefront-Antispam-Report: 
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB5893.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366004)(396003)(136003)(346002)(39860400002)(376002)(230922051799003)(451199024)(1800799012)(64100799003)(186009)(966005)(6512007)(6486002)(478600001)(31686004)(41300700001)(2906002)(8936002)(7416002)(5660300002)(4326008)(8676002)(66946007)(66556008)(53546011)(6666004)(316002)(6916009)(66476007)(2616005)(83380400001)(6506007)(31696002)(86362001)(38100700002)(36756003)(26005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: 
+	=?utf-8?B?S0h1aUx6TUx6a1o3SVJsOS9mY1h2OTAwdHV5LzAwZWxLNk9EOTV6OGNQbDNm?=
+ =?utf-8?B?d3dSbk52TlpxV1AwcXVhTTZFazhmNE5aeTB3bUpRRmxrZlVmOWNaUUhQS0JJ?=
+ =?utf-8?B?STBnT3hhS3ZqWnNLVmxIb0ZhL09yeUlJdDI5U01Jdjd4T2FoRkVxQ05PTXA3?=
+ =?utf-8?B?eSs4T3FwYWcvVGJsWUV1dHVObU5uTkZpU0JKeU1JbmRIam9keHVnNTd5ZU53?=
+ =?utf-8?B?YnZTMmp4L2RlV0RHV0Q5NnZtNCt4M3dVb1lOc1Zkc29NZ1BKVGtMY3dnVUFi?=
+ =?utf-8?B?UVhVNlFKMTlDY2psbitPVjdrMDFwdUp1SHlINEdlKzNhYVFML1V5MTM4NVVk?=
+ =?utf-8?B?azE0dks2d2Zwc2VHYk10VnRqSWVPODJhUXZUZTBaRTkvT0xOR2VrL3Y4TkZ2?=
+ =?utf-8?B?bkw4aG1UVjlraVpzZXhTVndQNnpLOWhSWTU5UE1vczhJajNXa3FLOTBZSGVK?=
+ =?utf-8?B?ajNtT1NoVEVQaURKMjFZNHk4RjlPc0FKRFBqME1Yem9Ua014aUdrTmd6bVNE?=
+ =?utf-8?B?RElvbHV3Mm50ZEtBb3Yyd0NGLzBzalhxUXlpQ3F6ZWh5Y0FxWWlxNmdYQTgy?=
+ =?utf-8?B?V2Y3OVBxOE04M3hTZUJWMU9mY0o0YllLQTFzWlFaSklNdU9jOWV6eS9nUlRH?=
+ =?utf-8?B?ZEVmOTZQY0JOTmlaOEYvMklQNU5UVUgwL3A5Tmx0SUJ3WFhGM3BudjMwbmtM?=
+ =?utf-8?B?UDk1QmZId05wL0RkSmRBYlQydUdtTjNsdXYvVUk1QWJRVUs0TmVYazBhK3cv?=
+ =?utf-8?B?K3ZYK3NwdlJWdlIvTzhMSGU1VEw2NnJWOEJMVjJhODEvOWo1MFRjTE11NUx0?=
+ =?utf-8?B?QnhrTjQ1b29Nc2NnTWdSL0dkMHAreGtPY29INHRjTVlZRVJnSENsaHdndGp1?=
+ =?utf-8?B?VENXMWhNN2pTeml4Z0N0Q3FhZ2pyZnZkMTZaanAzYU9ybVBCdi95dWZ1ajNR?=
+ =?utf-8?B?TFNSM1dtWU1iNmJ4VkdJeG93QlJNVVZWMFNlMU9sQmk0Nld0TkxKRDhiRE1H?=
+ =?utf-8?B?ODlycUVJdHdXeFZqUGtPSERneDIvTkkrY1d0bWRNVWJOSlRHYXV2OWhXcUtG?=
+ =?utf-8?B?a2UrT1ZRNjRYOVg0eXZRWThsb09YL1ByODBmTjlpOEx6WDZjbHZTdUZKVS8y?=
+ =?utf-8?B?em5walBGbTAzblVCTnhXSHBFVGF2Ri9HRjhkRmVKcFN3UURwQUxKLzZVdzVB?=
+ =?utf-8?B?bjZXY2hlUHRXaGp3c2hYanFKUjZHVHlpbGFjK2ZYRjJrWlV0U2FzeVR5Q05J?=
+ =?utf-8?B?NHlyTDNVdmJ0elFNbWN6WGJQNmJDaEJLcVVWcEp3cEZtanVGWjQ5aDJPTjMv?=
+ =?utf-8?B?TnVzclQ5SDU5MVYxM1lxQkVUVzRGdkZrUHIrM2QwWTI5R2tWdHowbnBOZTNK?=
+ =?utf-8?B?ckozWEhRK1dqSWN5N0ZGTjU3bWxmNTB1SXFtVnErWUd5STBQQmErSE5XOHI4?=
+ =?utf-8?B?M1lCVStqNE8yY3ZHdnNIOEIxbCt2Wloyd0pYaW56SWFtMDBUS2ZFU2tzTzBi?=
+ =?utf-8?B?TmxNMGdLdkRYSDg1MkJQeVZGZkhWZU9vMnNnUTFsTUF4aUpCNkxjc0k0bDUw?=
+ =?utf-8?B?a290T08vS3RmVCt4eGFOdkdqbk5EbTNKRVZPYmp3ZkZtMTJXNVF3QjZTcTVy?=
+ =?utf-8?B?WUJUeVUrUkx3NnA5dFBUc3I0cU1NbDUyd1RnV2QvakZxM3ZhVVhNZWswSjk0?=
+ =?utf-8?B?T2g2ZGVSNldtakJDLzh1YVZSN0NYUmlMSkk5R1BnTTlrR3Q0S1ZFTm9pbDZU?=
+ =?utf-8?B?SzluSCtyOW1SLzVVSlI2UnQwWWdQR3F1d3hDek5SQkFPRTk4U3ZGNmlmZzdS?=
+ =?utf-8?B?NWlOVnp6ay9BUmRIZ1lHUXI0Mmw5eVJLN1hKNEtzY2wrVHkvNFgva1ZETGsy?=
+ =?utf-8?B?YWcxMnVZZGVEQWUwdmZkYUIwVC9tMDRMRzVHeFRuVGYvU0xnMEJiamtvVHVE?=
+ =?utf-8?B?MDVVUmVWU0xCejJOS3g2b1luQ28rTEZrN3FKdC8wUzA5TWZweC9WWjNlaTJP?=
+ =?utf-8?B?cWpqTzZNZEwwekVpZDdGR3krYWtMUVYyWVdOalVPYWtpWWF0cERlaWZwc3Rw?=
+ =?utf-8?B?NGczOG9hMU43c3JUZWNOTmI2ejRKdjhaeDJFQTJFeWQ0ZE83MzVhM05vUXFC?=
+ =?utf-8?B?aHJVVUptS1hHTk53YTA2WFlKNUV4WGFVZ0lBSTRlaFRtLytCV25oZjFkSjF4?=
+ =?utf-8?B?REE9PQ==?=
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0: 
+	Po+/+PO4MylqpFCKw6Ag/cu5h6d1IGUTjO0TP65uUwreH3EsSrQwXrUMtzwZKLs0HFVb48gtu+qEZlehN6hsXDhfZ4jjmRm1Ig+xPN9H+bVWib8PGFkO9B0J7W/0RJB33RSLrwCWSiS2nS+BqL86KHoQQN7j5Z0dyEvWlp9hGX9SEIuKeYGUKip+9ETJmUhBK2WAiBRS1Kn8lgkQfRq6o364nQ9hdDFBCOOoT5hybTsC/cCZ7y/yhsIP7MsbdN3SRl7NVRVKEfZuoLM40K+rALyMRXfcAS1EXIbdOPVLuBr0kj3aaJdQ7m010GEi5aV1kUgmEJuotBoLxAWPaeSiehNBnLVTIoaDYZuDdYpEQA4cZwFl5EU1sxLsf31umBp4pQzRiAKN6Gx5EfDMBEWfd4Z1h2tw2E5Vx5QPUHksIng6WAxRH4ns2rSXGA+FUKhVHe7hxc+XuxGs/U2TYPDURAt+GF9oDy2j5UOnR8H275v5ziAWu3/2qqV3d+Y0HKXzfI7NHo7qZouI7K/ib+8LgdfGzoeV3XNqBMPxf/bg9Wim+JDI2xTNq5Rq8hciMcxTdD3ytRQ/Zv+BhiVoHO6FNJPdYZo2OKby2Ee/h0UCn1c=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd81f68f-0284-4fd2-eb7c-08dc295afaf8
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB5893.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2024 10:36:31.6770
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: xC5qc2FhL7U7N2ZyI38/yFWNQEClQfq9/xfiSQ73eIwpI3pZ3Wuaenhdy1nEOH61RgUd+4w7l2Um8jr1F6etdnUZpUjGYStxqzqr2j73XCU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR10MB7402
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-09_07,2024-02-08_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011 adultscore=0
- malwarescore=0 mlxlogscore=999 spamscore=0 impostorscore=0
- priorityscore=1501 phishscore=0 lowpriorityscore=0 mlxscore=0
- suspectscore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2401310000 definitions=main-2402090071
+ definitions=2024-02-09_08,2024-02-08_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 bulkscore=0
+ mlxlogscore=999 phishscore=0 spamscore=0 mlxscore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311290000 definitions=main-2402090076
+X-Proofpoint-ORIG-GUID: UVcMK95bZWIc8VQu4e1QK8P8edw3aTc8
+X-Proofpoint-GUID: UVcMK95bZWIc8VQu4e1QK8P8edw3aTc8
 
-Hi,
+On 08/02/2024 10:31, Joao Martins wrote:
+> On 08/02/2024 09:14, Yi Liu wrote:
+>> Should set the SSADE (Second Stage Access/Dirty bit Enable) bit of the
+>> pasid entry when attaching a device to a nested domain if its parent
+>> has already enabled dirty tracking.
+>>
+>> Fixes: 111bf85c68f6 ("iommu/vt-d: Add helper to setup pasid nested translation")
+>> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> 
+> Reviewed-by: Joao Martins <joao.m.martins@oracle.com>
+> 
+On a second thought, while the patch looks fine if this is what we wanna do,
+just a quick clarification on the why (that's also applicable to the last patch
+of your other series[0]). I am sure I am missing something :)
 
-Are there any additional inputs or suggestions on this patch?
-Could you let me know please, incase there are any further concerns.
-will try to address them.
+Shouldn't the nested domain be subdued to whatever features guest idea of
+ecap/cap instead of host's view? Or is this because guest first-stage page table
+on Intel is supposed to be always-enabled dirty tracking (per SDM) ? If it's the
+latter, it probably should be sprinkled in the commit message(s).
 
-Thanks & regards,
-Bibek
+[0] https://lore.kernel.org/linux-iommu/20240208082307.15759-9-yi.l.liu@intel.com/
 
-On 1/23/2024 8:15 PM, Bibek Kumar Patro wrote:
-> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
-> the TLB to fetch just the next page table. MMU-500 features ACTLR
-> register which is implementation defined and is used for Qualcomm SoCs
-> to have a custom prefetch setting enabling TLB to prefetch the next set
-> of page tables accordingly allowing for faster translations.
+>> ---
+>> base commit: 547ab8fc4cb04a1a6b34377dd8fad34cd2c8a8e3
+>> ---
+>>  drivers/iommu/intel/pasid.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+>> index 3239cefa4c33..9be24bb762cf 100644
+>> --- a/drivers/iommu/intel/pasid.c
+>> +++ b/drivers/iommu/intel/pasid.c
+>> @@ -658,6 +658,8 @@ int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *dev,
+>>  	pasid_set_domain_id(pte, did);
+>>  	pasid_set_address_width(pte, s2_domain->agaw);
+>>  	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
+>> +	if (s2_domain->dirty_tracking)
+>> +		pasid_set_ssade(pte);
+>>  	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
+>>  	pasid_set_present(pte);
+>>  	spin_unlock(&iommu->lock);
 > 
-> ACTLR value is unique for each SMR (Stream matching register) and stored
-> in a pre-populated table. This value is set to the register during
-> context bank initialisation.
-> 
-> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> ---
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 61 ++++++++++++++++++++++
->   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h | 16 +++++-
->   drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 +-
->   drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 ++
->   4 files changed, 84 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> index 333daeb18c1c..6004c6d9a7b2 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-> @@ -215,10 +215,42 @@ static bool qcom_adreno_can_do_ttbr1(struct arm_smmu_device *smmu)
->   	return true;
->   }
-> 
-> +static void qcom_smmu_set_actlr(struct device *dev, struct arm_smmu_device *smmu, int cbndx,
-> +		const struct actlr_config *actlrcfg, const size_t num_actlrcfg)
-> +{
-> +	struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +	struct arm_smmu_smr *smr;
-> +	u16 mask;
-> +	int idx;
-> +	u16 id;
-> +	int i;
-> +	int j;
-> +
-> +	for (i = 0; i < num_actlrcfg; i++) {
-> +		id = actlrcfg[i].sid;
-> +		mask = actlrcfg[i].mask;
-> +
-> +		for_each_cfg_sme(cfg, fwspec, j, idx) {
-> +			smr = &smmu->smrs[idx];
-> +			if (smr_is_subset(smr, id, mask)) {
-> +				arm_smmu_cb_write(smmu, cbndx, ARM_SMMU_CB_ACTLR,
-> +						actlrcfg[i].actlr);
-> +				break;
-> +			}
-> +		}
-> +	}
-> +}
-> +
->   static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->   		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
->   {
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-> +	const struct actlr_variant *actlrvar;
-> +	int cbndx = smmu_domain->cfg.cbndx;
->   	struct adreno_smmu_priv *priv;
-> +	int i;
-> 
->   	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
-> 
-> @@ -248,6 +280,18 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->   	priv->set_stall = qcom_adreno_smmu_set_stall;
->   	priv->resume_translation = qcom_adreno_smmu_resume_translation;
-> 
-> +	actlrvar = qsmmu->data->actlrvar;
-> +	if (!actlrvar)
-> +		return 0;
-> +
-> +	for (i = 0; i < qsmmu->data->num_smmu ; i++) {
-> +		if (actlrvar[i].io_start == smmu->ioaddr) {
-> +			qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar[i].actlrcfg,
-> +				       actlrvar[i].num_actlrcfg);
-> +			break;
-> +		}
-> +	}
-> +
->   	return 0;
->   }
-> 
-> @@ -274,7 +318,24 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
->   static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
->   		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
->   {
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-> +	const struct actlr_variant *actlrvar;
-> +	int cbndx = smmu_domain->cfg.cbndx;
-> +	int i;
-> +
->   	smmu_domain->cfg.flush_walk_prefer_tlbiasid = true;
-> +	actlrvar = qsmmu->data->actlrvar;
-> +	if (!actlrvar)
-> +		return 0;
-> +
-> +	for (i = 0; i < qsmmu->data->num_smmu ; i++) {
-> +		if (actlrvar[i].io_start == smmu->ioaddr) {
-> +			qcom_smmu_set_actlr(dev, smmu, cbndx, actlrvar[i].actlrcfg,
-> +				       actlrvar[i].num_actlrcfg);
-> +			break;
-> +		}
-> +	}
-> 
->   	return 0;
->   }
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-> index f3b91963e234..3f651242de7c 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-> @@ -1,6 +1,6 @@
->   /* SPDX-License-Identifier: GPL-2.0-only */
->   /*
-> - * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
-> + * Copyright (c) 2022-2023, Qualcomm Innovation Center, Inc. All rights reserved.
->    */
-> 
->   #ifndef _ARM_SMMU_QCOM_H
-> @@ -24,8 +24,22 @@ struct qcom_smmu_config {
->   	const u32 *reg_offset;
->   };
-> 
-> +struct actlr_config {
-> +	u16 sid;
-> +	u16 mask;
-> +	u32 actlr;
-> +};
-> +
-> +struct actlr_variant {
-> +	const resource_size_t io_start;
-> +	const struct actlr_config * const actlrcfg;
-> +	const size_t num_actlrcfg;
-> +};
-> +
->   struct qcom_smmu_match_data {
-> +	const struct actlr_variant * const actlrvar;
->   	const struct qcom_smmu_config *cfg;
-> +	const size_t num_smmu;
->   	const struct arm_smmu_impl *impl;
->   	const struct arm_smmu_impl *adreno_impl;
->   };
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index d6d1a2a55cc0..0c7f700b27dd 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -990,9 +990,10 @@ static int arm_smmu_find_sme(struct arm_smmu_device *smmu, u16 id, u16 mask)
->   		 * expect simply identical entries for this case, but there's
->   		 * no harm in accommodating the generalisation.
->   		 */
-> -		if ((mask & smrs[i].mask) == mask &&
-> -		    !((id ^ smrs[i].id) & ~smrs[i].mask))
-> +
-> +		if (smr_is_subset(&smrs[i], id, mask))
->   			return i;
-> +
->   		/*
->   		 * If the new entry has any other overlap with an existing one,
->   		 * though, then there always exists at least one stream ID
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> index 703fd5817ec1..2e4f65412c6b 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-> @@ -501,6 +501,11 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
->   		writeq_relaxed(val, arm_smmu_page(smmu, page) + offset);
->   }
-> 
-> +static inline bool smr_is_subset(struct arm_smmu_smr *smrs, u16 id, u16 mask)
-> +{
-> +	return (mask & smrs->mask) == mask && !((id ^ smrs->id) & ~smrs->mask);
-> +}
-> +
->   #define ARM_SMMU_GR0		0
->   #define ARM_SMMU_GR1		1
->   #define ARM_SMMU_CB(s, n)	((s)->numpage + (n))
-> --
-> 2.17.1
-> 
+
