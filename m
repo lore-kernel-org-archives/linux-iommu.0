@@ -1,101 +1,106 @@
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5982D20329
-	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 10:53:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8179525621;
+	Fri,  9 Feb 2024 10:55:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707475999; cv=none; b=odQqKuOnE/PPphcNuqGDHSMm8BG5qrU8a0kaJs0RGnQ1wPC0HqkEJPdSmeIFv7Rsu2T767nePfaWqKmRdsZXsNFo0bJ+FhrEkdjI/Hszcok5U1nom/q/4i6dadZizqAfwObQF9vtmjxVam+QICOQzKEfr5X0M2QD0EKe7K0DucU=
+	t=1707476119; cv=none; b=Gr2WPWb6vjjhqapvEl2Z6pjNZMhYFYq5kIzDV5Zjevv8ipy+CS/1s68Jbl6555I/M4sotm02Vejj7HDSpdOUwr9HC5MCZt4/B6blG6esa5ANB3ipuEtWDulKRGXypHg9LkNkIG/rt/XaNzmUGbxQOBD9t87xsy9Eu0UwuDduak4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707475999; c=relaxed/simple;
-	bh=bBVodIkFUuf5TjuHA1UbbrCx/ebybTBO+Q6c/7GdpAI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ctmjHjZ3eaKmyA7dXpS/c5xDbt0a73eRMPr/IJregEDSQxW60wkYDg69KQXSc3D0w7WcZ3/rHEYnWma17YN4kS0KWbyu7tzTF1p4HodcwXs8dCohmo4vk6ccL9RYHjWR/LhYb52OQk0XXmBub8yQo2r7Gexndl6erSGj5cTywH4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=NYg06Epm; arc=none smtp.client-ip=209.85.128.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1707476119; c=relaxed/simple;
+	bh=2WOJQ2RgbU0u8rkQ+XtqSxX9y1ZGslQjMejF/3cwOaE=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=C49U/zA4KdFw+wlryLXYLGz4YLetnLRj0BgSI5nTAE1KVwmXeqY1VnbJjBkTDHbuZh3QljqBirZRIholpgQm98i+GcetG8wqAuLEzN9//8WKDdiGFDAHUALqNbRBDEeCylZ1HVqXvQ6KjLleH8+OAedtlLRWbV/tXhGd5j7fkuo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CVYBri5J; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NYg06Epm"
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-60498c31743so8116987b3.3
-        for <iommu@lists.linux.dev>; Fri, 09 Feb 2024 02:53:18 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CVYBri5J"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a2a17f3217aso96563166b.2;
+        Fri, 09 Feb 2024 02:55:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707475997; x=1708080797; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=4t5G9ULgip1omppIrMSWBh824NopQFVbRmAIJheoN6k=;
-        b=NYg06EpmtNTiAPBzptO75sQy74qFlhmHCl2uYtwp9mDXRkHABE7cx9J00Xz3gCzzyq
-         ug83hnyaJIJJ8MYIdLi5KUrf+qqB6H8OlVL+MQbNkHf8rV+LVgVXkLuXpfRhpQb0Esax
-         u3vu3+ntVouHiXC2povckjx6vlAt/rf/AlAAO/cwcGARJGmKni5YFVDyvhWV2ysm+ZvX
-         VSPsEa7aQp60iDAyhhT5F8+hgvW+LAIMYoGHW4ODxd71Jb8F85QKjNW9dq5SEHy1MeQg
-         2KAD5xK2ZEjCUeI6TuPQDzcgpbVN2jHVmOy5o5mbg8tuq2FJIWEHxreOM38FO2+JFdiz
-         pHFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707475997; x=1708080797;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=gmail.com; s=20230601; t=1707476116; x=1708080916; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=4t5G9ULgip1omppIrMSWBh824NopQFVbRmAIJheoN6k=;
-        b=utKeXusjNb7yts0GspOh0PKiLI1WByZ+uZSdA2Kd8cGkrpvFTMhStv9Y6RoPvcMfLr
-         tMLuuTbaxfCqbtwHkFwSnpmyJaX8UeJEhyMdUE/nG9DfP4R5aPdkJMNbhQX0V4EB8ca6
-         DaU/DtrmT9xGS503jV8ojnNfdRSlt9pgh1xML8BspY8ameInVG1024S6ZhgloOhfv93d
-         /a1kk7+6OdZo71iVhnIFym59P7rckWZ+5PtM78/CAmsUJNS8cPDXlY/PeaHciJBCezQQ
-         B24LsUahOyDwL55QGehduLixNcFoho34bqiXvLF1qgwOS6xX/mt6Q3i90tnHbTfakEzC
-         dXHA==
-X-Gm-Message-State: AOJu0YxzZAwyIEOS1EXZLMLt64iEeS5rfqYIh9epkqOi9FNxSLbhT6Uv
-	D8ceB+kQtiRhKCa1iWqEo91rafz1hF+RU2frbHckKt8GYxvOzNeL6pGoyObNK22KDm/IM/v53DU
-	ARKLENGaJ7UMrsHqtSgZbESwDw3hj6nVovTu5Ug==
-X-Google-Smtp-Source: AGHT+IEYr40Xins1Ugu9N2EC470IZHXfOwEHL+myb8RBHaNgBLYJY6StP1BZSABiyzCT43QOSlagmJhV9ZKbAkqTMZE=
-X-Received: by 2002:a81:4a42:0:b0:5ff:d871:b4d with SMTP id
- x63-20020a814a42000000b005ffd8710b4dmr925660ywa.44.1707475997376; Fri, 09 Feb
- 2024 02:53:17 -0800 (PST)
+        bh=VPDCxvBNMC7jVwM9lF/rwisiu2UQZms91Q9LKR4ZUe8=;
+        b=CVYBri5JGud0htUWwy+/t8208pnFxijDAphcc7r6a+EnyYZ60Igq2HABa7ARgheCg0
+         iuluoTOVz+rw0YkQyiTmDJyD9ReFfWMCGa9ATgxxCDIDxnw9rSB2VA4QjccqyN+IHp3u
+         h3edpyRnalNSICtKIT3enwPtaHHRLmyDr/r2AqQop8TS8il1GUmomUvQ6LejsRkPDG6P
+         zJNVGR/oQ9hFMczt0g4bE7VhqnyuG5K4KSJ4Y/Y37lBPMP1lE6FFEUiKyzQOLXJbH+XL
+         cmKf0JTwxrxBiWBJyx0RKdPkNBTfhhl301ERFbn6mvnCuwO5OA9LNt/1ahj6o0Ol2LFJ
+         fZsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707476116; x=1708080916;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=VPDCxvBNMC7jVwM9lF/rwisiu2UQZms91Q9LKR4ZUe8=;
+        b=diU2JXyMOadoVmh6mpCNr6/xd6PgA5d8zRfCChzDTQEPRI1zWzqDH5QrvT7TKcJHQw
+         aQMmDMYKhTkj1NBBX9BQPcpOMga3F6s7GRAo8JXYOM5H18y2JsolZDxeGpogt9oOJjGJ
+         XYQqUVcKLECdw94kmczsWmT6j1+RVglVzZiWYYr9uEDMkvH2yJ9lNmfpwGznJbz4xVg7
+         w5kWknHu4hfsVtuCqKMNzAnWsatTYtDoLViIpp94ZYPr+M9KIAssM6d9PmZYWELk4O+r
+         XzXTdXJJw4zSiROZA1YLhkUdlUkS2ZAOEm8iejVeQR/pEPMMwMnJBNnfrDy8is1DsQTk
+         wgQg==
+X-Forwarded-Encrypted: i=1; AJvYcCVQGQdOo2YUZjvt8IYZaDoA4cS7K9mOfKqpZZIs/6vgX0EDqYEFCmmS7pIwq/dYrIf0uDg2UrY5PrgJQ5mgc5fSZhXItivuI9zOhLFnAUazCWkLVrBugHYI0HBYFin/DyCjRgFEnbadMdFzSCqYQc7AJ2Hir60xJ6IO
+X-Gm-Message-State: AOJu0YzKPBJ0VExtxI8ENbWV2usCuA67IM3HM+vYBNq377pWa30gJe/u
+	B7739TfY5JCvJSSmh2WLkJ1C4P5+MfrZVk3cslCueqWnJT05vSTtCJJFe4brgv8=
+X-Google-Smtp-Source: AGHT+IH8fQC4BYcatf4eNnFGSb58UqS4zJtebYfp5Tkvc0uum0cdKtMKpIELju2LqVMZ4Dh9GK/KUg==
+X-Received: by 2002:a17:906:f9d1:b0:a35:103e:3614 with SMTP id lj17-20020a170906f9d100b00a35103e3614mr863231ejb.52.1707476115517;
+        Fri, 09 Feb 2024 02:55:15 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCW0W2ig//yQ03IYUX8CzVxAEgCm8ndS3T1j4w20EZR4F7pSO46B0Ssj3CYd8S2QKwCcARm6ki3u9e+DBebFxzoEmI0oAbFUYYnNmQnIfRpW9iMLjJG04+63v/Bw70+28ySDWZpJTWzL6cI2ZNkUJZJBwsdxGXcv13Cex5FSXWQ/rA9VbY9FqqY9gqP3vr4cmM/C3FOjfKS8JqLEr7MLEXtAgcq9EhKu+atw3ez0PoqAKQG/JmJIV2N3c6/pHD4PEA5X2XFnqx8RZrsvXH+e/FBSspe0y9uDFUUpbR+LzWYkl9acy+GflcK9HZwzgdhL5XJATWhk/+YNWJSYJgI+XFcILFpe3zGY7mon1YpeqDQFNax5MEtzOpB5DFscrKJeiFJa/7oEMJeHdR8nIb74rJbhsoPHQM5vd0oKFnfn7QtJHpVf89dKVi8weQbjAgJ8g2mC1rBg2UiWropsPA72suo7mEQ2M8/tfdoGloKbAuI+XKt7MyeE0A4AUXuhmNfplAnS7k3f5b8skGR7wFI1yF/DOwTR9dk2x5l3vM5QHJJa/wXVNHmAM7ZtMSHzOAcf7sB/1Dk6rr6D6sBvSBih/Yi7A3mTIUvJfrTMeAH3bu+fBav/NdxOlr0OWM9Aut74GPCsiTwnDNmslfl6+GV9NyNqTeUeLd6jND27dWT/VhjfxwKpej42Iobb9GYk/l2DwagtHAj1C6DTy4Tyejx0ACCc3UnkebndWh0nS1SilTf6sRtD17hmcAGj6yEScljW6quvxOQyxq1rGybRxq+XfDHNKiGkrJcTfhs7AOxIFi8aJl3Fnj8/k/Q+dBj1ROIQhnjUeOw/Ex01Ynamfb6VACenMHuYjs2DjUiRQe5nrAPgYOyUOHlpV/SI9NViaJOezY/A87rwGJG3CngeT5OAMkMDIqpvq62KcNN+aLUv/t7qFkaBjYyzTSgLR+iN0DO+phbXFZ
+ pZJknOwjoo5SfgsL5gCYFRu5BCGxsd7nqNZTS9Hzq/tcc4IS/I7MGp6eiH+iCXIfdGAUgh4wOUbiOFGVsT9Z4idnsbB4hg5CGFiXSz6dgATKIgfsFvnmH4aQsC8iOJY2gmUAl3aIcQoEvOGdClgxelpZRKICgoSZzGK6kDqTQ6vgChMcBthxj+Rdb0aQRz1GtwtU+RcgF48fqY/UxEv4oUdUktTlEpJvnVT+0OlR5hZMlrAkTb4orEqBQKit/397dC5qzNVOLhyViUGFZVmUj8RcXSSScjXz/1Qn6eg+H7iKlae2EqEcdkYUiIBH/c/9zREOdzHiAGPOLatjckrAsePGDqYRUI/w0KCpzynCVjY1wV3GpyCS/noMczEQKDj7rAfUyB7PzDOalH/Cd8ScBs3aHXlv9Eo6z+MLOLKzJwD/e02tmzYjM86xU4WeM23qznU1N3jw777w==
+Received: from jernej-laptop.localnet (APN-123-244-98-gprs.simobil.net. [46.123.244.98])
+        by smtp.gmail.com with ESMTPSA id cu7-20020a170906ba8700b00a37b795348fsm629101ejd.127.2024.02.09.02.55.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Feb 2024 02:55:14 -0800 (PST)
+From: Jernej =?utf-8?B?xaBrcmFiZWM=?= <jernej.skrabec@gmail.com>
+To: akpm@linux-foundation.org, alim.akhtar@samsung.com, alyssa@rosenzweig.io,
+ asahi@lists.linux.dev, baolu.lu@linux.intel.com, bhelgaas@google.com,
+ cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com,
+ dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de,
+ iommu@lists.linux.dev, jonathanh@nvidia.com, joro@8bytes.org,
+ krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org, linux-rockchip@lists.infradead.org,
+ linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+ linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st,
+ mhiramat@kernel.org, m.szyprowski@samsung.com, pasha.tatashin@soleen.com,
+ paulmck@kernel.org, rdunlap@infradead.org, robin.murphy@arm.com,
+ samuel@sholland.org, suravee.suthikulpanit@amd.com, sven@svenpeter.dev,
+ thierry.reding@gmail.com, tj@kernel.org, tomas.mudrunka@gmail.com,
+ vdumpa@nvidia.com, wens@csie.org, will@kernel.org, yu-cheng.yu@intel.com,
+ rientjes@google.com, bagasdotme@gmail.com, mkoutny@suse.com,
+ Pasha Tatashin <pasha.tatashin@soleen.com>
+Subject:
+ Re: [PATCH v4 07/10] iommu/sun50i: use page allocation function provided by
+ iommu-pages.h
+Date: Fri, 09 Feb 2024 11:55:09 +0100
+Message-ID: <2718393.mvXUDI8C0e@jernej-laptop>
+In-Reply-To: <20240207174102.1486130-8-pasha.tatashin@soleen.com>
+References:
+ <20240207174102.1486130-1-pasha.tatashin@soleen.com>
+ <20240207174102.1486130-8-pasha.tatashin@soleen.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240123144543.9405-1-quic_bibekkum@quicinc.com> <20240123144543.9405-4-quic_bibekkum@quicinc.com>
-In-Reply-To: <20240123144543.9405-4-quic_bibekkum@quicinc.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Fri, 9 Feb 2024 12:53:10 +0200
-Message-ID: <CAA8EJpr3S1hGSjeBx+vhZZHq0OpyULCmyxasUzF6RGdTvXEBSg@mail.gmail.com>
-Subject: Re: [PATCH v9 3/5] iommu/arm-smmu: introduction of ACTLR for custom
- prefetcher settings
-To: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org, 
-	konrad.dybcio@linaro.org, jsnitsel@redhat.com, quic_bjorande@quicinc.com, 
-	mani@kernel.org, quic_eberman@quicinc.com, robdclark@chromium.org, 
-	u.kleine-koenig@pengutronix.de, robh@kernel.org, vladimir.oltean@nxp.com, 
-	quic_pkondeti@quicinc.com, quic_molvera@quicinc.com, 
-	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 
-On Tue, 23 Jan 2024 at 16:46, Bibek Kumar Patro
-<quic_bibekkum@quicinc.com> wrote:
->
-> Currently in Qualcomm  SoCs the default prefetch is set to 1 which allows
-> the TLB to fetch just the next page table. MMU-500 features ACTLR
-> register which is implementation defined and is used for Qualcomm SoCs
-> to have a custom prefetch setting enabling TLB to prefetch the next set
-> of page tables accordingly allowing for faster translations.
->
-> ACTLR value is unique for each SMR (Stream matching register) and stored
-> in a pre-populated table. This value is set to the register during
-> context bank initialisation.
->
-> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-> ---
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 61 ++++++++++++++++++++++
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h | 16 +++++-
->  drivers/iommu/arm/arm-smmu/arm-smmu.c      |  5 +-
->  drivers/iommu/arm/arm-smmu/arm-smmu.h      |  5 ++
->  4 files changed, 84 insertions(+), 3 deletions(-)
+Dne sreda, 07. februar 2024 ob 18:40:59 CET je Pasha Tatashin napisal(a):
+> Convert iommu/sun50i-iommu.c to use the new page allocation functions
+> provided in iommu-pages.h.
+> 
+> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> Acked-by: David Rientjes <rientjes@google.com>
+> Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+
+Best regards,
+Jernej
 
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-
-
--- 
-With best wishes
-Dmitry
