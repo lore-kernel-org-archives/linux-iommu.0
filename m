@@ -1,390 +1,189 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12olkn2032.outbound.protection.outlook.com [40.92.21.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06F31381C4
-	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 19:37:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.21.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707507448; cv=fail; b=ryZkzOJiMivKsR6r9AraNA2upG7y0ROrXf2e+RPEOuIttD4atN1y7tQPRpVEg8xqGCp1zlTc2sTYqm3f7z6G9X6T4VEYiv/XiBPpzkc/iBMCcMLaqifwcVlfhlg6OuLFScL6MTpr6+yue62lDonOjHTziL6D0YO8OQiM+mr2UvI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707507448; c=relaxed/simple;
-	bh=ILXwQyG2LEL9vuCpZwpy/ZQXduGu7XWnwrIwy42Igig=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=Sq1VXRTHbBPDHmYTMX5iuxU6KEfbflm2HUHtYOi3TKcGx46LBFyElbt8y6mPX/4J0ykLD7KvkFxIRQiMSpcxje9gyY/0vwxKJAL78H/zya+mR1KnLvHy0+bv0Z47nXGKLzQmKJhjeX7wHHuIe8mYpFWoEGdZe8Yq8NZHnZlxswY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=Ymq76vmT; arc=fail smtp.client-ip=40.92.21.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 487B680BFA
+	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 20:05:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707509143; cv=none; b=W3dVDxr4YOROx/AYrnSIl9A/mz/VLcnnMqQWenJ3vKgpgvwqF+NYCA+dytPq5yLAOG67MrKrmyeK4A+dk7/Al35AUvFE0qSjpnL7cmhjC2f3taBil7fBZ/KBIKxqF5ngznOdaQZDw/9nwn0Igg9bjGTdR+TzHo9VOkQSTDrQ7WQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707509143; c=relaxed/simple;
+	bh=5KqCk7kqbNG0tWx/V+e5rQlUsiH4IRC+jdytEP4MbGU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=E4qKh9bfy+M5Ej5B7prcC046C373eEPvWHTN3C0BlW0yWk32fBp2NGaByEoglPVHT53Sj9tDpmPpd383kNRvOV15n93OIWPA88pjWSP+Gx68OT6NZP5i+qkZYhfgQvvVW7xVGt8IAxBHSSg9b8mIQr6x5GgSGNcRgsGsj5F/pqY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=V07V3cYZ; arc=none smtp.client-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="Ymq76vmT"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MiMIdpVqwfRBaRVfOsq7v8EEERVp3VRu4EUdjmcjYLSr2zD7zDfqQ+pUTS3YiSSfrrNbBQfGgHIKDvF5YAK9DiNyln3EBwfiXUjbZ+OR5o+2j6FLjkvRkE6CZidkeHQ8JDzfE1yQWEDUZzqU07FwOIC4vTrvkgo5uVWhOPqKvQWmsUPVmuHykVTONk79PiqbWC1fF3vKp8xXMKbroVAXXIEOFzIOjYuZlQyyq+iTUmRSUcgOH84fjtUclPF/6YLR1muN6QeV+75CDlDys5Io+1MUd/b3QK/hG2TlmDbJBtFJYromQQ6+XHZNawNlSVCfv+AxNcuMSZgZoRF7xg8x6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3nSXYHI9uB8RyxtoRjJOdWU6I4BSCXsmsEAt5aYWvOg=;
- b=OMinebCIVSjJa44nAQomiH6Hv2jpOuk6FyD7nb80VI/BzlOd4lQ+4uwbha8gKCfU7pcvUxXszMnIAmO/17YhV6d5rc6yHOKKhPGpvOUHhFqLmyUNWiRLPQRcZILhEoQpIhx4ruajnoJ0z507T1vsnhD48PEHTXgTuwJlCbUeylPZfeZvpX5M3Wo6Ysvy3bBfFHwpt8M0SFH/v9R6OriDLpUyYaVCxM5HWq2ZVMXgMtbs/uEvG4Tz0r+v+faJhqZqOr0No6cYJg8Y6l1WpV/mRi6qiCQNTvHEKmzux3xdRXsJ0c1jWSbyM6U6FtOMu3qobGOaeR2KbC9HWP5l91U4sQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3nSXYHI9uB8RyxtoRjJOdWU6I4BSCXsmsEAt5aYWvOg=;
- b=Ymq76vmTmy6oG+DUF+YO0wb+NqLd6THcpgazb9FHiIJfY2ajo+SZbJp0WBDn6T9QcrRMryYRwBQT6GJKk0pDYJnEIC+pAv8zBvL2J4XHUN7mdHD+Qy7k8dn1da8CQsMnbxGjY+Td5lj8BcZo/LEa60O4tsvYMMFo7Do0XgQiB8WYRvVIY+KIZoKlBrSxl2YTCENqc9Z81n3Zzj+XPeLlUbKapi/vc2T3YuFDDKlgiyQQZfpnBOyv63cyMcM8ghw6KCunC/pdMNegpr61jZOt86z0JSoXbMPyNNOffEjhcKthqS/ZRnokDukhHL3BvNwB3lg76Q6JP4twChFkCuMw0A==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by PH7PR02MB9317.namprd02.prod.outlook.com (2603:10b6:510:27b::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.27; Fri, 9 Feb
- 2024 19:37:20 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::67a9:f3c0:f57b:86dd]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::67a9:f3c0:f57b:86dd%5]) with mapi id 15.20.7249.027; Fri, 9 Feb 2024
- 19:37:20 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Robin Murphy <robin.murphy@arm.com>
-CC: Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
-	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
-	Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, Thomas
- Bogendoerfer <tsbogend@alpha.franken.de>, Paul Walmsley
-	<paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou
-	<aou@eecs.berkeley.edu>, Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun
- Guo <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>, "K. Y.
- Srinivasan" <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Wei
- Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, Suravee
- Suthikulpanit <suravee.suthikulpanit@amd.com>, David Woodhouse
-	<dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Niklas Schnelle
-	<schnelle@linux.ibm.com>, Matthew Rosato <mjrosato@linux.ibm.com>, Gerald
- Schaefer <gerald.schaefer@linux.ibm.com>, Jean-Philippe Brucker
-	<jean-philippe@linaro.org>, Rob Herring <robh+dt@kernel.org>, Frank Rowand
-	<frowand.list@gmail.com>, Marek Szyprowski <m.szyprowski@samsung.com>, Jason
- Gunthorpe <jgg@ziepe.ca>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org"
-	<linux-acpi@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>, Rob Herring <robh@kernel.org>, Christoph
- Hellwig <hch@lst.de>
-Subject: RE: [PATCH v3 7/7] dma-mapping: Simplify arch_setup_dma_ops()
-Thread-Topic: [PATCH v3 7/7] dma-mapping: Simplify arch_setup_dma_ops()
-Thread-Index: AQHaW3j+UG9ZZrqvj0qLa4F9lupB4LECZ1uQ
-Date: Fri, 9 Feb 2024 19:37:19 +0000
-Message-ID:
- <SN6PR02MB4157B73801B450853E04369BD44B2@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <cover.1707493264.git.robin.murphy@arm.com>
- <f0ea76846c89a65dfe42933d78d770004bb3de01.1707493264.git.robin.murphy@arm.com>
-In-Reply-To:
- <f0ea76846c89a65dfe42933d78d770004bb3de01.1707493264.git.robin.murphy@arm.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [B9A1mUvZtHVPxvEJ2o4GSk9CmJ2HmRuI]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|PH7PR02MB9317:EE_
-x-ms-office365-filtering-correlation-id: 337a2f12-2bd4-49cd-8873-08dc29a687ce
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 3US/y0l0Y6LjjIkvOY1GX59DGad2BufVh89UZvnpLW1miZPBJUGYVPJvZH7Mn7dhLWXtK7A8R4aRb+J5oZI4Uv24cUdAef2fVN8ZgQeSUNt/oQ4Z2Tk4eR82PRyiMD07yyQzKsjF47QSDEilLGTNApdBGUpaPTlL5pDEp2FV/9nqTZ6FSy1j03x69SeP9556ceOmbcxOvHiEFx54D0bZAP4ODhoajKmaoYIKkiMR1Y+5lTgreWDWROnb8Rt339z6HRSjKnhPjn1bLJNk1FaqeAI6VS1EsXu0gwCc+j9nSlT2Y4Nfxa1/jmxkaesYRAD6ZqAwtbZSpXL+016MrqJgFyQGWndkE7xs2QYMOtsqjKTcFXO3w/P2TWMVR0GaVr1NpsqCmHFlqNrrKnsBmAszeBvWQrOPRvrZeVnftCt7jfE7jafImfSJZ6GRN2wY8XaKxolNoRaASvnbvUr8jKXEnsywmZ0kfc2+F28Ti1GiO6Z1DNMWsWNwiI343x1L0XnWFoVUWqgI+WHmCCZzMg1BrgUmwc7VEBvE+YvAEigl9Yv7G2r2+/l5P+iekFhbVM44
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?ggLJBwvvy7Eh208xoKdtolYsvRVJR8ikHxkmk7bqq9nbVoDIukjyvCiDKoJM?=
- =?us-ascii?Q?RLsZZnTCjPztyM3iNrD2zIqgZ9u5oauWddtJo6an3NB/QKIk0RQXFPu5KJv4?=
- =?us-ascii?Q?3iueYj4Eov1YpZnZ6cNvvsU8gQuUwI9kFho43PiGT/qxdaRD5OPWulbVm3p/?=
- =?us-ascii?Q?xGZ99W34HmkWg3JTZhOaIOUbLCaUoAyZyxrKG39GHF9ZWDQ7oT9CGAHiAXki?=
- =?us-ascii?Q?sWevt/w8e6zk/JfCf68tRhIGnNRRgzPLDhxS72tDGXq2PjLkFctQGdDjgOTp?=
- =?us-ascii?Q?0aEvS4qXzWoVACVV68UgzEKyetS9AuxYRquOzn7C6mHu+mQ5Vn9G20/SWfH6?=
- =?us-ascii?Q?ElAtdjutEgrclXvfT8SbgqGUba6ul6oqqUGMD6khozO3kR0nAFbP1ycmOg3z?=
- =?us-ascii?Q?6Y/l7mj7MBZSTVY92ZLlmH7rsCVbx2Wg42c3GNDd35N8RvBa1HVuISx31wjW?=
- =?us-ascii?Q?XNFbGZ5xtekseBRNjPoFQFxrHLEVVUadvWL87K750WwjcPwL4FC7JVU6c/Jg?=
- =?us-ascii?Q?5BzXxaYWcEWOoOL9LSnPtommXS/6GI3CoOHMlqSstYZWx6iaOYiOSb8oLo+I?=
- =?us-ascii?Q?wFG7jTe5XszHgHI4c1OV96GjQG+aARafwjVnog68WsKFzj7Xz0sLQj0pauiD?=
- =?us-ascii?Q?O1iu7DmaIaqYUZ5GdaqG7n2sGE9QkOE+SgYzqvkYq4EkRxg9F38+Du4ScAPb?=
- =?us-ascii?Q?21t5O5zjjfN2EDBtLkwxtTG53JXLtgjMtMUgczhyxe//Rcs+9uhHmKaVxNnq?=
- =?us-ascii?Q?FenwovcmmhQrY0RStpsCDmReGejznjkCOBia15qEjIeYVRZoEK2XEhTMGrFa?=
- =?us-ascii?Q?wYYTQ1bOubZZQ2v0lgfgEE0Vb+/KaPnH5IQZbEd46SrN01shCWVB3k3rWJv9?=
- =?us-ascii?Q?pyQAHP/4PVUY2Ivxpa7SXRWlxPEE7l+idrUOOUdvFov54gaV5WJX1HJ3m9E4?=
- =?us-ascii?Q?KGtSqp7C0ydWxWeOAftC12aGliSIZ5LbyBppH/c1M4tNabMIQg/wuClAzjIM?=
- =?us-ascii?Q?BUec4B7Ljl4SC15RndrQhqnn1Q0VDC1BuQFDOkTTD7iUaMroiS6E9Mt/stbc?=
- =?us-ascii?Q?kllYhT0P8GuEp9fiHhrGHedOYL6YI9NaQ+4MAEFFHKu1fTQ7xBKlDNOTne9i?=
- =?us-ascii?Q?JtBJ2PSsh2JStTSYPLZMfItHryZPqRU9t9e3nJ+AWF8cdxjQEqd7JgL5o84S?=
- =?us-ascii?Q?/yvgPoUfZHPI3FjpsFteY4MAM1hzv+z7i91cJtsUKZrC/7k8pVcmng+LPyM?=
- =?us-ascii?Q?=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="V07V3cYZ"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-51147d0abd1so1485460e87.1
+        for <iommu@lists.linux.dev>; Fri, 09 Feb 2024 12:05:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1707509139; x=1708113939; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=oIJMwJUHQ+J7xEXKw5dXfeQj52kqJF8fmHwmj7knEYE=;
+        b=V07V3cYZCEWJ+Y5mcpc/N1joQBDSoNwFeYyt4dVpLRJZs48wN/KPBh4Tjs9wig0acS
+         GGX7QFzj7OK93Y1ZUuwsBdiNTF8KASj6+KlJJi+NoHH6tluixZjY4rDjjAKxxNw6p1RJ
+         iUOKyw0PmrmHVeSFUkk+PesCTX4YPalZNmFG6wXgtpQ+0wCdezps1Js1HDJwLbMNkNB4
+         OeSZiIcuyWZHSb70XrtaZsctQGDjHKMTFrUYZfPc3ywcdyvr6v23Mud/VRBj/0UQrBlI
+         Na/lukX8gUntWAjr2dOuC5YtYR0Y1sx/4d9gbFmc3HVuNJqBTADx8f+OpNQ/bpYip7Fl
+         hzwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707509139; x=1708113939;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=oIJMwJUHQ+J7xEXKw5dXfeQj52kqJF8fmHwmj7knEYE=;
+        b=xTB/DGvcm9yYB4XokhgO9ziiWCis8OborZVB/w0jFKQL11qaYdPWN6oeR8RoFjE2al
+         Qgct34Ek9BPOV9MVc2fO2MHpJsJHq/UWMKjorAe+1lKs66LF6lOg4tN4Dh9MAud7PE4Y
+         GXdc8jL4KBE4fdsOEzLYElakOUy5fdTYp3kroWXUY3HiBoH7njLYr5bt3UCSs9T3O8+N
+         jPQrpAb6WLktI0hlV8KrTJhCrbByaB9A5T3nd922MH/hzJLm/cgMa+Es7R5spctkiPBR
+         P9etn4Db09YyWQGcMkZuJ+deAHwC1BLzT5wfOAEipdpqHYDIKbpKltv5+g0GkluiBHVM
+         m5Yw==
+X-Gm-Message-State: AOJu0YyfaSPvdM/3fS3Po4NAFlL5A1lOxG1C5JhsaxzAoEGITc7VjPVC
+	VL/1Z1Y5bMKPy9/eJUM0+8zMZz2ZVHv6SVNQR46YK9C4joClRMhstGCJMiPMsK4=
+X-Google-Smtp-Source: AGHT+IFsS9vPe2TfRx4i7aV2GmcAhtdCmpDu2x8n7eHp26Q8sMs0qB6eM/WuvW7RchuJrL7kzcCZlw==
+X-Received: by 2002:a05:6512:ac2:b0:511:4a01:2faa with SMTP id n2-20020a0565120ac200b005114a012faamr50005lfu.32.1707509139174;
+        Fri, 09 Feb 2024 12:05:39 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCVq2pZfvA1NxHHAbo8Lz9qp5ZRVqZsh0/tvCd5iFuaQ/wcPV01c6CmCmiIr7hNZsrbfTKMh0KNQ2Ajg0rKzY2PxhAPJ7S0CdpIaDrhleYCDGFZD97So+lG/KhiBuEHQrF+eOFE7hGI09odZrrR1Xb8DS17XcZl4bWe7CqxJeYGkIJBZbuIkPXfy27zPg1w8ne+ycUwe8+fdZ/JbItEkc0J88hJ6QXHIyyCe7U7Nlbelrsdq+nZX5dMrIkrqkhgsqsU=
+Received: from umbar.unikie.fi ([192.130.178.91])
+        by smtp.gmail.com with ESMTPSA id k26-20020ac2457a000000b0051166fc7faesm19900lfm.75.2024.02.09.12.05.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Feb 2024 12:05:38 -0800 (PST)
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To: jgg@nvidia.com
+Cc: iommu@lists.linux.dev,
+	joro@8bytes.org,
+	linux-arm-kernel@lists.infradead.org,
+	nicolinc@nvidia.com,
+	robin.murphy@arm.com,
+	will@kernel.org,
+	linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH v2 5/5] iommu/arm-smmu: Convert to domain_alloc_paging()
+Date: Fri,  9 Feb 2024 22:05:38 +0200
+Message-Id: <20240209200538.917366-1-dmitry.baryshkov@linaro.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <5-v2-c86cc8c2230e+160bb-smmu_newapi_jgg@nvidia.com>
+References: <5-v2-c86cc8c2230e+160bb-smmu_newapi_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 337a2f12-2bd4-49cd-8873-08dc29a687ce
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Feb 2024 19:37:19.9209
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR02MB9317
+Content-Transfer-Encoding: 8bit
 
-From: Robin Murphy <robin.murphy@arm.com> Sent: Friday, February 9, 2024 8:=
-50 AM
->=20
-> The dma_base, size and iommu arguments are only used by ARM, and can
-> now easily be deduced from the device itself, so there's no need to pass
-> them through the callchain as well.
->=20
-> Acked-by: Rob Herring <robh@kernel.org>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+On Tue, 17 Oct 2023 Jason Gunthorpe <jgg@nvidia.com> wrote:
+> Now that the BLOCKED and IDENTITY behaviors are managed with their own
+> domains change to the domain_alloc_paging() op.
+> 
+> The check for using_legacy_binding is now redundant,
+> arm_smmu_def_domain_type() always returns IOMMU_DOMAIN_IDENTITY for this
+> mode, so the core code will never attempt to create a DMA domain in the
+> first place.
+> 
+> Since commit a4fdd9762272 ("iommu: Use flush queue capability") the core
+> code only passes in IDENTITY/BLOCKED/UNMANAGED/DMA domain types. It will
+> not pass in IDENTITY or BLOCKED if the global statics exist, so the test
+> for DMA is also redundant now too.
+> 
+> Call arm_smmu_init_domain_context() early if a dev is available.
+> 
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
-> v2: Make sure the ARM changes actually build (oops...)
-> ---
->  arch/arc/mm/dma.c               |  3 +--
->  arch/arm/mm/dma-mapping-nommu.c |  3 +--
->  arch/arm/mm/dma-mapping.c       | 16 +++++++++-------
->  arch/arm64/mm/dma-mapping.c     |  3 +--
->  arch/mips/mm/dma-noncoherent.c  |  3 +--
->  arch/riscv/mm/dma-noncoherent.c |  3 +--
->  drivers/acpi/scan.c             |  7 +------
->  drivers/hv/hv_common.c          |  6 +-----
->  drivers/of/device.c             |  4 +---
->  include/linux/dma-map-ops.h     |  6 ++----
->  10 files changed, 19 insertions(+), 35 deletions(-)
->=20
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c | 21 +++++++++++++++------
+>  1 file changed, 15 insertions(+), 6 deletions(-)
 
-For the Hyper-V related change in drivers/hv/hv_common.c,
+For some reason this patch breaks booting of the APQ8096 Dragonboard820c
+(qcom/apq8096-db820c.dts). Dispbling display subsystem (mdss) and venus
+devices makes the board boot in most of the cases. Most frequently the
+last parts of the log loog in a following way:
 
-Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+arm-smmu b40000.iommu: probing hardware configuration...
+arm-smmu b40000.iommu: SMMUv2 with:
+arm-smmu b40000.iommu: 	stage 1 translation
+arm-smmu b40000.iommu: 	address translation ops
+arm-smmu b40000.iommu: 	non-coherent table walk
+arm-smmu b40000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+arm-smmu b40000.iommu: 	stream matching with 2 register groups
+arm-smmu b40000.iommu: 	2 context banks (0 stage-2 only)
+arm-smmu b40000.iommu: 	Supported page sizes: 0x63315000
+arm-smmu b40000.iommu: 	Stage-1: 48-bit VA -> 36-bit IPA
+arm-smmu b40000.iommu: 	preserved 0 boot mappings
+arm-smmu d00000.iommu: probing hardware configuration...
+arm-smmu d00000.iommu: SMMUv2 with:
+arm-smmu d00000.iommu: 	stage 1 translation
+arm-smmu d00000.iommu: 	address translation ops
+arm-smmu d00000.iommu: 	non-coherent table walk
+arm-smmu d00000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+arm-smmu d00000.iommu: 	stream matching with 2 register groups
+arm-smmu d00000.iommu: 	2 context banks (0 stage-2 only)
+arm-smmu d00000.iommu: 	Supported page sizes: 0x63315000
+arm-smmu d00000.iommu: 	Stage-1: 32-bit VA -> 36-bit IPA
+arm-smmu d00000.iommu: 	preserved 0 boot mappings
+arm-smmu d40000.iommu: probing hardware configuration...
+arm-smmu d40000.iommu: SMMUv2 with:
+arm-smmu d40000.iommu: 	stage 1 translation
+arm-smmu d40000.iommu: 	address translation ops
+arm-smmu d40000.iommu: 	non-coherent table walk
+arm-smmu d40000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+arm-smmu d40000.iommu: 	stream matching with 42 register groups
+arm-smmu d40000.iommu: 	7 context banks (0 stage-2 only)
+arm-smmu d40000.iommu: 	Supported page sizes: 0x63315000
+arm-smmu d40000.iommu: 	Stage-1: 32-bit VA -> 36-bit IPA
+arm-smmu d40000.iommu: 	preserved 0 boot mappings
+arm-smmu da0000.iommu: probing hardware configuration...
+arm-smmu da0000.iommu: SMMUv2 with:
+arm-smmu da0000.iommu: 	stage 1 translation
+arm-smmu da0000.iommu: 	address translation ops
+arm-smmu da0000.iommu: 	non-coherent table walk
+arm-smmu da0000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+arm-smmu da0000.iommu: 	stream matching with 4 register groups
+arm-smmu da0000.iommu: 	2 context banks (0 stage-2 only)
+arm-smmu da0000.iommu: 	Supported page sizes: 0x63315000
+arm-smmu da0000.iommu: 	Stage-1: 32-bit VA -> 36-bit IPA
+arm-smmu da0000.iommu: 	preserved 0 boot mappings
+arm-smmu 1600000.iommu: probing hardware configuration...
+arm-smmu 1600000.iommu: SMMUv2 with:
+arm-smmu 1600000.iommu: 	stage 1 translation
+arm-smmu 1600000.iommu: 	address translation ops
+arm-smmu 1600000.iommu: 	non-coherent table walk
+arm-smmu 1600000.iommu: 	(IDR0.CTTW overridden by FW configuration)
+arm-smmu 1600000.iommu: 	stream matching with 15 register groups
+arm-smmu 1600000.iommu: 	12 context banks (0 stage-2 only)
+arm-smmu 1600000.iommu: 	Supported page sizes: 0x63315000
+arm-smmu 1600000.iommu: 	Stage-1: 36-bit VA -> 36-bit IPA
+arm-smmu 1600000.iommu: 	preserved 0 boot mappings
+adreno b00000.gpu: Adding to iommu group 0
+Bluetooth: hci0: QCA Product ID   :0x00000008
+Bluetooth: hci0: QCA SOC Version  :0x00000044
+Bluetooth: hci0: QCA ROM Version  :0x00000302
+Bluetooth: hci0: QCA Patch Version:0x00000111
+Bluetooth: hci0: QCA controller version 0x00440302
+platform 9a0000.hdmi-tx: Fixed dependency cycle(s) with /soc@0/display-subsystem@900000/display-controller@901000/ports/port@0/endpoint
+Bluetooth: hci0: QCA Downloading qca/rampatch_00440302.bin
+spi_qup 7575000.spi: IN:block:16, fifo:64, OUT:block:16, fifo:64
+spi_qup 75ba000.spi: IN:block:16, fifo:64, OUT:block:16, fifo:64
+phy phy-7411000.phy.5: QUSB2PHY pll lock failed: status reg = 0
+phy phy-7411000.phy.5: phy init failed --> -16
+dwc3 6a00000.usb: error -EBUSY: failed to initialize core
+dwc3: probe of 6a00000.usb failed with error -16
+phy phy-7412000.phy.6: QUSB2PHY pll lock failed: status reg = 0
+phy phy-7412000.phy.6: phy init failed --> -16
+dwc3 7600000.usb: error -EBUSY: failed to initialize core
+dwc3: probe of 7600000.usb failed with error -16
+i2c_qup 7577000.i2c: using default clock-frequency 100000
+i2c_qup 75b5000.i2c: using default clock-frequency 100000
+sdhci_msm 74a4900.mmc: Got CD GPIO
+scsi host0: ufshcd
+ufshcd-qcom 624000.ufshc: ufs_qcom_host_reset: reset control not set
+remoteproc remoteproc0: 2080000.remoteproc is available
+remoteproc remoteproc1: 9300000.remoteproc is available
+mmc0: SDHCI controller on 74a4900.mmc [74a4900.mmc] using ADMA 64-bit
+qcom-pcie 600000.pcie: host bridge /soc@0/bus@0/pcie@600000 ranges:
+qcom-pcie 608000.pcie: supply vddpe-3v3 not found, using dummy regulator
 
-> diff --git a/arch/arc/mm/dma.c b/arch/arc/mm/dma.c
-> index 197707bc7658..6b85e94f3275 100644
-> --- a/arch/arc/mm/dma.c
-> +++ b/arch/arc/mm/dma.c
-> @@ -90,8 +90,7 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t
-> size,
->  /*
->   * Plug in direct dma map ops.
->   */
-> -void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> -			bool coherent)
-> +void arch_setup_dma_ops(struct device *dev, bool coherent)
->  {
->  	/*
->  	 * IOC hardware snoops all DMA traffic keeping the caches consistent
-> diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-
-> mapping-nommu.c
-> index b94850b57995..97db5397c320 100644
-> --- a/arch/arm/mm/dma-mapping-nommu.c
-> +++ b/arch/arm/mm/dma-mapping-nommu.c
-> @@ -33,8 +33,7 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t
-> size,
->  	}
->  }
->=20
-> -void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> -			bool coherent)
-> +void arch_setup_dma_ops(struct device *dev, bool coherent)
->  {
->  	if (IS_ENABLED(CONFIG_CPU_V7M)) {
->  		/*
-> diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-> index f68db05eba29..5adf1769eee4 100644
-> --- a/arch/arm/mm/dma-mapping.c
-> +++ b/arch/arm/mm/dma-mapping.c
-> @@ -1709,11 +1709,15 @@ void arm_iommu_detach_device(struct device
-> *dev)
->  }
->  EXPORT_SYMBOL_GPL(arm_iommu_detach_device);
->=20
-> -static void arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base,
-> u64 size,
-> -				    bool coherent)
-> +static void arm_setup_iommu_dma_ops(struct device *dev)
->  {
->  	struct dma_iommu_mapping *mapping;
-> +	u64 dma_base =3D 0, size =3D 1ULL << 32;
->=20
-> +	if (dev->dma_range_map) {
-> +		dma_base =3D dma_range_map_min(dev->dma_range_map);
-> +		size =3D dma_range_map_max(dev->dma_range_map) -
-> dma_base;
-> +	}
->  	mapping =3D arm_iommu_create_mapping(dev->bus, dma_base, size);
->  	if (IS_ERR(mapping)) {
->  		pr_warn("Failed to create %llu-byte IOMMU mapping for
-> device %s\n",
-> @@ -1744,8 +1748,7 @@ static void
-> arm_teardown_iommu_dma_ops(struct device *dev)
->=20
->  #else
->=20
-> -static void arm_setup_iommu_dma_ops(struct device *dev, u64 dma_base,
-> u64 size,
-> -				    bool coherent)
-> +static void arm_setup_iommu_dma_ops(struct device *dev)
->  {
->  }
->=20
-> @@ -1753,8 +1756,7 @@ static void
-> arm_teardown_iommu_dma_ops(struct device *dev) { }
->=20
->  #endif	/* CONFIG_ARM_DMA_USE_IOMMU */
->=20
-> -void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> -			bool coherent)
-> +void arch_setup_dma_ops(struct device *dev, bool coherent)
->  {
->  	/*
->  	 * Due to legacy code that sets the ->dma_coherent flag from a bus
-> @@ -1774,7 +1776,7 @@ void arch_setup_dma_ops(struct device *dev, u64
-> dma_base, u64 size,
->  		return;
->=20
->  	if (device_iommu_mapped(dev))
-> -		arm_setup_iommu_dma_ops(dev, dma_base, size, coherent);
-> +		arm_setup_iommu_dma_ops(dev);
->=20
->  	xen_setup_dma_ops(dev);
->  	dev->archdata.dma_ops_setup =3D true;
-> diff --git a/arch/arm64/mm/dma-mapping.c b/arch/arm64/mm/dma-
-> mapping.c
-> index 313d8938a2f0..0b320a25a471 100644
-> --- a/arch/arm64/mm/dma-mapping.c
-> +++ b/arch/arm64/mm/dma-mapping.c
-> @@ -46,8 +46,7 @@ void arch_teardown_dma_ops(struct device *dev)
->  }
->  #endif
->=20
-> -void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> -			bool coherent)
-> +void arch_setup_dma_ops(struct device *dev, bool coherent)
->  {
->  	int cls =3D cache_line_size_of_cpu();
->=20
-> diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-
-> noncoherent.c
-> index 0f3cec663a12..ab4f2a75a7d0 100644
-> --- a/arch/mips/mm/dma-noncoherent.c
-> +++ b/arch/mips/mm/dma-noncoherent.c
-> @@ -137,8 +137,7 @@ void arch_sync_dma_for_cpu(phys_addr_t paddr,
-> size_t size,
->  #endif
->=20
->  #ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
-> -void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> -		bool coherent)
-> +void arch_setup_dma_ops(struct device *dev, bool coherent)
->  {
->  	dev->dma_coherent =3D coherent;
->  }
-> diff --git a/arch/riscv/mm/dma-noncoherent.c b/arch/riscv/mm/dma-
-> noncoherent.c
-> index 843107f834b2..cb89d7e0ba88 100644
-> --- a/arch/riscv/mm/dma-noncoherent.c
-> +++ b/arch/riscv/mm/dma-noncoherent.c
-> @@ -128,8 +128,7 @@ void arch_dma_prep_coherent(struct page *page,
-> size_t size)
->  	ALT_CMO_OP(FLUSH, flush_addr, size, riscv_cbom_block_size);
->  }
->=20
-> -void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> -			bool coherent)
-> +void arch_setup_dma_ops(struct device *dev, bool coherent)
->  {
->  	WARN_TAINT(!coherent && riscv_cbom_block_size >
-> ARCH_DMA_MINALIGN,
->  		   TAINT_CPU_OUT_OF_SPEC,
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index e6ed1ba91e5c..f5df17d11717 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -1640,12 +1640,7 @@ int acpi_dma_configure_id(struct device *dev,
-> enum dev_dma_attr attr,
->  	if (ret =3D=3D -EPROBE_DEFER)
->  		return -EPROBE_DEFER;
->=20
-> -	/*
-> -	 * Historically this routine doesn't fail driver probing due to errors
-> -	 * in acpi_iommu_configure_id()
-> -	 */
-> -
-> -	arch_setup_dma_ops(dev, 0, U64_MAX, attr =3D=3D
-> DEV_DMA_COHERENT);
-> +	arch_setup_dma_ops(dev, attr =3D=3D DEV_DMA_COHERENT);
->=20
->  	return 0;
->  }
-> diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
-> index 0285a74363b3..0e2decd1167a 100644
-> --- a/drivers/hv/hv_common.c
-> +++ b/drivers/hv/hv_common.c
-> @@ -484,11 +484,7 @@ EXPORT_SYMBOL_GPL(hv_query_ext_cap);
->=20
->  void hv_setup_dma_ops(struct device *dev, bool coherent)
->  {
-> -	/*
-> -	 * Hyper-V does not offer a vIOMMU in the guest
-> -	 * VM, so pass 0/NULL for the IOMMU settings
-> -	 */
-> -	arch_setup_dma_ops(dev, 0, 0, coherent);
-> +	arch_setup_dma_ops(dev, coherent);
->  }
->  EXPORT_SYMBOL_GPL(hv_setup_dma_ops);
->=20
-> diff --git a/drivers/of/device.c b/drivers/of/device.c
-> index 9e7963972fa7..312c63361211 100644
-> --- a/drivers/of/device.c
-> +++ b/drivers/of/device.c
-> @@ -95,7 +95,6 @@ int of_dma_configure_id(struct device *dev, struct
-> device_node *np,
->  {
->  	const struct bus_dma_region *map =3D NULL;
->  	struct device_node *bus_np;
-> -	u64 dma_start =3D 0;
->  	u64 mask, end =3D 0;
->  	bool coherent;
->  	int iommu_ret;
-> @@ -118,7 +117,6 @@ int of_dma_configure_id(struct device *dev, struct
-> device_node *np,
->  			return ret =3D=3D -ENODEV ? 0 : ret;
->  	} else {
->  		/* Determine the overall bounds of all DMA regions */
-> -		dma_start =3D dma_range_map_min(map);
->  		end =3D dma_range_map_max(map);
->  	}
->=20
-> @@ -175,7 +173,7 @@ int of_dma_configure_id(struct device *dev, struct
-> device_node *np,
->  	} else
->  		dev_dbg(dev, "device is behind an iommu\n");
->=20
-> -	arch_setup_dma_ops(dev, dma_start, end - dma_start + 1, coherent);
-> +	arch_setup_dma_ops(dev, coherent);
->=20
->  	if (iommu_ret)
->  		of_dma_set_restricted_buffer(dev, np);
-> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-> index 4abc60f04209..ed89e1ce0114 100644
-> --- a/include/linux/dma-map-ops.h
-> +++ b/include/linux/dma-map-ops.h
-> @@ -426,11 +426,9 @@ bool arch_dma_unmap_sg_direct(struct device
-> *dev, struct scatterlist *sg,
->  #endif
->=20
->  #ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
-> -void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
-> -		bool coherent);
-> +void arch_setup_dma_ops(struct device *dev, bool coherent);
->  #else
-> -static inline void arch_setup_dma_ops(struct device *dev, u64 dma_base,
-> -		u64 size, bool coherent)
-> +static inline void arch_setup_dma_ops(struct device *dev, bool coherent)
->  {
->  }
->  #endif /* CONFIG_ARCH_HAS_SETUP_DMA_OPS */
-> --
-> 2.39.2.101.g768bb238c484.dirty
->=20
+[ The board resets to the bootloader ]
 
