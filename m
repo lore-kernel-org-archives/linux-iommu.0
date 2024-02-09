@@ -1,305 +1,203 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2087.outbound.protection.outlook.com [40.107.92.87])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E2B22C1B1
-	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 11:35:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.87
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707478551; cv=fail; b=CjLJ6fX0whgQRECFsWCTglPBf6ZHWDK5uVQOXoipl14QUUB0MKTjqrdtKLdTTXsTIj256isaTI1iePiEja5Uq1cYqJoKrOdj92Avi99ir+/eKRmJUOAw+D4DLe341rWasr+Q3Grh+6qGREGQsd7irddgoR0cHdRVWzwTxdyp/N0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707478551; c=relaxed/simple;
-	bh=x9QHpb6w4BEc/3zsu3a8Bspax4YOYG5lG4lwH9pVq0M=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=q0j4lPxSbHUXwjUHESfotfkyiu8CA9/5wPFr5mhpwe/lePHone1fmZ5ygFLeWPPvi0liULZUeDSFrJIigGkAtaoVqacpKaLFJjjUFEv0xbRHMswRtBKnjctWTIlmFwcMbEX8oFHfdbz7wyuvsPQCHdo62x4QnSQz3/TDBr+n2as=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=CQa/UVv1; arc=fail smtp.client-ip=40.107.92.87
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A201E2E651
+	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 11:58:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707479920; cv=none; b=f+F3GG6DI4Rv8xyRMy5qmX0/n29icGEGUZlGjR9/mhvysi9woSWx/rBxBU7T/d9O2EYvdfmb0pewShil7sXOTHnBNgxEyi7tTLBzSyRdBf794mEje0wYlJWXv7DcCMaIGBQR168d5TwxR04kUk1wYeSa7t1rMgXPmOtzMFkKoNQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707479920; c=relaxed/simple;
+	bh=pqufWlUw7wGcrbbby3U3Lel/p1k1uW7o6OSMwX/CjhQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MAO3XbgBJRnsAu/agTUj4M9t5F5fnecyZRS3tAv6P1KU7k/hG2Enx5ozmWfv3VzFVIbRZXEZmMq2Dqs52MaA/zhdEPRB1UQvOSGRhaRWJWSOTaET0uFy4v6iSSy8qd7xovY72h9FQhM79Tct16DuvS2yi+0h8w41FagIf2UytPw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=BTqCEMBQ; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="CQa/UVv1"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OCTfiYYPg0ypimsevHSfd3G+U7dWAcpmc97amPH6tcaSXSjArAUZSrEfIJ0qsHoCCjNcQn3nEmtFGbXTfSGoYHl+OrBSXd7/0XBzb3ig3mRUp6tBnPH3zhoJ9EDHgl77LC5jNBt35ENNTiLc2LKpy8lm6J5YJt1NTM4M8AxlLlEwShYu90xKxlbeW//3J6ms26b4RwU4kuU+2YlpuIe06vg2WZK7c6g3MNGVOcC5vrP3zBrik1p5O0g+UXUPvBTG5OFSZAFmyGYXaVvobxv4gqetnPyhFoa+DgZgdrldawA/KIBOkY6242Y9fHNfigp/a4yZV4nQwrIVpBJ3DJsMEw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vRRF4/bAzxyXlibAVERrDe7g6Cy2aMYZgXFFSJyuFHA=;
- b=kxcD/wLBFaT/55cPRQvKmKdT/xUYi1L5P/9vFhedo5JLDyQNV5fj+BqAq+344hmbr2I3jXE4ymIFkiKocFmFtFJv9mgLhgpA2BOX2HlT8bDW4PAIywMzFZY6fuFW4zOC5ITD1OBFN23mg0ev9qjV6VPiuZNL1eowSfrfXUngm/sDA4wWFOP9XeGKRLmH4qY/oJDKtY8p36UREJnsSnzegr52do4/82MVywdpJqkPeQFkb9MTpnlVp+3cZAfIhzxDfhkcyfx5frNfgbp8aKNP0+z6KzoplKA3klJ41KsZhHo3oIRbAOwrWUzFuljp9Z9v5f2PA84JQPu4E8BJ7d+7ug==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vRRF4/bAzxyXlibAVERrDe7g6Cy2aMYZgXFFSJyuFHA=;
- b=CQa/UVv1jABHjMS5UbIu6qDPGRZnms3izfo7ckDgCgxnL4XUngpBFuzcCC1NMX1YIOyfvmy61L3tvIuLRJsIDww/mQ6FOLWdwm+YjjZlJwc9v9/6J5ljYUNTQ742S7oKuxESPHoAWxocSk549LB195MXYsV/GyUBP518JduGr1k=
-Received: from MW4PR03CA0029.namprd03.prod.outlook.com (2603:10b6:303:8f::34)
- by DS0PR12MB9348.namprd12.prod.outlook.com (2603:10b6:8:1a0::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.12; Fri, 9 Feb
- 2024 11:35:46 +0000
-Received: from CO1PEPF000044F5.namprd05.prod.outlook.com
- (2603:10b6:303:8f:cafe::df) by MW4PR03CA0029.outlook.office365.com
- (2603:10b6:303:8f::34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7249.38 via Frontend
- Transport; Fri, 9 Feb 2024 11:35:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1PEPF000044F5.mail.protection.outlook.com (10.167.241.75) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7249.19 via Frontend Transport; Fri, 9 Feb 2024 11:35:46 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Fri, 9 Feb
- 2024 05:35:42 -0600
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
-	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v6 15/15] iommu/amd: Add SVA domain support
-Date: Fri, 9 Feb 2024 11:29:30 +0000
-Message-ID: <20240209112930.63663-16-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240209112930.63663-1-vasant.hegde@amd.com>
-References: <20240209112930.63663-1-vasant.hegde@amd.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="BTqCEMBQ"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-40efcb37373so7116865e9.2
+        for <iommu@lists.linux.dev>; Fri, 09 Feb 2024 03:58:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1707479913; x=1708084713; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZRwaXllpUiiGZN6hHGF+KZe1kKd23K1mjfQaoa29eGc=;
+        b=BTqCEMBQ0WhFKS5rzWg8y9bXSnbOf+ZcQsdiJ7quxP5RE8TtTYyTTRzQzojgspuTPp
+         p+peWM7qFtz3l+W5fnsUAYhLnHF6nEEgRynHKl9euE5xpi7P75LRQ25hJqyHMABXQhT/
+         anwzq8ZEkeZl3Z3PWWgOX8Cvlj+iQ54CoCyLo9AUdZk4KmoChcMl6uSsGoS8bMatSCPG
+         f+NkFRrCpukntZX+tzFAy7RoM2SHBIrrRHReKfeO0DB5whA60l/lXTj7tiKbeszgOCRl
+         liNW1jbnSP0JtOEzIMkffJDvU189Wn/3RQ5k+sIJbIltC4MySyRd1cNmwazEUTzoFH50
+         CccQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707479913; x=1708084713;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZRwaXllpUiiGZN6hHGF+KZe1kKd23K1mjfQaoa29eGc=;
+        b=H+LhBsFIeaXGu4z2nQ9t6keTt8xJu5qsoJO6KXyo1Zkz5caMz96dM0yfRTo6lD1cXt
+         b+rHaVfrNbWSIedUpXo92sblGmD+GBrr8TIw0lURFBU08OFTeqCjdsJhDHuiF+I/TfmW
+         xf1nyp3QWAsehfU/Mv2nennZRp889HThvMzVs0hUXXWmH+D8YjH8HmqGU1YOPqobzA0p
+         qAPSy1IMfWRnuFW7WOa/X9B2gmWjy+IjbNY/S97fWLoz6UpiVyMr8jkj43bPd2t3FFcm
+         RfYNQSd/BR/rRjh/5gC9iqADc82AuZXBaQjse5x9y+CVrujbDQ7bqSanB6JnEVN2kteH
+         dENA==
+X-Forwarded-Encrypted: i=1; AJvYcCX65+JCsWC6krpbuPgR7hLCO/P5dZu+JO54RiW/BQ8MhadDJd6f5SibdYzLoe/L/+4QoJtCi8inUmfAlw4XxwsvyeLlVPU=
+X-Gm-Message-State: AOJu0YxUeerC/GH5KmOOkNnSo38d8olx8E029CNq/kxbwrsWLCgKAfNZ
+	n3R9NP3HymVZocomIhKJm1seVZU9mxYw+E9CFN9P2+cHG+FPCGGyIIsLMExH/WM=
+X-Google-Smtp-Source: AGHT+IGvouDyT1S/q9yBMPyy37QzOHgMuxyrYD38phGx8Dc9ItCNIuOOaFGDMsnXDKAJsNkPQgu+mA==
+X-Received: by 2002:adf:e80b:0:b0:33b:49f6:cf89 with SMTP id o11-20020adfe80b000000b0033b49f6cf89mr1004637wrm.51.1707479912855;
+        Fri, 09 Feb 2024 03:58:32 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWfJPbY1ZXOjDhGDVDTfIfsNKg0YgtUMR/KFHggANeTQqZEgEdSQ8JUr+gOAaWCsU8tV/5X8V9HYdIjiYHgzVXDUQ5WC7s7hYFHWVh4Orn0lFB7dFzjYEYwhX4H/6nTr3n4ok8ZI2jGlDCDlnkXeJPG6H5jpYFnVeJvkFWfYzbR0808nIQNlFN5rN7NAlwNs1PnGTr7IBca4BK6Dq5EIoE/VNjIwFZ4JaYPl06dhVrHikaNnYp7IvOEicAqT8Sq6teH8vlQr6en/VAAKbfE/iHCwXa3cStqlEtGR5Hrw06oPEdz0YFENE6cTjy4a1Q6cUWPwqxUBLsusATY+3hnyUpN/htkTo6wLY9cGe6ySAWWzvUYSIPdPZJh31uCcr5IJ9NfOwlA9kI/I80WL3A=
+Received: from myrica ([2.221.137.100])
+        by smtp.gmail.com with ESMTPSA id i4-20020a5d55c4000000b0033aedaea1b2sm1636931wrw.30.2024.02.09.03.58.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Feb 2024 03:58:32 -0800 (PST)
+Date: Fri, 9 Feb 2024 11:58:24 +0000
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Cc: kvmarm@lists.linux.dev, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linuxarm@huawei.com,
+	kevin.tian@intel.com, jgg@ziepe.ca, alex.williamson@redhat.com,
+	maz@kernel.org, oliver.upton@linux.dev, will@kernel.org,
+	robin.murphy@arm.com, jonathan.cameron@huawei.com
+Subject: Re: [RFC PATCH v2 0/7] iommu/arm-smmu-v3: Use pinned KVM VMID for
+ stage 2
+Message-ID: <20240209115824.GA2922446@myrica>
+References: <20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CO1PEPF000044F5:EE_|DS0PR12MB9348:EE_
-X-MS-Office365-Filtering-Correlation-Id: 090109d5-6ef9-45e7-9a02-08dc296341ec
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	X0024Hi1korryPKHxgmkHI+l5zLGREWRrD3tILYXSEFwX3okBCyoVZgReFVsnT974J+RHwy1nk32jDUqI3oUqPj/8T6xXpDWdsN5cOke/po9vgHLwxAop/VutLgy7wd9oIGS4dgJgvpIF8Vq9ngn2HpxSC6FPMC2V4LqcAXoip9PPsKrT6mn7NnQwP4ZKm4I9S6R1eg3s+iaoXTf4du+BswrwBC95aRWFX+rPH8LHhm2ZWeR08Jdsmx6u26Wst6BrPvCpE7maYEOvGvZzWrkERZX1M7T7vrp/fmQdczxVicwEXjkf5JJSTPUDNpGBuXHxwlQdvceIK6sKsIFzajdI+4kdys0Wr1icMnQBUO0ejvsI++jQuaj4+WofdWfWfdWMElM1U1M3YQ5YyIC90sMwrPzG3d7UrJcDc0oPsyrYV4aBOUwUIKKspv7RiaatbZB0peZMOQA6W48LUTUFOks0QouL2xvn+QLlSOSSkhI/szU4/dZbhqPCvrSWKa6p2mufaDwYv1YsEMJ7MDD+TgWhUUejIXKCP8nVBsQUOo/a0P0BprNfjdfeGIPv3L0o2Fkn7Zi3lh1beoenSQffuBWo7Z5tlXJf1RvlYKegzqjya8=
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(136003)(396003)(39860400002)(376002)(346002)(230922051799003)(451199024)(1800799012)(82310400011)(186009)(64100799003)(46966006)(36840700001)(40470700004)(44832011)(5660300002)(82740400003)(2906002)(81166007)(86362001)(356005)(16526019)(26005)(7696005)(6666004)(426003)(336012)(83380400001)(1076003)(2616005)(110136005)(316002)(54906003)(70206006)(8676002)(8936002)(70586007)(4326008)(478600001)(36756003)(41300700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2024 11:35:46.1793
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 090109d5-6ef9-45e7-9a02-08dc296341ec
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CO1PEPF000044F5.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB9348
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com>
 
-- Allocate SVA domain and setup mmu notifier. In free path unregister
-  mmu notifier and free protection domain.
+Hi Shameer,
 
-- Add mmu notifier callback function. It will retrieve SVA protection
-  domain and invalidates IO/TLB.
+On Thu, Feb 08, 2024 at 03:18:30PM +0000, Shameer Kolothum wrote:
+> Hi,
+> 
+> On an ARM64 system with a SMMUv3 implementation that fully supports
+> Broadcast TLB Maintenance(BTM) feature as part of the Distributed
+> Virtual Memory(DVM) protocol, the CPU TLB invalidate instructions are
+> received by SMMUv3. This is very useful when the SMMUv3 shares the
+> page tables with the CPU(eg: Guest SVA use case). For this to work,
+> the SMMUv3 must use the same VMID that is allocated by KVM to configure
+> the nested stage 2(S2) translations.
 
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/amd/amd_iommu.h       |  5 ++
- drivers/iommu/amd/amd_iommu_types.h |  1 +
- drivers/iommu/amd/iommu.c           | 10 ++--
- drivers/iommu/amd/pasid.c           | 80 +++++++++++++++++++++++++++++
- 4 files changed, 93 insertions(+), 3 deletions(-)
+The series makes sense to me. Maybe a little more detail to help the KVM
+maintainers understand why we need something like this even though the s2
+page tables aren't shared between CPU and SMMU:
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index ceecc18279ab..5f90082316b5 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -45,6 +45,11 @@ extern enum io_pgtable_fmt amd_iommu_pgtable;
- extern int amd_iommu_gpt_level;
- 
- /* Protection domain ops */
-+struct protection_domain *protection_domain_alloc(unsigned int type);
-+void protection_domain_free(struct protection_domain *domain);
-+struct iommu_domain *amd_iommu_domain_alloc_sva(struct device *dev,
-+						struct mm_struct *mm);
-+void amd_iommu_domain_free(struct iommu_domain *dom);
- int iommu_sva_set_dev_pasid(struct iommu_domain *domain,
- 			    struct device *dev, ioasid_t pasid);
- void amd_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid);
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 1ae2a9b3e383..1c5ee8ebab49 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -594,6 +594,7 @@ struct protection_domain {
- 	unsigned dev_cnt;	/* devices assigned to this domain */
- 	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
- 
-+	struct mmu_notifier mn;	/* mmu notifier for the SVA domain */
- 	struct list_head dev_data_list; /* List of pdom_dev_data */
- };
- 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 36ae01d53bfa..f46608ddd13d 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2283,7 +2283,7 @@ static void cleanup_domain(struct protection_domain *domain)
- 	WARN_ON(domain->dev_cnt != 0);
- }
- 
--static void protection_domain_free(struct protection_domain *domain)
-+void protection_domain_free(struct protection_domain *domain)
- {
- 	if (!domain)
- 		return;
-@@ -2326,7 +2326,7 @@ static int protection_domain_init_v2(struct protection_domain *pdom)
- 	return 0;
- }
- 
--static struct protection_domain *protection_domain_alloc(unsigned int type)
-+struct protection_domain *protection_domain_alloc(unsigned int type)
- {
- 	struct io_pgtable_ops *pgtbl_ops;
- 	struct protection_domain *domain;
-@@ -2349,6 +2349,7 @@ static struct protection_domain *protection_domain_alloc(unsigned int type)
- 	switch (type) {
- 	/* No need to allocate io pgtable ops in passthrough mode */
- 	case IOMMU_DOMAIN_IDENTITY:
-+	case IOMMU_DOMAIN_SVA:
- 		return domain;
- 	case IOMMU_DOMAIN_DMA:
- 		pgtable = amd_iommu_pgtable;
-@@ -2468,7 +2469,7 @@ amd_iommu_domain_alloc_user(struct device *dev, u32 flags,
- 	return do_iommu_domain_alloc(type, dev, flags);
- }
- 
--static void amd_iommu_domain_free(struct iommu_domain *dom)
-+void amd_iommu_domain_free(struct iommu_domain *dom)
- {
- 	struct protection_domain *domain;
- 	unsigned long flags;
-@@ -2836,6 +2837,7 @@ static int amd_iommu_dev_enable_feature(struct device *dev,
- 
- 	switch (feat) {
- 	case IOMMU_DEV_FEAT_IOPF:
-+	case IOMMU_DEV_FEAT_SVA:
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -2851,6 +2853,7 @@ static int amd_iommu_dev_disable_feature(struct device *dev,
- 
- 	switch (feat) {
- 	case IOMMU_DEV_FEAT_IOPF:
-+	case IOMMU_DEV_FEAT_SVA:
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -2863,6 +2866,7 @@ const struct iommu_ops amd_iommu_ops = {
- 	.capable = amd_iommu_capable,
- 	.domain_alloc = amd_iommu_domain_alloc,
- 	.domain_alloc_user = amd_iommu_domain_alloc_user,
-+	.domain_alloc_sva = amd_iommu_domain_alloc_sva,
- 	.probe_device = amd_iommu_probe_device,
- 	.release_device = amd_iommu_release_device,
- 	.probe_finalize = amd_iommu_probe_finalize,
-diff --git a/drivers/iommu/amd/pasid.c b/drivers/iommu/amd/pasid.c
-index c96384ae3442..04beb2217d93 100644
---- a/drivers/iommu/amd/pasid.c
-+++ b/drivers/iommu/amd/pasid.c
-@@ -56,6 +56,49 @@ static void remove_pdom_dev_pasid(struct protection_domain *pdom,
- 	}
- }
- 
-+static void sva_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
-+				    struct mm_struct *mm,
-+				    unsigned long start, unsigned long end)
-+{
-+	struct pdom_dev_data *pdom_dev_data;
-+	struct protection_domain *sva_pdom;
-+	unsigned long flags;
-+
-+	sva_pdom = container_of(mn, struct protection_domain, mn);
-+
-+	spin_lock_irqsave(&sva_pdom->lock, flags);
-+
-+	for_each_pdom_dev_data(pdom_dev_data, sva_pdom) {
-+		amd_iommu_dev_flush_pasid_pages(pdom_dev_data->dev_data,
-+						pdom_dev_data->pasid,
-+						start, end - start);
-+	}
-+
-+	spin_unlock_irqrestore(&sva_pdom->lock, flags);
-+}
-+
-+static void sva_mn_release(struct mmu_notifier *mn, struct mm_struct *mm)
-+{
-+	struct pdom_dev_data *pdom_dev_data, *next;
-+	struct protection_domain *sva_pdom;
-+	unsigned long flags;
-+
-+	sva_pdom = container_of(mn, struct protection_domain, mn);
-+
-+	spin_lock_irqsave(&sva_pdom->lock, flags);
-+
-+	/* Assume dev_data_list contains same PASID with different devices */
-+	for_each_pdom_dev_data_safe(pdom_dev_data, next, sva_pdom)
-+		remove_dev_pasid(pdom_dev_data);
-+
-+	spin_unlock_irqrestore(&sva_pdom->lock, flags);
-+}
-+
-+static const struct mmu_notifier_ops sva_mn = {
-+	.arch_invalidate_secondary_tlbs = sva_arch_invalidate_secondary_tlbs,
-+	.release = sva_mn_release,
-+};
-+
- int iommu_sva_set_dev_pasid(struct iommu_domain *domain,
- 			    struct device *dev, ioasid_t pasid)
- {
-@@ -120,3 +163,40 @@ void amd_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
- 
- 	spin_unlock_irqrestore(&sva_pdom->lock, flags);
- }
-+
-+static void iommu_sva_domain_free(struct iommu_domain *domain)
-+{
-+	struct protection_domain *sva_pdom = to_pdomain(domain);
-+
-+	if (sva_pdom->mn.ops)
-+		mmu_notifier_unregister(&sva_pdom->mn, domain->mm);
-+
-+	amd_iommu_domain_free(domain);
-+}
-+
-+static const struct iommu_domain_ops amd_sva_domain_ops = {
-+	.set_dev_pasid = iommu_sva_set_dev_pasid,
-+	.free	       = iommu_sva_domain_free
-+};
-+
-+struct iommu_domain *amd_iommu_domain_alloc_sva(struct device *dev,
-+						struct mm_struct *mm)
-+{
-+	struct protection_domain *pdom;
-+	int ret;
-+
-+	pdom = protection_domain_alloc(IOMMU_DOMAIN_SVA);
-+	if (!pdom)
-+		return ERR_PTR(-ENOMEM);
-+
-+	pdom->domain.ops = &amd_sva_domain_ops;
-+	pdom->mn.ops = &sva_mn;
-+
-+	ret = mmu_notifier_register(&pdom->mn, mm);
-+	if (ret) {
-+		protection_domain_free(pdom);
-+		return ERR_PTR(ret);
-+	}
-+
-+	return &pdom->domain;
-+}
--- 
-2.31.1
+* When enabling BTM in the SMMU, all TLB invalidations to the
+  inner-shareable domain issued by the CPU are taken into account by the
+  SMMU. That includes for example the TLBI IPAS2E1IS from
+  __kvm_tlb_flush_vmid_range().
 
+* BTM is enabled globally in the SMMU CR2 register. If we enable BTM for
+  host SVA, then it also affects KVM.
+
+* Stage-1 TLB entries in the SMMU have a bit (ASET) saying "this entry
+  is private and does not participate in BTM", which we set for private
+  SMMU address spaces.
+
+  Annoyingly, the stage-2 TLB entries do not have it. With BTM all VMIDs
+  are shared between CPU and SMMU.
+
+* So, if the SMMU driver allocates VMID privately and we enable BTM, then
+  CPU invalidations will remove unrelated SMMU TLB entries. Instead, the
+  SMMU driver needs to coordinate with KVM on VMID allocation.
+
+* Private stage-2 address spaces in the SMMU would need to allocate VMIDs
+  that aren't used by KVM, but that's not a use-case at the moment:
+
+  - For assigning devices to a host process or to a VM, we use private
+    stage-1 mappings. stage-2 will be used to enable nesting translation,
+    and will typically mirror the KVM stage-2 since it pins the guest
+    address space.
+
+  - If the SMMU doesn't support stage-1, the driver falls back to stage-2
+    for private address spaces. For such an implementation we disable BTM.
+
+  - The old VFIO_TYPE1_NESTING_IOMMU lets userspace allocate a private
+    stage-2, and has only been used for testing as far as I know. I don't
+    think I ever found a program that used it in the wild, but haven't
+    checked recently.
+
+    The effects of using it with BTM enabled is performance degradation:
+    TLB entries of that VFIO container get invalidated by unrelated KVM
+    activity, and maybe that can be used in a side-channel attack. 
+ 
+    It needs to be deprecated over a few releases (starting with a
+    warning maybe?), and the replacement API shouldn't allow creating a
+    stage-2 without a KVM context.
+
+Thanks,
+Jean
+
+
+> 
+> An earlier proposal sent out[1] a while back resulted in changing the
+> ARM64/KVM VMID allocator similar to the ASID allocator to make it
+> better suited for this.
+> 
+> This RFC adds,
+>  -Support for pinned KVM VMID.
+>  -Support associating KVM pointer and iommufd ctx.
+>  -Changes to domain_alloc_user() to receive a kvm pointer.
+>  -Configure SMMUV3 S2 using KVM VMID
+>  -Finally enable BTM only if SMMUV3 supports S1 translation. This
+>   is to make sure that PAGING domains always use S1 and S2 is only
+>   used for nested domains with a valid KVM. The idea is to make sure
+>   when BTM is enabled in Guest, we use KVM VMID for S2.
+> 
+> Not sure I miss any explicit TLB invalidations with any use case
+> that may configure a S2 with a private VMID that matches a KVM
+> one.
+> 
+> This is based on Jason's ongoing SMMUv3 refactor series[2].
+> 
+> Please take a look and let me know.
+> 
+> Thanks,
+> Shameer
+> 
+> 1. https://lore.kernel.org/linux-arm-kernel/20210222155338.26132-1-shameerali.kolothum.thodi@huawei.com/
+> 2. https://lore.kernel.org/linux-arm-kernel/0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com/
+> 
+> Jean-Philippe Brucker (1):
+>   iommu/arm-smmu-v3: Enable broadcast TLB maintenance
+> 
+> Shameer Kolothum (6):
+>   KVM: Add generic infrastructure to support pinned VMIDs
+>   KVM: arm64: Introduce support to pin VMIDs
+>   KVM: arm64: Add interfaces for pinned VMID support
+>   iommufd: Associate kvm pointer to iommufd ctx
+>   iommu: Pass in kvm pointer to domain_alloc_user
+>   iommu/arm-smmu-v3: Use KVM VMID for s2 stage
+> 
+>  arch/arm64/include/asm/kvm_host.h           |  3 +
+>  arch/arm64/kvm/Kconfig                      |  1 +
+>  arch/arm64/kvm/arm.c                        | 14 ++++
+>  arch/arm64/kvm/vmid.c                       | 84 ++++++++++++++++++++-
+>  drivers/iommu/amd/iommu.c                   |  1 +
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 42 +++++++++--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +
+>  drivers/iommu/intel/iommu.c                 |  1 +
+>  drivers/iommu/iommufd/hw_pagetable.c        |  5 +-
+>  drivers/iommu/iommufd/iommufd_private.h     |  3 +
+>  drivers/iommu/iommufd/main.c                | 14 ++++
+>  drivers/iommu/iommufd/selftest.c            |  1 +
+>  drivers/vfio/device_cdev.c                  |  3 +
+>  include/linux/iommu.h                       |  3 +-
+>  include/linux/iommufd.h                     |  7 ++
+>  include/linux/kvm_host.h                    | 18 +++++
+>  virt/kvm/Kconfig                            |  3 +
+>  virt/kvm/kvm_main.c                         | 23 ++++++
+>  18 files changed, 218 insertions(+), 11 deletions(-)
+> 
+> -- 
+> 2.34.1
+> 
