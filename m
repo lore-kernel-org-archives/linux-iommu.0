@@ -1,23 +1,23 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 979CA12B172
-	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 16:50:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CB9AA86AE7
+	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 16:50:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707497441; cv=none; b=QOBUuJZJesU38xtnil/DSy73AXmCEE5Al2sNKxXDKt5FO+eiKm+Ws7IIRzGh3DfQGyZMOLMC8JEynLChYT3WD8REOnaRqy3zEBcYbFjIo8SfXD9fIJmRHCQl63CYOeRUiI+1PGCRvCWmSd/ODHmy/rY00zcgngxowleYzKPyv0g=
+	t=1707497445; cv=none; b=KAYtTCVNW1/6Y3iJAllZT70nWK3YmX54Z637vHF9hvabH0McVDSRQme1xDEcienHJ66FgQjihLw1W1xwWPMLr9KdJisIsxoVfrjaVJd7nRKoFJ6hGQseQ1jYHCrDXyg+nP4gkGY7y9rwAw4RUjD8IafeClDW1xAV2jz42yl1z3k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707497441; c=relaxed/simple;
-	bh=xTtinJLnaC/I9VC5UbTSJ2+ulMHcbqG/ydth+2lej9Y=;
+	s=arc-20240116; t=1707497445; c=relaxed/simple;
+	bh=dj4HiXbIQbXIq5aOa8YaHipGKB16kgEAFi56Lehan3Q=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=G2XXFzSF4jNXQ+okYqk2eOpQw7Sb9a+UIuxWK9yhdEetOs6it4gZmB/E9rSEVvRY+6IeMjXqt5qbDwOfvPm1MaRknLoB5lczj8I9cZ5eWQyYpHxpZ+h/7jUrlkq/RO62/LJYRQV8fe9Ad/H6K4bFfoCamhMUFl4h4Zq5foCUSyA=
+	 MIME-Version; b=OBsw6z3/52m54NhyPuqYkLt9bT/qAdXhCdaJBUoflLOoJLIa5+ep120IDf4OSwkYwbRmCVbbhM3tuRAz6ijuT9g6ZacaAuE5jIo+K40xC3Fh3q9dOrwXmgaKFLZt80/rixdzhL7VAOVEXH9+La71yQvSNSP8q4/Dlo5uduTWEIM=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 11730DA7;
-	Fri,  9 Feb 2024 08:51:21 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1847EFEC;
+	Fri,  9 Feb 2024 08:51:25 -0800 (PST)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 08BD53F64C;
-	Fri,  9 Feb 2024 08:50:34 -0800 (PST)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 42FEA3F64C;
+	Fri,  9 Feb 2024 08:50:39 -0800 (PST)
 From: Robin Murphy <robin.murphy@arm.com>
 To: 
 Cc: Vineet Gupta <vgupta@kernel.org>,
@@ -53,12 +53,10 @@ Cc: Vineet Gupta <vgupta@kernel.org>,
 	linux-acpi@vger.kernel.org,
 	iommu@lists.linux.dev,
 	devicetree@vger.kernel.org,
-	Rob Herring <robh@kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
 	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v3 4/7] dma-mapping: Add helpers for dma_range_map bounds
-Date: Fri,  9 Feb 2024 16:50:01 +0000
-Message-Id: <cc90d296daa52e9cfe9fdd6681c68df4773a5e6a.1707493264.git.robin.murphy@arm.com>
+Subject: [PATCH v3 5/7] iommu/dma: Make limit checks self-contained
+Date: Fri,  9 Feb 2024 16:50:02 +0000
+Message-Id: <2f9fe1c4fd29043db3d61d265bdf9908bb7fa85c.1707493264.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 In-Reply-To: <cover.1707493264.git.robin.murphy@arm.com>
 References: <cover.1707493264.git.robin.murphy@arm.com>
@@ -70,117 +68,76 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Several places want to compute the lower and/or upper bounds of a
-dma_range_map, so let's factor that out into reusable helpers.
+It's now easy to retrieve the device's DMA limits if we want to check
+them against the domain aperture, so do that ourselves instead of
+relying on them being passed through the callchain.
 
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
-v2: fix warning for 32-bit builds
----
- arch/loongarch/kernel/dma.c |  9 ++-------
- drivers/acpi/arm64/dma.c    |  8 +-------
- drivers/of/device.c         | 11 ++---------
- include/linux/dma-direct.h  | 18 ++++++++++++++++++
- 4 files changed, 23 insertions(+), 23 deletions(-)
+ drivers/iommu/dma-iommu.c | 21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/arch/loongarch/kernel/dma.c b/arch/loongarch/kernel/dma.c
-index 7a9c6a9dd2d0..429555fb4e13 100644
---- a/arch/loongarch/kernel/dma.c
-+++ b/arch/loongarch/kernel/dma.c
-@@ -8,17 +8,12 @@
- void acpi_arch_dma_setup(struct device *dev)
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index dbe3c225e0d5..52126f73f690 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -660,19 +660,16 @@ static void iommu_dma_init_options(struct iommu_dma_options *options,
+ /**
+  * iommu_dma_init_domain - Initialise a DMA mapping domain
+  * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie()
+- * @base: IOVA at which the mappable address space starts
+- * @limit: Last address of the IOVA space
+  * @dev: Device the domain is being initialised for
+  *
+- * @base and @limit + 1 should be exact multiples of IOMMU page granularity to
+- * avoid rounding surprises. If necessary, we reserve the page at address 0
++ * If the geometry and dma_range_map include address 0, we reserve that page
+  * to ensure it is an invalid IOVA. It is safe to reinitialise a domain, but
+  * any change which could make prior IOVAs invalid will fail.
+  */
+-static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+-				 dma_addr_t limit, struct device *dev)
++static int iommu_dma_init_domain(struct iommu_domain *domain, struct device *dev)
  {
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	const struct bus_dma_region *map = dev->dma_range_map;
+ 	unsigned long order, base_pfn;
+ 	struct iova_domain *iovad;
  	int ret;
--	u64 mask, end = 0;
-+	u64 mask, end;
- 	const struct bus_dma_region *map = NULL;
+@@ -684,18 +681,18 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
  
- 	ret = acpi_dma_get_range(dev, &map);
- 	if (!ret && map) {
--		const struct bus_dma_region *r = map;
--
--		for (end = 0; r->size; r++) {
--			if (r->dma_start + r->size - 1 > end)
--				end = r->dma_start + r->size - 1;
--		}
-+		end = dma_range_map_max(map);
+ 	/* Use the smallest supported page size for IOVA granularity */
+ 	order = __ffs(domain->pgsize_bitmap);
+-	base_pfn = max_t(unsigned long, 1, base >> order);
++	base_pfn = 1;
  
- 		mask = DMA_BIT_MASK(ilog2(end) + 1);
- 		dev->bus_dma_limit = end;
-diff --git a/drivers/acpi/arm64/dma.c b/drivers/acpi/arm64/dma.c
-index b98a149f8d50..52b2abf88689 100644
---- a/drivers/acpi/arm64/dma.c
-+++ b/drivers/acpi/arm64/dma.c
-@@ -28,13 +28,7 @@ void acpi_arch_dma_setup(struct device *dev)
- 
- 	ret = acpi_dma_get_range(dev, &map);
- 	if (!ret && map) {
--		const struct bus_dma_region *r = map;
--
--		for (end = 0; r->size; r++) {
--			if (r->dma_start + r->size - 1 > end)
--				end = r->dma_start + r->size - 1;
--		}
--
-+		end = dma_range_map_max(map);
- 		dev->dma_range_map = map;
+ 	/* Check the domain allows at least some access to the device... */
+-	if (domain->geometry.force_aperture) {
++	if (map) {
++		dma_addr_t base = dma_range_map_min(map);
+ 		if (base > domain->geometry.aperture_end ||
+-		    limit < domain->geometry.aperture_start) {
++		    dma_range_map_max(map) < domain->geometry.aperture_start) {
+ 			pr_warn("specified DMA range outside IOMMU capability\n");
+ 			return -EFAULT;
+ 		}
+ 		/* ...then finally give it a kicking to make sure it fits */
+-		base_pfn = max_t(unsigned long, base_pfn,
+-				domain->geometry.aperture_start >> order);
++		base_pfn = max(base, domain->geometry.aperture_start) >> order;
  	}
  
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 841ccd3a19d1..9e7963972fa7 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -117,16 +117,9 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
- 		if (!force_dma)
- 			return ret == -ENODEV ? 0 : ret;
- 	} else {
--		const struct bus_dma_region *r = map;
--
- 		/* Determine the overall bounds of all DMA regions */
--		for (dma_start = ~0; r->size; r++) {
--			/* Take lower and upper limits */
--			if (r->dma_start < dma_start)
--				dma_start = r->dma_start;
--			if (r->dma_start + r->size > end)
--				end = r->dma_start + r->size;
--		}
-+		dma_start = dma_range_map_min(map);
-+		end = dma_range_map_max(map);
+ 	/* start_pfn is always nonzero for an already-initialised domain */
+@@ -1746,7 +1743,7 @@ void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 dma_limit)
+ 	 * underlying IOMMU driver needs to support via the dma-iommu layer.
+ 	 */
+ 	if (iommu_is_dma_domain(domain)) {
+-		if (iommu_dma_init_domain(domain, dma_base, dma_limit, dev))
++		if (iommu_dma_init_domain(domain, dev))
+ 			goto out_err;
+ 		dev->dma_ops = &iommu_dma_ops;
  	}
- 
- 	/*
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index 3eb3589ff43e..edbe13d00776 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -54,6 +54,24 @@ static inline phys_addr_t translate_dma_to_phys(struct device *dev,
- 	return (phys_addr_t)-1;
- }
- 
-+static inline dma_addr_t dma_range_map_min(const struct bus_dma_region *map)
-+{
-+	dma_addr_t ret = (dma_addr_t)U64_MAX;
-+
-+	for (; map->size; map++)
-+		ret = min(ret, map->dma_start);
-+	return ret;
-+}
-+
-+static inline dma_addr_t dma_range_map_max(const struct bus_dma_region *map)
-+{
-+	dma_addr_t ret = 0;
-+
-+	for (; map->size; map++)
-+		ret = max(ret, map->dma_start + map->size - 1);
-+	return ret;
-+}
-+
- #ifdef CONFIG_ARCH_HAS_PHYS_TO_DMA
- #include <asm/dma-direct.h>
- #ifndef phys_to_dma_unencrypted
 -- 
 2.39.2.101.g768bb238c484.dirty
 
