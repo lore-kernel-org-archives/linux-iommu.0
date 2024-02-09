@@ -1,139 +1,311 @@
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D278336B1D
-	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 12:48:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.179
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 91678374EA;
+	Fri,  9 Feb 2024 13:44:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707482914; cv=none; b=mMKhKLkzLLZfmI/6U0CrvPoDQoRHJdiYp6DFkhMMZH+SWB8/N7hjg5mwdzII20IsBEyEqr40L2XQI26aQpZqDA7A3OE5WABFU4hbtR+4e0qtiBf7QIkjjY8uPscFC6dmsKjHtpOIuBsGOLRe9hif7MblWik64Px4VWBpSqExE4A=
+	t=1707486271; cv=none; b=kZfWHOeUjNHg1hVYbu8VBM/wT9F4CdLWENW+SaR2O/Gf8VEOSRyRKoZrs/LPwjtmgLUSmDbTF31BDFCwY9hW312HBA4CUwpQvYgop3cqJCF18tbNUaNcJB7CnphfB+vtmT/tG/hiNuuHOvwGIFtjvtHKWcaz+BM+T1sHnHn1Zqc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707482914; c=relaxed/simple;
-	bh=IM4q4X0gWydS60JSjkH5keOtJWJtq4G9Lb/U1VwXjTQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Tc351fQl3ugrHA/vSiVs8Aa08M5zHuTFUraZh+guSRsw05Z6naLXObtX2OZBF6mSjLS8sFjzxRsZyEoiz7jIOP/gzPSTpisdvkqvH+b8qGjTYWT/Ttf2eLaYJDkEUP4CKkaPGLYVDYAsPQfXdW5maAp27KEmyU1AIZmf6tLcxM0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=LdlnZS5+; arc=none smtp.client-ip=209.85.167.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="LdlnZS5+"
-Received: by mail-oi1-f179.google.com with SMTP id 5614622812f47-3bba0ac2e88so1058798b6e.0
-        for <iommu@lists.linux.dev>; Fri, 09 Feb 2024 04:48:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1707482912; x=1708087712; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=oWyRQWjZwGy5YBtNCBODdh66LwGl8ke0FcwUO1q6L1E=;
-        b=LdlnZS5+NPv/mP7SW8g6g3a/cJTjULcdFEJKq12du4kXzs/YlAXHPnaedh/HSo9bKH
-         yA0d+/NX4sntGx4pSaw7CkqsXVlyyURdeRFbHaghWy9LL3Z6Rr/QPEKiJNW43A0inMZi
-         fSa9isrj+ibbddr4FpqsTVRTpaX2bLi/L8cqtxnPZp9ZiPHOCmloaPrF8NwOsPg3yIGE
-         noUGJEeAb/wLYiVNB1iXo2lwZb0WLsdWisYiGWYBBeum4fzDM1Xui7vvM/WfPQlHM5Uj
-         tMHYdU2be/NJNs9SAK2+0A+ZKAG8e9HmIW/NvZq6+/RQB8cbvbYcpK/8aLtM3DQkIhSJ
-         HcLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707482912; x=1708087712;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oWyRQWjZwGy5YBtNCBODdh66LwGl8ke0FcwUO1q6L1E=;
-        b=H4qXR1tPJcLBDTgLDxUP5l3w07cqNKyjd24NusGw2BWX7iZlU1zPK+opcv25rXp/yO
-         2xHFe4DlAa9s+4qahV301k2TcQ3pby2yZmHcShR36wX/IaDp9mO1NIsFCggEwceigobr
-         ZFi0LsxgqJQxIvveCpFI6D+6ASNdBhVNLMg3he5JUg6/y8WYgLWuyZjvHNLNg8Psz1OB
-         TBN4x18DvCuQvXmVUOhEm+C5e8mzUwTMeF1pXgC0RqPZXfqPADVoZ7iXK5lQ4z0cAHaY
-         OdI/OqstC7M99VLAJYI40iPGNYeK4ifEixJiua5iP7ccyHWVb5C5hPRHqxANRUun7lhf
-         hYAw==
-X-Gm-Message-State: AOJu0YxkLTRbevze+awZiz/apuJu9SZx7tnCHkIFeO9ANdHNO2Lmvu2r
-	mIJuiq1nd+aaGTKVJvU8AFeQ+bKK2hp1OJZ+yfUlErnAYh6aYl4I9unQ2SJ55Fc=
-X-Google-Smtp-Source: AGHT+IHFPlR4wf7wjb3MRfreQQdqtvCuxiFKYBPPC7N+l8UE1yE7FNCdjopARBSlORizJZ/dGI5EsA==
-X-Received: by 2002:a05:6808:3195:b0:3bf:dd9d:4d0b with SMTP id cd21-20020a056808319500b003bfdd9d4d0bmr355246oib.13.1707482911751;
-        Fri, 09 Feb 2024 04:48:31 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUPwYEyUGD5aRT/+w0MJnpXz3rN94HARHVlk6JNRzkywXVQSfZLnyU/tNbTEAaMu3uFRZYqYPUzQAR73/2ePL21LXFO7pg+BD3dqk9biXkOojEIrKijKC473yLZaKAhs+fSe5kYVud3vj9tB56m6xRoQCPvb+sWZYAIFGHA4HcIDZvRRdHt3cZ4P4jWu9Q7/HlKtpNcuULmsBXf3ua7KJpcGJfq1mqzdZH4w0JOpz/KYi6K8VPoNi2A0JaaQAD8C7vMwVP0sddq+yJRXIPfKlgztVEwePf2HGnh+fkArqZk/GNTpkNBXg+OLsqRN4T/woIaXN8ixU43ZHUatKaQBsZkYIsxKMCAmwiZahVEGNKitRU7+mflXn1+mpQ2AYAvfoEyrjLgoRiYc+60ft11Ir95y1Twdi4w
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id c1-20020a544e81000000b003bfbeb8035esm243981oiy.8.2024.02.09.04.48.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Feb 2024 04:48:30 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rYQIv-001zB2-Rs;
-	Fri, 09 Feb 2024 08:48:29 -0400
-Date: Fri, 9 Feb 2024 08:48:29 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	kvmarm@lists.linux.dev, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linuxarm@huawei.com,
-	kevin.tian@intel.com, alex.williamson@redhat.com, maz@kernel.org,
-	oliver.upton@linux.dev, will@kernel.org, robin.murphy@arm.com,
-	jonathan.cameron@huawei.com
-Subject: Re: [RFC PATCH v2 0/7] iommu/arm-smmu-v3: Use pinned KVM VMID for
- stage 2
-Message-ID: <20240209124829.GB31743@ziepe.ca>
-References: <20240208151837.35068-1-shameerali.kolothum.thodi@huawei.com>
- <20240209115824.GA2922446@myrica>
+	s=arc-20240116; t=1707486271; c=relaxed/simple;
+	bh=IgoMaZM9kw0Wpb/KvMD5/2YbdK7ysD6H6KO4z/h6t3c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Mf1WeYgyzyFbCgWNDEkfaaoyf9xHsczs/bfIRgE7gzPr/kwAfLjcZxv31zhoD9e38M3VOKPFqlkBPfZET7Wxjs5aRXxPv3QCBwGz6TTGw7ogWYETHr/FpjJNNlYAEs/X3tF2jlNp0JArPfrt3lk8TZYpN0MtyJcvc6Z91VJkd90=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B9D9BDA7;
+	Fri,  9 Feb 2024 05:45:09 -0800 (PST)
+Received: from [10.57.47.119] (unknown [10.57.47.119])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6B0283F762;
+	Fri,  9 Feb 2024 05:44:21 -0800 (PST)
+Message-ID: <8ce2cd7b-7702-45aa-b4c8-25a01c27ed83@arm.com>
+Date: Fri, 9 Feb 2024 13:44:20 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240209115824.GA2922446@myrica>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 01/10] iommu/vt-d: add wrapper functions for page
+ allocations
+Content-Language: en-GB
+To: Pasha Tatashin <pasha.tatashin@soleen.com>, akpm@linux-foundation.org,
+ alim.akhtar@samsung.com, alyssa@rosenzweig.io, asahi@lists.linux.dev,
+ baolu.lu@linux.intel.com, bhelgaas@google.com, cgroups@vger.kernel.org,
+ corbet@lwn.net, david@redhat.com, dwmw2@infradead.org, hannes@cmpxchg.org,
+ heiko@sntech.de, iommu@lists.linux.dev, jernej.skrabec@gmail.com,
+ jonathanh@nvidia.com, joro@8bytes.org, krzysztof.kozlowski@linaro.org,
+ linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ linux-rockchip@lists.infradead.org, linux-samsung-soc@vger.kernel.org,
+ linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+ lizefan.x@bytedance.com, marcan@marcan.st, mhiramat@kernel.org,
+ m.szyprowski@samsung.com, paulmck@kernel.org, rdunlap@infradead.org,
+ samuel@sholland.org, suravee.suthikulpanit@amd.com, sven@svenpeter.dev,
+ thierry.reding@gmail.com, tj@kernel.org, tomas.mudrunka@gmail.com,
+ vdumpa@nvidia.com, wens@csie.org, will@kernel.org, yu-cheng.yu@intel.com,
+ rientjes@google.com, bagasdotme@gmail.com, mkoutny@suse.com
+References: <20240207174102.1486130-1-pasha.tatashin@soleen.com>
+ <20240207174102.1486130-2-pasha.tatashin@soleen.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240207174102.1486130-2-pasha.tatashin@soleen.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Feb 09, 2024 at 11:58:24AM +0000, Jean-Philippe Brucker wrote:
+On 2024-02-07 5:40 pm, Pasha Tatashin wrote:
+[...]> diff --git a/drivers/iommu/iommu-pages.h 
+b/drivers/iommu/iommu-pages.h
+> new file mode 100644
+> index 000000000000..c412d0aaa399
+> --- /dev/null
+> +++ b/drivers/iommu/iommu-pages.h
+> @@ -0,0 +1,204 @@
+> +/* SPDX-License-Identifier: GPL-2.0-only */
+> +/*
+> + * Copyright (c) 2024, Google LLC.
+> + * Pasha Tatashin <pasha.tatashin@soleen.com>
+> + */
+> +
+> +#ifndef __IOMMU_PAGES_H
+> +#define __IOMMU_PAGES_H
+> +
+> +#include <linux/vmstat.h>
+> +#include <linux/gfp.h>
+> +#include <linux/mm.h>
+> +
+> +/*
+> + * All page allocation that are performed in the IOMMU subsystem must use one of
 
-> * Stage-1 TLB entries in the SMMU have a bit (ASET) saying "this entry
->   is private and does not participate in BTM", which we set for private
->   SMMU address spaces.
-> 
->   Annoyingly, the stage-2 TLB entries do not have it. With BTM all VMIDs
->   are shared between CPU and SMMU.
+"All page allocations" is too broad; As before, this is only about 
+pagetable allocations, or I guess for the full nuance, allocations of 
+pagetables and other per-iommu_domain configuration structures which are 
+reasonable to report as "pagetables" to userspace.
 
-Right, the spec justified this decision like this:
+> + * the functions below.  This is necessary for the proper accounting as IOMMU
+> + * state can be rather large, i.e. multiple gigabytes in size.
+> + */
+> +
+> +/**
+> + * __iommu_alloc_pages_node - allocate a zeroed page of a given order from
+> + * specific NUMA node.
+> + * @nid: memory NUMA node id
+> + * @gfp: buddy allocator flags
+> + * @order: page order
+> + *
+> + * returns the head struct page of the allocated page.
+> + */
+> +static inline struct page *__iommu_alloc_pages_node(int nid, gfp_t gfp,
+> +						    int order)
+> +{
+> +	struct page *page;
+> +
+> +	page = alloc_pages_node(nid, gfp | __GFP_ZERO, order);
+> +	if (unlikely(!page))
+> +		return NULL;
+> +
+> +	return page;
+> +}
 
- Note: Arm expects that SMMU stage 2 address spaces are generally
- shared with their respective PE virtual machine stage 2
- configuration. If broadcast invalidation is required to be avoided
- for a particular SMMU stage 2 address space, Arm recommends that a
- hypervisor configures the STE with a VMID that is not allocated for
- virtual machine use on the PEs.
+All 3 invocations of this only use the returned struct page to trivially 
+derive page_address(), so we really don't need it; just clean up these 
+callsites a bit more.
 
-Which doesn't match how Linux works and I think after the recent KVM
-PUCK call on this topic we can say it does not match how Linux will
-work going into the future. Assuming the KVM S2 and IOMMU S2 are
-shared is not true.
+> +
+> +/**
+> + * __iommu_alloc_pages - allocate a zeroed page of a given order.
+> + * @gfp: buddy allocator flags
+> + * @order: page order
+> + *
+> + * returns the head struct page of the allocated page.
+> + */
+> +static inline struct page *__iommu_alloc_pages(gfp_t gfp, int order)
+> +{
+> +	struct page *page;
+> +
+> +	page = alloc_pages(gfp | __GFP_ZERO, order);
+> +	if (unlikely(!page))
+> +		return NULL;
+> +
+> +	return page;
+> +}
 
-So unfortuntely this creates a waste as the BTM will generate
-worthless invalidation workload on the related IOMMU S2. We cannot do
-as the spec suggests to avoid broadcast invalidation here with a
-unique VMID as that will break vSVA vBTM invalidation to the S1.
+Same for the single invocation of this one.
 
-I do wonder how much of a performance negative this will create. At
-least the S1 isn't flushed so perhaps the performace hit is
-small.
+> +
+> +/**
+> + * __iommu_alloc_page_node - allocate a zeroed page at specific NUMA node.
+> + * @nid: memory NUMA node id
+> + * @gfp: buddy allocator flags
+> + *
+> + * returns the struct page of the allocated page.
+> + */
+> +static inline struct page *__iommu_alloc_page_node(int nid, gfp_t gfp)
+> +{
+> +	return __iommu_alloc_pages_node(nid, gfp, 0);
+> +}
 
-Anyhow, I view it as a defect that the HW doesn't have a BTM ignore
-bit at the S2 level so that we can use the same VMID to make vBTM work
-but not participate in CPU originated invalidations for a non-shared
-S2. A global bit to disable S2 BTM would have been fine for Linux.
+There are no users of this at all.
 
->   - The old VFIO_TYPE1_NESTING_IOMMU lets userspace allocate a private
->     stage-2, and has only been used for testing as far as I know. I don't
->     think I ever found a program that used it in the wild, but haven't
->     checked recently.
+> +
+> +/**
+> + * __iommu_alloc_page - allocate a zeroed page
+> + * @gfp: buddy allocator flags
+> + *
+> + * returns the struct page of the allocated page.
+> + */
+> +static inline struct page *__iommu_alloc_page(gfp_t gfp)
+> +{
+> +	return __iommu_alloc_pages(gfp, 0);
+> +}
+> +
+> +/**
+> + * __iommu_free_pages - free page of a given order
+> + * @page: head struct page of the page
+> + * @order: page order
+> + */
+> +static inline void __iommu_free_pages(struct page *page, int order)
+> +{
+> +	if (!page)
+> +		return;
+> +
+> +	__free_pages(page, order);
+> +}
+> +
+> +/**
+> + * __iommu_free_page - free page
+> + * @page: struct page of the page
+> + */
+> +static inline void __iommu_free_page(struct page *page)
+> +{
+> +	__iommu_free_pages(page, 0);
+> +}
 
-There isn't, it is useless and cannot do anything. A patch has been
-waiting to remove it for a while now, I've got it in my part 3 right
-now.
+Beyond one more trivial Intel cleanup for __iommu_alloc_pages(), these 3 
+are then only used by tegra-smmu, so honestly I'd be inclined to just 
+open-code there page_address()/virt_to_page() conversions as appropriate 
+there (once again I think the whole thing could in fact be refactored to 
+not use struct pages at all because all it's ever ultimately doing with 
+them is page_address(), but that would be a bigger job so definitely 
+out-of-scope for this series).
 
->     It needs to be deprecated over a few releases (starting with a
->     warning maybe?),
+> +
+> +/**
+> + * iommu_alloc_pages_node - allocate a zeroed page of a given order from
+> + * specific NUMA node.
+> + * @nid: memory NUMA node id
+> + * @gfp: buddy allocator flags
+> + * @order: page order
+> + *
+> + * returns the virtual address of the allocated page
+> + */
+> +static inline void *iommu_alloc_pages_node(int nid, gfp_t gfp, int order)
+> +{
+> +	struct page *page = __iommu_alloc_pages_node(nid, gfp, order);
+> +
+> +	if (unlikely(!page))
+> +		return NULL;
 
-No need, we just NOP'd it. It has no user visible side effect,
-replacing the S2 with a S1 is fine.
+As a general point I'd prefer to fold these checks into the accounting 
+function itself rather than repeat them all over.
 
->     and the replacement API shouldn't allow creating a
->     stage-2 without a KVM context.
+> +
+> +	return page_address(page);
+> +}
+> +
+> +/**
+> + * iommu_alloc_pages - allocate a zeroed page of a given order
+> + * @gfp: buddy allocator flags
+> + * @order: page order
+> + *
+> + * returns the virtual address of the allocated page
+> + */
+> +static inline void *iommu_alloc_pages(gfp_t gfp, int order)
+> +{
+> +	struct page *page = __iommu_alloc_pages(gfp, order);
+> +
+> +	if (unlikely(!page))
+> +		return NULL;
+> +
+> +	return page_address(page);
+> +}
+> +
+> +/**
+> + * iommu_alloc_page_node - allocate a zeroed page at specific NUMA node.
+> + * @nid: memory NUMA node id
+> + * @gfp: buddy allocator flags
+> + *
+> + * returns the virtual address of the allocated page
+> + */
+> +static inline void *iommu_alloc_page_node(int nid, gfp_t gfp)
+> +{
+> +	return iommu_alloc_pages_node(nid, gfp, 0);
+> +}
 
-See my remarks yesterday.
+TBH I'm not entirely convinced that saving 4 characters per invocation 
+times 11 invocations makes this wrapper worthwhile :/
 
-Jason
+> +
+> +/**
+> + * iommu_alloc_page - allocate a zeroed page
+> + * @gfp: buddy allocator flags
+> + *
+> + * returns the virtual address of the allocated page
+> + */
+> +static inline void *iommu_alloc_page(gfp_t gfp)
+> +{
+> +	return iommu_alloc_pages(gfp, 0);
+> +}
+> +
+> +/**
+> + * iommu_free_pages - free page of a given order
+> + * @virt: virtual address of the page to be freed.
+> + * @order: page order
+> + */
+> +static inline void iommu_free_pages(void *virt, int order)
+> +{
+> +	if (!virt)
+> +		return;
+> +
+> +	__iommu_free_pages(virt_to_page(virt), order);
+> +}
+> +
+> +/**
+> + * iommu_free_page - free page
+> + * @virt: virtual address of the page to be freed.
+> + */
+> +static inline void iommu_free_page(void *virt)
+> +{
+> +	iommu_free_pages(virt, 0);
+> +}
+> +
+> +/**
+> + * iommu_free_pages_list - free a list of pages.
+> + * @page: the head of the lru list to be freed.
+> + *
+> + * There are no locking requirement for these pages, as they are going to be
+> + * put on a free list as soon as refcount reaches 0. Pages are put on this LRU
+> + * list once they are removed from the IOMMU page tables. However, they can
+> + * still be access through debugfs.
+> + */
+> +static inline void iommu_free_pages_list(struct list_head *page)
+
+Nit: I'd be inclined to call this iommu_put_pages_list for consistency.
+
+> +{
+> +	while (!list_empty(page)) {
+> +		struct page *p = list_entry(page->prev, struct page, lru);
+> +
+> +		list_del(&p->lru);
+> +		put_page(p);
+> +	}
+> +}
+
+I realise now you've also missed the common freelist freeing sites in 
+iommu-dma.
+
+Thanks,
+Robin.
+
+> +
+> +#endif	/* __IOMMU_PAGES_H */
