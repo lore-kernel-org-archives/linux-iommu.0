@@ -1,45 +1,46 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2050.outbound.protection.outlook.com [40.107.223.50])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2070.outbound.protection.outlook.com [40.107.243.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AD5828E39
-	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 11:29:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5669928DA7
+	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 11:30:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.70
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707478194; cv=fail; b=bkhjCKRjuwyao0MGOodigTPk3L5SyrRLW1iEQ/SlXPHQJKOu4r2JoY762a3+sdEQHQ4res6lsMMusZeK5L3Eb76BMYepR4LDtvjdCMcotqALaR5TCk2uL70btGsHZ7y426H0qUI6+vH36BGL4EJwlSsYO4ihbKjqUG1Py8QAg6g=
+	t=1707478219; cv=fail; b=YTpctkeo2S94ow+bTb3xsF61M8lZHVYxo81L4xDW0cQxoIM5CBTVaQewsoEaMAwzrUY/uKluj429BRxuL0McTNOx0mXbpobCz0jCqtaSASRmT22Cn2vM4BLkBU/u8l+Pj3ChpxfrqUuXOPMdi5OnaR2ZSQJZBR/gFIqQp2ZsZx4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707478194; c=relaxed/simple;
-	bh=gYx6ijp9w6l3FP/bj0tMcSP1eBMNaiw6VwFzkBaz6mM=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=iAg2FYt6HpbrsQXNIQ/53WN+znShxqJrf0Q4xSjT4L74Jl5DwASAYd7F/RPntAB19djYsouocPhw3XCBwY78XgC1M6Xta3F+ku/eN27rDBvo8//XAK6OkqOv/LpwvYKELZulkLTWPShuEpJYgZHt6nlmWTVa8X+l5BRd+ObzN+c=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=0uT81pII; arc=fail smtp.client-ip=40.107.223.50
+	s=arc-20240116; t=1707478219; c=relaxed/simple;
+	bh=8kneTi3aY2lFbMBdhnZ1aMgI4Sy8zZgFgMwJRHQc+VA=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=V1cn6eKlCFVOb/b2AneLLP76TYC70D8LRsqukf1MPPL2sREKI4IiZAw1LF+/Q1E9lh7vlyDQhM2BKu7lgR10Ydp0mqM2S0IbZxa0oqhSMYSXpoWuNDPs6amzjxofewqnyFAn1Wvb9PIo565SS+o40o0BAgxbgYW3V4pNEldcqG4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=N5tF9HrU; arc=fail smtp.client-ip=40.107.243.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="0uT81pII"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="N5tF9HrU"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OCa5J8cOr3LymTtGxp99vR4Mmb4dtAhXDyGoJ2FXUQUgiHHGFR6WWmpdc9PbslwG/CJG7z8Vig9/UivjzSVoPCHFufqLDAhWbiZGQw5ajFvkUIpucz9TvUh0nWdSoyf1V9rAssQ/RHdXfqv5gGGYKeyAmFinl7glSt9B9Xn/n9POZduKbmqDfje2JHosB59tZeZV6je1cxITj6QP4jl9Um7Z3VNcnRQCONWQn8+4BbteIbQq1ZSX75Bxa9dhNc8o1uoJqeH5Hr081JiUDtij/E9vDR4drvJihQywLxzntA9L1Opsd4AzkfyudmuOEwJ2gZN3d4Ufi2uFLLnSkNEIbQ==
+ b=h+AAYXQ+NpbHv3R2iej81OklGhaKW8A+Fjm44OBNwZKQMIvqu5So6vVXUvHw2UukQaQxKqs/gf25p/Cseftz8XmOfrwn9XAEwD3dPCFD2z8cN2iW3/OmGiYEgiUDYQEjjhFBN0QZGnDFcJM8xHj39007t2l8IWVtbckX4YII6wWcmhc4gI4g4ophVPG9EEW5ouO+8ndJgUo86Z8eQXXXKVgFHth1sLNFyQrQuU1NEfXFvCtOdYsM0bx+uixzizDS69fwLOP8gi2bVa4PeyfrmuUZJJv9Eg8QtUgCDsgOwnIxgRpCyCuoC2E85IB6vMsu8opKRuYdFSjVRfrTQMRUFg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qwQILCqXVNuqlrulJE7nOS/OxRwhjMGKcGHWwk+eZLI=;
- b=QseBW0Ae/qHPeRbvqd8FNak5r8AAWYcNeE/FqFV8RLcoEC+GkxaSg9EULuI2cQ4eaOkwq995UQ7KLuscMbTKtfbuHcWaWP6k7BXIsT5APrLoHzbO9nJIYipZJUWc6/ut5i12pUE9+w/K3fsg+ATMYkywqS5yOKJTzLmSb2Ll8x3ozIGJYNdE1z81jfzHcsP+3YemcJR5dCqn2rKuUUOS/Ghd/qBp9d16pXyu6ewSYojqA3kSIEqTMrqNmBxTMPUqWILPh2YYDQOFoxrbSzLm/LjZ7+anac2GQ5J39+5ebCZ9qyD74BTbc7Tfv4kCTMSMG2jawSAjQJAP37GcEgaYfA==
+ bh=bRVcOQOUfSO6JXhvDDfP8gDNBCokOQ4rQWvbcppgRF0=;
+ b=mSAnsqty6FF+LcPRDkWKktmlwMwMYkTyKgmJoM3Vl8gyLKJF4V79AUtK/Df74m0xAnDKbpUcKBENH9KQ0zlJKoaW+SEx60Ciao+7PcdSi00pEYjcUhgvDKaistU4cefy3bdb9GSDzfPmDzdd6QgnnDRkMA7TLPh58CoNZSGBpa+VDDg4/RF720Ms+CUDSsd4EbBAbMxGOxTyFMdcamP2ZRMxBtRAznIZrD/HcE0xFgfEzzu2dJ2UPZN8ouSTkOAsOfEKzlhBlNaNpVou8iveEGv4wr/OWtXWaU8RIMqWaoBwckWR4WLvXQ4VFnjG31gKtFISQmkrZqe1S+xNcA1HgQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qwQILCqXVNuqlrulJE7nOS/OxRwhjMGKcGHWwk+eZLI=;
- b=0uT81pIINEGUwR66sYRQIRTQwm5iDrM3TfKbWZe8mb5gFQu+CESHb6fD5MS5DtLSMhphSp0vMCDoSX08Wo8VYKyhAdQ9I6CuS8228nYgqk6MHzqnbwJurGgqMG5TcpLdRd6llMBagvRR/GqzB6chR0UHvAoDaLb3rEGSl7ytOs4=
-Received: from CY5P221CA0145.NAMP221.PROD.OUTLOOK.COM (2603:10b6:930:6a::25)
- by DS7PR12MB5960.namprd12.prod.outlook.com (2603:10b6:8:7f::14) with
+ bh=bRVcOQOUfSO6JXhvDDfP8gDNBCokOQ4rQWvbcppgRF0=;
+ b=N5tF9HrU4wZCCVMLecbuMI1HSVCLcZq55G8z6qWdZSQogVEDMEKmVbpFtF6s8zTO02UkJY3buZNptPRIErXsKNu0a9SIxOHtAPYx14tcVVThJHazSG0sFovszt6JXk7EGSXPdw5py5OGxw+cOr9jeH3DhahZpr8+czNlujImIY8=
+Received: from DM6PR03CA0008.namprd03.prod.outlook.com (2603:10b6:5:40::21) by
+ IA1PR12MB7736.namprd12.prod.outlook.com (2603:10b6:208:420::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.14; Fri, 9 Feb
- 2024 11:29:49 +0000
-Received: from CY4PEPF0000E9DA.namprd05.prod.outlook.com
- (2603:10b6:930:6a:cafe::57) by CY5P221CA0145.outlook.office365.com
- (2603:10b6:930:6a::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.24 via Frontend
- Transport; Fri, 9 Feb 2024 11:29:49 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.11; Fri, 9 Feb
+ 2024 11:30:15 +0000
+Received: from CY4PEPF0000E9DC.namprd05.prod.outlook.com
+ (2603:10b6:5:40:cafe::d5) by DM6PR03CA0008.outlook.office365.com
+ (2603:10b6:5:40::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7249.37 via Frontend
+ Transport; Fri, 9 Feb 2024 11:30:14 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -47,21 +48,24 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CY4PEPF0000E9DA.mail.protection.outlook.com (10.167.241.79) with Microsoft
+ CY4PEPF0000E9DC.mail.protection.outlook.com (10.167.241.82) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7249.19 via Frontend Transport; Fri, 9 Feb 2024 11:29:49 +0000
+ 15.20.7249.19 via Frontend Transport; Fri, 9 Feb 2024 11:30:14 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Fri, 9 Feb
- 2024 05:29:46 -0600
+ 2024 05:30:08 -0600
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
-	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v6 00/15] iommu/amd: SVA Support (Part 4) - SVA and IOPF
-Date: Fri, 9 Feb 2024 11:29:15 +0000
-Message-ID: <20240209112930.63663-1-vasant.hegde@amd.com>
+	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>,
+	Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH v6 01/15] iommu/amd: Rename amd_iommu_v2_supported() as amd_iommu_pasid_supported()
+Date: Fri, 9 Feb 2024 11:29:16 +0000
+Message-ID: <20240209112930.63663-2-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240209112930.63663-1-vasant.hegde@amd.com>
+References: <20240209112930.63663-1-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,152 +78,62 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9DA:EE_|DS7PR12MB5960:EE_
-X-MS-Office365-Filtering-Correlation-Id: c36821ad-3136-4234-9fb9-08dc29626d17
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9DC:EE_|IA1PR12MB7736:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8e3b491b-d528-4189-1eb0-08dc29627c3f
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	c446HiJaxW/TWYk0jPEvS+8oosSk3uqzCZSNdccVmmGcrtERNB2fefzWsBEwfhb6S5Bx7yza+FvawJ4dIhTrnbF82HMLGeIJCHSMJkE0WpXECuDDqL6ohEJWLCN+qKjII8LtBtCXlCIqcUS8aZIiFGGBH+4VR5zawPrtLVBJia9QRhvmqnmOKPjP5F5InWiAS0WaNiAvdS8ilO01I7q1b4/JcO5USeg29HnqMxryHX3Y1vP+uaKa/GwXV/btUhgpGvXESUC4Yw97efvUNj3TV9wkQSTgEnu6tACrlLc7dQkQQhqGPPIvWYpkhYtzUeStq2VhA68aX6dFcT55BlDVeiYNfgoQcR1UzJH8p8DyU+D05iSk1PNRrBlgb/SkudFsoBdyINiZ0y7kGcKWzWyH7jhSQ+HNtyK3vsQkDRBQe18tXdbGlnu2pYWEjBZAbkkQJnpKLUymBeYPemgm71CvyFeePIQTXKC5cjOusOJY3SHutDDTiGavdyRYeOcqjUoRLUlDKTgVGfTKXSwYviAerWWjQAS1ohZbOMYPq/cURCjSWRWCYLHmMdWzdXS+puBUwxs73J2tjJljFUvLMBDhsg==
+	KLBQra7dskR6QM+ASzx9fuAjIF0vH0GPgkcg+tyX26/oL3B17sIIbookyNZSbGQvvZnViDtiqDHA+drb5DkXT5fXkrxcjBhMcahJEH+0TGpvY8Gicj2TfGz0jD6Rx/v+BL0d1v8D9fdSTfNu5t/6Yzuu5FaWfhpY/iwt6mtlAUbnzSVIhJKZjh20f4DVJNHPxOeU7S9meaP/WULatQlIt1Yg1FiJ/DCPnMnzJKpcm4opZpbYYHRv5jJazKSPt5k8T0FMVFSmexz9vXJ+BAPXVK8/RGHg4d3vIrKpEoo/i4yaBfOUqOwnjMZPQMFZ4g8eIvFPW490gpktfFBhmEQEjmdAgkgRLxVfPFYiNp59LY74QBpCoPVNpegSELs09tVZwygI7xo3JDFpOAo/JSggdcv77nMHCOauAHvoo5hPTVl90hU9Xl7LsnlNznAzwvqpDNSLRJYbuBV4G3IEeSlfYH+Qw8xJPp/l/h+muCEGSP2qWxOQfqpR+L6RZcqQLOaXX/9yJcGkRlMU4JLUoNMAYyvd1X5P42TMiP/eA54L4rOz8XaK13CTECpbkdjAP1CX1pJ9xWBfWnHHx6SxMnZDlVRljN4+BSNQd9gaZApxNWE=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(376002)(346002)(39860400002)(136003)(396003)(230922051799003)(451199024)(1800799012)(82310400011)(64100799003)(186009)(40470700004)(46966006)(36840700001)(2906002)(4326008)(8936002)(8676002)(5660300002)(44832011)(336012)(426003)(83380400001)(2616005)(26005)(16526019)(1076003)(82740400003)(36756003)(81166007)(356005)(86362001)(110136005)(70586007)(70206006)(54906003)(6666004)(7696005)(966005)(478600001)(316002)(41300700001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(346002)(376002)(39860400002)(136003)(396003)(230922051799003)(1800799012)(451199024)(82310400011)(186009)(64100799003)(46966006)(40470700004)(36840700001)(82740400003)(5660300002)(44832011)(2906002)(86362001)(81166007)(356005)(6666004)(7696005)(83380400001)(336012)(426003)(1076003)(26005)(16526019)(70206006)(110136005)(36756003)(2616005)(54906003)(70586007)(8936002)(8676002)(4326008)(316002)(478600001)(41300700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2024 11:29:49.2316
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2024 11:30:14.6719
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: c36821ad-3136-4234-9fb9-08dc29626d17
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8e3b491b-d528-4189-1eb0-08dc29627c3f
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000E9DA.namprd05.prod.outlook.com
+	CY4PEPF0000E9DC.namprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5960
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7736
 
-This is part 4 of the 4-part series to introduce Share Virtual Address
-(SVA) support for devices, which can support PCI ATS, PASID and PRI
-capabilities. These devices are referred to as SVA-capable devices in
-this series.
+To reflect its usage. No functional changes intended.
 
-It contains the following enhancements:
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/amd/amd_iommu.h | 2 +-
+ drivers/iommu/amd/init.c      | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-* Patch 1 - 3:
-  Rename, add support to enable/disable features, update DTE etc.
-
-* Patch 4 - 12:
-  Add IOPF support
-
-* Patch 13 - 15:
-  Introduce SVA support
-
-
-This patch series is based on top of SVA Part 3 v7.
-  https://lore.kernel.org/linux-iommu/20240205115615.6053-1-vasant.hegde@amd.com/T/#t
-
-Also depends on :
-  1) Baolu's IOPF improvement v12
-     https://lore.kernel.org/linux-iommu/c918825d-ad74-4b1d-abcc-31c3f3ea4620@linux.intel.com/T/#t
-
-
-This is also available at github :
-  https://github.com/AMDESE/linux/tree/iommu_sva_part4_v6_v6.8_rc2
-
-Thanks everyone who reviewed previous version and provided valuable feedbacks.
-
-
-Changes from v5 -> v6:
-  - Rebased on top of SVA Part3 v7
-  - Reorganized, added few patches
-    - Patch to track per device max PASIDs
-    - Patch to setup GCR3 table for SVA capable domain
-    - Patch to enable PASID/PRI only when domain is capable of PRI support
-  - Dropped below patches as they are not needed anymore
-    - iommu/amd: Add GCR3 [un]initialization function
-    - iommu/amd: Add support for add/remove device for IOPF
-  - Rework sev[/remove_dev]_dev_pasid() functions
-  - Dropped late gcr3 setup patch
-
-v5: https://lore.kernel.org/linux-iommu/20240118073339.6978-1-vasant.hegde@amd.com/T/#t
-
-Changes from v4 -> v5:
-  - Rebased on top of v6.7-rc8 + SVA Part3 patches
-  - Few minor improvements like renaming structure name for better, introducing macros, etc
-
-V4: https://lore.kernel.org/linux-iommu/20231221111558.64652-1-vasant.hegde@amd.com/
-
-Changes from v3 -> v4:
-  - Moved amd_iommu_dev_update_dte() after set/clear_dte() so that we can avoid
-    forward declaration
-  - Dropped "iommu/amd: Do not override PASID entry in GCR3 table"
-  - Added patch to fix PPR interrupt processing logic
-  - Renamed enable_iommus_v2() -> enable_iommus_ppr()
-  - Added ops->domain_alloc_sva()
-  - Added domain_alloc_sva() support and reorganize SVA patches
-  - In error path iommu_call_iopf_notifier() calls amd_iommu_complete_ppr()
-    instead of amd_iommu_page_response()
-
-
-v3: https://lore.kernel.org/linux-iommu/20231016104351.5749-1-vasant.hegde@amd.com/T/#t
-
-Changes from v2 -> v3:
-  - Rename sva.c -> pasid.c
-  - Changed amd_iommu_sva_supported() -> amd_iommu_pasid_supported()
-  - Added patch to update/flush DTE
-  - Rework part of SVA support
-  - Move IOPF enablement to PASID bind time
-
-v2: https://lore.kernel.org/linux-iommu/20230911121046.1025732-1-vasant.hegde@amd.com/T/#u
-
-Changes from v1 -> v2:
-  - Added new patch to fix PASID override issue in GCR3 table
-  - Complete rework of SVA code on top of Tina's SVA series.
-  - Rework SVA enable code
-  - Reworked IOPF handler code on top of Baolu's IOPF improvement series.
-
-
-v1: https://lore.kernel.org/linux-iommu/20230823140415.729050-1-vasant.hegde@amd.com/T/#t
-
-Thank you,
-Vasant / Suravee
-
-
-Jason Gunthorpe (1):
-  iommu: Add ops->domain_alloc_sva()
-
-Suravee Suthikulpanit (3):
-  iommu/amd: Move PPR-related functions into ppr.c
-  iommu/amd: Define per-IOMMU iopf_queue
-  iommu/amd: Add support for page response
-
-Vasant Hegde (9):
-  iommu/amd: Rename amd_iommu_v2_supported() as
-    amd_iommu_pasid_supported()
-  iommu/amd: Introduce per device DTE update function
-  iommu/amd: Fix PPR interrupt processing logic
-  iommu/amd: Introduce iommu_dev_data.max_pasids
-  iommu/amd: Setup GCR3 table in advance if domain is SVA capable
-  iommu/amd: Enable PCI features based on attached domain capability
-  iommu/amd: Add support for enable/disable IOPF
-  iommu/amd: Initial SVA support for AMD IOMMU
-  iommu/amd: Add SVA domain support
-
-Wei Huang (2):
-  iommu/amd: Add support for enabling/disabling IOMMU features
-  iommu/amd: Add IO page fault notifier handler
-
- drivers/iommu/amd/Kconfig           |   2 +
- drivers/iommu/amd/Makefile          |   2 +-
- drivers/iommu/amd/amd_iommu.h       |  50 ++++-
- drivers/iommu/amd/amd_iommu_types.h |  33 ++++
- drivers/iommu/amd/init.c            |  85 +++------
- drivers/iommu/amd/iommu.c           | 284 ++++++++++++++++++----------
- drivers/iommu/amd/pasid.c           | 202 ++++++++++++++++++++
- drivers/iommu/amd/ppr.c             | 284 ++++++++++++++++++++++++++++
- drivers/iommu/iommu-sva.c           |  16 +-
- include/linux/iommu.h               |   3 +
- 10 files changed, 788 insertions(+), 173 deletions(-)
- create mode 100644 drivers/iommu/amd/pasid.c
- create mode 100644 drivers/iommu/amd/ppr.c
-
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index b61293f2aef6..334394d14753 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -38,7 +38,7 @@ extern int amd_iommu_guest_ir;
+ extern enum io_pgtable_fmt amd_iommu_pgtable;
+ extern int amd_iommu_gpt_level;
+ 
+-bool amd_iommu_v2_supported(void);
++bool amd_iommu_pasid_supported(void);
+ struct amd_iommu *get_amd_iommu(unsigned int idx);
+ u8 amd_iommu_pc_get_max_banks(unsigned int idx);
+ bool amd_iommu_pc_supported(void);
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 959820ccfbcc..62f695c519b5 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -3652,7 +3652,7 @@ __setup("ivrs_ioapic",		parse_ivrs_ioapic);
+ __setup("ivrs_hpet",		parse_ivrs_hpet);
+ __setup("ivrs_acpihid",		parse_ivrs_acpihid);
+ 
+-bool amd_iommu_v2_supported(void)
++bool amd_iommu_pasid_supported(void)
+ {
+ 	/* CPU page table size should match IOMMU guest page table size */
+ 	if (cpu_feature_enabled(X86_FEATURE_LA57) &&
 -- 
 2.31.1
 
