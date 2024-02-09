@@ -1,46 +1,46 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2054.outbound.protection.outlook.com [40.107.243.54])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2060.outbound.protection.outlook.com [40.107.237.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24EAF2C1B8
-	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 11:32:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 528692D79D
+	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 11:32:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.60
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707478338; cv=fail; b=mBn5BBZbgcB+zhL3LSnJwdadO+aS/VnMTeXkSkX0rroJLqOVzvEQ40zTkzxlZRwvHCf07f9SsOJDHRQIIlDIK9gLCyGjrnZAKID02uK+Z78yzbjPkO3b7TNRNdLYa33YACvC6rXOfkxzXxxXzrFPBIj0XzuVPvsVsmPp+pdrdQY=
+	t=1707478357; cv=fail; b=MZHRN6D8niJl8rZqVfb80jD1Jo6w3E0+IlN64ng6GvnXgkjb7/z0Rjnr2oRF+QGkksfAKizROYfhgARBSbyJHqR4MO/K89p/cg2Kg96/xox9tr66IstaK5t+KQgp1TnLgNFe3I1maYWtM1pAi30NSawAAKMqkYt7V48dfjrgvaI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707478338; c=relaxed/simple;
-	bh=UfvIZ/7qLCiRyk6h2SjdoKXi51+JksyPNkRd8pR7G4s=;
+	s=arc-20240116; t=1707478357; c=relaxed/simple;
+	bh=iLAfWn2tQkukcFWJVQmGuHkl5XUlMCBp7zUsbgFQSFM=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MDZHo7qAIJESkZm+9ZXs8HAg/pycPZkGAIvmk0I8VDq+PG5P58L7Nq7hNZJmn2YbfG2DA4L+fI426kWLr6PqAQPJJzRvOgwyCMFxEsejVjYhZpRN0jhflOWmtrlEA9E6OVEUAyndWyqS8WbP9fi0Vef9MdYRJcJrDG5AJzdghcQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=c0vUHfUA; arc=fail smtp.client-ip=40.107.243.54
+	 MIME-Version:Content-Type; b=XMlnnver8kIDTtS4FMJq1oO2Njwus1Pup7qDkFshL3P0i0VneCPUnVaEMuvAW2fZTzXg5CoAtWmtkxw5A2CB5qikP0CCnTE5vFxPymgMMXfmVaUEkOPjzHTNfgNzfIBoCybcGlN6x5TeIrtTxZa0GCcBHPK2Sy3Ob4LlKlMT2BE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=BrOEMWyT; arc=fail smtp.client-ip=40.107.237.60
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="c0vUHfUA"
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="BrOEMWyT"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HHNOX3qk3/+PfG3C/OA5iLZH14d2lr/80DoS8qmszRaTaoFKxwbxavDWPULkTL4d0lTdAv4aGcFN/Aak/Xz63MLzMtsNDdGNWBF3TiYsZJIbqh0zA7LsznN02iw0ENXtd/cWOOu7Vy/viCWUDdO5CkSI2XGPyfk2Z5eSw4biARd9Qwz4U5VZ1coWjaNfICx2yfZHddowvp4AhXAemWGCn63C52bDc8TopFrYs3pzms4cODMNL/0GuLSclztptIz6gcSSfhM/rkJJ77jSam64FhtE0077mhBh5ilTpruwV4w93bISo5hvVOEplf68z3aULgi3l0c48tFl0ag39k670Q==
+ b=IdH2JrTYMwGchwdQXuRzN2GaNgRrvJ4312vu4I1zi4uUBtmtRKLPv3zlaS9jkvIbRqpmEDSCF8/K7Isr+77UupeAKcxSLmgPLnb9qGM8aMCV4oUqjFcnD9rzMzegtv24fJtDeF4O16DLaPoBCgdEBIf6flTKt4hpKy5fDEFboR71LGrKotP+o11f1Rg3v4YpxsTxefh8mxpctl95kpG7ZUJ/adTLOpfYvvv/bTiXV6IC0bAKE6EHbWSDiRrLOpKSarglF421+KkBzO6ffA06LdsDkRcMgIxj3TQiEZoFqC7TVaE95zQiMIndWfL24UWquRNeEKW9lzpaRVjI55IFkw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=z4rvTlPTP6S1QA4BArksajiSfPWUfAGGGqPRnRJV3yk=;
- b=I0GFmAEFH8+RYMY4ghiUQRLNkYgLWZd3a4nPFnyhD7LlCzArmJGd63Gyzd+T2mcoKvS0n7B0qv+10wOzkSutU2Aw2j+L4Ewqy6awekmh+76kovvTokQchR2OafWq4XYakKHCuTgtHEOQuKam+1Kv6ixMbjPz1tj6o4WZmeOyKyXFj8te7ScM5b3clq//1anLVRrlu8qJvpRxA3AtChlPQOufjjvl5fOZ/aZMd73E/ED9M1ybWCXFZ9ZTNCt49yvO/8AOspkD8TfbF5XmupTsYRdg4iU0Rlv394/830105YYUJEVzQSBS/MrmJfbmGZXyEL4mfNOr52E+k3yHYaYrfw==
+ bh=QA0ecpV43ZnEMoYj15nMT0Yevq1T4jV+35G+0VGW+gc=;
+ b=YEjtBzD+KI3AJvWrd0MuT6W01MrkfKbCjcKbeTjsQPNjfh1Q88AKPdlGV+C7ERWTkcfE/4k9jIN0ukdQbvnLC7sw/Z6r6ZSaAwovWajQ1Rx+mGSXnAs/ITK6ZFHVHVPaqWTTkcWMajuFgTsx+NeYhxg2cztCeOPG1tD3/hE3vIvKWdP5jLUvPfNNlQ/NOlKTEY0PuVY5vEe8lqWe7MYoey6/bXqkVj2zeApz6eoov1U2Ym1y+SWR6nIKGakIWf2AEFEyochGL5xGbv3fjuImDhfeRicHSbUsjtSnfzVZxI4KSvWIfJvSW2RezvLjdZ6+QZe+agTfdm82XTam79PH+w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
  dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
  header.from=amd.com; dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z4rvTlPTP6S1QA4BArksajiSfPWUfAGGGqPRnRJV3yk=;
- b=c0vUHfUAoXxEexEAAIEUWVjZ6nQ+1icas8OaPB1b2N3hB+r63FPxpF1vKXcXhHmV6H/4hOkAS6cg9MTow0IwcVDZdip6Vgtsf/cpY7p+cPq50sD3rDiO+HRXvupJoLLP66kyg/AbBNJjnaU9YNY377LCKZtsyHTMM/Zn4vzAlgU=
-Received: from CH0PR04CA0058.namprd04.prod.outlook.com (2603:10b6:610:77::33)
- by DS7PR12MB5743.namprd12.prod.outlook.com (2603:10b6:8:72::14) with
+ bh=QA0ecpV43ZnEMoYj15nMT0Yevq1T4jV+35G+0VGW+gc=;
+ b=BrOEMWyTZWiy27oil8UI5XHTxyHcrUOM9krq3TQZ7ZDF0z/tXdDl7BHPrmRYbgPEPTZLRFPUrRRhkBc0YVQPPZnGcybZCuTdNtpUeXxgIM2CsRNBRQXu1v+wxHJ6UsjsSMjeVivE3jIkymEo60TJsc6lWwQ3m5XrBtwxOXBw6OY=
+Received: from DM6PR02CA0079.namprd02.prod.outlook.com (2603:10b6:5:1f4::20)
+ by DM6PR12MB4059.namprd12.prod.outlook.com (2603:10b6:5:215::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.17; Fri, 9 Feb
- 2024 11:32:13 +0000
-Received: from CH1PEPF0000A347.namprd04.prod.outlook.com
- (2603:10b6:610:77:cafe::bf) by CH0PR04CA0058.outlook.office365.com
- (2603:10b6:610:77::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7249.38 via Frontend
- Transport; Fri, 9 Feb 2024 11:32:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.25; Fri, 9 Feb
+ 2024 11:32:27 +0000
+Received: from CH1PEPF0000A34B.namprd04.prod.outlook.com
+ (2603:10b6:5:1f4:cafe::c5) by DM6PR02CA0079.outlook.office365.com
+ (2603:10b6:5:1f4::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.24 via Frontend
+ Transport; Fri, 9 Feb 2024 11:32:27 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
  smtp.mailfrom=amd.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=amd.com;
@@ -48,20 +48,20 @@ Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
  165.204.84.17 as permitted sender) receiver=protection.outlook.com;
  client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
 Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CH1PEPF0000A347.mail.protection.outlook.com (10.167.244.7) with Microsoft
+ CH1PEPF0000A34B.mail.protection.outlook.com (10.167.244.10) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7249.19 via Frontend Transport; Fri, 9 Feb 2024 11:32:12 +0000
+ 15.20.7249.19 via Frontend Transport; Fri, 9 Feb 2024 11:32:27 +0000
 Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
  (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.34; Fri, 9 Feb
- 2024 05:31:57 -0600
+ 2024 05:32:24 -0600
 From: Vasant Hegde <vasant.hegde@amd.com>
 To: <iommu@lists.linux.dev>, <joro@8bytes.org>
 CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
 	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>
-Subject: [PATCH v6 08/15] iommu/amd: Enable PCI features based on attached domain capability
-Date: Fri, 9 Feb 2024 11:29:23 +0000
-Message-ID: <20240209112930.63663-9-vasant.hegde@amd.com>
+Subject: [PATCH v6 09/15] iommu/amd: Define per-IOMMU iopf_queue
+Date: Fri, 9 Feb 2024 11:29:24 +0000
+Message-ID: <20240209112930.63663-10-vasant.hegde@amd.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240209112930.63663-1-vasant.hegde@amd.com>
 References: <20240209112930.63663-1-vasant.hegde@amd.com>
@@ -77,144 +77,174 @@ X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
  (10.181.40.145)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH1PEPF0000A347:EE_|DS7PR12MB5743:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4a19b23f-4408-45ac-4a3d-08dc2962c2bf
+X-MS-TrafficTypeDiagnostic: CH1PEPF0000A34B:EE_|DM6PR12MB4059:EE_
+X-MS-Office365-Filtering-Correlation-Id: 37bff51a-6a87-4835-202d-08dc2962cb69
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	1EPJYljVkLly9B/NrqH7SkVJXqyh4emS+6bRg6n0EaFl9z8jCiigSCF7wM+Kr2MOFoUEApq+TONMcQ+FR+3RH02ofyAEw65C731hRKKwkQc22dTYQkK9rKG3gj0ExuMgC5gK3KdQDuabsFwPDfoxJEsungIhiY9VjVA3gnlnKzPSrt2ekwmj3ZsUzSp0fTJVC2sTxEfgQ9RzhahbIIzXoME3Gkk77lwD9OnbGMMzEmpuA/HiqQhtBuQSvZnnhA/0HH/Y1UEwRi7Tm5+ghkmfOrnVgXCjyktzqgMook1nfhpS5AJMHPYezsoP0ytA0hAJVdMTB27IPjeUR9vNSGCQvIyTmMpHywURcLXYqeEGLSkfA4rjYvmnB4XU4Tt4eLKiDhLzH0t28f+qWUhlTrxvHl5CDl+ob/F5iGYqd3LYqe+RBfKHPqISO+ggyXU/te5iN1MfrQtaB28NUWME9Um/074DUoSTJe2dZyhISLATgm6gELErfPU7OUztC3JUgzHXH86a0UXdp73ocIEBUHBoqA8/LrWtYoXW8sFXL7+wzCM+IOLvpdvAUHW9LJHLjQiKapyqy3pSBmJS+NhtLKkORFdXvcDeL3JXTg6Eayc99+s=
+	hnHaQJP7xn/fbqxkB9g+yvWtBYgTL5pash8Qt3aXumpaGvs4uAPDEeRJrl5THef/OFx1uAac9UrNUKt0ciNbrgC+sGl9Atsypw5x+OqVPLDP0OQdF8uV2xi+aJtP2p9oujkoKOcNeKxw4dhsFeppBSd1q5tUtV20mEBnMPna85JQ9vCPlaJCeab6FLqI4IUZe4xpX469jYh8lpqzGg52Zi0ZevzF2cueDZ3OyxlJ0RlXuOANbPOZqs8ih3TEE53SSFiMij0+pi89l8EcadvSFSXnRqUwhRTn2c7JqS1nQKILdERkPk5hXZOGMtRx8CykYGzQ3RaCNh243w/vKx134cfqAt1Eife5+q1/Jw2qDPZ63sKkrbMSXaGMY5Gc1M7SkOw93ExoCan/CFkbWnKa7gkSC/pHf10fsbAWQE4U3+B+HBe+C683ooth5z1pyt1Npr6YndZvWG+qVR85I0bozI9hIyMHJbnwvDnISGgnIoVMxKTQgJKJKHGWglJ6bFykoLgPso1OQAYE+hvB2lyHYVxs3SUKZd5Vj1OmoNJ4atBhK6go0CxjRuXjufgPLj47HdgKzzWBtUrmZjbTLpItnObbHwLt+tzM4HlgJteP3ow=
 X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(346002)(376002)(136003)(396003)(230922051799003)(82310400011)(1800799012)(451199024)(64100799003)(186009)(36840700001)(46966006)(40470700004)(5660300002)(82740400003)(81166007)(356005)(110136005)(70206006)(478600001)(8676002)(4326008)(336012)(54906003)(426003)(83380400001)(316002)(70586007)(8936002)(16526019)(2906002)(1076003)(44832011)(26005)(2616005)(7696005)(36756003)(6666004)(41300700001)(86362001);DIR:OUT;SFP:1101;
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(4636009)(376002)(346002)(136003)(39860400002)(396003)(230922051799003)(1800799012)(451199024)(82310400011)(186009)(64100799003)(40470700004)(36840700001)(46966006)(41300700001)(2906002)(5660300002)(16526019)(336012)(1076003)(26005)(426003)(110136005)(44832011)(54906003)(70206006)(70586007)(316002)(2616005)(83380400001)(356005)(81166007)(86362001)(478600001)(7696005)(4326008)(8676002)(8936002)(82740400003)(36756003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2024 11:32:12.9992
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2024 11:32:27.5341
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4a19b23f-4408-45ac-4a3d-08dc2962c2bf
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37bff51a-6a87-4835-202d-08dc2962cb69
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
 X-MS-Exchange-CrossTenant-AuthSource:
-	CH1PEPF0000A347.namprd04.prod.outlook.com
+	CH1PEPF0000A34B.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5743
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4059
 
-Commit eda8c2860ab ("iommu/amd: Enable device ATS/PASID/PRI capabilities
-independently") changed the way it enables device capability while
-attaching devices. I missed to account the attached domain capability.
-Meaning if domain is not capable of handling PASID/PRI (ex: paging
-domain with v1 page table) then enabling device feature is not required.
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 
-This patch enables PASID/PRI only if domain is capable of handling SVA.
-Also move pci feature enablement to do_attach() function so that we make
-SVA capability in one place. Finally make PRI enable/disable functions as
-static functions.
+AMD IOMMU hardware supports PCI Peripheral Paging Request (PPR) using
+a PPR log, which is a circular buffer containing requests from downstream
+end-point devices.
 
+There is one PPR log per IOMMU instance. Therefore, allocate an iopf_queue
+per IOMMU instance during driver initialization, and free the queue during
+driver deinitialization.
+
+Also rename enable_iommus_v2() -> enable_iommus_ppr() to reflect its
+usage. And add amd_iommu_gt_ppr_supported() check before enabling PPR
+log.
+
+Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Co-developed-by: Vasant Hegde <vasant.hegde@amd.com>
 Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
 ---
- drivers/iommu/amd/amd_iommu.h |  4 ----
- drivers/iommu/amd/iommu.c     | 22 ++++++++++++++--------
- 2 files changed, 14 insertions(+), 12 deletions(-)
+ drivers/iommu/amd/amd_iommu.h       |  5 +++++
+ drivers/iommu/amd/amd_iommu_types.h |  4 ++++
+ drivers/iommu/amd/init.c            | 18 +++++++++++++++--
+ drivers/iommu/amd/ppr.c             | 31 +++++++++++++++++++++++++++++
+ 4 files changed, 56 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index 353d59111cb2..54ec9affb1f4 100644
+index 54ec9affb1f4..f2084f90f056 100644
 --- a/drivers/iommu/amd/amd_iommu.h
 +++ b/drivers/iommu/amd/amd_iommu.h
-@@ -54,10 +54,6 @@ int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
- int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
- 			 u8 fxn, u64 *value);
+@@ -45,6 +45,11 @@ extern enum io_pgtable_fmt amd_iommu_pgtable;
+ extern int amd_iommu_gpt_level;
  
--/* Device capabilities */
--int amd_iommu_pdev_enable_cap_pri(struct pci_dev *pdev);
--void amd_iommu_pdev_disable_cap_pri(struct pci_dev *pdev);
--
- /* GCR3 setup */
- int amd_iommu_set_gcr3(struct iommu_dev_data *dev_data,
- 		       ioasid_t pasid, unsigned long gcr3);
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 693b9ba9cef0..1c3a4914cd35 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -403,7 +403,7 @@ static inline void pdev_disable_cap_ats(struct pci_dev *pdev)
- 	}
- }
- 
--int amd_iommu_pdev_enable_cap_pri(struct pci_dev *pdev)
-+static inline int pdev_enable_cap_pri(struct pci_dev *pdev)
- {
- 	struct iommu_dev_data *dev_data = dev_iommu_priv_get(&pdev->dev);
- 	int ret = -EINVAL;
-@@ -411,6 +411,9 @@ int amd_iommu_pdev_enable_cap_pri(struct pci_dev *pdev)
- 	if (dev_data->pri_enabled)
- 		return 0;
- 
-+	if (!dev_data->ats_enabled)
-+		return 0;
+ bool amd_iommu_pasid_supported(void);
 +
- 	if (dev_data->flags & AMD_IOMMU_DEVICE_FLAG_PRI_SUP) {
- 		/*
- 		 * First reset the PRI state of the device.
-@@ -427,7 +430,7 @@ int amd_iommu_pdev_enable_cap_pri(struct pci_dev *pdev)
- 	return ret;
- }
- 
--void amd_iommu_pdev_disable_cap_pri(struct pci_dev *pdev)
-+static inline void pdev_disable_cap_pri(struct pci_dev *pdev)
- {
- 	struct iommu_dev_data *dev_data = dev_iommu_priv_get(&pdev->dev);
- 
-@@ -469,15 +472,14 @@ static void pdev_enable_caps(struct pci_dev *pdev)
- {
- 	pdev_enable_cap_ats(pdev);
- 	pdev_enable_cap_pasid(pdev);
--	amd_iommu_pdev_enable_cap_pri(pdev);
--
-+	pdev_enable_cap_pri(pdev);
- }
- 
- static void pdev_disable_caps(struct pci_dev *pdev)
- {
- 	pdev_disable_cap_ats(pdev);
- 	pdev_disable_cap_pasid(pdev);
--	amd_iommu_pdev_disable_cap_pri(pdev);
-+	pdev_disable_cap_pri(pdev);
- }
- 
- /*
-@@ -2036,6 +2038,7 @@ static int do_attach(struct iommu_dev_data *dev_data,
- 		     struct protection_domain *domain)
- {
- 	struct amd_iommu *iommu = get_amd_iommu_from_dev_data(dev_data);
-+	struct pci_dev *pdev;
- 	int ret = 0;
- 
- 	/* Update data structures */
-@@ -2050,10 +2053,16 @@ static int do_attach(struct iommu_dev_data *dev_data,
- 	domain->dev_iommu[iommu->index] += 1;
- 	domain->dev_cnt                 += 1;
- 
-+	pdev = dev_is_pci(dev_data->dev) ? to_pci_dev(dev_data->dev) : NULL;
- 	if (pdom_is_sva_capable(domain)) {
- 		ret = init_gcr3_table(dev_data, domain);
- 		if (ret)
- 			return ret;
++/* IOPF */
++int amd_iommu_iopf_init(struct amd_iommu *iommu);
++void amd_iommu_iopf_uninit(struct amd_iommu *iommu);
 +
-+		if (pdev)
-+			pdev_enable_caps(pdev);
-+	} else if (pdev) {
-+		pdev_enable_cap_ats(pdev);
- 	}
+ struct amd_iommu *get_amd_iommu(unsigned int idx);
+ u8 amd_iommu_pc_get_max_banks(unsigned int idx);
+ bool amd_iommu_pc_supported(void);
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index 0abf590f6bc9..36586ff873da 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -770,6 +770,10 @@ struct amd_iommu {
+ 	/* DebugFS Info */
+ 	struct dentry *debugfs;
+ #endif
++
++	/* IOPF support */
++	struct iopf_queue *iopf_queue;
++	unsigned char iopfq_name[32];
+ };
  
- 	/* Update device table */
-@@ -2108,9 +2117,6 @@ static int attach_device(struct device *dev,
- 		goto out;
- 	}
+ static inline struct amd_iommu *dev_to_amd_iommu(struct device *dev)
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index d25a706adcfc..d4fcb8c2b8ea 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -1638,6 +1638,7 @@ static void __init free_iommu_one(struct amd_iommu *iommu)
+ 	amd_iommu_free_ppr_log(iommu);
+ 	free_ga_log(iommu);
+ 	iommu_unmap_mmio_space(iommu);
++	amd_iommu_iopf_uninit(iommu);
+ }
  
--	if (dev_is_pci(dev))
--		pdev_enable_caps(to_pci_dev(dev));
--
- 	ret = do_attach(dev_data, domain);
+ static void __init free_iommu_all(void)
+@@ -2104,6 +2105,16 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ 	if (ret)
+ 		return ret;
+ 
++	/*
++	 * Allocate per IOMMU IOPF queue here so that in attach device path,
++	 * PRI capable device can be added to IOPF queue
++	 */
++	if (amd_iommu_gt_ppr_supported()) {
++		ret = amd_iommu_iopf_init(iommu);
++		if (ret)
++			return ret;
++	}
++
+ 	iommu_device_register(&iommu->iommu, &amd_iommu_ops, NULL);
+ 
+ 	return pci_enable_device(iommu->dev);
+@@ -2789,10 +2800,13 @@ static void early_enable_iommus(void)
+ 	}
+ }
+ 
+-static void enable_iommus_v2(void)
++static void enable_iommus_ppr(void)
+ {
+ 	struct amd_iommu *iommu;
+ 
++	if (!amd_iommu_gt_ppr_supported())
++		return;
++
+ 	for_each_iommu(iommu)
+ 		amd_iommu_enable_ppr_log(iommu);
+ }
+@@ -3130,7 +3144,7 @@ static int amd_iommu_enable_interrupts(void)
+ 	 * PPR and GA log interrupt for all IOMMUs.
+ 	 */
+ 	enable_iommus_vapic();
+-	enable_iommus_v2();
++	enable_iommus_ppr();
  
  out:
+ 	return ret;
+diff --git a/drivers/iommu/amd/ppr.c b/drivers/iommu/amd/ppr.c
+index d43a616c0c36..39ea979c7134 100644
+--- a/drivers/iommu/amd/ppr.c
++++ b/drivers/iommu/amd/ppr.c
+@@ -106,3 +106,34 @@ void amd_iommu_poll_ppr_log(struct amd_iommu *iommu)
+ 		/* TODO: PPR Handler will be added when we add IOPF support */
+ 	}
+ }
++
++/**************************************************************
++ *
++ * IOPF handling stuff
++ */
++
++/* Setup per-IOMMU IOPF queue if not exist. */
++int amd_iommu_iopf_init(struct amd_iommu *iommu)
++{
++	int ret = 0;
++
++	if (iommu->iopf_queue)
++		return ret;
++
++	snprintf(iommu->iopfq_name, sizeof(iommu->iopfq_name),
++		 "amdiommu-%#x-iopfq",
++		 PCI_SEG_DEVID_TO_SBDF(iommu->pci_seg->id, iommu->devid));
++
++	iommu->iopf_queue = iopf_queue_alloc(iommu->iopfq_name);
++	if (!iommu->iopf_queue)
++		ret = -ENOMEM;
++
++	return ret;
++}
++
++/* Destroy per-IOMMU IOPF queue if no longer needed. */
++void amd_iommu_iopf_uninit(struct amd_iommu *iommu)
++{
++	iopf_queue_free(iommu->iopf_queue);
++	iommu->iopf_queue = NULL;
++}
 -- 
 2.31.1
 
