@@ -1,46 +1,46 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [192.55.52.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DB5F1370;
-	Fri,  9 Feb 2024 02:08:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3DCE15C9
+	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 02:39:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.55.52.88
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707444540; cv=none; b=O/8YT7d59/SnJ3PwWbIzbKyaDHsENvEDYsEslN11IaVLfqQV2LLoKkBRRnO3twrY8q3s/bfne/9SrgLpVVZVam47wTO7JTieGISFz7gJUBekE8m1ezGha8ybOMFx2m/5H6pqwiuWXorVzq6JfbGXjqq5n7I5nbV8qX2fcwuyHpg=
+	t=1707446394; cv=none; b=mtOtSczup1MY9lv/nQeLVPIP9o+ptEps2YOiQ/YKmSnd076xMioMrkVjW8bsNYWBqMsv2ImLd1zu8P8Ql1ELwBy9A6WGPjqFFudGckC23O92LxNSVl28oDaIeWTJ2LlPcpjmbdldJX0hkAqh9oq5ZushJFmT7ZDgzfcjjBHpxwk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707444540; c=relaxed/simple;
-	bh=v8o7vfqnfzKhev8X7dFatWmQOop7Opbrjtjs3z6LDBk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=saDTEkVOzgwIyIdJHgFg2MTn5rsHdH+qKS19+0ObO3hQE2YXPkpdE1wJc6NBr4yujY2qKpgJdOzy9PnAfZjr3cWQCcp7/aUQAP1kOMU4xftNJ6LxALWnWj2lguhjESqI+Aa/7/5MdFlnr6GT/9mfIeR1u3o3qgZNgjkNz2dQBII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BzDU3xgY; arc=none smtp.client-ip=192.198.163.8
+	s=arc-20240116; t=1707446394; c=relaxed/simple;
+	bh=3Ee/2aKrjQDTU3Kmj/mgQyTJpUZanAxmwCxR4/tJSOo=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=Toni9lM1rYuTOdkv3jBb3B0eCfydR9kj6dktl8wyHR7hjTVuJ3jjBnftasalgBVeOyIyucRPr+QuNWXgB+rEsyKjPl4EIblZzth/0QZ/uzMk34cA8fHHRoD6t5VviNhStInXIZvJc8pQbzBkKP+erEEHPW373eQD4pMlSa66jLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FvoDm9ho; arc=none smtp.client-ip=192.55.52.88
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BzDU3xgY"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FvoDm9ho"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707444536; x=1738980536;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=v8o7vfqnfzKhev8X7dFatWmQOop7Opbrjtjs3z6LDBk=;
-  b=BzDU3xgYLeqBY6+gHqEC7Tp5J3mNB//i+GoThQXDbiEaYS3ijyqNjSKZ
-   /Fk3Cb86HZjr3WyZEwAP6XoniKotNprcqY3npTwF6ZZRPpVKoL2hsDTvw
-   oCW99t3i7s5TgR1KM6S1OOCzggluVhZ4ZWhQ3PR6v13J1SeK0r+wWrZ6j
-   tZ2LHXUPIQdW1YxEkWq1UBhZz8IuDdy8AxwTHxqqwpp4hswuRJk1WIlGm
-   lpEu9CoZDktpsjguHTTg+MMUn77urklMaQR1MImEYLHk7zE/4qkJ5ZGBE
-   J27aAWctXCBOAgWDuscMzo5RMi8fDrgI8aZxM15ZqQHLIxwagDg2IsesZ
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10978"; a="18862426"
+  t=1707446392; x=1738982392;
+  h=message-id:date:mime-version:from:subject:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=3Ee/2aKrjQDTU3Kmj/mgQyTJpUZanAxmwCxR4/tJSOo=;
+  b=FvoDm9hoBXCgCnvwzEFt4EXhGJtgWx3tXx9Zs9bMyK8nhYnnMeFTdHrS
+   0aqHgUeZDGRREgsz1BSOs+y+Jn+vNn+MvnWDfySKnYu7P+mMZBdi1nDYn
+   H99UyHcUOo3+OCvz6DgqDEkMFdYQg6yopJlwEYiM+4gaBvw+iFFLinoHb
+   Nwn28gdmMdMl6x1VyhOMuRmJRIbwsU95LgGxobhuSTzZmerV3TCBuwKO1
+   BlyFCK5qNP4+vm59DS4GcSvpzjcuM4+7ySsGaRsrjVgtrNb/oj7wM/eCL
+   JWfJD0TCoU34NvllYmkA+vlRNUS6pCEKW1QnavXCk9OLj9Z5B1rrNAYr5
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10978"; a="436494519"
 X-IronPort-AV: E=Sophos;i="6.05,255,1701158400"; 
-   d="scan'208";a="18862426"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2024 18:08:55 -0800
+   d="scan'208";a="436494519"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2024 18:39:51 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.05,255,1701158400"; 
-   d="scan'208";a="1829406"
-Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.249.169.150]) ([10.249.169.150])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2024 18:08:51 -0800
-Message-ID: <290d9e43-5d71-4c25-b299-37d3854fb714@linux.intel.com>
-Date: Fri, 9 Feb 2024 10:08:48 +0800
+   d="scan'208";a="6488628"
+Received: from lshui-mobl1.ccr.corp.intel.com (HELO [10.249.170.42]) ([10.249.170.42])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2024 18:39:47 -0800
+Message-ID: <c918825d-ad74-4b1d-abcc-31c3f3ea4620@linux.intel.com>
+Date: Fri, 9 Feb 2024 10:39:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,67 +48,77 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v12 4/5] iommu/vt-d: pass pdev parameter for
- qi_check_fault() and refactor callers
-To: Dan Carpenter <dan.carpenter@linaro.org>, oe-kbuild@lists.linux.dev,
- baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
- jgg@ziepe.ca
-Cc: lkp@intel.com, oe-kbuild-all@lists.linux.dev, kevin.tian@intel.com,
- dwmw2@infradead.org, will@kernel.org, lukas@wunner.de, yi.l.liu@intel.com,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-pci@vger.kernel.org
-References: <b0b45e40-7510-4107-92a0-27fafb5d7bf7@moroto.mountain>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <b0b45e40-7510-4107-92a0-27fafb5d7bf7@moroto.mountain>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v12 00/16] iommu: Prepare to deliver page faults to user
+ space
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Longfang Liu <liulongfang@huawei.com>, Yan Zhao <yan.y.zhao@intel.com>,
+ Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
+ kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20240207013325.95182-1-baolu.lu@linux.intel.com>
+ <CABQgh9H02z+uHg_hYnoVZURz7PLeYW_41MwxciE6W+kPRgEHsw@mail.gmail.com>
+Content-Language: en-US
+In-Reply-To: <CABQgh9H02z+uHg_hYnoVZURz7PLeYW_41MwxciE6W+kPRgEHsw@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
+On 2024/2/8 17:03, Zhangfei Gao wrote:
+> Hi, Baolu
+> 
+> On Wed, 7 Feb 2024 at 09:39, Lu Baolu <baolu.lu@linux.intel.com 
+> <mailto:baolu.lu@linux.intel.com>> wrote:
+> 
+>     When a user-managed page table is attached to an IOMMU, it is necessary
+>     to deliver IO page faults to user space so that they can be handled
+>     appropriately. One use case for this is nested translation, which is
+>     currently being discussed in the mailing list.
+> 
+>     I have posted a RFC series [1] that describes the implementation of
+>     delivering page faults to user space through IOMMUFD. This series has
+>     received several comments on the IOMMU refactoring, which I am trying to
+>     address in this series.
+> 
+>     The major refactoring includes:
+> 
+>     - [PATCH 01 ~ 04] Move include/uapi/linux/iommu.h to
+>        include/linux/iommu.h. Remove the unrecoverable fault data
+>     definition.
+>     - [PATCH 05 ~ 06] Remove iommu_[un]register_device_fault_handler().
+>     - [PATCH 07 ~ 10] Separate SVA and IOPF. Make IOPF a generic page fault
+>        handling framework.
+>     - [PATCH 11 ~ 16] Improve iopf framework.
+> 
+>     This is also available at github [2].
+> 
+>     [1]
+>     https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/ <https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/>
+>     [2]
+>     https://github.com/LuBaolu/intel-iommu/commits/preparatory-io-pgfault-delivery-v12 <https://github.com/LuBaolu/intel-iommu/commits/preparatory-io-pgfault-delivery-v12>
+> 
+> 
+> Wandering are these patches dropped now,
+> 
+> [PATCH v2 2/6] iommufd: Add iommu page fault uapi data
+> https://lore.kernel.org/lkml/20231026024930.382898-3-baolu.lu@linux.intel.com/raw <https://lore.kernel.org/lkml/20231026024930.382898-3-baolu.lu@linux.intel.com/raw>
+> 
+> [PATCH v2 4/6] iommufd: Deliver fault messages to user space
+> https://lore.kernel.org/lkml/20231026024930.382898-5-baolu.lu@linux.intel.com/ <https://lore.kernel.org/lkml/20231026024930.382898-5-baolu.lu@linux.intel.com/>
 
-On 2/8/2024 3:15 PM, Dan Carpenter wrote:
-> Hi Ethan,
->
-> kernel test robot noticed the following build warnings:
->
-> url:    https://github.com/intel-lab-lkp/linux/commits/Ethan-Zhao/PCI-make-pci_dev_is_disconnected-helper-public-for-other-drivers/20240129-115259
-> base:   41bccc98fb7931d63d03f326a746ac4d429c1dd3
-> patch link:    https://lore.kernel.org/r/20240129034924.817005-5-haifeng.zhao%40linux.intel.com
-> patch subject: [PATCH v12 4/5] iommu/vt-d: pass pdev parameter for qi_check_fault() and refactor callers
-> config: x86_64-randconfig-161-20240207 (https://download.01.org/0day-ci/archive/20240208/202402080321.n77hu71Y-lkp@intel.com/config)
-> compiler: gcc-12 (Debian 12.2.0-14) 12.2.0
->
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-> | Closes: https://lore.kernel.org/r/202402080321.n77hu71Y-lkp@intel.com/
->
-> smatch warnings:
-> drivers/iommu/intel/dmar.c:1533 qi_flush_dev_iotlb() error: we previously assumed 'info->dev' could be null (see line 1533)
->
-> vim +1533 drivers/iommu/intel/dmar.c
->
-> 20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1522  void qi_flush_dev_iotlb(struct intel_iommu *iommu,
-> 20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1523  			struct device_domain_info *info, u64 addr,
-> 20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1524  			unsigned int mask)
-> 6ba6c3a4cacfd6 drivers/pci/dmar.c         Yu Zhao      2009-05-18  1525  {
-> c830e699e08a6c drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1526  	struct pci_dev *pdev = NULL;
-> 20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1527  	u16 sid, qdep, pfsid;
-> 6ba6c3a4cacfd6 drivers/pci/dmar.c         Yu Zhao      2009-05-18  1528  	struct qi_desc desc;
-> 6ba6c3a4cacfd6 drivers/pci/dmar.c         Yu Zhao      2009-05-18  1529
-> 20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1530  	if (!info || !info->ats_enabled)
-> 20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1531  		return;
-> 20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1532
-> c830e699e08a6c drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28 @1533  	if (info->dev || !dev_is_pci(info->dev))
->
-> Missing ! character.  if (!info->dev
+Above patches are part of another series named "IOMMUFD: Deliver IO page
+faults to user space", which is now updated to v3.
 
-Got it, thanks.
+https://lore.kernel.org/linux-iommu/20240122073903.24406-1-baolu.lu@linux.intel.com/
 
->
-> c830e699e08a6c drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1534  		return;
-> c830e699e08a6c drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1535
-> c830e699e08a6c drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1536  	pdev = to_pci_dev(info->dev);
-> 20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1537  	sid = info->bus << 8 | info->devfn;
-> 20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1538  	qdep = info->ats_qdep;
-> 20da7293134024 drivers/iommu/intel/dmar.c Ethan Zhao   2024-01-28  1539  	pfsid = info->pfsid;
->
+> And does iouring still be used in user space?
+
+iouring is not related to this series. For uapi of iommufd, it's still
+recommended to use iouring to speed up the handling of faults.
+
+Best regards,
+baolu
