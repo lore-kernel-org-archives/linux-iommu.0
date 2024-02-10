@@ -1,197 +1,292 @@
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2075.outbound.protection.outlook.com [40.107.243.75])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90588210FA
-	for <iommu@lists.linux.dev>; Fri,  9 Feb 2024 22:23:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.75
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707517436; cv=fail; b=texaeLIHC23fUsdXupz2SXyxiFogyEUxLScKVc1qCoCBSFsHmJ2TrR5FeTKrUAIvi5kvgDiWZsVGNXHUrCC6fKjEoEukttscNASHZw4CzsAMBGq6Zs48rGKY2eJ6W+WlLHbyXRbfjicLw5ZhEp4NJvOVz3dBFMxqqfuYmupFWA4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707517436; c=relaxed/simple;
-	bh=Vi5QiqX+4Z92hoVenkft8vbY17OjI2jMCnyZFXfvIVk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=nbfmWePkZbm8jmNMYNDLzV+Xmzidm6pROk4ar07hIME6PivdQ9ZVZT7Y/ErBoD4DsdjcHJY1rLadvMk7SHbki1PYoItzNWWzpNU2iNlMZd574l9c9HHcScg7j1cQlfTcpYWQ4nW2Ay7LkBmQ9zoDyGzyT02g+0x95WO97nE1MdY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=jkMAJ1i1; arc=fail smtp.client-ip=40.107.243.75
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 974704A3F
+	for <iommu@lists.linux.dev>; Sat, 10 Feb 2024 02:21:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.49
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707531710; cv=none; b=DmO20cUTqh6MdTRdFPLpZUnfyYIutxAB3uruhAUCGWJEx7I2Xzq4w6vLacGTv7SaYkUD+FewtAyVv86VAxkvouxwPhdEiZR1I/ezaKzKECii/mHhpXG6Gdg91hK+2HqWSWhukgQkCnJw+YvLVQvD60vm/J/0LRanHv9HVb/Cxg8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707531710; c=relaxed/simple;
+	bh=OEsr09Gb3Hzxbc+OG+EIkVQM7fLubAEWg7orSg+gNbQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=G6gZX9Ba9niWeWJr4yy/h/eFyl0mrpj9JhUbmeP4OUUjhPruD8Y44MqzaXBCB6Neomry7ch+mrEOMpBnJrE93RS3k72FJY+ZCAYBwNNOoQ30gMjWQUuWMICJyD4CpRNDilM1FonefjFLkn7TkFoDHvVBKDXnseMt5awIrE4DjYU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com; spf=none smtp.mailfrom=soleen.com; dkim=fail (0-bit key) header.d=soleen.com header.i=@soleen.com header.b=Vc2htpBV reason="key not found in DNS"; arc=none smtp.client-ip=209.85.160.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="jkMAJ1i1"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XQkrjJFQsjHk03uSBq969FN4xrg4qXuz1I5aHN1bxw1Jn94UphUzKVjn9QCvu7M+uBNBgW2D46gcMpgO5+UTWQxiyAZN6iotPKNpz4VI4UHoDsctr8UDVobaZTC/JXfnpkrXNTuoHKNeEJhS4sD8LYjpjiHBTV76rwhD8J7staJi/lab402kLKnrN15VmGE3HdPKlkOp2kIiC4VXGwfDPgZi6BH8W8sr1jd8gUbCWtDMhLRsjqro/rwCv9ZEVcQ/6+Yybf183dkVAY1FjKRCV8DXKgjQPOE1H9BfHUiFNFpNBEnwDKTybm7Qh5BVXWijVCpPm3tKOTmQ8PbIG5+RgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WOeP9blMIkyObTnCRL+Ny7gI4tOl9Wuv7MTo0bRA/oc=;
- b=Ton/qXy6YzpoibF/l4q530tDHYUWx7wN+cBGzDgLXTvwKki1WN9rMECMyq+IjJCQHIuvw0H/Zd769ZEWyI0N7p4ojg+HLQy7j2ze6SGYfuX5+p94eruwPzFlc1Hfa9fTM2826n2Yvr7tt7wLrYUUahAEZMbS7eDrDU+1MeKCKZDbtMLzomCCXDDV+4ySLgqiNWUf/0MB+lvFu9680/88MJZzm1uHF8jwH9f0RbhROI7KsM+DwC+fMDQQfFFOkQh/xFrBtMjX8Q43Xl+26a+YZShChQ2U1p37VHW2+Qy5QKgGAQtt2UjMLhETjgspB0LSHAoS1O8Dnh4ostq8huSvyw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WOeP9blMIkyObTnCRL+Ny7gI4tOl9Wuv7MTo0bRA/oc=;
- b=jkMAJ1i1F/l54mFliSWGz7BhZLbWtcni1h8OKr3bOqaDa4OO9PSdQR3+Ybm7g4RTTti/fqUjlgttBEUcM+LU0Gi9ogVyBt1rVuxoToi2wYQ/eePlMVSRr7Ee5gODUE2MkEU4Sn/eaQlULzC4Tom7qr4j1FKxCzHsy3QVGT8sxFWo3PJG+4Q/tVgEawnkrqTw3z0VpwkJ+ioHXHBDmjWvmOBMpVI9GreB2TP7kQUn1/nTBz62Bq0aP0NHynPlkJE2GPmmVDtfQdDgjR6+l5ordU4EiJRxytvaS3IY3ybFeJyMYJEKL+p5XgHYBhYoLJRCLLxxh3L9aXbP87JsrYuHEQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CH3PR12MB8511.namprd12.prod.outlook.com (2603:10b6:610:15c::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.14; Fri, 9 Feb
- 2024 22:23:51 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873%6]) with mapi id 15.20.7270.012; Fri, 9 Feb 2024
- 22:23:51 +0000
-Date: Fri, 9 Feb 2024 18:23:49 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: iommu@lists.linux.dev, joro@8bytes.org,
-	linux-arm-kernel@lists.infradead.org, nicolinc@nvidia.com,
-	robin.murphy@arm.com, will@kernel.org,
-	linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] iommu/arm-smmu: Convert to domain_alloc_paging()
-Message-ID: <20240209222349.GA923780@nvidia.com>
-References: <5-v2-c86cc8c2230e+160bb-smmu_newapi_jgg@nvidia.com>
- <20240209200538.917366-1-dmitry.baryshkov@linaro.org>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240209200538.917366-1-dmitry.baryshkov@linaro.org>
-X-ClientProxiedBy: SA9PR13CA0135.namprd13.prod.outlook.com
- (2603:10b6:806:27::20) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=soleen.com header.i=@soleen.com header.b="Vc2htpBV"
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-214c940145bso848682fac.1
+        for <iommu@lists.linux.dev>; Fri, 09 Feb 2024 18:21:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen.com; s=google; t=1707531707; x=1708136507; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=HxzMCuaeyhn3J9cU+FUkQXDQEw1s8FDPbrSZbrZddcs=;
+        b=Vc2htpBV/XCG+6i0IzQcjZJt1j+ZdNtQ10AYBKXElgPbxoKa38oev/nET5NIuSQFfK
+         zaISKjJEM664MAmPyUMaLY1giFjGKEHLwcS1m9b9ziThQiEAA0S/Nhdqk7zMQnVpB8TW
+         NFrhifMBLvQZuTL+WaT2q49qqCeU/jV3KCOtYHGzrnHgUVsrUDrAIYy1aqZ2qlaxWeaH
+         IfFfGIDhz/vBO8pIrVPTkMyOt8rW8c0Ci+VOBRcDpywjNcceOcbVs6+239Quexzvovbt
+         xrDO6hNKYfI9BRiTjhAuCBslsDkmkfyVlsEkBYi1648ZRYGvFyKEiXAFbOkqoKzlaiSO
+         MTJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707531707; x=1708136507;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=HxzMCuaeyhn3J9cU+FUkQXDQEw1s8FDPbrSZbrZddcs=;
+        b=pI8VLOvi96QlJF46iu/In+HntvBAotW39kC2vVr1TIV4TV08M14ni/UpwA959ZwES/
+         jD2olVzkwFyfruSdIzT//4BE1rmO5BjDSIYUixFHLqGnl7kLR99Uxmjsiwabn2iTzeMr
+         ZlnatQSzhDiwYUq42UCnPXxM8NNARR81CvdDkuZMKm9bxq0AlfC1IIRaD+ufz9fh5qvc
+         cd9tGdCDBEmODEl/H8QkomXQXbV597w4eaoeCk9CLxet9eY1Y2paNtxxhAKZ1wHUp1/3
+         eT66ToAbtKaGqIK401L4anC3BfSC3yXDdkAYsbv4p3ZbN485QHUqpPB7a9qtqTxExBdv
+         ydJA==
+X-Forwarded-Encrypted: i=1; AJvYcCVCu+VlsE4WZOVHn1CyKTeXrBHZuictEBi0LCgFByG5rdxKxWfCZZtiC4g3VY9yPC8628FR+wyN7+rZb6qTAXOy1jmCL8E=
+X-Gm-Message-State: AOJu0YyMJYOGJCoPcW61cxYJ3/WoBKwVF2IfVfbYs/NZFdZ4yqISJAql
+	Gjxtl8vB1UM18wO1y3t4/zKb1spqX3kPH+zzhpc8cky2g9h2+Mbj/neEUxeaQZQicdil/x0Xa6S
+	Qs+7XGnpMJqVcPoQWrVRC/M2C050rFqZvuLQ9aA==
+X-Google-Smtp-Source: AGHT+IFmCDzBaOTRJEg/f8FLkRS6yQpqqh3yX5ZW6I0WCsOQ72Tibv6RAzofMrIiMT9QniCTSK/5rtfk2WW8zRu6CiM=
+X-Received: by 2002:a05:6870:211:b0:218:f001:10bf with SMTP id
+ j17-20020a056870021100b00218f00110bfmr1150766oad.35.1707531707564; Fri, 09
+ Feb 2024 18:21:47 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH3PR12MB8511:EE_
-X-MS-Office365-Filtering-Correlation-Id: aa83132f-8c6e-4e8f-ba5e-08dc29bdcaf8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	sg0IgKT/ewT27dN7A0arEsZ8247lgBOc/kncJz/mLTwJ2SbtP5FwzGNB2yl15xFnKB9onAFdiGU/U8axEIyyMKN3bPkhII3k01YlF92uigi6zY0FtBB5LrZhOptwzN5rByaGIW2l0xzl2ETo35QeEoay9TcU3nwa9o4oRfQMcc+41YxgM6ATuSUw7wnsnw4wy+1GlXy9zbhPwKTQKg8MRyDxWlczZjrhtbPH+y7czNHTBMGvK1IavUuzQwMldJ2lsuefvFqDCzhisY5cOES2qMikxrNrKUtSZjY/nMCkAB4nvphXUFhtyxqrQTqzqjg90ywjecw6AUCw4oI8nF34/1XVaCtUMaHbMFZBfI/MoMgP3DetzSBD3JFudeXYb0Ugj9sAEwFbgPruwqSmYPndqqsG+K2OoadNhIP6UluN7BWqE0BSj3XqRLfUc8SZV7QGhklku/SLytI0Efye2sUi/57jlryhzzFzJCM5iUDGZkXCRzDNMgqvAimrmaIi01SAIbRR1rwIPBohaV6iG6aS1/duQGrOLDkRRmZaa1MKMVpUbzZgEgpYsj11EfMGTi+5
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376002)(136003)(346002)(396003)(39860400002)(366004)(230922051799003)(64100799003)(1800799012)(186009)(451199024)(478600001)(6506007)(86362001)(6486002)(316002)(33656002)(66476007)(2906002)(38100700002)(66946007)(66556008)(41300700001)(6916009)(5660300002)(2616005)(26005)(1076003)(8676002)(6512007)(83380400001)(4326008)(36756003)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?yKvNuss1SOyBwdWbVeS4LDxk5mNpxcw1o5GPXDl4RefHTkj/2R24YFbnIWqg?=
- =?us-ascii?Q?xz3XVrx7MTqXpwglNeSiig1EUvQcfRgrZE5GsiwQl7aXiaA32ueugZz/mKOM?=
- =?us-ascii?Q?h5p5NB7rqgCN+pMBO55bP/oEjUMK0K2cw+sP2R5KR8VX/qf4VoEPhLnuSrkT?=
- =?us-ascii?Q?uIdtCOokyF0FCaPpJ1bSHerL2wjlPv0cdQhU37yQ+dagMF4rcLLzuaBEXiTY?=
- =?us-ascii?Q?nQhdZx9KVPaUyxzameGjdA8AhrUFQ4gR8va23yqd4oeeI861JOBlxZafZ4+7?=
- =?us-ascii?Q?HOM4SYL9QyvS1SvL1wHMtFG3+Qkw5E0nPpE40m+pWd6SeXfcAfj5awGRXLco?=
- =?us-ascii?Q?K5JJrfvuc13zxOs8On5XaMi7vb7dmr2xb1bWc2wd7+qWr5E6vVl3eqGd8TRl?=
- =?us-ascii?Q?Nll9Wzyui3CmruZugKoqLWJRKpw5Tlr0vzsba4ZWZT9Ys8MDS5teZir4yVKW?=
- =?us-ascii?Q?uymqZfpZX7HzXyfrU0xRJ5TUs4zUshuLzi4Y3HwrrblKBDDFOBybPG8tr1uo?=
- =?us-ascii?Q?EwhEJ5EH93Y01yYHqGQqJGXGbtweHyZ6EjlYo5Ox478hfvkCzRA7l2NcRU1u?=
- =?us-ascii?Q?TxQFfBvFC2mi9CvhzhihiBXU1EDrZesg9XwAlYYulJq1QNsTT7HMysmiZpI3?=
- =?us-ascii?Q?7aRlSku6cyPRPs4hlY4lxD9LoWRyUsKbIKmRgUgZlDQnGHeCQCqnuel3clET?=
- =?us-ascii?Q?xVWEeMryFBO6sK0H6Kr5XvUGcJrZ/3J6UYBfRFwXdxdbhxvL5LYM6aZyJbRv?=
- =?us-ascii?Q?AgM/696kd7oZMMBvwaNHxB2JEHNuunk9ZKtTl+a+0QCFcRMOxJDkWQwnsQ9s?=
- =?us-ascii?Q?Jn61fnHoI7GUJ+aQl7JxcW2vOgHPdG5fyLSP1TCGOswrlH/Gm0CCx6KL9czF?=
- =?us-ascii?Q?ZwqooazfcnOIN/v/We/yBkgqYGvxlx3SSx4HIduW0irWCj1lvG8eYZPNgzW3?=
- =?us-ascii?Q?g8AXDXW6zTGRr/SXGgtu7pR1pnB0o/VUUlWGoIcetAhQbiCmScH/IgEZ6Jic?=
- =?us-ascii?Q?Na3ckLI+EUDhL1O4Dmflf62seon9b2I3EQ/BuzbMuL3LaeBujJnrWNROnXjq?=
- =?us-ascii?Q?D/+rATdI86Edq8m7Eb4x10Ae7jKs5QelrAuoszwPjZIneyB/L1LGzg+Zy40Q?=
- =?us-ascii?Q?aIKfYE6EZm21c5XNW2eM46WglbaIf/zXYRHvjVuaUL/rNloUHgV/83IpgbW7?=
- =?us-ascii?Q?fGX2WP3ljwm6NRZ9L4RLMoa7206K1cfpuCzFArpMlnL3fTJO5Mf7wm3lnfve?=
- =?us-ascii?Q?/dcI/sZr+NeW122G72PXV39kYk8zPDWdXVqtjFgG32X/zICudcUf6dC2tUWr?=
- =?us-ascii?Q?gSZTL0HkdH2Ggv1tYJYzooGQL2NCvDKnC7Ir7OjhQefpKEOZCO+OFiaVSrV1?=
- =?us-ascii?Q?a2bSP+ZqQCUh0SSmRxHx50w4xocFRMkCiP0IgXgLIbS3UoiztaK4Xu2Zk5+8?=
- =?us-ascii?Q?Sd+4k5ph13yQQKB1WTGpL5ZoPVBkSW8UIvf8JIejAybXWyrRjrzTsmc1pKHu?=
- =?us-ascii?Q?V7CSy1z+2MIaP5bbUygt3tR5mRpK+0QZAPBoeHTp3sLFK3cp8Drw6xeVjrVV?=
- =?us-ascii?Q?z1nDXz0E4D7vWccaAxc=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: aa83132f-8c6e-4e8f-ba5e-08dc29bdcaf8
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Feb 2024 22:23:51.2000
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: B24bu6mC//pZ2r7gbNAkZb3QIsGhCA0XSPnBiNf6NiGwwr83Yi1+PXLfr8AQ9uVP
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB8511
+References: <20240207174102.1486130-1-pasha.tatashin@soleen.com>
+ <20240207174102.1486130-2-pasha.tatashin@soleen.com> <8ce2cd7b-7702-45aa-b4c8-25a01c27ed83@arm.com>
+In-Reply-To: <8ce2cd7b-7702-45aa-b4c8-25a01c27ed83@arm.com>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Fri, 9 Feb 2024 21:21:10 -0500
+Message-ID: <CA+CK2bC=XyUhoSP9f0XBqEnQ-P5mMT2U=5dfzRSc9C=2b+bstQ@mail.gmail.com>
+Subject: Re: [PATCH v4 01/10] iommu/vt-d: add wrapper functions for page allocations
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: akpm@linux-foundation.org, alim.akhtar@samsung.com, alyssa@rosenzweig.io, 
+	asahi@lists.linux.dev, baolu.lu@linux.intel.com, bhelgaas@google.com, 
+	cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com, 
+	dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de, 
+	iommu@lists.linux.dev, jernej.skrabec@gmail.com, jonathanh@nvidia.com, 
+	joro@8bytes.org, krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mm@kvack.org, linux-rockchip@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
+	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st, 
+	mhiramat@kernel.org, m.szyprowski@samsung.com, paulmck@kernel.org, 
+	rdunlap@infradead.org, samuel@sholland.org, suravee.suthikulpanit@amd.com, 
+	sven@svenpeter.dev, thierry.reding@gmail.com, tj@kernel.org, 
+	tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org, will@kernel.org, 
+	yu-cheng.yu@intel.com, rientjes@google.com, bagasdotme@gmail.com, 
+	mkoutny@suse.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, Feb 09, 2024 at 10:05:38PM +0200, Dmitry Baryshkov wrote:
-> On Tue, 17 Oct 2023 Jason Gunthorpe <jgg@nvidia.com> wrote:
-> > Now that the BLOCKED and IDENTITY behaviors are managed with their own
-> > domains change to the domain_alloc_paging() op.
-> > 
-> > The check for using_legacy_binding is now redundant,
-> > arm_smmu_def_domain_type() always returns IOMMU_DOMAIN_IDENTITY for this
-> > mode, so the core code will never attempt to create a DMA domain in the
-> > first place.
-> > 
-> > Since commit a4fdd9762272 ("iommu: Use flush queue capability") the core
-> > code only passes in IDENTITY/BLOCKED/UNMANAGED/DMA domain types. It will
-> > not pass in IDENTITY or BLOCKED if the global statics exist, so the test
-> > for DMA is also redundant now too.
-> > 
-> > Call arm_smmu_init_domain_context() early if a dev is available.
-> > 
-> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.c | 21 +++++++++++++++------
-> >  1 file changed, 15 insertions(+), 6 deletions(-)
-> 
-> For some reason this patch breaks booting of the APQ8096 Dragonboard820c
-> (qcom/apq8096-db820c.dts). Dispbling display subsystem (mdss) and venus
-> devices makes the board boot in most of the cases. Most frequently the
-> last parts of the log loog in a following way:
+Hi Robin,
 
-It is surprising we tested this patch on some tegra systems with this
-iommu and didn't hit anything..
+Thank you for reviewing this.
 
-The only real functional thing this changes is to move the domain
-initialization up in time, potentially a lot in time in some
-cases. That function does alot of things including touching HW so
-possibly there is some surprising interaction with something else.
+> > +#ifndef __IOMMU_PAGES_H
+> > +#define __IOMMU_PAGES_H
+> > +
+> > +#include <linux/vmstat.h>
+> > +#include <linux/gfp.h>
+> > +#include <linux/mm.h>
+> > +
+> > +/*
+> > + * All page allocation that are performed in the IOMMU subsystem must use one of
+>
+> "All page allocations" is too broad; As before, this is only about
+> pagetable allocations, or I guess for the full nuance, allocations of
+> pagetables and other per-iommu_domain configuration structures which are
+> reasonable to report as "pagetables" to userspace.
 
-So, I would expect this to not WARN_ON and to make it work the same as
-before the patch:
-
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -875,7 +875,9 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
-        mutex_init(&smmu_domain->init_mutex);
-        spin_lock_init(&smmu_domain->cb_lock);
- 
--       if (dev) {
-+       WARN_ON(using_legacy_binding);
-+
-+/*     if (dev) {
-                struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
- 
-                if (arm_smmu_init_domain_context(smmu_domain, cfg->smmu, dev)) {
-@@ -883,7 +885,7 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
-                        return NULL;
-                }
-        }
--
-+*/
-        return &smmu_domain->domain;
- }
-
-Then I'd ask you to remove the comment and do:
-
-@@ -878,7 +878,9 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
-        if (dev) {
-                struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
- 
-+               WARN_ON(true);
-                if (arm_smmu_init_domain_context(smmu_domain, cfg->smmu, dev)) {
-+                       printk("Allocation failure in arm_smmu_domain_alloc_paging()\n");
-                        kfree(smmu_domain);
-                        return NULL;
-                }
+I will update the comment.
 
 
-And then we may get a clue from the backtraces it generates. I only
-saw one iommu group reported in your log so I'd expect one trace?
+>
+> > + * the functions below.  This is necessary for the proper accounting as IOMMU
+> > + * state can be rather large, i.e. multiple gigabytes in size.
+> > + */
+> > +
+> > +/**
+> > + * __iommu_alloc_pages_node - allocate a zeroed page of a given order from
+> > + * specific NUMA node.
+> > + * @nid: memory NUMA node id
+> > + * @gfp: buddy allocator flags
+> > + * @order: page order
+> > + *
+> > + * returns the head struct page of the allocated page.
+> > + */
+> > +static inline struct page *__iommu_alloc_pages_node(int nid, gfp_t gfp,
+> > +                                                 int order)
+> > +{
+> > +     struct page *page;
+> > +
+> > +     page = alloc_pages_node(nid, gfp | __GFP_ZERO, order);
+> > +     if (unlikely(!page))
+> > +             return NULL;
+> > +
+> > +     return page;
+> > +}
+>
+> All 3 invocations of this only use the returned struct page to trivially
+> derive page_address(), so we really don't need it; just clean up these
+> callsites a bit more.
 
-Thanks,
-Jason
+I will remove this function, and update all invocations to use
+iommu_alloc_pages_node() directly.
+
+
+> > + * __iommu_alloc_pages - allocate a zeroed page of a given order.
+> > + * @gfp: buddy allocator flags
+> > + * @order: page order
+> > + *
+> > + * returns the head struct page of the allocated page.
+> > + */
+> > +static inline struct page *__iommu_alloc_pages(gfp_t gfp, int order)
+> > +{
+> > +     struct page *page;
+> > +
+> > +     page = alloc_pages(gfp | __GFP_ZERO, order);
+> > +     if (unlikely(!page))
+> > +             return NULL;
+> > +
+> > +     return page;
+> > +}
+>
+> Same for the single invocation of this one.
+
+I kept this function, but removed __iommu_alloc_page() that depends on
+it. This is because tegra-smmu needs a "struct page" allocator.
+
+>
+> > +
+> > +/**
+> > + * __iommu_alloc_page_node - allocate a zeroed page at specific NUMA node.
+> > + * @nid: memory NUMA node id
+> > + * @gfp: buddy allocator flags
+> > + *
+> > + * returns the struct page of the allocated page.
+> > + */
+> > +static inline struct page *__iommu_alloc_page_node(int nid, gfp_t gfp)
+> > +{
+> > +     return __iommu_alloc_pages_node(nid, gfp, 0);
+> > +}
+>
+> There are no users of this at all.
+
+Yes, I added it just for completeness, I will remove it.
+
+
+> > + * __iommu_alloc_page - allocate a zeroed page
+> > + * @gfp: buddy allocator flags
+> > + *
+> > + * returns the struct page of the allocated page.
+> > + */
+> > +static inline struct page *__iommu_alloc_page(gfp_t gfp)
+> > +{
+> > +     return __iommu_alloc_pages(gfp, 0);
+> > +}
+> > +
+> > +/**
+> > + * __iommu_free_pages - free page of a given order
+> > + * @page: head struct page of the page
+> > + * @order: page order
+> > + */
+> > +static inline void __iommu_free_pages(struct page *page, int order)
+> > +{
+> > +     if (!page)
+> > +             return;
+> > +
+> > +     __free_pages(page, order);
+> > +}
+> > +
+> > +/**
+> > + * __iommu_free_page - free page
+> > + * @page: struct page of the page
+> > + */
+> > +static inline void __iommu_free_page(struct page *page)
+> > +{
+> > +     __iommu_free_pages(page, 0);
+> > +}
+>
+> Beyond one more trivial Intel cleanup for __iommu_alloc_pages(), these 3
+> are then only used by tegra-smmu, so honestly I'd be inclined to just
+> open-code there page_address()/virt_to_page() conversions as appropriate
+> there (once again I think the whole thing could in fact be refactored to
+> not use struct pages at all because all it's ever ultimately doing with
+> them is page_address(), but that would be a bigger job so definitely
+> out-of-scope for this series).
+
+I removed __iommu_free_page(), but kept __iommu_free_pages() variant.
+
+>
+> > +
+> > +/**
+> > + * iommu_alloc_pages_node - allocate a zeroed page of a given order from
+> > + * specific NUMA node.
+> > + * @nid: memory NUMA node id
+> > + * @gfp: buddy allocator flags
+> > + * @order: page order
+> > + *
+> > + * returns the virtual address of the allocated page
+> > + */
+> > +static inline void *iommu_alloc_pages_node(int nid, gfp_t gfp, int order)
+> > +{
+> > +     struct page *page = __iommu_alloc_pages_node(nid, gfp, order);
+> > +
+> > +     if (unlikely(!page))
+> > +             return NULL;
+>
+> As a general point I'd prefer to fold these checks into the accounting
+> function itself rather than repeat them all over.
+
+For the free functions this saves a few cycles by not repeating this
+check again inside __free_pages(), to keep things symmetrical it makes
+sense to keep __iomu_free_account and __iomu_alloc_account the same.
+With the other clean-up there are not that many of these checks left.
+
+> > + */
+> > +static inline void *iommu_alloc_page_node(int nid, gfp_t gfp)
+> > +{
+> > +     return iommu_alloc_pages_node(nid, gfp, 0);
+> > +}
+>
+> TBH I'm not entirely convinced that saving 4 characters per invocation
+> times 11 invocations makes this wrapper worthwhile :/
+
+Let's keep them. After the clean-up that you suggested, there are
+fewer functions left in this file, but I think that it is cleaner to
+keep these remaining, as it is beneficial to easily distinguish when
+exactly one page is allocated vs when multiple are allocated via code
+search.
+
+
+> > + *
+> > + * There are no locking requirement for these pages, as they are going to be
+> > + * put on a free list as soon as refcount reaches 0. Pages are put on this LRU
+> > + * list once they are removed from the IOMMU page tables. However, they can
+> > + * still be access through debugfs.
+> > + */
+> > +static inline void iommu_free_pages_list(struct list_head *page)
+>
+> Nit: I'd be inclined to call this iommu_put_pages_list for consistency.
+
+I will rename it to iommu_put_pages_list(), indeed a better name.
+
+>
+> > +{
+> > +     while (!list_empty(page)) {
+> > +             struct page *p = list_entry(page->prev, struct page, lru);
+> > +
+> > +             list_del(&p->lru);
+> > +             put_page(p);
+> > +     }
+> > +}
+>
+> I realise now you've also missed the common freelist freeing sites in
+> iommu-dma.
+
+Ah yes, thank you for catching that. I will fix it.
+
+Pasha
