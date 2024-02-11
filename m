@@ -1,127 +1,115 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C5C33CF4E
-	for <iommu@lists.linux.dev>; Sat, 10 Feb 2024 11:27:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F6715B685;
+	Sun, 11 Feb 2024 17:52:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707564479; cv=none; b=IC+k2Q83F6i67adBX1Zj/Lzz83LKZ2FXHIZlOPnb15UoiKH8CG7Cn1AqankaQZDKlPpJeaydmDo/u2EoFNODHJu9r9TIneX6PrABN2DaC0UpUVetFszpvA+jLSbevFbfR68YF7tVYoW31//x1KO12qyW8YsR/lh6wVZQpQAxIg0=
+	t=1707673940; cv=none; b=KvYByoXriYz5KfVFjLezr5FStxxshCc1qxbrx1suBhq/iCwPEgpsd+YoOofbz7JjMMmaKFTbafdOXX7/LuiqpWbDk1bhb1M+U6FLlcL7PskRfb9itXC7Rspc6xYpqN4b1W59v3EY/dRr0KEfaKzIpcPK/jag8y2IHISnw36OmvY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707564479; c=relaxed/simple;
-	bh=4OyKZnmqJQZAOOTD2TG4WTVzLLJt8ZHseBX/iLb32yo=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=ZX27Hqivv8S8qIWEr5+oEf2XNZZc3TbiWtyw+X8mE9iuIPAbUAFehIqHIwcbtrU2XeeuAZnHOgSI5D/7xLepjtLClM33nxcFdpP7RkpInUJ2v8PfhlEmQzgmYOrVJ4Q4XeOc6VZyMDnPf8NMRToNvMulwIH+/dQuEQ1JRjkcHDk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SsEQCbYx; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1707673940; c=relaxed/simple;
+	bh=f2eO+FYHFwTKrMLX02BEOBpAa90tEHpnB9dG/oL3+XA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=nqQzZ4ti4KYi7HyBAKxxi969n14QjTb9rSaHY96c0az5A0XcJeOmELA0Alm9bDrN/laVCHiH0Qfj1YjODTYwMhuFtWUsSpZNPj4/PhMDTAry4qRsx6jyTuoPAx0yIwjzv5t2LuVePQJ9D222QQJbXNnE7ZArue+cHfUs/87WySY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.com; spf=pass smtp.mailfrom=gmx.com; dkim=pass (2048-bit key) header.d=gmx.com header.i=erick.archer@gmx.com header.b=mOkaH3mA; arc=none smtp.client-ip=212.227.17.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=gmx.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmx.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SsEQCbYx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707564477; x=1739100477;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=4OyKZnmqJQZAOOTD2TG4WTVzLLJt8ZHseBX/iLb32yo=;
-  b=SsEQCbYx8LOOHOst4N5PRqVZ8yG0HM30QNABpNWdtKb5D3TlOUXyJcAi
-   kSCnLi95cVE5u/78Wl+sl5QrtbGD7ZiyEqHxzP7Mk2ov8IvQDqM/AKOHW
-   S1rqX8oIj0pmxMrZAOomt3ELxXc7uUhMiLUgQ5euO6bMWBsq+YBN7DNYg
-   YBQjObw2J+mdiJEevlF1CBAdy1ZuidM4znJgtTGjZaoq45qWqUzesSy9n
-   D7l9oLKnBKlbNpWEAQayyEiOnG8vpKp8Omsp8+Ayj0XN2qGj5IDlZmHK8
-   VXjovVI/A/RnqxPkHkZAmGvWdXvpXooQxZs31Rki+WxXcQKk1kCjHNemv
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10979"; a="19063372"
-X-IronPort-AV: E=Sophos;i="6.05,259,1701158400"; 
-   d="scan'208";a="19063372"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2024 03:27:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.05,259,1701158400"; 
-   d="scan'208";a="6907193"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.214.152]) ([10.254.214.152])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2024 03:27:48 -0800
-Message-ID: <2a86f3d0-4aa7-4c32-afb9-e5a908a65d10@linux.intel.com>
-Date: Sat, 10 Feb 2024 19:27:46 +0800
+	dkim=pass (2048-bit key) header.d=gmx.com header.i=erick.archer@gmx.com header.b="mOkaH3mA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.com;
+	s=s31663417; t=1707673917; x=1708278717; i=erick.archer@gmx.com;
+	bh=f2eO+FYHFwTKrMLX02BEOBpAa90tEHpnB9dG/oL3+XA=;
+	h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+	b=mOkaH3mAEJGrziOsOi4RRqM+m5yie11GF8/ywPfvdYiLDH4ANKlu6ab6K5yRi32+
+	 zt56lXHlEp4SBeAuCSv9K60dhmuepmNVLeo3+xAT7nQJsEqR8g8mcoECD9/QDiyER
+	 dg9CnlTeAYKZGhqtc3XnhHVH+7q8HGNVoB+vqF/+P4VOSFtNF03aKXantsbTdxIO2
+	 RjOPWXi1Vp2YZ9lVhxpltPG9cTNfAwJXhFARcF1nPPLJRszWvh5+h4cbgyY7hXavm
+	 tF+YZ2YlWTq78sRCnAoJeOUjAv23vtszTGM+mdm2Z83aWSUwZTJTOcqsX+RWvN9dP
+	 O8UAWWs1bcb/MjDpMQ==
+X-UI-Sender-Class: 724b4f7f-cbec-4199-ad4e-598c01a50d3a
+Received: from localhost.localdomain ([79.157.194.183]) by mail.gmx.net
+ (mrgmx104 [212.227.17.174]) with ESMTPSA (Nemesis) id
+ 1N2V4J-1qqdmM2Yd5-013vIV; Sun, 11 Feb 2024 18:51:57 +0100
+From: Erick Archer <erick.archer@gmx.com>
+To: David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
+	Kees Cook <keescook@chromium.org>
+Cc: Erick Archer <erick.archer@gmx.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	linux-hardening@vger.kernel.org
+Subject: [PATCH] iommu/vt-d: Use kcalloc() instead of kzalloc()
+Date: Sun, 11 Feb 2024 18:51:43 +0100
+Message-Id: <20240211175143.9229-1-erick.archer@gmx.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Vineet Gupta <vgupta@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
- <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
- <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
- "K. Y. Srinivasan" <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
- Dexuan Cui <decui@microsoft.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- David Woodhouse <dwmw2@infradead.org>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 6/7] iommu/dma: Centralise iommu_setup_dma_ops()
-To: Robin Murphy <robin.murphy@arm.com>
-References: <cover.1707493264.git.robin.murphy@arm.com>
- <202fcca3269201bc9c4a8198253f195433d0c4ff.1707493264.git.robin.murphy@arm.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <202fcca3269201bc9c4a8198253f195433d0c4ff.1707493264.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:fRNt/jnU+EgR445uI1FodxKwopT7+a/mrfXW9mIP0JCRBnynv8J
+ CqQm+x7fJyJXcPNr3eUv/TQY/vFvLiOqKuoYBepSxBIFvumB67rV1UZhqkR3CkMTF+dcNPI
+ Yl21yBArAfKTKhhwT9PP0TNpjtCJk0fb5aWbmZ09eHpjHSt2iYvkRyAJQaIngPXJTyWTBT9
+ f45FaliNraYjGZ2kM3m5A==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:wI4IgzOPPy0=;TDkhQ6yQenORkRkTgJLiNmfm6Gi
+ 5iW80IJ/ey3QnC1veoGSCMBdQbMHXSGaWqyEyg0wEIeiJke8XUPZGcuoFemWgbf8YOwJSmWOY
+ F5WLHfRBGpROAxcxX7i5AK3bb/oDGrZFl6tQP7K1ZciNJk9Deom6B4U9Y7QDNOpH74JRJZ/0Q
+ g1aaV2LnMscM8uHovQ6YF443hcmzZsAwIGe0wtMB1a4ECoX8h5gVszW+8SwZkajYnZow8TJkQ
+ lMqf5ytzcbUN7IDBck3E+A1QubFlpYNYfQiilPG+NDJtYJhoY53u/fvUGOEeSJI5AIOJ57Sfu
+ MuwG8zh+zOkBWv0p+rmGsmnW1vc7AiGBhByxJmNTr3ZgbnEuBja1u0kKgItQMecs1knwBJxDb
+ 32i7iM8Ra91F1N5UW8gHRL3cAy9y3LbDksnP5J3bPqcL7SnvPuwFB/kyzjAfEyZCpBe4okbdM
+ r/yMFgBWhQucTTmivdwGWnP3zx+jSve0ndgQWZ/wvAs4Nb4giAd8ZVYcecd+GxlY6NGELRQPt
+ uhV0KoiSV5FlPphrNUhAOAPEWyuvRT8hsnIQzJnD0RfWBeGwEQvoUQnHS226QxXREyu9Tc7Nf
+ qytb8yVAA42UVzM133l+eX0uvQJUxaTJ1lA8CC/6+h59q5zV64+zM3G9/UezNwW3t5i74Jrb6
+ FXxCgm8ZpOSohQJ9tpb7qjwukxVX8eGexTsYA2qAFg0knoqgktimtMLdFF9KLO3vpFUZlVL5J
+ 0xbiUEQdQzPX5h9BZBL4J575YFZJWOrC0g5OG0lDd/61KYkpzo0aG5/MsKeilGuPMR567zEeH
+ ztmsDBEbq8AU0Z7RHD18T4AKAQq0Ig0xBirZYLAvtpjqs=
 
-On 2024/2/10 0:50, Robin Murphy wrote:
-> It's somewhat hard to see, but arm64's arch_setup_dma_ops() should only
-> ever call iommu_setup_dma_ops() after a successful iommu_probe_device(),
-> which means there should be no harm in achieving the same order of
-> operations by running it off the back of iommu_probe_device() itself.
-> This then puts it in line with the x86 and s390 .probe_finalize bodges,
-> letting us pull it all into the main flow properly. As a bonus this lets
-> us fold in and de-scope the PCI workaround setup as well.
-> 
-> At this point we can also then pull the call up inside the group mutex,
-> and avoid having to think about whether iommu_group_store_type() could
-> theoretically race and free the domain if iommu_setup_dma_ops() ran just
-> *before*  iommu_device_use_default_domain() claims it... Furthermore we
-> replace one .probe_finalize call completely, since the only remaining
-> implementations are now one which only needs to run once for the initial
-> boot-time probe, and two which themselves render that path unreachable.
-> 
-> This leaves us a big step closer to realistically being able to unpick
-> the variety of different things that iommu_setup_dma_ops() has been
-> muddling together, and further streamline iommu-dma into core API flows
-> in future.
-> 
-> Signed-off-by: Robin Murphy<robin.murphy@arm.com>
-> ---
-> v2: Shuffle around to make sure the iommu_group_do_probe_finalize() case
->      is covered as well, with bonus side-effects as above.
-> v3:*Really*  do that, remembering the other two probe_finalize sites too.
-> ---
->   arch/arm64/mm/dma-mapping.c  |  2 --
->   drivers/iommu/amd/iommu.c    |  8 --------
->   drivers/iommu/dma-iommu.c    | 18 ++++++------------
->   drivers/iommu/dma-iommu.h    | 14 ++++++--------
->   drivers/iommu/intel/iommu.c  |  7 -------
->   drivers/iommu/iommu.c        | 20 +++++++-------------
->   drivers/iommu/s390-iommu.c   |  6 ------
->   drivers/iommu/virtio-iommu.c | 10 ----------
->   include/linux/iommu.h        |  7 -------
->   9 files changed, 19 insertions(+), 73 deletions(-)
+This is an effort to get rid of all multiplications from allocation
+functions in order to prevent integer overflows [1].
 
-For changes in Intel IOMMU driver,
+Here the multiplication is obviously safe because DMAR_LATENCY_NUM
+is the number of latency types defined in the "latency_type" enum.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+enum latency_type {
+	DMAR_LATENCY_INV_IOTLB =3D 0,
+	DMAR_LATENCY_INV_DEVTLB,
+	DMAR_LATENCY_INV_IEC,
+	DMAR_LATENCY_PRQ,
+	DMAR_LATENCY_NUM
+};
 
-Best regards,
-baolu
+However, using kcalloc() is more appropriate [2] and improves
+readability. This patch has no effect on runtime behavior.
+
+Link: https://github.com/KSPP/linux/issues/162 [1]
+Link: https://www.kernel.org/doc/html/next/process/deprecated.html#open-co=
+ded-arithmetic-in-allocator-arguments [2]
+Signed-off-by: Erick Archer <erick.archer@gmx.com>
+=2D--
+ drivers/iommu/intel/perf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel/perf.c b/drivers/iommu/intel/perf.c
+index 94ee70ac38e3..adc4de6bbd88 100644
+=2D-- a/drivers/iommu/intel/perf.c
++++ b/drivers/iommu/intel/perf.c
+@@ -33,7 +33,7 @@ int dmar_latency_enable(struct intel_iommu *iommu, enum =
+latency_type type)
+
+ 	spin_lock_irqsave(&latency_lock, flags);
+ 	if (!iommu->perf_statistic) {
+-		iommu->perf_statistic =3D kzalloc(sizeof(*lstat) * DMAR_LATENCY_NUM,
++		iommu->perf_statistic =3D kcalloc(DMAR_LATENCY_NUM, sizeof(*lstat),
+ 						GFP_ATOMIC);
+ 		if (!iommu->perf_statistic) {
+ 			ret =3D -ENOMEM;
+=2D-
+2.25.1
+
