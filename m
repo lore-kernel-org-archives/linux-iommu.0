@@ -1,139 +1,111 @@
-Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 390D25F865
-	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 21:40:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 021DA4C63F
+	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 22:06:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707774051; cv=none; b=h0O/pbgjmNRaF3ovaapM3fP0PEjD+cX2KHdbzbSlqy/Y3VyfKmPbppUvJHFyNBLG7JsXQZKzIlaBuKNJgUv5Ftj2WI1Cw5fmRdcR8qygPn8wdHzMgL6IFl4BPBA0mGtuXVeGOf+IV/EPsFuvPBtVFRg0dzxnr+wMo0MAbs0Z6A8=
+	t=1707775610; cv=none; b=aY8Ub5FrSrtH+TWIzooIel0TXYBhoKpJEvEI2inixFP0GK4X128tEgNf9ZzimanCVWxtMfv/qCufdZTeQ6aNayQiu/U9j9o/G7o5cZ02X2ZEai57MqNeY5d9Pi0DUQR4ycAvxgvIk4U/J0t3418LC8VetC3t2d5yRHtFIvd5pFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707774051; c=relaxed/simple;
-	bh=vS3hFfqyUn7F6Wyl2Bup5pxO9jekfVbmKT9YXb3RIpI=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=WERePJLlvwha/6lbOg6IH3WjBsp3wndCLHb4eeDKZW7OVztXQLnsVz2FG33TraMrT5/WI1eQ6HCWm+J12Kmc1/n9XDYKzj3oc7MjEKpVCgDV6+djE7pPVWLfFLFuheXg0Yb3GXO4Lx9llv55ohdMhiY7/dbIcmPEwc6Nns9kCDo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Xh72hCUi; arc=none smtp.client-ip=209.85.128.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
+	s=arc-20240116; t=1707775610; c=relaxed/simple;
+	bh=JHTQeNLLMkswmIE/y7V+PKYlGU7fYxgX1dVgIvM2E2k=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rzocw4mvY4NzLOc3ttIjs4qYUhVLkly6XWJKdzkAsYu0Tb4gW1RFUyVEOd0y+ywl2R1pxDvB7agEUA9z7bmoeQadoDkgY4eQAL/T7CHWmihgpP7Epk5rFwyixoSyBfsrOLGrNq+7wxWIoyCEEQAVHQiclb33aes/ffoZdYnZsXQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=R9b9SCz6; arc=none smtp.client-ip=209.85.210.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Xh72hCUi"
-Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-6049b563243so67273147b3.1
-        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 13:40:49 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="R9b9SCz6"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-6e0a37751cbso1549786b3a.2
+        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 14:06:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1707774048; x=1708378848; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SBX12uj3ZhdKUrlA/PpkAMdvyZt1FRyTju3ec31OSZc=;
-        b=Xh72hCUiXw/oJrzD+C39u8Ai7XONbVBRPHUffK+4ho/uYbWdeDKShA9pKgqqFs+b/U
-         W+NxldVkzHG7+WCuQubPKI5EYo8vkirBZXjU7DvD4vV3zHtUwPXZ/WF4/VI+ScglVrNj
-         5brbvruLHEKnYnQVnxMlZF34wiEiwvWVp/0hjxyInIUL9d+Y4KDE7VjhVYpoFtJNZJrg
-         J6cy7BhOsqaq9HrXa2/KgPd09xsrp6tYJ9mHxMW/BPa8Cq3Uljp+e7BeYe0+RQ6YGCpN
-         QHa/CJ7a+mXVXPq7WkDmp7m4edNcTXuvPn8+VkGLX5BhqBTfo19A8/cJb2OjZvo8utYR
-         d/Zg==
+        d=chromium.org; s=google; t=1707775608; x=1708380408; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=cfBFT3E6uuwQvv/Pq6TrncKe1LxZZQMXwgtmc4u2niM=;
+        b=R9b9SCz6eEy0ApfZYJd446wFHm1k2lFlJ1Gc/PLZis9I0K+JMvJQzg1nTY9RPFD80h
+         PAqMqCtjZ1708eY06vHU6EsJF7R1IXbfWG3w1g+WBz407y5kqm42HVS1tBG0kW1JKrHO
+         AUaTWPLsvAIcqG3qNTR3p8mX8XmkOwfRBo/kg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707774048; x=1708378848;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SBX12uj3ZhdKUrlA/PpkAMdvyZt1FRyTju3ec31OSZc=;
-        b=o1aBuIrTbptgLf/MWA6n+jprPkmoXAVOjc8KaZKYoXpasI4592PG+1wkOZLiycr1Jf
-         oGexP563ghrnSZe6Z3seD5jXt+Fwt2BfR99VqzzXyMTDk0mN4SNbiFkTVW/TeK3O41rE
-         869FHaMMjBp2XYkQyS0+QdokJT/rBfMcFdBvYkQ2oKk06h8FsfWEr2G3WbBSnTLZYsmN
-         JrO0vYaewwnJYu/4OJIVcwZUphYW8asROHOPswa5DmXUwQgeOJ/QoV8HcW+2eyOQ9I1P
-         /y8a/FsrbVLa2+lt6xhMiYSS9i9qralh88LJJ2SDezyeGQGYgMsYHDSUblQEUAZg8YKL
-         Vr5w==
-X-Gm-Message-State: AOJu0YzzChjFV30z1i807Knw5zX5W/6iHa7cFXE29N52jjJTh05NVhWI
-	bqPsvooy5aR4F5pBXmSbKb59QQpqzekiEQpYDfRxvNOCgGBqzDSHZ/PGmEckwvqbi8/D/e8R+NC
-	oLw==
-X-Google-Smtp-Source: AGHT+IGnimMvKfHnjDqQ+fcufl2ID9NuWKv0TEQmpUKb7IHMbluonmQIQ8q+5RdznzBwDieXP2FUkEOc23U=
-X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:b848:2b3f:be49:9cbc])
- (user=surenb job=sendgmr) by 2002:a05:690c:ec9:b0:604:648:6dc0 with SMTP id
- cs9-20020a05690c0ec900b0060406486dc0mr2354569ywb.10.1707774048308; Mon, 12
- Feb 2024 13:40:48 -0800 (PST)
-Date: Mon, 12 Feb 2024 13:39:21 -0800
-In-Reply-To: <20240212213922.783301-1-surenb@google.com>
+        d=1e100.net; s=20230601; t=1707775608; x=1708380408;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cfBFT3E6uuwQvv/Pq6TrncKe1LxZZQMXwgtmc4u2niM=;
+        b=mH0tjRqypufmrrft4r+6s89G748/zGVd13A1n5gRMBpaA/4LYDOC7qGUE2tF9tN8Cx
+         1NYrGvYfmhXoHYmYZHz+dMuGiDfUQReHN/QO2I9Cn/S+vPkfmdSD34kyMEBL37jqtneH
+         Lqz86sLrlpo2qIazUsqrirwqz+Z8AYX6i4E1TmZfnpAOwh2Hcw/Duvt+XP3Tc78xAtiR
+         T0jb/M0QoTKWgz//YAtt6OX4oTtPbTVxVT8UOH2FjI0ucB5fDEPPzNAosNZnXXC5xKLo
+         3rtz10lSln/mhOKEunnYQMllFyAbGHhz9UYKRd//nRf8oFtFO4kQL59g19Epegf5UhtF
+         BExg==
+X-Forwarded-Encrypted: i=1; AJvYcCXwHhyuyLScv3kcf/sgc9hbU3trQNfAvLVLYbbqkecXcHhQ3Ps1v3/DjcwKlAYRcdz72etyKDegKhqvWDRI//J9f5yYlO8=
+X-Gm-Message-State: AOJu0YyES8a9+rLNOtgauCLq9BNg+ZQTdP3y1CTzErn6zY9tKbCqHQ0k
+	/7h2zQSSzYXo3mjuTK+nMEaev4nTDdI2W+bySePnmmfKYWdQcO3VWgyHnAbcVA==
+X-Google-Smtp-Source: AGHT+IGaCS4FE1fgtoRRnsmXSTy6fZAOSF37rEolH25HBo4sIUQjN9QncvXzf6oIO60VYs+syL8/fQ==
+X-Received: by 2002:a62:cdcf:0:b0:6e0:6c0d:f55a with SMTP id o198-20020a62cdcf000000b006e06c0df55amr8081618pfg.8.1707775608405;
+        Mon, 12 Feb 2024 14:06:48 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCVkewCVc6tHL4+EISv7PCsXM9ydkTsXDaDTLcNzXCcXhbrh/9C+ax0nndC/hzVRMx0nInEYWC0KIt/8lOHNzqIEmD1e/R6JnZN1Vl+JE8tkYrbQRcuHv6+76ApR26qH2E5I+H4dL02gaOsP2GqZB9zhAy+BzP/Xam7kiNv0f1NuAtutolmP4BxJOHmv6p/4+nri8gPYYXx2yBFWr5NL014vNsFwE6yR+EkHWpxHabW2jspuy9JvVw5xPvjVtcx+kvAQx351WFQx6EglHMAWoZHCmE67J7tbB0AYuj4mbHYYbddcGzVGmVl83+H+ZJVi0l8UQ1MFnuAEpXE85ZyohrEgLDkUOUmLNpo5LXxpY8EL/z6HU+Ff72PctyzucnexTN6EgJ+LopCob78Xl2LSlS9m7Ivnmm+zD+jBT2XwGVBKbJNFVx16AG7BaXeIN5J2hp1pyPl3fYTs6QzbQHFqYGdt/KOaLXF/t+5fNoJGIhQCbRMi6TsRpi6j4BsJHstaOHdJ5KSeuSow+uLH8y+XYLIPoT7s3U1XgCzMerDbCQG1HcJw1Pi8y0yNdBB+Crwddz+Y/8nUZLOjR3UWe68zNMfDp/kXRYB2oKryBCMWf9T9s6UIV20y0o/B5yoF/9R3JnIr5YkWHN5jc7H0L5PAL0RJLKW5561RaYHPERkxxltLBWDSgGUo0ausv8conJoy1YdIJlpbVK3bCp4QtXVKMFGW2S5HONUn9votHX11blRYyN+m6teOEA==
+Received: from www.outflux.net ([198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id j18-20020aa79292000000b006e0545768dasm6015711pfa.151.2024.02.12.14.06.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Feb 2024 14:06:47 -0800 (PST)
+Date: Mon, 12 Feb 2024 14:06:47 -0800
+From: Kees Cook <keescook@chromium.org>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
+	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
+	peterz@infradead.org, juri.lelli@redhat.com,
+	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+	x86@kernel.org, peterx@redhat.com, david@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+	ndesaulniers@google.com, vvvvvv@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 02/35] scripts/kallysms: Always include __start and
+ __stop symbols
+Message-ID: <202402121406.16006BBE54@keescook>
+References: <20240212213922.783301-1-surenb@google.com>
+ <20240212213922.783301-3-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <20240212213922.783301-1-surenb@google.com>
-X-Mailer: git-send-email 2.43.0.687.g38aa6559b0-goog
-Message-ID: <20240212213922.783301-36-surenb@google.com>
-Subject: [PATCH v3 35/35] MAINTAINERS: Add entries for code tagging and memory
- allocation profiling
-From: Suren Baghdasaryan <surenb@google.com>
-To: akpm@linux-foundation.org
-Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
-	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, 
-	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, surenb@google.com, 
-	kernel-team@android.com, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240212213922.783301-3-surenb@google.com>
 
-From: Kent Overstreet <kent.overstreet@linux.dev>
+On Mon, Feb 12, 2024 at 01:38:48PM -0800, Suren Baghdasaryan wrote:
+> From: Kent Overstreet <kent.overstreet@linux.dev>
+> 
+> These symbols are used to denote section boundaries: by always including
+> them we can unify loading sections from modules with loading built-in
+> sections, which leads to some significant cleanup.
+> 
+> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 
-The new code & libraries added are being maintained - mark them as such.
+Seems reasonable!
 
-Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-Signed-off-by: Suren Baghdasaryan <surenb@google.com>
----
- MAINTAINERS | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 73d898383e51..6da139418775 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5210,6 +5210,13 @@ S:	Supported
- F:	Documentation/process/code-of-conduct-interpretation.rst
- F:	Documentation/process/code-of-conduct.rst
- 
-+CODE TAGGING
-+M:	Suren Baghdasaryan <surenb@google.com>
-+M:	Kent Overstreet <kent.overstreet@linux.dev>
-+S:	Maintained
-+F:	include/linux/codetag.h
-+F:	lib/codetag.c
-+
- COMEDI DRIVERS
- M:	Ian Abbott <abbotti@mev.co.uk>
- M:	H Hartley Sweeten <hsweeten@visionengravers.com>
-@@ -14056,6 +14063,15 @@ F:	mm/memblock.c
- F:	mm/mm_init.c
- F:	tools/testing/memblock/
- 
-+MEMORY ALLOCATION PROFILING
-+M:	Suren Baghdasaryan <surenb@google.com>
-+M:	Kent Overstreet <kent.overstreet@linux.dev>
-+S:	Maintained
-+F:	include/linux/alloc_tag.h
-+F:	include/linux/codetag_ctx.h
-+F:	lib/alloc_tag.c
-+F:	lib/pgalloc_tag.c
-+
- MEMORY CONTROLLER DRIVERS
- M:	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
- L:	linux-kernel@vger.kernel.org
 -- 
-2.43.0.687.g38aa6559b0-goog
-
+Kees Cook
