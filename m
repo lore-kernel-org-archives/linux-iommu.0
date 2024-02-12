@@ -1,62 +1,62 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D5C04B5AE
-	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 13:55:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0A493B2AD
+	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 14:45:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707746129; cv=none; b=sKZenpRux4e652bu6lXx/r79hmmRWgHEO4XhdTrpirvn56b7A4OQ7DdoXCQxcAUf0F2IYN+95p3LlKzpcILXp2OtSxqa0AJ23kh+mOOP4Z7jdp1pdDTffCtPpV/U8VbWmUyM0oWWmZO3RDVIBK8Ln3dHkdy1N2uM9sqG9uxxV4o=
+	t=1707749161; cv=none; b=BEMYdoblj242/mvrseZYZsSFLvsn1YMnaOxcijlOm355IP8qqprktOziK/KtCNpYiGlHY70mNOHFpiVzy4Rga+zr9S/D5srMBnLr9G1rs+tMBdTR0F8soeLz7Y5eqboQCe6MzezHaiNGylWQDmrwv+74Kn/WNHMeIrADFJ79HdM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707746129; c=relaxed/simple;
-	bh=Iumxg7dOyROr9n3zhgwuZOr7k1xFCvfSz6tj70u8jvo=;
+	s=arc-20240116; t=1707749161; c=relaxed/simple;
+	bh=k0VGRuELN28Qn9lvQIHQIcutEgWButk0U6b9H2aLz3c=;
 	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=tjZpA82XLU2f/AKFSjGd7APktQP7YgB9uU8iHSyKiQWEl2ta7EcQaGsXJnG9WvqTuybEIGxmsnH9h00RMzZfuIwcYGaY5paaUh9nVjsKN1c351bIwU6qfpsGff0ZeXkAsZp+UIg9MbDPjrqjgIF3ZXAQpO+cCX4++n5Z6ERIXT8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=dkOnZXCB; arc=none smtp.client-ip=209.85.128.54
+	 In-Reply-To:Content-Type; b=hBSUxezlPLaAXw7bl27m/qfQl+2Cy3+mygtiiAIp7vek9+X4HU4lsSM4zd+ybiockqzBp9Zdd+0BET1F033GlcadWo1ATPHF3GQcvLLmpzHd3NCVi5PBv1DcfkpMktTt8j4PS3geHhidjV7E/4BbweaRuu7PhNIX04nXbL7eDW0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ouo7E5G9; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dkOnZXCB"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-411a54365cbso1460765e9.0
-        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 05:55:26 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ouo7E5G9"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-410cb9315f6so8192665e9.2
+        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 06:45:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707746125; x=1708350925; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1707749158; x=1708353958; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
          :references:cc:to:content-language:subject:reply-to:from:user-agent
          :mime-version:date:message-id:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=rPZItga0K6a/d3qYmA5SX0F5b4igv+uCIQlz3f+nZfg=;
-        b=dkOnZXCBrjSabioAOw+8MjRR8ATJsUSKVwJL/vrMPmrGqLjVSS+zTPBG24Cx7ECuBx
-         KI5DqLdbHC37lIuuizzdPM1NHVMVTIr7D70kd4muzwn0v1LAOnbjCBYfqGFF9jiEydsr
-         DGl5QMyKR1U66n34Yjvq1ey96Ic4XPdKL1bYtc+HqVaMUsBYCiSTPmJu9CWcyk/Fcyv2
-         m9ou/O0Y6BGmDUPYiAFFVHr4n6+S89ZSj8Q3PkaAyzCY/F4NTMjzz2cHyLPIA9xGUdof
-         m9Lh+fuiFa16fJdX7wJETh+y6GWLCpECF+Na31vj4af/G3VB5yexbAdRMTl4NaaMpLvB
-         MBkg==
+        bh=S3pxgRFVsEQsnhpF3PxeCXS4BN+4M3jXTWtMtfyBqxo=;
+        b=ouo7E5G9pZQMy8owSC/64UK4G6z9vcvy/FXL8xnTLFnaD45yjxB9z9RqSFciI7wl3c
+         R+1ysQrylZ2gPN0Y9tolIkssTgQcrO9qPgvDM2AkY7nwBKaJCTwqsj2vVhlT9nmh3x1n
+         O4Z7Ghy5X8kD5fMSWsFkuQtJBnuF+adECIG6kMw2P9135g9/CtLSERZBOq9nLNkyV0+C
+         d9TFuOZ15l7Gng2uzJMkvZAsZMYGSRRd5Pqk6xb57vsT/w5UliR2vuLF5v7/2IgcGCcD
+         zq7jT9tB7RxzKXMmzW8ajsu/x+n5cFhL2oBKpNe2xtYy2XZGjuqdEDnhQ7rl0ngRQ8kl
+         cw/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707746125; x=1708350925;
+        d=1e100.net; s=20230601; t=1707749158; x=1708353958;
         h=content-transfer-encoding:in-reply-to:organization:autocrypt
          :references:cc:to:content-language:subject:reply-to:from:user-agent
          :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=rPZItga0K6a/d3qYmA5SX0F5b4igv+uCIQlz3f+nZfg=;
-        b=TR26o7FO+7dvcWuC9AdeY81I+WQxj0QDsJWJZk7FvfCFYKlVHPPJOYbA2wj/C0k4AC
-         oXJjXLdqslO2k4sbq8FpyW5V2HOI9opLJ07ovsPBseU83xB5V3Y4EO9sq+KTpUg8n23n
-         PeDPZyzZwUgVGDDvOghdGGXO/ZDXlMpPjili4HAGIr1kX3yK1bI+mUIoq2s6Kpbfpur3
-         K1sd+FZCb5NStGzlQ7/DYi9+mID6QgunqqQQZsJqlaQmCMZ6fPPar6yBinPN6FZ/hkZB
-         ZUUjm9DRgziFiyICh0IQoN0UjZap764e8jijVjheHzbbcnRqVI8HoQnHihVqUlqOvpIE
-         jmmQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUiT7zaV2SbJYBXOviZM6ws4LVT9gFLVNPLBUJwubA4D4FNqi9Qp+A4jriWTqE7+OdK/ZeiSfa7mX8onejO/GPD/yS4bsU=
-X-Gm-Message-State: AOJu0YzD6Qgf7e2pF85oJtJDZ2Zb8lTfPMk+eyweBkl+cp5SJnH7ztn1
-	GPyW6JCXXig+5bj3jRvxb024ILeUAcugiwEOOvndmMY4zDUdiLYEI5NrGr0d0Vk=
-X-Google-Smtp-Source: AGHT+IG7KY1/dGz5O9hkR94hPzKo0X0u3+e+5j1NEGuM5qVmSOXQKof4lVhHGwJ6xxSDf7MW8jNfAQ==
-X-Received: by 2002:adf:ffcc:0:b0:33b:72f2:2283 with SMTP id x12-20020adfffcc000000b0033b72f22283mr4536501wrs.17.1707746124778;
-        Mon, 12 Feb 2024 05:55:24 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVkTD1yETNCUWfYwYCnpQdU5FS7SXa7H6wVPKrdy75+Sc7wy7dhEcOGBxivwS8upXzw9QSUx1H9UjRq76n9r4PVgnrWMUd0VH06GG/8U7GJqcHc4krhSmF60TYGvNcqZKM2WQAwv8Vdc5vKz0Hu8ODUgi998rEPcD0aVet908xw7RzW952PBXlzbOu2Mq/ZwM6T1KTyv0+yzmAshAyjWt5P5w3Cw1NttKbn9pqMnHM5B+jFiCT+uGYyDv64f++9FIU/DGFlelj6KCV7KRzDCOZKYvioTfwYoJB1/Ma3peqWGRWx9l8pwZmCCJNG/DzYs/rXm981E00zEJyiBU01WMVnC3jBdozdPWWJHWiN9SfxQgYM7EyysBMG5PXSHi8mXqwToUWJRQp2eBRsqykQFViyHIp6+U8sBRd8/ZvuWqKGGa6+wPHe+zGdGr5LC/mcniH936J+EmU1QfN5U58z4AFBB4xY9npKCEce7xDA9USySSod4bDRyLme8XB+B4NkRyDcy8RjOfZtLcXGr8TkoRulZkRsFeM2b8W3HSaEyKynPjz4ZNVUYa2enZUNXWTTaz668GOR/PFgmXcQfKxGFSnaUAdoS+V1aYmoaqJB5+Yle732nfv8RrVmngYZjSDpQvET2DSQJXhUC9EiX+7WxVKZzPiRTzFX7pibS2TbDnOZDnjXIFUDhHUVA6FeyOAfJ0s2vUo1wN7+atYwCOznpyE7BMywwfp+1d4uZNLhJ7icFqrfeDgVC6BtcUw+iM4d5nnuoxcsz0p1DQj7crxYWZ1zkyHt4ZS9MAgeWZm1qLqhvcfyx4RzTfF8WciP
+        bh=S3pxgRFVsEQsnhpF3PxeCXS4BN+4M3jXTWtMtfyBqxo=;
+        b=Z4OlwYR+TJT7ptxZeUUtxLCTEn6r0Yz+MmUSkVG3cKQSTnHO4Kg3nGO19d90ildHb8
+         xE+7cPpY2DIk6S51qblEZ90TLE5oeI7iZL3v+iwtG/3vAHn6MuC5ZdCbx2Y7TuL7+6bw
+         nNxGvQqF5yCp7guWSYtSU1rK++fpZg8lJpOE4e5iCUhUmUOuaQTj+nc5DzZRPa1X8HZA
+         CIN9RscSUDTs39kjhULf21vBmd9fTcdONYYNhyk3QRD1/I42fwv1bEn8HfsnxojfZCB3
+         TrPlVpP/4W/T1kVJnowQbeF1RH62WtQ1ZWtIkHcxBnizdprEIR7RQjdQhgYQZPya+I1B
+         qYmQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWgVa8al+ECRFD31ANnaGQKNuTPg5L7yeZG3qAFYmURSN0q5r7KqSUBOwqXCh46rIoNSQSmUcvIrF50DhLQc9Xp/Or2awQ=
+X-Gm-Message-State: AOJu0YxKZK1CX+VIcQOfBXXoz07HOfPd6Ldo5NdBbao/c2ci4shv/xu0
+	EAaga9EGtHAUPGfMqzHEm3B8SZjHPr1JCq90guuuJd7RLAc91kfRdktXqAyYksg=
+X-Google-Smtp-Source: AGHT+IEHJtRY7M5+ETyUGxdL1yxcw9sLc61GyouoRT2NnbbaDAbY3FCadTD8jQn8Z9bXvWOn1y1woQ==
+X-Received: by 2002:a05:600c:4fc9:b0:410:68e1:d9ca with SMTP id o9-20020a05600c4fc900b0041068e1d9camr5906660wmq.2.1707749157957;
+        Mon, 12 Feb 2024 06:45:57 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCV+OsJ9sIEG4makvNA6UljW+O0aO05W5OQxb9HP8XigGDgreyeP67n/CNekdhdkuf6UFZyn3XSWZ6vfSfH1I7nY7mLo3nANOWv1jBS+uVdHd0o+VO3+hrOtXdiTYF4zZxhKKoKcDsk0PPdULk6HfM8ReZUf0B7VdDzQwNGiOWbJ7dfaswBnU35eow3qqltrMkF5DaNSPB2zwxzkZWE9NVsoKh7MZYpEth+Yqd3LNsATOfru0UYFY8vOMnd7oD60RUUvkmD+oFj8EnMtgACLFIt+RUWimI5So1Wes75ctUQXh2todQYLdRX4oSxb15C8yzRxULLZZfRtrCMY/YiT7gEIKTsuwwFGV0I6uARhu0R++2w1OxL697TEBgmX90cRrgsWP83r6ntkoBhKsA5x2a/67VvF83FW0CTxGgdFVZZQ9CYp7SAIjzAh5ybmPH5Wz3KshjhyP0oL1Mu+0ebFdehkDQlErarLr6LfRJYwFdu1dWLtGGGhWkyJpyQTyM3AQvXHzsd/szfGWOY8+ESAVJA0u8MP3v8owoVxKUfi4/ylSYtjIbC7PdThcWFsviZ/wuWRwCnBG9jZMPx0F2ADgls5emoZYqW7W+/nMeofdwSkhrpfzPHdamML3NkrViXpN0xxez0QtPth2tWEmqFCavQ8acTCJcs72FuskFk2Es8JuLeyxSlnjy+3S+FaSIDivInZ8PwnbECyIU1mu82FnXDHfTEbf0/b/gdr72AXMcorBgnrZFALoEiYDtCSGuNa3nub9DX68g/XUzFimbE0dKzkvuDJqP6HNuxGTlHGUEoDIWME0/1AzgWj21gf
 Received: from ?IPV6:2a01:e0a:982:cbb0:fcee:f026:296d:135f? ([2a01:e0a:982:cbb0:fcee:f026:296d:135f])
-        by smtp.gmail.com with ESMTPSA id r10-20020a056000014a00b0033b1c321070sm6865830wrx.31.2024.02.12.05.55.21
+        by smtp.gmail.com with ESMTPSA id jw21-20020a05600c575500b004101543e843sm8765535wmb.10.2024.02.12.06.45.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Feb 2024 05:55:24 -0800 (PST)
-Message-ID: <575f4d10-6022-4e9f-9b0e-221ea2d20fc6@linaro.org>
-Date: Mon, 12 Feb 2024 14:55:21 +0100
+        Mon, 12 Feb 2024 06:45:57 -0800 (PST)
+Message-ID: <bcad544c-7ca2-4b4f-805b-4ccaedbd091c@linaro.org>
+Date: Mon, 12 Feb 2024 15:45:56 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,7 +66,7 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 From: Neil Armstrong <neil.armstrong@linaro.org>
 Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH 4/5] arm64: dts: qcom: sm8650: add GPU nodes
+Subject: Re: [PATCH 3/5] drm: msm: add support for A750 GPU
 Content-Language: en-US, fr
 To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
  <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
@@ -85,8 +85,8 @@ Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev
 References: <20240212-topic-sm8650-gpu-v1-0-708a40b747b5@linaro.org>
- <20240212-topic-sm8650-gpu-v1-4-708a40b747b5@linaro.org>
- <70caf0d0-28f5-48b9-b10e-5541488dd982@linaro.org>
+ <20240212-topic-sm8650-gpu-v1-3-708a40b747b5@linaro.org>
+ <b5d76a25-045a-4acd-ad20-d28855b40222@linaro.org>
 Autocrypt: addr=neil.armstrong@linaro.org; keydata=
  xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
  GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
@@ -112,52 +112,143 @@ Autocrypt: addr=neil.armstrong@linaro.org; keydata=
  4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
  QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
 Organization: Linaro Developer Services
-In-Reply-To: <70caf0d0-28f5-48b9-b10e-5541488dd982@linaro.org>
+In-Reply-To: <b5d76a25-045a-4acd-ad20-d28855b40222@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 12/02/2024 11:50, Konrad Dybcio wrote:
+On 12/02/2024 11:46, Konrad Dybcio wrote:
 > On 12.02.2024 11:37, Neil Armstrong wrote:
->> Add GPU nodes for the SM8650 platform.
+>> Add support for the A750 GPU found on the SM8650 platform
 >>
->> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
->> ---
->>   arch/arm64/boot/dts/qcom/sm8650.dtsi | 169 +++++++++++++++++++++++++++++++++++
->>   1 file changed, 169 insertions(+)
+>> Unlike the the very close A740 GPU on the SM8550 SoC, the A750 GPU
+>> doesn't have an HWCFG block but a separate register set.
 >>
->> diff --git a/arch/arm64/boot/dts/qcom/sm8650.dtsi b/arch/arm64/boot/dts/qcom/sm8650.dtsi
->> index c455ca4e6475..f6f9e603fb2f 100644
->> --- a/arch/arm64/boot/dts/qcom/sm8650.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sm8650.dtsi
->> @@ -2582,6 +2582,131 @@ tcsr: clock-controller@1fc0000 {
->>   			#reset-cells = <1>;
->>   		};
->>   
->> +		gpu: gpu@3d00000 {
->> +			compatible = "qcom,adreno-43051401", "qcom,adreno";
->> +			reg = <0x0 0x03d00000 0x0 0x40000>,
->> +			      <0x0 0x03d9e000 0x0 0x1000>,
->> +			      <0x0 0x03d61000 0x0 0x800>;
->> +			reg-names = "kgsl_3d0_reg_memory",
->> +				    "cx_mem",
->> +				    "cx_dbgc";
->> +
->> +			interrupts = <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>;
->> +
->> +			iommus = <&adreno_smmu 0 0x0>,
->> +				 <&adreno_smmu 1 0x0>;
->> +
->> +			operating-points-v2 = <&gpu_opp_table>;
->> +
->> +			interconnects = <&gem_noc MASTER_GFX3D 0 &mc_virt SLAVE_EBI1 0>;
->> +			interconnect-names = "gfx-mem";
+>> The missing registers are added in the a6xx.xml.h file that would
+>> require a subsequent sync and the non-existent hwcfg is handled
+>> in a6xx_set_hwcg().
 > 
-> ICC should be unnecessary
+> These should also be submitted to mesa to make sure the next header sync
+> doesn't wipe them
 
-Ack I'll remove
+Ack submitting them right now: https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27576
 
-Neil
+> 
+> [...]
+> 
+>> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>> @@ -958,10 +958,11 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+>>   	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
+>>   	struct a6xx_gmu *gmu = &a6xx_gpu->gmu;
+>>   	const struct adreno_reglist *reg;
+>> +	bool skip_programming = !(adreno_gpu->info->hwcg || adreno_is_a7xx(adreno_gpu));
+> 
+> is_a750?
+
+OK right, I was thinking of the next gpu which will probably also miss an hwcfg
+
+> 
+>>   	unsigned int i;
+>>   	u32 val, clock_cntl_on, cgc_mode;
+>>   
+>> -	if (!adreno_gpu->info->hwcg)
+>> +	if (skip_programming)
+>>   		return;
+>>   
+>>   	if (adreno_is_a630(adreno_gpu))
+>> @@ -982,6 +983,25 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+>>   			  state ? 0x5555 : 0);
+>>   	}
+>>   
+>> +	if (!adreno_gpu->info->hwcg) {
+> 
+> I don't think this block of code is reachable now, no?
+
+It is because we didn't skip when adreno_is_a7xx(adreno_gpu)
+
+> 
+> Maybe remove the skip_programming and if_a750 here?
+This would require:
+ >> -	if (!adreno_gpu->info->hwcg || )
+ >> +	if (!(adreno_gpu->info->hwcg || adreno_is_a750(adreno_gpu)))
+
+and:
+
+ >> +	if (adreno_is_a750(adreno_gpu)) {
+
+But if the next gpu also doesn't have an hwcfg, we will need to use
+the current design...
+
+I just tried with:
+====================><===============================
+@@ -961,7 +961,7 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+         unsigned int i;
+         u32 val, clock_cntl_on, cgc_mode;
+
+-       if (!adreno_gpu->info->hwcg)
++       if (!(adreno_gpu->info->hwcg || adreno_is_a750(adreno_gpu)))
+                 return;
+
+         if (adreno_is_a630(adreno_gpu))
+@@ -982,6 +982,25 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+                           state ? 0x5555 : 0);
+         }
+
++       if (adreno_is_a750(adreno_gpu)) {
++               gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
++               gpu_write(gpu, REG_A7XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
++
++               if (state) {
++                       gpu_write(gpu, REG_A7XX_RBBM_CGC_P2S_TRIG_CMD, 1);
++
++                       if (gpu_poll_timeout(gpu, REG_A7XX_RBBM_CGC_P2S_STATUS, val,
++                                            val & A7XX_RBBM_CGC_P2S_STATUS_TXDONE, 1, 10)) {
++                               dev_err(&gpu->pdev->dev, "RBBM_CGC_P2S_STATUS TXDONE Poll failed\n");
++                               return;
++                       }
++
++                       gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 0);
++               }
++
++               return;
++       }
++
+         val = gpu_read(gpu, REG_A6XX_RBBM_CLOCK_CNTL);
+
+         /* Don't re-program the registers if they are already correct */
+====================><===============================
+
+And it works fine, does it work it for you ?
+
+> 
+>> +		gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
+>> +		gpu_write(gpu, REG_A7XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
+>> +
+>> +		if (state) {
+>> +			gpu_write(gpu, REG_A7XX_RBBM_CGC_P2S_TRIG_CMD, 1);
+>> +
+>> +			if (gpu_poll_timeout(gpu, REG_A7XX_RBBM_CGC_P2S_STATUS, val,
+>> +					     val & BIT(0), 1, 10)) {
+> 
+> We should define that bit name (the err suggests it's
+> REG_A7XX_RBBM_GCC_P2S_STATUS_TXDONE or so)
+> 
+> [...]
+> 
+>> +static inline int adreno_is_a750(struct adreno_gpu *gpu)
+>> +{
+>> +	return gpu->info->chip_ids[0] == 0x43051401;
+>> +}
+>> +
+>>   /* Placeholder to make future diffs smaller */
+> 
+> Please also remove this comment now that it's invalid
+
+Ack
 
 > 
 > Konrad
+
+Thanks,
+Neil
 
