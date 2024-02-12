@@ -1,55 +1,56 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 021DA4C63F
-	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 22:06:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0459F4CDE5
+	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 22:07:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707775610; cv=none; b=aY8Ub5FrSrtH+TWIzooIel0TXYBhoKpJEvEI2inixFP0GK4X128tEgNf9ZzimanCVWxtMfv/qCufdZTeQ6aNayQiu/U9j9o/G7o5cZ02X2ZEai57MqNeY5d9Pi0DUQR4ycAvxgvIk4U/J0t3418LC8VetC3t2d5yRHtFIvd5pFY=
+	t=1707775654; cv=none; b=o5hXPb9CaTrfoXogzcTrsloRdau53sINvIr1h/J4QjpzhBqL02fqon9f/oMSANj/VosmARq1HA6CnKg1HrvRVg/1lw8joDkA4IIV2qS3YRY5ZBiBN56HIz+rk1+W566IJJrsPLgBvB3lCflz36viwJP1yyKhZV97n3rZeuk37wI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707775610; c=relaxed/simple;
-	bh=JHTQeNLLMkswmIE/y7V+PKYlGU7fYxgX1dVgIvM2E2k=;
+	s=arc-20240116; t=1707775654; c=relaxed/simple;
+	bh=o3J+H6QK+ft/jI/HQ/DmCribE5VO5VgEVrwjTsOd3+s=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rzocw4mvY4NzLOc3ttIjs4qYUhVLkly6XWJKdzkAsYu0Tb4gW1RFUyVEOd0y+ywl2R1pxDvB7agEUA9z7bmoeQadoDkgY4eQAL/T7CHWmihgpP7Epk5rFwyixoSyBfsrOLGrNq+7wxWIoyCEEQAVHQiclb33aes/ffoZdYnZsXQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=R9b9SCz6; arc=none smtp.client-ip=209.85.210.173
+	 Content-Type:Content-Disposition:In-Reply-To; b=nF6TnhaT4l2sXjsNrnSlh9V3DgV7UmW0gGXUowO9Ck88NLQFZleoMHZaM8E4O4Qafcxb28CjYfpOPXsPD0aSO7Wn64ptxGYY4qwQ9e3tz8mb8LnF0IvZ28r+QSnWbc8PLPBygW3BvamZJzMXsI5p+aOo/EJfDiBqGXaoLJNqABQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=Tl0ODNuZ; arc=none smtp.client-ip=209.85.161.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="R9b9SCz6"
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-6e0a37751cbso1549786b3a.2
-        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 14:06:48 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Tl0ODNuZ"
+Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-599fc25071bso2545818eaf.3
+        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 14:07:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1707775608; x=1708380408; darn=lists.linux.dev;
+        d=chromium.org; s=google; t=1707775652; x=1708380452; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cfBFT3E6uuwQvv/Pq6TrncKe1LxZZQMXwgtmc4u2niM=;
-        b=R9b9SCz6eEy0ApfZYJd446wFHm1k2lFlJ1Gc/PLZis9I0K+JMvJQzg1nTY9RPFD80h
-         PAqMqCtjZ1708eY06vHU6EsJF7R1IXbfWG3w1g+WBz407y5kqm42HVS1tBG0kW1JKrHO
-         AUaTWPLsvAIcqG3qNTR3p8mX8XmkOwfRBo/kg=
+        bh=8TgitNbd1mPIu/vo61kw5GTuium5jPqAU8tOs86SzdA=;
+        b=Tl0ODNuZcHdcGzvrU/ekfbh0NDjoVGRz4/0Q4cqMgqkd1mIK5f6uvBKunsCoge9Go4
+         3/jAsGqpFbbpMz4qOMcv3QbgnnmF91sRUazTzCo6YrgaU2uuChYXZXdsNhWAaajLnzOk
+         B3TZ5SLA6TP6Cm1r7fW5KLuOvGJl079DMdMtw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707775608; x=1708380408;
+        d=1e100.net; s=20230601; t=1707775652; x=1708380452;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cfBFT3E6uuwQvv/Pq6TrncKe1LxZZQMXwgtmc4u2niM=;
-        b=mH0tjRqypufmrrft4r+6s89G748/zGVd13A1n5gRMBpaA/4LYDOC7qGUE2tF9tN8Cx
-         1NYrGvYfmhXoHYmYZHz+dMuGiDfUQReHN/QO2I9Cn/S+vPkfmdSD34kyMEBL37jqtneH
-         Lqz86sLrlpo2qIazUsqrirwqz+Z8AYX6i4E1TmZfnpAOwh2Hcw/Duvt+XP3Tc78xAtiR
-         T0jb/M0QoTKWgz//YAtt6OX4oTtPbTVxVT8UOH2FjI0ucB5fDEPPzNAosNZnXXC5xKLo
-         3rtz10lSln/mhOKEunnYQMllFyAbGHhz9UYKRd//nRf8oFtFO4kQL59g19Epegf5UhtF
-         BExg==
-X-Forwarded-Encrypted: i=1; AJvYcCXwHhyuyLScv3kcf/sgc9hbU3trQNfAvLVLYbbqkecXcHhQ3Ps1v3/DjcwKlAYRcdz72etyKDegKhqvWDRI//J9f5yYlO8=
-X-Gm-Message-State: AOJu0YyES8a9+rLNOtgauCLq9BNg+ZQTdP3y1CTzErn6zY9tKbCqHQ0k
-	/7h2zQSSzYXo3mjuTK+nMEaev4nTDdI2W+bySePnmmfKYWdQcO3VWgyHnAbcVA==
-X-Google-Smtp-Source: AGHT+IGaCS4FE1fgtoRRnsmXSTy6fZAOSF37rEolH25HBo4sIUQjN9QncvXzf6oIO60VYs+syL8/fQ==
-X-Received: by 2002:a62:cdcf:0:b0:6e0:6c0d:f55a with SMTP id o198-20020a62cdcf000000b006e06c0df55amr8081618pfg.8.1707775608405;
-        Mon, 12 Feb 2024 14:06:48 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVkewCVc6tHL4+EISv7PCsXM9ydkTsXDaDTLcNzXCcXhbrh/9C+ax0nndC/hzVRMx0nInEYWC0KIt/8lOHNzqIEmD1e/R6JnZN1Vl+JE8tkYrbQRcuHv6+76ApR26qH2E5I+H4dL02gaOsP2GqZB9zhAy+BzP/Xam7kiNv0f1NuAtutolmP4BxJOHmv6p/4+nri8gPYYXx2yBFWr5NL014vNsFwE6yR+EkHWpxHabW2jspuy9JvVw5xPvjVtcx+kvAQx351WFQx6EglHMAWoZHCmE67J7tbB0AYuj4mbHYYbddcGzVGmVl83+H+ZJVi0l8UQ1MFnuAEpXE85ZyohrEgLDkUOUmLNpo5LXxpY8EL/z6HU+Ff72PctyzucnexTN6EgJ+LopCob78Xl2LSlS9m7Ivnmm+zD+jBT2XwGVBKbJNFVx16AG7BaXeIN5J2hp1pyPl3fYTs6QzbQHFqYGdt/KOaLXF/t+5fNoJGIhQCbRMi6TsRpi6j4BsJHstaOHdJ5KSeuSow+uLH8y+XYLIPoT7s3U1XgCzMerDbCQG1HcJw1Pi8y0yNdBB+Crwddz+Y/8nUZLOjR3UWe68zNMfDp/kXRYB2oKryBCMWf9T9s6UIV20y0o/B5yoF/9R3JnIr5YkWHN5jc7H0L5PAL0RJLKW5561RaYHPERkxxltLBWDSgGUo0ausv8conJoy1YdIJlpbVK3bCp4QtXVKMFGW2S5HONUn9votHX11blRYyN+m6teOEA==
+        bh=8TgitNbd1mPIu/vo61kw5GTuium5jPqAU8tOs86SzdA=;
+        b=p44F938er1FPorKPJ2mArPtXq6Wivfm2kMshZBCnpvaViV1EqM7xZDmXDSu+yIbdZK
+         llOdVkJ0TPRgXTvnU+7pBOBPJYwbGd6q6hWf/2gaR0WULKFLluJOKE+xxdLOygluoi2U
+         KEbFXGKwLrKMQQMdgZB18IWSUIsdHfQt8Q9gTbXYgXkqCbWycQyabRO03coreE7i6ZP3
+         yTg2EUWkeCRGJwoHOToxbbfuZ/CP/9+jd7OPkhBsf9xcPzwp6vq9htktihb+Sj5klwMm
+         nxz/SDFrN1V7z4TmvrfDJXxN6a1azMzAVMTfoRZkJz28Xc28f3G7NU7mvH3LXUYaOXIm
+         42cw==
+X-Forwarded-Encrypted: i=1; AJvYcCWkHLvtlkjabUf5/Dld501lHB0NkUSoDpfyaBaRdBntTEAdJsvFSzLrFKUT0grOV8SSZzApIRqVMeziHNR4E4D7yQgF5DA=
+X-Gm-Message-State: AOJu0Ywe4WCfrZRmBFCpbQPc8rwSOCIcDih6FpA+GxBUaVqrFZgsyjTF
+	LP2bpykoMgnYAcToTIw3jkn24Tb4Dqnu58hmQRnJJMXW05Wd2JMavCZluoz7L54Lhu69ieQpRDw
+	=
+X-Google-Smtp-Source: AGHT+IEBoMpvF9BOMExh1vMJk+XNeXjoVJg2+jCy4pHswhoUPY0dich6Z61quUlAHQwa6lLLXH8fXg==
+X-Received: by 2002:a05:6358:5620:b0:176:b16a:f392 with SMTP id b32-20020a056358562000b00176b16af392mr12132731rwf.10.1707775652109;
+        Mon, 12 Feb 2024 14:07:32 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCV8Gn2OxEuKk3FWjwu68UFaXsDD8RjGlM9njWSjabpecNhnMIF1qXxYsfC+/txWlVHC0uNpzndoDwf4ESht85jrpR/r/ZEAKPrZUfbCo36fTMhd5H7f89i82wLKok+ONkyckgWyvxvKZtguOZF19Lc8xEaaVmAhtDm4F98Jh5EiEU3bzhs2RJR7RX0b9EomlrTIMl2Vxf2JdkvMNlJ0310atgxvP0jRcjEz3LHTvUEeurXD9TVukzAeS1b+rDlDTNf71RARiXOdJMocjBhVxo0y425GBYWZy8HcJ3+Ewgj4Xbb5EiVCQj1rNNHF2o6HLhHP4A5G2EKni1Zp8kjTIQjZ7s2fZJ1D72MCwgSyHivTpm6mOTQtfxtt+idhBUM0KbKxWyCg7Fv1qyqxIRjf1NF3si4y72XuPquRerzGB+jFwtjZvokCokPWHXZe7fe9UFmeZqPwFzwdNYmKgzWkpfwmCqyBJbExowRztIrXkyAP1VdjX4X5Qc7dYEOmYc2WTGh3xtGJQr2Xo9EofKKCkp3mJ75b52BYwQbiQKEcmvC9ksvZybPWUZsRvCHQn+/hCuu/sVnHaFqQ2wTv1z7S/eBVKDqADDYHWqcS27arhMV3Qjz5uTY6EdWZHoxUwWBMH6jThkfIXMpBBFqDYg4U/KSoQpNzl38XKZW5h7gL6/YWlncNExg8DDgYF1aMOe7inz7E4L4FD63Iu9G9AHU8reaLM/OMt3uQXOlbrIrQE+z6JttijOLciccsYCwdIBgLeFq6N7Cw2y5pw8g/+8JUMVk=
 Received: from www.outflux.net ([198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id j18-20020aa79292000000b006e0545768dasm6015711pfa.151.2024.02.12.14.06.47
+        by smtp.gmail.com with ESMTPSA id p2-20020aa78602000000b006e0eece1ca4sm974755pfn.4.2024.02.12.14.07.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Feb 2024 14:06:47 -0800 (PST)
-Date: Mon, 12 Feb 2024 14:06:47 -0800
+        Mon, 12 Feb 2024 14:07:31 -0800 (PST)
+Date: Mon, 12 Feb 2024 14:07:31 -0800
 From: Kees Cook <keescook@chromium.org>
 To: Suren Baghdasaryan <surenb@google.com>
 Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
@@ -78,12 +79,11 @@ Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
 	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
 	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
 	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH v3 02/35] scripts/kallysms: Always include __start and
- __stop symbols
-Message-ID: <202402121406.16006BBE54@keescook>
+	cgroups@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v3 03/35] fs: Convert alloc_inode_sb() to a macro
+Message-ID: <202402121407.A6C61F37AE@keescook>
 References: <20240212213922.783301-1-surenb@google.com>
- <20240212213922.783301-3-surenb@google.com>
+ <20240212213922.783301-4-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -92,18 +92,18 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240212213922.783301-3-surenb@google.com>
+In-Reply-To: <20240212213922.783301-4-surenb@google.com>
 
-On Mon, Feb 12, 2024 at 01:38:48PM -0800, Suren Baghdasaryan wrote:
+On Mon, Feb 12, 2024 at 01:38:49PM -0800, Suren Baghdasaryan wrote:
 > From: Kent Overstreet <kent.overstreet@linux.dev>
 > 
-> These symbols are used to denote section boundaries: by always including
-> them we can unify loading sections from modules with loading built-in
-> sections, which leads to some significant cleanup.
+> We're introducing alloc tagging, which tracks memory allocations by
+> callsite. Converting alloc_inode_sb() to a macro means allocations will
+> be tracked by its caller, which is a bit more useful.
 > 
 > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 
-Seems reasonable!
+Yup, getting these all doing direct calls will be nice.
 
 Reviewed-by: Kees Cook <keescook@chromium.org>
 
