@@ -1,146 +1,347 @@
-Received: from omta40.uswest2.a.cloudfilter.net (omta40.uswest2.a.cloudfilter.net [35.89.44.39])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 574F143AA1
-	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 20:41:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=35.89.44.39
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D1E54D5A5
+	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 21:39:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707770509; cv=none; b=OmBGr5A53PwdH+FIAWNAMcS17DniIia1qanWTyZvGtntI7KQ38qycCbwB20f8LgFCJrd99vgNDmY1UYzgT5I0e15uGSN2XKqo+FUFiwsod5BqOOGAQEjLtwYEdhImJnmDfnWDUeCzcW3UAV741zxE8KJEOJcsozvAaOFTCOio6s=
+	t=1707773977; cv=none; b=ajnA17no8YpbpX7SzqcIhX7Rz8c38YbuJPhb3wyDnjXHUYT8MtLKO98bnJFE8C3hyzZvJL0mk/lEEn3I6JXBqStYIpNIUdn6oww09cE+Q+KYKkugGg+J79zdv6fOTegZxBeYL5L0QuyQnLghB5jcazpvdnr2MKWGD1Gh36a0rmE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707770509; c=relaxed/simple;
-	bh=70Cs7ov7NoNjbFObZWdWEBGERsNBoSbDT7igOQYMoRs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gFqGE4NbCCywgX/qduv0a4+nFNMrP6x558ukVhbkyQSYmZJL3Fa985zOzTDYEuZAcDGmNkjMkwptmhltBDygaaK2o0BFzNU7KBOmmKfAjFko9xHYRr6oBELmZ5EuAqSsi4/WtJAqhnwA8gJXy/0GUzEi45C6Bn1ibVcWLawM3Zc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com; spf=pass smtp.mailfrom=embeddedor.com; dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b=zhl6oJc5; arc=none smtp.client-ip=35.89.44.39
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=embeddedor.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=embeddedor.com
+	s=arc-20240116; t=1707773977; c=relaxed/simple;
+	bh=s3LEGYg8VUwRWvZpWWOEEverrgI0r872J86EZP7SPxw=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=KavvSZmJiYli0oRqIOWFpigqFfuFhGy30XApMxL0ID/uum+PWZ8JxDksrskIZsumQyrFnsj5n8psRgw+Q7SC+mbcYQN0SRlilK5v6+25zyNXuem50yuyD1QXbEmcYCiYDrw++5YcBM0lE1J5CAUwzfPSjLNtji9EtLx9xVoVxO8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=eghSOn+p; arc=none smtp.client-ip=209.85.219.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=embeddedor.com header.i=@embeddedor.com header.b="zhl6oJc5"
-Received: from eig-obgw-5008a.ext.cloudfilter.net ([10.0.29.246])
-	by cmsmtp with ESMTPS
-	id ZVy4rlreP80oiZd7Vrkoou; Mon, 12 Feb 2024 20:41:42 +0000
-Received: from gator4166.hostgator.com ([108.167.133.22])
-	by cmsmtp with ESMTPS
-	id Zd7UrbGeRb248Zd7Vrkhzb; Mon, 12 Feb 2024 20:41:41 +0000
-X-Authority-Analysis: v=2.4 cv=CK+JXgrD c=1 sm=1 tr=0 ts=65ca8285
- a=1YbLdUo/zbTtOZ3uB5T3HA==:117 a=VhncohosazJxI00KdYJ/5A==:17
- a=IkcTkHD0fZMA:10 a=k7vzHIieQBIA:10 a=wYkD_t78qR0A:10 a=NEAV23lmAAAA:8
- a=VwQbUJbxAAAA:8 a=7YfXLusrAAAA:8 a=twS1si07rgy1n0NQfEIA:9 a=QEXdDO2ut3YA:10
- a=9cHFzqQdt-sA:10 a=PUnBvhIW4WwA:10 a=AjGcO6oz07-iQ99wixmX:22
- a=SLz71HocmBbuEhFRYD3r:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-	In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=g8WgyYvFBXBBBgo1I/QNHAeGuuE+z9BnEavTarLPM9k=; b=zhl6oJc5gO0wT4sO9VwHZu1bvK
-	5Ibo/tsf1dUH/iwg6SVWrJrIBH5EbxUKD92wnCdBRSTYQN8KojIVzJxUA/dEo9K+kvr+3p786I2I3
-	/s+j6AAKOqnaAUH2xM7ECwXiDj7ESDU6d0CVjkrBWtdSAgFfRQgaXeQv6CS8hYm4P1guh02py00LI
-	HbvFeGk1ubVimzUKao+h0ABigZiIRiaNssDv/3cxVRsr8S7e3aUZDCz5g7HY5GCnS+59eDcociH/s
-	aMFrrKMWxLFs4u1QPlQCJtEpq0R7BUbUGLzGcbi+w4yBv9dI/eOo0Id7BFHL9dDSETjNiA+0BWl/2
-	/clN8iJg==;
-Received: from [201.172.172.225] (port=34544 helo=[192.168.15.10])
-	by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-	(Exim 4.96.2)
-	(envelope-from <gustavo@embeddedor.com>)
-	id 1rZd7T-000F5z-32;
-	Mon, 12 Feb 2024 14:41:39 -0600
-Message-ID: <b66caca8-a8d8-4081-b462-92a95a7fa830@embeddedor.com>
-Date: Mon, 12 Feb 2024 14:41:38 -0600
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="eghSOn+p"
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-dcbfe1a42a4so1071213276.2
+        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 13:39:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1707773972; x=1708378772; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=vA/ePHR05wabM4Y5MMpygOj0r4Hku8hMtHDwkSr6xQQ=;
+        b=eghSOn+pk2AKWa7NKC6WCD8NdVJ4598d4+RTPRSe8BQe4bBplXY4lzTP5UftXLz2bU
+         wLAWvGcu4sXFC3pSu67rxQ4FqPXSLcnIn67zFyWUlEX4ouvjXbDYB8wtUe5w0OewmKIN
+         bZ2nm0S1gGlne9mm1/IEThRdWnpzJwNf87ALqEXl0Z+NfbbyTgYYyBROV7C7lLAunc4y
+         7F8ZGF4lsouvv0f1v+GCbMXkSheIqTG96SjuWwhayjQmobCQlU3hj4sCi5EZmRM4Ejq1
+         Duu1c2U1XBce/myE1JNVo+uA37iOiRX2vD9HpyT9TiUsigPgmtMnDPRd+p5Bxr6VPB7i
+         O8/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707773972; x=1708378772;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=vA/ePHR05wabM4Y5MMpygOj0r4Hku8hMtHDwkSr6xQQ=;
+        b=XbvmHOII2bXWhnerYLSQx4V/USSdYuxqHdc5PBUxgTacFrvFkD/5C3an+NAURVpif+
+         bIwnuFx+tblfTpHdycqM40R40rqI/2yPsMkSRC40WltwPrDceq4Kyvi0sOBNtsN18qZJ
+         VfQ1b2DZdbLtrZzWo3L4cxtO4GvthLDDvezxr/8WEWU+cB6VpUsZt8hMLoam3blKyFy6
+         6TOteqQn9u6h/vGkWmdtxGexKLdhDI9TtD39XJgxoHabrZgi1lFtsLDjK5gLbj5cDKpP
+         OtdEu4usy94F0DVldzV2G0qy6lRFTlzFEnqB79UhOzpeHHk1G+MOJvTL+3lslWqRJCqU
+         5PNg==
+X-Gm-Message-State: AOJu0YweUnblUfsShaTe6NWIDhDYTlMmeNiZItYw4dGydNT3D0Oa6RDO
+	d+F/nzO5ZQ7Ulet0X2maduYoi+gfQXrCLc8eBQE4x1AQ4rqbtoby9AsSM+Q9up94EMP5uRGCX0L
+	BAg==
+X-Google-Smtp-Source: AGHT+IGYazuIgsgZwBWVLtlsmQQd5LxodV8fFUctMuX5ciXn0PoDOAWUoAo/h1A3Z0RCnVOsgEP5hOuPMuk=
+X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:b848:2b3f:be49:9cbc])
+ (user=surenb job=sendgmr) by 2002:a05:6902:188c:b0:dbd:b165:441 with SMTP id
+ cj12-20020a056902188c00b00dbdb1650441mr2291367ybb.0.1707773972271; Mon, 12
+ Feb 2024 13:39:32 -0800 (PST)
+Date: Mon, 12 Feb 2024 13:38:46 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/vt-d: Use kcalloc() instead of kzalloc()
-Content-Language: en-US
-To: Erick Archer <erick.archer@gmx.com>, David Woodhouse
- <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- "Gustavo A. R. Silva" <gustavoars@kernel.org>,
- Kees Cook <keescook@chromium.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-hardening@vger.kernel.org
-References: <20240211175143.9229-1-erick.archer@gmx.com>
-From: "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-In-Reply-To: <20240211175143.9229-1-erick.archer@gmx.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - lists.linux.dev
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 201.172.172.225
-X-Source-L: No
-X-Exim-ID: 1rZd7T-000F5z-32
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.15.10]) [201.172.172.225]:34544
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 17
-X-Org: HG=hgshared;ORG=hostgator;
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
-X-CMAE-Envelope: MS4xfDdTQf/fn9p9tqc1xnFhSdNyztnL9mc3zh4jx2jgxSdFkQ4IZ4QR0aNKQkw99sZzXdnDElpwNmeRIUR1czD0LC6l0iakWDWe8QyJA4AsOXG3OCBx4PkL
- Lcq5Aq8+sICvd0WEmy75KyNkffygNb0NY1NqR9yCR+B5Tb9NJ6fGszpCvxUBpBhnPanEhtv80rmhpj24FUD2/rOcFgwdleI6Cvw=
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.43.0.687.g38aa6559b0-goog
+Message-ID: <20240212213922.783301-1-surenb@google.com>
+Subject: [PATCH v3 00/35] Memory allocation profiling
+From: Suren Baghdasaryan <surenb@google.com>
+To: akpm@linux-foundation.org
+Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
+	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, 
+	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
+	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
+	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, surenb@google.com, 
+	kernel-team@android.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+
+Memory allocation, v3 and final:
+
+Overview:
+Low overhead [1] per-callsite memory allocation profiling. Not just for debug
+kernels, overhead low enough to be deployed in production.
+
+We're aiming to get this in the next merge window, for 6.9. The feedback
+we've gotten has been that even out of tree this patchset has already
+been useful, and there's a significant amount of other work gated on the
+code tagging functionality included in this patchset [2].
+
+Example output:
+  root@moria-kvm:~# sort -h /proc/allocinfo|tail
+   3.11MiB     2850 fs/ext4/super.c:1408 module:ext4 func:ext4_alloc_inode
+   3.52MiB      225 kernel/fork.c:356 module:fork func:alloc_thread_stack_node
+   3.75MiB      960 mm/page_ext.c:270 module:page_ext func:alloc_page_ext
+   4.00MiB        2 mm/khugepaged.c:893 module:khugepaged func:hpage_collapse_alloc_folio
+   10.5MiB      168 block/blk-mq.c:3421 module:blk_mq func:blk_mq_alloc_rqs
+   14.0MiB     3594 include/linux/gfp.h:295 module:filemap func:folio_alloc_noprof
+   26.8MiB     6856 include/linux/gfp.h:295 module:memory func:folio_alloc_noprof
+   64.5MiB    98315 fs/xfs/xfs_rmap_item.c:147 module:xfs func:xfs_rui_init
+   98.7MiB    25264 include/linux/gfp.h:295 module:readahead func:folio_alloc_noprof
+    125MiB     7357 mm/slub.c:2201 module:slub func:alloc_slab_page
+
+Since v2:
+ - tglx noticed a circular header dependency between sched.h and percpu.h;
+   a bunch of header cleanups were merged into 6.8 to ameliorate this [3].
+
+ - a number of improvements, moving alloc_hooks() annotations to the
+   correct place for better tracking (mempool), and bugfixes.
+
+ - looked at alternate hooking methods.
+   There were suggestions on alternate methods (compiler attribute,
+   trampolines), but they wouldn't have made the patchset any cleaner
+   (we still need to have different function versions for accounting vs. no
+   accounting to control at which point in a call chain the accounting
+   happens), and they would have added a dependency on toolchain
+   support.
+
+Usage:
+kconfig options:
+ - CONFIG_MEM_ALLOC_PROFILING
+ - CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT
+ - CONFIG_MEM_ALLOC_PROFILING_DEBUG
+   adds warnings for allocations that weren't accounted because of a
+   missing annotation
+
+sysctl:
+  /proc/sys/vm/mem_profiling
+
+Runtime info:
+  /proc/allocinfo
+
+Notes:
+
+[1]: Overhead
+To measure the overhead we are comparing the following configurations:
+(1) Baseline with CONFIG_MEMCG_KMEM=n
+(2) Disabled by default (CONFIG_MEM_ALLOC_PROFILING=y &&
+    CONFIG_MEM_ALLOC_PROFILING_BY_DEFAULT=n)
+(3) Enabled by default (CONFIG_MEM_ALLOC_PROFILING=y &&
+    CONFIG_MEM_ALLOC_PROFILING_BY_DEFAULT=y)
+(4) Enabled at runtime (CONFIG_MEM_ALLOC_PROFILING=y &&
+    CONFIG_MEM_ALLOC_PROFILING_BY_DEFAULT=n && /proc/sys/vm/mem_profiling=1)
+(5) Baseline with CONFIG_MEMCG_KMEM=y && allocating with __GFP_ACCOUNT
+
+Performance overhead:
+To evaluate performance we implemented an in-kernel test executing
+multiple get_free_page/free_page and kmalloc/kfree calls with allocation
+sizes growing from 8 to 240 bytes with CPU frequency set to max and CPU
+affinity set to a specific CPU to minimize the noise. Below are results
+from running the test on Ubuntu 22.04.2 LTS with 6.8.0-rc1 kernel on
+56 core Intel Xeon:
+
+                        kmalloc                 pgalloc
+(1 baseline)            6.764s                  16.902s
+(2 default disabled)    6.793s (+0.43%)         17.007s (+0.62%)
+(3 default enabled)     7.197s (+6.40%)         23.666s (+40.02%)
+(4 runtime enabled)     7.405s (+9.48%)         23.901s (+41.41%)
+(5 memcg)               13.388s (+97.94%)       48.460s (+186.71%)
+
+Memory overhead:
+Kernel size:
+
+   text           data        bss         dec         diff
+(1) 26515311	      18890222    17018880    62424413
+(2) 26524728	      19423818    16740352    62688898    264485
+(3) 26524724	      19423818    16740352    62688894    264481
+(4) 26524728	      19423818    16740352    62688898    264485
+(5) 26541782	      18964374    16957440    62463596    39183
+
+Memory consumption on a 56 core Intel CPU with 125GB of memory:
+Code tags:           192 kB
+PageExts:         262144 kB (256MB)
+SlabExts:           9876 kB (9.6MB)
+PcpuExts:            512 kB (0.5MB)
+
+Total overhead is 0.2% of total memory.
+
+[2]: Improved fault injection is the big one; the alloc_hooks() macro
+this patchset introduces is also used for per-callsite fault injection
+points in the dynamic fault injection patchset, which means we can
+easily do fault injection on a per module or per file basis; this makes
+it much easier to integrate memory fault injection into existing tests.
+
+Vlastimil recently raised concerns about exposing GFP_NOWAIT as a
+PF_MEMALLOC_* flag, as this might introduce GFP_NOWAIT to allocation
+paths that have never had their failure paths tested - this is something
+we need to address.
+
+[3]: The circular dependency looks to be unavoidable; the issue is that
+alloc_tag_save() -> current -> get_current() requires percpu.h, and
+percpu.h requires sched.h because of course it does. But this doesn't
+actually cause build errors because we're only using macros, so the main
+concern is just not leaving a difficult-to-disentangle minefield for
+later.
+So, sched.h is now pretty close to being a types only header that
+imports types and declares types - this is the header cleanups that were
+merged for 6.8.
 
 
+Kent Overstreet (11):
+  lib/string_helpers: Add flags param to string_get_size()
+  scripts/kallysms: Always include __start and __stop symbols
+  fs: Convert alloc_inode_sb() to a macro
+  mm/slub: Mark slab_free_freelist_hook() __always_inline
+  mempool: Hook up to memory allocation profiling
+  xfs: Memory allocation profiling fixups
+  mm: percpu: Introduce pcpuobj_ext
+  mm: percpu: Add codetag reference into pcpuobj_ext
+  mm: vmalloc: Enable memory allocation profiling
+  rhashtable: Plumb through alloc tag
+  MAINTAINERS: Add entries for code tagging and memory allocation
+    profiling
 
-On 2/11/24 11:51, Erick Archer wrote:
-> This is an effort to get rid of all multiplications from allocation
-> functions in order to prevent integer overflows [1].
-> 
-> Here the multiplication is obviously safe because DMAR_LATENCY_NUM
-> is the number of latency types defined in the "latency_type" enum.
-> 
-> enum latency_type {
-> 	DMAR_LATENCY_INV_IOTLB = 0,
-> 	DMAR_LATENCY_INV_DEVTLB,
-> 	DMAR_LATENCY_INV_IEC,
-> 	DMAR_LATENCY_PRQ,
-> 	DMAR_LATENCY_NUM
-> };
-> 
-> However, using kcalloc() is more appropriate [2] and improves
-> readability. This patch has no effect on runtime behavior.
-> 
-> Link: https://github.com/KSPP/linux/issues/162 [1]
-> Link: https://www.kernel.org/doc/html/next/process/deprecated.html#open-coded-arithmetic-in-allocator-arguments [2]
-> Signed-off-by: Erick Archer <erick.archer@gmx.com>
+Suren Baghdasaryan (24):
+  mm: enumerate all gfp flags
+  mm: introduce slabobj_ext to support slab object extensions
+  mm: introduce __GFP_NO_OBJ_EXT flag to selectively prevent slabobj_ext
+    creation
+  mm/slab: introduce SLAB_NO_OBJ_EXT to avoid obj_ext creation
+  mm: prevent slabobj_ext allocations for slabobj_ext and kmem_cache
+    objects
+  slab: objext: introduce objext_flags as extension to
+    page_memcg_data_flags
+  lib: code tagging framework
+  lib: code tagging module support
+  lib: prevent module unloading if memory is not freed
+  lib: add allocation tagging support for memory allocation profiling
+  lib: introduce support for page allocation tagging
+  mm: percpu: increase PERCPU_MODULE_RESERVE to accommodate allocation
+    tags
+  change alloc_pages name in dma_map_ops to avoid name conflicts
+  mm: enable page allocation tagging
+  mm: create new codetag references during page splitting
+  mm/page_ext: enable early_page_ext when
+    CONFIG_MEM_ALLOC_PROFILING_DEBUG=y
+  lib: add codetag reference into slabobj_ext
+  mm/slab: add allocation accounting into slab allocation and free paths
+  mm/slab: enable slab allocation tagging for kmalloc and friends
+  mm: percpu: enable per-cpu allocation tagging
+  lib: add memory allocations report in show_mem()
+  codetag: debug: skip objext checking when it's for objext itself
+  codetag: debug: mark codetags for reserved pages as empty
+  codetag: debug: introduce OBJEXTS_ALLOC_FAIL to mark failed slab_ext
+    allocations
 
-LGTM:
+ Documentation/admin-guide/sysctl/vm.rst       |  16 ++
+ Documentation/filesystems/proc.rst            |  28 ++
+ MAINTAINERS                                   |  16 ++
+ arch/alpha/kernel/pci_iommu.c                 |   2 +-
+ arch/mips/jazz/jazzdma.c                      |   2 +-
+ arch/powerpc/kernel/dma-iommu.c               |   2 +-
+ arch/powerpc/mm/book3s64/radix_pgtable.c      |   2 +-
+ arch/powerpc/platforms/ps3/system-bus.c       |   4 +-
+ arch/powerpc/platforms/pseries/vio.c          |   2 +-
+ arch/x86/kernel/amd_gart_64.c                 |   2 +-
+ drivers/block/virtio_blk.c                    |   4 +-
+ drivers/gpu/drm/gud/gud_drv.c                 |   2 +-
+ drivers/iommu/dma-iommu.c                     |   2 +-
+ drivers/mmc/core/block.c                      |   4 +-
+ drivers/mtd/spi-nor/debugfs.c                 |   6 +-
+ .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    |   4 +-
+ drivers/parisc/ccio-dma.c                     |   2 +-
+ drivers/parisc/sba_iommu.c                    |   2 +-
+ drivers/scsi/sd.c                             |   8 +-
+ drivers/staging/media/atomisp/pci/hmm/hmm.c   |   2 +-
+ drivers/xen/grant-dma-ops.c                   |   2 +-
+ drivers/xen/swiotlb-xen.c                     |   2 +-
+ fs/xfs/kmem.c                                 |   4 +-
+ fs/xfs/kmem.h                                 |  10 +-
+ include/asm-generic/codetag.lds.h             |  14 +
+ include/asm-generic/vmlinux.lds.h             |   3 +
+ include/linux/alloc_tag.h                     | 188 +++++++++++++
+ include/linux/codetag.h                       |  83 ++++++
+ include/linux/dma-map-ops.h                   |   2 +-
+ include/linux/fortify-string.h                |   5 +-
+ include/linux/fs.h                            |   6 +-
+ include/linux/gfp.h                           | 126 +++++----
+ include/linux/gfp_types.h                     | 101 +++++--
+ include/linux/memcontrol.h                    |  56 +++-
+ include/linux/mempool.h                       |  73 +++--
+ include/linux/mm.h                            |   8 +
+ include/linux/mm_types.h                      |   4 +-
+ include/linux/page_ext.h                      |   1 -
+ include/linux/pagemap.h                       |   9 +-
+ include/linux/percpu.h                        |  27 +-
+ include/linux/pgalloc_tag.h                   | 105 +++++++
+ include/linux/rhashtable-types.h              |  11 +-
+ include/linux/sched.h                         |  24 ++
+ include/linux/slab.h                          | 184 +++++++------
+ include/linux/string.h                        |   4 +-
+ include/linux/string_helpers.h                |  11 +-
+ include/linux/vmalloc.h                       |  60 +++-
+ init/Kconfig                                  |   4 +
+ kernel/dma/mapping.c                          |   4 +-
+ kernel/kallsyms_selftest.c                    |   2 +-
+ kernel/module/main.c                          |  25 +-
+ lib/Kconfig.debug                             |  31 +++
+ lib/Makefile                                  |   3 +
+ lib/alloc_tag.c                               | 213 +++++++++++++++
+ lib/codetag.c                                 | 258 ++++++++++++++++++
+ lib/rhashtable.c                              |  52 +++-
+ lib/string_helpers.c                          |  22 +-
+ lib/test-string_helpers.c                     |   4 +-
+ mm/compaction.c                               |   7 +-
+ mm/filemap.c                                  |   6 +-
+ mm/huge_memory.c                              |   2 +
+ mm/hugetlb.c                                  |   8 +-
+ mm/kfence/core.c                              |  14 +-
+ mm/kfence/kfence.h                            |   4 +-
+ mm/memcontrol.c                               |  56 +---
+ mm/mempolicy.c                                |  52 ++--
+ mm/mempool.c                                  |  36 +--
+ mm/mm_init.c                                  |  10 +
+ mm/page_alloc.c                               |  66 +++--
+ mm/page_ext.c                                 |  13 +
+ mm/page_owner.c                               |   2 +-
+ mm/percpu-internal.h                          |  26 +-
+ mm/percpu.c                                   | 120 ++++----
+ mm/show_mem.c                                 |  15 +
+ mm/slab.h                                     | 176 ++++++++++--
+ mm/slab_common.c                              |  65 ++++-
+ mm/slub.c                                     | 138 ++++++----
+ mm/util.c                                     |  44 +--
+ mm/vmalloc.c                                  |  88 +++---
+ scripts/kallsyms.c                            |  13 +
+ scripts/module.lds.S                          |   7 +
+ 81 files changed, 2126 insertions(+), 695 deletions(-)
+ create mode 100644 include/asm-generic/codetag.lds.h
+ create mode 100644 include/linux/alloc_tag.h
+ create mode 100644 include/linux/codetag.h
+ create mode 100644 include/linux/pgalloc_tag.h
+ create mode 100644 lib/alloc_tag.c
+ create mode 100644 lib/codetag.c
 
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-
-Thanks!
 -- 
-Gustavo
+2.43.0.687.g38aa6559b0-goog
 
-> ---
->   drivers/iommu/intel/perf.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/perf.c b/drivers/iommu/intel/perf.c
-> index 94ee70ac38e3..adc4de6bbd88 100644
-> --- a/drivers/iommu/intel/perf.c
-> +++ b/drivers/iommu/intel/perf.c
-> @@ -33,7 +33,7 @@ int dmar_latency_enable(struct intel_iommu *iommu, enum latency_type type)
-> 
->   	spin_lock_irqsave(&latency_lock, flags);
->   	if (!iommu->perf_statistic) {
-> -		iommu->perf_statistic = kzalloc(sizeof(*lstat) * DMAR_LATENCY_NUM,
-> +		iommu->perf_statistic = kcalloc(DMAR_LATENCY_NUM, sizeof(*lstat),
->   						GFP_ATOMIC);
->   		if (!iommu->perf_statistic) {
->   			ret = -ENOMEM;
-> --
-> 2.25.1
-> 
-> 
