@@ -1,56 +1,55 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA8BF4D5B5
-	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 22:10:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A5274D584
+	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 22:14:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707775818; cv=none; b=rDPQDtbWuugEo1/AtyAImhaQdiKYJn3XprU4nR6S+UmlrzGbUEbBQ/+ODBxZ4Eha3+HN6R/njf0U1htvYnSrnEL5LAu1aTZdlEx1HIuHY7u1fxIv0kdW1/zC9oloqfP0YKwlV+pUuPMUZE79/5N9tJx1h+Vo8SmtXCUAll4YjJM=
+	t=1707776061; cv=none; b=mZ6XtDUY7AalJOZBXRRtlDbBcSxq0LReXzfEiZJ0NOrZAngk0QGLcT6hdWzIKyCZbnz6jO0HSy+Px+wciAjviLmMqIVEhTy4hScHJJNln9EjGty4caM/oZWCas6u/DC6Ev5LMmBoM1S5T1CU/eMGIy8nZV5NGnSPjDWze292Bso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707775818; c=relaxed/simple;
-	bh=x2dB2HwYcw6FEFcyt88gNSz8C4rxKf1AxqpiQ+NBli4=;
+	s=arc-20240116; t=1707776061; c=relaxed/simple;
+	bh=16fk7xoE50+bBNfgxcCm+Ee3v/cfVODmJmytJVNx6ZE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UrKPn9SE+IFQNkWI2W0ypKQsQq/ouhJQX58uWOM+IZnYFwIbiww1uiAVyUO0B0B1+qXGx2eouAOoIl+JF+eJYcn+GJhn1lHgfbJ+kcFAChqZejRWeh5chhYbthk0com/yLo7fHUumr3n5tez+FK4n8jvR6oMK5ksr5t+z0JRHTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=E4QWZv73; arc=none smtp.client-ip=209.85.210.180
+	 Content-Type:Content-Disposition:In-Reply-To; b=GrHbvcKNIN1rY3MkU1RyEzYMwcQ35g5PqZavSX34QYzH6h5hkbFM2XUY2dUHp50eULBSDpKa7tti2P5knNv7kxXfz/uC0due9XQTwSf/O8rXXRNXZNvJzVAvzkFrWTtagSQf1y/WfCyTd/ujPa39jmSn6TqYMC4ghWmBgmi8CHw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=A/KFg6SM; arc=none smtp.client-ip=209.85.210.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="E4QWZv73"
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-6e08c16715fso1487748b3a.0
-        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 14:10:15 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="A/KFg6SM"
+Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-6e2e44aad03so943636a34.2
+        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 14:14:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1707775815; x=1708380615; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=SkGi1YlkpzrNgkK7fsGdO+nBxolzeU4HsB6lcpcl19k=;
-        b=E4QWZv73rp6SYl9Jj67UYXryeaagj5YoRfiGbTwlsZR+6vnoWvjFDPJ926LxogwwbE
-         4GW2anE+VoeuT++9F2mUVEoZUFrK//FYoxqNkuTg2dmqKzuy0i9ppchustG47XOkkcYE
-         ePVd+m5hJrrArL3PVe0BUNxgOd/zn+bINtqbA=
+        d=chromium.org; s=google; t=1707776057; x=1708380857; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=wZiXjxKnrMyz6iBNN8FZ/8Z5umOyXaSKjAB1K7uHil4=;
+        b=A/KFg6SMnOewFLZDT6JQMo30CqS9nx1oXzyeHt+n3Z6GPS3OXYty8bQi5iHdpqgEqc
+         wfzcWTgfFv1L2Erd6Mr1rTT1MTzw31+BuBBVXVsdGfNqTF0KX7u6Buj4KcPSDu3kCqIR
+         xvfKyLdPOIUj28pmL7Xf4Kv3SQH/6cic3sObM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707775815; x=1708380615;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=SkGi1YlkpzrNgkK7fsGdO+nBxolzeU4HsB6lcpcl19k=;
-        b=jsaTwyuPhL8BqsiM6YWFSuBCAzT1+zzDGVBCNTQLv4XSc1NgfQFI4a44xqeQ9kUBa0
-         XjrzM3VQPCc3RGmbxIBO0qjVW8ytKbY8Em6bZOhj7VNMBhs8tFpeTXQRctz3r46fnFq9
-         Sya6CXIfH5jKLloLjJVyL2ybrYU5xnYEYAgG4OjR1qmQ6Ep/fgPb/7wdq7so+U0lYUP4
-         XoRc6+EU1JhwVxb8cXolXOPZxP4UHKzOA9EH+4C1weFBbhTPVHC9D816wRTiuMFJdsvV
-         seYSwo+YFy+OpuNsUEuj7jfkdjjDY9gDAUL/Ig58mR+E86x/5sZwAA6OxFJPxJUXBxKj
-         zlLw==
-X-Forwarded-Encrypted: i=1; AJvYcCWP0iW8dNchPdUh+uO7c5hFqF3SKxhrC4sxUANnWGFzFDve8wJutYOT1IB50n83GtrXew8rComjC+IGZGCsQTgX9AJzzoI=
-X-Gm-Message-State: AOJu0Yw7aajEoNOagltRw+qz54+03FVwDVbkhdVG258aGBZepUgO/3Z/
-	ucfPRFuRSKPQwyRo9r6qYDCik767TeNehCG8LC8cBIMbJGsupcrGBi7S3VzFKA==
-X-Google-Smtp-Source: AGHT+IHpQno5Gs03vrNijZSLYd7CPW99yv7uxK9TZvUe9tkILhybemJJepHKCzS3OyHmktw5rKj2Aw==
-X-Received: by 2002:aa7:98db:0:b0:6df:dde5:6029 with SMTP id e27-20020aa798db000000b006dfdde56029mr6510317pfm.19.1707775815028;
-        Mon, 12 Feb 2024 14:10:15 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCXOM1Q1oyTIbMIm3/8NgYuKUVkfTyBovJtGCm92Dn+6W/OCl9Nrv/9i724olnZ5KO3Fz5WtaYNAxg/AWzfjP4i6FjATD/SDxSr/7MuS07SgqtcyB+KBkjG74OXwCYRnrUCULqm/FS1x+sDsfAtu5s6Kk9iGqitIj4DucCWD8+Hl7h+hD17lQD7sNGOUbVALXnbpIsgXE+6k9TNDm2VZqP1caSvISBQNoE5caPtC23Ze9Rpx+Gy1DKQW6uVG8x/pp95bOikO0VDHbBRFvlHuN1wOhy02IGklmdfe4h55X03v7DqS+SOQ/623AhBZyVQ31lQ4xSd6Qt0Z/YpxMLduBeenZOufyU3HUaY8oQjZb7JQQIODmDHwUbepfiMNs+GFKMo6YmScsmqReF1sHoBGSpV0Sdv/8rYGdPSMZG1XpAooQEr++lm34XyeYmZKniSFeLuTEEq0bYTHwevd/8a3xdOwtmuY+OrRGw4OipMEe1qbiuJDEtXWuFvwQ2gseYYcqX0Mmb5sma7UrIoA78CngK185TpVFMCib6jjPZmKaOU5oWUrMVPwtChDDSkb/8k0l8hdSdJyz+tcq0aiBX6NDtWHVtFZ16gGOHy1doeBfWMHyKWwFsraOU1+xUE6dqPg+aliI9BzB7SiLIDJ3fOw4wmqBnXROPnqBVbHUGPrLJvvvEwsBbfzcKgjdtOHKHfJam1UoC1057u35AfN2U4nwohU6ExKIcdFgnYFlt+7gwEzYI96N9vuVVfFr6cGfdoD5EdsOJ4yxoeWOQ==
+        d=1e100.net; s=20230601; t=1707776057; x=1708380857;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wZiXjxKnrMyz6iBNN8FZ/8Z5umOyXaSKjAB1K7uHil4=;
+        b=WcH973w+XT+mmaKJmRvi79fEoDvzWdDtu0C3E8TIm5BDt8Y1Ji1Ln/N/HCq7U2WcVD
+         n7M4uq6ON5eYCp1aSRCzXr504sbn8z4Es6nCK0N91XxQT79xTECOt6xWe3us39NQn4pT
+         SEFDjpVkl1Y3R/NKbkfRVcMFYhS6evdnw9vNmBcvGLh7XGg0DsA2zrWLNnkXuHxZxNQx
+         nUO+BROi8bz1RhNXVllR6d/hJcyoctMlLllCHMS/GRlmrGtGc768wYf6xu8lF6gtdlnU
+         CB3L8gumeTTPdv+OjG5nx9U/2Cp9Gh1F7uRyBJd4VWd9Or9S38LKWGre0SmUdtwwoKJm
+         qOMA==
+X-Forwarded-Encrypted: i=1; AJvYcCU66XiTSe8yxHzymKpjcCyc5L/OCaTYECoCzpgr5vilH5/H2ZF6tLznXEcIKAyd/ioYhXIPwMtNAWrG+NB2iqE4RHsy7WQ=
+X-Gm-Message-State: AOJu0Yx6yVxvAIc3VBGQ75Q4p8XDEd+j6tVmD0xBycQxJJzDx0L56BMS
+	PZbTnfi9aFTXSV/VaWHtHnM27BwWvEi7MIwvOlDpA0qYP2zHbhp08Wqcv2yb5A==
+X-Google-Smtp-Source: AGHT+IFJECsPbCNbGliZWvIYHRL4c/uXXAZZuCyqsAn1ZVqvZdYBLBf67fObnnMqVDNeWoqRd4Gw6Q==
+X-Received: by 2002:a05:6358:7e41:b0:17a:ec8c:72cd with SMTP id p1-20020a0563587e4100b0017aec8c72cdmr2085486rwm.16.1707776057707;
+        Mon, 12 Feb 2024 14:14:17 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWg3dML8VKifNsHk2CVNShk758+NTmByKLZI72E1V2q4Wu9oUmJYkccV4vQiDGOQgADidt5TguGkvh7V4YwOg63GLUryvPiyAQ7f48JUGKHk5FmbcUkOWNBC3Ux7+ARsfis4drosOSrq4FcO2E/nb4nKPd5tTo1IpF7Z2ZQEg+WFRPMypAJ1e34DAT+XFI/el7dGRYPGKNGvKQ6aS8/NETGtgnEw4gK8U9U1Hv73eJqHAkKRRk3J8Ph4Ck//KLXOSNRvO+rAIzUOniypVv1/4JK6yXaykyMLrjMOY39G+2fpgxPBGFw3nZ/LH0KQIjw0EkWhY3rJoqcS/NUxqyJmBf0+SxOykkUoB0LcAsReO1NjiWu0KRnzfLjhQG17Mx1k6lSx7ZZighHq1IIEqMNKmrf+vg0gcVHjQdB9dMPLIKL8hpNfHfvE4J6f62rNrCDo8Bd7E53U+GZrPnL0LkHPW+og8Hr772ylPjBjfFLnALXxOiqaNCPEiXgFsI4tlEu7NYq0RiV8tZ22FLSM13tuC21ckHIWSqolHrrEG281jvnKKCQqMQuN+O/NTCkXba09zfBsvtBX8T2lqUmkKdD00zzZRvUtnr587FITudCjm3qCRbvrPscljCRS1dQo3iBQh8Zy18C+pJxaLHX0SyV1nKKQzyumJgyrZRPaWmuLpyLmJijRnh1cQeWSVGBxt1Wxl7ZPOvMuLO8rM6/m1ZJffXJtGOBjfOlZIyZ/d2SeZ/s9b2tmn7hjA==
 Received: from www.outflux.net ([198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id z10-20020aa79e4a000000b006dae568baedsm6042528pfq.24.2024.02.12.14.10.14
+        by smtp.gmail.com with ESMTPSA id le22-20020a056a004fd600b006e0a30c8c8dsm5334232pfb.117.2024.02.12.14.14.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Feb 2024 14:10:14 -0800 (PST)
-Date: Mon, 12 Feb 2024 14:10:14 -0800
+        Mon, 12 Feb 2024 14:14:16 -0800 (PST)
+Date: Mon, 12 Feb 2024 14:14:16 -0800
 From: Kees Cook <keescook@chromium.org>
 To: Suren Baghdasaryan <surenb@google.com>
 Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
@@ -79,32 +78,37 @@ Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
 	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
 	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
 	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org,
-	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-Subject: Re: [PATCH v3 04/35] mm: enumerate all gfp flags
-Message-ID: <202402121410.2AC4CACAE@keescook>
+	cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 05/35] mm: introduce slabobj_ext to support slab
+ object extensions
+Message-ID: <202402121413.94791C74D5@keescook>
 References: <20240212213922.783301-1-surenb@google.com>
- <20240212213922.783301-5-surenb@google.com>
+ <20240212213922.783301-6-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240212213922.783301-5-surenb@google.com>
+In-Reply-To: <20240212213922.783301-6-surenb@google.com>
 
-On Mon, Feb 12, 2024 at 01:38:50PM -0800, Suren Baghdasaryan wrote:
-> Introduce GFP bits enumeration to let compiler track the number of used
-> bits (which depends on the config options) instead of hardcoding them.
-> That simplifies __GFP_BITS_SHIFT calculation.
+On Mon, Feb 12, 2024 at 01:38:51PM -0800, Suren Baghdasaryan wrote:
+> Currently slab pages can store only vectors of obj_cgroup pointers in
+> page->memcg_data. Introduce slabobj_ext structure to allow more data
+> to be stored for each slab object. Wrap obj_cgroup into slabobj_ext
+> to support current functionality while allowing to extend slabobj_ext
+> in the future.
 > 
-> Suggested-by: Petr Tesařík <petr@tesarici.cz>
 > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 
-Yeah, looks good.
+It looks like this doesn't change which buckets GFP_KERNEL_ACCOUNT comes
+out of, is that correct? I'd love it if we didn't have separate buckets
+so GFP_KERNEL and GFP_KERNEL_ACCOUNT came from the same pools (so that
+the randomized pools would cover GFP_KERNEL_ACCOUNT ...)
+
+Regardless:
 
 Reviewed-by: Kees Cook <keescook@chromium.org>
 
