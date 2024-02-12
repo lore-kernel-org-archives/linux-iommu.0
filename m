@@ -1,62 +1,59 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0A493B2AD
-	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 14:45:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C42F3CF49
+	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 15:50:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707749161; cv=none; b=BEMYdoblj242/mvrseZYZsSFLvsn1YMnaOxcijlOm355IP8qqprktOziK/KtCNpYiGlHY70mNOHFpiVzy4Rga+zr9S/D5srMBnLr9G1rs+tMBdTR0F8soeLz7Y5eqboQCe6MzezHaiNGylWQDmrwv+74Kn/WNHMeIrADFJ79HdM=
+	t=1707753020; cv=none; b=H8nRxKOwCcDdrLc+/2v/wlmNFbhE7kBU/44wVJZW3HA8rcIr3dDpIPADX9bdjJeAYM65ZVgKwbPBs6WZ6j2C7x5M2EKWdgySv85uFDi4XZzMktrN41qbjgjzFrdwXgfJZmEk9e3KmG35Pth0IKCq+ZImkDiqw5kjW76hme6cLxU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707749161; c=relaxed/simple;
-	bh=k0VGRuELN28Qn9lvQIHQIcutEgWButk0U6b9H2aLz3c=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=hBSUxezlPLaAXw7bl27m/qfQl+2Cy3+mygtiiAIp7vek9+X4HU4lsSM4zd+ybiockqzBp9Zdd+0BET1F033GlcadWo1ATPHF3GQcvLLmpzHd3NCVi5PBv1DcfkpMktTt8j4PS3geHhidjV7E/4BbweaRuu7PhNIX04nXbL7eDW0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ouo7E5G9; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1707753020; c=relaxed/simple;
+	bh=DeDmYPWZ0oDu/YhI0G0HsfPQ4KkcTePd/NW82ubRI0w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=L4vh3fOtGf11ecyEE4/+62SWPlQjd495Dc+83wvkFLHZxs71avZFBH7MHEVI+eroraykVIkYGVq2tky9+IbbL53vvn76jn1kHrsxD+TSTx9XdQ1oz6WaauuV/u2tkdZ+uzMIbiKWkWq+OCmJ79FawKimPNhsjaH9mx2nyCyrZxA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WZX44kyt; arc=none smtp.client-ip=209.85.208.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ouo7E5G9"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-410cb9315f6so8192665e9.2
-        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 06:45:59 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WZX44kyt"
+Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2d0ce22b5f3so39913271fa.1
+        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 07:50:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707749158; x=1708353958; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=S3pxgRFVsEQsnhpF3PxeCXS4BN+4M3jXTWtMtfyBqxo=;
-        b=ouo7E5G9pZQMy8owSC/64UK4G6z9vcvy/FXL8xnTLFnaD45yjxB9z9RqSFciI7wl3c
-         R+1ysQrylZ2gPN0Y9tolIkssTgQcrO9qPgvDM2AkY7nwBKaJCTwqsj2vVhlT9nmh3x1n
-         O4Z7Ghy5X8kD5fMSWsFkuQtJBnuF+adECIG6kMw2P9135g9/CtLSERZBOq9nLNkyV0+C
-         d9TFuOZ15l7Gng2uzJMkvZAsZMYGSRRd5Pqk6xb57vsT/w5UliR2vuLF5v7/2IgcGCcD
-         zq7jT9tB7RxzKXMmzW8ajsu/x+n5cFhL2oBKpNe2xtYy2XZGjuqdEDnhQ7rl0ngRQ8kl
-         cw/Q==
+        d=gmail.com; s=20230601; t=1707753016; x=1708357816; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gnijYrP15U15bxthLFyHlkGO+OlGFk98p9uD3CWT7wk=;
+        b=WZX44kytFOkNKauLEpFDRkb9e1thuYAd+i0mTlZUfmhu1TVUErIpoxm4kIPv9PPBEL
+         VpWeMF4iQZq1sWa7iNfmsfp7+1/XuVrkONU9fhuxS9U6KoA5Q5Far9C4kAH2CBQslYFn
+         +gJYxyJslNb+7rDP2kjT60Y0z+R6+z+kpALlJ07VOfvnrwnsiGycZZzsnAyo2Y54/ks3
+         FFkWxninQvDV6tYvAkO0qvQj+U3bPcE5FFHW1Xjo8ZlKn77A0KTHX22smgVlKAZEFpy2
+         hjEnCr+R+Y9MdHai7K3sTiPeXM/q4Pxvc2MkcOrAiz1kglJwZjVDGrlKbalmb+aWOMU+
+         m0Fw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707749158; x=1708353958;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=S3pxgRFVsEQsnhpF3PxeCXS4BN+4M3jXTWtMtfyBqxo=;
-        b=Z4OlwYR+TJT7ptxZeUUtxLCTEn6r0Yz+MmUSkVG3cKQSTnHO4Kg3nGO19d90ildHb8
-         xE+7cPpY2DIk6S51qblEZ90TLE5oeI7iZL3v+iwtG/3vAHn6MuC5ZdCbx2Y7TuL7+6bw
-         nNxGvQqF5yCp7guWSYtSU1rK++fpZg8lJpOE4e5iCUhUmUOuaQTj+nc5DzZRPa1X8HZA
-         CIN9RscSUDTs39kjhULf21vBmd9fTcdONYYNhyk3QRD1/I42fwv1bEn8HfsnxojfZCB3
-         TrPlVpP/4W/T1kVJnowQbeF1RH62WtQ1ZWtIkHcxBnizdprEIR7RQjdQhgYQZPya+I1B
-         qYmQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWgVa8al+ECRFD31ANnaGQKNuTPg5L7yeZG3qAFYmURSN0q5r7KqSUBOwqXCh46rIoNSQSmUcvIrF50DhLQc9Xp/Or2awQ=
-X-Gm-Message-State: AOJu0YxKZK1CX+VIcQOfBXXoz07HOfPd6Ldo5NdBbao/c2ci4shv/xu0
-	EAaga9EGtHAUPGfMqzHEm3B8SZjHPr1JCq90guuuJd7RLAc91kfRdktXqAyYksg=
-X-Google-Smtp-Source: AGHT+IEHJtRY7M5+ETyUGxdL1yxcw9sLc61GyouoRT2NnbbaDAbY3FCadTD8jQn8Z9bXvWOn1y1woQ==
-X-Received: by 2002:a05:600c:4fc9:b0:410:68e1:d9ca with SMTP id o9-20020a05600c4fc900b0041068e1d9camr5906660wmq.2.1707749157957;
-        Mon, 12 Feb 2024 06:45:57 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCV+OsJ9sIEG4makvNA6UljW+O0aO05W5OQxb9HP8XigGDgreyeP67n/CNekdhdkuf6UFZyn3XSWZ6vfSfH1I7nY7mLo3nANOWv1jBS+uVdHd0o+VO3+hrOtXdiTYF4zZxhKKoKcDsk0PPdULk6HfM8ReZUf0B7VdDzQwNGiOWbJ7dfaswBnU35eow3qqltrMkF5DaNSPB2zwxzkZWE9NVsoKh7MZYpEth+Yqd3LNsATOfru0UYFY8vOMnd7oD60RUUvkmD+oFj8EnMtgACLFIt+RUWimI5So1Wes75ctUQXh2todQYLdRX4oSxb15C8yzRxULLZZfRtrCMY/YiT7gEIKTsuwwFGV0I6uARhu0R++2w1OxL697TEBgmX90cRrgsWP83r6ntkoBhKsA5x2a/67VvF83FW0CTxGgdFVZZQ9CYp7SAIjzAh5ybmPH5Wz3KshjhyP0oL1Mu+0ebFdehkDQlErarLr6LfRJYwFdu1dWLtGGGhWkyJpyQTyM3AQvXHzsd/szfGWOY8+ESAVJA0u8MP3v8owoVxKUfi4/ylSYtjIbC7PdThcWFsviZ/wuWRwCnBG9jZMPx0F2ADgls5emoZYqW7W+/nMeofdwSkhrpfzPHdamML3NkrViXpN0xxez0QtPth2tWEmqFCavQ8acTCJcs72FuskFk2Es8JuLeyxSlnjy+3S+FaSIDivInZ8PwnbECyIU1mu82FnXDHfTEbf0/b/gdr72AXMcorBgnrZFALoEiYDtCSGuNa3nub9DX68g/XUzFimbE0dKzkvuDJqP6HNuxGTlHGUEoDIWME0/1AzgWj21gf
-Received: from ?IPV6:2a01:e0a:982:cbb0:fcee:f026:296d:135f? ([2a01:e0a:982:cbb0:fcee:f026:296d:135f])
-        by smtp.gmail.com with ESMTPSA id jw21-20020a05600c575500b004101543e843sm8765535wmb.10.2024.02.12.06.45.56
+        d=1e100.net; s=20230601; t=1707753016; x=1708357816;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gnijYrP15U15bxthLFyHlkGO+OlGFk98p9uD3CWT7wk=;
+        b=f/dU7BzHPpso1uHlyPbN/y2J61UYtpGcwdQoeSKwNEijmkb8ECCEDkna6V0gJW06sx
+         b+bdtHXFbrxwpY5hDG+W1Yly9npmlrE7SDmKXWwvQ9l02nOLru1eQtFMrDN3VMmdckFU
+         kj3QmHXY8WhVanisf2A5EGau7ORx6gg6Uz19Ek4EaEui8pKVcM1iUxZixd78igZZqZF+
+         9dHIDyzTHEkrqNheFkBmbktJwy7Uxys+8HSSjemMIMq4c0ZDOMmClXlvojm+RWnNNL3I
+         U6UTmlw4MAmq1jMl+VZy+QxQbeAd1hJ4n3GPBoa9aPjtja47KPTVo5q1Hce08sNGM6kz
+         XqBA==
+X-Gm-Message-State: AOJu0YzTg0sqsPrFfp4xs2DL6aexdtqlzfCAS0KHNRAa5TYcRWiu3Rhw
+	gY7pL9U1M2VwLB0iEJkTU0qSV6tpLssXe5LzqVb1YYAmUrsd6ejq
+X-Google-Smtp-Source: AGHT+IENL6GY2Fznvlg+fMFMPce7Fb5dfQbxexu+PqfSg5xMnC42WOOtwf6GkJocTKFB0C+xdkrF+g==
+X-Received: by 2002:ac2:43d5:0:b0:511:4ff0:5323 with SMTP id u21-20020ac243d5000000b005114ff05323mr4125491lfl.31.1707753016065;
+        Mon, 12 Feb 2024 07:50:16 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCURBnk92ZMeWtcXp1mspn3er8KAKaH9DRdAU5BS/AWPKAHYtG02JWqm0gMSnuzjq2mtk/8xGIb2JRfxzFZdxmxfpps3muDyh+ne4bV1XQ+jBKOTEWBoguqEePqw7UVYFkIrh8PTdQwlDnlVOrpbZzEVQwaATPwC7AUXUEfwitSg07QwnoLCtpYeg+ZBixe7T4VfN3BLKKwkjvzr6F4ALbKXAas4a9Vy7zeUFMQDixX6L91GH9C7MQ5LcKUZwpzYP3/Ll4MtqqxaUBAX6CSHTn+/zD0AXu9b6FEPHFQK9Db5eD0d25ykHUbrxmADC20UeQs/3VBI/mayec6lMc1ZB8CoyyWxNege7l2L7t8QqvEsIdxOadjQPe8j05GLIEny9M4XPs0miQY7uLujesQbFS6H11/LF3yVQ17D9Y+q1r3XxjRtFWw+2zL9jVfaXZcHAz/aRufvlYwWKi4Ijvg=
+Received: from [192.168.1.135] ([207.188.161.188])
+        by smtp.gmail.com with ESMTPSA id j36-20020a05600c1c2400b00410833555d5sm8461390wms.21.2024.02.12.07.50.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Feb 2024 06:45:57 -0800 (PST)
-Message-ID: <bcad544c-7ca2-4b4f-805b-4ccaedbd091c@linaro.org>
-Date: Mon, 12 Feb 2024 15:45:56 +0100
+        Mon, 12 Feb 2024 07:50:14 -0800 (PST)
+Message-ID: <826077f1-dc96-49be-961b-e9cfbed1fef5@gmail.com>
+Date: Mon, 12 Feb 2024 16:50:12 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -64,191 +61,121 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-From: Neil Armstrong <neil.armstrong@linaro.org>
-Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH 3/5] drm: msm: add support for A750 GPU
-Content-Language: en-US, fr
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
- <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Bjorn Andersson <andersson@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+Subject: Re: [PATCH] iommu/mtk_iommu: Use devm_kcalloc() instead of
+ devm_kzalloc()
+Content-Language: en-US, ca-ES, es-ES
+To: Erick Archer <erick.archer@gmx.com>, Yong Wu <yong.wu@mediatek.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+ Kees Cook <keescook@chromium.org>
+Cc: iommu@lists.linux.dev, linux-mediatek@lists.infradead.org,
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20240212-topic-sm8650-gpu-v1-0-708a40b747b5@linaro.org>
- <20240212-topic-sm8650-gpu-v1-3-708a40b747b5@linaro.org>
- <b5d76a25-045a-4acd-ad20-d28855b40222@linaro.org>
-Autocrypt: addr=neil.armstrong@linaro.org; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
- OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
- Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
- YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
- GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
- UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
- GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
- yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
- QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
- SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
- 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
- Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
- oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
- M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
- 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
- KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
- 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
- QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
-Organization: Linaro Developer Services
-In-Reply-To: <b5d76a25-045a-4acd-ad20-d28855b40222@linaro.org>
+ linux-hardening@vger.kernel.org
+References: <20240211182250.12656-1-erick.archer@gmx.com>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Autocrypt: addr=matthias.bgg@gmail.com; keydata=
+ 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
+In-Reply-To: <20240211182250.12656-1-erick.archer@gmx.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 12/02/2024 11:46, Konrad Dybcio wrote:
-> On 12.02.2024 11:37, Neil Armstrong wrote:
->> Add support for the A750 GPU found on the SM8650 platform
->>
->> Unlike the the very close A740 GPU on the SM8550 SoC, the A750 GPU
->> doesn't have an HWCFG block but a separate register set.
->>
->> The missing registers are added in the a6xx.xml.h file that would
->> require a subsequent sync and the non-existent hwcfg is handled
->> in a6xx_set_hwcg().
+
+
+On 11/02/2024 19:22, Erick Archer wrote:
+> This is an effort to get rid of all multiplications from allocation
+> functions in order to prevent integer overflows [1].
 > 
-> These should also be submitted to mesa to make sure the next header sync
-> doesn't wipe them
-
-Ack submitting them right now: https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27576
-
+> Here the multiplication is obviously safe because MTK_PROTECT_PA_ALIGN
+> is defined as a literal value of 256 or 128.
 > 
-> [...]
+> For the "mtk_iommu.c" file: 256
+> For the "mtk_iommu_v1.c" file: 128
 > 
->> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
->> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
->> @@ -958,10 +958,11 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
->>   	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
->>   	struct a6xx_gmu *gmu = &a6xx_gpu->gmu;
->>   	const struct adreno_reglist *reg;
->> +	bool skip_programming = !(adreno_gpu->info->hwcg || adreno_is_a7xx(adreno_gpu));
+> However, using devm_kcalloc() is more appropriate [2] and improves
+> readability. This patch has no effect on runtime behavior.
 > 
-> is_a750?
+> Link: https://github.com/KSPP/linux/issues/162 [1]
+> Link: https://www.kernel.org/doc/html/next/process/deprecated.html#open-coded-arithmetic-in-allocator-arguments [2]
+> Signed-off-by: Erick Archer <erick.archer@gmx.com>
 
-OK right, I was thinking of the next gpu which will probably also miss an hwcfg
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
+> ---
+>   drivers/iommu/mtk_iommu.c    | 2 +-
+>   drivers/iommu/mtk_iommu_v1.c | 4 ++--
+>   2 files changed, 3 insertions(+), 3 deletions(-)
 > 
->>   	unsigned int i;
->>   	u32 val, clock_cntl_on, cgc_mode;
->>   
->> -	if (!adreno_gpu->info->hwcg)
->> +	if (skip_programming)
->>   		return;
->>   
->>   	if (adreno_is_a630(adreno_gpu))
->> @@ -982,6 +983,25 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
->>   			  state ? 0x5555 : 0);
->>   	}
->>   
->> +	if (!adreno_gpu->info->hwcg) {
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 7abe9e85a570..9aae6eb604b1 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -1264,7 +1264,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>   	data->plat_data = of_device_get_match_data(dev);
 > 
-> I don't think this block of code is reachable now, no?
-
-It is because we didn't skip when adreno_is_a7xx(adreno_gpu)
-
+>   	/* Protect memory. HW will access here while translation fault.*/
+> -	protect = devm_kzalloc(dev, MTK_PROTECT_PA_ALIGN * 2, GFP_KERNEL);
+> +	protect = devm_kcalloc(dev, 2, MTK_PROTECT_PA_ALIGN, GFP_KERNEL);
+>   	if (!protect)
+>   		return -ENOMEM;
+>   	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
+> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> index 25b41222abae..45cd845d153f 100644
+> --- a/drivers/iommu/mtk_iommu_v1.c
+> +++ b/drivers/iommu/mtk_iommu_v1.c
+> @@ -621,8 +621,8 @@ static int mtk_iommu_v1_probe(struct platform_device *pdev)
+>   	data->dev = dev;
 > 
-> Maybe remove the skip_programming and if_a750 here?
-This would require:
- >> -	if (!adreno_gpu->info->hwcg || )
- >> +	if (!(adreno_gpu->info->hwcg || adreno_is_a750(adreno_gpu)))
-
-and:
-
- >> +	if (adreno_is_a750(adreno_gpu)) {
-
-But if the next gpu also doesn't have an hwcfg, we will need to use
-the current design...
-
-I just tried with:
-====================><===============================
-@@ -961,7 +961,7 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
-         unsigned int i;
-         u32 val, clock_cntl_on, cgc_mode;
-
--       if (!adreno_gpu->info->hwcg)
-+       if (!(adreno_gpu->info->hwcg || adreno_is_a750(adreno_gpu)))
-                 return;
-
-         if (adreno_is_a630(adreno_gpu))
-@@ -982,6 +982,25 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
-                           state ? 0x5555 : 0);
-         }
-
-+       if (adreno_is_a750(adreno_gpu)) {
-+               gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
-+               gpu_write(gpu, REG_A7XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
-+
-+               if (state) {
-+                       gpu_write(gpu, REG_A7XX_RBBM_CGC_P2S_TRIG_CMD, 1);
-+
-+                       if (gpu_poll_timeout(gpu, REG_A7XX_RBBM_CGC_P2S_STATUS, val,
-+                                            val & A7XX_RBBM_CGC_P2S_STATUS_TXDONE, 1, 10)) {
-+                               dev_err(&gpu->pdev->dev, "RBBM_CGC_P2S_STATUS TXDONE Poll failed\n");
-+                               return;
-+                       }
-+
-+                       gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 0);
-+               }
-+
-+               return;
-+       }
-+
-         val = gpu_read(gpu, REG_A6XX_RBBM_CLOCK_CNTL);
-
-         /* Don't re-program the registers if they are already correct */
-====================><===============================
-
-And it works fine, does it work it for you ?
-
+>   	/* Protect memory. HW will access here while translation fault.*/
+> -	protect = devm_kzalloc(dev, MTK_PROTECT_PA_ALIGN * 2,
+> -			GFP_KERNEL | GFP_DMA);
+> +	protect = devm_kcalloc(dev, 2, MTK_PROTECT_PA_ALIGN,
+> +			       GFP_KERNEL | GFP_DMA);
+>   	if (!protect)
+>   		return -ENOMEM;
+>   	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
+> --
+> 2.25.1
 > 
->> +		gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
->> +		gpu_write(gpu, REG_A7XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
->> +
->> +		if (state) {
->> +			gpu_write(gpu, REG_A7XX_RBBM_CGC_P2S_TRIG_CMD, 1);
->> +
->> +			if (gpu_poll_timeout(gpu, REG_A7XX_RBBM_CGC_P2S_STATUS, val,
->> +					     val & BIT(0), 1, 10)) {
-> 
-> We should define that bit name (the err suggests it's
-> REG_A7XX_RBBM_GCC_P2S_STATUS_TXDONE or so)
-> 
-> [...]
-> 
->> +static inline int adreno_is_a750(struct adreno_gpu *gpu)
->> +{
->> +	return gpu->info->chip_ids[0] == 0x43051401;
->> +}
->> +
->>   /* Placeholder to make future diffs smaller */
-> 
-> Please also remove this comment now that it's invalid
-
-Ack
-
-> 
-> Konrad
-
-Thanks,
-Neil
-
