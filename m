@@ -1,101 +1,257 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-il1-f173.google.com (mail-il1-f173.google.com [209.85.166.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE97B45BE7
-	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 18:31:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DD8645BE7
+	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 18:36:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707762674; cv=none; b=B/cFJAf3flxMZrMFNHimehWVT6ggMvuT4nAG3pa92S2LeapPWb1B4teoa289jzdeiw6DrDBNImUsUGIxoWNMc7DAI7QwY6dF9UVLzrFcMF2iwS/mUA7DS1jiFpN049Z6TaN7vdgSvpvQS6CG1tpMwz8m1NetwGTkpAjUQFnVBY4=
+	t=1707763007; cv=none; b=TK6/o7pMhGwwXDDxhcWL9Wm2ZoDyccLY2zCgy5NZrRv0ziC29DDdbnpiMbmlVNWiStpI38FLQ6UGgEdKjs5tC84vmm3nQnERpouRvjJ1+AX72AcX6UCkQiMhk2faFqcWdg08r6rOCcFeXFSR/ebIzpu6a21DnIPDiN4OvMDfKiI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707762674; c=relaxed/simple;
-	bh=Vi6c5axLczsjAfZ/jdvV6TZrVwfcoDXEpjFAYHPKp3c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Xa6o/woY8jESl4sFBERodWcp5wZZBrIkQMqFotHpXbqkPHS1tclcmBiHBt+zbcXRAIRthIIJn+mTG67L2vq50CJTSSfQcUes0LOCX/A2I76VVKKIvZRIpq0CWfvmfflzfAcZi2P84+QT2mP8ImXQrnXLWedA+WKfg53V2dPr8Ag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=ekiRMYEo; arc=none smtp.client-ip=209.85.214.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
+	s=arc-20240116; t=1707763007; c=relaxed/simple;
+	bh=m8jYFCrSiAHQCrclsFFugQkVkQ8mNvCBEUbX8VM2B3s=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Bew1t6/xZTptuwXjtNwgiBZmydmPR0kKA40xfuhsmsSaAwNyXQMfhgIB9/K6TmPxRTBn2vrLkxiryCkrdGLAtR23o+ZJHbhZKXVMcV7o5lEiruvKnNe8audFCBakmZubXDQ+E9cCsVe6b+83gJ7cyTTov5MvQPhKkqc/Mg+EMkw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk; spf=pass smtp.mailfrom=kernel.dk; dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b=QRSctXr7; arc=none smtp.client-ip=209.85.166.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kernel.dk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kernel.dk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ekiRMYEo"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1d93edfa76dso28095325ad.1
-        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 10:31:12 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel-dk.20230601.gappssmtp.com header.i=@kernel-dk.20230601.gappssmtp.com header.b="QRSctXr7"
+Received: by mail-il1-f173.google.com with SMTP id e9e14a558f8ab-35d374bebe3so4801755ab.1
+        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 10:36:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google; t=1707762672; x=1708367472; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=WxYKfxVc01RvCqlquCukYbiHiXMELvJ7WajMr+fzZiM=;
-        b=ekiRMYEoOGa6GgoT4ZAMx/5F9p3Hsem98uhaW0iyllNc1NBvi2UNjc55jl2rdemuhx
-         sfUYGSimUa0oocUtjPF2atMQ9WxrscpYUZfEZrLWzoUvw6w3W4vA/lcdHWJrGKHCrfH9
-         A+DWnHpb0m1BHxqBUYaVY6yXjNNdS86YUlqa8=
+        d=kernel-dk.20230601.gappssmtp.com; s=20230601; t=1707763004; x=1708367804; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=QamGh/bSN8B/QUCshCi8/HvCoWOBlZLPzsuAV9yhvF0=;
+        b=QRSctXr7kSsLwrCaGW+K8+E4xKiKPYFMI2sFWT/tIOVIWQ/qNNMh0jgOYfaW7NAfEh
+         SrC5kpb324bd0zlgBuS8J7ymZoBbc8q1tca7UUDuXkDS+oCJSgLpTsEzIyKzXh3wrPSJ
+         r1lOgHG+JAwhu7F0jxsPG6I0v8RxVaaq1oJmpP/tGtg3riBNG17GiWjOUEnoSr1hQbip
+         FPZFG2IaCGl4hX0wsQLokGBv2rzbibf5zMBPY4devV2a0HsSrR/AcHtNcrJ1hYUrnYa9
+         NMdgPoRTKRXbbxULtipiZK5Wn1KZyG20mYCkgAIRkD2vkMguz5h5iZ/jdoTH3udALS4U
+         vnzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707762672; x=1708367472;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WxYKfxVc01RvCqlquCukYbiHiXMELvJ7WajMr+fzZiM=;
-        b=PYShsUnsJ6WzEYpsf0HURCahAoY9TfY9HMPhNIpC/jnuUhvDDNG2HIWpfEFaQgrk18
-         KEf9Z7H9v4QmzXWq65Taudc3GFkY7SCwXHT2siNU4wQ7uCQMeQIpyJZbftjzqMDs2/cv
-         LV4yR2RAEHMojwD1uZYqe1hVjw1TyYzEpqR0hRufCYEaa5bfNdITo3FZ9CxwUfG2zpoT
-         zj5/ORGNAhf/uHU/poA6YHvBdOKJoSyxrC3PQgDFu36/uAYb6+ujFUsvow76wO58i7tq
-         BH3ABZHbB2HbVYfxF15oUJDSxwdaJElJeNwz12NedqvKlHcCHg0cKLuBS5zd8NHyFmV7
-         ECXA==
-X-Forwarded-Encrypted: i=1; AJvYcCUVAD+1zM7JxrQlqz6nqykl8vaI0SRtK0boW+7mtmrrtbBRBBTeXx/N4xZZLstEn3iDE2709YTnnlaW69iwo4USy5PAbpg=
-X-Gm-Message-State: AOJu0YxiUQWmMg8nwTT09Q6FtugtUKsCJF5dj1hVJ61st4ANlIOdEnGV
-	ZmYHFYsARQ+A7pO56va8c9vc/Fzwoa/c1+Hsv4oPVOsWMaC/igkfW0E9hryQlQ==
-X-Google-Smtp-Source: AGHT+IGgwfZ85ig5seHJCbnXSbj93G7dxG+Z8HmWUBYItrse6pgkNnMFfriCyi+RacTqAQ3g9R52ZQ==
-X-Received: by 2002:a17:902:fc46:b0:1db:28b4:4475 with SMTP id me6-20020a170902fc4600b001db28b44475mr1656842plb.9.1707762672359;
-        Mon, 12 Feb 2024 10:31:12 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUtqiIrorFvqjkApbF3idZ0NNZ5ryhVf4jv0lvSRs8BQcLjw0NMWxaEQu8LPuqrHMfyobiwwul93Aab5pCDYkBrY9W3bg2i7mqlQcoAFQQyYmGUTas1LBvaN0eXhGp9H8cMyHhB2/Q3mp7GKvlkANpIW9Wsyj84t7uczus2LAnei8WalXriCMZ7LUDrnMYTV9IHk/9NA5/PiUoWn60yClB2etHXG0QPKoMNUOUSMw4PXsAhnJztLYYRnfzHD0wF74cnM93rATXrgJcTQSYTLZO6vb+CIVa6/29VJsTH2F0UCAA90uUT8BRGcKcK504=
-Received: from www.outflux.net ([198.0.35.241])
-        by smtp.gmail.com with ESMTPSA id h12-20020a170902f7cc00b001d8924d8dbfsm644712plw.265.2024.02.12.10.31.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Feb 2024 10:31:11 -0800 (PST)
-Date: Mon, 12 Feb 2024 10:31:11 -0800
-From: Kees Cook <keescook@chromium.org>
-To: Erick Archer <erick.archer@gmx.com>
-Cc: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	"Gustavo A. R. Silva" <gustavoars@kernel.org>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-hardening@vger.kernel.org
-Subject: Re: [PATCH] iommu/vt-d: Use kcalloc() instead of kzalloc()
-Message-ID: <202402121031.4649560C1@keescook>
-References: <20240211175143.9229-1-erick.archer@gmx.com>
+        d=1e100.net; s=20230601; t=1707763004; x=1708367804;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=QamGh/bSN8B/QUCshCi8/HvCoWOBlZLPzsuAV9yhvF0=;
+        b=Ja768sthoNvWJaZHGt0rsMl5w06IC+RuVUSKkRw03XSAgj0UmNBE7J6jUaB2pLiPi2
+         W1trl6xIGy3a+qRQp/j68EQRWh8ZDdFfSnv4B6W/Xxe791f+QAq//v42ThvQzCK5E8X9
+         1fof9yaKwCwxJ3SGQQIf3O6+GE7va2g7mPZ0xhFfNUk5FuJVhdGyVttrNg4IIsIAY15x
+         KZK1mkdXyKn26j6K8PNyu/4ayI3j+8tUN4sduAKFuSHYeFMXCNe5MjDPTbgLGcDWUSVX
+         YIiksTExTNdErZ38euZvHLNdxrQOoMFnfDIwzT+feiF/7cGCgeI2lEzM4YYgRg7VU3fH
+         CPaQ==
+X-Gm-Message-State: AOJu0YyIWhr4HL8klh+4tXgPleR+aZfdMeFNTdFiw68B9q3e6ttk9QN2
+	fC/u370BtoWL48H8ZMoDPjHpA1zDh80+VU8eZA41jR9bp0LpCixhkmpF27Dlea4=
+X-Google-Smtp-Source: AGHT+IGx6UQ1RmewCkB263/NEIp8AIh9XRrVDN/CzTI5LD8F8RcBh7WZSovuc7AMI02CREDfWILuew==
+X-Received: by 2002:a05:6602:2c41:b0:7c4:5898:11d0 with SMTP id x1-20020a0566022c4100b007c4589811d0mr6176466iov.1.1707763004363;
+        Mon, 12 Feb 2024 10:36:44 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCXVJNEWyA0uLfG1KCQYyFnbZS6dUF/q18fJLotyRTkoB71luThdqtt/fYhsZtKzXR4OefxNFpCAzmRDEZt84gpU+K4IU4WtGW1WE56CX9tQJvjVYnOQos6IsYVhvu3aPBggPWiOY7p5RjbWtAeEBmcCdpVCf5Qa/8lqdHDUwgEelbcyf4ooD9ZQgpZ0ZZxVMpNApdZEBynHueLOQFdoOAYL7lTeeU1sTpHeavUScHlMwSUrASo364ktR0RDz/1O2djdYmLOmzRlnLjRlFhDpn4cOmECIkNYeyhyrnrqZ5icYn3+gsWDyWy4NUPNTd9hP+e0QGfZyCcfu5IRMa9/gnmItBZxvKSQ9t0kVY//4fpobw+anEm465/cjdQFNJhTu4B70iScGwOjGVvmjZniXupW/jH037IEEsHjfIKBCfoK5wJ3k+xoavt4DCzeLwdaTYbAvm6VlGeZbvSRaKCxICuB48Tew97/Dhoni9XFxnALqulXXzFSR5Uy1Cc60SF6taTL4oVAIV0D2E7nySG9Jpmt1mlXjKSZ4fQaPw==
+Received: from [192.168.1.116] ([96.43.243.2])
+        by smtp.gmail.com with ESMTPSA id e22-20020a6b6916000000b007c422dfb2f0sm1738311ioc.35.2024.02.12.10.36.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Feb 2024 10:36:43 -0800 (PST)
+Message-ID: <2aa290eb-ec4b-43b1-87db-4df8ccbeaa37@kernel.dk>
+Date: Mon, 12 Feb 2024 11:36:42 -0700
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240211175143.9229-1-erick.archer@gmx.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/15] Coalesced Interrupt Delivery with posted MSI
+Content-Language: en-US
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
+ Peter Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev,
+ Thomas Gleixner <tglx@linutronix.de>, Lu Baolu <baolu.lu@linux.intel.com>,
+ kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>,
+ Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>,
+ Paul Luse <paul.e.luse@intel.com>, Dan Williams <dan.j.williams@intel.com>,
+ Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ maz@kernel.org, seanjc@google.com, Robin Murphy <robin.murphy@arm.com>
+References: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
+ <051cf099-9ecf-4f5a-a3ac-ee2d63a62fa6@kernel.dk>
+ <20240209094307.4e7eacd0@jacob-builder>
+ <9285b29c-6556-46db-b0bb-7a85ad40d725@kernel.dk>
+ <20240212102742.34e1e2c2@jacob-builder>
+From: Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20240212102742.34e1e2c2@jacob-builder>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Feb 11, 2024 at 06:51:43PM +0100, Erick Archer wrote:
-> This is an effort to get rid of all multiplications from allocation
-> functions in order to prevent integer overflows [1].
+On 2/12/24 11:27 AM, Jacob Pan wrote:
+> Hi Jens,
 > 
-> Here the multiplication is obviously safe because DMAR_LATENCY_NUM
-> is the number of latency types defined in the "latency_type" enum.
+> On Fri, 9 Feb 2024 13:31:17 -0700, Jens Axboe <axboe@kernel.dk> wrote:
 > 
-> enum latency_type {
-> 	DMAR_LATENCY_INV_IOTLB = 0,
-> 	DMAR_LATENCY_INV_DEVTLB,
-> 	DMAR_LATENCY_INV_IEC,
-> 	DMAR_LATENCY_PRQ,
-> 	DMAR_LATENCY_NUM
-> };
-> 
-> However, using kcalloc() is more appropriate [2] and improves
-> readability. This patch has no effect on runtime behavior.
-> 
-> Link: https://github.com/KSPP/linux/issues/162 [1]
-> Link: https://www.kernel.org/doc/html/next/process/deprecated.html#open-coded-arithmetic-in-allocator-arguments [2]
-> Signed-off-by: Erick Archer <erick.archer@gmx.com>
+>> On 2/9/24 10:43 AM, Jacob Pan wrote:
+>>> Hi Jens,
+>>>
+>>> On Thu, 8 Feb 2024 08:34:55 -0700, Jens Axboe <axboe@kernel.dk> wrote:
+>>>   
+>>>> Hi Jacob,
+>>>>
+>>>> I gave this a quick spin, using 4 gen2 optane drives. Basic test, just
+>>>> IOPS bound on the drive, and using 1 thread per drive for IO. Random
+>>>> reads, using io_uring.
+>>>>
+>>>> For reference, using polled IO:
+>>>>
+>>>> IOPS=20.36M, BW=9.94GiB/s, IOS/call=31/31
+>>>> IOPS=20.36M, BW=9.94GiB/s, IOS/call=31/31
+>>>> IOPS=20.37M, BW=9.95GiB/s, IOS/call=31/31
+>>>>
+>>>> which is abount 5.1M/drive, which is what they can deliver.
+>>>>
+>>>> Before your patches, I see:
+>>>>
+>>>> IOPS=14.37M, BW=7.02GiB/s, IOS/call=32/32
+>>>> IOPS=14.38M, BW=7.02GiB/s, IOS/call=32/31
+>>>> IOPS=14.38M, BW=7.02GiB/s, IOS/call=32/31
+>>>> IOPS=14.37M, BW=7.02GiB/s, IOS/call=32/32
+>>>>
+>>>> at 2.82M ints/sec. With the patches, I see:
+>>>>
+>>>> IOPS=14.73M, BW=7.19GiB/s, IOS/call=32/31
+>>>> IOPS=14.90M, BW=7.27GiB/s, IOS/call=32/31
+>>>> IOPS=14.90M, BW=7.27GiB/s, IOS/call=31/32
+>>>>
+>>>> at 2.34M ints/sec. So a nice reduction in interrupt rate, though not
+>>>> quite at the extent I expected. Booted with 'posted_msi' and I do see
+>>>> posted interrupts increasing in the PMN in /proc/interrupts, 
+>>>>  
+>>> The ints/sec reduction is not as high as I expected either, especially
+>>> at this high rate. Which means not enough coalescing going on to get the
+>>> performance benefits.  
+>>
+>> Right, it means that we're getting pretty decent commands-per-int
+>> coalescing already. I added another drive and repeated, here's that one:
+>>
+>> IOPS w/polled: 25.7M IOPS
+>>
+>> Stock kernel:
+>>
+>> IOPS=21.41M, BW=10.45GiB/s, IOS/call=32/32
+>> IOPS=21.44M, BW=10.47GiB/s, IOS/call=32/32
+>> IOPS=21.41M, BW=10.45GiB/s, IOS/call=32/32
+>>
+>> at ~3.7M ints/sec, or about 5.8 IOPS / int on average.
+>>
+>> Patched kernel:
+>>
+>> IOPS=21.90M, BW=10.69GiB/s, IOS/call=31/32
+>> IOPS=21.89M, BW=10.69GiB/s, IOS/call=32/31
+>> IOPS=21.89M, BW=10.69GiB/s, IOS/call=32/32
+>>
+>> at the same interrupt rate. So not a reduction, but slighter higher
+>> perf. Maybe we're reaping more commands on average per interrupt.
+>>
+>> Anyway, not a lot of interesting data there, just figured I'd re-run it
+>> with the added drive.
+>>
+>>> The opportunity of IRQ coalescing is also dependent on how long the
+>>> driver's hardirq handler executes. In the posted MSI demux loop, it does
+>>> not wait for more MSIs to come before existing the pending IRQ polling
+>>> loop. So if the hardirq handler finishes very quickly, it may not
+>>> coalesce as much. Perhaps, we need to find more "useful" work to do to
+>>> maximize the window for coalescing.
+>>>
+>>> I am not familiar with optane driver, need to look into how its hardirq
+>>> handler work. I have only tested NVMe gen5 in terms of storage IO, i saw
+>>> 30-50% ints/sec reduction at even lower IRQ rate (200k/sec).  
+>>
+>> It's just an nvme device, so it's the nvme driver. The IRQ side is very
+>> cheap - for as long as there are CQEs in the completion ring, it'll reap
+>> them and complete them. That does mean that if we get an IRQ and there's
+>> more than one entry to complete, we will do all of them. No IRQ
+>> coalescing is configured (nvme kind of sucks for that...), but optane
+>> media is much faster than flash, so that may be a difference.
+>>
+> Yeah, I also check the the driver code it seems just wake up the threaded
+> handler.
 
-Looks reasonable.
+That only happens if you're using threaded interrupts, which is not the
+default as it's much slower. What happens for the normal case is that we
+init a batch, and then poll the CQ ring for completions, and then add
+them to the completion batch. Once no more are found, we complete the
+batch.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+You're not using threaded interrupts, are you?
+
+> For the record, here is my set up and performance data for 4 Samsung disks.
+> IOPS increased from 1.6M per disk to 2.1M. One difference I noticed is that
+> IRQ throughput is improved instead of reduction with this patch on my setup.
+> e.g. BEFORE: 185545/sec/vector 
+>      AFTER:  220128
+
+I'm surprised at the rates being that low, and if so, why the posted MSI
+makes a difference? Usually what I've seen for IRQ being slower than
+poll is if interrupt delivery is unreasonably slow on that architecture
+of machine. But ~200k/sec isn't that high at all.
+
+> [global]                      
+> bs=4k                         
+> direct=1                      
+> norandommap                   
+> ioengine=libaio               
+> randrepeat=0                  
+> readwrite=randread            
+> group_reporting               
+> time_based                    
+> iodepth=64                    
+> exitall                       
+> random_generator=tausworthe64 
+> runtime=30                    
+> ramp_time=3                   
+> numjobs=8                     
+> group_reporting=1             
+>                               
+> #cpus_allowed_policy=shared   
+> cpus_allowed_policy=split     
+> [disk_nvme6n1_thread_1]       
+> filename=/dev/nvme6n1         
+> cpus_allowed=0-7       
+> [disk_nvme6n1_thread_1]
+> filename=/dev/nvme5n1  
+> cpus_allowed=8-15      
+> [disk_nvme5n1_thread_2]
+> filename=/dev/nvme4n1  
+> cpus_allowed=16-23     
+> [disk_nvme5n1_thread_3]
+> filename=/dev/nvme3n1  
+> cpus_allowed=24-31     
+
+For better performance, I'd change that engine=libaio to:
+
+ioengine=io_uring
+fixedbufs=1
+registerfiles=1
+
+Particularly fixedbufs makes a big difference, as a big cycle consumer
+is mapping/unmapping pages from the application space into the kernel
+for O_DIRECT. With fixedbufs=1, this is done once and we just reuse the
+buffers. At least for my runs, this is ~15% of the systime for doing IO.
+It also removes the page referencing, which isn't as big a consumer, but
+still noticeable.
+
+Anyway, side quest, but I think you'll find this considerably reduces
+overhead / improves performance. Also makes it so that you can compare
+with polled IO on nvme, which aio can't do. You'd just add hipri=1 as an
+option for that (with a side note that you need to configure nvme poll
+queues, see the poll_queues parameter).
+
+On my box, all the NVMe devices seem to be on node1, not node0 which
+looks like it's the CPUs you are using. Might be worth checking and
+adjusting your CPU domains for each drive? I also tend to get better
+performance by removing the CPU scheduler, eg just pin each job to a
+single CPU rather than many. It's just one process/thread anyway, so
+really no point in giving it options here. It'll help reduce variability
+too, which can be a pain in the butt to deal with.
 
 -- 
-Kees Cook
+Jens Axboe
+
