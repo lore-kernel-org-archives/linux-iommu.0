@@ -1,55 +1,54 @@
-Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
+Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com [209.85.219.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0A6858129
-	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 21:40:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA78458206
+	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 21:40:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707774025; cv=none; b=YxIilJXvqoq7xee2bH4B6is7q49UvcCyr9qtPBTfRjZKes20pH5UB7o6joeX3ylMRqsD0PB9bGvE8go2EaAK/FN/WiOXVxtckj2Fb/KLHyKpBXMuTwWt04HyEuoUli6pdPnbmsT0giPtP5ArZ5geXiatHVp/SlEQ4BM5wUjHWLU=
+	t=1707774029; cv=none; b=C924v4BQnneW9Em+N0G2X3bAZ9msvjQgp6U2LrBbAHRHxnVSvuj6uLCfWtl4f+X9gtur58tTkAMmGy8JsUVSmW60y/yVWC1m7LT4cJqyCahGB8VknF9OUG/BWC/vyJ8M9ATEG+u0ccYhxmvHjXedK2RNL2e++uCDO9K3pt03oYw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707774025; c=relaxed/simple;
-	bh=mETHOHGta/ApXOLd4cZ9kSxCTLotDnWcLiMxmS8gzhM=;
+	s=arc-20240116; t=1707774029; c=relaxed/simple;
+	bh=PmKeN7vmTqxLXiZj031z5+rsSma28wkZJAJ21oArHtE=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=Luv0ffdaROWJkCq+jBUsjLcwXVB75B+QVci0sThYK1alyxcKSGYKikyirCq1LUX167hZ/+DLX63g3Eer41HVml8gGwdCrk7i5j1d4YhJb8MVFc9t3l1QM/iCA2amrPvrz7s103n+4Ri6awAO9GjRSz/zMrwbQeDDaxqsFp2l0Cw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=1YFCee3y; arc=none smtp.client-ip=209.85.219.202
+	 To:Cc:Content-Type; b=ZN+P4nKlb86VZ+VUOLbSTIPrKkkBWZ1U8DTUzq7faOr8yKA34M4FhtdwXzEMfoMRf8UBfKxNQCnd1s9CEt4UMI+kS3uK9umLX8wgvSSaEbwz1HZSdK48JHEgQT5hTuXvaisptPd/nKcNxAkrey4eBu2RrgAGNh3kL7Ki+TINCcc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UhUNdcFt; arc=none smtp.client-ip=209.85.219.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="1YFCee3y"
-Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-dcbee93a3e1so863510276.3
-        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 13:40:23 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UhUNdcFt"
+Received: by mail-yb1-f201.google.com with SMTP id 3f1490d57ef6-dcc4563611cso346129276.3
+        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 13:40:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1707774023; x=1708378823; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1707774025; x=1708378825; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=QVjGOqS2/C9DQQqaQQFc7iw3YwNnxSDsGz2z4KoUl2k=;
-        b=1YFCee3y4xO5AruHnmHq01Tk/D9gGrP76Oncr1aANVHAmRcaxsXKeohnW+JWf8+ZhD
-         UvzqS9Ct0HCyCYoTsQo7/22dwlWmnyXWo2ndTyJxalAOf5E6w6C6s4HO2AeHp3N7OLS0
-         Ux9XoWO5RoPm0B3OL03n814/SuceerQEzxO4oUMBDAvXXwI5EMyvVhgXqIr6iNFQv8WT
-         nT+/QWm9/7wEobnbETEhTQF0YEZxQLYBfeIK7fFvHme6NeKOe6lQtQOdWh8ktfeX+79T
-         om3KiVXctTrS7PI6Hl20Uir1kt6Vn+lnh1DLqr9bCocVPWTv4rQiAyBFX36glwJnBdY7
-         n1pw==
+        bh=nNnBkPYeQ1kRTTlryOW31uuwa/BW+/OIiMnW19R7vGw=;
+        b=UhUNdcFtU3IXU0pVqlDsuiTUZNUNnKyP6HAaYxznSR26xV2iUaDzer76wHBfymMqHD
+         JXFw0aa+hsgMCzJJHaoHlVCsXn4kbx7ed2qt7PLQXr4kPKSF31Y19mcoF0mKx33bc1aR
+         YvFm78uij6KMbAHSHYCD4KrMBJlfBidRkmaRsq3YJ8QyG2jbv9kNFzjyYKwBSeJBZLgK
+         QRLWICKbQ5MRjQHItdtwsRgHFfcw40CSLFGjXnkC6anQUa08AkOMTklk4zEkrn5DjnBl
+         +TxMw0m8Nilx84MVB0LWm4N9NmKgPwp4beesMPi0ogG07XvQl65oalx9hpTd04v/9lJ8
+         OvxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707774023; x=1708378823;
+        d=1e100.net; s=20230601; t=1707774025; x=1708378825;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QVjGOqS2/C9DQQqaQQFc7iw3YwNnxSDsGz2z4KoUl2k=;
-        b=FP+palwPqhqeYqWjH6NcvV6evts43OYfR8muhfDdKVGnXcKNlCXwQ2S4+NpLyPiMm2
-         xrLgyZZaru+8O8VZTlk78PHL8neB6qvlFwXEx1wYM5+A24LYbx9IJ8EP+/7Ua6xpiUBR
-         xo01K+rWwLtoXZMqhFCqb4T2lO0KWSTNr1j/K0l7eFnvZSu0YW5tIV7QHaUwvJoDjmz3
-         HXZ2bwrVHrovVuyWJXNeGNZrHuSjY9ZrgYKsoYphp+KI28pBW9Tto41KXDAdJQtPhvUO
-         Z8bCi2v0Do4lGqM+zIfewcAO7q7QrVoznqufLr6KZQ30pLA2P6bsIgQnIePLYZ7KFuYg
-         k56w==
-X-Forwarded-Encrypted: i=1; AJvYcCWnve0FIbUoQynWfdb3UBj67SLzSwz8J1y1Ie9/hY4B1rA1maDROuaaitt+cB2wvhpoG8/T5nafo2D/Vo3i69BMwZuF90E=
-X-Gm-Message-State: AOJu0YyYVqbcZWYGrZNENnfeYvV6yRO2Vaj2IC+IPDqUrAGRIo8nm161
-	BQH+rYmdfYD8vw8pSxFYiBFbRoYiJr3xPUQvRRVHVdGHsFROyziCRMROjcLp5RP0Uqc4hTPxMOW
-	DPg==
-X-Google-Smtp-Source: AGHT+IHcBrIgMIQ03gLdwIObn4fTPAITy7Rn+dgjwGrjWr5hIgaJ7mUN+6YCHWnvHC5rR1WgctLJs84VL90=
+        bh=nNnBkPYeQ1kRTTlryOW31uuwa/BW+/OIiMnW19R7vGw=;
+        b=jRaKyrXrJbL1Bu9plio6/xkC3EeqsT/BDFcrJ6eEd8PGiRlNfUWhYfSUbn1bQtn7++
+         5EyJy1D+ncVTpVVvyG12++ZEU2MkutylBHLLvpXtwRVnENssGV/DmHFv8/kMLmJJJJ44
+         uALCzug2jM9PDKHYZcTpmVxM3CXAk7xt+61x7eOiCuJ+ggOvfJZ0aUOPGVSNPV5e6PqL
+         9HPEpu+lRKz70kDC3Wcl1WwJGLtOk+vGD0mwS8Jroi0lER3TkQEFhRpRJPDmc9BbAQ8i
+         CpCr5gq927MKBYM0vrhK34OuLrZAGOfvTeL032XkJ8zUmFhMbRAO2rtN+5Q2DwarxG1D
+         Rm4A==
+X-Gm-Message-State: AOJu0YwNQvZ0dA0TfhfHnal2DsOvGpib69o5pkOcKIzlKHVFVp06BM/w
+	gZXCVJ785/4Ch0DB5gDUjliitLKOay2yYK/hGalmgdHqA+/JrV09g9hlwNl8CHD4gwOJCSO4tqr
+	MUw==
+X-Google-Smtp-Source: AGHT+IEpiuRr80eSOkkX3iShmGwFZB235v7m7vIUsPrbIrvmqpTi8MXkiRRWkpGv6G+qILNGIJvYkoh+KuQ=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:b848:2b3f:be49:9cbc])
- (user=surenb job=sendgmr) by 2002:a05:6902:709:b0:dbd:73bd:e55a with SMTP id
- k9-20020a056902070900b00dbd73bde55amr364194ybt.4.1707774022635; Mon, 12 Feb
- 2024 13:40:22 -0800 (PST)
-Date: Mon, 12 Feb 2024 13:39:09 -0800
+ (user=surenb job=sendgmr) by 2002:a05:6902:154b:b0:dc7:5aad:8965 with SMTP id
+ r11-20020a056902154b00b00dc75aad8965mr2054600ybu.0.1707774024786; Mon, 12 Feb
+ 2024 13:40:24 -0800 (PST)
+Date: Mon, 12 Feb 2024 13:39:10 -0800
 In-Reply-To: <20240212213922.783301-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,8 +58,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20240212213922.783301-1-surenb@google.com>
 X-Mailer: git-send-email 2.43.0.687.g38aa6559b0-goog
-Message-ID: <20240212213922.783301-24-surenb@google.com>
-Subject: [PATCH v3 23/35] mm/slub: Mark slab_free_freelist_hook() __always_inline
+Message-ID: <20240212213922.783301-25-surenb@google.com>
+Subject: [PATCH v3 24/35] mempool: Hook up to memory allocation profiling
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -92,27 +91,250 @@ Content-Type: text/plain; charset="UTF-8"
 
 From: Kent Overstreet <kent.overstreet@linux.dev>
 
-It seems we need to be more forceful with the compiler on this one.
+This adds hooks to mempools for correctly annotating mempool-backed
+allocations at the correct source line, so they show up correctly in
+/sys/kernel/debug/allocations.
+
+Various inline functions are converted to wrappers so that we can invoke
+alloc_hooks() in fewer places.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- mm/slub.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/mempool.h | 73 ++++++++++++++++++++---------------------
+ mm/mempool.c            | 36 ++++++++------------
+ 2 files changed, 49 insertions(+), 60 deletions(-)
 
-diff --git a/mm/slub.c b/mm/slub.c
-index 9ea03d6e9c9d..4d480784942e 100644
---- a/mm/slub.c
-+++ b/mm/slub.c
-@@ -2124,7 +2124,7 @@ bool slab_free_hook(struct kmem_cache *s, void *x, bool init)
- 	return !kasan_slab_free(s, x, init);
- }
+diff --git a/include/linux/mempool.h b/include/linux/mempool.h
+index 7be1e32e6d42..69e65ca515ee 100644
+--- a/include/linux/mempool.h
++++ b/include/linux/mempool.h
+@@ -5,6 +5,8 @@
+ #ifndef _LINUX_MEMPOOL_H
+ #define _LINUX_MEMPOOL_H
  
--static inline bool slab_free_freelist_hook(struct kmem_cache *s,
-+static __always_inline bool slab_free_freelist_hook(struct kmem_cache *s,
- 					   void **head, void **tail,
- 					   int *cnt)
++#include <linux/sched.h>
++#include <linux/alloc_tag.h>
+ #include <linux/wait.h>
+ #include <linux/compiler.h>
+ 
+@@ -39,18 +41,32 @@ void mempool_exit(mempool_t *pool);
+ int mempool_init_node(mempool_t *pool, int min_nr, mempool_alloc_t *alloc_fn,
+ 		      mempool_free_t *free_fn, void *pool_data,
+ 		      gfp_t gfp_mask, int node_id);
+-int mempool_init(mempool_t *pool, int min_nr, mempool_alloc_t *alloc_fn,
++
++int mempool_init_noprof(mempool_t *pool, int min_nr, mempool_alloc_t *alloc_fn,
+ 		 mempool_free_t *free_fn, void *pool_data);
++#define mempool_init(...)						\
++	alloc_hooks(mempool_init_noprof(__VA_ARGS__))
+ 
+ extern mempool_t *mempool_create(int min_nr, mempool_alloc_t *alloc_fn,
+ 			mempool_free_t *free_fn, void *pool_data);
+-extern mempool_t *mempool_create_node(int min_nr, mempool_alloc_t *alloc_fn,
++
++extern mempool_t *mempool_create_node_noprof(int min_nr, mempool_alloc_t *alloc_fn,
+ 			mempool_free_t *free_fn, void *pool_data,
+ 			gfp_t gfp_mask, int nid);
++#define mempool_create_node(...)					\
++	alloc_hooks(mempool_create_node_noprof(__VA_ARGS__))
++
++#define mempool_create(_min_nr, _alloc_fn, _free_fn, _pool_data)	\
++	mempool_create_node(_min_nr, _alloc_fn, _free_fn, _pool_data,	\
++			    GFP_KERNEL, NUMA_NO_NODE)
+ 
+ extern int mempool_resize(mempool_t *pool, int new_min_nr);
+ extern void mempool_destroy(mempool_t *pool);
+-extern void *mempool_alloc(mempool_t *pool, gfp_t gfp_mask) __malloc;
++
++extern void *mempool_alloc_noprof(mempool_t *pool, gfp_t gfp_mask) __malloc;
++#define mempool_alloc(...)						\
++	alloc_hooks(mempool_alloc_noprof(__VA_ARGS__))
++
+ extern void *mempool_alloc_preallocated(mempool_t *pool) __malloc;
+ extern void mempool_free(void *element, mempool_t *pool);
+ 
+@@ -62,19 +78,10 @@ extern void mempool_free(void *element, mempool_t *pool);
+ void *mempool_alloc_slab(gfp_t gfp_mask, void *pool_data);
+ void mempool_free_slab(void *element, void *pool_data);
+ 
+-static inline int
+-mempool_init_slab_pool(mempool_t *pool, int min_nr, struct kmem_cache *kc)
+-{
+-	return mempool_init(pool, min_nr, mempool_alloc_slab,
+-			    mempool_free_slab, (void *) kc);
+-}
+-
+-static inline mempool_t *
+-mempool_create_slab_pool(int min_nr, struct kmem_cache *kc)
+-{
+-	return mempool_create(min_nr, mempool_alloc_slab, mempool_free_slab,
+-			      (void *) kc);
+-}
++#define mempool_init_slab_pool(_pool, _min_nr, _kc)			\
++	mempool_init(_pool, (_min_nr), mempool_alloc_slab, mempool_free_slab, (void *)(_kc))
++#define mempool_create_slab_pool(_min_nr, _kc)			\
++	mempool_create((_min_nr), mempool_alloc_slab, mempool_free_slab, (void *)(_kc))
+ 
+ /*
+  * a mempool_alloc_t and a mempool_free_t to kmalloc and kfree the
+@@ -83,17 +90,12 @@ mempool_create_slab_pool(int min_nr, struct kmem_cache *kc)
+ void *mempool_kmalloc(gfp_t gfp_mask, void *pool_data);
+ void mempool_kfree(void *element, void *pool_data);
+ 
+-static inline int mempool_init_kmalloc_pool(mempool_t *pool, int min_nr, size_t size)
+-{
+-	return mempool_init(pool, min_nr, mempool_kmalloc,
+-			    mempool_kfree, (void *) size);
+-}
+-
+-static inline mempool_t *mempool_create_kmalloc_pool(int min_nr, size_t size)
+-{
+-	return mempool_create(min_nr, mempool_kmalloc, mempool_kfree,
+-			      (void *) size);
+-}
++#define mempool_init_kmalloc_pool(_pool, _min_nr, _size)		\
++	mempool_init(_pool, (_min_nr), mempool_kmalloc, mempool_kfree,	\
++		     (void *)(unsigned long)(_size))
++#define mempool_create_kmalloc_pool(_min_nr, _size)			\
++	mempool_create((_min_nr), mempool_kmalloc, mempool_kfree,	\
++		       (void *)(unsigned long)(_size))
+ 
+ /*
+  * A mempool_alloc_t and mempool_free_t for a simple page allocator that
+@@ -102,16 +104,11 @@ static inline mempool_t *mempool_create_kmalloc_pool(int min_nr, size_t size)
+ void *mempool_alloc_pages(gfp_t gfp_mask, void *pool_data);
+ void mempool_free_pages(void *element, void *pool_data);
+ 
+-static inline int mempool_init_page_pool(mempool_t *pool, int min_nr, int order)
+-{
+-	return mempool_init(pool, min_nr, mempool_alloc_pages,
+-			    mempool_free_pages, (void *)(long)order);
+-}
+-
+-static inline mempool_t *mempool_create_page_pool(int min_nr, int order)
+-{
+-	return mempool_create(min_nr, mempool_alloc_pages, mempool_free_pages,
+-			      (void *)(long)order);
+-}
++#define mempool_init_page_pool(_pool, _min_nr, _order)			\
++	mempool_init(_pool, (_min_nr), mempool_alloc_pages,		\
++		     mempool_free_pages, (void *)(long)(_order))
++#define mempool_create_page_pool(_min_nr, _order)			\
++	mempool_create((_min_nr), mempool_alloc_pages,			\
++		       mempool_free_pages, (void *)(long)(_order))
+ 
+ #endif /* _LINUX_MEMPOOL_H */
+diff --git a/mm/mempool.c b/mm/mempool.c
+index dbbf0e9fb424..c47ff883cf36 100644
+--- a/mm/mempool.c
++++ b/mm/mempool.c
+@@ -240,17 +240,17 @@ EXPORT_SYMBOL(mempool_init_node);
+  *
+  * Return: %0 on success, negative error code otherwise.
+  */
+-int mempool_init(mempool_t *pool, int min_nr, mempool_alloc_t *alloc_fn,
+-		 mempool_free_t *free_fn, void *pool_data)
++int mempool_init_noprof(mempool_t *pool, int min_nr, mempool_alloc_t *alloc_fn,
++			mempool_free_t *free_fn, void *pool_data)
  {
+ 	return mempool_init_node(pool, min_nr, alloc_fn, free_fn,
+ 				 pool_data, GFP_KERNEL, NUMA_NO_NODE);
+ 
+ }
+-EXPORT_SYMBOL(mempool_init);
++EXPORT_SYMBOL(mempool_init_noprof);
+ 
+ /**
+- * mempool_create - create a memory pool
++ * mempool_create_node - create a memory pool
+  * @min_nr:    the minimum number of elements guaranteed to be
+  *             allocated for this pool.
+  * @alloc_fn:  user-defined element-allocation function.
+@@ -265,17 +265,9 @@ EXPORT_SYMBOL(mempool_init);
+  *
+  * Return: pointer to the created memory pool object or %NULL on error.
+  */
+-mempool_t *mempool_create(int min_nr, mempool_alloc_t *alloc_fn,
+-				mempool_free_t *free_fn, void *pool_data)
+-{
+-	return mempool_create_node(min_nr, alloc_fn, free_fn, pool_data,
+-				   GFP_KERNEL, NUMA_NO_NODE);
+-}
+-EXPORT_SYMBOL(mempool_create);
+-
+-mempool_t *mempool_create_node(int min_nr, mempool_alloc_t *alloc_fn,
+-			       mempool_free_t *free_fn, void *pool_data,
+-			       gfp_t gfp_mask, int node_id)
++mempool_t *mempool_create_node_noprof(int min_nr, mempool_alloc_t *alloc_fn,
++				      mempool_free_t *free_fn, void *pool_data,
++				      gfp_t gfp_mask, int node_id)
+ {
+ 	mempool_t *pool;
+ 
+@@ -291,7 +283,7 @@ mempool_t *mempool_create_node(int min_nr, mempool_alloc_t *alloc_fn,
+ 
+ 	return pool;
+ }
+-EXPORT_SYMBOL(mempool_create_node);
++EXPORT_SYMBOL(mempool_create_node_noprof);
+ 
+ /**
+  * mempool_resize - resize an existing memory pool
+@@ -374,7 +366,7 @@ int mempool_resize(mempool_t *pool, int new_min_nr)
+ EXPORT_SYMBOL(mempool_resize);
+ 
+ /**
+- * mempool_alloc - allocate an element from a specific memory pool
++ * mempool_alloc_noprof - allocate an element from a specific memory pool
+  * @pool:      pointer to the memory pool which was allocated via
+  *             mempool_create().
+  * @gfp_mask:  the usual allocation bitmask.
+@@ -387,7 +379,7 @@ EXPORT_SYMBOL(mempool_resize);
+  *
+  * Return: pointer to the allocated element or %NULL on error.
+  */
+-void *mempool_alloc(mempool_t *pool, gfp_t gfp_mask)
++void *mempool_alloc_noprof(mempool_t *pool, gfp_t gfp_mask)
+ {
+ 	void *element;
+ 	unsigned long flags;
+@@ -454,7 +446,7 @@ void *mempool_alloc(mempool_t *pool, gfp_t gfp_mask)
+ 	finish_wait(&pool->wait, &wait);
+ 	goto repeat_alloc;
+ }
+-EXPORT_SYMBOL(mempool_alloc);
++EXPORT_SYMBOL(mempool_alloc_noprof);
+ 
+ /**
+  * mempool_alloc_preallocated - allocate an element from preallocated elements
+@@ -562,7 +554,7 @@ void *mempool_alloc_slab(gfp_t gfp_mask, void *pool_data)
+ {
+ 	struct kmem_cache *mem = pool_data;
+ 	VM_BUG_ON(mem->ctor);
+-	return kmem_cache_alloc(mem, gfp_mask);
++	return kmem_cache_alloc_noprof(mem, gfp_mask);
+ }
+ EXPORT_SYMBOL(mempool_alloc_slab);
+ 
+@@ -580,7 +572,7 @@ EXPORT_SYMBOL(mempool_free_slab);
+ void *mempool_kmalloc(gfp_t gfp_mask, void *pool_data)
+ {
+ 	size_t size = (size_t)pool_data;
+-	return kmalloc(size, gfp_mask);
++	return kmalloc_noprof(size, gfp_mask);
+ }
+ EXPORT_SYMBOL(mempool_kmalloc);
+ 
+@@ -597,7 +589,7 @@ EXPORT_SYMBOL(mempool_kfree);
+ void *mempool_alloc_pages(gfp_t gfp_mask, void *pool_data)
+ {
+ 	int order = (int)(long)pool_data;
+-	return alloc_pages(gfp_mask, order);
++	return alloc_pages_noprof(gfp_mask, order);
+ }
+ EXPORT_SYMBOL(mempool_alloc_pages);
+ 
 -- 
 2.43.0.687.g38aa6559b0-goog
 
