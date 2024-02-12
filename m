@@ -1,55 +1,54 @@
 Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3AD3524A1
-	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 21:39:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4B374D5BA
+	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 21:39:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707773992; cv=none; b=J0IKdlZu/ya270rukzGeBsGm9Ls5KiLEgXIidI8109jDSfA0JScHWOaOAJimFooB/XhuN+j4YQ2Iu7S8i5ECcddvv5SJGKARRHwm+WvAoeJQBS4sPWhgjSTdSLneOFgqlp57pgFxo6AlAiW5EFczZsk9piFacYIODDdPa3LclaI=
+	t=1707773994; cv=none; b=lN3aZSbhCUEtjdbl8EEHePE2DQvTpU3u1aMopcAA00qw4HXe08znDnAhrF8KS26EDiwvxCkxamMuBqfl6717W3FzmRgq3+173pBTr7R+8bATYDH56pXC1aWRNtFZcMNZYZ7t/OAxw/K9TAWMz2ro8OpnFydmgIlVuyiVgniAcqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707773992; c=relaxed/simple;
-	bh=w44iVPug8jpPRNSPySloNWFf1wUiHVTmGcnwNRfDzpg=;
+	s=arc-20240116; t=1707773994; c=relaxed/simple;
+	bh=91lL1S+QkjC2GC3HJr8NyIPXncCfL+P1OsUGwRSOa+E=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=EsxY44JLthv0kouW6ArSoNzfMC3wPSonJQFEbud8OQj7wLjbNFU+YzNVfwKqEFBgx6YGfXU/bgQNrN+pjvL/Kcm9D4bSYbKIHU8IuarM8knm4+Zlk5whG0n3iQScA+dDx3hliHDruu9OPbXTQVyIBj1q6Ih7q5KDuRQ5imFFNvg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=YJ1upOGb; arc=none smtp.client-ip=209.85.128.201
+	 To:Cc:Content-Type; b=Ey4aeqy18uC8aR+N2x+rGHxYiA6lKDdnn98Oi3roZ53X7PRVhChPtA59sUlPXN+UGqYpZwPJj13HmKS6mp7w2XbWdTWcApFWd5hC4MOqjTcfl1WGQNGjt2o91zUDdZ/qR41I/yqNQox07HbDH1EYbL2xM76SC6GxgY44Y0ydi9k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=2scRLEBD; arc=none smtp.client-ip=209.85.128.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="YJ1upOGb"
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-5fc6463b0edso62932437b3.0
-        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 13:39:50 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="2scRLEBD"
+Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-604ac3c75ebso68375507b3.0
+        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 13:39:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1707773990; x=1708378790; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1707773992; x=1708378792; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MHmYMVX3pDUmg31UH8awuyUsQFI7ijlFGj9IhCGVNQw=;
-        b=YJ1upOGbnrrTXSc4VuCBW0Dq+EaJgQS4kZuHhKcwu0dj5szL0rd+/qrb66xmhIYqRe
-         XtdWVv7+tWBwANOOLVdosLM44VeCjaAJSTxRjFBw/ksNhCzpmB2DjRvEj4tRdi628kKx
-         CRIoHGHYavgRTM607+qp38D++6ojkZ6EeBVAUJ01NxhNz9KdSK9T9MrF9S2iWRv6RDit
-         gVEvWYD1wn/A/6S3ckmoo4vVwy+VWfapurXG6n9ObEFwqB7SmQaI7YY2mDvyQqinmFEE
-         fPa5mStltpZmdju+R5cuxZQ6o8FOZ8tRJ//v1M09amJ44KWyK7cSdnZthGvrdt5hv8cq
-         /Ayw==
+        bh=Wy0D/wmUn3AGzRHJaKJZBS4cvr5irQ3tEAXEefF/wd0=;
+        b=2scRLEBDTcc5kdNIUsoLLOTK9EQmv5jcLZEgub+JRCAub8OOgMx6o6uZsetauMWoMH
+         LS/TLjnbBjv0NPehzuLCdMA4mWzbLGjjGddxxa3I10ieeFvpJZjrtJr+MK734b1VfRFm
+         +l/FOD0QEG8LGJL4jhvEn9XeHBMD7CF2Ugbn4aCJg/quqPrmnFOxCIxhMhmhkhZXP+rj
+         VjQH+Dm04s7+ZiyrF9HzCVJ98HOUPLi+bEKD24dfcTPXLC8gVK/qiEiW0kwYA/mWaeZT
+         3uhns6F/MWmQs6R1CbS/+xXG4fyHki62G9dcm9TLTWW5dqXyhTupbWVp+X7SzgRvQQQN
+         pVow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707773990; x=1708378790;
+        d=1e100.net; s=20230601; t=1707773992; x=1708378792;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MHmYMVX3pDUmg31UH8awuyUsQFI7ijlFGj9IhCGVNQw=;
-        b=LcdE5rnAn83wLCuyB84R8h6KM349Aqpbrb+mYoS+3Z8uVvIB4tcv+bAHE11mI/uFSL
-         Wro4H2Vsxg97ERAeehM1u7ovt0SEQr10C6Fm3sEPBuDGVG0gGcJTjvebl9MqtPLVb51f
-         9nRG8IFgr33UwwA6d4IxkfkhQrkTpbwH9K7aMZ/JcVx8+/HurK0SSulCPBCNMkvrxUBr
-         s96bxziB3clRGCQ9v45H6YCcOm/G6Nf/NOdZb5JxI4yRnZZGLjDE9Fu6IbP8Hdep31kQ
-         e58J5UKhCVwxnuIqkyanmjJa16BDEpWaGAORfKt6HYaSO3Q7ZtXNLDxaoMvHF/TuG9df
-         Nvjg==
-X-Forwarded-Encrypted: i=1; AJvYcCXRv/zZBwjowh4DcRxYejsZdYk5GwkJiudhBPeSWXXsH8nHKWj3z1LnlTwGY3TdlYVHyYKzONAXz9+tg73UUBB0Tfxq0Kc=
-X-Gm-Message-State: AOJu0Yy79tFeD7LfutEQMDV9DlmxM4MllAHQfnssDAcYN63LnMfpJ1rP
-	5Q7hN6/cAyiZ27mD0OVMGJw0lGgdxXYPJvPShYb5cB7s1isBtPDG6CrcZWIv4Z9XXuYcFgHWdcy
-	QOg==
-X-Google-Smtp-Source: AGHT+IFDzjF2cGPjf9byIT/iUDxPrFM8RUYETPrPWdKRGwVNA8HPcuChMwLVorzqu+gtL/yYLkx2m1ZVYB4=
+        bh=Wy0D/wmUn3AGzRHJaKJZBS4cvr5irQ3tEAXEefF/wd0=;
+        b=tcMQcIHB01EsOrBDKD6iiMRp49bw6p5GD/nzCCphBp7tfR6JGxDiI6DQxzQL01Mf/9
+         Ghcnaj8uxeU1p8g3KbmRpE7KEVZmvEK3j4zJqo8dHNHwoKlwAdVQ9TtxfKDv1BO8BkDq
+         XJBm2zOHTG6LTM5DJQnA2XDDSBpTtRv+fmbii+SG1hNGzsU+s2YbRinmVzjfobjnr5z9
+         1rzEKEkLhgdSg049sqTtzCg+JykUPlGh7OEBCdk1DATqTxuOTfxD1KtujalfiUoHlPmu
+         HIYVCVymeC7aqmPqOVJU1pj8omCF7BTHsQOZwyKA3hwp+mtME/Rc1fW9WKROJJgDxprg
+         aP2Q==
+X-Gm-Message-State: AOJu0YzrvrCXy0aX1MHvskLcU8gQg5u426HGGp/56Q3/UDSqBPlzfSTK
+	IjQ6DJa6DWa7CPRNlG+8+U9sVwZKHVWxRCz7rmpEIFbNvZlAp6vXdsrQCZRt/p7OyZYpcf1nWh3
+	+yA==
+X-Google-Smtp-Source: AGHT+IGJNldcJg1nJudvCE1Sp9g/6sTQwYzeBOB4AMRF5kjsz9nHiwJOvFtrkpc6PJTXjQSExrbdy8gvy1w=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:b848:2b3f:be49:9cbc])
- (user=surenb job=sendgmr) by 2002:a05:690c:fd0:b0:602:cd1a:6708 with SMTP id
- dg16-20020a05690c0fd000b00602cd1a6708mr1449899ywb.0.1707773989875; Mon, 12
- Feb 2024 13:39:49 -0800 (PST)
-Date: Mon, 12 Feb 2024 13:38:54 -0800
+ (user=surenb job=sendgmr) by 2002:a0d:cc91:0:b0:607:7bca:e8d5 with SMTP id
+ o139-20020a0dcc91000000b006077bcae8d5mr286452ywd.0.1707773992000; Mon, 12 Feb
+ 2024 13:39:52 -0800 (PST)
+Date: Mon, 12 Feb 2024 13:38:55 -0800
 In-Reply-To: <20240212213922.783301-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,9 +58,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20240212213922.783301-1-surenb@google.com>
 X-Mailer: git-send-email 2.43.0.687.g38aa6559b0-goog
-Message-ID: <20240212213922.783301-9-surenb@google.com>
-Subject: [PATCH v3 08/35] mm: prevent slabobj_ext allocations for slabobj_ext
- and kmem_cache objects
+Message-ID: <20240212213922.783301-10-surenb@google.com>
+Subject: [PATCH v3 09/35] slab: objext: introduce objext_flags as extension to page_memcg_data_flags
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -91,45 +89,104 @@ Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
 	cgroups@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-Use __GFP_NO_OBJ_EXT to prevent recursions when allocating slabobj_ext
-objects. Also prevent slabobj_ext allocations for kmem_cache objects.
+Introduce objext_flags to store additional objext flags unrelated to memcg.
 
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 ---
- mm/slab.h        | 6 ++++++
- mm/slab_common.c | 2 ++
- 2 files changed, 8 insertions(+)
+ include/linux/memcontrol.h | 29 ++++++++++++++++++++++-------
+ mm/slab.h                  |  4 +---
+ 2 files changed, 23 insertions(+), 10 deletions(-)
 
+diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+index eb1dc181e412..f3584e98b640 100644
+--- a/include/linux/memcontrol.h
++++ b/include/linux/memcontrol.h
+@@ -356,7 +356,22 @@ enum page_memcg_data_flags {
+ 	__NR_MEMCG_DATA_FLAGS  = (1UL << 2),
+ };
+ 
+-#define MEMCG_DATA_FLAGS_MASK (__NR_MEMCG_DATA_FLAGS - 1)
++#define __FIRST_OBJEXT_FLAG	__NR_MEMCG_DATA_FLAGS
++
++#else /* CONFIG_MEMCG */
++
++#define __FIRST_OBJEXT_FLAG	(1UL << 0)
++
++#endif /* CONFIG_MEMCG */
++
++enum objext_flags {
++	/* the next bit after the last actual flag */
++	__NR_OBJEXTS_FLAGS  = __FIRST_OBJEXT_FLAG,
++};
++
++#define OBJEXTS_FLAGS_MASK (__NR_OBJEXTS_FLAGS - 1)
++
++#ifdef CONFIG_MEMCG
+ 
+ static inline bool folio_memcg_kmem(struct folio *folio);
+ 
+@@ -390,7 +405,7 @@ static inline struct mem_cgroup *__folio_memcg(struct folio *folio)
+ 	VM_BUG_ON_FOLIO(memcg_data & MEMCG_DATA_OBJEXTS, folio);
+ 	VM_BUG_ON_FOLIO(memcg_data & MEMCG_DATA_KMEM, folio);
+ 
+-	return (struct mem_cgroup *)(memcg_data & ~MEMCG_DATA_FLAGS_MASK);
++	return (struct mem_cgroup *)(memcg_data & ~OBJEXTS_FLAGS_MASK);
+ }
+ 
+ /*
+@@ -411,7 +426,7 @@ static inline struct obj_cgroup *__folio_objcg(struct folio *folio)
+ 	VM_BUG_ON_FOLIO(memcg_data & MEMCG_DATA_OBJEXTS, folio);
+ 	VM_BUG_ON_FOLIO(!(memcg_data & MEMCG_DATA_KMEM), folio);
+ 
+-	return (struct obj_cgroup *)(memcg_data & ~MEMCG_DATA_FLAGS_MASK);
++	return (struct obj_cgroup *)(memcg_data & ~OBJEXTS_FLAGS_MASK);
+ }
+ 
+ /*
+@@ -468,11 +483,11 @@ static inline struct mem_cgroup *folio_memcg_rcu(struct folio *folio)
+ 	if (memcg_data & MEMCG_DATA_KMEM) {
+ 		struct obj_cgroup *objcg;
+ 
+-		objcg = (void *)(memcg_data & ~MEMCG_DATA_FLAGS_MASK);
++		objcg = (void *)(memcg_data & ~OBJEXTS_FLAGS_MASK);
+ 		return obj_cgroup_memcg(objcg);
+ 	}
+ 
+-	return (struct mem_cgroup *)(memcg_data & ~MEMCG_DATA_FLAGS_MASK);
++	return (struct mem_cgroup *)(memcg_data & ~OBJEXTS_FLAGS_MASK);
+ }
+ 
+ /*
+@@ -511,11 +526,11 @@ static inline struct mem_cgroup *folio_memcg_check(struct folio *folio)
+ 	if (memcg_data & MEMCG_DATA_KMEM) {
+ 		struct obj_cgroup *objcg;
+ 
+-		objcg = (void *)(memcg_data & ~MEMCG_DATA_FLAGS_MASK);
++		objcg = (void *)(memcg_data & ~OBJEXTS_FLAGS_MASK);
+ 		return obj_cgroup_memcg(objcg);
+ 	}
+ 
+-	return (struct mem_cgroup *)(memcg_data & ~MEMCG_DATA_FLAGS_MASK);
++	return (struct mem_cgroup *)(memcg_data & ~OBJEXTS_FLAGS_MASK);
+ }
+ 
+ static inline struct mem_cgroup *page_memcg_check(struct page *page)
 diff --git a/mm/slab.h b/mm/slab.h
-index 436a126486b5..f4ff635091e4 100644
+index f4ff635091e4..77cf7474fe46 100644
 --- a/mm/slab.h
 +++ b/mm/slab.h
-@@ -589,6 +589,12 @@ prepare_slab_obj_exts_hook(struct kmem_cache *s, gfp_t flags, void *p)
- 	if (!need_slab_obj_ext())
- 		return NULL;
+@@ -560,10 +560,8 @@ static inline struct slabobj_ext *slab_obj_exts(struct slab *slab)
+ 							slab_page(slab));
+ 	VM_BUG_ON_PAGE(obj_exts & MEMCG_DATA_KMEM, slab_page(slab));
  
-+	if (s->flags & SLAB_NO_OBJ_EXT)
-+		return NULL;
-+
-+	if (flags & __GFP_NO_OBJ_EXT)
-+		return NULL;
-+
- 	slab = virt_to_slab(p);
- 	if (!slab_obj_exts(slab) &&
- 	    WARN(alloc_slab_obj_exts(slab, s, flags, false),
-diff --git a/mm/slab_common.c b/mm/slab_common.c
-index 6bfa1810da5e..83fec2dd2e2d 100644
---- a/mm/slab_common.c
-+++ b/mm/slab_common.c
-@@ -218,6 +218,8 @@ int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
- 	void *vec;
+-	return (struct slabobj_ext *)(obj_exts & ~MEMCG_DATA_FLAGS_MASK);
+-#else
+-	return (struct slabobj_ext *)obj_exts;
+ #endif
++	return (struct slabobj_ext *)(obj_exts & ~OBJEXTS_FLAGS_MASK);
+ }
  
- 	gfp &= ~OBJCGS_CLEAR_MASK;
-+	/* Prevent recursive extension vector allocation */
-+	gfp |= __GFP_NO_OBJ_EXT;
- 	vec = kcalloc_node(objects, sizeof(struct slabobj_ext), gfp,
- 			   slab_nid(slab));
- 	if (!vec)
+ int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
 -- 
 2.43.0.687.g38aa6559b0-goog
 
