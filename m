@@ -1,87 +1,73 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96EC43D3A4
-	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 12:24:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 567AE41C75
+	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 12:53:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707827060; cv=none; b=MjomBmL9hWZIn8O0IV04LYrGCrDyNhTyinNP9Lf8fUYMDW1sboG0yAU/9TWOCqtVEmi+9FTYqqQe0hGYL2Xr0gqXbbWZu9kUVI/1leuKyP+8GyKpWYwMZyytwxflaLONH0XC4UYz8n25Dx8mQDV609Rc6JS6/GCv1jtHTcQOC1Q=
+	t=1707828790; cv=none; b=uj3FfhxcjTYPdaztXKAvQ0lcZ6sEmrj8ysYEgoyIb02IIVK+bKYw0r8ruR9gTXc+9bGtKnUpZJ1RSNXZydMMQO/jQ3DGVc+pHHTBe0kATYMnzTBMsE/GTQtDFukBKceJif2sK5ZCAfouL1FFMALUlkHjxsjETEgoDpYy/v69i+w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707827060; c=relaxed/simple;
-	bh=KM6zxaaoOFSyFZ5noXN1PyDk4COINjZTnbDT7nk2jc4=;
+	s=arc-20240116; t=1707828790; c=relaxed/simple;
+	bh=4QiDVmG8Pu10No36/bjRL+lJTGWGAeI7JyqY2zIafd8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nMROOOTTV6lrv4shUBU+r4D0+Omp/kAQe8tHl6VSmKumRzuuypBqZ9ZOKctQVpPmTnPnVfwoTJOJ5a4iBFHAqpupYxocioQPsPh7iNF13zxe0oeieoI+FCx1TROhqYg083xLwv1xMCx5r5qhA2aL+3M0JmgxhIaugBrXSi5KIls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=oPNMu0/3; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=oPNMu0/3; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=gGobYEWWoYJnidU2ApZioBLPcrMM9AruQd7ysPooclWZiKEDfoskwfLVkavE1F6AFrOROGE+QVt8TRE4lqBy0qC+xxLn5cWy/TiPNerrlmKUrZGeVy7GgFt+4naTAouKCnqriKNJWhBPbd/kZ1+uWwnkEOcbOXOvjEOlHonLflo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=gpF/Y3st; arc=none smtp.client-ip=209.85.160.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="oPNMu0/3";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="oPNMu0/3"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id B2D4722206;
-	Tue, 13 Feb 2024 12:24:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1707827056; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zXbOiQIN7neMTyajtp5U/4Xc00nM1Z7564QKlnGLw3E=;
-	b=oPNMu0/3kyHrjKXlmWcSVvIaXSDVbOqkAyBWw+GM976X053z77ogsr0EDbHX/7ytpQYyy9
-	SyG7mHOiNYd83sIJtiREPWMY5thldH58zWZvsioUSDVozZuC7lw84nRpXvaSjzQ83Bc875
-	OeMyCboEUx7oHjBoCcViZ4MERhSiPOw=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1707827056; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zXbOiQIN7neMTyajtp5U/4Xc00nM1Z7564QKlnGLw3E=;
-	b=oPNMu0/3kyHrjKXlmWcSVvIaXSDVbOqkAyBWw+GM976X053z77ogsr0EDbHX/7ytpQYyy9
-	SyG7mHOiNYd83sIJtiREPWMY5thldH58zWZvsioUSDVozZuC7lw84nRpXvaSjzQ83Bc875
-	OeMyCboEUx7oHjBoCcViZ4MERhSiPOw=
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 8BA931370C;
-	Tue, 13 Feb 2024 12:24:16 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id 4rhuIXBfy2WUCAAAD6G6ig
-	(envelope-from <mhocko@suse.com>); Tue, 13 Feb 2024 12:24:16 +0000
-Date: Tue, 13 Feb 2024 13:24:11 +0100
-From: Michal Hocko <mhocko@suse.com>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz,
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org,
-	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org,
-	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
-	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org,
-	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
-	paulmck@kernel.org, pasha.tatashin@soleen.com,
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
-	ndesaulniers@google.com, vvvvvv@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH v3 00/35] Memory allocation profiling
-Message-ID: <Zctfa2DvmlTYSfe8@tiehlicka>
-References: <20240212213922.783301-1-surenb@google.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="gpF/Y3st"
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-218eea4f1a7so2384372fac.3
+        for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 04:53:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1707828786; x=1708433586; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=PYlY4epw8eo23hBH5onki0iwHafDPOFpum80B41NzZM=;
+        b=gpF/Y3st+/aWvlkeZdqGTLlBFeUmie6EUH1SJt/5/kAQWXMd4KQ1KglmIkc7pyNJTH
+         OXj8Em8VOtS5YsvT8xfc/hXxLO92jnFi5uF536suNwpjSSDMycxkAeSzr+dUkkYHRH1Q
+         Sj72XIpAeMXhYJ0S2v9qS8o2jqEvkGoPLpbRHvVzPn7CrtnwyP+UvVsjD+IYSa486K/1
+         UxxCYhBGNx/BlL9+UnHDX59bic9t5aHjTJFfM9NgCKEi3m6EOZEfVlwJaFttnnvasFWL
+         71Mu14N1P3pi7WQFTSzd2b7r6WWqavy8b5oE5mnrAOkVIaeKtRO1qgQqcnzk5zKkxpRn
+         R34w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707828786; x=1708433586;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PYlY4epw8eo23hBH5onki0iwHafDPOFpum80B41NzZM=;
+        b=GHcxF8/fZF6Mi1oW9kN/8297mOV9nVJkw7xS0Hu7Hu5gfwKgb2+LrIVCQF4VCLwBLI
+         alFcuDiINrizOLz1vFhLjb3eFHInE6PAyIZn+at1FcjUakX+ZafBIRv5uTYCqUAL6nYT
+         5KjoKyT1E5lNFeCl7lDkXAlfQ37KssYJww1dBABeHE3kp6FWEkjEAjMQcFUOI/yEzds6
+         sbCl5PzhlNuspvBMSCkSoxbrVsRIp4YSuJK0ApdoKsMDsiD0Ci8QAzuf84c+RzpfzH4N
+         i/B12QNUxalyi0wjtmGxK5C7DLMsGkrduI9CqpX8MVboezgH+dq5ImcD8rjNb9D/EZf/
+         5LMA==
+X-Gm-Message-State: AOJu0YxYpoHcZzzuWiUgOCiCuCj41Q+a3rIzCcg9iHyimrLF5cLoqTdl
+	VTtplX6MXMxqgd1M0DJSDygAQ58GJDAJMDvoNt6oBEl+ACiQYYf9XXuXW/eUF5E=
+X-Google-Smtp-Source: AGHT+IGXkMm8BsVHGtdwe6ZYkH1WocH0C7Za2EnH5WwIcROjlfnVZ2BR2bYIkyqLIlksNy6/7ZFRdg==
+X-Received: by 2002:a05:6870:5246:b0:218:f129:8a98 with SMTP id o6-20020a056870524600b00218f1298a98mr9525379oai.42.1707828784969;
+        Tue, 13 Feb 2024 04:53:04 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCXH/vangM+zSm7yay+2+1sIJ4NTSgXE8HgI1nWybWorcFukbgqOIOm6VMAJ5kCF1To1NOYQ9+ty/g2/Dt1TQ2VjkwVQfPQIEDIabvSg9RseMpSokfeENM0DTL+kDfGOYbyWuj6LKI9N2Bd86AClZZAil1QlHaLfl7pTiydNo9Bp2oX1Kgz6R2b42UApdFW2J9x6KzZA6VpJfIW4MBwlflRudb2eNoXbaT7hbaw79qLz5lj0omrABNtOVLwJ9QELiQqDkWM7tIE=
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id hz10-20020a05687153ca00b0021a714d556asm683907oac.41.2024.02.13.04.53.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Feb 2024 04:53:04 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rZsHX-0048lN-Hc;
+	Tue, 13 Feb 2024 08:53:03 -0400
+Date: Tue, 13 Feb 2024 08:53:03 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Will Deacon <will@kernel.org>
+Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Rob Clark <robdclark@gmail.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH] Revert "iommu/arm-smmu: Convert to domain_alloc_paging()"
+Message-ID: <20240213125303.GJ765010@ziepe.ca>
+References: <20240213-iommu-revert-domain-alloc-v1-1-325ff55dece4@linaro.org>
+ <20240213121257.GI765010@ziepe.ca>
+ <20240213121934.GA28726@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -90,65 +76,39 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240212213922.783301-1-surenb@google.com>
-X-Spam-Level: 
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.com header.s=susede1 header.b="oPNMu0/3"
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Spamd-Result: default: False [-3.07 / 50.00];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	 TO_DN_SOME(0.00)[];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 DKIM_TRACE(0.00)[suse.com:+];
-	 MX_GOOD(-0.01)[];
-	 RCPT_COUNT_GT_50(0.00)[73];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 BAYES_HAM(-0.06)[60.75%];
-	 ARC_NA(0.00)[];
-	 R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
-	 RCVD_DKIM_ARC_DNSWL_HI(-1.00)[];
-	 FROM_HAS_DN(0.00)[];
-	 DWL_DNSWL_MED(-2.00)[suse.com:dkim];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 DNSWL_BLOCKED(0.00)[2a07:de40:b281:106:10:150:64:167:received];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 MID_RHS_NOT_FQDN(0.50)[];
-	 FREEMAIL_CC(0.00)[linux-foundation.org,linux.dev,suse.cz,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[];
-	 RCVD_IN_DNSWL_HI(-0.50)[2a07:de40:b281:104:10:150:64:97:from]
-X-Spam-Score: -3.07
-X-Rspamd-Queue-Id: B2D4722206
-X-Spam-Flag: NO
+In-Reply-To: <20240213121934.GA28726@willie-the-truck>
 
-On Mon 12-02-24 13:38:46, Suren Baghdasaryan wrote:
-[...]
-> We're aiming to get this in the next merge window, for 6.9. The feedback
-> we've gotten has been that even out of tree this patchset has already
-> been useful, and there's a significant amount of other work gated on the
-> code tagging functionality included in this patchset [2].
+On Tue, Feb 13, 2024 at 12:19:34PM +0000, Will Deacon wrote:
+> > > @@ -875,15 +879,6 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
+> > >  	mutex_init(&smmu_domain->init_mutex);
+> > >  	spin_lock_init(&smmu_domain->cb_lock);
+> > >  
+> > > -	if (dev) {
+> > > -		struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
+> > > -
+> > > -		if (arm_smmu_init_domain_context(smmu_domain, cfg->smmu, dev)) {
+> > > -			kfree(smmu_domain);
+> > > -			return NULL;
+> > > -		}
+> > > -	}
+> > > -
+> > >  	return &smmu_domain->domain;
+> > >  }
+> > 
+> > Everything else is fine, you already tested with that arrangement.
+> 
+> Partial reverts are a recipe for confusion, so I'll take this and if you'd
+> like to bring back some of the hunks, please can you send a patch on top
+> that does that?
 
-I suspect it will not come as a surprise that I really dislike the
-implementation proposed here. I will not repeat my arguments, I have
-done so on several occasions already. 
+The typical kernel standard is to fix bugs in patches and only reach
+for a wholesale revert if the community is struggling with bug
+fixing. Dmitry already tested removing that hunk, Robin explained the
+issue, we understand the bug fix is to remove the
+arm_smmu_init_domain_context() call. Nothing justifies a full scale
+revert.
 
-Anyway, I didn't go as far as to nak it even though I _strongly_ believe
-this debugging feature will add a maintenance overhead for a very long
-time. I can live with all the downsides of the proposed implementation
-_as long as_ there is a wider agreement from the MM community as this is
-where the maintenance cost will be payed. So far I have not seen (m)any
-acks by MM developers so aiming into the next merge window is more than
-little rushed. 
+I'll send another patch if you want, but it seems like a waste of all
+our time.
 
->  81 files changed, 2126 insertions(+), 695 deletions(-)
--- 
-Michal Hocko
-SUSE Labs
+Jason
