@@ -1,269 +1,256 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D444C208CB
-	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 10:20:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.11
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707819626; cv=fail; b=d+NGJvnrTNpzCI+cKgR4gYAgb87G3H21TqUtrVROZt1DYdihkCKrtQTSjHIPyY5Xg/DQT8YFX4XAaPgJVneKwfFQ+Hg31ZvBd2xNuqshj3YeuFN70CiT/EvBWDdYOp7qS7THHU0SVnMVDD6+VCxbXxE2vVpiUg1SBIQojrr20XE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707819626; c=relaxed/simple;
-	bh=qJ616c38Nd/lsKFiQBhQW6QBrUSx385+W3mQTwvF7fQ=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=OPCZjotXdupzQBpPsGSxEr5waXheu/0kCQo3GXTB4PkzYL6a4j0OLlVXbBVmj/8+TnO48YMQYHbtorReS4fVQStp13ddy01rVQsrVGRmCaYGJ2kHO+gTmWtFmn3F80bSOOi1RshjxnoB9DehozdnQZxvPGD0uIkAnWQkUZGB0Vk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fMXjNPxF; arc=fail smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fMXjNPxF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707819625; x=1739355625;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=qJ616c38Nd/lsKFiQBhQW6QBrUSx385+W3mQTwvF7fQ=;
-  b=fMXjNPxFA01YxCu6lbBKs+heqejzKB8VLRKQ+aEfvn4hkLRNkJnNGbB1
-   LV+II8gj2R0aYPBFOohI6p2G/9NrqMvAbIo/q90hYllyCMha7X+cYflPi
-   rPLONBifo8Jj624pgQfm9sCsWTAu/JgdO7ZMvMjk6alrurKF+qzAvgV6c
-   SSLKpk+CL5s9Dn3LGZf/aBsBkB+1aDFzG3vVNq04ANNWHqOaVWAhNwuLY
-   DvxemtPi4rCfVktrgcCtxRVd585NLu74s2PJD07Bv5v4fGaa0wv8+jemM
-   r9gfmKZnFf92TfkM9bJx63zb0yMNnpYAdC0D8R2dnA0UrOtvhOrtsnsnP
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10982"; a="12371470"
-X-IronPort-AV: E=Sophos;i="6.06,156,1705392000"; 
-   d="scan'208";a="12371470"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Feb 2024 02:20:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,156,1705392000"; 
-   d="scan'208";a="2774062"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmviesa007.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 13 Feb 2024 02:20:23 -0800
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Tue, 13 Feb 2024 02:20:23 -0800
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Tue, 13 Feb 2024 02:20:22 -0800
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Tue, 13 Feb 2024 02:20:22 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Tue, 13 Feb 2024 02:20:22 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j2gc7JQXiGMLiQfd4GFVp/3c7fWS8SH+OhTjvwfVebYOi+l1gJxhKWp9FqmupQISnwsnB9E0mqyxv5SqsZtku9mAjMXjnVW/IriEwBXTiX0LnxMjHps19UiCOqdyoPIKpYlZMlxil+4vZ/aZqOwBeZOhhVHUhf3uzgwKwk1qIoSk1MkchLdFUL7LA2TglmNk72YV8B08SFEjT82R5Q1bRcooAaIJM2J0TsuRrhKeQ5G8LP0BV5bNDMM3AAf1UBRKuJ/vJVVNChVmxoBTCnaZg+KoC/4rHEDQuYkRvkcwlmA3bY2dgNr3FnES6Ln7jiQXjs5cboaZTmJM8I0XuGFNMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WmW0TLoNkjSy8hjiwUtefPViVdD57EF3lP98vlimn2c=;
- b=YAfG5u07aZaNgu0oz5ZR+sVHl4LsgTz/D69IhH0iej5qvXkTL2TJGSuL1cJs3jW4lptqM+G7QWaM6hTVqivga+6hBQVrC6dCK/oV6mJ8Yx2drLoQiXB2VGLR+qGXTrRRVHhGoQdDCVXQ5LBNLnq/qq8trbJnqjqNj6KPm2CULmFgukKUGR3jQdpPbw0zHgpmxRchUd6NRNQ+IY9MaviMIa6elg8VBK8zbVmyQOMgFLl7Dtw65gOzo6yyLPCrhbq7CYn9B0hfh9K0aZrRq8SeJPn6HeXDxBbn3WrrzTdVRg/bHW0H5Pc0QUPJQPqD/QHctO4zXa0eMG2QZ1r+cp/sQg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB8718.namprd11.prod.outlook.com (2603:10b6:8:1b9::20)
- by DS0PR11MB7457.namprd11.prod.outlook.com (2603:10b6:8:140::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.39; Tue, 13 Feb
- 2024 10:20:21 +0000
-Received: from DS0PR11MB8718.namprd11.prod.outlook.com
- ([fe80::c806:4ac2:939:3f6]) by DS0PR11MB8718.namprd11.prod.outlook.com
- ([fe80::c806:4ac2:939:3f6%6]) with mapi id 15.20.7270.036; Tue, 13 Feb 2024
- 10:20:21 +0000
-Message-ID: <0812b7bf-bb66-4b0d-8615-964cb5181de9@intel.com>
-Date: Tue, 13 Feb 2024 11:19:10 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v2 2/7] dma: avoid redundant calls for sync
- operations
-Content-Language: en-US
-To: Christoph Hellwig <hch@lst.de>
-CC: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
-	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
-	<pabeni@redhat.com>, Marek Szyprowski <m.szyprowski@samsung.com>, "Robin
- Murphy" <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
-	<will@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
- J. Wysocki" <rafael@kernel.org>, Magnus Karlsson <magnus.karlsson@intel.com>,
-	Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Alexander Duyck
-	<alexanderduyck@fb.com>, <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
-References: <20240205110426.764393-1-aleksander.lobakin@intel.com>
- <20240205110426.764393-3-aleksander.lobakin@intel.com>
- <20240213061120.GC22451@lst.de>
-From: Alexander Lobakin <aleksander.lobakin@intel.com>
-In-Reply-To: <20240213061120.GC22451@lst.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: WA1P291CA0024.POLP291.PROD.OUTLOOK.COM
- (2603:10a6:1d0:19::18) To DS0PR11MB8718.namprd11.prod.outlook.com
- (2603:10b6:8:1b9::20)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A4B1423754
+	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 10:20:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707819631; cv=none; b=MGn4NBLeXRyvYthXmfOXE7DEZuI0xAquq3pJUVFuBnv9Hs4dU+9H4b9jYaSJTO2+1jjJHbKC/y3ZMXGQ6qMpFbICjcTTKmisz31oTjQfF3tb7e3iNGphh6F4NIcRO6X+AKVapt5aOVxrq63Tn/N2SZtcD9YE2i5Wc3Pay62lEu8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707819631; c=relaxed/simple;
+	bh=d5aUS7gDC3j66BfWBv6u2GUJn57/2k+JHVsrFx21zuQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Q7WeJVjh5pfQVplqA6C/4QFtZlhug5blmFsz1BDakt/gquhBcRuK71gbMwTN6P1jFUOiqWxxpOcljD1gFtyOKhPOFK5m3aifvOBEH3PiRLIhH6/Xa9eSSyHX8HDVk2CU2Do2Lke9eFCJnXpWkn9ymox+2Q1jF0YNT2FOg5PsdNA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2918ADA7;
+	Tue, 13 Feb 2024 02:21:09 -0800 (PST)
+Received: from [10.57.49.48] (unknown [10.57.49.48])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A24023F5A1;
+	Tue, 13 Feb 2024 02:20:26 -0800 (PST)
+Message-ID: <6511a289-fee6-4d08-9e01-695bd38d4ad6@arm.com>
+Date: Tue, 13 Feb 2024 10:20:25 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB8718:EE_|DS0PR11MB7457:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3c8fcb46-efa8-4c0d-5cc1-08dc2c7d6204
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8olqO3YoNniCPgsVgcZ5gPiNaENQFXITx2L9DMsvXI3VhW+xXwkcSfiKXKvOXkhKAs5TzAsk44/cQRljP8oP6Iye5m3qCg4ac+hU+Ro03L1XzFNykDZjIVKTiya+1rOvAqSeLTxmRC74AEkOlaqgiss/DWq7l6d9I5gMlVlo5RRf5izsE5qCHlw1ovwnbdGyEWF6lt/YHOz8SqW1pB/n2K3PNFJzaY8GqhFFF617/Cp/B9Y7Hi+zbaSkY8M83KOpQD68EDqGMoIxRoAt283OEz1qSm20HyTgXZwtcATjY4RurW49Byrx/AVkvN3juXNTGfXqEvnuIVcZPo20sfPyl2tP+yQzeZXKT6cnSue0brd5X9XcvX6VJGiicpuf5+4bwX/Z38OF/xgRvryDNqzH1jCZciuINI4TMYJEWpDhBdkZypiOC/jbgxnkNOJSj/KL02YItn9rhqBxgeF7D8X3nQZ0wh6/UCCIRh5zgiDgKktsY9+wkx7VksBLJA/+hROqViexHVO3Q0Ss7SSOh5/LZykCx+VqjBagzXp2wSW6auJA7OlJgXcaNcUm5QaBTBka
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB8718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(346002)(376002)(136003)(396003)(39860400002)(366004)(230922051799003)(186009)(1800799012)(451199024)(64100799003)(41300700001)(2616005)(26005)(31686004)(2906002)(4326008)(6916009)(66476007)(66946007)(5660300002)(7416002)(8936002)(8676002)(66556008)(478600001)(316002)(6486002)(6506007)(6512007)(6666004)(54906003)(86362001)(31696002)(82960400001)(83380400001)(38100700002)(36756003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UWdrK29Od0lCWDkveTRNRGczdzBGSGtmQjhDa0lNMERSdnRFVXBTaERERW5L?=
- =?utf-8?B?VXVHbWhGOFhiZ2pXd0ljMS9CblBJV2tHY1NsTC9VeTg1TUNLakxBZ3IvdHMx?=
- =?utf-8?B?eFF6OE90d0RYWHpTZUhOZXhKcFF5VnRDMlZKOExyb3hCNmpSZmVSTkFuaGFS?=
- =?utf-8?B?UEFmWGZtdTVnbk5Db3JkdzdKYXZZMm5PSkFTR055QVVXdktoSFpNWTNKZkl2?=
- =?utf-8?B?ZzAzbGxhMnY3T0FCcnBXZ2RtanRsbW9SSVM4Mk0xKzd0YWVGczNIazhCUjJK?=
- =?utf-8?B?SXZLRFJ4eDFSUEFIeWMrQ2FKQ2RwQ0p6bXRLbTI2czVJaXhKM2tOQnRvL2ZC?=
- =?utf-8?B?cDVuZi9Ma1dYZWtMTWNmZEFlcVZuUklUU1FHVzFLREdkSzQwamtGZGFQOFE4?=
- =?utf-8?B?a2d5UEc2VnlVSE40R3hMK09lWHc2ZHpQUUwxQXkwZjJ6bkJEVDBLdkRPMG94?=
- =?utf-8?B?REh4SWtlOGpYQm1GVlpEU29XTHNLR3J1RWltdmNhd1BrVElPMk9IM0lJaU00?=
- =?utf-8?B?UWFnY3NmaVZVUWdLR3J5a2k0R3JzanFiUTNmSmkxWWxRenZUZHhBM0QyY0pq?=
- =?utf-8?B?MTRxcjdZTEVTaCszcUpzMzRKOVBpM2NSb1l5L1dPMjJ6NzNmM2F3Q0V5V2hG?=
- =?utf-8?B?ZytCMzJtN0UvaWUwQ20xNU1SekpidXVVeDZrZUVpZHByYk5lZ3lkcGYxczgr?=
- =?utf-8?B?dUVBMEVzU2pqcHhPSFUvWDdMb0tCNHZYSkN0S0tQNXYvazd2RDluYmdyRTNn?=
- =?utf-8?B?RWE0ck5tZmhlekcrNEZwR010K2JOcFlHb0lPOUlWTUJEWXFnVDNPS094OXJY?=
- =?utf-8?B?Y0hXTVNDaVZJQVJMVlp2dzNPOGlFK2FkVjRhVHY5MzlSK1RKNFI3aHoyMWpI?=
- =?utf-8?B?N21kMno1RUR0Zk9sWDRGclFIT214OUZuQkZDZFNpR1IvbG9CZWNVZlNjNmV3?=
- =?utf-8?B?SG9QZURKdHcrMlFJRXpWdm9SZUMwK2VKZlZONTZDLytCTEt4bUlhd1lHeGRU?=
- =?utf-8?B?c2paYndCMEJFcDNpMElEZDZJZENBV2trVVhRSUFyaE9HTDEwREhZZ3ZWemtR?=
- =?utf-8?B?TXQvWGkwTHFpTmc2cURQY3Bqc2NEdUFteFNzbjBRalFWYm1CT1dUNm5sYm5G?=
- =?utf-8?B?YnRpRU9HS0hQMDhGOGJrWmJhSlYzSE95TTJ1M3NwWmpWSFdXWkdmb2xwempC?=
- =?utf-8?B?Uk95VGhuZFlqa2NuS3pVc3E3VDJvLzZqVXFvenRWWDRmZWFKRFV0WnFQUVZF?=
- =?utf-8?B?ZERiK0t0VHV3OG5CQU9Qb1RXVmlFTTNZd1k3OThEb0FNeVplRmNhamdWVWdC?=
- =?utf-8?B?ZVlzWDJFMUJBU1hDOWNrQTJLSHFGMzVKdUwyMGJBZkZBNUxUUFZSSmZyZkpa?=
- =?utf-8?B?dWFJVi9RZThEOU5XMzgrMXFaYmdDalBPMi8xWWZseHpkMG1CWGNEMGNPNCtv?=
- =?utf-8?B?cXJDaGpIQlA4TXBRbnA5UHdXK1N0NlpYd3VIbnZwNktBclJhTlh0VzB6ZWZ6?=
- =?utf-8?B?MTdrRzZmbFkyUHVaL2tudithRHlhU3l6Yi92MG02Rk5pMS9ITlVhQ3I5YnlS?=
- =?utf-8?B?QjYwdmZ5WVNGZWo5WFhqZTU1T2ZDU0N1SkYwMUdDSUVEelJYMHNvRENUaGZj?=
- =?utf-8?B?Ym96K3Byd09IRUx2QzEyOFViUG1rZlNxbzdFOUZIU01vUEhoMFUwNDNOdWc0?=
- =?utf-8?B?RG02VjZucXMwelZHbHpDODM5UGlxcUw1VzNkSk9sekh3V3BuaWtXdUxZT2tQ?=
- =?utf-8?B?bFRLL1B1eWtqNWorbGpJc0h3V3hNRWVvdzJoVm91WmFJVDNlNHJPQXlCd2g1?=
- =?utf-8?B?djRKKy9weHYwSTR1cjVIbTFMemJ0WTR4bWNhNUpDTWhiSDcvMy92STBRY0hE?=
- =?utf-8?B?eXJnaG1DN3BBNEhNTjZ3bDBOejJlMk1qcXVUL05IcStTaDNteENqajJiU3pq?=
- =?utf-8?B?S1hnSW9paGM1M2ZJbXVqbC9WcGZPczk0NUlvQnNIY2xlOGxQMWlpYXJaSGpN?=
- =?utf-8?B?Rm15dExJUFZSWVN2KzBWSXhrZFFmbFNmMEJDaGorYUpXbGE1RFo5TU1ZZXQ3?=
- =?utf-8?B?ZGhDMXoyK2N5L0x4aEMxdmRFNTYvZG83Y1lVR1lwMW9GekExZ3RvbEhNcHN0?=
- =?utf-8?B?all3VDcyL1JpUm5FMVp1VFZ0MmFrMHhRandNMWtFeUR6VGFUT1g4Y2t3K0Nw?=
- =?utf-8?B?SGc9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3c8fcb46-efa8-4c0d-5cc1-08dc2c7d6204
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB8718.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Feb 2024 10:20:20.9197
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nNGbyWctGP+YMnfzY1O691QPouS62RBVI+OU8EHW96edIQTalLm4pV5vRqrt13n4mue82MitC7eYiVWOjVtu4Iav+AbjiE+srkfwPP+DLhU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7457
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 5/5] iommu/arm-smmu: Convert to domain_alloc_paging()
+Content-Language: en-GB
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, joro@8bytes.org,
+ linux-arm-kernel@lists.infradead.org, nicolinc@nvidia.com, will@kernel.org,
+ linux-arm-msm@vger.kernel.org
+References: <5-v2-c86cc8c2230e+160bb-smmu_newapi_jgg@nvidia.com>
+ <20240209200538.917366-1-dmitry.baryshkov@linaro.org>
+ <20240209222349.GA923780@nvidia.com>
+ <CAA8EJpp1wuMgawaUPnQWnhz1k023n8Q-k0_sO6P9p7ixntrCJQ@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <CAA8EJpp1wuMgawaUPnQWnhz1k023n8Q-k0_sO6P9p7ixntrCJQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Christoph Hellwig <hch@lst.de>
-Date: Tue, 13 Feb 2024 07:11:20 +0100
+On 2024-02-13 7:51 am, Dmitry Baryshkov wrote:
+> On Sat, 10 Feb 2024 at 00:23, Jason Gunthorpe <jgg@nvidia.com> wrote:
+>>
+>> On Fri, Feb 09, 2024 at 10:05:38PM +0200, Dmitry Baryshkov wrote:
+>>> On Tue, 17 Oct 2023 Jason Gunthorpe <jgg@nvidia.com> wrote:
+>>>> Now that the BLOCKED and IDENTITY behaviors are managed with their own
+>>>> domains change to the domain_alloc_paging() op.
+>>>>
+>>>> The check for using_legacy_binding is now redundant,
+>>>> arm_smmu_def_domain_type() always returns IOMMU_DOMAIN_IDENTITY for this
+>>>> mode, so the core code will never attempt to create a DMA domain in the
+>>>> first place.
+>>>>
+>>>> Since commit a4fdd9762272 ("iommu: Use flush queue capability") the core
+>>>> code only passes in IDENTITY/BLOCKED/UNMANAGED/DMA domain types. It will
+>>>> not pass in IDENTITY or BLOCKED if the global statics exist, so the test
+>>>> for DMA is also redundant now too.
+>>>>
+>>>> Call arm_smmu_init_domain_context() early if a dev is available.
+>>>>
+>>>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>>>> ---
+>>>>   drivers/iommu/arm/arm-smmu/arm-smmu.c | 21 +++++++++++++++------
+>>>>   1 file changed, 15 insertions(+), 6 deletions(-)
+>>>
+>>> For some reason this patch breaks booting of the APQ8096 Dragonboard820c
+>>> (qcom/apq8096-db820c.dts). Dispbling display subsystem (mdss) and venus
+>>> devices makes the board boot in most of the cases. Most frequently the
+>>> last parts of the log loog in a following way:
+>>
+>> It is surprising we tested this patch on some tegra systems with this
+>> iommu and didn't hit anything..
+>>
+>> The only real functional thing this changes is to move the domain
+>> initialization up in time, potentially a lot in time in some
+>> cases. That function does alot of things including touching HW so
+>> possibly there is some surprising interaction with something else.
+> 
+> I should not be debugging strange platforms at 1 a.m. I forgot that
+> there was another patch to revert. So after reverting the MPM patch,
+> I'm getting the following results:
+> 
+>>
+>> So, I would expect this to not WARN_ON and to make it work the same as
+>> before the patch:
+> 
+> No warnings, the platform now boots up to the point of actually
+> bringing up the venus device:
+> 
+> 
+> [   11.906514] ath10k_pci 0000:01:00.0: qca6174 hw3.2 target
+> 0x05030000 chip_id 0x00340aff sub 0000:0000
+> [   11.907119] ath10k_pci 0000:01:00.0: kconfig debug 1 debugfs 0
+> tracing 0 dfs 0 testmode 0
+> [   11.915881] ath10k_pci 0000:01:00.0: firmware ver
+> WLAN.RM.4.4.1-00288- api 6 features wowlan,ignore-otp,mfp crc32
+> bf907c7c
+> [   11.979972] Console: switching to colour frame buffer device 320x90
+> [   11.990756] ath10k_pci 0000:01:00.0: board_file api 2 bmi_id 0:1
+> crc32 d2863f91
+> [   12.060834] msm_mdp 901000.display-controller: [drm] fb0: msmdrmfb
+> frame buffer device
+> [   12.096203] qcom-pcie 608000.pcie: Phy link never came up
+> [   12.103785] qcom-pcie 608000.pcie: PCI host bridge to bus 0001:00
+> [   12.103970] qcom-venus c00000.video-codec: Adding to iommu group 3
+> 
+> Format: Log Type - Time(microsec) - Message - Optional Info
+> Log Type: B - Since Boot(Power On Reset),  D - Delta,  S - Statistic
+> S - QC_IMAGE_VERSION_STRING=BOOT.XF.1.0-00301
+> S - IMAGE_VARIANT_STRING=M8996LAB
+> S - OEM_IMAGE_VERSION_STRING=crm-ubuntu68
+> S - Boot Interface: UFS
+> 
+>>
+>> Then I'd ask you to remove the comment and do:
+>>
+>> @@ -878,7 +878,9 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
+>>          if (dev) {
+>>                  struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
+>>
+>> +               WARN_ON(true);
+>>                  if (arm_smmu_init_domain_context(smmu_domain, cfg->smmu, dev)) {
+>> +                       printk("Allocation failure in arm_smmu_domain_alloc_paging()\n");
+>>                          kfree(smmu_domain);
+>>                          return NULL;
+>>                  }
+>>
+>>
+>> And then we may get a clue from the backtraces it generates. I only
+>> saw one iommu group reported in your log so I'd expect one trace?
+> 
+> I added dev_info + mdelays() around the arm_smmu_init_domain_context()
+> and I can see that it crashes within that function.
 
-> On Mon, Feb 05, 2024 at 12:04:21PM +0100, Alexander Lobakin wrote:
->> Quite often, NIC devices do not need dma_sync operations on x86_64
->> at least.
-> 
-> This is a fundamental property of the platform being DMA coherent,
-> and devices / platforms not having addressing limitations or other
-> need for bounce buffering (like all those whacky trusted platform
-> schemes).  Nothing NIC-specific here.
-
-This sentence is from the original Eric's commit message, but I'll
-reword it :D
-
-> 
->> In case some device doesn't work with the shortcut:
->> * include <linux/dma-map-ops.h> to the driver source;
->> * call dma_set_skip_sync(dev, false) at the beginning of the probe
->>   callback. This will disable the shortcut and force DMA syncs.
-> 
-> No, drivers should never include dma-map-ops.h.  If we have a legit
-> reason for drivers to ever call it it would have to move to
-> dma-mapping.h.  But I see now reason why there would be such a need.
-> For now I'd suggest simply dropping this paragraph from the commit
-> message.
-
-That's why I didn't move it to dma-mapping.h -- in general, drivers
-should not call it, so it would be a workaround. I added this paragraph
-in v2 as a couple folks asked "what if some weird device will break with
-this optimization". I can drop it anyway.
-
-> 
->>  	if (dma_map_direct(dev, ops))
->> +		/*
->> +		 * dma_skip_sync could've been set to false on first SWIOTLB
->> +		 * buffer mapping, but @dma_addr is not necessary an SWIOTLB
->> +		 * buffer. In this case, fall back to more granular check.
->> +		 */
->>  		return dma_direct_need_sync(dev, dma_addr);
->> +
-> 
-> Nit: with such a long block comment adding curly braces would make the
-> code a bit more readable.
-> 
->> +#ifdef CONFIG_DMA_NEED_SYNC
->> +void dma_setup_skip_sync(struct device *dev)
->> +{
->> +	const struct dma_map_ops *ops = get_dma_ops(dev);
->> +	bool skip;
->> +
->> +	if (dma_map_direct(dev, ops))
->> +		/*
->> +		 * dma_skip_sync will be set to false on first SWIOTLB buffer
->> +		 * mapping, if any. During the device initialization, it's
->> +		 * enough to check only for DMA coherence.
->> +		 */
->> +		skip = dev_is_dma_coherent(dev);
->> +	else if (!ops->sync_single_for_device && !ops->sync_single_for_cpu)
->> +		/*
->> +		 * Synchronization is not possible when none of DMA sync ops
->> +		 * is set. This check precedes the below one as it disables
->> +		 * the synchronization unconditionally.
->> +		 */
->> +		skip = true;
->> +	else if (ops->flags & DMA_F_CAN_SKIP_SYNC)
->> +		/*
->> +		 * Assume that when ``DMA_F_CAN_SKIP_SYNC`` is advertised,
->> +		 * the conditions for synchronizing are the same as with
->> +		 * the direct DMA.
->> +		 */
->> +		skip = dev_is_dma_coherent(dev);
->> +	else
->> +		skip = false;
->> +
->> +	dma_set_skip_sync(dev, skip);
-> 
-> I'd just assign directly to dev->dma_skip_sync instead of using a
-> local variable and the dma_set_skip_sync call - we are under
-> ifdef CONFIG_DMA_NEED_SYNC here and thus know is is available.
-> 
->> +static inline void swiotlb_disable_dma_skip_sync(struct device *dev)
->> +{
->> +	/*
->> +	 * If dma_skip_sync was set, reset it to false on first SWIOTLB buffer
->> +	 * mapping/allocation to always sync SWIOTLB buffers.
->> +	 */
->> +	if (unlikely(dma_skip_sync(dev)))
->> +		dma_set_skip_sync(dev, false);
->> +}
-> 
-> Nothing really swiotlb-specific here.  Also the naming is a bit odd.
-> Maybe have a dma_set_skip_sync helper without the bool to enable
-> skipping, and a dma_clear_skip_sync that clear the flag.  The optimization
-> to first check the flag here could just move into that latter
-> helper.
-
-Sounds good!
+Yeah, this is totally broken. We can't just call the unmodified 
+arm_smmu_init_domain_context() at domain allocation because half of what 
+it's doing belongs to the attach operation. We should not be allocating 
+context banks, IRQs, etc. for a not-yet-attached domain, and we 
+certainly shouldn't be touching hardware there outside of RPM.
 
 Thanks,
-Olek
+Robin.
+
+> 
+> [   29.819624] qcom-venus c00000.video-codec: Adding to iommu group 1
+> [   29.833181] ------------[ cut here ]------------
+> [   29.839198] WARNING: CPU: 1 PID: 35 at
+> drivers/iommu/arm/arm-smmu/arm-smmu.c:883
+> arm_smmu_domain_alloc_paging+0x80/0x174
+> [   29.843980] Modules linked in:
+> [   29.854824] CPU: 1 PID: 35 Comm: kworker/u18:0 Tainted: G     U
+>          6.8.0-rc3-next-20240208-05495-g20708c29957d-dirty #1739
+> [   29.857694] Hardware name: Qualcomm Technologies, Inc. DB820c (DT)
+> [   29.869410] Workqueue: events_unbound deferred_probe_work_func
+> [   29.875658] pstate: 40000005 (nZcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [   29.881474] pc : arm_smmu_domain_alloc_paging+0x80/0x174
+> [   29.888331] lr : arm_smmu_domain_alloc_paging+0x68/0x174
+> [   29.893885] sp : ffff8000830338c0
+> [   29.899179] x29: ffff8000830338c0 x28: 0000000000000000 x27: ffff800081e72000
+> [   29.902396] x26: ffff00008034ee48 x25: ffff000080b24810 x24: 0000000000000000
+> [   29.909513] x23: ffff800081e73000 x22: ffff000080b24810 x21: ffff800082e23258
+> [   29.916633] x20: ffff00008389a700 x19: ffff00008034f600 x18: ffffffffffffffff
+> [   29.918788] usb 1-1: new high-speed USB device number 2 using xhci-hcd
+> [   29.923746] x17: 0000000c0000000b x16: 0000000900000008 x15: 0000000000000000
+> [   29.923765] x14: 000000000000b0af x13: 0000000000000000 x12: 0000000000000166
+> [   29.923783] x11: 0000000000000001 x10: 0000000000001410 x9 : 0000000000000000
+> [   29.923801] x8 : ffff00008034f800 x7 : 0000000000000000 x6 : 0000000000000000
+> [   29.923819] x5 : 0000000000000000 x4 : 0000000000000002 x3 : 0000000000000000
+> [   29.923837] x2 : ffff800082e23290 x1 : dead4ead00000000 x0 : 0000000000000000
+> [   29.923855] Call trace:
+> [   29.923861]  arm_smmu_domain_alloc_paging+0x80/0x174
+> [   29.923872]  __iommu_domain_alloc+0xcc/0xf4
+> [   29.923884]  iommu_setup_default_domain+0x294/0x554
+> [   29.938567] Bluetooth: hci0: Frame reassembly failed (-84)
+> [   29.944494]  __iommu_probe_device+0x418/0x43c
+> [   29.944508]  iommu_probe_device+0x3c/0x80
+> [   29.944519]  of_iommu_configure+0x124/0x1b4
+> [   29.944529]  of_dma_configure_id+0x170/0x2f4
+> [   29.969874] mmc0: new ultra high speed SDR104 SDHC card at address 5048
+> [   29.972966]  platform_dma_configure+0xa8/0xb4
+> [   29.972983]  really_probe+0x70/0x2ac
+> [   29.972992]  __driver_probe_device+0x78/0x12c
+> [   29.973001]  driver_probe_device+0xd8/0x160
+> [   29.973010]  __device_attach_driver+0xb8/0x138
+> [   29.973019]  bus_for_each_drv+0x80/0xdc
+> [   29.973027]  __device_attach+0x9c/0x188
+> [   29.973037]  device_initial_probe+0x14/0x20
+> [   29.973046]  bus_probe_device+0xac/0xb0
+> [   29.973055]  deferred_probe_work_func+0x8c/0xc8
+> [   29.973064]  process_one_work+0x210/0x5e4
+> [   29.983596] mmcblk0: mmc0:5048 SD32G 28.8 GiB
+> [   29.987546]  worker_thread+0x1bc/0x38c
+> [   29.987558]  kthread+0x120/0x124
+> [   29.987568]  ret_from_fork+0x10/0x20
+> [   29.987579] irq event stamp: 109977
+> [   29.987584] hardirqs last  enabled at (109977):
+> [<ffff800080fbbc48>] _raw_spin_unlock_irqrestore+0x6c/0x70
+> [   29.987600] hardirqs last disabled at (109976):
+> [<ffff800080fbb0a8>] _raw_spin_lock_irqsave+0x84/0x88
+> [   29.987610] softirqs last  enabled at (109966):
+> [<ffff800080090680>] __do_softirq+0x498/0x4e0
+> [   29.987619] softirqs last disabled at (109961):
+> [<ffff800080096184>] ____do_softirq+0x10/0x1c
+> [   30.006747]  mmcblk0: p1
+> [   30.010291] ---[ end trace 0000000000000000 ]---
+> [   30.018630] remoteproc remoteproc1: remote processor
+> 9300000.remoteproc is now up
+> [   30.024525] qcom-pcie 600000.pcie: iATU: unroll F, 32 ob, 8 ib,
+> align 4K, limit 4G
+> [   30.044747] qcom,apr remoteproc1:smd-edge.apr_audio_svc.-1.-1:
+> Adding APR/GPR dev: aprsvc:service:4:3
+> [   30.046118] qcom-pcie 600000.pcie: Invalid eDMA IRQs found
+> [   30.051718] qcom,apr remoteproc1:smd-edge.apr_audio_svc.-1.-1:
+> Adding APR/GPR dev: aprsvc:service:4:4
+> [   30.066435] Bluetooth: hci0: QCA Downloading qca/nvm_00440302.bin
+> [   30.130736] hub 1-1:1.0: USB hub found
+> [   30.150390] qcom-pcie 600000.pcie: PCIe Gen.1 x1 link up
+> [   30.156394] hub 1-1:1.0: 4 ports detected
+> [   30.161837] qcom-pcie 600000.pcie: PCI host bridge to bus 0000:00
+> [   30.189583] pci_bus 0000:00: root bus resource [bus 00-ff]
+> [   30.195652] pci_bus 0000:00: root bus resource [io  0x0000-0xfffff]
+> [   30.201035] pci_bus 0000:00: root bus resource [mem 0x0c300000-0x0cffffff]
+> [   30.205424] Bluetooth: hci0: QCA setup on UART is completed
+> [   30.207262] pci 0000:00:00.0: [17cb:0104] type 01 class 0x060400
+> PCIe Root Port
+> [   30.214380] usb 2-1: new SuperSpeed USB device number 2 using xhci-hcd
+> [   30.219636] qcom-venus c00000.video-codec: Allocating domain
+> [   30.221503] pci 0000:00:00.0: BAR 0 [mem 0x00000000-0x00000fff]
+> [   30.221680] pci 0000:00:00.0: PCI bridge to [bus 01-ff]
+> [   30.221772] pci 0000:00:00.0:   bridge window [io  0x0000-0x0fff]
+> [   30.221832] pci 0000:00:00.0:   bridge window [mem 0x00000000-0x000fffff]
+> [   30.221945] pci 0000:00:00.0:   bridge window [mem
+> 0x00000000-0x000fffff 64bit pref]
+> [   30.222617] pci 0000:00:00.0: PME# supported from D0 D3hot
+> [   30.273673] hub 2-1:1.0: USB hub found
+> [   30.276567] hub 2-1:1.0: 4 ports detected
+> 
+> Format: Log Type - Time(microsec) - Message - Optional Info
+> Log Type: B - Since Boot(Power On Reset),  D - Delta,  S - Statistic
+> S - QC_IMAGE_VERSION_STRING=BOOT.XF.1.0-00301
+> S - IMAGE_VARIANT_STRING=M8996LAB
+> S - OEM_IMAGE_VERSION_STRING=crm-ubuntu68
+> S - Boot Interface: UFS
+> 
+> I traced this further, it crashes during arm_smmu_write_context_bank().
+> 
+> 
+> 
+> --
+> With best wishes
+> Dmitry
