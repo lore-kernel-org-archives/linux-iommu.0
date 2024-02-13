@@ -1,33 +1,42 @@
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C68F7883B
-	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 05:54:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D73D241E0
+	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 05:57:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707803672; cv=none; b=fPmZckGeEbMUR4/+WGPjfYV9pDYHsRJrMQzFh/QhioCHdnGWngqBo6v59kpkRH+dh+66zY6/5KlnohaU7Pfc1fGViPBQEmhyF7TVBgzTIuVVvXA6/rdj2Mw3P0whXZsFCIl2PmZ1+3FD2PK6skul5q65hVvVbidS3At5ZIQTi7s=
+	t=1707803834; cv=none; b=VnxyDjk6Y35wttsCcgqGIN3r5+CFzp/v5qeOK1ZArbPHsuXwkyUdlZTKEceZwS0SMWKhj3A5+/RlCTJKCVL72B1vI2fXkewmal31zMb9pn/w+9v7VrBZBOD87Z4/qequwVudwgxKOJfY6opqceXbmttJRx7CoKhBqNEtVZcpncQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707803672; c=relaxed/simple;
-	bh=YEAhsWIB1r8/9ua/DG5w6tONOQzGQ2O+bj237UZN9sA=;
+	s=arc-20240116; t=1707803834; c=relaxed/simple;
+	bh=p/s/YHg/ofyuou1+HQj8mlBXfSUgw0Od8Z3nz/6sJrE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IyVNk7g3hM/+cB8+NReJtH0oYhh4Kw5u/DgmfnOfIORJq4R1Bieju7QLdkjeiiLz8r4Z9LRge1iUD3FTVK46ORqsELy1MqWb4WazVIq7MeNdFFyIQjmmPjecaiLvKEIthyfkQJ2ocWCp++gCyVAfbdHXJy3zKgu45cfcb/kEsiY=
+	 Content-Type:Content-Disposition:In-Reply-To; b=bRzuwwVwluY+9quH2h6dQ+lhw8zWKPowwY/dXNPlU4+1AddzvYqln7KhyE6UWkJlfQhc62SiRvXNXALlqJfIq7icsF5LgfLnQeVxBKGs59siZNAb1t6bsYy+M2VuITUU6ag41Vq+Nqvq0Z3O+yLsxIdfp1DSXNEaS2WhpeWM+70=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
 Received: by verein.lst.de (Postfix, from userid 2407)
-	id 98A87227A87; Tue, 13 Feb 2024 06:54:26 +0100 (CET)
-Date: Tue, 13 Feb 2024 06:54:26 +0100
+	id 5EE32227A87; Tue, 13 Feb 2024 06:57:07 +0100 (CET)
+Date: Tue, 13 Feb 2024 06:57:07 +0100
 From: Christoph Hellwig <hch@lst.de>
-To: Howard Yen <howardyen@google.com>
-Cc: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com,
-	gregkh@linuxfoundation.org, andriy.shevchenko@linux.intel.com,
-	rafael@kernel.org, broonie@kernel.org, james@equiv.tech,
-	james.clark@arm.com, masahiroy@kernel.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: Re: [PATCH v3] dma-coherent: add support for multi coherent rmems
- per dev
-Message-ID: <20240213055426.GA22451@lst.de>
-References: <20240208152808.3712149-1-howardyen@google.com>
+To: Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Magnus Karlsson <magnus.karlsson@intel.com>,
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+	Alexander Duyck <alexanderduyck@fb.com>, bpf@vger.kernel.org,
+	netdev@vger.kernel.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/7] dma: compile-out DMA sync op calls
+ when not used
+Message-ID: <20240213055707.GB22451@lst.de>
+References: <20240205110426.764393-1-aleksander.lobakin@intel.com> <20240205110426.764393-2-aleksander.lobakin@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -36,10 +45,20 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240208152808.3712149-1-howardyen@google.com>
+In-Reply-To: <20240205110426.764393-2-aleksander.lobakin@intel.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Thu, Feb 08, 2024 at 03:28:05PM +0000, Howard Yen wrote:
-> Add support for multiple coherent rmems per device.
+> +void __dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
+> +			       size_t size, enum dma_data_direction dir);
+> +void __dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
+> +				  size_t size, enum dma_data_direction dir);
+> +void __dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+> +			   int nelems, enum dma_data_direction dir);
+> +void __dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+> +			      int nelems, enum dma_data_direction dir);
 
-Why?
+Please stick to the two-tab indentation for continuing prototypes.
+The version here is not only much harder to read, but also keeps blowing
+up the diffs for current and future changes.
+
+Otherwise this looks good to me.
