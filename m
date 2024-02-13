@@ -1,153 +1,101 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3A955DF3E
-	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 15:43:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17A385F55E
+	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 15:45:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707839028; cv=none; b=Jpy9nApCHN8ct5RxixuRlOx6CgeXAouLy7kzEMjAMjLN+6pWbdQ+jiVwg9KKWKzSah6HV40qI8G6yfIQlz1YRMOGVEts7fS9MfJdiru8lZD49ZdEnd3xFY2l+xtvgOws84CiNiDyxU0qtBLnBM0+EdmI1LT9KekiJqzlM1B6jno=
+	t=1707839133; cv=none; b=Y96cDiczfVqQzxneAcUh5c0bGa3p8hTXO72/sKS1cSwKPnefgky+HILZAZE29d9cAtwqIY/kYy02GL6jbLoeRGOwiE+nPrkay2CdAMCN0esBWxlCoDjpsluUdHHuPhf3JhCA/ualx/k2ZLJfwd/fW1TSH2Op41PtEB1ced8T3xs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707839028; c=relaxed/simple;
-	bh=bN+UFcCRIa0kfUCiLiY2xtENcHp50d8itZZssn4tSBk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IHikmJ6xm2MYXjMCXEShhAXMnx1zpZtkUObtvjOdX+uDZXYFDLgcHsaXSw9PYGqS4d3/icBpLFSZPrIYddPGn5Ioo23OlNDTcaNu3KbkDUJzmiqrRgkKwyjudo36jHJd9vhBnVvqFuhHeYQMoKd71b2p3dUzVb/sloa0sJ4DMbE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=moZ7DClF; arc=none smtp.client-ip=209.85.208.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1707839133; c=relaxed/simple;
+	bh=Mb7cfkVoTPe9SpFqQPiRQCgZRgp43WdceLq+nhIl53M=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qUZZr80vE5iFWrsFtCsSwwlmeNDQI4G2t7x63PghucZfUOGRgnkgA3PBTea9tD+77mMteMInGmjYjPRHqp06M9fWoQi8csX138deMePiKA2OmSl1U510dLXOrOm3/GTozAWE4o+5OLuROlpm0eQrydQMEGt1ipOS+rNTrNYFsbI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com; spf=none smtp.mailfrom=soleen.com; dkim=fail (0-bit key) header.d=soleen.com header.i=@soleen.com header.b=gEome/Zr reason="key not found in DNS"; arc=none smtp.client-ip=209.85.222.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="moZ7DClF"
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-560530f4e21so11205a12.1
-        for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 07:43:46 -0800 (PST)
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=soleen.com header.i=@soleen.com header.b="gEome/Zr"
+Received: by mail-qk1-f174.google.com with SMTP id af79cd13be357-783f553fdabso304619885a.0
+        for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 07:45:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1707839025; x=1708443825; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=bk1NS0qtruMcjKHBcgzBmeFEQhZuiLsEvlLQjVfdIzQ=;
-        b=moZ7DClFiDmYXz0GNWLwhKPfD845H/pG6ZGkBRT8zSI1PEFuCc0NLZtKHw/DraGU/9
-         vFDN+WeZFJlYWRff8ax6eoETQR3UStw2SWTqKaf1YJLYpqIV7CekUfgTb9xjRs0KDd93
-         kSOwtJ78TQ04l2UcXcN2MrN8zqj91PoLu4O1UQHjf7/PFRSZtW4WmwQPjfDesyPmJZNo
-         JgM4yHzW79d3mMXb+1iNRJF9Q/lIK8hG0DBk6hPVduI7WDsRe4QfwV1bVgJhGQ5X0Zqe
-         +AF0K6qPI4NdZ7feUb2bgD4b6FeP3V6y464OH2vgvIqo3kFr6iPfj9PVA2qhstcAD92B
-         9yQA==
+        d=soleen.com; s=google; t=1707839131; x=1708443931; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=r+5lFm1GOYo46btsIaJvA6S/B+CQsp17IG3lccG/v6g=;
+        b=gEome/ZrILoDDeyRIow3vBrWXA26zD5/we8YLr8e4Z3DsHbX5J7rglI1wQqh6QPVl1
+         32GV9i2a0TYB8+pxDBW/VIFzlqkRLIYkVlKEv51M0PQzQem9cQZgDigQ6iDMZuym9W4x
+         f35asHd6GN3LElTsFzfl8Mr3C2X8yQD+GyuZWVhWPELzopahVnhuTYW6rG36E/JF/8IQ
+         fhh/VY+fOkXc7VhqaE0eRg1zubPKbp6J2dhelc5NFmb5BHx1YU63CeemVPcfg8jiuQRo
+         wjqT/gXTi1bxKtu8WwByZyk9CzfFXy7qSqy7QBnRNDlSH4sQuzrlw8KFkUUYQD3SIaXn
+         w2Vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707839025; x=1708443825;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bk1NS0qtruMcjKHBcgzBmeFEQhZuiLsEvlLQjVfdIzQ=;
-        b=buirzlYJG5TGzyrsv/RO+p7bmGJdc245TqZJHuqxGhawttK82vPga4XVMe0ozvHJdG
-         600Bpk0TLMmGyX9Im+PXK5ku+r+RlhPNW4j9aVfQ2dKccywk1d/jxpDwT0toubJASsjK
-         6/TJG+pU2vUgHgj1/ONx+P4wTV0RY/Ex3fi+4N6XOrqbNtETxqFMiW59ZybF7akBmVe0
-         KMiiHO2JDAK49XGBQXADLvlWql4SFAf8vLtn5iVNnZJja2CHxk42rEL5GMCsyNL7ykFq
-         bqE/2IkangSPBI+fHYUGMaYF0geqZHV6K2ffXuLBsTdnh3p1BvJxSU4D/NsxeYQGYdxo
-         Zr7Q==
-X-Gm-Message-State: AOJu0YxIXkJ/TC7mJ6b8IDPGQIkKokpHlJ+qRpB9vkBo82oXx1QN/dbn
-	RrCxZtLL/Ooe57TJPN/FyiQkFM1is9PPkJmahgOhiH5ZWu4qlpOWjfNE9m3gDw==
-X-Google-Smtp-Source: AGHT+IEDuFFGUViGZf1sivuihjVwzz8vwZE2+7laoVfrhpOcs8/51AaEx5/z7DwuCk9g7hiBMa6/Ow==
-X-Received: by 2002:a50:f61e:0:b0:562:b30:fc90 with SMTP id c30-20020a50f61e000000b005620b30fc90mr85478edn.3.1707839024972;
-        Tue, 13 Feb 2024 07:43:44 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCXkyeXKE7DKbH/TjbebFN18vb0CDgNTI8e+gyC5f/BREAF8H1ZkgvYFZmTLWWse+vAq5OhqP5L7sSMKWKSivXZS5ryVxvgCxgQK2vTy/UlMuSyCssNfdfuVAMA+xA24FpE3mG/kh4LnPYCthi3LrlOYarLKZWecppbJHLPus+On4RnZplKsvfLrGKz+9y9HGQrKXkYXMzocs897epeaLvlfuLnmX7Z0Y4P5tbvHRyGevaR0XuAqz26daTzMOcBcOy085KdYMfc4+3t7qY/71xh/zjzjQYi0Rij4YaYYrPk8bzvw7F4Q3emWb6NDhd5L2wNe28MJKlnEJwRDA3bsxigSMnAjNVNulVzE0WQX/1H0k1pp1JCCXNhnAjR+DEDk2qU5G1s8tkA79I7PT054CfY488F+r4OtQDqtkAo0tG2y3TWHbusyPPfvbfHW8kq7AqsDjlmbcKVXrLAKfP2izQIjZjho6xP5wCINi1/1YqxrAzJSx525mg==
-Received: from google.com (185.83.140.34.bc.googleusercontent.com. [34.140.83.185])
-        by smtp.gmail.com with ESMTPSA id un6-20020a170907cb8600b00a3cfb02c12bsm829998ejc.79.2024.02.13.07.43.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Feb 2024 07:43:44 -0800 (PST)
-Date: Tue, 13 Feb 2024 15:43:40 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>,
-	Moritz Fischer <moritzf@google.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: Re: [PATCH v5 10/17] iommu/arm-smmu-v3: Pass smmu_domain to
- arm_enable/disable_ats()
-Message-ID: <ZcuOLGOqArUzUOfv@google.com>
-References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <10-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+        d=1e100.net; s=20230601; t=1707839131; x=1708443931;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=r+5lFm1GOYo46btsIaJvA6S/B+CQsp17IG3lccG/v6g=;
+        b=o8WUwM3RCpnA+Q6MQ9FOq85s2UmousIjgmhwy5GXSZ5r1/0QchiKsOzE8nvGTXgm/v
+         /d7z++IF9PRN/5Z6Js/PjBLajCRniux4NER+WyMeU0f9Vn73l+lkcjFnYhGnf50vKlv6
+         yXCfBT1f8MxMX4WXFe04eFBANKJCh8Bw1Sq48vUqTM7OilO5wffyyhkGau+P8hGd+ZJK
+         oapbubI+No6YW7TF9pE7+EbQVfUWoKNGXEC05dr6HQ5TeDVlSYkkZ0eI1B7HVV/B4aeL
+         NANF6mSaB2H7GyLeoMQ3s66nJrmQkHoIeXLHlUoilJmkvCVas0CLOKyUmPT1UYEH+y7o
+         Xlmg==
+X-Gm-Message-State: AOJu0YxUdvMOo4sDwdr1orqfY6H5+JH4AqyIjTLx7EzMmKQ4Gs6vkNXW
+	9E4RxRdT/2+EqKKcNDtOJ5oDd4zFqTXBKP4bmxPQeNWHWY7VQyag5KsYEGYdfOIA1FmeRdnram6
+	QOACw7vtV7QUZZLE2EkWDq1ELm8EdmA7vrT8ahw==
+X-Google-Smtp-Source: AGHT+IFqChznTFjr/EeidSN571ZA0nQfVJvF+Fp0E+Y2flaP6eNCXc4z1s3ADkdtr1CrUfrPgpTF+9pex3Z052b1w5U=
+X-Received: by 2002:a05:620a:618b:b0:787:1db5:f0de with SMTP id
+ or11-20020a05620a618b00b007871db5f0demr2991955qkn.26.1707839131046; Tue, 13
+ Feb 2024 07:45:31 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <10-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+References: <20231226200205.562565-1-pasha.tatashin@soleen.com>
+ <20231226200205.562565-11-pasha.tatashin@soleen.com> <20240213131210.GA28926@willie-the-truck>
+In-Reply-To: <20240213131210.GA28926@willie-the-truck>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Tue, 13 Feb 2024 10:44:53 -0500
+Message-ID: <CA+CK2bB4Z+z8tocO79AdsAy+gmN_4aVHgFUsm_gYLUJ2zV1A6A@mail.gmail.com>
+Subject: Re: [PATCH v3 10/10] iommu: account IOMMU allocated memory
+To: Will Deacon <will@kernel.org>
+Cc: akpm@linux-foundation.org, alim.akhtar@samsung.com, alyssa@rosenzweig.io, 
+	asahi@lists.linux.dev, baolu.lu@linux.intel.com, bhelgaas@google.com, 
+	cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com, 
+	dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de, 
+	iommu@lists.linux.dev, jernej.skrabec@gmail.com, jonathanh@nvidia.com, 
+	joro@8bytes.org, krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mm@kvack.org, linux-rockchip@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
+	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st, 
+	mhiramat@kernel.org, m.szyprowski@samsung.com, paulmck@kernel.org, 
+	rdunlap@infradead.org, robin.murphy@arm.com, samuel@sholland.org, 
+	suravee.suthikulpanit@amd.com, sven@svenpeter.dev, thierry.reding@gmail.com, 
+	tj@kernel.org, tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org, 
+	yu-cheng.yu@intel.com, rientjes@google.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Tue, Feb 06, 2024 at 11:12:47AM -0400, Jason Gunthorpe wrote:
-> The caller already has the domain, just pass it in. A following patch will
-> remove master->domain.
-> 
-> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Tested-by: Moritz Fischer <moritzf@google.com>
-> Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 2a6ac0af932c54..133f13f33df124 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2474,12 +2474,12 @@ static bool arm_smmu_ats_supported(struct arm_smmu_master *master)
->  	return dev_is_pci(dev) && pci_ats_supported(to_pci_dev(dev));
->  }
->  
-> -static void arm_smmu_enable_ats(struct arm_smmu_master *master)
-> +static void arm_smmu_enable_ats(struct arm_smmu_master *master,
-> +				struct arm_smmu_domain *smmu_domain)
->  {
->  	size_t stu;
->  	struct pci_dev *pdev;
->  	struct arm_smmu_device *smmu = master->smmu;
-> -	struct arm_smmu_domain *smmu_domain = master->domain;
->  
->  	/* Don't enable ATS at the endpoint if it's not enabled in the STE */
->  	if (!master->ats_enabled)
-> @@ -2495,10 +2495,9 @@ static void arm_smmu_enable_ats(struct arm_smmu_master *master)
->  		dev_err(master->dev, "Failed to enable ATS (STU %zu)\n", stu);
->  }
->  
-> -static void arm_smmu_disable_ats(struct arm_smmu_master *master)
-> +static void arm_smmu_disable_ats(struct arm_smmu_master *master,
-> +				 struct arm_smmu_domain *smmu_domain)
->  {
-> -	struct arm_smmu_domain *smmu_domain = master->domain;
-> -
->  	if (!master->ats_enabled)
->  		return;
->  
-> @@ -2567,7 +2566,7 @@ static void arm_smmu_detach_dev(struct arm_smmu_master *master)
->  	if (!smmu_domain)
->  		return;
->  
-> -	arm_smmu_disable_ats(master);
-> +	arm_smmu_disable_ats(master, smmu_domain);
->  
->  	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
->  	list_del(&master->domain_head);
-> @@ -2689,7 +2688,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  		break;
->  	}
->  
-> -	arm_smmu_enable_ats(master);
-> +	arm_smmu_enable_ats(master, smmu_domain);
->  	goto out_unlock;
->  
->  out_list_del:
-> -- 
-> 2.43.0
->
+> >  SecPageTables
+> > -              Memory consumed by secondary page tables, this currently
+> > -              currently includes KVM mmu allocations on x86 and arm64.
+> > +              Memory consumed by secondary page tables, this currently includes
+> > +              KVM mmu and IOMMU allocations on x86 and arm64.
 
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
+Hi Will,
 
-Thanks,
-Mostafa
+> While I can see the value in this for IOMMU mappings managed by VFIO,
+> doesn't this end up conflating that with the normal case of DMA domains?
+> For systems that e.g. rely on an IOMMU for functional host DMA, it seems
+> wrong to subject that to accounting constraints.
+
+The accounting constraints are only applicable when GFP_KERNEL_ACCOUNT
+is passed to the iommu mapping functions. We do that from the vfio,
+iommufd, and vhost. Without this flag, the memory useage is reported
+in /proc/meminfo as part of  SecPageTables field, but not constrained
+in cgroup.
+
+Pasha
