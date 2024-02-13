@@ -1,45 +1,56 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 734F34C606;
-	Tue, 13 Feb 2024 12:59:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF9DF55784;
+	Tue, 13 Feb 2024 13:12:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707829197; cv=none; b=qA1mXkj1gpLiBx7gPcRRPBpLpm0DaEVkTC+FpWvS00nskWy2pgxDOk9VlkA7hldmadu3RMu2UvydmdQhwTCAbUM5SHAc+oVtZe7RoRFebBfmqMwjOod6LLVSnKSxhGz7GYLz1dck6nKS/vYOGyHgTrF76/E9rTPc2vTr+futLSU=
+	t=1707829943; cv=none; b=QSvvzPCgh9NEKzhmEoL4YKzy6PB76P1rcL6edUZPji/tBP/I8KHytw7DURkPqTrVc262XrPQamixx57N1P9CmDuJtQvuX8EUINPea67u1bYeT7jmkQOkRaJFtIV+dV1hhmbpokt1z3JArp6eutqB8z7R3cz7zbFbbQyuX6LIUn0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707829197; c=relaxed/simple;
-	bh=C92yFZmAGpKulwoiy2FHqjnX4LOoik2WObIxu/w/yJM=;
+	s=arc-20240116; t=1707829943; c=relaxed/simple;
+	bh=0xP8I+Qej1cBpPDnNiDZJmh7/DqD49joD1ERj3DvfKk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=p1/9ySfR8j4neUgCF3ifLcPIESpoGsAOkHx98OCryQsloTkjoRkEBIFKqeyHtHUgUHkQuR+U1dT4PySM5zjbFgQ/dYiEPArNDpCDO2taCppIPSexRhEPL1hloRlQsI53JjRBXsHdsxpyYujOMvMFq5nVGdXmuJ0vNHr38QOScck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oZbd5vvd; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=fY7av0wuYZHZgIEfs4H1OVltkgaPv2W1/EFweAyiTDgtpUxV1RieadKubrlth2Fq0PmYAQGUWwBLSJAzUkFKBYGtSgiYvsU3AaB9txG2TQAXwIdtrqAtF1zP74llHWPPE8zZjwYi1PE3JVMtcCJzVf6K5cusT5wNXm9ubar+hU0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lCIC4VOm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oZbd5vvd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6510FC433C7;
-	Tue, 13 Feb 2024 12:59:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lCIC4VOm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E8FFC433C7;
+	Tue, 13 Feb 2024 13:12:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1707829197;
-	bh=C92yFZmAGpKulwoiy2FHqjnX4LOoik2WObIxu/w/yJM=;
+	s=k20201202; t=1707829942;
+	bh=0xP8I+Qej1cBpPDnNiDZJmh7/DqD49joD1ERj3DvfKk=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oZbd5vvdJZ+DAzSmeYJxgJFq8LBw1gf4bBowsyD+fKSdOx/QaOFJgCR34k/hjcroG
-	 0iFxoYjkcw9BRO28RUwEhFbKDjKGp1Ml7xbtBs5gdyenwSmD7fA/+ni7FLGmTYiJKY
-	 b3RrrDyewCtSYK0sf+3AF13b+Z4KLT9VIFLGJ1qNb12OKJcM69s+8r4AQp5brxvqH8
-	 NdnYCR38rS1FVXwVljCeFnQcfPRA9y0BNe9u5zf42esBpo5+kxzl8lt+k7Af6tWYoR
-	 iSrNDQcW6IK3vBNFRwFZwtei/03O9D0yeGVcKzofWvpSo5B0AodpH/5++yKMzyByMQ
-	 PokE4qHEw8uuQ==
-Date: Tue, 13 Feb 2024 12:59:52 +0000
+	b=lCIC4VOmOV8x0JsCqVrhzsGXz5txq4HxyFPJQRNTQh3KKT2Il8RF8+xeahTD5vCl5
+	 Kektsz/mfJ/JF35E4m5MMed5MRfMr6AfYG18l3OHogPx0QMHtC27U91R9ksMBhJ7LC
+	 QrvfK3L/7OQ2iqeglywl+CEqt2Kk1nqFfANGVdzwrbq09GCHd1PFvhMsW+yndJN2EI
+	 7AKa7uQuypabSxDDmx7RIiGt05YBvnxfcDyb7e4cAzPNfO0Its8Aro6czQ6i5gQbBA
+	 2KpPkjnKmYQ164gn/9NIeHWvTjE9mVJFzcMrCxOJS/SnPSYLIExFrgWV58G9p+7QNg
+	 Scf3fQWeQ5fiA==
+Date: Tue, 13 Feb 2024 13:12:11 +0000
 From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Rob Clark <robdclark@gmail.com>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH] Revert "iommu/arm-smmu: Convert to domain_alloc_paging()"
-Message-ID: <20240213125951.GB28844@willie-the-truck>
-References: <20240213-iommu-revert-domain-alloc-v1-1-325ff55dece4@linaro.org>
- <20240213121257.GI765010@ziepe.ca>
- <20240213121934.GA28726@willie-the-truck>
- <20240213125303.GJ765010@ziepe.ca>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: akpm@linux-foundation.org, alim.akhtar@samsung.com,
+	alyssa@rosenzweig.io, asahi@lists.linux.dev,
+	baolu.lu@linux.intel.com, bhelgaas@google.com,
+	cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com,
+	dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de,
+	iommu@lists.linux.dev, jernej.skrabec@gmail.com,
+	jonathanh@nvidia.com, joro@8bytes.org,
+	krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com,
+	marcan@marcan.st, mhiramat@kernel.org, m.szyprowski@samsung.com,
+	paulmck@kernel.org, rdunlap@infradead.org, robin.murphy@arm.com,
+	samuel@sholland.org, suravee.suthikulpanit@amd.com,
+	sven@svenpeter.dev, thierry.reding@gmail.com, tj@kernel.org,
+	tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org,
+	yu-cheng.yu@intel.com, rientjes@google.com
+Subject: Re: [PATCH v3 10/10] iommu: account IOMMU allocated memory
+Message-ID: <20240213131210.GA28926@willie-the-truck>
+References: <20231226200205.562565-1-pasha.tatashin@soleen.com>
+ <20231226200205.562565-11-pasha.tatashin@soleen.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,51 +59,58 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240213125303.GJ765010@ziepe.ca>
+In-Reply-To: <20231226200205.562565-11-pasha.tatashin@soleen.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Tue, Feb 13, 2024 at 08:53:03AM -0400, Jason Gunthorpe wrote:
-> On Tue, Feb 13, 2024 at 12:19:34PM +0000, Will Deacon wrote:
-> > > > @@ -875,15 +879,6 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
-> > > >  	mutex_init(&smmu_domain->init_mutex);
-> > > >  	spin_lock_init(&smmu_domain->cb_lock);
-> > > >  
-> > > > -	if (dev) {
-> > > > -		struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
-> > > > -
-> > > > -		if (arm_smmu_init_domain_context(smmu_domain, cfg->smmu, dev)) {
-> > > > -			kfree(smmu_domain);
-> > > > -			return NULL;
-> > > > -		}
-> > > > -	}
-> > > > -
-> > > >  	return &smmu_domain->domain;
-> > > >  }
-> > > 
-> > > Everything else is fine, you already tested with that arrangement.
-> > 
-> > Partial reverts are a recipe for confusion, so I'll take this and if you'd
-> > like to bring back some of the hunks, please can you send a patch on top
-> > that does that?
+Hi Pasha,
+
+On Tue, Dec 26, 2023 at 08:02:05PM +0000, Pasha Tatashin wrote:
+> In order to be able to limit the amount of memory that is allocated
+> by IOMMU subsystem, the memory must be accounted.
 > 
-> The typical kernel standard is to fix bugs in patches and only reach
-> for a wholesale revert if the community is struggling with bug
-> fixing. Dmitry already tested removing that hunk, Robin explained the
-> issue, we understand the bug fix is to remove the
-> arm_smmu_init_domain_context() call. Nothing justifies a full scale
-> revert.
+> Account IOMMU as part of the secondary pagetables as it was discussed
+> at LPC.
+> 
+> The value of SecPageTables now contains mmeory allocation by IOMMU
+> and KVM.
+> 
+> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> ---
+>  Documentation/admin-guide/cgroup-v2.rst | 2 +-
+>  Documentation/filesystems/proc.rst      | 4 ++--
+>  drivers/iommu/iommu-pages.h             | 2 ++
+>  include/linux/mmzone.h                  | 2 +-
+>  4 files changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/Documentation/admin-guide/cgroup-v2.rst b/Documentation/admin-guide/cgroup-v2.rst
+> index 3f85254f3cef..e004e05a7cde 100644
+> --- a/Documentation/admin-guide/cgroup-v2.rst
+> +++ b/Documentation/admin-guide/cgroup-v2.rst
+> @@ -1418,7 +1418,7 @@ PAGE_SIZE multiple when read back.
+>  	  sec_pagetables
+>  		Amount of memory allocated for secondary page tables,
+>  		this currently includes KVM mmu allocations on x86
+> -		and arm64.
+> +		and arm64 and IOMMU page tables.
+>  
+>  	  percpu (npn)
+>  		Amount of memory used for storing per-cpu kernel
+> diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
+> index 49ef12df631b..86f137a9b66b 100644
+> --- a/Documentation/filesystems/proc.rst
+> +++ b/Documentation/filesystems/proc.rst
+> @@ -1110,8 +1110,8 @@ KernelStack
+>  PageTables
+>                Memory consumed by userspace page tables
+>  SecPageTables
+> -              Memory consumed by secondary page tables, this currently
+> -              currently includes KVM mmu allocations on x86 and arm64.
+> +              Memory consumed by secondary page tables, this currently includes
+> +              KVM mmu and IOMMU allocations on x86 and arm64.
 
-I can't say I'm aware of any consensus for how to handle this, to be
-completely honest with you. I just personally see a lot of benefit in
-reverting to a known-good state, especially when the revert has been
-posted by the bug reporter. Then we can add stuff on top of that known
-good state without having to worry about any other problems that we're
-yet to uncover. Doesn't really sound controversial...
-
-> I'll send another patch if you want, but it seems like a waste of all
-> our time.
-
-It's a bug fix, of course it's a waste of time! We're talking minutes
-though, right?
+While I can see the value in this for IOMMU mappings managed by VFIO,
+doesn't this end up conflating that with the normal case of DMA domains?
+For systems that e.g. rely on an IOMMU for functional host DMA, it seems
+wrong to subject that to accounting constraints.
 
 Will
