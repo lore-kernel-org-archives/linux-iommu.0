@@ -1,213 +1,252 @@
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com [209.85.219.178])
+Received: from mail-yb1-f182.google.com (mail-yb1-f182.google.com [209.85.219.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 742FA4DA1C
-	for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 23:18:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45AA14683
+	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 00:09:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707779918; cv=none; b=jShQn4ZigKIuysY/3MBQFbTobl9FrS3eINOLMtE62wRIQBttiqrEqwN2qWH6Zzt29dIHwfIax6QSGb3wbAHge/5Rp8YyePDnBPfl99ZYFfE72RbiExIscGQ+mng6UKtzUuPrJGzXPaOWFzDelFHgfLT/ZzEINyp2Nl7yS4/0uVg=
+	t=1707782979; cv=none; b=tMpybpgqL5KRnY2+0dkpYbFSVUS6q+fSH3dH5yMYjB9pWV4xCeaEVoqTc0dLRLSsxsk0/clvNK8ER1ncXFFaBrs9omfq8+DiN0nlgKdF286NJ3iIsjiHZqevjEcVlVfRN8oUBPBRJBb3YS0g7aXRYv5kafzxtQJZiYnZkBdE67w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707779918; c=relaxed/simple;
-	bh=B7pihwsjDfEm8UE0m/hFK9r9fK9HYujiQ7NXpc9fsmU=;
+	s=arc-20240116; t=1707782979; c=relaxed/simple;
+	bh=XuwWJ5Dw+8x+0dOrRRNuv+dH3uOAg+IXu71lodinJZc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bsf/jjXnqn7loTJ1NrKHU9rYj/oCJ8W+EfcBLz09AigDu0PlTMaNdFPYRh4qY/XHanxlQBn9UCUawy3POLu0PL9swAg7GVDV46JZwJYWaYGBJJwVK+/u7DWCmXPQ3wudUnUgEmpiWH3Ami6NytQ1OlDJ8JVjH1TKG2ZvToNvWqo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=hwzh9Kpr; arc=none smtp.client-ip=209.85.219.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 To:Cc:Content-Type; b=TXOkR1wk1VVrpHDMl1eCp8w+kfkEtIEB4m42NOShrd+LNqOoIImgXrh9itCxMW0hGgSIBAXbJYJ6fdgAYe+yzlacGM08U8wmnLKfwOCzrlJ0GCfMXr/z/2fGOjbOghFte4dnDPTSXI8I0MfduUswm9B0fMRbIpLGJ7l6oNXOOzk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=WobvKpb7; arc=none smtp.client-ip=209.85.219.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="hwzh9Kpr"
-Received: by mail-yb1-f178.google.com with SMTP id 3f1490d57ef6-dc6cbe1ac75so3044781276.1
-        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 15:18:36 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="WobvKpb7"
+Received: by mail-yb1-f182.google.com with SMTP id 3f1490d57ef6-dcc84ae94c1so93823276.1
+        for <iommu@lists.linux.dev>; Mon, 12 Feb 2024 16:09:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707779915; x=1708384715; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=q2oUKZ9+k2fWUDVHdxmDEvSogLo9+LaOxnS10TKDJLQ=;
-        b=hwzh9KprXnKIvB6cl2c3KJdVi/B9UXwPe0gUmEcoyEJrO5TOhvwNH20uFvukoj9Xqt
-         +uzVjKTksa5rrhLGU4bJlUns4xM3egFO/nO0MoYnPA+kyfWgYBhc+Q7Okghz5jEZf1PR
-         +NRGofFp+U0xTSwuxcApcYeWKf/JJwdgAY1EG17atJLjDI8G5e+iErIr7+7B3F5xLlNq
-         Eucdn72wVtP0TQIT76aU46DmS9sH+duBZne4CCd7GhL9oQOgtZ6vMWJLatE1TofRG0+4
-         9XcSnsx0WXPtA9jz0jEwOVxrJMff3ByBZmJSTc+WbYkEtYia2yXpALSqod3DEllqsIP+
-         3lWg==
+        d=google.com; s=20230601; t=1707782976; x=1708387776; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=gLK7xEb3jxgpuysPUzwq60xsYYfX0bEwBasjsp6nC7A=;
+        b=WobvKpb73doEhYOp4acIzqcEI14SwfoKBUjhwiYVdHRdkNxuPwULXI7IXeLnrobel8
+         PSKSLqVKFpS9E5z71DClOu79mJiz21swOOAyUIXdiUiI3hGK7ba5mWV3CIqDOgvDlEO1
+         Unr2uYKok2YzRwsWyVjEdL545cDhByiV+gjvUcUNw0jWHQXkGxDDI+d1OyuiSZB2/dKD
+         ffcT66NrhL2er2NrxnDIHc4+brfnh3hHZ4f7d97CX0q3TbLimPt9ywlCVx1lZ8PTi6OX
+         dqY08sGsp+3Gu3YPR5LKrRcNA6vzV/+/QEQjpQAYR4bSDMlxOxtHNI//0hxZKsvMv26+
+         rq8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707779915; x=1708384715;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=q2oUKZ9+k2fWUDVHdxmDEvSogLo9+LaOxnS10TKDJLQ=;
-        b=fBDImWoV8LLXV1D4kxjDdrpYxObsb2tKN43nagcddoYp1PvWkdyGKzNsFrJbjy5nYD
-         N3HNkIxCdYmqyOnSZYmP5oL9m3G6jKWL0n63NUBLF6S8VNrMRy71IaUEvlbCJ3cYUQz8
-         g3swEYpcjWYdycct1TYzM5kPnphzCSzjLas6OwSadNUbacO2q4SE8n4vxwnk9lpKfAKe
-         6LbN5+Rpf3z8cs+qeIPi3JHF35UkVDa2UdXqesM4vXnfmuSjga+xlEk9DkoP3mPuiwHj
-         8g8OBcjQ9nuoJrPS274F+UWqmduY+BVOoWhCJ19fBc25GBxh/8PK8nm4+cFXSebI6Iqf
-         vp2g==
-X-Gm-Message-State: AOJu0Yw9tYbjf93xm9NPY5pus/tSStfqlyBqig+56T0b8mbhwZPs1Y3A
-	mts8iAWv37Sh72I+rfgffhjEKX8O2kQtPhNYhDVGoh+bwGbqeJz/+MnIhdAz6o2gOjCr1UOkRQ5
-	9YnYYBD476obqIbitYWfCohgD/Lt9BfCKIHxmXw==
-X-Google-Smtp-Source: AGHT+IE4eLVt2y/x1WM/Sg5v7ZT9w1e+rZDJpX22D6pGoEK1ybOMcLQRNaQPyX7zAEGSwC/QEyXmdBqfKqeNULg9klc=
-X-Received: by 2002:a25:ac4e:0:b0:dc6:9d15:be3f with SMTP id
- r14-20020a25ac4e000000b00dc69d15be3fmr712809ybd.2.1707779915351; Mon, 12 Feb
- 2024 15:18:35 -0800 (PST)
+        d=1e100.net; s=20230601; t=1707782976; x=1708387776;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=gLK7xEb3jxgpuysPUzwq60xsYYfX0bEwBasjsp6nC7A=;
+        b=AGtvNT3onCtHpsPkGuvbGzZccTXvaD8NvWxq/1IWXIX5QS8RAFFU7rHDPpMNH1dUw+
+         lh9QtKx1KI1c3pdkW7/BlssCdGlnSq8wlelQbqt3asjVdqtJEZmeyIPRFdJrKNonU129
+         /HUNL8igJWSkVlvr1jL2/kZa+Piu17xxBejJrPispnIGH77mQNCBb7wrlRyGWTkLHyUZ
+         0L490D54Mig12YvG7Nysjj5PKykUM9De4Pf30C429Tk/gatst2rLQaS0ewFcCUgf+sn5
+         gPdfXKsbPo0pT+pz8J5iYJ7CYXYKKagDLGHV5DdDeF/xWC90lGsTg6GWplFWK11kIIWP
+         ypWg==
+X-Forwarded-Encrypted: i=1; AJvYcCXN1o5/jgYIlVhH6wuPqqLGOomaINa58jwsInvE3ivhlDMdUr1bEzpTkaYbc6AvTD+FzGac9s21AAHDyyZEOSgEf4SDbT4=
+X-Gm-Message-State: AOJu0YxzcufeQ6icfCmplud8In1mPEzGGrvAaBfSGjnWsvZvQl8oxP2u
+	RqHHB8hPnCk4IowenyZT0dhx7bSpX/NxDkf3ZxfwriIkB4sfiSywr4tHVT/lPaN+rYO54oHbQRU
+	Jn/vEkHG8HpjBYxOhB5nY7HpAUqPpnLcVd487
+X-Google-Smtp-Source: AGHT+IFcIoxxZ/at1Ut37e+obqddPjXFDoTfSw2W9xlVFGkbEDUuUmXcmdD9+Fz3EgwVz//7/lLpGbCXr+gCQA4ZbLI=
+X-Received: by 2002:a25:8241:0:b0:dcc:623d:e475 with SMTP id
+ d1-20020a258241000000b00dcc623de475mr508725ybn.30.1707782975978; Mon, 12 Feb
+ 2024 16:09:35 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <5-v2-c86cc8c2230e+160bb-smmu_newapi_jgg@nvidia.com>
- <20240209200538.917366-1-dmitry.baryshkov@linaro.org> <20240209222349.GA923780@nvidia.com>
-In-Reply-To: <20240209222349.GA923780@nvidia.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Tue, 13 Feb 2024 01:18:24 +0200
-Message-ID: <CAA8EJpqdc3nQmTaWYY4VDE7ChV0NjMgBK7Q0rDRTyKZoWtbreA@mail.gmail.com>
-Subject: Re: [PATCH v2 5/5] iommu/arm-smmu: Convert to domain_alloc_paging()
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, 
-	linux-arm-kernel@lists.infradead.org, nicolinc@nvidia.com, 
-	robin.murphy@arm.com, will@kernel.org, linux-arm-msm@vger.kernel.org
+References: <20240212213922.783301-1-surenb@google.com> <20240212213922.783301-35-surenb@google.com>
+ <202402121448.AF0AA8E@keescook>
+In-Reply-To: <202402121448.AF0AA8E@keescook>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Mon, 12 Feb 2024 16:09:21 -0800
+Message-ID: <CAJuCfpEUQ+KctApss1upC4pWLvnU2bWVopbL5EsBzhsF0JzrPA@mail.gmail.com>
+Subject: Re: [PATCH v3 34/35] codetag: debug: introduce OBJEXTS_ALLOC_FAIL to
+ mark failed slab_ext allocations
+To: Kees Cook <keescook@chromium.org>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
+	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, 
+	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, ndesaulniers@google.com, 
+	vvvvvv@google.com, gregkh@linuxfoundation.org, ebiggers@google.com, 
+	ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com, 
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
+	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
+	shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com, 
+	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
+	kernel-team@android.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, 10 Feb 2024 at 00:23, Jason Gunthorpe <jgg@nvidia.com> wrote:
+On Mon, Feb 12, 2024 at 2:49=E2=80=AFPM Kees Cook <keescook@chromium.org> w=
+rote:
 >
-> On Fri, Feb 09, 2024 at 10:05:38PM +0200, Dmitry Baryshkov wrote:
-> > On Tue, 17 Oct 2023 Jason Gunthorpe <jgg@nvidia.com> wrote:
-> > > Now that the BLOCKED and IDENTITY behaviors are managed with their own
-> > > domains change to the domain_alloc_paging() op.
-> > >
-> > > The check for using_legacy_binding is now redundant,
-> > > arm_smmu_def_domain_type() always returns IOMMU_DOMAIN_IDENTITY for this
-> > > mode, so the core code will never attempt to create a DMA domain in the
-> > > first place.
-> > >
-> > > Since commit a4fdd9762272 ("iommu: Use flush queue capability") the core
-> > > code only passes in IDENTITY/BLOCKED/UNMANAGED/DMA domain types. It will
-> > > not pass in IDENTITY or BLOCKED if the global statics exist, so the test
-> > > for DMA is also redundant now too.
-> > >
-> > > Call arm_smmu_init_domain_context() early if a dev is available.
-> > >
-> > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> > > ---
-> > >  drivers/iommu/arm/arm-smmu/arm-smmu.c | 21 +++++++++++++++------
-> > >  1 file changed, 15 insertions(+), 6 deletions(-)
+> On Mon, Feb 12, 2024 at 01:39:20PM -0800, Suren Baghdasaryan wrote:
+> > If slabobj_ext vector allocation for a slab object fails and later on i=
+t
+> > succeeds for another object in the same slab, the slabobj_ext for the
+> > original object will be NULL and will be flagged in case when
+> > CONFIG_MEM_ALLOC_PROFILING_DEBUG is enabled.
+> > Mark failed slabobj_ext vector allocations using a new objext_flags fla=
+g
+> > stored in the lower bits of slab->obj_exts. When new allocation succeed=
+s
+> > it marks all tag references in the same slabobj_ext vector as empty to
+> > avoid warnings implemented by CONFIG_MEM_ALLOC_PROFILING_DEBUG checks.
 > >
-> > For some reason this patch breaks booting of the APQ8096 Dragonboard820c
-> > (qcom/apq8096-db820c.dts). Dispbling display subsystem (mdss) and venus
-> > devices makes the board boot in most of the cases. Most frequently the
-> > last parts of the log loog in a following way:
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > ---
+> >  include/linux/memcontrol.h |  4 +++-
+> >  mm/slab.h                  | 25 +++++++++++++++++++++++++
+> >  mm/slab_common.c           | 22 +++++++++++++++-------
+> >  3 files changed, 43 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
+> > index 2b010316016c..f95241ca9052 100644
+> > --- a/include/linux/memcontrol.h
+> > +++ b/include/linux/memcontrol.h
+> > @@ -365,8 +365,10 @@ enum page_memcg_data_flags {
+> >  #endif /* CONFIG_MEMCG */
+> >
+> >  enum objext_flags {
+> > +     /* slabobj_ext vector failed to allocate */
+> > +     OBJEXTS_ALLOC_FAIL =3D __FIRST_OBJEXT_FLAG,
+> >       /* the next bit after the last actual flag */
+> > -     __NR_OBJEXTS_FLAGS  =3D __FIRST_OBJEXT_FLAG,
+> > +     __NR_OBJEXTS_FLAGS  =3D (__FIRST_OBJEXT_FLAG << 1),
+> >  };
+> >
+> >  #define OBJEXTS_FLAGS_MASK (__NR_OBJEXTS_FLAGS - 1)
+> > diff --git a/mm/slab.h b/mm/slab.h
+> > index cf332a839bf4..7bb3900f83ef 100644
+> > --- a/mm/slab.h
+> > +++ b/mm/slab.h
+> > @@ -586,9 +586,34 @@ static inline void mark_objexts_empty(struct slabo=
+bj_ext *obj_exts)
+> >       }
+> >  }
+> >
+> > +static inline void mark_failed_objexts_alloc(struct slab *slab)
+> > +{
+> > +     slab->obj_exts =3D OBJEXTS_ALLOC_FAIL;
 >
-> It is surprising we tested this patch on some tegra systems with this
-> iommu and didn't hit anything..
->
-> The only real functional thing this changes is to move the domain
-> initialization up in time, potentially a lot in time in some
-> cases. That function does alot of things including touching HW so
-> possibly there is some surprising interaction with something else.
->
-> So, I would expect this to not WARN_ON and to make it work the same as
-> before the patch:
->
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -875,7 +875,9 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
->         mutex_init(&smmu_domain->init_mutex);
->         spin_lock_init(&smmu_domain->cb_lock);
->
-> -       if (dev) {
-> +       WARN_ON(using_legacy_binding);
-> +
-> +/*     if (dev) {
->                 struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
->
->                 if (arm_smmu_init_domain_context(smmu_domain, cfg->smmu, dev)) {
-> @@ -883,7 +885,7 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
->                         return NULL;
->                 }
->         }
-> -
-> +*/
->         return &smmu_domain->domain;
->  }
+> Uh, does this mean slab->obj_exts is suddenly non-NULL? Is everything
+> that accesses obj_exts expecting this?
 
-With the full device tree, this crashed during the IOMMU probe, no warnings:
-
-[   15.343477] bam-dma-engine 644000.dma-controller: num-channels
-unspecified in dt
-[   15.343675] bam-dma-engine 644000.dma-controller: num-ees unspecified in dt
-[   15.394653] msm_serial 7570000.serial: msm_serial: detected port #2
-[   15.395170] msm_serial 7570000.serial: uartclk = 19200000
-[   15.401983] 7570000.serial: ttyMSM2 at MMIO 0x7570000 (irq = 37,
-base_baud = 1200000) is a MSM
-[   15.407549] serial serial0: tty port ttyMSM2 registered
-[   15.421567] Bluetooth: hci0: setting up ROME/QCA6390
-[   15.421728] arm-smmu b40000.iommu: probing hardware configuration...
-[   15.425866] arm-smmu b40000.iommu: SMMUv2 with:
-[   15.432153] arm-smmu b40000.iommu: stage 1 translation
-[   15.436407] arm-smmu b40000.iommu: address translation ops
-[   15.441580] arm-smmu b40000.iommu: non-coherent table walk
-[   15.447136] arm-smmu b40000.iommu: (IDR0.CTTW overridden by FW configuration)
-[   15.452750] arm-smmu b40000.iommu: stream matching with 2 register groups
-[   15.460038] arm-smmu b40000.iommu: 2 context banks (0 stage-2 only)
-[   15.466908] arm-smmu b40000.iommu: Supported page sizes: 0x63315000
-[   15.473367] arm-smmu b40000.iommu: Stage-1: 48-bit VA -> 36-bit IPA
-[   15.481638] arm-smmu b40000.iommu: preserved 0 boot mappings
-[   15.491783] arm-smmu d00000.iommu: probing hardware configuration...
-[   15.491955] arm-smmu d00000.iommu: SMMUv2 with:
-[
-Format: Log Type - Time(microsec) - Message - Optional Info
-Log Type: B - Since Boot(Power On Reset),  D - Delta,  S - Statistic
-S - QC_IMAGE_VERSION_STRING=BOOT.XF.1.0-00301
-
+Hi Kees,
+Thank you for the reviews!
+Yes, I believe everything that accesses slab->obj_exts directly
+(currently alloc_slab_obj_exts() and free_slab_obj_exts()) handle this
+special non-NULL case. kfence_init_pool() initialized slab->obj_exts
+directly, but since it's setting it and not accessing it, it does not
+need to handle OBJEXTS_ALLOC_FAIL. All other slab->obj_exts users use
+slab_obj_exts() which applies OBJEXTS_FLAGS_MASK and masks out any
+special bits.
+Thanks,
+Suren.
 
 >
-> Then I'd ask you to remove the comment and do:
+> -Kees
 >
-> @@ -878,7 +878,9 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
->         if (dev) {
->                 struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
+> > +}
+> > +
+> > +static inline void handle_failed_objexts_alloc(unsigned long obj_exts,
+> > +                     struct slabobj_ext *vec, unsigned int objects)
+> > +{
+> > +     /*
+> > +      * If vector previously failed to allocate then we have live
+> > +      * objects with no tag reference. Mark all references in this
+> > +      * vector as empty to avoid warnings later on.
+> > +      */
+> > +     if (obj_exts & OBJEXTS_ALLOC_FAIL) {
+> > +             unsigned int i;
+> > +
+> > +             for (i =3D 0; i < objects; i++)
+> > +                     set_codetag_empty(&vec[i].ref);
+> > +     }
+> > +}
+> > +
+> > +
+> >  #else /* CONFIG_MEM_ALLOC_PROFILING_DEBUG */
+> >
+> >  static inline void mark_objexts_empty(struct slabobj_ext *obj_exts) {}
+> > +static inline void mark_failed_objexts_alloc(struct slab *slab) {}
+> > +static inline void handle_failed_objexts_alloc(unsigned long obj_exts,
+> > +                     struct slabobj_ext *vec, unsigned int objects) {}
+> >
+> >  #endif /* CONFIG_MEM_ALLOC_PROFILING_DEBUG */
+> >
+> > diff --git a/mm/slab_common.c b/mm/slab_common.c
+> > index d5f75d04ced2..489c7a8ba8f1 100644
+> > --- a/mm/slab_common.c
+> > +++ b/mm/slab_common.c
+> > @@ -214,29 +214,37 @@ int alloc_slab_obj_exts(struct slab *slab, struct=
+ kmem_cache *s,
+> >                       gfp_t gfp, bool new_slab)
+> >  {
+> >       unsigned int objects =3D objs_per_slab(s, slab);
+> > -     unsigned long obj_exts;
+> > -     void *vec;
+> > +     unsigned long new_exts;
+> > +     unsigned long old_exts;
+> > +     struct slabobj_ext *vec;
+> >
+> >       gfp &=3D ~OBJCGS_CLEAR_MASK;
+> >       /* Prevent recursive extension vector allocation */
+> >       gfp |=3D __GFP_NO_OBJ_EXT;
+> >       vec =3D kcalloc_node(objects, sizeof(struct slabobj_ext), gfp,
+> >                          slab_nid(slab));
+> > -     if (!vec)
+> > +     if (!vec) {
+> > +             /* Mark vectors which failed to allocate */
+> > +             if (new_slab)
+> > +                     mark_failed_objexts_alloc(slab);
+> > +
+> >               return -ENOMEM;
+> > +     }
+> >
+> > -     obj_exts =3D (unsigned long)vec;
+> > +     new_exts =3D (unsigned long)vec;
+> >  #ifdef CONFIG_MEMCG
+> > -     obj_exts |=3D MEMCG_DATA_OBJEXTS;
+> > +     new_exts |=3D MEMCG_DATA_OBJEXTS;
+> >  #endif
+> > +     old_exts =3D slab->obj_exts;
+> > +     handle_failed_objexts_alloc(old_exts, vec, objects);
+> >       if (new_slab) {
+> >               /*
+> >                * If the slab is brand new and nobody can yet access its
+> >                * obj_exts, no synchronization is required and obj_exts =
+can
+> >                * be simply assigned.
+> >                */
+> > -             slab->obj_exts =3D obj_exts;
+> > -     } else if (cmpxchg(&slab->obj_exts, 0, obj_exts)) {
+> > +             slab->obj_exts =3D new_exts;
+> > +     } else if (cmpxchg(&slab->obj_exts, old_exts, new_exts) !=3D old_=
+exts) {
+> >               /*
+> >                * If the slab is already in use, somebody can allocate a=
+nd
+> >                * assign slabobj_exts in parallel. In this case the exis=
+ting
+> > --
+> > 2.43.0.687.g38aa6559b0-goog
+> >
 >
-> +               WARN_ON(true);
->                 if (arm_smmu_init_domain_context(smmu_domain, cfg->smmu, dev)) {
-> +                       printk("Allocation failure in arm_smmu_domain_alloc_paging()\n");
->                         kfree(smmu_domain);
->                         return NULL;
->                 }
->
->
-> And then we may get a clue from the backtraces it generates. I only
-> saw one iommu group reported in your log so I'd expect one trace?
-
-With the full device tree, same result:
-
-[   12.319303] bam-dma-engine 644000.dma-controller: num-channels
-unspecified in dt
-[   12.319502] bam-dma-engine 644000.dma-controller: num-ees unspecified in dt
-[   12.370379] msm_serial 7570000.serial: msm_serial: detected port #2
-[   12.370895] msm_serial 7570000.serial: uartclk = 19200000
-[   12.377773] 7570000.serial: ttyMSM2 at MMIO 0x7570000 (irq = 37,
-base_baud = 1200000) is a MSM
-[   12.383228] serial serial0: tty port ttyMSM2 registered
-[   12.397263] arm-smmu b40000.iommu: probing hardware configuration...
-[   12.397441] arm-smmu b40000.iommu: SMMUv2 with:
-[   12.398072] Bluetooth: hci0: setting up ROME/QCA6390
-[   12.402779] arm-smmu b40000.iommu: stage 1 translation
-[   12.402817] arm-smmu b40000.iommu: address translation ops
-[   12.402832] arm-smmu b40000.iommu: non-coherent table walk
-[   12.402848] arm-smmu b40000.iommu: (IDR0.CTTW overridden by FW configuration)
-[   12.402881] arm-smmu b40000.iommu: stream matching with 2 register groups
-[   12.402943] arm-smmu b40000.iommu: 2 context banks (0 stage-2 only)
-[   12.402987] arm-smmu b40000.iommu: Supported page sizes: 0x63315000
-[   12.403004] arm-smmu b40000.iommu: Stage-1: 48-bit VA -> 36-bit IPA
-[   12.404941] arm-smmu b40000.iommu: preserved 0 boot mappings
-[   12.467015] arm-smmu d00000.iommu: probing hardware configuration...
-[   12.467318] arm-smmu d0
-Format: Log Type - Time(microsec) - Message - Optional Info
-Log Type: B - Since Boot(Power On Reset),  D - Delta,  S - Statistic
-S - QC_IMAGE_VERSION_STRING=BOOT.XF.1.0-00301
-
-Even with disabling display-subsystem and venus, it crashes at the
-same place, I don't seem to be able to get past it anymore.
-
--- 
-With best wishes
-Dmitry
+> --
+> Kees Cook
