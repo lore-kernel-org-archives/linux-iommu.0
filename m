@@ -1,58 +1,57 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C292EB65E
-	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 16:46:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 305B958124
+	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 17:00:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707842810; cv=none; b=GJKiBGw5w2x2gnb3wIOGcG73Bn1Zk6ZrHDSBI13+defn0s0V2PD5s1H76s9OIJmcQqII/g6+ROJaFovMu+3DsgRQWCS/59xMQ65XQI+NU/y2PIQKT2Lc9IUggHekXWQtCaZDxW2QXYXNsk/9TuLNi3A5r+h8EIUsGvnguh/sDJk=
+	t=1707843652; cv=none; b=dAh5vaKoma9UVK2lLS43rfyShSPsbHadaTbzzqiCyddbeUHgGc/Pmg3ipLsZnqLinqIkwgLWvq8rI5gavGG4wU9yw1POtJN9P3GWacRQeg4Vs4DPM4kcoBbzvMi4aKlbkITxAZ5KudSTzuhgvtRnv02Sjoh9GMl+eQEnF/Pb+l8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707842810; c=relaxed/simple;
-	bh=tpR6mme3U+c+hWwnrFLNhjYtJU3ak8FHR/XxFoZpt7A=;
+	s=arc-20240116; t=1707843652; c=relaxed/simple;
+	bh=exe8FC6k6donvhKbc3m8K6cLGboX46nkXKcr93qT6+Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=inS/jKXQvxci/6sucMORYXVkJ3U3JjMKw6t3egIBuP9Dlw1aXuwh6IhqmZ3HKVeEZfJ542PrehgccXqpKzo73w/WX6oXyQUxmXbJPujeNRv2gsJUXGR2ZpcuSY5Cu39zMzDtxmJnk69M4MxwDgj+iQZL5MC2CNXebM1B6Loplpo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=QHeX5IWT; arc=none smtp.client-ip=209.85.128.42
+	 Content-Type:Content-Disposition:In-Reply-To; b=reQjy3H1Jxe7GyqfosSoJ9YCPM/Sx39MSLiibz7osVpzygix9bGGycGqKRyIMqIIT2AFcAkbvTH076LqicDfa/nIKuI6owCp+OKoyoEITt0QfRnR8foeJ6xGoV1zQDyr34RftwaUjDYkSYvEEKc7tYWgxVZMms6tEEH5xZSmt7M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HkjsQYjg; arc=none smtp.client-ip=209.85.128.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="QHeX5IWT"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-410acf9e776so63295e9.1
-        for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 08:46:48 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HkjsQYjg"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-410cf70a057so66285e9.0
+        for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 09:00:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1707842807; x=1708447607; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ucHnqK65dNySMm0vCRPbNkUFL42gA9gziXTQqFiNUvw=;
-        b=QHeX5IWTqEp+oKym4UQAeP7/PDKOs+/EgOlZZpKG1DlC0tkcI1LHaHXEFcRGGDLPSt
-         ElFMcVRan4UpH47qaWhD4wjtmAReAOme3CjUhob2le194oBAIeOJvo2Iy2p7AympXHv8
-         9QqhwdHJ/YRGEnbaV1Up7/L7QL15CBP1qOJNSmmZsWZNtszXa98wxus7Yx1Y/DEE6+wa
-         inzqZpt0mFUSLXrYi7XMnMZGlXrpwBhWy73Ld2/X8+qYno8m3RDVLJc+YzbSCwgpkaER
-         EkoYdZpuQebBHG0Lj1jO3f/4+OqpdwT7e9PgP+yofp3IGPqetBWRf1XlP0NB0dLCGXxj
-         k/5A==
+        d=google.com; s=20230601; t=1707843649; x=1708448449; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=5cWBvmXxi6UMr28DCjOQCiv1KG2CcDRbLU6dcLN76xU=;
+        b=HkjsQYjgmmk5W+3X1V6G1Zn1cYlBMZbexLoEYK0CUGpR2t8g5duKC4X+9OY9mIDDAL
+         Y/42XFIRKLHuNL5B2jpIHVJixQSQM5KU31mASOP2d7R1cFYUsUnUxlUNU/TzAY5xx4oz
+         +k6SYbSKrax2On4DjYM83z6PBQ9Uv17Idd76Y6jCbVPXsOxWMOWIEjt8NpsWuh+XUVCu
+         jiNg35wioQSeCQz1oSYAFNnF8t2KUJkTyZExIBFXtaZ4iEZvzoNdl7bU72z9LEYnZpbT
+         bvwsrK9eVcbJTwRzWFtTiFU9Sx4AscVJqgEt84Q6wV2CzimkfRcYbo023ZccWtdyLmwo
+         18Pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707842807; x=1708447607;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ucHnqK65dNySMm0vCRPbNkUFL42gA9gziXTQqFiNUvw=;
-        b=HiY8okrjy14dAwj38SyEmOlz+D4q6ZXxy57ar/XjO98AspWIbeppAKb1T/rkrK8kUh
-         yKst4M7a4DNZUDHMZR3m5CFvq4NNl3C31DD7RPNatJXGSZCOF1+RABJgdXmjQlYwM2hv
-         wHGTzpP6muIvck0LBB03iwt4bqDSfd+0BagzyOzXEHkunR0iwjvBmSZq6xEoBPY1t6Mp
-         dHZMl1L5FYmAQc8jGhR66AId2GjqWsrj/lP3o3j3GhRE5Td0cuDHC2JlKgqbHU+Jif/w
-         yeW+xyNtXgkoogVP58BRlN8IVJDP/50+JyHbELBNaGBZR72KFYQffKdba7yGXG4TEARW
-         G77Q==
-X-Gm-Message-State: AOJu0YyNurdJM1LdRMoRhuqDnCEGcHbjihmjFB1IYdFc7+E+iZUeKJmH
-	GDWKhsZ9T84pO7loV/O7mElz9TQj4aajiwf0r0jZQSJ8574+mstBMGT2Gq3bKQ==
-X-Google-Smtp-Source: AGHT+IG6slvUXaUw0vRKI8A9me0rjK09WsK8zsiKRNl9I6idacUaF6C041HykWyYM6oWpHYw96xUNw==
-X-Received: by 2002:a05:600c:b86:b0:410:87e5:42da with SMTP id fl6-20020a05600c0b8600b0041087e542damr20895wmb.2.1707842806913;
-        Tue, 13 Feb 2024 08:46:46 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCWhWvrxvC7bBlOC2fdVAat9ianVn3v5ImA51f/ekh2Bn+WN6B+PRgMutn59Rh/G5n3wTsJ5N4htSPrmBzmmAbFz7eyO91qB/xLy9rcUWz8DHzWHN8VLO7V/+ydIILmXKrcSLvUHccEs+Z8BJdWUHbYm6KWQS3AZWvzuGCNo1UcQudJpAwLZny/dlVCWPIPxUsFQfyktpplDMmcA6OvQeozfvuRsm8tITPhGEH44YbUMRCctToqftPG30SjW7urn95FS0hlu8UnE/7uYHPbrIVYSsDzALRRkbh8uEfKkl6+JDfI/+0/j8zoNI9fxoHAAJj5cTJ7eT6k39+fsjqKRvR0hYubmkWBHXgU4GLrJLW4hIOM+sGUzIRMdBUomtsW8X4q7jS99vGKdFUjcVUKOAqTtwIrhy6vhc1cqqFT9AB/n6/gt1aIGHBtlFv8rQJPkTrahN1pDsuBrvgKewcS0H04/FkjAN2LlRrumoqSHllKsTHg+7RgEtA==
+        d=1e100.net; s=20230601; t=1707843649; x=1708448449;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5cWBvmXxi6UMr28DCjOQCiv1KG2CcDRbLU6dcLN76xU=;
+        b=VeSv6zSYs6jttd86VHm2EIorzU1hfkZbw4ac/CVp72WUz/N5lC07ocU5u2fA4Yi34C
+         fKAF2gXPITPfrl1iBAACGtMzfXP1prdxgOGbXroR8QZWreUY6QyKp2rvJBUElcaQJ2Al
+         +al9Qzz0IIxS0bNUYBpyamxd6kmbmRGvMlply/w8ugha6jTr2O2RDr17vlnFB/9JcCus
+         S0Fiw0J3qCHDG3eMv7LefnOGQBncaTJfbXjrYCjZbjbD2nTKFqejCdFyn8Xq53XMKCJn
+         bvf4nmkaOp7f1648HIcQE89RKvxXxL0vzu1f1PBYDQDj0fGr2bINN9pfBH3m4KbGLYes
+         uDCg==
+X-Gm-Message-State: AOJu0Yw5px5cLCT8fuRibZ3mR+CugBH0TLFiddHrKkwbUMn6iJKgWNzF
+	t1WfCKZ+/dEOjzp0SCA/WIIzB9yeeFOrOXptX1LanKWP4dVfRNunmACPJADZtA==
+X-Google-Smtp-Source: AGHT+IFsllimKT4Ae5wbJyvmEQy4xvKDG1jTB+aQNSR/IivggyXAlwFr7LJHQ/dE4OA58cgEGjlCng==
+X-Received: by 2002:a05:600c:a008:b0:410:d18a:290b with SMTP id jg8-20020a05600ca00800b00410d18a290bmr18394wmb.7.1707843649317;
+        Tue, 13 Feb 2024 09:00:49 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUm9zGe7yYjtudtYm2xecBgJCDyzWuo7aNldtekCrdZCF7haqHhbsTc43FrJDj0WVsuns4uctGcMcBrOLYwlIGD9L9p8arT0OtOzePAaFQeJkPdRyIAzR/xgKSGDBNpMMJhd/9LvkGaiB56GgKtAFOM9HZNPKArstCw1HOBGMW9ElSfjRJpYNvMlbj59vQ2cF46fBzz2HNaJ7xTUeeDqdnPEpCIoR3a8Nh8vGGYWK+nj0tRKGbagfXWcsE6J+RAik4aTeYGNeaiZ4QPdOZJRlAbroH36nuISSKvJeahoD4YwWd/tGwxZOx0oPLFS/EADd3QM/HmQ14owgpu5g6OrfyQTjyzkNrAAKN08ql5Ahx/TgRuhZYOPNfer/VYCugwylcMteT0tivNUcVhyAI8xST7DIFzKOOf+7GaRo73lBCfm/LUPUWb5vIf0C2UuiFuThrKZPpWufHVsfBPF8gDDjMhf2x+EIntz3whBMP0mOHPlFsrWvcSqw==
 Received: from google.com (185.83.140.34.bc.googleusercontent.com. [34.140.83.185])
-        by smtp.gmail.com with ESMTPSA id m41-20020a05600c3b2900b00411d0b58056sm886307wms.5.2024.02.13.08.46.46
+        by smtp.gmail.com with ESMTPSA id n16-20020a5d67d0000000b0033af26545c8sm9977041wrw.50.2024.02.13.09.00.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Feb 2024 08:46:46 -0800 (PST)
-Date: Tue, 13 Feb 2024 16:46:42 +0000
+        Tue, 13 Feb 2024 09:00:48 -0800 (PST)
+Date: Tue, 13 Feb 2024 17:00:44 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
@@ -66,79 +65,96 @@ Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
 	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
 	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
 	Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: Re: [PATCH v5 03/17] iommu/arm-smmu-v3: Move
- arm_smmu_rmr_install_bypass_ste()
-Message-ID: <Zcuc8g-G4dCxieUl@google.com>
+Subject: Re: [PATCH v5 11/17] iommu/arm-smmu-v3: Remove
+ arm_smmu_master->domain
+Message-ID: <ZcugPKDPlx6mOgfg@google.com>
 References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <3-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <ZcuMx0w6MDWpkLne@google.com>
- <20240213161601.GB1088888@nvidia.com>
+ <11-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+ <ZcuOnnrWN3ZxJY8x@google.com>
+ <20240213163739.GE1088888@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240213161601.GB1088888@nvidia.com>
+In-Reply-To: <20240213163739.GE1088888@nvidia.com>
 
-On Tue, Feb 13, 2024 at 12:16:01PM -0400, Jason Gunthorpe wrote:
-> On Tue, Feb 13, 2024 at 03:37:43PM +0000, Mostafa Saleh wrote:
+On Tue, Feb 13, 2024 at 12:37:39PM -0400, Jason Gunthorpe wrote:
+> On Tue, Feb 13, 2024 at 03:45:34PM +0000, Mostafa Saleh wrote:
 > > Hi Jason,
 > > 
-> > On Tue, Feb 06, 2024 at 11:12:40AM -0400, Jason Gunthorpe wrote:
-> > > Logically arm_smmu_init_strtab() is the function that allocates and
-> > > populates the stream table with the initial value of the STEs. After this
-> > > function returns the stream table should be fully ready.
+> > On Tue, Feb 06, 2024 at 11:12:48AM -0400, Jason Gunthorpe wrote:
+> > > Introducing global statics which are of type struct iommu_domain, not
+> > > struct arm_smmu_domain makes it difficult to retain
+> > > arm_smmu_master->domain, as it can no longer point to an IDENTITY or
+> > > BLOCKED domain.
 > > > 
-> > > arm_smmu_rmr_install_bypass_ste() adjusts the initial stream table to force
-> > > any SIDs that the FW says have IOMMU_RESV_DIRECT to use bypass. This
-> > > ensures there is no disruption to the identity mapping during boot.
+> > > The only place that uses the value is arm_smmu_detach_dev(). Change things
+> > > to work like other drivers and call iommu_get_domain_for_dev() to obtain
+> > > the current domain.
 > > > 
-> > > Put arm_smmu_rmr_install_bypass_ste() into arm_smmu_init_strtab(), it
-> > > already executes immediately after arm_smmu_init_strtab().
-> > > 
-> > > No functional change intended.
+> > > The master->domain is subtly protecting the domain_head against being
+> > > unused, change the domain_head to be INIT'd when the master is not
+> > > attached to a domain instead of garbage/zero.
 > > 
-> > I think arm_smmu_init_strtab is quite low level to abstract FW configuration in it.
-> > For example in KVM[1] we'd re-use a big part of this driver and rely on similar
-> > low-level functions. But no strong opinion.
+> > I don't this the problem here, neither the reason for initialising the
+> > domain_head, can you please clarify the issue?
 > 
-> I'm happy to drop this patch, if no strong opinion I will leave it
+> I didn't notice it either. Eric found it:
 > 
-> > [1] https://lore.kernel.org/kvmarm/20230201125328.2186498-1-jean-philippe@linaro.org/
+> https://lore.kernel.org/linux-iommu/6fff20dd-46d5-4974-a4a5-fb4e7a59ce44@redhat.com/
 > 
-> I saw this but I didn't try to figure out too much what it is
-> doing.. It looks like a new iommu driver that re-uses alot of the
-> datastructures of SMMU but has a different HW facing API based on
-> hypercalls?
-
-Yes, this is an implementation for the SMMUv3 driver in EL2 in KVM that is needed
-for DMA isolation for Protected KVM(pKVM) as the host is untrusted in this case and
-can attack the hypervisor through DMA.
-
-This is similar to the kernel driver but with a bunch of tricks such as page table
-allocation, power management and more.
-
-Also we have some plans to extend it to KVM guests, (Initially I was considering
-KVM-VFIO device but now with the new iommufd stuff, it might fit in there)
-
-> It seems interesting, but my knee jerk reaction would be that a new
-> iommu driver proposal needs to implement the new iommu core APIs, not
-> the old stuff. IMHO, when this progresses past a RFC it needs to come
-> as a proper submission of just the iommu driver, in the normal way.
+> > > @@ -2560,19 +2560,20 @@ static void arm_smmu_disable_pasid(struct arm_smmu_master *master)
+> > >  
+> > >  static void arm_smmu_detach_dev(struct arm_smmu_master *master)
+> > >  {
+> > > +	struct iommu_domain *domain = iommu_get_domain_for_dev(master->dev);
+> > > +	struct arm_smmu_domain *smmu_domain;
+> > >  	unsigned long flags;
+> > > -	struct arm_smmu_domain *smmu_domain = master->domain;
 > 
-> I also wonder about the wisdom of sharing so much code. Code sharing
-> is not unconditionally good if it doesn't have a robust abstraction..
->
+> master->domain is NULL here which happens in cases where the current
+> RID domain is not a PAGING domain.
+> 
+> > > -	if (!smmu_domain)
+> > > +	if (!domain)
+> > >  		return;
+> 
+> Which used to early exit
+> 
+> > >  
+> > > +	smmu_domain = to_smmu_domain(domain);
+> > >  	arm_smmu_disable_ats(master, smmu_domain);
+> > >  
+> > >  	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> > > -	list_del(&master->domain_head);
+> > > +	list_del_init(&master->domain_head);
+> > >  	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+> 
+> But now would cause the list_del() to hit a non-inited list_head and
+> explode.
+> 
+> Instead we keep the list head init'd and the list_del is a NOP.
+> 
+> Tricky right??
+> 
+> I changed the comment like this:
+> 
+> The master->domain is subtly protecting the master->domain_head against
+> being unused as only PAGING domains will set master->domain and only
+> paging domains use the master->domain_head. To make it simple keep the
+> master->domain_head initialized so that the list_del() logic just does
+> nothing for non-PAGING domains.
+> 
+> OK?
 
-The idea is that as the hardware is common and most of the dt binding also,
-we shouldn’t really reinvent the wheel, so this series moves the common code
-for the page-table library to be shared with EL1/EL2 and for HW/FW probe and
-init to be shared between the kernel drivers and adds a lot of the infrastructure
-for IOMMUs in the hypervisor.
+Ahh, I see, as iommu_get_domain_for_dev() now returns a valid domain.
+Thanks for the explanation, that makes sense.
+
+Reviewed-by: Mostafa Saleh <smostafa@google.com>
 
 Thanks,
 Mostafa
