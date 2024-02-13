@@ -1,221 +1,265 @@
-Received: from out-170.mta1.migadu.com (out-170.mta1.migadu.com [95.215.58.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C570E63101
-	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 23:24:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADED563107
+	for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 23:28:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707866660; cv=none; b=qxK/W30XqGeVRvX1lr4u6P7ux1DhZZVkx1I/Rw53Tt2XyTpak9vQnZ1gtfa0zcDN39i9+jye+mrw5S3VVS3tBtM8dwr3QqG3ghO0bKCyyhpOmeajPGm1G0luYhkNnR0jJ9xl/6Zd2QV7+iCqcsYrsB0VUuKkoKL6Y3IlWm6mrM8=
+	t=1707866926; cv=none; b=DWDJI0+/KHy6ENWuaJK3kD1s8N6uuRCqss2F3HSaPVGudxYeTtEC+ZRHWfZ60H0t+dDeAip8ZTIireokJrh2e74U4CsRCTelicdGQz/SecRCE1/rLk/19xnj9pvO5MtjlTlBewiHNSbdjVPpH5oi3h2mhBJD7rNl8KTNF2nsH0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707866660; c=relaxed/simple;
-	bh=xIizX9hn9H7P4Qd1S3ByJZRil7O6yirntX5vI1pah/Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=heqXIG4KZzIdHN65rSEbD/wQvvfGW5bHt90V9bAfzmepWh6m0ioWIpCto/E0zoAnIVPejseXTa0Oj7dMjbOEUFjXaJexKP6LWrr2DD3anVZi1dYL4Ybg+8eu2y55+NP3dlQPhqfN3nVHLyV1r98giWQEbGs6rl4TVSzo8IXE5e8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=c32gpRAo; arc=none smtp.client-ip=95.215.58.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1707866926; c=relaxed/simple;
+	bh=Fh7ErxUCpzMchpW5XvBpyJH6+JOUDYjAM9H3p1A49z8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=YuDMrE0DLfEuvZoqXX/ntMPFn/mxWGVXYn6ZzLU8GpbGSWVUkf/PyXuN/MX/+6XKGCdK0sUr3iF0EYyASSLn6BJg1oqveZ7CiEE0OuLWWPbjmhqkVD8N9Z+U3h7zn0gRKxmmpRzd3j7OD0IpTdXrWxnbmImxIHE8XiWLHj0UQqQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=mGOdmVKD; arc=none smtp.client-ip=209.85.219.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="c32gpRAo"
-Date: Tue, 13 Feb 2024 18:24:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1707866654;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=IQNc5sF3dDkI4DLDAhoYo17ANIh5r48U4JW8o4GQNhc=;
-	b=c32gpRAodKvVWo/dAGE7p0OKZvQsg2a1GAjZJKaKoPfPgt/c0QgWj0DzjKFTBELehY1nCG
-	a4JOjQxa7unZ1UtEicdIDQHsS8YcmUoqe+A+4fh0TNMzc/i3PX4pCZ0c/DY3/q7x1FVmjP
-	BpCIJi0jKmMyPh6iHQyV213S+IzwS28=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: "Darrick J. Wong" <djwong@kernel.org>
-Cc: David Hildenbrand <david@redhat.com>, 
-	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, akpm@linux-foundation.org, 
-	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net, 
-	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com, 
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de, 
-	mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org, 
-	dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org, 
-	paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com, 
-	yuzhao@google.com, dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
-	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com, 
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
-	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
-	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, minchan@google.com, 
-	kaleshsingh@google.com, kernel-team@android.com, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-modules@vger.kernel.org, 
-	kasan-dev@googlegroups.com, cgroups@vger.kernel.org
-Subject: Re: [PATCH v3 00/35] Memory allocation profiling
-Message-ID: <vxsk7w7z57rgwqgreeq2j4xq5klxeorfhjfysu3re3i6bomh5z@36p2iqhzxjfd>
-References: <20240212213922.783301-1-surenb@google.com>
- <Zctfa2DvmlTYSfe8@tiehlicka>
- <CAJuCfpEsWfZnpL1vUB2C=cxRi_WxhxyvgGhUg7WdAxLEqy6oSw@mail.gmail.com>
- <9e14adec-2842-458d-8a58-af6a2d18d823@redhat.com>
- <2hphuyx2dnqsj3hnzyifp5yqn2hpgfjuhfu635dzgofr5mst27@4a5dixtcuxyi>
- <6a0f5d8b-9c67-43f6-b25e-2240171265be@redhat.com>
- <huysjw5jiyd7m7ouf6g5n2yptg7slxk3am457x2x4ecz277k4o@gjfy2lu7ntos>
- <20240213231115.GF6184@frogsfrogsfrogs>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="mGOdmVKD"
+Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-dc6d8bd618eso5081416276.3
+        for <iommu@lists.linux.dev>; Tue, 13 Feb 2024 15:28:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1707866922; x=1708471722; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Fh7ErxUCpzMchpW5XvBpyJH6+JOUDYjAM9H3p1A49z8=;
+        b=mGOdmVKDWjr8t8WE58eExZRjwxCeGgvYvaEUOUIBrEgd6M4/wot0wMZ+mQG4K98nJs
+         grelGPglT9QQ6fylFvi52ULs6+Fh457b6L05lNq3I4ejbsXHKmPfqh/cEBmY2fKuWmS+
+         Qce5f0LhiMde1AkG13Sv6/WV4jmBOnisZLPfy2feJy76mbudIOna6QvzXoOtxpPTb+/K
+         OcjogxIGsaFwDPDJoS26WDBQ83R7V2bJpOFwfoQOsQbAT08vXomzOMmUAlcfKH+299eG
+         Nd6lEheo4Hz5eJk6/0309z3qXJoRe0akH6poR0EYxBTt6nJZVoF8toxNc/8Xr3cNx8o+
+         UQtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707866922; x=1708471722;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Fh7ErxUCpzMchpW5XvBpyJH6+JOUDYjAM9H3p1A49z8=;
+        b=m1bf+LgvXG9YaGJT8bG8Azs8xPmLsgap6x/YsaXpNREl0WPO74Sbne9KKd2a445QJ7
+         rXZDskukKAbpGjQC6wJWYD3fw2E4Fc+6ZLobIzwWUH3k1PXhWGt3W6iftt5TjmN9232F
+         0El419nz1XzsYC/GvqM6IH6Yl/CnCJ9aXyGhHBYbwqSyH6sqG/FtS1/UufWrVpgZxzQn
+         Xo4YciUtBygC4SfUFdrX75CNd5GYr7JwUQc/fU2TTt60tMRaZys4IBCybbHXrJUPyTrw
+         MNA/0pio7GKGEBvTNFFnkFVj+6c1knkzNUuFDPRe15NZ7Rci1R5RSRNK94P+vJCwOkli
+         6ohQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU7y6ttOdqWPKFbzzddhmh0iPiKw9ipu54erTLenVnIE9hVJSW2UTB/cq96lnrwOo0AvSNHibV2GpV4CZUeY4MWQSTLT3o=
+X-Gm-Message-State: AOJu0YykWY9T8W2fF+qC5dkhw4nHyQQJFQnJ7DCsU0HmhRBGodRD3NHT
+	eSisfUQ284Jbzev1akHqzTHix7y+rD8deUEb55/R4C4hTbhd5JEOkn/2nItkQUbhbPyoP8A6h1U
+	Qq0ycp5z0aOyH0welUUSKj+Nx6c1+HDXns9kU
+X-Google-Smtp-Source: AGHT+IH1cx91N1JNhTYTGrGxO4dPJb5P83emWz32j1FEf6NDT97WWgdnPVQTmEze6DwfHHV7j4kW4vXwyGP73AwNRVA=
+X-Received: by 2002:a25:84d2:0:b0:dcd:6a02:c111 with SMTP id
+ x18-20020a2584d2000000b00dcd6a02c111mr818389ybm.11.1707866922283; Tue, 13 Feb
+ 2024 15:28:42 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240213231115.GF6184@frogsfrogsfrogs>
-X-Migadu-Flow: FLOW_OUT
+References: <Zctfa2DvmlTYSfe8@tiehlicka> <CAJuCfpEsWfZnpL1vUB2C=cxRi_WxhxyvgGhUg7WdAxLEqy6oSw@mail.gmail.com>
+ <9e14adec-2842-458d-8a58-af6a2d18d823@redhat.com> <2hphuyx2dnqsj3hnzyifp5yqn2hpgfjuhfu635dzgofr5mst27@4a5dixtcuxyi>
+ <6a0f5d8b-9c67-43f6-b25e-2240171265be@redhat.com> <CAJuCfpEtOhzL65eMDk2W5SchcquN9hMCcbfD50a-FgtPgxh4Fw@mail.gmail.com>
+ <adbb77ee-1662-4d24-bcbf-d74c29bc5083@redhat.com> <r6cmbcmalryodbnlkmuj2fjnausbcysmolikjguqvdwkngeztq@45lbvxjavwb3>
+ <CAJuCfpF4g1jeEwHVHjQWwi5kqS-3UqjMt7GnG0Kdz5VJGyhK3Q@mail.gmail.com>
+ <a9b0440b-844e-4e45-a546-315d53322aad@redhat.com> <xbehqbtjp5wi4z2ppzrbmlj6vfazd2w5flz3tgjbo37tlisexa@caq633gciggt>
+ <c842347d-5794-4925-9b95-e9966795b7e1@redhat.com>
+In-Reply-To: <c842347d-5794-4925-9b95-e9966795b7e1@redhat.com>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Tue, 13 Feb 2024 15:28:28 -0800
+Message-ID: <CAJuCfpFB-WimQoC1s-ZoiAx+t31KRu1Hd9HgH3JTMssnskdvNw@mail.gmail.com>
+Subject: Re: [PATCH v3 00/35] Memory allocation profiling
+To: David Hildenbrand <david@redhat.com>
+Cc: Kent Overstreet <kent.overstreet@linux.dev>, Michal Hocko <mhocko@suse.com>, 
+	akpm@linux-foundation.org, vbabka@suse.cz, hannes@cmpxchg.org, 
+	roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net, 
+	willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net, 
+	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com, 
+	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de, 
+	mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org, 
+	peterx@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
+	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
+	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Feb 13, 2024 at 03:11:15PM -0800, Darrick J. Wong wrote:
-> On Tue, Feb 13, 2024 at 05:29:03PM -0500, Kent Overstreet wrote:
-> > On Tue, Feb 13, 2024 at 11:17:32PM +0100, David Hildenbrand wrote:
-> > > On 13.02.24 23:09, Kent Overstreet wrote:
-> > > > On Tue, Feb 13, 2024 at 11:04:58PM +0100, David Hildenbrand wrote:
-> > > > > On 13.02.24 22:58, Suren Baghdasaryan wrote:
-> > > > > > On Tue, Feb 13, 2024 at 4:24 AM Michal Hocko <mhocko@suse.com> wrote:
-> > > > > > > 
-> > > > > > > On Mon 12-02-24 13:38:46, Suren Baghdasaryan wrote:
-> > > > > > > [...]
-> > > > > > > > We're aiming to get this in the next merge window, for 6.9. The feedback
-> > > > > > > > we've gotten has been that even out of tree this patchset has already
-> > > > > > > > been useful, and there's a significant amount of other work gated on the
-> > > > > > > > code tagging functionality included in this patchset [2].
-> > > > > > > 
-> > > > > > > I suspect it will not come as a surprise that I really dislike the
-> > > > > > > implementation proposed here. I will not repeat my arguments, I have
-> > > > > > > done so on several occasions already.
-> > > > > > > 
-> > > > > > > Anyway, I didn't go as far as to nak it even though I _strongly_ believe
-> > > > > > > this debugging feature will add a maintenance overhead for a very long
-> > > > > > > time. I can live with all the downsides of the proposed implementation
-> > > > > > > _as long as_ there is a wider agreement from the MM community as this is
-> > > > > > > where the maintenance cost will be payed. So far I have not seen (m)any
-> > > > > > > acks by MM developers so aiming into the next merge window is more than
-> > > > > > > little rushed.
-> > > > > >
-> > > > > > We tried other previously proposed approaches and all have their
-> > > > > > downsides without making maintenance much easier. Your position is
-> > > > > > understandable and I think it's fair. Let's see if others see more
-> > > > > > benefit than cost here.
-> > > > > 
-> > > > > Would it make sense to discuss that at LSF/MM once again, especially
-> > > > > covering why proposed alternatives did not work out? LSF/MM is not "too far"
-> > > > > away (May).
-> 
-> You want to stall this effort for *three months* to schedule a meeting?
-> 
-> I would love to have better profiling of memory allocations inside XFS
-> so that we can answer questions like "What's going on with these
-> allocation stalls?" or "What memory is getting used, and where?" more
-> quickly than we can now.
-> 
-> Right now I get to stare at tracepoints and printk crap until my eyes
-> bleed, and maybe dchinner comes to my rescue and figures out what's
-> going on sooner than I do.  More often we just never figure it out
-> because only the customer can reproduce the problem, the reams of data
-> produced by ftrace is unmanageable, and BPF isn't always available.
-> 
-> I'm not thrilled by the large increase in macro crap in the allocation
-> paths, but I don't know of a better way to instrument things.  Our
-> attempts to use _RET_IP in XFS to instrument its code paths have never
-> worked quite right w.r.t. inlined functions and whatnot.
-> 
-> > > > > I recall that the last LSF/MM session on this topic was a bit unfortunate
-> > > > > (IMHO not as productive as it could have been). Maybe we can finally reach a
-> > > > > consensus on this.
-> 
-> From my outsider's perspective, nine months have gone by since the last
-> LSF.  Who has come up with a cleaner/better/faster way to do what Suren
-> and Kent have done?  Were those code changes integrated into this
-> patchset?  Or why not?
-> 
-> Most of what I saw in 2023 involved compiler changes (great; now I have
-> to wait until RHEL 11/Debian 14 to use it) and/or still utilize fugly
-> macros.
-> 
-> Recalling all the way back to suggestions made in 2022, who wrote the
-> prototype for doing this via ftrace?  Or BPF?  How well did that go for
-> counting allocation events and the like?  I saw Tejun saying something
-> about how they use BPF aggressively inside Meta, but that was about it.
-> 
-> Were any of those solutions significantly better than what's in front of
-> us here?
-> 
-> I get it, a giant patch forcing everyone to know the difference between
-> alloc_foo and alloc_foo_noperf offends my (yours?) stylistic
-> sensibilities.  On the other side, making analysis easier during
-> customer escalations means we kernel people get data, answers, and
-> solutions sooner instead of watching all our time get eaten up on L4
-> support and backporting hell.
-> 
-> > > > I'd rather not delay for more bikeshedding. Before agreeing to LSF I'd
-> > > > need to see a serious proposl - what we had at the last LSF was people
-> > > > jumping in with half baked alternative proposals that very much hadn't
-> > > > been thought through, and I see no need to repeat that.
-> > > > 
-> > > > Like I mentioned, there's other work gated on this patchset; if people
-> > > > want to hold this up for more discussion they better be putting forth
-> > > > something to discuss.
-> > > 
-> > > I'm thinking of ways on how to achieve Michal's request: "as long as there
-> > > is a wider agreement from the MM community". If we can achieve that without
-> > > LSF, great! (a bi-weekly MM meeting might also be an option)
-> > 
-> > A meeting wouldn't be out of the question, _if_ there is an agenda, but:
-> > 
-> > What's that coffeee mug say? I just survived another meeting that
-> > could've been an email?
-> 
-> I congratulate you on your memory of my kitchen mug.  Yes, that's what
-> it says.
-> 
-> > What exactly is the outcome we're looking for?
-> > 
-> > Is there info that people are looking for? I think we summed things up
-> > pretty well in the cover letter; if there are specifics that people
-> > want to discuss, that's why we emailed the series out.
-> > 
-> > There's people in this thread who've used this patchset in production
-> > and diagnosed real issues (gigabytes of memory gone missing, I heard the
-> > other day); I'm personally looking for them to chime in on this thread
-> > (Johannes, Pasha).
-> > 
-> > If it's just grumbling about "maintenance overhead" we need to get past
-> > - well, people are going to have to accept that we can't deliver
-> > features without writing code, and I'm confident that the hooking in
-> > particular is about as clean as it's going to get, _regardless_ of
-> > toolchain support; and moreover it addresses what's been historically a
-> > pretty gaping hole in our ability to profile and understand the code we
-> > write.
-> 
-> Are you and Suren willing to pay whatever maintenance overhead there is?
+On Tue, Feb 13, 2024 at 3:22=E2=80=AFPM David Hildenbrand <david@redhat.com=
+> wrote:
+>
+> On 14.02.24 00:12, Kent Overstreet wrote:
+> > On Wed, Feb 14, 2024 at 12:02:30AM +0100, David Hildenbrand wrote:
+> >> On 13.02.24 23:59, Suren Baghdasaryan wrote:
+> >>> On Tue, Feb 13, 2024 at 2:50=E2=80=AFPM Kent Overstreet
+> >>> <kent.overstreet@linux.dev> wrote:
+> >>>>
+> >>>> On Tue, Feb 13, 2024 at 11:48:41PM +0100, David Hildenbrand wrote:
+> >>>>> On 13.02.24 23:30, Suren Baghdasaryan wrote:
+> >>>>>> On Tue, Feb 13, 2024 at 2:17=E2=80=AFPM David Hildenbrand <david@r=
+edhat.com> wrote:
+> >>>>>>>
+> >>>>>>> On 13.02.24 23:09, Kent Overstreet wrote:
+> >>>>>>>> On Tue, Feb 13, 2024 at 11:04:58PM +0100, David Hildenbrand wrot=
+e:
+> >>>>>>>>> On 13.02.24 22:58, Suren Baghdasaryan wrote:
+> >>>>>>>>>> On Tue, Feb 13, 2024 at 4:24=E2=80=AFAM Michal Hocko <mhocko@s=
+use.com> wrote:
+> >>>>>>>>>>>
+> >>>>>>>>>>> On Mon 12-02-24 13:38:46, Suren Baghdasaryan wrote:
+> >>>>>>>>>>> [...]
+> >>>>>>>>>>>> We're aiming to get this in the next merge window, for 6.9. =
+The feedback
+> >>>>>>>>>>>> we've gotten has been that even out of tree this patchset ha=
+s already
+> >>>>>>>>>>>> been useful, and there's a significant amount of other work =
+gated on the
+> >>>>>>>>>>>> code tagging functionality included in this patchset [2].
+> >>>>>>>>>>>
+> >>>>>>>>>>> I suspect it will not come as a surprise that I really dislik=
+e the
+> >>>>>>>>>>> implementation proposed here. I will not repeat my arguments,=
+ I have
+> >>>>>>>>>>> done so on several occasions already.
+> >>>>>>>>>>>
+> >>>>>>>>>>> Anyway, I didn't go as far as to nak it even though I _strong=
+ly_ believe
+> >>>>>>>>>>> this debugging feature will add a maintenance overhead for a =
+very long
+> >>>>>>>>>>> time. I can live with all the downsides of the proposed imple=
+mentation
+> >>>>>>>>>>> _as long as_ there is a wider agreement from the MM community=
+ as this is
+> >>>>>>>>>>> where the maintenance cost will be payed. So far I have not s=
+een (m)any
+> >>>>>>>>>>> acks by MM developers so aiming into the next merge window is=
+ more than
+> >>>>>>>>>>> little rushed.
+> >>>>>>>>>>
+> >>>>>>>>>> We tried other previously proposed approaches and all have the=
+ir
+> >>>>>>>>>> downsides without making maintenance much easier. Your positio=
+n is
+> >>>>>>>>>> understandable and I think it's fair. Let's see if others see =
+more
+> >>>>>>>>>> benefit than cost here.
+> >>>>>>>>>
+> >>>>>>>>> Would it make sense to discuss that at LSF/MM once again, espec=
+ially
+> >>>>>>>>> covering why proposed alternatives did not work out? LSF/MM is =
+not "too far"
+> >>>>>>>>> away (May).
+> >>>>>>>>>
+> >>>>>>>>> I recall that the last LSF/MM session on this topic was a bit u=
+nfortunate
+> >>>>>>>>> (IMHO not as productive as it could have been). Maybe we can fi=
+nally reach a
+> >>>>>>>>> consensus on this.
+> >>>>>>>>
+> >>>>>>>> I'd rather not delay for more bikeshedding. Before agreeing to L=
+SF I'd
+> >>>>>>>> need to see a serious proposl - what we had at the last LSF was =
+people
+> >>>>>>>> jumping in with half baked alternative proposals that very much =
+hadn't
+> >>>>>>>> been thought through, and I see no need to repeat that.
+> >>>>>>>>
+> >>>>>>>> Like I mentioned, there's other work gated on this patchset; if =
+people
+> >>>>>>>> want to hold this up for more discussion they better be putting =
+forth
+> >>>>>>>> something to discuss.
+> >>>>>>>
+> >>>>>>> I'm thinking of ways on how to achieve Michal's request: "as long=
+ as
+> >>>>>>> there is a wider agreement from the MM community". If we can achi=
+eve
+> >>>>>>> that without LSF, great! (a bi-weekly MM meeting might also be an=
+ option)
+> >>>>>>
+> >>>>>> There will be a maintenance burden even with the cleanest proposed
+> >>>>>> approach.
+> >>>>>
+> >>>>> Yes.
+> >>>>>
+> >>>>>> We worked hard to make the patchset as clean as possible and
+> >>>>>> if benefits still don't outweigh the maintenance cost then we shou=
+ld
+> >>>>>> probably stop trying.
+> >>>>>
+> >>>>> Indeed.
+> >>>>>
+> >>>>>> At LSF/MM I would rather discuss functonal
+> >>>>>> issues/requirements/improvements than alternative approaches to
+> >>>>>> instrument allocators.
+> >>>>>> I'm happy to arrange a separate meeting with MM folks if that woul=
+d
+> >>>>>> help to progress on the cost/benefit decision.
+> >>>>> Note that I am only proposing ways forward.
+> >>>>>
+> >>>>> If you think you can easily achieve what Michal requested without a=
+ll that,
+> >>>>> good.
+> >>>>
+> >>>> He requested something?
+> >>>
+> >>> Yes, a cleaner instrumentation. Unfortunately the cleanest one is not
+> >>> possible until the compiler feature is developed and deployed. And it
+> >>> still would require changes to the headers, so don't think it's worth
+> >>> delaying the feature for years.
+> >>>
+> >>
+> >> I was talking about this: "I can live with all the downsides of the pr=
+oposed
+> >> implementationas long as there is a wider agreement from the MM commun=
+ity as
+> >> this is where the maintenance cost will be payed. So far I have not se=
+en
+> >> (m)any acks by MM developers".
+> >>
+> >> I certainly cannot be motivated at this point to review and ack this,
+> >> unfortunately too much negative energy around here.
+> >
+> > David, this kind of reaction is exactly why I was telling Andrew I was
+> > going to submit this as a direct pull request to Linus.
+> >
+> > This is an important feature; if we can't stay focused ot the technical
+> > and get it done that's what I'll do.
+>
+> Kent, I started this with "Would it make sense" in an attempt to help
+> Suren and you to finally make progress with this, one way or the other.
+> I know that there were ways in the past to get the MM community to agree
+> on such things.
+>
+> I tried to be helpful, finding ways *not having to* bypass the MM
+> community to get MM stuff merged.
+>
+> The reply I got is mostly negative energy.
+>
+> So you don't need my help here, understood.
+>
+> But I will fight against any attempts to bypass the MM community.
 
-I'm still wondering what this supposed "maintenance overhead" is going
-to be...
+Well, I'm definitely not trying to bypass the MM community, that's why
+this patchset is posted. Not sure why people can't voice their opinion
+on the benefit/cost balance of the patchset over the email... But if a
+meeting would be more productive I'm happy to set it up.
 
-As I use this patch series I occasionally notice places where a bunch of
-memory is being accounted to one line of code, and it would better be
-accounted to a caller - but then it's just a couple lines of code to fix
-that. You switch that callsite to the _noprof() version of whatever
-allocation it's doing, then add an alloc_hooks() wrapper at the place
-you do want it accounted.
-
-That doesn't really feel like overhead to me, just the normal tweaking
-your tools to get the most out of them.
-
-I will continue to do that for the code I'm looking at, yes.
-
-If other people are doing that too, it'll be because they're also using
-memory allocation profiling and finding it valuable.
-
-I did notice earlier that we're still lacking documentation in the
-Documentation/ directory; the workflow for "how you shift accounting to
-the right spot" is something that should go in there.
+>
+> --
+> Cheers,
+>
+> David / dhildenb
+>
