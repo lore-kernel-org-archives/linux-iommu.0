@@ -1,84 +1,77 @@
-Received: from wfhigh8-smtp.messagingengine.com (wfhigh8-smtp.messagingengine.com [64.147.123.159])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 014DE5A7AB;
-	Wed, 14 Feb 2024 14:49:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=64.147.123.159
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45D635B1F3;
+	Wed, 14 Feb 2024 15:00:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707922201; cv=none; b=AYV3UYURgQdPCqiCx77kFtpatbZCoUvJljxiNDX5P5MOURe/svrtRsCRUZJmBJK9RoB2OF0xXfq+nzxDOS6m51DTUJpa0agbGHOQsxXvaSHF3wjVdwV5N1XjfbydoHFHUrr54Oexl5DFAH+mbrnMY/HQfen9bw1ajod23+F1dSc=
+	t=1707922842; cv=none; b=swLvXy+KY4ZMDzf7Qher6/BH2nQcWQ3ZYy0GXu4JFetNPzdr9WOVuf3Gn1m5AqpVa5fljAgzbMqmT+6j10OiTZ1JgKiOaneT19VhchStogNVbRixTLrH952cWQSEx3y+N2aJd1P1PDwot/zivv36475pyHz5W1rDJK3eAlx0bzs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707922201; c=relaxed/simple;
-	bh=B1yFHfeHqpqZavgAJ56fxZmHRfqRxaiP53AMO42YAk8=;
+	s=arc-20240116; t=1707922842; c=relaxed/simple;
+	bh=J/8B9sj/gh69TjG907GBC0ybnivmqovG5E80SUw+iQs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a0qOCV1FTndOYCCD5gDYv2YGD9WrHImAFeJMhubnsbSDcM9zbb8IH1ZgUDrctv5rWFpjolRXhg7AO9ljcpTxwp48mFJDZ1JJPlB8AslQ89FJ/uFYxsnoftlOZkZ/rnmx2SsZxphbtq5Cqg7KTLa3VsAEb4117s4WTnWcg8jmjLU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=shutemov.name; spf=pass smtp.mailfrom=shutemov.name; dkim=pass (2048-bit key) header.d=shutemov.name header.i=@shutemov.name header.b=gyQBbXH2; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=TWECDkEP; arc=none smtp.client-ip=64.147.123.159
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=shutemov.name
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shutemov.name
+	 Content-Type:Content-Disposition:In-Reply-To; b=i+pgrpdw985tqxBW6M7jTcmkEiF0umnUXBXe9DyGWplXNnq5IISSWpkUtz9euNA7A0tSXMFXa0M6+lyd36+XfPx+UUVnQB5tul+lZuLSLAobwzDWBaSGA71XqXe/jNMPyE5MIHjNqkWnyRe6BXA9JDpAx9CGU14YAVCgTIMgwJw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=jfoJ/wmk; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=shutemov.name header.i=@shutemov.name header.b="gyQBbXH2";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="TWECDkEP"
-Received: from compute7.internal (compute7.nyi.internal [10.202.2.48])
-	by mailfhigh.west.internal (Postfix) with ESMTP id 5ECD2180007C;
-	Wed, 14 Feb 2024 09:49:56 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute7.internal (MEProxy); Wed, 14 Feb 2024 09:49:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shutemov.name;
-	 h=cc:cc:content-type:content-type:date:date:from:from
-	:in-reply-to:in-reply-to:message-id:mime-version:references
-	:reply-to:subject:subject:to:to; s=fm2; t=1707922195; x=
-	1708008595; bh=epVZw1x9FVt2elh8jYLSX6PiqT6PpjnxqNeFSeq1Zwo=; b=g
-	yQBbXH2Nd0+K8dm+BcBfX5h1iijUIOSpznBIPpqcSiWFGBi4uy+ekQkVEtz4utnl
-	RC8WyKwJOIUYe5ltvS5CAV+nY0oL7R6qmfPLy89cXJDUfEcV6QuVgXY6HOBcoTPE
-	IQuz8RItCSO8eg6jjCJnd8bgwu7h45n25lgd7Z3a0PHioW7afFmpMQdlr+rD2xEz
-	MPUyK8Y/nzYX7ovkxetOJuRLvdBfO5ImGrS4gFLl08+oXTfEk6Rlm2GCLHS5ezJR
-	B8LCU0r4c2Q+Kpolz6HDeASuRuILF687s2ny91S+eXAr10vzUppyIYhZ9TaUXxIu
-	KUhOEnig/MnY4J5ySkMcg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm3; t=1707922195; x=1708008595; bh=epVZw1x9FVt2elh8jYLSX6PiqT6P
-	pjnxqNeFSeq1Zwo=; b=TWECDkEPyM+sYaRC5S/kgrLIwNlmMN5vk78TViGP+uG9
-	sV19jQS/pZDH4VVyghDBnXnQeLbpl1oHNGtkc3b/KaF9+eOyZw8LVVBdHg8HarEe
-	fxc9m704DTG9dzstJOSIgSC0v8gBAAUYNpTIDGOqvmxJLzJDtxyd8MhUVA84+6Dq
-	VUJNWPDOJSCI7cUVBgvFHDPYb5A127XlJLexkbUWAddoJ4Z1KTdrogLR55ErvDia
-	+rk09aBQcQMq815rtwAMzyqDPMcaU99rsptGwady+fZc67+o5+OF2IBcl9iXNqnL
-	fydkw+UZqln/W0ihd9dwmd65wNdWU1wpL1lZbAJyeA==
-X-ME-Sender: <xms:E9PMZX54oyMKaAaJ_yd4U6z8deSTfX2VjxyII9T6oyFqWDT-VmqR1Q>
-    <xme:E9PMZc6d-aqCG-k5tlYpGO8Jj8vd_mU482uidZ4ns0uLHBAeHSO9zjPpeSX1rSUsL
-    xMCWALJfyqh_m6mzrs>
-X-ME-Received: <xmr:E9PMZeecVyW9Weif_91PgXCD17To5gU9JRvdVVTHnPpNba-1Uy8mGg6SeMpgZPtUS-opmQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrudejgdejtdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvvefukfhfgggtuggjsehttdfstddttddvnecuhfhrohhmpedfmfhirhhi
-    lhhlucetrdcuufhhuhhtvghmohhvfdcuoehkihhrihhllhesshhhuhhtvghmohhvrdhnrg
-    hmvgeqnecuggftrfgrthhtvghrnhepffdvveeuteduhffhffevlefhteefveevkeelveej
-    udduvedvuddvleetudevhfeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
-    hmrghilhhfrhhomhepkhhirhhilhhlsehshhhuthgvmhhovhdrnhgrmhgv
-X-ME-Proxy: <xmx:E9PMZYLEHNnCXh7Lx4P7KqbQWT0tTqd8hEYZyFHflgl86FQLOcl8Aw>
-    <xmx:E9PMZbI76GkVpmnx_IE0boGvmj1BCkv5F__Yoni-YXjxJp7Z6YFz8g>
-    <xmx:E9PMZRzzgaJxAaeZGGZvPtYcKP1GTtrA2EsR8rh_Bdipdm5GmLHtdg>
-    <xmx:E9PMZYj5w7fKoEtOhFuSYQhLi5HWBZVcSmJyPzQtJmPhHvhCrKLFGZJS86M>
-Feedback-ID: ie3994620:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 14 Feb 2024 09:49:46 -0500 (EST)
-Date: Wed, 14 Feb 2024 16:49:43 +0200
-From: "Kirill A. Shutemov" <kirill@shutemov.name>
-To: Vishal Annapurve <vannapurve@google.com>
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org, pbonzini@redhat.com, 
-	rientjes@google.com, bgardon@google.com, seanjc@google.com, erdemaktas@google.com, 
-	ackerleytng@google.com, jxgao@google.com, sagis@google.com, oupton@google.com, 
-	peterx@redhat.com, vkuznets@redhat.com, dmatlack@google.com, pgonda@google.com, 
-	michael.roth@amd.com, thomas.lendacky@amd.com, dave.hansen@linux.intel.com, 
-	linux-coco@lists.linux.dev, chao.p.peng@linux.intel.com, isaku.yamahata@gmail.com, 
-	andrew.jones@linux.dev, corbet@lwn.net, hch@lst.de, m.szyprowski@samsung.com, bp@suse.de, 
-	rostedt@goodmis.org, iommu@lists.linux.dev
-Subject: Re: [RFC V1 1/5] swiotlb: Support allocating DMA memory from SWIOTLB
-Message-ID: <etvf2mon464whscbxqktdd7bputnqmmwmoeg7ssixsk4kljfek@4wngbgzbbmck>
-References: <20240112055251.36101-1-vannapurve@google.com>
- <20240112055251.36101-2-vannapurve@google.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jfoJ/wmk"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+	Content-Transfer-Encoding:Content-ID:Content-Description;
+	bh=N9oS2vBFsBe7fjNywvimN9eVDsY+Q1p8TnsuDCbqyL8=; b=jfoJ/wmkTGQGza6aS6As/LoHT2
+	7f9nxqD9DDcP98YSEsCWUa2KUHKv3yOMXShjBerqUVejBrYgV37I0QICjylxkLAH01QVhY7zARA99
+	4cl5s8aYSnpH9z5inXWSTSNKWmmn9IJe3FSG3ZYYFRXX3lh0u0p+v8DKBDUFgcmrOVRSGaYZRCpVG
+	dswefOzAR6MusqozarzFQUAhf9oOgDNXGT+36hpSGg/Z2EcMWzrPYznsnnyW204WH1S7lTL0sGgVN
+	r5hkA+WxnCp1BeMai4eWKbYBadnRcJrtDVtupo9eMxQVeW09i9IRSU1xAJnexHy0C9unE+tOPNqUd
+	EaHb7PIg==;
+Received: from willy by casper.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1raGjw-0000000Gs4u-1uPd;
+	Wed, 14 Feb 2024 15:00:00 +0000
+Date: Wed, 14 Feb 2024 15:00:00 +0000
+From: Matthew Wilcox <willy@infradead.org>
+To: Kent Overstreet <kent.overstreet@linux.dev>
+Cc: Suren Baghdasaryan <surenb@google.com>,
+	David Hildenbrand <david@redhat.com>,
+	Michal Hocko <mhocko@suse.com>, akpm@linux-foundation.org,
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+	mgorman@suse.de, dave@stgolabs.net, liam.howlett@oracle.com,
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org,
+	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org,
+	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 00/35] Memory allocation profiling
+Message-ID: <ZczVcOXtmA2C3XX8@casper.infradead.org>
+References: <Zctfa2DvmlTYSfe8@tiehlicka>
+ <CAJuCfpEsWfZnpL1vUB2C=cxRi_WxhxyvgGhUg7WdAxLEqy6oSw@mail.gmail.com>
+ <9e14adec-2842-458d-8a58-af6a2d18d823@redhat.com>
+ <2hphuyx2dnqsj3hnzyifp5yqn2hpgfjuhfu635dzgofr5mst27@4a5dixtcuxyi>
+ <6a0f5d8b-9c67-43f6-b25e-2240171265be@redhat.com>
+ <CAJuCfpEtOhzL65eMDk2W5SchcquN9hMCcbfD50a-FgtPgxh4Fw@mail.gmail.com>
+ <adbb77ee-1662-4d24-bcbf-d74c29bc5083@redhat.com>
+ <r6cmbcmalryodbnlkmuj2fjnausbcysmolikjguqvdwkngeztq@45lbvxjavwb3>
+ <CAJuCfpF4g1jeEwHVHjQWwi5kqS-3UqjMt7GnG0Kdz5VJGyhK3Q@mail.gmail.com>
+ <ea5vqiv5rt5cdbrlrdep5flej2pysqbfvxau4cjjbho64652um@7rz23kesqdup>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -87,25 +80,33 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240112055251.36101-2-vannapurve@google.com>
+In-Reply-To: <ea5vqiv5rt5cdbrlrdep5flej2pysqbfvxau4cjjbho64652um@7rz23kesqdup>
 
-On Fri, Jan 12, 2024 at 05:52:47AM +0000, Vishal Annapurve wrote:
-> Modify SWIOTLB framework to allocate DMA memory always from SWIOTLB.
+On Tue, Feb 13, 2024 at 06:08:45PM -0500, Kent Overstreet wrote:
+> This is what instrumenting an allocation function looks like:
 > 
-> CVMs use SWIOTLB buffers for bouncing memory when using dma_map_* APIs
-> to setup memory for IO operations. SWIOTLB buffers are marked as shared
-> once during early boot.
+> #define krealloc_array(...)                     alloc_hooks(krealloc_array_noprof(__VA_ARGS__))
 > 
-> Buffers allocated using dma_alloc_* APIs are allocated from kernel memory
-> and then converted to shared during each API invocation. This patch ensures
-> that such buffers are also allocated from already shared SWIOTLB
-> regions. This allows enforcing alignment requirements on regions marked
-> as shared.
+> IOW, we have to:
+>  - rename krealloc_array to krealloc_array_noprof
+>  - replace krealloc_array with a one wrapper macro call
+> 
+> Is this really all we're getting worked up over?
+> 
+> The renaming we need regardless, because the thing that makes this
+> approach efficient enough to run in production is that we account at
+> _one_ point in the callstack, we don't save entire backtraces.
 
-But does it work in practice? 
+I'm probably going to regret getting involved in this thread, but since
+Suren already decided to put me on the cc ...
 
-Some devices (like GPUs) require a lot of DMA memory. So with this approach
-we would need to have huge SWIOTLB buffer that is unused in most VMs.
+There might be a way to do it without renaming.  We have a bit of the
+linker script called SCHED_TEXT which lets us implement
+in_sched_functions().  ie we could have the equivalent of
 
--- 
-  Kiryl Shutsemau / Kirill A. Shutemov
+include/linux/sched/debug.h:#define __sched             __section(".sched.text")
+
+perhaps #define __memalloc __section(".memalloc.text")
+which would do all the necessary magic to know where the backtrace
+should stop.
+
