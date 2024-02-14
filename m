@@ -1,272 +1,183 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A892613F01A
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 21:43:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADBA31419A2
+	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 22:22:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707947029; cv=none; b=sZIsbzjtEsGqVdsp1d/HHO/tGOSsHUTMfIjN6UA+BwC73/m5wtljTg/Xus/BCebRvEg4/cvGCeXyK7043Vy7D6EjHMRriFFGBtu0Go0bx+PAtU7gEeLo4TyAsD8jZjJGFYn/RA7x0FUTkMVMYjoOqUyNkkcgDh3m4sKbq2ZvVSo=
+	t=1707949361; cv=none; b=rNrTlk8tbVhRfjaEhVTnP1sRmqathWpRtuWUS+Hck03JZm8qsuVU/dRjlq1KjphGZ+zfTynxz+0lLuVWmz6gbsTnC97aTBT2o0nvQ/0apoo7GiPnXP9wVgkS046ba9tWm7KZAb5fStB5eARSK8TGjHFKc4rJi2QhpBVOx47/5Ww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707947029; c=relaxed/simple;
-	bh=jzDKArta05/SueeyHjcOmqtwh2NVrtwFbWx9We1YttA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jeP2AVxOmlvodVWGUPUvPQzU+CHKsi8UM3Bm7tWAV0UJHfn16aURUNLI4qqifRvy7exfG6GB1d0XuCquXwWBUkF1K2xg7mTQaBgeXehKSLEnB7qYQprt2YwNo1nXzeIIrF5Ca4ioj6W5XJT6ZKx379szf8xpSqi1uFEee7UWrTQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=yZ91kgRc; arc=none smtp.client-ip=209.85.218.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1707949361; c=relaxed/simple;
+	bh=Tjfak4zeHO2RhUSUhpoioPVs+jARNcl60hmLZOIqIDM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=J5IvBiG6Es2CkJtOJcFs2pPLVkbODcnMRSisEHoSsYf3JQZLuOfLJa3IY5U8vtxbyC4mDCA3veRTo7Xfnc/jgtWLa177umjYajqWuX4JJBhAg+MQFnJwEEW9J1iM0vUAf9jOK0VF4xaW8DPYApsa0ltH+U26UpFAwsTHuDa+PQQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com; spf=pass smtp.mailfrom=fromorbit.com; dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b=KwlJlw0/; arc=none smtp.client-ip=209.85.210.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fromorbit.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fromorbit.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="yZ91kgRc"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a2f79e79f0cso21051766b.2
-        for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 13:43:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=fromorbit-com.20230601.gappssmtp.com header.i=@fromorbit-com.20230601.gappssmtp.com header.b="KwlJlw0/"
+Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-6e10ac45684so218881b3a.3
+        for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 14:22:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707947026; x=1708551826; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=FH2C7vn8hDWw4rS59jrNqZ5mvcTJOw6OI/RhdHm4JoE=;
-        b=yZ91kgRcbXa4PbF5dGfF4pS1FxCFWSlEC7stS/7yr5KYQ1jMUbCzNZQY406YMV27D1
-         smBMogussKQId3j74y6F0pZoeyvWUV+zViPI3fGFupfqnWyB9SF75Zmvf6a+U7LGaAAv
-         THhqAmHJ4ewHrN6wIpvl5Kmn6985546Cf2t3FXdT1kylcJdnsH1NYSHtXLfjo2CKZoN5
-         xTyzkIQ2q3+dEAfW8NlmqPfgh0KhKvHRYq5J7vFcOnOLGdnE5k+ZC9XmdsH7PW8dZrEb
-         aE7qfjg6BNiypVL3BOqLf5gmj8UUm0awudBIccbbSFgkbB0tkWzVqVjNjc7rGrQ8YnGY
-         wumg==
+        d=fromorbit-com.20230601.gappssmtp.com; s=20230601; t=1707949358; x=1708554158; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=ln+OOvGmpFuiRMz6w7NK4oosvSzfGSRKkgDvCaci/QI=;
+        b=KwlJlw0/4XEFu+MfcL7CJcGXNlhi/9FHsnwplWZ8Fg7o8T5swplXwlvLQEec9bNWZl
+         NRF+u4qZoYqP6833gFhDWUYkA086l0Mp0toN4dJJpdxJiaBp45xKGPfKtkELpNpagXNq
+         OAhsbZwTunabG0zIIz2QE4I8zagE4ZjQUh8VPGTO6x7V4xElyyZp3OzWIavOQD1yh7fS
+         cowNWYm83SlNN+fOMswDqIMqah/ch4m1ZdQuXvWFstgz2MCFuFrg70lodo7VgoUAhXIX
+         eMZgkxHHeXW2OwNwUoBBls0TeFlqaKJzQSM/c7DvUQMxG2rTi0c65C7qklIiLpwnDvap
+         ZUrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707947026; x=1708551826;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=FH2C7vn8hDWw4rS59jrNqZ5mvcTJOw6OI/RhdHm4JoE=;
-        b=NePtopjsnQdF1OckGbiPMu89XzzYy9wIwT7hB/S2UEnemlCdR3203gDZyu84jUcqzY
-         kP05I9LuWyuvCszWCgQKbjiRanrEyufZ+N2fTdDBA4vZqLsy6Ez0BhjLQ2L5oJ4+Qk+q
-         lt/0PatEi5VBoYP2Pd0rXe9CumNrFCGqAFBFJWZKHzpx0S34yNt2xA7GxAb242Hdf5NT
-         RGMiZEjHcdJkU8UoTjv8h7F2kWdm8B6AyeIv8rgquB1XjW+OuwaixJj6EIAwVBWYUz/Q
-         KNfmpnABs8SbZyqls7bmoBVzx9HOZTYlb7JyynQifoMZX+HLPdw+SwcaHqLt01m4OjRP
-         pE3A==
-X-Forwarded-Encrypted: i=1; AJvYcCXEFi/lCHdApL0lP8jKsIhdN/KpK0IuTJCK0TcZGwW/IaVMc9HeDT2OOkczuhCTBS6623TISii+Az0NxTnTUR5ZJbX3qnU=
-X-Gm-Message-State: AOJu0Yw+ILIz3J/uGmF493xue6FF1mwbsdpm6gftF55dm+zhJkVIFtmU
-	2X6dlktd9j9npu1UZGIgBThjfnmzbxo+pMctRF8hemnzJVdIix4AaJM52r3CS2Q=
-X-Google-Smtp-Source: AGHT+IG7UQyEyDms50ny2v6l+WwpJ0LwBFQwJp87OYPcEEuRnmhBvrC48Jo9frT13TADGjAKcjdmrQ==
-X-Received: by 2002:a17:906:1cd0:b0:a3d:5932:7f59 with SMTP id i16-20020a1709061cd000b00a3d59327f59mr1945165ejh.71.1707947025935;
-        Wed, 14 Feb 2024 13:43:45 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCX+n+tcGDQQCOX21+nPmBrawzYkshOo9vWPljGBds4b7g2q8cM5IFouMZRoU+qnitU3L5Rbe3hXEEo5qfQcMJW9Yq50F1TwKjXqNt1GjVn0txnn7BH8JwJSU7hoFBwSrrw76BjuZYkHCbJ0WhNWjyEpnVzl4xh7vxHB7h5ytWaI9B1roXRtp8hdoiDojN6/6hxORYbHXIYfW+n+ZkPIysJ+R+Iua0A1qOonW3n19IDDhMC4FmC4BuYKTPtGxptu/+JxSJ8vIsIMgCcH+sNh+8jXdLrDlpPUhgMtbosP64grS5AeqNkJ7HOuc7vNRFHWKOEgwWVQRASjEfnKJ00s/pJJ1dckpg68xpWtmVHVtwNFs69iybWa7UAPeEt02b4nRg9Y1qx4QZ1qwPC32haGw90HI/B2kHLlaQjG0m53c4X7NpaANOuG3SzwS63F5Si8touyQG8kkD9fWg075wrUfLh2oFRVTlSpjmjXa3vX9i5MzeyEDZguO/w5IisoGBYezFEjuKXVn6Ss0A3sLjSlZXFsqGqLLq+mG6KlKkkvlO0ubAU3uXbRs0sfrkyPA5Fc8a2On/VMcdjb4eEQ1CB1llaIDNylVi222BLPiWFL1tOWDismznKU4I3bEMrKuXX0mlFrr47QQIAOxqQYvJsHLHrYkROFsxY+HKXSYh311+HSdeGnb+wZqP2rD5nYJe0Y7TpGPu8SOSw16Wz6ZWPX7t8t7eWhwQIv549wd2y3XDv4x4NOMm+A6YSPB+5fYG1nCTzR38h4EykOLrnCVGtWz0iL2NReuzZ+7DYURshGxC89RYM0zlm2rpZM477m
-Received: from [192.168.192.135] (078088045141.garwolin.vectranet.pl. [78.88.45.141])
-        by smtp.gmail.com with ESMTPSA id sa4-20020a1709076d0400b00a3d841e627bsm51757ejc.58.2024.02.14.13.43.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Feb 2024 13:43:45 -0800 (PST)
-Message-ID: <13d65685-b306-43ad-b9ca-a799f2cf73e5@linaro.org>
-Date: Wed, 14 Feb 2024 22:43:43 +0100
+        d=1e100.net; s=20230601; t=1707949358; x=1708554158;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ln+OOvGmpFuiRMz6w7NK4oosvSzfGSRKkgDvCaci/QI=;
+        b=o1ngRIXAOKjkzKELeWMFz2WRMigunXQ1dHxQUa6UJ+SBEk3p930Y+roNvt78UYXGzz
+         xseIWLEcWLkh8nOFPUjHZy/417sDv+gyM/LiSZMxSHx7CxIWTaCL4j4fn1aITpf7JpWY
+         Ri6vHAb1rw4SnFwMJdR9JLnhOnzHEV3M/G1Pw7d8ssMWnHfR1YYhYakL0Su/VdmSkm+0
+         UiPXgqaw4auG3n4NZy1473pe8sm9rPGR2PRLFqSQtAyxXEm2C7kCvOLx8ikCP989J/KT
+         RGHNjnCzm9xIqr8M7BLzlG0aAX6qSETnlMNvONgZXhCSESfEazLqc8lrdX5gKVI6v+pK
+         HFhQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUhofV93uldtI3ZwmIy7twSp/vprT+fh6UEld4zJDvsItkOLLyUPdnS8v1gq6V6+dYzFEW9XhFIjGEDJb3RXx+Kq91Dfdw=
+X-Gm-Message-State: AOJu0YxsrbKDWoobEiY2CUGhYqUyODaKlPD+gjID6IUUgN70NNMme1Di
+	G51PRPLBTQu5k00N64oSZkLb6BWiXSqJsnGsDNjo48ANu679/kFaWnUt+06StEg=
+X-Google-Smtp-Source: AGHT+IHTGeIRIsITdPStGM5mFftKvPz626lejWEKKG4hpUncJNP4ImSALCuOSyfVaorY4mjRZpEnMA==
+X-Received: by 2002:a05:6a20:d703:b0:19e:9b19:96c0 with SMTP id iz3-20020a056a20d70300b0019e9b1996c0mr191489pzb.7.1707949357817;
+        Wed, 14 Feb 2024 14:22:37 -0800 (PST)
+X-Forwarded-Encrypted: i=1; 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
+Received: from dread.disaster.area (pa49-181-38-249.pa.nsw.optusnet.com.au. [49.181.38.249])
+        by smtp.gmail.com with ESMTPSA id t29-20020a62d15d000000b006e0a55790easm9168222pfl.216.2024.02.14.14.22.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Feb 2024 14:22:36 -0800 (PST)
+Received: from dave by dread.disaster.area with local (Exim 4.96)
+	(envelope-from <david@fromorbit.com>)
+	id 1raNeD-006ZVB-2T;
+	Thu, 15 Feb 2024 09:22:33 +1100
+Date: Thu, 15 Feb 2024 09:22:33 +1100
+From: Dave Chinner <david@fromorbit.com>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
+	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
+	peterz@infradead.org, juri.lelli@redhat.com,
+	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+	x86@kernel.org, peterx@redhat.com, david@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 25/35] xfs: Memory allocation profiling fixups
+Message-ID: <Zc09KRo7nMlSGpG6@dread.disaster.area>
+References: <20240212213922.783301-1-surenb@google.com>
+ <20240212213922.783301-26-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/5] drm: msm: add support for A750 GPU
-Content-Language: en-US
-To: neil.armstrong@linaro.org, Rob Clark <robdclark@gmail.com>,
- Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Bjorn Andersson <andersson@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20240212-topic-sm8650-gpu-v1-0-708a40b747b5@linaro.org>
- <20240212-topic-sm8650-gpu-v1-3-708a40b747b5@linaro.org>
- <b5d76a25-045a-4acd-ad20-d28855b40222@linaro.org>
- <bcad544c-7ca2-4b4f-805b-4ccaedbd091c@linaro.org>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
- xsFNBF9ALYUBEADWAhxdTBWrwAgDQQzc1O/bJ5O7b6cXYxwbBd9xKP7MICh5YA0DcCjJSOum
- BB/OmIWU6X+LZW6P88ZmHe+KeyABLMP5s1tJNK1j4ntT7mECcWZDzafPWF4F6m4WJOG27kTJ
- HGWdmtO+RvadOVi6CoUDqALsmfS3MUG5Pj2Ne9+0jRg4hEnB92AyF9rW2G3qisFcwPgvatt7
- TXD5E38mLyOPOUyXNj9XpDbt1hNwKQfiidmPh5e7VNAWRnW1iCMMoKqzM1Anzq7e5Afyeifz
- zRcQPLaqrPjnKqZGL2BKQSZDh6NkI5ZLRhhHQf61fkWcUpTp1oDC6jWVfT7hwRVIQLrrNj9G
- MpPzrlN4YuAqKeIer1FMt8cq64ifgTzxHzXsMcUdclzq2LTk2RXaPl6Jg/IXWqUClJHbamSk
- t1bfif3SnmhA6TiNvEpDKPiT3IDs42THU6ygslrBxyROQPWLI9IL1y8S6RtEh8H+NZQWZNzm
- UQ3imZirlPjxZtvz1BtnnBWS06e7x/UEAguj7VHCuymVgpl2Za17d1jj81YN5Rp5L9GXxkV1
- aUEwONM3eCI3qcYm5JNc5X+JthZOWsbIPSC1Rhxz3JmWIwP1udr5E3oNRe9u2LIEq+wH/toH
- kpPDhTeMkvt4KfE5m5ercid9+ZXAqoaYLUL4HCEw+HW0DXcKDwARAQABzShLb25yYWQgRHli
- Y2lvIDxrb25yYWQuZHliY2lvQGxpbmFyby5vcmc+wsGOBBMBCAA4FiEEU24if9oCL2zdAAQV
- R4cBcg5dfFgFAmQ5bqwCGwMFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AACgkQR4cBcg5dfFjO
- BQ//YQV6fkbqQCceYebGg6TiisWCy8LG77zV7DB0VMIWJv7Km7Sz0QQrHQVzhEr3trNenZrf
- yy+o2tQOF2biICzbLM8oyQPY8B///KJTWI2khoB8IJSJq3kNG68NjPg2vkP6CMltC/X3ohAo
- xL2UgwN5vj74QnlNneOjc0vGbtA7zURNhTz5P/YuTudCqcAbxJkbqZM4WymjQhe0XgwHLkiH
- 5LHSZ31MRKp/+4Kqs4DTXMctc7vFhtUdmatAExDKw8oEz5NbskKbW+qHjW1XUcUIrxRr667V
- GWH6MkVceT9ZBrtLoSzMLYaQXvi3sSAup0qiJiBYszc/VOu3RbIpNLRcXN3KYuxdQAptacTE
- mA+5+4Y4DfC3rUSun+hWLDeac9z9jjHm5rE998OqZnOU9aztbd6zQG5VL6EKgsVXAZD4D3RP
- x1NaAjdA3MD06eyvbOWiA5NSzIcC8UIQvgx09xm7dThCuQYJR4Yxjd+9JPJHI6apzNZpDGvQ
- BBZzvwxV6L1CojUEpnilmMG1ZOTstktWpNzw3G2Gis0XihDUef0MWVsQYJAl0wfiv/0By+XK
- mm2zRR+l/dnzxnlbgJ5pO0imC2w0TVxLkAp0eo0LHw619finad2u6UPQAkZ4oj++iIGrJkt5
- Lkn2XgB+IW8ESflz6nDY3b5KQRF8Z6XLP0+IEdLOOARkOW7yEgorBgEEAZdVAQUBAQdAwmUx
- xrbSCx2ksDxz7rFFGX1KmTkdRtcgC6F3NfuNYkYDAQgHwsF2BBgBCAAgFiEEU24if9oCL2zd
- AAQVR4cBcg5dfFgFAmQ5bvICGwwACgkQR4cBcg5dfFju1Q//Xta1ShwL0MLSC1KL1lXGXeRM
- 8arzfyiB5wJ9tb9U/nZvhhdfilEDLe0jKJY0RJErbdRHsalwQCrtq/1ewQpMpsRxXzAjgfRN
- jc4tgxRWmI+aVTzSRpywNahzZBT695hMz81cVZJoZzaV0KaMTlSnBkrviPz1nIGHYCHJxF9r
- cIu0GSIyUjZ/7xslxdvjpLth16H27JCWDzDqIQMtg61063gNyEyWgt1qRSaK14JIH/DoYRfn
- jfFQSC8bffFjat7BQGFz4ZpRavkMUFuDirn5Tf28oc5ebe2cIHp4/kajTx/7JOxWZ80U70mA
- cBgEeYSrYYnX+UJsSxpzLc/0sT1eRJDEhI4XIQM4ClIzpsCIN5HnVF76UQXh3a9zpwh3dk8i
- bhN/URmCOTH+LHNJYN/MxY8wuukq877DWB7k86pBs5IDLAXmW8v3gIDWyIcgYqb2v8QO2Mqx
- YMqL7UZxVLul4/JbllsQB8F/fNI8AfttmAQL9cwo6C8yDTXKdho920W4WUR9k8NT/OBqWSyk
- bGqMHex48FVZhexNPYOd58EY9/7mL5u0sJmo+jTeb4JBgIbFPJCFyng4HwbniWgQJZ1WqaUC
- nas9J77uICis2WH7N8Bs9jy0wQYezNzqS+FxoNXmDQg2jetX8en4bO2Di7Pmx0jXA4TOb9TM
- izWDgYvmBE8=
-In-Reply-To: <bcad544c-7ca2-4b4f-805b-4ccaedbd091c@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240212213922.783301-26-surenb@google.com>
 
-On 12.02.2024 15:45, Neil Armstrong wrote:
-> On 12/02/2024 11:46, Konrad Dybcio wrote:
->> On 12.02.2024 11:37, Neil Armstrong wrote:
->>> Add support for the A750 GPU found on the SM8650 platform
->>>
->>> Unlike the the very close A740 GPU on the SM8550 SoC, the A750 GPU
->>> doesn't have an HWCFG block but a separate register set.
->>>
->>> The missing registers are added in the a6xx.xml.h file that would
->>> require a subsequent sync and the non-existent hwcfg is handled
->>> in a6xx_set_hwcg().
->>
->> These should also be submitted to mesa to make sure the next header sync
->> doesn't wipe them
+On Mon, Feb 12, 2024 at 01:39:11PM -0800, Suren Baghdasaryan wrote:
+> From: Kent Overstreet <kent.overstreet@linux.dev>
 > 
-> Ack submitting them right now: https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27576
+> This adds an alloc_hooks() wrapper around kmem_alloc(), so that we can
+> have allocations accounted to the proper callsite.
+> 
+> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> ---
+>  fs/xfs/kmem.c |  4 ++--
+>  fs/xfs/kmem.h | 10 ++++------
+>  2 files changed, 6 insertions(+), 8 deletions(-)
+> 
+> diff --git a/fs/xfs/kmem.c b/fs/xfs/kmem.c
+> index c557a030acfe..9aa57a4e2478 100644
+> --- a/fs/xfs/kmem.c
+> +++ b/fs/xfs/kmem.c
+> @@ -8,7 +8,7 @@
+>  #include "xfs_trace.h"
+>  
+>  void *
+> -kmem_alloc(size_t size, xfs_km_flags_t flags)
+> +kmem_alloc_noprof(size_t size, xfs_km_flags_t flags)
+>  {
+>  	int	retries = 0;
+>  	gfp_t	lflags = kmem_flags_convert(flags);
+> @@ -17,7 +17,7 @@ kmem_alloc(size_t size, xfs_km_flags_t flags)
+>  	trace_kmem_alloc(size, flags, _RET_IP_);
+>  
+>  	do {
+> -		ptr = kmalloc(size, lflags);
+> +		ptr = kmalloc_noprof(size, lflags);
+>  		if (ptr || (flags & KM_MAYFAIL))
+>  			return ptr;
+>  		if (!(++retries % 100))
+> diff --git a/fs/xfs/kmem.h b/fs/xfs/kmem.h
+> index b987dc2c6851..c4cf1dc2a7af 100644
+> --- a/fs/xfs/kmem.h
+> +++ b/fs/xfs/kmem.h
+> @@ -6,6 +6,7 @@
+>  #ifndef __XFS_SUPPORT_KMEM_H__
+>  #define __XFS_SUPPORT_KMEM_H__
+>  
+> +#include <linux/alloc_tag.h>
+>  #include <linux/slab.h>
+>  #include <linux/sched.h>
+>  #include <linux/mm.h>
+> @@ -56,18 +57,15 @@ kmem_flags_convert(xfs_km_flags_t flags)
+>  	return lflags;
+>  }
+>  
+> -extern void *kmem_alloc(size_t, xfs_km_flags_t);
+>  static inline void  kmem_free(const void *ptr)
+>  {
+>  	kvfree(ptr);
+>  }
+>  
+> +extern void *kmem_alloc_noprof(size_t, xfs_km_flags_t);
+> +#define kmem_alloc(...)			alloc_hooks(kmem_alloc_noprof(__VA_ARGS__))
+>  
+> -static inline void *
+> -kmem_zalloc(size_t size, xfs_km_flags_t flags)
+> -{
+> -	return kmem_alloc(size, flags | KM_ZERO);
+> -}
+> +#define kmem_zalloc(_size, _flags)	kmem_alloc((_size), (_flags) | KM_ZERO)
+>  
+>  /*
+>   * Zone interfaces
+> -- 
+> 2.43.0.687.g38aa6559b0-goog
 
-Thanks
+These changes can be dropped - the fs/xfs/kmem.[ch] stuff is now
+gone in linux-xfs/for-next.
 
-> 
->>
->> [...]
->>
->>> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
->>> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
->>> @@ -958,10 +958,11 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
->>>       struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
->>>       struct a6xx_gmu *gmu = &a6xx_gpu->gmu;
->>>       const struct adreno_reglist *reg;
->>> +    bool skip_programming = !(adreno_gpu->info->hwcg || adreno_is_a7xx(adreno_gpu));
->>
->> is_a750?
-> 
-> OK right, I was thinking of the next gpu which will probably also miss an hwcfg
-> 
->>
->>>       unsigned int i;
->>>       u32 val, clock_cntl_on, cgc_mode;
->>>   -    if (!adreno_gpu->info->hwcg)
->>> +    if (skip_programming)
->>>           return;
->>>         if (adreno_is_a630(adreno_gpu))
->>> @@ -982,6 +983,25 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
->>>                 state ? 0x5555 : 0);
->>>       }
->>>   +    if (!adreno_gpu->info->hwcg) {
->>
->> I don't think this block of code is reachable now, no?
-> 
-> It is because we didn't skip when adreno_is_a7xx(adreno_gpu)
-
-Ahh I misread the brackets within the assignment
-
-> 
->>
->> Maybe remove the skip_programming and if_a750 here?
-> This would require:
->>> -    if (!adreno_gpu->info->hwcg || )
->>> +    if (!(adreno_gpu->info->hwcg || adreno_is_a750(adreno_gpu)))
-> 
-> and:
-> 
->>> +    if (adreno_is_a750(adreno_gpu)) {
-> 
-> But if the next gpu also doesn't have an hwcfg, we will need to use
-> the current design...
-> 
-> I just tried with:
-> ====================><===============================
-> @@ -961,7 +961,7 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
->         unsigned int i;
->         u32 val, clock_cntl_on, cgc_mode;
-> 
-> -       if (!adreno_gpu->info->hwcg)
-> +       if (!(adreno_gpu->info->hwcg || adreno_is_a750(adreno_gpu)))
->                 return;
-> 
->         if (adreno_is_a630(adreno_gpu))
-> @@ -982,6 +982,25 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
->                           state ? 0x5555 : 0);
->         }
-> 
-> +       if (adreno_is_a750(adreno_gpu)) {
-> +               gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
-> +               gpu_write(gpu, REG_A7XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
-> +
-> +               if (state) {
-> +                       gpu_write(gpu, REG_A7XX_RBBM_CGC_P2S_TRIG_CMD, 1);
-> +
-> +                       if (gpu_poll_timeout(gpu, REG_A7XX_RBBM_CGC_P2S_STATUS, val,
-> +                                            val & A7XX_RBBM_CGC_P2S_STATUS_TXDONE, 1, 10)) {
-> +                               dev_err(&gpu->pdev->dev, "RBBM_CGC_P2S_STATUS TXDONE Poll failed\n");
-> +                               return;
-> +                       }
-> +
-> +                       gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 0);
-> +               }
-> +
-> +               return;
-> +       }
-> +
->         val = gpu_read(gpu, REG_A6XX_RBBM_CLOCK_CNTL);
-> 
->         /* Don't re-program the registers if they are already correct */
-> ====================><===============================
-> 
-> And it works fine, does it work it for you ?
-
-Let's keep it as-is in the original submission, as I've mentioned, I had
-misread the code
-
-Konrad
-
-> 
->>
->>> +        gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
->>> +        gpu_write(gpu, REG_A7XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
->>> +
->>> +        if (state) {
->>> +            gpu_write(gpu, REG_A7XX_RBBM_CGC_P2S_TRIG_CMD, 1);
->>> +
->>> +            if (gpu_poll_timeout(gpu, REG_A7XX_RBBM_CGC_P2S_STATUS, val,
->>> +                         val & BIT(0), 1, 10)) {
->>
->> We should define that bit name (the err suggests it's
->> REG_A7XX_RBBM_GCC_P2S_STATUS_TXDONE or so)
->>
->> [...]
->>
->>> +static inline int adreno_is_a750(struct adreno_gpu *gpu)
->>> +{
->>> +    return gpu->info->chip_ids[0] == 0x43051401;
->>> +}
->>> +
->>>   /* Placeholder to make future diffs smaller */
->>
->> Please also remove this comment now that it's invalid
-> 
-> Ack
-> 
->>
->> Konrad
-> 
-> Thanks,
-> Neil
-> 
+-Dave.
+-- 
+Dave Chinner
+david@fromorbit.com
