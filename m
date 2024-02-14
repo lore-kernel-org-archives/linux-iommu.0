@@ -1,254 +1,145 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BF8CC84FCD
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 17:20:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from out-184.mta0.migadu.com (out-184.mta0.migadu.com [91.218.175.184])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03BA01272C0
+	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 17:52:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707931257; cv=none; b=eoVtv9vtbO82drazRgohUfuLFanVfCYUzX/3m0NhEkqAYXc/nOZzJKXCVns5Jg8UwjZvr+O/rSk8My8Vjsmeaqcc4t859OhdTMvTe7f/O5Yt79imDrrxv5bmtd9OpFU9nd4671bfVIYpxtoMmut3jV6D7y73CZydw3rgchQkuPI=
+	t=1707933159; cv=none; b=CryQdgJe5NnugxzrbWGhtMK0qOI1ifJRi0X7lBx6hOtjrLOCnLeuTPCI2ATLwH6ZEY1jlzYo7SVDzn/izqGXiQZgkE+nfaPSeBUENHD3/OH7z57jjdTX+tnGo9mtzxJvmVukTx5MxOICYFuki+2zcBYHu6hJRd+lQs/42+UijaY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707931257; c=relaxed/simple;
-	bh=DRFlqUoQ+56jX8SosJW0HOg/C/81XeRHYKQhTNegNK0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=NBb7eN8QYMtkbuAPTyljvUHYuXzjlGVRAR7VlBJtRZ1IVKgqHD/n1fdP2G7InOvUG4MlzOw7ZdNTE1PKCWVe8eC1gRfzQBA1cvUmWYjULKspEoVyOCzkNWBcsfHBa9iuAWJ2DWS2QfoyQNprsT7rocPeXVYHAca3TT6dhnKcE+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 22EF71FB;
-	Wed, 14 Feb 2024 09:21:35 -0800 (PST)
-Received: from [10.57.47.86] (unknown [10.57.47.86])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 65B743F766;
-	Wed, 14 Feb 2024 09:20:51 -0800 (PST)
-Message-ID: <893ad3a4-ba24-43cf-8200-b8cd7742622d@arm.com>
-Date: Wed, 14 Feb 2024 17:20:50 +0000
+	s=arc-20240116; t=1707933159; c=relaxed/simple;
+	bh=ludUKPauweTDD8POxHffFJwhelusk8jo87YHW7heVtY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=rVC2cLFnnpy2Q6CSl0m+OHdyK98l/ZZ0rcmkcHDnwtec6z7kRzavlsMcTLA4bTSB1P1WeJuKGi6Kw3XzLwekSjzk9FjkhOSvKReZpQ7igEYmPjSGEtD+ThNVey8IPRHqmAUcF+ygEgEA2rGtbkPy3ZyPmwGx9zupGL4lSHQWd0A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=IUp0RzOj; arc=none smtp.client-ip=91.218.175.184
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="IUp0RzOj"
+Date: Wed, 14 Feb 2024 12:52:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1707933154;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=leY9N3alrQ22C+fXPazgCJacTsU7ND5Lt0yRBT6Nl7E=;
+	b=IUp0RzOjGR+ggmt5QyQRdV5SyNmk5BeYvtJPmMdFZ/0gdArxfBF61ir/qJD7o6ZZlPI1fa
+	T++b6tnGr9lt+Pc8uqq9a0m6P/fzXGm/Y4Z0gDlSz3GfalRNyLUnqF6AUPN+VvXSj2JW0v
+	2fUSwnZl9xW1aSObJLfJA6MLK5YNJzA=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Suren Baghdasaryan <surenb@google.com>, 
+	David Hildenbrand <david@redhat.com>, Michal Hocko <mhocko@suse.com>, vbabka@suse.cz, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net, 
+	willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, 
+	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, axboe@kernel.dk, 
+	mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, 
+	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, 
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
+	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
+	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
+	shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 00/35] Memory allocation profiling
+Message-ID: <7c3walgmzmcygchqaylcz2un5dandlnzdqcohyooryurx6utxr@66adcw7f26c3>
+References: <Zctfa2DvmlTYSfe8@tiehlicka>
+ <CAJuCfpEsWfZnpL1vUB2C=cxRi_WxhxyvgGhUg7WdAxLEqy6oSw@mail.gmail.com>
+ <9e14adec-2842-458d-8a58-af6a2d18d823@redhat.com>
+ <2hphuyx2dnqsj3hnzyifp5yqn2hpgfjuhfu635dzgofr5mst27@4a5dixtcuxyi>
+ <6a0f5d8b-9c67-43f6-b25e-2240171265be@redhat.com>
+ <CAJuCfpEtOhzL65eMDk2W5SchcquN9hMCcbfD50a-FgtPgxh4Fw@mail.gmail.com>
+ <adbb77ee-1662-4d24-bcbf-d74c29bc5083@redhat.com>
+ <r6cmbcmalryodbnlkmuj2fjnausbcysmolikjguqvdwkngeztq@45lbvxjavwb3>
+ <CAJuCfpF4g1jeEwHVHjQWwi5kqS-3UqjMt7GnG0Kdz5VJGyhK3Q@mail.gmail.com>
+ <20240214085548.d3608627739269459480d86e@linux-foundation.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v3 1/7] dma: compile-out DMA sync op calls when
- not used
-Content-Language: en-GB
-To: Alexander Lobakin <aleksander.lobakin@intel.com>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-Cc: Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>,
- Magnus Karlsson <magnus.karlsson@intel.com>,
- Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
- Alexander Duyck <alexanderduyck@fb.com>, bpf@vger.kernel.org,
- netdev@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240214162201.4168778-1-aleksander.lobakin@intel.com>
- <20240214162201.4168778-2-aleksander.lobakin@intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240214162201.4168778-2-aleksander.lobakin@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240214085548.d3608627739269459480d86e@linux-foundation.org>
+X-Migadu-Flow: FLOW_OUT
 
-On 2024-02-14 4:21 pm, Alexander Lobakin wrote:
-> Some platforms do have DMA, but DMA there is always direct and coherent.
-> Currently, even on such platforms DMA sync operations are compiled and
-> called.
-> Add a new hidden Kconfig symbol, DMA_NEED_SYNC, and set it only when
-> either sync operations are needed or there is DMA ops or swiotlb
-> enabled. Set dma_need_sync() and dma_skip_sync() depending on this
-> symbol state and don't call sync ops when dma_skip_sync() is true.
-> The change allows for future optimizations of DMA sync calls depending
-> on compile-time or runtime conditions.
+On Wed, Feb 14, 2024 at 08:55:48AM -0800, Andrew Morton wrote:
+> On Tue, 13 Feb 2024 14:59:11 -0800 Suren Baghdasaryan <surenb@google.com> wrote:
 > 
-> Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
-> ---
->   kernel/dma/Kconfig          |  4 ++
->   include/linux/dma-mapping.h | 80 +++++++++++++++++++++++++++++++------
->   kernel/dma/mapping.c        | 20 +++++-----
->   3 files changed, 81 insertions(+), 23 deletions(-)
+> > > > If you think you can easily achieve what Michal requested without all that,
+> > > > good.
+> > >
+> > > He requested something?
+> > 
+> > Yes, a cleaner instrumentation. Unfortunately the cleanest one is not
+> > possible until the compiler feature is developed and deployed. And it
+> > still would require changes to the headers, so don't think it's worth
+> > delaying the feature for years.
 > 
-> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-> index d62f5957f36b..1c9ff05b1ecb 100644
-> --- a/kernel/dma/Kconfig
-> +++ b/kernel/dma/Kconfig
-> @@ -107,6 +107,10 @@ config DMA_BOUNCE_UNALIGNED_KMALLOC
->   	bool
->   	depends on SWIOTLB
->   
-> +config DMA_NEED_SYNC
-> +	def_bool ARCH_HAS_SYNC_DMA_FOR_DEVICE || ARCH_HAS_SYNC_DMA_FOR_CPU || \
-> +		 ARCH_HAS_SYNC_DMA_FOR_CPU_ALL || DMA_OPS || SWIOTLB
+> Can we please be told much more about this compiler feature? 
+> Description of what it is, what it does, how it will affect this kernel
+> feature, etc.
+> 
+> Who is developing it and when can we expect it to become available?
+> 
+> Will we be able to migrate to it without back-compatibility concerns? 
+> (I think "you need quite recent gcc for memory profiling" is
+> reasonable).
+> 
+> 
+> 
+> Because: if the maintainability issues which Michel describes will be
+> significantly addressed with the gcc support then we're kinda reviewing
+> the wrong patchset.  Yes, it may be a maintenance burden initially, but
+> at some (yet to be revealed) time in the future, this will be addressed
+> with the gcc support?
 
-I'm not sure DMA_OPS belongs here - several architectures have 
-non-trivial ops without syncs, e.g. Alpha.
+Even if we had compiler magic, after considering it more I don't think
+the patchset would be improved by it - I would still prefer to stick
+with the macro approach.
 
-> +
->   config DMA_RESTRICTED_POOL
->   	bool "DMA Restricted Pool"
->   	depends on OF && OF_RESERVED_MEM && SWIOTLB
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 4a658de44ee9..6c7640441214 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -117,13 +117,13 @@ dma_addr_t dma_map_resource(struct device *dev, phys_addr_t phys_addr,
->   		size_t size, enum dma_data_direction dir, unsigned long attrs);
->   void dma_unmap_resource(struct device *dev, dma_addr_t addr, size_t size,
->   		enum dma_data_direction dir, unsigned long attrs);
-> -void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
-> +void __dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
->   		enum dma_data_direction dir);
-> -void dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
-> +void __dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
->   		size_t size, enum dma_data_direction dir);
-> -void dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
-> +void __dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
->   		    int nelems, enum dma_data_direction dir);
-> -void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
-> +void __dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
->   		       int nelems, enum dma_data_direction dir);
->   void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
->   		gfp_t flag, unsigned long attrs);
-> @@ -147,7 +147,7 @@ u64 dma_get_required_mask(struct device *dev);
->   bool dma_addressing_limited(struct device *dev);
->   size_t dma_max_mapping_size(struct device *dev);
->   size_t dma_opt_mapping_size(struct device *dev);
-> -bool dma_need_sync(struct device *dev, dma_addr_t dma_addr);
-> +bool __dma_need_sync(struct device *dev, dma_addr_t dma_addr);
->   unsigned long dma_get_merge_boundary(struct device *dev);
->   struct sg_table *dma_alloc_noncontiguous(struct device *dev, size_t size,
->   		enum dma_data_direction dir, gfp_t gfp, unsigned long attrs);
-> @@ -195,19 +195,19 @@ static inline void dma_unmap_resource(struct device *dev, dma_addr_t addr,
->   		size_t size, enum dma_data_direction dir, unsigned long attrs)
->   {
->   }
-> -static inline void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
-> -		size_t size, enum dma_data_direction dir)
-> +static inline void __dma_sync_single_for_cpu(struct device *dev,
-> +		dma_addr_t addr, size_t size, enum dma_data_direction dir)
+There's also a lot of unresolved questions about whether the compiler
+approach would even end being what we need; we need macro expansion to
+happen in the caller of the allocation function, and that's another
+level of hooking that I don't think the compiler people are even
+considering yet, since cpp runs before the main part of the compiler; if
+C macros worked and were implemented more like Rust macros I'm sure it
+could be done - in fact, I think this could all be done in Rust
+_without_ any new compiler support - but in C, this is a lot to ask.
 
-To me it would feel more logical to put all the wrappers inside the 
-#ifdef CONFIG_HAS_DMA and not touch these stubs at all (what does it 
-mean to skip an inline no-op?). Or in fact, if dma_skip_sync() is 
-constant false for !HAS_DMA, then we could also just make the external 
-function declarations unconditional and remove the stubs. Not a critical 
-matter though, and I defer to whatever Christoph thinks is most 
-maintainable.
+Let's look at the instrumentation again. There's two steps:
 
->   {
->   }
-> -static inline void dma_sync_single_for_device(struct device *dev,
-> +static inline void __dma_sync_single_for_device(struct device *dev,
->   		dma_addr_t addr, size_t size, enum dma_data_direction dir)
->   {
->   }
-> -static inline void dma_sync_sg_for_cpu(struct device *dev,
-> +static inline void __dma_sync_sg_for_cpu(struct device *dev,
->   		struct scatterlist *sg, int nelems, enum dma_data_direction dir)
->   {
->   }
-> -static inline void dma_sync_sg_for_device(struct device *dev,
-> +static inline void __dma_sync_sg_for_device(struct device *dev,
->   		struct scatterlist *sg, int nelems, enum dma_data_direction dir)
->   {
->   }
-> @@ -277,7 +277,7 @@ static inline size_t dma_opt_mapping_size(struct device *dev)
->   {
->   	return 0;
->   }
-> -static inline bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
-> +static inline bool __dma_need_sync(struct device *dev, dma_addr_t dma_addr)
->   {
->   	return false;
->   }
-> @@ -348,18 +348,72 @@ static inline void dma_unmap_single_attrs(struct device *dev, dma_addr_t addr,
->   	return dma_unmap_page_attrs(dev, addr, size, dir, attrs);
->   }
->   
-> +static inline void __dma_sync_single_range_for_cpu(struct device *dev,
-> +		dma_addr_t addr, unsigned long offset, size_t size,
-> +		enum dma_data_direction dir)
-> +{
-> +	__dma_sync_single_for_cpu(dev, addr + offset, size, dir);
-> +}
-> +
-> +static inline void __dma_sync_single_range_for_device(struct device *dev,
-> +		dma_addr_t addr, unsigned long offset, size_t size,
-> +		enum dma_data_direction dir)
-> +{
-> +	__dma_sync_single_for_device(dev, addr + offset, size, dir);
-> +}
+- Renaming the original function to _noprof
+- Adding a hooked version of the original function.
 
-There is no need to introduce these two.
+We need to do the renaming regardless of what approach we take in order
+to correctly handle allocations that happen inside the context of an
+existing alloc tag hook but should not be accounted to the outer
+context; we do that by selecting the alloc_foo() or alloc_foo_noprof()
+version as appropriate.
 
-> +
-> +static inline bool dma_skip_sync(const struct device *dev)
-> +{
-> +	return !IS_ENABLED(CONFIG_DMA_NEED_SYNC);
-> +}
-> +
-> +static inline bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
-> +{
-> +	return !dma_skip_sync(dev) ? __dma_need_sync(dev, dma_addr) : false;
-> +}
+It's important to get this right; consider slab object extension
+vectors or the slab allocator allocating pages from the page allocator.
 
-That's a bit of a mind-bender... is it actually just
+Second step, adding a hooked version of the original function. We do
+that with
 
-	return !dma_skip_sync(dev) && __dma_need_sync(dev, dma_addr);
+#define alloc_foo(...) alloc_hooks(alloc_foo_noprof(__VA_ARGS__))
 
-?
+That's pretty clean, if you ask me. The only way to make it more succint
+be if it were possible for a C macro to define a new macro, then it
+could be just
 
-(I do still think the negative flag makes it all a little harder to 
-follow in general than a positive "device needs to consider syncs" flag 
-would.)
+alloc_fn(alloc_foo);
 
-> +static inline void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
-> +		size_t size, enum dma_data_direction dir)
-> +{
-> +	if (!dma_skip_sync(dev))
-> +		__dma_sync_single_for_cpu(dev, addr, size, dir);
-> +}
-> +
-> +static inline void dma_sync_single_for_device(struct device *dev,
-> +		dma_addr_t addr, size_t size, enum dma_data_direction dir)
-> +{
-> +	if (!dma_skip_sync(dev))
-> +		__dma_sync_single_for_device(dev, addr, size, dir);
-> +}
-> +
-> +static inline void dma_sync_sg_for_cpu(struct device *dev,
-> +		struct scatterlist *sg, int nelems, enum dma_data_direction dir)
-> +{
-> +	if (!dma_skip_sync(dev))
-> +		__dma_sync_sg_for_cpu(dev, sg, nelems, dir);
-> +}
-> +
-> +static inline void dma_sync_sg_for_device(struct device *dev,
-> +		struct scatterlist *sg, int nelems, enum dma_data_direction dir)
-> +{
-> +	if (!dma_skip_sync(dev))
-> +		__dma_sync_sg_for_device(dev, sg, nelems, dir);
-> +}
-> +
->   static inline void dma_sync_single_range_for_cpu(struct device *dev,
->   		dma_addr_t addr, unsigned long offset, size_t size,
->   		enum dma_data_direction dir)
->   {
-> -	return dma_sync_single_for_cpu(dev, addr + offset, size, dir);
-> +	if (!dma_skip_sync(dev))
-> +		__dma_sync_single_for_cpu(dev, addr + offset, size, dir);
->   }
->   
->   static inline void dma_sync_single_range_for_device(struct device *dev,
->   		dma_addr_t addr, unsigned long offset, size_t size,
->   		enum dma_data_direction dir)
->   {
-> -	return dma_sync_single_for_device(dev, addr + offset, size, dir);
-> +	if (!dma_skip_sync(dev))
-> +		__dma_sync_single_for_device(dev, addr + offset, size, dir);
->   }
-
-These two don't need changing either, since the dma_sync_single_* 
-wrappers have already taken care of it.
-
-Thanks,
-Robin.
+But honestly, the former is probably preferable anyways from a ctags/cscope POV.
