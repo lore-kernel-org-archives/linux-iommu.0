@@ -1,163 +1,145 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2040.outbound.protection.outlook.com [40.107.236.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8F0BC8DD
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 05:34:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707888868; cv=none; b=V73FvvmzGscoOCF0KSh2mNaCz4puQ20ohfyH7Jx1JBk9QcnMbdOR5s7BzcoYXOcW1a/x2g0fxTYjJdD2K24p3e+FMcmRcT2fkZbNILEo3TUoP1f+QKYUFkLroKf9CuZZNv2AMUCPBBPQNlKafRQ9Hvpml1YW0dg6rGUx0SbGCg4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707888868; c=relaxed/simple;
-	bh=0vn/2xZjRpP2RruobzMCkoDCEodYNaVfuaYzWJk1pGI=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=JBK+ky8oYenPQtPdzsTvpWCOk817yZkGlCHGSkZnXFiS3Rg3gPG5C9JufB7K0blSBE+qk323rn+IKWSljUXUb++4JYSMxXC/1FKpbrQkD1cJtU2nZPXwYRJeZpr99mxg1IsUpWOg/aTPv7ciK8qW1Oq04yOfv1ufRFmtN7pHj2w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com; spf=none smtp.mailfrom=linux.vnet.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=KLVjjEBM; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.vnet.ibm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BFEA10A11
+	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 06:09:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.40
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707890979; cv=fail; b=J/nqiyHUoIjJfiqU3MWcaui9gzVg7QhjrQGUne4meyPv/N6ghq3XOUTF5cSiEi37JdWW+FEaUGPHdOpxBDGbvFcqMXA2u7ruGK5HpQGh1lAnkHoQ0E1n9kZb+znfEYwRb6DQVt7PMZymLg9kFUKSJITE99YBKuqvnPTFj1RegmQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707890979; c=relaxed/simple;
+	bh=9nKIFXtHunPpeD0cID7+kDUxSbbhKRryumP1MhN2ABI=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nflm3pMXuTzMQYRG45xB10SMskK60Xir0rsKjRYx6YOnLcf2r5k66iqLJZgJSTYx8tGRjwjRrJrrlRwOp7UIo+lKj8+dkfthM6+iR1H3UgHM+PfVJQPFyXnoeRCzc3LIJWe0XWtABHydJUdq1BKJxIPihtMF0buoL+gitDPxP/4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Ri5UEm/a; arc=fail smtp.client-ip=40.107.236.40
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="KLVjjEBM"
-Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 41E4vlrQ031412;
-	Wed, 14 Feb 2024 05:34:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=2v0hlwpBVJIDoWo3D4rG6ozciu8MtAw5fKJ6M/0ZGtA=;
- b=KLVjjEBMoqqxjWiQsGgV9Gs0dYzXQXlHvsRIJMWuXJVEwit72eowV8sL1Yg5SAeioXNg
- HBvpY/VJf+ipoSUMz03mLOTr7CmzRHHq0Bsub64Tr4ECyheIsvw5eAXLl3gEEq7LO46S
- xeGGbIJx7Eow8aG17toiZl8MrrAIBUKvhvGslflr1XQQLb+Wt6+nAsCSzOyi9FCL0c/x
- +RzztIOrMvoPiAENdkYLgX5PZrc2o1NPBLNwa+cQoEEHkejWVbAi6Yji9t9WcB6k2KQo
- LCmPEoXmc6jjspObIlvg6jyfa4t0blrUa+jitoCxBUplmqE8tJ05hbpEltao0dubhSk1 Ow== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w8pxmgw5c-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 14 Feb 2024 05:34:13 +0000
-Received: from m0360083.ppops.net (m0360083.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 41E4w2EM032629;
-	Wed, 14 Feb 2024 05:34:12 GMT
-Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w8pxmgw51-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 14 Feb 2024 05:34:12 +0000
-Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
-	by ppma22.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 41E2NvJ0004339;
-	Wed, 14 Feb 2024 05:34:11 GMT
-Received: from smtprelay03.wdc07v.mail.ibm.com ([172.16.1.70])
-	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3w6kv0c6e8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 14 Feb 2024 05:34:11 +0000
-Received: from smtpav01.dal12v.mail.ibm.com (smtpav01.dal12v.mail.ibm.com [10.241.53.100])
-	by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 41E5Y8OF26280472
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 14 Feb 2024 05:34:10 GMT
-Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2A15158058;
-	Wed, 14 Feb 2024 05:34:08 +0000 (GMT)
-Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 6A4855806B;
-	Wed, 14 Feb 2024 05:34:02 +0000 (GMT)
-Received: from [9.43.87.202] (unknown [9.43.87.202])
-	by smtpav01.dal12v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 14 Feb 2024 05:34:02 +0000 (GMT)
-Message-ID: <4f5e638d-30a2-4207-b515-d07c20b0fb47@linux.vnet.ibm.com>
-Date: Wed, 14 Feb 2024 11:04:00 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] powerpc/iommu: Fix the missing iommu_group_put() during
- platform domain attach
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@ziepe.ca>, Shivaprasad G Bhat <sbhat@linux.ibm.com>
-Cc: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
-        christophe.leroy@csgroup.eu, aneesh.kumar@kernel.org,
-        naveen.n.rao@linux.ibm.com, jroedel@suse.de,
-        tpearson@raptorengineering.com, aik@amd.com, bgray@linux.ibm.com,
-        gregkh@linuxfoundation.org, gbatra@linux.vnet.ibm.com,
-        vaibhav@linux.ibm.com
-References: <170784021983.6249.10039296655906636112.stgit@linux.ibm.com>
- <20240213172128.GM765010@ziepe.ca>
-From: Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com>
-In-Reply-To: <20240213172128.GM765010@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: VEN0Ab5lxghBOi28HwoCQawyJkmQ3Lg6
-X-Proofpoint-GUID: uUo8j74xaYSgknAAVs_YIypAe1HaCi1W
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Ri5UEm/a"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=k+0Z93BSNOfOoq0Gvi7zIAMabtOiSkI7syXWFneDRswzi3hSuCaNfs4O4oZsLPSMGnYGKAcizGJaaP6q99PzQ8zjR2wKbRk303WlU0vHcV2YwqIhqcvhN4OgHS2gR6e0iie7leW2rOj2Ce+F2TS8P8/pgO3mcBSNDNeSfGGoFEgSCmhb81yQSVvLPzlHSQAxOsOuw0ZKCxVsAHLN2ADsMQ+HbukmPYz0kbQJse4nhed0llZtgGYZ8BX7EiRdgI8jyqtId4iSUtOZRxAmAE2em+QfysZFOyIjB+52bgxv3XgLpepLL8RoRllQ41Ya5Zs2SrQD44rJGcDHxXHf25lMDg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=jNE6boFDHoljvD3VXPHTGXxDgM70hmBWyy5AXkD1HFs=;
+ b=cXhzIJ9vQlLP2LDwzRRU2+Slld1UBJENlcdzBtVvLBdb4O/p54cK0VUV43qemiWumhzRIKhDSVXjofmbjmjKmPQ8Ddd3HxwOu6k7heQFB1G1wVrcpYeb/NLuipHRnmp2VsentLbRWlZQ0a75do+gqKGDc6QTeGd7OcviwAfYXaLVqO1Jp1buQul0Wz3g6KdjX3v8ztAe8Ce+DRS8xeYIoG7B5aLnaViB8ZpQGgqr+PCdy1Z4Mva8fqagqV5uJSkyU8dpLAN6YmHMnJipJ5i4pR/xEgwEDxfqowH/iq/WJ5hZiioMjPYuYHzcUSeMt5WkMuiluUfHcolmuNoOeFct6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jNE6boFDHoljvD3VXPHTGXxDgM70hmBWyy5AXkD1HFs=;
+ b=Ri5UEm/aMYHexi9jW7/f5IVYR38yWHxbsZwIbtBEpyHzg0qVZ347ug7vQIsZUcZF75iHaG2DBczMSYr7lx1nT52gxFC55J6cL0rl0wk6Pc6QW0eEDkjEWKdPBp32jUac6++ty01RdTtIaRCzL8fKG6C5uurgFIWJTX1ronp8ivuI2WR9dBk4v30sRUTGYJrl9hsapRS1TldI4pYf4V7i26ZL9VYYuyhsZ6/x7XF/cD+CgPxEVLr11eekqFtP9DDR0SB/ykUm+JDaZHo6ztp7EV96X2gFS8+CugWjau9wWW8qdky7H4iNfySryPyFjsTTWH+gKaJAcVLOjQwkwdonAg==
+Received: from MW4P221CA0018.NAMP221.PROD.OUTLOOK.COM (2603:10b6:303:8b::23)
+ by DS0PR12MB8043.namprd12.prod.outlook.com (2603:10b6:8:14d::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.17; Wed, 14 Feb
+ 2024 06:09:34 +0000
+Received: from MWH0EPF000971E9.namprd02.prod.outlook.com
+ (2603:10b6:303:8b:cafe::61) by MW4P221CA0018.outlook.office365.com
+ (2603:10b6:303:8b::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.40 via Frontend
+ Transport; Wed, 14 Feb 2024 06:09:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ MWH0EPF000971E9.mail.protection.outlook.com (10.167.243.71) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7292.25 via Frontend Transport; Wed, 14 Feb 2024 06:09:34 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Tue, 13 Feb
+ 2024 22:09:22 -0800
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.12; Tue, 13 Feb 2024 22:09:21 -0800
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
+ Transport; Tue, 13 Feb 2024 22:09:21 -0800
+Date: Tue, 13 Feb 2024 22:09:19 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Keith Busch <kbusch@kernel.org>
+CC: <sagi@grimberg.me>, <hch@lst.de>, <axboe@kernel.dk>, <will@kernel.org>,
+	<joro@8bytes.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
+	<linux-nvme@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+	<iommu@lists.linux.dev>, <murphyt7@tcd.ie>, <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v1 2/2] nvme-pci: Fix iommu map (via swiotlb) failures
+ when PAGE_SIZE=64KB
+Message-ID: <ZcxZD2GXmR5+vC/k@Asurada-Nvidia>
+References: <cover.1707851466.git.nicolinc@nvidia.com>
+ <60bdcc29a2bcf12c6ab95cf0ea480d67c41c51e7.1707851466.git.nicolinc@nvidia.com>
+ <Zcv7uI6VrMc2EuGT@kbusch-mbp>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-13_16,2024-02-12_03,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 priorityscore=1501 suspectscore=0 bulkscore=0
- clxscore=1011 mlxlogscore=468 phishscore=0 mlxscore=0 adultscore=0
- impostorscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2311290000 definitions=main-2402140041
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <Zcv7uI6VrMc2EuGT@kbusch-mbp>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000971E9:EE_|DS0PR12MB8043:EE_
+X-MS-Office365-Filtering-Correlation-Id: ca0eb04f-75d9-40f8-9dc7-08dc2d238415
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	WrfDVmzEqGcn8eKt44tMbccA2drpHTKovplIu6tGh+kB2YQaD0f4j2GelOXJJGbJtNb1AqoJOcJPBGwwyqx91Yg7nQRvFix9aGkYMiE4LcP0KgQvP7csQO8PLN6/jcGAqe6P7OumtvtS9TIZFOVyDJAvv0A5zwibOd5jOWMwDfIUx8Jm2lvchVPf94vn1Ztv1tyHtnn9CIMkXU/A/7yDIVTklCYmX7fhum85LS2dLPfSn94shxn9Y5daJTovWzIszR4pHG+UKzG/nIZsbB6xad+zqJvi3haM/mMa6s3wn/ukxBmfVbMyygCjJDi6Vx/kWTGk3PQxzgPOBFh5jvhJKnWLTWTa8PJSCG+1W5gJ4i6XAjLR51Dop7O37ZtDfISjDf73sLYBGCwKLivtSHAuglg2pHOh3U1mYKXE2KKgQc7/JYEs9vilbjW3L9/+ssMNz0GbJ2xZKcqyZx9QQwDK13LGzPBiZtqHrQcoddZxwE9dsgiAQ50Hp9aucEX6uLKMjFoWm6GWzvFQjSDVQ7m1BDpceonN4Ovz5ZhMT3Hp5xT7MMVc9G+CWOjFgrVv38yDwcY9YU01+8nHQ2AaVgCltdhJU51SWuim/JG+XuHPTsQ=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(39860400002)(136003)(376002)(396003)(346002)(230922051799003)(451199024)(64100799003)(1800799012)(186009)(82310400011)(36840700001)(40470700004)(46966006)(426003)(478600001)(26005)(336012)(55016003)(9686003)(86362001)(70586007)(4326008)(6916009)(8936002)(54906003)(7636003)(82740400003)(70206006)(8676002)(316002)(356005)(7416002)(41300700001)(33716001)(2906002)(5660300002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2024 06:09:34.1944
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca0eb04f-75d9-40f8-9dc7-08dc2d238415
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000971E9.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8043
 
-Thanks for the patch. Applied this patch and verified and issue is fixed.
+On Tue, Feb 13, 2024 at 04:31:04PM -0700, Keith Busch wrote:
+> On Tue, Feb 13, 2024 at 01:53:57PM -0800, Nicolin Chen wrote:
+> > @@ -2967,7 +2967,7 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
+> >               dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(48));
+> >       else
+> >               dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+> > -     dma_set_min_align_mask(&pdev->dev, NVME_CTRL_PAGE_SIZE - 1);
+> > +     dma_set_min_align_mask(&pdev->dev, PAGE_SIZE - 1);
+> >       dma_set_max_seg_size(&pdev->dev, 0xffffffff);
+> 
+> I recall we had to do this for POWER because they have 64k pages, but
+> page aligned addresses IOMMU map to 4k, so we needed to allow the lower
+> dma alignment to efficiently use it.
 
-This issue way originally reported in the below mail.
+Thanks for the input!
 
-https://marc.info/?l=linux-kernel&m=170737160630106&w=2
+In that case, we might have to rely on iovad->granule from the
+attached iommu_domain:
 
++static size_t iommu_dma_max_mapping_size(struct device *dev)
++{
++       struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++
++       if (!domain || !is_swiotlb_active(dev) || !dev_is_untrusted(dev))
++               return SIZE_MAX;
++       return ALIGN_DOWN(swiotlb_max_mapping_size(dev),
++                         domain->iova_cookie->iovad.granule);
++}
 
-Tested-by: Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com>
+With this in PATCH-1, we can drop PATCH-2.
 
-On 13/02/24 10:51 pm, Jason Gunthorpe wrote:
-> On Tue, Feb 13, 2024 at 10:05:22AM -0600, Shivaprasad G Bhat wrote:
->> The function spapr_tce_platform_iommu_attach_dev() is missing to call
->> iommu_group_put() when the domain is already set. This refcount leak
->> shows up with BUG_ON() during DLPAR remove operation as,
->>
->>    KernelBug: Kernel bug in state 'None': kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
->>    Oops: Exception in kernel mode, sig: 5 [#1]
->>    LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=8192 NUMA pSeries
->>    <snip>
->>    Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200 0xf000006 of:IBM,FW1060.00 (NH1060_016) hv:phyp pSeries
->>    NIP:  c0000000000ff4d4 LR: c0000000000ff4cc CTR: 0000000000000000
->>    REGS: c0000013aed5f840 TRAP: 0700   Tainted: G          I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
->>    MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 44002402  XER: 20040000
->>    CFAR: c000000000a0d170 IRQMASK: 0
->>    GPR00: c0000000000ff4cc c0000013aed5fae0 c000000001512700 c0000013aa362138
->>    GPR04: 0000000000000000 0000000000000000 0000000000000000 0000000119c8afd0
->>    GPR08: 0000000000000000 c000001284442b00 0000000000000001 0000000000001003
->>    GPR12: 0000000300000000 c0000018ffff2f00 0000000000000000 0000000000000000
->>    GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
->>    GPR20: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
->>    GPR24: c0000013aed5fc40 0000000000000002 0000000000000000 c000000002757d90
->>    GPR28: c0000000000ff440 c000000002757cb8 c00000183799c1a0 c0000013aa362b00
->>    NIP [c0000000000ff4d4] iommu_reconfig_notifier+0x94/0x200
->>    LR [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200
->>    Call Trace:
->>    [c0000013aed5fae0] [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200 (unreliable)
->>    [c0000013aed5fb10] [c0000000001a27b0] notifier_call_chain+0xb8/0x19c
->>    [c0000013aed5fb70] [c0000000001a2a78] blocking_notifier_call_chain+0x64/0x98
->>    [c0000013aed5fbb0] [c000000000c4a898] of_reconfig_notify+0x44/0xdc
->>    [c0000013aed5fc20] [c000000000c4add4] of_detach_node+0x78/0xb0
->>    [c0000013aed5fc70] [c0000000000f96a8] ofdt_write.part.0+0x86c/0xbb8
->>    [c0000013aed5fce0] [c00000000069b4bc] proc_reg_write+0xf4/0x150
->>    [c0000013aed5fd10] [c0000000005bfeb4] vfs_write+0xf8/0x488
->>    [c0000013aed5fdc0] [c0000000005c0570] ksys_write+0x84/0x140
->>    [c0000013aed5fe10] [c000000000033358] system_call_exception+0x138/0x330
->>    [c0000013aed5fe50] [c00000000000d05c] system_call_vectored_common+0x15c/0x2ec
->>    --- interrupt: 3000 at 0x20000433acb4
->>    <snip>
->>    ---[ end trace 0000000000000000 ]---
->>
->> The patch adds the missing iommu_group_put() call.
->>
->> Fixes: a8ca9fc9134c ("powerpc/iommu: Do not do platform domain attach atctions after probe")
->> Signed-off-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
->> ---
->>   arch/powerpc/kernel/iommu.c |    4 +++-
->>   1 file changed, 3 insertions(+), 1 deletion(-)
-> Doh, that is a weird splat for this but thanks for finding it
->
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
->
-> Jason
->
+Thanks
+Nicolin
