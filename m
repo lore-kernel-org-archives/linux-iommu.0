@@ -1,137 +1,272 @@
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EB9C19472
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 20:31:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A892613F01A
+	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 21:43:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707942665; cv=none; b=ONZ2PdcPGjGhRY1KjHNiIVnQbl9xvSewJeY08+Sfd+B5hCXuGFP9q+eFZ2ee5hdhJigXjb3CN42f3649dmkOBxfPDtNma5Zyb13wXDsW9D3c4m9pFdrtywdFBt2Z+QdlVVGBU6QveuKV5mYDIaqe4BpJghWvgv5iu49I75p4YH8=
+	t=1707947029; cv=none; b=sZIsbzjtEsGqVdsp1d/HHO/tGOSsHUTMfIjN6UA+BwC73/m5wtljTg/Xus/BCebRvEg4/cvGCeXyK7043Vy7D6EjHMRriFFGBtu0Go0bx+PAtU7gEeLo4TyAsD8jZjJGFYn/RA7x0FUTkMVMYjoOqUyNkkcgDh3m4sKbq2ZvVSo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707942665; c=relaxed/simple;
-	bh=Vd0j1FX9Ch3W6HoLjw5jsyZYk+r6JPnPHoqpsjH65ZQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=QrobwqNGW1435jvJFVaeWq36AhFhptfdN1OH1GYK9Azabe3cAJBNKWBumPGZRkVDiXssd4OjK43S1FHOXFYJIVyI+WBDMF7xB21vvu9aZqyBf3Uholf3oQSIYUWNoFWwQtOj+C3PA2Y3m3XCXxXlzedim3F3SACdYaHt5J4/W+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ClFaRg5v; arc=none smtp.client-ip=209.85.219.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1707947029; c=relaxed/simple;
+	bh=jzDKArta05/SueeyHjcOmqtwh2NVrtwFbWx9We1YttA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jeP2AVxOmlvodVWGUPUvPQzU+CHKsi8UM3Bm7tWAV0UJHfn16aURUNLI4qqifRvy7exfG6GB1d0XuCquXwWBUkF1K2xg7mTQaBgeXehKSLEnB7qYQprt2YwNo1nXzeIIrF5Ca4ioj6W5XJT6ZKx379szf8xpSqi1uFEee7UWrTQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=yZ91kgRc; arc=none smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ClFaRg5v"
-Received: by mail-yb1-f181.google.com with SMTP id 3f1490d57ef6-dcc80d6004bso106510276.0
-        for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 12:31:03 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="yZ91kgRc"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a2f79e79f0cso21051766b.2
+        for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 13:43:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1707942662; x=1708547462; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NcEj/SyVb+AY5aiDL6vEY+YAlLL1EeaxcCrjK4Q+5oY=;
-        b=ClFaRg5v4n4YA/CqYiY2C9k9D++gF50PPR+fgwDYKsPoHhoN8Ji2/MfKkAhVrSXel6
-         85Vd9rfMmdx9qHc/l69+Oif/YOZ8aoMmGykuRRjZrt8fHiJ0VSIW8SInWPgKG3zKF8LJ
-         rEMdjEp54Izu7P21gqfL0VSFGvfhXKxAhILAwc6dTOH8TblRwhuFMJc8qn69mVArRAsb
-         RvKkylxdVclmtdbbtCB7x5iVxnPtcTQ0bnYxGxaalwLTHG8aokTvMKlD8MCqxsAEkrYN
-         7b0I9TckT9naRU4o/vbF1Li4Z1G1FAS7mNST5FdBDOOkiG/3Wg5uuHTp2Hf8BVI9FSOS
-         M8Jg==
+        d=linaro.org; s=google; t=1707947026; x=1708551826; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FH2C7vn8hDWw4rS59jrNqZ5mvcTJOw6OI/RhdHm4JoE=;
+        b=yZ91kgRcbXa4PbF5dGfF4pS1FxCFWSlEC7stS/7yr5KYQ1jMUbCzNZQY406YMV27D1
+         smBMogussKQId3j74y6F0pZoeyvWUV+zViPI3fGFupfqnWyB9SF75Zmvf6a+U7LGaAAv
+         THhqAmHJ4ewHrN6wIpvl5Kmn6985546Cf2t3FXdT1kylcJdnsH1NYSHtXLfjo2CKZoN5
+         xTyzkIQ2q3+dEAfW8NlmqPfgh0KhKvHRYq5J7vFcOnOLGdnE5k+ZC9XmdsH7PW8dZrEb
+         aE7qfjg6BNiypVL3BOqLf5gmj8UUm0awudBIccbbSFgkbB0tkWzVqVjNjc7rGrQ8YnGY
+         wumg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707942662; x=1708547462;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=NcEj/SyVb+AY5aiDL6vEY+YAlLL1EeaxcCrjK4Q+5oY=;
-        b=sOBfGadIiimqgb/vboxXd8OU+tpa+ofSVd7GmQUIiL73kVXeTtx/tmWSUQvsG1jquf
-         NzabpHOZK4c0mG/uwb6TC5pFKwekSEImaG9G7O0a+vMTO8rG8QaTb71ZutZqMq5qsRyv
-         EhT9sDzQjC/A67S0ikozm0OpKlvoLEC5QCcd+SCeUNLekEyPUBoPBmf9RbYgHGBErPmo
-         hJW/vG+5FHwSVODnAP5LNPBlheqt6I+lbmcvGBF9W1jIzSBUUXzF7k2vPJhBFPDAbPIz
-         XnJzkruXJxQkJ/MqAv2lk45bWrQE5bmy6XkVid7SzIvxvI0B1tkY4gHFEtC/NssANmiP
-         ghOw==
-X-Forwarded-Encrypted: i=1; AJvYcCVloRqDmj+uFIl1eSlzAn9gKbhjjBCrJfwZzWxHvkKcU2FwmcVau2dZeZ8MTgm5FvXRXHqJwe4ElhUSQh/EytK72991fho=
-X-Gm-Message-State: AOJu0YwxRVpzcKtPIaq/ThNqcf1imoSUqdiqocr8WOJpGUTBWVsz8pWG
-	1gCXBoiySKAn2TNATFt8PArm63Q4HO7sv3plQNByCF+RpXuEOMca5o15jfVqmMkVsW0e8Mw+po7
-	0iKaKCRIYQRZraezz6C9Kd2Lfsnm52d7TkJ1E
-X-Google-Smtp-Source: AGHT+IFqoJj5aCwpmg00G6ZaLb2aiZ8b3im8fm6yEl4ijg46+lI254clzZhzLZ0Iv0kb6bhFH6lVLC2hnoLSZAsSoRU=
-X-Received: by 2002:a25:4115:0:b0:dc6:bbeb:d889 with SMTP id
- o21-20020a254115000000b00dc6bbebd889mr3283052yba.52.1707942662262; Wed, 14
- Feb 2024 12:31:02 -0800 (PST)
+        d=1e100.net; s=20230601; t=1707947026; x=1708551826;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=FH2C7vn8hDWw4rS59jrNqZ5mvcTJOw6OI/RhdHm4JoE=;
+        b=NePtopjsnQdF1OckGbiPMu89XzzYy9wIwT7hB/S2UEnemlCdR3203gDZyu84jUcqzY
+         kP05I9LuWyuvCszWCgQKbjiRanrEyufZ+N2fTdDBA4vZqLsy6Ez0BhjLQ2L5oJ4+Qk+q
+         lt/0PatEi5VBoYP2Pd0rXe9CumNrFCGqAFBFJWZKHzpx0S34yNt2xA7GxAb242Hdf5NT
+         RGMiZEjHcdJkU8UoTjv8h7F2kWdm8B6AyeIv8rgquB1XjW+OuwaixJj6EIAwVBWYUz/Q
+         KNfmpnABs8SbZyqls7bmoBVzx9HOZTYlb7JyynQifoMZX+HLPdw+SwcaHqLt01m4OjRP
+         pE3A==
+X-Forwarded-Encrypted: i=1; AJvYcCXEFi/lCHdApL0lP8jKsIhdN/KpK0IuTJCK0TcZGwW/IaVMc9HeDT2OOkczuhCTBS6623TISii+Az0NxTnTUR5ZJbX3qnU=
+X-Gm-Message-State: AOJu0Yw+ILIz3J/uGmF493xue6FF1mwbsdpm6gftF55dm+zhJkVIFtmU
+	2X6dlktd9j9npu1UZGIgBThjfnmzbxo+pMctRF8hemnzJVdIix4AaJM52r3CS2Q=
+X-Google-Smtp-Source: AGHT+IG7UQyEyDms50ny2v6l+WwpJ0LwBFQwJp87OYPcEEuRnmhBvrC48Jo9frT13TADGjAKcjdmrQ==
+X-Received: by 2002:a17:906:1cd0:b0:a3d:5932:7f59 with SMTP id i16-20020a1709061cd000b00a3d59327f59mr1945165ejh.71.1707947025935;
+        Wed, 14 Feb 2024 13:43:45 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCX+n+tcGDQQCOX21+nPmBrawzYkshOo9vWPljGBds4b7g2q8cM5IFouMZRoU+qnitU3L5Rbe3hXEEo5qfQcMJW9Yq50F1TwKjXqNt1GjVn0txnn7BH8JwJSU7hoFBwSrrw76BjuZYkHCbJ0WhNWjyEpnVzl4xh7vxHB7h5ytWaI9B1roXRtp8hdoiDojN6/6hxORYbHXIYfW+n+ZkPIysJ+R+Iua0A1qOonW3n19IDDhMC4FmC4BuYKTPtGxptu/+JxSJ8vIsIMgCcH+sNh+8jXdLrDlpPUhgMtbosP64grS5AeqNkJ7HOuc7vNRFHWKOEgwWVQRASjEfnKJ00s/pJJ1dckpg68xpWtmVHVtwNFs69iybWa7UAPeEt02b4nRg9Y1qx4QZ1qwPC32haGw90HI/B2kHLlaQjG0m53c4X7NpaANOuG3SzwS63F5Si8touyQG8kkD9fWg075wrUfLh2oFRVTlSpjmjXa3vX9i5MzeyEDZguO/w5IisoGBYezFEjuKXVn6Ss0A3sLjSlZXFsqGqLLq+mG6KlKkkvlO0ubAU3uXbRs0sfrkyPA5Fc8a2On/VMcdjb4eEQ1CB1llaIDNylVi222BLPiWFL1tOWDismznKU4I3bEMrKuXX0mlFrr47QQIAOxqQYvJsHLHrYkROFsxY+HKXSYh311+HSdeGnb+wZqP2rD5nYJe0Y7TpGPu8SOSw16Wz6ZWPX7t8t7eWhwQIv549wd2y3XDv4x4NOMm+A6YSPB+5fYG1nCTzR38h4EykOLrnCVGtWz0iL2NReuzZ+7DYURshGxC89RYM0zlm2rpZM477m
+Received: from [192.168.192.135] (078088045141.garwolin.vectranet.pl. [78.88.45.141])
+        by smtp.gmail.com with ESMTPSA id sa4-20020a1709076d0400b00a3d841e627bsm51757ejc.58.2024.02.14.13.43.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Feb 2024 13:43:45 -0800 (PST)
+Message-ID: <13d65685-b306-43ad-b9ca-a799f2cf73e5@linaro.org>
+Date: Wed, 14 Feb 2024 22:43:43 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240212213922.783301-1-surenb@google.com> <4f24986587b53be3f9ece187a3105774eb27c12f.camel@linux.intel.com>
- <CAJuCfpGnnsMFu-2i6-d=n1N89Z3cByN4N1txpTv+vcWSBrC2eg@mail.gmail.com> <Zc0f7u5yCq-Iwh3A@google.com>
-In-Reply-To: <Zc0f7u5yCq-Iwh3A@google.com>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Wed, 14 Feb 2024 12:30:49 -0800
-Message-ID: <CAJuCfpEbdC4k=4aeEO=YfX2tZhkdOVaehAv9Ts7S42B_bmm=Ow@mail.gmail.com>
-Subject: Re: [PATCH v3 00/35] Memory allocation profiling
-To: Yosry Ahmed <yosryahmed@google.com>
-Cc: Tim Chen <tim.c.chen@linux.intel.com>, akpm@linux-foundation.org, 
-	kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
-	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, 
-	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yuzhao@google.com, dhowells@redhat.com, hughd@google.com, 
-	andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com, 
-	vvvvvv@google.com, gregkh@linuxfoundation.org, ebiggers@google.com, 
-	ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com, 
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
-	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
-	shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com, 
-	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
-	kernel-team@android.com, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/5] drm: msm: add support for A750 GPU
+Content-Language: en-US
+To: neil.armstrong@linaro.org, Rob Clark <robdclark@gmail.com>,
+ Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
+ Marijn Suijten <marijn.suijten@somainline.org>,
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Bjorn Andersson <andersson@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <20240212-topic-sm8650-gpu-v1-0-708a40b747b5@linaro.org>
+ <20240212-topic-sm8650-gpu-v1-3-708a40b747b5@linaro.org>
+ <b5d76a25-045a-4acd-ad20-d28855b40222@linaro.org>
+ <bcad544c-7ca2-4b4f-805b-4ccaedbd091c@linaro.org>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
+ 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
+ izWDgYvmBE8=
+In-Reply-To: <bcad544c-7ca2-4b4f-805b-4ccaedbd091c@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, Feb 14, 2024 at 12:17=E2=80=AFPM Yosry Ahmed <yosryahmed@google.com=
-> wrote:
->
-> > > > Performance overhead:
-> > > > To evaluate performance we implemented an in-kernel test executing
-> > > > multiple get_free_page/free_page and kmalloc/kfree calls with alloc=
-ation
-> > > > sizes growing from 8 to 240 bytes with CPU frequency set to max and=
- CPU
-> > > > affinity set to a specific CPU to minimize the noise. Below are res=
-ults
-> > > > from running the test on Ubuntu 22.04.2 LTS with 6.8.0-rc1 kernel o=
-n
-> > > > 56 core Intel Xeon:
-> > > >
-> > > >                         kmalloc                 pgalloc
-> > > > (1 baseline)            6.764s                  16.902s
-> > > > (2 default disabled)    6.793s (+0.43%)         17.007s (+0.62%)
-> > > > (3 default enabled)     7.197s (+6.40%)         23.666s (+40.02%)
-> > > > (4 runtime enabled)     7.405s (+9.48%)         23.901s (+41.41%)
-> > > > (5 memcg)               13.388s (+97.94%)       48.460s (+186.71%)
-> >
-> > (6 default disabled+memcg)    13.332s (+97.10%)         48.105s (+184.6=
-1%)
-> > (7 default enabled+memcg)     13.446s (+98.78%)       54.963s (+225.18%=
-)
->
-> I think these numbers are very interesting for folks that already use
-> memcg. Specifically, the difference between 6 & 7, which seems to be
-> ~0.85% and ~14.25%. IIUC, this means that the extra overhead is
-> relatively much lower if someone is already using memcgs.
+On 12.02.2024 15:45, Neil Armstrong wrote:
+> On 12/02/2024 11:46, Konrad Dybcio wrote:
+>> On 12.02.2024 11:37, Neil Armstrong wrote:
+>>> Add support for the A750 GPU found on the SM8650 platform
+>>>
+>>> Unlike the the very close A740 GPU on the SM8550 SoC, the A750 GPU
+>>> doesn't have an HWCFG block but a separate register set.
+>>>
+>>> The missing registers are added in the a6xx.xml.h file that would
+>>> require a subsequent sync and the non-existent hwcfg is handled
+>>> in a6xx_set_hwcg().
+>>
+>> These should also be submitted to mesa to make sure the next header sync
+>> doesn't wipe them
+> 
+> Ack submitting them right now: https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27576
 
-Well, yes, percentage-wise it's much lower. If you look at the
-absolute difference between 6 & 7 vs 2 & 3, it's quite close.
+Thanks
 
->
-> >
-> > (6) shows a bit better performance than (5) but it's probably noise. I
-> > would expect them to be roughly the same. Hope this helps.
-> >
-> > > >
-> > >
-> > >
+> 
+>>
+>> [...]
+>>
+>>> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>>> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>>> @@ -958,10 +958,11 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+>>>       struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
+>>>       struct a6xx_gmu *gmu = &a6xx_gpu->gmu;
+>>>       const struct adreno_reglist *reg;
+>>> +    bool skip_programming = !(adreno_gpu->info->hwcg || adreno_is_a7xx(adreno_gpu));
+>>
+>> is_a750?
+> 
+> OK right, I was thinking of the next gpu which will probably also miss an hwcfg
+> 
+>>
+>>>       unsigned int i;
+>>>       u32 val, clock_cntl_on, cgc_mode;
+>>>   -    if (!adreno_gpu->info->hwcg)
+>>> +    if (skip_programming)
+>>>           return;
+>>>         if (adreno_is_a630(adreno_gpu))
+>>> @@ -982,6 +983,25 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+>>>                 state ? 0x5555 : 0);
+>>>       }
+>>>   +    if (!adreno_gpu->info->hwcg) {
+>>
+>> I don't think this block of code is reachable now, no?
+> 
+> It is because we didn't skip when adreno_is_a7xx(adreno_gpu)
+
+Ahh I misread the brackets within the assignment
+
+> 
+>>
+>> Maybe remove the skip_programming and if_a750 here?
+> This would require:
+>>> -    if (!adreno_gpu->info->hwcg || )
+>>> +    if (!(adreno_gpu->info->hwcg || adreno_is_a750(adreno_gpu)))
+> 
+> and:
+> 
+>>> +    if (adreno_is_a750(adreno_gpu)) {
+> 
+> But if the next gpu also doesn't have an hwcfg, we will need to use
+> the current design...
+> 
+> I just tried with:
+> ====================><===============================
+> @@ -961,7 +961,7 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+>         unsigned int i;
+>         u32 val, clock_cntl_on, cgc_mode;
+> 
+> -       if (!adreno_gpu->info->hwcg)
+> +       if (!(adreno_gpu->info->hwcg || adreno_is_a750(adreno_gpu)))
+>                 return;
+> 
+>         if (adreno_is_a630(adreno_gpu))
+> @@ -982,6 +982,25 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+>                           state ? 0x5555 : 0);
+>         }
+> 
+> +       if (adreno_is_a750(adreno_gpu)) {
+> +               gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
+> +               gpu_write(gpu, REG_A7XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
+> +
+> +               if (state) {
+> +                       gpu_write(gpu, REG_A7XX_RBBM_CGC_P2S_TRIG_CMD, 1);
+> +
+> +                       if (gpu_poll_timeout(gpu, REG_A7XX_RBBM_CGC_P2S_STATUS, val,
+> +                                            val & A7XX_RBBM_CGC_P2S_STATUS_TXDONE, 1, 10)) {
+> +                               dev_err(&gpu->pdev->dev, "RBBM_CGC_P2S_STATUS TXDONE Poll failed\n");
+> +                               return;
+> +                       }
+> +
+> +                       gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 0);
+> +               }
+> +
+> +               return;
+> +       }
+> +
+>         val = gpu_read(gpu, REG_A6XX_RBBM_CLOCK_CNTL);
+> 
+>         /* Don't re-program the registers if they are already correct */
+> ====================><===============================
+> 
+> And it works fine, does it work it for you ?
+
+Let's keep it as-is in the original submission, as I've mentioned, I had
+misread the code
+
+Konrad
+
+> 
+>>
+>>> +        gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
+>>> +        gpu_write(gpu, REG_A7XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
+>>> +
+>>> +        if (state) {
+>>> +            gpu_write(gpu, REG_A7XX_RBBM_CGC_P2S_TRIG_CMD, 1);
+>>> +
+>>> +            if (gpu_poll_timeout(gpu, REG_A7XX_RBBM_CGC_P2S_STATUS, val,
+>>> +                         val & BIT(0), 1, 10)) {
+>>
+>> We should define that bit name (the err suggests it's
+>> REG_A7XX_RBBM_GCC_P2S_STATUS_TXDONE or so)
+>>
+>> [...]
+>>
+>>> +static inline int adreno_is_a750(struct adreno_gpu *gpu)
+>>> +{
+>>> +    return gpu->info->chip_ids[0] == 0x43051401;
+>>> +}
+>>> +
+>>>   /* Placeholder to make future diffs smaller */
+>>
+>> Please also remove this comment now that it's invalid
+> 
+> Ack
+> 
+>>
+>> Konrad
+> 
+> Thanks,
+> Neil
+> 
