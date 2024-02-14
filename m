@@ -1,93 +1,107 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C07E5D49C;
-	Wed, 14 Feb 2024 16:41:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D951604BC;
+	Wed, 14 Feb 2024 16:55:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707928905; cv=none; b=MGvp0+/UjriwVqs+LwEpkwIYBAayqOUMLBgKQDhuWQreCA50H1udcSNgfOY+GqDOtk0vs8gjuTfMWR/O1XcVU5KE/rlEkfs5ovZtAYKga6s5d6Dnkqaw6dv9b74BXVZ+hHWUpsQREtK9vG/pBV64BedqcRFpWOb+k7LbpWs6RIU=
+	t=1707929752; cv=none; b=gGg+zAVWRgws+NTYmPwWrAovxhn7j8f0KKes6Gkd/GavkUhdolVF2sv+0dc78MQCYTzMwRiXalKX2EmfQ5WxnVYXlNbKnNx8bDAFK9WkiK4igkaMOaSSyDV9jcdpCbFujXblAF/uDCY9+B+Dk4cvjw2GFaahNjQNvXvnMIdNvPg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707928905; c=relaxed/simple;
-	bh=rtzaQewjWyFqgXvX8Cpq/QwLjOpb1280iFp5zLTTWx8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZvngrQ0FvQ97ZLUoDE3506VHDXeinLbxC0HZniH1IEC65CLr1BOWXLbowHWdXopZJj08GW3aDdf94WFaiFC7SmL9scwwvOK0NPnhgQg3IeeO1Iey3XB2iTKPvLxC86HCmWijKsl915NjpcTMVJjr4JQfhzcGSjRsIvE0Gs3iK8k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oP/9iHXz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1707929752; c=relaxed/simple;
+	bh=Z1j0awbyiMqQJioymUvLXxMTBT0EGAz3kMP8dpbtft4=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=Qh9x31qTahDzxkLEMayQnWXSWt+TevPz6hxOoQrQIItZMqc9r7xlbL1eI74g8OvOmZ6i7JChSdKYxlSBcEANUssaXbHFOMXIpr7GFOzJi44h4/VkwGB1KrS8IVRdEcNIVH5fnHojpQQGObcAYPflsykxYsS3F+unmt/gX2XScNk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=aP6eNqCb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oP/9iHXz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14B19C433F1;
-	Wed, 14 Feb 2024 16:41:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1707928904;
-	bh=rtzaQewjWyFqgXvX8Cpq/QwLjOpb1280iFp5zLTTWx8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=oP/9iHXzZ4W3ZkEIKY9irpzbod0eFARuDjHbe93lj1nSEHbUYvXg3uHTnMtH9Jkmt
-	 SuqEPiKzPsRKrc5m74cY32AfDw/qAVaFGETVY32JqsFWgRSR5RvlcF0t1HdI+GtK3f
-	 x7Ye1fDwGN5Zfei+HU++QCasgmImmcKpwQHy6MC660hAUJZxnILvlV4RFM0QLgt23B
-	 7/MSUOriFsS4NiTahlVGWkpfjqfgxTAnimulbm1unYOY2l/Zum4l+1qVgQG/9qVV6w
-	 y1Iu8twIAaK4onCIbUsBWRJCER2TwLsWCJSJCFsh8Bk0OtJHI7HhALtsWjs3Dx7xQN
-	 XKys4GJgd5Tmw==
-Date: Wed, 14 Feb 2024 16:41:38 +0000
-From: Will Deacon <will@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: sagi@grimberg.me, hch@lst.de, axboe@kernel.dk, kbusch@kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, jgg@nvidia.com,
-	linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, murphyt7@tcd.ie, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v1 0/2] nvme-pci: Fix dma-iommu mapping failures when
- PAGE_SIZE=64KB
-Message-ID: <20240214164138.GA31927@willie-the-truck>
-References: <cover.1707851466.git.nicolinc@nvidia.com>
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="aP6eNqCb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57F71C433C7;
+	Wed, 14 Feb 2024 16:55:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+	s=korg; t=1707929751;
+	bh=Z1j0awbyiMqQJioymUvLXxMTBT0EGAz3kMP8dpbtft4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=aP6eNqCb/UgW05i+ulED3dJ38CFlbF46c9ImepcRNWw3cqV444ebJY3dOVwDX0TpF
+	 Zry6nkCkfDuDtI3bkVsahvhtqzq0e6p7PwaST0Yzxnx6S2AOkZW5cKbC+D8uj2KfhL
+	 cXIdI5wkzTTOR16ASzaWYyPLnnwcg8bFmbhrKB3U=
+Date: Wed, 14 Feb 2024 08:55:48 -0800
+From: Andrew Morton <akpm@linux-foundation.org>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: Kent Overstreet <kent.overstreet@linux.dev>, David Hildenbrand
+ <david@redhat.com>, Michal Hocko <mhocko@suse.com>, vbabka@suse.cz,
+ hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
+ dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+ corbet@lwn.net, void@manifault.com, peterz@infradead.org,
+ juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org,
+ arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+ dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+ axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+ nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
+ rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
+ yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
+ hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
+ ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org,
+ ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
+ dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+ bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+ iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+ elver@google.com, dvyukov@google.com, shakeelb@google.com,
+ songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+ minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+ cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 00/35] Memory allocation profiling
+Message-Id: <20240214085548.d3608627739269459480d86e@linux-foundation.org>
+In-Reply-To: <CAJuCfpF4g1jeEwHVHjQWwi5kqS-3UqjMt7GnG0Kdz5VJGyhK3Q@mail.gmail.com>
+References: <20240212213922.783301-1-surenb@google.com>
+	<Zctfa2DvmlTYSfe8@tiehlicka>
+	<CAJuCfpEsWfZnpL1vUB2C=cxRi_WxhxyvgGhUg7WdAxLEqy6oSw@mail.gmail.com>
+	<9e14adec-2842-458d-8a58-af6a2d18d823@redhat.com>
+	<2hphuyx2dnqsj3hnzyifp5yqn2hpgfjuhfu635dzgofr5mst27@4a5dixtcuxyi>
+	<6a0f5d8b-9c67-43f6-b25e-2240171265be@redhat.com>
+	<CAJuCfpEtOhzL65eMDk2W5SchcquN9hMCcbfD50a-FgtPgxh4Fw@mail.gmail.com>
+	<adbb77ee-1662-4d24-bcbf-d74c29bc5083@redhat.com>
+	<r6cmbcmalryodbnlkmuj2fjnausbcysmolikjguqvdwkngeztq@45lbvxjavwb3>
+	<CAJuCfpF4g1jeEwHVHjQWwi5kqS-3UqjMt7GnG0Kdz5VJGyhK3Q@mail.gmail.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1707851466.git.nicolinc@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Nicolin,
+On Tue, 13 Feb 2024 14:59:11 -0800 Suren Baghdasaryan <surenb@google.com> wrote:
 
-On Tue, Feb 13, 2024 at 01:53:55PM -0800, Nicolin Chen wrote:
-> It's observed that an NVME device is causing timeouts when Ubuntu boots
-> with a kernel configured with PAGE_SIZE=64KB due to failures in swiotlb:
->     systemd[1]: Started Journal Service.
->  => nvme 0000:00:01.0: swiotlb buffer is full (sz: 327680 bytes), total 32768 (slots), used 32 (slots)
->     note: journal-offline[392] exited with irqs disabled
->     note: journal-offline[392] exited with preempt_count 1
+> > > If you think you can easily achieve what Michal requested without all that,
+> > > good.
+> >
+> > He requested something?
 > 
-> An NVME device under a PCIe bus can be behind an IOMMU, so dma mappings
-> going through dma-iommu might be also redirected to swiotlb allocations.
-> Similar to dma_direct_max_mapping_size(), dma-iommu should implement its
-> dma_map_ops->max_mapping_size to return swiotlb_max_mapping_size() too.
-> 
-> Though an iommu_dma_max_mapping_size() is a must, it alone can't fix the
-> issue. The swiotlb_max_mapping_size() returns 252KB, calculated from the
-> default pool 256KB subtracted by min_align_mask NVME_CTRL_PAGE_SIZE=4KB,
-> while dma-iommu can roundup a 252KB mapping to 256KB at its "alloc_size"
-> when PAGE_SIZE=64KB via iova->granule that is often set to PAGE_SIZE. So
-> this mismatch between NVME_CTRL_PAGE_SIZE=4KB and PAGE_SIZE=64KB results
-> in a similar failure, though its signature has a fixed size "256KB":
->     systemd[1]: Started Journal Service.
->  => nvme 0000:00:01.0: swiotlb buffer is full (sz: 262144 bytes), total 32768 (slots), used 128 (slots)
->     note: journal-offline[392] exited with irqs disabled
->     note: journal-offline[392] exited with preempt_count 1
-> 
-> Both failures above occur to NVME behind IOMMU when PAGE_SIZE=64KB. They
-> were likely introduced for the security feature by:
-> commit 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers"),
-> 
-> So, this series bundles two fixes together against that. They should be
-> taken at the same time to entirely fix the mapping failures.
+> Yes, a cleaner instrumentation. Unfortunately the cleanest one is not
+> possible until the compiler feature is developed and deployed. And it
+> still would require changes to the headers, so don't think it's worth
+> delaying the feature for years.
 
-It's a bit of a shot in the dark, but I've got a pending fix to some of
-the alignment handling in swiotlb. It would be interesting to know if
-patch 1 has any impact at all on your NVME allocations:
+Can we please be told much more about this compiler feature? 
+Description of what it is, what it does, how it will affect this kernel
+feature, etc.
 
-https://lore.kernel.org/r/20240205190127.20685-1-will@kernel.org
+Who is developing it and when can we expect it to become available?
 
-Cheers,
+Will we be able to migrate to it without back-compatibility concerns? 
+(I think "you need quite recent gcc for memory profiling" is
+reasonable).
 
-Will
+
+
+Because: if the maintainability issues which Michel describes will be
+significantly addressed with the gcc support then we're kinda reviewing
+the wrong patchset.  Yes, it may be a maintenance burden initially, but
+at some (yet to be revealed) time in the future, this will be addressed
+with the gcc support?
+
