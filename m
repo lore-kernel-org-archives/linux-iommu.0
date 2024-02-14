@@ -1,176 +1,163 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7DE510A01
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 04:59:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8F0BC8DD
+	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 05:34:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707886777; cv=none; b=TteQ74ORx6zPHnP3/LuF4XpUnG/EFOXW64ZutncvB//yKxceDUdwMlsW97UTTy1ymGqRgnf6UaE4tzm7ONyPBvghcT08RfyIDCNA86CSx1AlXEzrzcLzauNn2QAI++Sc8UAp33HJnaXAFqJ7tAvN0OT4YbHRuGvZDRLhZOee/GY=
+	t=1707888868; cv=none; b=V73FvvmzGscoOCF0KSh2mNaCz4puQ20ohfyH7Jx1JBk9QcnMbdOR5s7BzcoYXOcW1a/x2g0fxTYjJdD2K24p3e+FMcmRcT2fkZbNILEo3TUoP1f+QKYUFkLroKf9CuZZNv2AMUCPBBPQNlKafRQ9Hvpml1YW0dg6rGUx0SbGCg4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707886777; c=relaxed/simple;
-	bh=GnF+HftFJovaowMYlUfGsE6UDD5v909bbQ4eem1ZV1s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=C07TJVFNn3jKtihXFtnW9LCahgHpnjRokmJdjjin0/+0eo/WMrlydSCCgUfsL/IpxFa9pn4glYOowlfN5W15EqmsVbPKqKswk9ep/LU5jhyehTo2UEcWNtxdvvUgiG69htPLLWwIAaLrzauvmjKVc75XyWnKbiDpyOqlpmIwwDs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=VAAgy3v+; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1707888868; c=relaxed/simple;
+	bh=0vn/2xZjRpP2RruobzMCkoDCEodYNaVfuaYzWJk1pGI=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=JBK+ky8oYenPQtPdzsTvpWCOk817yZkGlCHGSkZnXFiS3Rg3gPG5C9JufB7K0blSBE+qk323rn+IKWSljUXUb++4JYSMxXC/1FKpbrQkD1cJtU2nZPXwYRJeZpr99mxg1IsUpWOg/aTPv7ciK8qW1Oq04yOfv1ufRFmtN7pHj2w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com; spf=none smtp.mailfrom=linux.vnet.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=KLVjjEBM; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.vnet.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.vnet.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="VAAgy3v+"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41E4lLWY016894;
-	Wed, 14 Feb 2024 04:59:15 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=J5dw5NdwV5Wy8v/c5P6wBJjzKMEYcDWvV01sDtAgRUY=; b=VA
-	Agy3v+Kb51xaStEdrJWwC/NAEDFG6+VQ2EHb4mjX75xKOV8KxlN0hcAYA9WBUIwj
-	vGMa79XzAmNWelkDQ+X53QVRwcb11Cryn84R9keVr0Jty2J77gx+oBr/NywLRDoj
-	y2B3pwZ7v0zMbn/Pq4b12pXW+gIG3JACRHTGgI7k36l5LrtBiJ79pj0vb5loS2yP
-	MU2TfJhjeD4Hy9O02X747IaDnnGG3amO8VHkbXj5ePBxUsAgKld+tevAbU/8Nbx4
-	RY0B++0QveHQbzeeHjMdTwpXazjfmtiEpD7AIiblzgTKCniNhstu22O2TNgnWnDv
-	Bhb5fiD44X7zwiMrdffA==
-Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3w8448t7tp-1
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="KLVjjEBM"
+Received: from pps.filterd (m0360083.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 41E4vlrQ031412;
+	Wed, 14 Feb 2024 05:34:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=2v0hlwpBVJIDoWo3D4rG6ozciu8MtAw5fKJ6M/0ZGtA=;
+ b=KLVjjEBMoqqxjWiQsGgV9Gs0dYzXQXlHvsRIJMWuXJVEwit72eowV8sL1Yg5SAeioXNg
+ HBvpY/VJf+ipoSUMz03mLOTr7CmzRHHq0Bsub64Tr4ECyheIsvw5eAXLl3gEEq7LO46S
+ xeGGbIJx7Eow8aG17toiZl8MrrAIBUKvhvGslflr1XQQLb+Wt6+nAsCSzOyi9FCL0c/x
+ +RzztIOrMvoPiAENdkYLgX5PZrc2o1NPBLNwa+cQoEEHkejWVbAi6Yji9t9WcB6k2KQo
+ LCmPEoXmc6jjspObIlvg6jyfa4t0blrUa+jitoCxBUplmqE8tJ05hbpEltao0dubhSk1 Ow== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w8pxmgw5c-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 14 Feb 2024 04:59:15 +0000 (GMT)
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.45.79.139])
-	by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 41E4xE5k026181
+	Wed, 14 Feb 2024 05:34:13 +0000
+Received: from m0360083.ppops.net (m0360083.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 41E4w2EM032629;
+	Wed, 14 Feb 2024 05:34:12 GMT
+Received: from ppma22.wdc07v.mail.ibm.com (5c.69.3da9.ip4.static.sl-reverse.com [169.61.105.92])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w8pxmgw51-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 14 Feb 2024 04:59:14 GMT
-Received: from [10.214.25.202] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.45.79.139) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Tue, 13 Feb
- 2024 20:59:09 -0800
-Message-ID: <8a2a4ae4-26d3-40f2-b87b-336093a1ec8f@quicinc.com>
-Date: Wed, 14 Feb 2024 10:29:06 +0530
+	Wed, 14 Feb 2024 05:34:12 +0000
+Received: from pps.filterd (ppma22.wdc07v.mail.ibm.com [127.0.0.1])
+	by ppma22.wdc07v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 41E2NvJ0004339;
+	Wed, 14 Feb 2024 05:34:11 GMT
+Received: from smtprelay03.wdc07v.mail.ibm.com ([172.16.1.70])
+	by ppma22.wdc07v.mail.ibm.com (PPS) with ESMTPS id 3w6kv0c6e8-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 14 Feb 2024 05:34:11 +0000
+Received: from smtpav01.dal12v.mail.ibm.com (smtpav01.dal12v.mail.ibm.com [10.241.53.100])
+	by smtprelay03.wdc07v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 41E5Y8OF26280472
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Wed, 14 Feb 2024 05:34:10 GMT
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 2A15158058;
+	Wed, 14 Feb 2024 05:34:08 +0000 (GMT)
+Received: from smtpav01.dal12v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 6A4855806B;
+	Wed, 14 Feb 2024 05:34:02 +0000 (GMT)
+Received: from [9.43.87.202] (unknown [9.43.87.202])
+	by smtpav01.dal12v.mail.ibm.com (Postfix) with ESMTP;
+	Wed, 14 Feb 2024 05:34:02 +0000 (GMT)
+Message-ID: <4f5e638d-30a2-4207-b515-d07c20b0fb47@linux.vnet.ibm.com>
+Date: Wed, 14 Feb 2024 11:04:00 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] powerpc/iommu: Fix the missing iommu_group_put() during
+ platform domain attach
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@ziepe.ca>, Shivaprasad G Bhat <sbhat@linux.ibm.com>
+Cc: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
+        christophe.leroy@csgroup.eu, aneesh.kumar@kernel.org,
+        naveen.n.rao@linux.ibm.com, jroedel@suse.de,
+        tpearson@raptorengineering.com, aik@amd.com, bgray@linux.ibm.com,
+        gregkh@linuxfoundation.org, gbatra@linux.vnet.ibm.com,
+        vaibhav@linux.ibm.com
+References: <170784021983.6249.10039296655906636112.stgit@linux.ibm.com>
+ <20240213172128.GM765010@ziepe.ca>
+From: Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com>
+In-Reply-To: <20240213172128.GM765010@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: VEN0Ab5lxghBOi28HwoCQawyJkmQ3Lg6
+X-Proofpoint-GUID: uUo8j74xaYSgknAAVs_YIypAe1HaCi1W
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 08/10] iommu/arm-smmu-qcom: Merge table from
- arm-smmu-qcom-debug into match data
-Content-Language: en-US
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-CC: <andersson@kernel.org>, <devicetree@vger.kernel.org>,
-        <freedreno@lists.freedesktop.org>, <iommu@lists.linux.dev>,
-        <konrad.dybcio@somainline.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>, <quic_saipraka@quicinc.com>,
-        <robdclark@gmail.com>, <robh+dt@kernel.org>, <robin.murphy@arm.com>,
-        <vkoul@kernel.org>, <will@kernel.org>, <joro@8bytes.org>,
-        <quic_guptap@quicinc.com>, Pavan Kondeti
-	<quic_pkondeti@quicinc.com>
-References: <20221114170635.1406534-9-dmitry.baryshkov@linaro.org>
- <a61a3561-0dde-472b-b8a5-451703f6d8ee@quicinc.com>
- <CAA8EJpoJUZDUxpA1+LJTEVRaMQJrpZ7iU9_dZ3uQvzPKE_UUfg@mail.gmail.com>
-From: Pratyush Brahma <quic_pbrahma@quicinc.com>
-In-Reply-To: <CAA8EJpoJUZDUxpA1+LJTEVRaMQJrpZ7iU9_dZ3uQvzPKE_UUfg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.45.79.139)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: cMw8gIWXHn67I5PMbVm_WYWQlK0UxZUH
-X-Proofpoint-GUID: cMw8gIWXHn67I5PMbVm_WYWQlK0UxZUH
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
  definitions=2024-02-13_16,2024-02-12_03,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=999
- phishscore=0 adultscore=0 malwarescore=0 lowpriorityscore=0 clxscore=1015
- spamscore=0 suspectscore=0 priorityscore=1501 impostorscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2401310000
- definitions=main-2402140036
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ lowpriorityscore=0 priorityscore=1501 suspectscore=0 bulkscore=0
+ clxscore=1011 mlxlogscore=468 phishscore=0 mlxscore=0 adultscore=0
+ impostorscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2311290000 definitions=main-2402140041
+
+Thanks for the patch. Applied this patch and verified and issue is fixed.
+
+This issue way originally reported in the below mail.
+
+https://marc.info/?l=linux-kernel&m=170737160630106&w=2
 
 
-On 2/13/2024 4:40 PM, Dmitry Baryshkov wrote:
-> On Tue, 13 Feb 2024 at 12:29, Pratyush Brahma <quic_pbrahma@quicinc.com> wrote:
->> Hi
->>
->> Patch [1] introduces a use after free bug in the function
->> "qcom_smmu_create()" in file: drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> wherein devm_krealloc() frees the old pointer marked by "smmu" but it is
->> still being accessed later in qcom_smmu_impl_data() in the same function
->> as:
->>
->> qsmmu->cfg = qcom_smmu_impl_data(smmu);
->>
->> The current patchset [2] implicitly fixes this issue as it doesn't
->> access the freed ptr in the line:
->>
->> qsmmu->cfg = data->cfg;
->>
->> Hence, can this patchset[2] be propagated to branches where patchset[1]
->> has been propagated already? The bug is currently present in all branches
->> that have patchset[1] but do not have patchset[2].
-Can you please comment on your thoughts on this as well?
->>
->> RFC:
->>
->> This bug would be reintroduced if patchset [3] is accepted. This makes
->> the path prone to such errors as it relies on the
->> developer's understanding on the internal implementation of devm_krealloc().
-> realloc is a basic function. Not understanding it is a significant
-> problem for the developer.
->
->> Hence, a better fix IMO, would be to remove the confusion around the
->> freed "smmu" ptr in the following way:
-> Could you please post a proper patch, which can be reviewed and
-> accepted or declined?
-Sure, will do.
->
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> index 549ae4dba3a6..6dd142ce75d1 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> @@ -463,11 +463,12 @@ static struct arm_smmu_device
->> *qcom_smmu_create(struct arm_smmu_device *smmu,
->>           qsmmu = devm_krealloc(smmu->dev, smmu, sizeof(*qsmmu), GFP_KERNEL);
->>           if (!qsmmu)
->>                   return ERR_PTR(-ENOMEM);
->> +       smmu = &qsmmu->smmu;
->>
->>           qsmmu->smmu.impl = impl;
->>           qsmmu->cfg = data->cfg;
->>
->> -       return &qsmmu->smmu;
->> +       return smmu;
->>    }
->>
->> This is similar to the patch[4] which I've sent in-reply-to patch[3].
->> Will send a formal patch if you think this approach is better.
->>
->> Please let me know your thoughts.
-> None of the other implementations does this. If you are going to fix
-> qcom implementation, please fix all implementations.
-Ohh okay. Wasn't aware that this may be an issue in other 
-implementations as well.
-Will check and raise a formal patch.
->   However a better
-> option might be to change arm-smmu to remove devm_krealloc() usage at
-> all.
->
-Can you please elaborate on your thoughts on how removing devm_krealloc()
-usage would be better? Is it because this implementation is error prone 
-or do you
-think this isn't required at all?
+Tested-by: Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com>
 
-
-I agree on your previous comment that realloc is a basic function and 
-developers
-should understand that before using it. But as you've pointed out that 
-implementations other than
-qcom may also have this issue, I'm inclined to think that the usage of 
-the api is quite error prone and
-there may be some room for improving the usage text perhaps or some 
-other way.
+On 13/02/24 10:51 pm, Jason Gunthorpe wrote:
+> On Tue, Feb 13, 2024 at 10:05:22AM -0600, Shivaprasad G Bhat wrote:
+>> The function spapr_tce_platform_iommu_attach_dev() is missing to call
+>> iommu_group_put() when the domain is already set. This refcount leak
+>> shows up with BUG_ON() during DLPAR remove operation as,
+>>
+>>    KernelBug: Kernel bug in state 'None': kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
+>>    Oops: Exception in kernel mode, sig: 5 [#1]
+>>    LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=8192 NUMA pSeries
+>>    <snip>
+>>    Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200 0xf000006 of:IBM,FW1060.00 (NH1060_016) hv:phyp pSeries
+>>    NIP:  c0000000000ff4d4 LR: c0000000000ff4cc CTR: 0000000000000000
+>>    REGS: c0000013aed5f840 TRAP: 0700   Tainted: G          I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
+>>    MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 44002402  XER: 20040000
+>>    CFAR: c000000000a0d170 IRQMASK: 0
+>>    GPR00: c0000000000ff4cc c0000013aed5fae0 c000000001512700 c0000013aa362138
+>>    GPR04: 0000000000000000 0000000000000000 0000000000000000 0000000119c8afd0
+>>    GPR08: 0000000000000000 c000001284442b00 0000000000000001 0000000000001003
+>>    GPR12: 0000000300000000 c0000018ffff2f00 0000000000000000 0000000000000000
+>>    GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+>>    GPR20: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+>>    GPR24: c0000013aed5fc40 0000000000000002 0000000000000000 c000000002757d90
+>>    GPR28: c0000000000ff440 c000000002757cb8 c00000183799c1a0 c0000013aa362b00
+>>    NIP [c0000000000ff4d4] iommu_reconfig_notifier+0x94/0x200
+>>    LR [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200
+>>    Call Trace:
+>>    [c0000013aed5fae0] [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200 (unreliable)
+>>    [c0000013aed5fb10] [c0000000001a27b0] notifier_call_chain+0xb8/0x19c
+>>    [c0000013aed5fb70] [c0000000001a2a78] blocking_notifier_call_chain+0x64/0x98
+>>    [c0000013aed5fbb0] [c000000000c4a898] of_reconfig_notify+0x44/0xdc
+>>    [c0000013aed5fc20] [c000000000c4add4] of_detach_node+0x78/0xb0
+>>    [c0000013aed5fc70] [c0000000000f96a8] ofdt_write.part.0+0x86c/0xbb8
+>>    [c0000013aed5fce0] [c00000000069b4bc] proc_reg_write+0xf4/0x150
+>>    [c0000013aed5fd10] [c0000000005bfeb4] vfs_write+0xf8/0x488
+>>    [c0000013aed5fdc0] [c0000000005c0570] ksys_write+0x84/0x140
+>>    [c0000013aed5fe10] [c000000000033358] system_call_exception+0x138/0x330
+>>    [c0000013aed5fe50] [c00000000000d05c] system_call_vectored_common+0x15c/0x2ec
+>>    --- interrupt: 3000 at 0x20000433acb4
+>>    <snip>
+>>    ---[ end trace 0000000000000000 ]---
+>>
+>> The patch adds the missing iommu_group_put() call.
+>>
+>> Fixes: a8ca9fc9134c ("powerpc/iommu: Do not do platform domain attach atctions after probe")
+>> Signed-off-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+>> ---
+>>   arch/powerpc/kernel/iommu.c |    4 +++-
+>>   1 file changed, 3 insertions(+), 1 deletion(-)
+> Doh, that is a weird splat for this but thanks for finding it
 >
-> --
-> With best wishes
-> Dmitry
-Thanks,
-Pratyush
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>
+> Jason
+>
