@@ -1,43 +1,44 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C69775FF17
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 16:22:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94210604BF
+	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 16:22:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707927764; cv=none; b=R/asI2hdzp+W+h2HyPpuagFYSdZz3Z/NkIeNjvW9xYbRKafuZBnsBAgXrktCM7YJKwZEIqWMbzh/v/oR+pjtHSx6v99foukCHyUIGH4ohTJGSY9S2uUcuSBoLRz4vXkE5/Y8eDOY2lTKeVYfC36FogVsqPdrfQpQHyjxdXm/cQQ=
+	t=1707927769; cv=none; b=bw2drpDh5+qWB9toUy49wc0Y8IOkiWVjo72UHVF+H1972E/CVwrepLvOvdZ0PaCJCjz7ubCXr5W3Y3iBySZ+4fcSuS1HPem6RSXJxA0qLCbJUkKhmxxjfGEE6dnRjQ7auLg+F2K0A+hFrs8VamhchVJ9CJ5MXeR9W7LpfYi68g8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707927764; c=relaxed/simple;
-	bh=/p1Alr34TjW78H6O+WCKsMe1YvlhwfLn1wdHdogT8+A=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=oqq69lBoI73beqmSlrFWt4sRq+SXgJEmEVnPAQ19aYPITuAZf9WFuFx/QjfptNYreVyxqdos6s0pIJSB5R0IPfkJMFwAS6tsDQMeVtHVrrbZ2uhUEMue4y0ENu9IFOM108S5FM41OMhqUPKRJ3q9B1Hh3UxpoF7bbQkt9eeYds4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=feep2AjH; arc=none smtp.client-ip=192.198.163.12
+	s=arc-20240116; t=1707927769; c=relaxed/simple;
+	bh=XjQnDnhe7CydUIm6so/zShzYAWo2nbePKGaBcANZkSc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=IiGJGXhxcv68JJwXwjvVfcrJ8HJLz4cUpBzef26yHgA5vmJoLUqQOA1RWKE6dxATB9CrA2aGw0QuoXfruRdwbWzxNIOqPpr8x9mjpS24knZdjzPf2n3pNxNFzQrk2Gk5DBO+BZKXmgn4bhHkJ7RCOnLqOf0xINJUHFLeO4ASwgc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=afDpTSMW; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="feep2AjH"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="afDpTSMW"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707927762; x=1739463762;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=/p1Alr34TjW78H6O+WCKsMe1YvlhwfLn1wdHdogT8+A=;
-  b=feep2AjH+KRXfJD5z1uqxI2GAUrDs08/K3n1KWn5dY3WonqeBlGUlrvx
-   jKG8qYEXtteV5BMfm89yKGA5dutJDOfJPABRoD4F1ys3gt8C2mpZV3chL
-   TqCDIc8mHwLZ19qePg+Lj+DqFgYHypNZaTht371rLT9w1FvQiQG6WrXPD
-   h35yPm1mmhuAGtZZkiQKWwVdR0uY2AZEYA0u6guAXSlwJmMH072je9wIr
-   Ndv9fcVGnSYj0resdnCDzssW0oKN0jpUSp1vvlwNBLgpypyLYReeRRCdf
-   aHtmTOHoCQK4umfJRUygX5Hd0BwmhcJLkQBcLnLtf1P0nKrywMDgs1sTQ
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="5755528"
+  t=1707927766; x=1739463766;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=XjQnDnhe7CydUIm6so/zShzYAWo2nbePKGaBcANZkSc=;
+  b=afDpTSMWf8rsPpJ2L7tE/eRGlSEBqg0t5rBne79yfPbR8z6nC2/XtcxG
+   0173RMUiejIJ8S/E7t/d77X9WMIySJiBTQKLMED2ZRGxPCZ8Nypm6tVO7
+   prypJ37G+79vFNT27R0m453BRmepjnY5Jmko6F4AwvIwct9pLR3NYGeoM
+   0AnHIvaRnZLTMn8Dn8VtiEBeRForzW+HnSGwK2Zg451Xanq6x/WXpyTmz
+   Z520PxiL8wCnsOn+aefgU3dFGlRfIqCSqzTgk9/jelpVKB1QM1Bldl8s9
+   tkstuhAOx1HkCZnORNj+WMGfXpMaXmbrzTtpvs+YcPFN6iiAikpcMdOko
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="5755536"
 X-IronPort-AV: E=Sophos;i="6.06,159,1705392000"; 
-   d="scan'208";a="5755528"
+   d="scan'208";a="5755536"
 Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 08:22:42 -0800
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 08:22:46 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,159,1705392000"; 
-   d="scan'208";a="26399956"
+   d="scan'208";a="26399959"
 Received: from newjersey.igk.intel.com ([10.102.20.203])
-  by fmviesa002.fm.intel.com with ESMTP; 14 Feb 2024 08:22:38 -0800
+  by fmviesa002.fm.intel.com with ESMTP; 14 Feb 2024 08:22:42 -0800
 From: Alexander Lobakin <aleksander.lobakin@intel.com>
 To: "David S. Miller" <davem@davemloft.net>,
 	Eric Dumazet <edumazet@google.com>,
@@ -58,10 +59,12 @@ Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
 	netdev@vger.kernel.org,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 0/7] dma: skip calling no-op sync ops when possible
-Date: Wed, 14 Feb 2024 17:21:54 +0100
-Message-ID: <20240214162201.4168778-1-aleksander.lobakin@intel.com>
+Subject: [PATCH net-next v3 1/7] dma: compile-out DMA sync op calls when not used
+Date: Wed, 14 Feb 2024 17:21:55 +0100
+Message-ID: <20240214162201.4168778-2-aleksander.lobakin@intel.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20240214162201.4168778-1-aleksander.lobakin@intel.com>
+References: <20240214162201.4168778-1-aleksander.lobakin@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,104 +73,254 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The series grew from Eric's idea and patch at [0]. The idea of using the
-shortcut for direct DMA as well belongs to Chris.
+Some platforms do have DMA, but DMA there is always direct and coherent.
+Currently, even on such platforms DMA sync operations are compiled and
+called.
+Add a new hidden Kconfig symbol, DMA_NEED_SYNC, and set it only when
+either sync operations are needed or there is DMA ops or swiotlb
+enabled. Set dma_need_sync() and dma_skip_sync() depending on this
+symbol state and don't call sync ops when dma_skip_sync() is true.
+The change allows for future optimizations of DMA sync calls depending
+on compile-time or runtime conditions.
 
-When an architecture doesn't need DMA synchronization and the buffer is
-not an SWIOTLB buffer, most of times the kernel and the drivers end up
-calling DMA sync operations for nothing.
-Even when DMA is direct, this involves a good non-inline call ladder and
-eats a bunch of CPU time. With IOMMU, this results in calling indirect
-calls on hotpath just to check what is already known and return.
-XSk is been using a custom shortcut for that for quite some time.
-I recently wanted to introduce a similar one for Page Pool. Let's combine
-all this into one generic shortcut, which would cover all DMA sync ops
-and all types of DMA (direct, IOMMU, ...).
-
-* #1 adds stub inlines to be able to skip DMA sync ops or even compile
-     them out when not needed.
-* #2 adds the generic shortcut and enables it for direct DMA.
-* #3 adds ability to skip DMA syncs behind an IOMMU.
-* #4-5 are just cleanups for Page Pool to avoid merge conflicts in future.
-* #6 checks for the shortcut as early as possible in the Page Pool code to
-     make sure no cycles wasted.
-* #7 replaces XSk's shortcut with the generic one.
-
-On 100G NIC, the result is +3-5% for direct DMA and +10-11% for IOMMU.
-As a bonus, XSk core now allows batched buffer allocations for IOMMU
-setups.
-If the shortcut is not available on some system, there should be no
-visible performance regressions.
-
-[0] https://lore.kernel.org/netdev/20221115182841.2640176-1-edumazet@google.com
-
-Alexander Lobakin (7):
-  dma: compile-out DMA sync op calls when not used
-  dma: avoid redundant calls for sync operations
-  iommu/dma: avoid expensive indirect calls for sync operations
-  page_pool: make sure frag API fields don't span between cachelines
-  page_pool: don't use driver-set flags field directly
-  page_pool: check for DMA sync shortcut earlier
-  xsk: use generic DMA sync shortcut instead of a custom one
-
- kernel/dma/Kconfig                            |  4 +
- include/net/page_pool/types.h                 | 21 ++++-
- include/linux/device.h                        |  5 ++
- include/linux/dma-map-ops.h                   | 21 +++++
- include/linux/dma-mapping.h                   | 84 ++++++++++++++++---
- include/net/xdp_sock_drv.h                    |  7 +-
- include/net/xsk_buff_pool.h                   | 13 +--
- drivers/base/dd.c                             |  2 +
- drivers/iommu/dma-iommu.c                     |  3 +-
- drivers/net/ethernet/engleder/tsnep_main.c    |  2 +-
- .../net/ethernet/freescale/dpaa2/dpaa2-xsk.c  |  2 +-
- drivers/net/ethernet/intel/i40e/i40e_xsk.c    |  2 +-
- drivers/net/ethernet/intel/ice/ice_xsk.c      |  2 +-
- drivers/net/ethernet/intel/igc/igc_main.c     |  2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  |  2 +-
- .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |  4 +-
- .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  2 +-
- drivers/net/ethernet/netronome/nfp/nfd3/xsk.c |  2 +-
- .../net/ethernet/stmicro/stmmac/stmmac_main.c |  2 +-
- kernel/dma/mapping.c                          | 59 ++++++++++---
- kernel/dma/swiotlb.c                          |  8 ++
- net/core/page_pool.c                          | 67 +++++++++------
- net/xdp/xsk_buff_pool.c                       | 29 +------
- 23 files changed, 239 insertions(+), 106 deletions(-)
-
+Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
 ---
-From v2[1]:
-* #1:
-  * use two tabs for indenting multi-line function prototypes (Chris);
-* #2:
-  * make shortcut clearing function generic and move it out of the
-    SWIOTLB code (Chris);
-  * remove dma_set_skip_sync(): use direct assignment during the initial
-    setup, not used anywhere else (Chris);
-  * commitmsg: remove "NIC" and the workaround paragraph (Chris).
+ kernel/dma/Kconfig          |  4 ++
+ include/linux/dma-mapping.h | 80 +++++++++++++++++++++++++++++++------
+ kernel/dma/mapping.c        | 20 +++++-----
+ 3 files changed, 81 insertions(+), 23 deletions(-)
 
-From v1[2]:
-* #1:
-  * use static inlines instead of macros (Chris);
-  * move CONFIG_DMA_NEED_SYNC check into dma_skip_sync() (Robin);
-* #2:
-  * use a new dma_map_ops flag instead of new callback, assume the same
-    conditions as for direct DMA are enough (Petr, Robin);
-  * add more code comments to make sure the whole idea and path are
-    clear (Petr, Robin, Chris);
-* #2, #3: correct the Git tags and the authorship a bit.
-
-Not addressed in v2:
-* #1:
-  * dma_sync_*range_*() are still wrapped, as some subsystems may want
-    to call the underscored versions directly (e.g. Page Pool);
-* #2:
-  * the new dev->dma_skip_sync bit is still preferred over checking for
-    READ_ONCE(dev->dma_uses_io_tlb) + dev_is_dma_coherent() on hotpath
-    as a faster solution.
-
-[1] https://lore.kernel.org/netdev/20240205110426.764393-1-aleksander.lobakin@intel.com
-[2] https://lore.kernel.org/netdev/20240126135456.704351-1-aleksander.lobakin@intel.com
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index d62f5957f36b..1c9ff05b1ecb 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -107,6 +107,10 @@ config DMA_BOUNCE_UNALIGNED_KMALLOC
+ 	bool
+ 	depends on SWIOTLB
+ 
++config DMA_NEED_SYNC
++	def_bool ARCH_HAS_SYNC_DMA_FOR_DEVICE || ARCH_HAS_SYNC_DMA_FOR_CPU || \
++		 ARCH_HAS_SYNC_DMA_FOR_CPU_ALL || DMA_OPS || SWIOTLB
++
+ config DMA_RESTRICTED_POOL
+ 	bool "DMA Restricted Pool"
+ 	depends on OF && OF_RESERVED_MEM && SWIOTLB
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 4a658de44ee9..6c7640441214 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -117,13 +117,13 @@ dma_addr_t dma_map_resource(struct device *dev, phys_addr_t phys_addr,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs);
+ void dma_unmap_resource(struct device *dev, dma_addr_t addr, size_t size,
+ 		enum dma_data_direction dir, unsigned long attrs);
+-void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
++void __dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
+ 		enum dma_data_direction dir);
+-void dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
++void __dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
+ 		size_t size, enum dma_data_direction dir);
+-void dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
++void __dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+ 		    int nelems, enum dma_data_direction dir);
+-void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
++void __dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+ 		       int nelems, enum dma_data_direction dir);
+ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 		gfp_t flag, unsigned long attrs);
+@@ -147,7 +147,7 @@ u64 dma_get_required_mask(struct device *dev);
+ bool dma_addressing_limited(struct device *dev);
+ size_t dma_max_mapping_size(struct device *dev);
+ size_t dma_opt_mapping_size(struct device *dev);
+-bool dma_need_sync(struct device *dev, dma_addr_t dma_addr);
++bool __dma_need_sync(struct device *dev, dma_addr_t dma_addr);
+ unsigned long dma_get_merge_boundary(struct device *dev);
+ struct sg_table *dma_alloc_noncontiguous(struct device *dev, size_t size,
+ 		enum dma_data_direction dir, gfp_t gfp, unsigned long attrs);
+@@ -195,19 +195,19 @@ static inline void dma_unmap_resource(struct device *dev, dma_addr_t addr,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
+ {
+ }
+-static inline void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
+-		size_t size, enum dma_data_direction dir)
++static inline void __dma_sync_single_for_cpu(struct device *dev,
++		dma_addr_t addr, size_t size, enum dma_data_direction dir)
+ {
+ }
+-static inline void dma_sync_single_for_device(struct device *dev,
++static inline void __dma_sync_single_for_device(struct device *dev,
+ 		dma_addr_t addr, size_t size, enum dma_data_direction dir)
+ {
+ }
+-static inline void dma_sync_sg_for_cpu(struct device *dev,
++static inline void __dma_sync_sg_for_cpu(struct device *dev,
+ 		struct scatterlist *sg, int nelems, enum dma_data_direction dir)
+ {
+ }
+-static inline void dma_sync_sg_for_device(struct device *dev,
++static inline void __dma_sync_sg_for_device(struct device *dev,
+ 		struct scatterlist *sg, int nelems, enum dma_data_direction dir)
+ {
+ }
+@@ -277,7 +277,7 @@ static inline size_t dma_opt_mapping_size(struct device *dev)
+ {
+ 	return 0;
+ }
+-static inline bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
++static inline bool __dma_need_sync(struct device *dev, dma_addr_t dma_addr)
+ {
+ 	return false;
+ }
+@@ -348,18 +348,72 @@ static inline void dma_unmap_single_attrs(struct device *dev, dma_addr_t addr,
+ 	return dma_unmap_page_attrs(dev, addr, size, dir, attrs);
+ }
+ 
++static inline void __dma_sync_single_range_for_cpu(struct device *dev,
++		dma_addr_t addr, unsigned long offset, size_t size,
++		enum dma_data_direction dir)
++{
++	__dma_sync_single_for_cpu(dev, addr + offset, size, dir);
++}
++
++static inline void __dma_sync_single_range_for_device(struct device *dev,
++		dma_addr_t addr, unsigned long offset, size_t size,
++		enum dma_data_direction dir)
++{
++	__dma_sync_single_for_device(dev, addr + offset, size, dir);
++}
++
++static inline bool dma_skip_sync(const struct device *dev)
++{
++	return !IS_ENABLED(CONFIG_DMA_NEED_SYNC);
++}
++
++static inline bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
++{
++	return !dma_skip_sync(dev) ? __dma_need_sync(dev, dma_addr) : false;
++}
++
++static inline void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
++		size_t size, enum dma_data_direction dir)
++{
++	if (!dma_skip_sync(dev))
++		__dma_sync_single_for_cpu(dev, addr, size, dir);
++}
++
++static inline void dma_sync_single_for_device(struct device *dev,
++		dma_addr_t addr, size_t size, enum dma_data_direction dir)
++{
++	if (!dma_skip_sync(dev))
++		__dma_sync_single_for_device(dev, addr, size, dir);
++}
++
++static inline void dma_sync_sg_for_cpu(struct device *dev,
++		struct scatterlist *sg, int nelems, enum dma_data_direction dir)
++{
++	if (!dma_skip_sync(dev))
++		__dma_sync_sg_for_cpu(dev, sg, nelems, dir);
++}
++
++static inline void dma_sync_sg_for_device(struct device *dev,
++		struct scatterlist *sg, int nelems, enum dma_data_direction dir)
++{
++	if (!dma_skip_sync(dev))
++		__dma_sync_sg_for_device(dev, sg, nelems, dir);
++}
++
+ static inline void dma_sync_single_range_for_cpu(struct device *dev,
+ 		dma_addr_t addr, unsigned long offset, size_t size,
+ 		enum dma_data_direction dir)
+ {
+-	return dma_sync_single_for_cpu(dev, addr + offset, size, dir);
++	if (!dma_skip_sync(dev))
++		__dma_sync_single_for_cpu(dev, addr + offset, size, dir);
+ }
+ 
+ static inline void dma_sync_single_range_for_device(struct device *dev,
+ 		dma_addr_t addr, unsigned long offset, size_t size,
+ 		enum dma_data_direction dir)
+ {
+-	return dma_sync_single_for_device(dev, addr + offset, size, dir);
++	if (!dma_skip_sync(dev))
++		__dma_sync_single_for_device(dev, addr + offset, size, dir);
+ }
+ 
+ /**
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 58db8fd70471..85feaa0e008c 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -329,7 +329,7 @@ void dma_unmap_resource(struct device *dev, dma_addr_t addr, size_t size,
+ }
+ EXPORT_SYMBOL(dma_unmap_resource);
+ 
+-void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
++void __dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
+ 		enum dma_data_direction dir)
+ {
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+@@ -341,9 +341,9 @@ void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr, size_t size,
+ 		ops->sync_single_for_cpu(dev, addr, size, dir);
+ 	debug_dma_sync_single_for_cpu(dev, addr, size, dir);
+ }
+-EXPORT_SYMBOL(dma_sync_single_for_cpu);
++EXPORT_SYMBOL(__dma_sync_single_for_cpu);
+ 
+-void dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
++void __dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
+ 		size_t size, enum dma_data_direction dir)
+ {
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+@@ -355,9 +355,9 @@ void dma_sync_single_for_device(struct device *dev, dma_addr_t addr,
+ 		ops->sync_single_for_device(dev, addr, size, dir);
+ 	debug_dma_sync_single_for_device(dev, addr, size, dir);
+ }
+-EXPORT_SYMBOL(dma_sync_single_for_device);
++EXPORT_SYMBOL(__dma_sync_single_for_device);
+ 
+-void dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
++void __dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+ 		    int nelems, enum dma_data_direction dir)
+ {
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+@@ -369,9 +369,9 @@ void dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+ 		ops->sync_sg_for_cpu(dev, sg, nelems, dir);
+ 	debug_dma_sync_sg_for_cpu(dev, sg, nelems, dir);
+ }
+-EXPORT_SYMBOL(dma_sync_sg_for_cpu);
++EXPORT_SYMBOL(__dma_sync_sg_for_cpu);
+ 
+-void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
++void __dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+ 		       int nelems, enum dma_data_direction dir)
+ {
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+@@ -383,7 +383,7 @@ void dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+ 		ops->sync_sg_for_device(dev, sg, nelems, dir);
+ 	debug_dma_sync_sg_for_device(dev, sg, nelems, dir);
+ }
+-EXPORT_SYMBOL(dma_sync_sg_for_device);
++EXPORT_SYMBOL(__dma_sync_sg_for_device);
+ 
+ /*
+  * The whole dma_get_sgtable() idea is fundamentally unsafe - it seems
+@@ -841,7 +841,7 @@ size_t dma_opt_mapping_size(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(dma_opt_mapping_size);
+ 
+-bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
++bool __dma_need_sync(struct device *dev, dma_addr_t dma_addr)
+ {
+ 	const struct dma_map_ops *ops = get_dma_ops(dev);
+ 
+@@ -849,7 +849,7 @@ bool dma_need_sync(struct device *dev, dma_addr_t dma_addr)
+ 		return dma_direct_need_sync(dev, dma_addr);
+ 	return ops->sync_single_for_cpu || ops->sync_single_for_device;
+ }
+-EXPORT_SYMBOL_GPL(dma_need_sync);
++EXPORT_SYMBOL_GPL(__dma_need_sync);
+ 
+ unsigned long dma_get_merge_boundary(struct device *dev)
+ {
 -- 
 2.43.0
 
