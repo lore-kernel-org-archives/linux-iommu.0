@@ -1,211 +1,127 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64D1317571
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 10:20:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C40FC53392
+	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 12:53:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707906036; cv=none; b=L14ozIf+XSinNjn4U9I6d70eZNHJ+MUIoLYY9ROA6owPrtLtvntRbh0lwGBeA25nbzpDvu988v7ups9jNIWl83tSAWhrQguzicE/TSYHCsndF9Mqt25aKqPp/y0YzAbWiI+YCgWsXqgUhVctHha/WDXoYxHucLbtDlOOPQR9DXQ=
+	t=1707915211; cv=none; b=aQZ1rR/gjKnIS5jx3oxLw7GPqwuWh/Ty/a5/thBs22LLur+age4SDleYpxyVvK0VlReeplNnszIJqzBI/UukvCQC/TyPM9Zmx2iLHNQ+T5jNAPQ2f7xpeHBFqULVVs8YQtJ0VEmCou/ioI7npM7oIKDfi+sN8ipbUJbo08DXZ1E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707906036; c=relaxed/simple;
-	bh=20sRNx8iOq0dxtbjIRX48x/rKE5QlAzFN67tIlBtgIA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QYaClOI7qoHA195u3hu1jEGH31E/gm6Zw6kepovDgvyeeLr6oF8kys7cr7QtvkRI/D3WpSf6zxN0jnco3qIQpC3pbVygO1g6f/0XDMOsMmjnzVuWhqdTafDHaNJ9JaiS3LcbAf87d74Ec4sCTrXW71PIekRKRmCJkGuihgqj4LI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=DNRgpeGh; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=nX6r6YD0; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=DNRgpeGh; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=nX6r6YD0; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1707915211; c=relaxed/simple;
+	bh=7qQl3oUH908Qo+DjPhPwTveHPALrcW4P/GCBSzvUYvg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=dGcXM71uILybjAxuk1RZehlyNKA6XzuGwxFE2T7GIrnVfO4iC/fp1oucB5HFUypCMgwW9hKPCEkmg2XwriwGVIHVsZzSG6+AB/PwvNcknVZzW3v93qeq44gMtEpcMpaZ14PZDMb53giuQYEUmfwZ9cliiWPiptRK47HEPYOMTWQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au; spf=pass smtp.mailfrom=ellerman.id.au; dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b=XE2pPkt3; arc=none smtp.client-ip=150.107.74.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ellerman.id.au
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="DNRgpeGh";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="nX6r6YD0";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="DNRgpeGh";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="nX6r6YD0"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="XE2pPkt3"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+	s=201909; t=1707915205;
+	bh=2yGYnjksCOnTrmVt4RdgHftQySQabm4BEhRKLQZMYvw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=XE2pPkt3SjW8DtGmMvWJGhlsNBiE4/O11nAWaHS4X4tOUavECaHl3WodQ6RZ02WrI
+	 almV87Vjd3dekGxaIEk1nq2vrEFBC2fwJlTQC/NPMmv0sAH/9z39AzF6g5JkxVx15l
+	 4FN5phMtb9ZgcugZSS2XWi1jNOejnfyLXMLHdYCK63VX6KVnD6nU9JaU6EscAzSUN7
+	 Ys+WtcnU4s1YvhKkoHxFUey4JGkmQX3rrPk7lI9QULOLTewhWjgb2c3Cc2zl/lb8UM
+	 PsMeR4O6sjG9HMH7rLAzoW0HSRxfrXXLAbJi30sBWqLW1D9qwqc4uVEgsFAZ4R7U3q
+	 LXiQPCup57nYg==
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 110351FD18;
-	Wed, 14 Feb 2024 10:20:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1707906027; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=FGladMXENrd0YjrbTrjIK8mVP0LFAbru1yEEbY+cSOQ=;
-	b=DNRgpeGhsDI+oSKTmcp+slsJEYfRS5HYFj3TT/mD1w+ZV1MzliTWcl4XEU6bVt3xTX9gBa
-	6c93XMG6n7uYcTsRNReflnsHj10orptTi2Vyl2Ll8/BiPXGvllIFrZYcU8UY4ckjh5/mYE
-	ecPjl2bd/Jyci9DykfeSrzt1k/0aaCY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1707906027;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=FGladMXENrd0YjrbTrjIK8mVP0LFAbru1yEEbY+cSOQ=;
-	b=nX6r6YD0jPrpVOJ83kIFxVBq3vl0couSpQ2UrxdMnSPIbg4NKpFIEC32DvhFQkJALEvR40
-	eek/vbRuZR1rV0DQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1707906027; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=FGladMXENrd0YjrbTrjIK8mVP0LFAbru1yEEbY+cSOQ=;
-	b=DNRgpeGhsDI+oSKTmcp+slsJEYfRS5HYFj3TT/mD1w+ZV1MzliTWcl4XEU6bVt3xTX9gBa
-	6c93XMG6n7uYcTsRNReflnsHj10orptTi2Vyl2Ll8/BiPXGvllIFrZYcU8UY4ckjh5/mYE
-	ecPjl2bd/Jyci9DykfeSrzt1k/0aaCY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1707906027;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=FGladMXENrd0YjrbTrjIK8mVP0LFAbru1yEEbY+cSOQ=;
-	b=nX6r6YD0jPrpVOJ83kIFxVBq3vl0couSpQ2UrxdMnSPIbg4NKpFIEC32DvhFQkJALEvR40
-	eek/vbRuZR1rV0DQ==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 7241913A72;
-	Wed, 14 Feb 2024 10:20:26 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id wRKNG+qTzGW7RwAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Wed, 14 Feb 2024 10:20:26 +0000
-Message-ID: <4bb7b1e4-d107-4708-bb65-ac44d4af9959@suse.cz>
-Date: Wed, 14 Feb 2024 11:20:26 +0100
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 4TZdR636lbz4wcp;
+	Wed, 14 Feb 2024 23:53:22 +1100 (AEDT)
+From: Michael Ellerman <mpe@ellerman.id.au>
+To: Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com>, Jason Gunthorpe
+ <jgg@ziepe.ca>, Shivaprasad G Bhat <sbhat@linux.ibm.com>
+Cc: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org,
+ linux-kernel@vger.kernel.org, npiggin@gmail.com,
+ christophe.leroy@csgroup.eu, aneesh.kumar@kernel.org,
+ naveen.n.rao@linux.ibm.com, jroedel@suse.de,
+ tpearson@raptorengineering.com, aik@amd.com, bgray@linux.ibm.com,
+ gregkh@linuxfoundation.org, gbatra@linux.vnet.ibm.com,
+ vaibhav@linux.ibm.com
+Subject: Re: [PATCH] powerpc/iommu: Fix the missing iommu_group_put() during
+ platform domain attach
+In-Reply-To: <4f5e638d-30a2-4207-b515-d07c20b0fb47@linux.vnet.ibm.com>
+References: <170784021983.6249.10039296655906636112.stgit@linux.ibm.com>
+ <20240213172128.GM765010@ziepe.ca>
+ <4f5e638d-30a2-4207-b515-d07c20b0fb47@linux.vnet.ibm.com>
+Date: Wed, 14 Feb 2024 23:53:20 +1100
+Message-ID: <87le7n6wcf.fsf@mail.lhotse>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 00/35] Memory allocation profiling
-Content-Language: en-US
-To: Kent Overstreet <kent.overstreet@linux.dev>,
- Suren Baghdasaryan <surenb@google.com>
-Cc: David Hildenbrand <david@redhat.com>, Michal Hocko <mhocko@suse.com>,
- akpm@linux-foundation.org, hannes@cmpxchg.org, roman.gushchin@linux.dev,
- mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
- liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com,
- will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
- dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
- paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com,
- yuzhao@google.com, dhowells@redhat.com, hughd@google.com,
- andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com,
- vvvvvv@google.com, gregkh@linuxfoundation.org, ebiggers@google.com,
- ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
- rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
- vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
- minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arch@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
- cgroups@vger.kernel.org
-References: <20240212213922.783301-1-surenb@google.com>
- <Zctfa2DvmlTYSfe8@tiehlicka>
- <CAJuCfpEsWfZnpL1vUB2C=cxRi_WxhxyvgGhUg7WdAxLEqy6oSw@mail.gmail.com>
- <9e14adec-2842-458d-8a58-af6a2d18d823@redhat.com>
- <2hphuyx2dnqsj3hnzyifp5yqn2hpgfjuhfu635dzgofr5mst27@4a5dixtcuxyi>
- <6a0f5d8b-9c67-43f6-b25e-2240171265be@redhat.com>
- <CAJuCfpEtOhzL65eMDk2W5SchcquN9hMCcbfD50a-FgtPgxh4Fw@mail.gmail.com>
- <adbb77ee-1662-4d24-bcbf-d74c29bc5083@redhat.com>
- <r6cmbcmalryodbnlkmuj2fjnausbcysmolikjguqvdwkngeztq@45lbvxjavwb3>
- <CAJuCfpF4g1jeEwHVHjQWwi5kqS-3UqjMt7GnG0Kdz5VJGyhK3Q@mail.gmail.com>
- <ea5vqiv5rt5cdbrlrdep5flej2pysqbfvxau4cjjbho64652um@7rz23kesqdup>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <ea5vqiv5rt5cdbrlrdep5flej2pysqbfvxau4cjjbho64652um@7rz23kesqdup>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Level: 
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=DNRgpeGh;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=nX6r6YD0
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Spamd-Result: default: False [-3.00 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 XM_UA_NO_VERSION(0.01)[];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 MID_RHS_MATCH_FROM(0.00)[];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 BAYES_HAM(-3.00)[100.00%];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 DKIM_TRACE(0.00)[suse.cz:+];
-	 MX_GOOD(-0.01)[];
-	 RCPT_COUNT_GT_50(0.00)[73];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[linux.dev:email,suse.cz:dkim];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 FREEMAIL_CC(0.00)[redhat.com,suse.com,linux-foundation.org,cmpxchg.org,linux.dev,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[]
-X-Spam-Score: -3.00
-X-Rspamd-Queue-Id: 110351FD18
-X-Spam-Flag: NO
+Content-Type: text/plain
 
-On 2/14/24 00:08, Kent Overstreet wrote:
-> On Tue, Feb 13, 2024 at 02:59:11PM -0800, Suren Baghdasaryan wrote:
->> On Tue, Feb 13, 2024 at 2:50 PM Kent Overstreet
->> <kent.overstreet@linux.dev> wrote:
->> >
->> > On Tue, Feb 13, 2024 at 11:48:41PM +0100, David Hildenbrand wrote:
->> > > On 13.02.24 23:30, Suren Baghdasaryan wrote:
->> > > > On Tue, Feb 13, 2024 at 2:17 PM David Hildenbrand <david@redhat.com> wrote:
->> > > If you think you can easily achieve what Michal requested without all that,
->> > > good.
->> >
->> > He requested something?
->> 
->> Yes, a cleaner instrumentation. Unfortunately the cleanest one is not
->> possible until the compiler feature is developed and deployed. And it
->> still would require changes to the headers, so don't think it's worth
->> delaying the feature for years.
-> 
-> Hang on, let's look at the actual code.
-> 
-> This is what instrumenting an allocation function looks like:
-> 
-> #define krealloc_array(...)                     alloc_hooks(krealloc_array_noprof(__VA_ARGS__))
-> 
-> IOW, we have to:
->  - rename krealloc_array to krealloc_array_noprof
->  - replace krealloc_array with a one wrapper macro call
-> 
-> Is this really all we're getting worked up over?
-> 
-> The renaming we need regardless, because the thing that makes this
-> approach efficient enough to run in production is that we account at
-> _one_ point in the callstack, we don't save entire backtraces.
-> 
-> And thus we need to explicitly annotate which one that is; which means
-> we need _noprof() versions of functions for when the accounting is done
-> by an outer wraper (e.g. mempool).
-> 
-> And, as I keep saying: that alloc_hooks() macro will also get us _per
-> callsite fault injection points_, and we really need that because - if
-> you guys have been paying attention to other threads - whenever moving
-> more stuff to PF_MEMALLOC_* flags comes up (including adding
-> PF_MEMALLOC_NORECLAIM), the issue of small allocations not failing and
-> not being testable keeps coming up.
+Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com> writes:
+> Thanks for the patch. Applied this patch and verified and issue is fixed.
+>
+> This issue way originally reported in the below mail.
+>
+> https://marc.info/?l=linux-kernel&m=170737160630106&w=2
 
-How exactly do you envision the fault injection to help here? The proposals
-are about scoping via a process flag, and the process may then call just
-about anything under that scope. So if our tool is per callsite fault
-injection points, how do we know which callsites to enable to focus the
-fault injection on the particular scope?
+Please use lore for links, in this case:
+
+https://lore.kernel.org/all/274e0d2b-b5cc-475e-94e6-8427e88e271d@linux.vnet.ibm.com/
+
+cheers
+
+> On 13/02/24 10:51 pm, Jason Gunthorpe wrote:
+>> On Tue, Feb 13, 2024 at 10:05:22AM -0600, Shivaprasad G Bhat wrote:
+>>> The function spapr_tce_platform_iommu_attach_dev() is missing to call
+>>> iommu_group_put() when the domain is already set. This refcount leak
+>>> shows up with BUG_ON() during DLPAR remove operation as,
+>>>
+>>>    KernelBug: Kernel bug in state 'None': kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
+>>>    Oops: Exception in kernel mode, sig: 5 [#1]
+>>>    LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=8192 NUMA pSeries
+>>>    <snip>
+>>>    Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200 0xf000006 of:IBM,FW1060.00 (NH1060_016) hv:phyp pSeries
+>>>    NIP:  c0000000000ff4d4 LR: c0000000000ff4cc CTR: 0000000000000000
+>>>    REGS: c0000013aed5f840 TRAP: 0700   Tainted: G          I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
+>>>    MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 44002402  XER: 20040000
+>>>    CFAR: c000000000a0d170 IRQMASK: 0
+>>>    GPR00: c0000000000ff4cc c0000013aed5fae0 c000000001512700 c0000013aa362138
+>>>    GPR04: 0000000000000000 0000000000000000 0000000000000000 0000000119c8afd0
+>>>    GPR08: 0000000000000000 c000001284442b00 0000000000000001 0000000000001003
+>>>    GPR12: 0000000300000000 c0000018ffff2f00 0000000000000000 0000000000000000
+>>>    GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+>>>    GPR20: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+>>>    GPR24: c0000013aed5fc40 0000000000000002 0000000000000000 c000000002757d90
+>>>    GPR28: c0000000000ff440 c000000002757cb8 c00000183799c1a0 c0000013aa362b00
+>>>    NIP [c0000000000ff4d4] iommu_reconfig_notifier+0x94/0x200
+>>>    LR [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200
+>>>    Call Trace:
+>>>    [c0000013aed5fae0] [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200 (unreliable)
+>>>    [c0000013aed5fb10] [c0000000001a27b0] notifier_call_chain+0xb8/0x19c
+>>>    [c0000013aed5fb70] [c0000000001a2a78] blocking_notifier_call_chain+0x64/0x98
+>>>    [c0000013aed5fbb0] [c000000000c4a898] of_reconfig_notify+0x44/0xdc
+>>>    [c0000013aed5fc20] [c000000000c4add4] of_detach_node+0x78/0xb0
+>>>    [c0000013aed5fc70] [c0000000000f96a8] ofdt_write.part.0+0x86c/0xbb8
+>>>    [c0000013aed5fce0] [c00000000069b4bc] proc_reg_write+0xf4/0x150
+>>>    [c0000013aed5fd10] [c0000000005bfeb4] vfs_write+0xf8/0x488
+>>>    [c0000013aed5fdc0] [c0000000005c0570] ksys_write+0x84/0x140
+>>>    [c0000013aed5fe10] [c000000000033358] system_call_exception+0x138/0x330
+>>>    [c0000013aed5fe50] [c00000000000d05c] system_call_vectored_common+0x15c/0x2ec
+>>>    --- interrupt: 3000 at 0x20000433acb4
+>>>    <snip>
+>>>    ---[ end trace 0000000000000000 ]---
+>>>
+>>> The patch adds the missing iommu_group_put() call.
+>>>
+>>> Fixes: a8ca9fc9134c ("powerpc/iommu: Do not do platform domain attach atctions after probe")
+>>> Signed-off-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+>>> ---
+>>>   arch/powerpc/kernel/iommu.c |    4 +++-
+>>>   1 file changed, 3 insertions(+), 1 deletion(-)
+>> Doh, that is a weird splat for this but thanks for finding it
+>>
+>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>>
+>> Jason
+>>
