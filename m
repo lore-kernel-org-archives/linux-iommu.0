@@ -1,145 +1,83 @@
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA98B128838
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 18:13:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01F7112F37B
+	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 18:44:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707934432; cv=none; b=bnjYUEZikyRlDx8Vffn2MVnqXhncqpCq4YS1xtMDtKX/Zbovd2LXz+74gkirn1wKKWl9muuL6eS5mu1RXgrNsu8LZm1BfWeOAlJf8lU+qI3I7JJjiJDwytGAvwgzWjUVE5WCbXUbaulFGcWY64nzE4s6CnMd2KGG9wz2uyqoXKo=
+	t=1707936284; cv=none; b=revc/OUbOv4Ag0kOJr7HwewjduewtTZFVBiX+25Lxkmu/5F/AxKCHBCdYpNSzx4DMJzcMeE3ikzB3eBEjpsjEVBkST04+h3E4F/NWm6QDES6dyyVhF84KpJRNFVjhVuFfHkRWmowjlgfRb3oKgERJ+C1EC0ByjP8CWqdDroW5y0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707934432; c=relaxed/simple;
-	bh=hOxEivDLsFec5G+fAwHAZxlvSMbmWFiqoMuk2OF8eAw=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=aGFaAOJEX3gl/GhJFP8hG7yYjv/x5z0CjlHyVXK7l/YPytOmV6tKB4cFNfJO7Cy0JTkg777M8rXe7WSAm5XzD39MfhBYxsf4vl1wPK1kHzgPZeQpeRblolGS/iFauQdjdVFguq9N9QM2JcvzwLII6KGMI2zKahVwDHb3Rff08bk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=CZCczcjL; arc=none smtp.client-ip=148.163.156.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="CZCczcjL"
-Received: from pps.filterd (m0356517.ppops.net [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 41EI2G3o027548;
-	Wed, 14 Feb 2024 18:13:41 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=d/KbLmi+nBD4mrD2m/5GEPKn/dBx91j9UFtWVJsZHbY=;
- b=CZCczcjLTNCsDzNjriXciofWvVF76lsAjbUWndecqHVnBQ71yq9VAoIVZtoCHtmrKaLa
- BXTjwm1qFV+Yt0aB/Zuyv5ghdOLAv5gFdtNR9Tnw8F09DTBpqOCSAzOzLwcaBKQGB11I
- phLp7l0tp7umNF+2I28MO8Q/TbnWAv/udS23iWiJURnkTIuFJhEB+08VlsHzd9oBAaD6
- 9IuBAsfG7vr/T19ru/I90O9b9njqyMo8xSfuo7THLbWFyRlLgGZQZ29JWcGaa3qlR2DW
- OxiV+shwTVUI0nb1ZqOU6KsuOVJSiCG81pI9LsC3aoy/+mGn3OAYOexVqsmjBhNBeSK4 4g== 
-Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w92eq8awe-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 14 Feb 2024 18:13:40 +0000
-Received: from m0356517.ppops.net (m0356517.ppops.net [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 41EI2fr9029078;
-	Wed, 14 Feb 2024 18:13:40 GMT
-Received: from ppma11.dal12v.mail.ibm.com (db.9e.1632.ip4.static.sl-reverse.com [50.22.158.219])
-	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w92eq8aw2-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 14 Feb 2024 18:13:40 +0000
-Received: from pps.filterd (ppma11.dal12v.mail.ibm.com [127.0.0.1])
-	by ppma11.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 41EHsElB009920;
-	Wed, 14 Feb 2024 18:13:39 GMT
-Received: from smtprelay01.fra02v.mail.ibm.com ([9.218.2.227])
-	by ppma11.dal12v.mail.ibm.com (PPS) with ESMTPS id 3w6p62y32u-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 14 Feb 2024 18:13:39 +0000
-Received: from smtpav04.fra02v.mail.ibm.com (smtpav04.fra02v.mail.ibm.com [10.20.54.103])
-	by smtprelay01.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 41EIDXl362783962
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 14 Feb 2024 18:13:35 GMT
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id A66D520071;
-	Wed, 14 Feb 2024 18:13:33 +0000 (GMT)
-Received: from smtpav04.fra02v.mail.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id E93BF2006A;
-	Wed, 14 Feb 2024 18:13:29 +0000 (GMT)
-Received: from [9.43.53.225] (unknown [9.43.53.225])
-	by smtpav04.fra02v.mail.ibm.com (Postfix) with ESMTP;
-	Wed, 14 Feb 2024 18:13:29 +0000 (GMT)
-Message-ID: <0abafe3e-7dfd-4067-8a47-fa8eea00b232@linux.ibm.com>
-Date: Wed, 14 Feb 2024 23:43:28 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] powerpc/iommu: Fix the missing iommu_group_put() during
- platform domain attach
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com>, iommu@lists.linux.dev,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        npiggin@gmail.com, christophe.leroy@csgroup.eu,
-        aneesh.kumar@kernel.org, naveen.n.rao@linux.ibm.com, jroedel@suse.de,
-        tpearson@raptorengineering.com, aik@amd.com, bgray@linux.ibm.com,
-        gregkh@linuxfoundation.org, gbatra@linux.vnet.ibm.com,
-        vaibhav@linux.ibm.com, Michael Ellerman <mpe@ellerman.id.au>
-References: <170784021983.6249.10039296655906636112.stgit@linux.ibm.com>
- <20240213172128.GM765010@ziepe.ca>
- <4f5e638d-30a2-4207-b515-d07c20b0fb47@linux.vnet.ibm.com>
- <87le7n6wcf.fsf@mail.lhotse> <20240214125819.GA1299735@ziepe.ca>
-From: Shivaprasad G Bhat <sbhat@linux.ibm.com>
-In-Reply-To: <20240214125819.GA1299735@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Ayh_vcvCY-br2aPjrm37jCvWW48SBiVu
-X-Proofpoint-ORIG-GUID: W9AtKL8zdxS3o3scSejlP-3MJfG_6ZpM
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+	s=arc-20240116; t=1707936284; c=relaxed/simple;
+	bh=KFBiMaQU/PxUVXVt4KYkyObRHLVGfa0+L/fkok95v0E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UtBPQuB5c+Zj6zQ+EKlKccD54sDCqaRAnb/FnlamHTU1VoG2qo2+Xbs9FVUIUnbv6lAN/c8xEFEhdFYAHQa7vQ77uNHScmxVSn3cXdwGFM34CZi25AChOXuTKosTcCFB9TRNh/pFliqA5DGJOHupb4JAupIyW1EpyQm5LdO1Lfo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=black.fi.intel.com; spf=pass smtp.mailfrom=intel.com; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=black.fi.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="1850750"
+X-IronPort-AV: E=Sophos;i="6.06,160,1705392000"; 
+   d="scan'208";a="1850750"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 10:44:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="935617408"
+X-IronPort-AV: E=Sophos;i="6.06,160,1705392000"; 
+   d="scan'208";a="935617408"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga001.fm.intel.com with ESMTP; 14 Feb 2024 10:44:34 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id B4D90204; Wed, 14 Feb 2024 20:44:33 +0200 (EET)
+Date: Wed, 14 Feb 2024 20:44:33 +0200
+From: Andy Shevchenko <andy@black.fi.intel.com>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
+	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
+	peterz@infradead.org, juri.lelli@redhat.com,
+	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+	x86@kernel.org, peterx@redhat.com, david@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 00/35] Memory allocation profiling
+Message-ID: <Zc0KEfoCVvP1kWvA@black.fi.intel.com>
+References: <20240212213922.783301-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-14_10,2024-02-14_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
- mlxscore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0 adultscore=0
- suspectscore=0 priorityscore=1501 spamscore=0 mlxlogscore=744
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2311290000 definitions=main-2402140142
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240212213922.783301-1-surenb@google.com>
+
+On Mon, Feb 12, 2024 at 01:38:46PM -0800, Suren Baghdasaryan wrote:
+> Memory allocation, v3 and final:
+
+Would be nice to have --base added to cover letter. The very first patch
+can't be applied on today's Linux Next.
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-On 2/14/24 18:28, Jason Gunthorpe wrote:
-> On Wed, Feb 14, 2024 at 11:53:20PM +1100, Michael Ellerman wrote:
->> Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com> writes:
->>> Thanks for the patch. Applied this patch and verified and issue is fixed.
->>>
->>> This issue way originally reported in the below mail.
->>>
->>> https://marc.info/?l=linux-kernel&m=170737160630106&w=2
->> Please use lore for links, in this case:
->>
->> https://lore.kernel.org/all/274e0d2b-b5cc-475e-94e6-8427e88e271d@linux.vnet.ibm.com/
-> Also if you are respinning you may prefer this
->
-> @@ -1285,14 +1285,15 @@ spapr_tce_platform_iommu_attach_dev(struct iommu_domain *platform_domain,
->                                      struct device *dev)
->   {
->          struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
-> -       struct iommu_group *grp = iommu_group_get(dev);
->          struct iommu_table_group *table_group;
-> +       struct iommu_group *grp;
->          int ret = -EINVAL;
->   
->          /* At first attach the ownership is already set */
->          if (!domain)
->                  return 0;
->   
-> +       grp = iommu_group_get(dev);
->          if (!grp)
->                  return -ENODEV;
->
-> Which is sort of why this happened in the first place :)
-
-Right! Posted the v2 here
-
-https://lore.kernel.org/linux-iommu/170793401503.7491.9431631474642074097.stgit@linux.ibm.com/
-
-
-Thanks,
-
-Shivaprasad
-
-> Jason
