@@ -1,88 +1,84 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from wfhigh8-smtp.messagingengine.com (wfhigh8-smtp.messagingengine.com [64.147.123.159])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99AC35A7A6
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 14:46:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 014DE5A7AB;
+	Wed, 14 Feb 2024 14:49:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=64.147.123.159
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707921998; cv=none; b=KQETrUM356GJ2vQ4poPqlxNI+Dvae8ZHloc0sbA4BQmOTKjnWAZnQLWRTwlTB1t4o4Yg+ER1YA1iwe0jC1k04Mfgj7uNr0ncaM6hHjk/gceqc3qg5Pvpj7aNDAAb4PU2qa7LgEXN3kpEG3qGmxkVraJYAOy3EXf7CgUymV1Ttmg=
+	t=1707922201; cv=none; b=AYV3UYURgQdPCqiCx77kFtpatbZCoUvJljxiNDX5P5MOURe/svrtRsCRUZJmBJK9RoB2OF0xXfq+nzxDOS6m51DTUJpa0agbGHOQsxXvaSHF3wjVdwV5N1XjfbydoHFHUrr54Oexl5DFAH+mbrnMY/HQfen9bw1ajod23+F1dSc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707921998; c=relaxed/simple;
-	bh=rn+ZMoLKcmq4pEsTZ8FfVyz+GcEVWfCdy4jk0Bj7Vas=;
+	s=arc-20240116; t=1707922201; c=relaxed/simple;
+	bh=B1yFHfeHqpqZavgAJ56fxZmHRfqRxaiP53AMO42YAk8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CXERSHB6uegeowSjpX1dgwEIpPBH1XWEuc3ex94HAxlGZTK4gkS/9aPjG7sT3uyxgHx/hHKL3qJE4m61z4iBju3dHLSCrZ3zgl6K/Kfi1Rbj5uPOlM0j4YrCZSBsGptuTw9nuKddg0QPWccuuhzpCMfIllD7296epUEQdBGXlAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=G/fg/fXE; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=G/fg/fXE; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=a0qOCV1FTndOYCCD5gDYv2YGD9WrHImAFeJMhubnsbSDcM9zbb8IH1ZgUDrctv5rWFpjolRXhg7AO9ljcpTxwp48mFJDZ1JJPlB8AslQ89FJ/uFYxsnoftlOZkZ/rnmx2SsZxphbtq5Cqg7KTLa3VsAEb4117s4WTnWcg8jmjLU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=shutemov.name; spf=pass smtp.mailfrom=shutemov.name; dkim=pass (2048-bit key) header.d=shutemov.name header.i=@shutemov.name header.b=gyQBbXH2; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=TWECDkEP; arc=none smtp.client-ip=64.147.123.159
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=shutemov.name
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=shutemov.name
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="G/fg/fXE";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="G/fg/fXE"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id AABE1220CA;
-	Wed, 14 Feb 2024 14:46:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1707921994; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=L7XYt0NyV1LLmmYXD5SRXg7RDztZSN4xXat2vk9BckU=;
-	b=G/fg/fXE/BxmwJaDpB5G6+sbfW69+fMUQ0OzLitvcmHEv1Ds8G+GL4LdouO/fwIfpKsqYP
-	K1h5IhLHPiF9QIXH9zu5TsmsC3q6YrtzaT+6raFWjZBU+43wC0WrFSHBXIgYFSN3RNg2dN
-	Cy4YpNtjfnssPK+JWHc4gG9YwWLpq0E=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1707921994; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=L7XYt0NyV1LLmmYXD5SRXg7RDztZSN4xXat2vk9BckU=;
-	b=G/fg/fXE/BxmwJaDpB5G6+sbfW69+fMUQ0OzLitvcmHEv1Ds8G+GL4LdouO/fwIfpKsqYP
-	K1h5IhLHPiF9QIXH9zu5TsmsC3q6YrtzaT+6raFWjZBU+43wC0WrFSHBXIgYFSN3RNg2dN
-	Cy4YpNtjfnssPK+JWHc4gG9YwWLpq0E=
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 6C19613A72;
-	Wed, 14 Feb 2024 14:46:34 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id Hbm4GUrSzGUzGAAAD6G6ig
-	(envelope-from <mhocko@suse.com>); Wed, 14 Feb 2024 14:46:34 +0000
-Date: Wed, 14 Feb 2024 15:46:33 +0100
-From: Michal Hocko <mhocko@suse.com>
-To: Johannes Weiner <hannes@cmpxchg.org>
-Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
-	kent.overstreet@linux.dev, vbabka@suse.cz, roman.gushchin@linux.dev,
-	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
-	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com,
-	peterz@infradead.org, juri.lelli@redhat.com,
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH v3 00/35] Memory allocation profiling
-Message-ID: <ZczSSZOWMlqfvDg8@tiehlicka>
-References: <20240212213922.783301-1-surenb@google.com>
- <20240214062020.GA989328@cmpxchg.org>
+	dkim=pass (2048-bit key) header.d=shutemov.name header.i=@shutemov.name header.b="gyQBbXH2";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="TWECDkEP"
+Received: from compute7.internal (compute7.nyi.internal [10.202.2.48])
+	by mailfhigh.west.internal (Postfix) with ESMTP id 5ECD2180007C;
+	Wed, 14 Feb 2024 09:49:56 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute7.internal (MEProxy); Wed, 14 Feb 2024 09:49:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=shutemov.name;
+	 h=cc:cc:content-type:content-type:date:date:from:from
+	:in-reply-to:in-reply-to:message-id:mime-version:references
+	:reply-to:subject:subject:to:to; s=fm2; t=1707922195; x=
+	1708008595; bh=epVZw1x9FVt2elh8jYLSX6PiqT6PpjnxqNeFSeq1Zwo=; b=g
+	yQBbXH2Nd0+K8dm+BcBfX5h1iijUIOSpznBIPpqcSiWFGBi4uy+ekQkVEtz4utnl
+	RC8WyKwJOIUYe5ltvS5CAV+nY0oL7R6qmfPLy89cXJDUfEcV6QuVgXY6HOBcoTPE
+	IQuz8RItCSO8eg6jjCJnd8bgwu7h45n25lgd7Z3a0PHioW7afFmpMQdlr+rD2xEz
+	MPUyK8Y/nzYX7ovkxetOJuRLvdBfO5ImGrS4gFLl08+oXTfEk6Rlm2GCLHS5ezJR
+	B8LCU0r4c2Q+Kpolz6HDeASuRuILF687s2ny91S+eXAr10vzUppyIYhZ9TaUXxIu
+	KUhOEnig/MnY4J5ySkMcg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm3; t=1707922195; x=1708008595; bh=epVZw1x9FVt2elh8jYLSX6PiqT6P
+	pjnxqNeFSeq1Zwo=; b=TWECDkEPyM+sYaRC5S/kgrLIwNlmMN5vk78TViGP+uG9
+	sV19jQS/pZDH4VVyghDBnXnQeLbpl1oHNGtkc3b/KaF9+eOyZw8LVVBdHg8HarEe
+	fxc9m704DTG9dzstJOSIgSC0v8gBAAUYNpTIDGOqvmxJLzJDtxyd8MhUVA84+6Dq
+	VUJNWPDOJSCI7cUVBgvFHDPYb5A127XlJLexkbUWAddoJ4Z1KTdrogLR55ErvDia
+	+rk09aBQcQMq815rtwAMzyqDPMcaU99rsptGwady+fZc67+o5+OF2IBcl9iXNqnL
+	fydkw+UZqln/W0ihd9dwmd65wNdWU1wpL1lZbAJyeA==
+X-ME-Sender: <xms:E9PMZX54oyMKaAaJ_yd4U6z8deSTfX2VjxyII9T6oyFqWDT-VmqR1Q>
+    <xme:E9PMZc6d-aqCG-k5tlYpGO8Jj8vd_mU482uidZ4ns0uLHBAeHSO9zjPpeSX1rSUsL
+    xMCWALJfyqh_m6mzrs>
+X-ME-Received: <xmr:E9PMZeecVyW9Weif_91PgXCD17To5gU9JRvdVVTHnPpNba-1Uy8mGg6SeMpgZPtUS-opmQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrudejgdejtdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdfstddttddvnecuhfhrohhmpedfmfhirhhi
+    lhhlucetrdcuufhhuhhtvghmohhvfdcuoehkihhrihhllhesshhhuhhtvghmohhvrdhnrg
+    hmvgeqnecuggftrfgrthhtvghrnhepffdvveeuteduhffhffevlefhteefveevkeelveej
+    udduvedvuddvleetudevhfeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpe
+    hmrghilhhfrhhomhepkhhirhhilhhlsehshhhuthgvmhhovhdrnhgrmhgv
+X-ME-Proxy: <xmx:E9PMZYLEHNnCXh7Lx4P7KqbQWT0tTqd8hEYZyFHflgl86FQLOcl8Aw>
+    <xmx:E9PMZbI76GkVpmnx_IE0boGvmj1BCkv5F__Yoni-YXjxJp7Z6YFz8g>
+    <xmx:E9PMZRzzgaJxAaeZGGZvPtYcKP1GTtrA2EsR8rh_Bdipdm5GmLHtdg>
+    <xmx:E9PMZYj5w7fKoEtOhFuSYQhLi5HWBZVcSmJyPzQtJmPhHvhCrKLFGZJS86M>
+Feedback-ID: ie3994620:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 14 Feb 2024 09:49:46 -0500 (EST)
+Date: Wed, 14 Feb 2024 16:49:43 +0200
+From: "Kirill A. Shutemov" <kirill@shutemov.name>
+To: Vishal Annapurve <vannapurve@google.com>
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org, pbonzini@redhat.com, 
+	rientjes@google.com, bgardon@google.com, seanjc@google.com, erdemaktas@google.com, 
+	ackerleytng@google.com, jxgao@google.com, sagis@google.com, oupton@google.com, 
+	peterx@redhat.com, vkuznets@redhat.com, dmatlack@google.com, pgonda@google.com, 
+	michael.roth@amd.com, thomas.lendacky@amd.com, dave.hansen@linux.intel.com, 
+	linux-coco@lists.linux.dev, chao.p.peng@linux.intel.com, isaku.yamahata@gmail.com, 
+	andrew.jones@linux.dev, corbet@lwn.net, hch@lst.de, m.szyprowski@samsung.com, bp@suse.de, 
+	rostedt@goodmis.org, iommu@lists.linux.dev
+Subject: Re: [RFC V1 1/5] swiotlb: Support allocating DMA memory from SWIOTLB
+Message-ID: <etvf2mon464whscbxqktdd7bputnqmmwmoeg7ssixsk4kljfek@4wngbgzbbmck>
+References: <20240112055251.36101-1-vannapurve@google.com>
+ <20240112055251.36101-2-vannapurve@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -91,65 +87,25 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240214062020.GA989328@cmpxchg.org>
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.com header.s=susede1 header.b="G/fg/fXE"
-X-Spamd-Result: default: False [-0.31 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
-	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 RCVD_DKIM_ARC_DNSWL_HI(-1.00)[];
-	 BAYES_HAM(-0.00)[26.79%];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
-	 DKIM_TRACE(0.00)[suse.com:+];
-	 MX_GOOD(-0.01)[];
-	 RCPT_COUNT_GT_50(0.00)[73];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 MID_RHS_NOT_FQDN(0.50)[];
-	 FREEMAIL_CC(0.00)[google.com,linux-foundation.org,linux.dev,suse.cz,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[];
-	 RCVD_IN_DNSWL_HI(-1.00)[2a07:de40:b281:106:10:150:64:167:received,2a07:de40:b281:104:10:150:64:97:from]
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spam-Score: -0.31
-X-Rspamd-Queue-Id: AABE1220CA
-X-Spam-Level: 
-X-Spam-Flag: NO
-X-Spamd-Bar: /
+In-Reply-To: <20240112055251.36101-2-vannapurve@google.com>
 
-On Wed 14-02-24 01:20:20, Johannes Weiner wrote:
-[...]
-> I agree we should discuss how the annotations are implemented on a
-> technical basis, but my take is that we need something like this.
+On Fri, Jan 12, 2024 at 05:52:47AM +0000, Vishal Annapurve wrote:
+> Modify SWIOTLB framework to allocate DMA memory always from SWIOTLB.
+> 
+> CVMs use SWIOTLB buffers for bouncing memory when using dma_map_* APIs
+> to setup memory for IO operations. SWIOTLB buffers are marked as shared
+> once during early boot.
+> 
+> Buffers allocated using dma_alloc_* APIs are allocated from kernel memory
+> and then converted to shared during each API invocation. This patch ensures
+> that such buffers are also allocated from already shared SWIOTLB
+> regions. This allows enforcing alignment requirements on regions marked
+> as shared.
 
-I do not think there is any disagreement on usefulness of a better
-memory allocation tracking. At least for me the primary problem is the
-implementation. At LFSMM last year we have heard that existing tracing
-infrastructure hasn't really been explored much. Cover letter doesn't
-really talk much about those alternatives so it is really hard to
-evaluate whether the proposed solution is indeed our best way to
-approach this.
+But does it work in practice? 
 
-> In a codebase of our size, I don't think the allocator should be
-> handing out memory without some basic implied tracking of where it's
-> going. It's a liability for production environments, and it can hide
-> bad memory management decisions in drivers and other subsystems for a
-> very long time.
-
-Fully agreed! It is quite common to see oom reports with a large portion
-of memory unaccounted and this really presents additional cost on the
-debugging side.
+Some devices (like GPUs) require a lot of DMA memory. So with this approach
+we would need to have huge SWIOTLB buffer that is unused in most VMs.
 
 -- 
-Michal Hocko
-SUSE Labs
+  Kiryl Shutsemau / Kirill A. Shutemov
