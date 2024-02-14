@@ -1,75 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A408E604AA;
-	Wed, 14 Feb 2024 17:00:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D26AF7C084
+	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 17:14:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707930040; cv=none; b=XihySHYiF+Z/zkZNySMpo8C1f66Un6q3bhtVCdDz1IruwQJQpyf0DjGq9H7HBComRicBHsw3AHrcmUAES6QZ2i6Vw2hP+jPqAKHHNJSMTBcr4DR/plHMwbcavXJYVlbs4Bv7tl3DBqDlrD/txLuFKu4TdHbS5Ybd8/tP0obbm6A=
+	t=1707930887; cv=none; b=sLF0pVL2AxWewTnqfBhyGMG6RYNY6Ikbfgm5mwZyNHa2z52ybwuK2PEvWvLrU5RNgb78U7Nyklwig22+YvHHSWCDp7WnzNrmnKwhrNNQnzCHY9g/8NTbe51ns6JhlNRWH/m7HsYJCAiyGdUWfr5kpBXQjjxFy5/XKKnDfpETKrY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707930040; c=relaxed/simple;
-	bh=SBXvlj/pv3bXj7iz6+7oO/3tACndnmQVR4G2KMScMxI=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=IGr+aVciRpoYe4egD0P/fCb0dPE8vCkMW18qJzlOyeEv9ZD6kY72E9tsQGKzQbux5tBu95LvKukaetwW+hEGHVqeYCnhKYdW+GHjW1VnaakNFLWng/23gs8BgK1jrpUhRX7DurVwxHEdNjPr5J40T0DKNCfd9TXDFlk1oyHm7zc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VLzgymvi; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1707930887; c=relaxed/simple;
+	bh=8ou5WjqaFbf0d6dlT4/+7co77L0bUTMJQFMyMq7YuMo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jkqlfGeoE06wt7B/BKPr/K9BGQicJ3vxA4wrFKWlTANFyfrl6ax/1eFYCsjSO74o5DIfN1T70AK6/UCkEMt1d1akx/0w9BKBf7JPsn1FXECQQ3UXFgK76AeqA8+kxCj5DF+wwum9Nt4FYnGLRyfawkaTb/QAKMRd6IlP0mUOD/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iuHC4aPc; arc=none smtp.client-ip=209.85.219.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VLzgymvi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF2A6C433F1;
-	Wed, 14 Feb 2024 17:00:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1707930040;
-	bh=SBXvlj/pv3bXj7iz6+7oO/3tACndnmQVR4G2KMScMxI=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=VLzgymvi/0g7CgSK1EPdFxNHNf71qXRiX/VkFEuuLPWCc3K9Fv/QV4SVf4aMfuJds
-	 Ih+2AlSsvZ7QBZoaGkWsLZB27hcWLPv2aa5ryqz3pcRKHLa/tOo3lFK5dn9+GnVF9e
-	 1cxC437KYaE7xssmo1EEnKOe/XJps/CLn+6fG1j3UHtSppHq92Y8xbGeOplaoBTZ05
-	 4tkFhkIyMrC5FVgf8HzbWYKqLyQCFsAjyrPEQpfAcSWPYXcFQW47vP3C/mexXxr1H0
-	 ++4GpekVy8AtHgWdR3cdcXRxbQnfOM9JOHZLWeC0Ki4EMNoXfA3M2P0yzvqaBowX61
-	 5XtkZ2D+h+MwA==
-From: Will Deacon <will@kernel.org>
-To: Joerg Roedel <joro@8bytes.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Rob Clark <robdclark@gmail.com>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	linux-arm-msm@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH] Revert "iommu/arm-smmu: Convert to domain_alloc_paging()"
-Date: Wed, 14 Feb 2024 17:00:34 +0000
-Message-Id: <170782679599.2166016.11725176923934129944.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20240213-iommu-revert-domain-alloc-v1-1-325ff55dece4@linaro.org>
-References: <20240213-iommu-revert-domain-alloc-v1-1-325ff55dece4@linaro.org>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iuHC4aPc"
+Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-dbed179f0faso777678276.1
+        for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 09:14:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1707930885; x=1708535685; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8ou5WjqaFbf0d6dlT4/+7co77L0bUTMJQFMyMq7YuMo=;
+        b=iuHC4aPcMZMfAv2pXteo0iMpoKy5Ksjzx7Ky9Kd7e8RX9/gplOP8ZAZO0qX0U4aJlI
+         EQHXkwf054G/Mlla2qVJTnuClyk+OTO4ccuHwyut6/Kvk0Wjw5uNZAjUI/FcYQ9c84Cj
+         U2ukVq5yq08oAPrm7nWxGh1Uqm/PdaEuyYS0GDv/4C+BOJbMZHbJ49dh1V0hBF92jfFn
+         0lZrCR6/XMhOZ0aMoO/wBpiC7uYsLTrufCYX4B+7fRHOz5Z8cBOuyfP98W+Xp4h19TXL
+         2tYCWjZRsSnfjBImRcsELHbWVFKD72B7lzzh166iArwQ/Q4cUwj9DaP9VNoUsIe/2EwX
+         ya8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707930885; x=1708535685;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8ou5WjqaFbf0d6dlT4/+7co77L0bUTMJQFMyMq7YuMo=;
+        b=B1Dfkbksj9v6USGtwKrYfEt8/LE2VAUejtbzfKOnebofltEVfRBT88rtQTKsUEhJxs
+         +vKoottS/lN2xPwIOdFyw8To/Qu/tG7i1YMnTZ+z7XOgcNEq+gFlgJbILqJ/jiPN1lf1
+         +1dq8jRncxoFsx5AX2sL+GgyoATZHmA2Q/hYveXYupTP216iYzoh/aWA6ykm8WaB4mtW
+         t0PDHu9NRgoh8cmazXc1sz23V9rKk91QLS1LOboYgxMLGwJ3Sds48DEkUYdLEi7RRQlV
+         ig73zOXyku4Z/gLSPElxoOYiDu1XYa7l7Iuizz9aJmdFRktWwnL9q+MtxJ8RLCNbw+fm
+         0R2Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXqRKxGsCpAs1Rzt5S3X+oPIYJZ4eI0X7b+SuULv4zIqaXhcwVMBtwJGapilJxKd1twoZ5qtGHRp1L+4drTICarMUbsSxo=
+X-Gm-Message-State: AOJu0YyEGRZE6HJm2PhRxik+VwvMmLbZe67XiOUPe2Lg8BxrVgn9hbH/
+	+n3Cr9cVOi73rX77XCcEy40o1Ljvfz7MdPSpAHCq+uhhKSPNMTzD8eEUFXOhVlMqFuSkwp/6tOh
+	8PHzKCd2rzCijNDeW6pE5tna8xwe1siFaYMtF
+X-Google-Smtp-Source: AGHT+IEklcDkHwhJJTRfE00RVqD2YD9tPurIlvkQmweXW1ROZAgTvoBmd93LGr06RSN2meH7bqCAE1CDi8ShYu3HlN0=
+X-Received: by 2002:a25:4b84:0:b0:dbe:d2ec:e31 with SMTP id
+ y126-20020a254b84000000b00dbed2ec0e31mr1980533yba.27.1707930884496; Wed, 14
+ Feb 2024 09:14:44 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+References: <20240212213922.783301-1-surenb@google.com> <20240214062020.GA989328@cmpxchg.org>
+ <ZczSSZOWMlqfvDg8@tiehlicka> <ifz44lao4dbvvpzt7zha3ho7xnddcdxgp4fkeacqleu5lo43bn@f3dbrmcuticz>
+ <ZczkFH1dxUmx6TM3@tiehlicka> <udgv2gndh4leah734rfp7ydfy5dv65kbqutse6siaewizoooyw@pdd3tcji5yld>
+ <Zczq02jdZa9L0VKj@tiehlicka>
+In-Reply-To: <Zczq02jdZa9L0VKj@tiehlicka>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Wed, 14 Feb 2024 09:14:30 -0800
+Message-ID: <CAJuCfpFR85w5_8sX0uLfi4SsVb8Yr6DDu=VTA25PB-3SgC=5UA@mail.gmail.com>
+Subject: Re: [PATCH v3 00/35] Memory allocation profiling
+To: Michal Hocko <mhocko@suse.com>
+Cc: Kent Overstreet <kent.overstreet@linux.dev>, Johannes Weiner <hannes@cmpxchg.org>, 
+	akpm@linux-foundation.org, vbabka@suse.cz, roman.gushchin@linux.dev, 
+	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org, 
+	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
+	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
+	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 13 Feb 2024 13:31:56 +0200, Dmitry Baryshkov wrote:
-> This reverts commit 9b3febc3a3da ("iommu/arm-smmu: Convert to
-> domain_alloc_paging()"). It breaks Qualcomm MSM8996 platform. Calling
-> arm_smmu_write_context_bank() from new codepath results in the platform
-> being reset because of the unclocked hardware access.
-> 
-> 
+On Wed, Feb 14, 2024 at 8:31=E2=80=AFAM Michal Hocko <mhocko@suse.com> wrot=
+e:
+>
+> On Wed 14-02-24 11:17:20, Kent Overstreet wrote:
+> [...]
+> > You gotta stop with this this derailing garbage.
+>
+> It is always pleasure talking to you Kent, but let me give you advice
+> (free of charge of course). Let Suren talk, chances for civilized
+> and productive discussion are much higher!
 
-Applied to will (for-joerg/arm-smmu/fixes), thanks!
+Every time I wake up to a new drama... Sorry I won't follow up on this
+one not to feed the fire.
 
-[1/1] Revert "iommu/arm-smmu: Convert to domain_alloc_paging()"
-      https://git.kernel.org/will/c/b419c5e2d978
 
-Cheers,
--- 
-Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+>
+> I do not have much more to add to the discussion. My point stays, find a
+> support of the MM community if you want to proceed with this work.
+> --
+> Michal Hocko
+> SUSE Labs
