@@ -1,189 +1,152 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2049.outbound.protection.outlook.com [40.107.102.49])
+Received: from out-189.mta0.migadu.com (out-189.mta0.migadu.com [91.218.175.189])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ABC4127B5D
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 19:57:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.49
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707940672; cv=fail; b=F+xgAggnXdJO0AoVQEMmSJXDiec8fGCNvkyZyHquA7gyoh1AvGNAIju4cByCNyzclTHfP+ddKVioWX5DW4MSG6wpjQP6Gae2/eQwRlPhyKd9Ofu0JaSDPrOR69lTiTxJp00HkmoQVwZUFE6/QsxqOSAF28gK0Ipzbfm48QTzo/0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707940672; c=relaxed/simple;
-	bh=7YRYn2SAKkky3v2X4XmxwjdgQxnfVO+9+plUTxW4RdE=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oEuN9S9ERSx07Q+I4qJLmNup+AFh3MDV1qDGRpo/1Y7X82pStacPGn7VZiHpa5+VOP1RHaNaKwvsJM4lUOOF1aXB8bwQa7Iyf3Ox2LK8+h0TzA40zD5pN5j4bghxSiIz9ic3ZnnL+a9pybTE9gPVVYODIYlM4e+A/hHeNNRUBC8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=d2TlUizf; arc=fail smtp.client-ip=40.107.102.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B816213AA5E
+	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 20:00:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.189
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1707940830; cv=none; b=pnbp/Ud7+0mBbsNc2fQUJm5JGMjHTnkQqc3PcX1pqIc7QzZbqbyFVj6QKmmRCrSdM0FLo7DFE8LL6yfb4QbzNT2QbykWlaCyw9C2jyMKYCyioTTzl0SIDVEV2qQQPbT3szkb2fu6Y5p5k4reCF4+s1Nyj/6nZNMKYoTeSOQEvy4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1707940830; c=relaxed/simple;
+	bh=sG1eMeXm6V7HoOMCkcfIrnxVJDrJycSjo8dnKLtS7so=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=MCtzN1b863GxrVUAJ34dALCed6igDnjlUabQIxRFxGntMsxxhbz7yDzKx8gHfmyWEkyL4J1ajio/GVr6/y75woe4U2LyrzhkY4WrlE+KudH6ivV2GHrifxcmXeMdd9p58WIEl0V8GgkYx4LfDBkRjt5wrTO3JVnx0kBa72YrmNQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=V0Dtva7q; arc=none smtp.client-ip=91.218.175.189
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="d2TlUizf"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=APyLxyxkr0JSLT6erWJoXKUEmAUzkpgjIibo1q7YOIxfToAXk2dE8kq92rfnYvCK71U9uGU2oDOkYJ3VeXmsWzGXn2GtZlo71AYwtanr/gurofatjh48LR5EM8TxErh2/2FIuYfw0n5xasdGAnBefXVSGY2BqmDETeSHD0dcmYNNdt4p8FrAfY+vQipgvEAXx5HC29PYofsEoRmklGusqB8cFzGYRUWzKZwf9kP9iFDfz+oDffOzTDqoklhGGv4sinXJkUx8kUpnnqFyVSJZvGK7KITCdOZBaDaNmXYfvMi93eWPTwwuvdcfBIdhVOzOeg+8xxiGcrQiYCycc5lIIQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7f9gxrETEuRfaZrn83Vw971b9MljLgOHwCVrmXxxwKU=;
- b=gMgxdJPTQWcqCLvU2vcHT5lzguJgxK/CPR4SShhnnoAfcpsi+O4vAFQdOvc4zwyF/v0a70z6HqHXzUP/jW86j+Sv4rg5ycY1oQiDTQnPQEFoauZMEvHMwH6Bm7NAa1yF2YG+Mx6/XKhyis4jjdr0+r0HE8z+ATizoP+qHZWBJsCwJvAQGEklx1Zs8Ek9eUxNAhAtWzSfb94/dZb1gROcyRnBVe484kNAJseJgmk4WShA8P4nk4FXnZWMlezmHsNlY4W5lNwOiLuNzZUcMnsmpscITXBVS+vKV/QbqbRfuxfYvaCrKXn6j3iHnTYPg1RuaEWKvKg4rFsc3B5tnWiPWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7f9gxrETEuRfaZrn83Vw971b9MljLgOHwCVrmXxxwKU=;
- b=d2TlUizf8bCsO3+LLr7vv25aCaXbaMV7l4lmie8f/lvOUVVo8n6urdfUglzho6qWB4AS/Jrkz0rwmcy4EpfEJXQVEIQFsklGm7IGDCqpP++B0YGgttAEwjik/XtaY9mTXlUJA52IO5CVfVPnI7m273Y6QDWb7J5cISogeqC0bNbQvDxznZKxdYixD39Re6p2CbHgX3fp89pfa/voBhCttdcwBctT1XhT7RpCGpnJhSr4MC0nRGssjy/JuACPW7BDb9b958PkfdB7Y1QJk948cmyXc2mdZHCuCnr15tJb3vVzna9/SuSvwHgqdkzQXsucuYUQmHxL3arAJHA6KVXkSw==
-Received: from CH0PR03CA0360.namprd03.prod.outlook.com (2603:10b6:610:11a::11)
- by SJ2PR12MB8035.namprd12.prod.outlook.com (2603:10b6:a03:4d3::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.24; Wed, 14 Feb
- 2024 19:57:47 +0000
-Received: from CH2PEPF0000009F.namprd02.prod.outlook.com
- (2603:10b6:610:11a:cafe::88) by CH0PR03CA0360.outlook.office365.com
- (2603:10b6:610:11a::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.26 via Frontend
- Transport; Wed, 14 Feb 2024 19:57:46 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CH2PEPF0000009F.mail.protection.outlook.com (10.167.244.21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7292.25 via Frontend Transport; Wed, 14 Feb 2024 19:57:46 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 14 Feb
- 2024 11:57:34 -0800
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.12; Wed, 14 Feb 2024 11:57:34 -0800
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
- (10.126.190.182) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
- Transport; Wed, 14 Feb 2024 11:57:33 -0800
-Date: Wed, 14 Feb 2024 11:57:32 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Will Deacon <will@kernel.org>
-CC: <sagi@grimberg.me>, <hch@lst.de>, <axboe@kernel.dk>, <kbusch@kernel.org>,
-	<joro@8bytes.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
-	<linux-nvme@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<iommu@lists.linux.dev>, <murphyt7@tcd.ie>, <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v1 0/2] nvme-pci: Fix dma-iommu mapping failures when
- PAGE_SIZE=64KB
-Message-ID: <Zc0bLAIXSAqsQJJv@Asurada-Nvidia>
-References: <cover.1707851466.git.nicolinc@nvidia.com>
- <20240214164138.GA31927@willie-the-truck>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="V0Dtva7q"
+Date: Wed, 14 Feb 2024 15:00:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1707940826;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=pf30Mbuh5b/kObn023v7ccfUflKK/+7eCEEfg4Q4/Xo=;
+	b=V0Dtva7qS2reHkZJi6PJ+HEovBCR0hF1cHRtyU3vqEVbBd8vXfQIrh8jm2X0ifBBI4P+IO
+	H5vrvDEyaz0upotCLVyuYanif0dGbMLFqnWADl59CQ4rEdihhMwhzsvSw9R6sR/elwVruF
+	7JlRVAQ9ZPkvUkS27LLag/qy7F3NQ4g=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>, 
+	David Hildenbrand <david@redhat.com>, Michal Hocko <mhocko@suse.com>, vbabka@suse.cz, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net, 
+	willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, 
+	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, axboe@kernel.dk, 
+	mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, 
+	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, 
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
+	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
+	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
+	shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 00/35] Memory allocation profiling
+Message-ID: <stxem77cvysbfllp46dtgsgawzdtkr662ymw3jgo564ekssna3@t7iw7azgyqvy>
+References: <9e14adec-2842-458d-8a58-af6a2d18d823@redhat.com>
+ <2hphuyx2dnqsj3hnzyifp5yqn2hpgfjuhfu635dzgofr5mst27@4a5dixtcuxyi>
+ <6a0f5d8b-9c67-43f6-b25e-2240171265be@redhat.com>
+ <CAJuCfpEtOhzL65eMDk2W5SchcquN9hMCcbfD50a-FgtPgxh4Fw@mail.gmail.com>
+ <adbb77ee-1662-4d24-bcbf-d74c29bc5083@redhat.com>
+ <r6cmbcmalryodbnlkmuj2fjnausbcysmolikjguqvdwkngeztq@45lbvxjavwb3>
+ <CAJuCfpF4g1jeEwHVHjQWwi5kqS-3UqjMt7GnG0Kdz5VJGyhK3Q@mail.gmail.com>
+ <20240214085548.d3608627739269459480d86e@linux-foundation.org>
+ <7c3walgmzmcygchqaylcz2un5dandlnzdqcohyooryurx6utxr@66adcw7f26c3>
+ <CAJuCfpGi6g3rG8aVmXveSxKvXnfm+5gLKS=Q4ouQBDaTxSuhww@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240214164138.GA31927@willie-the-truck>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CH2PEPF0000009F:EE_|SJ2PR12MB8035:EE_
-X-MS-Office365-Filtering-Correlation-Id: 016addfe-ff54-4ebe-7b13-08dc2d973732
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	qXrZAmJ9AYHHTEZNGrDOlQdvxJyajZGPAC8xYENKvtPDRfXvDN3B0RFP/RCcjH+m8O1ome8EVS2KsJItLNXJZ1JWRMDShZnLoVQgIilezkI2VXc8VDA/Dq9mDKHkxsnmJh1T+dN/th4WSGwD3gV8sG9rhm8mGxdvI4QSceBYYKSo7+kMVmhhCuQGiJVaeDk93L/v2Sr7W5uVZtQ5NjPsY5O9SiNTvpzMGok0ZC5uUfcFI3h4LoRD96Sjwd+6d/liGZCSKrK2lywzTPGrmlmEamh4i29gX8C5vFvwIbKgp6cYPuPuErj6zsj+hB1YPTR1izRgWKjjGWSiAmjuH3ks14EWneWJ7FyoKERy2PrvfAFuZ2cPMBvjULnzONC6T6/PnZGsQxn12O7wFJVzDdJNs7S8owD8xV1vyUzeDljub2LpF0UZg6NsEapO9jXEhwXEEBOofwUwEJbFdUZQLgpP/+9CWRyRXNPCPzHIB4ZrAirBAAEaHqJtAJg7RG7iTwdlFlglFVYw6eOaPqz30LOhM9I5fAtZzFi3ywx2v0lZmUu+GViSb+VpuYst5mtQjn+q1/+Gg7QcEC0ZgVqDTu310JY+7CLJI2ptYahalD2pB+HNM2nnwGo+xpdxQ5DLJNsDBBppPEa+bWJsMDfu0XFM3w==
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(396003)(39860400002)(346002)(136003)(376002)(230273577357003)(230922051799003)(451199024)(1800799012)(64100799003)(82310400011)(186009)(46966006)(36840700001)(40470700004)(6916009)(26005)(478600001)(70586007)(7416002)(426003)(336012)(41300700001)(83380400001)(8936002)(8676002)(70206006)(5660300002)(9686003)(4326008)(54906003)(966005)(316002)(86362001)(82740400003)(356005)(7636003)(55016003)(33716001)(2906002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Feb 2024 19:57:46.7572
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 016addfe-ff54-4ebe-7b13-08dc2d973732
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CH2PEPF0000009F.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8035
+In-Reply-To: <CAJuCfpGi6g3rG8aVmXveSxKvXnfm+5gLKS=Q4ouQBDaTxSuhww@mail.gmail.com>
+X-Migadu-Flow: FLOW_OUT
 
-Hi Will,
-
-On Wed, Feb 14, 2024 at 04:41:38PM +0000, Will Deacon wrote:
-> Hi Nicolin,
+On Wed, Feb 14, 2024 at 11:24:23AM -0800, Suren Baghdasaryan wrote:
+> On Wed, Feb 14, 2024 at 9:52 AM Kent Overstreet
+> <kent.overstreet@linux.dev> wrote:
+> >
+> > On Wed, Feb 14, 2024 at 08:55:48AM -0800, Andrew Morton wrote:
+> > > On Tue, 13 Feb 2024 14:59:11 -0800 Suren Baghdasaryan <surenb@google.com> wrote:
+> > >
+> > > > > > If you think you can easily achieve what Michal requested without all that,
+> > > > > > good.
+> > > > >
+> > > > > He requested something?
+> > > >
+> > > > Yes, a cleaner instrumentation. Unfortunately the cleanest one is not
+> > > > possible until the compiler feature is developed and deployed. And it
+> > > > still would require changes to the headers, so don't think it's worth
+> > > > delaying the feature for years.
+> > >
+> > > Can we please be told much more about this compiler feature?
+> > > Description of what it is, what it does, how it will affect this kernel
+> > > feature, etc.
+> > >
+> > > Who is developing it and when can we expect it to become available?
+> > >
+> > > Will we be able to migrate to it without back-compatibility concerns?
+> > > (I think "you need quite recent gcc for memory profiling" is
+> > > reasonable).
+> > >
+> > >
+> > >
+> > > Because: if the maintainability issues which Michel describes will be
+> > > significantly addressed with the gcc support then we're kinda reviewing
+> > > the wrong patchset.  Yes, it may be a maintenance burden initially, but
+> > > at some (yet to be revealed) time in the future, this will be addressed
+> > > with the gcc support?
+> >
+> > Even if we had compiler magic, after considering it more I don't think
+> > the patchset would be improved by it - I would still prefer to stick
+> > with the macro approach.
+> >
+> > There's also a lot of unresolved questions about whether the compiler
+> > approach would even end being what we need; we need macro expansion to
+> > happen in the caller of the allocation function
 > 
-> On Tue, Feb 13, 2024 at 01:53:55PM -0800, Nicolin Chen wrote:
-> > It's observed that an NVME device is causing timeouts when Ubuntu boots
-> > with a kernel configured with PAGE_SIZE=64KB due to failures in swiotlb:
-> >     systemd[1]: Started Journal Service.
-> >  => nvme 0000:00:01.0: swiotlb buffer is full (sz: 327680 bytes), total 32768 (slots), used 32 (slots)
-> >     note: journal-offline[392] exited with irqs disabled
-> >     note: journal-offline[392] exited with preempt_count 1
-> >
-> > An NVME device under a PCIe bus can be behind an IOMMU, so dma mappings
-> > going through dma-iommu might be also redirected to swiotlb allocations.
-> > Similar to dma_direct_max_mapping_size(), dma-iommu should implement its
-> > dma_map_ops->max_mapping_size to return swiotlb_max_mapping_size() too.
-> >
-> > Though an iommu_dma_max_mapping_size() is a must, it alone can't fix the
-> > issue. The swiotlb_max_mapping_size() returns 252KB, calculated from the
-> > default pool 256KB subtracted by min_align_mask NVME_CTRL_PAGE_SIZE=4KB,
-> > while dma-iommu can roundup a 252KB mapping to 256KB at its "alloc_size"
-> > when PAGE_SIZE=64KB via iova->granule that is often set to PAGE_SIZE. So
-> > this mismatch between NVME_CTRL_PAGE_SIZE=4KB and PAGE_SIZE=64KB results
-> > in a similar failure, though its signature has a fixed size "256KB":
-> >     systemd[1]: Started Journal Service.
-> >  => nvme 0000:00:01.0: swiotlb buffer is full (sz: 262144 bytes), total 32768 (slots), used 128 (slots)
-> >     note: journal-offline[392] exited with irqs disabled
-> >     note: journal-offline[392] exited with preempt_count 1
-> >
-> > Both failures above occur to NVME behind IOMMU when PAGE_SIZE=64KB. They
-> > were likely introduced for the security feature by:
-> > commit 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers"),
-> >
-> > So, this series bundles two fixes together against that. They should be
-> > taken at the same time to entirely fix the mapping failures.
-> 
-> It's a bit of a shot in the dark, but I've got a pending fix to some of
-> the alignment handling in swiotlb. It would be interesting to know if
-> patch 1 has any impact at all on your NVME allocations:
-> 
-> https://lore.kernel.org/r/20240205190127.20685-1-will@kernel.org
+> For the record, that's what this attribute will be doing. So it should
+> cover our usecase.
 
-I applied these three patches locally for a test.
+That wasn't clear in the meeting we had the other day; all that was
+discussed there was the attribute syntax, as I recall.
 
-Though I am building with a v6.6 kernel, I see some warnings:
-                 from kernel/dma/swiotlb.c:26:
-kernel/dma/swiotlb.c: In function ‘swiotlb_area_find_slots’:
-./include/linux/minmax.h:21:35: warning: comparison of distinct pointer types lacks a cast
-   21 |         (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-      |                                   ^~
-./include/linux/minmax.h:27:18: note: in expansion of macro ‘__typecheck’
-   27 |                 (__typecheck(x, y) && __no_side_effects(x, y))
-      |                  ^~~~~~~~~~~
-./include/linux/minmax.h:37:31: note: in expansion of macro ‘__safe_cmp’
-   37 |         __builtin_choose_expr(__safe_cmp(x, y), \
-      |                               ^~~~~~~~~~
-./include/linux/minmax.h:75:25: note: in expansion of macro ‘__careful_cmp’
-   75 | #define max(x, y)       __careful_cmp(x, y, >)
-      |                         ^~~~~~~~~~~~~
-kernel/dma/swiotlb.c:1007:26: note: in expansion of macro ‘max’
- 1007 |                 stride = max(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
-      |                          ^~~
+So say that does work out (and I don't think that's a given; if I were a
+compiler person I don't think I'd be interested in this strange half
+macro, half inline function beast); all that has accomplished is to get
+rid of the need for the renaming - the _noprof() versions of functions.
 
-Replacing with a max_t() can fix these.
+So then how do you distinguish where in the callstack the accounting
+happens?
 
-And it seems to get worse, as even a 64KB mapping is failing:
-[    0.239821] nvme 0000:00:01.0: swiotlb buffer is full (sz: 65536 bytes), total 32768 (slots), used 0 (slots)
+If you say "it happens at the outermost wrapper", then what happens is
 
-With a printk, I found the iotlb_align_mask isn't correct:
-   swiotlb_area_find_slots:alloc_align_mask 0xffff, iotlb_align_mask 0x800
+ - Extra overhead for all the inner wrapper invocations, where they have
+   to now check "actually, we already have an alloc tag, don't do
+   anything". That's a cost, and given how much time we spent shaving
+   cycles and branches during development it's not one we want.
 
-But fixing the iotlb_align_mask to 0x7ff still fails the 64KB
-mapping..
+ - Inner allocations that shouldn't be accounted to the outer context
+   are now a major problem, because they silently will be accounted
+   there and never noticed.
 
-Thanks
-Nicolin
+   With our approach, inner allocations are by default (i.e. when we
+   haven't switched them to the _noprof() variant) accounted to their
+   own alloc tag; that way, when we're reading the /proc/allocinfo
+   output, we can examine them and check if they should be collapsed to
+   the outer context. With this approach they won't be seen.
+
+So no, we still don't want the compiler approach.
