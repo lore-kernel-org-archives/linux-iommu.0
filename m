@@ -1,107 +1,151 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D951604BC;
-	Wed, 14 Feb 2024 16:55:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 727A2604AA;
+	Wed, 14 Feb 2024 17:00:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707929752; cv=none; b=gGg+zAVWRgws+NTYmPwWrAovxhn7j8f0KKes6Gkd/GavkUhdolVF2sv+0dc78MQCYTzMwRiXalKX2EmfQ5WxnVYXlNbKnNx8bDAFK9WkiK4igkaMOaSSyDV9jcdpCbFujXblAF/uDCY9+B+Dk4cvjw2GFaahNjQNvXvnMIdNvPg=
+	t=1707930036; cv=none; b=WqZO/FfpWo1EAuRUNFhtuYTuJoXYO7vR9Xir2YW6IZe2qnNMnbVEVPvGV1O+8rbjQ+VS/ftHrrIF77kKd5gSp9+UbK0pjAZRb5RBvXqTFLqqKYNu9n9TRIGdMNc6l98kNC6z3LhiL3uyriDKTH78etbQgkz5Cck42wg7buN9B6U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707929752; c=relaxed/simple;
-	bh=Z1j0awbyiMqQJioymUvLXxMTBT0EGAz3kMP8dpbtft4=;
-	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
-	 Mime-Version:Content-Type; b=Qh9x31qTahDzxkLEMayQnWXSWt+TevPz6hxOoQrQIItZMqc9r7xlbL1eI74g8OvOmZ6i7JChSdKYxlSBcEANUssaXbHFOMXIpr7GFOzJi44h4/VkwGB1KrS8IVRdEcNIVH5fnHojpQQGObcAYPflsykxYsS3F+unmt/gX2XScNk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=aP6eNqCb; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1707930036; c=relaxed/simple;
+	bh=Z6rrMvEP6XhNUYQaqN3A0gAvieP0dNhtgVysnYh/Urc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Gv2zxeJDDzbZ/U/GS1q6lI9ZD1mcKTS8SNNFIASEGb5vnWS902PSjvwCfoC40yuB11tb389WrF73Qkxf5Kp2+ec23eSopN7956mSguFw/xG77/QBEafQb1NIJb+1B8gx7mXknHUSJuT1EjetMh5gNRr/LCW6vK1bCMuZ6aX72Go=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G6w9jYal; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="aP6eNqCb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57F71C433C7;
-	Wed, 14 Feb 2024 16:55:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
-	s=korg; t=1707929751;
-	bh=Z1j0awbyiMqQJioymUvLXxMTBT0EGAz3kMP8dpbtft4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=aP6eNqCb/UgW05i+ulED3dJ38CFlbF46c9ImepcRNWw3cqV444ebJY3dOVwDX0TpF
-	 Zry6nkCkfDuDtI3bkVsahvhtqzq0e6p7PwaST0Yzxnx6S2AOkZW5cKbC+D8uj2KfhL
-	 cXIdI5wkzTTOR16ASzaWYyPLnnwcg8bFmbhrKB3U=
-Date: Wed, 14 Feb 2024 08:55:48 -0800
-From: Andrew Morton <akpm@linux-foundation.org>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: Kent Overstreet <kent.overstreet@linux.dev>, David Hildenbrand
- <david@redhat.com>, Michal Hocko <mhocko@suse.com>, vbabka@suse.cz,
- hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
- dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
- corbet@lwn.net, void@manifault.com, peterz@infradead.org,
- juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org,
- arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
- nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
- rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
- yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
- hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
- ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org,
- ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
- dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
- bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
- minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arch@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
- cgroups@vger.kernel.org
-Subject: Re: [PATCH v3 00/35] Memory allocation profiling
-Message-Id: <20240214085548.d3608627739269459480d86e@linux-foundation.org>
-In-Reply-To: <CAJuCfpF4g1jeEwHVHjQWwi5kqS-3UqjMt7GnG0Kdz5VJGyhK3Q@mail.gmail.com>
-References: <20240212213922.783301-1-surenb@google.com>
-	<Zctfa2DvmlTYSfe8@tiehlicka>
-	<CAJuCfpEsWfZnpL1vUB2C=cxRi_WxhxyvgGhUg7WdAxLEqy6oSw@mail.gmail.com>
-	<9e14adec-2842-458d-8a58-af6a2d18d823@redhat.com>
-	<2hphuyx2dnqsj3hnzyifp5yqn2hpgfjuhfu635dzgofr5mst27@4a5dixtcuxyi>
-	<6a0f5d8b-9c67-43f6-b25e-2240171265be@redhat.com>
-	<CAJuCfpEtOhzL65eMDk2W5SchcquN9hMCcbfD50a-FgtPgxh4Fw@mail.gmail.com>
-	<adbb77ee-1662-4d24-bcbf-d74c29bc5083@redhat.com>
-	<r6cmbcmalryodbnlkmuj2fjnausbcysmolikjguqvdwkngeztq@45lbvxjavwb3>
-	<CAJuCfpF4g1jeEwHVHjQWwi5kqS-3UqjMt7GnG0Kdz5VJGyhK3Q@mail.gmail.com>
-X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G6w9jYal"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 165DDC433F1;
+	Wed, 14 Feb 2024 17:00:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1707930035;
+	bh=Z6rrMvEP6XhNUYQaqN3A0gAvieP0dNhtgVysnYh/Urc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=G6w9jYalv0wMQ79t+8DDbDRceD0QKT/3QiBDvSA3ANWA89srL1EaOGKfAaw+ghBYd
+	 DVstHA5FbtvHi/0LOvaqAUE1PCUuFlIpU+CP8o4Y+V+HPxhh4D5jeiaLGAVTytxpO9
+	 84HEOgePx6MZsOj3ZczfK/+F2PAKkxUPdlIxHhbrYohi/aWLwk/nS3RDa+D4wm+rPw
+	 J3Xh+A+wsMeAhWvoMFI2oB0DKTEkBYXuzgftwA4QBTRXrtt6RpIy/y+Jaj/QPQ/ENQ
+	 MJst1BgSiDlcU9oqI7tHqAIRv+Dx6wORESp0CYog3yqGCvowcn+GaWfQpK+B4NRnVp
+	 /hyTHDDVF72Wg==
+Date: Wed, 14 Feb 2024 17:00:30 +0000
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Dan Carpenter <dan.carpenter@linaro.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev
+Subject: Re: [PATCH rc] iommu/arm-smmu-v3: Do not use GFP_KERNEL under as
+ spinlock
+Message-ID: <20240214170030.GB31927@willie-the-truck>
+References: <0-v1-210234560de7+69a-smmu_cd_atomic_jgg@nvidia.com>
+ <20240208125846.GA23290@willie-the-truck>
+ <20240208142729.GH10476@nvidia.com>
+ <20240213112015.GB28517@willie-the-truck>
+ <20240213121850.GH4048826@nvidia.com>
+ <20240213125456.GA28844@willie-the-truck>
+ <20240213133045.GA989297@nvidia.com>
+ <20240213135627.GD28926@willie-the-truck>
+ <20240213140033.GB989297@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240213140033.GB989297@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Tue, 13 Feb 2024 14:59:11 -0800 Suren Baghdasaryan <surenb@google.com> wrote:
-
-> > > If you think you can easily achieve what Michal requested without all that,
-> > > good.
-> >
-> > He requested something?
+On Tue, Feb 13, 2024 at 10:00:33AM -0400, Jason Gunthorpe wrote:
+> On Tue, Feb 13, 2024 at 01:56:28PM +0000, Will Deacon wrote:
 > 
-> Yes, a cleaner instrumentation. Unfortunately the cleanest one is not
-> possible until the compiler feature is developed and deployed. And it
-> still would require changes to the headers, so don't think it's worth
-> delaying the feature for years.
+> > I can write it as a full patch if you prefer (and I'll need your help to
+> > test it), but I was really hoping to continue the discussion so you could
+> > spin a v2.
+> 
+> No worries, I'll take care of it, just need to understand what we have
+> agreed.
 
-Can we please be told much more about this compiler feature? 
-Description of what it is, what it does, how it will affect this kernel
-feature, etc.
+Cheers. I finished the diff off anyway, as it's basically just merging
+the thing I sent with the rest of your patch. What do you reckon?
 
-Who is developing it and when can we expect it to become available?
+Will
 
-Will we be able to migrate to it without back-compatibility concerns? 
-(I think "you need quite recent gcc for memory profiling" is
-reasonable).
+--->8
 
-
-
-Because: if the maintainability issues which Michel describes will be
-significantly addressed with the gcc support then we're kinda reviewing
-the wrong patchset.  Yes, it may be a maintenance burden initially, but
-at some (yet to be revealed) time in the future, this will be addressed
-with the gcc support?
-
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+index 05722121f00e..128f61a705c7 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -588,6 +588,12 @@ static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
+ {
+ 	int ret = 0;
+ 	struct mm_struct *mm = domain->mm;
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++
++	/* Pre-allocate the CD leaf table without any locks held */
++	ret = arm_smmu_init_cd_table(master, id);
++	if (ret)
++		return ret;
+ 
+ 	mutex_lock(&sva_lock);
+ 	ret = __arm_smmu_sva_bind(dev, mm);
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 0ffb1cf17e0b..e48f2b46f25e 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1019,7 +1019,10 @@ static void arm_smmu_write_cd_l1_desc(__le64 *dst,
+ 	WRITE_ONCE(*dst, cpu_to_le64(val));
+ }
+ 
+-static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
++static __le64 *
++__arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid,
++		      int (*cd_alloc)(struct arm_smmu_device *,
++				      struct arm_smmu_l1_ctx_desc *))
+ {
+ 	__le64 *l1ptr;
+ 	unsigned int idx;
+@@ -1033,7 +1036,7 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
+ 	idx = ssid >> CTXDESC_SPLIT;
+ 	l1_desc = &cd_table->l1_desc[idx];
+ 	if (!l1_desc->l2ptr) {
+-		if (arm_smmu_alloc_cd_leaf_table(smmu, l1_desc))
++		if (!cd_alloc || cd_alloc(smmu, l1_desc))
+ 			return NULL;
+ 
+ 		l1ptr = cd_table->cdtab + idx * CTXDESC_L1_DESC_DWORDS;
+@@ -1045,6 +1048,19 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
+ 	return l1_desc->l2ptr + idx * CTXDESC_CD_DWORDS;
+ }
+ 
++static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
++{
++	return __arm_smmu_get_cd_ptr(master, ssid, NULL);
++}
++
++int arm_smmu_init_cd_table(struct arm_smmu_master *master, int ssid)
++{
++	if (!__arm_smmu_get_cd_ptr(master, ssid, arm_smmu_alloc_cd_leaf_table))
++		return -ENOMEM;
++
++	return 0;
++}
++
+ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
+ 			    struct arm_smmu_ctx_desc *cd)
+ {
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index 65fb388d5173..cc42cede77bc 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -748,6 +748,7 @@ extern struct xarray arm_smmu_asid_xa;
+ extern struct mutex arm_smmu_asid_lock;
+ extern struct arm_smmu_ctx_desc quiet_cd;
+ 
++int arm_smmu_init_cd_table(struct arm_smmu_master *smmu_master, int ssid);
+ int arm_smmu_write_ctx_desc(struct arm_smmu_master *smmu_master, int ssid,
+ 			    struct arm_smmu_ctx_desc *cd);
+ void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid);
