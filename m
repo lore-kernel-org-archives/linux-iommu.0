@@ -1,117 +1,316 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B11314264
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 08:03:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A748168D7
+	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 10:01:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707897824; cv=none; b=JOAZpl6s2jrZzAlyQqTDYzJBpnWFSMJFJFxD0WlnGXbCL2eJq4Q8y2QStVj3jLWGF60QjnW+LKhYaL6SYy/XDRAH2AZ/Okpd4+jlJBSTPex07NtXqiKecIUCI9WXYx6shGF6ZvSjyhLuIv+DpGqML7u4y2ATi/hbNCF4JWU5BmE=
+	t=1707904874; cv=none; b=ge31M9z20RCug/9vNS9c113oaqRSC3IgWVTVhrr6fTUrs5jjgBy/McN/n/8OdLxe7ec6zeQcYk0tn17T8QyjRLsv04vpAjPxgQMlnQD9spsduZ8UfyFyNAOPXU7CY/vX7qSgsJCclxbBx9q5sES6jmty3wMtcIi3I8joJuUGgPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707897824; c=relaxed/simple;
-	bh=qDTr6j8KLwnlDyOgYyxvdnWHSER/jDCBOwN2h7/OVsY=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=Gm86OjOb7FmL77lAJ8+gEaLwOZL1Hhq550AFtw9dJWupXz7qy0sfAV/80X+M/cuMYyS2bZMjY2M8mSy3YY8N1KcezNQqxFIlWxoACVtScUSb7FudrXjiCocur/DgNkr04fehFoLpjg+XrGcsQhJ5Wal2ZgS/mYCfsS6MgeESqs0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=NmYwySwE; arc=none smtp.client-ip=209.85.208.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1707904874; c=relaxed/simple;
+	bh=ISNhoVAHE5ea59GMSp6fB/xzP9AMMIXNtq+7KToWy/g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ccZLH5JCqX7wwHKduC1krLIurORWgEWTwHawqgeLf7YUZMBNNhrr+CM9H0RPcpeX6+hmNCW//N/B57WxhX2s/Hyrf+Z+3I04kRawbsocK7c/nrLjLmQrBEZovncKkZ651/Rl6Lqx21dtaJqmj/Jkt+wXD2INxWTKt5mg/q6cBn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Zt/NFtSo; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="NmYwySwE"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-5610c233b95so5735836a12.0
-        for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 00:03:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707897820; x=1708502620; darn=lists.linux.dev;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=f+lzSZn9+OiMBN1+KgbGryw+8pDlfSWOmE0wEWMKQyk=;
-        b=NmYwySwErcH2zrnfVV7UTeySj+3QAsE3TsfecGu6VkA2janegmmegKFLpW4WioSFRC
-         pk6TKBqdpi+qUWbeG9eI3VsvyXS8UmLIMZ4KJ9ix7CoEmDU8XQ3M2wI4PZ0YKEEXtqOS
-         3bkftq3+b4aolyT2Xpk68grWM8evXrfll+mdLQCwEAAF7k0QV2VoNm4AIsuHKi+oV718
-         5M313T0SCW2CKNL1ycJL12+6+Fq7RzQo9xss8I1k4VfAWyp9q/7kJEOaJV8ntJxcAhyt
-         GHusr/nBLlnLpvIhWUfNkxVxs4CKH3vxe4fhNMtFw4rClm+DJEnVlvBFi0kBiO3n9zjB
-         zbaQ==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Zt/NFtSo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1707904871;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=SYtqzgv+BxOcacLu4368aIKcl3CwnG8tHFk8B9VUFvU=;
+	b=Zt/NFtSoz6le5JUH5GKFZSm48wlGJImoDcqyWoByxmVT+W+QjwX4J3n57C8EKYd7aiJ8EK
+	Pp5dA35il4ZVBqhIwhalKWDdniSjPPO9l9dqpZPLjeS5FvUjx0jNPAj9j9XRKw/xsOBGoI
+	5nnW4vQT/vAK6hfLVZMu8OcXg63eG4k=
+Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
+ [209.85.208.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-424-FoOsVisiOoS_yvOG8MkphQ-1; Wed, 14 Feb 2024 05:01:08 -0500
+X-MC-Unique: FoOsVisiOoS_yvOG8MkphQ-1
+Received: by mail-lj1-f199.google.com with SMTP id 38308e7fff4ca-2d0fba43533so25708581fa.1
+        for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 02:01:08 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707897820; x=1708502620;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=f+lzSZn9+OiMBN1+KgbGryw+8pDlfSWOmE0wEWMKQyk=;
-        b=IbUHhcXJGn1sDYBcOa+j2F+BaLLiaC39l3nMygsMEcel8wc5Zg4XUNZudkD4wCbJIZ
-         m0YhcacUrJwAUaLbMNoJqLrZp1hOPwKR8vzLI7NFzjmYipD2O7ZvrwwnkbAiYLqpWT0b
-         Cz010D68+CCfDP5UgpCUXdu4aC8Cx71xt/y/jYIe52jH+hc2fFNeKfwwysuqvddYoAtc
-         es7tNfEIMrtfwPl7E4/+duBUVQjgMVGvDNoeEhcCOO3piVc+/tXd2B6hvnoCszKlhkpH
-         3fXSY5kjZbrdVO5AjTC2JqqSMWYID/QKmavjC/603AovCybYO2S02OLY/AvVfaBhXskb
-         3YSg==
-X-Gm-Message-State: AOJu0YyDFwhzKTqB9bsBaCwpfBFB/tsjBVdL93EePKMhvrZTiFwwYr6I
-	YWH5LJRN8JdKQzRz1m9oygPGK/NxhYywNGXBS7zi7o69yGfyt43aUE9OozXay6Qd7Intt4GUSDc
-	9
-X-Google-Smtp-Source: AGHT+IGN5r4ZcFYFp+4+Yn7l1s10iMMCP2TjCFSbz6fe9ww8VESit0EFqyIK2JUGaE4B+Dopi8sG0g==
-X-Received: by 2002:aa7:d84b:0:b0:561:f8f0:162f with SMTP id f11-20020aa7d84b000000b00561f8f0162fmr1307756eds.3.1707897820430;
-        Wed, 14 Feb 2024 00:03:40 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUgC3Ve00MTH2EEYVleRA89JRkiYp9nFWOjbEfzwDClRPOW/s5ccnyFC58kXuKxUm0wJy2Dtz7qwrcJEj9vRhwDE271raZ1osc=
-Received: from localhost ([102.222.70.76])
-        by smtp.gmail.com with ESMTPSA id l20-20020aa7cad4000000b005638a4f935dsm47209edt.4.2024.02.14.00.03.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Feb 2024 00:03:39 -0800 (PST)
-Date: Wed, 14 Feb 2024 11:03:36 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: suravee.suthikulpanit@amd.com
-Cc: iommu@lists.linux.dev
-Subject: [bug report] iommu/amd: Refactor attaching / detaching device
- functions
-Message-ID: <41bd6e9a-19c1-43f4-8251-cc9e83737a31@moroto.mountain>
+        d=1e100.net; s=20230601; t=1707904867; x=1708509667;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt:from
+         :references:cc:to:content-language:subject:user-agent:mime-version
+         :date:message-id:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SYtqzgv+BxOcacLu4368aIKcl3CwnG8tHFk8B9VUFvU=;
+        b=dQWs+qqUj7MOmy0/y9V1W1aWc2n963KMrErhEyLovxv6kEk+NatBxo7++h5J2jq+RI
+         2GQ3acdWF04oWc3EM/rR+KM4sPVDPETRB2hNqwZKFGh8NDQFv/b51pVkmzpTJsw/45gT
+         5HM+XH2VB6UZegu9FvYSE48YoBHzZNQZIK4MsYg9Ggi1+Y0VovFBCYO+YR2xkZeCudg+
+         ITtbSYhKca68ycu0OAHu1Yn2gYCRGt7NBgrRX9DxivkHjscfgZlonrZt3urdmY6Yg5ab
+         7Jl7NkgpHGNcUS4WdiAj2VOqDtvnsK8wRWJ3ox+3gt6ODrMEp65VGq5q98Zxn2Z2l87E
+         Bh1A==
+X-Forwarded-Encrypted: i=1; AJvYcCVbK6OgtAT7zRzZTf310YBzwn3LTIoqaNPBgXCtAC3SO+S4gnfOgLlERJbr7NUPXfw8ENe7w0NhryMc6YaWMI24cnoQESA=
+X-Gm-Message-State: AOJu0YzbfH8BzTLXlFU8X/wsYGHDt4PE/Yze6vi7OzP++jEnNWhynqnQ
+	tfmjp/FLrKaFBWyRaThBjDr6PUip8agry0x/xjLaAkrJ6eVw1KBnXAD2tnQ/9F34Ji6+WIOOJjG
+	DiZKszwLeclNZAUzdm7qivxXmZ9ZjC9M+PFZECrMiVwDtRtxEGAKY
+X-Received: by 2002:a2e:bb85:0:b0:2d0:de72:9d47 with SMTP id y5-20020a2ebb85000000b002d0de729d47mr1387357lje.8.1707904866645;
+        Wed, 14 Feb 2024 02:01:06 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IEeBVBeETe/HNpRyfxbiQ4zG7pHiUv6kqZUWoyq8jvv2EQfYHAzza7a6OSmZLJjmPb8OFOyjg==
+X-Received: by 2002:a2e:bb85:0:b0:2d0:de72:9d47 with SMTP id y5-20020a2ebb85000000b002d0de729d47mr1387286lje.8.1707904866113;
+        Wed, 14 Feb 2024 02:01:06 -0800 (PST)
+Received: from ?IPV6:2003:d8:2f3c:3f00:7177:eb0c:d3d2:4b0e? (p200300d82f3c3f007177eb0cd3d24b0e.dip0.t-ipconnect.de. [2003:d8:2f3c:3f00:7177:eb0c:d3d2:4b0e])
+        by smtp.gmail.com with ESMTPSA id z21-20020a05600c221500b004101f27737asm1416372wml.29.2024.02.14.02.01.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Feb 2024 02:01:05 -0800 (PST)
+Message-ID: <d7d132ca-8d0d-497e-bf8d-3c275960aaf9@redhat.com>
+Date: Wed, 14 Feb 2024 11:01:02 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 00/35] Memory allocation profiling
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: Kent Overstreet <kent.overstreet@linux.dev>,
+ Michal Hocko <mhocko@suse.com>, akpm@linux-foundation.org, vbabka@suse.cz,
+ hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
+ dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+ corbet@lwn.net, void@manifault.com, peterz@infradead.org,
+ juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org,
+ arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+ dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+ axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org,
+ dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
+ paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com,
+ yuzhao@google.com, dhowells@redhat.com, hughd@google.com,
+ andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com,
+ vvvvvv@google.com, gregkh@linuxfoundation.org, ebiggers@google.com,
+ ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+ rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+ vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+ iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+ elver@google.com, dvyukov@google.com, shakeelb@google.com,
+ songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+ minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+ cgroups@vger.kernel.org
+References: <Zctfa2DvmlTYSfe8@tiehlicka>
+ <CAJuCfpEsWfZnpL1vUB2C=cxRi_WxhxyvgGhUg7WdAxLEqy6oSw@mail.gmail.com>
+ <9e14adec-2842-458d-8a58-af6a2d18d823@redhat.com>
+ <2hphuyx2dnqsj3hnzyifp5yqn2hpgfjuhfu635dzgofr5mst27@4a5dixtcuxyi>
+ <6a0f5d8b-9c67-43f6-b25e-2240171265be@redhat.com>
+ <CAJuCfpEtOhzL65eMDk2W5SchcquN9hMCcbfD50a-FgtPgxh4Fw@mail.gmail.com>
+ <adbb77ee-1662-4d24-bcbf-d74c29bc5083@redhat.com>
+ <r6cmbcmalryodbnlkmuj2fjnausbcysmolikjguqvdwkngeztq@45lbvxjavwb3>
+ <CAJuCfpF4g1jeEwHVHjQWwi5kqS-3UqjMt7GnG0Kdz5VJGyhK3Q@mail.gmail.com>
+ <a9b0440b-844e-4e45-a546-315d53322aad@redhat.com>
+ <xbehqbtjp5wi4z2ppzrbmlj6vfazd2w5flz3tgjbo37tlisexa@caq633gciggt>
+ <c842347d-5794-4925-9b95-e9966795b7e1@redhat.com>
+ <CAJuCfpFB-WimQoC1s-ZoiAx+t31KRu1Hd9HgH3JTMssnskdvNw@mail.gmail.com>
+From: David Hildenbrand <david@redhat.com>
+Autocrypt: addr=david@redhat.com; keydata=
+ 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
+ WNyWQQ==
+Organization: Red Hat
+In-Reply-To: <CAJuCfpFB-WimQoC1s-ZoiAx+t31KRu1Hd9HgH3JTMssnskdvNw@mail.gmail.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Hello Suravee Suthikulpanit,
+On 14.02.24 00:28, Suren Baghdasaryan wrote:
+> On Tue, Feb 13, 2024 at 3:22 PM David Hildenbrand <david@redhat.com> wrote:
+>>
+>> On 14.02.24 00:12, Kent Overstreet wrote:
+>>> On Wed, Feb 14, 2024 at 12:02:30AM +0100, David Hildenbrand wrote:
+>>>> On 13.02.24 23:59, Suren Baghdasaryan wrote:
+>>>>> On Tue, Feb 13, 2024 at 2:50 PM Kent Overstreet
+>>>>> <kent.overstreet@linux.dev> wrote:
+>>>>>>
+>>>>>> On Tue, Feb 13, 2024 at 11:48:41PM +0100, David Hildenbrand wrote:
+>>>>>>> On 13.02.24 23:30, Suren Baghdasaryan wrote:
+>>>>>>>> On Tue, Feb 13, 2024 at 2:17 PM David Hildenbrand <david@redhat.com> wrote:
+>>>>>>>>>
+>>>>>>>>> On 13.02.24 23:09, Kent Overstreet wrote:
+>>>>>>>>>> On Tue, Feb 13, 2024 at 11:04:58PM +0100, David Hildenbrand wrote:
+>>>>>>>>>>> On 13.02.24 22:58, Suren Baghdasaryan wrote:
+>>>>>>>>>>>> On Tue, Feb 13, 2024 at 4:24 AM Michal Hocko <mhocko@suse.com> wrote:
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> On Mon 12-02-24 13:38:46, Suren Baghdasaryan wrote:
+>>>>>>>>>>>>> [...]
+>>>>>>>>>>>>>> We're aiming to get this in the next merge window, for 6.9. The feedback
+>>>>>>>>>>>>>> we've gotten has been that even out of tree this patchset has already
+>>>>>>>>>>>>>> been useful, and there's a significant amount of other work gated on the
+>>>>>>>>>>>>>> code tagging functionality included in this patchset [2].
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> I suspect it will not come as a surprise that I really dislike the
+>>>>>>>>>>>>> implementation proposed here. I will not repeat my arguments, I have
+>>>>>>>>>>>>> done so on several occasions already.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Anyway, I didn't go as far as to nak it even though I _strongly_ believe
+>>>>>>>>>>>>> this debugging feature will add a maintenance overhead for a very long
+>>>>>>>>>>>>> time. I can live with all the downsides of the proposed implementation
+>>>>>>>>>>>>> _as long as_ there is a wider agreement from the MM community as this is
+>>>>>>>>>>>>> where the maintenance cost will be payed. So far I have not seen (m)any
+>>>>>>>>>>>>> acks by MM developers so aiming into the next merge window is more than
+>>>>>>>>>>>>> little rushed.
+>>>>>>>>>>>>
+>>>>>>>>>>>> We tried other previously proposed approaches and all have their
+>>>>>>>>>>>> downsides without making maintenance much easier. Your position is
+>>>>>>>>>>>> understandable and I think it's fair. Let's see if others see more
+>>>>>>>>>>>> benefit than cost here.
+>>>>>>>>>>>
+>>>>>>>>>>> Would it make sense to discuss that at LSF/MM once again, especially
+>>>>>>>>>>> covering why proposed alternatives did not work out? LSF/MM is not "too far"
+>>>>>>>>>>> away (May).
+>>>>>>>>>>>
+>>>>>>>>>>> I recall that the last LSF/MM session on this topic was a bit unfortunate
+>>>>>>>>>>> (IMHO not as productive as it could have been). Maybe we can finally reach a
+>>>>>>>>>>> consensus on this.
+>>>>>>>>>>
+>>>>>>>>>> I'd rather not delay for more bikeshedding. Before agreeing to LSF I'd
+>>>>>>>>>> need to see a serious proposl - what we had at the last LSF was people
+>>>>>>>>>> jumping in with half baked alternative proposals that very much hadn't
+>>>>>>>>>> been thought through, and I see no need to repeat that.
+>>>>>>>>>>
+>>>>>>>>>> Like I mentioned, there's other work gated on this patchset; if people
+>>>>>>>>>> want to hold this up for more discussion they better be putting forth
+>>>>>>>>>> something to discuss.
+>>>>>>>>>
+>>>>>>>>> I'm thinking of ways on how to achieve Michal's request: "as long as
+>>>>>>>>> there is a wider agreement from the MM community". If we can achieve
+>>>>>>>>> that without LSF, great! (a bi-weekly MM meeting might also be an option)
+>>>>>>>>
+>>>>>>>> There will be a maintenance burden even with the cleanest proposed
+>>>>>>>> approach.
+>>>>>>>
+>>>>>>> Yes.
+>>>>>>>
+>>>>>>>> We worked hard to make the patchset as clean as possible and
+>>>>>>>> if benefits still don't outweigh the maintenance cost then we should
+>>>>>>>> probably stop trying.
+>>>>>>>
+>>>>>>> Indeed.
+>>>>>>>
+>>>>>>>> At LSF/MM I would rather discuss functonal
+>>>>>>>> issues/requirements/improvements than alternative approaches to
+>>>>>>>> instrument allocators.
+>>>>>>>> I'm happy to arrange a separate meeting with MM folks if that would
+>>>>>>>> help to progress on the cost/benefit decision.
+>>>>>>> Note that I am only proposing ways forward.
+>>>>>>>
+>>>>>>> If you think you can easily achieve what Michal requested without all that,
+>>>>>>> good.
+>>>>>>
+>>>>>> He requested something?
+>>>>>
+>>>>> Yes, a cleaner instrumentation. Unfortunately the cleanest one is not
+>>>>> possible until the compiler feature is developed and deployed. And it
+>>>>> still would require changes to the headers, so don't think it's worth
+>>>>> delaying the feature for years.
+>>>>>
+>>>>
+>>>> I was talking about this: "I can live with all the downsides of the proposed
+>>>> implementationas long as there is a wider agreement from the MM community as
+>>>> this is where the maintenance cost will be payed. So far I have not seen
+>>>> (m)any acks by MM developers".
+>>>>
+>>>> I certainly cannot be motivated at this point to review and ack this,
+>>>> unfortunately too much negative energy around here.
+>>>
+>>> David, this kind of reaction is exactly why I was telling Andrew I was
+>>> going to submit this as a direct pull request to Linus.
+>>>
+>>> This is an important feature; if we can't stay focused ot the technical
+>>> and get it done that's what I'll do.
+>>
+>> Kent, I started this with "Would it make sense" in an attempt to help
+>> Suren and you to finally make progress with this, one way or the other.
+>> I know that there were ways in the past to get the MM community to agree
+>> on such things.
+>>
+>> I tried to be helpful, finding ways *not having to* bypass the MM
+>> community to get MM stuff merged.
+>>
+>> The reply I got is mostly negative energy.
+>>
+>> So you don't need my help here, understood.
+>>
+>> But I will fight against any attempts to bypass the MM community.
+> 
+> Well, I'm definitely not trying to bypass the MM community, that's why
+> this patchset is posted. Not sure why people can't voice their opinion
+> on the benefit/cost balance of the patchset over the email... But if a
+> meeting would be more productive I'm happy to set it up.
 
-The patch 4ebd4c7f2501: "iommu/amd: Refactor attaching / detaching
-device functions" from Feb 5, 2024 (linux-next), leads to the
-following Smatch static checker warning:
+If you can get the acks without any additional meetings, great. The 
+replies from Pasha and Johannes are encouraging, let's hope core 
+memory-allocator people will voice their opinion here.
 
-	drivers/iommu/amd/iommu.c:1796 setup_gcr3_table()
-	warn: sleeping in atomic context
+If you come to the conclusion that another meeting would help getting 
+maintainers's attention and sorting out some of the remaining concerns, 
+feel free to schedule a meeting with Dave R. I suspect only the slot 
+next week is already taken. In the past, we also had "special" meetings 
+just for things to make progress faster.
 
-drivers/iommu/amd/iommu.c
-    1781 static int setup_gcr3_table(struct gcr3_tbl_info *gcr3_info,
-    1782                             struct amd_iommu *iommu, int pasids)
-    1783 {
-    1784         int levels = get_gcr3_levels(pasids);
-    1785         int nid = iommu ? dev_to_node(&iommu->dev->dev) : NUMA_NO_NODE;
-    1786 
-    1787         if (levels > amd_iommu_max_glx_val)
-    1788                 return -EINVAL;
-    1789 
-    1790         if (gcr3_info->gcr3_tbl)
-    1791                 return -EBUSY;
-    1792 
-    1793         /* Allocate per device domain ID */
-    1794         gcr3_info->domid = domain_id_alloc();
-    1795 
---> 1796         gcr3_info->gcr3_tbl = alloc_pgtable_page(nid, GFP_KERNEL);
-                                                               ^^^^^^^^^^
+If you're looking for ideas on what the agenda of such a meeting could 
+look like, I'll happily discuss that with you off-list.
 
-    1797         if (gcr3_info->gcr3_tbl == NULL) {
-    1798                 domain_id_free(gcr3_info->domid);
-    1799                 return -ENOMEM;
-    1800         }
-    1801 
-    1802         gcr3_info->glx = levels;
-    1803 
-    1804         return 0;
-    1805 }
+v2 was more than 3 months ago. If it's really about minor details here, 
+waiting another 3 months for LSF/MM is indeed not reasonable.
 
-The call tree is:
+Myself, I'll be happy not having to sit through another LSF/MM session 
+of that kind. The level of drama is exceptional and I'm hoping it won't 
+be the new norm in the MM space.
 
-attach_device() <- disables preempt
--> do_attach()
-   -> setup_gcr3_table()
+Good luck!
 
-attach_device() is holding spin_lock(&dev_data->lock);
+-- 
+Cheers,
 
-regards,
-dan carpenter
+David / dhildenb
+
