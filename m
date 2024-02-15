@@ -1,128 +1,138 @@
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FC871386D1
-	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 17:47:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 981791369AC
+	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 17:48:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708019233; cv=none; b=gwQK62Osc/pgahTWeVQrd/TBNRKJchhNJn0CYxoT4Vgw1AkBViQPAKakVuAVVzoifAm5nW4SkiEnJ7H8kvBCKAPN9VVGwAyIDO9Z7zMYtD1egd1O+Xdb41QNY4rUYmmaDbdsANoBX0tmArOoNZYwT3JVM4hLSetNvOyz+5HLm7g=
+	t=1708019333; cv=none; b=k3qAStMsTJmz9UYKaaY4b7t0Md8qkNAER8aAAfdxdrm//HcBY64EGVdcreWieO4/vJkIsp1vcV7jhmylhTJ+yj8jAnhjYlOhRyKKvZXltILJCAOJEPZkq1dpXLUevzRHvM74rIfD7LvgYAzuefnNbsOhCemSeEuLsULn5A6+tvU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708019233; c=relaxed/simple;
-	bh=+dXm83v4lzGGGWoMkrAhpsoKvqPYYTZkbg+SCOnXjxY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bJyaFwHlOOsH2UWQKMHbeHfR0sa3xKMsk/UP5rsw+2kb0V6httePqc9iF8vCz0S86JKo3Hd45FBYn/U+BEE9vJaxvJ/og3zlGyKECb2DBKB1jKap9zGCaca6aS/DCoyJRKUU23uBmMFaXeJwrf1kxtYxBs3ra3o4VjhBBzezcuI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Qo9bxomr; arc=none smtp.client-ip=209.85.222.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1708019333; c=relaxed/simple;
+	bh=VBkqrqV6+5LV+EFIvspNumc41UHE2ANtr0AfhgHR8no=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cv2mqmyFdjKtMGzafiwTWJ5JVKQCrCddBhY9b9P+RF0GXSyy8LFb48pRACqy5cbEMqcbz7+OQgtzV5k29Vp5jg6mnYeNXLJqhFdnvGBmx6FiOul4g/shnLxG480c/cMtPN+kjnwqJxiU9IvEvNShWPsL2ZGnsfOaQL+OTyNpwno=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=tfUPrVcj; arc=none smtp.client-ip=209.85.167.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Qo9bxomr"
-Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-785d5705681so111745185a.1
-        for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 09:47:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tfUPrVcj"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-511a45f6a57so1490716e87.2
+        for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 09:48:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1708019230; x=1708624030; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gwxKYOTTfsVxRUkOMJlptUV0ZFZUoBorwA6GkU+MTmM=;
-        b=Qo9bxomr1W0+GHP1ApUr5sKNO/qqg2b8mLTh15ftGQ8VkiMxjTJ19k2fMJNJbbJTNu
-         TffDfS5JmQfz4KCl4VuRIc3REf7p23qxkFCsSkmDaRT62WUIpl0N8TFe1OB8iT0GAAtf
-         HGNXg+JUMHcVEQHd8Hsk8oCutkX5wGJ+GSgBtBa37SQSfAnTXbtiQqqiNs0FuqnTfphT
-         6rur1xgI0bA7N0vVSJJM2im1lKsExYulq1StgtTLY3QgO8Y6fLtliJfJP241GAEOxNk6
-         l+nbZMTA2Du9RWO+n1Cfg8eK5s7f5/YLDCXNnSjsvAvQpmlTlNDQcKWUWLGP/SAiBIQY
-         oj/Q==
+        d=linaro.org; s=google; t=1708019328; x=1708624128; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=gSGm1/quDyVH7f1J1vE3tPRgaBvwY8ELdKiGbMB2DOI=;
+        b=tfUPrVcjPWfbUDnEwbzWyPEUyUGl6fN/cwvoPiIksXDp62bSiOIzpJHdaHYBpRaoTy
+         yu5GTJ8Y+aaG6v5zyyp18pmSYP9YPIdGs4324g5Ifz4aRreG73v2ZAkcdORz3WiRqxKe
+         azlKLb0OyenHXUm98EI8hrx611jCvUeSqdGQaLYu4GRW5OwEYgLlkL9VU/25wPTeCXxo
+         PEwLFZO6DeTZLwjF7A2oNlATuf57KL0F0CTugCFhBdJIyhnGUo8eDKKfUZ+pAu6YW4MM
+         4ja1Huo0Raoc9kYPiTtFwyVU5qjfPAwhYn+o22DtN2kLDtrP9cv2Pts8otJdALdYh7RE
+         J+/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708019230; x=1708624030;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gwxKYOTTfsVxRUkOMJlptUV0ZFZUoBorwA6GkU+MTmM=;
-        b=vqUigka/jufMExLGoRYikmplCxD+pvOwL26cdlD6XnuHdz08qTUzQEwaOX6SeWRor5
-         jjNInPWuoHIxfOAmqWHvf9UPHIko4sbA+kTO7wMHqmLOcofxqA5LQhwWEVy57BqAESjJ
-         XwAdwc7V2Lvs4mj7pNhWiJnn5Yi1tX4HzLIM7K2+t3oqVGXyjqYVuWdEu4XT4PEKj3ZH
-         MOjC3HZEIfa66RK1TBeEG/WCkKgtexSF+vwZsutv5r4LaOdJHeCh+hkN2lpaa/veVAbC
-         1QD+7hYjx16utCaIht00wH+xNoxmKhtvEm4VYw7bswh90sAVzAywGDeKFQ05NlYHgNnf
-         FZRQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW0M97h2iX9UNRXLRAl/AYH4oKVmWdgifNHZWXyU86q1kvlkzKnNTWBZdGoOckTRDRms1F+gbsU3Ww6B+VpF01HCved/3g=
-X-Gm-Message-State: AOJu0YxcEH7QFsUmOdrSaU/D/OMgEZkULvABlEBh57/GWgK4zGGIg7gT
-	itZkkUF6gK1Epwwt58X8Mt7tFPiaGUTZtQ3HylcpmHJejWENVCXPPbyMb3tA5/o=
-X-Google-Smtp-Source: AGHT+IEPzBiyamH8HajiIAanCfaYKrF4d6zvsj2pCYaxgpaQcWPNs2s/mky4ykJihrWfUqWYewBaKQ==
-X-Received: by 2002:a05:620a:372a:b0:787:2d4a:e91 with SMTP id de42-20020a05620a372a00b007872d4a0e91mr9362184qkb.12.1708019229933;
-        Thu, 15 Feb 2024 09:47:09 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id bj27-20020a05620a191b00b007873df5a625sm182249qkb.97.2024.02.15.09.47.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Feb 2024 09:47:09 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rafpE-001DT3-Rz;
-	Thu, 15 Feb 2024 13:47:08 -0400
-Date: Thu, 15 Feb 2024 13:47:08 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Huang Jiaqing <jiaqing.huang@intel.com>,
-	Ethan Zhao <haifeng.zhao@linux.intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] iommu/vt-d: Use rbtree to track iommu probed devices
-Message-ID: <20240215174708.GC1299735@ziepe.ca>
-References: <20240215072249.4465-1-baolu.lu@linux.intel.com>
- <20240215072249.4465-2-baolu.lu@linux.intel.com>
+        d=1e100.net; s=20230601; t=1708019328; x=1708624128;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gSGm1/quDyVH7f1J1vE3tPRgaBvwY8ELdKiGbMB2DOI=;
+        b=fPPxNKJ/ZAs0eU7DkaJdzxdhMcLB8LBDjPIAlVsj0LSkced9SOdapJAq1souCqceSe
+         SeaSemBZDLh2N1WJYucXKp2eKxyHzgXG54Rfv+1NgUNH6LvvjjT8c24hf2Qs3suAcZSg
+         35WEV1NTwbNTGMrDTyZBjzIG4DVsgkJvA1shfX1j+DDeMjNDZEzX/CMrW/ZR/dqhEzls
+         QwBqacgDI5zOYwefOhUsssXMxvYJNbccFYm21HfPtESao8D+m3adIU0ZkrRxwHN9mhC+
+         qm22qkiKKG8xXzg8mmNZlPV6dTlWKr8pSISDjb1UlpKCmzLgqRuOYuYMwisrMVi8RWF2
+         TrUQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVzM6//fwzZeIPanquyHZcsvI+qxaJwc/aa5yc3SbpT/BeeBsBmrMDovZyHpsL0vVTvhHrNHYUQ76szUHUCdwJv9OJfMJs=
+X-Gm-Message-State: AOJu0Yx4SFM11EkUESrUFnHzpt16wInNkcBSYL3r2P4vJL6odaPmMr2m
+	wqPRAEsKhkTv05avuPhMCACMDJrjPbGpeDDSZ3O/vGRnUGIvvlegJ5FjRrhlJ1o=
+X-Google-Smtp-Source: AGHT+IHMfabMlTI3VJdHnS+r4bOWJPpFsDpM4SkglaQSyM4zv1SCpO8KBg7+698Clyq0oHLcDOCKSg==
+X-Received: by 2002:a19:e004:0:b0:511:5308:5c78 with SMTP id x4-20020a19e004000000b0051153085c78mr1902026lfg.4.1708019328632;
+        Thu, 15 Feb 2024 09:48:48 -0800 (PST)
+Received: from [192.168.192.135] (078088045141.garwolin.vectranet.pl. [78.88.45.141])
+        by smtp.gmail.com with ESMTPSA id r1-20020a50d681000000b005638f04c122sm790193edi.14.2024.02.15.09.48.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Feb 2024 09:48:46 -0800 (PST)
+Message-ID: <7827ef92-e3af-49f6-b9ed-5bac0cbcc513@linaro.org>
+Date: Thu, 15 Feb 2024 18:48:44 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240215072249.4465-2-baolu.lu@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 4/6] drm/msm: add support for A750 GPU
+Content-Language: en-US
+To: Neil Armstrong <neil.armstrong@linaro.org>,
+ Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
+ Marijn Suijten <marijn.suijten@somainline.org>,
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Bjorn Andersson <andersson@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <20240215-topic-sm8650-gpu-v2-0-6be0b4bf2e09@linaro.org>
+ <20240215-topic-sm8650-gpu-v2-4-6be0b4bf2e09@linaro.org>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
+ xsFNBF9ALYUBEADWAhxdTBWrwAgDQQzc1O/bJ5O7b6cXYxwbBd9xKP7MICh5YA0DcCjJSOum
+ BB/OmIWU6X+LZW6P88ZmHe+KeyABLMP5s1tJNK1j4ntT7mECcWZDzafPWF4F6m4WJOG27kTJ
+ HGWdmtO+RvadOVi6CoUDqALsmfS3MUG5Pj2Ne9+0jRg4hEnB92AyF9rW2G3qisFcwPgvatt7
+ TXD5E38mLyOPOUyXNj9XpDbt1hNwKQfiidmPh5e7VNAWRnW1iCMMoKqzM1Anzq7e5Afyeifz
+ zRcQPLaqrPjnKqZGL2BKQSZDh6NkI5ZLRhhHQf61fkWcUpTp1oDC6jWVfT7hwRVIQLrrNj9G
+ MpPzrlN4YuAqKeIer1FMt8cq64ifgTzxHzXsMcUdclzq2LTk2RXaPl6Jg/IXWqUClJHbamSk
+ t1bfif3SnmhA6TiNvEpDKPiT3IDs42THU6ygslrBxyROQPWLI9IL1y8S6RtEh8H+NZQWZNzm
+ UQ3imZirlPjxZtvz1BtnnBWS06e7x/UEAguj7VHCuymVgpl2Za17d1jj81YN5Rp5L9GXxkV1
+ aUEwONM3eCI3qcYm5JNc5X+JthZOWsbIPSC1Rhxz3JmWIwP1udr5E3oNRe9u2LIEq+wH/toH
+ kpPDhTeMkvt4KfE5m5ercid9+ZXAqoaYLUL4HCEw+HW0DXcKDwARAQABzShLb25yYWQgRHli
+ Y2lvIDxrb25yYWQuZHliY2lvQGxpbmFyby5vcmc+wsGOBBMBCAA4FiEEU24if9oCL2zdAAQV
+ R4cBcg5dfFgFAmQ5bqwCGwMFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AACgkQR4cBcg5dfFjO
+ BQ//YQV6fkbqQCceYebGg6TiisWCy8LG77zV7DB0VMIWJv7Km7Sz0QQrHQVzhEr3trNenZrf
+ yy+o2tQOF2biICzbLM8oyQPY8B///KJTWI2khoB8IJSJq3kNG68NjPg2vkP6CMltC/X3ohAo
+ xL2UgwN5vj74QnlNneOjc0vGbtA7zURNhTz5P/YuTudCqcAbxJkbqZM4WymjQhe0XgwHLkiH
+ 5LHSZ31MRKp/+4Kqs4DTXMctc7vFhtUdmatAExDKw8oEz5NbskKbW+qHjW1XUcUIrxRr667V
+ GWH6MkVceT9ZBrtLoSzMLYaQXvi3sSAup0qiJiBYszc/VOu3RbIpNLRcXN3KYuxdQAptacTE
+ mA+5+4Y4DfC3rUSun+hWLDeac9z9jjHm5rE998OqZnOU9aztbd6zQG5VL6EKgsVXAZD4D3RP
+ x1NaAjdA3MD06eyvbOWiA5NSzIcC8UIQvgx09xm7dThCuQYJR4Yxjd+9JPJHI6apzNZpDGvQ
+ BBZzvwxV6L1CojUEpnilmMG1ZOTstktWpNzw3G2Gis0XihDUef0MWVsQYJAl0wfiv/0By+XK
+ mm2zRR+l/dnzxnlbgJ5pO0imC2w0TVxLkAp0eo0LHw619finad2u6UPQAkZ4oj++iIGrJkt5
+ Lkn2XgB+IW8ESflz6nDY3b5KQRF8Z6XLP0+IEdLOOARkOW7yEgorBgEEAZdVAQUBAQdAwmUx
+ xrbSCx2ksDxz7rFFGX1KmTkdRtcgC6F3NfuNYkYDAQgHwsF2BBgBCAAgFiEEU24if9oCL2zd
+ AAQVR4cBcg5dfFgFAmQ5bvICGwwACgkQR4cBcg5dfFju1Q//Xta1ShwL0MLSC1KL1lXGXeRM
+ 8arzfyiB5wJ9tb9U/nZvhhdfilEDLe0jKJY0RJErbdRHsalwQCrtq/1ewQpMpsRxXzAjgfRN
+ jc4tgxRWmI+aVTzSRpywNahzZBT695hMz81cVZJoZzaV0KaMTlSnBkrviPz1nIGHYCHJxF9r
+ cIu0GSIyUjZ/7xslxdvjpLth16H27JCWDzDqIQMtg61063gNyEyWgt1qRSaK14JIH/DoYRfn
+ jfFQSC8bffFjat7BQGFz4ZpRavkMUFuDirn5Tf28oc5ebe2cIHp4/kajTx/7JOxWZ80U70mA
+ cBgEeYSrYYnX+UJsSxpzLc/0sT1eRJDEhI4XIQM4ClIzpsCIN5HnVF76UQXh3a9zpwh3dk8i
+ bhN/URmCOTH+LHNJYN/MxY8wuukq877DWB7k86pBs5IDLAXmW8v3gIDWyIcgYqb2v8QO2Mqx
+ YMqL7UZxVLul4/JbllsQB8F/fNI8AfttmAQL9cwo6C8yDTXKdho920W4WUR9k8NT/OBqWSyk
+ bGqMHex48FVZhexNPYOd58EY9/7mL5u0sJmo+jTeb4JBgIbFPJCFyng4HwbniWgQJZ1WqaUC
+ nas9J77uICis2WH7N8Bs9jy0wQYezNzqS+FxoNXmDQg2jetX8en4bO2Di7Pmx0jXA4TOb9TM
+ izWDgYvmBE8=
+In-Reply-To: <20240215-topic-sm8650-gpu-v2-4-6be0b4bf2e09@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu, Feb 15, 2024 at 03:22:48PM +0800, Lu Baolu wrote:
-> Use a red-black tree(rbtree) to track devices probed by the driver's
-> probe_device callback. These devices need to be looked up quickly by
-> a source ID when the hardware reports a fault, either recoverable or
-> unrecoverable.
+On 15.02.2024 10:20, Neil Armstrong wrote:
+> Add support for the A750 GPU found on the SM8650 platform
 > 
-> Fault reporting paths are critical. Searching a list in this scenario
-> is inefficient, with an algorithm complexity of O(n). An rbtree is a
-> self-balancing binary search tree, offering an average search time
-> complexity of O(log(n)). This significant performance improvement
-> makes rbtrees a better choice.
+> Unlike the the very close A740 GPU on the SM8550 SoC, the A750 GPU
+> doesn't have an HWCFG block but a separate register set.
 > 
-> Furthermore, rbtrees are implemented on a per-iommu basis, eliminating
-> the need for global searches and further enhancing efficiency in
-> critical fault paths. The rbtree is protected by a spin lock with
-> interrupts disabled to ensure thread-safe access even within interrupt
-> contexts.
+> The A750 GPU info are added under the adreno_is_a750() macro and
+> the ADRENO_7XX_GEN3 family id.
 > 
-> Co-developed-by: Huang Jiaqing <jiaqing.huang@intel.com>
-> Signed-off-by: Huang Jiaqing <jiaqing.huang@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
 > ---
->  drivers/iommu/intel/iommu.h |  7 +++++
->  drivers/iommu/intel/dmar.c  |  3 +-
->  drivers/iommu/intel/iommu.c | 62 +++++++++++++++++++++++++++++++++++--
->  3 files changed, 69 insertions(+), 3 deletions(-)
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
-> +static int device_rbtree_insert(struct intel_iommu *iommu,
-> +				struct device_domain_info *info)
-> +{
-> +	struct rb_node *curr;
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&iommu->device_rbtree_lock, flags);
-> +	curr = rb_find_add(&info->node, &iommu->device_rbtree, device_rid_cmp);
-> +	spin_unlock_irqrestore(&iommu->device_rbtree_lock, flags);
-> +	if (curr)
-> +		dev_warn(info->dev, "device already in rbtree\n");
-
-I would suggest
-
-WARN_ON(curr);
-
-Something has gone really wonky at this point, right?
-
-Jason
+Konrad
