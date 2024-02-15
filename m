@@ -1,134 +1,155 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10C0F1B81C
-	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 09:20:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E605D179B5
+	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 09:22:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707988841; cv=none; b=QbCi1b/vWdYei55Suq78CVGQT99qsP3WVYQnJawH2/zLMA5zL0w70vMuGXR3F/k4ha5HOBHzYoNCjrdFiIbbgV236q+m+sEtEKdV8NE8oKZYW3/dcA2xZNVHOdOc1GX6BHm6Aa5rCcMoYglKT/bg86Zw21cDocOT0K+Jx/GOSzQ=
+	t=1707988981; cv=none; b=VLvVJBnXKg6Es3+9qO+xIWPH6NqR52FkaVKR6FgDYm5tmwgc5GqnKx7Z0GS0WbJ5S5e58UtsRVmMmV6m/+TcFOIcZmUMgCp6dB/x6ruik+7PkkNZyr344QizkTpgNSpcvNhzV+5IZ/94yY/StN+fbQI6UiG93wC1GzfZ8K8brLs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707988841; c=relaxed/simple;
-	bh=eK619A8Ja/rJOcWssIzBbWM6D0kuHt0880KvRuYuMKM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=i8PXNP0k442RBx+n7kJPP3boz5VRXSdhEHW323X/wl48fLbc0DR/bnT5zutQoNG7497T0efmsNU8Ll8xE9JxbAD0BcYxxrsnRoLZsLwBFUoi9WKSazdMAy9TMKemXDIZaUTSrJvK23DOze245PVHaBSALYlS6tbfqIY4yi8pgfQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=JfIy5ze0; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1707988981; c=relaxed/simple;
+	bh=WNYLiPDN/h368EHdEX8l1z4Wuz1Yugs/kYjrmi7aM0g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=P9aqiLLF6qeA0w1urcfYqsbqm9XFWGPrEp5+hVSjzesHfmshMZHg1pprAaSw2+sGR5iI3Fp9BOFK46LrN2pCCijd4/LFk/V36bY9oPnTNAQxfF84fW5FbpmtjADHO1oTSzK2b0Va2aQd2TIoNlL5Wd1il0wA4G6uWeCpt38GYro=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=sfOAoS4D; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=sfOAoS4D; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JfIy5ze0"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4121a8635a2so2310145e9.3
-        for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 01:20:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707988838; x=1708593638; darn=lists.linux.dev;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=M4VUVivuxhBItwCnLx0xGdHQH3tLZmkPnVy151EVhso=;
-        b=JfIy5ze093ZKK+N3ScACuXuT969rZeLZKeW5kmo0j7v2MEpm69sQgqbNwBSj2gCN9m
-         +65VFMdQ2MAzJcPyXVd070PCENYTh4MHm5RdgQh3MaNwt307tThjD0+FTSozXoZEFG35
-         rK+cAO1mFZrRMKjpQXcHWHzo6bb0Dc8ywQUDbPcNleuhssEQGJowSIHt80gyCxfrQFr8
-         9lMb0YML9wDbbzqXdif9FNDK62ElxV60V8Bk5RmyBcBNplOPLTfKGCqatf8FoVEkdOgr
-         MLzCvVdClvUAoPPg974BLpVTx/8MOTqSO/t1CP0lWtzA8FvmGkBAMZq0yJquOIBf3han
-         gPzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707988838; x=1708593638;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=M4VUVivuxhBItwCnLx0xGdHQH3tLZmkPnVy151EVhso=;
-        b=B58M4S8P6Grn+MXGVqiYF3qHBd0VtMYJGED/BTPyVcqGQALJxALkDgv7Yc2Dd7sEba
-         J9ifkGDg3G3MjqaF+jRhR90Cx6Op6mRXuLcR4Evzio0TT5H8cD7J2JEBp0rB3HgOPtbA
-         lgGvOMb3xbHLSQ85u7r0OXhbxixvBrmg89KIeuZGnYFLmKwWHh9EfbyMGOyUit/sM1UR
-         Gq7YkQw8icmtIL59CNVZyN3hROlKJM+6MK+uCuK0C0P94HTatajCL3+D6Q4/UcSKGzQM
-         7K0jwuHEbm1iTPR+Lw+m0TnZSa1AEbbA3lP6uyyDRSY3IhMHfnlUjuymuJTgkCNJH2pa
-         Joww==
-X-Forwarded-Encrypted: i=1; AJvYcCXWiKOUixDZkEtPsRmi6w28wL3Ity/ETniFweiv01EVWv+5vlARhSzgOqa+D6lDdigdZri8C5nFcc14Q5Xy30nlDb5ZhAo=
-X-Gm-Message-State: AOJu0Ywxy4dHCNCzpm/wsITtxZJOhaspvw1MNdCgrhvjsYQIu6Pz/4Nd
-	E3XAp+mnbGe9SolfjW7DVXo61S/xLfnAY0PhSBOTqGK7d80ql1ac92HOHVl3njc=
-X-Google-Smtp-Source: AGHT+IFXVVQ/uxEk2n2UTx3FliemDL2HGwWD3N47dVkf/bJsy8vsKAGapR4cnCOAJNCWIz4P+M5s3A==
-X-Received: by 2002:a05:600c:310c:b0:40f:bd81:e738 with SMTP id g12-20020a05600c310c00b0040fbd81e738mr956462wmo.29.1707988838302;
-        Thu, 15 Feb 2024 01:20:38 -0800 (PST)
-Received: from arrakeen.starnux.net ([2a01:e0a:982:cbb0:52eb:f6ff:feb3:451a])
-        by smtp.gmail.com with ESMTPSA id l8-20020adfa388000000b0033b66c2d61esm1156435wrb.48.2024.02.15.01.20.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Feb 2024 01:20:37 -0800 (PST)
-From: Neil Armstrong <neil.armstrong@linaro.org>
-Date: Thu, 15 Feb 2024 10:20:28 +0100
-Subject: [PATCH v2 6/6] arm64: dts: qcom: sm8650-qrd: enable GPU
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="sfOAoS4D";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="sfOAoS4D"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 0F1001F871;
+	Thu, 15 Feb 2024 09:22:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1707988978; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=P0wAra6NNdsmQy/QOu3XOOm75y+sycyf1CReKWa3x/A=;
+	b=sfOAoS4D29QnYtnKO07SRNn72nriTA9zXXwoZ0RnHp0XHtxokuQn7bDggRyH/dV5bo4PMY
+	m6GbhMwzRlnOtmD5aW0DXlvPon3YpJ50cKwL/qadfxvkMWtOESzhQ0uXkZ1xrF5HxAfde3
+	KNje8XIUO7zvXrtU2TUsUX4dAPtyxss=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1707988978; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=P0wAra6NNdsmQy/QOu3XOOm75y+sycyf1CReKWa3x/A=;
+	b=sfOAoS4D29QnYtnKO07SRNn72nriTA9zXXwoZ0RnHp0XHtxokuQn7bDggRyH/dV5bo4PMY
+	m6GbhMwzRlnOtmD5aW0DXlvPon3YpJ50cKwL/qadfxvkMWtOESzhQ0uXkZ1xrF5HxAfde3
+	KNje8XIUO7zvXrtU2TUsUX4dAPtyxss=
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id CED2B13A53;
+	Thu, 15 Feb 2024 09:22:57 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id gyDbMfHXzWUfGQAAD6G6ig
+	(envelope-from <mhocko@suse.com>); Thu, 15 Feb 2024 09:22:57 +0000
+Date: Thu, 15 Feb 2024 10:22:57 +0100
+From: Michal Hocko <mhocko@suse.com>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz,
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org,
+	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org,
+	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
+	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org,
+	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
+	paulmck@kernel.org, pasha.tatashin@soleen.com,
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
+	ndesaulniers@google.com, vvvvvv@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 31/35] lib: add memory allocations report in show_mem()
+Message-ID: <Zc3X8XlnrZmh2mgN@tiehlicka>
+References: <20240212213922.783301-1-surenb@google.com>
+ <20240212213922.783301-32-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20240215-topic-sm8650-gpu-v2-6-6be0b4bf2e09@linaro.org>
-References: <20240215-topic-sm8650-gpu-v2-0-6be0b4bf2e09@linaro.org>
-In-Reply-To: <20240215-topic-sm8650-gpu-v2-0-6be0b4bf2e09@linaro.org>
-To: Rob Clark <robdclark@gmail.com>, 
- Abhinav Kumar <quic_abhinavk@quicinc.com>, 
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>, 
- Marijn Suijten <marijn.suijten@somainline.org>, 
- David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
- Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
- Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>, 
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
- Bjorn Andersson <andersson@kernel.org>, 
- Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- iommu@lists.linux.dev, Neil Armstrong <neil.armstrong@linaro.org>
-X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=openpgp-sha256; l=771;
- i=neil.armstrong@linaro.org; h=from:subject:message-id;
- bh=eK619A8Ja/rJOcWssIzBbWM6D0kuHt0880KvRuYuMKM=;
- b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBlzddcVOTYaWXhqXz7CR0Hulwvc1BGcUEkmWvV2LSR
- NKZ9k7WJAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCZc3XXAAKCRB33NvayMhJ0eCAD/
- sGA6LkVKECsn38P5DH+wqPkMbxKjQP2fox10vCL1kOfmXAKY/TaOdQkclGH3g5hLpEOBA6CGarOlrU
- 2kLTIui0bQVTUNKVtHdGewsVaGpZN5nCMv4Wdkg49nAZcS24QNPFFOf+L1AJtcLGM/F9lCH/J+89qv
- NgItVT649rOPF27s7wX1fSsFPZINwwsNY67B1I2bxKAEJC4I/nkTUPYnfwHlE0cGXTnlmPRJ+pVDhQ
- LHR0O0YnsS3Le9JGqEPyXxgjuil1IgUbKHiIa1/1uebw+aeeovJWnvsnFlMFhLltxJN8rTRFsa0Ht5
- vrqvc6TRjKwunCDjeQXaNsI4s9UQUA1bH1rQW7S9uji5sNURGP8FBNaYvbaLOmWkZLaJIFeXxNdjlt
- MvQ+TLWxwVU0/rsUG7j0qWlaN+i5zCEL+LVpY/Ewy/ENXU24l2iJYdNqRcvwg8WU1m7ryjIzBLPt7O
- +j1wfBYW/j+LCzrMonIWxtC+EOZW075OCV8Tdn90s97iADzC1nPKs4R4igTsm5H9/c20PVBejk3lep
- tjFjyda0GmKOGOYLxHSriW32Jacwk8nqT7Rd31uwmS+91HwYTCdiCzgxC/kYx+qUvHnIznYLeq0r9f
- Kv1VFYO/ReEoD5Dx+S0CnoWDPQO4CpB6v5J2zsqYVi+s2F/zjKwonhjw+XEA==
-X-Developer-Key: i=neil.armstrong@linaro.org; a=openpgp;
- fpr=89EC3D058446217450F22848169AB7B1A4CFF8AE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240212213922.783301-32-surenb@google.com>
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.com header.s=susede1 header.b=sfOAoS4D
+X-Spamd-Result: default: False [1.65 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
+	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 BAYES_HAM(-0.04)[58.58%];
+	 TAGGED_RCPT(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 TO_MATCH_ENVRCPT_SOME(0.00)[];
+	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	 DKIM_TRACE(0.00)[suse.com:+];
+	 MX_GOOD(-0.01)[];
+	 RCPT_COUNT_GT_50(0.00)[73];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 MID_RHS_NOT_FQDN(0.50)[];
+	 FREEMAIL_CC(0.00)[linux-foundation.org,linux.dev,suse.cz,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
+	 RCVD_TLS_ALL(0.00)[];
+	 SUSPICIOUS_RECIPS(1.50)[]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Score: 1.65
+X-Rspamd-Queue-Id: 0F1001F871
+X-Spam-Level: *
+X-Spam-Flag: NO
+X-Spamd-Bar: +
 
-Add path of the GPU firmware for the SM8650-QRD board
+On Mon 12-02-24 13:39:17, Suren Baghdasaryan wrote:
+[...]
+> @@ -423,4 +424,18 @@ void __show_mem(unsigned int filter, nodemask_t *nodemask, int max_zone_idx)
+>  #ifdef CONFIG_MEMORY_FAILURE
+>  	printk("%lu pages hwpoisoned\n", atomic_long_read(&num_poisoned_pages));
+>  #endif
+> +#ifdef CONFIG_MEM_ALLOC_PROFILING
+> +	{
+> +		struct seq_buf s;
+> +		char *buf = kmalloc(4096, GFP_ATOMIC);
+> +
+> +		if (buf) {
+> +			printk("Memory allocations:\n");
+> +			seq_buf_init(&s, buf, 4096);
+> +			alloc_tags_show_mem_report(&s);
+> +			printk("%s", buf);
+> +			kfree(buf);
+> +		}
+> +	}
+> +#endif
 
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
----
- arch/arm64/boot/dts/qcom/sm8650-qrd.dts | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/qcom/sm8650-qrd.dts b/arch/arm64/boot/dts/qcom/sm8650-qrd.dts
-index b07cac2e5bc8..dc91f0bf4b8c 100644
---- a/arch/arm64/boot/dts/qcom/sm8650-qrd.dts
-+++ b/arch/arm64/boot/dts/qcom/sm8650-qrd.dts
-@@ -766,6 +766,14 @@ &ipa {
- 	status = "okay";
- };
- 
-+&gpu {
-+	status = "okay";
-+
-+	zap-shader {
-+		firmware-name = "qcom/sm8650/gen70900_zap.mbn";
-+	};
-+};
-+
- &lpass_tlmm {
- 	spkr_1_sd_n_active: spkr-1-sd-n-active-state {
- 		pins = "gpio21";
+I am pretty sure I have already objected to this. Memory allocations in
+the oom path are simply no go unless there is absolutely no other way
+around that. In this case the buffer could be preallocated.
 
 -- 
-2.34.1
-
+Michal Hocko
+SUSE Labs
