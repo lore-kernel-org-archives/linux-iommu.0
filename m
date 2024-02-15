@@ -1,142 +1,117 @@
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC1E7136644
-	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 16:48:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8408135A75;
+	Thu, 15 Feb 2024 17:00:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708015695; cv=none; b=FUW5vkQRKmUT2u5XMLhA25ABO2Esq9FRZxeTXF6qxhuDzKsqURmMDLrdH+wd83KyjyDGAk8SXQ+1guRBov/kvfVQGVVLAJ9un0QY5r+1NgNt4H6OXi3zkOfw2OQET/5UeeD06S/nPSe+v3Gp4YG9sI8WBKB3CaN3XiWwFEGHaSY=
+	t=1708016437; cv=none; b=MQo26Eyi3IOhlNu5Q79k7w8JIkArQAShcCHWTK2egOGF/f+DrxYCpl7k/dLzNoF7S8wVVsAu3EhiragpxmpTH3M0lGPWV3h/saRhEza/af4eZrXGEECu0rS/SDFR3bby3p6uwJagwgbB2JNRceBQzNy4PLttQ6Canogbazuxqbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708015695; c=relaxed/simple;
-	bh=9TO9rM05PYsgFPIWymZY990BiwuTMGTPoVWKOTW/5Ag=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XZT9IOJaOcqYmtwZy5u1Ta2nXltlDZxxbZV335zIs1dtiinmgColydJykxnx6sVX8OBmRP1bAVrshV/8ixUL4FpKQvbT1G5JelpUy3p4e785MzwPJ9UebEECShRkjjJmNgOTR1Sd5cMtjo6nsVY5AybC62T80xmeDS2eIIwDOU8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=g3+ez9uC; arc=none smtp.client-ip=209.85.128.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1708016437; c=relaxed/simple;
+	bh=ICrWTbldjX975W3btYUWwVrChRkDG1H5ULl0Muhb6hM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JnmD722Mhjo17AqAdy8JYblY8tXI7A/q6xbkfAiIl+6f4DIbKm9jjSwzHlEEDA2qFMo8nV59syfhwRDktRZSpaZm6k1OgeAOHmZ0ETIQp2g5CqA3v63xZO0KD+vrGYfQXc0nV1WscDoJgbBvlyJIxquwW1TmZY7Rk7LgBSCZANg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VmGmXp9h; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="g3+ez9uC"
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-607e54b6cf5so3425747b3.0
-        for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 08:48:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708015693; x=1708620493; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1tI+hCE30y1jp9jG4DD8d4tpJXQ3JxVVysbuWcCVNic=;
-        b=g3+ez9uCiuLwCqe3uvY/B6dVXHRIcKTA3Gkd3emHH0BFJEjAN8hzhku3XUVH6v2Hp1
-         KYGoQcuVVyjXQ8AK+mSKlhSNh5yo227Dh+I7i91AkB7Owf6IWc4eWkUCXF9piMwctjWj
-         A7uqbf7VFa6Y89db9ddY98uRkl8UgXi4lNgTa1yEd4vMjcaLHV9hWqxCBGOgaA0+LEWF
-         kG4zS8GCwQJ/fzvra9KdVlLqmQcZvO+2trKLlROVN13/OA8QwDQpB4k9UsoMIHe6+Fta
-         kFXc36SIgEHkUg8BNcDnKoJNpPFZJ4UWJXAnWQ6jPsp4aFxsCh/3iZH4wUqZ4BTvvLg0
-         NmWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708015693; x=1708620493;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1tI+hCE30y1jp9jG4DD8d4tpJXQ3JxVVysbuWcCVNic=;
-        b=v43z0d3HW5LhaMm/NaXOT5ZIPzE1oprm20tmhziyJfPFz8EgA0jXYcDBEwYVodptUj
-         ILjHJhvhaIgx1A1QkwT8If+mxLTWaMh0gpEW7cd/FX5NM3dWN4bZwS1z/CS/ghOjCISE
-         n4qXot+vKGoBNQXmmHcJsa6/Qh+RFbi69024hjO1Ex4BLd4/rKEAQ/5lZ44Ph3RlFICt
-         IS65r5zOW4fqSyoHzSTvOHbCZpL16OLx/cP1j+mgZbefeRre5z10VsDfxomulpFFlx19
-         gH0dOl0RqPPh+SjFtIYgLqKlvjVKFFaI8xFwZV19LcgYB36o5w+89izypFGw+j6PeZjd
-         iZ1A==
-X-Forwarded-Encrypted: i=1; AJvYcCUSAlmuR90LtEoSyTd9JV9wSB65lE0RwoAk6BNWQ/n+dsfaOibNaVYdOpwkm+Ze2l/VmbAs810U76z+1tY+co72iQ8SrOM=
-X-Gm-Message-State: AOJu0Yy5+J3HVuMrC+wBftL7V5ba/fk24humo1Ar6lV9f3B6R8UbjuYS
-	rdK/ahQrf4Qp6vhwrfUwE3l5AtQhNd4LeiJSYWbQcZnDESMSLQEA09C6ug02VzqJ7gxvxcK7eah
-	QEdApGsHsoy13TkFl+mFDgn7rntFKTe8Ow2LT
-X-Google-Smtp-Source: AGHT+IEpKo2L6oplIyxSXpvbYHFzpW3S2D2HSJYFHw3+xQqVKIR17Ywy1D0gSKm8xVOUSCj/xezJ/KNnf15e7J0VTMo=
-X-Received: by 2002:a0d:e284:0:b0:607:77bd:711 with SMTP id
- l126-20020a0de284000000b0060777bd0711mr1808635ywe.11.1708015692595; Thu, 15
- Feb 2024 08:48:12 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VmGmXp9h"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97159C43394;
+	Thu, 15 Feb 2024 17:00:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1708016436;
+	bh=ICrWTbldjX975W3btYUWwVrChRkDG1H5ULl0Muhb6hM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VmGmXp9h8/NmjOVvPq2UXmxKPbIo0y7BYxzGHZv6aadFtcdMuMdbnYUGmQlO913DH
+	 LTVHQayO6nKjrvBtRy6BurVGNcoq50fnejWw3RpSLVwNtS8vG7I5ZeC3dhzezTTvWj
+	 PtAfGth6k8UAVkcJof1FI/SJ+KQqZvejxnRQLyHepkvLDIrydcShyy37QCE6KdjkVP
+	 IOOa+lwQgp72wkcYr+MTeUxXwNS1uOfUMaf/KovpVvgPVTmGsNbIzZIGSpjclG4Sr+
+	 v6yr3ItVCPcBgyZI2j5Fo9KDpR2f8eDDK8ScCJbb9CL3PvQuNPBeygARTqQIjHAsAb
+	 kWcK15ViP1wvQ==
+Date: Thu, 15 Feb 2024 17:00:29 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Neil Armstrong <neil.armstrong@linaro.org>
+Cc: Rob Clark <robdclark@gmail.com>,
+	Abhinav Kumar <quic_abhinavk@quicinc.com>,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	Sean Paul <sean@poorly.run>,
+	Marijn Suijten <marijn.suijten@somainline.org>,
+	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v2 1/6] dt-bindings: display/msm/gmu: Document Adreno 750
+ GMU
+Message-ID: <20240215-trout-written-9ba8c929f9a5@spud>
+References: <20240215-topic-sm8650-gpu-v2-0-6be0b4bf2e09@linaro.org>
+ <20240215-topic-sm8650-gpu-v2-1-6be0b4bf2e09@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240212213922.783301-1-surenb@google.com> <20240212213922.783301-32-surenb@google.com>
- <Zc3X8XlnrZmh2mgN@tiehlicka> <CAJuCfpHc2ee_V6SGAc_31O_ikjGGNivhdSG+2XNcc9vVmzO-9g@mail.gmail.com>
- <Zc4_i_ED6qjGDmhR@tiehlicka>
-In-Reply-To: <Zc4_i_ED6qjGDmhR@tiehlicka>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Thu, 15 Feb 2024 08:47:59 -0800
-Message-ID: <CAJuCfpHq3N0h6dGieHxD6Au+qs=iKAifFrHAMxTsHTcDrOwSQA@mail.gmail.com>
-Subject: Re: [PATCH v3 31/35] lib: add memory allocations report in show_mem()
-To: Michal Hocko <mhocko@suse.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
-	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, 
-	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="HZ+0T1NysZqNQ3hJ"
+Content-Disposition: inline
+In-Reply-To: <20240215-topic-sm8650-gpu-v2-1-6be0b4bf2e09@linaro.org>
+
+
+--HZ+0T1NysZqNQ3hJ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 15, 2024 at 8:45=E2=80=AFAM Michal Hocko <mhocko@suse.com> wrot=
-e:
->
-> On Thu 15-02-24 06:58:42, Suren Baghdasaryan wrote:
-> > On Thu, Feb 15, 2024 at 1:22=E2=80=AFAM Michal Hocko <mhocko@suse.com> =
-wrote:
-> > >
-> > > On Mon 12-02-24 13:39:17, Suren Baghdasaryan wrote:
-> > > [...]
-> > > > @@ -423,4 +424,18 @@ void __show_mem(unsigned int filter, nodemask_=
-t *nodemask, int max_zone_idx)
-> > > >  #ifdef CONFIG_MEMORY_FAILURE
-> > > >       printk("%lu pages hwpoisoned\n", atomic_long_read(&num_poison=
-ed_pages));
-> > > >  #endif
-> > > > +#ifdef CONFIG_MEM_ALLOC_PROFILING
-> > > > +     {
-> > > > +             struct seq_buf s;
-> > > > +             char *buf =3D kmalloc(4096, GFP_ATOMIC);
-> > > > +
-> > > > +             if (buf) {
-> > > > +                     printk("Memory allocations:\n");
-> > > > +                     seq_buf_init(&s, buf, 4096);
-> > > > +                     alloc_tags_show_mem_report(&s);
-> > > > +                     printk("%s", buf);
-> > > > +                     kfree(buf);
-> > > > +             }
-> > > > +     }
-> > > > +#endif
-> > >
-> > > I am pretty sure I have already objected to this. Memory allocations =
-in
-> > > the oom path are simply no go unless there is absolutely no other way
-> > > around that. In this case the buffer could be preallocated.
-> >
-> > Good point. We will change this to a smaller buffer allocated on the
-> > stack and will print records one-by-one. Thanks!
->
-> __show_mem could be called with a very deep call chains. A single
-> pre-allocated buffer should just do ok.
+On Thu, Feb 15, 2024 at 10:20:23AM +0100, Neil Armstrong wrote:
+> Document the Adreno 750 GMU found on the SM8650 platform.
+>=20
+> Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
 
-Ack. Will do.
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
->
-> --
-> Michal Hocko
-> SUSE Labs
+Cheers,
+Conor.
+
+> ---
+>  Documentation/devicetree/bindings/display/msm/gmu.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/display/msm/gmu.yaml b/Doc=
+umentation/devicetree/bindings/display/msm/gmu.yaml
+> index 4e1c25b42908..b3837368a260 100644
+> --- a/Documentation/devicetree/bindings/display/msm/gmu.yaml
+> +++ b/Documentation/devicetree/bindings/display/msm/gmu.yaml
+> @@ -224,6 +224,7 @@ allOf:
+>              enum:
+>                - qcom,adreno-gmu-730.1
+>                - qcom,adreno-gmu-740.1
+> +              - qcom,adreno-gmu-750.1
+>      then:
+>        properties:
+>          reg:
+>=20
+> --=20
+> 2.34.1
+>=20
+
+--HZ+0T1NysZqNQ3hJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZc5DLQAKCRB4tDGHoIJi
+0uvUAQCtCgC2eHupKQtPKFOnR5PFcNSjcf0kcLi4MhaYUVZEzgD/REr3WQUpQ8eD
+moB3rhx2b3tSDbMaZ5ZNmayqfscT5QA=
+=aBoj
+-----END PGP SIGNATURE-----
+
+--HZ+0T1NysZqNQ3hJ--
