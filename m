@@ -1,76 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E320617C9;
-	Thu, 15 Feb 2024 01:36:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5606E38D
+	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 02:31:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707961003; cv=none; b=JvYuBFAQhBS9/DUVM23XKGzPzkwaVjOe0a5UCDrtWwwv4wH2J3vjvnwL+3cxtYA+KLqoA6Sfle2hk30hDDDlZ4ijaX8m9gfCcc3pSDNShY954a5QHM2C70lXmFx2sy1EVqyaWhE6mK+msJ4W++Dsxtwxt6kArJvRuhXWrhgk/NU=
+	t=1707964274; cv=none; b=OnjfO6ta9h7CE/Kv/fb9Q8cQ6iq5vO6Jsx14Nuk/ypl9gRl79empFZf6v8frwpJBnJ6TrvZnz8x5wKFxcSiFWXNGEMLF8EjVzFKe0McIGc1M9pwGSB/lmDJkTn/Op4NxraMiLOykBiKC1KEVri3dntR5FQrgluoKty+twJtSqzE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707961003; c=relaxed/simple;
-	bh=pPliZncdA3i95L/mjXLvn7u/pxryzDw1zgs434SpmLk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VkpSjjND2QuPVLbVuoFc3omdne1E6b81N98lfiWi+tJZw0heFd+cY5sn++08hh6XKRoJ8oj/okmH/usRTJU5Ja0cJexPIz3K+dHvpMdrt3PSqby+sDPkTzfjtnEyySMgriVt1Gk8KeskWE3ucAzlu7p/I6vde2OXu6BIuLVQQIY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aIYWwiOS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1707964274; c=relaxed/simple;
+	bh=fWwe+zyzz52O3D2v6MbdZs2U98vj/zxwa7T4woR+DOQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=lRlX/nbLKhob2DjABJ6kaR2noPsURbGv4z1gKQyDb7VJ/h1Dex2Bv1XibZe5585EXEVr/Wa42KfTBvA8e1jBRybNl48QV/wS26uZ7LX0Zun5sNY0D2VmjbWXR0P3uyeO6vaFKL0/oddOgmV77nzsZtRfYdrdN/7mZ12A4g1E0/I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au; spf=pass smtp.mailfrom=ellerman.id.au; dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b=ZRbSjk+F; arc=none smtp.client-ip=150.107.74.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ellerman.id.au
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aIYWwiOS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 874ECC433C7;
-	Thu, 15 Feb 2024 01:36:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1707961002;
-	bh=pPliZncdA3i95L/mjXLvn7u/pxryzDw1zgs434SpmLk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=aIYWwiOSIjt8sT6wPq0tPs6lzJB8PGB3UrjsTwGEdZ462ubWUs53385RoWRztfpKY
-	 XG0JoA3wLh4Wc2H4zDw+7lcU17Icm139JzEIuZeTUeHsi9EQ7By5RIaGxqsnfuOztl
-	 sdFmFEDfoyWQDH3HoINL7MREAW/vdjH9EpNuoWPf2ik97lqwP5/+tScSXTY71AG9RL
-	 XJNeTL/JM5u3doGRsGqGJeh25Ng2ltElGKFffdfrPxqdN0+R9yGkwPZ7INbI/CnrO4
-	 2iltwab2NtxLSevGVysR/HLmtk8yWHBW2JrAKu7v0m3cQFn74pLaQmyF8UONu7dPj5
-	 LiseI3mLMtenw==
-Date: Wed, 14 Feb 2024 18:36:38 -0700
-From: Keith Busch <kbusch@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: sagi@grimberg.me, hch@lst.de, axboe@kernel.dk, will@kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, jgg@nvidia.com,
-	linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, murphyt7@tcd.ie, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v1 2/2] nvme-pci: Fix iommu map (via swiotlb) failures
- when PAGE_SIZE=64KB
-Message-ID: <Zc1qpr4zCy1N0OND@kbusch-mbp>
-References: <cover.1707851466.git.nicolinc@nvidia.com>
- <60bdcc29a2bcf12c6ab95cf0ea480d67c41c51e7.1707851466.git.nicolinc@nvidia.com>
- <Zcv7uI6VrMc2EuGT@kbusch-mbp>
- <ZcxZD2GXmR5+vC/k@Asurada-Nvidia>
+	dkim=pass (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="ZRbSjk+F"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+	s=201909; t=1707964269;
+	bh=mN7k05qDsCZMvJ231ko7Ex1DhgQgMDJKRw5c4Jz+Jno=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=ZRbSjk+F0dN7h56CW1VVMZbPdYMZNjqNRFpLazen7bRueZ0r5T1ywezmodVpyjVa9
+	 d92F0UbPkk9cWKe/PUaolTj0uuHCqNcK/ovV+hA+9r8vgDHeXTd6hLN6wCeRtjDm12
+	 wkrFjy7X7ibTf+qIS411Cy5ElqNoS0q5GnEN+y7jmi5FPb/ixivhx/JpCR66PfFpwA
+	 JP9jt3Lz0hSKEVJYKjPr8MT4mthYB057UdEkBZa4JxTJLbg6Uas//RbUT4CmRP2859
+	 ZbXPQ2xV1m3X13wKW1QvIjjvoRUVCp+CRxl7+/GFzsANQTLT9gMRfrag8IblLb8+dG
+	 7cgXHvEiWtt2Q==
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 4TZzZg5B7Nz4wxv;
+	Thu, 15 Feb 2024 13:31:07 +1100 (AEDT)
+From: Michael Ellerman <mpe@ellerman.id.au>
+To: Shivaprasad G Bhat <sbhat@linux.ibm.com>, iommu@lists.linux.dev,
+ linuxppc-dev@lists.ozlabs.org
+Cc: linux-kernel@vger.kernel.org, npiggin@gmail.com,
+ christophe.leroy@csgroup.eu, aneesh.kumar@kernel.org,
+ naveen.n.rao@linux.ibm.com, jgg@ziepe.ca, jroedel@suse.de,
+ tpearson@raptorengineering.com, aik@amd.com, bgray@linux.ibm.com,
+ gregkh@linuxfoundation.org, sbhat@linux.ibm.com,
+ gbatra@linux.vnet.ibm.com, vaibhav@linux.ibm.com,
+ venkat88@linux.vnet.ibm.com
+Subject: Re: [PATCH v2] powerpc/iommu: Fix the iommu group reference leak
+ during platform domain attach
+In-Reply-To: <170793401503.7491.9431631474642074097.stgit@linux.ibm.com>
+References: <170793401503.7491.9431631474642074097.stgit@linux.ibm.com>
+Date: Thu, 15 Feb 2024 13:31:06 +1100
+Message-ID: <875xyq791x.fsf@mail.lhotse>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZcxZD2GXmR5+vC/k@Asurada-Nvidia>
+Content-Type: text/plain
 
-On Tue, Feb 13, 2024 at 10:09:19PM -0800, Nicolin Chen wrote:
-> On Tue, Feb 13, 2024 at 04:31:04PM -0700, Keith Busch wrote:
-> > On Tue, Feb 13, 2024 at 01:53:57PM -0800, Nicolin Chen wrote:
-> > > @@ -2967,7 +2967,7 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
-> > >               dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(48));
-> > >       else
-> > >               dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-> > > -     dma_set_min_align_mask(&pdev->dev, NVME_CTRL_PAGE_SIZE - 1);
-> > > +     dma_set_min_align_mask(&pdev->dev, PAGE_SIZE - 1);
-> > >       dma_set_max_seg_size(&pdev->dev, 0xffffffff);
-> > 
-> > I recall we had to do this for POWER because they have 64k pages, but
-> > page aligned addresses IOMMU map to 4k, so we needed to allow the lower
-> > dma alignment to efficiently use it.
-> 
-> Thanks for the input!
-> 
-> In that case, we might have to rely on iovad->granule from the
-> attached iommu_domain:
+Shivaprasad G Bhat <sbhat@linux.ibm.com> writes:
+> The function spapr_tce_platform_iommu_attach_dev() is missing to call
+> iommu_group_put() when the domain is already set. This refcount leak
+> shows up with BUG_ON() during DLPAR remove operation as,
+>
+>   KernelBug: Kernel bug in state 'None': kernel BUG at arch/powerpc/platforms/pseries/iommu.c:100!
+>   Oops: Exception in kernel mode, sig: 5 [#1]
+>   LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=8192 NUMA pSeries
+>   <snip>
+>   Hardware name: IBM,9080-HEX POWER10 (raw) 0x800200 0xf000006 of:IBM,FW1060.00 (NH1060_016) hv:phyp pSeries
+>   NIP:  c0000000000ff4d4 LR: c0000000000ff4cc CTR: 0000000000000000
+>   REGS: c0000013aed5f840 TRAP: 0700   Tainted: G          I         (6.8.0-rc3-autotest-g99bd3cb0d12e)
+>   MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 44002402  XER: 20040000
+>   CFAR: c000000000a0d170 IRQMASK: 0
+>   GPR00: c0000000000ff4cc c0000013aed5fae0 c000000001512700 c0000013aa362138
+>   GPR04: 0000000000000000 0000000000000000 0000000000000000 0000000119c8afd0
+>   GPR08: 0000000000000000 c000001284442b00 0000000000000001 0000000000001003
+>   GPR12: 0000000300000000 c0000018ffff2f00 0000000000000000 0000000000000000
+>   GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+>   GPR20: 0000000000000000 0000000000000000 0000000000000000 0000000000000000
+>   GPR24: c0000013aed5fc40 0000000000000002 0000000000000000 c000000002757d90
+>   GPR28: c0000000000ff440 c000000002757cb8 c00000183799c1a0 c0000013aa362b00
+>   NIP [c0000000000ff4d4] iommu_reconfig_notifier+0x94/0x200
+>   LR [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200
+>   Call Trace:
+>   [c0000013aed5fae0] [c0000000000ff4cc] iommu_reconfig_notifier+0x8c/0x200 (unreliable)
+>   [c0000013aed5fb10] [c0000000001a27b0] notifier_call_chain+0xb8/0x19c
+>   [c0000013aed5fb70] [c0000000001a2a78] blocking_notifier_call_chain+0x64/0x98
+>   [c0000013aed5fbb0] [c000000000c4a898] of_reconfig_notify+0x44/0xdc
+>   [c0000013aed5fc20] [c000000000c4add4] of_detach_node+0x78/0xb0
+>   [c0000013aed5fc70] [c0000000000f96a8] ofdt_write.part.0+0x86c/0xbb8
+>   [c0000013aed5fce0] [c00000000069b4bc] proc_reg_write+0xf4/0x150
+>   [c0000013aed5fd10] [c0000000005bfeb4] vfs_write+0xf8/0x488
+>   [c0000013aed5fdc0] [c0000000005c0570] ksys_write+0x84/0x140
+>   [c0000013aed5fe10] [c000000000033358] system_call_exception+0x138/0x330
+>   [c0000013aed5fe50] [c00000000000d05c] system_call_vectored_common+0x15c/0x2ec
+>   --- interrupt: 3000 at 0x20000433acb4
+>   <snip>
+>   ---[ end trace 0000000000000000 ]---
+>
+> The patch makes the iommu_group_get() call only when using it there by
+> avoiding the leak.
+>
+> Fixes: a8ca9fc9134c ("powerpc/iommu: Do not do platform domain attach atctions after probe")
+> Reported-by: Venkat Rao Bagalkote <venkat88@linux.vnet.ibm.com>
+> Closes: https://lore.kernel.org/all/274e0d2b-b5cc-475e-94e6-8427e88e271d@linux.vnet.ibm.com
+> Signed-off-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+> ---
+> Changelog:
+> v1: https://lore.kernel.org/all/170784021983.6249.10039296655906636112.stgit@linux.ibm.com/
+>  - Minor refactor to call the iommu_group_get() only if required.
+>  - Updated the title, description and signature(Closes/Reported-by).
 
-I explored a bit more, and there is some PPC weirdness that lead to
-NVME_CTRL_PAGE_SIZE, I don't find the dma min align mask used in that
-path. It looks like swiotlb is the only user for this, so your original
-patch may be just fine.
+Sorry I already applied v1.
+
+If you send this as a patch on top of v1 with a new change log I can
+merge it as a cleanup/rework.
+
+cheers
