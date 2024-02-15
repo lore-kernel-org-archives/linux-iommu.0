@@ -1,68 +1,86 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 711597484
-	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 05:09:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C5F412B87
+	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 07:28:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707973743; cv=none; b=R8qNkIYwN0H5rUDY+nuwQ8/XOlHyhk4yM0jnbpdcESGfC80TwSqxsrFnwQ4s88S324xkPkgdVH7TlferGVNfx4LtLszCDyZEbm1Oa3ZQT5USq7VtzkSbxKfyNwFoweKGCBL+beoW3Y4ioyQ1efLSZlEizRe1sUtMtxtYGAtrTiY=
+	t=1707982130; cv=none; b=dIggbFeWHK8/LxRT/OHGIXXkrCGR8Ds/lfw9ZZiWTM0yyU0r5FsGD0tIqJ8KSxY1VCWx1bWsxQDKxhAoCw4CB46ji/obEEWEHJ/V5p8qqKIAzyzd6ugSbncUFGlZwi5BLZOf2y8fEb+ImQfooOYk5fb0WjF3ApIalHTaNpK92a0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707973743; c=relaxed/simple;
-	bh=cNwF0UBoZgTorJtcVmtOzDAYbe9MG8JuAeNdYwPv0w4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oK0cTbLCDSottxsigHskUq0aMU2iMTRy3RWq9xKngiqQ3UuRMjynIM2CENQNO7LPfzr8LzjhwEv/EKyYEb+mRTIsCqeRO8YBfsDojGdUCFSgXShEtRzlbRAlCTgKfh/EPZystXcJ3JcsQEyMvLz6qU7zApAS9nT5PNsolj/sO/g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id D1E0D67373; Thu, 15 Feb 2024 06:08:57 +0100 (CET)
-Date: Thu, 15 Feb 2024 06:08:57 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Magnus Karlsson <magnus.karlsson@intel.com>,
-	Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-	Alexander Duyck <alexanderduyck@fb.com>, bpf@vger.kernel.org,
-	netdev@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 2/7] dma: avoid redundant calls for sync
- operations
-Message-ID: <20240215050857.GC4861@lst.de>
-References: <20240214162201.4168778-1-aleksander.lobakin@intel.com> <20240214162201.4168778-3-aleksander.lobakin@intel.com> <3a9dd580-1977-418f-a3f3-73003dd37710@arm.com>
+	s=arc-20240116; t=1707982130; c=relaxed/simple;
+	bh=BGali8YR19f9ZRyzTwoqv3iiNG9oSUbGHt1wVtsRN2w=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=iVFN0OcuA0HqyYgbMNocgjv3dRvrGPMLHEz7ct+GCmI9aerAT6mE6De51+MXEqhTxXWdHj6139apD1ARDA1h5dJdXvB20em0nv79+fsu3BH21CH21nuLJcwxKm/muEs8NB0GmMWirP+Qx4Vvh7yoLrBYTkio6p24EMDdFl6AH0s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hUB9eZGz; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hUB9eZGz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1707982129; x=1739518129;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=BGali8YR19f9ZRyzTwoqv3iiNG9oSUbGHt1wVtsRN2w=;
+  b=hUB9eZGzHlHudCoJR/sKTeOEveQbLp+dZ9ObgosQppQYcmPV/pAv7Xle
+   trezkfH9lqeS/EmmaHw/7a9ydjM4luIm3GJWRlJXeSz5CdgY6u9XwTFWR
+   ROXmM8nxh4gnjWUuJuznMz3O+geXmRDjJpPj8bFAOIwUc/DJHZ61qG+ZN
+   IBbfS3flJQChuYIkz8KkxSBNbHJnpOlQeC4EhYI7MEw44tiUo4EzQ5RX6
+   uqJqXZLZP+jlc1jjn/zp+kSF57JED+uUww+Bi4WFqLDjYG7Sa3+Nvm0Mx
+   kugyyurpUvN2F/cOdD0OvwOty6kR86d+Jkzeawd+7yVWK5h+icAkhoFDU
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="2182709"
+X-IronPort-AV: E=Sophos;i="6.06,161,1705392000"; 
+   d="scan'208";a="2182709"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 23:28:48 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="912113130"
+X-IronPort-AV: E=Sophos;i="6.06,161,1705392000"; 
+   d="scan'208";a="912113130"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmsmga002.fm.intel.com with ESMTP; 14 Feb 2024 23:28:45 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>
+Cc: Huang Jiaqing <jiaqing.huang@intel.com>,
+	Ethan Zhao <haifeng.zhao@linux.intel.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 0/2] iommu/vt-d: Introduce rbtree for probed devices
+Date: Thu, 15 Feb 2024 15:22:47 +0800
+Message-Id: <20240215072249.4465-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3a9dd580-1977-418f-a3f3-73003dd37710@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
 
-On Wed, Feb 14, 2024 at 05:55:23PM +0000, Robin Murphy wrote:
->>   #define DMA_F_PCI_P2PDMA_SUPPORTED     (1 << 0)
->> +#define DMA_F_CAN_SKIP_SYNC		BIT(1)
->
-> Yuck, please be consistent - either match the style of the existing code, 
-> or change that to BIT(0) as well.
+This is a follow-up to the discussion thread here:
 
-Just don't use BIT() ever.  It doesn't save any typing and creates a
-totally pointless mental indirection.
+https://lore.kernel.org/linux-iommu/20240201193427.GQ50608@ziepe.ca/
 
-> I guess this was the existing condition from dma_need_sync(), but now it's 
-> on a one-off slow path it might be nice to check the sync_sg_* ops as well 
-> for completeness, or at least comment that nobody should be implementing 
-> those without also implementing the sync_single_* ops.
+This proposes a per-IOMMU red-black tree for iommu probed devices. It
+benefits fault handling paths, where the VT-d hardware reports the
+Source ID of the related device, and software needs to retrieve the
+corresponding device pointer based on this ID.
 
-Implementing only one and not the other doesn't make any sense.  Maybe
-a debug check for that is ok, but thing will break badly if they aren't
-in sync anyway.
+Lu Baolu (2):
+  iommu/vt-d: Use rbtree to track iommu probed devices
+  iommu/vt-d: Use device rbtree in iopf reporting path
+
+ drivers/iommu/intel/iommu.h |  8 ++++
+ drivers/iommu/intel/dmar.c  |  3 +-
+ drivers/iommu/intel/iommu.c | 91 ++++++++++++++++++++++++++++++++++++-
+ drivers/iommu/intel/svm.c   | 14 +++---
+ 4 files changed, 105 insertions(+), 11 deletions(-)
+
+-- 
+2.34.1
+
