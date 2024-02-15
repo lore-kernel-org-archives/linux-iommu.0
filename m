@@ -1,147 +1,114 @@
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp-fw-52002.amazon.com (smtp-fw-52002.amazon.com [52.119.213.150])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CECE1B949
-	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 09:32:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BE814CE17;
+	Thu, 15 Feb 2024 09:44:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.119.213.150
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707989544; cv=none; b=ho2uPTn7Z/kg+pFmJ+9eSc4ab7SJzgHqfME5cRt7BuLTZa15WKgPeNYP+LHgk1KJRrFXWFp6pWf4jPKL4E0Yx5ANxSXcSeAg8cb+idpYXgI/Df7k5qRo+cZ8ubhGOH2fIAhqu4FGc0e8LWnr9X/WTiPwQv0mHI4+zVp9QPkPMLI=
+	t=1707990269; cv=none; b=t8ltWg+TWgvqY5tacTsFr2UT9Us77adD5by3sCl9EOZtR8zUKq/JKm47SEzarN3FhHwQ+Gm4IuDG84DqTt9XJsRjJosw7SIpeaGAvanEC/KpyFZeDxV1Ahhv6762RquB/TiIP+f2Pmr7+1hq6OOi9vmuMvp8ttEXF16yBGMckhE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707989544; c=relaxed/simple;
-	bh=t8fjnbGI5gCrFfnFsadlQGU4sXRofYXA6zNJI24MqTw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cozsx5cupn5qZZHTNltdBuYeX3DvO9/lDyfjhmOMz770TpyEs/9jsEe4Xu/4uBBP2HYwVaqfQQsGQs7Ur/Bp+E3dDgmqyeG6OKpTkEm+ebj7a6KYjK5qCygoDO21SdpzeSmYUeYsw3z3byNpI5khRHMbhqd/JtIhs3QCQr0RJFM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=f0dzn3ov; arc=none smtp.client-ip=209.85.219.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1707990269; c=relaxed/simple;
+	bh=MpAnqmrBzKfhdUol4ez9sNwiJNke4mG+AQYMeOTO+3A=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=Jfc0czpiPsFfUlENPVspuLmpTJEDsdzU6iRpq4X9i0v+/82jRT0/C0K2UqoCfI2C0GqzaFMCdsCTLvRSFKBj/1q9BHMbbFQl6k4VUpnhf33b2pymiv11Urj39sPLMCE/qOOLr4/EjbVaqR0hM/6k4VfCv6XfKWWrOUPVZGWtquI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.de; dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b=BWc54xww; arc=none smtp.client-ip=52.119.213.150
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="f0dzn3ov"
-Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-dc74e33fe1bso565012276.0
-        for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 01:32:22 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b="BWc54xww"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707989541; x=1708594341; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=xhsL/cUAT42+vhfZnH+MnscoqoxI62SZOZMcf2180Ao=;
-        b=f0dzn3ov6UAYCAmA4AXjsQFJl6xzjFJe7Kqp9fPLJjL/tUjFbh4/fH9GU1lWbbpPW0
-         wGpf+7Cndru7yXtJN6cCZUpR9OS8NFyR0RdxBy2yMEVll0qO3TvDro+VNhsoVAJ/aH8/
-         zli3ERbHD/ss0sDYGmHp3tqW1Q/XHglz1NEsuRTSycUO3jGGSOeSKbRTKQHnEZW3/kuI
-         0RW4CsfN6AakuMyquaKSxwwUZ4XXxB8wfsCymzZ/UZt+sZktxxMyp/RH6/UID+6Gjvrt
-         z1FxPZKe4xS7HeEw9lzvqUxFUHZBZHIX5Qx3UFpVzN5LoGgkXxRHmuQoWcNygN8v2J8R
-         FIlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707989541; x=1708594341;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xhsL/cUAT42+vhfZnH+MnscoqoxI62SZOZMcf2180Ao=;
-        b=PHTDNJhGGrNdhlnrbrCaOaQckMAZLK/27uCWflR1pE4xH0GT4xODSsZWlnFhLHJCw1
-         xawUHKe8YtMfYUQI99gwKghctFBrDKiHXqF7sY35xd5to233MeSAljcWOl6Nnry5YDo8
-         roQMKNiWs6p6jK+cEoYtj0dnquHHByPKW7bgdcWh+wI+hsi4edKjII4QTMOqISeejvQC
-         EUODCj6nWrxTgHGB7LHio6pCxePrkjfGSjkuYQLMNI5OWgsNGPXnmqPrl+PlfD6VBDz1
-         KGpZXzgkIhO1vQ6qOx/osN8719TGD4jNUkeKZXaY6Zriw2+iJHnfje5GGscduf/5oebL
-         16xw==
-X-Forwarded-Encrypted: i=1; AJvYcCVLPzTh7pomO9o0nTs4/nS9oo6MRaQr2UuUG1OqmnQVmqfii4VGft8wttfn5hTDhqQKQ2v0OcCjcJRNxsiS8lpcQo1EUB0=
-X-Gm-Message-State: AOJu0Yw0/XVfAcLysQOl+LB13F0c47iV3NYm+SljAAlBojoy/nHNRQ8L
-	CUaEnCgtnAOXfwfvHnmV5Lxazel2UtEt+ALzkGwiy6NF1ZLeCYI5YrDPo5+beJocH3hOvUtzepS
-	EvOh9ZUzZey+P//fA5XOx3kb7DTZXYzC2S3M+JQ==
-X-Google-Smtp-Source: AGHT+IGo2HcfVD2s8rsl4Q6UKE4zYlvCOdCjsO2WiOwy9pC6rfEmy2MtkOAphVrWtXxWh32cSnZlcfv9SsjiJWqGlD8=
-X-Received: by 2002:a25:d68b:0:b0:dc6:aed5:718a with SMTP id
- n133-20020a25d68b000000b00dc6aed5718amr968831ybg.26.1707989541228; Thu, 15
- Feb 2024 01:32:21 -0800 (PST)
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1707990268; x=1739526268;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=MpAnqmrBzKfhdUol4ez9sNwiJNke4mG+AQYMeOTO+3A=;
+  b=BWc54xwws7Pzx1QbGyhA/YOnlTB9msumjGSKKfr1yeMAhq8UxcbhjXEj
+   UYhzdFsLcOZ5j20xsUU0bd0aV03VG9GVu7ojgPQ28/f3FWIdGu3O/8Jwq
+   6p0TPJjCvfB+GmT+0yj1u43BRZamAgaFcTH8pRNzFL3js1o/av48FWWMU
+   k=;
+X-IronPort-AV: E=Sophos;i="6.06,161,1705363200"; 
+   d="scan'208";a="613229364"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO smtpout.prod.us-west-2.prod.farcaster.email.amazon.dev) ([10.43.8.6])
+  by smtp-border-fw-52002.iad7.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2024 09:44:23 +0000
+Received: from EX19MTAUWB001.ant.amazon.com [10.0.21.151:18611]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.29.119:2525] with esmtp (Farcaster)
+ id 195158db-1473-4e04-93e0-963f8771d726; Thu, 15 Feb 2024 09:44:21 +0000 (UTC)
+X-Farcaster-Flow-ID: 195158db-1473-4e04-93e0-963f8771d726
+Received: from EX19D020UWC004.ant.amazon.com (10.13.138.149) by
+ EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Thu, 15 Feb 2024 09:44:21 +0000
+Received: from [0.0.0.0] (10.253.83.51) by EX19D020UWC004.ant.amazon.com
+ (10.13.138.149) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Thu, 15 Feb
+ 2024 09:44:15 +0000
+Message-ID: <8a6dabdf-dc11-4989-b6b4-b49871ff9ca6@amazon.com>
+Date: Thu, 15 Feb 2024 10:44:13 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240215-topic-sm8650-gpu-v2-0-6be0b4bf2e09@linaro.org>
- <20240215-topic-sm8650-gpu-v2-2-6be0b4bf2e09@linaro.org> <CAA8EJprpYEhGi5b+uWGWtOa+qbSwUR8C0j9NLC+ah_-nvy-=Ng@mail.gmail.com>
- <ffb16ef6-fc9a-42b1-b9c3-4e8f6b52d849@linaro.org>
-In-Reply-To: <ffb16ef6-fc9a-42b1-b9c3-4e8f6b52d849@linaro.org>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Thu, 15 Feb 2024 11:32:10 +0200
-Message-ID: <CAA8EJpobWYu8LoHZarOw82z78=kLJrKH0P4ncK6sX7zE1nHuqQ@mail.gmail.com>
-Subject: Re: [PATCH v2 2/6] dt-bindings: arm-smmu: Document SM8650 GPU SMMU
-To: neil.armstrong@linaro.org
-Cc: Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>, 
-	Sean Paul <sean@poorly.run>, Marijn Suijten <marijn.suijten@somainline.org>, 
-	David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
-	Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konrad.dybcio@linaro.org>, 
-	linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
-	freedreno@lists.freedesktop.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
-	iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC V1 1/5] swiotlb: Support allocating DMA memory from SWIOTLB
+Content-Language: en-US
+To: Vishal Annapurve <vannapurve@google.com>, "Kirill A. Shutemov"
+	<kirill@shutemov.name>
+CC: <x86@kernel.org>, <linux-kernel@vger.kernel.org>, <pbonzini@redhat.com>,
+	<rientjes@google.com>, <seanjc@google.com>, <erdemaktas@google.com>,
+	<ackerleytng@google.com>, <jxgao@google.com>, <sagis@google.com>,
+	<oupton@google.com>, <peterx@redhat.com>, <vkuznets@redhat.com>,
+	<dmatlack@google.com>, <pgonda@google.com>, <michael.roth@amd.com>,
+	<thomas.lendacky@amd.com>, <dave.hansen@linux.intel.com>,
+	<linux-coco@lists.linux.dev>, <chao.p.peng@linux.intel.com>,
+	<isaku.yamahata@gmail.com>, <andrew.jones@linux.dev>, <corbet@lwn.net>,
+	<hch@lst.de>, <m.szyprowski@samsung.com>, <rostedt@goodmis.org>,
+	<iommu@lists.linux.dev>
+References: <20240112055251.36101-1-vannapurve@google.com>
+ <20240112055251.36101-2-vannapurve@google.com>
+ <etvf2mon464whscbxqktdd7bputnqmmwmoeg7ssixsk4kljfek@4wngbgzbbmck>
+ <CAGtprH-95FEUzpc-yxQMo87gpqgMxyz9W8tiWtu_ZHhMW-jjuA@mail.gmail.com>
+From: Alexander Graf <graf@amazon.com>
+In-Reply-To: <CAGtprH-95FEUzpc-yxQMo87gpqgMxyz9W8tiWtu_ZHhMW-jjuA@mail.gmail.com>
+X-ClientProxiedBy: EX19D032UWA004.ant.amazon.com (10.13.139.56) To
+ EX19D020UWC004.ant.amazon.com (10.13.138.149)
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
 
-On Thu, 15 Feb 2024 at 11:29, Neil Armstrong <neil.armstrong@linaro.org> wrote:
->
-> On 15/02/2024 10:25, Dmitry Baryshkov wrote:
-> > On Thu, 15 Feb 2024 at 11:20, Neil Armstrong <neil.armstrong@linaro.org> wrote:
-> >>
-> >> Document the GPU SMMU found on the SM8650 platform.
-> >>
-> >> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
-> >> ---
-> >>   Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 7 +++++--
-> >>   1 file changed, 5 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> >> index a4042ae24770..3ad5c850f3bf 100644
-> >> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> >> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-> >> @@ -93,6 +93,7 @@ properties:
-> >>                 - qcom,sm8350-smmu-500
-> >>                 - qcom,sm8450-smmu-500
-> >>                 - qcom,sm8550-smmu-500
-> >> +              - qcom,sm8650-smmu-500
-> >>             - const: qcom,adreno-smmu
-> >>             - const: qcom,smmu-500
-> >>             - const: arm,mmu-500
-> >> @@ -508,7 +509,10 @@ allOf:
-> >>     - if:
-> >>         properties:
-> >>           compatible:
-> >> -          const: qcom,sm8550-smmu-500
-> >> +          contains:
-> >> +            enum:
-> >> +              - qcom,sm8550-smmu-500
-> >> +              - qcom,sm8650-smmu-500
-> >
-> > Doesn't this cause warnings for non-GPU SMMU on this platform?
->
-> No because it doesn't add those to required, it simply allows clock the properties.
+Ck9uIDE1LjAyLjI0IDA0OjMzLCBWaXNoYWwgQW5uYXB1cnZlIHdyb3RlOgo+IE9uIFdlZCwgRmVi
+IDE0LCAyMDI0IGF0IDg6MjDigK9QTSBLaXJpbGwgQS4gU2h1dGVtb3YgPGtpcmlsbEBzaHV0ZW1v
+di5uYW1lPiB3cm90ZToKPj4gT24gRnJpLCBKYW4gMTIsIDIwMjQgYXQgMDU6NTI6NDdBTSArMDAw
+MCwgVmlzaGFsIEFubmFwdXJ2ZSB3cm90ZToKPj4+IE1vZGlmeSBTV0lPVExCIGZyYW1ld29yayB0
+byBhbGxvY2F0ZSBETUEgbWVtb3J5IGFsd2F5cyBmcm9tIFNXSU9UTEIuCj4+Pgo+Pj4gQ1ZNcyB1
+c2UgU1dJT1RMQiBidWZmZXJzIGZvciBib3VuY2luZyBtZW1vcnkgd2hlbiB1c2luZyBkbWFfbWFw
+XyogQVBJcwo+Pj4gdG8gc2V0dXAgbWVtb3J5IGZvciBJTyBvcGVyYXRpb25zLiBTV0lPVExCIGJ1
+ZmZlcnMgYXJlIG1hcmtlZCBhcyBzaGFyZWQKPj4+IG9uY2UgZHVyaW5nIGVhcmx5IGJvb3QuCj4+
+Pgo+Pj4gQnVmZmVycyBhbGxvY2F0ZWQgdXNpbmcgZG1hX2FsbG9jXyogQVBJcyBhcmUgYWxsb2Nh
+dGVkIGZyb20ga2VybmVsIG1lbW9yeQo+Pj4gYW5kIHRoZW4gY29udmVydGVkIHRvIHNoYXJlZCBk
+dXJpbmcgZWFjaCBBUEkgaW52b2NhdGlvbi4gVGhpcyBwYXRjaCBlbnN1cmVzCj4+PiB0aGF0IHN1
+Y2ggYnVmZmVycyBhcmUgYWxzbyBhbGxvY2F0ZWQgZnJvbSBhbHJlYWR5IHNoYXJlZCBTV0lPVExC
+Cj4+PiByZWdpb25zLiBUaGlzIGFsbG93cyBlbmZvcmNpbmcgYWxpZ25tZW50IHJlcXVpcmVtZW50
+cyBvbiByZWdpb25zIG1hcmtlZAo+Pj4gYXMgc2hhcmVkLgo+PiBCdXQgZG9lcyBpdCB3b3JrIGlu
+IHByYWN0aWNlPwo+Pgo+PiBTb21lIGRldmljZXMgKGxpa2UgR1BVcykgcmVxdWlyZSBhIGxvdCBv
+ZiBETUEgbWVtb3J5LiBTbyB3aXRoIHRoaXMgYXBwcm9hY2gKPj4gd2Ugd291bGQgbmVlZCB0byBo
+YXZlIGh1Z2UgU1dJT1RMQiBidWZmZXIgdGhhdCBpcyB1bnVzZWQgaW4gbW9zdCBWTXMuCj4+Cj4g
+Q3VycmVudCBpbXBsZW1lbnRhdGlvbiBsaW1pdHMgdGhlIHNpemUgb2Ygc3RhdGljYWxseSBhbGxv
+Y2F0ZWQgU1dJT1RMQgo+IG1lbW9yeSBwb29sIHRvIDFHLiBJIHdhcyBwcm9wb3NpbmcgdG8gZW5h
+YmxlIGR5bmFtaWMgU1dJT1RMQiBmb3IgQ1ZNcwo+IGluIGFkZGl0aW9uIHRvIGFsaWduaW5nIHRo
+ZSBtZW1vcnkgYWxsb2NhdGlvbnMgdG8gaHVnZXBhZ2Ugc2l6ZXMsIHNvCj4gdGhhdCB0aGUgU1dJ
+T1RMQiBwb29sIGNhbiBiZSBzY2FsZWQgdXAgb24gZGVtYW5kLgo+Cj4gVGhlIGlzc3VlIHdpdGgg
+YWxpZ25pbmcgdGhlIHBvb2wgYXJlYXMgdG8gaHVnZXBhZ2VzIGlzIHRoYXQgaHVnZXBhZ2UKPiBh
+bGxvY2F0aW9uIGF0IHJ1bnRpbWUgaXMgbm90IGd1YXJhbnRlZWQuIEd1YXJhbnRlZWluZyB0aGUg
+aHVnZXBhZ2UKPiBhbGxvY2F0aW9uIG1pZ2h0IG5lZWQgY2FsY3VsYXRpbmcgdGhlIHVwcGVyIGJv
+dW5kIGluIGFkdmFuY2UsIHdoaWNoCj4gZGVmZWF0cyB0aGUgcHVycG9zZSBvZiBlbmFibGluZyBk
+eW5hbWljIFNXSU9UTEIuIEkgYW0gb3BlbiB0bwo+IHN1Z2dlc3Rpb25zIGhlcmUuCgoKWW91IGNv
+dWxkIGFsbG9jYXRlIGEgbWF4IGJvdW5kIGF0IGJvb3QgdXNpbmcgQ01BIGFuZCB0aGVuIG9ubHkg
+ZmlsbCBpbnRvIAp0aGUgQ01BIGFyZWEgd2hlbiBTV0lPVExCIHNpemUgcmVxdWlyZW1lbnRzIGlu
+Y3JlYXNlPyBUaGUgQ01BIHJlZ2lvbiAKd2lsbCBhbGxvdyBtb3ZhYmxlIGFsbG9jYXRpb25zIGFz
+IGxvbmcgYXMgeW91IGRvbid0IHJlcXVpcmUgdGhlIENNQSBzcGFjZS4KCgpBbGV4CgoKCgpBbWF6
+b24gRGV2ZWxvcG1lbnQgQ2VudGVyIEdlcm1hbnkgR21iSApLcmF1c2Vuc3RyLiAzOAoxMDExNyBC
+ZXJsaW4KR2VzY2hhZWZ0c2Z1ZWhydW5nOiBDaHJpc3RpYW4gU2NobGFlZ2VyLCBKb25hdGhhbiBX
+ZWlzcwpFaW5nZXRyYWdlbiBhbSBBbXRzZ2VyaWNodCBDaGFybG90dGVuYnVyZyB1bnRlciBIUkIg
+MTQ5MTczIEIKU2l0ejogQmVybGluClVzdC1JRDogREUgMjg5IDIzNyA4NzkKCgo=
 
-Can we further constrain this branch so that it is applicable only to
-the Adreno SMMUs (and enforce requirement)? And maybe constrain the
-second if-branch so that it doesn't apply to the Adreno SMMUs?
-
->
-> >
-> >>       then:
-> >>         properties:
-> >>           clock-names:
-> >> @@ -544,7 +548,6 @@ allOf:
-> >>                 - qcom,sdx65-smmu-500
-> >>                 - qcom,sm6350-smmu-500
-> >>                 - qcom,sm6375-smmu-500
-> >> -              - qcom,sm8650-smmu-500
-> >>                 - qcom,x1e80100-smmu-500
-> >>       then:
-> >>         properties:
-> >>
-> >> --
-> >> 2.34.1
-> >>
-> >
-> >
->
-
-
--- 
-With best wishes
-Dmitry
