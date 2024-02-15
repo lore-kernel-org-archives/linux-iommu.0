@@ -1,46 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DF5E12B90
-	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 07:43:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A0F61BF28
+	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 08:58:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707983014; cv=none; b=r/FSYUgHLap2P5piudTo4us7bE66YECESDF9PqWDy7AcV6ENC1mzWbW3BTOafk7qc2ivhQnxk3vz6tak68it44/tPVMv2Q1Ge3N23MO1W9jnyT5sJHE455IgYCXOTdbL29s9DrY8aY4exgX+/2MgpZvMzPCBShhWZqBrS0ayLJc=
+	t=1707987538; cv=none; b=grM63l7Y6stl3IBZ4UzlX0Ub1SQVEmvDKOt5fyGSuM715dDqucEF4Zm4yoepCkmEEgkbFYud+Zgk4qXlBYZ6apfvavkflXMf7zAf7GyuhCPgoJ7khZjcsnL6eGPrbCrpNCIRpCjIWa6zZwAbV1lW7qS11O07tnQOKCaASfM8NFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707983014; c=relaxed/simple;
-	bh=Zab4zbYyzSEJ6rZgWp5a8PIv1/MD6puSacJ4VYyk8rk=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=aRwBYKaZq372kNkjBdXYHElS3NBb5UYFs2v1YJGJfWFca+2U0nge5f1TX1ZN6nRgeQVazXc2gN0n0iRElmHCh2b4pvat/FVxuX275u3Y9NsGokyPhbLZbd6DRLp3QN0ChxaPpDj2pk9H2fv70v9tDQJ2dXYrF0RwxiGHtRUHJCY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nMTXrk/M; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1707987538; c=relaxed/simple;
+	bh=dNYeOqFk3ZAXp+sfHqfy+SC1Wh73yci1bZ7gt+mg/ps=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=r1dAVObIHmPZpF3e1Lx2ED2ip0i2/zBHlvM42HTBKdFSxMCr7/UMNSS14rP8bA25jKlbqtUr4CScb1PTOCLWmQHr/6W2OxaiGpv9iM9HWU48FBMYPy0h84bj9RPLFbkIGCsGdQ/51Yk14ScDSRCSiLCxVPs85zGXKyCkeU+MnDc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=aPX+yBtt; arc=none smtp.client-ip=209.85.208.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nMTXrk/M"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707983013; x=1739519013;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Zab4zbYyzSEJ6rZgWp5a8PIv1/MD6puSacJ4VYyk8rk=;
-  b=nMTXrk/MteIcSV8zNRntvQ7VY16Nfb2WqNQ/QNRzOcqEgZgJ+37eJWza
-   FG5aYlTVMdxDO9/6ieX0cnpu6W9qrnNh0TJT7R2DMey0Yruj8T7NFF9s0
-   vqCHsCRXkg8NkdllWAkwSAy9nu6ppB/DejTP8pbBI1QT5HVttBmNukb5P
-   O6DLB1zfiI+NRtSn2hcenLQa+0rDSyHH4gLXUfXgDgKzNSgKoc5wiaZXk
-   /ndch+xHDY4KsSfG/72BNne5elffpo3Ucej0IfoU2KbyT7xnFcBu1po/k
-   Wvi8+4PI76yiVwAD0tjzjrsOik+C/clsFaZIfsB6NUU7YXXpKEDpj3a+K
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="2202484"
-X-IronPort-AV: E=Sophos;i="6.06,161,1705392000"; 
-   d="scan'208";a="2202484"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 23:43:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,161,1705392000"; 
-   d="scan'208";a="34260199"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa002.jf.intel.com with ESMTP; 14 Feb 2024 23:43:29 -0800
-Message-ID: <7cd18221-0d25-4b99-887b-3a344be0da9d@linux.intel.com>
-Date: Thu, 15 Feb 2024 15:37:46 +0800
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="aPX+yBtt"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2d204e102a9so7338561fa.0
+        for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 00:58:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1707987534; x=1708592334; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:references:cc:to:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=thSm/NaAqUDsrmdo57qMDQ5CJPadtCEGhN2rge4I/tg=;
+        b=aPX+yBttC81Mg7E0JMRP+DP6NJnh8D4CjpVqUa53dly1kVxQSIbsZLzXF7ZoML5gkf
+         Wxs8Fuk61DkaS2R+AK42SH795mK/yHidS0Ccf4A/lRBdt+N1hvDT5C05wBrVJrM1AdVA
+         hlGHZyuffT0t8eWhMQpWsi0g6y8jDvsahpDV5929XKkziClf0ly/0RitQeDhW/RlzGmV
+         C9E9X2FxeVYMm/qOArxxrooeJbhoSvjhJpebLCwMZNajMMILJIQ4F1uc1lsE3XC3bFUr
+         j1aiPjYIt5IH3WeBVJmr8RgKJx17RQLL4WT1zZ/N2xK+U1cs09IeuqMQnxaass8H/Cnl
+         YheQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1707987534; x=1708592334;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :content-language:references:cc:to:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=thSm/NaAqUDsrmdo57qMDQ5CJPadtCEGhN2rge4I/tg=;
+        b=j5hr71mNNPzOmMlhXdskkCdzKW/5/yHK1VHy1JzhpWmdFj2dqvXeBh2STqK+keAH5d
+         fHFWDvWV2RNbDJPQNimsY2m3BOX9eYhqhcErERp2RFOk6pIT2eKbmfu2JM7TPTTfR+1Z
+         0vNBSHV1iB4V6Gx7xQsg8Y8IJC6a/rgCMbxQZisJBem8Uft7KPTXUn8xX0AKfQEbEQTl
+         hz1R8Q/11lh7TSuNxgx0r0nZU4w4kFENrqknWJGq5wK+dd6X93pJeBhQf8Mi6KnBSSyw
+         0W6y4XfD5U5r9PuNquktj7MOesy+dqnyR/vS1qEy8k5mTTqXau3LAXQcoQy2qmVlNA6k
+         IzSg==
+X-Forwarded-Encrypted: i=1; AJvYcCWmDXw/1TDqBtceSAQOBr8S1AbTEC3S0eGRa5/swtHNXkwSBqX3KC31syZ8EvLD9u4MM9g4nmn7bbPwr7TYDnWg8xmA4Zc=
+X-Gm-Message-State: AOJu0Yy6kqb7YQH3qkrfnmcRDVdfsVaNTXcF/of6g9io+65JleTx4JnQ
+	MAHPpiRPv/5ii19sFvOG0Ud91fp84rErgXH9wNODGrs9kqJUa0hKLz2sjYEHb+I=
+X-Google-Smtp-Source: AGHT+IHKg6BKjhzeos5aBRrK7kpueZ7SscUJfjJ3GKRg9xsS0chtvU+B6KhAY4Ng3oin0rL4VZwv5g==
+X-Received: by 2002:a2e:8805:0:b0:2d1:1df8:9ddd with SMTP id x5-20020a2e8805000000b002d11df89dddmr706979ljh.27.1707987534530;
+        Thu, 15 Feb 2024 00:58:54 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:982:cbb0:4589:7160:c264:fa3b? ([2a01:e0a:982:cbb0:4589:7160:c264:fa3b])
+        by smtp.gmail.com with ESMTPSA id n16-20020a5d51d0000000b0033cefb84b16sm1101386wrv.52.2024.02.15.00.58.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Feb 2024 00:58:54 -0800 (PST)
+Message-ID: <6aea55e7-2ca6-444c-b111-e3cc45bd28a5@linaro.org>
+Date: Thu, 15 Feb 2024 09:58:52 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,112 +63,210 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Ethan Zhao <haifeng.zhao@linux.intel.com>,
- "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
- "bhelgaas@google.com" <bhelgaas@google.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>,
- "will@kernel.org" <will@kernel.org>, "lukas@wunner.de" <lukas@wunner.de>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>
-Subject: Re: [PATCH v12 5/5] iommu/vt-d: improve ITE fault handling if target
- device isn't present
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240129034924.817005-1-haifeng.zhao@linux.intel.com>
- <20240129034924.817005-6-haifeng.zhao@linux.intel.com>
- <BN9PR11MB52761CC3E5F08D4B7BAD7F918C7E2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <7adec292-9d38-41ab-a982-bd840b24f3ab@intel.com>
- <0aee453c-e98f-4b72-8107-31d4731abcdb@linux.intel.com>
- <BN9PR11MB5276D3372267CE9246170FA78C7D2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <500c4582-ec05-4a9e-9b68-d2ae19aed49b@linux.intel.com>
- <20240130162958.GF50608@ziepe.ca>
- <6a48f023-2701-4f2f-8077-14fe348794dd@linux.intel.com>
- <20240201193427.GQ50608@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240201193427.GQ50608@ziepe.ca>
+From: neil.armstrong@linaro.org
+Reply-To: neil.armstrong@linaro.org
+Subject: Re: [PATCH 3/5] drm: msm: add support for A750 GPU
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
+ <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
+ Marijn Suijten <marijn.suijten@somainline.org>,
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Bjorn Andersson <andersson@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev
+References: <20240212-topic-sm8650-gpu-v1-0-708a40b747b5@linaro.org>
+ <20240212-topic-sm8650-gpu-v1-3-708a40b747b5@linaro.org>
+ <b5d76a25-045a-4acd-ad20-d28855b40222@linaro.org>
+ <bcad544c-7ca2-4b4f-805b-4ccaedbd091c@linaro.org>
+ <13d65685-b306-43ad-b9ca-a799f2cf73e5@linaro.org>
+Content-Language: en-US, fr
+Autocrypt: addr=neil.armstrong@linaro.org; keydata=
+ xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
+ GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
+ BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
+ qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
+ 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
+ AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
+ OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
+ Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
+ YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
+ GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
+ UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
+ GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
+ yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
+ QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
+ SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
+ 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
+ Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
+ oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
+ M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
+ 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
+ KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
+ 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
+ QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
+Organization: Linaro Developer Services
+In-Reply-To: <13d65685-b306-43ad-b9ca-a799f2cf73e5@linaro.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2/2/24 3:34 AM, Jason Gunthorpe wrote:
-> On Wed, Jan 31, 2024 at 02:21:20PM +0800, Baolu Lu wrote:
->> An rbtree for IOMMU device data for the VT-d driver would be beneficial.
->> It also benefits other paths of fault handling, such as the I/O page
->> fault handling path, where it currently still relies on the PCI
->> subsystem to convert a RID value into a pci_device structure.
+On 14/02/2024 22:43, Konrad Dybcio wrote:
+> On 12.02.2024 15:45, Neil Armstrong wrote:
+>> On 12/02/2024 11:46, Konrad Dybcio wrote:
+>>> On 12.02.2024 11:37, Neil Armstrong wrote:
+>>>> Add support for the A750 GPU found on the SM8650 platform
+>>>>
+>>>> Unlike the the very close A740 GPU on the SM8550 SoC, the A750 GPU
+>>>> doesn't have an HWCFG block but a separate register set.
+>>>>
+>>>> The missing registers are added in the a6xx.xml.h file that would
+>>>> require a subsequent sync and the non-existent hwcfg is handled
+>>>> in a6xx_set_hwcg().
+>>>
+>>> These should also be submitted to mesa to make sure the next header sync
+>>> doesn't wipe them
 >>
->> Given that such an rbtree would be helpful for multiple individual
->> drivers that handle PCI devices, it seems valuable to implement it in
->> the core?
-> rbtree is already supposed to be a re-usable library.
+>> Ack submitting them right now: https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27576
 > 
-> There is already good helper support in rbtree to make things easy to
-> implement. I see arm hasn't used them yet, it should look something
-> like this:
+> Thanks
+> 
+>>
+>>>
+>>> [...]
+>>>
+>>>> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>>>> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+>>>> @@ -958,10 +958,11 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+>>>>        struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
+>>>>        struct a6xx_gmu *gmu = &a6xx_gpu->gmu;
+>>>>        const struct adreno_reglist *reg;
+>>>> +    bool skip_programming = !(adreno_gpu->info->hwcg || adreno_is_a7xx(adreno_gpu));
+>>>
+>>> is_a750?
+>>
+>> OK right, I was thinking of the next gpu which will probably also miss an hwcfg
+>>
+>>>
+>>>>        unsigned int i;
+>>>>        u32 val, clock_cntl_on, cgc_mode;
+>>>>    -    if (!adreno_gpu->info->hwcg)
+>>>> +    if (skip_programming)
+>>>>            return;
+>>>>          if (adreno_is_a630(adreno_gpu))
+>>>> @@ -982,6 +983,25 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+>>>>                  state ? 0x5555 : 0);
+>>>>        }
+>>>>    +    if (!adreno_gpu->info->hwcg) {
+>>>
+>>> I don't think this block of code is reachable now, no?
+>>
+>> It is because we didn't skip when adreno_is_a7xx(adreno_gpu)
+> 
+> Ahh I misread the brackets within the assignment
+> 
+>>
+>>>
+>>> Maybe remove the skip_programming and if_a750 here?
+>> This would require:
+>>>> -    if (!adreno_gpu->info->hwcg || )
+>>>> +    if (!(adreno_gpu->info->hwcg || adreno_is_a750(adreno_gpu)))
+>>
+>> and:
+>>
+>>>> +    if (adreno_is_a750(adreno_gpu)) {
+>>
+>> But if the next gpu also doesn't have an hwcfg, we will need to use
+>> the current design...
+>>
+>> I just tried with:
+>> ====================><===============================
+>> @@ -961,7 +961,7 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+>>          unsigned int i;
+>>          u32 val, clock_cntl_on, cgc_mode;
+>>
+>> -       if (!adreno_gpu->info->hwcg)
+>> +       if (!(adreno_gpu->info->hwcg || adreno_is_a750(adreno_gpu)))
+>>                  return;
+>>
+>>          if (adreno_is_a630(adreno_gpu))
+>> @@ -982,6 +982,25 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+>>                            state ? 0x5555 : 0);
+>>          }
+>>
+>> +       if (adreno_is_a750(adreno_gpu)) {
+>> +               gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
+>> +               gpu_write(gpu, REG_A7XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
+>> +
+>> +               if (state) {
+>> +                       gpu_write(gpu, REG_A7XX_RBBM_CGC_P2S_TRIG_CMD, 1);
+>> +
+>> +                       if (gpu_poll_timeout(gpu, REG_A7XX_RBBM_CGC_P2S_STATUS, val,
+>> +                                            val & A7XX_RBBM_CGC_P2S_STATUS_TXDONE, 1, 10)) {
+>> +                               dev_err(&gpu->pdev->dev, "RBBM_CGC_P2S_STATUS TXDONE Poll failed\n");
+>> +                               return;
+>> +                       }
+>> +
+>> +                       gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 0);
+>> +               }
+>> +
+>> +               return;
+>> +       }
+>> +
+>>          val = gpu_read(gpu, REG_A6XX_RBBM_CLOCK_CNTL);
+>>
+>>          /* Don't re-program the registers if they are already correct */
+>> ====================><===============================
+>>
+>> And it works fine, does it work it for you ?
+> 
+> Let's keep it as-is in the original submission, as I've mentioned, I had
+> misread the code
 
-I have posted a similar implementation for the vt-d driver here:
+Ack thanks
 
-https://lore.kernel.org/linux-iommu/20240215072249.4465-1-baolu.lu@linux.intel.com/
+Neil
 
-Based on this implementation, only patches 1 and 2 are required. The
-last patch could be like below (code compiled but not tested, comments
-not changed yet):
+> 
+> Konrad
+> 
+>>
+>>>
+>>>> +        gpu_write(gpu, REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL, 1);
+>>>> +        gpu_write(gpu, REG_A7XX_RBBM_CGC_GLOBAL_LOAD_CMD, state ? 1 : 0);
+>>>> +
+>>>> +        if (state) {
+>>>> +            gpu_write(gpu, REG_A7XX_RBBM_CGC_P2S_TRIG_CMD, 1);
+>>>> +
+>>>> +            if (gpu_poll_timeout(gpu, REG_A7XX_RBBM_CGC_P2S_STATUS, val,
+>>>> +                         val & BIT(0), 1, 10)) {
+>>>
+>>> We should define that bit name (the err suggests it's
+>>> REG_A7XX_RBBM_GCC_P2S_STATUS_TXDONE or so)
+>>>
+>>> [...]
+>>>
+>>>> +static inline int adreno_is_a750(struct adreno_gpu *gpu)
+>>>> +{
+>>>> +    return gpu->info->chip_ids[0] == 0x43051401;
+>>>> +}
+>>>> +
+>>>>    /* Placeholder to make future diffs smaller */
+>>>
+>>> Please also remove this comment now that it's invalid
+>>
+>> Ack
+>>
+>>>
+>>> Konrad
+>>
+>> Thanks,
+>> Neil
+>>
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index f9b63c2875f7..30a659a4d3ed 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1272,6 +1272,7 @@ static int qi_check_fault(struct intel_iommu 
-*iommu, int index, int wait_index)
-  {
-         u32 fault;
-         int head, tail;
-+       u64 iqe_err, ite_sid;
-         struct q_inval *qi = iommu->qi;
-         int shift = qi_shift(iommu);
-
-@@ -1316,6 +1317,13 @@ static int qi_check_fault(struct intel_iommu 
-*iommu, int index, int wait_index)
-                 tail = readl(iommu->reg + DMAR_IQT_REG);
-                 tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
-
-+               /*
-+                * SID field is valid only when the ITE field is Set in 
-FSTS_REG
-+                * see Intel VT-d spec r4.1, section 11.4.9.9
-+                */
-+               iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
-+               ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
-+
-                 writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
-                 pr_info("Invalidation Time-out Error (ITE) cleared\n");
-
-@@ -1325,6 +1333,19 @@ static int qi_check_fault(struct intel_iommu 
-*iommu, int index, int wait_index)
-                         head = (head - 2 + QI_LENGTH) % QI_LENGTH;
-                 } while (head != tail);
-
-+               /*
-+                * If got ITE, we need to check if the sid of ITE is the 
-same as
-+                * current ATS invalidation target device, if yes, don't 
-try this
-+                * request anymore if the target device isn't present.
-+                * 0 value of ite_sid means old VT-d device, no ite_sid 
-value.
-+                */
-+               if (ite_sid) {
-+                       struct device *dev = device_rbtree_find(iommu, 
-ite_sid);
-+
-+                       if (!dev || !pci_device_is_present(to_pci_dev(dev)))
-+                               return -ETIMEDOUT;
-+               }
-+
-                 if (qi->desc_status[wait_index] == QI_ABORT)
-                         return -EAGAIN;
-         }
-
-Best regards,
-baolu
