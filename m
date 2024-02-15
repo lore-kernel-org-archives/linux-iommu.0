@@ -1,60 +1,61 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0231A14264
-	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 09:20:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 597DF17591
+	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 09:20:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707988837; cv=none; b=HzUcmECXzhmyGChboLGUidoxDyXdW1xyRqfAnQlJQqvhc5NMgI99t5TaAvl4N2p/q19GGQaHT917UegpZyibGu94ATGyjy2iJm+OMhOuYjjPxfatJH9V4H+ShBgkIjchBClWJm1R5CxY8ajFb9qIABhLkictck5TcJEosk33FMo=
+	t=1707988838; cv=none; b=HZ25XiVzQelVDVCg8TMqPrq+bQOjPZxMUKswOndV+C56K2uet0SjKw1+UxvcsZTGXt7UOxe4+3DBUKXA/kXXqE694y0F1sYIjXAV3ndS3V4nUBV3S3izYlPVtk4D/zvNf8QxuL362VhzULxorFgGeWDbdIf6VQCkP9W3movcdfA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707988837; c=relaxed/simple;
-	bh=yo2bcPgq0Ry4Dz1DgWE+noJk1QUbw0wPoiksjLdYOBo=;
+	s=arc-20240116; t=1707988838; c=relaxed/simple;
+	bh=B2VkxjrRCyr4kbi/Ih6iBNEXikEKFqg0faRJON0SE+g=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Bo6OiI7y+OeCG4bC3Fvhti91gowMorJBAGu3yUed6UF9bRyhkA8XsZsYN6y1QEDGDaX7m7CZlGRDwKi4mKxVnvq62Zrp2t3bhmw98B0TLppA3MRvZ0tlgIsBxBvmB2wYRIZ+I5Uk5ISx1wUpP42q6ujCXep5IlUhvWRtHiwILzs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=A9qytGfd; arc=none smtp.client-ip=209.85.221.47
+	 In-Reply-To:To:Cc; b=VbXvXkxDpRTPntgqaAbpXjwrZHcIxA7IgRGGJhLvKzZ77lSl7nW1Pdq7D7k4fldtq5z3zLsOf3XOycAUa2PfZcr5yJ4r8wIKJ3k5ijbEFaFG5t3QYkh0GXzt2EW/wxfYQhawEPF8mzP7fCkD0fOyChT/OCbqeKdUjyEbJziDDto=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=gWFzceZl; arc=none smtp.client-ip=209.85.128.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="A9qytGfd"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-33aeb088324so323687f8f.2
-        for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 01:20:34 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="gWFzceZl"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-411d76c9ce3so5257935e9.3
+        for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 01:20:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1707988833; x=1708593633; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1707988834; x=1708593634; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=rJagULZ78/2FNiklIv2V0yaJYekfWzVBl7+5o+wg9ug=;
-        b=A9qytGfds7ItaCeNqFFextAXfs0+iM1LHConO1hLrfVNkIxjtMjx51v/XzxASdVKwc
-         YA45+vJAerbX1HYzQoKUgY+1VlKRSNpfMc7WTuoKv0gqPi4LKYGI7Ln8IF97fLeoStVH
-         oD0sLp8kSFYEnWICX/JZ/YXAlr0dElMUmfmPmgDfBlQrNo8v9uwOwquTlOMeVuUCKj4r
-         Iz0BAHOwXhktHEKsk5MH8/H39EdZk+pQdfyMcSiM8iTvqj8ysrI+dAGxYJ/KBPc8cTbf
-         kFPErwZl0nPAADK3kHR2Jes9wUkxrAVishdLjqE1Vj7b6LzffR/CJJ98Clmuzbeq8/Z3
-         qM1w==
+        bh=5ygFt5WEvBpqUpx/ZfEWpp/27W6mJ4fXmmus9YC0aao=;
+        b=gWFzceZlAxElJmgEAWfMGLfiaabfyMhMFZlzakYeB5twXb8ttlxPc7EfEq5rGiYCvx
+         Dy+BzGHbglpb2oqOvTgekBuA0uRX8xGPgQjMnAOrWStqARk8d8L3uoSSybP/6KuywsSD
+         dB4VMWP9yYKspJNETt9GUICggVvyH6WRG5PeDKm9ma4DwzE+vGNcFD3zYPL9d04U0JuK
+         cJSSoSo9JDwpP1+uyls9uQXtRxPPcPKqReAXiVwT9w1JJJxC6XZZwdAjzkMTpYNMfCJW
+         B/W4jYkM7O3oEB28OoMuptz2sl1OFFm93TEGtCz6+EDa9aJfg08Wuea/YauGKydKVHaD
+         QhLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1707988833; x=1708593633;
+        d=1e100.net; s=20230601; t=1707988834; x=1708593634;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=rJagULZ78/2FNiklIv2V0yaJYekfWzVBl7+5o+wg9ug=;
-        b=lTfBCepLvXan2amcDEjQMCewPwscQbeQ6Xh15mIH4OHGVNAZ2Bja4uZTVW9Fx7Vhw2
-         TGXarNQWqpB8tr5ZZhF2SvrC+WMfspMhpgqzaqwUYxNQY2Dz7tqcrYqhJgoAJuvgRITN
-         mfGohQv2SLd6HsZB0f9cOh2RO1gLH7/cpmmMXwo/MZFBm2yvQireXX/mJvUYOuUTpkfE
-         Zm9ojfgj787QIh6BfFpeOzmddK9xMCFJFGwnz1IiIQFn0T16taXo7j6SscKxvfZ8ydqd
-         sUtP7f02r8k7sgFZMQouGLlVkwN5WCAxkJvWyByL+ZruOXwtUBEsqooomh04/Y5lV4mo
-         SBKg==
-X-Forwarded-Encrypted: i=1; AJvYcCVQrwL73ldM2DJGvm5xeiJ3pV8EhVZk3MNwN+/0lXUpt2sB8p9C/suY9dt7PljvHLvcYtWNmM80uXuJleQfxKlWTLJacW8=
-X-Gm-Message-State: AOJu0YyWfGhKnXpq4pwJ+5qFLP4DLfv9swtjmUfXYA9KgZtcuGQGPwDY
-	pi2LcZQXPfd5O/U3oJsNrzveV040AgyMbU+onTEjB47CmzSFWLGd7zdf13tx4s8=
-X-Google-Smtp-Source: AGHT+IGp8PMtl4/BQOIm+djYPcum7f8RPFzzwdqiXF8XlH48cA5EQ/oqgfoCl+h6vhKoGtgOFNP4gQ==
-X-Received: by 2002:a5d:6ac5:0:b0:33c:e29b:f5cd with SMTP id u5-20020a5d6ac5000000b0033ce29bf5cdmr1177257wrw.24.1707988833298;
-        Thu, 15 Feb 2024 01:20:33 -0800 (PST)
+        bh=5ygFt5WEvBpqUpx/ZfEWpp/27W6mJ4fXmmus9YC0aao=;
+        b=g5J6KWC/NTA6mpNzpLpvRlbdQCQ+hWWDKQpxfKotfpfz/Qys72gVMIUQPCP+2HGj34
+         l2a4KjiN52MXEK7exF6vvAp+DiqpD9nzXXJUb8FFnmQz3Dkn032IQxkRkS/ViJpO8KtR
+         FRBItkmwlqRltHXEcfv1IMFCpsrX/xBtrh6oshK6vJxbEOHUw23TTHxyNC4IBbvbpSE2
+         qR4GF2JQ8CXYeQwEBufNCIduEwDhkDkujM1SaXytppUgzW2Wnw9E+yCUQQyIg8SXC7lC
+         lbPhHtxc1FSb3RJGmR2zmciLLRwdWIJyYdnVjcG0mdGOD1uCt1gA2xTCzWdz+5rgSvqX
+         VmoQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVv3LH5Jkzvm4sDBIPc+W5+m/CVxwRJJ0V7ZcZ1DFl1NlRZgmjOcIAuI2LdnRTD+g0pMEpzjmGcsW7vxw9kA9jt9nLFfaU=
+X-Gm-Message-State: AOJu0Yw6go2F389Rzike6GcFhBISDksmvRw+WcIeFm80QkxzYo/e4ybH
+	pFFVpNRZHH16NSasiiZoI5BtL6SrysqAhi5bLPSs6eGCz3sAVHVb4h6lawd/L515sVw9tL0YSTM
+	cBQPZqQ==
+X-Google-Smtp-Source: AGHT+IHr6EIY5IaqJsX6nTJIJL95gxp6F5b/cqLuuSuiPNhGAbkKg8Oqmhr9/MhVWmYu+JmkeXZw2A==
+X-Received: by 2002:a5d:6205:0:b0:33b:131b:d8c1 with SMTP id y5-20020a5d6205000000b0033b131bd8c1mr830193wru.66.1707988834512;
+        Thu, 15 Feb 2024 01:20:34 -0800 (PST)
 Received: from arrakeen.starnux.net ([2a01:e0a:982:cbb0:52eb:f6ff:feb3:451a])
-        by smtp.gmail.com with ESMTPSA id l8-20020adfa388000000b0033b66c2d61esm1156435wrb.48.2024.02.15.01.20.31
+        by smtp.gmail.com with ESMTPSA id l8-20020adfa388000000b0033b66c2d61esm1156435wrb.48.2024.02.15.01.20.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Feb 2024 01:20:32 -0800 (PST)
+        Thu, 15 Feb 2024 01:20:34 -0800 (PST)
 From: Neil Armstrong <neil.armstrong@linaro.org>
-Date: Thu, 15 Feb 2024 10:20:24 +0100
-Subject: [PATCH v2 2/6] dt-bindings: arm-smmu: Document SM8650 GPU SMMU
+Date: Thu, 15 Feb 2024 10:20:25 +0100
+Subject: [PATCH v2 3/6] drm/msm/a6xx: Add missing regs for A750
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,7 +64,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240215-topic-sm8650-gpu-v2-2-6be0b4bf2e09@linaro.org>
+Message-Id: <20240215-topic-sm8650-gpu-v2-3-6be0b4bf2e09@linaro.org>
 References: <20240215-topic-sm8650-gpu-v2-0-6be0b4bf2e09@linaro.org>
 In-Reply-To: <20240215-topic-sm8650-gpu-v2-0-6be0b4bf2e09@linaro.org>
 To: Rob Clark <robdclark@gmail.com>, 
@@ -84,62 +85,68 @@ Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
  iommu@lists.linux.dev, Neil Armstrong <neil.armstrong@linaro.org>
 X-Mailer: b4 0.12.4
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1386;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1661;
  i=neil.armstrong@linaro.org; h=from:subject:message-id;
- bh=yo2bcPgq0Ry4Dz1DgWE+noJk1QUbw0wPoiksjLdYOBo=;
- b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBlzddbAVFrIBQkQc8wMo3rdp9H43W74Ogf7rPLLvlB
- Pp2ObIuJAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCZc3XWwAKCRB33NvayMhJ0XWFD/
- 90BnRPN6dApDP/mf/zTfMk+WPjxCgiRKD9B5wOVXHmserUOVv4XQjNbeSnmKiPHIrlA2diwPMLUQW5
- gldygkZKP/cKbNfC7aXmrDV3kzll9YnfrIfR8V9Ofd24GFWdevVhfZK95UCROl0ETK5LsWizLKAcPt
- 1ASrOZziaNSQOIH7ROV8AszH8knJdYLs8AzIzc+bpGYwJ2hHwI9rAcksVDZJY1qgHvR4mO0Y3ygS9t
- kErNXLjvPAtlytDCjUh9GFFft6IZoF3Tq50VcYk8e73pOYDH15ke9huAPevApViaQZfhMgMNlEvS1g
- HKpxQ7NSWSK3Ht39GwzxDw7JBh7U5pmU8f+0DJq+QS2V+Cjjns3L73O0u+hujvD1lmE+23PmuEse9y
- IHUTUqD0w4Uy+WGigKDnMcj7sbh/a4Ij3QUnDU/U8PO4Dav9d//50iKe7xlYIkbSmqJ19MSq2Z2R4j
- ifQRWVp61pZGXzF2w/ET1xRrK45+YUffB2vkPO2USc20WFM505lX4gOP9yLOkirH/6T0u6Ew9nZOTv
- prdfEyL6z6l9L4UDPtA4AqdpbfmIUJrzpHfkKoHkjhzKgJmYwQ8dpfbz0zJvH7Aos2R1MItpDpqvUY
- 7+ez6OVQ9TzbkKl9IESBxQACvj+aXm16MisovuPwclaI6Ip0zlL9qsMBs31Q==
+ bh=B2VkxjrRCyr4kbi/Ih6iBNEXikEKFqg0faRJON0SE+g=;
+ b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBlzddb1o2L2JxYU4dBpeU0HKoP1vroEL7LdMCezqtZ
+ gfjwvXCJAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCZc3XWwAKCRB33NvayMhJ0YUkD/
+ 9qLaDOjrM6piXhQRYK/i3fQkR18QxDH9oUXsgK71P1WL7T/sD8NNMAoo703snTLkzqTlmnf4CXu1qd
+ 7lC7wxhiKxpQXO3B5GdZ/RKiesscwFJn44lVY1ybLECyxTldEu7k4RpkeZ+tslnzVw/D990cKWHViI
+ 2QbZ1/KogldxveyiRY8iPVTjJI/YB/JiKrDJlIKE9dKcwpurOIt9ezL05fCs4lejcvcKcgOup46guY
+ wfSsjHyFzWkeiBAtuk0XPAuo3gGFrXIvWobHrEhfvArLoPVihzapOipOwP4LI5HMONmcQKIlyoWfFT
+ OqOmbrHNHR9Zt7pUS589p/9EZIIARfbX7pXxHkd85yDxt05Xx2CBdAeN+R5ntmxOjthtvpyPpivqfV
+ SRp8exyNiJo5PskG49xEhVPNK0lCuLMie/tA3EGzz65+7mHUDG4mHDUS1iFwIvi+ueq0k+gLOWj1pD
+ NkmRfvclMXK7tW/tEEsdiRq9J0V7ff07QWwOo6Aht6u8nXT4PTl4QLU4HUL5l74RB37Y8u/VCe/xWc
+ leZE6NwHMngwOo4np7EQUu2AeCyKefiFsCErQEs4CPecO2H6rRhfoZkBvc3g6hauQ45kln3lEoggnr
+ 6eog8DskhoUC+fXUOhab9hmCAba/BIQdkfLJuDMcrgJ5/2Mygit3ECp9JPiA==
 X-Developer-Key: i=neil.armstrong@linaro.org; a=openpgp;
  fpr=89EC3D058446217450F22848169AB7B1A4CFF8AE
 
-Document the GPU SMMU found on the SM8650 platform.
+Sync missing regs for A750 clock gating control related registers
+from Mesa a6xx.xml.h generated file.
+
+Those registers were added in the !27576 merge request [1].
+
+[1] https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27576
 
 Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
 ---
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/adreno/a6xx.xml.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index a4042ae24770..3ad5c850f3bf 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -93,6 +93,7 @@ properties:
-               - qcom,sm8350-smmu-500
-               - qcom,sm8450-smmu-500
-               - qcom,sm8550-smmu-500
-+              - qcom,sm8650-smmu-500
-           - const: qcom,adreno-smmu
-           - const: qcom,smmu-500
-           - const: arm,mmu-500
-@@ -508,7 +509,10 @@ allOf:
-   - if:
-       properties:
-         compatible:
--          const: qcom,sm8550-smmu-500
-+          contains:
-+            enum:
-+              - qcom,sm8550-smmu-500
-+              - qcom,sm8650-smmu-500
-     then:
-       properties:
-         clock-names:
-@@ -544,7 +548,6 @@ allOf:
-               - qcom,sdx65-smmu-500
-               - qcom,sm6350-smmu-500
-               - qcom,sm6375-smmu-500
--              - qcom,sm8650-smmu-500
-               - qcom,x1e80100-smmu-500
-     then:
-       properties:
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx.xml.h b/drivers/gpu/drm/msm/adreno/a6xx.xml.h
+index 863b5e3b0e67..58877464692a 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx.xml.h
++++ b/drivers/gpu/drm/msm/adreno/a6xx.xml.h
+@@ -1725,6 +1725,8 @@ static inline uint32_t REG_A6XX_RBBM_PERFCTR_RBBM_SEL(uint32_t i0) { return 0x00
+ 
+ #define REG_A6XX_RBBM_BLOCK_SW_RESET_CMD2			0x00000046
+ 
++#define REG_A7XX_RBBM_CLOCK_CNTL_GLOBAL				0x000000ad
++
+ #define REG_A6XX_RBBM_CLOCK_CNTL				0x000000ae
+ 
+ #define REG_A6XX_RBBM_CLOCK_CNTL_SP0				0x000000b0
+@@ -1939,12 +1941,19 @@ static inline uint32_t REG_A6XX_RBBM_PERFCTR_RBBM_SEL(uint32_t i0) { return 0x00
+ 
+ #define REG_A6XX_RBBM_CLOCK_HYST_HLSQ				0x0000011d
+ 
++#define REG_A7XX_RBBM_CGC_GLOBAL_LOAD_CMD			0x0000011e
++
++#define REG_A7XX_RBBM_CGC_P2S_TRIG_CMD				0x0000011f
++
+ #define REG_A6XX_RBBM_CLOCK_CNTL_TEX_FCHE			0x00000120
+ 
+ #define REG_A6XX_RBBM_CLOCK_DELAY_TEX_FCHE			0x00000121
+ 
+ #define REG_A6XX_RBBM_CLOCK_HYST_TEX_FCHE			0x00000122
+ 
++#define REG_A7XX_RBBM_CGC_P2S_STATUS				0x00000122
++#define A7XX_RBBM_CGC_P2S_STATUS_TXDONE				0x00000001
++
+ #define REG_A7XX_RBBM_CLOCK_HYST2_VFD				0x0000012f
+ 
+ #define REG_A6XX_RBBM_LPAC_GBIF_CLIENT_QOS_CNTL			0x000005ff
 
 -- 
 2.34.1
