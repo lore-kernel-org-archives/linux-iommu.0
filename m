@@ -1,138 +1,76 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C81B12E72
-	for <iommu@lists.linux.dev>; Wed, 14 Feb 2024 22:59:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E320617C9;
+	Thu, 15 Feb 2024 01:36:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707951553; cv=none; b=pkaIT80ZHikVBAhhbHeiAbKzVyiA+4MXC0kxKorwlJeJAMMkZ2kn00AB2hrmaA3SPDK9tcQBr2DdVnswDh7qytRsQgNbptbXczYiuf6TkXPJJzSiuN5+T5yCzBuZ8p/HrHsan6RggyZmNF8PDGg6eBPnK0lDjl9xycmNbT98dRo=
+	t=1707961003; cv=none; b=JvYuBFAQhBS9/DUVM23XKGzPzkwaVjOe0a5UCDrtWwwv4wH2J3vjvnwL+3cxtYA+KLqoA6Sfle2hk30hDDDlZ4ijaX8m9gfCcc3pSDNShY954a5QHM2C70lXmFx2sy1EVqyaWhE6mK+msJ4W++Dsxtwxt6kArJvRuhXWrhgk/NU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707951553; c=relaxed/simple;
-	bh=gUumXsY6f/GstkSVOqlmPHr63YyKvQbTJvGkcUOnWRc=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=BE4xvbq5nJaIfV9yxm2N5nRteIAqRF8ChTJXCVmL5qGiss1oXRbFrHoZSbURRAwUu3bYBa2F4zSOx2T0wilLtg7as0mI4gl1Q6z9YWO0k46gMmmwL7Mn/fnjl+UeqY+FUb8quJD4bRZoWIvxIOJ/XxbgXsGdWr5VgBm/fyOds+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OgWEYIMB; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1707961003; c=relaxed/simple;
+	bh=pPliZncdA3i95L/mjXLvn7u/pxryzDw1zgs434SpmLk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VkpSjjND2QuPVLbVuoFc3omdne1E6b81N98lfiWi+tJZw0heFd+cY5sn++08hh6XKRoJ8oj/okmH/usRTJU5Ja0cJexPIz3K+dHvpMdrt3PSqby+sDPkTzfjtnEyySMgriVt1Gk8KeskWE3ucAzlu7p/I6vde2OXu6BIuLVQQIY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aIYWwiOS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OgWEYIMB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1707951551; x=1739487551;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=gUumXsY6f/GstkSVOqlmPHr63YyKvQbTJvGkcUOnWRc=;
-  b=OgWEYIMBetc5qadMxXRlS9C4x0p1/VgJkGHECOiL2DupxGH+Gf8xpkR5
-   YJFUKeqcH22qhGcmxc1qysvrlBVr6iLrS9xXkEk54OdquPdEO2spxNn+r
-   n+QvPlB5041vMbuug0EmCTdIj3Ngq79wbNeDRu4q8c0Gi+D/hUkc89x/C
-   tAfaanavpUcm5WyQZnirsgmxbpde8l+vjqo5LlB+Q2Tu3gAISoAvBsCbq
-   z1G/vGY+57UOcOibsu53CRdQ32Yr7ASzlx7IPeYIAedYUhuhLeQxkoco6
-   bD5y7z5jQuj1nhvIlD8c2u3s/SfGgUyB2MAbR8Pl8fga18F+yCZLbf30p
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10984"; a="2143124"
-X-IronPort-AV: E=Sophos;i="6.06,160,1705392000"; 
-   d="scan'208";a="2143124"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 14:59:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,160,1705392000"; 
-   d="scan'208";a="3324531"
-Received: from wfaimone-mobl.amr.corp.intel.com (HELO [10.209.29.231]) ([10.209.29.231])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2024 14:59:06 -0800
-Message-ID: <f4abca3f1d89d11f31b965e58a397aa6074be9d1.camel@linux.intel.com>
-Subject: Re: [PATCH v3 00/35] Memory allocation profiling
-From: Tim Chen <tim.c.chen@linux.intel.com>
-To: Suren Baghdasaryan <surenb@google.com>, Yosry Ahmed
- <yosryahmed@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
- vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
- mgorman@suse.de,  dave@stgolabs.net, willy@infradead.org,
- liam.howlett@oracle.com, corbet@lwn.net,  void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com,  catalin.marinas@arm.com,
- will@kernel.org, arnd@arndb.de, tglx@linutronix.de,  mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
- david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-  nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
- muchun.song@linux.dev,  rppt@kernel.org, paulmck@kernel.org,
- pasha.tatashin@soleen.com, yuzhao@google.com,  dhowells@redhat.com,
- hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
- ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
- ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
- dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
- bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com,  dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com,  jbaron@akamai.com, rientjes@google.com,
- minchan@google.com, kaleshsingh@google.com,  kernel-team@android.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
- iommu@lists.linux.dev, linux-arch@vger.kernel.org,
- linux-fsdevel@vger.kernel.org,  linux-mm@kvack.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
- cgroups@vger.kernel.org
-Date: Wed, 14 Feb 2024 14:59:05 -0800
-In-Reply-To: <CAJuCfpEbdC4k=4aeEO=YfX2tZhkdOVaehAv9Ts7S42B_bmm=Ow@mail.gmail.com>
-References: <20240212213922.783301-1-surenb@google.com>
-	 <4f24986587b53be3f9ece187a3105774eb27c12f.camel@linux.intel.com>
-	 <CAJuCfpGnnsMFu-2i6-d=n1N89Z3cByN4N1txpTv+vcWSBrC2eg@mail.gmail.com>
-	 <Zc0f7u5yCq-Iwh3A@google.com>
-	 <CAJuCfpEbdC4k=4aeEO=YfX2tZhkdOVaehAv9Ts7S42B_bmm=Ow@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.4 (3.44.4-2.fc36) 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aIYWwiOS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 874ECC433C7;
+	Thu, 15 Feb 2024 01:36:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1707961002;
+	bh=pPliZncdA3i95L/mjXLvn7u/pxryzDw1zgs434SpmLk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=aIYWwiOSIjt8sT6wPq0tPs6lzJB8PGB3UrjsTwGEdZ462ubWUs53385RoWRztfpKY
+	 XG0JoA3wLh4Wc2H4zDw+7lcU17Icm139JzEIuZeTUeHsi9EQ7By5RIaGxqsnfuOztl
+	 sdFmFEDfoyWQDH3HoINL7MREAW/vdjH9EpNuoWPf2ik97lqwP5/+tScSXTY71AG9RL
+	 XJNeTL/JM5u3doGRsGqGJeh25Ng2ltElGKFffdfrPxqdN0+R9yGkwPZ7INbI/CnrO4
+	 2iltwab2NtxLSevGVysR/HLmtk8yWHBW2JrAKu7v0m3cQFn74pLaQmyF8UONu7dPj5
+	 LiseI3mLMtenw==
+Date: Wed, 14 Feb 2024 18:36:38 -0700
+From: Keith Busch <kbusch@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: sagi@grimberg.me, hch@lst.de, axboe@kernel.dk, will@kernel.org,
+	joro@8bytes.org, robin.murphy@arm.com, jgg@nvidia.com,
+	linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, murphyt7@tcd.ie, baolu.lu@linux.intel.com
+Subject: Re: [PATCH v1 2/2] nvme-pci: Fix iommu map (via swiotlb) failures
+ when PAGE_SIZE=64KB
+Message-ID: <Zc1qpr4zCy1N0OND@kbusch-mbp>
+References: <cover.1707851466.git.nicolinc@nvidia.com>
+ <60bdcc29a2bcf12c6ab95cf0ea480d67c41c51e7.1707851466.git.nicolinc@nvidia.com>
+ <Zcv7uI6VrMc2EuGT@kbusch-mbp>
+ <ZcxZD2GXmR5+vC/k@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZcxZD2GXmR5+vC/k@Asurada-Nvidia>
 
-On Wed, 2024-02-14 at 12:30 -0800, Suren Baghdasaryan wrote:
-> On Wed, Feb 14, 2024 at 12:17=E2=80=AFPM Yosry Ahmed <yosryahmed@google.c=
-om> wrote:
-> >=20
-> > > > > Performance overhead:
-> > > > > To evaluate performance we implemented an in-kernel test executin=
-g
-> > > > > multiple get_free_page/free_page and kmalloc/kfree calls with all=
-ocation
-> > > > > sizes growing from 8 to 240 bytes with CPU frequency set to max a=
-nd CPU
-> > > > > affinity set to a specific CPU to minimize the noise. Below are r=
-esults
-> > > > > from running the test on Ubuntu 22.04.2 LTS with 6.8.0-rc1 kernel=
- on
-> > > > > 56 core Intel Xeon:
-> > > > >=20
-> > > > >                         kmalloc                 pgalloc
-> > > > > (1 baseline)            6.764s                  16.902s
-> > > > > (2 default disabled)    6.793s (+0.43%)         17.007s (+0.62%)
-> > > > > (3 default enabled)     7.197s (+6.40%)         23.666s (+40.02%)
-> > > > > (4 runtime enabled)     7.405s (+9.48%)         23.901s (+41.41%)
-> > > > > (5 memcg)               13.388s (+97.94%)       48.460s (+186.71%=
-)
-> > >=20
-> > > (6 default disabled+memcg)    13.332s (+97.10%)         48.105s (+184=
-.61%)
-> > > (7 default enabled+memcg)     13.446s (+98.78%)       54.963s (+225.1=
-8%)
-> >=20
-> > I think these numbers are very interesting for folks that already use
-> > memcg. Specifically, the difference between 6 & 7, which seems to be
-> > ~0.85% and ~14.25%. IIUC, this means that the extra overhead is
-> > relatively much lower if someone is already using memcgs.
->=20
-> Well, yes, percentage-wise it's much lower. If you look at the
-> absolute difference between 6 & 7 vs 2 & 3, it's quite close.
->=20
-> >=20
-> > >=20
-> > > (6) shows a bit better performance than (5) but it's probably noise. =
-I
-> > > would expect them to be roughly the same. Hope this helps.
-> > >=20
-> > > >=20
+On Tue, Feb 13, 2024 at 10:09:19PM -0800, Nicolin Chen wrote:
+> On Tue, Feb 13, 2024 at 04:31:04PM -0700, Keith Busch wrote:
+> > On Tue, Feb 13, 2024 at 01:53:57PM -0800, Nicolin Chen wrote:
+> > > @@ -2967,7 +2967,7 @@ static struct nvme_dev *nvme_pci_alloc_dev(struct pci_dev *pdev,
+> > >               dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(48));
+> > >       else
+> > >               dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+> > > -     dma_set_min_align_mask(&pdev->dev, NVME_CTRL_PAGE_SIZE - 1);
+> > > +     dma_set_min_align_mask(&pdev->dev, PAGE_SIZE - 1);
+> > >       dma_set_max_seg_size(&pdev->dev, 0xffffffff);
+> > 
+> > I recall we had to do this for POWER because they have 64k pages, but
+> > page aligned addresses IOMMU map to 4k, so we needed to allow the lower
+> > dma alignment to efficiently use it.
+> 
+> Thanks for the input!
+> 
+> In that case, we might have to rely on iovad->granule from the
+> attached iommu_domain:
 
-Thanks for the data.  It does show that turning on memcg does not cost
-extra overhead percentage wise.
-
-Tim
+I explored a bit more, and there is some PPC weirdness that lead to
+NVME_CTRL_PAGE_SIZE, I don't find the dma min align mask used in that
+path. It looks like swiotlb is the only user for this, so your original
+patch may be just fine.
