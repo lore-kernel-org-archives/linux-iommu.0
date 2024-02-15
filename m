@@ -1,25 +1,78 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C769C41A81;
-	Thu, 15 Feb 2024 20:11:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3E2179958
+	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 20:22:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708027906; cv=none; b=lpcBjvTMq3pdUtHBurqAhPRDqKqC8RmZSK7AOHX+N/ZK444WfSFGANXjx9Iredul3nt3OvdgseXBHxNL+9F7unTPEBqEmePTweqNg9vW0rKDf9poCyfbFFwIaxGSWlpA8VHIJbOKVwk9qLGRCZ7WRb5Mu1dQvGIVi/SqzyBKfBY=
+	t=1708028532; cv=none; b=f2FYLZKQHlOn98A6Y1MtM4kvOys6TtR/ZUDPZ4X+zrdSgSbGKbHyXZ/SaOKVeNJ5cajHXX1GwdWAAGmEcu9l51/7SLc6kptp+TLyjZqylfsUuYLQ0AxCKMO0Mgsg6WM36K7z/FVScFaRoN8fJJ2mP0V3OZvGgoO/UAx8MhLcC0U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708027906; c=relaxed/simple;
-	bh=w0L/MOA/fkr556Qg1RcbmrCGeoN0/E/yyfJjAdS4C9c=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=SvVY2rdXOakH118abzy34Ww9MmFrxBdivAvFycyhLGawcMwO7Y+sfREdPm4tZ7muWnMmhRqq/34oTYoWUPCm4xkeVTVhle+I+ihBisJ24zZo9cmCyhIS8nUaVLotxFlmt4LhfqAydsqiN8iXkjEoc+7I99oKWKwRY+if0StL+LI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BE9041FB;
-	Thu, 15 Feb 2024 12:12:23 -0800 (PST)
-Received: from [10.57.50.88] (unknown [10.57.50.88])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5DC893F766;
-	Thu, 15 Feb 2024 12:11:40 -0800 (PST)
-Message-ID: <a0c62629-999f-4aa1-86c7-3104811f84d0@arm.com>
-Date: Thu, 15 Feb 2024 20:11:38 +0000
+	s=arc-20240116; t=1708028532; c=relaxed/simple;
+	bh=1sAlfiUyLqC/42u5WdlSFvGKZdqnhnY/hW80I5Hne0s=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=K8xUcqDdBrOrGCIbOLSG/RpFkrQyevoBPTh3HcZCO+rfmDdjtI4/JMZY5zixB3yl1y/JG1J1w9YUEns8Y53GD5f2qxLB8sdrZOP1QSstsNeWv4wOiD3rpiAFbekrIjvh35H9F+RnjfbYKtB1DSliLmHqZaj+u1DcLSLPzMSDHJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=fyDN9U4/; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=BwTk6WcO; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=fyDN9U4/; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=BwTk6WcO; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="fyDN9U4/";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="BwTk6WcO";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="fyDN9U4/";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="BwTk6WcO"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 1BFFF1F8D9;
+	Thu, 15 Feb 2024 20:22:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1708028529; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+PvwLOkhLs20C3GH06d6BicWz8S2K2wPQ3EkGdP8tjQ=;
+	b=fyDN9U4/AWiJg7n/Ot+hmcJ3eO/iy+4wR8VghNMMsaZEFyvOfaPkOvOVvDq2I457tMO7lt
+	EzYnQ3Rs+Bb+39he43kxtsDka1L2HfiA94nnBcCxPkk/NdR78i6EI+4qinR2XKjVSOuA0c
+	59rJ9CmZHRVQj1vVOW/91YcW/TsmXfA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1708028529;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+PvwLOkhLs20C3GH06d6BicWz8S2K2wPQ3EkGdP8tjQ=;
+	b=BwTk6WcO2bzcQNWckWXoRwyXeoTj9pDbrBgoFK2MBYXpW/4jyFifpgxKiK3ENRMnx+A4Qv
+	Swr43Y+7PhBXo+Bw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1708028529; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+PvwLOkhLs20C3GH06d6BicWz8S2K2wPQ3EkGdP8tjQ=;
+	b=fyDN9U4/AWiJg7n/Ot+hmcJ3eO/iy+4wR8VghNMMsaZEFyvOfaPkOvOVvDq2I457tMO7lt
+	EzYnQ3Rs+Bb+39he43kxtsDka1L2HfiA94nnBcCxPkk/NdR78i6EI+4qinR2XKjVSOuA0c
+	59rJ9CmZHRVQj1vVOW/91YcW/TsmXfA=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1708028529;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+PvwLOkhLs20C3GH06d6BicWz8S2K2wPQ3EkGdP8tjQ=;
+	b=BwTk6WcO2bzcQNWckWXoRwyXeoTj9pDbrBgoFK2MBYXpW/4jyFifpgxKiK3ENRMnx+A4Qv
+	Swr43Y+7PhBXo+Bw==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 6778A13A82;
+	Thu, 15 Feb 2024 20:22:08 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id 9ufzF3ByzmWgOwAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Thu, 15 Feb 2024 20:22:08 +0000
+Message-ID: <320cd134-b767-4f29-869b-d219793ba8a1@suse.cz>
+Date: Thu, 15 Feb 2024 21:22:07 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,76 +80,122 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 01/17] iommu/arm-smmu-v3: Make STE programming
- independent of the callers
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- linux-arm-kernel@lists.infradead.org, Lu Baolu <baolu.lu@linux.intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>,
- Moritz Fischer <moritzf@google.com>, Michael Shavit <mshavit@google.com>,
- Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
- Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- Mostafa Saleh <smostafa@google.com>, Zhangfei Gao <zhangfei.gao@linaro.org>
-References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <1-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <20240215134952.GA690@willie-the-truck> <20240215160135.GL1088888@nvidia.com>
- <02fac0ab-07ac-448e-ae4e-26788ed4fce9@arm.com>
-In-Reply-To: <02fac0ab-07ac-448e-ae4e-26788ed4fce9@arm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH v3 31/35] lib: add memory allocations report in show_mem()
+Content-Language: en-US
+To: Kent Overstreet <kent.overstreet@linux.dev>,
+ Suren Baghdasaryan <surenb@google.com>
+Cc: Michal Hocko <mhocko@suse.com>, akpm@linux-foundation.org,
+ hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
+ dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+ corbet@lwn.net, void@manifault.com, peterz@infradead.org,
+ juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org,
+ arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+ dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+ david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+ nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
+ rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
+ yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
+ hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
+ ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org,
+ ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
+ dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+ bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+ iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+ elver@google.com, dvyukov@google.com, shakeelb@google.com,
+ songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+ minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+ cgroups@vger.kernel.org
+References: <20240212213922.783301-1-surenb@google.com>
+ <20240212213922.783301-32-surenb@google.com> <Zc3X8XlnrZmh2mgN@tiehlicka>
+ <CAJuCfpHc2ee_V6SGAc_31O_ikjGGNivhdSG+2XNcc9vVmzO-9g@mail.gmail.com>
+ <Zc4_i_ED6qjGDmhR@tiehlicka>
+ <CAJuCfpHq3N0h6dGieHxD6Au+qs=iKAifFrHAMxTsHTcDrOwSQA@mail.gmail.com>
+ <ruxvgrm3scv7zfjzbq22on7tj2fjouydzk33k7m2kukm2n6uuw@meusbsciwuut>
+From: Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <ruxvgrm3scv7zfjzbq22on7tj2fjouydzk33k7m2kukm2n6uuw@meusbsciwuut>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Authentication-Results: smtp-out2.suse.de;
+	none
+X-Spam-Level: 
+X-Spam-Score: -2.79
+X-Spamd-Result: default: False [-2.79 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 XM_UA_NO_VERSION(0.01)[];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 MID_RHS_MATCH_FROM(0.00)[];
+	 TAGGED_RCPT(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 NEURAL_HAM_LONG(-1.00)[-1.000];
+	 BAYES_HAM(-3.00)[100.00%];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 TO_MATCH_ENVRCPT_SOME(0.00)[];
+	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	 NEURAL_HAM_SHORT(-0.20)[-0.976];
+	 RCPT_COUNT_GT_50(0.00)[73];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 FREEMAIL_CC(0.00)[suse.com,linux-foundation.org,cmpxchg.org,linux.dev,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
+	 RCVD_TLS_ALL(0.00)[];
+	 SUSPICIOUS_RECIPS(1.50)[]
+X-Spam-Flag: NO
 
-On 2024-02-15 6:42 pm, Robin Murphy wrote:
-[...]
->>>> +static void arm_smmu_get_ste_used(const __le64 *ent, __le64 
->>>> *used_bits)
->>>>   {
->>>> +    unsigned int cfg = FIELD_GET(STRTAB_STE_0_CFG, 
->>>> le64_to_cpu(ent[0]));
->>>> +
->>>> +    used_bits[0] = cpu_to_le64(STRTAB_STE_0_V);
->>>> +    if (!(ent[0] & cpu_to_le64(STRTAB_STE_0_V)))
->>>> +        return;
->>>> +
->>>> +    /*
->>>> +     * See 13.5 Summary of attribute/permission configuration 
->>>> fields for the
->>>> +     * SHCFG behavior. It is only used for BYPASS, including S1DSS 
->>>> BYPASS,
->>>> +     * and S2 only.
->>>> +     */
->>>> +    if (cfg == STRTAB_STE_0_CFG_BYPASS ||
->>>> +        cfg == STRTAB_STE_0_CFG_S2_TRANS ||
->>>> +        (cfg == STRTAB_STE_0_CFG_S1_TRANS &&
->>>> +         FIELD_GET(STRTAB_STE_1_S1DSS, le64_to_cpu(ent[1])) ==
->>>> +             STRTAB_STE_1_S1DSS_BYPASS))
->>>> +        used_bits[1] |= cpu_to_le64(STRTAB_STE_1_SHCFG);
->>>
->>> Huh, SHCFG is really getting in the way here, isn't it?
->>
->> I wouldn't say that.. It is just a complicated bit of the spec. One of
->> the things we recently did was to audit all the cache settings and, at
->> least, we then realized that SHCFG was being subtly used by S2 as
->> well..
+On 2/15/24 19:29, Kent Overstreet wrote:
+> On Thu, Feb 15, 2024 at 08:47:59AM -0800, Suren Baghdasaryan wrote:
+>> On Thu, Feb 15, 2024 at 8:45 AM Michal Hocko <mhocko@suse.com> wrote:
+>> >
+>> > On Thu 15-02-24 06:58:42, Suren Baghdasaryan wrote:
+>> > > On Thu, Feb 15, 2024 at 1:22 AM Michal Hocko <mhocko@suse.com> wrote:
+>> > > >
+>> > > > On Mon 12-02-24 13:39:17, Suren Baghdasaryan wrote:
+>> > > > [...]
+>> > > > > @@ -423,4 +424,18 @@ void __show_mem(unsigned int filter, nodemask_t *nodemask, int max_zone_idx)
+>> > > > >  #ifdef CONFIG_MEMORY_FAILURE
+>> > > > >       printk("%lu pages hwpoisoned\n", atomic_long_read(&num_poisoned_pages));
+>> > > > >  #endif
+>> > > > > +#ifdef CONFIG_MEM_ALLOC_PROFILING
+>> > > > > +     {
+>> > > > > +             struct seq_buf s;
+>> > > > > +             char *buf = kmalloc(4096, GFP_ATOMIC);
+>> > > > > +
+>> > > > > +             if (buf) {
+>> > > > > +                     printk("Memory allocations:\n");
+>> > > > > +                     seq_buf_init(&s, buf, 4096);
+>> > > > > +                     alloc_tags_show_mem_report(&s);
+>> > > > > +                     printk("%s", buf);
+>> > > > > +                     kfree(buf);
+>> > > > > +             }
+>> > > > > +     }
+>> > > > > +#endif
+>> > > >
+>> > > > I am pretty sure I have already objected to this. Memory allocations in
+>> > > > the oom path are simply no go unless there is absolutely no other way
+>> > > > around that. In this case the buffer could be preallocated.
+>> > >
+>> > > Good point. We will change this to a smaller buffer allocated on the
+>> > > stack and will print records one-by-one. Thanks!
+>> >
+>> > __show_mem could be called with a very deep call chains. A single
+>> > pre-allocated buffer should just do ok.
+>> 
+>> Ack. Will do.
 > 
-> Yeah, that really shouldn't be subtle; incoming attributes are replaced 
-> by S1 translation, thus they are relevant to not-S1 configs.
+> No, we're not going to permanently burn 4k here.
+> 
+> It's completely fine if the allocation fails, there's nothing "unsafe"
+> about doing a GFP_ATOMIC allocation here.
 
-That said, in this specific case I don't understand why we're worrying 
-about SHCFG here at all - we're never going to make use of any value 
-other than "use incoming" because we can't rely on it being implemented 
-in the first place, and even if it is, we really don't want to start 
-getting into the forced-coherency notion that the DMA layer can'#t 
-understand and devicetree can't describe.
-
-We're still unconditionally setting the "use incoming" value for MTCFG, 
-ALLOCCFG, PRIVCFG and INSTCFG without checking them, so there's no logic 
-in pretending SHCFG is any different from its peers simply because its 
-encoding is slightly less convenient. If the micro-optimisation of not 
-setting it when we know it's going to be ignored anyway starts getting 
-in the way, just drop that.
-
-Thanks,
-Robin.
+Well, I think without __GFP_NOWARN it will cause a warning and thus
+recursion into __show_mem(), potentially infinite? Which is of course
+trivial to fix, but I'd myself rather sacrifice a bit of memory to get this
+potentially very useful output, if I enabled the profiling. The necessary
+memory overhead of page_ext and slabobj_ext makes the printing buffer
+overhead negligible in comparison?
