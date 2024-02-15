@@ -1,76 +1,171 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21ADB1754B;
-	Thu, 15 Feb 2024 16:35:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6648D135409
+	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 16:45:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708014952; cv=none; b=MjW30Qi63k/VH9UlJ5fmeguZZWtRwhSGoJ15fXz1YWSzEXr5iBiJyzZr0sRyyxlUeDdvT1OvhC1ysoaeb2em0KT5g1DvPmJ9YFRRacuzKIlDBbD0f2G8b0ZTKY3pXiAB8PTU0FG9wLKcg2nfWk/OC0E62oDiVE3zAV4peJmYcTU=
+	t=1708015507; cv=none; b=BiT7U/MVcHALCMY4GdGKFIzj6iJd67kgezlIrGqpTyLHnCoPD02D727mUCfHTK3OLNGvEX7aaR0/rFn5eANmijVgMeKdxh7YebTyDLYevIov4kz3kVYA3ncIJmmvNjQu2k+P15vSiqTVEMiPm2lZwjG+30wvuj6HzUxSaUE264Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708014952; c=relaxed/simple;
-	bh=+zLAj2dv1mxs8pQKcOIXqeYT4laZWT/mVwhK3HGd0EI=;
+	s=arc-20240116; t=1708015507; c=relaxed/simple;
+	bh=dhI2UYB4aZIMTpkPZ7wbc9Q1Ft64yp0o85zXW/dWLZI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WuLL3ghJ3W/n6MApfcxI7nrNkdBMR4UtPORJ4/nOKdVlrYE1rXP0rRPRVQHI3Kv22DMKi7yPrgVEcoDPnThIhfd0Gn5BlVRZJH4XErpFHgeMtdH/hNKRsZwFkjKCHl3+JOP1QVFRSqGNPrYcGuMlNp182VsuEojTgdHyCHtpvOE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tENlyL1U; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=EVDDV5iky0JlLWQ1nu6L50o6QPkuWGtOPnUxUOvZ9XxqGNYBf7WxHtE1yI/X7H+K8IZlr5AS8dQAqc1Qrdr5GbEuJc4pxISMbzm6f2w44A0jC1hAFjZcK+yBd0gag8gZEy2B0vw37yeK3q4CdPmy65cVBEM8bQCfGT+EX7lFBOQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=G2VUrmve; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=CaMgsam2; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tENlyL1U"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14BCFC433C7;
-	Thu, 15 Feb 2024 16:35:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708014951;
-	bh=+zLAj2dv1mxs8pQKcOIXqeYT4laZWT/mVwhK3HGd0EI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=tENlyL1UhctC1ji35rmACH436KEsEf4wY7vf0fttSzkY8KreDcVR/jZml77spbPUH
-	 rgub6XHTDa0aqSrzK8aUSw4xUBinSCzAt4NlclazOXyL0V2PqC/+MiYDKxwr5H9bnt
-	 OEm6HW4sobAE76phqUDf7Pj2GXYUE07BiLTzEXozU9MkEYMilt4jW6ZZuW4p6toTud
-	 W7d98aimoio4WX+HHTuI4obLTqDf1T+46JUITse0X/YyCk+GBWaMy2+L9MhyJZ4X+f
-	 OPcIx3ZE6DyFSiE7a9CB64Ne5Z29MHA2w0FjcArhgyWeQB9KmbTCJImnIAgkgj0ZEe
-	 8uL9RNKVccbqQ==
-Date: Thu, 15 Feb 2024 16:35:45 +0000
-From: Will Deacon <will@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: sagi@grimberg.me, hch@lst.de, axboe@kernel.dk, kbusch@kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, jgg@nvidia.com,
-	linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, murphyt7@tcd.ie, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v1 0/2] nvme-pci: Fix dma-iommu mapping failures when
- PAGE_SIZE=64KB
-Message-ID: <20240215163544.GA821@willie-the-truck>
-References: <cover.1707851466.git.nicolinc@nvidia.com>
- <20240214164138.GA31927@willie-the-truck>
- <Zc0bLAIXSAqsQJJv@Asurada-Nvidia>
- <20240215142208.GA753@willie-the-truck>
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="G2VUrmve";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="CaMgsam2"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 7DEFE1F8BF;
+	Thu, 15 Feb 2024 16:45:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1708015503; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=VRHpwz0jmcW35D6Wb8el2YM1B2vf23RXP7/FUXCRfsQ=;
+	b=G2VUrmvezAJDdL1bvOsw0AVvncGfh7BJpd88nRO1U3Sffr4ODpgmfexpnmj40SUq7oeG/8
+	dqPynMGycM85bT6H3wTJMoVnhXGce8fOr0FDrPpOmQiphkR595nt5zURkfLOQa0PgGJddy
+	TxKsTcmPRy9XpYBzA3ytF9ETrah3a5U=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1708015501; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=VRHpwz0jmcW35D6Wb8el2YM1B2vf23RXP7/FUXCRfsQ=;
+	b=CaMgsam2Wq0Sy+5TGkRRdIpU+51MJ1joWXAnMU4Z8NDpef4JgM7ikKEDU4+rmgELUx2ZkA
+	pLcSLScJMrI4nuAL18Vs20cwDFykqhko9Df1IlPJOLmdfUrYyjhItpCmzm3G12Jg+p2ukW
+	1WjmqNlWOosKrYvpCgIB3qAozJT1Ymk=
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 4C44713A53;
+	Thu, 15 Feb 2024 16:45:01 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id 8HpaEo0/zmW6CQAAD6G6ig
+	(envelope-from <mhocko@suse.com>); Thu, 15 Feb 2024 16:45:01 +0000
+Date: Thu, 15 Feb 2024 17:44:59 +0100
+From: Michal Hocko <mhocko@suse.com>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz,
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org,
+	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org,
+	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
+	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org,
+	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
+	paulmck@kernel.org, pasha.tatashin@soleen.com,
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
+	ndesaulniers@google.com, vvvvvv@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 31/35] lib: add memory allocations report in show_mem()
+Message-ID: <Zc4_i_ED6qjGDmhR@tiehlicka>
+References: <20240212213922.783301-1-surenb@google.com>
+ <20240212213922.783301-32-surenb@google.com>
+ <Zc3X8XlnrZmh2mgN@tiehlicka>
+ <CAJuCfpHc2ee_V6SGAc_31O_ikjGGNivhdSG+2XNcc9vVmzO-9g@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240215142208.GA753@willie-the-truck>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJuCfpHc2ee_V6SGAc_31O_ikjGGNivhdSG+2XNcc9vVmzO-9g@mail.gmail.com>
+X-Spam-Level: 
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.com header.s=susede1 header.b=CaMgsam2
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Spamd-Result: default: False [-1.51 / 50.00];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	 TO_DN_SOME(0.00)[];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 DKIM_TRACE(0.00)[suse.com:+];
+	 MX_GOOD(-0.01)[];
+	 RCPT_COUNT_GT_50(0.00)[73];
+	 NEURAL_HAM_SHORT(-0.20)[-1.000];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 BAYES_HAM(-0.00)[27.68%];
+	 ARC_NA(0.00)[];
+	 R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
+	 FROM_HAS_DN(0.00)[];
+	 DWL_DNSWL_MED(-2.00)[suse.com:dkim];
+	 NEURAL_HAM_LONG(-1.00)[-1.000];
+	 TAGGED_RCPT(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 TO_MATCH_ENVRCPT_SOME(0.00)[];
+	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim,suse.com:email];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 MID_RHS_NOT_FQDN(0.50)[];
+	 FREEMAIL_CC(0.00)[linux-foundation.org,linux.dev,suse.cz,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
+	 RCVD_TLS_ALL(0.00)[];
+	 SUSPICIOUS_RECIPS(1.50)[]
+X-Spam-Score: -1.51
+X-Rspamd-Queue-Id: 7DEFE1F8BF
+X-Spam-Flag: NO
 
-On Thu, Feb 15, 2024 at 02:22:09PM +0000, Will Deacon wrote:
-> On Wed, Feb 14, 2024 at 11:57:32AM -0800, Nicolin Chen wrote:
-> > On Wed, Feb 14, 2024 at 04:41:38PM +0000, Will Deacon wrote:
-> > > On Tue, Feb 13, 2024 at 01:53:55PM -0800, Nicolin Chen wrote:
-> > And it seems to get worse, as even a 64KB mapping is failing:
-> > [    0.239821] nvme 0000:00:01.0: swiotlb buffer is full (sz: 65536 bytes), total 32768 (slots), used 0 (slots)
-> > 
-> > With a printk, I found the iotlb_align_mask isn't correct:
-> >    swiotlb_area_find_slots:alloc_align_mask 0xffff, iotlb_align_mask 0x800
-> > 
-> > But fixing the iotlb_align_mask to 0x7ff still fails the 64KB
-> > mapping..
+On Thu 15-02-24 06:58:42, Suren Baghdasaryan wrote:
+> On Thu, Feb 15, 2024 at 1:22 AM Michal Hocko <mhocko@suse.com> wrote:
+> >
+> > On Mon 12-02-24 13:39:17, Suren Baghdasaryan wrote:
+> > [...]
+> > > @@ -423,4 +424,18 @@ void __show_mem(unsigned int filter, nodemask_t *nodemask, int max_zone_idx)
+> > >  #ifdef CONFIG_MEMORY_FAILURE
+> > >       printk("%lu pages hwpoisoned\n", atomic_long_read(&num_poisoned_pages));
+> > >  #endif
+> > > +#ifdef CONFIG_MEM_ALLOC_PROFILING
+> > > +     {
+> > > +             struct seq_buf s;
+> > > +             char *buf = kmalloc(4096, GFP_ATOMIC);
+> > > +
+> > > +             if (buf) {
+> > > +                     printk("Memory allocations:\n");
+> > > +                     seq_buf_init(&s, buf, 4096);
+> > > +                     alloc_tags_show_mem_report(&s);
+> > > +                     printk("%s", buf);
+> > > +                     kfree(buf);
+> > > +             }
+> > > +     }
+> > > +#endif
+> >
+> > I am pretty sure I have already objected to this. Memory allocations in
+> > the oom path are simply no go unless there is absolutely no other way
+> > around that. In this case the buffer could be preallocated.
 > 
-> Hmm. A mask of 0x7ff doesn't make a lot of sense given that the slabs
-> are 2KiB aligned. I'll try plugging in some of the constants you have
-> here, as something definitely isn't right...
+> Good point. We will change this to a smaller buffer allocated on the
+> stack and will print records one-by-one. Thanks!
 
-Sorry, another ask: please can you print 'orig_addr' in the case of the
-failing allocation?
+__show_mem could be called with a very deep call chains. A single
+pre-allocated buffer should just do ok.
 
-Thanks!
-
-Will
+-- 
+Michal Hocko
+SUSE Labs
