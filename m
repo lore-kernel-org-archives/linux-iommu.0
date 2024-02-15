@@ -1,161 +1,139 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50BF113175A;
-	Thu, 15 Feb 2024 13:50:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA4A813246C
+	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 13:52:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.156.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708005000; cv=none; b=n+v4JfJBmdBH58jiRnOBVjdKdEcI6D1cAClYI+4DmbfbecCHo/zuoyPAL3nVIeKFLhjELEy8je01QgBE+Xdmfm63wOJkIY4Edte0AzVuCC7mh3cRX6YS494YNllnZmKt1VDiAsFXJekcSxd3MuPLiK9jDWK6MX3DFk3RoJvrizA=
+	t=1708005180; cv=none; b=ED69YOxHNThEmJUswmFtZ3nsb2/PqzEWKKAr1qojxTaTSckA+k7K3kbOkZ2sNsRqd/lDpKYw+gs6z35I0mp4SlhfPxi2YsxUXyQuJrj47ZWA8cIlQHr72YxZnFBWwoE/B48EwQZjvIvba4cYQ2MzIRjKlAtzVE0gxe9ZyxX+SmM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708005000; c=relaxed/simple;
-	bh=BPsx6HPohDJ6rSCspeipzi590qL9h/shf0Xs+0e6IzM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KXhbHPNjCGeEhOD4Tq0AoMzwb3kG+7bmlCl8Jzm4coKn5igp5TS9ba15sHYhiT1pwmVMRJQIJSSfDSh453VTfrBXWD7mdrJROaOBcev5xPN7tkpbmtPAzEHYTECc9hcJXHY0J08M06IgaUMirYodJd1W1FI1BdqVHTyOt9wlg00=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H9eqwgcz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1708005180; c=relaxed/simple;
+	bh=rqAuoHRaurMxoz2TVjJAS++4B/Bmmg8lzKA/Zbpdaeo=;
+	h=Subject:From:To:Cc:Date:Message-ID:Content-Type:MIME-Version; b=ZEgoh3domcPhV2ndsmukaNP1H4PLAEfWDfkn+NY7/t+7PaL+KophU33HJdTtIys87IgkgE0LutiKftw9WvQJolYtqBwXRIaOZ8Ex6Vi+U+eXbpJOD/XybcYS1z5fvsD8LYosVP6/hIX5Gtk9C2q3zQtwNYYmTUmfTf8le6SFIAY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com; spf=pass smtp.mailfrom=linux.ibm.com; dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b=cQOGi2Iu; arc=none smtp.client-ip=148.163.156.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.ibm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.ibm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H9eqwgcz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E716AC43390;
-	Thu, 15 Feb 2024 13:49:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708004999;
-	bh=BPsx6HPohDJ6rSCspeipzi590qL9h/shf0Xs+0e6IzM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=H9eqwgczN+4DD4O9zYilmjP7tRzpuH4bbbd/jgcvotZB0PmZ1v926jwXovnvwwDVU
-	 r/yGueiE4nxheSLfIz7qp9FIY4f47tmUSEfgOfTWNCC4T7qoJW3HQYz8xAAX0rC5rF
-	 TUCFLwy8Z4qV6mhUXZzXUep6FxhzSxYHe7sD9jx3SrKU8I3mUOCZ9pEmBJ6KEqxcpP
-	 DVq27TNObXEPO3SYM3y0wfZ7Hms1zT3JeQYgmodTK+Z1rblbBc58De+2sGpQ3QiDQN
-	 drIonniZ81crua9GLBO2jVLGUDoniBjZ2dnO8lb783rkwH6lOSn3gkFEvnich7PBCI
-	 O9qct+qQqZsVg==
-Date: Thu, 15 Feb 2024 13:49:53 +0000
-From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>,
-	Moritz Fischer <moritzf@google.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: Re: [PATCH v5 01/17] iommu/arm-smmu-v3: Make STE programming
- independent of the callers
-Message-ID: <20240215134952.GA690@willie-the-truck>
-References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <1-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="cQOGi2Iu"
+Received: from pps.filterd (m0353727.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 41FCvRXM009209;
+	Thu, 15 Feb 2024 13:52:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : from : to : cc
+ : date : message-id : content-type : content-transfer-encoding :
+ mime-version; s=pp1; bh=u2UUA63atDGlasutKgLg9ypixbU9NrFIFvQhqKA4BPI=;
+ b=cQOGi2IukbXELYxoiJV/7uSD/Ewny89qiK8IxOsb/Ma0UjCMSW97HuRQT/jn6hJeT/BQ
+ i6GSUIfEFC3L8+P2lg9nuCyua1CZE3MN27HGYhjpk7hKuPcJaHc3QDH/0cz+ZGETLXS7
+ RMAcjHXgbiAP7cHdHBa1aFkyI7AzEQt2tmmY3y9SwSBbV4sS6IO4sqKESmjVai3D00fY
+ pWz5SCbs3OY2hfZ6ypMDuxU66Dipn+Ul1nSvv+Ju+b+xWRj0j6y0J93Yqfih3PTSCg3J
+ OpT2v0X95z/T1rVC1AQrc5A9FqBUixtbAyoIY75bgXBGLHkrWwL1m2cMRypomYX1Uy/o JA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w9k2nhqap-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 15 Feb 2024 13:52:42 +0000
+Received: from m0353727.ppops.net (m0353727.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 41FCveCl010018;
+	Thu, 15 Feb 2024 13:52:42 GMT
+Received: from ppma13.dal12v.mail.ibm.com (dd.9e.1632.ip4.static.sl-reverse.com [50.22.158.221])
+	by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3w9k2nhqa6-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 15 Feb 2024 13:52:41 +0000
+Received: from pps.filterd (ppma13.dal12v.mail.ibm.com [127.0.0.1])
+	by ppma13.dal12v.mail.ibm.com (8.17.1.19/8.17.1.19) with ESMTP id 41FCht0W010063;
+	Thu, 15 Feb 2024 13:52:40 GMT
+Received: from smtprelay03.fra02v.mail.ibm.com ([9.218.2.224])
+	by ppma13.dal12v.mail.ibm.com (PPS) with ESMTPS id 3w6npm4nqc-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 15 Feb 2024 13:52:40 +0000
+Received: from smtpav02.fra02v.mail.ibm.com (smtpav02.fra02v.mail.ibm.com [10.20.54.101])
+	by smtprelay03.fra02v.mail.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 41FDqaL724314534
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Thu, 15 Feb 2024 13:52:38 GMT
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id EF04D2005A;
+	Thu, 15 Feb 2024 13:52:35 +0000 (GMT)
+Received: from smtpav02.fra02v.mail.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 3B3AD20043;
+	Thu, 15 Feb 2024 13:52:33 +0000 (GMT)
+Received: from ltcd48-lp2.aus.stglabs.ibm.com (unknown [9.3.101.175])
+	by smtpav02.fra02v.mail.ibm.com (Postfix) with ESMTP;
+	Thu, 15 Feb 2024 13:52:33 +0000 (GMT)
+Subject: [PATCH] powerpc/iommu: Refactor spapr_tce_platform_iommu_attach_dev()
+From: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+To: iommu@lists.linux.dev, linuxppc-dev@lists.ozlabs.org
+Cc: linux-kernel@vger.kernel.org, mpe@ellerman.id.au, npiggin@gmail.com,
+        christophe.leroy@csgroup.eu, aneesh.kumar@kernel.org,
+        naveen.n.rao@linux.ibm.com, jgg@ziepe.ca, jroedel@suse.de,
+        tpearson@raptorengineering.com, aik@amd.com, bgray@linux.ibm.com,
+        gregkh@linuxfoundation.org, sbhat@linux.ibm.com,
+        gbatra@linux.vnet.ibm.com, vaibhav@linux.ibm.com,
+        venkat88@linux.vnet.ibm.com
+Date: Thu, 15 Feb 2024 07:52:32 -0600
+Message-ID: <170800513841.2411.13524607664262048895.stgit@linux.ibm.com>
+User-Agent: StGit/1.5
+Content-Type: text/plain; charset="utf-8"
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: qqF8oKuU6pAzX4ZsyxvsmAUumSXTlYBo
+X-Proofpoint-GUID: Z9sxR3HwDIqpvMoUcjbcZDoBX1rk4RER
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-15_12,2024-02-14_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ phishscore=0 spamscore=0 clxscore=1015 mlxlogscore=452 suspectscore=0
+ bulkscore=0 impostorscore=0 mlxscore=0 priorityscore=1501 adultscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311290000 definitions=main-2402150111
 
-Hi Jason,
+The patch makes the iommu_group_get() call only when using it
+thereby avoiding the unnecessary get & put for domain already
+being set case.
 
-On Tue, Feb 06, 2024 at 11:12:38AM -0400, Jason Gunthorpe wrote:
-> As the comment in arm_smmu_write_strtab_ent() explains, this routine has
-> been limited to only work correctly in certain scenarios that the caller
-> must ensure. Generally the caller must put the STE into ABORT or BYPASS
-> before attempting to program it to something else.
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Shivaprasad G Bhat <sbhat@linux.ibm.com>
+---
+Changelog:
+v2: https://lore.kernel.org/linux-iommu/170793401503.7491.9431631474642074097.stgit@linux.ibm.com/
+ - As the v1 itself was merged, the patch was suggested to be reposted as
+   cleanup/refactoring to be applied on top of v1.
+ - Removed the versioning as this is actually new cleanup/refactoring.
+ - Retaining the Reviewed-by as the effective new code was actually reviewed.
 
-This is looking pretty good now, but I have a few comments inline.
+v1: https://lore.kernel.org/all/170784021983.6249.10039296655906636112.stgit@linux.ibm.com/
+ - Minor refactor to call the iommu_get_group only if required.
+ - Updated the title, description and signature(Closes/Reported-by).
 
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 330 ++++++++++++++++----
->  1 file changed, 263 insertions(+), 67 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 0ffb1cf17e0b2e..f0b915567cbcdc 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -48,6 +48,21 @@ enum arm_smmu_msi_index {
->  	ARM_SMMU_MAX_MSIS,
->  };
->  
-> +struct arm_smmu_entry_writer_ops;
-> +struct arm_smmu_entry_writer {
-> +	const struct arm_smmu_entry_writer_ops *ops;
-> +	struct arm_smmu_master *master;
-> +};
-> +
-> +struct arm_smmu_entry_writer_ops {
-> +	unsigned int num_entry_qwords;
-> +	__le64 v_bit;
-> +	void (*get_used)(const __le64 *entry, __le64 *used);
-> +	void (*sync)(struct arm_smmu_entry_writer *writer);
-> +};
+ arch/powerpc/kernel/iommu.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-Can we avoid the indirection for now, please? I'm sure we'll want it later
-when you extend this to CDs, but for the initial support it just makes it
-more difficult to follow the flow. Should be a trivial thing to drop, I
-hope.
+diff --git a/arch/powerpc/kernel/iommu.c b/arch/powerpc/kernel/iommu.c
+index a9bebfd56b3b..37fae3bd89c6 100644
+--- a/arch/powerpc/kernel/iommu.c
++++ b/arch/powerpc/kernel/iommu.c
+@@ -1285,15 +1285,14 @@ spapr_tce_platform_iommu_attach_dev(struct iommu_domain *platform_domain,
+ 				    struct device *dev)
+ {
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+-	struct iommu_group *grp = iommu_group_get(dev);
+ 	struct iommu_table_group *table_group;
++	struct iommu_group *grp;
 
-> +static void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
->  {
-> +	unsigned int cfg = FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(ent[0]));
-> +
-> +	used_bits[0] = cpu_to_le64(STRTAB_STE_0_V);
-> +	if (!(ent[0] & cpu_to_le64(STRTAB_STE_0_V)))
-> +		return;
-> +
-> +	/*
-> +	 * See 13.5 Summary of attribute/permission configuration fields for the
-> +	 * SHCFG behavior. It is only used for BYPASS, including S1DSS BYPASS,
-> +	 * and S2 only.
-> +	 */
-> +	if (cfg == STRTAB_STE_0_CFG_BYPASS ||
-> +	    cfg == STRTAB_STE_0_CFG_S2_TRANS ||
-> +	    (cfg == STRTAB_STE_0_CFG_S1_TRANS &&
-> +	     FIELD_GET(STRTAB_STE_1_S1DSS, le64_to_cpu(ent[1])) ==
-> +		     STRTAB_STE_1_S1DSS_BYPASS))
-> +		used_bits[1] |= cpu_to_le64(STRTAB_STE_1_SHCFG);
+ 	/* At first attach the ownership is already set */
+-	if (!domain) {
+-		iommu_group_put(grp);
++	if (!domain)
+ 		return 0;
+-	}
 
-Huh, SHCFG is really getting in the way here, isn't it? I think it also
-means we don't have a "hitless" transition from stage-2 translation ->
-bypass. I'm inclined to leave it set to "use incoming" all the time; the
-only difference I can see is if you have stage-2 translation and a
-master emitting outer-shareable transactions, in which case they'd now
-be outer-shareable instead of inner-shareable, which I think is harmless.
++	grp = iommu_group_get(dev);
+ 	table_group = iommu_group_get_iommudata(grp);
+ 	/*
+ 	 * The domain being set to PLATFORM from earlier
 
-Additionally, it looks like there's an existing buglet here in that we
-shouldn't set SHCFG if SMMU_IDR1.ATTR_TYPES_OVR == 0.
 
-> +
-> +	used_bits[0] |= cpu_to_le64(STRTAB_STE_0_CFG);
-> +	switch (cfg) {
-> +	case STRTAB_STE_0_CFG_ABORT:
-> +	case STRTAB_STE_0_CFG_BYPASS:
-> +		break;
-> +	case STRTAB_STE_0_CFG_S1_TRANS:
-> +		used_bits[0] |= cpu_to_le64(STRTAB_STE_0_S1FMT |
-> +					    STRTAB_STE_0_S1CTXPTR_MASK |
-> +					    STRTAB_STE_0_S1CDMAX);
-> +		used_bits[1] |=
-> +			cpu_to_le64(STRTAB_STE_1_S1DSS | STRTAB_STE_1_S1CIR |
-> +				    STRTAB_STE_1_S1COR | STRTAB_STE_1_S1CSH |
-> +				    STRTAB_STE_1_S1STALLD | STRTAB_STE_1_STRW);
-> +		used_bits[1] |= cpu_to_le64(STRTAB_STE_1_EATS);
-> +		used_bits[2] |= cpu_to_le64(STRTAB_STE_2_S2VMID);
-> +		break;
-> +	case STRTAB_STE_0_CFG_S2_TRANS:
-> +		used_bits[1] |=
-> +			cpu_to_le64(STRTAB_STE_1_EATS);
-> +		used_bits[2] |=
-> +			cpu_to_le64(STRTAB_STE_2_S2VMID | STRTAB_STE_2_VTCR |
-> +				    STRTAB_STE_2_S2AA64 | STRTAB_STE_2_S2ENDI |
-> +				    STRTAB_STE_2_S2PTW | STRTAB_STE_2_S2R);
-> +		used_bits[3] |= cpu_to_le64(STRTAB_STE_3_S2TTB_MASK);
-> +		break;
-
-With SHCFG fixed, can we go a step further with this and simply identify
-the live qwords directly, rather than on a field-by-field basis? I think
-we should be able to do the same "hitless" transitions you want with the
-coarser granularity.
-
-Will
