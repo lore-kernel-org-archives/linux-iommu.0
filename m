@@ -1,148 +1,167 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 24A4F1386B8;
-	Thu, 15 Feb 2024 18:42:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0252B1384B0
+	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 18:50:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708022572; cv=none; b=NpJsxZNsBQWvda5EYp1jntM1RWc1Ea+ENSik+LXDqiNiRNfEp05Ivs/JBILU38FhW8JmGQVtCMn/CO5cxiCINh1Z4dGFCVGNpCcx9GNbHdNpS/yrZPjElIPuP3mmhd5ESrUjzTXM/d4DYF8VVYjSgRgS/W6m5JBNvAT7mJ1Ripk=
+	t=1708023015; cv=none; b=XlC3XBHXfl7JVm+6O31o9jREuH1iBo+8O5+GCOXJukeFTM6BVc5eWSq4qG6SDcjCCByYR2hegFmBWO6+tFysr8wh2WvQI1zrIeCdaqzFDqLEcfpvuICjuASjAvTV3ETR2hc/ramLpl8ruAwPicxLNa8rFII0AFd5UemA0J10fIw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708022572; c=relaxed/simple;
-	bh=yVRQ3ag9UVa0k4NtsTkrJMzHb7F4uZ0AJfhrbSLTVUM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=m5u8vlHKfLJPsQvytDQ6zw7LhD/EV65JtIFJIj2bq5+6ZClWEjPjetqfmd6AfeoGhfV2patrNj7zr2fvauFs+aFgvkDERIyElmVm7F3290kn1IFc+gI2vpedqxdTx2uTca9DhfgThGRu+VhQf3rxuyaoE/qyfH9BmlL6OGUyHX4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1C1311FB;
-	Thu, 15 Feb 2024 10:43:29 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 368023F762;
-	Thu, 15 Feb 2024 10:42:38 -0800 (PST)
-Message-ID: <02fac0ab-07ac-448e-ae4e-26788ed4fce9@arm.com>
-Date: Thu, 15 Feb 2024 18:42:37 +0000
+	s=arc-20240116; t=1708023015; c=relaxed/simple;
+	bh=S81pGoJ8PfU6aLi9PbShqhGOm1UW2ATW5Cnzr2dZfPM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=tt03yMZT5rr9oNzwxnDs2gKYsiGe3lBCVZ/Km4BZ/IpQ31G7JSN0IMOX7rLUqB0xNcNJq3CqLknpKe5t48NI6Q1v5WXbURfjKSJwBjtsxD06I/lc7DywUzVWA4pRXDZsRQR+a9v2x1CDLJ5hBLKdj54EgQm+63ZQ3g2L/TMs2rg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=nLXqib4E; arc=none smtp.client-ip=209.85.128.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nLXqib4E"
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-6077444cb51so17280527b3.1
+        for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 10:50:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1708023013; x=1708627813; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WUlsSeO8LefyO4xLZYNJ9jNHAOJrLbOdsT9pDfMZXA8=;
+        b=nLXqib4EJt3xX1PyIhPkbnMGP/36dVn26pnJHz4fzPm5zsmC9E9JRf9d5A7pVTU8ao
+         yOqDqeUHVr2d21Gqi6rheFiGK7mcHbiAClj5giB8G3j6gFLcQe/gHUDT9OVG3vd0aIm3
+         TqWRMIcN4DeGPVuEpg2FauRbND+SmircpQp3Lu0j6DYxzLKp51B9c8yEH/Q1Ii2wS8tf
+         +iQReUQtUznvtidjRXInlv1K4MIa1jsJwH7vfSMpKbXBMdVlpxudXVq03vcSWQ8wh1Sp
+         moCEbyMd+G77wzxHXtk508SJwO9EpdEsKiyN+0C1dTodE1GVk0Mc+eqmkpQN1vIbB6kM
+         CPew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708023013; x=1708627813;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=WUlsSeO8LefyO4xLZYNJ9jNHAOJrLbOdsT9pDfMZXA8=;
+        b=Xm4CqF3M0UqR2NtERk84NschyOpPlpnoWSF93YoYtTG/x5dorf79T1QyDMAASk6qo/
+         ks6ddU4m9Xb8fejQueXMVSs1Oc4yga1fHj47FpeRA0M866uo0gDBv8oa4JpH2glalUMH
+         JvfvTdzWHXnnHmVNDm8icsCpSI18OHfvEybDnmWNDXQFkjs/+wc7sd0Tm96dao9Gq1VC
+         3BFVrwe6bBBtKjKI2NoAJLjCjBMl5CR8MkLkjkf+o8rbwRXky78hlgVcZZdYnALCyB17
+         uK/x3AMl/5CzZXm3BtG2O6QbLpHRAbwO/G5sDLg8ve2XlztjVkMdm1jG5yIQBzhRG+5b
+         p/BQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUwwIj+8/gG7/hrYRHWWiZKeJcXV53KkKRRK0+97O1elOdcEXOW8SxwanspVqpV/cQMqylHJN9+s2CMgx9dBGqVDf3NsM4=
+X-Gm-Message-State: AOJu0Yxb+qgmJLla+F2vI4OfFHqgJU2hDGYVf7FoVzFzcp6iLRiimo5Q
+	hrA7uyXU6irIAOCIEa6MsHnDQKSoIqiYloKhnr6aDkqCo25mzd2O/d2tOP8PwTB7tVrp7eyc1eq
+	Rcs3uSX2j0kP1If/0O0Se9d1A7VXJ6Vt5aCh/
+X-Google-Smtp-Source: AGHT+IHQQXGNaksc4ZLhdDELtvsfOEVbOUct07hRFV1UcZvxQkhvZT74vejiVn2ZOSoGey1AwcE3FMB7Y05S+V1u8DE=
+X-Received: by 2002:a25:ae28:0:b0:dc2:4fff:75ee with SMTP id
+ a40-20020a25ae28000000b00dc24fff75eemr1999749ybj.3.1708023012635; Thu, 15 Feb
+ 2024 10:50:12 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 01/17] iommu/arm-smmu-v3: Make STE programming
- independent of the callers
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
- linux-arm-kernel@lists.infradead.org, Lu Baolu <baolu.lu@linux.intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>,
- Moritz Fischer <moritzf@google.com>, Michael Shavit <mshavit@google.com>,
- Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
- Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- Mostafa Saleh <smostafa@google.com>, Zhangfei Gao <zhangfei.gao@linaro.org>
-References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <1-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <20240215134952.GA690@willie-the-truck> <20240215160135.GL1088888@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240215160135.GL1088888@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20240212213922.783301-1-surenb@google.com> <20240212213922.783301-32-surenb@google.com>
+ <Zc3X8XlnrZmh2mgN@tiehlicka> <CAJuCfpHc2ee_V6SGAc_31O_ikjGGNivhdSG+2XNcc9vVmzO-9g@mail.gmail.com>
+ <Zc4_i_ED6qjGDmhR@tiehlicka> <CAJuCfpHq3N0h6dGieHxD6Au+qs=iKAifFrHAMxTsHTcDrOwSQA@mail.gmail.com>
+ <ruxvgrm3scv7zfjzbq22on7tj2fjouydzk33k7m2kukm2n6uuw@meusbsciwuut> <Zc5a8MsJyt27jeJC@tiehlicka>
+In-Reply-To: <Zc5a8MsJyt27jeJC@tiehlicka>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Thu, 15 Feb 2024 10:49:59 -0800
+Message-ID: <CAJuCfpH2EF8DZhBp_7324ka7mnMkUdWyqTs+ZiMhwjm_nmcwZQ@mail.gmail.com>
+Subject: Re: [PATCH v3 31/35] lib: add memory allocations report in show_mem()
+To: Michal Hocko <mhocko@suse.com>
+Cc: Kent Overstreet <kent.overstreet@linux.dev>, akpm@linux-foundation.org, vbabka@suse.cz, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
+	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, 
+	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
+	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
+	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 15/02/2024 4:01 pm, Jason Gunthorpe wrote:
-> On Thu, Feb 15, 2024 at 01:49:53PM +0000, Will Deacon wrote:
->> Hi Jason,
->>
->> On Tue, Feb 06, 2024 at 11:12:38AM -0400, Jason Gunthorpe wrote:
->>> As the comment in arm_smmu_write_strtab_ent() explains, this routine has
->>> been limited to only work correctly in certain scenarios that the caller
->>> must ensure. Generally the caller must put the STE into ABORT or BYPASS
->>> before attempting to program it to something else.
->>
->> This is looking pretty good now, but I have a few comments inline.
-> 
-> Ok
-> 
->>> @@ -48,6 +48,21 @@ enum arm_smmu_msi_index {
->>>   	ARM_SMMU_MAX_MSIS,
->>>   };
->>>   
->>> +struct arm_smmu_entry_writer_ops;
->>> +struct arm_smmu_entry_writer {
->>> +	const struct arm_smmu_entry_writer_ops *ops;
->>> +	struct arm_smmu_master *master;
->>> +};
->>> +
->>> +struct arm_smmu_entry_writer_ops {
->>> +	unsigned int num_entry_qwords;
->>> +	__le64 v_bit;
->>> +	void (*get_used)(const __le64 *entry, __le64 *used);
->>> +	void (*sync)(struct arm_smmu_entry_writer *writer);
->>> +};
->>
->> Can we avoid the indirection for now, please? I'm sure we'll want it later
->> when you extend this to CDs, but for the initial support it just makes it
->> more difficult to follow the flow. Should be a trivial thing to drop, I
->> hope.
-> 
-> We can.
+On Thu, Feb 15, 2024 at 10:41=E2=80=AFAM Michal Hocko <mhocko@suse.com> wro=
+te:
+>
+> On Thu 15-02-24 13:29:40, Kent Overstreet wrote:
+> > On Thu, Feb 15, 2024 at 08:47:59AM -0800, Suren Baghdasaryan wrote:
+> > > On Thu, Feb 15, 2024 at 8:45=E2=80=AFAM Michal Hocko <mhocko@suse.com=
+> wrote:
+> > > >
+> > > > On Thu 15-02-24 06:58:42, Suren Baghdasaryan wrote:
+> > > > > On Thu, Feb 15, 2024 at 1:22=E2=80=AFAM Michal Hocko <mhocko@suse=
+.com> wrote:
+> > > > > >
+> > > > > > On Mon 12-02-24 13:39:17, Suren Baghdasaryan wrote:
+> > > > > > [...]
+> > > > > > > @@ -423,4 +424,18 @@ void __show_mem(unsigned int filter, nod=
+emask_t *nodemask, int max_zone_idx)
+> > > > > > >  #ifdef CONFIG_MEMORY_FAILURE
+> > > > > > >       printk("%lu pages hwpoisoned\n", atomic_long_read(&num_=
+poisoned_pages));
+> > > > > > >  #endif
+> > > > > > > +#ifdef CONFIG_MEM_ALLOC_PROFILING
+> > > > > > > +     {
+> > > > > > > +             struct seq_buf s;
+> > > > > > > +             char *buf =3D kmalloc(4096, GFP_ATOMIC);
+> > > > > > > +
+> > > > > > > +             if (buf) {
+> > > > > > > +                     printk("Memory allocations:\n");
+> > > > > > > +                     seq_buf_init(&s, buf, 4096);
+> > > > > > > +                     alloc_tags_show_mem_report(&s);
+> > > > > > > +                     printk("%s", buf);
+> > > > > > > +                     kfree(buf);
+> > > > > > > +             }
+> > > > > > > +     }
+> > > > > > > +#endif
+> > > > > >
+> > > > > > I am pretty sure I have already objected to this. Memory alloca=
+tions in
+> > > > > > the oom path are simply no go unless there is absolutely no oth=
+er way
+> > > > > > around that. In this case the buffer could be preallocated.
+> > > > >
+> > > > > Good point. We will change this to a smaller buffer allocated on =
+the
+> > > > > stack and will print records one-by-one. Thanks!
+> > > >
+> > > > __show_mem could be called with a very deep call chains. A single
+> > > > pre-allocated buffer should just do ok.
+> > >
+> > > Ack. Will do.
+> >
+> > No, we're not going to permanently burn 4k here.
+> >
+> > It's completely fine if the allocation fails, there's nothing "unsafe"
+> > about doing a GFP_ATOMIC allocation here.
+>
+> Nobody is talking about safety. This is just a wrong thing to do when
+> you are likely under OOM situation. This is a situation when you
+> GFP_ATOMIC allocation is _likely_ to fail. Yes, yes you will get some
+> additional memory reservers head room, but you shouldn't rely on that
+> because that will make the output unreliable. Not something you want in
+> situation when you really want to know that information.
+>
+> More over you do not need to preallocate a full page.
 
-Ack, the abstraction is really hard to follow, and much of that seems 
-entirely self-inflicted in the amount of recalculating information which 
-was in-context in a previous step but then thrown away. And as best I 
-can tell I think it will still end up doing more CFGIs than needed.
+Folks, please stop arguing about it. We have more important things to
+do. I'll fix it to use a small preallocated buffer.
 
-Keeping a single monolithic check-and-update function will be *so* much 
-easier to understand and maintain. As far as CDs go, anything we might 
-reasonably want to change in a live CD is all in the first word so I 
-don't see any value in attempting to generalise further on that side of 
-things. Maybe arm_smmu_write_ctx_desc() could stand to be a bit 
-prettier, but honestly I don't think it's too bad as-is.
-
->>> +static void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
->>>   {
->>> +	unsigned int cfg = FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(ent[0]));
->>> +
->>> +	used_bits[0] = cpu_to_le64(STRTAB_STE_0_V);
->>> +	if (!(ent[0] & cpu_to_le64(STRTAB_STE_0_V)))
->>> +		return;
->>> +
->>> +	/*
->>> +	 * See 13.5 Summary of attribute/permission configuration fields for the
->>> +	 * SHCFG behavior. It is only used for BYPASS, including S1DSS BYPASS,
->>> +	 * and S2 only.
->>> +	 */
->>> +	if (cfg == STRTAB_STE_0_CFG_BYPASS ||
->>> +	    cfg == STRTAB_STE_0_CFG_S2_TRANS ||
->>> +	    (cfg == STRTAB_STE_0_CFG_S1_TRANS &&
->>> +	     FIELD_GET(STRTAB_STE_1_S1DSS, le64_to_cpu(ent[1])) ==
->>> +		     STRTAB_STE_1_S1DSS_BYPASS))
->>> +		used_bits[1] |= cpu_to_le64(STRTAB_STE_1_SHCFG);
->>
->> Huh, SHCFG is really getting in the way here, isn't it?
-> 
-> I wouldn't say that.. It is just a complicated bit of the spec. One of
-> the things we recently did was to audit all the cache settings and, at
-> least, we then realized that SHCFG was being subtly used by S2 as
-> well..
-
-Yeah, that really shouldn't be subtle; incoming attributes are replaced 
-by S1 translation, thus they are relevant to not-S1 configs.
-
-I think it's likely to be significantly more straightforward to give up 
-on the switch statement and jump straight into the more architectural 
-paradigm at this level, e.g.
-
-	// Stage 1
-	if (cfg & BIT(0)) {
-		...
-	} else {
-		...
-	}
-	// Stage 2
-	if (cfg & BIT(1)) {
-		...
-	} else {
-		...
-	}
-
-Thanks,
-Robin.
+>
+> --
+> Michal Hocko
+> SUSE Labs
