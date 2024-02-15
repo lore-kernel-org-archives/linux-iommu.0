@@ -1,49 +1,25 @@
-Received: from smtp-fw-52002.amazon.com (smtp-fw-52002.amazon.com [52.119.213.150])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BE814CE17;
-	Thu, 15 Feb 2024 09:44:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.119.213.150
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A942112B152
+	for <iommu@lists.linux.dev>; Thu, 15 Feb 2024 11:36:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1707990269; cv=none; b=t8ltWg+TWgvqY5tacTsFr2UT9Us77adD5by3sCl9EOZtR8zUKq/JKm47SEzarN3FhHwQ+Gm4IuDG84DqTt9XJsRjJosw7SIpeaGAvanEC/KpyFZeDxV1Ahhv6762RquB/TiIP+f2Pmr7+1hq6OOi9vmuMvp8ttEXF16yBGMckhE=
+	t=1707997008; cv=none; b=X6hXGz3Ttaz4RI1jOLlJLX+OjvkUYnwMevemO/w3BnFCiux61i343Yx8TA0OzaNWSQKNRZCzdoHDqOzCSEYpkzAea4zY87Kjxw8ioCQhAw6DT3l2ryTjDV608juWj+guiTGQavpugCD4i83TocZi0EcCg2LgwP/yMN4cz3AY7dw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1707990269; c=relaxed/simple;
-	bh=MpAnqmrBzKfhdUol4ez9sNwiJNke4mG+AQYMeOTO+3A=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=Jfc0czpiPsFfUlENPVspuLmpTJEDsdzU6iRpq4X9i0v+/82jRT0/C0K2UqoCfI2C0GqzaFMCdsCTLvRSFKBj/1q9BHMbbFQl6k4VUpnhf33b2pymiv11Urj39sPLMCE/qOOLr4/EjbVaqR0hM/6k4VfCv6XfKWWrOUPVZGWtquI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.de; dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b=BWc54xww; arc=none smtp.client-ip=52.119.213.150
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b="BWc54xww"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1707990268; x=1739526268;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=MpAnqmrBzKfhdUol4ez9sNwiJNke4mG+AQYMeOTO+3A=;
-  b=BWc54xwws7Pzx1QbGyhA/YOnlTB9msumjGSKKfr1yeMAhq8UxcbhjXEj
-   UYhzdFsLcOZ5j20xsUU0bd0aV03VG9GVu7ojgPQ28/f3FWIdGu3O/8Jwq
-   6p0TPJjCvfB+GmT+0yj1u43BRZamAgaFcTH8pRNzFL3js1o/av48FWWMU
-   k=;
-X-IronPort-AV: E=Sophos;i="6.06,161,1705363200"; 
-   d="scan'208";a="613229364"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO smtpout.prod.us-west-2.prod.farcaster.email.amazon.dev) ([10.43.8.6])
-  by smtp-border-fw-52002.iad7.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2024 09:44:23 +0000
-Received: from EX19MTAUWB001.ant.amazon.com [10.0.21.151:18611]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.29.119:2525] with esmtp (Farcaster)
- id 195158db-1473-4e04-93e0-963f8771d726; Thu, 15 Feb 2024 09:44:21 +0000 (UTC)
-X-Farcaster-Flow-ID: 195158db-1473-4e04-93e0-963f8771d726
-Received: from EX19D020UWC004.ant.amazon.com (10.13.138.149) by
- EX19MTAUWB001.ant.amazon.com (10.250.64.248) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Thu, 15 Feb 2024 09:44:21 +0000
-Received: from [0.0.0.0] (10.253.83.51) by EX19D020UWC004.ant.amazon.com
- (10.13.138.149) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Thu, 15 Feb
- 2024 09:44:15 +0000
-Message-ID: <8a6dabdf-dc11-4989-b6b4-b49871ff9ca6@amazon.com>
-Date: Thu, 15 Feb 2024 10:44:13 +0100
+	s=arc-20240116; t=1707997008; c=relaxed/simple;
+	bh=XIkDs6gXOoQBSmrBWGt6tw2dOXe9NdTa7wBQ3lRFzNQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KUk7z5l2eP59QpqG59oEErC+6NdB1o8qAFta1DLnqIdm2h1PJCJ6v9LJlHT/hCHZXPKo94vnXJjsjHYMjmgQxEvuK/7yB9FdP3+37ZAZ4/7yPZ9newpTvWfniBFXoWZ/At+CDXnlR2W7eDKgYjlyHI5yaGprTXG+o/exE2AQMpM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 11BD3DA7;
+	Thu, 15 Feb 2024 03:37:27 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C91AC3F7B4;
+	Thu, 15 Feb 2024 03:36:36 -0800 (PST)
+Message-ID: <e0be48b9-4871-4124-9d71-8bb7f46ca141@arm.com>
+Date: Thu, 15 Feb 2024 11:36:35 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,64 +27,56 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC V1 1/5] swiotlb: Support allocating DMA memory from SWIOTLB
-Content-Language: en-US
-To: Vishal Annapurve <vannapurve@google.com>, "Kirill A. Shutemov"
-	<kirill@shutemov.name>
-CC: <x86@kernel.org>, <linux-kernel@vger.kernel.org>, <pbonzini@redhat.com>,
-	<rientjes@google.com>, <seanjc@google.com>, <erdemaktas@google.com>,
-	<ackerleytng@google.com>, <jxgao@google.com>, <sagis@google.com>,
-	<oupton@google.com>, <peterx@redhat.com>, <vkuznets@redhat.com>,
-	<dmatlack@google.com>, <pgonda@google.com>, <michael.roth@amd.com>,
-	<thomas.lendacky@amd.com>, <dave.hansen@linux.intel.com>,
-	<linux-coco@lists.linux.dev>, <chao.p.peng@linux.intel.com>,
-	<isaku.yamahata@gmail.com>, <andrew.jones@linux.dev>, <corbet@lwn.net>,
-	<hch@lst.de>, <m.szyprowski@samsung.com>, <rostedt@goodmis.org>,
-	<iommu@lists.linux.dev>
-References: <20240112055251.36101-1-vannapurve@google.com>
- <20240112055251.36101-2-vannapurve@google.com>
- <etvf2mon464whscbxqktdd7bputnqmmwmoeg7ssixsk4kljfek@4wngbgzbbmck>
- <CAGtprH-95FEUzpc-yxQMo87gpqgMxyz9W8tiWtu_ZHhMW-jjuA@mail.gmail.com>
-From: Alexander Graf <graf@amazon.com>
-In-Reply-To: <CAGtprH-95FEUzpc-yxQMo87gpqgMxyz9W8tiWtu_ZHhMW-jjuA@mail.gmail.com>
-X-ClientProxiedBy: EX19D032UWA004.ant.amazon.com (10.13.139.56) To
- EX19D020UWC004.ant.amazon.com (10.13.138.149)
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH net-next v3 2/7] dma: avoid redundant calls for sync
+ operations
+Content-Language: en-GB
+To: Christoph Hellwig <hch@lst.de>
+Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
+ "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
+ Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Magnus Karlsson <magnus.karlsson@intel.com>,
+ Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+ Alexander Duyck <alexanderduyck@fb.com>, bpf@vger.kernel.org,
+ netdev@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240214162201.4168778-1-aleksander.lobakin@intel.com>
+ <20240214162201.4168778-3-aleksander.lobakin@intel.com>
+ <3a9dd580-1977-418f-a3f3-73003dd37710@arm.com> <20240215050857.GC4861@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240215050857.GC4861@lst.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Ck9uIDE1LjAyLjI0IDA0OjMzLCBWaXNoYWwgQW5uYXB1cnZlIHdyb3RlOgo+IE9uIFdlZCwgRmVi
-IDE0LCAyMDI0IGF0IDg6MjDigK9QTSBLaXJpbGwgQS4gU2h1dGVtb3YgPGtpcmlsbEBzaHV0ZW1v
-di5uYW1lPiB3cm90ZToKPj4gT24gRnJpLCBKYW4gMTIsIDIwMjQgYXQgMDU6NTI6NDdBTSArMDAw
-MCwgVmlzaGFsIEFubmFwdXJ2ZSB3cm90ZToKPj4+IE1vZGlmeSBTV0lPVExCIGZyYW1ld29yayB0
-byBhbGxvY2F0ZSBETUEgbWVtb3J5IGFsd2F5cyBmcm9tIFNXSU9UTEIuCj4+Pgo+Pj4gQ1ZNcyB1
-c2UgU1dJT1RMQiBidWZmZXJzIGZvciBib3VuY2luZyBtZW1vcnkgd2hlbiB1c2luZyBkbWFfbWFw
-XyogQVBJcwo+Pj4gdG8gc2V0dXAgbWVtb3J5IGZvciBJTyBvcGVyYXRpb25zLiBTV0lPVExCIGJ1
-ZmZlcnMgYXJlIG1hcmtlZCBhcyBzaGFyZWQKPj4+IG9uY2UgZHVyaW5nIGVhcmx5IGJvb3QuCj4+
-Pgo+Pj4gQnVmZmVycyBhbGxvY2F0ZWQgdXNpbmcgZG1hX2FsbG9jXyogQVBJcyBhcmUgYWxsb2Nh
-dGVkIGZyb20ga2VybmVsIG1lbW9yeQo+Pj4gYW5kIHRoZW4gY29udmVydGVkIHRvIHNoYXJlZCBk
-dXJpbmcgZWFjaCBBUEkgaW52b2NhdGlvbi4gVGhpcyBwYXRjaCBlbnN1cmVzCj4+PiB0aGF0IHN1
-Y2ggYnVmZmVycyBhcmUgYWxzbyBhbGxvY2F0ZWQgZnJvbSBhbHJlYWR5IHNoYXJlZCBTV0lPVExC
-Cj4+PiByZWdpb25zLiBUaGlzIGFsbG93cyBlbmZvcmNpbmcgYWxpZ25tZW50IHJlcXVpcmVtZW50
-cyBvbiByZWdpb25zIG1hcmtlZAo+Pj4gYXMgc2hhcmVkLgo+PiBCdXQgZG9lcyBpdCB3b3JrIGlu
-IHByYWN0aWNlPwo+Pgo+PiBTb21lIGRldmljZXMgKGxpa2UgR1BVcykgcmVxdWlyZSBhIGxvdCBv
-ZiBETUEgbWVtb3J5LiBTbyB3aXRoIHRoaXMgYXBwcm9hY2gKPj4gd2Ugd291bGQgbmVlZCB0byBo
-YXZlIGh1Z2UgU1dJT1RMQiBidWZmZXIgdGhhdCBpcyB1bnVzZWQgaW4gbW9zdCBWTXMuCj4+Cj4g
-Q3VycmVudCBpbXBsZW1lbnRhdGlvbiBsaW1pdHMgdGhlIHNpemUgb2Ygc3RhdGljYWxseSBhbGxv
-Y2F0ZWQgU1dJT1RMQgo+IG1lbW9yeSBwb29sIHRvIDFHLiBJIHdhcyBwcm9wb3NpbmcgdG8gZW5h
-YmxlIGR5bmFtaWMgU1dJT1RMQiBmb3IgQ1ZNcwo+IGluIGFkZGl0aW9uIHRvIGFsaWduaW5nIHRo
-ZSBtZW1vcnkgYWxsb2NhdGlvbnMgdG8gaHVnZXBhZ2Ugc2l6ZXMsIHNvCj4gdGhhdCB0aGUgU1dJ
-T1RMQiBwb29sIGNhbiBiZSBzY2FsZWQgdXAgb24gZGVtYW5kLgo+Cj4gVGhlIGlzc3VlIHdpdGgg
-YWxpZ25pbmcgdGhlIHBvb2wgYXJlYXMgdG8gaHVnZXBhZ2VzIGlzIHRoYXQgaHVnZXBhZ2UKPiBh
-bGxvY2F0aW9uIGF0IHJ1bnRpbWUgaXMgbm90IGd1YXJhbnRlZWQuIEd1YXJhbnRlZWluZyB0aGUg
-aHVnZXBhZ2UKPiBhbGxvY2F0aW9uIG1pZ2h0IG5lZWQgY2FsY3VsYXRpbmcgdGhlIHVwcGVyIGJv
-dW5kIGluIGFkdmFuY2UsIHdoaWNoCj4gZGVmZWF0cyB0aGUgcHVycG9zZSBvZiBlbmFibGluZyBk
-eW5hbWljIFNXSU9UTEIuIEkgYW0gb3BlbiB0bwo+IHN1Z2dlc3Rpb25zIGhlcmUuCgoKWW91IGNv
-dWxkIGFsbG9jYXRlIGEgbWF4IGJvdW5kIGF0IGJvb3QgdXNpbmcgQ01BIGFuZCB0aGVuIG9ubHkg
-ZmlsbCBpbnRvIAp0aGUgQ01BIGFyZWEgd2hlbiBTV0lPVExCIHNpemUgcmVxdWlyZW1lbnRzIGlu
-Y3JlYXNlPyBUaGUgQ01BIHJlZ2lvbiAKd2lsbCBhbGxvdyBtb3ZhYmxlIGFsbG9jYXRpb25zIGFz
-IGxvbmcgYXMgeW91IGRvbid0IHJlcXVpcmUgdGhlIENNQSBzcGFjZS4KCgpBbGV4CgoKCgpBbWF6
-b24gRGV2ZWxvcG1lbnQgQ2VudGVyIEdlcm1hbnkgR21iSApLcmF1c2Vuc3RyLiAzOAoxMDExNyBC
-ZXJsaW4KR2VzY2hhZWZ0c2Z1ZWhydW5nOiBDaHJpc3RpYW4gU2NobGFlZ2VyLCBKb25hdGhhbiBX
-ZWlzcwpFaW5nZXRyYWdlbiBhbSBBbXRzZ2VyaWNodCBDaGFybG90dGVuYnVyZyB1bnRlciBIUkIg
-MTQ5MTczIEIKU2l0ejogQmVybGluClVzdC1JRDogREUgMjg5IDIzNyA4NzkKCgo=
+On 15/02/2024 5:08 am, Christoph Hellwig wrote:
+> On Wed, Feb 14, 2024 at 05:55:23PM +0000, Robin Murphy wrote:
+>>>    #define DMA_F_PCI_P2PDMA_SUPPORTED     (1 << 0)
+>>> +#define DMA_F_CAN_SKIP_SYNC		BIT(1)
+>>
+>> Yuck, please be consistent - either match the style of the existing code,
+>> or change that to BIT(0) as well.
+> 
+> Just don't use BIT() ever.  It doesn't save any typing and creates a
+> totally pointless mental indirection.
+> 
+>> I guess this was the existing condition from dma_need_sync(), but now it's
+>> on a one-off slow path it might be nice to check the sync_sg_* ops as well
+>> for completeness, or at least comment that nobody should be implementing
+>> those without also implementing the sync_single_* ops.
+> 
+> Implementing only one and not the other doesn't make any sense.  Maybe
+> a debug check for that is ok, but thing will break badly if they aren't
+> in sync anyway.
 
+In principle we *could* have an implementation which used bouncing 
+purely to merge coherent scatterlist segments, thus didn't need to do 
+anything for single mappings. I agree that it wouldn't seem like a 
+particularly realistic thing to do these days, but I don't believe the 
+API rules it out, so it might be nice to enforce that assumption 
+somewhere if we are actually relying on it (although I also concur that 
+this may not necessarily be the ideal place to do that in general).
+
+Thanks,
+Robin.
