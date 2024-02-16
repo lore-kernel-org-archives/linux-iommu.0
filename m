@@ -1,147 +1,121 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2077.outbound.protection.outlook.com [40.107.95.77])
+Received: from out-189.mta1.migadu.com (out-189.mta1.migadu.com [95.215.58.189])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92484647
-	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 00:29:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708043400; cv=fail; b=GqwDvytVPUEcmDe57uV43D59cpQ8wtWPTpVbGZuk0tbjMRlFijJmJTTWJTiAgc3tCrQORj/QQBsTbyBJSivR6jEu6Z6b8DfXRQHAjd/n3saTLw8Dx4t1TEoPtobjOMDbPX5rDNsRfmlnPIEpeZwD2BuLS5gUUFXXDWgsIOJb3pg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708043400; c=relaxed/simple;
-	bh=bLpVfdJKtTIAY+uX8ZAKtu/I+FmqzH1f32vHZAjCaYs=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BbcZFhoVklkG4YjA1n6SWmKYHD5VH6a4hn3G/2Vvl6TtVUVXz/5SCHtE+628O8ssjgAnNxvXo8tNlbQUJ+M9ejg0adKf2Vv2MuS286cJfXq2Xe6vMwfkJ61+wVwK6VTA507pMyqs3hKBsZGYTyMa2Es1vnitA67PyIP/gdeTjkI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=DeLR8/fN; arc=fail smtp.client-ip=40.107.95.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B0C33FC2
+	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 00:33:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.189
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708043605; cv=none; b=fE/5fXgl4cIRk7NO4MpU5fHCUc5qlIgnfSZUu45Os917OrfHsjhvWF0TprjNp7IC/9iSxtxi8rMMiNfVMCORRgK7iOwzasVCDWRowX+0e1EKVt7yTe36TwNM+BjKQ9Vuu/2NDLUpqhe8F1ews21dNqTbf93DTPCnJ1pFkhFhqMY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708043605; c=relaxed/simple;
+	bh=XuXzzdT4qpI/thepOvg44pFxyCWv6wsSemsRQD9/TFQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Umv5TwMKaFQB58q8WZD4NSYM/xDHwHiSIn0pqJLaBHbIz2gNaSROR8WaujfqvUKuyq7IrenPuTJGApY853HFziMroERVRrWToxKF4lAIkd8f5mTh9JgVP3Hb0BIHGUTehCM0DkM9BamP+pOIYaAEkbhFY76mySoYuwAKa7iy3vk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=TCBheLyH; arc=none smtp.client-ip=95.215.58.189
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="DeLR8/fN"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eRF69FE6SBkC+04u5r2xZPcGJaUpsaUM64/cA58O+yr0NjdB3rmiKYKD1F+F885H0ZP0SLoRlnhWPrDF/BAXVu0j9c5RkXxWqJFBMKOEnpxK2EPGWhE0B69+NS81phy1lI9VULFnUweMIcnasuo9toH8YXVAv7BOpLvB8RCAKBTjbDaNMlsrpQHTd3+2Ut9zc4+90aV87I+uPJIQePUS/kqPRDSoVggt4x1ZrOhoGKjvgluFqNd/XQRral+VuEEF8soBf+TXukzJjGZWmBu5hAdIPkTcp0DPuOK8g2iSIlccP7FDKIzwmHXS8EhEqw1za75y1ZNqRqYXCK5p0M/fjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bdTmzYklbNoOZBdysL9Dp47ykjJqdkdvgnJOmsThicU=;
- b=i/I3CEshJHekF6R2PoKK6F84ZCXwQy3cryxF3UBUIpXcM804xzzrZGeoIPUwAiQsavLsZ6jOjLDPOfxYXpZ4nWKQp6Ice0AnF3eLMfpJWha8eHm9Agpp6gYlOmkm/TTzigGvnUQMZSJOxm9PZcMgJheCrqpSWv7LqSdkxxryrRitdURclaBFKhl/W3lQaeu9FzdHgc79u7rMciGSZTMqr2hzTSsLeXLIiMbFG3PAsW0XbuP84LG7Hf/bZWimnXJtA5oQQdwUXgoOj1/X1HMCcCeMq7i62SqdUx0iWSIJZitkLlAtZECXPmI3qcjSB2Kcp+9piTkAnIANqOMyeXU4ZQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bdTmzYklbNoOZBdysL9Dp47ykjJqdkdvgnJOmsThicU=;
- b=DeLR8/fN8IDGFaIqr0FIkAY6PMLqFyTCrkcT+Abt1dlJrrFLkfBvNGc48hhb/ip6AB7cpJ9zN1QmQkpGY5kCtbJTJO0iYEu25fCa3swJrE5biKA7IbWO5JIE++pVcCdMy7f+MEIb0kXBQ1hZnenQcxRdYW6rQUf94o3U3mC3AeqUCWWB2xX8RyYDCCJ02pethq+Lux7IsJMCOZ0SBeos0KyJFfYtpfSbG0uh0Wrr/Tj6LgC6VrUsteXkdseiMlja89bI7+a045Kp+O1TZPwbTyfONYXUhs+BpX6v79VaNPaNL4EkkKgQVZ8P7ENmqsIptPqG0NBi5SwYOENJuNPLEw==
-Received: from CY5PR17CA0021.namprd17.prod.outlook.com (2603:10b6:930:17::17)
- by DM6PR12MB4975.namprd12.prod.outlook.com (2603:10b6:5:1bd::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.12; Fri, 16 Feb
- 2024 00:29:55 +0000
-Received: from CY4PEPF0000EE39.namprd03.prod.outlook.com
- (2603:10b6:930:17:cafe::80) by CY5PR17CA0021.outlook.office365.com
- (2603:10b6:930:17::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7270.40 via Frontend
- Transport; Fri, 16 Feb 2024 00:29:55 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- CY4PEPF0000EE39.mail.protection.outlook.com (10.167.242.13) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7249.19 via Frontend Transport; Fri, 16 Feb 2024 00:29:55 +0000
-Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 15 Feb
- 2024 16:29:44 -0800
-Received: from drhqmail203.nvidia.com (10.126.190.182) by
- drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.12; Thu, 15 Feb 2024 16:29:43 -0800
-Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.182)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
- Transport; Thu, 15 Feb 2024 16:29:43 -0800
-Date: Thu, 15 Feb 2024 16:29:41 -0800
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Will Deacon <will@kernel.org>
-CC: <sagi@grimberg.me>, <hch@lst.de>, <axboe@kernel.dk>, <kbusch@kernel.org>,
-	<joro@8bytes.org>, <robin.murphy@arm.com>, <jgg@nvidia.com>,
-	<linux-nvme@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<iommu@lists.linux.dev>, <murphyt7@tcd.ie>, <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v1 0/2] nvme-pci: Fix dma-iommu mapping failures when
- PAGE_SIZE=64KB
-Message-ID: <Zc6sdQVL6O8XN1kr@Asurada-Nvidia>
-References: <cover.1707851466.git.nicolinc@nvidia.com>
- <20240214164138.GA31927@willie-the-truck>
- <Zc0bLAIXSAqsQJJv@Asurada-Nvidia>
- <20240215142208.GA753@willie-the-truck>
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="TCBheLyH"
+Date: Thu, 15 Feb 2024 19:32:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1708043600;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=BwLdbKvwbuT7Py0w8ufFkW1cCk4JPEqYMR9dx/1h65M=;
+	b=TCBheLyHkvkCr2rg0SrQW08oAxBRtTvcZx+IRR+qV8bqJLfXAVvHTLefKtevmhJLC2yagF
+	90KJRsTt6yvwTHkdPhpkVXfpIaPw9mB+yLAmbC/9FosSVc2V4C/QiUfYBPe+UYZAzKt98o
+	D2JEy+U5Cbi2lIuDcjB+L1a1QUd7tzU=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Steven Rostedt <rostedt@goodmis.org>
+Cc: Vlastimil Babka <vbabka@suse.cz>, 
+	Suren Baghdasaryan <surenb@google.com>, Michal Hocko <mhocko@suse.com>, akpm@linux-foundation.org, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net, 
+	willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, 
+	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, david@redhat.com, 
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, nathan@kernel.org, 
+	dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org, 
+	paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com, 
+	yuzhao@google.com, dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
+	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com, 
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, bsegall@google.com, bristot@redhat.com, 
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
+	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
+	shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 31/35] lib: add memory allocations report in show_mem()
+Message-ID: <uhagqnpumyyqsnf4qj3fxm62i6la47yknuj4ngp6vfi7hqcwsy@lm46eypwe2lp>
+References: <Zc3X8XlnrZmh2mgN@tiehlicka>
+ <CAJuCfpHc2ee_V6SGAc_31O_ikjGGNivhdSG+2XNcc9vVmzO-9g@mail.gmail.com>
+ <Zc4_i_ED6qjGDmhR@tiehlicka>
+ <CAJuCfpHq3N0h6dGieHxD6Au+qs=iKAifFrHAMxTsHTcDrOwSQA@mail.gmail.com>
+ <ruxvgrm3scv7zfjzbq22on7tj2fjouydzk33k7m2kukm2n6uuw@meusbsciwuut>
+ <320cd134-b767-4f29-869b-d219793ba8a1@suse.cz>
+ <efxe67vo32epvmyzplmpd344nw2wf37azicpfhvkt3zz4aujm3@n27pl5j5zahj>
+ <20240215180742.34470209@gandalf.local.home>
+ <jpmlfejxcmxa7vpsuyuzykahr6kz5vjb44ecrzfylw7z4un3g7@ia3judu4xkfp>
+ <20240215192141.03421b85@gandalf.local.home>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240215142208.GA753@willie-the-truck>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000EE39:EE_|DM6PR12MB4975:EE_
-X-MS-Office365-Filtering-Correlation-Id: 667c9ad2-7b83-488d-1a4e-08dc2e86662d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	hVW/QabgAGBwz6ORuwG9TmCg+0DFk/xH/XHNRfXRd9HQIQyU/caiWMKUH5aSVQs9yFJBkS395Blwz7bSb8478Af4lG3MYIPgL165dHTC+5Xo+u2qP2bDE8ILcTxk9zYtKJ0kIAwAskW9fRnpT0DLOgGwt3wWVaTx0T8O6qK3Vjathzm5Y1dasOCDXzaawmlmZ4wO2sBBY4XmN1aV9UDtNG33a8lx+LXkHa1sC4K86Uli8t7FsyuXolWuH+rCy54fT9QxvE1d9+CCXRS/Doh0l71aoNYgxG+DvDN6LC5OjpvHZ/dg1sPyRsZTqWNCHBi0u+6GrtlgfCUFuKIvLJ+wT5D0kxCRG5q+XvM3W7mOwtO0plmIPbiSb4U7CquM2W0QrZyANospzuIpMwVcPdfR5jFX3ewpEqfbbB3uG8RggoGBR/CBM4xeSiELtS6MIzqsR8OxNGwlPTLIjxXs182Ymwyl1Mt1C9oHm0CNPalsNIFX7FrVLOBGVLu8XUVrrBjBv0RgmXGh8zCBtkXeJC7C4gj9NT43PbDzQV5hbLs6wkFZFDnn1fgHVjc31pja1eMgONZD893Kb9ar6ZUau3oBMlJ9swlyTqlgxnuJk2fFRRWhOl1dG2udzNXuOQ/Awjby5R+k8zxx4SQeqtwpEoJlwZFGoJp+xyqMVSJ+2zLXTnY=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(4636009)(376002)(39860400002)(136003)(396003)(346002)(230922051799003)(230273577357003)(186009)(64100799003)(1800799012)(36860700004)(451199024)(82310400011)(40470700004)(46966006)(4326008)(8936002)(8676002)(6916009)(7416002)(70586007)(70206006)(2906002)(83380400001)(26005)(336012)(426003)(82740400003)(7636003)(356005)(86362001)(5660300002)(54906003)(41300700001)(316002)(478600001)(9686003)(55016003)(33716001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2024 00:29:55.3557
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 667c9ad2-7b83-488d-1a4e-08dc2e86662d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000EE39.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4975
+In-Reply-To: <20240215192141.03421b85@gandalf.local.home>
+X-Migadu-Flow: FLOW_OUT
 
-On Thu, Feb 15, 2024 at 02:22:09PM +0000, Will Deacon wrote:
-
-> > Though I am building with a v6.6 kernel, I see some warnings:
-> >                  from kernel/dma/swiotlb.c:26:
-> > kernel/dma/swiotlb.c: In function ‘swiotlb_area_find_slots’:
-> > ./include/linux/minmax.h:21:35: warning: comparison of distinct pointer types lacks a cast
-> >    21 |         (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-> >       |                                   ^~
-> > ./include/linux/minmax.h:27:18: note: in expansion of macro ‘__typecheck’
-> >    27 |                 (__typecheck(x, y) && __no_side_effects(x, y))
-> >       |                  ^~~~~~~~~~~
-> > ./include/linux/minmax.h:37:31: note: in expansion of macro ‘__safe_cmp’
-> >    37 |         __builtin_choose_expr(__safe_cmp(x, y), \
-> >       |                               ^~~~~~~~~~
-> > ./include/linux/minmax.h:75:25: note: in expansion of macro ‘__careful_cmp’
-> >    75 | #define max(x, y)       __careful_cmp(x, y, >)
-> >       |                         ^~~~~~~~~~~~~
-> > kernel/dma/swiotlb.c:1007:26: note: in expansion of macro ‘max’
-> >  1007 |                 stride = max(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
-> >       |                          ^~~
-> >
-> > Replacing with a max_t() can fix these.
+On Thu, Feb 15, 2024 at 07:21:41PM -0500, Steven Rostedt wrote:
+> On Thu, 15 Feb 2024 18:51:41 -0500
+> Kent Overstreet <kent.overstreet@linux.dev> wrote:
 > 
-> Weird, I haven't seen that. I can fix it as you suggest, but please can
-> you also share your .config so I can look into it further?
+> > Most of that is data (505024), not text (68582, or 66k).
+> > 
+> 
+> And the 4K extra would have been data too.
 
-I attached it in my previous reply, yet forgot to mention before
-hitting the send key that here is my gcc info:
+"It's not that much" isn't an argument for being wasteful.
 
-# gcc -dumpmachine
-aarch64-linux-gnu
-# gcc --version
-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
+> > The data is mostly the alloc tags themselves (one per allocation
+> > callsite, and you compiled the entire kernel), so that's expected.
+> > 
+> > Of the text, a lot of that is going to be slowpath stuff - module load
+> > and unload hooks, formatt and printing the output, other assorted bits.
+> > 
+> > Then there's Allocation and deallocating obj extensions vectors - not
+> > slowpath but not super fast path, not every allocation.
+> > 
+> > The fastpath instruction count overhead is pretty small
+> >  - actually doing the accounting - the core of slub.c, page_alloc.c,
+> >    percpu.c
+> >  - setting/restoring the alloc tag: this is overhead we add to every
+> >    allocation callsite, so it's the most relevant - but it's just a few
+> >    instructions.
+> > 
+> > So that's the breakdown. Definitely not zero overhead, but that fixed
+> > memory overhead (and additionally, the percpu counters) is the price we
+> > pay for very low runtime CPU overhead.
+> 
+> But where are the benchmarks that are not micro-benchmarks. How much
+> overhead does this cause to those? Is it in the noise, or is it noticeable?
+
+Microbenchmarks are how we magnify the effect of a change like this to
+the most we'll ever see. Barring cache effects, it'll be in the noise.
+
+Cache effects are a concern here because we're now touching task_struct
+in the allocation fast path; that is where the
+"compiled-in-but-turned-off" overhead comes from, because we can't add
+static keys for that code without doubling the amount of icache
+footprint, and I don't think that would be a great tradeoff.
+
+So: if your code has fastpath allocations where the hot part of
+task_struct isn't in cache, then this will be noticeable overhead to
+you, otherwise it won't be.
