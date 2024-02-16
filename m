@@ -1,131 +1,89 @@
-Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-177.mta0.migadu.com (out-177.mta0.migadu.com [91.218.175.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89C63137C4B
-	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 19:48:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14075146904
+	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 23:26:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708112921; cv=none; b=aFEic92xmKqQqzaL+TArMh+sLec9J/dMeJv+Lte8BIv39zDMmqdzCwM7DBvfrh71GIYxKQ8epdOUWWrbgpCTfdZltTiE3Y4JQGYkicR6QLu6ym1W0rgMBy4LUHMnkGpgAD+Wm55s8IFIAb8jZix8AYiCTrsE6k79s4QWIHNCpCQ=
+	t=1708125982; cv=none; b=NEogd7eNKJrCY8y1CrPFmbtkuameH0y/BE/xNcoZkn6xceRL7L+kW91JPkPKEGAm7VgGSA97nEZM3Rm9HBUxgjUWpwspbsfrmZLeNop9tKtMVl6IggDuMpt8ouzRJ56KnOOHl2HSD4kIwXUjS3CYW5/By9Ei7R/QBngv+dzT9qA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708112921; c=relaxed/simple;
-	bh=m2Wvv0O31LwrnCQdUKYEs3sNTTEexlxilQS/jlCfnew=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=nVtbJCMX7loztu8DlJaZvsMDSNoSOgNAEkjnFyt5BoEI71Q/mqHeHab6vfHcbA9jkXiVGvKLqmVkTsHv1vOMi7Mgyg8NqmWhyjrgnbe0yTUsJ6xh6JktMFbJq53TvmJ4N8IrfXJ6Ipmx+KGPtbnX264fLVOlhvkwRaDRIBvR63Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=ckY10ujL; arc=none smtp.client-ip=209.85.167.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	s=arc-20240116; t=1708125982; c=relaxed/simple;
+	bh=HjwfytaqXF8iH9Dbpef0PBEdfS3nBXLDDCpMfB7MbjI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NLpRpdWZu3bguPgtfusFCpq6HaXksAGs1PX7DTAoTUaSKVoRVs8UyhhUmhmd2mWPbVoAJUDGrAy0dFhR/THu8ZpUytu/QQwytnVhpKVkMhUGspfoN7aE3wD4pOk4FwITS+41d0VmyNABZsrJ0SeSpdebWjIrdDQrRLsg94MynKI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=C1BPf5NM; arc=none smtp.client-ip=91.218.175.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="ckY10ujL"
-Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-511976c126dso3090072e87.1
-        for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 11:48:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708112917; x=1708717717; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XMO1uzBf5Ipo+B8nJFhezHnHhPZI6cIYH4qqZglP7mw=;
-        b=ckY10ujLnpt/e0yWo3qIWMdjzWkbxoNDzY5eS2aeUOuDwMDrqFCLfgMqmq4hAPslhe
-         iAWbegax3LVPgJsnzcL3oCsWGTkJkYJSdtv9XD+aX1uSK051f8hWlUeu3+Tx4L5jcMII
-         AgbH5rlwuXLEoTej6bzqyBfZRxQ4BFQMulEPYRgM+TUybu1KykNs8uA/Cjn2FCy/D6If
-         5lVYFHPnB+gFJrkLofug8O6IwJALrq0yGGiZFZcLRUnM+DcDBqBeEw9Wsy6+h54WX4HA
-         6scEMFXHtmr42qmp74LK+vCk8g6wdoxXJFdl8vba2FbqvTdvAF1CUW3m+Tk4yUvdSxn/
-         K+Gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708112917; x=1708717717;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=XMO1uzBf5Ipo+B8nJFhezHnHhPZI6cIYH4qqZglP7mw=;
-        b=c2UOAlt0ZL28tCv8jLawT0FxJXANmHlEu7O7u35j7/rhX1SCbFALskZtC3MgIuHqeU
-         QnZIXZLMz9W7MsYljFWkPoW1JA5v6YdOlO0r9ADdVioAteBj39goKOPhzDdrpW70VLfT
-         AWT799cZK+fTmD1B3p+2QdeB0bWTPzHs0CGbj5nrKVUK8QEwHIUYDj3kZg190g3fIByc
-         YIpDUUmvpsHm6armpcwyDy3FTXPxnb89nR/l6hNTsZbkSKKpQStpIId/UPdEAJjThSf1
-         W0yjxLbLdWMtpT7avKfMcf84DSuWMwgwwyBZWmCGtRpZE/jF4mZQ7kr7gwV/d4iha0rK
-         +DSg==
-X-Forwarded-Encrypted: i=1; AJvYcCWYatXN/xI0ae0mAWasiOnvwgA5n72dNhJl+edLalYatatWRP4Du+7PWs0+cRUbvmDDIQwovXnRl0FFcno9VXCcVopz/5w=
-X-Gm-Message-State: AOJu0YwWqwe4iwVZfGAjG2KStC9mFFRkSgRzQCWvkgmWBDZ6JkyFkyii
-	xe58PW/+l142wyjpxC/9IlboBbfBaStR99/212oyorWW3OIbqEAOjihTNi0W6efzQ+PEeaDeYmn
-	GoritidmQSKSLuNH91TaFAB6fyGiAYEC29i3zSA==
-X-Google-Smtp-Source: AGHT+IEiJLDM3GyyGWObGaRCyMN7MxvgX2HQgceLg5ERcIU76EjTibg8tg0F0e6PZPfErw11n01+i2wIipIreSPlOTo=
-X-Received: by 2002:ac2:5bd1:0:b0:511:a021:220a with SMTP id
- u17-20020ac25bd1000000b00511a021220amr4183994lfn.21.1708112917508; Fri, 16
- Feb 2024 11:48:37 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="C1BPf5NM"
+Date: Fri, 16 Feb 2024 18:26:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1708125977;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=i1dxXMhVUP1rgHFbx3bYUtrQ4Vj3OMrjAfFZh9B2nko=;
+	b=C1BPf5NM9g0o4QItUPGRDmMrvEdGWmyuKm4wf1nFggUVoULHG8BShovAlb221Bb8TlJ2Ja
+	KutXp2dyrtywnpnLlJsZyWbMnLgEtGr2j6xQgJwjPAMGkgKbYaLIt/Hwmsmi7ACHkQBytE
+	lKW+kj7xiaratGuJKp1Q6urfXB8QmCo=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Kees Cook <keescook@chromium.org>
+Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org, 
+	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, 
+	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com, 
+	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de, 
+	mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, hughd@google.com, 
+	andreyknvl@gmail.com, ndesaulniers@google.com, vvvvvv@google.com, 
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
+	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
+	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, minchan@google.com, 
+	kaleshsingh@google.com, kernel-team@android.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-modules@vger.kernel.org, 
+	kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+Subject: Re: [PATCH v3 13/35] lib: add allocation tagging support for memory
+ allocation profiling
+Message-ID: <lvrwtp73y2upktswswekhhilrp2i742tmhcxi2c4gayyn24qd2@hdktbg3qutgb>
+References: <20240212213922.783301-1-surenb@google.com>
+ <20240212213922.783301-14-surenb@google.com>
+ <202402121433.5CC66F34B@keescook>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231226200205.562565-1-pasha.tatashin@soleen.com>
- <20231226200205.562565-11-pasha.tatashin@soleen.com> <20240213131210.GA28926@willie-the-truck>
- <CA+CK2bB4Z+z8tocO79AdsAy+gmN_4aVHgFUsm_gYLUJ2zV1A6A@mail.gmail.com> <20240216175752.GB2374@willie-the-truck>
-In-Reply-To: <20240216175752.GB2374@willie-the-truck>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Fri, 16 Feb 2024 14:48:00 -0500
-Message-ID: <CA+CK2bDURTkZFo9uE9Bgfrz-NwgXqo4SAzLOW6Jb35M+eqUEaA@mail.gmail.com>
-Subject: Re: [PATCH v3 10/10] iommu: account IOMMU allocated memory
-To: Will Deacon <will@kernel.org>
-Cc: akpm@linux-foundation.org, alim.akhtar@samsung.com, alyssa@rosenzweig.io, 
-	asahi@lists.linux.dev, baolu.lu@linux.intel.com, bhelgaas@google.com, 
-	cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com, 
-	dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de, 
-	iommu@lists.linux.dev, jernej.skrabec@gmail.com, jonathanh@nvidia.com, 
-	joro@8bytes.org, krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, linux-rockchip@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
-	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st, 
-	mhiramat@kernel.org, m.szyprowski@samsung.com, paulmck@kernel.org, 
-	rdunlap@infradead.org, robin.murphy@arm.com, samuel@sholland.org, 
-	suravee.suthikulpanit@amd.com, sven@svenpeter.dev, thierry.reding@gmail.com, 
-	tj@kernel.org, tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org, 
-	yu-cheng.yu@intel.com, rientjes@google.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202402121433.5CC66F34B@keescook>
+X-Migadu-Flow: FLOW_OUT
 
-On Fri, Feb 16, 2024 at 12:58=E2=80=AFPM Will Deacon <will@kernel.org> wrot=
-e:
->
-> On Tue, Feb 13, 2024 at 10:44:53AM -0500, Pasha Tatashin wrote:
-> > > >  SecPageTables
-> > > > -              Memory consumed by secondary page tables, this curre=
-ntly
-> > > > -              currently includes KVM mmu allocations on x86 and ar=
-m64.
-> > > > +              Memory consumed by secondary page tables, this curre=
-ntly includes
-> > > > +              KVM mmu and IOMMU allocations on x86 and arm64.
-> >
-> > Hi Will,
-> >
-> > > While I can see the value in this for IOMMU mappings managed by VFIO,
-> > > doesn't this end up conflating that with the normal case of DMA domai=
-ns?
-> > > For systems that e.g. rely on an IOMMU for functional host DMA, it se=
-ems
-> > > wrong to subject that to accounting constraints.
-> >
-> > The accounting constraints are only applicable when GFP_KERNEL_ACCOUNT
-> > is passed to the iommu mapping functions. We do that from the vfio,
-> > iommufd, and vhost. Without this flag, the memory useage is reported
-> > in /proc/meminfo as part of  SecPageTables field, but not constrained
-> > in cgroup.
->
-> Thanks, Pasha, that explanation makes sense. I still find it bizarre to
-> include IOMMU allocations from the DMA API in SecPageTables though, and
-> I worry that it will confuse people who are using that metric as a way
-> to get a feeling for how much memory is being used by KVM's secondary
-> page-tables. As an extreme example, having a non-zero SecPageTables count
-> without KVM even compiled in is pretty bizarre.
+On Mon, Feb 12, 2024 at 02:40:12PM -0800, Kees Cook wrote:
+> On Mon, Feb 12, 2024 at 01:38:59PM -0800, Suren Baghdasaryan wrote:
+> > diff --git a/include/linux/sched.h b/include/linux/sched.h
+> > index ffe8f618ab86..da68a10517c8 100644
+> > --- a/include/linux/sched.h
+> > +++ b/include/linux/sched.h
+> > @@ -770,6 +770,10 @@ struct task_struct {
+> >  	unsigned int			flags;
+> >  	unsigned int			ptrace;
+> >  
+> > +#ifdef CONFIG_MEM_ALLOC_PROFILING
+> > +	struct alloc_tag		*alloc_tag;
+> > +#endif
+> 
+> Normally scheduling is very sensitive to having anything early in
+> task_struct. I would suggest moving this the CONFIG_SCHED_CORE ifdef
+> area.
 
-I agree; I also prefer a new field in /proc/meminfo named
-'IOMMUPageTables'. This is what I proposed at LPC, but I was asked to
-reuse the existing 'SecPageTables' field instead. The rationale was
-that 'secondary' implies not only KVM page tables, but any other
-non-regular page tables.
-
-I would appreciate the opinion of IOMMU maintainers on this: is it
-preferable to bundle the information with 'SecPageTables' or maintain
-a separate field?
-
-Pasha
+This is even hotter than the scheduler members; we actually do want it
+up front.
