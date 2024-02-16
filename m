@@ -1,78 +1,161 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D819612DD88
-	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 14:20:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708093225; cv=none; b=lPx9ERkVbMzA1n+eEvhuRHGoI3694V5TJPt2RgsNlX32D6ludhsNYP2RqCel8SHnmHtwJftprG8GMhJN9T2YIhE0AiQWNTBRzFOY2A3088J3t8LDIwEfMfFv1rP19/z0hwr20uYjsD+JJj4uEf3vnNxZEbDxSPa9B1EKMfgAQcg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708093225; c=relaxed/simple;
-	bh=bNxzB1iXQnVUL8kOxK+D7Fyr91Yu17rlVKWuwF3UjJA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rM/9n2Zm/jZT/LhC9sa9tmsSnqaM7wVbcn9dXMAniNXa7ULdOHlfJU6Tmd4zXNG7Zjqn3JHRHxCp3MXLY7JQSVupEJIfudl1nuzXgCFAvTkWg8QEyk4uMi/Hwr3ux7HDKjELv4ereEZ35kO09bM0RwNcr/1ge6AdpMqc1anSPe8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=Sk58NeRY; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="Sk58NeRY"
-Received: from 8bytes.org (p4ffe0c3c.dip0.t-ipconnect.de [79.254.12.60])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id A60FC1C462F;
-	Fri, 16 Feb 2024 15:20:17 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1708093217;
-	bh=bNxzB1iXQnVUL8kOxK+D7Fyr91Yu17rlVKWuwF3UjJA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Sk58NeRYOzA7VCTE6M4STJkXGudBbVh3xWbOFXBaIE0CIjO0bDoba2613m3xMEJkf
-	 Dz9zn4e+gu4809m5AYYcGtvASkTplVee+A0Zko251ZSTNH+aj9jdEY9FZoGz+O7xYu
-	 VWzFSTmzl3vvTkciReKFX2RIIuJ5at2pzeVqKE0ym3WXBiDY9u8pZRGUEy7KsSaZj+
-	 MgDtC2gXI2gIz4wpzn4CrnG4gGD3QC5zJnT67HcX/KeUdk8hYKUCfT4NsTZukP3aD0
-	 Z3VATvpm0DXr3vH6k+1ivJ6fGqZXzl8fs+J/mcWLXtOZF3aRzoQRkxT0DfRZwPgoo+
-	 TTG0g4f3RIRkA==
-Date: Fri, 16 Feb 2024 15:20:16 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Longfang Liu <liulongfang@huawei.com>,
-	Yan Zhao <yan.y.zhao@intel.com>,
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
-	kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v13 00/16] iommu: Prepare to deliver page faults to user
- space
-Message-ID: <Zc9vIMa_DarGHVZq@8bytes.org>
-References: <20240212012227.119381-1-baolu.lu@linux.intel.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B764D1E516
+	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 14:33:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708094010; cv=none; b=LD23S1iaPD01Po7BDffR7EeHsjd93627/4WzSitLhpL54flJE/hcE0UbNb31o885TsSNtcT5i551J5JW7DNdON2dMB8HTMncTBi3Ye2fuIw4J3IeEY+EcGoc8GjAOLi4MyZhtw/B4thuD7b1QphIqYyp0hJXjFnhrSgyPQJUaGs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708094010; c=relaxed/simple;
+	bh=bEShoLEM6tIkuBWHvdvzGbyhOUXhBWDe5D52MyLH2G8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=fOynREJH7orM64buXUympHVUdNvLpPykupFQy8i/wJezAQkc/BQadvvfEQZEBkQdCsmMNPJpnkjNuCzfQWpwifv4a5ZlpGEzm68ucDmQc6hT4S0MXpDXHU6BazNkInN7JPpzQ1yERdXe8yQMwP2wGA6fcMlk+lUkGrd39kmHGyw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=rbn1NWj2; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=qRdncZ1q; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=rbn1NWj2; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=qRdncZ1q; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="rbn1NWj2";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="qRdncZ1q";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="rbn1NWj2";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="qRdncZ1q"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 970D41FB71;
+	Fri, 16 Feb 2024 14:33:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1708094005; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=bEShoLEM6tIkuBWHvdvzGbyhOUXhBWDe5D52MyLH2G8=;
+	b=rbn1NWj2DncNsUN3usvQjdCxOanR70XIVIxZW4SwqqNpSvkUPleklt4+Gp17sdQLrakWUP
+	vqyOrM0fg+qSp+TvJyJe4vgCgm7kIXJ2kpkSN9HbpxNl9AriLmXYt72VizIu1cJdAvLhp1
+	P0pswVNFJP7q0yvjUPgooEV50nzuazg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1708094005;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=bEShoLEM6tIkuBWHvdvzGbyhOUXhBWDe5D52MyLH2G8=;
+	b=qRdncZ1qVeY7BkGvfabtUMl+HxHzgxcQLFYpA94PwDtGgi6NSFmuEK5EDdhftqI1jahzx8
+	auHZz3PLj6UMlRAQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1708094005; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=bEShoLEM6tIkuBWHvdvzGbyhOUXhBWDe5D52MyLH2G8=;
+	b=rbn1NWj2DncNsUN3usvQjdCxOanR70XIVIxZW4SwqqNpSvkUPleklt4+Gp17sdQLrakWUP
+	vqyOrM0fg+qSp+TvJyJe4vgCgm7kIXJ2kpkSN9HbpxNl9AriLmXYt72VizIu1cJdAvLhp1
+	P0pswVNFJP7q0yvjUPgooEV50nzuazg=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1708094005;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=bEShoLEM6tIkuBWHvdvzGbyhOUXhBWDe5D52MyLH2G8=;
+	b=qRdncZ1qVeY7BkGvfabtUMl+HxHzgxcQLFYpA94PwDtGgi6NSFmuEK5EDdhftqI1jahzx8
+	auHZz3PLj6UMlRAQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id E91F61398D;
+	Fri, 16 Feb 2024 14:33:24 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id H1yWODRyz2WlNQAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Fri, 16 Feb 2024 14:33:24 +0000
+Message-ID: <2e26bdf7-a793-4386-bcc1-5b1c7a0405b3@suse.cz>
+Date: Fri, 16 Feb 2024 15:33:24 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240212012227.119381-1-baolu.lu@linux.intel.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 18/35] mm: create new codetag references during page
+ splitting
+Content-Language: en-US
+To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
+Cc: kent.overstreet@linux.dev, mhocko@suse.com, hannes@cmpxchg.org,
+ roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
+ willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
+ void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
+ catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de,
+ mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org,
+ peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
+ masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+ muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+ pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+ dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+ keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
+ gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+ vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
+ bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
+ penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+ glider@google.com, elver@google.com, dvyukov@google.com,
+ shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
+ rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+ kernel-team@android.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-mm@kvack.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+References: <20240212213922.783301-1-surenb@google.com>
+ <20240212213922.783301-19-surenb@google.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20240212213922.783301-19-surenb@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Level: 
+X-Spamd-Bar: /
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=rbn1NWj2;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=qRdncZ1q
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Spamd-Result: default: False [-0.00 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	 XM_UA_NO_VERSION(0.01)[];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	 MID_RHS_MATCH_FROM(0.00)[];
+	 TAGGED_RCPT(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 NEURAL_HAM_LONG(-1.00)[-1.000];
+	 BAYES_HAM(-0.00)[44.23%];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 TO_MATCH_ENVRCPT_SOME(0.00)[];
+	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	 DKIM_TRACE(0.00)[suse.cz:+];
+	 MX_GOOD(-0.01)[];
+	 RCPT_COUNT_GT_50(0.00)[73];
+	 NEURAL_HAM_SHORT(-0.20)[-1.000];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 FREEMAIL_CC(0.00)[linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
+	 RCVD_TLS_ALL(0.00)[];
+	 SUSPICIOUS_RECIPS(1.50)[]
+X-Spam-Score: -0.00
+X-Rspamd-Queue-Id: 970D41FB71
+X-Spam-Flag: NO
 
-On Mon, Feb 12, 2024 at 09:22:11AM +0800, Lu Baolu wrote:
-> Lu Baolu (16):
->   iommu: Move iommu fault data to linux/iommu.h
->   iommu/arm-smmu-v3: Remove unrecoverable faults reporting
->   iommu: Remove unrecoverable fault data
->   iommu: Cleanup iopf data structure definitions
->   iommu: Merge iopf_device_param into iommu_fault_param
->   iommu: Remove iommu_[un]register_device_fault_handler()
->   iommu: Merge iommu_fault_event and iopf_fault
->   iommu: Prepare for separating SVA and IOPF
->   iommu: Make iommu_queue_iopf() more generic
->   iommu: Separate SVA and IOPF
->   iommu: Refine locking for per-device fault data management
->   iommu: Use refcount for fault data access
->   iommu: Improve iopf_queue_remove_device()
->   iommu: Track iopf group instead of last fault
->   iommu: Make iopf_group_response() return void
->   iommu: Make iommu_report_device_fault() return void
+On 2/12/24 22:39, Suren Baghdasaryan wrote:
+> When a high-order page is split into smaller ones, each newly split
+> page should get its codetag. The original codetag is reused for these
+> pages but it's recorded as 0-byte allocation because original codetag
+> already accounts for the original high-order allocated page.
 
-Applied, thanks Baolu.
+Wouldn't it be possible to adjust the original's accounted size and
+redistribute to the split pages for more accuracy?
+
