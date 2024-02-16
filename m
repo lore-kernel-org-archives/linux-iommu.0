@@ -1,148 +1,115 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41CD012D770;
-	Fri, 16 Feb 2024 16:13:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABD3312FB18;
+	Fri, 16 Feb 2024 16:28:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708099999; cv=none; b=LYbihIk37TNqKBVOa5a8VJy6r6irZgoLk4byqabC2UZp7Ne6ui7JPdjhkwY3oLQZ6ddhsYVNFFNsyk4hCS6BNHw3hBlznLjsfuKZk6GMQpDjrDSQXQcG9H6SMIFeaoEUGDW65fH+MF+7NZ8qvTyB33ngbgz3MyAzdqgdSSj0zCQ=
+	t=1708100934; cv=none; b=sOww8gTZM8EV9kJZIfeJ8Ur4G+VT8pD67SADOH5Cee+s6BJeFQRaySK6bdnpenpgDQ1d+pCDDe2n/BfMwEH6yRCh+di6P1guuZkReF/SEOu1qwNtI/JjSHt3uI+V/PQdkM0zoebI54vCQOnh30KM8a9/lmibXJ09WYPKeC9ttow=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708099999; c=relaxed/simple;
-	bh=0C9+pCgjxRMOl9W9M/RJQspbO81gdJ2Y5+OCFt5kwAw=;
+	s=arc-20240116; t=1708100934; c=relaxed/simple;
+	bh=bLayoZaZJLZiF5BMJqBebQLCc+RBwyhci3ZXz7tlJMY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RoV3Sp4kkpKAZEudGTRBi1Ale0uBx48kMrjKFf3THWhCZNUagFyxmQ/h+NrM/3OdBN362aQMmV/f+z55DxF90sZjq9RDEa47TCMjXk1NTJeHVuHLGQYoOYVNmvhmn1EwkUgkXu+seSDSV5lEmvnrJWcdLCnymgQPuDxHhzHmhCw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uQ2AVVwa; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=uS+im3yjui+jqWmUx0iG5pRDsAx7hwwaSGb0L/LCzfADA/qiMRuqdPJilg+7jSEawxlhr+oFkjiqOmCi7ceyyneuLHcwdMEpZtqsmK8ZpRAVkNlUoGymTy1EMQVcR36nEGFis2/3HDNxghGyWcWUqeF15iEMS3zu4IANz6GCpCk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=krob6DhG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uQ2AVVwa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 585B0C433C7;
-	Fri, 16 Feb 2024 16:13:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="krob6DhG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36F7FC433C7;
+	Fri, 16 Feb 2024 16:28:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708099998;
-	bh=0C9+pCgjxRMOl9W9M/RJQspbO81gdJ2Y5+OCFt5kwAw=;
+	s=k20201202; t=1708100934;
+	bh=bLayoZaZJLZiF5BMJqBebQLCc+RBwyhci3ZXz7tlJMY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=uQ2AVVwaKgHAtfDxbKsFun3Cxph1v1ovRg2RMHIfxNpeAFMxZoBEOaPhg+KMRRTFM
-	 dLRVSYRF1YV2rMCcilm14ixVSLxgl1pfJyn5kLRar+fPcQITEyDRQG3ehlzAljPYF2
-	 0Z39Z/YUMeaeipQ00UVGpvdYRSjtImymJsFsrnozJG3a+dkvLQn22ewV5tlTro2cyf
-	 qQBkStYqVNzmodLKgIfctm15lIX3C6B+Bw7ZCBViG6f3pse+iE6j3E/YIMwBNWZxN2
-	 Azgk3l0gu6/rm8sOJZr7FAlI2Yak86+3NTqkyi8VIituSoZpvE8MgpL59ggOqSjqva
-	 DBapcF2ROFIgQ==
-Date: Fri, 16 Feb 2024 16:13:12 +0000
+	b=krob6DhGMHFi1yO0jo5VUTbEo0bOL7nK+lnOcMUcxZCCEvNFnktE8Ik+Vv19iMdwV
+	 xrtviPpTD/7N+XnLu8Ds2ujzxszL1tRgQviMaufpHWGoNJkrGXhW+MATA5OHsepKEP
+	 YllORJMXxrpXwrgTDbLCZWMBA4gV82a1FA82gN9ggJRiMeJg+yT+r/m2T9vlzL7o13
+	 V+EAps5cCqhgF+MFwd1P6FtWjqePxRDbecuixlPABVczSzme1Yot66/qBB3faMhuK3
+	 xZj4zg20BKtSgS5XBRK/KoUYP/7mz9FHNe0ahFw11NycFL+COgiKNb0z4hqfOCGw35
+	 4lMcJs6rwCwRg==
+Date: Fri, 16 Feb 2024 16:28:47 +0000
 From: Will Deacon <will@kernel.org>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: sagi@grimberg.me, hch@lst.de, axboe@kernel.dk, kbusch@kernel.org,
-	joro@8bytes.org, robin.murphy@arm.com, jgg@nvidia.com,
-	linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, murphyt7@tcd.ie, baolu.lu@linux.intel.com
-Subject: Re: [PATCH v1 0/2] nvme-pci: Fix dma-iommu mapping failures when
- PAGE_SIZE=64KB
-Message-ID: <20240216161312.GA2203@willie-the-truck>
-References: <cover.1707851466.git.nicolinc@nvidia.com>
- <20240214164138.GA31927@willie-the-truck>
- <Zc0bLAIXSAqsQJJv@Asurada-Nvidia>
- <20240215142208.GA753@willie-the-truck>
- <20240215163544.GA821@willie-the-truck>
- <Zc6rr/LleQ2krkyg@Asurada-Nvidia>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH v5 01/17] iommu/arm-smmu-v3: Make STE programming
+ independent of the callers
+Message-ID: <20240216162847.GA2292@willie-the-truck>
+References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+ <1-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+ <20240215134952.GA690@willie-the-truck>
+ <20240215160135.GL1088888@nvidia.com>
+ <02fac0ab-07ac-448e-ae4e-26788ed4fce9@arm.com>
+ <a0c62629-999f-4aa1-86c7-3104811f84d0@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <Zc6rr/LleQ2krkyg@Asurada-Nvidia>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a0c62629-999f-4aa1-86c7-3104811f84d0@arm.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Hi Nicolin,
-
-Thanks for sharing all the logs, .config etc.
-
-On Thu, Feb 15, 2024 at 04:26:23PM -0800, Nicolin Chen wrote:
-> On Thu, Feb 15, 2024 at 04:35:45PM +0000, Will Deacon wrote:
-> > On Thu, Feb 15, 2024 at 02:22:09PM +0000, Will Deacon wrote:
-> > > On Wed, Feb 14, 2024 at 11:57:32AM -0800, Nicolin Chen wrote:
-> > > > On Wed, Feb 14, 2024 at 04:41:38PM +0000, Will Deacon wrote:
-> > > > > On Tue, Feb 13, 2024 at 01:53:55PM -0800, Nicolin Chen wrote:
-> > > > And it seems to get worse, as even a 64KB mapping is failing:
-> > > > [    0.239821] nvme 0000:00:01.0: swiotlb buffer is full (sz: 65536 bytes), total 32768 (slots), used 0 (slots)
-> > > >
-> > > > With a printk, I found the iotlb_align_mask isn't correct:
-> > > >    swiotlb_area_find_slots:alloc_align_mask 0xffff, iotlb_align_mask 0x800
-> > > >
-> > > > But fixing the iotlb_align_mask to 0x7ff still fails the 64KB
-> > > > mapping..
-> > >
-> > > Hmm. A mask of 0x7ff doesn't make a lot of sense given that the slabs
-> > > are 2KiB aligned. I'll try plugging in some of the constants you have
-> > > here, as something definitely isn't right...
+On Thu, Feb 15, 2024 at 08:11:38PM +0000, Robin Murphy wrote:
+> On 2024-02-15 6:42 pm, Robin Murphy wrote:
+> [...]
+> > > > > +static void arm_smmu_get_ste_used(const __le64 *ent, __le64
+> > > > > *used_bits)
+> > > > >   {
+> > > > > +    unsigned int cfg = FIELD_GET(STRTAB_STE_0_CFG,
+> > > > > le64_to_cpu(ent[0]));
+> > > > > +
+> > > > > +    used_bits[0] = cpu_to_le64(STRTAB_STE_0_V);
+> > > > > +    if (!(ent[0] & cpu_to_le64(STRTAB_STE_0_V)))
+> > > > > +        return;
+> > > > > +
+> > > > > +    /*
+> > > > > +     * See 13.5 Summary of attribute/permission
+> > > > > configuration fields for the
+> > > > > +     * SHCFG behavior. It is only used for BYPASS,
+> > > > > including S1DSS BYPASS,
+> > > > > +     * and S2 only.
+> > > > > +     */
+> > > > > +    if (cfg == STRTAB_STE_0_CFG_BYPASS ||
+> > > > > +        cfg == STRTAB_STE_0_CFG_S2_TRANS ||
+> > > > > +        (cfg == STRTAB_STE_0_CFG_S1_TRANS &&
+> > > > > +         FIELD_GET(STRTAB_STE_1_S1DSS, le64_to_cpu(ent[1])) ==
+> > > > > +             STRTAB_STE_1_S1DSS_BYPASS))
+> > > > > +        used_bits[1] |= cpu_to_le64(STRTAB_STE_1_SHCFG);
+> > > > 
+> > > > Huh, SHCFG is really getting in the way here, isn't it?
+> > > 
+> > > I wouldn't say that.. It is just a complicated bit of the spec. One of
+> > > the things we recently did was to audit all the cache settings and, at
+> > > least, we then realized that SHCFG was being subtly used by S2 as
+> > > well..
 > > 
-> > Sorry, another ask: please can you print 'orig_addr' in the case of the
-> > failing allocation?
+> > Yeah, that really shouldn't be subtle; incoming attributes are replaced
+> > by S1 translation, thus they are relevant to not-S1 configs.
 > 
-> I added nvme_print_sgl() in the nvme-pci driver before its
-> dma_map_sgtable() call, so the orig_addr isn't aligned with
-> PAGE_SIZE=64K or NVME_CTRL_PAGE_SIZE=4K:
->  sg[0] phys_addr:0x0000000105774600 offset:17920 length:512 dma_address:0x0000000000000000 dma_length:0
-> 
-> Also attaching some verbose logs, in case you'd like to check:
->    nvme 0000:00:01.0: swiotlb_area_find_slots: dma_get_min_align_mask 0xfff, IO_TLB_SIZE 0xfffff7ff
->    nvme 0000:00:01.0: swiotlb_area_find_slots: alloc_align_mask 0xffff, iotlb_align_mask 0x7ff
->    nvme 0000:00:01.0: swiotlb_area_find_slots: stride 0x20, max 0xffff
->    nvme 0000:00:01.0: swiotlb_area_find_slots: tlb_addr=0xbd830000, iotlb_align_mask=0x7ff, alloc_align_mask=0xffff
-> => nvme 0000:00:01.0: swiotlb_area_find_slots: orig_addr=0x105774600, iotlb_align_mask=0x7ff
+> That said, in this specific case I don't understand why we're worrying about
+> SHCFG here at all - we're never going to make use of any value other than
+> "use incoming" because we can't rely on it being implemented in the first
+> place, and even if it is, we really don't want to start getting into the
+> forced-coherency notion that the DMA layer can'#t understand and devicetree
+> can't describe.
 
-With my patches, I think 'iotlb_align_mask' will be 0x800 here, so this
-particular allocation might be alright, however I think I'm starting to
-see the wider problem. The IOMMU code is asking for a 64k-aligned
-allocation so that it can map it safely, but at the same time
-dma_get_min_align_mask() is asking for congruence in the 4k NVME page
-offset. Now, because we're going to allocate a 64k-aligned mapping and
-offset it, I think the NVME alignment will just fall out in the wash and
-checking the 'orig_addr' (which includes the offset) is wrong.
-
-So perhaps this diff (which I'm sadly not able to test) will help? You'll
-want to apply it on top of my other patches. The idea is to ignore the
-bits of 'orig_addr' which will be aligned automatically by offseting from
-the aligned allocation. I fixed the max() thing too, although that's only
-an issue for older kernels.
-
-Cheers,
+Yup, that's exactly what I'm thinking. We currently set it to NSH when
+translation is enabled, so that the stage-2 shareability is effectively
+an override. However, the device is either coherent, or it isn't, and so
+we should just leave this always set to "use incoming" in my opinion,
+which means we no longer need to care about qword 1 for the bypass case.
 
 Will
-
---->8
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 283eea33dd22..4a000d97f568 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -981,8 +981,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
-        dma_addr_t tbl_dma_addr =
-                phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
-        unsigned long max_slots = get_max_slots(boundary_mask);
--       unsigned int iotlb_align_mask =
--               dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
-+       unsigned int iotlb_align_mask = dma_get_min_align_mask(dev);
-        unsigned int nslots = nr_slots(alloc_size), stride;
-        unsigned int offset = swiotlb_align_offset(dev, orig_addr);
-        unsigned int index, slots_checked, count = 0, i;
-@@ -993,6 +992,9 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
-        BUG_ON(!nslots);
-        BUG_ON(area_index >= pool->nareas);
-
-+       alloc_align_mask |= (IO_TLB_SIZE - 1);
-+       iotlb_align_mask &= ~alloc_align_mask;
-+
-        /*
-         * For mappings with an alignment requirement don't bother looping to
-         * unaligned slots once we found an aligned one.
-@@ -1004,7 +1006,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
-         * allocations.
-         */
-        if (alloc_size >= PAGE_SIZE)
--               stride = max(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
-+               stride = umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
-
-        spin_lock_irqsave(&area->lock, flags);
-        if (unlikely(nslots > pool->area_nslabs - area->used))
-
