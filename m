@@ -1,115 +1,211 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABD3312FB18;
-	Fri, 16 Feb 2024 16:28:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE5101D689
+	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 16:31:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708100934; cv=none; b=sOww8gTZM8EV9kJZIfeJ8Ur4G+VT8pD67SADOH5Cee+s6BJeFQRaySK6bdnpenpgDQ1d+pCDDe2n/BfMwEH6yRCh+di6P1guuZkReF/SEOu1qwNtI/JjSHt3uI+V/PQdkM0zoebI54vCQOnh30KM8a9/lmibXJ09WYPKeC9ttow=
+	t=1708101078; cv=none; b=VZn72trY6y6L7XbEsEGGmj54/L1ZvaodRiK1ky48DdNhl3HJeinmdNeF1AeAZiEZsXhUVjV08a0pSjglMvj6nNGFtOtximoebeq7DtI54GQmUVygELxuJoZdwtvhuA41/7URy1ShnxgKoz5fZWZ4yM8unM9bQUkyWm/btI0OxN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708100934; c=relaxed/simple;
-	bh=bLayoZaZJLZiF5BMJqBebQLCc+RBwyhci3ZXz7tlJMY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uS+im3yjui+jqWmUx0iG5pRDsAx7hwwaSGb0L/LCzfADA/qiMRuqdPJilg+7jSEawxlhr+oFkjiqOmCi7ceyyneuLHcwdMEpZtqsmK8ZpRAVkNlUoGymTy1EMQVcR36nEGFis2/3HDNxghGyWcWUqeF15iEMS3zu4IANz6GCpCk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=krob6DhG; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1708101078; c=relaxed/simple;
+	bh=+pZ1ryuaBWtnB9/+TYxnV0GLBmD4Hr4MBmuOHCG4Kwc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nxFHHCO0R4SqEt1XHVhD3b15xT/+uIgFhfUf7w2Ywjtus2kLSF5af96z9uNzxPuel4USXQFesWXSIp+1Hb61DiFJmo0RwusoSwuq2kLXxa9FDipTS65K5xx5CwJ9cVfohFXCnQ3MGM+JoJJBGDHtmAo4F3H6J1Nexivy5bvyHPQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=PvWNYFER; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=+FYGDISJ; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=w2RqONsA; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=eEYKBvcE; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="krob6DhG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36F7FC433C7;
-	Fri, 16 Feb 2024 16:28:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708100934;
-	bh=bLayoZaZJLZiF5BMJqBebQLCc+RBwyhci3ZXz7tlJMY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=krob6DhGMHFi1yO0jo5VUTbEo0bOL7nK+lnOcMUcxZCCEvNFnktE8Ik+Vv19iMdwV
-	 xrtviPpTD/7N+XnLu8Ds2ujzxszL1tRgQviMaufpHWGoNJkrGXhW+MATA5OHsepKEP
-	 YllORJMXxrpXwrgTDbLCZWMBA4gV82a1FA82gN9ggJRiMeJg+yT+r/m2T9vlzL7o13
-	 V+EAps5cCqhgF+MFwd1P6FtWjqePxRDbecuixlPABVczSzme1Yot66/qBB3faMhuK3
-	 xZj4zg20BKtSgS5XBRK/KoUYP/7mz9FHNe0ahFw11NycFL+COgiKNb0z4hqfOCGw35
-	 4lMcJs6rwCwRg==
-Date: Fri, 16 Feb 2024 16:28:47 +0000
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>,
-	Moritz Fischer <moritzf@google.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: Re: [PATCH v5 01/17] iommu/arm-smmu-v3: Make STE programming
- independent of the callers
-Message-ID: <20240216162847.GA2292@willie-the-truck>
-References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <1-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <20240215134952.GA690@willie-the-truck>
- <20240215160135.GL1088888@nvidia.com>
- <02fac0ab-07ac-448e-ae4e-26788ed4fce9@arm.com>
- <a0c62629-999f-4aa1-86c7-3104811f84d0@arm.com>
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="PvWNYFER";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="+FYGDISJ";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="w2RqONsA";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="eEYKBvcE"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id D015A1FB81;
+	Fri, 16 Feb 2024 16:31:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1708101074; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lPLurTqAKLnQ458IhhqsUiDYFpmaxE3prWq99XPtm2A=;
+	b=PvWNYFERdBj6/X38g8RBED/odsY20Q+KehPIlVU0G6U0b4vOUZmfj77qPboFhrp7Bd9CnV
+	0H2m1Gs1s8M3CQCPnvyvZK5n8Vf4tyAdtWp1+uqsjkpDh3cFGiIYHtEbze0tARZthulYoj
+	PJQNhMLmZSbaaCV+ep7Hhzl4ewWkCeY=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1708101074;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lPLurTqAKLnQ458IhhqsUiDYFpmaxE3prWq99XPtm2A=;
+	b=+FYGDISJl02L7Oya4mQkx8/oWxMYWCf6DNOnjrKyNJPJKOBikQpCCKkKlBHLHnUGiMgp7b
+	aW1Yl2TtAoEfNHBg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1708101072; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lPLurTqAKLnQ458IhhqsUiDYFpmaxE3prWq99XPtm2A=;
+	b=w2RqONsAnc+GQMiPPww7rXdu6p7bKILnnJPgLwqTzKH0H7OXuM5DPfFo7Pvy2me/P2YVTh
+	X63CzX9gRR1UZXOHy3bxAPJwojhSeLTbLhs0AIN5O5TkNEp9cxwS37Dc0ugthfG9h0ZZXg
+	1pmrr2oxaR6lSO0gSf6iGntKIz6gSSw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1708101072;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lPLurTqAKLnQ458IhhqsUiDYFpmaxE3prWq99XPtm2A=;
+	b=eEYKBvcE3fUI6yqCe5di1cJaiYnNwB+JhiJpTBU1abe/HW09sf7huSfQ37SMWxMIagWemO
+	dg2ebBA8JFTuH/BQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 3CE2F1398D;
+	Fri, 16 Feb 2024 16:31:12 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id bsViDtCNz2U/UAAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Fri, 16 Feb 2024 16:31:12 +0000
+Message-ID: <ec0f9be2-d544-45a6-b6a9-178872b27bd4@suse.cz>
+Date: Fri, 16 Feb 2024 17:31:11 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a0c62629-999f-4aa1-86c7-3104811f84d0@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 21/35] mm/slab: add allocation accounting into slab
+ allocation and free paths
+Content-Language: en-US
+To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
+Cc: kent.overstreet@linux.dev, mhocko@suse.com, hannes@cmpxchg.org,
+ roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
+ willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
+ void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
+ catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de,
+ mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org,
+ peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
+ masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+ muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+ pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+ dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+ keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
+ gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+ vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
+ bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
+ penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+ glider@google.com, elver@google.com, dvyukov@google.com,
+ shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
+ rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+ kernel-team@android.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-mm@kvack.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+References: <20240212213922.783301-1-surenb@google.com>
+ <20240212213922.783301-22-surenb@google.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20240212213922.783301-22-surenb@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Authentication-Results: smtp-out2.suse.de;
+	none
+X-Spamd-Result: default: False [1.41 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 XM_UA_NO_VERSION(0.01)[];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 MID_RHS_MATCH_FROM(0.00)[];
+	 TAGGED_RCPT(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 BAYES_HAM(-0.00)[19.51%];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 TO_MATCH_ENVRCPT_SOME(0.00)[];
+	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	 RCPT_COUNT_GT_50(0.00)[73];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 FREEMAIL_CC(0.00)[linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
+	 RCVD_TLS_ALL(0.00)[];
+	 SUSPICIOUS_RECIPS(1.50)[]
+X-Spam-Level: *
+X-Spam-Score: 1.41
+X-Spam-Flag: NO
 
-On Thu, Feb 15, 2024 at 08:11:38PM +0000, Robin Murphy wrote:
-> On 2024-02-15 6:42 pm, Robin Murphy wrote:
-> [...]
-> > > > > +static void arm_smmu_get_ste_used(const __le64 *ent, __le64
-> > > > > *used_bits)
-> > > > >   {
-> > > > > +    unsigned int cfg = FIELD_GET(STRTAB_STE_0_CFG,
-> > > > > le64_to_cpu(ent[0]));
-> > > > > +
-> > > > > +    used_bits[0] = cpu_to_le64(STRTAB_STE_0_V);
-> > > > > +    if (!(ent[0] & cpu_to_le64(STRTAB_STE_0_V)))
-> > > > > +        return;
-> > > > > +
-> > > > > +    /*
-> > > > > +     * See 13.5 Summary of attribute/permission
-> > > > > configuration fields for the
-> > > > > +     * SHCFG behavior. It is only used for BYPASS,
-> > > > > including S1DSS BYPASS,
-> > > > > +     * and S2 only.
-> > > > > +     */
-> > > > > +    if (cfg == STRTAB_STE_0_CFG_BYPASS ||
-> > > > > +        cfg == STRTAB_STE_0_CFG_S2_TRANS ||
-> > > > > +        (cfg == STRTAB_STE_0_CFG_S1_TRANS &&
-> > > > > +         FIELD_GET(STRTAB_STE_1_S1DSS, le64_to_cpu(ent[1])) ==
-> > > > > +             STRTAB_STE_1_S1DSS_BYPASS))
-> > > > > +        used_bits[1] |= cpu_to_le64(STRTAB_STE_1_SHCFG);
-> > > > 
-> > > > Huh, SHCFG is really getting in the way here, isn't it?
-> > > 
-> > > I wouldn't say that.. It is just a complicated bit of the spec. One of
-> > > the things we recently did was to audit all the cache settings and, at
-> > > least, we then realized that SHCFG was being subtly used by S2 as
-> > > well..
-> > 
-> > Yeah, that really shouldn't be subtle; incoming attributes are replaced
-> > by S1 translation, thus they are relevant to not-S1 configs.
+On 2/12/24 22:39, Suren Baghdasaryan wrote:
+> Account slab allocations using codetag reference embedded into slabobj_ext.
 > 
-> That said, in this specific case I don't understand why we're worrying about
-> SHCFG here at all - we're never going to make use of any value other than
-> "use incoming" because we can't rely on it being implemented in the first
-> place, and even if it is, we really don't want to start getting into the
-> forced-coherency notion that the DMA layer can'#t understand and devicetree
-> can't describe.
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
+> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+> ---
+>  mm/slab.h | 26 ++++++++++++++++++++++++++
+>  mm/slub.c |  5 +++++
+>  2 files changed, 31 insertions(+)
+> 
+> diff --git a/mm/slab.h b/mm/slab.h
+> index 224a4b2305fb..c4bd0d5348cb 100644
+> --- a/mm/slab.h
+> +++ b/mm/slab.h
+> @@ -629,6 +629,32 @@ prepare_slab_obj_exts_hook(struct kmem_cache *s, gfp_t flags, void *p)
+>  
+>  #endif /* CONFIG_SLAB_OBJ_EXT */
+>  
+> +#ifdef CONFIG_MEM_ALLOC_PROFILING
+> +
+> +static inline void alloc_tagging_slab_free_hook(struct kmem_cache *s, struct slab *slab,
+> +					void **p, int objects)
+> +{
+> +	struct slabobj_ext *obj_exts;
+> +	int i;
+> +
+> +	obj_exts = slab_obj_exts(slab);
+> +	if (!obj_exts)
+> +		return;
+> +
+> +	for (i = 0; i < objects; i++) {
+> +		unsigned int off = obj_to_index(s, slab, p[i]);
+> +
+> +		alloc_tag_sub(&obj_exts[off].ref, s->size);
+> +	}
+> +}
+> +
+> +#else
+> +
+> +static inline void alloc_tagging_slab_free_hook(struct kmem_cache *s, struct slab *slab,
+> +					void **p, int objects) {}
+> +
+> +#endif /* CONFIG_MEM_ALLOC_PROFILING */
 
-Yup, that's exactly what I'm thinking. We currently set it to NSH when
-translation is enabled, so that the stage-2 shareability is effectively
-an override. However, the device is either coherent, or it isn't, and so
-we should just leave this always set to "use incoming" in my opinion,
-which means we no longer need to care about qword 1 for the bypass case.
+You don't actually use the alloc_tagging_slab_free_hook() anywhere? I see
+it's in the next patch, but logically should belong to this one.
 
-Will
+> +
+>  #ifdef CONFIG_MEMCG_KMEM
+>  void mod_objcg_state(struct obj_cgroup *objcg, struct pglist_data *pgdat,
+>  		     enum node_stat_item idx, int nr);
+> diff --git a/mm/slub.c b/mm/slub.c
+> index 9fd96238ed39..f4d5794c1e86 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -3821,6 +3821,11 @@ void slab_post_alloc_hook(struct kmem_cache *s,	struct obj_cgroup *objcg,
+>  					 s->flags, init_flags);
+>  		kmsan_slab_alloc(s, p[i], init_flags);
+>  		obj_exts = prepare_slab_obj_exts_hook(s, flags, p[i]);
+> +#ifdef CONFIG_MEM_ALLOC_PROFILING
+> +		/* obj_exts can be allocated for other reasons */
+> +		if (likely(obj_exts) && mem_alloc_profiling_enabled())
+> +			alloc_tag_add(&obj_exts->ref, current->alloc_tag, s->size);
+> +#endif
+>  	}
+>  
+>  	memcg_slab_post_alloc_hook(s, objcg, flags, size, p);
+
