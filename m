@@ -1,191 +1,243 @@
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2088.outbound.protection.outlook.com [40.107.212.88])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E856132483;
-	Fri, 16 Feb 2024 17:58:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.88
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708106308; cv=fail; b=kFcmfR/B7l1HOBepatqg9LO8TPhS6PUq9tf9fwXbJNg+eaPQf+fDKztmtxTPx7RwuHe4z20drvY5TVdoCn0WkJLXO6ADsPgIOosnJSuSEy59mHbmIdD52I1HbTWB9gQzztRl8YW3i68ZNTC3ygpBantjO9sOBJpeqmVI7TuO2SY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708106308; c=relaxed/simple;
-	bh=smwVzDV4hXmuMKsKJVVTwABueO6I0w0lywEuiuiwBU4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=rjBDGXC2DKRn7pYzCethp0EXjMhDfw3j7GyPVZzpb3i/4Nqlh/QqoO5awPmi34ZuHlXf+mUH54p2bSF3eHkOJ0eMD9XoLbVBrTdhBaTRphOq4hog5T6IFggILo6ONLYRpy09Zg/1SfKCcdBYplencLVc8swaI0aC2LCOsS/kljI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=mRBhqH8Q; arc=fail smtp.client-ip=40.107.212.88
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 050D2133439
+	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 18:39:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708108801; cv=none; b=I8ha4bPaBZgdZf/lonJYukI9A7x5/eS7pZXzRS/DjBpJ3wg1EMQffqdO9zYwT3eG/mP70Ao/c8fR6v4xWBJFhwQQukaYFnoiYp0DaxT2cJwtoexOt9mvRtb/Ra4tfoS0IccfSc3L21QCepiD69dnD3xe8M5fswLz7EVEG21dZVA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708108801; c=relaxed/simple;
+	bh=W3xZTWVFlItRUlgXMgoc0VAaiaG33E2DoCPxs2ZMPAo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KBBCSrywsbvwTW3e6NalIS2fLolHZyj1HvkrNL52DpQcUMmm3WA7Wn5T6RrRCXDOJFL3Iowybwn5D50xJ7VBoQr11+1F/xwcBAVjhoTpjSKySYPsy0Gms5NCEGO4evShpSkx9yQAh44xtNarvNksHI3HEVR7mOBUL8lZfQY3Ui0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=T3D8vPec; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=z69yD9wW; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=T3D8vPec; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=z69yD9wW; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="mRBhqH8Q"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kuchdWlY5KtiwLv3SAmCUYJi9H/ouqB/nwXgVB0fhFEQhmxq/MUnh2SchUPum/zIff8GFTnqg41Cwjd9BA5UsWRKtiqxF98Sg16kvvQZlSeZVNAoQpzp4gJnS/L20fT/t/xSnQODv8CFP2+apqjO4U39IwygxsOx/5PNyN+64iAZsiMbDzsc4yqrgwR7Gp5VuwkizmkBUD3W+c/jtEIycurWrwaUkNqF4Y3IrdRGHuAUkA6NPkYX1uA7P6I39593OBL6Uw1rNUUROVOqKK/LxqBWepaP7SxOfnjGM6UDtvZSiLsH5m86Cd0oeMjSqW5sP7bPHe1stkItAoZvZY3u8Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fIDObRM3gZvCAMDqYyFmxV96UNwWJu/5f+Nyju2LbTY=;
- b=Nz8a7vtX1KU3drB6JdP6taRkPy2Ou+sILmpq/GBSvd/TKYBX+ql259OPkiisoqxyQKAes5uMc+IB3Vr2pawF+ok+OW0cJ1VuV1AsT8KlHPkCLMjQNlyvgDLq0hi3iZZ49//JrvM2nxa38hUo9dMMIRC3fV/R/BvePYVlv/bE8KgO4bfT7hPk4HAlwsbT2qMadSbJIz3RrDCTm+uuBUj/fshquqyD0Vmb9dijFd5FHPFx8O1GUI7kqZhEyHfhWm2dkJ4BZu6R2iwUVKqNhJqbirxVGinRG/W5n4imyObEe7HLy5eTFC4JudTiaQ7aw3+c2cdeHTCIhEAo6bz1l0o9NA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fIDObRM3gZvCAMDqYyFmxV96UNwWJu/5f+Nyju2LbTY=;
- b=mRBhqH8Qojp1Wyxx0njO3sbOYilEL/HmBhjVnvH5zA9M0jQU60aEufRyw9BrhHfhSwCa1V5MFi/OZ23RRw388acGL1sf/oa6DTTQTagcV0AikwpH/IKjTTa584KL1dJtXfZcJodypNfTyAXV3AyfoOrJ+XN18EpX///+NIEMkwhu68je/q/9AomckpLPAKvDtemAmqP4llt3RWrBz8DcmziVNdztmvEoIZQSZ1IPwgI6WrsiglQjtt11jT8hV+zXbaE+D2lCSBAi8Hok2HfhzfCO8FMjPfIuPbtPpWdgjy9tq4mxby5Ke1UU9auACKVi2xlVvBn6qkDUJJiuODlhNw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com (2603:10b6:408:176::16)
- by CH2PR12MB4972.namprd12.prod.outlook.com (2603:10b6:610:69::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.12; Fri, 16 Feb
- 2024 17:58:22 +0000
-Received: from LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873]) by LV2PR12MB5869.namprd12.prod.outlook.com
- ([fe80::96dd:1160:6472:9873%6]) with mapi id 15.20.7316.012; Fri, 16 Feb 2024
- 17:58:22 +0000
-Date: Fri, 16 Feb 2024 13:58:21 -0400
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>,
-	Moritz Fischer <moritzf@google.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: Re: [PATCH v5 04/17] iommu/arm-smmu-v3: Move the STE generation for
- S1 and S2 domains into functions
-Message-ID: <20240216175821.GF13330@nvidia.com>
-References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <4-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <20240216171217.GA102281@nvidia.com>
- <20240216173921.GA2374@willie-the-truck>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240216173921.GA2374@willie-the-truck>
-X-ClientProxiedBy: MN2PR14CA0029.namprd14.prod.outlook.com
- (2603:10b6:208:23e::34) To LV2PR12MB5869.namprd12.prod.outlook.com
- (2603:10b6:408:176::16)
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="T3D8vPec";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="z69yD9wW";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="T3D8vPec";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="z69yD9wW"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id 0796D1FB78;
+	Fri, 16 Feb 2024 18:39:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1708108797; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=owuEgnvOaosc1e6fEV37dsj+Uoc2y36g1E2N9MOPSbU=;
+	b=T3D8vPec3pNpFlXmod27xj43+za8xehJtXjEJjuRtBo/mktHW05oGylB6ezvGFc6PLKMmn
+	yPmSLY0xDJ+xp9Z2AET1dy/qNC4j/fo7DfG+YwD2u6qhsEz30g5n3vpoGinmcTRmTFJuEc
+	aFyHa0Z9T7HhWJUT9vMlj6ocUutwiaM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1708108797;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=owuEgnvOaosc1e6fEV37dsj+Uoc2y36g1E2N9MOPSbU=;
+	b=z69yD9wW/OFsQgrqUmJct6GWlXv9jqFb/nEfoePXqTOUsy1f78dsLh7MdrAWwB2IYnRcaf
+	4CeMSFQrrJCGawBA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1708108797; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=owuEgnvOaosc1e6fEV37dsj+Uoc2y36g1E2N9MOPSbU=;
+	b=T3D8vPec3pNpFlXmod27xj43+za8xehJtXjEJjuRtBo/mktHW05oGylB6ezvGFc6PLKMmn
+	yPmSLY0xDJ+xp9Z2AET1dy/qNC4j/fo7DfG+YwD2u6qhsEz30g5n3vpoGinmcTRmTFJuEc
+	aFyHa0Z9T7HhWJUT9vMlj6ocUutwiaM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1708108797;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=owuEgnvOaosc1e6fEV37dsj+Uoc2y36g1E2N9MOPSbU=;
+	b=z69yD9wW/OFsQgrqUmJct6GWlXv9jqFb/nEfoePXqTOUsy1f78dsLh7MdrAWwB2IYnRcaf
+	4CeMSFQrrJCGawBA==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 6E0741398D;
+	Fri, 16 Feb 2024 18:39:56 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id ya4MGvyrz2W6awAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Fri, 16 Feb 2024 18:39:56 +0000
+Message-ID: <f0a56027-472d-44a6-aba5-912bd50ee3ae@suse.cz>
+Date: Fri, 16 Feb 2024 19:39:56 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: LV2PR12MB5869:EE_|CH2PR12MB4972:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3989da20-15d9-48e3-cf66-08dc2f18dd57
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	g1nTr8q7fQwcgB4cwW5UEBS/aEF+3+8xy+E2GVKVnxm7m+H16C8S5PmmqF/oJZtSG3pQ84kL0QuqvoBGg9RJ/RrB++wciLepHdu1qBi2HCYzPXWnKwSG0cs/d2gEuEI45zxrAYFnhIwiJhPQB2OkiJ0UmQyx3+nZ/PRTFdl/+Fly5fZkwKYzMlEMu0/gwusQUZ3SNl8elAfpDpqH6jQ4KI3TesQpCnON5NvXohyOlRa8ePdibfNNsie/DcPMod/1sUU4Ap1ERj2fz1/Y2Btg3pgo6mpaTlV3g8+hh9nDpxjKb2ayO9JNOPvZUFJ5DmMEQW4lk9XSUOIdl72Em7njFTTB+sCpmVvFq7Wk75z1XdPV3THAF44qggfC+yCmNU4DOd/QpfNiyvhxpvbLQbmi4XYV/+u1vJS2RCvfRQdxclarCg4vw6oNS9mtSbGKIKA2cr1VQSoQ3TqlkFY/+ejvGfyAwHoutdVwnRPH7Xh9lvQVf1EH2gYr5KeNu6xuXRZA8VweOyuhot80P3tn7WvnrreSO/hJY13H7GaiAtEbK+bYagmO8d1fGlvrcovvEpWG
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LV2PR12MB5869.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(136003)(346002)(39860400002)(396003)(366004)(376002)(230922051799003)(64100799003)(186009)(451199024)(1800799012)(1076003)(2616005)(41300700001)(26005)(2906002)(4326008)(8676002)(6916009)(7416002)(5660300002)(66476007)(66556008)(66946007)(478600001)(316002)(54906003)(6506007)(6512007)(8936002)(6486002)(38100700002)(33656002)(86362001)(36756003)(83380400001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?YgMr86OU2QWVvfQOFRgERvMNXCCT8+LQT5bAI6scXxzsTyK4Z7scLC/nNEcq?=
- =?us-ascii?Q?CS6mDiGKwb4NxobG118m/b3HzPQHB+jGgnE/Z5wn/aKVMXKTd8L41e8W6RSn?=
- =?us-ascii?Q?QfW2a8lV7OcNlah27YMN76Zw75vmGI6a9TFz9Zz0AhRMv6N9S6gQlYWdWggm?=
- =?us-ascii?Q?jyUSZwhKTkO5d+Qj/SkLSby494+daJKeoPFDmKl98YARI7BizMRBpNdoZU3a?=
- =?us-ascii?Q?mVPTEjaGkpQGQ72TTsrq1WNHB5ukDl+Ot9akwrWxrnGVCry94dH5mam/mzEv?=
- =?us-ascii?Q?NVFMyV2i2DMiSvSUhOmZquX3YeEa66aMNa5UzG0/67GAKnwRcEKJg0l+hk00?=
- =?us-ascii?Q?C31sGvmTnFeQzwOrEndRT+CMYJL4bwubnE9iOdPqDojjM/YI5WyG21mgjB8R?=
- =?us-ascii?Q?ZLmS3MvXwxSpxhIcX/Zf2GfT8UkNs+wy2Ae0bDvNqk+bWMPcwEJ/mNtJT0yO?=
- =?us-ascii?Q?R9cHTbiS1ZUim3KvfHeEHPzevWx7II13uaQ1tKKg3UlEO3ZJivAKXMlSwPLG?=
- =?us-ascii?Q?14eCKTinzPFn9O7yq+oiLEvmbb7exsqQbjkLRwIrsjdFDgoaYiTIg2zfC11O?=
- =?us-ascii?Q?cg3rck16qoEYxBcv0UtlTT+LFVPGMBI49WVgpGEbNrARdxqqlpwPictlkiZ2?=
- =?us-ascii?Q?mOFAGXb3e0fCJq7qewEXklPAWlgZQuqm5Hml3146nyPMpiq9ldV89opFEKTN?=
- =?us-ascii?Q?4CQKCaNxxtVkxNkgQJwpFc5+XS6GicWXFEu7nQyRCedAg/+Ff98qW0ZCmTSv?=
- =?us-ascii?Q?KawhsSTgBdbiX8U9q5JVzxaiGcxK7pkRHPIq5VDvUCEm2YzyfUsEUr69zzLl?=
- =?us-ascii?Q?fs3yRTvIQsdSCN7IYj4B6v9vwczZOXwSE8eec7d9hWx2R1TUOWy+H1tqH2dS?=
- =?us-ascii?Q?0nNmPnMyhITn6MAApoeNvmPcMhVARjmYInrvuZHHOrlm6ShRy8jCA5MzzeLm?=
- =?us-ascii?Q?L1R0nSryC+wLpure1HXXPvWYTC1qz8ovDjC9yfZtpzybKvmNt+2gUqSg/Bi8?=
- =?us-ascii?Q?I+1vzRG1amSllPA+zr6VCG8h3nps4wphLMl4mG/M35dmAKCE7enawJATQGkG?=
- =?us-ascii?Q?1aqbXuK1mJYSSL1dLE72SUct1mJRBVCeFl7fYV5vIVEQpDa9uGT6qvcqVPWZ?=
- =?us-ascii?Q?1YzF8+hBB/1recTzPfI7G28rhO4MwWT65juQNR/a0jHDKFdpNWj2kvFwUD94?=
- =?us-ascii?Q?OrgBbiEiWiguVHrsk6yD4KSFkdoHMtCnEeNaBJ1xQ1CldzwejD3yhbw7A+Jx?=
- =?us-ascii?Q?tiDw5ISYL0+aq5OZ7ECMtSHHwFAMmNq7DYpWSrfxh/sj+mhp3iiHGcHXfoz8?=
- =?us-ascii?Q?hokX9vdqWlVsnub8rt41Q6i4og1zZE1rBaAPB1ytwIlmuMZt9PB0Orhd1MFN?=
- =?us-ascii?Q?6XIJOONQn8qQI4zQLKL29y/mMff/DZmSlqFtTjfap6fEFb3rYWU7TtLWgZLc?=
- =?us-ascii?Q?KDkEML9+teat0CvM0UuM9YuZSb7OoQqhkbc2tRh79j7UqDTLfODSfcFHJ60V?=
- =?us-ascii?Q?V0jdfkW6Z1GD01pLZFOqe+EP82UnhIdfhvqcukcso23yWZFOGA1KMKjDnhle?=
- =?us-ascii?Q?7UktNzS/UQQliEGY1/sCDnTrgMHVSi/ohIs+0lO6?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3989da20-15d9-48e3-cf66-08dc2f18dd57
-X-MS-Exchange-CrossTenant-AuthSource: LV2PR12MB5869.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Feb 2024 17:58:22.0102
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ULBwa5Ny2VBpRhzAmrQBZx6ScTPi+O1ORAomadWXANx/koXXstoT4l9sc4Q2Ydm0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4972
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 32/35] codetag: debug: skip objext checking when it's
+ for objext itself
+Content-Language: en-US
+To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
+Cc: kent.overstreet@linux.dev, mhocko@suse.com, hannes@cmpxchg.org,
+ roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
+ willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
+ void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
+ catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de,
+ mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org,
+ peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
+ masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+ muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+ pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+ dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+ keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
+ gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+ vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
+ bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
+ penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+ glider@google.com, elver@google.com, dvyukov@google.com,
+ shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
+ rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+ kernel-team@android.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-mm@kvack.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+References: <20240212213922.783301-1-surenb@google.com>
+ <20240212213922.783301-33-surenb@google.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20240212213922.783301-33-surenb@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+Authentication-Results: smtp-out2.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=T3D8vPec;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=z69yD9wW
+X-Spamd-Result: default: False [1.20 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	 XM_UA_NO_VERSION(0.01)[];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	 MID_RHS_MATCH_FROM(0.00)[];
+	 TAGGED_RCPT(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 TO_MATCH_ENVRCPT_SOME(0.00)[];
+	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	 DKIM_TRACE(0.00)[suse.cz:+];
+	 MX_GOOD(-0.01)[];
+	 RCPT_COUNT_GT_50(0.00)[73];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 FREEMAIL_CC(0.00)[linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
+	 RCVD_TLS_ALL(0.00)[];
+	 SUSPICIOUS_RECIPS(1.50)[]
+X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
+X-Spam-Score: 1.20
+X-Rspamd-Queue-Id: 0796D1FB78
+X-Spam-Level: *
+X-Spam-Flag: NO
+X-Spamd-Bar: +
 
-On Fri, Feb 16, 2024 at 05:39:22PM +0000, Will Deacon wrote:
-> On Fri, Feb 16, 2024 at 01:12:17PM -0400, Jason Gunthorpe wrote:
-> > On Tue, Feb 06, 2024 at 11:12:41AM -0400, Jason Gunthorpe wrote:
-> > > +static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
-> > > +					struct arm_smmu_master *master,
-> > > +					struct arm_smmu_domain *smmu_domain)
-> > > +{
-> > > +	struct arm_smmu_s2_cfg *s2_cfg = &smmu_domain->s2_cfg;
-> > > +
-> > > +	memset(target, 0, sizeof(*target));
-> > > +	target->data[0] = cpu_to_le64(
-> > > +		STRTAB_STE_0_V |
-> > > +		FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S2_TRANS));
-> > > +
-> > > +	target->data[1] = cpu_to_le64(
-> > > +		FIELD_PREP(STRTAB_STE_1_EATS,
-> > > +			   master->ats_enabled ? STRTAB_STE_1_EATS_TRANS : 0) |
-> > > +		FIELD_PREP(STRTAB_STE_1_SHCFG,
-> > > +			   STRTAB_STE_1_SHCFG_NON_SHARABLE));
-> > 
-> > Just so we are on the same page.. The above NON_SHARABLE is a mistake
-> > here since v1.
-> > 
-> > It is hard to follow arm_smmu_write_strtab_ent() so we all missed that
-> > the S2 ends up re-using the qword[1] that was installed by the
-> > bypass/abort STE that has to be in place prior to installing the S2.
+On 2/12/24 22:39, Suren Baghdasaryan wrote:
+> objext objects are created with __GFP_NO_OBJ_EXT flag and therefore have
+> no corresponding objext themselves (otherwise we would get an infinite
+> recursion). When freeing these objects their codetag will be empty and
+> when CONFIG_MEM_ALLOC_PROFILING_DEBUG is enabled this will lead to false
+> warnings. Introduce CODETAG_EMPTY special codetag value to mark
+> allocations which intentionally lack codetag to avoid these warnings.
+> Set objext codetags to CODETAG_EMPTY before freeing to indicate that
+> the codetag is expected to be empty.
 > 
-> Ah! I thought you were inheriting the existing behaviour, but yeah,
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> ---
+>  include/linux/alloc_tag.h | 26 ++++++++++++++++++++++++++
+>  mm/slab.h                 | 25 +++++++++++++++++++++++++
+>  mm/slab_common.c          |  1 +
+>  mm/slub.c                 |  8 ++++++++
+>  4 files changed, 60 insertions(+)
+> 
+> diff --git a/include/linux/alloc_tag.h b/include/linux/alloc_tag.h
+> index 0a5973c4ad77..1f3207097b03 100644
 
-Yeah, so did I..
+...
 
-> it's a straight-up bug which I think just makes life a little more
-> difficult than it needs to be. If we can keep SHCFG as "use
-> incoming" in all configurations, then I do think we can move to a
-> per-qword rather than a per-field approach, as mentioned in the
-> other part of the thread. I'll try to make some time next week to
-> play with it.
+> index c4bd0d5348cb..cf332a839bf4 100644
+> --- a/mm/slab.h
+> +++ b/mm/slab.h
+> @@ -567,6 +567,31 @@ static inline struct slabobj_ext *slab_obj_exts(struct slab *slab)
+>  int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
+>  			gfp_t gfp, bool new_slab);
+>  
+> +
+> +#ifdef CONFIG_MEM_ALLOC_PROFILING_DEBUG
+> +
+> +static inline void mark_objexts_empty(struct slabobj_ext *obj_exts)
+> +{
+> +	struct slabobj_ext *slab_exts;
+> +	struct slab *obj_exts_slab;
+> +
+> +	obj_exts_slab = virt_to_slab(obj_exts);
+> +	slab_exts = slab_obj_exts(obj_exts_slab);
+> +	if (slab_exts) {
+> +		unsigned int offs = obj_to_index(obj_exts_slab->slab_cache,
+> +						 obj_exts_slab, obj_exts);
+> +		/* codetag should be NULL */
+> +		WARN_ON(slab_exts[offs].ref.ct);
+> +		set_codetag_empty(&slab_exts[offs].ref);
+> +	}
+> +}
+> +
+> +#else /* CONFIG_MEM_ALLOC_PROFILING_DEBUG */
+> +
+> +static inline void mark_objexts_empty(struct slabobj_ext *obj_exts) {}
+> +
+> +#endif /* CONFIG_MEM_ALLOC_PROFILING_DEBUG */
+> +
 
-I'm sure you can make per-qword work. I think it will be worse code
-though because doing so will have to compromise some of the
-underpinning logical principles:
+I assume with alloc_slab_obj_exts() moved to slub.c, mark_objexts_empty()
+could move there too.
 
- - Used bits reflects actual HW behavior and flows from the
-   spec's IGNORED/etc language
- - Make STE functions set the bits that the HW uses and no extra bits
- - The make STE functions create a complete STE
+>  static inline bool need_slab_obj_ext(void)
+>  {
+>  #ifdef CONFIG_MEM_ALLOC_PROFILING
+> diff --git a/mm/slab_common.c b/mm/slab_common.c
+> index 21b0b9e9cd9e..d5f75d04ced2 100644
+> --- a/mm/slab_common.c
+> +++ b/mm/slab_common.c
+> @@ -242,6 +242,7 @@ int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
+>  		 * assign slabobj_exts in parallel. In this case the existing
+>  		 * objcg vector should be reused.
+>  		 */
+> +		mark_objexts_empty(vec);
+>  		kfree(vec);
+>  		return 0;
+>  	}
+> diff --git a/mm/slub.c b/mm/slub.c
+> index 4d480784942e..1136ff18b4fe 100644
+> --- a/mm/slub.c
+> +++ b/mm/slub.c
+> @@ -1890,6 +1890,14 @@ static inline void free_slab_obj_exts(struct slab *slab)
+>  	if (!obj_exts)
+>  		return;
+>  
+> +	/*
+> +	 * obj_exts was created with __GFP_NO_OBJ_EXT flag, therefore its
+> +	 * corresponding extension will be NULL. alloc_tag_sub() will throw a
+> +	 * warning if slab has extensions but the extension of an object is
+> +	 * NULL, therefore replace NULL with CODETAG_EMPTY to indicate that
+> +	 * the extension for obj_exts is expected to be NULL.
+> +	 */
+> +	mark_objexts_empty(obj_exts);
+>  	kfree(obj_exts);
+>  	slab->obj_exts = 0;
+>  }
 
-I already tried the naive version where none of the above are
-compromised and it does not work. Someone else may have an idea. IMHO
-this is really not a valuable avenue to use all of our limited time
-on.
-
-I'm getting the existings remarks typed in, it is already turning into
-some work, but if you feel strongly please come next week with exactly
-you will accept and I will ensure whatever it is gets done if you will
-commit to merge it. Even if we have to toss out Michael's version too.
-
-I can always bring back this version for some future shared code
-thing.
-
-Thanks,
-Jason
