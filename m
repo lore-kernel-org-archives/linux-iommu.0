@@ -1,52 +1,58 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FB0254BD3;
-	Fri, 16 Feb 2024 17:39:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 209F9131756;
+	Fri, 16 Feb 2024 17:58:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708105169; cv=none; b=IRbXVjCh9tqIzfookai6KChqcIwDoRKJG9x1I53pkBTWaX07+IzHU484jW8kIB/mZVso7ALA+MGqM9k64YHz9t54D6hDwZOesJGmeCgRAZUbgwYdB67wNNX/8feop7UWtAPU9I7vBIhDX9KGmK0fiWhl27tNYLN/Yzp7zvBtHCA=
+	t=1708106284; cv=none; b=jYZAN1SQ5Q0H78Tv4vhc+pnAZ/60omxJ7f8wtKtD4R3i2/21TNTp45qwmke+PjPkxaOgQpzPBMwSN8yC7joyHHqhsyT5U7U0jicqDLAQxGE+iGXIuAVgpc+U0uw1tjeO411j77BKfG3drmWja4vU33NWrWu0W8b49nf5F/tJnL0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708105169; c=relaxed/simple;
-	bh=DPU9Zwjkal+aJ4ptcimn6xl5HN5vYQ2C0O40BvPvhOI=;
+	s=arc-20240116; t=1708106284; c=relaxed/simple;
+	bh=y2z4Q/0wnbBdLLtyxBXxt5K2cw4Zk8wNIb/HNMYSK+w=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QKZ7cdlhZ+arwCnvOvTGOOHx12/X6pgCAUXGb6nFEz4tSAxmm94SeuWBCW9NBJPtXX8eRs1xxkbpEz7wIYXoYNXyTl4LHs/yAjQGZ7I59KMjcRyij2AGOaDg8A3ldL6fV3GM6suToz425hSzSZnwSrtKRMdnAPkrFkotNtaNy9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HIwVwUg6; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=kn74lpXKleh49luNnAaoBQIyzFXHS0w1A5aNmo6OLq31OFUKgZ/J9sJ1f9aYxt/sA1INFj8S4Y8YDBp06mclJrMYYWO7VrUJbMq96L9pWS863U1cKPzPPq5kzoE74cf/8/Hqh1vqkCLw+9YdRV5K+pkgqg491HD30kldIqLwIdk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nT6IeXcB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HIwVwUg6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D504AC433C7;
-	Fri, 16 Feb 2024 17:39:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nT6IeXcB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53326C433C7;
+	Fri, 16 Feb 2024 17:57:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708105168;
-	bh=DPU9Zwjkal+aJ4ptcimn6xl5HN5vYQ2C0O40BvPvhOI=;
+	s=k20201202; t=1708106283;
+	bh=y2z4Q/0wnbBdLLtyxBXxt5K2cw4Zk8wNIb/HNMYSK+w=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=HIwVwUg69ftxaNTlulKpFZtJ4noBJEZK2MccrZ4OExg1mWYOWQDMioMNz2Pok+HMq
-	 cu4JIa5XH17dKCbrkgLB3aDQeC5+8Ur1lFZzkFeRoPWTLTqAdRLPnFpwnOyCMdGl7c
-	 QKlONVgU3uoU+ncJfRan/9Vwdwpr/lzGFW9bwSirxws6q3dFBVxnvBZLiFR7rSsga3
-	 RQrfRVAGVZHDbK9f2bBtHy140hWPHp59dZ+vV8yyDnnKO10GpeNWyzgN7FKgwB8fmF
-	 g/jRBpNz8oqB2EchxMqnSO86WPzzaAprcXWu8KxCJvqBUbTUYPjqXoSPxFqkNySuB/
-	 /L41UnULh2psQ==
-Date: Fri, 16 Feb 2024 17:39:22 +0000
+	b=nT6IeXcB5A43SSuF9BwUjII4ilTrRHMPvyzAnUo1omQItjPLdK1yI1D9r6AZeDJjT
+	 Lwec75FjdfHRyDok4qKpynzHaY+jVireNBdMEX/3sIKAUUpmIhEG7WzhREkQiExlla
+	 CgQQTgxXPyDIS10jW64uzXwfZpoYlaicR7QgPuL2AkSdV1armgqhtJ8YVi3RmIUsAl
+	 Q2sDUO4AfPf2tDL7JF+EOIX5LDDCQbncjtrRPNNl7ClDtX9p0Tr4GtgrGyYSwu7tru
+	 dgGCbrO+S2RC7zBGm+KqHvQrvfNlefg2300BnAO27KjDWBt5rkFi4I/om5XiQtrGtZ
+	 +tSr/4cauSzEg==
+Date: Fri, 16 Feb 2024 17:57:52 +0000
 From: Will Deacon <will@kernel.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>,
-	Moritz Fischer <moritzf@google.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: Re: [PATCH v5 04/17] iommu/arm-smmu-v3: Move the STE generation for
- S1 and S2 domains into functions
-Message-ID: <20240216173921.GA2374@willie-the-truck>
-References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <4-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
- <20240216171217.GA102281@nvidia.com>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: akpm@linux-foundation.org, alim.akhtar@samsung.com,
+	alyssa@rosenzweig.io, asahi@lists.linux.dev,
+	baolu.lu@linux.intel.com, bhelgaas@google.com,
+	cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com,
+	dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de,
+	iommu@lists.linux.dev, jernej.skrabec@gmail.com,
+	jonathanh@nvidia.com, joro@8bytes.org,
+	krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org, linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com,
+	marcan@marcan.st, mhiramat@kernel.org, m.szyprowski@samsung.com,
+	paulmck@kernel.org, rdunlap@infradead.org, robin.murphy@arm.com,
+	samuel@sholland.org, suravee.suthikulpanit@amd.com,
+	sven@svenpeter.dev, thierry.reding@gmail.com, tj@kernel.org,
+	tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org,
+	yu-cheng.yu@intel.com, rientjes@google.com
+Subject: Re: [PATCH v3 10/10] iommu: account IOMMU allocated memory
+Message-ID: <20240216175752.GB2374@willie-the-truck>
+References: <20231226200205.562565-1-pasha.tatashin@soleen.com>
+ <20231226200205.562565-11-pasha.tatashin@soleen.com>
+ <20240213131210.GA28926@willie-the-truck>
+ <CA+CK2bB4Z+z8tocO79AdsAy+gmN_4aVHgFUsm_gYLUJ2zV1A6A@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -55,40 +61,34 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240216171217.GA102281@nvidia.com>
+In-Reply-To: <CA+CK2bB4Z+z8tocO79AdsAy+gmN_4aVHgFUsm_gYLUJ2zV1A6A@mail.gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Fri, Feb 16, 2024 at 01:12:17PM -0400, Jason Gunthorpe wrote:
-> On Tue, Feb 06, 2024 at 11:12:41AM -0400, Jason Gunthorpe wrote:
-> > +static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
-> > +					struct arm_smmu_master *master,
-> > +					struct arm_smmu_domain *smmu_domain)
-> > +{
-> > +	struct arm_smmu_s2_cfg *s2_cfg = &smmu_domain->s2_cfg;
-> > +
-> > +	memset(target, 0, sizeof(*target));
-> > +	target->data[0] = cpu_to_le64(
-> > +		STRTAB_STE_0_V |
-> > +		FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S2_TRANS));
-> > +
-> > +	target->data[1] = cpu_to_le64(
-> > +		FIELD_PREP(STRTAB_STE_1_EATS,
-> > +			   master->ats_enabled ? STRTAB_STE_1_EATS_TRANS : 0) |
-> > +		FIELD_PREP(STRTAB_STE_1_SHCFG,
-> > +			   STRTAB_STE_1_SHCFG_NON_SHARABLE));
+On Tue, Feb 13, 2024 at 10:44:53AM -0500, Pasha Tatashin wrote:
+> > >  SecPageTables
+> > > -              Memory consumed by secondary page tables, this currently
+> > > -              currently includes KVM mmu allocations on x86 and arm64.
+> > > +              Memory consumed by secondary page tables, this currently includes
+> > > +              KVM mmu and IOMMU allocations on x86 and arm64.
 > 
-> Just so we are on the same page.. The above NON_SHARABLE is a mistake
-> here since v1.
+> Hi Will,
 > 
-> It is hard to follow arm_smmu_write_strtab_ent() so we all missed that
-> the S2 ends up re-using the qword[1] that was installed by the
-> bypass/abort STE that has to be in place prior to installing the S2.
+> > While I can see the value in this for IOMMU mappings managed by VFIO,
+> > doesn't this end up conflating that with the normal case of DMA domains?
+> > For systems that e.g. rely on an IOMMU for functional host DMA, it seems
+> > wrong to subject that to accounting constraints.
+> 
+> The accounting constraints are only applicable when GFP_KERNEL_ACCOUNT
+> is passed to the iommu mapping functions. We do that from the vfio,
+> iommufd, and vhost. Without this flag, the memory useage is reported
+> in /proc/meminfo as part of  SecPageTables field, but not constrained
+> in cgroup.
 
-Ah! I thought you were inheriting the existing behaviour, but yeah, it's
-a straight-up bug which I think just makes life a little more difficult
-than it needs to be. If we can keep SHCFG as "use incoming" in all
-configurations, then I do think we can move to a per-qword rather than a
-per-field approach, as mentioned in the other part of the thread. I'll
-try to make some time next week to play with it.
+Thanks, Pasha, that explanation makes sense. I still find it bizarre to
+include IOMMU allocations from the DMA API in SecPageTables though, and
+I worry that it will confuse people who are using that metric as a way
+to get a feeling for how much memory is being used by KVM's secondary
+page-tables. As an extreme example, having a non-zero SecPageTables count
+without KVM even compiled in is pretty bizarre.
 
 Will
