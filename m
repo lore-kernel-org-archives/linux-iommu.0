@@ -1,110 +1,94 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A118B130E2E
-	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 17:18:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FB0254BD3;
+	Fri, 16 Feb 2024 17:39:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708103928; cv=none; b=tBgxiFFRg1fVHJvJPIw8wfgoksvVPc7qCbUvHwCufY2dqHZglRevHBZAO/q0mTN9BtN38v9TmlIEAYOc+rX/R69AMElO3ZJybQT2pIDoYdPuBf9O+dvr6jgE1L3VrfJVjkdBq/E5J9rERIQK1pvnNQkKgxNLmhmWw90/3raaWIc=
+	t=1708105169; cv=none; b=IRbXVjCh9tqIzfookai6KChqcIwDoRKJG9x1I53pkBTWaX07+IzHU484jW8kIB/mZVso7ALA+MGqM9k64YHz9t54D6hDwZOesJGmeCgRAZUbgwYdB67wNNX/8feop7UWtAPU9I7vBIhDX9KGmK0fiWhl27tNYLN/Yzp7zvBtHCA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708103928; c=relaxed/simple;
-	bh=2eKrnC6xOIWZ1NTwD/IJazyXMwCp/t3u/M4Pc8vdQNQ=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gsnFcZG82DqJxgncC53hOIdJ2uynsg2bgb5B6e2DeC7n/oaUSBvqhj0m9C/UjfTDZjwgzWGZkFQ0E/rfYN8OPqQ6sSEU80xqD7llMgRTgOdN1mpoX36xRa0DomqOCm5P6Th4Fzq8D1NE980rfpRnnxAJB4NPLi77otFWnrrx7MI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=T97LJGa4; arc=none smtp.client-ip=209.85.160.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	s=arc-20240116; t=1708105169; c=relaxed/simple;
+	bh=DPU9Zwjkal+aJ4ptcimn6xl5HN5vYQ2C0O40BvPvhOI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=QKZ7cdlhZ+arwCnvOvTGOOHx12/X6pgCAUXGb6nFEz4tSAxmm94SeuWBCW9NBJPtXX8eRs1xxkbpEz7wIYXoYNXyTl4LHs/yAjQGZ7I59KMjcRyij2AGOaDg8A3ldL6fV3GM6suToz425hSzSZnwSrtKRMdnAPkrFkotNtaNy9c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HIwVwUg6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="T97LJGa4"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-42de67630abso2923561cf.1
-        for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 09:18:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708103925; x=1708708725; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ttXNwKWugMJyygslP182txVVK8JBh5UVtMFEymJTCI0=;
-        b=T97LJGa4m+U0lwN4wgLl3uzGHDjInpkXQg7POx4e8NGrJvHa74OGNufK2ldUtIGEw4
-         gjE+FIEPP+ftIuKNuyLJOhkj6zi68B0ICSI80lrEQfdLjs8UME/iwwZy5ar15Zp9yz3m
-         SYnhiq3eEytEULbB5kmfvZNO+ALEEXgGkmzpgBDf7SWTPxefV8Ty+X16fL2qufD/Q/qI
-         /TuimpKQN6KN0idmqD/P7tOOkGja10wCyEoGjle/Zxfwid/BZVCfb1I/CqiORDn3XTng
-         /Cx9TYKBcCGmPjP+wzmrj8sedXD2VE1HXilzmSq8vlSbnBuMXLnJ4+w4NZ9tHoBwO1qk
-         3Hbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708103925; x=1708708725;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ttXNwKWugMJyygslP182txVVK8JBh5UVtMFEymJTCI0=;
-        b=jvS+dO7D/1WizP0CX/AGt1p05RKqCAsyCca4kXc9riPdvnKFzk7PrzNpfZOVViVEnM
-         OOfeSKSR61ZXJo7OfE1uJZ5g6HDR0AjMuTJUCBkPq7mMczWbZdVfVsgIiJme1okUBzLG
-         0r+pEcbkQTRbuG5vdZ/b987SpNW5ExywqE/1meD1RGvcv8/pogjGamecCDvkR1W5Argf
-         5QrzkJSBv//e+GQAVGk+2l7kwnuUjRY7rqJX3ckDENYxLczxFqLGJdRl9hVuCWIaJBHe
-         XPHjmggg/KKUBIJbx5z8P4ZRU8UZRUbQzmJTuf6BOSkqijLR0qxvdOQOUdKnFVCmMmJk
-         QL1g==
-X-Forwarded-Encrypted: i=1; AJvYcCUPWnmF6tXg2W2COINIkIAz9KzuH74ukeIOm/sjtJKMIoOnkBZxrMPrURqPGgtk32TnTmYLXXE392a8WMhbDzMUOcMxF4E=
-X-Gm-Message-State: AOJu0Yxvlrtd5jphvkKF0WnILcYNlFI/XxALETbpibpoTfjZ8Pp6jQG0
-	kRRFkiIIiuD8gozRhEH2A6CsysnsFFRHEz+LrVrPY8GSuODAADPYZ8sRsG/yW1GDMRjNkqJ2da3
-	EbfRrLKqgspqI6tAhPnhl0RW+tpWX6r3Nfukz4Q==
-X-Google-Smtp-Source: AGHT+IGK94jPimX8q7FvTT5r2WHXeqQfvdyDWPQi6YyK2aTQJC/GbkrY2OBKc6aAMFaGl9yMXVM9CDJXDWJJ3i4OZS8=
-X-Received: by 2002:a05:622a:130d:b0:42c:7b12:70bd with SMTP id
- v13-20020a05622a130d00b0042c7b1270bdmr14455790qtk.9.1708103925488; Fri, 16
- Feb 2024 09:18:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HIwVwUg6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D504AC433C7;
+	Fri, 16 Feb 2024 17:39:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1708105168;
+	bh=DPU9Zwjkal+aJ4ptcimn6xl5HN5vYQ2C0O40BvPvhOI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=HIwVwUg69ftxaNTlulKpFZtJ4noBJEZK2MccrZ4OExg1mWYOWQDMioMNz2Pok+HMq
+	 cu4JIa5XH17dKCbrkgLB3aDQeC5+8Ur1lFZzkFeRoPWTLTqAdRLPnFpwnOyCMdGl7c
+	 QKlONVgU3uoU+ncJfRan/9Vwdwpr/lzGFW9bwSirxws6q3dFBVxnvBZLiFR7rSsga3
+	 RQrfRVAGVZHDbK9f2bBtHy140hWPHp59dZ+vV8yyDnnKO10GpeNWyzgN7FKgwB8fmF
+	 g/jRBpNz8oqB2EchxMqnSO86WPzzaAprcXWu8KxCJvqBUbTUYPjqXoSPxFqkNySuB/
+	 /L41UnULh2psQ==
+Date: Fri, 16 Feb 2024 17:39:22 +0000
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH v5 04/17] iommu/arm-smmu-v3: Move the STE generation for
+ S1 and S2 domains into functions
+Message-ID: <20240216173921.GA2374@willie-the-truck>
+References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+ <4-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+ <20240216171217.GA102281@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240212213922.783301-1-surenb@google.com> <20240212213922.783301-14-surenb@google.com>
- <20240215165438.cd4f849b291c9689a19ba505@linux-foundation.org>
- <wdj72247rptlp4g7dzpvgrt3aupbvinskx3abxnhrxh32bmxvt@pm3d3k6rn7pm>
- <CA+CK2bBod-1FtrWQH89OUhf0QMvTar1btTsE0wfROwiCumA8tg@mail.gmail.com>
- <iqynyf7tiei5xgpxiifzsnj4z6gpazujrisdsrjagt2c6agdfd@th3rlagul4nn> <CAJuCfpHxaCQ_sy0u88EcdkgsV-GX3AbhCaiaRW-DWYFvZK1=Ew@mail.gmail.com>
-In-Reply-To: <CAJuCfpHxaCQ_sy0u88EcdkgsV-GX3AbhCaiaRW-DWYFvZK1=Ew@mail.gmail.com>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Fri, 16 Feb 2024 12:18:09 -0500
-Message-ID: <CA+CK2bCsW34RQtKhrp=1=3opMcfB=NSsLTnpwSejkULvo7CbTw@mail.gmail.com>
-Subject: Re: [PATCH v3 13/35] lib: add allocation tagging support for memory
- allocation profiling
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: Kent Overstreet <kent.overstreet@linux.dev>, Andrew Morton <akpm@linux-foundation.org>, 
-	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, 
-	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org, 
-	liam.howlett@oracle.com, corbet@lwn.net, void@manifault.com, 
-	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, yosryahmed@google.com, yuzhao@google.com, 
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
-	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com, 
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
-	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
-	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
-	glider@google.com, elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240216171217.GA102281@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-> > Personally, I hate trying to count long strings digits by eyeball...
->
-> Maybe something like this work for everyone then?:
->
-> 160432128 (153MiB)     mm/slub.c:1826 module:slub func:alloc_slab_page
+On Fri, Feb 16, 2024 at 01:12:17PM -0400, Jason Gunthorpe wrote:
+> On Tue, Feb 06, 2024 at 11:12:41AM -0400, Jason Gunthorpe wrote:
+> > +static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
+> > +					struct arm_smmu_master *master,
+> > +					struct arm_smmu_domain *smmu_domain)
+> > +{
+> > +	struct arm_smmu_s2_cfg *s2_cfg = &smmu_domain->s2_cfg;
+> > +
+> > +	memset(target, 0, sizeof(*target));
+> > +	target->data[0] = cpu_to_le64(
+> > +		STRTAB_STE_0_V |
+> > +		FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S2_TRANS));
+> > +
+> > +	target->data[1] = cpu_to_le64(
+> > +		FIELD_PREP(STRTAB_STE_1_EATS,
+> > +			   master->ats_enabled ? STRTAB_STE_1_EATS_TRANS : 0) |
+> > +		FIELD_PREP(STRTAB_STE_1_SHCFG,
+> > +			   STRTAB_STE_1_SHCFG_NON_SHARABLE));
+> 
+> Just so we are on the same page.. The above NON_SHARABLE is a mistake
+> here since v1.
+> 
+> It is hard to follow arm_smmu_write_strtab_ent() so we all missed that
+> the S2 ends up re-using the qword[1] that was installed by the
+> bypass/abort STE that has to be in place prior to installing the S2.
 
-That would be even harder to parse.
+Ah! I thought you were inheriting the existing behaviour, but yeah, it's
+a straight-up bug which I think just makes life a little more difficult
+than it needs to be. If we can keep SHCFG as "use incoming" in all
+configurations, then I do think we can move to a per-qword rather than a
+per-field approach, as mentioned in the other part of the thread. I'll
+try to make some time next week to play with it.
 
-This one liner should converts bytes to human readable size:
-sort -rn /proc/allocinfo | numfmt --to=iec
-
-Also, a "alloctop" script that would auto-update the current top
-allocators would be useful to put in tools/mm/
-
-Pasha
+Will
