@@ -1,288 +1,173 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A4BA1BDCD
-	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 09:45:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3341657890
+	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 11:03:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708076745; cv=none; b=Mp5aCbiZLmSp+5/mv9uycV64uRco61S4hgtUEioh4D7N8MwVr7306Fg2GCKdtPCMBI1fWb9zsNOJYSC6AhS+6bwGBk5wE+wKUeUuFas6yOgDY1CquuibNAW0iEJPraFhZl1xJPCMuCYxjpY5+XlfPLJNIs6Nw+ZqtcSlwjAWNqU=
+	t=1708081438; cv=none; b=jH37UsZL+wL7Q1y4T8FjAj8/iS5j2UZ2pQaRlJYXPj/4gQtB9MCxXKBL4Oe4w+XE7SpR6ut2EbOQ8U+OAgnLH8810L3WmaPE8PLPAgPAV6a6U+5TrKH+ViOQe9LCeFpxnBJeP8YimP2JyVANYP2vJfKVkIhicmZfOS/ffF0LvXo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708076745; c=relaxed/simple;
-	bh=WVjbAfHuftK8LltDDQjmFiGwj7PPAcUMu1yWr19lI/w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QFgzia7fW2tZ8ehvVA2CVq62IQHjCfHVDnbfNF8g6rANgWE04SfH2Hd9/yOZuDPgFaXE7ZNfHDGs9MM9GrWhfDydWCmEQJ0cs5x4E6vZOfHqXLjDLfjKUMGmsvY85qzhn2WxAWRLFXcWTWHTo2x/b42FyLkqeEp0VIHek4WYnYo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=K3GJLk0N; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=WPdo0nzZ; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=K3GJLk0N; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=WPdo0nzZ; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1708081438; c=relaxed/simple;
+	bh=88200XhLDsXacy4SUSb4HPXY0yhpQByIXc7VIaR90QQ=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=gHx1Vbif0wm9zEvHwvPL1I9JpDTWaxZ8qw2A05U7j7qagvpOG1TMcw7nK8rw2SNyUJpvLs7qcMI03swC9l66kU1Oft/e7jzqVWmwL9W6ohUu2BUp//GBXV/L/8R71kqrFYika9Ga3+7m4hu6H0rjyFyo2FgbLvXgedxSuCy4dCM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=efk+odV3; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="K3GJLk0N";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="WPdo0nzZ";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="K3GJLk0N";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="WPdo0nzZ"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 9417021B7B;
-	Fri, 16 Feb 2024 09:45:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708076741; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=iYMvNCYqDaBQbPMA0B0bnoIRN91Lu24uOJ7yYQTso7E=;
-	b=K3GJLk0NyXrPMf/aFqjbRry/Qxwjc8Bj/g4q/MeRsSfZAu8Ybdf5Tj7wI+qAyBsgbcC0vR
-	xvxA7q+GGIm0yNvWUhWlBiqDWnj8pXbApt4a7yj3KGLQ2wRXaaHf5f+9c+RLhe5CYVhpn1
-	ZLX976pxOCFWLoG08M8uzuMAE2T3dv0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708076741;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=iYMvNCYqDaBQbPMA0B0bnoIRN91Lu24uOJ7yYQTso7E=;
-	b=WPdo0nzZBeg7Is27N5OIoEVPSfjVEKKv5xifLSGaijJGJbFNXXV9iA4sUvGd1/G+OGidNi
-	O5Nz+b6HIU0o9pAA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708076741; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=iYMvNCYqDaBQbPMA0B0bnoIRN91Lu24uOJ7yYQTso7E=;
-	b=K3GJLk0NyXrPMf/aFqjbRry/Qxwjc8Bj/g4q/MeRsSfZAu8Ybdf5Tj7wI+qAyBsgbcC0vR
-	xvxA7q+GGIm0yNvWUhWlBiqDWnj8pXbApt4a7yj3KGLQ2wRXaaHf5f+9c+RLhe5CYVhpn1
-	ZLX976pxOCFWLoG08M8uzuMAE2T3dv0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708076741;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=iYMvNCYqDaBQbPMA0B0bnoIRN91Lu24uOJ7yYQTso7E=;
-	b=WPdo0nzZBeg7Is27N5OIoEVPSfjVEKKv5xifLSGaijJGJbFNXXV9iA4sUvGd1/G+OGidNi
-	O5Nz+b6HIU0o9pAA==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id DF6F313A39;
-	Fri, 16 Feb 2024 09:45:40 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id rhsGNsQuz2WEcAAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Fri, 16 Feb 2024 09:45:40 +0000
-Message-ID: <039a817d-20c4-487d-a443-f87e19727305@suse.cz>
-Date: Fri, 16 Feb 2024 10:45:40 +0100
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="efk+odV3"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-40fb3b5893eso3902575e9.0
+        for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 03:03:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1708081433; x=1708686233; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=PB1x09n9EY53cKGEtrLSo/nG2NPG4AocGBYm52rVvBM=;
+        b=efk+odV301C3ymV1Pl5QvXc1ENyQz02K4c6BXVZRh7Ys2K+wYBSDstFSicwL0l73J2
+         D1P7tHuipJewoY8uAK/wOOpyz1gXwRe/q3uLjTZdb81b6iFvcaZBQNGh53QVp75xcwdl
+         nzbIYqZp6dVSKB7Ov6PYC3d3w8q35UpscIhjr9CSknM6tzMhHAZXPZM3de/SMl3O4Y5P
+         eAzoFLy30/nh9Z7SVvXlq5HL86MBUJOTib5jO5dcpygLBkGItPD2lC7w1fQ3RbixHlug
+         qw3E50OJ0XEoArEe6/dALdROl29RCx84R5HwFUbGx0Aie7GImS3C8zyxNu3Pk4mck11H
+         3HSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708081433; x=1708686233;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PB1x09n9EY53cKGEtrLSo/nG2NPG4AocGBYm52rVvBM=;
+        b=fVF7hoPWEc7U2n/8qUG18LcrX/7H92UKjbvBiQoX2Ee3xgafmk8SQkZOx+M/9+D5P4
+         b4QsYgmqQxMR/jDWoyN8CD87vWoZ/K1jlIYJNaGE1pvZu5F7DzGV1QMSlLkL+CQsCmiB
+         XMU+yeRhYd8b5rpSGwpcPHRSlFC2y4P4Z1syUPDWcmccKmmEZRqoERdaolLr2GbcyHNZ
+         PU1yAU8nMqSF+cDU3cRAnAZ830ezr6EgLtPnG8dEPPklYkQDf+lq0VmCa0AZtm+Sr7zS
+         +2IbGjPhdr9hR84ykBUSwWBBFo7aW140vDM/QK6CcKIrDQDOxTFJnZgPhPJKAcCENqWm
+         0a5A==
+X-Forwarded-Encrypted: i=1; AJvYcCX6eDhKd7VdSB1tMUfdjprozj0uTcir40dGlkeBH3/H2u6Y8O0YioO223ZcjzTvDMtcu5qtBthRwsMbv2aY1EoSDIzix68=
+X-Gm-Message-State: AOJu0YwjzEYlRAyrRrsvKTKysi2n2RABw8IfRLm3KmNKYOAmjTpFdVUK
+	TEjRKpp2/B+J44rmovfpdvVPfu4jsOQv6g/z/VdZU8RcVvlYWE2zKD5HhEZqqPo=
+X-Google-Smtp-Source: AGHT+IGdb4ensyCIsGPJM7F0VY29Yu/WCltb5zVpSxiuhAMGAeJyprzsZkYB3SyvWQv3EtBA22VOkw==
+X-Received: by 2002:a05:600c:198a:b0:412:1e23:e378 with SMTP id t10-20020a05600c198a00b004121e23e378mr2816457wmq.27.1708081433310;
+        Fri, 16 Feb 2024 03:03:53 -0800 (PST)
+Received: from arrakeen.starnux.net ([2a01:e0a:982:cbb0:8261:5fff:fe11:bdda])
+        by smtp.gmail.com with ESMTPSA id r2-20020a05600c35c200b004123b049f86sm1993174wmq.37.2024.02.16.03.03.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Feb 2024 03:03:52 -0800 (PST)
+From: Neil Armstrong <neil.armstrong@linaro.org>
+Subject: [PATCH v3 0/7] drm/msm: Add support for the A750 GPU found on the
+ SM8650 platform
+Date: Fri, 16 Feb 2024 12:03:47 +0100
+Message-Id: <20240216-topic-sm8650-gpu-v3-0-eb1f4b86d8d3@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 14/35] lib: introduce support for page allocation
- tagging
-Content-Language: en-US
-To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
-Cc: kent.overstreet@linux.dev, mhocko@suse.com, hannes@cmpxchg.org,
- roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
- willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
- void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
- catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de,
- mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org,
- peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
- masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
- muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
- pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
- dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
- keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
- gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
- vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
- bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
- penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
- glider@google.com, elver@google.com, dvyukov@google.com,
- shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
- rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
- kernel-team@android.com, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- linux-mm@kvack.org, linux-modules@vger.kernel.org,
- kasan-dev@googlegroups.com, cgroups@vger.kernel.org
-References: <20240212213922.783301-1-surenb@google.com>
- <20240212213922.783301-15-surenb@google.com>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20240212213922.783301-15-surenb@google.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Authentication-Results: smtp-out1.suse.de;
-	none
-X-Spam-Level: 
-X-Spam-Score: -2.79
-X-Spamd-Result: default: False [-2.79 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 XM_UA_NO_VERSION(0.01)[];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 MID_RHS_MATCH_FROM(0.00)[];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 BAYES_HAM(-3.00)[100.00%];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 RCPT_COUNT_GT_50(0.00)[73];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 FREEMAIL_CC(0.00)[linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[]
-X-Spam-Flag: NO
+X-B4-Tracking: v=1; b=H4sIABNBz2UC/23NQQ6CMBCF4auQrq0ZxpYWV97DuKBQYBKlpMVGQ
+ 7i7hbjQ6PJ/yXwzs2A92cCO2cy8jRTIDSkOu4zVfTV0llOTmiGgAATNJzdSzcNNFxJ4N9650GU
+ jLdZocsXS2ehtS4+NPF9S9xQm55/bh5iv6xvL8ReLOQeuQFcCjBLKyNOVhsq7vfMdW7WIn4L8I
+ 2ASCmPBCNOihfJLWJblBdgefTrzAAAA
+To: Rob Clark <robdclark@gmail.com>, 
+ Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>, 
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, 
+ Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, 
+ Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, 
+ Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ freedreno@lists.freedesktop.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ iommu@lists.linux.dev, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+ Neil Armstrong <neil.armstrong@linaro.org>, 
+ Conor Dooley <conor.dooley@microchip.com>
+X-Mailer: b4 0.12.4
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2554;
+ i=neil.armstrong@linaro.org; h=from:subject:message-id;
+ bh=88200XhLDsXacy4SUSb4HPXY0yhpQByIXc7VIaR90QQ=;
+ b=owEBbQKS/ZANAwAKAXfc29rIyEnRAcsmYgBlz0EUmjR87lIPCfi/Gb7UFQg438WdU0lWU7qVfQOr
+ uENaJoeJAjMEAAEKAB0WIQQ9U8YmyFYF/h30LIt33NvayMhJ0QUCZc9BFAAKCRB33NvayMhJ0cW1EA
+ DH6fQ5F4pT1r6Ym1YBG1uanj27R0Rd0ajpmw/qZ0rm6nT9k84uMuaGZYNoRR1A+8Rt8XZo1p2gxkC5
+ erG+1yjhFuLMVzmMnlGShi1mcpuz/gmQIyfvP9jasd/RLi3Q+pQIZyFpRysyOSo3xDn/IZ55CsRVrW
+ acRQ8/U4EWpo9YFlhELxf12PSvNX5g6NoJub9hyGwIs47/Igm1xP6CG4yVfRcJJk5VltNo1x5WevFf
+ ytATAhGfb4T2tpAljgPf+kL1yPpEHLSzf6NEyT3v1aGiJQ2At3a/8KMBxuA3XYqSVFFCNfLTav+5JX
+ gPq5fnDEkmRudgosN1w1EdyKz6wRIAB06g65mFmFzvi4+WQ374QEdxe0DA+8ErBO82fJ1u8bzk+f4Y
+ ikSU7Vi7mlFBfcMpVgTJjlceBAXEkpCu9YOS6cBFS4VlsJbQ219oTSw47igyGWo66B6VJNBZa+cXCw
+ G8cwmm192O5Ik8Ac0Nxk9ErtDcM9hRFoMeWhIe7hmwiQnT3Vx0hitq3nX7Li4zQdC2dFCdUqUBVc8T
+ pbnFHaRwcTROZ3y2F3nnuhJFQSkV+C95SF/xYEludWs0JhGSGwT8T1nG1VDFIRr8lfxlb7YkRg0q73
+ onvN/ISIwGAoSgeWwuRs4Zlsle3ZBwnVrhBm8O8LhR1J0Z5I7kByt0c0gnQQ==
+X-Developer-Key: i=neil.armstrong@linaro.org; a=openpgp;
+ fpr=89EC3D058446217450F22848169AB7B1A4CFF8AE
 
-On 2/12/24 22:39, Suren Baghdasaryan wrote:
-> Introduce helper functions to easily instrument page allocators by
-> storing a pointer to the allocation tag associated with the code that
-> allocated the page in a page_ext field.
-> 
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
-> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> +
-> +#ifdef CONFIG_MEM_ALLOC_PROFILING
-> +
-> +#include <linux/page_ext.h>
-> +
-> +extern struct page_ext_operations page_alloc_tagging_ops;
-> +extern struct page_ext *page_ext_get(struct page *page);
-> +extern void page_ext_put(struct page_ext *page_ext);
-> +
-> +static inline union codetag_ref *codetag_ref_from_page_ext(struct page_ext *page_ext)
-> +{
-> +	return (void *)page_ext + page_alloc_tagging_ops.offset;
-> +}
-> +
-> +static inline struct page_ext *page_ext_from_codetag_ref(union codetag_ref *ref)
-> +{
-> +	return (void *)ref - page_alloc_tagging_ops.offset;
-> +}
-> +
-> +static inline union codetag_ref *get_page_tag_ref(struct page *page)
-> +{
-> +	if (page && mem_alloc_profiling_enabled()) {
-> +		struct page_ext *page_ext = page_ext_get(page);
-> +
-> +		if (page_ext)
-> +			return codetag_ref_from_page_ext(page_ext);
+Unlike the the very close A740 GPU on the SM8550 SoC, the A750 GPU
+doesn't have an HWCFG block but a separate register set.
 
-I think when structured like this, you're not getting the full benefits of
-static keys, and the compiler probably can't improve that on its own.
+The missing registers are added in the a6xx.xml.h file that would
+require a subsequent sync and the non-existent hwcfg is handled
+in a6xx_set_hwcg().
 
-- page is tested before the static branch is evaluated
-- when disabled, the result is NULL, and that's again tested in the callers
+The A750 GPU info are added under the adreno_is_a750() macro and
+the ADRENO_7XX_GEN3 family id.
 
-> +	}
-> +	return NULL;
-> +}
-> +
-> +static inline void put_page_tag_ref(union codetag_ref *ref)
-> +{
-> +	page_ext_put(page_ext_from_codetag_ref(ref));
-> +}
-> +
-> +static inline void pgalloc_tag_add(struct page *page, struct task_struct *task,
-> +				   unsigned int order)
-> +{
-> +	union codetag_ref *ref = get_page_tag_ref(page);
+This adds:
+- the GMU and SMMU bindings
+- DRM driver changes
+- DT nodes
 
-So the more optimal way would be to test mem_alloc_profiling_enabled() here
-as the very first thing before trying to get the ref.
+Dependencies: None
 
-> +	if (ref) {
-> +		alloc_tag_add(ref, task->alloc_tag, PAGE_SIZE << order);
-> +		put_page_tag_ref(ref);
-> +	}
-> +}
-> +
-> +static inline void pgalloc_tag_sub(struct page *page, unsigned int order)
-> +{
-> +	union codetag_ref *ref = get_page_tag_ref(page);
+Tested using Mesa's !26934 Merge Request [0] on the SM8650-QRD
+and with kmscube & vkcube to test basic rendering.
 
-And same here.
+[0] https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/26934
 
-> +	if (ref) {
-> +		alloc_tag_sub(ref, PAGE_SIZE << order);
-> +		put_page_tag_ref(ref);
-> +	}
-> +}
-> +
-> +#else /* CONFIG_MEM_ALLOC_PROFILING */
-> +
-> +static inline void pgalloc_tag_add(struct page *page, struct task_struct *task,
-> +				   unsigned int order) {}
-> +static inline void pgalloc_tag_sub(struct page *page, unsigned int order) {}
-> +
-> +#endif /* CONFIG_MEM_ALLOC_PROFILING */
-> +
-> +#endif /* _LINUX_PGALLOC_TAG_H */
-> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> index 78d258ca508f..7bbdb0ddb011 100644
-> --- a/lib/Kconfig.debug
-> +++ b/lib/Kconfig.debug
-> @@ -978,6 +978,7 @@ config MEM_ALLOC_PROFILING
->  	depends on PROC_FS
->  	depends on !DEBUG_FORCE_WEAK_PER_CPU
->  	select CODE_TAGGING
-> +	select PAGE_EXTENSION
->  	help
->  	  Track allocation source code and record total allocation size
->  	  initiated at that code location. The mechanism can be used to track
-> diff --git a/lib/alloc_tag.c b/lib/alloc_tag.c
-> index 4fc031f9cefd..2d5226d9262d 100644
-> --- a/lib/alloc_tag.c
-> +++ b/lib/alloc_tag.c
-> @@ -3,6 +3,7 @@
->  #include <linux/fs.h>
->  #include <linux/gfp.h>
->  #include <linux/module.h>
-> +#include <linux/page_ext.h>
->  #include <linux/proc_fs.h>
->  #include <linux/seq_buf.h>
->  #include <linux/seq_file.h>
-> @@ -124,6 +125,22 @@ static bool alloc_tag_module_unload(struct codetag_type *cttype,
->  	return module_unused;
->  }
->  
-> +static __init bool need_page_alloc_tagging(void)
-> +{
-> +	return true;
+Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+---
+Changes in v3:
+- Fixed smmu bindings if condition for GMU smmu
+- Collected reviews
+- Link to v2: https://lore.kernel.org/r/20240215-topic-sm8650-gpu-v2-0-6be0b4bf2e09@linaro.org
 
-So this means the page_ext memory overead is paid unconditionally once
-MEM_ALLOC_PROFILING is compile time enabled, even if never enabled during
-runtime? That makes it rather costly to be suitable for generic distro
-kernels where the code could be compile time enabled, and runtime enabling
-suggested in a debugging/support scenario. It's what we do with page_owner,
-debug_pagealloc, slub_debug etc.
+Changes in v2:
+- Added separate a6xx.xml.h sync from https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27576
+- Collected review tags
+- Inlined skip_programming
+- Use A7XX_RBBM_CGC_P2S_STATUS_TXDONE instead of BIT(0)
+- Drop now useless placeholder comment
+- Removed interconnect properties
+- Rebased on current linux-next
+- Link to v1: https://lore.kernel.org/r/20240212-topic-sm8650-gpu-v1-0-708a40b747b5@linaro.org
 
-Ideally we'd have some vmalloc based page_ext flavor for later-than-boot
-runtime enablement, as we now have for stackdepot. But that could be
-explored later. For now it would be sufficient to add an early_param boot
-parameter to control the enablement including page_ext, like page_owner and
-other features do.
+---
+Neil Armstrong (7):
+      dt-bindings: display/msm/gmu: Document Adreno 750 GMU
+      dt-bindings: arm-smmu: fix SM8[45]50 GPU SMMU if condition
+      dt-bindings: arm-smmu: Document SM8650 GPU SMMU
+      drm/msm/a6xx: Add missing regs for A750
+      drm/msm: add support for A750 GPU
+      arm64: dts: qcom: sm8650: add GPU nodes
+      arm64: dts: qcom: sm8650-qrd: enable GPU
 
-> +}
-> +
-> +static __init void init_page_alloc_tagging(void)
-> +{
-> +}
-> +
-> +struct page_ext_operations page_alloc_tagging_ops = {
-> +	.size = sizeof(union codetag_ref),
-> +	.need = need_page_alloc_tagging,
-> +	.init = init_page_alloc_tagging,
-> +};
-> +EXPORT_SYMBOL(page_alloc_tagging_ops);
+ .../devicetree/bindings/display/msm/gmu.yaml       |   1 +
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |  17 ++-
+ arch/arm64/boot/dts/qcom/sm8650-qrd.dts            |   8 +
+ arch/arm64/boot/dts/qcom/sm8650.dtsi               | 166 +++++++++++++++++++++
+ drivers/gpu/drm/msm/adreno/a6xx.xml.h              |   9 ++
+ drivers/gpu/drm/msm/adreno/a6xx_gmu.c              |   2 +
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c              |  28 +++-
+ drivers/gpu/drm/msm/adreno/adreno_device.c         |  14 ++
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h            |  10 +-
+ 9 files changed, 247 insertions(+), 8 deletions(-)
+---
+base-commit: 2c3b09aac00d7835023bbc4473ee06696be64fa8
+change-id: 20240208-topic-sm8650-gpu-489d5e2c2b17
 
+Best regards,
+-- 
+Neil Armstrong <neil.armstrong@linaro.org>
 
