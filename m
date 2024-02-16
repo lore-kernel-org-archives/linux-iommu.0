@@ -1,218 +1,148 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90E4812FF77
-	for <iommu@lists.linux.dev>; Fri, 16 Feb 2024 15:36:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41CD012D770;
+	Fri, 16 Feb 2024 16:13:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708097782; cv=none; b=rL5+7YAk3PRS95obvixq6ADqJzb6cHM7mS98sThPK+aPg/tAiPVkfBqC7bR+7UUt3k3aIOGDAq6wBrewd8WiEQnE+UlyKDtncMmtdxvsZm8AtDQFHyngb2olvcwJNHB2itwNzRY8pnaE20Ulpifv5Q2OtzQiBfJjKEVOP6+4s+0=
+	t=1708099999; cv=none; b=LYbihIk37TNqKBVOa5a8VJy6r6irZgoLk4byqabC2UZp7Ne6ui7JPdjhkwY3oLQZ6ddhsYVNFFNsyk4hCS6BNHw3hBlznLjsfuKZk6GMQpDjrDSQXQcG9H6SMIFeaoEUGDW65fH+MF+7NZ8qvTyB33ngbgz3MyAzdqgdSSj0zCQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708097782; c=relaxed/simple;
-	bh=pah9zYc57F+4qGNmZRKDvZpI9hjcQlXtnd316b/T9NI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=DLNUm0d6NvJvDq8mJbUz7A6bLxIKqo2/EKfeU0uWxaTsOrtV84pywmVgKOqeGPdfYtX402Hz8LKwNe7H8fDzo7UvYD/rToEQfgZKi2ggJP4ywIMJXK6PHxP9M1Qc39jt+dcUMC6b44TfrwVWsX9huHqUjBa3jpSHCO9AP6n9Uu4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=fXAS9CXU; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=wLNfUmnQ; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=dSrBHIt3; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=fpMAcemL; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1708099999; c=relaxed/simple;
+	bh=0C9+pCgjxRMOl9W9M/RJQspbO81gdJ2Y5+OCFt5kwAw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RoV3Sp4kkpKAZEudGTRBi1Ale0uBx48kMrjKFf3THWhCZNUagFyxmQ/h+NrM/3OdBN362aQMmV/f+z55DxF90sZjq9RDEa47TCMjXk1NTJeHVuHLGQYoOYVNmvhmn1EwkUgkXu+seSDSV5lEmvnrJWcdLCnymgQPuDxHhzHmhCw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uQ2AVVwa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="fXAS9CXU";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="wLNfUmnQ";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="dSrBHIt3";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="fpMAcemL"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 8A575220A7;
-	Fri, 16 Feb 2024 15:36:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708097778; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=l4vJJ3H+AAWRQYjB/9/s6lx7LTkhnUXf/MDDTj+Stkc=;
-	b=fXAS9CXUF42GhTQH6Dk0ERLDWz+szvtqS4hbHz5hlzO72H5LWH2Wl77vKwF3bU9qC4xybd
-	HjdmQMfgq/Ycq/gNBcmd7PjKo0cEFheG5OeZ6u/bHVMIQAXHtaIoL5Yj6ebO2LJG9XS+CX
-	3+Vje1sZ5ixTYH+20X2ftwyiFvloZpQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708097778;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=l4vJJ3H+AAWRQYjB/9/s6lx7LTkhnUXf/MDDTj+Stkc=;
-	b=wLNfUmnQHWUDcdPKHwqLu3owRKTcVnwUnzDkwDQ8YYC0pW/hmoNyjQ563BD46+xsjNDUuK
-	MhOxPwPapwY2PFAw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708097777; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=l4vJJ3H+AAWRQYjB/9/s6lx7LTkhnUXf/MDDTj+Stkc=;
-	b=dSrBHIt3uKiS6UBDA1LDFuJGGqb41Kz/+40/qb22uPi50OBP7amfOHDriG5mkg+NJmWi+U
-	qsA7fyXiGrj2MiQRrsQVZThBVvedh2cLeqzrNBzmZGLofYe75EsMAx6s8Xg8OeXMG3SdXd
-	43cxzKzLMshU7AwlCJqyXmmWyY6b2aU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708097777;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=l4vJJ3H+AAWRQYjB/9/s6lx7LTkhnUXf/MDDTj+Stkc=;
-	b=fpMAcemL/HQ2lY2evYrW3COdALzWdIIUtvO+/lOtuXTDIKbWXIYZrSnv/m78K626CI9TBX
-	31xVPf3QzycPgYCg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id D3BB013A39;
-	Fri, 16 Feb 2024 15:36:16 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id Xg0ZM/CAz2W1QwAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Fri, 16 Feb 2024 15:36:16 +0000
-Message-ID: <e845a3ee-e6c0-47dd-81e9-ae0fb08886d1@suse.cz>
-Date: Fri, 16 Feb 2024 16:36:16 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uQ2AVVwa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 585B0C433C7;
+	Fri, 16 Feb 2024 16:13:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1708099998;
+	bh=0C9+pCgjxRMOl9W9M/RJQspbO81gdJ2Y5+OCFt5kwAw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=uQ2AVVwaKgHAtfDxbKsFun3Cxph1v1ovRg2RMHIfxNpeAFMxZoBEOaPhg+KMRRTFM
+	 dLRVSYRF1YV2rMCcilm14ixVSLxgl1pfJyn5kLRar+fPcQITEyDRQG3ehlzAljPYF2
+	 0Z39Z/YUMeaeipQ00UVGpvdYRSjtImymJsFsrnozJG3a+dkvLQn22ewV5tlTro2cyf
+	 qQBkStYqVNzmodLKgIfctm15lIX3C6B+Bw7ZCBViG6f3pse+iE6j3E/YIMwBNWZxN2
+	 Azgk3l0gu6/rm8sOJZr7FAlI2Yak86+3NTqkyi8VIituSoZpvE8MgpL59ggOqSjqva
+	 DBapcF2ROFIgQ==
+Date: Fri, 16 Feb 2024 16:13:12 +0000
+From: Will Deacon <will@kernel.org>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: sagi@grimberg.me, hch@lst.de, axboe@kernel.dk, kbusch@kernel.org,
+	joro@8bytes.org, robin.murphy@arm.com, jgg@nvidia.com,
+	linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, murphyt7@tcd.ie, baolu.lu@linux.intel.com
+Subject: Re: [PATCH v1 0/2] nvme-pci: Fix dma-iommu mapping failures when
+ PAGE_SIZE=64KB
+Message-ID: <20240216161312.GA2203@willie-the-truck>
+References: <cover.1707851466.git.nicolinc@nvidia.com>
+ <20240214164138.GA31927@willie-the-truck>
+ <Zc0bLAIXSAqsQJJv@Asurada-Nvidia>
+ <20240215142208.GA753@willie-the-truck>
+ <20240215163544.GA821@willie-the-truck>
+ <Zc6rr/LleQ2krkyg@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 20/35] lib: add codetag reference into slabobj_ext
-Content-Language: en-US
-To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
-Cc: kent.overstreet@linux.dev, mhocko@suse.com, hannes@cmpxchg.org,
- roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
- willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
- void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
- catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de,
- mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org,
- peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
- masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
- muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
- pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
- dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
- keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
- gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
- vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
- bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
- penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
- glider@google.com, elver@google.com, dvyukov@google.com,
- shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
- rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
- kernel-team@android.com, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- linux-mm@kvack.org, linux-modules@vger.kernel.org,
- kasan-dev@googlegroups.com, cgroups@vger.kernel.org
-References: <20240212213922.783301-1-surenb@google.com>
- <20240212213922.783301-21-surenb@google.com>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20240212213922.783301-21-surenb@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=dSrBHIt3;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=fpMAcemL
-X-Spamd-Result: default: False [1.20 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 XM_UA_NO_VERSION(0.01)[];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	 MID_RHS_MATCH_FROM(0.00)[];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 DKIM_TRACE(0.00)[suse.cz:+];
-	 MX_GOOD(-0.01)[];
-	 RCPT_COUNT_GT_50(0.00)[73];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 FREEMAIL_CC(0.00)[linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[]
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spam-Score: 1.20
-X-Rspamd-Queue-Id: 8A575220A7
-X-Spam-Level: *
-X-Spam-Flag: NO
-X-Spamd-Bar: +
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Zc6rr/LleQ2krkyg@Asurada-Nvidia>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 2/12/24 22:39, Suren Baghdasaryan wrote:
-> To store code tag for every slab object, a codetag reference is embedded
-> into slabobj_ext when CONFIG_MEM_ALLOC_PROFILING=y.
+Hi Nicolin,
+
+Thanks for sharing all the logs, .config etc.
+
+On Thu, Feb 15, 2024 at 04:26:23PM -0800, Nicolin Chen wrote:
+> On Thu, Feb 15, 2024 at 04:35:45PM +0000, Will Deacon wrote:
+> > On Thu, Feb 15, 2024 at 02:22:09PM +0000, Will Deacon wrote:
+> > > On Wed, Feb 14, 2024 at 11:57:32AM -0800, Nicolin Chen wrote:
+> > > > On Wed, Feb 14, 2024 at 04:41:38PM +0000, Will Deacon wrote:
+> > > > > On Tue, Feb 13, 2024 at 01:53:55PM -0800, Nicolin Chen wrote:
+> > > > And it seems to get worse, as even a 64KB mapping is failing:
+> > > > [    0.239821] nvme 0000:00:01.0: swiotlb buffer is full (sz: 65536 bytes), total 32768 (slots), used 0 (slots)
+> > > >
+> > > > With a printk, I found the iotlb_align_mask isn't correct:
+> > > >    swiotlb_area_find_slots:alloc_align_mask 0xffff, iotlb_align_mask 0x800
+> > > >
+> > > > But fixing the iotlb_align_mask to 0x7ff still fails the 64KB
+> > > > mapping..
+> > >
+> > > Hmm. A mask of 0x7ff doesn't make a lot of sense given that the slabs
+> > > are 2KiB aligned. I'll try plugging in some of the constants you have
+> > > here, as something definitely isn't right...
+> > 
+> > Sorry, another ask: please can you print 'orig_addr' in the case of the
+> > failing allocation?
 > 
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
-> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> ---
->  include/linux/memcontrol.h | 5 +++++
->  lib/Kconfig.debug          | 1 +
->  mm/slab.h                  | 4 ++++
->  3 files changed, 10 insertions(+)
+> I added nvme_print_sgl() in the nvme-pci driver before its
+> dma_map_sgtable() call, so the orig_addr isn't aligned with
+> PAGE_SIZE=64K or NVME_CTRL_PAGE_SIZE=4K:
+>  sg[0] phys_addr:0x0000000105774600 offset:17920 length:512 dma_address:0x0000000000000000 dma_length:0
 > 
-> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-> index f3584e98b640..2b010316016c 100644
-> --- a/include/linux/memcontrol.h
-> +++ b/include/linux/memcontrol.h
-> @@ -1653,7 +1653,12 @@ unsigned long mem_cgroup_soft_limit_reclaim(pg_data_t *pgdat, int order,
->   * if MEMCG_DATA_OBJEXTS is set.
->   */
->  struct slabobj_ext {
-> +#ifdef CONFIG_MEMCG_KMEM
->  	struct obj_cgroup *objcg;
-> +#endif
-> +#ifdef CONFIG_MEM_ALLOC_PROFILING
-> +	union codetag_ref ref;
-> +#endif
->  } __aligned(8);
+> Also attaching some verbose logs, in case you'd like to check:
+>    nvme 0000:00:01.0: swiotlb_area_find_slots: dma_get_min_align_mask 0xfff, IO_TLB_SIZE 0xfffff7ff
+>    nvme 0000:00:01.0: swiotlb_area_find_slots: alloc_align_mask 0xffff, iotlb_align_mask 0x7ff
+>    nvme 0000:00:01.0: swiotlb_area_find_slots: stride 0x20, max 0xffff
+>    nvme 0000:00:01.0: swiotlb_area_find_slots: tlb_addr=0xbd830000, iotlb_align_mask=0x7ff, alloc_align_mask=0xffff
+> => nvme 0000:00:01.0: swiotlb_area_find_slots: orig_addr=0x105774600, iotlb_align_mask=0x7ff
 
-So this means that compiling with CONFIG_MEM_ALLOC_PROFILING will increase
-the memory overhead of arrays allocated for CONFIG_MEMCG_KMEM, even if
-allocation profiling itself is not enabled in runtime? Similar concern to
-the unconditional page_ext usage, that this would hinder enabling in a
-general distro kernel.
+With my patches, I think 'iotlb_align_mask' will be 0x800 here, so this
+particular allocation might be alright, however I think I'm starting to
+see the wider problem. The IOMMU code is asking for a 64k-aligned
+allocation so that it can map it safely, but at the same time
+dma_get_min_align_mask() is asking for congruence in the 4k NVME page
+offset. Now, because we're going to allocate a 64k-aligned mapping and
+offset it, I think the NVME alignment will just fall out in the wash and
+checking the 'orig_addr' (which includes the offset) is wrong.
 
-The unused field overhead would be smaller than currently page_ext, but
-getting rid of it when alloc profiling is not enabled would be more work
-than introducing an early boot param for the page_ext case. Could be however
-solved similarly to how page_ext is populated dynamically at runtime.
-Hopefully it wouldn't add noticeable cpu overhead.
+So perhaps this diff (which I'm sadly not able to test) will help? You'll
+want to apply it on top of my other patches. The idea is to ignore the
+bits of 'orig_addr' which will be aligned automatically by offseting from
+the aligned allocation. I fixed the max() thing too, although that's only
+an issue for older kernels.
 
->  static inline void __inc_lruvec_kmem_state(void *p, enum node_stat_item idx)
-> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> index 7bbdb0ddb011..9ecfcdb54417 100644
-> --- a/lib/Kconfig.debug
-> +++ b/lib/Kconfig.debug
-> @@ -979,6 +979,7 @@ config MEM_ALLOC_PROFILING
->  	depends on !DEBUG_FORCE_WEAK_PER_CPU
->  	select CODE_TAGGING
->  	select PAGE_EXTENSION
-> +	select SLAB_OBJ_EXT
->  	help
->  	  Track allocation source code and record total allocation size
->  	  initiated at that code location. The mechanism can be used to track
-> diff --git a/mm/slab.h b/mm/slab.h
-> index 77cf7474fe46..224a4b2305fb 100644
-> --- a/mm/slab.h
-> +++ b/mm/slab.h
-> @@ -569,6 +569,10 @@ int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
->  
->  static inline bool need_slab_obj_ext(void)
->  {
-> +#ifdef CONFIG_MEM_ALLOC_PROFILING
-> +	if (mem_alloc_profiling_enabled())
-> +		return true;
-> +#endif
->  	/*
->  	 * CONFIG_MEMCG_KMEM creates vector of obj_cgroup objects conditionally
->  	 * inside memcg_slab_post_alloc_hook. No other users for now.
+Cheers,
+
+Will
+
+--->8
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 283eea33dd22..4a000d97f568 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -981,8 +981,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+        dma_addr_t tbl_dma_addr =
+                phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
+        unsigned long max_slots = get_max_slots(boundary_mask);
+-       unsigned int iotlb_align_mask =
+-               dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
++       unsigned int iotlb_align_mask = dma_get_min_align_mask(dev);
+        unsigned int nslots = nr_slots(alloc_size), stride;
+        unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+        unsigned int index, slots_checked, count = 0, i;
+@@ -993,6 +992,9 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+        BUG_ON(!nslots);
+        BUG_ON(area_index >= pool->nareas);
+
++       alloc_align_mask |= (IO_TLB_SIZE - 1);
++       iotlb_align_mask &= ~alloc_align_mask;
++
+        /*
+         * For mappings with an alignment requirement don't bother looping to
+         * unaligned slots once we found an aligned one.
+@@ -1004,7 +1006,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+         * allocations.
+         */
+        if (alloc_size >= PAGE_SIZE)
+-               stride = max(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
++               stride = umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
+
+        spin_lock_irqsave(&area->lock, flags);
+        if (unlikely(nslots > pool->area_nslabs - area->used))
 
