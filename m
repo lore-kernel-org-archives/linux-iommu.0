@@ -1,148 +1,178 @@
-Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF5481865
-	for <iommu@lists.linux.dev>; Sun, 18 Feb 2024 05:02:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9D8D149E15
+	for <iommu@lists.linux.dev>; Sun, 18 Feb 2024 07:02:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708232556; cv=none; b=EvDEUCePVVUve8FZbQUbZb3Hnvwte4mq9nRcRBx4h7r8S8J5lFuPXVOBf3ahVP0YArec7lRhiJ6bVLqAMJTDYoIicHdZRHL9vVtzDpo+eYpspkJGBPxphH40KLsG6xpn/971PYnaAaE5DDuKvHAiPs6HQo0GngnWWAXHPe+ZhEY=
+	t=1708239728; cv=none; b=qLiHJRDU3KoK1HbXUphBdQ3zKaVoAj7e5JDiiZixgYjWUO+vNyacVQFRy5B3saOu1mHAAk9bfIZ4j+RzaWtas6xzx/9kcEr7q6qkaZq2O7p7N9yj3T7jyB9k+cRVSQ2z02dPTJgyXt+ZgbJ0a+aaweqQTws7sS6C2btsta1bBBM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708232556; c=relaxed/simple;
-	bh=EH8yWcDAy3W3ecDVf+82YXRrT8f3dPAB53gelUfTzFk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=l2A/ccYyphj2fSOhj9X65j3MXqJHcdNjptUdc7cufDgscRQuxC+jjtRCQ9s2AImJfv7C+AlZjipXht/PBZadrvdxgfxuJ6vLYXzOokA8spW3Mp9dLX3z7YpLaA6BYuPBfWid4yP+Z84Do7XiL1Ee2AJMoSHxslPyyp7oS7hKeaM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LzzxGFRK; arc=none smtp.client-ip=209.85.161.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1708239728; c=relaxed/simple;
+	bh=HKzHkVS1fXxecNNyqxumIEyRbepuVzHbnU1ybxwDeQM=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=ILAAa9ISX4LZkaSV3iuueF5qWSy3SWTu/exd5qibuxCnZzyKF8y/wpN6oCYGJNpp5EAMYxUGRV+79Tsp9uuy9K3hmttegH/+ug/lCzhXKic6fb/9ZjRGQvcslRFw94LjRRPmeLfGYwETl+LEIj8XeM3rNqsb1LAncYH2CsIu3dY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KWxaD5Bf; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LzzxGFRK"
-Received: by mail-oo1-f46.google.com with SMTP id 006d021491bc7-5986d902ae6so1911800eaf.3
-        for <iommu@lists.linux.dev>; Sat, 17 Feb 2024 21:02:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1708232554; x=1708837354; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=uEhuBzl/XUO5srIc9IiEtG7zueZD6dPpQ8b++F1rfE4=;
-        b=LzzxGFRKCwOEANgrqTrf+PYyAjtRqp2bvMO4ihBfQd79W+oBEPurExpLpNnVioLOhk
-         ZL/6U5jeL08Ctld/GtF1nA6Wdv9OPL5JF7gNyp924EFLAzMAdKE+Mmd70DTt1OWYO6GQ
-         YNUSx2iWF6fOdKT5uwS5+o6WAbncjgcrWwBts9gngLh+i+UBMZdj+ybRZw02O+vANZFZ
-         R3uTfmvfgYSmgYPnrzloNMgejPGg+hnRu1AhcZlrafjmXItIL4l1DYD5Z2hgxO4w5e/n
-         DDGpE36c3cbE41rlnzCbapAKLl/zSk0TwMYc4hdtY9oEfDT8lX0f7rVvSAoyXUinoV8i
-         jJ5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708232554; x=1708837354;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=uEhuBzl/XUO5srIc9IiEtG7zueZD6dPpQ8b++F1rfE4=;
-        b=S2+VvTU4l2J/z2ji9cmZuCB8xZkE/i8kc6fqqFuK+unwq639KT+rU3j2iuMJnTcQzP
-         yrX1vXz0KIMexC+hnEgkJdELuAUGL5biQ9EDYown8q35cCIuwFxEVMNoLBv844/8uVq1
-         Jc9SU9a5JRFrNyavMLwWmH2tGba4/2UmxucqpNwdHmMFu3eB2ot2WluN8LNSVYtapavG
-         kWDWVCO3oV20dORVKNofnH4Y8Q6lpQ2IvQhlJbGz6uRwdhuhCwtlTzILb0X6F600rAJQ
-         dBgtTiFO1g4LfwvcO7mYIHlB2N9rRmWryU7v0lPl3AsFy5E5udHJ3yvt2U1mTR0vrfaw
-         561w==
-X-Forwarded-Encrypted: i=1; AJvYcCUcLWZvKGBN74DxxPvacdNZJkfppRzFtVTmQxSyhiqbDJ/VW3GO7gJxLJ0F+LxaeI3OX32qfKHq/OPAa5HGD+hLHLMvCj4=
-X-Gm-Message-State: AOJu0Yx4dfxANVpWVAqRVHwmEYxwnM/1mUgniNrudpdWVNrshOjj5R76
-	JJBcMDFqGujhRKWtPYtziLR5sXSYlsNBaFLUOOBZCl9MX0bLRrNz
-X-Google-Smtp-Source: AGHT+IFtcp5ctWAyRJeAGhJBhuhoEgIuvQ40gFn8og9Zx9QQmyVo4hFDLZYPPM/JgIF7Q/kwRxHrlw==
-X-Received: by 2002:a05:6358:f485:b0:17a:e6d8:b19f with SMTP id ku5-20020a056358f48500b0017ae6d8b19fmr9987069rwb.24.1708232553829;
-        Sat, 17 Feb 2024 21:02:33 -0800 (PST)
-Received: from nilq-virtual-machine.localdomain ([60.24.211.11])
-        by smtp.gmail.com with ESMTPSA id y5-20020a634945000000b005dc48e56191sm2297762pgk.11.2024.02.17.21.02.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Feb 2024 21:02:33 -0800 (PST)
-From: "ni.liqiang" <niliqiang.io@gmail.com>
-To: Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>
-Cc: "ni.liqiang" <niliqiang.io@gmail.com>,
-	"jin . qi" <jin.qi@zte.com.cn>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] drivers/iommu: Ensure that the queue base address is successfully written during SMMU initialization.
-Date: Sun, 18 Feb 2024 13:02:23 +0800
-Message-Id: <20240218050224.33426-1-niliqiang.io@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KWxaD5Bf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708239727; x=1739775727;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HKzHkVS1fXxecNNyqxumIEyRbepuVzHbnU1ybxwDeQM=;
+  b=KWxaD5BfEZe3wbuLsQ1Fabd3TWNKh20QeOia/WBDf3GtY9EC0FvFBozY
+   I2DPss1zuYfABqCkNfNJESTZJxBRDQZ1cjwxCDGhQWm+AW253vtgYtFMc
+   aYoW7RVAf3wYc8WRMDu9JWtRYLGvwtkoF1NW/arNQyPazwNtKtM6I8ael
+   22gMIFFMmpARh4f3SUflGJQ/SvGNA9IiVQqBcPJvhQQt6TfM0ZWwB5y0J
+   pOhbsqRXwyJRarMKc4/Hz1qBvINjvHY2cIHL8UEwvfMpmK7XBURmVvKcE
+   MlElbrjX19UHxqZ9bMl1+hb+x5HftKmzOADVc/8SRtRnWykPfMNqXm+WF
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10987"; a="2755481"
+X-IronPort-AV: E=Sophos;i="6.06,168,1705392000"; 
+   d="scan'208";a="2755481"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2024 23:02:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=McAfee;i="6600,9927,10987"; a="826814987"
+X-IronPort-AV: E=Sophos;i="6.06,168,1705392000"; 
+   d="scan'208";a="826814987"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.209.212]) ([10.254.209.212])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2024 23:02:02 -0800
+Message-ID: <67391b2d-b441-4d43-aa46-2a30c95420a3@linux.intel.com>
+Date: Sun, 18 Feb 2024 15:02:00 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Huang Jiaqing <jiaqing.huang@intel.com>,
+ Ethan Zhao <haifeng.zhao@linux.intel.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iommu/vt-d: Use device rbtree in iopf reporting path
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240215072249.4465-1-baolu.lu@linux.intel.com>
+ <20240215072249.4465-3-baolu.lu@linux.intel.com>
+ <20240215175534.GD1299735@ziepe.ca>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240215175534.GD1299735@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-In the system reboot test, I encountered an issue:
-After the OS started, the base address of CMDQ failed to be written
-successfully and remained at the default value of 0.
+On 2024/2/16 1:55, Jason Gunthorpe wrote:
+> On Thu, Feb 15, 2024 at 03:22:49PM +0800, Lu Baolu wrote:
+>> The existing IO page fault handler currently locates the PCI device by
+>> calling pci_get_domain_bus_and_slot(). This function searches the list
+>> of all PCI devices until the desired device is found. To improve lookup
+>> efficiency, a helper function named device_rbtree_find() is introduced
+>> to search for the device within the rbtree. Replace
+>> pci_get_domain_bus_and_slot() in the IO page fault handling path.
+>>
+>> Co-developed-by: Huang Jiaqing <jiaqing.huang@intel.com>
+>> Signed-off-by: Huang Jiaqing <jiaqing.huang@intel.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/iommu.h |  1 +
+>>   drivers/iommu/intel/iommu.c | 29 +++++++++++++++++++++++++++++
+>>   drivers/iommu/intel/svm.c   | 14 ++++++--------
+>>   3 files changed, 36 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+>> index 54eeaa8e35a9..f13c228924f8 100644
+>> --- a/drivers/iommu/intel/iommu.h
+>> +++ b/drivers/iommu/intel/iommu.h
+>> @@ -1081,6 +1081,7 @@ void free_pgtable_page(void *vaddr);
+>>   void iommu_flush_write_buffer(struct intel_iommu *iommu);
+>>   struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *parent,
+>>   					       const struct iommu_user_data *user_data);
+>> +struct device *device_rbtree_find(struct intel_iommu *iommu, u16 rid);
+>>   
+>>   #ifdef CONFIG_INTEL_IOMMU_SVM
+>>   void intel_svm_check(struct intel_iommu *iommu);
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index 09009d96e553..d92c680bcc96 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -120,6 +120,35 @@ static int device_rid_cmp(struct rb_node *lhs, const struct rb_node *rhs)
+>>   	return device_rid_cmp_key(&key, rhs);
+>>   }
+>>   
+>> +/*
+>> + * Looks up an IOMMU-probed device using its source ID.
+>> + *
+>> + * If the device is found:
+>> + *  - Increments its reference count.
+>> + *  - Returns a pointer to the device.
+>> + *  - The caller must call put_device() after using the pointer.
+>> + *
+>> + * If the device is not found, returns NULL.
+>> + */
+>> +struct device *device_rbtree_find(struct intel_iommu *iommu, u16 rid)
+>> +{
+>> +	struct device_domain_info *info;
+>> +	struct device *dev = NULL;
+>> +	struct rb_node *node;
+>> +	unsigned long flags;
+>> +
+>> +	spin_lock_irqsave(&iommu->device_rbtree_lock, flags);
+>> +	node = rb_find(&rid, &iommu->device_rbtree, device_rid_cmp_key);
+>> +	if (node) {
+>> +		info = rb_entry(node, struct device_domain_info, node);
+>> +		dev = info->dev;
+>> +		get_device(dev);
+> 
+> This get_device() is a bit troubling. It eventually calls into
+> iommu_report_device_fault() which does:
+> 
+> 	struct dev_iommu *param = dev->iommu;
+> 
+> Which is going to explode if the iomm driver release has already
+> happened, which is a precondition to getting to a unref'd struct
+> device.
+> 
+> The driver needs to do something to fence these events during it's
+> release function.
 
-Through timing analysis of CMN, it was found that although
-the write request for the CMDQ base precedes the write request
-for CMDQEN, the write response for the CMDQ base might be later
-than that for CMDQEN.
+Yes, theoretically the dev->iommu should be protected in the
+iommu_report_device_fault() path.
 
-Upon reviewing the SMMU Architecture Specification,
-I found the following explanation:
-The registers must be initialized in this order:
-1. Write SMMU_CMDQ_BASE to set the queue base and size.
-2. Write initial values to SMMU_CMDQ_CONS and SMMU_CMDQ_PROD.
-3. Enable the queue with an Update of the respective SMMU_CR0.CMDQEN to 1.
+> 
+> If we are already doing that then I'd suggest to drop the get_device
+> and add a big fat comment explaining the special rules about lifetime
+> that are in effect here.
+> 
+> Otherwise you need to do that barrier rethink the way the locking
+> works..
 
-If there are no memory barriers, how can we ensure this order?
-Therefore, I believe that adding a memory barrier before enabling CMDQ
-is necessary to ensure that the base address of CMDQ is correctly written.
+A device hot removing goes through at least the following steps:
 
-The base addresses of EVENTQ and PRIQ would also be subject
-to the same situation.
+- Disable PRI.
+- Drain all outstanding I/O page faults.
+- Stop DMA.
+- Unload the device driver.
+- Call iommu_release_device() upon the BUS_NOTIFY_REMOVED_DEVICE event.
 
-Could you please review if this modification seems reasonable? Thank you.
+This sequence ensures that a device cannot generate an I/O page fault
+after PRI has been disabled. So in reality it's impossible for a device
+to generate an I/O page fault before disabling PRI and then go through
+the long journey to reach iommu_release_device() before
+iopf_get_dev_fault_param() is called in page fault interrupt handling
+thread.
 
-Signed-off-by: ni.liqiang <niliqiang.io@gmail.com>
-Reviewed-by: jin.qi <jin.qi@zte.com.cn>
-Tested-by: ni.liqiang <niliqiang.io@gmail.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+Considering this behavior, adding a comment to the code explaining the
+sequence and removing put_device() may be a simpler solution?
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 0ffb1cf17e0b..ac854c46fdf3 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3324,6 +3324,11 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
- 	writel_relaxed(smmu->cmdq.q.llq.prod, smmu->base + ARM_SMMU_CMDQ_PROD);
- 	writel_relaxed(smmu->cmdq.q.llq.cons, smmu->base + ARM_SMMU_CMDQ_CONS);
- 
-+	/* Ensure that SMMU_CMDQ_BASE is written completely
-+	 * when SMMU_CR0.CMDQEN == 0.
-+	 */
-+	__iomb();
-+
- 	enables = CR0_CMDQEN;
- 	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
- 				      ARM_SMMU_CR0ACK);
-@@ -3350,6 +3355,11 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
- 	writel_relaxed(smmu->evtq.q.llq.prod, smmu->page1 + ARM_SMMU_EVTQ_PROD);
- 	writel_relaxed(smmu->evtq.q.llq.cons, smmu->page1 + ARM_SMMU_EVTQ_CONS);
- 
-+	/* Ensure that SMMU_EVENTQ_BASE is written completely
-+	 * when SMMU_CR0.EVENTQEN == 0.
-+	 */
-+	__iomb();
-+
- 	enables |= CR0_EVTQEN;
- 	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
- 				      ARM_SMMU_CR0ACK);
-@@ -3367,6 +3377,11 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
- 		writel_relaxed(smmu->priq.q.llq.cons,
- 			       smmu->page1 + ARM_SMMU_PRIQ_CONS);
- 
-+		/* Ensure that SMMU_PRIQ_BASE is written completely
-+		 * when SMMU_CR0.PRIQEN == 0.
-+		 */
-+		__iomb();
-+
- 		enables |= CR0_PRIQEN;
- 		ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
- 					      ARM_SMMU_CR0ACK);
--- 
-2.34.1
+> 
+> Aside from that this looks like a great improvement to me
+> 
+> Thanks,
+> Jason
 
+Best regards,
+baolu
