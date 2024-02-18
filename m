@@ -1,67 +1,69 @@
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E5B436E
-	for <iommu@lists.linux.dev>; Sun, 18 Feb 2024 00:44:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8511C1368
+	for <iommu@lists.linux.dev>; Sun, 18 Feb 2024 02:21:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708217060; cv=none; b=A8wpT5RmtTzXqb8Soz+6+Dga3Zp4aZIm3edui4T9xnCRevlIVJjyotyk9YhXaiXiXtKo7cHUXqxqpXAwxLpattpz467FR9Sb7T9ZEK7RI9FPsIHNivp8nVh8FdeDAOWSt0RX6/HAj6rgDPxDGJfje7tKIjkV+yKTbcT5Pdnprbs=
+	t=1708222895; cv=none; b=SmsiToW3RfXfYMI/i1ewCN3CsvXexo7XSW5lsSgPj5Xg+OLeWGO73JOKzqVV2a+eKPaRJuMywOU94+Yog3grHG+3SEjloqH/d/A/o4ZOgy2KywsPZBgIGtXKX49rdFj+yV3TH+IQXkiTolvV3z3qXg5XNfS0z1S5IOePHGVKeSg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708217060; c=relaxed/simple;
-	bh=eObXZNCrhmMoAtoJx0M+KCXazEG8uiFRYjucowDmnr4=;
+	s=arc-20240116; t=1708222895; c=relaxed/simple;
+	bh=sGLQWy2gJ22i5/11EUF6i6TeDZNPTR8RdMNYUPKuXtM=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FUdT4WnQ42Nqb3p2qSymItbUjxgGt3GOEuHgFBuuSK0SoW7ddS6B0q6EsXAw9v1QlbUDU9ug/toBu6WHJy4BUrMykoH30YIZGBp6eTBRTi1Wwfpged3Hgj/bMeo070KhGjoYKmPV6bYO8yT0hqiUMSv7aS2T8ct3HPwtS2ULXiA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=o15oaEzG; arc=none smtp.client-ip=209.85.128.179
+	 To:Cc:Content-Type; b=hxRV+0vQ3Hq8+9dU4NpmhRSNRun5THhosbm4Sa4OtUJ7wGtkD8elHpzk205lYJh2ihXfbpO6YCEX0dWLmI6pVC9ngtf3TBcMNJCQ0TxQnuFnwHSxwTwCQ3Ixrg2OrOktU5Uqmq4viQbTlocMUZUYRyMHB0vU3xGdN8KoSBKZ1XA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=jrScRF/N; arc=none smtp.client-ip=209.85.219.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="o15oaEzG"
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-60821136c5aso1346857b3.1
-        for <iommu@lists.linux.dev>; Sat, 17 Feb 2024 16:44:18 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="jrScRF/N"
+Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-dcc73148611so3718169276.3
+        for <iommu@lists.linux.dev>; Sat, 17 Feb 2024 18:21:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708217058; x=1708821858; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1708222892; x=1708827692; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cFEGcM8EospHG4JmqyUXYLdSoH1Alzf1U0lPv6eqJTM=;
-        b=o15oaEzGhRNCol0HwrTXXEWIqsCr55Yp0TuFIzJ8OYGFwH3ItAgfMAL0zUVZpiJT1Y
-         ODdGUCGON1F2eFVwWJealEnJcbvRrnH5gSRQhRSyrkdUu9F54ZLnmvSfsrqYHqYFD1d2
-         gPPHJCd4GlopTnSM2RTSp7YsZUSkGOt0LsspZRgJTfphReSNwH4o64huvsPoVZFFVsOR
-         WOaRrmoTLRNEuuLbV/jvTet5XO6e4zJNpNSZLCZ3P0PfgGbOalwnmWuMMNrzZXGbFB0O
-         ZOix72ae9zTL7nbdONb1Hqu9YVgSM7C+EsHqZz6lI6a/9o0LEwrTEKQBUK5J3Jyb11p7
-         OT1A==
+        bh=aGwMPlFmMn7i+PsCRsmYPKBrgHwqE0wRHG6PNy5zjw0=;
+        b=jrScRF/Nw+qSJ0V3+obolFWJcHQwv77ZmcdXYdITezeNLIAE5HR9pevQ+PfVgJy15B
+         lhlIqTrgOvTm9aoeuGyq6yEdxyIM41PnOiPM2jS+CzktafHRXG/1BLAWoFaxDFQiS/0v
+         N5/K+TcBquYbMQSsBFSJwPPoqN6I9E5f9QslU/wXBdgauZDe3KLEtVOAlowUG6nmyS7+
+         xBlvN+XD36cAKqsDGPim3JBuy/ySFMOVAxctvLIWJjtUY0uGWOIYqAklRkjDQPoGDmf/
+         pmYb9dotnl5N7fl0oiGZKywNTQXxoMqqtGaXc6fsVuXn7AuGI9ZddPBlqfaxUy+KNp+S
+         fUPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708217058; x=1708821858;
+        d=1e100.net; s=20230601; t=1708222892; x=1708827692;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=cFEGcM8EospHG4JmqyUXYLdSoH1Alzf1U0lPv6eqJTM=;
-        b=CnAI07z23TPx/s1Uj3BIxAxLLvP4MZ/mENBrJSJ6gPBvL5BsfCcHU6fvgEsdEN4C7C
-         n9umWhacgRbJ0kyEWdoJZkJHAEF9/FrGPLYLtZptYt1Aughx33A/WiobdPES72BzRI0m
-         EYKC43rUFyrJz/3MgNFsw3Y9wNMIv/4M1jAESNPiGo1FgrfxNAJqnnx7ZNq4V/2rhGsN
-         u1NCMAqeWXlSkZJQJFPrCcS/VZZeeK+EgGR8Pt63jR4mfV9Lx9W/7TuJnYAknM3PSFiR
-         s7Wu2BHhZcjg2JDHAz7w+OmMbX5vyvYawdGlmY3qE9G0HPOopKSUA835/lbLYvKRyPRJ
-         Lmfg==
-X-Forwarded-Encrypted: i=1; AJvYcCXQXSXT89iNyaqlV8PgrEllVf8H98lz4fJfLkazhdCQVbVHwa/lYTdkV7ijyxtES4sL3bh9rCcTfliEqfsIeuaQ76L/LRA=
-X-Gm-Message-State: AOJu0Yxf/5luiuNV/yjtkyiWOptnk6yk0DZpbzJt/pW7s6S6Nfss4+5q
-	8Fbwtvo4eCHSA1G5JznT4PafFGYvTpTWVTcK/ZuN40jgtHzi6ku4vCau6oeARMuFK96Rvut4AQG
-	DrLAjIYxLN1pbFZPSdQUwzchTgoNft1srkW+O
-X-Google-Smtp-Source: AGHT+IF0zbur3ZnS0QBbUiRVZnclSCZcw12C5kwuIUJh6ZOEbr9od3x9F9LKEta3pcFjU0rivXF1DW3eH5+/zL6adzk=
-X-Received: by 2002:a81:914a:0:b0:604:f681:a1 with SMTP id i71-20020a81914a000000b00604f68100a1mr9152837ywg.16.1708217057719;
- Sat, 17 Feb 2024 16:44:17 -0800 (PST)
+        bh=aGwMPlFmMn7i+PsCRsmYPKBrgHwqE0wRHG6PNy5zjw0=;
+        b=G5CAK8/Ug+XBVWNG1FXpewlvnSeyZhPzZCDrrH3kFi6CtWK7Ks6YXEZZ9H3hWnhuCv
+         7gBCyTIntlrqA2ZypfehEU2xoMA9w9QXyXzZx/85f0WK8mtt7LVLg++mArEhLH7BT4YJ
+         ExApDwtzzWci+m0mfTMe69CHgP6MkDwmCf+UsnN+q6Bpe9gmgL2EEmmaaEMKN//hS4HC
+         u0fFV3wbP5X9s1FpIwIS/3lcChfzlqnfzbDY6ZlpyhXs/2DxefvocS4Jcn6MEWZqP0Ys
+         xN2myfbNamxiZmSqovc4fEiORwCYokG+ZUnzp9veACJUmOekGpLbib12oe3w9URD8Xdi
+         Yf9A==
+X-Forwarded-Encrypted: i=1; AJvYcCWIfyxUlNkj3CTTXvhLPsJKWm2azOVaN1WEz7XWXS/K9WdrQbKzwX7DCTExqJS633p2HHcFAWmAj439OPW9enVce5NagqM=
+X-Gm-Message-State: AOJu0YyRsuX6E1lBiGN6/P+0i+U/egpieQ6jTqQIMxOojhWDjhEc2ZAZ
+	AKTiyytWLGuumZNlqx0+dft9sfvQbYqXvVXXyP0cC+E6Xwf3ipPW5ueSnSb6vfrb06s5nC+f2OU
+	TkwMNuYQ7oyiPi4yJZiN8U+KvKgJGrjp5tyCv
+X-Google-Smtp-Source: AGHT+IFbcmWP0wuiiRTf0AlfSBMbSNfrD0N8TNtgVp/GNQHvOsL/OfZQsmBKdpZvPdO7G1/QjsP0VpRVVtpV4P/uhdk=
+X-Received: by 2002:a05:6902:268a:b0:dcd:4e54:9420 with SMTP id
+ dx10-20020a056902268a00b00dcd4e549420mr9768527ybb.5.1708222891980; Sat, 17
+ Feb 2024 18:21:31 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240212213922.783301-1-surenb@google.com> <20240212213922.783301-19-surenb@google.com>
- <2e26bdf7-a793-4386-bcc1-5b1c7a0405b3@suse.cz> <CAJuCfpGUH9DNEzfDrt5O0z8T2oAfsJ7-RTTN2CGUqwA+m3g6_w@mail.gmail.com>
-In-Reply-To: <CAJuCfpGUH9DNEzfDrt5O0z8T2oAfsJ7-RTTN2CGUqwA+m3g6_w@mail.gmail.com>
+References: <20240212213922.783301-1-surenb@google.com> <20240212213922.783301-14-surenb@google.com>
+ <f92ad1e3-2dde-4db2-9b76-96c6bbc6a208@suse.cz>
+In-Reply-To: <f92ad1e3-2dde-4db2-9b76-96c6bbc6a208@suse.cz>
 From: Suren Baghdasaryan <surenb@google.com>
-Date: Sun, 18 Feb 2024 00:44:05 +0000
-Message-ID: <CAJuCfpFvSOtz7DaYdv=FXRvTvoRbMziXctFXqSpP_u97uNsFSQ@mail.gmail.com>
-Subject: Re: [PATCH v3 18/35] mm: create new codetag references during page splitting
+Date: Sun, 18 Feb 2024 02:21:18 +0000
+Message-ID: <CAJuCfpGemg-aXyiK1fHavdKuW+-9+DM5_4krLAdg+DQh=24Dvg@mail.gmail.com>
+Subject: Re: [PATCH v3 13/35] lib: add allocation tagging support for memory
+ allocation profiling
 To: Vlastimil Babka <vbabka@suse.cz>
 Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
 	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
@@ -91,46 +93,196 @@ Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 16, 2024 at 4:46=E2=80=AFPM Suren Baghdasaryan <surenb@google.c=
-om> wrote:
+On Fri, Feb 16, 2024 at 8:57=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
+ote:
 >
-> On Fri, Feb 16, 2024 at 6:33=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> =
-wrote:
+> On 2/12/24 22:38, Suren Baghdasaryan wrote:
+> > Introduce CONFIG_MEM_ALLOC_PROFILING which provides definitions to easi=
+ly
+> > instrument memory allocators. It registers an "alloc_tags" codetag type
+> > with /proc/allocinfo interface to output allocation tag information whe=
+n
+> > the feature is enabled.
+> > CONFIG_MEM_ALLOC_PROFILING_DEBUG is provided for debugging the memory
+> > allocation profiling instrumentation.
+> > Memory allocation profiling can be enabled or disabled at runtime using
+> > /proc/sys/vm/mem_profiling sysctl when CONFIG_MEM_ALLOC_PROFILING_DEBUG=
+=3Dn.
+> > CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT enables memory allocation
+> > profiling by default.
 > >
-> > On 2/12/24 22:39, Suren Baghdasaryan wrote:
-> > > When a high-order page is split into smaller ones, each newly split
-> > > page should get its codetag. The original codetag is reused for these
-> > > pages but it's recorded as 0-byte allocation because original codetag
-> > > already accounts for the original high-order allocated page.
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
+> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+> > ---
+> >  Documentation/admin-guide/sysctl/vm.rst |  16 +++
+> >  Documentation/filesystems/proc.rst      |  28 +++++
+> >  include/asm-generic/codetag.lds.h       |  14 +++
+> >  include/asm-generic/vmlinux.lds.h       |   3 +
+> >  include/linux/alloc_tag.h               | 133 ++++++++++++++++++++
+> >  include/linux/sched.h                   |  24 ++++
+> >  lib/Kconfig.debug                       |  25 ++++
+> >  lib/Makefile                            |   2 +
+> >  lib/alloc_tag.c                         | 158 ++++++++++++++++++++++++
+> >  scripts/module.lds.S                    |   7 ++
+> >  10 files changed, 410 insertions(+)
+> >  create mode 100644 include/asm-generic/codetag.lds.h
+> >  create mode 100644 include/linux/alloc_tag.h
+> >  create mode 100644 lib/alloc_tag.c
 > >
-> > Wouldn't it be possible to adjust the original's accounted size and
-> > redistribute to the split pages for more accuracy?
+> > diff --git a/Documentation/admin-guide/sysctl/vm.rst b/Documentation/ad=
+min-guide/sysctl/vm.rst
+> > index c59889de122b..a214719492ea 100644
+> > --- a/Documentation/admin-guide/sysctl/vm.rst
+> > +++ b/Documentation/admin-guide/sysctl/vm.rst
+> > @@ -43,6 +43,7 @@ Currently, these files are in /proc/sys/vm:
+> >  - legacy_va_layout
+> >  - lowmem_reserve_ratio
+> >  - max_map_count
+> > +- mem_profiling         (only if CONFIG_MEM_ALLOC_PROFILING=3Dy)
+> >  - memory_failure_early_kill
+> >  - memory_failure_recovery
+> >  - min_free_kbytes
+> > @@ -425,6 +426,21 @@ e.g., up to one or two maps per allocation.
+> >  The default value is 65530.
+> >
+> >
+> > +mem_profiling
+> > +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > +
+> > +Enable memory profiling (when CONFIG_MEM_ALLOC_PROFILING=3Dy)
+> > +
+> > +1: Enable memory profiling.
+> > +
+> > +0: Disabld memory profiling.
 >
-> I can't recall why I didn't do it that way but I'll try to change and
-> see if something non-obvious comes up. Thanks!
+>       Disable
 
-Ok, now I recall what's happening here. alloc_tag_add() effectively
-does two things:
-1. it sets reference to point to the tag (ref->ct =3D &tag->ct)
-2. it increments tag->counters
-
-In pgalloc_tag_split() by calling
-alloc_tag_add(codetag_ref_from_page_ext(page_ext), tag, 0); we
-effectively set the reference from new page_ext to point to the
-original tag but we keep the tag->counters->bytes counter the same
-(incrementing by 0). It still increments tag->counters->calls but I
-think we need that because when freeing individual split pages we will
-be decrementing this counter for each individual page. We allocated
-many pages with one call, then split into smaller pages and will be
-freeing them with multiple calls. We need to balance out the call
-counter during the split.
-
-I can refactor the part of alloc_tag_add() that sets the reference
-into a separate alloc_tag_ref_set() and make it set the reference and
-increments tag->counters->calls (with a comment explaining why we need
-this increment here). Then I can call alloc_tag_ref_set() from inside
-alloc_tag_add() and when splitting  pages. I think that will be a bit
-more clear.
+Ack.
 
 >
+> ...
+>
+> > +allocinfo
+> > +~~~~~~~
+> > +
+> > +Provides information about memory allocations at all locations in the =
+code
+> > +base. Each allocation in the code is identified by its source file, li=
+ne
+> > +number, module and the function calling the allocation. The number of =
+bytes
+> > +allocated at each location is reported.
+>
+> See, it even says "number of bytes" :)
+
+Yes, we are changing the output to bytes.
+
+>
+> > +
+> > +Example output.
+> > +
+> > +::
+> > +
+> > +    > cat /proc/allocinfo
+> > +
+> > +      153MiB     mm/slub.c:1826 module:slub func:alloc_slab_page
+>
+> Is "module" meant in the usual kernel module sense? In that case IIRC is
+> more common to annotate things e.g. [xfs] in case it's really a module, a=
+nd
+> nothing if it's built it, such as slub. Is that "slub" simply derived fro=
+m
+> "mm/slub.c"? Then it's just redundant?
+
+Sounds good. The new example would look like this:
+
+    > sort -rn /proc/allocinfo
+   127664128    31168 mm/page_ext.c:270 func:alloc_page_ext
+    56373248     4737 mm/slub.c:2259 func:alloc_slab_page
+    14880768     3633 mm/readahead.c:247 func:page_cache_ra_unbounded
+    14417920     3520 mm/mm_init.c:2530 func:alloc_large_system_hash
+    13377536      234 block/blk-mq.c:3421 func:blk_mq_alloc_rqs
+    11718656     2861 mm/filemap.c:1919 func:__filemap_get_folio
+     9192960     2800 kernel/fork.c:307 func:alloc_thread_stack_node
+     4206592        4 net/netfilter/nf_conntrack_core.c:2567
+func:nf_ct_alloc_hashtable
+     4136960     1010 drivers/staging/ctagmod/ctagmod.c:20 [ctagmod]
+func:ctagmod_start
+     3940352      962 mm/memory.c:4214 func:alloc_anon_folio
+     2894464    22613 fs/kernfs/dir.c:615 func:__kernfs_new_node
+     ...
+
+Note that [ctagmod] is the only allocation from a module in this example.
+
+>
+> > +     6.08MiB     mm/slab_common.c:950 module:slab_common func:_kmalloc=
+_order
+> > +     5.09MiB     mm/memcontrol.c:2814 module:memcontrol func:alloc_sla=
+b_obj_exts
+> > +     4.54MiB     mm/page_alloc.c:5777 module:page_alloc func:alloc_pag=
+es_exact
+> > +     1.32MiB     include/asm-generic/pgalloc.h:63 module:pgtable func:=
+__pte_alloc_one
+> > +     1.16MiB     fs/xfs/xfs_log_priv.h:700 module:xfs func:xlog_kvmall=
+oc
+> > +     1.00MiB     mm/swap_cgroup.c:48 module:swap_cgroup func:swap_cgro=
+up_prepare
+> > +      734KiB     fs/xfs/kmem.c:20 module:xfs func:kmem_alloc
+> > +      640KiB     kernel/rcu/tree.c:3184 module:tree func:fill_page_cac=
+he_func
+> > +      640KiB     drivers/char/virtio_console.c:452 module:virtio_conso=
+le func:alloc_buf
+> > +      ...
+> > +
+> > +
+> >  meminfo
+>
+> ...
+>
+> > diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
+> > index 0be2d00c3696..78d258ca508f 100644
+> > --- a/lib/Kconfig.debug
+> > +++ b/lib/Kconfig.debug
+> > @@ -972,6 +972,31 @@ config CODE_TAGGING
+> >       bool
+> >       select KALLSYMS
 > >
+> > +config MEM_ALLOC_PROFILING
+> > +     bool "Enable memory allocation profiling"
+> > +     default n
+> > +     depends on PROC_FS
+> > +     depends on !DEBUG_FORCE_WEAK_PER_CPU
+> > +     select CODE_TAGGING
+> > +     help
+> > +       Track allocation source code and record total allocation size
+> > +       initiated at that code location. The mechanism can be used to t=
+rack
+> > +       memory leaks with a low performance and memory impact.
+> > +
+> > +config MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT
+> > +     bool "Enable memory allocation profiling by default"
+> > +     default y
+>
+> I'd go with default n as that I'd select for a general distro.
+
+Well, we have MEM_ALLOC_PROFILING=3Dn by default, so if it was switched
+on manually, that is a strong sign that the user wants it enabled IMO.
+So, enabling this switch by default seems logical to me. If a distro
+wants to have the feature compiled in but disabled by default then
+this is perfectly doable, just need to set both options appropriately.
+Does my logic make sense?
+
+>
+> > +     depends on MEM_ALLOC_PROFILING
+> > +
+> > +config MEM_ALLOC_PROFILING_DEBUG
+> > +     bool "Memory allocation profiler debugging"
+> > +     default n
+> > +     depends on MEM_ALLOC_PROFILING
+> > +     select MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT
+> > +     help
+> > +       Adds warnings with helpful error messages for memory allocation
+> > +       profiling.
+> > +
+>
