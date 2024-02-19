@@ -1,98 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BEC532C9C
-	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 11:22:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17E5B23769
+	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 11:27:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708341737; cv=none; b=sSqvM3GkX3rsjiqoB3PIC7mm6qTmzvUEgbvblpA8iJHw/I2WEIW/vPITMWaSDbUU3bAEU60VSm+nKuohcVHLZsJKfTMt4lM1XT66tX9NlYpnRWa4Bbx++PazjXMYg9y+I9JQoJHIJOgom60MPmpHRQNzUltPZCI850IShlCTs/Q=
+	t=1708342034; cv=none; b=WkGuijFFzjs3gJbztyWJmXk4R7wOeAcyRjeX7OYrI7r0xwwMiRgD3f6Ut+n0d55t0zRq/b5Mw5jRzkJkyC9fNtSgqlqOY2MTaSuKHclAOncz9riIWCzqN74U0sEsjnvpjqCG2fhETW56C1Tr58N/5qqeCsY201EfWdnL2ggfyaE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708341737; c=relaxed/simple;
-	bh=fCI8ry2QwMgfpyT/VHftog8+K3+UurzhRMpjSws+ROQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=tSofmL7aVXWeWIfOjDRu/G8HbnUZ4YYgKnoYjTe5Gm5+ZVaB4rc01PFkh515+S0THcWEST20+7030lZ4wOoq/3lY9TUOTGtUM2jWpvlskwCoEbuYW+zcowMZLk5PVowU/HvRb5H+K3fy+m5mqoo93lwjQaGCorggtKTvJ8+qaqo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q9rUbu3l; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1708342034; c=relaxed/simple;
+	bh=psRznd+qwD4id3H3mkwUZ3NR28Q098n95rwBPacKDxA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=XpmiffwOb+1GivF492IhLlBNdF37T0nTns6IFtHd7h/9lxQGqiSNCvjfCZ8fBbGVrTiRSjt5KPDiilwjJnMnhLMc5qV8+nfBIoDM7fVlB5UdnVui4kFa8bQS22xgGkjG78LqbcPsCdHsHYCDIn3f23hg+8Riuz+8V04i5bq7Qpk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=1wkmCZZP; arc=none smtp.client-ip=209.85.128.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q9rUbu3l"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708341736; x=1739877736;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=fCI8ry2QwMgfpyT/VHftog8+K3+UurzhRMpjSws+ROQ=;
-  b=Q9rUbu3lKPUu0eElfh1wn1CmDlNipsWIkyeJe8yH204Y6lcOZbcR8Bn9
-   wS3SbaZ5/JkuZEeyUkaBHiRtUzStRuEEhoZw90O2+/T1WtBY8oISp9Y3F
-   Ky68iGUfEUaJnPCAmVnTi3v0Xi81xC4PS7N0q0s7Joef+0FndxVFAEcf/
-   Y/OqJJCDTuoNuHskNHkN7JAmODSffOqNLB8c6O8mxCaj8u5OQrOYOTT2I
-   Ac/rAulWhgNIo4pM4u2Z7mMdwjQv2csDPbxBpj6g4OSbRD//r8/7EvA8o
-   f01UnuzGSlXimKTI+nfpi7y3nbiIxbFofERcF2M1KjEEMhksuQdWnp8J9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="13823416"
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="13823416"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 03:22:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="4826892"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orviesa006.jf.intel.com with ESMTP; 19 Feb 2024 03:22:13 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Yi Liu <yi.l.liu@intel.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Joao Martins <joao.m.martins@oracle.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 10/10] iommu/vt-d: Fix constant-out-of-range warning
-Date: Mon, 19 Feb 2024 19:16:01 +0800
-Message-Id: <20240219111601.96405-11-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240219111601.96405-1-baolu.lu@linux.intel.com>
-References: <20240219111601.96405-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="1wkmCZZP"
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-607dec82853so35910397b3.3
+        for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 03:27:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1708342032; x=1708946832; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=psRznd+qwD4id3H3mkwUZ3NR28Q098n95rwBPacKDxA=;
+        b=1wkmCZZPXGw7Qt8gNezGoDXYlxOXNGa/Xs+EkSUOK89ORJmeFbvUiGIUM29d5pTMBv
+         yOYdfZ4NB3wKOQ7yr3iwa5g73ThUu7rME+S/OGwr6nhQoTuCP6VieHKDc3geJ0ZBY//J
+         Flkyzx+2E0/3NWnQk4RrX5wBa8j9CNWpoFBi1YkOPWNqZONKHlSRQm2iWhwTdfkbzmVt
+         aaabwVCeoF2UO7va+1x8whuxjy8OQLZRUhnzJ+jo2sQfjxZ3Eo+2/SvUrJw8JekPGNZZ
+         gMSuLtjKrm0DGNnZLkNDNR5fuM45aktd4s/XcMhJN1mzglPrpTQXnRi9t9JSbjJ8UxYW
+         tGdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708342032; x=1708946832;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=psRznd+qwD4id3H3mkwUZ3NR28Q098n95rwBPacKDxA=;
+        b=hLhkkWqUh4lgO6nLVSf8iqTaoCgPWx9sBrGX+w9V13wj5C5owiY7TfrUZpYR5ak/2T
+         PAU9cuPtQVZw8e2x3f93EOvQqsyVxNWww2h9pEUJGfeNXAkdo56s9sRZEuw79IrByOm6
+         66SLqUWjQO9XJg/LXQkmIFfrs2/TewDSSXVGCH/vz+GfghOXQ90qJaSuXNgFxT7xFtD2
+         iey96+W5mNspDqH1udKqc+AvyEpZeSLigrVotfsVEEUmBPuA4fWfEE+3oSadYJd6DKMu
+         cRXKC0hDGHVcHggPiknS7ys4klAqpB9rlnTUod/drKrcq/zPTCcb7aofZ0iZ6NXpM5NB
+         JWtA==
+X-Forwarded-Encrypted: i=1; AJvYcCWmvCSDtVADNE8X+1960Qs9dIvo4A3xemDfZGwX6l9LWvYQhNTkXN6BkPrOLrXiaRq5j8fNNJ6ausyc+2n7vsx0CNQZqyE=
+X-Gm-Message-State: AOJu0YwMAgVvszMe+zDiHbEE7t/lXvZNAvI/CVVRz2tcnqImuJ8y9CLv
+	5kXGJwQcrUQBJ0gS9jjVDwDl6SUdDExwGFA+PMk/SA2SQ5YLKGMo+pRn3vYUOepOmF+vEbLxtqA
+	xovk1bkarfgSi2k4Sz4W1edvLLqb7wdkg992S
+X-Google-Smtp-Source: AGHT+IGYQ7Ft8/k+yh/fauCEDuGdjwHYmI6RFXGJtA15ZTj7Vn8HJ0Oql8n7gZRk8bvuYJStcRQFfFcSWNN8TG2iA8c=
+X-Received: by 2002:a0d:cb89:0:b0:607:c93f:2c2a with SMTP id
+ n131-20020a0dcb89000000b00607c93f2c2amr11818399ywd.46.1708342032049; Mon, 19
+ Feb 2024 03:27:12 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20240208152808.3712149-1-howardyen@google.com> <20240213055426.GA22451@lst.de>
+In-Reply-To: <20240213055426.GA22451@lst.de>
+From: Howard Yen <howardyen@google.com>
+Date: Mon, 19 Feb 2024 19:27:01 +0800
+Message-ID: <CAJDAHvYbMVCitf59OvKGQk+cWrHc9Sk7_20LSyssUOEeJGvbFg@mail.gmail.com>
+Subject: Re: [PATCH v3] dma-coherent: add support for multi coherent rmems per dev
+To: Christoph Hellwig <hch@lst.de>
+Cc: m.szyprowski@samsung.com, robin.murphy@arm.com, gregkh@linuxfoundation.org, 
+	andriy.shevchenko@linux.intel.com, rafael@kernel.org, broonie@kernel.org, 
+	james@equiv.tech, james.clark@arm.com, masahiroy@kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Tue, Feb 13, 2024 at 1:54=E2=80=AFPM Christoph Hellwig <hch@lst.de> wrot=
+e:
+>
+> On Thu, Feb 08, 2024 at 03:28:05PM +0000, Howard Yen wrote:
+> > Add support for multiple coherent rmems per device.
+>
+> Why?
 
-On 32-bit builds, the vt-d driver causes a warning with clang:
+Resend the message because the previous one contained some HTML.
 
-drivers/iommu/intel/nested.c:112:13: error: result of comparison of constant 18446744073709551615 with expression of type 'unsigned long' is always false [-Werror,-Wtautological-constant-out-of-range-compare]
-  112 |         if (npages == U64_MAX)
-      |             ~~~~~~ ^  ~~~~~~~
+I tried to upload the patch to support multiple coherent rmems per device
+because in some system, the primary memory space for the device might
+be limited, so that add multiple coherent rmems support per device to satis=
+fy
+the scenario.
 
-Make the variable a 64-bit type, which matches both the caller and the
-use anyway.
 
-Fixes: f6f3721244a8 ("iommu/vt-d: Add iotlb flush for nested domain")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20240213095832.455245-1-arnd@kernel.org
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/nested.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--=20
+Regards,
 
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index d5af5925a31c..a7d68f3d518a 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -103,7 +103,7 @@ static void nested_flush_dev_iotlb(struct dmar_domain *domain, u64 addr,
- }
- 
- static void intel_nested_flush_cache(struct dmar_domain *domain, u64 addr,
--				     unsigned long npages, bool ih)
-+				     u64 npages, bool ih)
- {
- 	struct iommu_domain_info *info;
- 	unsigned int mask;
--- 
-2.34.1
-
+Howard
