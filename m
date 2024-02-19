@@ -1,197 +1,135 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C0CE3307C
-	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 12:58:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3587736134
+	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 13:36:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708347483; cv=none; b=VHf+875bxvHyHb54luze+2aMixREPEsNTDsejKjZctvJbm4Bmnsm2KraGlLArAfhgaRBG8mpPOXlxlyIBe3kyeJJBib4Qo+VulXfXz4uv5+8T+Md2VJWZ48gR8bHDkvK8CjzfGydWa21NBzLZDxn0Bw5M+SqCQpUqyYv7jbmb7U=
+	t=1708349766; cv=none; b=Xtn8aJHwyCqSuEy1eut5CnGulX6R5ihs0mq8bm419c7sDcqtB/x1lvK08OvvMLGxzGFlP3QDzQ5CAAAPL+axoMXHtuVOFBhEIHrZpoC3A+xt01DCfGrMAMWdWq85zD1clfkKeN/C1baXcXvpYqjtrqUwomobEsTb/BvRFg1PPJ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708347483; c=relaxed/simple;
-	bh=9df1Wc/QPv8JKRna5EyaMOIxCaEobk3ZwNEqaEJkrmk=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=jx73muAip36IFS/UCxDouRDjLJa66vhg4V0weYmu2BufSJXmoW4mJ0wRMztQy3QdoxmKMD5AGX8uakzOe6jwYDs+m31vkkht2dPGHm/z4sK6PMwJef1Gjdc7JJF+izpWddnfHhIdds7Fl8VpWAA5m5h8tySkFIXX1pAQ2Cjq9Lg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RsOiYIkZ; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1708349766; c=relaxed/simple;
+	bh=WXBvHj3CA0v2OnyyONM79OOqbce5c/wCncuFj1EY8Yk=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=mdQIAq0gZEUJAMVc11W0SzJNkCbritL2QzP/OT4osG+By/6feDzkxeq1RIPbCmfujxz7vZsHWtpKRcL2Q590JsEKXIYGngBmTwCDeA7CcC0ueNvZ0WKyQuyYksSl4+AeR0IGSY94CMuteBvajfAucswEiwqGbZK/1WM7q1CydRo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ibylpP2I; arc=none smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RsOiYIkZ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708347482; x=1739883482;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9df1Wc/QPv8JKRna5EyaMOIxCaEobk3ZwNEqaEJkrmk=;
-  b=RsOiYIkZRfwD2jUvyi8wa9gq6aTTBWQdf5VXlnX4+QzkeRXR06GRJARm
-   y2XuF6ZZNAF0VnzyTji+4KRgs1FFniGr+aZRANaTchxI4BGo8Io7IZp1N
-   3ub95GEh2hynh69vucV/riqQQIQ/h7S8keYBbHMsjRoVszOPa1Vxnz2jM
-   tY3m0b5vmEZhpjuoyZ8r0ify7IUHLscSduVwkEg032yWCy0DLEO1G56lg
-   9o7T5RJpRPasEIDqr508JORD9Geubw+IXsNM38VPtQNxjzwbD4pxklRaS
-   tg6fwNV/vXT4kWkqPTidxWZ1rZ58zfn4IVrHsqin+WTRnmIbh6dUO2T+X
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="2296478"
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="2296478"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 04:58:01 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="4449316"
-Received: from zhaojia-mobl2.ccr.corp.intel.com (HELO tinazhan-desk1.www.tendawifi.com) ([10.255.28.137])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 04:57:59 -0800
-From: Tina Zhang <tina.zhang@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev,
-	Tina Zhang <tina.zhang@intel.com>,
-	Sanjay Kumar <sanjay.k.kumar@intel.com>
-Subject: [PATCH v2 13/13] iommu/vt-d: Remove superfluous IOMMU IOTLB invalidations
-Date: Mon, 19 Feb 2024 20:57:23 +0800
-Message-Id: <20240219125723.1645703-14-tina.zhang@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240219125723.1645703-1-tina.zhang@intel.com>
-References: <20240219125723.1645703-1-tina.zhang@intel.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ibylpP2I"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-563d32ee33aso4259453a12.2
+        for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 05:36:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1708349762; x=1708954562; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=gcUcBFt3N1ktfXc1gPHrIeslPQYkGz8L1uvDW7LPc+w=;
+        b=ibylpP2IkuTyofsIeQDdDe7qeZAPlL0CmovBnvWOVbg1CqPPipmPgCQJX9ttCSdCjv
+         CJaRN4jxdq362kgf3qBg6CTqBZyxsZObldtenrnnLnLNKVaR1K9DBbwp9iuemS18VsUg
+         U2c3IiUA37TFDemBantRNBqZQYmmNrrIHIyXJX+1g/0NbMbywnYDoN6cxgpZRw3/58+r
+         fRUhZfct94t2c4MF0zyAJDLcaHpm0CaY/kA4BoUGRn+uefoF29uKSjrs/BciNsDnQ+0L
+         YBOpZi1XxYap5i9FGVCrpg1AHk6tbo1hiQnaD81jDvgbGdT9W0Gael/Hb6HCYPBA9xKz
+         sUEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708349762; x=1708954562;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gcUcBFt3N1ktfXc1gPHrIeslPQYkGz8L1uvDW7LPc+w=;
+        b=UEwFCsJTaAOwl+naEsed6K0f/GAjqSpYahihD8HkmqdmAPYWEtMNVG2B9DiDt7ZS4+
+         bb/+t94BviOJ/c3e/HNhMEZIm4cXN09/KtOIxCl5tbeu+CflRcp1WTALo7rTtDSsyzFI
+         ttnxpiFBTJVFa5J9yl1s7sBB9jykw+CjMU4p56KP5bFOPSy6sOr5yMkDJqozV8nwzs7g
+         PPiziC+Wn3fBEMHiHAUoJMXppGYUz0+CHqvy0FQylB1dj9lFZlYSrnFlS3MjKNgcMa9+
+         opC886RrRahQU4VWzEZPxDZi2M7inF3FhRFgLD0enurm2ctIrGkTiF0MJh13ZVRX/xuT
+         0Q5g==
+X-Forwarded-Encrypted: i=1; AJvYcCWOf5bCeMCok3ulA8NJ/quJSQxN6aWq+lv7F+hx0yQwi1UeKpAvApz1QHlRkwo86SSfmiYC2zSDffG3g8pdyGNAyzFvSNU=
+X-Gm-Message-State: AOJu0Yxh9D0/r6t9XY3304iDNMEMnAu+zMg1qXpCHw7c5uHOZlNtIVIC
+	xlQrtkCXG1Ry6gTSlPrcIx44f/FzIBPNjfCAzkTyNm56Rdq3HkHx7+U/3sRRAqI=
+X-Google-Smtp-Source: AGHT+IGXVYgMnspzTGdD5I5yCYByz/Xz0DYxnqQrqWXrukEzL4VS6LpQJbj3an4OOgf2z4QtP93W8g==
+X-Received: by 2002:aa7:ca42:0:b0:564:8a4c:6389 with SMTP id j2-20020aa7ca42000000b005648a4c6389mr1158711edt.29.1708349762517;
+        Mon, 19 Feb 2024 05:36:02 -0800 (PST)
+Received: from [10.167.154.1] (078088045141.garwolin.vectranet.pl. [78.88.45.141])
+        by smtp.gmail.com with ESMTPSA id q29-20020a50cc9d000000b00563a3ff30basm2900168edi.59.2024.02.19.05.35.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Feb 2024 05:36:02 -0800 (PST)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Subject: [PATCH 0/8] A702 support
+Date: Mon, 19 Feb 2024 14:35:45 +0100
+Message-Id: <20240219-topic-rb1_gpu-v1-0-d260fa854707@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIADJZ02UC/x2N7QrCMAwAX2Xkt4F+DKm+ioi0MW6B0ZXUiTD27
+ gZ/3sFxO3RW4Q7XYQflj3RZq4E/DUBzrhOjPI0huDC64C/4XpsQavGPqW0YmRKdU3QxjWBNyZ2
+ xaK40W1W3ZTHZlF/y/U9u9+P4AeWy2Vh0AAAA
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Rob Clark <robdclark@gmail.com>, 
+ Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>, 
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Konrad Dybcio <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org, 
+ linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ freedreno@lists.freedesktop.org, Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1708349759; l=1949;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=WXBvHj3CA0v2OnyyONM79OOqbce5c/wCncuFj1EY8Yk=;
+ b=09HBvpU95Fn5jEyPMGkTjAUJ7bgcBbYWScXmo1xRIJoHiVGqrahpUaQv4TEKCcp57yd+6yD83
+ XmQfcZAl71LB20l4ZsL60dx0F34PqpOR8hRCzmP4MVy3+krdyvQCBY6
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-Devices behind different IOMMUs can be bound to one sva domain. When a
-range of a sva domain address is being invalidated, VT-d driver needs to
-issue IOMMU IOTLB and Dev-IOTLB invalidation commands to ask IOMMU
-hardware and related devices to invalidate their caches.
+Bit of a megaseries, bunched together for your testing convenience..
+Needs mesa!27665 [1] on the userland part, kmscube happily spins.
 
-The current logic issues both IOTLB invalidation command and device-TLB
-command per device, which leads to superfluous IOTLB invalidation (e.g.,
-if there are four devices behind a IOMMU are attached to one sva domain.
-In the current logic, during handing intel_invalidate_range(), four IOTLB
-invalidation commands and four Dev-IOTLB invalidation commands will be
-issued. However, only one IOTLB invalidation command and four Dev-IOTLB
-invalidation command are necessary.), and therefore impacts run-time
-performance.
+I'm feeling quite lukewarm about the memory barriers in patch 3..
 
-The patch removes the redundant IOMMU IOTLB invalidations by allowing
-issuing IOMMU IOTLB invalidation command per iommu instead of per device.
+Patch 1 for Will/smmu, 5-6 for drm/msm, rest for qcom
 
-Suggested-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Tina Zhang <tina.zhang@intel.com>
+[1] https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27665
+
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- drivers/iommu/intel/svm.c | 70 +++++++++++++++++++++------------------
- 1 file changed, 37 insertions(+), 33 deletions(-)
+Konrad Dybcio (8):
+      dt-bindings: arm-smmu: Add QCM2290 GPU SMMU
+      dt-bindings: clock: Add Qcom QCM2290 GPUCC
+      clk: qcom: clk-alpha-pll: Add HUAYRA_2290 support
+      clk: qcom: Add QCM2290 GPU clock controller driver
+      drm/msm/adreno: Add missing defines for A702
+      drm/msm/adreno: Add A702 support
+      arm64: dts: qcom: qcm2290: Add GPU nodes
+      arm64: dts: qcom: qrb2210-rb1: Enable the GPU
 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 38e9ff95029a..0c4c0e4011d2 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -135,31 +135,40 @@ void intel_svm_check(struct intel_iommu *iommu)
- 	iommu->flags |= VTD_FLAG_SVM_CAPABLE;
- }
- 
--static void __flush_svm_range_dev(struct dmar_domain *domain,
--				  struct dev_pasid_info *dev_pasid,
-+static void __flush_svm_range(struct dmar_domain *domain,
- 				  unsigned long address,
- 				  unsigned long pages, int ih)
- {
--	struct device_domain_info *info = dev_iommu_priv_get(dev_pasid->dev);
-+	struct device_domain_info *dev_info;
-+	struct intel_iommu *iommu = NULL;
-+	struct dev_pasid_info *dev_pasid;
- 	u32 pasid = mm_get_enqcmd_pasid(domain->domain.mm);
- 
- 	if (WARN_ON(!pages))
- 		return;
- 
--	qi_flush_piotlb(info->iommu, FLPT_DEFAULT_DID, pasid, address, pages, ih);
--	if (info->ats_enabled) {
--		qi_flush_dev_iotlb_pasid(info->iommu, dev_pasid->sid, info->pfsid,
--					 pasid, dev_pasid->qdep, address,
--					 order_base_2(pages));
--		quirk_extra_dev_tlb_flush(info, address, order_base_2(pages),
--					  pasid, dev_pasid->qdep);
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(dev_pasid, &domain->dev_pasids, link_domain) {
-+		dev_info = dev_iommu_priv_get(dev_pasid->dev);
-+		if (iommu != dev_info->iommu) {
-+			iommu = dev_info->iommu;
-+			qi_flush_piotlb(iommu, FLPT_DEFAULT_DID,
-+					pasid, address, pages, ih);
-+		}
-+
-+		if (dev_info->ats_enabled) {
-+			qi_flush_dev_iotlb_pasid(iommu, dev_pasid->sid, dev_info->pfsid,
-+						 pasid, dev_pasid->qdep, address,
-+						 order_base_2(pages));
-+			quirk_extra_dev_tlb_flush(dev_info, address, order_base_2(pages),
-+						  pasid, dev_pasid->qdep);
-+		}
- 	}
-+	rcu_read_unlock();
- }
- 
--static void intel_flush_svm_range_dev(struct dmar_domain *domain,
--				      struct dev_pasid_info *dev_pasid,
--				      unsigned long address,
--				      unsigned long pages, int ih)
-+static void intel_flush_svm_range(struct dmar_domain *domain, unsigned long address,
-+				unsigned long pages, int ih)
- {
- 	unsigned long shift = ilog2(__roundup_pow_of_two(pages));
- 	unsigned long align = (1ULL << (VTD_PAGE_SHIFT + shift));
-@@ -167,37 +176,32 @@ static void intel_flush_svm_range_dev(struct dmar_domain *domain,
- 	unsigned long end = ALIGN(address + (pages << VTD_PAGE_SHIFT), align);
- 
- 	while (start < end) {
--		__flush_svm_range_dev(domain, dev_pasid, start, align >> VTD_PAGE_SHIFT, ih);
-+		__flush_svm_range(domain, start, align >> VTD_PAGE_SHIFT, ih);
- 		start += align;
- 	}
- }
- 
--static void intel_flush_svm_range(struct dmar_domain *domain, unsigned long address,
--				unsigned long pages, int ih)
--{
--	struct dev_pasid_info *dev_pasid;
--
--	rcu_read_lock();
--	list_for_each_entry_rcu(dev_pasid, &domain->dev_pasids, link_domain)
--		intel_flush_svm_range_dev(domain, dev_pasid, address, pages, ih);
--	rcu_read_unlock();
--}
--
- static void intel_flush_svm_all(struct dmar_domain *domain)
- {
--	struct device_domain_info *info;
--	struct dev_pasid_info *dev_pasid = NULL;
-+	struct device_domain_info *dev_info;
-+	struct intel_iommu *iommu = NULL;
-+	struct dev_pasid_info *dev_pasid;
- 	u32 pasid = mm_get_enqcmd_pasid(domain->domain.mm);
- 
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(dev_pasid, &domain->dev_pasids, link_domain) {
--		info = dev_iommu_priv_get(dev_pasid->dev);
--		qi_flush_piotlb(info->iommu, FLPT_DEFAULT_DID, pasid, 0, -1UL, 0);
--		if (info->ats_enabled) {
--			qi_flush_dev_iotlb_pasid(info->iommu, dev_pasid->sid, info->pfsid,
-+		dev_info = dev_iommu_priv_get(dev_pasid->dev);
-+		if (iommu != dev_info->iommu) {
-+			iommu = dev_info->iommu;
-+			qi_flush_piotlb(iommu, FLPT_DEFAULT_DID,
-+					pasid, 0, -1UL, 0);
-+		}
-+
-+		if (dev_info->ats_enabled) {
-+			qi_flush_dev_iotlb_pasid(dev_info->iommu, dev_pasid->sid, dev_info->pfsid,
- 						 pasid, dev_pasid->qdep,
- 						 0, 64 - VTD_PAGE_SHIFT);
--			quirk_extra_dev_tlb_flush(info, 0, 64 - VTD_PAGE_SHIFT,
-+			quirk_extra_dev_tlb_flush(dev_info, 0, 64 - VTD_PAGE_SHIFT,
- 						  pasid, dev_pasid->qdep);
- 		}
- 	}
+ .../bindings/clock/qcom,qcm2290-gpucc.yaml         |  76 ++++
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |   3 +-
+ arch/arm64/boot/dts/qcom/qcm2290.dtsi              | 154 ++++++++
+ arch/arm64/boot/dts/qcom/qrb2210-rb1.dts           |   8 +
+ drivers/clk/qcom/Kconfig                           |   9 +
+ drivers/clk/qcom/Makefile                          |   1 +
+ drivers/clk/qcom/clk-alpha-pll.c                   |  45 +++
+ drivers/clk/qcom/clk-alpha-pll.h                   |   3 +
+ drivers/clk/qcom/gpucc-qcm2290.c                   | 423 +++++++++++++++++++++
+ drivers/gpu/drm/msm/adreno/a6xx.xml.h              |  18 +
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c              |  92 ++++-
+ drivers/gpu/drm/msm/adreno/adreno_device.c         |  18 +
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h            |  16 +-
+ include/dt-bindings/clock/qcom,qcm2290-gpucc.h     |  32 ++
+ 14 files changed, 888 insertions(+), 10 deletions(-)
+---
+base-commit: 26d7d52b6253574d5b6fec16a93e1110d1489cef
+change-id: 20240219-topic-rb1_gpu-3ec8c6830384
+
+Best regards,
 -- 
-2.34.1
+Konrad Dybcio <konrad.dybcio@linaro.org>
 
