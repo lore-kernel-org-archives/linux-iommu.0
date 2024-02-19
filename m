@@ -1,112 +1,199 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20F792E642
-	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 12:41:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708346505; cv=none; b=EfPNhDJ5/DfVst5P9cjGqxYUONwRQnu6jjmL+E7lHuRHwPxl9RPWwttHabpVvGoEMFgZCPslguhuzGY8NhlPp+voXIXzrV/SBXUK1hP83DnmTy5J43wBSyxsYwOT1JQehc1YiWtiSBckQIBi+h61fR0u24YT/5D83m7b41NhIEY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708346505; c=relaxed/simple;
-	bh=LDMBEKTq6cyiopOllYtwKJ3tdATJ2fx3/t+JvAifnx8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nW17BrPsDDPnfxi7s5cZvdcbfqhaqq6OPlSaRPPg7WwiOFTnQtC8Y2102H917UgYQ8gii+WlRGkF8Y1VWmDF/cLGsEvvPRfdycq5xGmM7D5XyGNcjAA1wKL8XrG6G7KT2epwGRtWJN6gQyuc6Mrjf0mbvBGRaKVtXTGEdDSGwHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=uYEAFSWW; arc=none smtp.client-ip=77.93.223.253
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70AFC321B0
+	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 12:49:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.16
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708346969; cv=fail; b=jZG+HbpXLJIeInhw0kZMXb/agcy2/uHrcngqkk37DcYltqxKY5YfySdULy173x7cQjcnHzTh95D4gnGNQZrKpsu8YnFXTtWEwj56iuYPX+Ox+QxDkfJkgzQOt1ICDQOwXcxxjCUrkHtR/S4r8K0NI7a2I3M1TIqoP3Hd1jukzBE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708346969; c=relaxed/simple;
+	bh=3QkhmzFXKe+RKkyS6WpahY8Kf+tSPVbYfQtaPXJvhvg=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=gzun46qyjMpaCe2b+JkOEtAccapCtyycqOZ7XtP7+7n1CLl1tA4J96vGyOPMxpkaBTiSiGhXUv6e+en5djrWCOqTwpMi+eOwsSobeIxw0eyjl9yEgiobKE1cBoH53NaKxRndWRdJX6rE9U5iHvwFfEAdXeUTQ76CoVAAjmi3pHw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dmWWmyRN; arc=fail smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="uYEAFSWW"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 725341ADF1D;
-	Mon, 19 Feb 2024 13:41:42 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1708346502; bh=p13KCQ80RQpKs8qewoVyD1wVP4wEkOu3YdWAsGC9pK8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=uYEAFSWWTuCNR9YSbsv/mUXWxJNNeKNiZs84kg3+Muol+J0XAYDG1Ob1AVH9XtlVF
-	 Gcfwxkdm/qajwvWblaII4/oesOY5hinHLQaHsav3Xi/HoXktkFbDzIXpqB4bFagd05
-	 Z3IHDqsVuVCc2MkJcgUaqEffCtNb7ziBfB4Rlp/RgiMqoX0DaWKazwl6LlmQAaXKMq
-	 Z8VJj7F5cpT55/SrV0WO4Z0Qc1tPdou9S4IV4ovkWti3rHRczkCitvPBjspu5BzvK0
-	 EJXvV7b5Vr8kV5sJiWXi02Jg/G+itM0hqqh8PEtqSj2lrHiOHNgsjUH3DeMPprrRqz
-	 f9ckb89cNn8cQ==
-Date: Mon, 19 Feb 2024 13:41:41 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Will Deacon <will@kernel.org>
-Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
- iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
- Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
- <decui@microsoft.com>
-Subject: Re: [PATCH v3 3/3] swiotlb: Honour dma_alloc_coherent() alignment
- in swiotlb_alloc()
-Message-ID: <20240219134141.381dea51@meshulam.tesarici.cz>
-In-Reply-To: <20240205190127.20685-4-will@kernel.org>
-References: <20240205190127.20685-1-will@kernel.org>
-	<20240205190127.20685-4-will@kernel.org>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dmWWmyRN"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708346968; x=1739882968;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=3QkhmzFXKe+RKkyS6WpahY8Kf+tSPVbYfQtaPXJvhvg=;
+  b=dmWWmyRNEjqRR4qIuUi4JcUmTWmhQ+CIPjIP8DaqGBJIHR7mujYjHPpQ
+   wuH0Ioxvfnh3CcjcBAxlLQi0xV5lzrCoGBzQuUVMYXcm9hDwN4QRAHBDK
+   lYSnLGaFUutItAAzllzXbh1p53AQ8LLr95nsijWYCX7iwKVHsKXSzLtjp
+   snsEq1oREzjLoUBZNrb0LxWh8g98JhRiPUrpqwBLSxiHHAUs218sCQYLv
+   4dve/bDTXkcp0l0THS21wpGWSrsF5hd8S/CjI11hIY80qNPteRd3oWbby
+   dP2u2pmzvvUb3/TyJ1EvaY+9Ax/f23AZd8l9ZrW7RTbiU2/nRmTJyq/wJ
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="2868443"
+X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
+   d="scan'208";a="2868443"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 04:49:28 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
+   d="scan'208";a="9153391"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orviesa004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 19 Feb 2024 04:49:27 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Mon, 19 Feb 2024 04:49:25 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Mon, 19 Feb 2024 04:49:25 -0800
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.169)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Mon, 19 Feb 2024 04:49:24 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SpA17MzHo8YJsWZI3eUQzlV6ucMgiIlTX0QAd0UgJwAhf3wI4GKnVRlkQFIFc3W5YPWb8POmLzl5KJZLzBc7zWdUHE7U91VvFa5w7Z0pR0cCiJkKn9y94A3XN6UUeVmuID8QGB4ttit6MKGTRc6f5CawCNSgpM2KufbvbGUUUbQe+cR1N9Yl+8jkrn3MbEoH4gpMhRXoHvR7EHTjM8CnBrtNCcXkLdqoHxvX0ztZ9JhndA2bk9nXOkc3E7iIW7GsLmOeF+kS2r9qAf/CIcdolWujom0QK1lyhaYqDxe9PYwzOjFsSLig9KM3GZLK2GVZb3QuNQmmhNKr7AF3DEcA9Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/N0b9tGaHQhr7acJXshZm6i/t512flc91i1ogIOg89I=;
+ b=bO9DrxYCp0yitLysRqZ1HeXn9vUaqTDArte2TBLFJd8VjclsNHg9rgJn+BwgDfeIlSYWhnBVyGmRcECItxB2p36/vEUduQNSeVo4WCLE7C7V4ZuQRGNzHiFgGUTrOOyPOcvlctZhJVwUQH5XWeyjWmnq3vXMRMJaVE3yMyVIJbxO/lrK1r9ETQWHdseKRmnYTToYY1PVmhvKFSAAS0IZ8di8M9U7dkGf8LBCacoi8sOEPFL+Ny0TRxI7R1zjD0tiJj6pwOQXQs/rZi36ekOP+KyT9TTjuJ8bH53w94XYjDIkUWXN1PelZWtxpiwl+ps277eB6+ts6Ip9RMEawjVhWQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB8718.namprd11.prod.outlook.com (2603:10b6:8:1b9::20)
+ by CY8PR11MB6937.namprd11.prod.outlook.com (2603:10b6:930:5b::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.38; Mon, 19 Feb
+ 2024 12:49:17 +0000
+Received: from DS0PR11MB8718.namprd11.prod.outlook.com
+ ([fe80::93d9:a6b2:cf4c:9dd2]) by DS0PR11MB8718.namprd11.prod.outlook.com
+ ([fe80::93d9:a6b2:cf4c:9dd2%5]) with mapi id 15.20.7292.036; Mon, 19 Feb 2024
+ 12:49:17 +0000
+Message-ID: <4d2678be-e36c-4726-83a5-ae9a3a0def55@intel.com>
+Date: Mon, 19 Feb 2024 13:49:10 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH net-next v3 2/7] dma: avoid redundant calls for sync
+ operations
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>
+CC: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+	<edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni
+	<pabeni@redhat.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+	<will@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, "Rafael
+ J. Wysocki" <rafael@kernel.org>, Magnus Karlsson <magnus.karlsson@intel.com>,
+	Maciej Fijalkowski <maciej.fijalkowski@intel.com>, Alexander Duyck
+	<alexanderduyck@fb.com>, <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+	<iommu@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+References: <20240214162201.4168778-1-aleksander.lobakin@intel.com>
+ <20240214162201.4168778-3-aleksander.lobakin@intel.com>
+ <3a9dd580-1977-418f-a3f3-73003dd37710@arm.com>
+From: Alexander Lobakin <aleksander.lobakin@intel.com>
+In-Reply-To: <3a9dd580-1977-418f-a3f3-73003dd37710@arm.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: DB7PR02CA0004.eurprd02.prod.outlook.com
+ (2603:10a6:10:52::17) To DS0PR11MB8718.namprd11.prod.outlook.com
+ (2603:10b6:8:1b9::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR11MB8718:EE_|CY8PR11MB6937:EE_
+X-MS-Office365-Filtering-Correlation-Id: c7d24e8f-dc5c-41bb-031f-08dc31492f3a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: m9GUgYFwip3AWisQuPr4i70wkt2NL9mZBEcisXgyzmS61uI5QugHrnag+PAIqsRTX+gusZ89KABz7j2xC6bUTMpbLQvdX0W6dJwyDXg+TAdYfUViJSNQdIz1qxTg4fnbAu4zBvaKORYJTfb0N+sMOmEHfkBUcfY5QE35WcjGwZnyIaYYBhbFdASAmyBi3z+kXZHadrKJQuq6QCAWYqxtxTsktA65KfAc0l80Nip8mOiYJHr61RcKWYzwBP7EkL4dHi7hLetCJBfuR/b4VP298iR1zC3DF5LW2f6pIR9YYJeA0HJz9Kc6b9RAEmIa/ezPNWzOuoYtC2Rk8hgSRP2+Hs+DfWtT/B7rMfdYBz+bgZkKZTTX7bzSUywoysnIVlp8FP6/9Pul5YF7e+C+080xK11H28Fgh5d0G0xjAovUFzBg1p6ERlkwI83R687sBptvP2SGw4JbwrDdkYHuGy2VqC4+pc7pzpgaXMNGZY4cMXkcrqj1xIF/vKe3SvXG4XRnWjAQ6yBTTx0cnfoxNUBvpALaXmBBakN9crEhtHOGris=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB8718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cER1ZXlTNEVEazUwYUkvQTNteUZKaW5VcTZiTmluajRsZ2FZeURMZjRkdWZy?=
+ =?utf-8?B?QUI4dXp6K01SYkVQQVlnSndrZmVNOThhVDFtcUJzbGl4bi9rd01SUEJBT3Qz?=
+ =?utf-8?B?dTF5V0xZWm4rbnlwMEpwVnFHQ2EwNUhkNVpkeGFJM2k1ejhOVHFENWJtb1Ax?=
+ =?utf-8?B?YjVmb3NJZ2V6cVRRc3dhY0Uyem1nM2JWbGxjTnhUNGxoK0hYYkZITURkT0ZK?=
+ =?utf-8?B?SXRqUHZSd2RpRC9wQVFweGZNRmNmVWtFUkV2WGNQWHQ1S1ZEZWxlOEszNXZC?=
+ =?utf-8?B?bU1vSzhaQTNnbnhRRm1uakZoTFdpSnZWdUJHSmVRQnRFeHdtVWRmaHdTeGhW?=
+ =?utf-8?B?cklsUmNEN1p4b1VGT0dWR0pLb2wwekFTYkZpTmJKWFVTcFliaXBva2k0WGtY?=
+ =?utf-8?B?RElZakY2bFNIZGJqaXpLYk9tMGtYbG5kMVRSaXJ5K3lrZU05RVhlL1dYZmVX?=
+ =?utf-8?B?WlNVSmNJdzN6QUVRY05tSWcrYk9XaGU1NkY5K0NnSTdrMk5PejdoZjRHb2F6?=
+ =?utf-8?B?RGpBNndRazBEVEV2Vk9ranFoSWp5NEpkWDBwSTVLckZRY1VXMUhlN3ZqNEtw?=
+ =?utf-8?B?TzdoMHplTlhwRXdWbzRJQ0wwUnBCaHhoYjdBRnBoQkhMYXl0bEpYMi9ETU1i?=
+ =?utf-8?B?UEcvaGpKQ1h6OWNNTVBFZ095SzQ4dUkvR2ZUY3BJVDFZYkdWcitzcXd5anFJ?=
+ =?utf-8?B?a0xRS2YvZ05oR0JBd0ZlUHdhd0dkb3RRU3JWUEVYNCtTM1grbXVlWWxBMHdK?=
+ =?utf-8?B?eVpxenB1WEpSZjlIbTlqMnR5R0R3SytuYVZtQ0lIQmp2S01rdWdwR1NFNDVw?=
+ =?utf-8?B?RmVSVi8vTk1mVU12QjhKYWZqby9sS1NMU0Z6NmpDOWpZZ2pqZnZWdFNkbElE?=
+ =?utf-8?B?U2N6UUNubFhlaWpmc1FpbExNbk1Wc3NReVpudEpMcUhVUExqaldpblArK3Bh?=
+ =?utf-8?B?REQrZEE0S2dmYVMzSWlhSWpjdFR4TzBEd25RaHBUQUc4NjRKTGtyditKSnc4?=
+ =?utf-8?B?RWRuREZ6cnp4TmlmbFFSYWRLSXVHd254b2hEUGphVlJjcko5K1d6N21hY21K?=
+ =?utf-8?B?S1FLak9CYmFRMG1wUjBVekhJYXhRMGE5M1psZGcwR2svZnMwQmg3Rkc3QzAx?=
+ =?utf-8?B?T2dGZWc1bjgzc1dLQmxwZnI4RWttaEcwMDRGUkc3MDNFbkpOTDFLSFNkR0lh?=
+ =?utf-8?B?RWsxVmxTcC9GQkhQZUR6MElhSHlaVk1TVThWM3N2T3RHREZ2Zlp3SFNNV1V5?=
+ =?utf-8?B?Nks5c2JNdVpLdGVPNXg3Y3FNbmd3c044QlJkcU82TFJpaFdYb1cyVE5sUVRo?=
+ =?utf-8?B?OExKL1VpSGhDcG8wUFFGeFI0UUZaM2ZtN3c1QnZrVmxraFBRVHlZby9TM2dN?=
+ =?utf-8?B?d0UwZTBjbG5mYWtpSm94RVJxc2w4bkZHV1NDNk5iWTZRaWFJVUhyS0U0TkJs?=
+ =?utf-8?B?d21qOVRzUng3VVFuM3grYWJOVC9zVzRocnRLcGlDbjNONFV5djZpTENaUlJu?=
+ =?utf-8?B?M0pMMDVEcVIyMnYzZzd0SEtEeTYwVkpXTG50ZmFKQjRJNkNBdEZRRmlYVlFn?=
+ =?utf-8?B?NGZLSWZ4Zmtjb2sySDQreDZjaXpwOVZHZ2ZxaVlBdXJpRmNOMUVFdTBoTURU?=
+ =?utf-8?B?cW1kWE0zQmlRU2NhQ0NTUlMyMlZYRlpYbkVhb3dKQjFXVUVuSWxlRjFTd2xQ?=
+ =?utf-8?B?a1Q5cVp1R3FoS2FPMmdueUZSZ3MzVEFSd2cybmlvakx5TUkzRGl1VW9GOS94?=
+ =?utf-8?B?ZGpTdzdnYzlKdEk4MDNDRUJvZXVqZDV1YkFiWFlQSUNWYUdHZTNCRXpYNGZi?=
+ =?utf-8?B?TTh0bEtSQnJIWGpvKy9qQTZIY2R3RWtxcThwNFlWYklKdDFaZmlKQ0l4Z3NP?=
+ =?utf-8?B?a2RzQUl3Ulg3cHk4dHljMjVOcVVYQldvRGNjdTE1WHFQamdiZTVmSjBFYmxC?=
+ =?utf-8?B?UCtjaTNTdEFibW5iQWJxa2dVOXJaSnFGK2szOGd6RG1Gd3FyQm9qNmUxNG8v?=
+ =?utf-8?B?KzN3RWRDYUdiSlEwZ1pENHNScGQveDlpSEVYSnkyaUNzQjY2MWR1d0lGcWkz?=
+ =?utf-8?B?QnNwSW9ZVHRqVzg2NXlsRExzQkkrTlk4MjVaRWRLZGpZUXJRU1Q1cGl2OEkx?=
+ =?utf-8?B?YzhTRWJZcTV6d3B0K0RLYmJyWm16OFVydDF2TmlPdmFIUml5S1ZyUDgxeXdB?=
+ =?utf-8?B?Rnc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7d24e8f-dc5c-41bb-031f-08dc31492f3a
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB8718.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Feb 2024 12:49:17.6565
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VMLJfA2WHKZH/T5nc6m6ZC/L/FOYX+RR9MHuHYAIomowJvf5YBH4yfnKDPHDLjfa/r+lOpfOsTDBsfsSVns5QIoc+I0GIFe7/bFKhekqYrk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB6937
+X-OriginatorOrg: intel.com
 
-On Mon,  5 Feb 2024 19:01:27 +0000
-Will Deacon <will@kernel.org> wrote:
+From: Robin Murphy <robin.murphy@arm.com>
+Date: Wed, 14 Feb 2024 17:55:23 +0000
 
-> core-api/dma-api-howto.rst states the following properties of
-> dma_alloc_coherent():
+> On 2024-02-14 4:21 pm, Alexander Lobakin wrote:
+
+[...]
+
+>> +        /*
+>> +         * Synchronization is not possible when none of DMA sync ops
+>> +         * is set. This check precedes the below one as it disables
+>> +         * the synchronization unconditionally.
+>> +         */
+>> +        dev->dma_skip_sync = true;
+>> +    else if (ops->flags & DMA_F_CAN_SKIP_SYNC)
 > 
->   | The CPU virtual address and the DMA address are both guaranteed to
->   | be aligned to the smallest PAGE_SIZE order which is greater than or
->   | equal to the requested size.
-> 
-> However, swiotlb_alloc() passes zero for the 'alloc_align_mask'
-> parameter of swiotlb_find_slots() and so this property is not upheld.
-> Instead, allocations larger than a page are aligned to PAGE_SIZE,
-> 
-> Calculate the mask corresponding to the page order suitable for holding
-> the allocation and pass that to swiotlb_find_slots().
-> 
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-> Cc: Dexuan Cui <decui@microsoft.com>
-> Fixes: e81e99bacc9f ("swiotlb: Support aligned swiotlb buffers")
-> Signed-off-by: Will Deacon <will@kernel.org>
+> Personally I'd combine this into the dma-direct condition.
 
-Reviewed-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+Please read the code comment a couple lines above :D
 
-Petr T
-
-> ---
->  kernel/dma/swiotlb.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index adbb3143238b..283eea33dd22 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -1633,12 +1633,14 @@ struct page *swiotlb_alloc(struct device *dev, size_t size)
->  	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
->  	struct io_tlb_pool *pool;
->  	phys_addr_t tlb_addr;
-> +	unsigned int align;
->  	int index;
->  
->  	if (!mem)
->  		return NULL;
->  
-> -	index = swiotlb_find_slots(dev, 0, size, 0, &pool);
-> +	align = (1 << (get_order(size) + PAGE_SHIFT)) - 1;
-> +	index = swiotlb_find_slots(dev, 0, size, align, &pool);
->  	if (index == -1)
->  		return NULL;
->  
+>> +        /*
+>> +         * Assume that when ``DMA_F_CAN_SKIP_SYNC`` is advertised,
+>> +         * the conditions for synchronizing are the same as with
+>> +         * the direct DMA.
+>> +         */
+>> +        dev->dma_skip_sync = dev_is_dma_coherent(dev);
+>> +    else
+>> +        dev->dma_skip_sync = false;
+>> +}
+>> +#endif /* CONFIG_DMA_NEED_SYNC */
 
+[...]
+
+Thanks,
+Olek
