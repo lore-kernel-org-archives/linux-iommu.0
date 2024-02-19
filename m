@@ -1,235 +1,84 @@
-Received: from mail-yw1-f181.google.com (mail-yw1-f181.google.com [209.85.128.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [77.93.223.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADCAD2D043
-	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 11:30:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90E112E85A
+	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 12:40:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708342209; cv=none; b=pEh5sM7iqWcYpC9+Niwa32Y134GXL+it0bfo/EPEhGtdTFNbLlV+QNGivWpLPMWKmvNj49oMYNKC5EgfepdSji92uvCuEDHCDfUB3wkQCUPGek9JjbAY/v6F+ONHMWaiorIsqqcxWKKmrka5B9b4FX0uweysjpKefzalsuW9pfI=
+	t=1708346423; cv=none; b=SprqZ7u/0e0xHxcjHr5klvpenmi/3pDLOCKxgwE/Vmg6wlDPTFhqaizYtoJGd63dqH063rO9VqUtDSHXfEi3rCKBRuF/xbvC5Z1u6/EIHqEIV0cFn0LG1Slube7AHVT1LL1u606YvHKfzjavKp0s9a0N+CRIjiZwc10FJePgLiY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708342209; c=relaxed/simple;
-	bh=jA8i3ioQgOQIGjp2Ibf5r1JRi97p+s3VymmYnM5xl2s=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PKIqCsNe+EpiEPKgSm+K8J2biJE+Xgu3+McKvB/hvLiL2UA2zG3M9wb8iMWffNXEaWN9idU3MFbCO9tO5geboxRrSHKjop83SQ9RS7WQXOceHEaJlSeAU1cBU4cHCFBmoD7pmUcLPMXY4WCv5uKX8OUI6g3UEgcwRZdZI86KObI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=sk/B3HLr; arc=none smtp.client-ip=209.85.128.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1708346423; c=relaxed/simple;
+	bh=07ZMRt2iZQCVacurZog+A+8XvHvFt9qPaPQy0WtWnPU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=gu4orMl4ajh7a3Ob5ChNOg+pFU/VSY/xxAUFKovohdI5LOqvLmzZd3T6J9jPS7TXIbov/j8quH0k85Yhq70+e71JoWojuFZ50qr2HtFQi1v6iIvuD1GIElupdLI7EBbMPmIHdSx5tfaOcbjS3s3B4vcKozUjMWT0c4lJl8fRMRs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=L1RXsQSu; arc=none smtp.client-ip=77.93.223.253
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="sk/B3HLr"
-Received: by mail-yw1-f181.google.com with SMTP id 00721157ae682-60818d338bfso12747447b3.0
-        for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 03:30:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708342206; x=1708947006; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=rzcrk3xPXXPW5E4xvwIqBIj0vf/WhGzB03Om/UaEaD4=;
-        b=sk/B3HLrBJtz8v/EyQDjCHeHE9ZQMfWrVBjDmyVefWjcLp1WLW2sFj9nXdxDpPeB1a
-         ezADozgvwM9MTarxkEjFhonWfX8yimwHxLqOdychvJZm5qqJxItFWfSAfKapPbp64ME3
-         4q+B7EiFftNlDq/EbkaaUE2ClNLH2e5TwdEJUVvrH8eJA0Yd+CQ4lZ7SYU6H7oBM+D4n
-         F4Hn+oBpdY0WHh8Czt0exa32EHicqqQBKbGuQYOsP7BghjQ9yUEUf8Td/giCsTss5PzO
-         byucipWhzbtd4dEX71U5QNmQn76yH8/2ufnL1pRg+y8AcOujQ1D++NfrS5vpZfAh9PKs
-         LfhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708342206; x=1708947006;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=rzcrk3xPXXPW5E4xvwIqBIj0vf/WhGzB03Om/UaEaD4=;
-        b=tIYDGWqrHpeivwrrf+p0Z6WrySWwA/lboO2i0KDJ1O6vGfpOUo0J/gKrGeFgIVU4Ec
-         v625s5D0QFKViclM9/TdYsc0pQAIdQHvWBWd0k0JxoNwdA7iR/R+s98eImbzgkBwaOGs
-         PdU2RoNp6+MUxtHPOGryoFN1fwWEhpTA9cybZd/8tyewlj3AipqYQHIewH9YdAT8i1t+
-         wWGf6MpwHL2Ksx120o9WjhjcxXC1TJjliPSnZ0BDG/TPVWKuXSrAUqckurM4nhkcmsHC
-         r1H4u6Cbf5kiQQqWplrCG+vo2QjXsKEv1RA7aCaN72IKzC8HEP1H1iGOA8iNHcTMusMV
-         FuJA==
-X-Forwarded-Encrypted: i=1; AJvYcCX2scNI0sBCd1YUoaYC+k/+QqSmJ7+8peR03I4bO73wbQ+1z2Z0z+tC3kNodIkZGWni2kynDqubMt8PqnBqlssLr07lMqw=
-X-Gm-Message-State: AOJu0Yz70ihhPTRkSEQrMT3FA+r0ZKPAjaU48g502L1LOknkHvV7YKzy
-	66TelagXFLTrO5Znz9ANeYRP9DSk10lfhpl0ZDLHhO/xWPjlT7Pck7T5Gq+nMQ84W1T75HphzKP
-	xehGSnWCw14Uj56eKGr+S/Z5dAydu6oSkYm2r
-X-Google-Smtp-Source: AGHT+IFQZJmL8c/5NtY6f5BdPvoYb88H262MzAFliOOAJlGQJH69WotyinmVpQjwiiapZFhWIhykVbSBw7LtebX4I1g=
-X-Received: by 2002:a0d:cb0e:0:b0:604:7b9e:f62f with SMTP id
- n14-20020a0dcb0e000000b006047b9ef62fmr13410931ywd.37.1708342206438; Mon, 19
- Feb 2024 03:30:06 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="L1RXsQSu"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 303E21AE418;
+	Mon, 19 Feb 2024 13:40:12 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1708346412; bh=UJdhwMnrMlsSDhckid4cXjQK+fmYFZjzMfDxB1XFsVA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=L1RXsQSu2wC5yK4CdFKgeAELFMe3COQ6IK3BT7m96aA1QABI9o25oWMQDZ8EOwuPp
+	 71BkClN6GqBUHj46AWrCXqPpkzdlewKxTWxoL6dJKoj+T8ZB36ggCn1IJloYtrjcEB
+	 HH8dykVWpvPc1wIbEGqrXTm8kqL4WHkWdMm1pHz5WLDvHgE3FB1LwFrWgofWj1EBN/
+	 w6kFYm03w0ShNPEwY1CuKiBJs80PazLdr/IRFHWFv+OJsx0qGvlJp2z5/wDYDrHzx8
+	 qyE8afBe39MmIcJA35NZg+FY9TVAeEEDmcYbUqETrEM4rrojMa15xZPyruImJzfpRv
+	 UMl4mryngVDoA==
+Date: Mon, 19 Feb 2024 13:40:10 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Will Deacon <will@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org,
+ kernel-team@android.com, iommu@lists.linux.dev, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
+ Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
+ <decui@microsoft.com>
+Subject: Re: [PATCH v3 0/3] Fix double allocation in swiotlb_alloc()
+Message-ID: <20240219134010.5b49b8f1@meshulam.tesarici.cz>
+In-Reply-To: <20240219092438.GB4105@willie-the-truck>
+References: <20240205190127.20685-1-will@kernel.org>
+	<20240219063527.GA4580@lst.de>
+	<20240219092438.GB4105@willie-the-truck>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240208152808.3712149-1-howardyen@google.com> <ZcUXP14Ng8g5vw1j@smile.fi.intel.com>
-In-Reply-To: <ZcUXP14Ng8g5vw1j@smile.fi.intel.com>
-From: Howard Yen <howardyen@google.com>
-Date: Mon, 19 Feb 2024 19:29:55 +0800
-Message-ID: <CAJDAHvbYBVS=LiYHWd_KAtGtcQsjRsLCm2w3j9o4SvLBG_qiZw@mail.gmail.com>
-Subject: Re: [PATCH v3] dma-coherent: add support for multi coherent rmems per dev
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: hch@lst.de, m.szyprowski@samsung.com, robin.murphy@arm.com, 
-	gregkh@linuxfoundation.org, rafael@kernel.org, broonie@kernel.org, 
-	james@equiv.tech, james.clark@arm.com, masahiroy@kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Feb 9, 2024 at 2:02=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@linux.intel.com> wrote:
->
-> On Thu, Feb 08, 2024 at 03:28:05PM +0000, Howard Yen wrote:
-> > Add support for multiple coherent rmems per device. This patch replaces
-> > original dma_mem with dma_mems list in device structure to store multip=
-le
-> > rmems.
-> >
-> > These multiple rmems can be assigned to the device one by one by
-> > of_reserved_mem_device_init_by_idx() with the memory-region
-> > declaration in device tree as below and store the rmem to the dma_mems
-> > list.
-> >
-> >       device1@0 {
-> >               ...
-> >               memory-region =3D <&reserved_mem0>, <&reserved_mem1>;
-> >               ...
-> >       };
-> >
-> > When driver tries to allocate memory from the rmems, looks for the firs=
-t
-> > available rmem and allocates the memory from this rmem.
-> >
-> > Then if driver removed, of_reserved_mem_device_release() needs to be
-> > invoked to release all the rmems assigned to the device.
->
-> ...
->
-> >       struct dma_coherent_mem *mem;
-> > -     int ret;
-> > +     int retval;
-> >
-> >       mem =3D dma_init_coherent_memory(phys_addr, device_addr, size, fa=
-lse);
-> >       if (IS_ERR(mem))
-> >               return PTR_ERR(mem);
-> >
-> > -     ret =3D dma_assign_coherent_memory(dev, mem);
-> > -     if (ret)
-> > +     retval =3D dma_assign_coherent_memory(dev, mem);
-> > +     if (retval)
-> >               _dma_release_coherent_memory(mem);
-> > -     return ret;
-> > +     return retval;
->
-> This is unrelated change.
->
-> But why? Do you have retval in the _existing_ code elsewhere?
+On Mon, 19 Feb 2024 09:24:39 +0000
+Will Deacon <will@kernel.org> wrote:
 
-Rename the 'ret' variable to 'retval' because, in the
-dma_mmap_from_dev_coherent(),
-there is an argument named 'ret', and also I add 'retval' for the return va=
-lue.
-So I try to rename it here to be consistent.
+> Hey Christoph,
+> 
+> On Mon, Feb 19, 2024 at 07:35:27AM +0100, Christoph Hellwig wrote:
+> > Robin and Petr, does this looks good to you now?  
 
->
->
-> ...
->
-> >  int dma_alloc_from_dev_coherent(struct device *dev, ssize_t size,
-> >               dma_addr_t *dma_handle, void **ret)
-> >  {
-> > -     struct dma_coherent_mem *mem =3D dev_get_coherent_memory(dev);
-> > +     struct dma_coherent_mem *mem_tmp;
-> >
-> > -     if (!mem)
-> > +     if (list_empty(&dev->dma_mems))
-> >               return 0;
-> >
-> > -     *ret =3D __dma_alloc_from_coherent(dev, mem, size, dma_handle);
-> > +     list_for_each_entry(mem_tmp, &dev->dma_mems, node) {
-> > +             *ret =3D __dma_alloc_from_coherent(dev, mem_tmp, size, dm=
-a_handle);
-> > +             if (*ret)
-> > +                     break;
->
-> This bails out on the first success. Moreover, if one calls this function
-> again, it will rewrite the existing allocation. Is this all expected?
->
-> OTOH, if you add multiple entries and bailing out on error condition it s=
-hould
-> be clear if the previous allocations have to be released.
+It looks good to me for the boot-time swiotlb pool. Dynamic allocation
+of transient swiotlb pools does not take these additional alignment
+constraints into account, so when allocation may fail. OTOH the
+underlying allocator(s) do not provide a suitable API, so I don't think
+it's worth fixing.
 
-If it's not able to allocate required memory from the first entry,
-then tries to allocate
-from the following entry, and so on.
+In the worst case, a DMA buffer will fail to map, which may already
+happen today.
 
->
-> > +     }
->
-> >       return 1;
->
-> >  }
->
-> ...
->
-> >  int dma_release_from_dev_coherent(struct device *dev, int order, void =
-*vaddr)
-> >  {
-> > -     struct dma_coherent_mem *mem =3D dev_get_coherent_memory(dev);
-> > +     struct dma_coherent_mem *mem_tmp;
-> > +     int retval =3D 0;
-> > +
-> > +     list_for_each_entry(mem_tmp, &dev->dma_mems, node) {
-> > +             retval =3D __dma_release_from_coherent(mem_tmp, order, va=
-ddr);
-> > +             if (retval =3D=3D 1)
-> > +                     break;
->
-> Same Q here.
->
-> > +     }
-> >
-> > -     return __dma_release_from_coherent(mem, order, vaddr);
-> > +     return retval;
-> >  }
->
-> ...
->
-> >  int dma_mmap_from_dev_coherent(struct device *dev, struct vm_area_stru=
-ct *vma,
-> >                          void *vaddr, size_t size, int *ret)
-> >  {
-> > -     struct dma_coherent_mem *mem =3D dev_get_coherent_memory(dev);
-> > +     struct dma_coherent_mem *mem_tmp;
-> > +     int retval =3D 0;
-> >
-> > -     return __dma_mmap_from_coherent(mem, vma, vaddr, size, ret);
-> > +     list_for_each_entry(mem_tmp, &dev->dma_mems, node) {
-> > +             retval =3D __dma_mmap_from_coherent(mem_tmp, vma, vaddr, =
-size, ret);
-> > +             if (retval =3D=3D 1)
-> > +                     break;
->
-> And here.
->
-> > +     }
-> > +
-> > +     return retval;
-> >  }
->
-> ...
->
-> With the above Q in mind, here is another one: Why can't we allocate all =
-at once?
+> FWIW, I'm likely to send a v4 addressing another issue reported by
+> Nicolin with NVME and 64k pages [1], so you may as well wait for that.
 
-Not sure if I misunderstand your meaning, It tries to allocate the
-memory from the first
-entry that satisfies the allocation requirement, but not separately.
+I'm interested. The code look quite OK to me as it is, but I assume it
+again uncovers something when the difference between PAGE_SHIFT and
+IOTLB_SHIFT is more than one (which was motivation for my initial fix,
+which in the end broke more than it fixed).
 
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
-
-
---=20
-Regards,
-
-Howard
+Petr T
