@@ -1,66 +1,66 @@
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 754CD381A4
-	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 14:49:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37B7236134
+	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 14:53:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708354168; cv=none; b=KUQd3Rq5njr83dDyevH9enC9am47gbuEi0w3cOJTr5I3Tez34/3WDZamLuR8omDK8SZXZTKHFilW0rxVFPVYUYAbLb5jqFCIW7rJFHcOF49nw7W6QWwx3BtqkXdJJcR9lyKKR2wQrXIrIPG4UjktC5L9WzK5HsHyqw4fGFw42W8=
+	t=1708354429; cv=none; b=airHzAg1QoAu3qcrDCMebhziRb0f0ro77W+M1sM7sLvi8LG5eiooAXrxhX0iiHF1yGAix4mFuNbbwQ6aCRHmvY/l5vtJQCLCdSuid6vhdTxzqdf0VO4B3THbxUgx4BDmVwOeivnVwzkVv51rNPfRaFIcLBSexRew7idQESvPF08=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708354168; c=relaxed/simple;
-	bh=cXd+iZRHyG6Z54ZlDyEkvwRUedt1tgiayxTf/h55RT8=;
+	s=arc-20240116; t=1708354429; c=relaxed/simple;
+	bh=A4nq5x7Ib9yQ12vGKrkxl7Fvyza54Vi2OAWKmupXEmU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=IJXaQ+fiWnZ7bWJ2KgZEVtfE1V8/qHzDzlUKzBVEIH9WRXmfLqMrffvrPnj0OTUJ+A4lqYbPBvZBMV/mkXjkfkzUzAM61WwpL5+WnrFGj5aOwQ0L6IARpVHWlfz59e9Q4TqGmQN40s9h3acKrhITiyO/zeQjufFVeO4VWful+eM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Ne2+FYkC; arc=none smtp.client-ip=209.85.128.180
+	 To:Cc:Content-Type; b=IURDGDTuKHMV5jrKXpJQkY5jpAtaesoNtdynTA6hSsHHMZZppW4he2bVWXWHZLenN0m6jNpisrgHdoEjaw3sw2lPnaDef9rVzkHdBZjg7QoRJaz/s0MqdOGtADAQjwwU8rsvYYDfYUW/LKaN//F1aFpABPjmEZUeM6PyNx9sUQY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=AmliWe3J; arc=none smtp.client-ip=209.85.128.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Ne2+FYkC"
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-60837b7a8ddso10742997b3.3
-        for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 06:49:25 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="AmliWe3J"
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-60822b444c9so8036857b3.2
+        for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 06:53:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1708354164; x=1708958964; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1708354426; x=1708959226; darn=lists.linux.dev;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=WJI1teD2wPawZOQzTgWhX+w1Ti/ZVP+Yv2CET7JvPGw=;
-        b=Ne2+FYkC0juiZtSRI0EQGFYUpvpwFFd/j0XiJEXAfFBppHEn8jy09rHhMcNgY/rkf3
-         M64LAY17ZmJjSz1vFcuMHK8DVLrjfUaDWHysI6dBw1k71DftylJqQo0RPKiLn4F2DNHL
-         rKvTo67rqUUwGk1ev3YTe8+mHADMQAEuxoYyRAGicFWDYPpDTbl4vZ5GZb1AmlBSmAcU
-         S58PwqkghMEOXP4Oz/F8W7kkttpcgMnOqhHf1EMO3gHJyWthzMvKcG9ac/HbAg+b/yqp
-         Pj8/SCk0XYpndn8g2dZaGVwdG9As85WerUY8Bw1AFFii98Y5QZYDjvSUGQK49CplC8MC
-         FFQw==
+        bh=uHNd0ZyJA4gTbxBaC9YDXwkG/RiI5KMLPKGCG7+Wzlo=;
+        b=AmliWe3JPvPqm16HtHD/VxR09Cg0Z/WKD/A/SyYeyviLJz6QXFfqI0Sqwgt2a53HDd
+         8cfCDt8CUdaTiaIyDZRUCUkL7mcTzWpnF6aAsmua1/2Ci0nUZ1Xb5t+Wzu395dd2guBT
+         bqlZxDHz7fCd/vsUWsexdFyn+b0uAzwR2X02vSCVSbhX6rV1LgmJZ3FF1wV08XuOBFCE
+         OyJ/IJYYFzL4BPS231sTSKiARuZRLHOySsDE8U1hpwRziyguatwm+EXtvtfOzr0BaoAT
+         O7jilN6vsKZAL24SWLevY9/Sql2z2RQ4ZBD7mNSbWMiIbmEE3Yr7isRKGqyp5MCtqLuw
+         AajA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708354164; x=1708958964;
+        d=1e100.net; s=20230601; t=1708354426; x=1708959226;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=WJI1teD2wPawZOQzTgWhX+w1Ti/ZVP+Yv2CET7JvPGw=;
-        b=Jpz30el9dSJjm8DEBuIrPQnFNNTbtNL2GgeDPKI8bgGW4lDVshGPoXvNyyH6j2Qi40
-         Y7v8GQtz4SkDtqsNYKlfmRrOgUT4La5+wyoAa3k3JSz1cf3/p2c2hucR2nWgF0+8HZak
-         Qk2DApqIxRdmQghJbvZok/lrfpatlMZIkZQnEBM/AtdHvjbQ5eOY3+KSCVH4+CYOSptO
-         BJX4vjahuOxOp6+kWlupPdyqaj97GYsFBLYa5vTvfTrSc+m0ZZ2GIf/Nn/CO5OuSX+pC
-         eHyUFx6lZW11SHk3VvBSjMXK2EEvFUCGOgF/KWUdJSeNuj5DtfskuGjaQMS9wQ7Hr8rK
-         Eq+A==
-X-Forwarded-Encrypted: i=1; AJvYcCV+te5RGz0fwSpodCJonhegq3jO3eoXnSNwnkmv2l/6cHs/Inu+sU+3QI2l55UZ42K0Lnif+n19tBaL2qsP5IzFC7QeL2I=
-X-Gm-Message-State: AOJu0YzhtsMtOHXtOmmIvHd9s9WTY5jsIRpxXHbB6NM0D/Sb6nEYNyW4
-	HroFirH588Oc8CjkcX3N8icSvnO0tQiVRg+Hb30VQZUNfdspBdOwhDfsnBmgDIFJDAuc97ASdbf
-	rrhSUL6TqYWDSyUFQC+4ybmw/u5kiAlDJIFmQUg==
-X-Google-Smtp-Source: AGHT+IHr/IUKFhapXnOD7toFxlQf0Om4NTc3bUIZPM42rFzdOhQ5udZqS0lilrwVoRYH1x47luPm3EintARWerYH8fE=
-X-Received: by 2002:a81:ad1d:0:b0:604:a47e:6e52 with SMTP id
- l29-20020a81ad1d000000b00604a47e6e52mr12358877ywh.32.1708354164616; Mon, 19
- Feb 2024 06:49:24 -0800 (PST)
+        bh=uHNd0ZyJA4gTbxBaC9YDXwkG/RiI5KMLPKGCG7+Wzlo=;
+        b=SqXNWJuFKMbFkVHSpZhwSe+YmFn7Tpsw+yqQDzq9ZoI6sjwBZm/0NZV30pSX5h/y9c
+         kcDt+CZvlsccY8W+W6gpBntljCntEpts9TDg8QXThzm5+BqNLjD40zPn3W1tFqX0KzfS
+         Cp4Wa0tiKzZcDLq7yQlGG+S/5/zCp+I9GAIzl8PGWMoDaG7KkVvdsDycxBG1iPwXzd3F
+         o/a0sOYZ3n8pO/kuL/nnjaHQeKjdRdc8udbDUsiXBUOhsQUTal5sAjJG+xhGxli0zOma
+         ylrnFKYbQbkiIfcrKX8eP8g+LVoWilB8zSoqp5Xl8S2NGkC1jrAeAb7DTx7yxQ/vPXQn
+         xzOg==
+X-Forwarded-Encrypted: i=1; AJvYcCUBNZz2JvlOX76t792/lXjLWc/9aNXdLDdg5mqFiERU9rXT3dsVc8ukIqaT6Nl8LWD79P7IDkvsXOwUVGHa0XNp6DC46JE=
+X-Gm-Message-State: AOJu0Yx6Paih1Jdy8rFAmL28HgXaZars/W1rmrH1bcH7PwqN+NM7qrFa
+	4v1mgsLbepWHZvIZuFyLb5gmDWEbBFDmlUmsc9f/eKfeZxTaHL/0ONH7Hdb/FY5M+aBcEoWwiIW
+	issR6YkqVEk7djQYrsMvx16ykQH8NLtQIGaVR1A==
+X-Google-Smtp-Source: AGHT+IHY/le6C7LNc0DIav/5O65P9EcFeh1YIyPzIjc+EV5s2EcaI1Ea6U5pWMuSdfWLBVIgW0qC8w2mR4a/yKRxOBo=
+X-Received: by 2002:a81:5287:0:b0:607:9d63:f5f5 with SMTP id
+ g129-20020a815287000000b006079d63f5f5mr12422677ywb.12.1708354426245; Mon, 19
+ Feb 2024 06:53:46 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240219-topic-rb1_gpu-v1-0-d260fa854707@linaro.org> <20240219-topic-rb1_gpu-v1-8-d260fa854707@linaro.org>
-In-Reply-To: <20240219-topic-rb1_gpu-v1-8-d260fa854707@linaro.org>
+References: <20240219-topic-rb1_gpu-v1-0-d260fa854707@linaro.org> <20240219-topic-rb1_gpu-v1-3-d260fa854707@linaro.org>
+In-Reply-To: <20240219-topic-rb1_gpu-v1-3-d260fa854707@linaro.org>
 From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Mon, 19 Feb 2024 16:49:13 +0200
-Message-ID: <CAA8EJppPvXfkz=wVca8aFBhFaVUe9+OiVzcQUq7D8zPbK+T1FQ@mail.gmail.com>
-Subject: Re: [PATCH 8/8] arm64: dts: qcom: qrb2210-rb1: Enable the GPU
+Date: Mon, 19 Feb 2024 16:53:35 +0200
+Message-ID: <CAA8EJpq8XvQm9B3RZq9PNMqA5VAqKUyVn5qt8-WEYMQMWniDZA@mail.gmail.com>
+Subject: Re: [PATCH 3/8] clk: qcom: clk-alpha-pll: Add HUAYRA_2290 support
 To: Konrad Dybcio <konrad.dybcio@linaro.org>
 Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
 	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
@@ -78,21 +78,116 @@ Content-Type: text/plain; charset="UTF-8"
 
 On Mon, 19 Feb 2024 at 15:36, Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
 >
-> Enable the A702 GPU (also marketed as "3D accelerator by qcom [1], lol).
-
-Is it not?
-
+> Commit 134b55b7e19f ("clk: qcom: support Huayra type Alpha PLL")
+> introduced an entry to the alpha offsets array, but diving into QCM2290
+> downstream and some documentation, it turned out that the name Huayra
+> apparently has been used quite liberally across many chips, even with
+> noticeably different hardware.
 >
-> [1] https://docs.qualcomm.com/bundle/publicresource/87-61720-1_REV_A_QUALCOMM_ROBOTICS_RB1_PLATFORM__QUALCOMM_QRB2210__PRODUCT_BRIEF.pdf
+> Introduce another set of offsets and a new configure function for the
+> Huayra PLL found on QCM2290. This is required e.g. for the consumers
+> of GPUCC_PLL0 to properly start.
+>
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
-
-With the exception of the commit message:
-
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-
 > ---
->  arch/arm64/boot/dts/qcom/qrb2210-rb1.dts | 8 ++++++++
->  1 file changed, 8 insertions(+)
+>  drivers/clk/qcom/clk-alpha-pll.c | 45 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/clk/qcom/clk-alpha-pll.h |  3 +++
+>  2 files changed, 48 insertions(+)
+>
+> diff --git a/drivers/clk/qcom/clk-alpha-pll.c b/drivers/clk/qcom/clk-alpha-pll.c
+> index 8a412ef47e16..61b5abd13782 100644
+> --- a/drivers/clk/qcom/clk-alpha-pll.c
+> +++ b/drivers/clk/qcom/clk-alpha-pll.c
+> @@ -244,6 +244,19 @@ const u8 clk_alpha_pll_regs[][PLL_OFF_MAX_REGS] = {
+>                 [PLL_OFF_OPMODE] = 0x30,
+>                 [PLL_OFF_STATUS] = 0x3c,
+>         },
+> +       [CLK_ALPHA_PLL_TYPE_HUAYRA_2290] =  {
+> +               [PLL_OFF_L_VAL] = 0x04,
+> +               [PLL_OFF_ALPHA_VAL] = 0x08,
+> +               [PLL_OFF_USER_CTL] = 0x0c,
+> +               [PLL_OFF_CONFIG_CTL] = 0x10,
+> +               [PLL_OFF_CONFIG_CTL_U] = 0x14,
+> +               [PLL_OFF_CONFIG_CTL_U1] = 0x18,
+> +               [PLL_OFF_TEST_CTL] = 0x1c,
+> +               [PLL_OFF_TEST_CTL_U] = 0x20,
+> +               [PLL_OFF_TEST_CTL_U1] = 0x24,
+> +               [PLL_OFF_OPMODE] = 0x28,
+> +               [PLL_OFF_STATUS] = 0x38,
+> +       },
+
+Can you please move them next to the standard huayra PLL regs?
+
+>  };
+>  EXPORT_SYMBOL_GPL(clk_alpha_pll_regs);
+>
+> @@ -779,6 +792,38 @@ static long clk_alpha_pll_round_rate(struct clk_hw *hw, unsigned long rate,
+>         return clamp(rate, min_freq, max_freq);
+>  }
+>
+> +void clk_huayra_2290_pll_configure(struct clk_alpha_pll *pll, struct regmap *regmap,
+> +                                  const struct alpha_pll_config *config)
+> +{
+> +       clk_alpha_pll_write_config(regmap, PLL_CONFIG_CTL(pll), config->config_ctl_val);
+> +       clk_alpha_pll_write_config(regmap, PLL_CONFIG_CTL_U(pll), config->config_ctl_hi_val);
+> +       clk_alpha_pll_write_config(regmap, PLL_CONFIG_CTL_U1(pll), config->config_ctl_hi1_val);
+> +       clk_alpha_pll_write_config(regmap, PLL_TEST_CTL(pll), config->test_ctl_val);
+> +       clk_alpha_pll_write_config(regmap, PLL_TEST_CTL_U(pll), config->test_ctl_hi_val);
+> +       clk_alpha_pll_write_config(regmap, PLL_TEST_CTL_U1(pll), config->test_ctl_hi1_val);
+> +       clk_alpha_pll_write_config(regmap, PLL_L_VAL(pll), config->l);
+> +       clk_alpha_pll_write_config(regmap, PLL_ALPHA_VAL(pll), config->alpha);
+> +       clk_alpha_pll_write_config(regmap, PLL_USER_CTL(pll), config->user_ctl_val);
+> +
+> +       /* Set PLL_BYPASSNL */
+> +       regmap_update_bits(regmap, PLL_MODE(pll), PLL_BYPASSNL, PLL_BYPASSNL);
+> +
+> +       /* Wait 5 us between setting BYPASS and deasserting reset */
+> +       mb();
+> +       udelay(5);
+> +
+> +       /* Take PLL out from reset state */
+> +       regmap_update_bits(regmap, PLL_MODE(pll), PLL_RESET_N, PLL_RESET_N);
+> +
+> +       /* Wait 50us for PLL_LOCK_DET bit to go high */
+> +       mb();
+> +       usleep_range(50, 55);
+> +
+> +       /* Enable PLL output */
+> +       regmap_update_bits(regmap, PLL_MODE(pll), PLL_OUTCTRL, PLL_OUTCTRL);
+> +}
+> +EXPORT_SYMBOL(clk_huayra_2290_pll_configure);
+> +
+>  static unsigned long
+>  alpha_huayra_pll_calc_rate(u64 prate, u32 l, u32 a)
+>  {
+> diff --git a/drivers/clk/qcom/clk-alpha-pll.h b/drivers/clk/qcom/clk-alpha-pll.h
+> index fb6d50263bb9..91d3d6f19eae 100644
+> --- a/drivers/clk/qcom/clk-alpha-pll.h
+> +++ b/drivers/clk/qcom/clk-alpha-pll.h
+> @@ -29,6 +29,7 @@ enum {
+>         CLK_ALPHA_PLL_TYPE_BRAMMO_EVO,
+>         CLK_ALPHA_PLL_TYPE_STROMER,
+>         CLK_ALPHA_PLL_TYPE_STROMER_PLUS,
+> +       CLK_ALPHA_PLL_TYPE_HUAYRA_2290,
+
+Also next to standard huayra PLL, please.
+
+>         CLK_ALPHA_PLL_TYPE_MAX,
+>  };
+>
+> @@ -191,6 +192,8 @@ extern const struct clk_ops clk_alpha_pll_rivian_evo_ops;
+>
+>  void clk_alpha_pll_configure(struct clk_alpha_pll *pll, struct regmap *regmap,
+>                              const struct alpha_pll_config *config);
+> +void clk_huayra_2290_pll_configure(struct clk_alpha_pll *pll, struct regmap *regmap,
+> +                                  const struct alpha_pll_config *config);
+>  void clk_fabia_pll_configure(struct clk_alpha_pll *pll, struct regmap *regmap,
+>                                 const struct alpha_pll_config *config);
+>  void clk_trion_pll_configure(struct clk_alpha_pll *pll, struct regmap *regmap,
+>
+> --
+> 2.43.2
+>
 
 
 -- 
