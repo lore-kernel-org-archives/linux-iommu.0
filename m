@@ -1,44 +1,44 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA1712D03B
-	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 11:22:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7ED92C19F
+	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 11:22:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708341723; cv=none; b=LV2H5p0AlYUgyyVLpPdYxY6b546rl8Q33xAdZVqxw5x2b1hv7ot9WXrfp7z6lwoqAgsuigSu6T9xAFMrVT0BKBl8+vSC+b7f8uh2z3Q4SaLWvAmH83Bg75f5Pt+WCP4N+1OtpIgjOLQ7oqg4k7cZYSQrSVhVJlqgDIjXAZqmdoY=
+	t=1708341725; cv=none; b=Hu9pJzy/KP3NfROoRrume8EVnp+dDBkojbLoDEp9oVDKbekqcN4lRZQxh1ZmMgIZR2fayWjGivPFgokAnsZnDwrtY0zlDoudMhwtw80nbkyfqvIJ73P70/HppFQw4Th4lgmkTgBRvlLJj8v/W9Pmi6KkBH/x4lONVpcAEGP2fFA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708341723; c=relaxed/simple;
-	bh=MrZgKSOW1tjC5BJ1Aj4vy1HeG1IeCVgQtjxOHw/lyVA=;
+	s=arc-20240116; t=1708341725; c=relaxed/simple;
+	bh=Czn+l+8Z40u8Nj0hak+E8ur277wY/U7sKfZyklmUb7M=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=hZPIZKOvUrjQTY9MWpHM0TgGLKkBoO0XvpycIGFHMY7Q3MsSJLWrQzrSr6GIySx7hskB0ZrE+mIVvtGEImA/FlSm4cLWdUv5bg9r2ToVcdfYcJFc2I1T9IcMHXQnqlvJWGMY7oo/eeXHvRyTVPVRPzPSwPSOnTCI1SUUiiqqP1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GPl5sCRQ; arc=none smtp.client-ip=198.175.65.12
+	 MIME-Version; b=hSMczP3xTJS/I5WNCRqaHMxGmxQr+U1h2LnttOaCziOV5Igj+O2VxiOB2dUHXFTZOPUql8+sJs79j5DtVlTsSlIFAf0XeJGmo0yP4emhf0FtcyYA7zbGcq6feOF1jYIEMjyh1a/OZSw6Ee7N4N8YtZIIDJJk7S++2bT9OIfHNVM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I4pP64VG; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GPl5sCRQ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I4pP64VG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708341722; x=1739877722;
+  t=1708341724; x=1739877724;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=MrZgKSOW1tjC5BJ1Aj4vy1HeG1IeCVgQtjxOHw/lyVA=;
-  b=GPl5sCRQpuehZoDDCMa03BX4lisoJBZ8YFQm1h4UZQCfCKbTNMHO+8iF
-   gnG09ZOT0prQTNC3WAYWOuEQrDVfcukkTZ/5sU7LrNnO3PE6F7SSjAld+
-   XOE4TmsL73mhwZ5YtwCkfVQLIThPlpYbFZT77ij93Qmivgtud1zu2aG2Z
-   w07J0tjwC77Q0cezWXrgKAXOX3t0TXltFSzNORvKedRugwgll6vtWsVCI
-   zOI+uPfkNmgmheN6Lb/YV0+V3KcCs36pa0ak8ZSqlMyoifExPrbuxd9Vp
-   tBDih3+6yGlZJMBnyMhtM8rKOAr0cynigS4fgSp8/8Fsp6wvCBC1k2Q2e
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="13823362"
+  bh=Czn+l+8Z40u8Nj0hak+E8ur277wY/U7sKfZyklmUb7M=;
+  b=I4pP64VGDfXV3GfszASSTXJZ0VP91xa+IBCmdi7Kx/2LmzcUxppIiIqu
+   yF9JNpAie3u7QiYH6cO5P0eiKWIXpFmqnv24DgMUQNygmLvyF2UQaRM8R
+   bWCuKv1hhtB1iPmqevO5MxtfhUkM46sM5qVdIl6YbN9QViPbDXlcPR6/t
+   GBznt+Xm4ksD7jdoNBq5169WGyqIeTaIQv2BnbucvATKjvl+BLBq8N6Hm
+   C/zAN0RK6ys6gi0QxKmgkPN0+XAVf1ZF82jyxyEaxdbayYBAzkfmW43uY
+   JP6oNU7n4P9VOAR07Th4UL3XSfCBfhtnvJhVbD5wO3MzZkqeXLufHtSw+
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="13823372"
 X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="13823362"
+   d="scan'208";a="13823372"
 Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 03:22:02 -0800
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 03:22:04 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,170,1705392000"; 
-   d="scan'208";a="4826822"
+   d="scan'208";a="4826834"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orviesa006.jf.intel.com with ESMTP; 19 Feb 2024 03:22:00 -0800
+  by orviesa006.jf.intel.com with ESMTP; 19 Feb 2024 03:22:02 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Yi Liu <yi.l.liu@intel.com>,
@@ -47,9 +47,9 @@ Cc: Yi Liu <yi.l.liu@intel.com>,
 	Joao Martins <joao.m.martins@oracle.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 04/10] iommu/vt-d: Update iotlb in nested domain attach
-Date: Mon, 19 Feb 2024 19:15:55 +0800
-Message-Id: <20240219111601.96405-5-baolu.lu@linux.intel.com>
+Subject: [PATCH 05/10] iommu/vt-d: Add missing device iotlb flush for parent domain
+Date: Mon, 19 Feb 2024 19:15:56 +0800
+Message-Id: <20240219111601.96405-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240219111601.96405-1-baolu.lu@linux.intel.com>
 References: <20240219111601.96405-1-baolu.lu@linux.intel.com>
@@ -63,68 +63,65 @@ Content-Transfer-Encoding: 8bit
 
 From: Yi Liu <yi.l.liu@intel.com>
 
-Should call domain_update_iotlb() to update the has_iotlb_device flag
-of the domain after attaching device to nested domain. Without it, this
-flag is not set properly and would result in missing device TLB flush.
+ATS-capable devices cache the result of nested translation. This result
+relies on the mappings in s2 domain (a.k.a. parent). When there are
+modifications in the s2 domain, the related nested translation caches on
+the device should be flushed. This includes the devices that are attached
+to the s1 domain. However, the existing code ignores this fact to only
+loops its own devices.
 
-Fixes: 9838f2bb6b6b ("iommu/vt-d: Set the nested domain to a device")
+As there is no easy way to identify the exact set of nested translations
+affected by the change of s2 domain. So, this just flushes the entire
+device iotlb on the device.
+
+As above, driver loops the s2 domain's s1_domains list and loops the
+devices list of each s1_domain to flush the entire device iotlb on the
+devices.
+
+Fixes: b41e38e22539 ("iommu/vt-d: Add nested domain allocation")
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-Link: https://lore.kernel.org/r/20240208082307.15759-5-yi.l.liu@intel.com
+Link: https://lore.kernel.org/r/20240208082307.15759-6-yi.l.liu@intel.com
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.h  | 1 +
- drivers/iommu/intel/iommu.c  | 4 +---
- drivers/iommu/intel/nested.c | 2 ++
- 3 files changed, 4 insertions(+), 3 deletions(-)
+ drivers/iommu/intel/iommu.c | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 9b27edb73aa9..4145c04cb1c6 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -1066,6 +1066,7 @@ int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
-  */
- #define QI_OPT_WAIT_DRAIN		BIT(0)
- 
-+void domain_update_iotlb(struct dmar_domain *domain);
- int domain_attach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu);
- void domain_detach_iommu(struct dmar_domain *domain, struct intel_iommu *iommu);
- void device_block_translation(struct device *dev);
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index e3dbcae95975..711c3e3fe095 100644
+index 711c3e3fe095..2eee83b5441b 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -396,8 +396,6 @@ static int domain_update_device_node(struct dmar_domain *domain)
- 	return nid;
- }
+@@ -1461,12 +1461,30 @@ static void parent_domain_flush(struct dmar_domain *domain,
  
--static void domain_update_iotlb(struct dmar_domain *domain);
--
- /* Return the super pagesize bitmap if supported. */
- static unsigned long domain_super_pgsize_bitmap(struct dmar_domain *domain)
- {
-@@ -1218,7 +1216,7 @@ domain_lookup_dev_info(struct dmar_domain *domain,
- 	return NULL;
- }
+ 	spin_lock(&domain->s1_lock);
+ 	list_for_each_entry(s1_domain, &domain->s1_domains, s2_link) {
++		struct device_domain_info *device_info;
+ 		struct iommu_domain_info *info;
++		unsigned long flags;
+ 		unsigned long i;
  
--static void domain_update_iotlb(struct dmar_domain *domain)
-+void domain_update_iotlb(struct dmar_domain *domain)
- {
- 	struct dev_pasid_info *dev_pasid;
- 	struct device_domain_info *info;
-diff --git a/drivers/iommu/intel/nested.c b/drivers/iommu/intel/nested.c
-index 6a75f6eb18f1..d5af5925a31c 100644
---- a/drivers/iommu/intel/nested.c
-+++ b/drivers/iommu/intel/nested.c
-@@ -65,6 +65,8 @@ static int intel_nested_attach_dev(struct iommu_domain *domain,
- 	list_add(&info->link, &dmar_domain->devices);
- 	spin_unlock_irqrestore(&dmar_domain->lock, flags);
- 
-+	domain_update_iotlb(dmar_domain);
+ 		xa_for_each(&s1_domain->iommu_array, i, info)
+ 			__iommu_flush_iotlb_psi(info->iommu, info->did,
+ 						pfn, pages, ih);
 +
- 	return 0;
++		if (!s1_domain->has_iotlb_device)
++			continue;
++
++		spin_lock_irqsave(&s1_domain->lock, flags);
++		list_for_each_entry(device_info, &s1_domain->devices, link)
++			/*
++			 * Address translation cache in device side caches the
++			 * result of nested translation. There is no easy way
++			 * to identify the exact set of nested translations
++			 * affected by a change in S2. So just flush the entire
++			 * device cache.
++			 */
++			__iommu_flush_dev_iotlb(device_info, 0,
++						MAX_AGAW_PFN_WIDTH);
++		spin_unlock_irqrestore(&s1_domain->lock, flags);
+ 	}
+ 	spin_unlock(&domain->s1_lock);
  }
- 
 -- 
 2.34.1
 
