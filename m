@@ -1,207 +1,106 @@
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02895810
-	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 01:05:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82AFB163
+	for <iommu@lists.linux.dev>; Mon, 19 Feb 2024 01:11:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708304712; cv=none; b=DTHtsFqb9kXeNAMorWjUXgL8nmVFTwtJ/NB9tnfsrXWf+24cWSi8dea5c/aGHyUEikR2MEZbEH2Td5dAs743xZov1xP+Qa4XDuUDwNfj9vpEbhQ5a02T7H7qlVwLHzOwwc3jXENQ5f0olS8WetXqOHaFV/dduHBxt7MGpNpg49g=
+	t=1708305069; cv=none; b=ft6V0SEcxe5oR8W7fljVAOfrxonOUB4GpMYdC/AGFJF4UzJ+mtqkqcsWZJ9Prj2s5ToKUc6187hNblyov4Q1/NxwT1xItxTxHzm7f9yepB0rcdq2KdunEnuUWs1WdaAbd15lIuUkOrL/WpFdoa4xuErxec2h6NoBpGlHgk4Wd4A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708304712; c=relaxed/simple;
-	bh=RN/oOnbxOXJRjgABecn+1xhjdfXant7wAu1DO9OYV0M=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=IvzThXYuoZnprnjNw3C/gRcQIJVy6/mA+xTCM4Y1znhDCcKV7PxfFBMYaJ2MEMpCxZFXOrJfD5pJovWHtADSVrgR6/GYKLvkXQDenXxeFNssDjckkVocEMaJZTnLONMdmHL9yfr9oFWydSCDa5bL3EzCTEK7cd+wnJXzWaWOZrM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=cZ3j8yE5; arc=none smtp.client-ip=209.85.219.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1708305069; c=relaxed/simple;
+	bh=kRZET2KQOW5YaJGcVoJqNLW4ARdyJnu223yPjHH/TG0=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=BFXAafMuMozNa6jn9a1rCPmKMVTKtp25daqhD7CPyBlhGtwAbITcOwdiabE4OuzShvOFOaybmVdyvR3O3YZHQEZKN3B77z/vnUGdBajXdNjVxEeaIHNH2pAU1VTRNsuBJpwNoW68TG4qMCwGywFO/Js2+1CdCV58qUZ31VfJi8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IoqfXIGD; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="cZ3j8yE5"
-Received: by mail-yb1-f181.google.com with SMTP id 3f1490d57ef6-dcbf82cdf05so4272547276.2
-        for <iommu@lists.linux.dev>; Sun, 18 Feb 2024 17:05:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708304708; x=1708909508; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mIDaOHUmOnFQVc3Wwg+6+LPaeJ2ta81+Eqz5TMzPBys=;
-        b=cZ3j8yE5NUAUn3EkE0oPG1+LE+Cqf75tSCt/QaGUlU1BECxXcaC69YZO4XndRNduGh
-         x2HRnM38SB8BvWvAUj225f/TYcOObiq8Jbnaoez0z80MW5P/VXAdfKjxMFpr5DRF5H5p
-         WU7gRSQZSOp0t498m7xRGYz0ScTmc4EOiE4krTgLHBuseqFKt2CH6F+whpeLDWOS5lCn
-         GNv5nQyTgmLf2hY4WWo0uAs8aQu3st3WjzlsRHzlPSHKD/UO9QakoBZ/0IYa98z2huh/
-         r3pufePjTHMTe2owa5Z5d26YrJK164Hip0hsRbaLFVKZSiijFQGzIs/JTrWYwRZgkjEV
-         HixA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708304708; x=1708909508;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mIDaOHUmOnFQVc3Wwg+6+LPaeJ2ta81+Eqz5TMzPBys=;
-        b=Pz0yGaDhR5pyOx7IuKu1poUdhDtZwGjFm7VBFS+ATHtNnY9EJV19mksE42lk/rATdA
-         n99hVZTBCxwZVPn8PX0qWbll7oJJW7devMgGehWZ8BQorTSJmS6N6PphOPE54SyLhW2y
-         x6qMp/ytahOeoPyixlij8f1Rs59lPekUOotua8f96ftoTqsjcTA1uZlvzf1D+bTc+B/D
-         Hs4FHqt9aoJcwcJufuRDuVMxk8HnDlZKZZsC5Olh16out/4exyPLzcgvXp3OoTKTa5gw
-         OEN0DvAzAgdeUoUiRRphJ5zJ2VYKotJOLu9TXs2qp6H/pDIydAEoiVVWOFzOF1dj8kW2
-         rBJg==
-X-Forwarded-Encrypted: i=1; AJvYcCWZokWQxsUuxy+T3H/LnaFH+LkeKKZhs798vf2uDoTJEXKqQrx7kjC7z/8cu8FodXSkdns68c1hrCVEj2CUCzwT3a7iUZo=
-X-Gm-Message-State: AOJu0YyncFFx1qYEw820M2+OSi6Bto9QnpUrPsPE2Avbh9DMX0ZI8gCx
-	6l3fRvh1m6kCCLeN260hDU/KVXc5+kopwo+RlQ3BlC05Q3hNBNS/9cWXWjFPoeLHaWhO7L7B9P6
-	Oz164TsMI+sKCQu6zvlowNxfxZn++VIWEI5ld
-X-Google-Smtp-Source: AGHT+IFAFF6IWWYhF0S9T//EmmWIuYGcDfDoGsA7me1Exr/qYPq0aAoDdEWC37Tru9GNL3XObftohrbEHommrFTiK+w=
-X-Received: by 2002:a5b:b43:0:b0:dcc:eb38:199c with SMTP id
- b3-20020a5b0b43000000b00dcceb38199cmr10258615ybr.56.1708304707680; Sun, 18
- Feb 2024 17:05:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IoqfXIGD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708305067; x=1739841067;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kRZET2KQOW5YaJGcVoJqNLW4ARdyJnu223yPjHH/TG0=;
+  b=IoqfXIGDPsuzH7MY/4NS6C8v1eE1bbyzDhulaB5jBfdInb71y3ZIV4OG
+   gjvJiEco6p33Ac/rkp5cqHc4T1UfHs4KKukItRVD4YgBeMxdtbxU/W4Lu
+   S/NcsDU+4fny4CCdb1V4NdG0XNipRQwPD7yWdT1MGgcHNq69lC4CPsi1R
+   iGwD6hiZbm+VU28/p9gnM1XnGTt2I1wqmLxavSvnnakjTcUPmsu2KhTAl
+   XaytjCy4TGnlCDeA1ksjXDlW/ALDy6puqQDcLEfqSzbuDZKEYqWjp1mXe
+   Sk1rSWWOlRovnrT997pdEixKwBZtj30P8LSQspJmwAcIrN6JgSniRMRSV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10988"; a="2231053"
+X-IronPort-AV: E=Sophos;i="6.06,169,1705392000"; 
+   d="scan'208";a="2231053"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2024 17:11:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,169,1705392000"; 
+   d="scan'208";a="35381266"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmviesa001.fm.intel.com with ESMTP; 18 Feb 2024 17:11:05 -0800
+Message-ID: <5e186ad1-8869-4a0d-b0b2-ae333dfd1c56@linux.intel.com>
+Date: Mon, 19 Feb 2024 09:05:17 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240212213922.783301-1-surenb@google.com> <20240212213922.783301-33-surenb@google.com>
- <f0a56027-472d-44a6-aba5-912bd50ee3ae@suse.cz>
-In-Reply-To: <f0a56027-472d-44a6-aba5-912bd50ee3ae@suse.cz>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Mon, 19 Feb 2024 01:04:54 +0000
-Message-ID: <CAJuCfpGUTu7uhcR-23=0d3Wnn8ZbDtNwTaFnukd9qYYVHS9aSA@mail.gmail.com>
-Subject: Re: [PATCH v3 32/35] codetag: debug: skip objext checking when it's
- for objext itself
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
-	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, 
-	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH 08/11] iommu/vt-d: Add domain_type_is_sva helper function
+Content-Language: en-US
+To: "Zhang, Tina" <tina.zhang@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20240116011146.18645-1-tina.zhang@intel.com>
+ <20240116011146.18645-9-tina.zhang@intel.com>
+ <eb13b149-729b-4b22-a6df-63e73ecd73a2@linux.intel.com>
+ <MW5PR11MB588131E52514CC9B552DCA7F89512@MW5PR11MB5881.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <MW5PR11MB588131E52514CC9B552DCA7F89512@MW5PR11MB5881.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Feb 16, 2024 at 6:39=E2=80=AFPM Vlastimil Babka <vbabka@suse.cz> wr=
-ote:
->
-> On 2/12/24 22:39, Suren Baghdasaryan wrote:
-> > objext objects are created with __GFP_NO_OBJ_EXT flag and therefore hav=
-e
-> > no corresponding objext themselves (otherwise we would get an infinite
-> > recursion). When freeing these objects their codetag will be empty and
-> > when CONFIG_MEM_ALLOC_PROFILING_DEBUG is enabled this will lead to fals=
-e
-> > warnings. Introduce CODETAG_EMPTY special codetag value to mark
-> > allocations which intentionally lack codetag to avoid these warnings.
-> > Set objext codetags to CODETAG_EMPTY before freeing to indicate that
-> > the codetag is expected to be empty.
-> >
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > ---
-> >  include/linux/alloc_tag.h | 26 ++++++++++++++++++++++++++
-> >  mm/slab.h                 | 25 +++++++++++++++++++++++++
-> >  mm/slab_common.c          |  1 +
-> >  mm/slub.c                 |  8 ++++++++
-> >  4 files changed, 60 insertions(+)
-> >
-> > diff --git a/include/linux/alloc_tag.h b/include/linux/alloc_tag.h
-> > index 0a5973c4ad77..1f3207097b03 100644
->
-> ...
->
-> > index c4bd0d5348cb..cf332a839bf4 100644
-> > --- a/mm/slab.h
-> > +++ b/mm/slab.h
-> > @@ -567,6 +567,31 @@ static inline struct slabobj_ext *slab_obj_exts(st=
-ruct slab *slab)
-> >  int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
-> >                       gfp_t gfp, bool new_slab);
-> >
-> > +
-> > +#ifdef CONFIG_MEM_ALLOC_PROFILING_DEBUG
-> > +
-> > +static inline void mark_objexts_empty(struct slabobj_ext *obj_exts)
-> > +{
-> > +     struct slabobj_ext *slab_exts;
-> > +     struct slab *obj_exts_slab;
-> > +
-> > +     obj_exts_slab =3D virt_to_slab(obj_exts);
-> > +     slab_exts =3D slab_obj_exts(obj_exts_slab);
-> > +     if (slab_exts) {
-> > +             unsigned int offs =3D obj_to_index(obj_exts_slab->slab_ca=
-che,
-> > +                                              obj_exts_slab, obj_exts)=
-;
-> > +             /* codetag should be NULL */
-> > +             WARN_ON(slab_exts[offs].ref.ct);
-> > +             set_codetag_empty(&slab_exts[offs].ref);
-> > +     }
-> > +}
-> > +
-> > +#else /* CONFIG_MEM_ALLOC_PROFILING_DEBUG */
-> > +
-> > +static inline void mark_objexts_empty(struct slabobj_ext *obj_exts) {}
-> > +
-> > +#endif /* CONFIG_MEM_ALLOC_PROFILING_DEBUG */
-> > +
->
-> I assume with alloc_slab_obj_exts() moved to slub.c, mark_objexts_empty()
-> could move there too.
+On 2/19/24 8:13 AM, Zhang, Tina wrote:
+> Hi Baolu,
+> 
+>> -----Original Message-----
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>> Sent: Wednesday, January 17, 2024 3:33 PM
+>> To: Zhang, Tina<tina.zhang@intel.com>;iommu@lists.linux.dev
+>> Cc:baolu.lu@linux.intel.com; Tian, Kevin<kevin.tian@intel.com>
+>> Subject: Re: [PATCH 08/11] iommu/vt-d: Add domain_type_is_sva helper
+>> function
+>>
+>> On 2024/1/16 9:11, Tina Zhang wrote:
+>>> Introduce a helper function to tell if the type of a dmar_domain is
+>>> sva or not. In general, comparing with normal iommu_domain, a sva
+>>> domain shouldn't be special other than having a different source for
+>>> the page table. Thus, this helper function should be used as little as
+>>> possible (i.e. only in the cases related to handling page table source).
+>>>
+>>> Signed-off-by: Tina Zhang<tina.zhang@intel.com>
+>>> ---
+>>>    drivers/iommu/intel/iommu.c | 7 ++++++-
+>>>    1 file changed, 6 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>>> index 0eec5d971315..af466ba301b7 100644
+>>> --- a/drivers/iommu/intel/iommu.c
+>>> +++ b/drivers/iommu/intel/iommu.c
+>>> @@ -244,6 +244,11 @@ static int domain_type_is_si(struct dmar_domain
+>> *domain)
+>>>    	return domain->domain.type == IOMMU_DOMAIN_IDENTITY;
+>>>    }
+>>>
+>>> +static inline bool domain_type_is_sva(struct dmar_domain *domain) {
+>>> +	return domain->domain.type == IOMMU_DOMAIN_SVA; }
+>> Move the helper into the header file and put appropriate comments around it.
+> Is this domain_type_is_sva() helper expected to be reused by others?
 
-No, I think mark_objexts_empty() belongs here. This patch introduced
-the function and uses it. Makes sense to me to keep it all together.
+I am not sure. But let's put inline helpers in the header instead of C
+file.
 
->
-> >  static inline bool need_slab_obj_ext(void)
-> >  {
-> >  #ifdef CONFIG_MEM_ALLOC_PROFILING
-> > diff --git a/mm/slab_common.c b/mm/slab_common.c
-> > index 21b0b9e9cd9e..d5f75d04ced2 100644
-> > --- a/mm/slab_common.c
-> > +++ b/mm/slab_common.c
-> > @@ -242,6 +242,7 @@ int alloc_slab_obj_exts(struct slab *slab, struct k=
-mem_cache *s,
-> >                * assign slabobj_exts in parallel. In this case the exis=
-ting
-> >                * objcg vector should be reused.
-> >                */
-> > +             mark_objexts_empty(vec);
-> >               kfree(vec);
-> >               return 0;
-> >       }
-> > diff --git a/mm/slub.c b/mm/slub.c
-> > index 4d480784942e..1136ff18b4fe 100644
-> > --- a/mm/slub.c
-> > +++ b/mm/slub.c
-> > @@ -1890,6 +1890,14 @@ static inline void free_slab_obj_exts(struct sla=
-b *slab)
-> >       if (!obj_exts)
-> >               return;
-> >
-> > +     /*
-> > +      * obj_exts was created with __GFP_NO_OBJ_EXT flag, therefore its
-> > +      * corresponding extension will be NULL. alloc_tag_sub() will thr=
-ow a
-> > +      * warning if slab has extensions but the extension of an object =
-is
-> > +      * NULL, therefore replace NULL with CODETAG_EMPTY to indicate th=
-at
-> > +      * the extension for obj_exts is expected to be NULL.
-> > +      */
-> > +     mark_objexts_empty(obj_exts);
-> >       kfree(obj_exts);
-> >       slab->obj_exts =3D 0;
-> >  }
->
+Best regards,
+baolu
