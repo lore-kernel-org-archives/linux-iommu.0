@@ -1,157 +1,236 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+Received: from mail-lf1-f51.google.com (mail-lf1-f51.google.com [209.85.167.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2A79763E6
-	for <iommu@lists.linux.dev>; Tue, 20 Feb 2024 16:23:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4D6D67C4D
+	for <iommu@lists.linux.dev>; Tue, 20 Feb 2024 16:27:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708446218; cv=none; b=BGW02W/338PGBGbqhT12UaARqeVpuQrnfn6o7lWUffiUM2AdNAvMTF9B+3gvGgc9uw/yM/7uPnVe2Be+sE1rSLL32FWVs+tDdUZW9Wops4rA/kIZ7KcIBLx4Eooa6VlozG96BI6nlLMGDeWRkUnqr0VUebHAhs5U7waXs0m8t80=
+	t=1708446432; cv=none; b=pE9g8c5wY8xoHcoDnq2MAAgpdcswYDVuVxjUnsoTdHbVGW9QX4REzriJU/s1Cwq3rZoITsR1Tjpu7LZkZ/DZ7268LzGEwEN96gp4r24cgXwGgAHSTbCYhfyzStgUz14a4lX5F2OmOlj7yoxkTp1b+5CPOibXKi/+gNo1Ch1MjBk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708446218; c=relaxed/simple;
-	bh=g82dr/T1DAEl/vLBVbupqmB7edkNUjxgz7d9kHxYKs8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TUxREODYhHOkUDzrq4eZiT7vxINB9rsaIkNTJ8f2K5WPmOP3dYVAD0zFWmJavPiJv6/wvTd0mELnz8oF++RpHAltWeFQ2bWT8gPmJFKWtD/2yD8vJ+hTa410zc0qBJGty1Hmtd38caat95t6eG1DeGIQqhoxThe8K8BdGDqnON0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=ZFzfIWnc; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=ZFzfIWnc; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
+	s=arc-20240116; t=1708446432; c=relaxed/simple;
+	bh=mGTXaZNNbdb3/xwmUtLv4oUiJfbUgvqfyphMUdqUELc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=r6vN4oxDZOiJET497T/3RQ6zLx5ftmDTxo45rKrmefR0EHaEJ+Tz6SrdsaatmyRt6NKN4IJcFNcEn1cL5haLttVFDqRjXtBzhFw8bhLIK/OVKArzck1VeIU8Agw6bL4Gvj9g4ZftOtvPJtILnfe0yzHw1Lm2NrVJR8jKfL9SXdI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=tsfqDdfe; arc=none smtp.client-ip=209.85.167.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="ZFzfIWnc";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="ZFzfIWnc"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id ABB6921EFF;
-	Tue, 20 Feb 2024 16:23:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1708446214; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=h8kDAAJVm9DuuVWWpgF8KUfDBqc/AfjUKVkybEu9ZjA=;
-	b=ZFzfIWnckCCIdzh/XxcA8I6i/Abl4myhPRohiC29Y1zma2EAik3pIboVw8rsuI2Fk/hf1f
-	X460EYZMpb0V7T5YuVeLML+iBfORaE9Sv7Lkf1cmVnxbV+Gjv5P9Ql1DFoPrxePSCl7R1K
-	RpsOZjPJ1F9Bjd8vgU0BDeIDc4Yw+Ac=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1708446214; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=h8kDAAJVm9DuuVWWpgF8KUfDBqc/AfjUKVkybEu9ZjA=;
-	b=ZFzfIWnckCCIdzh/XxcA8I6i/Abl4myhPRohiC29Y1zma2EAik3pIboVw8rsuI2Fk/hf1f
-	X460EYZMpb0V7T5YuVeLML+iBfORaE9Sv7Lkf1cmVnxbV+Gjv5P9Ql1DFoPrxePSCl7R1K
-	RpsOZjPJ1F9Bjd8vgU0BDeIDc4Yw+Ac=
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 77DA3139D0;
-	Tue, 20 Feb 2024 16:23:34 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id Dr6rHAbS1GVrVAAAD6G6ig
-	(envelope-from <mhocko@suse.com>); Tue, 20 Feb 2024 16:23:34 +0000
-Date: Tue, 20 Feb 2024 17:23:29 +0100
-From: Michal Hocko <mhocko@suse.com>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: Kent Overstreet <kent.overstreet@linux.dev>,
-	Steven Rostedt <rostedt@goodmis.org>,
-	Vlastimil Babka <vbabka@suse.cz>, akpm@linux-foundation.org,
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org,
-	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org,
-	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
-	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org,
-	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
-	paulmck@kernel.org, pasha.tatashin@soleen.com,
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
-	ndesaulniers@google.com, vvvvvv@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com,
-	cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com,
-	42.hyeyoo@gmail.com, glider@google.com, elver@google.com,
-	dvyukov@google.com, shakeelb@google.com, songmuchun@bytedance.com,
-	jbaron@akamai.com, rientjes@google.com, minchan@google.com,
-	kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH v3 31/35] lib: add memory allocations report in show_mem()
-Message-ID: <ZdTSAWwNng9rmKtg@tiehlicka>
-References: <Zc4_i_ED6qjGDmhR@tiehlicka>
- <CAJuCfpHq3N0h6dGieHxD6Au+qs=iKAifFrHAMxTsHTcDrOwSQA@mail.gmail.com>
- <ruxvgrm3scv7zfjzbq22on7tj2fjouydzk33k7m2kukm2n6uuw@meusbsciwuut>
- <320cd134-b767-4f29-869b-d219793ba8a1@suse.cz>
- <efxe67vo32epvmyzplmpd344nw2wf37azicpfhvkt3zz4aujm3@n27pl5j5zahj>
- <20240215180742.34470209@gandalf.local.home>
- <20240215181648.67170ed5@gandalf.local.home>
- <20240215182729.659f3f1c@gandalf.local.home>
- <mi5zw42r6c2yfg7fr2pfhfff6hudwizybwydosmdiwsml7vqna@a5iu6ksb2ltk>
- <CAJuCfpEARb8t8pc8WVZYB=yPk6G_kYGmJTMOdgiMHaYYKW3fUA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tsfqDdfe"
+Received: by mail-lf1-f51.google.com with SMTP id 2adb3069b0e04-512cca90f38so460567e87.2
+        for <iommu@lists.linux.dev>; Tue, 20 Feb 2024 08:27:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1708446428; x=1709051228; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=0GoTG41kI5OtRvDaPRyIcuGxljet2n6lqDoeB3uJInM=;
+        b=tsfqDdfebehGjv+MaxSHa3kicU3cT9Ya31oJCJ3Pe1qiddhsCXk6RP2HBvs+adiE9M
+         NTaoJ6vzE+YgE+DX2AmL/lVVaM/BsUxfwLYjSnWnxSD/PNybEhcO24coOdJL8Tg/9dYz
+         sQrjcexqAKURnYGLgL8SgvjHTlg+LkTUUL/hoqBrwx8h6Rsxe67Sp3z6/6/9o6lZKgG4
+         cpBqS/esg7HX/H9wP4ubwcKy355btijefjkYLFbacTd8zbZxlnJOiiQ39Xmlp4xhdIdh
+         xc61FrCykpRBgHgv/j4Jn8BoJnCqawN/q31UmJpN6e+bCUY0pVy/2SF9N4bqjzVoktuw
+         62pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708446428; x=1709051228;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0GoTG41kI5OtRvDaPRyIcuGxljet2n6lqDoeB3uJInM=;
+        b=CEvriJL1vNOLixVYoz5a+7n56vuv5XAuutFG8Hjofo53+LNQk2aBKbuZIOnGswBDu4
+         5kDrZoUGx754E5jFYXhnzAkH7sf87oKQWOeMxmrpTA3/NjIO59/+Fd1NfY+bs43Gmsjl
+         TT6i7DvQu8dzOUAFZZ70JcAbGdESicx1ubiN8VFM+simyzzFK7dUhETqc2aWrCvUBuvW
+         QdM2kQ3nDoIXU53jpTb3jBegRdriCrjk0N4kN4P4/i5RDXHzV+eZIgq03SGWRXfo/kx+
+         IqxpGYUjpvywVBLrya38IX84j26swv8yl2VDFpwnKbih6c7UTnRMRzy8Bridi4uS7lGX
+         LEoQ==
+X-Gm-Message-State: AOJu0YzlhbzsiS131zgS63GhBGeBvNR4DEoekzvwVno6G4uskyTbiOb/
+	kGm0cszgPkRmr6Xht6jgafmV5XkJyhtE1AfdoJslWD/XnZr1bMgDegxhi+ZnWJXA5K1M8xABX/3
+	GVuO2/DJeOy2H2MTVS/PD38lNBzc0hfMoUd0nKw==
+X-Google-Smtp-Source: AGHT+IEFePdHyB4lIz2wmU3Z2bj7F0YcGOkBh0oWxNDx7e4zJcf1y7GqHGBsRQjK+NcqyJXVqdo1IBFokFWvAC+Y484=
+X-Received: by 2002:ac2:4885:0:b0:512:be41:146f with SMTP id
+ x5-20020ac24885000000b00512be41146fmr2514899lfc.68.1708446427913; Tue, 20 Feb
+ 2024 08:27:07 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJuCfpEARb8t8pc8WVZYB=yPk6G_kYGmJTMOdgiMHaYYKW3fUA@mail.gmail.com>
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.com header.s=susede1 header.b=ZFzfIWnc
-X-Spamd-Result: default: False [1.68 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 R_DKIM_ALLOW(-0.20)[suse.com:s=susede1];
-	 BAYES_HAM(-0.01)[47.30%];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
-	 DKIM_TRACE(0.00)[suse.com:+];
-	 MX_GOOD(-0.01)[];
-	 RCPT_COUNT_GT_50(0.00)[73];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:dkim];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 MID_RHS_NOT_FQDN(0.50)[];
-	 FREEMAIL_CC(0.00)[linux.dev,goodmis.org,suse.cz,linux-foundation.org,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[]
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spam-Score: 1.68
-X-Rspamd-Queue-Id: ABB6921EFF
-X-Spam-Level: *
-X-Spam-Flag: NO
-X-Spamd-Bar: +
+References: <20231027000525.1278806-1-tina.zhang@intel.com> <20231027000525.1278806-6-tina.zhang@intel.com>
+In-Reply-To: <20231027000525.1278806-6-tina.zhang@intel.com>
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+Date: Wed, 21 Feb 2024 00:26:56 +0800
+Message-ID: <CABQgh9GWcqUeBkHQCpj5tzu6FnEgpOp3KOQ6s9c0X0KU7Ov1qw@mail.gmail.com>
+Subject: Re: [PATCH v10 5/6] iommu: Support mm PASID 1:n with sva domains
+To: Tina Zhang <tina.zhang@intel.com>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Michael Shavit <mshavit@google.com>, Vasant Hegde <vasant.hegde@amd.com>, 
+	Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Mon 19-02-24 09:17:36, Suren Baghdasaryan wrote:
-[...]
-> For now I think with Vlastimil's __GFP_NOWARN suggestion the code
-> becomes safe and the only risk is to lose this report. If we get cases
-> with reports missing this data, we can easily change to reserved
-> memory.
+Hi, Tina
 
-This is not just about missing part of the oom report. This is annoying
-but not earth shattering. Eating into very small reserves (that might be
-the only usable memory while the system is struggling in OOM situation)
-could cause functional problems that would be non trivial to test for.
-All that for debugging purposes is just lame. If you want to reuse the code
-for a different purpose then abstract it and allocate the buffer when you
-can afford that and use preallocated on when in OOM situation.
+On Fri, 27 Oct 2023 at 08:06, Tina Zhang <tina.zhang@intel.com> wrote:
+>
+> Each mm bound to devices gets a PASID and corresponding sva domains
+> allocated in iommu_sva_bind_device(), which are referenced by iommu_mm
+> field of the mm. The PASID is released in __mmdrop(), while a sva domain
+> is released when no one is using it (the reference count is decremented
+> in iommu_sva_unbind_device()). However, although sva domains and their
+> PASID are separate objects such that their own life cycles could be
+> handled independently, an enqcmd use case may require releasing the
+> PASID in releasing the mm (i.e., once a PASID is allocated for a mm, it
+> will be permanently used by the mm and won't be released until the end
+> of mm) and only allows to drop the PASID after the sva domains are
+> released. To this end, mmgrab() is called in iommu_sva_domain_alloc() to
+> increment the mm reference count and mmdrop() is invoked in
+> iommu_domain_free() to decrement the mm reference count.
+>
+> Since the required info of PASID and sva domains is kept in struct
+> iommu_mm_data of a mm, use mm->iommu_mm field instead of the old pasid
+> field in mm struct. The sva domain list is protected by iommu_sva_lock.
+>
+> Besides, this patch removes mm_pasid_init(), as with the introduced
+> iommu_mm structure, initializing mm pasid in mm_init() is unnecessary.
+>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Vasant Hegde <vasant.hegde@amd.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/iommu-sva.c | 92 +++++++++++++++++++++++----------------
+>  include/linux/iommu.h     | 23 ++++++++--
+>  2 files changed, 74 insertions(+), 41 deletions(-)
+>
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index 4a2f5699747f..5175e8d85247 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -12,32 +12,42 @@
+>  static DEFINE_MUTEX(iommu_sva_lock);
+>
+>  /* Allocate a PASID for the mm within range (inclusive) */
+> -static int iommu_sva_alloc_pasid(struct mm_struct *mm, struct device *dev)
+> +static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct device *dev)
+>  {
+> +       struct iommu_mm_data *iommu_mm;
+>         ioasid_t pasid;
+> -       int ret = 0;
+> +
+> +       lockdep_assert_held(&iommu_sva_lock);
+>
+>         if (!arch_pgtable_dma_compat(mm))
+> -               return -EBUSY;
+> +               return ERR_PTR(-EBUSY);
+>
+> -       mutex_lock(&iommu_sva_lock);
+> +       iommu_mm = mm->iommu_mm;
+>         /* Is a PASID already associated with this mm? */
+> -       if (mm_valid_pasid(mm)) {
+> -               if (mm->pasid >= dev->iommu->max_pasids)
+> -                       ret = -EOVERFLOW;
+> -               goto out;
+> +       if (iommu_mm) {
+> +               if (iommu_mm->pasid >= dev->iommu->max_pasids)
+> +                       return ERR_PTR(-EOVERFLOW);
+> +               return iommu_mm;
+>         }
+>
+> +       iommu_mm = kzalloc(sizeof(struct iommu_mm_data), GFP_KERNEL);
+> +       if (!iommu_mm)
+> +               return ERR_PTR(-ENOMEM);
+> +
+>         pasid = iommu_alloc_global_pasid(dev);
+>         if (pasid == IOMMU_PASID_INVALID) {
+> -               ret = -ENOSPC;
+> -               goto out;
+> +               kfree(iommu_mm);
+> +               return ERR_PTR(-ENOSPC);
+>         }
+> -       mm->pasid = pasid;
+> -       ret = 0;
+> -out:
+> -       mutex_unlock(&iommu_sva_lock);
+> -       return ret;
+> +       iommu_mm->pasid = pasid;
+> +       INIT_LIST_HEAD(&iommu_mm->sva_domains);
+> +       /*
+> +        * Make sure the write to mm->iommu_mm is not reordered in front of
+> +        * initialization to iommu_mm fields. If it does, readers may see a
+> +        * valid iommu_mm with uninitialized values.
+> +        */
+> +       smp_store_release(&mm->iommu_mm, iommu_mm);
+> +       return iommu_mm;
+>  }
+>
+>  /**
+> @@ -58,31 +68,33 @@ static int iommu_sva_alloc_pasid(struct mm_struct *mm, struct device *dev)
+>   */
+>  struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm)
+>  {
+> +       struct iommu_mm_data *iommu_mm;
+>         struct iommu_domain *domain;
+>         struct iommu_sva *handle;
+>         int ret;
+>
+> +       mutex_lock(&iommu_sva_lock);
+> +
+>         /* Allocate mm->pasid if necessary. */
+> -       ret = iommu_sva_alloc_pasid(mm, dev);
+> -       if (ret)
+> -               return ERR_PTR(ret);
+> +       iommu_mm = iommu_alloc_mm_data(mm, dev);
+> +       if (IS_ERR(iommu_mm)) {
+> +               ret = PTR_ERR(iommu_mm);
+> +               goto out_unlock;
+> +       }
+>
+>         handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+> -       if (!handle)
+> -               return ERR_PTR(-ENOMEM);
+> -
+> -       mutex_lock(&iommu_sva_lock);
+> -       /* Search for an existing domain. */
+> -       domain = iommu_get_domain_for_dev_pasid(dev, mm->pasid,
+> -                                               IOMMU_DOMAIN_SVA);
+> -       if (IS_ERR(domain)) {
+> -               ret = PTR_ERR(domain);
+> +       if (!handle) {
+> +               ret = -ENOMEM;
+>                 goto out_unlock;
+>         }
+>
+> -       if (domain) {
+> -               domain->users++;
+> -               goto out;
 
-We have always went extra mile to avoid potentially disruptive
-operations from the oom handling code and I do not see any good reason
-to diverge from that principle.
--- 
-Michal Hocko
-SUSE Labs
+Our multi bind test case broke since 6.8-rc1.
+The test case can use same domain & pasid, return different handle,
+6.7 simply  domain->users ++ and return.
+
+> +       /* Search for an existing domain. */
+> +       list_for_each_entry(domain, &mm->iommu_mm->sva_domains, next) {
+> +               ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid);
+
+Now iommu_attach_device_pasid return BUSY since the same pasid.
+And then iommu_sva_bind_device attach ret=-16
+
+> +               if (!ret) {
+
+Simply tried if (!ret || ret == -EBUSY)
+The test passes, but report waring
+WARNING: CPU: 12 PID: 2992 at drivers/iommu/iommu.c:3591
+iommu_detach_device_pasid+0xa4/0xd0
+
+Will check more tomorrow.
+
+> +                       domain->users++;
+> +                       goto out;
+> +               }
+>         }
+>
+
+Thanks
