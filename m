@@ -1,178 +1,159 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AEDA5A783
-	for <iommu@lists.linux.dev>; Tue, 20 Feb 2024 07:05:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC55A5D498
+	for <iommu@lists.linux.dev>; Tue, 20 Feb 2024 08:38:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708412745; cv=none; b=VEbTTQOcNHo+t2+jOdpr7scIpAfRkPP25WLkTU6lWhaxMoAis7Q3orJUSStTkkVrT16FFxivpbG6d0HxAvwKlVxYmze9GcBFcHxe1hRCX/GkbiznBFislG+/ikIZHE3fCvnYtnVekOOC4KsNTfYuMhBrPHdw7dBmtFaKgM61RYI=
+	t=1708418315; cv=none; b=RQoAC8HrzhTh/w1wfV0hToKR8v10dSSFqDFJyoWb2p5RgaCh8oex5muHbbnNpVs7WwVIy+1LZK1pHWWwfkHZfLO+3Jy2w4mRMkwz8Y1u3QOFdowgpaF6dUC8LqXGrcZ4JgNN+hyllxeXIT8zos5/eCKJVviZEXhRU+Ou2goXJy4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708412745; c=relaxed/simple;
-	bh=ZbpO3w8GfTzpY3DoVWRz5vgwWK+8/2qXMylcU+ZyyLY=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Tbx++h9YifgpE4EJ0ShIh5ojJQS3hQrBJNNICKxuULnPVDIo74iZ66QRFsLylVfKtw2VIFezrAMq5tgSMrvnwqAEEESm+yTdH5f2BQ0/3oGQajEmigQGWNI/ah+Y4pCFiIjAHEMtMM6W++2FTHyDxWTn6k5lOqY8uIW+UtSv9dc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cTelXNx0; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1708418315; c=relaxed/simple;
+	bh=ALQjbo7dedlRuzpfkpxyD61RWnylLXK6v03q2r6nC0M=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=gE9EuaPeGhThcSVeouQ7eznYqGQWEygVr4Glq1uSjwaQGDza6TWflSRzMMTvUrOKIvRxK6l22+zyGYedZgIvepmYjK99+DRG5ABs9eA5k+cEOHgnzWcqK5x2UzBvvx3h6SKnO1c/v/1vjHpNEGs8FSmfS+FB1oIuV3zJPq1NZoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ttzLJmbL; arc=none smtp.client-ip=209.85.218.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cTelXNx0"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708412744; x=1739948744;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ZbpO3w8GfTzpY3DoVWRz5vgwWK+8/2qXMylcU+ZyyLY=;
-  b=cTelXNx0pU6V7a6X/ZLhg2wAq8U9kfkQcqODPPpLLOk9rjp9/RGKme1B
-   IF+KFbBsGhfpwq4Y5ZBh9S+xvw5fIpeO0CNxR8G+uqxskHlQQqfxvy697
-   pI1QLxibfR1Ly3g0aTZbxpX95q0kxwJeadU60loJ5McIj86Cto3lM52z3
-   6W9RvtclccF5IIFpazgnzJMw+b0nkQBxjaHKEaTwG2M9RpZioBj8CeuVB
-   4EFHlsiGo4k8aePPjF5Be7Gk8jXDqDx2qWEq3OnUOdUCrxso1TETGbHw9
-   Fjn3WfBZPstmH6WLj1NEtppggq+oCS1CgmNx8LrbwSuQgjg6glYID2nSM
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10989"; a="2366579"
-X-IronPort-AV: E=Sophos;i="6.06,172,1705392000"; 
-   d="scan'208";a="2366579"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2024 23:05:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,172,1705392000"; 
-   d="scan'208";a="4683784"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmviesa010.fm.intel.com with ESMTP; 19 Feb 2024 23:05:40 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>
-Cc: Huang Jiaqing <jiaqing.huang@intel.com>,
-	Ethan Zhao <haifeng.zhao@linux.intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 2/2] iommu/vt-d: Use device rbtree in iopf reporting path
-Date: Tue, 20 Feb 2024 14:59:39 +0800
-Message-Id: <20240220065939.121116-3-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240220065939.121116-1-baolu.lu@linux.intel.com>
-References: <20240220065939.121116-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ttzLJmbL"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-a3e87b2de41so178407866b.2
+        for <iommu@lists.linux.dev>; Tue, 20 Feb 2024 00:38:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1708418312; x=1709023112; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :references:cc:to:content-language:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=kJGa4Iif74KIq28HuBx0obq22VL2V9cwPjQcH9f77gk=;
+        b=ttzLJmbLW5raFsGkKiUT6FKORv1e9MVWMm+Nd5t+1goUHCN95oJHyiH2uKaej5u9Tr
+         XDmt5zl3o1M0fXEYl6PK14Ktsgg4jnboY7UVfR6+F0twBNub+Ismd5L9pbP02mwg0s7p
+         ZqTPM1F147jzsnLyelja53Qy1Gje/FkS9RSMQMazGJE1J452zd8CXYHFePGF6e3EGSl2
+         BIZn5qCtYIBsXrfreTj/D3w53PckvbY/BIJj7r3gZoV9yG9rl2AIxbip6vM0Cg1i3vIj
+         OuhOccUAw1czVnjzRAnaLo64rByTbYAdmiBDSeLbJ/tmJIszwfja2evkVwCmsevykEff
+         /DEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708418312; x=1709023112;
+        h=content-transfer-encoding:in-reply-to:organization:autocrypt
+         :references:cc:to:content-language:subject:reply-to:from:user-agent
+         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=kJGa4Iif74KIq28HuBx0obq22VL2V9cwPjQcH9f77gk=;
+        b=miqP18yOKrbaevXRarXSmNQUlhzcjdePFP6pu66ik7AnMy+ZM/zxp3fMTsVBn8DXQJ
+         vzJLbXGtzKJfiw9pFF/2O00d8SkF4mKH4wxoujshV9d0c2WFwwRPMkKIeI7HD5aia+sR
+         ZWkSd5IS+fRU1kqW4j3SWNtne6e/WszhgX4E98I0zCglQ+TD/9auvzPKQREPQKAO+a4r
+         7xfdHTsaTgKPVENOYvyOiGjS02d4JHokfI0SknuqOXpeCmqo9WDWvFi1/O2n4WTe+9/S
+         OF2crq3tVOGZ1mJ3I2PgBOO9ZkMAzuFThpgZrlou0ktwqg33f+ftbAKWS/Gme2ByndfA
+         o4aQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWzT/P+2lSw0puXCLsTSDE65clDGbY187Pa46N3Bif1f/DHZQrnLr8+Io/l/hhrbprzH7OhxNdQMKREfI7SjLXE1j8kq6U=
+X-Gm-Message-State: AOJu0YwyAiOWkH3lzFkIfPL0Uty26tIUGi6m7Sb+EBZgsrtZ6LsEqy9O
+	KWYiYDfVfle7+xNNfcls9IosJE8+zkB3jPlEkB+WWCKf5OR06njaWf8Y+wv3+H0=
+X-Google-Smtp-Source: AGHT+IG5sof+uEBFLugZ3URqtm9eYBKvIS7ypPMXhjAaCDviRIT2l26ljktZ4RfQuw9pU3z3NdDz/g==
+X-Received: by 2002:a17:906:ce4a:b0:a3e:720a:b961 with SMTP id se10-20020a170906ce4a00b00a3e720ab961mr4048248ejb.34.1708418312170;
+        Tue, 20 Feb 2024 00:38:32 -0800 (PST)
+Received: from ?IPV6:2a01:e0a:982:cbb0:bd84:e8aa:cf30:cb6e? ([2a01:e0a:982:cbb0:bd84:e8aa:cf30:cb6e])
+        by smtp.gmail.com with ESMTPSA id n5-20020a05600c294500b00410df4bf22esm13596294wmd.38.2024.02.20.00.38.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Feb 2024 00:38:31 -0800 (PST)
+Message-ID: <90290e71-6d85-4aaa-af5b-79c44bc786ef@linaro.org>
+Date: Tue, 20 Feb 2024 09:38:30 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+From: neil.armstrong@linaro.org
+Reply-To: neil.armstrong@linaro.org
+Subject: Re: [PATCH 8/8] arm64: dts: qcom: qrb2210-rb1: Enable the GPU
+Content-Language: en-US, fr
+To: Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Rob Clark <robdclark@gmail.com>,
+ Abhinav Kumar <quic_abhinavk@quicinc.com>, Sean Paul <sean@poorly.run>,
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Konrad Dybcio <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org,
+ linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org
+References: <20240219-topic-rb1_gpu-v1-0-d260fa854707@linaro.org>
+ <20240219-topic-rb1_gpu-v1-8-d260fa854707@linaro.org>
+ <CAA8EJppPvXfkz=wVca8aFBhFaVUe9+OiVzcQUq7D8zPbK+T1FQ@mail.gmail.com>
+ <b73e329a-02a4-46e0-bda4-5d5fae0a1180@linaro.org>
+Autocrypt: addr=neil.armstrong@linaro.org; keydata=
+ xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
+ GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
+ BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
+ qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
+ 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
+ AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
+ OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
+ Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
+ YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
+ GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
+ UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
+ GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
+ yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
+ QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
+ SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
+ 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
+ Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
+ oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
+ M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
+ 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
+ KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
+ 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
+ QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
+Organization: Linaro Developer Services
+In-Reply-To: <b73e329a-02a4-46e0-bda4-5d5fae0a1180@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The existing I/O page fault handler currently locates the PCI device by
-calling pci_get_domain_bus_and_slot(). This function searches the list
-of all PCI devices until the desired device is found. To improve lookup
-efficiency, replace it with device_rbtree_find() to search the device
-within the probed device rbtree.
+On 19/02/2024 22:37, Konrad Dybcio wrote:
+> On 19.02.2024 15:49, Dmitry Baryshkov wrote:
+>> On Mon, 19 Feb 2024 at 15:36, Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
+>>>
+>>> Enable the A702 GPU (also marketed as "3D accelerator by qcom [1], lol).
+>>
+>> Is it not?
+> 
+> Sure, every electronic device is also a heater, I suppose.. I found
+> this wording extremely funny though
 
-The I/O page fault is initiated by the device, which does not have any
-synchronization mechanism with the software to ensure that the device
-stays in the probed device tree. Theoretically, a device could be released
-by the IOMMU subsystem after device_rbtree_find() and before
-iopf_get_dev_fault_param(), which would cause a use-after-free problem.
 
-Add a mutex to synchronize the I/O page fault reporting path and the IOMMU
-release device path. This lock doesn't introduce any performance overhead,
-as the conflict between I/O page fault reporting and device releasing is
-very rare.
+GPU (Graphics Processing Unit) isn't accurate either since it can also run compute shaders do to non graphics processing,
+so 3D Accelerator isn't that different.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.h |  2 ++
- drivers/iommu/intel/dmar.c  |  1 +
- drivers/iommu/intel/iommu.c |  3 +++
- drivers/iommu/intel/svm.c   | 17 +++++++++--------
- 4 files changed, 15 insertions(+), 8 deletions(-)
+A proper term would be Vectorized Mathematical Computing Complex or something similar.
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 2b67ad0d6fe9..404d2476a877 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -719,6 +719,8 @@ struct intel_iommu {
- #endif
- 	struct iopf_queue *iopf_queue;
- 	unsigned char iopfq_name[16];
-+	/* Synchronization between fault report and iommu device release. */
-+	struct mutex iopf_lock;
- 	struct q_inval  *qi;            /* Queued invalidation info */
- 	u32 iommu_state[MAX_SR_DMAR_REGS]; /* Store iommu states between suspend and resume.*/
- 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index f9b63c2875f7..d14797aabb7a 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1097,6 +1097,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 	iommu->segment = drhd->segment;
- 	iommu->device_rbtree = RB_ROOT;
- 	spin_lock_init(&iommu->device_rbtree_lock);
-+	mutex_init(&iommu->iopf_lock);
- 	iommu->node = NUMA_NO_NODE;
- 
- 	ver = readl(iommu->reg + DMAR_VER_REG);
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index acfe27bd3448..6743fe6c7a36 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4430,8 +4430,11 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
- static void intel_iommu_release_device(struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct intel_iommu *iommu = info->iommu;
- 
-+	mutex_lock(&iommu->iopf_lock);
- 	device_rbtree_remove(info);
-+	mutex_unlock(&iommu->iopf_lock);
- 	dmar_remove_one_dev_info(dev);
- 	intel_pasid_free_table(dev);
- 	intel_iommu_debugfs_remove_dev(info);
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index b644d57da841..dda276e28325 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -645,7 +645,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 	struct intel_iommu *iommu = d;
- 	struct page_req_dsc *req;
- 	int head, tail, handled;
--	struct pci_dev *pdev;
-+	struct device *dev;
- 	u64 address;
- 
- 	/*
-@@ -691,21 +691,22 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 		if (unlikely(req->lpig && !req->rd_req && !req->wr_req))
- 			goto prq_advance;
- 
--		pdev = pci_get_domain_bus_and_slot(iommu->segment,
--						   PCI_BUS_NUM(req->rid),
--						   req->rid & 0xff);
- 		/*
- 		 * If prq is to be handled outside iommu driver via receiver of
- 		 * the fault notifiers, we skip the page response here.
- 		 */
--		if (!pdev)
-+		mutex_lock(&iommu->iopf_lock);
-+		dev = device_rbtree_find(iommu, req->rid);
-+		if (!dev) {
-+			mutex_unlock(&iommu->iopf_lock);
- 			goto bad_req;
-+		}
- 
--		intel_svm_prq_report(iommu, &pdev->dev, req);
--		trace_prq_report(iommu, &pdev->dev, req->qw_0, req->qw_1,
-+		intel_svm_prq_report(iommu, dev, req);
-+		trace_prq_report(iommu, dev, req->qw_0, req->qw_1,
- 				 req->priv_data[0], req->priv_data[1],
- 				 iommu->prq_seq_number++);
--		pci_dev_put(pdev);
-+		mutex_unlock(&iommu->iopf_lock);
- prq_advance:
- 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
- 	}
--- 
-2.34.1
+Neil
+
+> 
+>>
+>>>
+>>> [1] https://docs.qualcomm.com/bundle/publicresource/87-61720-1_REV_A_QUALCOMM_ROBOTICS_RB1_PLATFORM__QUALCOMM_QRB2210__PRODUCT_BRIEF.pdf
+>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+>>
+>> With the exception of the commit message:
+> 
+> :(
+> 
+> Konrad
+> 
+>>
+>> Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+>>
+>>> ---
+>>>   arch/arm64/boot/dts/qcom/qrb2210-rb1.dts | 8 ++++++++
+>>>   1 file changed, 8 insertions(+)
+>>
+>>
+> 
 
