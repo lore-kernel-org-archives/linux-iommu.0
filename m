@@ -1,104 +1,148 @@
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1541612DDAE
-	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 21:31:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 897638663D
+	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 23:05:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708551078; cv=none; b=TP4sykl8oEXwGV5kO4Pfhbi+SoOaSRziyDWqWy022ZXtL3FufwVYc6MCRMCG7BRmB6s8m/J0Pq6wTaCXKO8XNnlVPHJ+w9yrr5ZPmrPwaEp2vsXjn1N9rfvd1DYi3mMCYNE1TO+kvbksJAG9FwRKJ4mi5C/ZczRsX0xerpggp70=
+	t=1708556736; cv=none; b=ADmpO2JpYjGC3Sa3FwU1ojufwhr7UpShqNTkmuvUVGzjqakVqPTMypvcElJ2pPTB6iSI3UKPp/XutjDanVwlqU3YpUOFtN2NfNdTvwj2APQn/P8//HhRBOMhM4OwcuQ227gqlw6z2W2zT4yh1i+V0hMQpVy+b9pS0yqm12Yn5GU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708551078; c=relaxed/simple;
-	bh=gFsioKErNguGb0UXfpCehO3mOIaCj+gYffuxZggc6lc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KbaF2rCs4sC8dGm2pKQ0N778AIG+sRlOo9Nc2yPRHK4A6bQOVWK4I9PM7QF1Zbkud2aqT9s7H5BQJTZlvQj6CCpKTQ7QdWr3UdzLjRtX1/bapBSvZZfNkcEguTIoRnnfeaB4e4GDG/pG5BwFvOjaVAmBkvnxIjuTeOkJDCgfKm8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=vSxPNhbL; arc=none smtp.client-ip=209.85.160.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	s=arc-20240116; t=1708556736; c=relaxed/simple;
+	bh=zssxqx37knagHcWIMKikX95cYC9xskvO7oxvfidP8XA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GqiHcwCExBcc4806C3oscm3wHo1MlUlmUW/sZDVv4YSd6167ilkykBmO9Ad4umMk/Po/oB/lmVyCNOHq0nf16y/dmFfYlEgCCjEJahQ9zAhAYZYBJiX2iuopGDGT1SsBqKCRHf+IFs1ekcpZ7F3unnW7r4k/qh4oGYGZjTyfE3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=K6VMrKKX; arc=none smtp.client-ip=209.85.214.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="vSxPNhbL"
-Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-42e323a2e39so1644721cf.1
-        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 13:31:16 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="K6VMrKKX"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-1dc0e5b223eso26772905ad.1
+        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 15:05:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708551076; x=1709155876; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gFsioKErNguGb0UXfpCehO3mOIaCj+gYffuxZggc6lc=;
-        b=vSxPNhbL4eB9J5weJ6eoTni48VB83cBJdxbH6CzyYsTsa0JrCeQwbZAm8a/FXhjoUd
-         qbVOdkPixB2k17wB+0eBFUHW6r5e+OFdtIS/0lOsL1SifrmtZA/gEoMB4FYZPy3GmSlQ
-         u8jrOCO/Kw6kWRZuuPmjoJU+Eth81JGtnZgI803R/ux2VmZuZVm8XTKpqhgwP5C0tdQ0
-         wtj/Nei0GCnkM2f90r4Z5ERG2m/HcnHqdEoAMPuhojLonc3gJDqkwsz8X3Rc/G39Z0J/
-         zwejnhAL+2rm944vkhJkGgW4e1yEQtcUJ1GvF83aPaROcrjDIHf+Kl8V4CYU71heUkIi
-         ZmMg==
+        d=chromium.org; s=google; t=1708556733; x=1709161533; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=IaQv6IYiHqQsQRwxagN42nrCoy2L36X/io0NIlSKpEE=;
+        b=K6VMrKKXHSjBbvf7bammn+HL6yd9rGi5IPlNo/hObuLJBq8f5JZK1fS5cHmIAljPHw
+         b3Hrs0+63ercfmQ2GS76UmaQQoEqPrTGwKx0GHr6g58wgZXCJP7j5H7REzg0hx9pbbtV
+         OsKysz9atUZGsm2uLL9p9sDUtFtXcEtjeYW3g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708551076; x=1709155876;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=gFsioKErNguGb0UXfpCehO3mOIaCj+gYffuxZggc6lc=;
-        b=QcI4ne3PYpnbF1YTqeANZ+qqHdFeEp5lkQDQ9B31W7iVbpulS26xa/3thi9Glz3tKP
-         1Ez6k1wE1YClehGOXODoNkq4X5wDbv9JbNfJwaPt/fzkFRN1RFuk0MQtTjS2lAi/UGzT
-         L0g+aNjOn2NPPlghB5ZB22YM1FqE5fPiXkNfh30XOZ63OGLQLkOOOTaP9aemAfro2R05
-         SDAb/nhw33MUunccsj4SFxOoBwt+tDNv9A7VUSh6ZjCoOKBfVd6nZcJbLRkq1oxv9HRk
-         HuJgLTH0E/4BfsQa37Om3YnAkRRiwmGNWlPzb1xLyLluEG32T5yiLTjk5X0E+1VpDfXS
-         xx0g==
-X-Forwarded-Encrypted: i=1; AJvYcCXYe8lzdHfLjFG/P1okuw3L0jWVNMJ4/awzr0jovhzpFM3wi7B3XRvSkjegYw64paOlkc1tPvllUBRjJkTabblRC5gN/4I=
-X-Gm-Message-State: AOJu0Yx3eLvM1dg6ll5WI4i4yVMWJQNZu0VxH+skGI6hT6akev9BJpb0
-	A1W9RVWn7xh0BHycIChgcmiRQNz7K4zzm2c46gYO1TfL+nUcx75ZZZkw9QHW6RMZwGsmeMQycJ2
-	wsEV7XhWJyjDjih+uq10feVyTB0VdaExRFX/aZQ==
-X-Google-Smtp-Source: AGHT+IFO5Z7BsmHAefImdCXlOf9v/A1DymY9rKzrFG6F8X6fIh9MpYHyGC/yHJX92pP0BH/FzDecR0AIIxui9aAjnNM=
-X-Received: by 2002:ac8:570f:0:b0:42c:78fd:e4fa with SMTP id
- 15-20020ac8570f000000b0042c78fde4famr1316065qtw.32.1708551075946; Wed, 21 Feb
- 2024 13:31:15 -0800 (PST)
+        d=1e100.net; s=20230601; t=1708556733; x=1709161533;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IaQv6IYiHqQsQRwxagN42nrCoy2L36X/io0NIlSKpEE=;
+        b=CTFhwrAXFePQg+W24Ps5kP+akwfYcNbOLdIU/LTCXs/+oK7wrbBM/8ISIB06syXCvo
+         VlNsbvPe4PC2jF2hIe+0btIObvFPEUqxpBMZZetDyGj9P/EsoDKdvQh6mDn4ZDzB9yEQ
+         IeCvHVaVgtYeWeN9Vj51hnPQaTevC8iAiXT1w8CgtXePS/iPsqHt2JmJyWR5mu2zzWIZ
+         oIvGt84F9+UbqZ/G1gBNg3rWBbnDRa8KyHZMwR3ic9jjXD7Hu4jm4iLKalyKWc7gnB2c
+         YOG4KRlHRYkeTgPbEeZi25pC5QV5qgpLuI1uH3wnsXflTH4/8QV9MALlolMouI/e9qxb
+         17mw==
+X-Forwarded-Encrypted: i=1; AJvYcCWVjFHcb9QeieSM/XkRocQbvdGveiiWQnm18vAAZlMA4/XU6p/Rzu/jOCczuywHh0SC1D+cKuB1MnMowOp6QGCBEaARCKk=
+X-Gm-Message-State: AOJu0YwkJ2GukTtRiWA3+FjQ2mbe32KJmCJQ7HMCrwLY7ihb/8UldBOR
+	kWB9YS6ozzu9kbGpa7zNKXlLzMrnHRStxOzY7XWb9UrhLxnivmmsAbeeFoZ1Ng==
+X-Google-Smtp-Source: AGHT+IH1309ck0C/2D22VOAASZNUEEf4x9Q57P9Qvk9iAKdRznvrywgHAh+2sanfhM2Axko6bAh9XQ==
+X-Received: by 2002:a17:902:c086:b0:1dc:7b6:867a with SMTP id j6-20020a170902c08600b001dc07b6867amr6026373pld.21.1708556733655;
+        Wed, 21 Feb 2024 15:05:33 -0800 (PST)
+Received: from www.outflux.net ([198.0.35.241])
+        by smtp.gmail.com with ESMTPSA id h18-20020a170902f2d200b001d913992d8csm8631586plc.242.2024.02.21.15.05.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Feb 2024 15:05:33 -0800 (PST)
+Date: Wed, 21 Feb 2024 15:05:32 -0800
+From: Kees Cook <keescook@chromium.org>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
+	liam.howlett@oracle.com, penguin-kernel@i-love.sakura.ne.jp,
+	corbet@lwn.net, void@manifault.com, peterz@infradead.org,
+	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org,
+	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
+	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org,
+	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
+	paulmck@kernel.org, pasha.tatashin@soleen.com,
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
+	hughd@google.com, andreyknvl@gmail.com, ndesaulniers@google.com,
+	vvvvvv@google.com, gregkh@linuxfoundation.org, ebiggers@google.com,
+	ytcoode@gmail.com, vincent.guittot@linaro.org,
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+	bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
+	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+	glider@google.com, elver@google.com, dvyukov@google.com,
+	shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
+	rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+	kernel-team@android.com, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	linux-mm@kvack.org, linux-modules@vger.kernel.org,
+	kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+Subject: Re: [PATCH v4 14/36] lib: add allocation tagging support for memory
+ allocation profiling
+Message-ID: <202402211449.401382D2AF@keescook>
+References: <20240221194052.927623-1-surenb@google.com>
+ <20240221194052.927623-15-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-8-surenb@google.com>
-In-Reply-To: <20240221194052.927623-8-surenb@google.com>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Wed, 21 Feb 2024 16:30:39 -0500
-Message-ID: <CA+CK2bDOiV8xwig1pDdTVjkO4KhK+jJ0wXAtNon1ZXQGviih4A@mail.gmail.com>
-Subject: Re: [PATCH v4 07/36] mm: introduce slabobj_ext to support slab object extensions
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
-	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
-	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, yosryahmed@google.com, yuzhao@google.com, 
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
-	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com, 
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
-	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
-	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
-	glider@google.com, elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240221194052.927623-15-surenb@google.com>
 
-On Wed, Feb 21, 2024 at 2:41=E2=80=AFPM Suren Baghdasaryan <surenb@google.c=
-om> wrote:
->
-> Currently slab pages can store only vectors of obj_cgroup pointers in
-> page->memcg_data. Introduce slabobj_ext structure to allow more data
-> to be stored for each slab object. Wrap obj_cgroup into slabobj_ext
-> to support current functionality while allowing to extend slabobj_ext
-> in the future.
->
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+On Wed, Feb 21, 2024 at 11:40:27AM -0800, Suren Baghdasaryan wrote:
+> [...]
+> +struct alloc_tag {
+> +	struct codetag			ct;
+> +	struct alloc_tag_counters __percpu	*counters;
+> +} __aligned(8);
+> [...]
+> +#define DEFINE_ALLOC_TAG(_alloc_tag)						\
+> +	static DEFINE_PER_CPU(struct alloc_tag_counters, _alloc_tag_cntr);	\
+> +	static struct alloc_tag _alloc_tag __used __aligned(8)			\
+> +	__section("alloc_tags") = {						\
+> +		.ct = CODE_TAG_INIT,						\
+> +		.counters = &_alloc_tag_cntr };
+> [...]
+> +static inline struct alloc_tag *alloc_tag_save(struct alloc_tag *tag)
+> +{
+> +	swap(current->alloc_tag, tag);
+> +	return tag;
+> +}
 
-Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+Future security hardening improvement idea based on this infrastructure:
+it should be possible to implement per-allocation-site kmem caches. For
+example, we could create:
+
+struct alloc_details {
+	u32 flags;
+	union {
+		u32 size; /* not valid after __init completes */
+		struct kmem_cache *cache;
+	};
+};
+
+- add struct alloc_details to struct alloc_tag
+- move the tags section into .ro_after_init
+- extend alloc_hooks() to populate flags and size:
+	.flags = __builtin_constant_p(size) ? KMALLOC_ALLOCATE_FIXED
+					    : KMALLOC_ALLOCATE_BUCKETS;
+	.size = __builtin_constant_p(size) ? size : SIZE_MAX;
+- during kernel start or module init, walk the alloc_tag list
+  and create either a fixed-size kmem_cache or to allocate a
+  full set of kmalloc-buckets, and update the "cache" member.
+- adjust kmalloc core routines to use current->alloc_tag->cache instead
+  of using the global buckets.
+
+This would get us fully separated allocations, producing better than
+type-based levels of granularity, exceeding what we have currently with
+CONFIG_RANDOM_KMALLOC_CACHES.
+
+Does this look possible, or am I misunderstanding something in the
+infrastructure being created here?
+
+-- 
+Kees Cook
