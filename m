@@ -1,122 +1,101 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 992C13D974
-	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 11:07:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 750943F8D1
+	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 11:10:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708513629; cv=none; b=T9Ku5dbu5MJsLMhyjs+19oePoxjorput/UjEuRGEr/OWWylZDN+ZCqL3coVcZiJB9+aadK94oNxjXi3SnywNN/apZYI7POrog5c9wBFZtSXjtIBUQRB85fMPnYwtL0am8bi2bu/YpvZjJuZ2H8weVcKq72ao9b8STtPorlcm6mI=
+	t=1708513835; cv=none; b=Ji9FYsIRmc18O04RLiFIuV8p/wR4tqiGjWEvTmj51f2p5q+VDMcPrmKE2Y5WIqsiXq+Abb1qW8L3DCV/nYPUNAAkKvqvQwrcMmJzAIFgzK6EALZn+Z508XJ/f4UYtC6ztiutyTpDpyzZ1Y3vIqkhvGHEFz+ICxVmO5ZG491EK4E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708513629; c=relaxed/simple;
-	bh=oeT8D95NKe7pIr4hfviYGvVnoPtzduZq0zmxcgxK1g0=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=LkT/hZFfDP5PaCxHsbn9B/4Dmt4Nk1CTIx8HkkslfyKXSe8wT6UwDWnYQvOzV74dw7RZ1JMiE97rW802LRGgS8dGBB1fE+srezsogw1as0h54OM7MwKUps3MbcsCT44e16hEe3fWEqf+6+iUo7rLdAqSXGoq53/coC7RJgAhVGQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Q/KK0Eij; arc=none smtp.client-ip=209.85.214.172
+	s=arc-20240116; t=1708513835; c=relaxed/simple;
+	bh=yYwOfjmiT5pxQ2sOc334eJUjQ4d60tVUqL5jOyR3Ajk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ODKZQTV68eYND3Uz68s0kBnlLfog8zqOhUytL+jeB64znSV+WBLQMZA3wKd9o4NUZxs/UPjJajKH2v213/NT85ErcGis8ICTEA7vSZqrJzXE48n6rkUFPxpM4XE+iIhAiEr48E3S2iexSur5GumSTAWX/pv477ZZg+vSqyghqDo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=z4cNlnLl; arc=none smtp.client-ip=209.85.218.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Q/KK0Eij"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1d911c2103aso36916045ad.0
-        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 03:07:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="z4cNlnLl"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a30f7c9574eso820389966b.0
+        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 03:10:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1708513627; x=1709118427; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=brEb9TnfGp5/yuMw230xLgH6JsFOFAcbGsSGw6+DLbM=;
-        b=Q/KK0EijAgg9izZI0QR8cMrHQSIMRHs4t7B4T1Mw2Bok8sivrxTXBTDnOyjpu345iv
-         DY5sOOWDNeyOvXbPIKTWA/GbvHM6iaWzOFaXbHYwQeD11SN/V2/Ceh5bAFCfCbecCFKv
-         CdNlt8UN98VDyW3PZRQ58/dgrCL/IfMpy/kh8Qtr5KR0isC+dsT5OuAcbuWgOJDwPC7n
-         S8QOP6xX61oQ+09ZoOIo7hmiJebiQJop0HKIEDjSdcCZyP+0Pryef34wbmnPd8XMcXKg
-         oux4OC6MKQR6JIGvc7dhKql8uZEafpdEblZTETjVgLSQxhpg6qqPKOjXWkjDop799ce6
-         jl/A==
+        d=linaro.org; s=google; t=1708513832; x=1709118632; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=G5L9NoyuwvA4Gf7LYh90rqEBr7lWC8KBnH4p5IN+MFQ=;
+        b=z4cNlnLlr6fhZ3zeVMlC95Stw9lcU/AurQ8gSeYnDVseq49qRB7CuIizmkMCV8SMSk
+         VEQ0SesAHUyl6ap2plfJGJvaomSjUR4IkQpqeMLLRD9jGtzA2XkJ3o+YTRx6p5kLJeIL
+         v7gBuWhX2ePRYXac3w8HBwgmbdezqDQlK1SE+tHtL2wlHBEhtFF7V4LMuhqoPAWAlEgQ
+         rES3pJvKXM8jZnFi/otKJTiZOHU+xy/xV5wUjDtNW7fXkp0DENTPCnxxgC/5UW2++bQg
+         BA+bMogi4v/w/q0AXhjXEhwxC0442RKYHaQc8OwbRiq9WlU+xx4ijRZg8IPf45MRQhMA
+         u7zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708513627; x=1709118427;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=brEb9TnfGp5/yuMw230xLgH6JsFOFAcbGsSGw6+DLbM=;
-        b=E1toPIOsBQsZFSLUEhhZqztr1qLYs45CtQi3a7H92dAgmlseWkv9xKv3xAX5RzYfHf
-         /sjEsEj3nYkehnScXu0PqdVdsqKBZzXA5/v4xY+Qt200+Sztc2eWuj18pHEJmvbEIXnk
-         IS8n2EeiMbbbvG/noceTDOSODFiyHqBxO+NH3fgnm2j6jw2ePrnQEM6CKb8xqyGuRkYD
-         PnhX4Mwj9ZaF5tlMfEpueVVL884G3h98XgTu6X4I3RZfEOw3jS9aI93HbJo/fSMsst12
-         Ch4pJH/51ryQqu6/hvbeTJSMKYfJyPhG3ygKw2kEIMAzioy2GFmBUf7hGDSy+9aQ0jWW
-         7pIQ==
-X-Gm-Message-State: AOJu0YzYukE4EHUOi8danHqx4LkHiidQduXjLFr/1Dg1hJVkexVtcaqD
-	COZeN1i75Js2jdV1UhB8SkITAWii2b9zQtCDcKszC/KQ2eX1bwzqFn1qeJAtGsE=
-X-Google-Smtp-Source: AGHT+IFOfFUYOzmRcjcrUyMEhlZGMmrIiea4+cj0ZpJzxUHDRfvHzhLGB9dcIaitxNGbEeNYh65O8Q==
-X-Received: by 2002:a17:902:e951:b0:1dc:1b14:dc9f with SMTP id b17-20020a170902e95100b001dc1b14dc9fmr4338016pll.67.1708513626789;
-        Wed, 21 Feb 2024 03:07:06 -0800 (PST)
-Received: from localhost.localdomain ([114.103.193.174])
-        by smtp.gmail.com with ESMTPSA id ja12-20020a170902efcc00b001d9d4375149sm7873686plb.215.2024.02.21.03.07.03
+        d=1e100.net; s=20230601; t=1708513832; x=1709118632;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=G5L9NoyuwvA4Gf7LYh90rqEBr7lWC8KBnH4p5IN+MFQ=;
+        b=T6W8NOXT2wCiuEm7gmKWWG3NYSH8m2txf/jnVJnuZTF4vbwzGUh/ljgOxeieHKG2AM
+         FmUhv/xDMw18+Brm9I9t6UjCp7OXZ/ubLs8dPLFmdphkMrEvEXeC2PBf/qbggMte4r7+
+         ilM7hJsUsTVNsmG3CktXLSrCiDrdq/4wS4/6s3kc/B94yRix71m6fdx/o5eE1sy3I9N1
+         4u3/KnsEu/RMljMN4xrBetcUN0n8vUaNlRhQ1E9c6UF+t23q5vO+1Lcw5MI0DWh9KbvD
+         qjJaA9O/F+m6uZ7ldz2xUXUZ6DQQN4/q/KZBX/Xnn3LQfkOm47pR+A60eyYkYHqBzWel
+         n3CQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV14m2XQBMYwUxUTDE2YlWSK9LZcdMEFWqIystkuugPgOK9pCapZZ/UsJL/UPeqhg7V8ea7l8NuV1FEIlz50fG2It4NJPI=
+X-Gm-Message-State: AOJu0YyFa5Is9MjswqEF1UTa1i7WMyPVgrau7JNAtmfh/VBiov71e1zu
+	ouAFEDjsZiXb9AKHgt8dr8LzsSfLfwfSPOVkvI20h9TV2WYMuDdafWgW59/zoUs=
+X-Google-Smtp-Source: AGHT+IEHmqJXiGEszWIcBJwOe1/dTMQWWMygFC3Y1juPap31hfiRJ/+P0zYCmXOXO8UIXslmCNRgjw==
+X-Received: by 2002:a17:906:3bd0:b0:a3f:45b7:3af0 with SMTP id v16-20020a1709063bd000b00a3f45b73af0mr605988ejf.71.1708513831729;
+        Wed, 21 Feb 2024 03:10:31 -0800 (PST)
+Received: from linaro.org ([188.24.162.93])
+        by smtp.gmail.com with ESMTPSA id ts4-20020a170907c5c400b00a3e0119b4a3sm4958240ejc.140.2024.02.21.03.10.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Feb 2024 03:07:06 -0800 (PST)
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	jean-philippe <jean-philippe@linaro.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	baolu.lu@linux.intel.com,
-	"Zhang, Tina" <tina.zhang@intel.com>,
-	kevin.tian@intel.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: [PATCH v2] iommu: Fix iommu_sva_bind_device to the same domain
-Date: Wed, 21 Feb 2024 11:06:58 +0000
-Message-Id: <20240221110658.529-1-zhangfei.gao@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 21 Feb 2024 03:10:31 -0800 (PST)
+Date: Wed, 21 Feb 2024 13:10:29 +0200
+From: Abel Vesa <abel.vesa@linaro.org>
+To: Will Deacon <will@kernel.org>
+Cc: Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, iommu@lists.linux.dev,
+	linux-arm-msm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Add X1E80100 MDSS compatible
+Message-ID: <ZdXaJQ5AfOiki1l5@linaro.org>
+References: <20240131-x1e80100-iommu-arm-smmu-qcom-v1-1-c1240419c718@linaro.org>
+ <20240213131952.GB28926@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240213131952.GB28926@willie-the-truck>
 
-The accelerator device can provide multi-queue and bind to
-the same domain in multi-thread for better performance,
-and domain refcount takes care of it.
+On 24-02-13 13:19:52, Will Deacon wrote:
+> On Wed, Jan 31, 2024 at 02:35:16PM +0200, Abel Vesa wrote:
+> > Add the X1E80100 MDSS compatible to clients compatible list, as it also
+> > needs the workarounds.
+> > 
+> > Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
+> > ---
+> >  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > index 8b04ece00420..5c7cfc51b57c 100644
+> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> > @@ -260,6 +260,7 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+> >  	{ .compatible = "qcom,sm6375-mdss" },
+> >  	{ .compatible = "qcom,sm8150-mdss" },
+> >  	{ .compatible = "qcom,sm8250-mdss" },
+> > +	{ .compatible = "qcom,x1e80100-mdss" },
+> 
+> I think this needs adding to the bindings Documentation first.
 
-'commit 092edaddb660 ("iommu: Support mm PASID 1:n with sva domains")'
-removes the possibility, so fix it
+It is documented here (once it gets merged):
+https://lore.kernel.org/all/20240220-x1e80100-display-v4-2-971afd9de861@linaro.org/
 
-Fixs: '092edaddb660 ("iommu: Support mm PASID 1:n with sva domains")'
-Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
----
-v2: Instead of checking ret == -EBUSY, 
-    change iommu_attach_device_pasid return value from -EBUSY to 0
-    when pasid entry is found, and refcount++ when return
-
- drivers/iommu/iommu-sva.c | 2 +-
- drivers/iommu/iommu.c     | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index c3fc9201d0be..20b232c7675d 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -141,8 +141,8 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
- 	struct device *dev = handle->dev;
- 
- 	mutex_lock(&iommu_sva_lock);
--	iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
- 	if (--domain->users == 0) {
-+		iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
- 		list_del(&domain->next);
- 		iommu_domain_free(domain);
- 	}
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d14413916f93..a16ade93db25 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3551,7 +3551,7 @@ int iommu_attach_device_pasid(struct iommu_domain *domain,
- 	mutex_lock(&group->mutex);
- 	curr = xa_cmpxchg(&group->pasid_array, pasid, NULL, domain, GFP_KERNEL);
- 	if (curr) {
--		ret = xa_err(curr) ? : -EBUSY;
-+		ret = xa_err(curr) ? : 0;
- 		goto out_unlock;
- 	}
- 
--- 
-2.34.1
-
+> 
+> Will
