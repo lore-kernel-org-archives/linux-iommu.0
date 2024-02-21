@@ -1,163 +1,108 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f174.google.com (mail-yw1-f174.google.com [209.85.128.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52CBA17E1
-	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 08:55:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 432C945973
+	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 09:28:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708505759; cv=none; b=S9Iueyk7Kf2g6QuZWg1Vjcc3KgUsJwaHxUOdyPdO0X458YIQ1CR32xJvTadUFVhr2dYhF910JPev1gRTfIRAcARGjla5R8GJQB3GcryqbGyImFTnIYVJ4nMMt1y6m6W2HJAk/hj5n1BPQT3UM4EbS4m3+BykrE5SxncDPgMoszA=
+	t=1708507717; cv=none; b=LeUUBHb7E1Q8mKahmext5KiswM4oI/XZJhYAyP1S0tuMeL2v6BlB62hHpF4aRejyhaIaAM8tmODuoRR+3NYvOAxdyTK+NLt1JbS2pznqiyJy62IF05sLTdGcybGYnS5PCOtx3d3O2EP8f1shxPqVBb8zSrhtEXEGStIdv44D/YI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708505759; c=relaxed/simple;
-	bh=t0i7AUpWThgRz90yQislwVsOXiY5R5YW4Bm983CUoE8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=mj0dKMlTWBs++WFBlts5AA0gKH3ThMcxaSEUA7bQuEXdi+/ETYi3VknRrAR4F2Ri/HQrGyijDygNNT47af9LbkQMMoXpgNUi+JhQv1KRtsr24Frf9n/O0B2ftSvniMl+ybHVV1aVcQL1BP9vcNHXtG1kMbu/ETTA8/AYrZMYUN0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=eGgPG4d4; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1708507717; c=relaxed/simple;
+	bh=Hq8KJ6FUW+dUn5EF4x4k+Yc0eSHWRUNZYxQmVAAMYJc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=mo/XZQTQHiYSRLWeOMAnHoBCudeE134z05VwCPJsr9NVDC2h77pJ9Ryi8RME4HBMaYDEeZaRRTsNMtI3eC5bWg0s0QC7FRzIJ883uKK/vRPIGn5E9JaeY61Rnr+bwvUdDvQIuGKXiSuplkzml9bdo5BXWymNonGFd4YUhLbQXEY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UaX14ac6; arc=none smtp.client-ip=209.85.128.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="eGgPG4d4"
-Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41L1Ddqk022068;
-	Wed, 21 Feb 2024 08:55:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=Dh400oD5PMxWwz0r1DmS8UjX2c9zvWlF7BXlLVaLS2I=; b=eG
-	gPG4d4E4a3pt3DEYfWeKUw+o1V7KsSg/zjPcEov42OrMFqDYBiRpdcben/Lfg77c
-	kK7yhOv+W0ljd3mBvkHlT2tu3TKCDjt3IdYWsMXafeJZczFEmqegNaVY3wkRLHD+
-	dZVJuB7dVh7erMOlaasyzXGXKrebgydlaBz60VPYJUVG/Ze92eJNhaug7nDdSTO2
-	gsCnYq07ORVaChYtCMSKYpunzFUvslgnivBtgtEQbK/GXn9a9djbXSkkSYHkHefN
-	quLjExsnh7vhYjQrIPnEdIrzzI+PgUU0o7EH9rtCGxy1P9iMN8FPCGClZ3TsM/gB
-	4vN3Nh7lJ63c1qWkFzXg==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3wd22u1eu4-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 21 Feb 2024 08:55:43 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 41L8tfJ1009386
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 21 Feb 2024 08:55:41 GMT
-Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
- (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Wed, 21 Feb
- 2024 00:55:36 -0800
-Message-ID: <201fef09-50ab-436b-af63-4535c7510d15@quicinc.com>
-Date: Wed, 21 Feb 2024 14:25:26 +0530
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UaX14ac6"
+Received: by mail-yw1-f174.google.com with SMTP id 00721157ae682-6084165494eso26935117b3.1
+        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 01:28:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1708507715; x=1709112515; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Hq8KJ6FUW+dUn5EF4x4k+Yc0eSHWRUNZYxQmVAAMYJc=;
+        b=UaX14ac6LagcMj2sh/495ihZD9p42nUEZ6zD7bTc6lYaxJJr+OBtU0yMvCfa6V3MHT
+         TnS1qRg4Iuk56uOGMGRQKm3zTEVXj6GUBiZ/8BAvNC0TwfsM9vBaipWLvTYSUHNmGDJg
+         9cZ2Rs4Y7L9V0mqXSaUIgqyozXOtAvLOGxzcKm25Y5SaBrYXz6I8K+cq6i1IS2nqZeww
+         lYmYVSjl91byVydvonGdHvH5Wt+IV4vUybl2slrdKK9VLUFyoQxWJWd1es9i2IF+8qgm
+         jSv/glpjM2v8EeFkBxhOJOrtm5FkVhoXa7NjlSiTv36Jo/bGFDhPloBIeVb3+a2lclhB
+         vY0Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708507715; x=1709112515;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Hq8KJ6FUW+dUn5EF4x4k+Yc0eSHWRUNZYxQmVAAMYJc=;
+        b=qzrYa7p1iR2GtItIs+8aH04ZZjIRDJpIZrGm3u+VRx0hebiZdehCQQuxhsx+2FBhFK
+         5As+Kqs0R47tuEBTs2rlV2B0XIvvROiVBOjaDB+XJNALjkhzdCh9x80jrndvmPI/tMIV
+         +QxFg4QazuMqecTGcNtfjHphCSRnQ3x1GX41fg4W7rgIA2xfumaCCa+tKbekanXWFXRA
+         VgummsdtRY1XGWssuDFgSpwgNKuzhX5z1YWRnaf8rw0b1I7ZMUXIDiNRGAZ6AGK9LBi5
+         L5lKGi45JGKm2+WTp1KdLBT/mQiRxtrmtziNkm09uK51HwKANJ15ZWttzcDP60TgzcFL
+         0I+g==
+X-Forwarded-Encrypted: i=1; AJvYcCXsw0MOr8GbSftdm8Fp96K9Gm53dxDLGRKC0EjO7T2c1EKXsXM+S8oaCoPMWUT4Ts9iNl9ZqXVZwG1HUYvOQVLlMLpkgm0=
+X-Gm-Message-State: AOJu0YyXLCQiTqgvVqk87l9AwQNaUGxC1FgrKaVaSUVtEVzadUaF4dBq
+	CKtBwZY0Xiu0FkDqpdGBRZQ6BBBtZ06ff5+yUmhIk7/+z7IAegN+QxakvSlb1t+yYJgjClbxzos
+	fiLdUQ9A5AoVTcOuSI3zV4xaDqgK9WJSngx0g
+X-Google-Smtp-Source: AGHT+IFVBpH9fLue/cQ4cgz0WNF2n+3fm/CyQ+oI4lMHOKKC2JD3RQlkGlCDrGZ/wN8PXmrbUnhNrhpJUikMVBqoPdc=
+X-Received: by 2002:a0d:e8c7:0:b0:604:dd57:7845 with SMTP id
+ r190-20020a0de8c7000000b00604dd577845mr17964155ywe.2.1708507715007; Wed, 21
+ Feb 2024 01:28:35 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v9 4/5] iommu/arm-smmu: add ACTLR data and support for
- SM8550
-To: Will Deacon <will@kernel.org>
-CC: <robin.murphy@arm.com>, <joro@8bytes.org>, <dmitry.baryshkov@linaro.org>,
-        <konrad.dybcio@linaro.org>, <jsnitsel@redhat.com>,
-        <quic_bjorande@quicinc.com>, <mani@kernel.org>,
-        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
-        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
-        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
-        <quic_molvera@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <saravanak@google.com>
-References: <20240123144543.9405-1-quic_bibekkum@quicinc.com>
- <20240123144543.9405-5-quic_bibekkum@quicinc.com>
- <20240213134714.GC28926@willie-the-truck>
-Content-Language: en-US
-From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
-In-Reply-To: <20240213134714.GC28926@willie-the-truck>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: GH0YrLu6YqU4VmqqS0F4C2itO15lAgA4
-X-Proofpoint-ORIG-GUID: GH0YrLu6YqU4VmqqS0F4C2itO15lAgA4
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-20_06,2024-02-20_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- suspectscore=0 bulkscore=0 phishscore=0 adultscore=0 mlxscore=0
- spamscore=0 mlxlogscore=999 priorityscore=1501 clxscore=1011
- malwarescore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.19.0-2402120000 definitions=main-2402210069
+References: <20240208152808.3712149-1-howardyen@google.com>
+ <20240213055426.GA22451@lst.de> <CAJDAHvZGnzKPLaovRcq_Os1Fcixp2o1kY9GFV8VXztrmKahejQ@mail.gmail.com>
+ <20240220055241.GA7554@lst.de>
+In-Reply-To: <20240220055241.GA7554@lst.de>
+From: Howard Yen <howardyen@google.com>
+Date: Wed, 21 Feb 2024 17:27:58 +0800
+Message-ID: <CAJDAHvbOnAvW5f6oJUnuy2_5-vS7uJc13GQSNX_Nc25GJXSp-Q@mail.gmail.com>
+Subject: Re: [PATCH v3] dma-coherent: add support for multi coherent rmems per dev
+To: Christoph Hellwig <hch@lst.de>
+Cc: m.szyprowski@samsung.com, robin.murphy@arm.com, gregkh@linuxfoundation.org, 
+	andriy.shevchenko@linux.intel.com, rafael@kernel.org, broonie@kernel.org, 
+	james@equiv.tech, james.clark@arm.com, masahiroy@kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-
-
-On 2/13/2024 7:17 PM, Will Deacon wrote:
-> On Tue, Jan 23, 2024 at 08:15:42PM +0530, Bibek Kumar Patro wrote:
->> Add ACTLR data table for SM8550 along with support for
->> same including SM8550 specific implementation operations.
->>
->> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
->> ---
->>   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 90 ++++++++++++++++++++++
->>   1 file changed, 90 insertions(+)
->>
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> index 6004c6d9a7b2..db15b1eade97 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> @@ -23,6 +23,86 @@
->>
->>   #define CPRE			(1 << 1)
->>   #define CMTLB			(1 << 0)
->> +#define PREFETCH_SHIFT		8
->> +#define PREFETCH_DEFAULT	0
->> +#define PREFETCH_SHALLOW	(1 << PREFETCH_SHIFT)
->> +#define PREFETCH_MODERATE	(2 << PREFETCH_SHIFT)
->> +#define PREFETCH_DEEP		(3 << PREFETCH_SHIFT)
->> +#define PREFETCH_SWITCH_GFX	(5 << 3)
->> +
->> +static const struct actlr_config sm8550_apps_actlr_cfg[] = {
->> +	{ 0x18a0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
->> +	{ 0x18e0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
->> +	{ 0x0800, 0x0020, PREFETCH_DEFAULT | CMTLB },
->> +	{ 0x1800, 0x00c0, PREFETCH_DEFAULT | CMTLB },
->> +	{ 0x1820, 0x0000, PREFETCH_DEFAULT | CMTLB },
->> +	{ 0x1860, 0x0000, PREFETCH_DEFAULT | CMTLB },
->> +	{ 0x0c01, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
->> +	{ 0x0c02, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
->> +	{ 0x0c03, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
->> +	{ 0x0c04, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
->> +	{ 0x0c05, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
->> +	{ 0x0c06, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
-> 
-> [...]
-> 
-> Isn't this effectively hard-coding the topology of the SoC in the driver?
-> Wouldn't it better describing higher-level prefetch properties in the DT
-> nodes corresponding to the upstream devices?
-
-Since prefetch data stored in this table represent settings for the
-ACTLR register, and doesn't exactly define the hardware (So in this
-manner prefetch data won't exactly be a part of soc topology ?).
-So it seemed apt not to use the device tree for storing the prefetch
-property. Hence we reverted from the DT approach (initial proposal in
-RFC to piggyback on iommus property to store prefetch settings) back to 
-use driver for storing this data.
-
-Some drivers use the same approach for storing their platform specific
-data. Examples being
-drivers/phy/qualcomm/phy-qcom-qmp-combo.c
-drivers/soc/qcom/llcc-qcom.c
-These drivers were taken as reference for storing platform specific 
-ACTLR data.
-
-Thanks & regards,
-Bibek
-
-> 
-> Looking back at the prior revisions of this series, it seems like others
-> were in favour of this approach, so if that's the general consensus, then
-> so be it. But is this _really_ what we want in the SMMU driver? It would
-> be good to have an Ack from Robin and a DT maintainer on this mechanism.
+On Tue, Feb 20, 2024 at 1:52=E2=80=AFPM Christoph Hellwig <hch@lst.de> wrot=
+e:
 >
-> It just all feels a bit like a step back into the bad old world of
-> platform data to me, where we end up trying to maintain a bunch of random
-> constants that supposedly make things faster for somebody :/
-> > Will
+> On Mon, Feb 19, 2024 at 07:12:18PM +0800, Howard Yen wrote:
+> > I tried to upload the patch to support multiple coherent rmems per devi=
+ce
+> > because in some system, the primary memory space for the device might
+> > be limited, so that add multiple coherent rmems support per device to s=
+atisfy
+> > the scenario.
+>
+> I'm not sure what the means.
+>
+> If you have non-trivial patches you really need to explain why you're
+> doing in detail as you need to convince maintainers that it is useful.
+
+Thanks for the response, let me explain more.
+
+The reason why I tried to propose this patch is that in the system I'm
+working on, where the driver utilizes the coherent reserved memory in
+the subsystem for DMA, which has limited memory space as its primary
+usage. During the execution of the driver, there is a possibility of
+encountering memory depletion scenarios with the primary one.
+
+To address this issue, I tried to create a patch that enables the
+coherent reserved memory driver to support multiple coherent reserved
+memory regions per device. This modification aims to provide the
+driver with the ability to search for memory from a secondary region
+if the primary memory is exhausted, and so on.
+
+--
+Regards,
+
+Howard
