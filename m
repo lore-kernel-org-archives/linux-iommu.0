@@ -1,67 +1,67 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AEC286AD5
-	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 21:09:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD0D386AE5
+	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 21:11:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708549802; cv=none; b=Os0Zge4R6cM6BYZF5IRuAfoBUIBI5oTaJkj7U6+DkquvwxHPQXfTPjSW9GY8tDhxeAk6sg4KmzZlyIA/RuxoaDBaM9UX9ezcx9uZ0KJc4dfmStR5eQ/sC8pau0ytx9N5/m3xhAKxmu/HPqqLymsnzWzzzj4ELeX5PMa42PUU5xw=
+	t=1708549905; cv=none; b=iO6dpZTYfU6gV9CxuY98CPs/EWLvCue4Vz63EzoVj4BpBRx+ALpd631LTp5gYxCQ0Ues9hQJxAqBXOqFUk2d2zEWYNT8p0LSLzJdMyS654LGIV/ym2jmEARntE1zgd2TP68LIYlJAscC56l/e257tWQSeOPf1FQbspE9qgur4n4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708549802; c=relaxed/simple;
-	bh=6G+unPQpsnHPop/GA0eV3gHBK3dDdnNrDGYdK1/13VM=;
+	s=arc-20240116; t=1708549905; c=relaxed/simple;
+	bh=azPaND/xFc8atz8F6WN4yBES0vGIQl6FM+kHStQ3aX0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cQYdRMZAus0tZLOEHwO0e6lIYTo4ZvmnZmDK9Z1o1uQX+tCwv8JPurwN9mujf5EAFBKulObw2HUn5PZbKI3sKLgRyrb5gO4ZrNJ0YliQ0LBOjEz7OeH41n9Avws6/p2hotQSdDvQb+enFMgCo/qFBdVgrK3RQcH8Kt29JSTmVoo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=MA7hVp/1; arc=none smtp.client-ip=209.85.160.182
+	 To:Cc:Content-Type; b=rprGb9kf2k5fXWKekmIBRajjwuuRFe/Qne9BrbM9bBPOp2e7InfTsacqmLGhVyTayQ8aa5i4Qahl1cLDvCkWHJ8w+/VWk1OJWaRVOQHrkyyYa/KDUDR6NsPoObltA8CNH3V1pnGlj9eV1fjhPA3VkwA8U//vpty4ZV6S3vbJi3g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=D8EN61mf; arc=none smtp.client-ip=209.85.160.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="MA7hVp/1"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-42dd9dfe170so25674951cf.1
-        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 13:09:59 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="D8EN61mf"
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-42a4516ec46so2062531cf.0
+        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 13:11:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708549798; x=1709154598; darn=lists.linux.dev;
+        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708549902; x=1709154702; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6G+unPQpsnHPop/GA0eV3gHBK3dDdnNrDGYdK1/13VM=;
-        b=MA7hVp/1M+SYeqTHWUkzq05fDZlr0g/7WPe83qhTw7I1Aj5LdaUq4VASYgeadabCTn
-         FaZVhE9dq46L8aUQkZBy1MY/a+XDLCgyuz8u2kDY2Rxsk9nM1nk5ftxyGpUQJEXpzq/I
-         q9A+hK2NxslonK9B83QO7QbFpWhM1ilOPmNijURAUY8vHsxADln0FoyHSYKUX1SK40VS
-         7nYXy57x3MsiSLXEO0oBzSStjReHtfu7kU1rDmowNsPkILNiRORRWMhTmgT6J6Z0+jLP
-         DQ4z/QajStCsYPNjonIQVaX9D0gAQdzGiTEWrDt5o4XAD/4nK8t+cQWnRpOhTocvvdgl
-         UPgA==
+        bh=azPaND/xFc8atz8F6WN4yBES0vGIQl6FM+kHStQ3aX0=;
+        b=D8EN61mfnFFCkQMBLGepChjEknIVmI9iDRaJ824phkgQGP59tEMGfgP4oe1/aNjW7l
+         TYGaH7jD/DHj6fG9wNLQtgdY2THuEbrJFnO2w3SW4TcY+BPHj0R1TTFIaLQ2KDUwvLJt
+         b7YY4RA47Ew+vRPwr29j4BoFhdzScsE9VtqYeWlynW62G0KoksACwW1J65QObBjKNFBQ
+         ubZ3xMTU80KiKY51AwcOVlvRc4lHowH3F6aQXBSC9nGr5xQemlT+zmsiNDgQJRRsc3BM
+         6GPnak6VZOfmgVfOBTdFWwlBvfQDTOmLVZXjXbuuzIU0M+g2wnFn6YGRQ99QOGynNfAN
+         wWwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708549798; x=1709154598;
+        d=1e100.net; s=20230601; t=1708549902; x=1709154702;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=6G+unPQpsnHPop/GA0eV3gHBK3dDdnNrDGYdK1/13VM=;
-        b=Unh6kj/o9zeMtIWrBoJtqXv+yaxqvi9Ll0doV9uvTTgddYmK2JpaebX7PZIdSMJsAV
-         vvay1nhgBogJwvu71b+2ZLOM4B9uLaDBG6sdPc9rdb0qjaz5To31ahxOi7Vy0jc/ek90
-         UCYYCfia6fmTIDRl82DIFK70+rjfaehMEofmHBcS6LGwkbVDneJx8AcUu6uOm1HNRsLb
-         7M+05cGGOqXk0CIXT+iJeveH934LtxBNojQc1OMJZgYflPZgaasAXCGtIBQ/sKY8rcjq
-         it61HGzyLCgisrupwJe6yyN9Uo/dNllnfcaoRWch1NNPrXPgCWYljqUtbOCVGY0tk/NC
-         dpYA==
-X-Forwarded-Encrypted: i=1; AJvYcCUYvv9ZxcZSLRFvuTW0OBIQad7w/jdUrHiMR0OAzPsnAKUqbVBe//vYUgF2DR8eQfFR+aa09NxFpq7OBAnMwqrVLBu++Uk=
-X-Gm-Message-State: AOJu0Yz+85fOp81wDzJEjM4eveDAfoDbk7PDWvBw7xSfr4TAfuhhVyE+
-	Zuao0o7XfmYJG8MaF1V4m7qTYp1G5SGi0q6VRZgFgw6t9E3k6ucjtI8OEhHlMw45QUIw2SmS1AX
-	Nqt9ZB9OnG0y7TUzEORdOtPdPvH0SncxqyW47yQ==
-X-Google-Smtp-Source: AGHT+IFbNMG/eKGQfBxsEnoPFbDK6eYpGm1SWVL/cnzGi2c/1PCKaMW3zu0j9J+G8MGsPPZg33mj4TrwQBKh2/fVuMA=
-X-Received: by 2002:ac8:5f06:0:b0:42c:3b86:acb7 with SMTP id
- x6-20020ac85f06000000b0042c3b86acb7mr18725477qta.39.1708549798307; Wed, 21
- Feb 2024 13:09:58 -0800 (PST)
+        bh=azPaND/xFc8atz8F6WN4yBES0vGIQl6FM+kHStQ3aX0=;
+        b=nSldoxbB1TmYx/dGsqPxNODKbd8aqPmXFiitLvOmhj1n9OQMEspxUl3RLCE1kmvBX3
+         I6U/BtXHfhsLeqg9BmTrJj+vF+Zcg+FgqMYZZLp7gnbwU29DiserrY322EzrQJEDqA3w
+         6fk+dkrfN7phyRWt/rnlJMV728RF8JTUks874S6eEt7wP1ysFsSEre3N9JmX5gSySj/L
+         NmJvP4gYQal1vks1P3TdIJpuO3jJjSTqg60WUFTcZH0kuze+m8hbwdARLJVKKda4F8R+
+         BRpVDNvsp3dvOPOLgWkxKNxIZHuQffp3+RDXukF2sTfyk3xq5C45vHWh3suQHPWs69XJ
+         MEZw==
+X-Forwarded-Encrypted: i=1; AJvYcCUYHI4RalxXsav5dKAHj/A9aXAFqRkqymF52TMc/TwODUFC7Gblzrt239zwhJp0tf8UtuU8cRlJStpLBEin4JBIu7KH7LM=
+X-Gm-Message-State: AOJu0YxjO/Tebr7dwy+mORxzJ61q4GxSSl6maGLjNsCd69dBdYLUjU8k
+	9AXj5t4Y1Iw51+k99EHHOqyrZ0BVW/zFhlVGqCx87bj3rX27YqsQ0ezY2FGmOY4qmDXFnpKACgq
+	A0TEf1kACWrlFsgT1lDTPGRpTKn27Zyus9/yDbw==
+X-Google-Smtp-Source: AGHT+IEHXmwL8Aza8YxstZPNawifsEoPmvz+hNBFt6a/ALIjCAdVsEQDIakNnjXyrMZE7cImyXSV0z0ORZ0TJZY1zT8=
+X-Received: by 2002:a05:622a:1a0c:b0:42e:3f7a:819b with SMTP id
+ f12-20020a05622a1a0c00b0042e3f7a819bmr1401231qtb.8.1708549901753; Wed, 21 Feb
+ 2024 13:11:41 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-2-surenb@google.com>
-In-Reply-To: <20240221194052.927623-2-surenb@google.com>
+References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-3-surenb@google.com>
+In-Reply-To: <20240221194052.927623-3-surenb@google.com>
 From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Wed, 21 Feb 2024 16:09:21 -0500
-Message-ID: <CA+CK2bC-uMw6hSNRCeWQjKDihd7=fd01g9VyQ_Y1iRwcq0LAaw@mail.gmail.com>
-Subject: Re: [PATCH v4 01/36] fix missing vmalloc.h includes
+Date: Wed, 21 Feb 2024 16:11:05 -0500
+Message-ID: <CA+CK2bAs4t1UhLBahnG9GmFYgW2KxdO7PZkPwD4Wbv7oE+aMhA@mail.gmail.com>
+Subject: Re: [PATCH v4 02/36] asm-generic/io.h: Kill vmalloc.h dependency
 To: Suren Baghdasaryan <surenb@google.com>
 Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
 	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
@@ -90,16 +90,17 @@ Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 21, 2024 at 2:40=E2=80=AFPM Suren Baghdasaryan <surenb@google.c=
+On Wed, Feb 21, 2024 at 2:41=E2=80=AFPM Suren Baghdasaryan <surenb@google.c=
 om> wrote:
 >
 > From: Kent Overstreet <kent.overstreet@linux.dev>
 >
-> The next patch drops vmalloc.h from a system header in order to fix
-> a circular dependency; this adds it to all the files that were pulling
-> it in implicitly.
+> Needed to avoid a new circular dependency with the memory allocation
+> profiling series.
+>
+> Naturally, a whole bunch of files needed to include vmalloc.h that were
+> previously getting it implicitly.
 >
 > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 
 Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
