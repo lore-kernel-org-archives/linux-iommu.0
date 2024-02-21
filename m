@@ -1,67 +1,67 @@
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F7B9127B66
-	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 21:26:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1541612DDAE
+	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 21:31:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708550772; cv=none; b=FTey7KmrvjAVJh0GWIA/iAACKFTehjaqkG6jVQ7VUbAfQjXcEz3yFZbpRkc19ikjAvChVQKh5+njmz5f2WTvLLqidOKKUViQvgouh0Mm4+acLSyGLv07N//PN6WHLn8acbqJr5gRL7UTbVdmGOeafVo2WVagTQe/dV/9P38/gj8=
+	t=1708551078; cv=none; b=TP4sykl8oEXwGV5kO4Pfhbi+SoOaSRziyDWqWy022ZXtL3FufwVYc6MCRMCG7BRmB6s8m/J0Pq6wTaCXKO8XNnlVPHJ+w9yrr5ZPmrPwaEp2vsXjn1N9rfvd1DYi3mMCYNE1TO+kvbksJAG9FwRKJ4mi5C/ZczRsX0xerpggp70=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708550772; c=relaxed/simple;
-	bh=1oEaHzezRAll9SQ0JkGYVz7chMh/UI28PlbGaomS6oA=;
+	s=arc-20240116; t=1708551078; c=relaxed/simple;
+	bh=gFsioKErNguGb0UXfpCehO3mOIaCj+gYffuxZggc6lc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=od/4CsoH25+uzb1jga9caGMhrMXN9ocRP5FYj2RsQ1UC1QumB4UaxTitnl+kqkrYaSXLvwfHy06YtbRTFFxq+rp78ZMmyGqTCXLrjkkQXJHPgXKd3WSQ8uJiEvXcfdji1g++EcSX/cj4Dg8FBsDwtNMGGJfzimYIjQQXlB6ordE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=3KVby3fA; arc=none smtp.client-ip=209.85.167.173
+	 To:Cc:Content-Type; b=KbaF2rCs4sC8dGm2pKQ0N778AIG+sRlOo9Nc2yPRHK4A6bQOVWK4I9PM7QF1Zbkud2aqT9s7H5BQJTZlvQj6CCpKTQ7QdWr3UdzLjRtX1/bapBSvZZfNkcEguTIoRnnfeaB4e4GDG/pG5BwFvOjaVAmBkvnxIjuTeOkJDCgfKm8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=vSxPNhbL; arc=none smtp.client-ip=209.85.160.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="3KVby3fA"
-Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-3c16ce3eea8so428799b6e.0
-        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 13:26:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="vSxPNhbL"
+Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-42e323a2e39so1644721cf.1
+        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 13:31:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708550770; x=1709155570; darn=lists.linux.dev;
+        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708551076; x=1709155876; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=1oEaHzezRAll9SQ0JkGYVz7chMh/UI28PlbGaomS6oA=;
-        b=3KVby3fAm6SfnPZyADIZY23vAaBUa8gO7nVKmX6XcgjOEpDFlmEr1oIPepzJPSIGW9
-         CeJfin5bfBzGIMDIJ9Sfo97/a6QeJ+R6w5J3QsXmX80O8dMPb39SeIAU3lt0hVRzCGVt
-         Q3zMC8hXskNFGWAe3Ych5/w9mseqInb3KYw4bH4cdhhNzYTHkZkJbPoBJM2z9qU/IQSo
-         brvsurhC3jke+kisnUZdeqWp5/F77v9W0CTOpL+OzjFf4uH14UzGLf6iPqGBymqgEg7R
-         zzQoy5vu9CoLFIZigBvI66aEPeIpFaDsgfbW4SGLYWkVo49s6opI7JV0gt/B0PIdMXxC
-         bJTQ==
+        bh=gFsioKErNguGb0UXfpCehO3mOIaCj+gYffuxZggc6lc=;
+        b=vSxPNhbL4eB9J5weJ6eoTni48VB83cBJdxbH6CzyYsTsa0JrCeQwbZAm8a/FXhjoUd
+         qbVOdkPixB2k17wB+0eBFUHW6r5e+OFdtIS/0lOsL1SifrmtZA/gEoMB4FYZPy3GmSlQ
+         u8jrOCO/Kw6kWRZuuPmjoJU+Eth81JGtnZgI803R/ux2VmZuZVm8XTKpqhgwP5C0tdQ0
+         wtj/Nei0GCnkM2f90r4Z5ERG2m/HcnHqdEoAMPuhojLonc3gJDqkwsz8X3Rc/G39Z0J/
+         zwejnhAL+2rm944vkhJkGgW4e1yEQtcUJ1GvF83aPaROcrjDIHf+Kl8V4CYU71heUkIi
+         ZmMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708550770; x=1709155570;
+        d=1e100.net; s=20230601; t=1708551076; x=1709155876;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=1oEaHzezRAll9SQ0JkGYVz7chMh/UI28PlbGaomS6oA=;
-        b=mINPSPDy0UF0lljgDqAibGRjqCko/ym2FXbF8bz4QfCP3qUz9GpRL0wm512HJ8wTyX
-         HOu9qf7FKxC/WOLFN+MIORT/+WuZadd6UsCgG2FGGAqJ1DJtYa0KlkgVP2HPGHTk9MNY
-         YvBmXe+JZiRkarf8RAuppTxWy3h9OTv5CCroXD7UfV1rcCWQMVmJTyrRi++wpcAA46FD
-         8Gf9hUgMDjitzoQmmvcC5vfmbSZffpJvTCMPyW9baAKNeyFuK8tjdC/MhHjFUVCf5Qs6
-         0kgoZa6TyvKzrU7w8dZlrlBH9vCdXypownwQNydyc81/mKTfaWnHQX0cZ5YNwy0bc6Cx
-         5k5w==
-X-Forwarded-Encrypted: i=1; AJvYcCVwY12P9nC3OSPHUg5ORoFvI//5EJlt3GIfPfIgRc+5uGQriX3LLZ2u3N1AvIUE80kZr9Vh5TfiwNKFSkWTPxwPzYGFFRE=
-X-Gm-Message-State: AOJu0YwbtxuzeCMUW8J8XpvRgl7aoFzBWV5UA533iW7+zZMmgT/z1P0p
-	fYvtsg2BF1iS+27Q//Ow8nRIyvEhBScuaAIAkwynOrHc9VN/LlzjsUhuM8bOpIc28Ljog7C7jEz
-	tOTPjXr0jF805M5+VAHkT0Hm5DFc/bpYwrEqBWw==
-X-Google-Smtp-Source: AGHT+IFZSNXNYlAy0AiXEzXx4upknBW0nGNBljw/bbiwmtTqAeSgHzhF6z+ApQTHTR9DUqPj2ju2fMwMSbPw53G4Luo=
-X-Received: by 2002:a05:6808:1208:b0:3c0:3d12:2002 with SMTP id
- a8-20020a056808120800b003c03d122002mr24802049oil.13.1708550769929; Wed, 21
- Feb 2024 13:26:09 -0800 (PST)
+        bh=gFsioKErNguGb0UXfpCehO3mOIaCj+gYffuxZggc6lc=;
+        b=QcI4ne3PYpnbF1YTqeANZ+qqHdFeEp5lkQDQ9B31W7iVbpulS26xa/3thi9Glz3tKP
+         1Ez6k1wE1YClehGOXODoNkq4X5wDbv9JbNfJwaPt/fzkFRN1RFuk0MQtTjS2lAi/UGzT
+         L0g+aNjOn2NPPlghB5ZB22YM1FqE5fPiXkNfh30XOZ63OGLQLkOOOTaP9aemAfro2R05
+         SDAb/nhw33MUunccsj4SFxOoBwt+tDNv9A7VUSh6ZjCoOKBfVd6nZcJbLRkq1oxv9HRk
+         HuJgLTH0E/4BfsQa37Om3YnAkRRiwmGNWlPzb1xLyLluEG32T5yiLTjk5X0E+1VpDfXS
+         xx0g==
+X-Forwarded-Encrypted: i=1; AJvYcCXYe8lzdHfLjFG/P1okuw3L0jWVNMJ4/awzr0jovhzpFM3wi7B3XRvSkjegYw64paOlkc1tPvllUBRjJkTabblRC5gN/4I=
+X-Gm-Message-State: AOJu0Yx3eLvM1dg6ll5WI4i4yVMWJQNZu0VxH+skGI6hT6akev9BJpb0
+	A1W9RVWn7xh0BHycIChgcmiRQNz7K4zzm2c46gYO1TfL+nUcx75ZZZkw9QHW6RMZwGsmeMQycJ2
+	wsEV7XhWJyjDjih+uq10feVyTB0VdaExRFX/aZQ==
+X-Google-Smtp-Source: AGHT+IFO5Z7BsmHAefImdCXlOf9v/A1DymY9rKzrFG6F8X6fIh9MpYHyGC/yHJX92pP0BH/FzDecR0AIIxui9aAjnNM=
+X-Received: by 2002:ac8:570f:0:b0:42c:78fd:e4fa with SMTP id
+ 15-20020ac8570f000000b0042c78fde4famr1316065qtw.32.1708551075946; Wed, 21 Feb
+ 2024 13:31:15 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-7-surenb@google.com>
-In-Reply-To: <20240221194052.927623-7-surenb@google.com>
+References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-8-surenb@google.com>
+In-Reply-To: <20240221194052.927623-8-surenb@google.com>
 From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Wed, 21 Feb 2024 16:25:33 -0500
-Message-ID: <CA+CK2bDX7v8+NHi2ioxQ4KF+vBYA0JhR3=Sj6ZxBS0jD7i2Gmw@mail.gmail.com>
-Subject: Re: [PATCH v4 06/36] mm: enumerate all gfp flags
+Date: Wed, 21 Feb 2024 16:30:39 -0500
+Message-ID: <CA+CK2bDOiV8xwig1pDdTVjkO4KhK+jJ0wXAtNon1ZXQGviih4A@mail.gmail.com>
+Subject: Re: [PATCH v4 07/36] mm: introduce slabobj_ext to support slab object extensions
 To: Suren Baghdasaryan <surenb@google.com>
 Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
 	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
@@ -86,19 +86,19 @@ Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
 	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
 	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
 	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org, =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
+	cgroups@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 On Wed, Feb 21, 2024 at 2:41=E2=80=AFPM Suren Baghdasaryan <surenb@google.c=
 om> wrote:
 >
-> Introduce GFP bits enumeration to let compiler track the number of used
-> bits (which depends on the config options) instead of hardcoding them.
-> That simplifies __GFP_BITS_SHIFT calculation.
+> Currently slab pages can store only vectors of obj_cgroup pointers in
+> page->memcg_data. Introduce slabobj_ext structure to allow more data
+> to be stored for each slab object. Wrap obj_cgroup into slabobj_ext
+> to support current functionality while allowing to extend slabobj_ext
+> in the future.
 >
-> Suggested-by: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz>
 > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> Reviewed-by: Kees Cook <keescook@chromium.org>
 
 Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
