@@ -1,53 +1,53 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
+Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00C6A1FDD
-	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 01:28:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 488A26FB2
+	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 01:53:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708478902; cv=none; b=tvM5ffj9vE6r4oGef0y0EnWxpye9nuwE2hi0XmrsUQaBv6FYw9ydXfzyEXY+AjNmphgUR9asmHl0Z02kXdlwAOTRBcPGoYnu3csQ2AfTiPolOkxxOgy0hAC4/+0bygCNlxohBc6IIGSTzXWvWZ4fqwGWBxBndhkmwuMW9jBdDMc=
+	t=1708480430; cv=none; b=Bqm/hyax7WNU/mjeBqVp0VijWMpEFx9DQkzJF12tJwSxGdvMRx/AuUwtygPO8ModgXBTdIq5/t0cnF3VOXpZWdMZ5RSE+SSQ0EZE5dWN1+wBpggDvit5ozhnXKUzlztoPbmxIBYy5xy1xZNoA3Oq3L33mx8fdH1mHzPZG2ZG1e8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708478902; c=relaxed/simple;
-	bh=miuWVSUfiT4bw6c4HADcYw+Oa2GyLFZkBZGaNA1iiHM=;
+	s=arc-20240116; t=1708480430; c=relaxed/simple;
+	bh=X7DS4AxqZmwIGaiOTbhL7uSmpzpJXN4zPisSmEhXWzw=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cq3PYLwP0qverrstVK3QwJ9uQ4GoRY0cCEunfz6a7OXjdbWODOjIxqzbULdIXY2lTuD47LpTPzVUI1Bm6rhfMhEYI+Bv06aHjhfunFyeotynXf+3cntWMqpo/Z1t/F3fubzRg1Aq8w9K3RfFaQuhz1QCk9Dm6I87oyVHUjbWzSk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=V8cmCq+7; arc=none smtp.client-ip=209.85.167.53
+	 To:Cc:Content-Type; b=Ylo8lfogLL4ptGzw+j4LzQpp/Je3yuPQXI/fTVj3WtlhoL2p3mNlmGjAGJibhwioYhVvGYukorxPAzaLF1fmdRgp16snHyFz6raOZfVRj6sFdm9xAEBqu9SJJtOwAC53mYpuu9HUcGuKvo0vnbh1iy76cdk751XIUg+OTPhQ2qo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=vX4WYXeI; arc=none smtp.client-ip=209.85.167.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="V8cmCq+7"
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-512be87a0f3so105308e87.3
-        for <iommu@lists.linux.dev>; Tue, 20 Feb 2024 17:28:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vX4WYXeI"
+Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-511976c126dso151467e87.1
+        for <iommu@lists.linux.dev>; Tue, 20 Feb 2024 17:53:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1708478899; x=1709083699; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1708480426; x=1709085226; darn=lists.linux.dev;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=nYNt1GrpQrtFfSNviDmfzHNLw/OwvxTSzUWQXin35bs=;
-        b=V8cmCq+7jweGbpZ7qXTvpg4g16GouRM2YhZmyfVxv2LfIhdgQYZ0NY97hmAw5b5hnz
-         huSzn2Xgxg70RxpM+4ZrvxC79Vvc9//zWtW52I8H22GfmMSEXhfTb0L5UKJcN/q2IulP
-         mKxVyjGs1xd3TOt5iW2a1cJX6eDeJh9kzoKb80MstvEqW66BYPx40CrBQ3ET/dZ3/WAP
-         SGpFRDguP2pGArNqJefB8B/kKlvi0eYmACTozgKVknQ21YhE5SiDIVXtqp0+QhNiz64w
-         VeOpkOet6Se14dTfdEKd6hrPTqG4yqywgHEl7OKH8R8w5vnuFosDGMZvofMT7iQ7MgMG
-         TFTw==
+        bh=xNv57wTrROpvBu7D7eRkAMBX/0S6ivveyoxRqXbvKXQ=;
+        b=vX4WYXeIvLoLQXUzCUTXJaE4e8uuVkxdfRF++mnxtJG6hLLcLAsIPnBW10bU3n1k5P
+         E6tRELbL2/jlWyo/auIIVNildlqYFRX+hvWLkW96xETQq8gVdFdKzPEfjKHPuCMgVLS8
+         k9J8nKaL3cL+PrlDp4waLN4fc5CsInma4apxekn60TreWUYG9lytEXomV+Ihkk2a+XYy
+         NYL/UQ/BUv70sXLxfVO6iGrr9Rzm2Lhiaa8/D4XtaAjbp6yjZ9pBsU6A1Gjoij0XIAOv
+         VzUpyiOcxoaCMdHFxdRoU+Ku4hHDu1oV8wPSTQD8exrO04lsFgJJfAH+NhBtgYFF1pYJ
+         c2vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708478899; x=1709083699;
+        d=1e100.net; s=20230601; t=1708480426; x=1709085226;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=nYNt1GrpQrtFfSNviDmfzHNLw/OwvxTSzUWQXin35bs=;
-        b=J9jhX1s7y/InF/xJWV3dERRypBXglBOKeu4lBXjhGMkXwY8HrFk6L5Lg6GIIBlzbpw
-         YAhrw5EnThx+MUJ1b4SRX+s3GtuAFIzeHrD7OzuBtQKsocQocCyDS6sEXV6MDzhYXSnh
-         mBqblmzm3c9ZtESSaIdWkBZBnGca0oN5uK+3nOtxXvnDdtidgKRILo/hIAV0qCl99I01
-         8Frt7tZGHom23NKQ+1gFFqr6xXTmMkOAdgQ0Kxa1TH3IN/Q++M28zdAbKbuQCaRWcjuK
-         vS1/kJqvJDqSu08EGhm2LVrdd7f0NrvBV/u2BnnvExkzsWfsywUpaKXhcfCzr5rLI87B
-         e+jQ==
-X-Gm-Message-State: AOJu0Yx1n9fI+e4ccY64wfa9Ekoa75I283JSs6d2IaOsFrHhkJ0YsXci
-	+6YG5+0M+aGis7ZSRYeNAWVI8YhV94Ur6CUdlYC3CYkcctWCsHqmeDyGllex62c4oyRJj+ir1B6
-	MYCbmMk2vgzSpmYoInyQWPV/2k60D9qW2VcQjmw==
-X-Google-Smtp-Source: AGHT+IG8/gJasXhBJ2zg0xGRCx11CYH9J/kNDUlx5W2Eb78PnwLX0tpjO++0WDuEDCY9bmuAJPyB5zfkGRNFRAFqE30=
-X-Received: by 2002:a05:6512:3e6:b0:512:ba41:51f with SMTP id
- n6-20020a05651203e600b00512ba41051fmr3710314lfq.50.1708478899197; Tue, 20 Feb
- 2024 17:28:19 -0800 (PST)
+        bh=xNv57wTrROpvBu7D7eRkAMBX/0S6ivveyoxRqXbvKXQ=;
+        b=lKZUSe7dlS4dMTl8J3dbZ1ANupMvKPmxhOxukqE0hF4+kJeHVITgalfrU1R1K8gaG+
+         704H0fbpDV5Sbc57bJd6S0TfY/6YBWtS8cc70OFVVuHbEAlklXinw+8q929f7jCGt9dy
+         Q5Nt+R7RfAG9oyOb7GvaWA7rrcVcdT4FXArwlUxPhw/22U9YmJvdtnxgRxsFgoTgRoUV
+         sHN8lwSlO8eZE+h1rrC2PvukwjH+j67s7q6mG5Il7ewCmxaEeG8TtJCh26vLmTSRvRm/
+         34bNi77BGr65oWe1bTmfiD06OPZE3TysOL51Sb7ONEuuaKV9vXOdO5FLUFfhmh/yFFWZ
+         TP2Q==
+X-Gm-Message-State: AOJu0Yz/L6FYAfpuIgIJxYKaAlW7w9WyMxSvqw4AVWobfucxaO7MzLte
+	kE9rcS8BExDp4gk9T4pH/8rddsQm1QpBf2PbzdBlCW8Oz9EHuYBnaZeVblMpkrQIff8Ui6xg7Wt
+	JKr+uVC8dVy0t6sVXB87E9kI7vZ7xiD+IMAp3l2sj8JAA1ILODV93eLQ9RlE=
+X-Google-Smtp-Source: AGHT+IF7gRjr9Hk5fW6BUGGbPQ45tQ34I5uYoYOH7wMtdjE5w7kHEwr10LtY/FMpzS+Tfzw5d9v8DCNbOYESwUeLQKk=
+X-Received: by 2002:a05:6512:2021:b0:512:b041:d6cc with SMTP id
+ s1-20020a056512202100b00512b041d6ccmr5213332lfs.29.1708480426340; Tue, 20 Feb
+ 2024 17:53:46 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -57,10 +57,11 @@ MIME-Version: 1.0
 References: <20231027000525.1278806-1-tina.zhang@intel.com>
  <20231027000525.1278806-6-tina.zhang@intel.com> <CABQgh9GWcqUeBkHQCpj5tzu6FnEgpOp3KOQ6s9c0X0KU7Ov1qw@mail.gmail.com>
  <MW5PR11MB5881C5CC15452017867B412889502@MW5PR11MB5881.namprd11.prod.outlook.com>
-In-Reply-To: <MW5PR11MB5881C5CC15452017867B412889502@MW5PR11MB5881.namprd11.prod.outlook.com>
+ <CABQgh9GxQmGU2HR73bSoZLuf4XZFhThXwUs_HJx6KwxDmXrXgg@mail.gmail.com>
+In-Reply-To: <CABQgh9GxQmGU2HR73bSoZLuf4XZFhThXwUs_HJx6KwxDmXrXgg@mail.gmail.com>
 From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Wed, 21 Feb 2024 09:28:07 +0800
-Message-ID: <CABQgh9GxQmGU2HR73bSoZLuf4XZFhThXwUs_HJx6KwxDmXrXgg@mail.gmail.com>
+Date: Wed, 21 Feb 2024 09:53:34 +0800
+Message-ID: <CABQgh9HTH9Utx1CGfni42VykJAFDoYChVbucSA0tmCpeV6Wpxg@mail.gmail.com>
 Subject: Re: [PATCH v10 5/6] iommu: Support mm PASID 1:n with sva domains
 To: "Zhang, Tina" <tina.zhang@intel.com>
 Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
@@ -72,66 +73,91 @@ Cc: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
 	Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="UTF-8"
 
-Hi, Tina
-
-On Wed, 21 Feb 2024 at 07:58, Zhang, Tina <tina.zhang@intel.com> wrote:
-
-> > >  struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct
-> > > mm_struct *mm)  {
-> > > +       struct iommu_mm_data *iommu_mm;
-> > >         struct iommu_domain *domain;
-> > >         struct iommu_sva *handle;
-> > >         int ret;
+On Wed, 21 Feb 2024 at 09:28, Zhangfei Gao <zhangfei.gao@linaro.org> wrote:
+>
+> Hi, Tina
+>
+> On Wed, 21 Feb 2024 at 07:58, Zhang, Tina <tina.zhang@intel.com> wrote:
+>
+> > > >  struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct
+> > > > mm_struct *mm)  {
+> > > > +       struct iommu_mm_data *iommu_mm;
+> > > >         struct iommu_domain *domain;
+> > > >         struct iommu_sva *handle;
+> > > >         int ret;
+> > > >
+> > > > +       mutex_lock(&iommu_sva_lock);
+> > > > +
+> > > >         /* Allocate mm->pasid if necessary. */
+> > > > -       ret = iommu_sva_alloc_pasid(mm, dev);
+> > > > -       if (ret)
+> > > > -               return ERR_PTR(ret);
+> > > > +       iommu_mm = iommu_alloc_mm_data(mm, dev);
+> > > > +       if (IS_ERR(iommu_mm)) {
+> > > > +               ret = PTR_ERR(iommu_mm);
+> > > > +               goto out_unlock;
+> > > > +       }
+> > > >
+> > > >         handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+> > > > -       if (!handle)
+> > > > -               return ERR_PTR(-ENOMEM);
+> > > > -
+> > > > -       mutex_lock(&iommu_sva_lock);
+> > > > -       /* Search for an existing domain. */
+> > > > -       domain = iommu_get_domain_for_dev_pasid(dev, mm->pasid,
+> > > > -                                               IOMMU_DOMAIN_SVA);
+> > > > -       if (IS_ERR(domain)) {
+> > > > -               ret = PTR_ERR(domain);
+> > > > +       if (!handle) {
+> > > > +               ret = -ENOMEM;
+> > > >                 goto out_unlock;
+> > > >         }
+> > > >
+> > > > -       if (domain) {
+> > > > -               domain->users++;
+> > > > -               goto out;
 > > >
-> > > +       mutex_lock(&iommu_sva_lock);
-> > > +
-> > >         /* Allocate mm->pasid if necessary. */
-> > > -       ret = iommu_sva_alloc_pasid(mm, dev);
-> > > -       if (ret)
-> > > -               return ERR_PTR(ret);
-> > > +       iommu_mm = iommu_alloc_mm_data(mm, dev);
-> > > +       if (IS_ERR(iommu_mm)) {
-> > > +               ret = PTR_ERR(iommu_mm);
-> > > +               goto out_unlock;
-> > > +       }
+> > > Our multi bind test case broke since 6.8-rc1.
+> > > The test case can use same domain & pasid, return different handle,
+> > > 6.7 simply  domain->users ++ and return.
 > > >
-> > >         handle = kzalloc(sizeof(*handle), GFP_KERNEL);
-> > > -       if (!handle)
-> > > -               return ERR_PTR(-ENOMEM);
-> > > -
-> > > -       mutex_lock(&iommu_sva_lock);
-> > > -       /* Search for an existing domain. */
-> > > -       domain = iommu_get_domain_for_dev_pasid(dev, mm->pasid,
-> > > -                                               IOMMU_DOMAIN_SVA);
-> > > -       if (IS_ERR(domain)) {
-> > > -               ret = PTR_ERR(domain);
-> > > +       if (!handle) {
-> > > +               ret = -ENOMEM;
-> > >                 goto out_unlock;
-> > >         }
+> > > > +       /* Search for an existing domain. */
+> > > > +       list_for_each_entry(domain, &mm->iommu_mm->sva_domains, next)
+> > > {
+> > > > +               ret = iommu_attach_device_pasid(domain, dev,
+> > > > + iommu_mm->pasid);
 > > >
-> > > -       if (domain) {
-> > > -               domain->users++;
-> > > -               goto out;
-> >
-> > Our multi bind test case broke since 6.8-rc1.
-> > The test case can use same domain & pasid, return different handle,
-> > 6.7 simply  domain->users ++ and return.
-> >
-> > > +       /* Search for an existing domain. */
-> > > +       list_for_each_entry(domain, &mm->iommu_mm->sva_domains, next)
-> > {
-> > > +               ret = iommu_attach_device_pasid(domain, dev,
-> > > + iommu_mm->pasid);
-> >
-> > Now iommu_attach_device_pasid return BUSY since the same pasid.
-> > And then iommu_sva_bind_device attach ret=-16
-> Sounds like the test case tries to bind a device to a same mm multiple times without unbinding the device and the expectation is that it can always return a valid handle to pass the test. Right?
+> > > Now iommu_attach_device_pasid return BUSY since the same pasid.
+> > > And then iommu_sva_bind_device attach ret=-16
+> > Sounds like the test case tries to bind a device to a same mm multiple times without unbinding the device and the expectation is that it can always return a valid handle to pass the test. Right?
+>
+> Yes
+>
+> The device can bind to the same mm multi-times and return different handle,
+> Since the refcount, no need to unbind and bind sequently,
+> The unbind can happen later with the handle.
 
-Yes
 
-The device can bind to the same mm multi-times and return different handle,
-Since the refcount, no need to unbind and bind sequently,
-The unbind can happen later with the handle.
+With this diff can solve the issue, what's your suggestion?
+
+@@ -88,10 +94,12 @@ struct iommu_sva *iommu_sva_bind_device(struct
+device *dev, struct mm_struct *mm
+        /* Search for an existing domain. */
+        list_for_each_entry(domain, &mm->iommu_mm->sva_domains, next) {
+                ret = iommu_attach_device_pasid(domain, dev, iommu_mm->pasid);
+-               if (!ret) {
++               if (!ret || ret == -EBUSY) {
+                        domain->users++;
+                        goto out;
+                }
+@@ -141,8 +151,8 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
+        struct device *dev = handle->dev;
+        mutex_lock(&iommu_sva_lock);
+-       iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
+        if (--domain->users == 0) {
++               iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
+                list_del(&domain->next);
+                iommu_domain_free(domain);
+        }
 
 Thanks
