@@ -1,157 +1,184 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 867EE3A1C2
-	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 07:04:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708499075; cv=none; b=lFEJleZXmBfF2XauBgEr48IXKh0vfUQ6zJwBgetA2G+E95Mitx8xa+q9pvAo2UQnv13X6LcBehgq1NFFgoP0e2qRK5B37Q2v55wv1HlJeYJB/9EuEDjVE47DdsaD0Da50qBUynyX8lAvxdTmw5KFA9egKZ/f0fxrM9CNwLm3iP0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708499075; c=relaxed/simple;
-	bh=z8a6adMwHf0zm9CtOjQSKt10MSEpjf4VHNiwglQO3j8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TAANv/r9n/Itc5hQ2a87B8IRwaI4FPf1fiibJaBG8sAkFQHDc0if0ho9RrmYdURoMp0tQvz9z/5n1bOv6/F99wrcOGriv+zqCMTZ/Kgd29HmIeZEcRE0nf+sTiiutNAnLrZqFn1+xsrdgD70KNODhCRpsXdTJm7g/GtHdEfiS9E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=njhbinh8; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D4AD3A26E
+	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 07:09:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.14
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708499373; cv=fail; b=oRn8VH6mkij87zDOzvF3iYtmTEJgP0Fu1gbZMocJGtyRLmDOauTZ4SVWFraWW6AF7uyh9ILP3Ju1JSl8dGbDDmYshnkSF83YKOzQDwchzLTqQXHpBVAsCUD0bxtyBAwqypLe3hxzoXDt/qtQ8PcDYvpcgUKhcJg6glBDhc/jph0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708499373; c=relaxed/simple;
+	bh=cFchp/XLA40DbS/kmr+s1j9r+qk+xKAMihPVWZxEZvU=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=tHpyhVyKwdZymu6BUfTHz0Q34NilTqrUsIQGF230oUl+Gu0Ujz7N5NTgRqVoN6qbFxma8QRyHWNg+Hpg3jUEVpCpjqH+OVTt+akY5Ug4mwLxDzdvtYV2ynDNBkxU4it1zOv0ilG4UALVpPJbujpcjcBr9wqfKOzKtoLYaU4WTgU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Y7CooUI5; arc=fail smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="njhbinh8"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Y7CooUI5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708499073; x=1740035073;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=z8a6adMwHf0zm9CtOjQSKt10MSEpjf4VHNiwglQO3j8=;
-  b=njhbinh8bG2rLUq/2wkwLh7K7se8dBrha8I3IMOzALxT33SZflKuisPy
-   nAQhnnu/z7PVQ9JaA9bG6C4YcbJeyo4tmUoQQ02RYwSHLrao+gCISDgrk
-   ZbS7xinh8+2bFdLJcLYsONQFqMKfnXbOMnWEzcvnsiJaVrpjnQpM6/0se
-   4pFEjXtqp5fXI51CGuZHhhZlPF/eVMA1O0UmWOzmO0YL+OhCxkRsuLGnl
-   0FVQGlYYrHIY8u7/XJJbcOd1Q3+WrX3rnQlZWanOvMl58X8hdFdQSg/D4
-   V/TQ6IELsHVISM1YgUdL3fqBK4slu6QHMPw6x/uLNRffR5bKyP9vgfpXY
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10990"; a="2514550"
+  t=1708499372; x=1740035372;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=cFchp/XLA40DbS/kmr+s1j9r+qk+xKAMihPVWZxEZvU=;
+  b=Y7CooUI5fRjSREZapZZCQffJDWL+js+ojtoiwBR6PJt5iqyZd046/BuG
+   ABttJw2Pcz9G8UR7WD63ILp2NqjuhrZ8WzVoyOUe7k/681eAyn2vow46E
+   pQy2Zk0TsykXYq1dZpAPQXaGWofxZ0WJ5d16wO0UafoeWNfeoM0FMpFEn
+   v/EaMELSEAFT66cqyAOq+kkxPikv5CRkN2+rnQT64lDm9z9LRyYei3yD+
+   EnPRnGIFjPxymkHAKEQeMcqMqUtpfV/n8HvT535PC5FtYn7e1O5wiW3tQ
+   4PzyR7kGmPuBbJRRajssV/W13MyG3yJoF+3dU5o6NnGiZ0WCmjc+aos29
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10990"; a="2781521"
 X-IronPort-AV: E=Sophos;i="6.06,175,1705392000"; 
-   d="scan'208";a="2514550"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2024 23:04:33 -0800
+   d="scan'208";a="2781521"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2024 23:09:27 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,175,1705392000"; 
-   d="scan'208";a="42519268"
-Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.255.29.32]) ([10.255.29.32])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2024 23:04:30 -0800
-Message-ID: <2049ec79-b081-4ae2-80d2-50899d461339@linux.intel.com>
-Date: Wed, 21 Feb 2024 15:04:11 +0800
+   d="scan'208";a="5188864"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by fmviesa008.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 20 Feb 2024 23:09:27 -0800
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Tue, 20 Feb 2024 23:09:26 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Tue, 20 Feb 2024 23:09:26 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Tue, 20 Feb 2024 23:09:26 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UY35VmDHLKnQCvL54r95Vn9xuBP8Ojl0IOwDRJhVpN8d2N5FOxgfL5jSWn20t4RgNZ4NQ2Uih4nUihTH6Wd4DrUZb5RRSbFCvVbVgyfu/XdqMmjg6vX9v1+AOU2FT/tP9QN4cg/3mdBYYKJSw+EXfTZ4p/QBYKUt4guSEx/GUcMIPZqwNe8LUQ6IlWRpvaGLHwUIa6Z41Ha+Xcdf9ILLPTIpf+r24JdENFSdzz9QXQC1Qjp8C44xJ/ygLsSAXM9VdcDUNJiYZW9owqVuxIe/oIS0Lkgy5H/UIm8IS17kjPdZBR+VzTdRYCpi5Mh9nqfAPoy5X1r6tgHeU1awA8zeKQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=QKUD2xYZ/U8PLMevpkdJGWeuYjurLaivh+U1F7QRl9k=;
+ b=BcC3OcCkA3smxQpZ8cAVGu2xNmaLt6lURd/zLpV82IZdPM5VG8wpHnOSsZMaf5zV/YyVuE851klk3pq+FOhSYfqut1iapghlOr8B/jtuA4hvZwhTF2XCz6I+6nbWlnEZmaPyaGPIFftBe9cQZdCrn9afJOU2UZy9ejIeneDnUr4NqS/Lu3EEXBQif6v0sL/YYCkzbWZP+J5c8UHOsJty2BBZmF8qktGOJauc/kswy1Mf8+UwZ2AIuKIoxV1Uep2gs6FxOrVfCdEGndiMMvuNAH4w/ePdgRO4hVhmNq5nNO4UvfbnzxUFtqfusDqHJyQofexlrFHf4o5ouMlfkbYhWg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by SJ2PR11MB7618.namprd11.prod.outlook.com (2603:10b6:a03:4cc::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.25; Wed, 21 Feb
+ 2024 07:09:24 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b0e3:e5b2:ab34:ff80]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::b0e3:e5b2:ab34:ff80%6]) with mapi id 15.20.7316.018; Wed, 21 Feb 2024
+ 07:09:24 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, jean-philippe <jean-philippe@linaro.org>,
+	Jason Gunthorpe <jgg@nvidia.com>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "Zhang, Tina" <tina.zhang@intel.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] iommu: Fix iommu_sva_bind_device to the same domain
+Thread-Topic: [PATCH] iommu: Fix iommu_sva_bind_device to the same domain
+Thread-Index: AQHaZI3ars2WxaUdb0ObfriZ3G40C7EUX32A
+Date: Wed, 21 Feb 2024 07:09:24 +0000
+Message-ID: <BN9PR11MB52763F2A7B45747622C9B17D8C572@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240221061832.430-1-zhangfei.gao@linaro.org>
+In-Reply-To: <20240221061832.430-1-zhangfei.gao@linaro.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|SJ2PR11MB7618:EE_
+x-ms-office365-filtering-correlation-id: ea638d2c-b577-42a3-d108-08dc32ac0901
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: bTbO55kS4ndKngMIob++EdF+qUVmUU03Pd0UJCA5dSbsMUHf3DIbjIkfnNiiOr8EqxscOVXWogzA5G6i/cIz2aOcam2mJfWGhiO1/uLFPoBLaoShrixW50EEMK6bE2YkJ5//7XoJ3GZl4ZY+H9OnEnR8aJ6u0YkwdH5HWIjsXjYnXIRBzidMXwaECxq+z0iCiqOrKgJy0ayUFi3/+RoFYRe4vhmuOD4tTzA7uIk2wu8ViRODxjcGa0QxAujMgIPAbzb8dpFUMkQpXB0NgPl/vEWrRSRpglq/dmRxcnGZRfnUZ7aE6T9ox1PWVcfU4ZhHCOk5L6EiDHIcnKw3XlsVl806ysioSkeiPBF614VkfobHw2NKcLh2SscXiqq9BLqRSAexqHBACzWKb00RLlc4jvVXoGZMOGtA2xRj8CZAnwY50TxkJKkLiCIYUusY3TYiGL8R3ARzzLCjjAHMHIVNtyZExU/h3IPrQ2LJu5Dh/epI2VvXesftBokazbIB+yMSbwTUjuNej3oQ9QbK4qn2jd4UTymz9dDuAnT57MQJY3a7ItdnjVNEbOG3fON40tICQzJxq//rDUQuTH/NBx15WoxWv878iaYttD8bsM79iM9J8d4QyM81OI4TvP5ehHy2
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(38070700009);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?UGSq3KDjqROum/e2u1TKMjdPh6/pkESm7yLlQi4DyL62EU5q6627l+Vpv3Of?=
+ =?us-ascii?Q?LjxScFjL2grzJWwCEVFyDnS1uk41UZPV69NjbRqz1bzTUb9CoZom/tmhWk4C?=
+ =?us-ascii?Q?TQN3nhE4Le11JLhl0djQMD8kwB2f/wr8dzjDZVeXCbXPSH4dJNfIjYcqJ/VP?=
+ =?us-ascii?Q?gXKKeX/6/nO4MFBcIte1zQTCwNjIhfQmNS9MdqedohuSCnqUpX6iMHYpIm2d?=
+ =?us-ascii?Q?xJyrN+O6KjseCtcmhdrl/J3omzj9/c5iwXX0nd7pCVquUMDa6II9MqgPIm2I?=
+ =?us-ascii?Q?z/q1FJN6ECG7nT2R6/Yag5WFAiNctBrjVKSJ1UWXvlFVpfLBeku98AfFrjE1?=
+ =?us-ascii?Q?j8BeqVUF9ii1tA2Q8pqTGB4g39vaIvxkkFMJoYSnXflxFZIME3wFOi3AbAjP?=
+ =?us-ascii?Q?Yx+SxtTDfS1fNiYyRKsY7e1huoUxQx2VnSfI972Ub28aydzv6yabSUPkv/Nl?=
+ =?us-ascii?Q?vFWhfw6DPlJ9aE7KkLCtW6fDvmVl3HQGp6M3hZl8xih0bkS0635t5aD/rMog?=
+ =?us-ascii?Q?hf5l+x+ASUVccUqCDmcAXAeMBRRotyKecdRGkeYbeCIn/1o3W9jPkqZZVnUZ?=
+ =?us-ascii?Q?mPZbyA6fsg9sLFBWI9n6sU7yD08ycGMLk59kl+eqCsSuiCI5VZYwsBwRgpwR?=
+ =?us-ascii?Q?Wgc3UW2orlVYkUcOjbLzEmcTO3UZ0D4H9ItXo58ENYriFTXjgEiUOLK4Wh+0?=
+ =?us-ascii?Q?IyRLznQ2wHrXpcQwVq1WTqXEyTGyt3pQ07iIygtQISTpMg1+64X3gUQnkNy0?=
+ =?us-ascii?Q?+MlX/80f8SzbO03L+lvWH0Z9GQAFrFAsykFxIpzF0xjVuFW8Ze24qSmxVbr1?=
+ =?us-ascii?Q?g/0SeMsaJoNeRV5XrQNLHwqXlZ4pZSG9H3oYzJezbP7NxN7xDMlOHcqWePu+?=
+ =?us-ascii?Q?zWFQYd5pVGLu++5dRRHPm58nLjpDYopfooMctN1lB9w5Njdi17TPsVkxxIlY?=
+ =?us-ascii?Q?PcbZyqLZaX/aRXNEaslSeUgl/WwIiGidlYGoczPuupn8aSVQNe18qqEgvQdl?=
+ =?us-ascii?Q?hfIh51a7P1LXbUJduiRagYnkAKqvxDsmSGPzuZC7U1fo5krBzf+pNnHYa+bx?=
+ =?us-ascii?Q?5p+4+OXHO+92dtd7o0ouzSA8As8Exjq2Bsvga+cBMPz4RQEGd1JflfHEZbik?=
+ =?us-ascii?Q?3zM7asTJxH8V1IZH2PIwAVNffwbyP+J+B3LRQKMd/oEMuVHT55drdVBrlfA0?=
+ =?us-ascii?Q?/kUZXwRRCyagwn66hGgSRB1AL1JFfDyE6kCPp2YozB8yuQz+Bamdp+DG5Iyu?=
+ =?us-ascii?Q?PtD7OmrhP/PbOBSmmFj+ISm2wk+qCXKSPAonYPntO4EPUHqrqL6B+3a23L1v?=
+ =?us-ascii?Q?D5gqzhhjKi4T6LwfQg51yHdhA1/1cPfzpYnZx+1FyUcbtpWximlVe49Avv9T?=
+ =?us-ascii?Q?ewAF3AkOkdmYiik0vveYVDXjzFW8rakThNcZQp0/K/sRQY+xZMLZHhwQR58S?=
+ =?us-ascii?Q?NE53kjYfNXHQ81FJrkjTOb4yVDVtK8MaA6Ue96X+iUbabbhIppzXxTd5rQjB?=
+ =?us-ascii?Q?HXrNisvIxHgdjOD4yDRvdOKLNZL+h+rCwI64UTkJafHkzM6j6cxtBwAHt0yn?=
+ =?us-ascii?Q?7bBPvRm0dLlvoHWyUh2N3q7L081VPuJ0Kyqu3NGo?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iommu/vt-d: Use device rbtree in iopf reporting path
-To: Jason Gunthorpe <jgg@ziepe.ca>, Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
- Huang Jiaqing <jiaqing.huang@intel.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20240215072249.4465-1-baolu.lu@linux.intel.com>
- <20240215072249.4465-3-baolu.lu@linux.intel.com>
- <20240215175534.GD1299735@ziepe.ca>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <20240215175534.GD1299735@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ea638d2c-b577-42a3-d108-08dc32ac0901
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Feb 2024 07:09:24.6608
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: N7KWig2NOJHHiWqEF94goXmKiKMdil5/bWMWhPqYGZh5OZp6xAfIH8p/hFliEBKx5DgesFyuSQ4pMDrT1JDySA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR11MB7618
+X-OriginatorOrg: intel.com
 
-On 2/16/2024 1:55 AM, Jason Gunthorpe wrote:
-> On Thu, Feb 15, 2024 at 03:22:49PM +0800, Lu Baolu wrote:
->> The existing IO page fault handler currently locates the PCI device by
->> calling pci_get_domain_bus_and_slot(). This function searches the list
->> of all PCI devices until the desired device is found. To improve lookup
->> efficiency, a helper function named device_rbtree_find() is introduced
->> to search for the device within the rbtree. Replace
->> pci_get_domain_bus_and_slot() in the IO page fault handling path.
->>
->> Co-developed-by: Huang Jiaqing <jiaqing.huang@intel.com>
->> Signed-off-by: Huang Jiaqing <jiaqing.huang@intel.com>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel/iommu.h |  1 +
->>   drivers/iommu/intel/iommu.c | 29 +++++++++++++++++++++++++++++
->>   drivers/iommu/intel/svm.c   | 14 ++++++--------
->>   3 files changed, 36 insertions(+), 8 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
->> index 54eeaa8e35a9..f13c228924f8 100644
->> --- a/drivers/iommu/intel/iommu.h
->> +++ b/drivers/iommu/intel/iommu.h
->> @@ -1081,6 +1081,7 @@ void free_pgtable_page(void *vaddr);
->>   void iommu_flush_write_buffer(struct intel_iommu *iommu);
->>   struct iommu_domain *intel_nested_domain_alloc(struct iommu_domain *parent,
->>   					       const struct iommu_user_data *user_data);
->> +struct device *device_rbtree_find(struct intel_iommu *iommu, u16 rid);
->>   
->>   #ifdef CONFIG_INTEL_IOMMU_SVM
->>   void intel_svm_check(struct intel_iommu *iommu);
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 09009d96e553..d92c680bcc96 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -120,6 +120,35 @@ static int device_rid_cmp(struct rb_node *lhs, const struct rb_node *rhs)
->>   	return device_rid_cmp_key(&key, rhs);
->>   }
->>   
->> +/*
->> + * Looks up an IOMMU-probed device using its source ID.
->> + *
->> + * If the device is found:
->> + *  - Increments its reference count.
->> + *  - Returns a pointer to the device.
->> + *  - The caller must call put_device() after using the pointer.
->> + *
->> + * If the device is not found, returns NULL.
->> + */
->> +struct device *device_rbtree_find(struct intel_iommu *iommu, u16 rid)
->> +{
->> +	struct device_domain_info *info;
->> +	struct device *dev = NULL;
->> +	struct rb_node *node;
->> +	unsigned long flags;
->> +
->> +	spin_lock_irqsave(&iommu->device_rbtree_lock, flags);
->> +	node = rb_find(&rid, &iommu->device_rbtree, device_rid_cmp_key);
->> +	if (node) {
->> +		info = rb_entry(node, struct device_domain_info, node);
->> +		dev = info->dev;
->> +		get_device(dev);
-> This get_device() is a bit troubling. It eventually calls into
-> iommu_report_device_fault() which does:
->
-> 	struct dev_iommu *param = dev->iommu;
+> From: Zhangfei Gao <zhangfei.gao@linaro.org>
+> Sent: Wednesday, February 21, 2024 2:19 PM
+>=20
+> The accelerator dev can provide multi-queue and bind to
+> the same domain in multi-thread for better performance,
+> and domain refcount takes care of it.
+>=20
+> 'commit 092edaddb660 ("iommu: Support mm PASID 1:n with sva domains")'
+> removes the possibility, so fix it
+>=20
+> Fixs: '092edaddb660 ("iommu: Support mm PASID 1:n with sva domains")'
+> Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> ---
+>  drivers/iommu/iommu-sva.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> index c3fc9201d0be..a95c8f3a5407 100644
+> --- a/drivers/iommu/iommu-sva.c
+> +++ b/drivers/iommu/iommu-sva.c
+> @@ -91,7 +91,7 @@ struct iommu_sva *iommu_sva_bind_device(struct
+> device *dev, struct mm_struct *mm
+>  	/* Search for an existing domain. */
+>  	list_for_each_entry(domain, &mm->iommu_mm->sva_domains,
+> next) {
+>  		ret =3D iommu_attach_device_pasid(domain, dev, iommu_mm-
+> >pasid);
+> -		if (!ret) {
+> +		if (!ret || ret =3D=3D -EBUSY) {
+>  			domain->users++;
+>  			goto out;
 
-So far no protection to dev->iommu structure access in generic
-iommu layer between different threads, such as hot removal interrupt &
-iopf handling thread, so we should enhance that in generic iommu code ?
+-EBUSY is not a right indicator for reuse.
 
-Thanks,
-Ethan
-
->
-> Which is going to explode if the iomm driver release has already
-> happened, which is a precondition to getting to a unref'd struct
-> device.
->
-> The driver needs to do something to fence these events during it's
-> release function.
->
-> If we are already doing that then I'd suggest to drop the get_device
-> and add a big fat comment explaining the special rules about lifetime
-> that are in effect here.
->
-> Otherwise you need to do that barrier rethink the way the locking
-> works..
->
-> Aside from that this looks like a great improvement to me
->
-> Thanks,
-> Jason
->
+It may simply indicate that the pasid has been used for other purposes
+e.g. attached to a domain different from what the caller expects here.
