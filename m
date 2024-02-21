@@ -1,209 +1,149 @@
-Received: from mail-lj1-f177.google.com (mail-lj1-f177.google.com [209.85.208.177])
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3731743AAB
-	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 16:17:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08D6981726
+	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 16:19:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708532246; cv=none; b=O5jA3/2bYlIhbEVehu64/8Wo1UB3k75J90gV8B0hkyUzgsx64WA5vo8Bs/VMREhZkwxnJ0P+dcK/gXK4UXrf7AOCuBG6ssZUNarQezKXOPwrj731/HnraavwVrNZwQL8rwCqax1AJrlpKQOjyVPT3vSCmWtHGXuz6y2GlDyIUg0=
+	t=1708532387; cv=none; b=dM4gSe1qGyLqwO9GgOQPRjMH4DJRbtbXtbKREQS94/c06pE3HraQT1Tu+9iqebKX53J2OIpTettGB8tw2PscY/3RPkcDLwmg4JIZC52t+dZ3QdC9GPeOcN19JULERoYZAyMaxzuUlCwlramjLxrvbTUAtP/SRUAe8MulksE/rrk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708532246; c=relaxed/simple;
-	bh=I1meVWt4Ajaq/+XCxI26UXI001r+bq752Odfv/pfMpM=;
+	s=arc-20240116; t=1708532387; c=relaxed/simple;
+	bh=FBLyFoFFU5YRVyvvqlDTfMPWl9CsnVhbrvNf42AaM1k=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=FiA1phUndXJzX/fYGoBKhd07wDLJcp58GE9ZN2GKdbQYOjlqCTSdUb3UpRjLX916dAkYP1G4rPnaUylHcWCFjqriIE3cINGTu2EKCPqvrY1a/fS1ve/Nsfs1XeAS4SKADG8gVlBYZB4b6IHEJWnKshK22oCfe0oj8WPGJS6CiRo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=IPyFRagM; arc=none smtp.client-ip=209.85.208.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 To:Cc:Content-Type; b=YgXkBuWRA3LOZv3E9ksReSq2oV//UQpDLzYgB95pvC3uqoLpyzKIUSzpWpUS6LbiiohyKFyd7dhng7VVTp+OVF8vzCSJweE2xpzdvCphubgVlbN3p4T/DuNi7sidOI0VL1eLkRWTxip3PY28BtwQyXtXmTCiizULkjvl/MdBD+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=LegVtSo9; arc=none smtp.client-ip=209.85.160.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="IPyFRagM"
-Received: by mail-lj1-f177.google.com with SMTP id 38308e7fff4ca-2d109e82bd0so89990671fa.3
-        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 08:17:23 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="LegVtSo9"
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-42e2507c6e1so265951cf.1
+        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 08:19:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1708532242; x=1709137042; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QSRdTUORIP3JPrt7kN1tEQGw0K12XfL4OvvkueI/BL4=;
-        b=IPyFRagMmP7jwxxu8ykAV/DvlWWuKe0FwSATdRvoC8ggBwx19QK6+MrEeLwO1y/u2I
-         +eIMIoG5rKfw+g53pY9nxCFUR4i2crcsxRny+rl+K7CGdU2j6L3F62tY7NTFx0advR1x
-         p5aXnJjwwmalb1vBtYiMglZ71E9Uq8r8QMyVn6ZXjsGHLtZFWY3yDl7veRUEJJAcBCwh
-         cJYEJ+vyONzs3urB4HRYzax6jyIaqSWdpPCCR9Heq95Pb9Jqi9/wKOnnr0AzZZAGek/z
-         wzczSEZ8jQqeHIPV3DxztL37Nh0t1DtDNWzXbvYoe0gsrPCtMKU2lZ4BYOuZ1J+wyU2c
-         VzaA==
+        d=google.com; s=20230601; t=1708532385; x=1709137185; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=arl0fzz6TB+mDBQSxtnFgvSHghA7NLawqyNW3EPWxH8=;
+        b=LegVtSo9PMWkIxHCW5pzGehkvSKgyZWxLCmQddZmuQVyK8/Csf99pnNl48UztOl6Vo
+         a8AwZ/ELRwif+JBc9hIlT977TyCeCdUFSlKcXRHeoYuuVYTtLz1ZB9nyQl9bnmFGosTb
+         5VpGPOTSOmmS2CUiYVK6Kz3bXk5295rmt1K6QnkgaTSqrAAeJhzkUl9E+zHZUYgjkvsn
+         +JLpFR4zPy6lrUmoRqNmfq1iFDdbwhdgNDR/wCgLHPZvccifaiOtqjqxr0wppQ+EuJZr
+         dBKn1U+oKlNQCKrBewSg9vN8H1ZhfZHG3FSV/9zLyqLGshZrkxHI8OT0ihUaj9VN4whN
+         kbWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708532242; x=1709137042;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QSRdTUORIP3JPrt7kN1tEQGw0K12XfL4OvvkueI/BL4=;
-        b=pir0VExtq1PdtIwquTxadjQFaGcDgY6t4c+i98ynOwm4ldbe5D4e6Jt6J/ogjUbC9O
-         1W+kQ6AegQdbpXKHRD082z+a9w7plDnEe18JAQNlscqnX5oVjhTXJQwE3K+G2WbxIIUO
-         FeieQh0mUR5hYruaT2CVYjmJ9Ss7A1O8BZViaITEScWBPCQF3ul+qeiP7H7KiHpubxEV
-         OivCP/MYK5Aq6OTD2y0EmLaemTxeafiHJUTVZc3bhnba28mFy4rpTr4cS7YqMIuZ03tn
-         4Xxpr39/YBmYzbUN5iu6cyp2dT3W6RODUrjVDhxlA5neLLHmAvuEJOFLT2/s/XB0IHnL
-         fusg==
-X-Forwarded-Encrypted: i=1; AJvYcCWhcNDKmK3otzJmHn/g6GpaTdUJfz+z7FHdhtrP2t4vuwqFsPy5hvv2FPPKmTMmy2WpIl8sBWlEECNX29Db1rZBmilsBBI=
-X-Gm-Message-State: AOJu0YxMK1QatbB8NcVsSvtVX2H4zl0J8ObVx1BPlKNdztiQlBtEB9gC
-	NeyR1sbxXWsw9lQq+BSp9a/P2ET+P87vsX1vTMfhpKTmet6CYyAl50OlbgG+dAaGyu7gO9kfmSM
-	TV7F5B0x6nRNbYhFd1gDFQjWOUBp1I5hCsx+0LA==
-X-Google-Smtp-Source: AGHT+IEAPcKs9cACBOi8r1qIxX65sNThq1I+8at14ElsSzJt2HeQxDAK+upl9KCdTVvkGPrjF+VdX67GjanquSArscg=
-X-Received: by 2002:a2e:9f44:0:b0:2d2:2e1d:651b with SMTP id
- v4-20020a2e9f44000000b002d22e1d651bmr7799978ljk.29.1708532242159; Wed, 21 Feb
- 2024 08:17:22 -0800 (PST)
+        d=1e100.net; s=20230601; t=1708532385; x=1709137185;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=arl0fzz6TB+mDBQSxtnFgvSHghA7NLawqyNW3EPWxH8=;
+        b=BlPNXwJCwQEIYwpzu+NwEaLXlQZpGzyhFQHS0gQqp+Ttyi9HMcDwE969v9wp28c2TO
+         kpmlS6XQ9DAa1URMkLPYKAqLR8jFlE58Q7ngelgSz8Z9FUtAqyL/iGPV6jxyrPFaI+81
+         c3spvX2RlUYy7Ev8LpldjWhu8OAG3ulHALYUEumCUgEuJIVu7WdRBOL/GFqepv2ADb0J
+         wZG2hHOLpaKW41IwHF3SQ8CSreHHb49j5YegkbqaN4Z8miIC7wQqCgQgD0axoIbybNwH
+         YxAdIasU52IKUZdbnY5/8PGQJBu5h9IcXne1sXuIvTLtOTLkt/pfP7izauCGQa6AvmzT
+         uh6A==
+X-Forwarded-Encrypted: i=1; AJvYcCXZ4FY8egMPCicAc0CUdMx2QTCDC6LlCHrQrqBOxfCyeaP7EHQgGpLPE77kFO6Xp8b5wb237lQL70iUlUTF++MXmyLndr4=
+X-Gm-Message-State: AOJu0Ywj9gLc83Y5ttXYVixiiA/jnpQ/+kvgnoHB7byXK4myEUrLVAEX
+	AwdfdCffS1ljd/vg13LdPJNpHPmo+wwKRk5dIuX/kAaF2j1qwhurDmeK4slAveH66oS23PSRow+
+	U1HLopfsvl8JMnh/2tVhRchbhTJRq8R+y4ewy
+X-Google-Smtp-Source: AGHT+IF03ue/kQYI6nVauk5Jp7DIfLX2vYATuegN40BS0XIc1RYCwm0is6FHiEkKbzM/qEsPgc3paZNUnWnnlogXlpU=
+X-Received: by 2002:ac8:4907:0:b0:42e:660:eb8d with SMTP id
+ e7-20020ac84907000000b0042e0660eb8dmr209224qtq.5.1708532384638; Wed, 21 Feb
+ 2024 08:19:44 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221110658.529-1-zhangfei.gao@linaro.org> <20240221131725.GR13330@nvidia.com>
-In-Reply-To: <20240221131725.GR13330@nvidia.com>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Thu, 22 Feb 2024 00:17:10 +0800
-Message-ID: <CABQgh9Ha6C=Ej7Z2Md3v5Q6iXPKHsz+yQ2G_-oOaotVuVi8Hmg@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu: Fix iommu_sva_bind_device to the same domain
+References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+ <1-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com> <20240215134952.GA690@willie-the-truck>
+ <20240215160135.GL1088888@nvidia.com> <20240221134923.GA7362@willie-the-truck>
+ <20240221140818.GA2635804@nvidia.com>
+In-Reply-To: <20240221140818.GA2635804@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Thu, 22 Feb 2024 00:19:06 +0800
+Message-ID: <CAKHBV25XrwOXyrYkjLZ7=5sNoFsM8VPS=HaJupswu6QDZ02LcQ@mail.gmail.com>
+Subject: Re: [PATCH v5 01/17] iommu/arm-smmu-v3: Make STE programming
+ independent of the callers
 To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	jean-philippe <jean-philippe@linaro.org>, baolu.lu@linux.intel.com, 
-	"Zhang, Tina" <tina.zhang@intel.com>, kevin.tian@intel.com, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
+Cc: Will Deacon <will@kernel.org>, iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+	Lu Baolu <baolu.lu@linux.intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>, 
+	Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>, Moritz Fischer <moritzf@google.com>, 
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>, Mostafa Saleh <smostafa@google.com>, 
+	Zhangfei Gao <zhangfei.gao@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, 21 Feb 2024 at 21:17, Jason Gunthorpe <jgg@nvidia.com> wrote:
+On Wed, Feb 21, 2024 at 10:08=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> w=
+rote:
 >
-> On Wed, Feb 21, 2024 at 11:06:58AM +0000, Zhangfei Gao wrote:
-> > The accelerator device can provide multi-queue and bind to
-> > the same domain in multi-thread for better performance,
-> > and domain refcount takes care of it.
-> >
-> > 'commit 092edaddb660 ("iommu: Support mm PASID 1:n with sva domains")'
-> > removes the possibility, so fix it
-> >
-> > Fixs: '092edaddb660 ("iommu: Support mm PASID 1:n with sva domains")'
-> > Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-> > ---
-> > v2: Instead of checking ret == -EBUSY,
-> >     change iommu_attach_device_pasid return value from -EBUSY to 0
-> >     when pasid entry is found, and refcount++ when return
-> >
-> >  drivers/iommu/iommu-sva.c | 2 +-
-> >  drivers/iommu/iommu.c     | 2 +-
-> >  2 files changed, 2 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> > index c3fc9201d0be..20b232c7675d 100644
-> > --- a/drivers/iommu/iommu-sva.c
-> > +++ b/drivers/iommu/iommu-sva.c
-> > @@ -141,8 +141,8 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
-> >       struct device *dev = handle->dev;
-> >
-> >       mutex_lock(&iommu_sva_lock);
-> > -     iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
-> >       if (--domain->users == 0) {
-> > +             iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
-> >               list_del(&domain->next);
-> >               iommu_domain_free(domain);
-> >       }
+> On Wed, Feb 21, 2024 at 01:49:23PM +0000, Will Deacon wrote:
 >
-> The users refcount is not to provide for sharing of the same PASID it
-> is to provide for sharing the domain across devices. This change would
-> break that because we loose the 'dev' that needs to be detached in a
-> multi-device case if we don't immediately call detach_device_pasid
-> here.
+> > Very roughly, yes, although I'd go further and just return a bitmap of
+> > used qwords instead of tracking these bits. Basically, we could have so=
+me
+> > #defines saying which qwords are used by which configs,
 >
-> You'd need to build something much more complicated here to allow
-> PASID sharing.
+> I don't think this will work well for CD's EPD0 case..
 >
-> I wonder if this case is common enough to warrant the core code to get
-> involved. I suppose maybe, does idxd have the same problem? It can
-> only open it's cdev once because of this - that doesn't seem like what
-> the code intends for a non-wq_dedicated?
+> static void arm_smmu_get_cd_used(const __le64 *ent, __le64 *used_bits)
+> {
+>         used_bits[0] =3D cpu_to_le64(CTXDESC_CD_0_V);
+>         if (!(ent[0] & cpu_to_le64(CTXDESC_CD_0_V)))
+>                 return;
+>         memset(used_bits, 0xFF, sizeof(struct arm_smmu_cd));
 >
-> More like this:
-
-Hi, Jason
-
-Only added two lines change, and tested ok.
-The different with before is same handle is returned, and the handle
-itself has refcount.
-While before different handle is returned,
-Not think about any issue now, I think it is OK.
-
-Could you send the patch, will add tested-by then.
-
->
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index c3fc9201d0be97..aec11e5cde6b0e 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -41,6 +41,7 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
+>         /* EPD0 means T0SZ/TG0/IR0/OR0/SH0/TTB0 are IGNORED */
+>         if (ent[0] & cpu_to_le64(CTXDESC_CD_0_TCR_EPD0)) {
+>                 used_bits[0] &=3D ~cpu_to_le64(
+>                         CTXDESC_CD_0_TCR_T0SZ | CTXDESC_CD_0_TCR_TG0 |
+>                         CTXDESC_CD_0_TCR_IRGN0 | CTXDESC_CD_0_TCR_ORGN0 |
+>                         CTXDESC_CD_0_TCR_SH0);
+>                 used_bits[1] &=3D ~cpu_to_le64(CTXDESC_CD_1_TTB0_MASK);
 >         }
->         iommu_mm->pasid = pasid;
->         INIT_LIST_HEAD(&iommu_mm->sva_domains);
-> +       INIT_LIST_HEAD(&iommu_mm->sva_handles);
->         /*
->          * Make sure the write to mm->iommu_mm is not reordered in front of
->          * initialization to iommu_mm fields. If it does, readers may see a
-> @@ -82,6 +83,13 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
->                 goto out_unlock;
->         }
+> }
 >
-> +       list_for_each_entry(handle, &mm->iommu_mm->sva_handles, handle_item) {
-> +               if (handle->dev == dev && handle->domain->mm == mm) {
-> +                       refcount_inc(&handle->users);
-
-mutex_unlock(&iommu_sva_lock);
-
-
-> +                       return handle;
-> +               }
-> +       }
-> +
->         handle = kzalloc(sizeof(*handle), GFP_KERNEL);
->         if (!handle) {
->                 ret = -ENOMEM;
-> @@ -109,6 +117,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
->                 goto out_free_domain;
->         domain->users = 1;
-
- refcount_set(&handle->users, 1);
-
-
->         list_add(&domain->next, &mm->iommu_mm->sva_domains);
-> +       list_add(&handle->handle_item, &mm->iommu_mm->sva_handles);
+> > and then we can
+> > simplify the algorithm while retaining the ability to reject updates
+> > to qwords which we're not expecting.
 >
->  out:
->         mutex_unlock(&iommu_sva_lock);
-> @@ -141,6 +150,12 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
->         struct device *dev = handle->dev;
->
->         mutex_lock(&iommu_sva_lock);
-> +       if (!refcount_dec_and_test(&handle->users)) {
-> +               mutex_unlock(&iommu_sva_lock);
-> +               return;
-> +       }
-> +       list_del(&handle->handle_item);
-> +
->         iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
->         if (--domain->users == 0) {
->                 list_del(&domain->next);
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 1ea2a820e1eb03..5e27cb3a3be99b 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -892,11 +892,14 @@ struct iommu_fwspec {
->  struct iommu_sva {
->         struct device                   *dev;
->         struct iommu_domain             *domain;
-> +       struct list_head                handle_item;
-> +       refcount_t                      users;
->  };
->
->  struct iommu_mm_data {
->         u32                     pasid;
->         struct list_head        sva_domains;
-> +       struct list_head        sva_handles;
->  };
->
->  int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+> It is not much simplification. arm_smmu_entry_qword_diff() gets a bit
+> shorter (not that it is complex anyhow) and other stuff gets worse.
 
-Thanks
+I think the simplification here is in the first if branch of
+arm_smmu_write_ste. With Will's proposal, we only perform a hitless
+update if there's a single used qword that needs updating. There's no
+longer a case where we first set unused bits in qwords whose other
+bits are in use. I'd argue that setting unused bits of a q word was
+very clever and removing the logic does conceptually simplify things,
+although yes it's not much fewer lines of code. I also don't think
+this throws away the entire logic of the current design, the idea of
+counting the number of qwords that differ and writing qwords that are
+unused first is still there.
+
+But, it does mean that hitless updates are only possible under
+narrower circumstances...We now have to figure out if there are
+transitions where this is problematic where we could previously assume
+that we'd always get the best behavior possible. Both in the present
+(i.e this SHCFG discussion and EPD0 case) and in the future if new
+parts of the configs start getting used. IMO not having to think about
+this is a meaningful advantage of the current solution.
+
+> > > We'd have to really start doing really hacky things like remove the
+> > > SHCFG as a used field entirely - but I think if you do that you break
+> > > the entire logic of the design and also go backwards to having
+> > > programming that only works if STEs are constructed in certain ways.
+> >
+> > I would actually like to remove SHCFG as a used field. If the encoding
+> > was less whacky (i.e. if 0b00 always meant "use incoming"), then it wou=
+ld
+> > be easy, but it shouldn't be too hard to work around that.
+>
+
+What do you mean by removing SHCFG as a used field? Are we changing
+the driver so that it only ever sets SHCFG to a single possible value?
+Or are we talking about fudging things and pretending it's not used
+when it is and might have different values?
