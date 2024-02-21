@@ -1,67 +1,67 @@
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FC327CF03
-	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 21:24:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F7B9127B66
+	for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 21:26:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708550658; cv=none; b=eK/A7/lZGFvgJJjTqPEVu0lgJ9YL8pvbON1fDECYxcwxyRPf0PiOq6pCnN7g2+TkbmUJdYlGNlZ4yqSLWM2kt5r8s3WD0do1oIt3zet/t2hThfAI4iVK0x3Dngu0jDR9LzXrdZPLSnrnH0PtVuGDwD6fSJGlUIrz+D+o1AEMy0A=
+	t=1708550772; cv=none; b=FTey7KmrvjAVJh0GWIA/iAACKFTehjaqkG6jVQ7VUbAfQjXcEz3yFZbpRkc19ikjAvChVQKh5+njmz5f2WTvLLqidOKKUViQvgouh0Mm4+acLSyGLv07N//PN6WHLn8acbqJr5gRL7UTbVdmGOeafVo2WVagTQe/dV/9P38/gj8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708550658; c=relaxed/simple;
-	bh=cZXkUcelidv55pcogEZ5q8CQsV5tGZzpTAAvQxpkWOQ=;
+	s=arc-20240116; t=1708550772; c=relaxed/simple;
+	bh=1oEaHzezRAll9SQ0JkGYVz7chMh/UI28PlbGaomS6oA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GdNXWjVHWX6BLrVXG2k6tDpZqVRViXsfTWjCo6NfkfIzfUaau0yY+5RFGLnu2Wc6x9GLsU4sWaM+Rmpj3H9KXpSYIreCbw8TLvILdZcn3oi2O6i3WAmxuttQ0k9O7gdAzgKmMDmth41YLxgixrwxv5kly2rcnj9LDwd15iXnvd0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=3Dz6bWe6; arc=none smtp.client-ip=209.85.210.49
+	 To:Cc:Content-Type; b=od/4CsoH25+uzb1jga9caGMhrMXN9ocRP5FYj2RsQ1UC1QumB4UaxTitnl+kqkrYaSXLvwfHy06YtbRTFFxq+rp78ZMmyGqTCXLrjkkQXJHPgXKd3WSQ8uJiEvXcfdji1g++EcSX/cj4Dg8FBsDwtNMGGJfzimYIjQQXlB6ordE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=3KVby3fA; arc=none smtp.client-ip=209.85.167.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="3Dz6bWe6"
-Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-6e44c9a62b6so1817706a34.3
-        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 13:24:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="3KVby3fA"
+Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-3c16ce3eea8so428799b6e.0
+        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 13:26:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708550656; x=1709155456; darn=lists.linux.dev;
+        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708550770; x=1709155570; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=cZXkUcelidv55pcogEZ5q8CQsV5tGZzpTAAvQxpkWOQ=;
-        b=3Dz6bWe65FZQNcSk8Uq8zbRr2qnZBQz33b0UXjQokFu/laG/ckgmIFVCPgNUJJUs+g
-         vTOkHkPhnXLu0CEQVTY88jNoJ8/A6AegOsumBC0DUVX/ekTqx/PASCDTEJrFQnSw6hdB
-         wMIAjuCxuvieaifax9/7tY8Jd9pFpTyI1ZeIiuF6C5ijehckJ213jCGekcqSpMlB6j9V
-         FdM68P/Rqyype0SMXpVAbjNfoKH0R8XAhtJlkCMp3mVFbM4zq3sIJyNWy/uW2CnYpbvC
-         3iq/p2rc6hk5Ijki/4bpTmLuS7tPVhiRsLm8CrEInK4fl1X3Gndk1GhlXQif9qWAoCqf
-         qbZQ==
+        bh=1oEaHzezRAll9SQ0JkGYVz7chMh/UI28PlbGaomS6oA=;
+        b=3KVby3fAm6SfnPZyADIZY23vAaBUa8gO7nVKmX6XcgjOEpDFlmEr1oIPepzJPSIGW9
+         CeJfin5bfBzGIMDIJ9Sfo97/a6QeJ+R6w5J3QsXmX80O8dMPb39SeIAU3lt0hVRzCGVt
+         Q3zMC8hXskNFGWAe3Ych5/w9mseqInb3KYw4bH4cdhhNzYTHkZkJbPoBJM2z9qU/IQSo
+         brvsurhC3jke+kisnUZdeqWp5/F77v9W0CTOpL+OzjFf4uH14UzGLf6iPqGBymqgEg7R
+         zzQoy5vu9CoLFIZigBvI66aEPeIpFaDsgfbW4SGLYWkVo49s6opI7JV0gt/B0PIdMXxC
+         bJTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708550656; x=1709155456;
+        d=1e100.net; s=20230601; t=1708550770; x=1709155570;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=cZXkUcelidv55pcogEZ5q8CQsV5tGZzpTAAvQxpkWOQ=;
-        b=lzojIrYgdqpmYm3AI2QavKkffnKNM8iQCNv+7hRp7TekJxazgr7t9hxkkeynTvTGOM
-         2zx+BDrXsJG/EtQoOBpWKi7kwmWk7Bt2XKeAG4v9zY+bIto2GniR92u2rhH2ioUXxg9Z
-         OmRcPuiMZCPSWRN005CPhreyVAlbBnR+hATTjX740dRn2sMoj9puPfxqMoOLn3+xa6Aw
-         EffUGyYDIVqy7XHnPJNhhb+W3OJgejsxsADLmhVoy3CO+7MNxaGA1up2VgXtTy9FMCvx
-         aZt9Lf6BtyTLQfAS8H6IPp+CB9X+paKMq8pvXpJNtqeyptX+VBZYTVqatyiR0/oBupE+
-         lVfw==
-X-Forwarded-Encrypted: i=1; AJvYcCXk1taTAsGiQOQZuS8wDK8V3A/K6hKNGbIqGsNJiRwhrGeS7zloJcClxtMG0LvX2Lm8PZ6lfZgYpOUst/pu85dYa77YnmM=
-X-Gm-Message-State: AOJu0YyGJqwU9+9JwWNxY3boE4RwFoigamYJosFhHxs8A9wJN7GIgisS
-	0ikOhOK5hg6b/QWP6yfr4xJqoT7pDiomKaoOAyJFuMnsAIR3OiS8ke9Hyi36xeAw1t68Il9xdkk
-	7y5hMjh2QG30Z3mXGNo7YVHbaItoAYsACFuFs0A==
-X-Google-Smtp-Source: AGHT+IFvWKjWPK3amI8VL9W53BBk35ttzb77PzRBdxcUJJDHyxRlktLp+XaDhvA82AT8l0qmpbPOUDFRSVqjGiC7KOY=
-X-Received: by 2002:a05:6830:1005:b0:6e2:eba0:ec4d with SMTP id
- a5-20020a056830100500b006e2eba0ec4dmr18796951otp.33.1708550655819; Wed, 21
- Feb 2024 13:24:15 -0800 (PST)
+        bh=1oEaHzezRAll9SQ0JkGYVz7chMh/UI28PlbGaomS6oA=;
+        b=mINPSPDy0UF0lljgDqAibGRjqCko/ym2FXbF8bz4QfCP3qUz9GpRL0wm512HJ8wTyX
+         HOu9qf7FKxC/WOLFN+MIORT/+WuZadd6UsCgG2FGGAqJ1DJtYa0KlkgVP2HPGHTk9MNY
+         YvBmXe+JZiRkarf8RAuppTxWy3h9OTv5CCroXD7UfV1rcCWQMVmJTyrRi++wpcAA46FD
+         8Gf9hUgMDjitzoQmmvcC5vfmbSZffpJvTCMPyW9baAKNeyFuK8tjdC/MhHjFUVCf5Qs6
+         0kgoZa6TyvKzrU7w8dZlrlBH9vCdXypownwQNydyc81/mKTfaWnHQX0cZ5YNwy0bc6Cx
+         5k5w==
+X-Forwarded-Encrypted: i=1; AJvYcCVwY12P9nC3OSPHUg5ORoFvI//5EJlt3GIfPfIgRc+5uGQriX3LLZ2u3N1AvIUE80kZr9Vh5TfiwNKFSkWTPxwPzYGFFRE=
+X-Gm-Message-State: AOJu0YwbtxuzeCMUW8J8XpvRgl7aoFzBWV5UA533iW7+zZMmgT/z1P0p
+	fYvtsg2BF1iS+27Q//Ow8nRIyvEhBScuaAIAkwynOrHc9VN/LlzjsUhuM8bOpIc28Ljog7C7jEz
+	tOTPjXr0jF805M5+VAHkT0Hm5DFc/bpYwrEqBWw==
+X-Google-Smtp-Source: AGHT+IFZSNXNYlAy0AiXEzXx4upknBW0nGNBljw/bbiwmtTqAeSgHzhF6z+ApQTHTR9DUqPj2ju2fMwMSbPw53G4Luo=
+X-Received: by 2002:a05:6808:1208:b0:3c0:3d12:2002 with SMTP id
+ a8-20020a056808120800b003c03d122002mr24802049oil.13.1708550769929; Wed, 21
+ Feb 2024 13:26:09 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-6-surenb@google.com>
-In-Reply-To: <20240221194052.927623-6-surenb@google.com>
+References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-7-surenb@google.com>
+In-Reply-To: <20240221194052.927623-7-surenb@google.com>
 From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Wed, 21 Feb 2024 16:23:39 -0500
-Message-ID: <CA+CK2bAAzRfsDYG+LVvp9LAJLpJoakhTAB3i6JiGDogvz8kfHg@mail.gmail.com>
-Subject: Re: [PATCH v4 05/36] fs: Convert alloc_inode_sb() to a macro
+Date: Wed, 21 Feb 2024 16:25:33 -0500
+Message-ID: <CA+CK2bDX7v8+NHi2ioxQ4KF+vBYA0JhR3=Sj6ZxBS0jD7i2Gmw@mail.gmail.com>
+Subject: Re: [PATCH v4 06/36] mm: enumerate all gfp flags
 To: Suren Baghdasaryan <surenb@google.com>
 Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
 	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
@@ -86,22 +86,19 @@ Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
 	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
 	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
 	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>
+	cgroups@vger.kernel.org, =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 On Wed, Feb 21, 2024 at 2:41=E2=80=AFPM Suren Baghdasaryan <surenb@google.c=
 om> wrote:
 >
-> From: Kent Overstreet <kent.overstreet@linux.dev>
+> Introduce GFP bits enumeration to let compiler track the number of used
+> bits (which depends on the config options) instead of hardcoding them.
+> That simplifies __GFP_BITS_SHIFT calculation.
 >
-> We're introducing alloc tagging, which tracks memory allocations by
-> callsite. Converting alloc_inode_sb() to a macro means allocations will
-> be tracked by its caller, which is a bit more useful.
->
-> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+> Suggested-by: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz>
 > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> Cc: Alexander Viro <viro@zeniv.linux.org.uk>
 > Reviewed-by: Kees Cook <keescook@chromium.org>
 
 Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
