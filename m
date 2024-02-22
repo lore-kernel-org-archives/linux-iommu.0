@@ -1,107 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE25A605DE
-	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 12:55:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B923B12E1F7
+	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 13:02:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708606502; cv=none; b=B33UlLxPdDI/+x9V1ykFfrV7mM5GL+iIDLfYho/MDwR3esR4DqHhGeLDvMp5JVG+8CHljfRiNPAzOSwsuyQq4D89C00Ljfj3nhnByykNVblH1ihS0k28GIRMviq4a014XBr9lyd6ELvnJZobZ+4E4JomZaLcm/0NXr3kIif3L94=
+	t=1708606965; cv=none; b=Gg6YJErUOQ6MisklIfkJmMCK/7nlSKWQKMYHbfdKNOyv3IJ5nXs4SZYfTgaobtRZ409pvIMjjBy88/yxTrbVmgYWvhN99p7ALMaa80ujB+qAAGp2P3SSfWZ3CkeJAUmtVPPS2ucWoz0XD1xqSM2sXipRgfxj2Ayk/GG9zhRfedk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708606502; c=relaxed/simple;
-	bh=cVfB0yeCoQ1d3ZYvhoeMYL94HZ5I4I0dl5HnrRLOySE=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=YCs7DTvv53BFh3ave0Qj76p6zjSV/Qmq5uvH4pmqjNrs4IFpfe7ga1XrscMOpVsnaxOZQFkICxW4WL2aeRMV+grBbNeJ/mM4mmrGooSdrEIMGXlmfNregNqoeJiiFeWXMm88cPh9BqLVoWnVKJmOTv/Nj7ZFFLI6Ng2zvopH9bo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VGdiXxTn; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1708606965; c=relaxed/simple;
+	bh=mLihlxLtwpBjewJipEa6FRB39ptkzFSdsuzkpNHKxJI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TDQ+GBfyO7K4WvgUKQb5vlrSTAnR/G2quI83W9R6cGGl4fOP2C4uVVR5vU9Wg5Gls9uR6p6Hs4SL0RhAI2TfHNoCOJnnx+yJDJ9+mn03pOouPBQ6S723PfhFPfm7RwODDEqHzQDixZ/OKRb8Dc8YStZHU9gvOw3PK8iyK0czGvw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Xu3zQWnT; arc=none smtp.client-ip=209.85.222.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VGdiXxTn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708606501; x=1740142501;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=cVfB0yeCoQ1d3ZYvhoeMYL94HZ5I4I0dl5HnrRLOySE=;
-  b=VGdiXxTn6I6vgnNbzzpMG0q/OYAbWf9qTb0sJwQrzXPB/ZJFuSHXlS8Y
-   N9QpQJ1+30n8pmlgVCSPxVuZ6LSZM+qS/tIco8fvkbVXxW2JJXTCaFH9J
-   k5QJyX0xVJnrK7rOzJWZ/UuwgJh6dxzNVU2kVdJ90komTU1nRTB9En8pQ
-   n9FDzPe6khrlCUlUIRO2w5MyA65DC4ymB0/HE7wMCgUGqxnA5Ea3fVCr7
-   3G72892XXsL9K9g0oO4O74OCMYUt0WIaNIe2v3iszFA9SvJ4XDrLIA1jq
-   uJWJaOsGZE8NMgO8F0xk7wdEicU6M+pDjVnoMd3PAjS2dFd4/+GUWMptR
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10991"; a="14243688"
-X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
-   d="scan'208";a="14243688"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 04:55:00 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10991"; a="913518859"
-X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
-   d="scan'208";a="913518859"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.171.222]) ([10.249.171.222])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 04:54:56 -0800
-Message-ID: <9c4637d5-6496-4c68-b2db-4be1e56ca746@linux.intel.com>
-Date: Thu, 22 Feb 2024 20:54:54 +0800
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Xu3zQWnT"
+Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-787a43e2e2dso22682185a.0
+        for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 05:02:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1708606962; x=1709211762; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=5AaVii71/VY2wZ+q8F0jNvSLMQ/WesHh9hxpdt+FDPE=;
+        b=Xu3zQWnTlTl3r/2fWxAUCftEqoOXkISJ/YoxGvbR+p3hsH4r+8sKZfMoMC+/T0eGzh
+         yXYF96AhRjSapKJO7itR650vUNa6T7rltbCChVxG963WPb+VZjetMYXlldfB66d+lgm/
+         5V93mwcTFQDY8SDIq7WcGJbY0eWqpJ9N6lSFHifvMJ1TvngrTrmFAYEEYKkq8HHFBTTM
+         0i7UXARzTmoDQ8Rqj8mkADWutj7CnqtwIvXN/St9e7M+FTaAppgiaQScesp7/nEYz/4m
+         zHrgJDmtacTUqYffcNU3uLJxAMnn/LONPkgbu4d6oyF52n1Pv/UlyA2nZEWg+MhwzKJY
+         qcrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708606962; x=1709211762;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=5AaVii71/VY2wZ+q8F0jNvSLMQ/WesHh9hxpdt+FDPE=;
+        b=eoXn734x/MGBXAMNbymCBKiMoDf52xMHgTwgkAzg28BVGLgI5O57z3K/7FMrzRS7us
+         uzcfocq+bNignjYm8opLBrfGqQpnBF/VYO6CxIf3y5lAlS9PfL/k8uqFGovW6Yje5Bwr
+         ntECl96FO8caTygI3iaZb58GOB/pSYIjOtEUoGAAuDL3RsRTRoJeHH2ETJPd3X94oQub
+         B5yewZLzasFkwwLqxpAkExMk9j0cYvbBRGz4maZqeY0nktHqTpNaHJ+Nj4dlCW/XKeUH
+         +OHZ7YPbqV9UKa17cf3CQSCnoZik3VCFX+7dT9JcOp0eCWWhGaJB4jIuz/Ba9iG/gebA
+         BNFA==
+X-Forwarded-Encrypted: i=1; AJvYcCVb/o/gtHT02Jz3O8VPxlgegpNT6c0RxHsWYmdSlrHt1aw2I6GihqsDtQ9vpiXzT3Rpv5XTAnq4qZQQJvScDOV/cG2qQeQ=
+X-Gm-Message-State: AOJu0Yyx0Ry9UnBYpTqDyhTxHDNmOPh/k7clRJBVDXFNjvY/gAACbM3P
+	7AnV6a/H1wQeATNkDQihyEsDCDwlgsNeKpSl+WIWUbhkUyvKED9pOzJ7LuwBjGU=
+X-Google-Smtp-Source: AGHT+IGAK7E+kzRE8+YA/j2lb1I8Y61tiNcJdozr2Qvcpk6aaDKEVgEQPQJ+SEeGp2gh8IK9zaw/sg==
+X-Received: by 2002:a0c:da82:0:b0:68f:2c72:a76a with SMTP id z2-20020a0cda82000000b0068f2c72a76amr22568368qvj.3.1708606962586;
+        Thu, 22 Feb 2024 05:02:42 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id qm18-20020a056214569200b0068c88a31f1bsm1309293qvb.89.2024.02.22.05.02.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Feb 2024 05:02:42 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rd8im-00G85D-DJ;
+	Thu, 22 Feb 2024 09:02:40 -0400
+Date: Thu, 22 Feb 2024 09:02:40 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Shuah Khan <shuah@kernel.org>,
+	Yi Liu <yi.l.liu@intel.com>, Nicolin Chen <nicolinc@nvidia.com>,
+	kernel@collabora.com, iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests/iommu: fix the config fragment
+Message-ID: <20240222130240.GA3220539@ziepe.ca>
+References: <20240222074934.71380-1-usama.anjum@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, kevin.tian@intel.com, dwmw2@infradead.org,
- will@kernel.org, lukas@wunner.de, yi.l.liu@intel.com,
- dan.carpenter@linaro.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
- Haorong Ye <yehaorong@bytedance.com>
-Subject: Re: [PATCH v13 1/3] PCI: make pci_dev_is_disconnected() helper public
- for other drivers
-Content-Language: en-US
-To: Ethan Zhao <haifeng.zhao@linux.intel.com>, bhelgaas@google.com,
- robin.murphy@arm.com, jgg@ziepe.ca
-References: <20240222090251.2849702-1-haifeng.zhao@linux.intel.com>
- <20240222090251.2849702-2-haifeng.zhao@linux.intel.com>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240222090251.2849702-2-haifeng.zhao@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240222074934.71380-1-usama.anjum@collabora.com>
 
-On 2024/2/22 17:02, Ethan Zhao wrote:
-> Make pci_dev_is_disconnected() public so that it can be called from
-> Intel VT-d driver to quickly fix/workaround the surprise removal
-> unplug hang issue for those ATS capable devices on PCIe switch downstream
-> hotplug capable ports.
+On Thu, Feb 22, 2024 at 12:49:33PM +0500, Muhammad Usama Anjum wrote:
+> The config fragment doesn't follow the correct format to enable those
+> config options which make the config options getting missed while
+> merging with other configs.
 > 
-> Beside pci_device_is_present() function, this one has no config space
-> space access, so is light enough to optimize the normal pure surprise
-> removal and safe removal flow.
+> ➜ merge_config.sh -m .config tools/testing/selftests/iommu/config
+> Using .config as base
+> Merging tools/testing/selftests/iommu/config
+> ➜ make olddefconfig
+> .config:5295:warning: unexpected data: CONFIG_IOMMUFD
+> .config:5296:warning: unexpected data: CONFIG_IOMMUFD_TEST
 > 
-> Tested-by: Haorong Ye<yehaorong@bytedance.com>
-> Signed-off-by: Ethan Zhao<haifeng.zhao@linux.intel.com>
+> While at it, add CONFIG_FAULT_INJECTION as well which is needed for
+> CONFIG_IOMMUFD_TEST. If CONFIG_FAULT_INJECTION isn't present in base
+> config (such as x86 defconfig), CONFIG_IOMMUFD_TEST doesn't get enabled.
+> 
+> Fixes: 57f0988706fe ("iommufd: Add a selftest")
+> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
 > ---
->   drivers/pci/pci.h   | 5 -----
->   include/linux/pci.h | 5 +++++
->   2 files changed, 5 insertions(+), 5 deletions(-)
+>  tools/testing/selftests/iommu/config | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 
-Hi PCI subsystem maintainers,
+Appled, thanks
 
-The iommu drivers (including, but not limited to, the Intel VT-d driver)
-require a helper to check the physical presence of a PCI device in two
-scenarios:
-
-- During the iommu_release_device() path: This ensures the device is
-   physically present before sending device TLB invalidation to device.
-
-- During the device driver lifecycle when a device TLB invalidation
-   timeout event is generated by the IOMMU hardware: This helps handle
-   situations where the device might have been hot-removed.
-
-While there may be some adjustments needed in patch 3/3, I'd like to
-confirm with you whether it's feasible to expose this helper for general
-use within the iommu subsystem.
-
-If you agree with this change, I can route this patch to Linus through
-the iommu tree with an "acked-by" or "reviewed-by" tag from you.
-
-Best regards,
-baolu
+Jason
