@@ -1,63 +1,121 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2043.outbound.protection.outlook.com [40.107.220.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD732548EA;
-	Thu, 22 Feb 2024 20:03:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708632201; cv=none; b=Z+tLnbQWqpKvWqHywWY9fYyurz1SVZZBMUSLyABGv4eZ3AI6DWia7lGfCr81tkbn+bacKd1ZNakoYzFlSVP/Aahj6ktm3DgO+0iPXdPSe74Yd3cTkvn8wiyFqg3f04Wz0Bi9U2MLBGg67AYqUIwBOpQ+T6kGTIjxnn24kDboitY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708632201; c=relaxed/simple;
-	bh=T7r/4WSkGDKc96mto37aPOmcOTt+wPazyC3Uwb2o0x8=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=ezMnZeVorUeNt9t5N1wev7WifAgdUTD5PR9lTX6DJAQGhTdetPT8VcNhlFrizv7Y2GZsjwuUpi9AzT/Tx+Kj2j8utpwt9b41aQ0Uwib1CdBICdJd55whU3zLX6UmQ9V5YQ/Umm6eXqkSM8X6Q6v1jK8NH9pFHnZ0MpkYCtI4M1M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VGD/v7ve; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5C9514B832;
+	Thu, 22 Feb 2024 21:24:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708637045; cv=fail; b=XeaTNY3qBJsqRbVvZLghtABDnKrlQT/qgZeFO7mHIQV0jgznKDEInbo9g3y4oqLp/S8dVMnnEASMIVYXnLQRxPeHCFAfbg7OlhFHVxeZGj7HORKme0M6O5O7XuhywEhg2B0YHMjkqOpf+HKVUto5/S0HStebDH3tAq7kZnZsILo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708637045; c=relaxed/simple;
+	bh=2VWHsO8eiZ+k512qv6/59xkYcqTSCCTn13EP0Ayb1C8=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=idmeMmucxBRhTZcv568c8XSDqGon61GMgEP6WnAdsBKvUvQKcJRkAXU/U+k3Us36iSqy1404IKchdI7HZJ+o9eq8CONqIx7/IRlXRs9pzQ+7Mki4FoaQQ9uYKGoGnwdiOxMmaNRdC2SXRen7SuP5Gphs/Al5l+MV/N8wrFDbBFw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=fOlGns/z; arc=fail smtp.client-ip=40.107.220.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VGD/v7ve"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2D4CFC433F1;
-	Thu, 22 Feb 2024 20:03:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708632201;
-	bh=T7r/4WSkGDKc96mto37aPOmcOTt+wPazyC3Uwb2o0x8=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=VGD/v7vezpF479PDvh+EdxHAVp/DaQ0aYhcLiIQwM+9KXhZDWkkQBL9ZEsj16Umoj
-	 TresCfR079y9l6YANX9gHUGFH/UKPdSKGk9dNyYIPe+b1riRj+QzfLTXPj+SL5Nk2z
-	 ZedRZxUWkp+O7L+p2//OUIfB40F8OozP6RZ9gfe0jD9+evqRivSWsDbgtxh11z3A2V
-	 9y7DGy1RfZFIBR8Nhr+UMzhEOAYw/fBamMbelG6qgsVxDlmEjdz6XKOMjnwoEdaMt/
-	 m3HwzOLOCW2MpHsrTjeBzkV/Bej+ucoVGz+KTGKQ5VG/fzlThKOo6iR7Fz916MRa2o
-	 I+4pwY3jbGmpQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 190EAC395F1;
-	Thu, 22 Feb 2024 20:03:21 +0000 (UTC)
-Subject: Re: [GIT PULL] Please pull IOMMUFD subsystem changes
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20240222132304.GA3882153@nvidia.com>
-References: <20240222132304.GA3882153@nvidia.com>
-X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20240222132304.GA3882153@nvidia.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
-X-PR-Tracked-Commit-Id: 510325e5ac5f45c1180189d3bfc108c54bf64544
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 4c36fbb46f1326c8a11d81594a710098909eb9bf
-Message-Id: <170863220108.18444.5780012185035340615.pr-tracker-bot@kernel.org>
-Date: Thu, 22 Feb 2024 20:03:21 +0000
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="fOlGns/z"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cxXWTu4YkK1pdqEvsMEJ6tOOOJe3vvv0fPJLMCesstjFC/i93HjNUyzh/9WgdlYchxCLlP/Ifa0L7gnNQcsqopaFitnJLpiW4dZVgwwIAebY04niHaEanshCVXRDe2yCw5Pd9Edb0uY6zAE/1VniEfGfWTClz5zV8VqQ00FCmy03jLsnQOjJPotLJOe2xPLVNi47cSFdjlAlqp2d9ge5UDcSrGuDnsK3LDJ8AQfXJ/ZJn4H6kASj2oLoVGW83Zc92nLhaaIIEoS02Eg6HA5YY9Pltgg/oPZD7JfaAj47vg1WslPDHisUR5teBnBXad/FqWW5pK9GxvzHzlRUCVt7xw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Do3tPKVoS0rIH2c8R0h09/5glxyQgXXZPq8L4axdOkU=;
+ b=BMtd2U2jV8VQY6Uy0DCqg8Mr+JgMPk2RGEuHI3/O3eIVXWpuj1pLWmnGPn1OTCWmEayR88lWtx49VLoaTXCpFWm5qJsVWWudF+K+yDAh6K98dmzExEBqT5Zg9+PX3pJhWGl2C7XglODIx8J9L41GppwFKUadnufH88l+VrH6VZQ6qYUyhNRhej+UTA7PNYAfCwIU9mmwho5uSCyE4gNLDFYXpkx+t+4irM5v1WbEymZY31mbT7+HDhkvcDhQQO0XQtyBr+UyejBl3v3MD7T566IBE9oS05VcMXxKHYSQwM8XsO0UXjHYUfj8FdGKsaQfnXEn8TJjUcf9+L/mpNBNWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=intel.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Do3tPKVoS0rIH2c8R0h09/5glxyQgXXZPq8L4axdOkU=;
+ b=fOlGns/zRS+doCKo5VEj0mKqeoNavTfYbyWLMJwwUB2hKbn/iG28hXBAgrNZ/5AGrFNi2VfLzJct2vuq+wWuvK4SzD3nrOCoFp4tiVlhWqVh1+f7M7vTzB8u1z/jyO6Ul1WPppSR+9Avb+57E+aAvoaa+Xj7eBtSIiSsL2Gt21ZispF0xIhPqXaNle0Ld6dbgvm6UUdVjlA91D5XvUiKmlw5ow+f9zcOvyZHW2SoWUQIJhrZVMKGxaGu2mdXBQifU4yOH7Q7vr4K+SPxxwRhGr0Vf7D5/GOAjnA35BXKXI0bSb1NUPJQJmzo14bLYNkO/ssNkj87mlr1jof9ANiNCQ==
+Received: from DS7P222CA0018.NAMP222.PROD.OUTLOOK.COM (2603:10b6:8:2e::33) by
+ PH7PR12MB6718.namprd12.prod.outlook.com (2603:10b6:510:1b1::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.24; Thu, 22 Feb
+ 2024 21:24:00 +0000
+Received: from DS2PEPF00003443.namprd04.prod.outlook.com
+ (2603:10b6:8:2e:cafe::6e) by DS7P222CA0018.outlook.office365.com
+ (2603:10b6:8:2e::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.43 via Frontend
+ Transport; Thu, 22 Feb 2024 21:24:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ DS2PEPF00003443.mail.protection.outlook.com (10.167.17.70) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7292.25 via Frontend Transport; Thu, 22 Feb 2024 21:24:00 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 22 Feb
+ 2024 13:23:49 -0800
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.12; Thu, 22 Feb 2024 13:23:49 -0800
+Received: from Asurada-Nvidia.nvidia.com (10.127.8.11) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server id 15.2.1258.12 via Frontend
+ Transport; Thu, 22 Feb 2024 13:23:49 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <jgg@nvidia.com>, <kevin.tian@intel.com>
+CC: <yi.l.liu@intel.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
+	<patches@lists.linux.dev>
+Subject: [PATCH rc 0/3] iommufd: Fix three bugs found by Syzkaller
+Date: Thu, 22 Feb 2024 13:23:44 -0800
+Message-ID: <cover.1708636627.git.nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS2PEPF00003443:EE_|PH7PR12MB6718:EE_
+X-MS-Office365-Filtering-Correlation-Id: 81e7e454-a64b-404a-acb4-08dc33ec960d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	WOKUsfgXr5F6vZigztHFTLiJb2fG0n3nt+xjL5qBRhVjh7fXXwrqu6ZNvYvjrdgXob+O6QMMC1kGO8x2FIlQ/3voNh3/oN9nMx+M7cQr+Fjn0pDj1T3yulzymlnt7K//Vr2U3oBi8vJPz277Kslt1Qg2rRrF7T6/FfIwZSV+/40NUael4iP4VwbvYTWMUpcGZSRwa3o9+JTnNOQ45vk/FDkVxx9z8E7oOcJ9ax0W/dVQqAHtYRxZDlcp2xtAsewxqqiT5YdTAbJfQkTzKCNL9KrhOEbQCSbKld+mPbNDSN3qVL+pN8RHyxuwWMJh6iOH4Y/rRha5caOwKk85VsWIzsgXxRZVn8xfs5WwIY4YHesx7ewydQuEJdj+66WINcu9CrxObGLXXkndvY+ElXQuAogH0IYZ1q0HuXjsSiuNj/bFA7/7q/f531ZWrPK2P2SmWt8gJEl9NFHfeHnD0Kd8sPhwMOoSFvwY/4N26prMyfwXXeE73x9AimL5zVzyv0zzK8StaL3++2X8ec+Sr3B0XczhrqBVlvgsIPoYUF/4EeZusO+hUMyJrAiZ+Tu9ONFHgz1SwSPA0exlp1wMPi8exKJXgetE78ef065oSE3VAqa0EDyulLee/A7ZtXI8am4BBljMDab+Od65wGVm7MqJ7XifEClLiAFCs5YwEnssqpA=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(36860700004)(40470700004)(46966006);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Feb 2024 21:24:00.1138
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 81e7e454-a64b-404a-acb4-08dc33ec960d
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS2PEPF00003443.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6718
 
-The pull request you sent on Thu, 22 Feb 2024 09:23:04 -0400:
+Jason has been running Syzkaller that found three bugs.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git tags/for-linus-iommufd
+Fix them properly.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/4c36fbb46f1326c8a11d81594a710098909eb9bf
+Nicolin Chen (3):
+  iommufd: Fix iopt_access_list_id overwrite bug
+  iommufd/selftest: Fix mock_dev_num bug
+  iommufd: Fix protection fault in iommufd_test_syz_conv_iova
 
-Thank you!
+ drivers/iommu/iommufd/io_pagetable.c |  9 ++++---
+ drivers/iommu/iommufd/selftest.c     | 40 +++++++++++++++++++++-------
+ 2 files changed, 36 insertions(+), 13 deletions(-)
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.43.0
+
