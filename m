@@ -1,146 +1,271 @@
-Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6FE95788B
-	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 12:06:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED71758ACA
+	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 12:12:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708603596; cv=none; b=i8TrVkI/+EQ9oMICB8wSHzRQ9zfm82KO2eVgp0jAghr/Bp/268CFksKA/PAMw0NjEAZGLYoXuH+ZSEiiY51e+fq7vQB0dze+NFxGj4Qae782SJaDUQhAJJynheXps0YnMPu7F2wZaOr0RXMaei8ApQ1GkgxfjS8ndk6UeiImCD0=
+	t=1708603954; cv=none; b=c/3niIbK4iQypS4Wa2FvX+lHapaSqvNt3OhoW6xZlOJzrfQeiAFBFdFuY9/mXcDQy6Yfm3j99V2938d0bqBsJIFO6yOQon6VgNt+UwOCgkHEEw0bn6mjXzydMCuqSTGfUKFm5MDQODAR0WcDujvRK2yNL4OgJ3eK2dnwHZOdY9c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708603596; c=relaxed/simple;
-	bh=7aI6G4bBOHHgdLUJENGOOZbX/ns+aV6r4MxNKmJTzm4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=telT0W7G7Ecof/N9tXwFgshuRtBLrvvNjl1HKUXUEAnDK3XVxKCqCFQPZM/14FuAz5OyOSVcaykAKm9Swm5IS6AqmgpEmAbuci0EPQ68cRKCQk922UjShsSP4Ko8Pyu46MAXErzKpUMNP3SqPJvirjI5ZB5WUAutRdPTjYc/MOA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=rDVNCPKD; arc=none smtp.client-ip=209.85.218.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1708603954; c=relaxed/simple;
+	bh=FVdZu1RyDYBRnbvcrBaCROcUhkIvKg3pVHlVzcbPamI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nYtL1DhLBfbrV8fCl4s8i5iqXtGlPvIeWEtfIKqidqleCOAvZoivcXNF0zWzIX0USOxjfLcWJ3CR/HtSsalVUKr/qWQJCcIZhJwFw+nWbbZj/b/UnQtMqKExKB7k1RG1lf9LKeWmt/FgzujjGZRSXIboykJ4DNt9kFS2wiY7DOI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=FE4RHYf6; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=nU7WDITh; arc=none smtp.client-ip=195.135.223.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rDVNCPKD"
-Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a3e7f7b3d95so558697666b.3
-        for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 04:06:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1708603592; x=1709208392; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XHa5235f3kt9jZfGjaBEmGnvg17AThIfGkA6Ms6UFUA=;
-        b=rDVNCPKD7g5nH2YST2YzrTnVKQsomfbhrC479tbKEe3aC2c4Uhs55IoTkz7JvIDZ3a
-         /QxVv+VZR7exMPXI9a/hSNAjAqipdxBS/X4FNsZdZHeFbVvysSEStIqikhPtaZ/oXEJ0
-         drwilDo4EJbyJqTFtMqlRKyLqsysRGWabz9qrC+0cmWsLMwQqyM6JD4nhCpCDf8VzLJt
-         fZ+qrk38jyxchIMwDl1TlW+PUE9/Sb7LewBihZco56RwzDPRdh2rzSaXpLjE3cf5tvfQ
-         gwubuzV7Ez90ld9eXIH0RONV++DOsEke3Et3qty4esB2oZ3YeAtMU0ObZvWry/9lx0Yx
-         eL4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708603592; x=1709208392;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
-         :to:content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=XHa5235f3kt9jZfGjaBEmGnvg17AThIfGkA6Ms6UFUA=;
-        b=wTGxlo6z/Jyj9k3hq8ivVseHaS8QR285/ymyyjOwc69zLkvBLvFyRKOm61hGRPe8kO
-         5NL7OSrr5/uEdaAK0cyeAMJldszkTfQGMZvILut8x8u3g1XD3ei2yBWKHC2ibfj7EZXH
-         CJ0EvHcTm0Y6AlwL0Ve2wLRGrX3pJiO54psrV9SYbpTP0oU3JSVL4fcoEJMD2HRC6kOO
-         IgCkRmYnyusjAb0z2ixV2AMLIzyvhaSdqCacwokVKuEXU22PXimTYZe1BT04iasqBYFo
-         Eb0dPhsHVZDS7gur8E3VgPqTNNoR/PhxZkcexvqsyRqd00jihzxnAlx/L0XRfO/yxAf3
-         E6Ug==
-X-Forwarded-Encrypted: i=1; AJvYcCXMnXcstdGKCWDqktMtw2ULnCHrcd6soeBT8QxHRB21flI6Y3Lceubna2LCU6OrS1RDOiyfI9lTe1Ma1opGT7a4huhujlg=
-X-Gm-Message-State: AOJu0YwLpY7r2QVHdaEfbx/nRFH4iKPSHWCqZzoRySgfbMiM921xbCIa
-	TOpdX8zZ4wMCWH4m22+Wn6KwUocOln12mc8YIgbtzHPLOJMpVQN9kuy7tYTF2mI=
-X-Google-Smtp-Source: AGHT+IHvla7m4ZYgc3jjkIaynn5M6ot4IzHI5Wb7Kz375HfTJBfGN/z83SI+l/ELrpL/guKZwGYY+Q==
-X-Received: by 2002:a17:906:1c05:b0:a3f:804f:c1a4 with SMTP id k5-20020a1709061c0500b00a3f804fc1a4mr1267372ejg.74.1708603592180;
-        Thu, 22 Feb 2024 04:06:32 -0800 (PST)
-Received: from [192.168.1.20] ([178.197.222.116])
-        by smtp.gmail.com with ESMTPSA id y2-20020a170906470200b00a3d0dd84276sm5890564ejq.184.2024.02.22.04.06.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Feb 2024 04:06:31 -0800 (PST)
-Message-ID: <4a812d27-26e4-4358-a9f5-33ac66086769@linaro.org>
-Date: Thu, 22 Feb 2024 13:06:28 +0100
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="FE4RHYf6";
+	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="nU7WDITh"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out2.suse.de (Postfix) with ESMTPS id E40B71F457;
+	Thu, 22 Feb 2024 12:12:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1708603950; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=iDZS9rn1ORcB7JdPkuWo18rKAM4Uqo344IyJ6OSxvyU=;
+	b=FE4RHYf6KQniBvu69hMH61YFsJGUm+be/AWgzv3XVTDS8haXVcKEcmtqhLYtyoH79wE+BF
+	9rTbXWAQMLmYQg3dhbWCm6OQO7Hl7M/EukNOai/eLMIyuZ/W9oozZ458YgCq5yQMsvEOG9
+	9pG+sSYy3ZZ9rbeHDquU39srhn5O5Vc=
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+	t=1708603949; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=iDZS9rn1ORcB7JdPkuWo18rKAM4Uqo344IyJ6OSxvyU=;
+	b=nU7WDIThkhntaO85yrfZH+rTOcDv2P9JE96isJ7T+1A7OWnrrCYh5wjA2AMoxhC/+10aqG
+	iaI/IirNep5cQnEr9Hn5ohr48ApPMWRLfdMJkWuT0SulHAuto1+doT2DtrDHrf4LrtEqzZ
+	KGRJHRN6xIdAfHSvGSq+zmWiPenhKQM=
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id B76F9133DC;
+	Thu, 22 Feb 2024 12:12:29 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id tUIxLC0612VEJwAAD6G6ig
+	(envelope-from <mhocko@suse.com>); Thu, 22 Feb 2024 12:12:29 +0000
+Date: Thu, 22 Feb 2024 13:12:29 +0100
+From: Michal Hocko <mhocko@suse.com>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz,
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net,
+	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
+	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
+	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
+	x86@kernel.org, peterx@redhat.com, david@redhat.com,
+	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+	elver@google.com, dvyukov@google.com, shakeelb@google.com,
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org,
+	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+Subject: Re: [PATCH v4 06/36] mm: enumerate all gfp flags
+Message-ID: <Zdc6LUWnPOBRmtZH@tiehlicka>
+References: <20240221194052.927623-1-surenb@google.com>
+ <20240221194052.927623-7-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/7] dt-bindings: arm-smmu: Document SM8650 GPU SMMU
-Content-Language: en-US
-To: Neil Armstrong <neil.armstrong@linaro.org>,
- Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev
-References: <20240216-topic-sm8650-gpu-v3-0-eb1f4b86d8d3@linaro.org>
- <20240216-topic-sm8650-gpu-v3-3-eb1f4b86d8d3@linaro.org>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240216-topic-sm8650-gpu-v3-3-eb1f4b86d8d3@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240221194052.927623-7-surenb@google.com>
+Authentication-Results: smtp-out2.suse.de;
+	none
+X-Spam-Level: 
+X-Spam-Score: 0.70
+X-Spamd-Result: default: False [0.70 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 BAYES_HAM(-0.00)[10.38%];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 NEURAL_HAM_LONG(-1.00)[-1.000];
+	 TAGGED_RCPT(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 TO_MATCH_ENVRCPT_SOME(0.00)[];
+	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
+	 NEURAL_HAM_SHORT(-0.20)[-1.000];
+	 RCPT_COUNT_GT_50(0.00)[75];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 MID_RHS_NOT_FQDN(0.50)[];
+	 FREEMAIL_CC(0.00)[linux-foundation.org,linux.dev,suse.cz,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,i-love.sakura.ne.jp,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com,tesarici.cz];
+	 RCVD_TLS_ALL(0.00)[];
+	 SUSPICIOUS_RECIPS(1.50)[]
+X-Spam-Flag: NO
 
-On 16/02/2024 12:03, Neil Armstrong wrote:
-> Document the GPU SMMU found on the SM8650 platform.
+On Wed 21-02-24 11:40:19, Suren Baghdasaryan wrote:
+> Introduce GFP bits enumeration to let compiler track the number of used
+> bits (which depends on the config options) instead of hardcoding them.
+> That simplifies __GFP_BITS_SHIFT calculation.
 > 
-> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+> Suggested-by: Petr Tesařík <petr@tesarici.cz>
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> Reviewed-by: Kees Cook <keescook@chromium.org>
+
+I thought I have responded to this patch but obviously not the case.
+I like this change. Makes sense even without the rest of the series.
+Acked-by: Michal Hocko <mhocko@suse.com>
+
+It seems that KASAN flags already __GFP_BITS_SHIFT which just proves how
+fragile this existing scheme is.
+
 > ---
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+>  include/linux/gfp_types.h | 90 +++++++++++++++++++++++++++------------
+>  1 file changed, 62 insertions(+), 28 deletions(-)
+> 
+> diff --git a/include/linux/gfp_types.h b/include/linux/gfp_types.h
+> index 1b6053da8754..868c8fb1bbc1 100644
+> --- a/include/linux/gfp_types.h
+> +++ b/include/linux/gfp_types.h
+> @@ -21,44 +21,78 @@ typedef unsigned int __bitwise gfp_t;
+>   * include/trace/events/mmflags.h and tools/perf/builtin-kmem.c
+>   */
+>  
+> +enum {
+> +	___GFP_DMA_BIT,
+> +	___GFP_HIGHMEM_BIT,
+> +	___GFP_DMA32_BIT,
+> +	___GFP_MOVABLE_BIT,
+> +	___GFP_RECLAIMABLE_BIT,
+> +	___GFP_HIGH_BIT,
+> +	___GFP_IO_BIT,
+> +	___GFP_FS_BIT,
+> +	___GFP_ZERO_BIT,
+> +	___GFP_UNUSED_BIT,	/* 0x200u unused */
+> +	___GFP_DIRECT_RECLAIM_BIT,
+> +	___GFP_KSWAPD_RECLAIM_BIT,
+> +	___GFP_WRITE_BIT,
+> +	___GFP_NOWARN_BIT,
+> +	___GFP_RETRY_MAYFAIL_BIT,
+> +	___GFP_NOFAIL_BIT,
+> +	___GFP_NORETRY_BIT,
+> +	___GFP_MEMALLOC_BIT,
+> +	___GFP_COMP_BIT,
+> +	___GFP_NOMEMALLOC_BIT,
+> +	___GFP_HARDWALL_BIT,
+> +	___GFP_THISNODE_BIT,
+> +	___GFP_ACCOUNT_BIT,
+> +	___GFP_ZEROTAGS_BIT,
+> +#ifdef CONFIG_KASAN_HW_TAGS
+> +	___GFP_SKIP_ZERO_BIT,
+> +	___GFP_SKIP_KASAN_BIT,
+> +#endif
+> +#ifdef CONFIG_LOCKDEP
+> +	___GFP_NOLOCKDEP_BIT,
+> +#endif
+> +	___GFP_LAST_BIT
+> +};
+> +
+>  /* Plain integer GFP bitmasks. Do not use this directly. */
+> -#define ___GFP_DMA		0x01u
+> -#define ___GFP_HIGHMEM		0x02u
+> -#define ___GFP_DMA32		0x04u
+> -#define ___GFP_MOVABLE		0x08u
+> -#define ___GFP_RECLAIMABLE	0x10u
+> -#define ___GFP_HIGH		0x20u
+> -#define ___GFP_IO		0x40u
+> -#define ___GFP_FS		0x80u
+> -#define ___GFP_ZERO		0x100u
+> +#define ___GFP_DMA		BIT(___GFP_DMA_BIT)
+> +#define ___GFP_HIGHMEM		BIT(___GFP_HIGHMEM_BIT)
+> +#define ___GFP_DMA32		BIT(___GFP_DMA32_BIT)
+> +#define ___GFP_MOVABLE		BIT(___GFP_MOVABLE_BIT)
+> +#define ___GFP_RECLAIMABLE	BIT(___GFP_RECLAIMABLE_BIT)
+> +#define ___GFP_HIGH		BIT(___GFP_HIGH_BIT)
+> +#define ___GFP_IO		BIT(___GFP_IO_BIT)
+> +#define ___GFP_FS		BIT(___GFP_FS_BIT)
+> +#define ___GFP_ZERO		BIT(___GFP_ZERO_BIT)
+>  /* 0x200u unused */
+> -#define ___GFP_DIRECT_RECLAIM	0x400u
+> -#define ___GFP_KSWAPD_RECLAIM	0x800u
+> -#define ___GFP_WRITE		0x1000u
+> -#define ___GFP_NOWARN		0x2000u
+> -#define ___GFP_RETRY_MAYFAIL	0x4000u
+> -#define ___GFP_NOFAIL		0x8000u
+> -#define ___GFP_NORETRY		0x10000u
+> -#define ___GFP_MEMALLOC		0x20000u
+> -#define ___GFP_COMP		0x40000u
+> -#define ___GFP_NOMEMALLOC	0x80000u
+> -#define ___GFP_HARDWALL		0x100000u
+> -#define ___GFP_THISNODE		0x200000u
+> -#define ___GFP_ACCOUNT		0x400000u
+> -#define ___GFP_ZEROTAGS		0x800000u
+> +#define ___GFP_DIRECT_RECLAIM	BIT(___GFP_DIRECT_RECLAIM_BIT)
+> +#define ___GFP_KSWAPD_RECLAIM	BIT(___GFP_KSWAPD_RECLAIM_BIT)
+> +#define ___GFP_WRITE		BIT(___GFP_WRITE_BIT)
+> +#define ___GFP_NOWARN		BIT(___GFP_NOWARN_BIT)
+> +#define ___GFP_RETRY_MAYFAIL	BIT(___GFP_RETRY_MAYFAIL_BIT)
+> +#define ___GFP_NOFAIL		BIT(___GFP_NOFAIL_BIT)
+> +#define ___GFP_NORETRY		BIT(___GFP_NORETRY_BIT)
+> +#define ___GFP_MEMALLOC		BIT(___GFP_MEMALLOC_BIT)
+> +#define ___GFP_COMP		BIT(___GFP_COMP_BIT)
+> +#define ___GFP_NOMEMALLOC	BIT(___GFP_NOMEMALLOC_BIT)
+> +#define ___GFP_HARDWALL		BIT(___GFP_HARDWALL_BIT)
+> +#define ___GFP_THISNODE		BIT(___GFP_THISNODE_BIT)
+> +#define ___GFP_ACCOUNT		BIT(___GFP_ACCOUNT_BIT)
+> +#define ___GFP_ZEROTAGS		BIT(___GFP_ZEROTAGS_BIT)
+>  #ifdef CONFIG_KASAN_HW_TAGS
+> -#define ___GFP_SKIP_ZERO	0x1000000u
+> -#define ___GFP_SKIP_KASAN	0x2000000u
+> +#define ___GFP_SKIP_ZERO	BIT(___GFP_SKIP_ZERO_BIT)
+> +#define ___GFP_SKIP_KASAN	BIT(___GFP_SKIP_KASAN_BIT)
+>  #else
+>  #define ___GFP_SKIP_ZERO	0
+>  #define ___GFP_SKIP_KASAN	0
+>  #endif
+>  #ifdef CONFIG_LOCKDEP
+> -#define ___GFP_NOLOCKDEP	0x4000000u
+> +#define ___GFP_NOLOCKDEP	BIT(___GFP_NOLOCKDEP_BIT)
+>  #else
+>  #define ___GFP_NOLOCKDEP	0
+>  #endif
+> -/* If the above are modified, __GFP_BITS_SHIFT may need updating */
+>  
+>  /*
+>   * Physical address zone modifiers (see linux/mmzone.h - low four bits)
+> @@ -249,7 +283,7 @@ typedef unsigned int __bitwise gfp_t;
+>  #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
+>  
+>  /* Room for N __GFP_FOO bits */
+> -#define __GFP_BITS_SHIFT (26 + IS_ENABLED(CONFIG_LOCKDEP))
+> +#define __GFP_BITS_SHIFT ___GFP_LAST_BIT
+>  #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
+>  
+>  /**
+> -- 
+> 2.44.0.rc0.258.g7320e95886-goog
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
-
+-- 
+Michal Hocko
+SUSE Labs
