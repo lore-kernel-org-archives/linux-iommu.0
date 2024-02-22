@@ -1,60 +1,59 @@
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+Received: from mail-ej1-f45.google.com (mail-ej1-f45.google.com [209.85.218.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FCB8537EE
-	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 12:05:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6FE95788B
+	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 12:06:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708603554; cv=none; b=l0hC+zd4memGbIE8ni5hsC+hiS/Rvg/ekAkCsP4dkl0+jFYv9hwM8CXVoIgwMOvkwuSsg3rcbGYWNcW8N9A2PC13iO7RKt8uaTyIAC0WsQ0b7peZ+w1P/ov+dBe+8v2AJMlW1Dgp7j8Q/bTKslMdhDOONf2upy+HBuoQDKJ4DFY=
+	t=1708603596; cv=none; b=i8TrVkI/+EQ9oMICB8wSHzRQ9zfm82KO2eVgp0jAghr/Bp/268CFksKA/PAMw0NjEAZGLYoXuH+ZSEiiY51e+fq7vQB0dze+NFxGj4Qae782SJaDUQhAJJynheXps0YnMPu7F2wZaOr0RXMaei8ApQ1GkgxfjS8ndk6UeiImCD0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708603554; c=relaxed/simple;
-	bh=KKvLcOiV98GSllgISKgrqyI1EGcLROv5/IvM5efETM0=;
+	s=arc-20240116; t=1708603596; c=relaxed/simple;
+	bh=7aI6G4bBOHHgdLUJENGOOZbX/ns+aV6r4MxNKmJTzm4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gFgczSTkqCghXi2ULRIiisw3uIHdtsWEYPX5PDE1TTM6wwtA1nf9YnDAq1P1zCWWPvwSOsGto6QVRCfMjAk95q+f6OLEsB45z5YIRM1DCyKs8+XJ+3E+6EdAQ4qBU6Zho/euLiyZV8iEDXQHECmlmwGl26FmNGQIElytkp0cqiw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=esl70156; arc=none smtp.client-ip=209.85.218.52
+	 In-Reply-To:Content-Type; b=telT0W7G7Ecof/N9tXwFgshuRtBLrvvNjl1HKUXUEAnDK3XVxKCqCFQPZM/14FuAz5OyOSVcaykAKm9Swm5IS6AqmgpEmAbuci0EPQ68cRKCQk922UjShsSP4Ko8Pyu46MAXErzKpUMNP3SqPJvirjI5ZB5WUAutRdPTjYc/MOA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=rDVNCPKD; arc=none smtp.client-ip=209.85.218.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="esl70156"
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-a36126ee41eso1024642566b.2
-        for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 04:05:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rDVNCPKD"
+Received: by mail-ej1-f45.google.com with SMTP id a640c23a62f3a-a3e7f7b3d95so558697666b.3
+        for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 04:06:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1708603551; x=1709208351; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=VhNTP5JSQFFpkkI45lmtwLKszfADT7dwrioks7vMsQQ=;
-        b=esl70156w9zMzsbBvFoHNRS0BdVhtJdlw0qCn92BgA7owR4RAoLehybkCp9F7dXSUQ
-         c7K5FRYk5w1ONgZhJ/qccxBBAKNdcdY/4+pclE/z6WrMJNGiVGFcxGeuG3fFQTS8F0uE
-         z1DFU0/qlonbN9W6PdFb7eMVLOfO3h/Mv5CUQabwGyPGEjTrtqfk4neNDJqUgKRZbrB5
-         eAjOFKL5CNcJW0Vc2bgRBViPrsZD9oXAVyL1pwpDQhIBSWmJkLkzym6YcQrpUKxCypzh
-         X8KEzzVpLhNAoW1+ESdBaKwG84KTgbe/Ot6QUn7b9tI4KfGOZTeFfAx6vQjtz1lwjvUR
-         iVJA==
+        d=linaro.org; s=google; t=1708603592; x=1709208392; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=XHa5235f3kt9jZfGjaBEmGnvg17AThIfGkA6Ms6UFUA=;
+        b=rDVNCPKD7g5nH2YST2YzrTnVKQsomfbhrC479tbKEe3aC2c4Uhs55IoTkz7JvIDZ3a
+         /QxVv+VZR7exMPXI9a/hSNAjAqipdxBS/X4FNsZdZHeFbVvysSEStIqikhPtaZ/oXEJ0
+         drwilDo4EJbyJqTFtMqlRKyLqsysRGWabz9qrC+0cmWsLMwQqyM6JD4nhCpCDf8VzLJt
+         fZ+qrk38jyxchIMwDl1TlW+PUE9/Sb7LewBihZco56RwzDPRdh2rzSaXpLjE3cf5tvfQ
+         gwubuzV7Ez90ld9eXIH0RONV++DOsEke3Et3qty4esB2oZ3YeAtMU0ObZvWry/9lx0Yx
+         eL4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708603551; x=1709208351;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VhNTP5JSQFFpkkI45lmtwLKszfADT7dwrioks7vMsQQ=;
-        b=Pk1ivgVym+OPJH5xQf1aoHEUhqZDL7BH7Cmzw3HSwNxqjK9OkAZUTWoRLM/r5fFZPZ
-         PEQk8o/M4esF8EHYI4Sg4s5wNI/sLCC1jOlfGq4GILw5s3asbvufcZOsbC/G/GS3Tu/W
-         0OGLEsAqN5tAvjiCkTEo4pqtW/Fgx0sT4PYJWFRIPfCWCYUZMy/SJGtC9K/ikcVtnu7d
-         4XRYAEQ/uDQM/c3tjF08feny4iunkO2UTFzhYT8O0g+qg6PKNUgjBzJFxBVUTxk4JS4g
-         qECV6ASDStH1/+cs6yNp/VH+Dxu2DIJeTvtIzd5RyIc97ykEP6VTBOGiAa7qpPHpiePV
-         ayvw==
-X-Forwarded-Encrypted: i=1; AJvYcCUU/VkbevhdQFKF0WJSVnFFaiAeNs9CuOWrVLht42ALM+RHyEzOlSslx0D0VxJFL53qjg2MlTJFuvVKMAo8gXp1N/6Kgq8=
-X-Gm-Message-State: AOJu0YyohSD1HXGF/zA3ASVA//cW1lAGT4C+39F/Vm87CeYOXxUbSd+1
-	rq5RTuVl8hdnwkU8Z59YaZKXharm5Z+TTvMFnHIdb0AD6KmA71s/dUgetXLlcV0=
-X-Google-Smtp-Source: AGHT+IF0gq7oB19JRQfFEFdJ3i5QsdYD92leThmo951Mg2PKlUcdNRsBde2z2MI+ZKWkTEbzC/a84Q==
-X-Received: by 2002:a17:907:b9ca:b0:a3f:2247:bb59 with SMTP id xa10-20020a170907b9ca00b00a3f2247bb59mr4009151ejc.61.1708603551444;
-        Thu, 22 Feb 2024 04:05:51 -0800 (PST)
+        d=1e100.net; s=20230601; t=1708603592; x=1709208392;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XHa5235f3kt9jZfGjaBEmGnvg17AThIfGkA6Ms6UFUA=;
+        b=wTGxlo6z/Jyj9k3hq8ivVseHaS8QR285/ymyyjOwc69zLkvBLvFyRKOm61hGRPe8kO
+         5NL7OSrr5/uEdaAK0cyeAMJldszkTfQGMZvILut8x8u3g1XD3ei2yBWKHC2ibfj7EZXH
+         CJ0EvHcTm0Y6AlwL0Ve2wLRGrX3pJiO54psrV9SYbpTP0oU3JSVL4fcoEJMD2HRC6kOO
+         IgCkRmYnyusjAb0z2ixV2AMLIzyvhaSdqCacwokVKuEXU22PXimTYZe1BT04iasqBYFo
+         Eb0dPhsHVZDS7gur8E3VgPqTNNoR/PhxZkcexvqsyRqd00jihzxnAlx/L0XRfO/yxAf3
+         E6Ug==
+X-Forwarded-Encrypted: i=1; AJvYcCXMnXcstdGKCWDqktMtw2ULnCHrcd6soeBT8QxHRB21flI6Y3Lceubna2LCU6OrS1RDOiyfI9lTe1Ma1opGT7a4huhujlg=
+X-Gm-Message-State: AOJu0YwLpY7r2QVHdaEfbx/nRFH4iKPSHWCqZzoRySgfbMiM921xbCIa
+	TOpdX8zZ4wMCWH4m22+Wn6KwUocOln12mc8YIgbtzHPLOJMpVQN9kuy7tYTF2mI=
+X-Google-Smtp-Source: AGHT+IHvla7m4ZYgc3jjkIaynn5M6ot4IzHI5Wb7Kz375HfTJBfGN/z83SI+l/ELrpL/guKZwGYY+Q==
+X-Received: by 2002:a17:906:1c05:b0:a3f:804f:c1a4 with SMTP id k5-20020a1709061c0500b00a3f804fc1a4mr1267372ejg.74.1708603592180;
+        Thu, 22 Feb 2024 04:06:32 -0800 (PST)
 Received: from [192.168.1.20] ([178.197.222.116])
-        by smtp.gmail.com with ESMTPSA id y2-20020a170906470200b00a3d0dd84276sm5890564ejq.184.2024.02.22.04.05.48
+        by smtp.gmail.com with ESMTPSA id y2-20020a170906470200b00a3d0dd84276sm5890564ejq.184.2024.02.22.04.06.29
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Feb 2024 04:05:50 -0800 (PST)
-Message-ID: <bd13fb09-8602-45e3-8d03-db7a8a0afb7e@linaro.org>
-Date: Thu, 22 Feb 2024 13:05:46 +0100
+        Thu, 22 Feb 2024 04:06:31 -0800 (PST)
+Message-ID: <4a812d27-26e4-4358-a9f5-33ac66086769@linaro.org>
+Date: Thu, 22 Feb 2024 13:06:28 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,8 +61,8 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/7] dt-bindings: arm-smmu: fix SM8[45]50 GPU SMMU if
- condition
+Subject: Re: [PATCH v3 3/7] dt-bindings: arm-smmu: Document SM8650 GPU SMMU
+Content-Language: en-US
 To: Neil Armstrong <neil.armstrong@linaro.org>,
  Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
  Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
@@ -82,8 +81,7 @@ Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
  linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev
 References: <20240216-topic-sm8650-gpu-v3-0-eb1f4b86d8d3@linaro.org>
- <20240216-topic-sm8650-gpu-v3-2-eb1f4b86d8d3@linaro.org>
-Content-Language: en-US
+ <20240216-topic-sm8650-gpu-v3-3-eb1f4b86d8d3@linaro.org>
 From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
@@ -129,18 +127,17 @@ Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
  KQ06ztUMRrj8eVtpImjsWCd0bDWRaaR4vqhCHvAG9iWXZu4qh3ipie2Y0oSJygcZT7H3UZxq
  fyYKiqEmRuqsvv6dcbblD8ZLkz1EVZL6djImH5zc5x8qpVxlA0A0i23v5QvN00m6G9NFF0Le
  D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240216-topic-sm8650-gpu-v3-2-eb1f4b86d8d3@linaro.org>
+In-Reply-To: <20240216-topic-sm8650-gpu-v3-3-eb1f4b86d8d3@linaro.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 16/02/2024 12:03, Neil Armstrong wrote:
-> The if condition for the SM8[45]50 GPU SMMU is too large,
-> add the other compatible strings to the condition to only
-> allow the clocks for the GPU SMMU nodes.
+> Document the GPU SMMU found on the SM8650 platform.
 > 
-> Fixes: 4fff78dc2490 ("dt-bindings: arm-smmu: Document SM8[45]50 GPU SMMU")
-> Suggested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 > Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 
 Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
