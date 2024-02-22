@@ -1,129 +1,153 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-187.mta1.migadu.com (out-187.mta1.migadu.com [95.215.58.187])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0C598BF9
-	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 00:27:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3431C2E6
+	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 00:34:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.187
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708561666; cv=none; b=sjKLyhwsHvyg0h2hFWwVT98sV/3DDOepHqPNIhbg0g58q+ggXTlKSfzuHShZZK1QjSNDUxQipn/qzwWIAFJwZg/tM/vAFcEDM91vt4y0SkZFKmzqBA0LSE6eKNIqRJcyO0fkNZtF2SUft5mbJCT5CNm3VRM02fURxPfTgf61voY=
+	t=1708562101; cv=none; b=qytA0Mu4vSwn00sLCDin06HBkWRlw2h7ZL4CqjrhO2Hr/u79uhHU4yhD6fqUXGgEE3xuNs00B0z2gWlPG4sG9KvT7ApBDCjq9JxjI8YBRq/6QwPIIXSeaDSKD7k5ca2/ufnEfu4xMaJ/Fr2LFjKG1EH0dMb+UAD+3KVZ/MWH8ww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708561666; c=relaxed/simple;
-	bh=KFCl6fU1744flulJCJ4xzKP7ZfOs3jlFHZaEmtavvFE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=l9Zn4bAyRzhArRWehtXrGcDCN4r6ctiafZdjIdwHVvcu3SOLlvn8K+qYRlkcAtX0Mh1MYP/J5LGMK5Z5Ck1nlXvPTskOMYBOUfn498TC0ZRDaI08Q+6ElDyTDVBmVxG3nnE08L1Bjw6CcEyE7ZLmOXeONKLl08Q78SRS5W2Tfcg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=LHHDn/nF; arc=none smtp.client-ip=209.85.160.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	s=arc-20240116; t=1708562101; c=relaxed/simple;
+	bh=fsJO7Voe+3kvWM45B0Sk22Vetz/209FiI591NGHa660=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nlOkeDrPbLQpPeVd0m/H9jnOi7U2pjSPAomuHzZqhXGQJ3iDbjSkK6re5PiSIVGiipJBjiBpfOB9r9hg+RZENUbpXm8A8lfr+60TdEzfNMTfo+/if67NU5gpZsVqw3j8qVwUl+qCnLbK14QfTun5nTOlxhp1UqnvgjCaPDa5APg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=DNUFEkkq; arc=none smtp.client-ip=95.215.58.187
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="LHHDn/nF"
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-429f53f0b0bso53122361cf.2
-        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 16:27:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708561664; x=1709166464; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=aQ94+F18kEzvELBZYdN+dTOkgUJXZz4kfGzznQZui6Y=;
-        b=LHHDn/nFsRHTm0vQNZYLmNE2zDndtM7VgpFD9VLaZPMhSF9svJ5+7adKUcj3ND0N9G
-         IjH1seXf03hg+7dwZv1Rk5QGSQ5iJwASrxWfg5fZIMDpqelseS6ZqXiexzwDqgw6WF0u
-         KjVZnYfSNuUh/nEQsyE23elBoPHA9anTC2w4gtuMB5PPKsGocgy2JpmNeKsIO1us9ved
-         3ErClLEkYqLB/mAp9bBKr02SkUUV3QcRY/XQNgwQi+p16Ho4q1vGMD5EGd1nGyD99GSv
-         2Kfp7wcp1tlU7X8XQG1KBYLsyZxj4PkqlmR9ZaxdD4pmdnCvlER4EMUCdJS9XECuNzsK
-         B2rw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708561664; x=1709166464;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=aQ94+F18kEzvELBZYdN+dTOkgUJXZz4kfGzznQZui6Y=;
-        b=JFrDJJSYTecQJ5os/1mbpFG2tbUjHta1cuLyJDUaf5WcKpURBtlloEL9Cl3d5uH8fP
-         VKgpLnGF62QqtgoWD560QHtfk97DLMkU8RmLJrg9nLs6XUUmCYG34L/d8KpjTm+OrzBS
-         3/QIjo/Yon2uNpI5whkz2N9e7Kl4kOoygbhbewwT/NKbU1e/gGZSxf6yjzp9yt056aM1
-         M+6qZvIhtkZ/Ze+eN2jP6fmfdcsuzhQboDc0J+AwYLgeb6LK+SqWfm18Yk6HE80oMXm1
-         sIc3Zbmk5H6arYjH4207PzHEz9BXAjorQ/qgjLPz7r+qk0a+ghiyg0/fEEM5jithidBl
-         /oNQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV7dnuZHLuqeN2LPewt7q8C2vDCPDzSCqppzJ7K/3BxsD5ubqzf4Jn0qXxgFalY6gFbnZ4ji8Nuf4saUsg0gcU8jUqAw+U=
-X-Gm-Message-State: AOJu0YzSH60dKCEXm+Ed/5507/22aLhqmqCyVolV1o1HwnvbnV/TNMHL
-	gE6HX9RRhkKnRruz4Ne61dvgfT3G950A/CcXqkYtmTJAMNi2ataK5HPvEtyGt9kvjv56xgAOnqS
-	0NR6pUq2eJ6ftVRQbWr0qGZta5eMTYENMtSIvqw==
-X-Google-Smtp-Source: AGHT+IGOmZsSpC2Y4SyYnlcRyS9zDA76SD5RvGLDRLTwS53fSOkMzROnT7IsmFNQ2MsELKRVDDNbuO1hZG2u+Llmnq0=
-X-Received: by 2002:a05:622a:1391:b0:42c:6fef:90e with SMTP id
- o17-20020a05622a139100b0042c6fef090emr25244584qtk.65.1708561663980; Wed, 21
- Feb 2024 16:27:43 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="DNUFEkkq"
+Date: Wed, 21 Feb 2024 19:34:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1708562097;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=G88uSOyu1u80Eng+KqSI+b6wDgfOq5t2Nzkcxgmz8B8=;
+	b=DNUFEkkqgQoWl+SP5laughmYXRyxMqPuHqKkeAnGKyFby/zySfYBY3FIzXWdfPg84xohpk
+	J9sGqqVtCHuZbx8fNQO/nCqhO4qFN18b+/JysbQQ/t5n2nk/SljAJhmsg3qEL65+dgnRkH
+	bSHDYXEVjKjZFJzAzNHVNqfZXbzQDrY=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Kees Cook <keescook@chromium.org>
+Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org, 
+	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, 
+	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
+	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, 
+	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org, 
+	peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, 
+	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, tj@kernel.org, 
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, hughd@google.com, 
+	andreyknvl@gmail.com, ndesaulniers@google.com, vvvvvv@google.com, 
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
+	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
+	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, minchan@google.com, 
+	kaleshsingh@google.com, kernel-team@android.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-modules@vger.kernel.org, 
+	kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+Subject: Re: [PATCH v4 14/36] lib: add allocation tagging support for memory
+ allocation profiling
+Message-ID: <vxx2o2wdcqjkxauglu7ul52mygu4tti2i3yc2dvmcbzydvgvu2@knujflwtakni>
+References: <20240221194052.927623-1-surenb@google.com>
+ <20240221194052.927623-15-surenb@google.com>
+ <202402211449.401382D2AF@keescook>
+ <4vwiwgsemga7vmahgwsikbsawjq5xfskdsssmjsfe5hn7k2alk@b6ig5v2pxe5i>
+ <202402211608.41AD94094@keescook>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20231226200205.562565-1-pasha.tatashin@soleen.com>
- <20231226200205.562565-11-pasha.tatashin@soleen.com> <20240213131210.GA28926@willie-the-truck>
- <CA+CK2bB4Z+z8tocO79AdsAy+gmN_4aVHgFUsm_gYLUJ2zV1A6A@mail.gmail.com>
- <20240216175752.GB2374@willie-the-truck> <CA+CK2bDURTkZFo9uE9Bgfrz-NwgXqo4SAzLOW6Jb35M+eqUEaA@mail.gmail.com>
- <20240222002152.GG13491@ziepe.ca>
-In-Reply-To: <20240222002152.GG13491@ziepe.ca>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Wed, 21 Feb 2024 19:27:07 -0500
-Message-ID: <CA+CK2bBGzM8Xbfq9A7HHNr40oukvAk7-1RK7AFbW3qFcNstb5g@mail.gmail.com>
-Subject: Re: [PATCH v3 10/10] iommu: account IOMMU allocated memory
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Will Deacon <will@kernel.org>, akpm@linux-foundation.org, alim.akhtar@samsung.com, 
-	alyssa@rosenzweig.io, asahi@lists.linux.dev, baolu.lu@linux.intel.com, 
-	bhelgaas@google.com, cgroups@vger.kernel.org, corbet@lwn.net, 
-	david@redhat.com, dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de, 
-	iommu@lists.linux.dev, jernej.skrabec@gmail.com, jonathanh@nvidia.com, 
-	joro@8bytes.org, krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, linux-rockchip@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
-	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st, 
-	mhiramat@kernel.org, m.szyprowski@samsung.com, paulmck@kernel.org, 
-	rdunlap@infradead.org, robin.murphy@arm.com, samuel@sholland.org, 
-	suravee.suthikulpanit@amd.com, sven@svenpeter.dev, thierry.reding@gmail.com, 
-	tj@kernel.org, tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org, 
-	yu-cheng.yu@intel.com, rientjes@google.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202402211608.41AD94094@keescook>
+X-Migadu-Flow: FLOW_OUT
 
-> > > > > While I can see the value in this for IOMMU mappings managed by VFIO,
-> > > > > doesn't this end up conflating that with the normal case of DMA domains?
-> > > > > For systems that e.g. rely on an IOMMU for functional host DMA, it seems
-> > > > > wrong to subject that to accounting constraints.
-> > > >
-> > > > The accounting constraints are only applicable when GFP_KERNEL_ACCOUNT
-> > > > is passed to the iommu mapping functions. We do that from the vfio,
-> > > > iommufd, and vhost. Without this flag, the memory useage is reported
-> > > > in /proc/meminfo as part of  SecPageTables field, but not constrained
-> > > > in cgroup.
-> > >
-> > > Thanks, Pasha, that explanation makes sense. I still find it bizarre to
-> > > include IOMMU allocations from the DMA API in SecPageTables though, and
-> > > I worry that it will confuse people who are using that metric as a way
-> > > to get a feeling for how much memory is being used by KVM's secondary
-> > > page-tables. As an extreme example, having a non-zero SecPageTables count
-> > > without KVM even compiled in is pretty bizarre.
-> >
-> > I agree; I also prefer a new field in /proc/meminfo named
-> > 'IOMMUPageTables'. This is what I proposed at LPC, but I was asked to
-> > reuse the existing 'SecPageTables' field instead. The rationale was
-> > that 'secondary' implies not only KVM page tables, but any other
-> > non-regular page tables.
->
-> Right, SeanC mentioned that the purpose of SecPageTables was to
-> capture all non-mm page table radix allocations.
->
-> > I would appreciate the opinion of IOMMU maintainers on this: is it
-> > preferable to bundle the information with 'SecPageTables' or maintain
-> > a separate field?
->
-> I think you should keep them together. I don't think we should be
-> introducing new counters, in general.
+On Wed, Feb 21, 2024 at 04:25:02PM -0800, Kees Cook wrote:
+> On Wed, Feb 21, 2024 at 06:29:17PM -0500, Kent Overstreet wrote:
+> > On Wed, Feb 21, 2024 at 03:05:32PM -0800, Kees Cook wrote:
+> > > On Wed, Feb 21, 2024 at 11:40:27AM -0800, Suren Baghdasaryan wrote:
+> > > > [...]
+> > > > +struct alloc_tag {
+> > > > +	struct codetag			ct;
+> > > > +	struct alloc_tag_counters __percpu	*counters;
+> > > > +} __aligned(8);
+> > > > [...]
+> > > > +#define DEFINE_ALLOC_TAG(_alloc_tag)						\
+> > > > +	static DEFINE_PER_CPU(struct alloc_tag_counters, _alloc_tag_cntr);	\
+> > > > +	static struct alloc_tag _alloc_tag __used __aligned(8)			\
+> > > > +	__section("alloc_tags") = {						\
+> > > > +		.ct = CODE_TAG_INIT,						\
+> > > > +		.counters = &_alloc_tag_cntr };
+> > > > [...]
+> > > > +static inline struct alloc_tag *alloc_tag_save(struct alloc_tag *tag)
+> > > > +{
+> > > > +	swap(current->alloc_tag, tag);
+> > > > +	return tag;
+> > > > +}
+> > > 
+> > > Future security hardening improvement idea based on this infrastructure:
+> > > it should be possible to implement per-allocation-site kmem caches. For
+> > > example, we could create:
+> > > 
+> > > struct alloc_details {
+> > > 	u32 flags;
+> > > 	union {
+> > > 		u32 size; /* not valid after __init completes */
+> > > 		struct kmem_cache *cache;
+> > > 	};
+> > > };
+> > > 
+> > > - add struct alloc_details to struct alloc_tag
+> > > - move the tags section into .ro_after_init
+> > > - extend alloc_hooks() to populate flags and size:
+> > > 	.flags = __builtin_constant_p(size) ? KMALLOC_ALLOCATE_FIXED
+> > > 					    : KMALLOC_ALLOCATE_BUCKETS;
+> > > 	.size = __builtin_constant_p(size) ? size : SIZE_MAX;
+> > > - during kernel start or module init, walk the alloc_tag list
+> > >   and create either a fixed-size kmem_cache or to allocate a
+> > >   full set of kmalloc-buckets, and update the "cache" member.
+> > > - adjust kmalloc core routines to use current->alloc_tag->cache instead
+> > >   of using the global buckets.
+> > > 
+> > > This would get us fully separated allocations, producing better than
+> > > type-based levels of granularity, exceeding what we have currently with
+> > > CONFIG_RANDOM_KMALLOC_CACHES.
+> > > 
+> > > Does this look possible, or am I misunderstanding something in the
+> > > infrastructure being created here?
+> > 
+> > Definitely possible, but... would we want this?
+> 
+> Yes, very very much. One of the worst and mostly unaddressed weaknesses
+> with the kernel right now is use-after-free based type confusion[0], which
+> depends on merged caches (or cache reuse).
+> 
+> This doesn't solve cross-allocator (kmalloc/page_alloc) type confusion
+> (as terrifyingly demonstrated[1] by Jann Horn), but it does help with
+> what has been a very common case of "use msg_msg to impersonate your
+> target object"[2] exploitation.
 
-Thanks Jason, I will keep it as-is. I will send a new version soon
-with your comments addressed.
+We have a ton of code that references PAGE_SIZE and uses the page
+allocator completely unnecessarily - that's something worth harping
+about at conferences; if we could motivate people to clean that stuff up
+it'd have a lot of positive effects.
 
-> Detailed memory profile should come from some kind of more dynamic and
-> universal scheme. Hopefully that other giant thread about profiling
-> will reach some conclusion.
+> > That would produce a _lot_ of kmem caches
+> 
+> Fewer than you'd expect, but yes, there is some overhead. However,
+> out-of-tree forks of Linux have successfully experimented with this
+> already and seen good results[3].
 
-+1! Memory profiling is going to be a very useful addition to the kernel.
+So in that case - I don't think there's any need for a separate
+alloc_details; we'd just add a kmem_cache * to alloc_tag and then hook
+into the codetag init/unload path to create and destroy the kmem caches.
 
-Pasha
+No need to adjust the slab code either; alloc_hooks() itself could
+dispatch to kmem_cache_alloc() instead of kmalloc() if this is in use.
