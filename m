@@ -1,68 +1,68 @@
-Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com [209.85.222.46])
+Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com [209.85.222.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44B3E63D5
-	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 00:09:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF92BEC3
+	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 00:10:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708560551; cv=none; b=WCPqmFNUQL9hU700nsUAn9f9sQG9hcADeazXvh+D//HAyqxCc7egajjIRmO7kAcCPz7VQi1BKbFE9lZ7Fsvrz3kO4et7OnTKZFU1Su5aVxodysHNTPOy/wDgrSpvHhh1xkCPbRByq0xaxPRzxK0NcJW23xxe1WSRXbgQH6RBsGc=
+	t=1708560637; cv=none; b=BlzVbWW5ir/sTZrOz04LQ8qOQzB+Z6FXugFZE8yV1uAsCg3oHkJB2m90rxmhLeHISLH7QqHHUuKJNMsX13gAuS3LRdNX3mIBQat/7B4MDTdZjYiBdTmWh56MQGKfn2+iWZ7F0icA9EMyIMdzD0XyfCmvBtOvPE7RkGSOfj+09/8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708560551; c=relaxed/simple;
-	bh=aiZ2wjkXdUeF2DZJw2oBIl8u+9EyfQfZ9ycNkF8fAgk=;
+	s=arc-20240116; t=1708560637; c=relaxed/simple;
+	bh=1D0pVaWMlr8hskhdGaW7hZtXBWle1reW17x7OUuU9Uk=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gLD3XmI6yAk9IMaFtZBVW8UEPxKLSttGqUGS1WCDNG6bLyIhTo4zvUY11okzGj9SXViATaGlLjHRWErDdDS1ZGuup31RC/fRmPXrrYdQYgRLVvhmpTL0sbOEQi5JdAHJC61ZZhtYt9Qpzvvl94nSQGxv1/jW8MxVRcAUF9pxo0k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=zRZzd3KK; arc=none smtp.client-ip=209.85.222.46
+	 To:Cc:Content-Type; b=XsP3xLIxT8UFME2hU2PIKHAa8rFuJAXXgnJJzjP7Z0mqtReDOQUV0bJpbCJ2Rzg7rCJTAzMYL2TVbU67W0jxjLc86N5GXawCEI05DheTlVcECvGP3uQ1hm2Vt7RWuZOzj0UtM/1zEoB/+5ZAIauN825R61xFsjWi7ceJKhFiZUU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=H+7gfDE7; arc=none smtp.client-ip=209.85.222.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="zRZzd3KK"
-Received: by mail-ua1-f46.google.com with SMTP id a1e0cc1a2514c-7d2940ad0e1so4605061241.1
-        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 16:09:08 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="H+7gfDE7"
+Received: by mail-ua1-f42.google.com with SMTP id a1e0cc1a2514c-7d5c2502ea2so2789211241.1
+        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 16:10:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708560547; x=1709165347; darn=lists.linux.dev;
+        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708560635; x=1709165435; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=aiZ2wjkXdUeF2DZJw2oBIl8u+9EyfQfZ9ycNkF8fAgk=;
-        b=zRZzd3KK7IICEaBVvDWVK6m0SeykOiiIIasAVq4iGDq8w4K8rUvPToqCrtu5yQUAsE
-         Alh0wMCW7Q//YBQ6tWhr2HHu2HbR//96z/tXv3Q02PvRI2bXAzxmYrujGxwdShhb/Uwi
-         CHAyeb/JSFKqWvAdhpYsBFw/kT9e2Ti/8I0YgisYxrJtfGCIhlEsi5hVTJNCwCIcye8w
-         XPY5W6v6x+ZCxq2bYTh1NFjJFafl4ELYPPGgqdhPMCJi0tiocVM0ibSl1NykkBdC9IR0
-         gdhH4lu0Bd4qHvFtkHFDeQ4djle/osiTzo4EA4saVJPyoxu0Vn8+7Hi7S3mqp7cMJayt
-         OZ6A==
+        bh=1D0pVaWMlr8hskhdGaW7hZtXBWle1reW17x7OUuU9Uk=;
+        b=H+7gfDE7IKvyJx6iYVhjcFooEHPSkJw95Us+Eo00f8tYHfVhSsZ/W1kPsK4mUE951H
+         4IEIbyvxKdmy/MQW2MhXBsxtNp0XOnm1NsDfnw9EfpfliDY8bp67ce6cmlfrIIlYMyrE
+         EyOW8zBorJH8ngxT6VyagNBDk7aHtPQAFH5uJW+wcilHzdAKV1UvmfUFpNlhYdKVy/Yf
+         yqMzcj6FVZ77sb/Z0+gyDUwgakM7RRm57DMYPf1UXJBgf0oJqD7NhODiq5y1uYz2zkoU
+         ok/5CNloewgSsHkDnD71iTRL3qNvxHb4oq0W2hFFqhHxa+mtXd7Oukvvx8oBGM9M0yf6
+         AGiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708560547; x=1709165347;
+        d=1e100.net; s=20230601; t=1708560635; x=1709165435;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=aiZ2wjkXdUeF2DZJw2oBIl8u+9EyfQfZ9ycNkF8fAgk=;
-        b=nCPiOogUw1ik0t1ybovcaAbIrdyE3kBmA2PNzulGoEVh1a8IREVeoCtFEVWA7BiE0z
-         x+FdTWUEjoxh07L6Wh0MzoZqM8nrqBo9K2MoXfeEUwN7gbMBZJvi3G0uyUGpGwYaj5Uv
-         bfWZRCQ6zvpJXrEr0/D6mU7+5GDk0bUJMM/jIzCsAhDPfZn1OQBFWIaXZEqps8ccrhkq
-         dATJUHrQ3G15TIZWoqXM5Ry9hw1C2nXG4l+ozE1QN2xfhD9rgLzQ750OSXQy3DQBjdoR
-         gxaqS3ba3zICZX+W9LEiV7KE8V0zHcLeKs7HgZn8gedISbMVnS/O5HcNZfGxC73IowLJ
-         dSNg==
-X-Forwarded-Encrypted: i=1; AJvYcCWK//nlDG6D2Lv6xYlS/cRVaZqPYtIb8P6vWtKQlBjTABihYBavKUeIv+8t4IdTJJNwJqrcq7+0gy0i/s0C62HqhaK/s+U=
-X-Gm-Message-State: AOJu0YwcT69X1Qqi6yxZSXdZ/qwvN8Fk7v4fzwVUgbN+q5NmAPjVseZ0
-	Wb4zt8AtPGElt4RH6ISKzG8Tcl/A4IIcM1UmzxjXizV91pmfVadCoD9NejA9uQH+V8x3cVZ+ib+
-	zmIqGlv6f9DT/hANQjFSv6UE0ewxs3qZ10/H8FA==
-X-Google-Smtp-Source: AGHT+IE8YdNcoy9yHPyWH3FSVi3grCuLLJ8fT8RNUBKoMQxE9UzcTUruywG2qiU3pKHX1/up6wOF6uOUyIuOPTAbvgM=
-X-Received: by 2002:a05:6102:953:b0:470:605a:6a4 with SMTP id
- a19-20020a056102095300b00470605a06a4mr10156813vsi.21.1708560547208; Wed, 21
- Feb 2024 16:09:07 -0800 (PST)
+        bh=1D0pVaWMlr8hskhdGaW7hZtXBWle1reW17x7OUuU9Uk=;
+        b=SrAOm2JxQam0LWbHqmnPHWIR+E4/OYJP9wsrHmfZ9D0qqT3bAGLduvVX7xHf2gxOSm
+         PqvU4jmjSV8L6fPtWBs2SQAt3Hx7SeqItb0eHoYtpcUCfpRuVBS8ho2dQ9LFjUVf6vgD
+         Btbzy1Q9vfwrVN6HR/3k1NMKi7HTB4xp9T+QF8SKXdjMl1nd/yqHaR0w4A1Ap9tDM6B1
+         cJAFBSOSfZTcJclBAAHYt9ssAdSd6z3aESE5VKFkQSQ1qmFSewkbqp594tvQK6UtOIKb
+         dsie7jb9uVoNYJama9S2JCDovMzyCe45Gc+UTsYkcJySGLx5o7PsgvDr/4KhRLDY5MUc
+         bV+w==
+X-Forwarded-Encrypted: i=1; AJvYcCUFYT38XLKxFwEeF626hha6xPW6u+8imZ3fhzVuIZ00V6gq8Oem5APRGst8tWv90XPAaPiYx9k13j94fwcVZbqSIIJWlWA=
+X-Gm-Message-State: AOJu0Yw01fhLeCIG9bpCiF4kSn89FjG1RyDtI8a5npm98gwkWu/Kia4U
+	mJDBTGF5X34422DJZkYit4uQSbj8JkjCCMuHv/AF1xwXHLW83GX916V8ZEAkt9T2Xbpuqdl5SmM
+	jlW1wM9C8Yn9/mk72tBfBxwxs8WUUSL39Y05dJw==
+X-Google-Smtp-Source: AGHT+IGvkzT3uz6qELPJtraK+YKtQ9uJucd+Pri79etJZSzYbQUZmm3eTGpEAZMzRr8Ip545g98kCtUJT9vyheZUmog=
+X-Received: by 2002:a67:f54a:0:b0:470:3ade:af52 with SMTP id
+ z10-20020a67f54a000000b004703adeaf52mr11439980vsn.6.1708560634875; Wed, 21
+ Feb 2024 16:10:34 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-9-surenb@google.com>
-In-Reply-To: <20240221194052.927623-9-surenb@google.com>
+References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-10-surenb@google.com>
+In-Reply-To: <20240221194052.927623-10-surenb@google.com>
 From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Wed, 21 Feb 2024 19:08:30 -0500
-Message-ID: <CA+CK2bD-AvHR45zWrLOGA7Y=HQeFf=Ty4vCB5bWxbX7XyMsYRw@mail.gmail.com>
-Subject: Re: [PATCH v4 08/36] mm: introduce __GFP_NO_OBJ_EXT flag to
- selectively prevent slabobj_ext creation
+Date: Wed, 21 Feb 2024 19:09:58 -0500
+Message-ID: <CA+CK2bDWkrNapWD7pv47XQo8PD4qJ3O=U99pL3o72KCnrzpsXQ@mail.gmail.com>
+Subject: Re: [PATCH v4 09/36] mm/slab: introduce SLAB_NO_OBJ_EXT to avoid
+ obj_ext creation
 To: Suren Baghdasaryan <surenb@google.com>
 Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
 	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
@@ -94,8 +94,14 @@ Content-Transfer-Encoding: quoted-printable
 On Wed, Feb 21, 2024 at 2:41=E2=80=AFPM Suren Baghdasaryan <surenb@google.c=
 om> wrote:
 >
-> Introduce __GFP_NO_OBJ_EXT flag in order to prevent recursive allocations
-> when allocating slabobj_ext on a slab.
+> Slab extension objects can't be allocated before slab infrastructure is
+> initialized. Some caches, like kmem_cache and kmem_cache_node, are create=
+d
+> before slab infrastructure is initialized. Objects from these caches can'=
+t
+> have extension objects. Introduce SLAB_NO_OBJ_EXT slab flag to mark these
+> caches and avoid creating extensions for objects allocated from these
+> slabs.
 >
 > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 > Reviewed-by: Kees Cook <keescook@chromium.org>
