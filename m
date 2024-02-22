@@ -1,57 +1,57 @@
-Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D0D715699C
-	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 17:39:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 150C315699B
+	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 17:39:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708623596; cv=none; b=qj0lU6Qu9ZYGlBRB3QMgROiUBgPkw+dGspWz57QvgYuQEgAF16NPwafx9baRhTvyiUMooKuwwhLICS5P+N0vLXlxVT1mqp1rXMLjCGUbNLJkC1NbA2sO7jKQCLKSFScBQARIaV5Ifk2NyCp6zt+eqmTBwXArXlxnRzGN7lVkrl0=
+	t=1708623598; cv=none; b=XO7Do7JL+/5N8t/wc96232bp4qmysPkcgTgEGxcEVK3e6EkITYTLRCwlAsNR3FVpLd0rnPXRl3ZhMEAOoCnCXVLLhLKIUCa4mMcm7ZmAI/PHqw4G2M3HlH/zq97sPRYyJFQYj4IXOQdVfsT9Mew5Y+N9OhekOvWESOwuYNlPn8k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708623596; c=relaxed/simple;
-	bh=MO9zupR8uvU3mAVWpwjGwF/5I/sWszt0d3zRSJTo/LE=;
+	s=arc-20240116; t=1708623598; c=relaxed/simple;
+	bh=4O/lLtqZ0CSeZX6xhgII8Jva5Jk41VTWtWk38T0JqEg=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=e4xNKm9icbnMqysAe0hm3ilKNOloj0h185Ouy4wPGTJ8TFb0FvOPULgeorZLwL2pN0hOQwFeqdFtQrP/vT1jBiJNAF21bWVgCs3AbkyEg83zhiAEMS9d4Xk0hjsd6fkDZgvWcQHseEKPQ1QmkTlMTie8qOxMojANDys3WjBowog=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=J2x69GBb; arc=none smtp.client-ip=209.85.160.170
+	 MIME-Version; b=RBxyg12zJ5Y6DeLxgc0Tj2iaYy7YkTVXFPYL1gIJD4N9Q7J3Lvv7R/04+kBHTkS0x1IyOL7E7Lyr56n0aXYzcFbJgWn+DP3ZrW/ZmwXKREjuTWEbzi+PILvIoeQPDpbn4QYgBRf1K4xBUuqbTZie5uZHpjQpGKrnaSCBoK5YDO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=XLZR8O3/; arc=none smtp.client-ip=209.85.160.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="J2x69GBb"
-Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-42a0ba5098bso46270151cf.0
-        for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 09:39:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="XLZR8O3/"
+Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-42a9f4935a6so7788761cf.1
+        for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 09:39:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708623589; x=1709228389; darn=lists.linux.dev;
+        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1708623591; x=1709228391; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=C9sOCaXXTnuRzyvLt2S+i0eLigQNp6D64P7FATFt28E=;
-        b=J2x69GBb3zqBkMSpRLJbJ2QOHYWJfho3xAES0b4OAb1/R8+DhyA3jq1o60LQn3oI70
-         yuPk7lazrU1A7qNAPz/5fXJ8PwTw5/tJ4WQOenTaev/T8BUtsKEj732+GwNNU18m0wjq
-         919lR+ZXIa+N076luR+G5QhWtYNnYSxGfYw1n1cCG3SHaGUoMX+PitC9sCQ92XVXik7i
-         cqyxdy0BRngtuVQlGY1BHxcwY+6r2GZeTOMltZn5v79MZZU6uCNeglvnElIMEB/INLx1
-         uct3x3+0AVnTaEAnjgAy2NgS1LY3mXWjhFBEjUHZ3Tp/QIFsiOYQSQLmRqStKPjoTAA6
-         1ZBw==
+        bh=g7w3BmgXmvWecR5SKtsZ1cNA/rDbNvV1OeS7wJNdwTQ=;
+        b=XLZR8O3/qpeqibpkpHLgqnPEdHUd0m2X/BEJMkCYkgiZrn3XckFvFW58s+SWWEkUzj
+         Ze1koIWXNtydMSb9sEht09NZQ0ZoDxhvW01zwzA9hPOEhq2VbaGBQ94KhSePKX4nG95m
+         KKJGYtLGCKUAuXotbsWa2Z5Q9p+fSZ5/gppeuBbMxYNZM3OFXqo8MmKATBqQezNOvEcK
+         ZKLTW3aHpAZlH0f7GxyLK2OCyYBD0TRut5CtBrBVtALsi60PXmxFPHf0FqtK5HRPX4T8
+         s/lXnXq0hGc840+lLjQ/BDDaDOVaD+urII+wL6QyoE5rTseidlU9WkKb/UAyJcIr43lU
+         PDTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708623589; x=1709228389;
+        d=1e100.net; s=20230601; t=1708623591; x=1709228391;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=C9sOCaXXTnuRzyvLt2S+i0eLigQNp6D64P7FATFt28E=;
-        b=Z2BP5oXzPcUJWIPxC6RvnwprX93LisJLPWg7l4k+j7yeeRCw6J1gKQ5rhqGhOpGQck
-         txF8tixdia0c2sZhQCfv2fnrP5w7ETYt9DBBwoxL4zCEQyj9DRFJvnWzoxFwnmNE/LgT
-         cuKu864i3AVONEcSC1R1sWpr7QWJ1Yl+Ucx8MvTwm3lq24VODWrqPBsEIjcCpCGwrwKQ
-         F+X6k7aEvI3LcXc5Q0EjVWYe6ypVK9i4KiLulf7p8nsN2+SI4C/oMOiB+KibTzP4XKCU
-         Fhv0qzc0QOzn/SeC7LeFwP8S0/adzC7kNxvbpbCVex3ulMZaLJben2W5nTNgmfp0c/Q2
-         h4xA==
-X-Forwarded-Encrypted: i=1; AJvYcCVXIVb0hollpzaW6KyGa60xZ0fl8BHtiWHtSoKbH1lTw9bsOD7vQUVcsNt14eFVlBnQL2E7UzF7gY/udoQE06ggCixxLUA=
-X-Gm-Message-State: AOJu0Yw4JsSELrHFSZTxBIJRenQDRC8YaW8zkzOPYbVx7Oc2edpv1Jnr
-	qEr9pHW26zwL/bOlSq0c7qrjShM5a8j2ucC0dXtdDx9ZZgbFv8VlKowm/rR4pDg=
-X-Google-Smtp-Source: AGHT+IEnNHT8mmpNAC8qGBK3waMn+7XKEftGRHH+gMR5BoK6c8bTMJMeqnbIkBxo5nuTApw4Lzgcmg==
-X-Received: by 2002:a05:622a:103:b0:42d:b355:1538 with SMTP id u3-20020a05622a010300b0042db3551538mr27425174qtw.55.1708623589605;
-        Thu, 22 Feb 2024 09:39:49 -0800 (PST)
+        bh=g7w3BmgXmvWecR5SKtsZ1cNA/rDbNvV1OeS7wJNdwTQ=;
+        b=uTllE4fPc+nRRDdcq4QnptZGw9D2yNhjK32+xCbImhC1pdC/tY568nxNrddzg2DtTK
+         vNHAE2grKiqFLlH0aeNey7THvSkNb+XMThe1RRgpDO8+ZA4vr5mAJ2U09NofW8SZ2HZn
+         VScWLzhbz90gx9dVhnpRS3hEJUYWQ2tpV1b/c99sxiuBVo00w3xTmxhOpzMMsrHv/KqN
+         oNsyz2iDx+ik4xAkwDRPkJM5pvZqEi4omglVkHKQS5/Piytg7c35S9a4Fz50wagJ3DQG
+         /LiY+rsDjoN1LEXuAe5r2Ut6yEd3OQk/7j+mHPQZQAqxyF/+AS5FRUnlTSQGdvYfcf8t
+         ywqw==
+X-Forwarded-Encrypted: i=1; AJvYcCWwX4CXjK4jLzreHUsj5YkbTYs431w4Sh9SKRB8Lq5FXNO/0lpOnYedNGY2gZyUYUob14buITnYj94fT6fICvKG50yy4XQ=
+X-Gm-Message-State: AOJu0YzI3G676B9zOgilGHy8f46RXuJ0PSKHi33Ev0k89f2xfuQpNdew
+	I929Cc5q0LnaMlTKYGeHiWPiKSB1ObqxGmmeNiErYkcBafQfk4Cgpmqe4hhrYQk=
+X-Google-Smtp-Source: AGHT+IG90zBa6YLMZGIfCYT7Th/1b5UWVffhOhrq9tGqR1mvmgjPkxAiIwv1iDqI+0/4uYQJoXyfRA==
+X-Received: by 2002:ac8:4e82:0:b0:42c:8054:8a with SMTP id 2-20020ac84e82000000b0042c8054008amr5212735qtp.27.1708623591384;
+        Thu, 22 Feb 2024 09:39:51 -0800 (PST)
 Received: from soleen.c.googlers.com.com (249.240.85.34.bc.googleusercontent.com. [34.85.240.249])
-        by smtp.gmail.com with ESMTPSA id f17-20020ac86ed1000000b0042e5ab6f24fsm259682qtv.7.2024.02.22.09.39.48
+        by smtp.gmail.com with ESMTPSA id f17-20020ac86ed1000000b0042e5ab6f24fsm259682qtv.7.2024.02.22.09.39.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Feb 2024 09:39:49 -0800 (PST)
+        Thu, 22 Feb 2024 09:39:51 -0800 (PST)
 From: Pasha Tatashin <pasha.tatashin@soleen.com>
 To: akpm@linux-foundation.org,
 	alim.akhtar@samsung.com,
@@ -99,9 +99,9 @@ To: akpm@linux-foundation.org,
 	rientjes@google.com,
 	bagasdotme@gmail.com,
 	mkoutny@suse.com
-Subject: [PATCH v5 04/11] iommu/io-pgtable-arm: use page allocation function provided by iommu-pages.h
-Date: Thu, 22 Feb 2024 17:39:30 +0000
-Message-ID: <20240222173942.1481394-5-pasha.tatashin@soleen.com>
+Subject: [PATCH v5 06/11] iommu/exynos: use page allocation function provided by iommu-pages.h
+Date: Thu, 22 Feb 2024 17:39:32 +0000
+Message-ID: <20240222173942.1481394-7-pasha.tatashin@soleen.com>
 X-Mailer: git-send-email 2.44.0.rc0.258.g7320e95886-goog
 In-Reply-To: <20240222173942.1481394-1-pasha.tatashin@soleen.com>
 References: <20240222173942.1481394-1-pasha.tatashin@soleen.com>
@@ -113,64 +113,67 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Convert iommu/io-pgtable-arm.c to use the new page allocation functions
+Convert iommu/exynos-iommu.c to use the new page allocation functions
 provided in iommu-pages.h.
 
 Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
 Acked-by: David Rientjes <rientjes@google.com>
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
 Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
 ---
- drivers/iommu/io-pgtable-arm.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ drivers/iommu/exynos-iommu.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index f7828a7aad41..3d23b924cec1 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -21,6 +21,7 @@
- #include <asm/barrier.h>
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 2c6e9094f1e9..3eab0ae65a4f 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -22,6 +22,8 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/slab.h>
  
- #include "io-pgtable-arm.h"
 +#include "iommu-pages.h"
- 
- #define ARM_LPAE_MAX_ADDR_BITS		52
- #define ARM_LPAE_S2_MAX_CONCAT_PAGES	16
-@@ -198,14 +199,10 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
- 
- 	VM_BUG_ON((gfp & __GFP_HIGHMEM));
- 
--	if (cfg->alloc) {
-+	if (cfg->alloc)
- 		pages = cfg->alloc(cookie, size, gfp);
--	} else {
--		struct page *p;
--
--		p = alloc_pages_node(dev_to_node(dev), gfp | __GFP_ZERO, order);
--		pages = p ? page_address(p) : NULL;
--	}
-+	else
-+		pages = iommu_alloc_pages_node(dev_to_node(dev), gfp, order);
- 
- 	if (!pages)
++
+ typedef u32 sysmmu_iova_t;
+ typedef u32 sysmmu_pte_t;
+ static struct iommu_domain exynos_identity_domain;
+@@ -900,11 +902,11 @@ static struct iommu_domain *exynos_iommu_domain_alloc_paging(struct device *dev)
+ 	if (!domain)
  		return NULL;
-@@ -233,7 +230,7 @@ static void *__arm_lpae_alloc_pages(size_t size, gfp_t gfp,
- 	if (cfg->free)
- 		cfg->free(cookie, pages, size);
- 	else
--		free_pages((unsigned long)pages, order);
-+		iommu_free_pages(pages, order);
  
+-	domain->pgtable = (sysmmu_pte_t *)__get_free_pages(GFP_KERNEL, 2);
++	domain->pgtable = iommu_alloc_pages(GFP_KERNEL, 2);
+ 	if (!domain->pgtable)
+ 		goto err_pgtable;
+ 
+-	domain->lv2entcnt = (short *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 1);
++	domain->lv2entcnt = iommu_alloc_pages(GFP_KERNEL, 1);
+ 	if (!domain->lv2entcnt)
+ 		goto err_counter;
+ 
+@@ -930,9 +932,9 @@ static struct iommu_domain *exynos_iommu_domain_alloc_paging(struct device *dev)
+ 	return &domain->domain;
+ 
+ err_lv2ent:
+-	free_pages((unsigned long)domain->lv2entcnt, 1);
++	iommu_free_pages(domain->lv2entcnt, 1);
+ err_counter:
+-	free_pages((unsigned long)domain->pgtable, 2);
++	iommu_free_pages(domain->pgtable, 2);
+ err_pgtable:
+ 	kfree(domain);
  	return NULL;
- }
-@@ -249,7 +246,7 @@ static void __arm_lpae_free_pages(void *pages, size_t size,
- 	if (cfg->free)
- 		cfg->free(cookie, pages, size);
- 	else
--		free_pages((unsigned long)pages, get_order(size));
-+		iommu_free_pages(pages, get_order(size));
+@@ -973,8 +975,8 @@ static void exynos_iommu_domain_free(struct iommu_domain *iommu_domain)
+ 					phys_to_virt(base));
+ 		}
+ 
+-	free_pages((unsigned long)domain->pgtable, 2);
+-	free_pages((unsigned long)domain->lv2entcnt, 1);
++	iommu_free_pages(domain->pgtable, 2);
++	iommu_free_pages(domain->lv2entcnt, 1);
+ 	kfree(domain);
  }
  
- static void __arm_lpae_sync_pte(arm_lpae_iopte *ptep, int num_entries,
 -- 
 2.44.0.rc0.258.g7320e95886-goog
 
