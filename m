@@ -1,271 +1,209 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED71758ACA
-	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 12:12:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A51F60DF9
+	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 12:24:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.187
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708603954; cv=none; b=c/3niIbK4iQypS4Wa2FvX+lHapaSqvNt3OhoW6xZlOJzrfQeiAFBFdFuY9/mXcDQy6Yfm3j99V2938d0bqBsJIFO6yOQon6VgNt+UwOCgkHEEw0bn6mjXzydMCuqSTGfUKFm5MDQODAR0WcDujvRK2yNL4OgJ3eK2dnwHZOdY9c=
+	t=1708604655; cv=none; b=tqCctgQYz3vAj0/MV8Zn7zH+RtPWtnHBGy5B3rGCNpAs7XP8y8ETOWBih5G0LPl4/wW1Wlbx2AMzaeMNpKuzClzwKol7RfcxbNaYU7ChJyYHm0X5rYqAezQ93QvErzLZR9B60E8+FCGSskSNXA8zyipYrUc4njyEY93An5BGuKg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708603954; c=relaxed/simple;
-	bh=FVdZu1RyDYBRnbvcrBaCROcUhkIvKg3pVHlVzcbPamI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nYtL1DhLBfbrV8fCl4s8i5iqXtGlPvIeWEtfIKqidqleCOAvZoivcXNF0zWzIX0USOxjfLcWJ3CR/HtSsalVUKr/qWQJCcIZhJwFw+nWbbZj/b/UnQtMqKExKB7k1RG1lf9LKeWmt/FgzujjGZRSXIboykJ4DNt9kFS2wiY7DOI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com; spf=pass smtp.mailfrom=suse.com; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=FE4RHYf6; dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b=nU7WDITh; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=suse.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="FE4RHYf6";
-	dkim=pass (1024-bit key) header.d=suse.com header.i=@suse.com header.b="nU7WDITh"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id E40B71F457;
-	Thu, 22 Feb 2024 12:12:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1708603950; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=iDZS9rn1ORcB7JdPkuWo18rKAM4Uqo344IyJ6OSxvyU=;
-	b=FE4RHYf6KQniBvu69hMH61YFsJGUm+be/AWgzv3XVTDS8haXVcKEcmtqhLYtyoH79wE+BF
-	9rTbXWAQMLmYQg3dhbWCm6OQO7Hl7M/EukNOai/eLMIyuZ/W9oozZ458YgCq5yQMsvEOG9
-	9pG+sSYy3ZZ9rbeHDquU39srhn5O5Vc=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-	t=1708603949; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=iDZS9rn1ORcB7JdPkuWo18rKAM4Uqo344IyJ6OSxvyU=;
-	b=nU7WDIThkhntaO85yrfZH+rTOcDv2P9JE96isJ7T+1A7OWnrrCYh5wjA2AMoxhC/+10aqG
-	iaI/IirNep5cQnEr9Hn5ohr48ApPMWRLfdMJkWuT0SulHAuto1+doT2DtrDHrf4LrtEqzZ
-	KGRJHRN6xIdAfHSvGSq+zmWiPenhKQM=
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id B76F9133DC;
-	Thu, 22 Feb 2024 12:12:29 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id tUIxLC0612VEJwAAD6G6ig
-	(envelope-from <mhocko@suse.com>); Thu, 22 Feb 2024 12:12:29 +0000
-Date: Thu, 22 Feb 2024 13:12:29 +0100
-From: Michal Hocko <mhocko@suse.com>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, vbabka@suse.cz,
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net,
-	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org,
-	Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-Subject: Re: [PATCH v4 06/36] mm: enumerate all gfp flags
-Message-ID: <Zdc6LUWnPOBRmtZH@tiehlicka>
-References: <20240221194052.927623-1-surenb@google.com>
- <20240221194052.927623-7-surenb@google.com>
+	s=arc-20240116; t=1708604655; c=relaxed/simple;
+	bh=Jtbg4s19st/YVHi/EQVvAFIV5nFUuITKWya4EdDZRBo=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=eapKuMSg7S2EKIWajbTMazB160e4J+mlfcMbcqsKVm2bUbtwf7EHB3wpzMrlk57sX8fHqKWzKCnvJifBCrDkpW3XPjNXbc0IjZZcy5L4dV/y5R9yGonkaZpWzc+CdKfwriXxPPaCOGy6rS2jouUzcEOcfOQ0n+46sn+iFk+eOOo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.187
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.174])
+	by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4TgXMK63kgzvVsX;
+	Thu, 22 Feb 2024 20:22:05 +0800 (CST)
+Received: from dggems702-chm.china.huawei.com (unknown [10.3.19.179])
+	by mail.maildlp.com (Postfix) with ESMTPS id 6A99514011D;
+	Thu, 22 Feb 2024 20:24:09 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ dggems702-chm.china.huawei.com (10.3.19.179) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Thu, 22 Feb 2024 20:24:08 +0800
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
+ Thu, 22 Feb 2024 12:24:06 +0000
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Joao Martins <joao.m.martins@oracle.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>, "nicolinc@nvidia.com"
+	<nicolinc@nvidia.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"mshavit@google.com" <mshavit@google.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>, jiangkunkun
+	<jiangkunkun@huawei.com>, zhukeqian <zhukeqian1@huawei.com>, Linuxarm
+	<linuxarm@huawei.com>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
+Subject: RE: [PATCH v2 3/4] iommu/arm-smmu-v3: Add support for dirty tracking
+ in domain alloc
+Thread-Topic: [PATCH v2 3/4] iommu/arm-smmu-v3: Add support for dirty tracking
+ in domain alloc
+Thread-Index: AQHaZXTSExgSw/uTxUa44V9Mknrnh7EWMsuAgAAGflCAAALvgIAADF3g
+Date: Thu, 22 Feb 2024 12:24:06 +0000
+Message-ID: <d6442be07c9d4f999286e073ed221984@huawei.com>
+References: <20240222094923.33104-1-shameerali.kolothum.thodi@huawei.com>
+ <20240222094923.33104-4-shameerali.kolothum.thodi@huawei.com>
+ <a47699c9-4f3d-4cd0-94f4-f19e117ea6a3@oracle.com>
+ <dfdc7daf8bd14b04b9bd29faaa1e6a96@huawei.com>
+ <5607ece8-ce00-4834-9ae9-f4aa16fc4886@oracle.com>
+In-Reply-To: <5607ece8-ce00-4834-9ae9-f4aa16fc4886@oracle.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240221194052.927623-7-surenb@google.com>
-Authentication-Results: smtp-out2.suse.de;
-	none
-X-Spam-Level: 
-X-Spam-Score: 0.70
-X-Spamd-Result: default: False [0.70 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 BAYES_HAM(-0.00)[10.38%];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.com:s=susede1];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 RCPT_COUNT_GT_50(0.00)[75];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.com:email];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 MID_RHS_NOT_FQDN(0.50)[];
-	 FREEMAIL_CC(0.00)[linux-foundation.org,linux.dev,suse.cz,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,i-love.sakura.ne.jp,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com,tesarici.cz];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[]
-X-Spam-Flag: NO
 
-On Wed 21-02-24 11:40:19, Suren Baghdasaryan wrote:
-> Introduce GFP bits enumeration to let compiler track the number of used
-> bits (which depends on the config options) instead of hardcoding them.
-> That simplifies __GFP_BITS_SHIFT calculation.
-> 
-> Suggested-by: Petr Tesařík <petr@tesarici.cz>
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> Reviewed-by: Kees Cook <keescook@chromium.org>
-
-I thought I have responded to this patch but obviously not the case.
-I like this change. Makes sense even without the rest of the series.
-Acked-by: Michal Hocko <mhocko@suse.com>
-
-It seems that KASAN flags already __GFP_BITS_SHIFT which just proves how
-fragile this existing scheme is.
-
-> ---
->  include/linux/gfp_types.h | 90 +++++++++++++++++++++++++++------------
->  1 file changed, 62 insertions(+), 28 deletions(-)
-> 
-> diff --git a/include/linux/gfp_types.h b/include/linux/gfp_types.h
-> index 1b6053da8754..868c8fb1bbc1 100644
-> --- a/include/linux/gfp_types.h
-> +++ b/include/linux/gfp_types.h
-> @@ -21,44 +21,78 @@ typedef unsigned int __bitwise gfp_t;
->   * include/trace/events/mmflags.h and tools/perf/builtin-kmem.c
->   */
->  
-> +enum {
-> +	___GFP_DMA_BIT,
-> +	___GFP_HIGHMEM_BIT,
-> +	___GFP_DMA32_BIT,
-> +	___GFP_MOVABLE_BIT,
-> +	___GFP_RECLAIMABLE_BIT,
-> +	___GFP_HIGH_BIT,
-> +	___GFP_IO_BIT,
-> +	___GFP_FS_BIT,
-> +	___GFP_ZERO_BIT,
-> +	___GFP_UNUSED_BIT,	/* 0x200u unused */
-> +	___GFP_DIRECT_RECLAIM_BIT,
-> +	___GFP_KSWAPD_RECLAIM_BIT,
-> +	___GFP_WRITE_BIT,
-> +	___GFP_NOWARN_BIT,
-> +	___GFP_RETRY_MAYFAIL_BIT,
-> +	___GFP_NOFAIL_BIT,
-> +	___GFP_NORETRY_BIT,
-> +	___GFP_MEMALLOC_BIT,
-> +	___GFP_COMP_BIT,
-> +	___GFP_NOMEMALLOC_BIT,
-> +	___GFP_HARDWALL_BIT,
-> +	___GFP_THISNODE_BIT,
-> +	___GFP_ACCOUNT_BIT,
-> +	___GFP_ZEROTAGS_BIT,
-> +#ifdef CONFIG_KASAN_HW_TAGS
-> +	___GFP_SKIP_ZERO_BIT,
-> +	___GFP_SKIP_KASAN_BIT,
-> +#endif
-> +#ifdef CONFIG_LOCKDEP
-> +	___GFP_NOLOCKDEP_BIT,
-> +#endif
-> +	___GFP_LAST_BIT
-> +};
-> +
->  /* Plain integer GFP bitmasks. Do not use this directly. */
-> -#define ___GFP_DMA		0x01u
-> -#define ___GFP_HIGHMEM		0x02u
-> -#define ___GFP_DMA32		0x04u
-> -#define ___GFP_MOVABLE		0x08u
-> -#define ___GFP_RECLAIMABLE	0x10u
-> -#define ___GFP_HIGH		0x20u
-> -#define ___GFP_IO		0x40u
-> -#define ___GFP_FS		0x80u
-> -#define ___GFP_ZERO		0x100u
-> +#define ___GFP_DMA		BIT(___GFP_DMA_BIT)
-> +#define ___GFP_HIGHMEM		BIT(___GFP_HIGHMEM_BIT)
-> +#define ___GFP_DMA32		BIT(___GFP_DMA32_BIT)
-> +#define ___GFP_MOVABLE		BIT(___GFP_MOVABLE_BIT)
-> +#define ___GFP_RECLAIMABLE	BIT(___GFP_RECLAIMABLE_BIT)
-> +#define ___GFP_HIGH		BIT(___GFP_HIGH_BIT)
-> +#define ___GFP_IO		BIT(___GFP_IO_BIT)
-> +#define ___GFP_FS		BIT(___GFP_FS_BIT)
-> +#define ___GFP_ZERO		BIT(___GFP_ZERO_BIT)
->  /* 0x200u unused */
-> -#define ___GFP_DIRECT_RECLAIM	0x400u
-> -#define ___GFP_KSWAPD_RECLAIM	0x800u
-> -#define ___GFP_WRITE		0x1000u
-> -#define ___GFP_NOWARN		0x2000u
-> -#define ___GFP_RETRY_MAYFAIL	0x4000u
-> -#define ___GFP_NOFAIL		0x8000u
-> -#define ___GFP_NORETRY		0x10000u
-> -#define ___GFP_MEMALLOC		0x20000u
-> -#define ___GFP_COMP		0x40000u
-> -#define ___GFP_NOMEMALLOC	0x80000u
-> -#define ___GFP_HARDWALL		0x100000u
-> -#define ___GFP_THISNODE		0x200000u
-> -#define ___GFP_ACCOUNT		0x400000u
-> -#define ___GFP_ZEROTAGS		0x800000u
-> +#define ___GFP_DIRECT_RECLAIM	BIT(___GFP_DIRECT_RECLAIM_BIT)
-> +#define ___GFP_KSWAPD_RECLAIM	BIT(___GFP_KSWAPD_RECLAIM_BIT)
-> +#define ___GFP_WRITE		BIT(___GFP_WRITE_BIT)
-> +#define ___GFP_NOWARN		BIT(___GFP_NOWARN_BIT)
-> +#define ___GFP_RETRY_MAYFAIL	BIT(___GFP_RETRY_MAYFAIL_BIT)
-> +#define ___GFP_NOFAIL		BIT(___GFP_NOFAIL_BIT)
-> +#define ___GFP_NORETRY		BIT(___GFP_NORETRY_BIT)
-> +#define ___GFP_MEMALLOC		BIT(___GFP_MEMALLOC_BIT)
-> +#define ___GFP_COMP		BIT(___GFP_COMP_BIT)
-> +#define ___GFP_NOMEMALLOC	BIT(___GFP_NOMEMALLOC_BIT)
-> +#define ___GFP_HARDWALL		BIT(___GFP_HARDWALL_BIT)
-> +#define ___GFP_THISNODE		BIT(___GFP_THISNODE_BIT)
-> +#define ___GFP_ACCOUNT		BIT(___GFP_ACCOUNT_BIT)
-> +#define ___GFP_ZEROTAGS		BIT(___GFP_ZEROTAGS_BIT)
->  #ifdef CONFIG_KASAN_HW_TAGS
-> -#define ___GFP_SKIP_ZERO	0x1000000u
-> -#define ___GFP_SKIP_KASAN	0x2000000u
-> +#define ___GFP_SKIP_ZERO	BIT(___GFP_SKIP_ZERO_BIT)
-> +#define ___GFP_SKIP_KASAN	BIT(___GFP_SKIP_KASAN_BIT)
->  #else
->  #define ___GFP_SKIP_ZERO	0
->  #define ___GFP_SKIP_KASAN	0
->  #endif
->  #ifdef CONFIG_LOCKDEP
-> -#define ___GFP_NOLOCKDEP	0x4000000u
-> +#define ___GFP_NOLOCKDEP	BIT(___GFP_NOLOCKDEP_BIT)
->  #else
->  #define ___GFP_NOLOCKDEP	0
->  #endif
-> -/* If the above are modified, __GFP_BITS_SHIFT may need updating */
->  
->  /*
->   * Physical address zone modifiers (see linux/mmzone.h - low four bits)
-> @@ -249,7 +283,7 @@ typedef unsigned int __bitwise gfp_t;
->  #define __GFP_NOLOCKDEP ((__force gfp_t)___GFP_NOLOCKDEP)
->  
->  /* Room for N __GFP_FOO bits */
-> -#define __GFP_BITS_SHIFT (26 + IS_ENABLED(CONFIG_LOCKDEP))
-> +#define __GFP_BITS_SHIFT ___GFP_LAST_BIT
->  #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
->  
->  /**
-> -- 
-> 2.44.0.rc0.258.g7320e95886-goog
-
--- 
-Michal Hocko
-SUSE Labs
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9hbyBNYXJ0aW5zIDxq
+b2FvLm0ubWFydGluc0BvcmFjbGUuY29tPg0KPiBTZW50OiBUaHVyc2RheSwgRmVicnVhcnkgMjIs
+IDIwMjQgMTE6MzggQU0NCj4gVG86IFNoYW1lZXJhbGkgS29sb3RodW0gVGhvZGkgPHNoYW1lZXJh
+bGkua29sb3RodW0udGhvZGlAaHVhd2VpLmNvbT4NCj4gQ2M6IGpvcm9AOGJ5dGVzLm9yZzsgamdn
+QG52aWRpYS5jb207IGtldmluLnRpYW5AaW50ZWwuY29tOw0KPiBuaWNvbGluY0BudmlkaWEuY29t
+OyBpb21tdUBsaXN0cy5saW51eC5kZXY7IG1zaGF2aXRAZ29vZ2xlLmNvbTsNCj4gcm9iaW4ubXVy
+cGh5QGFybS5jb207IHdpbGxAa2VybmVsLm9yZzsgamlhbmdrdW5rdW4NCj4gPGppYW5na3Vua3Vu
+QGh1YXdlaS5jb20+OyB6aHVrZXFpYW4gPHpodWtlcWlhbjFAaHVhd2VpLmNvbT47IExpbnV4YXJt
+DQo+IDxsaW51eGFybUBodWF3ZWkuY29tPjsgbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRl
+YWQub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjIgMy80XSBpb21tdS9hcm0tc21tdS12Mzog
+QWRkIHN1cHBvcnQgZm9yIGRpcnR5IHRyYWNraW5nDQo+IGluIGRvbWFpbiBhbGxvYw0KPiANCj4g
+T24gMjIvMDIvMjAyNCAxMTozMSwgU2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaSB3cm90ZToNCj4g
+Pg0KPiA+DQo+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4+IEZyb206IEpvYW8g
+TWFydGlucyA8am9hby5tLm1hcnRpbnNAb3JhY2xlLmNvbT4NCj4gPj4gU2VudDogVGh1cnNkYXks
+IEZlYnJ1YXJ5IDIyLCAyMDI0IDExOjA0IEFNDQo+ID4+IFRvOiBTaGFtZWVyYWxpIEtvbG90aHVt
+IFRob2RpIDxzaGFtZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1YXdlaS5jb20+DQo+ID4+IENjOiBq
+b3JvQDhieXRlcy5vcmc7IGpnZ0BudmlkaWEuY29tOyBrZXZpbi50aWFuQGludGVsLmNvbTsNCj4g
+Pj4gbmljb2xpbmNAbnZpZGlhLmNvbTsgaW9tbXVAbGlzdHMubGludXguZGV2OyBtc2hhdml0QGdv
+b2dsZS5jb207DQo+ID4+IHJvYmluLm11cnBoeUBhcm0uY29tOyB3aWxsQGtlcm5lbC5vcmc7IGpp
+YW5na3Vua3VuDQo+ID4+IDxqaWFuZ2t1bmt1bkBodWF3ZWkuY29tPjsgemh1a2VxaWFuIDx6aHVr
+ZXFpYW4xQGh1YXdlaS5jb20+Ow0KPiA+PiBMaW51eGFybSA8bGludXhhcm1AaHVhd2VpLmNvbT47
+IGxpbnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZw0KPiA+PiBTdWJqZWN0OiBSZTog
+W1BBVENIIHYyIDMvNF0gaW9tbXUvYXJtLXNtbXUtdjM6IEFkZCBzdXBwb3J0IGZvciBkaXJ0eQ0K
+PiA+PiB0cmFja2luZyBpbiBkb21haW4gYWxsb2MNCj4gPj4NCj4gPj4gT24gMjIvMDIvMjAyNCAw
+OTo0OSwgU2hhbWVlciBLb2xvdGh1bSB3cm90ZToNCj4gPj4+IEZyb206IEpvYW8gTWFydGlucyA8
+am9hby5tLm1hcnRpbnNAb3JhY2xlLmNvbT4NCj4gPj4+DQo+ID4+PiBUaGlzIHByb3ZpZGVzIGFs
+bCB0aGUgaW5mcmFzdHJ1Y3R1cmUgdG8gZW5hYmxlIGRpcnR5IHRyYWNraW5nIGlmIHRoZQ0KPiA+
+Pj4gaGFyZHdhcmUgaGFzIHRoZSBjYXBhYmlsaXR5IGFuZCBkb21haW4gYWxsb2MgcmVxdWVzdCBm
+b3IgaXQuDQo+ID4+Pg0KPiA+Pj4gUGxlYXNlIG5vdGUsIHdlIHN0aWxsIHJlcG9ydCBubyBzdXBw
+b3J0IGZvciBJT01NVV9DQVBfRElSVFlfVFJBQ0tJTkcNCj4gPj4+IGFzIGl0IHdpbGwgZmluYWxs
+eSBiZSBlbmFibGVkIGluIGEgc3Vic2VxdWVudCBwYXRjaC4NCj4gPj4+DQo+ID4+PiBTaWduZWQt
+b2ZmLWJ5OiBKb2FvIE1hcnRpbnMgPGpvYW8ubS5tYXJ0aW5zQG9yYWNsZS5jb20+DQo+ID4+PiBT
+aWduZWQtb2ZmLWJ5OiBTaGFtZWVyIEtvbG90aHVtDQo+ID4+IDxzaGFtZWVyYWxpLmtvbG90aHVt
+LnRob2RpQGh1YXdlaS5jb20+DQo+ID4+PiAtLS0NCj4gPj4+ICBkcml2ZXJzL2lvbW11L2FybS9h
+cm0tc21tdS12My9hcm0tc21tdS12My5jIHwgOTUNCj4gPj4gKysrKysrKysrKysrKysrKy0tLS0t
+DQo+ID4+PiAgaW5jbHVkZS9saW51eC9pby1wZ3RhYmxlLmggICAgICAgICAgICAgICAgICB8ICA0
+ICsNCj4gPj4+ICAyIGZpbGVzIGNoYW5nZWQsIDc3IGluc2VydGlvbnMoKyksIDIyIGRlbGV0aW9u
+cygtKQ0KPiA+Pj4NCj4gPj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21t
+dS12My9hcm0tc21tdS12My5jDQo+ID4+PiBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYz
+L2FybS1zbW11LXYzLmMNCj4gPj4+IGluZGV4IGJkMzA3MzllMzU4OC4uMDU4YmJiMGRiZTJlIDEw
+MDY0NA0KPiA+Pj4gLS0tIGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUt
+djMuYw0KPiA+Pj4gKysrIGIvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUt
+djMuYw0KPiA+Pj4gQEAgLTQzLDYgKzQzLDcgQEAgTU9EVUxFX1BBUk1fREVTQyhkaXNhYmxlX21z
+aXBvbGxpbmcsDQo+ID4+PiAgCSJEaXNhYmxlIE1TSS1iYXNlZCBwb2xsaW5nIGZvciBDTURfU1lO
+QyBjb21wbGV0aW9uLiIpOw0KPiA+Pj4NCj4gPj4+ICBzdGF0aWMgc3RydWN0IGlvbW11X29wcyBh
+cm1fc21tdV9vcHM7DQo+ID4+PiArc3RhdGljIHN0cnVjdCBpb21tdV9kaXJ0eV9vcHMgYXJtX3Nt
+bXVfZGlydHlfb3BzOw0KPiA+Pj4NCj4gPj4+ICBlbnVtIGFybV9zbW11X21zaV9pbmRleCB7DQo+
+ID4+PiAgCUVWVFFfTVNJX0lOREVYLA0KPiA+Pj4gQEAgLTg2LDcgKzg3LDggQEAgc3RhdGljIHN0
+cnVjdCBhcm1fc21tdV9vcHRpb25fcHJvcA0KPiA+Pj4gYXJtX3NtbXVfb3B0aW9uc1tdID0gew0K
+PiA+Pj4NCj4gPj4+ICBzdGF0aWMgdm9pZCBhcm1fc21tdV9ybXJfaW5zdGFsbF9ieXBhc3Nfc3Rl
+KHN0cnVjdCBhcm1fc21tdV9kZXZpY2UNCj4gPj4+ICpzbW11KTsgIHN0YXRpYyBpbnQgYXJtX3Nt
+bXVfZG9tYWluX2ZpbmFsaXNlKHN0cnVjdCBhcm1fc21tdV9kb21haW4NCj4gPj4gKnNtbXVfZG9t
+YWluLA0KPiA+Pj4gLQkJCQkgICAgc3RydWN0IGFybV9zbW11X2RldmljZSAqc21tdSk7DQo+ID4+
+PiArCQkJCSAgICBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11LA0KPiA+Pj4gKwkJCQkgICAg
+Ym9vbCBlbmFibGVfZGlydHkpOw0KPiA+Pj4gIHN0YXRpYyBpbnQgYXJtX3NtbXVfYWxsb2NfY2Rf
+dGFibGVzKHN0cnVjdCBhcm1fc21tdV9tYXN0ZXIgKm1hc3Rlcik7DQo+ID4+PiBzdGF0aWMgdm9p
+ZCBhcm1fc21tdV90bGJfaW52X2FsbF9zMihzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluDQo+ID4+PiAq
+c21tdV9kb21haW4pOw0KPiA+Pj4NCj4gPj4+IEBAIC0yMzc4LDcgKzIzODAsNyBAQCBzdGF0aWMg
+c3RydWN0IGlvbW11X2RvbWFpbg0KPiA+PiAqYXJtX3NtbXVfZG9tYWluX2FsbG9jX3BhZ2luZyhz
+dHJ1Y3QgZGV2aWNlICpkZXYpDQo+ID4+PiAgCQlzdHJ1Y3QgYXJtX3NtbXVfbWFzdGVyICptYXN0
+ZXIgPQ0KPiA+PiBkZXZfaW9tbXVfcHJpdl9nZXQoZGV2KTsNCj4gPj4+ICAJCWludCByZXQ7DQo+
+ID4+Pg0KPiA+Pj4gLQkJcmV0ID0gYXJtX3NtbXVfZG9tYWluX2ZpbmFsaXNlKHNtbXVfZG9tYWlu
+LCBtYXN0ZXItDQo+ID4+PiBzbW11KTsNCj4gPj4+ICsJCXJldCA9IGFybV9zbW11X2RvbWFpbl9m
+aW5hbGlzZShzbW11X2RvbWFpbiwgbWFzdGVyLQ0KPiA+Pj4gc21tdSwgZmFsc2UpOw0KPiA+Pj4g
+IAkJaWYgKHJldCkgew0KPiA+Pj4gIAkJCWtmcmVlKHNtbXVfZG9tYWluKTsNCj4gPj4+ICAJCQly
+ZXR1cm4gRVJSX1BUUihyZXQpOw0KPiA+Pj4gQEAgLTI0NDUsMTAgKzI0NDcsMTEgQEAgc3RhdGlj
+IHZvaWQgYXJtX3NtbXVfZG9tYWluX2ZyZWUoc3RydWN0DQo+ID4+PiBpb21tdV9kb21haW4gKmRv
+bWFpbikgIH0NCj4gPj4+DQo+ID4+PiAgc3RhdGljIGludCBhcm1fc21tdV9kb21haW5fZmluYWxp
+c2Uoc3RydWN0IGFybV9zbW11X2RvbWFpbg0KPiA+PiAqc21tdV9kb21haW4sDQo+ID4+PiAtCQkJ
+CSAgICBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11KQ0KPiA+Pj4gKwkJCQkgICAgc3RydWN0
+IGFybV9zbW11X2RldmljZSAqc21tdSwNCj4gPj4+ICsJCQkJICAgIGJvb2wgZW5hYmxlX2RpcnR5
+KQ0KPiA+Pj4gIHsNCj4gPj4+ICAJaW50IHJldDsNCj4gPj4+IC0JdW5zaWduZWQgbG9uZyBpYXMs
+IG9hczsNCj4gPj4+ICsJdW5zaWduZWQgbG9uZyBpYXM7DQo+ID4+PiAgCWVudW0gaW9fcGd0YWJs
+ZV9mbXQgZm10Ow0KPiA+Pj4gIAlzdHJ1Y3QgaW9fcGd0YWJsZV9jZmcgcGd0YmxfY2ZnOw0KPiA+
+Pj4gIAlzdHJ1Y3QgaW9fcGd0YWJsZV9vcHMgKnBndGJsX29wczsNCj4gPj4+IEBAIC0yNDU5LDMx
+ICsyNDYyLDMxIEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVfZG9tYWluX2ZpbmFsaXNlKHN0cnVjdA0K
+PiA+PiBhcm1fc21tdV9kb21haW4gKnNtbXVfZG9tYWluLA0KPiA+Pj4gIAlpZiAoIShzbW11LT5m
+ZWF0dXJlcyAmIEFSTV9TTU1VX0ZFQVRfVFJBTlNfUzIpKQ0KPiA+Pj4gIAkJc21tdV9kb21haW4t
+PnN0YWdlID0gQVJNX1NNTVVfRE9NQUlOX1MxOw0KPiA+Pj4NCj4gPj4+ICsJcGd0YmxfY2ZnID0g
+KHN0cnVjdCBpb19wZ3RhYmxlX2NmZykgew0KPiA+Pj4gKwkJLnBnc2l6ZV9iaXRtYXAJPSBzbW11
+LT5wZ3NpemVfYml0bWFwLA0KPiA+Pj4gKwkJLmNvaGVyZW50X3dhbGsJPSBzbW11LT5mZWF0dXJl
+cyAmDQo+ID4+IEFSTV9TTU1VX0ZFQVRfQ09IRVJFTkNZLA0KPiA+Pj4gKwkJLnRsYgkJPSAmYXJt
+X3NtbXVfZmx1c2hfb3BzLA0KPiA+Pj4gKwkJLmlvbW11X2Rldgk9IHNtbXUtPmRldiwNCj4gPj4+
+ICsJfTsNCj4gPj4+ICsNCj4gPj4+ICAJc3dpdGNoIChzbW11X2RvbWFpbi0+c3RhZ2UpIHsNCj4g
+Pj4+ICAJY2FzZSBBUk1fU01NVV9ET01BSU5fUzE6DQo+ID4+PiAgCQlpYXMgPSAoc21tdS0+ZmVh
+dHVyZXMgJiBBUk1fU01NVV9GRUFUX1ZBWCkgPyA1MiA6IDQ4Ow0KPiA+Pj4gLQkJaWFzID0gbWlu
+X3QodW5zaWduZWQgbG9uZywgaWFzLCBWQV9CSVRTKTsNCj4gPj4+IC0JCW9hcyA9IHNtbXUtPmlh
+czsNCj4gPj4+ICsJCXBndGJsX2NmZy5pYXMgPSBtaW5fdCh1bnNpZ25lZCBsb25nLCBpYXMsIFZB
+X0JJVFMpOw0KPiA+Pj4gKwkJcGd0YmxfY2ZnLm9hcyA9IHNtbXUtPmlhczsNCj4gPj4+ICsJCWlm
+IChlbmFibGVfZGlydHkpDQo+ID4+PiArCQkJcGd0YmxfY2ZnLnF1aXJrcyB8PSBJT19QR1RBQkxF
+X1FVSVJLX0FSTV9IRDsNCj4gPj4+ICAJCWZtdCA9IEFSTV82NF9MUEFFX1MxOw0KPiA+Pj4gIAkJ
+YnJlYWs7DQo+ID4+PiAgCWNhc2UgQVJNX1NNTVVfRE9NQUlOX1MyOg0KPiA+Pj4gLQkJaWFzID0g
+c21tdS0+aWFzOw0KPiA+Pj4gLQkJb2FzID0gc21tdS0+b2FzOw0KPiA+Pj4gKwkJcGd0YmxfY2Zn
+LmlhcyA9IHNtbXUtPmlhczsNCj4gPj4+ICsJCXBndGJsX2NmZy5vYXMgPSBzbW11LT5vYXM7DQo+
+ID4+PiAgCQlmbXQgPSBBUk1fNjRfTFBBRV9TMjsNCj4gPj4+ICAJCWJyZWFrOw0KPiA+Pj4gIAlk
+ZWZhdWx0Og0KPiA+Pj4gIAkJcmV0dXJuIC1FSU5WQUw7DQo+ID4+PiAgCX0NCj4gPj4+DQo+ID4+
+PiAtCXBndGJsX2NmZyA9IChzdHJ1Y3QgaW9fcGd0YWJsZV9jZmcpIHsNCj4gPj4+IC0JCS5wZ3Np
+emVfYml0bWFwCT0gc21tdS0+cGdzaXplX2JpdG1hcCwNCj4gPj4+IC0JCS5pYXMJCT0gaWFzLA0K
+PiA+Pj4gLQkJLm9hcwkJPSBvYXMsDQo+ID4+PiAtCQkuY29oZXJlbnRfd2Fsawk9IHNtbXUtPmZl
+YXR1cmVzICYNCj4gPj4gQVJNX1NNTVVfRkVBVF9DT0hFUkVOQ1ksDQo+ID4+PiAtCQkudGxiCQk9
+ICZhcm1fc21tdV9mbHVzaF9vcHMsDQo+ID4+PiAtCQkuaW9tbXVfZGV2CT0gc21tdS0+ZGV2LA0K
+PiA+Pj4gLQl9Ow0KPiA+Pj4gLQ0KPiA+Pj4gIAlwZ3RibF9vcHMgPSBhbGxvY19pb19wZ3RhYmxl
+X29wcyhmbXQsICZwZ3RibF9jZmcsIHNtbXVfZG9tYWluKTsNCj4gPj4+ICAJaWYgKCFwZ3RibF9v
+cHMpDQo+ID4+PiAgCQlyZXR1cm4gLUVOT01FTTsNCj4gPj4+IEBAIC0yNDkxLDcgKzI0OTQsOCBA
+QCBzdGF0aWMgaW50IGFybV9zbW11X2RvbWFpbl9maW5hbGlzZShzdHJ1Y3QNCj4gPj4gYXJtX3Nt
+bXVfZG9tYWluICpzbW11X2RvbWFpbiwNCj4gPj4+ICAJc21tdV9kb21haW4tPmRvbWFpbi5wZ3Np
+emVfYml0bWFwID0gcGd0YmxfY2ZnLnBnc2l6ZV9iaXRtYXA7DQo+ID4+PiAgCXNtbXVfZG9tYWlu
+LT5kb21haW4uZ2VvbWV0cnkuYXBlcnR1cmVfZW5kID0gKDFVTCA8PA0KPiA+PiBwZ3RibF9jZmcu
+aWFzKSAtIDE7DQo+ID4+PiAgCXNtbXVfZG9tYWluLT5kb21haW4uZ2VvbWV0cnkuZm9yY2VfYXBl
+cnR1cmUgPSB0cnVlOw0KPiA+Pj4gLQ0KPiA+Pj4gKwlpZiAoZW5hYmxlX2RpcnR5ICYmIHNtbXVf
+ZG9tYWluLT5zdGFnZSA9PQ0KPiA+PiBBUk1fU01NVV9ET01BSU5fUzEpDQo+ID4+PiArCQlzbW11
+X2RvbWFpbi0+ZG9tYWluLmRpcnR5X29wcyA9DQo+ID4+ICZhcm1fc21tdV9kaXJ0eV9vcHM7DQo+
+ID4+PiAgCXJldCA9IGFybV9zbW11X2RvbWFpbl9hbGxvY19pZChzbW11LCBzbW11X2RvbWFpbik7
+DQo+ID4+PiAgCWlmIChyZXQgPCAwKSB7DQo+ID4+PiAgCQlmcmVlX2lvX3BndGFibGVfb3BzKHBn
+dGJsX29wcyk7DQo+ID4+PiBAQCAtMjgxMSw3ICsyODE1LDcgQEAgc3RhdGljIGludCBhcm1fc21t
+dV9hdHRhY2hfZGV2KHN0cnVjdA0KPiA+PiBpb21tdV9kb21haW4gKmRvbWFpbiwgc3RydWN0IGRl
+dmljZSAqZGV2KQ0KPiA+Pj4gIAltdXRleF9sb2NrKCZzbW11X2RvbWFpbi0+aW5pdF9tdXRleCk7
+DQo+ID4+Pg0KPiA+Pj4gIAlpZiAoIXNtbXVfZG9tYWluLT5zbW11KSB7DQo+ID4+PiAtCQlyZXQg
+PSBhcm1fc21tdV9kb21haW5fZmluYWxpc2Uoc21tdV9kb21haW4sIHNtbXUpOw0KPiA+Pj4gKwkJ
+cmV0ID0gYXJtX3NtbXVfZG9tYWluX2ZpbmFsaXNlKHNtbXVfZG9tYWluLCBzbW11LA0KPiA+PiBm
+YWxzZSk7DQo+ID4+PiAgCX0gZWxzZSBpZiAoc21tdV9kb21haW4tPnNtbXUgIT0gc21tdSkNCj4g
+Pj4+ICAJCXJldCA9IC1FSU5WQUw7DQo+ID4+Pg0KPiA+Pg0KPiA+Pg0KPiA+PiBJIHRoaW5rIHdl
+IGFyZSBtaXNzaW5nIHRoZSBkb21haW4gYXR0YWNoX2RldiBjaGVjayBmb3IgZGlydHkgdHJhY2tp
+bmcuDQo+ID4+DQo+ID4+IFNvbWV0aGluZyBsaWtlOg0KPiA+Pg0KPiA+PiBpZiAoZG9tYWluLT5k
+aXJ0eV9vcHMgJiYgIWFybV9zbW11X2RibV9jYXBhYmxlKHNtbXUpKQ0KPiA+PiAJcmV0dXJuIC1F
+SU5WQUw7DQo+ID4+DQo+ID4+IEJ1dCB0aGF0IGhlbHBlciBpcyBvbmx5IGludHJvZHVjZWQgaW4g
+dGhlIGxhc3QgcGF0Y2gsIHNvIG1heWJlOg0KPiA+Pg0KPiA+PiBpZiAoZG9tYWluLT5kaXJ0eV9v
+cHMgJiYNCj4gPj4gICAgICFkZXZpY2VfaW9tbXVfY2FwYWJsZShkZXYsIElPTU1VX0NBUF9ESVJU
+WV9UUkFDS0lORykpDQo+ID4+IAlyZXR1cm4gLUVJTlZBTDsNCj4gPg0KPiA+IE9rLiBCdXQgZG8g
+d2UgcmVhbGx5IG5lZWQgdG8gY2hlY2sgdGhpcyBpbiBhdHRhY2goKT8gQXMgZGlydHlfb3BzIGFy
+ZSBhZGRlZCBvbmx5DQo+ID4gaWYgaXQgaXMgcmVxdWVzdGVkIGluIGFsbG9jX3VzZXIoKSBhbmQg
+dGhlcmUgd2UgcmV0dXJuIGVyciB3aGVuIGhhcmR3YXJlIGRvZXNuJ3QNCj4gPiBoYXZlIHRoZSBj
+YXBhYmlsaXR5LiAgU28gbm90IHN1cmUgaG93IHRoaXMgbWF0dGVycyBpbiBhdHRhY2goKSBwYXRo
+LiBNYXkgYmUgSSBhbQ0KPiA+IG1pc3Npbmcgc29tZXRoaW5nLg0KPiANCj4gVGhhdCdzIHdoZW4g
+eW91IGNyZWF0ZSB0aGUgZG9tYWluIHdpdGggZGV2IEEuIEFmdGVyd2FyZHMgdGhhdCBkZXYgQSBp
+cw0KPiBhdHRhY2hlZCwNCj4gYnV0IGxhdGVyIG9uIHlvdSBjYW4gYXR0YWNoIGFub3RoZXIgZGV2
+aWNlIEIgdG8gdGhlIGRvbWFpbi4gU28gdGhpcyBjaGVjayBpcw0KPiB0aGVyZSBzdWNoIHRoYXQg
+YSBkb21haW4gd2l0aCBkaXJ0eSB0cmFja2luZyBvcHMgc2V0IHdpbGwgb25seSBoYXZlIGRldmlj
+ZXMgaW4NCj4gdGhlcmUgdGhhdCBzdXBwb3J0IGRpcnR5IHRyYWNraW5nLg0KDQpCdXQgdGhhdCBv
+bmx5IG1hdHRlcnMgaWYgZGV2IEIgaXMgb24gIGRpZmZlcmVudCBzbW11IHdpdGhvdXQgZGJtIGNh
+cGFiaWxpdHksIHJpZ2h0Pw0KSW4gdGhhdCBjYXNlIHdlIGFscmVhZHkgZmFpbCB0aGUgYXR0YWNo
+IHdpdGgsDQoNCj4+PiAgCX0gZWxzZSBpZiAoc21tdV9kb21haW4tPnNtbXUgIT0gc21tdSkNCj4g
+Pj4+ICAJCXJldCA9IC1FSU5WQUw7DQo+ID4+Pg0KDQpJcyB0aGF0IHJpZ2h0Pw0KDQpUaGFua3Ms
+DQpTaGFtZWVyDQogDQo=
