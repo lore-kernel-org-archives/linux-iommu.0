@@ -1,283 +1,221 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+Received: from mail-lj1-f174.google.com (mail-lj1-f174.google.com [209.85.208.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4137714A94
-	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 02:38:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0020517597
+	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 04:12:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708569517; cv=none; b=XQtW9SOYGirskCRBr5Q+T1WP78RyTSbNdRezqoPBkPCtW1pE+lEk5G6S37NTwwZzxsU6SBwzTTNDlc7w8t4PYgCrIO2zVAfv9eZHlk1PhxZ3wjulOFgOyivSD11vvXRxr8p1EwPA+PLTjb73qhxWqeSkDTPsBdprDSoIKszGKvI=
+	t=1708575135; cv=none; b=iqSAy2RHjJnVuIr78/lqYtSwZKszcI6/YuUkSzXLPQq9Eunckb36SgQKX/Gcpn1i/v4jnAjkYf4JTAAC5NWcc+SrSCw0jbd3ATrRcDOzpCcNbKEkbD09VmXngabVdNDvv5MjIbL3hMqMV9tk7+KIUtP8ZZD6vlvynyW05GwRdw0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708569517; c=relaxed/simple;
-	bh=bol1OGOngLrnY2UX2bViq+wywxl3J7FoZal7fVc+BhY=;
+	s=arc-20240116; t=1708575135; c=relaxed/simple;
+	bh=Vu/f/rZT1RWUCIPuLYOEVeQTHZVSDQpnAARYghsCAB4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Jrid9pIY8WJ1zvsr8tSNZvHkHK0w1bZZz2bt9U5SvusyKGJuKllIvThZ+y6RzZ3D5A6ReFkqUvKUrhLKpZvVYeIPwOBcsgpLKp840vs/9Rlk7oBZq4EXwI0eudq3mgkNEDrAJ9YYTO+SQzrMKP0iacybT9cROHhQzpEuT2aF26Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=c7oLxhFv; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 To:Cc:Content-Type; b=OHDLAFQqYori88w5/ePv1Pu9uDQ4wRTnnrTJ4LVAX73+U4gNxr6aQzUqLmcfqc7dmB/xzOCSIw7aiBzBCgCMMiMC5BsIov8dvcrUdRQwJVnIbL313KoD2F9pi3GHjNHiuHePMnR9jqGO5PFMCuga3qdeIMspQKVW4YOoXWOMEyE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Qdcq72ti; arc=none smtp.client-ip=209.85.208.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="c7oLxhFv"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-42e2507c6e1so90021cf.1
-        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 18:38:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Qdcq72ti"
+Received: by mail-lj1-f174.google.com with SMTP id 38308e7fff4ca-2d208be133bso81902661fa.2
+        for <iommu@lists.linux.dev>; Wed, 21 Feb 2024 20:12:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708569514; x=1709174314; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=qpTCkm3CX5PXc96PIxYgipMqzqlj7oekjyp+AyYtxnk=;
-        b=c7oLxhFva5C0vUh5IucoWusulBiyvbE535tB505EbBbRmt791wJg+DvC/K6oPGfaDC
-         0LlG0mT8ZavM2lTcI9oVUOsLk9g2sc9X+vcxmB3stbLxyIuMUjvhaFR6yuSZdxqMbUtR
-         3PndjNY3wlLXXW1A05Wb6P5en0UFVtDXivoHkqgoUwK95+aEwL6+2dyEVFTyWDgQsh7j
-         yuiBRAG1FvpMd/mnKSpueu/1l7Z/Hx8RSHW0/7Z46YET+CXTvPWC4UtEKnELMxvHatvF
-         x2WP9kXHLy8c3fN9sDcUwi8AJfQ6AsOn1FxaE8rEDSnNcXQyRptAYm6EV9+YXkM+93g0
-         44Ww==
+        d=linaro.org; s=google; t=1708575132; x=1709179932; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=pLbMdXfqeNQGrSTR+lBgPID7T5y9s5oLe74DwSX22JM=;
+        b=Qdcq72ti3DTAr/8VO9Oaj2k73OKdJ5VwQtdkGcIjk3MmTnJ7vdNxw5nE4FBzXEI6ok
+         3M9OZanHxwtmnsnVaol87B8mHDo0HyB/Q7ktDDFgrqPM+rsdBZigG39TSc3YP5w/bGfr
+         jaQyseJo5YbqbQmr+BNMuoCruuDgGgtfE3bLPAdgEN2AMdGmIzNjarWCA0HW5al6OuA2
+         ptfBaliVsY1l+JsMtHRTjumL+j4BJlgQRXPbXXi3wqffGyu6CUY5qiZqp83BkbdEpp9Y
+         X+qYQs+Ssc8PUubvlL4kWJoJB73m3JJRbSZxr8asTjPOmBojoulYrsiJRkX5rwnNqxvz
+         FIIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708569514; x=1709174314;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=qpTCkm3CX5PXc96PIxYgipMqzqlj7oekjyp+AyYtxnk=;
-        b=Skq8MnCfAoooNCMzQOqPSNlYNWaJ6Oy1z944MuRJQ/Qs3wHl24iQf1HVVL8I/YCoUQ
-         z6WvXAnuHLAyAnA/X8lrtRysk6rk0cpba2jmmx7QI4B7Z0SZGiekhOT1trUuPIjUsgIu
-         nY3CSJWz5KPEYjQfNDQWFmLIv8NV4zuez8qPR6F6aFyR2DqJfJBTzCBN09wnk0kSmcA0
-         09eyfdbL/L4fk5/77olhoEdHfiQrTpHC4elr7Uk0+WwxUgMij5+MBL/202vhcU06vqb6
-         SVrYGKzgaJkpqBw+bJf4DxaEwaAv34KB73OY/9MUWfRfMHzYOvcc9FW1wic3+OY/irli
-         vlPQ==
-X-Gm-Message-State: AOJu0YxOGotf8Jyz1IhYLik9hNH9kjNa1RF/Qro/9+Bv4gYuj1lmPyfw
-	Ks6qqGSkm2br5KsjV7bPYZlWjdsC54D8VpbptilMtut8iQvo/45oXAUPAIYTg+qrD2BPqWp/R8d
-	z5MaLTOu+vvtPjw6K/5FA5JxnP7MrenHJUSXwXjQcDskECGKbz+gP
-X-Google-Smtp-Source: AGHT+IFmMszaHy2M3FCsvRukDYUmIRAZKB1sYbS2/1eLvF+5wORRZDR4yENK3bsd8ThmIM108TKNw0I0wE58Gx4ulUg=
-X-Received: by 2002:ac8:705:0:b0:42e:4b7c:d82d with SMTP id
- g5-20020ac80705000000b0042e4b7cd82dmr69526qth.2.1708569513868; Wed, 21 Feb
- 2024 18:38:33 -0800 (PST)
+        d=1e100.net; s=20230601; t=1708575132; x=1709179932;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=pLbMdXfqeNQGrSTR+lBgPID7T5y9s5oLe74DwSX22JM=;
+        b=Z+8DCIbcsgtcXmTIwQ4sydMQrl2v8bDyIPdjVMyyI5BvGaJLRoaIa4GPXNb+rWx8uX
+         coX3dsnFEeWvxjE/2mitFoV20oAh5dQBI2/E9ps16zBRJgQOLIibgHDGR/ZLTZJAb3/N
+         6KP2p1pbLf2+DZqRzPjT4CLoX1vstIBKJbZ/zzGnFJNku/7uBkuVYTOF3zRiU4D97L0v
+         k7DhY4k1kTeUoZYfmKwyeZzP5n1sj4t09l85/B8hy+TYKXB62OAizrrXpuyrgr184b2z
+         RUz2vRZ2rmcbPuAvzN9z7nfip3dtXcL5xCBEzOblSmYm+0s+6PZGxpY8TK1PkdHgkoLD
+         Z3+g==
+X-Forwarded-Encrypted: i=1; AJvYcCU1rk/fHkZkC/cRE1hFqUsOdk5sYcTNZgN1SYTgym42xEzJP3dPAffoinc02mufFpHzMYlUJ9wqVzem7bafuxgoPWvPuXE=
+X-Gm-Message-State: AOJu0YzpFVPYGK/0eBW33+KzHxvefXkBJhR0KUxEfs2T6K2En2rwxpQk
+	PCwS3cs8lkwa8o09jOvJdPbm+meF45o1lqPV0ZS4lGS1b+8ArcyavjTL4GGSakXHyoPRtd3ZID6
+	x0oCCfNBOuhblGVGNsUXeHrxG+e2i9UHf41YQDw==
+X-Google-Smtp-Source: AGHT+IHAMoyEL/VKTxvWkJITVlh+9tUKrNIKjNd6Rne2m4uJOagL+re0ibXespCN1AK8TgJOdoioC2ZuY5dXzU5ehEo=
+X-Received: by 2002:a2e:9bc2:0:b0:2d2:3c72:516d with SMTP id
+ w2-20020a2e9bc2000000b002d23c72516dmr6807924ljj.1.1708575132001; Wed, 21 Feb
+ 2024 20:12:12 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v3-11978fc67151+112-smmu_cd_atomic_jgg@nvidia.com>
-In-Reply-To: <0-v3-11978fc67151+112-smmu_cd_atomic_jgg@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Thu, 22 Feb 2024 10:37:56 +0800
-Message-ID: <CAKHBV24y8p49cPJQhwDpRu0NYw74SjNCJo9MohwQ35NUJL92mg@mail.gmail.com>
-Subject: Re: [PATCH v3] iommu/arm-smmu-v3: Do not use GFP_KERNEL under as spinlock
+References: <20240221110658.529-1-zhangfei.gao@linaro.org> <20240221131725.GR13330@nvidia.com>
+ <CABQgh9Ha6C=Ej7Z2Md3v5Q6iXPKHsz+yQ2G_-oOaotVuVi8Hmg@mail.gmail.com>
+In-Reply-To: <CABQgh9Ha6C=Ej7Z2Md3v5Q6iXPKHsz+yQ2G_-oOaotVuVi8Hmg@mail.gmail.com>
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+Date: Thu, 22 Feb 2024 12:11:59 +0800
+Message-ID: <CABQgh9Gp5QaG8-KUOGa=S4i_tAt25Zo=tMFx_DbY-mw+OS17_g@mail.gmail.com>
+Subject: Re: [PATCH v2] iommu: Fix iommu_sva_bind_device to the same domain
 To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Dan Carpenter <dan.carpenter@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
-	Will Deacon <will@kernel.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	jean-philippe <jean-philippe@linaro.org>, baolu.lu@linux.intel.com, 
+	"Zhang, Tina" <tina.zhang@intel.com>, kevin.tian@intel.com, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 22, 2024 at 8:27=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
+On Thu, 22 Feb 2024 at 00:17, Zhangfei Gao <zhangfei.gao@linaro.org> wrote:
 >
-> If the SMMU is configured to use a two level CD table then
-> arm_smmu_write_ctx_desc() allocates a CD table leaf internally using
-> GFP_KERNEL. Due to recent changes this is being done under a spinlock to
-> iterate over the device list - thus it will trigger a sleeping while
-> atomic warning:
+> On Wed, 21 Feb 2024 at 21:17, Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >
+> > On Wed, Feb 21, 2024 at 11:06:58AM +0000, Zhangfei Gao wrote:
+> > > The accelerator device can provide multi-queue and bind to
+> > > the same domain in multi-thread for better performance,
+> > > and domain refcount takes care of it.
+> > >
+> > > 'commit 092edaddb660 ("iommu: Support mm PASID 1:n with sva domains")'
+> > > removes the possibility, so fix it
+> > >
+> > > Fixs: '092edaddb660 ("iommu: Support mm PASID 1:n with sva domains")'
+> > > Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> > > ---
+> > > v2: Instead of checking ret == -EBUSY,
+> > >     change iommu_attach_device_pasid return value from -EBUSY to 0
+> > >     when pasid entry is found, and refcount++ when return
+> > >
+> > >  drivers/iommu/iommu-sva.c | 2 +-
+> > >  drivers/iommu/iommu.c     | 2 +-
+> > >  2 files changed, 2 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> > > index c3fc9201d0be..20b232c7675d 100644
+> > > --- a/drivers/iommu/iommu-sva.c
+> > > +++ b/drivers/iommu/iommu-sva.c
+> > > @@ -141,8 +141,8 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
+> > >       struct device *dev = handle->dev;
+> > >
+> > >       mutex_lock(&iommu_sva_lock);
+> > > -     iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
+> > >       if (--domain->users == 0) {
+> > > +             iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
+> > >               list_del(&domain->next);
+> > >               iommu_domain_free(domain);
+> > >       }
+> >
+> > The users refcount is not to provide for sharing of the same PASID it
+> > is to provide for sharing the domain across devices. This change would
+> > break that because we loose the 'dev' that needs to be detached in a
+> > multi-device case if we don't immediately call detach_device_pasid
+> > here.
+> >
+> > You'd need to build something much more complicated here to allow
+> > PASID sharing.
+> >
+> > I wonder if this case is common enough to warrant the core code to get
+> > involved. I suppose maybe, does idxd have the same problem? It can
+> > only open it's cdev once because of this - that doesn't seem like what
+> > the code intends for a non-wq_dedicated?
+> >
+> > More like this:
 >
->   arm_smmu_sva_set_dev_pasid()
->     mutex_lock(&sva_lock);
->     __arm_smmu_sva_bind()
->      arm_smmu_mmu_notifier_get()
->       spin_lock_irqsave()
->       arm_smmu_write_ctx_desc()
->         arm_smmu_get_cd_ptr()
->          arm_smmu_alloc_cd_leaf_table()
->           dmam_alloc_coherent(GFP_KERNEL)
+> Hi, Jason
 >
-> This is a 64K high order allocation and really should not be done
-> atomically.
+> Only added two lines change, and tested ok.
+> The different with before is same handle is returned, and the handle
+> itself has refcount.
+> While before different handle is returned,
+> Not think about any issue now, I think it is OK.
 >
-> At the moment the rework of the SVA to follow the new API is half
-> finished. Recently the CD table memory was moved from the domain to the
-> master, however we have the confusing situation where the SVA code is
-> wrongly using the RID domains device's list to track which CD tables the
-> SVA is installed in.
+> Could you send the patch, will add tested-by then.
+
+Or would you mind I send the patch on behalf of you?
+
+The limitation breaks our existing system :(
+
+https://github.com/Linaro/linux-kernel-uadk/commit/4c48330faf727303e3127c9ee6fbf56d885b4297
+
+Thanks
+
 >
-> Remove the logic to replicate the CD across all the domain's masters
-> during attach. We know which master and which CD table the PASID should b=
-e
-> installed in.
+> >
+> > diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+> > index c3fc9201d0be97..aec11e5cde6b0e 100644
+> > --- a/drivers/iommu/iommu-sva.c
+> > +++ b/drivers/iommu/iommu-sva.c
+> > @@ -41,6 +41,7 @@ static struct iommu_mm_data *iommu_alloc_mm_data(struct mm_struct *mm, struct de
+> >         }
+> >         iommu_mm->pasid = pasid;
+> >         INIT_LIST_HEAD(&iommu_mm->sva_domains);
+> > +       INIT_LIST_HEAD(&iommu_mm->sva_handles);
+> >         /*
+> >          * Make sure the write to mm->iommu_mm is not reordered in front of
+> >          * initialization to iommu_mm fields. If it does, readers may see a
+> > @@ -82,6 +83,13 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+> >                 goto out_unlock;
+> >         }
+> >
+> > +       list_for_each_entry(handle, &mm->iommu_mm->sva_handles, handle_item) {
+> > +               if (handle->dev == dev && handle->domain->mm == mm) {
+> > +                       refcount_inc(&handle->users);
 >
-> Right now SVA only works when dma-iommu.c is in control of the RID
-> translation, which means we have a single iommu_domain shared across the
-> entire group and that iommu_domain is not shared outside the group.
+> mutex_unlock(&iommu_sva_lock);
 >
-> Critically this means that the iommu_group->devices list and RID's
-> smmu_domain->devices list describe the same set of masters.
 >
-> For PCI cases the core code also insists on singleton groups so there is
-> only one entry in the smmu_domain->devices list that is equal to the
-> master being passed in to arm_smmu_sva_set_dev_pasid().
+> > +                       return handle;
+> > +               }
+> > +       }
+> > +
+> >         handle = kzalloc(sizeof(*handle), GFP_KERNEL);
+> >         if (!handle) {
+> >                 ret = -ENOMEM;
+> > @@ -109,6 +117,7 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+> >                 goto out_free_domain;
+> >         domain->users = 1;
 >
-> Only non-PCI cases may have multi-device groups. However, the core code
-> will repeat the calls to arm_smmu_sva_set_dev_pasid() across the entire
-> iommu_group->devices list.
+>  refcount_set(&handle->users, 1);
 >
-> Instead of having arm_smmu_mmu_notifier_get() indirectly loop over all th=
-e
-> devices in the group via the RID's smmu_domain, rely on
-> __arm_smmu_sva_bind() to be called for each device in the group and
-> install the repeated CD entry that way.
 >
-> This avoids taking the spinlock to access the devices list and permits th=
-e
-> arm_smmu_write_ctx_desc() to use a sleeping allocation. Leave the
-> arm_smmu_mm_release() as a confusing situation, this requires tracking
-> attached masters inside the SVA domain.
+> >         list_add(&domain->next, &mm->iommu_mm->sva_domains);
+> > +       list_add(&handle->handle_item, &mm->iommu_mm->sva_handles);
+> >
+> >  out:
+> >         mutex_unlock(&iommu_sva_lock);
+> > @@ -141,6 +150,12 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
+> >         struct device *dev = handle->dev;
+> >
+> >         mutex_lock(&iommu_sva_lock);
+> > +       if (!refcount_dec_and_test(&handle->users)) {
+> > +               mutex_unlock(&iommu_sva_lock);
+> > +               return;
+> > +       }
+> > +       list_del(&handle->handle_item);
+> > +
+> >         iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
+> >         if (--domain->users == 0) {
+> >                 list_del(&domain->next);
+> > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > index 1ea2a820e1eb03..5e27cb3a3be99b 100644
+> > --- a/include/linux/iommu.h
+> > +++ b/include/linux/iommu.h
+> > @@ -892,11 +892,14 @@ struct iommu_fwspec {
+> >  struct iommu_sva {
+> >         struct device                   *dev;
+> >         struct iommu_domain             *domain;
+> > +       struct list_head                handle_item;
+> > +       refcount_t                      users;
+> >  };
+> >
+> >  struct iommu_mm_data {
+> >         u32                     pasid;
+> >         struct list_head        sva_domains;
+> > +       struct list_head        sva_handles;
+> >  };
+> >
+> >  int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
 >
-> Removing the loop allows arm_smmu_write_ctx_desc() to be called outside
-> the spinlock and thus is safe to use GFP_KERNEL.
->
-> Move the clearing of the CD into arm_smmu_sva_remove_dev_pasid() so that
-> arm_smmu_mmu_notifier_get/put() remain paired functions.
->
-> Fixes: 24503148c545 ("iommu/arm-smmu-v3: Refactor write_ctx_desc")
-> Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-> Closes: https://lore.kernel.org/all/4e25d161-0cf8-4050-9aa3-dfa21cd63e56@=
-moroto.mountain/
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 38 ++++++-------------
->  1 file changed, 12 insertions(+), 26 deletions(-)
->
-> I suggest taking these two patches as well which will further help this c=
-ode:
->
-> https://lore.kernel.org/linux-iommu/12-v5-cd1be8dd9c71+3fa-smmuv3_newapi_=
-p1_jgg@nvidia.com/
-> https://lore.kernel.org/linux-iommu/2-v4-e7091cdd9e8d+43b1-smmuv3_newapi_=
-p2_jgg@nvidia.com/
->
-> Michael should check it, and Nicolin or Shameer should do a quick sanity =
-check
-> on their SVA HW.
->
-> v3:
->   - Pull arm_smmu_write_ctx_desc() up into __arm_smmu_sva_bind() and
->     arm_smmu_sva_remove_dev_pasid() to avoid the early exit in
->     arm_smmu_mmu_notifier_get()
-> v2: https://lore.kernel.org/all/0-v2-7988c2682634+261-smmu_cd_atomic_jgg@=
-nvidia.com/
->
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/io=
-mmu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index 05722121f00e70..4a27fbdb2d8446 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -292,10 +292,8 @@ arm_smmu_mmu_notifier_get(struct arm_smmu_domain *sm=
-mu_domain,
->                           struct mm_struct *mm)
->  {
->         int ret;
-> -       unsigned long flags;
->         struct arm_smmu_ctx_desc *cd;
->         struct arm_smmu_mmu_notifier *smmu_mn;
-> -       struct arm_smmu_master *master;
->
->         list_for_each_entry(smmu_mn, &smmu_domain->mmu_notifiers, list) {
->                 if (smmu_mn->mn.mm =3D=3D mm) {
-> @@ -325,28 +323,9 @@ arm_smmu_mmu_notifier_get(struct arm_smmu_domain *sm=
-mu_domain,
->                 goto err_free_cd;
->         }
->
-> -       spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> -       list_for_each_entry(master, &smmu_domain->devices, domain_head) {
-> -               ret =3D arm_smmu_write_ctx_desc(master, mm_get_enqcmd_pas=
-id(mm),
-> -                                             cd);
-> -               if (ret) {
-> -                       list_for_each_entry_from_reverse(
-> -                               master, &smmu_domain->devices, domain_hea=
-d)
-> -                               arm_smmu_write_ctx_desc(
-> -                                       master, mm_get_enqcmd_pasid(mm), =
-NULL);
-> -                       break;
-> -               }
-> -       }
-> -       spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-> -       if (ret)
-> -               goto err_put_notifier;
-> -
->         list_add(&smmu_mn->list, &smmu_domain->mmu_notifiers);
->         return smmu_mn;
->
-> -err_put_notifier:
-> -       /* Frees smmu_mn */
-> -       mmu_notifier_put(&smmu_mn->mn);
->  err_free_cd:
->         arm_smmu_free_shared_cd(cd);
->         return ERR_PTR(ret);
-> @@ -363,9 +342,6 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu=
-_mmu_notifier *smmu_mn)
->
->         list_del(&smmu_mn->list);
->
-> -       arm_smmu_update_ctx_desc_devices(smmu_domain, mm_get_enqcmd_pasid=
-(mm),
-> -                                        NULL);
-> -
->         /*
->          * If we went through clear(), we've already invalidated, and no
->          * new TLB entry can have been formed.
-> @@ -381,7 +357,8 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu=
-_mmu_notifier *smmu_mn)
->         arm_smmu_free_shared_cd(cd);
->  }
->
-> -static int __arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
-> +static int __arm_smmu_sva_bind(struct device *dev, ioasid_t pasid,
-> +                              struct mm_struct *mm)
->  {
->         int ret;
->         struct arm_smmu_bond *bond;
-> @@ -404,9 +381,15 @@ static int __arm_smmu_sva_bind(struct device *dev, s=
-truct mm_struct *mm)
->                 goto err_free_bond;
->         }
->
-> +       ret =3D arm_smmu_write_ctx_desc(master, pasid, bond->smmu_mn->cd)=
-;
-> +       if (ret)
-> +               goto err_put_notifier;
-> +
->         list_add(&bond->list, &master->bonds);
->         return 0;
->
-> +err_put_notifier:
-> +       arm_smmu_mmu_notifier_put(bond->smmu_mn);
->  err_free_bond:
->         kfree(bond);
->         return ret;
-> @@ -568,6 +551,9 @@ void arm_smmu_sva_remove_dev_pasid(struct iommu_domai=
-n *domain,
->         struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
->
->         mutex_lock(&sva_lock);
-> +
-> +       arm_smmu_write_ctx_desc(master, id, NULL);
-> +
->         list_for_each_entry(t, &master->bonds, list) {
->                 if (t->mm =3D=3D mm) {
->                         bond =3D t;
-> @@ -590,7 +576,7 @@ static int arm_smmu_sva_set_dev_pasid(struct iommu_do=
-main *domain,
->         struct mm_struct *mm =3D domain->mm;
->
->         mutex_lock(&sva_lock);
-> -       ret =3D __arm_smmu_sva_bind(dev, mm);
-> +       ret =3D __arm_smmu_sva_bind(dev, id, mm);
->         mutex_unlock(&sva_lock);
->
->         return ret;
->
-> base-commit: c76c50cd425e574df5a071cd7e1805d0764aabff
-> --
-> 2.43.2
->
-Reviewed-by: Michael Shavit <mshavit@google.com>
+> Thanks
