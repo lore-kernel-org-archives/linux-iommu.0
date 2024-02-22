@@ -1,198 +1,179 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4778208A2
-	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 11:24:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D613245975
+	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 11:31:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708601059; cv=none; b=jbSnW8U4xlvCJ0ZEzhTc7EnG/hiP77AAO+efEXV47A5YJGTS58Bsi4j6JyILwVJYlJCs0nb3pN7kCRUb4sAl3zIYJ2cc4+4tlYx561aQxSI6ciuxqGEGhAOoSWBJgjc22CgDs9+DBRUCTolS9G4+xDXvKGuKhJAASEamAJzrt7s=
+	t=1708601488; cv=none; b=fZPGWR2+81kKJjpFzJr8VU8davOrkp4XHgMEbPNuOjvlMkDGSyhGwaS8B9gkDlsPcGKh1OZNIadckE3XSwSlQe6dEhuQrtoBmA0Kfp5N6hfkSf7NdEpcZjGgDtPsQQo806sIjNpzi5D3jsz15cTA8ZRymtLn3ncYY+1xYDBoGfc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708601059; c=relaxed/simple;
-	bh=inTQdY5SH59sOtE/87PynLBV4T4wuKBQEIAbWFx9vkE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MyjmePViS4385mSuXAphJk4nuT8qcbQ8EwFBZkYcmJ19ehcUaBT7LCtmKJmAn6Lhgq+joSnOmYwA/5mv0QD3bMLJFIq7KERhcoySBLnuDk7JVkJLdHvX81S+qJiSGdkzAzQUDqG94C74FipG9G5ekO9H3UM7YdQvt6TFbYP4Kk0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=TSkQGPyi; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="TSkQGPyi"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-33d6fe64a9bso2242030f8f.0
-        for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 03:24:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1708601056; x=1709205856; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MqEeq1wIdA2VonSejspd8tgQGyiApSRfSkr6oRM5U9g=;
-        b=TSkQGPyi8ZgYZEAdE8TpyntwfxYhq9kz/NxFiD7q3s+qGevMMQ4YwREZziXwqUB0ao
-         t4pdOBDeyMapwMTaFgswadPRvMsB7IjDqlYOQfnTyuWSiOpHT3yAorFPy5bY2D+DiIcf
-         w2cM1CHzaPXem7s07TPEICjGCKQt9Xh8rQbiuLR2ynj8viqDXkWabT2q65+FU80w7CIk
-         xWxYf0nbP01WaGEseaA5Mo+xzAcn6E0+ZEfZ7St7Plvhp1XwMZvipV8doiDeqbsRFjFK
-         Znt/RmcgoDfQIpyUilxu0wByfodtVBoWE02idtixXvlXQRmCMOEP0GGdqX4OTzPYIM0M
-         QUxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708601056; x=1709205856;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MqEeq1wIdA2VonSejspd8tgQGyiApSRfSkr6oRM5U9g=;
-        b=hhg/Aj8YcVxwliFMolwuRE9oDAjhR1idEvpWxFPxx/PmO6Zq/SAXAN0UMYIIgcHF7t
-         YDtP/zde5OH3aUiAqTSsNAGgGmEZjSA2iNjnPHA1PENaj58bISkbjiHt/MLc3xMhfFps
-         2CJ6g9sijWX82u6tnxN+caJgqK6w23g1vynZOwhkIvIZfHYXGXAH6/2ycPpcbk5FYlm2
-         8zBEoLhLvzzH5buFSeY4mk8jeAspQeij1RcoeSW3TW4+nNJbs1bnm/DIqjKmh+CFxP04
-         x495YYv9f8jcAf/stIZPrUln4BZ6sEgu1E9YPSlRWw98jjkwmgODaeVly4OHcNILjR+t
-         9H+A==
-X-Forwarded-Encrypted: i=1; AJvYcCVTq/P75EexPVna8VRRKesITPU1t0WMWoflNOtwpy0Qu96KD9o0YpS3y1c6xBAgVgvYYtfyXOW3F2vXFmtVyumkwnLeWc0=
-X-Gm-Message-State: AOJu0YytCc4X3hKWuL5Xwq/FGZns6uUYjM5Mfzt/9vOrOkeAPvWHkeTN
-	HkSue7RJ3ITauyy1KsMyIlEfOHXT6B3efVwcfriUuJ7rlJ8hk5FL1IjJg9i9QLc=
-X-Google-Smtp-Source: AGHT+IFbZl22L3B28jhj398tqBenu+qqj0WScFRUPY/I7QkkGNNZIcDW6FMPAAx8TMuoprcZzNDV7g==
-X-Received: by 2002:adf:fd07:0:b0:33d:9231:d1c2 with SMTP id e7-20020adffd07000000b0033d9231d1c2mr919322wrr.25.1708601056009;
-        Thu, 22 Feb 2024 03:24:16 -0800 (PST)
-Received: from localhost ([102.222.70.76])
-        by smtp.gmail.com with ESMTPSA id b11-20020a05600003cb00b0033d9ac8f356sm745848wrg.93.2024.02.22.03.24.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Feb 2024 03:24:15 -0800 (PST)
-Date: Thu, 22 Feb 2024 14:24:11 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Ethan Zhao <haifeng.zhao@linux.intel.com>
-Cc: baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
-	jgg@ziepe.ca, kevin.tian@intel.com, dwmw2@infradead.org,
-	will@kernel.org, lukas@wunner.de, yi.l.liu@intel.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-pci@vger.kernel.org
-Subject: Re: [PATCH v13 3/3] iommu/vt-d: improve ITE fault handling if target
- device isn't valid
-Message-ID: <c655cd15-c883-483b-b698-b1b7ae360388@moroto.mountain>
-References: <20240222090251.2849702-1-haifeng.zhao@linux.intel.com>
- <20240222090251.2849702-4-haifeng.zhao@linux.intel.com>
+	s=arc-20240116; t=1708601488; c=relaxed/simple;
+	bh=F4am/n7NRcpyCYiYEb/VlrfOLQWcEB1g1+lHxOal0wQ=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=IjLAw+C3pxutGqgkJPKaPEWVD232giJysWtK4za73CDc0BJctncSabwMHc0pe8DToBVez4/eWeE4Zf5qbUAsKqf5CfF2zNdt3uDbxWsqGCAlicLXmenKuy5HWlR9oXHjNA+RNmMd9TS6W6lFaWTp6FpkUuh2M1Jftzj7bJ0xn1Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.163])
+	by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4TgWD66hp6z1vv47;
+	Thu, 22 Feb 2024 19:30:46 +0800 (CST)
+Received: from dggems704-chm.china.huawei.com (unknown [10.3.19.181])
+	by mail.maildlp.com (Postfix) with ESMTPS id 8AF6E18002F;
+	Thu, 22 Feb 2024 19:31:21 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Thu, 22 Feb 2024 19:31:20 +0800
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
+ Thu, 22 Feb 2024 11:31:18 +0000
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Joao Martins <joao.m.martins@oracle.com>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>, "nicolinc@nvidia.com"
+	<nicolinc@nvidia.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"mshavit@google.com" <mshavit@google.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>, jiangkunkun
+	<jiangkunkun@huawei.com>, zhukeqian <zhukeqian1@huawei.com>, Linuxarm
+	<linuxarm@huawei.com>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
+Subject: RE: [PATCH v2 3/4] iommu/arm-smmu-v3: Add support for dirty tracking
+ in domain alloc
+Thread-Topic: [PATCH v2 3/4] iommu/arm-smmu-v3: Add support for dirty tracking
+ in domain alloc
+Thread-Index: AQHaZXTSExgSw/uTxUa44V9Mknrnh7EWMsuAgAAGflA=
+Date: Thu, 22 Feb 2024 11:31:18 +0000
+Message-ID: <dfdc7daf8bd14b04b9bd29faaa1e6a96@huawei.com>
+References: <20240222094923.33104-1-shameerali.kolothum.thodi@huawei.com>
+ <20240222094923.33104-4-shameerali.kolothum.thodi@huawei.com>
+ <a47699c9-4f3d-4cd0-94f4-f19e117ea6a3@oracle.com>
+In-Reply-To: <a47699c9-4f3d-4cd0-94f4-f19e117ea6a3@oracle.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240222090251.2849702-4-haifeng.zhao@linux.intel.com>
 
-I'm sorry, I'm coming into this late and this is the first time I have
-reviewed this patch.  I see that we are at v13, and I hate to come in
-with picky comments when a patch has already gone through 13
-revisions...
-
-On Thu, Feb 22, 2024 at 04:02:51AM -0500, Ethan Zhao wrote:
-> Because surprise removal could happen anytime, e.g. user could request safe
-> removal to EP(endpoint device) via sysfs and brings its link down to do
-> surprise removal cocurrently. such aggressive cases would cause ATS
-> invalidation request issued to non-existence target device, then deadly
-> loop to retry that request after ITE fault triggered in interrupt context.
-> this patch aims to optimize the ITE handling by checking the target device
-> presence state to avoid retrying the timeout request blindly, thus avoid
-> hard lockup or system hang.
-> 
-> Devices are valid ATS invalidation request target only when they reside
-
-"valid invalidation" is awkward wording.  Can we instead say:
-
-Devices should only be invalidated when they are in the
-iommu->device_rbtree (probed, not released) and present.
-
-> in the iommu->device_rbtre (probed, not released) and present.
-                            ^
-Missing e in _rbtree.
-
-> 
-> Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
-
-This patch should have a Fixes tags and be backported to stable kernels.
-I think it goes back all the way...
-
-Fixes: 704126ad81b8 ("VT-d: handle Invalidation Queue Error to avoid system hang")
-
-> ---
->  drivers/iommu/intel/dmar.c | 25 +++++++++++++++++++++++++
->  1 file changed, 25 insertions(+)
-> 
-> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-> index d14797aabb7a..d01d68205557 100644
-> --- a/drivers/iommu/intel/dmar.c
-> +++ b/drivers/iommu/intel/dmar.c
-> @@ -1273,6 +1273,9 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
->  {
->  	u32 fault;
->  	int head, tail;
-> +	u64 iqe_err, ite_sid;
-> +	struct device *dev = NULL;
-> +	struct pci_dev *pdev = NULL;
->  	struct q_inval *qi = iommu->qi;
->  	int shift = qi_shift(iommu);
->  
-> @@ -1317,6 +1320,13 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
->  		tail = readl(iommu->reg + DMAR_IQT_REG);
->  		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
->  
-> +		/*
-> +		 * SID field is valid only when the ITE field is Set in FSTS_REG
-> +		 * see Intel VT-d spec r4.1, section 11.4.9.9
-> +		 */
-> +		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
-> +		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
-> +
->  		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
->  		pr_info("Invalidation Time-out Error (ITE) cleared\n");
->  
-> @@ -1326,6 +1336,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
->  			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
->  		} while (head != tail);
->  
-> +		/*
-> +		 * If got ITE, we need to check if the sid of ITE is one of the
-> +		 * current valid ATS invalidation target devices, if no, or the
-> +		 * target device isn't presnet, don't try this request anymore.
-> +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
-> +		 */
-
-This comment is kind of confusing.
-
-/*
- * If we have an ITE, then we need to check whether the sid of the ITE
- * is in the rbtree (meaning it is probed and not released), and that
- * the PCI device is present.
- */
-
-My comment is slightly shorter but I think it has the necessary
-information.
-
-> +		if (ite_sid) {
-> +			dev = device_rbtree_find(iommu, ite_sid);
-> +			if (!dev || !dev_is_pci(dev))
-> +				return -ETIMEDOUT;
-
--ETIMEDOUT is weird.  The callers don't care which error code we return.
-Change this to -ENODEV or something
-
-> +			pdev = to_pci_dev(dev);
-> +			if (!pci_device_is_present(pdev) &&
-> +				ite_sid == pci_dev_id(pci_physfn(pdev)))
-
-The && confused me, but then I realized that probably "ite_sid ==
-pci_dev_id(pci_physfn(pdev))" is always true.  Can we delete that part?
-
-		pdev = to_pci_dev(dev);
-		if (!pci_device_is_present(pdev))
-			return -ENODEV;
-
-
-> +				return -ETIMEDOUT;
-
--ENODEV.
-
-> +		}
->  		if (qi->desc_status[wait_index] == QI_ABORT)
->  			return -EAGAIN;
->  	}
-
-Sorry, again for nit picking a v13 patch.  I'm not a domain expert but
-this patchset seems reasonable to me.
-
-regards,
-dan carpenter
+DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9hbyBNYXJ0aW5zIDxq
+b2FvLm0ubWFydGluc0BvcmFjbGUuY29tPg0KPiBTZW50OiBUaHVyc2RheSwgRmVicnVhcnkgMjIs
+IDIwMjQgMTE6MDQgQU0NCj4gVG86IFNoYW1lZXJhbGkgS29sb3RodW0gVGhvZGkgPHNoYW1lZXJh
+bGkua29sb3RodW0udGhvZGlAaHVhd2VpLmNvbT4NCj4gQ2M6IGpvcm9AOGJ5dGVzLm9yZzsgamdn
+QG52aWRpYS5jb207IGtldmluLnRpYW5AaW50ZWwuY29tOw0KPiBuaWNvbGluY0BudmlkaWEuY29t
+OyBpb21tdUBsaXN0cy5saW51eC5kZXY7IG1zaGF2aXRAZ29vZ2xlLmNvbTsNCj4gcm9iaW4ubXVy
+cGh5QGFybS5jb207IHdpbGxAa2VybmVsLm9yZzsgamlhbmdrdW5rdW4NCj4gPGppYW5na3Vua3Vu
+QGh1YXdlaS5jb20+OyB6aHVrZXFpYW4gPHpodWtlcWlhbjFAaHVhd2VpLmNvbT47DQo+IExpbnV4
+YXJtIDxsaW51eGFybUBodWF3ZWkuY29tPjsgbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZyYWRl
+YWQub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjIgMy80XSBpb21tdS9hcm0tc21tdS12Mzog
+QWRkIHN1cHBvcnQgZm9yIGRpcnR5DQo+IHRyYWNraW5nIGluIGRvbWFpbiBhbGxvYw0KPiANCj4g
+T24gMjIvMDIvMjAyNCAwOTo0OSwgU2hhbWVlciBLb2xvdGh1bSB3cm90ZToNCj4gPiBGcm9tOiBK
+b2FvIE1hcnRpbnMgPGpvYW8ubS5tYXJ0aW5zQG9yYWNsZS5jb20+DQo+ID4NCj4gPiBUaGlzIHBy
+b3ZpZGVzIGFsbCB0aGUgaW5mcmFzdHJ1Y3R1cmUgdG8gZW5hYmxlIGRpcnR5IHRyYWNraW5nIGlm
+IHRoZQ0KPiA+IGhhcmR3YXJlIGhhcyB0aGUgY2FwYWJpbGl0eSBhbmQgZG9tYWluIGFsbG9jIHJl
+cXVlc3QgZm9yIGl0Lg0KPiA+DQo+ID4gUGxlYXNlIG5vdGUsIHdlIHN0aWxsIHJlcG9ydCBubyBz
+dXBwb3J0IGZvciBJT01NVV9DQVBfRElSVFlfVFJBQ0tJTkcNCj4gPiBhcyBpdCB3aWxsIGZpbmFs
+bHkgYmUgZW5hYmxlZCBpbiBhIHN1YnNlcXVlbnQgcGF0Y2guDQo+ID4NCj4gPiBTaWduZWQtb2Zm
+LWJ5OiBKb2FvIE1hcnRpbnMgPGpvYW8ubS5tYXJ0aW5zQG9yYWNsZS5jb20+DQo+ID4gU2lnbmVk
+LW9mZi1ieTogU2hhbWVlciBLb2xvdGh1bQ0KPiA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9kaUBo
+dWF3ZWkuY29tPg0KPiA+IC0tLQ0KPiA+ICBkcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9h
+cm0tc21tdS12My5jIHwgOTUNCj4gKysrKysrKysrKysrKysrKy0tLS0tDQo+ID4gIGluY2x1ZGUv
+bGludXgvaW8tcGd0YWJsZS5oICAgICAgICAgICAgICAgICAgfCAgNCArDQo+ID4gIDIgZmlsZXMg
+Y2hhbmdlZCwgNzcgaW5zZXJ0aW9ucygrKSwgMjIgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYw0KPiA+
+IGIvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYw0KPiA+IGluZGV4
+IGJkMzA3MzllMzU4OC4uMDU4YmJiMGRiZTJlIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvaW9t
+bXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMNCj4gPiArKysgYi9kcml2ZXJzL2lvbW11
+L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5jDQo+ID4gQEAgLTQzLDYgKzQzLDcgQEAgTU9E
+VUxFX1BBUk1fREVTQyhkaXNhYmxlX21zaXBvbGxpbmcsDQo+ID4gIAkiRGlzYWJsZSBNU0ktYmFz
+ZWQgcG9sbGluZyBmb3IgQ01EX1NZTkMgY29tcGxldGlvbi4iKTsNCj4gPg0KPiA+ICBzdGF0aWMg
+c3RydWN0IGlvbW11X29wcyBhcm1fc21tdV9vcHM7DQo+ID4gK3N0YXRpYyBzdHJ1Y3QgaW9tbXVf
+ZGlydHlfb3BzIGFybV9zbW11X2RpcnR5X29wczsNCj4gPg0KPiA+ICBlbnVtIGFybV9zbW11X21z
+aV9pbmRleCB7DQo+ID4gIAlFVlRRX01TSV9JTkRFWCwNCj4gPiBAQCAtODYsNyArODcsOCBAQCBz
+dGF0aWMgc3RydWN0IGFybV9zbW11X29wdGlvbl9wcm9wDQo+ID4gYXJtX3NtbXVfb3B0aW9uc1td
+ID0gew0KPiA+DQo+ID4gIHN0YXRpYyB2b2lkIGFybV9zbW11X3Jtcl9pbnN0YWxsX2J5cGFzc19z
+dGUoc3RydWN0IGFybV9zbW11X2RldmljZQ0KPiA+ICpzbW11KTsgIHN0YXRpYyBpbnQgYXJtX3Nt
+bXVfZG9tYWluX2ZpbmFsaXNlKHN0cnVjdCBhcm1fc21tdV9kb21haW4NCj4gKnNtbXVfZG9tYWlu
+LA0KPiA+IC0JCQkJICAgIHN0cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNtbXUpOw0KPiA+ICsJCQkJ
+ICAgIHN0cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNtbXUsDQo+ID4gKwkJCQkgICAgYm9vbCBlbmFi
+bGVfZGlydHkpOw0KPiA+ICBzdGF0aWMgaW50IGFybV9zbW11X2FsbG9jX2NkX3RhYmxlcyhzdHJ1
+Y3QgYXJtX3NtbXVfbWFzdGVyICptYXN0ZXIpOw0KPiA+IHN0YXRpYyB2b2lkIGFybV9zbW11X3Rs
+Yl9pbnZfYWxsX3MyKHN0cnVjdCBhcm1fc21tdV9kb21haW4NCj4gPiAqc21tdV9kb21haW4pOw0K
+PiA+DQo+ID4gQEAgLTIzNzgsNyArMjM4MCw3IEBAIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9tYWlu
+DQo+ICphcm1fc21tdV9kb21haW5fYWxsb2NfcGFnaW5nKHN0cnVjdCBkZXZpY2UgKmRldikNCj4g
+PiAgCQlzdHJ1Y3QgYXJtX3NtbXVfbWFzdGVyICptYXN0ZXIgPQ0KPiBkZXZfaW9tbXVfcHJpdl9n
+ZXQoZGV2KTsNCj4gPiAgCQlpbnQgcmV0Ow0KPiA+DQo+ID4gLQkJcmV0ID0gYXJtX3NtbXVfZG9t
+YWluX2ZpbmFsaXNlKHNtbXVfZG9tYWluLCBtYXN0ZXItDQo+ID5zbW11KTsNCj4gPiArCQlyZXQg
+PSBhcm1fc21tdV9kb21haW5fZmluYWxpc2Uoc21tdV9kb21haW4sIG1hc3Rlci0NCj4gPnNtbXUs
+IGZhbHNlKTsNCj4gPiAgCQlpZiAocmV0KSB7DQo+ID4gIAkJCWtmcmVlKHNtbXVfZG9tYWluKTsN
+Cj4gPiAgCQkJcmV0dXJuIEVSUl9QVFIocmV0KTsNCj4gPiBAQCAtMjQ0NSwxMCArMjQ0NywxMSBA
+QCBzdGF0aWMgdm9pZCBhcm1fc21tdV9kb21haW5fZnJlZShzdHJ1Y3QNCj4gPiBpb21tdV9kb21h
+aW4gKmRvbWFpbikgIH0NCj4gPg0KPiA+ICBzdGF0aWMgaW50IGFybV9zbW11X2RvbWFpbl9maW5h
+bGlzZShzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluDQo+ICpzbW11X2RvbWFpbiwNCj4gPiAtCQkJCSAg
+ICBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11KQ0KPiA+ICsJCQkJICAgIHN0cnVjdCBhcm1f
+c21tdV9kZXZpY2UgKnNtbXUsDQo+ID4gKwkJCQkgICAgYm9vbCBlbmFibGVfZGlydHkpDQo+ID4g
+IHsNCj4gPiAgCWludCByZXQ7DQo+ID4gLQl1bnNpZ25lZCBsb25nIGlhcywgb2FzOw0KPiA+ICsJ
+dW5zaWduZWQgbG9uZyBpYXM7DQo+ID4gIAllbnVtIGlvX3BndGFibGVfZm10IGZtdDsNCj4gPiAg
+CXN0cnVjdCBpb19wZ3RhYmxlX2NmZyBwZ3RibF9jZmc7DQo+ID4gIAlzdHJ1Y3QgaW9fcGd0YWJs
+ZV9vcHMgKnBndGJsX29wczsNCj4gPiBAQCAtMjQ1OSwzMSArMjQ2MiwzMSBAQCBzdGF0aWMgaW50
+IGFybV9zbW11X2RvbWFpbl9maW5hbGlzZShzdHJ1Y3QNCj4gYXJtX3NtbXVfZG9tYWluICpzbW11
+X2RvbWFpbiwNCj4gPiAgCWlmICghKHNtbXUtPmZlYXR1cmVzICYgQVJNX1NNTVVfRkVBVF9UUkFO
+U19TMikpDQo+ID4gIAkJc21tdV9kb21haW4tPnN0YWdlID0gQVJNX1NNTVVfRE9NQUlOX1MxOw0K
+PiA+DQo+ID4gKwlwZ3RibF9jZmcgPSAoc3RydWN0IGlvX3BndGFibGVfY2ZnKSB7DQo+ID4gKwkJ
+LnBnc2l6ZV9iaXRtYXAJPSBzbW11LT5wZ3NpemVfYml0bWFwLA0KPiA+ICsJCS5jb2hlcmVudF93
+YWxrCT0gc21tdS0+ZmVhdHVyZXMgJg0KPiBBUk1fU01NVV9GRUFUX0NPSEVSRU5DWSwNCj4gPiAr
+CQkudGxiCQk9ICZhcm1fc21tdV9mbHVzaF9vcHMsDQo+ID4gKwkJLmlvbW11X2Rldgk9IHNtbXUt
+PmRldiwNCj4gPiArCX07DQo+ID4gKw0KPiA+ICAJc3dpdGNoIChzbW11X2RvbWFpbi0+c3RhZ2Up
+IHsNCj4gPiAgCWNhc2UgQVJNX1NNTVVfRE9NQUlOX1MxOg0KPiA+ICAJCWlhcyA9IChzbW11LT5m
+ZWF0dXJlcyAmIEFSTV9TTU1VX0ZFQVRfVkFYKSA/IDUyIDogNDg7DQo+ID4gLQkJaWFzID0gbWlu
+X3QodW5zaWduZWQgbG9uZywgaWFzLCBWQV9CSVRTKTsNCj4gPiAtCQlvYXMgPSBzbW11LT5pYXM7
+DQo+ID4gKwkJcGd0YmxfY2ZnLmlhcyA9IG1pbl90KHVuc2lnbmVkIGxvbmcsIGlhcywgVkFfQklU
+Uyk7DQo+ID4gKwkJcGd0YmxfY2ZnLm9hcyA9IHNtbXUtPmlhczsNCj4gPiArCQlpZiAoZW5hYmxl
+X2RpcnR5KQ0KPiA+ICsJCQlwZ3RibF9jZmcucXVpcmtzIHw9IElPX1BHVEFCTEVfUVVJUktfQVJN
+X0hEOw0KPiA+ICAJCWZtdCA9IEFSTV82NF9MUEFFX1MxOw0KPiA+ICAJCWJyZWFrOw0KPiA+ICAJ
+Y2FzZSBBUk1fU01NVV9ET01BSU5fUzI6DQo+ID4gLQkJaWFzID0gc21tdS0+aWFzOw0KPiA+IC0J
+CW9hcyA9IHNtbXUtPm9hczsNCj4gPiArCQlwZ3RibF9jZmcuaWFzID0gc21tdS0+aWFzOw0KPiA+
+ICsJCXBndGJsX2NmZy5vYXMgPSBzbW11LT5vYXM7DQo+ID4gIAkJZm10ID0gQVJNXzY0X0xQQUVf
+UzI7DQo+ID4gIAkJYnJlYWs7DQo+ID4gIAlkZWZhdWx0Og0KPiA+ICAJCXJldHVybiAtRUlOVkFM
+Ow0KPiA+ICAJfQ0KPiA+DQo+ID4gLQlwZ3RibF9jZmcgPSAoc3RydWN0IGlvX3BndGFibGVfY2Zn
+KSB7DQo+ID4gLQkJLnBnc2l6ZV9iaXRtYXAJPSBzbW11LT5wZ3NpemVfYml0bWFwLA0KPiA+IC0J
+CS5pYXMJCT0gaWFzLA0KPiA+IC0JCS5vYXMJCT0gb2FzLA0KPiA+IC0JCS5jb2hlcmVudF93YWxr
+CT0gc21tdS0+ZmVhdHVyZXMgJg0KPiBBUk1fU01NVV9GRUFUX0NPSEVSRU5DWSwNCj4gPiAtCQku
+dGxiCQk9ICZhcm1fc21tdV9mbHVzaF9vcHMsDQo+ID4gLQkJLmlvbW11X2Rldgk9IHNtbXUtPmRl
+diwNCj4gPiAtCX07DQo+ID4gLQ0KPiA+ICAJcGd0Ymxfb3BzID0gYWxsb2NfaW9fcGd0YWJsZV9v
+cHMoZm10LCAmcGd0YmxfY2ZnLCBzbW11X2RvbWFpbik7DQo+ID4gIAlpZiAoIXBndGJsX29wcykN
+Cj4gPiAgCQlyZXR1cm4gLUVOT01FTTsNCj4gPiBAQCAtMjQ5MSw3ICsyNDk0LDggQEAgc3RhdGlj
+IGludCBhcm1fc21tdV9kb21haW5fZmluYWxpc2Uoc3RydWN0DQo+IGFybV9zbW11X2RvbWFpbiAq
+c21tdV9kb21haW4sDQo+ID4gIAlzbW11X2RvbWFpbi0+ZG9tYWluLnBnc2l6ZV9iaXRtYXAgPSBw
+Z3RibF9jZmcucGdzaXplX2JpdG1hcDsNCj4gPiAgCXNtbXVfZG9tYWluLT5kb21haW4uZ2VvbWV0
+cnkuYXBlcnR1cmVfZW5kID0gKDFVTCA8PA0KPiBwZ3RibF9jZmcuaWFzKSAtIDE7DQo+ID4gIAlz
+bW11X2RvbWFpbi0+ZG9tYWluLmdlb21ldHJ5LmZvcmNlX2FwZXJ0dXJlID0gdHJ1ZTsNCj4gPiAt
+DQo+ID4gKwlpZiAoZW5hYmxlX2RpcnR5ICYmIHNtbXVfZG9tYWluLT5zdGFnZSA9PQ0KPiBBUk1f
+U01NVV9ET01BSU5fUzEpDQo+ID4gKwkJc21tdV9kb21haW4tPmRvbWFpbi5kaXJ0eV9vcHMgPQ0K
+PiAmYXJtX3NtbXVfZGlydHlfb3BzOw0KPiA+ICAJcmV0ID0gYXJtX3NtbXVfZG9tYWluX2FsbG9j
+X2lkKHNtbXUsIHNtbXVfZG9tYWluKTsNCj4gPiAgCWlmIChyZXQgPCAwKSB7DQo+ID4gIAkJZnJl
+ZV9pb19wZ3RhYmxlX29wcyhwZ3RibF9vcHMpOw0KPiA+IEBAIC0yODExLDcgKzI4MTUsNyBAQCBz
+dGF0aWMgaW50IGFybV9zbW11X2F0dGFjaF9kZXYoc3RydWN0DQo+IGlvbW11X2RvbWFpbiAqZG9t
+YWluLCBzdHJ1Y3QgZGV2aWNlICpkZXYpDQo+ID4gIAltdXRleF9sb2NrKCZzbW11X2RvbWFpbi0+
+aW5pdF9tdXRleCk7DQo+ID4NCj4gPiAgCWlmICghc21tdV9kb21haW4tPnNtbXUpIHsNCj4gPiAt
+CQlyZXQgPSBhcm1fc21tdV9kb21haW5fZmluYWxpc2Uoc21tdV9kb21haW4sIHNtbXUpOw0KPiA+
+ICsJCXJldCA9IGFybV9zbW11X2RvbWFpbl9maW5hbGlzZShzbW11X2RvbWFpbiwgc21tdSwNCj4g
+ZmFsc2UpOw0KPiA+ICAJfSBlbHNlIGlmIChzbW11X2RvbWFpbi0+c21tdSAhPSBzbW11KQ0KPiA+
+ICAJCXJldCA9IC1FSU5WQUw7DQo+ID4NCj4gDQo+IA0KPiBJIHRoaW5rIHdlIGFyZSBtaXNzaW5n
+IHRoZSBkb21haW4gYXR0YWNoX2RldiBjaGVjayBmb3IgZGlydHkgdHJhY2tpbmcuDQo+IA0KPiBT
+b21ldGhpbmcgbGlrZToNCj4gDQo+IGlmIChkb21haW4tPmRpcnR5X29wcyAmJiAhYXJtX3NtbXVf
+ZGJtX2NhcGFibGUoc21tdSkpDQo+IAlyZXR1cm4gLUVJTlZBTDsNCj4gDQo+IEJ1dCB0aGF0IGhl
+bHBlciBpcyBvbmx5IGludHJvZHVjZWQgaW4gdGhlIGxhc3QgcGF0Y2gsIHNvIG1heWJlOg0KPiAN
+Cj4gaWYgKGRvbWFpbi0+ZGlydHlfb3BzICYmDQo+ICAgICAhZGV2aWNlX2lvbW11X2NhcGFibGUo
+ZGV2LCBJT01NVV9DQVBfRElSVFlfVFJBQ0tJTkcpKQ0KPiAJcmV0dXJuIC1FSU5WQUw7DQoNCk9r
+LiBCdXQgZG8gd2UgcmVhbGx5IG5lZWQgdG8gY2hlY2sgdGhpcyBpbiBhdHRhY2goKT8gQXMgZGly
+dHlfb3BzIGFyZSBhZGRlZCBvbmx5DQppZiBpdCBpcyByZXF1ZXN0ZWQgaW4gYWxsb2NfdXNlcigp
+IGFuZCB0aGVyZSB3ZSByZXR1cm4gZXJyIHdoZW4gaGFyZHdhcmUgZG9lc24ndCANCmhhdmUgdGhl
+IGNhcGFiaWxpdHkuICBTbyBub3Qgc3VyZSBob3cgdGhpcyBtYXR0ZXJzIGluIGF0dGFjaCgpIHBh
+dGguIE1heSBiZSBJIGFtIA0KbWlzc2luZyBzb21ldGhpbmcuDQoNClRoYW5rcywNClNoYW1lZXIN
+Cg0K
