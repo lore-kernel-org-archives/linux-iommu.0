@@ -1,140 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E98F1374F6
-	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 09:03:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5F3E37715
+	for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 09:50:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708592613; cv=none; b=JU6BttMCa62SlJKM0kC1lJzNc/jEEdruyBqQLcg3Ug8CXVr4pNITMDZqvYpp/LH9hRJjv/06PkvTf0guCQGzswMbBrdVgBULsYg6vPuVLT5hkk4rBR8ijLNSSPZiHaWELKCcTPS0APFk4QgAqDTwYR3KVM/MTF1e5BJdnMUbSuA=
+	t=1708595438; cv=none; b=OEsHDa7wSoWrw18M38LAas0U+eB6Q+q/q330iLkWquyW0c183Asonb2F1hbsskUNFPu+M86J09OoesZ03XmHsyLkjKiTgDVJOJr6T2I5O6IDRrWGhWsc0xENjXgaz55Tz+QApcimAMHEUSpvb7t40AK16xKP6Ib45biyZXMxCR8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708592613; c=relaxed/simple;
-	bh=Ufbfc9qGqnc9GmviuGU5ACXNF84S20F4WyXi3i5SB2A=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=IMQ0SGdckUZgIXNH/Jk/cKuazGJQz6466bDVPxU7gquAj8d2zS/h1QCQuREGpwor/5G62cadx78owi8CEuc53dN99vZyWC71wQLQvReJLMzLnwSxpnF6G6L8fvNPevmkEQG8h97lXaCM2fDxm+zJHq+E056xAAIK1Mmfa/semQY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=An46a9oW; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="An46a9oW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708592612; x=1740128612;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Ufbfc9qGqnc9GmviuGU5ACXNF84S20F4WyXi3i5SB2A=;
-  b=An46a9oWu7+08JXZGZIDKX428jFFteAKwCuhJuUnQTlRKL8uZKKXLAR1
-   SGmAl4qwqkm4XFYI0jBEXRM/+G7fHZmEGSSkQ85P9gfBfEo2GvdM54Are
-   MPXXoSVpdC1wk7cRd95j2noF8mvbRmkFuR28KxiT50V+Xmvz3J/ATA+tJ
-   AtvJQ3myqfeLEOGccmadheoOfvLtzrzHE60zU8PpOMzqcUw/kNMIEPEpK
-   5z2E1evEB4g/sqES/E5Snd3CcIWjfMwgo3Xr7o+gwQxGqfo/COdCeQjax
-   BZW55863HAKWhGsXyt5uVS+BzSp3NXVgpYLUBWYhDNLbH4h84cr63HXdg
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10991"; a="25264498"
-X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
-   d="scan'208";a="25264498"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 01:03:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,177,1705392000"; 
-   d="scan'208";a="10122703"
-Received: from unknown (HELO ply01-vm-store.amr.corp.intel.com) ([10.238.153.201])
-  by orviesa003.jf.intel.com with ESMTP; 22 Feb 2024 01:03:27 -0800
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-To: baolu.lu@linux.intel.com,
-	bhelgaas@google.com,
-	robin.murphy@arm.com,
-	jgg@ziepe.ca
-Cc: kevin.tian@intel.com,
-	dwmw2@infradead.org,
-	will@kernel.org,
-	lukas@wunner.de,
-	yi.l.liu@intel.com,
-	dan.carpenter@linaro.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-pci@vger.kernel.org,
-	Ethan Zhao <haifeng.zhao@linux.intel.com>
-Subject: [PATCH v13 3/3] iommu/vt-d: improve ITE fault handling if target device isn't valid
-Date: Thu, 22 Feb 2024 04:02:51 -0500
-Message-Id: <20240222090251.2849702-4-haifeng.zhao@linux.intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20240222090251.2849702-1-haifeng.zhao@linux.intel.com>
-References: <20240222090251.2849702-1-haifeng.zhao@linux.intel.com>
+	s=arc-20240116; t=1708595438; c=relaxed/simple;
+	bh=7YnMhsYIDtre6870juBTBJpvg8DNkBogMFTY2KA/4Bo=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=JzSLufoo4qt+BPdyVGV/CEGwyayToD4lL0BriCdrrmIwld/Ehv5wVDKjs5jSMnZGBzpK4wD17wTmaohIbaEX6LJ53bRwrA0UB8njytv1EKWkbl1AWXyxNWFS5eKSn0Hn3B3PIkexzQdcccfrUl8JqYVOCzQ9EiGf+uHOV8bMr1k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.216])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4TgSwC3GQCz6H8D1;
+	Thu, 22 Feb 2024 17:46:51 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
+	by mail.maildlp.com (Postfix) with ESMTPS id C742D140119;
+	Thu, 22 Feb 2024 17:50:28 +0800 (CST)
+Received: from A2303104131.china.huawei.com (10.202.227.28) by
+ lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Thu, 22 Feb 2024 09:50:22 +0000
+From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>
+CC: <joro@8bytes.org>, <jgg@nvidia.com>, <kevin.tian@intel.com>,
+	<nicolinc@nvidia.com>, <mshavit@google.com>, <robin.murphy@arm.com>,
+	<will@kernel.org>, <joao.m.martins@oracle.com>, <jiangkunkun@huawei.com>,
+	<zhukeqian1@huawei.com>, <linuxarm@huawei.com>
+Subject: [PATCH v2 0/4] iommu/smmuv3: Add IOMMUFD dirty tracking support for SMMUv3
+Date: Thu, 22 Feb 2024 09:49:19 +0000
+Message-ID: <20240222094923.33104-1-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
 
-Because surprise removal could happen anytime, e.g. user could request safe
-removal to EP(endpoint device) via sysfs and brings its link down to do
-surprise removal cocurrently. such aggressive cases would cause ATS
-invalidation request issued to non-existence target device, then deadly
-loop to retry that request after ITE fault triggered in interrupt context.
-this patch aims to optimize the ITE handling by checking the target device
-presence state to avoid retrying the timeout request blindly, thus avoid
-hard lockup or system hang.
+Hi,
 
-Devices are valid ATS invalidation request target only when they reside
-in the iommu->device_rbtre (probed, not released) and present.
+This is revisiting the earlier attempts [1, 2] to use SMMUv3 HTTU feature
+for dirty page tracking. The Intel/AMD support is already mainline.
 
-Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
----
- drivers/iommu/intel/dmar.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+The code is now based on the new IOMMUFD APIs and is rebased on
+Jason's SMMUv3 driver refactor series[3].
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index d14797aabb7a..d01d68205557 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1273,6 +1273,9 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
- {
- 	u32 fault;
- 	int head, tail;
-+	u64 iqe_err, ite_sid;
-+	struct device *dev = NULL;
-+	struct pci_dev *pdev = NULL;
- 	struct q_inval *qi = iommu->qi;
- 	int shift = qi_shift(iommu);
- 
-@@ -1317,6 +1320,13 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
- 		tail = readl(iommu->reg + DMAR_IQT_REG);
- 		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
- 
-+		/*
-+		 * SID field is valid only when the ITE field is Set in FSTS_REG
-+		 * see Intel VT-d spec r4.1, section 11.4.9.9
-+		 */
-+		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
-+		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
-+
- 		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
- 		pr_info("Invalidation Time-out Error (ITE) cleared\n");
- 
-@@ -1326,6 +1336,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
- 			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
- 		} while (head != tail);
- 
-+		/*
-+		 * If got ITE, we need to check if the sid of ITE is one of the
-+		 * current valid ATS invalidation target devices, if no, or the
-+		 * target device isn't presnet, don't try this request anymore.
-+		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
-+		 */
-+		if (ite_sid) {
-+			dev = device_rbtree_find(iommu, ite_sid);
-+			if (!dev || !dev_is_pci(dev))
-+				return -ETIMEDOUT;
-+			pdev = to_pci_dev(dev);
-+			if (!pci_device_is_present(pdev) &&
-+				ite_sid == pci_dev_id(pci_physfn(pdev)))
-+				return -ETIMEDOUT;
-+		}
- 		if (qi->desc_status[wait_index] == QI_ABORT)
- 			return -EAGAIN;
- 	}
+Basic sanity tests are done using an emulation setup and on a test
+hardware setup. Block page split/merge(BBML) is not part of this
+series. I am planning to send it separately.
+
+v1 --> v2:
+https://lore.kernel.org/linux-iommu/20231128094940.1344-1-shameerali.kolothum.thodi@huawei.com/
+
+Addressed review comments from Jason and Joao(Thanks)
+   -Moved dirty_ops setting to domain finalise(patch #3)
+   -Only enable DBM for stage 1 if domain_alloc_user() requests it.
+   -Changed IO page table walker(patch #2) and tested with 4KB/16KB/64KB
+    with l1/l2/l3 traversal.(The earlier one had a bug where it fails to
+    walk L3 level).
+   -Rearranged patches a bit to improve bi-sectability.
+   -Rebased on top of Jason's v5 of SMMUv3 new API series git.
+
+Please take a look and let me know your feedback.
+Thanks,
+Shameer
+
+1. https://lore.kernel.org/lkml/20210413085457.25400-1-zhukeqian1@huawei.com/
+2. https://lore.kernel.org/linux-iommu/20230518204650.14541-1-joao.m.martins@oracle.com/
+3. https://github.com/jgunthorpe/linux/commits/smmuv3_newapi
+
+Jean-Philippe Brucker (1):
+  iommu/arm-smmu-v3: Add feature detection for HTTU
+
+Joao Martins (1):
+  iommu/arm-smmu-v3: Add support for dirty tracking in domain alloc
+
+Kunkun Jiang (1):
+  iommu/arm-smmu-v3: Enable HTTU for stage1 with io-pgtable mapping
+
+Shameer Kolothum (1):
+  iommu/io-pgtable-arm: Add read_and_clear_dirty() support
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 142 +++++++++++++++++---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |   8 ++
+ drivers/iommu/io-pgtable-arm.c              | 133 +++++++++++++++++-
+ include/linux/io-pgtable.h                  |   4 +
+ 4 files changed, 263 insertions(+), 24 deletions(-)
+
 -- 
-2.31.1
+2.34.1
 
