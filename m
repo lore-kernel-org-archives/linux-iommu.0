@@ -1,60 +1,60 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 631FE14D43B
-	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 21:21:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B95E14D431
+	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 21:21:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708723319; cv=none; b=HGjqTBtj2fSMJokMVJJLE69VpsT6M4wWR3UnoHUwbMPZ0Jookpuuu1tUPhQvxBEMLpoVIY1rotWQKkD4de61nGTAuoBJhXvJaFtu4b3wcU0mKxUhEbOupk402SBaox1o4QtHgPIVOEpxhadjx8+ex97R1ma+AZ3ktSvW/DRKtko=
+	t=1708723322; cv=none; b=ZKhFvwN9l4pIdykHlnoFT0iNXuFaQ8sW/In6oHYjFSDBLH6BXuVczFTLtn/qE65Xwpr2AYxeSWLXID8GOagLLOuP+o9VLcSVmQThSYdsXNFVAxoGSTOVFDUSaYcufFSKa0TeIhgQrNU1pRma4ETKJkv/KWhFa/Fcrz3vtpUfF5k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708723319; c=relaxed/simple;
-	bh=2VUaTHaFXwk9sVr7gsAachnQpNO5KMem0UoFA2HST7g=;
+	s=arc-20240116; t=1708723322; c=relaxed/simple;
+	bh=/obkr4MMIdqspTXLmZcuivEDxO3xqayOzHksqJVGMAk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=WHAgBJlOthDNSETcl7gNvfAIuDTWYCqHyN/6i+xI/B7sFK9dSNZr/R0deTS5Cq7IsWnAkRu213/M/N26ZDoEzpFrbbVZZz9ZbOfgtTpEN54mIXM96KzyxvvklL2LyIbgXbL5osrBtdJN5JDLvQUcrFTJT1C18n8yyLGBhziNkuM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=eJJT0q7V; arc=none smtp.client-ip=209.85.218.42
+	 In-Reply-To:To:Cc; b=oK5QQ/GsbfXu0VnoQdT0YZkK4GyzXG708qCUQjvwaRC8wsTlSi2cUoORjc+l1WO3dGJvLR1H4JUPKLiyjYtbMLhipo029TlJzyLEN+AvQYoASAsmKZnytBRbfOC8nDvDWNZ5KC+Ls38bwpLC2aLyw/5io+9zDZrdQk8ylOC3Pzs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=mV/2ZS0O; arc=none smtp.client-ip=209.85.218.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="eJJT0q7V"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-a3566c0309fso111627266b.1
-        for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 13:21:57 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="mV/2ZS0O"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-a3ee69976c9so133325166b.0
+        for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 13:21:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1708723316; x=1709328116; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1708723318; x=1709328118; darn=lists.linux.dev;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=mjP12Zq06nby7HMeSJ/EUbYJ63ENO6BkYD8FuiAok6w=;
-        b=eJJT0q7V25uYAGF0/7EjV1TLXZ5p3pzjdsyjSBc0WDH9LSq5vmPFvEGxf4pP65bYka
-         aXvwKO9RYntCc1UyWgurgHS/wAZvQ5h7OOhVc8hJCBx+Vh2H/DTisfuGO28b5mPwoeL3
-         KF0YUjFvwnMEM3bMqBnQ6SVETPTM167NLRr5YE4aqSWAjHQUH0V7GHzFeZNSU47QaL3v
-         5CzSpIUha+WMpbYjPAzXa24O6qASlqm/V4SBdANcZsLR+qNBr6sFGUCrI+DNPUICHeAt
-         zRvGZTG8ZxFPd2td//bE+hQmYX9gS9LeZvAvcJOl3Oy/hFIvq/goOUbepiI9X6TcjFye
-         Yjdw==
+        bh=+hQ3SpYizIIEdO8h/cb2gS2gZ6yJ1jbKnG/M424eunA=;
+        b=mV/2ZS0OGbkf36eqzNxKffwxl30oZNaTMlJVb8l4nSfczo/wj8yzewjkyp9tlz4aVn
+         588MCgDHBH61ZN/pHA13fR8pAPgSwJ6c2oWfzKsj+iSW+R6mxzdwmnYe4ScRkt/CEpIF
+         wkUJOltq8RWZIrosBDLUckgAUBzeb+aDgFhm92rkT59iPPjr5Nv6O2BtJjWBYLU0nlmR
+         H0ho5jYh9cVnouODSqOhUCMeceqj84pA5S3xG1Y1fzNx+LO+eJLnR4Tv5Np/PdkGmh4A
+         fJnCNUpXNB/lseEwIP8GWgu6mgEK4WZJSfokqu+o6qtfyaTOuN8Ad9LflqkAt3LK+vtO
+         XApQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708723316; x=1709328116;
+        d=1e100.net; s=20230601; t=1708723318; x=1709328118;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=mjP12Zq06nby7HMeSJ/EUbYJ63ENO6BkYD8FuiAok6w=;
-        b=tA5MZGTUMiO9VVbB2814S9Z73UrrQtM9KmFOGKmKxOcXFMZMGyTQmfgLYSlCJKKTEs
-         QE3+rEByVL+Vd8WCxmR8QEaxuqidrohl3Afe0J1meaafdNLDId5PIi4bTuaKC3OIrW2T
-         mLQjox24yOM8SavsV/P1vQGfcEJnXNu2tuF4ChlsHTs33rVWguHn4WpY32u6Xe2zXk0y
-         pcjCTkF9ZZ6ppubBpiHzHct8Lf4Ss4ArAVX6Pmou2r2lXvwDQk9lwXRFZYGSUp3+ECfe
-         fDhf09DY8fW5zoUfaRgi7nS8UYMKCTGbliBFibi+Gmhjs7OP/G8siCt6vv3p3OSfu7uD
-         zVug==
-X-Forwarded-Encrypted: i=1; AJvYcCX5RCXPcT0aOruqJ6fTIp6CSICL4b1GxdKeMbcTSSK377ezFfWtIG8jppVysdk+KvHCLpHsHStWYiozPZj2XgUi1ElaJxU=
-X-Gm-Message-State: AOJu0YzgrKRFsi/HzigtEbNlQqPt1H4AdO2MREYZCXFEW4yH4EGLzQAp
-	ZLkPG3rY6P5dpTCmvHK9ciHI1DQGdVbH3Ze3HAm8YeHPFmhR9kpOP6GMLfxJEYo=
-X-Google-Smtp-Source: AGHT+IElLGA1VQIlXAlt56rTNEpM3OmiudTre3s73PFHTGooTnhMqgF/0YDNxtDTUSbwvvaMjDFiOA==
-X-Received: by 2002:a17:906:a38b:b0:a3f:721f:a7ac with SMTP id k11-20020a170906a38b00b00a3f721fa7acmr600921ejz.45.1708723315809;
-        Fri, 23 Feb 2024 13:21:55 -0800 (PST)
+        bh=+hQ3SpYizIIEdO8h/cb2gS2gZ6yJ1jbKnG/M424eunA=;
+        b=OnoGM1o2uAndWfJdJoyOBykEqPEQFnmm31chc3VylB6zAKAQgZbEwwRGYZRuZ6ffZa
+         2gT/5CiS+YevVE789FJiB3LhqjD6cWghrgq68q7kvDQTxWqMV8++RbN6tj+mmYKBGR3K
+         XSQ6cs0kI3f5noBDF04fwyRZSYh2Xb91XE+NzAwd2Z3wIS/NsnzVIV/42k1S2df3ZQMg
+         aXGih+auAqsphBNs2WgsPNOwCge8Bn8A/WnBN6P9O/W5yezRspTjCMunYxnJg/T5TkiS
+         ASaIqvwHfUuRE/eYGnO5frVP1U+j0DgFc04nqxcjcbhYerhbf1e+k7nIf3byIpATxhzF
+         PWHA==
+X-Forwarded-Encrypted: i=1; AJvYcCUMwE0T9tuntWLRqLIhKxayW36pO3owNVVVEr6vHRLZVJjtsEKpJNvloFDA0tMwPrYRL5bGA9WKB4uBFugh4KEVV6Ia6iU=
+X-Gm-Message-State: AOJu0YypomzOkLDLFP1IFgkX9YPO85Ea81aZ23NMsujz3CP2h6vZSALl
+	2Y0PQBtHafLif5qH2icq/PegB2DqY3T28Aj9ZWtXd+alCuPeLN+UZxk6xtqvyMo=
+X-Google-Smtp-Source: AGHT+IGT2W+inJ5mu4XwVKxW6JI0EEqx3LbPDQ4lO11OsxNs4YZ2Cy/N+nePCCx8UipRF2D18K6sEQ==
+X-Received: by 2002:a17:906:b24c:b0:a3e:d20a:f1d9 with SMTP id ce12-20020a170906b24c00b00a3ed20af1d9mr640449ejb.11.1708723318103;
+        Fri, 23 Feb 2024 13:21:58 -0800 (PST)
 Received: from [10.167.154.1] (078088045141.garwolin.vectranet.pl. [78.88.45.141])
-        by smtp.gmail.com with ESMTPSA id mj8-20020a170906af8800b00a3ee9305b02sm4091226ejb.20.2024.02.23.13.21.53
+        by smtp.gmail.com with ESMTPSA id mj8-20020a170906af8800b00a3ee9305b02sm4091226ejb.20.2024.02.23.13.21.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Feb 2024 13:21:55 -0800 (PST)
+        Fri, 23 Feb 2024 13:21:57 -0800 (PST)
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Date: Fri, 23 Feb 2024 22:21:40 +0100
-Subject: [PATCH v2 4/7] drm/msm/adreno: Add missing defines for A702
+Date: Fri, 23 Feb 2024 22:21:41 +0100
+Subject: [PATCH v2 5/7] drm/msm/adreno: Add A702 support
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,7 +63,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240219-topic-rb1_gpu-v2-4-2d3d6a0db040@linaro.org>
+Message-Id: <20240219-topic-rb1_gpu-v2-5-2d3d6a0db040@linaro.org>
 References: <20240219-topic-rb1_gpu-v2-0-2d3d6a0db040@linaro.org>
 In-Reply-To: <20240219-topic-rb1_gpu-v2-0-2d3d6a0db040@linaro.org>
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
@@ -82,52 +82,284 @@ Cc: Marijn Suijten <marijn.suijten@somainline.org>,
  linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org, 
  freedreno@lists.freedesktop.org, Konrad Dybcio <konrad.dybcio@linaro.org>
 X-Mailer: b4 0.12.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1708723303; l=1379;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1708723303; l=11199;
  i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
- bh=2VUaTHaFXwk9sVr7gsAachnQpNO5KMem0UoFA2HST7g=;
- b=NXYDavFJ3TC/4KiU+OLYy06EnXZgFmyjLCFX7iZKoUTbin8UI3o1WKHxiAxISRJ/Lpa8whlgL
- OmvgcvRyQ93Bgd7cMUYUQkgAXoezpOmzuvOSNtRIQf2InPOAkx5rZ92
+ bh=/obkr4MMIdqspTXLmZcuivEDxO3xqayOzHksqJVGMAk=;
+ b=iGpmkAcmm3fUbJiZftbO7EpEpe4DIzzUNqVGtKPVhzZmXwEUWIJSo4843rvERaJTE7dZTmzfM
+ ZSadIeZnX4KBEFOGTgBXMmMGV/r2k1BMLZgPIPpwlsGsHhXVhyfXeRV
 X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
  pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-Add some defines required for A702. Can be substituted with a header
-sync after merging mesa!27665 [1].
+The A702 is a weird mix of 600 and 700 series.. Perhaps even a
+testing ground for some A7xx features with good ol' A6xx silicon.
+It's basically A610 that's been beefed up with some new registers
+and hw features (like APRIV!), that was then cut back in size,
+memory bus and some other ways.
 
-[1] https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27665
+Add support for it, tested with QCM2290 / RB1.
+
 Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 ---
- drivers/gpu/drm/msm/adreno/a6xx.xml.h | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c      | 92 +++++++++++++++++++++++++++---
+ drivers/gpu/drm/msm/adreno/adreno_device.c | 18 ++++++
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h    | 16 +++++-
+ 3 files changed, 117 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx.xml.h b/drivers/gpu/drm/msm/adreno/a6xx.xml.h
-index 863b5e3b0e67..1ec4dbc0e746 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx.xml.h
-+++ b/drivers/gpu/drm/msm/adreno/a6xx.xml.h
-@@ -1945,6 +1945,24 @@ static inline uint32_t REG_A6XX_RBBM_PERFCTR_RBBM_SEL(uint32_t i0) { return 0x00
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index c9c55e2ea584..2a491a486ca1 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -837,6 +837,65 @@ const struct adreno_reglist a690_hwcg[] = {
+ 	{}
+ };
  
- #define REG_A6XX_RBBM_CLOCK_HYST_TEX_FCHE			0x00000122
++const struct adreno_reglist a702_hwcg[] = {
++	{ REG_A6XX_RBBM_CLOCK_CNTL_SP0, 0x22222222 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL2_SP0, 0x02222220 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_SP0, 0x00000081 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_SP0, 0x0000f3cf },
++	{ REG_A6XX_RBBM_CLOCK_CNTL_TP0, 0x22222222 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL2_TP0, 0x22222222 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL3_TP0, 0x22222222 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL4_TP0, 0x00022222 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_TP0, 0x11111111 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY2_TP0, 0x11111111 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY3_TP0, 0x11111111 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY4_TP0, 0x00011111 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_TP0, 0x77777777 },
++	{ REG_A6XX_RBBM_CLOCK_HYST2_TP0, 0x77777777 },
++	{ REG_A6XX_RBBM_CLOCK_HYST3_TP0, 0x77777777 },
++	{ REG_A6XX_RBBM_CLOCK_HYST4_TP0, 0x00077777 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL_RB0, 0x22222222 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL2_RB0, 0x01202222 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL_CCU0, 0x00002220 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_RB_CCU0, 0x00040f00 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL_RAC, 0x05522022 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL2_RAC, 0x00005555 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_RAC, 0x00000011 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_RAC, 0x00445044 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL_TSE_RAS_RBBM, 0x04222222 },
++	{ REG_A6XX_RBBM_CLOCK_MODE_VFD, 0x00002222 },
++	{ REG_A6XX_RBBM_CLOCK_MODE_GPC, 0x02222222 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_HLSQ_2, 0x00000002 },
++	{ REG_A6XX_RBBM_CLOCK_MODE_HLSQ, 0x00002222 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_TSE_RAS_RBBM, 0x00004000 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_VFD, 0x00002222 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_GPC, 0x00000200 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_HLSQ, 0x00000000 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_TSE_RAS_RBBM, 0x00000000 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_VFD, 0x00000000 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_GPC, 0x04104004 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_HLSQ, 0x00000000 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL_UCHE, 0x22222222 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_UCHE, 0x00000004 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_UCHE, 0x00000002 },
++	{ REG_A6XX_RBBM_ISDB_CNT, 0x00000182 },
++	{ REG_A6XX_RBBM_RAC_THRESHOLD_CNT, 0x00000000 },
++	{ REG_A6XX_RBBM_SP_HYST_CNT, 0x00000000 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL_GMU_GX, 0x00000222 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_GMU_GX, 0x00000111 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_GMU_GX, 0x00000555 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL_FCHE, 0x00000222 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_FCHE, 0x00000000 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_FCHE, 0x00000000 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL_GLC, 0x00222222 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_GLC, 0x00000000 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_GLC, 0x00000000 },
++	{ REG_A6XX_RBBM_CLOCK_CNTL_MHUB, 0x00000002 },
++	{ REG_A6XX_RBBM_CLOCK_DELAY_MHUB, 0x00000000 },
++	{ REG_A6XX_RBBM_CLOCK_HYST_MHUB, 0x00000000 },
++	{}
++};
++
+ const struct adreno_reglist a730_hwcg[] = {
+ 	{ REG_A6XX_RBBM_CLOCK_CNTL_SP0, 0x02222222 },
+ 	{ REG_A6XX_RBBM_CLOCK_CNTL2_SP0, 0x02022222 },
+@@ -968,6 +1027,8 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+ 		clock_cntl_on = 0x8aa8aa02;
+ 	else if (adreno_is_a610(adreno_gpu))
+ 		clock_cntl_on = 0xaaa8aa82;
++	else if (adreno_is_a702(adreno_gpu))
++		clock_cntl_on = 0xaaaaaa82;
+ 	else
+ 		clock_cntl_on = 0x8aa8aa82;
  
-+#define REG_A6XX_RBBM_CLOCK_CNTL_FCHE				0x00000123
-+
-+#define REG_A6XX_RBBM_CLOCK_DELAY_FCHE				0x00000124
-+
-+#define REG_A6XX_RBBM_CLOCK_HYST_FCHE				0x00000125
-+
-+#define REG_A6XX_RBBM_CLOCK_CNTL_MHUB				0x00000126
-+
-+#define REG_A6XX_RBBM_CLOCK_DELAY_MHUB				0x00000127
-+
-+#define REG_A6XX_RBBM_CLOCK_HYST_MHUB				0x00000128
-+
-+#define REG_A6XX_RBBM_CLOCK_DELAY_GLC				0x00000129
-+
-+#define REG_A6XX_RBBM_CLOCK_HYST_GLC				0x0000012a
-+
-+#define REG_A6XX_RBBM_CLOCK_CNTL_GLC				0x0000012b
-+
- #define REG_A7XX_RBBM_CLOCK_HYST2_VFD				0x0000012f
+@@ -989,14 +1050,14 @@ static void a6xx_set_hwcg(struct msm_gpu *gpu, bool state)
+ 		return;
  
- #define REG_A6XX_RBBM_LPAC_GBIF_CLIENT_QOS_CNTL			0x000005ff
+ 	/* Disable SP clock before programming HWCG registers */
+-	if (!adreno_is_a610(adreno_gpu) && !adreno_is_a7xx(adreno_gpu))
++	if (!adreno_is_a610_family(adreno_gpu) && !adreno_is_a7xx(adreno_gpu))
+ 		gmu_rmw(gmu, REG_A6XX_GPU_GMU_GX_SPTPRAC_CLOCK_CONTROL, 1, 0);
+ 
+ 	for (i = 0; (reg = &adreno_gpu->info->hwcg[i], reg->offset); i++)
+ 		gpu_write(gpu, reg->offset, state ? reg->value : 0);
+ 
+ 	/* Enable SP clock */
+-	if (!adreno_is_a610(adreno_gpu) && !adreno_is_a7xx(adreno_gpu))
++	if (!adreno_is_a610_family(adreno_gpu) && !adreno_is_a7xx(adreno_gpu))
+ 		gmu_rmw(gmu, REG_A6XX_GPU_GMU_GX_SPTPRAC_CLOCK_CONTROL, 0, 1);
+ 
+ 	gpu_write(gpu, REG_A6XX_RBBM_CLOCK_CNTL, state ? clock_cntl_on : 0);
+@@ -1224,7 +1285,7 @@ static void a6xx_set_cp_protect(struct msm_gpu *gpu)
+ 	const u32 *regs = a6xx_protect;
+ 	unsigned i, count, count_max;
+ 
+-	if (adreno_is_a650(adreno_gpu)) {
++	if (adreno_is_a650(adreno_gpu) || adreno_is_a702(adreno_gpu)) {
+ 		regs = a650_protect;
+ 		count = ARRAY_SIZE(a650_protect);
+ 		count_max = 48;
+@@ -1320,6 +1381,12 @@ static void a6xx_calc_ubwc_config(struct adreno_gpu *gpu)
+ 		gpu->ubwc_config.rgb565_predicator = 1;
+ 		gpu->ubwc_config.uavflagprd_inv = 2;
+ 	}
++
++	if (adreno_is_a702(gpu)) {
++		gpu->ubwc_config.highest_bank_bit = 14;
++		gpu->ubwc_config.min_acc_len = 1;
++		gpu->ubwc_config.ubwc_mode = 2;
++	}
+ }
+ 
+ static void a6xx_set_ubwc_config(struct msm_gpu *gpu)
+@@ -1453,7 +1520,7 @@ static bool a6xx_ucode_check_version(struct a6xx_gpu *a6xx_gpu,
+ 		return false;
+ 
+ 	/* A7xx is safe! */
+-	if (adreno_is_a7xx(adreno_gpu))
++	if (adreno_is_a7xx(adreno_gpu) || adreno_is_a702(adreno_gpu))
+ 		return true;
+ 
+ 	/*
+@@ -1671,7 +1738,7 @@ static int hw_init(struct msm_gpu *gpu)
+ 	a6xx_set_hwcg(gpu, true);
+ 
+ 	/* VBIF/GBIF start*/
+-	if (adreno_is_a610(adreno_gpu) ||
++	if (adreno_is_a610_family(adreno_gpu) ||
+ 	    adreno_is_a640_family(adreno_gpu) ||
+ 	    adreno_is_a650_family(adreno_gpu) ||
+ 	    adreno_is_a7xx(adreno_gpu)) {
+@@ -1705,6 +1772,7 @@ static int hw_init(struct msm_gpu *gpu)
+ 	}
+ 
+ 	if (!(adreno_is_a650_family(adreno_gpu) ||
++	      adreno_is_a702(adreno_gpu) ||
+ 	      adreno_is_a730(adreno_gpu))) {
+ 		gmem_range_min = adreno_is_a740_family(adreno_gpu) ? SZ_16M : SZ_1M;
+ 
+@@ -1725,7 +1793,7 @@ static int hw_init(struct msm_gpu *gpu)
+ 	if (adreno_is_a640_family(adreno_gpu) || adreno_is_a650_family(adreno_gpu)) {
+ 		gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_2, 0x02000140);
+ 		gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_1, 0x8040362c);
+-	} else if (adreno_is_a610(adreno_gpu)) {
++	} else if (adreno_is_a610_family(adreno_gpu)) {
+ 		gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_2, 0x00800060);
+ 		gpu_write(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_1, 0x40201b16);
+ 	} else if (!adreno_is_a7xx(adreno_gpu)) {
+@@ -1740,13 +1808,18 @@ static int hw_init(struct msm_gpu *gpu)
+ 	if (adreno_is_a610(adreno_gpu)) {
+ 		gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 48);
+ 		gpu_write(gpu, REG_A6XX_CP_MEM_POOL_DBG_ADDR, 47);
++	} else if (adreno_is_a702(adreno_gpu)) {
++		gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 64);
++		gpu_write(gpu, REG_A6XX_CP_MEM_POOL_DBG_ADDR, 63);
+ 	} else if (!adreno_is_a7xx(adreno_gpu))
+ 		gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 128);
+ 
+ 	/* Setting the primFifo thresholds default values,
+ 	 * and vccCacheSkipDis=1 bit (0x200) for A640 and newer
+ 	*/
+-	if (adreno_is_a690(adreno_gpu))
++	if (adreno_is_a702(adreno_gpu))
++		gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x0000c000);
++	else if (adreno_is_a690(adreno_gpu))
+ 		gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x00800200);
+ 	else if (adreno_is_a650(adreno_gpu) || adreno_is_a660(adreno_gpu))
+ 		gpu_write(gpu, REG_A6XX_PC_DBG_ECO_CNTL, 0x00300200);
+@@ -1786,7 +1859,7 @@ static int hw_init(struct msm_gpu *gpu)
+ 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0x4fffff);
+ 	else if (adreno_is_a619(adreno_gpu))
+ 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0x3fffff);
+-	else if (adreno_is_a610(adreno_gpu))
++	else if (adreno_is_a610(adreno_gpu) || adreno_is_a702(adreno_gpu))
+ 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0x3ffff);
+ 	else
+ 		gpu_write(gpu, REG_A6XX_RBBM_INTERFACE_HANG_INT_CNTL, (1 << 30) | 0x1fffff);
+@@ -1822,6 +1895,9 @@ static int hw_init(struct msm_gpu *gpu)
+ 		else
+ 			gpu_write(gpu, REG_A6XX_CP_CHICKEN_DBG, 0x1);
+ 		gpu_write(gpu, REG_A6XX_RBBM_GBIF_CLIENT_QOS_CNTL, 0x0);
++	} else if (adreno_is_a702(adreno_gpu)) {
++		/* Something to do with the HLSQ cluster */
++		gpu_write(gpu, REG_A6XX_CP_CHICKEN_DBG, BIT(24));
+ 	}
+ 
+ 	if (adreno_is_a690(adreno_gpu))
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
+index 2ce7d7b1690d..b121abc71338 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_device.c
++++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
+@@ -492,6 +492,24 @@ static const struct adreno_info gpulist[] = {
+ 		.zapfw = "a690_zap.mdt",
+ 		.hwcg = a690_hwcg,
+ 		.address_space_size = SZ_16G,
++	}, {
++		.chip_ids = ADRENO_CHIP_IDS(0x07000200),
++		.family = ADRENO_6XX_GEN1, /* NOT a mistake! */
++		.fw = {
++			[ADRENO_FW_SQE] = "a702_sqe.fw",
++		},
++		.gmem = SZ_128K,
++		.inactive_period = DRM_MSM_INACTIVE_PERIOD,
++		.quirks = ADRENO_QUIRK_HAS_HW_APRIV,
++		.init = a6xx_gpu_init,
++		.zapfw = "a702_zap.mbn",
++		.hwcg = a702_hwcg,
++		.speedbins = ADRENO_SPEEDBINS(
++			{ 0,   0 },
++			{ 236, 1 },
++			{ 178, 2 },
++			{ 142, 3 },
++		),
+ 	}, {
+ 		.chip_ids = ADRENO_CHIP_IDS(0x07030001),
+ 		.family = ADRENO_7XX_GEN1,
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.h b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
+index bc14df96feb0..f451881a6ddf 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_gpu.h
++++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
+@@ -77,7 +77,7 @@ struct adreno_reglist {
+ };
+ 
+ extern const struct adreno_reglist a612_hwcg[], a615_hwcg[], a630_hwcg[], a640_hwcg[], a650_hwcg[];
+-extern const struct adreno_reglist a660_hwcg[], a690_hwcg[], a730_hwcg[], a740_hwcg[];
++extern const struct adreno_reglist a660_hwcg[], a690_hwcg[], a702_hwcg[], a730_hwcg[], a740_hwcg[];
+ 
+ struct adreno_speedbin {
+ 	uint16_t fuse;
+@@ -382,6 +382,20 @@ static inline int adreno_is_a690(const struct adreno_gpu *gpu)
+ 	return gpu->info->chip_ids[0] == 0x06090000;
+ }
+ 
++static inline int adreno_is_a702(const struct adreno_gpu *gpu)
++{
++	return gpu->info->chip_ids[0] == 0x07000200;
++}
++
++static inline int adreno_is_a610_family(const struct adreno_gpu *gpu)
++{
++	if (WARN_ON_ONCE(!gpu->info))
++		return false;
++
++	/* TODO: A612 */
++	return adreno_is_a610(gpu) || adreno_is_a702(gpu);
++}
++
+ /* check for a615, a616, a618, a619 or any a630 derivatives */
+ static inline int adreno_is_a630_family(const struct adreno_gpu *gpu)
+ {
 
 -- 
 2.43.2
