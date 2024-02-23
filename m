@@ -1,151 +1,164 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE499125B3
-	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 05:19:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD33B125AD
+	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 06:08:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708665548; cv=none; b=fmEI2CfYBoxh+YmhZ2wNGqe9R6YuG894VTtIIAW4I3t81Xn59T2Yy7e4+JHo57a9rOqxr2O3Q+SOSWNsnSeHNdLZnoF8lTpaXWGu3MsoiHFXfMdx98RioFfUSptPZ8aFSzDg0yOvpQbK5QW51b1pzQ2PN/pZmIi9dLZuhZIOwy0=
+	t=1708668549; cv=none; b=CUmNDXDwOMvpHz+hMhh6uHXQ31Be677FB/Ht/xIEkgtu9+opvR+IdTCrwg7POGJCvdgEFEhQ29ZKE6uaoAosE/UoUvvzFyV27fD5X3fGC6dLuvADOhlzuCDTDcWZ3R5kP3b751Sw8wCkGCTbrBOqtZzbpwfbhNT+NG4LwecAUhg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708665548; c=relaxed/simple;
-	bh=aj8WBi473QKu6WuNMZasSmz84DJgvffMYsFTZXTEz2c=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=aCiUqPw4fMebwTF/aJnT6kEx874TUkr+HIc+dIcAune5o+ASuoE7kXiWQsU6OmmoYZOWJxQUzyJtVPe4kzAYG5LSia4SXsVvuNyKtUrEkb8ukcocnmeBBq1kQ4aF1L9BxFclm+AuW9hfUak1aWhoGNRNpgJsTuALT62+AWjYKfk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=J8HQ4a42; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1708668549; c=relaxed/simple;
+	bh=w73Y1KiCtwSSNnb8s6C3iNRtkRCRJkrRrjR54fcNazI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HRsizC3IdUVqUo3nOwxImFpEnDT/ARAJmXWGt0LvNTLTP28NywQnMVTRPPhUs1IM3bdaz477TyTaofMHWLdKyljyNqT0Nn3XQiO42E+Cc1g32GG7oI7rJy7iE9hNpRf6Otb5OGkemzG2mknv8OF7Wo9Q2l7M9iYKHAfhTMx7gRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Z15DBazm; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J8HQ4a42"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708665547; x=1740201547;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=aj8WBi473QKu6WuNMZasSmz84DJgvffMYsFTZXTEz2c=;
-  b=J8HQ4a42Y9/M9eF6VjeULe0cmZ+gQDAsCXydSNqqGZHt2cq3uZ91OI++
-   52DqxWehh7/toKzE09GRn6mk/lOuyWbOWtAuVT4Yb/Ne05LeB/YyozMTR
-   6R09jHtBnwIf03339E7hW0txNyNEBzdw2ZQY6F27cEAcgPoG+H2eoBlas
-   ZFpsPFj1EZsa5+x75QkFYyi6D9qTjnZppCA0LbDvk7yIMYtWXzBblViRX
-   N7cWEyqYnSB9b4pDSXCOsJPPjHc7vKEV0sE8wYUqE/33e16ic6yPzWkDa
-   Ul2T6shG3bNDwPATeRIvcLnTCru6Yb7QkJCQenqAoEch2oVNuhWTdg8mH
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10992"; a="28395446"
-X-IronPort-AV: E=Sophos;i="6.06,179,1705392000"; 
-   d="scan'208";a="28395446"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 21:19:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,179,1705392000"; 
-   d="scan'208";a="5999900"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmviesa006.fm.intel.com with ESMTP; 22 Feb 2024 21:19:04 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Eric Badger <ebadger@purestorage.com>
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 2/2] iommu/vt-d: Fix NULL domain on device release
-Date: Fri, 23 Feb 2024 13:13:02 +0800
-Message-Id: <20240223051302.177596-3-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240223051302.177596-1-baolu.lu@linux.intel.com>
-References: <20240223051302.177596-1-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Z15DBazm"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-41279203064so3643655e9.1
+        for <iommu@lists.linux.dev>; Thu, 22 Feb 2024 22:08:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1708668536; x=1709273336; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=xvvawxzkQ/f1bt19Uoqp8vmIWZqjXje7U8hF46YHGuw=;
+        b=Z15DBazmvLYDP3LRfmKXR6qrZ/5L/PD7P1+p+5sEFKnfQm+e1W6zVetyRyUnjlMxzb
+         n8D9br2RoSeRk/M2h9rJzbAiP9pdLPKYNB0u5qmnKvDFxrvvp5ULhccveEsMHFYXX1HY
+         XVIAf8JsMaRu71PiQYbggtdjMgSnaelwggb+BgKCyXQN+uK5fITYWkh2ZVIP/UrOkgv7
+         49ZfBmU9iCGIsW5t6fHE9HQF80E8uOoFn4F2N5QTYNojaa8x+lKgRwup0MosvDI66n4B
+         UxdnG6nBI5jXZeMKb7M8pYBSun1FvdOM49MqYgJHA5uw6Yi+YGPwA3fnYGWIDRHBTD+3
+         H7Sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708668536; x=1709273336;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xvvawxzkQ/f1bt19Uoqp8vmIWZqjXje7U8hF46YHGuw=;
+        b=uSt2fIw1FRWqBwkU3bKmQlbKQMMY3m0R66bK/SZkDkckidjmyiH0zRnKYvMau14UPj
+         6ULfRb0yE5bhljmFW5wjY7xeBB1b13HXMbi2YsKDfygRE31as1j/KkZfJG0xtyUslQhc
+         T0ZRzwyC3DqyH+LAb7pjnlKViDAG1PXhRSJiXRznw2JK6OgxBPxOKHvvGFa2ByDXBUVU
+         CPhN7ixfCersLSVtadWyEiEKRB2JbyZh04PN4ZSD268BS5mA9YmfZdVjByH1shEfsQ+K
+         /6g1KuerxQylKK8PFXTS4hIabvt909s0Um0Eih8rMuJwbp5tlJqooS4Y/vXE0kSPKxaK
+         qr/w==
+X-Forwarded-Encrypted: i=1; AJvYcCXdhtAXYVGVlFkHA2vjqARgqn0rTb4pB4bw0uHE5aHybSsn0I1WyVrDpFx/SijbBJCHUQbVVQuyGyfbFK3BgsWrEL0+2f8=
+X-Gm-Message-State: AOJu0YzYwpBbTca7Wu3OoO2Bsk8/C9/aTTF3nQfBAYb7LJys2Ls+Wm3x
+	AfCpFlPS+W7aPiMeBRQFkIHVslsE1sKHyDeNwniL8tMPcqXFqlg9ElHTt1kroEA=
+X-Google-Smtp-Source: AGHT+IFIeHpvgdehCMrYu8OHPGNSDClunXiXc00W2jMt4Z0Ch5RLvUjC/9bVOT0FwD4vAERkHWlhQg==
+X-Received: by 2002:a05:600c:a4f:b0:411:c789:5730 with SMTP id c15-20020a05600c0a4f00b00411c7895730mr471326wmq.35.1708668536282;
+        Thu, 22 Feb 2024 22:08:56 -0800 (PST)
+Received: from localhost ([102.222.70.76])
+        by smtp.gmail.com with ESMTPSA id bs22-20020a056000071600b0033b75b39aebsm1482967wrb.11.2024.02.22.22.08.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Feb 2024 22:08:55 -0800 (PST)
+Date: Fri, 23 Feb 2024 09:08:51 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>
+Cc: baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
+	jgg@ziepe.ca, kevin.tian@intel.com, dwmw2@infradead.org,
+	will@kernel.org, lukas@wunner.de, yi.l.liu@intel.com,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-pci@vger.kernel.org
+Subject: Re: [PATCH v13 3/3] iommu/vt-d: improve ITE fault handling if target
+ device isn't valid
+Message-ID: <039a19e5-d1ff-47ae-aa35-3347c08acc13@moroto.mountain>
+References: <20240222090251.2849702-1-haifeng.zhao@linux.intel.com>
+ <20240222090251.2849702-4-haifeng.zhao@linux.intel.com>
+ <c655cd15-c883-483b-b698-b1b7ae360388@moroto.mountain>
+ <2d1788da-521c-4531-a159-81d2fb801d6c@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2d1788da-521c-4531-a159-81d2fb801d6c@linux.intel.com>
 
-In the kdump kernel, the IOMMU operates in deferred_attach mode. In this
-mode, info->domain may not yet be assigned by the time the release_device
-function is called. It leads to the following crash in the crash kernel:
+On Fri, Feb 23, 2024 at 10:29:28AM +0800, Ethan Zhao wrote:
+> > > @@ -1326,6 +1336,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+> > >   			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
+> > >   		} while (head != tail);
+> > > +		/*
+> > > +		 * If got ITE, we need to check if the sid of ITE is one of the
+> > > +		 * current valid ATS invalidation target devices, if no, or the
+> > > +		 * target device isn't presnet, don't try this request anymore.
+> > > +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
+> > > +		 */
+> > This comment is kind of confusing.
+> 
+> Really confusing ? this is typo there, resnet-> "present"
+> 
 
-    BUG: kernel NULL pointer dereference, address: 000000000000003c
-    ...
-    RIP: 0010:do_raw_spin_lock+0xa/0xa0
-    ...
-    _raw_spin_lock_irqsave+0x1b/0x30
-    intel_iommu_release_device+0x96/0x170
-    iommu_deinit_device+0x39/0xf0
-    __iommu_group_remove_device+0xa0/0xd0
-    iommu_bus_notifier+0x55/0xb0
-    notifier_call_chain+0x5a/0xd0
-    blocking_notifier_call_chain+0x41/0x60
-    bus_notify+0x34/0x50
-    device_del+0x269/0x3d0
-    pci_remove_bus_device+0x77/0x100
-    p2sb_bar+0xae/0x1d0
-    ...
-    i801_probe+0x423/0x740
+Reading this comment again, the part about zero ite_sid values is
+actually useful, but what does "old" mean in "old VT-d device".  How old
+is it?  One year old?
 
-Use the release_domain mechanism to fix it.
+> > 
+> > /*
+> >   * If we have an ITE, then we need to check whether the sid of the ITE
+> >   * is in the rbtree (meaning it is probed and not released), and that
+> >   * the PCI device is present.
+> >   */
+> > 
+> > My comment is slightly shorter but I think it has the necessary
+> > information.
+> > 
+> > > +		if (ite_sid) {
+> > > +			dev = device_rbtree_find(iommu, ite_sid);
+> > > +			if (!dev || !dev_is_pci(dev))
+> > > +				return -ETIMEDOUT;
+> > -ETIMEDOUT is weird.  The callers don't care which error code we return.
+> > Change this to -ENODEV or something
+> 
+> -ETIMEDOUT means prior ATS invalidation request hit timeout fault, and the
+> caller really cares about the returned value.
+> 
 
-Fixes: 586081d3f6b1 ("iommu/vt-d: Remove DEFER_DEVICE_DOMAIN_INFO")
-Reported-by: Eric Badger <ebadger@purestorage.com>
-Closes: https://lore.kernel.org/r/20240113181713.1817855-1-ebadger@purestorage.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 26 +-------------------------
- 1 file changed, 1 insertion(+), 25 deletions(-)
+I don't really care about the return value and if you say it should be
+-ETIMEDOUT, then you're the expert.  However, I don't see anything in
+linux-next which cares about the return values except -EAGAIN.
+This function is only called from qi_submit_sync() which checks for
+-EAGAIN.  Then I did a git grep.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 61bb35046ea4..2c04ea90d22f 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3798,30 +3798,6 @@ static void domain_context_clear(struct device_domain_info *info)
- 			       &domain_context_clear_one_cb, info);
- }
- 
--static void dmar_remove_one_dev_info(struct device *dev)
--{
--	struct device_domain_info *info = dev_iommu_priv_get(dev);
--	struct dmar_domain *domain = info->domain;
--	struct intel_iommu *iommu = info->iommu;
--	unsigned long flags;
--
--	if (!dev_is_real_dma_subdevice(info->dev)) {
--		if (dev_is_pci(info->dev) && sm_supported(iommu))
--			intel_pasid_tear_down_entry(iommu, info->dev,
--					IOMMU_NO_PASID, false);
--
--		iommu_disable_pci_caps(info);
--		domain_context_clear(info);
--	}
--
--	spin_lock_irqsave(&domain->lock, flags);
--	list_del(&info->link);
--	spin_unlock_irqrestore(&domain->lock, flags);
--
--	domain_detach_iommu(domain, iommu);
--	info->domain = NULL;
--}
--
- /*
-  * Clear the page table pointer in context or pasid table entries so that
-  * all DMA requests without PASID from the device are blocked. If the page
-@@ -4348,7 +4324,6 @@ static void intel_iommu_release_device(struct device *dev)
- {
- 	struct device_domain_info *info = dev_iommu_priv_get(dev);
- 
--	dmar_remove_one_dev_info(dev);
- 	intel_pasid_free_table(dev);
- 	intel_iommu_debugfs_remove_dev(info);
- 	kfree(info);
-@@ -4839,6 +4814,7 @@ static const struct iommu_dirty_ops intel_dirty_ops = {
- 
- const struct iommu_ops intel_iommu_ops = {
- 	.blocked_domain		= &blocking_domain,
-+	.release_domain		= &blocking_domain,
- 	.capable		= intel_iommu_capable,
- 	.hw_info		= intel_iommu_hw_info,
- 	.domain_alloc		= intel_iommu_domain_alloc,
--- 
-2.34.1
+$ git grep qi_submit_sync
+drivers/iommu/intel/dmar.c:int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
+drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+drivers/iommu/intel/iommu.h:int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
+drivers/iommu/intel/iommu.h: * Options used in qi_submit_sync:
+drivers/iommu/intel/irq_remapping.c:    return qi_submit_sync(iommu, &desc, 1, 0);
+drivers/iommu/intel/pasid.c:    qi_submit_sync(iommu, &desc, 1, 0);
+drivers/iommu/intel/svm.c:      qi_submit_sync(iommu, desc, 3, QI_OPT_WAIT_DRAIN);
+drivers/iommu/intel/svm.c:      qi_submit_sync(iommu, &desc, 1, 0);
+drivers/iommu/intel/svm.c:              qi_submit_sync(iommu, &desc, 1, 0);
+
+Only qi_flush_iec() in irq_remapping.c cares about the return.  Then I
+traced those callers back and nothing cares about -ETIMEOUT.
+
+Are you refering to patches that haven't ben merged yet?
+
+> > 
+> > > +			pdev = to_pci_dev(dev);
+> > > +			if (!pci_device_is_present(pdev) &&
+> > > +				ite_sid == pci_dev_id(pci_physfn(pdev)))
+> > The && confused me, but then I realized that probably "ite_sid ==
+> > pci_dev_id(pci_physfn(pdev))" is always true.  Can we delete that part?
+> 
+> Here is the fault handling, just double confirm nothing else goes wrong --
+> beyond the assumption.
+> 
+
+Basically for that to ever be != it would need some kind of memory
+corruption?  I feel like in that situation, the more conservative thing
+is to give up.  If the PCI device is not present then just give up.
+
+regards,
+dan carpenter
 
