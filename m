@@ -1,145 +1,115 @@
-Received: from mail-yb1-f180.google.com (mail-yb1-f180.google.com [209.85.219.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 972A014CACA
-	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 22:17:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C18DF14CACC
+	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 22:49:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708726680; cv=none; b=F2tNVoGC3mU5TYdHpvlS+rbNa1oWur8LpJW7dUp8bZFRKUolLnD/N7rFGPy86/PA2XL9lQW3Hw16iKaa+/Nuw7a4gDiKTIB7guBAV9kDbOZp6SVPBaWoUNzSdIfFo7Lf81NRiQ7jECJ5lYIohg+p5cMpwi5O1bLzsCI6X19b6H8=
+	t=1708728550; cv=none; b=tIPR7xoJg+28NrLA8yHi4q04MQJ7vtJUBaZQKfm44PGt1gPZ6FsED86sxb79EG/hHYeG5rV2t1+99yvZiwEUlqzWsyt7odIbzanS+9XZnDcTDDGeSe71h+5cikAk+lP2dB417Bg8KDLWvHBKYvHzgRI16uvEI1WqJ4JzyCVwQ64=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708726680; c=relaxed/simple;
-	bh=mr+d1THQdIOXLBHXtZjKUSDXbb7TH7vTqrSqao2j71w=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Z96UKsgywOr8AKAXGQ5zSCHLakTHk7+nrg/v9PkWVPVENovqiK4rZrtr5sbiueQ//xBHrCKhHCPL2NoE+Jo9DCac2CUfyFTPZ+NcfBQECA5ZqLeqIWn30GWoSjAt3zroc+kZZOEjwl07slbgOg5hSwTeuPpQuMnjEe7hGH5cjTI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NxtMbSQU; arc=none smtp.client-ip=209.85.219.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1708728550; c=relaxed/simple;
+	bh=BneJaexN6bxax2QSYZ41yzv4sfBJcOWFqW2K4d+gM6c=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=S5J4zGiy2Z6+k+iEiJmv4WbBE0k5LhNk1pmaPKQRmOPpd7TD+Ze1QiyOkVwF5m0Jx/29dw+1/tIDwJ7RE9ztnDqT8NUSy9Cml0tc4SUe/AtFqM99AQe9kSUYImFbH7cbfDpxvy1mq6NtQt7pMC/xa+8bcMgJucT/s9GZnLgrZ+M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Qew1ha+z; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NxtMbSQU"
-Received: by mail-yb1-f180.google.com with SMTP id 3f1490d57ef6-dcd94fb9e4dso1450820276.2
-        for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 14:17:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708726677; x=1709331477; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mr+d1THQdIOXLBHXtZjKUSDXbb7TH7vTqrSqao2j71w=;
-        b=NxtMbSQUzo43O0dO+M9csuLossX/75QO+LTvAUuSeqQEw6bhYb0sWMvqAehyNCfB5l
-         CmGujRhmD91gu+W7NwrZL8a9UEdKnun8JD6tQOynYxch4n5tsbIF3OElflgLA6Y9DBBD
-         gFWGv89hXWmClqqShAi3gGhMLlCWT/yoQx/m4JHNq/zyt9yOMbNmXtYLvTxDfCrBTKi/
-         W26YH8l3U63NxcfwhoxfyUFKFGdEXU7yZCMhX6LyEGg3HiejYeGDC6ZxAkf60qksiEOl
-         /lv7Zk3+omR9kQW2zglfz5sdAzuLYKdI7YWzTRsDv0sc/C7johB1YtfUbXzXXovdodLq
-         XA4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708726677; x=1709331477;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=mr+d1THQdIOXLBHXtZjKUSDXbb7TH7vTqrSqao2j71w=;
-        b=TbwFMNGegNFeeOBQi8+Lu+kOdfbLo2uD/ZTPP7iYxND6NbVaw9hcgNhb/OW61yQLf6
-         +aE+TwcdEgdbzw393s8VR9+AAMOXBJXC6Y1st7Sm6bA9a2ugMbGs6nwjNk6q19qyG3SH
-         Cwtc2quls7DD6M8lwf4wpdqOris7QfmpPROtVCwH8IrsXFuSYC8deenntZQ7zl8G65x6
-         DaDE7d8u1fjRoPQu+2I4kZ//4vPh+JEHsAL7K+MlzLqaBo4W1qHGW8UyyoG/U5EGrRo/
-         vYkH//gCK8uLx53ITIUxdKBhgDklbn+VYSZLhK3Y934q9Y6x1U84yDuN/8jekVfcWdkr
-         JcBw==
-X-Forwarded-Encrypted: i=1; AJvYcCXah8a/f9bBDZyp5coasd0MvP6ymM2jGWviDDDIPPYR3zgOtzAV0GUIRR0+fscUF4ruSxFhlX4BR6sAX+pCu4DbAIs92nw=
-X-Gm-Message-State: AOJu0YyuDvBgOkeiA1iUgUnACpmlsziQmNgNl/3ISXYQ8rrtTmbBLq9E
-	z/g41su6DUY4xkkOe9EJ8gvBh30dBtfcHKTs+GMwie9TEUzHO+6Irw6hf7hTuOrrMDCLk6A7aM6
-	pdIS/A6NXL5T9KqTo/LbDDKWYoJPGBtOra/5L
-X-Google-Smtp-Source: AGHT+IFvVslf3S11aDqNfvq204R/MIDJZtFxjw2mS4TXD0XUNA43SeY457VF5UW1NHR7Lcxr2CpVLic3B31+1rRIW2U=
-X-Received: by 2002:a25:a427:0:b0:dc7:47b7:9053 with SMTP id
- f36-20020a25a427000000b00dc747b79053mr1214318ybi.15.1708726677063; Fri, 23
- Feb 2024 14:17:57 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Qew1ha+z"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41NLwboI019276;
+	Fri, 23 Feb 2024 22:48:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=K+EhGOBFAOwInduVtZkvCxg9hFwWnwlqCf5W7sd/NdU=; b=Qe
+	w1ha+zQFfefKt1PgJZA671PJegduTk1YJOJMHvwGEpaeAnsLbsCC44i71BnxopFk
+	Ci+QPetBkpF+0bNS8D2nkofhj/U6aSTwfkfMECelhti6c+RivM+PdKm7u3cL5+e5
+	YeZLDJT3suQjM+Oicou9UvrP6b6G3CY7pEtpENkCZ+mho93AjHBAQgoRr89YUaRJ
+	TJeHcj+q3s++qMMiysD0vKeoLWF1+59DeKaPYXLGsx/FCFkqiztpfCH4gTaL8HMh
+	e+Uy61GudVuqT+4E+Aib7ShlswtIdF2E6JsbXTfVV90t0r7DoHpAHVcaIjp6WDq3
+	fTtKtzvbVacya3Sq16QQ==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3wer8mssky-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 23 Feb 2024 22:48:52 +0000 (GMT)
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 41NMmpQ9006083
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 23 Feb 2024 22:48:51 GMT
+Received: from [10.110.70.241] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 23 Feb
+ 2024 14:48:50 -0800
+Message-ID: <605d9e50-d61b-b0ce-1664-00554ba70b41@quicinc.com>
+Date: Fri, 23 Feb 2024 14:48:49 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-25-surenb@google.com>
- <CAH5fLgiyouEuDGkbm3fB6WTOxAnTiDx=z6ADx7HN3BTMAO851g@mail.gmail.com>
-In-Reply-To: <CAH5fLgiyouEuDGkbm3fB6WTOxAnTiDx=z6ADx7HN3BTMAO851g@mail.gmail.com>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Fri, 23 Feb 2024 14:17:44 -0800
-Message-ID: <CAJuCfpHBEX27ThkdMBag-rOwir0Aaie-EeAUgF6bem=3OX4EdA@mail.gmail.com>
-Subject: Re: [PATCH v4 24/36] rust: Add a rust helper for krealloc()
-To: Alice Ryhl <aliceryhl@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
-	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
-	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org, Miguel Ojeda <ojeda@kernel.org>, 
-	Alex Gaynor <alex.gaynor@gmail.com>, Wedson Almeida Filho <wedsonaf@gmail.com>, 
-	Boqun Feng <boqun.feng@gmail.com>, Gary Guo <gary@garyguo.net>, 
-	=?UTF-8?Q?Bj=C3=B6rn_Roy_Baron?= <bjorn3_gh@protonmail.com>, 
-	Benno Lossin <benno.lossin@proton.me>, Andreas Hindborg <a.hindborg@samsung.com>, 
-	rust-for-linux@vger.kernel.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.15.1
+Subject: Re: [PATCH v2 2/7] clk: qcom: clk-alpha-pll: Add HUAYRA_2290 support
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+        "Rob
+ Herring" <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Michael Turquette
+	<mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>, Rob Clark
+	<robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        "Dmitry
+ Baryshkov" <dmitry.baryshkov@linaro.org>,
+        Sean Paul <sean@poorly.run>, "David
+ Airlie" <airlied@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>
+CC: Marijn Suijten <marijn.suijten@somainline.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Konrad Dybcio
+	<konradybcio@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-clk@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <freedreno@lists.freedesktop.org>
+References: <20240219-topic-rb1_gpu-v2-0-2d3d6a0db040@linaro.org>
+ <20240219-topic-rb1_gpu-v2-2-2d3d6a0db040@linaro.org>
+From: Trilok Soni <quic_tsoni@quicinc.com>
+In-Reply-To: <20240219-topic-rb1_gpu-v2-2-2d3d6a0db040@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: nmwHTNyTCNAaftUm0O5wFymUBF5x3hm_
+X-Proofpoint-ORIG-GUID: nmwHTNyTCNAaftUm0O5wFymUBF5x3hm_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-23_06,2024-02-23_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ adultscore=0 malwarescore=0 bulkscore=0 clxscore=1011 mlxscore=0
+ impostorscore=0 mlxlogscore=901 suspectscore=0 priorityscore=1501
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2402120000 definitions=main-2402230163
 
-On Thu, Feb 22, 2024 at 2:00=E2=80=AFAM Alice Ryhl <aliceryhl@google.com> w=
-rote:
->
-> On Wed, Feb 21, 2024 at 8:41=E2=80=AFPM Suren Baghdasaryan <surenb@google=
-.com> wrote:
-> >
-> > From: Kent Overstreet <kent.overstreet@linux.dev>
-> >
-> > Memory allocation profiling is turning krealloc() into a nontrivial
-> > macro - so for now, we need a helper for it.
-> >
-> > Until we have proper support on the rust side for memory allocation
-> > profiling this does mean that all Rust allocations will be accounted to
-> > the helper.
-> >
-> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> > Cc: Miguel Ojeda <ojeda@kernel.org>
-> > Cc: Alex Gaynor <alex.gaynor@gmail.com>
-> > Cc: Wedson Almeida Filho <wedsonaf@gmail.com>
-> > Cc: Boqun Feng <boqun.feng@gmail.com>
-> > Cc: Gary Guo <gary@garyguo.net>
-> > Cc: "Bj=C3=B6rn Roy Baron" <bjorn3_gh@protonmail.com>
-> > Cc: Benno Lossin <benno.lossin@proton.me>
-> > Cc: Andreas Hindborg <a.hindborg@samsung.com>
-> > Cc: Alice Ryhl <aliceryhl@google.com>
-> > Cc: rust-for-linux@vger.kernel.org
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
->
-> Currently, the Rust build doesn't work throughout the entire series
-> since there are some commits where krealloc is missing before you
-> introduce the helper. If you introduce the helper first before
-> krealloc stops being an exported function, then the Rust build should
-> work throughout the entire series. (Having both the helper and the
-> exported function at the same time is not a problem.)
+On 2/23/2024 1:21 PM, Konrad Dybcio wrote:
+> +	/* Wait 50us for PLL_LOCK_DET bit to go high */
+> +	usleep_range(50, 55);
+> +
+> +	/* Enable PLL output */
+> +	regmap_update_bits(regmap, PLL_MODE(pll), PLL_OUTCTRL, PLL_OUTCTRL);
+> +}
+> +EXPORT_SYMBOL(clk_huayra_2290_pll_configure);
 
-Ack. I'll move it up in the series.
+Please use EXPORT_SYMBOL_GPL. 
 
->
-> With the patch reordered:
->
-> Reviewed-by: Alice Ryhl <aliceryhl@google.com>
+-- 
+---Trilok Soni
 
-Thanks Alice!
-
->
-> Alice
