@@ -1,66 +1,66 @@
 Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04C59149382
-	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 21:24:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C8B6142649
+	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 21:24:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708723474; cv=none; b=cnSm2fY5XuMHvnZiOy9LCokM59yiJA5dtm/g1P1E+Y3EMNPLDAnAd+UMscqe2vri1yQ4oJ3vHDOxYWNtMldBgeLBC6jsLmemVtMehzQ1vgTIyOjcLwUWx6IMDPVvz2v2l6ydnlUyETn0SxEH6HXWOPZK+XMXF0/WjHDrzFS4YNU=
+	t=1708723496; cv=none; b=uVqRgNcbGDmo2ZP1pbikkZQK78FGOEN6n9s4v/POqrIpzapVYC3Lsqopcx26SJnpnA66E3s28VkCpIrnuf1PWj0VhUNZrZdFkVe1VftNqZCeDai4SVs3YzbNeJL1COWWaxYEvMed1N5o0R6Tx8BpXgQwHp34WPWx0MacZeltQG0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708723474; c=relaxed/simple;
-	bh=H/tJhqv8w47L674SEcvyX50L+C3QiQZtQ8jkIBC/B54=;
+	s=arc-20240116; t=1708723496; c=relaxed/simple;
+	bh=FvyHoKuJyRa2YSuYvwYb58L/t6J6cqmjt53b8ta4lpU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=X+KUWtZzVaxiIdXOS2fN5TCTeKrelMmZ1/086jppL56oUauiPaWICezw+KRm8pY3xFVGF4+hM2cszgLJzaNH2QpE9F6wdXsRHOBP/ujKJUOVa9VrQRyVzT+nYQSkDHEg6X282otrqNqs0XdomeoGH1bX3DFp+FFmtUGlzRCzjjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=zvy1eCGY; arc=none smtp.client-ip=209.85.219.169
+	 To:Cc:Content-Type; b=W7V3S9p3pDtXevKnRoZu9hJXgDvskwhuFPhE6y58CpYd78aaHPHNoxVO6T+PZD17jNikEchpmFenvPR3eN05wjxzRecZI1EkDkm4ZaAqrbIXp4FcXwOJBgrM6BP4rDypBSQcbgsU508hkLoBHNvXFbwIdWIQ7KR1JM/eBOncgHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=xY4VjiOb; arc=none smtp.client-ip=209.85.219.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zvy1eCGY"
-Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-dcc84ae94c1so1264299276.1
-        for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 13:24:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xY4VjiOb"
+Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-dcbef31a9dbso616842276.1
+        for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 13:24:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1708723471; x=1709328271; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1708723493; x=1709328293; darn=lists.linux.dev;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=akuPkkgI0y/oHinOKr0HxoZmwUf171P0m6vGM5/O5Js=;
-        b=zvy1eCGYHnAyJQoP1qy28qHS7rlZkwG6ZYXl4HwIQRUfHp7tfIGFPtUf8vnN0TcB4P
-         fUsPTkEejQhIUc/fUS6rjevqxST7mOiI+KnzLq/S/QSjJjamMSBYAzrOzPBX/0x9o2kx
-         f8xjfgVPv5AhRe5beVMLbWGiF2tlV2A5vNtVRWa4XL2c3gXU/p7bb5EfK1ZgsRnfGdpi
-         Yu1Nq45COANVoEmRucLnGgnYkYRxFYWhEjqdkhVv/ybMaKj3WE1tDHLoeczJJyksd16J
-         oA2/1xZf3ficCQ9qBhRuVWNcCuI6oeUIFyIDjioBWRy2DGR0O0dpMkrIff1AUjzxMp5Y
-         uVcA==
+        bh=wgdv/OJ7jeihH3J71yo7/tj9HKsPe0FnbUozf7yDTNQ=;
+        b=xY4VjiObRlhcV2DIjsNB4mb/lp4siuqfG4NdvaDEwKF6GfYZboDkXRx9rZWshG8GfV
+         AA7JYlD1t/uJgpsi3oc8cZIFhSRgzuf1MqWZEAwQihpYvCYMremgzpLo6ncCGlnD8/mY
+         hO/5r5zGvFR4S+++ssUhUcg3UZa9iY4cqE2HtCsbQwGfBcMkIRH6DDDiaWAT/dB2cfld
+         /UUxlUhFE1b6yPCX+3yWQm5cV1q46RflT7xAriyRoqi4g1WokplBcfMdwYdtohRn1ASN
+         ChbpntK7/B8el6T7E4n+YmrO+k6x02Ymd7GDp+PFKP1dOAkybISCIsbY5Moos1Vv67Js
+         MYLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708723471; x=1709328271;
+        d=1e100.net; s=20230601; t=1708723493; x=1709328293;
         h=cc:to:subject:message-id:date:from:in-reply-to:references
          :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=akuPkkgI0y/oHinOKr0HxoZmwUf171P0m6vGM5/O5Js=;
-        b=ACV3q/vRqw+/h3NEycjcZJB8mHw+xUfKy/Hck/6QEX932qA/s0KVzJWLTtu39uuPBv
-         /gGTFIQlarA+4LThscjm17QvGCltg/5IRt5VDHwFvYvzZ0ER8iuSul0m2RHCAU06r8oh
-         VGdV6apOCXZWO4RRs8vBo7ichj9SCzNf0kgdMyRwnmpWEMOtQSrfB+bzX02R55xdLovv
-         vDgsZXVt9ywpJEfV42UYvueARIutEZAWZKu06lOSPS+J7hTL9xhszKuGJX+/2NtaRKiW
-         0mY6DXrUNq1LvZAqNRyBY3OcDiZwvHAX4oyY44Xeu6oLFYsGcHq8Dsoio00PebEJZPRi
-         AFYQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVugO4BHDokblY8FHP7E27z8YZT/5rKOx3tUl/Ih+NgeaevquWJBILtGQhlGmAOcmHWKj2RzSsmS4sM4yh+/tmgflLGDt4=
-X-Gm-Message-State: AOJu0YzDutlbSxzxyRZS2mniayEVHzkFl8/ykaWtghxzA9gWpSH0LVEP
-	9/MSuj2xN15wlSEwzMI01fFtnCFqDKv7hknsxgb67bA5tnfA2Mv4PGiMHPR838hqlUpCWtXVIah
-	nWfMBz2D4hid0kHx8+RhmDMgISjh+Zue9ok1Bpw==
-X-Google-Smtp-Source: AGHT+IFbG9R3qzPDyULutJwOdT2KkYVwoLnuTNnZQAQUOT10IOJuFq9jx8p8pvPNgR7Ok5iVzV0j+sTC9nwDRCxlZ88=
-X-Received: by 2002:a25:c511:0:b0:db9:9537:2c39 with SMTP id
- v17-20020a25c511000000b00db995372c39mr1121626ybe.2.1708723471023; Fri, 23 Feb
- 2024 13:24:31 -0800 (PST)
+        bh=wgdv/OJ7jeihH3J71yo7/tj9HKsPe0FnbUozf7yDTNQ=;
+        b=Ce4JRWva5jKJF4sEb/nnjW3BhI90KJto67PLJ84UlC+DRWBkXyV0LTfmGJE5Tt8yyo
+         fynqjyKqXaPJyVbY2ByEjqW5Id0qf/0cCL13A1hCoO4wbdGHNp3IUWtmlCcAKP1XzCg7
+         3KYyNRf5K+v9YCsmwz7wCv2SIgv5r5CnJtOcAj9/SK1ZIQAlpkAxjD/5MX6cnar8BsPn
+         chLFZWbni4wmakDl4eBbCa6MQcZ6FJ7Uk5XmOxBRIMERzAHhet/0rde4P4Jo+laCpw6x
+         jwz8wbwXGG35zmO32rbkrAWyVn2wXX8BazsQj6CGSx7iNdED24bIXAfahQucFGcFKgz0
+         ytzg==
+X-Forwarded-Encrypted: i=1; AJvYcCWBdK1f3tFOogmAkSPIm3z0FGx67fGTfRNLiO1T5S50IKf/jc00knO4WTndyevijaLZxzkHnvAXJxjhJ0vqi3zMfXPpJeM=
+X-Gm-Message-State: AOJu0YxtFMUDRauAHrynpOF4IdFyyzG6QO1z3shsSqFydMvZGv4KPMRK
+	zLvmSgo8PZxzhJ0UmnQmGEHrBzbkIXiz5wiBSaR8BAWuzyaaZzYQTG03skwr8Jv8SrUOB4ij4oM
+	lLou3xdOzZK21o9Xuck+IEVfV/5mXRxPhHPOT2g==
+X-Google-Smtp-Source: AGHT+IFMmUBgDbCE2Q2G9lsAmZpvVhtEQwvP+lU1HPMuQilfEiaGC1y+Wv7lhCQH4132jTFroLi4zQTtEiwxKXXZKTw=
+X-Received: by 2002:a25:3082:0:b0:dc6:c2b2:c039 with SMTP id
+ w124-20020a253082000000b00dc6c2b2c039mr998519ybw.41.1708723493452; Fri, 23
+ Feb 2024 13:24:53 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240219-topic-rb1_gpu-v2-0-2d3d6a0db040@linaro.org> <20240219-topic-rb1_gpu-v2-2-2d3d6a0db040@linaro.org>
-In-Reply-To: <20240219-topic-rb1_gpu-v2-2-2d3d6a0db040@linaro.org>
+References: <20240219-topic-rb1_gpu-v2-0-2d3d6a0db040@linaro.org> <20240219-topic-rb1_gpu-v2-4-2d3d6a0db040@linaro.org>
+In-Reply-To: <20240219-topic-rb1_gpu-v2-4-2d3d6a0db040@linaro.org>
 From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Fri, 23 Feb 2024 23:24:19 +0200
-Message-ID: <CAA8EJprR=tPUsFit7DEzh0U9TDOm8TY29m=JVJwXQwH6vEN49A@mail.gmail.com>
-Subject: Re: [PATCH v2 2/7] clk: qcom: clk-alpha-pll: Add HUAYRA_2290 support
+Date: Fri, 23 Feb 2024 23:24:42 +0200
+Message-ID: <CAA8EJpqnAoCDer93V34BaFHf5mhiNOFMQTP1Xaeoio0BWaPzhA@mail.gmail.com>
+Subject: Re: [PATCH v2 4/7] drm/msm/adreno: Add missing defines for A702
 To: Konrad Dybcio <konrad.dybcio@linaro.org>
 Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
 	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
@@ -78,21 +78,14 @@ Content-Type: text/plain; charset="UTF-8"
 
 On Fri, 23 Feb 2024 at 23:21, Konrad Dybcio <konrad.dybcio@linaro.org> wrote:
 >
-> Commit 134b55b7e19f ("clk: qcom: support Huayra type Alpha PLL")
-> introduced an entry to the alpha offsets array, but diving into QCM2290
-> downstream and some documentation, it turned out that the name Huayra
-> apparently has been used quite liberally across many chips, even with
-> noticeably different hardware.
+> Add some defines required for A702. Can be substituted with a header
+> sync after merging mesa!27665 [1].
 >
-> Introduce another set of offsets and a new configure function for the
-> Huayra PLL found on QCM2290. This is required e.g. for the consumers
-> of GPUCC_PLL0 to properly start.
->
+> [1] https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27665
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->  drivers/clk/qcom/clk-alpha-pll.c | 47 ++++++++++++++++++++++++++++++++++++++++
->  drivers/clk/qcom/clk-alpha-pll.h |  3 +++
->  2 files changed, 50 insertions(+)
+>  drivers/gpu/drm/msm/adreno/a6xx.xml.h | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
 
 Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
