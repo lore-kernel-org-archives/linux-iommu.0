@@ -1,109 +1,149 @@
-Received: from out-170.mta1.migadu.com (out-170.mta1.migadu.com [95.215.58.170])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2063.outbound.protection.outlook.com [40.107.244.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A21145358;
-	Fri, 23 Feb 2024 19:51:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.170
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708717871; cv=none; b=RR9C6pMAZxIYJ91jm8k2eKpzX6iV2oyuP/V+OXYfbh7DzzpdNCYJ7hxh/YxAN84Vjzpm+VIean5K8Wt4X6zQzme1uykUJ0Gkgu/jGNY/8vvrPSWmc0mfkWWS9SXTr8EjzN/qrFPGqeAs0wlAQX2S7aOkH8hjJthjYJNhfdlW3Ko=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708717871; c=relaxed/simple;
-	bh=YaVgMmCZccAOj2rhCfHdyWTcmqoRE1LJqZeVBmFLeSU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jopwIebqvkwwBE/i175fQdJ3GozQ7EiwAXHYfWjDG+b2ZCr3ZjKR7ldki4G7O1nT39zBFVHaNgkZ8FY7UzY47mWsYktnXY3iDGRyIicjeRIbNBHgWniMUaRT4VxV6ubDKAhzMeRR52ETflEbNhWgSe4xv/+iJ7CjCtQz6Dxgrj8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=uWxPu15j; arc=none smtp.client-ip=95.215.58.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82E33145352
+	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 19:58:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.63
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708718313; cv=fail; b=BrWVge/ntqnX7JNFU/djjtD2WPLiuQ9vU9DZqF371zS7fqyanTKeiY5EnYl1eEF2SxWRuLTAcFb/YBZIlAT51oQT/qpMOMNaLMYC4AQsEYdqRkhf5uhZ2089FihKTssZWCMJkUi/BOfOyLRAzGWikRUXbRtsmZvqeNzOUZb8iv8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708718313; c=relaxed/simple;
+	bh=i8wABGqt94IYV7+DvUp5bmYJq5nFpPgsHQVimhgmaUk=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HfWfUmlHwtq5hlLYvd5SMR/m56hk/4hMOeUaJ9BxUdewjSGVcVTwLbACbYMm6O31YzkNYedaEsaJ8MVHFc/5BKABMP3LkxJqMRhOVLvHRGD+uD2Sp1mFYY8xJfITHFOjGmfYyv0QDq66AvEdnp7LNL3IXAvxpicPzuvb/1U3E78=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FHR3zGxd; arc=fail smtp.client-ip=40.107.244.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="uWxPu15j"
-Date: Fri, 23 Feb 2024 14:50:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1708717865;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=G9nEEkfFGj8WFYt7yvHDxsoouHxXt+6aC7E5xhimc9A=;
-	b=uWxPu15jxbBy5Qv8sUU4/FKz9vhwMVdq24ex7AxwdBDTkpdTty7N4oFt5H+WpItVhn5h2q
-	QhDNbk6QMiXNrrlkBl7kMfsoV81d2NhOFvXWC0sVWqoHMtRJN5Tm42Zzvb2Qci9w4QIV6Q
-	wpkGE4FwRbb7rZDimmKQkBl02FYhYXk=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: Jeff Johnson <quic_jjohnson@quicinc.com>, 
-	LKML <linux-kernel@vger.kernel.org>, Linux Trace Kernel <linux-trace-kernel@vger.kernel.org>, 
-	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
-	Linus Torvalds <torvalds@linux-foundation.org>, linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org, 
-	linux-block@vger.kernel.org, linux-cxl@vger.kernel.org, linux-media@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
-	intel-xe@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, 
-	virtualization@lists.linux.dev, linux-rdma@vger.kernel.org, linux-pm@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-tegra@vger.kernel.org, netdev@vger.kernel.org, 
-	linux-hyperv@vger.kernel.org, ath10k@lists.infradead.org, linux-wireless@vger.kernel.org, 
-	ath11k@lists.infradead.org, ath12k@lists.infradead.org, brcm80211@lists.linux.dev, 
-	brcm80211-dev-list.pdl@broadcom.com, linux-usb@vger.kernel.org, linux-bcachefs@vger.kernel.org, 
-	linux-nfs@vger.kernel.org, ocfs2-devel@lists.linux.dev, linux-cifs@vger.kernel.org, 
-	linux-xfs@vger.kernel.org, linux-edac@vger.kernel.org, selinux@vger.kernel.org, 
-	linux-btrfs@vger.kernel.org, linux-erofs@lists.ozlabs.org, 
-	linux-f2fs-devel@lists.sourceforge.net, linux-hwmon@vger.kernel.org, io-uring@vger.kernel.org, 
-	linux-sound@vger.kernel.org, bpf@vger.kernel.org, linux-wpan@vger.kernel.org, 
-	dev@openvswitch.org, linux-s390@vger.kernel.org, 
-	tipc-discussion@lists.sourceforge.net, Julia Lawall <Julia.Lawall@inria.fr>
-Subject: Re: [FYI][PATCH] tracing/treewide: Remove second parameter of
- __assign_str()
-Message-ID: <qsksxrdinia3cxr52tfe4p3pafsy4biktnodlfn4vyzud73p2j@6ycnhrhzwsv6>
-References: <20240223125634.2888c973@gandalf.local.home>
- <0aed6cf2-17ae-45aa-b7ff-03da932ea4e0@quicinc.com>
- <20240223134653.524a5c9e@gandalf.local.home>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FHR3zGxd"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=APDHscDBb4N/dYuFwVyVfx7X3QXzkM+P94+FTwBsvKI2+TPIrH+JK7TAZH30LaQCzDY8ng4Diz/7u2+/bGTMEjK6xBhl4Z2JlX9+JNimuFDvbyALe+uqjadJ3115uOUPbx86yWXy0J7llZCWGWxWVf9gZB8QBqIWM8LjZPc5Zv+jB7BAv1eiS4VzGZyV+7r4SQ++fXLywZNONzZ7ryPnzr5/t5ZFXzrgxFYBWTf86RgGeeh93O2koiFow5MZTBcCmkOgjtfaKTrpM7FwCkcZxkeHds5CKz4UadrOZhnW+MiSV2a4ISQcG6cBqYeVY33e+DOVftZl2EOal0r12wR9bg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8+DGRMHVhOX8b88OUvriafsTJVVfSqF+SQd6Ai3GK+4=;
+ b=aFULXkgIBGQoBHKuPSTF8jQC0HbgWOtpdovtNdxwS22l7cndcvpD23SQygLps13JWgqrWjt4dmOEBoKfEK16jtpzrm31zQ1ZCQjDfBNXpLIhWzTqbLDp9EhKnEUodMOc8Hq/qv5VW/c92Tdl/SCPkRP3Gs2wzqUcvKv4ucSnAHYUMTCxd7eQanu1Jb8ZdXKdcbgf1aDYZnUjIksg9ULbQdUWXi/xoVyrBqgtnstie+ovapHftCOkmkrkEA6kppEZuha13IyKzN7fLUheXveFtpt51E2zuiZySrysggfQZ4b7l6D28OntmrrAymOvSNM/6hyWG8nTinnxZsnJRc/aJQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8+DGRMHVhOX8b88OUvriafsTJVVfSqF+SQd6Ai3GK+4=;
+ b=FHR3zGxdvwiTQx7KXKtKTxx5qXgXVRYChzIsQ06fV4Tts9MUBYhiTZ8Ud8EIWjFgS0/KuA8xcIGaFz5HAXXzc6OmmKlFP/yXvX+AJfeyg04DYamRLv2pGW9V6u8U3Ykwz4NJkGTZ/sC5mG0+gZmoEuGLcS3NIO3FFfYNe3AAr/XzKiAdlqIPcFggm6pF7OtJpreq9M7T6bkr1GeFG/9WD8ehsXXDbuqdvuFZ6eGHs0AXHznlLJXOEqOUD65rhJLV4T+oqXV7e83GIanvgU1wNMln5NIpML4fs/rPEZ9NNCQoGpM1cJ6IwWI1Pr3DpF4yDA7V31Q9liMdsxDv8JReqg==
+Received: from BN0PR04CA0159.namprd04.prod.outlook.com (2603:10b6:408:eb::14)
+ by PH0PR12MB7814.namprd12.prod.outlook.com (2603:10b6:510:288::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.24; Fri, 23 Feb
+ 2024 19:58:27 +0000
+Received: from BN2PEPF000044A9.namprd04.prod.outlook.com
+ (2603:10b6:408:eb:cafe::2a) by BN0PR04CA0159.outlook.office365.com
+ (2603:10b6:408:eb::14) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7292.45 via Frontend
+ Transport; Fri, 23 Feb 2024 19:58:27 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN2PEPF000044A9.mail.protection.outlook.com (10.167.243.103) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7292.25 via Frontend Transport; Fri, 23 Feb 2024 19:58:26 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Fri, 23 Feb
+ 2024 11:58:06 -0800
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by rnnvmail203.nvidia.com
+ (10.129.68.9) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12; Fri, 23 Feb
+ 2024 11:58:05 -0800
+Received: from Asurada-Nvidia (10.127.8.13) by mail.nvidia.com (10.129.68.8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
+ Transport; Fri, 23 Feb 2024 11:58:05 -0800
+Date: Fri, 23 Feb 2024 11:58:03 -0800
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Will Deacon <will@kernel.org>, Michael Kelley <mhklinux@outlook.com>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"kernel-team@android.com" <kernel-team@android.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr Tesarik
+	<petr.tesarik1@huawei-partners.com>, Dexuan Cui <decui@microsoft.com>
+Subject: Re: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
+ untrusted device
+Message-ID: <Zdj4y7nqF2LHq2IH@Asurada-Nvidia>
+References: <20240221113504.7161-1-will@kernel.org>
+ <20240221113504.7161-6-will@kernel.org>
+ <SN6PR02MB4157828120FB7D3408CEC991D4572@SN6PR02MB4157.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20240223134653.524a5c9e@gandalf.local.home>
-X-Migadu-Flow: FLOW_OUT
+In-Reply-To: <SN6PR02MB4157828120FB7D3408CEC991D4572@SN6PR02MB4157.namprd02.prod.outlook.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN2PEPF000044A9:EE_|PH0PR12MB7814:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7303f021-d8d1-482f-c5aa-08dc34a9cce4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	ReX421XnTV8BrPA4AK9eB+uKGr0Y8hcvL21DUqiMigjifGDOhX1twf/JiELs120LIrpvZ8kbYuH6o/0nRcNWjW/CwPSWa6YBNTqm1FaGAtqgylc7oxBtUBs+QwpfWyL8x8j+qGEDzw9zHJ7vPbehNubkIfYMzId6WVkVE68PGUEpnb7xZ+AwFbGQeJR0ZcQi6lzEGC9rM4Zqd2Uz7k9msenT+RPdBAzMMaspJrW31by6Do7UUTL2oRDm7wfAWp8zgfs0968cgQGHGN7EVR+vBOowk2ZeRJ8TUp76Ou6ap+sYxJKlGrZirz2mTIBdgHP0dngHTA3E+TWHJyPKRLAZLSN/laou5I9G/59UKA2lT89GcVqUx6Hm7qzhweCre3FMhwyb2mhvzUWGa8DO3VBMXUtC6o8SUIxwd9yVoMKqy4CFZjRmtYsuSmAqSGt1peJl3XaH+hIspZgHXfcube+HbMizlzjBskaW/3ISLsc8d4/IwenKJda0J3uxPE9EeM7ZEBS1jy4QxynfIyU/5Bl6QjeW/yO85ygiOnH26IbW14qR9leaIgZXL358ng4uK5x4MBkrogv9bhAxQKMvVVdjPBJNSa5Qk0MFWuJpBcVk28xDHg6N7ydchyymJfwIPxEzw6rCHGFGs6TmhOlt6CPokGlDCYgdiHpNUfOxSd4ofea6/T9YYOrPua8HeCf+5xEV69BBMSRJo9g0eCbOF9idrpO+EFBAP6wMjX0lycrEnv0=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(32650700005)(36860700004)(40470700004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Feb 2024 19:58:26.8461
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7303f021-d8d1-482f-c5aa-08dc34a9cce4
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN2PEPF000044A9.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB7814
 
-On Fri, Feb 23, 2024 at 01:46:53PM -0500, Steven Rostedt wrote:
-> On Fri, 23 Feb 2024 10:30:45 -0800
-> Jeff Johnson <quic_jjohnson@quicinc.com> wrote:
+On Wed, Feb 21, 2024 at 11:39:29PM +0000, Michael Kelley wrote:
+> From: Will Deacon <will@kernel.org> Sent: Wednesday, February 21, 2024 3:35 AM
+> > +static size_t iommu_dma_max_mapping_size(struct device *dev)
+> > +{
+> > +     if (is_swiotlb_active(dev) && dev_is_untrusted(dev))
+> > +             return swiotlb_max_mapping_size(dev);
+> > +     return SIZE_MAX;
+> > +}
+> > +
 > 
-> > On 2/23/2024 9:56 AM, Steven Rostedt wrote:
-> > > From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
-> > > 
-> > > [
-> > >    This is a treewide change. I will likely re-create this patch again in
-> > >    the second week of the merge window of v6.9 and submit it then. Hoping
-> > >    to keep the conflicts that it will cause to a minimum.
-> > > ]
-> > > 
-> > > With the rework of how the __string() handles dynamic strings where it
-> > > saves off the source string in field in the helper structure[1], the
-> > > assignment of that value to the trace event field is stored in the helper
-> > > value and does not need to be passed in again.  
-> > 
-> > Just curious if this could be done piecemeal by first changing the
-> > macros to be variadic macros which allows you to ignore the extra
-> > argument. The callers could then be modified in their separate trees.
-> > And then once all the callers have be merged, the macros could be
-> > changed to no longer be variadic.
+> In this [1] email, Nicolin had a version of this function that incorporated
+> the IOMMU granule.  For granules bigger than 4K, I think that's needed
+> so that when IOMMU code sets the swiotlb alloc_align_mask to the
+> IOMMU granule - 1, the larger offset plus the size won't exceed the
+> max number of slots.  swiotlb_max_mapping_size() by itself may
+> return a value that's too big when alloc_align_mask is used.
 > 
-> I weighed doing that, but I think ripping off the band-aid is a better
-> approach. One thing I found is that leaving unused parameters in the macros
-> can cause bugs itself. I found one case doing my clean up, where an unused
-> parameter in one of the macros was bogus, and when I made it a used
-> parameter, it broke the build.
+> Michael
 > 
-> I think for tree-wide changes, the preferred approach is to do one big
-> patch at once. And since this only affects TRACE_EVENT() macros, it
-> hopefully would not be too much of a burden (although out of tree users may
-> suffer from this, but do we care?)
+> [1] https://lore.kernel.org/linux-iommu/SN6PR02MB415727E61B5295C259CCB268D4512@SN6PR02MB4157.namprd02.prod.outlook.com/T/#m14dd359c5a4dd13e6cb0c35cf94f8d746257ae48
 
-Agreed on doing it all at once, it'll be way less spam for people to
-deal with.
+Yea, I just confirmed that with 64KB PAGE_SIZE the alloc_size
+can be over swiotlb_max_mapping_size, i.e. 256KB > 252KB. Yet,
+the max size corresponding to the max number of slots should
+be 256KB. So, I feel that this is marginally safe?
 
-Tangentially related though, what would make me really happy is if we
-could create the string with in the TP__fast_assign() section. I have to
-have a bunch of annoying wrappers right now because the string length
-has to be known when we invoke the tracepoint.
+With that being said, there seems to be a 4KB size waste, due
+to aligning with the iommu_domain granule, in this particular
+alloc_size=256KB case?
+
+On the other hand, if swiotlb_max_mapping_size was subtracted
+by 64KB (granule=64KB), i.e. alloc_size=192KB, which seems to
+generate more swiotlb fragments?
+
+Thanks
+Nicolin
