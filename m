@@ -1,195 +1,147 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10olkn2068.outbound.protection.outlook.com [40.92.41.68])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f46.google.com (mail-ej1-f46.google.com [209.85.218.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D0E5146E71
-	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 21:10:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.41.68
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708722639; cv=fail; b=rfwShS2fz0vUm1mHx6oWxLKlgjQvbVxpWk5Yl7+PprFnTcKms02ckdRboz3mCurXL7zMYvjWyJdZGj/s9K3UCWVZrz3AbtYPG99KIOaV5KQJWrIp9ErJQQhBmstCkXD/zo9mWV3rzQ2BUEuZ+HVx0C0GzgGWbdPjMw0SVbKbQAs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708722639; c=relaxed/simple;
-	bh=JrVB95/TWCv8ZLM64mCAJklAx2qKyMBLXlf2m8jNuTw=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=rzcmG+TYhP4lVojvc4LfkIZ95fWX2l8iAiz5+NJk1/Xa0yY3+FdouM4zzEaCSxOlIDLvPDPGPud3yKCrDxIE1IGAnnZOH+MCxu+dE/4az/00a2+7I7eA52tgfuBYskD5WxQDZtzB8w5az52RKnVK8SdBSUWBX7cGfvJjqZHOTzs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=t+oVJXFt; arc=fail smtp.client-ip=40.92.41.68
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F35F6149382
+	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 21:21:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.46
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708723309; cv=none; b=lhK3TfxBoKjZsPAFJckVCA7dPMsBmcCNzJB78qPu+hsBXfiP2JGbEA8TKO5tyz8ofOUf43anU5G0b5WwEtJbLhzWW4lBIVlTQPracw43/Q3bv5+8Sunn8HTguLxYLr9r/C8kT/bLifL29VtoAme8IaDRm1fyjGwRALRRottWws8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708723309; c=relaxed/simple;
+	bh=7tHpBwYBjs0QIZxWGt5a/fib2c1/MZ4A6oZE+Z30PYs=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=YdcjsFyDUEl3C0IRzT0qvr11BpT5rbuHZNcKtV8yn+dL3JO84m8+X+f0YcsbcQI/XZsdPes87bGUEq0c62jIMGfsTTIPHvWRSLXC8hPjcGqmTZIEiBj8crv/utQT3i34WFTvDHJSdWYlQSul642S8pbCchZxbgzSCyuSIb1nwRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=jaEhprcu; arc=none smtp.client-ip=209.85.218.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="t+oVJXFt"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UMgOd6Rs7OOXUxhdsoRTLNKdfWeY/rgMVKof0gzROzZJRSvKwV+BpdV1BI69NZy+9W9BnUOVWoLBYAqJDFhvKwV9+OOnvifxk8Cw+L6Q/o7O1BmNwQ/r5bnFa0Okp6C2ygDWDluvsekYUZHIL0NW9IMujRilVWJQKJnckvZW2WRecWL+FSWJ8RSQ3L8UXFqxFQTpibf2OVRoQyhJCl1hAy3NMaPzWhdNeQ/i+aq9NvP8WPcuXyClAn1+EwN94OX8K2v/gedZ8LAABDgxwPISIxJ/dtrWc4JXMxaTbrFYsgEYBcy++vkT4/o9z4vGSlZHou3bdGUlbvveL+N4D65I9Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uggaKpUcAWd905T4GzigR2HNUvzixs4MV3ck+UHXZaU=;
- b=V5h8Ax8ls6MSOkgsB9akyPG8pjedevX9XTvqFakK81sMkisE6Ey7SR+BYb+s58wsBjLsRnjVEVmZcQPjfQgrJv2aVg0bhRr8ITgCKZRY7WFpttgKtv5+ZjY2DQLugJm4plgYdRq3tzG/yZBqN7vLbJO9KGaNbxMwwJG1CFAoVHtd4VunNKHYZig3/DO0W4ZpslMUCgXRLQD8Zf02yRwkXWu8Bl0vKELGAWa2tOXvXrGxSc24lNXnfPOrJDdN3S29dKaz6P9W62Y6LCDh1cQQiPSphRNMItDTu2bnkggNQh7gTlC2GQ1BjiU9vcuNDPD9RqnqZYNLDuSN+xz9wPoL+Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uggaKpUcAWd905T4GzigR2HNUvzixs4MV3ck+UHXZaU=;
- b=t+oVJXFtlxyXU6igdic/fSIagz02gpakQYDt+WUluul7A70wMLo/vPxqa3uuzZSLLx+cA07UXRLARBdXjb7ZWWtQlnuqCHVtjtFFH33r4wq3x1SqejJqsyc9CCI2WZe4V2YAgObuSdXoYHwfpIX4QS/Ih91/RkFQaOvex6y5PQuqlEdoXaprfeQQyF8goFKYkFVVZlvczhnjrymXrvIWM+x0wdoceTGjhdttuFWxbDuR66UoSefCS6DzDXUOmp67jF8xDTBV3puTF+1i3gaD3PytFVn8FLkr5YI2VdW3pp2OFjGwVv1Ovj9bZ/uI0NARJS0NwP1u+6rleSSa701vCA==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by CO1PR02MB8394.namprd02.prod.outlook.com (2603:10b6:303:152::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.22; Fri, 23 Feb
- 2024 21:10:33 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::67a9:f3c0:f57b:86dd]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::67a9:f3c0:f57b:86dd%5]) with mapi id 15.20.7316.023; Fri, 23 Feb 2024
- 21:10:33 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"kernel-team@android.com" <kernel-team@android.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr Tesarik
-	<petr.tesarik1@huawei-partners.com>, Dexuan Cui <decui@microsoft.com>
-Subject: RE: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
- untrusted device
-Thread-Topic: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
- untrusted device
-Thread-Index: AQHaZLoRyKgMK9jLMUWPn0GpqcfvobEVbBTggALvr4CAAAjwsA==
-Date: Fri, 23 Feb 2024 21:10:32 +0000
-Message-ID:
- <SN6PR02MB41574C0F51BEF3AC474C2EC1D4552@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240221113504.7161-1-will@kernel.org>
- <20240221113504.7161-6-will@kernel.org>
- <SN6PR02MB4157828120FB7D3408CEC991D4572@SN6PR02MB4157.namprd02.prod.outlook.com>
- <Zdj4y7nqF2LHq2IH@Asurada-Nvidia>
-In-Reply-To: <Zdj4y7nqF2LHq2IH@Asurada-Nvidia>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [TssF13v3uYvU8cM/C6DKKgGnwC0n4eR9]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|CO1PR02MB8394:EE_
-x-ms-office365-filtering-correlation-id: 4924402e-63b7-43a5-a1c0-08dc34b3df5a
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- LabQ+imBQARDVexfgUuNmsh8qUTbGX91hGMZ/sVjcAr4xdiyqsCOEfCV5FT017h8I82fCfVpYuzs/XhqnO6TYyAfOvdADVWeY8NoGiqCs7MTdtv04kf1KHkMB/qViPBvxVHvENtbhC7az5B/ebz/UzZ44ecHnUIruJ0Jstrklr2hjjTtgzqmptA5gG8zMX6Z1CeINE8nZw6BKwbUc35c5R3tX7BwuElL41YLCZlUi1zo1oNQU3Fhud0K/OXnQ8FAs1hMJaZSDthr0DXWzlLK+ss2XFniYkKe6BTApIPYrK/UQgRMWrlgAuAouZD/P3flLRoZVRyAjbUAJ+ROLaNgVN75bPmvIu8dwVPrUoJ1iLUBaXuj5yRKhEwwd5zGdjkMcxQss/oHg6/sj8B5C6Yr89LAYmPrXRQAnloLxeOjPtSIwIa6L6b95CXLpfB/If9zsLfcovk0lCBJlCbio9gNO5YyoeOmdpV02cwBlYySimw5ZDsKvMzqp+XRW6CNcaHOd/fXgzwQpz/G5JBHoHb5c5DOVe/OEvB2mlu4+a0t6tj512vzAVBQA781YRv9FQ+g
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?CaWyl/XV6cBTbWB4es0rYT3xWPNv3tINhp4+W9RCGc9PWNSZwIsRqsgdTpaS?=
- =?us-ascii?Q?9AGObyqfC4bSVacC3SLPPPMk+PTuO5GV1Tpvbewc0+ajy5iGmlmhKFyHQTE4?=
- =?us-ascii?Q?fUV3vHQNKu74LGUBNaORUzi5iSvk+HGiecMVUO0nS99H18cdnigMn+SW0fko?=
- =?us-ascii?Q?yGclD13/gtXEEdliBgSnCq2NdKR5jMj7rR413WZv2qcK8wBocooK3V9fpNoI?=
- =?us-ascii?Q?2xDR73Sgy48cVqIoq/ZizfO+LjMQjp0D5WdsOkoQyo47xHZaBM9didIxe7qo?=
- =?us-ascii?Q?ENMr2BRV/AYsUJHqK4muTHI2bsenM/yCgmy28jLo+FGh+/ara6hx8eYtUlNu?=
- =?us-ascii?Q?7h3NBwYlryqDJl0qB/mrWUMmgcUxMLIv+8zPtJkk6hMCexnt/xXTudfsRa04?=
- =?us-ascii?Q?s03+3hxuaPuCJPGxYotfXYqhzSpwlfKXiep8vLgccR6VcVZetXcnir0Wwpma?=
- =?us-ascii?Q?yZV4U5A/Erpg/WBXi655xFXBMe/U+6X6yZHAe1OAVaA1Fsa+Nf/KYaSoaeKJ?=
- =?us-ascii?Q?qztfU3Fn7m75+6MYF3jDm9cXWVC1t5PYG1NgCizaTjXPCBDnoPrs98MZYElC?=
- =?us-ascii?Q?gNnsTjgabPqUNz5SQCVw0bbl3RtkThnUFvIjBSUJY0WdDgKNgrElNMVzJx3D?=
- =?us-ascii?Q?+Al7IfINUgpUfjHzX42Jt+G8O0pRnpRDi+yhNy3KfmMswRbQo6XE8/XwOI+1?=
- =?us-ascii?Q?rOH5UOaiClmbrju78Y4ZWy44YpEosPQZTg1g8LESBTnL2T6mqdBpPbLA5O6x?=
- =?us-ascii?Q?Bsbr2ALgMal7xbfu4G2MInrQf1FuyvmdWcxS/7DVjhDoG7ZPHOJ4GrgxoSg0?=
- =?us-ascii?Q?duWNML5hLXgjqVZQt48nVsf7elN1Tk9Jd09fo7EJMYQ3XUWk1eGXkxouF6m+?=
- =?us-ascii?Q?YAStq3xrLcStkT8YTQMFzh3LOMQz9J116VXPzuLL2qutGs3D9SeIzLiVE7zH?=
- =?us-ascii?Q?agVKVASaWqTV5SpiqwWCbXbK2CH5XLTjPLPHTmui1mkl5wFDZgbaDyjDXGNO?=
- =?us-ascii?Q?h9a6Zzxrbm2+spkU5EzCYMHZsn5JBKPwBMoDMhzi2CYuoZaFrimfRJnwKQeS?=
- =?us-ascii?Q?T8uWyPfYI4oESTxg/aMxM2MzfHUgr8XRYYjF1QExAQ3vLexAE2IMbgeC09vf?=
- =?us-ascii?Q?WA2OAHRuWeX4mJ66DM0FECxQQb8TZ0ML5E1eg0uPitlj5VXDrztZAIBC0dtQ?=
- =?us-ascii?Q?c4oIZf3jV3xutQpuzy2NQThlA2xv2NclZLgQ1w=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="jaEhprcu"
+Received: by mail-ej1-f46.google.com with SMTP id a640c23a62f3a-a3ed9cae56fso158911766b.1
+        for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 13:21:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1708723306; x=1709328106; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=3qOtgMPjyNgM5pphCQWRy5M3sSPymURGErwjzDyDOL0=;
+        b=jaEhprcubximTS3tY1hgFTGNPAgxyOB2MxXhf5NJa1sfxMbKkrY7TJL80I9nn4ArcQ
+         pD+ZBBkgOEG5xkE+iT8BmyUR09okKjiS3G09uxMJ3RgUcpGnp+997SQ4xqSBa6KtXccx
+         peVYh25vf/EVJlowP8fA/xn1S1Un7Q5RblTIbdrXm1PdyDjoH3poCvK/mnmrULIXzx1/
+         x9mJxwhPIirw5X7+p14WVNNh/Dsrez89w6ZzQycJxb/lqM5VGxI4bjt/WGfQvM98Xprn
+         OfBTAVRoD+QtY5kWU8Qizh5yWK6y4v46nNrrhNKror5jobPO9TxMaJPrfmaMuRlQZ4d6
+         QsQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708723306; x=1709328106;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3qOtgMPjyNgM5pphCQWRy5M3sSPymURGErwjzDyDOL0=;
+        b=GNQyLKNJ25fDx3c2WyTVyP5mk4R8kfliofWJzy4kXTA9wZwVZWX/N0+3SJ3qMteybz
+         mAa4Yk4VGjG4jKj4sLSiqXQSRR91hPqqC+XZy1jMHhJEThBAPpouxfD1EXpf41edgWQK
+         JUHqAZywH8rJhWROSnPPycfQR2GT9JqVSISMc/nDGdmekTyN0msGnd853Eg8fCs4TsL3
+         FESF42aWEw4EgN01uUOk57Kg7dMCqLMT6qq9uLw6r/of/qaIRznhY+jnf6EoLtq3CS5p
+         bPCSipnKWXrqm/9/q28o9Iuy5pdS3R3A/L41MDXbzj3wdgzJNGX1R55fPY6+4uyC729i
+         WLeQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV2fRPOoum/lmGoRv9TznATvECsCPBe2l9+nkS092kkRevcYQG94MslVvmiC4tZtCjc2ivEFxE64V/f5aSzCeocYo8qk90=
+X-Gm-Message-State: AOJu0YxNK4lq/8Ld9vz/a1iN3bdUFdRNwrv7UGen3AXEuaVFOBTF5ryf
+	UZYzh76SQzOa0HojWLHOuPkKK2yvG6Kprj8hQqWAmo4PqK6cfLNI+0hj0VlQPdU=
+X-Google-Smtp-Source: AGHT+IHNsRoCGn0GHTzTMfxgVcZdziz1Uz8p/0O7ANbTl1s5RH6d++8nVtFJ+a8mGI1yevbhqwpi0w==
+X-Received: by 2002:a17:906:fb06:b0:a3e:8bd8:b711 with SMTP id lz6-20020a170906fb0600b00a3e8bd8b711mr685947ejb.37.1708723306292;
+        Fri, 23 Feb 2024 13:21:46 -0800 (PST)
+Received: from [10.167.154.1] (078088045141.garwolin.vectranet.pl. [78.88.45.141])
+        by smtp.gmail.com with ESMTPSA id mj8-20020a170906af8800b00a3ee9305b02sm4091226ejb.20.2024.02.23.13.21.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Feb 2024 13:21:45 -0800 (PST)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Subject: [PATCH v2 0/7] A702 support
+Date: Fri, 23 Feb 2024 22:21:36 +0100
+Message-Id: <20240219-topic-rb1_gpu-v2-0-2d3d6a0db040@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4924402e-63b7-43a5-a1c0-08dc34b3df5a
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Feb 2024 21:10:33.0319
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR02MB8394
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAGAM2WUC/3WNQQqDMBBFryKzbkoSraaueo8iJcZRBySRiUqLe
+ Pem7rt8D/5/O0Rkwgh1tgPjRpGCT6AvGbjR+gEFdYlBS11Ire5iCTM5wa16DfMqcnTGlSaXuSk
+ gbVobUbRsvRvTyq/TlOTM2NP7jDybxCPFJfDnbG7qZ//db0pI0elS9tbcikpWj4m85XANPEBzH
+ McX0NVltcAAAAA=
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+ Michael Turquette <mturquette@baylibre.com>, 
+ Stephen Boyd <sboyd@kernel.org>, Rob Clark <robdclark@gmail.com>, 
+ Abhinav Kumar <quic_abhinavk@quicinc.com>, 
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>, 
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>, 
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Konrad Dybcio <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org, 
+ linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ freedreno@lists.freedesktop.org, Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1708723303; l=2367;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=7tHpBwYBjs0QIZxWGt5a/fib2c1/MZ4A6oZE+Z30PYs=;
+ b=epuG5oAKrr533fJKmkaFnj1FjTAPxNoYkEMcHz+KHP4gzlrOn5lsXpP9f1YjnwX0/IsJ6cXt4
+ ZTN2yx5xm87CgDWY+vMjlaY6zIT3LRax1dgd2sxLnp0EOV4B4xdjC4F
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-From: Nicolin Chen <nicolinc@nvidia.com> Sent: Friday, February 23, 2024 11=
-:58 AM
->=20
-> On Wed, Feb 21, 2024 at 11:39:29PM +0000, Michael Kelley wrote:
-> > From: Will Deacon <will@kernel.org> Sent: Wednesday, February 21, 2024
-> 3:35 AM
-> > > +static size_t iommu_dma_max_mapping_size(struct device *dev)
-> > > +{
-> > > +     if (is_swiotlb_active(dev) && dev_is_untrusted(dev))
-> > > +             return swiotlb_max_mapping_size(dev);
-> > > +     return SIZE_MAX;
-> > > +}
-> > > +
-> >
-> > In this [1] email, Nicolin had a version of this function that incorpor=
-ated
-> > the IOMMU granule.  For granules bigger than 4K, I think that's needed
-> > so that when IOMMU code sets the swiotlb alloc_align_mask to the
-> > IOMMU granule - 1, the larger offset plus the size won't exceed the
-> > max number of slots.  swiotlb_max_mapping_size() by itself may
-> > return a value that's too big when alloc_align_mask is used.
-> >
-> > Michael
-> >
-> > [1] https://lore.kernel.org/linux-iommu/SN6PR02MB415727E61B5295C259CCB2=
-68D4512@SN6PR02MB4157.namprd02.prod.outlook.com/T/#m14dd359c5a4dd13e6cb0c35=
-cf94f8d746257ae48
->=20
-> Yea, I just confirmed that with 64KB PAGE_SIZE the alloc_size
-> can be over swiotlb_max_mapping_size, i.e. 256KB > 252KB. Yet,
-> the max size corresponding to the max number of slots should
-> be 256KB. So, I feel that this is marginally safe?
+Bit of a megaseries, bunched together for your testing convenience..
+Needs mesa!27665 [1] on the userland part, kmscube happily spins.
 
-Yes, in the specific case you tested.  But I don't think the general
-case is safe.  In your specific case, the "size" argument to
-iommu_dma_map_page() is presumably 252 Kbytes because that's
-what your new iommu_dma_max_mapping_size() returns.=20
-iommu_dma_map_page() calls iova_align() to round up the 252K
-to 256K.  Also in your specific case, the "offset" argument to=20
-iommu_dma_map_page() is 0, so the "phys" variable (which embeds
-the offset) passed to swiotlb_tbl_map_single() is aligned on a
-64 Kbyte page boundary.   swiotlb_tbl_map_single() then
-computes an offset in the orig_addr (i.e., "phys") based on the
-DMA min_align_mask (4 Kbytes), and that value is 0 in your specific
-case.  swiotlb_tbl_map_single() then calls swiotlb_find_slots()
-specifying a size that is 256K bytes plus an offset of 0, so everything
-works.
+I'm feeling quite lukewarm about the memory barriers in patch 3..
 
-But what if the original offset passed to iommu_dma_map_page()
-is 3 Kbytes (for example)?   swiotlb_tbl_map_single() will have an
-orig_addr that is offset from a page boundary by 3 Kbytes.  The
-value passed to swiotlb_find_slots() will be 256 Kbytes plus an
-offset of 3 Kbytes, which is too big.
+Patch 1 for Will/smmu, 5-6 for drm/msm, rest for qcom
 
->=20
-> With that being said, there seems to be a 4KB size waste, due
-> to aligning with the iommu_domain granule, in this particular
-> alloc_size=3D256KB case?
->=20
-> On the other hand, if swiotlb_max_mapping_size was subtracted
-> by 64KB (granule=3D64KB), i.e. alloc_size=3D192KB, which seems to
-> generate more swiotlb fragments?
+[1] https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/27665
 
-dma_max_mapping_size() returns a fixed value for a particular
-device, so the fixed value must be conversative enough to handle
-dma_map_page() calls with a non-zero offset (or the similar
-dma_map_sg() where the scatter/gather list has non-zero
-offsets).  So yes, the higher layers must limit I/O size, which
-can produce more separate I/Os and swiotlb fragments to
-fulfill an original request that is 256 Kbytes or larger.  The
-same thing happens with 4K page size in that a 256K I/O
-gets broken into a 252K I/O and a 4K I/O if the swiotlb is
-being used.
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+---
+Changes in v2:
+- Drop applied smmu-bindings patch
+- Fix the gpucc bindings patch to be even better
+- Reorder HUAYRA_2290 definitions near HUAYRA (..Add HUAYRA_2290
+  support..)
+- Replace weird memory barriers copypasted from msm-5.4 with readback to
+  ensure timely write completion (..Add HUAYRA_2290 support..)
+- Keep my super amazing commit message referencing the 3D accelerator
+  official naming (dts)
+- Pick up tags
+- Link to v1: https://lore.kernel.org/r/20240219-topic-rb1_gpu-v1-0-d260fa854707@linaro.org
 
-I'm trying to think through if there's a way to make things
-work with iommu_max_mapping_size() being less
-conversative than subtracting the full granule size.  I'm
-doubtful that there is.
+---
+Konrad Dybcio (7):
+      dt-bindings: clock: Add Qcom QCM2290 GPUCC
+      clk: qcom: clk-alpha-pll: Add HUAYRA_2290 support
+      clk: qcom: Add QCM2290 GPU clock controller driver
+      drm/msm/adreno: Add missing defines for A702
+      drm/msm/adreno: Add A702 support
+      arm64: dts: qcom: qcm2290: Add GPU nodes
+      arm64: dts: qcom: qrb2210-rb1: Enable the GPU
 
-Michael
+ .../bindings/clock/qcom,qcm2290-gpucc.yaml         |  77 ++++
+ arch/arm64/boot/dts/qcom/qcm2290.dtsi              | 154 ++++++++
+ arch/arm64/boot/dts/qcom/qrb2210-rb1.dts           |   8 +
+ drivers/clk/qcom/Kconfig                           |   9 +
+ drivers/clk/qcom/Makefile                          |   1 +
+ drivers/clk/qcom/clk-alpha-pll.c                   |  47 +++
+ drivers/clk/qcom/clk-alpha-pll.h                   |   3 +
+ drivers/clk/qcom/gpucc-qcm2290.c                   | 423 +++++++++++++++++++++
+ drivers/gpu/drm/msm/adreno/a6xx.xml.h              |  18 +
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c              |  92 ++++-
+ drivers/gpu/drm/msm/adreno/adreno_device.c         |  18 +
+ drivers/gpu/drm/msm/adreno/adreno_gpu.h            |  16 +-
+ include/dt-bindings/clock/qcom,qcm2290-gpucc.h     |  32 ++
+ 13 files changed, 889 insertions(+), 9 deletions(-)
+---
+base-commit: 26d7d52b6253574d5b6fec16a93e1110d1489cef
+change-id: 20240219-topic-rb1_gpu-3ec8c6830384
+
+Best regards,
+-- 
+Konrad Dybcio <konrad.dybcio@linaro.org>
+
