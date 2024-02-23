@@ -1,39 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07C537A71E;
-	Fri, 23 Feb 2024 11:50:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CF527B3E3;
+	Fri, 23 Feb 2024 12:25:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708689049; cv=none; b=Kraqg2fzLIEenRj2kw+QDxyA6nsrQX5H0lm8Ao1ROqyN1VfZD+Ar23IR2yvP3eGis/kBzMDngGLG9cKe8l9J1qcoMuN9d0BJfvxj0pUm0yVAJo6Qu5evmjxdSkuybfleqa9rC9HRiOririxYgOS5cmsumnbAgAkQZD7Rh/iDOoI=
+	t=1708691136; cv=none; b=krD9ueKbD/h6xY6SIfrIfpyzuVSgVvACkG7Exo/zT+q1sUZxNMnEsMUem5Uhi/AfoZsSuhQBQb3nUzQbDJwbMO0G5UjUjL4Luk+zjI8AqQRb9MY/bN8+UPbnd+qFZ9qKKWj9r46nPMA42Z0+3PRh0GkPvZCrSGy9F+prrrqxuAA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708689049; c=relaxed/simple;
-	bh=w6qT2LiU2ag3cn1TULdm+kq1WVmzxUh3rh8IbQLvE6M=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=dyZSzcn/p6mMO2oUeBxx4llsYqh/vzGYra5L6RVzK+2+kn1DGX0zO2fxt7lCQyLGKAKh9XItcJesWict6fshz6M48ofUxr3mK2lX6TScvktsv/EyFwfegKwh5fsnZ5jwUAaeOLoGH4zjAzlEF0dwns1jHgwlGYFNLKZC9lL5bl0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Kv74LwEM; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1708691136; c=relaxed/simple;
+	bh=8Of16FeuK62BABqKCILjWT3Z7WbQBNIne5rn4ZE3mAA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WsMtB6LUAW4gjlnm285OdvK6E6aro8zHuDwPs1HYl3Ad+CBeeibwR9ghZvhnSiUjBm5G2CVZqi4vdzojiLwVEE8boodsy10C/vsQdwz4V6aO/PRW8az2aWciKPpaQTRPy8xZhd2YmfjsaRjwjMoSnRzXJcFXo375wAg/CE6ix5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i7CS91D9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kv74LwEM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 388A5C433F1;
-	Fri, 23 Feb 2024 11:50:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i7CS91D9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7800C433C7;
+	Fri, 23 Feb 2024 12:25:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1708689048;
-	bh=w6qT2LiU2ag3cn1TULdm+kq1WVmzxUh3rh8IbQLvE6M=;
-	h=Date:From:To:Cc:Subject:From;
-	b=Kv74LwEMVGf3Toz6Feh2ACfSSwcj2nd8HgmEutjUYKViJzjvsAYSB2pNoRNHBXFG+
-	 1jxcF2RqQTSiZ9NdAzF8cOBQEuplKFX1KxPhbH8BoE9A2qGnIbz77wWZAZ6VkkTaMl
-	 XePBsdb9c3ur2HTVKqMHCg4yh1748wWYZSggQ5Pe0bK5bm7GEedox7p8w9E+aNLR/J
-	 AZP47c+c1Z4OzmFlu8nY6tvERPJ6pMw5Ys8km3vW7DTWoKTMOl+OVzPvzst/iJ2riX
-	 nKVUpTC8lSI0zDfeoRI+5nQdfzamaY/KUVJnB6EDX3ccngPCbiiDjUt4H3VVrpu46Y
-	 3jW8sTcs17AYg==
-Date: Fri, 23 Feb 2024 11:50:43 +0000
+	s=k20201202; t=1708691135;
+	bh=8Of16FeuK62BABqKCILjWT3Z7WbQBNIne5rn4ZE3mAA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=i7CS91D93l5F/DEdZGaKzR35RysxD2B4cH/G/VgiWBw4DEdFqMcvHkhlt9LBpYp8y
+	 GIG7u9B0KuEn4XbmV+6NZRYHKmFFR4BCSZsmiynuG28s26sg6xOQvx6jFd39yDmFA9
+	 FMRqap7cdnUJgnaxH5deMKISFOmSxk2Wc1nkBoIcNfCfXFCuwTPDD5i3z8NJ+Omudb
+	 0jMV0716KSF3cKt4D9gPM9LyWRLzEP2fXR+7aSvXvWczZLEJjcfEFOhF9UM500qTkr
+	 UNibDK6AFFawjAsq+iZj+zrQO0pyfPfZXavrT59l9H2aV97d5fyVjmpk9jHZZ1jNjf
+	 wcQkOffOWKEzw==
+Date: Fri, 23 Feb 2024 12:25:30 +0000
 From: Will Deacon <will@kernel.org>
-To: joro@8bytes.org
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	kernel-team@android.com
-Subject: [GIT PULL] iommu/arm-smmu: Fixes for 6.8-rc
-Message-ID: <20240223115043.GA10608@willie-the-truck>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
+	iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v4 0/5] Fix double allocation in swiotlb_alloc()
+Message-ID: <20240223122529.GA10641@willie-the-truck>
+References: <20240221113504.7161-1-will@kernel.org>
+ <ZdiC4OpEMQHQjEtv@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -42,50 +48,54 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <ZdiC4OpEMQHQjEtv@Asurada-Nvidia>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Hi Joerg,
+On Fri, Feb 23, 2024 at 03:34:56AM -0800, Nicolin Chen wrote:
+> On Wed, Feb 21, 2024 at 11:34:59AM +0000, Will Deacon wrote:
+> > This is version four of the patches which I previously posted at:
+> > 
+> > v1: https://lore.kernel.org/r/20240126151956.10014-1-will@kernel.org
+> > v2: https://lore.kernel.org/r/20240131122543.14791-1-will@kernel.org
+> > v3: https://lore.kernel.org/r/20240205190127.20685-1-will@kernel.org
+> > 
+> > Thanks to Petr for his Reviewed-by tag on the first three.
+> > 
+> > Changes since v3 include:
+> > 
+> >   - Use umax() instead of max() to fix a build warning if the first
+> >     patch is applied to older kernels which warn on signedness
+> >     mismatches.
+> > 
+> >   - Add two new patches to the end of the series to resolve some
+> >     additional issues with NVME and 64KiB pages, reported by Nicolin.
+> >     I've added them to this series, as the first three patches make it
+> >     easier to fix this problem in the SWIOTLB code.
+> > 
+> >   - Add Reviewed-by tags from Petr
+> > 
+> > Cheers,
+> > 
+> > Will
+> > 
+> > Cc: iommu@lists.linux.dev
+> > Cc: Christoph Hellwig <hch@lst.de>
+> > Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> > Cc: Robin Murphy <robin.murphy@arm.com>
+> > Cc: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+> > Cc: Dexuan Cui <decui@microsoft.com>
+> > Cc: Nicolin Chen <nicolinc@nvidia.com>
+> 
+> This fixes the bug with NVME on arm64/SMMU when PAGE_SIZE=64KiB.
+> 
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
 
-Please can you pull these two Arm SMMU fixes for 6.8-rc? I appreciate
-it's getting late in the cycle, but it took us a little while to fix the
-SVA allocation problem properly. The summary is in the tag.
+Thanks, Nicolin! Please can you also respond to Michael's observation on
+your patch (5/5)? I didn't think we needed anything extra there, but since
+it's your patch I'd prefer to hear your opinion.
 
-I'll send you my 6.9 queue next week and it will be based on these
-fixes.
+https://lore.kernel.org/lkml/SN6PR02MB4157828120FB7D3408CEC991D4572@SN6PR02MB4157.namprd02.prod.outlook.com/
 
 Cheers,
 
 Will
-
---->8
-
-The following changes since commit 41bccc98fb7931d63d03f326a746ac4d429c1dd3:
-
-  Linux 6.8-rc2 (2024-01-28 17:01:12 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-fixes
-
-for you to fetch changes up to b5bf7778b722105d7a04b1d51e884497b542638b:
-
-  iommu/arm-smmu-v3: Do not use GFP_KERNEL under as spinlock (2024-02-22 12:34:11 +0000)
-
-----------------------------------------------------------------
-Arm SMMU fixes for 6.8
-
-- Fix CD allocation from atomic context when using SVA with SMMUv3
-
-- Revert the conversion of SMMUv2 to domain_alloc_paging(), as it
-  breaks the boot for Qualcomm MSM8996 devices
-
-----------------------------------------------------------------
-Dmitry Baryshkov (1):
-      Revert "iommu/arm-smmu: Convert to domain_alloc_paging()"
-
-Jason Gunthorpe (1):
-      iommu/arm-smmu-v3: Do not use GFP_KERNEL under as spinlock
-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 38 ++++++++-----------------
- drivers/iommu/arm/arm-smmu/arm-smmu.c           | 17 ++++-------
- 2 files changed, 18 insertions(+), 37 deletions(-)
