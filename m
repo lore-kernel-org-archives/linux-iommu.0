@@ -1,131 +1,109 @@
-Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out-170.mta1.migadu.com (out-170.mta1.migadu.com [95.215.58.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E79984FBB
-	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 19:26:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A21145358;
+	Fri, 23 Feb 2024 19:51:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708716414; cv=none; b=Pok8gXty3l24hR+HT2ES3UUr3oEpSTXXH40P2uaopI+vfOhwUU9wU0bIyuGSx89zbFiR+jFPAo/oJesvbEsad3MBrudp/korShXu6YOj8HWe87nGrJiJHQe2fRtORlObDbgNUX8f4WNn6T+qs/ZMGrkuBH1opqRrSr4BdKdltG8=
+	t=1708717871; cv=none; b=RR9C6pMAZxIYJ91jm8k2eKpzX6iV2oyuP/V+OXYfbh7DzzpdNCYJ7hxh/YxAN84Vjzpm+VIean5K8Wt4X6zQzme1uykUJ0Gkgu/jGNY/8vvrPSWmc0mfkWWS9SXTr8EjzN/qrFPGqeAs0wlAQX2S7aOkH8hjJthjYJNhfdlW3Ko=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708716414; c=relaxed/simple;
-	bh=R6zUV9LQ644WPBwU2nAdaKkCRupl6ITF2pP4ziWZMV0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CBBSq6NPYEYjThQK3zxT7RlDmtwBA+kH+eiDQCcUSwIPYIM6aH7LrpaHyZJ7HsrW2GoJaxHD+/gF0HmVn3JAwvW2ySpkqnSHDkw1OdGN9QdEbevu48b7Xg7VcTf24Rt46Ipeq0arjixZVOev24UWHRSk0Ox1sen/Vl6VFb15GHU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=f7dqFXVD; arc=none smtp.client-ip=209.85.128.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1708717871; c=relaxed/simple;
+	bh=YaVgMmCZccAOj2rhCfHdyWTcmqoRE1LJqZeVBmFLeSU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jopwIebqvkwwBE/i175fQdJ3GozQ7EiwAXHYfWjDG+b2ZCr3ZjKR7ldki4G7O1nT39zBFVHaNgkZ8FY7UzY47mWsYktnXY3iDGRyIicjeRIbNBHgWniMUaRT4VxV6ubDKAhzMeRR52ETflEbNhWgSe4xv/+iJ7CjCtQz6Dxgrj8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=uWxPu15j; arc=none smtp.client-ip=95.215.58.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="f7dqFXVD"
-Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-608cf2e08f9so895467b3.0
-        for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 11:26:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708716412; x=1709321212; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=R6zUV9LQ644WPBwU2nAdaKkCRupl6ITF2pP4ziWZMV0=;
-        b=f7dqFXVDr7xNnXDlf5I+aBBa4E+EM0lHJ7eaeAJ+zqh3n9KcFwcecDZ8LkG811gTW/
-         HuUQibyBTU9LcR/pSjLwySFwg3pN5Hwibz0JHr3FeSX2faGPZlBg+yqgygA/2acjyLFw
-         FA0o4SyllZb1FLSvDCMGZJZ4jHY57k8VXLUFut1W2SKeUnQ3sD+ALWug5n8OcFl/QyId
-         nVpgY7gn+oGOj3f0JbpKM9OrT7Onf9fIsw1RaJR4sLwosXkiTHw+LM6QiGL5p5iDkfXI
-         D0QAVaKFDKyv+kEZpYAiVKt0OYEzRt5QQ26YM5nHCiEnKOsg3ar0XsXqttjaGBkkPgjE
-         URSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708716412; x=1709321212;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=R6zUV9LQ644WPBwU2nAdaKkCRupl6ITF2pP4ziWZMV0=;
-        b=tYgtfT+WyabdlETmOzA0mUvwzqhQa73sIwdFygXFZPTcKgUZmxXMrd0bErUGU4gI9a
-         +XJ+9bfFZZiZM0jFRNruLQht4P8dSyhp0/6sJdsPf5BuFCwoqg/JDG1t84UzWh7lMwny
-         qf5ZGu5HqYt6aO3ivDbRvuNZH/2TnLkbddrajid21z/Vr1ldByxDAUr4bAYPx/kU8EN9
-         TkQu4B6TDvUghLEvc4yJGG01FwaWwOw8VEeyB6+tBN0GZP2tHWXoYBV6FbhhiOmP9NgL
-         U0/sXEy/T1UOCNRPmImqnppbpEnFfyePG+Y1kb/u91ehjYQATuGSUuyDDSaQwW8/azGe
-         KHJQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVuG3b/x+kdpVX1tL6G7lwWSRYpCTGNUC5OYOdwwOpxELRBFh3hscyTyHVgqziWAYHmMD/Su1ACng68MgpZepkPK3e7upY=
-X-Gm-Message-State: AOJu0Yzk69IJ4rwzM5pFzrcZKMgYgCjBfx/flBp4lMYwbfIDVvYYU/qn
-	QmJxKrPP3/Enq4th/ou3U/M9MacpFFNToFZczMktvvy+sRUf+2JnrEEOrmbTVBlKRCU/PV0cDf2
-	qTiUZgv3EHDqTBTB8Ty1wW8SOgu/vAHRigArP
-X-Google-Smtp-Source: AGHT+IE/Pl6hrmaYgXKRMYbWWj3alWqUpkDIYPYsJjZVZ7mPx6TO4HEVqSuGco97bbBAS2NUd8BFNQPQR2paQWXSoCg=
-X-Received: by 2002:a25:2653:0:b0:dc6:b088:e742 with SMTP id
- m80-20020a252653000000b00dc6b088e742mr843579ybm.8.1708716411749; Fri, 23 Feb
- 2024 11:26:51 -0800 (PST)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="uWxPu15j"
+Date: Fri, 23 Feb 2024 14:50:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1708717865;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=G9nEEkfFGj8WFYt7yvHDxsoouHxXt+6aC7E5xhimc9A=;
+	b=uWxPu15jxbBy5Qv8sUU4/FKz9vhwMVdq24ex7AxwdBDTkpdTty7N4oFt5H+WpItVhn5h2q
+	QhDNbk6QMiXNrrlkBl7kMfsoV81d2NhOFvXWC0sVWqoHMtRJN5Tm42Zzvb2Qci9w4QIV6Q
+	wpkGE4FwRbb7rZDimmKQkBl02FYhYXk=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Steven Rostedt <rostedt@goodmis.org>
+Cc: Jeff Johnson <quic_jjohnson@quicinc.com>, 
+	LKML <linux-kernel@vger.kernel.org>, Linux Trace Kernel <linux-trace-kernel@vger.kernel.org>, 
+	Masami Hiramatsu <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>, 
+	Linus Torvalds <torvalds@linux-foundation.org>, linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org, 
+	linux-block@vger.kernel.org, linux-cxl@vger.kernel.org, linux-media@vger.kernel.org, 
+	dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org, 
+	intel-xe@lists.freedesktop.org, linux-arm-msm@vger.kernel.org, freedreno@lists.freedesktop.org, 
+	virtualization@lists.linux.dev, linux-rdma@vger.kernel.org, linux-pm@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-tegra@vger.kernel.org, netdev@vger.kernel.org, 
+	linux-hyperv@vger.kernel.org, ath10k@lists.infradead.org, linux-wireless@vger.kernel.org, 
+	ath11k@lists.infradead.org, ath12k@lists.infradead.org, brcm80211@lists.linux.dev, 
+	brcm80211-dev-list.pdl@broadcom.com, linux-usb@vger.kernel.org, linux-bcachefs@vger.kernel.org, 
+	linux-nfs@vger.kernel.org, ocfs2-devel@lists.linux.dev, linux-cifs@vger.kernel.org, 
+	linux-xfs@vger.kernel.org, linux-edac@vger.kernel.org, selinux@vger.kernel.org, 
+	linux-btrfs@vger.kernel.org, linux-erofs@lists.ozlabs.org, 
+	linux-f2fs-devel@lists.sourceforge.net, linux-hwmon@vger.kernel.org, io-uring@vger.kernel.org, 
+	linux-sound@vger.kernel.org, bpf@vger.kernel.org, linux-wpan@vger.kernel.org, 
+	dev@openvswitch.org, linux-s390@vger.kernel.org, 
+	tipc-discussion@lists.sourceforge.net, Julia Lawall <Julia.Lawall@inria.fr>
+Subject: Re: [FYI][PATCH] tracing/treewide: Remove second parameter of
+ __assign_str()
+Message-ID: <qsksxrdinia3cxr52tfe4p3pafsy4biktnodlfn4vyzud73p2j@6ycnhrhzwsv6>
+References: <20240223125634.2888c973@gandalf.local.home>
+ <0aed6cf2-17ae-45aa-b7ff-03da932ea4e0@quicinc.com>
+ <20240223134653.524a5c9e@gandalf.local.home>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-7-surenb@google.com>
- <Zdc6LUWnPOBRmtZH@tiehlicka> <20240222132410.6e1a2599@meshulam.tesarici.cz>
-In-Reply-To: <20240222132410.6e1a2599@meshulam.tesarici.cz>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Fri, 23 Feb 2024 11:26:40 -0800
-Message-ID: <CAJuCfpGNoMa4G3o_us+Pn2wvAKxA2L=7WEif2xHT7tR76Mbw5g@mail.gmail.com>
-Subject: Re: [PATCH v4 06/36] mm: enumerate all gfp flags
-To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
-Cc: Michal Hocko <mhocko@suse.com>, akpm@linux-foundation.org, kent.overstreet@linux.dev, 
-	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
-	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240223134653.524a5c9e@gandalf.local.home>
+X-Migadu-Flow: FLOW_OUT
 
-On Thu, Feb 22, 2024 at 4:24=E2=80=AFAM 'Petr Tesa=C5=99=C3=ADk' via kernel=
--team
-<kernel-team@android.com> wrote:
->
-> On Thu, 22 Feb 2024 13:12:29 +0100
-> Michal Hocko <mhocko@suse.com> wrote:
->
-> > On Wed 21-02-24 11:40:19, Suren Baghdasaryan wrote:
-> > > Introduce GFP bits enumeration to let compiler track the number of us=
-ed
-> > > bits (which depends on the config options) instead of hardcoding them=
-.
-> > > That simplifies __GFP_BITS_SHIFT calculation.
-> > >
-> > > Suggested-by: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz>
-> > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > > Reviewed-by: Kees Cook <keescook@chromium.org>
-> >
-> > I thought I have responded to this patch but obviously not the case.
-> > I like this change. Makes sense even without the rest of the series.
-> > Acked-by: Michal Hocko <mhocko@suse.com>
->
-> Thank you, Michal. I also hope it can be merged without waiting for the
-> rest of the series.
+On Fri, Feb 23, 2024 at 01:46:53PM -0500, Steven Rostedt wrote:
+> On Fri, 23 Feb 2024 10:30:45 -0800
+> Jeff Johnson <quic_jjohnson@quicinc.com> wrote:
+> 
+> > On 2/23/2024 9:56 AM, Steven Rostedt wrote:
+> > > From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
+> > > 
+> > > [
+> > >    This is a treewide change. I will likely re-create this patch again in
+> > >    the second week of the merge window of v6.9 and submit it then. Hoping
+> > >    to keep the conflicts that it will cause to a minimum.
+> > > ]
+> > > 
+> > > With the rework of how the __string() handles dynamic strings where it
+> > > saves off the source string in field in the helper structure[1], the
+> > > assignment of that value to the trace event field is stored in the helper
+> > > value and does not need to be passed in again.  
+> > 
+> > Just curious if this could be done piecemeal by first changing the
+> > macros to be variadic macros which allows you to ignore the extra
+> > argument. The callers could then be modified in their separate trees.
+> > And then once all the callers have be merged, the macros could be
+> > changed to no longer be variadic.
+> 
+> I weighed doing that, but I think ripping off the band-aid is a better
+> approach. One thing I found is that leaving unused parameters in the macros
+> can cause bugs itself. I found one case doing my clean up, where an unused
+> parameter in one of the macros was bogus, and when I made it a used
+> parameter, it broke the build.
+> 
+> I think for tree-wide changes, the preferred approach is to do one big
+> patch at once. And since this only affects TRACE_EVENT() macros, it
+> hopefully would not be too much of a burden (although out of tree users may
+> suffer from this, but do we care?)
 
-Thanks Michal! I can post it separately. With the Ack I don't think it
-will delay the rest of the series.
-Thanks,
-Suren.
+Agreed on doing it all at once, it'll be way less spam for people to
+deal with.
 
->
-> Petr T
->
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to kernel-team+unsubscribe@android.com.
->
+Tangentially related though, what would make me really happy is if we
+could create the string with in the TP__fast_assign() section. I have to
+have a bunch of annoying wrappers right now because the string length
+has to be known when we invoke the tracepoint.
