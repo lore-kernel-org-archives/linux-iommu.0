@@ -1,96 +1,85 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AAE41170E;
-	Fri, 23 Feb 2024 05:06:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C860111B9
+	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 05:19:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708664822; cv=none; b=T2B+wHfm6djaESHa0TzUqOM6ws1GGL2re7eTQ5wA/sFFk760Hs6ksAKJXZJOl0UUR+m0D99+Uiy/FROMDGmUx4uWzrVYFVl4SlVLUpEij0v4fkvE0wCtspC1e5fQ2zywerY1NCzN4dU/Z0Qp7wyi/jzkuVa8I9e0+WLs45Wy8QY=
+	t=1708665543; cv=none; b=N4rXu38PNIzjaxC4Fa4eoW0H5BYZQeKGn9nWgCLFo312QX2BVKljM4JJ633dv+IjcuQN5K4I1SDZWqP8cQi1Bwv0W493gLYFw9AO9wOQ4QCz7BnsrSVJTKs7ghjStTsCh2uKtPQUfEYCA4MOhuCkbNAxlczXrHCjBKhkMyHuxIE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708664822; c=relaxed/simple;
-	bh=Vq0DUW3Exv2HDTgkq84X+iSqyIRr3W7hZEMz3qwsbH4=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=mm4QBH4LK1M/DyllY9GxxDmTH2rt2Y2BpS3BpS2QqgakH1dFtNRjJSUfRDiCc1mm8vsvQaYYPCtFSdx1Qb1wQnUbCgO4zrLikUAVIuG3W2vbX3ZGp+dUzaL4LkrGCotZz8DJ1je5CwEFdEE4kEu5Sl6pijJ2AnIgvvJzwzBiV+c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mquI5VGy; arc=none smtp.client-ip=198.175.65.14
+	s=arc-20240116; t=1708665543; c=relaxed/simple;
+	bh=H2XeO8lmUCg3AbvczavG13/6CA2n5O1kZYTojrAKZco=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Q7jb8eYllITkpyB3+BqgxIa1IEsxV1ALfuE7iyrYCCTufNTrlxpDs40TVITH2TXsaV4gU/o49L6gerFuOAAB0HE8ipiZbAzFSuMnZXlsQECrwcHsmG5CIDw+HXFRJcu1jvrYnCjn2Kr7D52UGjF9OHgAFjYyju4Rj7Dg1WOeN9o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BU23r05Q; arc=none smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mquI5VGy"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BU23r05Q"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708664819; x=1740200819;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=Vq0DUW3Exv2HDTgkq84X+iSqyIRr3W7hZEMz3qwsbH4=;
-  b=mquI5VGyXVxyNLFuy5duYK2VAbTRVjl6/rOC4q5kmKgqyNh001xqfV6l
-   LoDujI5qWJ/3HQTGrdmgtSY6iPFLE5Vl6/Ks4iRN5zxLHxQbXUXU0+17t
-   BtKoGFN0zHPZHF9CUPcb5VCZHd/D3zmn820LY/yfEXya5pxRM2vNP6YbX
-   6kF+BGr2A7Lnb6YV+lh20keDznx7EYYXL84hWg4IxcQ5f0PaurKADzRcU
-   wDn4+lz2sw/9bfkSglvEpTFjJzodsyOUyv8m5M3GYNEIld62AF23EyrF4
-   K7JvHASOG7KmaVppe+3GVDZ6D4OpJigOnbhZClAB/gQS0oG8AkCWzGTF3
+  t=1708665542; x=1740201542;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=H2XeO8lmUCg3AbvczavG13/6CA2n5O1kZYTojrAKZco=;
+  b=BU23r05QaL7dyECVIrKCXF2p3b3k3eY0vwr5C2jKshAWOgGvQVMsm3HS
+   B6lnTAR8oXCKrrka1SidiqJpsr2ATld+KTYZHDmPPGPnVcNEOV9/DAWID
+   W65x71gaHkYj09TRXQUv1BOmuiH5CHh8nqtJLO0CSCxXux+BhUTn1E3o2
+   UsmgH0hyE1C2k2U0F5cfxgblshifk/mIigALEd5IZrAKTW84q3zWiCndL
+   tEblw0Gzad0U4wV1SzK+Y3kjQq4B2gOYVCa7GITVl6f+721jMkT7lDoh8
+   eyuuKoSuMSoBWxFauQAIATpcj5R0Tn/ZZtDnuCjQ4sxoJkEcb8VAsreGu
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10992"; a="6778227"
+X-IronPort-AV: E=McAfee;i="6600,9927,10992"; a="28395429"
 X-IronPort-AV: E=Sophos;i="6.06,179,1705392000"; 
-   d="scan'208";a="6778227"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 21:06:58 -0800
+   d="scan'208";a="28395429"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 21:19:01 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,179,1705392000"; 
-   d="scan'208";a="5766182"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.171.186]) ([10.249.171.186])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2024 21:06:55 -0800
-Message-ID: <b6dd12c0-4d2c-432e-96c6-10a24e4b16b1@linux.intel.com>
-Date: Fri, 23 Feb 2024 13:06:51 +0800
+   d="scan'208";a="5999886"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmviesa006.fm.intel.com with ESMTP; 22 Feb 2024 21:18:59 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Eric Badger <ebadger@purestorage.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 0/2] iommu: Fix domain check on device release
+Date: Fri, 23 Feb 2024 13:13:00 +0800
+Message-Id: <20240223051302.177596-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <jroedel@suse.de>,
- Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
- Tina Zhang <tina.zhang@intel.com>, Vasant Hegde <vasant.hegde@amd.com>,
- Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: Re: [PATCH rc] iommu/sva: Restore SVA handle sharing
-To: Jason Gunthorpe <jgg@nvidia.com>, iommu@lists.linux.dev,
- Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>
-References: <0-v1-9455fc497a6f+3b4-iommu_sva_sharing_jgg@nvidia.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <0-v1-9455fc497a6f+3b4-iommu_sva_sharing_jgg@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2024/2/22 22:07, Jason Gunthorpe wrote:
-> Prior to commit 092edaddb660 ("iommu: Support mm PASID 1:n with sva
-> domains") the code allowed a SVA handle to be bound multiple times to the
-> same (mm, device) pair. This was alluded to in the kdoc comment, but we
-> had understood this to be more a remark about allowing multiple devices,
-> not a literal same-driver re-opening the same SVA.
-> 
-> It turns out uacce and idxd were both relying on the core code to handle
-> reference counting for same-device same-mm scenarios. As this looks hard
-> to resolve in the drivers bring it back to the core code.
-> 
-> The new design has changed the meaning of the domain->users refcount to
-> refer to the number of devices that are sharing that domain for the same
-> mm. This is part of the design to lift the SVA domain de-duplication out
-> of the drivers.
-> 
-> Return the old behavior by explicitly de-duplicating the struct iommu_sva
-> handle. The same (mm, device) will return the same handle pointer and the
-> core code will handle tracking this. The last unbind of the handle will
-> destroy it.
-> 
-> Fixes: 092edaddb660 ("iommu: Support mm PASID 1:n with sva domains")
-> Reported-by: Zhangfei Gao<zhangfei.gao@linaro.org>
-> Closes:https://lore.kernel.org/all/20240221110658.529-1-zhangfei.gao@linaro.org/
-> Tested-by: Zhangfei Gao<zhangfei.gao@linaro.org>
-> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
+This is a follow-up to the discussion thread here:
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+https://lore.kernel.org/linux-iommu/20240221154012.GC13491@ziepe.ca/
+
+It fixes a NULL pointer reference in the Intel iommu driver and
+strengthens the iommu core to possibly prevent similar failures in other
+iommu drivers.
 
 Best regards,
 baolu
+
+Lu Baolu (2):
+  iommu: Add static iommu_ops->release_domain
+  iommu/vt-d: Fix NULL domain on device release
+
+ include/linux/iommu.h       |  1 +
+ drivers/iommu/intel/iommu.c | 26 +-------------------------
+ drivers/iommu/iommu.c       | 12 ++++++++++++
+ 3 files changed, 14 insertions(+), 25 deletions(-)
+
+-- 
+2.34.1
+
