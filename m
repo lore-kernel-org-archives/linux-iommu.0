@@ -1,115 +1,138 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C18DF14CACC
-	for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 22:49:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D6D7D530
+	for <iommu@lists.linux.dev>; Sat, 24 Feb 2024 01:59:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708728550; cv=none; b=tIPR7xoJg+28NrLA8yHi4q04MQJ7vtJUBaZQKfm44PGt1gPZ6FsED86sxb79EG/hHYeG5rV2t1+99yvZiwEUlqzWsyt7odIbzanS+9XZnDcTDDGeSe71h+5cikAk+lP2dB417Bg8KDLWvHBKYvHzgRI16uvEI1WqJ4JzyCVwQ64=
+	t=1708739983; cv=none; b=fHmWDJzi8FR3R3q2HNmKPNlzbAcm5KpYpKq2hI7DYdXiSQmMJE9YcdX8oxfBO85eRRMhT1bBsEd8w6PHOEFtUMxzkvORem+DtAuSJ7e7tjSzaSw6O3U0t1MVaupa1MG9WKh7ZhGGb/k+8molDkjMLHyhPLcUBgAeD2lEPXJB4qQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708728550; c=relaxed/simple;
-	bh=BneJaexN6bxax2QSYZ41yzv4sfBJcOWFqW2K4d+gM6c=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=S5J4zGiy2Z6+k+iEiJmv4WbBE0k5LhNk1pmaPKQRmOPpd7TD+Ze1QiyOkVwF5m0Jx/29dw+1/tIDwJ7RE9ztnDqT8NUSy9Cml0tc4SUe/AtFqM99AQe9kSUYImFbH7cbfDpxvy1mq6NtQt7pMC/xa+8bcMgJucT/s9GZnLgrZ+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Qew1ha+z; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1708739983; c=relaxed/simple;
+	bh=T+a2SRS9CYU21NdR/LXMyfpfOaFxGBggdHbbvAXJGNw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=gEzw3knq6ta7iyp43t/IuVh6sKG//qMcdcMOIr6FNebP3FJiNWt0MNQtRw2W0HgZU5L94QrJlaPBa05GEOkXrHQqjAxnLWbjMn13UL/Hk2qfb9S7LPaHSLXAzoKA5qkruBGrrtZQVB83uhbydhUYoar0mAZrfmlPcderrp354vE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=4VoM9jqD; arc=none smtp.client-ip=209.85.219.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Qew1ha+z"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41NLwboI019276;
-	Fri, 23 Feb 2024 22:48:52 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	message-id:date:mime-version:subject:to:cc:references:from
-	:in-reply-to:content-type:content-transfer-encoding; s=
-	qcppdkim1; bh=K+EhGOBFAOwInduVtZkvCxg9hFwWnwlqCf5W7sd/NdU=; b=Qe
-	w1ha+zQFfefKt1PgJZA671PJegduTk1YJOJMHvwGEpaeAnsLbsCC44i71BnxopFk
-	Ci+QPetBkpF+0bNS8D2nkofhj/U6aSTwfkfMECelhti6c+RivM+PdKm7u3cL5+e5
-	YeZLDJT3suQjM+Oicou9UvrP6b6G3CY7pEtpENkCZ+mho93AjHBAQgoRr89YUaRJ
-	TJeHcj+q3s++qMMiysD0vKeoLWF1+59DeKaPYXLGsx/FCFkqiztpfCH4gTaL8HMh
-	e+Uy61GudVuqT+4E+Aib7ShlswtIdF2E6JsbXTfVV90t0r7DoHpAHVcaIjp6WDq3
-	fTtKtzvbVacya3Sq16QQ==
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3wer8mssky-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 23 Feb 2024 22:48:52 +0000 (GMT)
-Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 41NMmpQ9006083
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 23 Feb 2024 22:48:51 GMT
-Received: from [10.110.70.241] (10.80.80.8) by nasanex01a.na.qualcomm.com
- (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Fri, 23 Feb
- 2024 14:48:50 -0800
-Message-ID: <605d9e50-d61b-b0ce-1664-00554ba70b41@quicinc.com>
-Date: Fri, 23 Feb 2024 14:48:49 -0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="4VoM9jqD"
+Received: by mail-yb1-f172.google.com with SMTP id 3f1490d57ef6-dc6d9a8815fso1072498276.3
+        for <iommu@lists.linux.dev>; Fri, 23 Feb 2024 17:59:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1708739979; x=1709344779; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T+a2SRS9CYU21NdR/LXMyfpfOaFxGBggdHbbvAXJGNw=;
+        b=4VoM9jqDe5C7XfpxuZ3vKbdW8Ne1ZK8fMhhpMSMnVEzZAGK/nIaBc82KMl/TgXYO9P
+         erzqX2XM8SgO0iOIXxfGFlbngtBjVOERT7EObiTrHU1P+BAxKe09O45T2TjAw4YF8Z/L
+         f+cRx+V4zIPO2N35eQQ438208bJwVMAZzRh3Ei4qm1P85EOU0ZiQac3EJfL+ivwEV3k+
+         bd7OVRSdVHv2l10zsTBClkG9xaA07rZlG7KskCqaNpc3cuTywnqQoHqSUfxzt0U9Zt23
+         OsePU5e9tWuF62lqc1qett21PgB+935xi/vAR2C9A/orzD9huzzPwlEoVOMnO10lHKyI
+         v+GA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708739979; x=1709344779;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=T+a2SRS9CYU21NdR/LXMyfpfOaFxGBggdHbbvAXJGNw=;
+        b=jkx+w40nQIrO7oaG8lcDHgACj1zYLrnt6E3OFOZ76xV1d9ArjuGC0CbhyrX775D4FN
+         Y8l9ru+aJ25N+v/w5ZBjsfHOha0A7seKy9zvHhWurpWReyAq7w8FNYBVev/wi7ngzdti
+         IqvBRzX9BgbuXu7XKbOl0+XlJfD0b3lTTJmrsndkVPlq3eJFEFmG+br6WwobA5kKFbKI
+         6yCMQOSGbXRN8nOkH5/9cwTOwBAt+IZNBAy0DRMI9R/RN+Wx61AL/yBFZwFPWiO6I/BU
+         /BqyltV7xH3yX8iZNRW0SaZ1ZKRfnOsWuuzZdZgOC1GkNuanmEBnwOGQ98bObWd9LWuL
+         B4uA==
+X-Forwarded-Encrypted: i=1; AJvYcCX4EjkFZQVrzx9sWTzNTQSnjWpAbBtCg2Ke3Q21Z+EQZQH2ta0J++w2DFF2K6GVvDU33k6JTwZ/z2XU5A2IYInaxezpXqs=
+X-Gm-Message-State: AOJu0YzFnZipM+qk1vMhjKrQUIVZN+NIU2H3yPmimdM3L2Ufa0ZaMiHm
+	rJXyu6gnvev+fa0gGLUDzke7/PjI+9uDjN+YhBAXCc3VcfXZv21jQAME+lUnb+G4VhZu7LOpM6q
+	eGSmqwAX6gPGavm2RPnZ214J79+hTkzfQrZO6
+X-Google-Smtp-Source: AGHT+IE96gofthBIDY1zcxV1fCC6ZYb0ubhfQdxrWxQDA5xXy9sf7lsJXU+uVwoyJAnzh9d/485wU5tc9VrVgvYEwvY=
+X-Received: by 2002:a25:aa67:0:b0:dcc:b69c:12e1 with SMTP id
+ s94-20020a25aa67000000b00dccb69c12e1mr1515692ybi.59.1708739979162; Fri, 23
+ Feb 2024 17:59:39 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.15.1
-Subject: Re: [PATCH v2 2/7] clk: qcom: clk-alpha-pll: Add HUAYRA_2290 support
-Content-Language: en-US
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-        "Rob
- Herring" <robh@kernel.org>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski+dt@linaro.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Michael Turquette
-	<mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, Rob Clark
-	<robdclark@gmail.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        "Dmitry
- Baryshkov" <dmitry.baryshkov@linaro.org>,
-        Sean Paul <sean@poorly.run>, "David
- Airlie" <airlied@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>
-CC: Marijn Suijten <marijn.suijten@somainline.org>,
-        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Konrad Dybcio
-	<konradybcio@kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-clk@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <freedreno@lists.freedesktop.org>
-References: <20240219-topic-rb1_gpu-v2-0-2d3d6a0db040@linaro.org>
- <20240219-topic-rb1_gpu-v2-2-2d3d6a0db040@linaro.org>
-From: Trilok Soni <quic_tsoni@quicinc.com>
-In-Reply-To: <20240219-topic-rb1_gpu-v2-2-2d3d6a0db040@linaro.org>
+References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-7-surenb@google.com>
+ <Zdc6LUWnPOBRmtZH@tiehlicka> <20240222132410.6e1a2599@meshulam.tesarici.cz> <CAJuCfpGNoMa4G3o_us+Pn2wvAKxA2L=7WEif2xHT7tR76Mbw5g@mail.gmail.com>
+In-Reply-To: <CAJuCfpGNoMa4G3o_us+Pn2wvAKxA2L=7WEif2xHT7tR76Mbw5g@mail.gmail.com>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Fri, 23 Feb 2024 17:59:26 -0800
+Message-ID: <CAJuCfpHY1T2jCCitt7cufKSeXP7zhh_f9gVN0UNZoOQz1cNBjw@mail.gmail.com>
+Subject: Re: [PATCH v4 06/36] mm: enumerate all gfp flags
+To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
+Cc: Michal Hocko <mhocko@suse.com>, akpm@linux-foundation.org, kent.overstreet@linux.dev, 
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
+	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
+	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: nmwHTNyTCNAaftUm0O5wFymUBF5x3hm_
-X-Proofpoint-ORIG-GUID: nmwHTNyTCNAaftUm0O5wFymUBF5x3hm_
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-23_06,2024-02-23_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
- adultscore=0 malwarescore=0 bulkscore=0 clxscore=1011 mlxscore=0
- impostorscore=0 mlxlogscore=901 suspectscore=0 priorityscore=1501
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2402120000 definitions=main-2402230163
+Content-Transfer-Encoding: quoted-printable
 
-On 2/23/2024 1:21 PM, Konrad Dybcio wrote:
-> +	/* Wait 50us for PLL_LOCK_DET bit to go high */
-> +	usleep_range(50, 55);
-> +
-> +	/* Enable PLL output */
-> +	regmap_update_bits(regmap, PLL_MODE(pll), PLL_OUTCTRL, PLL_OUTCTRL);
-> +}
-> +EXPORT_SYMBOL(clk_huayra_2290_pll_configure);
+On Fri, Feb 23, 2024 at 11:26=E2=80=AFAM Suren Baghdasaryan <surenb@google.=
+com> wrote:
+>
+> On Thu, Feb 22, 2024 at 4:24=E2=80=AFAM 'Petr Tesa=C5=99=C3=ADk' via kern=
+el-team
+> <kernel-team@android.com> wrote:
+> >
+> > On Thu, 22 Feb 2024 13:12:29 +0100
+> > Michal Hocko <mhocko@suse.com> wrote:
+> >
+> > > On Wed 21-02-24 11:40:19, Suren Baghdasaryan wrote:
+> > > > Introduce GFP bits enumeration to let compiler track the number of =
+used
+> > > > bits (which depends on the config options) instead of hardcoding th=
+em.
+> > > > That simplifies __GFP_BITS_SHIFT calculation.
+> > > >
+> > > > Suggested-by: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz>
+> > > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > > > Reviewed-by: Kees Cook <keescook@chromium.org>
+> > >
+> > > I thought I have responded to this patch but obviously not the case.
+> > > I like this change. Makes sense even without the rest of the series.
+> > > Acked-by: Michal Hocko <mhocko@suse.com>
+> >
+> > Thank you, Michal. I also hope it can be merged without waiting for the
+> > rest of the series.
+>
+> Thanks Michal! I can post it separately. With the Ack I don't think it
+> will delay the rest of the series.
 
-Please use EXPORT_SYMBOL_GPL. 
+Stand-alone version is posted as v5 here:
+https://lore.kernel.org/all/20240224015800.2569851-1-surenb@google.com/
 
--- 
----Trilok Soni
-
+> Thanks,
+> Suren.
+>
+> >
+> > Petr T
+> >
+> > --
+> > To unsubscribe from this group and stop receiving emails from it, send =
+an email to kernel-team+unsubscribe@android.com.
+> >
