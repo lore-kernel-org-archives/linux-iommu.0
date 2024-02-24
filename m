@@ -1,31 +1,30 @@
-Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFE59364D5
-	for <iommu@lists.linux.dev>; Sat, 24 Feb 2024 11:43:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.191
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A27E52941B
+	for <iommu@lists.linux.dev>; Sat, 24 Feb 2024 11:47:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.189
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708775014; cv=none; b=ipN5BBIaroNlqMnHpGglq3jlVLYUz81wS99lb6JopNDUMvuu3ZTOz0ftiJsVeebjyYLrOUcTqm1ys99wEO0pTPZLT+qvDWVSDmuzRkw0/Oa42WCqX+BAaihIvbTHWiS0OGzQbnDZB/81oPzAsirN82QAF3r5FW4NTpjtpraa4DE=
+	t=1708775258; cv=none; b=KQ2lEET2n73X8nj1jfmsYd6G8ZiXHr4WE5Z3fQWRUAqsn/bGdOjthw/2JSO5HkzP/+Gk38/oHDycDGlmvKuYY5/nMsZ+CPLOOh05ljH3jn+6ZUluoXEsYoFKvpcuHXeT7ioVu5W+NbSD30fgKu8I4VXHJPnrRIUsgsGe0uKAMRg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708775014; c=relaxed/simple;
-	bh=8VJckfJvcNBhFjZ7UyOVWAMSOuwa6K1jsyFc/kuZ1nI=;
+	s=arc-20240116; t=1708775258; c=relaxed/simple;
+	bh=9cqKCErocqPNNEG9BvS/09Xa2+C39jZH7JHgM7Zy5GA=;
 	h=Subject:To:CC:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=GjyZPUNRpU2DB9FrW9dT06fYm7DfRlub7QSdKwYLfHP1kZ+TdJFiJEDfR9p8r0giyEUqI2Hn6t4Qc9NT0w8qRNbUTo8bb9wvdbBM1zj3uHRUSTWb3QyT6xel2J3tibX6VsR1kMEYre7sxJqOpzv3m9QpMnIxZhevYJ6aQnp6yZk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.191
+	 In-Reply-To:Content-Type; b=eeY/mYbyoJXpq1P0MQhYXw8cSgr8vC5fMUHv7Vv/oGD89f2XnqVAhWfml3XIqNk36ZlkESzYiuidG8y41lsuMACIo9OwNTm7qToiadp3Y3ia3Zu9rlj0GdnayIgBpetzQR3EIH+nBj0JjgkPYvFyaDt1/i6cWEpPiC83eelT8X0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.189
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.19.88.214])
-	by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4ThlJB2rwSz1FLF6;
-	Sat, 24 Feb 2024 19:38:34 +0800 (CST)
+Received: from mail.maildlp.com (unknown [172.19.163.174])
+	by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4ThlSp3ShJzNllG;
+	Sat, 24 Feb 2024 19:46:02 +0800 (CST)
 Received: from dggpemm500002.china.huawei.com (unknown [7.185.36.229])
-	by mail.maildlp.com (Postfix) with ESMTPS id 65BE41A016B;
-	Sat, 24 Feb 2024 19:43:29 +0800 (CST)
+	by mail.maildlp.com (Postfix) with ESMTPS id C97211400DD;
+	Sat, 24 Feb 2024 19:47:28 +0800 (CST)
 Received: from [10.174.178.247] (10.174.178.247) by
  dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Sat, 24 Feb 2024 19:43:28 +0800
-Subject: Re: [PATCH v3 3/7] ACPI/IORT: Handle memory address size limits as
- limits
+ 15.1.2507.35; Sat, 24 Feb 2024 19:47:27 +0800
+Subject: Re: [PATCH v3 4/7] dma-mapping: Add helpers for dma_range_map bounds
 To: Robin Murphy <robin.murphy@arm.com>
 CC: Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
 	Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
@@ -44,12 +43,13 @@ CC: Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
 	<m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>,
 	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
 	<linux-acpi@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<devicetree@vger.kernel.org>, Jason Gunthorpe <jgg@nvidia.com>
+	<devicetree@vger.kernel.org>, Rob Herring <robh@kernel.org>, Christoph
+ Hellwig <hch@lst.de>, Jason Gunthorpe <jgg@nvidia.com>
 References: <cover.1707493264.git.robin.murphy@arm.com>
- <5d52d580bf33d475053f9b05188fe3541cbe8798.1707493264.git.robin.murphy@arm.com>
+ <cc90d296daa52e9cfe9fdd6681c68df4773a5e6a.1707493264.git.robin.murphy@arm.com>
 From: Hanjun Guo <guohanjun@huawei.com>
-Message-ID: <ab2099fd-b0b7-63d3-bdba-a4462ec230a8@huawei.com>
-Date: Sat, 24 Feb 2024 19:43:27 +0800
+Message-ID: <6e837f8b-b855-99b6-6f73-721de97b3fa4@huawei.com>
+Date: Sat, 24 Feb 2024 19:47:27 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
  Thunderbird/68.6.0
 Precedence: bulk
@@ -58,31 +58,33 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <5d52d580bf33d475053f9b05188fe3541cbe8798.1707493264.git.robin.murphy@arm.com>
+In-Reply-To: <cc90d296daa52e9cfe9fdd6681c68df4773a5e6a.1707493264.git.robin.murphy@arm.com>
 Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
  dggpemm500002.china.huawei.com (7.185.36.229)
 
 On 2024/2/10 0:50, Robin Murphy wrote:
-> Return the Root Complex/Named Component memory address size limit as an
-> inclusive limit value, rather than an exclusive size. This saves having
-> to fudge an off-by-one for the 64-bit case, and simplifies our caller.
+> Several places want to compute the lower and/or upper bounds of a
+> dma_range_map, so let's factor that out into reusable helpers.
 > 
+> Acked-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
 > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
-> v2: Avoid undefined shifts (grr...)
+> v2: fix warning for 32-bit builds
 > ---
->   drivers/acpi/arm64/dma.c  |  9 +++------
->   drivers/acpi/arm64/iort.c | 20 ++++++++++----------
->   include/linux/acpi_iort.h |  4 ++--
->   3 files changed, 15 insertions(+), 18 deletions(-)
+>   arch/loongarch/kernel/dma.c |  9 ++-------
+>   drivers/acpi/arm64/dma.c    |  8 +-------
+>   drivers/of/device.c         | 11 ++---------
+>   include/linux/dma-direct.h  | 18 ++++++++++++++++++
+>   4 files changed, 23 insertions(+), 23 deletions(-)
 
-This also makes the code easier to read,
+For the ARM64 code,
 
-Acked-by: Hanjun Guo <guohanjun@huawei.com>
+Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
 
 Thanks
 Hanjun
