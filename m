@@ -1,150 +1,63 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5F6702CCA0
-	for <iommu@lists.linux.dev>; Sat, 24 Feb 2024 22:06:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708812396; cv=none; b=nNP5wfSZB+GGhUDzGii8mRKaj2GIQfWZBdIHjf1qHJHdR+AkkjyzIB4iMyuiI/XiWcV1FHcirr/EJmn+qmwjcdfSYOuq+NqyjqkhGyNqdUgEw7dJCBn56YgCY1hnSvszJPh7fACwrgvnPNKmg2QGCmaHvPRdVbICrLDJVnrIz98=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708812396; c=relaxed/simple;
-	bh=ieBA33WGs4Kt+fmMNbz2jVA32D/Ax2LrmYRtNByr9rc=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=YfOkUnyVDpFeRokceJA+wacokV4H7HKJSeNY6D2uOeE4MQILUuqiYsWwQl03IBzU0vxi1RHgPcBDmHD9743VlUbguhbty1BrOBEswqmwUw+g/C+Y1pUPsCxA5fhMOqYLLi7J05TX5nz77H4O1qiNzwxXd9UJIWfDDl1JxJDopCo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=ROllbFbJ; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="ROllbFbJ"
-Received: from 8bytes.org (p4ffe0c3c.dip0.t-ipconnect.de [79.254.12.60])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 829C61C62A2;
-	Sat, 24 Feb 2024 23:06:27 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1708812387;
-	bh=ieBA33WGs4Kt+fmMNbz2jVA32D/Ax2LrmYRtNByr9rc=;
-	h=Date:From:To:Cc:Subject:From;
-	b=ROllbFbJ35aqzbPD3ZW7uSn6QnQ1C1I5d8buXPTOJjwFspYZXSWcIVeMKI61xbj+8
-	 aik7e6UclKzAJ64zFvsnN2Ul7BGwO5v4LEkaikSky3rQolXn6s8JOAH4mo41Q2JN8q
-	 lx7/4yky/uDPoA6Uc9oRTTr24qkyJOOMs/nE7/IYTBnKnaaS8HxKHG1aEmyaOCiPty
-	 xfpJXbVIkLKnAunZUzoKt7Wyk2YcqSxwO0+9O0W/FhPSdLde6g/jRCRa77d2/kLaTp
-	 GDY2N3Y3O6uOk0YsYb1oH+089a/859Mhs82UC3BZXU+JT1xeiJPw//DiU9gABN90pm
-	 AqmtI4UaBEFEQ==
-Date: Sat, 24 Feb 2024 23:06:26 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fixes for Linux v6.8-rc5
-Message-ID: <ZdpoYsivgpf_zdax@8bytes.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEBBD624;
+	Sun, 25 Feb 2024 00:08:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708819685; cv=none; b=D0H9z7nUbh6Zj3VNsv8oapvPgYycSNtXReDF+MyG9UBUD+rwy61t0nDZiC0nNj4jLHrmTmXXRxMc8e4+poiCRFvalgxR/cwD0njzaHdJzP+YpRIJSywsrrXniD0eZZU5lpEwj7Mx/Hp/7k/33F0DklEmdwgRW19v7lSyEj7MJOA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708819685; c=relaxed/simple;
+	bh=yrY8Nr4zMfHxT+8/AsEaLdiLFsn/sLn2lQfmB0dp//w=;
+	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=k5rMg6YZBExuaT2b+gmIA71is6xJN8zpTyx4F6WBOf309clCuJ6lCWdWPxrbczRRgQ/jZL3yapTPbBIyu8WlTuhdZktGJL6aoYCGcx7FEBBKUnYyt8zLVxmp0XcecOEAUSiUEK49NFQf/WVTEipETuJdTkoEG7eysJlIX6FBWhY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kwdyMir3; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kwdyMir3"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 80634C433C7;
+	Sun, 25 Feb 2024 00:08:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1708819684;
+	bh=yrY8Nr4zMfHxT+8/AsEaLdiLFsn/sLn2lQfmB0dp//w=;
+	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+	b=kwdyMir3t+WTSW7ngPQY5wszmdFcrK4Af3b27EsAxZdNhxzLx2kb7eJIxijYopTV4
+	 IVHGNzJ1OktmHtf1LZ7HcVUCIf9JPo12dIkiYBh7HkG9X0gSY7fzH08l6GAZDZEC6O
+	 0Js6ePID+ha3KG0nTlJc1bWf5iZRdOw8wDjkGTD1KvjWdfBJA+YoLij9RzR8dVYbDY
+	 cMoG+fxSVeC3Mmx7m48EhZzJ48HKEn8FTku4O1iMPlJgquj98h0TFzfxIEZajFvrn2
+	 XoOxeoqIoWoT1rBOkEzbD2lkMiAmHLqPbQOfX6g0VHrwGAAaBM9FS9BNtTM3Ml8hOf
+	 CpjKnhbXHDlaw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5D05DC39563;
+	Sun, 25 Feb 2024 00:08:04 +0000 (UTC)
+Subject: Re: [git pull] IOMMU Fixes for Linux v6.8-rc5
+From: pr-tracker-bot@kernel.org
+In-Reply-To: <ZdpoYsivgpf_zdax@8bytes.org>
+References: <ZdpoYsivgpf_zdax@8bytes.org>
+X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
+X-PR-Tracked-Message-Id: <ZdpoYsivgpf_zdax@8bytes.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.8-rc5
+X-PR-Tracked-Commit-Id: 65d4418c5002ec5b0e529455bf4152fd43459079
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 91403d50e9b133eea5fb48e473c6f7c9968341a4
+Message-Id: <170881968426.17738.2644658337200785466.pr-tracker-bot@kernel.org>
+Date: Sun, 25 Feb 2024 00:08:04 +0000
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="8udg5sVDv6UBipkG"
-Content-Disposition: inline
 
+The pull request you sent on Sat, 24 Feb 2024 23:06:26 +0100:
 
---8udg5sVDv6UBipkG
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.8-rc5
 
-Hi Linus,
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/91403d50e9b133eea5fb48e473c6f7c9968341a4
 
-The following changes since commit b401b621758e46812da61fa58a67c3fd8d91de0d:
+Thank you!
 
-  Linux 6.8-rc5 (2024-02-18 12:56:25 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.8-rc5
-
-for you to fetch changes up to 65d4418c5002ec5b0e529455bf4152fd43459079:
-
-  iommu/sva: Restore SVA handle sharing (2024-02-23 16:45:05 +0100)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v6.8-rc5
-
-Including:
-
-	- Intel VT-d fixes for nested domain handling:
-	  - Cache invalidation for changes in a parent domain
-	  - Dirty tracking setting for parent and nested domains
-	  - Fix a constant-out-of-range warning
-
-	- ARM SMMU fixes:
-	  - Fix CD allocation from atomic context when using SVA with SMMUv3
-	  - Revert the conversion of SMMUv2 to domain_alloc_paging(), as it
-	    breaks the boot for Qualcomm MSM8996 devices
-
-	- Restore SVA handle sharing in core code as it turned out there are
-	  still drivers relying on it
-
-----------------------------------------------------------------
-Arnd Bergmann (1):
-      iommu/vt-d: Fix constant-out-of-range warning
-
-Dmitry Baryshkov (1):
-      Revert "iommu/arm-smmu: Convert to domain_alloc_paging()"
-
-Jason Gunthorpe (2):
-      iommu/arm-smmu-v3: Do not use GFP_KERNEL under as spinlock
-      iommu/sva: Restore SVA handle sharing
-
-Joerg Roedel (1):
-      Merge tag 'arm-smmu-fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/will/linux into iommu/fixes
-
-Yi Liu (9):
-      iommu/vt-d: Track nested domains in parent
-      iommu/vt-d: Add __iommu_flush_iotlb_psi()
-      iommu/vt-d: Add missing iotlb flush for parent domain
-      iommu/vt-d: Update iotlb in nested domain attach
-      iommu/vt-d: Add missing device iotlb flush for parent domain
-      iommu/vt-d: Remove domain parameter for intel_pasid_setup_dirty_tracking()
-      iommu/vt-d: Wrap the dirty tracking loop to be a helper
-      iommu/vt-d: Add missing dirty tracking set for parent domain
-      iommu/vt-d: Set SSADE when attaching to a parent with dirty tracking
-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c |  38 ++---
- drivers/iommu/arm/arm-smmu/arm-smmu.c           |  17 +-
- drivers/iommu/intel/iommu.c                     | 214 ++++++++++++++++++------
- drivers/iommu/intel/iommu.h                     |   7 +
- drivers/iommu/intel/nested.c                    |  16 +-
- drivers/iommu/intel/pasid.c                     |   5 +-
- drivers/iommu/intel/pasid.h                     |   1 -
- drivers/iommu/iommu-sva.c                       |  17 ++
- include/linux/iommu.h                           |   3 +
- 9 files changed, 225 insertions(+), 93 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---8udg5sVDv6UBipkG
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmXaaGIACgkQK/BELZcB
-GuN9fBAAjszaR5P6P941H8PXC1JOUMDQVdFK3kuxrS9+t0KL1C6NbyalkkYkVV8x
-TbQ8dh0R8ZxVoM5E+vFYM6QlE1DPsUw9a3K6h4JGZJwfOqHCGncK8rAWa+30/MtM
-Tam+gaHy4TvSwRwHXe0oY2s0L03ETyLTGoa5SumHL69vaWSQM6GGOvC/CzHcoTTX
-LhZwsajEzwDVenqCnEdCdxKqhVVQoLwpvudmXuEIUkk8BEJ4/OgZMm+hQlAE6MTB
-9He43DzzIgb5ikLHNV1E0ReERNyK+jUKgdgVfp4Fi5Gyfap7qMPycPCOD/CdPf2u
-sJYrZyYLjWXJXwbt6+Iz0tZ0duPnEx89NdtR75P4tRssrxSdCmwauKdEd9CvYjCO
-frTNBpftVlhosapkdBCPtN+BMPIFRCpgALCxxfbzeegD7KN4KAIh03CUbM2mWU07
-Ok80Wm94RzphE/ObmvNH53mhz2QBUrsfLiBX02mdjwGz3sJ/ZgLg4E9NQn+KIAMr
-lNsxkGTSlMuNkPqS3XCMDQLUpiZRdmD7rOX72dvz6RGmKnU0X9X2EIDjPZF4P/cO
-aQVquRnmFS+55B0+AokqODlwqmhYTsMd440EeyaIfxAIz7rNUgFENiPvatqkV1+l
-7UWkcw72I5t2hw7wQ1mo9OVXOXRWLaxoxyudEtNQwj1yEJor8P4=
-=3AY4
------END PGP SIGNATURE-----
-
---8udg5sVDv6UBipkG--
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
