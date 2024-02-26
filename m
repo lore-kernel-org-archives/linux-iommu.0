@@ -1,279 +1,149 @@
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02olkn2090.outbound.protection.outlook.com [40.92.44.90])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12olkn2076.outbound.protection.outlook.com [40.92.21.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84B2D1B949
-	for <iommu@lists.linux.dev>; Sun, 25 Feb 2024 21:17:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.44.90
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6F9F613D
+	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 01:56:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.21.76
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708895860; cv=fail; b=LWHQ+Q/rSysn5DeWphLHNcuw7FYRJu8OSEGso2XlT5XeT9suSQwaazzHqBXHcGP2alluA/Zrc7RmLr0VwVKlwhCVApY8vuX2fnlZ8Dtajm60Qfnbrq53zSfNdH/26+ObXUrMGlMybr1laDU/kfu2xhEbq/FdJv2DzbRQCtEnr8w=
+	t=1708912608; cv=fail; b=CLadN4JpREqKEDVT09Ae+KTkYiWX2sMw4G0eDCCCrsbEuAIi0zT+Q7hOlFbktHM97WSxHzfyAQaDUH36QLODIbXt41MTK2IdpKd3tKE9ArxObrTJ0lbD82cdLDxQwqdeeu/f/Sj8n/bei8kPT7ELpPJ49i4qpttyWn0XGxdI4JE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708895860; c=relaxed/simple;
-	bh=6+YoUu417I/sDtZRLSkTy6ZzALA65JloRQHG6FJzdlg=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=MzfFZZfnSQ2RfhBhP3+sxu3VAmCH5q4iqvRlWsl7h5nASY0HDF7feeP8c6bVO0fRVxiZRiMLonYvS1BuT3KuAkNDa0iRKIgJUuyHeoBUBMpFRIpq40nKyjFNELTtHQDhR8rC+8wypNuf2d3KsQuFJgycuRadjny1nzKYtpkvOyY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=p0On1WWj; arc=fail smtp.client-ip=40.92.44.90
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	s=arc-20240116; t=1708912608; c=relaxed/simple;
+	bh=csMSuvz0clH82ysE88Z6ZGrdueZcRlPn6/7ETAB51fw=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=R1GO7H1KZLfYLLeCeOgsnznko01HH5eb13c3IbzP6MVcqWrWlBF8a6yhdhTIdk3O+9T7mcS1OYD2afaffvJiCMN8fbdm9KPf21zfNQbtohrATMTjbxv6ncrw3scp0ElNOPtnP9YM/GDZQS/qfAoD43/22kJd7vMoDV3dwiYTgeY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=vQ/BFjJV; arc=fail smtp.client-ip=40.92.21.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="p0On1WWj"
+	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="vQ/BFjJV"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mEvKFy62WCe70XMfI1qyouvXxcZzImbY1JMwf2MvF3fJVWWuJp9UhC78UVdtJVm35Yl6J0lJBXZe2UeK8HzVDYaE19RB5mEsoDv7HdCEDCur5+XJlxVWVYjlacGtmkk27fuRn/Tez0jFRHEUzEifPxkJIWnd3UW0yFLML+L23oPyXCgsuDSjUKwxfO9ocT610oRQ87beDUbbLRoIDCHyGsl1nF3iYpwgmonusNmfg76rMc56EJgnnEv5TmJZ+wLS/BqRHOyY7AersQ2jucZVOB8X/8PDAnxmsdt9sC1esqBp8v9zMTvpv8SRZpr9pEHmG/qLQ9Thd9XgRjfJTZKZBA==
+ b=YkLs0ivkdIn5jOxhqumOB2wsaAEcvlS7Ws95Aw3xuYv12ZJyc3TdsyI6CGuI0tQ4gz17acuX6gxW4oWr3AwdcCRIv6aHVNFT8UxUCkRK159jT1rAwpodl3kXdkK4Rcot1zRoydOcKwmWSsldI4Z/+sJAWbJt7Sjsu3l6Dg/v+d175QB9w2n5S6ys+VPJ7YuLtJZZw/CBVKcfxAO2W619Gp9cnRKfhzne9nONVxyp/dzrzvQQ/3V2MnzuUuqCztOXuT75KVH3kHeiUSgkBEwIBTUsbmQg5GunRPgmup51A81JQaSVzOA4hyzoGhj5S6fsPOaiJSTivIcNoMIjTMMErw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=t5Mpk3YLeGBUzznIDSQPOyS2HMpb31q/6iU0BDsA/FY=;
- b=gdpJBM7ycRt9Ouj1/OFWG33Q03bV7i8/BytJQp4nxCFr8rRkZ23/gQluKFjosy/WACMWpwF3aJaZSLk4rxQsLQysYzAXk7+LWuWyHLsOZoaniYvwjOzy00Ju3+FIc1rF4KIgAlCKorGHQskqhE1TLs5k81uIH1oI3915C30pVvf9gJfWd7mKkf/LOA2ZDfRhNkBC2zjecVZ7oPC3f1acSrNJhIB3v/eSRu9r5vHO2ETBQ4sGylC0R7Wdri6uzex/Kqag5smMMLWsibf13SWaSIBEE2OesDIgDJ56YswTsLWYvjYCUJvC/kApyCTJic60iVYaaiaYEnEgRgjJiOSFWw==
+ bh=YqHqPCHMIyOGzk8kjqu0uxLHw2BV3CbbtRl5lj53BtU=;
+ b=IhqQ07iWImGFkkpiAaCWrO+p/z2X6A0Xe0PAB8zM+/1OFnW8EZiN8nOuw5lVsCYDZSOWY8VC+Mr0euDiEhPywKfYJSZ40Xrj2xKlFTOZ/EzSGmFBW/ier347atApBQgU3FKVAWUCDqxHOZqoHI2ULcpjEX3DAmnWwvcAN0iQH+gOfoWqTfoGIjmfu5b3qCt/IJkWM1nQHl87LhAxgNl0WYbvy9tRsocJx3QppTsoWRfuyD4bLC60q8rvUOCtcM8ludS2EcEzgPz6IJ83cCvnKZzjfa7nbdzCGwzaolvxJTp3qCCxxYZTNCy+xO/Ce780eC1KRLj4xSO/hHxYfbUIhA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t5Mpk3YLeGBUzznIDSQPOyS2HMpb31q/6iU0BDsA/FY=;
- b=p0On1WWjncX3cGqS/D+Rd1TjUJ4DztqO+QtOTaWyMD34ToaiR5NorJNAcRCAkc7pA0Xmoq1CSrCH2vlb+kPOvYlvPW7KNgt7i4E4Nr6cSaozZlAf8BvIGKFtvRpysRMSu4DSBwQyg2ULIclSEsQdiYqevti+KQjbaOi+W565jnexI3HBL46GzR8dYFffPTWXIgvgYI8/jsp6eoEcbZnT2fFZ7awvkclq5Xu2dXrE43L3qbUIDkBoDRODNmYN2tnJ70WUT+D40LScCmDa+yI82m97u8pmGm8PbpKG6Uxyk4XwnPFs1oTNHvRGCa11/FEWo8uqhuxbHCTqSzq2IwC1Vw==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by PH0PR02MB8359.namprd02.prod.outlook.com (2603:10b6:510:104::10) with
+ bh=YqHqPCHMIyOGzk8kjqu0uxLHw2BV3CbbtRl5lj53BtU=;
+ b=vQ/BFjJV/fux0q7NsqbHC7jRLW07oei8p8dHmxpt3IoVXbYDUMo3qVc2fkwjfjX/2GG3Hr03NZhRBQIs6JRrBG5Kld3t3m0/V6EPtbzWIhJFw9TDjbvDHsuL/SYV7GqNbDjzHzunlRLfhGT15XuVX6irAXeIcd3MJeMl/4qm2rzxfaa1Yh5DzBmzpiZcLCnfNVmzMjQPHPA9IJ6FrmmA/knY7wCZigMkJwupJshY9T53bilcvFmXsy/KC8uxjkYZeSPU6pNFTU0HHvBb9qHwEgMWkXGpbbglv9CQ1NvgJj/uRl3lwnVTxM2O0Sc6SnuYSDVAEq8jPVpRlAlNRp4r8w==
+Received: from CY8PR11MB7779.namprd11.prod.outlook.com (2603:10b6:930:77::22)
+ by CH3PR11MB7772.namprd11.prod.outlook.com (2603:10b6:610:120::5) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.34; Sun, 25 Feb
- 2024 21:17:34 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::67a9:f3c0:f57b:86dd]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::67a9:f3c0:f57b:86dd%5]) with mapi id 15.20.7316.023; Sun, 25 Feb 2024
- 21:17:34 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Nicolin Chen <nicolinc@nvidia.com>, Will Deacon <will@kernel.org>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"kernel-team@android.com" <kernel-team@android.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr Tesarik
-	<petr.tesarik1@huawei-partners.com>, Dexuan Cui <decui@microsoft.com>
-Subject: RE: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
- untrusted device
-Thread-Topic: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
- untrusted device
-Thread-Index: AQHaZLoRyKgMK9jLMUWPn0GpqcfvobEVbBTggALvr4CAAAjwsIAC0mdw
-Date: Sun, 25 Feb 2024 21:17:34 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.10; Mon, 26 Feb
+ 2024 01:56:43 +0000
+Received: from CY8PR11MB7779.namprd11.prod.outlook.com
+ ([fe80::3ca3:fb4f:d0d4:974]) by CY8PR11MB7779.namprd11.prod.outlook.com
+ ([fe80::3ca3:fb4f:d0d4:974%5]) with mapi id 15.20.7339.009; Mon, 26 Feb 2024
+ 01:56:43 +0000
+From: Kunwu Chan <kunwu.chan@hotmail.com>
+To: joro@8bytes.org,
+	suravee.suthikulpanit@amd.com,
+	will@kernel.org,
+	robin.murphy@arm.com
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Kunwu Chan <kunwu.chan@hotmail.com>
+Subject: [PATCH] iommu/amd: drop unused but set variable entry
+Date: Mon, 26 Feb 2024 09:56:30 +0800
 Message-ID:
- <SN6PR02MB4157EF99BD9A018F0808AE7DD45B2@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240221113504.7161-1-will@kernel.org>
- <20240221113504.7161-6-will@kernel.org>
- <SN6PR02MB4157828120FB7D3408CEC991D4572@SN6PR02MB4157.namprd02.prod.outlook.com>
- <Zdj4y7nqF2LHq2IH@Asurada-Nvidia>
- <SN6PR02MB41574C0F51BEF3AC474C2EC1D4552@SN6PR02MB4157.namprd02.prod.outlook.com>
-In-Reply-To:
- <SN6PR02MB41574C0F51BEF3AC474C2EC1D4552@SN6PR02MB4157.namprd02.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [fcJAOtBaVD2SaZEmtzlnrmrqYWwxUYv3]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|PH0PR02MB8359:EE_
-x-ms-office365-filtering-correlation-id: 31144ec6-7118-4550-a252-08dc36472f47
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- jKqXV/hbGKnzChzaIm4vajp3O/6XYN4OQt7q41q91Ea8sGRh0TWX9dtK4m0oBczGhbY3NArMWijJfw12exDJt/zl/XqjUM1hsY6nUnSq3UJ68HfjbBORvkby4QBU0uyXhByb2F4wYhdtnTig5S4jbXK4JhSXHl/Vo7qBTyJfiu+neiGnW2LvxdWfBpca9H/1AZ6urPl5K7+C4jSqK+1I+OhZ4ltwji6Q5/ezFt3S9Z1SXUW16+8Qafu9WZwwfqqC2+u1cPE+DyemImUC4NuGNDKcZFfgts9dkqb1ZUEyvYnP//xM537KqQw9nWBCWVJKRfydi5VxSMgyLMXTei+Q9lRCSiEIdMqzqdhLCSqNT1tmvHHk1omdetRX2uAt6PuFwYvLxoR3vRsjQAZgzl485CWxqgcCdZ8/XBGUwquG05JIl1Q4MAzGX/LPVyMZ8s80n0Utg83Zm76zbhGG0DESlbI6zGPbZnCWE8RiS1P4YjTbDJ3KssQlc5OjA/9ZXMXB+gOSd2R7I9oNdZO92r92KHnAdihx49ey4kqIh3gzELDLIS1r8voAUebx201VfgQXq10hfjJwREcfZHChYV7n3dXHf4YNDG7nc/OEOrH8pY8d5rhx4+zql037D2KR72Ozrh+VIAOooZZ6nvdlJ3GeHjEa4dGisEmWuD5Ltj5JVXk=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?YqOA9eSoXhGi8bOUUIchk3xNHlZDTtDYRBkJsRq6PP00TBp4rS3VNXtnarDg?=
- =?us-ascii?Q?h6YX0PJYUy/b+E39taNxhhD/+D/V6vuE2HhYKRYyd3NYvsPSQDDc0rdV4wOL?=
- =?us-ascii?Q?M8fXSyVFiEAml+9yII2frDg6U8+QmlVsQDYTWPulQw6XoCll/27KKLSTBCsF?=
- =?us-ascii?Q?+iBBsajtXXoJus8Ki1aoUEMDCK7doB8KFGTkCFe/0D8gA+aMwP3PghWy06p9?=
- =?us-ascii?Q?6SyYrLf7ZMRlyGollDCkpujLwXUmzjVuT/QcncdBVxZR1vEFOyt1pY59EqXz?=
- =?us-ascii?Q?RnCHGRz03RvjRszHFC0N/dyx8w+3hnACwk9Q87RqaeyzXjoE+7zWD3gWbeeK?=
- =?us-ascii?Q?IXFcu3dlg0cVep+gf6OZO+4KTIQyMTlJybDF4AAP6rHu4EffkOa9GgQDKHTG?=
- =?us-ascii?Q?G0cGw8w58U3u8IQtvOv53TSJuqqVuIpitLOOJyE7olXJF8QJeyt8TGIdbKBL?=
- =?us-ascii?Q?idtDgozxF1GoYvZ7iaiF6N0KU9nd4U+k/T/36fox0SeBUCzwJyKkUt5a55Cw?=
- =?us-ascii?Q?mQxb7/alaB7IQtGE8jjZOSTh0UDn3cVULVQZh0o3RtOWbxVevPpffOlYWY5v?=
- =?us-ascii?Q?UUGbxHraYNCXSjmOKeQSgVtrUeiiyoOIsOblP4GXY5v+ZvVyLaNjshqQd2g8?=
- =?us-ascii?Q?Hkt53uB+E65ynpd91IEFaqHG/jFVzYsyR9rGtA8gLjicFcB/aZgygF7AdBT3?=
- =?us-ascii?Q?nxra/kSGe0UVC9Z/+23ivb36xm11/m+QgtMPw6jwjIhb7tyBGUJAdcupxpPo?=
- =?us-ascii?Q?1moz8n5witIHB6HRiSHfjrN6eABqAiWEcPTSfnXLxiSLMuAIaHPo11bR91GS?=
- =?us-ascii?Q?5BFGf998G2TEOsfcYOuJQB54Q0gjmkWDc++SYHXHvIwM6cmCkWfLqTbLxQ4i?=
- =?us-ascii?Q?YXeUEeR58cmPz9hJPIdvvG51IPSui+koBCa7EjSgTGfrzpWvHjVC5Cbgm3Ca?=
- =?us-ascii?Q?vvYVGsfvJ4aOr1hO822HlTm/1hLqIbjo71uUXDmiU1dypkGVPlUTkfPx56UR?=
- =?us-ascii?Q?UNPuoEBXBBqBCjF7SIwU6yIrbSqX4ggNJMDrOALtDLEmp903XhGVSftyMC7+?=
- =?us-ascii?Q?81lkvWvljqdt79xPdWsTJ2K2Tri1P1Yrfd3UBxhINBGlZWCoZXj3G7WVuxP+?=
- =?us-ascii?Q?Xz83E/+fSYqTzfOr+whBNfOitjeJSPafN9yhVX6wWm304wPdetpCkllYUUTr?=
- =?us-ascii?Q?IG6E0/bm18u+sEv78m2xu2R9jOxjg6mrkwEBRg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+ <CY8PR11MB777960FF31E255903D0EE664975A2@CY8PR11MB7779.namprd11.prod.outlook.com>
+X-Mailer: git-send-email 2.39.2
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-TMN: [0OXqA7Q06W8xKHWxotmOjsEUIz36rsk6GUbKnQvkfGc=]
+X-ClientProxiedBy: SI2PR02CA0033.apcprd02.prod.outlook.com
+ (2603:1096:4:195::20) To CY8PR11MB7779.namprd11.prod.outlook.com
+ (2603:10b6:930:77::22)
+X-Microsoft-Original-Message-ID:
+ <20240226015630.1770718-1-kunwu.chan@hotmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY8PR11MB7779:EE_|CH3PR11MB7772:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0e426354-003b-4760-c2ea-08dc366e2e3d
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	RSgEarufBrhyxqtNgxFh/7OaI+WvsikKzzZft2V/WldNXzbCv8efocY85s1nTEfuweVlHLDDNjV+x2mq0+CaFdw9/MhXeH6p1b+scrwsd+WUF8Qx9BYkg9Mx25v9QHFj48RgOEbCqqXSfiW9/EJJiDeqMZmcL8fpvYwhDQavVTA735oDdFUN7DziOlHg4sMf6/SJ4LcLjemS/nSwzhe4ZHU0smLi1/PlHgsbvWmqleKL3kUBDSMxdI8xscvfXKfeG8PQlWD2ztlXok7qmlze6Dr8q0e31WKa2lDeXFye6bAJ3BiadoRJ+7SuphZryLxJEpDmP+Nme6T3zyMSQBUVHLJkh1OLwsy2F2hVXsB92bIKXKxO8anPmd0cpqLQpkMDHajK6VinmKKLnp3AOJjHVolvYYN8xPUxaxuV+eegrbde6i3aw5hqCeppx2QZOxiQEo6OUnmgreeUn/yqzI27utpS/d467r8EDt4FJd2FEmqzy8SsEsmLTxYW087R+weZpw4tryVZRUWVJGP3vRRMZgrp8t5eygL5HOJC1axJ8/F15N/mNsR8KQzINESqwUpApnLV5kGuNwe2vHDzT3LePxSYUpxoewt+uTNOiiBeUuttK6opbH+s+XzgCb7dMpbakkER/6axGdIMG+UlE7ftV/xKs1CrOBdS67ChZ66JfhYqWVMrcBpUrE/g4/+jGqHzeZaDLDv4cF/LZ4xY9yV0LA==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?b6VHTeioHzKDb1R9z18SDZv6D4PjbULrJx/yljMbmF8xSVqdLllketZTNRly?=
+ =?us-ascii?Q?aty4bG6pcusyNPqdQtuKzLU4cZJQIsZBnpqRjcleO3vfTeHXAEeXFGVb3uSB?=
+ =?us-ascii?Q?ciDHGl8vOy3BryeQXexTaVIfmq3Yfj16WSIojve+DWur+uG+LilMUW100TZh?=
+ =?us-ascii?Q?Dg2BtGAPWhZeRsWWeEh5Gvl84RjbkybRRhmoWS9hEcTtuSYiRxwrUY8luB11?=
+ =?us-ascii?Q?MjefEO5n0akk2cOVLWKT0hX3bOKLbNTR0Br8ZWzhwrs6CE5e5gGgQFpG7jOX?=
+ =?us-ascii?Q?zLikOYKz9Ev+ASdA2EfBL1cPoP5O1UBV+QZKAfU4o5ky6UlCYw3L9DFVWmZk?=
+ =?us-ascii?Q?4izwVHjbOHTVbU9WsDTyrSLJo4p+o1ml81Ywb7CIRCxTFH4ErzUXRRsJewrH?=
+ =?us-ascii?Q?CbmfqQdlzQRSVBXI8e56SWfM7F3lcSBIQ837c9Ob6kJeJG3DcH7EOpCbh6HY?=
+ =?us-ascii?Q?TpODDwR1j832zw/XNaRRVaDimZbSZtNc7NKomTlVYLsslgXT0D8d7WGHlNiR?=
+ =?us-ascii?Q?cHvURKlTfiH3VO+Fu8XGwhYdQ2Doux3kXjWzdIFIuAxYgJ1XVwOQwfQjeTHK?=
+ =?us-ascii?Q?JDzGsw7ln9R6zIJe1brO7yYorLbe0Lev9GbC1hRrjo9q5PaMypSg+6JeqqOu?=
+ =?us-ascii?Q?VAB/7hcc74fhEi98BaE1a/dPb+iakd1Aizj+1QxwUj+GbzCXzAeSSTxVSf3+?=
+ =?us-ascii?Q?/iVWwVsCIdOIW1wCjC2kreElR1Is4rNYsl9krUFtAgCqbiHzL1iK9Tov2f9A?=
+ =?us-ascii?Q?9JWAM/cN1yKWi9M5Hei37THiidGacWjYLom9D0yRdp/OEytDa7c5RjauIvgT?=
+ =?us-ascii?Q?tpvCrfAKsLcZhWO9Z1iTgn6MtQWfnwcMQniseSYQBthuRpkQEdHRhvFguk/J?=
+ =?us-ascii?Q?6AIgP7QWOEQxVUjSKsW3DjmirWKUC2qeU47svY/VSvoDqpOGQAxAfneaoVXk?=
+ =?us-ascii?Q?Wa2R64R+jtZId87kd0WPUsgQpqoZ0k1yl3yXQcypYyz5RQN8V6QeTMSF1EyB?=
+ =?us-ascii?Q?c91T3vfQ9f7AZUWpkP27nFP9t7YSkdClUkphMJlMpMd1pQDyC+/shwLksrAU?=
+ =?us-ascii?Q?gtw5TwFw09YquqqQfHmXqgxBYEUESTsu8TjMarRfnA/L6XE5E/qlUrR0kocM?=
+ =?us-ascii?Q?xWfbGx89Ait+BLxOW+XshYqBXApIC5P57X3BC9Jx78MQlJzk44pcy8Mvf56R?=
+ =?us-ascii?Q?35PXoiTBTWq9INi6u2IdZixMLvm9rn+mCovVtTzU9jhnZo48t5lg0B8JCipS?=
+ =?us-ascii?Q?hS9pqMLII3L3lzWr+k+s?=
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-e8f36.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0e426354-003b-4760-c2ea-08dc366e2e3d
+X-MS-Exchange-CrossTenant-AuthSource: CY8PR11MB7779.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 31144ec6-7118-4550-a252-08dc36472f47
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Feb 2024 21:17:34.3064
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2024 01:56:43.4305
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR02MB8359
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
+	00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7772
 
-From: Michael Kelley <mhklinux@outlook.com> Sent: Friday, February 23, 2024=
- 1:11 PM
->=20
-> From: Nicolin Chen <nicolinc@nvidia.com> Sent: Friday, February 23, 2024 =
-11:58 AM
-> >
-> > On Wed, Feb 21, 2024 at 11:39:29PM +0000, Michael Kelley wrote:
-> > > From: Will Deacon <will@kernel.org> Sent: Wednesday, February 21, 202=
-4 3:35 AM
-> > > > +static size_t iommu_dma_max_mapping_size(struct device *dev)
-> > > > +{
-> > > > +     if (is_swiotlb_active(dev) && dev_is_untrusted(dev))
-> > > > +             return swiotlb_max_mapping_size(dev);
-> > > > +     return SIZE_MAX;
-> > > > +}
-> > > > +
-> > >
-> > > In this [1] email, Nicolin had a version of this function that incorp=
-orated
-> > > the IOMMU granule.  For granules bigger than 4K, I think that's neede=
-d
-> > > so that when IOMMU code sets the swiotlb alloc_align_mask to the
-> > > IOMMU granule - 1, the larger offset plus the size won't exceed the
-> > > max number of slots.  swiotlb_max_mapping_size() by itself may
-> > > return a value that's too big when alloc_align_mask is used.
-> > >
-> > > Michael
-> > >
-> > > [1] https://lore.kernel.org/linux-iommu/SN6PR02MB415727E61B5295C259CC=
-B268D4512@SN6PR02MB4157.namprd02.prod.outlook.com/T/#m14dd359c5a4dd13e6cb0c=
-35cf94f8d746257ae48
-> >
-> > Yea, I just confirmed that with 64KB PAGE_SIZE the alloc_size
-> > can be over swiotlb_max_mapping_size, i.e. 256KB > 252KB. Yet,
-> > the max size corresponding to the max number of slots should
-> > be 256KB. So, I feel that this is marginally safe?
->=20
-> Yes, in the specific case you tested.  But I don't think the general
-> case is safe.  In your specific case, the "size" argument to
-> iommu_dma_map_page() is presumably 252 Kbytes because that's
-> what your new iommu_dma_max_mapping_size() returns.
-> iommu_dma_map_page() calls iova_align() to round up the 252K
-> to 256K.  Also in your specific case, the "offset" argument to
-> iommu_dma_map_page() is 0, so the "phys" variable (which embeds
-> the offset) passed to swiotlb_tbl_map_single() is aligned on a
-> 64 Kbyte page boundary.   swiotlb_tbl_map_single() then
-> computes an offset in the orig_addr (i.e., "phys") based on the
-> DMA min_align_mask (4 Kbytes), and that value is 0 in your specific
-> case.  swiotlb_tbl_map_single() then calls swiotlb_find_slots()
-> specifying a size that is 256K bytes plus an offset of 0, so everything
-> works.
->=20
-> But what if the original offset passed to iommu_dma_map_page()
-> is 3 Kbytes (for example)?   swiotlb_tbl_map_single() will have an
-> orig_addr that is offset from a page boundary by 3 Kbytes.  The
-> value passed to swiotlb_find_slots() will be 256 Kbytes plus an
-> offset of 3 Kbytes, which is too big.
->=20
-> >
-> > With that being said, there seems to be a 4KB size waste, due
-> > to aligning with the iommu_domain granule, in this particular
-> > alloc_size=3D256KB case?
-> >
-> > On the other hand, if swiotlb_max_mapping_size was subtracted
-> > by 64KB (granule=3D64KB), i.e. alloc_size=3D192KB, which seems to
-> > generate more swiotlb fragments?
->=20
-> dma_max_mapping_size() returns a fixed value for a particular
-> device, so the fixed value must be conversative enough to handle
-> dma_map_page() calls with a non-zero offset (or the similar
-> dma_map_sg() where the scatter/gather list has non-zero
-> offsets).  So yes, the higher layers must limit I/O size, which
-> can produce more separate I/Os and swiotlb fragments to
-> fulfill an original request that is 256 Kbytes or larger.  The
-> same thing happens with 4K page size in that a 256K I/O
-> gets broken into a 252K I/O and a 4K I/O if the swiotlb is
-> being used.
->=20
-> I'm trying to think through if there's a way to make things
-> work with iommu_max_mapping_size() being less
-> conversative than subtracting the full granule size.  I'm
-> doubtful that there is.
->=20
+Fix compile warning:
+drivers/iommu/amd/iommu.c: In function 'iommu_poll_ppr_log':
+drivers/iommu/amd/iommu.c:833:21: Warning:
+Variable 'entry' is set but not used [-Wunused-but-set-variable]
 
-With the current interface between iommu_dma_map_page()
-and swiotlb_tbl_map_single(), iommu_max_mapping_size()
-really has no choice but to be more conservative and subtract
-the full granule size.
+Commit d55b0d2e075a("iommu/amd: Remove PPR support")
+removes the use of 'entry', but does not delete this variable.
 
-The underlying problem is how iommu_dma_map_page() and
-swiotlb_tbl_map_single() interact.  iommu_dma_map_page()
-rounds up the size to a granule boundary, and then
-swiotlb_tbl_map_single() adds the offset modulo DMA
-min_align_mask.  These steps should be done in the opposite
-order -- first add the offset then do the rounding up.  With
-that opposite order, iommu_max_mapping_size() could be
-less conservative and be based solely on min_align_mask.
+Signed-off-by: Kunwu Chan <kunwu.chan@hotmail.com>
+---
+ drivers/iommu/amd/iommu.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-I could see using the following approach, where alignment
-and rounding up are both done in swiotlb_tbl_map_single(),
-based on the alloc_align_mask parameter.  Conceptually it
-makes sense to align the start and the end of the allocated
-buffer in the same function rather than splitting them.
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 4283dd8191f0..de771a6420dc 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -831,7 +831,6 @@ static void iommu_poll_ppr_log(struct amd_iommu *iommu)
+ 
+ 	while (head != tail) {
+ 		volatile u64 *raw;
+-		u64 entry[2];
+ 		int i;
+ 
+ 		raw = (u64 *)(iommu->ppr_log + head);
+@@ -847,10 +846,6 @@ static void iommu_poll_ppr_log(struct amd_iommu *iommu)
+ 			udelay(1);
+ 		}
+ 
+-		/* Avoid memcpy function-call overhead */
+-		entry[0] = raw[0];
+-		entry[1] = raw[1];
+-
+ 		/*
+ 		 * To detect the hardware errata 733 we need to clear the
+ 		 * entry back to zero. This issue does not exist on SNP
+-- 
+2.39.2
 
-1.  Remove the alloc_size parameter from
-swiotlb_tbl_map_single(). Fixup two other call sites, where
-alloc_size is redundant anyway.
-
-2.  swiotlb_tbl_map_single() calculates its own local
-alloc_size as map_size + offset, rounded up based on
-alloc_align_mask.  If alloc_align_mask is zero, this
-rounding up is a no-op, and alloc_size equals map_size
-+ offset.  Pass this local alloc_size to swiotlb_find_slots.
-
-3. iommu_dma_map_page() removes the iova_align() call
-just prior to invoking swiotlb_tbl_map_single().
-
-Looking at the code, there are also problems in
-iommu_dma_map_page() in zero'ing out portions of the
-allocated swiotlb buffer.  Evidently the zero'ing is done
-to avoid giving an untrusted device DMA access to kernel
-memory areas that could contain random information
-that's sensitive.  But I see these issues in the code:
-
-1.  The zero'ing doesn't cover any "padding" at the
-beginning of the swiotlb buffer due to min_align_mask
-offsetting.  The cover letter for the last set of changes in
-this area explicitly says that such padding isn't zero'ed [1]
-but I can't reconcile why.  The swiotlb *does* allocate
-padding slots at the beginning, even in the 5.16 kernel
-when those commits first went in.  Maybe I'm missing
-something.
-
-2.  With commit 901c7280ca0d, swiotlb_tbl_map_single()
-always calls swiotlb_bounce(), which initializes the
-mapped portion regardless of the DMA xfer direction.  But
-then in the case of DMA_FROM_DEVICE (i.e., read I/Os)
-iommu_dma_map_page() will zero what swiotlb_bounce()
-already initialized.  The discussion that led to commit
-901c7280ca0d concluded that the buffer must be
-initialized to the ultimate target buffer contents so that
-partial reads don't change data that wasn't read. This
-zero'ing violates that and should be removed (unless
-there's some unique handling of untrusted devices I'm
-not aware of).
-
-3.  If the swiotlb path is taken for reasons other than an
-untrusted device, iommu_dma_map_page() still does the
-zero'ing.  That doesn't break anything, but it seems wasteful
-as there could be a lot of padding area that is unnecessarily
-zero'ed in the dma_kmalloc_needs_bounce() case, especially
-if the IOMMU granule is 64K.
-
-Net, it seems like some additional work beyond Patch 5
-of Will's series is needed to get Nicolin's path working
-robustly.  I could help with coding, but I can't test IOMMU
-paths as I only have access to VMs (x64 and arm64).
-
-Michael
-
-[1] https://lore.kernel.org/all/20210929023300.335969-1-stevensd@google.com=
-/
