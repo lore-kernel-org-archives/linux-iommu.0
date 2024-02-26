@@ -1,68 +1,68 @@
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 679DF132499
-	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 17:13:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F15912DD87
+	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 17:22:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708967613; cv=none; b=m2oidFbMjTf1t6/NAyWxUpKl07JqM+J4sCcbqPd2tPIbSoLOByBLrzi4PFSbpMqnV8XBjx1NIaBvMA/dLo4Zv05tBKcJJWWwNhVSm5sL+LnNlEK3vIY8TrSbDd3gKdAJ0NM4MMSypzLz0K+MMgSgKlupmBlweROrE22O0EvZXmg=
+	t=1708968165; cv=none; b=udvvuit969m3mkd2/cxviPI17ajr/JSu/CNeQJ8xAgIyf2NXuEAxKhF8EXsTFYsyf8Lmn0yd8vQZJDPnTVtxEB9AvHNk3Idnt4fH22G05WWqG+Hw38G0XrNx1Jh2pH+n/E0aH5dn1Z2Wdr+2MuDsTYf+qh0cq6HlP6QX8kh4nNA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708967613; c=relaxed/simple;
-	bh=EyV42V4YwospafBlBP85zlF0CzzIrV0ckGMLg38+cps=;
+	s=arc-20240116; t=1708968165; c=relaxed/simple;
+	bh=EqmeweN9yJbHN4ZOPQ4NNULOO0mEliqSsTTtiukx5Xg=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kOvWoly/E9OOxf3qvetBc1owsTPF7Xf0pVbtAPeUqZWsDfiPwL2yV3fmbhoZbmKiu8WMBTfcxDiZOMSVHSucyTdI6qhue3CDQLJwuz535nN/hF8sDRgIuxtu7PcmxD3tHCi/PotmyolYHh7m1Thldo9AT/pnS1MAmCtnl236c0M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=H5vsUWDf; arc=none smtp.client-ip=209.85.128.178
+	 To:Cc:Content-Type; b=Ou4DHqkRvNDR2UW7DWcqJao+SCrKTeiGZ8xRT5qCOlDn9UORJlKP3uYmxgT4RVw9EO5Dgf/4tpxHGplga6Yh8fyaZx9Q929tAwP9gFLBs1nYhExuSYM4W1S4qzTLKK4pY/OTNDoDG2Na9H6k0qgD6O2ooN8bAapD0amLGitg/48=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Z7p4Rq7q; arc=none smtp.client-ip=209.85.208.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="H5vsUWDf"
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-60921c4dc27so363977b3.3
-        for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 09:13:30 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Z7p4Rq7q"
+Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2d09cf00214so52407391fa.0
+        for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 09:22:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708967609; x=1709572409; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1708968161; x=1709572961; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=EyV42V4YwospafBlBP85zlF0CzzIrV0ckGMLg38+cps=;
-        b=H5vsUWDf+NFgt1GV7xY7Rv+0wjBUjGmPpi1o1/Nxpu2RinxG87aWS5B6X6ia6h4uLd
-         5AIlD1ZwAoQ5C6J4oGxFXotH2Pl/Z6052fjqjQdO1V2WgK8m903HBLRSzbNry2k4J4PX
-         BjMpe2nRs93HR238AzSEyx8c0+9WI1dg2dIF8KY+odLDhJtj9atww870D8jif4Oaiw+5
-         Deb9bUQUSVQDJc2zuYnZI2HU0isoFMF14TFKRSID5alUMQks/cGe15ZvvXPUPq9lH8zL
-         3zKT6DD66DxZ7GMPkinRr172sMceGsI+bPuPAArOgVzmHHCeJuKk05gW2jFaZMG+wiAL
-         N+qg==
+        bh=dv1MR8FFyIVeo2kD5/jRtw1zZdBqiDH8uTYdJ7duKRA=;
+        b=Z7p4Rq7qYFXC8x6Kcc4e6K6yWrHmubJ0C26XCGV8x6YqYMnexdxAkG+kLuYUxBm8nc
+         +e8GTKYnZvHXSE5TK8x73wK6DOFp11i32cFnfsd0QiMiD8nuc2GR9e+PwAe8JgALSpoT
+         SdQ3E0PCTY40JFSzLPvmc9YkC6c41jqlYd8V15EQEuGPaYbgyv0l9OaaFcGQyrjr3IsT
+         uL4iDxzHC1+Rg70mzE5fqnNbVokCpK8C9l1Yg34pUxKp+ywLJkSnIFpT3kkDjbuYto00
+         HQUnmGdo6/xMyzmmQvUk4IcO8sebdWYvhJs6zAKj8momQqF/1V3BhQDQTqjp4Xb6dXLA
+         0+8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708967609; x=1709572409;
+        d=1e100.net; s=20230601; t=1708968161; x=1709572961;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=EyV42V4YwospafBlBP85zlF0CzzIrV0ckGMLg38+cps=;
-        b=ms7/QFWK/KC24WV71hqrW9EwmxzyFnwy2hVOGRsxvnweQesNNGsjMi2LAeNdSJqhsD
-         7oXd0DeyojZ5syWAFj0Xh0+cHxJi5FiEUBsJtu1cdIiAavNad7fo/33UUTfKm5WX/YPD
-         NYOkNn5l8nZi0HWJSa3/SWkQm0v6gGOx6WTlMFI5PLBdrbsu92IyAUcaKqTiUghQHio1
-         rEnfGZpnzVnkSid9EWk7KV83g97MXkbFC7H/tmx4O4VqvWBd+eXSxmE3ccvKhVBK5Nzt
-         Q/KZiyjz10430rPq+NTMBvsO301ICms1yQNS0+y6+/DQt1V5WeqFXtMg2QM2buQW6NO5
-         rcAA==
-X-Forwarded-Encrypted: i=1; AJvYcCXvDHjYolzUY493w5yxXQ1A31GtIJYgDlU+JLTI3pGJ3sVZGvAa2cQCnvLX1yByhMTEvzJmoesYJuCXgb5M7IlkUYaBBiM=
-X-Gm-Message-State: AOJu0YyldD/8ibQd9spDyRvlkWDyC8F6UJvGG2WZQacd6meNdnRLkpEt
-	o0G06hs5NnsCSg3BrZ47YeVbVEB96Q1wRzkir9edQSVEP8B5sT8F+AqPYfyvNOsqmqG9Uf9Wyt+
-	vk11BjqJvbYkBPRP0yBRK2HaUoXYpqDVJwgCK
-X-Google-Smtp-Source: AGHT+IE/7/pQws6CVfL30UNt1mkliSDpCczaElkub3hA0YpEAm7Kcwht1trOE3ZU3RPvAg7BLiFgI/3lAi1UqBVzgIg=
-X-Received: by 2002:a05:6902:210e:b0:dcd:1f17:aaea with SMTP id
- dk14-20020a056902210e00b00dcd1f17aaeamr6639276ybb.26.1708967608014; Mon, 26
- Feb 2024 09:13:28 -0800 (PST)
+        bh=dv1MR8FFyIVeo2kD5/jRtw1zZdBqiDH8uTYdJ7duKRA=;
+        b=XDrYFW0+UDFi7MCvvn1iIdqmeWCdkSnaktxpfsqWvgnMJwtD0vgcxwWyuGtlXA34bA
+         Af3tnJLk9RGT6SeHxYWZATtHDxk3lrlVmC+jJ2W2W8im/QZML3dyY7p1iHIM9bNQoWNO
+         IjpVvR6n9uWK21H40Ct9fEIyI7TxAEiOXKITxiKkrhuDC6VWmBUSidzvC+3y/h2GSagK
+         vD98NWdBHxiMGfu/rDDPd5VCpCoS7mCFJ8hgsnVPIivYrg1fnSE2/vSdM+8YFCfAM0kb
+         8CpmxXf01NQOqRTboIEwl4tPQVB/H3QIODK0Rbt9ALtTOy0aR0Oy7vhsAfxQ+KwC8r4K
+         Qptg==
+X-Forwarded-Encrypted: i=1; AJvYcCWRqmufo485NS4yVlfH9ZxV+4M4uJA+vmHdie0iQF7TurpfSAT6oo5y2GkQnUB8ULqKakm/f1nmMG8WxGLtX0r7vwwm2YU=
+X-Gm-Message-State: AOJu0Yw0D8wZCqVdQAVzmoHq6Qk24cIQaxXwXBJz6tIv/t7R5ALcI0YZ
+	YaTxiFPqnqA+KgnIcV0TPrFKg5KsP7pfraQdBmUC95Qus5nHZG4v6LNkCml7ovgx26O4Oj0WykC
+	YAufGRcaV9RAq5ygZf0BJc1tdSC+rCN80OieF
+X-Google-Smtp-Source: AGHT+IHRxxQsMQSRpnlCaAS8PflYsK1iTOiKydsmAuE0utC3AXspYUhCmo2l3tTpb+Dmf3/YMDJ4hjbxrgCTIuiY2OA=
+X-Received: by 2002:a2e:990b:0:b0:2d2:7164:c6ba with SMTP id
+ v11-20020a2e990b000000b002d27164c6bamr4367139lji.43.1708968160893; Mon, 26
+ Feb 2024 09:22:40 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-14-surenb@google.com>
- <a9ebb623-298d-4acf-bdd5-0025ccb70148@suse.cz>
-In-Reply-To: <a9ebb623-298d-4acf-bdd5-0025ccb70148@suse.cz>
+References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-8-surenb@google.com>
+ <6851f8a0-e5d2-4b79-9cee-cff0fdec2970@suse.cz>
+In-Reply-To: <6851f8a0-e5d2-4b79-9cee-cff0fdec2970@suse.cz>
 From: Suren Baghdasaryan <surenb@google.com>
-Date: Mon, 26 Feb 2024 09:13:17 -0800
-Message-ID: <CAJuCfpE6sJa2oHE2HrXAYuMeHd8JWd0deWa062teUs3bBRi2PA@mail.gmail.com>
-Subject: Re: [PATCH v4 13/36] lib: prevent module unloading if memory is not freed
+Date: Mon, 26 Feb 2024 17:22:21 +0000
+Message-ID: <CAJuCfpHA-0PsQcNMcJVniVyUo4+nUYaioQSS7ZnXO_TGxgumqA@mail.gmail.com>
+Subject: Re: [PATCH v4 07/36] mm: introduce slabobj_ext to support slab object extensions
 To: Vlastimil Babka <vbabka@suse.cz>
 Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
 	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
@@ -92,28 +92,169 @@ Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 26, 2024 at 8:58=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
+On Mon, Feb 26, 2024 at 8:26=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
 ote:
 >
 > On 2/21/24 20:40, Suren Baghdasaryan wrote:
-> > Skip freeing module's data section if there are non-zero allocation tag=
-s
-> > because otherwise, once these allocations are freed, the access to thei=
-r
-> > code tag would cause UAF.
+> > Currently slab pages can store only vectors of obj_cgroup pointers in
+> > page->memcg_data. Introduce slabobj_ext structure to allow more data
+> > to be stored for each slab object. Wrap obj_cgroup into slabobj_ext
+> > to support current functionality while allowing to extend slabobj_ext
+> > in the future.
 > >
 > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
 >
-> I know that module unloading was never considered really supported etc.
-> But should we printk something so the admin knows why it didn't unload, a=
-nd
-> can go check those outstanding allocations?
+> Hi, mostly good from slab perspective, just some fixups:
+>
+> > --- a/mm/slab.h
+> > +++ b/mm/slab.h
+> > -int memcg_alloc_slab_cgroups(struct slab *slab, struct kmem_cache *s,
+> > -                              gfp_t gfp, bool new_slab);
+> > -void mod_objcg_state(struct obj_cgroup *objcg, struct pglist_data *pgd=
+at,
+> > -                  enum node_stat_item idx, int nr);
+> > -#else /* CONFIG_MEMCG_KMEM */
+> > -static inline struct obj_cgroup **slab_objcgs(struct slab *slab)
+> > +int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
+> > +                     gfp_t gfp, bool new_slab);
+> >
+>
+> We could remove this declaration and make the function static in mm/slub.=
+c.
 
-Yes, that sounds reasonable. I'll add a pr_warn() in the next version.
-Thanks!
+Ack.
 
 >
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to kernel-team+unsubscribe@android.com.
+> > +#else /* CONFIG_SLAB_OBJ_EXT */
+> > +
+> > +static inline struct slabobj_ext *slab_obj_exts(struct slab *slab)
+> >  {
+> >       return NULL;
+> >  }
+> >
+> > -static inline int memcg_alloc_slab_cgroups(struct slab *slab,
+> > -                                            struct kmem_cache *s, gfp_=
+t gfp,
+> > -                                            bool new_slab)
+> > +static inline int alloc_slab_obj_exts(struct slab *slab,
+> > +                                   struct kmem_cache *s, gfp_t gfp,
+> > +                                   bool new_slab)
+> >  {
+> >       return 0;
+> >  }
+>
+> Ditto
+
+Ack.
+
+>
+> > -#endif /* CONFIG_MEMCG_KMEM */
+> > +
+> > +static inline struct slabobj_ext *
+> > +prepare_slab_obj_exts_hook(struct kmem_cache *s, gfp_t flags, void *p)
+> > +{
+> > +     return NULL;
+> > +}
+>
+> Same here (and the definition and usage even happens in later patch).
+
+Ack.
+
+>
+> > +#endif /* CONFIG_SLAB_OBJ_EXT */
+> > +
+> > +#ifdef CONFIG_MEMCG_KMEM
+> > +void mod_objcg_state(struct obj_cgroup *objcg, struct pglist_data *pgd=
+at,
+> > +                  enum node_stat_item idx, int nr);
+> > +#endif
+> >
+> >  size_t __ksize(const void *objp);
+> >
+> > diff --git a/mm/slub.c b/mm/slub.c
+> > index d31b03a8d9d5..76fb600fbc80 100644
+> > --- a/mm/slub.c
+> > +++ b/mm/slub.c
+> > @@ -683,10 +683,10 @@ static inline bool __slab_update_freelist(struct =
+kmem_cache *s, struct slab *sla
+> >
+> >       if (s->flags & __CMPXCHG_DOUBLE) {
+> >               ret =3D __update_freelist_fast(slab, freelist_old, counte=
+rs_old,
+> > -                                         freelist_new, counters_new);
+> > +                                         freelist_new, counters_new);
+> >       } else {
+> >               ret =3D __update_freelist_slow(slab, freelist_old, counte=
+rs_old,
+> > -                                         freelist_new, counters_new);
+> > +                                         freelist_new, counters_new);
+> >       }
+> >       if (likely(ret))
+> >               return true;
+> > @@ -710,13 +710,13 @@ static inline bool slab_update_freelist(struct km=
+em_cache *s, struct slab *slab,
+> >
+> >       if (s->flags & __CMPXCHG_DOUBLE) {
+> >               ret =3D __update_freelist_fast(slab, freelist_old, counte=
+rs_old,
+> > -                                         freelist_new, counters_new);
+> > +                                         freelist_new, counters_new);
+> >       } else {
+> >               unsigned long flags;
+> >
+> >               local_irq_save(flags);
+> >               ret =3D __update_freelist_slow(slab, freelist_old, counte=
+rs_old,
+> > -                                         freelist_new, counters_new);
+> > +                                          freelist_new, counters_new);
+>
+> Please no drive-by fixups of whitespace in code you're not actually
+> changing. I thought you agreed in v3?
+
+Sorry, I must have misunderstood your previous comment. I thought you
+were saying that the alignment I changed to was incorrect. I'll keep
+them untouched.
+
+
+>
+> >  static inline bool memcg_slab_pre_alloc_hook(struct kmem_cache *s,
+> >                                            struct list_lru *lru,
+> >                                            struct obj_cgroup **objcgp,
+> > @@ -2314,7 +2364,7 @@ static __always_inline void account_slab(struct s=
+lab *slab, int order,
+> >                                        struct kmem_cache *s, gfp_t gfp)
+> >  {
+> >       if (memcg_kmem_online() && (s->flags & SLAB_ACCOUNT))
+> > -             memcg_alloc_slab_cgroups(slab, s, gfp, true);
+> > +             alloc_slab_obj_exts(slab, s, gfp, true);
+>
+> This is still guarded by the memcg_kmem_online() static key, which is goo=
+d.
+>
+> >
+> >       mod_node_page_state(slab_pgdat(slab), cache_vmstat_idx(s),
+> >                           PAGE_SIZE << order);
+> > @@ -2323,8 +2373,7 @@ static __always_inline void account_slab(struct s=
+lab *slab, int order,
+> >  static __always_inline void unaccount_slab(struct slab *slab, int orde=
+r,
+> >                                          struct kmem_cache *s)
+> >  {
+> > -     if (memcg_kmem_online())
+> > -             memcg_free_slab_cgroups(slab);
+> > +     free_slab_obj_exts(slab);
+>
+> But this no longer is, yet it still could be?
+
+Yes, I missed that, it seems. free_slab_obj_exts() would bail out but
+still checking the static key is more efficient. I'll revive this
+check.
+
+Thanks for the review!
+Suren.
+
+>
+> >
+> >       mod_node_page_state(slab_pgdat(slab), cache_vmstat_idx(s),
+> >                           -(PAGE_SIZE << order));
 >
