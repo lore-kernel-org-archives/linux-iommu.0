@@ -1,148 +1,139 @@
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C06C12DDAB
-	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 17:49:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.181
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 21EAF1947E
+	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 19:36:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708969747; cv=none; b=CcvLa8Nxon1Fj3USx3WlTe3ZqyWkpOEgIdcwysr9YflQEBTrF9KTttFBLIGDkKFEPOc5Dd8KZXuxbWjzQf50HWsiVgQTiKw604oEhrryDz6i153Ej+RUxbrROs+T5UziX5/8JEEFH5WGuYpBxF1fYHOOoM51f+ttWQaj5bUvo+I=
+	t=1708976165; cv=none; b=K4GhvRxdvk0nn1mhRaxqWNQUniqBTNeGJrjJxd1vanmhH8igwo9+wducSQTMX3NqLhudd/ugzcuepe5NFqy/kD3DacGFxwL4WulvXMd/EAZQ9QKG8YxzIsjTR4H4mwLBMGpLtpZVnDXkjvmLhUt3gEgLdRB37L8zUM9caiwhbaU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708969747; c=relaxed/simple;
-	bh=kjTgbrtrQFudnQ2Ks1fdChZ9nj/O1JwPt17wu4Lp+yo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XfIykhA66WVzuYMqxMeup0QC9YM0FGYINz1M2WoTjb/jx6Nu2PsOXNbZTpGOLAtgVWEooTJB5uluS0+GcZlaTlbCI63kCZLMWmaHTuBfybsCClJAgXcSQDPbwyyogY9flTIzDPcvkMiOvP+BOyAjp/h6NZ/RSEJ9l99134107xY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dPZOry64; arc=none smtp.client-ip=209.85.208.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dPZOry64"
-Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-2d269b2ff48so38457001fa.3
-        for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 09:49:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708969742; x=1709574542; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=E2MfOrnw8vcrCKgg1+LRA9aXdiQ7KcRVPoPiOl2oNZk=;
-        b=dPZOry64vOzEu8vacfkeCy1vH0ZSYZqfo3rqvHA2Tj0GzNSnKBo28PwyDinWnKcCTN
-         1RoyRI0hHjnCckJ2qW3Ioe1iBTzZD5LCHxFUkNDcEtbeoAvA5MNzcMeTB0rOf+6PlpwS
-         6qjanUzSOsn2pGiNh6/2eCUaVjJYPHXqWB5kjKowN7lUmgj2HYPjrxWnuTUVVy0T+7aE
-         x/X5MBqZ4vvu6ez/kLGULALDmmah4VYmJf5XpGG9I7lap5tpxldqXBbZDW6O3Upykmky
-         w+V8eNQceXKDvRgi6U/EAkZxJ1XQ7bOLQjJ1FEKeFPZWm36uK/onALyuIw3hyMSeIfKb
-         Xbig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708969742; x=1709574542;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=E2MfOrnw8vcrCKgg1+LRA9aXdiQ7KcRVPoPiOl2oNZk=;
-        b=aNWWaLfgUUiUjIeQEwkmNvkRGcN+PWgrgN8v56KsqWiu0JyHNkBXczLjMUUHytrMic
-         cXL14e6HWliTwP2Wu+v3IFq2dRQJkmesAP4VktTXPeSLHNi2IGplv+x/VvwtNW/cFXid
-         gF4e6JfJEftWZRg40EHHC2m72g2HNVdWN+m3Q1XUJnZA/W3PDDWjYn9q98IQncywMp2t
-         uokqdQXV6DdIj6g8cACYhbzuxx1XtLhcXRRPCVvCljIEsSjkscexIWolnGw0Q44Yjinm
-         JNFsWB7I8VHNu7I+X8p5eXVMnU/8iG5bT1sS6Iya9UMTXx0+58Bx+uzATz3SEjvBQTaY
-         7pEA==
-X-Forwarded-Encrypted: i=1; AJvYcCX8ScxPbZilyKi2dsKbugKCF2ZHGfNbB1As4nUtLIB8ENW08+R6mqgoWjsOgAWx4lJ1P83XiRgWi9mUF11I4cQ/VCdKMgk=
-X-Gm-Message-State: AOJu0YyUKl21YUrP8zDgGZQRoLidcE5xYrS52DSFv6SS7y1+lGYcL+FD
-	ck/55QQCRCYyV+hFaw+l2TcRf2ZR9WTcnJxEo88jpMqTzkz80ExUTQJhXTpfNNa4+sb8JrG8R1D
-	WTBgzjUxKUg8pz9UwSKjXzy5zbWbUBl+bYMap
-X-Google-Smtp-Source: AGHT+IGMkZ+7cEJwol9OFFnPnlkwO7m64F/71T4BMwZRitgeDSyoz1rib12v0dNYQtXiC2DOXiB0AGgmNnmExOErSa0=
-X-Received: by 2002:a2e:b889:0:b0:2d2:6676:3b0f with SMTP id
- r9-20020a2eb889000000b002d266763b0fmr6282519ljp.22.1708969741996; Mon, 26 Feb
- 2024 09:49:01 -0800 (PST)
+	s=arc-20240116; t=1708976165; c=relaxed/simple;
+	bh=UaVvJo8VEL45JixxaiG9F8e+o68JzaMmzhDzuncz1fs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Xnbcr4D/T3/+ALKIs4z6YcZo75e3T2NkHRWXIbLNEo19AUbv5f6jfXvpoDCIEWPFwQOetxwAnTO2abWzh3GSYqfR2HoUdtUQU5YADZlao7zVCOPvQMzkRQBQM+uGWYw0S06gwhdxmRifql2XQfIgdvXl+5ph7K1/pmDBhUqEsYk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 09272DA7;
+	Mon, 26 Feb 2024 11:36:41 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B306A3F762;
+	Mon, 26 Feb 2024 11:36:00 -0800 (PST)
+Message-ID: <6be819d8-f1f9-4833-81c3-32220617f0c5@arm.com>
+Date: Mon, 26 Feb 2024 19:35:59 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-6-surenb@google.com>
- <f68e7f17-c288-4dc9-9ae9-78015983f99c@suse.cz>
-In-Reply-To: <f68e7f17-c288-4dc9-9ae9-78015983f99c@suse.cz>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Mon, 26 Feb 2024 09:48:46 -0800
-Message-ID: <CAJuCfpEQPgg6-TD+-PEsVRXnK=T0Ak6TvMiwz7DbS-q9YxsVcg@mail.gmail.com>
-Subject: Re: [PATCH v4 05/36] fs: Convert alloc_inode_sb() to a macro
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
-	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
+ untrusted device
+Content-Language: en-GB
+To: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
+Cc: kernel-team@android.com, iommu@lists.linux.dev,
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+ Dexuan Cui <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ Michael Kelley <mhklinux@outlook.com>
+References: <20240221113504.7161-1-will@kernel.org>
+ <20240221113504.7161-6-will@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240221113504.7161-6-will@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Feb 26, 2024 at 7:44=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
-ote:
->
-> On 2/21/24 20:40, Suren Baghdasaryan wrote:
-> > From: Kent Overstreet <kent.overstreet@linux.dev>
-> >
-> > We're introducing alloc tagging, which tracks memory allocations by
-> > callsite. Converting alloc_inode_sb() to a macro means allocations will
-> > be tracked by its caller, which is a bit more useful.
-> >
-> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-> > Reviewed-by: Kees Cook <keescook@chromium.org>
-> > ---
-> >  include/linux/fs.h | 6 +-----
-> >  1 file changed, 1 insertion(+), 5 deletions(-)
-> >
-> > diff --git a/include/linux/fs.h b/include/linux/fs.h
-> > index 023f37c60709..08d8246399c3 100644
-> > --- a/include/linux/fs.h
-> > +++ b/include/linux/fs.h
-> > @@ -3010,11 +3010,7 @@ int setattr_should_drop_sgid(struct mnt_idmap *i=
-dmap,
-> >   * This must be used for allocating filesystems specific inodes to set
-> >   * up the inode reclaim context correctly.
-> >   */
-> > -static inline void *
-> > -alloc_inode_sb(struct super_block *sb, struct kmem_cache *cache, gfp_t=
- gfp)
->
-> A __always_inline wouldn't have the same effect? Just wondering.
+On 21/02/2024 11:35 am, Will Deacon wrote:
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> 
+> The swiotlb does not support a mapping size > swiotlb_max_mapping_size().
+> On the other hand, with a 64KB PAGE_SIZE configuration, it's observed that
+> an NVME device can map a size between 300KB~512KB, which certainly failed
+> the swiotlb mappings, though the default pool of swiotlb has many slots:
+>      systemd[1]: Started Journal Service.
+>   => nvme 0000:00:01.0: swiotlb buffer is full (sz: 327680 bytes), total 32768 (slots), used 32 (slots)
+>      note: journal-offline[392] exited with irqs disabled
+>      note: journal-offline[392] exited with preempt_count 1
+> 
+> Call trace:
+> [    3.099918]  swiotlb_tbl_map_single+0x214/0x240
+> [    3.099921]  iommu_dma_map_page+0x218/0x328
+> [    3.099928]  dma_map_page_attrs+0x2e8/0x3a0
+> [    3.101985]  nvme_prep_rq.part.0+0x408/0x878 [nvme]
+> [    3.102308]  nvme_queue_rqs+0xc0/0x300 [nvme]
+> [    3.102313]  blk_mq_flush_plug_list.part.0+0x57c/0x600
+> [    3.102321]  blk_add_rq_to_plug+0x180/0x2a0
+> [    3.102323]  blk_mq_submit_bio+0x4c8/0x6b8
+> [    3.103463]  __submit_bio+0x44/0x220
+> [    3.103468]  submit_bio_noacct_nocheck+0x2b8/0x360
+> [    3.103470]  submit_bio_noacct+0x180/0x6c8
+> [    3.103471]  submit_bio+0x34/0x130
+> [    3.103473]  ext4_bio_write_folio+0x5a4/0x8c8
+> [    3.104766]  mpage_submit_folio+0xa0/0x100
+> [    3.104769]  mpage_map_and_submit_buffers+0x1a4/0x400
+> [    3.104771]  ext4_do_writepages+0x6a0/0xd78
+> [    3.105615]  ext4_writepages+0x80/0x118
+> [    3.105616]  do_writepages+0x90/0x1e8
+> [    3.105619]  filemap_fdatawrite_wbc+0x94/0xe0
+> [    3.105622]  __filemap_fdatawrite_range+0x68/0xb8
+> [    3.106656]  file_write_and_wait_range+0x84/0x120
+> [    3.106658]  ext4_sync_file+0x7c/0x4c0
+> [    3.106660]  vfs_fsync_range+0x3c/0xa8
+> [    3.106663]  do_fsync+0x44/0xc0
+> 
+> Since untrusted devices might go down the swiotlb pathway with dma-iommu,
+> these devices should not map a size larger than swiotlb_max_mapping_size.
+> 
+> To fix this bug, add iommu_dma_max_mapping_size() for untrusted devices to
+> take into account swiotlb_max_mapping_size() v.s. iova_rcache_range() from
+> the iommu_dma_opt_mapping_size().
 
-I think inlining it would still keep __LINE__ and __FILE__ pointing to
-this location in the header instead of the location where the call
-happens. If we change alloc_inode_sb() to inline we will have to wrap
-it with alloc_hook() and call kmem_cache_alloc_lru_noprof() inside it.
-Doable but this change seems much simpler.
+On the basis that this is at least far closer to correct than doing nothing,
 
->
-> > -{
-> > -     return kmem_cache_alloc_lru(cache, &sb->s_inode_lru, gfp);
-> > -}
-> > +#define alloc_inode_sb(_sb, _cache, _gfp) kmem_cache_alloc_lru(_cache,=
- &_sb->s_inode_lru, _gfp)
-> >
-> >  extern void __insert_inode_hash(struct inode *, unsigned long hashval)=
-;
-> >  static inline void insert_inode_hash(struct inode *inode)
->
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to kernel-team+unsubscribe@android.com.
->
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+
+TBH I'm scared to think about theoretical correctness for all the 
+interactions between the IOVA granule and min_align_mask, since just the 
+SWIOTLB stuff is bad enough, even before you realise the ways that the 
+IOVA allocation isn't necessarily right either. However I reckon as long 
+as we don't ever see a granule smaller than IO_TLB_SIZE, and/or a 
+min_align_mask larger than a granule, then this should probably work 
+well enough as-is.
+
+Cheers,
+Robin.
+
+> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> Link: https://lore.kernel.org/r/ee51a3a5c32cf885b18f6416171802669f4a718a.1707851466.git.nicolinc@nvidia.com
+> Signed-off-by: Will Deacon <will@kernel.org>
+> ---
+>   drivers/iommu/dma-iommu.c | 8 ++++++++
+>   1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 50ccc4f1ef81..7d1a20da6d94 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1706,6 +1706,13 @@ static size_t iommu_dma_opt_mapping_size(void)
+>   	return iova_rcache_range();
+>   }
+>   
+> +static size_t iommu_dma_max_mapping_size(struct device *dev)
+> +{
+> +	if (is_swiotlb_active(dev) && dev_is_untrusted(dev))
+> +		return swiotlb_max_mapping_size(dev);
+> +	return SIZE_MAX;
+> +}
+> +
+>   static const struct dma_map_ops iommu_dma_ops = {
+>   	.flags			= DMA_F_PCI_P2PDMA_SUPPORTED,
+>   	.alloc			= iommu_dma_alloc,
+> @@ -1728,6 +1735,7 @@ static const struct dma_map_ops iommu_dma_ops = {
+>   	.unmap_resource		= iommu_dma_unmap_resource,
+>   	.get_merge_boundary	= iommu_dma_get_merge_boundary,
+>   	.opt_mapping_size	= iommu_dma_opt_mapping_size,
+> +	.max_mapping_size       = iommu_dma_max_mapping_size,
+>   };
+>   
+>   /*
