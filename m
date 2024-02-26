@@ -1,46 +1,46 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB1CB19BA5
-	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 06:16:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A5EE2C95
+	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 06:19:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708928175; cv=none; b=uPk/cd28C7rKZVuLLMhu0GiMiJuES9WCT9CtvR7j1L2jo0Mz/RzXiLA5+fLvEPoOXzLSc4vm2LdPgkGPojWVhNSAjruu532BPDCYjyUmQj02pSYwTOZ/UNAE8wRPPtkBVNEMLr3p5ZwKcbHEiiOznlmOSXFzqedidhgvngA5yaU=
+	t=1708928374; cv=none; b=QSw8C5TUQaIy67/nu16r56tKY/RIQ7+fOI10rJ5MjZq0toPpZHm85VDhpZpAvFJqX4QtJpUM6JayfZw5oju5m3tKOfB5gStGMfwXBShYVod1ZBjuRwrPj1nW99mR5WVEzkbb3r+qsm6p5h3C4uRXk0KVoqA2FiNNdRg5tr5ZTx0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708928175; c=relaxed/simple;
-	bh=6YR3K8NMuUzqh39Zc1JfQbYtft5iWJwFgxclWEU7HyY=;
+	s=arc-20240116; t=1708928374; c=relaxed/simple;
+	bh=KcP2v2syPmwJPmaJwiiwGPULXNMJO+NfaGDnGfKueYE=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=uAXOdoHv+uw/oCqlegn2NKSB/eAe4ywe+dp3K3oaCjJxmxnF9wXp/gYOuFZSFGxGxyE9TaHSDIkwvdAxH70k11nyYZEeTm35e5RJkL2fDwFLz00ruyLlJGeMlJ6HmdCjcOh7vy8OvpOkTT+iSlFjzTZcRMxkXXr6JwhYT+sMbTs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=T0hvMlj6; arc=none smtp.client-ip=192.198.163.16
+	 In-Reply-To:Content-Type; b=CE73Oz1eXQYqC8hgyhk6mk03TjppW0BjFeYYuLOynZZZUDIBE8Y7U8l0kc3p6yWO9CcxrWwOChg4bD4v0r+gaS7ys8mG9sBDsVE0TsfhbRBWDgch5PJqodTUUUDEQTO5Afw9tqEx6esbnP/pF+4UsleZCAGKAdztag/SePBvgoQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WrTKeRjJ; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T0hvMlj6"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WrTKeRjJ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708928173; x=1740464173;
+  t=1708928373; x=1740464373;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=6YR3K8NMuUzqh39Zc1JfQbYtft5iWJwFgxclWEU7HyY=;
-  b=T0hvMlj6T+Ugjee45+wujCl2O/AHIWIAwozIf8XD3lZe8H8enf5XLTrt
-   jUHjsE3t0zKNhTiDHDBZKlRV+B0a0tmD8e9wSLZ77f28ktdKyy8iL52Ea
-   auV4dEzV+eEqtH4NLFCKwYLdRNpxWkuabi58hGG5M2rSVordb5k+VFOj4
-   aRIVw0/XQrabruBHMNZ9Ci9P8sYv4AhCc0opzQsuGi4/I+qdSLFetm099
-   gTIhRLXTwVJ7BjZH+g+pwlbIUI85JtfcOQAzm2xlIMo56abPpEFVutdss
-   YrqeRZ3lhpd7USYZap+BhcBLkj662ipyJmXF3m2wLNUZLOkcJweZkoG8Y
+  bh=KcP2v2syPmwJPmaJwiiwGPULXNMJO+NfaGDnGfKueYE=;
+  b=WrTKeRjJFaiBKXODuRL78QREDO/vM30pBz5D+VvsK3Q3TPd3ULf+wi8P
+   YljwOcZ2DNApmIHOLv4wyVcfvgbzaSmsAmRhq1sUNGNzu0S2bCAX1SavO
+   VGshe4emh+PihpjF6YVOTfhr2VYcMVuBsufkcWIpO0wnf+jW9RwtKh1CH
+   7UGEXbONfsnyErUAigb7LfvLLN4DmyV1qdLLIkSs2AAu1xZqzPxb+Cyvw
+   sfw4doHM7s85x6BNteaCu5IFogEhb7wpOJK7VtJfNRcubWP47ZuVm2KG6
+   L3dwyk+GztYPvOTjzBWQTZtgkF6e/RF48lJtiYPeNzMAsHxA/WKPkdLa/
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="3738541"
+X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="3359661"
 X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
-   d="scan'208";a="3738541"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2024 22:16:13 -0800
+   d="scan'208";a="3359661"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2024 22:19:32 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
-   d="scan'208";a="11130350"
+   d="scan'208";a="6561414"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa005.fm.intel.com with ESMTP; 25 Feb 2024 22:16:08 -0800
-Message-ID: <0b30b737-65b3-415e-a3a6-d18393873e22@linux.intel.com>
-Date: Mon, 26 Feb 2024 14:10:15 +0800
+  by orviesa010.jf.intel.com with ESMTP; 25 Feb 2024 22:19:31 -0800
+Message-ID: <537e54f3-f169-4040-8b55-169f6b4bdbfa@linux.intel.com>
+Date: Mon, 26 Feb 2024 14:13:37 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,37 +48,26 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, linux-kernel@vger.kernel.org
-Subject: Re: [PACTH v3] Documentation: iommu/vt-d: Add the document for Intel
- IOMMU debugfs
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev
+Subject: Re: [PATCH v2 00/13] iommu/vt-d: Remove superfluous IOMMU IOTLB
+ invalidations
 Content-Language: en-US
-To: Jingqi Liu <Jingqi.liu@intel.com>, iommu@lists.linux.dev,
- Tian Kevin <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <20240207090742.23857-1-Jingqi.liu@intel.com>
+To: Tina Zhang <tina.zhang@intel.com>
+References: <20240219125723.1645703-1-tina.zhang@intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240207090742.23857-1-Jingqi.liu@intel.com>
+In-Reply-To: <20240219125723.1645703-1-tina.zhang@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2/7/24 5:07 PM, Jingqi Liu wrote:
-> This document guides users to dump the Intel IOMMU internals by debugfs.
-> 
-> Signed-off-by: Jingqi Liu<Jingqi.liu@intel.com>
-> ---
-> Change log:
->   v3:
->    - Add this change log per Baolu's comments.
->   v2:http://lore.kernel.org/lkml/20240126064704.14292-1-Jingqi.liu@intel.com
->    - Remove the use of private data field according to VT-d specification
->      changes in v4.0.
->   v1:http://lore.kernel.org/lkml/20231220132519.11077-1-Jingqi.liu@intel.com
-> ---
->   Documentation/ABI/testing/debugfs-intel-iommu | 276 ++++++++++++++++++
->   1 file changed, 276 insertions(+)
->   create mode 100644 Documentation/ABI/testing/debugfs-intel-iommu
+On 2/19/24 8:57 PM, Tina Zhang wrote:
+> Tina Zhang (12):
+>    iommu/vt-d: Retire the treatment for revoking PASIDs with pending
+>      pgfaults
+>    iommu/vt-d: Remove initialization for dynamically heap-allocated
+>      rcu_head
+>    iommu/vt-d: Refactor intel_svm_set_dev_pasid function
 
-I have queued this patch for v6.9.
+Above three cleanup patches have been queued for v6.9.
 
 Best regards,
 baolu
