@@ -1,68 +1,68 @@
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95C71131735
-	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 17:12:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 679DF132499
+	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 17:13:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708967522; cv=none; b=NEh1+wPpXHzJ7wXF7+SbruIca+rTQSizReoxme7PPmGuc+MXtTZCwfqudhg9M+yizQ11Jd8KloQevK8kDlUozChfnQ59PZ4Gx9eaWDt8q50gzzS+HH4VQKfD45jpy6dlG+9XvCF5UUkOtby//0CNk3HO91VW/8pngCrj2WbZRYQ=
+	t=1708967613; cv=none; b=m2oidFbMjTf1t6/NAyWxUpKl07JqM+J4sCcbqPd2tPIbSoLOByBLrzi4PFSbpMqnV8XBjx1NIaBvMA/dLo4Zv05tBKcJJWWwNhVSm5sL+LnNlEK3vIY8TrSbDd3gKdAJ0NM4MMSypzLz0K+MMgSgKlupmBlweROrE22O0EvZXmg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708967522; c=relaxed/simple;
-	bh=Chynr1L1b/d5TcYFCNc4RvKn+tu9v2QwhIq+NAH+cTo=;
+	s=arc-20240116; t=1708967613; c=relaxed/simple;
+	bh=EyV42V4YwospafBlBP85zlF0CzzIrV0ckGMLg38+cps=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=B3Z/k2LE9qsLrg/9NwW3yrhhb9/FfYTr8aoNVAtrVTfx203LMKnRs3c73YswgOxtJ3ScQr2itsFYmuTVeiomK9iNM8tuAwA+ZV9SLPexvSNt3lZV5ZN9oM2Ec/BfkrMdyU1rrFI7AcSTMgrhituzp61/XRLauAch7ZtsOsgkbYU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XdQh6sop; arc=none smtp.client-ip=209.85.219.177
+	 To:Cc:Content-Type; b=kOvWoly/E9OOxf3qvetBc1owsTPF7Xf0pVbtAPeUqZWsDfiPwL2yV3fmbhoZbmKiu8WMBTfcxDiZOMSVHSucyTdI6qhue3CDQLJwuz535nN/hF8sDRgIuxtu7PcmxD3tHCi/PotmyolYHh7m1Thldo9AT/pnS1MAmCtnl236c0M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=H5vsUWDf; arc=none smtp.client-ip=209.85.128.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XdQh6sop"
-Received: by mail-yb1-f177.google.com with SMTP id 3f1490d57ef6-dcc80d6004bso3247435276.0
-        for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 09:12:00 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="H5vsUWDf"
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-60921c4dc27so363977b3.3
+        for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 09:13:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1708967519; x=1709572319; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1708967609; x=1709572409; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Chynr1L1b/d5TcYFCNc4RvKn+tu9v2QwhIq+NAH+cTo=;
-        b=XdQh6sopYMgelP/aXLx+9e/K6u+ASjnKT9HJRrUpUrswMO1OGpG54Plfl/pS3g4JN5
-         J+Vxn9DQ8cf7AtO4NU+JvGluZ7s7s/5zaBvxxEfEoKddGWZlNfDHZbHLhdose+ukA2le
-         vNyVGm1REaQUJN/M3u3bMKKTMUurlqMZzVPi/KXRkmYo9VcnDdigLSwDr1mUECLysRZd
-         LDUa1O/XO/KjDeAZ4H16yX7KCuwSHpmzDneCwCZlD9vL7tl33wOMl3ItEDTuW4qv1vYp
-         xKQlg2JTnuiCQh8Ym8Cu3nAqzd3R9byaBeWIctvr4qdreBmLyrnPnzqaN52/5T0dsNAn
-         /PCQ==
+        bh=EyV42V4YwospafBlBP85zlF0CzzIrV0ckGMLg38+cps=;
+        b=H5vsUWDf+NFgt1GV7xY7Rv+0wjBUjGmPpi1o1/Nxpu2RinxG87aWS5B6X6ia6h4uLd
+         5AIlD1ZwAoQ5C6J4oGxFXotH2Pl/Z6052fjqjQdO1V2WgK8m903HBLRSzbNry2k4J4PX
+         BjMpe2nRs93HR238AzSEyx8c0+9WI1dg2dIF8KY+odLDhJtj9atww870D8jif4Oaiw+5
+         Deb9bUQUSVQDJc2zuYnZI2HU0isoFMF14TFKRSID5alUMQks/cGe15ZvvXPUPq9lH8zL
+         3zKT6DD66DxZ7GMPkinRr172sMceGsI+bPuPAArOgVzmHHCeJuKk05gW2jFaZMG+wiAL
+         N+qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1708967519; x=1709572319;
+        d=1e100.net; s=20230601; t=1708967609; x=1709572409;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=Chynr1L1b/d5TcYFCNc4RvKn+tu9v2QwhIq+NAH+cTo=;
-        b=KGKiKuVFxWvbO7hs1g7f2VdEnBV9J28/6qoNFARmQyTbmgrYAQ/P7Bqo13h1Z2GYci
-         vT8jr/H0xbhz9dgDzosOEocmCsHArWwruyzwyIcap1dWHKICZJ5u7fxCndbFNcxFgtGj
-         aJIJcbVHyrDdqg0YBp5ZjJMuEvNcPb1nTEBfyuixvnRAtPaaGHDaSEgqYskxiOyDkrfb
-         frDgCeZC3xx/H0/B6DleiFly/Gl+LRSUVO3tVYdoEHVK7VQEBPDVUn6B4vn9AuDaIBMq
-         I9h0gph3XzbmUjI8anO69oGKFM9itUZJWZv98jLshKWDesBUIFDe+6svoRTSwJhlvFl7
-         Zh2Q==
-X-Forwarded-Encrypted: i=1; AJvYcCU8mtZSPPCw7pR2kODbL4o0rzQOngZu+XyboyPJG2r8SJw2vynOX1RSphbgoxMOzsqWlC1YdoFBSNeZ9JlAnOge5ZHUDLQ=
-X-Gm-Message-State: AOJu0YzTqTnmlls89TvlJnqCgZ5IFgUPe8uP6RGM96fLBTFfTRw4gU1h
-	5sw1rKGC4536NEgGgDL1Csm3J4ycr4ludrpFe9vdwTaHDvR9EL0Od8GACvOgvU3ZAHUv7NkZlam
-	THh/FbXonr0uLRCPcWfQSw+cP9KlbIQRrd4RQ
-X-Google-Smtp-Source: AGHT+IFIvCWhsm/t6u8M8LFQ9aoCdr7tXSqiWENlQfptKH682IaVJyWTqKPlBpDf+9Q2OFcqiRYx3fgZnfrpOzBGyTM=
-X-Received: by 2002:a25:acd2:0:b0:dcc:2caa:578b with SMTP id
- x18-20020a25acd2000000b00dcc2caa578bmr5024557ybd.40.1708967519035; Mon, 26
- Feb 2024 09:11:59 -0800 (PST)
+        bh=EyV42V4YwospafBlBP85zlF0CzzIrV0ckGMLg38+cps=;
+        b=ms7/QFWK/KC24WV71hqrW9EwmxzyFnwy2hVOGRsxvnweQesNNGsjMi2LAeNdSJqhsD
+         7oXd0DeyojZ5syWAFj0Xh0+cHxJi5FiEUBsJtu1cdIiAavNad7fo/33UUTfKm5WX/YPD
+         NYOkNn5l8nZi0HWJSa3/SWkQm0v6gGOx6WTlMFI5PLBdrbsu92IyAUcaKqTiUghQHio1
+         rEnfGZpnzVnkSid9EWk7KV83g97MXkbFC7H/tmx4O4VqvWBd+eXSxmE3ccvKhVBK5Nzt
+         Q/KZiyjz10430rPq+NTMBvsO301ICms1yQNS0+y6+/DQt1V5WeqFXtMg2QM2buQW6NO5
+         rcAA==
+X-Forwarded-Encrypted: i=1; AJvYcCXvDHjYolzUY493w5yxXQ1A31GtIJYgDlU+JLTI3pGJ3sVZGvAa2cQCnvLX1yByhMTEvzJmoesYJuCXgb5M7IlkUYaBBiM=
+X-Gm-Message-State: AOJu0YyldD/8ibQd9spDyRvlkWDyC8F6UJvGG2WZQacd6meNdnRLkpEt
+	o0G06hs5NnsCSg3BrZ47YeVbVEB96Q1wRzkir9edQSVEP8B5sT8F+AqPYfyvNOsqmqG9Uf9Wyt+
+	vk11BjqJvbYkBPRP0yBRK2HaUoXYpqDVJwgCK
+X-Google-Smtp-Source: AGHT+IE/7/pQws6CVfL30UNt1mkliSDpCczaElkub3hA0YpEAm7Kcwht1trOE3ZU3RPvAg7BLiFgI/3lAi1UqBVzgIg=
+X-Received: by 2002:a05:6902:210e:b0:dcd:1f17:aaea with SMTP id
+ dk14-20020a056902210e00b00dcd1f17aaeamr6639276ybb.26.1708967608014; Mon, 26
+ Feb 2024 09:13:28 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-16-surenb@google.com>
- <d6141a99-3409-447b-88ac-16c24b0a892e@suse.cz>
-In-Reply-To: <d6141a99-3409-447b-88ac-16c24b0a892e@suse.cz>
+References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-14-surenb@google.com>
+ <a9ebb623-298d-4acf-bdd5-0025ccb70148@suse.cz>
+In-Reply-To: <a9ebb623-298d-4acf-bdd5-0025ccb70148@suse.cz>
 From: Suren Baghdasaryan <surenb@google.com>
-Date: Mon, 26 Feb 2024 09:11:45 -0800
-Message-ID: <CAJuCfpGZ6W-vjby=hWd5F3BOCLjdeda2iQx_Tz-HcyjCAsmKVg@mail.gmail.com>
-Subject: Re: [PATCH v4 15/36] lib: introduce support for page allocation tagging
+Date: Mon, 26 Feb 2024 09:13:17 -0800
+Message-ID: <CAJuCfpE6sJa2oHE2HrXAYuMeHd8JWd0deWa062teUs3bBRi2PA@mail.gmail.com>
+Subject: Re: [PATCH v4 13/36] lib: prevent module unloading if memory is not freed
 To: Vlastimil Babka <vbabka@suse.cz>
 Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
 	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
@@ -92,32 +92,28 @@ Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 26, 2024 at 9:07=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
+On Mon, Feb 26, 2024 at 8:58=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
 ote:
 >
 > On 2/21/24 20:40, Suren Baghdasaryan wrote:
-> > Introduce helper functions to easily instrument page allocators by
-> > storing a pointer to the allocation tag associated with the code that
-> > allocated the page in a page_ext field.
+> > Skip freeing module's data section if there are non-zero allocation tag=
+s
+> > because otherwise, once these allocations are freed, the access to thei=
+r
+> > code tag would cause UAF.
 > >
 > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
-> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 >
-> The static key usage seems fine now. Even if the page_ext overhead is sti=
-ll
-> always paid when compiled in, you mention in the cover letter there's a p=
-lan
-> for boot-time toggle later, so
+> I know that module unloading was never considered really supported etc.
+> But should we printk something so the admin knows why it didn't unload, a=
+nd
+> can go check those outstanding allocations?
 
-Yes, I already have a simple patch for that to be included in the next
-revision: https://github.com/torvalds/linux/commit/7ca367e80232345f471b77b3=
-ea71cf82faf50954
-
->
-> Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
-
+Yes, that sounds reasonable. I'll add a pr_warn() in the next version.
 Thanks!
 
 >
+> --
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to kernel-team+unsubscribe@android.com.
 >
