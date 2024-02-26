@@ -1,165 +1,312 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2081.outbound.protection.outlook.com [40.107.96.81])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A098132480
-	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 16:58:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708966724; cv=none; b=Bg1Al7HZv0geMoLMXmB5RwkGZUD/fGrp6EieEXLXR25gHV5Py7HNPjgsie7Cau42LdhGbWK+ikVkxIpQJq9CB8IqOVxWxXdRk3xF//UHOx8eYCnofiDkYMa/IQLgqujHFhs4WymtLXzCigP67GRV8hs+PSN4Z/unu+iwEGq0XFI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708966724; c=relaxed/simple;
-	bh=zYKjf9atYKOAZsSmpBw821yA+yGfcDbKYiZ1glrCtOI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=p1EEw4B0UAuIfbsSrMdXwKXWtfNFNszn4PBc9ul1lqvz/u6YVpAF0Y2Z0JD7t6EBPRaOf3Qd2enCo+C7zF/VtqQBM6CTOHuREqbRZq2zCSF/56pboPuW45zMY4P03ostmsMc0u8hxoPj1DsXqLhk/4w+s5xMGL8RIxTH4/vtLGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=jcYeMA68; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Q/Xv00rl; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=jcYeMA68; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=Q/Xv00rl; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA9F812B166;
+	Mon, 26 Feb 2024 17:07:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.96.81
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708967256; cv=fail; b=WhwqSgXUbo8SujX5JsURS0KnRjVnbRld70G6bLUutwHaXBfeCVz+GzYZ0nYTgqODaspOpGg6dPzyOYKn882DoqTCt/uOvq0lrnltoTn9qjy6VCQcZprblODy3r3vYPyLI7Bf0yNdHRqymJYFQUT3k9zlKYEIznljVfXTG/Fk3h8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708967256; c=relaxed/simple;
+	bh=GKeR0rQywLIhFRMkbLCgIWJz7zEnKdbDsFSEB/GXqXk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=fB1Dh1o60zpruronsTFb6zNZwXZLxKc6CDjgZvTC0Fhm2cP3iZkeELTh9Ggi+Gtu/8PYmG3f0DyHD9Wtkt+9Hwe7B2y6FepSGqliJvWyXt56dYtapVWhtw1UajOSmu7cGHc8vVuIQ2ORD0b+cMVHhh6nueAFKWlKAcpOvNrUXWU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=gUdTMNY0; arc=fail smtp.client-ip=40.107.96.81
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="jcYeMA68";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Q/Xv00rl";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="jcYeMA68";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="Q/Xv00rl"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 14138225F4;
-	Mon, 26 Feb 2024 16:58:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708966721; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=l0KFPjXNqVsEqy2ySF8st8aX9aaAa1NXHzLxm/9qX7E=;
-	b=jcYeMA68fIDBke9G63XYDHgm8r7rC8tM+xa/Jd9ZUVyLmCWWjabOr3q1eQCqkPp8AXYygU
-	B6gQn18Om2KAhCXe4PdV8gb9C03jZeMWnTF7c8/KmoT48mw5r5Fs8oh4z7Va22fcqWQo2R
-	5nb3sre7bhuJCoZed92SVCBqLCLRheE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708966721;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=l0KFPjXNqVsEqy2ySF8st8aX9aaAa1NXHzLxm/9qX7E=;
-	b=Q/Xv00rlXZFJgefrppCuzXJpBCyRFGwXI/qhd56LD39Ty5Lx3SkyuS3agI9PXyjpcd844V
-	kHbrGV8fBOAd1zCA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708966721; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=l0KFPjXNqVsEqy2ySF8st8aX9aaAa1NXHzLxm/9qX7E=;
-	b=jcYeMA68fIDBke9G63XYDHgm8r7rC8tM+xa/Jd9ZUVyLmCWWjabOr3q1eQCqkPp8AXYygU
-	B6gQn18Om2KAhCXe4PdV8gb9C03jZeMWnTF7c8/KmoT48mw5r5Fs8oh4z7Va22fcqWQo2R
-	5nb3sre7bhuJCoZed92SVCBqLCLRheE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708966721;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=l0KFPjXNqVsEqy2ySF8st8aX9aaAa1NXHzLxm/9qX7E=;
-	b=Q/Xv00rlXZFJgefrppCuzXJpBCyRFGwXI/qhd56LD39Ty5Lx3SkyuS3agI9PXyjpcd844V
-	kHbrGV8fBOAd1zCA==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 6763713A58;
-	Mon, 26 Feb 2024 16:58:40 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id 5Hq7GEDD3GUxGAAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Mon, 26 Feb 2024 16:58:40 +0000
-Message-ID: <a9ebb623-298d-4acf-bdd5-0025ccb70148@suse.cz>
-Date: Mon, 26 Feb 2024 17:58:40 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="gUdTMNY0"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QGEQajO/QDwp8TUxVnRUdE8j/CFaJHU0BMVBl8Ts/vboSQ72bIim0qcSecXVkdXGERFHTheucs6RFmJv7lZAHF5P++s/crnz8i8mPCBQlmPQeWYB5H89ITJGZIVQx+r8oxVpZvmARhvLZYHNt0cm6x4WyJ3HdcH6Fdygl2ZvKZ5bEBvHRroRd4ANn/CMv7yb4ndvLhci8eLMbJPNVXWIdDMnmOMPwppsso4qoEt/3tG5cRdkSrnaKKjjZkpZXHr3njq8gos73HHvB2PebXYNEmIIO6aAG0C7s2A/4WigqhuaK+mmEGJQebjF+NZ9tCI4Wym1blvNHEW/JC33C1OBmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=4YMRf8eUCowtHepCIhiLLHq4UmIUqrl2p80RhAD5JIU=;
+ b=JiOk/wau2+bScju112cGxm7nLpvCaEAVMtDlOG3hQervWHd/4K2SKWJdsW9ccQ2/twKmsCQNS4gvgVpVGq60HHfsyyRsVsoc6KVFtKBZdisFiY10Uv8JOkF+12SZpRq1MoaSHp5RVaSAYNzhgkgSX4nWSsqW8E/T+T/uXwOeeJM/ovg+fIuY/61tFnYHKlcialCRhj9Is1BJj0zBEqX6UqH4iV26IOfLmBbXpZx9AqfHkAjUYkVYig/fNyGK4DZPZTpDsi2c2DNDI7VQdvnlKuA6D5xaiV6d4o8XABV5XMqGP1jkgw+NQZtHahSfJd+r1FHkI6O+q3vl+yh4kmkfyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4YMRf8eUCowtHepCIhiLLHq4UmIUqrl2p80RhAD5JIU=;
+ b=gUdTMNY0TuRMpVPuWa2hMm9Wh/6U+PZvb3NFIvifYDY/Nr52lOoWlAy0g0Od27Hazjhw5p2UdeTO2y7Y6lD7/eQlaDt4fgrZp9m1GB/fmNOWMJcQ15qNHilnzHu3b2D8iVZPHCDdsx8iYxPVXtI+O0l124JZ0fdh7QionLcgcPnsTDJBs31caZ6f5ovBIKmMTxx6XIcnXey4JgMKvLQVfXvse6lWezTS51XqeExnrJfnoPrzml3SdytknRz2T9iop2ewsdq1nqg2tdTNE5B0BCdhBzs0dppL4y0JXzD331GSTddEP2Dhz6ikWBpufAULOa76ni5CivmRYttGT7WA3g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by PH7PR12MB6905.namprd12.prod.outlook.com (2603:10b6:510:1b7::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.33; Mon, 26 Feb
+ 2024 17:07:30 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::2e3e:c7c0:84da:3941]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::2e3e:c7c0:84da:3941%6]) with mapi id 15.20.7316.034; Mon, 26 Feb 2024
+ 17:07:30 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joerg Roedel <jroedel@suse.de>,
+	Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: [PATCH v6 03/16] iommu/arm-smmu-v3: Move the STE generation for S1 and S2 domains into functions
+Date: Mon, 26 Feb 2024 13:07:14 -0400
+Message-ID: <3-v6-96275f25c39d+2d4-smmuv3_newapi_p1_jgg@nvidia.com>
+In-Reply-To: <0-v6-96275f25c39d+2d4-smmuv3_newapi_p1_jgg@nvidia.com>
+References:
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: BL0PR1501CA0002.namprd15.prod.outlook.com
+ (2603:10b6:207:17::15) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 13/36] lib: prevent module unloading if memory is not
- freed
-Content-Language: en-US
-To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
-Cc: kent.overstreet@linux.dev, mhocko@suse.com, hannes@cmpxchg.org,
- roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
- willy@infradead.org, liam.howlett@oracle.com,
- penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com,
- will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
- nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
- rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
- yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
- hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
- ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org,
- ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
- dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
- bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
- minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arch@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
- cgroups@vger.kernel.org
-References: <20240221194052.927623-1-surenb@google.com>
- <20240221194052.927623-14-surenb@google.com>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20240221194052.927623-14-surenb@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Level: 
-X-Spamd-Bar: /
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=jcYeMA68;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b="Q/Xv00rl"
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Spamd-Result: default: False [-0.73 / 50.00];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 XM_UA_NO_VERSION(0.01)[];
-	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	 TO_DN_SOME(0.00)[];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 DKIM_TRACE(0.00)[suse.cz:+];
-	 MX_GOOD(-0.01)[];
-	 RCPT_COUNT_GT_50(0.00)[74];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 MID_RHS_MATCH_FROM(0.00)[];
-	 BAYES_HAM(-0.73)[83.74%];
-	 ARC_NA(0.00)[];
-	 R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 FROM_HAS_DN(0.00)[];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FREEMAIL_CC(0.00)[linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,i-love.sakura.ne.jp,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[]
-X-Spam-Score: -0.73
-X-Rspamd-Queue-Id: 14138225F4
-X-Spam-Flag: NO
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|PH7PR12MB6905:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6e48be36-d683-48e6-5a54-08dc36ed69c8
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	JWYY0usYDwkjyNrni9y8y7G31KzCfLnuHCWCvjiPLYX+Su3qDm1+PEChUcFmMUFlBG8xN4FH1NG1II+qcOQTh6t5jW5Grtq0WH2FAZNkkacy3WjyS/Ew81BZWWas/3FOku3viDD4q12fJchWs8eGFLNhD7uszOQf1YZ2EFrFql1qM8tFKL5OU3K/t6k9/gd1TT9e2Ft5u/75g/Njwm+95mp/31qiMZ63B+YzksnxGkVtmJADNSrnERUg99vvbyqgaxeQNeCBVgx+dBxpvfQ/v/+S0ksFCB2OQJrnYWKzKA6GcvslK62+QszfmvRyElHLzSbt1Jv9//beysn1He2m9fTAR8Qk+oaIsahqLYBFeO60SEQlawoquJCPOW8a1EyYchUtX/55QS+n9PnfTNijShLa+9/6ltVa3/4c8YGkQ+iqtVRhzKy/x/V6gZOJzsKVbUdseyfjakGBXprYwk9pjq9/8vRzHLqMUPjcYOtDMt+62sNLO1YF/Yy89l4bh/bdZB0mIROP8yWwrinnMfa9bt6UYTLONUSa+T9/2KwABW52uo2E+7rC1XMd4KkymQ9a7hXNvWiBBUT0NIVlltIkIMXfyi11Sdm8Eia1ReQ1MtZy5KpTpl1rEeGRN2MpJDLH/j1T5iHUVMenGXVESux0/A==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?K3GOCZiADwN8pKM5x6rvdfHGrwUKBKTqPGE1XqlswQyMY+RITHp8OIPiFJ/T?=
+ =?us-ascii?Q?Ggsd009F7KCz7i7BZiqE21auwf92HjPMSDPVFQBMquzOm4RUal8Y2c8Rjgha?=
+ =?us-ascii?Q?+AO82XXEgxz6fCApyoKiPOg+BKoeZcPWt/LiH3O+lfg/76NFoJEFvgYIII+U?=
+ =?us-ascii?Q?dm6rMIo8f2Lb6oqhLd/SlB60nekMHrmkbButaep2rtRbn/yLTm/6XVuhVV0b?=
+ =?us-ascii?Q?oB0ytBNZTw6QeoeIwV0GwiDty4yLADIVfWasNFveHmJbm07rSKmyIUpTZ6+Y?=
+ =?us-ascii?Q?/e3hnFH/y0J/42QCgWuvdgv5uDWkihztta7jQXW21I8pIhnCshm4schj3Eau?=
+ =?us-ascii?Q?+pG4GDnY9B6rvbSYpIklsEpHvA3l1LTnNmwfg9ZgSnv//Mtm92OQXj8QF1P5?=
+ =?us-ascii?Q?vEdP1CJcvlFL+t6HB+pcvt5WLWT2GQg+hTDDfBMfjWkwVUaUAa8NvKuiwabn?=
+ =?us-ascii?Q?m/lc0pqLAJjS2Hk0KolnQLKh+sPygAnoYNNtrt6rgOah6J6GBzqCtwidfInJ?=
+ =?us-ascii?Q?xLnVy+SsLidZdlzesUbecjguQcrL9qMQffBaTp7Z1vh7HSc83FY6oEsVSk79?=
+ =?us-ascii?Q?He3cuNKOd7biCeRrzdeuDMrzvxZg/4uXZ4lGwRa8Xo6i5/tVanBKp/9Vq2HP?=
+ =?us-ascii?Q?DJpVvh1kOITZiXDhqGCClZ458yCRuIEa/zkibOe24h9af1ZX948aIpNoBBmh?=
+ =?us-ascii?Q?7B+E1f4Wg2sI4LxDULVqx8yzAgFzDRUeY20Z+X7i7FkqxCCzKHSVn4X5d2Tf?=
+ =?us-ascii?Q?uX4inA55EzjeM3vu9LQvcpI5eaXLb7Yw0Mty8pmrcilIelO/I/z5lxPFoLSP?=
+ =?us-ascii?Q?zKn5ydEUuvqHXapQQqpY1RkFoWBsMs9xf5EijrZQUwG+iDMlLoXIStkB6oc6?=
+ =?us-ascii?Q?zV5q8IC8KauwGjDkdbvBC6cgWh73YlzdXsOqikVfVonjv4X6VioU+cSdu4Vb?=
+ =?us-ascii?Q?OdfDlP/S6CyI1BgrKzGHpNT0LRCpp+L/b2H+f0B7T7WpaiXMDr0vlw0UIDD+?=
+ =?us-ascii?Q?SD7lRWtiIAnQ0tRBUq4fwgx/bweDOP6CJHSQ9/4yHnNXZsP14wLmQmcEhZFD?=
+ =?us-ascii?Q?jZ2ud6Cza0LUTCmvHd5ZYCU/sXovOVvpdLYfYLH1lymNgKPciTL6Qa2xoVOw?=
+ =?us-ascii?Q?GbqF/rzPQ6YWLhGMNc7km3d9Y6oEb/wm51RSRhKyM4jIOgeiqNDFesLIvsUN?=
+ =?us-ascii?Q?G61EZmBOnPRVljdu1EB3/joPi9DU13HuqnGVlXRKL1sQSvPWyOvSlehe7g88?=
+ =?us-ascii?Q?IXISbjv/BUCsOohQBphMjb5JGKJ0uz/ZV/hlNb6DJgQqpsHlBuzJZHoW5DOC?=
+ =?us-ascii?Q?Uaatet3T1O/O994vk7wTzOd6G/JgmAF+XPv1JozowmkQlS84+XYatvHvb+Yy?=
+ =?us-ascii?Q?4TcNqyhXySB2HJG6kIQVDhzcINSrI9ErOQhxCWdE2VjDuXZAPJBFsSGt0CH5?=
+ =?us-ascii?Q?GMD2qYA9YiFvFvknW02VlXoyCUWVulCRkngasIxrOhtWAXu3nSLS0eSGESVL?=
+ =?us-ascii?Q?qcTIUKRK/MCFLf7U2bEDa86uQSYUrU9lTEAIRqcbiPBenUYJg5Rl3KkBZ/lI?=
+ =?us-ascii?Q?j66FdlpqHTbyUzzfvQg=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e48be36-d683-48e6-5a54-08dc36ed69c8
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2024 17:07:29.2244
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hWkxMrzVF8jHvrhBWiAHmUn55WRioPTcBWAOnTPusMcBljduaUCrawX3/BnPGKOV
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6905
 
-On 2/21/24 20:40, Suren Baghdasaryan wrote:
-> Skip freeing module's data section if there are non-zero allocation tags
-> because otherwise, once these allocations are freed, the access to their
-> code tag would cause UAF.
-> 
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+This is preparation to move the STE calculation higher up in to the call
+chain and remove arm_smmu_write_strtab_ent(). These new functions will be
+called directly from attach_dev.
 
-I know that module unloading was never considered really supported etc.
-But should we printk something so the admin knows why it didn't unload, and
-can go check those outstanding allocations?
+Reviewed-by: Moritz Fischer <mdf@kernel.org>
+Reviewed-by: Michael Shavit <mshavit@google.com>
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+Reviewed-by: Mostafa Saleh <smostafa@google.com>
+Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+Tested-by: Moritz Fischer <moritzf@google.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 138 ++++++++++++--------
+ 1 file changed, 83 insertions(+), 55 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 12ba1b97d696c9..e34c3181966934 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1465,13 +1465,89 @@ static void arm_smmu_make_bypass_ste(struct arm_smmu_ste *target)
+ 		FIELD_PREP(STRTAB_STE_1_SHCFG, STRTAB_STE_1_SHCFG_INCOMING));
+ }
+ 
++static void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
++				      struct arm_smmu_master *master)
++{
++	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
++	struct arm_smmu_device *smmu = master->smmu;
++
++	memset(target, 0, sizeof(*target));
++	target->data[0] = cpu_to_le64(
++		STRTAB_STE_0_V |
++		FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS) |
++		FIELD_PREP(STRTAB_STE_0_S1FMT, cd_table->s1fmt) |
++		(cd_table->cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
++		FIELD_PREP(STRTAB_STE_0_S1CDMAX, cd_table->s1cdmax));
++
++	target->data[1] = cpu_to_le64(
++		FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0) |
++		FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
++		FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
++		FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
++		((smmu->features & ARM_SMMU_FEAT_STALLS &&
++		  !master->stall_enabled) ?
++			 STRTAB_STE_1_S1STALLD :
++			 0) |
++		FIELD_PREP(STRTAB_STE_1_EATS,
++			   master->ats_enabled ? STRTAB_STE_1_EATS_TRANS : 0));
++
++	if (smmu->features & ARM_SMMU_FEAT_E2H) {
++		/*
++		 * To support BTM the streamworld needs to match the
++		 * configuration of the CPU so that the ASID broadcasts are
++		 * properly matched. This means either S/NS-EL2-E2H (hypervisor)
++		 * or NS-EL1 (guest). Since an SVA domain can be installed in a
++		 * PASID this should always use a BTM compatible configuration
++		 * if the HW supports it.
++		 */
++		target->data[1] |= cpu_to_le64(
++			FIELD_PREP(STRTAB_STE_1_STRW, STRTAB_STE_1_STRW_EL2));
++	} else {
++		target->data[1] |= cpu_to_le64(
++			FIELD_PREP(STRTAB_STE_1_STRW, STRTAB_STE_1_STRW_NSEL1));
++
++		/*
++		 * VMID 0 is reserved for stage-2 bypass EL1 STEs, see
++		 * arm_smmu_domain_alloc_id()
++		 */
++		target->data[2] =
++			cpu_to_le64(FIELD_PREP(STRTAB_STE_2_S2VMID, 0));
++	}
++}
++
++static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
++					struct arm_smmu_master *master,
++					struct arm_smmu_domain *smmu_domain)
++{
++	struct arm_smmu_s2_cfg *s2_cfg = &smmu_domain->s2_cfg;
++
++	memset(target, 0, sizeof(*target));
++	target->data[0] = cpu_to_le64(
++		STRTAB_STE_0_V |
++		FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S2_TRANS));
++
++	target->data[1] = cpu_to_le64(
++		FIELD_PREP(STRTAB_STE_1_EATS,
++			   master->ats_enabled ? STRTAB_STE_1_EATS_TRANS : 0) |
++		FIELD_PREP(STRTAB_STE_1_SHCFG,
++			   STRTAB_STE_1_SHCFG_INCOMING));
++
++	target->data[2] = cpu_to_le64(
++		FIELD_PREP(STRTAB_STE_2_S2VMID, s2_cfg->vmid) |
++		FIELD_PREP(STRTAB_STE_2_VTCR, s2_cfg->vtcr) |
++		STRTAB_STE_2_S2AA64 |
++#ifdef __BIG_ENDIAN
++		STRTAB_STE_2_S2ENDI |
++#endif
++		STRTAB_STE_2_S2PTW |
++		STRTAB_STE_2_S2R);
++
++	target->data[3] = cpu_to_le64(s2_cfg->vttbr & STRTAB_STE_3_S2TTB_MASK);
++}
++
+ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+ 				      struct arm_smmu_ste *dst)
+ {
+-	u64 val;
+-	struct arm_smmu_device *smmu = master->smmu;
+-	struct arm_smmu_ctx_desc_cfg *cd_table = NULL;
+-	struct arm_smmu_s2_cfg *s2_cfg = NULL;
+ 	struct arm_smmu_domain *smmu_domain = master->domain;
+ 	struct arm_smmu_ste target = {};
+ 
+@@ -1486,63 +1562,15 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+ 
+ 	switch (smmu_domain->stage) {
+ 	case ARM_SMMU_DOMAIN_S1:
+-		cd_table = &master->cd_table;
++		arm_smmu_make_cdtable_ste(&target, master);
+ 		break;
+ 	case ARM_SMMU_DOMAIN_S2:
+-		s2_cfg = &smmu_domain->s2_cfg;
++		arm_smmu_make_s2_domain_ste(&target, master, smmu_domain);
+ 		break;
+ 	case ARM_SMMU_DOMAIN_BYPASS:
+ 		arm_smmu_make_bypass_ste(&target);
+-		arm_smmu_write_ste(master, sid, dst, &target);
+-		return;
++		break;
+ 	}
+-
+-	/* Nuke the existing STE_0 value, as we're going to rewrite it */
+-	val = STRTAB_STE_0_V;
+-
+-	if (cd_table) {
+-		u64 strw = smmu->features & ARM_SMMU_FEAT_E2H ?
+-			STRTAB_STE_1_STRW_EL2 : STRTAB_STE_1_STRW_NSEL1;
+-
+-		target.data[1] = cpu_to_le64(
+-			 FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0) |
+-			 FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+-			 FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+-			 FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
+-			 FIELD_PREP(STRTAB_STE_1_STRW, strw));
+-
+-		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
+-		    !master->stall_enabled)
+-			target.data[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
+-
+-		val |= (cd_table->cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
+-			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS) |
+-			FIELD_PREP(STRTAB_STE_0_S1CDMAX, cd_table->s1cdmax) |
+-			FIELD_PREP(STRTAB_STE_0_S1FMT, cd_table->s1fmt);
+-	}
+-
+-	if (s2_cfg) {
+-		target.data[1] = cpu_to_le64(FIELD_PREP(STRTAB_STE_1_SHCFG,
+-						STRTAB_STE_1_SHCFG_INCOMING));
+-		target.data[2] = cpu_to_le64(
+-			 FIELD_PREP(STRTAB_STE_2_S2VMID, s2_cfg->vmid) |
+-			 FIELD_PREP(STRTAB_STE_2_VTCR, s2_cfg->vtcr) |
+-#ifdef __BIG_ENDIAN
+-			 STRTAB_STE_2_S2ENDI |
+-#endif
+-			 STRTAB_STE_2_S2PTW | STRTAB_STE_2_S2AA64 |
+-			 STRTAB_STE_2_S2R);
+-
+-		target.data[3] = cpu_to_le64(s2_cfg->vttbr & STRTAB_STE_3_S2TTB_MASK);
+-
+-		val |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S2_TRANS);
+-	}
+-
+-	if (master->ats_enabled)
+-		target.data[1] |= cpu_to_le64(FIELD_PREP(STRTAB_STE_1_EATS,
+-						 STRTAB_STE_1_EATS_TRANS));
+-
+-	target.data[0] = cpu_to_le64(val);
+ 	arm_smmu_write_ste(master, sid, dst, &target);
+ }
+ 
+-- 
+2.43.2
 
