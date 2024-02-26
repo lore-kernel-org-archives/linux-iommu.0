@@ -1,100 +1,204 @@
-Received: from out-180.mta1.migadu.com (out-180.mta1.migadu.com [95.215.58.180])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10olkn2067.outbound.protection.outlook.com [40.92.42.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B97C130E46
-	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 20:50:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.180
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708980640; cv=none; b=Nrm8ttKk7gcKQWHB8TluX4MuLlWDZYh9P5ovV6la57Gt4VykAOWAByhhtbjYIq8lcMcMj1bZQv5mcpkYn9dm1bAlelWD/Ha1iS1/UuluCMnb0Yo27QKYhMexazZKnyguezG8H7G0iGK6Q/YCOJOTHTQQMgsnP2So1YI8yQPDNKg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708980640; c=relaxed/simple;
-	bh=+CBQCm6KmLQMuZ7o0MLaEKmbklNJJaFnLg8M+0QfYnA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Gd729EA8d9w4/FBqSheRmPYYp/TVTff0t2fa0ram8GjdKuDMpEcZlu6gfo9sC6OHC8oklicf2M3ZHT6WuoUIvnYYqVg+fuZxTlEoaepbeYuFN51g5fzN5cER94zslMtJCWHMfbVtKOV6DnsufGl3tZ1+3pjB1bzpKnSlvs71SxY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=HcSqhizu; arc=none smtp.client-ip=95.215.58.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB8B7130E58
+	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 21:11:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.42.67
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708981889; cv=fail; b=ujgtRf4whkyHtoD+ohmwA2EMN+C5Ivn5hh8Ac9rUxhQRAC5pGrQe1bOPr2l+loBMC/pZFGciA8ItZwDm6f9mLuSplxpCfIg9YV+CK43jaIipkdUIsRvLT7ewI4efvIfS7CKjmQ44h2uJmgq7SrHYyZBznSYHguOO7zU6ywYBzek=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708981889; c=relaxed/simple;
+	bh=NgVhF1ofpDyn8BVKPVajouoVwqTLkZoo/PhU++uo6u8=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=EAeKw22yRmJ/lQxPc/HQYTgmc3x0/F2NWDZwoFCs0vgxbEIIijBwQr7ue2ixTxtIDFa4i2RGeYus62n41KFWk/pXvPwU32RoqJu+x4s0zywSXalfY/eGHiwPXLFeYqyHmPrzG95YqkQ/lsy8/Homa8BsbZpj4jYG38xc+Xo55Go=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=sw3NVYyq; arc=fail smtp.client-ip=40.92.42.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="HcSqhizu"
-Date: Mon, 26 Feb 2024 15:50:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1708980635;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=mIdkIRtnrOSnd32neZalGi5cjdozYTT6FIEdWcWsU6U=;
-	b=HcSqhizuRpNge/p4Z96mL1vYf4HBThYX/JtRwapRQvIQkUUrCJFkJbw2jiZlCrr1G01OY6
-	VEdKjsiolBcD3vnVkbSepoV1u7spOFQRwGmtRyPJ2rPlH/FFfryTukpBmQxkHJUVCq9K/U
-	bro4rJOJCyg9F/1Fe1ZUZ2cOW9BM2KM=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org, 
-	mhocko@suse.com, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
-	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, 
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org, 
-	peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, 
-	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, tj@kernel.org, 
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, hughd@google.com, 
-	andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com, 
-	vvvvvv@google.com, gregkh@linuxfoundation.org, ebiggers@google.com, 
-	ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com, 
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, 
-	cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
-	glider@google.com, elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, minchan@google.com, 
-	kaleshsingh@google.com, kernel-team@android.com, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-modules@vger.kernel.org, 
-	kasan-dev@googlegroups.com, cgroups@vger.kernel.org, 
-	Alexander Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v4 05/36] fs: Convert alloc_inode_sb() to a macro
-Message-ID: <4uhmoltnaywbhhecnj53g5a6ye3x5acf4upbutgraxn2eg2pe2@6ab667edrl2z>
-References: <20240221194052.927623-1-surenb@google.com>
- <20240221194052.927623-6-surenb@google.com>
- <f68e7f17-c288-4dc9-9ae9-78015983f99c@suse.cz>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="sw3NVYyq"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gNqUkU9aP3C3mAj+8W/qKsHhI9nvpc4Q5MYC1XWPG3eocesmbSzyYoeaM8dDHsediaSyhAR+H/tXrs7hRhF29gtfI+Mx21sD31WG0f/jVmgBb4p+wWbl4x4fFXchJPm+BXlcT8b8P+z4ll5WXPnrQU1cke7CZeEyPsEimctyo1Z70PHOXYwjZ6/N+QXS/S++CoWDfdUwPzWSxQ0qPEyTEO7VXHxcs3xLj5Kx7iTVl1Zi0XeikRCUz6KxCPeHRFIorzJ0Wl3yHQUNFa2Caqq5qQDgvYrptM5TfO/AOJAVWbW1IDWH53VGSYOnt4Q95LyjRYpMLuMf7EDQJjtXcf+1Aw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LigZghKtPkO1bDR+xQDXjitUVpff+BqFhY12NFI+TVQ=;
+ b=YFUBTOmylKnKEg7kBkt8mdW7Zsm8XiP5lw+p+k8Z4cOX3iXThNBLJSaZ214amYg1WVo4n9wC6RHyMu+lcI4GtFIU1OQ50Ba8afDIfukWzZfQX9wtxYWptCbADHRy2W2TZ0Zl93djPh5nrRWOhl3Er25La/WXwDjPU3UDkp8CE8zTjhtoZL4KZjMCn3ykkj7zCvHM1zo4ptyRUOWgrnPaHNyc4FeYWTGNwkPuatdsrD4EQCjZRE6cr0CLlduIIltM4sc8Zt8n9iO8TYxD6QFHo8bV3vBx39nFsebCuu3sca/qwY/UOXvpDYa8oXhwrE7tDCruFuJyBFLCPYkpUwW4GQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LigZghKtPkO1bDR+xQDXjitUVpff+BqFhY12NFI+TVQ=;
+ b=sw3NVYyqCfeOHe01Mof/DC1sFTF9M8hmHcyeCaFFby3uTyEEAIHch/wIhL7Lr9oGYYDLarTiL/cQ6oB7SIiIlCj9nSJn+Ywl+oIYHny5xZIO12O1bFE3Qh/UMCe92I70jyigZE0OM5QXw+VFBLTMwx3RTlsnHVD6etjCqXAwlG4aFTOagCidQRaPKgRsJHHYo/sfSgPX9TaS+h/J4ja45BY3AIDAqhc9LOADBa5TE9rFwz5JotSoi9rUowLq5G5N18dAZT4OtxtK3Y/yBqodSoSl1r5mvtwFRH3joIiXiRpBYaO9PHwTqY13iBrt0bZNekbeQEzcoK67Sdz846Aeig==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by CH0PR02MB8150.namprd02.prod.outlook.com (2603:10b6:610:10b::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.34; Mon, 26 Feb
+ 2024 21:11:23 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::67a9:f3c0:f57b:86dd]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::67a9:f3c0:f57b:86dd%5]) with mapi id 15.20.7316.035; Mon, 26 Feb 2024
+ 21:11:23 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC: "kernel-team@android.com" <kernel-team@android.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Christoph Hellwig
+	<hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Petr Tesarik
+	<petr.tesarik1@huawei-partners.com>, Dexuan Cui <decui@microsoft.com>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: RE: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
+ untrusted device
+Thread-Topic: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
+ untrusted device
+Thread-Index: AQHaZLoRyKgMK9jLMUWPn0GpqcfvobEdDJiAgAAUxOA=
+Date: Mon, 26 Feb 2024 21:11:22 +0000
+Message-ID:
+ <SN6PR02MB4157CD26C1D9BAC64208D9D8D45A2@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240221113504.7161-1-will@kernel.org>
+ <20240221113504.7161-6-will@kernel.org>
+ <6be819d8-f1f9-4833-81c3-32220617f0c5@arm.com>
+In-Reply-To: <6be819d8-f1f9-4833-81c3-32220617f0c5@arm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-tmn: [93LBLVOYOzyIxC3ZZ5x6P/cRW6IwdOwM]
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|CH0PR02MB8150:EE_
+x-ms-office365-filtering-correlation-id: 67e2f709-9929-44a3-02e5-08dc370f7c65
+x-ms-exchange-slblob-mailprops:
+ WaIXnCbdHrPlZmxz1a0npQ9IDLvgJEUsC3/tRLXymph4t9SnIvhbn8A8sKI+qmNK36Ennp7fV4JzuMZL/RWwdi1yCQirffIn6i6kXyNu8/+TKnrLLpuvcP5X4KxDDVPRsBFLBt/bykpec+X91JELzGtNz1fTVuvzTaekTM6KiehtYcwrrsQqDe8IeSGvPXXmqifiBkdNXP1EdKfwkjWZuVfpiO8UFRvzso1x1MpscRgGgQCoPl29rMiLDAzngUJyTdXgfZOiH4GqDM2WeIcf0ndhi2IHOlLBy28kRWOLOact4sp62MQcqIhvKJ6YAN8QtNlNEI7YG2B/AE+3btG8BYcS1ZGiwSue/oKHWcM9wlzvC2vLtdctEUdcTL4MNEda6oTOgCEB8vGyqbETZ3eRDqbAqMQ9ayzhvbJr8M5n+q/32Ya+XGUIPK/EacoZOqs5OgwB8kEMcuyFRJTCVKhZqx8tRZj8Cuur1g4cYw0E+bAC4HyLUQFSMiJfNzBiSz/r9RzrX7N91vc8HtfR9D+aMniD834IMzR68liMbVde8A61lngOfQ252rSBliPGdrc7EjeSTNtjyWRAAFjhB1D4QHWwre+3eE5lw4k9uzTh5nB8CO6DqcREWNiHwZz4F+rQ231jLqqv0YTFtWslV/4rUf0Bz8mHldxZwLyeWLEexvFeKQJhOhWbdJZEVUP8fls+WeGzMqJ1y2py/3te7En8I6u2PuPW9u5OA+FkuDnHP7vEMjcasjCVVqq8MXNXniaVGLYysuOOI1s=
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ SBaz84F9AvW+z1u8+D1U89ivrlxW8KMcVmO6f0lTYQuJjrQ6LGinGyv51VPblWT2v8zkFw4IB0TYc2PNEwbOFqLOttWtc3+OwtArWSs/eGLQfCLMA/CtGvzCyNbzGLUmOu1LWP3H/6yAmF/ImLT5ozozlaVqKdd95xUqOqtE/9IZDuVeJlNvxINbsn9RC2yolY4GXbfjV6mDYSJgzJ/nJR0AaU0pjsHvGK1LLFqPw0szvfecZ2pXB41sflgYGEHuCh2HkC9DqSuEv0KiwA/I9UGNe8xjOAnMFC4K04aK0DxAoFN9sJcTVINbypPdjoqFpe3P2FhbZZ/1iRZlnNWmMglw5F6TXG9WmJedYIiYFL8JsF1NOpl2XDRvcgliajPTqRRosqofat+MZnEKukx4BGQ1Tu1dkh4bkcpmVcyWjI06eJGlyod+Z8mYXTCgtjHSjjA7pEVgHLvS100SDj3pKMw69wpJsSAXDxi+NXt/gL//BGoPrFJQyaP8xbjcwp+KxpKpTV1sL5V5EOU9ODy9mUTs0zGwfDrRl5K5/J2nu5lbu/aNE4LiyOvTuRdP1B76
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?4rx1fnkY4QPsenAHewF0kUDnOcECoP9JZ2jbCGoMzm7TNY0LPRasH1pWe/GO?=
+ =?us-ascii?Q?kenB8ZJYyd5h7F7GqPARQxYILUgtXjoiDvOVxwwwXmKfwCHi+A1+2KMwUFZR?=
+ =?us-ascii?Q?UdeTiRN5fDNrbW3gTfn7Kycp7CzIR2ZTGaSZMMxGnD0F6l/vK6cER5QAR+Uv?=
+ =?us-ascii?Q?5w9RzC895WXL7D90w41TxaxAxwo+pdKCy0+npRatAjg84CIKC212d4h+AFS9?=
+ =?us-ascii?Q?86KlO2Vcxr42pEJCxrxUPu8lxusx0TS5CFzondOdtaAcmcauOg2MOqu42Cxt?=
+ =?us-ascii?Q?ggugTMomawmoEIDH1WOxVf/osQONLv0M2RJHcp0DfCT3YvbdkZW6dB2CIlle?=
+ =?us-ascii?Q?d0rdwsrIWQazniuk+YLFkn9OmSUZBe0Phlv+8veDuYN70uwkfakTl/zr+Ouw?=
+ =?us-ascii?Q?pFvtzq24KAmGv91aCLs/6r9nlMgGiQad1x7XTQt0tVBQoBCXFavlx/GSXsm4?=
+ =?us-ascii?Q?QiRD1vrUyBoC1bPiL6x1jx9rHEIAtMX0+c4X5n9UM8he/nvsz8lJgyrtm5S1?=
+ =?us-ascii?Q?mLAIa/IWLYUAJxdDk2xGeLSQNF1XXdLv0ElLXSgWDnBaJxmZ7CgGpi5TnqxR?=
+ =?us-ascii?Q?3McTZokDJBeesgQWFfbzqaZ9pZl/VywWJnyVurAKDxdmNMw+BVAwFNKfZ2Wy?=
+ =?us-ascii?Q?v+rIzfqjQsEpbo3LkQXkGLKtJRPXa1WMZGir6FjZWpXi1iKBbW9tvZ1Snz6s?=
+ =?us-ascii?Q?6r21wHF/wPjgW3uJYoIw9uTvRjKw7Ud73Wh5wCxbZXkFdCrdfDclWmaOVwlo?=
+ =?us-ascii?Q?bVaHX49KahxYD5blTEAaoUVmVA0NntlC0PZgKdApOTlFB0UpWeiXrKjHyyh2?=
+ =?us-ascii?Q?shLzJN9md3PEWQIRMkd/MGxkTubtA4SlNjXOf5E4XDyLcX6E+s/J0Q49lNH9?=
+ =?us-ascii?Q?es5CyxoRDQRE7gQ4eIkxR1e7/12az5My9wn/t6Dm1+rCwL1vL0yojaiRrx30?=
+ =?us-ascii?Q?nB3VAKLNlgHsYeqdM6bU5rygQFWWd0JfvT37HoLOBTnxK9JSzqEiSEa4PUeW?=
+ =?us-ascii?Q?TZF2L+5PSjs37at0KnZhlxiF7uXZkuZELDCp4dQx+YpkaAy8mk6vwbLVMPXk?=
+ =?us-ascii?Q?EB8Vi5zj3aguZwQss2/CMSNONP9ZLsrl0Oscx8646adQK+wZA7PA4bsPE/JC?=
+ =?us-ascii?Q?KesuXHugXRF6DNPL7wEcp1M0UKuXKznWmf1rL/bU8y8EHiR/m1YAMdoFtNeP?=
+ =?us-ascii?Q?wv/F2JTPb4XFML2KFq8iLg5RIKkbT4WeTLEouw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f68e7f17-c288-4dc9-9ae9-78015983f99c@suse.cz>
-X-Migadu-Flow: FLOW_OUT
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 67e2f709-9929-44a3-02e5-08dc370f7c65
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Feb 2024 21:11:23.0505
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR02MB8150
 
-On Mon, Feb 26, 2024 at 04:44:51PM +0100, Vlastimil Babka wrote:
-> On 2/21/24 20:40, Suren Baghdasaryan wrote:
-> > From: Kent Overstreet <kent.overstreet@linux.dev>
-> > 
-> > We're introducing alloc tagging, which tracks memory allocations by
-> > callsite. Converting alloc_inode_sb() to a macro means allocations will
-> > be tracked by its caller, which is a bit more useful.
-> > 
-> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-> > Reviewed-by: Kees Cook <keescook@chromium.org>
-> > ---
-> >  include/linux/fs.h | 6 +-----
-> >  1 file changed, 1 insertion(+), 5 deletions(-)
-> > 
-> > diff --git a/include/linux/fs.h b/include/linux/fs.h
-> > index 023f37c60709..08d8246399c3 100644
-> > --- a/include/linux/fs.h
-> > +++ b/include/linux/fs.h
-> > @@ -3010,11 +3010,7 @@ int setattr_should_drop_sgid(struct mnt_idmap *idmap,
-> >   * This must be used for allocating filesystems specific inodes to set
-> >   * up the inode reclaim context correctly.
-> >   */
-> > -static inline void *
-> > -alloc_inode_sb(struct super_block *sb, struct kmem_cache *cache, gfp_t gfp)
-> 
-> A __always_inline wouldn't have the same effect? Just wondering.
+From: Robin Murphy <robin.murphy@arm.com> Sent: Monday, February 26, 2024 1=
+1:36 AM
+>=20
+> On 21/02/2024 11:35 am, Will Deacon wrote:
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> >
+> > The swiotlb does not support a mapping size > swiotlb_max_mapping_size(=
+).
+> > On the other hand, with a 64KB PAGE_SIZE configuration, it's observed t=
+hat
+> > an NVME device can map a size between 300KB~512KB, which certainly fail=
+ed
+> > the swiotlb mappings, though the default pool of swiotlb has many slots=
+:
+> >      systemd[1]: Started Journal Service.
+> >   =3D> nvme 0000:00:01.0: swiotlb buffer is full (sz: 327680 bytes), to=
+tal 32768 (slots), used 32 (slots)
+> >      note: journal-offline[392] exited with irqs disabled
+> >      note: journal-offline[392] exited with preempt_count 1
+> >
+> > Call trace:
+> > [    3.099918]  swiotlb_tbl_map_single+0x214/0x240
+> > [    3.099921]  iommu_dma_map_page+0x218/0x328
+> > [    3.099928]  dma_map_page_attrs+0x2e8/0x3a0
+> > [    3.101985]  nvme_prep_rq.part.0+0x408/0x878 [nvme]
+> > [    3.102308]  nvme_queue_rqs+0xc0/0x300 [nvme]
+> > [    3.102313]  blk_mq_flush_plug_list.part.0+0x57c/0x600
+> > [    3.102321]  blk_add_rq_to_plug+0x180/0x2a0
+> > [    3.102323]  blk_mq_submit_bio+0x4c8/0x6b8
+> > [    3.103463]  __submit_bio+0x44/0x220
+> > [    3.103468]  submit_bio_noacct_nocheck+0x2b8/0x360
+> > [    3.103470]  submit_bio_noacct+0x180/0x6c8
+> > [    3.103471]  submit_bio+0x34/0x130
+> > [    3.103473]  ext4_bio_write_folio+0x5a4/0x8c8
+> > [    3.104766]  mpage_submit_folio+0xa0/0x100
+> > [    3.104769]  mpage_map_and_submit_buffers+0x1a4/0x400
+> > [    3.104771]  ext4_do_writepages+0x6a0/0xd78
+> > [    3.105615]  ext4_writepages+0x80/0x118
+> > [    3.105616]  do_writepages+0x90/0x1e8
+> > [    3.105619]  filemap_fdatawrite_wbc+0x94/0xe0
+> > [    3.105622]  __filemap_fdatawrite_range+0x68/0xb8
+> > [    3.106656]  file_write_and_wait_range+0x84/0x120
+> > [    3.106658]  ext4_sync_file+0x7c/0x4c0
+> > [    3.106660]  vfs_fsync_range+0x3c/0xa8
+> > [    3.106663]  do_fsync+0x44/0xc0
+> >
+> > Since untrusted devices might go down the swiotlb pathway with dma-iomm=
+u,
+> > these devices should not map a size larger than swiotlb_max_mapping_siz=
+e.
+> >
+> > To fix this bug, add iommu_dma_max_mapping_size() for untrusted devices=
+ to
+> > take into account swiotlb_max_mapping_size() v.s. iova_rcache_range() f=
+rom
+> > the iommu_dma_opt_mapping_size().
+>=20
+> On the basis that this is at least far closer to correct than doing nothi=
+ng,
+>=20
+> Acked-by: Robin Murphy <robin.murphy@arm.com>
+>=20
+> TBH I'm scared to think about theoretical correctness for all the
+> interactions between the IOVA granule and min_align_mask, since just the
+> SWIOTLB stuff is bad enough, even before you realise the ways that the
+> IOVA allocation isn't necessarily right either. However I reckon as long
+> as we don't ever see a granule smaller than IO_TLB_SIZE, and/or a
+> min_align_mask larger than a granule, then this should probably work
+> well enough as-is.
+>=20
 
-nope, macro expansion within an inline happens once, and will show
-__func__ and __line__ of the helper, we want it expanded in the caller
+I'm not convinced.  The conditions you describe are reasonable
+and reflect upstream code today. But there can still be a failure
+due to attempting to allocate a "too large" swiotlb buffer. It
+happens with a granule of 64K and min_align_mask of 4K - 1 (the
+NVMe case) when the offset passed to iommu_dma_map_page()
+is non-zero modulo 4K.  With this patch, the size passed into
+iommu_dma_map_page() is limited to 252K, but it gets rounded
+up to 256K.  Then swiotlb_tbl_map_single() adds the offset
+modulo 4K.  The result exceeds the 256K limit in swiotlb and
+the mapping fails.
+
+The case I describe is a reasonable case that happens in the real
+world.  As is, this patch will work most of the time because for
+large xfers the offset is typically at least 4K aligned. But not always.
+
+Michael
