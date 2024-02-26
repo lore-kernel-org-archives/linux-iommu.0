@@ -1,149 +1,227 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12olkn2076.outbound.protection.outlook.com [40.92.21.76])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6F9F613D
-	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 01:56:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.21.76
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708912608; cv=fail; b=CLadN4JpREqKEDVT09Ae+KTkYiWX2sMw4G0eDCCCrsbEuAIi0zT+Q7hOlFbktHM97WSxHzfyAQaDUH36QLODIbXt41MTK2IdpKd3tKE9ArxObrTJ0lbD82cdLDxQwqdeeu/f/Sj8n/bei8kPT7ELpPJ49i4qpttyWn0XGxdI4JE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708912608; c=relaxed/simple;
-	bh=csMSuvz0clH82ysE88Z6ZGrdueZcRlPn6/7ETAB51fw=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=R1GO7H1KZLfYLLeCeOgsnznko01HH5eb13c3IbzP6MVcqWrWlBF8a6yhdhTIdk3O+9T7mcS1OYD2afaffvJiCMN8fbdm9KPf21zfNQbtohrATMTjbxv6ncrw3scp0ElNOPtnP9YM/GDZQS/qfAoD43/22kJd7vMoDV3dwiYTgeY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=vQ/BFjJV; arc=fail smtp.client-ip=40.92.21.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 472A2FC01
+	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 02:48:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1708915712; cv=none; b=R5Ma5nfToBnaIhcN8eNaH+9XEbd9PGoAeOZwEP/aDs/4y7mmag1ia8l4HQNC3ITRvj9O0uQEmfEcrLM8CKX7bnjPsW9Ao1Iae5bxnRQ5QPfswVhHFh9lH65sxzBmaHwCRzs/zSQIh8ERBjvxwrUOA31uL2Bb4J3seQkJ2Tf2mjo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1708915712; c=relaxed/simple;
+	bh=m13GnJ6jRnxtBNzF5syjVlJjm5bbUfD6PW5EC6Oq4CU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GW2ZE78+8l22IbdDeJ0lC0h0K94oQZGTFqdrChg/V+ri91Cu7GLOHTp1+OVqExmciyHsCyqyZKEOKyIP1sssUtn7XxcDnhTo8rIpWCZBnKURvIujaq9/uaw1JdbTvDLaFYVhZPeOnmtXbNTPwGuyueurgY1wqKPCSRyXS6VydKg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RhBdFQfF; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="vQ/BFjJV"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YkLs0ivkdIn5jOxhqumOB2wsaAEcvlS7Ws95Aw3xuYv12ZJyc3TdsyI6CGuI0tQ4gz17acuX6gxW4oWr3AwdcCRIv6aHVNFT8UxUCkRK159jT1rAwpodl3kXdkK4Rcot1zRoydOcKwmWSsldI4Z/+sJAWbJt7Sjsu3l6Dg/v+d175QB9w2n5S6ys+VPJ7YuLtJZZw/CBVKcfxAO2W619Gp9cnRKfhzne9nONVxyp/dzrzvQQ/3V2MnzuUuqCztOXuT75KVH3kHeiUSgkBEwIBTUsbmQg5GunRPgmup51A81JQaSVzOA4hyzoGhj5S6fsPOaiJSTivIcNoMIjTMMErw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YqHqPCHMIyOGzk8kjqu0uxLHw2BV3CbbtRl5lj53BtU=;
- b=IhqQ07iWImGFkkpiAaCWrO+p/z2X6A0Xe0PAB8zM+/1OFnW8EZiN8nOuw5lVsCYDZSOWY8VC+Mr0euDiEhPywKfYJSZ40Xrj2xKlFTOZ/EzSGmFBW/ier347atApBQgU3FKVAWUCDqxHOZqoHI2ULcpjEX3DAmnWwvcAN0iQH+gOfoWqTfoGIjmfu5b3qCt/IJkWM1nQHl87LhAxgNl0WYbvy9tRsocJx3QppTsoWRfuyD4bLC60q8rvUOCtcM8ludS2EcEzgPz6IJ83cCvnKZzjfa7nbdzCGwzaolvxJTp3qCCxxYZTNCy+xO/Ce780eC1KRLj4xSO/hHxYfbUIhA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YqHqPCHMIyOGzk8kjqu0uxLHw2BV3CbbtRl5lj53BtU=;
- b=vQ/BFjJV/fux0q7NsqbHC7jRLW07oei8p8dHmxpt3IoVXbYDUMo3qVc2fkwjfjX/2GG3Hr03NZhRBQIs6JRrBG5Kld3t3m0/V6EPtbzWIhJFw9TDjbvDHsuL/SYV7GqNbDjzHzunlRLfhGT15XuVX6irAXeIcd3MJeMl/4qm2rzxfaa1Yh5DzBmzpiZcLCnfNVmzMjQPHPA9IJ6FrmmA/knY7wCZigMkJwupJshY9T53bilcvFmXsy/KC8uxjkYZeSPU6pNFTU0HHvBb9qHwEgMWkXGpbbglv9CQ1NvgJj/uRl3lwnVTxM2O0Sc6SnuYSDVAEq8jPVpRlAlNRp4r8w==
-Received: from CY8PR11MB7779.namprd11.prod.outlook.com (2603:10b6:930:77::22)
- by CH3PR11MB7772.namprd11.prod.outlook.com (2603:10b6:610:120::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.10; Mon, 26 Feb
- 2024 01:56:43 +0000
-Received: from CY8PR11MB7779.namprd11.prod.outlook.com
- ([fe80::3ca3:fb4f:d0d4:974]) by CY8PR11MB7779.namprd11.prod.outlook.com
- ([fe80::3ca3:fb4f:d0d4:974%5]) with mapi id 15.20.7339.009; Mon, 26 Feb 2024
- 01:56:43 +0000
-From: Kunwu Chan <kunwu.chan@hotmail.com>
-To: joro@8bytes.org,
-	suravee.suthikulpanit@amd.com,
-	will@kernel.org,
-	robin.murphy@arm.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Kunwu Chan <kunwu.chan@hotmail.com>
-Subject: [PATCH] iommu/amd: drop unused but set variable entry
-Date: Mon, 26 Feb 2024 09:56:30 +0800
-Message-ID:
- <CY8PR11MB777960FF31E255903D0EE664975A2@CY8PR11MB7779.namprd11.prod.outlook.com>
-X-Mailer: git-send-email 2.39.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-TMN: [0OXqA7Q06W8xKHWxotmOjsEUIz36rsk6GUbKnQvkfGc=]
-X-ClientProxiedBy: SI2PR02CA0033.apcprd02.prod.outlook.com
- (2603:1096:4:195::20) To CY8PR11MB7779.namprd11.prod.outlook.com
- (2603:10b6:930:77::22)
-X-Microsoft-Original-Message-ID:
- <20240226015630.1770718-1-kunwu.chan@hotmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RhBdFQfF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708915710; x=1740451710;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=m13GnJ6jRnxtBNzF5syjVlJjm5bbUfD6PW5EC6Oq4CU=;
+  b=RhBdFQfFpMPX0W41z+1NMJso7i+AFCit6+1FBUV0Ou0N7uJiGvm01r6B
+   XNEiR2yeeWWvsukTcqLqolAB7b9GSFMRWus9lPj9erlljxn3wJmphDbdG
+   Ct3tUhj7Y3PZp2CdJ5n8aic4zleFtaSZ9mYAS9lla3dorhmmdlQamoF5a
+   YFN2tIOS5Bj5cmwaqCWjmvZxEQ5RmhrCiGwJKKyprVRoWKYze+ilgnmfO
+   Y+TxzLimAfJJB/08AkTYbVcJsaWamt0yRtaUn7l1q4peeQ9ucnKp02Dgg
+   3XmUHVShn+rgUJu9TYllObxek+8N131vznA6U/UBQ96Lz90IJFhPnumqk
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="14615943"
+X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
+   d="scan'208";a="14615943"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2024 18:48:29 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
+   d="scan'208";a="43994065"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.124.229.115]) ([10.124.229.115])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2024 18:48:26 -0800
+Message-ID: <9b31ef51-51c9-42e4-b113-4d5e422b5173@linux.intel.com>
+Date: Mon, 26 Feb 2024 10:48:23 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY8PR11MB7779:EE_|CH3PR11MB7772:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0e426354-003b-4760-c2ea-08dc366e2e3d
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	RSgEarufBrhyxqtNgxFh/7OaI+WvsikKzzZft2V/WldNXzbCv8efocY85s1nTEfuweVlHLDDNjV+x2mq0+CaFdw9/MhXeH6p1b+scrwsd+WUF8Qx9BYkg9Mx25v9QHFj48RgOEbCqqXSfiW9/EJJiDeqMZmcL8fpvYwhDQavVTA735oDdFUN7DziOlHg4sMf6/SJ4LcLjemS/nSwzhe4ZHU0smLi1/PlHgsbvWmqleKL3kUBDSMxdI8xscvfXKfeG8PQlWD2ztlXok7qmlze6Dr8q0e31WKa2lDeXFye6bAJ3BiadoRJ+7SuphZryLxJEpDmP+Nme6T3zyMSQBUVHLJkh1OLwsy2F2hVXsB92bIKXKxO8anPmd0cpqLQpkMDHajK6VinmKKLnp3AOJjHVolvYYN8xPUxaxuV+eegrbde6i3aw5hqCeppx2QZOxiQEo6OUnmgreeUn/yqzI27utpS/d467r8EDt4FJd2FEmqzy8SsEsmLTxYW087R+weZpw4tryVZRUWVJGP3vRRMZgrp8t5eygL5HOJC1axJ8/F15N/mNsR8KQzINESqwUpApnLV5kGuNwe2vHDzT3LePxSYUpxoewt+uTNOiiBeUuttK6opbH+s+XzgCb7dMpbakkER/6axGdIMG+UlE7ftV/xKs1CrOBdS67ChZ66JfhYqWVMrcBpUrE/g4/+jGqHzeZaDLDv4cF/LZ4xY9yV0LA==
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?b6VHTeioHzKDb1R9z18SDZv6D4PjbULrJx/yljMbmF8xSVqdLllketZTNRly?=
- =?us-ascii?Q?aty4bG6pcusyNPqdQtuKzLU4cZJQIsZBnpqRjcleO3vfTeHXAEeXFGVb3uSB?=
- =?us-ascii?Q?ciDHGl8vOy3BryeQXexTaVIfmq3Yfj16WSIojve+DWur+uG+LilMUW100TZh?=
- =?us-ascii?Q?Dg2BtGAPWhZeRsWWeEh5Gvl84RjbkybRRhmoWS9hEcTtuSYiRxwrUY8luB11?=
- =?us-ascii?Q?MjefEO5n0akk2cOVLWKT0hX3bOKLbNTR0Br8ZWzhwrs6CE5e5gGgQFpG7jOX?=
- =?us-ascii?Q?zLikOYKz9Ev+ASdA2EfBL1cPoP5O1UBV+QZKAfU4o5ky6UlCYw3L9DFVWmZk?=
- =?us-ascii?Q?4izwVHjbOHTVbU9WsDTyrSLJo4p+o1ml81Ywb7CIRCxTFH4ErzUXRRsJewrH?=
- =?us-ascii?Q?CbmfqQdlzQRSVBXI8e56SWfM7F3lcSBIQ837c9Ob6kJeJG3DcH7EOpCbh6HY?=
- =?us-ascii?Q?TpODDwR1j832zw/XNaRRVaDimZbSZtNc7NKomTlVYLsslgXT0D8d7WGHlNiR?=
- =?us-ascii?Q?cHvURKlTfiH3VO+Fu8XGwhYdQ2Doux3kXjWzdIFIuAxYgJ1XVwOQwfQjeTHK?=
- =?us-ascii?Q?JDzGsw7ln9R6zIJe1brO7yYorLbe0Lev9GbC1hRrjo9q5PaMypSg+6JeqqOu?=
- =?us-ascii?Q?VAB/7hcc74fhEi98BaE1a/dPb+iakd1Aizj+1QxwUj+GbzCXzAeSSTxVSf3+?=
- =?us-ascii?Q?/iVWwVsCIdOIW1wCjC2kreElR1Is4rNYsl9krUFtAgCqbiHzL1iK9Tov2f9A?=
- =?us-ascii?Q?9JWAM/cN1yKWi9M5Hei37THiidGacWjYLom9D0yRdp/OEytDa7c5RjauIvgT?=
- =?us-ascii?Q?tpvCrfAKsLcZhWO9Z1iTgn6MtQWfnwcMQniseSYQBthuRpkQEdHRhvFguk/J?=
- =?us-ascii?Q?6AIgP7QWOEQxVUjSKsW3DjmirWKUC2qeU47svY/VSvoDqpOGQAxAfneaoVXk?=
- =?us-ascii?Q?Wa2R64R+jtZId87kd0WPUsgQpqoZ0k1yl3yXQcypYyz5RQN8V6QeTMSF1EyB?=
- =?us-ascii?Q?c91T3vfQ9f7AZUWpkP27nFP9t7YSkdClUkphMJlMpMd1pQDyC+/shwLksrAU?=
- =?us-ascii?Q?gtw5TwFw09YquqqQfHmXqgxBYEUESTsu8TjMarRfnA/L6XE5E/qlUrR0kocM?=
- =?us-ascii?Q?xWfbGx89Ait+BLxOW+XshYqBXApIC5P57X3BC9Jx78MQlJzk44pcy8Mvf56R?=
- =?us-ascii?Q?35PXoiTBTWq9INi6u2IdZixMLvm9rn+mCovVtTzU9jhnZo48t5lg0B8JCipS?=
- =?us-ascii?Q?hS9pqMLII3L3lzWr+k+s?=
-X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-e8f36.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0e426354-003b-4760-c2ea-08dc366e2e3d
-X-MS-Exchange-CrossTenant-AuthSource: CY8PR11MB7779.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Feb 2024 01:56:43.4305
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR11MB7772
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v13 3/3] iommu/vt-d: improve ITE fault handling if target
+ device isn't valid
+To: Dan Carpenter <dan.carpenter@linaro.org>
+Cc: baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
+ jgg@ziepe.ca, kevin.tian@intel.com, dwmw2@infradead.org, will@kernel.org,
+ lukas@wunner.de, yi.l.liu@intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
+References: <20240222090251.2849702-1-haifeng.zhao@linux.intel.com>
+ <20240222090251.2849702-4-haifeng.zhao@linux.intel.com>
+ <c655cd15-c883-483b-b698-b1b7ae360388@moroto.mountain>
+ <2d1788da-521c-4531-a159-81d2fb801d6c@linux.intel.com>
+ <039a19e5-d1ff-47ae-aa35-3347c08acc13@moroto.mountain>
+ <31ee6660-ad4a-40b8-8503-ebc3ed06dd16@linux.intel.com>
+ <f779be97-66c2-4520-91f2-a9a54e84017c@moroto.mountain>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <f779be97-66c2-4520-91f2-a9a54e84017c@moroto.mountain>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Fix compile warning:
-drivers/iommu/amd/iommu.c: In function 'iommu_poll_ppr_log':
-drivers/iommu/amd/iommu.c:833:21: Warning:
-Variable 'entry' is set but not used [-Wunused-but-set-variable]
 
-Commit d55b0d2e075a("iommu/amd: Remove PPR support")
-removes the use of 'entry', but does not delete this variable.
+On 2/23/2024 4:19 PM, Dan Carpenter wrote:
+> On Fri, Feb 23, 2024 at 03:32:52PM +0800, Ethan Zhao wrote:
+>> On 2/23/2024 2:08 PM, Dan Carpenter wrote:
+>>> On Fri, Feb 23, 2024 at 10:29:28AM +0800, Ethan Zhao wrote:
+>>>>>> @@ -1326,6 +1336,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+>>>>>>     			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
+>>>>>>     		} while (head != tail);
+>>>>>> +		/*
+>>>>>> +		 * If got ITE, we need to check if the sid of ITE is one of the
+>>>>>> +		 * current valid ATS invalidation target devices, if no, or the
+>>>>>> +		 * target device isn't presnet, don't try this request anymore.
+>>>>>> +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
+>>>>>> +		 */
+>>>>> This comment is kind of confusing.
+>>>> Really confusing ? this is typo there, resnet-> "present"
+>>>>
+>>> Reading this comment again, the part about zero ite_sid values is
+>>> actually useful, but what does "old" mean in "old VT-d device".  How old
+>>> is it?  One year old?
+>> I recite the description from Intel VT-d spec here
+>>
+>> "A value of 0 in this field indicates that this is an older version of DMA
+>> remapping hardware which does not provide additional details about
+>> the Invalidation Time-out Error"
+>>
+> This is good.  Put that in the comment.  Otherwise it's not clear.  I
 
-Signed-off-by: Kunwu Chan <kunwu.chan@hotmail.com>
----
- drivers/iommu/amd/iommu.c | 5 -----
- 1 file changed, 5 deletions(-)
+Sure.
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 4283dd8191f0..de771a6420dc 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -831,7 +831,6 @@ static void iommu_poll_ppr_log(struct amd_iommu *iommu)
- 
- 	while (head != tail) {
- 		volatile u64 *raw;
--		u64 entry[2];
- 		int i;
- 
- 		raw = (u64 *)(iommu->ppr_log + head);
-@@ -847,10 +846,6 @@ static void iommu_poll_ppr_log(struct amd_iommu *iommu)
- 			udelay(1);
- 		}
- 
--		/* Avoid memcpy function-call overhead */
--		entry[0] = raw[0];
--		entry[1] = raw[1];
--
- 		/*
- 		 * To detect the hardware errata 733 we need to clear the
- 		 * entry back to zero. This issue does not exist on SNP
--- 
-2.39.2
+> assumed "old" meant released or something.
+>
+>
+>> At least, the Intel VT-d spec 4.0 released 2022 June says the same thing.
+>> as to how old, I didn't find docs older than that, really out of my radar.
+>>
+>>>>> /*
+>>>>>     * If we have an ITE, then we need to check whether the sid of the ITE
+>>>>>     * is in the rbtree (meaning it is probed and not released), and that
+>>>>>     * the PCI device is present.
+>>>>>     */
+>>>>>
+>>>>> My comment is slightly shorter but I think it has the necessary
+>>>>> information.
+>>>>>
+>>>>>> +		if (ite_sid) {
+>>>>>> +			dev = device_rbtree_find(iommu, ite_sid);
+>>>>>> +			if (!dev || !dev_is_pci(dev))
+>>>>>> +				return -ETIMEDOUT;
+>>>>> -ETIMEDOUT is weird.  The callers don't care which error code we return.
+>>>>> Change this to -ENODEV or something
+>>>> -ETIMEDOUT means prior ATS invalidation request hit timeout fault, and the
+>>>> caller really cares about the returned value.
+>>>>
+>>> I don't really care about the return value and if you say it should be
+>>> -ETIMEDOUT, then you're the expert.  However, I don't see anything in
+>>> linux-next which cares about the return values except -EAGAIN.
+>>> This function is only called from qi_submit_sync() which checks for
+>>> -EAGAIN.  Then I did a git grep.
+>>>
+>>> $ git grep qi_submit_sync
+>>> drivers/iommu/intel/dmar.c:int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/iommu.h:int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
+>>> drivers/iommu/intel/iommu.h: * Options used in qi_submit_sync:
+>>> drivers/iommu/intel/irq_remapping.c:    return qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/pasid.c:    qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/svm.c:      qi_submit_sync(iommu, desc, 3, QI_OPT_WAIT_DRAIN);
+>>> drivers/iommu/intel/svm.c:      qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/svm.c:              qi_submit_sync(iommu, &desc, 1, 0);
+>>>
+>>> Only qi_flush_iec() in irq_remapping.c cares about the return.  Then I
+>>> traced those callers back and nothing cares about -ETIMEOUT.
+>>>
+>>> Are you refering to patches that haven't ben merged yet?
+>> Yes, patches under working, not the code running on your boxes.
+>>
+>> -ETIMEOUT & -ENODEV, they both describe the error that is happenning, someone
+>> prefers -ETIMEOUT, they would like to know the request was timeout, and someone
+>> perfers -ENODEV, they know the target device is gone, ever existed.
+> Okay.  I obviously can't comment on patches that I haven't seen but,
+> sure, it sounds reasonable.
+>
+>>>>>> +			pdev = to_pci_dev(dev);
+>>>>>> +			if (!pci_device_is_present(pdev) &&
+>>>>>> +				ite_sid == pci_dev_id(pci_physfn(pdev)))
+>>>>> The && confused me, but then I realized that probably "ite_sid ==
+>>>>> pci_dev_id(pci_physfn(pdev))" is always true.  Can we delete that part?
+>>>> Here is the fault handling, just double confirm nothing else goes wrong --
+>>>> beyond the assumption.
+>>>>
+>>> Basically for that to ever be != it would need some kind of memory
+>>> corruption?  I feel like in that situation, the more conservative thing
+>>> is to give up.  If the PCI device is not present then just give up.
+>> memory corruption, buggy BIOS tables, faked request ...something out
+>> of imagination, after confirmed the device is what it claimed to be, if
+>> not present, then give up to retry the request.
+> This is not correct.  We looked up the device based on the ite_sid so
+> we know what the device id is, unless we experience catastrophic memory
+> corruption.
+>
+> +                       dev = device_rbtree_find(iommu, ite_sid);
+>                                                          ^^^^^^^
+> We looked it up here.
+>
+> +                       if (!dev || !dev_is_pci(dev))
+> +                               return -ETIMEDOUT;
+> +                       pdev = to_pci_dev(dev);
+> +                       if (!pci_device_is_present(pdev) &&
+> +                               ite_sid == pci_dev_id(pci_physfn(pdev)))
+>                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> Unless the device_rbtree_find() is returning garbage then these things
+> must be true.
+>
+> +                               return -ETIMEDOUT;
+>
+> I tried to double check how we were storing devices into the rbtree,
+> but then I discovered that the device_rbtree_find() doesn't exist in
+> linux-next and this patch breaks the build.
 
+This patchset is based on Baolu's rbtree patchset,
+https://lkml.org/lkml/2024/2/15/147
+I mentioned that in the cover-letter (and the base commit tag).
+
+>
+> This is very frustrating thing.  But let's say a buggy BIOS could mess
+
+Buggy BIOS dmar table etc doesn't corrupt the rbtree, but might feed rbtree
+with inconsistent info about iommu and pci device.
+
+e.g. the device exists, present, but in fact, the device doesn't belong to the
+iommu the BIOS table claimed, if devTLB invalidation sent to such target, we
+will get ITE too, but here it isn't be handled. we will deal with that case in
+other patches.
+
+The key used to index rbtree is device_domain_info->bus, device_domain_info->
+devfn, see intel_iommu_probe_device(), these values not always be the same
+as pdev, such as the device is vmd/VF etc, here we only handle the case we intend
+to handle ---the hot removal of physical device.
+
+Thanks,
+Ethan
+
+> up the rbtree.  In that situation, we would still want to change the &&
+> to an ||.  If the divice is not present and^W or the rbtree is corrupted
+> then return an error.  But don't do this.  If the memory is corrupted we
+> are already screwed and there is no way the system can really recover
+> in any reasonable way.
+>
+> regards,
+> dan carpenter
+>
