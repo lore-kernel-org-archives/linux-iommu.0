@@ -1,46 +1,46 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 472A2FC01
-	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 02:48:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19FEE1BF2A
+	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 06:13:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708915712; cv=none; b=R5Ma5nfToBnaIhcN8eNaH+9XEbd9PGoAeOZwEP/aDs/4y7mmag1ia8l4HQNC3ITRvj9O0uQEmfEcrLM8CKX7bnjPsW9Ao1Iae5bxnRQ5QPfswVhHFh9lH65sxzBmaHwCRzs/zSQIh8ERBjvxwrUOA31uL2Bb4J3seQkJ2Tf2mjo=
+	t=1708928007; cv=none; b=G+PqegsLE+xih+ZhpA5Mo8kVp8Ju4f4Lu7yclM0WH175XXznxPAp7BG5WjjwwHJf/8Zx7b6jjfAHI3RpF8Uy9R48SQrKTFMwfyH6AVSJRQaJLjaVF2oeT289mnS4IdzapPcMAln5hv7oZ2WiCni6Pz66kzfvK4cDouKzhBmQub0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708915712; c=relaxed/simple;
-	bh=m13GnJ6jRnxtBNzF5syjVlJjm5bbUfD6PW5EC6Oq4CU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=GW2ZE78+8l22IbdDeJ0lC0h0K94oQZGTFqdrChg/V+ri91Cu7GLOHTp1+OVqExmciyHsCyqyZKEOKyIP1sssUtn7XxcDnhTo8rIpWCZBnKURvIujaq9/uaw1JdbTvDLaFYVhZPeOnmtXbNTPwGuyueurgY1wqKPCSRyXS6VydKg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RhBdFQfF; arc=none smtp.client-ip=198.175.65.12
+	s=arc-20240116; t=1708928007; c=relaxed/simple;
+	bh=L85jrdnuvWMYNRaKJflVjhzs3F+SyK8Kz4ffE7SFr9w=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=ZnfeI34EO4EprjlH1/1YaZFTsDRls+nG/3t3VBXOf3fr+loIfxFnb1Uql5M4eiPNLI3nZXV8h35B1pM/mQ00UoN/Sp65H9cq/5W12Bt9Rsbi+ncoSewcXBdsFYe0h45g4SOk4QJZtQRun+Uguv3HvHWQhJiZgOQyK59OuvpE2LI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Kp9m4xuY; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RhBdFQfF"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Kp9m4xuY"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1708915710; x=1740451710;
-  h=message-id:date:mime-version:subject:to:cc:references:
+  t=1708928006; x=1740464006;
+  h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=m13GnJ6jRnxtBNzF5syjVlJjm5bbUfD6PW5EC6Oq4CU=;
-  b=RhBdFQfFpMPX0W41z+1NMJso7i+AFCit6+1FBUV0Ou0N7uJiGvm01r6B
-   XNEiR2yeeWWvsukTcqLqolAB7b9GSFMRWus9lPj9erlljxn3wJmphDbdG
-   Ct3tUhj7Y3PZp2CdJ5n8aic4zleFtaSZ9mYAS9lla3dorhmmdlQamoF5a
-   YFN2tIOS5Bj5cmwaqCWjmvZxEQ5RmhrCiGwJKKyprVRoWKYze+ilgnmfO
-   Y+TxzLimAfJJB/08AkTYbVcJsaWamt0yRtaUn7l1q4peeQ9ucnKp02Dgg
-   3XmUHVShn+rgUJu9TYllObxek+8N131vznA6U/UBQ96Lz90IJFhPnumqk
+  bh=L85jrdnuvWMYNRaKJflVjhzs3F+SyK8Kz4ffE7SFr9w=;
+  b=Kp9m4xuYdkrg0/IDNA30iempjSDeTWAN4LiyJan9OEYbcG8DzJrOXJRe
+   owsQqNt/rW08GfKLHccGWfw6u7R6cwJiPJXAKeLPrR03TyK1xd7c/+VmI
+   KTvsIHgXk9HVZB+IH5Gu30kyRhrLNAokuI4XsykY7+FQR6u7faLq10+rN
+   BfCnGkoHE+iAcw/DMTfMZC16iFD1wAoPMbgwYYXexhW2fnugDWPlfo01k
+   EjgHiq/pNBaBkVgh5tXfpn/Gr752SLLcmT/7592o6fizIpNOQIfgnmGjc
+   mWSGEWLxzI3Ofifvaf6ywK+S5ZnHg34J2gCEkOpjyw9W+RKBRPT+/Qf+d
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="14615943"
+X-IronPort-AV: E=McAfee;i="6600,9927,10995"; a="3738232"
 X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
-   d="scan'208";a="14615943"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2024 18:48:29 -0800
+   d="scan'208";a="3738232"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2024 22:13:26 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,185,1705392000"; 
-   d="scan'208";a="43994065"
-Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.124.229.115]) ([10.124.229.115])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2024 18:48:26 -0800
-Message-ID: <9b31ef51-51c9-42e4-b113-4d5e422b5173@linux.intel.com>
-Date: Mon, 26 Feb 2024 10:48:23 +0800
+   d="scan'208";a="11129742"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmviesa005.fm.intel.com with ESMTP; 25 Feb 2024 22:13:22 -0800
+Message-ID: <b2dac6a4-3916-4a67-b7d9-8f69e5b0eb78@linux.intel.com>
+Date: Mon, 26 Feb 2024 14:07:28 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,180 +48,45 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v13 3/3] iommu/vt-d: improve ITE fault handling if target
- device isn't valid
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
- jgg@ziepe.ca, kevin.tian@intel.com, dwmw2@infradead.org, will@kernel.org,
- lukas@wunner.de, yi.l.liu@intel.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
-References: <20240222090251.2849702-1-haifeng.zhao@linux.intel.com>
- <20240222090251.2849702-4-haifeng.zhao@linux.intel.com>
- <c655cd15-c883-483b-b698-b1b7ae360388@moroto.mountain>
- <2d1788da-521c-4531-a159-81d2fb801d6c@linux.intel.com>
- <039a19e5-d1ff-47ae-aa35-3347c08acc13@moroto.mountain>
- <31ee6660-ad4a-40b8-8503-ebc3ed06dd16@linux.intel.com>
- <f779be97-66c2-4520-91f2-a9a54e84017c@moroto.mountain>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <f779be97-66c2-4520-91f2-a9a54e84017c@moroto.mountain>
+Cc: baolu.lu@linux.intel.com, Jani Nikula <jani.nikula@linux.intel.com>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>, iommu@lists.linux.dev,
+ intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] iommu/vt-d: Remove INTEL_IOMMU_BROKEN_GFX_WA
+Content-Language: en-US
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>
+References: <20240130060823.57990-1-baolu.lu@linux.intel.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240130060823.57990-1-baolu.lu@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
+On 1/30/24 2:08 PM, Lu Baolu wrote:
+> Commit 62edf5dc4a524 ("intel-iommu: Restore DMAR_BROKEN_GFX_WA option for
+> broken graphics drivers") was introduced 24 years ago as a temporary
+> workaround for graphics drivers that used physical addresses for DMA and
+> avoided DMA APIs. This workaround was disabled by default.
+> 
+> As 24 years have passed, it is expected that graphics driver developers
+> have migrated their drivers to use kernel DMA APIs. Therefore, this
+> workaround is no longer required and could been removed.
+> 
+> The Intel iommu driver also provides a "igfx_off" option to turn off
+> the DAM translation for the graphic dedicated IOMMU. Hence, there is
+> really no good reason to keep this config option.
+> 
+> Suggested-by: Kevin Tian<kevin.tian@intel.com>
+> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+> Reviewed-by: Kevin Tian<kevin.tian@intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c |  4 ----
+>   drivers/iommu/intel/Kconfig | 11 -----------
+>   2 files changed, 15 deletions(-)
 
-On 2/23/2024 4:19 PM, Dan Carpenter wrote:
-> On Fri, Feb 23, 2024 at 03:32:52PM +0800, Ethan Zhao wrote:
->> On 2/23/2024 2:08 PM, Dan Carpenter wrote:
->>> On Fri, Feb 23, 2024 at 10:29:28AM +0800, Ethan Zhao wrote:
->>>>>> @@ -1326,6 +1336,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
->>>>>>     			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
->>>>>>     		} while (head != tail);
->>>>>> +		/*
->>>>>> +		 * If got ITE, we need to check if the sid of ITE is one of the
->>>>>> +		 * current valid ATS invalidation target devices, if no, or the
->>>>>> +		 * target device isn't presnet, don't try this request anymore.
->>>>>> +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
->>>>>> +		 */
->>>>> This comment is kind of confusing.
->>>> Really confusing ? this is typo there, resnet-> "present"
->>>>
->>> Reading this comment again, the part about zero ite_sid values is
->>> actually useful, but what does "old" mean in "old VT-d device".  How old
->>> is it?  One year old?
->> I recite the description from Intel VT-d spec here
->>
->> "A value of 0 in this field indicates that this is an older version of DMA
->> remapping hardware which does not provide additional details about
->> the Invalidation Time-out Error"
->>
-> This is good.  Put that in the comment.  Otherwise it's not clear.  I
+I have queued this patch for v6.9.
 
-Sure.
-
-> assumed "old" meant released or something.
->
->
->> At least, the Intel VT-d spec 4.0 released 2022 June says the same thing.
->> as to how old, I didn't find docs older than that, really out of my radar.
->>
->>>>> /*
->>>>>     * If we have an ITE, then we need to check whether the sid of the ITE
->>>>>     * is in the rbtree (meaning it is probed and not released), and that
->>>>>     * the PCI device is present.
->>>>>     */
->>>>>
->>>>> My comment is slightly shorter but I think it has the necessary
->>>>> information.
->>>>>
->>>>>> +		if (ite_sid) {
->>>>>> +			dev = device_rbtree_find(iommu, ite_sid);
->>>>>> +			if (!dev || !dev_is_pci(dev))
->>>>>> +				return -ETIMEDOUT;
->>>>> -ETIMEDOUT is weird.  The callers don't care which error code we return.
->>>>> Change this to -ENODEV or something
->>>> -ETIMEDOUT means prior ATS invalidation request hit timeout fault, and the
->>>> caller really cares about the returned value.
->>>>
->>> I don't really care about the return value and if you say it should be
->>> -ETIMEDOUT, then you're the expert.  However, I don't see anything in
->>> linux-next which cares about the return values except -EAGAIN.
->>> This function is only called from qi_submit_sync() which checks for
->>> -EAGAIN.  Then I did a git grep.
->>>
->>> $ git grep qi_submit_sync
->>> drivers/iommu/intel/dmar.c:int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
->>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
->>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
->>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
->>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
->>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
->>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
->>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
->>> drivers/iommu/intel/iommu.h:int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
->>> drivers/iommu/intel/iommu.h: * Options used in qi_submit_sync:
->>> drivers/iommu/intel/irq_remapping.c:    return qi_submit_sync(iommu, &desc, 1, 0);
->>> drivers/iommu/intel/pasid.c:    qi_submit_sync(iommu, &desc, 1, 0);
->>> drivers/iommu/intel/svm.c:      qi_submit_sync(iommu, desc, 3, QI_OPT_WAIT_DRAIN);
->>> drivers/iommu/intel/svm.c:      qi_submit_sync(iommu, &desc, 1, 0);
->>> drivers/iommu/intel/svm.c:              qi_submit_sync(iommu, &desc, 1, 0);
->>>
->>> Only qi_flush_iec() in irq_remapping.c cares about the return.  Then I
->>> traced those callers back and nothing cares about -ETIMEOUT.
->>>
->>> Are you refering to patches that haven't ben merged yet?
->> Yes, patches under working, not the code running on your boxes.
->>
->> -ETIMEOUT & -ENODEV, they both describe the error that is happenning, someone
->> prefers -ETIMEOUT, they would like to know the request was timeout, and someone
->> perfers -ENODEV, they know the target device is gone, ever existed.
-> Okay.  I obviously can't comment on patches that I haven't seen but,
-> sure, it sounds reasonable.
->
->>>>>> +			pdev = to_pci_dev(dev);
->>>>>> +			if (!pci_device_is_present(pdev) &&
->>>>>> +				ite_sid == pci_dev_id(pci_physfn(pdev)))
->>>>> The && confused me, but then I realized that probably "ite_sid ==
->>>>> pci_dev_id(pci_physfn(pdev))" is always true.  Can we delete that part?
->>>> Here is the fault handling, just double confirm nothing else goes wrong --
->>>> beyond the assumption.
->>>>
->>> Basically for that to ever be != it would need some kind of memory
->>> corruption?  I feel like in that situation, the more conservative thing
->>> is to give up.  If the PCI device is not present then just give up.
->> memory corruption, buggy BIOS tables, faked request ...something out
->> of imagination, after confirmed the device is what it claimed to be, if
->> not present, then give up to retry the request.
-> This is not correct.  We looked up the device based on the ite_sid so
-> we know what the device id is, unless we experience catastrophic memory
-> corruption.
->
-> +                       dev = device_rbtree_find(iommu, ite_sid);
->                                                          ^^^^^^^
-> We looked it up here.
->
-> +                       if (!dev || !dev_is_pci(dev))
-> +                               return -ETIMEDOUT;
-> +                       pdev = to_pci_dev(dev);
-> +                       if (!pci_device_is_present(pdev) &&
-> +                               ite_sid == pci_dev_id(pci_physfn(pdev)))
->                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> Unless the device_rbtree_find() is returning garbage then these things
-> must be true.
->
-> +                               return -ETIMEDOUT;
->
-> I tried to double check how we were storing devices into the rbtree,
-> but then I discovered that the device_rbtree_find() doesn't exist in
-> linux-next and this patch breaks the build.
-
-This patchset is based on Baolu's rbtree patchset,
-https://lkml.org/lkml/2024/2/15/147
-I mentioned that in the cover-letter (and the base commit tag).
-
->
-> This is very frustrating thing.  But let's say a buggy BIOS could mess
-
-Buggy BIOS dmar table etc doesn't corrupt the rbtree, but might feed rbtree
-with inconsistent info about iommu and pci device.
-
-e.g. the device exists, present, but in fact, the device doesn't belong to the
-iommu the BIOS table claimed, if devTLB invalidation sent to such target, we
-will get ITE too, but here it isn't be handled. we will deal with that case in
-other patches.
-
-The key used to index rbtree is device_domain_info->bus, device_domain_info->
-devfn, see intel_iommu_probe_device(), these values not always be the same
-as pdev, such as the device is vmd/VF etc, here we only handle the case we intend
-to handle ---the hot removal of physical device.
-
-Thanks,
-Ethan
-
-> up the rbtree.  In that situation, we would still want to change the &&
-> to an ||.  If the divice is not present and^W or the rbtree is corrupted
-> then return an error.  But don't do this.  If the memory is corrupted we
-> are already screwed and there is no way the system can really recover
-> in any reasonable way.
->
-> regards,
-> dan carpenter
->
+Best regards,
+baolu
