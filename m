@@ -1,25 +1,46 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 21EAF1947E
-	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 19:36:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31165130AF9
+	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 20:00:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708976165; cv=none; b=K4GhvRxdvk0nn1mhRaxqWNQUniqBTNeGJrjJxd1vanmhH8igwo9+wducSQTMX3NqLhudd/ugzcuepe5NFqy/kD3DacGFxwL4WulvXMd/EAZQ9QKG8YxzIsjTR4H4mwLBMGpLtpZVnDXkjvmLhUt3gEgLdRB37L8zUM9caiwhbaU=
+	t=1708977642; cv=none; b=Mful71iknfCDk3SA5A7HqCnlTN/oI2psL/Db08Ku2EDy/lc6ZSRtQYYgJSV1n2TqD6t1p6SHi6LtNxJ/hkso74lNyL6+xZ+xnsyxIZlb7OZdhtW+Yd6Ftb/M4dRfoWkT1GUwzteEnCMVG+COZEoYet4fGXnI46Qy0Mt3Faygp+c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708976165; c=relaxed/simple;
-	bh=UaVvJo8VEL45JixxaiG9F8e+o68JzaMmzhDzuncz1fs=;
+	s=arc-20240116; t=1708977642; c=relaxed/simple;
+	bh=s9SBE+3/1NhK9cfyqIIFTjRmoWxhSNiFxCbfOOR0Zxo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Xnbcr4D/T3/+ALKIs4z6YcZo75e3T2NkHRWXIbLNEo19AUbv5f6jfXvpoDCIEWPFwQOetxwAnTO2abWzh3GSYqfR2HoUdtUQU5YADZlao7zVCOPvQMzkRQBQM+uGWYw0S06gwhdxmRifql2XQfIgdvXl+5ph7K1/pmDBhUqEsYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 09272DA7;
-	Mon, 26 Feb 2024 11:36:41 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B306A3F762;
-	Mon, 26 Feb 2024 11:36:00 -0800 (PST)
-Message-ID: <6be819d8-f1f9-4833-81c3-32220617f0c5@arm.com>
-Date: Mon, 26 Feb 2024 19:35:59 +0000
+	 In-Reply-To:Content-Type; b=Jw+W2LXqB2NgMTiVrXmGQ5Z8jxBJWa7aSA+NujttNiNWDWazYECpzH9MYCpVM2ap/Iqx9sg9PGNmTWUp8gHWvRO3q7aIAU7ir17+VR17KTRkEgLFuQlxcuXuYgLNMuKGXS6neTLmNVeKwWVSG4zJeAcVpEi8nqdZYUKIy0tGISI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Mgk5/BMS; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Mgk5/BMS"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1708977640; x=1740513640;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=s9SBE+3/1NhK9cfyqIIFTjRmoWxhSNiFxCbfOOR0Zxo=;
+  b=Mgk5/BMSyLBgxuF3i57I7EbV1fMWqri/dLOaSTCK8frdDuj6KBtRVGpV
+   eGdGwPThymE8jQrFAm5UKe2dhsCahCCwHFm537FnHRiNc8HDiv89hgSaG
+   Lw0erLp5eNh7nVN5ZZkPaF547fabe0YGwarz/N0plMtMZE/2MPZxQYje7
+   KBc41IFvqejVgVoaGZjaHsXMk3QDQNwecpIae+5LsHZuIMAtbD6Y/hhvC
+   3laatqzBxJ1VGpdt51vT8bSFkGfXLZnHSZSe2LWLNMhbkh44KCR6O3dEH
+   VknkSM/luX0kUnkdXGp8XaEWgrUNJW/AXuFp5gTlTTp5xduVghn4L/e1D
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10996"; a="3136235"
+X-IronPort-AV: E=Sophos;i="6.06,186,1705392000"; 
+   d="scan'208";a="3136235"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2024 12:00:39 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,186,1705392000"; 
+   d="scan'208";a="37809154"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.124.229.115]) ([10.124.229.115])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2024 12:00:36 -0800
+Message-ID: <623ce65f-da43-4493-8a21-4fd6dfe86dbb@linux.intel.com>
+Date: Tue, 27 Feb 2024 04:00:33 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,113 +48,176 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
- untrusted device
-Content-Language: en-GB
-To: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
-Cc: kernel-team@android.com, iommu@lists.linux.dev,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Petr Tesarik <petr.tesarik1@huawei-partners.com>,
- Dexuan Cui <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>,
- Michael Kelley <mhklinux@outlook.com>
-References: <20240221113504.7161-1-will@kernel.org>
- <20240221113504.7161-6-will@kernel.org>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240221113504.7161-6-will@kernel.org>
+Subject: Re: [PATCH v13 3/3] iommu/vt-d: improve ITE fault handling if target
+ device isn't valid
+To: Dan Carpenter <dan.carpenter@linaro.org>
+Cc: baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
+ jgg@ziepe.ca, kevin.tian@intel.com, dwmw2@infradead.org, will@kernel.org,
+ lukas@wunner.de, yi.l.liu@intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
+References: <20240222090251.2849702-1-haifeng.zhao@linux.intel.com>
+ <20240222090251.2849702-4-haifeng.zhao@linux.intel.com>
+ <c655cd15-c883-483b-b698-b1b7ae360388@moroto.mountain>
+ <2d1788da-521c-4531-a159-81d2fb801d6c@linux.intel.com>
+ <039a19e5-d1ff-47ae-aa35-3347c08acc13@moroto.mountain>
+ <31ee6660-ad4a-40b8-8503-ebc3ed06dd16@linux.intel.com>
+ <f779be97-66c2-4520-91f2-a9a54e84017c@moroto.mountain>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <f779be97-66c2-4520-91f2-a9a54e84017c@moroto.mountain>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 21/02/2024 11:35 am, Will Deacon wrote:
-> From: Nicolin Chen <nicolinc@nvidia.com>
-> 
-> The swiotlb does not support a mapping size > swiotlb_max_mapping_size().
-> On the other hand, with a 64KB PAGE_SIZE configuration, it's observed that
-> an NVME device can map a size between 300KB~512KB, which certainly failed
-> the swiotlb mappings, though the default pool of swiotlb has many slots:
->      systemd[1]: Started Journal Service.
->   => nvme 0000:00:01.0: swiotlb buffer is full (sz: 327680 bytes), total 32768 (slots), used 32 (slots)
->      note: journal-offline[392] exited with irqs disabled
->      note: journal-offline[392] exited with preempt_count 1
-> 
-> Call trace:
-> [    3.099918]  swiotlb_tbl_map_single+0x214/0x240
-> [    3.099921]  iommu_dma_map_page+0x218/0x328
-> [    3.099928]  dma_map_page_attrs+0x2e8/0x3a0
-> [    3.101985]  nvme_prep_rq.part.0+0x408/0x878 [nvme]
-> [    3.102308]  nvme_queue_rqs+0xc0/0x300 [nvme]
-> [    3.102313]  blk_mq_flush_plug_list.part.0+0x57c/0x600
-> [    3.102321]  blk_add_rq_to_plug+0x180/0x2a0
-> [    3.102323]  blk_mq_submit_bio+0x4c8/0x6b8
-> [    3.103463]  __submit_bio+0x44/0x220
-> [    3.103468]  submit_bio_noacct_nocheck+0x2b8/0x360
-> [    3.103470]  submit_bio_noacct+0x180/0x6c8
-> [    3.103471]  submit_bio+0x34/0x130
-> [    3.103473]  ext4_bio_write_folio+0x5a4/0x8c8
-> [    3.104766]  mpage_submit_folio+0xa0/0x100
-> [    3.104769]  mpage_map_and_submit_buffers+0x1a4/0x400
-> [    3.104771]  ext4_do_writepages+0x6a0/0xd78
-> [    3.105615]  ext4_writepages+0x80/0x118
-> [    3.105616]  do_writepages+0x90/0x1e8
-> [    3.105619]  filemap_fdatawrite_wbc+0x94/0xe0
-> [    3.105622]  __filemap_fdatawrite_range+0x68/0xb8
-> [    3.106656]  file_write_and_wait_range+0x84/0x120
-> [    3.106658]  ext4_sync_file+0x7c/0x4c0
-> [    3.106660]  vfs_fsync_range+0x3c/0xa8
-> [    3.106663]  do_fsync+0x44/0xc0
-> 
-> Since untrusted devices might go down the swiotlb pathway with dma-iommu,
-> these devices should not map a size larger than swiotlb_max_mapping_size.
-> 
-> To fix this bug, add iommu_dma_max_mapping_size() for untrusted devices to
-> take into account swiotlb_max_mapping_size() v.s. iova_rcache_range() from
-> the iommu_dma_opt_mapping_size().
 
-On the basis that this is at least far closer to correct than doing nothing,
+On 2/23/2024 4:19 PM, Dan Carpenter wrote:
+> On Fri, Feb 23, 2024 at 03:32:52PM +0800, Ethan Zhao wrote:
+>> On 2/23/2024 2:08 PM, Dan Carpenter wrote:
+>>> On Fri, Feb 23, 2024 at 10:29:28AM +0800, Ethan Zhao wrote:
+>>>>>> @@ -1326,6 +1336,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+>>>>>>     			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
+>>>>>>     		} while (head != tail);
+>>>>>> +		/*
+>>>>>> +		 * If got ITE, we need to check if the sid of ITE is one of the
+>>>>>> +		 * current valid ATS invalidation target devices, if no, or the
+>>>>>> +		 * target device isn't presnet, don't try this request anymore.
+>>>>>> +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
+>>>>>> +		 */
+>>>>> This comment is kind of confusing.
+>>>> Really confusing ? this is typo there, resnet-> "present"
+>>>>
+>>> Reading this comment again, the part about zero ite_sid values is
+>>> actually useful, but what does "old" mean in "old VT-d device".  How old
+>>> is it?  One year old?
+>> I recite the description from Intel VT-d spec here
+>>
+>> "A value of 0 in this field indicates that this is an older version of DMA
+>> remapping hardware which does not provide additional details about
+>> the Invalidation Time-out Error"
+>>
+> This is good.  Put that in the comment.  Otherwise it's not clear.  I
+> assumed "old" meant released or something.
+>
+>
+>> At least, the Intel VT-d spec 4.0 released 2022 June says the same thing.
+>> as to how old, I didn't find docs older than that, really out of my radar.
+>>
+>>>>> /*
+>>>>>     * If we have an ITE, then we need to check whether the sid of the ITE
+>>>>>     * is in the rbtree (meaning it is probed and not released), and that
+>>>>>     * the PCI device is present.
+>>>>>     */
+>>>>>
+>>>>> My comment is slightly shorter but I think it has the necessary
+>>>>> information.
+>>>>>
+>>>>>> +		if (ite_sid) {
+>>>>>> +			dev = device_rbtree_find(iommu, ite_sid);
+>>>>>> +			if (!dev || !dev_is_pci(dev))
+>>>>>> +				return -ETIMEDOUT;
+>>>>> -ETIMEDOUT is weird.  The callers don't care which error code we return.
+>>>>> Change this to -ENODEV or something
+>>>> -ETIMEDOUT means prior ATS invalidation request hit timeout fault, and the
+>>>> caller really cares about the returned value.
+>>>>
+>>> I don't really care about the return value and if you say it should be
+>>> -ETIMEDOUT, then you're the expert.  However, I don't see anything in
+>>> linux-next which cares about the return values except -EAGAIN.
+>>> This function is only called from qi_submit_sync() which checks for
+>>> -EAGAIN.  Then I did a git grep.
+>>>
+>>> $ git grep qi_submit_sync
+>>> drivers/iommu/intel/dmar.c:int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/dmar.c:     qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/iommu.h:int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
+>>> drivers/iommu/intel/iommu.h: * Options used in qi_submit_sync:
+>>> drivers/iommu/intel/irq_remapping.c:    return qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/pasid.c:    qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/svm.c:      qi_submit_sync(iommu, desc, 3, QI_OPT_WAIT_DRAIN);
+>>> drivers/iommu/intel/svm.c:      qi_submit_sync(iommu, &desc, 1, 0);
+>>> drivers/iommu/intel/svm.c:              qi_submit_sync(iommu, &desc, 1, 0);
+>>>
+>>> Only qi_flush_iec() in irq_remapping.c cares about the return.  Then I
+>>> traced those callers back and nothing cares about -ETIMEOUT.
+>>>
+>>> Are you refering to patches that haven't ben merged yet?
+>> Yes, patches under working, not the code running on your boxes.
+>>
+>> -ETIMEOUT & -ENODEV, they both describe the error that is happenning, someone
+>> prefers -ETIMEOUT, they would like to know the request was timeout, and someone
+>> perfers -ENODEV, they know the target device is gone, ever existed.
+> Okay.  I obviously can't comment on patches that I haven't seen but,
+> sure, it sounds reasonable.
+>
+>>>>>> +			pdev = to_pci_dev(dev);
+>>>>>> +			if (!pci_device_is_present(pdev) &&
+>>>>>> +				ite_sid == pci_dev_id(pci_physfn(pdev)))
+>>>>> The && confused me, but then I realized that probably "ite_sid ==
+>>>>> pci_dev_id(pci_physfn(pdev))" is always true.  Can we delete that part?
+>>>> Here is the fault handling, just double confirm nothing else goes wrong --
+>>>> beyond the assumption.
+>>>>
+>>> Basically for that to ever be != it would need some kind of memory
+>>> corruption?  I feel like in that situation, the more conservative thing
+>>> is to give up.  If the PCI device is not present then just give up.
+>> memory corruption, buggy BIOS tables, faked request ...something out
+>> of imagination, after confirmed the device is what it claimed to be, if
+>> not present, then give up to retry the request.
+> This is not correct.  We looked up the device based on the ite_sid so
+> we know what the device id is, unless we experience catastrophic memory
+> corruption.
+>
+> +                       dev = device_rbtree_find(iommu, ite_sid);
+>                                                          ^^^^^^^
+> We looked it up here.
+>
+> +                       if (!dev || !dev_is_pci(dev))
+> +                               return -ETIMEDOUT;
+> +                       pdev = to_pci_dev(dev);
+> +                       if (!pci_device_is_present(pdev) &&
+> +                               ite_sid == pci_dev_id(pci_physfn(pdev)))
+>                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> Unless the device_rbtree_find() is returning garbage then these things
+> must be true.
+>
+> +                               return -ETIMEDOUT;
+>
+> I tried to double check how we were storing devices into the rbtree,
+> but then I discovered that the device_rbtree_find() doesn't exist in
+> linux-next and this patch breaks the build.
+>
+> This is very frustrating thing.  But let's say a buggy BIOS could mess
+> up the rbtree.  In that situation, we would still want to change the &&
+> to an ||.  If the divice is not present and^W or the rbtree is corrupted
 
-Acked-by: Robin Murphy <robin.murphy@arm.com>
+Maybe you meant
++                       if (!pci_device_is_present(pdev) ||
++                               ite_sid != pci_dev_id(pci_physfn(pdev)))
 
-TBH I'm scared to think about theoretical correctness for all the 
-interactions between the IOVA granule and min_align_mask, since just the 
-SWIOTLB stuff is bad enough, even before you realise the ways that the 
-IOVA allocation isn't necessarily right either. However I reckon as long 
-as we don't ever see a granule smaller than IO_TLB_SIZE, and/or a 
-min_align_mask larger than a granule, then this should probably work 
-well enough as-is.
+Unfortunately, the ite_sid we got from the "Invalidation Queue Error Record Register" is the *PCI Requester-id* of faulty device, that could be different
+BDF as the sid in the ATS invalidation request for devices:
 
-Cheers,
-Robin.
+1. behind the PCIe to PCI bridges.
+2. behindConventional PCI Bridges  
+3.PCI Express* Devices Using Phantom Functions  
+4.Intel® Scalable I/O Virtualization Capable Devices  (e.g. ADI)
+5. devices with ARI function.
+6. behind root port without ACS enabled.
+... ...
 
-> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
-> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> Link: https://lore.kernel.org/r/ee51a3a5c32cf885b18f6416171802669f4a718a.1707851466.git.nicolinc@nvidia.com
-> Signed-off-by: Will Deacon <will@kernel.org>
-> ---
->   drivers/iommu/dma-iommu.c | 8 ++++++++
->   1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 50ccc4f1ef81..7d1a20da6d94 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -1706,6 +1706,13 @@ static size_t iommu_dma_opt_mapping_size(void)
->   	return iova_rcache_range();
->   }
->   
-> +static size_t iommu_dma_max_mapping_size(struct device *dev)
-> +{
-> +	if (is_swiotlb_active(dev) && dev_is_untrusted(dev))
-> +		return swiotlb_max_mapping_size(dev);
-> +	return SIZE_MAX;
-> +}
-> +
->   static const struct dma_map_ops iommu_dma_ops = {
->   	.flags			= DMA_F_PCI_P2PDMA_SUPPORTED,
->   	.alloc			= iommu_dma_alloc,
-> @@ -1728,6 +1735,7 @@ static const struct dma_map_ops iommu_dma_ops = {
->   	.unmap_resource		= iommu_dma_unmap_resource,
->   	.get_merge_boundary	= iommu_dma_get_merge_boundary,
->   	.opt_mapping_size	= iommu_dma_opt_mapping_size,
-> +	.max_mapping_size       = iommu_dma_max_mapping_size,
->   };
->   
->   /*
+
+Thanks,
+Ethan
+
+> then return an error.  But don't do this.  If the memory is corrupted we
+> are already screwed and there is no way the system can really recover
+> in any reasonable way.
+>
+> regards,
+> dan carpenter
+>
+>
