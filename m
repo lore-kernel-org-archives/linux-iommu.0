@@ -1,78 +1,25 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEC2212B140
-	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 15:44:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9C2E212BE9F
+	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 15:45:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708962296; cv=none; b=dcNTob8Mv8HM3aYEA0WblNKqp2qCXA7bpJcNGhlL89UrHdETWKrBVjaXTNEImULAx2TDBbOj5q6n41/7/7P4S1i9kb1S1uzOZY3g+BWBuYZOnrgTVFuQ0TbLooohfOxIUFmi5L0JaYz4ty4wHjZvAozrncjyTgT7bpEC73zt+AY=
+	t=1708962360; cv=none; b=IIn3AjoxMCg3OtF/Z9srvktuNZML46un1KAhUqJS+4Ef5A+RBE0NAfJgN1Vre2suHkC+9+OvokIaUk+EzRAlY+C3bUy3UtlTkghAljI12WRrjCUBPFbMJfppDSlQp9rPHdwWnK6uKcxDzWVIRSIhCouWSeX+OmeBJzfgmf8pLnc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708962296; c=relaxed/simple;
-	bh=RLBFNkzP9GqTjvndlIET/xlLk5CJRmEdNX0X75l4ank=;
+	s=arc-20240116; t=1708962360; c=relaxed/simple;
+	bh=bdJTfIlFy3ED3bBg1k1z8Me8BEsVndqCk6aPs/qgrVU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=gu1IE79e9NPFJF4rHFNw9y7KSiUF1mdCX9CVg5ovFyiWGd1dQJcAc6Mk+lU1EdKorJkd32spKMGl7cUwV44CJQPsvkO+aI/nHQ8KZPJkjStsH1cyU1luC++Fj4SYWFWm38tto4WxlXzYgz4aI5PG2pPxObNFoFVH74MAekksnDk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=NOETsR1/; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=y1kEO+FP; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=Q25SrPtC; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=PG2cmVLD; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="NOETsR1/";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="y1kEO+FP";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="Q25SrPtC";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="PG2cmVLD"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id DB67A1FD17;
-	Mon, 26 Feb 2024 15:44:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708962293; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=uO6nFRXFkR5BenyCu2zdHy6TynY7FaB2n2EEfF5vWuc=;
-	b=NOETsR1/coQP/da0HBqaD0qjl4DgUf+en6xj+srfFF+1uXTOn4+58dhn2yprDpczaFiAQr
-	2p7piU7RIh4Du1TBu8haQtMzsJDWm+HwEqQQDP6rAqmBMZpKbHd7OycRp1MVjfCZ/f1MPC
-	geFKKe27a31O8OQPpjlMDlB9/6f+yWw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708962293;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=uO6nFRXFkR5BenyCu2zdHy6TynY7FaB2n2EEfF5vWuc=;
-	b=y1kEO+FPjFYcUBvJzauKLGMk+sf/NPUgzw8djkI0nt/EWKAIW/8hiTzV37R/6gZlhB9sSS
-	dN0FoMwSj4d4cDCw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1708962292; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=uO6nFRXFkR5BenyCu2zdHy6TynY7FaB2n2EEfF5vWuc=;
-	b=Q25SrPtCCHf76Rh616VtmtaJKZ8H33R+tYn4wpxCU1VSWMijjvei5aC5qPuEV4uLfS/6F1
-	TkD2vldaYqHVTh0wW3y2F45Bc53hkZd3ob2Tc1nWw1t+B2msiATKRtYg5stCDTzFlOnuVM
-	S4clmKoEGWAto1Re5Obt6f4HxlU92E0=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1708962292;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=uO6nFRXFkR5BenyCu2zdHy6TynY7FaB2n2EEfF5vWuc=;
-	b=PG2cmVLDF6FPZ1ud+0JyiNBt6cG/oYI4OaGXlS9u3C5MWNnPp+NYekSYA9fOaUxEM2Z2wZ
-	2h9o/cDJcA8f2xAA==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 3E9C213A3A;
-	Mon, 26 Feb 2024 15:44:52 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id Da2gDvSx3GU+BAAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Mon, 26 Feb 2024 15:44:52 +0000
-Message-ID: <f68e7f17-c288-4dc9-9ae9-78015983f99c@suse.cz>
-Date: Mon, 26 Feb 2024 16:44:51 +0100
+	 In-Reply-To:Content-Type; b=a39wgW1+Hw+1btwCFEIrzoZ2gLafKFiu2dDNuek5MouahrSXUqZcBQpSOzMF+W3Vi1fug3Gjf0fWuUI6hMWna+jmWpaWbrLAbHbr5kS+gzmqlgS4M3UhirDw1Nl3Fx329H3ms2n6jB+xZCN37om1ml+jbp1zoGV9YHxyOfxN93Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B4E93DA7;
+	Mon, 26 Feb 2024 07:46:36 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 10D503F762;
+	Mon, 26 Feb 2024 07:45:55 -0800 (PST)
+Message-ID: <7e3c779e-09ae-4c87-855e-f0e6ae945169@arm.com>
+Date: Mon, 26 Feb 2024 15:45:44 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,102 +27,57 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 05/36] fs: Convert alloc_inode_sb() to a macro
-Content-Language: en-US
-To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
-Cc: kent.overstreet@linux.dev, mhocko@suse.com, hannes@cmpxchg.org,
- roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
- willy@infradead.org, liam.howlett@oracle.com,
- penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com,
- will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
- nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
- rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
- yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
- hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
- ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org,
- ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
- dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
- bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
- minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arch@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
- cgroups@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>
-References: <20240221194052.927623-1-surenb@google.com>
- <20240221194052.927623-6-surenb@google.com>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20240221194052.927623-6-surenb@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-Authentication-Results: smtp-out2.suse.de;
-	none
-X-Spam-Level: 
-X-Spam-Score: 0.18
-X-Spamd-Result: default: False [0.18 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 XM_UA_NO_VERSION(0.01)[];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 MID_RHS_MATCH_FROM(0.00)[];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 BAYES_HAM(-0.03)[55.68%];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 RCPT_COUNT_GT_50(0.00)[75];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[linux.dev:email];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 FREEMAIL_CC(0.00)[linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,i-love.sakura.ne.jp,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com,zeniv.linux.org.uk];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[]
-X-Spam-Flag: NO
+Subject: Re: [PATCH net-next v3 2/7] dma: avoid redundant calls for sync
+ operations
+To: Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc: "David S. Miller" <davem@davemloft.net>,
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
+ Paolo Abeni <pabeni@redhat.com>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rafael@kernel.org>,
+ Magnus Karlsson <magnus.karlsson@intel.com>,
+ Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+ Alexander Duyck <alexanderduyck@fb.com>, bpf@vger.kernel.org,
+ netdev@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240214162201.4168778-1-aleksander.lobakin@intel.com>
+ <20240214162201.4168778-3-aleksander.lobakin@intel.com>
+ <3a9dd580-1977-418f-a3f3-73003dd37710@arm.com>
+ <4d2678be-e36c-4726-83a5-ae9a3a0def55@intel.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <4d2678be-e36c-4726-83a5-ae9a3a0def55@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 2/21/24 20:40, Suren Baghdasaryan wrote:
-> From: Kent Overstreet <kent.overstreet@linux.dev>
+On 19/02/2024 12:49 pm, Alexander Lobakin wrote:
+> From: Robin Murphy <robin.murphy@arm.com>
+> Date: Wed, 14 Feb 2024 17:55:23 +0000
 > 
-> We're introducing alloc tagging, which tracks memory allocations by
-> callsite. Converting alloc_inode_sb() to a macro means allocations will
-> be tracked by its caller, which is a bit more useful.
+>> On 2024-02-14 4:21 pm, Alexander Lobakin wrote:
 > 
-> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-> Reviewed-by: Kees Cook <keescook@chromium.org>
-> ---
->  include/linux/fs.h | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
+> [...]
 > 
-> diff --git a/include/linux/fs.h b/include/linux/fs.h
-> index 023f37c60709..08d8246399c3 100644
-> --- a/include/linux/fs.h
-> +++ b/include/linux/fs.h
-> @@ -3010,11 +3010,7 @@ int setattr_should_drop_sgid(struct mnt_idmap *idmap,
->   * This must be used for allocating filesystems specific inodes to set
->   * up the inode reclaim context correctly.
->   */
-> -static inline void *
-> -alloc_inode_sb(struct super_block *sb, struct kmem_cache *cache, gfp_t gfp)
+>>> +        /*
+>>> +         * Synchronization is not possible when none of DMA sync ops
+>>> +         * is set. This check precedes the below one as it disables
+>>> +         * the synchronization unconditionally.
+>>> +         */
+>>> +        dev->dma_skip_sync = true;
+>>> +    else if (ops->flags & DMA_F_CAN_SKIP_SYNC)
+>>
+>> Personally I'd combine this into the dma-direct condition.
+> 
+> Please read the code comment a couple lines above :D
 
-A __always_inline wouldn't have the same effect? Just wondering.
+And my point is that that logic is not actually useful, since it would 
+be nonsensical for ops to set DMA_F_CAN_SKIP_SYNC if they don't even 
+implement sync ops anyway.
 
-> -{
-> -	return kmem_cache_alloc_lru(cache, &sb->s_inode_lru, gfp);
-> -}
-> +#define alloc_inode_sb(_sb, _cache, _gfp) kmem_cache_alloc_lru(_cache, &_sb->s_inode_lru, _gfp)
->  
->  extern void __insert_inode_hash(struct inode *, unsigned long hashval);
->  static inline void insert_inode_hash(struct inode *inode)
+If the intent of DMA_F_CAN_SKIP_SYNC is to mean "behaves like 
+dma-direct", then "if (dma_map_direct(...) || ops->flags & 
+DMA_F_CAN_SKIP_SYNC)" is an entirely logical and expected condition.
 
+Thanks,
+Robin.
