@@ -1,249 +1,148 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FD1E131729;
-	Mon, 26 Feb 2024 17:22:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C06C12DDAB
+	for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 17:49:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1708968179; cv=none; b=rZ7xWQQDOaMCqC8XdAR8rPnwwS/DBSKwLjB9VLtDvJ0pE+DCGcYXPazQwvnjgGyV9LldC4f6uz1qczI/7H7ogxQtyZNMS7TWvgT2sJV1t2JvxJT1rXeTzx67/bQ5jIXtoxSGEOnRd6Ji8api8FK+E7FuNF2016/pq9GYDIaJZ38=
+	t=1708969747; cv=none; b=CcvLa8Nxon1Fj3USx3WlTe3ZqyWkpOEgIdcwysr9YflQEBTrF9KTttFBLIGDkKFEPOc5Dd8KZXuxbWjzQf50HWsiVgQTiKw604oEhrryDz6i153Ej+RUxbrROs+T5UziX5/8JEEFH5WGuYpBxF1fYHOOoM51f+ttWQaj5bUvo+I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1708968179; c=relaxed/simple;
-	bh=Tc4Ktv/D7YTB7Nmxjy0xTT+j9o08Tb6wQ5ZBOneqWIk=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rwDHtMBmfiLoVenvIjCbrkXiEFEFOfr9WwgqS2OHem4N/0vUPYW7OfpMkWSwnXeYpIV30faisL9wwkXEfZ5papa3sTqrDtmxnnF0ZyNUHCiErTISc7A408VKx2lWikMQX4j3h7raLVYJZzZ+xJp8blewfNbWmW1mFMDQVS2M6CE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=pE7BqOzS; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1708969747; c=relaxed/simple;
+	bh=kjTgbrtrQFudnQ2Ks1fdChZ9nj/O1JwPt17wu4Lp+yo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=XfIykhA66WVzuYMqxMeup0QC9YM0FGYINz1M2WoTjb/jx6Nu2PsOXNbZTpGOLAtgVWEooTJB5uluS0+GcZlaTlbCI63kCZLMWmaHTuBfybsCClJAgXcSQDPbwyyogY9flTIzDPcvkMiOvP+BOyAjp/h6NZ/RSEJ9l99134107xY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=dPZOry64; arc=none smtp.client-ip=209.85.208.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="pE7BqOzS"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41QGjDq5014223;
-	Mon, 26 Feb 2024 17:22:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-transfer-encoding:content-type; s=
-	qcppdkim1; bh=N+szkwugbiAMw3EsTUBEqZQBYgLwAbjT++yuFPP2PuQ=; b=pE
-	7BqOzSiifkPg8DnHhbacruL8VhiHJeGd7tHIFppnDw8hj549YWSb3xB7tYrNut12
-	lPU4ZS9aYjKEfTzU9DZAsAZwyUVg3AMFaq85RdgK+vMEuLTV+lGyAJEdls+JqwrA
-	M+1SoK5wfFkZull4UVbyLnq8iGh6dn658DYZY7vCU2ZUikq6xXJ0QcyYgfd/RqfK
-	T1gVM0ftI23vJ43mSuBOXTBBcfxj38Xkofiz4c0WpfK/ac2b/jWz25/mSh3fatpM
-	2IYnjA0zi0Tu+trozKw5n2lEwUPziNHfJX8yJayzBxuqZxchHWyQkJgUJWDzNL2U
-	XCQPpDHaX9Lun8X975ZQ==
-Received: from nasanppmta03.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3wgkxp9htw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 26 Feb 2024 17:22:36 +0000 (GMT)
-Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 41QHMZqi013103
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 26 Feb 2024 17:22:35 GMT
-Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Mon, 26 Feb 2024 09:22:34 -0800
-From: Georgi Djakov <quic_c_gdjako@quicinc.com>
-To: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <conor+dt@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
-        <joro@8bytes.org>, <iommu@lists.linux.dev>
-CC: <devicetree@vger.kernel.org>, <andersson@kernel.org>,
-        <konrad.dybcio@linaro.org>, <robdclark@gmail.com>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <quic_cgoldswo@quicinc.com>,
-        <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
-        <quic_sudaraja@quicinc.com>, <djakov@kernel.org>
-Subject: [PATCH v5 4/7] iommu/arm-smmu-qcom: Use a custom context fault handler for sdm845
-Date: Mon, 26 Feb 2024 09:22:15 -0800
-Message-ID: <20240226172218.69486-5-quic_c_gdjako@quicinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240226172218.69486-1-quic_c_gdjako@quicinc.com>
-References: <20240226172218.69486-1-quic_c_gdjako@quicinc.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="dPZOry64"
+Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-2d269b2ff48so38457001fa.3
+        for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 09:49:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1708969742; x=1709574542; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=E2MfOrnw8vcrCKgg1+LRA9aXdiQ7KcRVPoPiOl2oNZk=;
+        b=dPZOry64vOzEu8vacfkeCy1vH0ZSYZqfo3rqvHA2Tj0GzNSnKBo28PwyDinWnKcCTN
+         1RoyRI0hHjnCckJ2qW3Ioe1iBTzZD5LCHxFUkNDcEtbeoAvA5MNzcMeTB0rOf+6PlpwS
+         6qjanUzSOsn2pGiNh6/2eCUaVjJYPHXqWB5kjKowN7lUmgj2HYPjrxWnuTUVVy0T+7aE
+         x/X5MBqZ4vvu6ez/kLGULALDmmah4VYmJf5XpGG9I7lap5tpxldqXBbZDW6O3Upykmky
+         w+V8eNQceXKDvRgi6U/EAkZxJ1XQ7bOLQjJ1FEKeFPZWm36uK/onALyuIw3hyMSeIfKb
+         Xbig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1708969742; x=1709574542;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=E2MfOrnw8vcrCKgg1+LRA9aXdiQ7KcRVPoPiOl2oNZk=;
+        b=aNWWaLfgUUiUjIeQEwkmNvkRGcN+PWgrgN8v56KsqWiu0JyHNkBXczLjMUUHytrMic
+         cXL14e6HWliTwP2Wu+v3IFq2dRQJkmesAP4VktTXPeSLHNi2IGplv+x/VvwtNW/cFXid
+         gF4e6JfJEftWZRg40EHHC2m72g2HNVdWN+m3Q1XUJnZA/W3PDDWjYn9q98IQncywMp2t
+         uokqdQXV6DdIj6g8cACYhbzuxx1XtLhcXRRPCVvCljIEsSjkscexIWolnGw0Q44Yjinm
+         JNFsWB7I8VHNu7I+X8p5eXVMnU/8iG5bT1sS6Iya9UMTXx0+58Bx+uzATz3SEjvBQTaY
+         7pEA==
+X-Forwarded-Encrypted: i=1; AJvYcCX8ScxPbZilyKi2dsKbugKCF2ZHGfNbB1As4nUtLIB8ENW08+R6mqgoWjsOgAWx4lJ1P83XiRgWi9mUF11I4cQ/VCdKMgk=
+X-Gm-Message-State: AOJu0YyUKl21YUrP8zDgGZQRoLidcE5xYrS52DSFv6SS7y1+lGYcL+FD
+	ck/55QQCRCYyV+hFaw+l2TcRf2ZR9WTcnJxEo88jpMqTzkz80ExUTQJhXTpfNNa4+sb8JrG8R1D
+	WTBgzjUxKUg8pz9UwSKjXzy5zbWbUBl+bYMap
+X-Google-Smtp-Source: AGHT+IGMkZ+7cEJwol9OFFnPnlkwO7m64F/71T4BMwZRitgeDSyoz1rib12v0dNYQtXiC2DOXiB0AGgmNnmExOErSa0=
+X-Received: by 2002:a2e:b889:0:b0:2d2:6676:3b0f with SMTP id
+ r9-20020a2eb889000000b002d266763b0fmr6282519ljp.22.1708969741996; Mon, 26 Feb
+ 2024 09:49:01 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: ZLr_R9aVmSU1kBlVWGrYZyZMcytkEr2N
-X-Proofpoint-GUID: ZLr_R9aVmSU1kBlVWGrYZyZMcytkEr2N
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-26_11,2024-02-26_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 suspectscore=0 phishscore=0 adultscore=0 bulkscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2402120000 definitions=main-2402260132
+References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-6-surenb@google.com>
+ <f68e7f17-c288-4dc9-9ae9-78015983f99c@suse.cz>
+In-Reply-To: <f68e7f17-c288-4dc9-9ae9-78015983f99c@suse.cz>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Mon, 26 Feb 2024 09:48:46 -0800
+Message-ID: <CAJuCfpEQPgg6-TD+-PEsVRXnK=T0Ak6TvMiwz7DbS-q9YxsVcg@mail.gmail.com>
+Subject: Re: [PATCH v4 05/36] fs: Convert alloc_inode_sb() to a macro
+To: Vlastimil Babka <vbabka@suse.cz>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
+	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
+	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The sdm845 platform now supports TBUs, so let's get additional debug
-info from the TBUs when a context fault occurs. Implement a custom
-context fault handler that does both software + hardware page table
-walks and TLB Invalidate All.
+On Mon, Feb 26, 2024 at 7:44=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
+ote:
+>
+> On 2/21/24 20:40, Suren Baghdasaryan wrote:
+> > From: Kent Overstreet <kent.overstreet@linux.dev>
+> >
+> > We're introducing alloc tagging, which tracks memory allocations by
+> > callsite. Converting alloc_inode_sb() to a macro means allocations will
+> > be tracked by its caller, which is a bit more useful.
+> >
+> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+> > Reviewed-by: Kees Cook <keescook@chromium.org>
+> > ---
+> >  include/linux/fs.h | 6 +-----
+> >  1 file changed, 1 insertion(+), 5 deletions(-)
+> >
+> > diff --git a/include/linux/fs.h b/include/linux/fs.h
+> > index 023f37c60709..08d8246399c3 100644
+> > --- a/include/linux/fs.h
+> > +++ b/include/linux/fs.h
+> > @@ -3010,11 +3010,7 @@ int setattr_should_drop_sgid(struct mnt_idmap *i=
+dmap,
+> >   * This must be used for allocating filesystems specific inodes to set
+> >   * up the inode reclaim context correctly.
+> >   */
+> > -static inline void *
+> > -alloc_inode_sb(struct super_block *sb, struct kmem_cache *cache, gfp_t=
+ gfp)
+>
+> A __always_inline wouldn't have the same effect? Just wondering.
 
-Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
----
- .../iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c    | 130 ++++++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    |   4 +
- 2 files changed, 134 insertions(+)
+I think inlining it would still keep __LINE__ and __FILE__ pointing to
+this location in the header instead of the location where the call
+happens. If we change alloc_inode_sb() to inline we will have to wrap
+it with alloc_hook() and call kmem_cache_alloc_lru_noprof() inside it.
+Doable but this change seems much simpler.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c
-index 62900d485fa2..b69624ab5f76 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c
-@@ -306,6 +306,136 @@ static phys_addr_t qcom_iova_to_phys(struct arm_smmu_domain *smmu_domain,
- 	return phys;
- }
- 
-+static phys_addr_t qcom_smmu_iova_to_phys_hard(struct arm_smmu_domain *smmu_domain, dma_addr_t iova)
-+{
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	int idx = smmu_domain->cfg.cbndx;
-+	u32 frsynra;
-+	u16 sid;
-+
-+	frsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(idx));
-+	sid = FIELD_GET(ARM_SMMU_CBFRSYNRA_SID, frsynra);
-+
-+	return qcom_iova_to_phys(smmu_domain, iova, sid);
-+}
-+
-+static phys_addr_t qcom_smmu_verify_fault(struct arm_smmu_domain *smmu_domain, dma_addr_t iova, u32 fsr)
-+{
-+	struct io_pgtable *iop = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	phys_addr_t phys_post_tlbiall;
-+	phys_addr_t phys;
-+
-+	phys = qcom_smmu_iova_to_phys_hard(smmu_domain, iova);
-+	io_pgtable_tlb_flush_all(iop);
-+	phys_post_tlbiall = qcom_smmu_iova_to_phys_hard(smmu_domain, iova);
-+
-+	if (phys != phys_post_tlbiall) {
-+		dev_err(smmu->dev,
-+			"ATOS results differed across TLBIALL... (before: %pa after: %pa)\n",
-+			&phys, &phys_post_tlbiall);
-+	}
-+
-+	return (phys == 0 ? phys_post_tlbiall : phys);
-+}
-+
-+irqreturn_t qcom_smmu_context_fault(int irq, void *dev)
-+{
-+	struct arm_smmu_domain *smmu_domain = dev;
-+	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	u32 fsr, fsynr, cbfrsynra, resume = 0;
-+	int idx = smmu_domain->cfg.cbndx;
-+	phys_addr_t phys_soft;
-+	unsigned long iova;
-+	int ret, tmp;
-+
-+	static DEFINE_RATELIMIT_STATE(_rs,
-+				      DEFAULT_RATELIMIT_INTERVAL,
-+				      DEFAULT_RATELIMIT_BURST);
-+
-+	fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
-+	if (!(fsr & ARM_SMMU_FSR_FAULT))
-+		return IRQ_NONE;
-+
-+	fsynr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSYNR0);
-+	iova = arm_smmu_cb_readq(smmu, idx, ARM_SMMU_CB_FAR);
-+	cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(idx));
-+
-+	phys_soft = ops->iova_to_phys(ops, iova);
-+
-+	tmp = report_iommu_fault(&smmu_domain->domain, NULL, iova,
-+				 fsynr & ARM_SMMU_FSYNR0_WNR ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ);
-+	if (!tmp || tmp == -EBUSY) {
-+		dev_dbg(smmu->dev,
-+			"Context fault handled by client: iova=0x%08lx, fsr=0x%x, fsynr=0x%x, cb=%d\n",
-+			iova, fsr, fsynr, idx);
-+		dev_dbg(smmu->dev, "soft iova-to-phys=%pa\n", &phys_soft);
-+		ret = IRQ_HANDLED;
-+		resume = ARM_SMMU_RESUME_TERMINATE;
-+	} else {
-+		phys_addr_t phys_atos = qcom_smmu_verify_fault(smmu_domain, iova, fsr);
-+
-+		if (__ratelimit(&_rs)) {
-+			dev_err(smmu->dev,
-+				"Unhandled context fault: fsr=0x%x, iova=0x%08lx, fsynr=0x%x, cbfrsynra=0x%x, cb=%d\n",
-+				fsr, iova, fsynr, cbfrsynra, idx);
-+			dev_err(smmu->dev,
-+				"FSR    = %08x [%s%s%s%s%s%s%s%s%s], SID=0x%x\n",
-+				fsr,
-+				(fsr & 0x02) ? "TF " : "",
-+				(fsr & 0x04) ? "AFF " : "",
-+				(fsr & 0x08) ? "PF " : "",
-+				(fsr & 0x10) ? "EF " : "",
-+				(fsr & 0x20) ? "TLBMCF " : "",
-+				(fsr & 0x40) ? "TLBLKF " : "",
-+				(fsr & 0x80) ? "MHF " : "",
-+				(fsr & 0x40000000) ? "SS " : "",
-+				(fsr & 0x80000000) ? "MULTI " : "",
-+				cbfrsynra);
-+
-+			dev_err(smmu->dev,
-+				"soft iova-to-phys=%pa\n", &phys_soft);
-+			if (!phys_soft)
-+				dev_err(smmu->dev,
-+					"SOFTWARE TABLE WALK FAILED! Looks like %s accessed an unmapped address!\n",
-+					dev_name(smmu->dev));
-+			if (phys_atos)
-+				dev_err(smmu->dev, "hard iova-to-phys (ATOS)=%pa\n",
-+					&phys_atos);
-+			else
-+				dev_err(smmu->dev, "hard iova-to-phys (ATOS) failed\n");
-+		}
-+		ret = IRQ_NONE;
-+		resume = ARM_SMMU_RESUME_TERMINATE;
-+	}
-+
-+	/*
-+	 * If the client returns -EBUSY, do not clear FSR and do not RESUME
-+	 * if stalled. This is required to keep the IOMMU client stalled on
-+	 * the outstanding fault. This gives the client a chance to take any
-+	 * debug action and then terminate the stalled transaction.
-+	 * So, the sequence in case of stall on fault should be:
-+	 * 1) Do not clear FSR or write to RESUME here
-+	 * 2) Client takes any debug action
-+	 * 3) Client terminates the stalled transaction and resumes the IOMMU
-+	 * 4) Client clears FSR. The FSR should only be cleared after 3) and
-+	 *    not before so that the fault remains outstanding. This ensures
-+	 *    SCTLR.HUPCF has the desired effect if subsequent transactions also
-+	 *    need to be terminated.
-+	 */
-+	if (tmp != -EBUSY) {
-+		/* Clear the faulting FSR */
-+		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
-+
-+		/* Retry or terminate any stalled transactions */
-+		if (fsr & ARM_SMMU_FSR_SS)
-+			arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_RESUME, resume);
-+	}
-+
-+	return ret;
-+}
-+
- static int qcom_tbu_probe(struct platform_device *pdev)
- {
- 	struct of_phandle_args args = { .args_count = 2 };
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index 8b04ece00420..a8238f75c5d3 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -421,6 +421,10 @@ static const struct arm_smmu_impl sdm845_smmu_500_impl = {
- 	.reset = qcom_sdm845_smmu500_reset,
- 	.write_s2cr = qcom_smmu_write_s2cr,
- 	.tlb_sync = qcom_smmu_tlb_sync,
-+#ifdef CONFIG_ARM_SMMU_QCOM_TBU
-+	.context_fault = qcom_smmu_context_fault,
-+	.context_fault_needs_threaded_irq = true,
-+#endif
- };
- 
- static const struct arm_smmu_impl qcom_adreno_smmu_v2_impl = {
+>
+> > -{
+> > -     return kmem_cache_alloc_lru(cache, &sb->s_inode_lru, gfp);
+> > -}
+> > +#define alloc_inode_sb(_sb, _cache, _gfp) kmem_cache_alloc_lru(_cache,=
+ &_sb->s_inode_lru, _gfp)
+> >
+> >  extern void __insert_inode_hash(struct inode *, unsigned long hashval)=
+;
+> >  static inline void insert_inode_hash(struct inode *inode)
+>
+> --
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to kernel-team+unsubscribe@android.com.
+>
