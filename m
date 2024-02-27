@@ -1,55 +1,51 @@
 Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9E96145333;
-	Tue, 27 Feb 2024 15:38:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05718145351;
+	Tue, 27 Feb 2024 15:40:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709048327; cv=none; b=j4jLuYXnGpVUZYnUAHDDzIHXVipN1BVkYaZ+a65C5XhYrbWrAmYCm8JEbD2+dXZfL3adhi4eDHKtg/91dWvdLc/cmNyU594fQ0eiBycXzQRdp9lTJdB5voWSh49EXB/ioi20Fg8HtdY+jcQRvtS/KAAwsl43QM0mtZtuM+mOVSE=
+	t=1709048436; cv=none; b=fAQMS3x63QfYClnqo9iJPHHWzJ6cJsTdnUAdXf1Fz6eqG8ohLIQ47jta3rl0GQh43j9CUR9Dg7X8wRpDVF+BDwAHZnF/6U1Vc0NhqbBpX81NcW4NM5zP7FiEQUFrpzbnVri1u3Uly/J1QMQLD34Xhz2AhqB5ALiixNcjnjMQjkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709048327; c=relaxed/simple;
-	bh=QBsMYy9pwrh5P4TfAHnB2k/9xmLO73IG0uXxRrYpT14=;
+	s=arc-20240116; t=1709048436; c=relaxed/simple;
+	bh=lBLIuciUfLLdhMU8sA8OeS0LAgcXIgpkhNbhKryepEw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uY7v9HYjnAOBPINQGsa5tQKZENsrwI8ZSwG4c3340sP4NeICX4iAPjK0/TrWmH2dhcWXHAnPfUrLfqNXtoIutwnckDDzZqaZNapPhpV5J3+q8we4Xm4mjFvfe9Dtf8j1M3Ao/F9qjCuxE1VkZmtTPYfmyHDHkMq6w7xcHazXnGw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=A4emScMR; arc=none smtp.client-ip=198.137.202.133
+	 Content-Type:Content-Disposition:In-Reply-To; b=jWqrD6pclLI6xGT3JxHh41/lNudkQIPNGjId+IG5KDogjx2oPtVu0RKXqfN2zAh2i/lyAlbcXxSyLuHtF1WQNpJslTT2W9FGCGdXRAIrftlay88xu0eDYihvaoZsdBcBj8e+Jqsk8fLtGzVysv9Rj+PUHIQxHXEPoxk09jYqRO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=dFpLYTJH; arc=none smtp.client-ip=198.137.202.133
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="A4emScMR"
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="dFpLYTJH"
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
 	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
 	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=vnd2pbpFP2291J6ZbnrPd0ojsH0sCTz1YbhiBOPu5Zo=; b=A4emScMRSC9y0pQJS/PHvQNV+e
-	t3rpzBrMLITiRYpDmspI2QrSdqHU6Qa/xhaKvKYYZmh0v2/K50PGu54X1BqkIAMfkhGd8IZ9Z6l73
-	uiwSElPtoENwTuI3G7Am/HYaFMl/UQ8yUIoaBIkqQe3p2Sc7Czzh0NwoI6sLztwvVgzXBd5Uba92s
-	mra4/CyL9fdzrq4Ajcu7KtitaMSr/thNeTxuDwIH3GFS0pMswb2ytiZC+c2L32ZbvNowz5xLcCPGT
-	b2dlHNB5uvEysEfgOYOP+0uMQz38vyXwDJn85eLyJhhCTBEaGy8+zQEAK46hzGx9Q1cuhQg3eKrqd
-	LcE2o54g==;
+	bh=r3ZEbWsCJHgCVJ0r8he9VWyoedSF99TnfaCfGUy0RzA=; b=dFpLYTJHypNqkRcwjKNx3n26Dd
+	D+ZsaJT/6nPEiWlbZe9DtgWSHqAwI4HfF4rb4sA6BRu3iznLrsRk4QJOEHzd5Sj0ahPH5GJFekTPH
+	h2AAAgK9+pgzypZHzeR8kIy7N36rn9ciusynwb89QxKoG2O5JqkX3Wrdt/qPMnRCNWN4JuTJVQMnJ
+	AiK+Ml28K63mmZ7CaHBrDJMp2TFniMy5gqdpOJc1gFU4WOYo8psOBy5sN/ZGREHj6JkFNpxjOLbui
+	5CX1RuI4G6QefI7+ERYX0VMhkIRaMJlCTkc9unqKrvKt9LJoWtuj56NVTiW0SQXPI7f/aMmEIuBQ5
+	SYj91vDg==;
 Received: from [12.229.247.3] (helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1rezXW-00000005oEH-0TMV;
-	Tue, 27 Feb 2024 15:38:42 +0000
-Date: Tue, 27 Feb 2024 07:38:40 -0800
+	id 1rezZJ-00000005oXH-1yMi;
+	Tue, 27 Feb 2024 15:40:33 +0000
+Date: Tue, 27 Feb 2024 07:40:32 -0800
 From: Christoph Hellwig <hch@infradead.org>
 To: Will Deacon <will@kernel.org>
-Cc: Michael Kelley <mhklinux@outlook.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"kernel-team@android.com" <kernel-team@android.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Christoph Hellwig <hch@lst.de>,
+Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
+	iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
 	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
 	Dexuan Cui <decui@microsoft.com>,
-	Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [PATCH v4 1/5] swiotlb: Fix double-allocation of slots due to
- broken alignment handling
-Message-ID: <Zd4CANmJdW_t69S2@infradead.org>
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
+ untrusted device
+Message-ID: <Zd4CcL3Nnvybw2xF@infradead.org>
 References: <20240221113504.7161-1-will@kernel.org>
- <20240221113504.7161-2-will@kernel.org>
- <SN6PR02MB4157089980E6FC58D5557BCED4572@SN6PR02MB4157.namprd02.prod.outlook.com>
- <20240223124742.GB10641@willie-the-truck>
+ <20240221113504.7161-6-will@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,48 +54,16 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240223124742.GB10641@willie-the-truck>
+In-Reply-To: <20240221113504.7161-6-will@kernel.org>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On Fri, Feb 23, 2024 at 12:47:43PM +0000, Will Deacon wrote:
-> > >  	/*
-> > >  	 * For allocations of PAGE_SIZE or larger only look for page aligned
-> > >  	 * allocations.
-> > >  	 */
-> > >  	if (alloc_size >= PAGE_SIZE)
-> > > -		iotlb_align_mask |= ~PAGE_MASK;
-> > > -	iotlb_align_mask &= ~(IO_TLB_SIZE - 1);
-> > > -
-> > > -	/*
-> > > -	 * For mappings with an alignment requirement don't bother looping to
-> > > -	 * unaligned slots once we found an aligned one.
-> > > -	 */
-> > > -	stride = (iotlb_align_mask >> IO_TLB_SHIFT) + 1;
-> > > +		stride = umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
-> > 
-> > Is this special handling of alloc_size >= PAGE_SIZE really needed?
-> 
-> I've been wondering that as well, but please note that this code (and the
-> comment) are in the upstream code, so I was erring in favour of keeping
-> that while fixing the bugs. We could have an extra patch dropping it if
-> we can convince ourselves that it's not adding anything, though.
+On Wed, Feb 21, 2024 at 11:35:04AM +0000, Will Deacon wrote:
+> +static size_t iommu_dma_max_mapping_size(struct device *dev)
+> +{
+> +	if (is_swiotlb_active(dev) && dev_is_untrusted(dev))
+> +		return swiotlb_max_mapping_size(dev);
 
-This special casing goes back to before git history.  It obviously is not
-needed, but it might have made sense back then.  If people come up with
-a good argument I'm totally fine with removing it, but I also think we
-need to get the fixes here in ASAP, so things that are just cleanups
-probably aren't priority right now.
-
-> > While the iommu_dma_map_page() case can already fail due to
-> > "too large" requests because of not setting a max mapping size,
-> > this patch can cause smaller requests to fail as well until Patch 4
-> > gets applied.  That might be problem to avoid, perhaps by
-> > merging the Patch 4 changes into this patch.
-> 
-> I'll leave this up to Christoph. Personally, I'm keen to avoid having
-> a giant patch trying to fix all the SWIOTLB allocation issues in one go,
-> as it will inevitably get reverted due to a corner case that we weren't
-> able to test properly, breaking the common cases at the same time.
-
-Let's keep it split.
+Curious: do we really need both checks here?  If swiotlb is active
+for a device (for whatever reason), aren't we then always bound
+by the max size?  If not please add a comment explaining it.
 
