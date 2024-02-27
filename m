@@ -1,85 +1,133 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB71013A865
-	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 12:28:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02D77135A71;
+	Tue, 27 Feb 2024 12:43:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709036911; cv=none; b=n8DR7HF1S9oKSb4V73TWjdF9E8e8o5ULvJ/bYsbcRSU18sIJjcEJtOyNC3JXD+c/xtOgRYvGN9s8b2V5do6SYAIEucIF6s8Ms6U71+o/RRhfYJWDSA6oUGkBPlqxGsu3Ra8CKMVaS5wh1I/IFNnZ8WV1BoLKR8tA3PYgK8yGbP8=
+	t=1709037806; cv=none; b=tuFK4o2u4Bc6bQdekDCN6sRdQtaljNno+RjVaiQGJBTt+fXaiq3gSr3v/rml1DiQu+5firHNPeQQUGlQ8WWZwgaV07zRB/FHSfAOuez6F+WYjQUVYq5EGiiONthia4Uztyssz9V0WEFtb3kOZGal/TioWz3erUt7vf89qNcBB0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709036911; c=relaxed/simple;
-	bh=afkpinB50uAtiuEirVwsOCngi4mOGR+1dFOVwEPdmiI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=FObZukNEWySzd6E9d/EoM4yXLmCQpClKMDS8kp0//ufZiLGmukgCDkxvQ3jbMDM8RT1MrH0GIAcl4ErU3BpXt1zeDW5YCN0AwoSIHKyRYFtwpDOuqnamRb9kGWrli3LGlXTXxJ21dCl+K6QVuKA7VewCSKwQRfA7FBQ3mcqy0nQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 54950DA7;
-	Tue, 27 Feb 2024 04:29:07 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4B5403F73F;
-	Tue, 27 Feb 2024 04:28:28 -0800 (PST)
-Message-ID: <9e7e3e55-1f23-4e71-90d3-83b1309b34d6@arm.com>
-Date: Tue, 27 Feb 2024 12:28:26 +0000
+	s=arc-20240116; t=1709037806; c=relaxed/simple;
+	bh=Gdt77ksnx11y5DS0VA+3N+NAJ38/cUuc0MumnJGbAs8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tYU5Cp/9bOZLk5CY1IrVGmTvZvah/lcSzsSpCX7Xg/c33XiJ6701fxfFcOfsyka+j5ieUvH9rKHyhvw8J1gSW3SQ/6acxXPvoqVwLF2gPGUUeJZLoBNoHwBWLNiBjFtEGbbMYKZwN6D8bcrUAAbfpbF3LduAzv3auT+uq05/NB8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CIhDQNRy; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CIhDQNRy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B72EC433F1;
+	Tue, 27 Feb 2024 12:43:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1709037805;
+	bh=Gdt77ksnx11y5DS0VA+3N+NAJ38/cUuc0MumnJGbAs8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=CIhDQNRyhsuk12fqmDhRrBXuSjcniVMPQPDRa6jNCYpJ/iGkiW+Esxopeq0PjOh+T
+	 H46XCwmJUMFYcNhvxqxN9ImZOcxqq/oKlYqSnWmI11XDPOC7zadLmtGKko7KIthAsl
+	 y3d9wZnQJu5BnHPGucjL6e6Xz2m/X/9YYi7zmBhigkI5Nhk6KuysEobc0IAfirczce
+	 XR7P5GMomohVwtJaCg0px+ccRlI8lLDp7d3gpcZWFv9WOxPOMgRscee3TailKEt7Aq
+	 1jHIklenbdRc1cWt8rz/4k2ZOWg/OvuGTbG4TNYDE+9z76Jh7/aLIXadu1XwYIUKDb
+	 u++P2Rsp58R2A==
+Date: Tue, 27 Feb 2024 12:43:18 +0000
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH v5 01/17] iommu/arm-smmu-v3: Make STE programming
+ independent of the callers
+Message-ID: <20240227124318.GA14089@willie-the-truck>
+References: <0-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+ <1-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+ <20240215134952.GA690@willie-the-truck>
+ <20240215160135.GL1088888@nvidia.com>
+ <20240221134923.GA7362@willie-the-truck>
+ <20240221140818.GA2635804@nvidia.com>
+ <20240222174346.GB9488@willie-the-truck>
+ <20240223151841.GH13330@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/iova: Simplify IOVA cache allocation with
- KMEM_CACHE()
-Content-Language: en-GB
-To: Cong Liu <liucong2@kylinos.cn>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240227090807.82318-1-liucong2@kylinos.cn>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240227090807.82318-1-liucong2@kylinos.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240223151841.GH13330@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 27/02/2024 9:08 am, Cong Liu wrote:
-> Use the new KMEM_CACHE() macro instead of direct kmem_cache_create
-> to simplify the creation of SLAB caches.
-
-Heh, this "new" macro has existed for more than half the lifetime of 
-Linux itself ;) ...and given that users are still outnumbered at least 
-5:1 by users of kmem_cache_alloc(), I think it's fair to say that it 
-hasn't really caught on all that well.
-
-Most critically, though, as I mentioned on the previous thread, this 
-would change the userspace-visible names - where I think the "iommu_" 
-namespace is helpful in itself - and so impact anyone who's already 
-using meminfo to track IOVA memory consumption, so I don't think such 
-disruption is worthwhile just to save a mere 3 lines of code.
-
-Thanks,
-Robin.
-
-> Signed-off-by: Cong Liu <liucong2@kylinos.cn>
-> ---
->   drivers/iommu/iova.c | 7 ++-----
->   1 file changed, 2 insertions(+), 5 deletions(-)
+On Fri, Feb 23, 2024 at 11:18:41AM -0400, Jason Gunthorpe wrote:
+> On Thu, Feb 22, 2024 at 05:43:46PM +0000, Will Deacon wrote:
+> > On Wed, Feb 21, 2024 at 10:08:18AM -0400, Jason Gunthorpe wrote:
+> > > On Wed, Feb 21, 2024 at 01:49:23PM +0000, Will Deacon wrote:
+> > > 
+> > > > Very roughly, yes, although I'd go further and just return a bitmap of
+> > > > used qwords instead of tracking these bits. Basically, we could have some
+> > > > #defines saying which qwords are used by which configs, 
+> > > 
+> > > I don't think this will work well for CD's EPD0 case..
+> > > 
+> > > static void arm_smmu_get_cd_used(const __le64 *ent, __le64 *used_bits)
+> > > {
+> > > 	used_bits[0] = cpu_to_le64(CTXDESC_CD_0_V);
+> > > 	if (!(ent[0] & cpu_to_le64(CTXDESC_CD_0_V)))
+> > > 		return;
+> > > 	memset(used_bits, 0xFF, sizeof(struct arm_smmu_cd));
+> > > 
+> > > 	/* EPD0 means T0SZ/TG0/IR0/OR0/SH0/TTB0 are IGNORED */
+> > > 	if (ent[0] & cpu_to_le64(CTXDESC_CD_0_TCR_EPD0)) {
+> > > 		used_bits[0] &= ~cpu_to_le64(
+> > > 			CTXDESC_CD_0_TCR_T0SZ | CTXDESC_CD_0_TCR_TG0 |
+> > > 			CTXDESC_CD_0_TCR_IRGN0 | CTXDESC_CD_0_TCR_ORGN0 |
+> > > 			CTXDESC_CD_0_TCR_SH0);
+> > > 		used_bits[1] &= ~cpu_to_le64(CTXDESC_CD_1_TTB0_MASK);
+> > > 	}
+> > > }
+> > 
+> > Please can you explain more about the issue here? I know what EPDx are,
+> > but I'm not understanding why they're problematic. This presumably
+> > involves a hitless transition to/from an aborting CD?
 > 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index d59d0ea2fd21..9134acae76f5 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -950,14 +950,11 @@ int iova_cache_get(void)
->   
->   	mutex_lock(&iova_cache_mutex);
->   	if (!iova_cache_users) {
-> -		iova_cache = kmem_cache_create("iommu_iova", sizeof(struct iova), 0,
-> -					       SLAB_HWCACHE_ALIGN, NULL);
-> +		iova_cache = KMEM_CACHE(iova, SLAB_HWCACHE_ALIGN);
->   		if (!iova_cache)
->   			goto out_err;
->   
-> -		iova_magazine_cache = kmem_cache_create("iommu_iova_magazine",
-> -							sizeof(struct iova_magazine),
-> -							0, SLAB_HWCACHE_ALIGN, NULL);
-> +		iova_magazine_cache = KMEM_CACHE(iova_magazine, SLAB_HWCACHE_ALIGN);
->   		if (!iova_magazine_cache)
->   			goto out_err;
->   
+> When a process using SVA exits uncleanly the MM is released so the
+> SMMU HW must stop chasing the page table pointers since all that
+> memory will be freed.
+> 
+> However, in an unclean exit we can't control the order of shutdown so
+> something like uacce or RDMA may not have quieted the DMA device yet.
+> 
+> So there is a period during shutdown where the mm has been released
+> and the device is doing DMA, the desire is that the DMA continue to be
+> handled as a PRI and the SW will return failure for all PRI requests.
+> 
+> Specifically we do not want to trigger any dmesg log events during
+> this condition.
+
+Curious, but why is it problematic to log events? As you say, it's an
+"unclean" exit, so it doesn't seem that unreasonable to me.
+
+> Jean-Philippe came up with this solution where we hitlessly use EPD0
+> in release to allow the mm to release the page table while continuing
+> to use the PRI flow.
+>
+> So it is going from a "SVA domain with a page table" to a "SVA domain
+> without a page table but EPD0 set", hitlessly.
+
+Ok, and so the reason this adds complexity is because the set of used
+bits/qwords changes based on something other than the cfg? I think it's
+a pretty weak argument for field vs qwords, but it's a good
+counter-example to my naive approach of per-config masks, so thanks.
+
+> BTW Michael's self test won't be in part 1 because it needs the ops to
+> be restored in order to work (now done in part 2), and has a few other
+> more minor dependencies on part 2 and 3.
+
+That's a pity, but fair enough.
+
+Will
