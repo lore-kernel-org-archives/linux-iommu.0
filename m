@@ -1,95 +1,85 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8BDA91386C9;
-	Tue, 27 Feb 2024 11:30:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BB71013A865
+	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 12:28:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709033412; cv=none; b=sNbKLKvn4TgeFFZiIyWsqwv90WaPwHyrAshXn9HC14e9zfAnPx7pZoTxpr9ND6kjgycmMWc5SXi+V0SpY7+tnXu60PxNMTmZXM/MJexDt8Jj6jS2RaqOMk7xkr0zTTZl8l1hqV05XM2AD/xXjPI91zDILiE5vE5nwt9dczaaa8k=
+	t=1709036911; cv=none; b=n8DR7HF1S9oKSb4V73TWjdF9E8e8o5ULvJ/bYsbcRSU18sIJjcEJtOyNC3JXD+c/xtOgRYvGN9s8b2V5do6SYAIEucIF6s8Ms6U71+o/RRhfYJWDSA6oUGkBPlqxGsu3Ra8CKMVaS5wh1I/IFNnZ8WV1BoLKR8tA3PYgK8yGbP8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709033412; c=relaxed/simple;
-	bh=kdrZaX0aMKIkA+JGeMkKBVsvA05i0ftiJZuPnMvGgP4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=js4DIajju1KJZEHmVOziuy/WBDS/8RNC4nI2VEuCzyCv59vMzAR1Vzrz2rlUHl+iUXXMbf2TVkdKkUj16DTxftaWHW6nECIJ9Bal1bs2niydrCTRUW2cltTPjA7lRjlLHc+Ao+BUNhRPaMQlSlEYX3AMZF2OfDlp8S66Zf0mfaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NHOX5rpX; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NHOX5rpX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D62BC433F1;
-	Tue, 27 Feb 2024 11:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1709033412;
-	bh=kdrZaX0aMKIkA+JGeMkKBVsvA05i0ftiJZuPnMvGgP4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=NHOX5rpX6BtMKfbOHHkQRkSOBZi6bLMMy0wao6khQStgIZm1d1qkcj1x7f+WTuxf2
-	 t43rqIOoAYCXZXM+0z28Q5aPOzeDTgrDf9auFw17UX/gJPb0dNe+sW7vEtU+Bd2lCR
-	 sUIzylUAVVqEdhvwpWRcUZ3y4swv8UWZVcbLz7ksl4blN9rGrURxyv44peMxBrf5FO
-	 V8THu/sFza5RyopfTx/5+7sw2YjmKOR+/jdtWjQ+9WjUl4FnyIEOhk5DkrVl0WKV/H
-	 LLJ89HcJ0hcwesqoGZqet+1jKymjr/gArdqFGkoz5ckIpfFcBNbSNwTkfUZQsiX0t6
-	 MH2MMNrhR9Mog==
-Date: Tue, 27 Feb 2024 13:30:07 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Chaitanya Kulkarni <chaitanyak@nvidia.com>
-Cc: "lsf-pc@lists.linux-foundation.org" <lsf-pc@lists.linux-foundation.org>,
-	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-	"linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	linux-rdma <linux-rdma@vger.kernel.org>,
-	"linux-mm@kvack.org" <linux-mm@kvack.org>,
-	Jens Axboe <axboe@kernel.dk>, Bart Van Assche <bvanassche@acm.org>,
-	"kbusch@kernel.org" <kbusch@kernel.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Amir Goldstein <amir73il@gmail.com>,
-	"josef@toxicpanda.com" <josef@toxicpanda.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	"daniel@iogearbox.net" <daniel@iogearbox.net>,
-	Christoph Hellwig <hch@lst.de>,
-	Dan Williams <dan.j.williams@intel.com>,
-	"jack@suse.com" <jack@suse.com>, Jason Gunthorpe <jgg@nvidia.com>,
-	Chuck Lever <chuck.lever@oracle.com>
-Subject: Re: [LSF/MM/BPF TOPIC] [LSF/MM/BPF ATTEND] : Two stage IOMMU DMA
- mapping operations
-Message-ID: <20240227113007.GD1842804@unreal>
-References: <97f385db-42c9-4c04-8fba-9b1ba8ffc525@nvidia.com>
+	s=arc-20240116; t=1709036911; c=relaxed/simple;
+	bh=afkpinB50uAtiuEirVwsOCngi4mOGR+1dFOVwEPdmiI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FObZukNEWySzd6E9d/EoM4yXLmCQpClKMDS8kp0//ufZiLGmukgCDkxvQ3jbMDM8RT1MrH0GIAcl4ErU3BpXt1zeDW5YCN0AwoSIHKyRYFtwpDOuqnamRb9kGWrli3LGlXTXxJ21dCl+K6QVuKA7VewCSKwQRfA7FBQ3mcqy0nQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 54950DA7;
+	Tue, 27 Feb 2024 04:29:07 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4B5403F73F;
+	Tue, 27 Feb 2024 04:28:28 -0800 (PST)
+Message-ID: <9e7e3e55-1f23-4e71-90d3-83b1309b34d6@arm.com>
+Date: Tue, 27 Feb 2024 12:28:26 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <97f385db-42c9-4c04-8fba-9b1ba8ffc525@nvidia.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/iova: Simplify IOVA cache allocation with
+ KMEM_CACHE()
+Content-Language: en-GB
+To: Cong Liu <liucong2@kylinos.cn>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240227090807.82318-1-liucong2@kylinos.cn>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240227090807.82318-1-liucong2@kylinos.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Feb 27, 2024 at 08:17:27AM +0000, Chaitanya Kulkarni wrote:
-> Hi,
+On 27/02/2024 9:08 am, Cong Liu wrote:
+> Use the new KMEM_CACHE() macro instead of direct kmem_cache_create
+> to simplify the creation of SLAB caches.
 
-<...>
+Heh, this "new" macro has existed for more than half the lifetime of 
+Linux itself ;) ...and given that users are still outnumbered at least 
+5:1 by users of kmem_cache_alloc(), I think it's fair to say that it 
+hasn't really caught on all that well.
 
-> In order to create a good platform for a concrete and meaningful
-> discussion at LSFMM 24, we plan to post an RFC within the next two weeks.
+Most critically, though, as I mentioned on the previous thread, this 
+would change the userspace-visible names - where I think the "iommu_" 
+namespace is helpful in itself - and so impact anyone who's already 
+using meminfo to track IOVA memory consumption, so I don't think such 
+disruption is worthwhile just to save a mere 3 lines of code.
 
-The code can be found here https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=dma-split
+Thanks,
+Robin.
 
-Thanks
-
+> Signed-off-by: Cong Liu <liucong2@kylinos.cn>
+> ---
+>   drivers/iommu/iova.c | 7 ++-----
+>   1 file changed, 2 insertions(+), 5 deletions(-)
 > 
-> Required Attendees list :-
-> 
-> Christoph Hellwig
-> Jason Gunthorpe
-> Jens Axboe
-> Chuck Lever
-> David Howells
-> Keith Busch
-> Bart Van Assche
-> Damien Le Moal
-> Martin Petersen
-> 
-> -ck
-> 
-> [1] 
-> https://lore.kernel.org/all/169772852492.5232.17148564580779995849.stgit@klimt.1015granger.net
-> [2] https://lore.kernel.org/linux-iommu/20200708065014.GA5694@lst.de/
-> 
-> 
-> 
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index d59d0ea2fd21..9134acae76f5 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -950,14 +950,11 @@ int iova_cache_get(void)
+>   
+>   	mutex_lock(&iova_cache_mutex);
+>   	if (!iova_cache_users) {
+> -		iova_cache = kmem_cache_create("iommu_iova", sizeof(struct iova), 0,
+> -					       SLAB_HWCACHE_ALIGN, NULL);
+> +		iova_cache = KMEM_CACHE(iova, SLAB_HWCACHE_ALIGN);
+>   		if (!iova_cache)
+>   			goto out_err;
+>   
+> -		iova_magazine_cache = kmem_cache_create("iommu_iova_magazine",
+> -							sizeof(struct iova_magazine),
+> -							0, SLAB_HWCACHE_ALIGN, NULL);
+> +		iova_magazine_cache = KMEM_CACHE(iova_magazine, SLAB_HWCACHE_ALIGN);
+>   		if (!iova_magazine_cache)
+>   			goto out_err;
+>   
