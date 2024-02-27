@@ -1,203 +1,237 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82272148319;
-	Tue, 27 Feb 2024 16:29:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A38F149E1F
+	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 16:39:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709051396; cv=none; b=QqSfOx2romSkzbynIk17itYarIa845DRcCO82tdXdAML6PTztXY6MQhcTfI9aQ8elqXsXX7byazAoYGWDGhmOb3cdFEIScDuhcnc+NlTHQAYVjX+b0HloknSXcu894a/FRRu5w0jmoK6D5sW/kUwQFDOHI76qT8Nk0c1UTt1Qak=
+	t=1709051952; cv=none; b=PNSvgxFv/uGjniUH7w0OKe+xZCI6Nn+rYjU66ln1dNVtbFCi/s1njAImekaXv9QUfjl9QVYkP5FVQcY9ArpLGgtFo6A3mm5uJ2BTuIKVycKOsMdAIdYlR6u5PCr/hayc6rXJhgThWBTZToJcqtYwWvzP18WclGwl/EYhFr5nlKw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709051396; c=relaxed/simple;
-	bh=L4Iaf2rjfKAUw/E8OMNL91VnY4mSAs6/+XLXKz8Lbt0=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=uRpvfHzV9nf/arVS9uQzU0IwlySvMobNrDU9s0bgatMFJQN0UGVBLCjn47s+90cCU5+jyoqFqpG7VRqne10beKg5NSom5NiY/WDLEwJMCmavJ4xo1OLwXoEBFkERlDeF1Y/M7wfHpokVNLoSAlrz3Z3+u3loygARCU/lEUwkdYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Og+jJ9Fz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1709051952; c=relaxed/simple;
+	bh=NgpWdnxiLbFqNexAmzcqA9YP7ocmvHBLOxsvEhPCKvg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=bTsV/f/ebKAuGx59bCKgeilRS+be2S3htWzPENBJIYSKt3MHWr6iTKiRQ3/4O+hnZC+S+wwxKVazQLMIKE0BLrVmW9kk5zImvCrnRZH/byZweP1tHrU06iIEydLPnKGYOYxa/ayakNkR24A6kAnFlVN4C1T3dYc4OTqdbRTykP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MFQC9z5l; arc=none smtp.client-ip=209.85.128.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Og+jJ9Fz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF944C433C7;
-	Tue, 27 Feb 2024 16:29:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1709051396;
-	bh=L4Iaf2rjfKAUw/E8OMNL91VnY4mSAs6/+XLXKz8Lbt0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=Og+jJ9Fz9Aastq1pF2qD65jvJOuHWsyVXlbyG1HMk4ZBzdz3YqCMfffW2pI/+efVE
-	 SJB2ds1NsYo97/QsEKVgR1haaZuyfeyKwzJesssP32H8yFABNJOUorALufDfYWnKy8
-	 pqE7JBt3RaISAYNCkfAMh2E1Kv5Pis6xjSlw4kHUmKvkw5fR7iY7TYheCodRQEju6c
-	 xrpf3lthgPn7qzxjB/a/sXt7G5pbsKpUOgztdMGZg13AD8X7/m8YXt+hvWV7DLLNJu
-	 D2ucFSxCBRdlxivfwphIHcHrKkPdWLQXNNWAG6VuHn8zel1zD/QnAKonIn+MO2dFUr
-	 CqMdndlJBtsYA==
-Date: Tue, 27 Feb 2024 10:29:54 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Ethan Zhao <haifeng.zhao@linux.intel.com>
-Cc: Dan Carpenter <dan.carpenter@linaro.org>, baolu.lu@linux.intel.com,
-	bhelgaas@google.com, robin.murphy@arm.com, jgg@ziepe.ca,
-	kevin.tian@intel.com, dwmw2@infradead.org, will@kernel.org,
-	lukas@wunner.de, yi.l.liu@intel.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
-Subject: Re: [PATCH v13 3/3] iommu/vt-d: improve ITE fault handling if target
- device isn't valid
-Message-ID: <20240227162954.GA239330@bhelgaas>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MFQC9z5l"
+Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-6089b64f4eeso44753287b3.2
+        for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 08:39:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1709051948; x=1709656748; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=z/ds6xBAyNMUyUudVMgCcZQOOdZHJrbf6LFZuMELU1U=;
+        b=MFQC9z5lJRGywdj2paRk7p6f1tRoShMeiJqcf/eWZrxSdKfiL0+iu9gA2/BYFgcn54
+         ZWoSEdN8GRxr1Ec84MWwGZPvGH0Q9sxhLK5sCkJMTZ4Mo9h4a5LS9bMEBlU1yycNMEm3
+         E5InGsyVhguP35gITUAyX3huulE48yKVvabZUSoHNoDsTXAjwclb4OfV87t3G3CfFntz
+         VeFRAjjISEySHwpG08yEUfUsLfoIRtIOzlrHfxEQELGoa5ZhPurEwvvIKENMMivxiHOQ
+         bQiIJPUJLrKZUPPhFpA9L/KAIDiA37Hy1EKS72Ilb6iObq9Vlkd2wfcFK8qGY6Axmfs9
+         dTPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709051948; x=1709656748;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=z/ds6xBAyNMUyUudVMgCcZQOOdZHJrbf6LFZuMELU1U=;
+        b=AyLh5B/R1ZbNWFQWXfo5zjwEJgHZBniKEg8qfgSLI38r/fyEmL+FqZ7rRqDa6IIvTb
+         irMYBgjmJxMRkX/f26fTl+ZMU3Lpd1OWLzF0fyAxT3HYkuMNe87W3UVISDyY6wBro/c7
+         jCGUATyjmP//fapa8ZY0TVYlZ8isOOBpj7E0zk/OtND+OtTIBHhow/+OE65Q0Q+xwq0w
+         dRavhEtEsDDtvdgrLmSa5Mw5kSB0tfdbVNYG9TbrwHYGhIGhcedJ0sNnolFwh52bJgq7
+         SUVuDZfCy1PZYr7+zu5LhwzRxLcUi1beYiFAA8NytxImkm9AZC9xCj8PPPoPPly913yg
+         Tl4g==
+X-Forwarded-Encrypted: i=1; AJvYcCVSAZzfnIa6xeKJpCXfpXgLq0KUYO+/nBBG6lUMcUvDu11jonpwD4zlXEqJ+IFQKNRPXN5vzp31RxRahuqieS6ijFoAUsU=
+X-Gm-Message-State: AOJu0YyfTYn8MhhYq7AQjc0xnaXLrtC54F81gDCYo5QH9nPbP3yLwVz5
+	DFbgPRV/fjAOlDzAirhrsU/P2kMg6cIy4pudRxHohf57rNN4UsF8H6jlU1R25R7omzNSoH7rfY0
+	iMQcg5mzDjfgY29YdGabQM6QxfABNJkJh4pCA
+X-Google-Smtp-Source: AGHT+IGYsfj1hpFG2qZ+lv3Tc2gaVahH2B+pghzlhO4uZB2pAxOqLV3b7HUJfJpPshrzze8w4TdCoPFLjSNMBWpeWIM=
+X-Received: by 2002:a0d:cc52:0:b0:609:2c38:4dd2 with SMTP id
+ o79-20020a0dcc52000000b006092c384dd2mr1712145ywd.42.1709051948102; Tue, 27
+ Feb 2024 08:39:08 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ae9137f1-3e9b-4d84-956f-4e8c31d2e1bb@linux.intel.com>
+References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-20-surenb@google.com>
+ <2daf5f5a-401a-4ef7-8193-6dca4c064ea0@suse.cz>
+In-Reply-To: <2daf5f5a-401a-4ef7-8193-6dca4c064ea0@suse.cz>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Tue, 27 Feb 2024 08:38:54 -0800
+Message-ID: <CAJuCfpGt+zfFzfLSXEjeTo79gw2Be-UWBcJq=eL1qAnPf9PaiA@mail.gmail.com>
+Subject: Re: [PATCH v4 19/36] mm: create new codetag references during page splitting
+To: Vlastimil Babka <vbabka@suse.cz>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
+	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
+	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Feb 27, 2024 at 10:30:36AM +0800, Ethan Zhao wrote:
-> On 2/27/2024 6:52 AM, Bjorn Helgaas wrote:
-> > On Fri, Feb 23, 2024 at 10:29:28AM +0800, Ethan Zhao wrote:
-> > > On 2/22/2024 7:24 PM, Dan Carpenter wrote:
-> > > > On Thu, Feb 22, 2024 at 04:02:51AM -0500, Ethan Zhao wrote:
-> > > > > Because surprise removal could happen anytime, e.g. user could request safe
-> > > > > removal to EP(endpoint device) via sysfs and brings its link down to do
-> > > > > surprise removal cocurrently. such aggressive cases would cause ATS
-> > > > > invalidation request issued to non-existence target device, then deadly
-> > > > > loop to retry that request after ITE fault triggered in interrupt context.
-> > > > > this patch aims to optimize the ITE handling by checking the target device
-> > > > > presence state to avoid retrying the timeout request blindly, thus avoid
-> > > > > hard lockup or system hang.
-> > > > > 
-> > > > > Devices are valid ATS invalidation request target only when they reside
-> > > > > in the iommu->device_rbtree (probed, not released) and present.
-> > > > "valid invalidation" is awkward wording.  Can we instead say:
-> > > If you read them together, sounds like tongue twister. but here "ATS
-> > > invalidation request target" is one term in PCIe spec.
-> > "ATS invalidation request target" does not appear in the PCIe spec.  I
-> > think you're trying to avoid sending ATS Invalidate Requests when you
-> > know they will not be completed.
-> 
-> I meant "ATS Invalidation Request" here is one term in PCIe spec, 'valid'
-> is used to describe the word 'target'.
-> 
-> This patch isn't intended to work as the same logic as patch [2/3], this
-> aims to break the blindly dead loop not to retry the timeout request after
-> ITE fault happened.
-> 
-> > 
-> > It is impossible to reliably determine whether a device will be
-> > present and able to complete an Invalidate Request.  No matter what
-> > you check to determine that a device is present *now*, it may be
-> > removed before an Invalidate Request reaches it.
-> 
-> Here we check to see if the ITE fault was caused by device is not present.
-> The opposite logic, not predict the future, but find the cause of the fault
-> already happened, if pci_device_is_present() tells us the device isn't
-> there, it is reliable I think.
-> 
-> > 
-> > If an Invalidate Request to a non-existent device causes a "deadly
-> > loop" (I'm not sure what that means) or a hard lockup or a system
-> 
-> There is a dead loop here to blindly retry to timeout request if
-> ITE happened, we want to break that loop if the target device was
-> gone.
-> 
-> > hang, something is wrong with the hardware.  There should be a
-> > mechanism to recover from a timeout in that situation.
-> > 
-> > You can avoid sending Invalidate Requests to devices that have been
-> 
-> That logic works for simple safe /surprise removal as described in
-> patch[2/3], no race there that case at all.
-> 
-> > removed, and that will reduce the number of timeout cases.  But if you
-> > rely on a check like pci_device_is_present() or
-> > pci_dev_is_disconnected(), there is *always* an unavoidable race
-> 
-> We are not relying on pci_device_is_present() here in this patch to close
-> the race window between aggressive surprise removal and ATS invalidation
-> Request, we are doing post-fault handling here.
+On Tue, Feb 27, 2024 at 2:10=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
+ote:
+>
+> On 2/21/24 20:40, Suren Baghdasaryan wrote:
+> > When a high-order page is split into smaller ones, each newly split
+> > page should get its codetag. The original codetag is reused for these
+> > pages but it's recorded as 0-byte allocation because original codetag
+> > already accounts for the original high-order allocated page.
+>
+> This was v3 but then you refactored (for the better) so the commit log
+> could reflect it?
 
-OK, sorry, I guess I missed that this fixes the code that handles the
-Completion Timeouts.
+Yes, technically mechnism didn't change but I should word it better.
+Smth like this:
 
-> > between a device removal and the Invalidate Request.
-> > 
-> > > > > @@ -1273,6 +1273,9 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
-> > > > >    {
-> > > > >    	u32 fault;
-> > > > >    	int head, tail;
-> > > > > +	u64 iqe_err, ite_sid;
-> > > > > +	struct device *dev = NULL;
-> > > > > +	struct pci_dev *pdev = NULL;
-> > > > >    	struct q_inval *qi = iommu->qi;
-> > > > >    	int shift = qi_shift(iommu);
-> > > > > @@ -1317,6 +1320,13 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
-> > > > >    		tail = readl(iommu->reg + DMAR_IQT_REG);
-> > > > >    		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
-> > > > > +		/*
-> > > > > +		 * SID field is valid only when the ITE field is Set in FSTS_REG
-> > > > > +		 * see Intel VT-d spec r4.1, section 11.4.9.9
-> > > > > +		 */
-> > > > > +		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
-> > > > > +		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
-> > > > > +
-> > > > >    		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
-> > > > >    		pr_info("Invalidation Time-out Error (ITE) cleared\n");
-> > > > > @@ -1326,6 +1336,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
-> > > > >    			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
-> > > > >    		} while (head != tail);
-> > > > > +		/*
-> > > > > +		 * If got ITE, we need to check if the sid of ITE is one of the
-> > > > > +		 * current valid ATS invalidation target devices, if no, or the
-> > > > > +		 * target device isn't presnet, don't try this request anymore.
-> > > > > +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
-> > > > > +		 */
-> > > > This comment is kind of confusing.
-> > > Really confusing ? this is typo there, resnet-> "present"
-> > > 
-> > > > /*
-> > > >    * If we have an ITE, then we need to check whether the sid of the ITE
-> > > >    * is in the rbtree (meaning it is probed and not released), and that
-> > > >    * the PCI device is present.
-> > > >    */
-> > > > 
-> > > > My comment is slightly shorter but I think it has the necessary
-> > > > information.
-> > > > 
-> > > > > +		if (ite_sid) {
-> > > > > +			dev = device_rbtree_find(iommu, ite_sid);
-> > > > > +			if (!dev || !dev_is_pci(dev))
-> > > > > +				return -ETIMEDOUT;
-> > > > -ETIMEDOUT is weird.  The callers don't care which error code we return.
-> > > > Change this to -ENODEV or something
-> > > -ETIMEDOUT means prior ATS invalidation request hit timeout fault, and the
-> > > caller really cares about the returned value.
-> > > 
-> > > > > +			pdev = to_pci_dev(dev);
-> > > > > +			if (!pci_device_is_present(pdev) &&
-> > > > > +				ite_sid == pci_dev_id(pci_physfn(pdev)))
-> > > > The && confused me, but then I realized that probably "ite_sid ==
-> > > > pci_dev_id(pci_physfn(pdev))" is always true.  Can we delete that part?
-> > > Here is the fault handling, just double confirm nothing else goes wrong --
-> > > beyond the assumption.
-> > > 
-> > > > 		pdev = to_pci_dev(dev);
-> > > > 		if (!pci_device_is_present(pdev))
-> > > > 			return -ENODEV;
-> > > > 
-> > > > 
-> > > > > +				return -ETIMEDOUT;
-> > > > -ENODEV.
-> > > The ATS invalidation request could be sent from userland in later code,
-> > > the userland code will care about the returned value,  -ENODEV is one aspect
-> > > of the fact (target device not present), while -ETIMEDOUT is another
-> > > (timeout happened). we couldn't return them both.
-> > > 
-> > > > > +		}
-> > > > >    		if (qi->desc_status[wait_index] == QI_ABORT)
-> > > > >    			return -EAGAIN;
-> > > > >    	}
-> > > > Sorry, again for nit picking a v13 patch.  I'm not a domain expert but
-> > > > this patchset seems reasonable to me.
-> > > Though this is the v13, it is based on new rbtree code, you are welcome.
-> > > 
-> > > Thanks,
-> > > Ethan
-> > > 
-> > > > regards,
-> > > > dan carpenter
+When a high-order page is split into smaller ones, each newly split
+page should get its codetag. After the split each split page will be
+referencing the original codetag. The codetag's "bytes" counter
+remains the same because the amount of allocated memory has not
+changed, however the "calls" counter gets increased to keep the
+counter correct when these individual pages get freed.
+
+>
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+>
+> I was going to R-b, but now I recalled the trickiness of
+> __free_pages() for non-compound pages if it loses the race to a
+> speculative reference. Will the codetag handling work fine there?
+
+I think so. Each non-compoud page has its individual reference to its
+codetag and will decrement it whenever the page is freed. IIUC the
+logic in  __free_pages(), when it loses race to a speculative
+reference it will free all pages except for the first one and the
+first one will be freed when the last put_page() happens. If prior to
+this all these pages were split from one page then all of them will
+have their own reference which points to the same codetag. Every time
+one of these pages are freed that codetag's "bytes" and "calls"
+counters will be decremented. I think accounting will work correctly
+irrespective of where these pages are freed, in __free_pages() or by
+put_page().
+
+>
+> > ---
+> >  include/linux/pgalloc_tag.h | 30 ++++++++++++++++++++++++++++++
+> >  mm/huge_memory.c            |  2 ++
+> >  mm/page_alloc.c             |  2 ++
+> >  3 files changed, 34 insertions(+)
+> >
+> > diff --git a/include/linux/pgalloc_tag.h b/include/linux/pgalloc_tag.h
+> > index b49ab955300f..9e6ad8e0e4aa 100644
+> > --- a/include/linux/pgalloc_tag.h
+> > +++ b/include/linux/pgalloc_tag.h
+> > @@ -67,11 +67,41 @@ static inline void pgalloc_tag_sub(struct page *pag=
+e, unsigned int order)
+> >       }
+> >  }
+> >
+> > +static inline void pgalloc_tag_split(struct page *page, unsigned int n=
+r)
+> > +{
+> > +     int i;
+> > +     struct page_ext *page_ext;
+> > +     union codetag_ref *ref;
+> > +     struct alloc_tag *tag;
+> > +
+> > +     if (!mem_alloc_profiling_enabled())
+> > +             return;
+> > +
+> > +     page_ext =3D page_ext_get(page);
+> > +     if (unlikely(!page_ext))
+> > +             return;
+> > +
+> > +     ref =3D codetag_ref_from_page_ext(page_ext);
+> > +     if (!ref->ct)
+> > +             goto out;
+> > +
+> > +     tag =3D ct_to_alloc_tag(ref->ct);
+> > +     page_ext =3D page_ext_next(page_ext);
+> > +     for (i =3D 1; i < nr; i++) {
+> > +             /* Set new reference to point to the original tag */
+> > +             alloc_tag_ref_set(codetag_ref_from_page_ext(page_ext), ta=
+g);
+> > +             page_ext =3D page_ext_next(page_ext);
+> > +     }
+> > +out:
+> > +     page_ext_put(page_ext);
+> > +}
+> > +
+> >  #else /* CONFIG_MEM_ALLOC_PROFILING */
+> >
+> >  static inline void pgalloc_tag_add(struct page *page, struct task_stru=
+ct *task,
+> >                                  unsigned int order) {}
+> >  static inline void pgalloc_tag_sub(struct page *page, unsigned int ord=
+er) {}
+> > +static inline void pgalloc_tag_split(struct page *page, unsigned int n=
+r) {}
+> >
+> >  #endif /* CONFIG_MEM_ALLOC_PROFILING */
+> >
+> > diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> > index 94c958f7ebb5..86daae671319 100644
+> > --- a/mm/huge_memory.c
+> > +++ b/mm/huge_memory.c
+> > @@ -38,6 +38,7 @@
+> >  #include <linux/sched/sysctl.h>
+> >  #include <linux/memory-tiers.h>
+> >  #include <linux/compat.h>
+> > +#include <linux/pgalloc_tag.h>
+> >
+> >  #include <asm/tlb.h>
+> >  #include <asm/pgalloc.h>
+> > @@ -2899,6 +2900,7 @@ static void __split_huge_page(struct page *page, =
+struct list_head *list,
+> >       /* Caller disabled irqs, so they are still disabled here */
+> >
+> >       split_page_owner(head, nr);
+> > +     pgalloc_tag_split(head, nr);
+> >
+> >       /* See comment in __split_huge_page_tail() */
+> >       if (PageAnon(head)) {
+> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+> > index 58c0e8b948a4..4bc5b4720fee 100644
+> > --- a/mm/page_alloc.c
+> > +++ b/mm/page_alloc.c
+> > @@ -2621,6 +2621,7 @@ void split_page(struct page *page, unsigned int o=
+rder)
+> >       for (i =3D 1; i < (1 << order); i++)
+> >               set_page_refcounted(page + i);
+> >       split_page_owner(page, 1 << order);
+> > +     pgalloc_tag_split(page, 1 << order);
+> >       split_page_memcg(page, 1 << order);
+> >  }
+> >  EXPORT_SYMBOL_GPL(split_page);
+> > @@ -4806,6 +4807,7 @@ static void *make_alloc_exact(unsigned long addr,=
+ unsigned int order,
+> >               struct page *last =3D page + nr;
+> >
+> >               split_page_owner(page, 1 << order);
+> > +             pgalloc_tag_split(page, 1 << order);
+> >               split_page_memcg(page, 1 << order);
+> >               while (page < --last)
+> >                       set_page_refcounted(last);
