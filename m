@@ -1,197 +1,89 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D328137C5E
-	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 10:18:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6FC2138480;
+	Tue, 27 Feb 2024 10:50:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709029133; cv=none; b=n0GIPtNUxxgRZb+kKFyJE5jtO+k9PQK5jOGAQgjP3Qv7+SP4lx7mJn3vK/wbrppNta1ywaStZCG5xvdxvXkzIf57VorM/BDUKLf1Ia2RJxynHQ38WO+blfai7RJHr4jhatIHe0gLDckGo5yd6UO98V1xnMnd07BwzvjYoVFPsl4=
+	t=1709031014; cv=none; b=WmAA8j2T4G8xX9EpWQ4yMpiKYB89LZKb8puOXbVkxAkhYXfMyxLTiHKwAy0aHJwZj3gUtdYgtf3Lyi66i0R8TvVuEsbDVztSjlVU4ZWvgMtkk5vOzJiIk+Z9jCjib5/Ru6Oak80jXlq7F7wkyamEHObA9NNl9xlyHHlP+27URtA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709029133; c=relaxed/simple;
-	bh=1kT4IadTcD9s8wVa7TvXCimMRyY5zCB8d4SK3JfJKpI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iAhAcHhuW71rzWHw2+ZlgUhAkQT69FGSXzTcOhHHMKO9i6cHtOPkX+XEvjdhZRhwncr2Xyt7b9GEG21/WhygTIuXcCKuF5wYv2+qgTiWthhkhd50o/o4+gRRJBvlYgHR6LIkEWP6guwmzjSN7EiaDt4fcJZtqS1UKYs++IMgYAY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=cpyVIP79; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=UuxALrSs; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=cpyVIP79; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=UuxALrSs; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1709031014; c=relaxed/simple;
+	bh=h/XPnR9/Of74e57QRgQwK4utsjer1UJrLhZg11kJf9E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OhniqNj0pU1PVjcrKwCaPrxNCJNIxFX6BNYl4RbYyaY7QRjxwTH4BMct3cofe5fs/9xLHo3RgsGxYR9FwhLZTbim2m7VwNvjgbVOdWmItS8txipAT6wEDy8fJKBZ0KsWuqYTLqB6Mi0naIquFMGS3NtIBBFKy2MzugT8V2cwr1Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ArRbrzzk; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="cpyVIP79";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="UuxALrSs";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="cpyVIP79";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="UuxALrSs"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 5FBE01F44F;
-	Tue, 27 Feb 2024 10:18:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1709029129; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Q4pT87ICIgMrimfBYIsFt4403+jQ655os57F8M8rAV0=;
-	b=cpyVIP79rj0/sBrJvpdZDSi/YWGaVzMxOeOUTFZkxXRW5dBBpVG2nrSet3ziaxNcNhCRul
-	fsn2i6ZDMFIR8vZKMy1rHahvaELrlR9TdV1JOh9wud8P37gKHfMGsbCuw8Lz1zGjf4dOM9
-	gotsrvN12NpBYdL5ELH484nyYHkPZRY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1709029129;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Q4pT87ICIgMrimfBYIsFt4403+jQ655os57F8M8rAV0=;
-	b=UuxALrSs0P8mLarP5bjo/PfJ0N2IwYv6LH6qdRMTKIyww8fRC4dOnMwu5xagQtZCCFsHZf
-	6lKfIVVRnWShjTBw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1709029129; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Q4pT87ICIgMrimfBYIsFt4403+jQ655os57F8M8rAV0=;
-	b=cpyVIP79rj0/sBrJvpdZDSi/YWGaVzMxOeOUTFZkxXRW5dBBpVG2nrSet3ziaxNcNhCRul
-	fsn2i6ZDMFIR8vZKMy1rHahvaELrlR9TdV1JOh9wud8P37gKHfMGsbCuw8Lz1zGjf4dOM9
-	gotsrvN12NpBYdL5ELH484nyYHkPZRY=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1709029129;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Q4pT87ICIgMrimfBYIsFt4403+jQ655os57F8M8rAV0=;
-	b=UuxALrSs0P8mLarP5bjo/PfJ0N2IwYv6LH6qdRMTKIyww8fRC4dOnMwu5xagQtZCCFsHZf
-	6lKfIVVRnWShjTBw==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id B14DF13A65;
-	Tue, 27 Feb 2024 10:18:48 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([10.150.64.162])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id UH3gKQi33WXqfQAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Tue, 27 Feb 2024 10:18:48 +0000
-Message-ID: <4e648451-31a8-4293-bc14-e7ea01c889b1@suse.cz>
-Date: Tue, 27 Feb 2024 11:19:20 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ArRbrzzk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FE34C433C7;
+	Tue, 27 Feb 2024 10:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1709031014;
+	bh=h/XPnR9/Of74e57QRgQwK4utsjer1UJrLhZg11kJf9E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ArRbrzzkRv2DPl31GDKc2bQzlz9XV2Kd3q/cN28EQDl0wb7IzkqVYnFqoZoTOH0R9
+	 6cTKAjWYxCnZw6gvXOHoOeHhbCq/ZYghidbOW06ryrO8KV4f/Yi4vJskd20OFf0utH
+	 GqzyNgqXtvcYh7sqsveTNby6WAa6VLT1nMxjkdvbid7p1xBBqQY7AizQQW8Zl1TER/
+	 Qd01DP7+og2GkcmzD5HDreBYLD1DmCFGq8cdaS6N0o2/4HAzh2BiU+riEg311Rvr3h
+	 v0wNZ5UEzsDSwIG7K34Jsamx5tli3V72And1hL/IuskBJ1hsUkB7ooDt8O1Ks7F+7e
+	 mk/3N614ouRxw==
+Date: Tue, 27 Feb 2024 10:50:08 +0000
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joerg Roedel <jroedel@suse.de>, Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>,
+	Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH v5 02/17] iommu/arm-smmu-v3: Consolidate the STE
+ generation for abort/bypass
+Message-ID: <20240227105007.GA13859@willie-the-truck>
+References: <2-v5-cd1be8dd9c71+3fa-smmuv3_newapi_p1_jgg@nvidia.com>
+ <2ca7f64e-a9e3-4d47-b04f-726c86223fd6@arm.com>
+ <20240223185358.GA791502@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 21/36] lib: add codetag reference into slabobj_ext
-Content-Language: en-US
-To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
-Cc: kent.overstreet@linux.dev, mhocko@suse.com, hannes@cmpxchg.org,
- roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
- willy@infradead.org, liam.howlett@oracle.com,
- penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com,
- will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
- nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
- rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
- yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
- hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
- ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org,
- ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
- dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
- bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
- minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arch@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
- cgroups@vger.kernel.org
-References: <20240221194052.927623-1-surenb@google.com>
- <20240221194052.927623-22-surenb@google.com>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20240221194052.927623-22-surenb@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Level: 
-X-Spamd-Bar: /
-Authentication-Results: smtp-out2.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=cpyVIP79;
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=UuxALrSs
-X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
-X-Spamd-Result: default: False [-0.02 / 50.00];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 XM_UA_NO_VERSION(0.01)[];
-	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
-	 TO_DN_SOME(0.00)[];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 DKIM_TRACE(0.00)[suse.cz:+];
-	 MX_GOOD(-0.01)[];
-	 RCPT_COUNT_GT_50(0.00)[74];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 MID_RHS_MATCH_FROM(0.00)[];
-	 BAYES_HAM(-0.02)[51.67%];
-	 ARC_NA(0.00)[];
-	 R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 FROM_HAS_DN(0.00)[];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,suse.cz:email,linux.dev:email];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FREEMAIL_CC(0.00)[linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,i-love.sakura.ne.jp,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[]
-X-Spam-Score: -0.02
-X-Rspamd-Queue-Id: 5FBE01F44F
-X-Spam-Flag: NO
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240223185358.GA791502@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 2/21/24 20:40, Suren Baghdasaryan wrote:
-> To store code tag for every slab object, a codetag reference is embedded
-> into slabobj_ext when CONFIG_MEM_ALLOC_PROFILING=y.
+On Fri, Feb 23, 2024 at 02:53:58PM -0400, Jason Gunthorpe wrote:
+> On Thu, Feb 15, 2024 at 05:27:09PM +0000, Robin Murphy wrote:
+> > > @@ -1583,22 +1595,20 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+> > >   	arm_smmu_write_ste(master, sid, dst, &target);
+> > >   }
+> > > +/*
+> > > + * This can safely directly manipulate the STE memory without a sync sequence
+> > > + * because the STE table has not been installed in the SMMU yet.
+> > > + */
+> > >   static void arm_smmu_init_bypass_stes(struct arm_smmu_ste *strtab,
+> > 
+> > This name is long out-of-date - if we're refreshing this area, please rename
+> > to something relevant to what it actually does, e.g. s/bypass/initial/.
 > 
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
-> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
-
-> ---
->  include/linux/memcontrol.h | 5 +++++
->  lib/Kconfig.debug          | 1 +
->  2 files changed, 6 insertions(+)
+> Done
 > 
-> diff --git a/include/linux/memcontrol.h b/include/linux/memcontrol.h
-> index f3584e98b640..2b010316016c 100644
-> --- a/include/linux/memcontrol.h
-> +++ b/include/linux/memcontrol.h
-> @@ -1653,7 +1653,12 @@ unsigned long mem_cgroup_soft_limit_reclaim(pg_data_t *pgdat, int order,
->   * if MEMCG_DATA_OBJEXTS is set.
->   */
->  struct slabobj_ext {
-> +#ifdef CONFIG_MEMCG_KMEM
->  	struct obj_cgroup *objcg;
-> +#endif
-> +#ifdef CONFIG_MEM_ALLOC_PROFILING
-> +	union codetag_ref ref;
-> +#endif
->  } __aligned(8);
->  
->  static inline void __inc_lruvec_kmem_state(void *p, enum node_stat_item idx)
-> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> index 7bbdb0ddb011..9ecfcdb54417 100644
-> --- a/lib/Kconfig.debug
-> +++ b/lib/Kconfig.debug
-> @@ -979,6 +979,7 @@ config MEM_ALLOC_PROFILING
->  	depends on !DEBUG_FORCE_WEAK_PER_CPU
->  	select CODE_TAGGING
->  	select PAGE_EXTENSION
-> +	select SLAB_OBJ_EXT
->  	help
->  	  Track allocation source code and record total allocation size
->  	  initiated at that code location. The mechanism can be used to track
+> > Although frankly I also think that at this point we should just get rid of
+> > the disable_bypass parameter altogether - it's been almost entirely
+> > meaningless since default domain support was added, and any tenuous cases
+> > for wanting inital STEs to be bypass should probably be using RMRs now
+> > anyway.
+> 
+> I can write the patch for this if you and Will agree
+
+Yes, please! I'll be glad to see the back of that option. Since you just
+posted v6 of your "part 1", feel free to send a patch which applies on top
+of that (rather than having to rebase the whole shebang).
+
+Will
