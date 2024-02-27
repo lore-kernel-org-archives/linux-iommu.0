@@ -1,280 +1,203 @@
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36429148307
-	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 16:15:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82272148319;
+	Tue, 27 Feb 2024 16:29:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709050536; cv=none; b=ASOGBo4V+e/PNikKEdVSDe5DFlnhCk+y0knv5VFTtKIsEyBKHNqlqXaLbmnYtt2D0Fi13eIZbGxVvnVVY/ZZwmGobsxa6SzcM+/dk68wxl44IJk+6tx5Iv9MTyyJpbiDa/LSYe2zKN5pRz9BE19Ab0hQUejOZMGIt3H1l7lxOew=
+	t=1709051396; cv=none; b=QqSfOx2romSkzbynIk17itYarIa845DRcCO82tdXdAML6PTztXY6MQhcTfI9aQ8elqXsXX7byazAoYGWDGhmOb3cdFEIScDuhcnc+NlTHQAYVjX+b0HloknSXcu894a/FRRu5w0jmoK6D5sW/kUwQFDOHI76qT8Nk0c1UTt1Qak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709050536; c=relaxed/simple;
-	bh=+J92/r3jcnHXJ/0cv7LsIQJtOsDjbMxL06wEUVm7B4Y=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=mpVIYYFJGaxgtZ7mQT40YsoJimKAnTR1u7TrT+txO5Mm5IeKNl9PZQLhHnaM2tLkXRTQk/iSL6wdZx8O7GhBadO7meQf/m5dANJHZMkdHNnZH1w31u18sm+NnCvHBHc+4vjtZkVnktA4CgqU8vgpcEJbhuw4pSk71zEBTjQzyqs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=k6E/lrqS; arc=none smtp.client-ip=209.85.219.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1709051396; c=relaxed/simple;
+	bh=L4Iaf2rjfKAUw/E8OMNL91VnY4mSAs6/+XLXKz8Lbt0=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=uRpvfHzV9nf/arVS9uQzU0IwlySvMobNrDU9s0bgatMFJQN0UGVBLCjn47s+90cCU5+jyoqFqpG7VRqne10beKg5NSom5NiY/WDLEwJMCmavJ4xo1OLwXoEBFkERlDeF1Y/M7wfHpokVNLoSAlrz3Z3+u3loygARCU/lEUwkdYk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Og+jJ9Fz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="k6E/lrqS"
-Received: by mail-yb1-f177.google.com with SMTP id 3f1490d57ef6-dbed0710c74so4032399276.1
-        for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 08:15:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1709050533; x=1709655333; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZscKwOxqDJIaAnxf3DOisSB4kKJVJaPdUBtyCsbS8zY=;
-        b=k6E/lrqS8bJ7NvPMl1wg+fPXnkLFfXMQhdHxkDjLDphMuA/Tc0NIe8zNRxJaNUe+F9
-         TDyaJpqEDFECR8GfGzAKq0mJAJBFRN6/3bvKtRYCNZGUz9sTHg2TouDEPs9YByqNjGLg
-         c85qgG4IR8txgC4FyF1px5i4ZOMMUL6gRiIVO0lPVCvD/XhsSTLnmYYUYy7Q7NgFdoXp
-         ok5GO7ZOD+N/bf/BEKCNoiTjjgW30lNSJ21onTBtS+1ngMcm+JKAcH2pPpOWRfi206aB
-         TUweM4xvxCmjq2PzuRmV1E9upmrxdh09cltDsd1AD6cUVaR+FGnOhzmBw8WaFwazHEaI
-         D2OA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709050533; x=1709655333;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=ZscKwOxqDJIaAnxf3DOisSB4kKJVJaPdUBtyCsbS8zY=;
-        b=JPCnTws2AvzJFQ6O0YpuV+bTspxY4J9IKpyHRPAp+XdRphCl6h1ZhGLFn3KnoE7hdJ
-         DXvQEL5qrNowAedXk5MaiorYJHX1M6md1DsK5GDjcOOlFO8SmT0o01DV4bsJQSWNKMQb
-         s7Rl/xHLK4x3lZXTU/2+Df1jT5nxo855TBbndrzKqLr3ZJ+M11pRkJn3Z+62bxtmikuP
-         x8tKSpkkXk2Z29p5sSISCezw6v/uKR4qboRvYcVOk3yHBk14XOE8gE6xR/GCSQ+5cs4r
-         5VQcGgnZbF3SR/oF+rJOPnDypctvRFh1KZJC5j/VgqZ5/lyPnl+K8YM+RkRiSzdDpJUl
-         BrtQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUbqFirzFi/RaTJeLC4IwmtPYqWGLVzgscd6JK1X1WKY9R7U+8I7w0jZuW9UNti1eJLWHEKnB+RJAY5iUVIHRZDlkVZdF4=
-X-Gm-Message-State: AOJu0YyMpUFjGUSZNZfb/ARzOyrbQMQ7vbm9zsWDpN0MflwooJ06Q5w3
-	kGS4iyw3a4XoVyySPTweMUs00F3GLRO6/KNTXNQopC0WrTWdHQ1svolAmOcIRYf270Wzg9vtZvn
-	LtcmyuTyIpNRcqq1SeaKz+n2BNn4za3bUBBlW
-X-Google-Smtp-Source: AGHT+IEw+VgUM8rjFF4tarET9LYSoU4rt/YwPutl48cPMakVPIe4FNGy4MH5hQJmtrlQlJwMQOaq0wT1r6aJOfixfFE=
-X-Received: by 2002:a25:aac5:0:b0:dcc:4b84:67cd with SMTP id
- t63-20020a25aac5000000b00dcc4b8467cdmr2309188ybi.9.1709050532850; Tue, 27 Feb
- 2024 08:15:32 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Og+jJ9Fz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF944C433C7;
+	Tue, 27 Feb 2024 16:29:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1709051396;
+	bh=L4Iaf2rjfKAUw/E8OMNL91VnY4mSAs6/+XLXKz8Lbt0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=Og+jJ9Fz9Aastq1pF2qD65jvJOuHWsyVXlbyG1HMk4ZBzdz3YqCMfffW2pI/+efVE
+	 SJB2ds1NsYo97/QsEKVgR1haaZuyfeyKwzJesssP32H8yFABNJOUorALufDfYWnKy8
+	 pqE7JBt3RaISAYNCkfAMh2E1Kv5Pis6xjSlw4kHUmKvkw5fR7iY7TYheCodRQEju6c
+	 xrpf3lthgPn7qzxjB/a/sXt7G5pbsKpUOgztdMGZg13AD8X7/m8YXt+hvWV7DLLNJu
+	 D2ucFSxCBRdlxivfwphIHcHrKkPdWLQXNNWAG6VuHn8zel1zD/QnAKonIn+MO2dFUr
+	 CqMdndlJBtsYA==
+Date: Tue, 27 Feb 2024 10:29:54 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>
+Cc: Dan Carpenter <dan.carpenter@linaro.org>, baolu.lu@linux.intel.com,
+	bhelgaas@google.com, robin.murphy@arm.com, jgg@ziepe.ca,
+	kevin.tian@intel.com, dwmw2@infradead.org, will@kernel.org,
+	lukas@wunner.de, yi.l.liu@intel.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
+Subject: Re: [PATCH v13 3/3] iommu/vt-d: improve ITE fault handling if target
+ device isn't valid
+Message-ID: <20240227162954.GA239330@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-23-surenb@google.com>
- <4a0e40e5-3542-4d47-bb2b-c0666f6a904d@suse.cz>
-In-Reply-To: <4a0e40e5-3542-4d47-bb2b-c0666f6a904d@suse.cz>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Tue, 27 Feb 2024 08:15:21 -0800
-Message-ID: <CAJuCfpGvSfu5dtxFVxmQ4cMfQti2vGVtkNmm2kqQVPfrpFM1tw@mail.gmail.com>
-Subject: Re: [PATCH v4 22/36] mm/slab: add allocation accounting into slab
- allocation and free paths
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
-	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ae9137f1-3e9b-4d84-956f-4e8c31d2e1bb@linux.intel.com>
 
-On Tue, Feb 27, 2024 at 5:07=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
-ote:
->
->
->
-> On 2/21/24 20:40, Suren Baghdasaryan wrote:
-> > Account slab allocations using codetag reference embedded into slabobj_=
-ext.
-> >
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
-> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> > Reviewed-by: Kees Cook <keescook@chromium.org>
-> > ---
-> >  mm/slab.h | 66 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-> >  mm/slub.c |  9 ++++++++
-> >  2 files changed, 75 insertions(+)
-> >
-> > diff --git a/mm/slab.h b/mm/slab.h
-> > index 13b6ba2abd74..c4bd0d5348cb 100644
-> > --- a/mm/slab.h
-> > +++ b/mm/slab.h
-> > @@ -567,6 +567,46 @@ static inline struct slabobj_ext *slab_obj_exts(st=
-ruct slab *slab)
-> >  int alloc_slab_obj_exts(struct slab *slab, struct kmem_cache *s,
-> >                       gfp_t gfp, bool new_slab);
-> >
-> > +static inline bool need_slab_obj_ext(void)
-> > +{
-> > +#ifdef CONFIG_MEM_ALLOC_PROFILING
-> > +     if (mem_alloc_profiling_enabled())
-> > +             return true;
-> > +#endif
-> > +     /*
-> > +      * CONFIG_MEMCG_KMEM creates vector of obj_cgroup objects conditi=
-onally
-> > +      * inside memcg_slab_post_alloc_hook. No other users for now.
-> > +      */
-> > +     return false;
-> > +}
-> > +
-> > +static inline struct slabobj_ext *
-> > +prepare_slab_obj_exts_hook(struct kmem_cache *s, gfp_t flags, void *p)
-> > +{
-> > +     struct slab *slab;
-> > +
-> > +     if (!p)
-> > +             return NULL;
-> > +
-> > +     if (!need_slab_obj_ext())
-> > +             return NULL;
-> > +
-> > +     if (s->flags & SLAB_NO_OBJ_EXT)
-> > +             return NULL;
-> > +
-> > +     if (flags & __GFP_NO_OBJ_EXT)
-> > +             return NULL;
-> > +
-> > +     slab =3D virt_to_slab(p);
-> > +     if (!slab_obj_exts(slab) &&
-> > +         WARN(alloc_slab_obj_exts(slab, s, flags, false),
-> > +              "%s, %s: Failed to create slab extension vector!\n",
-> > +              __func__, s->name))
-> > +             return NULL;
-> > +
-> > +     return slab_obj_exts(slab) + obj_to_index(s, slab, p);
-> > +}
-> > +
-> >  #else /* CONFIG_SLAB_OBJ_EXT */
-> >
-> >  static inline struct slabobj_ext *slab_obj_exts(struct slab *slab)
-> > @@ -589,6 +629,32 @@ prepare_slab_obj_exts_hook(struct kmem_cache *s, g=
-fp_t flags, void *p)
-> >
-> >  #endif /* CONFIG_SLAB_OBJ_EXT */
-> >
-> > +#ifdef CONFIG_MEM_ALLOC_PROFILING
-> > +
-> > +static inline void alloc_tagging_slab_free_hook(struct kmem_cache *s, =
-struct slab *slab,
-> > +                                     void **p, int objects)
->
-> Only used from mm/slub.c so could move?
+On Tue, Feb 27, 2024 at 10:30:36AM +0800, Ethan Zhao wrote:
+> On 2/27/2024 6:52 AM, Bjorn Helgaas wrote:
+> > On Fri, Feb 23, 2024 at 10:29:28AM +0800, Ethan Zhao wrote:
+> > > On 2/22/2024 7:24 PM, Dan Carpenter wrote:
+> > > > On Thu, Feb 22, 2024 at 04:02:51AM -0500, Ethan Zhao wrote:
+> > > > > Because surprise removal could happen anytime, e.g. user could request safe
+> > > > > removal to EP(endpoint device) via sysfs and brings its link down to do
+> > > > > surprise removal cocurrently. such aggressive cases would cause ATS
+> > > > > invalidation request issued to non-existence target device, then deadly
+> > > > > loop to retry that request after ITE fault triggered in interrupt context.
+> > > > > this patch aims to optimize the ITE handling by checking the target device
+> > > > > presence state to avoid retrying the timeout request blindly, thus avoid
+> > > > > hard lockup or system hang.
+> > > > > 
+> > > > > Devices are valid ATS invalidation request target only when they reside
+> > > > > in the iommu->device_rbtree (probed, not released) and present.
+> > > > "valid invalidation" is awkward wording.  Can we instead say:
+> > > If you read them together, sounds like tongue twister. but here "ATS
+> > > invalidation request target" is one term in PCIe spec.
+> > "ATS invalidation request target" does not appear in the PCIe spec.  I
+> > think you're trying to avoid sending ATS Invalidate Requests when you
+> > know they will not be completed.
+> 
+> I meant "ATS Invalidation Request" here is one term in PCIe spec, 'valid'
+> is used to describe the word 'target'.
+> 
+> This patch isn't intended to work as the same logic as patch [2/3], this
+> aims to break the blindly dead loop not to retry the timeout request after
+> ITE fault happened.
+> 
+> > 
+> > It is impossible to reliably determine whether a device will be
+> > present and able to complete an Invalidate Request.  No matter what
+> > you check to determine that a device is present *now*, it may be
+> > removed before an Invalidate Request reaches it.
+> 
+> Here we check to see if the ITE fault was caused by device is not present.
+> The opposite logic, not predict the future, but find the cause of the fault
+> already happened, if pci_device_is_present() tells us the device isn't
+> there, it is reliable I think.
+> 
+> > 
+> > If an Invalidate Request to a non-existent device causes a "deadly
+> > loop" (I'm not sure what that means) or a hard lockup or a system
+> 
+> There is a dead loop here to blindly retry to timeout request if
+> ITE happened, we want to break that loop if the target device was
+> gone.
+> 
+> > hang, something is wrong with the hardware.  There should be a
+> > mechanism to recover from a timeout in that situation.
+> > 
+> > You can avoid sending Invalidate Requests to devices that have been
+> 
+> That logic works for simple safe /surprise removal as described in
+> patch[2/3], no race there that case at all.
+> 
+> > removed, and that will reduce the number of timeout cases.  But if you
+> > rely on a check like pci_device_is_present() or
+> > pci_dev_is_disconnected(), there is *always* an unavoidable race
+> 
+> We are not relying on pci_device_is_present() here in this patch to close
+> the race window between aggressive surprise removal and ATS invalidation
+> Request, we are doing post-fault handling here.
 
-Ack.
+OK, sorry, I guess I missed that this fixes the code that handles the
+Completion Timeouts.
 
->
-> > +{
-> > +     struct slabobj_ext *obj_exts;
-> > +     int i;
-> > +
-> > +     obj_exts =3D slab_obj_exts(slab);
-> > +     if (!obj_exts)
-> > +             return;
-> > +
-> > +     for (i =3D 0; i < objects; i++) {
-> > +             unsigned int off =3D obj_to_index(s, slab, p[i]);
-> > +
-> > +             alloc_tag_sub(&obj_exts[off].ref, s->size);
-> > +     }
-> > +}
-> > +
-> > +#else
-> > +
-> > +static inline void alloc_tagging_slab_free_hook(struct kmem_cache *s, =
-struct slab *slab,
-> > +                                     void **p, int objects) {}
-> > +
-> > +#endif /* CONFIG_MEM_ALLOC_PROFILING */
-> > +
-> >  #ifdef CONFIG_MEMCG_KMEM
-> >  void mod_objcg_state(struct obj_cgroup *objcg, struct pglist_data *pgd=
-at,
-> >                    enum node_stat_item idx, int nr);
-> > diff --git a/mm/slub.c b/mm/slub.c
-> > index 5dc7beda6c0d..a69b6b4c8df6 100644
-> > --- a/mm/slub.c
-> > +++ b/mm/slub.c
-> > @@ -3826,6 +3826,7 @@ void slab_post_alloc_hook(struct kmem_cache *s, s=
-truct obj_cgroup *objcg,
-> >                         unsigned int orig_size)
-> >  {
-> >       unsigned int zero_size =3D s->object_size;
-> > +     struct slabobj_ext *obj_exts;
-> >       bool kasan_init =3D init;
-> >       size_t i;
-> >       gfp_t init_flags =3D flags & gfp_allowed_mask;
-> > @@ -3868,6 +3869,12 @@ void slab_post_alloc_hook(struct kmem_cache *s, =
-       struct obj_cgroup *objcg,
-> >               kmemleak_alloc_recursive(p[i], s->object_size, 1,
-> >                                        s->flags, init_flags);
-> >               kmsan_slab_alloc(s, p[i], init_flags);
-> > +             obj_exts =3D prepare_slab_obj_exts_hook(s, flags, p[i]);
-> > +#ifdef CONFIG_MEM_ALLOC_PROFILING
-> > +             /* obj_exts can be allocated for other reasons */
-> > +             if (likely(obj_exts) && mem_alloc_profiling_enabled())
-> > +                     alloc_tag_add(&obj_exts->ref, current->alloc_tag,=
- s->size);
-> > +#endif
->
-> I think that like in the page allocator, this could be better guarded by
-> mem_alloc_profiling_enabled() as the outermost thing.
-
-Oops, missed it. Will fix.
-
->
-> >       }
-> >
-> >       memcg_slab_post_alloc_hook(s, objcg, flags, size, p);
-> > @@ -4346,6 +4353,7 @@ void slab_free(struct kmem_cache *s, struct slab =
-*slab, void *object,
-> >              unsigned long addr)
-> >  {
-> >       memcg_slab_free_hook(s, slab, &object, 1);
-> > +     alloc_tagging_slab_free_hook(s, slab, &object, 1);
->
-> Same here, the static key is not even inside of this?
-
-Ack.
-
->
-> >
-> >       if (likely(slab_free_hook(s, object, slab_want_init_on_free(s))))
-> >               do_slab_free(s, slab, object, object, 1, addr);
-> > @@ -4356,6 +4364,7 @@ void slab_free_bulk(struct kmem_cache *s, struct =
-slab *slab, void *head,
-> >                   void *tail, void **p, int cnt, unsigned long addr)
-> >  {
-> >       memcg_slab_free_hook(s, slab, p, cnt);
-> > +     alloc_tagging_slab_free_hook(s, slab, p, cnt);
->
-> Ditto.
-
-Ack.
-
->
-> >       /*
-> >        * With KASAN enabled slab_free_freelist_hook modifies the freeli=
-st
-> >        * to remove objects, whose reuse must be delayed.
->
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to kernel-team+unsubscribe@android.com.
->
+> > between a device removal and the Invalidate Request.
+> > 
+> > > > > @@ -1273,6 +1273,9 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+> > > > >    {
+> > > > >    	u32 fault;
+> > > > >    	int head, tail;
+> > > > > +	u64 iqe_err, ite_sid;
+> > > > > +	struct device *dev = NULL;
+> > > > > +	struct pci_dev *pdev = NULL;
+> > > > >    	struct q_inval *qi = iommu->qi;
+> > > > >    	int shift = qi_shift(iommu);
+> > > > > @@ -1317,6 +1320,13 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+> > > > >    		tail = readl(iommu->reg + DMAR_IQT_REG);
+> > > > >    		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
+> > > > > +		/*
+> > > > > +		 * SID field is valid only when the ITE field is Set in FSTS_REG
+> > > > > +		 * see Intel VT-d spec r4.1, section 11.4.9.9
+> > > > > +		 */
+> > > > > +		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
+> > > > > +		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
+> > > > > +
+> > > > >    		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
+> > > > >    		pr_info("Invalidation Time-out Error (ITE) cleared\n");
+> > > > > @@ -1326,6 +1336,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+> > > > >    			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
+> > > > >    		} while (head != tail);
+> > > > > +		/*
+> > > > > +		 * If got ITE, we need to check if the sid of ITE is one of the
+> > > > > +		 * current valid ATS invalidation target devices, if no, or the
+> > > > > +		 * target device isn't presnet, don't try this request anymore.
+> > > > > +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
+> > > > > +		 */
+> > > > This comment is kind of confusing.
+> > > Really confusing ? this is typo there, resnet-> "present"
+> > > 
+> > > > /*
+> > > >    * If we have an ITE, then we need to check whether the sid of the ITE
+> > > >    * is in the rbtree (meaning it is probed and not released), and that
+> > > >    * the PCI device is present.
+> > > >    */
+> > > > 
+> > > > My comment is slightly shorter but I think it has the necessary
+> > > > information.
+> > > > 
+> > > > > +		if (ite_sid) {
+> > > > > +			dev = device_rbtree_find(iommu, ite_sid);
+> > > > > +			if (!dev || !dev_is_pci(dev))
+> > > > > +				return -ETIMEDOUT;
+> > > > -ETIMEDOUT is weird.  The callers don't care which error code we return.
+> > > > Change this to -ENODEV or something
+> > > -ETIMEDOUT means prior ATS invalidation request hit timeout fault, and the
+> > > caller really cares about the returned value.
+> > > 
+> > > > > +			pdev = to_pci_dev(dev);
+> > > > > +			if (!pci_device_is_present(pdev) &&
+> > > > > +				ite_sid == pci_dev_id(pci_physfn(pdev)))
+> > > > The && confused me, but then I realized that probably "ite_sid ==
+> > > > pci_dev_id(pci_physfn(pdev))" is always true.  Can we delete that part?
+> > > Here is the fault handling, just double confirm nothing else goes wrong --
+> > > beyond the assumption.
+> > > 
+> > > > 		pdev = to_pci_dev(dev);
+> > > > 		if (!pci_device_is_present(pdev))
+> > > > 			return -ENODEV;
+> > > > 
+> > > > 
+> > > > > +				return -ETIMEDOUT;
+> > > > -ENODEV.
+> > > The ATS invalidation request could be sent from userland in later code,
+> > > the userland code will care about the returned value,  -ENODEV is one aspect
+> > > of the fact (target device not present), while -ETIMEDOUT is another
+> > > (timeout happened). we couldn't return them both.
+> > > 
+> > > > > +		}
+> > > > >    		if (qi->desc_status[wait_index] == QI_ABORT)
+> > > > >    			return -EAGAIN;
+> > > > >    	}
+> > > > Sorry, again for nit picking a v13 patch.  I'm not a domain expert but
+> > > > this patchset seems reasonable to me.
+> > > Though this is the v13, it is based on new rbtree code, you are welcome.
+> > > 
+> > > Thanks,
+> > > Ethan
+> > > 
+> > > > regards,
+> > > > dan carpenter
