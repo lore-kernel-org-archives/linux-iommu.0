@@ -1,25 +1,78 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9A75113A87C
-	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 13:22:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34BA054FA5
+	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 13:35:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709040174; cv=none; b=A5u7e8godFVDTDqKl/r9RghQwNWiDHl3tN7SUmm6xnbHIi8v/1yflx/GbgrT5hTiP2O1lMMxkOEwr6QAldHHCdOMvfFG/A9drrDvJAh7PYCEOY33Fj8h0xhYRTl0orUJtVsOMljWI7jkJBdi+1zMVI19qAWo/bI0e0UU882VFIY=
+	t=1709040954; cv=none; b=DvxX1szfwG4ztvYFOgXJfyZoFIFLymLWyMcQepGpkaPglLI22E6p3rTkIwmsmu2WapPH/ATDSDlWBqosF+yh5UQtwtmYNV1GgwFVG6WwcsZM9HtYL3qZ0k/7/6MfHSFrxSno15cI5Zj6cuVPBU02eQHmF/wREnAYfX08eol0QFA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709040174; c=relaxed/simple;
-	bh=lFl7whs//Mq1ga5t4xx9WBQo46JRkdrWTfODsqllbKA=;
+	s=arc-20240116; t=1709040954; c=relaxed/simple;
+	bh=IeeH8FW7appcHAym5VvThxokOlHOzDrVEXH8nPsBLP8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BJkvjHhh39zIYcn5GuzZrRpRagH8tjJ0w8nzGcOiuv0gVo+uMMZ7s++Q6YgZpw/FAu0uMnya2wDwVdrFaQy2nuGA7OjrNUx5SDvL0GqhynIiXDzQ8hy51N9TviakNVvlN7Fdx6AYFuFQqmaTtKohfHjTX9We3BaI8zEzKgXQKjI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5EA8ADA7;
-	Tue, 27 Feb 2024 05:23:29 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C03BA3F73F;
-	Tue, 27 Feb 2024 05:22:49 -0800 (PST)
-Message-ID: <5a94049b-5527-4c05-bce5-e15edebd1b81@arm.com>
-Date: Tue, 27 Feb 2024 13:22:48 +0000
+	 In-Reply-To:Content-Type; b=TrikIlBZvEatgXUMcSqAMsbhUP/Pimp8D1lY+GJ6nYeDVMEygFQL7enTDBHWglqWf/wnoSeEBSOORB9lHpUY0zPEX+i74PTCX7dxDoP+tyQxKypJ7cvypvcV/cxe2YtnWDb2cj28emrZRRkXYIyP6ePg43CSck3pgDDD7wmr2Wg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=Si4g5Sei; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=nTgrsNPt; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=Si4g5Sei; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=nTgrsNPt; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="Si4g5Sei";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="nTgrsNPt";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="Si4g5Sei";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="nTgrsNPt"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 5CB6622445;
+	Tue, 27 Feb 2024 13:35:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1709040951; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=k1BLeq7Vl9qJ6EYRJ54haTpHogCVSh3EPlNJp9vn1oU=;
+	b=Si4g5SeiWxr+Fxmg1mh1nKy7S726J5ngIFb3w5n1326Q+tVr5DbAT5m8N+TG2LIB03edoG
+	pcPuoEhcH+pjcb1S0qhxhtrOr9QQprUkGb+KMJgzqH9/+7TTJ4JA1h8XNMYT/lWVAPhSWF
+	ZXzwdohp08cA5HsNxeTq8KMrTzwp3Ls=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1709040951;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=k1BLeq7Vl9qJ6EYRJ54haTpHogCVSh3EPlNJp9vn1oU=;
+	b=nTgrsNPt3BuR2Za3gx0Z1aZPJwCD4atXB95fQMBDER1s+A+MPzLOFn2uXXsSiMpEUe42Xp
+	nTNV5F9Y6gXm2tDg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1709040951; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=k1BLeq7Vl9qJ6EYRJ54haTpHogCVSh3EPlNJp9vn1oU=;
+	b=Si4g5SeiWxr+Fxmg1mh1nKy7S726J5ngIFb3w5n1326Q+tVr5DbAT5m8N+TG2LIB03edoG
+	pcPuoEhcH+pjcb1S0qhxhtrOr9QQprUkGb+KMJgzqH9/+7TTJ4JA1h8XNMYT/lWVAPhSWF
+	ZXzwdohp08cA5HsNxeTq8KMrTzwp3Ls=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1709040951;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=k1BLeq7Vl9qJ6EYRJ54haTpHogCVSh3EPlNJp9vn1oU=;
+	b=nTgrsNPt3BuR2Za3gx0Z1aZPJwCD4atXB95fQMBDER1s+A+MPzLOFn2uXXsSiMpEUe42Xp
+	nTNV5F9Y6gXm2tDg==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 0512013A58;
+	Tue, 27 Feb 2024 13:35:50 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([10.150.64.162])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id B094ADbl3WX2MAAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Tue, 27 Feb 2024 13:35:50 +0000
+Message-ID: <67453a56-d4c2-4dc8-a5db-0a4665e40856@suse.cz>
+Date: Tue, 27 Feb 2024 14:36:14 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,109 +80,142 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
- untrusted device
-Content-Language: en-GB
-To: Michael Kelley <mhklinux@outlook.com>, Will Deacon <will@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Cc: "kernel-team@android.com" <kernel-team@android.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Petr Tesarik <petr.tesarik1@huawei-partners.com>,
- Dexuan Cui <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
-References: <20240221113504.7161-1-will@kernel.org>
- <20240221113504.7161-6-will@kernel.org>
- <6be819d8-f1f9-4833-81c3-32220617f0c5@arm.com>
- <SN6PR02MB4157CD26C1D9BAC64208D9D8D45A2@SN6PR02MB4157.namprd02.prod.outlook.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <SN6PR02MB4157CD26C1D9BAC64208D9D8D45A2@SN6PR02MB4157.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Subject: Re: [PATCH v4 00/36] Memory allocation profiling
+Content-Language: en-US
+To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
+Cc: kent.overstreet@linux.dev, mhocko@suse.com, hannes@cmpxchg.org,
+ roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
+ willy@infradead.org, liam.howlett@oracle.com,
+ penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com,
+ peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com,
+ will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+ dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+ david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+ nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
+ rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
+ yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
+ hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
+ ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org,
+ ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
+ dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+ bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+ iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+ elver@google.com, dvyukov@google.com, shakeelb@google.com,
+ songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+ minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+ cgroups@vger.kernel.org
+References: <20240221194052.927623-1-surenb@google.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20240221194052.927623-1-surenb@google.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Spam-Level: 
+Authentication-Results: smtp-out1.suse.de;
+	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b=Si4g5Sei;
+	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=nTgrsNPt
+X-Rspamd-Server: rspamd2.dmz-prg2.suse.org
+X-Spamd-Result: default: False [-3.00 / 50.00];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 XM_UA_NO_VERSION(0.01)[];
+	 SPAMHAUS_XBL(0.00)[2a07:de40:b281:104:10:150:64:97:from];
+	 TO_DN_SOME(0.00)[];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 DKIM_TRACE(0.00)[suse.cz:+];
+	 MX_GOOD(-0.01)[];
+	 RCPT_COUNT_GT_50(0.00)[74];
+	 NEURAL_HAM_SHORT(-0.20)[-1.000];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 MID_RHS_MATCH_FROM(0.00)[];
+	 BAYES_HAM(-3.00)[100.00%];
+	 ARC_NA(0.00)[];
+	 R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	 FROM_HAS_DN(0.00)[];
+	 NEURAL_HAM_LONG(-1.00)[-1.000];
+	 TAGGED_RCPT(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 TO_MATCH_ENVRCPT_SOME(0.00)[];
+	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FREEMAIL_CC(0.00)[linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,i-love.sakura.ne.jp,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
+	 RCVD_TLS_ALL(0.00)[];
+	 SUSPICIOUS_RECIPS(1.50)[];
+	 RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from]
+X-Spam-Score: -3.00
+X-Rspamd-Queue-Id: 5CB6622445
+X-Spam-Flag: NO
 
-On 26/02/2024 9:11 pm, Michael Kelley wrote:
-> From: Robin Murphy <robin.murphy@arm.com> Sent: Monday, February 26, 2024 11:36 AM
->>
->> On 21/02/2024 11:35 am, Will Deacon wrote:
->>> From: Nicolin Chen <nicolinc@nvidia.com>
->>>
->>> The swiotlb does not support a mapping size > swiotlb_max_mapping_size().
->>> On the other hand, with a 64KB PAGE_SIZE configuration, it's observed that
->>> an NVME device can map a size between 300KB~512KB, which certainly failed
->>> the swiotlb mappings, though the default pool of swiotlb has many slots:
->>>       systemd[1]: Started Journal Service.
->>>    => nvme 0000:00:01.0: swiotlb buffer is full (sz: 327680 bytes), total 32768 (slots), used 32 (slots)
->>>       note: journal-offline[392] exited with irqs disabled
->>>       note: journal-offline[392] exited with preempt_count 1
->>>
->>> Call trace:
->>> [    3.099918]  swiotlb_tbl_map_single+0x214/0x240
->>> [    3.099921]  iommu_dma_map_page+0x218/0x328
->>> [    3.099928]  dma_map_page_attrs+0x2e8/0x3a0
->>> [    3.101985]  nvme_prep_rq.part.0+0x408/0x878 [nvme]
->>> [    3.102308]  nvme_queue_rqs+0xc0/0x300 [nvme]
->>> [    3.102313]  blk_mq_flush_plug_list.part.0+0x57c/0x600
->>> [    3.102321]  blk_add_rq_to_plug+0x180/0x2a0
->>> [    3.102323]  blk_mq_submit_bio+0x4c8/0x6b8
->>> [    3.103463]  __submit_bio+0x44/0x220
->>> [    3.103468]  submit_bio_noacct_nocheck+0x2b8/0x360
->>> [    3.103470]  submit_bio_noacct+0x180/0x6c8
->>> [    3.103471]  submit_bio+0x34/0x130
->>> [    3.103473]  ext4_bio_write_folio+0x5a4/0x8c8
->>> [    3.104766]  mpage_submit_folio+0xa0/0x100
->>> [    3.104769]  mpage_map_and_submit_buffers+0x1a4/0x400
->>> [    3.104771]  ext4_do_writepages+0x6a0/0xd78
->>> [    3.105615]  ext4_writepages+0x80/0x118
->>> [    3.105616]  do_writepages+0x90/0x1e8
->>> [    3.105619]  filemap_fdatawrite_wbc+0x94/0xe0
->>> [    3.105622]  __filemap_fdatawrite_range+0x68/0xb8
->>> [    3.106656]  file_write_and_wait_range+0x84/0x120
->>> [    3.106658]  ext4_sync_file+0x7c/0x4c0
->>> [    3.106660]  vfs_fsync_range+0x3c/0xa8
->>> [    3.106663]  do_fsync+0x44/0xc0
->>>
->>> Since untrusted devices might go down the swiotlb pathway with dma-iommu,
->>> these devices should not map a size larger than swiotlb_max_mapping_size.
->>>
->>> To fix this bug, add iommu_dma_max_mapping_size() for untrusted devices to
->>> take into account swiotlb_max_mapping_size() v.s. iova_rcache_range() from
->>> the iommu_dma_opt_mapping_size().
->>
->> On the basis that this is at least far closer to correct than doing nothing,
->>
->> Acked-by: Robin Murphy <robin.murphy@arm.com>
->>
->> TBH I'm scared to think about theoretical correctness for all the
->> interactions between the IOVA granule and min_align_mask, since just the
->> SWIOTLB stuff is bad enough, even before you realise the ways that the
->> IOVA allocation isn't necessarily right either. However I reckon as long
->> as we don't ever see a granule smaller than IO_TLB_SIZE, and/or a
->> min_align_mask larger than a granule, then this should probably work
->> well enough as-is.
->>
+On 2/21/24 20:40, Suren Baghdasaryan wrote:
+> Overview:
+> Low overhead [1] per-callsite memory allocation profiling. Not just for
+> debug kernels, overhead low enough to be deployed in production.
 > 
-> I'm not convinced.  The conditions you describe are reasonable
-> and reflect upstream code today. But there can still be a failure
-> due to attempting to allocate a "too large" swiotlb buffer. It
-> happens with a granule of 64K and min_align_mask of 4K - 1 (the
-> NVMe case) when the offset passed to iommu_dma_map_page()
-> is non-zero modulo 4K.  With this patch, the size passed into
-> iommu_dma_map_page() is limited to 252K, but it gets rounded
-> up to 256K.  Then swiotlb_tbl_map_single() adds the offset
-> modulo 4K.  The result exceeds the 256K limit in swiotlb and
-> the mapping fails.
+> Example output:
+>   root@moria-kvm:~# sort -rn /proc/allocinfo
+>    127664128    31168 mm/page_ext.c:270 func:alloc_page_ext
+>     56373248     4737 mm/slub.c:2259 func:alloc_slab_page
+>     14880768     3633 mm/readahead.c:247 func:page_cache_ra_unbounded
+>     14417920     3520 mm/mm_init.c:2530 func:alloc_large_system_hash
+>     13377536      234 block/blk-mq.c:3421 func:blk_mq_alloc_rqs
+>     11718656     2861 mm/filemap.c:1919 func:__filemap_get_folio
+>      9192960     2800 kernel/fork.c:307 func:alloc_thread_stack_node
+>      4206592        4 net/netfilter/nf_conntrack_core.c:2567 func:nf_ct_alloc_hashtable
+>      4136960     1010 drivers/staging/ctagmod/ctagmod.c:20 [ctagmod] func:ctagmod_start
+>      3940352      962 mm/memory.c:4214 func:alloc_anon_folio
+>      2894464    22613 fs/kernfs/dir.c:615 func:__kernfs_new_node
+>      ...
 > 
-> The case I describe is a reasonable case that happens in the real
-> world.  As is, this patch will work most of the time because for
-> large xfers the offset is typically at least 4K aligned. But not always.
+> Since v3:
+>  - Dropped patch changing string_get_size() [2] as not needed
+>  - Dropped patch modifying xfs allocators [3] as non needed,
+>    per Dave Chinner
+>  - Added Reviewed-by, per Kees Cook
+>  - Moved prepare_slab_obj_exts_hook() and alloc_slab_obj_exts() where they
+>    are used, per Vlastimil Babka
+>  - Fixed SLAB_NO_OBJ_EXT definition to use unused bit, per Vlastimil Babka
+>  - Refactored patch [4] into other patches, per Vlastimil Babka
+>  - Replaced snprintf() with seq_buf_printf(), per Kees Cook
+>  - Changed output to report bytes, per Andrew Morton and Pasha Tatashin
+>  - Changed output to report [module] only for loadable modules,
+>    per Vlastimil Babka
+>  - Moved mem_alloc_profiling_enabled() check earlier, per Vlastimil Babka
+>  - Changed the code to handle page splitting to be more understandable,
+>    per Vlastimil Babka
+>  - Moved alloc_tagging_slab_free_hook(), mark_objexts_empty(),
+>    mark_failed_objexts_alloc() and handle_failed_objexts_alloc(),
+>    per Vlastimil Babka
+>  - Fixed loss of __alloc_size(1, 2) in kvmalloc functions,
+>    per Vlastimil Babka
+>  - Refactored the code in show_mem() to avoid memory allocations,
+>    per Michal Hocko
+>  - Changed to trylock in show_mem() to avoid blocking in atomic context,
+>    per Tetsuo Handa
+>  - Added mm mailing list into MAINTAINERS, per Kees Cook
+>  - Added base commit SHA, per Andy Shevchenko
+>  - Added a patch with documentation, per Jani Nikula
+>  - Fixed 0day bugs
+>  - Added benchmark results [5], per Steven Rostedt
+>  - Rebased over Linux 6.8-rc5
+> 
+> Items not yet addressed:
+>  - An early_boot option to prevent pageext overhead. We are looking into
+>    ways for using the same sysctr instead of adding additional early boot
+>    parameter.
 
-Indeed that's what my "probably [...] well enough" meant to imply.
+I have reviewed the parts that integrate the tracking with page and slab
+allocators, and besides some details to improve it seems ok to me. The
+early boot option seems coming so that might eventually be suitable for
+build-time enablement in a distro kernel.
 
-I think there's proving to be sufficient complexity here that if it 
-turns out we do manage to still hit real-world issues with the coarse 
-approximation, that will be the point when any further effort would be 
-better spent on finally tackling the thing that's always been on the 
-to-do list, where we'd only bounce the unaligned start and/or end 
-granules while mapping the rest of the buffer in place.
-
-Cheers,
-Robin.
+The macros (and their potential spread to upper layers to keep the
+information useful enough) are of course ugly, but guess it can't be
+currently helped and I'm unable to decide whether it's worth it or not.
+That's up to those providing their success stories I guess. If there's
+at least a path ahead to replace that part with compiler support in the
+future, great. So I'm not against merging this. BTW, do we know Linus's
+opinion on the macros approach?
