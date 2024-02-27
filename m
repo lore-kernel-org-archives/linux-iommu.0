@@ -1,108 +1,77 @@
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2EAE53389
-	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 06:48:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 414FD37145
+	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 06:57:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709016514; cv=none; b=PEAQtbObuol8a82JvZmKr7RlfVMMKpKA65/NZ9SV9z9DqLYt0HVBHEfiWz33t8TDLSZM3CjNce2XX+KxcZWBEdU4g0Ps+8fzr5gTC3xWKms51b2ogQGyYNt7cntQgIHUlGmnKLX9rq6kpya6NqEqIaTjE/lceopWRem+wwLaP08=
+	t=1709017059; cv=none; b=MvwV/gj6XP7+IAmxoWzTWlXn+2XBaRYl33vIawjlVXqXOemY2rz1kWyjR/YZQywc2vd5L4prH0lSRUq1A08sT9ega3XcYR18LmxR5QnU9+JpEopDbF41zOwt4HvpBVwrSVkyFajovT8WkSb4ZRR/qnZ6OE3b6/HlaXt8wOZ5ACo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709016514; c=relaxed/simple;
-	bh=gAZmDrTV3gdyDJKZeIBaeyHPyu+CA7GYjfEYzBnrUmk=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=uyqFNvzKboJiHYCbdCQxgDs96Pfbm08e77XSN2dMAB5+bzC6AuDpKUhwTNnis8gZ/NhvEVBBXmwiv45KlHuS3/rrW/aViQ36LR1udgpm2QYJQ4izfNKjpMXDHPcHkXdR4+EBbXRN2gzMszn7ojkW9f0s8ki+jYGaWlQnx3YsK7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=KbKk2UAx; arc=none smtp.client-ip=209.85.167.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1709017059; c=relaxed/simple;
+	bh=YvGZDgLgIVJF+BHE7Jc79utI2MU3LMX2wIjPPgVMfJQ=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=V6pIDNT9KTSXBmXcpGqtqj2bt2ewhsZtl4PV7T0TDNagqs1C3dZY/e8etTlvxT0iz+qs0YijvFeGNJ0Vg8IUkmz0L3JEqZmsWEIEAFyuUfQ2auIfeeY0hpvp+uk7u4yEmPx79g25WLxS+7YHxs77/QO8QlChdomBNWzpMBOiizw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IId5QlNo; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KbKk2UAx"
-Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-3c19b79535aso1898757b6e.0
-        for <iommu@lists.linux.dev>; Mon, 26 Feb 2024 22:48:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1709016511; x=1709621311; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=6FBYjN6sLTi7L4W/93/wTWpFgwkV8FUHLIcwh/+Iuvc=;
-        b=KbKk2UAxn2AAkeCUi4W2aIzl8yncX9tF5LoIIGj/HpGGVtZhJ4aTuODD+H7xY7VJc5
-         wxqiFA9PJA++/EaDPHcm7SI9pSJiKeSGeh9R0tP2sRDGQ0MfwdRsPdCrkIUV8ef1WknF
-         KYN0PtqBYvoLzrt7aOemB8YIQCMpwkN5vRIGhPjbSWBLaHnuY4Loh7UxJag19hb7qZVt
-         zVHRauL1fAUlYc9dErJVXQY560MH8uT6ybtWrKNb8V8WJq5WM4fDIWlnakJ4Y+sJ7hgN
-         xDfspTszi72bKA5CiV9p2PqYdyp8+Z4MrwcQAYU7pQp4A24k/tvVYxTQnrDHggEU3qCR
-         eeag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709016511; x=1709621311;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=6FBYjN6sLTi7L4W/93/wTWpFgwkV8FUHLIcwh/+Iuvc=;
-        b=SnhoREHokTeP+jECJxWuVpTdqhxikWu4DbBGIl8NNFid9whZj5EXXUyFIL98HDjHi4
-         Gfdi57TKsFNRU1KuDgFYFvVNCyhCaRYCkVdDANsjZLHLY03/DYjaefe1mWcW0gpNNUs3
-         AFEPn1ARc/TmB17WQk5gqZi6jTTE5wZT6MiV/ywAds9Cms7BFVVmd6zErwHyY2EOGQJU
-         d6oN6G9P/UaFSdz2dXGW6jh8W7Yj5BdhdUIyenMZYOC0uaHZs/so6A99ijFoCQca0XSa
-         rXlTkf4iMeHU417mNxFikSBuvHCb17oMnImhBEqTHsg0EN2XTjLqGaK2lSE/TZSQ0T3m
-         /TTA==
-X-Gm-Message-State: AOJu0YyUR7A3XqAUbgTXwHaELJkgAxrX66brhm/aOVXmf4WtBT2x3bqz
-	+7Lhsb3Z66hsPsJdgqlT5+UmoKJOfGEg77Em7cIn55cEu2dxp6u+zoqZwI9pqWw=
-X-Google-Smtp-Source: AGHT+IHHvWagKMC3ICJDsaCVFk4z/6NgugJGHX4oq4lQrnzeCIAv/oIyshplmumfnjLVpI40nRGNvw==
-X-Received: by 2002:a05:6808:1a1e:b0:3c1:adf7:c169 with SMTP id bk30-20020a0568081a1e00b003c1adf7c169mr1037171oib.4.1709016511725;
-        Mon, 26 Feb 2024 22:48:31 -0800 (PST)
-Received: from localhost.localdomain ([114.103.193.174])
-        by smtp.gmail.com with ESMTPSA id k2-20020aa788c2000000b006e13a88d52esm5107113pff.61.2024.02.26.22.48.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Feb 2024 22:48:31 -0800 (PST)
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	jean-philippe <jean-philippe@linaro.org>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	baolu.lu@linux.intel.com,
-	"Zhang, Tina" <tina.zhang@intel.com>,
-	kevin.tian@intel.com
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: [PATCH rc] iommu/sva: Fix SVA handle sharing in multi device case
-Date: Tue, 27 Feb 2024 06:48:21 +0000
-Message-Id: <20240227064821.128-1-zhangfei.gao@linaro.org>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IId5QlNo"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1709017058; x=1740553058;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=YvGZDgLgIVJF+BHE7Jc79utI2MU3LMX2wIjPPgVMfJQ=;
+  b=IId5QlNoPjDwC08tl04I8OwsBq6eAAi1MMgxhjbI8gHKnX2SzIYsHjRl
+   T+TdcGdeY+fwxvH2WbGGwpG6os9xoBSz3vWo5IZECOsFaSgNmz1w1Lu5C
+   bwGiG9YF8eh8oAm+yxFgB3Z7e4CTnihRiv0Xuo7TgBCG5Gt5SVW5IbpUR
+   b/6R7re18BTIz05jKLAhYstpZyWFk+C7ZjWlPI2SBPKq8fiGzINrVKBRu
+   7Eh/rHgs+k4NsssIR/K6cnLxWF0HpdbNit0wBoP467O0KIOq0qPFAeRD+
+   rkhjPCT1CvSdMkLE7TPKq2HQezYp+SWvRDRelEpcW/mYgGlaF9o/ur7P5
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10996"; a="14766528"
+X-IronPort-AV: E=Sophos;i="6.06,187,1705392000"; 
+   d="scan'208";a="14766528"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2024 22:57:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,187,1705392000"; 
+   d="scan'208";a="7146296"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmviesa006.fm.intel.com with ESMTP; 26 Feb 2024 22:57:35 -0800
+Message-ID: <07bce1eb-85cb-48be-9e46-8e9d075f9452@linux.intel.com>
+Date: Tue, 27 Feb 2024 14:51:40 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH rc] iommu/sva: Fix SVA handle sharing in multi device case
+Content-Language: en-US
+To: Zhangfei Gao <zhangfei.gao@linaro.org>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, jean-philippe <jean-philippe@linaro.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, "Zhang, Tina" <tina.zhang@intel.com>,
+ kevin.tian@intel.com
+References: <20240227064821.128-1-zhangfei.gao@linaro.org>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240227064821.128-1-zhangfei.gao@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-iommu_sva_bind_device will directly goto out in multi-device
-case when found existing domain, ignoring list_add handle,
-which causes the handle to fail to be shared.
+On 2/27/24 2:48 PM, Zhangfei Gao wrote:
+> iommu_sva_bind_device will directly goto out in multi-device
+> case when found existing domain, ignoring list_add handle,
+> which causes the handle to fail to be shared.
+> 
+> Fixes: 65d4418c5002 ("iommu/sva: Restore SVA handle sharing")
+> Signed-off-by: Zhangfei Gao<zhangfei.gao@linaro.org>
+> Reviewed-by: Jason Gunthorpe<jgg@nvidia.com>
 
-Fixes: 65d4418c5002 ("iommu/sva: Restore SVA handle sharing")
-Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
----
-Based on rc6
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
- drivers/iommu/iommu-sva.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 7f91c8d0064b..65814cbc8402 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -117,11 +117,11 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
- 	if (ret)
- 		goto out_free_domain;
- 	domain->users = 1;
--	refcount_set(&handle->users, 1);
- 	list_add(&domain->next, &mm->iommu_mm->sva_domains);
--	list_add(&handle->handle_item, &mm->iommu_mm->sva_handles);
- 
- out:
-+	refcount_set(&handle->users, 1);
-+	list_add(&handle->handle_item, &mm->iommu_mm->sva_handles);
- 	mutex_unlock(&iommu_sva_lock);
- 	handle->dev = dev;
- 	handle->domain = domain;
--- 
-2.34.1
-
+Best regards,
+baolu
