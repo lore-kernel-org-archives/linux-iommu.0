@@ -1,87 +1,187 @@
-Received: from mailgw.kylinos.cn (mailgw.kylinos.cn [124.126.103.232])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6F3B130E27
-	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 09:13:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=124.126.103.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC44813664A
+	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 09:30:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709025218; cv=none; b=k+O9A/zLGhnaIwMiz4BUZNUVW7+KP/p8iwp/GpZCzh2nohjqLC9GER0sH5Jnbx0x6RqgCdwRF6TMcgBzd3ZKFTJyU0+2OY/lDYjp/9CFcqaK+s8q1kHX4yTxedF+yhSGQi2DkVVDM3nzCzg7/+Mi0v+YW0k8ssB/Cn1AzHHMb4A=
+	t=1709026225; cv=none; b=Nz0wnrCvA1cMh/MwdPxz6vja+5XCV1z3jPPgYvDRYu52gyUrlGakfMbrSdq3PprkN+mUWUrgynnfq8FqLUBJuKEYjsiRAQLeaSs4BB57s1t7D06iHWD5yKXVdYLJHCeldvrKD6xVBQqw2a+a7G9rd5OSFOP+ZBXyQiuz2+t4Nvs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709025218; c=relaxed/simple;
-	bh=kUucMWcN1gzSD3nuVGZ8AdNn9SZk4BXKz5H2jbJ3fzE=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=aacVPxty3lWY/10UXBplm/v9JeKHJKE4VQTotA0CaDIKPKfHjudqk8SeEDS2rHei7dQAdKNlavwlVmvW7F/kkfU7+cHR/Y2ngiB8Oy/MAdWablhOWBuKIc+c1W+Ywwf98WP7X7+7tj6aROqeWt7lTx5thFWI/bdZsfqH06K2UWY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn; spf=pass smtp.mailfrom=kylinos.cn; arc=none smtp.client-ip=124.126.103.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=kylinos.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kylinos.cn
-X-UUID: 7308ab9104af48c9bb1a1d486dbe15f8-20240227
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.37,REQID:467c87d6-4014-47bb-9be2-ec11e3300fb7,IP:15,
-	URL:0,TC:0,Content:0,EDM:0,RT:0,SF:-15,FILE:0,BULK:0,RULE:Release_Ham,ACTI
-	ON:release,TS:0
-X-CID-INFO: VERSION:1.1.37,REQID:467c87d6-4014-47bb-9be2-ec11e3300fb7,IP:15,UR
-	L:0,TC:0,Content:0,EDM:0,RT:0,SF:-15,FILE:0,BULK:0,RULE:Release_Ham,ACTION
-	:release,TS:0
-X-CID-META: VersionHash:6f543d0,CLOUDID:f98a5e84-8d4f-477b-89d2-1e3bdbef96d1,B
-	ulkID:2402271708129XE05GC6,BulkQuantity:0,Recheck:0,SF:17|19|44|66|38|24|1
-	02,TC:nil,Content:0,EDM:-3,IP:-2,URL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC
-	:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0
-X-CID-BVR: 0,NGT
-X-CID-BAS: 0,NGT,0,_
-X-CID-FACTOR: TF_CID_SPAM_FSI,TF_CID_SPAM_SNR,TF_CID_SPAM_FAS,TF_CID_SPAM_FSD
-X-UUID: 7308ab9104af48c9bb1a1d486dbe15f8-20240227
-X-User: liucong2@kylinos.cn
-Received: from localhost.localdomain [(116.128.244.171)] by mailgw
-	(envelope-from <liucong2@kylinos.cn>)
-	(Generic MTA)
-	with ESMTP id 1570390208; Tue, 27 Feb 2024 17:08:10 +0800
-From: Cong Liu <liucong2@kylinos.cn>
-To: Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: Cong Liu <liucong2@kylinos.cn>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu/iova: Simplify IOVA cache allocation with KMEM_CACHE()
-Date: Tue, 27 Feb 2024 17:08:07 +0800
-Message-Id: <20240227090807.82318-1-liucong2@kylinos.cn>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1709026225; c=relaxed/simple;
+	bh=V8bBaiplfc/wVHe6wlfGo3JD6VOdJZwSExMn/u7zeBA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Chm+BMWfOPdtlpdUjn1vT44Py7D3OGneJT0AKwagFGq/RtqBDzcVAqK88WYJQ65BovaPOme00foTnAwZKKcasC8dcAs3dkiKLbPPKdFljrgd4Sig4gdP2Tw4Z1Z1aavGb7/Lg083+j5JiAqs6ednzfMp7qpWknPL/O8xTHiAeJ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=0+Xj01Kk; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=a5suGYZ0; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=0+Xj01Kk; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=a5suGYZ0; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="0+Xj01Kk";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="a5suGYZ0";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="0+Xj01Kk";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="a5suGYZ0"
+Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 0888121F39;
+	Tue, 27 Feb 2024 09:30:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1709026222; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2tfyNx8Ewzx9RhyM+EFV+xT647ehMQIa9lFPRNlyECQ=;
+	b=0+Xj01KkKvhGJdcjtMAWzvJi7m2CYOxjq5YrvrR72FrAbBnNksgWTG3mO/sjQJxliG0g07
+	y5XsdIYk5XIw4V9w/uFGbV+ho5g2Z79tZZHX9Z5MisAFZaNbg0ho00u47ApDjRWrG0I7x9
+	LSiAQEtP8rShQ5r3WMB7RTCprO6zAnM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1709026222;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2tfyNx8Ewzx9RhyM+EFV+xT647ehMQIa9lFPRNlyECQ=;
+	b=a5suGYZ0cgpf5Gj/Tn3aV8oNvMw4mA2P70HXJT8NNRif7MsKFvRRBqOmJe+FSffjbyvyAG
+	BTUMPoP/9cEiW9CQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1709026222; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2tfyNx8Ewzx9RhyM+EFV+xT647ehMQIa9lFPRNlyECQ=;
+	b=0+Xj01KkKvhGJdcjtMAWzvJi7m2CYOxjq5YrvrR72FrAbBnNksgWTG3mO/sjQJxliG0g07
+	y5XsdIYk5XIw4V9w/uFGbV+ho5g2Z79tZZHX9Z5MisAFZaNbg0ho00u47ApDjRWrG0I7x9
+	LSiAQEtP8rShQ5r3WMB7RTCprO6zAnM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1709026222;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=2tfyNx8Ewzx9RhyM+EFV+xT647ehMQIa9lFPRNlyECQ=;
+	b=a5suGYZ0cgpf5Gj/Tn3aV8oNvMw4mA2P70HXJT8NNRif7MsKFvRRBqOmJe+FSffjbyvyAG
+	BTUMPoP/9cEiW9CQ==
+Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id B04E513A58;
+	Tue, 27 Feb 2024 09:30:21 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([10.150.64.162])
+	by imap1.dmz-prg2.suse.org with ESMTPSA
+	id QuGyKq2r3WW8cgAAD6G6ig
+	(envelope-from <vbabka@suse.cz>); Tue, 27 Feb 2024 09:30:21 +0000
+Message-ID: <72cc5f0b-90cc-48a8-a026-412fa1186acd@suse.cz>
+Date: Tue, 27 Feb 2024 10:30:53 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 15/36] lib: introduce support for page allocation
+ tagging
+Content-Language: en-US
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
+ hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
+ dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+ penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com,
+ peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com,
+ will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+ dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+ david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+ nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
+ rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
+ yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
+ hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
+ ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org,
+ ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
+ dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
+ bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+ iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+ elver@google.com, dvyukov@google.com, shakeelb@google.com,
+ songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
+ minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux.dev, linux-arch@vger.kernel.org,
+ linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+ linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
+ cgroups@vger.kernel.org
+References: <20240221194052.927623-1-surenb@google.com>
+ <20240221194052.927623-16-surenb@google.com>
+ <d6141a99-3409-447b-88ac-16c24b0a892e@suse.cz>
+ <CAJuCfpGZ6W-vjby=hWd5F3BOCLjdeda2iQx_Tz-HcyjCAsmKVg@mail.gmail.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <CAJuCfpGZ6W-vjby=hWd5F3BOCLjdeda2iQx_Tz-HcyjCAsmKVg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Authentication-Results: smtp-out1.suse.de;
+	none
+X-Spamd-Result: default: False [1.39 / 50.00];
+	 ARC_NA(0.00)[];
+	 RCVD_VIA_SMTP_AUTH(0.00)[];
+	 XM_UA_NO_VERSION(0.01)[];
+	 FROM_HAS_DN(0.00)[];
+	 TO_DN_SOME(0.00)[];
+	 MID_RHS_MATCH_FROM(0.00)[];
+	 TAGGED_RCPT(0.00)[];
+	 MIME_GOOD(-0.10)[text/plain];
+	 BAYES_HAM(-0.02)[52.97%];
+	 RCVD_COUNT_THREE(0.00)[3];
+	 TO_MATCH_ENVRCPT_SOME(0.00)[];
+	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	 RCPT_COUNT_GT_50(0.00)[74];
+	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:email];
+	 FUZZY_BLOCKED(0.00)[rspamd.com];
+	 FROM_EQ_ENVFROM(0.00)[];
+	 MIME_TRACE(0.00)[0:+];
+	 FREEMAIL_CC(0.00)[linux-foundation.org,linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,i-love.sakura.ne.jp,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
+	 RCVD_TLS_ALL(0.00)[];
+	 SUSPICIOUS_RECIPS(1.50)[]
+X-Spam-Level: *
+X-Spam-Score: 1.39
+X-Spam-Flag: NO
 
-Use the new KMEM_CACHE() macro instead of direct kmem_cache_create
-to simplify the creation of SLAB caches.
 
-Signed-off-by: Cong Liu <liucong2@kylinos.cn>
----
- drivers/iommu/iova.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index d59d0ea2fd21..9134acae76f5 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -950,14 +950,11 @@ int iova_cache_get(void)
- 
- 	mutex_lock(&iova_cache_mutex);
- 	if (!iova_cache_users) {
--		iova_cache = kmem_cache_create("iommu_iova", sizeof(struct iova), 0,
--					       SLAB_HWCACHE_ALIGN, NULL);
-+		iova_cache = KMEM_CACHE(iova, SLAB_HWCACHE_ALIGN);
- 		if (!iova_cache)
- 			goto out_err;
- 
--		iova_magazine_cache = kmem_cache_create("iommu_iova_magazine",
--							sizeof(struct iova_magazine),
--							0, SLAB_HWCACHE_ALIGN, NULL);
-+		iova_magazine_cache = KMEM_CACHE(iova_magazine, SLAB_HWCACHE_ALIGN);
- 		if (!iova_magazine_cache)
- 			goto out_err;
- 
--- 
-2.34.1
+On 2/26/24 18:11, Suren Baghdasaryan wrote:
+> On Mon, Feb 26, 2024 at 9:07 AM Vlastimil Babka <vbabka@suse.cz> wrote:
+>>
+>> On 2/21/24 20:40, Suren Baghdasaryan wrote:
+>>> Introduce helper functions to easily instrument page allocators by
+>>> storing a pointer to the allocation tag associated with the code that
+>>> allocated the page in a page_ext field.
+>>>
+>>> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+>>> Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
+>>> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+>>
+>> The static key usage seems fine now. Even if the page_ext overhead is still
+>> always paid when compiled in, you mention in the cover letter there's a plan
+>> for boot-time toggle later, so
+> 
+> Yes, I already have a simple patch for that to be included in the next
+> revision: https://github.com/torvalds/linux/commit/7ca367e80232345f471b77b3ea71cf82faf50954
 
+This opt-out logic would require a distro kernel with allocation
+profiling compiled-in to ship together with something that modifies
+kernel command line to disable it by default, so it's not very
+practical. Could the CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT be
+turned into having 3 possible choices, where one of them would
+initialize mem_profiling_enabled to false?
+
+Or, taking a step back, is it going to be a common usecase to pay the
+memory overhead unconditionally, but only enable the profiling later
+during runtime? Also what happens if someone would enable and disable it
+multiple times during one boot? Would the statistics get all skewed
+because some frees would be not accounted while it's disabled?
+
+>>
+>> Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+> 
+> Thanks!
+> 
+>>
+>>
