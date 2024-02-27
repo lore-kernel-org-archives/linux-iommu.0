@@ -1,68 +1,69 @@
-Received: from mail-yw1-f178.google.com (mail-yw1-f178.google.com [209.85.128.178])
+Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A38F149E1F
-	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 16:39:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EEA1224CE
+	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 16:55:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709051952; cv=none; b=PNSvgxFv/uGjniUH7w0OKe+xZCI6Nn+rYjU66ln1dNVtbFCi/s1njAImekaXv9QUfjl9QVYkP5FVQcY9ArpLGgtFo6A3mm5uJ2BTuIKVycKOsMdAIdYlR6u5PCr/hayc6rXJhgThWBTZToJcqtYwWvzP18WclGwl/EYhFr5nlKw=
+	t=1709052946; cv=none; b=UKFB6UdTMHpOUnruQKWU91Y7F+GoXJ00pIFyjHW1K4XS/9ttLzfBKUtBzFnPBX1HbynPJd3KDsB1VCFQRmO65lSVPJTBBgkjSd+CQekC9rdi6UOSP8HKeCMRVnTKy0I2fJ31EEKsCOXva21AnUfw8N7azdbPmjpL1xbgQtY/KBA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709051952; c=relaxed/simple;
-	bh=NgpWdnxiLbFqNexAmzcqA9YP7ocmvHBLOxsvEhPCKvg=;
+	s=arc-20240116; t=1709052946; c=relaxed/simple;
+	bh=WING8+ifDIdPqWo/GgNARqwiCxM6QeK8N+15oiAYs8U=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bTsV/f/ebKAuGx59bCKgeilRS+be2S3htWzPENBJIYSKt3MHWr6iTKiRQ3/4O+hnZC+S+wwxKVazQLMIKE0BLrVmW9kk5zImvCrnRZH/byZweP1tHrU06iIEydLPnKGYOYxa/ayakNkR24A6kAnFlVN4C1T3dYc4OTqdbRTykP8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=MFQC9z5l; arc=none smtp.client-ip=209.85.128.178
+	 To:Cc:Content-Type; b=ZXooCZ+Jgz1HGThNxDsKU8F4aQHwbJel/DOTUI0krgYF0lLqM4bnWmEISzo+ut5GRiJRqXO5kWfnyKRkixm6GEojONu+T/rvZdMShQSdoszs8YidehZHQpSY1NtzGemSe/7y/Ra78d8/FfXI91Uro91BwtJZIXv1LVIQsknUqrE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=joJXYgd0; arc=none smtp.client-ip=209.85.128.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="MFQC9z5l"
-Received: by mail-yw1-f178.google.com with SMTP id 00721157ae682-6089b64f4eeso44753287b3.2
-        for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 08:39:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="joJXYgd0"
+Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-60925c4235eso9423117b3.3
+        for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 08:55:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1709051948; x=1709656748; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1709052943; x=1709657743; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=z/ds6xBAyNMUyUudVMgCcZQOOdZHJrbf6LFZuMELU1U=;
-        b=MFQC9z5lJRGywdj2paRk7p6f1tRoShMeiJqcf/eWZrxSdKfiL0+iu9gA2/BYFgcn54
-         ZWoSEdN8GRxr1Ec84MWwGZPvGH0Q9sxhLK5sCkJMTZ4Mo9h4a5LS9bMEBlU1yycNMEm3
-         E5InGsyVhguP35gITUAyX3huulE48yKVvabZUSoHNoDsTXAjwclb4OfV87t3G3CfFntz
-         VeFRAjjISEySHwpG08yEUfUsLfoIRtIOzlrHfxEQELGoa5ZhPurEwvvIKENMMivxiHOQ
-         bQiIJPUJLrKZUPPhFpA9L/KAIDiA37Hy1EKS72Ilb6iObq9Vlkd2wfcFK8qGY6Axmfs9
-         dTPw==
+        bh=WING8+ifDIdPqWo/GgNARqwiCxM6QeK8N+15oiAYs8U=;
+        b=joJXYgd02GOxnaj6ef8Tbhn5hlPcZ3UqS+J/znOOqWLdoQWtc5YW99ONRr8rbpHIu6
+         rtl+3OKgo3pR7e/Oc2fb3o+p4b+uvqToah4e0AMCYkJqQB2k2TXr5OwBkWUzqEW262pL
+         vzSiZZvwhrxNDoet/Rv9i02nLWwZooSb0ZrsBSODHkmSLTo+H3h5L6OWCYwjCA1MXiDv
+         BCfJnHEYckwfPaOBX6+zP6/Jc/YC66anHbcWnCsKEye6AmaN/LxuOs9DlWLET3DUjS7N
+         HcwoGEUFbTle6kwrqEKkR/f+e0M8/RoXiZd3ys/8CrOUdggKREqXgamGlQU4lxSrZUCB
+         R+9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709051948; x=1709656748;
+        d=1e100.net; s=20230601; t=1709052943; x=1709657743;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=z/ds6xBAyNMUyUudVMgCcZQOOdZHJrbf6LFZuMELU1U=;
-        b=AyLh5B/R1ZbNWFQWXfo5zjwEJgHZBniKEg8qfgSLI38r/fyEmL+FqZ7rRqDa6IIvTb
-         irMYBgjmJxMRkX/f26fTl+ZMU3Lpd1OWLzF0fyAxT3HYkuMNe87W3UVISDyY6wBro/c7
-         jCGUATyjmP//fapa8ZY0TVYlZ8isOOBpj7E0zk/OtND+OtTIBHhow/+OE65Q0Q+xwq0w
-         dRavhEtEsDDtvdgrLmSa5Mw5kSB0tfdbVNYG9TbrwHYGhIGhcedJ0sNnolFwh52bJgq7
-         SUVuDZfCy1PZYr7+zu5LhwzRxLcUi1beYiFAA8NytxImkm9AZC9xCj8PPPoPPly913yg
-         Tl4g==
-X-Forwarded-Encrypted: i=1; AJvYcCVSAZzfnIa6xeKJpCXfpXgLq0KUYO+/nBBG6lUMcUvDu11jonpwD4zlXEqJ+IFQKNRPXN5vzp31RxRahuqieS6ijFoAUsU=
-X-Gm-Message-State: AOJu0YyfTYn8MhhYq7AQjc0xnaXLrtC54F81gDCYo5QH9nPbP3yLwVz5
-	DFbgPRV/fjAOlDzAirhrsU/P2kMg6cIy4pudRxHohf57rNN4UsF8H6jlU1R25R7omzNSoH7rfY0
-	iMQcg5mzDjfgY29YdGabQM6QxfABNJkJh4pCA
-X-Google-Smtp-Source: AGHT+IGYsfj1hpFG2qZ+lv3Tc2gaVahH2B+pghzlhO4uZB2pAxOqLV3b7HUJfJpPshrzze8w4TdCoPFLjSNMBWpeWIM=
-X-Received: by 2002:a0d:cc52:0:b0:609:2c38:4dd2 with SMTP id
- o79-20020a0dcc52000000b006092c384dd2mr1712145ywd.42.1709051948102; Tue, 27
- Feb 2024 08:39:08 -0800 (PST)
+        bh=WING8+ifDIdPqWo/GgNARqwiCxM6QeK8N+15oiAYs8U=;
+        b=eWy/lLfCgMlGu3yT7O9GTpbeS0pPFBi5bdNv1SCVw7g2QMFRTAwrJSyZ2g3SJl5I50
+         3wst3v9KY7W8yXBXxLkXvG+RkwIS56hPPD7xv0EhONsKurhbkqS8eeI6ZGtMHARfBkd8
+         W0kVIW0JxwtEO9k5UDMmHFxwsmy0q5dvasiHlZnetEp0uVRRuOC8h3dS3Mt/PWFKqYlR
+         CgpHF0d+9G/hJvBPjIc7H40CxLvl07toVTxIoojtEr6EBvc5aHAL2y5j2A2DdKJQbts+
+         EksH/Mab9FHBi9NBm/DfD/mtsUbUG0TB+tdLLls6iQ1XzzxltG4E+hxGLlJ9UnUtCym2
+         m0pQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXi2PN36JqSE/RNQ0R8A6iZj3K2aLLpZ6nq8AF1dKEo25fl6HeWucEr7VGHKwBz58x47fHw6MtIwoawvyzIJkaz6+2gF14=
+X-Gm-Message-State: AOJu0Yy3KfiPpALsc8uWAa9gqFDGzCmmOv5W6Eu6LrR59++xIgjV0ikg
+	ov70nnsM303bAvDrqppLDGMz8zYfuXA1nUc180K+P9Gw5y5lkElV2Q/SRZZcmJyD/IMgLHoDd4e
+	WSvfFzChSnlBK5vsV8HLZt6DQwubamjoy/Xms
+X-Google-Smtp-Source: AGHT+IFx4IMLdqGd5Fz34j1UAm6oDJfltAQpGSG6yeY6HBGKjoGVypF3GR4a4leI/V5eKU8dpRmwS6ivB2dTqeub54A=
+X-Received: by 2002:a81:e245:0:b0:609:2857:af0 with SMTP id
+ z5-20020a81e245000000b0060928570af0mr1933120ywl.25.1709052942967; Tue, 27 Feb
+ 2024 08:55:42 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-20-surenb@google.com>
- <2daf5f5a-401a-4ef7-8193-6dca4c064ea0@suse.cz>
-In-Reply-To: <2daf5f5a-401a-4ef7-8193-6dca4c064ea0@suse.cz>
+References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-16-surenb@google.com>
+ <d6141a99-3409-447b-88ac-16c24b0a892e@suse.cz> <CAJuCfpGZ6W-vjby=hWd5F3BOCLjdeda2iQx_Tz-HcyjCAsmKVg@mail.gmail.com>
+ <72cc5f0b-90cc-48a8-a026-412fa1186acd@suse.cz>
+In-Reply-To: <72cc5f0b-90cc-48a8-a026-412fa1186acd@suse.cz>
 From: Suren Baghdasaryan <surenb@google.com>
-Date: Tue, 27 Feb 2024 08:38:54 -0800
-Message-ID: <CAJuCfpGt+zfFzfLSXEjeTo79gw2Be-UWBcJq=eL1qAnPf9PaiA@mail.gmail.com>
-Subject: Re: [PATCH v4 19/36] mm: create new codetag references during page splitting
+Date: Tue, 27 Feb 2024 08:55:32 -0800
+Message-ID: <CAJuCfpF=uwxH93BF6905FAcvaihYD0iyT=rJS-REe4u_1Km22w@mail.gmail.com>
+Subject: Re: [PATCH v4 15/36] lib: introduce support for page allocation tagging
 To: Vlastimil Babka <vbabka@suse.cz>
 Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
 	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
@@ -92,146 +93,88 @@ Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Feb 27, 2024 at 2:10=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
+On Tue, Feb 27, 2024 at 1:30=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
 ote:
 >
-> On 2/21/24 20:40, Suren Baghdasaryan wrote:
-> > When a high-order page is split into smaller ones, each newly split
-> > page should get its codetag. The original codetag is reused for these
-> > pages but it's recorded as 0-byte allocation because original codetag
-> > already accounts for the original high-order allocated page.
 >
-> This was v3 but then you refactored (for the better) so the commit log
-> could reflect it?
+>
+> On 2/26/24 18:11, Suren Baghdasaryan wrote:
+> > On Mon, Feb 26, 2024 at 9:07=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz=
+> wrote:
+> >>
+> >> On 2/21/24 20:40, Suren Baghdasaryan wrote:
+> >>> Introduce helper functions to easily instrument page allocators by
+> >>> storing a pointer to the allocation tag associated with the code that
+> >>> allocated the page in a page_ext field.
+> >>>
+> >>> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> >>> Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
+> >>> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+> >>
+> >> The static key usage seems fine now. Even if the page_ext overhead is =
+still
+> >> always paid when compiled in, you mention in the cover letter there's =
+a plan
+> >> for boot-time toggle later, so
+> >
+> > Yes, I already have a simple patch for that to be included in the next
+> > revision: https://github.com/torvalds/linux/commit/7ca367e80232345f471b=
+77b3ea71cf82faf50954
+>
+> This opt-out logic would require a distro kernel with allocation
+> profiling compiled-in to ship together with something that modifies
+> kernel command line to disable it by default, so it's not very
+> practical. Could the CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT be
+> turned into having 3 possible choices, where one of them would
+> initialize mem_profiling_enabled to false?
 
-Yes, technically mechnism didn't change but I should word it better.
-Smth like this:
-
-When a high-order page is split into smaller ones, each newly split
-page should get its codetag. After the split each split page will be
-referencing the original codetag. The codetag's "bytes" counter
-remains the same because the amount of allocated memory has not
-changed, however the "calls" counter gets increased to keep the
-counter correct when these individual pages get freed.
+I was thinking about a similar approach of having the early boot
+parameter to be a tri-state with "0 | 1 | Never". The default option
+would be "Never" if CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=3Dn
+and "1" if CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=3Dy. Would that
+solve the problem for distributions?
 
 >
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
->
-> I was going to R-b, but now I recalled the trickiness of
-> __free_pages() for non-compound pages if it loses the race to a
-> speculative reference. Will the codetag handling work fine there?
+> Or, taking a step back, is it going to be a common usecase to pay the
+> memory overhead unconditionally, but only enable the profiling later
+> during runtime?
 
-I think so. Each non-compoud page has its individual reference to its
-codetag and will decrement it whenever the page is freed. IIUC the
-logic in  __free_pages(), when it loses race to a speculative
-reference it will free all pages except for the first one and the
-first one will be freed when the last put_page() happens. If prior to
-this all these pages were split from one page then all of them will
-have their own reference which points to the same codetag. Every time
-one of these pages are freed that codetag's "bytes" and "calls"
-counters will be decremented. I think accounting will work correctly
-irrespective of where these pages are freed, in __free_pages() or by
-put_page().
+I think that would be the option one would use in the early
+deployments, to be able to enable the feature on specific devices
+without a reboot. Pasha brought up also an option when we disable the
+feature initially (via early boot option) but can enable it and reboot
+the system that will come up with enabled option.
+
+As Kent mentioned, he has been working on a pointer compression
+mechanism to cut the overhead of each codtag reference from one
+pointer (8 bytes) to 2 bytes index. I'm yet to check the performance
+but if that works and we can fit this index into page flags, that
+would completely eliminate dependency on page_ext and this memory
+overhead will be gone. This mechanism is not mature enough and I don't
+want to include these optimizations into the initial patchset, that's
+why it's not included in this patchset.
+
+> Also what happens if someone would enable and disable it
+> multiple times during one boot? Would the statistics get all skewed
+> because some frees would be not accounted while it's disabled?
+
+Yes and this was discussed during last LSFMM when the runtime control
+was brought up for the first time. That loss of accounting while the
+feature is disabled seems to be expected and acceptable. One could
+snapshot the state before re-enabling the feature and then compare
+later results with the initial snapshot to figure out the allocation
+growth.
 
 >
-> > ---
-> >  include/linux/pgalloc_tag.h | 30 ++++++++++++++++++++++++++++++
-> >  mm/huge_memory.c            |  2 ++
-> >  mm/page_alloc.c             |  2 ++
-> >  3 files changed, 34 insertions(+)
+> >>
+> >> Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 > >
-> > diff --git a/include/linux/pgalloc_tag.h b/include/linux/pgalloc_tag.h
-> > index b49ab955300f..9e6ad8e0e4aa 100644
-> > --- a/include/linux/pgalloc_tag.h
-> > +++ b/include/linux/pgalloc_tag.h
-> > @@ -67,11 +67,41 @@ static inline void pgalloc_tag_sub(struct page *pag=
-e, unsigned int order)
-> >       }
-> >  }
+> > Thanks!
 > >
-> > +static inline void pgalloc_tag_split(struct page *page, unsigned int n=
-r)
-> > +{
-> > +     int i;
-> > +     struct page_ext *page_ext;
-> > +     union codetag_ref *ref;
-> > +     struct alloc_tag *tag;
-> > +
-> > +     if (!mem_alloc_profiling_enabled())
-> > +             return;
-> > +
-> > +     page_ext =3D page_ext_get(page);
-> > +     if (unlikely(!page_ext))
-> > +             return;
-> > +
-> > +     ref =3D codetag_ref_from_page_ext(page_ext);
-> > +     if (!ref->ct)
-> > +             goto out;
-> > +
-> > +     tag =3D ct_to_alloc_tag(ref->ct);
-> > +     page_ext =3D page_ext_next(page_ext);
-> > +     for (i =3D 1; i < nr; i++) {
-> > +             /* Set new reference to point to the original tag */
-> > +             alloc_tag_ref_set(codetag_ref_from_page_ext(page_ext), ta=
-g);
-> > +             page_ext =3D page_ext_next(page_ext);
-> > +     }
-> > +out:
-> > +     page_ext_put(page_ext);
-> > +}
-> > +
-> >  #else /* CONFIG_MEM_ALLOC_PROFILING */
-> >
-> >  static inline void pgalloc_tag_add(struct page *page, struct task_stru=
-ct *task,
-> >                                  unsigned int order) {}
-> >  static inline void pgalloc_tag_sub(struct page *page, unsigned int ord=
-er) {}
-> > +static inline void pgalloc_tag_split(struct page *page, unsigned int n=
-r) {}
-> >
-> >  #endif /* CONFIG_MEM_ALLOC_PROFILING */
-> >
-> > diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> > index 94c958f7ebb5..86daae671319 100644
-> > --- a/mm/huge_memory.c
-> > +++ b/mm/huge_memory.c
-> > @@ -38,6 +38,7 @@
-> >  #include <linux/sched/sysctl.h>
-> >  #include <linux/memory-tiers.h>
-> >  #include <linux/compat.h>
-> > +#include <linux/pgalloc_tag.h>
-> >
-> >  #include <asm/tlb.h>
-> >  #include <asm/pgalloc.h>
-> > @@ -2899,6 +2900,7 @@ static void __split_huge_page(struct page *page, =
-struct list_head *list,
-> >       /* Caller disabled irqs, so they are still disabled here */
-> >
-> >       split_page_owner(head, nr);
-> > +     pgalloc_tag_split(head, nr);
-> >
-> >       /* See comment in __split_huge_page_tail() */
-> >       if (PageAnon(head)) {
-> > diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-> > index 58c0e8b948a4..4bc5b4720fee 100644
-> > --- a/mm/page_alloc.c
-> > +++ b/mm/page_alloc.c
-> > @@ -2621,6 +2621,7 @@ void split_page(struct page *page, unsigned int o=
-rder)
-> >       for (i =3D 1; i < (1 << order); i++)
-> >               set_page_refcounted(page + i);
-> >       split_page_owner(page, 1 << order);
-> > +     pgalloc_tag_split(page, 1 << order);
-> >       split_page_memcg(page, 1 << order);
-> >  }
-> >  EXPORT_SYMBOL_GPL(split_page);
-> > @@ -4806,6 +4807,7 @@ static void *make_alloc_exact(unsigned long addr,=
- unsigned int order,
-> >               struct page *last =3D page + nr;
-> >
-> >               split_page_owner(page, 1 << order);
-> > +             pgalloc_tag_split(page, 1 << order);
-> >               split_page_memcg(page, 1 << order);
-> >               while (page < --last)
-> >                       set_page_refcounted(last);
+> >>
+> >>
+>
+> --
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to kernel-team+unsubscribe@android.com.
+>
