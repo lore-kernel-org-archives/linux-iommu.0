@@ -1,58 +1,86 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E9EB4C631
-	for <iommu@lists.linux.dev>; Tue, 27 Feb 2024 18:44:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 787E6EDD
+	for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 01:19:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709059491; cv=none; b=pLB1KJju49krQtkHXNStVyIKKWzZvW5OTk6MjZ11KzKoE5BteJ50j0hJIohIXfiGunLWQTaPv0Zw9ci2rLUyZYpGwm22nqrVJcd49NBASL+zBFX+oLwbEa4fZVOR1finmA2h6L7VoPzO8hZaJzSwHBHFe8b/228i9tY3bQ65GVc=
+	t=1709083185; cv=none; b=VYn/iopAOZR+naFL/T2EkOjPLdtEC+y+k91crbaqXStEI69ufZ7jIntkcY5c+6F+ZcJJ8fEXE1k6R28dDGVhzscLCiKr6I9XEQlgoog+gDqsQAhgvKi7doWPn/tSk+WfQr6z+lK4eBkcv4LW96j0LUNfAJUu+PKPav0d1lVo+nU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709059491; c=relaxed/simple;
-	bh=e5LEOg3Dp4RGsCdApUKXSKlKWZtAYCNCKl6mAFykbDw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hpNGv9kRewaOzWavt+T5eXpLw4CGG8VbnUO+h/ZJOTdoFixp/Bg5sZDoAYp2hZtgisC+Nrk3sRS1CKx7PSjAaFHcE/xcEhXAvZ69fJsjTmagBk/FjAcMxbyxTK+35mbQjnlNSseTiWHTasIBRkEjyCbte6BGanCJK106Vt+fxKU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 5979D68C4E; Tue, 27 Feb 2024 19:44:44 +0100 (CET)
-Date: Tue, 27 Feb 2024 19:44:44 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Anshuman Khandual <anshuman.khandual@arm.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
-	kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dma-contiguous: remove debug code to removed
- CONFIG_CMA_DEBUG
-Message-ID: <20240227184444.GA20094@lst.de>
-References: <20240207143825.986-1-lukas.bulwahn@gmail.com> <20240227154424.GB15319@lst.de> <CAKXUXMxctfDVt=+UHNrFfQFMhRitiQVQ1DBu-X0gtuM-WZYJgA@mail.gmail.com>
+	s=arc-20240116; t=1709083185; c=relaxed/simple;
+	bh=tQvscC8DBlBxs+BhNJ1NwTvV+ccyIZaVmqcCkhwrSXU=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=VxMVv+T5ccWiNKKTndE0dyVM1EHDufYWvTVGV75MN6blVfGRyfU2BojvqF6rnoiYWZoHQJAoLuqwymFyX1JKnPKk8RXC8j8hUi0W33zEP7RYZRp3LVEDb8e/Vtey2vAsAcENFfkMtZF20n6ydxDQAwGHaNpjpIE8O4x4Nv5YkWY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lrIEPNnN; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lrIEPNnN"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1709083185; x=1740619185;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tQvscC8DBlBxs+BhNJ1NwTvV+ccyIZaVmqcCkhwrSXU=;
+  b=lrIEPNnN6wr68RTV/tIdqkwBT0I5JSYgNHZhnppOQNuWHXgTg/SxjSYa
+   JHSjtNhG5pCqRn3x8M5fwj6hlewFIwVQ/XGczW9h+5tQvgJiApAB+q5j/
+   jmOkDT6khNUStyIcrcjk88Bsa0CX7DKuPQhRWQv37IH8FJtV9s/SOUfmY
+   uPw6DiTSS7VKRmDwDJ/6kfp72xpSY7TwCjPevx3HHm+46FjzjC6NGuyJU
+   VTh7ewSWtjuP7LHVFPNQ8uGd4vcsMoGcUBiE3aSbz3xF3ccYkE9QlB8qu
+   eGmnTqMI4gsh1is1wLy4RZ/PW5X3CymdozO+C1Itfn+HLZ7j1aYUVOB+G
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10996"; a="3620157"
+X-IronPort-AV: E=Sophos;i="6.06,189,1705392000"; 
+   d="scan'208";a="3620157"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2024 17:19:44 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,189,1705392000"; 
+   d="scan'208";a="11872833"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmviesa004.fm.intel.com with ESMTP; 27 Feb 2024 17:19:41 -0800
+Message-ID: <c8bfc031-27a2-464e-b98e-47a7e6a05286@linux.intel.com>
+Date: Wed, 28 Feb 2024 09:13:45 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAKXUXMxctfDVt=+UHNrFfQFMhRitiQVQ1DBu-X0gtuM-WZYJgA@mail.gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH 1/2] iommu: Add static iommu_ops->release_domain
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, "Badger, Eric" <ebadger@purestorage.com>
+References: <20240223051302.177596-1-baolu.lu@linux.intel.com>
+ <20240223051302.177596-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB52766C0E58E2CB6989E0EB608C592@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52766C0E58E2CB6989E0EB608C592@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Feb 27, 2024 at 07:23:36PM +0100, Lukas Bulwahn wrote:
-> On Tue, Feb 27, 2024 at 4:44 PM Christoph Hellwig <hch@lst.de> wrote:
-> >
-> > Thanks,
-> >
-> > added to the dma-mapping for-next branch.
-> >
-> 
-> Christoph, please drop this patch in your for-next branch if possible.
-> 
-> Andrew has picked this patch already and squashed it together with the
-> commit "mm/cma: drop CONFIG_CMA_DEBUG" in the mm tree. So, you do not
-> need to add it anymore.
+On 2/27/24 3:32 PM, Tian, Kevin wrote:
+>> From: Lu Baolu<baolu.lu@linux.intel.com>
+>> Sent: Friday, February 23, 2024 1:13 PM
+>>
+>>
+>> +	/*
+>> +	 * If the iommu driver provides release_domain then the core code
+>> +	 * ensures that domain is attached prior to calling release_device.
+>> +	 * Drivers can use this to enforce a translation on the idle iommu.
+> 'enforce a translation' is confusing in the context of blocking/identity
+> domain.
 
-Ok, I'll drop it.
+Blocking or identity domain is also kind of a translation from the
+core's perspective. The core does not care what type of translation the
+release_domain is; it just enforces this type of translation before
+device release if the driver has specified one.
+
+Best regards,
+baolu
