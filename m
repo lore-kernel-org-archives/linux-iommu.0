@@ -1,138 +1,132 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2061.outbound.protection.outlook.com [40.107.237.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71398160885
-	for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 19:38:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709149098; cv=none; b=CEbvhjiS1M1TFTmfDUorH47qnObHDr9U0U2gImdbSUYn6ThfYBM5wuk3J8MnbQSJ3HSrjPGtTqCipJdrQNKlZKBvzwlMqpRZRax9BhRXdwO2FFEGO6Vc7+ArEv7pwfbgEs745bvObt9ABV6XqZQUgFM/eiS4iL5lZ+srkRUmmb0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709149098; c=relaxed/simple;
-	bh=3mzdhPKAJw9K4mIZOxB1UV8uaho4YjxUkqlu9AvTtSQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Wj6w+dLZzineLkHc8k7Qewwg7TA5+Rt6LKdgK0NugyGW2AfPxYfoY6PCoqwkWEFPNs4hJb2L3rqN4T5XZmZsUCLX504kvN0K1iXDpoIdclaTLLfzBiytGEYZA108T/b++dWrqbWpHFUg5xc/0X7GzimEFDHGO5QJXh7sxMP5d5M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=KHiqyOJ8; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C02813D304;
+	Wed, 28 Feb 2024 22:59:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709161176; cv=fail; b=Excb4iLVSkwY4ch9EP6YyWZKobMUm3mhbg41ADWJY0lXt2opuO/9XYVVLycSCbfJ3RQ7E3Y+2Io7/EdsHTfeWrt9f1RUAkPeR9Xejy+NK90oFbWqffHUuIKGSx1IhLmbfpmgXCbr335pJbRPjBt9kNafxqGJ8qeM4wQKvhsS3hY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709161176; c=relaxed/simple;
+	bh=6c/qeXAkM4WTt+H5WPDa9HqIIaNyAqU2sAYoYJDTBys=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=aTksa2vUntuSN4chJlH55iC2YjR5qSNvi04lF2srgT0xgs509qunicaBoo5aC6TqRydNL3Ts0HrTFrXvZEtUBmOBPrTKjI4ZL8kEHfZEQjuZpkFBwEMFwxhcvvww2SJ5D6+5Xb2l6yoHXS9MZOZB3HnB7DB2dsPRoXZo8skkEEo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=M8pO9Xkp; arc=fail smtp.client-ip=40.107.237.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="KHiqyOJ8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1709149095;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=67dIkbaqejGM9dM5+izpDf+P8kc9aAZ3gpV2PIdOLs4=;
-	b=KHiqyOJ8dK/L1FeNwYRjUrOqvECrFX7b0w6UPzBkz93W7TpBoCFuxyV0QbvN7/NQqCcyff
-	WIG9iYyZ9BLcY+YuZDcYiOkoiRmIJGW76n/Z2fx4fkARHGjIZm6kuDN1Nf2RAoT9aVXZWz
-	ityanTuogTQ+LbZHwRCYan2TFWypqZo=
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
- [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-641-6c7vIarhPwyozlvs5FFyTQ-1; Wed, 28 Feb 2024 14:38:12 -0500
-X-MC-Unique: 6c7vIarhPwyozlvs5FFyTQ-1
-Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-7bfe777fe22so3237739f.3
-        for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 11:38:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709149092; x=1709753892;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=uA20CDAKsgM4Tx3YYjgPKLshZVqnm4Ew1QkRNRKLdZo=;
-        b=Kmh3PMptjQ1TK1VP+DQAAdovLfQBoBylX5BG00u0pC5ByoBKEKuytpcrqUvFHmNNQf
-         BZRUdNlTDxQmYVpaGkxaf3TKEcV/zPdhJf44cCI/wqiNwJ1PatLRPj6Mpn9K/AD3vAXX
-         x221ItJ5cKHTLFJu8QmVwRYZSbkawYETH2N1HLh24SgG2wmfj4G/NwGIWc3h1hIlyn0e
-         8cuNkwixcOdwL6+w60LAePFpxNg4pnZitkLvHfR2CmMAIrviji69Uhm16c4AKw2zd5p8
-         ER9P+majx5wQy4QJkW/R+SjIKUXJb94OqnllrG8Wwqra62w8JaA1k3xHQ8CneLCt7NIF
-         fdDw==
-X-Forwarded-Encrypted: i=1; AJvYcCU17OtSCMPQteoj9YxTZIr7TnCGGeUmveanvi7IGdlBO2u86aTSj0H0qdHsDC+sIp+9aY1q7VSFtSdcP98J0+CNLQBqyN4=
-X-Gm-Message-State: AOJu0YzcU8sEfE96DG5KVUGC6jW0ekdb+8/+QUKCAR6ztABqzJqD86Li
-	/9AI6jDfwd3BiH/5xDdXiad2xZOZ2hFsMmkwu4pMHqL3H0U3ty+7VUficGCe/RisL+HFB4Wvnfs
-	vFOHIxj9lZJ+vhPWI1vRvAFG78AKGuEfZCk4UXBVj1BdvWqgANsTa
-X-Received: by 2002:a05:6602:734:b0:7c7:687e:41ba with SMTP id g20-20020a056602073400b007c7687e41bamr163495iox.9.1709149092243;
-        Wed, 28 Feb 2024 11:38:12 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IFLbkc9moMLuoOGq7o7bm+s7c1gRZdMUmGNufsCw5nAB2hYAZNgiuYz111J6g0/Tgm8/E8rCg==
-X-Received: by 2002:a05:6602:734:b0:7c7:687e:41ba with SMTP id g20-20020a056602073400b007c7687e41bamr163467iox.9.1709149091853;
-        Wed, 28 Feb 2024 11:38:11 -0800 (PST)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id cl10-20020a0566383d0a00b004741d55e66asm7810jab.84.2024.02.28.11.38.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Feb 2024 11:38:11 -0800 (PST)
-Date: Wed, 28 Feb 2024 12:38:10 -0700
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Peter Delevoryas <peter@pjd.dev>
-Cc: qemu-devel <qemu-devel@nongnu.org>, suravee.suthikulpanit@amd.com,
- iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [q&a] Status of IOMMU virtualization for nested virtualization
- (userspace PCI drivers in VMs)
-Message-ID: <20240228123810.70663da2.alex.williamson@redhat.com>
-In-Reply-To: <3D96D76D-85D2-47B5-B4C1-D6F95061D7D6@pjd.dev>
-References: <3D96D76D-85D2-47B5-B4C1-D6F95061D7D6@pjd.dev>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="M8pO9Xkp"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kyABQSaTBV4ZvM3SLb5cVkk6kNeRYfEOqP2m+YzdzDLIdauTK+2v8sPEArL6/HF/izCCR1167SiQtlbZYv10pYFNhkzJrjZ2XxmEfIG1zXf1S6z7et23XzU/KeKp1r7/Aumzl3DQMKpGfPSh/rtwIaIquLzZ8oh5nZJmMfB8WwMzgcUjsuIGkFDJRObmhGkKELr4kF8+laOm+W6Mbv/aomgYX5DjSA+voWa63B1xnFL8bGYtYJ6ELeO3w+XpuQEcTY7p7MXyKjGABSW/JtOY53s2WFNnS5MZ3hHC6Cd2MtJohCNh10VGzeHwFnLue6rkbNSAnuQ+i0j+JWwEXSbDwg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=454o32wUhxMQJq4xDHQ/PpPJSgTNAAGKSfoUpoTO3xM=;
+ b=hvnXJiKNAGQ37oz46BERzRia/U6d8CC+gS19rFqju5cbT5jXK4fe2KmTO8LOkUn86IPGVjsMc59WRiPnra85Scx+4EbDF04Vu1seQaAWtDLNHJ9E6tZcgsD57IqW6QuXFwBRRWZQd49OghicD66Iv5C3RmNrfvIrhe/lGsi0JouuhjL5Vpt6KUL3EZ8cTq7Jw0giOLpChJCQqOSxYjiiaf+dd0yylz4VBzQv1rd85g513sLud+RlYNQBhBmGn+n9yw8MI1vc+HDcYmPKnerib5tr6ysBnMR8jOTeKISMRKh8HZ9BIJ2soVee1gO20ZJUpBHOBbj05om/pqmezKNCpQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=454o32wUhxMQJq4xDHQ/PpPJSgTNAAGKSfoUpoTO3xM=;
+ b=M8pO9Xkp4DcnGrcI7x5XDEMGThOrHr4FNet+gS8s8qBOLvDZki78BnILEjW4VLfFShYn6afMNc819uR+Db4bYNEycXGX4TAHplLFx7CF8mn/cvOtyXIwOTDpxQhNiLABSbhy9M72u1TiDgwHedA63RZukjW7cbcIR9ra58ufr11+hxvN1hWK0ZXZEpaTv8BYp11WiMWz5q+H/lJqlSzF89UuVy8OznDwgzpWjWFt8H1xCMsoCfPlqeoQDyG+TXKEUuJZaqwY2uW3637QqdIc9v3geojvh5wO5uruyjZxOL8U+pMys2OmtwQa7JHO00sdxoFxmlQUBYyueOTdELQ3DA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by SJ2PR12MB8848.namprd12.prod.outlook.com (2603:10b6:a03:537::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.41; Wed, 28 Feb
+ 2024 22:59:31 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::2e3e:c7c0:84da:3941]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::2e3e:c7c0:84da:3941%6]) with mapi id 15.20.7316.037; Wed, 28 Feb 2024
+ 22:59:31 +0000
+Date: Wed, 28 Feb 2024 18:59:29 -0400
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"stable@vger.kernel.org" <stable@vger.kernel.org>,
+	"patches@lists.linux.dev" <patches@lists.linux.dev>
+Subject: Re: [PATCH rc 0/3] iommufd: Fix three bugs found by Syzkaller
+Message-ID: <20240228225929.GR13330@nvidia.com>
+References: <cover.1708636627.git.nicolinc@nvidia.com>
+ <BN9PR11MB5276D622986E55465C3977CB8C592@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5276D622986E55465C3977CB8C592@BN9PR11MB5276.namprd11.prod.outlook.com>
+X-ClientProxiedBy: SA9PR13CA0084.namprd13.prod.outlook.com
+ (2603:10b6:806:23::29) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|SJ2PR12MB8848:EE_
+X-MS-Office365-Filtering-Correlation-Id: e4058933-0326-4cdf-39e1-08dc38b0ec4e
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	wKjNvoNtO5J5l8P9oPnmodsMnaHoqP3NFTnpvVuZLm4BqsBvsPPYX2+NaiFh1zF5TeMcXqH4fEb1rqQ0y9+R+3NNST8PSK4BBOd9U+2bpMZEI7CuLNh7DoViHsvggzwkwy1hI5K4fyM/A7TWiaUM5EwBqC+YQFJ+nfFZcC67VaH4emOaLBw9AlZJcGVoN6N4qLu1sgGjm0m6nBhhWVrQEKNw2rMCWDcnC7HLkMGq/yFHE/PUkpJjR/NmGKQlZWRYBLpnMSU7fMlhiWTUWupokTegUoZZBHiJaLgtzgLVy/CZ9cF/7pXsf9vLfDYMXUMgn1BJAzU3tC0NihZo+XLHGUue4GF0d8s7gF6nmU2kkGpQM3Qw8kREN8Vm1M9rj/KMxSp2MYV49x3hHUb/7n/wUZ2hR9FVHEMuckRpMXp+NkB7mEQkxUKmqMeJF/TDDVOkpu1R8FVU9MqZgVXdhRN3E+chUDcSo4tObLDWmKbZ0TiQfbqVlSshpFaiG/3I4jDaCg5mvoa5ohRR3yuiJTbSUGJHGJzz79fBUwStuxL3oEcT40TibPKlKccCPYXVvVhjAsEFK+N42UM22bqMPI2Soma7xPAD/Iegw/7tMtqE7jvDhk0QZ0xWfmb8SmxMXzLOtTh4jonhb1gwCaR8iQ+GoA==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?cLp55OBzS7D9I/MVx0Bey+Fyacf8+yO3HXxDOlf3AqePbZfTKnI6EkyUYXAL?=
+ =?us-ascii?Q?HvodTsPBXAc5mtU7Mj9gZDVEac4jTf4xf53QeIQ8lZRWrCYM80NakWvz+IW2?=
+ =?us-ascii?Q?jkqSvkjPzJAh0p8L7o8UrXaT7lErguYVKEW98cPj0yNd/CFb619DOoBJJoHw?=
+ =?us-ascii?Q?oE8kJ39T3mfp1uGKNBBd0xBeednNQk+Q3wXqC8R2qMlkFkKQ+ulemyqq0pbi?=
+ =?us-ascii?Q?hrpH0Y4lIyafLxwJbd28nibfQuHSiWEYxGqPPkbSJqkHAtx/9Od6UvqDdVqj?=
+ =?us-ascii?Q?naUcf1M0/SQzI6VlPwYLZ4v9nIm82iZvY8t/rQ+KhiAmFgZ59V0VJ/j06pZu?=
+ =?us-ascii?Q?s1hqeTBcRlSkPhKA1Oil2rVqQYhiPhzxmCcK2cHn8+0C9usVzUIftPk8NO56?=
+ =?us-ascii?Q?xRwONHQ79cCSscQMvqNMGvxBliSCesahkBdrDTYOEa7Dr18ciNhHIWN+H2gU?=
+ =?us-ascii?Q?CEMdOUCm2Xp9ghIr56OQa9F4OshhMrvqHQBNTYG2A6lHvI4EmwhYEUcuR1mU?=
+ =?us-ascii?Q?lZGnbiZEHNc7LogeEYXV15wGPhaZdIhA96kMZc+sk6WxJZ2gSZ640tg8Wq53?=
+ =?us-ascii?Q?5kaVjulmC0tfqbWCUEutcUy1rBoaJZZDRscjvD7DLhNY9aPEWL6Wnuzq7cXt?=
+ =?us-ascii?Q?a8t8rY9WnoqXIx/HQ/5dbiuWuPAXFO31Xqxnj9hcirwfSsvuHEzzopHBAdyS?=
+ =?us-ascii?Q?h8c49bn0dg/2y9IpDA1TYtG+C/pKkCAd75xUyL7XJPhmLC38wlQNjrJ72ZPl?=
+ =?us-ascii?Q?mBF77rn00J/4iHNDccZALTVcdDFjp3i+4Vgxtp4bUtcrzqgmgIv5ZsLKJc3e?=
+ =?us-ascii?Q?3hfX5IWCKC4GX31vu7j4qWH6DAvXz24x0TpxdCGX+Z1Lm5K1vDxVdwjVNbuv?=
+ =?us-ascii?Q?fCIenFbgD8xkkE63o/OXbWrMHzsBuKrPIAgj2GuQVT6RE+386muGrtZDe07j?=
+ =?us-ascii?Q?yfegy4T04o4THXdzaTTEWMfvDgEV7ApodeRszf15++qVVrIojfao/KieVItv?=
+ =?us-ascii?Q?NEPdLJzN25gO3O93SkGikbjzA1jy8OfN+PpRq9KR8KINd/fXLYtPYXS2payN?=
+ =?us-ascii?Q?7CeHVY9yiR/263dHjhlS2ISNAgjXsPjd43qbekACrofxaloj2ULaPyEYd7TB?=
+ =?us-ascii?Q?9eGiTwAiZVLPZU9QdV/HxifF9wiSRfH56cy7shPpnT1MRPtI6MzVNoDWjAZn?=
+ =?us-ascii?Q?bu5wZUwAkUzmiiJw69VAQKUdGyJdUVQcPo3dn8YGY+7VVk6Nm+8fO40s2sVt?=
+ =?us-ascii?Q?3GYpaJa81V2r/E8QQUlXNsxKo14qHfiWQFqU65qhEamNB2DqhJQIQPMXgODY?=
+ =?us-ascii?Q?JbzXu+IVAOTPYVWtAKpIobTXiwMskRXo4rm4DtWULvlvArX1gwhO0+jA4dLh?=
+ =?us-ascii?Q?BNDcZ1rydzCZNN8RSs8LcSXtvwgX0axybcxiJlIQepDGuGcHWHsB9pygLS1j?=
+ =?us-ascii?Q?v4nIGcX9UowZvm4qS+SV2o8WrDp9NVZ7euxuDCmPqCstP0NzcQehgyPzM0nw?=
+ =?us-ascii?Q?tSmUZG5RokGtmOxZsSibuXPZhr9AYcSbirQsVO92Mm8uEAXvNzyQwaEm677a?=
+ =?us-ascii?Q?ZGMyjBcDmyeCezaUlko=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e4058933-0326-4cdf-39e1-08dc38b0ec4e
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2024 22:59:31.0931
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: i6Ut08zTqhTjeOt/aQxVeZk80Po+yIZvQF2LwrQT4KW+gQrVWshROTWDyyvDxSkq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8848
 
-On Wed, 28 Feb 2024 10:29:32 -0800
-Peter Delevoryas <peter@pjd.dev> wrote:
+On Tue, Feb 27, 2024 at 03:34:11AM +0000, Tian, Kevin wrote:
+> > From: Nicolin Chen <nicolinc@nvidia.com>
+> > Sent: Friday, February 23, 2024 5:24 AM
+> > 
+> > Jason has been running Syzkaller that found three bugs.
+> 
+> could you remove "Jason has been running" from all three patches?
+> Just say that Syzkaller found a bug.
 
-> Hey guys,
->=20
-> I=E2=80=99m having a little trouble reading between the lines on various
-> docs, mailing list threads, KVM presentations, github forks, etc, so
-> I figured I=E2=80=99d just ask:
->=20
-> What is the status of IOMMU virtualization, like in the case where I
-> want a VM guest to have a virtual IOMMU?
+I will copy edit the commit messages
 
-It works fine for simply nested assignment scenarios, ie. guest
-userspace drivers or nested VMs.
-=20
-> I found this great presentation from KVM Forum 2021: [1]
->=20
-> 1. I=E2=80=99m using -device intel-iommu right now. This has performance
-> implications and large DMA transfers hit the vfio_iommu_type1
-> dma_entry_limit on the host because of how the mappings are made.
-
-Hugepages for the guest and mappings within the guest should help both
-the mapping performance and DMA entry limit.  In general the type1 vfio
-IOMMU backend is not optimized for dynamic mapping, so performance-wise
-your best bet is still to design the userspace driver for static DMA
-buffers.
-=20
-> 2. -device virtio-iommu is an improvement, but it doesn=E2=80=99t seem
-> compatible with -device vfio-pci? I was only able to test this with
-> cloud-hypervisor, and it has a better vfio mapping pattern (avoids
-> hitting dma_entry_limit).
-
-AFAIK it's just growing pains, it should work but it's working through
-bugs.
-
-> 3. -object iommufd [2] I haven=E2=80=99t tried this quite yet, planning t=
-o:
-> if it=E2=80=99s using iommufd, and I have all the right kernel features i=
-n
-> the guest and host, I assume it=E2=80=99s implementing the passthrough mo=
-de
-> that AMD has described in their talk? Because I imagine that would be
-> the best solution for me, I=E2=80=99m just having trouble understanding i=
-f
-> it=E2=80=99s actually related or orthogonal.
-
-For now iommufd provides a similar DMA mapping interface to type1, but
-it does remove the DMA entry limit and improves locked page accounting.
-
-To really see a performance improvement relative to dynamic mappings,
-you'll need nesting support in the IOMMU, which is under active
-development.  From this aspect you will want iommufd since similar
-features will not be provided by type1.  Thanks,
-
-Alex
-
+Thanks,
+Jason
