@@ -1,146 +1,138 @@
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04EFF71EB4
-	for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 18:39:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71398160885
+	for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 19:38:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709145546; cv=none; b=eSGMZdQtJFiCCLqF4gg/XAYIdEhEFh//JG2tknL9bZDFnwMc0WKoFrqCqyZ/mQBy9iQbIuLfkcvZCRUBPMF5o/lq56OY4Gfd1IV/1Do4oTatdZ3HWPrkn5IQLyR5wA9sVKpZDqW0JS+9ULjGKJSm7GxcwbZLlBFpyW+RTL3tmiw=
+	t=1709149098; cv=none; b=CEbvhjiS1M1TFTmfDUorH47qnObHDr9U0U2gImdbSUYn6ThfYBM5wuk3J8MnbQSJ3HSrjPGtTqCipJdrQNKlZKBvzwlMqpRZRax9BhRXdwO2FFEGO6Vc7+ArEv7pwfbgEs745bvObt9ABV6XqZQUgFM/eiS4iL5lZ+srkRUmmb0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709145546; c=relaxed/simple;
-	bh=7iqFBA+LWwnU3gwgoROsymeSLKp/pJPiwqlUMLON2K8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Tfq9OL+iz5FNxt6FDNkrL/KfS1FJu55xXAkwV6K0IFCnItB/kh8lQ83K9BYM85hKm7iLfechF0N4lpF9bUwSQFnbIeX439u/inK/tnW7QazmdpxbS7DNANuUmF0+Uq0qk6eOYf+BkJIBivlBQDqSp8iDPBfZxKEDPfanlU3SNf4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=zIvidZsT; arc=none smtp.client-ip=209.85.128.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1709149098; c=relaxed/simple;
+	bh=3mzdhPKAJw9K4mIZOxB1UV8uaho4YjxUkqlu9AvTtSQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Wj6w+dLZzineLkHc8k7Qewwg7TA5+Rt6LKdgK0NugyGW2AfPxYfoY6PCoqwkWEFPNs4hJb2L3rqN4T5XZmZsUCLX504kvN0K1iXDpoIdclaTLLfzBiytGEYZA108T/b++dWrqbWpHFUg5xc/0X7GzimEFDHGO5QJXh7sxMP5d5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=KHiqyOJ8; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="zIvidZsT"
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-60925c4235eso617947b3.3
-        for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 10:39:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1709145544; x=1709750344; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7iqFBA+LWwnU3gwgoROsymeSLKp/pJPiwqlUMLON2K8=;
-        b=zIvidZsTtdGK+dTIlQsluAuBLI/BAByumLKOMmu5dUfbXMXlgXb8DZjMMIvlw1kpTH
-         H79K0GW/nM4pvvFpi2bKYH9S2KZn+OREfe7ESlkxVe1Ro8EYY+EfKUQlT/o0TYjryg1T
-         KDhSl4IwNmMVs9wY34Iu9tNVSJnhT1bpMQqtzk5qMpPMyxcbCvFs9UCZL73xd4T/f4JO
-         nEEE7BIuA1E5Md2VTXjc1k3GyCPuW8G/+QCXQrNN193FZaTZ2nzCqx2/HK0IbrOEkeYr
-         cPHMQUOgjYKRHZIXmlf8onZf9Aa8IBtIesuqSIfeMech1IdMVJjpphHlXrmihoJnNKs9
-         ijCA==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="KHiqyOJ8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1709149095;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=67dIkbaqejGM9dM5+izpDf+P8kc9aAZ3gpV2PIdOLs4=;
+	b=KHiqyOJ8dK/L1FeNwYRjUrOqvECrFX7b0w6UPzBkz93W7TpBoCFuxyV0QbvN7/NQqCcyff
+	WIG9iYyZ9BLcY+YuZDcYiOkoiRmIJGW76n/Z2fx4fkARHGjIZm6kuDN1Nf2RAoT9aVXZWz
+	ityanTuogTQ+LbZHwRCYan2TFWypqZo=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-641-6c7vIarhPwyozlvs5FFyTQ-1; Wed, 28 Feb 2024 14:38:12 -0500
+X-MC-Unique: 6c7vIarhPwyozlvs5FFyTQ-1
+Received: by mail-io1-f69.google.com with SMTP id ca18e2360f4ac-7bfe777fe22so3237739f.3
+        for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 11:38:12 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709145544; x=1709750344;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1709149092; x=1709753892;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=7iqFBA+LWwnU3gwgoROsymeSLKp/pJPiwqlUMLON2K8=;
-        b=JCl4qm4Abs3OCBhqbOO4N5AgaR67PugNK4+nzgSHdDh2hcze0fggqr6rev82Ksh7Xt
-         dKEsBG581cYoHrCRa1K5K4/d8RfwTghBQujScX7xXX+dliPHlEg6QBq7cxVPoO/pLowZ
-         83DUnyBDGKpo4zS7pTS66kWXMeFQU0n5NIxZaf+iK/+FtyBdRZygcIE5Ab/X4iVJKcHI
-         XohkTpoBwds78GyuDGH59tHgJtw/xS6LGMLbWJryYEdcxbvD5WIjidQYXti4WaQrH5Aw
-         Fod3BehuZyj1aYR6rr34WADzDs5wgZ1m3Hpy7jKZxn4cRnIYJ4Q8Rnm29tCDSJ9WeOc3
-         zotw==
-X-Forwarded-Encrypted: i=1; AJvYcCUl48wr2xjtt2u+V4OK3sKylj7xkyQ1vlhpECPFDafd4Ss2gbDbGVEpSqbs4Ymjmg62mbwq4qEoAiQu4BSSYvPR6GSGRXU=
-X-Gm-Message-State: AOJu0Yy0GGXS0dT0VCixZ5T9TxP7TI2EceZqkTnsZJDYK5BXbyJco+Wn
-	KvD3lxaOm6QLOE0xkEo8Qo7So1wLNc0Tko5XPHlFRfu+pp6RvWgl28nZYi2xSQer7eHi/rtuFDx
-	r8oIflwNhBE/26T1IXJBHDU8Hs5n2ov0UmA+8
-X-Google-Smtp-Source: AGHT+IGPWnLmF2TVmBJmUMEp5oMR8c6WgnFtjjNeDdqebhJZ+NPAbFsWrA/RAsFNPaaO16thY7f2/GzzgeasEYFaVaU=
-X-Received: by 2002:a5b:f45:0:b0:dc6:e75d:d828 with SMTP id
- y5-20020a5b0f45000000b00dc6e75dd828mr48009ybr.18.1709145543730; Wed, 28 Feb
- 2024 10:39:03 -0800 (PST)
+        bh=uA20CDAKsgM4Tx3YYjgPKLshZVqnm4Ew1QkRNRKLdZo=;
+        b=Kmh3PMptjQ1TK1VP+DQAAdovLfQBoBylX5BG00u0pC5ByoBKEKuytpcrqUvFHmNNQf
+         BZRUdNlTDxQmYVpaGkxaf3TKEcV/zPdhJf44cCI/wqiNwJ1PatLRPj6Mpn9K/AD3vAXX
+         x221ItJ5cKHTLFJu8QmVwRYZSbkawYETH2N1HLh24SgG2wmfj4G/NwGIWc3h1hIlyn0e
+         8cuNkwixcOdwL6+w60LAePFpxNg4pnZitkLvHfR2CmMAIrviji69Uhm16c4AKw2zd5p8
+         ER9P+majx5wQy4QJkW/R+SjIKUXJb94OqnllrG8Wwqra62w8JaA1k3xHQ8CneLCt7NIF
+         fdDw==
+X-Forwarded-Encrypted: i=1; AJvYcCU17OtSCMPQteoj9YxTZIr7TnCGGeUmveanvi7IGdlBO2u86aTSj0H0qdHsDC+sIp+9aY1q7VSFtSdcP98J0+CNLQBqyN4=
+X-Gm-Message-State: AOJu0YzcU8sEfE96DG5KVUGC6jW0ekdb+8/+QUKCAR6ztABqzJqD86Li
+	/9AI6jDfwd3BiH/5xDdXiad2xZOZ2hFsMmkwu4pMHqL3H0U3ty+7VUficGCe/RisL+HFB4Wvnfs
+	vFOHIxj9lZJ+vhPWI1vRvAFG78AKGuEfZCk4UXBVj1BdvWqgANsTa
+X-Received: by 2002:a05:6602:734:b0:7c7:687e:41ba with SMTP id g20-20020a056602073400b007c7687e41bamr163495iox.9.1709149092243;
+        Wed, 28 Feb 2024 11:38:12 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IFLbkc9moMLuoOGq7o7bm+s7c1gRZdMUmGNufsCw5nAB2hYAZNgiuYz111J6g0/Tgm8/E8rCg==
+X-Received: by 2002:a05:6602:734:b0:7c7:687e:41ba with SMTP id g20-20020a056602073400b007c7687e41bamr163467iox.9.1709149091853;
+        Wed, 28 Feb 2024 11:38:11 -0800 (PST)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id cl10-20020a0566383d0a00b004741d55e66asm7810jab.84.2024.02.28.11.38.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Feb 2024 11:38:11 -0800 (PST)
+Date: Wed, 28 Feb 2024 12:38:10 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Peter Delevoryas <peter@pjd.dev>
+Cc: qemu-devel <qemu-devel@nongnu.org>, suravee.suthikulpanit@amd.com,
+ iommu@lists.linux.dev, kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [q&a] Status of IOMMU virtualization for nested virtualization
+ (userspace PCI drivers in VMs)
+Message-ID: <20240228123810.70663da2.alex.williamson@redhat.com>
+In-Reply-To: <3D96D76D-85D2-47B5-B4C1-D6F95061D7D6@pjd.dev>
+References: <3D96D76D-85D2-47B5-B4C1-D6F95061D7D6@pjd.dev>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-20-surenb@google.com>
- <2daf5f5a-401a-4ef7-8193-6dca4c064ea0@suse.cz> <CAJuCfpGt+zfFzfLSXEjeTo79gw2Be-UWBcJq=eL1qAnPf9PaiA@mail.gmail.com>
- <6db0f0c8-81cb-4d04-9560-ba73d63db4b8@suse.cz> <CAJuCfpEgh1OiYNE_uKG-BqW2x97sOL9+AaTX4Jct3=WHzAv+kg@mail.gmail.com>
- <f494b8e5-f1ca-4b95-a8aa-01b9c4395523@suse.cz>
-In-Reply-To: <f494b8e5-f1ca-4b95-a8aa-01b9c4395523@suse.cz>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Wed, 28 Feb 2024 10:38:49 -0800
-Message-ID: <CAJuCfpHJoPa_pQNPrcWNZyU7V7=UA4deGFMxh9_aZPyiP0bFSw@mail.gmail.com>
-Subject: Re: [PATCH v4 19/36] mm: create new codetag references during page splitting
-To: Vlastimil Babka <vbabka@suse.cz>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
-	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
-	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
-	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 28, 2024 at 10:28=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> w=
-rote:
->
-> On 2/28/24 18:50, Suren Baghdasaryan wrote:
-> > On Wed, Feb 28, 2024 at 12:47=E2=80=AFAM Vlastimil Babka <vbabka@suse.c=
-z> wrote:
-> >
-> >>
-> >> Now this might be rare enough that it's not worth fixing if that would=
- be
-> >> too complicated, just FYI.
-> >
-> > Yeah. We can fix this by subtracting the "bytes" counter of the "head"
-> > page for all free_the_page(page + (1 << order), order) calls we do
-> > inside __free_pages(). But we can't simply use pgalloc_tag_sub()
-> > because the "calls" counter will get over-decremented (we allocated
-> > all of these pages with one call). I'll need to introduce a new
-> > pgalloc_tag_sub_bytes() API and use it here. I feel it's too targeted
-> > of a solution but OTOH this is a special situation, so maybe it's
-> > acceptable. WDYT?
->
-> Hmm I think there's a problem that once you fail put_page_testzero() and
-> detect you need to do this, the page might be already gone or reallocated=
- so
-> you can't get to the tag for decrementing bytes. You'd have to get it
-> upfront (I guess for "head && order > 0" cases) just in case it happens.
-> Maybe it's not worth the trouble for such a rare case.
+On Wed, 28 Feb 2024 10:29:32 -0800
+Peter Delevoryas <peter@pjd.dev> wrote:
 
-Yes, that hit me when I tried to implement it but there is a simple
-solution around that. I can obtain alloc_tag before doing
-put_page_testzero() and then decrement bytes counter directly as
-needed.
-Not sure if it is a rare enough case that we can ignore it but if the
-fix is simple enough then might as well do it?
+> Hey guys,
+>=20
+> I=E2=80=99m having a little trouble reading between the lines on various
+> docs, mailing list threads, KVM presentations, github forks, etc, so
+> I figured I=E2=80=99d just ask:
+>=20
+> What is the status of IOMMU virtualization, like in the case where I
+> want a VM guest to have a virtual IOMMU?
 
->
-> >>
-> >>
-> >> > Every time
-> >> > one of these pages are freed that codetag's "bytes" and "calls"
-> >> > counters will be decremented. I think accounting will work correctly
-> >> > irrespective of where these pages are freed, in __free_pages() or by
-> >> > put_page().
-> >> >
-> >>
->
-> --
-> To unsubscribe from this group and stop receiving emails from it, send an=
- email to kernel-team+unsubscribe@android.com.
->
+It works fine for simply nested assignment scenarios, ie. guest
+userspace drivers or nested VMs.
+=20
+> I found this great presentation from KVM Forum 2021: [1]
+>=20
+> 1. I=E2=80=99m using -device intel-iommu right now. This has performance
+> implications and large DMA transfers hit the vfio_iommu_type1
+> dma_entry_limit on the host because of how the mappings are made.
+
+Hugepages for the guest and mappings within the guest should help both
+the mapping performance and DMA entry limit.  In general the type1 vfio
+IOMMU backend is not optimized for dynamic mapping, so performance-wise
+your best bet is still to design the userspace driver for static DMA
+buffers.
+=20
+> 2. -device virtio-iommu is an improvement, but it doesn=E2=80=99t seem
+> compatible with -device vfio-pci? I was only able to test this with
+> cloud-hypervisor, and it has a better vfio mapping pattern (avoids
+> hitting dma_entry_limit).
+
+AFAIK it's just growing pains, it should work but it's working through
+bugs.
+
+> 3. -object iommufd [2] I haven=E2=80=99t tried this quite yet, planning t=
+o:
+> if it=E2=80=99s using iommufd, and I have all the right kernel features i=
+n
+> the guest and host, I assume it=E2=80=99s implementing the passthrough mo=
+de
+> that AMD has described in their talk? Because I imagine that would be
+> the best solution for me, I=E2=80=99m just having trouble understanding i=
+f
+> it=E2=80=99s actually related or orthogonal.
+
+For now iommufd provides a similar DMA mapping interface to type1, but
+it does remove the DMA entry limit and improves locked page accounting.
+
+To really see a performance improvement relative to dynamic mappings,
+you'll need nesting support in the IOMMU, which is under active
+development.  From this aspect you will want iommufd since similar
+features will not be provided by type1.  Thanks,
+
+Alex
+
