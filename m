@@ -1,78 +1,46 @@
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.223.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D081D2D03C
-	for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 08:47:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40FAE2E403
+	for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 09:00:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709110041; cv=none; b=FnUZpD5nTKiG9gucLqLpYaE1pbc8eoT+UOar7ntveeV8EcHGwoelPREAg+d878/NqKMFJ2lTSuk6evrAIOw4SL1rWMuIkEKAQ+0LagK4J6ViMfaGQMvrcHwB4f2qgWM57AeLYT/kqSo6gWpTOMnJMgep3Uk6mGoOs6P3wuGoveU=
+	t=1709110817; cv=none; b=EBV/XjV7FcHwjw6j0r8k3Lli6lSNE2waN6xey7uaTirszjZkJYiiI4ksUDTpgoppphkkkb1/Fgy9TMRTxSveP6N9nIbmuftEdNgX8Yh0flbiHpcqe10FfEikHuAUUtJloC21Y2fLDWGQWE9NSFP3Wy4mrvLGT/QXxPOKuwp1KWc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709110041; c=relaxed/simple;
-	bh=da7fKvfglkLdtpNErLBCbJjKSB2vf0y1Y/4zsoOTLBk=;
+	s=arc-20240116; t=1709110817; c=relaxed/simple;
+	bh=vsh9jGxQjjvBWK3B4oQcW0pqzFbEoSreLHkQicRRkn8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=C6wk/hLLLFXv9+S5ZZiY112tzk6ztmeF75KAyQHzipytoFmz2qVmPPpBMhn/NkL2fmRYyzFOt9JM8HDgOaiOsB4hXBTYoJfE9jygWUfvX9iF1Q/XRYYLsn0gvJIT2jzwGVLKH6HzCTo/jhaL1avPqaf3uFc3x2aQHq5AWTmL52Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=s6ogdVMW; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=A7eYUasH; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=s6ogdVMW; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=A7eYUasH; arc=none smtp.client-ip=195.135.223.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	 In-Reply-To:Content-Type; b=fx7QvR5KJoTKIVxS4iITb6KMQRnpRWzUrtKMvumKT+gcc7tixsZXDlkFiW0TG3iXNgXbZI3f2tRELEZtMNIbFfI7b8rw8FkLxfeHC1aL3zaDBDvWvsD8aFwKJAHN7KyOvFMeLO1Az0BOP+ngyDQT3POkxtgZJNjS14jnQO81Z6c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LaSmTbZ9; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="s6ogdVMW";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="A7eYUasH";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="s6ogdVMW";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="A7eYUasH"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [10.150.64.97])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by smtp-out2.suse.de (Postfix) with ESMTPS id 0A4421F7A4;
-	Wed, 28 Feb 2024 08:47:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1709110038; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Vj8SBiVnmCzYeLcoo696dWgrqk2e7VmSkmzYdiIhZIA=;
-	b=s6ogdVMWJ9Yj9M6VNL5ljL6Ihfa+xkxsw6TeA+cvHUv191l4MKLQpNULNHkeB8GJ+Auu9v
-	PlYnqE2eAGQFWv8MbBbeDgIXLU4P3Vp4vlAlYxXdU17cH7RDGQc5/8z8it3Ueoh+CGKfRr
-	MPuPGNG5Utti2cOzW55ELkB4rw0zp6Y=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1709110038;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Vj8SBiVnmCzYeLcoo696dWgrqk2e7VmSkmzYdiIhZIA=;
-	b=A7eYUasHGOqwTH88ZwnQWwVHo65JIkxjb91z9NcIz/jEEyMjS4CeV6OF9o9IbMR0a8tvDr
-	fG/C/fs7C5VAitBQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1709110038; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Vj8SBiVnmCzYeLcoo696dWgrqk2e7VmSkmzYdiIhZIA=;
-	b=s6ogdVMWJ9Yj9M6VNL5ljL6Ihfa+xkxsw6TeA+cvHUv191l4MKLQpNULNHkeB8GJ+Auu9v
-	PlYnqE2eAGQFWv8MbBbeDgIXLU4P3Vp4vlAlYxXdU17cH7RDGQc5/8z8it3Ueoh+CGKfRr
-	MPuPGNG5Utti2cOzW55ELkB4rw0zp6Y=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1709110038;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Vj8SBiVnmCzYeLcoo696dWgrqk2e7VmSkmzYdiIhZIA=;
-	b=A7eYUasHGOqwTH88ZwnQWwVHo65JIkxjb91z9NcIz/jEEyMjS4CeV6OF9o9IbMR0a8tvDr
-	fG/C/fs7C5VAitBQ==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id 6D9ED13AB0;
-	Wed, 28 Feb 2024 08:47:17 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id d+w3GhXz3mXBIQAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Wed, 28 Feb 2024 08:47:17 +0000
-Message-ID: <6db0f0c8-81cb-4d04-9560-ba73d63db4b8@suse.cz>
-Date: Wed, 28 Feb 2024 09:47:17 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LaSmTbZ9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1709110816; x=1740646816;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vsh9jGxQjjvBWK3B4oQcW0pqzFbEoSreLHkQicRRkn8=;
+  b=LaSmTbZ9SBV3mflqI845r+3zLA8QyMSxE4v3mNpFY3IYyc6cTcI7+BJu
+   el755Ws326R1VlwsOWV+MaS+nxSt2SadeL/hnsY21gF3Kbdhpxy4DJ3OR
+   8aD6b8S9bsV3K9raqG6mfRzMCqmsp2DOZDf/W0zwaue+o5JfljG2M1P/L
+   gkI1cSVjgIG+kjPPG2vD8hgq7YaS/Iq2d4L4+Z0salhDesgE8F0GZiRAC
+   HXLExSWG1cwHLKBIMrDkoIN5qi8i1aL34gLVRS7DWWGL7h0tevYa4Enzk
+   +wfiogOPgTtSNSNx7PaloJAKFGIxARHqNC1+cORh5vwbKzNCILIVu1bh0
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10996"; a="3421073"
+X-IronPort-AV: E=Sophos;i="6.06,190,1705392000"; 
+   d="scan'208";a="3421073"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2024 01:00:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,190,1705392000"; 
+   d="scan'208";a="7396998"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.124.229.115]) ([10.124.229.115])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2024 01:00:12 -0800
+Message-ID: <eac3e9e7-657f-4de2-b9ed-878ffc2b93cb@linux.intel.com>
+Date: Wed, 28 Feb 2024 17:00:09 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -80,139 +48,155 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 19/36] mm: create new codetag references during page
- splitting
-Content-Language: en-US
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
- hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
- dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
- penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com,
- will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
- nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
- rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
- yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
- hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
- ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org,
- ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
- dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
- bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
- minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arch@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
- cgroups@vger.kernel.org
-References: <20240221194052.927623-1-surenb@google.com>
- <20240221194052.927623-20-surenb@google.com>
- <2daf5f5a-401a-4ef7-8193-6dca4c064ea0@suse.cz>
- <CAJuCfpGt+zfFzfLSXEjeTo79gw2Be-UWBcJq=eL1qAnPf9PaiA@mail.gmail.com>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <CAJuCfpGt+zfFzfLSXEjeTo79gw2Be-UWBcJq=eL1qAnPf9PaiA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-Authentication-Results: smtp-out2.suse.de;
-	none
-X-Spam-Level: 
-X-Spam-Score: -2.79
-X-Spamd-Result: default: False [-2.79 / 50.00];
-	 ARC_NA(0.00)[];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 XM_UA_NO_VERSION(0.01)[];
-	 FROM_HAS_DN(0.00)[];
-	 TO_DN_SOME(0.00)[];
-	 MID_RHS_MATCH_FROM(0.00)[];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 BAYES_HAM(-3.00)[100.00%];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 RCPT_COUNT_GT_50(0.00)[74];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:email];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 FREEMAIL_CC(0.00)[linux-foundation.org,linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,i-love.sakura.ne.jp,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[]
-X-Spam-Flag: NO
+Subject: Re: [PATCH v13 3/3] iommu/vt-d: improve ITE fault handling if target
+ device isn't valid
+To: Bjorn Helgaas <helgaas@kernel.org>
+Cc: Dan Carpenter <dan.carpenter@linaro.org>, baolu.lu@linux.intel.com,
+ bhelgaas@google.com, robin.murphy@arm.com, jgg@ziepe.ca,
+ kevin.tian@intel.com, dwmw2@infradead.org, will@kernel.org, lukas@wunner.de,
+ yi.l.liu@intel.com, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ linux-pci@vger.kernel.org
+References: <20240226225234.GA211745@bhelgaas>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <20240226225234.GA211745@bhelgaas>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 2/27/24 17:38, Suren Baghdasaryan wrote:
-> On Tue, Feb 27, 2024 at 2:10 AM Vlastimil Babka <vbabka@suse.cz> wrote:
+On 2/27/2024 6:52 AM, Bjorn Helgaas wrote:
+> On Fri, Feb 23, 2024 at 10:29:28AM +0800, Ethan Zhao wrote:
+>> On 2/22/2024 7:24 PM, Dan Carpenter wrote:
+>>> On Thu, Feb 22, 2024 at 04:02:51AM -0500, Ethan Zhao wrote:
+>>>> Because surprise removal could happen anytime, e.g. user could request safe
+>>>> removal to EP(endpoint device) via sysfs and brings its link down to do
+>>>> surprise removal cocurrently. such aggressive cases would cause ATS
+>>>> invalidation request issued to non-existence target device, then deadly
+>>>> loop to retry that request after ITE fault triggered in interrupt context.
+>>>> this patch aims to optimize the ITE handling by checking the target device
+>>>> presence state to avoid retrying the timeout request blindly, thus avoid
+>>>> hard lockup or system hang.
+>>>>
+>>>> Devices are valid ATS invalidation request target only when they reside
+>>>> in the iommu->device_rbtree (probed, not released) and present.
+>>> "valid invalidation" is awkward wording.  Can we instead say:
+>> If you read them together, sounds like tongue twister. but here "ATS
+>> invalidation request target" is one term in PCIe spec.
+> "ATS invalidation request target" does not appear in the PCIe spec.  I
+> think you're trying to avoid sending ATS Invalidate Requests when you
+> know they will not be completed.
+>
+> It is impossible to reliably determine whether a device will be
+> present and able to complete an Invalidate Request.  No matter what
+> you check to determine that a device is present *now*, it may be
+> removed before an Invalidate Request reaches it.
+>
+> If an Invalidate Request to a non-existent device causes a "deadly
+> loop" (I'm not sure what that means) or a hard lockup or a system
+> hang, something is wrong with the hardware.  There should be a
+
+The hardware might be innocent, here in the qi_submit_sync() &
+qi_check_fault() will retry the timeout request forever if the
+target device is gone or the target device always takes too much
+time to reponse. there is dead loop here.
+
+This patch aims to break the dead loop for case device is not
+present anymore.
+
+But for those devices takes too much time to complete. I am
+working on other patches, not in this patchset.
+
+
+Thanks,
+Ethan
+
+> mechanism to recover from a timeout in that situation.
+>
+> You can avoid sending Invalidate Requests to devices that have been
+> removed, and that will reduce the number of timeout cases.  But if you
+> rely on a check like pci_device_is_present() or
+> pci_dev_is_disconnected(), there is *always* an unavoidable race
+> between a device removal and the Invalidate Request.
+>
+>>>> @@ -1273,6 +1273,9 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+>>>>    {
+>>>>    	u32 fault;
+>>>>    	int head, tail;
+>>>> +	u64 iqe_err, ite_sid;
+>>>> +	struct device *dev = NULL;
+>>>> +	struct pci_dev *pdev = NULL;
+>>>>    	struct q_inval *qi = iommu->qi;
+>>>>    	int shift = qi_shift(iommu);
+>>>> @@ -1317,6 +1320,13 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+>>>>    		tail = readl(iommu->reg + DMAR_IQT_REG);
+>>>>    		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
+>>>> +		/*
+>>>> +		 * SID field is valid only when the ITE field is Set in FSTS_REG
+>>>> +		 * see Intel VT-d spec r4.1, section 11.4.9.9
+>>>> +		 */
+>>>> +		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
+>>>> +		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
+>>>> +
+>>>>    		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
+>>>>    		pr_info("Invalidation Time-out Error (ITE) cleared\n");
+>>>> @@ -1326,6 +1336,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+>>>>    			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
+>>>>    		} while (head != tail);
+>>>> +		/*
+>>>> +		 * If got ITE, we need to check if the sid of ITE is one of the
+>>>> +		 * current valid ATS invalidation target devices, if no, or the
+>>>> +		 * target device isn't presnet, don't try this request anymore.
+>>>> +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
+>>>> +		 */
+>>> This comment is kind of confusing.
+>> Really confusing ? this is typo there, resnet-> "present"
 >>
->> On 2/21/24 20:40, Suren Baghdasaryan wrote:
->> > When a high-order page is split into smaller ones, each newly split
->> > page should get its codetag. The original codetag is reused for these
->> > pages but it's recorded as 0-byte allocation because original codetag
->> > already accounts for the original high-order allocated page.
+>>> /*
+>>>    * If we have an ITE, then we need to check whether the sid of the ITE
+>>>    * is in the rbtree (meaning it is probed and not released), and that
+>>>    * the PCI device is present.
+>>>    */
+>>>
+>>> My comment is slightly shorter but I think it has the necessary
+>>> information.
+>>>
+>>>> +		if (ite_sid) {
+>>>> +			dev = device_rbtree_find(iommu, ite_sid);
+>>>> +			if (!dev || !dev_is_pci(dev))
+>>>> +				return -ETIMEDOUT;
+>>> -ETIMEDOUT is weird.  The callers don't care which error code we return.
+>>> Change this to -ENODEV or something
+>> -ETIMEDOUT means prior ATS invalidation request hit timeout fault, and the
+>> caller really cares about the returned value.
 >>
->> This was v3 but then you refactored (for the better) so the commit log
->> could reflect it?
-> 
-> Yes, technically mechnism didn't change but I should word it better.
-> Smth like this:
-> 
-> When a high-order page is split into smaller ones, each newly split
-> page should get its codetag. After the split each split page will be
-> referencing the original codetag. The codetag's "bytes" counter
-> remains the same because the amount of allocated memory has not
-> changed, however the "calls" counter gets increased to keep the
-> counter correct when these individual pages get freed.
-
-Great, thanks.
-The concern with __free_pages() is not really related to splitting, so for
-this patch:
-
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
-
-> 
+>>>> +			pdev = to_pci_dev(dev);
+>>>> +			if (!pci_device_is_present(pdev) &&
+>>>> +				ite_sid == pci_dev_id(pci_physfn(pdev)))
+>>> The && confused me, but then I realized that probably "ite_sid ==
+>>> pci_dev_id(pci_physfn(pdev))" is always true.  Can we delete that part?
+>> Here is the fault handling, just double confirm nothing else goes wrong --
+>> beyond the assumption.
 >>
->> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+>>> 		pdev = to_pci_dev(dev);
+>>> 		if (!pci_device_is_present(pdev))
+>>> 			return -ENODEV;
+>>>
+>>>
+>>>> +				return -ETIMEDOUT;
+>>> -ENODEV.
+>> The ATS invalidation request could be sent from userland in later code,
+>> the userland code will care about the returned value,  -ENODEV is one aspect
+>> of the fact (target device not present), while -ETIMEDOUT is another
+>> (timeout happened). we couldn't return them both.
 >>
->> I was going to R-b, but now I recalled the trickiness of
->> __free_pages() for non-compound pages if it loses the race to a
->> speculative reference. Will the codetag handling work fine there?
-> 
-> I think so. Each non-compoud page has its individual reference to its
-> codetag and will decrement it whenever the page is freed. IIUC the
-> logic in  __free_pages(), when it loses race to a speculative
-> reference it will free all pages except for the first one and the
-
-The "tail" pages of this non-compound high-order page will AFAICS not have
-code tags assigned, so alloc_tag_sub() will be a no-op (or a warning with
-_DEBUG).
-
-> first one will be freed when the last put_page() happens. If prior to
-> this all these pages were split from one page then all of them will
-> have their own reference which points to the same codetag.
-
-Yeah I'm assuming there's no split before the freeing. This patch about
-splitting just reminded me of that tricky freeing scenario.
-
-So IIUC the "else if (!head)" path of __free_pages() will do nothing about
-the "tail" pages wrt code tags as there are no code tags.
-Then whoever took the speculative "head" page reference will put_page() and
-free it, which will end up in alloc_tag_sub(). This will decrement calls
-properly, but bytes will become imbalanced, because that put_page() will
-pass order-0 worth of bytes - the original order is lost.
-
-Now this might be rare enough that it's not worth fixing if that would be
-too complicated, just FYI.
-
-
-> Every time
-> one of these pages are freed that codetag's "bytes" and "calls"
-> counters will be decremented. I think accounting will work correctly
-> irrespective of where these pages are freed, in __free_pages() or by
-> put_page().
-> 
-
+>>>> +		}
+>>>>    		if (qi->desc_status[wait_index] == QI_ABORT)
+>>>>    			return -EAGAIN;
+>>>>    	}
+>>> Sorry, again for nit picking a v13 patch.  I'm not a domain expert but
+>>> this patchset seems reasonable to me.
+>> Though this is the v13, it is based on new rbtree code, you are welcome.
+>>
+>> Thanks,
+>> Ethan
+>>
+>>> regards,
+>>> dan carpenter
