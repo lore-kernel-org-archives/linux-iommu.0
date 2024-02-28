@@ -1,132 +1,146 @@
-Received: from fhigh8-smtp.messagingengine.com (fhigh8-smtp.messagingengine.com [103.168.172.159])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCCE979B70
-	for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 18:29:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.159
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04EFF71EB4
+	for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 18:39:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709144988; cv=none; b=EAj8vKF41bBjkRD3b7EdkHkVdFZTSd0LXSDat8XstSseOTVNWkE8wOIwxdm7/5gEFVsteU1bmb8PZD5amNCRr2uBMivzLe6mLgucepDos1o5tjugMZ47TmsM4al0naM2E8A3gj+EhcGVoyC+m1gAYM392vhs0+m98Hd9EAbT4R0=
+	t=1709145546; cv=none; b=eSGMZdQtJFiCCLqF4gg/XAYIdEhEFh//JG2tknL9bZDFnwMc0WKoFrqCqyZ/mQBy9iQbIuLfkcvZCRUBPMF5o/lq56OY4Gfd1IV/1Do4oTatdZ3HWPrkn5IQLyR5wA9sVKpZDqW0JS+9ULjGKJSm7GxcwbZLlBFpyW+RTL3tmiw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709144988; c=relaxed/simple;
-	bh=TsPjkHBJygap37cRuTpCQBI1U2BypmTxAUkUzYlptt8=;
-	h=From:Content-Type:Mime-Version:Subject:Message-Id:Date:Cc; b=bw69S4sZvdy2hLCU5psRq/g3aL6lO+ZnJ05BRIPcGBFzIvKChevcjspWgblEeWCi3DHxdQtBBs7Akf49Z+0zXRHWiYsfsXPmD4KvrRJ95OftBAdJA9VJukYHsRHVLy4XIb/zLIPOzODd3Byy/H3TBHwopUPjxyKdDxX9KWT9rrw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=pjd.dev; spf=pass smtp.mailfrom=pjd.dev; dkim=pass (2048-bit key) header.d=pjd.dev header.i=@pjd.dev header.b=OgxTX3qy; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=jWn0wqXw; arc=none smtp.client-ip=103.168.172.159
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=pjd.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pjd.dev
+	s=arc-20240116; t=1709145546; c=relaxed/simple;
+	bh=7iqFBA+LWwnU3gwgoROsymeSLKp/pJPiwqlUMLON2K8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Tfq9OL+iz5FNxt6FDNkrL/KfS1FJu55xXAkwV6K0IFCnItB/kh8lQ83K9BYM85hKm7iLfechF0N4lpF9bUwSQFnbIeX439u/inK/tnW7QazmdpxbS7DNANuUmF0+Uq0qk6eOYf+BkJIBivlBQDqSp8iDPBfZxKEDPfanlU3SNf4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=zIvidZsT; arc=none smtp.client-ip=209.85.128.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=pjd.dev header.i=@pjd.dev header.b="OgxTX3qy";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="jWn0wqXw"
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.47])
-	by mailfhigh.nyi.internal (Postfix) with ESMTP id CF9481140084;
-	Wed, 28 Feb 2024 13:29:45 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Wed, 28 Feb 2024 13:29:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pjd.dev; h=cc:cc
-	:content-transfer-encoding:content-type:content-type:date:date
-	:from:from:in-reply-to:message-id:mime-version:reply-to:subject
-	:subject:to; s=fm2; t=1709144985; x=1709231385; bh=TsPjkHBJygap3
-	7cRuTpCQBI1U2BypmTxAUkUzYlptt8=; b=OgxTX3qyRLfeRejawo+b1Jx1E79Mj
-	rpJAYSMK4P+vjxCWRkc06HkM5UdZGsRSAKz/flI583jDolahfrivzWGIZYFjwc/Y
-	DI+4zbBm47E/eQNfldO7S8++akk+Rb9AvIMC/O12HAZ1fGyk2T9LOVn6tYupdO/8
-	4oXnaL/PmQiN8wlvat3qUBS/3DEooVV7jfaBZQEGfCvSVuv6eAsXcDH+6zgHruJV
-	cnFvHcIyIZ1gfSwSBllFpb4/GU+cmqDurKDNPL+LdrCJUt+Rr8Dfef/0DlGER58k
-	bqnB7NVyuoEZIxwQGlNxb9Ly3u6U04A6m2q6pSpvgq+APLcZYOFU3hBgA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-transfer-encoding
-	:content-type:content-type:date:date:feedback-id:feedback-id
-	:from:from:in-reply-to:message-id:mime-version:reply-to:subject
-	:subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-	:x-sasl-enc; s=fm1; t=1709144985; x=1709231385; bh=TsPjkHBJygap3
-	7cRuTpCQBI1U2BypmTxAUkUzYlptt8=; b=jWn0wqXwKPRHZCvPhztlSVq+OdzMU
-	cdmH8zdtqFASFGM0Ay04zD/HgE1TB7qMCUVn9xcCC3jlf/XC91XnH08Dz2OoZ9W7
-	0TQdkD3vmNliSAk0NDQRmofggu6v2164gVg3JCbA8jEYOjwBDGHeZukklYimnJe0
-	dWKZzoQhjHaSl2xcywoA/wp8OZBSbUlFRRbgR+BPvshGm2ALQTN9WpID6e7DkJ12
-	fHAMyE5pOR2Y4Ahb+ddp1/br+SCY3Z0TVd4Zmg9SBzwNDG6NvR67bAl30sEnaXdR
-	dJLX4FqSc6U1SbH8ckkPi171J4kEH4hKAm+UkXIiqljZye9O8HYIrGX3w==
-X-ME-Sender: <xms:mXvfZUm7Fd2vwXbSn-tWBoFRrdeE9L7M1XpMbHvJZWehnj0vlcXI9A>
-    <xme:mXvfZT1wxuWHLQlRt2Iikqqkr6PrnkNLJ7KSGV6u40bwUwDXXKPEvI5OwJss2qVbR
-    XbTI8nQyKSiImLo-SA>
-X-ME-Received: <xmr:mXvfZSrw8HOY3JJi_1ufQHrl1P936uxHsDGhlICgxVM1pvnkijgN8LtUaR1T5zs5ykiRrQ7ySeaqFgxIAxB4-Ln5_QtKhMPRwN3AYYwPvQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrgeejgddutdekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenuchmihhsshhinhhgucfvqfcufhhivghlugculdeftd
-    dmnecujfgurhephfgtgfgguffkffevofesthhqmhdthhdtjeenucfhrhhomheprfgvthgv
-    rhcuffgvlhgvvhhorhihrghsuceophgvthgvrhesphhjugdruggvvheqnecuggftrfgrth
-    htvghrnhepjeffvdeigfevgfefhfeutdeijeekieehfeefvdefhedtfefhhfdutdefieeh
-    geevnecuffhomhgrihhnpehstghhvggurdgtohhmpdhqvghmuhdrohhrghdpghhithhhuh
-    gsrdgtohhmpdhkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgr
-    rhgrmhepmhgrihhlfhhrohhmpehpvghtvghrsehpjhgurdguvghv
-X-ME-Proxy: <xmx:mXvfZQlq9-xvJ4sbfiIGfDWaiXp0jkzNdWj_A_-TGveCZbdejRfQ8Q>
-    <xmx:mXvfZS0ALPkaZQuibMXDcDwcLMkBKr_EAQlHqKhUUcdgeJdkOZpypg>
-    <xmx:mXvfZXsdR1B7YT63VC3sJMJLcnAcSWqK60huyNC5TBZl377_qeMitA>
-    <xmx:mXvfZcqEfDZnBoQsxsNqTNowBnj8eqcSB66nfJEtJx6sNW-szSFHjQ>
-Feedback-ID: i9e814621:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 28 Feb 2024 13:29:44 -0500 (EST)
-From: Peter Delevoryas <peter@pjd.dev>
-Content-Type: text/plain;
-	charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="zIvidZsT"
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-60925c4235eso617947b3.3
+        for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 10:39:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1709145544; x=1709750344; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7iqFBA+LWwnU3gwgoROsymeSLKp/pJPiwqlUMLON2K8=;
+        b=zIvidZsTtdGK+dTIlQsluAuBLI/BAByumLKOMmu5dUfbXMXlgXb8DZjMMIvlw1kpTH
+         H79K0GW/nM4pvvFpi2bKYH9S2KZn+OREfe7ESlkxVe1Ro8EYY+EfKUQlT/o0TYjryg1T
+         KDhSl4IwNmMVs9wY34Iu9tNVSJnhT1bpMQqtzk5qMpPMyxcbCvFs9UCZL73xd4T/f4JO
+         nEEE7BIuA1E5Md2VTXjc1k3GyCPuW8G/+QCXQrNN193FZaTZ2nzCqx2/HK0IbrOEkeYr
+         cPHMQUOgjYKRHZIXmlf8onZf9Aa8IBtIesuqSIfeMech1IdMVJjpphHlXrmihoJnNKs9
+         ijCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709145544; x=1709750344;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=7iqFBA+LWwnU3gwgoROsymeSLKp/pJPiwqlUMLON2K8=;
+        b=JCl4qm4Abs3OCBhqbOO4N5AgaR67PugNK4+nzgSHdDh2hcze0fggqr6rev82Ksh7Xt
+         dKEsBG581cYoHrCRa1K5K4/d8RfwTghBQujScX7xXX+dliPHlEg6QBq7cxVPoO/pLowZ
+         83DUnyBDGKpo4zS7pTS66kWXMeFQU0n5NIxZaf+iK/+FtyBdRZygcIE5Ab/X4iVJKcHI
+         XohkTpoBwds78GyuDGH59tHgJtw/xS6LGMLbWJryYEdcxbvD5WIjidQYXti4WaQrH5Aw
+         Fod3BehuZyj1aYR6rr34WADzDs5wgZ1m3Hpy7jKZxn4cRnIYJ4Q8Rnm29tCDSJ9WeOc3
+         zotw==
+X-Forwarded-Encrypted: i=1; AJvYcCUl48wr2xjtt2u+V4OK3sKylj7xkyQ1vlhpECPFDafd4Ss2gbDbGVEpSqbs4Ymjmg62mbwq4qEoAiQu4BSSYvPR6GSGRXU=
+X-Gm-Message-State: AOJu0Yy0GGXS0dT0VCixZ5T9TxP7TI2EceZqkTnsZJDYK5BXbyJco+Wn
+	KvD3lxaOm6QLOE0xkEo8Qo7So1wLNc0Tko5XPHlFRfu+pp6RvWgl28nZYi2xSQer7eHi/rtuFDx
+	r8oIflwNhBE/26T1IXJBHDU8Hs5n2ov0UmA+8
+X-Google-Smtp-Source: AGHT+IGPWnLmF2TVmBJmUMEp5oMR8c6WgnFtjjNeDdqebhJZ+NPAbFsWrA/RAsFNPaaO16thY7f2/GzzgeasEYFaVaU=
+X-Received: by 2002:a5b:f45:0:b0:dc6:e75d:d828 with SMTP id
+ y5-20020a5b0f45000000b00dc6e75dd828mr48009ybr.18.1709145543730; Wed, 28 Feb
+ 2024 10:39:03 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.400.31\))
-Subject: [q&a] Status of IOMMU virtualization for nested virtualization
- (userspace PCI drivers in VMs)
-Message-Id: <3D96D76D-85D2-47B5-B4C1-D6F95061D7D6@pjd.dev>
-Date: Wed, 28 Feb 2024 10:29:32 -0800
-Cc: qemu-devel <qemu-devel@nongnu.org>,
- suravee.suthikulpanit@amd.com,
- iommu@lists.linux.dev,
- alex.williamson@redhat.com,
- kvm@vger.kernel.org,
- linux-kernel@vger.kernel.org
-X-Mailer: Apple Mail (2.3774.400.31)
+MIME-Version: 1.0
+References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-20-surenb@google.com>
+ <2daf5f5a-401a-4ef7-8193-6dca4c064ea0@suse.cz> <CAJuCfpGt+zfFzfLSXEjeTo79gw2Be-UWBcJq=eL1qAnPf9PaiA@mail.gmail.com>
+ <6db0f0c8-81cb-4d04-9560-ba73d63db4b8@suse.cz> <CAJuCfpEgh1OiYNE_uKG-BqW2x97sOL9+AaTX4Jct3=WHzAv+kg@mail.gmail.com>
+ <f494b8e5-f1ca-4b95-a8aa-01b9c4395523@suse.cz>
+In-Reply-To: <f494b8e5-f1ca-4b95-a8aa-01b9c4395523@suse.cz>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Wed, 28 Feb 2024 10:38:49 -0800
+Message-ID: <CAJuCfpHJoPa_pQNPrcWNZyU7V7=UA4deGFMxh9_aZPyiP0bFSw@mail.gmail.com>
+Subject: Re: [PATCH v4 19/36] mm: create new codetag references during page splitting
+To: Vlastimil Babka <vbabka@suse.cz>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev, 
+	rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
+	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, 
+	bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org, 
+	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
+	elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hey guys,
+On Wed, Feb 28, 2024 at 10:28=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> w=
+rote:
+>
+> On 2/28/24 18:50, Suren Baghdasaryan wrote:
+> > On Wed, Feb 28, 2024 at 12:47=E2=80=AFAM Vlastimil Babka <vbabka@suse.c=
+z> wrote:
+> >
+> >>
+> >> Now this might be rare enough that it's not worth fixing if that would=
+ be
+> >> too complicated, just FYI.
+> >
+> > Yeah. We can fix this by subtracting the "bytes" counter of the "head"
+> > page for all free_the_page(page + (1 << order), order) calls we do
+> > inside __free_pages(). But we can't simply use pgalloc_tag_sub()
+> > because the "calls" counter will get over-decremented (we allocated
+> > all of these pages with one call). I'll need to introduce a new
+> > pgalloc_tag_sub_bytes() API and use it here. I feel it's too targeted
+> > of a solution but OTOH this is a special situation, so maybe it's
+> > acceptable. WDYT?
+>
+> Hmm I think there's a problem that once you fail put_page_testzero() and
+> detect you need to do this, the page might be already gone or reallocated=
+ so
+> you can't get to the tag for decrementing bytes. You'd have to get it
+> upfront (I guess for "head && order > 0" cases) just in case it happens.
+> Maybe it's not worth the trouble for such a rare case.
 
-I=E2=80=99m having a little trouble reading between the lines on various =
-docs, mailing list threads, KVM presentations, github forks, etc, so I =
-figured I=E2=80=99d just ask:
+Yes, that hit me when I tried to implement it but there is a simple
+solution around that. I can obtain alloc_tag before doing
+put_page_testzero() and then decrement bytes counter directly as
+needed.
+Not sure if it is a rare enough case that we can ignore it but if the
+fix is simple enough then might as well do it?
 
-What is the status of IOMMU virtualization, like in the case where I =
-want a VM guest to have a virtual IOMMU?
-
-I found this great presentation from KVM Forum 2021: [1]
-
-1. I=E2=80=99m using -device intel-iommu right now. This has performance =
-implications and large DMA transfers hit the vfio_iommu_type1 =
-dma_entry_limit on the host because of how the mappings are made.
-
-2. -device virtio-iommu is an improvement, but it doesn=E2=80=99t seem =
-compatible with -device vfio-pci? I was only able to test this with =
-cloud-hypervisor, and it has a better vfio mapping pattern (avoids =
-hitting dma_entry_limit).
-
-3. -object iommufd [2] I haven=E2=80=99t tried this quite yet, planning =
-to: if it=E2=80=99s using iommufd, and I have all the right kernel =
-features in the guest and host, I assume it=E2=80=99s implementing the =
-passthrough mode that AMD has described in their talk? Because I imagine =
-that would be the best solution for me, I=E2=80=99m just having trouble =
-understanding if it=E2=80=99s actually related or orthogonal. I see AMD =
-has -device amd-viommu here [3], is that ever going to be upstreamed or =
-is that what -object iommufd is abstracting? I also found this mailing =
-list submission [4], and the context and changes there imply this is all =
-about that (exposing iommu virtualization to the guest)
-
-Thanks!
-Peter
-=20
-[1] =
-https://static.sched.com/hosted_files/kvmforum2021/da/vIOMMU%20KVM%20Forum=
-%202021%20-%20v4.pdf
-[2] https://www.qemu.org/docs/master/devel/vfio-iommufd.html
-[3] =
-https://github.com/AMDESE/qemu/commit/ee056455c411ee3369a47c65ba8a54783b5d=
-2814
-[4] =
-https://lore.kernel.org/lkml/20230621235508.113949-1-suravee.suthikulpanit=
-@amd.com/
-
+>
+> >>
+> >>
+> >> > Every time
+> >> > one of these pages are freed that codetag's "bytes" and "calls"
+> >> > counters will be decremented. I think accounting will work correctly
+> >> > irrespective of where these pages are freed, in __free_pages() or by
+> >> > put_page().
+> >> >
+> >>
+>
+> --
+> To unsubscribe from this group and stop receiving emails from it, send an=
+ email to kernel-team+unsubscribe@android.com.
+>
