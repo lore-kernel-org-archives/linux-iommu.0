@@ -1,81 +1,116 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C28373501;
-	Wed, 28 Feb 2024 12:05:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1876614AD07;
+	Wed, 28 Feb 2024 13:39:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709121930; cv=none; b=mFGZE5puAl36xFns5ley+Xah+7c1BYo3tIHbz18r3QklUxjT5kMba2thPtmK7CurhxL39o5IDuXVzR52MaHNwFPXtuJ9M69fqP/IEYpG5nl6cn87qPUweZ5iRvRBw/VCyy+Lc5SENaVA2zmGS+HG1H6tv6+20EUOt6FTxKzRD9s=
+	t=1709127577; cv=none; b=krx7+4sGD7piDDlwCy+9YJB0I52fRhYujwdyLZqzrr9mjnyix6flJeghiEXP09BscxrtLwfUaS2q7nIrKfZhONr/mJ6obctoEtM2z+U9yWYgB2IdvHcgFcWNME1+w4MoCH7owCTghoN9z0RNxBNpK5dhhVbmOlFb5xqvLOpMPy0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709121930; c=relaxed/simple;
-	bh=SU9EilANUxXGjBEPo0K/zUkP5ytJW6h7olNyIK9TmFE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jUx3DB2srBQDHMWZ/xdg+dDrcA3C8xSyMBtxsJKNKA9F74pjR8m3ey9gICa7lI383wVZWVPQyGhDZWdOsEMX2pK43fYKJekkXAOa50LpAE1hSB9e4D2v7IQV5M55i+KETUFKeECGKR4lMID74MnxVKo9ac9KPSEcD2ERE9IrST4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pi2YBY6d; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1709127577; c=relaxed/simple;
+	bh=9M5IeUXf3IQoeSYqVlOLU709MVkE93Tw2opRABbT/bs=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=C9drTXMmEcJJtB2fvPrmZM+1OXYsm5S4BkjjOyht7sXd1iDjzbvwIjO6Q7oAulIa7HUdJdVx11iWkeyrz+w1zT5BD2YAg1M33jFbDi0B+H+onIYMT4o3FaT/ywQ+n5QCTMwSmiQw8gSIJy0dD9L8A7s82fjMNio5XxzLtWD1Tn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cW0JH05C; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pi2YBY6d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80324C433F1;
-	Wed, 28 Feb 2024 12:05:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cW0JH05C"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FEE5C433F1;
+	Wed, 28 Feb 2024 13:39:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1709121929;
-	bh=SU9EilANUxXGjBEPo0K/zUkP5ytJW6h7olNyIK9TmFE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Pi2YBY6daQjrwS2RlLYQDvKF110QllmzVuDJBm0iiG4NU+5kvOFBKcXs1NQsocdty
-	 op7bv2UvR80xWR9wIelLL8PLk1TYBUJC9Q/Ptte66JNOoMsEdGZ2TBULNfSxtuUAe9
-	 sT8UdLi56LGCwFXNARDXCP3noKvhtXmNzQuOmshEvABbFstGte87DKbLLeljh+MVhC
-	 GszhgCQkWJ3QITLL0qo++/OE9yh1H1vmrKPYwYL9zpvok8Xw4zy+5LvvNRyDpFEknA
-	 4w/H+bdehwnzcTN0YeRiJJ0yQyfzzd+3+z78SzRBz0iOmuBg4aWncKu3qD1Fm2faOA
-	 5K/cmbD3psHbg==
-Date: Wed, 28 Feb 2024 12:05:23 +0000
+	s=k20201202; t=1709127576;
+	bh=9M5IeUXf3IQoeSYqVlOLU709MVkE93Tw2opRABbT/bs=;
+	h=From:To:Cc:Subject:Date:From;
+	b=cW0JH05Cslh9hwgukH/5vLo/F5orXfPEP+8a7EHwdeehPxmWkap/0tEVqXTtv9pns
+	 98mvJ19iHQ/ltGsOEQvIReTkQxhbSKJmeOXc6BYj/A0X8xuNVtf2KDhgssuKh0Qp+t
+	 4sYuVtBBveyEYvccu9XT4erREGsWwxnNUF84TgA5D78cPy/2iOg1K5oCeYyMjPDgSr
+	 bg3JJ3M2mcYK7mqzts4irrJpnN6IaHNs8VUZo2CVsIxwfVamxI39kAWRXSOUGy7RWx
+	 CJ5KKhPOY/9kJhGIvggJHF2HGI5k+4/w+9Av1vc3zjfw6otCXmNy5rQ50rRXKbuXlH
+	 b/TUkZ73XzlCQ==
 From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@infradead.org>, linux-kernel@vger.kernel.org,
-	kernel-team@android.com, iommu@lists.linux.dev,
+To: linux-kernel@vger.kernel.org
+Cc: kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	iommu@lists.linux.dev,
 	Christoph Hellwig <hch@lst.de>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
 	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
 	Dexuan Cui <decui@microsoft.com>,
 	Nicolin Chen <nicolinc@nvidia.com>,
 	Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v4 5/5] iommu/dma: Force swiotlb_max_mapping_size on an
- untrusted device
-Message-ID: <20240228120523.GA15054@willie-the-truck>
-References: <20240221113504.7161-1-will@kernel.org>
- <20240221113504.7161-6-will@kernel.org>
- <Zd4CcL3Nnvybw2xF@infradead.org>
- <57c928e6-14a4-4724-8c07-e985a2bce522@arm.com>
+Subject: [PATCH v5 0/6] Fix double allocation in swiotlb_alloc()
+Date: Wed, 28 Feb 2024 13:39:24 +0000
+Message-Id: <20240228133930.15400-1-will@kernel.org>
+X-Mailer: git-send-email 2.20.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <57c928e6-14a4-4724-8c07-e985a2bce522@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 
-On Tue, Feb 27, 2024 at 03:53:05PM +0000, Robin Murphy wrote:
-> On 27/02/2024 3:40 pm, Christoph Hellwig wrote:
-> > On Wed, Feb 21, 2024 at 11:35:04AM +0000, Will Deacon wrote:
-> > > +static size_t iommu_dma_max_mapping_size(struct device *dev)
-> > > +{
-> > > +	if (is_swiotlb_active(dev) && dev_is_untrusted(dev))
-> > > +		return swiotlb_max_mapping_size(dev);
-> > 
-> > Curious: do we really need both checks here?  If swiotlb is active
-> > for a device (for whatever reason), aren't we then always bound
-> > by the max size?  If not please add a comment explaining it.
-> > 
-> 
-> Oh, good point - if we have an untrusted device but SWIOTLB isn't
-> initialised for whatever reason, then it doesn't matter what
-> max_mapping_size returns because iommu_dma_map_page() is going to bail out
-> regardless.
+Hi all,
 
-Makes sense. Since this is all internal to the IOMMU DMA code, I can just
-drop the first part of the check.
+This is version five of the patches which I previously posted at:
 
-I'll get a v5 out shortly.
+v1: https://lore.kernel.org/r/20240126151956.10014-1-will@kernel.org
+v2: https://lore.kernel.org/r/20240131122543.14791-1-will@kernel.org
+v3: https://lore.kernel.org/r/20240205190127.20685-1-will@kernel.org
+v4: https://lore.kernel.org/r/20240221113504.7161-1-will@kernel.org
+
+Cheers again to everybody who helped to review and test the last
+version.
+
+Changes since v4 include:
+
+  - Remove unnecessary 'is_swiotlb_active()' from patch 5.
+    Nicolin: I didn't add your Tested-by because of this, so if you can
+    take it for another spin, that would be fantastic.
+
+  - New patch removing redundant stride adjustment for allocations
+    of PAGE_SIZE or more.
+
+  - Commit message tweaks and addition of tags from reviewers and
+    testers.
+
+The final patch is a cleanup, so I'm happy to post it again after the
+merge window if it doesn't make it this time around. The rest are fixes
+and, even though patch five doesn't solve the general problem, it's
+sufficient to fix NVME for Nicolin and is definitely an improvement over
+what we currently have.
+
+Thanks,
 
 Will
+
+Cc: iommu@lists.linux.dev
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+Cc: Dexuan Cui <decui@microsoft.com>
+Cc: Nicolin Chen <nicolinc@nvidia.com>
+Cc: Michael Kelley <mhklinux@outlook.com>
+
+--->8
+
+Nicolin Chen (1):
+  iommu/dma: Force swiotlb_max_mapping_size on an untrusted device
+
+Will Deacon (5):
+  swiotlb: Fix double-allocation of slots due to broken alignment
+    handling
+  swiotlb: Enforce page alignment in swiotlb_alloc()
+  swiotlb: Honour dma_alloc_coherent() alignment in swiotlb_alloc()
+  swiotlb: Fix alignment checks when both allocation and DMA masks are
+    present
+  swiotlb: Remove pointless stride adjustment for allocations >=
+    PAGE_SIZE
+
+ drivers/iommu/dma-iommu.c |  9 +++++++++
+ kernel/dma/swiotlb.c      | 36 +++++++++++++++++++++++-------------
+ 2 files changed, 32 insertions(+), 13 deletions(-)
+
+-- 
+2.44.0.rc1.240.g4c46232300-goog
+
