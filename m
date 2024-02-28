@@ -1,55 +1,55 @@
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 465C179B78
-	for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 18:05:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 427FB79B82
+	for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 18:07:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709143522; cv=none; b=YC5lR/Mg5q60EfRTqvAaVtp1uA4WzMgu6/3UyCQ7K8Jck1M/sfgRQit28rnOYFGpvlfwyCEyBcWqL5HnYHRxfEOZMDqKmXpg0Ni0SR1VMBcIuWEoClizVIVbBCgrptYbVRxS25B3lHGGMYW4IXf89aoOPLvaVBqrf2sS76/y/Do=
+	t=1709143656; cv=none; b=frTCICezMdHyYco9fPNXITNMg7QpMnyGD2p5bqJEwPrJuipuJBcTSrS5czmJuxHxMs4zDlrSXMwujOUWuO3FD5Z/Lq1qseBHhW8G17hfqLDPkHoYSBUEaP9alL5tvvC495/QukB89nMWFM9RInWWnFt5/ut7pEjNsa7GmUgn0Aw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709143522; c=relaxed/simple;
-	bh=M5RWLefMMZcrjC6ohvg7ZMSlCbzmM6eu4zL9kM45cas=;
+	s=arc-20240116; t=1709143656; c=relaxed/simple;
+	bh=rv47TPwMaL5mB4Ug9VuCbJFQC3RVZQfJetV44+QcIfk=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KcVkyPtdg4Go5faJUmvpLOab7WfodTGOytf+rffgLzIoUd6m7KFxWSGTRLHaheAn974Zi97Zvy6vghVP75Y32lYPJV//Tx3aiaDcXGHNT57zbjWuBSzvrMRBo2YB7yenXG7vRYGrSOusBcQTvyfFEOY0O83FEEsPoQQRZOogktI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ndNxK69o; arc=none smtp.client-ip=209.85.219.175
+	 To:Cc:Content-Type; b=mdbjSob1t8PMT8Ba3keHx+oOJJbKDCqBBnKjmS+cAXbJ0E7SyUp1VnUbxSh3qNzy/B4xQEllWjJBYm35Ufu/xi2jGUMRAbaAzs7Uhce8lIKerKIkl4H81TIzAk4tYmPAOa0V1E6K5lG33dJd3HV51LY/Swzx5ERghYtUq+L4tnA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=bAgVe+Ca; arc=none smtp.client-ip=209.85.167.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ndNxK69o"
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-dcbf82cdf05so51486276.2
-        for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 10:05:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="bAgVe+Ca"
+Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-3c19bc08f96so3580097b6e.2
+        for <iommu@lists.linux.dev>; Wed, 28 Feb 2024 10:07:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1709143520; x=1709748320; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1709143653; x=1709748453; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=M5RWLefMMZcrjC6ohvg7ZMSlCbzmM6eu4zL9kM45cas=;
-        b=ndNxK69oEPPk5RNLRPjGCJIQZ/fYBB1hkUzLwm1a9ElrdjgqqvD8jD77CDYZmHGPfv
-         AyIkbNim2r97hIZ1HoCPJzM3q55JFkUmZbC654iE1yZTtlgmgni6qgpFgOYA1tkvZww2
-         fdLzE8LZFgG8N0FAAInNJ/tTkwd88Ipcl/3HMrOlzbY8+DKon5AoAJjDr34cnK9TlSLe
-         UuO+pWkEnb1npJiAuqmWtiPj4enK6Te+x4C2F3xvCFzAdn9sXYrmreJkJocpTL8qCDeq
-         E4MdIvbSp1bCzHChJHlXEFDUwRIrjpHkvayrl/VmxmKKqBbnmlkOAxPT/CXZLTBkYD1D
-         02Mg==
+        bh=TpJn79d7ymx24Tp5aF1RCceBrMYpEjjJMLmxKg1qMeo=;
+        b=bAgVe+CaUJ6rHZN4osJ7InkvI2UfZ1oO0QsHkyu1o+xfk6b4qXlIufGrJepGH6VHti
+         AR7OqD/zYKuj7Yzt4Vw/7Slhf1ZyVnGJPKzAkaB273vaqFIqDjtXfiC7PHBeC2+piQDQ
+         5VdM2BSji3LYCvUHHc1iAy4kKkBij8LDfxbBhYzMNYkGdZ0ig0Js4Cg+gU0cuLR9mjy7
+         YY4Rw4fcMjOxhKXA8Zv9rlXCH6R+yw+/8Coq3fvlXlwLA36IZ/SjEasKWiSGnx1U/u2b
+         +YPdzACPKknCLwgAM0z8Agx5g2i0RHPx/tO5ul1CfNaJbva/0D3OoIEb/ngZqrkAOGT/
+         /2hA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709143520; x=1709748320;
+        d=1e100.net; s=20230601; t=1709143653; x=1709748453;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=M5RWLefMMZcrjC6ohvg7ZMSlCbzmM6eu4zL9kM45cas=;
-        b=MKarQC30JsgMNbMYM4DIhc8+7aM8IWCTqmSpuSrkfUn0M8FEb7dmJIeTDawQL7qpxC
-         cRyqkJX7sDP2QvTf9ApBSU6TxGuvf9e85mX/brJrB+evp5ym5Y8Wo5LO7LiXn3sAZOtR
-         httZnia978FfxYX5I6640UkrMVxvvF0cs28zF3MnbEq+fUklrMCmfp1kFv2qLactSj8w
-         LU87pgH1IfB5Y5cuJw3y8WZm3DzdHslzKau4Q951IPQKKNVxl0HdBmMsYj2Yliz33b3S
-         jVtdvBMtbz4/qCQie4UYioVIJetSzdVuzJtLoSojKODsYmHW5Lk79xTSAEXA2Q92MAFz
-         v/AQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW958mGwi717O7pOS3hyZOTcMtmCBlODEzuNR/WJ4Udk6cotziXs41Xyh8QpaxcKthk1/w16GEiTy13v61gAfGBL0Hcf5g=
-X-Gm-Message-State: AOJu0Yxr+qJNhheJBwraRMOZAKAo0u3ZN9pXz8G1EL0/t1OxMa1OgTjU
-	5Dg5KqcFbLdjghB9nBi+StjGKxJKXe2lv5R9FNb59ctuxm3MO+XYscv4W2A2gU7qZCAmLTIyJwG
-	Vi5nSPFP+ul5qO+rMpj0rmhltUkBYqfDONPHC
-X-Google-Smtp-Source: AGHT+IGXC8lezvXLfyLFgurkGO2/8+xbMmbLbWU2Dhx0X772e49nOZcLM0/mejcqQER1kvdSNB2vVup4Slt3VEZ2U4I=
-X-Received: by 2002:a25:4687:0:b0:dc2:398b:fa08 with SMTP id
- t129-20020a254687000000b00dc2398bfa08mr21101yba.31.1709143520037; Wed, 28 Feb
- 2024 10:05:20 -0800 (PST)
+        bh=TpJn79d7ymx24Tp5aF1RCceBrMYpEjjJMLmxKg1qMeo=;
+        b=vn+DntHfRDVqYlRYE7gn1MKWdw6agy9l6d+O0oHZyKvCZG3wQOI/cqc+t+oSWCeIk1
+         0HsUuJ42q8a3YBPC4dqliKxzp6vanpHhT1zFdSt4EYpRZmERva1Sstp4CLSW5oAvbXld
+         9pMYLFXBbI3gwsvUDgLOT1uIDJhwv5krnX3SUEsPkmanpkwvJJy4D9sI8j3OMX2AeMAz
+         yDUZA4A5MNLj62wRbygXtYtZvo945Vpct8TufLokcFdzUZZgTK/23DGcQXEjh9Gi6IwV
+         it8oy7dTTkCS6ZZiKwd9MVv8XvQZ4lL+p6ilcWmyPL7xls/fYiZ9s6rJjKDNQ4EYguEX
+         fA1Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWoZuYWl25kgFOlkE7KlzjoOOT7eLpbXk33EhBrJqRGHpdz7aUEuLhzW5jrYRm+Phkj0d0b0Tuco8TFaojpw8JisJNHO/w=
+X-Gm-Message-State: AOJu0Yz4WU6SUsJ2JIBmEKGqBR8hYhJTM0hLU3lvBE1HRicRcGm2OHVL
+	tG1NJhNguwRru355bS1Q1C0ms2xueNHy73m+BkDVHP8I24X615eWi3gIgwS4xaYw3Jj8y0pV9jV
+	3y/e0189aqtvoNNf8XUchRitr0mA8//GcpNBQ
+X-Google-Smtp-Source: AGHT+IE9fAMwB02uuQ94nEpy4LyanC7xT4icsl4y9kTpTBjAiVMb+QVVN/OZ7PFrRjTuaOAC60zwFIwL5MnGwsnXp9Q=
+X-Received: by 2002:a05:6358:80a8:b0:17b:521f:b2ae with SMTP id
+ a40-20020a05635880a800b0017b521fb2aemr6472rwk.14.1709143652850; Wed, 28 Feb
+ 2024 10:07:32 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -57,11 +57,11 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <20240221194052.927623-1-surenb@google.com> <20240221194052.927623-15-surenb@google.com>
- <1287d17e-9f9e-49a4-8db7-cf3bbbb15d02@suse.cz>
-In-Reply-To: <1287d17e-9f9e-49a4-8db7-cf3bbbb15d02@suse.cz>
+ <b62d2ace-4619-40ac-8536-c5626e95d87b@suse.cz>
+In-Reply-To: <b62d2ace-4619-40ac-8536-c5626e95d87b@suse.cz>
 From: Suren Baghdasaryan <surenb@google.com>
-Date: Wed, 28 Feb 2024 18:05:08 +0000
-Message-ID: <CAJuCfpGSNut2st7vKYJE7NXb6BPjd=DFW_VEUKfw=hGyzUpqJw@mail.gmail.com>
+Date: Wed, 28 Feb 2024 18:07:18 +0000
+Message-ID: <CAJuCfpEsBEK5M72v1MdSBnh_bFgJLRj3JzDdz1X1BGzfJw6sfw@mail.gmail.com>
 Subject: Re: [PATCH v4 14/36] lib: add allocation tagging support for memory
  allocation profiling
 To: Vlastimil Babka <vbabka@suse.cz>
@@ -93,29 +93,91 @@ Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 28, 2024 at 8:29=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
+On Wed, Feb 28, 2024 at 8:41=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
 ote:
 >
+> Another thing I noticed, dunno how critical
+>
 > On 2/21/24 20:40, Suren Baghdasaryan wrote:
-> >
+> > +static inline void __alloc_tag_sub(union codetag_ref *ref, size_t byte=
+s)
+> > +{
+> > +     struct alloc_tag *tag;
+> > +
+> > +#ifdef CONFIG_MEM_ALLOC_PROFILING_DEBUG
+> > +     WARN_ONCE(ref && !ref->ct, "alloc_tag was not set\n");
+> > +#endif
+> > +     if (!ref || !ref->ct)
+> > +             return;
+>
+> This is quite careful.
+>
+> > +
+> > +     tag =3D ct_to_alloc_tag(ref->ct);
+> > +
+> > +     this_cpu_sub(tag->counters->bytes, bytes);
+> > +     this_cpu_dec(tag->counters->calls);
+> > +
+> > +     ref->ct =3D NULL;
+> > +}
+> > +
 > > +static inline void alloc_tag_sub(union codetag_ref *ref, size_t bytes)
 > > +{
-> > + __alloc_tag_sub(ref, bytes);
+> > +     __alloc_tag_sub(ref, bytes);
 > > +}
 > > +
 > > +static inline void alloc_tag_sub_noalloc(union codetag_ref *ref, size_=
 t bytes)
 > > +{
-> > + __alloc_tag_sub(ref, bytes);
+> > +     __alloc_tag_sub(ref, bytes);
 > > +}
 > > +
+> > +static inline void alloc_tag_ref_set(union codetag_ref *ref, struct al=
+loc_tag *tag)
+> > +{
+> > +#ifdef CONFIG_MEM_ALLOC_PROFILING_DEBUG
+> > +     WARN_ONCE(ref && ref->ct,
+> > +               "alloc_tag was not cleared (got tag for %s:%u)\n",\
+> > +               ref->ct->filename, ref->ct->lineno);
+> > +
+> > +     WARN_ONCE(!tag, "current->alloc_tag not set");
+> > +#endif
+> > +     if (!ref || !tag)
+> > +             return;
 >
-> Nit: just notice these are now the same and maybe you could just drop bot=
-h
-> wrappers and rename __alloc_tag_sub to alloc_tag_sub?
+> This too.
+>
+> > +
+> > +     ref->ct =3D &tag->ct;
+> > +     /*
+> > +      * We need in increment the call counter every time we have a new
+> > +      * allocation or when we split a large allocation into smaller on=
+es.
+> > +      * Each new reference for every sub-allocation needs to increment=
+ call
+> > +      * counter because when we free each part the counter will be dec=
+remented.
+> > +      */
+> > +     this_cpu_inc(tag->counters->calls);
+> > +}
+> > +
+> > +static inline void alloc_tag_add(union codetag_ref *ref, struct alloc_=
+tag *tag, size_t bytes)
+> > +{
+> > +     alloc_tag_ref_set(ref, tag);
+>
+> We might have returned from alloc_tag_ref_set() due to !tag
+>
+> > +     this_cpu_add(tag->counters->bytes, bytes);
+>
+> But here we still assume it's valid.
 
-Ack.
+Yes, this is a blunder on my side after splitting alloc_tag_ref_set()
+into a separate function. I'll fix this in the next version. Thanks!
 
+>
+> > +}
+> > +
 >
 > --
 > To unsubscribe from this group and stop receiving emails from it, send an=
