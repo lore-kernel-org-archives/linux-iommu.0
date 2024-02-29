@@ -1,111 +1,145 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A3C66D500
-	for <iommu@lists.linux.dev>; Thu, 29 Feb 2024 20:55:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F184014373A;
+	Thu, 29 Feb 2024 21:03:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.147.86
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709240105; cv=none; b=bIeMuZhjAgUBLtw9NVGokzHs71DhK6hlpeFEC8ZmD82M6/agbtoTiRU8mMJqRzhUmVXPUtjWmd1iAF8X4Wb9pqd7De/LIrh4AHEFlKde7EZLqTXr2havIdGM6q8R8iw4sJg5Nk1UvccYiURLUQz+QnGL+Kp7KZigpdX3l6OYKOg=
+	t=1709240594; cv=none; b=Pq2FBAZyY+s0XsGgrnFsNwjIqHRVTe50OOEmyZrWrvhiEsC2G+TET0eZV1XU8whCSx+SH5VOAqDBmQqq27Dn2XEsbwULY7cbe8BvFzcCpLlFJmaBomEnzE3MSZwv05U9JxRlFEW1rwd9m2pDVjxBriE1hJFCP33Uc90OxBs2Ffg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709240105; c=relaxed/simple;
-	bh=GWMJIephgFCkyB7gv9JQpivlnHOMsUi+KcICdET6vg0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aCJXW9OcBhQ/xq8iYd/GDVL6flabKaLP1yQtgllp4wWrS6UuVP5M9RHNtPCdyz3DRcf0A8IonCqmraTbns99C/j5N/dlQqdS5h2LFbPbzYPy+D/dK1a879XVh391Wwzg63/3VsG9QiLRE4KJUNLYPIra0D5hkV0/cFuCuytUkx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
-X-IronPort-AV: E=McAfee;i="6600,9927,10999"; a="26211649"
-X-IronPort-AV: E=Sophos;i="6.06,194,1705392000"; 
-   d="scan'208";a="26211649"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 12:55:03 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=McAfee;i="6600,9927,10999"; a="913992414"
-X-IronPort-AV: E=Sophos;i="6.06,194,1705392000"; 
-   d="scan'208";a="913992414"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga002.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 12:54:47 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.97)
-	(envelope-from <andy.shevchenko@gmail.com>)
-	id 1rfnQO-00000008nBm-1H3p;
-	Thu, 29 Feb 2024 22:54:40 +0200
-Date: Thu, 29 Feb 2024 22:54:40 +0200
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
-	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
-	roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
-	willy@infradead.org, liam.howlett@oracle.com, corbet@lwn.net,
-	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, tj@kernel.org,
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
-	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, shakeelb@google.com,
-	songmuchun@bytedance.com, jbaron@akamai.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	Paul Mackerras <paulus@samba.org>,
-	"Michael S. Tsirkin" <mst@redhat.com>,
-	Jason Wang <jasowang@redhat.com>,
-	Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>
-Subject: Re: [PATCH v3 01/35] lib/string_helpers: Add flags param to
- string_get_size()
-Message-ID: <ZeDvEKtlB73mnOYy@smile.fi.intel.com>
-References: <20240212213922.783301-1-surenb@google.com>
- <20240212213922.783301-2-surenb@google.com>
- <CAHp75Vek3DEYLHnpUDBo_bYSd-ksN_66=LQ5s0Z+EhnNvhybpw@mail.gmail.com>
- <bicga3cv554ey4lby2twq3jw4tkkzx7mreakicf22sna63ye4x@x5di6km5x7fn>
+	s=arc-20240116; t=1709240594; c=relaxed/simple;
+	bh=VTjWIjnaot8bvp8Uz7YSb+Wu+VwzB7BvnAiwu0uiHUE=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=aA5Kx72eCTQTlcfN85Ih+XhIu4XF4ziOO3F3Zx1Tun8tw96TIREO2CLLU2ZHPTvqDXf+FHPFlKHsHC+dYAz1pm48C3JNfsBcJ8j0yZBgUibj9Cc0+EWKyRPK2ruKLwpnFxIlWWYx9HbrqDopnnj8ljt5aKIXMwhqUVwjy3Jkrhw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com; spf=pass smtp.mailfrom=hpe.com; dkim=pass (2048-bit key) header.d=hpe.com header.i=@hpe.com header.b=kzPXwjK1; arc=none smtp.client-ip=148.163.147.86
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hpe.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=hpe.com header.i=@hpe.com header.b="kzPXwjK1"
+Received: from pps.filterd (m0150241.ppops.net [127.0.0.1])
+	by mx0a-002e3701.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 41TFBuaH010561;
+	Thu, 29 Feb 2024 20:07:30 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
+ subject : message-id : mime-version : content-type; s=pps0720;
+ bh=bTL4DOSmyNxQGe0QwLYqgTCiTE3h293KECpT2Cd+njk=;
+ b=kzPXwjK1SZsCC4A2UXBWK91e9uFF/hCuTPi/3IZkSdWrHbLVAxL10mh32LdEw+Qf5/ik
+ at81CsioejMhAKCSvyosSXQTrD63rc1D1WG3QZE84heShZI+kdUW4LvQ0dzZE4esF0OQ
+ /GLydvzxR5es2XSb3ehAa2Sd4tkM+ZqWsYOjmbT1nfxPMjNPWoDTqxkvuPohvhABOSFU
+ e1sc33lrbdKqeMAkVfZzwza1x2KLjLatL3e6oHtFcInLnKCYtXEyqtvWrOqwpzmj/fb/
+ qthu2c9EMSRUd+FI9oRgFnlP/q2d3V9q4YlabwIFqRkVDvEs4B8R3/II53iogipiTrde 7w== 
+Received: from p1lg14879.it.hpe.com ([16.230.97.200])
+	by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3wjvbxb4w5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 29 Feb 2024 20:07:30 +0000
+Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by p1lg14879.it.hpe.com (Postfix) with ESMTPS id 9BB85130F8;
+	Thu, 29 Feb 2024 20:07:29 +0000 (UTC)
+Received: from hpe.com (unknown [16.231.227.39])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTPS id A83CB8005F1;
+	Thu, 29 Feb 2024 20:07:26 +0000 (UTC)
+Date: Thu, 29 Feb 2024 14:07:24 -0600
+From: Dimitri Sivanich <sivanich@hpe.com>
+To: Dimitri Sivanich <sivanich@hpe.com>, David Woodhouse <dwmw2@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>, iommu@lists.linux.dev
+Cc: linux-kernel@vger.kernel.org, Steve Wahl <steve.wahl@hpe.com>,
+        Russ Anderson <russ.anderson@hpe.com>
+Subject: [PATCH] Allocate DMAR fault interrupts locally
+Message-ID: <ZeDj/LK56borSxO4@hpe.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <bicga3cv554ey4lby2twq3jw4tkkzx7mreakicf22sna63ye4x@x5di6km5x7fn>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+X-Proofpoint-GUID: kaKI-Rt3ddMThGjjOtXFFOFMzOETu6v1
+X-Proofpoint-ORIG-GUID: kaKI-Rt3ddMThGjjOtXFFOFMzOETu6v1
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-29_06,2024-02-29_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
+ mlxscore=0 mlxlogscore=995 priorityscore=1501 impostorscore=0 phishscore=0
+ suspectscore=0 lowpriorityscore=0 bulkscore=0 malwarescore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311290000
+ definitions=main-2402290155
 
-On Tue, Feb 13, 2024 at 05:06:24PM -0500, Kent Overstreet wrote:
-> On Tue, Feb 13, 2024 at 10:26:48AM +0200, Andy Shevchenko wrote:
-> > On Mon, Feb 12, 2024 at 11:39 PM Suren Baghdasaryan <surenb@google.com> wrote:
+The Intel IOMMU code currently tries to allocate all DMAR fault interrupt
+vectors on the boot cpu.  On large systems with high DMAR counts this
+results in vector exhaustion, and most of the vectors are not initially
+allocated socket local.
 
-> > It seems most of my points from the previous review were refused...
-> 
-> Look, Andy, this is a pretty tiny part of the patchset, yet it's been
-> eating up a pretty disproprortionate amount of time and your review
-> feedback has been pretty unhelpful - asking for things to be broken up
-> in ways that would not be bisectable, or (as here) re-asking the same
-> things that I've already answered and that should've been obvious.
-> 
-> The code works. If you wish to complain about anything being broken, or
-> if you can come up with anything more actionable than what you've got
-> here, I will absolutely respond to that, but otherwise I'm just going to
-> leave things where they sit.
+Instead, have a cpu on each node do the vector allocation for the DMARs on
+that node.  The boot cpu still does the allocation for its node during its
+boot sequence.
 
-I do not understand why I should do *your* job.
-Nevertheless, I have just sent my version of this change.
-Enjoy!
+Signed-off-by: Dimitri Sivanich <sivanich@hpe.com>
+---
+ drivers/iommu/intel/dmar.c | 34 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 33 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 23cb80d62a9a..41ef72ba7509 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -2108,8 +2108,12 @@ int __init enable_drhd_fault_handling(void)
+ 	 */
+ 	for_each_iommu(iommu, drhd) {
+ 		u32 fault_status;
+-		int ret = dmar_set_interrupt(iommu);
++		int ret;
+ 
++		if (iommu->node != cpu_to_node(smp_processor_id()))
++			continue;
++
++		ret = dmar_set_interrupt(iommu);
+ 		if (ret) {
+ 			pr_err("DRHD %Lx: failed to enable fault, interrupt, ret %d\n",
+ 			       (unsigned long long)drhd->reg_base_addr, ret);
+@@ -2192,6 +2196,34 @@ static int __init dmar_free_unused_resources(void)
+ 
+ late_initcall(dmar_free_unused_resources);
+ 
++#ifdef CONFIG_X86_LOCAL_APIC
++static void __init irq_remap_enable_fault_handling_thr(struct work_struct *work)
++{
++	irq_remap_enable_fault_handling();
++}
++
++static int __init assign_dmar_vectors(void)
++{
++	struct work_struct irq_remap_work;
++	int nid;
++
++	INIT_WORK(&irq_remap_work, irq_remap_enable_fault_handling_thr);
++	cpus_read_lock();
++	for_each_online_node(nid) {
++		/* Boot cpu dmar vectors are assigned before the rest */
++		if (nid == cpu_to_node(get_boot_cpu_id()))
++			continue;
++		schedule_work_on(cpumask_first(cpumask_of_node(nid)),
++				 &irq_remap_work);
++		flush_work(&irq_remap_work);
++	}
++	cpus_read_unlock();
++	return 0;
++}
++
++arch_initcall(assign_dmar_vectors);
++#endif /* CONFIG_X86_LOCAL_APIC */
++
+ /*
+  * DMAR Hotplug Support
+  * For more details, please refer to Intel(R) Virtualization Technology
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.35.3
 
