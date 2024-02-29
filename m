@@ -1,148 +1,135 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F5076D52F
-	for <iommu@lists.linux.dev>; Thu, 29 Feb 2024 22:18:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7465974BED;
+	Thu, 29 Feb 2024 22:24:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709245127; cv=none; b=ipCfYi4D9csH5Sm1O3nsYEcZFGXxAD1p3wblDlPDXWHgGRu57r6i05LpOyLAOqMgfaHn6YJPFZSLS2bCLp4CLHBKSKKq9LFBPJtq6Z8LWbrs4/RBHD+ifi9xyVsBwZABX02NoZ07eFVNDcK/uSGUoXQRIEgOwOdrCgJidId36Q0=
+	t=1709245469; cv=none; b=eyrrrEUNndindHVlX9/DLgXvDmZcf9hoqUJLnztVuzNW6lXQCeKWpK3B1Z7VdBWJCCdPiV+fx/WoQn8IfcOoHBohxpjCPNEgWKM2z+4hWS+sJ4WNEDtVeaiN3Bo1TPdC1sym4EQ8sBeGXw5KZTcMG8lPi0j8+VM9UWhepwRhibU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709245127; c=relaxed/simple;
-	bh=AZ8vFdseDArLDA3MltLutOe9fOfNmbM09SyXJH4sSSQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=JGVX8xSHvfALwN3mT/4wlVMDs7OjPe4YLRpy/ZS6lrXKh3vq2JwoT/TkefqPYjSjjzrl6od3VEOnMPeLsR0pmYv9xIvo2gIhl1M0qecmxikjIo59Vorxp/7FPTCkIUoOBnU354OIBZEJPl6KR6RVQuoLCCbIAtTIF9OHnNBkILI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=ZzqnCwJI; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=ZrFPrNcu; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	s=arc-20240116; t=1709245469; c=relaxed/simple;
+	bh=0jwd/jJz9F7HyDfXNZKIQyTdhdaG+2S7SxpZB0qD6OI=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=P7kvH2sKoXDADw6d/UE9Tbg8g9bRkcwtAezYMYplpqW+qcs76VsEBx9YT5mZrNVLe8TsX/A+sJkY6Hk9TQGQPhPF2q8/k7Y9nOVwtMiFmNkgAbJL7dMFBpZynDFxdh9yFOis10JUjdsVHzzUEnt/VCi3U1eOlVY80Y4Imp+o1e4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=SyoVmo1h; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ZzqnCwJI";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ZrFPrNcu"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1709245118;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=HChKMC5lwAPM5OQ3TNfOuideypjcOh5mp5j1eeugdCU=;
-	b=ZzqnCwJIdsnJzyForWXkD39afr1UzcRMe+yCoFg+yUzg9aAibO01rPFZXCJb1PzSR/qjpm
-	ioAbp4XkH+4OC+nhnETymgN4Fc7AzuI17QW4GBb3DBsRIxl8ZHjZXzblmttTy6VTabYYU3
-	am5FS68SwPppnpGoXcZD7kk7DwiX9MOFAC9pzdR0Nnq1b+aZIeYKQ3EVpYnAjxaOf/nYgH
-	f5miZxMVdYxqdTnAuLsLZJXCsLzofepSwSoKUYjbxDXYHW6hCX5hUya+0S7+M7MKF0Lxz2
-	dml8GPiXVfr221UdVBHcLRuAwegHGRNIHgnOXk35QWXP3cib2n6VAV0879EdaA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1709245118;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=HChKMC5lwAPM5OQ3TNfOuideypjcOh5mp5j1eeugdCU=;
-	b=ZrFPrNcu6WHGLZcJLQ4BHrpFkVLY22P9euudu1uVi5MQxx+pD4tkIKbBYblYkm+YMvxrK7
-	SigmuIl0MVDBIwBA==
-To: Dimitri Sivanich <sivanich@hpe.com>, Dimitri Sivanich
- <sivanich@hpe.com>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu
- <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org, Steve Wahl <steve.wahl@hpe.com>, Russ
- Anderson <russ.anderson@hpe.com>
-Subject: Re: [PATCH] Allocate DMAR fault interrupts locally
-In-Reply-To: <ZeDj/LK56borSxO4@hpe.com>
-References: <ZeDj/LK56borSxO4@hpe.com>
-Date: Thu, 29 Feb 2024 23:18:37 +0100
-Message-ID: <87plwe7w3m.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="SyoVmo1h"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 41TLls8D009650;
+	Thu, 29 Feb 2024 22:24:06 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	date:from:to:cc:subject:message-id:references:mime-version
+	:content-type:in-reply-to; s=qcppdkim1; bh=OtqW1XZXFcuupLJ9seJDX
+	buTAWyH7zHudvWRXGce+gE=; b=SyoVmo1harXCR7en4JVVG10pO4Pv6cwwRNf2o
+	Pguv0A/JONB/mOudHWLOt0ggxQFISbRwgX0SPs35Zf7JAelJvRR0gLGDkHVrn4VQ
+	FEvhe+dKiFzg6TzxwXpYl1bUhEnrNdvhK1LPGZyrxo7KhIjt87O+nHQvVv3thMPC
+	4gHKU+Qt7kMiTdy+FWCCZBXjMOW85PeWEioSz4mVZz9XT+uaonCSTLpGr0ZS7p10
+	IKolXiAt4WWxjDNUONnbHNitISGi6DICUCTUQI249OUiQnAWn3ip0y8xHdxmZ2Ya
+	JNcmksT9OI+01iYxCIV0QgUUwIo1Fcu/01dZ06LV9XNmfcDlg==
+Received: from nalasppmta03.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3wjycdgktv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 29 Feb 2024 22:24:06 +0000 (GMT)
+Received: from nalasex01a.na.qualcomm.com (nalasex01a.na.qualcomm.com [10.47.209.196])
+	by NALASPPMTA03.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 41TMO5Hl000407
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 29 Feb 2024 22:24:05 GMT
+Received: from hu-cgoldswo-sd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Thu, 29 Feb 2024 14:24:04 -0800
+Date: Thu, 29 Feb 2024 14:24:03 -0800
+From: Chris Goldsworthy <quic_cgoldswo@quicinc.com>
+To: Georgi Djakov <djakov@kernel.org>
+CC: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Georgi Djakov
+	<quic_c_gdjako@quicinc.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <conor+dt@kernel.org>,
+        <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <iommu@lists.linux.dev>, <devicetree@vger.kernel.org>,
+        <andersson@kernel.org>, <konrad.dybcio@linaro.org>,
+        <robdclark@gmail.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <quic_cgoldswo@quicinc.com>, <quic_sukadev@quicinc.com>,
+        <quic_pdaly@quicinc.com>, <quic_sudaraja@quicinc.com>
+Subject: Re: [PATCH v5 1/7] dt-bindings: iommu: Add Qualcomm TBU bindings
+Message-ID: <20240229222347.GA918@hu-cgoldswo-sd.qualcomm.com>
+References: <20240226172218.69486-1-quic_c_gdjako@quicinc.com>
+ <20240226172218.69486-2-quic_c_gdjako@quicinc.com>
+ <b6215fcd-29fc-4495-999f-b7b03b36c087@linaro.org>
+ <70095e04-eaec-4323-b2ac-2d4d366763d5@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <70095e04-eaec-4323-b2ac-2d4d366763d5@kernel.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: OXH1O4Jm_oC6uUujkc43pumk01oZDJUg
+X-Proofpoint-ORIG-GUID: OXH1O4Jm_oC6uUujkc43pumk01oZDJUg
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-02-29_06,2024-02-29_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ mlxlogscore=999 impostorscore=0 bulkscore=0 priorityscore=1501
+ lowpriorityscore=0 malwarescore=0 adultscore=0 suspectscore=0 spamscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2402120000 definitions=main-2402290175
 
-Dimitri!
+On Thu, Feb 29, 2024 at 10:09:34PM +0200, Georgi Djakov wrote:
+> Hi Krzysztof,
+> 
+> On 29.02.24 19:53, Krzysztof Kozlowski wrote:
+> >On 26/02/2024 18:22, Georgi Djakov wrote:
+> >>+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> >>+%YAML 1.2
+> >>+---
+> >>+$id: http://devicetree.org/schemas/iommu/qcom,tbu.yaml#
+> >>+$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >>+
+> >>+title: Qualcomm TBU (Translation Buffer Unit)
+> >>+
+> >>+maintainers:
+> >>+  - Georgi Djakov <quic_c_gdjako@quicinc.com>
+> >>+
+> >>+description:
+> >>+  The Qualcomm SMMU500 implementation consists of TCU and TBU. The TBU contains
+> >>+  a Translation Lookaside Buffer (TLB) that caches page tables. TBUs provides
+> >>+  debug features to trace and trigger debug transactions. There are multiple TBU
+> >>+  instances with each client core.
+> >>+
+> >>+properties:
+> >>+  compatible:
+> >>+    const: qcom,qsmmuv500-tbu
+> >
+> >Why we don't have SoC specific compatibles? If that's for SDM845, then
+> >it should be qcom,sdm845-tbu or qcom,sdm845-qsmmuv500-tbu
+> >
+> 
+> Because they should be all compatible (as registers). Adding a SoC compatible
+> might get overly-specific, but i can also see the benefits in that, so ok will
+> do it!
+> 
 
-On Thu, Feb 29 2024 at 14:07, Dimitri Sivanich wrote:
+Hi Krzysztof,
 
-The subject lacks a subsystem prefix. You're doing this for how many
-decades now?
-
-> The Intel IOMMU code currently tries to allocate all DMAR fault interrupt
->  
-> +#ifdef CONFIG_X86_LOCAL_APIC
-
-I seriously doubt that this code can ever be compiled w/o X86_LOCAL_APIC:
-
-obj-$(CONFIG_DMAR_TABLE) += dmar.o
-
-config DMAR_TABLE
-        bool
-
-config INTEL_IOMMU
-        depends on PCI_MSI && ACPI && X86
-        select DMAR_TABLE
-
-config IRQ_REMAP
-        depends on X86_64 && X86_IO_APIC && PCI_MSI && ACPI
-        select DMAR_TABLE
-
-config X86_LOCAL_APIC
-        def_bool y
-        depends on X86_64 || SMP || X86_32_NON_STANDARD || X86_UP_APIC || PCI_MSI
-
-What are you trying to achieve here other than #ifdef voodoo?
-
-> +static void __init irq_remap_enable_fault_handling_thr(struct work_struct *work)
-> +{
-> +	irq_remap_enable_fault_handling();
-
-because if INTEL_IOMMU=y and IRQ_REMAP=n then X86_LOCAL_APIC=y and this
-muck gets invoked for nothing. 'git grep irq_remap_enable_fault_handling
-include/' might give you a hint.
-
-> +}
-> +
-> +static int __init assign_dmar_vectors(void)
-> +{
-> +	struct work_struct irq_remap_work;
-> +	int nid;
-> +
-> +	INIT_WORK(&irq_remap_work, irq_remap_enable_fault_handling_thr);
-> +	cpus_read_lock();
-> +	for_each_online_node(nid) {
-> +		/* Boot cpu dmar vectors are assigned before the rest */
-> +		if (nid == cpu_to_node(get_boot_cpu_id()))
-> +			continue;
-> +		schedule_work_on(cpumask_first(cpumask_of_node(nid)),
-> +				 &irq_remap_work);
-> +		flush_work(&irq_remap_work);
-> +	}
-> +	cpus_read_unlock();
-> +	return 0;
-> +}
-> +
-> +arch_initcall(assign_dmar_vectors);
-
-Stray newline before arch_initcall(), but that's not the problem.
-
-The real problems are:
-
- 1) This approach only works when _ALL_ APs have been brought up during
-    boot. With 'maxcpus=N' on the command line this will fail to enable
-    fault handling when the APs which have not been brought up initially
-    are onlined later on.
-
-    This might be working in practice because intel_iommu_init() will
-    enable the interrupts later on via init_dmars() unconditionally, but
-    that's far from correct because IRQ_REMAP does not depend on
-    INTEL_IOMMU.
-
- 2) It leaves a gap where the reporting is not working between bringing
-    up the APs during boot and this initcall. Mostly theoretical, but
-    that does not make it more correct either.
-
-What you really want is a cpu hotplug state in the CPUHP_BP_PREPARE_DYN
-space which enables the interrupt for the node _before_ the first AP of
-the node is brought up. That will solve the problem nicely w/o any of
-the above issues.
+JFYI that the TBUs are used on our mobile SoCs going up until the SoC
+we commercialized in early 2022, Snapdragon 8 Gen 1. Including SDM845
+there are three more premium tier SoCs using TBUs plus all of their
+value-tier derivatives.  There will also be prior generation premium
+tier SoCs along with their derivatives that use the TBU as well. Does
+it make sense to have a target-specific compatible string given this? 
 
 Thanks,
 
-        tglx
+Chris.
+
