@@ -1,125 +1,177 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com [66.111.4.28])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0107F78295;
-	Thu, 29 Feb 2024 18:15:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62C3913F42F
+	for <iommu@lists.linux.dev>; Thu, 29 Feb 2024 19:53:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=66.111.4.28
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709230539; cv=none; b=KWXllLjBq+6OvxXxKn2xBaerBEUQs+w2MEdj5KLy+pCSzkNZfsorWrHkPydFSwoOqu5CH+XbEytXIM9g1FNHi4cT/uKa4JDBI8J08Eu5rnH8MxMxGCdhjAReRr5AjAF+g3lq1RD3EQXefaE8g36VstxrILI5PYl6ITrOtVmBOl0=
+	t=1709236435; cv=none; b=CKtmVzfIyyjT7lPc/8VVQ8yaV25IwqLgBBNoPgBm5HqGPfTlFcxkDPv3ZCiIe2XVukK1PTMfTo/B4X/PGedW2NHqER5bo4dHxPNshn5oCptfWJMmnySG23WVx+jnLBHeoDbhipxjYv8EvflmjQdAYyYmZlmyX+KrS9ddHnKuzZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709230539; c=relaxed/simple;
-	bh=jfp9NM/oduYBlfC4B2HixtczjJ4MUMSRLdM3FJ9Nqzs=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=F+sAprn/c1WurKVC6MM/L6EN2z65Xl1Nn9/exRNWXKE2JkwdBIxeN6+LN6TZgFd7rm0+uKnS3g5ok9BrIaKtBZupVlv1aEY5JJcp/+cyObF22QUzV5NReGHlxT7wIiHIXCMFbdEXluPqqXjU4ELsBovI2LWipfrREfKPv49INOw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Tx4eeOWr; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1709236435; c=relaxed/simple;
+	bh=jthKmHH9qkCJL1rwJwt8b2jErTogMsGgAUEXSYO24Yw=;
+	h=From:Content-Type:Mime-Version:Subject:Date:In-Reply-To:Cc:
+	 References:Message-Id; b=HjNlqxFZlM4NQLEoAzRcu/oGFyjl1jE51X9s/goOSSXAnxaLWoDN85NnNyl5Qa/DQnOi7brhyl1kf1yji+1rdLShWBjzNT751orlFseZYQ2Fu5rE+/rxNU4yvD9b9eK4QxeB63fslkrb/vmLYSnBiVQGjXh3rsST4/lKF4HiATg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=pjd.dev; spf=pass smtp.mailfrom=pjd.dev; dkim=pass (2048-bit key) header.d=pjd.dev header.i=@pjd.dev header.b=MRCduglQ; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=OCqkEO0D; arc=none smtp.client-ip=66.111.4.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=pjd.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pjd.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Tx4eeOWr"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B092C433F1;
-	Thu, 29 Feb 2024 18:15:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1709230538;
-	bh=jfp9NM/oduYBlfC4B2HixtczjJ4MUMSRLdM3FJ9Nqzs=;
-	h=Date:From:To:Cc:Subject:From;
-	b=Tx4eeOWrXzfFXq6toThB8Vyuwvfmd+EM9PCvpnRMW5eO1/JDZpz6XJLoWCKiClBNM
-	 Iduyzi4Gi0oEhNWB/+DUVfQbEwS8TKh/A7tqCQZAe5w6UUUq/+xBKMh0fxqGsFJ9Lo
-	 77QGOlMJNbP35VyTp3Yw+V5/UQelXGiIQDtVs2aDlVhbAxsSzLthUztuYKURDFRwdP
-	 oQZ0ShPAOoyVPeLXLVETnRx1gOQ1RV/pIXWazGywROnHx9eo8/rKVzDggKfvfPb6/H
-	 acmjNawC8+koALPgkE4Rz5rkuF16irQ7GJHQNQ4S8UI7UxFlNMsyEIg0LNSBYGjR3I
-	 C+GaefOSe+2BQ==
-Date: Thu, 29 Feb 2024 18:15:33 +0000
-From: Will Deacon <will@kernel.org>
-To: joro@8bytes.org
-Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
-	kernel-team@android.com
-Subject: [GIT PULL] iommu/arm-smmu: Updates for 6.9
-Message-ID: <20240229181533.GA16854@willie-the-truck>
+	dkim=pass (2048-bit key) header.d=pjd.dev header.i=@pjd.dev header.b="MRCduglQ";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="OCqkEO0D"
+Received: from compute7.internal (compute7.nyi.internal [10.202.2.48])
+	by mailout.nyi.internal (Postfix) with ESMTP id 51E785C005D;
+	Thu, 29 Feb 2024 14:53:52 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute7.internal (MEProxy); Thu, 29 Feb 2024 14:53:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pjd.dev; h=cc:cc
+	:content-transfer-encoding:content-type:content-type:date:date
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to; s=fm2; t=1709236432; x=
+	1709322832; bh=M6rbw+n+N/w7eLH273TiruvrBg5kCYrlH64w/wGT6BE=; b=M
+	RCduglQ26s2yEjvTWgEx6I1ewsYbU+20i4Z1Fx8vBy3oeMwZGTJsJ1+U994l+jkz
+	++L+pcn8/y4qSpBlFBNzj6Gfrnir/WEIz/GDN18PEjRzKJHO2r77JA9fNcNOQiZy
+	//BvVlFPwGxQuiUfd4FEQQk2hyz62f38PT+El97C1JsD0s2XuEf3rtmBjEKvg4Gj
+	guem2TQ3+p2/2S96IJljZvvDoU3WZgRgjpLP7phbSCgmA/XeP+NusQCyvLVbcZ3J
+	OOy2ihFl1GLtDUj5ERXtQWYyojAVRRPugvE/Gq23ZRAR3Z0GB57lFZLWvveVFmeY
+	s+ZD0RhrOoHvYeWE6CDlQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-transfer-encoding
+	:content-type:content-type:date:date:feedback-id:feedback-id
+	:from:from:in-reply-to:in-reply-to:message-id:mime-version
+	:references:reply-to:subject:subject:to:x-me-proxy:x-me-proxy
+	:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1709236432; x=
+	1709322832; bh=M6rbw+n+N/w7eLH273TiruvrBg5kCYrlH64w/wGT6BE=; b=O
+	CqkEO0DvDTpEFyxxN1l26pty9a/06rQgGuKiB+F7L2R2aUPZjJ9BafSWil98zPij
+	pNTb09Lw0CTca1fSMX5Ldee60EIDdCo4X3+wHnTs8j4/8YYYBW+EahliDj8hQ1e3
+	f3dVVUvWfd6eH/TSY2hfzO/wvDhr7hOirE5SHwXzBdkOC4TR4DgDkLQNjmyasglS
+	mVpSIFXIuJFu00Le4C2fuRuDitAZISVOtr6+ojCE3AwyYnMcaBeh09HGgDWa7pGX
+	zRQySiyeP5tdDMvTIRA2aBmrL8eHJFD3KpgUC6vogO+0/Sjcswzjqw5QxnHoA0Ls
+	5t1qIlkKdP9Xxy4DdOobA==
+X-ME-Sender: <xms:0ODgZYhQJiJZ8e8CxidGqvAUQvWY2uP42x_FpRpmC8qfe7spo4qt4Q>
+    <xme:0ODgZRCWAGwMurvef3OvjOAwD4JywlxqmiVR-cECLzxdiyPc0eRwv8A9h3wcizRfC
+    AM7E7XsGaKoU7RU500>
+X-ME-Received: <xmr:0ODgZQGdMrH1sbmw07PB1Mv506CikCgtFNo7DHQzgStY_wa-dTPTNeY5qvzlJ4k0uMlHkz0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrgeelgdduvdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenuchmihhsshhinhhgucfvqfcufhhivghlugculdeftd
+    dmnecujfgurhephfgtgfggufffjgevfhfkofesthhqmhdthhdtjeenucfhrhhomheprfgv
+    thgvrhcuffgvlhgvvhhorhihrghsuceophgvthgvrhesphhjugdruggvvheqnecuggftrf
+    grthhtvghrnhepledvleeijedtteffudfhkeduheeludefgfeuveekheekvefhfffhffeh
+    ieeifeeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epphgvthgvrhesphhjugdruggvvh
+X-ME-Proxy: <xmx:0ODgZZQra8s9NrKYILgCsPHGziVk5PK6CQUEYLNT3jOGF55DZA5xcQ>
+    <xmx:0ODgZVxKfKaJXuS9nQ9pNluWXLInu-7dM2Bar0Syb-suaMEs_P6b_Q>
+    <xmx:0ODgZX7tcGNY2ZTDdXgg4EwnoQNqCkZS0_9nh897giTD31Op3Wu-Qw>
+    <xmx:0ODgZcnnaCFXPoYGS5hc8uT3M-zpslxBKte70xWrye0IsH1TXnmWng>
+Feedback-ID: i9e814621:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 29 Feb 2024 14:53:51 -0500 (EST)
+From: Peter Delevoryas <peter@pjd.dev>
+Content-Type: text/plain;
+	charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3774.400.31\))
+Subject: Re: [q&a] Status of IOMMU virtualization for nested virtualization
+ (userspace PCI drivers in VMs)
+Date: Thu, 29 Feb 2024 11:53:39 -0800
+In-Reply-To: <20240228123810.70663da2.alex.williamson@redhat.com>
+Cc: qemu-devel <qemu-devel@nongnu.org>,
+ suravee.suthikulpanit@amd.com,
+ iommu@lists.linux.dev,
+ kvm@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ alex.williamson@redhat.com,
+ Peter Delevoryas <peter@pjd.dev>
+References: <3D96D76D-85D2-47B5-B4C1-D6F95061D7D6@pjd.dev>
+ <20240228123810.70663da2.alex.williamson@redhat.com>
+Message-Id: <D4DDA526-5E5D-40DB-86EF-B4B6D7692663@pjd.dev>
+X-Mailer: Apple Mail (2.3774.400.31)
 
-Hi Joerg,
 
-Please pull these Arm SMMU updates for 6.9. There's the usual crop of
-device-tree changes, but the meat of the work is part one of the SMMUv3
-IOMMUFD-enabling work from Jason.
 
-The branch is based on the fixes tag I sent you before and there's the
-usual brief summary in the tag.
+> On Feb 28, 2024, at 11:38=E2=80=AFAM, Alex Williamson =
+<alex.williamson@redhat.com> wrote:
+>=20
+> On Wed, 28 Feb 2024 10:29:32 -0800
+> Peter Delevoryas <peter@pjd.dev> wrote:
+>=20
+>> Hey guys,
+>>=20
+>> I=E2=80=99m having a little trouble reading between the lines on =
+various
+>> docs, mailing list threads, KVM presentations, github forks, etc, so
+>> I figured I=E2=80=99d just ask:
+>>=20
+>> What is the status of IOMMU virtualization, like in the case where I
+>> want a VM guest to have a virtual IOMMU?
+>=20
+> It works fine for simply nested assignment scenarios, ie. guest
+> userspace drivers or nested VMs.
+>=20
+>> I found this great presentation from KVM Forum 2021: [1]
+>>=20
+>> 1. I=E2=80=99m using -device intel-iommu right now. This has =
+performance
+>> implications and large DMA transfers hit the vfio_iommu_type1
+>> dma_entry_limit on the host because of how the mappings are made.
+>=20
+> Hugepages for the guest and mappings within the guest should help both
+> the mapping performance and DMA entry limit.  In general the type1 =
+vfio
+> IOMMU backend is not optimized for dynamic mapping, so =
+performance-wise
+> your best bet is still to design the userspace driver for static DMA
+> buffers.
 
-Cheers,
+Yep, huge pages definitely help, will probably switch to allocating them =
+at boot for better guarantees.
 
-Will
+>=20
+>> 2. -device virtio-iommu is an improvement, but it doesn=E2=80=99t =
+seem
+>> compatible with -device vfio-pci? I was only able to test this with
+>> cloud-hypervisor, and it has a better vfio mapping pattern (avoids
+>> hitting dma_entry_limit).
+>=20
+> AFAIK it's just growing pains, it should work but it's working through
+> bugs.
 
---->8
+Oh really?? Ok: I might even be configuring things incorrectly, or
+Maybe I need to upgrade from QEMU 7.1 to 8. I was relying on whatever
+libvirt does by default, which seems to just be:
 
-The following changes since commit b5bf7778b722105d7a04b1d51e884497b542638b:
+    -device virtio-iommu -device vfio-pci,host=3D<bdf>
 
-  iommu/arm-smmu-v3: Do not use GFP_KERNEL under as spinlock (2024-02-22 12:34:11 +0000)
+But maybe I need some other options?
 
-are available in the Git repository at:
+>=20
+>> 3. -object iommufd [2] I haven=E2=80=99t tried this quite yet, =
+planning to:
+>> if it=E2=80=99s using iommufd, and I have all the right kernel =
+features in
+>> the guest and host, I assume it=E2=80=99s implementing the =
+passthrough mode
+>> that AMD has described in their talk? Because I imagine that would be
+>> the best solution for me, I=E2=80=99m just having trouble =
+understanding if
+>> it=E2=80=99s actually related or orthogonal.
+>=20
+> For now iommufd provides a similar DMA mapping interface to type1, but
+> it does remove the DMA entry limit and improves locked page =
+accounting.
+>=20
+> To really see a performance improvement relative to dynamic mappings,
+> you'll need nesting support in the IOMMU, which is under active
+> development.  =46rom this aspect you will want iommufd since similar
+> features will not be provided by type1.  Thanks,
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-updates
+I see, thanks! That=E2=80=99s great to hear.
 
-for you to fetch changes up to 327e10b47ae99f76ac53f0b8b73a0539f390d2d2:
+>=20
+> Alex
+>=20
 
-  iommu/arm-smmu-v3: Convert to domain_alloc_paging() (2024-02-29 15:12:23 +0000)
-
-----------------------------------------------------------------
-Arm SMMU updates for 6.9
-
-- Device-tree binding updates for a bunch of Qualcomm SoCs
-
-- SMMUv2:
-  * Support for Qualcomm X1E80100 MDSS
-
-- SMMUv3:
-  * Significant rework of the driver's STE manipulation and domain
-    handling code. This is the initial part of a larger scale rework
-    aiming to improve the driver's implementation of the IOMMU API
-    in preparation for hooking up IOMMUFD support.
-
-----------------------------------------------------------------
-Abel Vesa (1):
-      iommu/arm-smmu-qcom: Add X1E80100 MDSS compatible
-
-Jason Gunthorpe (16):
-      iommu/arm-smmu-v3: Make STE programming independent of the callers
-      iommu/arm-smmu-v3: Consolidate the STE generation for abort/bypass
-      iommu/arm-smmu-v3: Move the STE generation for S1 and S2 domains into functions
-      iommu/arm-smmu-v3: Build the whole STE in arm_smmu_make_s2_domain_ste()
-      iommu/arm-smmu-v3: Hold arm_smmu_asid_lock during all of attach_dev
-      iommu/arm-smmu-v3: Compute the STE only once for each master
-      iommu/arm-smmu-v3: Do not change the STE twice during arm_smmu_attach_dev()
-      iommu/arm-smmu-v3: Put writing the context descriptor in the right order
-      iommu/arm-smmu-v3: Pass smmu_domain to arm_enable/disable_ats()
-      iommu/arm-smmu-v3: Remove arm_smmu_master->domain
-      iommu/arm-smmu-v3: Check that the RID domain is S1 in SVA
-      iommu/arm-smmu-v3: Add a global static IDENTITY domain
-      iommu/arm-smmu-v3: Add a global static BLOCKED domain
-      iommu/arm-smmu-v3: Use the identity/blocked domain during release
-      iommu/arm-smmu-v3: Pass arm_smmu_domain and arm_smmu_device to finalize
-      iommu/arm-smmu-v3: Convert to domain_alloc_paging()
-
-Konrad Dybcio (1):
-      dt-bindings: arm-smmu: Add QCM2290 GPU SMMU
-
-Neil Armstrong (2):
-      dt-bindings: arm-smmu: Fix SM8[45]50 GPU SMMU 'if' condition
-      dt-bindings: arm-smmu: Document SM8650 GPU SMMU
-
-Will Deacon (1):
-      Merge branch 'for-joerg/arm-smmu/bindings' into for-joerg/arm-smmu/updates
-
- .../devicetree/bindings/iommu/arm,smmu.yaml        |  20 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |   8 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 730 ++++++++++++++-------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |   4 -
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   1 +
- 5 files changed, 515 insertions(+), 248 deletions(-)
