@@ -1,44 +1,43 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F02F162813
-	for <iommu@lists.linux.dev>; Thu, 29 Feb 2024 09:52:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DEA176086B
+	for <iommu@lists.linux.dev>; Thu, 29 Feb 2024 09:54:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709200341; cv=none; b=QSjLUjGzmGZpLuw4+B9oYetSdXNamS1ZT6Q5gxFva4p9Wa1yJfucXUgBHiv8dCgq9CyJ6S3Sz6v8TEiMWDrfAikGYM+edzjMZtM6bqde+ZX3IFJARr86w0Lcry5G9nvvGTICNqLkDsUBI7gXf1dw7Yc/PLy3PbMalA3QnsqHj7Q=
+	t=1709200451; cv=none; b=WPuh253q/WGid+j/a0AEfT/8M73Ue9ZAP2reu7bdzran677/SSuttm40U0gTskZeuXm6a1JdvHOKewgrYefW/5uV/a32Ua0+IHeR5UbubA5lcA2bytCn441XFJiA0FFkkz9JGGbOcy6Uaj37Xykty3LDvnvoDojbBqvcAVtP/Ew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709200341; c=relaxed/simple;
-	bh=lKzo68tQ2/euX957y2t0ouNXm48fmjaBIyuo8kUBY4I=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ZGQnPvjzOt3ibmqsIshiMHpU1cyCRgufebafbgfCKBaqOf9/dC2+sn8Dy7f0FNf23KZ0jqQDhWQ370Ls9xvbwdtV+8nGD/mShqYJNULp8oVHRAA98AszHWe/CFkhx3Ypsq2HZoqpoPlU7vjTpNzfJo5SjScOKGfSBKi4FhPVpvc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TJMoyXAj; arc=none smtp.client-ip=192.198.163.9
+	s=arc-20240116; t=1709200451; c=relaxed/simple;
+	bh=2wXxdGYUOltk7Lzm5DmMsD3Q83xGW/4pr62gkHYUHlA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=sQ1jLKTE2AJSYdXFmFg2tPT+3MUTaUNxdCEeWN4E504bJRChd9B7k9n73afhbPx5qctwgV1+gxkAGbwk7njm+7WEP3oFNetZWbRs8OO4N8dWjjSLSOwaKFOTlEDnmTQM2y5gCKgqwDDGgZD0SsY326Bxcz4aZ6K4kkRbsWvgyLY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=E2AqZ5L1; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TJMoyXAj"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="E2AqZ5L1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709200340; x=1740736340;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=lKzo68tQ2/euX957y2t0ouNXm48fmjaBIyuo8kUBY4I=;
-  b=TJMoyXAjNVvmZcCJ75BAr0bqcobLu4D7JWO63zrSSqMoQRh9vsbtZ3j6
-   H84JgMoHL+KKWdfwlObweU1MsEmw6YvorBqolMukqeqIYaIr/2Zu7HUdR
-   veumDIGofq5WOFydaoHoJF/027VTcnmpE6a6wD3zfPvWdNXf6ea0YJnBm
-   JLp8L4uvNvoGhaYkL/c95ZJnjG42p6FRk9ajTiIV2Ea9gPn6Nt14rpYgE
-   oscgwJtq65WdtrJUJVA4R6Q+T7EjW4ZHeaJEdlxOzelSiL1m8xXwWAgK+
-   BpnMrNyGxVpBqWjYFAumg8I2tmZ/5cBMrohWo6UAWfxLrMWOClnhSvMZy
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="14366694"
+  t=1709200450; x=1740736450;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=2wXxdGYUOltk7Lzm5DmMsD3Q83xGW/4pr62gkHYUHlA=;
+  b=E2AqZ5L13IQyJ1zgjzDn27I/QSs8Z2XMiXvDNxV9rUnb3nToJak+ev06
+   SMxI+oDUGxnzZC9k7kArs6JItQGmvVfEkjYSpjQfO6lsgWNKY4jS0njp8
+   wiuRCqlLq7kQMsLQfe9TCKqNpRTdCcOMLhqyykX9YtvoZrrwvq/ckwGl6
+   y/41lCqQrKgCT/hmGp/FyiSLgowHRiiGSdxVVS1E66ElWc/ldr+Lo79iJ
+   IoptBtp5USL9ROEMWpo4YXk7VJ3AINHYkO6fGtDiR8t/wLr2c09NwVtJW
+   /t/Z4cGcpkgrTrvAmwXqJRbllgUZt6Y7B5PB6yE5ZaE87cBD4QO2nLUKw
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="7480759"
 X-IronPort-AV: E=Sophos;i="6.06,194,1705392000"; 
-   d="scan'208";a="14366694"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 01:52:19 -0800
+   d="scan'208";a="7480759"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 01:54:09 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,194,1705392000"; 
-   d="scan'208";a="38811022"
+   d="scan'208";a="7695758"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by fmviesa001.fm.intel.com with ESMTP; 29 Feb 2024 01:52:18 -0800
+  by orviesa010.jf.intel.com with ESMTP; 29 Feb 2024 01:54:07 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>,
@@ -49,12 +48,10 @@ To: Joerg Roedel <joro@8bytes.org>,
 Cc: iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 2/2] iommu/vt-d: Fix NULL domain on device release
-Date: Thu, 29 Feb 2024 17:46:13 +0800
-Message-Id: <20240229094613.121575-3-baolu.lu@linux.intel.com>
+Subject: [PATCH 0/3] iommu: Fix domain check on release (part 2/2)
+Date: Thu, 29 Feb 2024 17:48:01 +0800
+Message-Id: <20240229094804.121610-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240229094613.121575-1-baolu.lu@linux.intel.com>
-References: <20240229094613.121575-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,199 +60,31 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-In the kdump kernel, the IOMMU operates in deferred_attach mode. In this
-mode, info->domain may not yet be assigned by the time the release_device
-function is called. It leads to the following crash in the crash kernel:
+This is a follow-up to the discussion thread here:
 
-    BUG: kernel NULL pointer dereference, address: 000000000000003c
-    ...
-    RIP: 0010:do_raw_spin_lock+0xa/0xa0
-    ...
-    _raw_spin_lock_irqsave+0x1b/0x30
-    intel_iommu_release_device+0x96/0x170
-    iommu_deinit_device+0x39/0xf0
-    __iommu_group_remove_device+0xa0/0xd0
-    iommu_bus_notifier+0x55/0xb0
-    notifier_call_chain+0x5a/0xd0
-    blocking_notifier_call_chain+0x41/0x60
-    bus_notify+0x34/0x50
-    device_del+0x269/0x3d0
-    pci_remove_bus_device+0x77/0x100
-    p2sb_bar+0xae/0x1d0
-    ...
-    i801_probe+0x423/0x740
+https://lore.kernel.org/linux-iommu/20240221154012.GC13491@ziepe.ca/
 
-Use the release_domain mechanism to fix it. The scalable mode context
-entry which is not part of release_domain should be cleared in
-release_device().
+This change includes cleanups and refactoring in the Intel iommu driver
+related to the use of the iommu_ops->release_domain.
 
-Fixes: 586081d3f6b1 ("iommu/vt-d: Remove DEFER_DEVICE_DOMAIN_INFO")
-Reported-by: Eric Badger <ebadger@purestorage.com>
-Closes: https://lore.kernel.org/r/20240113181713.1817855-1-ebadger@purestorage.com
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/pasid.h |  1 +
- drivers/iommu/intel/iommu.c | 31 +++-----------
- drivers/iommu/intel/pasid.c | 83 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 90 insertions(+), 25 deletions(-)
+There are two parts of this topic:
+[ ] Introduce release_domain and fix a kernel NULL pointer dereference
+    issue in the intel iommu driver.
+[x] A follow-up series to cleanup intel iommu driver.
 
-diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
-index 487ede039bdd..42fda97fd851 100644
---- a/drivers/iommu/intel/pasid.h
-+++ b/drivers/iommu/intel/pasid.h
-@@ -318,4 +318,5 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
- 				 bool fault_ignore);
- void intel_pasid_setup_page_snoop_control(struct intel_iommu *iommu,
- 					  struct device *dev, u32 pasid);
-+void intel_pasid_teardown_sm_context(struct device *dev);
- #endif /* __INTEL_PASID_H */
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index cc3994efd362..f74d42d3258f 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3869,30 +3869,6 @@ static void domain_context_clear(struct device_domain_info *info)
- 			       &domain_context_clear_one_cb, info);
- }
- 
--static void dmar_remove_one_dev_info(struct device *dev)
--{
--	struct device_domain_info *info = dev_iommu_priv_get(dev);
--	struct dmar_domain *domain = info->domain;
--	struct intel_iommu *iommu = info->iommu;
--	unsigned long flags;
--
--	if (!dev_is_real_dma_subdevice(info->dev)) {
--		if (dev_is_pci(info->dev) && sm_supported(iommu))
--			intel_pasid_tear_down_entry(iommu, info->dev,
--					IOMMU_NO_PASID, false);
--
--		iommu_disable_pci_caps(info);
--		domain_context_clear(info);
--	}
--
--	spin_lock_irqsave(&domain->lock, flags);
--	list_del(&info->link);
--	spin_unlock_irqrestore(&domain->lock, flags);
--
--	domain_detach_iommu(domain, iommu);
--	info->domain = NULL;
--}
--
- /*
-  * Clear the page table pointer in context or pasid table entries so that
-  * all DMA requests without PASID from the device are blocked. If the page
-@@ -4431,7 +4407,11 @@ static void intel_iommu_release_device(struct device *dev)
- 	mutex_lock(&iommu->iopf_lock);
- 	device_rbtree_remove(info);
- 	mutex_unlock(&iommu->iopf_lock);
--	dmar_remove_one_dev_info(dev);
-+
-+	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev) &&
-+	    !context_copied(iommu, info->bus, info->devfn))
-+		intel_pasid_teardown_sm_context(dev);
-+
- 	intel_pasid_free_table(dev);
- 	intel_iommu_debugfs_remove_dev(info);
- 	kfree(info);
-@@ -4922,6 +4902,7 @@ static const struct iommu_dirty_ops intel_dirty_ops = {
- 
- const struct iommu_ops intel_iommu_ops = {
- 	.blocked_domain		= &blocking_domain,
-+	.release_domain		= &blocking_domain,
- 	.capable		= intel_iommu_capable,
- 	.hw_info		= intel_iommu_hw_info,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index 108158e2b907..52068cf52fe2 100644
---- a/drivers/iommu/intel/pasid.c
-+++ b/drivers/iommu/intel/pasid.c
-@@ -667,3 +667,86 @@ int intel_pasid_setup_nested(struct intel_iommu *iommu, struct device *dev,
- 
- 	return 0;
- }
-+
-+/*
-+ * Interfaces to setup or teardown a pasid table to the scalable-mode
-+ * context table entry:
-+ */
-+
-+/*
-+ * Cache invalidation for changes to a scalable-mode context table
-+ * entry.
-+ *
-+ * Section 6.5.3.3 of the VT-d spec:
-+ * - Device-selective context-cache invalidation;
-+ * - Domain-selective PASID-cache invalidation to affected domains
-+ *   (can be skipped if all PASID entries were not-present);
-+ * - Domain-selective IOTLB invalidation to affected domains;
-+ * - Global Device-TLB invalidation to affected functions.
-+ *
-+ * Note that RWBF (Required Write-Buffer Flushing) capability has
-+ * been deprecated for scable mode. Section 11.4.2 of the VT-d spec:
-+ *
-+ * HRWBF: Hardware implementations reporting Scalable Mode Translation
-+ * Support (SMTS) as Set also report this field as Clear.
-+ */
-+static void sm_context_flush_caches(struct device *dev)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct intel_iommu *iommu = info->iommu;
-+
-+	iommu->flush.flush_context(iommu, 0, PCI_DEVID(info->bus, info->devfn),
-+				   DMA_CCMD_MASK_NOBIT, DMA_CCMD_DEVICE_INVL);
-+	qi_flush_pasid_cache(iommu, 0, QI_PC_GLOBAL, 0);
-+	iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
-+	devtlb_invalidation_with_pasid(iommu, dev, IOMMU_NO_PASID);
-+}
-+
-+static void context_entry_teardown_pasid_table(struct intel_iommu *iommu,
-+					       struct context_entry *context)
-+{
-+	context_clear_entry(context);
-+	if (!ecap_coherent(iommu->ecap))
-+		clflush_cache_range(context, sizeof(*context));
-+}
-+
-+static void device_pasid_table_teardown(struct device *dev, u8 bus, u8 devfn)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+	struct intel_iommu *iommu = info->iommu;
-+	struct context_entry *context;
-+
-+	spin_lock(&iommu->lock);
-+	context = iommu_context_addr(iommu, bus, devfn, false);
-+	if (!context) {
-+		spin_unlock(&iommu->lock);
-+		return;
-+	}
-+
-+	context_entry_teardown_pasid_table(iommu, context);
-+	spin_unlock(&iommu->lock);
-+
-+	sm_context_flush_caches(dev);
-+}
-+
-+static int pci_pasid_table_teardown(struct pci_dev *pdev, u16 alias, void *data)
-+{
-+	struct device *dev = data;
-+
-+	if (dev == &pdev->dev)
-+		device_pasid_table_teardown(dev, PCI_BUS_NUM(alias), alias & 0xff);
-+
-+	return 0;
-+}
-+
-+void intel_pasid_teardown_sm_context(struct device *dev)
-+{
-+	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+
-+	if (!dev_is_pci(dev)) {
-+		device_pasid_table_teardown(dev, info->bus, info->devfn);
-+		return;
-+	}
-+
-+	pci_for_each_dma_alias(to_pci_dev(dev), pci_pasid_table_teardown, dev);
-+}
+Best regards,
+baolu
+
+Lu Baolu (3):
+  iommu/vt-d: Setup scalable mode context entry in probe path
+  iommu/vt-d: Remove scalable mode context entry setup from attach_dev
+  iommu/vt-d: Remove scalabe mode in domain_context_clear_one()
+
+ drivers/iommu/intel/pasid.h |   1 +
+ drivers/iommu/intel/iommu.c | 183 +++++++++++-------------------------
+ drivers/iommu/intel/pasid.c | 116 +++++++++++++++++++++++
+ 3 files changed, 174 insertions(+), 126 deletions(-)
+
 -- 
 2.34.1
 
