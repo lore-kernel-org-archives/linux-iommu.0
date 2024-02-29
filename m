@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B54F6D503;
-	Thu, 29 Feb 2024 21:06:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86AE574BE6;
+	Thu, 29 Feb 2024 21:07:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709240803; cv=none; b=DgsBRwxkOCvnmI6qLvBZUNBy1TRiO33cVFAISOriHmHNNGDv2uyhLnbS9KypXL8w+ibz8cKMmhW5d6PF6771qHH6v7UlJo7jiJadhUCQ6dpRfJNRYUATBQr9n5nQuveoUjndqc4hdcHpkl5l9qyXBs7/i7UlWifhk7lpF7F4Bzg=
+	t=1709240848; cv=none; b=t7g6hDFzK4vCCaRHXJAaEOpudmctwE2wT/MdZdIdrPQ7lC7rTsdsPAxbNkBHgc29Lxquyqv05U0olNscxaj0xHikpqev0WoLQoWB2G11UHt4Mr+FsUz4ulj2JadvzCn2mtKxIGx0aMKqWNP/J2+gt1bWWtx6Ngww1FV+R4AFWRA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709240803; c=relaxed/simple;
-	bh=AEjYtbKr9ZxceLUwWxzAgzu87zcJb3nLNbDcnS6bRS4=;
+	s=arc-20240116; t=1709240848; c=relaxed/simple;
+	bh=J6nl5xudWoaHe5zt2ZmvKLymkNzx1v+WzoPkxo7Ue94=;
 	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=cebCOL8ADyVy68XTCzIq4Ha1cYyRSRF53i+/DtDYIwe3eWUsUTv0Ibh77ThMeqGXBTru8OxYpU7uGF8vmzPwmqbBVUlLirCAduAujp+yLqe8eambhjtUbLeRX1wGw4HCenZ8TgZqOLpwhh1T0mNsCoEbw/GVvfsI8LCWumPCGBY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bFKFW96s; arc=none smtp.client-ip=10.30.226.201
+	 Content-Disposition:In-Reply-To; b=suovqQg6Akop3TTz6AXuwdrhWVfWQM36myAEZBgx+Az7raOIoPYn55lOMbk6+z/E3dxTCL2NIYqqgCMB3Lha6SB3LtyFCvzDq/+ujGpT3CSnrmkL2+EtxgK6HEFVyYdRKR6llGoRW09WcAhlixF5REiVmqQZU40dhwyYVDzrJN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KmlYJ0BY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bFKFW96s"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF351C433F1;
-	Thu, 29 Feb 2024 21:06:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KmlYJ0BY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC3BEC433F1;
+	Thu, 29 Feb 2024 21:07:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1709240802;
-	bh=AEjYtbKr9ZxceLUwWxzAgzu87zcJb3nLNbDcnS6bRS4=;
+	s=k20201202; t=1709240848;
+	bh=J6nl5xudWoaHe5zt2ZmvKLymkNzx1v+WzoPkxo7Ue94=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=bFKFW96sIiJGSerm8V0bNCD1SbFpGcH/jDdjnh4RISImFg9R0/QLxoUqbMF5f6JXJ
-	 ORnFl3JyAhMJN9MkJO1le80pH4UK/bdn6EpKh3PKAwnwHo27GndhmCouKfNFHe0Csw
-	 1/iToOeuEUcZ5liziICd9GbPgezx1mJo2E7pHzz/S3JtN7xuCTA22hBMTvzvWGWXUf
-	 DDyborhhtQlAOxY+QJcmFzr0ZFBL6UoxhMMXo3Yo+TKfcQ4bMY60AjqEwj4+5dAgbd
-	 egOHbUlLATGcB4yk3C8SQDfRgmV4pljL9ydcLl6A+ilyVdaUmMbcespX3oZPyRvXRS
-	 11bYcGkPSOkcA==
-Date: Thu, 29 Feb 2024 15:06:40 -0600
+	b=KmlYJ0BYjLjSdDhJPfMWjeAbasyaPJyxC5J5JG5g9OpaBI/OR5KF5myyHrzftRLKT
+	 2d7M7lO5gv/wY3vsu9dOs+HU9cVpFI+2Lsea5uCZSwfPxH05KOrOAhVBUnqnaHZGx7
+	 AaACX2V6QPzfh9/UcwVxDoseikUQz2j/mvH/n7Tfc1II+lw45KCiBnVECXD9KFFiky
+	 403mfSB593j48zUgQkxtW24ECMmUNq440NoGr6WNlocpiZkhqmN+rjcMxQ1NRCJsHj
+	 ppa89wrCYjojAiPm8lKM+1dRhEF0s3tGyaSGiLIRKFC1qcIFpx6LxxEUbUmC3v3C6h
+	 oUmHBZwVqW3PQ==
+Date: Thu, 29 Feb 2024 15:07:26 -0600
 From: Bjorn Helgaas <helgaas@kernel.org>
 To: Ethan Zhao <haifeng.zhao@linux.intel.com>
 Cc: baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
@@ -34,9 +34,9 @@ Cc: baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
 	will@kernel.org, lukas@wunner.de, yi.l.liu@intel.com,
 	dan.carpenter@linaro.org, iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/vt-d: avoid sending explicit ATS invalidation
- request to released device
-Message-ID: <20240229210640.GA362869@bhelgaas>
+Subject: Re: [PATCH] iommu/vt-d: improve ITE fault handling if device was
+ released
+Message-ID: <20240229210726.GA363458@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -45,91 +45,74 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240229033138.3379560-1-haifeng.zhao@linux.intel.com>
+In-Reply-To: <20240229040724.3393042-1-haifeng.zhao@linux.intel.com>
 
-On Wed, Feb 28, 2024 at 10:31:38PM -0500, Ethan Zhao wrote:
-> The introduction of per iommu device rbtree also defines the lifetime of
-> interoperation between iommu and devices, if the device has been released
-> from device rbtree, no need to send ATS invalidation request to it anymore,
-> thus avoid the possibility of later ITE fault to be triggered.
+On Wed, Feb 28, 2024 at 11:07:24PM -0500, Ethan Zhao wrote:
+> Break the loop to blindly retry the timeout ATS invalidation request
+> after ITE fault hit if device was released or isn't present anymore.
 > 
 > This is part of the followup of prior proposed patchset
 > 
 > https://do-db2.lkml.org/lkml/2024/2/22/350
 
-Please use https://lore.kernel.org/ URLs instead.  This one looks like
-https://lore.kernel.org/r/20240222090251.2849702-1-haifeng.zhao@linux.intel.com/
+Use lore URL, please.
 
-> To make sure all the devTLB entries to be invalidated in the device release
-> path, do implict invalidation by fapping the E bit of ATS control register.
-> see PCIe spec v6.2, sec 10.3.7 implicit invalidation events.
-
-s/implict/implicit/
-
-s/fapping/?/  (no idea :)  "flipping"?  Oh, probably "flapping" per the
-comment below.  But I think "flapping" is ambiguous; "setting" would be
-better)
-
-s/v6.2/r6.2/ (also below in comment)
-
-> Fixes: 6f7db75e1c46 ("iommu/vt-d: Add second level page table interface")
+> Fixes: 6ba6c3a4cacf ("VT-d: add device IOTLB invalidation support")
 > Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
 > ---
->  drivers/iommu/intel/iommu.c | 6 ++++++
->  drivers/iommu/intel/pasid.c | 7 +++++++
->  2 files changed, 13 insertions(+)
+>  drivers/iommu/intel/dmar.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
 > 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 6743fe6c7a36..b85d88ccb4b0 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1368,6 +1368,12 @@ static void iommu_disable_pci_caps(struct device_domain_info *info)
->  	pdev = to_pci_dev(info->dev);
+> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+> index d14797aabb7a..d01d68205557 100644
+> --- a/drivers/iommu/intel/dmar.c
+> +++ b/drivers/iommu/intel/dmar.c
+> @@ -1273,6 +1273,9 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+>  {
+>  	u32 fault;
+>  	int head, tail;
+> +	u64 iqe_err, ite_sid;
+> +	struct device *dev = NULL;
+> +	struct pci_dev *pdev = NULL;
+>  	struct q_inval *qi = iommu->qi;
+>  	int shift = qi_shift(iommu);
 >  
->  	if (info->ats_enabled) {
-> +		pci_disable_ats(pdev);
+> @@ -1317,6 +1320,13 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+>  		tail = readl(iommu->reg + DMAR_IQT_REG);
+>  		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
+>  
 > +		/*
-> +		 * flap the E bit of ATS control register to do implicit
-> +		 * ATS invlidation, see PCIe spec v6.2, sec 10.3.7
-
-s/invlidation/invalidation/
-
-I would put the comment above the pci_disable_ats(), so it looks like
-this:
-
-  /* comment ... */
-  pci_disable_ats(pdev);
-  pci_enable_ats(pdev, VTD_PAGE_SHIFT);
-
-  pci_disable_ats(pdev);
-
-because the spec says the E field must change from Clear to Set to
-cause invalidation of all ATC entries, so it's important to see that
-we clear E first, then set it.
-
+> +		 * SID field is valid only when the ITE field is Set in FSTS_REG
+> +		 * see Intel VT-d spec r4.1, section 11.4.9.9
 > +		 */
-> +		pci_enable_ats(pdev, VTD_PAGE_SHIFT);
->  		pci_disable_ats(pdev);
->  		info->ats_enabled = 0;
->  		domain_update_iotlb(info->domain);
-> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-> index 108158e2b907..5f13e017a12c 100644
-> --- a/drivers/iommu/intel/pasid.c
-> +++ b/drivers/iommu/intel/pasid.c
-> @@ -215,6 +215,13 @@ devtlb_invalidation_with_pasid(struct intel_iommu *iommu,
->  		return;
->  
->  	sid = info->bus << 8 | info->devfn;
-> +	/*
-> +	 * If device has been released from rbtree, no need to send ATS
-> +	 * Invalidation	request anymore, that could cause ITE fault.
-> +	 */
-> +	if (!device_rbtree_find(iommu, sid))
-> +		return;
+> +		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
+> +		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
 > +
->  	qdep = info->ats_qdep;
->  	pfsid = info->pfsid;
+>  		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
+>  		pr_info("Invalidation Time-out Error (ITE) cleared\n");
 >  
+> @@ -1326,6 +1336,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+>  			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
+>  		} while (head != tail);
+>  
+> +		/*
+> +		 * If got ITE, we need to check if the sid of ITE is one of the
+> +		 * current valid ATS invalidation target devices, if no, or the
+> +		 * target device isn't presnet, don't try this request anymore.
+> +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
+> +		 */
+> +		if (ite_sid) {
+> +			dev = device_rbtree_find(iommu, ite_sid);
+> +			if (!dev || !dev_is_pci(dev))
+> +				return -ETIMEDOUT;
+> +			pdev = to_pci_dev(dev);
+> +			if (!pci_device_is_present(pdev) &&
+> +				ite_sid == pci_dev_id(pci_physfn(pdev)))
+> +				return -ETIMEDOUT;
+> +		}
+>  		if (qi->desc_status[wait_index] == QI_ABORT)
+>  			return -EAGAIN;
+>  	}
 > -- 
 > 2.31.1
 > 
