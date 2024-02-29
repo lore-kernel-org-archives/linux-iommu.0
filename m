@@ -1,165 +1,100 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10olkn2022.outbound.protection.outlook.com [40.92.40.22])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33BD044C9B
-	for <iommu@lists.linux.dev>; Thu, 29 Feb 2024 07:36:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.40.22
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709192171; cv=fail; b=oF4H1x5v8P4TGO+2hP62tOSgNyFy5rtYEsTFwcEFXo5BA8TBdyr5EJdF+ZmX9Q5rmCTBUBkqgNhraLedywEm8bCScGv8Ex155IDap5qtI4Vrw6+tIcWAUxgMogMfY55XsQutkLMoiuKBim0wC2MG1z68S0lhLm+y+qOfdVvlmHU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709192171; c=relaxed/simple;
-	bh=KS3y+96FU0MWaX4D9C7Fi3Bqsn+8Xpv+YubQvc0tCkM=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=Rc5HwYAvNdAS60cBpP/9sE6zN/KBRlWuArCIWKzqp5q77bKtJGV4HLB9F0DLunYBGJm8AVhPKcc7iSjvLbjPHhDDkGBOdFqgr+QqlQdBAmecx6bHgU78841IFCfkPNQBn+ahH6hPsyjkbQBpYNSq43n3Gy0rbSLAVC7LtTgc1OE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=aP5UV2zC; arc=fail smtp.client-ip=40.92.40.22
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9316462154
+	for <iommu@lists.linux.dev>; Thu, 29 Feb 2024 09:52:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709200337; cv=none; b=Apvep8tFdIk5gLQhUy9RqFDwtn1eL4HVVskFC2IzTV9rijTYHsM5bEydNs4uxFBjiAFi/R7hLK0FNSrIb4EBksYERjgYXB5bgN9TmDr43o63RYVoY4IqGadHvGDpbVeA/b8KuFX1/NZwYJjZJr6238K+Plhld9uyEVXEKVd/npU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709200337; c=relaxed/simple;
+	bh=+9JxLT5TVumyzyybTc6fOlSoFtDJPx48dbrQoi3SRAQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Ls4WzYVo9a5YgQIik0DDILVN3B2dpjV4g4xCX7rOVfVjNZa5RmNO+fpGnn9dkyuU+u6u0Ofrpm+mmMipkbS+UmVE1uINu13vYs6CSkZ+A9gYi2iSqm3/Z1uhWs29BFzi95S9GgQxMqdGZJrtBhiuqoWyS05mOs4xYjF9VvxiEe4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=axfXhrnN; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="aP5UV2zC"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UnPYAOGPa3pWqcdgpBesmwHi8fnIq5jgPBUIEQ10InCTFZZZj60we9GVsgL7wbJMIoRNP9Gl9d2U4AksUb1mgHmXXCD7qsJVIY5xCrC1mD+XFLCGyNLRqXRBdZ3BuR4LnFvRi6mDn8YeLW+waqpwPTNzTeuVWpT7C+Qb0IQTZX4SbwRQh+Ut5KybeGGCtA0Z/HpE+d+vcU/b0FIjbcOnVfucpRgIC1wj70ptNb+yR2Cknqwf7memjgbZbnO48DPmPR4cf5T3FXa2UMsB6bYEexSOJgWnQXl2coIC7aSlL2B9E1YK9t0z+0KuUihZ+hO38ZKMjxUICC9x8OaKW+JgKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iO4YTlOOjtAWTRt0Dbwct8P58rd4w2p8QseRByuYVZc=;
- b=OeqMZ4ko2Vr4VDrnihXSsgkvn5Io+1M/RvBT5Lah8RTrhzstNBuaIqb5UYI+v5Cq+YammZCVm4ZXL9WTS51Bx+D2emDUEtyiHHgUblI0DDmYLKng5TEho0WmRhO2Bc9Ueffb12ghnwb1hga18UTWOSqhOFW71EZe932AKpbHPKvPiaZQFG22jf+eG/GLHj6SuTj5/cQ9nsRc9xsNrTZIkrQoq2OCG0NO/VcRZcex/e6n2A1UX+Ug+6nIKnHhOVipJ68pbHT5y14b2ZvJXiWds/jRdgr/0of3kUYnTB/tGTbFTsFGpcA0/SyoWyigk5KJUmqvK1OwQeEMz5ne2z4O6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iO4YTlOOjtAWTRt0Dbwct8P58rd4w2p8QseRByuYVZc=;
- b=aP5UV2zCEukPmgoYRlJGdWohIs+ir0uxlzSjD7ZGm6U2IAalicaESZOazeuOgO9pwanvH9zY2zo1/wW4E48RA8NQ6YmQGGwEKpNlLyJ+hzArZnAJW67cygei5Do+pty2T6nBo9aDq3cxKeT4HUmyM7RcU60ihq735Zpl8ChbiWNyBJYBc8r4D3GBZwuzvDx6hRumGYgBajQA9TBSXxsHoBM0zAoCAxZhtisn7nLcndXQPD7GM4jDx7Bj0ePV5aIDXzJUdDXjjbZaqAfA6yHkvvQnglBgCBw8CqGVOYQpp8M4PwzuCUIrcoEFxd5povbF4RngU4paRdTAPEO2Z8oWAA==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by DM8PR02MB8022.namprd02.prod.outlook.com (2603:10b6:8:17::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7316.39; Thu, 29 Feb
- 2024 07:36:06 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::67a9:f3c0:f57b:86dd]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::67a9:f3c0:f57b:86dd%5]) with mapi id 15.20.7316.037; Thu, 29 Feb 2024
- 07:36:05 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Will Deacon <will@kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, Petr Tesarik
-	<petr.tesarik1@huawei-partners.com>
-CC: "kernel-team@android.com" <kernel-team@android.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Christoph Hellwig
-	<hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
-	<robin.murphy@arm.com>, Petr Tesarik <petr.tesarik1@huawei-partners.com>,
-	Dexuan Cui <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
-Subject: RE: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
- allocations >= PAGE_SIZE
-Thread-Topic: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
- allocations >= PAGE_SIZE
-Thread-Index: AQHaakuep9s0mIf3eE+om+sQlmyZtbEg06/QgAAR1sA=
-Date: Thu, 29 Feb 2024 07:36:05 +0000
-Message-ID:
- <SN6PR02MB41577D09E97B1D9645369D58D45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240228133930.15400-1-will@kernel.org>
- <20240228133930.15400-7-will@kernel.org>
- <SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-In-Reply-To:
- <SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [JjVH26CSkS77Hu1bhHR4k2X5/jjNX+H5]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|DM8PR02MB8022:EE_
-x-ms-office365-filtering-correlation-id: c51196c4-7580-4fa7-4db3-08dc38f91670
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- 5hTREnYf2Fm4YrNv5hzF7TYqXKbsqPjUjqdnU9PdlU33sO7qjpfnRQ0wlkAmrXa7qYuQydYIvSeVw9dIA/FQckPVNfoBPGaWvh7fnSxEtlvZQ0f2/CGVKhxYXLWLqfKiFPWTtGa97iS8pHNmh/pX/IS7xp4RlJMrTL2Zh+96YRrJCQYTo4QsGD8XYDIrP9G9WLXn2iFUQnlUtGf8AaCat5shE/kkmyHAxSzkAsLGORKGwEUowddBptGQ288hftccZWpBXzSuORm3zd31yfV1JO8mNJW16E7asgEhSo7DHSwU7n1AcMu+UecxYQMNYy8ECOEE5AlAlKYRTb4oI3R3TMB4bo/v5Jy2pdRsIEG59rSTkQzlj8pqOGQkSAj6utTiInKA8ukL+Z4J6enX16bye44VtdlQisULDySJnj+6JYnU9FhhHiUCEs49b55ELNWBuqZVXxZkUfYD354zFSNzSzSyrNxTeAe7xjquSSMYpmZvJi6pxpXIMPeUXauEBYluBjvypvV+bPLA5Xp6SsEJOPvrqs4PqZs2UfncYI+eP4mUsL35G5ov96kIiIVbb0J4
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?Wk5AEgXsaiOIzdsBB6bjKxrKdulyQOFErOCnkwIVy1fO8m+qLW9nm5d/+q49?=
- =?us-ascii?Q?hgsGMigGP3Xh54+kNVbItUQo1yORp7cEZJX7ci40nmEEA4e2kIs71z8NIKPZ?=
- =?us-ascii?Q?9oD7dZVK6dRi8T2T0aJ1UgqOZl2Zxbave6yU6At5DkHePgsDqrBuNJK5sC3F?=
- =?us-ascii?Q?nrnDgFOH8qkDYrt7CDYa1tuTf6l4Np0iyolO2SQT+v2QPxZSujWTOv16KAhK?=
- =?us-ascii?Q?CnB8Y0ryhzAzXNBb/FHx1cNJQ4LWsi60G1aqXks6RPI5Y6Zj3WSYNAcHXrtE?=
- =?us-ascii?Q?rtA8GAMYaDtzLZBiJwdWfD++ZDJHnmB6RP/JRDxjQfH14i5JuUCZH7Q5AwhN?=
- =?us-ascii?Q?28SJ2XuwELMXv8usHKGlNEQotbyycKf3/0I5d2zSu0Er7T9HbL2m3jsywY3R?=
- =?us-ascii?Q?bn5pLgr6e5cLbTyQaiUluWL9zhUNByLXHmIeiNjfWaZ1ANFZU6WAX3/mOEHM?=
- =?us-ascii?Q?lxyKHc2831obYJYRG7YjHo8U8CsG+zA9suAeeGDLSkHKinEiqCPHF35QPiP0?=
- =?us-ascii?Q?j+FRXQvB9kqPe/p3lEB/dZtXu3wLDnTGaeSx4wFWEYQRGc5O8AKhYaVHThEm?=
- =?us-ascii?Q?YT/b6FbYlx8G/oFWL5VDdmrG1DulS2sCMIHcTPj+JDdg4l+WXr1RELEtDVpa?=
- =?us-ascii?Q?NkPDEtaJ+9dnY6QcjS30Hg1FX2iD8/1pgXqgtHsC6i4Ab5oWcy6iOKG0a9TZ?=
- =?us-ascii?Q?99s4XijrIVooq4OAolm85/u4ngqCzZN1oME4AsUDf0neArVXwuEtrGXcDa0H?=
- =?us-ascii?Q?qEcPXvsR7Vmvw9HHFGfqKzvpEBe/L/IBuBhvBeySCsjOPBza1V5oJdG+8xRB?=
- =?us-ascii?Q?kMk/SecBmtohoNFRThEz2WYIxCUGyu+VwUjGXcpKWQpof4gfJXKTYXQSXxvw?=
- =?us-ascii?Q?NPK1r99ux0J+5MfQRKAeZ69nJFPo6sAy1AB/3d/NH/Bq+v5L7lnA+jRBxZf2?=
- =?us-ascii?Q?ljqWTYfKXsEzagbjmZR07/GCFCqqvXN1mxdaS297FTDhrTfPdF7LnxiH4ZyE?=
- =?us-ascii?Q?LZM802id2iujW+3vQ7wUdjxWWjAsBNkBrgEskbzjWjHNDu+0jni8ezu0+BOx?=
- =?us-ascii?Q?RTwSw1c6OLrp8l1o6hkyV43PboMW2vM38Ki+zKIIHFcmErIupOCq6I5ULjoG?=
- =?us-ascii?Q?YMjerIXTcdEzrUWAHMC/ixMjtbK6ghB1LbiMWM+m6i35drhsonznvz7zMV/H?=
- =?us-ascii?Q?dAkzJCOgPqF3odFnIPpBz05sXWf4eMRTrJWMKg=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="axfXhrnN"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1709200335; x=1740736335;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+9JxLT5TVumyzyybTc6fOlSoFtDJPx48dbrQoi3SRAQ=;
+  b=axfXhrnNSrATJPlm7k4kIq+nrcQd2+mywqN5Lup1sqKF2pTtnQe+wumz
+   9ms818C/cQKikPQ0PeG/R8Ayib8ZEXhwE77bJ7DaXfXvKztSukrVq8IcY
+   Pf+6QifLaTt3iuiK9wP0+mCHWbxQSiLju+F9LJRRtN9vYe0n+Cs79F2r+
+   G5aJmgPV+tjubCJcEL0f3Jwi9X5woPLfr/Zdi8a5UKlvn2WDJqapF7ssw
+   OiGNKNwF7xBTE0c3if66ai8CDLDDaE9RVpQlMOiMAx4DO3Punq9d7hSAT
+   x9tEXi9DFwz+HAZPczFzuUfa2km/9yYNHlsDeRWHfXk2SHyiKz+Z08eqZ
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,10998"; a="14366663"
+X-IronPort-AV: E=Sophos;i="6.06,194,1705392000"; 
+   d="scan'208";a="14366663"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 01:52:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,194,1705392000"; 
+   d="scan'208";a="38811012"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmviesa001.fm.intel.com with ESMTP; 29 Feb 2024 01:52:13 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Eric Badger <ebadger@purestorage.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v2 0/2] iommu: Fix domain check on release (part 1/2)
+Date: Thu, 29 Feb 2024 17:46:11 +0800
+Message-Id: <20240229094613.121575-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: c51196c4-7580-4fa7-4db3-08dc38f91670
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Feb 2024 07:36:05.3677
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR02MB8022
+Content-Transfer-Encoding: 8bit
 
-> From: Will Deacon <will@kernel.org> Sent: Wednesday, February 28, 2024 5:=
-40 AM
-> >
-> > For swiotlb allocations >=3D PAGE_SIZE, the slab search historically
-> > adjusted the stride to avoid checking unaligned slots. However, this is
-> > no longer needed now that the code around it has evolved and the
-> > stride is calculated from the required alignment.
-> >
-> > Either 'alloc_align_mask' is used to specify the allocation alignment o=
-r
-> > the DMA 'min_align_mask' is used to align the allocation with 'orig_add=
-r'.
-> > At least one of these masks is always non-zero.
->=20
-> I think the patch is correct, but this justification is not.  alloc_align=
-_mask
-> and the DMA min_align_mask are often both zero.  While the NVMe
-> PCI driver sets min_align_mask, SCSI disk drivers do not (except for the
-> Hyper-V synthetic SCSI driver).   When both are zero, presumably
-> there are no alignment requirements, so a stride of 1 is appropriate.
->=20
+This is a follow-up to the discussion thread here:
 
-I did additional checking into the history of page alignment for alloc
-sizes of a page or greater. The swiotlb code probably made sense
-prior to commit 0eee5ae10256. This commit has this change:
+https://lore.kernel.org/linux-iommu/20240221154012.GC13491@ziepe.ca/
 
-        slot_base =3D area_index * mem->area_nslabs;
--       index =3D wrap_area_index(mem, ALIGN(area->index, stride));
-+       index =3D area->index;
+It fixes a NULL pointer dereference issue in the Intel iommu driver and
+strengthens the iommu core to possibly prevent similar failures in other
+iommu drivers.
 
-        for (slots_checked =3D 0; slots_checked < mem->area_nslabs; ) {
-                slot_index =3D slot_base + index;
+There are two parts of this topic:
+[x] Introduce release_domain and fix a kernel NULL pointer dereference
+    issue in the intel iommu driver.
+[ ] A follow-up series to cleanup intel iommu driver.
 
-In the old code, once the PAGE_SIZE was factored into the stride, the
-stride was used to align the starting index, so that the first slot checked
-would be page aligned. But commit 0eee5ae10256 drops that use
-of the stride and puts the page alignment in iotlb_align_mask, for
-reasons explained in the commit message. But in Will's Patch 1
-when the page alignment is no longer incorporated into
-iotlb_align_mask (for good reason), page aligning the stride then
-doesn't do anything useful, resulting in this patch.
+Best regards,
+baolu
 
-If there *is* a requirement for page alignment of page-size-or-greater
-requests, even when alloc_align_mask and min_align_mask are zero,
-we need to think about how to do that correctly, as that requirement
-is no longer met after Patch 1 of this series.
+Change log:
 
-Michael
+v2:
+ - The scalable mode context entry should be removed in the release path
+   as it's not part of the blocking domain.
+
+v1: https://lore.kernel.org/linux-iommu/20240223051302.177596-1-baolu.lu@linux.intel.com/
+
+Lu Baolu (2):
+  iommu: Add static iommu_ops->release_domain
+  iommu/vt-d: Fix NULL domain on device release
+
+ include/linux/iommu.h       |  1 +
+ drivers/iommu/intel/pasid.h |  1 +
+ drivers/iommu/intel/iommu.c | 31 +++-----------
+ drivers/iommu/intel/pasid.c | 83 +++++++++++++++++++++++++++++++++++++
+ drivers/iommu/iommu.c       | 19 +++++++--
+ 5 files changed, 106 insertions(+), 29 deletions(-)
+
+-- 
+2.34.1
+
