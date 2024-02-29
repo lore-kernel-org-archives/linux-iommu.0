@@ -1,58 +1,42 @@
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F184014373A;
-	Thu, 29 Feb 2024 21:03:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.147.86
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B54F6D503;
+	Thu, 29 Feb 2024 21:06:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709240594; cv=none; b=Pq2FBAZyY+s0XsGgrnFsNwjIqHRVTe50OOEmyZrWrvhiEsC2G+TET0eZV1XU8whCSx+SH5VOAqDBmQqq27Dn2XEsbwULY7cbe8BvFzcCpLlFJmaBomEnzE3MSZwv05U9JxRlFEW1rwd9m2pDVjxBriE1hJFCP33Uc90OxBs2Ffg=
+	t=1709240803; cv=none; b=DgsBRwxkOCvnmI6qLvBZUNBy1TRiO33cVFAISOriHmHNNGDv2uyhLnbS9KypXL8w+ibz8cKMmhW5d6PF6771qHH6v7UlJo7jiJadhUCQ6dpRfJNRYUATBQr9n5nQuveoUjndqc4hdcHpkl5l9qyXBs7/i7UlWifhk7lpF7F4Bzg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709240594; c=relaxed/simple;
-	bh=VTjWIjnaot8bvp8Uz7YSb+Wu+VwzB7BvnAiwu0uiHUE=;
+	s=arc-20240116; t=1709240803; c=relaxed/simple;
+	bh=AEjYtbKr9ZxceLUwWxzAgzu87zcJb3nLNbDcnS6bRS4=;
 	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=aA5Kx72eCTQTlcfN85Ih+XhIu4XF4ziOO3F3Zx1Tun8tw96TIREO2CLLU2ZHPTvqDXf+FHPFlKHsHC+dYAz1pm48C3JNfsBcJ8j0yZBgUibj9Cc0+EWKyRPK2ruKLwpnFxIlWWYx9HbrqDopnnj8ljt5aKIXMwhqUVwjy3Jkrhw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com; spf=pass smtp.mailfrom=hpe.com; dkim=pass (2048-bit key) header.d=hpe.com header.i=@hpe.com header.b=kzPXwjK1; arc=none smtp.client-ip=148.163.147.86
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hpe.com
+	 Content-Disposition:In-Reply-To; b=cebCOL8ADyVy68XTCzIq4Ha1cYyRSRF53i+/DtDYIwe3eWUsUTv0Ibh77ThMeqGXBTru8OxYpU7uGF8vmzPwmqbBVUlLirCAduAujp+yLqe8eambhjtUbLeRX1wGw4HCenZ8TgZqOLpwhh1T0mNsCoEbw/GVvfsI8LCWumPCGBY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bFKFW96s; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hpe.com header.i=@hpe.com header.b="kzPXwjK1"
-Received: from pps.filterd (m0150241.ppops.net [127.0.0.1])
-	by mx0a-002e3701.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 41TFBuaH010561;
-	Thu, 29 Feb 2024 20:07:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
- subject : message-id : mime-version : content-type; s=pps0720;
- bh=bTL4DOSmyNxQGe0QwLYqgTCiTE3h293KECpT2Cd+njk=;
- b=kzPXwjK1SZsCC4A2UXBWK91e9uFF/hCuTPi/3IZkSdWrHbLVAxL10mh32LdEw+Qf5/ik
- at81CsioejMhAKCSvyosSXQTrD63rc1D1WG3QZE84heShZI+kdUW4LvQ0dzZE4esF0OQ
- /GLydvzxR5es2XSb3ehAa2Sd4tkM+ZqWsYOjmbT1nfxPMjNPWoDTqxkvuPohvhABOSFU
- e1sc33lrbdKqeMAkVfZzwza1x2KLjLatL3e6oHtFcInLnKCYtXEyqtvWrOqwpzmj/fb/
- qthu2c9EMSRUd+FI9oRgFnlP/q2d3V9q4YlabwIFqRkVDvEs4B8R3/II53iogipiTrde 7w== 
-Received: from p1lg14879.it.hpe.com ([16.230.97.200])
-	by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3wjvbxb4w5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Feb 2024 20:07:30 +0000
-Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by p1lg14879.it.hpe.com (Postfix) with ESMTPS id 9BB85130F8;
-	Thu, 29 Feb 2024 20:07:29 +0000 (UTC)
-Received: from hpe.com (unknown [16.231.227.39])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTPS id A83CB8005F1;
-	Thu, 29 Feb 2024 20:07:26 +0000 (UTC)
-Date: Thu, 29 Feb 2024 14:07:24 -0600
-From: Dimitri Sivanich <sivanich@hpe.com>
-To: Dimitri Sivanich <sivanich@hpe.com>, David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>, iommu@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org, Steve Wahl <steve.wahl@hpe.com>,
-        Russ Anderson <russ.anderson@hpe.com>
-Subject: [PATCH] Allocate DMAR fault interrupts locally
-Message-ID: <ZeDj/LK56borSxO4@hpe.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bFKFW96s"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF351C433F1;
+	Thu, 29 Feb 2024 21:06:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1709240802;
+	bh=AEjYtbKr9ZxceLUwWxzAgzu87zcJb3nLNbDcnS6bRS4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=bFKFW96sIiJGSerm8V0bNCD1SbFpGcH/jDdjnh4RISImFg9R0/QLxoUqbMF5f6JXJ
+	 ORnFl3JyAhMJN9MkJO1le80pH4UK/bdn6EpKh3PKAwnwHo27GndhmCouKfNFHe0Csw
+	 1/iToOeuEUcZ5liziICd9GbPgezx1mJo2E7pHzz/S3JtN7xuCTA22hBMTvzvWGWXUf
+	 DDyborhhtQlAOxY+QJcmFzr0ZFBL6UoxhMMXo3Yo+TKfcQ4bMY60AjqEwj4+5dAgbd
+	 egOHbUlLATGcB4yk3C8SQDfRgmV4pljL9ydcLl6A+ilyVdaUmMbcespX3oZPyRvXRS
+	 11bYcGkPSOkcA==
+Date: Thu, 29 Feb 2024 15:06:40 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>
+Cc: baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
+	jgg@ziepe.ca, kevin.tian@intel.com, dwmw2@infradead.org,
+	will@kernel.org, lukas@wunner.de, yi.l.liu@intel.com,
+	dan.carpenter@linaro.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/vt-d: avoid sending explicit ATS invalidation
+ request to released device
+Message-ID: <20240229210640.GA362869@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,85 +45,91 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Proofpoint-GUID: kaKI-Rt3ddMThGjjOtXFFOFMzOETu6v1
-X-Proofpoint-ORIG-GUID: kaKI-Rt3ddMThGjjOtXFFOFMzOETu6v1
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-02-29_06,2024-02-29_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 adultscore=0
- mlxscore=0 mlxlogscore=995 priorityscore=1501 impostorscore=0 phishscore=0
- suspectscore=0 lowpriorityscore=0 bulkscore=0 malwarescore=0 clxscore=1011
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2311290000
- definitions=main-2402290155
+In-Reply-To: <20240229033138.3379560-1-haifeng.zhao@linux.intel.com>
 
-The Intel IOMMU code currently tries to allocate all DMAR fault interrupt
-vectors on the boot cpu.  On large systems with high DMAR counts this
-results in vector exhaustion, and most of the vectors are not initially
-allocated socket local.
+On Wed, Feb 28, 2024 at 10:31:38PM -0500, Ethan Zhao wrote:
+> The introduction of per iommu device rbtree also defines the lifetime of
+> interoperation between iommu and devices, if the device has been released
+> from device rbtree, no need to send ATS invalidation request to it anymore,
+> thus avoid the possibility of later ITE fault to be triggered.
+> 
+> This is part of the followup of prior proposed patchset
+> 
+> https://do-db2.lkml.org/lkml/2024/2/22/350
 
-Instead, have a cpu on each node do the vector allocation for the DMARs on
-that node.  The boot cpu still does the allocation for its node during its
-boot sequence.
+Please use https://lore.kernel.org/ URLs instead.  This one looks like
+https://lore.kernel.org/r/20240222090251.2849702-1-haifeng.zhao@linux.intel.com/
 
-Signed-off-by: Dimitri Sivanich <sivanich@hpe.com>
----
- drivers/iommu/intel/dmar.c | 34 +++++++++++++++++++++++++++++++++-
- 1 file changed, 33 insertions(+), 1 deletion(-)
+> To make sure all the devTLB entries to be invalidated in the device release
+> path, do implict invalidation by fapping the E bit of ATS control register.
+> see PCIe spec v6.2, sec 10.3.7 implicit invalidation events.
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 23cb80d62a9a..41ef72ba7509 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -2108,8 +2108,12 @@ int __init enable_drhd_fault_handling(void)
- 	 */
- 	for_each_iommu(iommu, drhd) {
- 		u32 fault_status;
--		int ret = dmar_set_interrupt(iommu);
-+		int ret;
- 
-+		if (iommu->node != cpu_to_node(smp_processor_id()))
-+			continue;
-+
-+		ret = dmar_set_interrupt(iommu);
- 		if (ret) {
- 			pr_err("DRHD %Lx: failed to enable fault, interrupt, ret %d\n",
- 			       (unsigned long long)drhd->reg_base_addr, ret);
-@@ -2192,6 +2196,34 @@ static int __init dmar_free_unused_resources(void)
- 
- late_initcall(dmar_free_unused_resources);
- 
-+#ifdef CONFIG_X86_LOCAL_APIC
-+static void __init irq_remap_enable_fault_handling_thr(struct work_struct *work)
-+{
-+	irq_remap_enable_fault_handling();
-+}
-+
-+static int __init assign_dmar_vectors(void)
-+{
-+	struct work_struct irq_remap_work;
-+	int nid;
-+
-+	INIT_WORK(&irq_remap_work, irq_remap_enable_fault_handling_thr);
-+	cpus_read_lock();
-+	for_each_online_node(nid) {
-+		/* Boot cpu dmar vectors are assigned before the rest */
-+		if (nid == cpu_to_node(get_boot_cpu_id()))
-+			continue;
-+		schedule_work_on(cpumask_first(cpumask_of_node(nid)),
-+				 &irq_remap_work);
-+		flush_work(&irq_remap_work);
-+	}
-+	cpus_read_unlock();
-+	return 0;
-+}
-+
-+arch_initcall(assign_dmar_vectors);
-+#endif /* CONFIG_X86_LOCAL_APIC */
-+
- /*
-  * DMAR Hotplug Support
-  * For more details, please refer to Intel(R) Virtualization Technology
--- 
-2.35.3
+s/implict/implicit/
 
+s/fapping/?/  (no idea :)  "flipping"?  Oh, probably "flapping" per the
+comment below.  But I think "flapping" is ambiguous; "setting" would be
+better)
+
+s/v6.2/r6.2/ (also below in comment)
+
+> Fixes: 6f7db75e1c46 ("iommu/vt-d: Add second level page table interface")
+> Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
+> ---
+>  drivers/iommu/intel/iommu.c | 6 ++++++
+>  drivers/iommu/intel/pasid.c | 7 +++++++
+>  2 files changed, 13 insertions(+)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index 6743fe6c7a36..b85d88ccb4b0 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1368,6 +1368,12 @@ static void iommu_disable_pci_caps(struct device_domain_info *info)
+>  	pdev = to_pci_dev(info->dev);
+>  
+>  	if (info->ats_enabled) {
+> +		pci_disable_ats(pdev);
+> +		/*
+> +		 * flap the E bit of ATS control register to do implicit
+> +		 * ATS invlidation, see PCIe spec v6.2, sec 10.3.7
+
+s/invlidation/invalidation/
+
+I would put the comment above the pci_disable_ats(), so it looks like
+this:
+
+  /* comment ... */
+  pci_disable_ats(pdev);
+  pci_enable_ats(pdev, VTD_PAGE_SHIFT);
+
+  pci_disable_ats(pdev);
+
+because the spec says the E field must change from Clear to Set to
+cause invalidation of all ATC entries, so it's important to see that
+we clear E first, then set it.
+
+> +		 */
+> +		pci_enable_ats(pdev, VTD_PAGE_SHIFT);
+>  		pci_disable_ats(pdev);
+>  		info->ats_enabled = 0;
+>  		domain_update_iotlb(info->domain);
+> diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+> index 108158e2b907..5f13e017a12c 100644
+> --- a/drivers/iommu/intel/pasid.c
+> +++ b/drivers/iommu/intel/pasid.c
+> @@ -215,6 +215,13 @@ devtlb_invalidation_with_pasid(struct intel_iommu *iommu,
+>  		return;
+>  
+>  	sid = info->bus << 8 | info->devfn;
+> +	/*
+> +	 * If device has been released from rbtree, no need to send ATS
+> +	 * Invalidation	request anymore, that could cause ITE fault.
+> +	 */
+> +	if (!device_rbtree_find(iommu, sid))
+> +		return;
+> +
+>  	qdep = info->ats_qdep;
+>  	pfsid = info->pfsid;
+>  
+> -- 
+> 2.31.1
+> 
