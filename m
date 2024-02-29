@@ -1,181 +1,210 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2ACB4AEF3;
-	Thu, 29 Feb 2024 16:46:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1D2C757EE
+	for <iommu@lists.linux.dev>; Thu, 29 Feb 2024 17:53:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709225175; cv=none; b=svQ2IDVz3kp2rlxqc19zbsaXf5Ft8I0eMY9xY8cmn0cvaWXd2LZ6oBOODrCAMiJR8uUcPH+LmygFTszbnISvylxoUXfDFzEhGVaWZyABTnK7goe3Xk+5eXm0167xPW4Rlu2WJidj7E9kmTzG71YGQyNISEdjELJASTFzVKqjkJQ=
+	t=1709229234; cv=none; b=TRQJ0cGrNOH3Af29gLO+4+K0mOnCuCx0pXMdHR195O9ddyMO2za1pfxBtwHpd1PpW+QSn87ceKh6Hnh6UStnB8hZ2eJaR45q1kOmzFpyaIONnW+n4+9tMRDO+FbA+KYgKzHjmt/Aqcntj3IShO59p9pumkMdZIVUgmJVxSfQCM4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709225175; c=relaxed/simple;
-	bh=8RqIIXF34nZ8GXlY8oIvWGsjhyeVgFUKpX4/XuHmuEM=;
-	h=Content-Type:Mime-Version:Date:Message-Id:Subject:From:To:Cc:
-	 References:In-Reply-To; b=skrOSpSIJhO69n+H4hwE0yKiUeND/5IcZX9JKzW9Fgx++lIuBg8kEwQlSQLRBB/UYnjtneiEhLr9vNga6a2OnttMvFBP7bdZm2E+0VQxAmttBXATh0K3RXilsUf0E8Ni6astkwIkI5gMUCfqBk/qnLetdmWbYjq09/THmRwTpJ8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Owk/lbNA; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1709229234; c=relaxed/simple;
+	bh=zBqfNMYVF5/JiYjN86izYLCeDLHWsfJLi15L0WBi6Nw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=t0LBW/IwY0W4iNXwEth/vXdlKGxM9scvtjS0vNNvDiMMCC7BH4huYtWBP3LH0KRDqD+qUHwQc2ojruHiaSvcy/CA4KhcWc2Ro2ZJNnru6k1P5slkbimjrsWjxG4I58efODvZ2MnqAqZhHyZ3zWPwyvahKFi4uUCf83l+VLqNfP0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=xxk3oA/G; arc=none smtp.client-ip=209.85.208.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Owk/lbNA"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-33d28468666so774943f8f.0;
-        Thu, 29 Feb 2024 08:46:13 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xxk3oA/G"
+Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-5661b7b1f51so2069434a12.2
+        for <iommu@lists.linux.dev>; Thu, 29 Feb 2024 09:53:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1709225172; x=1709829972; darn=lists.linux.dev;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Xhbu3vuLuSjWsdzC0FVCBhGVPtGx1e4BdeAUYrGCjGY=;
-        b=Owk/lbNAulRhkyVr2rOb0ZYJ1jrRy19t+q3YJdxEQVYOa1n5XraIr3rUm2LqQCqxx9
-         joInEaQQXRjgadKehbbK3zSCRxrnRqYqPqoUxYhDFkBSlhOWeYGOii1OPvwi20zW3q7w
-         P9+3LJUu3j4hxaR54/qIT4jlofnIJsm4cdBFc3vvNvJGJlgEbwzjN9LrxSPfNPONQsWx
-         W3gsYzfmW9HewceQhom1+4OR5rHpiG/1SeVt2lnGXo/8AuD8glPSE9F+TS3kd6LkPHvI
-         lJGkEQRwasbtM1fyHVWApJC7d+gGOztANuxR7jxBkjW7+FHmapkjXJQVpY09duILDQwP
-         mmeA==
+        d=linaro.org; s=google; t=1709229230; x=1709834030; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=RfoGmIA3EXLESsnrc37tloaAWUC/7gWzQvgxYQosHz8=;
+        b=xxk3oA/GGIpzMA0G9a+cn349T0PT4eLZITX9p+P4fGU3xwgaVGek6ciDuy55CWKMaA
+         f//ZEFMAb/oPcuR/ffR8q5KYOVYlrE/2os5wGol9jA178zBjoRPaVvFxNA2QnrQSv8Na
+         3qsTFQdsqiD4N5l8jvssBGdIDZr+21TssEWtM2n4i8/UifLi/XvBIoFKBwxLNr/br+i8
+         vfTL1JFDZ5BmFJotYFZP0HxM0SIq+SImi6xpihORDbS9PJUhcxkMPe06azLYep49Shb5
+         SROgrRe/pQEfEkXo+20KwM810cXGG51zDZdjBvtTB90mF/d48GKiGWhkVn4yNAV6mbRu
+         qQKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709225172; x=1709829972;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Xhbu3vuLuSjWsdzC0FVCBhGVPtGx1e4BdeAUYrGCjGY=;
-        b=OUWsm2GIZAncvgZaO9lJc6TV+snt06jrsDdz4nYmO1g0uroxzbYVHpB+9y8jGWXGEs
-         y5NHoy2CPW1owOU9sHStyVxQVNBnMStuBfotoLoUGe1QvlEW8yV0oSSw+9roZMb22U9i
-         VVH8NztZ4xttVo58RBvTNSwivIipd6VVLmYjGOFb4p8iD6h1WSs1qRzsliC2msdj5dy6
-         kJ0uusD7Qfzv59JE+B015g4BfUb5gzKk3CxurvUWmC8PqkRTU5hXuoz0UtFISoJtPrUP
-         rHGKs2l3d9Akqb7lLhysrNAHE8YbckngG2HlrZ6MfzhKkVerAs3ey6Xxz564rCPpVVjw
-         pMNQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWxKZ+79KTELFBcVLX+YJn3InNqC8mSlu8jewCKk+RNXa3EwSNnPOHLKbaG0hAT01eRqXVgEIeOpU+1ccug2HpB6ndj7kSoazZRdRe37n2Fbn/ZUxEvICJ+Q2TP7CfkvqF7Hw==
-X-Gm-Message-State: AOJu0YyS7LPbrcTIPzlH42nBhVeFGP0zXddLtkjy+vuBxubADrFigV29
-	Joq08PnA30WytGAgzSkXsqDS86PEqyrTnK2axSD1QCPpH0HkQMmz
-X-Google-Smtp-Source: AGHT+IEGglLrQpgc8Roh+yvWbM4T0Y02kCuG+aROzWTVgaMbxUg/3rk3hM/+2sHShiMAsrYZq/S0/A==
-X-Received: by 2002:adf:b64e:0:b0:33d:3ee3:cc0a with SMTP id i14-20020adfb64e000000b0033d3ee3cc0amr2287039wre.0.1709225171428;
-        Thu, 29 Feb 2024 08:46:11 -0800 (PST)
-Received: from localhost (p200300e41f162000f22f74fffe1f3a53.dip0.t-ipconnect.de. [2003:e4:1f16:2000:f22f:74ff:fe1f:3a53])
-        by smtp.gmail.com with ESMTPSA id cc6-20020a5d5c06000000b0033dd4673a4asm2258126wrb.71.2024.02.29.08.46.10
+        d=1e100.net; s=20230601; t=1709229230; x=1709834030;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=RfoGmIA3EXLESsnrc37tloaAWUC/7gWzQvgxYQosHz8=;
+        b=XuOiiXTLuqtdBuwhKKWRD13OLmFoRYEw1iwkgdJ99ncfzZfJTmSS+29ffJOO9TnBoq
+         Lr1RBcphn+rJFRGSPN8+F2QOrOR/EUwOYuQC7xfAQ0FmVoHTICE66JU54/j0aNLuYwAh
+         bTjaWam67zC+V2D5CDsTX+qS0y8bSycCD23Gv0sBBYcbnz8oi3TwEatyacTykKkmBl6o
+         FtD21w2Lm5pTdTCxcOB52tR9RZGl6FGa3U46xusFX+PUROr0a7Npu7xoOCVsd7yd7zOz
+         Z9FnNE+GOXOFX7+cdkIGJKVmzFobLebLOY6Yq5itPJV1MDkOfqcHUc7ivWPbekUfWkyD
+         lx2Q==
+X-Forwarded-Encrypted: i=1; AJvYcCV/z2MLZR4RyUTPN27Jyb9a3JCYHCgqO26aeVX09p1qxH7XybsztvCIxxDh4/60DNUldCgXM06b78hyDr4v/wIwzUIe0Wo=
+X-Gm-Message-State: AOJu0YwoxW7vTHQ9cS8wRlIrnbVYHBDevNxnYO83VJNorW6nv4MIHS32
+	7oemxlkmGk0V+ErItdcsX3vEAz6wS/TtvJTgXSX3gwwr0j4mcGvSkWPSNHQyPpI=
+X-Google-Smtp-Source: AGHT+IGVLMaC14/+PftipvYzEtNgHcVPIokxbS5gRXWbo8S3+5pXOTZGSppDpuWEK/paubEq7vg70A==
+X-Received: by 2002:a05:6402:4494:b0:565:7bca:eebf with SMTP id er20-20020a056402449400b005657bcaeebfmr2313985edb.14.1709229230199;
+        Thu, 29 Feb 2024 09:53:50 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.222.97])
+        by smtp.gmail.com with ESMTPSA id r15-20020a056402034f00b0056686744752sm809679edw.37.2024.02.29.09.53.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Feb 2024 08:46:11 -0800 (PST)
-Content-Type: multipart/signed;
- boundary=aecc9b8c48571b79653ff9adff16128b76ab31233217e3a39eac093068b2;
- micalg=pgp-sha256; protocol="application/pgp-signature"
+        Thu, 29 Feb 2024 09:53:49 -0800 (PST)
+Message-ID: <b6215fcd-29fc-4495-999f-b7b03b36c087@linaro.org>
+Date: Thu, 29 Feb 2024 18:53:47 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Date: Thu, 29 Feb 2024 17:46:10 +0100
-Message-Id: <CZHPR7BLVDWK.3I71VAJO1OSNZ@gmail.com>
-Subject: Re: [REGRESSION] Failed buffer allocation in Tegra fbdev
-From: "Thierry Reding" <thierry.reding@gmail.com>
-To: "Jon Hunter" <jonathanh@nvidia.com>, "Diogo Ivo"
- <diogo.ivo@tecnico.ulisboa.pt>, "Robin Murphy" <robin.murphy@arm.com>
-Cc: "Jason Gunthorpe" <jgg@ziepe.ca>, <vdumpa@nvidia.com>,
- <joro@8bytes.org>, <will@kernel.org>, <baolu.lu@linux.intel.com>,
- <jsnitsel@redhat.com>, <jroedel@suse.de>, <linux-tegra@vger.kernel.org>,
- <iommu@lists.linux.dev>, <regressions@lists.linux.dev>
-X-Mailer: aerc 0.16.0-1-0-g560d6168f0ed-dirty
-References: <bbmhcoghrprmbdibnjum6lefix2eoquxrde7wyqeulm4xabmlm@b6jy32saugqh> <20240123151508.GR50608@ziepe.ca> <pgund4coabp5pdlmwze5o2d7ogrdncktqz267yzukjcvmikudc@7svrwdci7ujl> <55cab5e0-0abf-47d0-becc-05cdf1d22fac@arm.com> <r46zhd52g3w3kpu4jjca3vihmv5ahp3jcwge3rvg42dupxf2g4@p2u5mbdyypw3> <02a8d225-99cd-4dfe-bf49-b002aaa045d1@nvidia.com>
-In-Reply-To: <02a8d225-99cd-4dfe-bf49-b002aaa045d1@nvidia.com>
-
---aecc9b8c48571b79653ff9adff16128b76ab31233217e3a39eac093068b2
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 1/7] dt-bindings: iommu: Add Qualcomm TBU bindings
+Content-Language: en-US
+To: Georgi Djakov <quic_c_gdjako@quicinc.com>, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, will@kernel.org,
+ robin.murphy@arm.com, joro@8bytes.org, iommu@lists.linux.dev
+Cc: devicetree@vger.kernel.org, andersson@kernel.org,
+ konrad.dybcio@linaro.org, robdclark@gmail.com,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com,
+ quic_sukadev@quicinc.com, quic_pdaly@quicinc.com, quic_sudaraja@quicinc.com,
+ djakov@kernel.org
+References: <20240226172218.69486-1-quic_c_gdjako@quicinc.com>
+ <20240226172218.69486-2-quic_c_gdjako@quicinc.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20240226172218.69486-2-quic_c_gdjako@quicinc.com>
 Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Thu Feb 29, 2024 at 3:50 PM CET, Jon Hunter wrote:
->
-> On 24/01/2024 12:56, Diogo Ivo wrote:
->
-> ...
->
-> >>> I did the tracing and found that the ENOENT is coming from
-> >>> sysfs_do_create_link_sd() in the following function call chain:
-> >>>
-> >>> of_iommu_configure() -> iommu_probe_device() -> __iommu_probe_device(=
-) ->
-> >>
-> >> What's the call path leading up to that? If it's the one from
-> >> host1x_device_add() then it's expected and benign - for fiddly reasons=
-,
-> >> iommu_probe_device() ends up being called too early, but will soon be =
-run
-> >> again in the correct circumstances once we proceed into
-> >> host1x_subdev_register()->device_add(). That will have been happening =
-for
-> >> years, we just never reported errors in that spot before (and frankly =
-I'm
-> >> not convinced it's valuable to have added it now).
-> >>
-> >> Thanks,
-> >> Robin.
-> >=20
-> > Yes, it is the one called from host1x_device_add(), so this
-> > is solved and only the patch sent above needs to be merged.
->
->
-> Sorry for the delay in getting back to this. I have been doing more
-> testing and the backtrace I see from this warning is ...
->
-> [    7.001380]  drm: iommu configuration for device failed with -ENOENT
-> [    7.001550] CPU: 4 PID: 263 Comm: systemd-udevd Not tainted 6.8.0-rc6-=
-gbbe953beb8b9-dirty #2
-> [    7.001559] Hardware name: NVIDIA Jetson AGX Xavier Developer Kit (DT)
-> [    7.001564] Call trace:
-> [    7.001568]  dump_backtrace.part.6+0x84/0xdc
-> [    7.001583]  show_stack+0x14/0x1c
-> [    7.001590]  dump_stack_lvl+0x48/0x5c
-> [    7.001600]  dump_stack+0x14/0x1c
-> [    7.001606]  of_dma_configure_id+0x218/0x400
-> [    7.001636]  host1x_attach_driver+0x150/0x2d0 [host1x]
-> [    7.001664]  host1x_driver_register_full+0x7c/0xdc [host1x]
-> [    7.001711]  host1x_drm_init+0x3c/0x1000 [tegra_drm]
-> [    7.001746]  do_one_initcall+0x58/0x1c0
-> [    7.001752]  do_init_module+0x54/0x1d8
-> [    7.001761]  load_module+0x18b8/0x18ec
-> [    7.001770]  init_module_from_file+0x8c/0xc8
-> [    7.001777]  __arm64_sys_finit_module+0x1c4/0x29c
-> [    7.001784]  invoke_syscall+0x40/0xf4
-> [    7.001792]  el0_svc_common.constprop.1+0xc4/0xec
-> [    7.001814]  do_el0_svc+0x18/0x20
-> [    7.001820]  el0_svc+0x28/0x90
-> [    7.001826]  el0t_64_sync_handler+0x9c/0xc0
-> [    7.001845]  el0t_64_sync+0x160/0x164
->
->
-> I could have sworn that this was coming from
-> host1x_memory_context_list_init() but that is not the case.
->
-> Anyway, we have a test that checks for warnings/errors and this
-> is causing that test to fail. Even if this particular instance
-> of error is benign we would still like to trap any instances
-> that are not. So is there something we can fix here to avoid
-> this?
+On 26/02/2024 18:22, Georgi Djakov wrote:
+> The "apps_smmu" on the Qualcomm sdm845 platform is an implementation
+> of the SMMU-500, that consists of a single TCU (Translation Control
+> Unit) and multiple TBUs (Translation Buffer Units). These TBUs have
+> hardware debugging features that are specific and only present on
+> Qualcomm hardware. Represent them as independent DT nodes. List all
+> the resources that are needed to operate them (such as registers,
+> clocks, power domains and interconnects).
+> 
+> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+> ---
+>  .../devicetree/bindings/iommu/qcom,tbu.yaml   | 65 +++++++++++++++++++
+>  1 file changed, 65 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,tbu.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/qcom,tbu.yaml b/Documentation/devicetree/bindings/iommu/qcom,tbu.yaml
+> new file mode 100644
+> index 000000000000..6841ca9af21f
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/qcom,tbu.yaml
+> @@ -0,0 +1,65 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iommu/qcom,tbu.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Qualcomm TBU (Translation Buffer Unit)
+> +
+> +maintainers:
+> +  - Georgi Djakov <quic_c_gdjako@quicinc.com>
+> +
+> +description:
+> +  The Qualcomm SMMU500 implementation consists of TCU and TBU. The TBU contains
+> +  a Translation Lookaside Buffer (TLB) that caches page tables. TBUs provides
+> +  debug features to trace and trigger debug transactions. There are multiple TBU
+> +  instances with each client core.
+> +
+> +properties:
+> +  compatible:
+> +    const: qcom,qsmmuv500-tbu
 
-I was wondering why I wasn't seeing this and looking through some of the
-code I noticed that I have commented out the of_dma_configure() call in
-host1x_device_add() in my local development tree. I probably came across
-this at some point while trying to fix something else with the intention
-of getting back to it but then never did.
+Why we don't have SoC specific compatibles? If that's for SDM845, then
+it should be qcom,sdm845-tbu or qcom,sdm845-qsmmuv500-tbu
 
-Anyway, let me try to refresh my memory and take a stab at fixing this.
 
-Thierry
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +  interconnects:
+> +    maxItems: 1
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  qcom,stream-id-range:
+> +    description: Phandle of a SMMU device and Stream ID range (address and size) that is assigned by the TBU
 
---aecc9b8c48571b79653ff9adff16128b76ab31233217e3a39eac093068b2
-Content-Type: application/pgp-signature; name="signature.asc"
+Please wrap it according to coding style, so 80.
 
------BEGIN PGP SIGNATURE-----
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    items:
+> +      - items:
+> +          - description: phandle of a smmu node
+> +          - description: stream id base address
+> +          - description: stream id size
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - qcom,stream-id-range
+> +
+> +unevaluatedProperties: false
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmXgtNIACgkQ3SOs138+
-s6GXwQ/8CyWN8BB/KTF1iGQFIOz0qskslmxmYkGGV8EfwnYfO/7ks38fpbHrr7eB
-9QzidX0bEFQYH02YWA5ZiwYdcAbRHoiZWiSVN0bsL43oFeGZ3OmwJGvJ9I4mc9iT
-R0DMBvTU8ujju92dt3oOsAGo9X1s+O3evR1R43Ijqc2yQKi9wJ3MVTZ3GzsXvWum
-bTLf/XOswNiQ+rJfQtJXXxbjwnk+6Ymjn21EPWje6u8VhSyc6uGz3MUbSfFcxdu6
-g8BF7Ags9+qQ7cIch0f9xBwRgBCoXtxGGn+1rce6gHs82vYEA43q5053tm1zWAlM
-13bSIWGH/4qY9RQEeLEaqjzKnyjg0gJBDr1a1Y7OpT4pDoirUOT1xQtHU/jXzRkz
-Gu5u/Qx7jNmU19A0GK5d/bcGHheWRQ/ETdrqxx8lQjZfhsbHcmfquYDxtcb6Hd3X
-SqwPJ9cwW5jJAIodYfLOXk0/Sz+4NhmqdfbSQLEcYJMZ/zhZHZJ1mBPavbixl/oa
-xQrx9ALHPLaNv5FFfSX9RGmPSELlqBUvFJVTxcsTl/Zz2Ijr4Bkh0C+6ctGut/QG
-vNXNM2Ht3mpQ2XFMwZPPJZuCQiLb+YyJX3vQFial5qrG9WIBxNjGMIguyc20dTTe
-KabASO6ZAtq1IBvK/gdnlTU7Vgmzjs2ttZjSSJ/DKs00LNhJ9z0=
-=jm9P
------END PGP SIGNATURE-----
+This should be additionalProperties: false
 
---aecc9b8c48571b79653ff9adff16128b76ab31233217e3a39eac093068b2--
+> +
+> +examples:
+Best regards,
+Krzysztof
+
