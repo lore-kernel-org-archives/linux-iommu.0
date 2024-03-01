@@ -1,67 +1,44 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id ED11D4205A;
-	Fri,  1 Mar 2024 12:47:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 5B5647E1
+	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 12:52:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709297249; cv=none; b=H4qK/FX09nyWMjwFWQnJ0AqaETI2yHeNEnowxlIdDsh5OKfcy6RRyAL9zV+95wro069XxbDvHo42dOKnsHC8FnrSHRVJh8wf8VxBJjcQG2WmOqiwuoF5+oe2LpLATawIKOvRQkFPwDweIWF11cfgqrj8JX5BCyY6JkGuvICUp1Q=
+	t=1709297534; cv=none; b=se16FQd4E5lynKL2LmT4/Os/bZkv0odoIdXFDL59vxf1IDjqzbYqPGDsITsow3AEZTaQaAdLq8fS4CNbj5Njg04tZsHowg5HlYsOQ0Xk10hNmC1aLOQVwuV8SLsjqD29ztMXR/LluBjXDEtdzhC3BuP6vlZl1SEhmqb2Te0wdQw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709297249; c=relaxed/simple;
-	bh=hA0oxwD27gd74f5RciQ0gAwJyLc3AOc6ENazGRzlsA8=;
+	s=arc-20240116; t=1709297534; c=relaxed/simple;
+	bh=lNMKwH9kfeIeAtz9gbPDS0KIyL8hy2deaf0JVFtvNSA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cfoZjahUq3l+yScVLWlGSno08DbXOeYGdDERBlcJ3z1pJEVixW6p3YbuDYKQLy9YWBMucRCacQyQUAJUy/jRI8W/SQVQl5yOWe1FIflkZRiPXKhsQCvqz89JFuI7XYxV4XXKP505uG4YnQ42v57/v1yTVSG9pjOwPVvgyV/iy5Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=17zvLga4; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=KN8/nc0n8pzRyLe9f/XN8gTRFkC3L/Mp4GFxRCVHoAe55jTqQgOYyiSK9YbwVGJMFi4RjMyi4K5rwBm+Ln1aLTy9YQrBGbC7xTM6KifF4qJBfLXl+dsZiVeAraePMkMWPMVXcugJP93o4zsdbp2EhdqdcutOVJqKIwdC2n5MfAg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=wttwjfL8; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="17zvLga4"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="wttwjfL8"
 Received: from 8bytes.org (p4ffe0c3c.dip0.t-ipconnect.de [79.254.12.60])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id B32031C2C89;
-	Fri,  1 Mar 2024 13:47:22 +0100 (CET)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 417621C303C;
+	Fri,  1 Mar 2024 13:52:11 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1709297243;
-	bh=hA0oxwD27gd74f5RciQ0gAwJyLc3AOc6ENazGRzlsA8=;
+	s=default; t=1709297531;
+	bh=lNMKwH9kfeIeAtz9gbPDS0KIyL8hy2deaf0JVFtvNSA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=17zvLga4k0NTgX7vMeySb0BST/85bdOAY7Tbmc6qXLWdcX5iiVdGYAFNMGHwTHhaD
-	 283fe6n+XYrQ/bHfCjsAfEvCK0QPphrx/G0/uJLueU+GPWo0u0fURkWHAClQ45C9uI
-	 uIvO1RmSja0KtwTEwIzL5JJM9GJ/LcAvmkyaz6Qi9DbfkNzr9uSWNtRbOriy+5pRPV
-	 2gQtzJ+O2Br8Ta3rRxwqFFTiug2NvFzLQFRpROnF95KN8tzg5yj5MpDAvgx2Dm/psw
-	 sDfN2jQw/qIHXKrhff0JF5WdLh5syukwy7nwIhemdPGPS4RXoyorYt7ID45BQAFQpD
-	 VrRA+CYGCvnTg==
-Date: Fri, 1 Mar 2024 13:47:21 +0100
+	b=wttwjfL81Pk0FZW1MXub9vFYAMrhmcPYny+VaZPomwFQqL+1zh5AVg6er6hG1VjtU
+	 eLfUUrFUn+VeJazUyEQZYmEZ0mIgVYlhaL3HclgJ2nXcvapTRXmVmY4SzuSQtl9G9q
+	 o3cFxEBUZ6TwxhN904sDRz4BjmFvASp4nhBD2kh1MdAbx0S9GJw2oZY5pN63hK4IeW
+	 Y5G/L+QVlkS9GFPtBNA/cMfopNfmLK2hFq2X8cbsXmNOWkVMRzkitv5d801SKHb9tn
+	 b/SCgdqEC5S+A9Lp4Fns2oarpv+ImBXWFxJ38eEoXqrHT91QBf0Vp5YKfwACPs38Za
+	 PNJb5HJyITH4Q==
+Date: Fri, 1 Mar 2024 13:52:10 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
-	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Rob Clark <robdclark@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konrad.dybcio@linaro.org>,
-	Yong Wu <yong.wu@mediatek.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
-	Heiko Stuebner <heiko@sntech.de>, Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Krishna Reddy <vdumpa@nvidia.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-	linux-mediatek@lists.infradead.org,
-	linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
-	linux-tegra@vger.kernel.org, virtualization@lists.linux.dev
-Subject: Re: [PATCH 1/4] iommu: constify pointer to bus_type
-Message-ID: <ZeHOWXuNLhQlSrxM@8bytes.org>
-References: <20240216144027.185959-1-krzysztof.kozlowski@linaro.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Tina Zhang <tina.zhang@intel.com>, Erick Archer <erick.archer@gmx.com>,
+	Jingqi Liu <Jingqi.liu@intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/8] [PULL REQUEST] Intel IOMMU updates for Linux v6.9
+Message-ID: <ZeHPejP-_0DTWwIu@8bytes.org>
+References: <20240227021441.50434-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -70,8 +47,16 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240216144027.185959-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20240227021441.50434-1-baolu.lu@linux.intel.com>
 
-On Fri, Feb 16, 2024 at 03:40:24PM +0100, Krzysztof Kozlowski wrote:
+On Tue, Feb 27, 2024 at 10:14:33AM +0800, Lu Baolu wrote:
+> Hi Joerg,
+> 
+> The following changes have been queued for v6.9:
+> 
+>  - Add rbtree to track iommu probed devices
+>  - Add Intel IOMMU debugfs document
+>  - Cleanup and refactoring
 
-Applied all, thanks.
+Applied, thanks Baolu.
+
