@@ -1,46 +1,46 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E22E536118
-	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 01:51:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E3F02AF1C
+	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 02:03:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709257900; cv=none; b=EzKuZ/jCu+QHVapQJ3vkNDWkQs0rlP6UAumsf/ft3mla+nQCH/9onvqOve8Kt2PSIaUGk4tsw+L18TCzgx70TDOTMDWArsKf2xV2upXlcwW2M0qBoJeylrA+2190j/J+27MqC6ftB+gbVSY+4vMCIWUB0hxSV4hZ4KVqVcgG3RA=
+	t=1709258637; cv=none; b=VSXtcXRyXejTpqqKAr/VyXJ90DFZnX8BUtMdQ5CcZb9cd0aKKhpRni+sIhAaLh0Ry8LuIjlpcqHBzYHw+OrILAn+ckHsAz1FSIdNIF9Hxy/ABUAexCSdVsGHNnMU+gopc4Mxn1/BLdz1I3sEzP5yp0e9rnOW1XpEIYgxuUYm32Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709257900; c=relaxed/simple;
-	bh=hFW6W71DX+J8HilFF8PSecokRa8ihHk28CG7/DMhH3w=;
+	s=arc-20240116; t=1709258637; c=relaxed/simple;
+	bh=D0UYIJU+Wae4fIkSE6J7PCAdA+0TfZGkj99JFM0PZIw=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Rlk7qNydeM7oaT3K9hsYcAfVPSWqiCqDAQ6C/PrHTG5enk/ACpNQ2ag4dnrwoMB3dCKJkSa+IXorYA8HDeCSNZOyH439nX8XjGj0J0q7PHy+c9BaqMxgELfYWQjaEo4AgHKcCYkv6ey/jwQPyMzQAwm2FwioJcsukQ6GIXUp7cU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=huy8Z9ze; arc=none smtp.client-ip=198.175.65.12
+	 In-Reply-To:Content-Type; b=LRRtXemmNAkxPZvTdi6ysQD4xMJzxhc8e5Wf6fKIB4m7RVW/2LNHlwYlVKEGjvsjWPuySm7XhmD7bz+7BeRag8mgL+DHnI2Ln4J/Menqx94RtB9KS1p1MMZ0BScXyIk4b3addLh+5onCXxDr6nO681jkY5Hv9WmFEjopC3SFi48=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GOVRdKUp; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="huy8Z9ze"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GOVRdKUp"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709257899; x=1740793899;
+  t=1709258637; x=1740794637;
   h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=hFW6W71DX+J8HilFF8PSecokRa8ihHk28CG7/DMhH3w=;
-  b=huy8Z9zeni11Ubf1UrQuvHqcE6RMqIDLA9Eo5JHFnnyW+MBdtOcbu/fR
-   4E9t+cWSDOtr4H73mKy6Tp8yRF6Zo1In/2+Dwo/WuztrgWm3KeDe6v1E4
-   tiCiO7Mqe/C21Rq5k5lzhRfEAUlHrLFUx5GTXBKyUl2/vDfkIAtKMcGcR
-   xYJUI+4LI969/QWks1nr7W19M8vv97We6DzKIcys5ixOIf4DFnnmJVNe7
-   WRBVItpXogiCbq18jrwN0RhMkCLqt7BSbqw4gORY4iNfa3WoI6tuC/i5I
-   E2Auhh6YgaE89cghmhSslLBasiVxer0zGQvuFc5CFW00/FzNAKO6hC1Be
+  bh=D0UYIJU+Wae4fIkSE6J7PCAdA+0TfZGkj99JFM0PZIw=;
+  b=GOVRdKUpiFM4i5eZDjEj5RekeGPW6XH/s739W0XwKz0Jfjddx1jNHfgp
+   Cxyo4arTkF0UE9FYb3NTmNJVp+oD0M22h+svx2N3AUBW0MxZDk384qTD4
+   tYcmxJMTy6nvDSx/XVe8vhA/LvdZg2Q5bKuWl/aAeC5Ydp1vzrH/EBFR/
+   jB52DLT9lZDabw5xau5Ph/Ha7lyc5RnvXMA2K+bxPDCbgCybg7SsaI1I3
+   aWLK2l3I8wCx1gXZC/3JK1j0WwtOHHX2QDmi8vd2HhLYwnRr7lNdMyjMT
+   sCrPmi4qhyF1elxgv9im33q81CnVGORjym3Wa7Tm8SIlpXSAIWOMV3T/V
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10999"; a="15211691"
+X-IronPort-AV: E=McAfee;i="6600,9927,10999"; a="14925485"
 X-IronPort-AV: E=Sophos;i="6.06,194,1705392000"; 
-   d="scan'208";a="15211691"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 17:51:38 -0800
+   d="scan'208";a="14925485"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 18:03:56 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,194,1705392000"; 
-   d="scan'208";a="45581615"
+   d="scan'208";a="12579781"
 Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.124.229.115]) ([10.124.229.115])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 17:51:35 -0800
-Message-ID: <86db24b9-5461-4b6b-8858-a7ca2966c957@linux.intel.com>
-Date: Fri, 1 Mar 2024 09:51:34 +0800
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Feb 2024 18:03:51 -0800
+Message-ID: <5a137fa9-c18d-44e1-b486-1256b677c678@linux.intel.com>
+Date: Fri, 1 Mar 2024 10:03:49 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,89 +48,109 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/vt-d: improve ITE fault handling if device was
- released
+Subject: Re: [PATCH v13 1/3] PCI: make pci_dev_is_disconnected() helper public
+ for other drivers
 To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
- jgg@ziepe.ca, kevin.tian@intel.com, dwmw2@infradead.org, will@kernel.org,
- lukas@wunner.de, yi.l.liu@intel.com, dan.carpenter@linaro.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240229210726.GA363458@bhelgaas>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, bhelgaas@google.com,
+ robin.murphy@arm.com, jgg@ziepe.ca, kevin.tian@intel.com,
+ dwmw2@infradead.org, will@kernel.org, lukas@wunner.de, yi.l.liu@intel.com,
+ dan.carpenter@linaro.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+ Haorong Ye <yehaorong@bytedance.com>
+References: <20240229223302.GA363505@bhelgaas>
 From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <20240229210726.GA363458@bhelgaas>
+In-Reply-To: <20240229223302.GA363505@bhelgaas>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-
-On 3/1/2024 5:07 AM, Bjorn Helgaas wrote:
-> On Wed, Feb 28, 2024 at 11:07:24PM -0500, Ethan Zhao wrote:
->> Break the loop to blindly retry the timeout ATS invalidation request
->> after ITE fault hit if device was released or isn't present anymore.
+On 3/1/2024 6:33 AM, Bjorn Helgaas wrote:
+> On Thu, Feb 29, 2024 at 09:58:43AM +0800, Ethan Zhao wrote:
+>> On 2/27/2024 7:05 AM, Bjorn Helgaas wrote:
+>>> On Thu, Feb 22, 2024 at 08:54:54PM +0800, Baolu Lu wrote:
+>>>> On 2024/2/22 17:02, Ethan Zhao wrote:
+>>>>> Make pci_dev_is_disconnected() public so that it can be called from
+>>>>> Intel VT-d driver to quickly fix/workaround the surprise removal
+>>>>> unplug hang issue for those ATS capable devices on PCIe switch downstream
+>>>>> hotplug capable ports.
+>>>>>
+>>>>> Beside pci_device_is_present() function, this one has no config space
+>>>>> space access, so is light enough to optimize the normal pure surprise
+>>>>> removal and safe removal flow.
+>>>>>
+>>>>> Tested-by: Haorong Ye<yehaorong@bytedance.com>
+>>>>> Signed-off-by: Ethan Zhao<haifeng.zhao@linux.intel.com>
+>>>>> ---
+>>>>>     drivers/pci/pci.h   | 5 -----
+>>>>>     include/linux/pci.h | 5 +++++
+>>>>>     2 files changed, 5 insertions(+), 5 deletions(-)
+>>>> Hi PCI subsystem maintainers,
+>>>>
+>>>> The iommu drivers (including, but not limited to, the Intel VT-d driver)
+>>>> require a helper to check the physical presence of a PCI device in two
+>>>> scenarios:
+>>>>
+>>>> - During the iommu_release_device() path: This ensures the device is
+>>>>     physically present before sending device TLB invalidation to device.
+>>> This wording is fundamentally wrong.  Testing
+>>> pci_dev_is_disconnected() can never ensure the device will still be
+>>> present by the time a TLB invalidation is sent.
+>> The logic of testing pci_dev_is_disconnected() in patch [2/3] works
+>> in the opposite:
 >>
->> This is part of the followup of prior proposed patchset
+>> 1. if pci_dev_is_disconnected() return true, means the device is in
+>>     the process of surprise removal handling, adapter already been
+>>     removed from the slot.
 >>
->> https://do-db2.lkml.org/lkml/2024/2/22/350
-> Use lore URL, please.
+>> 2. for removed device, no need to send ATS invalidation request to it.
+>>     removed device lost power, its devTLB wouldn't be valid anymore.
+>>
+>> 3. if pci_dev_is_disconnected() return false, the device is *likely*
+>>     to be removed at any momoment after this function called.
+>>     such case will be treated in the iommu ITE fault handling, not to
+>>     retry the timeout request if device isn't present (patch [3/3]).
+>>
+>>> The device may be removed after the pci_dev_is_disconnected() test and
+>>> before a TLB invalidate is sent.
+>> even in the process while TLB is invalidating.
+>>
+>>> This is why I hesitate to expose pci_dev_is_disconnected() (and
+>>> pci_device_is_present(), which we already export) outside
+>>> drivers/pci/.  They both lead to terrible mistakes like relying on the
+>>> false assumption that the result will remain valid after the functions
+>>> return, without any recognition that we MUST be able to deal with the
+>>> cases where that assumption is broken.
+>> Yup, your concern is worthy ,but isn't happening within this patchset.
+> OK, I acked the patch.
 
-Sure !
+Great !
 
 >
->> Fixes: 6ba6c3a4cacf ("VT-d: add device IOTLB invalidation support")
->> Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
->> ---
->>   drivers/iommu/intel/dmar.c | 25 +++++++++++++++++++++++++
->>   1 file changed, 25 insertions(+)
->>
->> diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
->> index d14797aabb7a..d01d68205557 100644
->> --- a/drivers/iommu/intel/dmar.c
->> +++ b/drivers/iommu/intel/dmar.c
->> @@ -1273,6 +1273,9 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
->>   {
->>   	u32 fault;
->>   	int head, tail;
->> +	u64 iqe_err, ite_sid;
->> +	struct device *dev = NULL;
->> +	struct pci_dev *pdev = NULL;
->>   	struct q_inval *qi = iommu->qi;
->>   	int shift = qi_shift(iommu);
->>   
->> @@ -1317,6 +1320,13 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
->>   		tail = readl(iommu->reg + DMAR_IQT_REG);
->>   		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
->>   
->> +		/*
->> +		 * SID field is valid only when the ITE field is Set in FSTS_REG
->> +		 * see Intel VT-d spec r4.1, section 11.4.9.9
->> +		 */
->> +		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
->> +		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
->> +
->>   		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
->>   		pr_info("Invalidation Time-out Error (ITE) cleared\n");
->>   
->> @@ -1326,6 +1336,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
->>   			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
->>   		} while (head != tail);
->>   
->> +		/*
->> +		 * If got ITE, we need to check if the sid of ITE is one of the
->> +		 * current valid ATS invalidation target devices, if no, or the
->> +		 * target device isn't presnet, don't try this request anymore.
->> +		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
->> +		 */
->> +		if (ite_sid) {
->> +			dev = device_rbtree_find(iommu, ite_sid);
->> +			if (!dev || !dev_is_pci(dev))
->> +				return -ETIMEDOUT;
->> +			pdev = to_pci_dev(dev);
->> +			if (!pci_device_is_present(pdev) &&
->> +				ite_sid == pci_dev_id(pci_physfn(pdev)))
->> +				return -ETIMEDOUT;
->> +		}
->>   		if (qi->desc_status[wait_index] == QI_ABORT)
->>   			return -EAGAIN;
->>   	}
->> -- 
->> 2.31.1
->>
+> I guess my complaint is really with pci_device_is_present() because
+> that's even harder to use correctly.
+>
+> pci_device_is_present():
+>    slow (may do config access to device)
+>    true  => device *was* present in the recent past, may not be now
+>    false => device is not accessible
+
+so the 'false' result is reliable for post-calling code, then give up
+more attempt of the same request. the usage in patch[3/3]
+
+>
+> pci_dev_is_disconnected():
+>    fast (doesn't touch device)
+>    true  => device is not accessible
+
+also we are relying on the 'true' result returned, used in  patch[2/3].
+
+>    false => basically means nothing
+>
+> I guess they're both hard ;)
+
+seems I didn't mess them up. :)
+
+Thanks,
+Ethan
+
+>
+> Bjorn
