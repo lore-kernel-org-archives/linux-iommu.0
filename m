@@ -1,63 +1,86 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF1D33CF74;
-	Fri,  1 Mar 2024 20:17:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAC3954273;
+	Fri,  1 Mar 2024 21:56:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709324247; cv=none; b=fiXMIz5nk5+eV7JaRbJ2qkTc++IFLAcZ9huv/yKqx7gzhNi6lVLW9HGgu1g0pV85r2tsSzqZYbyDIkH/nC65BQR3gRYjmsreEEGH+c4JRKTJXfCoo329RHOLWTT6tqmEYDxkrVFoeLP7vXlg25EcXjNa1rRyxemh94urqdQPXyY=
+	t=1709330192; cv=none; b=ZAExKeK/nrm3fwZW6igP9MLuao0lMZs1dfqi+xd35eQebf4smrN9SxYD8WM2emtE282v0IHbDgqj2WVrzghCu6Ji4KQYfmvc6ZOHieptOR9Hd5/XXgZsVfW3bBwUym7u7imwxTYk7fuNIWQogLBVEWwpbwcD4QyexiRZwL7dijg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709324247; c=relaxed/simple;
-	bh=QpDhGvD3t9++XK9eHN0GMCkwjtv3kzUfmbnqyWVw0WQ=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=DI3mnODlX2WXHXwDkkh7b28bhlzU9XAyoO6WJzJV8m8eNpaYDACcMWJ93Qro5wj9EJDAKIuO0HiYHE+s1/ki3lHqXEaVL1SgYrRra6Y2C3eglpwZUhKNU3Oud86j33Ecr3oNbJghKhI56u5DGi+Xq0Xm2lU30Z93cYr2afykWg4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=B8rSgBZO; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1709330192; c=relaxed/simple;
+	bh=q9UABsAyzVvzna/Tm8mCWvvTktUvuLlJ2k9eH6PTep4=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=tBVJVXby5IEfeGys3B6Z/Ba1+2kzCfSS92YJhcJMgKknMpQe9G8i5c1CungJf9pU3psLypKZGbgL4jB309IlqpXMTsHsETyz9yexLlIgoxiMUSo8VX9B4NcpWKdU3Q/QfGHdMcHh0SRlWwIJvGnQHOumuIk/rmPYOyEgkbSULW8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pkBYj13/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="B8rSgBZO"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8C59FC43609;
-	Fri,  1 Mar 2024 20:17:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pkBYj13/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0692BC433C7;
+	Fri,  1 Mar 2024 21:56:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1709324247;
-	bh=QpDhGvD3t9++XK9eHN0GMCkwjtv3kzUfmbnqyWVw0WQ=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=B8rSgBZOFG7UpAxUrtCik/Ec52X95vCcLR9nK/Xo32rZpmkXwN6pSnWdB4rmdvmTE
-	 RZZI38mUfDKRPrE1vgxNCRQh6uzPFaX/Y7P1qkcEM66k702JV9Hq+J6i9UkzSvqN8r
-	 Wp6wBnNbbgZtMSMC8L4xTct+JMhE/cmlsFEsZ3D952zSTD2Js0sigyGCNloqma0r2U
-	 R/W5b0kgLAbg6umxTtWDTpSBQwkbKHOIpWVeSW3fEzFRkJeoheYDR0FbrhlBDVVrqP
-	 qbwlsIwqL2YJ3ZPpqhrqmb0dJrtQTXXqR0DD1xjZKQ+SDSvFhNtcD6B6jfTtieNFRP
-	 516ezue24nsqA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 75BA2C595D1;
-	Fri,  1 Mar 2024 20:17:27 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fix for Linux v6.8-rc6
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <ZeHvJSZR_XoebLF8@8bytes.org>
-References: <ZeHvJSZR_XoebLF8@8bytes.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <ZeHvJSZR_XoebLF8@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v6.8-rc6
-X-PR-Tracked-Commit-Id: 6384c56c99d98c84afea5b9ec7029a6e153ae431
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 17ba56605bfd139dfa5eba183f9f53ab90deea78
-Message-Id: <170932424747.25962.1629909327352593531.pr-tracker-bot@kernel.org>
-Date: Fri, 01 Mar 2024 20:17:27 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	s=k20201202; t=1709330192;
+	bh=q9UABsAyzVvzna/Tm8mCWvvTktUvuLlJ2k9eH6PTep4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=pkBYj13/IpRqvB8QY+NKFXvyFlaEV/DO70V8JI0iu7z95dFtwg1ltpxvh61Woby+a
+	 DnkGBGquZr/O/vse0kpnT8yqEJT4LyxBymgNxLVQyGlSTsJDQMhA3+IRJ1bI4Xj0Ui
+	 zJyiFKWXerHzyXe/nrxiXqAOmTHu87J+CcPStp+qScsB3ct+dI0K6C/CijzgdyCGN6
+	 WRIXDRZOhI+Dr3YLp7f+Nzpw+vd1vW2pU/Ho7KOhg9Y0aC9Imt6nzE40EjGNVfoZYl
+	 f1Y4OFqA6M80em7X5sxtGBgz2UOejcPwvPKOzd6+pvnJB15TumKfEw9/81yZTVyuy6
+	 NuyrXElm4l9Ow==
+Date: Fri, 1 Mar 2024 15:56:30 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Ethan Zhao <haifeng.zhao@linux.intel.com>
+Cc: baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
+	jgg@ziepe.ca, kevin.tian@intel.com, dwmw2@infradead.org,
+	will@kernel.org, lukas@wunner.de, yi.l.liu@intel.com,
+	dan.carpenter@linaro.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu/vt-d: avoid sending explicit ATS invalidation
+ request to released device
+Message-ID: <20240301215630.GA409512@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f258426b-cfbe-42c8-9c6a-42452837c73c@linux.intel.com>
 
-The pull request you sent on Fri, 1 Mar 2024 16:07:17 +0100:
+On Fri, Mar 01, 2024 at 09:50:36AM +0800, Ethan Zhao wrote:
+> On 3/1/2024 5:06 AM, Bjorn Helgaas wrote:
+> > On Wed, Feb 28, 2024 at 10:31:38PM -0500, Ethan Zhao wrote:
+> > > The introduction of per iommu device rbtree also defines the lifetime of
+> > > interoperation between iommu and devices, if the device has been released
+> > > from device rbtree, no need to send ATS invalidation request to it anymore,
+> > > thus avoid the possibility of later ITE fault to be triggered.
+> > > 
+> > > This is part of the followup of prior proposed patchset
+> > > 
+> > > https://do-db2.lkml.org/lkml/2024/2/22/350
+> > Please use https://lore.kernel.org/ URLs instead.  This one looks like
+> > https://lore.kernel.org/r/20240222090251.2849702-1-haifeng.zhao@linux.intel.com/
+> > 
+> > > To make sure all the devTLB entries to be invalidated in the device release
+> > > path, do implict invalidation by fapping the E bit of ATS control register.
+> > > see PCIe spec v6.2, sec 10.3.7 implicit invalidation events.
+> > s/implict/implicit/
+> > 
+> > s/fapping/?/  (no idea :)  "flipping"?  Oh, probably "flapping" per the
+> > comment below.  But I think "flapping" is ambiguous; "setting" would be
+> > better)
+> 
+> Yup, like the memory bit flipping, no idea what is the right word,
+> setting one bit to 0, then 1, then back to 0. perhaps details the
+> setting action 0-->1-->0 ?
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v6.8-rc6
+In PCIe spec-speak, "Set" means "assign 1 to this", and "Clear" means
+"assign 0 to this".
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/17ba56605bfd139dfa5eba183f9f53ab90deea78
+Maybe you could copy the spec language like this:
 
-Thank you!
+  Invalidate all ATC entries by changing the E field in the ATS
+  Capability from Clear to Set, which causes an implicit invalidation
+  event.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Bjorn
