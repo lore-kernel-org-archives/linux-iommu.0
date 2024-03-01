@@ -1,206 +1,177 @@
-Received: from bee.tesarici.cz (unknown [77.93.223.253])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EED87F9F6
-	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 17:33:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F03C0848E
+	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 17:54:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709314410; cv=none; b=QbvaG/9+8tCYCY8C1uFXTf45gBnFqXS7OTJRjfbKmgJZoIfTYdIwMTvFj1mb/DRLBUdi6HR9rHewhF+gjsAbO/DJuNxaGx/6DKevZeToEbqGvXv8SO0wlUVJUK+nBryY4akjO/Z0k1/p1iKqvERwVaPR1jKRyOsi1oxQ8pBvvsY=
+	t=1709315651; cv=none; b=klbxnRgzYbQrBZQJ25nANcGeNTLUU/lF7U1yDD49oEm5jw6AkzMc0zZJ2shQv1FjPHavu8MMHY8XkUcZzOpa6w1n4aPTeC0TPOYgjBCrSZ2EaICvE3KyJjXWDKqcH9UZx2SJmLIWU+YHm+DjKRKm1DER2fVVYXt2wMnfPaUYFT4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709314410; c=relaxed/simple;
-	bh=kqFNymNhulpq3C9J15L9aRCKq+ZlvGBWEINffETSl9Y=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bEdGVXq5X6wTRdRfaRPRBAvFbzn7/JS0Kei+JCh/DAVNEL4SLX8jGlTV7L21miQs/IqgnZiTnHuekhzkvmh4Jrhaj1QzX1B8kHDTdwBfpl2Q866WZ6wAkzc7A477P2GbkYoLdfRsS+n7MfQAR3t0gW5On+5Z46eKY6z3VCBim8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=q8/zY7Ut; arc=none smtp.client-ip=77.93.223.253
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="q8/zY7Ut"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id C6EDC1C163E;
-	Fri,  1 Mar 2024 18:33:25 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1709314406; bh=y5F9nq6Ty0/dF9UJva7lXz28jL0DsAwabnPmvR0UHIE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=q8/zY7UtxCWkrAUnWSom6lRc1oWwIcjPkd1EABwXDjtLeNLlAm/gioZB9DVWI32Q4
-	 cqFsBTSoCbjJ5rAO7SE2TdjtDKLcJwFX7LQMFzMRm7/1ya2TeqZT11eqJcByM5werx
-	 sipjchVa0oxNkwVdcEgIrHJ3dAa5ndy0VSYqptc4a+C6IbL6ZEDO7ZyL+IzGDACu5L
-	 R2MafJFrtLRiCWSHezTBXeh8DNklH+cT6GrRYL5r+bL/HO5/C6lE7L0PliCOzE1wtk
-	 dAuI5QfzE2I4F+kTmEf2TZX8iGr4QYKBJ5SXpdN75JJ0t6JQv1uC3HxGUknYq3vP+e
-	 BPjRubOeuEDpg==
-Date: Fri, 1 Mar 2024 18:33:24 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Michael Kelley <mhklinux@outlook.com>,
- Will Deacon <will@kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, Petr Tesarik
- <petr.tesarik1@huawei-partners.com>, "kernel-team@android.com"
- <kernel-team@android.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Dexuan Cui
- <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
- allocations >= PAGE_SIZE
-Message-ID: <20240301183324.11e76df2@meshulam.tesarici.cz>
-In-Reply-To: <4fbcdd49-cd93-4af8-83e2-f1cef0ea2eeb@arm.com>
-References: <20240228133930.15400-1-will@kernel.org>
-	<20240228133930.15400-7-will@kernel.org>
-	<SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<SN6PR02MB41577D09E97B1D9645369D58D45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<20240229133346.GA7177@lst.de>
-	<SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<20240229154756.GA10137@lst.de>
-	<20240301163927.18358ee2@meshulam.tesarici.cz>
-	<4fbcdd49-cd93-4af8-83e2-f1cef0ea2eeb@arm.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	s=arc-20240116; t=1709315651; c=relaxed/simple;
+	bh=dhV8UcMzuIMIEciXJWv9lg+qF4UzGIqBhO24KteMsZA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=nP+BIYF9x89dLl8B86g10L5D1kyBG1RG+zI/+kXEjlqbYMVGRZBOKC081sAXFg6dGv92cCXhpMuACOENlJzx6ZyQARxlNHXGKzygLRWVZrV8IM09VfxadOfpXVik+kaEAdhUt3geYGqmrDz2lTsQidaIdc05a9fE8uHdOoCUuQM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 558C0139F;
+	Fri,  1 Mar 2024 09:54:47 -0800 (PST)
+Received: from [10.57.67.78] (unknown [10.57.67.78])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 60F573F6C4;
+	Fri,  1 Mar 2024 09:54:07 -0800 (PST)
+Message-ID: <8869c8b2-29c3-41e4-8f8a-5bcf9c0d22bb@arm.com>
+Date: Fri, 1 Mar 2024 17:54:06 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
+ allocations >= PAGE_SIZE
+Content-Language: en-GB
+To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>,
+ Christoph Hellwig <hch@lst.de>
+Cc: Michael Kelley <mhklinux@outlook.com>, Will Deacon <will@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+ "kernel-team@android.com" <kernel-team@android.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Dexuan Cui
+ <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
+References: <20240228133930.15400-1-will@kernel.org>
+ <20240228133930.15400-7-will@kernel.org>
+ <SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <SN6PR02MB41577D09E97B1D9645369D58D45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <20240229133346.GA7177@lst.de>
+ <SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <20240229154756.GA10137@lst.de>
+ <20240301163927.18358ee2@meshulam.tesarici.cz>
+ <20240301180853.5ac20b27@meshulam.tesarici.cz>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240301180853.5ac20b27@meshulam.tesarici.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Fri, 1 Mar 2024 16:38:33 +0000
-Robin Murphy <robin.murphy@arm.com> wrote:
+On 2024-03-01 5:08 pm, Petr Tesařík wrote:
+> On Fri, 1 Mar 2024 16:39:27 +0100
+> Petr Tesařík <petr@tesarici.cz> wrote:
+> 
+>> On Thu, 29 Feb 2024 16:47:56 +0100
+>> Christoph Hellwig <hch@lst.de> wrote:
+>>
+>>> On Thu, Feb 29, 2024 at 03:44:11PM +0000, Michael Kelley wrote:
+>>>> Any thoughts on how that historical behavior should apply if
+>>>> the DMA min_align_mask is non-zero, or the alloc_align_mask
+>>>> parameter to swiotbl_tbl_map_single() is non-zero? As currently
+>>>> used, alloc_align_mask is page aligned if the IOMMU granule is
+>>>>> = PAGE_SIZE. But a non-zero min_align_mask could mandate
+>>>> returning a buffer that is not page aligned. Perhaps do the
+>>>> historical behavior only if alloc_align_mask and min_align_mask
+>>>> are both zero?
+>>>
+>>> I think the driver setting min_align_mask is a clear indicator
+>>> that the driver requested a specific alignment and the defaults
+>>> don't apply.  For swiotbl_tbl_map_single as used by dma-iommu
+>>> I'd have to tak a closer look at how it is used.
+>>
+>> I'm not sure it helps in this discussion, but let me dive into a bit
+>> of ancient history to understand how we ended up here.
+>>
+>> IIRC this behaviour was originally motivated by limitations of PC AT
+>> hardware. Intel 8237 is a 16-bit DMA controller. To make it somehow
+>> usable with addresses up to 16MB (yeah, the infamous DMA zone), IBM
+>> added a page register, but it was on a separate chip and it did not
+>> increment when the 8237 address rolled over back to zero. Effectively,
+>> the page register selected a 64K-aligned window of 64K buffers.
+>> Consequently, DMA buffers could not cross a 64K physical boundary.
+>>
+>> Thanks to how the buddy allocator works, the 64K-boundary constraint
+>> was satisfied by allocation size, and drivers took advantage of it when
+>> allocating device buffers. IMO software bounce buffers simply followed
+>> the same logic that worked for buffers allocated by the buddy allocator.
+>>
+>> OTOH min_align_mask was motivated by NVME which prescribes the value of
+>> a certain number of low bits in the DMA address (for simplicity assumed
+>> to be identical with the same bits in the physical address).
+>>
+>> The only pre-existing user of alloc_align_mask is x86 IOMMU code, and
+>> IIUC it is used to guarantee that unaligned transactions do not share
+>> the IOMMU granule with another device. This whole thing is weird,
+>> because swiotlb_tbl_map_single() is called like this:
+>>
+>>                  aligned_size = iova_align(iovad, size);
+>>                  phys = swiotlb_tbl_map_single(dev, phys, size, aligned_size,
+>>                                                iova_mask(iovad), dir, attrs);
+>>
+>> Here:
+>>
+>> * alloc_size = iova_align(iovad, size)
+>> * alloc_align_mask = iova_mask(iovad)
+>>
+>> Now, iova_align() rounds up its argument to a multiple of iova granule
+>> and iova_mask() is simply "granule - 1". This works, because granule
+>> size must be a power of 2, and I assume it must also be >= PAGE_SIZE.
+>>
+>> In that case, the alloc_align_mask argument is not even needed if you
+>> adjust the code to match documentation---the resulting buffer will be
+>> aligned to a granule boundary by virtue of having a size that is a
+>> multiple of the granule size.
+>>
+>> To sum it up:
+>>
+>> 1. min_align_mask is by far the most important constraint. Devices will
+>>     simply stop working if it is not met.
+>> 2. Alignment to the smallest PAGE_SIZE order which is greater than or
+>>     equal to the requested size has been documented, and some drivers
+>>     may rely on it.
+>> 3. alloc_align_mask is a misguided fix for a bug in the above.
+>>
+>> Correct me if anything of the above is wrong.
+> 
+> I thought about it some more, and I believe I know what should happen
+> if the first two constraints appear to be mutually exclusive.
+> 
+> First, the alignment based on size does not guarantee that the resulting
+> physical address is aligned. In fact, the lowest IO_TLB_SHIFT bits must
+> be always identical to the original buffer address.
+> 
+> Let's take an example request like this:
+> 
+>     TLB_SIZE       = 0x00000800
+>     min_align_mask = 0x0000ffff
+>     orig_addr      = 0x....1234
+>     alloc_size     = 0x00002800
+> 
+> Minimum alignment mask requires to keep the 1234 at the end. Allocation
+> size requires a buffer that is aligned to 16K. Of course, there is no
+> 16K-aligned slot with slot_address & 0x7ff == 0x200, but if IO_TLB_SHIFT
+> was 14, it would be slot_address & 0x3fff == 0 (low IO_TLB_SHIFT are
+> masked off). Since the SWIOTLB API does not guarantee any specific
+> value of IO_TLB_SHIFT, callers cannot rely on it. That means 0x1234 is a
+> perfectly valid bounce buffer address for this example.
+> 
+> The caller may rightfully expect that the 16K granule containing the
+> bounce buffer is not shared with any other user. For the above case I
+> suggest to increase the allocation size to 0x4000 already in
+> swiotlb_tbl_map_single() and treat 0x1234 as the offset from the slot
+> address.
 
-> On 2024-03-01 3:39 pm, Petr Tesa=C5=99=C3=ADk wrote:
-> > On Thu, 29 Feb 2024 16:47:56 +0100
-> > Christoph Hellwig <hch@lst.de> wrote:
-> >  =20
-> >> On Thu, Feb 29, 2024 at 03:44:11PM +0000, Michael Kelley wrote: =20
-> >>> Any thoughts on how that historical behavior should apply if
-> >>> the DMA min_align_mask is non-zero, or the alloc_align_mask
-> >>> parameter to swiotbl_tbl_map_single() is non-zero? As currently
-> >>> used, alloc_align_mask is page aligned if the IOMMU granule is =20
-> >>>> =3D PAGE_SIZE. But a non-zero min_align_mask could mandate =20
-> >>> returning a buffer that is not page aligned. Perhaps do the
-> >>> historical behavior only if alloc_align_mask and min_align_mask
-> >>> are both zero? =20
-> >>
-> >> I think the driver setting min_align_mask is a clear indicator
-> >> that the driver requested a specific alignment and the defaults
-> >> don't apply.  For swiotbl_tbl_map_single as used by dma-iommu
-> >> I'd have to tak a closer look at how it is used. =20
-> >=20
-> > I'm not sure it helps in this discussion, but let me dive into a bit
-> > of ancient history to understand how we ended up here.
-> >=20
-> > IIRC this behaviour was originally motivated by limitations of PC AT
-> > hardware. Intel 8237 is a 16-bit DMA controller. To make it somehow
-> > usable with addresses up to 16MB (yeah, the infamous DMA zone), IBM
-> > added a page register, but it was on a separate chip and it did not
-> > increment when the 8237 address rolled over back to zero. Effectively,
-> > the page register selected a 64K-aligned window of 64K buffers.
-> > Consequently, DMA buffers could not cross a 64K physical boundary.
-> >=20
-> > Thanks to how the buddy allocator works, the 64K-boundary constraint
-> > was satisfied by allocation size, and drivers took advantage of it when
-> > allocating device buffers. IMO software bounce buffers simply followed
-> > the same logic that worked for buffers allocated by the buddy allocator.
-> >=20
-> > OTOH min_align_mask was motivated by NVME which prescribes the value of
-> > a certain number of low bits in the DMA address (for simplicity assumed
-> > to be identical with the same bits in the physical address).
-> >=20
-> > The only pre-existing user of alloc_align_mask is x86 IOMMU code, and
-> > IIUC it is used to guarantee that unaligned transactions do not share
-> > the IOMMU granule with another device. This whole thing is weird,
-> > because swiotlb_tbl_map_single() is called like this:
-> >=20
-> >                  aligned_size =3D iova_align(iovad, size);
-> >                  phys =3D swiotlb_tbl_map_single(dev, phys, size, align=
-ed_size,
-> >                                                iova_mask(iovad), dir, a=
-ttrs);
-> >=20
-> > Here:
-> >=20
-> > * alloc_size =3D iova_align(iovad, size)
-> > * alloc_align_mask =3D iova_mask(iovad)
-> >=20
-> > Now, iova_align() rounds up its argument to a multiple of iova granule
-> > and iova_mask() is simply "granule - 1". This works, because granule
-> > size must be a power of 2, and I assume it must also be >=3D PAGE_SIZE.=
- =20
->=20
-> Not quite, the granule must *not* be larger than PAGE_SIZE (but can be=20
-> smaller).
+That doesn't make sense - a caller asks to map some range of kernel 
+addresses and they get back a corresponding range of DMA addresses; they 
+cannot make any reasonable assumptions about DMA addresses *outside* 
+that range. In the example above, the caller has explicitly chosen not 
+to map the range xxx0000-xxx1234; if they expect the device to actually 
+access bytes in the DMA range yyy0000-yyy1234, then they should have 
+mapped the whole range starting from xxx0000 and it is their own error.
 
-OK... I must rethink what is achieved with the alignment then.
+SWIOTLB does not and cannot provide any memory protection itself, so 
+there is no functional benefit to automatically over-allocating, all it 
+will do is waste slots. iommu-dma *can* provide memory protection 
+between individual mappings via additional layers that SWIOTLB doesn't 
+know about, so in that case it's iommu-dma's responsibility to 
+explicitly manage whatever over-allocation is necessary at the SWIOTLB 
+level to match the IOMMU level.
 
-> > In that case, the alloc_align_mask argument is not even needed if you
-> > adjust the code to match documentation---the resulting buffer will be
-> > aligned to a granule boundary by virtue of having a size that is a
-> > multiple of the granule size. =20
->=20
-> I think we've conflated two different notions of "allocation" here. The=20
-> page-alignment which Christoph quoted applies for dma_alloc_coherent(),=20
-> which nowadays *should* only be relevant to SWIOTLB code in the=20
-> swiotlb_alloc() path for stealing coherent pages out of restricted DMA=20
-> pools. Historically there was never any official alignment requirement=20
-> for the DMA addresses returned by dma_map_{page,sg}(), until=20
-> min_align_mask was introduced.
->=20
-> > To sum it up:
-> >=20
-> > 1. min_align_mask is by far the most important constraint. Devices will
-> >     simply stop working if it is not met.
-> > 2. Alignment to the smallest PAGE_SIZE order which is greater than or
-> >     equal to the requested size has been documented, and some drivers
-> >     may rely on it. =20
->=20
-> Strictly it stopped being necessary since fafadcd16595 when the=20
-> historical swiotlb_alloc() was removed, but 602d9858f07c implies that=20
-> indeed the assumption of it for streaming mappings had already set in.=20
-> Of course NVMe is now using min_align_mask, but I'm not sure if it's=20
-> worth taking the risk to find out who else should also be.
->=20
-> > 3. alloc_align_mask is a misguided fix for a bug in the above. =20
->=20
-> No, alloc_align_mask is about describing the explicit requirement rather=
-=20
-> than relying on any implicit behaviour, and thus being able to do the=20
-> optimal thing for, say, a 9KB mapping given a 4KB IOVA granule and 64KB=20
-> PAGE_SIZE.
-
-It's getting confusing. Can we stay with the IOMMU use case for a
-moment? Since you don't use IO_TLB_SIZE or IO_TLB_SHIFT, I assume the
-code should work with any SWIOTLB slot size.
-
-For granule sizes up to SWIOTLB slot size, you always get a buffer that
-is not shared with any other granule.
-
-For granule sizes between SWIOTLB slot size and page size, you want to
-get as many slots as needed to cover the whole granule. Indeed, that
-would not be achieved with size alone.
-
-What if we change the size-based alignment constraint to:
-
-   Aligned to the smallest IO_TLB_SIZE order which is greater than or
-   equal to the requested size.
-
-AFAICS this is stricter, i.e. it covers the already documented
-PAGE_SIZE alignment, but it would also cover IOMMU needs.
-
-I have the feeling that the slot search has too many parameters. This
-alloc_align_mask has only one in-tree user, so it's a logical candidate
-for reduction.
-
-Petr T
-
->=20
-> Thanks,
-> Robin.
->=20
-> >=20
-> > Correct me if anything of the above is wrong.
-> >=20
-> > HTH
-> > Petr T =20
->=20
-
+Thanks,
+Robin.
