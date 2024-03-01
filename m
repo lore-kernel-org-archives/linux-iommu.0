@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F03C0848E
-	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 17:54:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 49999179A6
+	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 18:04:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709315651; cv=none; b=klbxnRgzYbQrBZQJ25nANcGeNTLUU/lF7U1yDD49oEm5jw6AkzMc0zZJ2shQv1FjPHavu8MMHY8XkUcZzOpa6w1n4aPTeC0TPOYgjBCrSZ2EaICvE3KyJjXWDKqcH9UZx2SJmLIWU+YHm+DjKRKm1DER2fVVYXt2wMnfPaUYFT4=
+	t=1709316254; cv=none; b=ZUfPenXxsEu7KOXdqwbpxU9dunrE0Vvmfps/aXkk1cRISOffeOXWiyobBv/k/oeNyuEw6LccgTVgwgbkvDrjgW4LjTauGf62toxlOlCJW/cllhqslsiqEu7Nenxns/9nfvNjZhqoae6tT7fJ0hAr+ddBTaLYgE1c1oGIQfcjjJ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709315651; c=relaxed/simple;
-	bh=dhV8UcMzuIMIEciXJWv9lg+qF4UzGIqBhO24KteMsZA=;
+	s=arc-20240116; t=1709316254; c=relaxed/simple;
+	bh=wm1vvnyXKFgcFNI7otyHTbvXDz55V2VsO09wlIS3jYI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=nP+BIYF9x89dLl8B86g10L5D1kyBG1RG+zI/+kXEjlqbYMVGRZBOKC081sAXFg6dGv92cCXhpMuACOENlJzx6ZyQARxlNHXGKzygLRWVZrV8IM09VfxadOfpXVik+kaEAdhUt3geYGqmrDz2lTsQidaIdc05a9fE8uHdOoCUuQM=
+	 In-Reply-To:Content-Type; b=SvDFQ8B+C7kTjADH0B5eJeh0i1zqp0F6ZN9b6ynz40rO/q+IE4iD6iOWByu2cOLDX9gRrevjIRuaksd2uVXmb+g/Z0S1Rfy96WFBY9gexC6FDL77hZ+fqnMd+G7b9vL09d3ZJy0p2OuHy+rhmRekuG77eTMs4SejuH4BuPYepDA=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 558C0139F;
-	Fri,  1 Mar 2024 09:54:47 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C214C1FB;
+	Fri,  1 Mar 2024 10:04:50 -0800 (PST)
 Received: from [10.57.67.78] (unknown [10.57.67.78])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 60F573F6C4;
-	Fri,  1 Mar 2024 09:54:07 -0800 (PST)
-Message-ID: <8869c8b2-29c3-41e4-8f8a-5bcf9c0d22bb@arm.com>
-Date: Fri, 1 Mar 2024 17:54:06 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2D8B83F6C4;
+	Fri,  1 Mar 2024 10:04:11 -0800 (PST)
+Message-ID: <d4f2f99c-b8bb-4ed9-8d91-ed0f5b418425@arm.com>
+Date: Fri, 1 Mar 2024 18:04:10 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,151 +27,103 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
- allocations >= PAGE_SIZE
+Subject: Re: [RFC] dma-mapping: introduce dma_can_skip_unmap()
 Content-Language: en-GB
-To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>,
- Christoph Hellwig <hch@lst.de>
-Cc: Michael Kelley <mhklinux@outlook.com>, Will Deacon <will@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Petr Tesarik <petr.tesarik1@huawei-partners.com>,
- "kernel-team@android.com" <kernel-team@android.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Dexuan Cui
- <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
-References: <20240228133930.15400-1-will@kernel.org>
- <20240228133930.15400-7-will@kernel.org>
- <SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <SN6PR02MB41577D09E97B1D9645369D58D45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <20240229133346.GA7177@lst.de>
- <SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <20240229154756.GA10137@lst.de>
- <20240301163927.18358ee2@meshulam.tesarici.cz>
- <20240301180853.5ac20b27@meshulam.tesarici.cz>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, linux-kernel@vger.kernel.org,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ iommu@lists.linux.dev, Zelin Deng <zelin.deng@linux.alibaba.com>
+References: <20240301071918.64631-1-xuanzhuo@linux.alibaba.com>
+ <64be2e23-c526-45d3-bb7b-29e31241bbef@arm.com>
+ <20240301064632-mutt-send-email-mst@kernel.org>
+ <a00f0b55-0681-4e9c-b75e-e7e3d4110471@arm.com>
+ <20240301082703-mutt-send-email-mst@kernel.org>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240301180853.5ac20b27@meshulam.tesarici.cz>
+In-Reply-To: <20240301082703-mutt-send-email-mst@kernel.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2024-03-01 5:08 pm, Petr Tesařík wrote:
-> On Fri, 1 Mar 2024 16:39:27 +0100
-> Petr Tesařík <petr@tesarici.cz> wrote:
-> 
->> On Thu, 29 Feb 2024 16:47:56 +0100
->> Christoph Hellwig <hch@lst.de> wrote:
->>
->>> On Thu, Feb 29, 2024 at 03:44:11PM +0000, Michael Kelley wrote:
->>>> Any thoughts on how that historical behavior should apply if
->>>> the DMA min_align_mask is non-zero, or the alloc_align_mask
->>>> parameter to swiotbl_tbl_map_single() is non-zero? As currently
->>>> used, alloc_align_mask is page aligned if the IOMMU granule is
->>>>> = PAGE_SIZE. But a non-zero min_align_mask could mandate
->>>> returning a buffer that is not page aligned. Perhaps do the
->>>> historical behavior only if alloc_align_mask and min_align_mask
->>>> are both zero?
+On 2024-03-01 1:41 pm, Michael S. Tsirkin wrote:
+> On Fri, Mar 01, 2024 at 12:42:39PM +0000, Robin Murphy wrote:
+>> On 2024-03-01 11:50 am, Michael S. Tsirkin wrote:
+>>> On Fri, Mar 01, 2024 at 11:38:25AM +0000, Robin Murphy wrote:
+>>>> Not only is this idea not viable, the entire premise seems flawed - the
+>>>> reasons for virtio needing to use the DMA API at all are highly likely to be
+>>>> the same reasons for it needing to use the DMA API *properly* anyway.
 >>>
->>> I think the driver setting min_align_mask is a clear indicator
->>> that the driver requested a specific alignment and the defaults
->>> don't apply.  For swiotbl_tbl_map_single as used by dma-iommu
->>> I'd have to tak a closer look at how it is used.
+>>> The idea has nothing to do with virtio per se
 >>
->> I'm not sure it helps in this discussion, but let me dive into a bit
->> of ancient history to understand how we ended up here.
->>
->> IIRC this behaviour was originally motivated by limitations of PC AT
->> hardware. Intel 8237 is a 16-bit DMA controller. To make it somehow
->> usable with addresses up to 16MB (yeah, the infamous DMA zone), IBM
->> added a page register, but it was on a separate chip and it did not
->> increment when the 8237 address rolled over back to zero. Effectively,
->> the page register selected a 64K-aligned window of 64K buffers.
->> Consequently, DMA buffers could not cross a 64K physical boundary.
->>
->> Thanks to how the buddy allocator works, the 64K-boundary constraint
->> was satisfied by allocation size, and drivers took advantage of it when
->> allocating device buffers. IMO software bounce buffers simply followed
->> the same logic that worked for buffers allocated by the buddy allocator.
->>
->> OTOH min_align_mask was motivated by NVME which prescribes the value of
->> a certain number of low bits in the DMA address (for simplicity assumed
->> to be identical with the same bits in the physical address).
->>
->> The only pre-existing user of alloc_align_mask is x86 IOMMU code, and
->> IIUC it is used to guarantee that unaligned transactions do not share
->> the IOMMU granule with another device. This whole thing is weird,
->> because swiotlb_tbl_map_single() is called like this:
->>
->>                  aligned_size = iova_align(iovad, size);
->>                  phys = swiotlb_tbl_map_single(dev, phys, size, aligned_size,
->>                                                iova_mask(iovad), dir, attrs);
->>
->> Here:
->>
->> * alloc_size = iova_align(iovad, size)
->> * alloc_align_mask = iova_mask(iovad)
->>
->> Now, iova_align() rounds up its argument to a multiple of iova granule
->> and iova_mask() is simply "granule - 1". This works, because granule
->> size must be a power of 2, and I assume it must also be >= PAGE_SIZE.
->>
->> In that case, the alloc_align_mask argument is not even needed if you
->> adjust the code to match documentation---the resulting buffer will be
->> aligned to a granule boundary by virtue of having a size that is a
->> multiple of the granule size.
->>
->> To sum it up:
->>
->> 1. min_align_mask is by far the most important constraint. Devices will
->>     simply stop working if it is not met.
->> 2. Alignment to the smallest PAGE_SIZE order which is greater than or
->>     equal to the requested size has been documented, and some drivers
->>     may rely on it.
->> 3. alloc_align_mask is a misguided fix for a bug in the above.
->>
->> Correct me if anything of the above is wrong.
+>> Sure, I can see that, but if virtio is presented as the justification for
+>> doing this then it's the justification I'm going to look at first. And the
+>> fact is that it *does* seem to have particular significance, since having up
+>> to 19 DMA addresses involved in a single transfer is very much an outlier
+>> compared to typical hardware drivers.
 > 
-> I thought about it some more, and I believe I know what should happen
-> if the first two constraints appear to be mutually exclusive.
+> That's a valid comment. Xuan Zhuo do other drivers do this too,
+> could you check pls?
 > 
-> First, the alignment based on size does not guarantee that the resulting
-> physical address is aligned. In fact, the lowest IO_TLB_SHIFT bits must
-> be always identical to the original buffer address.
+>> Furthermore the fact that DMA API
+>> support was retrofitted to the established virtio design means I would
+>> always expect it to run up against more challenges than a hardware driver
+>> designed around the expectation that DMA buffers have DMA addresses.
 > 
-> Let's take an example request like this:
 > 
->     TLB_SIZE       = 0x00000800
->     min_align_mask = 0x0000ffff
->     orig_addr      = 0x....1234
->     alloc_size     = 0x00002800
-> 
-> Minimum alignment mask requires to keep the 1234 at the end. Allocation
-> size requires a buffer that is aligned to 16K. Of course, there is no
-> 16K-aligned slot with slot_address & 0x7ff == 0x200, but if IO_TLB_SHIFT
-> was 14, it would be slot_address & 0x3fff == 0 (low IO_TLB_SHIFT are
-> masked off). Since the SWIOTLB API does not guarantee any specific
-> value of IO_TLB_SHIFT, callers cannot rely on it. That means 0x1234 is a
-> perfectly valid bounce buffer address for this example.
-> 
-> The caller may rightfully expect that the 16K granule containing the
-> bounce buffer is not shared with any other user. For the above case I
-> suggest to increase the allocation size to 0x4000 already in
-> swiotlb_tbl_map_single() and treat 0x1234 as the offset from the slot
-> address.
+> It seems virtio can't drive any DMA changes then it's forever tainted?
+> Seems unfair - we retrofitted it years ago, enough refactoring happened
+> since then.
 
-That doesn't make sense - a caller asks to map some range of kernel 
-addresses and they get back a corresponding range of DMA addresses; they 
-cannot make any reasonable assumptions about DMA addresses *outside* 
-that range. In the example above, the caller has explicitly chosen not 
-to map the range xxx0000-xxx1234; if they expect the device to actually 
-access bytes in the DMA range yyy0000-yyy1234, then they should have 
-mapped the whole range starting from xxx0000 and it is their own error.
+No, I'm not saying we couldn't still do things to help virtio if and 
+when it does prove reasonable to do so; just that if anything it's 
+*because* that retrofit is mature and fairly well polished by now that 
+any remaining issues like this one are going to be found in the most 
+awkward corners and thus unlikely to generalise.
 
-SWIOTLB does not and cannot provide any memory protection itself, so 
-there is no functional benefit to automatically over-allocating, all it 
-will do is waste slots. iommu-dma *can* provide memory protection 
-between individual mappings via additional layers that SWIOTLB doesn't 
-know about, so in that case it's iommu-dma's responsibility to 
-explicitly manage whatever over-allocation is necessary at the SWIOTLB 
-level to match the IOMMU level.
+FWIW in my experience it seems more common for network drivers to 
+actually have the opposite problem, where knowing the DMA address of a 
+buffer is easy, but keeping track of the corresponding CPU address can 
+be more of a pain.
+
+>>> - we are likely not the
+>>> only driver that wastes a lot of memory (hot in cache, too) keeping DMA
+>>> addresses around for the sole purpose of calling DMA unmap.  On a bunch
+>>> of systems unmap is always a nop and we could save some memory if there
+>>> was a way to find out. What is proposed is an API extension allowing
+>>> that for anyone - not just virtio.
+>>
+>> And the point I'm making is that that "always" is a big assumption, and in
+>> fact for the situations where it is robustly true we already have the
+>> DEFINE_DMA_UNMAP_{ADDR,LEN} mechanism.
+>> I'd consider it rare for DMA
+>> addresses to be stored in isolation, as opposed to being part of some kind
+>> of buffer descriptor (or indeed struct scatterlist, for an obvious example)
+>> that a driver or subsystem still has to keep track of anyway, so in general
+>> I believe the scope for saving decidedly small amounts of memory at runtime
+>> is also considerably less than you might be imagining.
+>>
+>> Thanks,
+>> Robin.
+> 
+> 
+> Yes. DEFINE_DMA_UNMAP_ exits but that's only compile time.
+> And I think the fact we have that mechanism is a hint that
+> enough configurations could benefit from a runtime
+> mechanism, too.
+> 
+> E.g. since you mentioned scatterlist, it has a bunch of ifdefs
+> in place.
+
+But what could that benefit be in general? It's not like we can change 
+structure layouts on a per-DMA-mapping-call basis to save 
+already-allocated memory... :/
 
 Thanks,
 Robin.
+
+> 
+> Of course
+> - finding more examples would be benefitial to help maintainers
+>    do the cost/benefit analysis
+> - a robust implementation is needed
+> 
+> 
