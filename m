@@ -1,81 +1,139 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 045A8622
-	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 15:07:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
+Received: from bee.tesarici.cz (unknown [77.93.223.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94E823A8F8
+	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 15:39:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709305648; cv=none; b=feEnN1jTbuQTnCWXCp+4JeTj/zSRjb49VCv5JA584sN7q+uQIxgzve7hqY7puIzS51JkUf8EJrw0IQ1/b33piYex0oGmgtY8zBibV4kGzN2SMn1MmGntzUmAdhlYltoYzSRyRM4VM6u/O3LfPFcdkPIRuSrhfPaK+ckQyAC1ihU=
+	t=1709307579; cv=none; b=JqI0jFwOsd3URErdCf8N+BJL1RqkVqqEXYo2prDetXcoC90tiASdSpkgrauvjW0W9kRRW/u63pU864+C8t6n9MPXT3LCLHn2TzZTK+dnv1UYV/VWSn6YHDvxGJZ8H0n4YPcrUabR3AGHEHZwgcsY4/HyQWdInXpf/HCml/4YmVE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709305648; c=relaxed/simple;
-	bh=CL83DanGD/AEOLUdlbiy1Wyke3nJGd0ty89cOTE7sPM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=TwwQZTMVcs9YyvNb8AgN5pQMfGr50h7Gz4wUDLxExGnHKWZP74JdPeyRZplsUHSx9gMhMtmzQFZR/vHg0L1FeScvzDEUCe8Ut1IlELYForWxr7Sc7Xz055sjCLrFpo8/GiYNFzk7LDSaR/tSx9u+qnVaSQDNATk8WUTFs57Lcqc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=deeXjQUm; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+	s=arc-20240116; t=1709307579; c=relaxed/simple;
+	bh=MgUqSXoPJkNv53osPWyAYHJspRzP4mbPdaDO/LJU97k=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ursOcbwX5lRHcKFQeRPHIkZAtaRbyCp8uIBxHpi26gndqw2K7GX3y/NleyxpK0HqbJoOCcZRMx/fHWBCmtbvSaf6xGMvs1hLiJXBWUCrc6e+szs3VvDfA3254IUuGscIjOHDqcnmt9UDXdJQhp8Vc/8Wi4wT1gxsI4GMoQ2pO4s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=H0mewWKV; arc=none smtp.client-ip=77.93.223.253
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="deeXjQUm"
-Received: from 8bytes.org (p4ffe0c3c.dip0.t-ipconnect.de [79.254.12.60])
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="H0mewWKV"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 5E1F41C3C63;
-	Fri,  1 Mar 2024 16:07:18 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1709305638;
-	bh=CL83DanGD/AEOLUdlbiy1Wyke3nJGd0ty89cOTE7sPM=;
-	h=Date:From:To:Cc:Subject:From;
-	b=deeXjQUmW1NHChIgsoRdjT6Uqy8m+SLiX5bHGgumYGWz+QxN7ahmr8Rclup1THrfX
-	 L8ZbFnu0ySlQwG1X/B+RvinSvfEENB9Mapup4tawzxCrfz6G+H4qiIaIgeh3gi8T5y
-	 M5AxuqWDIA+V726leT/bRyltOX6YmogYi9MdMI5JLDBIByfn5zPMTwaNh/pd5wASta
-	 LtRZGr4kaq7qm1ffsTdTkQ0QZoNNDmrnUy5oqi1fQxXr0B7yxfjD+CwF5nXWP9FPla
-	 4vxiyUfmFY+WNrXX+rVzT3gEAojZmPrSZM2tTaxIcootdkFliq1/OHzL/1FhsvIIjG
-	 mMXK3I0DLupcA==
-Date: Fri, 1 Mar 2024 16:07:17 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fix for Linux v6.8-rc6
-Message-ID: <ZeHvJSZR_XoebLF8@8bytes.org>
+	by bee.tesarici.cz (Postfix) with ESMTPSA id DE6C11C32B2;
+	Fri,  1 Mar 2024 16:39:28 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1709307569; bh=lhnMMcmJC5RrjEhIqhAv2s0zT/02tZlCTuNpbuEIU4Y=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=H0mewWKV/KjTw4gwzl7j6Xj1MKKMFO0f30vWMbt/+p0uWUvY16DbLVm5h4xi+yECX
+	 4x+7iXVJ7YOlG4e528m8fNRjxJPHGj6a6tviz2KjvQzTYSG0WAF60Igs4Fsj0I1H1Q
+	 82D6vIN7yZzi4bwNWqaYpSz1xqCULqNxnM2efF6n4/rUpRGjtrqrzjWECiwjhV4Y0U
+	 mpn3nXzFZAivEdcEfZpss7cflspaBEaFT4YwzHamve4fInO4pccklB+xS/Kyh213SV
+	 CHAgRwPlURdR6vLYHVq9icVNVAl34flRZDmuL9P7YtGExDCellm/r9s7WaYOkuxY4Y
+	 JUvYmi0pNIHTA==
+Date: Fri, 1 Mar 2024 16:39:27 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Michael Kelley <mhklinux@outlook.com>, Will Deacon <will@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Petr Tesarik
+ <petr.tesarik1@huawei-partners.com>, "kernel-team@android.com"
+ <kernel-team@android.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, Dexuan Cui <decui@microsoft.com>, Nicolin Chen
+ <nicolinc@nvidia.com>
+Subject: Re: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
+ allocations >= PAGE_SIZE
+Message-ID: <20240301163927.18358ee2@meshulam.tesarici.cz>
+In-Reply-To: <20240229154756.GA10137@lst.de>
+References: <20240228133930.15400-1-will@kernel.org>
+	<20240228133930.15400-7-will@kernel.org>
+	<SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<SN6PR02MB41577D09E97B1D9645369D58D45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240229133346.GA7177@lst.de>
+	<SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240229154756.GA10137@lst.de>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Linus,
+On Thu, 29 Feb 2024 16:47:56 +0100
+Christoph Hellwig <hch@lst.de> wrote:
 
-Another fix on-top of last weeks fixes, sorry for the inconveniences.
+> On Thu, Feb 29, 2024 at 03:44:11PM +0000, Michael Kelley wrote:
+> > Any thoughts on how that historical behavior should apply if
+> > the DMA min_align_mask is non-zero, or the alloc_align_mask
+> > parameter to swiotbl_tbl_map_single() is non-zero? As currently
+> > used, alloc_align_mask is page aligned if the IOMMU granule is  
+> > >= PAGE_SIZE. But a non-zero min_align_mask could mandate  
+> > returning a buffer that is not page aligned. Perhaps do the
+> > historical behavior only if alloc_align_mask and min_align_mask
+> > are both zero?  
+> 
+> I think the driver setting min_align_mask is a clear indicator
+> that the driver requested a specific alignment and the defaults
+> don't apply.  For swiotbl_tbl_map_single as used by dma-iommu
+> I'd have to tak a closer look at how it is used.
 
-The following changes since commit d206a76d7d2726f3b096037f2079ce0bd3ba329b:
+I'm not sure it helps in this discussion, but let me dive into a bit
+of ancient history to understand how we ended up here.
 
-  Linux 6.8-rc6 (2024-02-25 15:46:06 -0800)
+IIRC this behaviour was originally motivated by limitations of PC AT
+hardware. Intel 8237 is a 16-bit DMA controller. To make it somehow
+usable with addresses up to 16MB (yeah, the infamous DMA zone), IBM
+added a page register, but it was on a separate chip and it did not
+increment when the 8237 address rolled over back to zero. Effectively,
+the page register selected a 64K-aligned window of 64K buffers.
+Consequently, DMA buffers could not cross a 64K physical boundary.
 
-are available in the Git repository at:
+Thanks to how the buddy allocator works, the 64K-boundary constraint
+was satisfied by allocation size, and drivers took advantage of it when
+allocating device buffers. IMO software bounce buffers simply followed
+the same logic that worked for buffers allocated by the buddy allocator.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fix-v6.8-rc6
+OTOH min_align_mask was motivated by NVME which prescribes the value of
+a certain number of low bits in the DMA address (for simplicity assumed
+to be identical with the same bits in the physical address).
 
-for you to fetch changes up to 6384c56c99d98c84afea5b9ec7029a6e153ae431:
+The only pre-existing user of alloc_align_mask is x86 IOMMU code, and
+IIUC it is used to guarantee that unaligned transactions do not share
+the IOMMU granule with another device. This whole thing is weird,
+because swiotlb_tbl_map_single() is called like this:
 
-  iommu/sva: Fix SVA handle sharing in multi device case (2024-03-01 13:53:58 +0100)
+                aligned_size = iova_align(iovad, size);
+                phys = swiotlb_tbl_map_single(dev, phys, size, aligned_size,
+                                              iova_mask(iovad), dir, attrs);
 
-----------------------------------------------------------------
-IOMMU fix for Linux v6.8-rc6:
+Here:
 
-	- Fix SVA handle sharing in multi device case
+* alloc_size = iova_align(iovad, size)
+* alloc_align_mask = iova_mask(iovad)
 
-----------------------------------------------------------------
-Zhangfei Gao (1):
-      iommu/sva: Fix SVA handle sharing in multi device case
+Now, iova_align() rounds up its argument to a multiple of iova granule
+and iova_mask() is simply "granule - 1". This works, because granule
+size must be a power of 2, and I assume it must also be >= PAGE_SIZE.
 
- drivers/iommu/iommu-sva.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+In that case, the alloc_align_mask argument is not even needed if you
+adjust the code to match documentation---the resulting buffer will be
+aligned to a granule boundary by virtue of having a size that is a
+multiple of the granule size.
 
-Please pull.
+To sum it up:
 
-Thanks,
+1. min_align_mask is by far the most important constraint. Devices will
+   simply stop working if it is not met.
+2. Alignment to the smallest PAGE_SIZE order which is greater than or
+   equal to the requested size has been documented, and some drivers
+   may rely on it.
+3. alloc_align_mask is a misguided fix for a bug in the above.
 
-	Joerg
+Correct me if anything of the above is wrong.
+
+HTH
+Petr T
