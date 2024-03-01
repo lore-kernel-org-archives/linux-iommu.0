@@ -1,219 +1,174 @@
-Received: from bee.tesarici.cz (unknown [77.93.223.253])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F29E38DCD
-	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 18:42:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E57513A8C2
+	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 19:44:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709318538; cv=none; b=DW8kAYeMgJO+zUmvzkSCgoMhYn5A5bRI0q989Oi2s7VeaU4ENszmhkAUuu52oFtx2PDXJpd7lukdd9L1PDRgMILiWzdwyp68B524BBbyTaSuQuMqU0gPg/T0H8FgT2cquzpxtQDZl8Ghdubtx3F51Jo9gh8Hk7PWwd7lIRPuego=
+	t=1709322265; cv=none; b=K2mhzPPpprz7UfO5zRQCCyzNgSGWwXos8kjpKSCGxQl3JzjdM/4arTUvTS5O0PIM7ro2zQ92UhrI1qsQMl+oloZiq5Bw0b5SPG9xpbpf71dBUo2qP7Q0mpv/zgIPdK+NJGTSd+gCV70eZ2YBbgTlin3X1KgrfbXCZgrXYuHlUI0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709318538; c=relaxed/simple;
-	bh=w+8tzDUNxC+0c2kk3d9ykcorijNJa53GYpsyK5+JaZE=;
+	s=arc-20240116; t=1709322265; c=relaxed/simple;
+	bh=0W+wImXykfI+kFSl8R1LGXPsuEpOm5r99zqYr61SZsE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HBILSm8RhskJs+Ftv5hbyR1lPccbzazQ0IZZCoHbYgUzLkndTGDLhqO4l7WEFyZ0lBUnkzQRgM4+3nF2doPmahM7LfIk/akZ6DdoMFUiz7KU5lEUkVmfyOU3IDRjVFPgrTuCMNzu4XAM3agXBqPZg6Ux8x818lARpWjxJ/Gke10=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=Bmhi2mkZ; arc=none smtp.client-ip=77.93.223.253
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	 MIME-Version:Content-Type; b=bZsQIVPMD+skWdKWc+dWv4vyKDrpC0WARoEJYHhL9lfh6PW0bWnOtRSTDjqn4cbDSEASwaHA7c/5cY0y4auvQfzfMuSRBGgIEr9Ks3E2BqLLLnO8D7dTlBkp4ePgTFjNapDaoyIyrUDMjuAs2x02vcnXB+PS0gUAKTZyUOET9dU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=J+FPnGDz; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="Bmhi2mkZ"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 52C991C37C8;
-	Fri,  1 Mar 2024 19:42:13 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1709318533; bh=0BzVbEMUW+HOHqX604KISbar5ltvn6EhM64KI0u9ocU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Bmhi2mkZ3so7nx3ERP2V7oB11mo9VdPjZVkhxOBotjJZP6CxSTk+Az+/ZH8rRDjUP
-	 NGyu1a3lBsp2D3ADnmZrO31NQtF/tjXYTY1qN7qRur6ZZKqdxWHXmjBwQeJEqH/Qj5
-	 Uc0lftk9fJR+LV3q1ZSReYPjTosYktuTyvI0cWVaQCuje7HjOXjt191XIMvyKYBFLV
-	 LvXiyexLut5Oylz+NII5OEnRH1ICf0kX+tdEX5JVJ2xP0M/oykO9qzepMx7rvCTCSJ
-	 dy5CmsHXKa4acTWPoBJ0yGqUcBSvcn5hqg99x6tYlZrHGL12uYJCTVM0QrgoRFx5oH
-	 WvemhV6V89Jiw==
-Date: Fri, 1 Mar 2024 19:42:12 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@lst.de>, Michael Kelley <mhklinux@outlook.com>,
- Will Deacon <will@kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, Petr Tesarik
- <petr.tesarik1@huawei-partners.com>, "kernel-team@android.com"
- <kernel-team@android.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Dexuan Cui
- <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
- allocations >= PAGE_SIZE
-Message-ID: <20240301194212.3c64c9b2@meshulam.tesarici.cz>
-In-Reply-To: <8869c8b2-29c3-41e4-8f8a-5bcf9c0d22bb@arm.com>
-References: <20240228133930.15400-1-will@kernel.org>
-	<20240228133930.15400-7-will@kernel.org>
-	<SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<SN6PR02MB41577D09E97B1D9645369D58D45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<20240229133346.GA7177@lst.de>
-	<SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<20240229154756.GA10137@lst.de>
-	<20240301163927.18358ee2@meshulam.tesarici.cz>
-	<20240301180853.5ac20b27@meshulam.tesarici.cz>
-	<8869c8b2-29c3-41e4-8f8a-5bcf9c0d22bb@arm.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J+FPnGDz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1709322264; x=1740858264;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=0W+wImXykfI+kFSl8R1LGXPsuEpOm5r99zqYr61SZsE=;
+  b=J+FPnGDz2qQrhyerZUT66yHt1bKZigYz85YkUIsWPcReq1WKano1JPfn
+   w/81wUHkCUiAxTgnSGTcoGslWRgal0X7r8Mq6VEGz/CxnEzYF3k1OaoYI
+   a/b9W4hKQSmki6sXVlOyazvSDsWl6+zUm21SRwyNne+cNvgbKKGp3jDF8
+   PsBFF+ObodE2jXgnXNu4idO4UGFAYHQkj99ViIljmRz+n+eW1CELzlRnf
+   hUESh7m02df6b7jXmZ7Dgi/+gP+7n6Wv4rNloB5sIk/WTBUC2SE4z1Evf
+   SbzTvb+gCqzt4A+rYKX1UsnXwbqwefnSDKEO1yjajtwJLSOLBaOeJFJ0k
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11000"; a="3726938"
+X-IronPort-AV: E=Sophos;i="6.06,197,1705392000"; 
+   d="scan'208";a="3726938"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2024 11:44:23 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,197,1705392000"; 
+   d="scan'208";a="8521774"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2024 11:44:22 -0800
+Date: Fri, 1 Mar 2024 11:50:00 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Dimitri Sivanich <sivanich@hpe.com>, David Woodhouse
+ <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Steve Wahl <steve.wahl@hpe.com>, Russ
+ Anderson <russ.anderson@hpe.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH] Allocate DMAR fault interrupts locally
+Message-ID: <20240301115000.4ba2e411@jacob-builder>
+In-Reply-To: <87plwe7w3m.ffs@tglx>
+References: <ZeDj/LK56borSxO4@hpe.com>
+	<87plwe7w3m.ffs@tglx>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 1 Mar 2024 17:54:06 +0000
-Robin Murphy <robin.murphy@arm.com> wrote:
+Hi Thomas,
 
-> On 2024-03-01 5:08 pm, Petr Tesa=C5=99=C3=ADk wrote:
-> > On Fri, 1 Mar 2024 16:39:27 +0100
-> > Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> wrote:
-> >  =20
-> >> On Thu, 29 Feb 2024 16:47:56 +0100
-> >> Christoph Hellwig <hch@lst.de> wrote:
-> >> =20
-> >>> On Thu, Feb 29, 2024 at 03:44:11PM +0000, Michael Kelley wrote: =20
-> >>>> Any thoughts on how that historical behavior should apply if
-> >>>> the DMA min_align_mask is non-zero, or the alloc_align_mask
-> >>>> parameter to swiotbl_tbl_map_single() is non-zero? As currently
-> >>>> used, alloc_align_mask is page aligned if the IOMMU granule is =20
-> >>>>> =3D PAGE_SIZE. But a non-zero min_align_mask could mandate =20
-> >>>> returning a buffer that is not page aligned. Perhaps do the
-> >>>> historical behavior only if alloc_align_mask and min_align_mask
-> >>>> are both zero? =20
-> >>>
-> >>> I think the driver setting min_align_mask is a clear indicator
-> >>> that the driver requested a specific alignment and the defaults
-> >>> don't apply.  For swiotbl_tbl_map_single as used by dma-iommu
-> >>> I'd have to tak a closer look at how it is used. =20
-> >>
-> >> I'm not sure it helps in this discussion, but let me dive into a bit
-> >> of ancient history to understand how we ended up here.
-> >>
-> >> IIRC this behaviour was originally motivated by limitations of PC AT
-> >> hardware. Intel 8237 is a 16-bit DMA controller. To make it somehow
-> >> usable with addresses up to 16MB (yeah, the infamous DMA zone), IBM
-> >> added a page register, but it was on a separate chip and it did not
-> >> increment when the 8237 address rolled over back to zero. Effectively,
-> >> the page register selected a 64K-aligned window of 64K buffers.
-> >> Consequently, DMA buffers could not cross a 64K physical boundary.
-> >>
-> >> Thanks to how the buddy allocator works, the 64K-boundary constraint
-> >> was satisfied by allocation size, and drivers took advantage of it when
-> >> allocating device buffers. IMO software bounce buffers simply followed
-> >> the same logic that worked for buffers allocated by the buddy allocato=
-r.
-> >>
-> >> OTOH min_align_mask was motivated by NVME which prescribes the value of
-> >> a certain number of low bits in the DMA address (for simplicity assumed
-> >> to be identical with the same bits in the physical address).
-> >>
-> >> The only pre-existing user of alloc_align_mask is x86 IOMMU code, and
-> >> IIUC it is used to guarantee that unaligned transactions do not share
-> >> the IOMMU granule with another device. This whole thing is weird,
-> >> because swiotlb_tbl_map_single() is called like this:
-> >>
-> >>                  aligned_size =3D iova_align(iovad, size);
-> >>                  phys =3D swiotlb_tbl_map_single(dev, phys, size, alig=
-ned_size,
-> >>                                                iova_mask(iovad), dir, =
-attrs);
-> >>
-> >> Here:
-> >>
-> >> * alloc_size =3D iova_align(iovad, size)
-> >> * alloc_align_mask =3D iova_mask(iovad)
-> >>
-> >> Now, iova_align() rounds up its argument to a multiple of iova granule
-> >> and iova_mask() is simply "granule - 1". This works, because granule
-> >> size must be a power of 2, and I assume it must also be >=3D PAGE_SIZE.
-> >>
-> >> In that case, the alloc_align_mask argument is not even needed if you
-> >> adjust the code to match documentation---the resulting buffer will be
-> >> aligned to a granule boundary by virtue of having a size that is a
-> >> multiple of the granule size.
-> >>
-> >> To sum it up:
-> >>
-> >> 1. min_align_mask is by far the most important constraint. Devices will
-> >>     simply stop working if it is not met.
-> >> 2. Alignment to the smallest PAGE_SIZE order which is greater than or
-> >>     equal to the requested size has been documented, and some drivers
-> >>     may rely on it.
-> >> 3. alloc_align_mask is a misguided fix for a bug in the above.
-> >>
-> >> Correct me if anything of the above is wrong. =20
-> >=20
-> > I thought about it some more, and I believe I know what should happen
-> > if the first two constraints appear to be mutually exclusive.
-> >=20
-> > First, the alignment based on size does not guarantee that the resulting
-> > physical address is aligned. In fact, the lowest IO_TLB_SHIFT bits must
-> > be always identical to the original buffer address.
-> >=20
-> > Let's take an example request like this:
-> >=20
-> >     TLB_SIZE       =3D 0x00000800
-> >     min_align_mask =3D 0x0000ffff
-> >     orig_addr      =3D 0x....1234
-> >     alloc_size     =3D 0x00002800
-> >=20
-> > Minimum alignment mask requires to keep the 1234 at the end. Allocation
-> > size requires a buffer that is aligned to 16K. Of course, there is no
-> > 16K-aligned slot with slot_address & 0x7ff =3D=3D 0x200, but if IO_TLB_=
-SHIFT
-> > was 14, it would be slot_address & 0x3fff =3D=3D 0 (low IO_TLB_SHIFT are
-> > masked off). Since the SWIOTLB API does not guarantee any specific
-> > value of IO_TLB_SHIFT, callers cannot rely on it. That means 0x1234 is a
-> > perfectly valid bounce buffer address for this example.
-> >=20
-> > The caller may rightfully expect that the 16K granule containing the
-> > bounce buffer is not shared with any other user. For the above case I
-> > suggest to increase the allocation size to 0x4000 already in
-> > swiotlb_tbl_map_single() and treat 0x1234 as the offset from the slot
-> > address. =20
->=20
-> That doesn't make sense - a caller asks to map some range of kernel=20
-> addresses and they get back a corresponding range of DMA addresses; they=
-=20
-> cannot make any reasonable assumptions about DMA addresses *outside*=20
-> that range. In the example above, the caller has explicitly chosen not=20
-> to map the range xxx0000-xxx1234; if they expect the device to actually=20
-> access bytes in the DMA range yyy0000-yyy1234, then they should have=20
-> mapped the whole range starting from xxx0000 and it is their own error.
+On Thu, 29 Feb 2024 23:18:37 +0100, Thomas Gleixner <tglx@linutronix.de>
+wrote:
 
-I agree that the range was not requested. But it is not wrong if
-SWIOTLB overallocates. In fact, it usually does overallocate because it
-works with slot granularity.
+> Dimitri!
+> 
+> On Thu, Feb 29 2024 at 14:07, Dimitri Sivanich wrote:
+> 
+> The subject lacks a subsystem prefix. You're doing this for how many
+> decades now?
+> 
+> > The Intel IOMMU code currently tries to allocate all DMAR fault
+> > interrupt 
+> > +#ifdef CONFIG_X86_LOCAL_APIC  
+> 
+> I seriously doubt that this code can ever be compiled w/o X86_LOCAL_APIC:
+> 
+> obj-$(CONFIG_DMAR_TABLE) += dmar.o
+> 
+> config DMAR_TABLE
+>         bool
+> 
+> config INTEL_IOMMU
+>         depends on PCI_MSI && ACPI && X86
+>         select DMAR_TABLE
+> 
+> config IRQ_REMAP
+>         depends on X86_64 && X86_IO_APIC && PCI_MSI && ACPI
+>         select DMAR_TABLE
+> 
+> config X86_LOCAL_APIC
+>         def_bool y
+>         depends on X86_64 || SMP || X86_32_NON_STANDARD || X86_UP_APIC ||
+> PCI_MSI
+> 
+> What are you trying to achieve here other than #ifdef voodoo?
+> 
+> > +static void __init irq_remap_enable_fault_handling_thr(struct
+> > work_struct *work) +{
+> > +	irq_remap_enable_fault_handling();  
+> 
+> because if INTEL_IOMMU=y and IRQ_REMAP=n then X86_LOCAL_APIC=y and this
+> muck gets invoked for nothing. 'git grep irq_remap_enable_fault_handling
+> include/' might give you a hint.
+> 
+> > +}
+> > +
+> > +static int __init assign_dmar_vectors(void)
+> > +{
+> > +	struct work_struct irq_remap_work;
+> > +	int nid;
+> > +
+> > +	INIT_WORK(&irq_remap_work,
+> > irq_remap_enable_fault_handling_thr);
+> > +	cpus_read_lock();
+> > +	for_each_online_node(nid) {
+> > +		/* Boot cpu dmar vectors are assigned before the rest
+> > */
+> > +		if (nid == cpu_to_node(get_boot_cpu_id()))
+> > +			continue;
+> > +		schedule_work_on(cpumask_first(cpumask_of_node(nid)),
+> > +				 &irq_remap_work);
+> > +		flush_work(&irq_remap_work);
+> > +	}
+> > +	cpus_read_unlock();
+> > +	return 0;
+> > +}
+> > +
+> > +arch_initcall(assign_dmar_vectors);  
+> 
+> Stray newline before arch_initcall(), but that's not the problem.
+> 
+> The real problems are:
+> 
+>  1) This approach only works when _ALL_ APs have been brought up during
+>     boot. With 'maxcpus=N' on the command line this will fail to enable
+>     fault handling when the APs which have not been brought up initially
+>     are onlined later on.
+> 
+>     This might be working in practice because intel_iommu_init() will
+>     enable the interrupts later on via init_dmars() unconditionally, but
+>     that's far from correct because IRQ_REMAP does not depend on
+>     INTEL_IOMMU.
+The dmar fault interrupt is VT-d's own interrupt, not subject to IRQ_REMAP.
+So this set up has nothing to do with IR, right?
 
-> SWIOTLB does not and cannot provide any memory protection itself, so=20
-> there is no functional benefit to automatically over-allocating, all it=20
-> will do is waste slots. iommu-dma *can* provide memory protection=20
-> between individual mappings via additional layers that SWIOTLB doesn't=20
-> know about, so in that case it's iommu-dma's responsibility to=20
-> explicitly manage whatever over-allocation is necessary at the SWIOTLB=20
-> level to match the IOMMU level.
+Maybe we should not call it irq_remap_work, call it dmar_fault_irq_work
+instead?
 
-I'm trying to understand what the caller expects to get if they request
-both buffer alignment (either given implicitly through mapping size or
-explicitly with an alloc_align_mask) with a min_align_mask and non-zero
-low bits covered by the buffer alignment.
+>  2) It leaves a gap where the reporting is not working between bringing
+>     up the APs during boot and this initcall. Mostly theoretical, but
+>     that does not make it more correct either.
+> 
+> What you really want is a cpu hotplug state in the CPUHP_BP_PREPARE_DYN
+> space which enables the interrupt for the node _before_ the first AP of
+> the node is brought up. That will solve the problem nicely w/o any of
+> the above issues.
+> 
+> Thanks,
+> 
+>         tglx
+> 
 
-In other words, if iommu_dma_map_page() gets into this situation:
 
-* granule size is 4k
-* device specifies 64k min_align_mask
-* bit 11 of the original buffer address is non-zero
+Thanks,
 
-Then you ask for a pair of slots where the first slot has bit 11 =3D=3D 0
-(required by alignment to granule size) and also has bit 11 =3D=3D 1
-(required to preserve the lowest 16 bits of the original address).
-
-Sure, you can fail such a mapping, but is it what the caller expects?
-
-Thanks
-Petr T
+Jacob
