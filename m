@@ -1,47 +1,43 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E57513A8C2
-	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 19:44:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41F288F65
+	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 19:59:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709322265; cv=none; b=K2mhzPPpprz7UfO5zRQCCyzNgSGWwXos8kjpKSCGxQl3JzjdM/4arTUvTS5O0PIM7ro2zQ92UhrI1qsQMl+oloZiq5Bw0b5SPG9xpbpf71dBUo2qP7Q0mpv/zgIPdK+NJGTSd+gCV70eZ2YBbgTlin3X1KgrfbXCZgrXYuHlUI0=
+	t=1709323166; cv=none; b=oQXd3aLD0DcTu+yvN8pAtKcucoiMft7e9KcPLiBcuYWGq07+ZGYxv9OeTtEFtEW1MRDZvlHEm1aK5A+DvMUP3wVOmEk6fRT3qHktzv2Q0B65/UsB04rFb13ngWipN9H+baGBpGe6jb2p1HZcobtg2IduaE9ViuuKwxQCf9XvmIQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709322265; c=relaxed/simple;
-	bh=0W+wImXykfI+kFSl8R1LGXPsuEpOm5r99zqYr61SZsE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bZsQIVPMD+skWdKWc+dWv4vyKDrpC0WARoEJYHhL9lfh6PW0bWnOtRSTDjqn4cbDSEASwaHA7c/5cY0y4auvQfzfMuSRBGgIEr9Ks3E2BqLLLnO8D7dTlBkp4ePgTFjNapDaoyIyrUDMjuAs2x02vcnXB+PS0gUAKTZyUOET9dU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=J+FPnGDz; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1709323166; c=relaxed/simple;
+	bh=vEw8hKXCZ7Q5pqWVw83KkjUoR47z/R3Z0Zqq9PA2VM8=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=BSymK+SB/iZMlMUrppt+6UtS/zNwFmQcxwa59Tefyzj2r6yDVq2kpTeiNW4odpHGEBd2qkEnGqkHKZpGCcQAZNyk3q/QdQXQHTHe992Ecwl17RIwgUvPUwul8ptg8NIGi4vu9tGxpoIn3VdHREHs3FLWCP5KXTd81YEVC5hEfdU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=alhEwi3X; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=Vp36FRU2; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="J+FPnGDz"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709322264; x=1740858264;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0W+wImXykfI+kFSl8R1LGXPsuEpOm5r99zqYr61SZsE=;
-  b=J+FPnGDz2qQrhyerZUT66yHt1bKZigYz85YkUIsWPcReq1WKano1JPfn
-   w/81wUHkCUiAxTgnSGTcoGslWRgal0X7r8Mq6VEGz/CxnEzYF3k1OaoYI
-   a/b9W4hKQSmki6sXVlOyazvSDsWl6+zUm21SRwyNne+cNvgbKKGp3jDF8
-   PsBFF+ObodE2jXgnXNu4idO4UGFAYHQkj99ViIljmRz+n+eW1CELzlRnf
-   hUESh7m02df6b7jXmZ7Dgi/+gP+7n6Wv4rNloB5sIk/WTBUC2SE4z1Evf
-   SbzTvb+gCqzt4A+rYKX1UsnXwbqwefnSDKEO1yjajtwJLSOLBaOeJFJ0k
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11000"; a="3726938"
-X-IronPort-AV: E=Sophos;i="6.06,197,1705392000"; 
-   d="scan'208";a="3726938"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2024 11:44:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,197,1705392000"; 
-   d="scan'208";a="8521774"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.24.100.114])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2024 11:44:22 -0800
-Date: Fri, 1 Mar 2024 11:50:00 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="alhEwi3X";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="Vp36FRU2"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1709323163;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PfFPGWCK+GSDiSmRj2uN72ko5lEX5jt2xXFl55bKfn4=;
+	b=alhEwi3XGV0RCP4AGdMXeUdQqlR/iZDCbIaF93tSJe/gCqqH3SEY2MjHkTjX6Xj1upVyIi
+	rkDbyCEoDDnIE/gt3xatWfGmA7E854npJzX9W5BOLihCK+GVGVQ/14g8Qok9X9xz2iGxmm
+	eeSiLXYtg4Vwo3LZLp3QwoRCv/eVlsPpYYjue+Kj+U2cx52ZtYfCyIjeEOrgCiVBar3cOj
+	4bR2/hDXYKZJx+RHOzzcgTyPsrqiIbV6nSNaLRCt7j6V/JsaeANqoWJow2o6pUGvaPx2yP
+	pn3bSCAYLELeq0nnCde+BTnHjCKUk4SUMkg1zzH+fTipr3GfkEkb7k2Oe7OQ9A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1709323163;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PfFPGWCK+GSDiSmRj2uN72ko5lEX5jt2xXFl55bKfn4=;
+	b=Vp36FRU2Xs3ultveYfGUTxgAlIEr9vbpLjThGBBl/hAXtk+WbJb7AoJfe9d1I/5Y13uzWf
+	goXB4PKql1Ma2jDw==
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Cc: Dimitri Sivanich <sivanich@hpe.com>, David Woodhouse
  <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
  <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
@@ -49,126 +45,52 @@ Cc: Dimitri Sivanich <sivanich@hpe.com>, David Woodhouse
  linux-kernel@vger.kernel.org, Steve Wahl <steve.wahl@hpe.com>, Russ
  Anderson <russ.anderson@hpe.com>, jacob.jun.pan@linux.intel.com
 Subject: Re: [PATCH] Allocate DMAR fault interrupts locally
-Message-ID: <20240301115000.4ba2e411@jacob-builder>
-In-Reply-To: <87plwe7w3m.ffs@tglx>
-References: <ZeDj/LK56borSxO4@hpe.com>
-	<87plwe7w3m.ffs@tglx>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+In-Reply-To: <20240301115000.4ba2e411@jacob-builder>
+References: <ZeDj/LK56borSxO4@hpe.com> <87plwe7w3m.ffs@tglx>
+ <20240301115000.4ba2e411@jacob-builder>
+Date: Fri, 01 Mar 2024 20:59:22 +0100
+Message-ID: <87msrhwwo5.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 
-Hi Thomas,
+Jacob!
 
-On Thu, 29 Feb 2024 23:18:37 +0100, Thomas Gleixner <tglx@linutronix.de>
-wrote:
+On Fri, Mar 01 2024 at 11:50, Jacob Pan wrote:
+> On Thu, 29 Feb 2024 23:18:37 +0100, Thomas Gleixner <tglx@linutronix.de>
+> wrote:
+>> On Thu, Feb 29 2024 at 14:07, Dimitri Sivanich wrote:
+>> The real problems are:
+>> 
+>>  1) This approach only works when _ALL_ APs have been brought up during
+>>     boot. With 'maxcpus=N' on the command line this will fail to enable
+>>     fault handling when the APs which have not been brought up initially
+>>     are onlined later on.
+>> 
+>>     This might be working in practice because intel_iommu_init() will
+>>     enable the interrupts later on via init_dmars() unconditionally, but
+>>     that's far from correct because IRQ_REMAP does not depend on
+>>     INTEL_IOMMU.
+> The dmar fault interrupt is VT-d's own interrupt, not subject to IRQ_REMAP.
+> So this set up has nothing to do with IR, right?
 
-> Dimitri!
-> 
-> On Thu, Feb 29 2024 at 14:07, Dimitri Sivanich wrote:
-> 
-> The subject lacks a subsystem prefix. You're doing this for how many
-> decades now?
-> 
-> > The Intel IOMMU code currently tries to allocate all DMAR fault
-> > interrupt 
-> > +#ifdef CONFIG_X86_LOCAL_APIC  
-> 
-> I seriously doubt that this code can ever be compiled w/o X86_LOCAL_APIC:
-> 
-> obj-$(CONFIG_DMAR_TABLE) += dmar.o
-> 
-> config DMAR_TABLE
->         bool
-> 
-> config INTEL_IOMMU
->         depends on PCI_MSI && ACPI && X86
->         select DMAR_TABLE
-> 
-> config IRQ_REMAP
->         depends on X86_64 && X86_IO_APIC && PCI_MSI && ACPI
->         select DMAR_TABLE
-> 
-> config X86_LOCAL_APIC
->         def_bool y
->         depends on X86_64 || SMP || X86_32_NON_STANDARD || X86_UP_APIC ||
-> PCI_MSI
-> 
-> What are you trying to achieve here other than #ifdef voodoo?
-> 
-> > +static void __init irq_remap_enable_fault_handling_thr(struct
-> > work_struct *work) +{
-> > +	irq_remap_enable_fault_handling();  
-> 
-> because if INTEL_IOMMU=y and IRQ_REMAP=n then X86_LOCAL_APIC=y and this
-> muck gets invoked for nothing. 'git grep irq_remap_enable_fault_handling
-> include/' might give you a hint.
-> 
-> > +}
-> > +
-> > +static int __init assign_dmar_vectors(void)
-> > +{
-> > +	struct work_struct irq_remap_work;
-> > +	int nid;
-> > +
-> > +	INIT_WORK(&irq_remap_work,
-> > irq_remap_enable_fault_handling_thr);
-> > +	cpus_read_lock();
-> > +	for_each_online_node(nid) {
-> > +		/* Boot cpu dmar vectors are assigned before the rest
-> > */
-> > +		if (nid == cpu_to_node(get_boot_cpu_id()))
-> > +			continue;
-> > +		schedule_work_on(cpumask_first(cpumask_of_node(nid)),
-> > +				 &irq_remap_work);
-> > +		flush_work(&irq_remap_work);
-> > +	}
-> > +	cpus_read_unlock();
-> > +	return 0;
-> > +}
-> > +
-> > +arch_initcall(assign_dmar_vectors);  
-> 
-> Stray newline before arch_initcall(), but that's not the problem.
-> 
-> The real problems are:
-> 
->  1) This approach only works when _ALL_ APs have been brought up during
->     boot. With 'maxcpus=N' on the command line this will fail to enable
->     fault handling when the APs which have not been brought up initially
->     are onlined later on.
-> 
->     This might be working in practice because intel_iommu_init() will
->     enable the interrupts later on via init_dmars() unconditionally, but
->     that's far from correct because IRQ_REMAP does not depend on
->     INTEL_IOMMU.
-The dmar fault interrupt is VT-d's own interrupt, not subject to IRQ_REMAP.
-So this set up has nothing to do with IR, right?
+Both interrupt remap and the IOMMU use DMAR and both set the DMAR's
+fault interrupt up, whatever comes first. If IR is enabled then IR does
+it, if not then the IOMMU init handles it.
 
-Maybe we should not call it irq_remap_work, call it dmar_fault_irq_work
-instead?
+But yes, the interrupt is part of DMAR.
 
->  2) It leaves a gap where the reporting is not working between bringing
->     up the APs during boot and this initcall. Mostly theoretical, but
->     that does not make it more correct either.
-> 
-> What you really want is a cpu hotplug state in the CPUHP_BP_PREPARE_DYN
-> space which enables the interrupt for the node _before_ the first AP of
-> the node is brought up. That will solve the problem nicely w/o any of
-> the above issues.
-> 
-> Thanks,
-> 
->         tglx
-> 
+> Maybe we should not call it irq_remap_work, call it dmar_fault_irq_work
+> instead?
 
+This work thing does not work at all as I explained in detail. No matter
+how you name it. The only sane way to do that is with a hotplug state.
 
 Thanks,
 
-Jacob
+        tglx
+
