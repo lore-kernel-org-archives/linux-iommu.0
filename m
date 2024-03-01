@@ -1,192 +1,98 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id CCE6120315
-	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 11:38:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7DAB6D52F
+	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 11:50:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709293123; cv=none; b=X+HNhVmtbsHBTO85WHoa3PiGLBS0tmRJ7MqGXgNftvS4Dh5S5Jfg3sSyPW8PfdIKlUC8u1TBmqvNhZXKmHnR+v2WYMIfQlYPqrD6lhuMezxQPDeSOO6JczISVBqxkc2GMDWhHpgWoEprkhU4GifKjM2RIh9PmJ3KuAGxVY2+nac=
+	t=1709293815; cv=none; b=MdYhTIvbqrOiVzCMn0jWxkndTTC/Cs7bAyhbmQgXwu0oS2DQk3hyXJYF77tkxelsNoLQiK5DmrEu4h+kpqst9KTXb1ZCPGZtBIsfssP0VtDErEjAJJXVjU3LI7smUJGT9fVoaKXTRql/hUU64ecCNz/j1ezms1pf+xMImSyqCJw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709293123; c=relaxed/simple;
-	bh=Bho0V3L6EalNqI/VaFRZI239nh8uqJQHHjMpb9j/96I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Bsntqf27KTRMTPVyipSNUztbKWjbrQAzgoSEdRq8bCFdKhH0ZLvhoQet9/Eif1WztUwacNJYWUfeJj9HwjIafSZ4+of1kHC9p0dEPLRqCMac0IUc84AdpJHONRm408idGUAur6Hb+wopFciJLziR0BsF6+FWIlkvNsbYM62h9yQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 714EB1FB;
-	Fri,  1 Mar 2024 03:39:19 -0800 (PST)
-Received: from [10.57.67.78] (unknown [10.57.67.78])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B9F1E3F6C4;
-	Fri,  1 Mar 2024 03:38:39 -0800 (PST)
-Message-ID: <64be2e23-c526-45d3-bb7b-29e31241bbef@arm.com>
-Date: Fri, 1 Mar 2024 11:38:25 +0000
+	s=arc-20240116; t=1709293815; c=relaxed/simple;
+	bh=v8Q6Jl37N2zGR/HpoxxGmiaWTFVZujCX5ASqmiZFrbA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 In-Reply-To:Content-Type:Content-Disposition; b=iCUk0KP0+I8HBWkZpWVUtaMhZMt37iPYnD9B9FdnYhiZZHWxD3uX1+ODxAw0STeAbK0F3cIiBty3QptFy779aELWpANFlMSMQoF4Scxab5Ip/avjGMbmy1PhpXT62siCGm7Wz2IDj9mnmeB3thWBpSxXr+Wbi6LvS8qhFIuMcd0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=UTOQlnpw; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="UTOQlnpw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1709293812;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=FfXTaDiZwo/oZl8lj7bR+2VUdXCLhRKEwJk47+amUD4=;
+	b=UTOQlnpwGej5R/GRVj30k1LJhUw4zbbMmB/uL5YL3TsASdGL/PnzGnP1W+vWSIzOmNGkqs
+	rDF5UlukU7apPcaUvtRiphXHmqnSmUI2+q50hpJpzqia1c1IwWLlqIJD3RykjmtQG2FF9T
+	heZnv3Cd4z7oNbIes2+28UdELqjlOqo=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-106-OCC5GP8lOC-0RL3yIprfIw-1; Fri, 01 Mar 2024 06:50:11 -0500
+X-MC-Unique: OCC5GP8lOC-0RL3yIprfIw-1
+Received: by mail-ej1-f69.google.com with SMTP id a640c23a62f3a-a3ee38c40baso176805266b.0
+        for <iommu@lists.linux.dev>; Fri, 01 Mar 2024 03:50:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709293810; x=1709898610;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FfXTaDiZwo/oZl8lj7bR+2VUdXCLhRKEwJk47+amUD4=;
+        b=ERWPUaeKnZruC+3WM+TUOOFVlAgTMxaCWYzslnQhCHwW7DaRnGrEA98PuN3JVJw/Px
+         FWNetfH3nfsJwfwVj6Bzs5rIabdSgc77ZFtWrxkD2PQsof0mvzZ48TmQff3QFCLyhkt+
+         ZG4JfSfqDvHcBbkyY2AriXBjIaTt9O+AWfpcnqZq/F71RPdgt3omlAHD/UtqzYR9MXFA
+         l2e2OgMJFrPoY8nY9lzTD0G1w48ttBAxv2tVnNo2JGmnvg2T8p4Zjaglzvzm+mmuIhc4
+         b16o0naY4XRYCMYimdEsVmC9lpj5WF9sqb5ENXZSNJyiAK5rCLEwbrfZcTHb6VHZQcIN
+         jZ+Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVcML/TgrNu2d0cjGf9eqFQAmVxhN1aaXbNf4JGvZnsXEyN2rdzsFDq/6S63hCqXG4yGOkirKF9VaPZgP/RxHKbESYRXz4=
+X-Gm-Message-State: AOJu0Ywff94r9s8SuK4imlzUOIR9c8WHZ5jls7uRjtMSFduyKSfX2r96
+	Cm2BgF39h7WTFxscSO2eKGhMKPUX/59ubNuQ/ZZudHsADesjxQpIA5n6rWoGLTEIY9hBX/jvw6/
+	7fVbIJ4y0dbxVSZu/R10wG4xZEiUswY1IQJCqrRI/h+waR60nQSU+
+X-Received: by 2002:a17:906:6889:b0:a43:f825:ef52 with SMTP id n9-20020a170906688900b00a43f825ef52mr1165091ejr.28.1709293809870;
+        Fri, 01 Mar 2024 03:50:09 -0800 (PST)
+X-Google-Smtp-Source: AGHT+IGgSzULUZjY1B+qQ1X+GwdMQFa+cNtdHXqiMvqiMYETfuq7yL9oj929clF85P2IkH9peSUsVw==
+X-Received: by 2002:a17:906:6889:b0:a43:f825:ef52 with SMTP id n9-20020a170906688900b00a43f825ef52mr1165062ejr.28.1709293809432;
+        Fri, 01 Mar 2024 03:50:09 -0800 (PST)
+Received: from redhat.com ([2.52.158.48])
+        by smtp.gmail.com with ESMTPSA id cb17-20020a170906a45100b00a43f1feac16sm1627108ejb.88.2024.03.01.03.50.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 01 Mar 2024 03:50:08 -0800 (PST)
+Date: Fri, 1 Mar 2024 06:50:05 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, linux-kernel@vger.kernel.org,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
+	Zelin Deng <zelin.deng@linux.alibaba.com>
+Subject: Re: [RFC] dma-mapping: introduce dma_can_skip_unmap()
+Message-ID: <20240301064632-mutt-send-email-mst@kernel.org>
+References: <20240301071918.64631-1-xuanzhuo@linux.alibaba.com>
+ <64be2e23-c526-45d3-bb7b-29e31241bbef@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC] dma-mapping: introduce dma_can_skip_unmap()
-To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, linux-kernel@vger.kernel.org
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- iommu@lists.linux.dev, "Michael S. Tsirkin" <mst@redhat.com>,
- Zelin Deng <zelin.deng@linux.alibaba.com>
-References: <20240301071918.64631-1-xuanzhuo@linux.alibaba.com>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240301071918.64631-1-xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <64be2e23-c526-45d3-bb7b-29e31241bbef@arm.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 2024-03-01 7:19 am, Xuan Zhuo wrote:
-> In a typical workflow, we first perform a dma map on an address to
-> obtain a dma address, followed by a dma unmap on that address. Generally,
-> this process works without issues. However, under certain circumstances,
-> we require additional resources to manage these dma addresses. For
-> instance, in layered architectures, we pass the dma address to another
-> module, but retrieving it back from that module can present some
-> challenges. In such cases, we must allocate extra resources to manage
-> these dma addresses.
-> 
-> However, considering that many times the dma unmap operation is actually
-> a no-op, if we know in advance that unmap is not necessary, we can save
-> on these extra management overheads. Moreover, we can directly skip the
-> dma unmap operation. This would be advantageous.
-> 
-> This tries to resolve the problem of patchset:
-> 
->   http://lore.kernel.org/all/20240225032330-mutt-send-email-mst@kernel.org
-> 
-> For a single packet, virtio-net may submit 1-19 dma addresses to virtio
-> core. If the virtio-net maintains the dma addresses will waste too much
-> memory when the unmap is not necessary. If the virtio-net retrieves the
-> dma addresses of the packet from the virtio core, we need to hold the 19
-> dma addresses by one call. And the net drivers maintain the dma is the
-> future. So we hope to check the unmap is necessary or not.
-> 
-> Co-developed-by: Zelin Deng <zelin.deng@linux.alibaba.com>
-> Signed-off-by: Zelin Deng <zelin.deng@linux.alibaba.com>
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> ---
->   drivers/iommu/dma-iommu.c   | 11 +++++++++++
->   include/linux/dma-map-ops.h |  1 +
->   include/linux/dma-mapping.h |  5 +++++
->   kernel/dma/mapping.c        | 23 +++++++++++++++++++++++
->   4 files changed, 40 insertions(+)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 50ccc4f1ef81..8c661a0e1111 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -1706,6 +1706,16 @@ static size_t iommu_dma_opt_mapping_size(void)
->   	return iova_rcache_range();
->   }
->   
-> +static bool iommu_dma_opt_can_skip_unmap(struct device *dev)
-> +{
-> +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-> +
-> +	if (domain->type == IOMMU_DOMAIN_IDENTITY)
+On Fri, Mar 01, 2024 at 11:38:25AM +0000, Robin Murphy wrote:
+> Not only is this idea not viable, the entire premise seems flawed - the
+> reasons for virtio needing to use the DMA API at all are highly likely to be
+> the same reasons for it needing to use the DMA API *properly* anyway.
 
-This is nonsense; iommu-dma does not operate on identity domains in the 
-first place.
+The idea has nothing to do with virtio per se - we are likely not the
+only driver that wastes a lot of memory (hot in cache, too) keeping DMA
+addresses around for the sole purpose of calling DMA unmap.  On a bunch
+of systems unmap is always a nop and we could save some memory if there
+was a way to find out. What is proposed is an API extension allowing
+that for anyone - not just virtio.
 
-> +		return true;
-> +	else
-> +		return false;
-> +}
-> +
->   static const struct dma_map_ops iommu_dma_ops = {
->   	.flags			= DMA_F_PCI_P2PDMA_SUPPORTED,
->   	.alloc			= iommu_dma_alloc,
-> @@ -1728,6 +1738,7 @@ static const struct dma_map_ops iommu_dma_ops = {
->   	.unmap_resource		= iommu_dma_unmap_resource,
->   	.get_merge_boundary	= iommu_dma_get_merge_boundary,
->   	.opt_mapping_size	= iommu_dma_opt_mapping_size,
-> +	.dma_can_skip_unmap	= iommu_dma_opt_can_skip_unmap,
->   };
->   
->   /*
-> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-> index 4abc60f04209..d508fa90bc06 100644
-> --- a/include/linux/dma-map-ops.h
-> +++ b/include/linux/dma-map-ops.h
-> @@ -83,6 +83,7 @@ struct dma_map_ops {
->   	size_t (*max_mapping_size)(struct device *dev);
->   	size_t (*opt_mapping_size)(void);
->   	unsigned long (*get_merge_boundary)(struct device *dev);
-> +	bool (*dma_can_skip_unmap)(struct device *dev);
->   };
->   
->   #ifdef CONFIG_DMA_OPS
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 4a658de44ee9..af5d9275f8cc 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -140,6 +140,7 @@ int dma_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
->   		void *cpu_addr, dma_addr_t dma_addr, size_t size,
->   		unsigned long attrs);
->   bool dma_can_mmap(struct device *dev);
-> +bool dma_can_skip_unmap(struct device *dev);
->   bool dma_pci_p2pdma_supported(struct device *dev);
->   int dma_set_mask(struct device *dev, u64 mask);
->   int dma_set_coherent_mask(struct device *dev, u64 mask);
-> @@ -249,6 +250,10 @@ static inline bool dma_can_mmap(struct device *dev)
->   {
->   	return false;
->   }
-> +static inline bool dma_can_skip_unmap(struct device *dev)
-> +{
-> +	return false;
-> +}
->   static inline bool dma_pci_p2pdma_supported(struct device *dev)
->   {
->   	return false;
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 58db8fd70471..99a81932820b 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -445,6 +445,29 @@ bool dma_can_mmap(struct device *dev)
->   }
->   EXPORT_SYMBOL_GPL(dma_can_mmap);
->   
-> +/**
-> + * dma_can_skip_unmap - check if unmap can be skipped
-> + * @dev: device to check
-> + *
-> + * Returns %true if @dev supports direct map or dma_can_skip_unmap() return true.
-> + */
-> +bool dma_can_skip_unmap(struct device *dev)
-> +{
-> +	const struct dma_map_ops *ops = get_dma_ops(dev);
-> +
-> +	if (is_swiotlb_force_bounce(dev))
-> +		return false;
-> +
-> +	if (dma_map_direct(dev, ops))
-> +		return true;
+-- 
+MST
 
-And this is also broken and nonsensical. What about non-coherent cache 
-maintenance, or regular non-forced SWIOTLB bouncing due to per-mapping 
-address limitations or buffer alignment, or dma-debug?
-
-Not only is this idea not viable, the entire premise seems flawed - the 
-reasons for virtio needing to use the DMA API at all are highly likely 
-to be the same reasons for it needing to use the DMA API *properly* anyway.
-
-Thanks,
-Robin.
-
-> +
-> +	if (ops->dma_can_skip_unmap)
-> +		return ops->dma_can_skip_unmap(dev);
-> +
-> +	return false;
-> +}
-> +EXPORT_SYMBOL_GPL(dma_can_skip_unmap);
-> +
->   /**
->    * dma_mmap_attrs - map a coherent DMA allocation into user space
->    * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
