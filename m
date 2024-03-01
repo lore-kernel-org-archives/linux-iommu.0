@@ -1,138 +1,192 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5481769E04
-	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 08:07:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CCE6120315
+	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 11:38:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709280479; cv=none; b=eEHJsRR0rz9E9Ru+/Fg638tL1IJD8LtOIRGh9Zw1hRTIQChiEiHxoZwmy9e3jRnyQR5zC6GW0C0NJv8tP7e/rl0HZla8LNa8Va8j7vf0dcAf6wuyHXLNPb2wIPT/mCaAGMKUt59ARlAmdcNmBC8BKFFL5Zxt2DCDEXri92RE7kM=
+	t=1709293123; cv=none; b=X+HNhVmtbsHBTO85WHoa3PiGLBS0tmRJ7MqGXgNftvS4Dh5S5Jfg3sSyPW8PfdIKlUC8u1TBmqvNhZXKmHnR+v2WYMIfQlYPqrD6lhuMezxQPDeSOO6JczISVBqxkc2GMDWhHpgWoEprkhU4GifKjM2RIh9PmJ3KuAGxVY2+nac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709280479; c=relaxed/simple;
-	bh=/cVxTPK8YMoBH+k7owpPAvLO8OBKEisXNbpy2Gi5tXs=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=KoF1CLz9yG9TkX63uvWlG8awDNXXACKPpP8wSnbC62btpXFzyLdeKZCkL0VBKwzd7XZbRJ9ytvnVgqNUaEAbJHk738jUzAHvokFPVGkfXy4KGdgCaxyUMB36D/498Wqv5Vo+iudEgtFfefhd+T1/SXKrjM/Bj3iU2e4RRxA9940=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QG6jdsZJ; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QG6jdsZJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709280479; x=1740816479;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=/cVxTPK8YMoBH+k7owpPAvLO8OBKEisXNbpy2Gi5tXs=;
-  b=QG6jdsZJpamAtqR/FjeutAA8uBqOYs1fdgFQfYN5fkgyszb3iBq77fH5
-   T532gCL8I0nmSkqMrn6yIfchG0z8BgaJfESrnEKK2czv8f99Xv386v3Rf
-   grZO5jElZjUMJzdIE3cnvPcqsBArjsksDLdFpDOoDsFZb3zrCZJoDXazg
-   URFIxQ2Y9fGnWw/ExrR5nKqZElX6l5ruOo+YvJmRC2RU7I47KeKY740Dc
-   Nshb6bi1kyI+iAcKgzFJXb18CrkThQ2i5gnQmxDleWUgITJsYQwaWxjSR
-   ongFTf8KLjzCIIkuw7y1ulWYH0eIlFdoZmFFyKKgEy501hWF1TQJl3hiu
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,10999"; a="15240433"
-X-IronPort-AV: E=Sophos;i="6.06,195,1705392000"; 
-   d="scan'208";a="15240433"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2024 00:07:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,195,1705392000"; 
-   d="scan'208";a="8187527"
-Received: from unknown (HELO ply01-vm-store.amr.corp.intel.com) ([10.238.153.201])
-  by orviesa009.jf.intel.com with ESMTP; 01 Mar 2024 00:07:52 -0800
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-To: baolu.lu@linux.intel.com,
-	bhelgaas@google.com,
-	robin.murphy@arm.com,
-	jgg@ziepe.ca
-Cc: kevin.tian@intel.com,
-	dwmw2@infradead.org,
-	will@kernel.org,
-	lukas@wunner.de,
-	yi.l.liu@intel.com,
-	dan.carpenter@linaro.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Ethan Zhao <haifeng.zhao@linux.intel.com>
-Subject: [PATCH v14 3/3] iommu/vt-d: improve ITE fault handling if target device isn't present
-Date: Fri,  1 Mar 2024 03:07:27 -0500
-Message-Id: <20240301080727.3529832-4-haifeng.zhao@linux.intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20240301080727.3529832-1-haifeng.zhao@linux.intel.com>
-References: <20240301080727.3529832-1-haifeng.zhao@linux.intel.com>
+	s=arc-20240116; t=1709293123; c=relaxed/simple;
+	bh=Bho0V3L6EalNqI/VaFRZI239nh8uqJQHHjMpb9j/96I=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Bsntqf27KTRMTPVyipSNUztbKWjbrQAzgoSEdRq8bCFdKhH0ZLvhoQet9/Eif1WztUwacNJYWUfeJj9HwjIafSZ4+of1kHC9p0dEPLRqCMac0IUc84AdpJHONRm408idGUAur6Hb+wopFciJLziR0BsF6+FWIlkvNsbYM62h9yQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 714EB1FB;
+	Fri,  1 Mar 2024 03:39:19 -0800 (PST)
+Received: from [10.57.67.78] (unknown [10.57.67.78])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B9F1E3F6C4;
+	Fri,  1 Mar 2024 03:38:39 -0800 (PST)
+Message-ID: <64be2e23-c526-45d3-bb7b-29e31241bbef@arm.com>
+Date: Fri, 1 Mar 2024 11:38:25 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [RFC] dma-mapping: introduce dma_can_skip_unmap()
+To: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, linux-kernel@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ iommu@lists.linux.dev, "Michael S. Tsirkin" <mst@redhat.com>,
+ Zelin Deng <zelin.deng@linux.alibaba.com>
+References: <20240301071918.64631-1-xuanzhuo@linux.alibaba.com>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240301071918.64631-1-xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Because surprise removal could happen anytime, e.g. user could request safe
-removal to EP(endpoint device) via sysfs and brings its link down to do
-surprise removal cocurrently. such aggressive cases would cause ATS
-invalidation request issued to non-existence target device, then deadly
-loop to retry that request after ITE fault triggered in interrupt context.
-this patch aims to optimize the ITE handling by checking the target device
-presence state to avoid retrying the timeout request blindly, thus avoid
-hard lockup or system hang.
+On 2024-03-01 7:19 am, Xuan Zhuo wrote:
+> In a typical workflow, we first perform a dma map on an address to
+> obtain a dma address, followed by a dma unmap on that address. Generally,
+> this process works without issues. However, under certain circumstances,
+> we require additional resources to manage these dma addresses. For
+> instance, in layered architectures, we pass the dma address to another
+> module, but retrieving it back from that module can present some
+> challenges. In such cases, we must allocate extra resources to manage
+> these dma addresses.
+> 
+> However, considering that many times the dma unmap operation is actually
+> a no-op, if we know in advance that unmap is not necessary, we can save
+> on these extra management overheads. Moreover, we can directly skip the
+> dma unmap operation. This would be advantageous.
+> 
+> This tries to resolve the problem of patchset:
+> 
+>   http://lore.kernel.org/all/20240225032330-mutt-send-email-mst@kernel.org
+> 
+> For a single packet, virtio-net may submit 1-19 dma addresses to virtio
+> core. If the virtio-net maintains the dma addresses will waste too much
+> memory when the unmap is not necessary. If the virtio-net retrieves the
+> dma addresses of the packet from the virtio core, we need to hold the 19
+> dma addresses by one call. And the net drivers maintain the dma is the
+> future. So we hope to check the unmap is necessary or not.
+> 
+> Co-developed-by: Zelin Deng <zelin.deng@linux.alibaba.com>
+> Signed-off-by: Zelin Deng <zelin.deng@linux.alibaba.com>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> ---
+>   drivers/iommu/dma-iommu.c   | 11 +++++++++++
+>   include/linux/dma-map-ops.h |  1 +
+>   include/linux/dma-mapping.h |  5 +++++
+>   kernel/dma/mapping.c        | 23 +++++++++++++++++++++++
+>   4 files changed, 40 insertions(+)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 50ccc4f1ef81..8c661a0e1111 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1706,6 +1706,16 @@ static size_t iommu_dma_opt_mapping_size(void)
+>   	return iova_rcache_range();
+>   }
+>   
+> +static bool iommu_dma_opt_can_skip_unmap(struct device *dev)
+> +{
+> +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+> +
+> +	if (domain->type == IOMMU_DOMAIN_IDENTITY)
 
-Devices TLB should only be invalidated when devices are in the 
-iommu->device_rbtree (probed, not released) and present.
+This is nonsense; iommu-dma does not operate on identity domains in the 
+first place.
 
-Fixes: 6ba6c3a4cacf ("VT-d: add device IOTLB invalidation support")
-Reviewed-by: Dan Carpenter <dan.carpenter@linaro.org>
-Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
----
- drivers/iommu/intel/dmar.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+> +		return true;
+> +	else
+> +		return false;
+> +}
+> +
+>   static const struct dma_map_ops iommu_dma_ops = {
+>   	.flags			= DMA_F_PCI_P2PDMA_SUPPORTED,
+>   	.alloc			= iommu_dma_alloc,
+> @@ -1728,6 +1738,7 @@ static const struct dma_map_ops iommu_dma_ops = {
+>   	.unmap_resource		= iommu_dma_unmap_resource,
+>   	.get_merge_boundary	= iommu_dma_get_merge_boundary,
+>   	.opt_mapping_size	= iommu_dma_opt_mapping_size,
+> +	.dma_can_skip_unmap	= iommu_dma_opt_can_skip_unmap,
+>   };
+>   
+>   /*
+> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+> index 4abc60f04209..d508fa90bc06 100644
+> --- a/include/linux/dma-map-ops.h
+> +++ b/include/linux/dma-map-ops.h
+> @@ -83,6 +83,7 @@ struct dma_map_ops {
+>   	size_t (*max_mapping_size)(struct device *dev);
+>   	size_t (*opt_mapping_size)(void);
+>   	unsigned long (*get_merge_boundary)(struct device *dev);
+> +	bool (*dma_can_skip_unmap)(struct device *dev);
+>   };
+>   
+>   #ifdef CONFIG_DMA_OPS
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 4a658de44ee9..af5d9275f8cc 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -140,6 +140,7 @@ int dma_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+>   		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+>   		unsigned long attrs);
+>   bool dma_can_mmap(struct device *dev);
+> +bool dma_can_skip_unmap(struct device *dev);
+>   bool dma_pci_p2pdma_supported(struct device *dev);
+>   int dma_set_mask(struct device *dev, u64 mask);
+>   int dma_set_coherent_mask(struct device *dev, u64 mask);
+> @@ -249,6 +250,10 @@ static inline bool dma_can_mmap(struct device *dev)
+>   {
+>   	return false;
+>   }
+> +static inline bool dma_can_skip_unmap(struct device *dev)
+> +{
+> +	return false;
+> +}
+>   static inline bool dma_pci_p2pdma_supported(struct device *dev)
+>   {
+>   	return false;
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 58db8fd70471..99a81932820b 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -445,6 +445,29 @@ bool dma_can_mmap(struct device *dev)
+>   }
+>   EXPORT_SYMBOL_GPL(dma_can_mmap);
+>   
+> +/**
+> + * dma_can_skip_unmap - check if unmap can be skipped
+> + * @dev: device to check
+> + *
+> + * Returns %true if @dev supports direct map or dma_can_skip_unmap() return true.
+> + */
+> +bool dma_can_skip_unmap(struct device *dev)
+> +{
+> +	const struct dma_map_ops *ops = get_dma_ops(dev);
+> +
+> +	if (is_swiotlb_force_bounce(dev))
+> +		return false;
+> +
+> +	if (dma_map_direct(dev, ops))
+> +		return true;
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index d14797aabb7a..fa1ac111a6e2 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1273,6 +1273,8 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
- {
- 	u32 fault;
- 	int head, tail;
-+	u64 iqe_err, ite_sid;
-+	struct device *dev = NULL;
- 	struct q_inval *qi = iommu->qi;
- 	int shift = qi_shift(iommu);
- 
-@@ -1317,6 +1319,13 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
- 		tail = readl(iommu->reg + DMAR_IQT_REG);
- 		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
- 
-+		/*
-+		 * SID field is valid only when the ITE field is Set in FSTS_REG
-+		 * see Intel VT-d spec r4.1, section 11.4.9.9
-+		 */
-+		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
-+		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
-+
- 		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
- 		pr_info("Invalidation Time-out Error (ITE) cleared\n");
- 
-@@ -1326,6 +1335,19 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
- 			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
- 		} while (head != tail);
- 
-+		/*
-+		 * If device was released or isn't present, no need to retry
-+		 * the ATS invalidate request anymore.
-+		 *
-+		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
-+		 * see Intel VT-d spec r4.1, section 11.4.9.9
-+		 */
-+		if (ite_sid) {
-+			dev = device_rbtree_find(iommu, ite_sid);
-+			if (!dev || !dev_is_pci(dev) ||
-+				!pci_device_is_present(to_pci_dev(dev)))
-+				return -ETIMEDOUT;
-+		}
- 		if (qi->desc_status[wait_index] == QI_ABORT)
- 			return -EAGAIN;
- 	}
--- 
-2.31.1
+And this is also broken and nonsensical. What about non-coherent cache 
+maintenance, or regular non-forced SWIOTLB bouncing due to per-mapping 
+address limitations or buffer alignment, or dma-debug?
 
+Not only is this idea not viable, the entire premise seems flawed - the 
+reasons for virtio needing to use the DMA API at all are highly likely 
+to be the same reasons for it needing to use the DMA API *properly* anyway.
+
+Thanks,
+Robin.
+
+> +
+> +	if (ops->dma_can_skip_unmap)
+> +		return ops->dma_can_skip_unmap(dev);
+> +
+> +	return false;
+> +}
+> +EXPORT_SYMBOL_GPL(dma_can_skip_unmap);
+> +
+>   /**
+>    * dma_mmap_attrs - map a coherent DMA allocation into user space
+>    * @dev: valid struct device pointer, or NULL for ISA and EISA-like devices
