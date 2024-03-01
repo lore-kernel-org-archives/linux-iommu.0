@@ -1,80 +1,77 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 921273A8F3
-	for <iommu@lists.linux.dev>; Fri,  1 Mar 2024 12:42:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id ED11D4205A;
+	Fri,  1 Mar 2024 12:47:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709296964; cv=none; b=Pqw7Oxh4lOzpcmNLep/s/fEpS8waiIN18dofkP3amqvD4keJiCzLH8C1rF7BlR293FlUt5333b6cJeUc9wGGacOCIkIVzQYq7A64geSL76YGNFjeae0xWoveRpurA0IbEdbKCG85q79YW5YYLel4hl8LZKkHdXImnWV5+HwhQZo=
+	t=1709297249; cv=none; b=H4qK/FX09nyWMjwFWQnJ0AqaETI2yHeNEnowxlIdDsh5OKfcy6RRyAL9zV+95wro069XxbDvHo42dOKnsHC8FnrSHRVJh8wf8VxBJjcQG2WmOqiwuoF5+oe2LpLATawIKOvRQkFPwDweIWF11cfgqrj8JX5BCyY6JkGuvICUp1Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709296964; c=relaxed/simple;
-	bh=t992hf53Vycc3JIlhL128nsP3WDitkm3C4upBjGdDZw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=c/zRYITYn9iLbPOGoQ8V02MI93Du6fah05lxNjC9JMwUFQ2qbLFRU1n0tVKjMfefDkk6dUkVWLRaT3MFsBmsqtKtFEYvDOLL1oXp24sRiZLVW+NdcMUgbT3Nb+JiqNE5zQ6V/BNDAcBhDfIxzsAoFu3XnJ6LgfjX04olOEosEAo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 002921FB;
-	Fri,  1 Mar 2024 04:43:20 -0800 (PST)
-Received: from [10.57.67.78] (unknown [10.57.67.78])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4F6A43F6C4;
-	Fri,  1 Mar 2024 04:42:40 -0800 (PST)
-Message-ID: <a00f0b55-0681-4e9c-b75e-e7e3d4110471@arm.com>
-Date: Fri, 1 Mar 2024 12:42:39 +0000
+	s=arc-20240116; t=1709297249; c=relaxed/simple;
+	bh=hA0oxwD27gd74f5RciQ0gAwJyLc3AOc6ENazGRzlsA8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cfoZjahUq3l+yScVLWlGSno08DbXOeYGdDERBlcJ3z1pJEVixW6p3YbuDYKQLy9YWBMucRCacQyQUAJUy/jRI8W/SQVQl5yOWe1FIflkZRiPXKhsQCvqz89JFuI7XYxV4XXKP505uG4YnQ42v57/v1yTVSG9pjOwPVvgyV/iy5Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=17zvLga4; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="17zvLga4"
+Received: from 8bytes.org (p4ffe0c3c.dip0.t-ipconnect.de [79.254.12.60])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id B32031C2C89;
+	Fri,  1 Mar 2024 13:47:22 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1709297243;
+	bh=hA0oxwD27gd74f5RciQ0gAwJyLc3AOc6ENazGRzlsA8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=17zvLga4k0NTgX7vMeySb0BST/85bdOAY7Tbmc6qXLWdcX5iiVdGYAFNMGHwTHhaD
+	 283fe6n+XYrQ/bHfCjsAfEvCK0QPphrx/G0/uJLueU+GPWo0u0fURkWHAClQ45C9uI
+	 uIvO1RmSja0KtwTEwIzL5JJM9GJ/LcAvmkyaz6Qi9DbfkNzr9uSWNtRbOriy+5pRPV
+	 2gQtzJ+O2Br8Ta3rRxwqFFTiug2NvFzLQFRpROnF95KN8tzg5yj5MpDAvgx2Dm/psw
+	 sDfN2jQw/qIHXKrhff0JF5WdLh5syukwy7nwIhemdPGPS4RXoyorYt7ID45BQAFQpD
+	 VrRA+CYGCvnTg==
+Date: Fri, 1 Mar 2024 13:47:21 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+	Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Rob Clark <robdclark@gmail.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konrad.dybcio@linaro.org>,
+	Yong Wu <yong.wu@mediatek.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	Heiko Stuebner <heiko@sntech.de>, Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Krishna Reddy <vdumpa@nvidia.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	asahi@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+	linux-mediatek@lists.infradead.org,
+	linux-rockchip@lists.infradead.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, virtualization@lists.linux.dev
+Subject: Re: [PATCH 1/4] iommu: constify pointer to bus_type
+Message-ID: <ZeHOWXuNLhQlSrxM@8bytes.org>
+References: <20240216144027.185959-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC] dma-mapping: introduce dma_can_skip_unmap()
-Content-Language: en-GB
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, linux-kernel@vger.kernel.org,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- iommu@lists.linux.dev, Zelin Deng <zelin.deng@linux.alibaba.com>
-References: <20240301071918.64631-1-xuanzhuo@linux.alibaba.com>
- <64be2e23-c526-45d3-bb7b-29e31241bbef@arm.com>
- <20240301064632-mutt-send-email-mst@kernel.org>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240301064632-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240216144027.185959-1-krzysztof.kozlowski@linaro.org>
 
-On 2024-03-01 11:50 am, Michael S. Tsirkin wrote:
-> On Fri, Mar 01, 2024 at 11:38:25AM +0000, Robin Murphy wrote:
->> Not only is this idea not viable, the entire premise seems flawed - the
->> reasons for virtio needing to use the DMA API at all are highly likely to be
->> the same reasons for it needing to use the DMA API *properly* anyway.
-> 
-> The idea has nothing to do with virtio per se
+On Fri, Feb 16, 2024 at 03:40:24PM +0100, Krzysztof Kozlowski wrote:
 
-Sure, I can see that, but if virtio is presented as the justification 
-for doing this then it's the justification I'm going to look at first. 
-And the fact is that it *does* seem to have particular significance, 
-since having up to 19 DMA addresses involved in a single transfer is 
-very much an outlier compared to typical hardware drivers. Furthermore 
-the fact that DMA API support was retrofitted to the established virtio 
-design means I would always expect it to run up against more challenges 
-than a hardware driver designed around the expectation that DMA buffers 
-have DMA addresses.
-
-> - we are likely not the
-> only driver that wastes a lot of memory (hot in cache, too) keeping DMA
-> addresses around for the sole purpose of calling DMA unmap.  On a bunch
-> of systems unmap is always a nop and we could save some memory if there
-> was a way to find out. What is proposed is an API extension allowing
-> that for anyone - not just virtio.
-
-And the point I'm making is that that "always" is a big assumption, and 
-in fact for the situations where it is robustly true we already have the 
-DEFINE_DMA_UNMAP_{ADDR,LEN} mechanism. I'd consider it rare for DMA 
-addresses to be stored in isolation, as opposed to being part of some 
-kind of buffer descriptor (or indeed struct scatterlist, for an obvious 
-example) that a driver or subsystem still has to keep track of anyway, 
-so in general I believe the scope for saving decidedly small amounts of 
-memory at runtime is also considerably less than you might be imagining.
-
-Thanks,
-Robin.
+Applied all, thanks.
