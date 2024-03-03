@@ -1,177 +1,131 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAF6817561
-	for <iommu@lists.linux.dev>; Sat,  2 Mar 2024 09:58:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BF9A1E499
+	for <iommu@lists.linux.dev>; Sun,  3 Mar 2024 16:43:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709373497; cv=none; b=i3tL4UQKP26b8TJcX5KlCtuyfVDiKwLLlZWI9wGvbnKcsrSE2Hn/l8PJ5Th0pe781btN0VzTSZg/wN5RNiNLAToU1XmRhqm4hdRUcPoFqw13lxxtxmWj/k3+iYKD/4uqXn31GQsicwvbs1qKLkQVLAjSaDkyjokWqbyAyDDPB3g=
+	t=1709484227; cv=none; b=rhwidLjYgJIzpPqt7k/Uh0QqBOrApdYgNs5He9kMeZXYPYkw4kVQ6eJ6sf46AVAEoR02DcBy5Z4ExSx5nhZe5g5OWf82W8rqkQfVuIDNcw6ClP7mOMs9gaJOUkHpRYUSw4MYvZvYzQqLAU7STcjbgIXAh6/gTq5Y9aNulWA2Xhw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709373497; c=relaxed/simple;
-	bh=/x3T0OMpp3iKUzLBEGpWVmoMm/HiL+dupIgBySb4nos=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=dLgV+OGy2qldZxbB6fucPowEIVm46Yd2CDcc6IYHzDInMbeDYwda5TsWRfmSXotTbLQ5a4/9EoyVXjmEdeqqyqhJVeQuOyZ2MOQf7WWc0ZPY/rtwYmMJh9YObyZmpeuKli4GxbO7jn2+4eYPYzNn7YAE7Zv3JRYAn7SLvfD1w4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=YLfwfVtJ; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1709484227; c=relaxed/simple;
+	bh=AylZCUlrBr6sCkdNJuqFPFI5HrOKw1Lt/qRw1U+EUO0=;
+	h=From:Message-ID:Date:MIME-Version:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=dzy8/M1jH8aKl90/HEd8QfO8Lm87/LcUlle611cIJX4SfahHgUeQ9egrUNLBVnhXa2rmXQlpB2058IzIARo+vJM6uZBzFWoSVZOAPxnZ9G7fFbGlh3lUptaIvZmQ1OlFUTKMFh6+RDA1VU9dsLELzcYYBi+WxtjW4Qmb+Xg2PhU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Lc4h6wuH; arc=none smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="YLfwfVtJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1709373494;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=AKr8rD8fAkNwo51tA34H8+UMuH0UM/JJlMXUkpjGSV4=;
-	b=YLfwfVtJt1S44UoTdZNuTENhqAOr3rlcQZslvkSb8OygXqewNLTwXlKmVm/OlDGds5hvH/
-	pwcEku+bEuzZjyS3eS9TwSMoW64CGf9mnk7KkPST/NaU1nX5kGYqP+ojOFseqCNtEAXW7V
-	CWGKyNvhttGBHhEIvIwx2BLKQHTTQvc=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-501-NTMlmLptOkCBllexJESdbw-1; Sat, 02 Mar 2024 04:58:11 -0500
-X-MC-Unique: NTMlmLptOkCBllexJESdbw-1
-Received: by mail-ej1-f72.google.com with SMTP id a640c23a62f3a-a44d9c0809cso16722866b.2
-        for <iommu@lists.linux.dev>; Sat, 02 Mar 2024 01:58:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Lc4h6wuH"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-33d0a7f2424so1990085f8f.0
+        for <iommu@lists.linux.dev>; Sun, 03 Mar 2024 08:43:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1709484224; x=1710089024; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ikfe6o+inj4dMrhzQCM91BE0ram1wt5jM+ElrBh+ocw=;
+        b=Lc4h6wuHDoo622B06wWIroRIsnwWhOJzy6e/0FSa5oHzKws6r7CUCk4v5DDADdYslE
+         IdIORoc+/BnZO82UrcNvif0AoT4/VMoOSwYbtlQ4prCCRSgzDhAWeEZgSFBc+SOf8RJZ
+         sBtWONYU4XNe/tanPieD3KZVGJaNv6HdxGM/iwxjbGSmvLQuJVO/fRakU5Rw9kBZW8Kw
+         xZYzF80Ke1ruVI8iSrBMVTkQXkLefmyfGcXHBbu4FFzlU27q2wBecFBCnZF/YqSWkw81
+         1I6/IbVmH7EgbWcjGB1vuRX2Rsyhb81Ve7oS01O2jHc2zUNYtNLms4GVh+t2pFzcPpWo
+         ylLg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709373490; x=1709978290;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AKr8rD8fAkNwo51tA34H8+UMuH0UM/JJlMXUkpjGSV4=;
-        b=ffniLtKbbcZ/tb1UEZZb5FqrarSaY5nfNuUneZnBeEzKF7fpHMeicYNZcHCyE71sHE
-         9DEITisxTLU8GR5g89cI6hGdp+EcEjnAPMBmAExd+NtyzVBlWfKV5eHAHAbLRIypxiDG
-         39/kkDlp56SvrLo7aD1QBnuEPRS88ecVnMKYe8UB6HVebJGTo3uuCskf3vjfs84eU5mJ
-         j/m6emX3Ky4TnHdQtaq3S5QZVk2f2r2MYDBYuldbtPPPv1Ir8hAudAy7b6LuSWsd484x
-         R4mZgX4yM5BEvTaHgtvTUvm2JadDnbOs3fYyxZ/IM7VE9i8QkFNXYkGHKyCRjn/Ga9s2
-         ey8A==
-X-Forwarded-Encrypted: i=1; AJvYcCV1AB7lbjIm53U9pna504YZF8SY3dY656xKPafyIsLrUHf55SOx3wqFEuqlikQk+Oi0wz9uxEi7QqLomhePKk3RlXxiOmo=
-X-Gm-Message-State: AOJu0YwVN6K3VqceVP5LsVvmPA8mDI/4MqUyD44qEaufcbLtHcUXbojR
-	gX1nfZ5NhOK1M33xPTYQudr7EFDkA4KDmGlPlK6QToGKmWmO1UJZquWvBvuBaAglQI+noSfo9Lz
-	gCwVqm68Ko26Sl/AMyPT3qPGl7VrjxKideVwSgeA7jwB9nbJzxqiD
-X-Received: by 2002:a17:906:411b:b0:a44:56f1:d2df with SMTP id j27-20020a170906411b00b00a4456f1d2dfmr3278141ejk.76.1709373490251;
-        Sat, 02 Mar 2024 01:58:10 -0800 (PST)
-X-Google-Smtp-Source: AGHT+IF+FY4M17VhTpy7pWcteQLhp1iMfNHz1ayYo1OkLw38k2RWegPdjIZgMSPUsyyhLDuhpTpR+g==
-X-Received: by 2002:a17:906:411b:b0:a44:56f1:d2df with SMTP id j27-20020a170906411b00b00a4456f1d2dfmr3278127ejk.76.1709373489788;
-        Sat, 02 Mar 2024 01:58:09 -0800 (PST)
-Received: from redhat.com ([2.52.158.48])
-        by smtp.gmail.com with ESMTPSA id y1-20020a1709060bc100b00a43aa27b5f2sm2547614ejg.94.2024.03.02.01.58.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 02 Mar 2024 01:58:08 -0800 (PST)
-Date: Sat, 2 Mar 2024 04:58:04 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Xuan Zhuo <xuanzhuo@linux.alibaba.com>, linux-kernel@vger.kernel.org,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>, iommu@lists.linux.dev,
-	Zelin Deng <zelin.deng@linux.alibaba.com>
-Subject: Re: [RFC] dma-mapping: introduce dma_can_skip_unmap()
-Message-ID: <20240301194817-mutt-send-email-mst@kernel.org>
-References: <20240301071918.64631-1-xuanzhuo@linux.alibaba.com>
- <64be2e23-c526-45d3-bb7b-29e31241bbef@arm.com>
- <20240301064632-mutt-send-email-mst@kernel.org>
- <a00f0b55-0681-4e9c-b75e-e7e3d4110471@arm.com>
- <20240301082703-mutt-send-email-mst@kernel.org>
- <d4f2f99c-b8bb-4ed9-8d91-ed0f5b418425@arm.com>
+        d=1e100.net; s=20230601; t=1709484224; x=1710089024;
+        h=content-transfer-encoding:in-reply-to:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ikfe6o+inj4dMrhzQCM91BE0ram1wt5jM+ElrBh+ocw=;
+        b=n6x8io00FePb3STiQxQ6wqlbh7SJL6kiNxlsVXEdlfiWQNI/4+sYynS4TMlpRaLfJb
+         +UeMdXH7sWQvLvE9RI3ydvzBO0Fq6NNTGvFzJyrZd15W5v0fl3iBmKhh8q+dINf1v7RG
+         DbX50LtJ91E2Sk13Licb4MCpTCDYgDfMcU8H/5HJKi5Sg8/UPUt9Mfn5yBYyJbovxpqM
+         HNGgWeDz5sBhFciQ8DC8B4IcqsyE74CxzQzYzu+SBTGzKNCvw1PkSgGBhj/NtZ9cbbzp
+         ZG/U1bP9SS3Pm3baN36r2mCWhDGJkbiapZw9ySmcLM0ZjIqLV2rxWxHUVTCi/bsansuz
+         9i8g==
+X-Forwarded-Encrypted: i=1; AJvYcCW/j9Q5p3ll26Jc7XmYIAVSKCThU98z4DoXo6Ab022rg7mqPLPx9ug6ykDiZDJdWlDUEFnzg8akuKWYgMuxu851WvXdtHU=
+X-Gm-Message-State: AOJu0Yzczp+LTsB0OrZYZne0p2UE87POxiWqm7ibazrwReNMhgRBjTG1
+	BtiAK3L8fZEjce2ycWwr6m/GKak7yKatxUD5pyPX420ALmdTjbMQ
+X-Google-Smtp-Source: AGHT+IEan7Mnlup0Dsmz/hl+Nfxoss34Q+iDIhW40VewxV5OR6PZ3luhS7QypruxneaihlG33uJrxQ==
+X-Received: by 2002:a05:6000:12c8:b0:33d:747a:1e94 with SMTP id l8-20020a05600012c800b0033d747a1e94mr4376321wrx.41.1709484223538;
+        Sun, 03 Mar 2024 08:43:43 -0800 (PST)
+Received: from [10.8.18.71] ([62.214.99.74])
+        by smtp.gmail.com with ESMTPSA id cr14-20020a05600004ee00b0033dd06e628asm9995441wrb.27.2024.03.03.08.43.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 03 Mar 2024 08:43:42 -0800 (PST)
+From: Zhu Yanjun <zyjzyj2000@gmail.com>
+X-Google-Original-From: Zhu Yanjun <yanjun.zhu@linux.dev>
+Message-ID: <be75fe5b-9901-425c-8dbb-771dcb084e2e@linux.dev>
+Date: Sun, 3 Mar 2024 17:43:41 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <d4f2f99c-b8bb-4ed9-8d91-ed0f5b418425@arm.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [LSF/MM/BPF TOPIC] [LSF/MM/BPF ATTEND] : Two stage IOMMU DMA
+ mapping operations
+Content-Language: en-US
+To: Leon Romanovsky <leon@kernel.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>
+Cc: "lsf-pc@lists.linux-foundation.org" <lsf-pc@lists.linux-foundation.org>,
+ "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+ "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ linux-rdma <linux-rdma@vger.kernel.org>,
+ "linux-mm@kvack.org" <linux-mm@kvack.org>, Jens Axboe <axboe@kernel.dk>,
+ Bart Van Assche <bvanassche@acm.org>, "kbusch@kernel.org"
+ <kbusch@kernel.org>, Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+ Amir Goldstein <amir73il@gmail.com>,
+ "josef@toxicpanda.com" <josef@toxicpanda.com>,
+ "Martin K. Petersen" <martin.petersen@oracle.com>,
+ "daniel@iogearbox.net" <daniel@iogearbox.net>, Christoph Hellwig
+ <hch@lst.de>, Dan Williams <dan.j.williams@intel.com>,
+ "jack@suse.com" <jack@suse.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Chuck Lever <chuck.lever@oracle.com>
+References: <97f385db-42c9-4c04-8fba-9b1ba8ffc525@nvidia.com>
+ <20240227113007.GD1842804@unreal>
+In-Reply-To: <20240227113007.GD1842804@unreal>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, Mar 01, 2024 at 06:04:10PM +0000, Robin Murphy wrote:
-> On 2024-03-01 1:41 pm, Michael S. Tsirkin wrote:
-> > On Fri, Mar 01, 2024 at 12:42:39PM +0000, Robin Murphy wrote:
-> > > On 2024-03-01 11:50 am, Michael S. Tsirkin wrote:
-> > > > On Fri, Mar 01, 2024 at 11:38:25AM +0000, Robin Murphy wrote:
-> > > > > Not only is this idea not viable, the entire premise seems flawed - the
-> > > > > reasons for virtio needing to use the DMA API at all are highly likely to be
-> > > > > the same reasons for it needing to use the DMA API *properly* anyway.
-> > > > 
-> > > > The idea has nothing to do with virtio per se
-> > > 
-> > > Sure, I can see that, but if virtio is presented as the justification for
-> > > doing this then it's the justification I'm going to look at first. And the
-> > > fact is that it *does* seem to have particular significance, since having up
-> > > to 19 DMA addresses involved in a single transfer is very much an outlier
-> > > compared to typical hardware drivers.
-> > 
-> > That's a valid comment. Xuan Zhuo do other drivers do this too,
-> > could you check pls?
-> > 
-> > > Furthermore the fact that DMA API
-> > > support was retrofitted to the established virtio design means I would
-> > > always expect it to run up against more challenges than a hardware driver
-> > > designed around the expectation that DMA buffers have DMA addresses.
-> > 
-> > 
-> > It seems virtio can't drive any DMA changes then it's forever tainted?
-> > Seems unfair - we retrofitted it years ago, enough refactoring happened
-> > since then.
+On 27.02.24 12:30, Leon Romanovsky wrote:
+> On Tue, Feb 27, 2024 at 08:17:27AM +0000, Chaitanya Kulkarni wrote:
+>> Hi,
 > 
-> No, I'm not saying we couldn't still do things to help virtio if and when it
-> does prove reasonable to do so; just that if anything it's *because* that
-> retrofit is mature and fairly well polished by now that any remaining issues
-> like this one are going to be found in the most awkward corners and thus
-> unlikely to generalise.
+> <...>
 > 
-> FWIW in my experience it seems more common for network drivers to actually
-> have the opposite problem, where knowing the DMA address of a buffer is
-> easy, but keeping track of the corresponding CPU address can be more of a
-> pain.
+>> In order to create a good platform for a concrete and meaningful
+>> discussion at LSFMM 24, we plan to post an RFC within the next two weeks.
 > 
-> > > > - we are likely not the
-> > > > only driver that wastes a lot of memory (hot in cache, too) keeping DMA
-> > > > addresses around for the sole purpose of calling DMA unmap.  On a bunch
-> > > > of systems unmap is always a nop and we could save some memory if there
-> > > > was a way to find out. What is proposed is an API extension allowing
-> > > > that for anyone - not just virtio.
-> > > 
-> > > And the point I'm making is that that "always" is a big assumption, and in
-> > > fact for the situations where it is robustly true we already have the
-> > > DEFINE_DMA_UNMAP_{ADDR,LEN} mechanism.
-> > > I'd consider it rare for DMA
-> > > addresses to be stored in isolation, as opposed to being part of some kind
-> > > of buffer descriptor (or indeed struct scatterlist, for an obvious example)
-> > > that a driver or subsystem still has to keep track of anyway, so in general
-> > > I believe the scope for saving decidedly small amounts of memory at runtime
-> > > is also considerably less than you might be imagining.
-> > > 
-> > > Thanks,
-> > > Robin.
-> > 
-> > 
-> > Yes. DEFINE_DMA_UNMAP_ exits but that's only compile time.
-> > And I think the fact we have that mechanism is a hint that
-> > enough configurations could benefit from a runtime
-> > mechanism, too.
-> > 
-> > E.g. since you mentioned scatterlist, it has a bunch of ifdefs
-> > in place.
-> 
-> But what could that benefit be in general? It's not like we can change
-> structure layouts on a per-DMA-mapping-call basis to save already-allocated
-> memory... :/
-> 
-> Thanks,
-> Robin.
+> The code can be found here https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=dma-split
 
-This is all speculation, but maybe e.g. by not writing into a cache line
-we can reduce pressure on the cache.  Some other code and/or structure
-changes might or might not become benefitial.
+Thanks a lot. I will delve into it. An interesting topic.
 
+Zhu Yanjun
 
-> > 
-> > Of course
-> > - finding more examples would be benefitial to help maintainers
-> >    do the cost/benefit analysis
-> > - a robust implementation is needed
-> > 
-> >
+> 
+> Thanks
+> 
+>>
+>> Required Attendees list :-
+>>
+>> Christoph Hellwig
+>> Jason Gunthorpe
+>> Jens Axboe
+>> Chuck Lever
+>> David Howells
+>> Keith Busch
+>> Bart Van Assche
+>> Damien Le Moal
+>> Martin Petersen
+>>
+>> -ck
+>>
+>> [1]
+>> https://lore.kernel.org/all/169772852492.5232.17148564580779995849.stgit@klimt.1015granger.net
+>> [2] https://lore.kernel.org/linux-iommu/20200708065014.GA5694@lst.de/
+>>
+>>
+>>
 
