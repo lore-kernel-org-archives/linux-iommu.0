@@ -1,34 +1,34 @@
-Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA10FBA5E
-	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 06:21:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C767811705
+	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 06:30:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709533302; cv=none; b=LJEpMRpCjKhqVen/gRWDJn4KXzKy1NVUvv8EI5jZQELZhVEbgK6YUCxRxtGgpAMxA5J2GazMS8yRF2pvXyzb3SfC5eno+uW321JFpdTY2bvXvQpYaUZK9Mp6YIcp/yioTMO+JNXQqeKdAkbdSq4/x6cv78YzE0lUruDUOm5rmQg=
+	t=1709533838; cv=none; b=h2m4tFVXh6d/aCi4sILQsd3uO4cCSATWhB+ImLEFHwV2oEbs9FqQpek+gCXUKPIXBmFCbzTZkZBhby7CwBOt9sDRxwA9nE5+X++XyQsc0lz0/oY2prwZG1aalz1TJ20kYmlSFkNd9FCNTgYO3hn2UXqqAFjQqA4L76ipsZJgJy4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709533302; c=relaxed/simple;
-	bh=RY90ZcVRTd3xTZgswgtC+XVHYgz5ZvIpGUvShK7L7Nk=;
-	h=Message-ID:Subject:Date:From:To:Cc:References:In-Reply-To; b=khgODcGY2+ubtdZv4S/tEmtOorpG96lYibfnFW5iKHH5Acy44BkNXx9I1IDY/K1gu6QiliDpnpu9tL/eEpzI/k7mKZLNJkGdv0zbtT82/zyOwuVlDGBRnaCG9bhXM9SH/C6TWml6l2FJW3isBXR1Jj57r0suay9ksR4mhPohZz4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=eJ0UGOcm; arc=none smtp.client-ip=115.124.30.130
+	s=arc-20240116; t=1709533838; c=relaxed/simple;
+	bh=oRuL5E03NRBdlsCXDyKaHFjeY88RtCn+H3QpyLpZHgI=;
+	h=Message-ID:Subject:Date:From:To:Cc:References:In-Reply-To; b=B4UNSIyTVMfqoRT4u52Fi2+mdHx0WIx3hwGIKQztlB4xkxzgVA/D/2lYpF3yk2AYxcHZXOh2JROs3wBoCBDJd1S02tCgb/3QwHryNoEzwq43LtxnkW/db+RaDcDXa38t5k4d0myo/p7+zaQCus41gmmOVj6oPYHJ9bYCD0qCNMk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=sPquiY6o; arc=none smtp.client-ip=115.124.30.133
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="eJ0UGOcm"
+	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="sPquiY6o"
 DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=linux.alibaba.com; s=default;
-	t=1709533291; h=Message-ID:Subject:Date:From:To;
-	bh=dUDdh5wVcfRP3a5H1iRsoBCROf53bWeQiUnd3Swr9r8=;
-	b=eJ0UGOcmlGDp0/TF1/qm3jPa4BRfBL2rnbzCTV6arPW6fucQnbsDNBoLWpi8VG62VKEeMXrmKMpyG4Rvqwib+shtNPOsIZqbXfrM5eBa9pmspmlR6Gohp6mU+YH5m38HZc4v0jXFUFBoeFG2WQ2dTqpEncwe3quftDpQDENhHkw=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R761e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0W1kG4O-_1709533290;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0W1kG4O-_1709533290)
+	t=1709533833; h=Message-ID:Subject:Date:From:To;
+	bh=NGXjorvuk11qTskGv8WPgdXQ88lN94avzSL2JOcc1C8=;
+	b=sPquiY6or+egThxF2tTEh0EE8v8UOQUYiOseVtW3MzTvkr+XUFty0kSDja9xFMf8vJZY8S9k8JPaZF/498yq+a2iZzgR4V8e/KhistVE0i5Z5t6n2crtIttAAIF792c27zFv1VeVtegHgmlusCcU/TT8ABqWpPlhx6sjvoxrvXU=
+X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R631e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0W1kG7dz_1709533832;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0W1kG7dz_1709533832)
           by smtp.aliyun-inc.com;
-          Mon, 04 Mar 2024 14:21:31 +0800
-Message-ID: <1709533151.0138865-1-xuanzhuo@linux.alibaba.com>
+          Mon, 04 Mar 2024 14:30:32 +0800
+Message-ID: <1709533720.5072534-2-xuanzhuo@linux.alibaba.com>
 Subject: Re: [RFC] dma-mapping: introduce dma_can_skip_unmap()
-Date: Mon, 4 Mar 2024 14:19:11 +0800
+Date: Mon, 4 Mar 2024 14:28:40 +0800
 From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
+To: Robin Murphy <robin.murphy@arm.com>
 Cc: linux-kernel@vger.kernel.org,
  Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>,
@@ -36,92 +36,109 @@ Cc: linux-kernel@vger.kernel.org,
  Marek Szyprowski <m.szyprowski@samsung.com>,
  iommu@lists.linux.dev,
  Zelin Deng <zelin.deng@linux.alibaba.com>,
- Robin Murphy <robin.murphy@arm.com>
+ "Michael S. Tsirkin" <mst@redhat.com>
 References: <20240301071918.64631-1-xuanzhuo@linux.alibaba.com>
  <64be2e23-c526-45d3-bb7b-29e31241bbef@arm.com>
  <20240301064632-mutt-send-email-mst@kernel.org>
  <a00f0b55-0681-4e9c-b75e-e7e3d4110471@arm.com>
  <20240301082703-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20240301082703-mutt-send-email-mst@kernel.org>
+ <d4f2f99c-b8bb-4ed9-8d91-ed0f5b418425@arm.com>
+In-Reply-To: <d4f2f99c-b8bb-4ed9-8d91-ed0f5b418425@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-On Fri, 1 Mar 2024 08:41:50 -0500, "Michael S. Tsirkin" <mst@redhat.com> wrote:
-> On Fri, Mar 01, 2024 at 12:42:39PM +0000, Robin Murphy wrote:
-> > On 2024-03-01 11:50 am, Michael S. Tsirkin wrote:
-> > > On Fri, Mar 01, 2024 at 11:38:25AM +0000, Robin Murphy wrote:
-> > > > Not only is this idea not viable, the entire premise seems flawed - the
-> > > > reasons for virtio needing to use the DMA API at all are highly likely to be
-> > > > the same reasons for it needing to use the DMA API *properly* anyway.
-> > >
-> > > The idea has nothing to do with virtio per se
+On Fri, 1 Mar 2024 18:04:10 +0000, Robin Murphy <robin.murphy@arm.com> wrote:
+> On 2024-03-01 1:41 pm, Michael S. Tsirkin wrote:
+> > On Fri, Mar 01, 2024 at 12:42:39PM +0000, Robin Murphy wrote:
+> >> On 2024-03-01 11:50 am, Michael S. Tsirkin wrote:
+> >>> On Fri, Mar 01, 2024 at 11:38:25AM +0000, Robin Murphy wrote:
+> >>>> Not only is this idea not viable, the entire premise seems flawed - the
+> >>>> reasons for virtio needing to use the DMA API at all are highly likely to be
+> >>>> the same reasons for it needing to use the DMA API *properly* anyway.
+> >>>
+> >>> The idea has nothing to do with virtio per se
+> >>
+> >> Sure, I can see that, but if virtio is presented as the justification for
+> >> doing this then it's the justification I'm going to look at first. And the
+> >> fact is that it *does* seem to have particular significance, since having up
+> >> to 19 DMA addresses involved in a single transfer is very much an outlier
+> >> compared to typical hardware drivers.
 > >
-> > Sure, I can see that, but if virtio is presented as the justification for
-> > doing this then it's the justification I'm going to look at first. And the
-> > fact is that it *does* seem to have particular significance, since having up
-> > to 19 DMA addresses involved in a single transfer is very much an outlier
-> > compared to typical hardware drivers.
+> > That's a valid comment. Xuan Zhuo do other drivers do this too,
+> > could you check pls?
+> >
+> >> Furthermore the fact that DMA API
+> >> support was retrofitted to the established virtio design means I would
+> >> always expect it to run up against more challenges than a hardware driver
+> >> designed around the expectation that DMA buffers have DMA addresses.
+> >
+> >
+> > It seems virtio can't drive any DMA changes then it's forever tainted?
+> > Seems unfair - we retrofitted it years ago, enough refactoring happened
+> > since then.
 >
-> That's a valid comment. Xuan Zhuo do other drivers do this too,
-> could you check pls?
+> No, I'm not saying we couldn't still do things to help virtio if and
+> when it does prove reasonable to do so; just that if anything it's
+> *because* that retrofit is mature and fairly well polished by now that
+> any remaining issues like this one are going to be found in the most
+> awkward corners and thus unlikely to generalise.
+>
+> FWIW in my experience it seems more common for network drivers to
+> actually have the opposite problem, where knowing the DMA address of a
+> buffer is easy, but keeping track of the corresponding CPU address can
+> be more of a pain.
+>
+> >>> - we are likely not the
+> >>> only driver that wastes a lot of memory (hot in cache, too) keeping DMA
+> >>> addresses around for the sole purpose of calling DMA unmap.  On a bunch
+> >>> of systems unmap is always a nop and we could save some memory if there
+> >>> was a way to find out. What is proposed is an API extension allowing
+> >>> that for anyone - not just virtio.
+> >>
+> >> And the point I'm making is that that "always" is a big assumption, and in
+> >> fact for the situations where it is robustly true we already have the
+> >> DEFINE_DMA_UNMAP_{ADDR,LEN} mechanism.
+> >> I'd consider it rare for DMA
+> >> addresses to be stored in isolation, as opposed to being part of some kind
+> >> of buffer descriptor (or indeed struct scatterlist, for an obvious example)
+> >> that a driver or subsystem still has to keep track of anyway, so in general
+> >> I believe the scope for saving decidedly small amounts of memory at runtime
+> >> is also considerably less than you might be imagining.
+> >>
+> >> Thanks,
+> >> Robin.
+> >
+> >
+> > Yes. DEFINE_DMA_UNMAP_ exits but that's only compile time.
+> > And I think the fact we have that mechanism is a hint that
+> > enough configurations could benefit from a runtime
+> > mechanism, too.
+> >
+> > E.g. since you mentioned scatterlist, it has a bunch of ifdefs
+> > in place.
+>
+> But what could that benefit be in general? It's not like we can change
+> structure layouts on a per-DMA-mapping-call basis to save
+> already-allocated memory... :/
 
-I checked some drivers(gve, mlx, ice), no one has the same operation like
-virtio-net. We can do it because we have indirect feature.
+We can put the memory together. If the unmap is not needed, then we do not
+allocate the memory. That is the way we are trying.
 
 Thanks.
 
 
 
 >
-> > Furthermore the fact that DMA API
-> > support was retrofitted to the established virtio design means I would
-> > always expect it to run up against more challenges than a hardware driver
-> > designed around the expectation that DMA buffers have DMA addresses.
+> Thanks,
+> Robin.
 >
->
-> It seems virtio can't drive any DMA changes then it's forever tainted?
-> Seems unfair - we retrofitted it years ago, enough refactoring happened
-> since then.
->
->
-> > > - we are likely not the
-> > > only driver that wastes a lot of memory (hot in cache, too) keeping DMA
-> > > addresses around for the sole purpose of calling DMA unmap.  On a bunch
-> > > of systems unmap is always a nop and we could save some memory if there
-> > > was a way to find out. What is proposed is an API extension allowing
-> > > that for anyone - not just virtio.
 > >
-> > And the point I'm making is that that "always" is a big assumption, and in
-> > fact for the situations where it is robustly true we already have the
-> > DEFINE_DMA_UNMAP_{ADDR,LEN} mechanism.
-> > I'd consider it rare for DMA
-> > addresses to be stored in isolation, as opposed to being part of some kind
-> > of buffer descriptor (or indeed struct scatterlist, for an obvious example)
-> > that a driver or subsystem still has to keep track of anyway, so in general
-> > I believe the scope for saving decidedly small amounts of memory at runtime
-> > is also considerably less than you might be imagining.
+> > Of course
+> > - finding more examples would be benefitial to help maintainers
+> >    do the cost/benefit analysis
+> > - a robust implementation is needed
 > >
-> > Thanks,
-> > Robin.
->
->
-> Yes. DEFINE_DMA_UNMAP_ exits but that's only compile time.
-> And I think the fact we have that mechanism is a hint that
-> enough configurations could benefit from a runtime
-> mechanism, too.
->
-> E.g. since you mentioned scatterlist, it has a bunch of ifdefs
-> in place.
->
-> Of course
-> - finding more examples would be benefitial to help maintainers
->   do the cost/benefit analysis
-> - a robust implementation is needed
->
->
-> --
-> MST
->
+> >
