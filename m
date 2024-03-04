@@ -1,94 +1,80 @@
-Received: from bee.tesarici.cz (unknown [77.93.223.253])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11BF84087C
-	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 14:39:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 451613B29A;
+	Mon,  4 Mar 2024 15:32:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709563185; cv=none; b=arGvtotFVwXaR+AuUGxidyvFV4KnTTxPsyg+ZH8a5nHJ2K4ypp8wD7Hb5Y3adzXt7P7jUpgbAAUBd5Vtasn4TgtHDqe9RDMQckK9mbH7OnM70ntVJREKHwYJnGAS1qC9XqvvGAmmjdFJLDoZOV4LcfSEvuBz9yh76XRxwFWbq5Y=
+	t=1709566329; cv=none; b=PhPSgsAnDG22kFGmUP7TaDnNMQmv/8N9vOP0K5O4IZKilJG3GtvHKZY0e3P9Fx06Kxi9oCW+udziep4s5Fkyv/t/7dKfWvdRPvgPu1sqAexcInPgrQr4a3ovzobZlJ4YNg3WzJq8Ca7t0kbjVyR/VMhG6Y7UoStO0d10Z524m2U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709563185; c=relaxed/simple;
-	bh=OuH4ARsy4uMSskFQxM4nVWSg6cNRuQIZsejNWP30OlM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=px9KRSkgmeER0oXfZXdjqbnpBYLtRI/tgR8Or2vR9ZaZq74TLzLs1V6f16KZIr2o7DMAQUtOmKfLuw9uYTwk9pZyn+pXyyuZcthoAy3Ui60exedGDn4yFRZ0zXwI06JnlqV6fHedtBkiSM4sSaizlssJ52Pc5KwIjnzTuF9lKOo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=jmj4UvLe; arc=none smtp.client-ip=77.93.223.253
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1709566329; c=relaxed/simple;
+	bh=IdRitC6F7nifQvPVz5e9YSZwKUHZjAx+E0QvkQGFJaM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iLxcIN8kZOzR4BlVZN40eXPG/w7ahMKexN3iupLSiUIz9Xd6mosKrvqg5aya96R34fvjhQISwidRlTr0RJ4ZP4Ug/FxHAvKb3C66bOdPkUHkbWzDMYgcniNQQQX6Cwx86FWCn79Cs54AvT7tGbZrKjaAPd+WstMI+n9/QcxTCRE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=O7umev13; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="jmj4UvLe"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id C409E1C4BDD;
-	Mon,  4 Mar 2024 15:39:39 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1709563179; bh=DNUUA0JgeJlN4yw9N1RggkXAebOO04FxH/opiGgSGMU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=jmj4UvLeXwlP5cI6zhn4rcHfzcQAW0evTccxhBZD/Rejx23Y2+HJzE9WUhT6lr8El
-	 5nTLAo3t1GsEzptAULYUw07tCVnr+vY+8MG6mKH25vHoI/kKYEmM34ilqZf/RuhxiV
-	 7D9RvZqtWveVlbvv4nbEzYGJIiDDDkHnhCJk3GoyGVc40hgng9IViTN3B8W6ydJtkI
-	 bgyuJr73NzhCByCwv4GcGuORGEp+CJ8ctycpn3rn0jZTyRKOo2ipaKGYCV7ktaMII4
-	 c/fuYmkgoOHfQ0gwtSBeADekmE3fSDye2AHONrNjG6dzumsdWPphxplxN1+JaWV/v2
-	 l4/EYlFeg6p7g==
-Date: Mon, 4 Mar 2024 15:39:38 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- will@kernel.org, mhklinux@outlook.com, hch@lst.de
-Subject: Re: [PATCH] iommu/dma: Document min_align_mask assumption
-Message-ID: <20240304153938.1fa984b7@meshulam.tesarici.cz>
-In-Reply-To: <dbb4d2d8e5d1691ac9a6c67e9758904e6c447ba5.1709553942.git.robin.murphy@arm.com>
-References: <dbb4d2d8e5d1691ac9a6c67e9758904e6c447ba5.1709553942.git.robin.murphy@arm.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="O7umev13"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C34AAC43390;
+	Mon,  4 Mar 2024 15:32:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1709566328;
+	bh=IdRitC6F7nifQvPVz5e9YSZwKUHZjAx+E0QvkQGFJaM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=O7umev13qkbaai4cI8CRvb/qV3QLoTKH+zy4IscyXT/F91ectlFLWyI1B33Cav6n3
+	 HZqvF4Z/y5Mz5dOGO43+SMYEQYwIh2nHQ9HGI8TDh1LwJxcJUIcCm3xndrNCyvFCZl
+	 Wig4zzr1uS7FVoyOsxLe9kGYOG5pz9nrU3pZ/jZ7Yhv/a2CQvfc5r8lORHvhVfS+Ic
+	 pOc8RKHtRmMM6yF5173HVFihMy5GDEX0RGLEbFXsAOHxG8hgbQLNMqITfcsEeQh8i5
+	 6g/scjJUrG4WJUt/63UxFehNiD5fewpY5V3et7YorgnwGSIQtXHY7mNF87EGC4CsWk
+	 dEoDBPY4kV/jA==
+Date: Mon, 4 Mar 2024 15:32:03 +0000
+From: Will Deacon <will@kernel.org>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"kernel-team@android.com" <kernel-team@android.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
+ allocations >= PAGE_SIZE
+Message-ID: <20240304153203.GA21077@willie-the-truck>
+References: <20240228133930.15400-1-will@kernel.org>
+ <20240228133930.15400-7-will@kernel.org>
+ <SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Mon,  4 Mar 2024 12:05:42 +0000
-Robin Murphy <robin.murphy@arm.com> wrote:
-
-> iommu-dma does not explicitly reference min_align_mask since we already
-> assume that that will be less than or equal to any typical IOVA granule.
-> We wouldn't realistically expect to see the case where it is larger, and
-> that would be non-trivial to support, however for the sake of reasoning
-> (particularly around the interaction with SWIOTLB), let's clearly
-> enforce the assumption.
+On Thu, Feb 29, 2024 at 06:07:32AM +0000, Michael Kelley wrote:
+> From: Will Deacon <will@kernel.org> Sent: Wednesday, February 28, 2024 5:40 AM
+> > 
+> > For swiotlb allocations >= PAGE_SIZE, the slab search historically
+> > adjusted the stride to avoid checking unaligned slots. However, this is
+> > no longer needed now that the code around it has evolved and the
+> > stride is calculated from the required alignment.
+> > 
+> > Either 'alloc_align_mask' is used to specify the allocation alignment or
+> > the DMA 'min_align_mask' is used to align the allocation with 'orig_addr'.
+> > At least one of these masks is always non-zero.
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> I think the patch is correct, but this justification is not.  alloc_align_mask
+> and the DMA min_align_mask are often both zero.  While the NVMe
+> PCI driver sets min_align_mask, SCSI disk drivers do not (except for the
+> Hyper-V synthetic SCSI driver).   When both are zero, presumably
+> there are no alignment requirements, so a stride of 1 is appropriate.
 
-Looks good to me.
+Sorry, yes, I messed up the commit message here as I was trying to reason
+through the allocation case separately from the mapping case. However, I
+need to digest the rest of this thread before doing the obvious fix...
 
-Reviewed-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-
-Thank you!
-
-Petr T
-
-> ---
->  drivers/iommu/dma-iommu.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 50ccc4f1ef81..b58f5a3311c3 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -859,6 +859,11 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
->  	    iommu_deferred_attach(dev, domain))
->  		return DMA_MAPPING_ERROR;
->  
-> +	/* If anyone ever wants this we'd need support in the IOVA allocator */
-> +	if (dev_WARN_ONCE(dev, dma_get_min_align_mask(dev) > iova_mask(iovad),
-> +	    "Unsupported alignment constraint\n"))
-> +		return DMA_MAPPING_ERROR;
-> +
->  	size = iova_align(iovad, size + iova_off);
->  
->  	iova = iommu_dma_alloc_iova(domain, size, dma_mask, dev);
-
+Will
