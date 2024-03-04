@@ -1,25 +1,25 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6148D45BF6
-	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 16:53:37 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 345BC5FF0C
+	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 17:11:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709571220; cv=none; b=SjsYwmq97Snp73HZrPiPmgcwG17IqU8Jyy0wNDEsmjGXtxyryBB+safG1OzH6DUdr+U5Jqsw2JqibesUcGCzhSkPStUvNhBqTZ+gUADyY6zhIBVyVMoQyItdOyOJhF6ah/2F+C4+qs1YstOvelqT9jsGWINQwt45TXxRHlGn3bI=
+	t=1709572289; cv=none; b=dGultzV3W4VsxgpT0sKyZC23bmnbm1yDZtVo8icGOxyiHROLxuG+bKJjBCegzqg8/72n2U4s1KTGXK4Uv1cGImDZJhpARvT1Yehxl9Tqf6c0ICKl2h4bDUsWDgnM4FKJcXRSkdaQGo6mASGu7HYNwoQFfIqdZ1/foWMSGFHOfsY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709571220; c=relaxed/simple;
-	bh=odLag6z4EVrHLDoxIhELyF6yH/BXlNlYTSx9r0KRJf8=;
+	s=arc-20240116; t=1709572289; c=relaxed/simple;
+	bh=F0AhxNrMQYa399m9SObdQwh9VeOeMmvSZ2t1OUpqLuQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=a1otXHU2OoHoPz9/6OlVq1MisRhIgy1wahKl7UzhTwfGzFhTeDGv9+oTTHmv0LoLSWWRDZmkX01SVnVaUVf6AVMaWwFDkXCrKxuIF++jG3ikG78r9NEBbDKrK66yGLlleFi2zFcGaWtmd+xSfKgtbknvok1ziFB7OOFx45XI4sk=
+	 In-Reply-To:Content-Type; b=evVOUhVb1p7tqCBy2Zyl4rAdc+5YxbKSa9tHXCTrH73cBHTrn3z/2f5zNZkvZXwZL+TDWCg9iAf2BXyptiQN20USzobS0fHChx8yilAPVNJ9qo5BHUwKy/hvFAYT1gi9OOixLYew5sGLd9/gocB/xRyRZfzTp5+8wn5xA+9oDeE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 260FA1FB;
-	Mon,  4 Mar 2024 08:54:13 -0800 (PST)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 32C4C1FB;
+	Mon,  4 Mar 2024 09:12:04 -0800 (PST)
 Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A3FB73F73F;
-	Mon,  4 Mar 2024 08:53:34 -0800 (PST)
-Message-ID: <b63d4332-b659-4897-83c7-04e5ad397a69@arm.com>
-Date: Mon, 4 Mar 2024 16:53:32 +0000
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B83A73F73F;
+	Mon,  4 Mar 2024 09:11:25 -0800 (PST)
+Message-ID: <d7bd7dce-ead2-4c9b-bb47-d4029c3ce6f7@arm.com>
+Date: Mon, 4 Mar 2024 17:11:23 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -30,16 +30,21 @@ User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
  allocations >= PAGE_SIZE
 Content-Language: en-GB
-To: Michael Kelley <mhklinux@outlook.com>, Will Deacon <will@kernel.org>,
- =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
-Cc: Christoph Hellwig <hch@lst.de>,
+To: Michael Kelley <mhklinux@outlook.com>, =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?=
+ <petr@tesarici.cz>
+Cc: Christoph Hellwig <hch@lst.de>, Will Deacon <will@kernel.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  Petr Tesarik <petr.tesarik1@huawei-partners.com>,
  "kernel-team@android.com" <kernel-team@android.com>,
  "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
  Marek Szyprowski <m.szyprowski@samsung.com>, Dexuan Cui
  <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
-References: <SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240228133930.15400-1-will@kernel.org>
+ <20240228133930.15400-7-will@kernel.org>
+ <SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <SN6PR02MB41577D09E97B1D9645369D58D45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <20240229133346.GA7177@lst.de>
+ <SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
  <20240229154756.GA10137@lst.de>
  <20240301163927.18358ee2@meshulam.tesarici.cz>
  <20240301180853.5ac20b27@meshulam.tesarici.cz>
@@ -49,108 +54,99 @@ References: <SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.
  <20240304120055.56035c21@meshulam.tesarici.cz>
  <ffd7646b-37b1-4cd2-822a-848b36b076c9@arm.com>
  <20240304165506.49e3b2d3@meshulam.tesarici.cz>
- <20240304160210.GB21077@willie-the-truck>
- <SN6PR02MB41571F68F8F9E003C4359948D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <SN6PR02MB41576F53BE9B88EB52BBDC10D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
 From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <SN6PR02MB41571F68F8F9E003C4359948D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
+In-Reply-To: <SN6PR02MB41576F53BE9B88EB52BBDC10D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 04/03/2024 4:10 pm, Michael Kelley wrote:
-> From: Will Deacon <will@kernel.org> Sent: Monday, March 4, 2024 8:02 AM
+On 04/03/2024 4:04 pm, Michael Kelley wrote:
+> From: Petr Tesařík <petr@tesarici.cz> Sent: Monday, March 4, 2024 7:55 AM
 >>
->> Hi folks,
+>> On Mon, 4 Mar 2024 13:37:56 +0000
+>> Robin Murphy <robin.murphy@arm.com> wrote:
 >>
->> On Mon, Mar 04, 2024 at 04:55:06PM +0100, Petr Tesařík wrote:
->>> On Mon, 4 Mar 2024 13:37:56 +0000
->>> Robin Murphy <robin.murphy@arm.com> wrote:
->>>> On 04/03/2024 11:00 am, Petr Tesařík wrote:
->>>> [...]
->>>>>> Here's my take on tying all the threads together. There are
->>>>>> four alignment combinations:
->>>>>>
->>>>>> 1. alloc_align_mask: zero; min_align_mask: zero
->>
->> Based on this ^^^ ...
->>
->>>>>> xen_swiotlb_map_page() and dma_direct_map_page() are #1 or #2
->>>>>> via swiotlb_map() and swiotlb_tbl_map_single()
->>>>>>
->>>>>> iommu_dma_map_page() is #3 and #4 via swiotlb_tbl_map_single()
->>>>>>
->>>>>> swiotlb_alloc() is #3, directly to swiotlb_find_slots()
->>>>>>
->>>>>> For #1, the returned physical address has no constraints if
->>>>>> the requested size is less than a page. For page size or
->>>>>> greater, the discussed historical requirement for page
->>>>>> alignment applies.
->>
->> ... and this ^^^ ...
->>
->>
->>> I believe this patch series is now good as is, except the commit
->>> message should make it clear that alloc_align_mask and min_align_mask
->>> can both be zero, but that simply means no alignment constraints.
->>
->> ... my (possibly incorrect!) reading of the thread so far is that we
->> should preserve page-aligned allocation in this case if the allocation
->> size is >= PAGE_SIZE.
->>
->> Something like the diff below, to replace this final patch?
->>
->> Will
->>
->> --->8
->>
->> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
->> index c381a7ed718f..67eac05728c0 100644
->> --- a/kernel/dma/swiotlb.c
->> +++ b/kernel/dma/swiotlb.c
->> @@ -992,6 +992,14 @@ static int swiotlb_search_pool_area(struct device
->> *dev, struct io_tlb_pool *pool
->>          BUG_ON(!nslots);
->>          BUG_ON(area_index >= pool->nareas);
->>
->> +       /*
->> +        * Historically, allocations >= PAGE_SIZE were guaranteed to be
->> +        * page-aligned in the absence of any other alignment requirements.
->> +        * Since drivers may be relying on this, preserve the old behaviour.
->> +        */
->> +       if (!alloc_align_mask && !iotlb_align_mask && alloc_size >= PAGE_SIZE)
->> +               alloc_align_mask = PAGE_SIZE - 1;
->> +
+>>> On 04/03/2024 11:00 am, Petr Tesařík wrote:
+>>> [...]
+>>>>> Here's my take on tying all the threads together. There are
+>>>>> four alignment combinations:
+>>>>>
+>>>>> 1. alloc_align_mask: zero; min_align_mask: zero
+>>>>> 2. alloc_align_mask: zero; min_align_mask: non-zero
+>>>>> 3. alloc_align_mask: non-zero; min_align_mask: zero/ignored
+>>>>> 4. alloc_align_mask: non-zero; min_align_mask: non-zero
+>>>>
+>>>> What does "min_align_mask: zero/ignored" mean? Under which
+>>>> circumstances should be a non-zero min_align_mask ignored?
 > 
-> Yes, I think that should do it.
+> "Ignored" was my short-hand for the swiotlb_alloc() case where
+> orig_addr is zero.  Even if min_align_mask is set for the device, it
+> doesn't have any effect when orig_addr is zero.
+> 
+>>>>
+>>>>> xen_swiotlb_map_page() and dma_direct_map_page() are #1 or #2
+>>>>> via swiotlb_map() and swiotlb_tbl_map_single()
+>>>>>
+>>>>> iommu_dma_map_page() is #3 and #4 via swiotlb_tbl_map_single()
+>>>>>
+>>>>> swiotlb_alloc() is #3, directly to swiotlb_find_slots()
+>>>>>
+>>>>> For #1, the returned physical address has no constraints if
+>>>>> the requested size is less than a page. For page size or
+>>>>> greater, the discussed historical requirement for page
+>>>>> alignment applies.
+>>>>>
+>>>>> For #2, min_align_mask governs the bits of the returned
+>>>>> physical address that must match the original address. When
+>>>>> needed, swiotlb must also allocate pre-padding aligned to
+>>>>> IO_TLB_SIZE that precedes the returned physical address.  A
+>>>>> request size <= swiotlb_max_mapping_size() will not exceed
+>>>>> IO_TLB_SEGSIZE even with the padding. The historical
+>>>>> requirement for page alignment does not apply because the
+>>>>> driver has explicitly used the newer min_align_mask feature.
+>>>>
+>>>> What is the idea here? Is it the assumption that only old drivers rely
+>>>> on page alignment, so if they use min_align_mask, it proves that they
+>>>> are new and must not rely on page alignment?
+>>>
+>>> Yes, if a driver goes out of its way to set a min_align_mask which is
+>>> smaller than its actual alignment constraint, that is clearly the
+>>> driver's own bug. Strictly we only need to be sympathetic to drivers
+>>> which predate min_align_mask, when implicitly relying on page alignment
+>>> was all they had.
+>>>
+>>>>> For #3, alloc_align_mask specifies the required alignment. No
+>>>>> pre-padding is needed. Per earlier comments from Robin[1],
+>>>>> it's reasonable to assume alloc_align_mask (i.e., the granule)
+>>>>> is >= IO_TLB_SIZE. The original address is not relevant in
+>>>>> determining the alignment, and the historical page alignment
+>>>>> requirement does not apply since alloc_align_mask explicitly
+>>>>> states the alignment.
+>>>
+>>> FWIW I'm also starting to wonder about getting rid of the alloc_size
+>>> argument and just have SWIOTLB round the end address up to
+>>> alloc_align_mask itself as part of all these calculations. Seems like it
+>>> could potentially end up a little simpler, maybe?
+> 
+> Yes, I was thinking exactly this.  But my reasoning was to solve the
+> bug in #4 that I previously pointed out.  If iommu_dma_map_page()
+> does *not* do
+> 
+> 	aligned_size = iova_align(iovad, size);
+> 
+> but swiotlb_tbl_map_single() rounds up the size based on
+> alloc_align_mask *after* adding the offset modulo
+> min_align_mask, then the rounded-up size won't exceed IO_TLB_SIZE,
+> regardless of which bits are set in orig_addr.
 
-In principle it might be more logical to fudge this into 
-iotlb_align_mask rather than alloc_align_mask - since that's really the 
-effective behaviour to preserve for streaming mappings - and then pass 
-an explicit alloc_align_mask from swiotlb_alloc() to honour the 
-dma-coherent requirements. However I also wouldn't really object to not 
-going that far and instead just making the comment a bit clearer that 
-this is still serving both purposes.
+Ah, neat, I had a gut feeling that something like that might also fall 
+out, I just didn't feel like working through the details to see if 
+"simpler" could lead to "objectively better" :)
+
+I guess at worst we might also need to pass an alloc_align_mask to 
+swiotlb_max_mapping_size() as well, but even that's not necessarily a 
+bad thing if it keeps the equivalent calculations close together within 
+SWIOTLB and makes things more robust overall.
 
 Cheers,
 Robin.
-
-> 
-> Michael
-> 
->>          /*
->>           * Ensure that the allocation is at least slot-aligned and update
->>           * 'iotlb_align_mask' to ignore bits that will be preserved when
->> @@ -1006,13 +1014,6 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
->>           */
->>          stride = get_max_slots(max(alloc_align_mask, iotlb_align_mask));
->>
->> -       /*
->> -        * For allocations of PAGE_SIZE or larger only look for page aligned
->> -        * allocations.
->> -        */
->> -       if (alloc_size >= PAGE_SIZE)
->> -               stride = umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
->> -
->>          spin_lock_irqsave(&area->lock, flags);
->>          if (unlikely(nslots > pool->area_nslabs - area->used))
->>                  goto not_found;
-> 
