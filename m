@@ -1,144 +1,213 @@
-Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C767811705
-	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 06:30:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.30.133
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709533838; cv=none; b=h2m4tFVXh6d/aCi4sILQsd3uO4cCSATWhB+ImLEFHwV2oEbs9FqQpek+gCXUKPIXBmFCbzTZkZBhby7CwBOt9sDRxwA9nE5+X++XyQsc0lz0/oY2prwZG1aalz1TJ20kYmlSFkNd9FCNTgYO3hn2UXqqAFjQqA4L76ipsZJgJy4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709533838; c=relaxed/simple;
-	bh=oRuL5E03NRBdlsCXDyKaHFjeY88RtCn+H3QpyLpZHgI=;
-	h=Message-ID:Subject:Date:From:To:Cc:References:In-Reply-To; b=B4UNSIyTVMfqoRT4u52Fi2+mdHx0WIx3hwGIKQztlB4xkxzgVA/D/2lYpF3yk2AYxcHZXOh2JROs3wBoCBDJd1S02tCgb/3QwHryNoEzwq43LtxnkW/db+RaDcDXa38t5k4d0myo/p7+zaQCus41gmmOVj6oPYHJ9bYCD0qCNMk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com; spf=pass smtp.mailfrom=linux.alibaba.com; dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b=sPquiY6o; arc=none smtp.client-ip=115.124.30.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.alibaba.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.alibaba.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E35613FFD
+	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 07:36:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709537810; cv=fail; b=kktiiid+7OhhErK6GjbVEmx1+ZCgGluP81rf4ehnT4oZMin21KBGRJn5aUaEpi9oE4i/j644TptGmy+2avOPGYQSapTkqR4/502u9uRjncaGlJGr2Wz0RMef7OnGKtLk7FzWeQdcX6vmS61ttv2Z+dXb++elmM9sDKYeNeC3ZI8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709537810; c=relaxed/simple;
+	bh=OBq5mh2fzVs3xao7eGZW0GSk3f2fzcuPiTzEe6TcLnM=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=diPTr1IsH1K3qYOzJ1BZyw7K3FxkPv1va5vdHtLX7sXClVd2pMHfvgSm12ygqK/0/RTvNmXdaMyr8uQEGInatK54ayu1hxAkAHb60eAyu1PO2sVbnKzmkriBAikmLYOfDQzgWsqIdayV2zIwrJSKQ0uSwZ6dJHZ861a1tTIF704=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OORFuUJ1; arc=fail smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.alibaba.com header.i=@linux.alibaba.com header.b="sPquiY6o"
-DKIM-Signature:v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=linux.alibaba.com; s=default;
-	t=1709533833; h=Message-ID:Subject:Date:From:To;
-	bh=NGXjorvuk11qTskGv8WPgdXQ88lN94avzSL2JOcc1C8=;
-	b=sPquiY6or+egThxF2tTEh0EE8v8UOQUYiOseVtW3MzTvkr+XUFty0kSDja9xFMf8vJZY8S9k8JPaZF/498yq+a2iZzgR4V8e/KhistVE0i5Z5t6n2crtIttAAIF792c27zFv1VeVtegHgmlusCcU/TT8ABqWpPlhx6sjvoxrvXU=
-X-Alimail-AntiSpam:AC=PASS;BC=-1|-1;BR=01201311R631e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0W1kG7dz_1709533832;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0W1kG7dz_1709533832)
-          by smtp.aliyun-inc.com;
-          Mon, 04 Mar 2024 14:30:32 +0800
-Message-ID: <1709533720.5072534-2-xuanzhuo@linux.alibaba.com>
-Subject: Re: [RFC] dma-mapping: introduce dma_can_skip_unmap()
-Date: Mon, 4 Mar 2024 14:28:40 +0800
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: linux-kernel@vger.kernel.org,
- Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>,
- Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- iommu@lists.linux.dev,
- Zelin Deng <zelin.deng@linux.alibaba.com>,
- "Michael S. Tsirkin" <mst@redhat.com>
-References: <20240301071918.64631-1-xuanzhuo@linux.alibaba.com>
- <64be2e23-c526-45d3-bb7b-29e31241bbef@arm.com>
- <20240301064632-mutt-send-email-mst@kernel.org>
- <a00f0b55-0681-4e9c-b75e-e7e3d4110471@arm.com>
- <20240301082703-mutt-send-email-mst@kernel.org>
- <d4f2f99c-b8bb-4ed9-8d91-ed0f5b418425@arm.com>
-In-Reply-To: <d4f2f99c-b8bb-4ed9-8d91-ed0f5b418425@arm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OORFuUJ1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1709537810; x=1741073810;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=OBq5mh2fzVs3xao7eGZW0GSk3f2fzcuPiTzEe6TcLnM=;
+  b=OORFuUJ1U7/zozVhqLzFLzhHHmrVl0IJbg5uFauO6fhuRzGs/0x9fH2e
+   4qFUEOZx2U4lRLejUBorDonAdB4+fVDsCs2xYzVTwqoZqJ/ea/kGTRaym
+   REwvfniCL0HIQOBThlDF7fnPkX/aoyBiiu57yt7uetVQtp5jW5PWiChgb
+   S4Uf1AHedl65WwSYZRF2ogxxQD8PW96iro7EkBOfaXcYIlzO0wftCoiUm
+   jdL8tXpTFmiDFAfSF417sBbzk1FINzLOwsgyGNGpaurxCrZh0CgCJtX2a
+   X83Gsn5EY1kZxf7UtTd2Lvez8QwN29zkgOrhgRo24NJnRorSmv1a5Igf5
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="4177991"
+X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
+   d="scan'208";a="4177991"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2024 23:36:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
+   d="scan'208";a="39899999"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmviesa001.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 03 Mar 2024 23:36:49 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Sun, 3 Mar 2024 23:36:48 -0800
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Sun, 3 Mar 2024 23:36:47 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Sun, 3 Mar 2024 23:36:47 -0800
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Sun, 3 Mar 2024 23:36:47 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LwhIWqvNBCfsuH7I5A5o7SqDqHAmqNVBXci5D6vfqRoZN41LFTeEDYfsemyHbel0TCmQsCC1FgPESYcg98mip1GXx8TzWH2q/1vrhgXREhnLqmr0zOpdQ5l0QvcNVm/AHp67vVervsifLUcXzSaSVf6fT1VQg6o21tkmgPLUXM697BLN2yuWHuCQuzqQztMRgTxkHmFRpAYa8cBZ4hyAg7YZACLeIFNvY0A5igxo67HpjZxK4aufOHRBBbdOxbB4ll4zSU5HPvqvEziYGWBvOLOBvAsk33JMM6Fc16Xt+RbAk3begyDyFtwixcK2g72/AQuKeYfj/y6jQW9RDXhX9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=SYYwIFFtBeUqrz7GrOkPlamTfX+I4yvEFG8Z66DtGTM=;
+ b=f6nHhalw1ohyJ9eDuaQ1BLAmjqUX6pEI1t+5sHtinMyQkhwmbrnO7v308pyvpz+WCGEHkaZdfNAhrHgXUxtIYE+oRi9c35IrF5X0d/Zlpfz0jbzvmPnpuww23J+1R2BCEtpnBghXHfFlZY8sJcfU5BiR5p96B+9As1AUfHmDBVffKYpciXD+K9JabtO2LpInyfc6/CUSFW2m7L8IOYX3GVEiHK3K056/wF0mKLIBE704pR5n1uY4UIlNq8Gy0yWhsiVFUYq+mxy8NpFBBqv9pPWMmJg0aibyUH6fWRfsFnEsJNd30XhU0SLm/Ne9+XMUmMAqGaRQYRilGe2Uhi1YPA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by MN0PR11MB6086.namprd11.prod.outlook.com (2603:10b6:208:3ce::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.22; Mon, 4 Mar
+ 2024 07:36:45 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::39d:5a9c:c9f5:c327]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::39d:5a9c:c9f5:c327%5]) with mapi id 15.20.7362.019; Mon, 4 Mar 2024
+ 07:36:45 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
+ Gunthorpe" <jgg@ziepe.ca>, "Badger, Eric" <ebadger@purestorage.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 2/2] iommu/vt-d: Fix NULL domain on device release
+Thread-Topic: [PATCH v2 2/2] iommu/vt-d: Fix NULL domain on device release
+Thread-Index: AQHaavUDCy/i5tLpVk2E42aG3RqhHLEnNNfQ
+Date: Mon, 4 Mar 2024 07:36:45 +0000
+Message-ID: <BN9PR11MB52764189F754ABF69D24E2AE8C232@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240229094613.121575-1-baolu.lu@linux.intel.com>
+ <20240229094613.121575-3-baolu.lu@linux.intel.com>
+In-Reply-To: <20240229094613.121575-3-baolu.lu@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MN0PR11MB6086:EE_
+x-ms-office365-filtering-correlation-id: 06a04caa-84ff-4752-990c-08dc3c1dd800
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5PtotZAlkrCrYhTTsJz5TWpjH39eAn+rq7lV43Bo/vhv+QQopqRpDjtd524QNQiplZhC2BaxdccQ4fP1gZi9rifhUDj35d+Kx7q5vOC/zT3mkRg1ezkr1BFMpN2KHXx5Wl7gzdkXZ23O6pZ9TG0cTQ1tm01tqMakNPX7x3ulqoBDhUS+zomTGfw3foCm1Oy2DmgaH2pyYF3i9XYPz/yZq2YR/iX7cu5MEEd2Bf4wKCzo6pOZwI5VUbaadz5FWQVV3qMnTDPCmhAOkWakbpYFZu852f9BxNJ09FtRifAVUFlAUy1uZag8Qyfaq2hhKRXndHMTSO54w02m8EmRY/p9Pvur43zWowDg5PHM5HhYQetJXanW/SAiGSQDpnj0K18oRVXPSXhSRQhA4ZwHViIQLnGSxx74+dwTgKNbzfatF4I76O1zVb/kyV/n3cOuO01CjIVOh1hmMUDRY6z892rkbwUGUR4ftrnrmbUZarkrWOBmBloIaqjO6sPKYFsX+F78gixwyzlMu1n146G5w0xt1lqdgm7rJkagK1XYtWi4I5tB/1Hn1cS8i5B3Kh9EI+KIbsunKlV21LrSC+f7Fb0oKB/J4pEADB52dTPIQAIPxozTg8n5H1Xyqg5gZJTqqtAJvH2YNWoTwmWOI/iBMzFCJ75d8dEm5xsl+wTy6LoVY7cL7WV53SMKbEpdX6sNudZ56dVCpn/bCXS7yNM9m40aLh2GvUOazYSa/8uouZf9V/Q=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(38070700009);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?gJYmiXk6PpKT+0xu65vTJVaE3Diy2bAJcMAY9hExO1iMB9iPPJ2YRaguUTdb?=
+ =?us-ascii?Q?sBY+qsr6deA+UstsVd1whHZjVBejcMCWvOfEdMuk4JU2FOeDDiWCZpiRZvtJ?=
+ =?us-ascii?Q?PqJY1BZioQYK+ALrxUjiHJ0zQkdXjp2hanyyY2pEFzshOHPfdnZR8z61ISXG?=
+ =?us-ascii?Q?4j+uuuI4Kxiz8fUsxnJyQyB3B8RAF6fV1ijKQI6GesSF2/cB+8hnxQRQ0RK1?=
+ =?us-ascii?Q?iOJX40btax1th3oSDApYDTQtGGAO/in/7ZlqODlQdAkpYyZ1/r+r5W1vatLB?=
+ =?us-ascii?Q?R44VsKBCq9bcfvdI/xZfWjqKfloi6cJKj/umL/qIKmiya2IY6EXYuUcl9Ot1?=
+ =?us-ascii?Q?j3iMTdFqM9EEgRyTejcdA9yVhSbkz28b9gtH5GidTSXiIsri4Him/dI/p7Y1?=
+ =?us-ascii?Q?opb5i7mbiaLxEPDrCIPehaZOeFylwHl9OzMlCZx2YvNOVwfBYltPbAhVhWsP?=
+ =?us-ascii?Q?VbxIdIRm9IsRVncy2yTHx+udXpPcEOGvdrUr7FpmC2tXXBXVv1PYeRJ9GFB9?=
+ =?us-ascii?Q?EaT/Ksy+Lo5A3qtEN1f9E36+yOD80p/ebcDGSRXHflNFSSKktRDPmOb9SBco?=
+ =?us-ascii?Q?Hv6ounP8NZHZUqBPe/XQdmAV3K9YqHkqxX5zRMVq5fzsZgXmfUzQBKaODOx7?=
+ =?us-ascii?Q?oWwjn8yYssU+XYVGlhSPc9UZwaFu+C++Z6eRBq2AQwzEoSHcsiWBwIkiMlyx?=
+ =?us-ascii?Q?4D+1WqNb6mWKwFwDTDXEu+cSiSKakRC++Z/0H/Fg49Tow82ntl9TJFnFPHGy?=
+ =?us-ascii?Q?KXtwi9LhD4GGSDrdWUSOLi6Ln4izlSbgh5KRTWhJ8W1ri/Lsq9YsfOYtCp7Y?=
+ =?us-ascii?Q?2scWlwOwOwAnFEKA/zyRLMTCV+Usrkz34Spj3ExYU2oEtrILWUlZYBlbwXFd?=
+ =?us-ascii?Q?GIPk95nIf+z9qbE4IL7YFwJywRTnLywLaA8amRSY2bqyBWeBjyyspqoRZdyJ?=
+ =?us-ascii?Q?qEjw9S2T7IYj25QET3OzWB2zBVkJCdwVJ/5XBLtHFTN4Fd0ycfZo8SsnYFim?=
+ =?us-ascii?Q?OZMhAn8TP1gtD9+EyM14uOcAj2xNWD5o4lSNjI0cf4dbBn/rdGO0ZQL70fwt?=
+ =?us-ascii?Q?A7qxQRH72tksJzOgdflhw1XkZqVirQ2FVQ5i7D5V5CRqxD6QSfhkO1XCqlJi?=
+ =?us-ascii?Q?kzMEaJ7FmAR5gcIHhJCpv8kEElEAbGgXM7AYOOhjfzxcE0Oynv9VjQm5cB7F?=
+ =?us-ascii?Q?nN9e5aNXNsh+rJqJsfsXRburmL0xpPgpKfUahiuoreziOLj2M/MgP6UnC6hS?=
+ =?us-ascii?Q?0GKaHV2umj7sz0BhC+uw6GaY5dosQo/2O7WB6olwT0mb/Ndksjy7IbIjz49y?=
+ =?us-ascii?Q?ZkT936gGZkUaK2ijBy0d+eqeFApTkeGYCFzkL/dq81y7fZxazkLVBz6SoxiB?=
+ =?us-ascii?Q?0fCiDTiDEc+cMGHde/zmGMleumzy8HUWzKc6brz96lmwbQjGbBcUnEerOH+D?=
+ =?us-ascii?Q?6PcIPiJRxsYTIFUNsDFNXwrfBxL0wSjuwTEKzwkWB8UQZYBGyz6mRrxGSist?=
+ =?us-ascii?Q?wL/HobStrvLYJswSf2pDVV0r4DU0w7sIxjq9W+I10SBn0VOIWfeJMzj+Itlu?=
+ =?us-ascii?Q?w1iiR1A2BzEf3kQZwnfIGmvaf+oXfOgTa+2sYyQY?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 06a04caa-84ff-4752-990c-08dc3c1dd800
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Mar 2024 07:36:45.5072
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MgnUwjoM+lxvB4SzObGmklelkdtcAtq4/a46KByigUKZATtLtJ3CLYeF8YAnHr7aiWqNiAWbYsCAKUAhLJIN8g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR11MB6086
+X-OriginatorOrg: intel.com
 
-On Fri, 1 Mar 2024 18:04:10 +0000, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 2024-03-01 1:41 pm, Michael S. Tsirkin wrote:
-> > On Fri, Mar 01, 2024 at 12:42:39PM +0000, Robin Murphy wrote:
-> >> On 2024-03-01 11:50 am, Michael S. Tsirkin wrote:
-> >>> On Fri, Mar 01, 2024 at 11:38:25AM +0000, Robin Murphy wrote:
-> >>>> Not only is this idea not viable, the entire premise seems flawed - the
-> >>>> reasons for virtio needing to use the DMA API at all are highly likely to be
-> >>>> the same reasons for it needing to use the DMA API *properly* anyway.
-> >>>
-> >>> The idea has nothing to do with virtio per se
-> >>
-> >> Sure, I can see that, but if virtio is presented as the justification for
-> >> doing this then it's the justification I'm going to look at first. And the
-> >> fact is that it *does* seem to have particular significance, since having up
-> >> to 19 DMA addresses involved in a single transfer is very much an outlier
-> >> compared to typical hardware drivers.
-> >
-> > That's a valid comment. Xuan Zhuo do other drivers do this too,
-> > could you check pls?
-> >
-> >> Furthermore the fact that DMA API
-> >> support was retrofitted to the established virtio design means I would
-> >> always expect it to run up against more challenges than a hardware driver
-> >> designed around the expectation that DMA buffers have DMA addresses.
-> >
-> >
-> > It seems virtio can't drive any DMA changes then it's forever tainted?
-> > Seems unfair - we retrofitted it years ago, enough refactoring happened
-> > since then.
->
-> No, I'm not saying we couldn't still do things to help virtio if and
-> when it does prove reasonable to do so; just that if anything it's
-> *because* that retrofit is mature and fairly well polished by now that
-> any remaining issues like this one are going to be found in the most
-> awkward corners and thus unlikely to generalise.
->
-> FWIW in my experience it seems more common for network drivers to
-> actually have the opposite problem, where knowing the DMA address of a
-> buffer is easy, but keeping track of the corresponding CPU address can
-> be more of a pain.
->
-> >>> - we are likely not the
-> >>> only driver that wastes a lot of memory (hot in cache, too) keeping DMA
-> >>> addresses around for the sole purpose of calling DMA unmap.  On a bunch
-> >>> of systems unmap is always a nop and we could save some memory if there
-> >>> was a way to find out. What is proposed is an API extension allowing
-> >>> that for anyone - not just virtio.
-> >>
-> >> And the point I'm making is that that "always" is a big assumption, and in
-> >> fact for the situations where it is robustly true we already have the
-> >> DEFINE_DMA_UNMAP_{ADDR,LEN} mechanism.
-> >> I'd consider it rare for DMA
-> >> addresses to be stored in isolation, as opposed to being part of some kind
-> >> of buffer descriptor (or indeed struct scatterlist, for an obvious example)
-> >> that a driver or subsystem still has to keep track of anyway, so in general
-> >> I believe the scope for saving decidedly small amounts of memory at runtime
-> >> is also considerably less than you might be imagining.
-> >>
-> >> Thanks,
-> >> Robin.
-> >
-> >
-> > Yes. DEFINE_DMA_UNMAP_ exits but that's only compile time.
-> > And I think the fact we have that mechanism is a hint that
-> > enough configurations could benefit from a runtime
-> > mechanism, too.
-> >
-> > E.g. since you mentioned scatterlist, it has a bunch of ifdefs
-> > in place.
->
-> But what could that benefit be in general? It's not like we can change
-> structure layouts on a per-DMA-mapping-call basis to save
-> already-allocated memory... :/
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Thursday, February 29, 2024 5:46 PM
+>=20
+> +
+> +/*
+> + * Cache invalidation for changes to a scalable-mode context table
+> + * entry.
+> + *
+> + * Section 6.5.3.3 of the VT-d spec:
+> + * - Device-selective context-cache invalidation;
+> + * - Domain-selective PASID-cache invalidation to affected domains
+> + *   (can be skipped if all PASID entries were not-present);
+> + * - Domain-selective IOTLB invalidation to affected domains;
 
-We can put the memory together. If the unmap is not needed, then we do not
-allocate the memory. That is the way we are trying.
+the spec talks about domain-selective but the code actually does
+global invalidation.
 
-Thanks.
+> + * - Global Device-TLB invalidation to affected functions.
+> + *
+> + * Note that RWBF (Required Write-Buffer Flushing) capability has
+> + * been deprecated for scable mode. Section 11.4.2 of the VT-d spec:
+> + *
+> + * HRWBF: Hardware implementations reporting Scalable Mode Translation
+> + * Support (SMTS) as Set also report this field as Clear.
 
+RWBF info is a bit weird given existing code doesn't touch it
 
+> + */
+> +static void sm_context_flush_caches(struct device *dev)
+> +{
+> +	struct device_domain_info *info =3D dev_iommu_priv_get(dev);
+> +	struct intel_iommu *iommu =3D info->iommu;
+> +
+> +	iommu->flush.flush_context(iommu, 0, PCI_DEVID(info->bus, info-
+> >devfn),
+> +				   DMA_CCMD_MASK_NOBIT,
+> DMA_CCMD_DEVICE_INVL);
+> +	qi_flush_pasid_cache(iommu, 0, QI_PC_GLOBAL, 0);
+> +	iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
+> +	devtlb_invalidation_with_pasid(iommu, dev, IOMMU_NO_PASID);
+> +}
+> +
+> +static void context_entry_teardown_pasid_table(struct intel_iommu
+> *iommu,
+> +					       struct context_entry *context)
+> +{
+> +	context_clear_entry(context);
+> +	if (!ecap_coherent(iommu->ecap))
+> +		clflush_cache_range(context, sizeof(*context));
 
->
-> Thanks,
-> Robin.
->
-> >
-> > Of course
-> > - finding more examples would be benefitial to help maintainers
-> >    do the cost/benefit analysis
-> > - a robust implementation is needed
-> >
-> >
+this is __iommu_flush_cache(). You can use it throughout this and
+the 2nd series.
+
+> +
+> +void intel_pasid_teardown_sm_context(struct device *dev)
+> +{
+
+it's clearer to call it just intel_teardown_sm_context. pasid_table
+is one field in the context entry. Having pasid leading is slightly
+confusing.
