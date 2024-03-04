@@ -1,109 +1,149 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F6DA3D57C;
-	Mon,  4 Mar 2024 13:25:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B44863DBB2
+	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 13:38:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709558723; cv=none; b=EeepLYhVZcc9mhgA3om/i2MpZI2gCXjQ4pP6kftolefuKa0Lc8u+VF6DYuYomXQqpGHw6zrRnanxYq7nfNGp6oT2HReXRsOCahgGp8EK1ECpIXKpOiZqGWazUKepj1hLv06B3xEK6qa1YkNsBj8PJCTdCOBxzwppJj+XcxOJ73Q=
+	t=1709559483; cv=none; b=JpuTQOfgzyoZqgLvUlqrGta+atenthTEZPmGZg3dIq6saQ20MqI5p8baiQd4BuN3qK80QY0PslSdcFnphWPmMi6CMtMllIi1cMjX7kCnAs+eBF6z6xPaZYQw764Z63jfGdZQuOiuHnr/aBkT8A4ty0xven3R75NMOEHQABpeb0A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709558723; c=relaxed/simple;
-	bh=7k5KTxhcjg0DBPGEReEyIU1YQdK9/ETlpA6DECaW8oc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=EbcHb1lkwRM57nxqxxQtDscREbIsBc/fhu1VMUs38+b56BXk+E+cB7c+LHlbyF2fkyWSd1ApSwVQBKz5qWcsD7S1OJO6N1whE/JaAxDlcZlUCStC9UjJKEFUHpUomlYD+0ax6abe/ZwnkqOT1hixu1YJlj8xbc+y7IY/E3R2IvI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=p5+WAq3b; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="p5+WAq3b"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E157C433C7;
-	Mon,  4 Mar 2024 13:25:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1709558723;
-	bh=7k5KTxhcjg0DBPGEReEyIU1YQdK9/ETlpA6DECaW8oc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=p5+WAq3bQpF0mHhs2r+TE58RSsMX6QZ/3R4qUKMp18a7M8pacdx7uZi2mr5Nq++Nx
-	 //KBCSiHXZ9945m/SvLcA1RluCDFy2j7YiMcTG3hVUrEi3iz2E3xCwKndwnT0tnDRB
-	 DCqfsULJi8T85cQfKBm2ChMrfx9FSAEMQNun3QN4=
-Date: Mon, 4 Mar 2024 14:25:20 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Nikhil V <quic_nprakash@quicinc.com>
-Cc: Charan Teja Kalla <quic_charante@quicinc.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, stable@vger.kernel.org
-Subject: Re: [PATCH RESEND STABLE v6.1] iommu: Avoid races around default
- domain allocations
-Message-ID: <2024030403-self-morality-062e@gregkh>
-References: <cbf1295589bd90083ad6f75a7fbced01f327c047.1708680521.git.quic_nprakash@quicinc.com>
+	s=arc-20240116; t=1709559483; c=relaxed/simple;
+	bh=38TJYvdNVrM0MO1RETMbWp4toUBh2E4mWcOxm3EsUJs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HkSbn/6s/uTRILRcvveCZleohL9AkkMwDAtVTysWGgAeUzGmYPDPMc8LYlmNQs8MmK0v5bHejAGm3vHa7ZpkRQ2cQNO5xvZnvCSTrKh5Dxhx2Ei/SHE5qRas73ySX0QpKBsn26x8UaTN7M7/9TZ+GMvpio1ZXw/KFiBwfK78y6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 976AF1FB;
+	Mon,  4 Mar 2024 05:38:36 -0800 (PST)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 72FC33F738;
+	Mon,  4 Mar 2024 05:37:58 -0800 (PST)
+Message-ID: <ffd7646b-37b1-4cd2-822a-848b36b076c9@arm.com>
+Date: Mon, 4 Mar 2024 13:37:56 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cbf1295589bd90083ad6f75a7fbced01f327c047.1708680521.git.quic_nprakash@quicinc.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
+ allocations >= PAGE_SIZE
+Content-Language: en-GB
+To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>,
+ Michael Kelley <mhklinux@outlook.com>
+Cc: Christoph Hellwig <hch@lst.de>, Will Deacon <will@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+ "kernel-team@android.com" <kernel-team@android.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Dexuan Cui
+ <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
+References: <20240228133930.15400-1-will@kernel.org>
+ <20240228133930.15400-7-will@kernel.org>
+ <SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <SN6PR02MB41577D09E97B1D9645369D58D45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <20240229133346.GA7177@lst.de>
+ <SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <20240229154756.GA10137@lst.de>
+ <20240301163927.18358ee2@meshulam.tesarici.cz>
+ <20240301180853.5ac20b27@meshulam.tesarici.cz>
+ <8869c8b2-29c3-41e4-8f8a-5bcf9c0d22bb@arm.com>
+ <20240301194212.3c64c9b2@meshulam.tesarici.cz>
+ <SN6PR02MB41571DA1EE99BFAA65869024D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <20240304120055.56035c21@meshulam.tesarici.cz>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240304120055.56035c21@meshulam.tesarici.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, Mar 04, 2024 at 04:40:50PM +0530, Nikhil V wrote:
-> From: Charan Teja Kalla <quic_charante@quicinc.com>
+On 04/03/2024 11:00 am, Petr Tesařík wrote:
+[...]
+>> Here's my take on tying all the threads together. There are
+>> four alignment combinations:
+>>
+>> 1. alloc_align_mask: zero; min_align_mask: zero
+>> 2. alloc_align_mask: zero; min_align_mask: non-zero
+>> 3. alloc_align_mask: non-zero; min_align_mask: zero/ignored
+>> 4. alloc_align_mask: non-zero; min_align_mask: non-zero
 > 
-> This fix is applicable for LTS kernel, 6.1.y. In latest kernels, this race
-> issue is fixed by the patch series [1] and [2]. The right thing to do here
-> would have been propagating these changes from latest kernel to the stable
-> branch, 6.1.y. However, these changes seems too intrusive to be picked for
-> stable branches. Hence, the fix proposed can be taken as an alternative
-> instead of backporting the patch series.
-> [1] https://lore.kernel.org/all/0-v8-81230027b2fa+9d-iommu_all_defdom_jgg@nvidia.com/
-> [2] https://lore.kernel.org/all/0-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com/
+> What does "min_align_mask: zero/ignored" mean? Under which
+> circumstances should be a non-zero min_align_mask ignored?
 > 
-> Issue:
-> A race condition is observed when arm_smmu_device_probe and
-> modprobe of client devices happens in parallel. This results
-> in the allocation of a new default domain for the iommu group
-> even though it was previously allocated and the respective iova
-> domain(iovad) was initialized. However, for this newly allocated
-> default domain, iovad will not be initialized. As a result, for
-> devices requesting dma allocations, this uninitialized iovad will
-> be used, thereby causing NULL pointer dereference issue.
+>> xen_swiotlb_map_page() and dma_direct_map_page() are #1 or #2
+>> via swiotlb_map() and swiotlb_tbl_map_single()
+>>
+>> iommu_dma_map_page() is #3 and #4 via swiotlb_tbl_map_single()
+>>
+>> swiotlb_alloc() is #3, directly to swiotlb_find_slots()
+>>
+>> For #1, the returned physical address has no constraints if
+>> the requested size is less than a page. For page size or
+>> greater, the discussed historical requirement for page
+>> alignment applies.
+>>
+>> For #2, min_align_mask governs the bits of the returned
+>> physical address that must match the original address. When
+>> needed, swiotlb must also allocate pre-padding aligned to
+>> IO_TLB_SIZE that precedes the returned physical address.  A
+>> request size <= swiotlb_max_mapping_size() will not exceed
+>> IO_TLB_SEGSIZE even with the padding. The historical
+>> requirement for page alignment does not apply because the
+>> driver has explicitly used the newer min_align_mask feature.
 > 
-> Flow:
-> - During arm_smmu_device_probe, bus_iommu_probe() will be called
-> as part of iommu_device_register(). This results in the device probe,
-> __iommu_probe_device().
-> 
-> - When the modprobe of the client device happens in parallel, it
-> sets up the DMA configuration for the device using of_dma_configure_id(),
-> which inturn calls iommu_probe_device(). Later, default domain is
-> allocated and attached using iommu_alloc_default_domain() and
-> __iommu_attach_device() respectively. It then ends up initializing a
-> mapping domain(IOVA domain) and rcaches for the device via
-> arch_setup_dma_ops()->iommu_setup_dma_ops().
-> 
-> - Now, in the bus_iommu_probe() path, it again tries to allocate
-> a default domain via probe_alloc_default_domain(). This results in
-> allocating a new default domain(along with IOVA domain) via
-> __iommu_domain_alloc(). However, this newly allocated IOVA domain
-> will not be initialized.
-> 
-> - Now, when the same client device tries dma allocations via
-> iommu_dma_alloc(), it ends up accessing the rcaches of the newly
-> allocated IOVA domain, which is not initialized. This results
-> into NULL pointer dereferencing.
-> 
-> Fix this issue by adding a check in probe_alloc_default_domain()
-> to see if the iommu_group already has a default domain allocated
-> and initialized.
-> 
-> Cc: <stable@vger.kernel.org> # see patch description, fix applicable only for 6.1.y
-> Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
-> Co-developed-by: Nikhil V <quic_nprakash@quicinc.com>
-> Signed-off-by: Nikhil V <quic_nprakash@quicinc.com>
-> ---
->  drivers/iommu/iommu.c | 3 +++
->  1 file changed, 3 insertions(+)
+> What is the idea here? Is it the assumption that only old drivers rely
+> on page alignment, so if they use min_align_mask, it proves that they
+> are new and must not rely on page alignment?
 
-Why RESEND?  What happened to the first send?
+Yes, if a driver goes out of its way to set a min_align_mask which is 
+smaller than its actual alignment constraint, that is clearly the 
+driver's own bug. Strictly we only need to be sympathetic to drivers 
+which predate min_align_mask, when implicitly relying on page alignment 
+was all they had.
 
-thanks,
+>> For #3, alloc_align_mask specifies the required alignment. No
+>> pre-padding is needed. Per earlier comments from Robin[1],
+>> it's reasonable to assume alloc_align_mask (i.e., the granule)
+>> is >= IO_TLB_SIZE. The original address is not relevant in
+>> determining the alignment, and the historical page alignment
+>> requirement does not apply since alloc_align_mask explicitly
+>> states the alignment.
 
-greg k-h
+FWIW I'm also starting to wonder about getting rid of the alloc_size 
+argument and just have SWIOTLB round the end address up to 
+alloc_align_mask itself as part of all these calculations. Seems like it 
+could potentially end up a little simpler, maybe?
+
+>> For #4, the returned physical address must match the bits
+>> in the original address specified by min_align_mask.  swiotlb
+>> swiotlb must also allocate pre-padding aligned to
+>> alloc_align_mask that precedes the returned physical address.
+>> Also per Robin[1], assume alloc_align_mask is >=
+>> min_align_mask, which solves the conflicting alignment
+>> problem pointed out by Petr[2]. Perhaps we should add a
+>> "WARN_ON(alloc_align_mask < min_align_mask)" rather than
+>> failing depending on which bits of the original address are
+>> set. Again, the historical requirement for page alignment does
+>> not apply.
+> 
+> AFAICS the only reason this works in practice is that there are only
+> two in-tree users of min_align_mask: NVMe and Hyper-V. Both use a mask
+> of 12 bits, and the IOVA granule size is never smaller than 4K.
+
+If we assume a nonzero alloc_align_mask exclusively signifies iommu-dma, 
+then for this situation SWIOTLB should only need to worry about the 
+intersection of alloc_align_mask & min_align_mask, since any 
+min_align_mask bits larger than the IOVA granule would need to be 
+accounted for in the IOVA allocation regardless of SWIOTLB.
+> If we want to rely on this, then I propose to make a BUG_ON() rather
+> than WARN_ON().
+
+I've just proposed a patch to make it not matter for now - the nature of 
+iommu-dma makes it slightly more awkward to prevent SWIOTLB from ever 
+seeing this condition at all, so I chose not to do that, but as long as 
+swiotlb_tbl_map_single() does *something* for conflicting constraints 
+without completely falling over, which swiotlb_tbl_unmap_single can then 
+undo again, then it should be fine.
+
+Thanks,
+Robin.
