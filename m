@@ -1,106 +1,134 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from out-177.mta1.migadu.com (out-177.mta1.migadu.com [95.215.58.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FAA91362
-	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 01:52:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB4CC137E
+	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 02:28:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709517143; cv=none; b=FnmEjjBfVBV453vOP+Q8KXbqdNZ62s9c6euy237JgqTNIdL2YsKfcO1ifiVqxftXGXvysGaPU/mb/LguK42X4uhuKuoHAKhX2Dsk/wOcLFAIvdi2knizAtHUdAoxIRGaJqDutFop3fH1bOBPkxshemgOhHGum5MbpxLt3Lrh79U=
+	t=1709519287; cv=none; b=l1aa8eCq/nncIwkkrsNuozsHOTivYMMvDY3FzTN7bmwLOm+8nYrjGVgwej1iR4NbtqYzBWLsuFQoMwMWBwDTK6HzzPK5zDZUO1AfEgEf2BO2NFMkPviRC7UNItDSP63Hdbxf6blSyPyjKSygvFEMaDhABBOPVoZ2foR/P5AVfQU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709517143; c=relaxed/simple;
-	bh=ryzVKDVJdRXkf1w4Nn2pTtkFqNfXCs5KG7YB8Xq9NNY=;
+	s=arc-20240116; t=1709519287; c=relaxed/simple;
+	bh=Lxi/GwcyHffRZyDkM6ZiyzHoAvkPz9PAdQ08ZI1MKn4=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YQqnLpQouZo8jgFS9puHRBSYc3ynex1triQCxNTCDqXGRTGHtTZ1BqROGJ5GGEJTAuEuxgSaNWJTZs7MSkW1avuZWN5C5nPLgxH+s5/PdMeWKRD1B1/7szRnTdZ8DkaZ4StztGv1wwmiwZfG2mJIbroAcz26Em1bKXL3LTPQltI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FykheAjh; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 In-Reply-To:Content-Type; b=eX1xV0fjsH0w7k2u8Q3g6GeZ48IjanEy8IhbY+l8l5T65Bgs9dvZbhQ3OE86v0tm4XyLWqrBBLnPQu50KgYslvXnVrPORUGkYiqBg4jMG4v8aX7x+z82LHvYxbQIuJOsFbfuHvPbRQOUAHoKv3pzQT+lmBw6e0hLmtXFFCsKf5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=GFbyjr7F; arc=none smtp.client-ip=95.215.58.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FykheAjh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709517141; x=1741053141;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=ryzVKDVJdRXkf1w4Nn2pTtkFqNfXCs5KG7YB8Xq9NNY=;
-  b=FykheAjhZiUVwpVkWim+GOKyZrhOgZpJTWhPgTe2CPbn1Yq6xszZ7RUg
-   RdsOGZtfpOiwI8k/4BC5SJULvIPROgQuDIs5i8jHG8UzV6bJBm+mC9Djt
-   wi7tvvYT/pesZfpUJ+MqHKFxZwtotJl9Mdh3ChClXU/RFW4fSLpgJ3Nv1
-   m+DhZqgeBaklxoopiohiKrGLyaLlsmoor5vSn8E/LOL1IqIytmNyTp1z1
-   sRR5y9oOuIw7QKKi9rT4E3H8AvRo/+rlEA8EglKzm9Xr6HO0jApa7lsEi
-   n111UcKuksatPYeuWW/eobAExZs86N2Ly+kR95qYkl+EennYuaTPr3JJE
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="4157276"
-X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
-   d="scan'208";a="4157276"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2024 17:52:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
-   d="scan'208";a="13495543"
-Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.124.229.115]) ([10.124.229.115])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2024 17:52:17 -0800
-Message-ID: <82f5aa96-ddf8-4ba4-a8f6-9bf099caadad@linux.intel.com>
-Date: Mon, 4 Mar 2024 09:52:14 +0800
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="GFbyjr7F"
+Message-ID: <22df55f8-cf64-4aa8-8c0b-b556c867b926@linux.dev>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1709519282;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=AwmaRBK9f4xeTr2KKIZaEkYuoxsnConkJ3QY8WkxaG4=;
+	b=GFbyjr7FhhwloIRGYJbvYR2kjPjcVdcWEeIEFJysy6dwcV7/jHlDBt/GAmHusvPsiaRlNZ
+	UB7rrqP99IQeHRy17j5j5Kx45ucggNjfStR4c5A4+uGW1Gcy07R2jku2TzogQkWFWGB+PJ
+	j/QAT+SkCeRTAFVbxsPeNebm/D8kfjk=
+Date: Mon, 4 Mar 2024 03:27:52 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iommu/vt-d: avoid sending explicit ATS invalidation
- request to released device
-To: Bjorn Helgaas <helgaas@kernel.org>
-Cc: baolu.lu@linux.intel.com, bhelgaas@google.com, robin.murphy@arm.com,
- jgg@ziepe.ca, kevin.tian@intel.com, dwmw2@infradead.org, will@kernel.org,
- lukas@wunner.de, yi.l.liu@intel.com, dan.carpenter@linaro.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240301215630.GA409512@bhelgaas>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <20240301215630.GA409512@bhelgaas>
+Subject: Re: [LSF/MM/BPF TOPIC] [LSF/MM/BPF ATTEND] : Two stage IOMMU DMA
+ mapping operations
+To: Zhu Yanjun <zyjzyj2000@gmail.com>, Leon Romanovsky <leon@kernel.org>,
+ Chaitanya Kulkarni <chaitanyak@nvidia.com>
+Cc: "lsf-pc@lists.linux-foundation.org" <lsf-pc@lists.linux-foundation.org>,
+ "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+ "linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ linux-rdma <linux-rdma@vger.kernel.org>,
+ "linux-mm@kvack.org" <linux-mm@kvack.org>, Jens Axboe <axboe@kernel.dk>,
+ Bart Van Assche <bvanassche@acm.org>, "kbusch@kernel.org"
+ <kbusch@kernel.org>, Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+ Amir Goldstein <amir73il@gmail.com>,
+ "josef@toxicpanda.com" <josef@toxicpanda.com>,
+ "Martin K. Petersen" <martin.petersen@oracle.com>,
+ "daniel@iogearbox.net" <daniel@iogearbox.net>, Christoph Hellwig
+ <hch@lst.de>, Dan Williams <dan.j.williams@intel.com>,
+ "jack@suse.com" <jack@suse.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ Chuck Lever <chuck.lever@oracle.com>
+References: <97f385db-42c9-4c04-8fba-9b1ba8ffc525@nvidia.com>
+ <20240227113007.GD1842804@unreal>
+ <be75fe5b-9901-425c-8dbb-771dcb084e2e@linux.dev>
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Zhu Yanjun <yanjun.zhu@linux.dev>
+In-Reply-To: <be75fe5b-9901-425c-8dbb-771dcb084e2e@linux.dev>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
 
-On 3/2/2024 5:56 AM, Bjorn Helgaas wrote:
-> On Fri, Mar 01, 2024 at 09:50:36AM +0800, Ethan Zhao wrote:
->> On 3/1/2024 5:06 AM, Bjorn Helgaas wrote:
->>> On Wed, Feb 28, 2024 at 10:31:38PM -0500, Ethan Zhao wrote:
->>>> The introduction of per iommu device rbtree also defines the lifetime of
->>>> interoperation between iommu and devices, if the device has been released
->>>> from device rbtree, no need to send ATS invalidation request to it anymore,
->>>> thus avoid the possibility of later ITE fault to be triggered.
->>>>
->>>> This is part of the followup of prior proposed patchset
->>>>
->>>> https://do-db2.lkml.org/lkml/2024/2/22/350
->>> Please use https://lore.kernel.org/ URLs instead.  This one looks like
->>> https://lore.kernel.org/r/20240222090251.2849702-1-haifeng.zhao@linux.intel.com/
+在 2024/3/3 17:43, Zhu Yanjun 写道:
+> On 27.02.24 12:30, Leon Romanovsky wrote:
+>> On Tue, Feb 27, 2024 at 08:17:27AM +0000, Chaitanya Kulkarni wrote:
+>>> Hi,
+>>
+>> <...>
+>>
+>>> In order to create a good platform for a concrete and meaningful
+>>> discussion at LSFMM 24, we plan to post an RFC within the next two 
+>>> weeks.
+>>
+>> The code can be found here 
+>> https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=dma-split
+> 
+> Thanks a lot. I will delve into it. An interesting topic.
+
+The commits should be the followings. I am interested in them.
+
+5d8f8f35859c (HEAD -> dma-split, origin/dma-split) cover-letter: Split 
+IOMMU DMA mapping operation to two steps
+3beffcde0c12 vfio/mlx5: Convert vfio to use DMA link API
+acdfef1ccbcb vfio/mlx5: Explicitly store page list
+f16314362e66 vfio/mlx5: Rewrite create mkey flow to allow better code reuse
+763e753cd6ed vfio/mlx5: Explicitly use number of pages instead of 
+allocated length
+7f58ebf0cfc4 RDMA/umem: Prevent UMEM ODP creation with SWIOTLB
+f1c687fde096 RDMA/core: Separate DMA mapping to caching IOVA and page 
+linkage
+ffc81619c60d RDMA/umem: Store ODP access mask information in PFN
+67038d9e24fd RDMA/umem: Preallocate and cache IOVA for UMEM ODP
+ce141bccd409 iommu/dma: Implement link/unlink page callbacks
+1dd12d4a44d1 iommu/dma: Prepare map/unmap page functions to receive IOVA
+b9714667f54f iommu/dma: Provide an interface to allow preallocate IOVA
+21dbfc7fc2f1 dma-mapping: provide callbacks to link/unlink pages to 
+specific IOVA
+52689a26b87a dma-mapping: provide an interface to allocate IOVA
+34f8a8baecaa mm/hmm: let users to tag specific PFNs
+
+Zhu Yanjun
+
+> 
+> Zhu Yanjun
+> 
+>>
+>> Thanks
+>>
 >>>
->>>> To make sure all the devTLB entries to be invalidated in the device release
->>>> path, do implict invalidation by fapping the E bit of ATS control register.
->>>> see PCIe spec v6.2, sec 10.3.7 implicit invalidation events.
->>> s/implict/implicit/
+>>> Required Attendees list :-
 >>>
->>> s/fapping/?/  (no idea :)  "flipping"?  Oh, probably "flapping" per the
->>> comment below.  But I think "flapping" is ambiguous; "setting" would be
->>> better)
->> Yup, like the memory bit flipping, no idea what is the right word,
->> setting one bit to 0, then 1, then back to 0. perhaps details the
->> setting action 0-->1-->0 ?
-> In PCIe spec-speak, "Set" means "assign 1 to this", and "Clear" means
-> "assign 0 to this".
->
-> Maybe you could copy the spec language like this:
->
->    Invalidate all ATC entries by changing the E field in the ATS
->    Capability from Clear to Set, which causes an implicit invalidation
->    event.
+>>> Christoph Hellwig
+>>> Jason Gunthorpe
+>>> Jens Axboe
+>>> Chuck Lever
+>>> David Howells
+>>> Keith Busch
+>>> Bart Van Assche
+>>> Damien Le Moal
+>>> Martin Petersen
+>>>
+>>> -ck
+>>>
+>>> [1]
+>>> https://lore.kernel.org/all/169772852492.5232.17148564580779995849.stgit@klimt.1015granger.net
+>>> [2] https://lore.kernel.org/linux-iommu/20200708065014.GA5694@lst.de/
+>>>
+>>>
+>>>
+> 
 
-Fair enough.
-
-Thanks,
-Ethan
-
->
-> Bjorn
->
