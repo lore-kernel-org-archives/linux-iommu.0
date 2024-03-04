@@ -1,184 +1,151 @@
-Received: from bee.tesarici.cz (unknown [77.93.223.253])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FECC78B53
-	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 19:04:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709579075; cv=none; b=Pg7/2H8RvU63P0ZuN+/N2F7n/WRkpxgtStjATExer+SrCnZwONF8Fq5KXwriAMJ9yLlCyCzhNAtYI0KMHufL0j2CUwoo9o+RPTlM+mUHYQqSZJMWSPs8nBnyL4gTKTSzo9uMkqKJ4rvk2dcfESNWeAtf6BF3179pUtP+kosLwGc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709579075; c=relaxed/simple;
-	bh=OpcaKRhpxKs0wOB7QmV51ntNwwxhFrwNpqIrJcjmlXI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Zyd8v3hCIIHkC7dgfOCs0Cc5aVknP1GpZpzTFlyL+EBR/2TCd53bQ3AuEUNqfzLvdgBF1WhtVMpMKDqZ4lAxgvbpsepdgiCCooKWiOOvSixnfSVklOoo0/miZ76wlVwhMsmx8weF4hFj9EUqfizmjMLbsr6w9vhMXDc/wQolcY8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=Fo3nHuCy; arc=none smtp.client-ip=77.93.223.253
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 592691E4AA;
+	Mon,  4 Mar 2024 19:50:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709581815; cv=fail; b=k21rw8F+YphJV4gtbXyQRTnsaIT49k4qvZWXIzmeTwxocxodkX1Dw6rMNiB1FYQ7AY/NzI48rEPIW1lqkGPVdBKmSnt0eiSbjFtadSQE2K1pwldi3VFxfZLarOq5KMMIuJvjxVPFfKPqpzT/0URdzTw+c2lkYoR2A/ToxXk5IRk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709581815; c=relaxed/simple;
+	bh=quf4zo6ZcosdN6toK9ClmJShd8I0zqd7kjwqcIxdWzo=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=pwn8L9xEsNb+kPSsLHgLaYqkGVupVgApx3OUF/zzbLch0d4fVn1sCgCmFm4DyzoA/a3QdTZ1RGGfULD3qUAmEtDe7KFl615zP121jQorMQrDBuOX3iUiI40cAiZmtxf9Tl4Mf7grYnp4DCYnV/j5+nNlM0iTJXQLaY2kaa8R66Y=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=mLLLsY39; arc=fail smtp.client-ip=40.107.236.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="Fo3nHuCy"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id AB1041C6459;
-	Mon,  4 Mar 2024 20:04:29 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1709579069; bh=ve+WTsjm8GalaYsBeUXZYJVXRvABnJYKupgzVA3x+6A=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Fo3nHuCyzevUukPS4EApPbTFdWBknU7zj0Wabpd2eNjlJlFoV83SnSKiFwpwtSrS0
-	 rcId2iacLg8Y7rGv3McpJhsyRw63rHb1IYhRLromNmZLXdL6zuDZUAK/ZOGBqXSBXC
-	 kigxZ/qacEJwFUsydGy+uaPgFwxxkvhAkshDxC84NHS/FALvbIZnR5sTOI0s8Pdrsg
-	 JayA3+6QeP+LcJ14meIxW4Ldl32elMakh3ehS4SxMRkCxss0Hy9ZI/lrhwxI/7K599
-	 bGurMFB1Z6bda/tcUkA+/NGyehlcWB4F9FgBmGM3OAw1aROAdoTa1yxPIx+Qv+CYRZ
-	 Q3sci9mc8SnXw==
-Date: Mon, 4 Mar 2024 20:04:28 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, Petr Tesarik
- <petr.tesarik1@huawei-partners.com>, "kernel-team@android.com"
- <kernel-team@android.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Dexuan Cui
- <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
- allocations >= PAGE_SIZE
-Message-ID: <20240304200428.4111d78e@meshulam.tesarici.cz>
-In-Reply-To: <SN6PR02MB41571F68F8F9E003C4359948D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<20240229154756.GA10137@lst.de>
-	<20240301163927.18358ee2@meshulam.tesarici.cz>
-	<20240301180853.5ac20b27@meshulam.tesarici.cz>
-	<8869c8b2-29c3-41e4-8f8a-5bcf9c0d22bb@arm.com>
-	<20240301194212.3c64c9b2@meshulam.tesarici.cz>
-	<SN6PR02MB41571DA1EE99BFAA65869024D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<20240304120055.56035c21@meshulam.tesarici.cz>
-	<ffd7646b-37b1-4cd2-822a-848b36b076c9@arm.com>
-	<20240304165506.49e3b2d3@meshulam.tesarici.cz>
-	<20240304160210.GB21077@willie-the-truck>
-	<SN6PR02MB41571F68F8F9E003C4359948D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="mLLLsY39"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fC5hgEmtefbyha4tye6n3Fh4DozWJdIZQ5L68CPBgZb0BziArWp+qSCkflubQsir9idtVkIeRatrR3hXXJRVNp1ejjCZ3kDLpAVtPohgoJ0TNJj7NzgcWcFxmrQ5P4F6GMv+pUk+FkBNJX8RbWWIIXj4n+0apGnd1FeaHeQYjimkM5UMWCeZQcQZWjIRUT9vWAhukpASvyl5KScG7rya8TAr1it5yVwmmzaVTNAqmTzE4i36LL2hi7TlEPVbc3m4vN80gpGzEJb+fuxp4pa12fB9DhqSLVw6fn3gsSVrpVUmc9umnnJdpb0lBSXQy5/Y1iKnkO4pzKOBafaWmk/UzA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/bu7WOeDFaNE3Ty0TDl77ta6f8joTE9Bj+Zdo+g96Ug=;
+ b=is6eNS3pE0ldAXI9YgPemjMZoFeyOMUJwphR2vxwLFFyDZOiUmg9meI8rqq2lmVAXqSlHncNUilAeWo4Ifpn59rgzzNYUMEqEx6bb5izydh847pNVsRVOE3JR64rNpQNy1T/d1uIDLWvzkdMI2yuajYqmmYtyL4aIRSU1PGKSreDp0Ea8looWzks0K3TycIhlhYARdfN+bqPJwpR0W2k7e3BVhYiS6EHqOB3N0hFbxaPAk1iYri1ro5EKUp35bjaqMbe93DhQCs8GGeH8ypWKuHPPi0ojtzhdlEcWkBw4pJgJH4r/lQJLfB1xzcyf0h6ElWWPhGZKB4HCcOIOw+JHw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/bu7WOeDFaNE3Ty0TDl77ta6f8joTE9Bj+Zdo+g96Ug=;
+ b=mLLLsY390bVImYKLSGoe8duRZBsg6OJCGVUfVR9rpbVCbU8lYy/7VIwUMU+wKaLHAxTUYPv++bRODRQGwf84N1iYyq4zBvUCkPoTsGVDeJ5EVWodxwuIaPNjrQ9U1Yu061+oTqDsbbR0jVfP/oYYVzs6xFLzyDHJsuI0pSLGkYD8KfFPIC/C6v4QFQPmY4pZTFvZcrcGKbIY9LChLtzauvco8turYxh4LIc2xH5fJvxr2Gyb+aOP0MwlXh0seEGO7MlBl0KikNF4jIS6wRxVYOBPNcvLb0VsCfaPtWpeyv9O2mQ9xAtWvnN+9yNXCLY0u7/sFL3RYHGcHgBB5s7X1A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by SA1PR12MB9002.namprd12.prod.outlook.com (2603:10b6:806:38b::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.38; Mon, 4 Mar
+ 2024 19:50:10 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c33c:18db:c570:33b3]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c33c:18db:c570:33b3%5]) with mapi id 15.20.7339.035; Mon, 4 Mar 2024
+ 19:50:10 +0000
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Will Deacon <will@kernel.org>
+Cc: kernel test robot <lkp@intel.com>,
+	Michael Shavit <mshavit@google.com>,
+	patches@lists.linux.dev,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH] iommu/arm-smmu-v3: Add cpu_to_le64() around STRTAB_STE_0_V
+Date: Mon,  4 Mar 2024 15:50:08 -0400
+Message-ID: <0-v1-98b23ebb0c84+9f-smmu_cputole_jgg@nvidia.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SN7PR04CA0063.namprd04.prod.outlook.com
+ (2603:10b6:806:121::8) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|SA1PR12MB9002:EE_
+X-MS-Office365-Filtering-Correlation-Id: ab08e4d0-7d3f-41b7-a883-08dc3c844cb0
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	/PM0hgJOkpg42iakGPZYOAEtc0dKtF9WTWdc2xEHR4/GDUQeuyzB1pf1KP1yQ9NXqyfqE3tpP0Il/X9mEc+IuTwRvRsfG5eHYWm6h8f5qQOpcEh6kBw0xJ/jsafjlQbYczyRKSo15h3s3MgmnflqkLhBAWsboePNmPS3Pbl11oZVdQRjmUFc52peLPneb339bKiaZL3F85Ed/rJj4/yfoOPEyC1Q525OI7OwI+WydFBTzWv9EcrfVnr2rZ5pGv4sfDobU+fTxu3Hbo1CrgWAR+fUtCn1ahnN4qeEeGiD4F4CM09Y3Eq2qNBpe3wBsneX2znBzv5WJPmvqXAe9aCr/zXzcgz5Imt99hhU8cy3vm125otcfg+/6j3keGQzLq7BehiPKyDZjRLOBa97p5JBYy4NxWZKTvF/1CGwYAYCmFmfidImrKx9p9SfxboIzxWMFKsxbP/Yqk74xC0bOvC3x0P3x/lbkDXiErPIxp1wNP4sipRmnQf1Ng7Gg3ajEgBjlfR/27Mqc4v+fr8aInqC+5r/ti6px/VPVS2Pyxr/fAMYIsH1GD5+LPHgvS2wPDc5gsnzo5yQrUykNsYP0lxzbO7u7TuXVG+Rp9ANxK+VrLnl4GOgvsrdD/gUup/KsgODc8N7WufXuxsLvNRYVNhH2xAI3M0LVUPjlt+06FD6dPY=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?bcqbHH0wxHvPmO60g4ARhlEWN0hGHaJpT5uobnv/dLZQ1Sd8J4Bys3EL8ZIx?=
+ =?us-ascii?Q?MOseTHukEjsmo23snnXFgOlP2jzhswqkMYtYcYfO6HPpImbYh/aQeGAg1z8c?=
+ =?us-ascii?Q?QiqNZ19P5zz7afsBGC2eELP17c3Fa9mR5+cMQ8pf9mNbzlvbI2L6dAVccP2I?=
+ =?us-ascii?Q?3u6rlSNa54vnJDBwr6Q3ayr5osM2MN7fnSwrB+33sPjFL6Fdo4Dexb998WVU?=
+ =?us-ascii?Q?92Ou6MEYVseyx/0RnC82H1U5q/PHPKrjN7VlxvqI6f3LCLt0O0FPXXEToZIm?=
+ =?us-ascii?Q?lGab4k6CrNcNkz0HtbfMBQkqlrrAn86fTTKBkWm30As4KWUaaC/k7bzdDZsT?=
+ =?us-ascii?Q?bE5RnleGq1WKJ20swwfbDOhCzg4tigaHiIobyNhq5LSlaCkMeqGK2yxAl00P?=
+ =?us-ascii?Q?GTOq3I36SQ03xujr/k7CVDC0bajQKwvn2yygpYlrsB2DukR1+kUS5uhPQht4?=
+ =?us-ascii?Q?Qr+yOAoZse6Z+pUVpxQPakHvbV+wiAcMZ0jw7UFWC7DblrMd9X8mLxzFKRpK?=
+ =?us-ascii?Q?VH7Npz1eZnYflHdZWzPD5kq6VeSEVAHnKBjQbHNujxeVhoNZEkR/suIcWfWc?=
+ =?us-ascii?Q?FM5BJUxrrBhJVSkmLG3qTwTsosfo/mjdkjPojxVlirPGZO2En7DtMzM4Pn+t?=
+ =?us-ascii?Q?vBtoLOZMO03BLc0kbcWVVRQcugXubB7uBqFQNhusR9lGTZS99uCwig5trs+v?=
+ =?us-ascii?Q?v9gOxfwMNDBaYidSTOWGtVUeXxsOTLJ1ffEsAu2sajU/tOgLuyBYYsSF6zh+?=
+ =?us-ascii?Q?apRMHyckAKfwzq/f91zcUkXbZYdAgQFln+w12EVYKe1gTIDwGNxIRxt/MSq0?=
+ =?us-ascii?Q?th8boDG3PZ8vburng7bUS7xIHv6rKPMoCXhWAxDYL28g4TsUtvOPrfu8lG25?=
+ =?us-ascii?Q?C5fFQfhqHTSc4/0JYqg4NKymQc7g1YCm9NUHBkz2+CiavO6+nJUivSLDX8gE?=
+ =?us-ascii?Q?RBiJNaOnHlnSSRykOfivDO3LYAMpDUKboq6qxI/olfyTU981rRbd5+z+gZHy?=
+ =?us-ascii?Q?ZnI7lK+l2FA7j52wWAtlQpbRt44RfSCDcGW/b3fvVLrKookHGPYEpwd/A3Uh?=
+ =?us-ascii?Q?9Cwv1f7TXG835lLpTzdOvEthKKCECizAJ4WFvus3C9+JFSwfKW5fMpcBX+0e?=
+ =?us-ascii?Q?vEB5DvHVih8jKul6W9rsKkIMT4Xwx9LCfHh39D7jY+Rd58xY86MSpGvjE+J3?=
+ =?us-ascii?Q?We5wHl7Jkz9mFelk8N78DX51um2NAWm1lRfm0MGxf0gWDjlQS4FjOxuAQsEM?=
+ =?us-ascii?Q?953n0anm/lsgOIDI8PyvJSN2aNp9t9xSEjOiT1L/9qT0KqsNYq96ILeLzhbA?=
+ =?us-ascii?Q?tdi8x//l+Y88QgiSxNnQXdU0K0J/WPPwg35wIZlDlLdPRaFcSWIMk7OTYFJW?=
+ =?us-ascii?Q?p1ss4+IeepXwH0i41RIfuVZOQwerVzVqE0roinIUx+SaOm1LrkUzkmkwiQ+J?=
+ =?us-ascii?Q?Vtpdb0ZIyqvZIIfHjyLrLu+AzNvinvawwofpIWzZoBZl8luNgnnd+be7S38M?=
+ =?us-ascii?Q?fdVC0RkQNSQxSwIHB9thoiyMvEzYpxcyvMPldz2seTK82g4SV28lI6Z/xsxl?=
+ =?us-ascii?Q?7YBJnh9UN0F5B4nk+KM=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ab08e4d0-7d3f-41b7-a883-08dc3c844cb0
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Mar 2024 19:50:10.1231
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ExbNrqznF6MuthVC3FK4wuShwsGBzqNqClCHr1ho2F3DgZUePRCxpIZadIlQZzY+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB9002
 
-On Mon, 4 Mar 2024 16:10:46 +0000
-Michael Kelley <mhklinux@outlook.com> wrote:
+STRTAB_STE_0_V is a CPU value, it needs conversion for sparse to be clean.
 
-> From: Will Deacon <will@kernel.org> Sent: Monday, March 4, 2024 8:02 AM
-> >=20
-> > Hi folks,
-> >=20
-> > On Mon, Mar 04, 2024 at 04:55:06PM +0100, Petr Tesa=C5=99=C3=ADk wrote:=
- =20
-> > > On Mon, 4 Mar 2024 13:37:56 +0000
-> > > Robin Murphy <robin.murphy@arm.com> wrote: =20
-> > > > On 04/03/2024 11:00 am, Petr Tesa=C5=99=C3=ADk wrote:
-> > > > [...] =20
-> > > > >> Here's my take on tying all the threads together. There are
-> > > > >> four alignment combinations:
-> > > > >>
-> > > > >> 1. alloc_align_mask: zero; min_align_mask: zero =20
-> >=20
-> > Based on this ^^^ ...
-> >  =20
-> > > > >> xen_swiotlb_map_page() and dma_direct_map_page() are #1 or #2
-> > > > >> via swiotlb_map() and swiotlb_tbl_map_single()
-> > > > >>
-> > > > >> iommu_dma_map_page() is #3 and #4 via swiotlb_tbl_map_single()
-> > > > >>
-> > > > >> swiotlb_alloc() is #3, directly to swiotlb_find_slots()
-> > > > >>
-> > > > >> For #1, the returned physical address has no constraints if
-> > > > >> the requested size is less than a page. For page size or
-> > > > >> greater, the discussed historical requirement for page
-> > > > >> alignment applies. =20
-> >=20
-> > ... and this ^^^ ...
-> >=20
-> >  =20
-> > > I believe this patch series is now good as is, except the commit
-> > > message should make it clear that alloc_align_mask and min_align_mask
-> > > can both be zero, but that simply means no alignment constraints. =20
-> >=20
-> > ... my (possibly incorrect!) reading of the thread so far is that we
-> > should preserve page-aligned allocation in this case if the allocation
-> > size is >=3D PAGE_SIZE.
-> >=20
-> > Something like the diff below, to replace this final patch?
-> >=20
-> > Will
-> >  =20
-> > --->8 =20
-> >=20
-> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> > index c381a7ed718f..67eac05728c0 100644
-> > --- a/kernel/dma/swiotlb.c
-> > +++ b/kernel/dma/swiotlb.c
-> > @@ -992,6 +992,14 @@ static int swiotlb_search_pool_area(struct device
-> > *dev, struct io_tlb_pool *pool
-> >         BUG_ON(!nslots);
-> >         BUG_ON(area_index >=3D pool->nareas);
-> >=20
-> > +       /*
-> > +        * Historically, allocations >=3D PAGE_SIZE were guaranteed to =
-be
-> > +        * page-aligned in the absence of any other alignment requireme=
-nts.
-> > +        * Since drivers may be relying on this, preserve the old behav=
-iour.
-> > +        */
-> > +       if (!alloc_align_mask && !iotlb_align_mask && alloc_size >=3D P=
-AGE_SIZE)
-> > +               alloc_align_mask =3D PAGE_SIZE - 1;
-> > + =20
->=20
-> Yes, I think that should do it.
+The missing annotation was a mistake introduced by splitting the ops out
+from the STE writer.
 
-Sure, this will solve the allocations. But my understanding of this
-same thread is that we don't need it here. The historical page order
-alignment applies ONLY to allocations, NOT to mappings. It is
-documented in Documentation/core-api/dma-api-howto.rst under Consistent
-DMA mappings, for dma_alloc_coherent(). IIUC it does not apply to the
-streaming DMA mappings. At least, it would explain why nobody
-complained that the more strict guarantee for sizes greater than
-PAGE_SIZE was not kept...
+Fixes: 7da51af9125c ("iommu/arm-smmu-v3: Make STE programming independent of the callers")
+Reported-by: kernel test robot <lkp@intel.com>
+Closes: https://lore.kernel.org/oe-kbuild-all/202403011441.5WqGrYjp-lkp@intel.com/
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-The SWIOTLB can be used for allocation if CONFIG_DMA_RESTRICTED_POOL=3Dy,
-but this case is handled by patch 3/6 of this patch series.
+Unclear why 0-day did not notice this when it covered my github..
 
-Do I miss something again?
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index b7938f17222b4d..d1bc151a5dff8c 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1144,7 +1144,8 @@ static void arm_smmu_write_ste(struct arm_smmu_master *master, u32 sid,
+ 		 * requires a breaking update, zero the V bit, write all qwords
+ 		 * but 0, then set qword 0
+ 		 */
+-		unused_update.data[0] = entry->data[0] & (~STRTAB_STE_0_V);
++		unused_update.data[0] = entry->data[0] &
++					cpu_to_le64(~STRTAB_STE_0_V);
+ 		entry_set(smmu, sid, entry, &unused_update, 0, 1);
+ 		entry_set(smmu, sid, entry, target, 1, num_entry_qwords - 1);
+ 		entry_set(smmu, sid, entry, target, 0, 1);
 
-Petr T
-
-> Michael
->=20
-> >         /*
-> >          * Ensure that the allocation is at least slot-aligned and upda=
-te
-> >          * 'iotlb_align_mask' to ignore bits that will be preserved when
-> > @@ -1006,13 +1014,6 @@ static int swiotlb_search_pool_area(struct devic=
-e *dev, struct io_tlb_pool *pool
-> >          */
-> >         stride =3D get_max_slots(max(alloc_align_mask, iotlb_align_mask=
-));
-> >=20
-> > -       /*
-> > -        * For allocations of PAGE_SIZE or larger only look for page al=
-igned
-> > -        * allocations.
-> > -        */
-> > -       if (alloc_size >=3D PAGE_SIZE)
-> > -               stride =3D umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
-> > -
-> >         spin_lock_irqsave(&area->lock, flags);
-> >         if (unlikely(nslots > pool->area_nslabs - area->used))
-> >                 goto not_found; =20
->=20
+base-commit: faa6bc241bb0cd181f557d67bfd1de8223014f9e
+-- 
+2.43.2
 
