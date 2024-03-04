@@ -1,151 +1,131 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A98B46AD;
-	Mon,  4 Mar 2024 11:11:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01EB736B15
+	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 11:13:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709550703; cv=none; b=rLWkQUI80yxuJKsEiqd4DeCKWgOqwAl8zGTtym++ttr6Ce7lILK48zGSyuwOx+bO1v/z12TrlkBIauRavK4YYT/LXvt9dR2x5QOGW0IKKcoVZLM2zLXfr0equ3hAgBSdFEWniy5qGou1Og2+DW8Kq6bi7qhpWSxb8wIVm2bwP9A=
+	t=1709550814; cv=none; b=tA6BwVaWdt8qgxW7SgIh7GJWWcLBAkz6rr8VjTUFPcUzuC2Vt4A77hCUpfQEjPXXjsrlQvV1Fah6mcXFTt2Di+LOx3IBZ7ZVNp1dle6eThXxab5251MwBMvOTymwWI4/NmIzBD3EfXvg8R9DKCjMZIe/d4C2mGtWA1VbRPKY2VA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709550703; c=relaxed/simple;
-	bh=xVSkuAeo4D9ZElgt/IODeSW5ZINrq3fTsbkPSDyPGmc=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Yb+OvbtWbJRcZ3Nf41HH5F7ii6SAnMexh8NfzBLBPAeta6Yh7RgaAocgSipaLum9H+7tNjhRw14W70bYvX4Q8S+NkSSclMu/zV4tLvMIdZTs7wLu+QR0UP/JkT05F6emSxNZbdCarr1xpUMBSOLQ0RA87etTa2BlyM+Fl5KelW8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=NXenhUgW; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1709550814; c=relaxed/simple;
+	bh=HqUqg/Wa53cQbaSF5Qd2u9XC2JhUzuVO9f0/Fxehy84=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=aCOX/rvQWPHOvl/emFbICdRB4SvbCN3DnBqozfqpwgLFa6HuC/8dNaTFcNi98Q6hEdhK5mAwHYbeg1o4G2lQ8bqyh8m5cpU2pz0YeC/OpJkrtxZ5he/2aI89OKAhoSL65HI207xjPYvmKcnWSnktzGkfMjpqVj923WpSv3a00jg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nsLn6j6t; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="NXenhUgW"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 424AsnYr019049;
-	Mon, 4 Mar 2024 11:11:32 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	from:to:cc:subject:date:message-id:mime-version:content-type; s=
-	qcppdkim1; bh=250lxiVyVhWgGkynbsvy556K2WPzHaat5nPoNu3o7uI=; b=NX
-	enhUgWz8BXddC9wB3akbZsUu/sCKYGBo4ZvPuYtT2dgnp+RKp7J3YCgArmuBpMyN
-	FlqDYq8+U5O641XmzJZ9pXrrsHgL8SpYnAgzWYNxTK2k1RmJJUKHMA+wsh5nwDsy
-	U9CFeB2UTAjzhyfJVs1DJ0EcfNLn074DFeKTyCLRUMGAb8Iyu5EM2DS9moZlpyeg
-	nKnkn/Nfvxwau4DGVBinA4WtVqjTeXdshYl3AP3QOmrFuYCHtpiNDTGeBbZnqBeP
-	wrwhRRrV8H8ZItyy/nyDHhqkZ9GDkBOk7QycbceyaJHcgyczqf2UsYbFtT6xp89u
-	swbxvW+3vTgZm7Pd0U2Q==
-Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3wkvb739ed-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 04 Mar 2024 11:11:31 +0000 (GMT)
-Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
-	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 424BBUT4007051
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 4 Mar 2024 11:11:30 GMT
-Received: from hu-nprakash-blr.qualcomm.com (10.80.80.8) by
- nalasex01b.na.qualcomm.com (10.47.209.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1118.40; Mon, 4 Mar 2024 03:11:27 -0800
-From: Nikhil V <quic_nprakash@quicinc.com>
-To: 
-CC: Charan Teja Kalla <quic_charante@quicinc.com>,
-        Joerg Roedel
-	<joro@8bytes.org>, Will Deacon <will@kernel.org>,
-        Robin Murphy
-	<robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>,
-        <iommu@lists.linux.dev>, Nikhil V <quic_nprakash@quicinc.com>,
-        <stable@vger.kernel.org>
-Subject: [PATCH RESEND STABLE v6.1] iommu: Avoid races around default domain allocations
-Date: Mon, 4 Mar 2024 16:40:50 +0530
-Message-ID: <cbf1295589bd90083ad6f75a7fbced01f327c047.1708680521.git.quic_nprakash@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nsLn6j6t"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1709550813; x=1741086813;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=HqUqg/Wa53cQbaSF5Qd2u9XC2JhUzuVO9f0/Fxehy84=;
+  b=nsLn6j6thXLBgBXcQntg/zxgkyEdWL5gdNO0Vn3IkjCpkOKHa5ga6QGg
+   cg647ysFTb2Rs9tf3cPKqFMK0kQJ3Amut40Ij7R9d+hur+IusBOxQbQfX
+   r2ZXRzJKzn/5da/bLBn9Lhh1vHgyLm9c75GYZgY1FGXKL8uMzlKMrvABc
+   +ZGHJKCk0cmqTGJj7AloJAl494E2Q9etBPluJno0qACj0uw9WIyurR0Ba
+   pzm7ETMk33SWAvRlKxd5OCdTATfmVXMsfF0GM96pgHyMqrfCQ6jEE+Wli
+   PqXzy805L2YSP3nz8M17dZMkR/0AcT9VQZ/GyUtWPpUXK2FIltrsaqbJV
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11002"; a="3923529"
+X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
+   d="scan'208";a="3923529"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2024 03:13:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,203,1705392000"; 
+   d="scan'208";a="13645690"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.254.211.18]) ([10.254.211.18])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2024 03:13:30 -0800
+Message-ID: <2d2b605f-3b95-4764-b7c3-005824709078@linux.intel.com>
+Date: Mon, 4 Mar 2024 19:13:27 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01b.na.qualcomm.com (10.47.209.197)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: yz3Nelq0fOTemW5jQPryH1pxnJWCrhqt
-X-Proofpoint-ORIG-GUID: yz3Nelq0fOTemW5jQPryH1pxnJWCrhqt
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-03-04_06,2024-03-04_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 adultscore=0 mlxlogscore=999 lowpriorityscore=0 phishscore=0
- malwarescore=0 impostorscore=0 clxscore=1015 spamscore=0 mlxscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2402120000 definitions=main-2403040084
-Message-ID: <20240304111050.8lmf60HPC99M_toA9K4NvHCRefxjZ-6NTBCUU2wrvP0@z>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/3] iommu/vt-d: Setup scalable mode context entry in
+ probe path
+Content-Language: en-US
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>, "Badger, Eric" <ebadger@purestorage.com>
+References: <20240229094804.121610-1-baolu.lu@linux.intel.com>
+ <20240229094804.121610-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB52762BCC8AC154A601B6EBCA8C232@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <3ad0e349-0ba4-4a89-a664-800c5615ef77@linux.intel.com>
+ <BL1PR11MB52719E06919ECFF95A91EC028C232@BL1PR11MB5271.namprd11.prod.outlook.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BL1PR11MB52719E06919ECFF95A91EC028C232@BL1PR11MB5271.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-From: Charan Teja Kalla <quic_charante@quicinc.com>
+On 2024/3/4 17:05, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Monday, March 4, 2024 4:24 PM
+>>
+>> On 2024/3/4 15:48, Tian, Kevin wrote:
+>>>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>>>> Sent: Thursday, February 29, 2024 5:48 PM
+>>>>
+>>>> +	/*
+>>>> +	 * For kdump case, at this point, the device is supposed to finish
+>>>> +	 * reset at its driver probe stage, so no in-flight DMA will exist,
+>>>> +	 * and we don't need to worry anymore hereafter.
+>>>> +	 */
+>>>> +	if (context_copied(iommu, bus, devfn)) {
+>>>> +		context_clear_entry(context);
+>>>> +		if (!ecap_coherent(iommu->ecap))
+>>>> +			clflush_cache_range(context, sizeof(*context));
+>>>> +		sm_context_flush_caches(dev);
+>>>> +		clear_context_copied(iommu, bus, devfn);
+>>>> +	}
+>>>
+>>> it's unclear to me why this doesn't need refer to old did as done in the
+>>> existing code. If scalable mode makes any difference could you extend
+>>> the comment to explain so people can avoid similar confusion when
+>>> comparing the different paths between legacy and sm?
+>>
+>> The previous code gets the domain ID from the copied context entry:
+>>
+>> u16 did_old = context_domain_id(context);
+>>
+>> This makes no sense for scalable mode, as the domain ID has been moved
+>> to the PASID entry in scalable mode. As the result, did_old always gets
+>> 0.
+> 
+> The point is whether the driver requires to invalidate cache for old did
+> which is orthogonal to using legacy or sm. If yes, then we should fix the
+> code to find the right did instead of ignoring it. If no then the legacy path
+> should be cleared too to avoid unnecessary burden.
+> 
+>>
+>>> anyway it's kind of a semantics change probably worth a separate patch
+>>> to special case sm for bisect and then doing cleanup...
+>>
+>> This change doesn't impact anything as the hardware will skip domain id
+>> field in the Context-cache Invalidate Descriptor in scalable mode.
+>>
+> 
+> no semantics change but if old code has bug we should fix it instead
+> of carrying the behavior. 😊
 
-This fix is applicable for LTS kernel, 6.1.y. In latest kernels, this race
-issue is fixed by the patch series [1] and [2]. The right thing to do here
-would have been propagating these changes from latest kernel to the stable
-branch, 6.1.y. However, these changes seems too intrusive to be picked for
-stable branches. Hence, the fix proposed can be taken as an alternative
-instead of backporting the patch series.
-[1] https://lore.kernel.org/all/0-v8-81230027b2fa+9d-iommu_all_defdom_jgg@nvidia.com/
-[2] https://lore.kernel.org/all/0-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com/
+The driver is required to invalidate the cache for the old did.
 
-Issue:
-A race condition is observed when arm_smmu_device_probe and
-modprobe of client devices happens in parallel. This results
-in the allocation of a new default domain for the iommu group
-even though it was previously allocated and the respective iova
-domain(iovad) was initialized. However, for this newly allocated
-default domain, iovad will not be initialized. As a result, for
-devices requesting dma allocations, this uninitialized iovad will
-be used, thereby causing NULL pointer dereference issue.
+The previous code invalidated the cache twice, once in
+intel_pasid_tear_down_entry() and another time in
+domain_context_clear().
 
-Flow:
-- During arm_smmu_device_probe, bus_iommu_probe() will be called
-as part of iommu_device_register(). This results in the device probe,
-__iommu_probe_device().
+The new code attempts to eliminate this duplication by invalidating the
+cache for the did during blocking domain attachment and skipping it in
+sm-context-entry teardown.
 
-- When the modprobe of the client device happens in parallel, it
-sets up the DMA configuration for the device using of_dma_configure_id(),
-which inturn calls iommu_probe_device(). Later, default domain is
-allocated and attached using iommu_alloc_default_domain() and
-__iommu_attach_device() respectively. It then ends up initializing a
-mapping domain(IOVA domain) and rcaches for the device via
-arch_setup_dma_ops()->iommu_setup_dma_ops().
-
-- Now, in the bus_iommu_probe() path, it again tries to allocate
-a default domain via probe_alloc_default_domain(). This results in
-allocating a new default domain(along with IOVA domain) via
-__iommu_domain_alloc(). However, this newly allocated IOVA domain
-will not be initialized.
-
-- Now, when the same client device tries dma allocations via
-iommu_dma_alloc(), it ends up accessing the rcaches of the newly
-allocated IOVA domain, which is not initialized. This results
-into NULL pointer dereferencing.
-
-Fix this issue by adding a check in probe_alloc_default_domain()
-to see if the iommu_group already has a default domain allocated
-and initialized.
-
-Cc: <stable@vger.kernel.org> # see patch description, fix applicable only for 6.1.y
-Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
-Co-developed-by: Nikhil V <quic_nprakash@quicinc.com>
-Signed-off-by: Nikhil V <quic_nprakash@quicinc.com>
----
- drivers/iommu/iommu.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8b3897239477..83736824f17d 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1741,6 +1741,9 @@ static void probe_alloc_default_domain(struct bus_type *bus,
- {
- 	struct __group_domain_type gtype;
- 
-+	if (group->default_domain)
-+		return;
-+
- 	memset(&gtype, 0, sizeof(gtype));
- 
- 	/* Ask for default domain requirements of all devices in the group */
--- 
-2.17.1
-
+Best regards,
+baolu
