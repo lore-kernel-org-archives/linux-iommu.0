@@ -1,70 +1,109 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id AF60F3B290
-	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 12:05:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F6DA3D57C;
+	Mon,  4 Mar 2024 13:25:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709553950; cv=none; b=tJdc2xGo4ozsAbag/ipzBXiGDJx2Ysn2ZA28BpoepXlC4YXfAJMa78qZS+MavcTwI8qGT4rLP5K6r6HnooUu6YRbSwZykbHCULkKZzaFhHEOvokZsBuJ1olWdgSwuz/TMFa+vRo6HULVfcf3LnnXYoML3XZy+c1KH1O1lTyzfv8=
+	t=1709558723; cv=none; b=EeepLYhVZcc9mhgA3om/i2MpZI2gCXjQ4pP6kftolefuKa0Lc8u+VF6DYuYomXQqpGHw6zrRnanxYq7nfNGp6oT2HReXRsOCahgGp8EK1ECpIXKpOiZqGWazUKepj1hLv06B3xEK6qa1YkNsBj8PJCTdCOBxzwppJj+XcxOJ73Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709553950; c=relaxed/simple;
-	bh=KAwUc2Kbgvw1J573Drd3ZQTYc3qRXADwMtlZMDBhq2Q=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=NGCQHOUXIMSxGoblIOBp5MnlD+pvUBn8AXTTE8milBuNcDDw2+Yl6Czc6WFScL/7mmcACPlC8We9sy1rnl86S8xxjodmsi66W+MSBXlCHr81fOqdqxo8B+/3mzIcnrlnQAYy1pbdj6jznCYFS/5Mv8Nl7n/pp5IoOh7Hbl9nEI4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E22411FB;
-	Mon,  4 Mar 2024 04:06:24 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 0BC463F738;
-	Mon,  4 Mar 2024 04:05:46 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org
-Cc: iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	will@kernel.org,
-	mhklinux@outlook.com,
-	petr@tesarici.cz,
-	hch@lst.de
-Subject: [PATCH] iommu/dma: Document min_align_mask assumption
-Date: Mon,  4 Mar 2024 12:05:42 +0000
-Message-Id: <dbb4d2d8e5d1691ac9a6c67e9758904e6c447ba5.1709553942.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
+	s=arc-20240116; t=1709558723; c=relaxed/simple;
+	bh=7k5KTxhcjg0DBPGEReEyIU1YQdK9/ETlpA6DECaW8oc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EbcHb1lkwRM57nxqxxQtDscREbIsBc/fhu1VMUs38+b56BXk+E+cB7c+LHlbyF2fkyWSd1ApSwVQBKz5qWcsD7S1OJO6N1whE/JaAxDlcZlUCStC9UjJKEFUHpUomlYD+0ax6abe/ZwnkqOT1hixu1YJlj8xbc+y7IY/E3R2IvI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=p5+WAq3b; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="p5+WAq3b"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E157C433C7;
+	Mon,  4 Mar 2024 13:25:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1709558723;
+	bh=7k5KTxhcjg0DBPGEReEyIU1YQdK9/ETlpA6DECaW8oc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=p5+WAq3bQpF0mHhs2r+TE58RSsMX6QZ/3R4qUKMp18a7M8pacdx7uZi2mr5Nq++Nx
+	 //KBCSiHXZ9945m/SvLcA1RluCDFy2j7YiMcTG3hVUrEi3iz2E3xCwKndwnT0tnDRB
+	 DCqfsULJi8T85cQfKBm2ChMrfx9FSAEMQNun3QN4=
+Date: Mon, 4 Mar 2024 14:25:20 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Nikhil V <quic_nprakash@quicinc.com>
+Cc: Charan Teja Kalla <quic_charante@quicinc.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev, stable@vger.kernel.org
+Subject: Re: [PATCH RESEND STABLE v6.1] iommu: Avoid races around default
+ domain allocations
+Message-ID: <2024030403-self-morality-062e@gregkh>
+References: <cbf1295589bd90083ad6f75a7fbced01f327c047.1708680521.git.quic_nprakash@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cbf1295589bd90083ad6f75a7fbced01f327c047.1708680521.git.quic_nprakash@quicinc.com>
 
-iommu-dma does not explicitly reference min_align_mask since we already
-assume that that will be less than or equal to any typical IOVA granule.
-We wouldn't realistically expect to see the case where it is larger, and
-that would be non-trivial to support, however for the sake of reasoning
-(particularly around the interaction with SWIOTLB), let's clearly
-enforce the assumption.
+On Mon, Mar 04, 2024 at 04:40:50PM +0530, Nikhil V wrote:
+> From: Charan Teja Kalla <quic_charante@quicinc.com>
+> 
+> This fix is applicable for LTS kernel, 6.1.y. In latest kernels, this race
+> issue is fixed by the patch series [1] and [2]. The right thing to do here
+> would have been propagating these changes from latest kernel to the stable
+> branch, 6.1.y. However, these changes seems too intrusive to be picked for
+> stable branches. Hence, the fix proposed can be taken as an alternative
+> instead of backporting the patch series.
+> [1] https://lore.kernel.org/all/0-v8-81230027b2fa+9d-iommu_all_defdom_jgg@nvidia.com/
+> [2] https://lore.kernel.org/all/0-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com/
+> 
+> Issue:
+> A race condition is observed when arm_smmu_device_probe and
+> modprobe of client devices happens in parallel. This results
+> in the allocation of a new default domain for the iommu group
+> even though it was previously allocated and the respective iova
+> domain(iovad) was initialized. However, for this newly allocated
+> default domain, iovad will not be initialized. As a result, for
+> devices requesting dma allocations, this uninitialized iovad will
+> be used, thereby causing NULL pointer dereference issue.
+> 
+> Flow:
+> - During arm_smmu_device_probe, bus_iommu_probe() will be called
+> as part of iommu_device_register(). This results in the device probe,
+> __iommu_probe_device().
+> 
+> - When the modprobe of the client device happens in parallel, it
+> sets up the DMA configuration for the device using of_dma_configure_id(),
+> which inturn calls iommu_probe_device(). Later, default domain is
+> allocated and attached using iommu_alloc_default_domain() and
+> __iommu_attach_device() respectively. It then ends up initializing a
+> mapping domain(IOVA domain) and rcaches for the device via
+> arch_setup_dma_ops()->iommu_setup_dma_ops().
+> 
+> - Now, in the bus_iommu_probe() path, it again tries to allocate
+> a default domain via probe_alloc_default_domain(). This results in
+> allocating a new default domain(along with IOVA domain) via
+> __iommu_domain_alloc(). However, this newly allocated IOVA domain
+> will not be initialized.
+> 
+> - Now, when the same client device tries dma allocations via
+> iommu_dma_alloc(), it ends up accessing the rcaches of the newly
+> allocated IOVA domain, which is not initialized. This results
+> into NULL pointer dereferencing.
+> 
+> Fix this issue by adding a check in probe_alloc_default_domain()
+> to see if the iommu_group already has a default domain allocated
+> and initialized.
+> 
+> Cc: <stable@vger.kernel.org> # see patch description, fix applicable only for 6.1.y
+> Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
+> Co-developed-by: Nikhil V <quic_nprakash@quicinc.com>
+> Signed-off-by: Nikhil V <quic_nprakash@quicinc.com>
+> ---
+>  drivers/iommu/iommu.c | 3 +++
+>  1 file changed, 3 insertions(+)
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/dma-iommu.c | 5 +++++
- 1 file changed, 5 insertions(+)
+Why RESEND?  What happened to the first send?
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 50ccc4f1ef81..b58f5a3311c3 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -859,6 +859,11 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
- 	    iommu_deferred_attach(dev, domain))
- 		return DMA_MAPPING_ERROR;
- 
-+	/* If anyone ever wants this we'd need support in the IOVA allocator */
-+	if (dev_WARN_ONCE(dev, dma_get_min_align_mask(dev) > iova_mask(iovad),
-+	    "Unsupported alignment constraint\n"))
-+		return DMA_MAPPING_ERROR;
-+
- 	size = iova_align(iovad, size + iova_off);
- 
- 	iova = iommu_dma_alloc_iova(domain, size, dma_mask, dev);
--- 
-2.39.2.101.g768bb238c484.dirty
+thanks,
 
+greg k-h
