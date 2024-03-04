@@ -1,149 +1,94 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B44863DBB2
-	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 13:38:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from bee.tesarici.cz (unknown [77.93.223.253])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11BF84087C
+	for <iommu@lists.linux.dev>; Mon,  4 Mar 2024 14:39:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709559483; cv=none; b=JpuTQOfgzyoZqgLvUlqrGta+atenthTEZPmGZg3dIq6saQ20MqI5p8baiQd4BuN3qK80QY0PslSdcFnphWPmMi6CMtMllIi1cMjX7kCnAs+eBF6z6xPaZYQw764Z63jfGdZQuOiuHnr/aBkT8A4ty0xven3R75NMOEHQABpeb0A=
+	t=1709563185; cv=none; b=arGvtotFVwXaR+AuUGxidyvFV4KnTTxPsyg+ZH8a5nHJ2K4ypp8wD7Hb5Y3adzXt7P7jUpgbAAUBd5Vtasn4TgtHDqe9RDMQckK9mbH7OnM70ntVJREKHwYJnGAS1qC9XqvvGAmmjdFJLDoZOV4LcfSEvuBz9yh76XRxwFWbq5Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709559483; c=relaxed/simple;
-	bh=38TJYvdNVrM0MO1RETMbWp4toUBh2E4mWcOxm3EsUJs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=HkSbn/6s/uTRILRcvveCZleohL9AkkMwDAtVTysWGgAeUzGmYPDPMc8LYlmNQs8MmK0v5bHejAGm3vHa7ZpkRQ2cQNO5xvZnvCSTrKh5Dxhx2Ei/SHE5qRas73ySX0QpKBsn26x8UaTN7M7/9TZ+GMvpio1ZXw/KFiBwfK78y6o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 976AF1FB;
-	Mon,  4 Mar 2024 05:38:36 -0800 (PST)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 72FC33F738;
-	Mon,  4 Mar 2024 05:37:58 -0800 (PST)
-Message-ID: <ffd7646b-37b1-4cd2-822a-848b36b076c9@arm.com>
-Date: Mon, 4 Mar 2024 13:37:56 +0000
+	s=arc-20240116; t=1709563185; c=relaxed/simple;
+	bh=OuH4ARsy4uMSskFQxM4nVWSg6cNRuQIZsejNWP30OlM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=px9KRSkgmeER0oXfZXdjqbnpBYLtRI/tgR8Or2vR9ZaZq74TLzLs1V6f16KZIr2o7DMAQUtOmKfLuw9uYTwk9pZyn+pXyyuZcthoAy3Ui60exedGDn4yFRZ0zXwI06JnlqV6fHedtBkiSM4sSaizlssJ52Pc5KwIjnzTuF9lKOo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=jmj4UvLe; arc=none smtp.client-ip=77.93.223.253
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="jmj4UvLe"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id C409E1C4BDD;
+	Mon,  4 Mar 2024 15:39:39 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1709563179; bh=DNUUA0JgeJlN4yw9N1RggkXAebOO04FxH/opiGgSGMU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=jmj4UvLeXwlP5cI6zhn4rcHfzcQAW0evTccxhBZD/Rejx23Y2+HJzE9WUhT6lr8El
+	 5nTLAo3t1GsEzptAULYUw07tCVnr+vY+8MG6mKH25vHoI/kKYEmM34ilqZf/RuhxiV
+	 7D9RvZqtWveVlbvv4nbEzYGJIiDDDkHnhCJk3GoyGVc40hgng9IViTN3B8W6ydJtkI
+	 bgyuJr73NzhCByCwv4GcGuORGEp+CJ8ctycpn3rn0jZTyRKOo2ipaKGYCV7ktaMII4
+	 c/fuYmkgoOHfQ0gwtSBeADekmE3fSDye2AHONrNjG6dzumsdWPphxplxN1+JaWV/v2
+	 l4/EYlFeg6p7g==
+Date: Mon, 4 Mar 2024 15:39:38 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ will@kernel.org, mhklinux@outlook.com, hch@lst.de
+Subject: Re: [PATCH] iommu/dma: Document min_align_mask assumption
+Message-ID: <20240304153938.1fa984b7@meshulam.tesarici.cz>
+In-Reply-To: <dbb4d2d8e5d1691ac9a6c67e9758904e6c447ba5.1709553942.git.robin.murphy@arm.com>
+References: <dbb4d2d8e5d1691ac9a6c67e9758904e6c447ba5.1709553942.git.robin.murphy@arm.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
- allocations >= PAGE_SIZE
-Content-Language: en-GB
-To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>,
- Michael Kelley <mhklinux@outlook.com>
-Cc: Christoph Hellwig <hch@lst.de>, Will Deacon <will@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Petr Tesarik <petr.tesarik1@huawei-partners.com>,
- "kernel-team@android.com" <kernel-team@android.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Dexuan Cui
- <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
-References: <20240228133930.15400-1-will@kernel.org>
- <20240228133930.15400-7-will@kernel.org>
- <SN6PR02MB4157A62353559DA8DB8BC4ADD45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <SN6PR02MB41577D09E97B1D9645369D58D45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <20240229133346.GA7177@lst.de>
- <SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
- <20240229154756.GA10137@lst.de>
- <20240301163927.18358ee2@meshulam.tesarici.cz>
- <20240301180853.5ac20b27@meshulam.tesarici.cz>
- <8869c8b2-29c3-41e4-8f8a-5bcf9c0d22bb@arm.com>
- <20240301194212.3c64c9b2@meshulam.tesarici.cz>
- <SN6PR02MB41571DA1EE99BFAA65869024D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
- <20240304120055.56035c21@meshulam.tesarici.cz>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240304120055.56035c21@meshulam.tesarici.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 04/03/2024 11:00 am, Petr Tesařík wrote:
-[...]
->> Here's my take on tying all the threads together. There are
->> four alignment combinations:
->>
->> 1. alloc_align_mask: zero; min_align_mask: zero
->> 2. alloc_align_mask: zero; min_align_mask: non-zero
->> 3. alloc_align_mask: non-zero; min_align_mask: zero/ignored
->> 4. alloc_align_mask: non-zero; min_align_mask: non-zero
+On Mon,  4 Mar 2024 12:05:42 +0000
+Robin Murphy <robin.murphy@arm.com> wrote:
+
+> iommu-dma does not explicitly reference min_align_mask since we already
+> assume that that will be less than or equal to any typical IOVA granule.
+> We wouldn't realistically expect to see the case where it is larger, and
+> that would be non-trivial to support, however for the sake of reasoning
+> (particularly around the interaction with SWIOTLB), let's clearly
+> enforce the assumption.
 > 
-> What does "min_align_mask: zero/ignored" mean? Under which
-> circumstances should be a non-zero min_align_mask ignored?
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+
+Looks good to me.
+
+Reviewed-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+
+Thank you!
+
+Petr T
+
+> ---
+>  drivers/iommu/dma-iommu.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
->> xen_swiotlb_map_page() and dma_direct_map_page() are #1 or #2
->> via swiotlb_map() and swiotlb_tbl_map_single()
->>
->> iommu_dma_map_page() is #3 and #4 via swiotlb_tbl_map_single()
->>
->> swiotlb_alloc() is #3, directly to swiotlb_find_slots()
->>
->> For #1, the returned physical address has no constraints if
->> the requested size is less than a page. For page size or
->> greater, the discussed historical requirement for page
->> alignment applies.
->>
->> For #2, min_align_mask governs the bits of the returned
->> physical address that must match the original address. When
->> needed, swiotlb must also allocate pre-padding aligned to
->> IO_TLB_SIZE that precedes the returned physical address.  A
->> request size <= swiotlb_max_mapping_size() will not exceed
->> IO_TLB_SEGSIZE even with the padding. The historical
->> requirement for page alignment does not apply because the
->> driver has explicitly used the newer min_align_mask feature.
-> 
-> What is the idea here? Is it the assumption that only old drivers rely
-> on page alignment, so if they use min_align_mask, it proves that they
-> are new and must not rely on page alignment?
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 50ccc4f1ef81..b58f5a3311c3 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -859,6 +859,11 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+>  	    iommu_deferred_attach(dev, domain))
+>  		return DMA_MAPPING_ERROR;
+>  
+> +	/* If anyone ever wants this we'd need support in the IOVA allocator */
+> +	if (dev_WARN_ONCE(dev, dma_get_min_align_mask(dev) > iova_mask(iovad),
+> +	    "Unsupported alignment constraint\n"))
+> +		return DMA_MAPPING_ERROR;
+> +
+>  	size = iova_align(iovad, size + iova_off);
+>  
+>  	iova = iommu_dma_alloc_iova(domain, size, dma_mask, dev);
 
-Yes, if a driver goes out of its way to set a min_align_mask which is 
-smaller than its actual alignment constraint, that is clearly the 
-driver's own bug. Strictly we only need to be sympathetic to drivers 
-which predate min_align_mask, when implicitly relying on page alignment 
-was all they had.
-
->> For #3, alloc_align_mask specifies the required alignment. No
->> pre-padding is needed. Per earlier comments from Robin[1],
->> it's reasonable to assume alloc_align_mask (i.e., the granule)
->> is >= IO_TLB_SIZE. The original address is not relevant in
->> determining the alignment, and the historical page alignment
->> requirement does not apply since alloc_align_mask explicitly
->> states the alignment.
-
-FWIW I'm also starting to wonder about getting rid of the alloc_size 
-argument and just have SWIOTLB round the end address up to 
-alloc_align_mask itself as part of all these calculations. Seems like it 
-could potentially end up a little simpler, maybe?
-
->> For #4, the returned physical address must match the bits
->> in the original address specified by min_align_mask.  swiotlb
->> swiotlb must also allocate pre-padding aligned to
->> alloc_align_mask that precedes the returned physical address.
->> Also per Robin[1], assume alloc_align_mask is >=
->> min_align_mask, which solves the conflicting alignment
->> problem pointed out by Petr[2]. Perhaps we should add a
->> "WARN_ON(alloc_align_mask < min_align_mask)" rather than
->> failing depending on which bits of the original address are
->> set. Again, the historical requirement for page alignment does
->> not apply.
-> 
-> AFAICS the only reason this works in practice is that there are only
-> two in-tree users of min_align_mask: NVMe and Hyper-V. Both use a mask
-> of 12 bits, and the IOVA granule size is never smaller than 4K.
-
-If we assume a nonzero alloc_align_mask exclusively signifies iommu-dma, 
-then for this situation SWIOTLB should only need to worry about the 
-intersection of alloc_align_mask & min_align_mask, since any 
-min_align_mask bits larger than the IOVA granule would need to be 
-accounted for in the IOVA allocation regardless of SWIOTLB.
-> If we want to rely on this, then I propose to make a BUG_ON() rather
-> than WARN_ON().
-
-I've just proposed a patch to make it not matter for now - the nature of 
-iommu-dma makes it slightly more awkward to prevent SWIOTLB from ever 
-seeing this condition at all, so I chose not to do that, but as long as 
-swiotlb_tbl_map_single() does *something* for conflicting constraints 
-without completely falling over, which swiotlb_tbl_unmap_single can then 
-undo again, then it should be fine.
-
-Thanks,
-Robin.
