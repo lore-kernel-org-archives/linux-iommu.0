@@ -1,68 +1,68 @@
-Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
+Received: from mail-qv1-f44.google.com (mail-qv1-f44.google.com [209.85.219.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDAD67F
-	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 00:40:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6134C46A0
+	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 00:42:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709599205; cv=none; b=D7J0yrI23bISOyGoM7qbGTRfqGs7Bu2QPHTO0ltKRhIDVnq/mJX4Iuhbjzj//pF9B6w5/xJGCYr4W8pTFP1mDG5LrKUn92LggKH4EW+IqumMZVdqaXfdg6lah71T6NddMgKgFMJko/1PZDQu3zn7dfaAHjje/OQyhXTA18o0Usk=
+	t=1709599378; cv=none; b=Ujtz3O2Q87L9Y2ccT96GUo2Q/wUn49ji4nU28aUP0rOl3QcNIRCq5dGDH3SriEurPU93O3jtXMx9v6r3f/wmOg/CtrmadRDdBqY3VoVA7x6OYuiSoMIY0gcgbPYI+7PFIazjxe7IGxUSCe4vNe4wnRMEgGg6c0AkngXujIh/VnI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709599205; c=relaxed/simple;
-	bh=OJVxlvUHWy2uOkUJ9qzLlrd+YUDXz+sTwBcLeuZtP5Q=;
+	s=arc-20240116; t=1709599378; c=relaxed/simple;
+	bh=MziMln0/x+/xCAokzHsHc6gZIklCEHGRl7qzswABxnI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NqI44z/op07P9quNFcc5tonE/RhfdKhqMZJ4wClvg2VjZNe29ViUQgRceIwQTZ/hs0AShhQlSOQ+8TKVmmvW9tlbKqKS03sk9E7+h3Hm8bzDmwEHcyEioOqpzVz3UWvdPJY7QJQHz7WYjiEdmtyc+hbN8spTZjbCanY733BcJ9I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=obg1zYd0; arc=none smtp.client-ip=209.85.161.50
+	 Content-Type:Content-Disposition:In-Reply-To; b=kkLO2vxovslueZ4jUFeUw7TNZi7EU7ROZEvu00Ow+1+KTNkSZu9nH+0XN95+dMuQIAfKQHRFDpkCjCZnPIM030jiTxp/gCBLBX3nQM/3L+gD5+03PYKj3syzSM0sdbXu/mYwVdoPIYDBkSMOKbJKsbfHIClnHY4J9fBqBlJ2T+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dx6pBe0L; arc=none smtp.client-ip=209.85.219.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="obg1zYd0"
-Received: by mail-oo1-f50.google.com with SMTP id 006d021491bc7-5a12060fb59so1442845eaf.1
-        for <iommu@lists.linux.dev>; Mon, 04 Mar 2024 16:40:02 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dx6pBe0L"
+Received: by mail-qv1-f44.google.com with SMTP id 6a1803df08f44-690578e13c4so18747546d6.1
+        for <iommu@lists.linux.dev>; Mon, 04 Mar 2024 16:42:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1709599202; x=1710204002; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1709599375; x=1710204175; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=uVtsAUdyiMgNvT7uMIw5qQhwfMqE3HQO6gWH1Lry9MU=;
-        b=obg1zYd0aNWzsO01onilddQK+UC7wtvLQxOhN/MxmOxxqRzhS0fblCO5An/4CnbbOw
-         AATXBwZOdsraVWVnsMzQwJk7TNsYOocA2yFGRwZpqHF8+FVd0KdkxwXhHsKnT8dHYEes
-         D4iM1OXrn3sDIWTffSrzy/huTf/ywrVJSRagMapcqzjIk8sMU0y+jaMEH7+kZO+5OtKY
-         f02UkulFaMN/E3mKh8sLaoXkV3Dcpd3L2XrZrl4mRrWlLSwPGCvBmqt5WiiRWfS4JF4C
-         /BgdVW7x7BYWawzoog9lebM9NM8wHwGZUufOePlR0V+EEOBxy8z+QPkoz8vSW/gzeW8n
-         i+xg==
+        bh=07NafigSH79AeKnUyKDPr8ajVSq53UxnAzdoD2er6SA=;
+        b=dx6pBe0LC6Ul9dJyIu4U3AopK6Fh7klwYNsDp4upNxR2wlgLtkfYjInnw64rtykF7v
+         HTDV1frgm71BByTI9rzWLlDGdJtF2/RYxr6hYPTDGuWPOSo2+dP2tpz2IB+eg7UCVII0
+         7az6mStnACT9KYK0N8FpehZFjVP3toS9lsF+wtVUFxC20l0bawhq5WjMei9jRH7+OIwZ
+         8q0hcGRJDJR3xtbFw5h8JhiXdsvEvTrPCfA+A+fNNGQMU2izE98hO/QWpJaENQUs3Fb4
+         GGXsUk73nqHrSgxfJkcUYv0FwSEzGu3Uf1cDQ0/GJqty34uwxLJGaAI4wKE9QsKgDLzI
+         3Crw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709599202; x=1710204002;
+        d=1e100.net; s=20230601; t=1709599375; x=1710204175;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=uVtsAUdyiMgNvT7uMIw5qQhwfMqE3HQO6gWH1Lry9MU=;
-        b=WJG1VWubqs29eeo4qZpPcQO/fnMhASuh9zzJ/u5QtFv1aStgbdsoJkp325Gnl7xwql
-         pFGV0z8M9wdwNu7WoouHp9dusOC3e+/afd4n/K8uRdHebfO891O3J3TqswTqZeniEF+P
-         S0w9KEpM/D9qfcGCvQV+5QDZ6c0keSB5dWr9rW1ZoinjlszZdEt4SuqZdtueqQfCgXjo
-         Y6nh1DPOQ6SyHsJ31/FfSkT1x+U7gSqYMReHSL7EmGnN4bznmrb3SMcLAbfv0XUvPA2x
-         dPLFesZUFwL2QIr5lIvdi8Z6q6Fy4YEOfy8KNORRrPWLpcWsjeZxWLjwNZj5ed4X9VhE
-         fNJw==
-X-Gm-Message-State: AOJu0YzPgl6t7MLCBuvzH6i/3MrV2XUXTvLZesDRrnTQN6hpC/VtZ9FV
-	pCj4Mas3bAn2hFV1NoTuAlx29oWmeXrd49qjqufricOodJE0IETZ1yzrBScA+Rg=
-X-Google-Smtp-Source: AGHT+IEt9tiA/2ReNRUFrQzgscif4B8CsCi+sw7D79HBoMEJYz36PQ1ssNo6IUHIfnKdfF7TshF8Ag==
-X-Received: by 2002:a05:6358:5924:b0:179:f2:daa4 with SMTP id g36-20020a056358592400b0017900f2daa4mr293076rwf.24.1709599201973;
-        Mon, 04 Mar 2024 16:40:01 -0800 (PST)
+        bh=07NafigSH79AeKnUyKDPr8ajVSq53UxnAzdoD2er6SA=;
+        b=dg3YFtJ72uFjTt/mFlRVXAWD9HUYocf79f9uYe11/5yV1bM9LyNVgOWxH9+zviwlPH
+         1kvIzdnCVs2ENfuoo4eNmfUHW4u4MMPX0I6OTpIo6BV2/4+Ap4kG0kMSDoVyJ4vGxLE5
+         GEDTDmAt9Ge9RRIYh2zldHnqoDYWoiEORrid6TOb0LyTj8p185uVi63Spo1EA61L3kKH
+         UxYGukNM3AV/lUwWHn7nCzv+f52cdE33G9c5g1csGDHK469XX+4hB0rtTnZGzYDlMC8H
+         xHYpXPKY0OkiKRvtNH7pk5ylTWNTyhWFN1dBN4il4Mt/Bj0ix8OICMTR61PncqoGXkMX
+         Nvsw==
+X-Gm-Message-State: AOJu0YyQMgkCRjgNbld4A1WwIWTUN6W3yWeI8Pl/lmALY6g2YhCMA4jJ
+	xWOpz385qj5tA36CnoiG8FiENJQ2Gx4KHs53N7gwai6J96v58jkbrXJ8oeIkpuM=
+X-Google-Smtp-Source: AGHT+IHWOm2Pw30/JQyroczNQQxVjMxwEvTgHmykfELxTS3qndsXPshmpqR8g4l9kYJN0C1+djzVyw==
+X-Received: by 2002:a05:6214:104d:b0:68f:2b9b:2809 with SMTP id l13-20020a056214104d00b0068f2b9b2809mr485221qvr.54.1709599375392;
+        Mon, 04 Mar 2024 16:42:55 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id s17-20020a05620a031100b0078830d4ef5bsm687585qkm.107.2024.03.04.16.40.01
+        by smtp.gmail.com with ESMTPSA id lr10-20020a0562145bca00b0068d191dfa9fsm5628223qvb.94.2024.03.04.16.42.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Mar 2024 16:40:01 -0800 (PST)
+        Mon, 04 Mar 2024 16:42:55 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rhIqf-00DZkP-2N;
-	Mon, 04 Mar 2024 20:40:01 -0400
-Date: Mon, 4 Mar 2024 20:40:01 -0400
+	id 1rhItS-00DaOe-G8;
+	Mon, 04 Mar 2024 20:42:54 -0400
+Date: Mon, 4 Mar 2024 20:42:54 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Vasant Hegde <vasant.hegde@amd.com>
 Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
 	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v6 11/15] iommu/amd: Add IO page fault notifier handler
-Message-ID: <20240305004001.GF9225@ziepe.ca>
+Subject: Re: [PATCH v6 12/15] iommu/amd: Add support for enable/disable IOPF
+Message-ID: <20240305004254.GG9225@ziepe.ca>
 References: <20240209112930.63663-1-vasant.hegde@amd.com>
- <20240209112930.63663-12-vasant.hegde@amd.com>
+ <20240209112930.63663-13-vasant.hegde@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,70 +71,52 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240209112930.63663-12-vasant.hegde@amd.com>
+In-Reply-To: <20240209112930.63663-13-vasant.hegde@amd.com>
 
-On Fri, Feb 09, 2024 at 11:29:26AM +0000, Vasant Hegde wrote:
+On Fri, Feb 09, 2024 at 11:29:27AM +0000, Vasant Hegde wrote:
+> diff --git a/drivers/iommu/amd/Kconfig b/drivers/iommu/amd/Kconfig
+> index 443b2c13c37b..d563f6d496ca 100644
+> --- a/drivers/iommu/amd/Kconfig
+> +++ b/drivers/iommu/amd/Kconfig
+> @@ -10,6 +10,7 @@ config AMD_IOMMU
+>  	select IOMMU_API
+>  	select IOMMU_IOVA
+>  	select IOMMU_IO_PGTABLE
+> +	select IOMMU_IOPF
 
-> +static bool ppr_is_valid(struct amd_iommu *iommu, u64 *raw)
-> +{
-> +	struct device *dev = iommu->iommu.dev;
-> +	u16 devid = PPR_DEVID(raw[0]);
-> +
-> +	if (!(PPR_FLAGS(raw[0]) & PPR_FLAG_GN)) {
-> +		dev_dbg(dev, "PPR logged [Request ignored due to GN=0 (device=%04x:%02x:%02x.%x "
-> +			"pasid=0x%05llx address=0x%llx flags=0x%04llx tag=0x%03llx]\n",
-> +			iommu->pci_seg->id, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-> +			PPR_PASID(raw[0]), raw[1], PPR_FLAGS(raw[0]), PPR_TAG(raw[0]));
-> +		return false;
+Makes me wonder if the previous patches actually compile fully?
 
-Someday this will not be an error..
+> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+> index 0fa172e0583d..21cc6654410f 100644
+> --- a/drivers/iommu/amd/iommu.c
+> +++ b/drivers/iommu/amd/iommu.c
+> @@ -2058,12 +2058,22 @@ static int do_attach(struct iommu_dev_data *dev_data,
+>  		if (ret)
+>  			return ret;
+>  
+> -		if (pdev)
+> +		if (pdev) {
+>  			pdev_enable_caps(pdev);
+> +
+> +			/*
+> +			 * Device can continue to function even if IOPF
+> +			 * enablement failed. Hence in error path just
+> +			 * disable device PRI support.
+> +			 */
+> +			if (amd_iommu_iopf_add_device(iommu, dev_data))
+> +				pdev_disable_cap_pri(pdev);
+> +		}
+>  	} else if (pdev) {
+>  		pdev_enable_cap_ats(pdev);
+>  	}
+>  
+> +
+>  	/* Update device table */
 
-> +static void iommu_call_iopf_notifier(struct amd_iommu *iommu, u64 *raw)
-> +{
-> +	struct iommu_dev_data *dev_data;
-> +	struct iopf_fault event;
-> +	struct pci_dev *pdev;
-> +	u16 devid = PPR_DEVID(raw[0]);
-> +
-> +	if (PPR_REQ_TYPE(raw[0]) != PPR_REQ_FAULT) {
-> +		pr_info_ratelimited("Unknown PPR request received\n");
-> +		return;
-> +	}
-> +
-> +	pdev = pci_get_domain_bus_and_slot(iommu->pci_seg->id,
-> +					   PCI_BUS_NUM(devid), devid & 0xff);
-> +	if (!pdev)
-> +		return;
-> +
-> +	if (!ppr_is_valid(iommu, raw))
-> +		goto out;
-> +
-> +	memset(&event, 0, sizeof(struct iopf_fault));
-> +
-> +	event.fault.type = IOMMU_FAULT_PAGE_REQ;
-> +	event.fault.prm.perm = ppr_flag_to_fault_perm(PPR_FLAGS(raw[0]));
-> +	event.fault.prm.addr = (u64)(raw[1] & PAGE_MASK);
-> +	event.fault.prm.pasid = PPR_PASID(raw[0]);
-> +	event.fault.prm.grpid = PPR_TAG(raw[0]) & 0x1FF;
-> +
-> +	/*
-> +	 * PASID zero is used for requests from the I/O device without
-> +	 * a PASID
-> +	 */
-> +	dev_data = dev_iommu_priv_get(&pdev->dev);
-> +	if (event.fault.prm.pasid == 0 ||
-> +	    event.fault.prm.pasid >= dev_data->max_pasids) {
-> +		pr_info_ratelimited("Invalid PASID : 0x%x, device : 0x%x\n",
-> +				    event.fault.prm.pasid, pdev->dev.id);
-> +		goto out;
-> +	}
-
-Why even do this check? The core code is perfectly fine to take in a
-big pasid value, it will not match anything in the xarray and just be
-completed with error anyhow.
-
-Looks fine otherwise
+Extra whitespace
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+
+I already remarked about enabling PRI in the wrong spot..
 
 Jason
