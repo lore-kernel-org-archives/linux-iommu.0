@@ -1,174 +1,164 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B12DE17C6F
-	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 01:50:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709603418; cv=fail; b=lll1cD+d7aqzLPOq5Q/uf0U8HKa2cPzdx1/nbsJEKlIbLiMAwIIbGmiVS8WUOBNhLmiaqvpfSjwgKHTKp8CCRd4D2ZGdtKsrIPVqOoLSiPHqpSle+PQcohJDQKqmiSW+D1aUsUdSo+wJeDFF0nAcapWFy7aAXivdH5rkA0MToGY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709603418; c=relaxed/simple;
-	bh=I76CABBfjMhzfFzN7FHmq0Ge0nHTqc4CiEViXdOjqdo=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=rF0nnm0Vxgg4vi9NwUj99NSlVE0N+SV3/qNCzWvAOCfVVI8Ao5EOmknxKEr3wusncNLPQfeNA279JKnL4Ag2H+EMMnvu0Y01RSdK/wGd9x3lIBSoKjJbYlBU13/DW/Xz4IOR3R83cAfYS5cskINcaMwvAMti1a3/KxhE5CDK82E=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=R0O+HRBj; arc=fail smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 842027E58F;
+	Tue,  5 Mar 2024 07:32:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709623922; cv=none; b=vBC3/Px+iYjBKtppDYYoYPZFOgQ4Lq0aSsy3j5UDfrUiCWX9YZLVOLBd27lELE2gmB4oic6UNCTh/CUxchXLKYT5Np4oGh9jn9+aPkLxgQfM+zxYEMHYYgWIljPRO8BqgiMER1p/ocsUbTc4adSpMXpVSIRtGRT5cMpAlUVERhg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709623922; c=relaxed/simple;
+	bh=BRmbYPu9uwZv0NohdrzAOM6oEjNLSw62KYQSbPqi+fw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=qMsO5OtI8dASLs6h4o4r6PB4Rv5WQPtYubx8yWG6sil+z6+epegZJZT9Hh43/0Z6uvTp2DlFIxaciCe2FXz4q8q7Cq+3lpKwcJQawG10qAzoNuANME5e7O6/1wpjptS7LH65Wh6ZtaVOhPSo+1atRAG16INXGjzkyWjjJD993IY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=PgKYhqGN; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="R0O+HRBj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709603416; x=1741139416;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=I76CABBfjMhzfFzN7FHmq0Ge0nHTqc4CiEViXdOjqdo=;
-  b=R0O+HRBjPYf1gAJw6AQzMqxv3r2tlIxWP/bOzxUeOBmkz7yi0nSbnbA0
-   IUvlsGHXmpsI0uTK7xJZ/RYlNUFtZXFmabCLdGJI3cE69HFqztEoGyiZY
-   p/EmQVA77XJM28Kh1A8st5MQUk3jOAYdecXDFgrukUQj7Aw6fK3jObvsm
-   RUqCX2DP3l4Mxp7rnKBiSjHJyIsJUnga7DwCp0xV6NJ7CuJScqdHwtfA+
-   jFK7B5SBIG9yZZ1y1IQFTvUB4SxB+tfNB0ZCKjMZM68xWwWHH70bbehaN
-   AlqNNQbZ2dGGGozIR3uAN/++wyu2x8odcfts40KFiBYQv0BlEfKmkiDvW
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11003"; a="14850133"
-X-IronPort-AV: E=Sophos;i="6.06,205,1705392000"; 
-   d="scan'208";a="14850133"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2024 17:50:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.06,205,1705392000"; 
-   d="scan'208";a="9156945"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa010.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 04 Mar 2024 17:50:15 -0800
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 4 Mar 2024 17:50:14 -0800
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 4 Mar 2024 17:50:13 -0800
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Mon, 4 Mar 2024 17:50:13 -0800
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Mon, 4 Mar 2024 17:50:13 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NQ6Msd7sDrMVva+Gk7vZvQv9hjWNqRs8k0m3Z7veJxYkWMIsjqxDxszNxipaXYuxux9qChYytBFVKomNd0zD56mv6gl06DTaPBPk/w7/UtC/zh4iHKcPiPWhG+dqBZ9fOj+zVy3njEUTuHJZDXAS9BEZnJw8p7EWLBTHzhiDtdKdHNqD2+NRYQ5lDbU3Y3hcO8U6ymN4+Pdh7G6KlVXhqllzx5xwiWT9KQV5VqBF+JsF6hZz4bq19aUOdUbWfdpDuFHJi2ONKHn2J7YnTKzbZzlzfC3QeJjcQAmnWxF6PGOzrzK7gAFT5MIXhaZXOlEXNv3JmreaSWA8EOuGgN0dlw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I76CABBfjMhzfFzN7FHmq0Ge0nHTqc4CiEViXdOjqdo=;
- b=U+rNQ/Ihem5i8E1jpx/xCvYY7KWnVG8xbk0R0XYOQSHMYp1VzAP9bgUPeWbIoU1ikCj7qOebWyiAYLwS+YEihdyGAT4mZRVlUQVcFbuf5lx9HMS3+jZSivSq/U13J2bhSLOLzw9RmqCNfVv7edQQswp3+2yRDnG981LN8f+xMImdTqtHFMcRaMNPQT5E5xLZXwSKMBFudnNFa0HO9YkVQ8WvetDhDOIFL+N7kksUThsdVSICRB0VLBLtb04evbB6Mc0YcVw3uKS1fnRXKN7Pu+200R4YmJYUCxg7sr+WihDPrAQ32T/UhITv/qasBKHn1mRilkaTcowwMU05Ov1AWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by PH7PR11MB8059.namprd11.prod.outlook.com (2603:10b6:510:24e::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.23; Tue, 5 Mar
- 2024 01:50:11 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::39d:5a9c:c9f5:c327]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::39d:5a9c:c9f5:c327%5]) with mapi id 15.20.7362.019; Tue, 5 Mar 2024
- 01:50:11 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
- Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
- Gunthorpe" <jgg@ziepe.ca>, "Badger, Eric" <ebadger@purestorage.com>
-CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v3 3/5] iommu/vt-d: Setup scalable mode context entry in
- probe path
-Thread-Topic: [PATCH v3 3/5] iommu/vt-d: Setup scalable mode context entry in
- probe path
-Thread-Index: AQHabp350YqpI+jb+kKA2bSryKFGQLEoYX2Q
-Date: Tue, 5 Mar 2024 01:50:11 +0000
-Message-ID: <BN9PR11MB527698ADE41D00838D94C0A08C222@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240305013305.204605-1-baolu.lu@linux.intel.com>
- <20240305013305.204605-4-baolu.lu@linux.intel.com>
-In-Reply-To: <20240305013305.204605-4-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|PH7PR11MB8059:EE_
-x-ms-office365-filtering-correlation-id: 99f49cbc-c090-45c2-24e0-08dc3cb69810
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1PB7TxY+itVDeGsVcNbXUZHbc5TLSISD3OQDMUO4KBcIQKcwvKGd9Z9zymb4HaCsT28Io7s8HGGYPw3oEmh3olF00DF1yCCDHbeKwCzjx7rJ4lLE32B0sbuvm7SRwdcJ9WoYNW2Y/+hyS3TZaKDgJwSwd3+mFald25cH0XLP/B1uVy2rg7PKKqTj1DghSb26ySHv4py0oDj7hxZrdq/u1Z6aa9S+fkcXPUs7NV39kPTBRpq9EWScFZSP6yWg3EZvWxwPTptqLX69ymw3qLOLloIaCyNpZdvXw79IwD3afNxa27czoRne00rmadB/u/Ab72aeFOgZ8BK27o0g18lv6gnftZH1XytZzfIaKCA4d1kXhv5TfmTqOHEe9+zqC3pB5Vmc85uU3edR1ub6I/on9wPTEwQYb5lb6f328csPVUIbS9Lx8Hrrerog8kRMIkaAogmXSO9lrTwNwMZF2T2TruY5jEpjr4yDLfR7Yoow88EJVeCYM30vC13qpTJDjDqMFjw1VZxMKVY8QmmGQhffG7m/V1BrQ9tgCb25T8RarJxNdXKrBtPBq3j3f8qcLZxRnAs5tQ9RX2qg6S2DvwvIntHDhywtDhQIK8XFbpRHz47/3K5PmNw761S+Hi3PatNaiEkSgYpWkL6RsVrNH/bcsmoLJQ/QXv81I7hhSasQRVPnFUmShcBPoglGTcD00YSMIRJTRV2yPX399GeMk7uJeW3bBEpYEx+O5LzHeihxkcY=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(38070700009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?RFT7LPs5a6eafUsrtuejHHzNGSTt79VsxfhFdYpGeBfqRPbJ+KLmKZhxH/62?=
- =?us-ascii?Q?mAvAjqmPRVeBJwdI5pyX7a5xiU+82l+w4T/oqcasGx4UvFOxYisuKrNh6aiT?=
- =?us-ascii?Q?k3Xl9Fa4YMZgUL/mTZF4JgNpKrO41O3YH2pFjaUmnnXa2Do/7jTQqY2dZuho?=
- =?us-ascii?Q?yMRdbXFx0KJoLwpZJZA9eC6N5c5EorTBhyzAhB4mksTxX5Aw6xc71N9HMoqh?=
- =?us-ascii?Q?IBHCVPadVOT0KyzRWojpWCT9my4ug5fRKDvnSAWPVz7GGNnBO/JU02TiEXPP?=
- =?us-ascii?Q?f+jWDBbUJuos2kR0rGlnlgFkDbLBGU+STvcHk+6W6cMexK5R6FpIycwpn3Dw?=
- =?us-ascii?Q?e1pcLeOJF2KcZytceB9mZh4u7b9T2SXOoremIL8GCO3kzIDgjkmxd+1ttUk7?=
- =?us-ascii?Q?krpS9+jDa0LZ3LxygKtJ7Ox6r5YRhamfemKRo8obcpWUfNLeB3960a8U/IlQ?=
- =?us-ascii?Q?C7BpEASTmHYWw87Al9e86UiceVaB0i3CDzi72Ln9rRLPh5lSS3U7FzQbBIZE?=
- =?us-ascii?Q?0+4OBXT/gNEs5KkisKRFYjLLCzzBxt/HRNUAdDxpKgkZ7kyjmj+rFEZ1WBuj?=
- =?us-ascii?Q?3IVKfd5vy0k3xBjhr+qH14fmD0F1eKEkZ779w4cfFzkFFJKogJc2OPnlC5S8?=
- =?us-ascii?Q?rTXa+BaUiugeDlZ/LmF0J1yINfjj3Hq4V3kWs5fVMMYhJstTaYZMmEXiHB9W?=
- =?us-ascii?Q?joQ4QAdlSxSKcih2ArjH98tazzrFeN4Fd+20xD7jW2xnLuX3iAkZQY77OwnP?=
- =?us-ascii?Q?OFSIXVOmIkWbWF5uifQIqknVI8dA3wcm34LZVPNbimTNgnY/Zs0NhnzcHgRi?=
- =?us-ascii?Q?FPPK4QjlkFgNy1b+KBWvakv9A7WPSfHWn13LJ7bNmfRkxvdrm5DPhb+OG94j?=
- =?us-ascii?Q?PhVUO0CevshTqcg5r8ixE4B40tRl0qN4Mx7zDQqi3yVJFzvSeWFEsvCbWCWn?=
- =?us-ascii?Q?GJlIzp51VRmkbFWw1C9wMf3HY7Coee1YDcq1PHh4a9+Dc3GhSuC/wyx32ebw?=
- =?us-ascii?Q?ef8J1LuvUXRH+Kn8NB68ONZ6YziwTQb+AhbQy7IfZE+uCa6kRxqKpU1THnL+?=
- =?us-ascii?Q?ujrkFEHD2uAJj+U+VuHwMtxAJBQ5oJ2oKz+1Qt0Ozcy0bpgL9PkESmiHiYS0?=
- =?us-ascii?Q?SQnM9VQkjH4H9yvzhdE9NKWWVzQuVDJ42JgQit+GTM3Emc+IZKUFtwzm8MFv?=
- =?us-ascii?Q?0PgfNMo1aFqEoueu8EMVWE3ghosRvY+oz12JaZcMaw8sknZda5UxUlKmffy1?=
- =?us-ascii?Q?JBIHiUoUh0RGvGdTUSdqeqDZzwQwAGyI6QbXPrNGSG/RLuekyp3HABd9km6Y?=
- =?us-ascii?Q?yeWnKUA4IHZwc6vOair3+XMYWgLm8qPBvZB7Wq+f3tk8mAqQSkPwUQm2W9WE?=
- =?us-ascii?Q?VYddnylY+mpA8qyeK2y8HTqiEClBU5YPXhbiWg/GCYE8V5Ng8meCXA15wMfV?=
- =?us-ascii?Q?nqR43sNMB/RNwbrg2xN9ddNUELjSN1WD1S9rPgjcFOewXb5aoFuiZOHveAL6?=
- =?us-ascii?Q?52HaPCHtRJLuoVRKZs4vkioTahIedejv97MQhIRt1KtWWCKz1zOhERxtzrTu?=
- =?us-ascii?Q?mxmNStEjwT1yZdPROEOiPpIamQdzjCk0ij/+md1Z?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="PgKYhqGN"
+Received: from pps.filterd (m0279870.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 4256Jttu014028;
+	Tue, 5 Mar 2024 07:31:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:subject:to:cc:references:from
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=wMbUenWZaYTavA7xWqeeZ0KV1Px9iK8tI8NYl+N974g=; b=Pg
+	KYhqGNpF2CsW4JZ9dfZKfrmXlievESq0K//abrY6QkfE6aV8Fe/udjbdOg4y5B5B
+	I9uU2fViG8DMTsH2nqq/J9M9RarVupVZL5yTdcgemUaCkDpfWpigG8WOe74w00hV
+	DfJmYLQYUJVgdUBDBry7vNQLoQTizUKQRpIY/VsJhRsqChANVci2ZwRs+fz15IF8
+	K+Apd1pVhLvVDfDmvSlR5NvNE9jiSxkm2e9uKy3sGkoluMC7ZyqBsXtOqQSPDwGQ
+	d6z8BrNvpbQ7wwhw/cWJLHjVOazj2GAd+ndcAfRuMg1r+3gDWx6F4xZp19V1m63o
+	mAEQbSpKSt2UF041OrjA==
+Received: from nalasppmta01.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3wnx0y04c9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 05 Mar 2024 07:31:43 +0000 (GMT)
+Received: from nalasex01b.na.qualcomm.com (nalasex01b.na.qualcomm.com [10.47.209.197])
+	by NALASPPMTA01.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 4257Vgnr031877
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 5 Mar 2024 07:31:42 GMT
+Received: from [10.216.18.120] (10.80.80.8) by nalasex01b.na.qualcomm.com
+ (10.47.209.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Mon, 4 Mar
+ 2024 23:31:39 -0800
+Message-ID: <6dcf6bc5-e1e5-8388-8bcb-c093a5fb61ed@quicinc.com>
+Date: Tue, 5 Mar 2024 13:01:12 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 99f49cbc-c090-45c2-24e0-08dc3cb69810
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Mar 2024 01:50:11.2239
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: bPfhSuC2Tm6UfIk84cbQiSotSb5vkKcUjFfnlsgRD1h3HRCGqG3ZLmqOT39XKnZAoXT2M8N6MO0X+BrpDDVs/Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB8059
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+Subject: Re: [PATCH RESEND STABLE v6.1] iommu: Avoid races around default
+ domain allocations
+To: Greg KH <gregkh@linuxfoundation.org>
+CC: Charan Teja Kalla <quic_charante@quicinc.com>,
+        Joerg Roedel
+	<joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy
+	<robin.murphy@arm.com>, <linux-kernel@vger.kernel.org>,
+        <iommu@lists.linux.dev>, <stable@vger.kernel.org>
+References: <cbf1295589bd90083ad6f75a7fbced01f327c047.1708680521.git.quic_nprakash@quicinc.com>
+ <2024030403-self-morality-062e@gregkh>
+Content-Language: en-US
+From: Nikhil V <quic_nprakash@quicinc.com>
+In-Reply-To: <2024030403-self-morality-062e@gregkh>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01b.na.qualcomm.com (10.47.209.197)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: 4JT4wgqE_gix773HeXXQ08JPCQ9hKfZi
+X-Proofpoint-ORIG-GUID: 4JT4wgqE_gix773HeXXQ08JPCQ9hKfZi
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-03-05_04,2024-03-04_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxscore=0
+ bulkscore=0 impostorscore=0 clxscore=1011 priorityscore=1501 adultscore=0
+ mlxlogscore=755 lowpriorityscore=0 suspectscore=0 spamscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2402120000 definitions=main-2403050058
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Tuesday, March 5, 2024 9:33 AM
->=20
-> In contrast to legacy mode, the DMA translation table is configured in
-> the PASID table entry instead of the context entry for scalable mode.
-> For this reason, it is more appropriate to set up the scalable mode
-> context entry in the device_probe callback and direct it to the
-> appropriate PASID table.
->=20
-> The iommu domain attach/detach operations only affect the PASID table
-> entry. Therefore, there is no need to modify the context entry when
-> configuring the translation type and page table.
->=20
-> The only exception is the kdump case, where context entry setup is
-> postponed until the device driver invokes the first DMA interface.
->=20
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+
+On 3/4/2024 6:55 PM, Greg KH wrote:
+> On Mon, Mar 04, 2024 at 04:40:50PM +0530, Nikhil V wrote:
+>> From: Charan Teja Kalla <quic_charante@quicinc.com>
+>>
+>> This fix is applicable for LTS kernel, 6.1.y. In latest kernels, this race
+>> issue is fixed by the patch series [1] and [2]. The right thing to do here
+>> would have been propagating these changes from latest kernel to the stable
+>> branch, 6.1.y. However, these changes seems too intrusive to be picked for
+>> stable branches. Hence, the fix proposed can be taken as an alternative
+>> instead of backporting the patch series.
+>> [1] https://lore.kernel.org/all/0-v8-81230027b2fa+9d-iommu_all_defdom_jgg@nvidia.com/
+>> [2] https://lore.kernel.org/all/0-v5-1b99ae392328+44574-iommu_err_unwind_jgg@nvidia.com/
+>>
+>> Issue:
+>> A race condition is observed when arm_smmu_device_probe and
+>> modprobe of client devices happens in parallel. This results
+>> in the allocation of a new default domain for the iommu group
+>> even though it was previously allocated and the respective iova
+>> domain(iovad) was initialized. However, for this newly allocated
+>> default domain, iovad will not be initialized. As a result, for
+>> devices requesting dma allocations, this uninitialized iovad will
+>> be used, thereby causing NULL pointer dereference issue.
+>>
+>> Flow:
+>> - During arm_smmu_device_probe, bus_iommu_probe() will be called
+>> as part of iommu_device_register(). This results in the device probe,
+>> __iommu_probe_device().
+>>
+>> - When the modprobe of the client device happens in parallel, it
+>> sets up the DMA configuration for the device using of_dma_configure_id(),
+>> which inturn calls iommu_probe_device(). Later, default domain is
+>> allocated and attached using iommu_alloc_default_domain() and
+>> __iommu_attach_device() respectively. It then ends up initializing a
+>> mapping domain(IOVA domain) and rcaches for the device via
+>> arch_setup_dma_ops()->iommu_setup_dma_ops().
+>>
+>> - Now, in the bus_iommu_probe() path, it again tries to allocate
+>> a default domain via probe_alloc_default_domain(). This results in
+>> allocating a new default domain(along with IOVA domain) via
+>> __iommu_domain_alloc(). However, this newly allocated IOVA domain
+>> will not be initialized.
+>>
+>> - Now, when the same client device tries dma allocations via
+>> iommu_dma_alloc(), it ends up accessing the rcaches of the newly
+>> allocated IOVA domain, which is not initialized. This results
+>> into NULL pointer dereferencing.
+>>
+>> Fix this issue by adding a check in probe_alloc_default_domain()
+>> to see if the iommu_group already has a default domain allocated
+>> and initialized.
+>>
+>> Cc: <stable@vger.kernel.org> # see patch description, fix applicable only for 6.1.y
+>> Signed-off-by: Charan Teja Kalla <quic_charante@quicinc.com>
+>> Co-developed-by: Nikhil V <quic_nprakash@quicinc.com>
+>> Signed-off-by: Nikhil V <quic_nprakash@quicinc.com>
+>> ---
+>>   drivers/iommu/iommu.c | 3 +++
+>>   1 file changed, 3 insertions(+)
+> 
+> Why RESEND?  What happened to the first send?
+> 
+> thanks,
+> 
+> greg k-h
+
+
+Hi Greg,
+
+There are no changes as such w.r.t first send, [1]. It is resent to gain 
+attention on this patch. Also, we have added a proper Cc: stable tag 
+with this patch.
+
+
+[1] 
+https://lore.kernel.org/all/cbf1295589bd90083ad6f75a7fbced01f327c047.1708680521.git.quic_nprakash@quicinc.com/
+
+Thanks
+Nikhil V
