@@ -1,46 +1,46 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8792C5B208
-	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 12:00:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FD1B5822E
+	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 12:01:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709640045; cv=none; b=qJp8YVYDoQmFpkd0MZOYtJw77OZZILR8mtm11xEbf3ZeugmFsca1X/x3zeu73UsxAxlnu1z90PzgFHWaWDmwHPZ+4EUxFiHa4jrqz4Sc/vJs2ep/CgmV/Cw3jMl1+lAgWFVhJHU0kGGQaHijRpXaC1InzJiuYPvMkBnB6Hi1x2U=
+	t=1709640115; cv=none; b=GkploqimUiEj8HXS7P/AZubNbS+k9rxYJK+jelKeK4+pjcqfwxsEHkywIYmrzt9dTuRsf/ZMCN4RbewtKMiRTcIA5i7PNclJ4CkMGtHJR/AX2qn3vwCRCAgbrg93+yRiOAX+V+6HRDDt1SveIGgiaEQxhKI3ADVETWRYq0jSxKI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709640045; c=relaxed/simple;
-	bh=sRvqQdB8kRs9Wd4XZ5XIBXVpsTGVVIckK00iEDJ5uJQ=;
+	s=arc-20240116; t=1709640115; c=relaxed/simple;
+	bh=p3MEnM7Hc3Q02hOH9T/CHTh7Gwecqmsvh/qEe+3UuM8=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=l06IEnKWGbyew8JHpkGgOpMWuvtKwhvpqTcNxMxityrZspiDc3ZIa8GaZANxUERkjXZKkTS59wX0UR69OW55JXsgYe14aKpT7pLGaFGNK4CY0sqDXs657PtigBNmXBD6BaNoqICp4lEgZQCqkdfpxbG+nUHKPyYaSShaWeeXv2g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kiA+knFa; arc=none smtp.client-ip=192.198.163.17
+	 In-Reply-To:Content-Type; b=qTBa+O6coMSVJBygKGzB4o7RgXU/zYizt59AZmnx+PhrL8mQ7Up5635Vjy65n3UmtiSpA3JaBPeHLBRQrOE3tmGOU72UVHYxSquK9JFom02FJkU/Zq9LDo6dXS86pp2g4UrXD9wuMywYK4iEH5NmMvnNi0hQ/XcPwl3N0PBT/Js=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CIUY37uS; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kiA+knFa"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CIUY37uS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709640043; x=1741176043;
+  t=1709640115; x=1741176115;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=sRvqQdB8kRs9Wd4XZ5XIBXVpsTGVVIckK00iEDJ5uJQ=;
-  b=kiA+knFaFQeo1D8JIvnhBU3HlcFgU41T8vt7yBebA6/uKGztbDZE/0ZC
-   a+fL71Igfk04Q9+nHk0JJdq7zR9XJhI/i+nZmhndCpVQuwg7+OTvBJ4EE
-   eWwTuqUDn6vs4vPAb5+hm8TjUK2QtWJ1nq0rpiJwohMm8SlRSNV9cinn/
-   sizESEMyze5yWOybm7cE7zvOezwpTnt21RIF4dfLipgNKYeNMaiiPf3N7
-   d2qJoo4aRLBajHoxh6gC36PSATE3PeQOz/BWXrp1+6kz4Z0QPH2o+Wr4Z
-   nobExL+px2ZorVcFN2mxaSXJW0dlYyZ50NNv+j4sCcaKTd4gtLRRDxcr2
+  bh=p3MEnM7Hc3Q02hOH9T/CHTh7Gwecqmsvh/qEe+3UuM8=;
+  b=CIUY37uSzllmApnZq4yTklcrOw5fNuShV1nIkT0JFgmduseD7zD1hz3B
+   x3+zXw9lhQorjNIXSIBfJO2ZskuyNXK9d7w0AOb1iE8MBxDTuLzTYcbhX
+   g7WvIO2NS/k5yCYhdyjfo0jg9u8t6xSrQL03IWRsmlXuBxY1TN3PCPMcw
+   VTtxivmW4LkNcyZXsizy5n/3KEOmx9iEMZR19n+6IJnm+K9+F5zJjn24q
+   RucrVepSso7qqQlKkhauzhga5swCW0pTw8Z81wzRt2T/TW8ZClGXZqULS
+   yLWtcKaTKVy0bAOBwsbUMoNkQi7JIZ/NPE2LFAJ9BL1RB/LLt1JDfPGQL
    A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11003"; a="4044096"
+X-IronPort-AV: E=McAfee;i="6600,9927,11003"; a="21641598"
 X-IronPort-AV: E=Sophos;i="6.06,205,1705392000"; 
-   d="scan'208";a="4044096"
+   d="scan'208";a="21641598"
 Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2024 04:00:42 -0800
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2024 04:01:54 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,205,1705392000"; 
-   d="scan'208";a="9218674"
+   d="scan'208";a="9219180"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.249.173.205]) ([10.249.173.205])
-  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2024 04:00:39 -0800
-Message-ID: <65479314-39e8-432e-8b9f-daf6c4aea72a@linux.intel.com>
-Date: Tue, 5 Mar 2024 20:00:36 +0800
+  by fmviesa007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2024 04:01:51 -0800
+Message-ID: <eb7dc225-d7e3-471f-9758-b03089be5a3f@linux.intel.com>
+Date: Tue, 5 Mar 2024 20:01:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,48 +48,29 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, kevin.tian@intel.com, dwmw2@infradead.org,
- will@kernel.org, lukas@wunner.de, yi.l.liu@intel.com,
- dan.carpenter@linaro.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v14 0/3] fix vt-d hard lockup when hotplug ATS capable
- device
-To: Ethan Zhao <haifeng.zhao@linux.intel.com>, bhelgaas@google.com,
- robin.murphy@arm.com, jgg@ziepe.ca
-References: <20240301080727.3529832-1-haifeng.zhao@linux.intel.com>
+Cc: baolu.lu@linux.intel.com, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Kevin Tian <kevin.tian@intel.com>, Eric Badger <ebadger@purestorage.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/5] iommu: Fix domain check on release
 Content-Language: en-US
+To: Joerg Roedel <joro@8bytes.org>
+References: <20240305013305.204605-1-baolu.lu@linux.intel.com>
+ <ZebPsvHQWJcOgmUW@8bytes.org>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240301080727.3529832-1-haifeng.zhao@linux.intel.com>
+In-Reply-To: <ZebPsvHQWJcOgmUW@8bytes.org>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2024/3/1 16:07, Ethan Zhao wrote:
-> This patchset is used to fix vt-d hard lockup reported when surprise
-> unplug ATS capable endpoint device connects to system via PCIe switch
-> as following topology.
-> 
->       +-[0000:15]-+-00.0  Intel Corporation Ice Lake Memory Map/VT-d
->       |           +-00.1  Intel Corporation Ice Lake Mesh 2 PCIe
->       |           +-00.2  Intel Corporation Ice Lake RAS
->       |           +-00.4  Intel Corporation Device 0b23
->       |           \-01.0-[16-1b]----00.0-[17-1b]--+-00.0-[18]----00.0
->                                             NVIDIA Corporation Device 2324
->       |                                           +-01.0-[19]----00.0
->                            Mellanox Technologies MT2910 Family [ConnectX-7]
-> 
-> User brought endpoint device 19:00.0's link down by flapping it's hotplug
-> capable slot 17:01.0 link control register, as sequence DLLSC response,
-> pciehp_ist() will unload device driver and power it off, durning device
-> driver is unloading an iommu device-TLB invalidation (Intel VT-d spec, or
-> 'ATS Invalidation' in PCIe spec) request issued to that link down device,
-> thus a long time completion/timeout waiting in interrupt context causes
-> continuous hard lockup warnning and system hang.
-> 
-> Other detail, see every patch commit log.
-> 
-> patch [1&2] were tested byyehaorong@bytedance.com  on stable v6.7-rc4.
-> patch [1-3] passed compiling on stable v6.8-rc4 (Baolu's rbtree branch).
+On 2024/3/5 15:54, Joerg Roedel wrote:
+> On Tue, Mar 05, 2024 at 09:33:00AM +0800, Lu Baolu wrote:
+>> It fixes a NULL pointer dereference issue in the Intel iommu driver and
+>> strengthens the iommu core to possibly prevent similar failures in other
+>> iommu drivers.
+> Please send me another pull request once you consider this ready. I
+> guess it is v6.9 material.
 
-This series has been queued for iommu next.
+Sure. I will queue this series in a pull request.
 
 Best regards,
 baolu
