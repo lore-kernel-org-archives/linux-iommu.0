@@ -1,108 +1,109 @@
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com [209.85.160.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB69BF9DB
-	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 00:52:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0FFA17C6D
+	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 01:39:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709599977; cv=none; b=DiqOL5/XwkSc576b6ggIdvuEjcxV2mJ14wDdAbj31H6Pn0/bLVHz7TS5p6hse5cUz5i9x57bbisD4VKttKlIOjFdQ9M9dOrCIGJSxaYcqKnRP6seFvxg826ZpfTcMIqqjvtouTJJg9CR3KegqKcpnmVfZG7mjGq6IvKDETEMmEA=
+	t=1709602759; cv=none; b=jEMMnIVkMv4aCozcuodnQ/ezYMLxBtTtbDrB2D2qZFZodxQFyP3Eq+8Of70OyeUV8FIWyqIxrTZh/CMG8ws/9cywzs3zBZgyQys6JvalOqVfrS0Zcp8jIa2FYTJVohDN+iBLohw41HPMeNgrsGWfeeJW3j1FXDHUGe2m8Wtsxjk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709599977; c=relaxed/simple;
-	bh=eVi9HnEVBXePw8CULuM7naqiYIHNPKc0XNaedsU1Cgc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PKzLAs+UvHT0mQ7OVTcIzoSuOZLME+LquE50+A/gmiaZV/x20ivnGh0ZfTybsi7isgNbBOZYpt4Jm4GI61y4yO7C0okCImy4Qwt2BdX3KrIOtehrYohpUMTkvOXfHWwi6TLaxuDo71KUuhP+SpgHvAr4gCI+9CgPSMM2CHYPUPQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=KYn2sf7a; arc=none smtp.client-ip=209.85.160.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1709602759; c=relaxed/simple;
+	bh=eiU/1NcIOJEtkEHiA5OyoXSA8xSvI1Z67moJ09F+JIc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=BgmXDjgLj5y2ExVvGKWm6jRUIsVlt3wlpFW3TeO4KrS7aRa1d77NBuKr+M+rPG+n3ozK0LGj90Bsq28jgZoq3L2WsRuvrFEkwvRqHhIek5xAd1P9WpUVy4vPA/v8lHRT4X/a6/R/jaPfA0b3QQFfpPZdtT0VS+hlXTL46DYJt4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PerJ+l1z; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="KYn2sf7a"
-Received: by mail-qt1-f172.google.com with SMTP id d75a77b69052e-42e4f706847so37250581cf.2
-        for <iommu@lists.linux.dev>; Mon, 04 Mar 2024 16:52:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1709599975; x=1710204775; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=QezIdcMhBK4JmpH5lnLJ59QKzefVecbHv1nG3ueZguQ=;
-        b=KYn2sf7aoio+a48QAR6dEH72PsdtDWYoQn/0FwAeOi521MZEKY0A5+89uCkBP2pwCt
-         tAiPQGrTltlt+psAzwHT3IIPXnlyOWsSg72hy0LyxoD9SNU4EJJCZuWQKFtuPZVF3ZbP
-         yPx++yzls3mBMiAyvPvco24hmCXsknCavS6q+dzS86ftA22qe4U0kc5l2r1Cf91MRNrZ
-         YfR2RqEn85rHi38TAEIV98dNovmAIwzTg43FJV1nOh49Mc2nGd+WzkjA7AMrcniUC+iw
-         d5IQHWNAyoPwVe1pCun3BtRaKylNNWpFLF6B2GHWMnupa2lwL6G6GxAfOeQfGvNYBuRv
-         YBQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709599975; x=1710204775;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QezIdcMhBK4JmpH5lnLJ59QKzefVecbHv1nG3ueZguQ=;
-        b=YXmaeYMnoXQPBENcv6GLWQzgXwyGlxMciNd5r/C8QHfWMd3TWCj0CftLYKzoY3eQpb
-         BLg/yYEZyi0xhG8ZF4SCVgnw82+jNGLY2+2JQzOAaEOrx/+jO2k62x3hZA8bBiL98phy
-         bNTGGyWiKmTyXaqo9jqfMkoqjzO3RZ+qOxhRiBE24xafwDZt61PND7zUgtHbPAmfs9e0
-         4EHo1Vu7uSCjbRkTLyYeOJ/ehApGzS4HCRGwMhwTOj2zMLE88wuKDlZX/kHO+0+KNIQm
-         PK3WNnM5IjknI8a7Qx3nk48xJt2SXOJIY92QRXCCZcW1MN0oCBrjgbRFePfaT2cxMOHx
-         VHIg==
-X-Gm-Message-State: AOJu0YwpHW74+uVKV8d2Wu4Q6W1iInwFWfVMAnXnrDvsyL5sxL8wZwkd
-	q1GeZleoX/5BDvUkshbvDdnOuHFxi3NBPc2MYqfQJzPRzEPa5cZ1cP5bOm7rlgABlageV7t7+A+
-	mETk=
-X-Google-Smtp-Source: AGHT+IHSZQI5whEGo+0AVcLk0R43AvtytXIV6juSbIy0oDmeDbBbaq80hJQgYCeSLJPb4GgOZoOEuQ==
-X-Received: by 2002:a05:622a:24c:b0:42e:b470:1ba5 with SMTP id c12-20020a05622a024c00b0042eb4701ba5mr607487qtx.24.1709599974901;
-        Mon, 04 Mar 2024 16:52:54 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id kq5-20020ac86185000000b0042efbd83ab5sm483098qtb.5.2024.03.04.16.52.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Mar 2024 16:52:54 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rhJ37-00DceF-Rf;
-	Mon, 04 Mar 2024 20:52:53 -0400
-Date: Mon, 4 Mar 2024 20:52:53 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v6 00/15] iommu/amd: SVA Support (Part 4) - SVA and IOPF
-Message-ID: <20240305005253.GI9225@ziepe.ca>
-References: <20240209112930.63663-1-vasant.hegde@amd.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PerJ+l1z"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1709602758; x=1741138758;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=eiU/1NcIOJEtkEHiA5OyoXSA8xSvI1Z67moJ09F+JIc=;
+  b=PerJ+l1zz/QQE0AO1UB9d2Vxtvmd910J279dlUWvvcQNOP5iR9prdAPx
+   J+C3SG2IJpoYGCtG2W4VVypmUWtoR5uLf20O05bmeQisVMPVUw4wmDJJG
+   nyRuq7jZyzO8UQ5rZmWN2+OwZSHcD72mB8/rFOfJH9P/OU3WJI8/wgUn7
+   F7+2ZCAxvuzzGcaINvujXcvGTeASLMHlaLJiYyZyrzgTDgluBo/E1ht2m
+   mpVUokH+GLapC+C8IIVFZC1o2fyspZXcFaNSshs965L7nY9esES0OE4zW
+   Cso/NUbPn7rWG1WT/ZeXODQbeOKLYU3PPGPPUJGGdTAtkRtnRzFTx62re
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11003"; a="4286683"
+X-IronPort-AV: E=Sophos;i="6.06,205,1705392000"; 
+   d="scan'208";a="4286683"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2024 17:39:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.06,205,1705392000"; 
+   d="scan'208";a="13865421"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orviesa004.jf.intel.com with ESMTP; 04 Mar 2024 17:39:14 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Eric Badger <ebadger@purestorage.com>
+Cc: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v3 0/5] iommu: Fix domain check on release
+Date: Tue,  5 Mar 2024 09:33:00 +0800
+Message-Id: <20240305013305.204605-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240209112930.63663-1-vasant.hegde@amd.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Feb 09, 2024 at 11:29:15AM +0000, Vasant Hegde wrote:
-> Jason Gunthorpe (1):
->   iommu: Add ops->domain_alloc_sva()
-> 
-> Suravee Suthikulpanit (3):
->   iommu/amd: Move PPR-related functions into ppr.c
->   iommu/amd: Define per-IOMMU iopf_queue
->   iommu/amd: Add support for page response
-> 
-> Vasant Hegde (9):
->   iommu/amd: Rename amd_iommu_v2_supported() as
->     amd_iommu_pasid_supported()
->   iommu/amd: Introduce per device DTE update function
->   iommu/amd: Fix PPR interrupt processing logic
->   iommu/amd: Introduce iommu_dev_data.max_pasids
->   iommu/amd: Setup GCR3 table in advance if domain is SVA capable
->   iommu/amd: Enable PCI features based on attached domain capability
->   iommu/amd: Add support for enable/disable IOPF
->   iommu/amd: Initial SVA support for AMD IOMMU
->   iommu/amd: Add SVA domain support
-> 
-> Wei Huang (2):
->   iommu/amd: Add support for enabling/disabling IOMMU features
->   iommu/amd: Add IO page fault notifier handler
+This is a follow-up to the discussion thread here:
 
-There is still more to be done in the drievr, but this looks
-structured well now that it should go ahead. I think you need to
-rebase this on the Joerg's latest tree?
+https://lore.kernel.org/linux-iommu/20240221154012.GC13491@ziepe.ca/
 
-Either way, fingers crossed for this cycle, sorry to have been so late
-with this.
+It fixes a NULL pointer dereference issue in the Intel iommu driver and
+strengthens the iommu core to possibly prevent similar failures in other
+iommu drivers.
 
-Jason
+There are two parts of this topic:
+[x] Introduce release_domain and fix a kernel NULL pointer dereference
+    issue in the intel iommu driver.
+[x] Follow-up patches to cleanup intel iommu driver.
+
+Best regards,
+baolu
+
+Change log:
+v3:
+ - Avoid global IOTLB and PASID cache invalidation in normal release
+   path to mitigate the impact on other devices.
+ - Comment and code refinements.
+
+v2:
+ - https://lore.kernel.org/linux-iommu/20240229094613.121575-1-baolu.lu@linux.intel.com/
+ - https://lore.kernel.org/linux-iommu/20240229094804.121610-1-baolu.lu@linux.intel.com/
+ - The scalable mode context entry should be removed in the release path
+   as it's not part of the blocking domain.
+
+v1: https://lore.kernel.org/linux-iommu/20240223051302.177596-1-baolu.lu@linux.intel.com/
+
+Lu Baolu (5):
+  iommu: Add static iommu_ops->release_domain
+  iommu/vt-d: Fix NULL domain on device release
+  iommu/vt-d: Setup scalable mode context entry in probe path
+  iommu/vt-d: Remove scalable mode context entry setup from attach_dev
+  iommu/vt-d: Remove scalabe mode in domain_context_clear_one()
+
+ include/linux/iommu.h       |   1 +
+ drivers/iommu/intel/pasid.h |   2 +
+ drivers/iommu/intel/iommu.c | 214 +++++++++++-------------------------
+ drivers/iommu/intel/pasid.c | 202 ++++++++++++++++++++++++++++++++++
+ drivers/iommu/iommu.c       |  19 +++-
+ 5 files changed, 283 insertions(+), 155 deletions(-)
+
+-- 
+2.34.1
+
