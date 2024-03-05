@@ -1,202 +1,212 @@
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2062.outbound.protection.outlook.com [40.107.95.62])
+Received: from bee.tesarici.cz (unknown [77.93.223.253])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7616B8664C
-	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 15:10:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.62
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709651425; cv=fail; b=amuz+eo9I6GmXuyKY7Som9a4hXqFjgIfYX/N10vx7dF/+H1poPrAQ+4uX4yE7xUauztzCwPhQN6hsewKjtXBBsCKRp+2S9xp34PbGr+RWdfFsOGVzP688iL/SxX8ANrkRsikD7NrCzssDyyHMNVGBMfC3QuYfAMqr3JhYC6ylyw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709651425; c=relaxed/simple;
-	bh=i2ERTJnixhEG00MWgBSwCOMcxrhOqgEQHA8TiQB5wvs=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=JAFmntd2idY7AoPzQ5qos9hhIyPyfOQG4lKtJOYAOhe2aVsJjx9OYBNFY/r5qHknLbJT4M8QW6r99kMwOBxpbZyDSqL5WEYdzn0TA3Q1nUG7MXh1Cb2CICHd+VeY9Wq4liE2gQws2RtDkDrKtL39BoAj9gcAHLUmtVk2jUcZrb8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=oE1yZqTz; arc=fail smtp.client-ip=40.107.95.62
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DF06126F11
+	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 15:16:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.93.223.253
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709651767; cv=none; b=hd9pXzn0QTLdWWprdAJtwDGXAfb9IkE14rkgvtIYnJ5Jf1o+AIeFxlmVdJYHDUUIvschv634rmLuauFKb9hQX1Pv0yREbEu+7PNtMW0Mj7oCI3qdlf3TQxzig4JWUQa/M7MVeJd9frz196pt244388M818NPx48fU9SNk+rm/7o=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709651767; c=relaxed/simple;
+	bh=gcLuym4tORjlH5EIM/roVTuZMRa/La7PuANUj3Vlrdc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=T7Lpga72LrKTNk6VORf3MWELGTLbMcLjCSXfqSj/VRlNZreoj0eifDwNJmHAV3OOD4whh8MNvtd1e8I+LyOtH2HLuxtHuf4avmbogsxRL1Wnvm8Nv8cMj0SngIjeOXjSo5TNkQup+Fb+yBkY34TXq+1NuquZCryrD6mwQX6fVwY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=tbaTYFD4; arc=none smtp.client-ip=77.93.223.253
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="oE1yZqTz"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VDmBzQpXO4twnDeTyr13NBZwQkImAV8QxUVWE9UwR20b64bO6Q9JgtHksrz3bphGByXReITmXmggmF8PZx8vEDo5G6qXhLL/jVBWB/4GBYL7GaptkT1y+wBBnuE8KbDoFvuT5z06YDm6WAkkTe3X5sT9E2VXXqUhzDCID5KEpTWH8a2yriogA+4wiGZlp0Lqf98t5pYXoHtB8P8N6YZeyoVDH5FWvAGgW+Sp9tpY7e75CnH+F1QjS5PrG6XRaplV6YAohYvADv0iIhEf/yQZRGdZiVqaLO4j0cSvHz64Wf2mK4J0zon0gfNKV27Dfx939uVo7mp+T7yYf21szr1ZRg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rrvoG6XJG9GvrrjFYc0w7yB9sE3S2LVuRgP2ucUWKVE=;
- b=eO0ptMnadTJOYqoLy7t19fJtkO6R4KL2lInqbaMMjRYZ6Os0DTotyJGiJIz+iLzB37xTjatKGRQqs1rQkMF621YGqvfOgtM+J15ohRPv3m4oH5lRY7egp0bIcdN10MrUuUW938yEorjSHFFrQhBXsnD7VmX/f+CfeyZjlav9iXC1iHYiDubrN8/6N2AxJq19M4T5TxOCdT87AiUug3sfEsyWBzYV0RuPZkbAHH4mYih9bSpjQ3/qHblLyq8WisDLZVcw7ziocBs+CeuhQOqGsLnkF7ZbSVs3jeblwLifNqdEog5YqLTyBe84wO4XOZkKphNzqlUR5ul/75x+uxVYNw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rrvoG6XJG9GvrrjFYc0w7yB9sE3S2LVuRgP2ucUWKVE=;
- b=oE1yZqTzrjIwH4d0/6vMAj3k/rBhYEq5Ko5Sd+QuF+ujVyF4AlwxGpMEV4qdDSeMVT2erE1s5vuL3g2egDlt1VcTBTMohIriBoHh7v9QUqIork3PBnWJzeHlJqAQcYNEQrLFAchtfhrsPywjqF37AiFuSpn2WLOlEW0i5npGFWg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- SA1PR12MB7342.namprd12.prod.outlook.com (2603:10b6:806:2b3::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7362.24; Tue, 5 Mar 2024 15:10:16 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::d709:cb7d:2612:bb27]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::d709:cb7d:2612:bb27%5]) with mapi id 15.20.7362.019; Tue, 5 Mar 2024
- 15:10:16 +0000
-Message-ID: <87abadb2-aa08-3a79-e1a2-4031b2c7e791@amd.com>
-Date: Tue, 5 Mar 2024 20:40:08 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v6 08/15] iommu/amd: Enable PCI features based on attached
- domain capability
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
- wei.huang2@amd.com, jsnitsel@redhat.com
-References: <20240209112930.63663-1-vasant.hegde@amd.com>
- <20240209112930.63663-9-vasant.hegde@amd.com>
- <20240305003219.GC9225@ziepe.ca>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <20240305003219.GC9225@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0045.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:22::20) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="tbaTYFD4"
+Received: from meshulam.tesarici.cz (unknown [213.235.133.40])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 4351F1C8F14;
+	Tue,  5 Mar 2024 16:15:50 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1709651755; bh=y/6VHNYbM2dXn3PZSaRABe1IKBrYRIArcEvPm87Sib0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=tbaTYFD4/j/2AsvvEEy0V7hmQraCBh0oPW8S3bg9ao+U0sxxiUVzx2qROocYHuEll
+	 MUtixg6f/o4+5552CX0vF4BXq08ZxDF9np97Cp96vhm5XT9/+Eg8xBlZGLEkSkQwCb
+	 C9P59wKcFnPcNRdum+Jp9h3/Pp7u8FFVSoaHmOGOYCQePv8cn//7twrNZnbpTOAh1f
+	 20n37jIrYUWkmwQn+Z+gkPMwpNks00ryWscUju6o0wZ+gNy50wYxIgDMQUhQ5IASYf
+	 qyKp4nyjGA1TE4bFoJKV6N9NljCp6Z01AqNXFQuEPvvd52WtJ75jegLNbgrFpsOcuR
+	 cOEwoTek0Csjg==
+Date: Tue, 5 Mar 2024 16:15:41 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Michael Kelley <mhklinux@outlook.com>, Will Deacon <will@kernel.org>,
+ Christoph Hellwig <hch@lst.de>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, Petr Tesarik
+ <petr.tesarik1@huawei-partners.com>, "kernel-team@android.com"
+ <kernel-team@android.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Dexuan Cui
+ <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH v5 6/6] swiotlb: Remove pointless stride adjustment for
+ allocations >= PAGE_SIZE
+Message-ID: <20240305161541.5cb83203@meshulam.tesarici.cz>
+In-Reply-To: <555d0e55-a8f8-446d-ab1a-f05e50b33477@arm.com>
+References: <SN6PR02MB4157314F142D05E279B7991ED45F2@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240229154756.GA10137@lst.de>
+	<20240301163927.18358ee2@meshulam.tesarici.cz>
+	<20240301180853.5ac20b27@meshulam.tesarici.cz>
+	<8869c8b2-29c3-41e4-8f8a-5bcf9c0d22bb@arm.com>
+	<20240301194212.3c64c9b2@meshulam.tesarici.cz>
+	<SN6PR02MB41571DA1EE99BFAA65869024D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240304120055.56035c21@meshulam.tesarici.cz>
+	<ffd7646b-37b1-4cd2-822a-848b36b076c9@arm.com>
+	<20240304165506.49e3b2d3@meshulam.tesarici.cz>
+	<20240304160210.GB21077@willie-the-truck>
+	<SN6PR02MB41571F68F8F9E003C4359948D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<b63d4332-b659-4897-83c7-04e5ad397a69@arm.com>
+	<SN6PR02MB41574A920D7511D4E5DCE813D4232@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<555d0e55-a8f8-446d-ab1a-f05e50b33477@arm.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SA1PR12MB7342:EE_
-X-MS-Office365-Filtering-Correlation-Id: 253993e0-86ae-482a-4dc4-08dc3d265d3e
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	LuDKIvzUIiDkdpu3xmPMKHkTwuNfEBCod7EtY6UHdeJoLMl5ReOJCkOfZgzz5MGZr4a+l00k5fJERTij5Y2czdRISueinGyLWKSw08rt00+bhbeohLpOXQGc43C8SayTbfF1ClkuvpyISIV9HQOJY5vQUUgXzvCTYHQvkGPVBc9KhJjqDT7FaoHJIdLAMukQeqojVttmvGFIOl4EjQf4WyETAtEOXDbDfTOx7JcnPi6ujfoBWX9Pdp9d4cnrax6wEOuWnQhF4kIbFjCccid8S/Hqg9hGpSs5wbtEb2pHqOdgCASM6pjaaUSw4WlrSzDyCSYfag2fQzUbXkLbZR+Br8IoKUH7d1h5zhVHhX7Ip+VO+KCsXLIATeuMkYhMtdMqbDgad8jvyS/Og2nesNFsjFBmx0Qo+NxRTOEK2pG2geukwmF8k2Qw/54uW9BSSWy8/N9EUmQzihFPJC4KxCiq1Y+NFsF6b4pO6zAqcktQhyoDESeDMCY/w1rWBG8TB+nWEIj7fCWHXZNq1aocShV2MahzFjfCB9Ydl+FpWnKQH+tYhIm1DpGRtIoCabHWecat632QXdyZnimJ8p/tUpEbnqIjV+63ngPYfbYbUt42XNjxtxT+NMJGh5jkI4nMwBwYxEvO8iGT2RtlPaocdmpYyJGRxIpHtairrPY8MO3+TdI=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Nk4vbXZ6N0tqRzcxMm5tdVNjRXJrbkZmWnRYTTRyL3M1Y2RtSy9YWDdxdmNL?=
- =?utf-8?B?RDBZQmhncWQzTWkvTEtMWHRWY1NncWVZU2d1bW41SkNzRDRnOWYzZ0dOZHBu?=
- =?utf-8?B?K2lKcXRIekNZUTdJOEFVUjFJZ2U5SUV3YzdUNy9SY21DNy9CSmllTkxKTUVq?=
- =?utf-8?B?MFhBTzhRU0MyNGU5aWlxU3E2cUk3dUw0cFphZFJhZk1qd21rTWVtcjhQY2NF?=
- =?utf-8?B?YitIdWpCMWdBY0FORzl2eUdValgwZ0M3UjFFUURqYXBCZGc0cVZYZXVKZ1VD?=
- =?utf-8?B?TE92R2Q0NjNOckJEckpodExCYkR2Ky9EaVdHTW0yMHRrbzVqMHNBTUtZWTNY?=
- =?utf-8?B?cW9aN2gvN2F0M1gwY2JFdWo3cDVMMU9iWVBLVFRyTVRoWDBzSkN4ZlpnN3l5?=
- =?utf-8?B?M2pBRUNBK3J5NE9MQTRyVzVNR3I2ejR0eEVjeWtvS3AvUE5KRXZEUi9rR3dS?=
- =?utf-8?B?VlBySzhGSXF6WHlOODQvU2l1L0owMzg2YUh3N2dLWk9SMzdxNUhnWDk3RDZY?=
- =?utf-8?B?emUwanhjZEF1UzBXNUwxYnFpUlNrV1ZPSjZxVlBnelk1aFpWL0NVdTliSmds?=
- =?utf-8?B?L3lnRVhHS3ptWVpzSGRuY0F6SUJ0azVxQXFBMjluTml6aWpnRnFzeDA0dnBu?=
- =?utf-8?B?bWVKR1c5MXRCV3VlRUJUeGFpc3BlZlFtQ1BSQ1BUbForY0V5bVNkWklCL2xK?=
- =?utf-8?B?cFAxWU9reUZORUt0bE5yZngwRUJ5VEI4N2dhRktGNnF0T1AvcTBTeVptZWlq?=
- =?utf-8?B?TFlTSnVnc2hZb2FGUDBsd2xVaUQrRTdMY01DMEx1bVo1OGxvVVB1WFUzbnYx?=
- =?utf-8?B?RWNwb3BxSEF1WDdtQmUvbVdicnMrc1ZOM1BrZU9Nd2YvK0Y4emNaUjBmS29T?=
- =?utf-8?B?YTcvRVFZRE4vMkRmeWQrdWNYNnFpb3krSUpVSFBMR1hNZVVXVTZGWGlUQXZK?=
- =?utf-8?B?aEFiNzU0ME1MK0JiM3g2R1M1Mmx3QTZadUh1ZHRGUENpMXdXa1phVmRFcDBw?=
- =?utf-8?B?ZFFGMGFlYTJ4UldZOUpyNHBRbVBZQm9pblBta1pldFEwU2ZLbncrR0I2ZlY2?=
- =?utf-8?B?OENzRGlkbkZreFhTcldQUVJSQnovZXlha3JsdU9DN2RrZzc0eFBaZzd2MkVo?=
- =?utf-8?B?QlEzYkdCejdMMk1pbmR6eXlDNGMvN1VhYWNiRDcwTzMwSWlRZ0dQeFd1N0Z6?=
- =?utf-8?B?R1I2MjV1TzdQWExjNjVud1hqaW5tdHVOTWhMWEtOWGhENE9nMURpakFETFZN?=
- =?utf-8?B?dGRvYUxaem1qdmNocTNoVEVEL2pBc3BXc2U4bDVHUkNNL3oxTnA2ZzVOVHh0?=
- =?utf-8?B?a1VYUFUvK3pFcUFNSXgzUTVrVzJwTm03OGVtZm56cERKb3VtR0RDOUpuNlRO?=
- =?utf-8?B?c3dtZWJaY3hEbGkyY21CRytLUGRjT3o3RXRmRHNRdmc3SGRiU2d5U3hPamc2?=
- =?utf-8?B?WUNvNmRJQ3NhZEpMdDJXUy9BS3JuLzdLbXF0cnpYV0k2aFRnNzJHNDhYbDJx?=
- =?utf-8?B?L1Z6MGV5a2xWNFArbWZWNEl0TFFVR0t4eHNyaHZzcFNUZDYrL2RyOUxqV1pl?=
- =?utf-8?B?N0dGZnU3R0FiYzZOYi9MdnRYNFEzTlU1RXVlam5BUy9zc3lPRUp6a0w1V0FL?=
- =?utf-8?B?RS93S0daRThYT1Q5SHpxRHZGMjRjNlFNckRyc3ltQW82OStVNGJKL2tnT1RS?=
- =?utf-8?B?QjdsdHNjTFpVcE9GcmlBS1RzeExMb1VNeC9HcDQzdGhJd1ZiY1I2QjZoQmQ2?=
- =?utf-8?B?RmE1dVFJYi83V1U1RXBHQStNdFhuYitOS21DNXJnOWhLcFhwaFVHNmZtUEZt?=
- =?utf-8?B?OTJHWGgrTEppSW16SWUwOFptd2l5ZXNZM0tNVGw5Q0VHSmlPQ2VOTVUvYzJR?=
- =?utf-8?B?VDFGQzdpVnlZbi93OVV0UEErM0ZOeHdJMDNCem9tZ2NjN3RHUFVxb1JidnNH?=
- =?utf-8?B?K0NjVW92UmhPbVFvQmQ3eW9mcDY2TDMxbWxYQ09uQW9lYXZyZHNaWVIwN3d6?=
- =?utf-8?B?M0ZZMUhaZTYrR1ZjY0ZsZ3Azeis1Ym5jcFRtYzNFUmU4WDBjRHFqalRtYTli?=
- =?utf-8?B?SElpQnV3bklXcUF6czB0SkFJNnhCNG5pZUdpa2pXb29jZk9oSHhLK1RodlFZ?=
- =?utf-8?Q?KuHtOo0bwcHsCFTsYVzW7Uw4F?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 253993e0-86ae-482a-4dc4-08dc3d265d3e
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2024 15:10:16.5965
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DHrf5ulEQoPZTOIBZFHxjRzfg2Ys0Y+OugZRuzjwlYHRUNHIy3/5/Mqg9LaY+DMcwLa43/Ik09LPuFLMFsM6iw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB7342
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Jason,
+On Tue, 5 Mar 2024 11:20:13 +0000
+Robin Murphy <robin.murphy@arm.com> wrote:
 
+> On 2024-03-04 6:22 pm, Michael Kelley wrote:
+> > From: Robin Murphy <robin.murphy@arm.com> Sent: Monday, March 4, 2024 8=
+:54 AM =20
+> >>
+> >> On 04/03/2024 4:10 pm, Michael Kelley wrote: =20
+> >>> From: Will Deacon <will@kernel.org> Sent: Monday, March 4, 2024 8:02 =
+AM =20
+> >>>>
+> >>>> Hi folks,
+> >>>>
+> >>>> On Mon, Mar 04, 2024 at 04:55:06PM +0100, Petr Tesa=C5=99=C3=ADk wro=
+te: =20
+> >>>>> On Mon, 4 Mar 2024 13:37:56 +0000
+> >>>>> Robin Murphy <robin.murphy@arm.com> wrote: =20
+> >>>>>> On 04/03/2024 11:00 am, Petr Tesa=C5=99=C3=ADk wrote:
+> >>>>>> [...] =20
+> >>>>>>>> Here's my take on tying all the threads together. There are
+> >>>>>>>> four alignment combinations:
+> >>>>>>>>
+> >>>>>>>> 1. alloc_align_mask: zero; min_align_mask: zero =20
+> >>>>
+> >>>> Based on this ^^^ ...
+> >>>> =20
+> >>>>>>>> xen_swiotlb_map_page() and dma_direct_map_page() are #1 or #2
+> >>>>>>>> via swiotlb_map() and swiotlb_tbl_map_single()
+> >>>>>>>>
+> >>>>>>>> iommu_dma_map_page() is #3 and #4 via swiotlb_tbl_map_single()
+> >>>>>>>>
+> >>>>>>>> swiotlb_alloc() is #3, directly to swiotlb_find_slots()
+> >>>>>>>>
+> >>>>>>>> For #1, the returned physical address has no constraints if
+> >>>>>>>> the requested size is less than a page. For page size or
+> >>>>>>>> greater, the discussed historical requirement for page
+> >>>>>>>> alignment applies. =20
+> >>>>
+> >>>> ... and this ^^^ ...
+> >>>>
+> >>>> =20
+> >>>>> I believe this patch series is now good as is, except the commit
+> >>>>> message should make it clear that alloc_align_mask and min_align_ma=
+sk
+> >>>>> can both be zero, but that simply means no alignment constraints. =
+=20
+> >>>>
+> >>>> ... my (possibly incorrect!) reading of the thread so far is that we
+> >>>> should preserve page-aligned allocation in this case if the allocati=
+on
+> >>>> size is >=3D PAGE_SIZE.
+> >>>>
+> >>>> Something like the diff below, to replace this final patch?
+> >>>>
+> >>>> Will
+> >>>> =20
+> >>>> --->8 =20
+> >>>>
+> >>>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> >>>> index c381a7ed718f..67eac05728c0 100644
+> >>>> --- a/kernel/dma/swiotlb.c
+> >>>> +++ b/kernel/dma/swiotlb.c
+> >>>> @@ -992,6 +992,14 @@ static int swiotlb_search_pool_area(struct devi=
+ce
+> >>>> *dev, struct io_tlb_pool *pool
+> >>>>           BUG_ON(!nslots);
+> >>>>           BUG_ON(area_index >=3D pool->nareas);
+> >>>>
+> >>>> +       /*
+> >>>> +        * Historically, allocations >=3D PAGE_SIZE were guaranteed =
+to be
+> >>>> +        * page-aligned in the absence of any other alignment requir=
+ements.
+> >>>> +        * Since drivers may be relying on this, preserve the old be=
+haviour.
+> >>>> +        */
+> >>>> +       if (!alloc_align_mask && !iotlb_align_mask && alloc_size >=
+=3D PAGE_SIZE)
+> >>>> +               alloc_align_mask =3D PAGE_SIZE - 1;
+> >>>> + =20
+> >>>
+> >>> Yes, I think that should do it. =20
+> >>
+> >> In principle it might be more logical to fudge this into
+> >> iotlb_align_mask rather than alloc_align_mask =20
+> >=20
+> > I'm not understanding what you are getting at, but maybe we are
+> > interpreting the historical page alignment requirement differently.
+> > I think of the page alignment requirement as independent of the
+> > orig_addr -- the returned physical address should always be exactly
+> > page aligned, and not offset to match bits in orig_addr.  If that's
+> > the case, then implementing the page alignment via
+> > alloc_align_mask is logically the right place. Fudging into
+> > iotlb_align_mask would do matching of bits in orig_addr.
+> >=20
+> > Or is there something else I'm not considering? =20
+>=20
+> In short, it's that alloc_align_mask is concerned with how slots are=20
+> allocated, while min_align_mask is concerned with where the data itself=20
+> is bounced (which may also place certain constraints on allocation).
+>=20
+> The reason this page-alignment was here in the first place was seemingly=
+=20
+> to serve the original swiotlb_alloc() path, and thus it could be=20
+> considered functionally equivalent to what is now alloc_align_mask.=20
+> However the side-effect it happened to also have for streaming mappings=20
+> was to prevent sufficiently large page-aligned buffers being bounced to=20
+> a non-page-aligned address, which apparently managed to work well enough=
+=20
+> for NVMe until 64K pages became more common and ruined things by being=20
+> too big, and we formalised *that* desired effect into min_align_mask.
+>=20
+> I get that forcing io_tlb_align mask here would introduce a stronger=20
+> constraint which affects non-page-aligned buffers as well, and wanting=20
+> to avoid that is perhaps a reasonable concern, so once again I'm really=20
+> just arguing semantics. Given the head-scratching we've been through=20
+> over this already, I think it would be valuable to at least be clearer=20
+> that a significant part of the "old behaviour" is to do the right thing=20
+> for swiotlb_alloc(), which is very much still current and necessary, but=
+=20
+> the reason we're not setting alloc_align_mask there is because doing it=20
+> here also preserves this legacy side-effect which acts as a limited=20
+> version of min_align_mask to preserve page alignment when bouncing.
 
-On 3/5/2024 6:02 AM, Jason Gunthorpe wrote:
-> On Fri, Feb 09, 2024 at 11:29:23AM +0000, Vasant Hegde wrote:
->> Commit eda8c2860ab ("iommu/amd: Enable device ATS/PASID/PRI capabilities
->> independently") changed the way it enables device capability while
->> attaching devices. I missed to account the attached domain capability.
->> Meaning if domain is not capable of handling PASID/PRI (ex: paging
->> domain with v1 page table) then enabling device feature is not required.
->>
->> This patch enables PASID/PRI only if domain is capable of handling SVA.
->> Also move pci feature enablement to do_attach() function so that we make
->> SVA capability in one place. Finally make PRI enable/disable functions as
->> static functions.
-> 
->> @@ -2036,6 +2038,7 @@ static int do_attach(struct iommu_dev_data *dev_data,
->>  		     struct protection_domain *domain)
->>  {
->>  	struct amd_iommu *iommu = get_amd_iommu_from_dev_data(dev_data);
->> +	struct pci_dev *pdev;
->>  	int ret = 0;
->>  
->>  	/* Update data structures */
->> @@ -2050,10 +2053,16 @@ static int do_attach(struct iommu_dev_data *dev_data,
->>  	domain->dev_iommu[iommu->index] += 1;
->>  	domain->dev_cnt                 += 1;
->>  
->> +	pdev = dev_is_pci(dev_data->dev) ? to_pci_dev(dev_data->dev) : NULL;
->>  	if (pdom_is_sva_capable(domain)) {
->>  		ret = init_gcr3_table(dev_data, domain);
->>  		if (ret)
->>  			return ret;
->> +
->> +		if (pdev)
->> +			pdev_enable_caps(pdev);
-> 
-> But here we are turning PRI on for an IDENTITY domain and for a v2
-> domain that doesn't have a PRI handler. This is not technically what
-> we want to see, the PRI capability at the device should only be turned
-> on when a PRI handler is available in the SW side. Otherwise PRI
-> should be off and non-present ATS responses should fail in the device.
+I'm confused. Doesn't PATCH 3/6 of this series change swiotlb_alloc()
+to use alloc_align_mask (and finally do it properly for sizes greater
+than page size)?
 
-We are setting up handler right after enabling capability for both IDENTIFY and
-v2 domain as both can support SVA mode.
+Anyway, the placement of streaming DMA buffers is not under control of
+the device driver IIUC. These buffers may have been allocated without
+even knowing that they would be once used for I/O. I cannot imagine how
+a device driver could rely on its physical address beyond offfset
+within a page. And even then it's subtly broken, because the size of
+the mapping may be less than PAGE_SIZE (e.g. 512 bytes as traditional
+sector size under direct I/O). Even if we keep the alignment based on
+mapping size for now, it should probably be deprecated in favour of
+min_align_mask.
 
-> 
-> ATS is not like that, ATS should be enabled whenever the system iommu
-> can support it. For AMD I guess that is always?
-
-Yes. If device supports ATS then its enabled always.
-
-
-> 
-> Also, PASID enablement looks like the wrong spot too, it should be
-> done in the probe_device() callback and stay enabled. The bit is set
-> if the IOMMU HW can decode the PASID TLP. Ie don't enable it on old
-> IOMMU HW that can't understand PASID.
-
-Our V1 page table is not compatible with PASID. Hence currently its done in
-attach_device path.
-
-> 
-> However all of this is basically pre-existing problems at this point
-> and this patch is improving things as they are so
-
-Correct. I will revisit some of these code paths later.
-
--Vasant
-
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> Jason
+Petr T
