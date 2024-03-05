@@ -1,53 +1,53 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2E4C5B684
-	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 12:27:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 048885B68B
+	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 12:27:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709641654; cv=none; b=i/dGTH6BL/EjKPpgXn1sGtQhE8ssD7IvHjXABpcujXmd21B5fdXBqVkdo6kaLFhLWjnURVfTfWdj5OmlF+nqwTaN+enKr2/TsiTSB0d7GV/9O8XRxttMTZrp80+X2CJ6NU3j0ZxHgPc4aps51KYPDfrRZcuvbgj6cNwmpabVaqc=
+	t=1709641655; cv=none; b=YiYyKpr3mA7Z3C5tPH32+OS0uN1K2Yt3dZZqyQOl5BWkjGXoA5dYJ4BDzhIYaXk6dof9NCkmwzE0ffu4VJbmghOZ0WDJk6yswhwzXchBnEzXYdVxvpFVjiP7kzaMonIH8VMuI4ZC1rm24nso4r56EKVi4MAYhc+OLEL0c67HhuY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709641654; c=relaxed/simple;
-	bh=Wea79WtDueDcsbl7gYJzerSqx45NPTieanVyZzD4qvA=;
+	s=arc-20240116; t=1709641655; c=relaxed/simple;
+	bh=maKNjl3/k7YtNAhNUBytDuUXRmMI86juobu03Z7Ayi0=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=PnJOzkpGeOqxC9Gi8O6QFg7WR39XeRJ44SjzqTuPiWi2Iod+FDJi0u1gUzhAjNkKAd4tsxMyjXYYZ/94p/wtR1urPx+tCxl09o7Ci2fC265iyuf0EVrpzRO9KKeKHEddAVAbD5PbJdqDjvtmIe8I+cGo/I85mNtQDxEvZmEwBbs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fHtum+OI; arc=none smtp.client-ip=198.175.65.10
+	 MIME-Version; b=Hf687CcAs0ZYyoe7/czp7khVhwjYFglPpiz/VooRmvl5hY8NPqNbemoz6oNNdlFgnlJ3R5OPnadOru5YHbMGmfudMWNxVjPeNUp/A1tFiPQQ3+U7L++4/4MJjgC+v/zQguNm7JSK57Y6YBf7Ni2utEAP2hPs9/TEpsrCBuDIF48=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iKlym7RD; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fHtum+OI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iKlym7RD"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1709641652; x=1741177652;
+  t=1709641654; x=1741177654;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Wea79WtDueDcsbl7gYJzerSqx45NPTieanVyZzD4qvA=;
-  b=fHtum+OIi8Eub/3wMyZCJgd3qTkjkRBEE4VbcZH1e5ynHn529DPrp+dv
-   IR8Ln5WKekm6OT8/afWRA+ooJfvPT92ON1TS4ieA0V30rcc8zYxw8k6H4
-   t4s/SNt9aO0aEW624u/DLTDDQ7g/Varm5PYF9k+l1Ye33aI0A7XTUj45l
-   LFt4yWQM+GU97yFo/dJwEAdYA8QKfEmOsbvBEAuk+8bf3Co39LpWXNvZt
-   5sQMUEsDp23xCJGTl5Ua7Z9maraxpu8TD/GXfUL1v4XGXwnFD/a8c/Lj6
-   XxrVYxF3z+bqcMULOgW0BQ76bqNEbGMPN5aJJ2W3utD28ZawekwykcSX7
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11003"; a="21648463"
+  bh=maKNjl3/k7YtNAhNUBytDuUXRmMI86juobu03Z7Ayi0=;
+  b=iKlym7RD50XrfGRApYpZBGTUV3HfJacix0vQ7aB8yTRhDpc2rw2BUXGy
+   znYnFtz9OtQVRj8ZYMxa0ZACvGC8tuMVxni5CfH8SPcWYEdbH9HIRvpVh
+   tYkpFeWuVrfCVP5Fi4w2nqrmuqLA/Pz13XyrW70gvSrL/7YFaaWMstPL1
+   1Cq/A8G4zexvmt+RisrrCyO9Xqea9NiLW7BgPjVHwARwTJWFqm1qRSBtq
+   xDJMzDQJ6jrazzw/cASTiFwG5vR9UDPMJzaqHF/7QACf8WkZ60fCbHzlH
+   Wd+iU5Kxw5dWfcyUoQ9ClXFvUrNSsnbwmReow48a9X51M9j5QPaiz73qa
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11003"; a="21648473"
 X-IronPort-AV: E=Sophos;i="6.06,205,1705392000"; 
-   d="scan'208";a="21648463"
+   d="scan'208";a="21648473"
 Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2024 04:27:32 -0800
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Mar 2024 04:27:34 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.06,205,1705392000"; 
-   d="scan'208";a="9330097"
+   d="scan'208";a="9330112"
 Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orviesa010.jf.intel.com with ESMTP; 05 Mar 2024 04:27:30 -0800
+  by orviesa010.jf.intel.com with ESMTP; 05 Mar 2024 04:27:32 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Ethan Zhao <haifeng.zhao@linux.intel.com>,
 	Eric Badger <ebadger@purestorage.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 3/8] iommu/vt-d: Improve ITE fault handling if target device isn't present
-Date: Tue,  5 Mar 2024 20:21:16 +0800
-Message-Id: <20240305122121.211482-4-baolu.lu@linux.intel.com>
+Subject: [PATCH 4/8] iommu: Add static iommu_ops->release_domain
+Date: Tue,  5 Mar 2024 20:21:17 +0800
+Message-Id: <20240305122121.211482-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240305122121.211482-1-baolu.lu@linux.intel.com>
 References: <20240305122121.211482-1-baolu.lu@linux.intel.com>
@@ -59,76 +59,85 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+The current device_release callback for individual iommu drivers does the
+following:
 
-Because surprise removal could happen anytime, e.g. user could request safe
-removal to EP(endpoint device) via sysfs and brings its link down to do
-surprise removal cocurrently. such aggressive cases would cause ATS
-invalidation request issued to non-existence target device, then deadly
-loop to retry that request after ITE fault triggered in interrupt context.
-this patch aims to optimize the ITE handling by checking the target device
-presence state to avoid retrying the timeout request blindly, thus avoid
-hard lockup or system hang.
+1) Silent IOMMU DMA translation: It detaches any existing domain from the
+   device and puts it into a blocking state (some drivers might use the
+   identity state).
+2) Resource release: It releases resources allocated during the
+   device_probe callback and restores the device to its pre-probe state.
 
-Devices TLB should only be invalidated when devices are in the
-iommu->device_rbtree (probed, not released) and present.
+Step 1 is challenging for individual iommu drivers because each must check
+if a domain is already attached to the device. Additionally, if a deferred
+attach never occurred, the device_release should avoid modifying hardware
+configuration regardless of the reason for its call.
 
-Fixes: 6ba6c3a4cacf ("VT-d: add device IOTLB invalidation support")
-Reviewed-by: Dan Carpenter <dan.carpenter@linaro.org>
-Signed-off-by: Ethan Zhao <haifeng.zhao@linux.intel.com>
-Link: https://lore.kernel.org/r/20240301080727.3529832-4-haifeng.zhao@linux.intel.com
+To simplify this process, introduce a static release_domain within the
+iommu_ops structure. It can be either a blocking or identity domain
+depending on the iommu hardware. The iommu core will decide whether to
+attach this domain before the device_release callback, eliminating the
+need for repetitive code in various drivers.
+
+Consequently, the device_release callback can focus solely on the opposite
+operations of device_probe, including releasing all resources allocated
+during that callback.
+
+Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Link: https://lore.kernel.org/r/20240305013305.204605-2-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/dmar.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ include/linux/iommu.h |  1 +
+ drivers/iommu/iommu.c | 19 +++++++++++++++----
+ 2 files changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index d14797aabb7a..36d7427b1202 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1273,6 +1273,8 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
- {
- 	u32 fault;
- 	int head, tail;
-+	struct device *dev;
-+	u64 iqe_err, ite_sid;
- 	struct q_inval *qi = iommu->qi;
- 	int shift = qi_shift(iommu);
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index af6c367ed673..2e925b5eba53 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -585,6 +585,7 @@ struct iommu_ops {
+ 	struct module *owner;
+ 	struct iommu_domain *identity_domain;
+ 	struct iommu_domain *blocked_domain;
++	struct iommu_domain *release_domain;
+ 	struct iommu_domain *default_domain;
+ };
  
-@@ -1317,6 +1319,13 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
- 		tail = readl(iommu->reg + DMAR_IQT_REG);
- 		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index eb50543bf956..098869007c69 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -462,13 +462,24 @@ static void iommu_deinit_device(struct device *dev)
  
-+		/*
-+		 * SID field is valid only when the ITE field is Set in FSTS_REG
-+		 * see Intel VT-d spec r4.1, section 11.4.9.9
-+		 */
-+		iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
-+		ite_sid = DMAR_IQER_REG_ITESID(iqe_err);
+ 	/*
+ 	 * release_device() must stop using any attached domain on the device.
+-	 * If there are still other devices in the group they are not effected
++	 * If there are still other devices in the group, they are not affected
+ 	 * by this callback.
+ 	 *
+-	 * The IOMMU driver must set the device to either an identity or
+-	 * blocking translation and stop using any domain pointer, as it is
+-	 * going to be freed.
++	 * If the iommu driver provides release_domain, the core code ensures
++	 * that domain is attached prior to calling release_device. Drivers can
++	 * use this to enforce a translation on the idle iommu. Typically, the
++	 * global static blocked_domain is a good choice.
++	 *
++	 * Otherwise, the iommu driver must set the device to either an identity
++	 * or a blocking translation in release_device() and stop using any
++	 * domain pointer, as it is going to be freed.
++	 *
++	 * Regardless, if a delayed attach never occurred, then the release
++	 * should still avoid touching any hardware configuration either.
+ 	 */
++	if (!dev->iommu->attach_deferred && ops->release_domain)
++		ops->release_domain->ops->attach_dev(ops->release_domain, dev);
 +
- 		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
- 		pr_info("Invalidation Time-out Error (ITE) cleared\n");
+ 	if (ops->release_device)
+ 		ops->release_device(dev);
  
-@@ -1326,6 +1335,19 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
- 			head = (head - 2 + QI_LENGTH) % QI_LENGTH;
- 		} while (head != tail);
- 
-+		/*
-+		 * If device was released or isn't present, no need to retry
-+		 * the ATS invalidate request anymore.
-+		 *
-+		 * 0 value of ite_sid means old VT-d device, no ite_sid value.
-+		 * see Intel VT-d spec r4.1, section 11.4.9.9
-+		 */
-+		if (ite_sid) {
-+			dev = device_rbtree_find(iommu, ite_sid);
-+			if (!dev || !dev_is_pci(dev) ||
-+			    !pci_device_is_present(to_pci_dev(dev)))
-+				return -ETIMEDOUT;
-+		}
- 		if (qi->desc_status[wait_index] == QI_ABORT)
- 			return -EAGAIN;
- 	}
 -- 
 2.34.1
 
