@@ -1,55 +1,55 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+Received: from mail-yb1-f202.google.com (mail-yb1-f202.google.com [209.85.219.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD4C9152794
-	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 18:26:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D36FD152DE3
+	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 18:26:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709749565; cv=none; b=TvbNCYW5C7j9feQlH7HI2N6AAvWzvrIuO1nR5TpjjtiBQhVgj/DYKAlygdTEFp1RMboaKqcYtUQIJRBvnG/IyvCzdZ9eqp7bAK4Ix0daF08cuZGU7kYuxF4LNI5RtZMEPwQHR52V4m0qZf0E0NfCipXl7WawB5201jpVDtJsfmw=
+	t=1709749567; cv=none; b=Y4xip8w8j+4qyvqsF7XjM1EmB8xlmM7fFjn+6hlgKSvlbpTOOLjqZx8f55WYkQnwzhKp9sLGasYi7g+AgM8esdIV29Kwgk/GkalmlWfcSy95+laP3kuy6p1/LtF/oGHv/eGHFBJyQxWYJHzrEE79pajXJSiSDYFzE+jiGx5RTnA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709749565; c=relaxed/simple;
-	bh=x2ZpLX5yONr7aQCOCLA0e041Rtm6gz/YdLIaAuCTmqI=;
+	s=arc-20240116; t=1709749567; c=relaxed/simple;
+	bh=WZ9Wfhph9SqMvpwjpOilQz7uq5chx2Sd29yINS9foKA=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=Hm9GZI6vt7Dvi7ljbQBRX9A+3gkyr30Srq5Jxywpp9KVhotXRgAUcvtMwhua8MnY1/9nvUzhU7bhxb/F2zykNfcs/GegJ4P1xQjARNgg14nhF7r0wGmeaO/cxKJz/2rINeqMWTXHSKDNk4VuZBAaHie0BV68TTZPrfpZScd+amM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pv3smSik; arc=none smtp.client-ip=209.85.128.201
+	 To:Cc:Content-Type; b=XMuzQaXS8iu/pbqzDeM4C0fbfAv3DT/W3lDFEeuIPygdPedF9BWdF9jY4HC/MJBMVJ45F8amDl6exvTpjk87a5veYQ82r6jqSSLF7AVbaMVxzGd7EEF9uhBaDMFhYh8WP1vWzPsjOeZrMh5QJ2s0fy0u4VXaJN7nUNYZy7A5/FQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=03trG0nP; arc=none smtp.client-ip=209.85.219.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pv3smSik"
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-60832a48684so472947b3.1
-        for <iommu@lists.linux.dev>; Wed, 06 Mar 2024 10:26:02 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="03trG0nP"
+Received: by mail-yb1-f202.google.com with SMTP id 3f1490d57ef6-dcc0bcf9256so9589729276.3
+        for <iommu@lists.linux.dev>; Wed, 06 Mar 2024 10:26:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1709749562; x=1710354362; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1709749564; x=1710354364; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Jq5e0nRnwdhD4a9FMTFm9DydRhfgPVhlZe9ht+OK6P8=;
-        b=pv3smSikHf8QAiL9CduiOg2PB8QY2I8xtVGJn8mgOtLiHNYQHoE3NIeThc/8l768rt
-         3QWh0xaGj+T/fCEGY0tmOYaQe+M/4yjgtPeBe3zm1hjR5b9k/DlZAwtOYT6DyX74kJ3v
-         1d6yLkis1S3zXU+iuZyESmLsTnmv+EnbyzLoNrsfHVdC/FhNGrdWq93R4qZGXaS+T/JN
-         bDj3ZuhRqEmapCSsTfXyrSklo9K/7QXNgdqepbJvuGMSlsioG1UMJY7C8x2JeLsv+10d
-         +RXya9xne2Zf0dccAvHkFQOqoyVpVc/G0gpOxip3fooyE/6ZeCiZgnrqwPY/JgMEiq4n
-         Yp6g==
+        bh=yGhey761h+yk0goaaYaIkNpiVVUjQ3rocN1HojLD7sY=;
+        b=03trG0nP0ounrufVhXYVvP/BkX5wwbnyFK6/7lwVa6ay3h7DmyokyhaL5afDMwqXob
+         vzGFJIBsLaDwC5PE/cN/HSe63GdsDYFatKwW2uDoIKHF/IebpfcArq8cIbyujJPeaDji
+         WftOykPNJn2itxfk4xgIQes9xCZQw5Dhws5SPbhmcjto6/9ztuJER/IbJnm58lG4ni5p
+         Z0DszXbMdHsh9CQ1s4dtmwhezGV84FpMWcYRowRrdl5LvgpxD1NjarJlwS0K8uKht3S5
+         dSsq+VRcB4MOzlbA0x+wdide8ghXXFOhEq6B98eU/RgajcYCbBGDNAtIi34mS2gM+UYK
+         h70A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709749562; x=1710354362;
+        d=1e100.net; s=20230601; t=1709749564; x=1710354364;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Jq5e0nRnwdhD4a9FMTFm9DydRhfgPVhlZe9ht+OK6P8=;
-        b=unnVvcakqSV0A18iO+XWFoFs/1FlnnzeANTSWPReMkn0IrhYRYRbjBAZPkFkfP5WWB
-         kyLFZ9q4nYUxZ9yy1jgUA0eo86TIwFmOrWQTyvfFNIBnHgqcNmrHq7wFQJpbpsJWj1zY
-         vpKe9AFP0AxAsOUG34ilfYOvWiiHyZCL8ZwGHX6U9D4V6UiGxRXahKA6PFBS88YPtK8a
-         FkrK/JAe0GsFlvvcb42tZb5y5CWg4t+M6I7fNnN4DNd28qYGbGiURlMAWDi1iCaSl+9c
-         uyViwkzg6Qcpg4n2XN/fKaApFwmzJkIGjqhStaQ6yAf2Fu/dGK/QEjYI9/s0IdV0lt4Y
-         WNbw==
-X-Forwarded-Encrypted: i=1; AJvYcCWxJXWzqUjMQQRMdxVc9Y3xcXY8ZpdSVOz4AVeycx3T1DQQxIEJCFvzqO7Pux/MgMt72RUCjtlhrTXayJ5Yo0J6eJA//5k=
-X-Gm-Message-State: AOJu0YwBYR33yG+hrgEfOlwKobtWTWvGnroIOzOytbyS7iZbgADjD80O
-	V34MP8Y48Vr/w3SqeUX5Kp9NrDtWIpSFgDbrzyOXg6MJ3UhIn6wb97vrEBkRBBkwFrZVSGR6Yup
-	6tg==
-X-Google-Smtp-Source: AGHT+IHvZ8kVm6l/VDxZg87uGkFZ91C+i4oKHcDrWRMYqfh/2LVOqc/iUX+s1MQiLrOuG91osjkHSkoZjwg=
+        bh=yGhey761h+yk0goaaYaIkNpiVVUjQ3rocN1HojLD7sY=;
+        b=Q2iri2VPwgyK1s7vF7/OIy2iUFzBEKDHaGCv6GA/IUe50bNTNN8bxjFEP0Xq1WJiVA
+         dSiFUpWsiPcE1bxrBAjmTWU5cgs2Uv74BYJV+WCLAlu6YCFsEjk8YtxNnhOxpgO/7zEb
+         TGwU8vJSIilhkb8CbuHoyafblgA7F7ScvGOPQMnwN4gDmlBDhJ+RAK0OJJkzXsWMxzq7
+         RtfYXdTQbEsLmX1fo3SbCf+sjRxnvHlRpZm7hYO3DBkCwG4mbWjzzKx3dXjLizaU/YXM
+         YvkhH6minR+G0F1D9hBr81FpYvIMSVG3c6OIjvtNrJVSTYk5qZ1C47V8VBWRWB8e8QzE
+         mE2A==
+X-Forwarded-Encrypted: i=1; AJvYcCW/qJDDMvLAJZ35HFGS5fOlv9+YsdDuFAi7KmoR0GQp4aszC7Gmet2QiiO1TqajHsBumVUWZBFvvDepr4TWJ5uBsiuiVlw=
+X-Gm-Message-State: AOJu0Yzp2QbW4hLjUC40ri32B1mb6DvCvTtAxVj9EG/7nKVOUQeNnNO0
+	bzZsHoo1nrp3W5IVkByanLPH+RgMMKu6Y32ytjOFhwu8emWNR0MzxkKgD2pZMDVJrOpgk0xDrHl
+	esw==
+X-Google-Smtp-Source: AGHT+IGSwvnidbX0/rOv0INS3he6frJgJB+IsYvN52GAPjMVdVuwPoKCHiyeHTzcN2rL9OOwKUgSVjL4/4I=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:85f0:e3db:db05:85e2])
- (user=surenb job=sendgmr) by 2002:a05:690c:fce:b0:609:e1f:5a42 with SMTP id
- dg14-20020a05690c0fce00b006090e1f5a42mr3594072ywb.2.1709749561828; Wed, 06
- Mar 2024 10:26:01 -0800 (PST)
-Date: Wed,  6 Mar 2024 10:24:34 -0800
+ (user=surenb job=sendgmr) by 2002:a25:2fc1:0:b0:dc6:ebd4:cca2 with SMTP id
+ v184-20020a252fc1000000b00dc6ebd4cca2mr528159ybv.11.1709749563843; Wed, 06
+ Mar 2024 10:26:03 -0800 (PST)
+Date: Wed,  6 Mar 2024 10:24:35 -0800
 In-Reply-To: <20240306182440.2003814-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,9 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20240306182440.2003814-1-surenb@google.com>
 X-Mailer: git-send-email 2.44.0.278.ge034bb2e1d-goog
-Message-ID: <20240306182440.2003814-37-surenb@google.com>
-Subject: [PATCH v5 36/37] MAINTAINERS: Add entries for code tagging and memory
- allocation profiling
+Message-ID: <20240306182440.2003814-38-surenb@google.com>
+Subject: [PATCH v5 37/37] memprofiling: Documentation
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -93,50 +92,112 @@ Content-Type: text/plain; charset="UTF-8"
 
 From: Kent Overstreet <kent.overstreet@linux.dev>
 
-The new code & libraries added are being maintained - mark them as such.
+Provide documentation for memory allocation profiling.
 
 Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
 ---
- MAINTAINERS | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ Documentation/mm/allocation-profiling.rst | 91 +++++++++++++++++++++++
+ 1 file changed, 91 insertions(+)
+ create mode 100644 Documentation/mm/allocation-profiling.rst
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f4ddbcdfb29a..03892d8032ca 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -5210,6 +5210,13 @@ S:	Supported
- F:	Documentation/process/code-of-conduct-interpretation.rst
- F:	Documentation/process/code-of-conduct.rst
- 
-+CODE TAGGING
-+M:	Suren Baghdasaryan <surenb@google.com>
-+M:	Kent Overstreet <kent.overstreet@linux.dev>
-+S:	Maintained
-+F:	include/linux/codetag.h
-+F:	lib/codetag.c
+diff --git a/Documentation/mm/allocation-profiling.rst b/Documentation/mm/allocation-profiling.rst
+new file mode 100644
+index 000000000000..8a862c7d3aab
+--- /dev/null
++++ b/Documentation/mm/allocation-profiling.rst
+@@ -0,0 +1,91 @@
++.. SPDX-License-Identifier: GPL-2.0
 +
- COMEDI DRIVERS
- M:	Ian Abbott <abbotti@mev.co.uk>
- M:	H Hartley Sweeten <hsweeten@visionengravers.com>
-@@ -14062,6 +14069,16 @@ F:	mm/memblock.c
- F:	mm/mm_init.c
- F:	tools/testing/memblock/
- 
++===========================
 +MEMORY ALLOCATION PROFILING
-+M:	Suren Baghdasaryan <surenb@google.com>
-+M:	Kent Overstreet <kent.overstreet@linux.dev>
-+L:	linux-mm@kvack.org
-+S:	Maintained
-+F:	include/linux/alloc_tag.h
-+F:	include/linux/codetag_ctx.h
-+F:	lib/alloc_tag.c
-+F:	lib/pgalloc_tag.c
++===========================
 +
- MEMORY CONTROLLER DRIVERS
- M:	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
- L:	linux-kernel@vger.kernel.org
++Low overhead (suitable for production) accounting of all memory allocations,
++tracked by file and line number.
++
++Usage:
++kconfig options:
++ - CONFIG_MEM_ALLOC_PROFILING
++ - CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT
++ - CONFIG_MEM_ALLOC_PROFILING_DEBUG
++   adds warnings for allocations that weren't accounted because of a
++   missing annotation
++
++Boot parameter:
++  sysctl.vm.mem_profiling=0|1|never
++
++  When set to "never", memory allocation profiling overheads is minimized and it
++  cannot be enabled at runtime (sysctl becomes read-only).
++  When CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=y, default value is "1".
++  When CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=n, default value is "never".
++
++sysctl:
++  /proc/sys/vm/mem_profiling
++
++Runtime info:
++  /proc/allocinfo
++
++Example output:
++  root@moria-kvm:~# sort -g /proc/allocinfo|tail|numfmt --to=iec
++        2.8M    22648 fs/kernfs/dir.c:615 func:__kernfs_new_node
++        3.8M      953 mm/memory.c:4214 func:alloc_anon_folio
++        4.0M     1010 drivers/staging/ctagmod/ctagmod.c:20 [ctagmod] func:ctagmod_start
++        4.1M        4 net/netfilter/nf_conntrack_core.c:2567 func:nf_ct_alloc_hashtable
++        6.0M     1532 mm/filemap.c:1919 func:__filemap_get_folio
++        8.8M     2785 kernel/fork.c:307 func:alloc_thread_stack_node
++         13M      234 block/blk-mq.c:3421 func:blk_mq_alloc_rqs
++         14M     3520 mm/mm_init.c:2530 func:alloc_large_system_hash
++         15M     3656 mm/readahead.c:247 func:page_cache_ra_unbounded
++         55M     4887 mm/slub.c:2259 func:alloc_slab_page
++        122M    31168 mm/page_ext.c:270 func:alloc_page_ext
++===================
++Theory of operation
++===================
++
++Memory allocation profiling builds off of code tagging, which is a library for
++declaring static structs (that typcially describe a file and line number in
++some way, hence code tagging) and then finding and operating on them at runtime
++- i.e. iterating over them to print them in debugfs/procfs.
++
++To add accounting for an allocation call, we replace it with a macro
++invocation, alloc_hooks(), that
++ - declares a code tag
++ - stashes a pointer to it in task_struct
++ - calls the real allocation function
++ - and finally, restores the task_struct alloc tag pointer to its previous value.
++
++This allows for alloc_hooks() calls to be nested, with the most recent one
++taking effect. This is important for allocations internal to the mm/ code that
++do not properly belong to the outer allocation context and should be counted
++separately: for example, slab object extension vectors, or when the slab
++allocates pages from the page allocator.
++
++Thus, proper usage requires determining which function in an allocation call
++stack should be tagged. There are many helper functions that essentially wrap
++e.g. kmalloc() and do a little more work, then are called in multiple places;
++we'll generally want the accounting to happen in the callers of these helpers,
++not in the helpers themselves.
++
++To fix up a given helper, for example foo(), do the following:
++ - switch its allocation call to the _noprof() version, e.g. kmalloc_noprof()
++ - rename it to foo_noprof()
++ - define a macro version of foo() like so:
++   #define foo(...) alloc_hooks(foo_noprof(__VA_ARGS__))
++
++It's also possible to stash a pointer to an alloc tag in your own data structures.
++
++Do this when you're implementing a generic data structure that does allocations
++"on behalf of" some other code - for example, the rhashtable code. This way,
++instead of seeing a large line in /proc/allocinfo for rhashtable.c, we can
++break it out by rhashtable type.
++
++To do so:
++ - Hook your data structure's init function, like any other allocation function
++ - Within your init function, use the convenience macro alloc_tag_record() to
++   record alloc tag in your data structure.
++ - Then, use the following form for your allocations:
++   alloc_hooks_tag(ht->your_saved_tag, kmalloc_noprof(...))
 -- 
 2.44.0.278.ge034bb2e1d-goog
 
