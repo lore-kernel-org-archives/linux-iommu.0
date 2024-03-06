@@ -1,138 +1,310 @@
-Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC675131745
-	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 15:05:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 557D6134CEC
+	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 15:16:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709737523; cv=none; b=gzQgFYR0xdlTRu47iF+1W8bSATTrTTnTWJeUGWBeq7+ZR7BvAmu2va9pcBi/HorpkriUm5ETIA0N3n1cMfbn5t+9SiKjlCJDIyYDqQ9iJVh4V++uPsRmK36GQAmsZOVhc9gSg/3DE7he9mUjluzDXz3/ZBfpFgYLw6yzxaohMH8=
+	t=1709738166; cv=none; b=m36hGnVUPImTDVb/rEb+IXjaDyTHTyUaFNEfUBMn4xsZz86Q6F1dQW8HioGKgBLpllDTOm5Wd5PKojkwPYi0LVEX1IkpccMzqg28zQQdj7rDPId1RmeJwOS8nFuTRJVO1byW6UNUExnjvQDgaGmOBCyC+WGPWV4uavhQYHXGrjY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709737523; c=relaxed/simple;
-	bh=FAE7tKzetJC0DRifXVvbyePo3HyTO0kdYHz5YfVi9U8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FoCw6FPKeYhkGlqJ+WipHx2L6v70zHEMlA5ukdt0+PKkoqnevLY6OXlRUe+9ziK/VhX3RvuUdEQvHAm2iTdU1bWb7PtgciIlKX9Zy2z2yxLA1JVDWdp1d43a6l5QSubmgIVBUNrDr0bVjdpJ2OOarzpQADWNxTtI986Q5aMiVn4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=K0EfhUDX; arc=none smtp.client-ip=209.85.160.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1709738166; c=relaxed/simple;
+	bh=kZ8mXvtpel/ZYEPSkuZBEYdU1hA22wv0YjD3idEA/+Y=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GQl+pPzUKdi4LzV22W1ZZTAAdo0fLJ8bbtsL69iA5TGn8ONJn4zw0Xt8Y/QPI21zrwxxU8eFe3doqArvCLn0b2BKDdtuyLMUF5giFK4cFBNHrpleBqnTH+uOHRYKsL4rzdRQEDTTU9qKn5une20f+N1AaSHo0XTLHhdWDuGOcb0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=FSqFACxE; arc=none smtp.client-ip=209.85.208.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="K0EfhUDX"
-Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-42eff08e3f8so8053791cf.1
-        for <iommu@lists.linux.dev>; Wed, 06 Mar 2024 07:05:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="FSqFACxE"
+Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2d2509c66daso90740721fa.3
+        for <iommu@lists.linux.dev>; Wed, 06 Mar 2024 07:16:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1709737521; x=1710342321; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3q6XaWzdNlm5rZVTCa+MalaN5VSyURFchooXo3LCyRw=;
-        b=K0EfhUDXOFjwyISkCrjTwntwxYrQwXpmk3hISpgu5yoA+G8rIvSqEEHaFO1qjEz45e
-         foloDqVfEJAF6bHXBcPzQmUOW0eqYMKsDqI5YdQwX69ibTFTTv6+fHNAkLDvT/OREwIc
-         BD6XG3+LZg2LfQ0YwB/BPl3PznejwNQbQUHLFTztrxNk5UdJtaVHXoYt2xtS/Suvexm4
-         Sdws8IL9sSxgEP0u4325JwU7VwotJQLuQBLiAxXSPN1KSpq8ieXN9hUAVOS/N+wPeVd0
-         S9C16yZUdPKLbZhivvdgpoGJCA67hwwf+kxrqMfXRoZ2DhRyG0AhtcjKQvvFdpCzS/yT
-         96hw==
+        d=linaro.org; s=google; t=1709738162; x=1710342962; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=1tzJ9zCUXkaV13wzjAuc8h9G1xtp7/nN8arE8U8gfY8=;
+        b=FSqFACxEqGP5dqUn6aKOwQ28vS3wkZgxIBiAflZ4k3PV7RW+zOuWKYvzgAT0gs2Lxm
+         iF79lApyLijuuU5t8gkuX16lCdQtDnSXQ/eq5LBcf5RrBlqWXca7KQNiNQZOfOxL1lnU
+         3ZOLPw7oQgufLwsPqEq30lLl2IIaaCvoMJGe0jk5OAcmTzbsvT6kr3uuKKESlbOp63Mr
+         zKLsK80JIwBd55PqSbeQL6qscVz23nyysMFieIMOM3OS40wNudiKhLw3lpGB5sw+M8vt
+         kKsiIcW9Dii687NZ1jstXYQBF9ZRZ9oOcpief4ythzvCU8bITEsDKKrKHfoLHvKeoCLB
+         FMRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709737521; x=1710342321;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3q6XaWzdNlm5rZVTCa+MalaN5VSyURFchooXo3LCyRw=;
-        b=SAthTrq0eIrNHaZ/bg/P6YjBfxG3cKZaFk3uBWOjDFrSPUPrlzGPuBEaRD3z5F5ExS
-         onDj5TvGSi+jQUm7nRczfF8sKEbxj2r9l6GRq4H0plelJhBxxB0+jO2xFIVGjgv0pNAm
-         A7DuSsyBy1kaWjfuYndr6g3dxelNhjcV3PIEsP4u2DN13STKj1JMNKDLvxUznQzKz5RQ
-         6SDCbYpEnVap0PGRt3WxSzb95xWj3FHrWaiLit//NNN+pY5LqcOK4ehAotHdGjUaYPAo
-         ViNcXOG3pRQIZXeTBuukROxJXjkG/ofZoxU2AAGaLMuBqrW/dGpnZKVMxgmDs4QouB0c
-         YLRA==
-X-Forwarded-Encrypted: i=1; AJvYcCUQN8/740EzLJV+HnRJpsJyBt58iLB1c8tFM0Kb5fIuwAqyq/Aq4RAN7xLUyGqj4S5/4iQn/kEYE+TmBfOaZzTyB1OEVQk=
-X-Gm-Message-State: AOJu0Yy4vp7HrEz83GRxrC3hgUfScNQRZDM/HiUGoMpaOJbjEp2w92rH
-	w1RVsO5dkpPhAwMuE2TaYpZNis+6O1TuDdt9owyBWvMNdHnLiMtshH8HNuKTaHM=
-X-Google-Smtp-Source: AGHT+IF3DD5YVqRayIYcxbWGOreOFw/mqikGG0c1CCT98Poz3twNOMiPHe1g+1Vg/YON1gYeWp1F9Q==
-X-Received: by 2002:a05:622a:1743:b0:42e:bcc4:2959 with SMTP id l3-20020a05622a174300b0042ebcc42959mr5571780qtk.4.1709737520530;
-        Wed, 06 Mar 2024 07:05:20 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id f5-20020a05622a1a0500b0042f01390d5csm1686793qtb.30.2024.03.06.07.05.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Mar 2024 07:05:19 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rhspa-001WNB-Tx;
-	Wed, 06 Mar 2024 11:05:18 -0400
-Date: Wed, 6 Mar 2024 11:05:18 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Keith Busch <kbusch@kernel.org>, Leon Romanovsky <leon@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Chaitanya Kulkarni <kch@nvidia.com>,
-	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
-	Sagi Grimberg <sagi@grimberg.me>, Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Bart Van Assche <bvanassche@acm.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Amir Goldstein <amir73il@gmail.com>,
-	"josef@toxicpanda.com" <josef@toxicpanda.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	"daniel@iogearbox.net" <daniel@iogearbox.net>,
-	Dan Williams <dan.j.williams@intel.com>,
-	"jack@suse.com" <jack@suse.com>,
-	Leon Romanovsky <leonro@nvidia.com>,
-	Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [RFC RESEND 16/16] nvme-pci: use blk_rq_dma_map() for NVMe SGL
-Message-ID: <20240306150518.GL9225@ziepe.ca>
-References: <cover.1709635535.git.leon@kernel.org>
- <016fc02cbfa9be3c156a6f74df38def1e09c08f1.1709635535.git.leon@kernel.org>
- <Zec_nAQn1Ft_ZTHH@kbusch-mbp.dhcp.thefacebook.com>
- <20240306143321.GA19711@lst.de>
+        d=1e100.net; s=20230601; t=1709738162; x=1710342962;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1tzJ9zCUXkaV13wzjAuc8h9G1xtp7/nN8arE8U8gfY8=;
+        b=mAX/tqHmWMRrS7MdZqLaa5UW3jvUgIM8wIyr2LKEsHoOlwsWvtVWUjgD/G9X8ciuTV
+         jOcPlMzkSp2GJxA36grg/2VAXWBFIcsNBaJnRAThCodN54oj6k8uMl90eoJkdKrR32h8
+         rAF4AD2sdb+QAYQ+GH1Cc3gJDL1sH1uEwvVU8VxtMwDjaynJJ1b0lhTVrSlUeNwdYf5N
+         A/TlgtplcStu9OpALB6uOu1MHQ1ZLwnMetHGhumF5D7OJUrv1Ht6nhapbmZuyVL/JhCQ
+         bh/SU6umtcldbYwHtwq031dxhG3+AfeSwk7/6uJxF9gTd3nCepSvUbqj1gT0lfMlSR6W
+         l4AQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVa07SvgSO0Rm+s/Esp4Am0GfT/33jUBiClg+b+BGNGzbvbgPWtm5nu82i99AWtBUfyktQQpVbOKnAHf5Vawu46+CNOVZ0=
+X-Gm-Message-State: AOJu0YyeobdOQowahXif4CI7SOitRsGLVUVxhVi9uM/We3QWjDlRwRsR
+	mnS998AKeRIJ/xnrvYdCy7lUZzxznLaVsIXXhPLx/njInUcp9VUpc5UzRq97Ybo9+qQy99cLyaW
+	UkW0LdLqH1I2MYQnfy4qaUTRTHbwdPucJNJCzwg==
+X-Google-Smtp-Source: AGHT+IHmRpEcbVPzqLhnsNtyibyzMhmgr/03XxNzNXgO7mCxUIf62cD2x5AhOtv+FfAHACFNwN5t6nlDOMlQ2JOOkcE=
+X-Received: by 2002:a2e:9796:0:b0:2d2:2b2e:1680 with SMTP id
+ y22-20020a2e9796000000b002d22b2e1680mr3445457lji.35.1709738162161; Wed, 06
+ Mar 2024 07:16:02 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240306143321.GA19711@lst.de>
+References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
+ <20240122073903.24406-6-baolu.lu@linux.intel.com> <CABQgh9FwOVsFe3+5VG0_rDruJVW0ueHTcsnxUcVAvFqrF4Vz6Q@mail.gmail.com>
+In-Reply-To: <CABQgh9FwOVsFe3+5VG0_rDruJVW0ueHTcsnxUcVAvFqrF4Vz6Q@mail.gmail.com>
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+Date: Wed, 6 Mar 2024 23:15:50 +0800
+Message-ID: <CABQgh9G5yFZ_p+tfvnJqOQo+Be62rMDatsEX1rhD_oTiXDaw5w@mail.gmail.com>
+Subject: Re: [PATCH v3 5/8] iommufd: Associate fault object with iommufd_hw_pgtable
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>, 
+	Yi Liu <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, 
+	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev, 
+	virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Mar 06, 2024 at 03:33:21PM +0100, Christoph Hellwig wrote:
-> On Tue, Mar 05, 2024 at 08:51:56AM -0700, Keith Busch wrote:
-> > On Tue, Mar 05, 2024 at 01:18:47PM +0200, Leon Romanovsky wrote:
-> > > @@ -236,7 +236,9 @@ struct nvme_iod {
-> > >  	unsigned int dma_len;	/* length of single DMA segment mapping */
-> > >  	dma_addr_t first_dma;
-> > >  	dma_addr_t meta_dma;
-> > > -	struct sg_table sgt;
-> > > +	struct dma_iova_attrs iova;
-> > > +	dma_addr_t dma_link_address[128];
-> > > +	u16 nr_dma_link_address;
-> > >  	union nvme_descriptor list[NVME_MAX_NR_ALLOCATIONS];
-> > >  };
-> > 
-> > That's quite a lot of space to add to the iod. We preallocate one for
-> > every request, and there could be millions of them. 
-> 
-> Yes.  And this whole proposal also seems clearly confused (not just
-> because of the gazillion reposts) but because it mixes up the case
-> where we can coalesce CPU regions into a single dma_addr_t range
-> (iommu and maybe in the future swiotlb) and one where we need a
+Hi, Baolu
 
-I had the broad expectation that the DMA API user would already be
-providing a place to store the dma_addr_t as it has to feed that into
-the HW. That memory should simply last up until we do dma unmap and
-the cases that need dma_addr_t during unmap can go get it from there.
+On Sat, 2 Mar 2024 at 10:36, Zhangfei Gao <zhangfei.gao@linaro.org> wrote:
+>
+> On Mon, 22 Jan 2024 at 15:46, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+> >
+> > When allocating a user iommufd_hw_pagetable, the user space is allowed to
+> > associate a fault object with the hw_pagetable by specifying the fault
+> > object ID in the page table allocation data and setting the
+> > IOMMU_HWPT_FAULT_ID_VALID flag bit.
+> >
+> > On a successful return of hwpt allocation, the user can retrieve and
+> > respond to page faults by reading and writing the file interface of the
+> > fault object.
+> >
+> > Once a fault object has been associated with a hwpt, the hwpt is
+> > iopf-capable, indicated by fault_capable set to true. Attaching,
+> > detaching, or replacing an iopf-capable hwpt to an RID or PASID will
+> > differ from those that are not iopf-capable. The implementation of these
+> > will be introduced in the next patch.
+> >
+> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > ---
+> >  drivers/iommu/iommufd/iommufd_private.h | 11 ++++++++
+> >  include/uapi/linux/iommufd.h            |  6 +++++
+> >  drivers/iommu/iommufd/fault.c           | 14 ++++++++++
+> >  drivers/iommu/iommufd/hw_pagetable.c    | 36 +++++++++++++++++++------
+> >  4 files changed, 59 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
+> > index 52d83e888bd0..2780bed0c6b1 100644
+> > --- a/drivers/iommu/iommufd/iommufd_private.h
+> > +++ b/drivers/iommu/iommufd/iommufd_private.h
+> > @@ -293,6 +293,8 @@ int iommufd_check_iova_range(struct io_pagetable *iopt,
+> >  struct iommufd_hw_pagetable {
+> >         struct iommufd_object obj;
+> >         struct iommu_domain *domain;
+> > +       struct iommufd_fault *fault;
+> > +       bool fault_capable : 1;
+> >  };
+> >
+> >  struct iommufd_hwpt_paging {
+> > @@ -446,8 +448,17 @@ struct iommufd_fault {
+> >         struct wait_queue_head wait_queue;
+> >  };
+> >
+> > +static inline struct iommufd_fault *
+> > +iommufd_get_fault(struct iommufd_ucmd *ucmd, u32 id)
+> > +{
+> > +       return container_of(iommufd_get_object(ucmd->ictx, id,
+> > +                                              IOMMUFD_OBJ_FAULT),
+> > +                           struct iommufd_fault, obj);
+> > +}
+> > +
+> >  int iommufd_fault_alloc(struct iommufd_ucmd *ucmd);
+> >  void iommufd_fault_destroy(struct iommufd_object *obj);
+> > +int iommufd_fault_iopf_handler(struct iopf_group *group);
+> >
+> >  #ifdef CONFIG_IOMMUFD_TEST
+> >  int iommufd_test(struct iommufd_ucmd *ucmd);
+> > diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
+> > index c32d62b02306..7481cdd57027 100644
+> > --- a/include/uapi/linux/iommufd.h
+> > +++ b/include/uapi/linux/iommufd.h
+> > @@ -357,10 +357,13 @@ struct iommu_vfio_ioas {
+> >   *                                the parent HWPT in a nesting configuration.
+> >   * @IOMMU_HWPT_ALLOC_DIRTY_TRACKING: Dirty tracking support for device IOMMU is
+> >   *                                   enforced on device attachment
+> > + * @IOMMU_HWPT_FAULT_ID_VALID: The fault_id field of hwpt allocation data is
+> > + *                             valid.
+> >   */
+> >  enum iommufd_hwpt_alloc_flags {
+> >         IOMMU_HWPT_ALLOC_NEST_PARENT = 1 << 0,
+> >         IOMMU_HWPT_ALLOC_DIRTY_TRACKING = 1 << 1,
+> > +       IOMMU_HWPT_FAULT_ID_VALID = 1 << 2,
+> >  };
+> >
+> >  /**
+> > @@ -411,6 +414,8 @@ enum iommu_hwpt_data_type {
+> >   * @__reserved: Must be 0
+> >   * @data_type: One of enum iommu_hwpt_data_type
+> >   * @data_len: Length of the type specific data
+> > + * @fault_id: The ID of IOMMUFD_FAULT object. Valid only if flags field of
+> > + *            IOMMU_HWPT_FAULT_ID_VALID is set.
+> >   * @data_uptr: User pointer to the type specific data
+> >   *
+> >   * Explicitly allocate a hardware page table object. This is the same object
+> > @@ -441,6 +446,7 @@ struct iommu_hwpt_alloc {
+> >         __u32 __reserved;
+> >         __u32 data_type;
+> >         __u32 data_len;
+> > +       __u32 fault_id;
+> >         __aligned_u64 data_uptr;
+> >  };
+> >  #define IOMMU_HWPT_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_ALLOC)
+> > diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
+> > index 9844a85feeb2..e752d1c49dde 100644
+> > --- a/drivers/iommu/iommufd/fault.c
+> > +++ b/drivers/iommu/iommufd/fault.c
+> > @@ -253,3 +253,17 @@ int iommufd_fault_alloc(struct iommufd_ucmd *ucmd)
+> >
+> >         return rc;
+> >  }
+> > +
+> > +int iommufd_fault_iopf_handler(struct iopf_group *group)
+> > +{
+> > +       struct iommufd_hw_pagetable *hwpt = group->cookie->domain->fault_data;
+> > +       struct iommufd_fault *fault = hwpt->fault;
+> > +
+> > +       mutex_lock(&fault->mutex);
+> > +       list_add_tail(&group->node, &fault->deliver);
+> > +       mutex_unlock(&fault->mutex);
+> > +
+> > +       wake_up_interruptible(&fault->wait_queue);
+> > +
+> > +       return 0;
+> > +}
+> > diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
+> > index 3f3f1fa1a0a9..2703d5aea4f5 100644
+> > --- a/drivers/iommu/iommufd/hw_pagetable.c
+> > +++ b/drivers/iommu/iommufd/hw_pagetable.c
+> > @@ -8,6 +8,15 @@
+> >  #include "../iommu-priv.h"
+> >  #include "iommufd_private.h"
+> >
+> > +static void __iommufd_hwpt_destroy(struct iommufd_hw_pagetable *hwpt)
+> > +{
+> > +       if (hwpt->domain)
+> > +               iommu_domain_free(hwpt->domain);
+> > +
+> > +       if (hwpt->fault)
+> > +               iommufd_put_object(hwpt->fault->ictx, &hwpt->fault->obj);
+> > +}
+> > +
+> >  void iommufd_hwpt_paging_destroy(struct iommufd_object *obj)
+> >  {
+> >         struct iommufd_hwpt_paging *hwpt_paging =
+> > @@ -22,9 +31,7 @@ void iommufd_hwpt_paging_destroy(struct iommufd_object *obj)
+> >                                          hwpt_paging->common.domain);
+> >         }
+> >
+> > -       if (hwpt_paging->common.domain)
+> > -               iommu_domain_free(hwpt_paging->common.domain);
+> > -
+> > +       __iommufd_hwpt_destroy(&hwpt_paging->common);
+> >         refcount_dec(&hwpt_paging->ioas->obj.users);
+> >  }
+> >
+> > @@ -49,9 +56,7 @@ void iommufd_hwpt_nested_destroy(struct iommufd_object *obj)
+> >         struct iommufd_hwpt_nested *hwpt_nested =
+> >                 container_of(obj, struct iommufd_hwpt_nested, common.obj);
+> >
+> > -       if (hwpt_nested->common.domain)
+> > -               iommu_domain_free(hwpt_nested->common.domain);
+> > -
+> > +       __iommufd_hwpt_destroy(&hwpt_nested->common);
+> >         refcount_dec(&hwpt_nested->parent->common.obj.users);
+> >  }
+> >
+> > @@ -213,7 +218,8 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
+> >         struct iommufd_hw_pagetable *hwpt;
+> >         int rc;
+> >
+> > -       if (flags || !user_data->len || !ops->domain_alloc_user)
+> > +       if ((flags & ~IOMMU_HWPT_FAULT_ID_VALID) ||
+> > +           !user_data->len || !ops->domain_alloc_user)
+> >                 return ERR_PTR(-EOPNOTSUPP);
+> >         if (parent->auto_domain || !parent->nest_parent)
+> >                 return ERR_PTR(-EINVAL);
+> > @@ -227,7 +233,7 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
+> >         refcount_inc(&parent->common.obj.users);
+> >         hwpt_nested->parent = parent;
+> >
+> > -       hwpt->domain = ops->domain_alloc_user(idev->dev, flags,
+> > +       hwpt->domain = ops->domain_alloc_user(idev->dev, 0,
+> >                                               parent->common.domain, user_data);
+>
+> Why remove flags? typo or any reason?
+> arm_smmu_domain_alloc_user  can not get flags from the user app.
+> User should set IOMMU_HWPT_FAULT_ID_VALID, right?
+>
 
-If that is how things are organized, is there another reason to lean
-further into single-range case optimization?
+Double checked, this does not send flags, 0 is OK,
+Only domain_alloc_user in iommufd_hwpt_paging_alloc requires flags.
 
-We can't do much on the map side as single range doesn't imply
-contiguous range, P2P and alignment create discontinuities in the
-dma_addr_t that still have to be delt with.
+In my debug, I need this patch, otherwise NULL pointer errors happen
+since SVA is not set.
 
-Jason
+Subject: [PATCH] iommufd: enable/disable IOMMU_DEV_FEAT_SVA when
+ iopf_enable/disable
+
+When iopf_enable, IOMMU_DEV_FEAT_SVA has to be enabled as well,
+which will call iopf_queue_add_device(master->smmu->evtq.iopf, dev).
+Otherwise NULL pointer will happen since fault_param is NULL.
+
+And disable IOMMU_DEV_FEAT_SVA in iopf_disable accordingly.
+
+Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+---
+ drivers/iommu/iommufd/fault.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
+index a4a49f3cd4c2..89837d83e757 100644
+--- a/drivers/iommu/iommufd/fault.c
++++ b/drivers/iommu/iommufd/fault.c
+@@ -289,6 +289,12 @@ static int iommufd_fault_iopf_enable(struct
+iommufd_device *idev)
+        if (ret)
+                return ret;
+
++       ret = iommu_dev_enable_feature(idev->dev, IOMMU_DEV_FEAT_SVA);
++       if (ret) {
++               iommu_dev_disable_feature(idev->dev, IOMMU_DEV_FEAT_IOPF);
++               return ret;
++       }
++
+        idev->iopf_enabled = true;
+
+        return 0;
+@@ -299,6 +305,7 @@ static void iommufd_fault_iopf_disable(struct
+iommufd_device *idev)
+        if (!idev->iopf_enabled)
+                return;
+
++       iommu_dev_disable_feature(idev->dev, IOMMU_DEV_FEAT_SVA);
+        iommu_dev_disable_feature(idev->dev, IOMMU_DEV_FEAT_IOPF);
+        idev->iopf_enabled = false;
+ }
+
+
+And iommufd_fault_domain_replace_dev
+        if (iopf_enabled_originally && !hwpt->fault_capable)
+                iommufd_fault_iopf_disable(idev);
+will cause iopf enable/ disable / enable, is this required, a bit confused.
+
+Thanks
