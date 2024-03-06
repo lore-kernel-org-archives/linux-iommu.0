@@ -1,310 +1,127 @@
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from wfout1-smtp.messagingengine.com (wfout1-smtp.messagingengine.com [64.147.123.144])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 557D6134CEC
-	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 15:16:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 559711350EF
+	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 15:24:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=64.147.123.144
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709738166; cv=none; b=m36hGnVUPImTDVb/rEb+IXjaDyTHTyUaFNEfUBMn4xsZz86Q6F1dQW8HioGKgBLpllDTOm5Wd5PKojkwPYi0LVEX1IkpccMzqg28zQQdj7rDPId1RmeJwOS8nFuTRJVO1byW6UNUExnjvQDgaGmOBCyC+WGPWV4uavhQYHXGrjY=
+	t=1709738675; cv=none; b=kgvvl/kSlmhkB3ioQ12LNNIA+OAx8E2WdN5fj13xxAUnogmFJUHoGvI3T9urVlpvX9cR3POSpUYDqk6yhFuy4I8xTSyIJBffuoZUMQFZwW0gxXAceRT8NwWQi19pKIjaWvAAA5mo1SKAOWCRYdWikxncSEqAsFPPxEc+aC5pAcI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709738166; c=relaxed/simple;
-	bh=kZ8mXvtpel/ZYEPSkuZBEYdU1hA22wv0YjD3idEA/+Y=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GQl+pPzUKdi4LzV22W1ZZTAAdo0fLJ8bbtsL69iA5TGn8ONJn4zw0Xt8Y/QPI21zrwxxU8eFe3doqArvCLn0b2BKDdtuyLMUF5giFK4cFBNHrpleBqnTH+uOHRYKsL4rzdRQEDTTU9qKn5une20f+N1AaSHo0XTLHhdWDuGOcb0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=FSqFACxE; arc=none smtp.client-ip=209.85.208.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1709738675; c=relaxed/simple;
+	bh=/0VqDz2UIu0+cfOsCSrTAnJyiyHmrm+TUFtAK1PFAwA=;
+	h=MIME-Version:Message-Id:In-Reply-To:References:Date:From:To:Cc:
+	 Subject:Content-Type; b=JMr+xXRn7zVfY2drViv/Ysjnm2VHXxlBQzjvBP5nTTZHMRR2vKMgyuDiay0gdZkvjp/Y5LDPLl71Lh2toTtWilrCelso7CfRxFk1faB54nQ2yJCCX7SRwZvocNx0spcoQ1gMuAF1ebJQ3Ng3bFvTtEyttAF6H0jnXs/mRBaY4aQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de; spf=pass smtp.mailfrom=arndb.de; dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b=ykNoruf2; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=ez3qY4MF; arc=none smtp.client-ip=64.147.123.144
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arndb.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arndb.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="FSqFACxE"
-Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2d2509c66daso90740721fa.3
-        for <iommu@lists.linux.dev>; Wed, 06 Mar 2024 07:16:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1709738162; x=1710342962; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=1tzJ9zCUXkaV13wzjAuc8h9G1xtp7/nN8arE8U8gfY8=;
-        b=FSqFACxEqGP5dqUn6aKOwQ28vS3wkZgxIBiAflZ4k3PV7RW+zOuWKYvzgAT0gs2Lxm
-         iF79lApyLijuuU5t8gkuX16lCdQtDnSXQ/eq5LBcf5RrBlqWXca7KQNiNQZOfOxL1lnU
-         3ZOLPw7oQgufLwsPqEq30lLl2IIaaCvoMJGe0jk5OAcmTzbsvT6kr3uuKKESlbOp63Mr
-         zKLsK80JIwBd55PqSbeQL6qscVz23nyysMFieIMOM3OS40wNudiKhLw3lpGB5sw+M8vt
-         kKsiIcW9Dii687NZ1jstXYQBF9ZRZ9oOcpief4ythzvCU8bITEsDKKrKHfoLHvKeoCLB
-         FMRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709738162; x=1710342962;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=1tzJ9zCUXkaV13wzjAuc8h9G1xtp7/nN8arE8U8gfY8=;
-        b=mAX/tqHmWMRrS7MdZqLaa5UW3jvUgIM8wIyr2LKEsHoOlwsWvtVWUjgD/G9X8ciuTV
-         jOcPlMzkSp2GJxA36grg/2VAXWBFIcsNBaJnRAThCodN54oj6k8uMl90eoJkdKrR32h8
-         rAF4AD2sdb+QAYQ+GH1Cc3gJDL1sH1uEwvVU8VxtMwDjaynJJ1b0lhTVrSlUeNwdYf5N
-         A/TlgtplcStu9OpALB6uOu1MHQ1ZLwnMetHGhumF5D7OJUrv1Ht6nhapbmZuyVL/JhCQ
-         bh/SU6umtcldbYwHtwq031dxhG3+AfeSwk7/6uJxF9gTd3nCepSvUbqj1gT0lfMlSR6W
-         l4AQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVa07SvgSO0Rm+s/Esp4Am0GfT/33jUBiClg+b+BGNGzbvbgPWtm5nu82i99AWtBUfyktQQpVbOKnAHf5Vawu46+CNOVZ0=
-X-Gm-Message-State: AOJu0YyeobdOQowahXif4CI7SOitRsGLVUVxhVi9uM/We3QWjDlRwRsR
-	mnS998AKeRIJ/xnrvYdCy7lUZzxznLaVsIXXhPLx/njInUcp9VUpc5UzRq97Ybo9+qQy99cLyaW
-	UkW0LdLqH1I2MYQnfy4qaUTRTHbwdPucJNJCzwg==
-X-Google-Smtp-Source: AGHT+IHmRpEcbVPzqLhnsNtyibyzMhmgr/03XxNzNXgO7mCxUIf62cD2x5AhOtv+FfAHACFNwN5t6nlDOMlQ2JOOkcE=
-X-Received: by 2002:a2e:9796:0:b0:2d2:2b2e:1680 with SMTP id
- y22-20020a2e9796000000b002d22b2e1680mr3445457lji.35.1709738162161; Wed, 06
- Mar 2024 07:16:02 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=arndb.de header.i=@arndb.de header.b="ykNoruf2";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="ez3qY4MF"
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailfout.west.internal (Postfix) with ESMTP id 69D6E1C000C1;
+	Wed,  6 Mar 2024 10:24:32 -0500 (EST)
+Received: from imap51 ([10.202.2.101])
+  by compute5.internal (MEProxy); Wed, 06 Mar 2024 10:24:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arndb.de; h=cc
+	:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:subject
+	:subject:to:to; s=fm3; t=1709738671; x=1709825071; bh=FCtZTjzE5o
+	yWPrrBsm0oZsGBE71NFluIUILuLO0a/z0=; b=ykNoruf2EuASTUPLT0n1H+GFaO
+	6Ku+dR0onI91/Zo9wGix2jzOGDUu0QMFapyitfDgFswF1vRjAUQB4E1Ru6Oo/w81
+	7qmEhoO6/gRebytxitzAK9urHL/WIzsoCh51Foga7xKqCEGBUDaqMOx6vXmjiwtA
+	UTL2TsEpAelgmUwvurHEufVEqfOJf71UbASoxVnFI8okEFxYnnLxE1PSok/499ae
+	ZvbymSkWRl+tyL9M5W7J83ZkWmnJlHnCuxNQxGetIFwR+e/1CpOgzKw/DppCYVkg
+	THz3XGB94d9OKqIMAWm0Vwf/tt8YLDiPRhjbs0dDnAg/pUXJmbtp2flAWYug==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm1; t=1709738671; x=1709825071; bh=FCtZTjzE5oyWPrrBsm0oZsGBE71N
+	FluIUILuLO0a/z0=; b=ez3qY4MFkz8UwDlZo5Hz+ydAJZpq8ZIjgEPfpLfkfE3L
+	4RPuVXiBjqM/BGHmVie49CR7dV0dhb7NV2RVfusO6ZjLDVo18QEJly99GKp+UOZm
+	0TKSaOMlrdf9xvkQL+nbwacsSogAetoQWvAFzPYkygBfQ2/cNWVcCfJp03sUKZwv
+	wLPQCYXQVkh9JbhgJB5E/QtDXCMLglZNbuFF/iX3qeci2Tts6CIDAGUFDJYCwe8M
+	awBuJlvg3TKGDauEKPLnFMo9eGOHMDbo0nMD+0qthmhX9rNbTLpA935Q5Dhuhe15
+	x8+r4Zc2eliY953srFi0gAebwPQIz6psoalnBZtBDg==
+X-ME-Sender: <xms:r4roZT23L_I28IMj9Dgqub33DbiAWTfAn6eZV6vLe7Wdh4S0nQ5_IA>
+    <xme:r4roZSHvIxc6EOOI8yVUNN72wXPO0VjojBOpjvjjbTWbbIqbaqemkFD6Hglg-qec5
+    tvvqPWjOsFakto-Ua8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledriedugdejvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdetrhhn
+    ugcuuegvrhhgmhgrnhhnfdcuoegrrhhnugesrghrnhgusgdruggvqeenucggtffrrghtth
+    gvrhhnpeffheeugeetiefhgeethfejgfdtuefggeejleehjeeutefhfeeggefhkedtkeet
+    ffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrrh
+    hnugesrghrnhgusgdruggv
+X-ME-Proxy: <xmx:r4roZT7P8Co7u63upfj4UniV96vbACQmwceakT0CTxF8tJmzE3XcFw>
+    <xmx:r4roZY1dxbj85rJ4nzPvj7VbBnOtp9Xv52Db_ItUEb6kMKcDOE4c5A>
+    <xmx:r4roZWFHVb6Jzjdo1G0S9EoTykeW7ISfmirx59OsOiTpaV5dsoRhxA>
+    <xmx:r4roZSHa0Mt03W0W6kiHY0QpuDD3c8pJ855LHKWjzMmIcmJRDGfK4iSkKxs>
+Feedback-ID: i56a14606:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+	id 090A6B6008D; Wed,  6 Mar 2024 10:24:30 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.11.0-alpha0-208-g3f1d79aedb-fm-20240301.002-g3f1d79ae
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
- <20240122073903.24406-6-baolu.lu@linux.intel.com> <CABQgh9FwOVsFe3+5VG0_rDruJVW0ueHTcsnxUcVAvFqrF4Vz6Q@mail.gmail.com>
-In-Reply-To: <CABQgh9FwOVsFe3+5VG0_rDruJVW0ueHTcsnxUcVAvFqrF4Vz6Q@mail.gmail.com>
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-Date: Wed, 6 Mar 2024 23:15:50 +0800
-Message-ID: <CABQgh9G5yFZ_p+tfvnJqOQo+Be62rMDatsEX1rhD_oTiXDaw5w@mail.gmail.com>
-Subject: Re: [PATCH v3 5/8] iommufd: Associate fault object with iommufd_hw_pgtable
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Nicolin Chen <nicolinc@nvidia.com>, 
-	Yi Liu <yi.l.liu@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>, 
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev, 
-	virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Message-Id: <9f6c9e65-d7f5-46cf-bdf8-9ff01b135ea9@app.fastmail.com>
+In-Reply-To: <ZeiGBuMN_I9V94Mx@infradead.org>
+References: 
+ <20240224-sam-fix-sparc32-all-builds-v2-0-1f186603c5c4@ravnborg.org>
+ <20240224-sam-fix-sparc32-all-builds-v2-4-1f186603c5c4@ravnborg.org>
+ <8d5780f5-1047-48d7-a9c9-09b95c7b5604@gaisler.com>
+ <5648dca0-4853-4dfb-91cf-282a656beb1e@app.fastmail.com>
+ <bc33b608-e0b5-4dff-aa05-8513dce409b3@gaisler.com>
+ <ZeiGBuMN_I9V94Mx@infradead.org>
+Date: Wed, 06 Mar 2024 16:24:10 +0100
+From: "Arnd Bergmann" <arnd@arndb.de>
+To: "Christoph Hellwig" <hch@infradead.org>,
+ "Andreas Larsson" <andreas@gaisler.com>
+Cc: "Sam Ravnborg" <sam@ravnborg.org>,
+ "Maciej W. Rozycki" <macro@orcam.me.uk>, sparclinux@vger.kernel.org,
+ "Randy Dunlap" <rdunlap@infradead.org>,
+ "Miquel Raynal" <miquel.raynal@bootlin.com>,
+ linux-parport@lists.infradead.org, "David S . Miller" <davem@davemloft.net>,
+ linux-kernel@vger.kernel.org, "Takashi Iwai" <tiwai@suse.de>,
+ iommu@lists.linux.dev, linux-kbuild@vger.kernel.org,
+ "Masahiro Yamada" <masahiroy@kernel.org>
+Subject: Re: [PATCH v2 4/7] sparc32: Do not select ZONE_DMA
+Content-Type: text/plain
 
-Hi, Baolu
-
-On Sat, 2 Mar 2024 at 10:36, Zhangfei Gao <zhangfei.gao@linaro.org> wrote:
+On Wed, Mar 6, 2024, at 16:04, Christoph Hellwig wrote:
+> On Wed, Mar 06, 2024 at 03:19:52PM +0100, Andreas Larsson wrote:
+>> > I think that is the correct thing to do then: the only
+>> > drivers that I see with this dependency are PCI sound cards
+>> > that apparently rely on DMA to the 16MB ISA range, which is
+>> > not provided by sparc.
+>> 
+>> The ZONE_DMA dependency does not seem related to ISA per se. Commit
+>> 80ab8eae70e5 ("ALSA: Enable CONFIG_ZONE_DMA for smaller PCI DMA masks")
+>> that started to introduce it did were about ensuring 32-bit masks.
 >
-> On Mon, 22 Jan 2024 at 15:46, Lu Baolu <baolu.lu@linux.intel.com> wrote:
-> >
-> > When allocating a user iommufd_hw_pagetable, the user space is allowed to
-> > associate a fault object with the hw_pagetable by specifying the fault
-> > object ID in the page table allocation data and setting the
-> > IOMMU_HWPT_FAULT_ID_VALID flag bit.
-> >
-> > On a successful return of hwpt allocation, the user can retrieve and
-> > respond to page faults by reading and writing the file interface of the
-> > fault object.
-> >
-> > Once a fault object has been associated with a hwpt, the hwpt is
-> > iopf-capable, indicated by fault_capable set to true. Attaching,
-> > detaching, or replacing an iopf-capable hwpt to an RID or PASID will
-> > differ from those that are not iopf-capable. The implementation of these
-> > will be introduced in the next patch.
-> >
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > ---
-> >  drivers/iommu/iommufd/iommufd_private.h | 11 ++++++++
-> >  include/uapi/linux/iommufd.h            |  6 +++++
-> >  drivers/iommu/iommufd/fault.c           | 14 ++++++++++
-> >  drivers/iommu/iommufd/hw_pagetable.c    | 36 +++++++++++++++++++------
-> >  4 files changed, 59 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/drivers/iommu/iommufd/iommufd_private.h b/drivers/iommu/iommufd/iommufd_private.h
-> > index 52d83e888bd0..2780bed0c6b1 100644
-> > --- a/drivers/iommu/iommufd/iommufd_private.h
-> > +++ b/drivers/iommu/iommufd/iommufd_private.h
-> > @@ -293,6 +293,8 @@ int iommufd_check_iova_range(struct io_pagetable *iopt,
-> >  struct iommufd_hw_pagetable {
-> >         struct iommufd_object obj;
-> >         struct iommu_domain *domain;
-> > +       struct iommufd_fault *fault;
-> > +       bool fault_capable : 1;
-> >  };
-> >
-> >  struct iommufd_hwpt_paging {
-> > @@ -446,8 +448,17 @@ struct iommufd_fault {
-> >         struct wait_queue_head wait_queue;
-> >  };
-> >
-> > +static inline struct iommufd_fault *
-> > +iommufd_get_fault(struct iommufd_ucmd *ucmd, u32 id)
-> > +{
-> > +       return container_of(iommufd_get_object(ucmd->ictx, id,
-> > +                                              IOMMUFD_OBJ_FAULT),
-> > +                           struct iommufd_fault, obj);
-> > +}
-> > +
-> >  int iommufd_fault_alloc(struct iommufd_ucmd *ucmd);
-> >  void iommufd_fault_destroy(struct iommufd_object *obj);
-> > +int iommufd_fault_iopf_handler(struct iopf_group *group);
-> >
-> >  #ifdef CONFIG_IOMMUFD_TEST
-> >  int iommufd_test(struct iommufd_ucmd *ucmd);
-> > diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> > index c32d62b02306..7481cdd57027 100644
-> > --- a/include/uapi/linux/iommufd.h
-> > +++ b/include/uapi/linux/iommufd.h
-> > @@ -357,10 +357,13 @@ struct iommu_vfio_ioas {
-> >   *                                the parent HWPT in a nesting configuration.
-> >   * @IOMMU_HWPT_ALLOC_DIRTY_TRACKING: Dirty tracking support for device IOMMU is
-> >   *                                   enforced on device attachment
-> > + * @IOMMU_HWPT_FAULT_ID_VALID: The fault_id field of hwpt allocation data is
-> > + *                             valid.
-> >   */
-> >  enum iommufd_hwpt_alloc_flags {
-> >         IOMMU_HWPT_ALLOC_NEST_PARENT = 1 << 0,
-> >         IOMMU_HWPT_ALLOC_DIRTY_TRACKING = 1 << 1,
-> > +       IOMMU_HWPT_FAULT_ID_VALID = 1 << 2,
-> >  };
-> >
-> >  /**
-> > @@ -411,6 +414,8 @@ enum iommu_hwpt_data_type {
-> >   * @__reserved: Must be 0
-> >   * @data_type: One of enum iommu_hwpt_data_type
-> >   * @data_len: Length of the type specific data
-> > + * @fault_id: The ID of IOMMUFD_FAULT object. Valid only if flags field of
-> > + *            IOMMU_HWPT_FAULT_ID_VALID is set.
-> >   * @data_uptr: User pointer to the type specific data
-> >   *
-> >   * Explicitly allocate a hardware page table object. This is the same object
-> > @@ -441,6 +446,7 @@ struct iommu_hwpt_alloc {
-> >         __u32 __reserved;
-> >         __u32 data_type;
-> >         __u32 data_len;
-> > +       __u32 fault_id;
-> >         __aligned_u64 data_uptr;
-> >  };
-> >  #define IOMMU_HWPT_ALLOC _IO(IOMMUFD_TYPE, IOMMUFD_CMD_HWPT_ALLOC)
-> > diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
-> > index 9844a85feeb2..e752d1c49dde 100644
-> > --- a/drivers/iommu/iommufd/fault.c
-> > +++ b/drivers/iommu/iommufd/fault.c
-> > @@ -253,3 +253,17 @@ int iommufd_fault_alloc(struct iommufd_ucmd *ucmd)
-> >
-> >         return rc;
-> >  }
-> > +
-> > +int iommufd_fault_iopf_handler(struct iopf_group *group)
-> > +{
-> > +       struct iommufd_hw_pagetable *hwpt = group->cookie->domain->fault_data;
-> > +       struct iommufd_fault *fault = hwpt->fault;
-> > +
-> > +       mutex_lock(&fault->mutex);
-> > +       list_add_tail(&group->node, &fault->deliver);
-> > +       mutex_unlock(&fault->mutex);
-> > +
-> > +       wake_up_interruptible(&fault->wait_queue);
-> > +
-> > +       return 0;
-> > +}
-> > diff --git a/drivers/iommu/iommufd/hw_pagetable.c b/drivers/iommu/iommufd/hw_pagetable.c
-> > index 3f3f1fa1a0a9..2703d5aea4f5 100644
-> > --- a/drivers/iommu/iommufd/hw_pagetable.c
-> > +++ b/drivers/iommu/iommufd/hw_pagetable.c
-> > @@ -8,6 +8,15 @@
-> >  #include "../iommu-priv.h"
-> >  #include "iommufd_private.h"
-> >
-> > +static void __iommufd_hwpt_destroy(struct iommufd_hw_pagetable *hwpt)
-> > +{
-> > +       if (hwpt->domain)
-> > +               iommu_domain_free(hwpt->domain);
-> > +
-> > +       if (hwpt->fault)
-> > +               iommufd_put_object(hwpt->fault->ictx, &hwpt->fault->obj);
-> > +}
-> > +
-> >  void iommufd_hwpt_paging_destroy(struct iommufd_object *obj)
-> >  {
-> >         struct iommufd_hwpt_paging *hwpt_paging =
-> > @@ -22,9 +31,7 @@ void iommufd_hwpt_paging_destroy(struct iommufd_object *obj)
-> >                                          hwpt_paging->common.domain);
-> >         }
-> >
-> > -       if (hwpt_paging->common.domain)
-> > -               iommu_domain_free(hwpt_paging->common.domain);
-> > -
-> > +       __iommufd_hwpt_destroy(&hwpt_paging->common);
-> >         refcount_dec(&hwpt_paging->ioas->obj.users);
-> >  }
-> >
-> > @@ -49,9 +56,7 @@ void iommufd_hwpt_nested_destroy(struct iommufd_object *obj)
-> >         struct iommufd_hwpt_nested *hwpt_nested =
-> >                 container_of(obj, struct iommufd_hwpt_nested, common.obj);
-> >
-> > -       if (hwpt_nested->common.domain)
-> > -               iommu_domain_free(hwpt_nested->common.domain);
-> > -
-> > +       __iommufd_hwpt_destroy(&hwpt_nested->common);
-> >         refcount_dec(&hwpt_nested->parent->common.obj.users);
-> >  }
-> >
-> > @@ -213,7 +218,8 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
-> >         struct iommufd_hw_pagetable *hwpt;
-> >         int rc;
-> >
-> > -       if (flags || !user_data->len || !ops->domain_alloc_user)
-> > +       if ((flags & ~IOMMU_HWPT_FAULT_ID_VALID) ||
-> > +           !user_data->len || !ops->domain_alloc_user)
-> >                 return ERR_PTR(-EOPNOTSUPP);
-> >         if (parent->auto_domain || !parent->nest_parent)
-> >                 return ERR_PTR(-EINVAL);
-> > @@ -227,7 +233,7 @@ iommufd_hwpt_nested_alloc(struct iommufd_ctx *ictx,
-> >         refcount_inc(&parent->common.obj.users);
-> >         hwpt_nested->parent = parent;
-> >
-> > -       hwpt->domain = ops->domain_alloc_user(idev->dev, flags,
-> > +       hwpt->domain = ops->domain_alloc_user(idev->dev, 0,
-> >                                               parent->common.domain, user_data);
->
-> Why remove flags? typo or any reason?
-> arm_smmu_domain_alloc_user  can not get flags from the user app.
-> User should set IOMMU_HWPT_FAULT_ID_VALID, right?
->
+> Yikes!  That commit is just unbelievable buggy.  CONFIG_ZONE_DMA
+> is only for architetures to select, not drivers.  A driver randomly
+> enabling such an arch zone is just crazy.
 
-Double checked, this does not send flags, 0 is OK,
-Only domain_alloc_user in iommufd_hwpt_paging_alloc requires flags.
+It looks like it did not remain that way for long, as
+2db1a57986d3 ("ALSA: pci: depend on ZONE_DMA") removed
+the broken select again.
 
-In my debug, I need this patch, otherwise NULL pointer errors happen
-since SVA is not set.
+> I've been wondering for a while if we need some Kconfig magic
+> so that certain symbols can only be select from arch/* and not
+> elsewhere to prevent this (we had a few other similar cases like
+> DMA_MAP_OPS).
 
-Subject: [PATCH] iommufd: enable/disable IOMMU_DEV_FEAT_SVA when
- iopf_enable/disable
+It's a nice idea, but it would require a lot of reworks to get right,
+with things like drivers/platform/x86 or drivers/{parisc,s390,sh}
+that are still somewhat architecture code, and subsystems like
+drivers/gpu/drm that typically just select whatever they want
+instead of using dependencies.
 
-When iopf_enable, IOMMU_DEV_FEAT_SVA has to be enabled as well,
-which will call iopf_queue_add_device(master->smmu->evtq.iopf, dev).
-Otherwise NULL pointer will happen since fault_param is NULL.
-
-And disable IOMMU_DEV_FEAT_SVA in iopf_disable accordingly.
-
-Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
----
- drivers/iommu/iommufd/fault.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
-index a4a49f3cd4c2..89837d83e757 100644
---- a/drivers/iommu/iommufd/fault.c
-+++ b/drivers/iommu/iommufd/fault.c
-@@ -289,6 +289,12 @@ static int iommufd_fault_iopf_enable(struct
-iommufd_device *idev)
-        if (ret)
-                return ret;
-
-+       ret = iommu_dev_enable_feature(idev->dev, IOMMU_DEV_FEAT_SVA);
-+       if (ret) {
-+               iommu_dev_disable_feature(idev->dev, IOMMU_DEV_FEAT_IOPF);
-+               return ret;
-+       }
-+
-        idev->iopf_enabled = true;
-
-        return 0;
-@@ -299,6 +305,7 @@ static void iommufd_fault_iopf_disable(struct
-iommufd_device *idev)
-        if (!idev->iopf_enabled)
-                return;
-
-+       iommu_dev_disable_feature(idev->dev, IOMMU_DEV_FEAT_SVA);
-        iommu_dev_disable_feature(idev->dev, IOMMU_DEV_FEAT_IOPF);
-        idev->iopf_enabled = false;
- }
-
-
-And iommufd_fault_domain_replace_dev
-        if (iopf_enabled_originally && !hwpt->fault_capable)
-                iommufd_fault_iopf_disable(idev);
-will cause iopf enable/ disable / enable, is this required, a bit confused.
-
-Thanks
+      Arnd
