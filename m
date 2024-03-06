@@ -1,55 +1,55 @@
-Received: from mail-yw1-f201.google.com (mail-yw1-f201.google.com [209.85.128.201])
+Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB4A914AD11
-	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 18:25:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2FB614BD55
+	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 18:25:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709749531; cv=none; b=iN1NcHtPs17fBP/ntxY6kSa2A0pDWbi+IpJxQdg3YE6MaAbmBQeSYzi7g/dfqFVPgYbKfcMucOdDvEzITi0bu5Tx5NFi8YkJ6nxracgmVehgXCzC5uIb9CiBXCaYDW9UwxpYQ89ZqSFzupcEUPCWaTBEXieCOBEY+LGjOGxCVKk=
+	t=1709749532; cv=none; b=iPEZ4b7cCz75Kued4Mf+IXR7wlp0Kwr/df6xLEl5zz83mQN6SaeT6WnBxAOl443QWivVLWMHS/loWQt2uuNDVuImFKUU8CRt+FciFVRbhg1W9kRDxp0lSQPYKV/MlrmGNWCnQHr+EmKwYe7UHP8MigyNAtnvUBNQAJIVmKWpkbs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709749531; c=relaxed/simple;
-	bh=U1GwlK71boTuxaedjljr6xYdZS31lmYH7mWe5hsF6dM=;
+	s=arc-20240116; t=1709749532; c=relaxed/simple;
+	bh=hIMAOlcJzFPaDudolR/SgVF/OtepzRNxoHk4FDHPmto=;
 	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=MwbMSsPBQkt68cEHlPM5xAlP+SAh+VsS1ZL4LmSsEcrVknzzi7lUgbIdBiyF1U9TomeBc5H3CyD5w3n9/2hVVdLlguDLfDxwssarxKGN50YVh72oCq1p1ZMErTum8rYjfG2F+BYU1wOFb+V3jyrywt2zppMf8EOr6cxqi5IccUA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=BKsmZTkP; arc=none smtp.client-ip=209.85.128.201
+	 To:Cc:Content-Type; b=NFxqQZd5yKecqvJjfZWpc5kzMvhiO9ly7gpMQLN41DYXSHx3HCAXSep+fpHodVG4TQTNll+JU5n6sMXYUBemEqL/+U9jW++tJTjIOymKDvSdjMgial1IXPH6Cz2sPe5BxzfN+xmCxFU0jXOtG7kejJkIGB5E4ytyOryqRMkAi3I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=U3/m6hCX; arc=none smtp.client-ip=209.85.128.202
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--surenb.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="BKsmZTkP"
-Received: by mail-yw1-f201.google.com with SMTP id 00721157ae682-608dc99b401so718837b3.0
-        for <iommu@lists.linux.dev>; Wed, 06 Mar 2024 10:25:28 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="U3/m6hCX"
+Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-60971264c48so592007b3.0
+        for <iommu@lists.linux.dev>; Wed, 06 Mar 2024 10:25:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1709749528; x=1710354328; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1709749530; x=1710354330; darn=lists.linux.dev;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=EvAS1Tk9rG7Nm0pd+ehjWtNqiQusCGfZiqvBjL56bfE=;
-        b=BKsmZTkPRseL9D9BT4QZaAvHTd+MucFvj5X58Nyu/q7ac4+gIGsuvasBx2g+UpkFDc
-         Co1LVb1cbDj9ppk4tyBlz8x+qCaVcjyHtz5EpSKqvaWCHxABYOYijBl2ZfwgIaydWXGR
-         mM9+KnlIcm1xlMl5SZd8wcKg4crORoMRd8QFZZt8VZV8Z6Ai6ob0Tj3wUUDyXNl9WZSO
-         o1Y2g8bsZdKL6Vrbn+cLCPyt6Hh/ajD8SZgcNduPB+25Nw88s5rpXCWjMlOGXMxEK/Vt
-         4H/+NGytZvbSJ6RIoEN4SA3NsZaY7gviVFFOworKoAowq/mqcyLIt/939tpoXm9SIcnc
-         pVxQ==
+        bh=r962bvR5LCwoMgFXL0pngYYUaEUVgmlMd//tXW54EfM=;
+        b=U3/m6hCXHV6mOL7HBmPKxR37018gMJ17m4MryOE3/EA1B3TCMQKMdYWY6MqPrDV9rS
+         FcJHmrlfIMrFcvtefqvl23whhUQQYf/ery90igioYuj26gcG0ru2j06cpqo4LSgiBrVM
+         76sx4dpEM/V55QScnKkyH6+sr4l7j8WxC7WGlgnBvFkMRuOcOGRj4Tossj9BlkCimpgU
+         doSTOE34JgIehtQ/2wZwZMJciSxpEHPOGgJYhaWmQRdWBEJWSV1ViWJ7Sl3EejuprYQP
+         EGYLLDxok6GjVFPvu+Vzztz7gxvuaHVqxlv+QZYmJg+zAPKEDClH0STvnCDeHExQ9gtU
+         lBbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709749528; x=1710354328;
+        d=1e100.net; s=20230601; t=1709749530; x=1710354330;
         h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
          :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=EvAS1Tk9rG7Nm0pd+ehjWtNqiQusCGfZiqvBjL56bfE=;
-        b=QA8opmj7LYBDwJYLiSHFBSObiL9PaJ2NCubwUyB48CI8HRyVbGjnvr3MCYFXTSk/Tm
-         259exFInYV/Bo754GDE0tY5RY5pOgdQ5tymC37E+vxOB/g/JS9Al9egdFxVPnSF9lbjR
-         CHTs84TQ+YhMHI0ZMzo76BwBsj0Usbps7PQl7hNGkNw2HvJYJ0TLIDFZebGc8eiPccfC
-         42/7Os06ZhRJgnufkQ7bIYvUcHEIg5FLACtI2oglPdLuekGT0FhHggaB3RmVjYseYApV
-         KkJ9TT61Hh8jo9/r8N7ljfa/0UTdQmmtiPReEP12viabS1V0Hlk3I5bfx1fDxKs+wTAv
-         rEVA==
-X-Forwarded-Encrypted: i=1; AJvYcCUnHc8Mkf5Q/cBfHzHs0j2vtQ5sUbq8cuJUMx35K3CPk8G3xzRa76TFfR10+l/bKjdCURgfWV/RkeJbnFoN7RVEvbSMUYs=
-X-Gm-Message-State: AOJu0YyBlYSqpNRiYVq0Szoh8RWoDrFcqVI+A8Apo4Tca4+lxEX3eKga
-	4HN+x25spyu2RWH6xJ+otq4Ac128AmhoNxxGM5ZzBQSo0/EVmDx2OZafwMp+v1yVxjCoQO4MHxz
-	inQ==
-X-Google-Smtp-Source: AGHT+IFQIptCkWW78zp6nNtKkGuc5SIQRmDLhLOqGJHxbi7rcmsMoDf48+EiK0QB4NL+su2PCoHiqX08ucE=
+        bh=r962bvR5LCwoMgFXL0pngYYUaEUVgmlMd//tXW54EfM=;
+        b=NRVmxAzsg1aTh5BljyjpcKKCgheLL0g7sxIOdIryYLj9b9nmDEgK4aCbIRqULvNEyc
+         D/u37d1e0wbHPEg1gsscdOHQBj1gnUphcly6GJvCQHcM3PqkVe+pDlsArq76BuXM9nM5
+         7DN6M+WmCxIs6/ronKa0uJibDwNXZf8CZUsJB+rjqBlb7NpJc2EFpmobsguhGzj8avyy
+         6Dx45MxU9UsmDWgcIiMYxBPeORqdt2r6hsGIXrlSiYh3er0pCioZDZBQptMBb9HwYCIr
+         JehITWDV0WiVfvlGSgXRtHkajJheiYho4iQQw5TRyeFZeeQRTbeK7OcN3XXS210jyWhS
+         BQpg==
+X-Forwarded-Encrypted: i=1; AJvYcCU7mIpHOPLN5A5cUGmguQUxsguVrbfQt83M6Pf0+YPIhk3AoU3vzD0/8EtOay1009pPaiVFFbKiBHIm8d76UsaT++PT8YQ=
+X-Gm-Message-State: AOJu0Yye2Gfv3B/AiVTM/j7kW+mWOL4s6j6w928rU5U7i8GzdQqpAqy8
+	+LcIC8F+YVpo3XlMhvdaW70m/6yPTPHogHsfryrtb5ahPtKIZBYC/MpwGDsg4knC1QCd5rnN6KW
+	W5w==
+X-Google-Smtp-Source: AGHT+IGe7t6LCx7ntWuuN0pG3BUD23g3ZHCgKcqafT1luEHOL8Lf4ydoGId/CWh1jbpa65530MO9Fdk68K8=
 X-Received: from surenb-desktop.mtv.corp.google.com ([2620:15c:211:201:85f0:e3db:db05:85e2])
- (user=surenb job=sendgmr) by 2002:a05:690c:fcd:b0:609:33af:cca8 with SMTP id
- dg13-20020a05690c0fcd00b0060933afcca8mr4422200ywb.2.1709749527811; Wed, 06
- Mar 2024 10:25:27 -0800 (PST)
-Date: Wed,  6 Mar 2024 10:24:18 -0800
+ (user=surenb job=sendgmr) by 2002:a05:690c:82:b0:5e6:1e40:e2e3 with SMTP id
+ be2-20020a05690c008200b005e61e40e2e3mr3383691ywb.5.1709749529862; Wed, 06 Mar
+ 2024 10:25:29 -0800 (PST)
+Date: Wed,  6 Mar 2024 10:24:19 -0800
 In-Reply-To: <20240306182440.2003814-1-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -59,9 +59,8 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 Mime-Version: 1.0
 References: <20240306182440.2003814-1-surenb@google.com>
 X-Mailer: git-send-email 2.44.0.278.ge034bb2e1d-goog
-Message-ID: <20240306182440.2003814-21-surenb@google.com>
-Subject: [PATCH v5 20/37] mm: fix non-compound multi-order memory accounting
- in __free_pages
+Message-ID: <20240306182440.2003814-22-surenb@google.com>
+Subject: [PATCH v5 21/37] mm/page_ext: enable early_page_ext when CONFIG_MEM_ALLOC_PROFILING_DEBUG=y
 From: Suren Baghdasaryan <surenb@google.com>
 To: akpm@linux-foundation.org
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
@@ -91,90 +90,45 @@ Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
 	cgroups@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 
-When a non-compound multi-order page is freed, it is possible that a
-speculative reference keeps the page pinned. In this case we free all
-pages except for the first page, which will be freed later by the last
-put_page(). However put_page() ignores the order of the page being freed,
-treating it as a 0-order page. This creates a memory accounting imbalance
-because the pages freed in __free_pages() do not have their own alloc_tag
-and their memory was accounted to the first page. To fix this the first
-page should adjust its allocation size counter when "tail" pages are freed.
+For all page allocations to be tagged, page_ext has to be initialized
+before the first page allocation. Early tasks allocate their stacks
+using page allocator before alloc_node_page_ext() initializes page_ext
+area, unless early_page_ext is enabled. Therefore these allocations will
+generate a warning when CONFIG_MEM_ALLOC_PROFILING_DEBUG is enabled.
+Enable early_page_ext whenever CONFIG_MEM_ALLOC_PROFILING_DEBUG=y to
+ensure page_ext initialization prior to any page allocation. This will
+have all the negative effects associated with early_page_ext, such as
+possible longer boot time, therefore we enable it only when debugging
+with CONFIG_MEM_ALLOC_PROFILING_DEBUG enabled and not universally for
+CONFIG_MEM_ALLOC_PROFILING.
 
-Reported-by: Vlastimil Babka <vbabka@suse.cz>
 Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 ---
- include/linux/pgalloc_tag.h | 24 ++++++++++++++++++++++++
- mm/page_alloc.c             | 11 ++++++++++-
- 2 files changed, 34 insertions(+), 1 deletion(-)
+ mm/page_ext.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/include/linux/pgalloc_tag.h b/include/linux/pgalloc_tag.h
-index 9e6ad8e0e4aa..59de43172cc2 100644
---- a/include/linux/pgalloc_tag.h
-+++ b/include/linux/pgalloc_tag.h
-@@ -96,12 +96,36 @@ static inline void pgalloc_tag_split(struct page *page, unsigned int nr)
- 	page_ext_put(page_ext);
- }
+diff --git a/mm/page_ext.c b/mm/page_ext.c
+index 3c58fe8a24df..e7d8f1a5589e 100644
+--- a/mm/page_ext.c
++++ b/mm/page_ext.c
+@@ -95,7 +95,16 @@ unsigned long page_ext_size;
  
-+static inline struct alloc_tag *pgalloc_tag_get(struct page *page)
-+{
-+	struct alloc_tag *tag = NULL;
-+
-+	if (mem_alloc_profiling_enabled()) {
-+		union codetag_ref *ref = get_page_tag_ref(page);
-+
-+		alloc_tag_sub_check(ref);
-+		if (ref && ref->ct)
-+			tag = ct_to_alloc_tag(ref->ct);
-+		put_page_tag_ref(ref);
-+	}
-+
-+	return tag;
-+}
-+
-+static inline void pgalloc_tag_sub_bytes(struct alloc_tag *tag, unsigned int order)
-+{
-+	if (mem_alloc_profiling_enabled() && tag)
-+		this_cpu_sub(tag->counters->bytes, PAGE_SIZE << order);
-+}
-+
- #else /* CONFIG_MEM_ALLOC_PROFILING */
+ static unsigned long total_usage;
  
- static inline void pgalloc_tag_add(struct page *page, struct task_struct *task,
- 				   unsigned int order) {}
- static inline void pgalloc_tag_sub(struct page *page, unsigned int order) {}
- static inline void pgalloc_tag_split(struct page *page, unsigned int nr) {}
-+static inline struct alloc_tag *pgalloc_tag_get(struct page *page) { return NULL; }
-+static inline void pgalloc_tag_sub_bytes(struct alloc_tag *tag, unsigned int order) {}
- 
- #endif /* CONFIG_MEM_ALLOC_PROFILING */
- 
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 39dc4dcf14f5..b402149a795f 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -4697,12 +4697,21 @@ void __free_pages(struct page *page, unsigned int order)
++#ifdef CONFIG_MEM_ALLOC_PROFILING_DEBUG
++/*
++ * To ensure correct allocation tagging for pages, page_ext should be available
++ * before the first page allocation. Otherwise early task stacks will be
++ * allocated before page_ext initialization and missing tags will be flagged.
++ */
++bool early_page_ext __meminitdata = true;
++#else
+ bool early_page_ext __meminitdata;
++#endif
+ static int __init setup_early_page_ext(char *str)
  {
- 	/* get PageHead before we drop reference */
- 	int head = PageHead(page);
-+	struct alloc_tag *tag = pgalloc_tag_get(page);
- 
- 	if (put_page_testzero(page))
- 		free_the_page(page, order);
- 	else if (!head)
--		while (order-- > 0)
-+		while (order-- > 0) {
- 			free_the_page(page + (1 << order), order);
-+			/*
-+			 * non-compound multi-order page accounts all allocations
-+			 * to the first page (just like compound one), therefore
-+			 * we need to adjust the allocation size of the first
-+			 * page as its order is ignored when put_page() frees it.
-+			 */
-+			pgalloc_tag_sub_bytes(tag, order);
-+		}
- }
- EXPORT_SYMBOL(__free_pages);
- 
+ 	early_page_ext = true;
 -- 
 2.44.0.278.ge034bb2e1d-goog
 
