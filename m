@@ -1,53 +1,96 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6B4C5D904;
-	Wed,  6 Mar 2024 15:04:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC675131745
+	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 15:05:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709737485; cv=none; b=k85yBnU/2Vuzs8xTdOlPY9ZIEijQU/XWZZqR7iSfD1ZixMr+ej0b7PVgekP+NNknx8C70EDmy/b9TYZEJEtl/qntpVpqyTVeZvSkq+hx+lxg4NyN+VqDh5cooq51QrhRP8WlE7JO5yo2Hf/NYNdMicaDErNXdW4D66i+7dLED+k=
+	t=1709737523; cv=none; b=gzQgFYR0xdlTRu47iF+1W8bSATTrTTnTWJeUGWBeq7+ZR7BvAmu2va9pcBi/HorpkriUm5ETIA0N3n1cMfbn5t+9SiKjlCJDIyYDqQ9iJVh4V++uPsRmK36GQAmsZOVhc9gSg/3DE7he9mUjluzDXz3/ZBfpFgYLw6yzxaohMH8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709737485; c=relaxed/simple;
-	bh=s0cP/vdeTBfqUMpPi1K2dMYOFXlNATU+OscAfsIgh9Y=;
+	s=arc-20240116; t=1709737523; c=relaxed/simple;
+	bh=FAE7tKzetJC0DRifXVvbyePo3HyTO0kdYHz5YfVi9U8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KVBauO5XqTUwpANohxNPl7/09XovzAhJMj0K2kGifo8OtTMe40QnqVPH/B2X0nVFd+V2gbcqOugnRO36pOIxUQyquikhdmX7p2jigb4MUzFyJv+M7JonEdmkA020jFqAOqAUFNMZv0kKEGnUnWXy5r6V2cqurgeP7+wxj+i8LUY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=ZSFZ7s8Y; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=FoCw6FPKeYhkGlqJ+WipHx2L6v70zHEMlA5ukdt0+PKkoqnevLY6OXlRUe+9ziK/VhX3RvuUdEQvHAm2iTdU1bWb7PtgciIlKX9Zy2z2yxLA1JVDWdp1d43a6l5QSubmgIVBUNrDr0bVjdpJ2OOarzpQADWNxTtI986Q5aMiVn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=K0EfhUDX; arc=none smtp.client-ip=209.85.160.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ZSFZ7s8Y"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=bIU+Y5tx9f1r7LHMtxJaaNjMHc4LWtkAUlFKv4XMp0s=; b=ZSFZ7s8YIDIt3b0Xse+j2mtEhj
-	YBv9PmhQb2Sr+mtg/nLN85fQCd08SSYbxHLzctr+hn9NTjtJpKHlOZO3UoZkorkMF8JxiHBn35N+K
-	kcCo51zZYbX228avPHZxiQzHGn5kj1WL7jgXHzPJKtzaA4Q33z8OYpDxSbyTw0jB/VCXk50bHviC7
-	l91UxkVIUBnshpCIvi6dqC6HKYm9rVf/uMuASQlVOPcBPM7dYi7Q/UN+NcF2mwUXFqGB4zFTD+drp
-	9/QveY/6yGnml+UULDxNINgBZVmuKJ7gj7tBN5HHWorUcTW2fosCnVaES8QpEqpwQc/15FN9l/RS3
-	CX7hQ42g==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1rhsow-00000000hHr-35do;
-	Wed, 06 Mar 2024 15:04:38 +0000
-Date: Wed, 6 Mar 2024 07:04:38 -0800
-From: Christoph Hellwig <hch@infradead.org>
-To: Andreas Larsson <andreas@gaisler.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, Sam Ravnborg <sam@ravnborg.org>,
-	"Maciej W. Rozycki" <macro@orcam.me.uk>, sparclinux@vger.kernel.org,
-	Randy Dunlap <rdunlap@infradead.org>,
-	Miquel Raynal <miquel.raynal@bootlin.com>,
-	linux-parport@lists.infradead.org,
-	"David S . Miller" <davem@davemloft.net>,
-	linux-kernel@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
-	iommu@lists.linux.dev, linux-kbuild@vger.kernel.org,
-	Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: [PATCH v2 4/7] sparc32: Do not select ZONE_DMA
-Message-ID: <ZeiGBuMN_I9V94Mx@infradead.org>
-References: <20240224-sam-fix-sparc32-all-builds-v2-0-1f186603c5c4@ravnborg.org>
- <20240224-sam-fix-sparc32-all-builds-v2-4-1f186603c5c4@ravnborg.org>
- <8d5780f5-1047-48d7-a9c9-09b95c7b5604@gaisler.com>
- <5648dca0-4853-4dfb-91cf-282a656beb1e@app.fastmail.com>
- <bc33b608-e0b5-4dff-aa05-8513dce409b3@gaisler.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="K0EfhUDX"
+Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-42eff08e3f8so8053791cf.1
+        for <iommu@lists.linux.dev>; Wed, 06 Mar 2024 07:05:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1709737521; x=1710342321; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3q6XaWzdNlm5rZVTCa+MalaN5VSyURFchooXo3LCyRw=;
+        b=K0EfhUDXOFjwyISkCrjTwntwxYrQwXpmk3hISpgu5yoA+G8rIvSqEEHaFO1qjEz45e
+         foloDqVfEJAF6bHXBcPzQmUOW0eqYMKsDqI5YdQwX69ibTFTTv6+fHNAkLDvT/OREwIc
+         BD6XG3+LZg2LfQ0YwB/BPl3PznejwNQbQUHLFTztrxNk5UdJtaVHXoYt2xtS/Suvexm4
+         Sdws8IL9sSxgEP0u4325JwU7VwotJQLuQBLiAxXSPN1KSpq8ieXN9hUAVOS/N+wPeVd0
+         S9C16yZUdPKLbZhivvdgpoGJCA67hwwf+kxrqMfXRoZ2DhRyG0AhtcjKQvvFdpCzS/yT
+         96hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709737521; x=1710342321;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=3q6XaWzdNlm5rZVTCa+MalaN5VSyURFchooXo3LCyRw=;
+        b=SAthTrq0eIrNHaZ/bg/P6YjBfxG3cKZaFk3uBWOjDFrSPUPrlzGPuBEaRD3z5F5ExS
+         onDj5TvGSi+jQUm7nRczfF8sKEbxj2r9l6GRq4H0plelJhBxxB0+jO2xFIVGjgv0pNAm
+         A7DuSsyBy1kaWjfuYndr6g3dxelNhjcV3PIEsP4u2DN13STKj1JMNKDLvxUznQzKz5RQ
+         6SDCbYpEnVap0PGRt3WxSzb95xWj3FHrWaiLit//NNN+pY5LqcOK4ehAotHdGjUaYPAo
+         ViNcXOG3pRQIZXeTBuukROxJXjkG/ofZoxU2AAGaLMuBqrW/dGpnZKVMxgmDs4QouB0c
+         YLRA==
+X-Forwarded-Encrypted: i=1; AJvYcCUQN8/740EzLJV+HnRJpsJyBt58iLB1c8tFM0Kb5fIuwAqyq/Aq4RAN7xLUyGqj4S5/4iQn/kEYE+TmBfOaZzTyB1OEVQk=
+X-Gm-Message-State: AOJu0Yy4vp7HrEz83GRxrC3hgUfScNQRZDM/HiUGoMpaOJbjEp2w92rH
+	w1RVsO5dkpPhAwMuE2TaYpZNis+6O1TuDdt9owyBWvMNdHnLiMtshH8HNuKTaHM=
+X-Google-Smtp-Source: AGHT+IF3DD5YVqRayIYcxbWGOreOFw/mqikGG0c1CCT98Poz3twNOMiPHe1g+1Vg/YON1gYeWp1F9Q==
+X-Received: by 2002:a05:622a:1743:b0:42e:bcc4:2959 with SMTP id l3-20020a05622a174300b0042ebcc42959mr5571780qtk.4.1709737520530;
+        Wed, 06 Mar 2024 07:05:20 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id f5-20020a05622a1a0500b0042f01390d5csm1686793qtb.30.2024.03.06.07.05.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Mar 2024 07:05:19 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rhspa-001WNB-Tx;
+	Wed, 06 Mar 2024 11:05:18 -0400
+Date: Wed, 6 Mar 2024 11:05:18 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Keith Busch <kbusch@kernel.org>, Leon Romanovsky <leon@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
+	Sagi Grimberg <sagi@grimberg.me>, Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Bart Van Assche <bvanassche@acm.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Amir Goldstein <amir73il@gmail.com>,
+	"josef@toxicpanda.com" <josef@toxicpanda.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"daniel@iogearbox.net" <daniel@iogearbox.net>,
+	Dan Williams <dan.j.williams@intel.com>,
+	"jack@suse.com" <jack@suse.com>,
+	Leon Romanovsky <leonro@nvidia.com>,
+	Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [RFC RESEND 16/16] nvme-pci: use blk_rq_dma_map() for NVMe SGL
+Message-ID: <20240306150518.GL9225@ziepe.ca>
+References: <cover.1709635535.git.leon@kernel.org>
+ <016fc02cbfa9be3c156a6f74df38def1e09c08f1.1709635535.git.leon@kernel.org>
+ <Zec_nAQn1Ft_ZTHH@kbusch-mbp.dhcp.thefacebook.com>
+ <20240306143321.GA19711@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,25 +99,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bc33b608-e0b5-4dff-aa05-8513dce409b3@gaisler.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20240306143321.GA19711@lst.de>
 
-On Wed, Mar 06, 2024 at 03:19:52PM +0100, Andreas Larsson wrote:
-> > I think that is the correct thing to do then: the only
-> > drivers that I see with this dependency are PCI sound cards
-> > that apparently rely on DMA to the 16MB ISA range, which is
-> > not provided by sparc.
+On Wed, Mar 06, 2024 at 03:33:21PM +0100, Christoph Hellwig wrote:
+> On Tue, Mar 05, 2024 at 08:51:56AM -0700, Keith Busch wrote:
+> > On Tue, Mar 05, 2024 at 01:18:47PM +0200, Leon Romanovsky wrote:
+> > > @@ -236,7 +236,9 @@ struct nvme_iod {
+> > >  	unsigned int dma_len;	/* length of single DMA segment mapping */
+> > >  	dma_addr_t first_dma;
+> > >  	dma_addr_t meta_dma;
+> > > -	struct sg_table sgt;
+> > > +	struct dma_iova_attrs iova;
+> > > +	dma_addr_t dma_link_address[128];
+> > > +	u16 nr_dma_link_address;
+> > >  	union nvme_descriptor list[NVME_MAX_NR_ALLOCATIONS];
+> > >  };
+> > 
+> > That's quite a lot of space to add to the iod. We preallocate one for
+> > every request, and there could be millions of them. 
 > 
-> The ZONE_DMA dependency does not seem related to ISA per se. Commit
-> 80ab8eae70e5 ("ALSA: Enable CONFIG_ZONE_DMA for smaller PCI DMA masks")
-> that started to introduce it did were about ensuring 32-bit masks.
+> Yes.  And this whole proposal also seems clearly confused (not just
+> because of the gazillion reposts) but because it mixes up the case
+> where we can coalesce CPU regions into a single dma_addr_t range
+> (iommu and maybe in the future swiotlb) and one where we need a
 
-Yikes!  That commit is just unbelievable buggy.  CONFIG_ZONE_DMA
-is only for architetures to select, not drivers.  A driver randomly
-enabling such an arch zone is just crazy.
+I had the broad expectation that the DMA API user would already be
+providing a place to store the dma_addr_t as it has to feed that into
+the HW. That memory should simply last up until we do dma unmap and
+the cases that need dma_addr_t during unmap can go get it from there.
 
-I've been wondering for a while if we need some Kconfig magic
-so that certain symbols can only be select from arch/* and not
-elsewhere to prevent this (we had a few other similar cases like
-DMA_MAP_OPS).
+If that is how things are organized, is there another reason to lean
+further into single-range case optimization?
 
+We can't do much on the map side as single range doesn't imply
+contiguous range, P2P and alignment create discontinuities in the
+dma_addr_t that still have to be delt with.
+
+Jason
