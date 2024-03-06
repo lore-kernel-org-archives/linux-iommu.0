@@ -1,127 +1,118 @@
-Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44A4C14286
-	for <iommu@lists.linux.dev>; Tue,  5 Mar 2024 17:19:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 012757FBA0
+	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 12:02:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709659156; cv=none; b=CoQ0WXI/vLiCcVpDktQnNw04z2+2nPFNJVYJWtjSa4G5xwNrznEtb/mVMrjKER/oN5bKm/MjbGX/wS5T94un3THIYLwdUu68fMxo5aK9UFlS+OrXDWxau9+A9nNBQiNJRDwIEAlnrmfNoLFBvVeb6mZc/2vdAB/SLoTZg96R8sc=
+	t=1709726573; cv=none; b=ABDxJ24d7A1zNz2d8RVHP//ydVcsNc2F0BcLeoaAcLoxFHCEha4FTE69Nm+1KvpL8yA+9ibNZAKJd6v6+IUlUcs6qOSC/+t787pgw/JDwFOcENR+74aO3K+Of5k28I2hcUsNlXTo2Rh+53BOtpPfIxrvucydNA9sv82YWVV7GjQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709659156; c=relaxed/simple;
-	bh=35W0xkiyIW+h4I7uaqpD3yZaGe3eGIyUIL9pgPlFMFg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=neiiCQQM7IQVvRZK7x1FgOK96gO4qv2asx0EUf+9l5Gl+0/Tq81bS8U0crDwaRmm/D0V5VwyjoLNnEARTyXUJYrFGYLLr9+QaSBGw2Ryyc1lFXi17xr4wV1ivc17OmkrCZv3kQd+r9+LxPrGAumtKkteXVZqBhwWHu2NKqYGof8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=o6rsnOer; arc=none smtp.client-ip=209.85.161.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="o6rsnOer"
-Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-5a142375987so459745eaf.3
-        for <iommu@lists.linux.dev>; Tue, 05 Mar 2024 09:19:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1709659154; x=1710263954; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=+QaobAGWVH6S5E9EJzoRHvFL79d1fgtq8p8ecN7tgGg=;
-        b=o6rsnOerzYUJo1A90xu7rRjY+Fe7zgsWQKNl02HtUDfhfV0azAxM80c5aUyRmrhPan
-         bom4Ysg6wCryBSSkH0FqP7yR8HENhzc6flfIIYmUpUMkWxhWDDADM3Eeba1Tp8WmZj90
-         qMZHrlxSIF805g5qDjwV3fPqZS0nQSOb3DkmW8QTT/e97Gxed6Ypn4osgsyxt3nFeeMO
-         F5ui/ZdAfHNiRiArxInAVNMSFWqmmHj99snzyhgjq77jT6yKnaAiJcn7GWCPp4Nl/pWw
-         zkP49rLoteuh174M82+Zqe2I9tDhGfHKfSlod1Q7X0W/yGSsMegfcg3fTf5i9qLliMUV
-         nGWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709659154; x=1710263954;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=+QaobAGWVH6S5E9EJzoRHvFL79d1fgtq8p8ecN7tgGg=;
-        b=uPHNkoKh3gT74rJ2UmqWIaxD9t18RzJRcCMznLmY0+rIBUXwrDTiuf0wU+XlxFHQrO
-         wU7njqKznY8dM6oS8+BXrtnnYeLY/joCNB9/1EYi/RjBJJVXJ0aStcvf+7ITLtYkz+L0
-         ZbB6NKp05pronImmiviIIJ4fk6VYLnDNhQyhZJSpMn/C76n6oFdAl2G0LyzhBGRXNS+Z
-         HxLMwqpls/fYCBTN/4KELH5sHOM8l9gH6h6ebpa16IPEW1HLWSioifUlwb0LDyGSZJUR
-         UTB62k1VA3zxbBam6W47GIiA+1b2m6Z5EYiKArdY86qyE4MxVcCse6O0t8FfTGf1Cr5C
-         rG+A==
-X-Forwarded-Encrypted: i=1; AJvYcCV1+9Y+6gdSoVuvUuHrcdNSNDVnDkCqaRVH15PdIwwDQQeMF/g0asmdL6RvHWgdssAhGoxQbgTNkSSLIwsrT0rrElpMSDs=
-X-Gm-Message-State: AOJu0Ywu+r2XWb0WOKX6LiX0pt6hAAWUKzzcN9KWkYxNsGQP1WfItlEq
-	Nnbe0HaPAIZ9MNc9k68oNvOJaByulgY+/oonFSByhXZkmsovjSSMiPIl0gbW16vU/0FPtoUOgJ4
-	Rxb9+u0Zf/L8GK9dJVZv/ICNAo7E+vons/U6R
-X-Google-Smtp-Source: AGHT+IEFsxok2qYjPGM8WG7zzaRYUAHjkHuadWtw7qIkVbdF0GYy27xbG5BOekp2bznsc7bcEKBI8II7uSjtyoF/Gzc=
-X-Received: by 2002:a05:6359:4103:b0:17a:d4c0:d59f with SMTP id
- kh3-20020a056359410300b0017ad4c0d59fmr2914394rwc.4.1709659153881; Tue, 05 Mar
- 2024 09:19:13 -0800 (PST)
+	s=arc-20240116; t=1709726573; c=relaxed/simple;
+	bh=yF6gwCEWbGF3pPVi8P+IIvtLpYFThZkXLvepHc0U0MA=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=XC9ZLbHXV/y+n/oYYkxPNAVYr2VPuPTCYMhwJZbr8a1rsm2Bp83uiuT0dxcLMOxWIxlmqwte8XffIU8Dbhv6in6GtJdHm/BXLy4m0p/GasqYsnhhIvSduPXlfWelQcf/688/Ts+eEwObc93A7HK476pyuJcjNyM7OmsOMTv+XPQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 552571FB;
+	Wed,  6 Mar 2024 04:03:27 -0800 (PST)
+Received: from [10.57.67.126] (unknown [10.57.67.126])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1AF433F738;
+	Wed,  6 Mar 2024 04:02:41 -0800 (PST)
+Message-ID: <6af5e7da-08ba-4fc7-8e57-863377182142@arm.com>
+Date: Wed, 6 Mar 2024 12:02:41 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240112055251.36101-1-vannapurve@google.com> <20240112055251.36101-2-vannapurve@google.com>
- <etvf2mon464whscbxqktdd7bputnqmmwmoeg7ssixsk4kljfek@4wngbgzbbmck>
- <CAGtprH-95FEUzpc-yxQMo87gpqgMxyz9W8tiWtu_ZHhMW-jjuA@mail.gmail.com> <8a6dabdf-dc11-4989-b6b4-b49871ff9ca6@amazon.com>
-In-Reply-To: <8a6dabdf-dc11-4989-b6b4-b49871ff9ca6@amazon.com>
-From: Vishal Annapurve <vannapurve@google.com>
-Date: Tue, 5 Mar 2024 09:19:00 -0800
-Message-ID: <CAGtprH8LOgvtO_rjFzASbp240P=yBvODCBU22sN_+uhdumueiQ@mail.gmail.com>
-Subject: Re: [RFC V1 1/5] swiotlb: Support allocating DMA memory from SWIOTLB
-To: Alexander Graf <graf@amazon.com>
-Cc: "Kirill A. Shutemov" <kirill@shutemov.name>, x86@kernel.org, linux-kernel@vger.kernel.org, 
-	pbonzini@redhat.com, rientjes@google.com, seanjc@google.com, 
-	erdemaktas@google.com, ackerleytng@google.com, jxgao@google.com, 
-	sagis@google.com, oupton@google.com, peterx@redhat.com, vkuznets@redhat.com, 
-	dmatlack@google.com, pgonda@google.com, michael.roth@amd.com, 
-	thomas.lendacky@amd.com, dave.hansen@linux.intel.com, 
-	linux-coco@lists.linux.dev, chao.p.peng@linux.intel.com, 
-	isaku.yamahata@gmail.com, andrew.jones@linux.dev, corbet@lwn.net, hch@lst.de, 
-	m.szyprowski@samsung.com, rostedt@goodmis.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 0/7] dma-mapping: Simplify arch_setup_dma_ops()
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+To: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>
+Cc: Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
+ <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux.dev, devicetree@vger.kernel.org
+References: <cover.1707493264.git.robin.murphy@arm.com>
+In-Reply-To: <cover.1707493264.git.robin.murphy@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Feb 15, 2024 at 3:14=E2=80=AFPM Alexander Graf <graf@amazon.com> wr=
-ote:
-> > ...
-> > The issue with aligning the pool areas to hugepages is that hugepage
-> > allocation at runtime is not guaranteed. Guaranteeing the hugepage
-> > allocation might need calculating the upper bound in advance, which
-> > defeats the purpose of enabling dynamic SWIOTLB. I am open to
-> > suggestions here.
->
->
-> You could allocate a max bound at boot using CMA and then only fill into
-> the CMA area when SWIOTLB size requirements increase? The CMA region
-> will allow movable allocations as long as you don't require the CMA space=
-.
+Hi Joerg, Christoph,
 
-Thanks Alex for the inputs, I wanted to understand CMA better before
-responding here.
+On 2024-02-09 4:49 pm, Robin Murphy wrote:
+> v2: https://lore.kernel.org/linux-iommu/cover.1702486837.git.robin.murphy@arm.com/
+> 
+> Hi all,
+> 
+> Here's v3, rebased and fixing the thinko from v2, so unless anything
+> else has changed behind my back I hope it's good to go (via the IOMMU
+> tree, as mentioned before).
 
-I am trying to get the following requirements satisfied:
-1) SWIOTLB pools are aligned to hugepage sizes.
-2) SWIOTLB pool areas can be scaled up dynamically on demand to avoid
-pre-allocating large memory ranges.
+Are either of you happy to pick this series up now that we have Hanjun's 
+acks for the IORT parts? As it stands it still applies cleanly to both 
+iommu/next and dma/for-next. I do have some followup IOMMU patches 
+prepared already (continuing to delete more code, yay!), but I don't 
+want to get too far ahead of myself.
 
-Using CMA to back SWIOTLB pools for CoCo VMs as per this suggestion would n=
-eed:
-1) Pre-configuring CMA areas with a certain amount at boot either with,
-   - command line argument to the kernel (tedious to specify with
-different memory shapes) or
-   - kernel init time hook called by architecture specific code to
-setup CMA areas according to the amount of memory available (Possibly
-a percentage of memory as done for SWIOTLB configuration)
-2) SWIOTLB pool dynamic allocation logic can first scan for CMA areas
-to find the hugepage aligned ranges,  and if not found, can fall back
-to allocate the ranges using buddy allocator (which should ideally
-happen after depleting the CMA area).
-3) SWIOTLB pool regions would need to be allocatable from >4G ranges as wel=
-l.
+Cheers,
+Robin.
 
-Setting up a suitable percentage of memory for CMA area in case of
-CoCo VMs will allow larger SWIOTLB pool area additions, this should
-help alleviate Michael Kelley's concern about spin lock contention due
-to smaller pool areas. This will need some analysis of shared memory
-usage with current devices in use with CoCo VMs, especially GPUs which
-might need large amounts of shared memory.
-
->
->
-> Alex
+> 
+> Thanks,
+> Robin.
+> 
+> 
+> Robin Murphy (7):
+>    OF: Retire dma-ranges mask workaround
+>    OF: Simplify DMA range ca1lculations
+>    ACPI/IORT: Handle memory address size limits as limits
+>    dma-mapping: Add helpers for dma_range_map bounds
+>    iommu/dma: Make limit checks self-contained
+>    iommu/dma: Centralise iommu_setup_dma_ops()
+>    dma-mapping: Simplify arch_setup_dma_ops()
+> 
+>   arch/arc/mm/dma.c               |  3 +--
+>   arch/arm/mm/dma-mapping-nommu.c |  3 +--
+>   arch/arm/mm/dma-mapping.c       | 16 +++++++------
+>   arch/arm64/mm/dma-mapping.c     |  5 +---
+>   arch/loongarch/kernel/dma.c     |  9 ++-----
+>   arch/mips/mm/dma-noncoherent.c  |  3 +--
+>   arch/riscv/mm/dma-noncoherent.c |  3 +--
+>   drivers/acpi/arm64/dma.c        | 17 ++++---------
+>   drivers/acpi/arm64/iort.c       | 20 ++++++++--------
+>   drivers/acpi/scan.c             |  7 +-----
+>   drivers/hv/hv_common.c          |  6 +----
+>   drivers/iommu/amd/iommu.c       |  8 -------
+>   drivers/iommu/dma-iommu.c       | 39 ++++++++++++------------------
+>   drivers/iommu/dma-iommu.h       | 14 +++++------
+>   drivers/iommu/intel/iommu.c     |  7 ------
+>   drivers/iommu/iommu.c           | 20 ++++++----------
+>   drivers/iommu/s390-iommu.c      |  6 -----
+>   drivers/iommu/virtio-iommu.c    | 10 --------
+>   drivers/of/device.c             | 42 ++++++---------------------------
+>   include/linux/acpi_iort.h       |  4 ++--
+>   include/linux/dma-direct.h      | 18 ++++++++++++++
+>   include/linux/dma-map-ops.h     |  6 ++---
+>   include/linux/iommu.h           |  7 ------
+>   23 files changed, 89 insertions(+), 184 deletions(-)
+> 
