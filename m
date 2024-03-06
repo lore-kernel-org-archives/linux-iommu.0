@@ -1,188 +1,180 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2080.outbound.protection.outlook.com [40.107.102.80])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f53.google.com (mail-qv1-f53.google.com [209.85.219.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7FF4D534
-	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 16:44:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.80
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709743476; cv=fail; b=CDR8cs6GIKwLqlow5tu3R21hoj1+2KHIqkPN/Rvb0aO1L7r9mJy3VfjxuPfIUqhEf/0A6zI2UaKgK6Fs9QW/jb1gg5rX+wTuESQ8pB0bSmw2WzxTSdNF/DlbiKArvZw9Jbexvp6RypQduabui9LNlDt+c4SBz5ckRj13d/5d2gE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709743476; c=relaxed/simple;
-	bh=3td0p1QosglwBf7mLWWpWYDBCc8ulAmShRT8bTt2+oU=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=nU2rcdsbM9SFFnbRzLXVIdwW/qddSA5L6IekJH7hSs8PtQx5k3b7tOqvjpa8b+Na86f8IOEKRmGX5IbEwP0FC7Kb0YG3H5Zat1kSZLJ3GWko8WHA2GuHPuMe9D09rRNae+bn1hX3lwTSx2g3vXWvY50SkCBnOCxJ4Y4ECXkuzSY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=Yl3TIIPH; arc=fail smtp.client-ip=40.107.102.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AF2813B7BD
+	for <iommu@lists.linux.dev>; Wed,  6 Mar 2024 17:44:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709747100; cv=none; b=sGnU8UMJJsgozvxNKu/OyiciSdr0EmaqtmE6/Zs0jejyL5p/+Wvw7uG9lLGWn1GH3ubRZIhSOOjg+HDGvKw3TBd3RqXugKlxO3WUpmgXUfle7laWftLyscVlfMC5E8cH/7uW/tzqoTrvN1Vw1jrgg5InufI5B/BlHctpB3ny5tM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709747100; c=relaxed/simple;
+	bh=KgEC8zWw55+Acg7UImx7iG13lc0bEoNvPiGpELvl9iU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EbKTi7H4MjniBsT8srEb5AyJhCClfGX8v2wE5VeGo7MzBhgm1yscjF4lOnnJ24CTTAFhazuck/nLK9n+Tp0lPzsC01gYU7KYUSm8z5KpZkoosiu4m+V1xEtdmQuWpw/SyP9hGKM2n4sW0Bn7dBt3E2q9OCR9OKPVusL5Zl+H7Yc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=dhYgd1BZ; arc=none smtp.client-ip=209.85.219.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="Yl3TIIPH"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hKtjKccC6UFMOU+6bKadTdO55sK39IVLoPZLZOWfHoyMcuYfM3PQuH06TFqXIWUtKHXbqeP9PlI2YFXdmC5EjCoJpgnRVJa4rZIMY6S4jybX8LGsdUnNHiPNd1ZGNDBgjXN41nGRnkPV9vRr7tcOO/FJ31lB6FyBdahx5pMLbFVloHsbGdMS1ZaPN7/zYK5Dvo9TUJGH8SYwZ6ArOO46GaL2tytmPVaaGQjbAIIIb2jSeADTW73g+JL/e2mSzqjlzVuUL/2vRn7keDiOauDkT7SMK4YXtPlZr14sDVDuvzz6enExhuKVRyxygJnBvjsO/W5gGGCWLExbalxXWdwSmQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X8LQt9iMGRVWS855TVhxJ3onQAVrt0TJSIsQKNdk1VA=;
- b=YxuhpO7D4Re4KM9ZEHSGwU0QyC+e6vtIDW9JG/pb0Pst04v5ciOBnUqrlnmw2Luzh4+zIQofwXVTksav6ykEOvEvBZe+TmQ+Jer90PGEoQJqHaBuHlYyQ2cAMdk44VfoODUegMDeip1IwLgb3Yrkx5KAd1GBy2h5TqVLDmgKZpETrowwQ5ZBRnL02coRQ3IemvbkCyp2DuL4ApcIrTcpHwGGuh0kfG0jKiZh8zHQAD5T+2OMiN0FQ1R7gBpldPL5Hwy4vjaC97gT5/zqK6e30Jrb1H0YKToHa5g5UkWp+1I9Jcg3/J2lx9Gqm+Qn3KN6a1Uq/BTgW+kKCVJpJVGvMA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X8LQt9iMGRVWS855TVhxJ3onQAVrt0TJSIsQKNdk1VA=;
- b=Yl3TIIPHFV99VIAWkjEEzQIzVb0NqTrKCH3LCoBDTLIFd36hDjNFMRqXDsP1KaijT+tHsISvr+URoVcp3Fbo8BqCHea6tuYyP/7pWB4wvIqp6NrMjiBPkPIdWAOmXrpCEtqj+8Geiq0nQWPSlmZhWrPTrLsiHxi81+pKe4DMr0A=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
- SA1PR12MB8859.namprd12.prod.outlook.com (2603:10b6:806:37c::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.38; Wed, 6 Mar
- 2024 16:44:32 +0000
-Received: from DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::d709:cb7d:2612:bb27]) by DS7PR12MB6048.namprd12.prod.outlook.com
- ([fe80::d709:cb7d:2612:bb27%5]) with mapi id 15.20.7362.019; Wed, 6 Mar 2024
- 16:44:31 +0000
-Message-ID: <45a509a3-6a6d-7662-47e5-181bca1e55b1@amd.com>
-Date: Wed, 6 Mar 2024 22:14:24 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [bug report] iommu/amd: Refactor attaching / detaching device
- functions
-Content-Language: en-US
-To: Dan Carpenter <dan.carpenter@linaro.org>, suravee.suthikulpanit@amd.com
-Cc: iommu@lists.linux.dev
-References: <41bd6e9a-19c1-43f4-8251-cc9e83737a31@moroto.mountain>
-From: Vasant Hegde <vasant.hegde@amd.com>
-In-Reply-To: <41bd6e9a-19c1-43f4-8251-cc9e83737a31@moroto.mountain>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN3PR01CA0117.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:96::21) To DS7PR12MB6048.namprd12.prod.outlook.com
- (2603:10b6:8:9f::5)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="dhYgd1BZ"
+Received: by mail-qv1-f53.google.com with SMTP id 6a1803df08f44-6869233d472so36813576d6.2
+        for <iommu@lists.linux.dev>; Wed, 06 Mar 2024 09:44:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1709747098; x=1710351898; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=FpyRbZ0RdQZQRjC0Rn2UI7ybSBSrjRoc3WCER4LofKQ=;
+        b=dhYgd1BZf74EzJxTGfGUbj+iZgICWcI61G1VcOXIN58jKTz9DRmenlB+rDBEiD4Jy7
+         2QYOR6kffvEQDlEwFTpQ7PZH3l4FX/9Y6KpZcjslpcgprnoPijYg1uXJDEZ+gUzYaTWo
+         NO5LakHF4dqsUCjegVkyROtzAp+rG51pWStpadqmpWar2vUhnnYzfcbHxftzRLHcyhhL
+         uMSAS8jZzOr/Bl5M7a0A7+vu85VxzDy0yblKzAIO4r4DA1d0tYl/gdbg/5S13ctIVlq+
+         xycOdOok1XXlKtevqwmimrLBLvv0j0PTQFWyViEPRRW8zBURaRcbkCa6Mv6+UMYxjLMt
+         dfpw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709747098; x=1710351898;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=FpyRbZ0RdQZQRjC0Rn2UI7ybSBSrjRoc3WCER4LofKQ=;
+        b=ifDJb7oy76mn8Myj7+DlolVdJaWv6TRAJ9m5Yn/7grBTFXaKcZXEw7nok0IxiaWm8E
+         gMjkwxxSDvnKvMa/z+v0IyiG7M6krh4Sd4CuUaVKfiwV3RrJsGtYt4P2OV2WfAox/nHB
+         N+QGj/lsPPXEKNWWFgFM4z3UKbGAsMeLxXm3hB1TvTL38XJ9WOwtL457jNz/Js++mYCM
+         QMVLZE8TDK2UuLratTFmWAf4jzqZGea6unVsN169txRtvZfrBzoiV+Ce3ygqURIaQIBn
+         Jtrcr/UJoroG1u3mpRMvI3Z7gyTJbuRo/J3b9SqBljRdgWeI7WGlCqsMCKOeZHCmeH/R
+         pkfw==
+X-Forwarded-Encrypted: i=1; AJvYcCVf2uBfXl87tOLxqGyuKiVkEgBPse/pxcC8AuIV+eGGxTYCp3J/+b7iAoSZX+lSXuBR8GhdRT2yDa2t4kI4jy9hmJXEbD8=
+X-Gm-Message-State: AOJu0YwNE0aiIR//AXv5aDQ86UiZvtEDEDz7orsG2UkWv/SOMzRJx2t4
+	ZycWYkvqTlf4EFqrrwi6sDRTV/xOgubRiz/6XJco26Dk2O5zHDUQbVko/NPhnbE=
+X-Google-Smtp-Source: AGHT+IFPBkf7L5QuuJTJ8Xv6bEQYd424i8376Z5+WOarEDc8ZpU3tKfW4UZ0uYoM0R8xl79r0aNmBg==
+X-Received: by 2002:a05:6214:11b1:b0:690:64e6:33d5 with SMTP id u17-20020a05621411b100b0069064e633d5mr5599360qvv.54.1709747097870;
+        Wed, 06 Mar 2024 09:44:57 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id ol17-20020a0562143d1100b006904e2c9e36sm7228573qvb.116.2024.03.06.09.44.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 06 Mar 2024 09:44:57 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rhvK4-001uSz-88;
+	Wed, 06 Mar 2024 13:44:56 -0400
+Date: Wed, 6 Mar 2024 13:44:56 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
+	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Bart Van Assche <bvanassche@acm.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Amir Goldstein <amir73il@gmail.com>,
+	"josef@toxicpanda.com" <josef@toxicpanda.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"daniel@iogearbox.net" <daniel@iogearbox.net>,
+	Dan Williams <dan.j.williams@intel.com>,
+	"jack@suse.com" <jack@suse.com>, Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two steps
+Message-ID: <20240306174456.GO9225@ziepe.ca>
+References: <cover.1709635535.git.leon@kernel.org>
+ <47afacda-3023-4eb7-b227-5f725c3187c2@arm.com>
+ <20240305122935.GB36868@unreal>
+ <20240306144416.GB19711@lst.de>
+ <20240306154328.GM9225@ziepe.ca>
+ <20240306162022.GB28427@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|SA1PR12MB8859:EE_
-X-MS-Office365-Filtering-Correlation-Id: 42111056-08a8-4939-0830-08dc3dfcb277
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	wmhSrvwhJhKsO3Df0UTapxB/KtEst76DzyHAEK9nqtfDO/1qflGsm5ktFKkLwIhX2V5y7+D49QWSjnCjnn+8lkpwyyLrUWukNdozEDq8zxQbDrV5tqkWK+bwQJ01Ddwy180aTezJVvxBN+PhvnW8wS84R/7uMChbttwrMegIyXJ9QX+Eofo+cHF2K3nF4eGEFS89b8bMZBt911mLqksJ+TVTWKJ9WchDFIeskdYCsQNl2n6Fye22DHF17N+gQgf6vMOwkrk0qRM9INIdfbHHnN/yNDT4xr6JqGUPQy/07+EtHbHq+Fg3VYrjzDYHd3NGDCIDZjpNBEYbS2orU0xVjSy28zuyaetWNqCh5BP6euIOfoAKdm5mdiBXewi2QieifTFebiXB7BTQBUO0fE4eSQjzJKOaTJcDDxw5lQ7NOw3SGKU/Ygwx4fLgt4BlDRq83vIK+n7JlHwtEqT3676t0/J53Y4yZXKINhfW5qs/BuFrPlTZLYNv5u4YqAOK5QKP1peFMcOk9jtrCQsdjlWA14oGKf5btksXoFGoG8WT/50m2feR+4KoZrcFO9tBt4yDrE64MurMgD4i4CPwDr9SVnVdVkIpcMWbeVXqeEOcHTSG0YBjd59gusbP7HHYuDN/JKQWpP6asQaEevzNOXA0f3iERYaIQCfEjb78Jrvm59Y=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QktGUW5EUXNLNnFKd2h5TytwK1lTMGtTR3V3U0NnWWlVU1cyYVRXWWNyVUtJ?=
- =?utf-8?B?SGNrU09mZ2c3U2FUWUZBdVR2eFhDK1Z0YmRDSGpDYml3Q05ISHVPOHk5Nmkv?=
- =?utf-8?B?UVUwNkNkSDJYWWI3WUdYeEtjaEpBUVFPQlJMeGNLZnFrLzVHZWFaVU1OQjBZ?=
- =?utf-8?B?TFZJQzFYbTAwbE1aTzBQeGNrK2hCRUpuaVl5enUrUjVMUEJyUG9iWlEzZm5P?=
- =?utf-8?B?ams5dW1tdmVwWGthRHU4SEtmWTZZME1KZE54OGtja2w4RWhCQU1mTHNTVThS?=
- =?utf-8?B?WG1iZmV5SmIyR1hUeTZNeVhTWDU1QUl5cWxkVHJLUklBaW02OEN1V0xrTjVO?=
- =?utf-8?B?L1JNQTlINlQxVWdTTHNMOTJnVm5EMERIR1RQalBYU0lmTFBGQkc0Z1FKMUtm?=
- =?utf-8?B?TXJiY0FIak9TSnY5WU9wbXUrY0lURHNpUi95YThydmJlSnBHRitWdVpBdUpW?=
- =?utf-8?B?RWtZU2d1Nk1PWjZHZk93Y01DMmcxWHN2eHJZdVoxei9NazdjNTdwSDR4WGZU?=
- =?utf-8?B?RFNQeUlmWGVURFluUWpRbzZGNGZTakdwS3U1YWh2QXB6QjJjWnRpNXMrTWFV?=
- =?utf-8?B?TW1NOEsxSy9qL2pvVkp4T3pheGYxYkNVbEdtelFsbmkzR2ZHa0pka0V3Y2d0?=
- =?utf-8?B?dEQrM2VTZVlFL2ZDalBYWU1WMTJBOVZ2ZFRQYzQ4SmZ5NnRTOHVJWmJzOGsz?=
- =?utf-8?B?NjA1a1Z6WWJpV1lwaHFDcXIybUhRLzNzaE4yVlg3d29OMlpMejNDOUo0c1ZS?=
- =?utf-8?B?ZGF2NWdPUDgrT1JlUGp4L3NrUnZReUQ5bWswVHFxOHBRMjBGdVhMSWZoa2Ja?=
- =?utf-8?B?L0dLYmdncjVaYkVTUFhOdXp1RE5MbVYvYjMzMUJGd2pscVJaSUw0R0VqUVdH?=
- =?utf-8?B?UGMyNFBpQ3dOemRwY0tkaVJwdWF0M05mdThuR1RLZ1BTOXl4OTdPQ2F3bmtE?=
- =?utf-8?B?QkowclVibmhPejdXN2s2VjJkNS82cFRqZkpzdDh3blIyRXhDeFVtMjU0czIx?=
- =?utf-8?B?YnZWVmFXQWc0MjBSNUxqSWJVOXhiUTJ1VlR2cEhRQklOSlR1RjNDSGNBcjY5?=
- =?utf-8?B?QjNPRlF0a2M3N3lkVTVnVG1NanZEejdROGhTeStsZFZvM0ZZb0hmNndoMk45?=
- =?utf-8?B?UCtVNmlaQmxRSExFOXY3bHdVZG1ET1A2dXVtakdqVitkQTIxQmdCL3RqN25t?=
- =?utf-8?B?OUpXQ3QrbFRkbFBTL05jYjM0cHN3UEVKVnBRNmFiNXBOamN6ekp2NzdOQ3JW?=
- =?utf-8?B?VU5ReENoV2haSHQxbk9EU1lqVHJySXZoT3JKMzlJSU5kUk41akF1WFJSKy94?=
- =?utf-8?B?RGtPK2pwNWI2eStUQ29pYnhTb3hCcUdlMytoUzMvZTluVVhSbXdOS2ErblpP?=
- =?utf-8?B?UW9DMDV2VjBXdnI2c0xpQ240MXJnRzd5Y1grSUM2MTVSaW1xL1RDSW9ZQXFW?=
- =?utf-8?B?a1ZobEo5V1Z6cityM0UxMGJneUh3bXdDNGhtRm1LSE5MYzVqMlFkU3RlTkl0?=
- =?utf-8?B?VDQ5MWN3ZXJ3eS90am5DNXdOV3BlRG5wTU92eDhzeG9ML1F0aXV3UWZpbHdD?=
- =?utf-8?B?NU1penVaWkhUaFUydk50RmFxK3lGUWJsVG4wQ1FRNUZqSEVNTTNGdEZGUnhM?=
- =?utf-8?B?RTVrdTh2d1NmL1Z3VFk1SkRBYnBaVlhSMjdYMjVXRGx0Y09TaDZVT0twd3Iy?=
- =?utf-8?B?bnFWakFVQWJVcG5UZXV0SHp0Qlk1YzNYd1hOeTlvSXpUWHI1RE44dkVFUHFE?=
- =?utf-8?B?a3NScCtQVUpwZlBtV3VJVGdsbWlGNDgzS1pNL1RvUjBtQXl5MG8yODlBbUFY?=
- =?utf-8?B?Q25GbHNHWE5yMXU3OHAzQlVHbHRGSGpzYTNEUkQ2TWp3RTNQVG11Y0xxRExx?=
- =?utf-8?B?bGg0QXVjWkVpVmVESFRnTDgvWXJuZE9nYkliNUpXcW8xYVJXS3NkV1dDV05n?=
- =?utf-8?B?Z1FRS1JrL0E3NHZwZ0dlMnl2YW9rRFN1enlWdFBIVExSRFhnSmZqVHl2eEtN?=
- =?utf-8?B?UjBpMy9NaVpPS2hQcjVKZE43bnk1eFg4a29weXk5UkVGU1FqNjRnSFZSWmtn?=
- =?utf-8?B?eElLSGxjNTB6cEhUTTAvODZtREZ4S0JPNE5iaVJNT0YwL2NsL1gxbFNLVEYy?=
- =?utf-8?Q?6LBRmvTay0/qzXyvaAQCVtLqU?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 42111056-08a8-4939-0830-08dc3dfcb277
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Mar 2024 16:44:31.8600
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: N4G6homPZvKFe5iYu3YvwjQDQmrFj6+KpVeg2I/I6ootLw5hs10cr4XVgl7i7ILak8ZcTUQnjOHmbIpgqaGesA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8859
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240306162022.GB28427@lst.de>
 
-Hi Dan,
+On Wed, Mar 06, 2024 at 05:20:22PM +0100, Christoph Hellwig wrote:
+> On Wed, Mar 06, 2024 at 11:43:28AM -0400, Jason Gunthorpe wrote:
+> > I don't think they are so fundamentally different, at least in our
+> > past conversations I never came out with the idea we should burden the
+> > driver with two different flows based on what kind of alignment the
+> > transfer happens to have.
+> 
+> Then we talked past each other..
 
-On 2/14/2024 1:33 PM, Dan Carpenter wrote:
-> Hello Suravee Suthikulpanit,
-> 
-> The patch 4ebd4c7f2501: "iommu/amd: Refactor attaching / detaching
-> device functions" from Feb 5, 2024 (linux-next), leads to the
-> following Smatch static checker warning:
-> 
-> 	drivers/iommu/amd/iommu.c:1796 setup_gcr3_table()
-> 	warn: sleeping in atomic context
+Well, we never talked to such detail
 
-Somehow I missed this one.
+> > > So if we want to efficiently be able to handle these cases we need
+> > > two APIs in the driver and a good framework to switch between them.
+> > 
+> > But, what does the non-page-aligned version look like? Doesn't it
+> > still look basically like this?
+> 
+> I'd just rather have the non-aligned case for those who really need
+> it be the loop over map single region that is needed for the direct
+> mapping anyway.
 
-Thanks for the bug report. I was thinking of moving allocation out of lock and
-use GPF_KERNEL. But we decided to rework attach_device() code path later. I
-missed to revert this change. I will post the fix soon.
+There is a list of interesting cases this has to cover:
 
--Vasant
+ 1. Direct map. No dma_addr_t at unmap, multiple HW SGLs
+ 2. IOMMU aligned map, no P2P. Only IOVA range at unmap, single HW SGLs
+ 3. IOMMU aligned map, P2P. Only IOVA range at unmap, multiple HW SGLs
+ 4. swiotlb single range. Only IOVA range at unmap, single HW SGL
+ 5. swiotlb multi-range. All dma_addr_t's at unmap, multiple HW SGLs.
+ 6. Unaligned IOMMU. Only IOVA range at unmap, multiple HW SGLs
 
+I think we agree that 1 and 2 should be optimized highly as they are
+the common case. That mainly means no dma_addr_t storage in either
 
-> 
-> drivers/iommu/amd/iommu.c
->     1781 static int setup_gcr3_table(struct gcr3_tbl_info *gcr3_info,
->     1782                             struct amd_iommu *iommu, int pasids)
->     1783 {
->     1784         int levels = get_gcr3_levels(pasids);
->     1785         int nid = iommu ? dev_to_node(&iommu->dev->dev) : NUMA_NO_NODE;
->     1786 
->     1787         if (levels > amd_iommu_max_glx_val)
->     1788                 return -EINVAL;
->     1789 
->     1790         if (gcr3_info->gcr3_tbl)
->     1791                 return -EBUSY;
->     1792 
->     1793         /* Allocate per device domain ID */
->     1794         gcr3_info->domid = domain_id_alloc();
->     1795 
-> --> 1796         gcr3_info->gcr3_tbl = alloc_pgtable_page(nid, GFP_KERNEL);
->                                                                ^^^^^^^^^^
-> 
->     1797         if (gcr3_info->gcr3_tbl == NULL) {
->     1798                 domain_id_free(gcr3_info->domid);
->     1799                 return -ENOMEM;
->     1800         }
->     1801 
->     1802         gcr3_info->glx = levels;
->     1803 
->     1804         return 0;
->     1805 }
-> 
-> The call tree is:
-> 
-> attach_device() <- disables preempt
-> -> do_attach()
->    -> setup_gcr3_table()
-> 
-> attach_device() is holding spin_lock(&dev_data->lock);
-> 
-> regards,
-> dan carpenter
+5 is the slowest and has the most overhead.
 
+4 is basically the same as 2 from the driver's viewpoint
+
+3 is quite similar to 1, but it has the IOVA range at unmap.
+
+6 doesn't have to be optimal, from the driver perspective it can be
+like 5
+
+That is three basic driver flows 1/3, 2/4 and 5/6
+
+So are you thinking something more like a driver flow of:
+
+  .. extent IO and get # aligned pages and know if there is P2P ..
+  dma_init_io(state, num_pages, p2p_flag)
+  if (dma_io_single_range(state)) {
+       // #2, #4
+       for each io()
+	    dma_link_aligned_pages(state, io range)
+       hw_sgl = (state->iova, state->len)
+  } else {
+       // #1, #3, #5, #6
+       hw_sgls = alloc_hw_sgls(num_ios)
+       if (dma_io_needs_dma_addr_unmap(state))
+	   dma_addr_storage = alloc_num_ios(); // #5 only
+       for each io()
+	    hw_sgl[i] = dma_map_single(state, io range)
+	    if (dma_addr_storage)
+	       dma_addr_storage[i] = hw_sgl[i]; // #5 only
+  }
+
+?
+
+This is not quite what you said, we split the driver flow based on
+needing 1 HW SGL vs need many HW SGL.
+
+> > So are they really so different to want different APIs? That strikes
+> > me as a big driver cost.
+> 
+> To not have to store a dma_address range per CPU range that doesn't
+> actually get used at all.
+
+Right, that is a nice optimization we should reach for.
+
+Jason
