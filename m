@@ -1,143 +1,110 @@
-Received: from mout.web.de (mout.web.de [217.72.192.78])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D37DA12F399;
-	Thu,  7 Mar 2024 19:44:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.72.192.78
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C35512DDB6;
+	Thu,  7 Mar 2024 19:59:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709840691; cv=none; b=GR08J1Yq5KW9KPvEZpPtY6It6fSbIkw/dRif/fe/tyuAWinLcXeMdzb3ezFrjxBWoan5CQ6xdXdZlmjsIrwi8nOHVNo9cD9rJOq8smouQpsiW8gRJV/zkvEnoij7CPp72AMG1rx7I7az8NFL1j9BvzsVb6aEUT813Cq/4lmkmgs=
+	t=1709841557; cv=none; b=RzzNJ4ziSd3TND7sBxkvxCecHfzLqr1PJwJAIg4YcrcC4sxNY7IQgKbamJ61UI1F/3qziEKSkyh91y2hUHYUmUTFSYu/ktvXk24JQyVYkODyZKCli9M2FBvB9Ba3fckcdRpWBP8O3+xCrCyYBlSWUbKHGzsyypB8IrDMkCRLceQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709840691; c=relaxed/simple;
-	bh=XgJUa5/zRGoc2L+nYuRH1XvQNBJF4iikjoUJX52nFxM=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=V5zd0zZpyv2zA/Zfb/Ye6R132PXYjd6Bdsr4bcUVD4bHabIAxUYLvi7Ltg5aFsua/p7JhfeHZKAjQ9yxVz8vsHWj4YKmQCGcakwza/l+Cyn419EzdjuEUK+Wjq9M7zLlRn9LnppF4tVsxQYxdrRZl34vV5OP6AJovUTsGa0IDk0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=spasswolf@web.de header.b=iZoH6ZWP; arc=none smtp.client-ip=217.72.192.78
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+	s=arc-20240116; t=1709841557; c=relaxed/simple;
+	bh=eH7ts0q5onZGbRT1w1B9IvPr7bH0ysYwVmxguJ8VLyo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=AIfnk2ezrTX/jOYQ1dH83HvGL7Yc/c2ZtErIdSx1tyi4tsEmKY4E/b/W5nNEE9WuJJykLfZ7UKYX0A3s1G2CbC/Y1FmsVR0Qql8ZUplgoQWCqFH+MQqXE0LNkT7zTAYeFrVEqZ4OpMXePD5PQDxPkSh6AGS/9EI3bdZGiONlYIc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=f3WrWocD; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=spasswolf@web.de header.b="iZoH6ZWP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de; s=s29768273;
-	t=1709840663; x=1710445463; i=spasswolf@web.de;
-	bh=XgJUa5/zRGoc2L+nYuRH1XvQNBJF4iikjoUJX52nFxM=;
-	h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:
-	 References;
-	b=iZoH6ZWPYP9trw8qlx6M/hKnFPpiFXHfYiyG7xrzl+LP1RfcODO+1EGxAb/kqD7o
-	 X6SfD69GME+hyrKJMw5vWep+Td2Ogg910u5G2JDv/sHNXR50nGnDvIcJgtWCwlbik
-	 mMDc+VqQvOrKjlsBb6niSkCgdTDt7aYjHyk0KH3tPntpAyAfIxK9o6Pk/Wi9D+naN
-	 JWGMMIHaTcj7PsshsWYhQejwDwKiVBx6taxCSQzNCRfElmh2Qu/ZlmpJY6xdq6yfQ
-	 eGNa/jVtySGIkwR4JTpSr8wvXT6V+owfUyhtmn6Nm2NgnK5xXE6ocioEJz0BhUf6p
-	 BJ7o+v5JLfpDWaZDng==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from lisa.home ([84.119.92.193]) by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1M3m9J-1ri2gH3fpT-0012rJ; Thu, 07
- Mar 2024 20:44:22 +0100
-From: Bert Karwatzki <spasswolf@web.de>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Bert Karwatzki <spasswolf@web.de>,
-	haifeng.zhao@linux.intel.com,
-	iommu@lists.linux.dev,
-	jgg@ziepe.ca,
-	jiaqing.huang@intel.com,
-	joro@8bytes.org,
-	kevin.tian@intel.com,
-	linux-kernel@vger.kernel.org,
-	robin.murphy@arm.com,
-	will@kernel.org
-Subject: [PATCH] iommu: fix compilation without CONFIG_IOMMU_INTEL
-Date: Thu,  7 Mar 2024 20:44:19 +0100
-Message-Id: <20240307194419.15801-1-spasswolf@web.de>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: 20240220065939.121116-3-baolu.lu@linux.intel.com
-References: 
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="f3WrWocD"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=KVaCyMJy+vYOeUyoSR5Mk9pa+MCPgO2uUL4D5SXL/4U=; b=f3WrWocD0YgDteVxzjrU8D0SOL
+	i6nsddeuB7BsTF/6Bk57YSNGFwHs5xN7nLFK/8A0vEldbFtlRrqHlHBwZXKMbZ/V+lRULmFaGKkP2
+	KmcmYY8ln1CsCtQzN+HNZBkzqQPvRHsl85eew0Cw+l1z7z8R+S0q+3mlnKAIzYdGPXeatqeje8nqo
+	qqxpITt1bjw+UbEfM/hpcJ0+04WQ+YwWc0ItpZUX31hvtv3ihrmMw8UhN2jOiHLs/2uCP9xQpbGGV
+	S31FHRUrFmwa1Qfe20oJaHcxYNP0lu42D9hN2gPZQGm4p5MY87QkeTQhqi1x2geuN6lbb+dW5nC9v
+	APJHYROA==;
+Received: from [50.53.50.0] (helo=[192.168.254.15])
+	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1riJtE-00000006Axx-2mZO;
+	Thu, 07 Mar 2024 19:58:52 +0000
+Message-ID: <299be3c9-4cf4-47ce-b53a-c9789af4f5ca@infradead.org>
+Date: Thu, 7 Mar 2024 11:58:49 -0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:hJ/EqF2bUYCrsXvrrUvZwiUXkkyj27FOXhqt8cTC7Kq90kSlYPj
- 4b7bPD5r9edVonMvi+A5KJBuxmsVx+JEJ6Am6ipWb6paEQSdNz/sWCVr3s8oWoyvdOkqCTO
- ZsJ3MCVFwMiMnRVlK+Ohpw5BD2k9or/lbbJpu8fJy+vM5Ov3SqBTaRVYS9Tqj35ELsHGMDi
- 8H+0cVAJQDX0g5vIm9Xfg==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:uYplgaJgDq4=;lgloB+JWZWvvLi7QdmHQOxfxNN3
- aS5Sla3GXqZfGR3FlPg6y2xlqCq6/8r+GJ0k/JKRy5GXsOBWXMcnw6rp4D3jcVjo3WAqy5Kjr
- zrV5le4MKHxYWjeoAyCHMsHCg8EfrpZlwZ25Mpj8GBqNpWbGVYaL1a0brYYMyHosh+3EAUN89
- x4cBxevhepngAE4317fPRzu2c+weMhaGwJNhxDczoSTJ5PVemrrIax8rxBLQIQPfCykCtikTm
- ZbK/eWEMXugl1fCzURsDX0neVkUS5MGRa4VLG7zvRSu+eax/68VOtp669qPuzq9ZlSY5T2oYF
- HTC+MN/M+HnoKi4mjH0dW+nJD9tOSclLvBULEVCed8m5s3yg/k/glavVOCtMPsGStwU0QTks7
- EFtwa68wSvsB79l2K/DhcM6XZm7shTHoRN240LUC3Alkz4HlTk8ITcS+K199CjV18uB6ysJ9Z
- jPy1K/7iEnxpCU8o72/Kcm850x3jNpw77vAxYSJDD2Fzf5mYT+sOwPeC03Whj4GfoIQkFpucS
- MhM0RxYqC/SSfMtxEBDge/Veubgwo7lVhKrKD6RPPVrtDcCKiO23OV2KXO+M/HaGt7TVBzqqP
- SF6hcYSGEFMWKJ47LdnI1SiNbCOb7ahjGlz8YmkULTujXV/Rd5lhuBrq/4fwSsCxcxTNKXnH4
- Hl3K9GSbD8/EgDz5oYqUmTGnft9E90pbibiWAVjgLkwlqNuXkTXf+akzsxJwJ60E/YRiLkBXZ
- QGnmJSvPWvQUFUB38QxAPmFlx5xPtWysFpyhktZ16DNp4KhsG29qd2mRcRXS2fRXHL9J6PLFh
- Yl/gDm4uLKMyHeWZ2yw0sMgpGGt/ed1g3r5G48D4iUzHs=
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 37/37] memprofiling: Documentation
+Content-Language: en-US
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
+ vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
+ mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
+ liam.howlett@oracle.com, penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net,
+ void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
+ catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de,
+ mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org,
+ peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
+ masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org,
+ jhubbard@nvidia.com, tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
+ paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com,
+ yuzhao@google.com, dhowells@redhat.com, hughd@google.com,
+ andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com,
+ vvvvvv@google.com, gregkh@linuxfoundation.org, ebiggers@google.com,
+ ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+ rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
+ vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
+ iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
+ elver@google.com, dvyukov@google.com, shakeelb@google.com,
+ songmuchun@bytedance.com, jbaron@akamai.com, aliceryhl@google.com,
+ rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+ kernel-team@android.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-mm@kvack.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+References: <20240306182440.2003814-1-surenb@google.com>
+ <20240306182440.2003814-38-surenb@google.com>
+ <10a95079-86e4-41bf-8e82-e387936c437d@infradead.org>
+ <CAJuCfpFN3BLsFOWB0huA==LVa2pNYdnf7bT_VXgDtPuJOxvWSQ@mail.gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <CAJuCfpFN3BLsFOWB0huA==LVa2pNYdnf7bT_VXgDtPuJOxvWSQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-When the kernel is comiled with CONFIG_IRQ_REMAP=3Dy but without
-CONFIG_IOMMU_INTEL compilation fails since commit def054b01a8678 with an
-undefined reference to device_rbtree_find(). This patch makes sure that
-intel specific code is only compiled with CONFIG_IOMMU_INTEL=3Dy.
 
-Fixes: def054b01a8678 ("iommu/vt-d: Use device rbtree in iopf reporting pa=
-th")
 
-Signed-off-by: Bert Karwatzki <spasswolf@web.de>
-=2D--
- drivers/iommu/Kconfig         | 2 +-
- drivers/iommu/intel/Makefile  | 2 ++
- drivers/iommu/irq_remapping.c | 3 ++-
- 3 files changed, 5 insertions(+), 2 deletions(-)
+On 3/7/24 08:51, Suren Baghdasaryan wrote:
+> On Thu, Mar 7, 2024 at 3:19 AM Randy Dunlap <rdunlap@infradead.org> wrote:
+>>
+>> Hi,
+>> This includes some editing suggestions and some doc build fixes.
+>>
+>>
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index e0796fa84227..0af39bbbe3a3 100644
-=2D-- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -199,7 +199,7 @@ source "drivers/iommu/iommufd/Kconfig"
- config IRQ_REMAP
- 	bool "Support for Interrupt Remapping"
- 	depends on X86_64 && X86_IO_APIC && PCI_MSI && ACPI
--	select DMAR_TABLE
-+	select DMAR_TABLE if INTEL_IOMMU
- 	help
- 	  Supports Interrupt remapping for IO-APIC and MSI devices.
- 	  To use x2apic mode in the CPU's which support x2APIC enhancements or
-diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
-index 5dabf081a779..5402b699a122 100644
-=2D-- a/drivers/iommu/intel/Makefile
-+++ b/drivers/iommu/intel/Makefile
-@@ -5,5 +5,7 @@ obj-$(CONFIG_DMAR_TABLE) +=3D trace.o cap_audit.o
- obj-$(CONFIG_DMAR_PERF) +=3D perf.o
- obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) +=3D debugfs.o
- obj-$(CONFIG_INTEL_IOMMU_SVM) +=3D svm.o
-+ifdef CONFIG_INTEL_IOMMU
- obj-$(CONFIG_IRQ_REMAP) +=3D irq_remapping.o
-+endif
- obj-$(CONFIG_INTEL_IOMMU_PERF_EVENTS) +=3D perfmon.o
-diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
-index 83314b9d8f38..ee59647c2050 100644
-=2D-- a/drivers/iommu/irq_remapping.c
-+++ b/drivers/iommu/irq_remapping.c
-@@ -99,7 +99,8 @@ int __init irq_remapping_prepare(void)
- 	if (disable_irq_remap)
- 		return -ENOSYS;
+[snip]
 
--	if (intel_irq_remap_ops.prepare() =3D=3D 0)
-+	if (IS_ENABLED(CONFIG_INTEL_IOMMU) &&
-+	    intel_irq_remap_ops.prepare() =3D=3D 0)
- 		remap_ops =3D &intel_irq_remap_ops;
- 	else if (IS_ENABLED(CONFIG_AMD_IOMMU) &&
- 		 amd_iommu_irq_ops.prepare() =3D=3D 0)
-=2D-
-2.39.2
+>>
+>>
+>> Finally, there are a number of documentation build warnings in this patch.
+>> I'm no ReST expert, but the attached patch fixes them for me.
+> 
+> Thanks Randy! I'll use your cleaned-up patch in the next submission.
+> Cheers,
+> Suren.
 
-Since commit def054b01a8678 compilation fails on x86_64 without
-CONFIG_IOMMU_INTEL=3Dy with an undefined reference to device_rbtree_find()
-when linking drivers/iommu/intel/dmar.o. Even though this file is intel
-specific it is compile because CONFIG_IRQ_REMAP unconditionally selects
-CONFIG_DMAR_TABLE. This patch fixes this by only compiling intel
-specific files when CONFIG_IOMMU_INTEL=3Dy.
+Hi Suren,
 
-Bert Karwatzki
+The patch did not include the grammar/punctuation changes, only the
+doc build changes.
 
+I can make a more complete patch if you like.
+
+thanks.
+-- 
+#Randy
