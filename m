@@ -1,210 +1,162 @@
-Received: from out-172.mta0.migadu.com (out-172.mta0.migadu.com [91.218.175.172])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B408512D76A
-	for <iommu@lists.linux.dev>; Thu,  7 Mar 2024 18:18:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14273137C26;
+	Thu,  7 Mar 2024 19:05:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709835490; cv=none; b=SCm23m9A2PvZH/hVtqNZ47B2Oqz3jSEMfTToHxsNAHhm8b+3xIuOWYGgi5ZWkSAWmrq70uhYpznN8X7dIiJWURhEch1gvA+PvKteLx/9b9Y9sVNnLQWXI5NPVIMuKPSpTt2fTBSE1w1S9xoolH5QbnvTWWRuv2U6n1SWXG6a/W4=
+	t=1709838361; cv=none; b=ubDRUV6MqQ0ybhg7Z+Zoyh3f/lt4PneKZKDLs3ciyI2ONrdM4+yHmgy1ImpT4A3I7cdFusZtVudrDbT2+j/0QeuxZHYl/aV7z+HwAvQOxllfiz4+E3ffMuRcVnc4AJ5VNoYLvC1od0to7uympuo3/Nk8KwG8cutK21A6OoRU/lo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709835490; c=relaxed/simple;
-	bh=Gm1+12tqQKv7crZi1oC909n2tXEtrT/LTbYSqj5bPhw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q3nlC2QFv+5fdvQWFHGZhhvof6ZfP2sW1InG81+bg3u7bWrmJNxEtj8UwKFuMQCXOhit9HVhf+qN9cPdX+v7VM1gq2FLnm1M/wTgrP2FMEEehoF7YscRq7lWBqQfDXzOAq19VslG622gY0QpCMPqG2BZoydtyX8SRM3SApcgIaI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=H5aOzJ+M; arc=none smtp.client-ip=91.218.175.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1709838361; c=relaxed/simple;
+	bh=jL+0TE/sTC+jJgISDbUZ+39FzYgDfAvGp+1jjEaOf2o=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=bKMLLb+bLr7BXv/x5MoznLx3cuSah3Ej8nDfZC6XVQjYQR+WlZzd2TukFdRj3NWNEzNt564vc+MB2uU9Qn0Uh2DhJxt6Q7M1Lkb6P0Ppp889sUTiCIsp1+JkFeEfKAEnBdJAlFOmQZheIGo7LhwXs8xsmGLFoS2NtkiGVA5Ep1E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=oHnfl1CB; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="H5aOzJ+M"
-Date: Thu, 7 Mar 2024 13:17:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1709835485;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=iHaIxY/+BiJn46m1UxNdZN63kb5NNOFAVQARDvBki5g=;
-	b=H5aOzJ+MeszkUjW7Gdq8GIb9xZvvYFafE54Qajm1X53jP+9kSZaHykmws15lGZbxbVC4sP
-	xB+aj3bB+XZoL9vVS6ke4qTd3NSX0xuXSFczxjIN4xYv/lKG+5cGIuGnJ1kVWq3Q8k+XsG
-	i3YlKbhrl9zIpdvnTlhFtaDJQqe9fLg=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org, 
-	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, 
-	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
-	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, 
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org, 
-	peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, 
-	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, 
-	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, 
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
-	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
-	shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com, 
-	aliceryhl@google.com, rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
-	kernel-team@android.com, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	linux-mm@kvack.org, linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH v5 37/37] memprofiling: Documentation
-Message-ID: <hsyclfp3ketwzkebjjrucpb56gmalixdgl6uld3oym3rvssyar@fmjlbpdkrczv>
-References: <20240306182440.2003814-1-surenb@google.com>
- <20240306182440.2003814-38-surenb@google.com>
- <10a95079-86e4-41bf-8e82-e387936c437d@infradead.org>
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="oHnfl1CB"
+Received: from pps.filterd (m0279866.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 427Fx3x9015930;
+	Thu, 7 Mar 2024 19:05:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding:content-type; s=qcppdkim1; bh=aDyfSt6
+	DL18qcLL2NYzKLrV8n95+Q4a2EksRu1hGb30=; b=oHnfl1CBnKA9YlfyDhltRwz
+	SSOV2TOXBUIBDXWPUcQtNwnhFdMk0Lh0pzwJSNHMa8Nf7fwaayV+txjxGi/wiYyq
+	SozSBJdesPmr5yrCpnn1jt+afH/9A5J3Lq2uKOJzbWWmAMyesuLuaHFAIeO7j1bs
+	p75bRba7LX0qQjYsycAg5QCSrzcR6n8SSvaPVp8Qv1vTWfH9cd8c//1YkdJtwGly
+	ub/LStF6nJNvg2e2UyQ8dWeL/A5W9pdvOtgFXw7bg6SNgabm+waqzCOQvfq+GRnI
+	5JkgKO083pXLzAmLbPRnpJ8R8yBYCer9xpIBKW1wuHouwr15p0IxKAUO8ypA4sw=
+	=
+Received: from nasanppmta04.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3wq588hrw5-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 07 Mar 2024 19:05:44 +0000 (GMT)
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA04.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 427J5iN3011224
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 7 Mar 2024 19:05:44 GMT
+Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Thu, 7 Mar 2024 11:05:43 -0800
+From: Georgi Djakov <quic_c_gdjako@quicinc.com>
+To: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+        <joro@8bytes.org>, <iommu@lists.linux.dev>
+CC: <devicetree@vger.kernel.org>, <andersson@kernel.org>,
+        <konrad.dybcio@linaro.org>, <robdclark@gmail.com>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <quic_cgoldswo@quicinc.com>,
+        <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
+        <quic_sudaraja@quicinc.com>, <djakov@kernel.org>
+Subject: [PATCH v6 0/7] Add support for Translation Buffer Units
+Date: Thu, 7 Mar 2024 11:05:18 -0800
+Message-ID: <20240307190525.395291-1-quic_c_gdjako@quicinc.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <10a95079-86e4-41bf-8e82-e387936c437d@infradead.org>
-X-Migadu-Flow: FLOW_OUT
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nalasex01a.na.qualcomm.com (10.47.209.196) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: o2yFfdr-1_NR-ShVIYrOIkH5uuc7kzcv
+X-Proofpoint-ORIG-GUID: o2yFfdr-1_NR-ShVIYrOIkH5uuc7kzcv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-03-07_14,2024-03-06_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
+ mlxlogscore=999 spamscore=0 impostorscore=0 bulkscore=0 mlxscore=0
+ clxscore=1015 priorityscore=1501 suspectscore=0 lowpriorityscore=0
+ adultscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2402120000 definitions=main-2403070133
 
-On Wed, Mar 06, 2024 at 07:18:57PM -0800, Randy Dunlap wrote:
-> Hi,
-> This includes some editing suggestions and some doc build fixes.
-> 
-> 
-> On 3/6/24 10:24, Suren Baghdasaryan wrote:
-> > From: Kent Overstreet <kent.overstreet@linux.dev>
-> > 
-> > Provide documentation for memory allocation profiling.
-> > 
-> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > ---
-> >  Documentation/mm/allocation-profiling.rst | 91 +++++++++++++++++++++++
-> >  1 file changed, 91 insertions(+)
-> >  create mode 100644 Documentation/mm/allocation-profiling.rst
-> > 
-> > diff --git a/Documentation/mm/allocation-profiling.rst b/Documentation/mm/allocation-profiling.rst
-> > new file mode 100644
-> > index 000000000000..8a862c7d3aab
-> > --- /dev/null
-> > +++ b/Documentation/mm/allocation-profiling.rst
-> > @@ -0,0 +1,91 @@
-> > +.. SPDX-License-Identifier: GPL-2.0
-> > +
-> > +===========================
-> > +MEMORY ALLOCATION PROFILING
-> > +===========================
-> > +
-> > +Low overhead (suitable for production) accounting of all memory allocations,
-> > +tracked by file and line number.
-> > +
-> > +Usage:
-> > +kconfig options:
-> > + - CONFIG_MEM_ALLOC_PROFILING
-> > + - CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT
-> > + - CONFIG_MEM_ALLOC_PROFILING_DEBUG
-> > +   adds warnings for allocations that weren't accounted because of a
-> > +   missing annotation
-> > +
-> > +Boot parameter:
-> > +  sysctl.vm.mem_profiling=0|1|never
-> > +
-> > +  When set to "never", memory allocation profiling overheads is minimized and it
-> 
->                                                       overhead is
-> 
-> > +  cannot be enabled at runtime (sysctl becomes read-only).
-> > +  When CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=y, default value is "1".
-> > +  When CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=n, default value is "never".
-> > +
-> > +sysctl:
-> > +  /proc/sys/vm/mem_profiling
-> > +
-> > +Runtime info:
-> > +  /proc/allocinfo
-> > +
-> > +Example output:
-> > +  root@moria-kvm:~# sort -g /proc/allocinfo|tail|numfmt --to=iec
-> > +        2.8M    22648 fs/kernfs/dir.c:615 func:__kernfs_new_node
-> > +        3.8M      953 mm/memory.c:4214 func:alloc_anon_folio
-> > +        4.0M     1010 drivers/staging/ctagmod/ctagmod.c:20 [ctagmod] func:ctagmod_start
-> > +        4.1M        4 net/netfilter/nf_conntrack_core.c:2567 func:nf_ct_alloc_hashtable
-> > +        6.0M     1532 mm/filemap.c:1919 func:__filemap_get_folio
-> > +        8.8M     2785 kernel/fork.c:307 func:alloc_thread_stack_node
-> > +         13M      234 block/blk-mq.c:3421 func:blk_mq_alloc_rqs
-> > +         14M     3520 mm/mm_init.c:2530 func:alloc_large_system_hash
-> > +         15M     3656 mm/readahead.c:247 func:page_cache_ra_unbounded
-> > +         55M     4887 mm/slub.c:2259 func:alloc_slab_page
-> > +        122M    31168 mm/page_ext.c:270 func:alloc_page_ext
-> > +===================
-> > +Theory of operation
-> > +===================
-> > +
-> > +Memory allocation profiling builds off of code tagging, which is a library for
-> > +declaring static structs (that typcially describe a file and line number in
-> 
->                                   typically
-> 
-> > +some way, hence code tagging) and then finding and operating on them at runtime
-> 
->                                                                         at runtime,
-> 
-> > +- i.e. iterating over them to print them in debugfs/procfs.
-> 
->   i.e., iterating
+The TCUs (Translation Control Units) and TBUs (Translation Buffer
+Units) are key components of the MMU-500. Multiple TBUs are connected
+to a single TCU over an interconnect. Each TBU contains a TLB that
+caches page tables. The MMU-500 implements a TBU for each connected
+master, and the TBU is designed, so that it is local to the master.
+A common TBU DT schema is added to describe the TBUs.
 
-i.e. latin id est, that is: grammatically my version is fine
+The Qualcomm SDM845 and SC7280 platforms have an implementation of the
+SMMU-500, that has multiple TBUs. A vendor-specific DT schema is added
+to describe the resources for each TBU (register space, power-domains,
+interconnects and clocks).
 
-> 
-> > +
-> > +To add accounting for an allocation call, we replace it with a macro
-> > +invocation, alloc_hooks(), that
-> > + - declares a code tag
-> > + - stashes a pointer to it in task_struct
-> > + - calls the real allocation function
-> > + - and finally, restores the task_struct alloc tag pointer to its previous value.
-> > +
-> > +This allows for alloc_hooks() calls to be nested, with the most recent one
-> > +taking effect. This is important for allocations internal to the mm/ code that
-> > +do not properly belong to the outer allocation context and should be counted
-> > +separately: for example, slab object extension vectors, or when the slab
-> > +allocates pages from the page allocator.
-> > +
-> > +Thus, proper usage requires determining which function in an allocation call
-> > +stack should be tagged. There are many helper functions that essentially wrap
-> > +e.g. kmalloc() and do a little more work, then are called in multiple places;
-> > +we'll generally want the accounting to happen in the callers of these helpers,
-> > +not in the helpers themselves.
-> > +
-> > +To fix up a given helper, for example foo(), do the following:
-> > + - switch its allocation call to the _noprof() version, e.g. kmalloc_noprof()
-> > + - rename it to foo_noprof()
-> > + - define a macro version of foo() like so:
-> > +   #define foo(...) alloc_hooks(foo_noprof(__VA_ARGS__))
-> > +
-> > +It's also possible to stash a pointer to an alloc tag in your own data structures.
-> > +
-> > +Do this when you're implementing a generic data structure that does allocations
-> > +"on behalf of" some other code - for example, the rhashtable code. This way,
-> > +instead of seeing a large line in /proc/allocinfo for rhashtable.c, we can
-> > +break it out by rhashtable type.
-> > +
-> > +To do so:
-> > + - Hook your data structure's init function, like any other allocation function
-> 
-> maybe end the line above with a '.' like the following line.
-> 
-> > + - Within your init function, use the convenience macro alloc_tag_record() to
-> > +   record alloc tag in your data structure.
-> > + - Then, use the following form for your allocations:
-> > +   alloc_hooks_tag(ht->your_saved_tag, kmalloc_noprof(...))
-> 
-> 
-> Finally, there are a number of documentation build warnings in this patch.
-> I'm no ReST expert, but the attached patch fixes them for me.
-> 
-> -- 
-> #Randy
+The TBU driver will manage the resources and allow the system to
+operate the TBUs during a context fault to obtain details by doing
+s1 inv, software + hardware page table walks etc. This is implemented
+with ATOS/eCATs as the ATS feature is not supported. Being able to
+query the TBUs is useful for debugging various hardware/software
+issues on these platforms.
 
+v6:
+- Use SoC-specific compatibles (Krzysztof)
+- Use additionalProperties: false (Krzysztof)
+- Wrap description text to 80 cols (Krzysztof)
+
+v5: https://lore.kernel.org/r/20240226172218.69486-1-quic_c_gdjako@quicinc.com
+- Drop the common TBU bindings and child nodes. These TBU functionalities
+  are only Qualcomm specific and not generic. In the unmodified ARM MMU-500
+  implementation there are no TBU-specific resources, so just make them
+  standalone DT nodes. (Robin)
+- The "qcom,stream-id-range" DT property now takes a phandle to the smmu
+  and a stream ID range.
+
+v4: https://lore.kernel.org/r/20240201210529.7728-1-quic_c_gdjako@quicinc.com/
+- Create a common TBU schema. Move the vendor-specific properties into
+  a separate schema that references the common one. (Rob)
+- Drop unused DT labels in example, fix regex. (Rob)
+- Properly rebase on latest code.
+
+v3: https://lore.kernel.org/r/20231220060236.18600-1-quic_c_gdjako@quicinc.com
+- Having a TBU is not Qualcomm specific, so allow having TBU child
+  nodes with no specific constraints on properties. For some of the
+  vendor compatibles however, add a schema to describe specific
+  properties and allow validation. (Rob)
+- Drop the useless reg-names DT property on TBUs. (Rob)
+- Make the stream-id-range DT property a common one. (Rob)
+- Fix the DT example. (Rob)
+- Minor fixes on the TBU driver.
+- Add support for SC7280 platforms.
+
+v2: https://lore.kernel.org/r/20231118042730.2799-1-quic_c_gdjako@quicinc.com
+- Improve DT binding description, add full example. (Konrad)
+- Drop Qcom specific stuff from the generic binding. (Rob)
+- Unconditionally try to populate subnodes. (Konrad)
+- Improve TBU driver commit text, remove memory barriers. (Bjorn)
+- Move TBU stuff into separate file. Make the driver builtin.
+- TODO: Evaluate whether to keep TBU support as a separate driver
+  or just instantiate things from qcom_smmu_impl_init()
+
+v1: https://lore.kernel.org/r/20231019021923.13939-1-quic_c_gdjako@quicinc.com
+
+Georgi Djakov (7):
+  dt-bindings: iommu: Add Qualcomm TBU
+  iommu/arm-smmu-qcom-tbu: Add Qualcomm TBU driver
+  iommu/arm-smmu: Allow using a threaded handler for context interrupts
+  iommu/arm-smmu-qcom: Use a custom context fault handler for sdm845
+  arm64: dts: qcom: sdm845: Add DT nodes for the TBUs
+  iommu/arm-smmu-qcom: Use the custom fault handler on more platforms
+  arm64: dts: qcom: sc7280: Add DT nodes for the TBUs
+
+ .../devicetree/bindings/iommu/qcom,tbu.yaml   |  69 +++
+ arch/arm64/boot/dts/qcom/sc7280.dtsi          |  89 ++++
+ arch/arm64/boot/dts/qcom/sdm845.dtsi          |  70 +++
+ drivers/iommu/Kconfig                         |   9 +
+ drivers/iommu/arm/arm-smmu/Makefile           |   1 +
+ .../iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c    | 496 ++++++++++++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c    |   8 +
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |   2 +
+ drivers/iommu/arm/arm-smmu/arm-smmu.c         |  12 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.h         |   3 +
+ 10 files changed, 757 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/qcom,tbu.yaml
+ create mode 100644 drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c
 
