@@ -1,127 +1,249 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EA2241C60;
-	Thu,  7 Mar 2024 20:53:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99DF313A25E
+	for <iommu@lists.linux.dev>; Thu,  7 Mar 2024 21:01:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709844814; cv=none; b=SbthuC0hIbJk5ULBMM73nHqznkMageQiKXSgNG8B8we7RiUiJyyzqhu+zTmlQdl91/mCCmWAcOe0ck+vMPyPUGe7AFE+Y3DXD7ZUel3GNya5wUUXoAWdkZsvLw04WevsOHylRP/7N54c1gIFnqIpJX0xL8MNJB8/YXpyt5shmh0=
+	t=1709845282; cv=none; b=Rm4p2Qqt++bm+F2UrOMm29KSfpYYfZoDbJa9DTMZBXjTqbgjfSCQMyg9tt9azykVeLQEs/DvIOhizcR7DmKUMoVTXplaORSKQcEhJSihIxEhBy9dVC3cC0dh8bCtJoEK6pGs3j1htAiSOR4yfk3Dl0dGdAW7Y6tSQrrG8qn5je8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709844814; c=relaxed/simple;
-	bh=zg0CO3XEyVe8+ghF9U9lAFrlk+J130/oBgEnLCNFpxY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UMod/kNMMLh6EsPAzXly5odvvb2UQGA9+ucjiYucD+Bdb/kVIJSzQhF9AXx67L9jzFHK8xM+WoDQZs5uHKcM88ajEvUZjgt6n0UMfcRypr5tHLNY4yxawAHk55i8t9RkKsb2sV2ZJFnsTLIYYHIaz79xt82AJ7YkoDzGERiApew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=TOvuaa/3; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1709845282; c=relaxed/simple;
+	bh=F39gQbFf5tQqliZeRzBOmtAU/EnGdgFMl0rx4muVbQE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AJyzrf09WQiLD9ds5RTbPGWkyduJMt1Fe/rMB3BGD5g+IqOXr8iXluQzmdN4/L7ES4N2phSlEEj+xL6cdA0YtCUw08fv3oMr2dyk5jzSw/usUqNotMY89UvvREwB08mToqY0/Vf76uW/kCvob62KeTlVoiJgUl58/rsfpAAHOjg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=PonoUF7o; arc=none smtp.client-ip=209.85.160.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="TOvuaa/3"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=p08jq4TIBI4zazg51JnXnjGH5Lu+du6lZuf9B2Rz4QQ=; b=TOvuaa/3wlEt4HaASAp9xkKucG
-	+PY7MI+cX1hSmkmfFLvtR4JkMMdWfcVn8YtHQDGiMS3PJt7AA09NmwT0+GjU4w7EvTcYU989bq3lA
-	Sh6H3anq6UeJdG7s5+p9HZ3DirzhzdP4JpB9MphGl6IsZAH4dOfsdtbzZJkSRJLswWFYPpauuyfXA
-	Sfzyecd0rAcXOKsin/ZW2uEow+r/lYb/9BCfKH8o5Krry/ndFvOqVqSjHrnsABA9QpX6LO/lLNPn5
-	mwcOKE/wR1613yI+3HUvjJwhhHwu/dOn5jZGJybhQAfPSWpxxpf3MHsWmV/YP2TEMLCSl1X1YJmQp
-	aZy2ZdFg==;
-Received: from [50.53.50.0] (helo=[192.168.254.15])
-	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1riKjl-00000006Lv6-1biU;
-	Thu, 07 Mar 2024 20:53:09 +0000
-Message-ID: <25a03dba-8d6b-4072-beae-7ea477fccbcb@infradead.org>
-Date: Thu, 7 Mar 2024 12:53:06 -0800
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="PonoUF7o"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-21fed501addso625947fac.2
+        for <iommu@lists.linux.dev>; Thu, 07 Mar 2024 13:01:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1709845279; x=1710450079; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=B2cqZbDJobgrAlQUN+X6Gc/N/G77Yt6hRBbHc0B6Byw=;
+        b=PonoUF7o1m8dmBp0YTYOd1oUcYHx5IaMZqkiaFbbwWKLnZWAySdftlsXSeagawbfOG
+         CZPfHeM+4ViQ0q+3xtC0GWsbXdLSuNFVOJWSG03MhIvgpE1HokD3MgDIbxVMSR3Xy1Co
+         mZGIrlFMqyld4iFKGF1426S2Mxcx6XNQs4HsQRHBaXy/FcReICZT+X58XpUM6kxMi/Uv
+         i6zeWsAdDlH0dds4aWMsXsynap6iRlDQI18NT2ThTRVwPZf4stbxR9FFOfyCXIK4Fsv4
+         OMyXc1bhON0iBQ1BzGQ4nmvT3zrS+myMAR7mlxeEfC1Vw+ljZdxQTY/VV3apQVEXomr5
+         rNQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709845279; x=1710450079;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=B2cqZbDJobgrAlQUN+X6Gc/N/G77Yt6hRBbHc0B6Byw=;
+        b=hj0AmgChcGedconQQQcm4hracZDYus3Lt8rVx16NYIElvs7acMZu6II+ih3OlhWlAs
+         2D8nuKHNKIAWTxNyTqjQLVj0c2vLcSuIFFpzlMIVRBANrZkVSa8OwpbckN/uK7e4IJ0N
+         L4pzwxNAnR6U10qcA3XpKrpCzFZk7MMHgu8COAt6nJuSWY45akz4btDKEUlEsXSmAa6L
+         yvlBNyctW0WSSMtoXroNvTJWKUQu4K8Wy2s49yqsuDBx7/5bDWk0P92H3fQuTD4k6S94
+         ucW1t4Hf3WX+zhN4uhsEC5wix61zp7tXasfJ4iHA3RAH0/oBzfDJD/SooFO7Lh5xsDIV
+         CKXw==
+X-Forwarded-Encrypted: i=1; AJvYcCWxSg7L7/gqCNSEn3AuMxEgmwUk8KtQs0O1E3TBuqAMQ4cTFi7CIBqC7ZdaPkMJRMOH0CfHFxfhekwzFcuQ/bhQFnEkRdA=
+X-Gm-Message-State: AOJu0YwhEVUPa8IJmfQV7KRo0D4DWZOP1TNeyCx175Avi6v+vLgvYjVd
+	9Ulhj2+0TQ1i99xHQyJcuZAV6LAYBXxvJD8RBIDuf7UjXdGOg0X7J+xKDPO4lA8=
+X-Google-Smtp-Source: AGHT+IHVDDnrRb4IzGsRrjreYb2lzNqXBjfY5dZE5DynfGK6hFbMLsAKifeob/DJ0ED9qSx2chYugA==
+X-Received: by 2002:a05:6870:8a06:b0:21e:a40e:7465 with SMTP id p6-20020a0568708a0600b0021ea40e7465mr1134062oaq.24.1709845279574;
+        Thu, 07 Mar 2024 13:01:19 -0800 (PST)
+Received: from ziepe.ca ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id mt9-20020a0568706b0900b00220b0891304sm3660721oab.1.2024.03.07.13.01.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 07 Mar 2024 13:01:18 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1riKrc-004Zwv-Aq;
+	Thu, 07 Mar 2024 17:01:16 -0400
+Date: Thu, 7 Mar 2024 17:01:16 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
+	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Bart Van Assche <bvanassche@acm.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Amir Goldstein <amir73il@gmail.com>,
+	"josef@toxicpanda.com" <josef@toxicpanda.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"daniel@iogearbox.net" <daniel@iogearbox.net>,
+	Dan Williams <dan.j.williams@intel.com>,
+	"jack@suse.com" <jack@suse.com>, Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two steps
+Message-ID: <20240307210116.GQ9225@ziepe.ca>
+References: <cover.1709635535.git.leon@kernel.org>
+ <47afacda-3023-4eb7-b227-5f725c3187c2@arm.com>
+ <20240305122935.GB36868@unreal>
+ <20240306144416.GB19711@lst.de>
+ <20240306154328.GM9225@ziepe.ca>
+ <20240306162022.GB28427@lst.de>
+ <20240306174456.GO9225@ziepe.ca>
+ <20240306221400.GA8663@lst.de>
+ <20240307000036.GP9225@ziepe.ca>
+ <20240307150505.GA28978@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 37/37] memprofiling: Documentation
-Content-Language: en-US
-To: John Hubbard <jhubbard@nvidia.com>,
- Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org,
- mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org,
- roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
- willy@infradead.org, liam.howlett@oracle.com,
- penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com,
- will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
- nathan@kernel.org, dennis@kernel.org, tj@kernel.org, muchun.song@linux.dev,
- rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com,
- yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
- hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
- ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org,
- ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org,
- dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com,
- bristot@redhat.com, vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, shakeelb@google.com,
- songmuchun@bytedance.com, jbaron@akamai.com, aliceryhl@google.com,
- rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
- kernel-team@android.com, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- linux-mm@kvack.org, linux-modules@vger.kernel.org,
- kasan-dev@googlegroups.com, cgroups@vger.kernel.org
-References: <20240306182440.2003814-1-surenb@google.com>
- <20240306182440.2003814-38-surenb@google.com>
- <10a95079-86e4-41bf-8e82-e387936c437d@infradead.org>
- <hsyclfp3ketwzkebjjrucpb56gmalixdgl6uld3oym3rvssyar@fmjlbpdkrczv>
- <f12e83ef-5881-4df8-87ae-86f8ca5a6ab4@infradead.org>
- <72bbe76c-fcf9-47c2-b583-63d5ad77b3c3@nvidia.com>
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <72bbe76c-fcf9-47c2-b583-63d5ad77b3c3@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240307150505.GA28978@lst.de>
 
-
-
-On 3/7/24 12:15, John Hubbard wrote:
-> On 3/7/24 12:03, Randy Dunlap wrote:
->> On 3/7/24 10:17, Kent Overstreet wrote:
->>> On Wed, Mar 06, 2024 at 07:18:57PM -0800, Randy Dunlap wrote:
-> ...
->>>>> +- i.e. iterating over them to print them in debugfs/procfs.
->>>>
->>>>    i.e., iterating
->>>
->>> i.e. latin id est, that is: grammatically my version is fine
->>>
->>
->> Some of my web search hits say that a comma is required after "i.e.".
->> At least one of them says that it is optional.
->> And one says that it is not required in British English.
->>
->> But writing it with "that is":
->>
->>
->> hence code tagging) and then finding and operating on them at runtime
->> - that is iterating over them to print them in debugfs/procfs.
->>
->> is not good IMO. But it's your document.
->>
+On Thu, Mar 07, 2024 at 04:05:05PM +0100, Christoph Hellwig wrote:
+> On Wed, Mar 06, 2024 at 08:00:36PM -0400, Jason Gunthorpe wrote:
+> > > 
+> > > I don't think you can do without dma_addr_t storage.  In most cases
+> > > your can just store the dma_addr_t in the LE/BE encoded hardware
+> > > SGL, so no extra storage should be needed though.
+> > 
+> > RDMA (and often DRM too) generally doesn't work like that, the driver
+> > copies the page table into the device and then the only reason to have
+> > a dma_addr_t storage is to pass that to the dma unmap API. Optionally
+> > eliminating long term dma_addr_t storage would be a worthwhile memory
+> > savings for large long lived user space memory registrations.
 > 
-> Technical writing often benefits from a small amount redundancy. Short
-> sentences and repetition of terms are helpful to most readers. And this
-> also stays out of the more advanced grammatical constructs, as a side
-> effect.
-> 
-> So, for example, something *approximately* like this, see what you
-> think:
-> 
-> Memory allocation profiling is based upon code tagging. Code tagging is
-> a library for declaring static structs (typically by associating a file
-> and line number with a descriptive string), and then finding and
-> operating on those structs at runtime. Memory allocation profiling's
-> runtime operation is simply: print the structs via debugfs/procfs.
+> It's just kinda hard to do.  For aligned IOMMU mapping you'd only
+> have one dma_addr_t mappings (or maybe a few if P2P regions are
+> involved), so this probably doesn't matter.  For direct mappings
+> you'd have a few, but maybe the better answer is to use THP
+> more aggressively and reduce the number of segments.
 
-Works for me.  Thanks.
+Right, those things have all been done. 100GB of huge pages is still
+using a fair amount of memory for storing dma_addr_t's.
 
--- 
-#Randy
+It is hard to do perfectly, but I think it is not so bad if we focus
+on the direct only case and simple systems that can exclude swiotlb
+early on.
+
+> > > > So are you thinking something more like a driver flow of:
+> > > > 
+> > > >   .. extent IO and get # aligned pages and know if there is P2P ..
+> > > >   dma_init_io(state, num_pages, p2p_flag)
+> > > >   if (dma_io_single_range(state)) {
+> > > >        // #2, #4
+> > > >        for each io()
+> > > > 	    dma_link_aligned_pages(state, io range)
+> > > >        hw_sgl = (state->iova, state->len)
+> > > >   } else {
+> > > 
+> > > I think what you have a dma_io_single_range should become before
+> > > the dma_init_io.  If we know we can't coalesce it really just is a
+> > > dma_map_{single,page,bvec} loop, no need for any extra state.
+> > 
+> > I imagine dma_io_single_range() to just check a flag in state.
+> > 
+> > I still want to call dma_init_io() for the non-coalescing cases
+> > because all the flows, regardless of composition, should be about as
+> > fast as dma_map_sg is today.
+> 
+> If all flows includes multiple non-coalesced regions that just makes
+> things very complicated, and that's exactly what I'd want to avoid.
+
+I don't see how to avoid it unless we say RDMA shouldn't use this API,
+which is kind of the whole point from my perspective..
+
+I want an API that can handle all the same complexity as dma_map_sg()
+without forcing the use of scatterlist. Instead "bring your own
+datastructure". This is the essence of what we discussed.
+
+An API that is inferior to dma_map_sg() is really problematic to use
+with RDMA.
+
+> > That means we need to always pre-allocate the IOVA in any case where
+> > the IOMMU might be active - even on a non-coalescing flow.
+> > 
+> > IOW, dma_init_io() always pre-allocates IOVA if the iommu is going to
+> > be used and we can't just call today's dma_map_page() in a loop on the
+> > non-coalescing side and pay the overhead of Nx IOVA allocations.
+> > 
+> > In large part this is for RDMA, were a single P2P page in a large
+> > multi-gigabyte user memory registration shouldn't drastically harm the
+> > registration performance by falling down to doing dma_map_page, and an
+> > IOVA allocation, on a 4k page by page basis.
+> 
+> But that P2P page needs to be handled very differently, as with it
+> we can't actually use a single iova range.  So I'm not sure how that
+> is even supposed to work.  If you have
+> 
+>  +-------+-----+-------+
+>  | local | P2P | local |
+>  +-------+-----+-------+
+> 
+> you need at least 3 hw SGL entries, as the IOVA won't be contigous.
+
+Sure, 3 SGL entries is fine, that isn't what I'm pointing at
+
+I'm saying that today if you give such a scatterlist to dma_map_sg()
+it scans it and computes the IOVA space need, allocates one IOVA
+space, then subdivides that single space up into the 3 HW SGLs you
+show.
+
+If you don't preserve that then we are calling, 4k at a time, a
+dma_map_page() which is not anywhere close to the same outcome as what
+dma_map_sg did. I may not get contiguous IOVA, I may not get 3 SGLs,
+and we call into the IOVA allocator a huge number of times.
+
+It needs to work following the same basic structure of dma_map_sg,
+unfolding that logic into helpers so that the driver can provide
+the data structure:
+
+ - Scan the io ranges and figure out how much IOVA needed
+   (dma_io_summarize_range)
+ - Allocate the IOVA (dma_init_io)
+ - Scan the io ranges again generate the final HW SGL
+   (dma_io_link_page)
+ - Finish the iommu batch (dma_io_done_mapping)
+
+And you can make that pattern work for all the other cases too.
+
+So I don't see this as particularly worse, calling some other API
+instead of dma_map_page is not really a complexity on the
+driver. Calling dma_init_io every time is also not a complexity. The
+DMA API side is a bit more, but not substantively different logic from
+what dma_map_sg already does.
+
+Otherwise what is the alternative? How do I keep these complex things
+working in RDMA and remove scatterlist?
+
+> > The other thing that got hand waved here is how does dma_init_io()
+> > know which of the 6 states we are looking at? I imagine we probably
+> > want to do something like:
+> > 
+> >    struct dma_io_summarize summary = {};
+> >    for each io()
+> >         dma_io_summarize_range(&summary, io range)
+> >    dma_init_io(dev, &state, &summary);
+> >    if (state->single_range) {
+> >    } else {
+> >    }
+> >    dma_io_done_mapping(&state); <-- flush IOTLB once
+> 
+> That's why I really just want 2 cases.  If the caller guarantees the
+> range is coalescable and there is an IOMMU use the iommu-API like
+> API, else just iter over map_single/page.
+
+But how does the caller even know if it is coalescable? Other than the
+trivial case of a single CPU range, that is a complicated detail based
+on what pages are inside the range combined with the capability of the
+device doing DMA. I don't see a simple way for the caller to figure
+this out. You need to sweep every page and collect some information on
+it. The above is to abstract that detail.
+
+It was simpler before the confidential compute stuff :(
+
+Jason
