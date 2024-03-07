@@ -1,279 +1,126 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2064.outbound.protection.outlook.com [40.107.223.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86869E555;
-	Thu,  7 Mar 2024 03:19:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709781574; cv=none; b=Q/sVWaV6iZkLqPHHgDBiVAfKm1fV7y7DRQ5CIhoKMqhcm52GG0jbUWfHeEhzeuj67UtGZkOCao6j3rAX5Zj3spvZpn1MbT0BwGIOP9//ggOlK7H+TmyC3wnalJlI2Cd9IM9hZYJ6HNbIUNziA1fMGdoL1y4QlieqypY3rQ6HMaQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709781574; c=relaxed/simple;
-	bh=hJ6fv3HI3NxvYP0IKsPxT4ASej2UnYY1+6Lcvw7UNHM=;
-	h=Content-Type:Message-ID:Date:MIME-Version:From:Subject:To:Cc:
-	 References:In-Reply-To; b=uw1MW/MKWD6s7tQw6yxQ3JMVMpc1HyPHLeG5H69y2O48AGYgqtJX7ZnOYMauM7fEr+tkgK0SNNBw2v4/J+26ZcAwtclUhppeyTq9iODj3cHz3bom1Ulbo2rD0FvHlzWDY1SWcyOiWyFv6BnWrIaSGQ7LMBHVsDElTTq2wOvspiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=ychUmlpI; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30331320E
+	for <iommu@lists.linux.dev>; Thu,  7 Mar 2024 05:28:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.64
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709789287; cv=fail; b=Vkc78s1utmQyN78v+iW85RQfRYO0uLDJv59g0jQ/L/9X21YnNWEqkRQYY2zK1peksmPlUTLKr4I7A5wUYgZ3X+cr+2pz6z1PfLLUSJNfogb/3UwYLYKT1w5yPMzh6H2DCCgcFuRW2ZVkqMpgmoWtAkCR6Y+Hl0VrubpeH1I+1tI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709789287; c=relaxed/simple;
+	bh=U/V0UrGrgIfelqahF0HgC/0m1D5M/7ihyjzreBaoGgk=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=membrIq/2wgrzvuBxRlHWk8Pfg2ogwxVEL3x5TJ1Keb7JCBjoS66kSsUqzBLj8SpbXNwgq8nBWoDhyvMrr59b1SWgkNX5v+Io7Dnav9jimlRBHMqYVB9CLGuqdxPKDukCeGBpYLTwEIfLqBhcxEXeGr8yjqbyrO7Gw1faOxnOBc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=U04UEQ8C; arc=fail smtp.client-ip=40.107.223.64
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ychUmlpI"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:References:Cc:To:Subject:
-	From:MIME-Version:Date:Message-ID:Content-Type:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=K3TldHFnOYBYmyA+ZpDycxvkU6EpB6K91tOzErQkNoI=; b=ychUmlpIQkbhQ0W88gqlbMN+nk
-	N7kxwIp4Izr4S3lPCeFsCe0pWGa05MFzhPp2qPSYgcWyeCT567m7b6xEwRBOrMHS3lZSsqVyoUU4T
-	7y7F6/lnCPMAbpLWNT/KgSkRXbsb+WWVTPkheyVwlC0r9TITjgwaWMg0KgLhrms6g9S/ejbG7FBNm
-	SnHBJTcxh0jjHwmTLQ8nR9IGWHgPGEJJpwnf9Ij4MI5DdZHa+8y8x739teJjHUtKT2eoh77rLEGz6
-	MdP/Ix8fny+Mesi6BjfLkCNZ6bfubnyJsEeeVzha+mbjpED+NoQEjvZnt3DmNMWzWM6Xr/QhSH1JE
-	yw3U0gQw==;
-Received: from [50.53.50.0] (helo=[192.168.254.15])
-	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1ri4Hf-00000002oO9-0yJC;
-	Thu, 07 Mar 2024 03:19:03 +0000
-Content-Type: multipart/mixed; boundary="------------oaFa8uBlfstuVB17zCaypWJR"
-Message-ID: <10a95079-86e4-41bf-8e82-e387936c437d@infradead.org>
-Date: Wed, 6 Mar 2024 19:18:57 -0800
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="U04UEQ8C"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QuKlFiZhEqwJqYavrYHv7DgAAWZDLaVl9KMwUuFfGuY0yfhBI3PrLMWzfGDWdTakj7MW/JrqyXGXJfH/shWam1zQ5fnG3Sj+NTTYGVlHRVmWtYJYImWhhHdSGWwnFfKcwOF2jk8xQls+RNESKLGjC8w4UzBJCqP+JfsfzslutOiWds/RoR+iuenihPre02KwmnWISdDHeLBuyGdyJej2Zrls9CQnmBr1D6/zysg0wcLiknHRq1SB7ITpAxAqH5iGCD/IqplM/5sOQhZKPTiThjAYUZ/hJtjO08GNtQ4k5KCi9Z8wDbzq95fFMPVRZMFMYkbZ5vkBd5NME3ueYi2rgw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tk0JvjMSOs34kPdH9ZQa5WvjnVm91Vb7SKfldgx/Puw=;
+ b=LbexekY88tnhUikuvdchhW3cMLMe1L5nn6kJqW80tkRbFwKFToaJEJ7l9K9TnKRN5wm+EqdbRCsiz3QSxrNnvslEALMhineXAXI5qQgCFd7i4MtwGpjFlwV3xCfg2qLkRtwLKpCdKQ3UO7Q/l6nI2f53eiL6JeFB68EVrVCjgvhDKlnSP052tm6mcRuFgVT6rKoEmTqe6tkVO4lRNyY8FirYND5O3XMtOyZivV9JOxhCAfuDz6/i+TEAwuiPs6DG90aJb0Tut+5T+Xfczov2D4g/Ah1DaacWQC3c9s/tHqqgU63Q+iN7icW85htDsvpYJutURh6eEts+15ZIA9rpeg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tk0JvjMSOs34kPdH9ZQa5WvjnVm91Vb7SKfldgx/Puw=;
+ b=U04UEQ8CYfrh9cZLKUbDMyB5N0V2hrrxePJdvuLrQ8uD0EMMzMOPSoyGblRQWYRAyHXuusPu1H1oHClNifPuzMpYZAwSmSG8kNc/cVj14qbuRt/aLTLPBqhnWaGjV1t2R7oeqdoPBVElI3WgqXR6FcN5sZC63ETomN0vJkKF8yU=
+Received: from BY5PR17CA0022.namprd17.prod.outlook.com (2603:10b6:a03:1b8::35)
+ by LV8PR12MB9405.namprd12.prod.outlook.com (2603:10b6:408:1fa::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7339.38; Thu, 7 Mar
+ 2024 05:28:02 +0000
+Received: from SJ1PEPF00001CE8.namprd03.prod.outlook.com
+ (2603:10b6:a03:1b8:cafe::7) by BY5PR17CA0022.outlook.office365.com
+ (2603:10b6:a03:1b8::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.24 via Frontend
+ Transport; Thu, 7 Mar 2024 05:28:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ SJ1PEPF00001CE8.mail.protection.outlook.com (10.167.242.24) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7362.11 via Frontend Transport; Thu, 7 Mar 2024 05:28:01 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Wed, 6 Mar
+ 2024 23:27:59 -0600
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <suravee.suthikulpanit@amd.com>, Vasant Hegde <vasant.hegde@amd.com>, "Dan
+ Carpenter" <dan.carpenter@linaro.org>
+Subject: [PATCH] iommu/amd: Fix sleeping in atomic context
+Date: Thu, 7 Mar 2024 05:27:38 +0000
+Message-ID: <20240307052738.116035-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v5 37/37] memprofiling: Documentation
-To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
-Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
- hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
- dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
- penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com,
- will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
- nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, tj@kernel.org,
- muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
- pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
- dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
- keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
- gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
- vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
- bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
- penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
- glider@google.com, elver@google.com, dvyukov@google.com,
- shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
- aliceryhl@google.com, rientjes@google.com, minchan@google.com,
- kaleshsingh@google.com, kernel-team@android.com, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- linux-mm@kvack.org, linux-modules@vger.kernel.org,
- kasan-dev@googlegroups.com, cgroups@vger.kernel.org
-References: <20240306182440.2003814-1-surenb@google.com>
- <20240306182440.2003814-38-surenb@google.com>
-Content-Language: en-US
-In-Reply-To: <20240306182440.2003814-38-surenb@google.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ1PEPF00001CE8:EE_|LV8PR12MB9405:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0c3b34b1-bade-4361-83ca-08dc3e675b97
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	rhSeDCfW59mJn8A8HhLXgRYBCkaHcSqwkluvGDaPBeye0kPwYBa0HGkVOYSBmitht0Tw2+SNKd8VTYw3EODTz4sO6iO1C8xK6vo50eJlhDaDX2GEe+ZAW3cZkQ1iZI0ZYSGKTjVMNuCVX740yaa3K0akzfQDroYXzBq2JZLuCg2Rwdzj984f3JcYv7sSkBW2+zuGzStcBZX3Qdh956/KU1Y/6UUmcOR5zXNBogZWCoefqnPFomuRqwMd5+kqBQdWAwR5q980LDxGtgqlPhRlTzn7ND9LTFTZoiB0Gve4mRgwZrMrbMFeJk6w6/4NUB+QggUw1Q+SmtFqsxM8z4BXLjkVHcXuBOOHjX7j6XI7xQ4x3pjnbQSVDQ0wfRihFszbY5eyxWWKvgMx30R1lUrPEr7AA5o2tNsoVCj+Pb4fbUZRFUimb4aRbu48TExBqsvzrdMDYyEzLf2W8sTRF8P+ulIg942VbyVvLuGrFhMuoUuDgmjt9PiLgizhNZY4G/7b/C90fmVREP4gLIBMw6FjXLmbe32cpQW4LtbGYHBvbzMstl3C7zxm/neqP70ZeHBE7eb0oU7IGltMqlaDr0zUg28GahGHsUWDt19kLMnLD7TmY9Dl9fx4csN9iZ5lMdYd+pmBdpkxKIhFTl9JmsHMdDcIes0Ifa4TqekgnJsdN7qV9erCDS6cbFCVxYiPtR1SPQcFtBbSG9ykx2rHGKd/kn2ggJIUggfJxEKpIJ3jdl6PDLLrd2NrDQRcMT3S9goq
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(82310400014)(36860700004)(376005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Mar 2024 05:28:01.7727
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c3b34b1-bade-4361-83ca-08dc3e675b97
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SJ1PEPF00001CE8.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR12MB9405
 
-This is a multi-part message in MIME format.
---------------oaFa8uBlfstuVB17zCaypWJR
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Commit cf70873e3d01 ("iommu/amd: Refactor GCR3 table helper functions")
+changed GFP flag we use for GCR3 table. Original plan was to move GCR3
+table allocation outside spinlock. But this requires complete rework of
+attach device path. Hence we didn't do it as part of SVA series. For now
+revert the GFP flag to ATOMIC (same as original code).
 
-Hi,
-This includes some editing suggestions and some doc build fixes.
+Fixes: cf70873e3d01 ("iommu/amd: Refactor GCR3 table helper functions")
+Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+---
+ drivers/iommu/amd/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-On 3/6/24 10:24, Suren Baghdasaryan wrote:
-> From: Kent Overstreet <kent.overstreet@linux.dev>
-> 
-> Provide documentation for memory allocation profiling.
-> 
-> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> ---
->  Documentation/mm/allocation-profiling.rst | 91 +++++++++++++++++++++++
->  1 file changed, 91 insertions(+)
->  create mode 100644 Documentation/mm/allocation-profiling.rst
-> 
-> diff --git a/Documentation/mm/allocation-profiling.rst b/Documentation/mm/allocation-profiling.rst
-> new file mode 100644
-> index 000000000000..8a862c7d3aab
-> --- /dev/null
-> +++ b/Documentation/mm/allocation-profiling.rst
-> @@ -0,0 +1,91 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +===========================
-> +MEMORY ALLOCATION PROFILING
-> +===========================
-> +
-> +Low overhead (suitable for production) accounting of all memory allocations,
-> +tracked by file and line number.
-> +
-> +Usage:
-> +kconfig options:
-> + - CONFIG_MEM_ALLOC_PROFILING
-> + - CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT
-> + - CONFIG_MEM_ALLOC_PROFILING_DEBUG
-> +   adds warnings for allocations that weren't accounted because of a
-> +   missing annotation
-> +
-> +Boot parameter:
-> +  sysctl.vm.mem_profiling=0|1|never
-> +
-> +  When set to "never", memory allocation profiling overheads is minimized and it
-
-                                                      overhead is
-
-> +  cannot be enabled at runtime (sysctl becomes read-only).
-> +  When CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=y, default value is "1".
-> +  When CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT=n, default value is "never".
-> +
-> +sysctl:
-> +  /proc/sys/vm/mem_profiling
-> +
-> +Runtime info:
-> +  /proc/allocinfo
-> +
-> +Example output:
-> +  root@moria-kvm:~# sort -g /proc/allocinfo|tail|numfmt --to=iec
-> +        2.8M    22648 fs/kernfs/dir.c:615 func:__kernfs_new_node
-> +        3.8M      953 mm/memory.c:4214 func:alloc_anon_folio
-> +        4.0M     1010 drivers/staging/ctagmod/ctagmod.c:20 [ctagmod] func:ctagmod_start
-> +        4.1M        4 net/netfilter/nf_conntrack_core.c:2567 func:nf_ct_alloc_hashtable
-> +        6.0M     1532 mm/filemap.c:1919 func:__filemap_get_folio
-> +        8.8M     2785 kernel/fork.c:307 func:alloc_thread_stack_node
-> +         13M      234 block/blk-mq.c:3421 func:blk_mq_alloc_rqs
-> +         14M     3520 mm/mm_init.c:2530 func:alloc_large_system_hash
-> +         15M     3656 mm/readahead.c:247 func:page_cache_ra_unbounded
-> +         55M     4887 mm/slub.c:2259 func:alloc_slab_page
-> +        122M    31168 mm/page_ext.c:270 func:alloc_page_ext
-> +===================
-> +Theory of operation
-> +===================
-> +
-> +Memory allocation profiling builds off of code tagging, which is a library for
-> +declaring static structs (that typcially describe a file and line number in
-
-                                  typically
-
-> +some way, hence code tagging) and then finding and operating on them at runtime
-
-                                                                        at runtime,
-
-> +- i.e. iterating over them to print them in debugfs/procfs.
-
-  i.e., iterating
-
-> +
-> +To add accounting for an allocation call, we replace it with a macro
-> +invocation, alloc_hooks(), that
-> + - declares a code tag
-> + - stashes a pointer to it in task_struct
-> + - calls the real allocation function
-> + - and finally, restores the task_struct alloc tag pointer to its previous value.
-> +
-> +This allows for alloc_hooks() calls to be nested, with the most recent one
-> +taking effect. This is important for allocations internal to the mm/ code that
-> +do not properly belong to the outer allocation context and should be counted
-> +separately: for example, slab object extension vectors, or when the slab
-> +allocates pages from the page allocator.
-> +
-> +Thus, proper usage requires determining which function in an allocation call
-> +stack should be tagged. There are many helper functions that essentially wrap
-> +e.g. kmalloc() and do a little more work, then are called in multiple places;
-> +we'll generally want the accounting to happen in the callers of these helpers,
-> +not in the helpers themselves.
-> +
-> +To fix up a given helper, for example foo(), do the following:
-> + - switch its allocation call to the _noprof() version, e.g. kmalloc_noprof()
-> + - rename it to foo_noprof()
-> + - define a macro version of foo() like so:
-> +   #define foo(...) alloc_hooks(foo_noprof(__VA_ARGS__))
-> +
-> +It's also possible to stash a pointer to an alloc tag in your own data structures.
-> +
-> +Do this when you're implementing a generic data structure that does allocations
-> +"on behalf of" some other code - for example, the rhashtable code. This way,
-> +instead of seeing a large line in /proc/allocinfo for rhashtable.c, we can
-> +break it out by rhashtable type.
-> +
-> +To do so:
-> + - Hook your data structure's init function, like any other allocation function
-
-maybe end the line above with a '.' like the following line.
-
-> + - Within your init function, use the convenience macro alloc_tag_record() to
-> +   record alloc tag in your data structure.
-> + - Then, use the following form for your allocations:
-> +   alloc_hooks_tag(ht->your_saved_tag, kmalloc_noprof(...))
-
-
-Finally, there are a number of documentation build warnings in this patch.
-I'm no ReST expert, but the attached patch fixes them for me.
-
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index f688443c2764..d35c1b8c8e65 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -1793,7 +1793,7 @@ static int setup_gcr3_table(struct gcr3_tbl_info *gcr3_info,
+ 	/* Allocate per device domain ID */
+ 	gcr3_info->domid = domain_id_alloc();
+ 
+-	gcr3_info->gcr3_tbl = alloc_pgtable_page(nid, GFP_KERNEL);
++	gcr3_info->gcr3_tbl = alloc_pgtable_page(nid, GFP_ATOMIC);
+ 	if (gcr3_info->gcr3_tbl == NULL) {
+ 		domain_id_free(gcr3_info->domid);
+ 		return -ENOMEM;
 -- 
-#Randy
---------------oaFa8uBlfstuVB17zCaypWJR
-Content-Type: text/x-patch; charset=UTF-8;
- name="docum-mm-alloc-profiling-fix403.patch"
-Content-Disposition: attachment;
- filename="docum-mm-alloc-profiling-fix403.patch"
-Content-Transfer-Encoding: base64
+2.31.1
 
-U2lnbmVkLW9mZi1ieTogUmFuZHkgRHVubGFwIDxyZHVubGFwQGluZnJhZGVhZC5vcmc+Ci0t
-LQogRG9jdW1lbnRhdGlvbi9tbS9hbGxvY2F0aW9uLXByb2ZpbGluZy5yc3QgfCAgIDI4ICsr
-KysrKysrKystLS0tLS0tLS0tCiBEb2N1bWVudGF0aW9uL21tL2luZGV4LnJzdCAgICAgICAg
-ICAgICAgICB8ICAgIDEgCiAyIGZpbGVzIGNoYW5nZWQsIDE2IGluc2VydGlvbnMoKyksIDEz
-IGRlbGV0aW9ucygtKQoKZGlmZiAtLSBhL0RvY3VtZW50YXRpb24vbW0vYWxsb2NhdGlvbi1w
-cm9maWxpbmcucnN0IGIvRG9jdW1lbnRhdGlvbi9tbS9hbGxvY2F0aW9uLXByb2ZpbGluZy5y
-c3QKLS0tIGEvRG9jdW1lbnRhdGlvbi9tbS9hbGxvY2F0aW9uLXByb2ZpbGluZy5yc3QKKysr
-IGIvRG9jdW1lbnRhdGlvbi9tbS9hbGxvY2F0aW9uLXByb2ZpbGluZy5yc3QKQEAgLTksMTEg
-KzksMTEgQEAgdHJhY2tlZCBieSBmaWxlIGFuZCBsaW5lIG51bWJlci4KIAogVXNhZ2U6CiBr
-Y29uZmlnIG9wdGlvbnM6Ci0gLSBDT05GSUdfTUVNX0FMTE9DX1BST0ZJTElORwotIC0gQ09O
-RklHX01FTV9BTExPQ19QUk9GSUxJTkdfRU5BQkxFRF9CWV9ERUZBVUxUCi0gLSBDT05GSUdf
-TUVNX0FMTE9DX1BST0ZJTElOR19ERUJVRwotICAgYWRkcyB3YXJuaW5ncyBmb3IgYWxsb2Nh
-dGlvbnMgdGhhdCB3ZXJlbid0IGFjY291bnRlZCBiZWNhdXNlIG9mIGEKLSAgIG1pc3Npbmcg
-YW5ub3RhdGlvbgorLSBDT05GSUdfTUVNX0FMTE9DX1BST0ZJTElORworLSBDT05GSUdfTUVN
-X0FMTE9DX1BST0ZJTElOR19FTkFCTEVEX0JZX0RFRkFVTFQKKy0gQ09ORklHX01FTV9BTExP
-Q19QUk9GSUxJTkdfREVCVUcKK2FkZHMgd2FybmluZ3MgZm9yIGFsbG9jYXRpb25zIHRoYXQg
-d2VyZW4ndCBhY2NvdW50ZWQgYmVjYXVzZSBvZiBhCittaXNzaW5nIGFubm90YXRpb24KIAog
-Qm9vdCBwYXJhbWV0ZXI6CiAgIHN5c2N0bC52bS5tZW1fcHJvZmlsaW5nPTB8MXxuZXZlcgpA
-QCAtMjksNyArMjksOCBAQCBzeXNjdGw6CiBSdW50aW1lIGluZm86CiAgIC9wcm9jL2FsbG9j
-aW5mbwogCi1FeGFtcGxlIG91dHB1dDoKK0V4YW1wbGUgb3V0cHV0OjoKKwogICByb290QG1v
-cmlhLWt2bTp+IyBzb3J0IC1nIC9wcm9jL2FsbG9jaW5mb3x0YWlsfG51bWZtdCAtLXRvPWll
-YwogICAgICAgICAyLjhNICAgIDIyNjQ4IGZzL2tlcm5mcy9kaXIuYzo2MTUgZnVuYzpfX2tl
-cm5mc19uZXdfbm9kZQogICAgICAgICAzLjhNICAgICAgOTUzIG1tL21lbW9yeS5jOjQyMTQg
-ZnVuYzphbGxvY19hbm9uX2ZvbGlvCkBAIC00MiwyMSArNDMsMjIgQEAgRXhhbXBsZSBvdXRw
-dXQ6CiAgICAgICAgICAxNU0gICAgIDM2NTYgbW0vcmVhZGFoZWFkLmM6MjQ3IGZ1bmM6cGFn
-ZV9jYWNoZV9yYV91bmJvdW5kZWQKICAgICAgICAgIDU1TSAgICAgNDg4NyBtbS9zbHViLmM6
-MjI1OSBmdW5jOmFsbG9jX3NsYWJfcGFnZQogICAgICAgICAxMjJNICAgIDMxMTY4IG1tL3Bh
-Z2VfZXh0LmM6MjcwIGZ1bmM6YWxsb2NfcGFnZV9leHQKKwogPT09PT09PT09PT09PT09PT09
-PQogVGhlb3J5IG9mIG9wZXJhdGlvbgogPT09PT09PT09PT09PT09PT09PQogCiBNZW1vcnkg
-YWxsb2NhdGlvbiBwcm9maWxpbmcgYnVpbGRzIG9mZiBvZiBjb2RlIHRhZ2dpbmcsIHdoaWNo
-IGlzIGEgbGlicmFyeSBmb3IKIGRlY2xhcmluZyBzdGF0aWMgc3RydWN0cyAodGhhdCB0eXBj
-aWFsbHkgZGVzY3JpYmUgYSBmaWxlIGFuZCBsaW5lIG51bWJlciBpbgotc29tZSB3YXksIGhl
-bmNlIGNvZGUgdGFnZ2luZykgYW5kIHRoZW4gZmluZGluZyBhbmQgb3BlcmF0aW5nIG9uIHRo
-ZW0gYXQgcnVudGltZQotLSBpLmUuIGl0ZXJhdGluZyBvdmVyIHRoZW0gdG8gcHJpbnQgdGhl
-bSBpbiBkZWJ1Z2ZzL3Byb2Nmcy4KK3NvbWUgd2F5LCBoZW5jZSBjb2RlIHRhZ2dpbmcpIGFu
-ZCB0aGVuIGZpbmRpbmcgYW5kIG9wZXJhdGluZyBvbiB0aGVtIGF0IHJ1bnRpbWUsCitpLmUu
-LCBpdGVyYXRpbmcgb3ZlciB0aGVtIHRvIHByaW50IHRoZW0gaW4gZGVidWdmcy9wcm9jZnMu
-CiAKIFRvIGFkZCBhY2NvdW50aW5nIGZvciBhbiBhbGxvY2F0aW9uIGNhbGwsIHdlIHJlcGxh
-Y2UgaXQgd2l0aCBhIG1hY3JvCi1pbnZvY2F0aW9uLCBhbGxvY19ob29rcygpLCB0aGF0Ci0g
-LSBkZWNsYXJlcyBhIGNvZGUgdGFnCi0gLSBzdGFzaGVzIGEgcG9pbnRlciB0byBpdCBpbiB0
-YXNrX3N0cnVjdAotIC0gY2FsbHMgdGhlIHJlYWwgYWxsb2NhdGlvbiBmdW5jdGlvbgotIC0g
-YW5kIGZpbmFsbHksIHJlc3RvcmVzIHRoZSB0YXNrX3N0cnVjdCBhbGxvYyB0YWcgcG9pbnRl
-ciB0byBpdHMgcHJldmlvdXMgdmFsdWUuCitpbnZvY2F0aW9uLCBhbGxvY19ob29rcygpLCB0
-aGF0OgorLSBkZWNsYXJlcyBhIGNvZGUgdGFnCistIHN0YXNoZXMgYSBwb2ludGVyIHRvIGl0
-IGluIHRhc2tfc3RydWN0CistIGNhbGxzIHRoZSByZWFsIGFsbG9jYXRpb24gZnVuY3Rpb24K
-Ky0gYW5kIGZpbmFsbHksIHJlc3RvcmVzIHRoZSB0YXNrX3N0cnVjdCBhbGxvYyB0YWcgcG9p
-bnRlciB0byBpdHMgcHJldmlvdXMgdmFsdWUuCiAKIFRoaXMgYWxsb3dzIGZvciBhbGxvY19o
-b29rcygpIGNhbGxzIHRvIGJlIG5lc3RlZCwgd2l0aCB0aGUgbW9zdCByZWNlbnQgb25lCiB0
-YWtpbmcgZWZmZWN0LiBUaGlzIGlzIGltcG9ydGFudCBmb3IgYWxsb2NhdGlvbnMgaW50ZXJu
-YWwgdG8gdGhlIG1tLyBjb2RlIHRoYXQKZGlmZiAtLSBhL0RvY3VtZW50YXRpb24vbW0vaW5k
-ZXgucnN0IGIvRG9jdW1lbnRhdGlvbi9tbS9pbmRleC5yc3QKLS0tIGEvRG9jdW1lbnRhdGlv
-bi9tbS9pbmRleC5yc3QKKysrIGIvRG9jdW1lbnRhdGlvbi9tbS9pbmRleC5yc3QKQEAgLTI2
-LDYgKzI2LDcgQEAgc2VlIHRoZSA6ZG9jOmBhZG1pbiBndWlkZSA8Li4vYWRtaW4tZ3VpZAog
-ICAgcGFnZV9jYWNoZQogICAgc2htZnMKICAgIG9vbQorICAgYWxsb2NhdGlvbi1wcm9maWxp
-bmcKIAogTGVnYWN5IERvY3VtZW50YXRpb24KID09PT09PT09PT09PT09PT09PT09Cg==
-
---------------oaFa8uBlfstuVB17zCaypWJR--
