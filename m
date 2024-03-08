@@ -1,183 +1,176 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11olkn2027.outbound.protection.outlook.com [40.92.19.27])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F41F636D
-	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 18:08:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709921293; cv=none; b=gTzhV4zr3WfzP6LbiZT6iFRWoMs9OvqududH1wCijYCy7Y11TCdg0s5MJX7ZKW9TKcrFI3vw7z3xiWRsJDaEvIwiILLjo+khhmzZzxMtOFVjejY2UkFvP++s0Y0aA3csOo9i1FiS3aL3zY/DbGPEs0/b3n+REy0419QVKlUSN7E=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709921293; c=relaxed/simple;
-	bh=llig45hej0d2HciGt7hMF4l08MvpOtnxKAgR61xjClI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KJdPHugsNqxu9oNkkb8NXdKetfUHn3ZcbkNAQde66OLLv1UguJIr5eJIUSU0nn7X8dOASSP2X4ohSGKDrZXK9WzvPNmGcmZK+1uvL05/XImH995I38bdhOHFbRbXn+jXaIF/g9UHnAlXFXJi0b7aF/Mml11GBUeQtLGecPXJxkc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=F3AtGLuO; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98EA75102A
+	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 19:02:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.19.27
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709924547; cv=fail; b=ZdVlsJBBENq5x1RP3mciRabjlU3GEf7zjx99Xq+LUd8YeDoEYGuT9U/6OSfV+NBVCrbWDqOGaYCnF3mSOeEfsIZP4aChEZozvnORZdhqvgWyKrla+iRbrty1r9pIyMFDJFumv5rS8Qr6A4O6/Kqq2OyDwBiETgGvuV6vB1lmZYw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709924547; c=relaxed/simple;
+	bh=EGW0D9qqdINcQpeWyWhl9kJk+cU8rwnKIgqwzgZdqts=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=LGxF4/yw5Pk861p/ev+etWqUHQUMvHtfRjcXM8jFk5XZbTKNZ06UJLY6ek7AcE/godGQ5/HbdTRH1J+nFYQCpAUIGqL4Vh3oVTYEx7p4SOkK0adheub+ppPWMuAf6GM+J17JFAGh2sAOoBetDyfoWYn4dbTcvIhAoBd/jcrS394=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=cYp1JAvw; arc=fail smtp.client-ip=40.92.19.27
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="F3AtGLuO"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id CC2E01CC3EA;
-	Fri,  8 Mar 2024 19:08:07 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1709921288; bh=/Ywz2SvhfWP7fD0h2M7iW5nTRwOnfNV4nPJrd8EunkY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=F3AtGLuOs9vhJoAWtUwNG8iK63GnZi1kWput0MZSWylkNoypBga/iY0OhNynwFxKI
-	 zOIIRjAD0SvlcLe+JJZJlClGyiHmTDf+B43OpkogWJTmlvA87f9T22//oN9v0FwgTY
-	 1lhf8RrV2IkcsRumf/sSXXTgFPuwPjuCjFUUiO4siF+iPED1/lAPtb1sIeVtXq6FQ8
-	 p7ywLKUD8ROMQWcOnwJU6rWTRjn2VSEXkVdpG2HlC05xI0NHi9cPOWC57uryjUtIeq
-	 V83SfX/gxn8cx+wzMfCrqKdmiH+sRQd1jCeybYUxw/m1ppddSpAMzQ0oFERWG5pJnq
-	 6dRFv68tPlZcQ==
-Date: Fri, 8 Mar 2024 19:08:06 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- kernel-team@android.com, iommu@lists.linux.dev, Christoph Hellwig
- <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Petr Tesarik
- <petr.tesarik1@huawei-partners.com>, Dexuan Cui <decui@microsoft.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v6 6/6] swiotlb: Reinstate page-alignment for mappings
- >= PAGE_SIZE
-Message-ID: <20240308190806.06507e25@meshulam.tesarici.cz>
-In-Reply-To: <9597a3ea-b71f-46bd-bc72-1d19e81dcfb5@arm.com>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="cYp1JAvw"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hs7qVVrT9Nk7WSxZiTluTvdO4Rmq+eeQ41DGItq9mlxZ6Ul9E+2BuUvPi0phhk1lhFj17+vJJEgs2EBMJVGV/IML8Ph1lYThqH/Q0FCpjQ7L0kO4VQhsgEA/mJQjBL+Hq+UWf+Bugn4Nhjg6qkY8PcsZiZBaoknKaiEoHls9U8dCCFiGbeaF+PZfZcgjiJHDfMx5a2FOwX4WhyPtTvf9vFyy+5fZK3QEJzuHc/yFwNKMQ+rizKvzDPgyMpsmf/ZAGvkI70COsK4Bwd3mDKX7owbXc58wqOnSiJa1Qo22C1VquqnM9o5vP4nmJomrXvWIpAoP9PMZOWHWKSmh2sF+qA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7VG8Ld8k0CeIikLDC8K4VkB8lTJyb6pElm/nq39FUk8=;
+ b=IgVBoiYCT/K/AVTHlZytLlEmxHpbJaYKHEphR+doWObie40ce8hwYdWhCgpnZi0l+R5xCm+nObzuVh2ZDGuAiJ57M6njDF1/n1HlyuMZuT16ydYQrpwJ4/lmIFz/yKhycfXwRAl2C4HodkEDdbmRHmHhcoHIrzNRBMV5Dw8EmSeNY4hYEb6AzUXp01IIadgo99MSnkzvA2sfUGqI+6FaO26QGNLey6TgYId9t7mLPDWbqpqLzps8fosb7K8KJ6my5fzV7jWHlzxNQvbwo/sQsUe3Weos4oxlcTQjIhk2UQ5AhQKvxQrU7mXd/I+R8/8dFHXImt9z7fR135KPL0V94w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7VG8Ld8k0CeIikLDC8K4VkB8lTJyb6pElm/nq39FUk8=;
+ b=cYp1JAvwxQcEg+SCSYK1Csr56s0Qpyu9draJC22q8FVxppkYCxmTQSRHJxs5SfxjhEsbGzrp6/DxQEYavgy34XBaJxyrjcLduSLBYXZF7n96KBshrA25MpwJIBt0EkDdSPOv6fgYOy2kjohCzF79/QACqAK0zfyk8ju5NJTLH5VxQUtB91nM6HsyvrvhiS+1a21g10+MGvbosJJwnTfipKNuVkgbIy1yycL8pIntSJQgImEiBlvluQGjA8o/vzA7LgXyA3JM7yrUzb43HyilpjwWzS373aU1kXXInxHPFRVDkjvh8Dd9SFoLsqf5dyGI5ICShU91JcZQkBAp7c6uEA==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by LV3PR02MB10152.namprd02.prod.outlook.com (2603:10b6:408:194::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.24; Fri, 8 Mar
+ 2024 19:02:22 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::67a9:f3c0:f57b:86dd]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::67a9:f3c0:f57b:86dd%5]) with mapi id 15.20.7362.024; Fri, 8 Mar 2024
+ 19:02:22 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Will Deacon <will@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+CC: "kernel-team@android.com" <kernel-team@android.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Christoph Hellwig
+	<hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+	<robin.murphy@arm.com>, Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Dexuan Cui <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
+Subject: RE: [PATCH v6 6/6] swiotlb: Reinstate page-alignment for mappings >=
+ PAGE_SIZE
+Thread-Topic: [PATCH v6 6/6] swiotlb: Reinstate page-alignment for mappings >=
+ PAGE_SIZE
+Thread-Index: AQHacW1Xe8drQ9jqnUu26if2JOMrnrEuMy1A
+Date: Fri, 8 Mar 2024 19:02:21 +0000
+Message-ID:
+ <SN6PR02MB4157DBE41292B3E1B380D9F0D4272@SN6PR02MB4157.namprd02.prod.outlook.com>
 References: <20240308152829.25754-1-will@kernel.org>
-	<20240308152829.25754-7-will@kernel.org>
-	<5c7c7407-5356-4e12-a648-ae695fe0d1cb@arm.com>
-	<20240308173816.5351ea58@meshulam.tesarici.cz>
-	<9597a3ea-b71f-46bd-bc72-1d19e81dcfb5@arm.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+ <20240308152829.25754-7-will@kernel.org>
+In-Reply-To: <20240308152829.25754-7-will@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-tmn: [mHyMT9635YLi3cJz0GV0fdAWLrrLyvVI]
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|LV3PR02MB10152:EE_
+x-ms-office365-filtering-correlation-id: 8015f6a1-0f9e-48aa-3599-08dc3fa248dc
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ gCB4HEdo7kBkSKHYGrTjKlL4EmotdwG0hxibCk1HFqdt48iJZbtz7vkOCOe+T4GNMZFg6x0ulcSEwhuK2rP0WuQunyMM0vKLdx+vvtuPbEfqfQFKiemKvgsFqUR18ibmcRAp0Ermw1keVTNV38UtziaNyDlhXCe9qushc1/SnaOMEVQ+URTYb2ZaHOu9aiwoCFWslVFpbxC8QktZ/le9xMSUo7LY46Ja1T76DDtFhdXE/whb9axeW4lemKYxc8U/8fPEsutAnx08O49ewmOXH8IOYubghewwq9+t05Gb0lpA9PiTnyA+40pOvRKQgzt4fii1L+YFB+zny3ucal8Yv8ZLJBh19MV3op3snhpMAXzvCGHzH1x5RbGfmIMpSL3Fxg6VcRM56PrgJOLFD1JlE08x4wjCMbuLfpYn/Ky+nHEzwu6DBfXDVjZ/SJ0/tZkc2pm+Zg0O2Beuahq+0Gqs8HBdrb3Uy2kXDLK4mQ3nKVArwBuWwgbjGD8h1VvP4karESCh7Frhzo1zeYZl8Y/TsyqLotirMA/TtJQBQ3yC4Jnh0Q6x0ypVWqWPgDBJRYLl
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?hfGUoj+sT6P+PpTqlMrGRChamlRiXep1zeEdnRVP84CQgXY5ePKSV/kkTrrn?=
+ =?us-ascii?Q?HjuZdvKP8UwEY3XUSqb0X0mMh0KlnoGl5eB4Kof5mED+lovWGsRra4eeFz9E?=
+ =?us-ascii?Q?Mdbpp4YMUsBPD2B8OlVWs28+oag2m99p8rDEVpWmUiYvRqZrB06d2lX5yJjP?=
+ =?us-ascii?Q?QhPi5p/Zr2Uvt/jU6ddV0KDD2NhT+l/xmDAuUf1dpDhA5ETRdxm+FayqQRID?=
+ =?us-ascii?Q?Nzk+Mfl+IooUJltSC7r0pYhzKNn2MKhrt7o/atqC0QigZmk3MOy9CDan47uB?=
+ =?us-ascii?Q?nrwsqL/WFqPOWYOZnxXjsS4ctrNsb6wPawkgwVpEGdhRKUA8qhs+P8tLfj5Z?=
+ =?us-ascii?Q?NxLsgvi5tdmdTUXjngA1a37Yg/w3QFr+ndvvfiiE+lVS8e0Vsq+uR55cKkSb?=
+ =?us-ascii?Q?Du5ViwgSoBMt6eDraG5WTRDQncQ5lfk3uGRMaJwgjlLusSmGmtZvz4vnDzsD?=
+ =?us-ascii?Q?XkDZCdOPv9B43spA5QGrGSbTnriL+2bEDY3oUzbN1Y47e7pMcWFcnmFn6iPH?=
+ =?us-ascii?Q?n2aQkWnpkZOTtKHgw5M1Ayk/MScEoO4wxp65DsU0drYsoDvyAwH6UAUPsWh1?=
+ =?us-ascii?Q?PPu/RlEFFvoVhXIUTrIMmoBxxCHJ1TH/BNwsjjIMQr8g5VboWV8dpiAP2hUd?=
+ =?us-ascii?Q?u8WVD0xaH9tfGDjvTGmS+ZtQLl0Qic5AG/PIcgJyeDU3S7foDhMesb3o7G/k?=
+ =?us-ascii?Q?LKhwl/yzkXfOPRkRzm86Ow5WTdSKEHnh5+0yKFU2fDp9Pn8QnWfLU98AzVm2?=
+ =?us-ascii?Q?y6SMA9cVlvwDnpcGjUYG68mej4n3+RaQtiCr8+1ffdzr8oXaL23r2fsSQhSK?=
+ =?us-ascii?Q?OUAmxWYKZSrBknnKwzZnJFtLpauiNzLRZ9sADmXkdmp/ophrDc8AykWiiVAu?=
+ =?us-ascii?Q?OTr0IToZ5HBEfNW54W/jo3GdIOInZz5MIobM0aRO6BVWu5gAZI+rw8YZ4JM+?=
+ =?us-ascii?Q?RBz+TE2YQDhXCXA1XSlPKSMiK7dy7m7SSWmkAXdHOu77G2JhNQhFlcOqW/Xs?=
+ =?us-ascii?Q?8O4XF8PvMfv83nCUdgZN6I7aSJHphWwyqaais9qrnJISTATeDini8qEr/xRW?=
+ =?us-ascii?Q?rtXINHQQgi0g1ZB7y+PsTcblOc90o0CeUWAxNGKQcnqSwEo6nS/oVROlDtgS?=
+ =?us-ascii?Q?extaJcNp/X0tmPbM9Mkve4K1pyJKeEnTrO/+8/JkrsB11oRoodAVCARWxdtw?=
+ =?us-ascii?Q?7YTeXyfIzfwatnO2SdwKqa2NBZ2+e78ejUDxtA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8015f6a1-0f9e-48aa-3599-08dc3fa248dc
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Mar 2024 19:02:21.9336
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR02MB10152
 
-On Fri, 8 Mar 2024 17:17:51 +0000
-Robin Murphy <robin.murphy@arm.com> wrote:
-
-> On 2024-03-08 4:38 pm, Petr Tesa=C5=99=C3=ADk wrote:
-> > On Fri, 8 Mar 2024 16:08:01 +0000
-> > Robin Murphy <robin.murphy@arm.com> wrote:
-> >  =20
-> >> On 2024-03-08 3:28 pm, Will Deacon wrote: =20
-> >>> For swiotlb allocations >=3D PAGE_SIZE, the slab search historically
-> >>> adjusted the stride to avoid checking unaligned slots. This had the
-> >>> side-effect of aligning large mapping requests to PAGE_SIZE, but that
-> >>> was broken by 0eee5ae10256 ("swiotlb: fix slot alignment checks").
-> >>>
-> >>> Since this alignment could be relied upon drivers, reinstate PAGE_SIZE
-> >>> alignment for swiotlb mappings >=3D PAGE_SIZE. =20
-> >>
-> >> This seems clear enough to keep me happy now, thanks! And apologies th=
-at
-> >> I managed to confuse even myself in the previous thread...
-> >>
-> >> Reviewed-by: Robin Murphy <robin.murphy@arm.com> =20
-> >=20
-> > I thought we agreed that this stricter alignment is unnecessary:
-> >=20
-> >    https://lore.kernel.org/linux-iommu/20240305140833.GC3659@lst.de/ =20
+From: Will Deacon <will@kernel.org> Sent: Friday, March 8, 2024 7:28 AM
 >=20
-> No, that was about dma_alloc_coherent() again (and TBH I'm not sure we=20
-> should actually relax it anyway, since there definitely are callers who=20
-> rely on size-alignment beyond PAGE_SIZE, however they're typically going=
-=20
-> to be using the common implementations which end up in alloc_pages() or=20
-> CMA and so do offer that, rather than the oddball ones which don't -=20
-> e.g. we're never going to be allocating SMMUv3 Stream Tables out of some=
-=20
-> restricted pool via the emergency swiotlb_alloc() path). If anywhere,=20
-> the place to argue that point would be patch #3 (which as mentioned I'd=20
-> managed to forget about before...)
-
-Sure, swiotlb_alloc() ensures that alloc_align_mask is non-zero, so the
-condition in this patch cannot be met. In fact, that's why it could be
-moved up to swiotlb_tbl_map_single().
-
-> This one's just about preserving a SWIOTLB-specific behaviour which has=20
-> the practical effect of making SWIOTLB a bit less visible to dma_map_*()=
-=20
-> callers. The impact of keeping this is fairly low, so seems preferable=20
-> to the risk of facing issues 2 or 3 years down the line when someone=20
-> finally upgrades their distro and their data gets eaten because it turns=
-=20
-> out some obscure driver should really have been updated to use=20
-> min_align_mask.
-
-The impact is indeed negligible with 4K pages. It may put a bit of
-stress on the SWIOTLB with 64K pages, but if the mapping size somehow
-correlates with page size, such drivers would need a larger SWIOTLB
-anyway.
-
-I had some doubts if there are any guarantees at all for dma_map_*().
-Now I see that the email I linked dealt with dma_alloc_coherent().
-
-OK, let's not open the other discussion now.
-
-Petr T
-
-> Thanks,
-> Robin.
+> For swiotlb allocations >=3D PAGE_SIZE, the slab search historically
+> adjusted the stride to avoid checking unaligned slots. This had the
+> side-effect of aligning large mapping requests to PAGE_SIZE, but that
+> was broken by 0eee5ae10256 ("swiotlb: fix slot alignment checks").
 >=20
-> > But if everybody else wants to have it...
-> >=20
-> > Petr T
-> >  =20
-> >>> Reported-by: Michael Kelley <mhklinux@outlook.com>
-> >>> Signed-off-by: Will Deacon <will@kernel.org>
-> >>> ---
-> >>>    kernel/dma/swiotlb.c | 18 +++++++++++-------
-> >>>    1 file changed, 11 insertions(+), 7 deletions(-)
-> >>>
-> >>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> >>> index c381a7ed718f..c5851034523f 100644
-> >>> --- a/kernel/dma/swiotlb.c
-> >>> +++ b/kernel/dma/swiotlb.c
-> >>> @@ -992,6 +992,17 @@ static int swiotlb_search_pool_area(struct devic=
-e *dev, struct io_tlb_pool *pool
-> >>>    	BUG_ON(!nslots);
-> >>>    	BUG_ON(area_index >=3D pool->nareas);
-> >>>   =20
-> >>> +	/*
-> >>> +	 * Historically, swiotlb allocations >=3D PAGE_SIZE were guaranteed=
- to be
-> >>> +	 * page-aligned in the absence of any other alignment requirements.
-> >>> +	 * 'alloc_align_mask' was later introduced to specify the alignment
-> >>> +	 * explicitly, however this is passed as zero for streaming mappings
-> >>> +	 * and so we preserve the old behaviour there in case any drivers a=
-re
-> >>> +	 * relying on it.
-> >>> +	 */
-> >>> +	if (!alloc_align_mask && !iotlb_align_mask && alloc_size >=3D PAGE_=
-SIZE)
-> >>> +		alloc_align_mask =3D PAGE_SIZE - 1;
-> >>> +
-> >>>    	/*
-> >>>    	 * Ensure that the allocation is at least slot-aligned and update
-> >>>    	 * 'iotlb_align_mask' to ignore bits that will be preserved when
-> >>> @@ -1006,13 +1017,6 @@ static int swiotlb_search_pool_area(struct dev=
-ice *dev, struct io_tlb_pool *pool
-> >>>    	 */
-> >>>    	stride =3D get_max_slots(max(alloc_align_mask, iotlb_align_mask));
-> >>>   =20
-> >>> -	/*
-> >>> -	 * For allocations of PAGE_SIZE or larger only look for page aligned
-> >>> -	 * allocations.
-> >>> -	 */
-> >>> -	if (alloc_size >=3D PAGE_SIZE)
-> >>> -		stride =3D umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
-> >>> -
-> >>>    	spin_lock_irqsave(&area->lock, flags);
-> >>>    	if (unlikely(nslots > pool->area_nslabs - area->used))
-> >>>    		goto not_found; =20
-> >> =20
-> >  =20
+> Since this alignment could be relied upon drivers, reinstate PAGE_SIZE
+> alignment for swiotlb mappings >=3D PAGE_SIZE.
 >=20
+> Reported-by: Michael Kelley <mhklinux@outlook.com>
+> Signed-off-by: Will Deacon <will@kernel.org>
+
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+
+> ---
+>  kernel/dma/swiotlb.c | 18 +++++++++++-------
+>  1 file changed, 11 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index c381a7ed718f..c5851034523f 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -992,6 +992,17 @@ static int swiotlb_search_pool_area(struct device *d=
+ev, struct io_tlb_pool *pool
+>  	BUG_ON(!nslots);
+>  	BUG_ON(area_index >=3D pool->nareas);
+>=20
+> +	/*
+> +	 * Historically, swiotlb allocations >=3D PAGE_SIZE were guaranteed to =
+be
+> +	 * page-aligned in the absence of any other alignment requirements.
+> +	 * 'alloc_align_mask' was later introduced to specify the alignment
+> +	 * explicitly, however this is passed as zero for streaming mappings
+> +	 * and so we preserve the old behaviour there in case any drivers are
+> +	 * relying on it.
+> +	 */
+> +	if (!alloc_align_mask && !iotlb_align_mask && alloc_size >=3D PAGE_SIZE=
+)
+> +		alloc_align_mask =3D PAGE_SIZE - 1;
+> +
+>  	/*
+>  	 * Ensure that the allocation is at least slot-aligned and update
+>  	 * 'iotlb_align_mask' to ignore bits that will be preserved when
+> @@ -1006,13 +1017,6 @@ static int swiotlb_search_pool_area(struct device =
+*dev, struct io_tlb_pool *pool
+>  	 */
+>  	stride =3D get_max_slots(max(alloc_align_mask, iotlb_align_mask));
+>=20
+> -	/*
+> -	 * For allocations of PAGE_SIZE or larger only look for page aligned
+> -	 * allocations.
+> -	 */
+> -	if (alloc_size >=3D PAGE_SIZE)
+> -		stride =3D umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
+> -
+>  	spin_lock_irqsave(&area->lock, flags);
+>  	if (unlikely(nslots > pool->area_nslabs - area->used))
+>  		goto not_found;
+> --
+> 2.44.0.278.ge034bb2e1d-goog
 
