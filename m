@@ -1,61 +1,61 @@
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97F8736D
-	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 17:50:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A78D58103
+	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 18:03:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709920213; cv=none; b=kZomleubYcQCvqShtJikpjE6DqrIqjqW7S6hkRiLDMU6sfkAC+MHO061y+IX5z+ooWtHRcfqydEAI/Y9EtS5ldIIn8Pr+vMqaYxaPMhBWsbziUVL/DgjKC3wJ68/7eUyiSBumH2lHmCPhhNEiUMLTjYXUW64u2lpJi3eh/8zXJ0=
+	t=1709921017; cv=none; b=HpwbMA2fqfqrdFqt/Uk6uZH6Zvv/dBVmucNUE55aaZlwrUs2DrI7RqnlQdWcl3ykzkQot+eWlly+DbP8gNnShz3wnnL1U1kG/VaP6z5KlR9iTZJjSkx4RRjGO6Kx+/HN5uurdG0WdknY4oUClNgqvX0wZYqhi4mSkE/vn56TqiU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709920213; c=relaxed/simple;
-	bh=D4lAezz1Fe85IAGC56X4pGJ4Or5jTbAWiToJS9KUs+U=;
+	s=arc-20240116; t=1709921017; c=relaxed/simple;
+	bh=3LVj4/dvr7RiYytJk6zXL+ousuVGoUmlE+T+FQANLJs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OZQ3bcWWXQ3JXIfpcx9tBEgpwo9WtBuxbi0pYj0AqgTVutU7x0lr985A7Ih5L/w+wwrJ4RkWE+IAkOtmPRX7lNZL1ZE3ZDpW8s76R0Htt+Ra1mjTfOy1lC1vnbG/YhXi8rem6UjbDh/UuKMbjPb4Alp2Wi5U3PYBEBmxvKueJ+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=KFjS20bD; arc=none smtp.client-ip=209.85.167.178
+	 Content-Type:Content-Disposition:In-Reply-To; b=MQIXfdBidJJmm0LOT9/9PJUA597INZAmtE1ZkZNNCmFHvzwdX1+YKCDhQUY28Vo8BuaoxxTW8uCDLnQP90pIhs8gFTbb0+6i7a0qCAcQEaxVBrgZqJjIXruf/5o2ugkjGGaDnLECOJxD/nHh7QJug8yuDyvw40b6K1ztdZ2Dojs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=mEN6yjLS; arc=none smtp.client-ip=209.85.160.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="KFjS20bD"
-Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-3c22bca4cbeso555475b6e.1
-        for <iommu@lists.linux.dev>; Fri, 08 Mar 2024 09:50:11 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="mEN6yjLS"
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-21e6be74db4so1439034fac.2
+        for <iommu@lists.linux.dev>; Fri, 08 Mar 2024 10:03:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1709920211; x=1710525011; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1709921014; x=1710525814; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ExG2PAh8KBxjdV5p9HMOJ0D9TzLucoEgJI4R5jjzcnY=;
-        b=KFjS20bDhB/GBx5n3hwW+hSHpYW0k75lTR5r5QOV86Gq94esj1N0cB+9NFMULJecNJ
-         RsI9mdSa0t+bzWMjd5GQqRM0sim7XdDKeo3ClCftz5W9dWcCu1DaVIomeUDrPxqpB2+H
-         Dn1u7ooyM2Fa0d9A9UcEor7CHLtjUEp65rD25FxLeGOXA3su2u+ubidRnIThxmKlBoSS
-         ebWWHoKtf8r7Gg9E6OMk/9DqKy7npY3Juv5udqop6tp2AJD62x/rufTtBjxT4GJAk+De
-         LJfO4wha6osETAIbDuSblK2ZDmtFuT5MKU5IBGVJWBUbw+o/Mq78W4BIysSYqDzphtYV
-         /Rxg==
+        bh=oZzrM6BbRqgMpeBTx8YDf05PpuvDd3fYcXNtVCqPsiw=;
+        b=mEN6yjLSeVO+lsiNmtn6MTMICuTOpOArNK5/uglj0dG7X6kqCnS/yfnmSGkLf2uM+M
+         OUsotptluOeQQWlYFAEFWYrfWS2GJ7UDowSrfGIW/dEZgl9XpBt6lpny/Gb0A8/vbyJt
+         MwLy+Q1/bqgzkxo/lPVbfZYfXJt5ZklvoquKqQ+RA/CoRyDnciEqlappC/xeLY4aUB7g
+         Wu7RpHcn+9jeykuZh2IlfoMZnXZYBj+dN+AVeGTXSPwLm2Th6kAgbh5RCOfA57bibBT9
+         Yygha559/v3jtrrUTk3DaOsHtEXvklKFiynjZBR6w1glvwiqx37O76+iFgvXbpG13NUB
+         RZlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709920211; x=1710525011;
+        d=1e100.net; s=20230601; t=1709921014; x=1710525814;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ExG2PAh8KBxjdV5p9HMOJ0D9TzLucoEgJI4R5jjzcnY=;
-        b=ovb9aHB69+OmZaBlPXDmpgwkC/d1yrCDbTVQVdol3CNiwhbibI6Ras2hEBAXDlLsw9
-         YJ5fKN+al7QfQPDsV6Yc7TbayCf99orVPB1p0o70X3QlwCU6j5WuQRSx5sXM1bbR9waU
-         XHeiAV5RnQn0d7ziS9sYVlDnP/CoQ2fNUkDdPXq9qDXLcEWopRCfdNlUwVe5aVJ+KTP8
-         ykynT0j2yu9uRHDYxk3omiWOYrwZqym5U7oAWkCTGWFeD+xhBbl4EpAi5dHG/wfeiyv4
-         P6yqdWpvR6lJlpscOQhA+KynRa0jVrSaHNknqv/zgC1qkGKZOpqpoEulTL2PSjthHlSN
-         MymQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUMs3bmUeX8q2qSnU9aGWFMQTHbTYV5H2j0RIrDiE1bpcM2pccOgxumHBsalyQTznNzx9LubrkmdcYxvCo8mrmjXxL8WRw=
-X-Gm-Message-State: AOJu0YyqSdWm+t2HngW1XjYu1uochgznuiR4/9DSuenUcg1TGMjf1BMl
-	/tZtPOFsW8NXpzh5mnie2B7ZYUxemcevmcq4/eWxEydbKIFKZYuR+w7rPAEiGmY=
-X-Google-Smtp-Source: AGHT+IHqotrzjMlulGgfxn/O3daDWLB1M/i0FqmA6MZtfAe0W8HVLP0YT6jYEI77fyNP3sENbK2zQA==
-X-Received: by 2002:a54:4781:0:b0:3c1:ebff:89a2 with SMTP id o1-20020a544781000000b003c1ebff89a2mr10704452oic.55.1709920209271;
-        Fri, 08 Mar 2024 09:50:09 -0800 (PST)
+        bh=oZzrM6BbRqgMpeBTx8YDf05PpuvDd3fYcXNtVCqPsiw=;
+        b=qqjYli9stOQ/NC83csYOvzPgZW5Jk3nQQ7UCwsBBrf0+coyJmBZwlmGnEvMLH1kKwB
+         +ITzdp5Tr9i+/BIvg0ofC8wN0nZsWBBsVBXUSzQpc4Cc211pUyq0gFxiOkekKcS4FhjX
+         L7FHg3LqZNIFhDjjgeKO6FGoCd6hNnt6kjRCX4QBc0HjnJxtYphwZ4k71zFrYbUI2gq8
+         KqnTuGplNfcfeJyeRkd30qFndRLu9Eb1wMUqTtCBusRSGUmKrXdGpYzylcaJxgG1LflS
+         zMTDCSeYswRGTtCqmbqM8y5Mo8ICALz0hFGI/1r+WjMdIg4q1wa6/9DQ2PDo5jOwGhzj
+         JfDg==
+X-Forwarded-Encrypted: i=1; AJvYcCVXVKzZ0yF4BnMyu15LWPdDTMQrhbZtiUPR+Sb2aXUoRVtZMWTZygNSnHkn2Iz/VF4oJT1Rq1zpigzKNWiTjQ/SMOhPtJU=
+X-Gm-Message-State: AOJu0YyOakmlTynejP8Hc6dMRmmtAo0BX0tTKBWRhS2yibGyC/VhefZz
+	/YNzgVFXO7HQJwr72AHKrDqWfmqs21ICwM6XIBk70Y8HzwlwHKfPCmtRQGxA550=
+X-Google-Smtp-Source: AGHT+IF7pWjtuz8Xb3cQKQtapSRXtT6lbKWY4ydmQ4LB9QhAYAFvk6sa+sebdrqQhb+hD17nUWsTIA==
+X-Received: by 2002:a05:6870:171a:b0:21e:c3a4:8dd9 with SMTP id h26-20020a056870171a00b0021ec3a48dd9mr3833215oae.10.1709921014517;
+        Fri, 08 Mar 2024 10:03:34 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id t11-20020a0568080b2b00b003c1f461d1cbsm1447808oij.37.2024.03.08.09.50.08
+        by smtp.gmail.com with ESMTPSA id oo24-20020a0568715a9800b0022138173901sm1968607oac.45.2024.03.08.10.03.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Mar 2024 09:50:08 -0800 (PST)
+        Fri, 08 Mar 2024 10:03:34 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rieMB-007Z0m-Os;
-	Fri, 08 Mar 2024 13:50:07 -0400
-Date: Fri, 8 Mar 2024 13:50:07 -0400
+	id 1rieZA-007b0V-V9;
+	Fri, 08 Mar 2024 14:03:32 -0400
+Date: Fri, 8 Mar 2024 14:03:32 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
@@ -66,11 +66,10 @@ Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
 	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
 	virtualization@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/8] iommufd: Add fault and response message
- definitions
-Message-ID: <20240308175007.GW9225@ziepe.ca>
+Subject: Re: [PATCH v3 4/8] iommufd: Add iommufd fault object
+Message-ID: <20240308180332.GX9225@ziepe.ca>
 References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
- <20240122073903.24406-4-baolu.lu@linux.intel.com>
+ <20240122073903.24406-5-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -79,89 +78,253 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240122073903.24406-4-baolu.lu@linux.intel.com>
+In-Reply-To: <20240122073903.24406-5-baolu.lu@linux.intel.com>
 
-On Mon, Jan 22, 2024 at 03:38:58PM +0800, Lu Baolu wrote:
-
-> +/**
-> + * enum iommu_hwpt_pgfault_flags - flags for struct iommu_hwpt_pgfault
-> + * @IOMMU_PGFAULT_FLAGS_PASID_VALID: The pasid field of the fault data is
-> + *                                   valid.
-> + * @IOMMU_PGFAULT_FLAGS_LAST_PAGE: It's the last fault of a fault group.
+On Mon, Jan 22, 2024 at 03:38:59PM +0800, Lu Baolu wrote:
+> --- /dev/null
+> +++ b/drivers/iommu/iommufd/fault.c
+> @@ -0,0 +1,255 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/* Copyright (C) 2024 Intel Corporation
 > + */
-> +enum iommu_hwpt_pgfault_flags {
-> +	IOMMU_PGFAULT_FLAGS_PASID_VALID		= (1 << 0),
-> +	IOMMU_PGFAULT_FLAGS_LAST_PAGE		= (1 << 1),
-> +};
+> +#define pr_fmt(fmt) "iommufd: " fmt
 > +
-> +/**
-> + * enum iommu_hwpt_pgfault_perm - perm bits for struct iommu_hwpt_pgfault
-> + * @IOMMU_PGFAULT_PERM_READ: request for read permission
-> + * @IOMMU_PGFAULT_PERM_WRITE: request for write permission
-> + * @IOMMU_PGFAULT_PERM_EXEC: request for execute permission
-> + * @IOMMU_PGFAULT_PERM_PRIV: request for privileged permission
-
-You are going to have to elaborate what PRIV is for.. We don't have
-any concept of this in the UAPI for iommufd so what is a userspace
-supposed to do if it hits this? EXEC is similar, we can't actually
-enable exec permissions from userspace IIRC..
-
-> +enum iommu_hwpt_pgfault_perm {
-> +	IOMMU_PGFAULT_PERM_READ			= (1 << 0),
-> +	IOMMU_PGFAULT_PERM_WRITE		= (1 << 1),
-> +	IOMMU_PGFAULT_PERM_EXEC			= (1 << 2),
-> +	IOMMU_PGFAULT_PERM_PRIV			= (1 << 3),
-> +};
+> +#include <linux/file.h>
+> +#include <linux/fs.h>
+> +#include <linux/module.h>
+> +#include <linux/mutex.h>
+> +#include <linux/iommufd.h>
+> +#include <linux/poll.h>
+> +#include <linux/anon_inodes.h>
+> +#include <uapi/linux/iommufd.h>
 > +
-> +/**
-> + * struct iommu_hwpt_pgfault - iommu page fault data
-> + * @size: sizeof(struct iommu_hwpt_pgfault)
-> + * @flags: Combination of enum iommu_hwpt_pgfault_flags
-> + * @dev_id: id of the originated device
-> + * @pasid: Process Address Space ID
-> + * @grpid: Page Request Group Index
-> + * @perm: Combination of enum iommu_hwpt_pgfault_perm
-> + * @addr: page address
-> + */
-> +struct iommu_hwpt_pgfault {
-> +	__u32 size;
-> +	__u32 flags;
-> +	__u32 dev_id;
-> +	__u32 pasid;
-> +	__u32 grpid;
-> +	__u32 perm;
-> +	__u64 addr;
+> +#include "iommufd_private.h"
+> +
+> +static int device_add_fault(struct iopf_group *group)
+> +{
+> +	struct iommufd_device *idev = group->cookie->private;
+> +	void *curr;
+> +
+> +	curr = xa_cmpxchg(&idev->faults, group->last_fault.fault.prm.grpid,
+> +			  NULL, group, GFP_KERNEL);
+> +
+> +	return curr ? xa_err(curr) : 0;
+> +}
+> +
+> +static void device_remove_fault(struct iopf_group *group)
+> +{
+> +	struct iommufd_device *idev = group->cookie->private;
+> +
+> +	xa_store(&idev->faults, group->last_fault.fault.prm.grpid,
+> +		 NULL, GFP_KERNEL);
+
+xa_erase ?
+
+Is grpid OK to use this way? Doesn't it come from the originating
+device?
+
+> +void iommufd_fault_destroy(struct iommufd_object *obj)
+> +{
+> +	struct iommufd_fault *fault = container_of(obj, struct iommufd_fault, obj);
+> +	struct iopf_group *group, *next;
+> +
+> +	mutex_lock(&fault->mutex);
+> +	list_for_each_entry_safe(group, next, &fault->deliver, node) {
+> +		list_del(&group->node);
+> +		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
+> +		iopf_free_group(group);
+> +	}
+> +	list_for_each_entry_safe(group, next, &fault->response, node) {
+> +		list_del(&group->node);
+> +		device_remove_fault(group);
+> +		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
+> +		iopf_free_group(group);
+> +	}
+> +	mutex_unlock(&fault->mutex);
+> +
+> +	mutex_destroy(&fault->mutex);
+
+It is really weird to lock a mutex we are about to destroy? At this
+point the refcount on the iommufd_object is zero so there had better
+not be any other threads with access to this pointer!
+
+> +static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
+> +				       size_t count, loff_t *ppos)
+> +{
+> +	size_t fault_size = sizeof(struct iommu_hwpt_pgfault);
+> +	struct iommufd_fault *fault = filep->private_data;
+> +	struct iommu_hwpt_pgfault data;
+> +	struct iommufd_device *idev;
+> +	struct iopf_group *group;
+> +	struct iopf_fault *iopf;
+> +	size_t done = 0;
+> +	int rc;
+> +
+> +	if (*ppos || count % fault_size)
+> +		return -ESPIPE;
+> +
+> +	mutex_lock(&fault->mutex);
+> +	while (!list_empty(&fault->deliver) && count > done) {
+> +		group = list_first_entry(&fault->deliver,
+> +					 struct iopf_group, node);
+> +
+> +		if (list_count_nodes(&group->faults) * fault_size > count - done)
+> +			break;
+> +
+> +		idev = (struct iommufd_device *)group->cookie->private;
+> +		list_for_each_entry(iopf, &group->faults, list) {
+> +			iommufd_compose_fault_message(&iopf->fault, &data, idev);
+> +			rc = copy_to_user(buf + done, &data, fault_size);
+> +			if (rc)
+> +				goto err_unlock;
+> +			done += fault_size;
+> +		}
+> +
+> +		rc = device_add_fault(group);
+
+See I wonder if this should be some xa_alloc or something instead of
+trying to use the grpid?
+
+> +	while (!list_empty(&fault->response) && count > done) {
+> +		rc = copy_from_user(&response, buf + done, response_size);
+> +		if (rc)
+> +			break;
+> +
+> +		idev = container_of(iommufd_get_object(fault->ictx,
+> +						       response.dev_id,
+> +						       IOMMUFD_OBJ_DEVICE),
+> +				    struct iommufd_device, obj);
+
+It seems unfortunate we do this lookup for every iteration of the loop,
+I would lift it up and cache it..
+
+> +		if (IS_ERR(idev))
+> +			break;
+> +
+> +		group = device_get_fault(idev, response.grpid);
+
+This looks locked wrong, it should hold the fault mutex here and we
+should probably do xchng to zero it at the same time we fetch it.
+
+> +		if (!group ||
+> +		    response.addr != group->last_fault.fault.prm.addr ||
+> +		    ((group->last_fault.fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) &&
+> +		      response.pasid != group->last_fault.fault.prm.pasid)) {
+
+Why? If grpid is unique then just trust it.
+
+> +			iommufd_put_object(fault->ictx, &idev->obj);
+> +			break;
+> +		}
+> +
+> +		iopf_group_response(group, response.code);
+> +
+> +		mutex_lock(&fault->mutex);
+> +		list_del(&group->node);
+> +		mutex_unlock(&fault->mutex);
+> +
+> +		device_remove_fault(group);
+> +		iopf_free_group(group);
+> +		done += response_size;
+> +
+> +		iommufd_put_object(fault->ictx, &idev->obj);
+> +	}
+> +
+> +	return done;
+> +}
+> +
+> +static __poll_t iommufd_fault_fops_poll(struct file *filep,
+> +					struct poll_table_struct *wait)
+> +{
+> +	struct iommufd_fault *fault = filep->private_data;
+> +	__poll_t pollflags = 0;
+> +
+> +	poll_wait(filep, &fault->wait_queue, wait);
+> +	mutex_lock(&fault->mutex);
+> +	if (!list_empty(&fault->deliver))
+> +		pollflags = EPOLLIN | EPOLLRDNORM;
+> +	mutex_unlock(&fault->mutex);
+> +
+> +	return pollflags;
+> +}
+> +
+> +static const struct file_operations iommufd_fault_fops = {
+> +	.owner		= THIS_MODULE,
+> +	.open		= nonseekable_open,
+> +	.read		= iommufd_fault_fops_read,
+> +	.write		= iommufd_fault_fops_write,
+> +	.poll		= iommufd_fault_fops_poll,
+> +	.llseek		= no_llseek,
 > +};
 
-Do we need an addr + size here? I've seen a few things where I wonder
-if that might become an enhancment someday.
+No release? That seems wrong..
 
-> +/**
-> + * struct iommu_hwpt_page_response - IOMMU page fault response
-> + * @size: sizeof(struct iommu_hwpt_page_response)
-> + * @flags: Must be set to 0
-> + * @dev_id: device ID of target device for the response
-> + * @pasid: Process Address Space ID
-> + * @grpid: Page Request Group Index
-> + * @code: response code. The supported codes include:
-> + *        0: Successful; 1: Response Failure; 2: Invalid Request.
+> +static int get_fault_fd(struct iommufd_fault *fault)
+> +{
+> +	struct file *filep;
+> +	int fdno;
+> +
+> +	fdno = get_unused_fd_flags(O_CLOEXEC);
+> +	if (fdno < 0)
+> +		return fdno;
+> +
+> +	filep = anon_inode_getfile("[iommufd-pgfault]", &iommufd_fault_fops,
+> +				   fault, O_RDWR);
+                                   ^^^^^^
 
-This should be an enum
+See here you stick the iommufd_object into the FD but we don't
+refcount it...
 
-> + * @addr: The fault address. Must match the addr field of the
-> + *        last iommu_hwpt_pgfault of a reported iopf group.
-> + */
-> +struct iommu_hwpt_page_response {
-> +	__u32 size;
-> +	__u32 flags;
-> +	__u32 dev_id;
-> +	__u32 pasid;
-> +	__u32 grpid;
-> +	__u32 code;
-> +	__u64 addr;
-> +};
+And iommufd_fault_destroy() doesn't do anything about this, so it just
+UAFs the fault memory in the FD.
 
-Do we want some kind of opaque ID value from the kernel here to match
-request with response exactly? Or is the plan to search on the addr?
+You need to refcount the iommufd_object here and add a release
+function for the fd to put it back
+
+*and* this FD needs to take a reference on the base iommufd_ctx fd too
+as we can't tolerate them being destroyed out of sequence.
+
+> +int iommufd_fault_alloc(struct iommufd_ucmd *ucmd)
+> +{
+> +	struct iommu_fault_alloc *cmd = ucmd->cmd;
+> +	struct iommufd_fault *fault;
+> +	int rc;
+> +
+> +	if (cmd->flags)
+> +		return -EOPNOTSUPP;
+> +
+> +	fault = iommufd_object_alloc(ucmd->ictx, fault, IOMMUFD_OBJ_FAULT);
+> +	if (IS_ERR(fault))
+> +		return PTR_ERR(fault);
+> +
+> +	fault->ictx = ucmd->ictx;
+> +	INIT_LIST_HEAD(&fault->deliver);
+> +	INIT_LIST_HEAD(&fault->response);
+> +	mutex_init(&fault->mutex);
+> +	init_waitqueue_head(&fault->wait_queue);
+> +
+> +	rc = get_fault_fd(fault);
+> +	if (rc < 0)
+> +		goto out_abort;
+
+And this is ordered wrong, fd_install has to happen after return to
+user space is guarenteed as it cannot be undone.
+
+> +	cmd->out_fault_id = fault->obj.id;
+> +	cmd->out_fault_fd = rc;
+> +
+> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
+> +	if (rc)
+> +		goto out_abort;
+> +	iommufd_object_finalize(ucmd->ictx, &fault->obj);
+
+fd_install() goes here
+
+> +	return 0;
+> +out_abort:
+> +	iommufd_object_abort_and_destroy(ucmd->ictx, &fault->obj);
+> +
+> +	return rc;
+> +}
 
 Jason
