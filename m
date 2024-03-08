@@ -1,73 +1,103 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3B38130AD0;
-	Thu,  7 Mar 2024 22:24:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 513DC4A35
+	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 01:11:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709850252; cv=none; b=YuSgywiI2So50hxujtROkNXI+fp4mo2wy4wDvoP5dIC31cF/nBWTodnHmdATEIXg9Ptck5w1gnZH3B62jSauE6Cuxd142fTC8BG4414NAtDB3bjYJp2+L3pth5S0wpX/s+INihHuKqD62VIbGD0ZlF3NmAE9krIgnMJhArZaBGQ=
+	t=1709860317; cv=none; b=g49hwsx6Z8AqXxewBbxd186c1RdshU0Cv9p9gB0+Ga7sbhleQ5KloxuxEyGEM1o4nE7X8mhvHGYG0bBWS7wRtXcEkSByWXV2/y391VqznH6TyoHC+IbAslSa+gZ7x7IKyuCtRladybJzNlHHWuSCEaMC6DV/VseXh5yFHEc2Gm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709850252; c=relaxed/simple;
-	bh=oMeYecuHZIy3l6Q9Du0Z/SK+z9Wg3+rQlraIvaDliCM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CEH65AHpS0aw6IydZ41jJr+CJMW1p/bma/TxYNktpqj6yydzLsU+RORZOK7tPVKdFY+DtdrhjEbNxjowpBAFbc5br9UlK79NoHI43fArHON/A6sBt0U/dnkN1ETSyqX+3bQqxp44Zayqiu+rYUkSyRPX1MzFsqghtW9uRQnHggk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nxvHkuHE; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1709860317; c=relaxed/simple;
+	bh=UH2NMaQQbXycY8nTN3zcaCTvKnRM7PFycZeWYzrJJa4=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=ZAFZJ+JAKgcvrc7gic0jC+vLDLVAiu8HBIVcTF4pByMCYFktLSylTJ5TpKC7L+XUULSvQen8KMlx90qdg0t9rqeSDCvYe7XCB25ecEu522A4hCLLgEeFg0zv9bAcTs/eT3ruHEEeKJmnG+hRWE08jGBJDwQ2lzKVUJxqz/YkJa4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IQ0Dce4D; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nxvHkuHE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15EE7C433F1;
-	Thu,  7 Mar 2024 22:24:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1709850251;
-	bh=oMeYecuHZIy3l6Q9Du0Z/SK+z9Wg3+rQlraIvaDliCM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nxvHkuHElKkgFc/iEqtq391OweqsrPmOn6N+UB6Si0PXtQeoOknkLKiCbnb1YdLNT
-	 0riomS38WR/801S/Q+MleGSSfwA0obsRpkVSFeVDzK4kqku+f3pTVjgVb/qdd84+4L
-	 of5uBJopiIm5gHazmhk7ysMrdq1STUXJVNq+E8QC4VLUeVjys3aMHDdxHT1c9CB260
-	 zYixtqZoyHy3ikwD35iIfpkDdwWsQD2iQke+6s3NDs17OckpondwNRmoOlGNqyIsXq
-	 JzHXrc8jBQqzjv8NgLKlHeWIdnw/aJXHZUz/mQwFLxgXWzquTwEVc4+G2HwyKV0zJu
-	 kz7q6Xro/FXjQ==
-Date: Thu, 7 Mar 2024 16:24:08 -0600
-From: Rob Herring <robh@kernel.org>
-To: Georgi Djakov <quic_c_gdjako@quicinc.com>
-Cc: andersson@kernel.org, robin.murphy@arm.com, quic_pdaly@quicinc.com,
-	quic_sudaraja@quicinc.com, iommu@lists.linux.dev,
-	krzysztof.kozlowski+dt@linaro.org, joro@8bytes.org,
-	djakov@kernel.org, will@kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, conor+dt@kernel.org,
-	linux-arm-msm@vger.kernel.org, konrad.dybcio@linaro.org,
-	quic_cgoldswo@quicinc.com, quic_sukadev@quicinc.com,
-	robdclark@gmail.com, linux-arm-kernel@lists.infradead.org,
-	robh+dt@kernel.org
-Subject: Re: [PATCH v6 1/7] dt-bindings: iommu: Add Qualcomm TBU
-Message-ID: <170985024752.3267604.7194637769214315327.robh@kernel.org>
-References: <20240307190525.395291-1-quic_c_gdjako@quicinc.com>
- <20240307190525.395291-2-quic_c_gdjako@quicinc.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IQ0Dce4D"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1709860315; x=1741396315;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=UH2NMaQQbXycY8nTN3zcaCTvKnRM7PFycZeWYzrJJa4=;
+  b=IQ0Dce4DcbkByzQtH9AOmGphzkkF89eyjckSGpgfFyFKyzwNWlo5YwrJ
+   1eW35oF0vxyooNdXJc2L5RcNNwGQXA4gh4/fEyQfdkOY168j35xekTdvo
+   8KTy5useIpyJlP67MdbhI35TlJeLoP/wC6iEb5H8XBqN5vnVu8ZNWFPgY
+   pTz1ptYw/qEbo5ZoU6J2kyGF7p5v0XSLJ8AMWKwexbi5DFM7AXQ9/03Pz
+   /RvNlal+jGZvmgcBeTQyHCPrFM5AE70hjx0jEJ3c+GqOZpAOyWC/Y+1wm
+   G2tqGmCcUfOHUAgHzg6g1Dq0HkPFKMWBgKTYMHfKXG4GTPtLYME951DGW
+   g==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11006"; a="22019260"
+X-IronPort-AV: E=Sophos;i="6.07,108,1708416000"; 
+   d="scan'208";a="22019260"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2024 17:11:54 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,108,1708416000"; 
+   d="scan'208";a="14861453"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmviesa003.fm.intel.com with ESMTP; 07 Mar 2024 17:11:49 -0800
+Message-ID: <1b1acbb7-409f-4263-928d-bb73d6c328ab@linux.intel.com>
+Date: Fri, 8 Mar 2024 09:05:43 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240307190525.395291-2-quic_c_gdjako@quicinc.com>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Arnd Bergmann <arnd@arndb.de>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
+ Ard Biesheuvel <ardb@kernel.org>, Ingo Molnar <mingo@elte.hu>,
+ Suresh Siddha <suresh.b.siddha@intel.com>,
+ Dan Carpenter <dan.carpenter@linaro.org>,
+ Ethan Zhao <haifeng.zhao@linux.intel.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iommu: always select INTEL_IOMMU for IRQ_REMAP
+Content-Language: en-US
+To: Robin Murphy <robin.murphy@arm.com>, Arnd Bergmann <arnd@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+References: <20240307140547.2201713-1-arnd@kernel.org>
+ <95554e96-d8b9-4325-aa73-e698b1873a79@arm.com>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <95554e96-d8b9-4325-aa73-e698b1873a79@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-
-On Thu, 07 Mar 2024 11:05:19 -0800, Georgi Djakov wrote:
-> The "apps_smmu" on the Qualcomm sdm845 platform is an implementation
-> of the SMMU-500, that consists of a single TCU (Translation Control
-> Unit) and multiple TBUs (Translation Buffer Units). These TBUs have
-> hardware debugging features that are specific and only present on
-> Qualcomm hardware. Represent them as independent DT nodes. List all
-> the resources that are needed to operate them (such as registers,
-> clocks, power domains and interconnects).
+On 3/7/24 11:48 PM, Robin Murphy wrote:
+> On 07/03/2024 2:05 pm, Arnd Bergmann wrote:
+>> From: Arnd Bergmann <arnd@arndb.de>
+>>
+>> CONFIG_INTR_REMAP was originally split out of the intel iommu code to be
+>> shared by IRQ_REMAP. This recently broke again because the IRQ_REMAP
+>> code calls the global device_rbtree_find() function that is unavailable
+>> for builds without INTEL_IOMMU:
+>>
+>> x86_64-linux-ld: vmlinux.o: in function `qi_submit_sync':
+>> (.text+0x10771e0): undefined reference to `device_rbtree_find'
+>>
+>> It seems that the intel iommu code now contains a lot of generic helper
+>> functions that are not specific to intel, such as alloc_pgtable_page(),
+>> iommu_flush_write_buffer(), domain_attach_iommu() etc, so presumably
+>> it is not x86 specific any more.
 > 
-> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
-> ---
->  .../devicetree/bindings/iommu/qcom,tbu.yaml   | 69 +++++++++++++++++++
->  1 file changed, 69 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/qcom,tbu.yaml
+> No, it's still all very much Intel-specific, which in fact means it is 
+> just recently now x86-specific since IA-64 has departed.
 > 
+> Historically it's always been the case that building IRQ remapping 
+> support on its own without IOMMU_API was supported, and for a while we 
+> even had the awkward iommu_device_set_ops() wrapper and various other 
+> indirections and stubs in the core API solely to make it work. IMO the 
+> underlying issue here is that there have never been very clear lines of 
+> separation between the ACPI DMAR code, the IOMMU API driver, and the IRQ 
+> remapping driver, so unless the whole design could be improved to make 
+> it harder to break, it probably is time to start asking the question of 
+> whether anyone actually cares about this config combination any more.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+IOMMU in passthrough mode + interrupt remapping might be a reasonable
+alternative to no IOMMU API + interrupt remapping.
 
+Best regards,
+baolu
