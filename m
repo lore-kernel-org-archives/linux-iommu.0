@@ -1,128 +1,137 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3323ED304
-	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 16:41:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00FE01D698
+	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 16:49:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709916077; cv=none; b=QGVJ6N2L+fjMhhE9nv7f7qEhoM83r/D0RmYQuf/oHu2bIKKG+0Tzxw8mZiS5zmklTyVW24UVq+5OAr69D7uDQdA+i+kslr8x8la90CR+C87H0+aCc6s+ZGW+Gi47bo39rZn/IyIA8wHZG4I02gv8/U8ghttVtWl2+PeIeqTAS7s=
+	t=1709916568; cv=none; b=oC41pV5z11iEs7/kl1Iai/AwwJvXvJ3l7pgM1bnBcSRze9Ow7E8IXmvALlku9MXBCw7+zXcZUQrDikwH0YITVUmEobnIgt6f89xHXvX+Rw0kxgPYfLFdemidSPHyRDLBgEwx1H9c3edKTyDgdyMKE3YMU2fI/7mzpN/ih9RhUdc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709916077; c=relaxed/simple;
-	bh=E7xjUr7XFDIgxAuAR5skBYnGfcngAPHjHTPg0v/bj90=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=A7mmg+qBWH9+4L+yiYwTMcoKqygT2Kj8LtZLZC0Zkll3dX2hu+csn8bE5SouGlSw4VPn2GcnMgU5c0gISQ8X3PegO5q7fR2SnafmKPSJQum2EAicS9CQ5aECm/HLe9TIGD0F5KCNPW/7aVUWnmBpgvZK/+cLShXSsMRQrLlbrYI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=X8APzAw4; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="X8APzAw4"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 2658B1CD4D4;
-	Fri,  8 Mar 2024 17:38:17 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1709915897; bh=wYkGaMnNecZ484j/sTojyqfZAtdlr73D93VzoZo94XQ=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=X8APzAw4QGRrwmr7uU8EBQQaxdnUXixKcfd9Vy2bIaRqtOf5kFsoTuZNJJRCBwH76
-	 Y5OT/bsLx439Bwnr1nMTq85VUAx4SnXhTHkdwUrxfK88Z31Brx7MY9S3FaE5zt6r6+
-	 AOGk+0T7l3E6rahfyR3sNlMs/wdv+TiAY60PxgF8U8gRgPfHia7QiKS6CrAgtVabyP
-	 tCdn12xxZfn3/X/R9vQ8GMkbSRpgaimKOppaQQ71aNKjD1GK55ZrbJ2fRF13BNgHqs
-	 y6WrvJZxu57KnchJ5ah5QANXRSwEN0nHF2HGs0v50/yiEUaeuw2VDN7g+BQMy9D8rK
-	 JJGs1fkc6A0Iw==
-Date: Fri, 8 Mar 2024 17:38:16 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- kernel-team@android.com, iommu@lists.linux.dev, Christoph Hellwig
- <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Petr Tesarik
- <petr.tesarik1@huawei-partners.com>, Dexuan Cui <decui@microsoft.com>,
- Nicolin Chen <nicolinc@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v6 6/6] swiotlb: Reinstate page-alignment for mappings
- >= PAGE_SIZE
-Message-ID: <20240308173816.5351ea58@meshulam.tesarici.cz>
-In-Reply-To: <5c7c7407-5356-4e12-a648-ae695fe0d1cb@arm.com>
-References: <20240308152829.25754-1-will@kernel.org>
-	<20240308152829.25754-7-will@kernel.org>
-	<5c7c7407-5356-4e12-a648-ae695fe0d1cb@arm.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	s=arc-20240116; t=1709916568; c=relaxed/simple;
+	bh=KzdKUekyi9rBF/gDC5z7G4GjeHKa0pomXxJxjC5D0Xc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=sK40sn2CIn9bTNvNh02B8hToXNWUIQhoe1uK/zUR/GCkccIpf23l/QmmzX08mbspCq0tG+qeHLe9FIAgH89x4bmGuisE56qOwrYkquKFVYn06eGpRi5eP0A04nnIjsvDUSS+SKmybnkCtF7O0bXWiQ+c4WXAZoWcDAqsubxJaBo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id E414168BEB; Fri,  8 Mar 2024 17:49:20 +0100 (CET)
+Date: Fri, 8 Mar 2024 17:49:20 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
+	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Bart Van Assche <bvanassche@acm.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Amir Goldstein <amir73il@gmail.com>,
+	"josef@toxicpanda.com" <josef@toxicpanda.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"daniel@iogearbox.net" <daniel@iogearbox.net>,
+	Dan Williams <dan.j.williams@intel.com>,
+	"jack@suse.com" <jack@suse.com>, Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two
+ steps
+Message-ID: <20240308164920.GA17991@lst.de>
+References: <47afacda-3023-4eb7-b227-5f725c3187c2@arm.com> <20240305122935.GB36868@unreal> <20240306144416.GB19711@lst.de> <20240306154328.GM9225@ziepe.ca> <20240306162022.GB28427@lst.de> <20240306174456.GO9225@ziepe.ca> <20240306221400.GA8663@lst.de> <20240307000036.GP9225@ziepe.ca> <20240307150505.GA28978@lst.de> <20240307210116.GQ9225@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240307210116.GQ9225@ziepe.ca>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Fri, 8 Mar 2024 16:08:01 +0000
-Robin Murphy <robin.murphy@arm.com> wrote:
-
-> On 2024-03-08 3:28 pm, Will Deacon wrote:
-> > For swiotlb allocations >= PAGE_SIZE, the slab search historically
-> > adjusted the stride to avoid checking unaligned slots. This had the
-> > side-effect of aligning large mapping requests to PAGE_SIZE, but that
-> > was broken by 0eee5ae10256 ("swiotlb: fix slot alignment checks").
+On Thu, Mar 07, 2024 at 05:01:16PM -0400, Jason Gunthorpe wrote:
 > > 
-> > Since this alignment could be relied upon drivers, reinstate PAGE_SIZE
-> > alignment for swiotlb mappings >= PAGE_SIZE.  
+> > It's just kinda hard to do.  For aligned IOMMU mapping you'd only
+> > have one dma_addr_t mappings (or maybe a few if P2P regions are
+> > involved), so this probably doesn't matter.  For direct mappings
+> > you'd have a few, but maybe the better answer is to use THP
+> > more aggressively and reduce the number of segments.
 > 
-> This seems clear enough to keep me happy now, thanks! And apologies that 
-> I managed to confuse even myself in the previous thread...
+> Right, those things have all been done. 100GB of huge pages is still
+> using a fair amount of memory for storing dma_addr_t's.
 > 
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> It is hard to do perfectly, but I think it is not so bad if we focus
+> on the direct only case and simple systems that can exclude swiotlb
+> early on.
 
-I thought we agreed that this stricter alignment is unnecessary:
+Even with direct mappings only we still need to take care of
+cache synchronization.
 
-  https://lore.kernel.org/linux-iommu/20240305140833.GC3659@lst.de/
-
-But if everybody else wants to have it...
-
-Petr T
-
-> > Reported-by: Michael Kelley <mhklinux@outlook.com>
-> > Signed-off-by: Will Deacon <will@kernel.org>
-> > ---
-> >   kernel/dma/swiotlb.c | 18 +++++++++++-------
-> >   1 file changed, 11 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> > index c381a7ed718f..c5851034523f 100644
-> > --- a/kernel/dma/swiotlb.c
-> > +++ b/kernel/dma/swiotlb.c
-> > @@ -992,6 +992,17 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
-> >   	BUG_ON(!nslots);
-> >   	BUG_ON(area_index >= pool->nareas);
-> >   
-> > +	/*
-> > +	 * Historically, swiotlb allocations >= PAGE_SIZE were guaranteed to be
-> > +	 * page-aligned in the absence of any other alignment requirements.
-> > +	 * 'alloc_align_mask' was later introduced to specify the alignment
-> > +	 * explicitly, however this is passed as zero for streaming mappings
-> > +	 * and so we preserve the old behaviour there in case any drivers are
-> > +	 * relying on it.
-> > +	 */
-> > +	if (!alloc_align_mask && !iotlb_align_mask && alloc_size >= PAGE_SIZE)
-> > +		alloc_align_mask = PAGE_SIZE - 1;
-> > +
-> >   	/*
-> >   	 * Ensure that the allocation is at least slot-aligned and update
-> >   	 * 'iotlb_align_mask' to ignore bits that will be preserved when
-> > @@ -1006,13 +1017,6 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
-> >   	 */
-> >   	stride = get_max_slots(max(alloc_align_mask, iotlb_align_mask));
-> >   
-> > -	/*
-> > -	 * For allocations of PAGE_SIZE or larger only look for page aligned
-> > -	 * allocations.
-> > -	 */
-> > -	if (alloc_size >= PAGE_SIZE)
-> > -		stride = umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
-> > -
-> >   	spin_lock_irqsave(&area->lock, flags);
-> >   	if (unlikely(nslots > pool->area_nslabs - area->used))
-> >   		goto not_found;  
+> > If all flows includes multiple non-coalesced regions that just makes
+> > things very complicated, and that's exactly what I'd want to avoid.
 > 
+> I don't see how to avoid it unless we say RDMA shouldn't use this API,
+> which is kind of the whole point from my perspective..
+
+The DMA API callers really need to know what is P2P or not for
+various reasons.  And they should generally have that information
+available, either from pin_user_pages that needs to special case
+it or from the in-kernel I/O submitter that build it from P2P and
+normal memory.
+
+> Sure, 3 SGL entries is fine, that isn't what I'm pointing at
+> 
+> I'm saying that today if you give such a scatterlist to dma_map_sg()
+> it scans it and computes the IOVA space need, allocates one IOVA
+> space, then subdivides that single space up into the 3 HW SGLs you
+> show.
+> 
+> If you don't preserve that then we are calling, 4k at a time, a
+> dma_map_page() which is not anywhere close to the same outcome as what
+> dma_map_sg did. I may not get contiguous IOVA, I may not get 3 SGLs,
+> and we call into the IOVA allocator a huge number of times.
+
+Again, your callers must know what is a P2P region and what is not.
+I don't think it is a hard burdern to do mappings at that granularity,
+and we can encapsulate this in nice helpes for say the block layer
+and pin_user_pages callers to start.
+
+> 
+> It needs to work following the same basic structure of dma_map_sg,
+> unfolding that logic into helpers so that the driver can provide
+> the data structure:
+> 
+>  - Scan the io ranges and figure out how much IOVA needed
+>    (dma_io_summarize_range)
+
+That is in general a function of the upper layer and not the DMA code.
+
+>  - Allocate the IOVA (dma_init_io)
+
+And this step is only needed for the iommu case.
+
+> > That's why I really just want 2 cases.  If the caller guarantees the
+> > range is coalescable and there is an IOMMU use the iommu-API like
+> > API, else just iter over map_single/page.
+> 
+> But how does the caller even know if it is coalescable? Other than the
+> trivial case of a single CPU range, that is a complicated detail based
+> on what pages are inside the range combined with the capability of the
+> device doing DMA. I don't see a simple way for the caller to figure
+> this out. You need to sweep every page and collect some information on
+> it. The above is to abstract that detail.
+
+dma_get_merge_boundary already provides this information in terms
+of the device capabilities.  And given that the callers knows what
+is P2P and what is not we have all the information that is needed.
 
