@@ -1,123 +1,123 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A336E5B5C8
-	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 17:28:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B86B8C1A
+	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 17:46:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709918902; cv=none; b=aJtCmssRpuCxKC1GNlo/Jn9FNFNBAp/bwInN+9c3hToPi4EaZkWHr1zvfGlrNBRT6DcCDvNAgHr6TeToHEeUV0QdwDLApNuL74WFX1QBMZcsvzhbEPLBNydV5s98w3GbZ7njwRbC2yzxJgnQn/t+Wvk5P6DozmJTokiSYxyb2HY=
+	t=1709919971; cv=none; b=sgodSb1OunOk8sJo8hQ99DwnO+WB5UFnftQSH0HQ+9hjomfCYqovF8e0WNBFCEFAVYrbZstU3FcltMEqSo8C8PYo6ZN6IkvnZtwgJbkpekDRizIAfgLQOZQh0jxvIucewvV7W8ZasIHZhNFvCFHbQBZaP+EPryb6yyMbuaFrTZw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709918902; c=relaxed/simple;
-	bh=RpplHZoWRCwJBQzacp1/sEZWsMwTazs9ZvYuQaaQW3s=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fw1JeKMVCa77R+n0MBaNKVkL/pOE1uiOvEOyrOGCDsqfiFC5jNFAQWkHBkEd9hza7DnvTu8KV9ca6iSn6ZG/h2I3+iNgViXiZW2wByK24dMvJq/8p/25yYz3dV+g+OaHBU0mnmurXVaIWp+CqZQLHsmga0jl44l+lAPfqvkJrxY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=dtDlJ6AJ; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1709919971; c=relaxed/simple;
+	bh=rK08lC8h70tM+jBp3b7B85bfPjBarpj/C+Yd2hRo22M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=n1W28u0dtQNm1Ujx/kC/oHO2eM9vOHlz+c3pjchMJjg+Wmttf+ecSxKv9onZOGJmNGndxzMSuaxoKXlQb84K3f6ng5GG9mjF7ic7FSORY5qQ2Oyc0KWLT7j/Q+PzJxyJEi3hjKxE9APPW60M3BvqEVCjZSejJnKqTSJRZJag064=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=OmfJKgK8; arc=none smtp.client-ip=209.85.167.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="dtDlJ6AJ"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 5ACC91CDD3D;
-	Fri,  8 Mar 2024 18:28:18 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1709918898; bh=Kh5qXYlmNI8yXj7FHKJySjYJ+bgEs1XYPseFJ0PQC3I=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=dtDlJ6AJTV0HohsVWIa/BdsZ4tUcZ5RlOZUFwSV8B9JYNQgwfQgXneqKDPmCRxOhi
-	 4I4k4NziEPUCjyPt1FiY4D4ePPb144pZCdZku48qsHlz5D5bt1HnSgUb0wJwr1YxDF
-	 od4lXCx4tVaXSPqACZiKZwKXXmOMxChMZR+Jp1bB5kvFx60CXZBE+mgDRZa9XGgxm5
-	 Lhi11D7770Ypj/PmD4aeKmeqFYltqDCqOba2A+RfeihUAaXh7BF2tv6mUE3DnROdxJ
-	 xhSJh0xI+8YX0Axo5fo5dQcKQH/qR7dRPLvani5ohkdP1vrpmZ22V9JXUBNHb1DoAq
-	 El/mgKgHc6+8Q==
-Date: Fri, 8 Mar 2024 18:28:17 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Will Deacon <will@kernel.org>
-Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
- iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
- Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
- <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>, Michael Kelley
- <mhklinux@outlook.com>
-Subject: Re: [PATCH v6 6/6] swiotlb: Reinstate page-alignment for mappings
- >= PAGE_SIZE
-Message-ID: <20240308182817.7687329f@meshulam.tesarici.cz>
-In-Reply-To: <20240308152829.25754-7-will@kernel.org>
-References: <20240308152829.25754-1-will@kernel.org>
-	<20240308152829.25754-7-will@kernel.org>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="OmfJKgK8"
+Received: by mail-oi1-f179.google.com with SMTP id 5614622812f47-3c2313de2ceso410538b6e.1
+        for <iommu@lists.linux.dev>; Fri, 08 Mar 2024 09:46:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1709919967; x=1710524767; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=8ZYf0KQeywWJjZBtMXb+CC74/7IAx0iyjAYpGhr4CHk=;
+        b=OmfJKgK8k2HQQnIqFGUJbWKqvxIAu0ClNrnxfE4qJPYnyo33AcKX8OqPYNGthLdHM5
+         8sYng62/IvjFDXyXPMpmii+isDGx1yW7cFV2oACHmNt3KdXKfW+vq94r28bDOjR3haP8
+         QMd44qrM4rZP6Xa7Eh3YcIedrNg0RStrKltlNGJHnU+rDS3HDEXfrjrCeynTAnD3Zz+t
+         tLpou6m2DEBq+UH2hdcRFM2bZX3i+kXGG8G0Yasa2y9XQKFKAGyo4QcdLYKf011DhaXA
+         64LWrFk7OCZd26bDTGg4EzXUiS2bn0qVWXmZwwD8rMdGq+WXa8pyjyEHwWY2r2r/m6dG
+         un2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1709919967; x=1710524767;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8ZYf0KQeywWJjZBtMXb+CC74/7IAx0iyjAYpGhr4CHk=;
+        b=DOECqoNFh9uHoytDAcHOJ2jszdeuM2EROpdzXWV6d5N1pDzt4nddrmImERjfOG555b
+         bzXddsBfgUrn+tjgugCJMfJv3SBGqaMR0hdcwz8I6rDQur4Nzz9bjRSuQbv13KOEbnpE
+         AqXPsSAnGenijvv0m1pPxQSz6capQmlbEamg1LoSNlhrpKeMFU8BL3wfhSGV1omhCjUT
+         wm22RP12F6C6oqsfpqDnmBEMYRztXFIMSq2MRHjEBi7/DmoYFLmO5rkaisUtCBnxesfa
+         cCpOTM+S3YwwQ9SngVvL3/CRr8tBCIy1mA6sfxlAC180aT9mXYmpyk/8YCdD+r4xvQX4
+         L3eQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUTExrCw/uVVApODWeH1TjpN4e0a68oPNC9rDLq/mpe0FshCcxBfkYfLJT5Q1pBfecX4BtNsVCtjQfFZH2fFnRQEVSxXXk=
+X-Gm-Message-State: AOJu0YzNUsl7zU5hzqGdVCpc1iKC35UfXj7SANKBNhkDEEH7UFyxmU3T
+	NA9LhwVlt4OYvTPD54QFZnq5e7OxKhWYjozAixeo4atPtNxkuhHMsUZ13kL9Ckk=
+X-Google-Smtp-Source: AGHT+IG/7S0/bhrT9Ch0XEq+I93hxTOeDTQg4sBqPyBXTbTrJFkEN75WabLyNMNzEVIsrKpv74Bpcg==
+X-Received: by 2002:a05:6808:23d4:b0:3c2:34b4:2b05 with SMTP id bq20-20020a05680823d400b003c234b42b05mr1861100oib.25.1709919967381;
+        Fri, 08 Mar 2024 09:46:07 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id bk1-20020a0568081a0100b003c1e577140asm1940100oib.25.2024.03.08.09.46.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 08 Mar 2024 09:46:06 -0800 (PST)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rieIH-007YP8-Qj;
+	Fri, 08 Mar 2024 13:46:05 -0400
+Date: Fri, 8 Mar 2024 13:46:05 -0400
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
+	virtualization@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/8] iommu/sva: Use iopf domain attach/detach interface
+Message-ID: <20240308174605.GV9225@ziepe.ca>
+References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
+ <20240122073903.24406-3-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240122073903.24406-3-baolu.lu@linux.intel.com>
 
-On Fri,  8 Mar 2024 15:28:29 +0000
-Will Deacon <will@kernel.org> wrote:
-
-> For swiotlb allocations >= PAGE_SIZE, the slab search historically
-> adjusted the stride to avoid checking unaligned slots. This had the
-> side-effect of aligning large mapping requests to PAGE_SIZE, but that
-> was broken by 0eee5ae10256 ("swiotlb: fix slot alignment checks").
-> 
-> Since this alignment could be relied upon drivers, reinstate PAGE_SIZE
-> alignment for swiotlb mappings >= PAGE_SIZE.
-> 
-> Reported-by: Michael Kelley <mhklinux@outlook.com>
-> Signed-off-by: Will Deacon <will@kernel.org>
-> 
-> ---
->  kernel/dma/swiotlb.c | 18 +++++++++++-------
->  1 file changed, 11 insertions(+), 7 deletions(-)
-> 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index c381a7ed718f..c5851034523f 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -992,6 +992,17 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
->  	BUG_ON(!nslots);
->  	BUG_ON(area_index >= pool->nareas);
+On Mon, Jan 22, 2024 at 03:38:57PM +0800, Lu Baolu wrote:
+> @@ -215,7 +202,23 @@ static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
+>  		group = abort_group;
+>  	}
 >  
-> +	/*
-> +	 * Historically, swiotlb allocations >= PAGE_SIZE were guaranteed to be
-> +	 * page-aligned in the absence of any other alignment requirements.
-> +	 * 'alloc_align_mask' was later introduced to specify the alignment
-> +	 * explicitly, however this is passed as zero for streaming mappings
-> +	 * and so we preserve the old behaviour there in case any drivers are
-> +	 * relying on it.
-> +	 */
-> +	if (!alloc_align_mask && !iotlb_align_mask && alloc_size >= PAGE_SIZE)
-> +		alloc_align_mask = PAGE_SIZE - 1;
-> +
+> +	cookie = iopf_pasid_cookie_get(iopf_param->dev, pasid);
+> +	if (!cookie && pasid != IOMMU_NO_PASID)
+> +		cookie = iopf_pasid_cookie_get(iopf_param->dev, IOMMU_NO_PASID);
+> +	if (IS_ERR(cookie) || !cookie) {
+> +		/*
+> +		 * The PASID of this device was not attached by an I/O-capable
+> +		 * domain. Ask the caller to abort handling of this fault.
+> +		 * Otherwise, the reference count will be switched to the new
+> +		 * iopf group and will be released in iopf_free_group().
+> +		 */
+> +		kfree(group);
+> +		group = abort_group;
+> +		cookie = NULL;
+> +	}
 
-This could be moved up the call chain to swiotlb_tbl_map_single(), but
-since there is already a plan to modify the call signatures for the
-next release, let's keep it here.
+If this is the main point of the cookie mechansim - why not just have
+a refcount inside the domain itself?
 
-Reviewed-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+I'm really having a hard time making sense of this cookie thing, we
+have a lifetime issue on the domain pointer, why is adding another
+structure the answer?
 
-Petr T
+I see we also need to stick a pointer in the domain for iommufd to get
+back to the hwpt, but that doesn't seem to need such a big system to
+accomplish - just add a void *. It would make sense for the domain to
+have some optional pointer to a struct for all the fault related data
+that becomes allocated when a PRI domain is created..
 
->  	/*
->  	 * Ensure that the allocation is at least slot-aligned and update
->  	 * 'iotlb_align_mask' to ignore bits that will be preserved when
-> @@ -1006,13 +1017,6 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
->  	 */
->  	stride = get_max_slots(max(alloc_align_mask, iotlb_align_mask));
->  
-> -	/*
-> -	 * For allocations of PAGE_SIZE or larger only look for page aligned
-> -	 * allocations.
-> -	 */
-> -	if (alloc_size >= PAGE_SIZE)
-> -		stride = umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
-> -
->  	spin_lock_irqsave(&area->lock, flags);
->  	if (unlikely(nslots > pool->area_nslabs - area->used))
->  		goto not_found;
+Also, I thought we'd basically said that domain detatch is supposed to
+flush any open PRIs before returning, what happened to that as a
+solution to the lifetime problem?
 
+Regardless I think we should split this into two series - improve the PRI
+lifetime model for domains and then put iommufd on top of it..
+
+Jason
