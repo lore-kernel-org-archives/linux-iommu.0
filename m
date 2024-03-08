@@ -1,55 +1,52 @@
 Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0B60288D7
-	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 17:22:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A336E5B5C8
+	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 17:28:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709918557; cv=none; b=uRrcSTq/u9kOIBjZBEnbpjXqXGQE68rWNIofRyrzyFkkGI2cyuweVtk/gP4SwgMjLa65v8NGlAnCKJBvp13A3ei2R5i6zzMyiuaicNP5uyufANMuMZb6rcxxRwB9hZSeZTjQmiegyhfk4vy6W90wmeloQiVfbqR6J2bjufYypzE=
+	t=1709918902; cv=none; b=aJtCmssRpuCxKC1GNlo/Jn9FNFNBAp/bwInN+9c3hToPi4EaZkWHr1zvfGlrNBRT6DcCDvNAgHr6TeToHEeUV0QdwDLApNuL74WFX1QBMZcsvzhbEPLBNydV5s98w3GbZ7njwRbC2yzxJgnQn/t+Wvk5P6DozmJTokiSYxyb2HY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709918557; c=relaxed/simple;
-	bh=GkDhdbaweBxHBVnSFe/4jZfuGtdvnP5xJfMMoRIrsbo=;
+	s=arc-20240116; t=1709918902; c=relaxed/simple;
+	bh=RpplHZoWRCwJBQzacp1/sEZWsMwTazs9ZvYuQaaQW3s=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Xj+Ueg+LBTdTcHC0K8RBmf5jhFjHqIOcZ11OOvKBJ5Ijb62Se8NBjd1LxO3tfT40YPESIBLxYgH/tOsdWHwlxo04haC+WCgYtEuNKhnxqR3PIVm++PpID3Aa3MDMpEZagarebj9/nk9htCt+i6+uV7JBqIudQnF2ki1vtrM4L8s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=pam1G0Z+; arc=none smtp.client-ip=37.205.15.56
+	 MIME-Version:Content-Type; b=fw1JeKMVCa77R+n0MBaNKVkL/pOE1uiOvEOyrOGCDsqfiFC5jNFAQWkHBkEd9hza7DnvTu8KV9ca6iSn6ZG/h2I3+iNgViXiZW2wByK24dMvJq/8p/25yYz3dV+g+OaHBU0mnmurXVaIWp+CqZQLHsmga0jl44l+lAPfqvkJrxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=dtDlJ6AJ; arc=none smtp.client-ip=37.205.15.56
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="pam1G0Z+"
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="dtDlJ6AJ"
 Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 0D8421CD637;
-	Fri,  8 Mar 2024 18:22:34 +0100 (CET)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 5ACC91CDD3D;
+	Fri,  8 Mar 2024 18:28:18 +0100 (CET)
 Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1709918554; bh=IIjocy0slfVtwd++6GcQ24vjrbD1TY3TGPMpZvNOIEg=;
+	t=1709918898; bh=Kh5qXYlmNI8yXj7FHKJySjYJ+bgEs1XYPseFJ0PQC3I=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=pam1G0Z+1K+Gxm7SaqFhf8CCIXCd11ATi8Dma6oxnzxC4A+LFMnsckIEgyqkgYhRb
-	 A9s2lvSYxSpy/n/7Gf2Q77F5+x9Du6lAMfyqbYImOcUqA410H6IBN638O8cObTTp2s
-	 E61RbagsAOBBjf6LpZe+uZ2fZPCoodw5vSExUjyeXR9HUDwoknBBs89PhvicLPs5mb
-	 diyaLp00dUceopAen3TSdmBXDeGZdOtVbKBSM4P40Qdn4q37LPyKZEw6JUcWvn1yEz
-	 pFLo7hmYMZkSbBQn0dL0gA3Fp2s6s1MsQ9/K2GFxnQK/yjiXoKyDpmsAG60EvY8FoY
-	 nnJF2bV9RZ6gA==
-Date: Fri, 8 Mar 2024 18:22:32 +0100
+	b=dtDlJ6AJTV0HohsVWIa/BdsZ4tUcZ5RlOZUFwSV8B9JYNQgwfQgXneqKDPmCRxOhi
+	 4I4k4NziEPUCjyPt1FiY4D4ePPb144pZCdZku48qsHlz5D5bt1HnSgUb0wJwr1YxDF
+	 od4lXCx4tVaXSPqACZiKZwKXXmOMxChMZR+Jp1bB5kvFx60CXZBE+mgDRZa9XGgxm5
+	 Lhi11D7770Ypj/PmD4aeKmeqFYltqDCqOba2A+RfeihUAaXh7BF2tv6mUE3DnROdxJ
+	 xhSJh0xI+8YX0Axo5fo5dQcKQH/qR7dRPLvani5ohkdP1vrpmZ22V9JXUBNHb1DoAq
+	 El/mgKgHc6+8Q==
+Date: Fri, 8 Mar 2024 18:28:17 +0100
 From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org, kernel-team@android.com,
- iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>, Petr
+To: Will Deacon <will@kernel.org>
+Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
+ iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
  Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
  <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>, Michael Kelley
  <mhklinux@outlook.com>
 Subject: Re: [PATCH v6 6/6] swiotlb: Reinstate page-alignment for mappings
  >= PAGE_SIZE
-Message-ID: <20240308182232.2480a1f3@meshulam.tesarici.cz>
-In-Reply-To: <20240308165025.GA18550@lst.de>
+Message-ID: <20240308182817.7687329f@meshulam.tesarici.cz>
+In-Reply-To: <20240308152829.25754-7-will@kernel.org>
 References: <20240308152829.25754-1-will@kernel.org>
 	<20240308152829.25754-7-will@kernel.org>
-	<5c7c7407-5356-4e12-a648-ae695fe0d1cb@arm.com>
-	<20240308173816.5351ea58@meshulam.tesarici.cz>
-	<20240308165025.GA18550@lst.de>
 X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -57,23 +54,70 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, 8 Mar 2024 17:50:25 +0100
-Christoph Hellwig <hch@lst.de> wrote:
+On Fri,  8 Mar 2024 15:28:29 +0000
+Will Deacon <will@kernel.org> wrote:
 
-> On Fri, Mar 08, 2024 at 05:38:16PM +0100, Petr Tesa=C5=99=C3=ADk wrote:
-> > I thought we agreed that this stricter alignment is unnecessary:
-> >=20
-> >   https://lore.kernel.org/linux-iommu/20240305140833.GC3659@lst.de/
-> >=20
-> > But if everybody else wants to have it... =20
->=20
-> Let's get the fixes in with the existing documented alignment, and
-> then lift it in the next merge window with enough soaking time in
-> linux-next.
+> For swiotlb allocations >= PAGE_SIZE, the slab search historically
+> adjusted the stride to avoid checking unaligned slots. This had the
+> side-effect of aligning large mapping requests to PAGE_SIZE, but that
+> was broken by 0eee5ae10256 ("swiotlb: fix slot alignment checks").
+> 
+> Since this alignment could be relied upon drivers, reinstate PAGE_SIZE
+> alignment for swiotlb mappings >= PAGE_SIZE.
+> 
+> Reported-by: Michael Kelley <mhklinux@outlook.com>
+> Signed-off-by: Will Deacon <will@kernel.org>
+> 
+> ---
+>  kernel/dma/swiotlb.c | 18 +++++++++++-------
+>  1 file changed, 11 insertions(+), 7 deletions(-)
+> 
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index c381a7ed718f..c5851034523f 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -992,6 +992,17 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+>  	BUG_ON(!nslots);
+>  	BUG_ON(area_index >= pool->nareas);
+>  
+> +	/*
+> +	 * Historically, swiotlb allocations >= PAGE_SIZE were guaranteed to be
+> +	 * page-aligned in the absence of any other alignment requirements.
+> +	 * 'alloc_align_mask' was later introduced to specify the alignment
+> +	 * explicitly, however this is passed as zero for streaming mappings
+> +	 * and so we preserve the old behaviour there in case any drivers are
+> +	 * relying on it.
+> +	 */
+> +	if (!alloc_align_mask && !iotlb_align_mask && alloc_size >= PAGE_SIZE)
+> +		alloc_align_mask = PAGE_SIZE - 1;
+> +
 
-I agree. It make sense.
+This could be moved up the call chain to swiotlb_tbl_map_single(), but
+since there is already a plan to modify the call signatures for the
+next release, let's keep it here.
+
+Reviewed-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 
 Petr T
+
+>  	/*
+>  	 * Ensure that the allocation is at least slot-aligned and update
+>  	 * 'iotlb_align_mask' to ignore bits that will be preserved when
+> @@ -1006,13 +1017,6 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+>  	 */
+>  	stride = get_max_slots(max(alloc_align_mask, iotlb_align_mask));
+>  
+> -	/*
+> -	 * For allocations of PAGE_SIZE or larger only look for page aligned
+> -	 * allocations.
+> -	 */
+> -	if (alloc_size >= PAGE_SIZE)
+> -		stride = umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
+> -
+>  	spin_lock_irqsave(&area->lock, flags);
+>  	if (unlikely(nslots > pool->area_nslabs - area->used))
+>  		goto not_found;
+
