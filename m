@@ -1,121 +1,143 @@
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11olkn2099.outbound.protection.outlook.com [40.92.18.99])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0A2356473
-	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 19:05:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709924744; cv=none; b=GJI2lK9qT3/EmRtivolIelU8akkzxgMx6OZT9WsH4uGX54W3ZpSsTh4wwCIZDbcNuPSiyYo0+5kXKNO+7WqjNL5KsV/wcLdESm33hgm5P+yzrrrAI8m7GviVtlEzU+4zEdoTX8Xy2ghmRiP+PC7rNPgyLXvn199udYIyd13yc5o=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709924744; c=relaxed/simple;
-	bh=ILaKu4J8rSQrN8d6WmZQitsoeFgh+zPlpkPgOdLz644=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rVkxl/SYlyv0dQStYjIlN5ekTVALwVbc+d5lYsX9Ee9clEJfVWajYXf/gZ+iaSiJsRkqRTGc97iKOyAznp1g5sJrZMBYcI9YtBDlWWlOYJ0ZYwFGm9H9Nlqrp4syruh1sZiME2sEKN68aEV5bGzsFqPtwjlfR5YRpXOkCc3l0xc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=XcMbwQlV; arc=none smtp.client-ip=209.85.160.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57F7D17745
+	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 19:21:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.18.99
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1709925688; cv=fail; b=arBSkWu65IcRNI6fkDYeVZ6U3EOjm9xCzmTx5eW3vOGtGdnhTh/P54JiwhZxE9u3HQtLtI16ZYsV/WvizRrfEI4K0KFiFeM96wa2/0hmYiAtqMmaUaO/a+oTsTREbWiIyB/fQCPz09BIYZjJEnzgbKzESXf/5SeKHE3N65dRrEA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1709925688; c=relaxed/simple;
+	bh=GIj8puZjH5ZQMYAtSNzmkHIH1Dav9McpY0Jik7yBgEo=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=IIAHfyeMO3UnV2FWzjHKiTESp1vl02eluzYZcVhT3Q3iMGmK9ZvvEtEdlcp+hhwLO5aL2UbTg+njes0+ez3vbTWWm+pUHDA0EQ4zT5VANsefH3NPkDKIelEEAdDj1aWQhPxDIQha7o5aCoL+qAtx3PFSqeNZtPHsHfJD/A2j5EM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=ogb4CWqH; arc=fail smtp.client-ip=40.92.18.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="XcMbwQlV"
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-2210a266118so844154fac.1
-        for <iommu@lists.linux.dev>; Fri, 08 Mar 2024 11:05:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1709924740; x=1710529540; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7qMRR7sLkZVUANHdEsXoEoSh+RPGbp+63DXPrOksx9o=;
-        b=XcMbwQlViVDgPHGwU0y8z3QC7griIvJa4m3Vmk9jhaFCjzPikfWTDPj8+Ku2bFNTYV
-         40yhhEFX5YztRJ/uIfyi01Kk/rHDhvHXTwGkxbFcXVvngekgmDMKuBkU7r1vHMDK7UqV
-         QjQr3CWJb9RPolZDwCYRKw3/NNZIHgOqRj3kyxPAr9j7OH2jnCCe40LCQFp2UNYHF3KL
-         MSenvD+SEQlR1LHXLKsAIvwct7ejgXOdJdoxrVXvqk/G3QmbLmmQpcDt6dvb2deUNkKj
-         qGpsc8jCw3YuwPZpP3HgYdGQSVHW1oURmQMgKAu7hRSuQ6I7RRH5SM5a1TtdVKhiFdcp
-         Ac6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709924740; x=1710529540;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7qMRR7sLkZVUANHdEsXoEoSh+RPGbp+63DXPrOksx9o=;
-        b=ew2UncvtWjpM+3qMNFCzU0X8IRTIN1zrcjKIzZ2ULRsRDPkifLj8omC8LnYRTyhIK7
-         4J6Ow2qnXOPS2AZvNcCLupTggXxab2WtuEag/iHuiinaK06DFFzfFnOlNgYemEk7h+Ce
-         FcByzhvyL1dWod2fbG1IX5/dV25SoaJwM6ppVu2VHUzNcr9o+xSLBEyrlq21g7xQh2Y3
-         cuvz+NjVuvCQ17rgdSfFi5Pb8hIdmO7FOYQSG4upJ3spdLemJIvj7AVh3VX9ttIm3ttk
-         mjTsqwVJ/SAU+dZ8q2InFkFgTdX/0IEQ+l8hzdQ8eY9n04k2Wd2ZgKMWRCTt7fNoO+0X
-         AUzA==
-X-Forwarded-Encrypted: i=1; AJvYcCXKtdGk+CPe6lmGLgpKD3zwhVSVzZUe081crQc8MVXn6FmKyYXc1tjbWpvzOz1MoftV+zbW7pz6eeGOD7NUyfJB421VcZ0=
-X-Gm-Message-State: AOJu0Yxz4OIQ0gEATLK/RzsNQbYAxXscJxBkxdAAYnMMDpWmZvkldefs
-	cxUw4ZkkZB4YpE1OA1sIAS8MhQD0tA4v6+zgFurfqP5YaUivz5GkMfPUXnBuKsc=
-X-Google-Smtp-Source: AGHT+IFDoglDB8jr4C0bRLZGs90q16mK5wPOyxs6caLbupPbYv27tZdKsh1cc0oiSg/2ojAvVJQeAA==
-X-Received: by 2002:a05:6870:844f:b0:220:fc89:db73 with SMTP id n15-20020a056870844f00b00220fc89db73mr42008oak.0.1709924740712;
-        Fri, 08 Mar 2024 11:05:40 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id la12-20020a056871410c00b00221847430e2sm1485oab.30.2024.03.08.11.05.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Mar 2024 11:05:40 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rifXH-007kGb-7w;
-	Fri, 08 Mar 2024 15:05:39 -0400
-Date: Fri, 8 Mar 2024 15:05:39 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 5/8] iommufd: Associate fault object with
- iommufd_hw_pgtable
-Message-ID: <20240308190539.GY9225@ziepe.ca>
-References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
- <20240122073903.24406-6-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="ogb4CWqH"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=glvh5uByjZvLO1C8rgCy9yFfyIAn/xhWotzAUXchNOy15lel3aZCBA9I0wTrdEWTt748r59WKEY5fd5z5l5ywmQE2hPq0KnWARrCmnL5iN2hfr/7lYflR00c7bxYtZWIWg6RK05Xla1xLctg8272R/POZhwd2SWZNwGc5BbPr9m8uXZHWTR0oHolZytVxK0JofbCYoUp9GjVdO93LoGGt8mD8NpHISfhrfrpPzmhL8LkuP53f1Sx86IQ6kc+3AKpzlMH6Xh9aQTGbaSNDcr7YyKGBX03ubXKZ8qPIBIynXsrFKlpSdJpODZ+WK837MVyysFLr33o5f4DhxL3wRqe9w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=va/VF07J3SNDOg6Kz5ztF/VnZWzioFSWPrAA/Dvpvb8=;
+ b=LFf0cGraFwzGZQeePNb39TXWDVCkGqLn/fRMjiUayeAt0++4Xl0VhjuzyXTK28TFX9shoiKEv/1a4spgdsOMbZ62kHyNbxgzdV2ol4qvzbePumD+YYDqnNpzUIfpuo36+BkkBKsoxCO/KAGCLEEmrDxPHTqBl1EH155sXcS5y3RfADqFbOHi0b6k+1P8Le1orPesvv1RmWTO2HcaqqiP0qE8uehTeP9pIArV03fFcHBSKhwJ7/gdTX4j3XxmjXtcJhXioMd0Rmp8SNzxR7Whx94B7IeDHRqFXlsPGxV40hTLEUvIcKVd3KxdF2z5FrHvVP42QMbS2ZkwX/m4crFA+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=va/VF07J3SNDOg6Kz5ztF/VnZWzioFSWPrAA/Dvpvb8=;
+ b=ogb4CWqHOwlgXUo2J1ETGUCe8NDMseccUt2O4VQ9BOO5nrODYZRKTBHiDmZLM5MW3ifFPTuwfi9f4jcO/Xubz/ZIdNohquoDLlBT0e/phGsB0t/B0k3kODTvSesLBVgQkZUyUG4jHFu+m55dVFA+SgutZKprtQZgTRSJvfzm4KwLAGq3Gjwf0wD7A+wASyVC2jSc1xwH4zSZqCUUTosFquqqNljtINtwx3RDyOwIhyMvlcKOWZPNuFs0jhrmXM6FOtAHa/hWdNs08tTDKdStr/iiWrkmcrU7rMO665dJSUGrYxqYJ9VxOM6AtbYkXgpmqOtFwW7s6om+cEZLHsTSpg==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by DS0PR02MB10249.namprd02.prod.outlook.com (2603:10b6:8:1a1::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.29; Fri, 8 Mar
+ 2024 19:21:24 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::67a9:f3c0:f57b:86dd]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::67a9:f3c0:f57b:86dd%5]) with mapi id 15.20.7362.024; Fri, 8 Mar 2024
+ 19:21:24 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Will Deacon <will@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>
+CC: "kernel-team@android.com" <kernel-team@android.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Christoph Hellwig
+	<hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+	<robin.murphy@arm.com>, Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Dexuan Cui <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
+Subject: RE: [PATCH v6 0/6] Fix double allocation in swiotlb_alloc()
+Thread-Topic: [PATCH v6 0/6] Fix double allocation in swiotlb_alloc()
+Thread-Index: AQHacW1No1NKp7IpLU2beBr9mF1JxbEuM3Zg
+Date: Fri, 8 Mar 2024 19:21:23 +0000
+Message-ID:
+ <SN6PR02MB4157A1A03F2F1EB5A006AF27D4272@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240308152829.25754-1-will@kernel.org>
+In-Reply-To: <20240308152829.25754-1-will@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-tmn: [gyhjEOirfm862V8uAT4Bku19e4wY6stJ]
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|DS0PR02MB10249:EE_
+x-ms-office365-filtering-correlation-id: 19fecae1-0aae-4e7c-3a05-08dc3fa4f18c
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ SF85ui1505WmAspij3lD2maCwnxhnlFnQ57t1Hgn1FSzYCFpPe4g4Xq2KRMMxmVD4dL1nlpp4XqrVEbg/A60o7SznLV1rryrprWHBgDRbXpAj6XWp3SMIsvJz3GtuJupkysXemRt8zjhWUMK5QSYi4SCIHwkFydB11mDnl8XsPtLtrN/8fZuICckVcroRXgvh4vYhawVSWtoUNtv+NGVVBN4cydiUTRXq/vFZf74NWSCTG9MRv3ZokdbfP5rfAB72MoeIsG7oj+KBQMRPr8aLVJi2cuhVHdpMdN2MgoLTVh5SeswGZJR/uALPVlT8eYzWzBI4o/adsjO0xifRUYRcPSnB619nbK1DCoySG/rdx9iLthS46bqnTYlD+x7T7DpZa4kzFZYFwqSwteR58XWIAsoLDkhqVdPpvDWpKQKIEihqoB9rXrecKsUPc6eKT0msME7jUDyl2cm4iEqV19OzIWldtoZz3qUyVHcTEvyhaYpQr2uox8IV1rVUDtKMPnwh0M8lRhmni4s3jOuwHFnOJsrrlbUH2APS2Jw7F1VmYnJJGZ/aC60fN3r6Kg+UFYQ
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?s/SHTnRy90TtaSioQb+IWg/+/cF7cUqbYQ2EIxoxiuvcuhRNkbIBlRnRzq01?=
+ =?us-ascii?Q?XWJIRKxUDUeiGRHXaXIOnEYTCBGlxFxburhcf60wpujk6Wx46RuS4ByOsY/b?=
+ =?us-ascii?Q?iHWXAOMmbyA+uU8EXUQ4nPcxNX/otdfOlkR3jJGG23CbjYf0KH2s5gJlIpWJ?=
+ =?us-ascii?Q?T58SGPNIFVpavDtvuIu7JZOOMBlI9jIBvALFRknVIDKEw6IyEMoCZB+uqJXU?=
+ =?us-ascii?Q?Vn5uVy1axC4VX/4Dne/veYnr/y9stqjpq8fzzVSQRGiPsV5hRIYXPYpSOwVT?=
+ =?us-ascii?Q?x2pnseeTnZRy8OO6LIqfU8hh4FT6lr6+LP8YNhXj30TwhG5/NVhzbJ0mdRW4?=
+ =?us-ascii?Q?gX3lO1Q8XYDdddmMtyxu6+gEXZ2B2uOx3SDGJjb+6SJQG69rjPvxjBnGQSfu?=
+ =?us-ascii?Q?yJaRCDeioMjSRhuVPJKv1ApOgGyanBR4RuKL4vyY1cH8zGs4CMxDFv/o14xY?=
+ =?us-ascii?Q?m83yGjIH1ljq5Wn5eybVvIbycBvZpqQ7yGsTjRX7xhxNhVPT/G7k9DEklmEY?=
+ =?us-ascii?Q?yHL65JHYU2legR6qVC/jsDZwank2KaX2bSs1kpIro2TX7luj5jk8LtFo5YiY?=
+ =?us-ascii?Q?PcnaENbaDc4tVntTdJdI+fdyhHgjukC6Pb+oCv24hOCiyD10LI+MOMa4+eVK?=
+ =?us-ascii?Q?j9g2UG+Fs/sJ9JMbrPfapD0lyFyKlwFpfvGSk5nX4bAOLlWx5h/vhonpC4F0?=
+ =?us-ascii?Q?qTSL5n1JtbgA9wxnmjsAKtlKFD7b83axEz96wxsgsmNovz3xy7NWSBLEyjX1?=
+ =?us-ascii?Q?MjL8H8iSUwe48euvmVUVZC9pQyviUsjroahCixk7allzX1o9ej96XLYuN3Gc?=
+ =?us-ascii?Q?29OjXxzl4ET+ucFcosK5cqGx5epW5Q6gR9pquzbL4RSrKSEFRSi7MSBNdfp/?=
+ =?us-ascii?Q?9K0bukGdg1d6ZmAhgQVvE/veyjUj2g4m2olxluVY3yBWoHiqfGQfQ+reRdKP?=
+ =?us-ascii?Q?Dr2O0mfF9S4pwwNCQPvvInI/qjzkriM33bBSljL6LSSuGgVP4nelySdjaC0L?=
+ =?us-ascii?Q?LZMlf5770FcHuecyZslLuYnGhbtV1VllMryqf3FELF6r/J7WnIqzEyx4sN38?=
+ =?us-ascii?Q?k6heXbQ9l4TNSWtbQLAY5b4g1E78Q5Skq0Ks3H7EBXU2tZnqll9O4TSuS+cO?=
+ =?us-ascii?Q?+HDDfl2PcpIgyVln43dJLM7zacErRyKbM9LojyW+qu/Sjj0N/B6ZP6OxT1JD?=
+ =?us-ascii?Q?l6Ya7IYO/VAY/77S1Df8VvMqoO6CBxxmoYnavg=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240122073903.24406-6-baolu.lu@linux.intel.com>
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 19fecae1-0aae-4e7c-3a05-08dc3fa4f18c
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Mar 2024 19:21:23.9152
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR02MB10249
 
-On Mon, Jan 22, 2024 at 03:39:00PM +0800, Lu Baolu wrote:
+From: Will Deacon <will@kernel.org> Sent: Friday, March 8, 2024 7:28 AM
+>=20
 
-> @@ -411,6 +414,8 @@ enum iommu_hwpt_data_type {
->   * @__reserved: Must be 0
->   * @data_type: One of enum iommu_hwpt_data_type
->   * @data_len: Length of the type specific data
-> + * @fault_id: The ID of IOMMUFD_FAULT object. Valid only if flags field of
-> + *            IOMMU_HWPT_FAULT_ID_VALID is set.
->   * @data_uptr: User pointer to the type specific data
->   *
->   * Explicitly allocate a hardware page table object. This is the same object
-> @@ -441,6 +446,7 @@ struct iommu_hwpt_alloc {
->  	__u32 __reserved;
->  	__u32 data_type;
->  	__u32 data_len;
-> +	__u32 fault_id;
->  	__aligned_u64 data_uptr;
->  };
+[snip]
 
-?? We can't add fault_id in the middle of the struct??
+>=20
+> Changes since v5 include:
+>=20
+>   - Rework the final patch to preserve page-alignment for streaming
+>     requests without a DMA alignment mask
+>=20
+>   - Added Reviewed-by tags from Michael
+>=20
+> Cheers,
+>=20
+> Will
+>=20
 
-> +	if (cmd->flags & IOMMU_HWPT_FAULT_ID_VALID) {
-> +		struct iommufd_fault *fault;
-> +
-> +		fault = iommufd_get_fault(ucmd, cmd->fault_id);
-> +		if (IS_ERR(fault)) {
-> +			rc = PTR_ERR(fault);
-> +			goto out_hwpt;
-> +		}
-> +		hwpt->fault = fault;
-> +		hwpt->domain->iopf_handler = iommufd_fault_iopf_handler;
-> +		hwpt->domain->fault_data = hwpt;
-> +		hwpt->fault_capable = true;
+I've tested the full v6 of this series on an ARM64 VM in the Azure
+public cloud with 64K page size, and swiotlb=3Dforce on the kernel
+boot line.  The path exercised is the DMA Direct path on a synthetic
+SCSI disk device with min_align_mask =3D 0xFFF.  I have a standalone
+user-space test program using writev() to generate direct disk
+I/Os with a variety of memory buffer alignments and physically
+contiguous extents.  It's designed to test the paths through the
+iovec level, scatter/gather lists, and the driver DMA descriptors
+to make sure all is working correctly.
 
-I wonder if there should be an iommu API to make a domain fault
-capable?
+Prior to this patch series, some tests were failing with 64K page
+size when swiotlb=3Dforce, but they are all working now.
 
-Jason
+Tested-by: Michael Kelley <mhklinux@outlook.com>
