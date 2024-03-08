@@ -1,61 +1,61 @@
-Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF3885D900
-	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 20:37:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41CB05D900
+	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 20:37:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709930239; cv=none; b=ofj9zn2i16EjTWay7JsXlGHZ+7+8yDYpmYQl0NT6FaG4Vq1PD2kGskuo+MThgrX7njjJrZJCOf/suNU3tBTRfPPuKn0xEFd3tlopyKbTb7rJBpxsX0JQdaL4Hk8tDMWqGk6dz/l5KVrKz3JbaGtvBV6n3BFNkVHi5B71rFqTJQw=
+	t=1709930260; cv=none; b=m9h0wnapf86AP9SGOxyirw0fLKJODEkdNAC68Iw1m6inN9y0zFOUupka5nI5s4VOA3PTOibJ2H9yVukcvB2BxcgeEeG7fXlYCz8FNmoTkH1zt7OPEK+Moy8CZehPmt31xDLjhZjg3cmrIKj2tWjWTY7NWcdENgCREIH3YknsBBU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709930239; c=relaxed/simple;
-	bh=Bi3P4E1LMVNI9ICHZizJgPWFi1cAG6MJcwmbCUE+tB0=;
+	s=arc-20240116; t=1709930260; c=relaxed/simple;
+	bh=QVuJYBg7eAXpV6Ijtmm49xelHY48E81cS9xdFZ2y8ww=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DN/wjz0x2wGkcFHuiskkrK6rcFxul0cFgO5x0a2ROd0OLraN0tEKQLgCERytDmqUvzXdYXp1+oi65AO+TYoQT3sgLpZ2iUiHH+0BDuCAdVCzTIidsyj3zMIQcoNfgamYGKZ0A144Yw6Q2LKnkU4m7ABkCz9v/fdqhTLk8ZKzEQY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=gHbAOme3; arc=none smtp.client-ip=209.85.161.45
+	 Content-Type:Content-Disposition:In-Reply-To; b=oLuRbDJwT58YmY+/NcT0DiOOmV16Noo6cvMY/+YD8uB7EWqKimRuqAcrl7JEGTBMbIF6laLqq9QSjxOcoS1Ur+cp2QoDhkpeCN5ajinI2vG51Iemx9Xtoy06QlrlCNfWVpvsrl4kaC5f2pkWORhdrL9VTNvYThE34VWtHqY2U30=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=BhTViLWG; arc=none smtp.client-ip=209.85.167.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="gHbAOme3"
-Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-5a105e55bccso1222248eaf.1
-        for <iommu@lists.linux.dev>; Fri, 08 Mar 2024 12:37:17 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="BhTViLWG"
+Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-3bd72353d9fso1381311b6e.3
+        for <iommu@lists.linux.dev>; Fri, 08 Mar 2024 12:37:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1709930237; x=1710535037; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1709930258; x=1710535058; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=jjWpdrEe1CBSB6fUsA969odLMNfAGSgF6jvNlFE06WQ=;
-        b=gHbAOme37lpL55fqrEjCieY/2qWM3OjPHkmnquaMIeqsrTevO3bt/hXQqlIycKtoDG
-         lPRjx39KKs/sddQcTL5AEoCuLgSMGMZPmCGveCblUrqoaIk6b1GN0aC80KDeEkJcuH5T
-         VoN8/8vcC2OzYAdrCxKK2LEv2wjKlK615iUgZ5PLMPndB0tDOxp/hxxDasNOFsTSo8XC
-         PZdX+AC06MyBTgXrVEyrkVFCXDsgEs7jQDpl2BZlvUimssHErE6EHISTvPDWIYY9eZyU
-         xTjTPXxyDsI8K1knX0/Hu/yBt8gviYZaKgORc30a8tRetea9EsA4et0zb5qTfpp9Kvd+
-         y66Q==
+        bh=8AtBhhUJsX7iCjuz60QlnI9oeTh8ox4hiuWAL+2qFxI=;
+        b=BhTViLWGWF2y/YO4KbrDOksJvCCtaU6dYbLzvBq4bPwaytoHBlXpwGwQ9inDNZk9rT
+         j08CyMIdWGoFN96lHTLRKfGe5yna8LTHTTrql2pQJEVY5CwvdZmK/dU7znSn5Lgiftq7
+         IcVLQO70Zz0b/oc1wmAoacbPj892RtuRlifdXsTkYX9Y9kZXTZje5kv/oh6dH0dtSvwV
+         dMsL6nMnU5O5vMmtyrVnUwlN+zHATztoy1TceNBYk23vyykv00W2cU7Px+mdiePUcH56
+         H40w2QqDgQFLSel1eMi7xSLCbOSHmoaomXV29f3zcQcjvIdT/e2r5Ea3GxZpiB7uPVes
+         XerA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709930237; x=1710535037;
+        d=1e100.net; s=20230601; t=1709930258; x=1710535058;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=jjWpdrEe1CBSB6fUsA969odLMNfAGSgF6jvNlFE06WQ=;
-        b=kftZeiachlZ7+Iru3EGAMjRvDPtTMsL/aT8xvnNMHMAbft68eRYX1L+7K3LYCLZRlM
-         WkK4rLDWk//V2JwTTbDZ9ysmKEJuPGq6zMOWpAwNcKkA4SVUK+Impz4j+8Y9sYPduvPI
-         LjIue5VAqtkm3XEbih9MZD/J0tqjfZdmm4Hv/Ggyitsdb4fsEXv3WSNUGknHadLUWBjd
-         +5UM7zX1xxz0y3DPmS3qAmd7sHh6umUjvjFagtpXmWsyZYiVAwLPAXhmdC8BHuiBjSOJ
-         +mtKJMnfViGGGHfAxuGc/ykYz3V1zmG/i7M4sLo4MVJTH80Sijp9V3tkAKWmy8thPC/6
-         gn0g==
-X-Forwarded-Encrypted: i=1; AJvYcCVKA2AwQdP6jEBYVNNXemOxWtg763g0YgMq1Kx4iuatdie+Kf0tTOvAIfIjRq5q6GW7kjiPMX1uAHKm1JVWO2CYdw1T7Zo=
-X-Gm-Message-State: AOJu0YzVWSAO53cmiYiYvY47iL3NEH5bYNBaWnKTZbSkIhvvwjBQ0pHK
-	VBa1Va4/g+jnvtxhweCg4EteoUddmd55m+iqk81tpWM+Q2yoLW+YFaLojBnkhdg=
-X-Google-Smtp-Source: AGHT+IEqmZ/bPScFDErmd2Bdge5ElcWmdcXhPkDOr+1siQATWKStEMzgbLHSA9vyfoc0LpJeGpIgyw==
-X-Received: by 2002:a4a:2b11:0:b0:5a1:25fc:7be0 with SMTP id i17-20020a4a2b11000000b005a125fc7be0mr413338ooa.3.1709930236902;
-        Fri, 08 Mar 2024 12:37:16 -0800 (PST)
+        bh=8AtBhhUJsX7iCjuz60QlnI9oeTh8ox4hiuWAL+2qFxI=;
+        b=C7Q5nc9s+GjthOBJ/sKPOgbcfynRM63zP9NYZlm0DQ2LQUJTqw4EnxTMZSKZU2Mw9k
+         2d00HOjhzy+Wxk0qk32k8KSXm2o0TqmciPgVVguUZ+HpyEBjfC41r/568wA7qWxn8yJf
+         ca9j/3iibfnoi+skhcoQkccdzIi6qeEUdo7aHr8LwlBHEknumsUb0eEtbkjL0rmqkBUk
+         SWrBOkfLEBjTf+toTHEdsaguSLR0qC5q6Pu4bUReXZrb+t9ljjnDqF7EPgLEJew7zr70
+         2UhSCILEtjJEXm05fjB7Xx182n/Hk1+ZdSPmuJMrRooQArSJfrRqCELuOQH2erIJN3XI
+         3jIA==
+X-Forwarded-Encrypted: i=1; AJvYcCXcKSof1EFZ2cW+rGW0v0ZogC5g+ETl8xDVx0b4OhMfngZf6xBkQ2+KArwJyFr+kc8HGpTrmGaefAF7e0ior0+1uQ61SVI=
+X-Gm-Message-State: AOJu0YydqXQdsJrepCmUpKKSVfyIQrCOJeya4QDkA5niy00w285YsIkH
+	p6QnBcF3r4pivPvPjvYTidVmmo+I41RNUzGHjUja2CX9VtWjw+U3f6PpK8EyQ+A=
+X-Google-Smtp-Source: AGHT+IFbgpl0pB6g2XaoyrWZZStUAXJBL7gQEaHjPXP/ruZgANeVKSb/3hxLcl0YhzvyQSM42+vm+A==
+X-Received: by 2002:a05:6870:7a0d:b0:21f:ab17:44c3 with SMTP id hf13-20020a0568707a0d00b0021fab1744c3mr272908oab.24.1709930258434;
+        Fri, 08 Mar 2024 12:37:38 -0800 (PST)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id bi3-20020a05682008c300b005a0859a4a01sm19059oob.36.2024.03.08.12.37.16
+        by smtp.gmail.com with ESMTPSA id gu19-20020a056870ab1300b0022154dd4eb0sm47251oab.4.2024.03.08.12.37.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Mar 2024 12:37:16 -0800 (PST)
+        Fri, 08 Mar 2024 12:37:38 -0800 (PST)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rigxv-007xzf-Er;
-	Fri, 08 Mar 2024 16:37:15 -0400
-Date: Fri, 8 Mar 2024 16:37:15 -0400
+	id 1rigyH-007y3a-Aw;
+	Fri, 08 Mar 2024 16:37:37 -0400
+Date: Fri, 8 Mar 2024 16:37:37 -0400
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
@@ -84,11 +84,12 @@ Cc: Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
 	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 6/7] iommu/dma: Centralise iommu_setup_dma_ops()
-Message-ID: <20240308203715.GA9225@ziepe.ca>
+	devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>,
+	Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v3 7/7] dma-mapping: Simplify arch_setup_dma_ops()
+Message-ID: <20240308203737.GB9225@ziepe.ca>
 References: <cover.1707493264.git.robin.murphy@arm.com>
- <202fcca3269201bc9c4a8198253f195433d0c4ff.1707493264.git.robin.murphy@arm.com>
+ <f0ea76846c89a65dfe42933d78d770004bb3de01.1707493264.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -97,46 +98,30 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <202fcca3269201bc9c4a8198253f195433d0c4ff.1707493264.git.robin.murphy@arm.com>
+In-Reply-To: <f0ea76846c89a65dfe42933d78d770004bb3de01.1707493264.git.robin.murphy@arm.com>
 
-On Fri, Feb 09, 2024 at 04:50:03PM +0000, Robin Murphy wrote:
-> It's somewhat hard to see, but arm64's arch_setup_dma_ops() should only
-> ever call iommu_setup_dma_ops() after a successful iommu_probe_device(),
-> which means there should be no harm in achieving the same order of
-> operations by running it off the back of iommu_probe_device() itself.
-> This then puts it in line with the x86 and s390 .probe_finalize bodges,
-> letting us pull it all into the main flow properly. As a bonus this lets
-> us fold in and de-scope the PCI workaround setup as well.
+On Fri, Feb 09, 2024 at 04:50:04PM +0000, Robin Murphy wrote:
+> The dma_base, size and iommu arguments are only used by ARM, and can
+> now easily be deduced from the device itself, so there's no need to pass
+> them through the callchain as well.
 > 
-> At this point we can also then pull the call up inside the group mutex,
-> and avoid having to think about whether iommu_group_store_type() could
-> theoretically race and free the domain if iommu_setup_dma_ops() ran just
-> *before* iommu_device_use_default_domain() claims it... Furthermore we
-> replace one .probe_finalize call completely, since the only remaining
-> implementations are now one which only needs to run once for the initial
-> boot-time probe, and two which themselves render that path unreachable.
-> 
-> This leaves us a big step closer to realistically being able to unpick
-> the variety of different things that iommu_setup_dma_ops() has been
-> muddling together, and further streamline iommu-dma into core API flows
-> in future.
-> 
+> Acked-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
 > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
-> v2: Shuffle around to make sure the iommu_group_do_probe_finalize() case
->     is covered as well, with bonus side-effects as above.
-> v3: *Really* do that, remembering the other two probe_finalize sites too.
+> v2: Make sure the ARM changes actually build (oops...)
 > ---
->  arch/arm64/mm/dma-mapping.c  |  2 --
->  drivers/iommu/amd/iommu.c    |  8 --------
->  drivers/iommu/dma-iommu.c    | 18 ++++++------------
->  drivers/iommu/dma-iommu.h    | 14 ++++++--------
->  drivers/iommu/intel/iommu.c  |  7 -------
->  drivers/iommu/iommu.c        | 20 +++++++-------------
->  drivers/iommu/s390-iommu.c   |  6 ------
->  drivers/iommu/virtio-iommu.c | 10 ----------
->  include/linux/iommu.h        |  7 -------
->  9 files changed, 19 insertions(+), 73 deletions(-)
+>  arch/arc/mm/dma.c               |  3 +--
+>  arch/arm/mm/dma-mapping-nommu.c |  3 +--
+>  arch/arm/mm/dma-mapping.c       | 16 +++++++++-------
+>  arch/arm64/mm/dma-mapping.c     |  3 +--
+>  arch/mips/mm/dma-noncoherent.c  |  3 +--
+>  arch/riscv/mm/dma-noncoherent.c |  3 +--
+>  drivers/acpi/scan.c             |  7 +------
+>  drivers/hv/hv_common.c          |  6 +-----
+>  drivers/of/device.c             |  4 +---
+>  include/linux/dma-map-ops.h     |  6 ++----
+>  10 files changed, 19 insertions(+), 35 deletions(-)
 
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
