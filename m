@@ -1,330 +1,183 @@
-Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A78D58103
-	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 18:03:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F41F636D
+	for <iommu@lists.linux.dev>; Fri,  8 Mar 2024 18:08:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1709921017; cv=none; b=HpwbMA2fqfqrdFqt/Uk6uZH6Zvv/dBVmucNUE55aaZlwrUs2DrI7RqnlQdWcl3ykzkQot+eWlly+DbP8gNnShz3wnnL1U1kG/VaP6z5KlR9iTZJjSkx4RRjGO6Kx+/HN5uurdG0WdknY4oUClNgqvX0wZYqhi4mSkE/vn56TqiU=
+	t=1709921293; cv=none; b=gTzhV4zr3WfzP6LbiZT6iFRWoMs9OvqududH1wCijYCy7Y11TCdg0s5MJX7ZKW9TKcrFI3vw7z3xiWRsJDaEvIwiILLjo+khhmzZzxMtOFVjejY2UkFvP++s0Y0aA3csOo9i1FiS3aL3zY/DbGPEs0/b3n+REy0419QVKlUSN7E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1709921017; c=relaxed/simple;
-	bh=3LVj4/dvr7RiYytJk6zXL+ousuVGoUmlE+T+FQANLJs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MQIXfdBidJJmm0LOT9/9PJUA597INZAmtE1ZkZNNCmFHvzwdX1+YKCDhQUY28Vo8BuaoxxTW8uCDLnQP90pIhs8gFTbb0+6i7a0qCAcQEaxVBrgZqJjIXruf/5o2ugkjGGaDnLECOJxD/nHh7QJug8yuDyvw40b6K1ztdZ2Dojs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=mEN6yjLS; arc=none smtp.client-ip=209.85.160.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1709921293; c=relaxed/simple;
+	bh=llig45hej0d2HciGt7hMF4l08MvpOtnxKAgR61xjClI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=KJdPHugsNqxu9oNkkb8NXdKetfUHn3ZcbkNAQde66OLLv1UguJIr5eJIUSU0nn7X8dOASSP2X4ohSGKDrZXK9WzvPNmGcmZK+1uvL05/XImH995I38bdhOHFbRbXn+jXaIF/g9UHnAlXFXJi0b7aF/Mml11GBUeQtLGecPXJxkc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=F3AtGLuO; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="mEN6yjLS"
-Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-21e6be74db4so1439034fac.2
-        for <iommu@lists.linux.dev>; Fri, 08 Mar 2024 10:03:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1709921014; x=1710525814; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=oZzrM6BbRqgMpeBTx8YDf05PpuvDd3fYcXNtVCqPsiw=;
-        b=mEN6yjLSeVO+lsiNmtn6MTMICuTOpOArNK5/uglj0dG7X6kqCnS/yfnmSGkLf2uM+M
-         OUsotptluOeQQWlYFAEFWYrfWS2GJ7UDowSrfGIW/dEZgl9XpBt6lpny/Gb0A8/vbyJt
-         MwLy+Q1/bqgzkxo/lPVbfZYfXJt5ZklvoquKqQ+RA/CoRyDnciEqlappC/xeLY4aUB7g
-         Wu7RpHcn+9jeykuZh2IlfoMZnXZYBj+dN+AVeGTXSPwLm2Th6kAgbh5RCOfA57bibBT9
-         Yygha559/v3jtrrUTk3DaOsHtEXvklKFiynjZBR6w1glvwiqx37O76+iFgvXbpG13NUB
-         RZlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1709921014; x=1710525814;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=oZzrM6BbRqgMpeBTx8YDf05PpuvDd3fYcXNtVCqPsiw=;
-        b=qqjYli9stOQ/NC83csYOvzPgZW5Jk3nQQ7UCwsBBrf0+coyJmBZwlmGnEvMLH1kKwB
-         +ITzdp5Tr9i+/BIvg0ofC8wN0nZsWBBsVBXUSzQpc4Cc211pUyq0gFxiOkekKcS4FhjX
-         L7FHg3LqZNIFhDjjgeKO6FGoCd6hNnt6kjRCX4QBc0HjnJxtYphwZ4k71zFrYbUI2gq8
-         KqnTuGplNfcfeJyeRkd30qFndRLu9Eb1wMUqTtCBusRSGUmKrXdGpYzylcaJxgG1LflS
-         zMTDCSeYswRGTtCqmbqM8y5Mo8ICALz0hFGI/1r+WjMdIg4q1wa6/9DQ2PDo5jOwGhzj
-         JfDg==
-X-Forwarded-Encrypted: i=1; AJvYcCVXVKzZ0yF4BnMyu15LWPdDTMQrhbZtiUPR+Sb2aXUoRVtZMWTZygNSnHkn2Iz/VF4oJT1Rq1zpigzKNWiTjQ/SMOhPtJU=
-X-Gm-Message-State: AOJu0YyOakmlTynejP8Hc6dMRmmtAo0BX0tTKBWRhS2yibGyC/VhefZz
-	/YNzgVFXO7HQJwr72AHKrDqWfmqs21ICwM6XIBk70Y8HzwlwHKfPCmtRQGxA550=
-X-Google-Smtp-Source: AGHT+IF7pWjtuz8Xb3cQKQtapSRXtT6lbKWY4ydmQ4LB9QhAYAFvk6sa+sebdrqQhb+hD17nUWsTIA==
-X-Received: by 2002:a05:6870:171a:b0:21e:c3a4:8dd9 with SMTP id h26-20020a056870171a00b0021ec3a48dd9mr3833215oae.10.1709921014517;
-        Fri, 08 Mar 2024 10:03:34 -0800 (PST)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id oo24-20020a0568715a9800b0022138173901sm1968607oac.45.2024.03.08.10.03.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Mar 2024 10:03:34 -0800 (PST)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rieZA-007b0V-V9;
-	Fri, 08 Mar 2024 14:03:32 -0400
-Date: Fri, 8 Mar 2024 14:03:32 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/8] iommufd: Add iommufd fault object
-Message-ID: <20240308180332.GX9225@ziepe.ca>
-References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
- <20240122073903.24406-5-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="F3AtGLuO"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id CC2E01CC3EA;
+	Fri,  8 Mar 2024 19:08:07 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1709921288; bh=/Ywz2SvhfWP7fD0h2M7iW5nTRwOnfNV4nPJrd8EunkY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=F3AtGLuOs9vhJoAWtUwNG8iK63GnZi1kWput0MZSWylkNoypBga/iY0OhNynwFxKI
+	 zOIIRjAD0SvlcLe+JJZJlClGyiHmTDf+B43OpkogWJTmlvA87f9T22//oN9v0FwgTY
+	 1lhf8RrV2IkcsRumf/sSXXTgFPuwPjuCjFUUiO4siF+iPED1/lAPtb1sIeVtXq6FQ8
+	 p7ywLKUD8ROMQWcOnwJU6rWTRjn2VSEXkVdpG2HlC05xI0NHi9cPOWC57uryjUtIeq
+	 V83SfX/gxn8cx+wzMfCrqKdmiH+sRQd1jCeybYUxw/m1ppddSpAMzQ0oFERWG5pJnq
+	 6dRFv68tPlZcQ==
+Date: Fri, 8 Mar 2024 19:08:06 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ kernel-team@android.com, iommu@lists.linux.dev, Christoph Hellwig
+ <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Petr Tesarik
+ <petr.tesarik1@huawei-partners.com>, Dexuan Cui <decui@microsoft.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v6 6/6] swiotlb: Reinstate page-alignment for mappings
+ >= PAGE_SIZE
+Message-ID: <20240308190806.06507e25@meshulam.tesarici.cz>
+In-Reply-To: <9597a3ea-b71f-46bd-bc72-1d19e81dcfb5@arm.com>
+References: <20240308152829.25754-1-will@kernel.org>
+	<20240308152829.25754-7-will@kernel.org>
+	<5c7c7407-5356-4e12-a648-ae695fe0d1cb@arm.com>
+	<20240308173816.5351ea58@meshulam.tesarici.cz>
+	<9597a3ea-b71f-46bd-bc72-1d19e81dcfb5@arm.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240122073903.24406-5-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 22, 2024 at 03:38:59PM +0800, Lu Baolu wrote:
-> --- /dev/null
-> +++ b/drivers/iommu/iommufd/fault.c
-> @@ -0,0 +1,255 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/* Copyright (C) 2024 Intel Corporation
-> + */
-> +#define pr_fmt(fmt) "iommufd: " fmt
-> +
-> +#include <linux/file.h>
-> +#include <linux/fs.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/iommufd.h>
-> +#include <linux/poll.h>
-> +#include <linux/anon_inodes.h>
-> +#include <uapi/linux/iommufd.h>
-> +
-> +#include "iommufd_private.h"
-> +
-> +static int device_add_fault(struct iopf_group *group)
-> +{
-> +	struct iommufd_device *idev = group->cookie->private;
-> +	void *curr;
-> +
-> +	curr = xa_cmpxchg(&idev->faults, group->last_fault.fault.prm.grpid,
-> +			  NULL, group, GFP_KERNEL);
-> +
-> +	return curr ? xa_err(curr) : 0;
-> +}
-> +
-> +static void device_remove_fault(struct iopf_group *group)
-> +{
-> +	struct iommufd_device *idev = group->cookie->private;
-> +
-> +	xa_store(&idev->faults, group->last_fault.fault.prm.grpid,
-> +		 NULL, GFP_KERNEL);
+On Fri, 8 Mar 2024 17:17:51 +0000
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-xa_erase ?
+> On 2024-03-08 4:38 pm, Petr Tesa=C5=99=C3=ADk wrote:
+> > On Fri, 8 Mar 2024 16:08:01 +0000
+> > Robin Murphy <robin.murphy@arm.com> wrote:
+> >  =20
+> >> On 2024-03-08 3:28 pm, Will Deacon wrote: =20
+> >>> For swiotlb allocations >=3D PAGE_SIZE, the slab search historically
+> >>> adjusted the stride to avoid checking unaligned slots. This had the
+> >>> side-effect of aligning large mapping requests to PAGE_SIZE, but that
+> >>> was broken by 0eee5ae10256 ("swiotlb: fix slot alignment checks").
+> >>>
+> >>> Since this alignment could be relied upon drivers, reinstate PAGE_SIZE
+> >>> alignment for swiotlb mappings >=3D PAGE_SIZE. =20
+> >>
+> >> This seems clear enough to keep me happy now, thanks! And apologies th=
+at
+> >> I managed to confuse even myself in the previous thread...
+> >>
+> >> Reviewed-by: Robin Murphy <robin.murphy@arm.com> =20
+> >=20
+> > I thought we agreed that this stricter alignment is unnecessary:
+> >=20
+> >    https://lore.kernel.org/linux-iommu/20240305140833.GC3659@lst.de/ =20
+>=20
+> No, that was about dma_alloc_coherent() again (and TBH I'm not sure we=20
+> should actually relax it anyway, since there definitely are callers who=20
+> rely on size-alignment beyond PAGE_SIZE, however they're typically going=
+=20
+> to be using the common implementations which end up in alloc_pages() or=20
+> CMA and so do offer that, rather than the oddball ones which don't -=20
+> e.g. we're never going to be allocating SMMUv3 Stream Tables out of some=
+=20
+> restricted pool via the emergency swiotlb_alloc() path). If anywhere,=20
+> the place to argue that point would be patch #3 (which as mentioned I'd=20
+> managed to forget about before...)
 
-Is grpid OK to use this way? Doesn't it come from the originating
-device?
+Sure, swiotlb_alloc() ensures that alloc_align_mask is non-zero, so the
+condition in this patch cannot be met. In fact, that's why it could be
+moved up to swiotlb_tbl_map_single().
 
-> +void iommufd_fault_destroy(struct iommufd_object *obj)
-> +{
-> +	struct iommufd_fault *fault = container_of(obj, struct iommufd_fault, obj);
-> +	struct iopf_group *group, *next;
-> +
-> +	mutex_lock(&fault->mutex);
-> +	list_for_each_entry_safe(group, next, &fault->deliver, node) {
-> +		list_del(&group->node);
-> +		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
-> +		iopf_free_group(group);
-> +	}
-> +	list_for_each_entry_safe(group, next, &fault->response, node) {
-> +		list_del(&group->node);
-> +		device_remove_fault(group);
-> +		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
-> +		iopf_free_group(group);
-> +	}
-> +	mutex_unlock(&fault->mutex);
-> +
-> +	mutex_destroy(&fault->mutex);
+> This one's just about preserving a SWIOTLB-specific behaviour which has=20
+> the practical effect of making SWIOTLB a bit less visible to dma_map_*()=
+=20
+> callers. The impact of keeping this is fairly low, so seems preferable=20
+> to the risk of facing issues 2 or 3 years down the line when someone=20
+> finally upgrades their distro and their data gets eaten because it turns=
+=20
+> out some obscure driver should really have been updated to use=20
+> min_align_mask.
 
-It is really weird to lock a mutex we are about to destroy? At this
-point the refcount on the iommufd_object is zero so there had better
-not be any other threads with access to this pointer!
+The impact is indeed negligible with 4K pages. It may put a bit of
+stress on the SWIOTLB with 64K pages, but if the mapping size somehow
+correlates with page size, such drivers would need a larger SWIOTLB
+anyway.
 
-> +static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
-> +				       size_t count, loff_t *ppos)
-> +{
-> +	size_t fault_size = sizeof(struct iommu_hwpt_pgfault);
-> +	struct iommufd_fault *fault = filep->private_data;
-> +	struct iommu_hwpt_pgfault data;
-> +	struct iommufd_device *idev;
-> +	struct iopf_group *group;
-> +	struct iopf_fault *iopf;
-> +	size_t done = 0;
-> +	int rc;
-> +
-> +	if (*ppos || count % fault_size)
-> +		return -ESPIPE;
-> +
-> +	mutex_lock(&fault->mutex);
-> +	while (!list_empty(&fault->deliver) && count > done) {
-> +		group = list_first_entry(&fault->deliver,
-> +					 struct iopf_group, node);
-> +
-> +		if (list_count_nodes(&group->faults) * fault_size > count - done)
-> +			break;
-> +
-> +		idev = (struct iommufd_device *)group->cookie->private;
-> +		list_for_each_entry(iopf, &group->faults, list) {
-> +			iommufd_compose_fault_message(&iopf->fault, &data, idev);
-> +			rc = copy_to_user(buf + done, &data, fault_size);
-> +			if (rc)
-> +				goto err_unlock;
-> +			done += fault_size;
-> +		}
-> +
-> +		rc = device_add_fault(group);
+I had some doubts if there are any guarantees at all for dma_map_*().
+Now I see that the email I linked dealt with dma_alloc_coherent().
 
-See I wonder if this should be some xa_alloc or something instead of
-trying to use the grpid?
+OK, let's not open the other discussion now.
 
-> +	while (!list_empty(&fault->response) && count > done) {
-> +		rc = copy_from_user(&response, buf + done, response_size);
-> +		if (rc)
-> +			break;
-> +
-> +		idev = container_of(iommufd_get_object(fault->ictx,
-> +						       response.dev_id,
-> +						       IOMMUFD_OBJ_DEVICE),
-> +				    struct iommufd_device, obj);
+Petr T
 
-It seems unfortunate we do this lookup for every iteration of the loop,
-I would lift it up and cache it..
+> Thanks,
+> Robin.
+>=20
+> > But if everybody else wants to have it...
+> >=20
+> > Petr T
+> >  =20
+> >>> Reported-by: Michael Kelley <mhklinux@outlook.com>
+> >>> Signed-off-by: Will Deacon <will@kernel.org>
+> >>> ---
+> >>>    kernel/dma/swiotlb.c | 18 +++++++++++-------
+> >>>    1 file changed, 11 insertions(+), 7 deletions(-)
+> >>>
+> >>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> >>> index c381a7ed718f..c5851034523f 100644
+> >>> --- a/kernel/dma/swiotlb.c
+> >>> +++ b/kernel/dma/swiotlb.c
+> >>> @@ -992,6 +992,17 @@ static int swiotlb_search_pool_area(struct devic=
+e *dev, struct io_tlb_pool *pool
+> >>>    	BUG_ON(!nslots);
+> >>>    	BUG_ON(area_index >=3D pool->nareas);
+> >>>   =20
+> >>> +	/*
+> >>> +	 * Historically, swiotlb allocations >=3D PAGE_SIZE were guaranteed=
+ to be
+> >>> +	 * page-aligned in the absence of any other alignment requirements.
+> >>> +	 * 'alloc_align_mask' was later introduced to specify the alignment
+> >>> +	 * explicitly, however this is passed as zero for streaming mappings
+> >>> +	 * and so we preserve the old behaviour there in case any drivers a=
+re
+> >>> +	 * relying on it.
+> >>> +	 */
+> >>> +	if (!alloc_align_mask && !iotlb_align_mask && alloc_size >=3D PAGE_=
+SIZE)
+> >>> +		alloc_align_mask =3D PAGE_SIZE - 1;
+> >>> +
+> >>>    	/*
+> >>>    	 * Ensure that the allocation is at least slot-aligned and update
+> >>>    	 * 'iotlb_align_mask' to ignore bits that will be preserved when
+> >>> @@ -1006,13 +1017,6 @@ static int swiotlb_search_pool_area(struct dev=
+ice *dev, struct io_tlb_pool *pool
+> >>>    	 */
+> >>>    	stride =3D get_max_slots(max(alloc_align_mask, iotlb_align_mask));
+> >>>   =20
+> >>> -	/*
+> >>> -	 * For allocations of PAGE_SIZE or larger only look for page aligned
+> >>> -	 * allocations.
+> >>> -	 */
+> >>> -	if (alloc_size >=3D PAGE_SIZE)
+> >>> -		stride =3D umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
+> >>> -
+> >>>    	spin_lock_irqsave(&area->lock, flags);
+> >>>    	if (unlikely(nslots > pool->area_nslabs - area->used))
+> >>>    		goto not_found; =20
+> >> =20
+> >  =20
+>=20
 
-> +		if (IS_ERR(idev))
-> +			break;
-> +
-> +		group = device_get_fault(idev, response.grpid);
-
-This looks locked wrong, it should hold the fault mutex here and we
-should probably do xchng to zero it at the same time we fetch it.
-
-> +		if (!group ||
-> +		    response.addr != group->last_fault.fault.prm.addr ||
-> +		    ((group->last_fault.fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) &&
-> +		      response.pasid != group->last_fault.fault.prm.pasid)) {
-
-Why? If grpid is unique then just trust it.
-
-> +			iommufd_put_object(fault->ictx, &idev->obj);
-> +			break;
-> +		}
-> +
-> +		iopf_group_response(group, response.code);
-> +
-> +		mutex_lock(&fault->mutex);
-> +		list_del(&group->node);
-> +		mutex_unlock(&fault->mutex);
-> +
-> +		device_remove_fault(group);
-> +		iopf_free_group(group);
-> +		done += response_size;
-> +
-> +		iommufd_put_object(fault->ictx, &idev->obj);
-> +	}
-> +
-> +	return done;
-> +}
-> +
-> +static __poll_t iommufd_fault_fops_poll(struct file *filep,
-> +					struct poll_table_struct *wait)
-> +{
-> +	struct iommufd_fault *fault = filep->private_data;
-> +	__poll_t pollflags = 0;
-> +
-> +	poll_wait(filep, &fault->wait_queue, wait);
-> +	mutex_lock(&fault->mutex);
-> +	if (!list_empty(&fault->deliver))
-> +		pollflags = EPOLLIN | EPOLLRDNORM;
-> +	mutex_unlock(&fault->mutex);
-> +
-> +	return pollflags;
-> +}
-> +
-> +static const struct file_operations iommufd_fault_fops = {
-> +	.owner		= THIS_MODULE,
-> +	.open		= nonseekable_open,
-> +	.read		= iommufd_fault_fops_read,
-> +	.write		= iommufd_fault_fops_write,
-> +	.poll		= iommufd_fault_fops_poll,
-> +	.llseek		= no_llseek,
-> +};
-
-No release? That seems wrong..
-
-> +static int get_fault_fd(struct iommufd_fault *fault)
-> +{
-> +	struct file *filep;
-> +	int fdno;
-> +
-> +	fdno = get_unused_fd_flags(O_CLOEXEC);
-> +	if (fdno < 0)
-> +		return fdno;
-> +
-> +	filep = anon_inode_getfile("[iommufd-pgfault]", &iommufd_fault_fops,
-> +				   fault, O_RDWR);
-                                   ^^^^^^
-
-See here you stick the iommufd_object into the FD but we don't
-refcount it...
-
-And iommufd_fault_destroy() doesn't do anything about this, so it just
-UAFs the fault memory in the FD.
-
-You need to refcount the iommufd_object here and add a release
-function for the fd to put it back
-
-*and* this FD needs to take a reference on the base iommufd_ctx fd too
-as we can't tolerate them being destroyed out of sequence.
-
-> +int iommufd_fault_alloc(struct iommufd_ucmd *ucmd)
-> +{
-> +	struct iommu_fault_alloc *cmd = ucmd->cmd;
-> +	struct iommufd_fault *fault;
-> +	int rc;
-> +
-> +	if (cmd->flags)
-> +		return -EOPNOTSUPP;
-> +
-> +	fault = iommufd_object_alloc(ucmd->ictx, fault, IOMMUFD_OBJ_FAULT);
-> +	if (IS_ERR(fault))
-> +		return PTR_ERR(fault);
-> +
-> +	fault->ictx = ucmd->ictx;
-> +	INIT_LIST_HEAD(&fault->deliver);
-> +	INIT_LIST_HEAD(&fault->response);
-> +	mutex_init(&fault->mutex);
-> +	init_waitqueue_head(&fault->wait_queue);
-> +
-> +	rc = get_fault_fd(fault);
-> +	if (rc < 0)
-> +		goto out_abort;
-
-And this is ordered wrong, fd_install has to happen after return to
-user space is guarenteed as it cannot be undone.
-
-> +	cmd->out_fault_id = fault->obj.id;
-> +	cmd->out_fault_fd = rc;
-> +
-> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
-> +	if (rc)
-> +		goto out_abort;
-> +	iommufd_object_finalize(ucmd->ictx, &fault->obj);
-
-fd_install() goes here
-
-> +	return 0;
-> +out_abort:
-> +	iommufd_object_abort_and_destroy(ucmd->ictx, &fault->obj);
-> +
-> +	return rc;
-> +}
-
-Jason
