@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A2B31DFD2;
-	Sun, 10 Mar 2024 06:18:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D42ED11CA1;
+	Sun, 10 Mar 2024 06:29:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710051485; cv=none; b=VGHAT5UsVWNgKsXYqOQ1p4yv93II+y4TAzKZwCf9uUXBFo8UhtZCKjeXmhUgdms1U8wMQWmNxwiYE3Ib78hPU/BHPD64680b4TYKM8PIiZyyc6m2EwOwga+dnU0KpUjiXdpbvzc7ed++ne4RBNXi1mV9lLCJi6w/Lmffi5yFJhg=
+	t=1710052145; cv=none; b=BH6DtFuuamytylu5RAaof3y4C2xlOYuGIMYoFenASXBtJZ8iTojrNp9Et6vbSLbx+x62CgYzv27zcSnurZS36d7fhWMVIRZ3BPSrlShZFSUSMvJowg/YA5elhVmKTZEiiVWLgBVBYECyVnjPbkP4ebYoqB9aIUbZWQ8aYzG+2dU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710051485; c=relaxed/simple;
-	bh=Qd7HC+q9d5knYtY9e/+g+fegud7ueRr738wWcWZ6po8=;
+	s=arc-20240116; t=1710052145; c=relaxed/simple;
+	bh=01m+kPN27F7ulBBXRzWG+6qNsRfLAik1JnnMPebFFRQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MsvctoSlgCF1LZqeSHaWTrh2ykTxgLqRvMrXgbwcdM8+vRbxBOUsRwjaEOusXRIfRzZj24pH5nSaNjoddHs8FZQz+7O3+/TmHOm+NgpsNpfNyZDVjhVfMLTD7qvkA1NFAgFzk1XeSjRwCLzGIuUYTS5WgkavoHnD9heWwt3WZtY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gApQwLft; arc=none smtp.client-ip=198.175.65.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=sbjvoBOrGUyZ7/D1UPL5r+nrmFql+ExBbfNrE9FkO1HNN/tePj5OhkearRmrJdalylL7pRAeq4+M2oc1ZMenhtiIwY3rC4NOqIDswLY2hSyQh7mIDDan0wvdsyYzalFU+xyXZ9H09vD61Iyw0tiMqo8nk/+bUS4zgn918tA0IjM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RsrYLO18; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gApQwLft"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RsrYLO18"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1710051483; x=1741587483;
+  t=1710052143; x=1741588143;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Qd7HC+q9d5knYtY9e/+g+fegud7ueRr738wWcWZ6po8=;
-  b=gApQwLft/Fq9I9Sbc8rgj6iZmTXICJZoRSK3nosB7ysQ8HQzwVMH0bkl
-   XQojjwqktVwx3pkhfEGn3M2S5FB9BDp4zZUQ92NarJ5JBC+d6gLo+30ra
-   0E4xXcE214N/9VTujEF1fQiorIsCdrZ2/OdMdBFeWb04wymRqbTvyndla
-   d5f+bq88DcklKlBfCCVemTVbEqWlDVJhDWLmi9MH4sM5FGeowvmQUf+4+
-   SBreCbfdG5ThBaZDQmpLVZeDw7Com/j9gpWoPllh1yFgxE0eG1PRJwpjO
-   dP365y187bhBYQn9CanbtS0XzDXRhLfBp7rmUp5PEilmaTeo8awgPpOwZ
+  bh=01m+kPN27F7ulBBXRzWG+6qNsRfLAik1JnnMPebFFRQ=;
+  b=RsrYLO18VIhzh517Xf4L+Eln1t1tQ+3pZ32FB2IV6Pv6qBjRIFOT7tNh
+   gv6v4Jt+o5jPuPHvnpdCYrj4ulM87aeK2firPX4npSuOEp8tl71uCcaon
+   WfNBpmTyAQcJSa75avdQTgqg0LIJ/twTTK+O2AKDc/PLMxuM/LeZRD9LB
+   ZK3Bx5t9zDJ/5jpw9l94OSsYY0HcGHGkTxgTNZry++2jLFJBuy3s9DSpw
+   cg13lq7OEIZIiZcipyOd9OIm5cHnHKIETCwBkPbaNrfFZJF1GdaoLT0Ji
+   aDDnOLhay5sdqdc7BJSLk5T65cMk0VyK6mSl/HVwxS1PleI49Yel/cJs7
    Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11008"; a="16165727"
+X-IronPort-AV: E=McAfee;i="6600,9927,11008"; a="5329034"
 X-IronPort-AV: E=Sophos;i="6.07,114,1708416000"; 
-   d="scan'208";a="16165727"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2024 22:18:02 -0800
+   d="scan'208";a="5329034"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2024 22:29:02 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,114,1708416000"; 
-   d="scan'208";a="48307298"
+   d="scan'208";a="11253614"
 Received: from lkp-server01.sh.intel.com (HELO b21307750695) ([10.239.97.150])
-  by orviesa001.jf.intel.com with ESMTP; 09 Mar 2024 22:17:57 -0800
+  by orviesa006.jf.intel.com with ESMTP; 09 Mar 2024 22:28:58 -0800
 Received: from kbuild by b21307750695 with local (Exim 4.96)
 	(envelope-from <lkp@intel.com>)
-	id 1rjCVO-000807-2e;
-	Sun, 10 Mar 2024 06:17:54 +0000
-Date: Sun, 10 Mar 2024 14:16:55 +0800
+	id 1rjCg3-00080Z-0T;
+	Sun, 10 Mar 2024 06:28:55 +0000
+Date: Sun, 10 Mar 2024 14:27:55 +0800
 From: kernel test robot <lkp@intel.com>
 To: Howard Yen <howardyen@google.com>, gregkh@linuxfoundation.org,
 	rafael@kernel.org, mathias.nyman@intel.com, hch@lst.de,
@@ -51,12 +51,12 @@ To: Howard Yen <howardyen@google.com>, gregkh@linuxfoundation.org,
 	andriy.shevchenko@linux.intel.com, petr.tesarik.ext@huawei.com,
 	broonie@kernel.org, james@equiv.tech, james.clark@arm.com,
 	masahiroy@kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-	iommu@lists.linux.dev, Howard Yen <howardyen@google.com>
+Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
+	linux-usb@vger.kernel.org, iommu@lists.linux.dev,
+	Howard Yen <howardyen@google.com>
 Subject: Re: [PATCH v4 2/2] usb: host: xhci-plat: add support for multi
  memory regions
-Message-ID: <202403101417.3D62qONB-lkp@intel.com>
+Message-ID: <202403101400.PHmsnLOh-lkp@intel.com>
 References: <20240308095320.1961469-3-howardyen@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -82,182 +82,29 @@ url:    https://github.com/intel-lab-lkp/linux/commits/Howard-Yen/dma-coherent-a
 base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
 patch link:    https://lore.kernel.org/r/20240308095320.1961469-3-howardyen%40google.com
 patch subject: [PATCH v4 2/2] usb: host: xhci-plat: add support for multi memory regions
-config: riscv-defconfig (https://download.01.org/0day-ci/archive/20240310/202403101417.3D62qONB-lkp@intel.com/config)
-compiler: clang version 19.0.0git (https://github.com/llvm/llvm-project 503c55e17037436dcd45ac69dea8967e67e3f5e8)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240310/202403101417.3D62qONB-lkp@intel.com/reproduce)
+config: arm64-defconfig (https://download.01.org/0day-ci/archive/20240310/202403101400.PHmsnLOh-lkp@intel.com/config)
+compiler: aarch64-linux-gcc (GCC) 13.2.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240310/202403101400.PHmsnLOh-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202403101417.3D62qONB-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202403101400.PHmsnLOh-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
-   In file included from drivers/usb/host/xhci-plat.c:12:
-   In file included from include/linux/dma-mapping.h:11:
-   In file included from include/linux/scatterlist.h:8:
-   In file included from include/linux/mm.h:2188:
-   include/linux/vmstat.h:522:36: warning: arithmetic between different enumeration types ('enum node_stat_item' and 'enum lru_list') [-Wenum-enum-conversion]
-     522 |         return node_stat_name(NR_LRU_BASE + lru) + 3; // skip "nr_"
-         |                               ~~~~~~~~~~~ ^ ~~~
->> drivers/usb/host/xhci-plat.c:201:9: error: call to undeclared function 'of_reserved_mem_device_init_by_idx'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   drivers/usb/host/xhci-plat.c: In function 'xhci_plat_probe':
+>> drivers/usb/host/xhci-plat.c:201:23: error: implicit declaration of function 'of_reserved_mem_device_init_by_idx' [-Werror=implicit-function-declaration]
      201 |                 ret = of_reserved_mem_device_init_by_idx(sysdev, sysdev->of_node, i);
-         |                       ^
->> drivers/usb/host/xhci-plat.c:205:5: error: call to undeclared function 'of_reserved_mem_device_release'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+         |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/usb/host/xhci-plat.c:205:33: error: implicit declaration of function 'of_reserved_mem_device_release' [-Werror=implicit-function-declaration]
      205 |                                 of_reserved_mem_device_release(sysdev);
-         |                                 ^
-   drivers/usb/host/xhci-plat.c:169:42: warning: shift count >= width of type [-Wshift-count-overflow]
-     169 |         ret = dma_set_mask_and_coherent(sysdev, DMA_BIT_MASK(64));
-         |                                                 ^~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:77:54: note: expanded from macro 'DMA_BIT_MASK'
-      77 | #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-         |                                                      ^ ~~~
-   drivers/usb/host/xhci-plat.c:409:46: warning: shift count >= width of type [-Wshift-count-overflow]
-     409 |                 ret = dma_coerce_mask_and_coherent(sysdev, DMA_BIT_MASK(64));
-         |                                                            ^~~~~~~~~~~~~~~~
-   include/linux/dma-mapping.h:77:54: note: expanded from macro 'DMA_BIT_MASK'
-      77 | #define DMA_BIT_MASK(n) (((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
-         |                                                      ^ ~~~
-   drivers/usb/host/xhci-plat.c:449:2: error: call to undeclared function 'of_reserved_mem_device_release'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-     449 |         of_reserved_mem_device_release(hcd->self.sysdev);
-         |         ^
-   3 warnings and 3 errors generated.
+         |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
 
 
 vim +/of_reserved_mem_device_init_by_idx +201 drivers/usb/host/xhci-plat.c
 
-  > 12	#include <linux/dma-mapping.h>
-    13	#include <linux/module.h>
-    14	#include <linux/pci.h>
-    15	#include <linux/of.h>
-    16	#include <linux/of_device.h>
-    17	#include <linux/platform_device.h>
-    18	#include <linux/usb/phy.h>
-    19	#include <linux/slab.h>
-    20	#include <linux/acpi.h>
-    21	#include <linux/usb/of.h>
-    22	#include <linux/reset.h>
-    23	
-    24	#include "xhci.h"
-    25	#include "xhci-plat.h"
-    26	#include "xhci-mvebu.h"
-    27	
-    28	static struct hc_driver __read_mostly xhci_plat_hc_driver;
-    29	
-    30	static int xhci_plat_setup(struct usb_hcd *hcd);
-    31	static int xhci_plat_start(struct usb_hcd *hcd);
-    32	
-    33	static const struct xhci_driver_overrides xhci_plat_overrides __initconst = {
-    34		.extra_priv_size = sizeof(struct xhci_plat_priv),
-    35		.reset = xhci_plat_setup,
-    36		.start = xhci_plat_start,
-    37	};
-    38	
-    39	static void xhci_priv_plat_start(struct usb_hcd *hcd)
-    40	{
-    41		struct xhci_plat_priv *priv = hcd_to_xhci_priv(hcd);
-    42	
-    43		if (priv->plat_start)
-    44			priv->plat_start(hcd);
-    45	}
-    46	
-    47	static int xhci_priv_init_quirk(struct usb_hcd *hcd)
-    48	{
-    49		struct xhci_plat_priv *priv = hcd_to_xhci_priv(hcd);
-    50	
-    51		if (!priv->init_quirk)
-    52			return 0;
-    53	
-    54		return priv->init_quirk(hcd);
-    55	}
-    56	
-    57	static int xhci_priv_suspend_quirk(struct usb_hcd *hcd)
-    58	{
-    59		struct xhci_plat_priv *priv = hcd_to_xhci_priv(hcd);
-    60	
-    61		if (!priv->suspend_quirk)
-    62			return 0;
-    63	
-    64		return priv->suspend_quirk(hcd);
-    65	}
-    66	
-    67	static int xhci_priv_resume_quirk(struct usb_hcd *hcd)
-    68	{
-    69		struct xhci_plat_priv *priv = hcd_to_xhci_priv(hcd);
-    70	
-    71		if (!priv->resume_quirk)
-    72			return 0;
-    73	
-    74		return priv->resume_quirk(hcd);
-    75	}
-    76	
-    77	static void xhci_plat_quirks(struct device *dev, struct xhci_hcd *xhci)
-    78	{
-    79		struct xhci_plat_priv *priv = xhci_to_priv(xhci);
-    80	
-    81		xhci->quirks |= priv->quirks;
-    82	}
-    83	
-    84	/* called during probe() after chip reset completes */
-    85	static int xhci_plat_setup(struct usb_hcd *hcd)
-    86	{
-    87		int ret;
-    88	
-    89	
-    90		ret = xhci_priv_init_quirk(hcd);
-    91		if (ret)
-    92			return ret;
-    93	
-    94		return xhci_gen_setup(hcd, xhci_plat_quirks);
-    95	}
-    96	
-    97	static int xhci_plat_start(struct usb_hcd *hcd)
-    98	{
-    99		xhci_priv_plat_start(hcd);
-   100		return xhci_run(hcd);
-   101	}
-   102	
-   103	#ifdef CONFIG_OF
-   104	static const struct xhci_plat_priv xhci_plat_marvell_armada = {
-   105		.init_quirk = xhci_mvebu_mbus_init_quirk,
-   106	};
-   107	
-   108	static const struct xhci_plat_priv xhci_plat_marvell_armada3700 = {
-   109		.init_quirk = xhci_mvebu_a3700_init_quirk,
-   110	};
-   111	
-   112	static const struct xhci_plat_priv xhci_plat_brcm = {
-   113		.quirks = XHCI_RESET_ON_RESUME | XHCI_SUSPEND_RESUME_CLKS,
-   114	};
-   115	
-   116	static const struct of_device_id usb_xhci_of_match[] = {
-   117		{
-   118			.compatible = "generic-xhci",
-   119		}, {
-   120			.compatible = "xhci-platform",
-   121		}, {
-   122			.compatible = "marvell,armada-375-xhci",
-   123			.data = &xhci_plat_marvell_armada,
-   124		}, {
-   125			.compatible = "marvell,armada-380-xhci",
-   126			.data = &xhci_plat_marvell_armada,
-   127		}, {
-   128			.compatible = "marvell,armada3700-xhci",
-   129			.data = &xhci_plat_marvell_armada3700,
-   130		}, {
-   131			.compatible = "brcm,xhci-brcm-v2",
-   132			.data = &xhci_plat_brcm,
-   133		}, {
-   134			.compatible = "brcm,bcm2711-xhci",
-   135			.data = &xhci_plat_brcm,
-   136		}, {
-   137			.compatible = "brcm,bcm7445-xhci",
-   138			.data = &xhci_plat_brcm,
-   139		},
-   140		{},
-   141	};
-   142	MODULE_DEVICE_TABLE(of, usb_xhci_of_match);
-   143	#endif
    144	
    145	int xhci_plat_probe(struct platform_device *pdev, struct device *sysdev, const struct xhci_plat_priv *priv_match)
    146	{
