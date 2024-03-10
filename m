@@ -1,350 +1,160 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D42ED11CA1;
-	Sun, 10 Mar 2024 06:29:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A124107B2
+	for <iommu@lists.linux.dev>; Sun, 10 Mar 2024 08:46:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710052145; cv=none; b=BH6DtFuuamytylu5RAaof3y4C2xlOYuGIMYoFenASXBtJZ8iTojrNp9Et6vbSLbx+x62CgYzv27zcSnurZS36d7fhWMVIRZ3BPSrlShZFSUSMvJowg/YA5elhVmKTZEiiVWLgBVBYECyVnjPbkP4ebYoqB9aIUbZWQ8aYzG+2dU=
+	t=1710060401; cv=none; b=Hpa1bfsUB2LjVoS8w7gV+EPADaQyI8/Kj1hWRCHYf3timrJIhYTxPGaReYr663RWeyIcY2P5HAd0PILlY+fn8SYr7e91w5Fy0lYFBEpYIm4LLmZOaREwEGhYmdBXBfhFB2f7fb4DDU744L6PUwmMlnXBzWG/uEi1H3xKR9M3xHw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710052145; c=relaxed/simple;
-	bh=01m+kPN27F7ulBBXRzWG+6qNsRfLAik1JnnMPebFFRQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sbjvoBOrGUyZ7/D1UPL5r+nrmFql+ExBbfNrE9FkO1HNN/tePj5OhkearRmrJdalylL7pRAeq4+M2oc1ZMenhtiIwY3rC4NOqIDswLY2hSyQh7mIDDan0wvdsyYzalFU+xyXZ9H09vD61Iyw0tiMqo8nk/+bUS4zgn918tA0IjM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RsrYLO18; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1710060401; c=relaxed/simple;
+	bh=xLmmJdf7b1EcM83YnOo1gFdVXubBPLeW+b+Fbod8neQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WNqqBYirSAVBYApTUXdZqIjTJJ2LB0GpRZ27CEoWpEt5GxKocwIH4zMH2pvtpOSSquHq/uzWG+XKSO3RqFuruTUsrVSD9GcIo+2JSjDdjhku7RCMS8cX7pWNsvZ7iMy+t2Pzn4cSphc/zowwmDVYzlzyTX0DqQiCaR0Xmur1c6E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=AipFPpF1; arc=none smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RsrYLO18"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1710052143; x=1741588143;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=01m+kPN27F7ulBBXRzWG+6qNsRfLAik1JnnMPebFFRQ=;
-  b=RsrYLO18VIhzh517Xf4L+Eln1t1tQ+3pZ32FB2IV6Pv6qBjRIFOT7tNh
-   gv6v4Jt+o5jPuPHvnpdCYrj4ulM87aeK2firPX4npSuOEp8tl71uCcaon
-   WfNBpmTyAQcJSa75avdQTgqg0LIJ/twTTK+O2AKDc/PLMxuM/LeZRD9LB
-   ZK3Bx5t9zDJ/5jpw9l94OSsYY0HcGHGkTxgTNZry++2jLFJBuy3s9DSpw
-   cg13lq7OEIZIiZcipyOd9OIm5cHnHKIETCwBkPbaNrfFZJF1GdaoLT0Ji
-   aDDnOLhay5sdqdc7BJSLk5T65cMk0VyK6mSl/HVwxS1PleI49Yel/cJs7
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11008"; a="5329034"
-X-IronPort-AV: E=Sophos;i="6.07,114,1708416000"; 
-   d="scan'208";a="5329034"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2024 22:29:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,114,1708416000"; 
-   d="scan'208";a="11253614"
-Received: from lkp-server01.sh.intel.com (HELO b21307750695) ([10.239.97.150])
-  by orviesa006.jf.intel.com with ESMTP; 09 Mar 2024 22:28:58 -0800
-Received: from kbuild by b21307750695 with local (Exim 4.96)
-	(envelope-from <lkp@intel.com>)
-	id 1rjCg3-00080Z-0T;
-	Sun, 10 Mar 2024 06:28:55 +0000
-Date: Sun, 10 Mar 2024 14:27:55 +0800
-From: kernel test robot <lkp@intel.com>
-To: Howard Yen <howardyen@google.com>, gregkh@linuxfoundation.org,
-	rafael@kernel.org, mathias.nyman@intel.com, hch@lst.de,
-	m.szyprowski@samsung.com, robin.murphy@arm.com,
-	andriy.shevchenko@linux.intel.com, petr.tesarik.ext@huawei.com,
-	broonie@kernel.org, james@equiv.tech, james.clark@arm.com,
-	masahiroy@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-usb@vger.kernel.org, iommu@lists.linux.dev,
-	Howard Yen <howardyen@google.com>
-Subject: Re: [PATCH v4 2/2] usb: host: xhci-plat: add support for multi
- memory regions
-Message-ID: <202403101400.PHmsnLOh-lkp@intel.com>
-References: <20240308095320.1961469-3-howardyen@google.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="AipFPpF1"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-564647bcdbfso2243781a12.2
+        for <iommu@lists.linux.dev>; Sun, 10 Mar 2024 00:46:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1710060398; x=1710665198; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=C530xy+YltijTtebs95wWn+75gIn26qAKpps14k6LgI=;
+        b=AipFPpF135AOrFHu6BQ8DG16wEp3MrtFPJxzZ4+AHISreQgL3ACxXd1PDrvYDDYawV
+         X3PeurBqXCcjvDDGRLHes6EKdqkZN77CFygPabQlFAX73jKc6myvdkggl1TKrFtYwOr1
+         8fqljkxeb18iML7hNcrG0Neu+nm5OpU7zbyQY43rT5/L1+QhsVqLpf0odGUliIrlQjfg
+         /yONZD0iZKI/PQxzj9JOXc+n8IJfGaUM8CXBvzqAlIoFvdhMiqmK1jEORJ3OWxw+fTlh
+         DZdrY/3ZpOfIASoiIzjQLd778/QmxMaIyvXvC2Uqm6ZNVrmsZMyUyzCYJCxEbXEQczoy
+         qmGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1710060398; x=1710665198;
+        h=content-transfer-encoding:in-reply-to:autocrypt:from:references:cc
+         :to:content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=C530xy+YltijTtebs95wWn+75gIn26qAKpps14k6LgI=;
+        b=Z/leMkM3WDcjt5Rs9Q93rAIHCJ4wiDQIEY0u5xMzMN9Ml/uLZ1FDfEXBsntUZP8wlI
+         J++FNXGOFmKrL+6INo0uDbvoucbEoGZPfn0bPDu12w8w0Dx1QJSXLQibJR3hGLAy/fBb
+         yAj1mqBwQSr7qc2ZNAjOXNJSNfVHVHbEh8hHOm3cAMyPJMXB5QkUVZwzvgBoiT8iOWQ8
+         qakJAhtohitfzEIgIOJZNtT424M1l2HLwCxDAjeHzr2BL/igazDtrdZhJXgq9rWTTKTP
+         zF9FLn8kUZgZKNyLGkoT7mI/qukC/Aa5ahYSqtlGMOv8rW1erZcOWN13xnApnttzsMez
+         Yxgw==
+X-Forwarded-Encrypted: i=1; AJvYcCXH1wNVAtTknmbw94Zh1NvjrSi/RMVQxaTvz34i8RawtzqXDLwQdBI890gcKEEfbVeT0A2EuLjFLrCS4GrVoCD+6mTTV1o=
+X-Gm-Message-State: AOJu0YwBTEXPmFg8dde0aJrSOdI5KSYdevNSXUJAwQUbbxNQQjSHeG4r
+	lGGEZ7zHU8aE/qwd07rEltQEMqnJkNZ/WN3BBH6zjQ5v9ftWeGl2fXB6TsJbLlk=
+X-Google-Smtp-Source: AGHT+IH5kSY38rfz+3g8kBzu9+2QsdxgrFctdunyDmLQiYSfKlA5Uh533yF369VBiVmmlfgNgIPR5w==
+X-Received: by 2002:a50:c01b:0:b0:566:43ab:8b78 with SMTP id r27-20020a50c01b000000b0056643ab8b78mr2188685edb.30.1710060398578;
+        Sun, 10 Mar 2024 00:46:38 -0800 (PST)
+Received: from [192.168.1.20] ([178.197.222.97])
+        by smtp.gmail.com with ESMTPSA id b2-20020aa7c902000000b00564e489ce9asm1765052edt.12.2024.03.10.00.46.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 10 Mar 2024 00:46:38 -0800 (PST)
+Message-ID: <e8c04ee6-d860-410f-a333-aa36205661ec@linaro.org>
+Date: Sun, 10 Mar 2024 09:46:36 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240308095320.1961469-3-howardyen@google.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/2] dt-bindings: iommu: arm,smmu-v3: Add SC8280XP
+ compatible
+Content-Language: en-US
+To: Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, Johan Hovold <johan+linaro@kernel.org>
+References: <20231219-topic-8280_smmuv3-v2-0-c67bd3226687@linaro.org>
+ <20231219-topic-8280_smmuv3-v2-1-c67bd3226687@linaro.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
+ 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
+ D2GYIS41Kv4Isx2dEFh+/Q==
+In-Reply-To: <20231219-topic-8280_smmuv3-v2-1-c67bd3226687@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Howard,
+On 09/03/2024 14:31, Konrad Dybcio wrote:
+> The smmu-v3 binding currently doesn't differentiate the SoCs it's
+> implemented on. This is a poor design choice that may bite in the future,
+> should any quirks surface.
+> 
+> Add a compatible for the instance found on Qualcomm SC8280XP.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> index 75fcf4cb52d9..f284f7b0c1d8 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> @@ -20,7 +20,11 @@ properties:
+>    $nodename:
+>      pattern: "^iommu@[0-9a-f]*"
+>    compatible:
+> -    const: arm,smmu-v3
+> +    oneOf:
+> +      - items:
+> +          - const: qcom,sc8280xp-smmu-v3
 
-kernel test robot noticed the following build errors:
+This could be enum, because likely it will grow in the future, but there
+is no need to resend for this alone.
 
-[auto build test ERROR on usb/usb-testing]
-[also build test ERROR on usb/usb-next usb/usb-linus char-misc/char-misc-testing char-misc/char-misc-next char-misc/char-misc-linus driver-core/driver-core-testing driver-core/driver-core-next driver-core/driver-core-linus linus/master v6.8-rc7 next-20240308]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Howard-Yen/dma-coherent-add-support-for-multi-coherent-rmems-per-dev/20240308-175649
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-patch link:    https://lore.kernel.org/r/20240308095320.1961469-3-howardyen%40google.com
-patch subject: [PATCH v4 2/2] usb: host: xhci-plat: add support for multi memory regions
-config: arm64-defconfig (https://download.01.org/0day-ci/archive/20240310/202403101400.PHmsnLOh-lkp@intel.com/config)
-compiler: aarch64-linux-gcc (GCC) 13.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20240310/202403101400.PHmsnLOh-lkp@intel.com/reproduce)
+Best regards,
+Krzysztof
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202403101400.PHmsnLOh-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
-   drivers/usb/host/xhci-plat.c: In function 'xhci_plat_probe':
->> drivers/usb/host/xhci-plat.c:201:23: error: implicit declaration of function 'of_reserved_mem_device_init_by_idx' [-Werror=implicit-function-declaration]
-     201 |                 ret = of_reserved_mem_device_init_by_idx(sysdev, sysdev->of_node, i);
-         |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/usb/host/xhci-plat.c:205:33: error: implicit declaration of function 'of_reserved_mem_device_release' [-Werror=implicit-function-declaration]
-     205 |                                 of_reserved_mem_device_release(sysdev);
-         |                                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +/of_reserved_mem_device_init_by_idx +201 drivers/usb/host/xhci-plat.c
-
-   144	
-   145	int xhci_plat_probe(struct platform_device *pdev, struct device *sysdev, const struct xhci_plat_priv *priv_match)
-   146	{
-   147		const struct hc_driver	*driver;
-   148		struct device		*tmpdev;
-   149		struct xhci_hcd		*xhci;
-   150		struct resource         *res;
-   151		struct usb_hcd		*hcd, *usb3_hcd;
-   152		int			i, count, ret;
-   153		int			irq;
-   154		struct xhci_plat_priv	*priv = NULL;
-   155		bool			of_match;
-   156	
-   157		if (usb_disabled())
-   158			return -ENODEV;
-   159	
-   160		driver = &xhci_plat_hc_driver;
-   161	
-   162		irq = platform_get_irq(pdev, 0);
-   163		if (irq < 0)
-   164			return irq;
-   165	
-   166		if (!sysdev)
-   167			sysdev = &pdev->dev;
-   168	
-   169		ret = dma_set_mask_and_coherent(sysdev, DMA_BIT_MASK(64));
-   170		if (ret)
-   171			return ret;
-   172	
-   173		pm_runtime_set_active(&pdev->dev);
-   174		pm_runtime_enable(&pdev->dev);
-   175		pm_runtime_get_noresume(&pdev->dev);
-   176	
-   177		hcd = __usb_create_hcd(driver, sysdev, &pdev->dev,
-   178				       dev_name(&pdev->dev), NULL);
-   179		if (!hcd) {
-   180			ret = -ENOMEM;
-   181			goto disable_runtime;
-   182		}
-   183	
-   184		hcd->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
-   185		if (IS_ERR(hcd->regs)) {
-   186			ret = PTR_ERR(hcd->regs);
-   187			goto put_hcd;
-   188		}
-   189	
-   190		hcd->rsrc_start = res->start;
-   191		hcd->rsrc_len = resource_size(res);
-   192	
-   193		xhci = hcd_to_xhci(hcd);
-   194	
-   195		xhci->allow_single_roothub = 1;
-   196	
-   197		count = of_property_count_elems_of_size(sysdev->of_node, "memory-region",
-   198							sizeof(u32));
-   199	
-   200		for (i = 0; i < count; i++) {
- > 201			ret = of_reserved_mem_device_init_by_idx(sysdev, sysdev->of_node, i);
-   202			if (ret) {
-   203				dev_err(sysdev, "Could not get reserved memory\n");
-   204				if (i > 0)
- > 205					of_reserved_mem_device_release(sysdev);
-   206	
-   207				return ret;
-   208			}
-   209		}
-   210	
-   211		/*
-   212		 * Not all platforms have clks so it is not an error if the
-   213		 * clock do not exist.
-   214		 */
-   215		xhci->reg_clk = devm_clk_get_optional(&pdev->dev, "reg");
-   216		if (IS_ERR(xhci->reg_clk)) {
-   217			ret = PTR_ERR(xhci->reg_clk);
-   218			goto put_hcd;
-   219		}
-   220	
-   221		xhci->clk = devm_clk_get_optional(&pdev->dev, NULL);
-   222		if (IS_ERR(xhci->clk)) {
-   223			ret = PTR_ERR(xhci->clk);
-   224			goto put_hcd;
-   225		}
-   226	
-   227		xhci->reset = devm_reset_control_array_get_optional_shared(&pdev->dev);
-   228		if (IS_ERR(xhci->reset)) {
-   229			ret = PTR_ERR(xhci->reset);
-   230			goto put_hcd;
-   231		}
-   232	
-   233		ret = reset_control_deassert(xhci->reset);
-   234		if (ret)
-   235			goto put_hcd;
-   236	
-   237		ret = clk_prepare_enable(xhci->reg_clk);
-   238		if (ret)
-   239			goto err_reset;
-   240	
-   241		ret = clk_prepare_enable(xhci->clk);
-   242		if (ret)
-   243			goto disable_reg_clk;
-   244	
-   245		if (priv_match) {
-   246			priv = hcd_to_xhci_priv(hcd);
-   247			/* Just copy data for now */
-   248			*priv = *priv_match;
-   249		}
-   250	
-   251		device_set_wakeup_capable(&pdev->dev, true);
-   252	
-   253		xhci->main_hcd = hcd;
-   254	
-   255		/* imod_interval is the interrupt moderation value in nanoseconds. */
-   256		xhci->imod_interval = 40000;
-   257	
-   258		/* Iterate over all parent nodes for finding quirks */
-   259		for (tmpdev = &pdev->dev; tmpdev; tmpdev = tmpdev->parent) {
-   260	
-   261			if (device_property_read_bool(tmpdev, "usb2-lpm-disable"))
-   262				xhci->quirks |= XHCI_HW_LPM_DISABLE;
-   263	
-   264			if (device_property_read_bool(tmpdev, "usb3-lpm-capable"))
-   265				xhci->quirks |= XHCI_LPM_SUPPORT;
-   266	
-   267			if (device_property_read_bool(tmpdev, "quirk-broken-port-ped"))
-   268				xhci->quirks |= XHCI_BROKEN_PORT_PED;
-   269	
-   270			if (device_property_read_bool(tmpdev, "xhci-sg-trb-cache-size-quirk"))
-   271				xhci->quirks |= XHCI_SG_TRB_CACHE_SIZE_QUIRK;
-   272	
-   273			device_property_read_u32(tmpdev, "imod-interval-ns",
-   274						 &xhci->imod_interval);
-   275		}
-   276	
-   277		/*
-   278		 * Drivers such as dwc3 manages PHYs themself (and rely on driver name
-   279		 * matching for the xhci platform device).
-   280		 */
-   281		of_match = of_match_device(pdev->dev.driver->of_match_table, &pdev->dev);
-   282		if (of_match) {
-   283			hcd->usb_phy = devm_usb_get_phy_by_phandle(sysdev, "usb-phy", 0);
-   284			if (IS_ERR(hcd->usb_phy)) {
-   285				ret = PTR_ERR(hcd->usb_phy);
-   286				if (ret == -EPROBE_DEFER)
-   287					goto disable_clk;
-   288				hcd->usb_phy = NULL;
-   289			} else {
-   290				ret = usb_phy_init(hcd->usb_phy);
-   291				if (ret)
-   292					goto disable_clk;
-   293			}
-   294		}
-   295	
-   296		hcd->tpl_support = of_usb_host_tpl_support(sysdev->of_node);
-   297	
-   298		if (priv && (priv->quirks & XHCI_SKIP_PHY_INIT))
-   299			hcd->skip_phy_initialization = 1;
-   300	
-   301		if (priv && (priv->quirks & XHCI_SG_TRB_CACHE_SIZE_QUIRK))
-   302			xhci->quirks |= XHCI_SG_TRB_CACHE_SIZE_QUIRK;
-   303	
-   304		ret = usb_add_hcd(hcd, irq, IRQF_SHARED);
-   305		if (ret)
-   306			goto disable_usb_phy;
-   307	
-   308		if (!xhci_has_one_roothub(xhci)) {
-   309			xhci->shared_hcd = __usb_create_hcd(driver, sysdev, &pdev->dev,
-   310							    dev_name(&pdev->dev), hcd);
-   311			if (!xhci->shared_hcd) {
-   312				ret = -ENOMEM;
-   313				goto dealloc_usb2_hcd;
-   314			}
-   315	
-   316			if (of_match) {
-   317				xhci->shared_hcd->usb_phy = devm_usb_get_phy_by_phandle(sysdev,
-   318											"usb-phy", 1);
-   319				if (IS_ERR(xhci->shared_hcd->usb_phy)) {
-   320					xhci->shared_hcd->usb_phy = NULL;
-   321				} else {
-   322					ret = usb_phy_init(xhci->shared_hcd->usb_phy);
-   323					if (ret)
-   324						dev_err(sysdev, "%s init usb3phy fail (ret=%d)\n",
-   325							__func__, ret);
-   326				}
-   327			}
-   328	
-   329			xhci->shared_hcd->tpl_support = hcd->tpl_support;
-   330		}
-   331	
-   332		usb3_hcd = xhci_get_usb3_hcd(xhci);
-   333		if (usb3_hcd && HCC_MAX_PSA(xhci->hcc_params) >= 4)
-   334			usb3_hcd->can_do_streams = 1;
-   335	
-   336		if (xhci->shared_hcd) {
-   337			ret = usb_add_hcd(xhci->shared_hcd, irq, IRQF_SHARED);
-   338			if (ret)
-   339				goto put_usb3_hcd;
-   340		}
-   341	
-   342		device_enable_async_suspend(&pdev->dev);
-   343		pm_runtime_put_noidle(&pdev->dev);
-   344	
-   345		/*
-   346		 * Prevent runtime pm from being on as default, users should enable
-   347		 * runtime pm using power/control in sysfs.
-   348		 */
-   349		pm_runtime_forbid(&pdev->dev);
-   350	
-   351		return 0;
-   352	
-   353	
-   354	put_usb3_hcd:
-   355		usb_put_hcd(xhci->shared_hcd);
-   356	
-   357	dealloc_usb2_hcd:
-   358		usb_remove_hcd(hcd);
-   359	
-   360	disable_usb_phy:
-   361		usb_phy_shutdown(hcd->usb_phy);
-   362	
-   363	disable_clk:
-   364		clk_disable_unprepare(xhci->clk);
-   365	
-   366	disable_reg_clk:
-   367		clk_disable_unprepare(xhci->reg_clk);
-   368	
-   369	err_reset:
-   370		reset_control_assert(xhci->reset);
-   371	
-   372	put_hcd:
-   373		usb_put_hcd(hcd);
-   374	
-   375	disable_runtime:
-   376		pm_runtime_put_noidle(&pdev->dev);
-   377		pm_runtime_disable(&pdev->dev);
-   378	
-   379		return ret;
-   380	}
-   381	EXPORT_SYMBOL_GPL(xhci_plat_probe);
-   382	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
