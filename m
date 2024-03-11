@@ -1,222 +1,278 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2046.outbound.protection.outlook.com [40.107.220.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A841314010
-	for <iommu@lists.linux.dev>; Mon, 11 Mar 2024 09:11:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710148283; cv=fail; b=alTC7uxGOc53xLChUllc81hGRfXmsBkWKd5wsfDK38MIu1i+GRgbCMCCfCWwO6VjZTeFikjL0vBVkcFdtXM1X/ruYePSPHgaGZddID4QxxZW4rp6CBSjbG9kukbXV2R1Pkf72VnBuh83O6EGa1EHy/oom2tHbKqg1v4DojtcJMI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710148283; c=relaxed/simple;
-	bh=6PVlhQkv/iyzasNgwxst64sXoUMb3WpyKVu38sVlqMg=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FP9CeZv8kHVTeRekdSVV4yjvXbNDUpg11RD0bsySOXGt0qZ4nPtRPTEpx/yOaW1O0NOfug3grtHez2khindYFtAfrbNezvtqSSPc1+jkOJ2FDZjVlemKyE+P3dzjYfnJ9c6T6Ht3asQNo47od4G6rsbvOCbg/W7KaIa91pHslCo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=gU6nkTsQ; arc=fail smtp.client-ip=40.107.220.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 05B3113FFA
+	for <iommu@lists.linux.dev>; Mon, 11 Mar 2024 09:11:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1710148284; cv=none; b=VJiujWkS/0+B4ziP6hzRcg6nhnMmsELbXHRg2pxoJRGB832DAUd4XeRP7P8eZ6ffiWjRIpc1PPYvTe/0CfmL/ZKXlrXjfefQ1Y0aC6q4FC3cRpAq8uKMoPYaQBMNWB/gQ6X+sGXRoRaKx3Uhwj7YQZ1LsU5zhzZU/z5yFsU5NLk=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1710148284; c=relaxed/simple;
+	bh=miCbQdpcXs3OZwmYKJpRmifu1gWyF3jmGEJzcdzlVas=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=tlsncpl7+i9QItpwxkoNkgbkLJPbAJo0WCz2O77INI/IG3geD2uQQEkmYWtDN11EDKVbatSIfzeLDBInQTcUZOoe4nN+iec88W3MJWO0ZUowdjPnav7vbMDmhLHoQN6/ENXRkUyq0LYtO/eAj9fJ8XMnOGjW6oA7GxbkGdCqwn4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=kl0pxinO; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="gU6nkTsQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nC91eD0iGEhnzUekfgNaq1YyoXftvFdkxeKPykdZNxPRgmzK2kHN4rTcMqsQ4+QCWhVC8H57hgIoVCcih5EyhWGUGsLAa80Zazq24G9GU8x6qvYS+apckWQnJeDnVACDQFs7I14b9G6bLXNigUW5bYNcgq6UylQYZVgHC0Piq5qKHsSojM17+2aiLPQHmFA9RP9m/aBGSFhIVtOsZBPEAIEEFJfAZXYgEWEPWHcwKcd7nOj3BY6ASeO6V2DUEoPy1mmR7d0hh/fzwn+aBHy7Tsn3WRfkixGkua7vbNCNWsR0uoWWxyp8S0+6oBNoF4SjaZEtDqVFlM7wvynsZyyhbw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZvlgFuIbnFLqSPKFmQcTC7rlENseqrla6W/y9pGz6D4=;
- b=VFwjq+IF3zJHrRL8qknaR07fL/EIZsoU9FH2yvpz9HlUXED5xdnkUBh5Tu/Lm1cmYnpCduFY+8fP4REClQ76WiUkWr94RlW++MuWw+Pw6x5avig8vUVifcAlz8VFHNdQWdaFqa85q3c5cxLf6PD+9At2/gZ6Er5ODGICFYYW7euhZuIF+1vlbU8XbJCTwM4Ho6l9A77aywMl7nOPvnlroEWeVMynbaWmhEnOFlPqp7N/1lwWwgFPa9iwCPYJxJ06zKgbsz4YWSU8+Io94YxsswQkXBUydHYEzd1i7wo3DeXijaUSFj1fUvgpR9Al2vr5PwboZpmzFEJVyNHlmW7ibg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZvlgFuIbnFLqSPKFmQcTC7rlENseqrla6W/y9pGz6D4=;
- b=gU6nkTsQF0Dvn+jAotw5IMomW4cJD9tN75oIJ9lcitpEcAGZuqXeb2rOr7mQJ88wircEP1sTjGv+JceiuFh9lcscRF6g9NWxUO5VYjINacUKKwGv49uT0grB169o2pj1hTzqwpgL4N9TdLg7colQ/Ng0WXk9G+6Czsw+gVFHe1A=
-Received: from MN2PR07CA0022.namprd07.prod.outlook.com (2603:10b6:208:1a0::32)
- by DS7PR12MB5838.namprd12.prod.outlook.com (2603:10b6:8:79::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.35; Mon, 11 Mar
- 2024 09:11:17 +0000
-Received: from BL02EPF0001A107.namprd05.prod.outlook.com
- (2603:10b6:208:1a0:cafe::8c) by MN2PR07CA0022.outlook.office365.com
- (2603:10b6:208:1a0::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.35 via Frontend
- Transport; Mon, 11 Mar 2024 09:11:17 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- BL02EPF0001A107.mail.protection.outlook.com (10.167.241.136) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.7386.12 via Frontend Transport; Mon, 11 Mar 2024 09:11:17 +0000
-Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Mon, 11 Mar
- 2024 04:11:14 -0500
-From: Vasant Hegde <vasant.hegde@amd.com>
-To: <iommu@lists.linux.dev>, <joro@8bytes.org>
-CC: <suravee.suthikulpanit@amd.com>, <wei.huang2@amd.com>,
-	<jsnitsel@redhat.com>, <jgg@ziepe.ca>, Vasant Hegde <vasant.hegde@amd.com>,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH v7 08/15] iommu/amd: Enable PCI features based on attached domain capability
-Date: Mon, 11 Mar 2024 09:08:36 +0000
-Message-ID: <20240311090843.133455-9-vasant.hegde@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240311090843.133455-1-vasant.hegde@amd.com>
-References: <20240311090843.133455-1-vasant.hegde@amd.com>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="kl0pxinO"
+Received: from 8bytes.org (p4ffe0c3c.dip0.t-ipconnect.de [79.254.12.60])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id B4A131C7CA4;
+	Mon, 11 Mar 2024 10:11:11 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1710148272;
+	bh=miCbQdpcXs3OZwmYKJpRmifu1gWyF3jmGEJzcdzlVas=;
+	h=Date:From:To:Cc:Subject:From;
+	b=kl0pxinOpkekigSgnns/xKzjeAGB2uu2AD18WeyBMFnsnKX5QEQwShVU01PoRy1ka
+	 q6EPkRHWjlmwCD1km/4C0tAc9vSNrHahTbPw/I+bcz2v3HvOmlnoEvRYjcjks5Piid
+	 8/27hjenRmk3oMhDj2gzGECLVnLBLWigHniyXgJmzTe5KKHDgzfg9JO/ZFMp6PEZ1L
+	 YVQp/+wH54Yh9vtIPrr0wjoHrzFw0Stp8IbOZubT4lA2PTq8X0UY2+JRogHaRTWFvb
+	 GwRt8e9vKbq4shmHFNoAzdOTwVmyEmhDMJDqOKThiENTBioc11PSkzfjPnRrcNIDi7
+	 /XJBVRwDX8mjA==
+Date: Mon, 11 Mar 2024 10:11:09 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev
+Subject: [git pull] IOMMU Updates for Linux v6.9
+Message-ID: <Ze7KrT5is81WGTRT@8bytes.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL02EPF0001A107:EE_|DS7PR12MB5838:EE_
-X-MS-Office365-Filtering-Correlation-Id: b394c537-9494-4830-056c-08dc41ab35b4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	+PnbP+i2g1uFYp78aZ1+ohwBkNE2DBXihnE4Qb7ZV5SISu2IoJ69I9m4+k7r5uiej2gj+yNO+UeKtcHUMDvxf1IZKmUPWmb4dBjFLY/naFJeryuxyxpfkNyBfTHbVZZ+KXmtNdkmDW+DDdxBxUAHc0tiZ0FDAv9+9rf8st80Gljnedjpka7WkJUU3WyFu+kS6sihRjCdiYxqRzjwz6BGFWhs1fPZdL3zi7QjQD0ib7KPCH0hhTJ0xFJ+Jy4uA/enKnFQV+AT9/pRdf7MjK7UrWT1xgcSvmjHqS8WetB+IieMdR+334kK/R2E7PnEmZrNnypRf55Wa4FtTVJRAmNGD/v6wuDkAs6dcWGvdd/ac5Bs+5u3xuCUJJz4dl/rPx6Kl9ofDXuLNUBlYE8fBiyawXtVOUIINAa7x+if5jJ5c7gtz1++Z6E1gHbzjBeqcF2P1R1iM27sa+lJS0I2sGDq/+eKe0AxZBenkKV5wqBk4E3iAOnuUNy1OU0CI1wRkHVwbqYSk+68OXER4CdV4PbosdLQeZhrOEbxEQQzbY7YhzqQCP9xKADzUcc56ZAWq58fG3S5JAGT1yyyHVbfy8eW4DFI45fdHM8fjAtno0Rd55dP8Zr5DAFe9sqXhkksz2BnWEKPOyOEpPgUz3KqJrXBnMVpwYqTcjNpZcrSTn9bvPwmPSbFSr0KUtstFHpMGGx4hwv9QbbpicxvzaLpfyQr8JVw755Dos4clLCv3JQwy0FMtg/4KBpZ0ey2TD1AeDnV
-X-Forefront-Antispam-Report:
-	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(1800799015)(82310400014)(36860700004)(376005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2024 09:11:17.5502
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b394c537-9494-4830-056c-08dc41ab35b4
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL02EPF0001A107.namprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5838
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Commit eda8c2860ab6 ("iommu/amd: Enable device ATS/PASID/PRI capabilities
-independently") changed the way it enables device capability while
-attaching devices. I missed to account the attached domain capability.
-Meaning if domain is not capable of handling PASID/PRI (ex: paging
-domain with v1 page table) then enabling device feature is not required.
+Hi Linus,
 
-This patch enables PASID/PRI only if domain is capable of handling SVA.
-Also move pci feature enablement to do_attach() function so that we make
-SVA capability in one place. Finally make PRI enable/disable functions as
-static functions.
+The following changes since commit 90d35da658da8cff0d4ecbb5113f5fac9d00eb72:
 
-Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/iommu/amd/amd_iommu.h |  4 ----
- drivers/iommu/amd/iommu.c     | 22 ++++++++++++++--------
- 2 files changed, 14 insertions(+), 12 deletions(-)
+  Linux 6.8-rc7 (2024-03-03 13:02:52 -0800)
 
-diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
-index b365c02a9694..d39141f81229 100644
---- a/drivers/iommu/amd/amd_iommu.h
-+++ b/drivers/iommu/amd/amd_iommu.h
-@@ -46,10 +46,6 @@ extern int amd_iommu_gpt_level;
- 
- bool amd_iommu_pasid_supported(void);
- 
--/* Device capabilities */
--int amd_iommu_pdev_enable_cap_pri(struct pci_dev *pdev);
--void amd_iommu_pdev_disable_cap_pri(struct pci_dev *pdev);
--
- /* GCR3 setup */
- int amd_iommu_set_gcr3(struct iommu_dev_data *dev_data,
- 		       ioasid_t pasid, unsigned long gcr3);
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index cf727db66d61..60a14e184dcc 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -399,7 +399,7 @@ static inline void pdev_disable_cap_ats(struct pci_dev *pdev)
- 	}
- }
- 
--int amd_iommu_pdev_enable_cap_pri(struct pci_dev *pdev)
-+static inline int pdev_enable_cap_pri(struct pci_dev *pdev)
- {
- 	struct iommu_dev_data *dev_data = dev_iommu_priv_get(&pdev->dev);
- 	int ret = -EINVAL;
-@@ -407,6 +407,9 @@ int amd_iommu_pdev_enable_cap_pri(struct pci_dev *pdev)
- 	if (dev_data->pri_enabled)
- 		return 0;
- 
-+	if (!dev_data->ats_enabled)
-+		return 0;
-+
- 	if (dev_data->flags & AMD_IOMMU_DEVICE_FLAG_PRI_SUP) {
- 		/*
- 		 * First reset the PRI state of the device.
-@@ -423,7 +426,7 @@ int amd_iommu_pdev_enable_cap_pri(struct pci_dev *pdev)
- 	return ret;
- }
- 
--void amd_iommu_pdev_disable_cap_pri(struct pci_dev *pdev)
-+static inline void pdev_disable_cap_pri(struct pci_dev *pdev)
- {
- 	struct iommu_dev_data *dev_data = dev_iommu_priv_get(&pdev->dev);
- 
-@@ -465,15 +468,14 @@ static void pdev_enable_caps(struct pci_dev *pdev)
- {
- 	pdev_enable_cap_ats(pdev);
- 	pdev_enable_cap_pasid(pdev);
--	amd_iommu_pdev_enable_cap_pri(pdev);
--
-+	pdev_enable_cap_pri(pdev);
- }
- 
- static void pdev_disable_caps(struct pci_dev *pdev)
- {
- 	pdev_disable_cap_ats(pdev);
- 	pdev_disable_cap_pasid(pdev);
--	amd_iommu_pdev_disable_cap_pri(pdev);
-+	pdev_disable_cap_pri(pdev);
- }
- 
- /*
-@@ -2032,6 +2034,7 @@ static int do_attach(struct iommu_dev_data *dev_data,
- 		     struct protection_domain *domain)
- {
- 	struct amd_iommu *iommu = get_amd_iommu_from_dev_data(dev_data);
-+	struct pci_dev *pdev;
- 	int ret = 0;
- 
- 	/* Update data structures */
-@@ -2046,10 +2049,16 @@ static int do_attach(struct iommu_dev_data *dev_data,
- 	domain->dev_iommu[iommu->index] += 1;
- 	domain->dev_cnt                 += 1;
- 
-+	pdev = dev_is_pci(dev_data->dev) ? to_pci_dev(dev_data->dev) : NULL;
- 	if (pdom_is_sva_capable(domain)) {
- 		ret = init_gcr3_table(dev_data, domain);
- 		if (ret)
- 			return ret;
-+
-+		if (pdev)
-+			pdev_enable_caps(pdev);
-+	} else if (pdev) {
-+		pdev_enable_cap_ats(pdev);
- 	}
- 
- 	/* Update device table */
-@@ -2104,9 +2113,6 @@ static int attach_device(struct device *dev,
- 		goto out;
- 	}
- 
--	if (dev_is_pci(dev))
--		pdev_enable_caps(to_pci_dev(dev));
--
- 	ret = do_attach(dev_data, domain);
- 
- out:
--- 
-2.31.1
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v6.9
+
+for you to fetch changes up to f379a7e9c3b5c325ff550e911ea42092295695de:
+
+  Merge branches 'arm/mediatek', 'arm/renesas', 'arm/smmu', 'x86/vt-d', 'x86/amd' and 'core' into next (2024-03-08 09:05:59 +0100)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v6.9
+
+Including:
+
+	- Core changes:
+	  - Constification of bus_type pointer
+	  - Preparations for user-space page-fault delivery
+	  - Use a named kmem_cache for IOVA magazines
+
+	- Intel VT-d changes from Lu Baolu:
+	  - Add RBTree to track iommu probed devices
+	  - Add Intel IOMMU debugfs document
+	  - Cleanup and refactoring
+
+	- ARM-SMMU Updates from Will Deacon:
+	  - Device-tree binding updates for a bunch of Qualcomm SoCs
+	  - SMMUv2: Support for Qualcomm X1E80100 MDSS
+	  - SMMUv3: Significant rework of the driver's STE manipulation and
+	    domain handling code. This is the initial part of a larger scale
+	    rework aiming to improve the driver's implementation of the
+	    IOMMU-API in preparation for hooking up IOMMUFD support.
+
+	- AMD-Vi Updates:
+	  - Refactor GCR3 table support for SVA
+	  - Cleanups
+
+	- Some smaller cleanups and fixes
+
+----------------------------------------------------------------
+Abel Vesa (1):
+      iommu/arm-smmu-qcom: Add X1E80100 MDSS compatible
+
+Bert Karwatzki (1):
+      iommu: Fix compilation without CONFIG_IOMMU_INTEL
+
+Erick Archer (2):
+      iommu/mtk_iommu: Use devm_kcalloc() instead of devm_kzalloc()
+      iommu/vt-d: Use kcalloc() instead of kzalloc()
+
+Ethan Zhao (3):
+      PCI: Make pci_dev_is_disconnected() helper public for other drivers
+      iommu/vt-d: Don't issue ATS Invalidation request when device is disconnected
+      iommu/vt-d: Improve ITE fault handling if target device isn't present
+
+Jason Gunthorpe (16):
+      iommu/arm-smmu-v3: Make STE programming independent of the callers
+      iommu/arm-smmu-v3: Consolidate the STE generation for abort/bypass
+      iommu/arm-smmu-v3: Move the STE generation for S1 and S2 domains into functions
+      iommu/arm-smmu-v3: Build the whole STE in arm_smmu_make_s2_domain_ste()
+      iommu/arm-smmu-v3: Hold arm_smmu_asid_lock during all of attach_dev
+      iommu/arm-smmu-v3: Compute the STE only once for each master
+      iommu/arm-smmu-v3: Do not change the STE twice during arm_smmu_attach_dev()
+      iommu/arm-smmu-v3: Put writing the context descriptor in the right order
+      iommu/arm-smmu-v3: Pass smmu_domain to arm_enable/disable_ats()
+      iommu/arm-smmu-v3: Remove arm_smmu_master->domain
+      iommu/arm-smmu-v3: Check that the RID domain is S1 in SVA
+      iommu/arm-smmu-v3: Add a global static IDENTITY domain
+      iommu/arm-smmu-v3: Add a global static BLOCKED domain
+      iommu/arm-smmu-v3: Use the identity/blocked domain during release
+      iommu/arm-smmu-v3: Pass arm_smmu_domain and arm_smmu_device to finalize
+      iommu/arm-smmu-v3: Convert to domain_alloc_paging()
+
+Jingqi Liu (1):
+      iommu/vt-d: Add the document for Intel IOMMU debugfs
+
+Joerg Roedel (2):
+      Merge tag 'arm-smmu-updates' of git://git.kernel.org/pub/scm/linux/kernel/git/will/linux into arm/smmu
+      Merge branches 'arm/mediatek', 'arm/renesas', 'arm/smmu', 'x86/vt-d', 'x86/amd' and 'core' into next
+
+Konrad Dybcio (1):
+      dt-bindings: arm-smmu: Add QCM2290 GPU SMMU
+
+Krzysztof Kozlowski (4):
+      iommu: constify pointer to bus_type
+      iommu: constify of_phandle_args in xlate
+      iommu: constify fwnode in iommu_ops_from_fwnode()
+      iommu: re-use local fwnode variable in iommu_ops_from_fwnode()
+
+Lu Baolu (24):
+      iommu: Move iommu fault data to linux/iommu.h
+      iommu/arm-smmu-v3: Remove unrecoverable faults reporting
+      iommu: Remove unrecoverable fault data
+      iommu: Cleanup iopf data structure definitions
+      iommu: Merge iopf_device_param into iommu_fault_param
+      iommu: Remove iommu_[un]register_device_fault_handler()
+      iommu: Merge iommu_fault_event and iopf_fault
+      iommu: Prepare for separating SVA and IOPF
+      iommu: Make iommu_queue_iopf() more generic
+      iommu: Separate SVA and IOPF
+      iommu: Refine locking for per-device fault data management
+      iommu: Use refcount for fault data access
+      iommu: Improve iopf_queue_remove_device()
+      iommu: Track iopf group instead of last fault
+      iommu: Make iopf_group_response() return void
+      iommu: Make iommu_report_device_fault() return void
+      iommu/vt-d: Remove INTEL_IOMMU_BROKEN_GFX_WA
+      iommu/vt-d: Use rbtree to track iommu probed devices
+      iommu/vt-d: Use device rbtree in iopf reporting path
+      iommu: Add static iommu_ops->release_domain
+      iommu/vt-d: Fix NULL domain on device release
+      iommu/vt-d: Setup scalable mode context entry in probe path
+      iommu/vt-d: Remove scalable mode context entry setup from attach_dev
+      iommu/vt-d: Remove scalabe mode in domain_context_clear_one()
+
+Mario Limonciello (1):
+      iommu/amd: Mark interrupt as managed
+
+Neil Armstrong (2):
+      dt-bindings: arm-smmu: Fix SM8[45]50 GPU SMMU 'if' condition
+      dt-bindings: arm-smmu: Document SM8650 GPU SMMU
+
+Pasha Tatashin (1):
+      iommu/iova: use named kmem_cache for iova magazines
+
+Robin Murphy (4):
+      iommu/iova: Tidy up iova_cache_get() failure
+      iommu/iova: Reorganise some code
+      iommu/ipmmu-vmsa: Minor cleanups
+      iommu/dma: Document min_align_mask assumption
+
+Suravee Suthikulpanit (8):
+      iommu/amd: Introduce get_amd_iommu_from_dev()
+      iommu/amd: Introduce struct protection_domain.pd_mode
+      iommu/amd: Introduce per-device GCR3 table
+      iommu/amd: Refactor helper function for setting / clearing GCR3
+      iommu/amd: Refactor attaching / detaching device functions
+      iommu/amd: Refactor protection_domain helper functions
+      iommu/amd: Refactor GCR3 table helper functions
+      iommu/amd: Remove unused GCR3 table parameters from struct protection_domain
+
+Tina Zhang (3):
+      iommu/vt-d: Remove treatment for revoking PASIDs with pending page faults
+      iommu/vt-d: Remove initialization for dynamically heap-allocated rcu_head
+      iommu/vt-d: Merge intel_svm_bind_mm() into its caller
+
+Vasant Hegde (16):
+      iommu/amd: Remove unused PPR_* macros
+      iommu/amd: Remove unused IOVA_* macro
+      iommu/amd: Remove unused APERTURE_* macros
+      iommu/amd: Remove duplicate function declarations from amd_iommu.h
+      iommu/amd: Remove redundant error check in amd_iommu_probe_device()
+      iommu/amd: Remove EXPORT_SYMBOL for perf counter related functions
+      iommu/amd: Pass struct iommu_dev_data to set_dte_entry()
+      iommu/amd: Enable Guest Translation before registering devices
+      iommu/amd: Use protection_domain.flags to check page table mode
+      iommu/amd: Add support for device based TLB invalidation
+      iommu/amd: Rearrange GCR3 table setup code
+      iommu: Introduce iommu_group_mutex_assert()
+      iommu/amd: Remove unused flush pasid functions
+      iommu/amd: Rearrange device flush code
+      iommu/amd: Introduce per-device domain ID to fix potential TLB aliasing issue
+      iommu/amd: Fix sleeping in atomic context
+
+Will Deacon (1):
+      Merge branch 'for-joerg/arm-smmu/bindings' into for-joerg/arm-smmu/updates
+
+ Documentation/ABI/testing/debugfs-intel-iommu      | 276 +++++++
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |  20 +-
+ MAINTAINERS                                        |   1 -
+ drivers/iommu/Kconfig                              |   6 +-
+ drivers/iommu/Makefile                             |   3 +-
+ drivers/iommu/amd/amd_iommu.h                      |  41 +-
+ drivers/iommu/amd/amd_iommu_types.h                |  34 +-
+ drivers/iommu/amd/init.c                           |  12 +-
+ drivers/iommu/amd/io_pgtable_v2.c                  |  21 +-
+ drivers/iommu/amd/iommu.c                          | 634 ++++++++--------
+ drivers/iommu/apple-dart.c                         |   3 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |  22 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 814 +++++++++++++--------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |   4 -
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   1 +
+ drivers/iommu/arm/arm-smmu/arm-smmu.c              |   3 +-
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c            |   3 +-
+ drivers/iommu/dma-iommu.c                          |   5 +
+ drivers/iommu/exynos-iommu.c                       |   2 +-
+ drivers/iommu/intel/Kconfig                        |  12 +-
+ drivers/iommu/intel/Makefile                       |   2 +
+ drivers/iommu/intel/dmar.c                         |  26 +-
+ drivers/iommu/intel/iommu.c                        | 337 ++++-----
+ drivers/iommu/intel/iommu.h                        |  14 +-
+ drivers/iommu/intel/pasid.c                        | 205 ++++++
+ drivers/iommu/intel/pasid.h                        |   2 +
+ drivers/iommu/intel/perf.c                         |   2 +-
+ drivers/iommu/intel/svm.c                          |  76 +-
+ drivers/iommu/io-pgfault.c                         | 463 +++++++-----
+ drivers/iommu/iommu-priv.h                         |   5 +-
+ drivers/iommu/iommu-sva.c                          |  71 +-
+ drivers/iommu/iommu-sva.h                          |  71 --
+ drivers/iommu/iommu.c                              | 280 +------
+ drivers/iommu/iova.c                               | 143 ++--
+ drivers/iommu/ipmmu-vmsa.c                         |  19 +-
+ drivers/iommu/irq_remapping.c                      |   3 +-
+ drivers/iommu/msm_iommu.c                          |   4 +-
+ drivers/iommu/mtk_iommu.c                          |   5 +-
+ drivers/iommu/mtk_iommu_v1.c                       |   7 +-
+ drivers/iommu/of_iommu.c                           |   2 +-
+ drivers/iommu/rockchip-iommu.c                     |   2 +-
+ drivers/iommu/sprd-iommu.c                         |   3 +-
+ drivers/iommu/sun50i-iommu.c                       |   2 +-
+ drivers/iommu/tegra-smmu.c                         |   4 +-
+ drivers/iommu/virtio-iommu.c                       |   3 +-
+ drivers/pci/pci.h                                  |   5 -
+ include/linux/iommu.h                              | 295 ++++++--
+ include/linux/pci.h                                |   5 +
+ include/uapi/linux/iommu.h                         | 161 ----
+ 49 files changed, 2295 insertions(+), 1839 deletions(-)
+ create mode 100644 Documentation/ABI/testing/debugfs-intel-iommu
+ delete mode 100644 drivers/iommu/iommu-sva.h
+ delete mode 100644 include/uapi/linux/iommu.h
+
+Please pull.
+
+Thanks,
+
+	Joerg
