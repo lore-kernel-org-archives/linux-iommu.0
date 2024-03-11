@@ -1,41 +1,35 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB5573E491;
-	Mon, 11 Mar 2024 13:29:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E6E83D541
+	for <iommu@lists.linux.dev>; Mon, 11 Mar 2024 13:36:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710163756; cv=none; b=ap/6tITEmt42osGNQ/qGDikKYWghQQMVRCVgprJB0qsSHJh9saHaV33Z1b3jkqqJwmSMVkKzRY81TmzG87IK1olPqtVrQM7jSONBJnQxkPDrudnom3Uh4FRzXsOfBaHWA8Coskv5kTrtyRSVi6i2EGCgmC9MDYWaMdINmkFDIDA=
+	t=1710164183; cv=none; b=Qmg7jpMKBdueqYyrXl79o5ObkynGyl/ncssJEMYFWriWICV7acro6l/AR24iq9S6rDY6ZK/JUCYJoYfsdCqZR9hHyktfEBoR1f/fpwgFrfhf47BFgTT4hMTB54AQMAZG0hYUq0s97zkSWGsaj3/FdG/lrrAJIjhopT14ZVvFonw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710163756; c=relaxed/simple;
-	bh=qtskDbr0GRmzH7Abac91cv2vivMGRxnKLQdxYEF6sIQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=aubucTW4XxZOVU8pPftef5WA+dFZ2hrSjpiZy+b+oN2BvXRLQbmcg4X25OdzEJUPtFnb3h28P0Q3fWsdYxX89bn7IoV1M1H93Pklw39p1AQBVXeLyGMXMGa8qKDkc+za2Dy9xTZipf9kTLZTmmT2Q6uidc/IT5dfOZlopjEa+2g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=PfGfgQet; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="PfGfgQet"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
-	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-	Content-Description:In-Reply-To:References;
-	bh=Zt+0PhFTJi/O7n8lmrcYH3hrlQAEKRRv5KT+zMKiFEw=; b=PfGfgQet4DsFdrtZgkMcBQXIQ7
-	Qonw8N8tdt+YCPYDqx3m4YVmCxlqpZCtRRFzYggPiMPdzD+DDTConV9Op48pb6jNLtLlIjyJHTvbQ
-	0713usiNdpmcoDjlohqUJQx/gOoELeXieqmqO69rghMT05TxW6iHbz0YRyNwJFn5Gxhwe4gTHK/OW
-	eyWx8SX69mMVwm/QO9UfnVa2hKQ20oUSTcjhC0zsay3/qd3FSpL+1P7GQjRmtb6DtFvrMYRqA4MDc
-	jHU0I6lRUrEonz0+q6Yr469T19B0zbxHVn72EmFp/wfLOVgtmb5dVQX0zd+JvJ0ygw8OSs9Gk15FE
-	cyMiJfgQ==;
-Received: from [50.226.187.238] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1rjfiJ-00000001cYG-1p21;
-	Mon, 11 Mar 2024 13:29:11 +0000
-Date: Mon, 11 Mar 2024 07:29:09 -0600
-From: Christoph Hellwig <hch@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: [GIT PULL] dma-mapping updates for Linux 6.9
-Message-ID: <Ze8HJco2qTcDcxDn@infradead.org>
+	s=arc-20240116; t=1710164183; c=relaxed/simple;
+	bh=wQ5Yp4pXWaoBbmBNYOPfp7lvuKVchthqXLs7iIX5CUw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PRvtfiS92RgB1LyIeAwFSjW9ZbYDhy1xpr0w9KHlSWAIPb8xQhGKAbPaynwAZWbsR9tF45J6xMLIlwUcRe9OFjrO3GYdYRdZDuw6lZEAGDCdHfyd15MYcmauZeYyAjHY6iNWt4Jar8pwgnbioFqZvzLHV6G3E+dPN5mQhf8ON6A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 48E0A68B05; Mon, 11 Mar 2024 14:36:17 +0100 (CET)
+Date: Mon, 11 Mar 2024 14:36:17 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Will Deacon <will@kernel.org>
+Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
+	iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v6 0/6] Fix double allocation in swiotlb_alloc()
+Message-ID: <20240311133617.GA1349@lst.de>
+References: <20240308152829.25754-1-will@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -44,37 +38,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20240308152829.25754-1-will@kernel.org>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-Pretty light load for now, but a big swiotlb bug fix has been brewing
-for a while and will follow soon.
 
-The following changes since commit cf1182944c7cc9f1c21a8a44e0d29abe12527412:
-
-  Merge tag 'lsm-pr-20240227' of git://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/lsm (2024-02-27 17:00:10 -0800)
-
-are available in the Git repository at:
-
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.9-2024-03-11
-
-for you to fetch changes up to b9fa16949d18e06bdf728a560f5c8af56d2bdcaf:
-
-  dma-direct: Leak pages on dma_set_decrypted() failure (2024-02-28 05:31:38 -0800)
-
-----------------------------------------------------------------
-dma-mapping updates for Linux 6.9
-
- - leak pages on dma_set_decrypted() failure (Rick Edgecombe)
- - add a new swiotlb debugfs file (ZhangPeng)
-
-----------------------------------------------------------------
-Rick Edgecombe (1):
-      dma-direct: Leak pages on dma_set_decrypted() failure
-
-ZhangPeng (1):
-      swiotlb: add debugfs to track swiotlb transient pool usage
-
- include/linux/swiotlb.h |  3 +++
- kernel/dma/direct.c     |  9 +++++----
- kernel/dma/swiotlb.c    | 46 ++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 54 insertions(+), 4 deletions(-)
+Thanks, I've applied this to the dma-mapping tree and plan to send it
+onto Linus after a bit of soaking time.
