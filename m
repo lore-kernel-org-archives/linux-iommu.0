@@ -1,137 +1,154 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2424A4206B
-	for <iommu@lists.linux.dev>; Mon, 11 Mar 2024 20:05:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 018851DDFA;
+	Mon, 11 Mar 2024 20:39:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.147.86
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710187513; cv=none; b=QOSsTZ2GeN6AmaNuB8BCtobX2EYSdUTQ1L+OzkoZQVbF9uvE+g0I7fziuqsoRoZIK9gjK+6NVQh/6oFuMwT5/oMvIObsn/mmXKDmcIO+scFq3MBlR/6fsD3SsSpnOHy3hu+jr3gHaKX42B6DABs/wMdIhXMUk9hWUA9MuGljjFI=
+	t=1710189598; cv=none; b=Y+Nymw6y99Cz+O2GUj0apEHdX/hAVAkjPYseGrIUP4e4t3QhhgweeprQtB/fs+G4vZKCx464gf7TYYIgRUJLBH/i5NxGbjTDm1H3pZil3cG8cHVWH7Wb2iDkncdexbWaUIDAZ7Q0RRtspMqEGwK2K66mcUoUK0mPqb8NTdLgb9U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710187513; c=relaxed/simple;
-	bh=Dd3L8MnUZbt3XNG7D95vnVqMzNTpKO7da/OXJzhdrJY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=B7LLaKAfSHch9ilFEic5qX7gPEDnq+pRMYJB/octnospFAfehhpIrv0OQlk2ExhvrYxWf+CZSLce8oau/xHX73r2PLX+FlV/XtKYX/quUHY0Rdav6IJC6XNgurFXYxTRRvX7FsnSt4jEj8ePK9ZaLmOV9HO3HpkpHs6+WjCIQ6w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=wyEKgURJ; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1710189598; c=relaxed/simple;
+	bh=GLRH/ff873bHDZ3G/dS9FCmtnVNAdEXsgR2369HqHu0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=m7bka5ew7eATEo1AXzAdl4idZOSjPjRoXuD7KdZ5BxQJEwM7wzc0N+oA4ggWZDGrLzsOF4ALIFw7TEw1uhRZA9AGChhbnR6wZ+Lw71koJ5E1WqK4NW2ACfLOdZMgAIQLjyDyqc6pOu+sBTR3wts3Vq0iqSo6kHpnXfKo5Ah9DBg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com; spf=pass smtp.mailfrom=hpe.com; dkim=pass (2048-bit key) header.d=hpe.com header.i=@hpe.com header.b=YokwowUm; arc=none smtp.client-ip=148.163.147.86
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hpe.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="wyEKgURJ"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	dkim=pass (2048-bit key) header.d=hpe.com header.i=@hpe.com header.b="YokwowUm"
+Received: from pps.filterd (m0134422.ppops.net [127.0.0.1])
+	by mx0b-002e3701.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 42BKZXCq023964;
+	Mon, 11 Mar 2024 20:39:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pps0720; bh=bG9zvg+KT7rDf9tdsNZ9Pa4BjTW2/RgQhqLVC2YoX5o=;
+ b=YokwowUmIu0MFrRelHcvOUvw7m4+JyxXX5gblyRsenvtI6spiguzX2Q5apWeEb7qQrIA
+ 9t5ytlj0bcUIKHPH0UDNH1n+VxDGzdafeR4gVPGd6voBz9C3VbXNG3sniueYDaiKX376
+ GE4XbyckKqDTGDbhCL6YfZqrqgRenR3ngsZf2nbxj5bl2AHEW1WxYKYBF2dLNnVcN0l5
+ gbUL6Yr5T/9f9PBotIWSsTvlMpTpXHStfKF7KEQHxOeaogm2InewH8crQCkCZh/eaTRO
+ 46VxHFHBtJPflWYA3tOSnlv3uGt9wjLxLjUMJzmjCUsdnH4n1zb0ATa6Vx7UNJ/EERAf VA== 
+Received: from p1lg14880.it.hpe.com ([16.230.97.201])
+	by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3wsy5mcvdh-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 11 Mar 2024 20:39:14 +0000
+Received: from p1lg14886.dc01.its.hpecorp.net (unknown [10.119.18.237])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by p1lg14880.it.hpe.com (Postfix) with ESMTPS id 78C1B8005C8;
+	Mon, 11 Mar 2024 20:39:03 +0000 (UTC)
+Received: from hpe.com (unknown [16.231.227.36])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id C4DE01CFAE6;
-	Mon, 11 Mar 2024 21:05:08 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1710187509; bh=UR9/fHtF3ylhFb+vQrKq2FopW5DRuWNRssvKZI8ZonY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=wyEKgURJ/lwuVhrDSJ9tPWRN7winKNNaRknwXJWxewn2lpx4cAtHvgJs6XzuZc9vo
-	 6iX4aBnh3QizG7IyItjoQqmj1Uuz7zyTUDcIlEhiYP1iTTk7MV8m9O+yZZ8nZD7sjI
-	 Jlsvq3IsJaOuCWgX+yRbAGwnA+jNnno69KDEpJ5hjY4nwdSD46calyYGhDtlz82aia
-	 JyvClztpcOJYNRLHUUR9oN3Z/J6n/0+p8YP+Gb73meFyME9cVtiajKOcmwHIyDLGgA
-	 dlRY+OOfeCBWrU8nCdPTp+NHfgx8VMxJJp1x7IPyS1juHZwMhY/8L7iDDqTKop9M6e
-	 MArHNeOxOk1kA==
-Date: Mon, 11 Mar 2024 21:05:07 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Will Deacon <will@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>
-Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
- iommu@lists.linux.dev, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
- Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
- <decui@microsoft.com>, Michael Kelley <mhklinux@outlook.com>
-Subject: Re: [PATCH v6 4/6] swiotlb: Fix alignment checks when both
- allocation and DMA masks are present
-Message-ID: <20240311210507.217daf8b@meshulam.tesarici.cz>
-In-Reply-To: <20240308152829.25754-5-will@kernel.org>
-References: <20240308152829.25754-1-will@kernel.org>
-	<20240308152829.25754-5-will@kernel.org>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	(Client did not present a certificate)
+	by p1lg14886.dc01.its.hpecorp.net (Postfix) with ESMTPS id 981658033F2;
+	Mon, 11 Mar 2024 20:39:01 +0000 (UTC)
+Date: Mon, 11 Mar 2024 15:38:59 -0500
+From: Dimitri Sivanich <sivanich@hpe.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Steve Wahl <steve.wahl@hpe.com>,
+        Russ Anderson <russ.anderson@hpe.com>,
+        Dimitri Sivanich <sivanich@hpe.com>
+Subject: Re: [PATCH] Allocate DMAR fault interrupts locally
+Message-ID: <Ze9r47riIq9ovBCY@hpe.com>
+References: <ZeDj/LK56borSxO4@hpe.com>
+ <87plwe7w3m.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87plwe7w3m.ffs@tglx>
+X-Proofpoint-ORIG-GUID: ot8_frxBggv2_ZPl4NxLJUxCiusslAmV
+X-Proofpoint-GUID: ot8_frxBggv2_ZPl4NxLJUxCiusslAmV
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-03-11_11,2024-03-11_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 phishscore=0
+ mlxlogscore=798 mlxscore=0 priorityscore=1501 adultscore=0 bulkscore=0
+ clxscore=1015 spamscore=0 lowpriorityscore=0 impostorscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2311290000 definitions=main-2403110158
 
-On Fri,  8 Mar 2024 15:28:27 +0000
-Will Deacon <will@kernel.org> wrote:
+Thomas!
 
-> Nicolin reports that swiotlb buffer allocations fail for an NVME device
-> behind an IOMMU using 64KiB pages. This is because we end up with a
-> minimum allocation alignment of 64KiB (for the IOMMU to map the buffer
-> safely) but a minimum DMA alignment mask corresponding to a 4KiB NVME
-> page (i.e. preserving the 4KiB page offset from the original allocation).
-> If the original address is not 4KiB-aligned, the allocation will fail
-> because swiotlb_search_pool_area() erroneously compares these unmasked
-> bits with the 64KiB-aligned candidate allocation.
+On Thu, Feb 29, 2024 at 11:18:37PM +0100, Thomas Gleixner wrote:
+> Dimitri!
 > 
-> Tweak swiotlb_search_pool_area() so that the DMA alignment mask is
-> reduced based on the required alignment of the allocation.
+> On Thu, Feb 29 2024 at 14:07, Dimitri Sivanich wrote:
 > 
-> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
-> Reported-by: Nicolin Chen <nicolinc@nvidia.com>
-> Link: https://lore.kernel.org/r/cover.1707851466.git.nicolinc@nvidia.com
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Reviewed-by: Michael Kelley <mhklinux@outlook.com>
-> Signed-off-by: Will Deacon <will@kernel.org>
-> ---
->  kernel/dma/swiotlb.c | 11 +++++++++--
->  1 file changed, 9 insertions(+), 2 deletions(-)
+> > +}
+> > +
+> > +static int __init assign_dmar_vectors(void)
+> > +{
+> > +	struct work_struct irq_remap_work;
+> > +	int nid;
+> > +
+> > +	INIT_WORK(&irq_remap_work, irq_remap_enable_fault_handling_thr);
+> > +	cpus_read_lock();
+> > +	for_each_online_node(nid) {
+> > +		/* Boot cpu dmar vectors are assigned before the rest */
+> > +		if (nid == cpu_to_node(get_boot_cpu_id()))
+> > +			continue;
+> > +		schedule_work_on(cpumask_first(cpumask_of_node(nid)),
+> > +				 &irq_remap_work);
+> > +		flush_work(&irq_remap_work);
+> > +	}
+> > +	cpus_read_unlock();
+> > +	return 0;
+> > +}
+> > +
+> > +arch_initcall(assign_dmar_vectors);
 > 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index c20324fba814..c381a7ed718f 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -981,8 +981,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
->  	dma_addr_t tbl_dma_addr =
->  		phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
->  	unsigned long max_slots = get_max_slots(boundary_mask);
-> -	unsigned int iotlb_align_mask =
-> -		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
-> +	unsigned int iotlb_align_mask = dma_get_min_align_mask(dev);
->  	unsigned int nslots = nr_slots(alloc_size), stride;
->  	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
->  	unsigned int index, slots_checked, count = 0, i;
-> @@ -993,6 +992,14 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
->  	BUG_ON(!nslots);
->  	BUG_ON(area_index >= pool->nareas);
->  
-> +	/*
-> +	 * Ensure that the allocation is at least slot-aligned and update
-> +	 * 'iotlb_align_mask' to ignore bits that will be preserved when
-> +	 * offsetting into the allocation.
-> +	 */
-> +	alloc_align_mask |= (IO_TLB_SIZE - 1);
-> +	iotlb_align_mask &= ~alloc_align_mask;
-> +
+> Stray newline before arch_initcall(), but that's not the problem.
+> 
+> The real problems are:
+> 
+>  1) This approach only works when _ALL_ APs have been brought up during
+>     boot. With 'maxcpus=N' on the command line this will fail to enable
+>     fault handling when the APs which have not been brought up initially
+>     are onlined later on.
+> 
+>     This might be working in practice because intel_iommu_init() will
+>     enable the interrupts later on via init_dmars() unconditionally, but
+>     that's far from correct because IRQ_REMAP does not depend on
+>     INTEL_IOMMU.
+> 
+>  2) It leaves a gap where the reporting is not working between bringing
+>     up the APs during boot and this initcall. Mostly theoretical, but
+>     that does not make it more correct either.
+> 
+> What you really want is a cpu hotplug state in the CPUHP_BP_PREPARE_DYN
+> space which enables the interrupt for the node _before_ the first AP of
+> the node is brought up. That will solve the problem nicely w/o any of
+> the above issues.
+>
 
-I have started writing the KUnit test suite, and the results look
-incorrect to me for this case.
+Initially this sounds like a good approach.  As things currently stand, however,
+there are (at least) several problems with attempting to allocate interrupts on
+cpus that are not running yet via the existing dmar_set_interrupt path.
 
-I'm calling swiotlb_tbl_map_single() with:
+- The code relies on node_to_cpumask_map (cpumask_of_node()), which has been
+  allocated, but not populated at the CPUHP_BP_PREPARE_DYN stage.
 
-* alloc_align_mask = 0xfff
-* a device with min_align_mask = 0xfff
-* the 12 lowest bits of orig_addr are 0xfa0
+- The irq_matrix cpumaps do not indicate being online or initialized yet, except
+  for the boot cpu instance, of course.
 
-The min_align_mask becomes zero after the masking added by this patch,
-and the 12 lowest bits of the returned address are 0x7a0, i.e. not
-equal to 0xfa0.
+So things still revert to boot cpu allocation, until we exhaust the vectors.
 
-In other words, the min_align_mask constraint is not honored. Of course,
-given the above values, it is not possible to honor both min_align_mask
-and alloc_align_mask. I find it somewhat surprising that NVMe does not
-in fact require that the NVME_CTRL_PAGE_SHIFT low bits are preserved,
-as suggested by Nicolin's successful testing.
+Of course, running the dmar_set_interrupt code from a CPUHP_AP_ONLINE_DYN state
+does work (although I believe there is a concurrency issue that could show up
+with the current dmar_set_interrupt path).
 
-Why is that?
+So the code seems to have been designed based on the assumption that it will be
+run on an already active (though not necessarily fully onlined?) cpu.  To make
+this work, any code based on that assumption would need to be fixed.  Otherwise,
+a different approach is needed.
 
-Does IOMMU do some additional post-processing of the bounce buffer
-address to restore the value of bit 11?
-
-Or is this bit always zero in all real-world scenarios?
-
-Petr T
