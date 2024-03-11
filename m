@@ -1,205 +1,178 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6CE216FF43
-	for <iommu@lists.linux.dev>; Sun, 10 Mar 2024 13:02:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.14
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710075767; cv=fail; b=eJprupgbC76V2c5DkBSD5+g8y8/80uHokrl/oXKyQ2/91PNxsf4XUcqZrNgm4kgMNrjeVW548A+lcYGeDO6F557DurfGpYzu3v3YByTOzbuXeukbzE0uuA02abxjz+xMM7EejrHBb4qdn/FX73VkSoFcEovpuxj9SqVz7JD7yQU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710075767; c=relaxed/simple;
-	bh=H7hGMugSbdXs7Xg7CXR8bZM6nXA03PEGiOKBaljG6jI=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=Ag1FJuvugNmMFQvlDR4BDBrEkthrEHYWyKjafBYEnH2lz0YnP04LuvR5rZ8Kzfs02/nUDqCxc6xVIIg/5cHAcojp5hulP3xuSS2t8gDnrfIz16a/pS9vES6zq1VGF95bCZtRwHUKsmxaTqsXuhG8vfkwhfbdeoUY80gQX3U+OmM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mjoJH82g; arc=fail smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 685A2125BF
+	for <iommu@lists.linux.dev>; Mon, 11 Mar 2024 08:42:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1710146567; cv=none; b=tQo6otdlUkhDwUs3WuibRunubIX+Y49onyLBzva3UB111V/baZNIROvywD1eMQuFHFw5N/I+1Fue3jA5pfVcItuPk681zUnOfRZaakyn6RAheMIsmdnS7qeNaXaUatgOUDpEUyumtQLv/aA2hnKMMhFutYm9Zf9mSrPbMYDe78c=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1710146567; c=relaxed/simple;
+	bh=nFtFkNNeWFq1qGq8aKTKJOBUm95N5gYay+CiAaz/Bqg=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:CC:References:
+	 In-Reply-To:Content-Type; b=TUHYI9yJEDk5TtN+X5sdyNn5PI+nkINErUmetELAldGJ36K1REtG9ehVe2BtB2wzI/n7D/ZwJ/HEd8qSym34w8o62TV0siyOrYUVp5qQx7G4jbHS73Dn4o2BpT9iQU+OvwdGLoD/ltqi9JVRCyIVOCostPojxVxA6YKLYl46pPU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=WKNg6Bgb; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mjoJH82g"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1710075765; x=1741611765;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=H7hGMugSbdXs7Xg7CXR8bZM6nXA03PEGiOKBaljG6jI=;
-  b=mjoJH82gLLy37cJAthEjPI51QY1NBs6SHzuSOBVl9YjQbdMLKXFMoBi5
-   hbw5yKT6rGsIfZzVnAW8qwuTt9oRe+UsjAoxlYVEx/2VMtdBEXfsuNbeA
-   czg7lli1ncns4VS8g935waKrUiHEddvDEJ+Cbw4uiZwqvHUUiR/voQIMI
-   /8C2YwqRqgNt0ml3kIiYbqvkSGFw6za5/kjSNY7XNW22da1xrT7j/830e
-   vwe+4jtA4NsGHDMgJI2RYH0pS+fbwnvf/sq4blRfI6p4w+iFKHAfXchyW
-   Ps24JOW4baVQW4dvjpU7qFDEoK4wpIhTBMXjAgE8EuAFNqiANfxPQ9/cy
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11008"; a="8560224"
-X-IronPort-AV: E=Sophos;i="6.07,114,1708416000"; 
-   d="scan'208";a="8560224"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2024 06:02:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,114,1708416000"; 
-   d="scan'208";a="34054467"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmviesa002.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 10 Mar 2024 06:02:43 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Sun, 10 Mar 2024 06:02:43 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Sun, 10 Mar 2024 06:02:42 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Sun, 10 Mar 2024 06:02:42 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Sun, 10 Mar 2024 06:02:42 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BHTZgx/BOZ70rPYbLdfv+jO1icaEVvtyrP0OxLDkaySX/XwSelINNOQfgLWOeygAUmSW5S0MdPBdZECmW0Wm1pSOWEdW0nLRtO07W61YgSZclYkmJABsx3813ToVnYo+RIFrT7Ri/0i9uv883OCEl8t5PTuXSAU3itv1jCKW8h8VNv/J2dHvlnGdMg9KD8B1MgPrZvYf6WaVRhbOYa6RXDeqZbxERfbkyHuik8YzPpmMxcBOemCFzhZJo5cdrdMf0prm4kj3rOESWeblmJ7cYvSH5aJ19qsyh7av/D2JP821Up3M/JsgGbHfvG20GMzjBGOC7GB298UyVs+7+N7MHA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V642mXmE5xNWk6/pT6xOAdWtg0axiMEBmwwaUESC1K4=;
- b=Epq8CoZ82h1/Pb8r4gdItOdgyYULg/7KtBWe9eYe+OoEsMTAeGRU3GjRbESDl9xsE/ZcfLB1UfI3My4m/YpDkceNA7VNRc3DL2hWtE/NYYiGegYlQDMVXcSRnftwMsngj0UIkQ8Vp2lir6ii0HbBV8ksY2w72lneYLJSSG9UD6EXg3kREis/f0wh2z2bWuslt38zhmkPEpbya9F+oFi1AhEHahmWpnhSEmURQiSvbKepmqPG219K3617jrjZ+liSwyTwLo1CtL7wu5RXVMJvWRYTt/ZP/OpFh1fToPk8uFh+dLu7h02Ia+/lValbE+Z6Gj5/a6pvEzKOJ1dFerkjUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by CY8PR11MB7107.namprd11.prod.outlook.com (2603:10b6:930:51::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.15; Sun, 10 Mar
- 2024 13:02:40 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::b1f5:9d1f:f510:d54c]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::b1f5:9d1f:f510:d54c%3]) with mapi id 15.20.7386.013; Sun, 10 Mar 2024
- 13:02:40 +0000
-Message-ID: <c831bf5e-f623-402d-9347-8718987d1610@intel.com>
-Date: Sun, 10 Mar 2024 21:05:58 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/8] iommu: Introduce a replace API for device pasid
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <joro@8bytes.org>, <alex.williamson@redhat.com>, <kevin.tian@intel.com>,
-	<robin.murphy@arm.com>, <baolu.lu@linux.intel.com>, <cohuck@redhat.com>,
-	<eric.auger@redhat.com>, <nicolinc@nvidia.com>, <kvm@vger.kernel.org>,
-	<mjrosato@linux.ibm.com>, <chao.p.peng@linux.intel.com>,
-	<yi.y.sun@linux.intel.com>, <peterx@redhat.com>, <jasowang@redhat.com>,
-	<shameerali.kolothum.thodi@huawei.com>, <lulu@redhat.com>,
-	<suravee.suthikulpanit@amd.com>, <iommu@lists.linux.dev>,
-	<linux-kernel@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-	<zhenzhong.duan@intel.com>, <joao.m.martins@oracle.com>,
-	<xin.zeng@intel.com>, <yan.y.zhao@intel.com>
-References: <20231127063428.127436-1-yi.l.liu@intel.com>
- <20231127063428.127436-2-yi.l.liu@intel.com>
- <20240115171950.GL734935@nvidia.com>
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <20240115171950.GL734935@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SI2PR02CA0034.apcprd02.prod.outlook.com
- (2603:1096:4:195::9) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="WKNg6Bgb"
+Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 42B4Yabx026682;
+	Mon, 11 Mar 2024 08:42:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	message-id:date:mime-version:from:subject:to:cc:references
+	:in-reply-to:content-type:content-transfer-encoding; s=
+	qcppdkim1; bh=rbBiPLaD7aT3pY+ebUIPfAuhH4QRqD2CZRFmflsXf9M=; b=WK
+	Ng6BgbP0xIueqP9GSkcMWYNp7L+m/wHtET7b9bXiO0yDS7mNCCOmQP52fCYzqwXg
+	PvF5CMTTmyVl0Wu3nd/U7efHMIsmewKVYHpT64uhGOLjxwtQE4TsYQ5cME6+qGHD
+	IUTVpXeoBvEIQRgQb0wHYNSUuKy7U6yzUwq2NzecS8mjonOw41nO1YItxspbCMDE
+	5wiFyW7l7z8L5IVTwBhvexoGyS7Lo9oZWC8dBIq6NjsoXk+2axp10JTYPU/5epNu
+	HFOPt3q4K0rsHc49vjYyxJMLkLP1f6Ba1/QZWYtS8M7zN9EjuYMA2ReSes8vJLv3
+	d5gmYGs5kUuTAm8qvHAg==
+Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3wssgv8hd7-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 11 Mar 2024 08:42:21 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 42B8gLgo012316
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 11 Mar 2024 08:42:21 GMT
+Received: from [10.214.66.253] (10.80.80.8) by nalasex01c.na.qualcomm.com
+ (10.47.97.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.40; Mon, 11 Mar
+ 2024 01:42:14 -0700
+Message-ID: <2b0d8c5b-7e79-41ff-bc57-003d1b947c16@quicinc.com>
+Date: Mon, 11 Mar 2024 14:12:06 +0530
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|CY8PR11MB7107:EE_
-X-MS-Office365-Filtering-Correlation-Id: 48ce4173-23b8-4079-cf18-08dc41025d67
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: T3mdjpTYk7ERjdM9HDnzFmBhjyT+7m21Ral6At41HaanZom+dLNeHB4h/VIblMQ6CcapPC+PtfXqVdMkXoCF7/knmZj2zIUMlV9zwwdJNZxouhqv7TuU+0vamUbsmcK1k8DNuqnqQdoAx0UyvEFapxQvlZlurLS7YxlG+oVxCmOKE9K2BzIB1A3R8E42LBUsm3V7T5tWrc0Q9oR4MK5QXoMrahT3NbzP5qgmejbL4VKDxovJ3Pg8pWPydRPwRZq2fr5GVWlJeQmpX4dk3bV7VkJszapzdp9ziGHfcn1rDQ0GfWjH2wzaOntRcU3b+e4peCEuY/N8v76AMIvU+rl2uA6QiK4BonBy9Ys34c1fpiKZz00runTZKdSavBx1dgMLEl55a7VRDAdY9k6FfslHWaJf/z07/RzgR85E35LebAFNCEMNt/WEHDOVIIoxknhf+mxMelxY3DOC7L0tOysTDyFhXEaNa1aEPLaI5QfRWOaCYq9F8FuF7X4HWDfb7HxLhZz0zGZwbiEevmLN9cKT5yKlBY0D9TE0AD0EqSOrrb6oSL+Eg0ZpZzh7eEXkE7FLkNcsDwskTwkuIcz2jFw/UjpN+OdJWYocFwKnWR3HpfI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(7416005)(1800799015);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?ZUkyOHZINjZRQmsyQzJBQzVuZS9PWXJMNnRRbTVCYmExQy9DaVJ0SWd0UmRx?=
- =?utf-8?B?NnNuTDRKckdOYTRWbEVJSTZFbGpodU9OS3lyRzBhVjNaWEpPU2dqYUNnQVpi?=
- =?utf-8?B?NTZVVzZFKzdPdW9tLzV2SHpLN29BR2FJakFvNVk3LzYrWHdtLy9TNWdmekVB?=
- =?utf-8?B?YjgxVFpRcHdkb3lhajBKa01JZEUwTFdtNHRCS1FjdWxVVVdLT1J1SlRsWW5B?=
- =?utf-8?B?WnVwa2NMbzIzUnYzRXFqNkhTR1JCWlFUWHVPMno4T05tZGltdEFuc3QzS2Mv?=
- =?utf-8?B?bGQwQ21HQko3TkVxRFNRMmxxb3NaRU5sTnorSGZObHQvZEJZS2craE12Y2Mr?=
- =?utf-8?B?ZVh2ejRpYUltNW9WcGs3YVcvVDFtVnhUaVpXMlF3Y0p1dmQycHRLQ2ErQmd1?=
- =?utf-8?B?S0MzVjFJZm1HNEFXZHFmVnZGZmZjUTA5eHRPTE0zRm5BTGZUMnRMZmVoaU1X?=
- =?utf-8?B?eDdYOGZqZWNrQW5PZzdrMTExeS9ja3BFcUdqbkNRMkRMZ2V4TmtrQVBDV2dv?=
- =?utf-8?B?ekNZVDVQeFFSa3h5a0FQOVZRKzZhL0NQeUpFRWJWKzJTdzBPVXpnT2J5WXpp?=
- =?utf-8?B?THFWdW1sbHlyMzB3N2JLWis0THNxSXNNMy9aVjZPeUptRE85SEV2TllnVWh1?=
- =?utf-8?B?dWJwNkhGc0UyeStKMWRxSTVMbWNVcmYvbVk1eTVhVHAzY3JNUzRJdjNMUHND?=
- =?utf-8?B?dUtEdFZEVHRDSjJzQjU3NUZlMnd3K3NRL0l4aWM2L1ZDOHRVTkZiN2t2Wkdz?=
- =?utf-8?B?QVNJdzZEWTlKdkgyUDNYSUZXWjAxTzNmNkpvT0hwNlN6bGMwM3gwdGE0Q0ZN?=
- =?utf-8?B?UjJja0RtQUlIdkZWa1JCQ2tWcjhnT2xqOGJQOXVxeHZaOE9YcW5WcjZBTzE4?=
- =?utf-8?B?anZuV0tpOC9ha1VWM0paVW1ZejZhS3JRSlNxb2hiUEVxZm5YM0RrTGtMeE1r?=
- =?utf-8?B?UlBaSElrT1NHY09jTitENWl3MU51cE92YjUvamRhYWp0WmdveldZZ1VWdS9o?=
- =?utf-8?B?bWRzVXh2YjJXdlBGdU9BZVpJYkZUbkNDcjd0TXN0MVEzZ1o4THhKbDVZaFBP?=
- =?utf-8?B?MkRzTXQ1aXhFQnNEVkJaOENTS3UvVkNQN2hvV3pZWlMwdG9yK2tPREJqZUNh?=
- =?utf-8?B?NDdPdVRKaUdJazRjckNOc01jY3RROVhoZHByZWJSaXM2bHU2ZjU1VXIxVE8w?=
- =?utf-8?B?SXlVZWtJaE5KaW5WM2tGMlpHb2RlOU9ucDhWbFNLUnRua1AwYlZuSVB2RnA4?=
- =?utf-8?B?Z3E5UzE0TnhNTHdtTnR5ZURGdGtnN20wajRNUWxEZUlMSVRNemJRNExwYndJ?=
- =?utf-8?B?UU1lTXo4cUgvZmNWajRGTEN3TnE2Q3FXS3ZBeEhSMjVBVGZJcFp2NGt2WlNz?=
- =?utf-8?B?UndzZWJZOUNVblIwZkJlQzA1RTRPY2l3MXFFbGtQc2lubzY4cXJGWk0zRkRY?=
- =?utf-8?B?eEFvdTR3OC9kL2wxTXBHWDBnNEVyVDY2R3JWajVQTVA1cGJLR3NaZW0zRnZo?=
- =?utf-8?B?QkhoVVJTVHQvbk14WlJ0OXpBRUVtQ3BZU04yZG04azRnWE5XWmVRVlZxempm?=
- =?utf-8?B?dkRCRWhMbXdTZjd4OHZKOEo2a0srMXlQODRZelRhSkphbzc5KzhkVUZlN3pF?=
- =?utf-8?B?NEhJOXFzNFRhK28xN2NCUHJtWGYxbWdMNDl1MGFMSm5KRzkxRWo0M2w4aXQy?=
- =?utf-8?B?d04xbjZieUNCU2lrL0JkbWwwODFGWlExSW5QS285Zy9JOWVockVsRlBuL3dZ?=
- =?utf-8?B?RVZPMzl1Tmk4SC85bWRGR21UMFRqSVVheVZLYWw1SnB5ZHhsWEhOV2Vqc1pE?=
- =?utf-8?B?V2NPMWxLZFpjbVJTdDJSbVc4RVRkWC9ZeUFnNUtJQ28zTG5DZG5ERjZ1Tm53?=
- =?utf-8?B?aEJVWktXRzFZbDdWYU1ueDdxNVE4SlE3YmZrc1NrcTkvTUhnZGhIbUpkaFhN?=
- =?utf-8?B?WDQxTEswMzBuQjdER3hFcG1MY1FyRnhaRldCOUwzSS9uNHN5bktJYWpsWHIy?=
- =?utf-8?B?QjNNaU5vVXg4bUhGdEsycStLNTU1WWlzUVU1OGpuTTZ4UnduYmxramRFTlYw?=
- =?utf-8?B?NGovYkhMcnRLL29mZ3RaMXluNCtBeTdFTGc4WndJTFM4NGtlaW1lWVpLTUJY?=
- =?utf-8?Q?oSa0a5LZwmSe5bDqzQDpWaJY3?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 48ce4173-23b8-4079-cf18-08dc41025d67
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Mar 2024 13:02:39.6101
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KqwJAyOr6aWAqe60TYEU9+39XHpcu1batpo8MaGU9TIi4monK8anywH4/YJUH92ZQRxqZryavsLloGIAQCJWgw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7107
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+From: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+Subject: Re: [PATCH v9 4/5] iommu/arm-smmu: add ACTLR data and support for
+ SM8550
+To: Will Deacon <will@kernel.org>
+CC: <robin.murphy@arm.com>, <joro@8bytes.org>, <dmitry.baryshkov@linaro.org>,
+        <konrad.dybcio@linaro.org>, <jsnitsel@redhat.com>,
+        <quic_bjorande@quicinc.com>, <mani@kernel.org>,
+        <quic_eberman@quicinc.com>, <robdclark@chromium.org>,
+        <u.kleine-koenig@pengutronix.de>, <robh@kernel.org>,
+        <vladimir.oltean@nxp.com>, <quic_pkondeti@quicinc.com>,
+        <quic_molvera@quicinc.com>, <linux-arm-msm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <saravanak@google.com>
+References: <20240123144543.9405-1-quic_bibekkum@quicinc.com>
+ <20240123144543.9405-5-quic_bibekkum@quicinc.com>
+ <20240213134714.GC28926@willie-the-truck>
+ <201fef09-50ab-436b-af63-4535c7510d15@quicinc.com>
+ <20240221132101.GB7273@willie-the-truck>
+Content-Language: en-US
+In-Reply-To: <20240221132101.GB7273@willie-the-truck>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: D7s9_4USJISRv-v30YVnG93YgSELK_Bw
+X-Proofpoint-ORIG-GUID: D7s9_4USJISRv-v30YVnG93YgSELK_Bw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-03-11_04,2024-03-06_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
+ clxscore=1011 mlxlogscore=999 bulkscore=0 lowpriorityscore=0
+ impostorscore=0 mlxscore=0 spamscore=0 priorityscore=1501 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.19.0-2402120000 definitions=main-2403110064
 
-On 2024/1/16 01:19, Jason Gunthorpe wrote:
-> On Sun, Nov 26, 2023 at 10:34:21PM -0800, Yi Liu wrote:
->> +int iommu_replace_device_pasid(struct iommu_domain *domain,
->> +			       struct device *dev, ioasid_t pasid)
->> +{
->> +	struct iommu_group *group = dev->iommu_group;
->> +	struct iommu_domain *old_domain;
->> +	int ret;
->> +
->> +	if (!domain)
->> +		return -EINVAL;
->> +
->> +	if (!group)
->> +		return -ENODEV;
->> +
->> +	mutex_lock(&group->mutex);
->> +	__iommu_remove_group_pasid(group, pasid);
+
+
+On 2/21/2024 6:51 PM, Will Deacon wrote:
+> On Wed, Feb 21, 2024 at 02:25:26PM +0530, Bibek Kumar Patro wrote:
+>> On 2/13/2024 7:17 PM, Will Deacon wrote:
+>>> On Tue, Jan 23, 2024 at 08:15:42PM +0530, Bibek Kumar Patro wrote:
+>>>> Add ACTLR data table for SM8550 along with support for
+>>>> same including SM8550 specific implementation operations.
+>>>>
+>>>> Signed-off-by: Bibek Kumar Patro <quic_bibekkum@quicinc.com>
+>>>> ---
+>>>>    drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 90 ++++++++++++++++++++++
+>>>>    1 file changed, 90 insertions(+)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> index 6004c6d9a7b2..db15b1eade97 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>>>> @@ -23,6 +23,86 @@
+>>>>
+>>>>    #define CPRE			(1 << 1)
+>>>>    #define CMTLB			(1 << 0)
+>>>> +#define PREFETCH_SHIFT		8
+>>>> +#define PREFETCH_DEFAULT	0
+>>>> +#define PREFETCH_SHALLOW	(1 << PREFETCH_SHIFT)
+>>>> +#define PREFETCH_MODERATE	(2 << PREFETCH_SHIFT)
+>>>> +#define PREFETCH_DEEP		(3 << PREFETCH_SHIFT)
+>>>> +#define PREFETCH_SWITCH_GFX	(5 << 3)
+>>>> +
+>>>> +static const struct actlr_config sm8550_apps_actlr_cfg[] = {
+>>>> +	{ 0x18a0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>> +	{ 0x18e0, 0x0000, PREFETCH_SHALLOW | CPRE | CMTLB },
+>>>> +	{ 0x0800, 0x0020, PREFETCH_DEFAULT | CMTLB },
+>>>> +	{ 0x1800, 0x00c0, PREFETCH_DEFAULT | CMTLB },
+>>>> +	{ 0x1820, 0x0000, PREFETCH_DEFAULT | CMTLB },
+>>>> +	{ 0x1860, 0x0000, PREFETCH_DEFAULT | CMTLB },
+>>>> +	{ 0x0c01, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
+>>>> +	{ 0x0c02, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
+>>>> +	{ 0x0c03, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
+>>>> +	{ 0x0c04, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
+>>>> +	{ 0x0c05, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
+>>>> +	{ 0x0c06, 0x0020, PREFETCH_DEEP | CPRE | CMTLB },
+>>>
+>>> [...]
+>>>
+>>> Isn't this effectively hard-coding the topology of the SoC in the driver?
+>>> Wouldn't it better describing higher-level prefetch properties in the DT
+>>> nodes corresponding to the upstream devices?
+>>
+>> Since prefetch data stored in this table represent settings for the
+>> ACTLR register, and doesn't exactly define the hardware (So in this
+>> manner prefetch data won't exactly be a part of soc topology ?).
 > 
-> It is not replace if you do remove first.
+> The first two columns of the table are StreamID/Mask pairs, no? How is that
+> _not_ the SoC topology? I really think it would be better to define some
+> high-level prefetch properties in the DT binding which can be put on the
+> master nodes.
 > 
-> Replace must just call set_dev_pasid and nothing much else..
+>> So it seemed apt not to use the device tree for storing the prefetch
+>> property. Hence we reverted from the DT approach (initial proposal in
+>> RFC to piggyback on iommus property to store prefetch settings) back to use
+>> driver for storing this data.
+>>
+>> Some drivers use the same approach for storing their platform specific
+>> data. Examples being
+>> drivers/phy/qualcomm/phy-qcom-qmp-combo.c
+>> drivers/soc/qcom/llcc-qcom.c
+>> These drivers were taken as reference for storing platform specific ACTLR
+>> data.
+> 
+> I don't know anything about those drivers, but on the SMMU side we already
+> have ways to describe the topology in the DT and the driver is using them,
+> so I'm struggling to see the need to add these tables as well.
+> 
+> But as I said before, if Robin and the DT folks prefer this approach,
+> then I won't get in the way.
+> 
 
-Seems uneasy to do it so far. The VT-d driver needs to get the old domain
-first in order to do replacement. However, VT-d driver does not track the
-attached domains of pasids. It gets domain of a pasid
-by iommu_get_domain_for_dev_pasid(). Like intel_iommu_remove_dev_pasid)
-in link [1]. While the iommu layer exchanges the domain in the
-group->pasid_array before calling into VT-d driver. So when calling into
-VT-d driver, the domain got by iommu_get_domain_for_dev_pasid() is already
-the new domain. To solve it, we may need to let VT-d driver have its
-own tracking on the domains. How about your thoughts? @Jason, @Kevin, @Baoplu?
+With the driver approach at the current state of patches, it has been 
+ACKed by DT folks and it seems there has been no concern/objection from 
+Robin till now.
+So can this patch go ahead Will?
+Let us know Robin of your opinion as well please.
 
-[1] 
-https://github.com/torvalds/linux/blob/master/drivers/iommu/intel/iommu.c#L4621C19-L4621C20
+Thanks & regards,
+Bibek
 
--- 
-Regards,
-Yi Liu
+> Will
