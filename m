@@ -1,143 +1,63 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6636B5812A
-	for <iommu@lists.linux.dev>; Mon, 11 Mar 2024 22:55:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710197740; cv=fail; b=lU/jNZVGItasbso+XGkwss+Fv1FRff1Hwi5cstvwAXGIWT0aEqMxWjZ/Aw3OFNXtQl7eA/qq7wBQaZ4HxbMlIGIhTkPI5a8LQr80Xb4ps0cb7JTEnRD4EG6rfKOAFuxi96BraSHomMkdBqHLyaUBwyQmnjq8ZnB6O9mYRAxmnqI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710197740; c=relaxed/simple;
-	bh=MOmi08FohoizqKclsbWFJEka9On8qhsY94Uv3rlFvDM=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cMPFx9H0remDw11qKzaBnmCSQPRbZ9mRYhqfN6vWo69P1etG4dhXcA4yHtIqEVfd2u/WsGIPPQwz0zR1ry6jVQQ8uDAnCuoGFsWVulej1wyIokGMCJPsxxhz+OKw25OwjkoxkjED9AhS3wjzMYqAY4LQmbe3KqM8AaMmNah0658=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=cwDXP+cr; arc=fail smtp.client-ip=40.107.236.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B816F5B1EE;
+	Mon, 11 Mar 2024 23:19:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1710199175; cv=none; b=WMlPQQ82xB8TsUl8CvyGiY25HCIpPbqqhDdu6tbfoGjHWwA4y9kqnDOVPZJkLiv4JLzfFVg+IBM6Z+6N7meOYxqOaRINHWkL0DwhSSjvtEM06sPgqsIYp1IIh7/RKXBUl9g1or20AKr3O/nZKgaJvhWWIP6HbNUiSfeQnP2xkY8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1710199175; c=relaxed/simple;
+	bh=ao1qU99xMqRjKkn54WMjqMkh4JDfooM7PjAuxBwuxX0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BzCpa2AspddTEf2YR9C3hUfYS9Hgo9pARP5iSrOLNs73/DIqJ26RyYejDwr5qOtT8Mop8hKhs0X015HmglFJm1DvXmWnlFgkXCGkHPvQf0iwbjUfIoqfONx2XmY3W0EykPmUlGJ7mFRWyK7yt4CORfZIRjD6BD/PZIYcB0r9utQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FvoOm3mY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cwDXP+cr"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SjkNyEyd0NYT9a9AyKszGWQLEZcwcpgSVqH/WKtlIMUiICY4vpO/Fwm/5gFklDDhTisuu5jrbexc3pxhHOwDmP4ILWCGNhN7g2auMDXNjrmmfpUzYcE/0M2kEv1pCcMRUms8CNpLFywzdmRl6oFuQKFkfLYPyHEzDme3S/UjDMd2rnwhm9/clH0VdyBjMgp488IMwFcDZwMBiJDoMGxZpaeK8AzkYcPMgbCwUiW2uSnD+iQoiI36X0FN0YfHQMnlzFCET5LiuHGzS1rko9S+VvREW/W9rLMIsIQCZ/ANevNIhM8OjXKdN5Vp+okMQFFVkd+dwCFeaeyp1UMeoyp+mA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TkIkvtvrwqJYu5VbEyD1WmdlnmbyF6325zXXn0+AR/U=;
- b=nI6x9Lq4DWFWu6vT4PILAIteDz1402iJLet59au/PgTIViV1Gaa/ZLdxfy3fVZ7Fh+GO38XgygkCpJsrKCqqBXM47UUCfdbkwMliu3rQJahrGIuxInhtVTklScN7FBnzEQK5XeZWjNq02cJkZ2IzC9tKKIWN/GL4sO5sggXtrsPnM4qvph2wy9D23Kx1ac5RAy0QZ3TchDiZF8PURSWeWQR2vDy+Uvi1RRD1C1BgQHy3CI56i684+v3XVz2sdO9LUKxN6Eu3COfG8sBH5q6Pvp3fbT6FnUuffEaah4ZuKAqzCoKALKLpgmv5PW4E99Y1AV9oXHrzeiuHGp8WgniJDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TkIkvtvrwqJYu5VbEyD1WmdlnmbyF6325zXXn0+AR/U=;
- b=cwDXP+crfV5GSTmAEJ4uA6NCv1KAgRo7GkkD0p0B3ZmKNete13+jFwyUXvU8tY84rvzGyYJc+fX+ppiUdfqhUv1nYBhFWP1VGHi2AuMMVWNTaLl2F/SJheE33xpbYhARQ8lrjydtYZ1k3bfM0IZue58ZJpCaHtX4tGFhxHzV9VFd8YYvJkVkmRaOHPHYLqgCGuaoOuQyur4ef2RZZ5k6XquyyhCPBX+REyN3IIEN7kTBXcSugJBUtHzCpEv3QGcSk8hbM9sZKszsssRSjwY9ps8JrRCY+N2rfoPMnj6lBxd8/Ib5Z4CHyHX6mpDN2mP6hNTNotjeiGVGnpqrSsGnGw==
-Received: from MN2PR18CA0016.namprd18.prod.outlook.com (2603:10b6:208:23c::21)
- by SA3PR12MB9132.namprd12.prod.outlook.com (2603:10b6:806:394::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.35; Mon, 11 Mar
- 2024 22:55:33 +0000
-Received: from BL6PEPF0001AB71.namprd02.prod.outlook.com
- (2603:10b6:208:23c:cafe::b8) by MN2PR18CA0016.outlook.office365.com
- (2603:10b6:208:23c::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.36 via Frontend
- Transport; Mon, 11 Mar 2024 22:55:33 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BL6PEPF0001AB71.mail.protection.outlook.com (10.167.242.164) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7386.12 via Frontend Transport; Mon, 11 Mar 2024 22:55:33 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 11 Mar
- 2024 15:55:16 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.12; Mon, 11 Mar 2024 15:55:16 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
- Transport; Mon, 11 Mar 2024 15:55:15 -0700
-Date: Mon, 11 Mar 2024 15:55:14 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>
-CC: <linux-kernel@vger.kernel.org>, <kernel-team@android.com>,
-	<iommu@lists.linux.dev>, Marek Szyprowski <m.szyprowski@samsung.com>, "Robin
- Murphy" <robin.murphy@arm.com>, Petr Tesarik
-	<petr.tesarik1@huawei-partners.com>, Dexuan Cui <decui@microsoft.com>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FvoOm3mY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 580C0C433F1;
+	Mon, 11 Mar 2024 23:19:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1710199175;
+	bh=ao1qU99xMqRjKkn54WMjqMkh4JDfooM7PjAuxBwuxX0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FvoOm3mYATihJvuer6OdqR15Lg0SdNaNQqZuf1BX/PHXYcTSyOEPbqb4D15oBOLDE
+	 1GcIh/bJzWoGeKTfTqTXQOqJSWrlUank6UA6jLHDKziPkwWWppJksFr27Dr5Bvd0u0
+	 txaI6G7+b8QXw4q6/w8Ixn/P++vNBj2uABDS6OkapfF2FEjjkgsHa19yIY+S/4yrDV
+	 Y3fWNmvDiLXWTCf9aNqvF+YNBBwfqVUTb88BkFhGPM5CQ+kRvXO6+Z4zY+h7TCH740
+	 ZrGsTeeGHSi6hCd4zLYZK2FyPJb+Ut9WTJ0PANRm9TUgyKs2TjSdeT/bPCNoYjZ56Q
+	 WsOI4cRy7uB1w==
+Date: Mon, 11 Mar 2024 23:19:29 +0000
+From: Will Deacon <will@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Cc: linux-kernel@vger.kernel.org, kernel-team@android.com,
+	iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Dexuan Cui <decui@microsoft.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
 	Michael Kelley <mhklinux@outlook.com>
 Subject: Re: [PATCH v6 0/6] Fix double allocation in swiotlb_alloc()
-Message-ID: <Ze+L0qBdc/+gOCCi@Asurada-Nvidia>
+Message-ID: <20240311231929.GA28478@willie-the-truck>
 References: <20240308152829.25754-1-will@kernel.org>
+ <20240311133617.GA1349@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240308152829.25754-1-will@kernel.org>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB71:EE_|SA3PR12MB9132:EE_
-X-MS-Office365-Filtering-Correlation-Id: ed200798-3cfe-4c8b-6c28-08dc421e5baf
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	JstOig4Eb5+aK09QHU3cOCCmgKBNa7sa5cTxxH4y7KehfxJ7RMfpukddym+1XrV6Z0T+2dgi0wzklttnXa+aUg1o2TaiZ4V+IK344HiBTPF64XzdvZ1hw9dVnQ9zcGAC5dX7cLXLb8/5C6QZSOBSA0zE86CVUl8zLZzzhKSqevnoSBpMlqCrXlXvfBbwbhXcGyokqUBz/nC04w8SNLYUhhIfPMZQwjtHIb/YKNz8EK2+1YcoIWOJvQo71D96sO3D/0CDgBQYJOfybr1cbS0iA79StOpEf3JktzOc3OydrTZHnyjvM4mIu84RfwxuI88FNpmG4IIuicjMYPp1nw+lvHlhBfLw4VuLvIY4xfeIZ9RQtXQ9USD5ECXjP0Vu7DGoQe5mLWQh9oJ9BypxTsj5fj9dH3jfSX7dnPLLciTE3V4QMyG0nZXpFOm2+hKWH+qYZVShvnfCoT45oapAPKIdNvNwYqlvJ2+9k7zmm0KfiGjDGPH7Ocy3FH039lrf0d/asj/rc+rPL3T4HH9FFCeiZXN1Yp6b+/1I2DJQ6U3B21oOrlzBZPRYG4kk+wVmiLdscYmiJ84yRnUPwGnQkx5hyrYL+m4zGHBjso01kVAlo8x9vfTS27JiazjPA2xqm9JkS61IMLuUrVDRF8FPxkQ07+Vr4MSx0BygGGvlKlbxVIkadkiR8O9N4OVyD1RPuE7MpIsFsi+vSpgfA3+D16VVh5PRaSL6fJ0WPMKTj0L1cTVeRvR5KMwl5Gp1Gbk8BIQB6d+JAJTscxtfhedudUUR9o7a9ThBi0fzXwTqZxFCz9M=
-X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(7416005)(82310400014)(1800799015)(36860700004)(376005)(32650700005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2024 22:55:33.2724
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: ed200798-3cfe-4c8b-6c28-08dc421e5baf
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BL6PEPF0001AB71.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB9132
+In-Reply-To: <20240311133617.GA1349@lst.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Fri, Mar 08, 2024 at 03:28:23PM +0000, Will Deacon wrote:
-> Hi again, folks,
+On Mon, Mar 11, 2024 at 02:36:17PM +0100, Christoph Hellwig wrote:
 > 
-> This is version six of the patches which I previously posted at:
-> 
-> v1: https://lore.kernel.org/r/20240126151956.10014-1-will@kernel.org
-> v2: https://lore.kernel.org/r/20240131122543.14791-1-will@kernel.org
-> v3: https://lore.kernel.org/r/20240205190127.20685-1-will@kernel.org
-> v4: https://lore.kernel.org/r/20240221113504.7161-1-will@kernel.org
-> v5: https://lore.kernel.org/r/20240228133930.15400-1-will@kernel.org
-> 
-> Changes since v5 include:
-> 
->   - Rework the final patch to preserve page-alignment for streaming
->     requests without a DMA alignment mask
-> 
->   - Added Reviewed-by tags from Michael
-> 
-> Cheers,
-> 
-> Will
-> 
-> Cc: iommu@lists.linux.dev
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-> Cc: Dexuan Cui <decui@microsoft.com>
-> Cc: Nicolin Chen <nicolinc@nvidia.com>
+> Thanks, I've applied this to the dma-mapping tree and plan to send it
+> onto Linus after a bit of soaking time.
 
-Was out of office, so couldn't rerun the test. If it still matters:
+Cheers, Christoph. I'm suspecting we'll have a few extra fixes as we
+collectively get a better understanding of this code (and also as Petr
+develops the selftests), but we can send those on top of this series.
 
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+Will
