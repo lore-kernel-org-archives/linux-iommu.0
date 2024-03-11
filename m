@@ -1,138 +1,143 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1412433CC;
-	Mon, 11 Mar 2024 22:49:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710197357; cv=none; b=JM9FipOjq/aChUwscMR1/8ER1i5PYOIGJI5xiF76b8KzfZYGRwIMB6LXqE19AObHRvRz+WaCuuChyqkwXl8MZDGb+ZzSQZjKXvbNwlSOOi/I4I/7+bKLfWM+VuBY9Ta082je1v0dkk+HF3q0edjQChS+yfJOkAkxR3PVut4Lpm8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710197357; c=relaxed/simple;
-	bh=4x5JZYqHqdYVcamVAyLlqhcsKG8VLNeJTDI/33dxYjw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lAtr42J+X4oEjPCmfxW++XlT/DWtgiJRQceenpa4MctaTEuJEUbWrQ01hYYgb6v1rDSwXJp1fSdowDmimexQLRYlHfmCD0PZR6nDrPa4ixoMbvexhkqhxv99hO4Dl80fNGmq0y8qRHQIkUk8CUwtUbjovVfpBa/v7Xzhzs5MI0A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=X3QKdCO8; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6636B5812A
+	for <iommu@lists.linux.dev>; Mon, 11 Mar 2024 22:55:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1710197740; cv=fail; b=lU/jNZVGItasbso+XGkwss+Fv1FRff1Hwi5cstvwAXGIWT0aEqMxWjZ/Aw3OFNXtQl7eA/qq7wBQaZ4HxbMlIGIhTkPI5a8LQr80Xb4ps0cb7JTEnRD4EG6rfKOAFuxi96BraSHomMkdBqHLyaUBwyQmnjq8ZnB6O9mYRAxmnqI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1710197740; c=relaxed/simple;
+	bh=MOmi08FohoizqKclsbWFJEka9On8qhsY94Uv3rlFvDM=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=cMPFx9H0remDw11qKzaBnmCSQPRbZ9mRYhqfN6vWo69P1etG4dhXcA4yHtIqEVfd2u/WsGIPPQwz0zR1ry6jVQQ8uDAnCuoGFsWVulej1wyIokGMCJPsxxhz+OKw25OwjkoxkjED9AhS3wjzMYqAY4LQmbe3KqM8AaMmNah0658=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=cwDXP+cr; arc=fail smtp.client-ip=40.107.236.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="X3QKdCO8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8A3CC433C7;
-	Mon, 11 Mar 2024 22:49:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1710197356;
-	bh=4x5JZYqHqdYVcamVAyLlqhcsKG8VLNeJTDI/33dxYjw=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=X3QKdCO8OEHpC2I9zB5WhxNWKTIQT2TLVJ1wNuoQpDTz1DhrWcvo/TeN5UTHU3xjq
-	 Tqduy8Z8XGnw+97Jtn0zm3+JzRWVyqOj+ITmQrPLcuiJaSj8fi3kteBg0OSXvjhs3Q
-	 Z1CtVXUD76TOs/xOrGBAImIEAUjix6OX/NKddKPBCuftkUAovpkBALaQWX29w8O7NH
-	 wn7xOWzDURamytMIfgtrArXlr+LxK5r/biv09nQniXlBLRsBW3ChkwB8SjQVX3Oh9b
-	 YlDtMtE71edYmdIGcRA3yAl3FR3dgYNoLzFyMVTC7gRqVSrxgQH7+xm3XYpwbK7g6K
-	 S0qNTbW1e3d8g==
-Date: Mon, 11 Mar 2024 22:49:11 +0000
-From: Will Deacon <will@kernel.org>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"kernel-team@android.com" <kernel-team@android.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
-	Dexuan Cui <decui@microsoft.com>
-Subject: Re: [PATCH v6 4/6] swiotlb: Fix alignment checks when both
- allocation and DMA masks are present
-Message-ID: <20240311224910.GA28426@willie-the-truck>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="cwDXP+cr"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SjkNyEyd0NYT9a9AyKszGWQLEZcwcpgSVqH/WKtlIMUiICY4vpO/Fwm/5gFklDDhTisuu5jrbexc3pxhHOwDmP4ILWCGNhN7g2auMDXNjrmmfpUzYcE/0M2kEv1pCcMRUms8CNpLFywzdmRl6oFuQKFkfLYPyHEzDme3S/UjDMd2rnwhm9/clH0VdyBjMgp488IMwFcDZwMBiJDoMGxZpaeK8AzkYcPMgbCwUiW2uSnD+iQoiI36X0FN0YfHQMnlzFCET5LiuHGzS1rko9S+VvREW/W9rLMIsIQCZ/ANevNIhM8OjXKdN5Vp+okMQFFVkd+dwCFeaeyp1UMeoyp+mA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=TkIkvtvrwqJYu5VbEyD1WmdlnmbyF6325zXXn0+AR/U=;
+ b=nI6x9Lq4DWFWu6vT4PILAIteDz1402iJLet59au/PgTIViV1Gaa/ZLdxfy3fVZ7Fh+GO38XgygkCpJsrKCqqBXM47UUCfdbkwMliu3rQJahrGIuxInhtVTklScN7FBnzEQK5XeZWjNq02cJkZ2IzC9tKKIWN/GL4sO5sggXtrsPnM4qvph2wy9D23Kx1ac5RAy0QZ3TchDiZF8PURSWeWQR2vDy+Uvi1RRD1C1BgQHy3CI56i684+v3XVz2sdO9LUKxN6Eu3COfG8sBH5q6Pvp3fbT6FnUuffEaah4ZuKAqzCoKALKLpgmv5PW4E99Y1AV9oXHrzeiuHGp8WgniJDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=TkIkvtvrwqJYu5VbEyD1WmdlnmbyF6325zXXn0+AR/U=;
+ b=cwDXP+crfV5GSTmAEJ4uA6NCv1KAgRo7GkkD0p0B3ZmKNete13+jFwyUXvU8tY84rvzGyYJc+fX+ppiUdfqhUv1nYBhFWP1VGHi2AuMMVWNTaLl2F/SJheE33xpbYhARQ8lrjydtYZ1k3bfM0IZue58ZJpCaHtX4tGFhxHzV9VFd8YYvJkVkmRaOHPHYLqgCGuaoOuQyur4ef2RZZ5k6XquyyhCPBX+REyN3IIEN7kTBXcSugJBUtHzCpEv3QGcSk8hbM9sZKszsssRSjwY9ps8JrRCY+N2rfoPMnj6lBxd8/Ib5Z4CHyHX6mpDN2mP6hNTNotjeiGVGnpqrSsGnGw==
+Received: from MN2PR18CA0016.namprd18.prod.outlook.com (2603:10b6:208:23c::21)
+ by SA3PR12MB9132.namprd12.prod.outlook.com (2603:10b6:806:394::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.35; Mon, 11 Mar
+ 2024 22:55:33 +0000
+Received: from BL6PEPF0001AB71.namprd02.prod.outlook.com
+ (2603:10b6:208:23c:cafe::b8) by MN2PR18CA0016.outlook.office365.com
+ (2603:10b6:208:23c::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.36 via Frontend
+ Transport; Mon, 11 Mar 2024 22:55:33 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ BL6PEPF0001AB71.mail.protection.outlook.com (10.167.242.164) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7386.12 via Frontend Transport; Mon, 11 Mar 2024 22:55:33 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 11 Mar
+ 2024 15:55:16 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.12; Mon, 11 Mar 2024 15:55:16 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com
+ (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
+ Transport; Mon, 11 Mar 2024 15:55:15 -0700
+Date: Mon, 11 Mar 2024 15:55:14 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>
+CC: <linux-kernel@vger.kernel.org>, <kernel-team@android.com>,
+	<iommu@lists.linux.dev>, Marek Szyprowski <m.szyprowski@samsung.com>, "Robin
+ Murphy" <robin.murphy@arm.com>, Petr Tesarik
+	<petr.tesarik1@huawei-partners.com>, Dexuan Cui <decui@microsoft.com>,
+	Michael Kelley <mhklinux@outlook.com>
+Subject: Re: [PATCH v6 0/6] Fix double allocation in swiotlb_alloc()
+Message-ID: <Ze+L0qBdc/+gOCCi@Asurada-Nvidia>
 References: <20240308152829.25754-1-will@kernel.org>
- <20240308152829.25754-5-will@kernel.org>
- <20240311210507.217daf8b@meshulam.tesarici.cz>
- <SN6PR02MB41576E58DDF5A56FC6FC1EB6D4242@SN6PR02MB4157.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <SN6PR02MB41576E58DDF5A56FC6FC1EB6D4242@SN6PR02MB4157.namprd02.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20240308152829.25754-1-will@kernel.org>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BL6PEPF0001AB71:EE_|SA3PR12MB9132:EE_
+X-MS-Office365-Filtering-Correlation-Id: ed200798-3cfe-4c8b-6c28-08dc421e5baf
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	JstOig4Eb5+aK09QHU3cOCCmgKBNa7sa5cTxxH4y7KehfxJ7RMfpukddym+1XrV6Z0T+2dgi0wzklttnXa+aUg1o2TaiZ4V+IK344HiBTPF64XzdvZ1hw9dVnQ9zcGAC5dX7cLXLb8/5C6QZSOBSA0zE86CVUl8zLZzzhKSqevnoSBpMlqCrXlXvfBbwbhXcGyokqUBz/nC04w8SNLYUhhIfPMZQwjtHIb/YKNz8EK2+1YcoIWOJvQo71D96sO3D/0CDgBQYJOfybr1cbS0iA79StOpEf3JktzOc3OydrTZHnyjvM4mIu84RfwxuI88FNpmG4IIuicjMYPp1nw+lvHlhBfLw4VuLvIY4xfeIZ9RQtXQ9USD5ECXjP0Vu7DGoQe5mLWQh9oJ9BypxTsj5fj9dH3jfSX7dnPLLciTE3V4QMyG0nZXpFOm2+hKWH+qYZVShvnfCoT45oapAPKIdNvNwYqlvJ2+9k7zmm0KfiGjDGPH7Ocy3FH039lrf0d/asj/rc+rPL3T4HH9FFCeiZXN1Yp6b+/1I2DJQ6U3B21oOrlzBZPRYG4kk+wVmiLdscYmiJ84yRnUPwGnQkx5hyrYL+m4zGHBjso01kVAlo8x9vfTS27JiazjPA2xqm9JkS61IMLuUrVDRF8FPxkQ07+Vr4MSx0BygGGvlKlbxVIkadkiR8O9N4OVyD1RPuE7MpIsFsi+vSpgfA3+D16VVh5PRaSL6fJ0WPMKTj0L1cTVeRvR5KMwl5Gp1Gbk8BIQB6d+JAJTscxtfhedudUUR9o7a9ThBi0fzXwTqZxFCz9M=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(7416005)(82310400014)(1800799015)(36860700004)(376005)(32650700005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2024 22:55:33.2724
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed200798-3cfe-4c8b-6c28-08dc421e5baf
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BL6PEPF0001AB71.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB9132
 
-On Mon, Mar 11, 2024 at 09:36:10PM +0000, Michael Kelley wrote:
-> From: Petr Tesařík <petr@tesarici.cz>
-> > On Fri,  8 Mar 2024 15:28:27 +0000
-> > Will Deacon <will@kernel.org> wrote:
-> > > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> > > index c20324fba814..c381a7ed718f 100644
-> > > --- a/kernel/dma/swiotlb.c
-> > > +++ b/kernel/dma/swiotlb.c
-> > > @@ -981,8 +981,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
-> > >  	dma_addr_t tbl_dma_addr =
-> > >  		phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
-> > >  	unsigned long max_slots = get_max_slots(boundary_mask);
-> > > -	unsigned int iotlb_align_mask =
-> > > -		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
-> > > +	unsigned int iotlb_align_mask = dma_get_min_align_mask(dev);
-> > >  	unsigned int nslots = nr_slots(alloc_size), stride;
-> > >  	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
-> > >  	unsigned int index, slots_checked, count = 0, i;
-> > > @@ -993,6 +992,14 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
-> > >  	BUG_ON(!nslots);
-> > >  	BUG_ON(area_index >= pool->nareas);
-> > >
-> > > +	/*
-> > > +	 * Ensure that the allocation is at least slot-aligned and update
-> > > +	 * 'iotlb_align_mask' to ignore bits that will be preserved when
-> > > +	 * offsetting into the allocation.
-> > > +	 */
-> > > +	alloc_align_mask |= (IO_TLB_SIZE - 1);
-> > > +	iotlb_align_mask &= ~alloc_align_mask;
-> > > +
-> > 
-> > I have started writing the KUnit test suite, and the results look
-> > incorrect to me for this case.
-> > 
-> > I'm calling swiotlb_tbl_map_single() with:
-> > 
-> > * alloc_align_mask = 0xfff
-> > * a device with min_align_mask = 0xfff
-> > * the 12 lowest bits of orig_addr are 0xfa0
-> > 
-> > The min_align_mask becomes zero after the masking added by this patch,
-> > and the 12 lowest bits of the returned address are 0x7a0, i.e. not
-> > equal to 0xfa0.
+On Fri, Mar 08, 2024 at 03:28:23PM +0000, Will Deacon wrote:
+> Hi again, folks,
 > 
-> The address returned by swiotlb_tbl_map_single() is the slot index
-> converted to an address, plus the offset modulo the min_align_mask for
-> the device.  The local variable "offset" in swiotlb_tbl_map_single()
-> should be 0xfa0.  The slot index should be an even number to meet
-> the alloc_align_mask requirement.  And the pool->start address should
-> be at least page aligned, producing a page-aligned address *before* the
-> offset is added. Can you debug which of these isn't true for the case
-> you are seeing?
-
-I was just looking into this, and I think the problem starts because
-swiotlb_align_offset() doesn't return the offset modulo the min_align_mask,
-but instead returns the offset *into the slot*:
-
-	return addr & dma_get_min_align_mask(dev) & (IO_TLB_SIZE - 1);
-
-so this presumably lops off bit 11 without adjusting the slot number.
-
-I don't think swiotlb_find_slots() should be handling this though; it's
-more about how swiotlb_tbl_map_single() puts the address back together
-again.
-
-> > In other words, the min_align_mask constraint is not honored. Of course,
-> > given the above values, it is not possible to honor both min_align_mask
-> > and alloc_align_mask. 
+> This is version six of the patches which I previously posted at:
 > 
-> When orig_addr is specified and min_align_mask is set, alloc_align_mask
-> governs the address of the _allocated_ space, which is not necessarily the
-> returned physical address.  The min_align_mask may dictate some
-> pre-padding of size "offset" within the allocated space, and the returned
-> address is *after* that pre-padding.  In this way, both can be honored.
+> v1: https://lore.kernel.org/r/20240126151956.10014-1-will@kernel.org
+> v2: https://lore.kernel.org/r/20240131122543.14791-1-will@kernel.org
+> v3: https://lore.kernel.org/r/20240205190127.20685-1-will@kernel.org
+> v4: https://lore.kernel.org/r/20240221113504.7161-1-will@kernel.org
+> v5: https://lore.kernel.org/r/20240228133930.15400-1-will@kernel.org
+> 
+> Changes since v5 include:
+> 
+>   - Rework the final patch to preserve page-alignment for streaming
+>     requests without a DMA alignment mask
+> 
+>   - Added Reviewed-by tags from Michael
+> 
+> Cheers,
+> 
+> Will
+> 
+> Cc: iommu@lists.linux.dev
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+> Cc: Dexuan Cui <decui@microsoft.com>
+> Cc: Nicolin Chen <nicolinc@nvidia.com>
 
-I agree, modulo the issue with the offset calculation.
+Was out of office, so couldn't rerun the test. If it still matters:
 
-Will
+Tested-by: Nicolin Chen <nicolinc@nvidia.com>
