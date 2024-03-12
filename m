@@ -1,193 +1,110 @@
-Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 965747A15A
-	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 13:42:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=14.137.139.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D7227D061
+	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 16:12:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710250945; cv=none; b=MiWqcdO8Cr6WzXgBTEuSpFaH9vH61acfZ8pDC2LaFLsWmauH8dfV8KF/p2iM2jjB+X1FIG+Sf79wWKgU++MvSayUkjHi+soMTUxc4sl19Xn0pCFP0Ts/VbxUAk31tdgrRH/ar2VU142fuYAAvNnUSyeyOszi4bYVPv9gGdIc+iA=
+	t=1710259945; cv=none; b=iTWXtWCrwxi8r0GT893hUUULiSgUIPGGwcxkbUrmr4dle0z5YByAOTQ8u1T7IAgxihwUmDqzwV+p0aB/0TJX02l1+ePni7y/ZLVNdSYQiVsXrdu6PxTDgh9uGjYjJvKtKGGD/hvTtw6y4zMkVqaHi0dg4EcAWfizGflmxFxoeDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710250945; c=relaxed/simple;
-	bh=4LOfLz//4stF1IyW6kG8Qzj1vCEfzfpLV6bnrTyxpQI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=MNFaBNCSDUyMnQuUBDvNvYW8fQW1W72JYWJi5tLTBQV7Ii4ou/8RbMaltTtaRLWMjjTdz1NcPit1LaU75tBSNpBfGdRMPpto0vNQHRE33hm/9MNPviHqWIBPthNsN76eyDJC5evEds178NWK2D+lT5v/3S/tkb1s56lKBTh2hJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com; spf=pass smtp.mailfrom=huaweicloud.com; arc=none smtp.client-ip=14.137.139.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huaweicloud.com
-Received: from mail.maildlp.com (unknown [172.18.186.51])
-	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4TvDtq6c1Kz9xsCn
-	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 21:26:27 +0800 (CST)
-Received: from mail02.huawei.com (unknown [7.182.16.47])
-	by mail.maildlp.com (Postfix) with ESMTP id 209CB14041A
-	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 21:42:09 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.48.131.93])
-	by APP1 (Coremail) with SMTP id LxC2BwD3oBmmW_BlDi4zBA--.21282S2;
-	Tue, 12 Mar 2024 14:42:08 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>,
-	Michael Kelley <mhklinux@outlook.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
-	linux-kernel@vger.kernel.org (open list)
-Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	Petr Tesarik <petr.tesarik1@huawei-partners.com>
-Subject: [PATCH 1/1] swiotlb: extend buffer pre-padding to alloc_align_mask if necessary
-Date: Tue, 12 Mar 2024 14:41:49 +0100
-Message-Id: <20240312134149.497-1-petrtesarik@huaweicloud.com>
-X-Mailer: git-send-email 2.34.1
+	s=arc-20240116; t=1710259945; c=relaxed/simple;
+	bh=rXaL0LJcdegT3oLCAhYYQ90a8sQqF6H95AJnSTlrKSc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lPCaFunRrnum9P2EKSMRvqwVQnZ9RuPoXD9GvwII4wapNY/RPC8X/sfCxKG9vbcbo1yHc+ziRvDxtNEhgDsNO0YzkRt9WhNSyHl5lUhqK9ogwnUKchArzmeshHZaAhljVXc400WxHHyOVzO+RVy9VJve/2RW1hPBUMnsK73mXPw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=CZ377AYg; arc=none smtp.client-ip=209.85.167.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="CZ377AYg"
+Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-513b1e1724bso136656e87.1
+        for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 09:12:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1710259942; x=1710864742; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zLG0VkRk9T+MqlwYSwMr85lswH7UeBe9EKEDGZIjNWM=;
+        b=CZ377AYgBiCivi2bxQ2WTEcvWWVUEn89hlqno6u7+nXcTfU/06EkdKkKAt4pYtaOXD
+         KIsvk8PBskNLo/GGrW5ulVPgpFCRb8noabg0S1/BcVm6NrHqlsP+aej168tMXUzXHe62
+         gY+i6vtx4S2EWCUKhYkjWyNf9NmOlxIvqj5mOZ/VLMly8jaSnqHr41BUzileqHWhSLYr
+         vMlmVY60UvfF3mGIoOEOHBhtL9slqnCL8nkWih4uDZYydBXzvU0dbZBypRD4HfnHoXIW
+         RC/s8KcZ4TQIcjbM3UiRQ1wW+67MeBstgD5vKnyNb2Etnu6aIJcjZjPTVDzsf4urJb9X
+         DXgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1710259942; x=1710864742;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zLG0VkRk9T+MqlwYSwMr85lswH7UeBe9EKEDGZIjNWM=;
+        b=Oapy5H6MF6E9/YJnVcW3bPc/VhR9w9nhlbHNyy7NwhZ5U/IsrtwcbLOJVZbmRP3hk6
+         NoxsTYr9MksGTrfkWPGQfuXioSHug9BisC84trldJFo4Wqqn8+k0O4og6494XJEBcEA+
+         dEJYRl2G/+YK8HtK1beU83ISbvY5QlaIfGJNH9T/B9euXFTtQYOULGK/vNcinONO1XEm
+         fO/cbDwqk4UcJJ1jVWEnY5vh3E+1cvOze1rN+1l/DvE6obkOiPmMne9weUi8rubDQOa5
+         KePHl6//hg/5JnM96em0ihIDJj1LuIxoaAXq0PqXtu3n3ReDbSJWPUUbCxy+79Umsdox
+         IZaw==
+X-Forwarded-Encrypted: i=1; AJvYcCW8GP4N+64t+f3xU/cMeDvOHEP7iKVsq3TIWPED5c6dnyAfM/RFIACMTKCtcXMk6rki4QdihgFXalx4D8lfNVYuRlykanU=
+X-Gm-Message-State: AOJu0Yxz0PcV6dEFVAltft/IZ6vBuyAmY5padv/dx7+mDHxrG0HLNRF8
+	pa44kKeUtXLkvQtYAetX9NNVKkvowqFWWC/amTz9il5Rn6EaglMUgAKQJYnxWuI=
+X-Google-Smtp-Source: AGHT+IHFOEHl33gs0on8qTVXiyJ+aHRxksDiQ505Q8fof/YGiXciDjx8sbsbVrPzSuDgBdzksPF1+g==
+X-Received: by 2002:ac2:4d0f:0:b0:513:488a:95af with SMTP id r15-20020ac24d0f000000b00513488a95afmr1774lfi.15.1710259942295;
+        Tue, 12 Mar 2024 09:12:22 -0700 (PDT)
+Received: from [87.246.221.205] (netpanel-87-246-221-205.pol.akademiki.lublin.pl. [87.246.221.205])
+        by smtp.gmail.com with ESMTPSA id o5-20020ac24945000000b0051321db6a0dsm1634984lfi.139.2024.03.12.09.12.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Mar 2024 09:12:21 -0700 (PDT)
+Message-ID: <83734790-85c5-446f-b353-f3765cb10d41@linaro.org>
+Date: Tue, 12 Mar 2024 17:12:19 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:LxC2BwD3oBmmW_BlDi4zBA--.21282S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3Xw4rZr4xXw1fZw4fKrW5trb_yoW7XrW3pF
-	4fKa1rKFWDJFyxCanFka18KF1F934kAry5CF4S9ryY9r1kXF98XF98A34Yga4FqFWv9FW2
-	qFyrur40kF47Jr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUBS14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
-	6F4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4j6r
-	4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-	I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-	n2kIc2xKxwCY1x0262kKe7AKxVW8ZVWrXwCY1x0264kExVAvwVAq07x20xyl42xK82IYc2
-	Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s02
-	6x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0x
-	vE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE
-	42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87
-	Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjTRWbyCUUUUU
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/7] clk: qcom: clk-alpha-pll: Add HUAYRA_2290 support
+Content-Language: en-US
+To: Trilok Soni <quic_tsoni@quicinc.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
+ <sboyd@kernel.org>, Rob Clark <robdclark@gmail.com>,
+ Abhinav Kumar <quic_abhinavk@quicinc.com>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
+ David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Konrad Dybcio <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org,
+ linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ freedreno@lists.freedesktop.org
+References: <20240219-topic-rb1_gpu-v2-0-2d3d6a0db040@linaro.org>
+ <20240219-topic-rb1_gpu-v2-2-2d3d6a0db040@linaro.org>
+ <605d9e50-d61b-b0ce-1664-00554ba70b41@quicinc.com>
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+In-Reply-To: <605d9e50-d61b-b0ce-1664-00554ba70b41@quicinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 
-Allow a buffer pre-padding of up to alloc_align_mask. If the allocation
-alignment is bigger than IO_TLB_SIZE and min_align_mask covers any non-zero
-bits in the original address between IO_TLB_SIZE and alloc_align_mask,
-these bits are not preserved in the swiotlb buffer address.
 
-To fix this case, increase the allocation size and use a larger offset
-within the allocated buffer. As a result, extra padding slots may be
-allocated before the mapping start address.
+On 2/23/24 23:48, Trilok Soni wrote:
+> On 2/23/2024 1:21 PM, Konrad Dybcio wrote:
+>> +	/* Wait 50us for PLL_LOCK_DET bit to go high */
+>> +	usleep_range(50, 55);
+>> +
+>> +	/* Enable PLL output */
+>> +	regmap_update_bits(regmap, PLL_MODE(pll), PLL_OUTCTRL, PLL_OUTCTRL);
+>> +}
+>> +EXPORT_SYMBOL(clk_huayra_2290_pll_configure);
+> 
+> Please use EXPORT_SYMBOL_GPL.
 
-Set the orig_addr in these padding slots to INVALID_PHYS_ADDR, because they
-do not correspond to any CPU buffer and the data must never be synced.
+Sure, I glanced over this!
 
-The padding slots should be automatically released when the buffer is
-unmapped. However, swiotlb_tbl_unmap_single() takes only the address of the
-DMA buffer slot, not the first padding slot. Save the number of padding
-slots in struct io_tlb_slot and use it to adjust the slot index in
-swiotlb_release_slots(), so all allocated slots are properly freed.
+I've also noticed that it's a very common oversight.. would you be
+interested in extending scripts/checkpatch.pl to suggest the _GPL
+variant?
 
-Fixes: 2fd4fa5d3fb5 ("swiotlb: Fix alignment checks when both allocation and DMA masks are present")
-Link: https://lore.kernel.org/linux-iommu/20240311210507.217daf8b@meshulam.tesarici.cz/
-Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
----
- kernel/dma/swiotlb.c | 34 +++++++++++++++++++++++++++++-----
- 1 file changed, 29 insertions(+), 5 deletions(-)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 86fe172b5958..8ce11abc691f 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -69,11 +69,13 @@
-  * @alloc_size:	Size of the allocated buffer.
-  * @list:	The free list describing the number of free entries available
-  *		from each index.
-+ * @padding:    Number of preceding padding slots.
-  */
- struct io_tlb_slot {
- 	phys_addr_t orig_addr;
- 	size_t alloc_size;
- 	unsigned int list;
-+	unsigned int padding;
- };
- 
- static bool swiotlb_force_bounce;
-@@ -287,6 +289,7 @@ static void swiotlb_init_io_tlb_pool(struct io_tlb_pool *mem, phys_addr_t start,
- 					 mem->nslabs - i);
- 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
- 		mem->slots[i].alloc_size = 0;
-+		mem->slots[i].padding = 0;
- 	}
- 
- 	memset(vaddr, 0, bytes);
-@@ -1328,11 +1331,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		unsigned long attrs)
- {
- 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
--	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
-+	unsigned int offset;
- 	struct io_tlb_pool *pool;
- 	unsigned int i;
- 	int index;
- 	phys_addr_t tlb_addr;
-+	unsigned int padding;
- 
- 	if (!mem || !mem->nslabs) {
- 		dev_warn_ratelimited(dev,
-@@ -1349,6 +1353,15 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		return (phys_addr_t)DMA_MAPPING_ERROR;
- 	}
- 
-+	/*
-+	 * Calculate buffer pre-padding within the allocated space. Use it to
-+	 * preserve the low bits of the original address according to device's
-+	 * min_align_mask. Limit the padding to alloc_align_mask or slot size
-+	 * (whichever is bigger); higher bits of the original address are
-+	 * preserved by selecting a suitable IO TLB slot.
-+	 */
-+	offset = orig_addr & dma_get_min_align_mask(dev) &
-+		(alloc_align_mask | (IO_TLB_SIZE - 1));
- 	index = swiotlb_find_slots(dev, orig_addr,
- 				   alloc_size + offset, alloc_align_mask, &pool);
- 	if (index == -1) {
-@@ -1364,6 +1377,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	 * This is needed when we sync the memory.  Then we sync the buffer if
- 	 * needed.
- 	 */
-+	padding = 0;
-+	while (offset >= IO_TLB_SIZE) {
-+		pool->slots[index++].orig_addr = INVALID_PHYS_ADDR;
-+		pool->slots[index].padding = ++padding;
-+		offset -= IO_TLB_SIZE;
-+	}
- 	for (i = 0; i < nr_slots(alloc_size + offset); i++)
- 		pool->slots[index + i].orig_addr = slot_addr(orig_addr, i);
- 	tlb_addr = slot_addr(pool->start, index) + offset;
-@@ -1385,12 +1404,16 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
- 	struct io_tlb_pool *mem = swiotlb_find_pool(dev, tlb_addr);
- 	unsigned long flags;
- 	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
--	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
--	int nslots = nr_slots(mem->slots[index].alloc_size + offset);
--	int aindex = index / mem->area_nslabs;
--	struct io_tlb_area *area = &mem->areas[aindex];
-+	int index, nslots, aindex;
-+	struct io_tlb_area *area;
- 	int count, i;
- 
-+	index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
-+	index -= mem->slots[index].padding;
-+	nslots = nr_slots(mem->slots[index].alloc_size + offset);
-+	aindex = index / mem->area_nslabs;
-+	area = &mem->areas[aindex];
-+
- 	/*
- 	 * Return the buffer to the free list by setting the corresponding
- 	 * entries to indicate the number of contiguous entries available.
-@@ -1413,6 +1436,7 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
- 		mem->slots[i].list = ++count;
- 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
- 		mem->slots[i].alloc_size = 0;
-+		mem->slots[i].padding = 0;
- 	}
- 
- 	/*
--- 
-2.34.1
-
+Konrad
