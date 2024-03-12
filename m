@@ -1,59 +1,59 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+Received: from mail-lf1-f45.google.com (mail-lf1-f45.google.com [209.85.167.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D7227D061
-	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 16:12:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27B6313958E
+	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 18:14:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710259945; cv=none; b=iTWXtWCrwxi8r0GT893hUUULiSgUIPGGwcxkbUrmr4dle0z5YByAOTQ8u1T7IAgxihwUmDqzwV+p0aB/0TJX02l1+ePni7y/ZLVNdSYQiVsXrdu6PxTDgh9uGjYjJvKtKGGD/hvTtw6y4zMkVqaHi0dg4EcAWfizGflmxFxoeDk=
+	t=1710267293; cv=none; b=oBSMEX+Bm7K1VOAnzvOIodqoY8/Ow0AspwsZr1+oFgP4CC5e18LcwlaQEm1PZdpdK1xORb6tki5q9xTYF22r6v7rMimJ31WiFyrx3qBgyYUk4maKSzqXEInOidnuwx7E4PC0jq27V+SQp8hzEaNpd8sJRgGfU5VRc6B1WZT/4eM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710259945; c=relaxed/simple;
-	bh=rXaL0LJcdegT3oLCAhYYQ90a8sQqF6H95AJnSTlrKSc=;
+	s=arc-20240116; t=1710267293; c=relaxed/simple;
+	bh=NoHLxl5q4br2NmwuVbEbWC8Hgzx+ElYfgu5TSPvDZak=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lPCaFunRrnum9P2EKSMRvqwVQnZ9RuPoXD9GvwII4wapNY/RPC8X/sfCxKG9vbcbo1yHc+ziRvDxtNEhgDsNO0YzkRt9WhNSyHl5lUhqK9ogwnUKchArzmeshHZaAhljVXc400WxHHyOVzO+RVy9VJve/2RW1hPBUMnsK73mXPw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=CZ377AYg; arc=none smtp.client-ip=209.85.167.48
+	 In-Reply-To:Content-Type; b=K83bYMinUo2e76JuXWkBdILr1+gBXUoYM+vgA+Lxw3uJgaa9IGNGKQNoI9k5wa5AEvOLfC0Z5eJX46y4/+6YrD1LGkjKYV42i8i+gYogfV8Cq6U1zP2tNBi6sr0oxVy4gaenhvGPP3m/ptJJyIwa9VwV907xAABm6zqOvtLAHZ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Xj6sbpUV; arc=none smtp.client-ip=209.85.167.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="CZ377AYg"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-513b1e1724bso136656e87.1
-        for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 09:12:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Xj6sbpUV"
+Received: by mail-lf1-f45.google.com with SMTP id 2adb3069b0e04-512ed314881so5245800e87.2
+        for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 11:14:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1710259942; x=1710864742; darn=lists.linux.dev;
+        d=linaro.org; s=google; t=1710267289; x=1710872089; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=zLG0VkRk9T+MqlwYSwMr85lswH7UeBe9EKEDGZIjNWM=;
-        b=CZ377AYgBiCivi2bxQ2WTEcvWWVUEn89hlqno6u7+nXcTfU/06EkdKkKAt4pYtaOXD
-         KIsvk8PBskNLo/GGrW5ulVPgpFCRb8noabg0S1/BcVm6NrHqlsP+aej168tMXUzXHe62
-         gY+i6vtx4S2EWCUKhYkjWyNf9NmOlxIvqj5mOZ/VLMly8jaSnqHr41BUzileqHWhSLYr
-         vMlmVY60UvfF3mGIoOEOHBhtL9slqnCL8nkWih4uDZYydBXzvU0dbZBypRD4HfnHoXIW
-         RC/s8KcZ4TQIcjbM3UiRQ1wW+67MeBstgD5vKnyNb2Etnu6aIJcjZjPTVDzsf4urJb9X
-         DXgQ==
+        bh=ndyrovNU7gmuZatlaLPeU/xwQKMeCdI2vpreLiAY164=;
+        b=Xj6sbpUVK6EGiDui9ehfcOR0APWLuY0rdDC4MKD0HL8rQzv25Ug2eJp1LuVkYK34P4
+         XGwLUOAXHN21fsHGVmjTkPa13x6BrO3jNy4MhhIZVZaQSdpnQYjZ0vqcss3/LhKWHIhV
+         vVEqxP/yC6gAgDFane8r/7kW7OIYOt+mes4E2H/AyUrE846R6vrK9e21v2uu6Gwtjuu1
+         av16vDGEmbiJfqwFCmKXJDn4uigUXnSDc+DCbTkh3/TX5kiNTWT8jXwJzhXmP6ir+etL
+         QC/uBT+TU4M22spo2tNswij6VznXVN+r5dBzb0C55mRHS8CmPMK3wBT7BRO7zpIosu59
+         wsiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710259942; x=1710864742;
+        d=1e100.net; s=20230601; t=1710267289; x=1710872089;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=zLG0VkRk9T+MqlwYSwMr85lswH7UeBe9EKEDGZIjNWM=;
-        b=Oapy5H6MF6E9/YJnVcW3bPc/VhR9w9nhlbHNyy7NwhZ5U/IsrtwcbLOJVZbmRP3hk6
-         NoxsTYr9MksGTrfkWPGQfuXioSHug9BisC84trldJFo4Wqqn8+k0O4og6494XJEBcEA+
-         dEJYRl2G/+YK8HtK1beU83ISbvY5QlaIfGJNH9T/B9euXFTtQYOULGK/vNcinONO1XEm
-         fO/cbDwqk4UcJJ1jVWEnY5vh3E+1cvOze1rN+1l/DvE6obkOiPmMne9weUi8rubDQOa5
-         KePHl6//hg/5JnM96em0ihIDJj1LuIxoaAXq0PqXtu3n3ReDbSJWPUUbCxy+79Umsdox
-         IZaw==
-X-Forwarded-Encrypted: i=1; AJvYcCW8GP4N+64t+f3xU/cMeDvOHEP7iKVsq3TIWPED5c6dnyAfM/RFIACMTKCtcXMk6rki4QdihgFXalx4D8lfNVYuRlykanU=
-X-Gm-Message-State: AOJu0Yxz0PcV6dEFVAltft/IZ6vBuyAmY5padv/dx7+mDHxrG0HLNRF8
-	pa44kKeUtXLkvQtYAetX9NNVKkvowqFWWC/amTz9il5Rn6EaglMUgAKQJYnxWuI=
-X-Google-Smtp-Source: AGHT+IHFOEHl33gs0on8qTVXiyJ+aHRxksDiQ505Q8fof/YGiXciDjx8sbsbVrPzSuDgBdzksPF1+g==
-X-Received: by 2002:ac2:4d0f:0:b0:513:488a:95af with SMTP id r15-20020ac24d0f000000b00513488a95afmr1774lfi.15.1710259942295;
-        Tue, 12 Mar 2024 09:12:22 -0700 (PDT)
-Received: from [87.246.221.205] (netpanel-87-246-221-205.pol.akademiki.lublin.pl. [87.246.221.205])
-        by smtp.gmail.com with ESMTPSA id o5-20020ac24945000000b0051321db6a0dsm1634984lfi.139.2024.03.12.09.12.20
+        bh=ndyrovNU7gmuZatlaLPeU/xwQKMeCdI2vpreLiAY164=;
+        b=uDaQO7ShlUnFC7wuQAABQ8etMEd9eBaO2wBal3WN01aE1HaLjVIK0QJPAXhpRjzBJ8
+         59bhHxAAgwX+QtL2+EbBnuPjbk93hUiZBUZMrk7NkqZn5iJII0gf9RyGnmDuzWCZ4/6n
+         p0kbXTQs2Os9kPek74mtNDIiqMwOvrRbkDXjv0lF168uaBiSdhHIL8zhIf5iBo2l2lZ4
+         sulhUwwNBh7bD3qZ6+QczXlnetIKS/LDrY42JiuL5o5J/qeCmThFgIsrk4iSL+fLjIDA
+         aOSLBBKu+JUWmNrzeG64qkW3d2Bjur3qmU9TM7HG6mHMxWMQ1BG8AjE414ofk2sYJ1BZ
+         Ip5Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXgymSVOwiU9N0Dpw9cfmRm5FIOwBcbluQvPDpruXxLyfIR5ySsDYiHDHNZSpXD5OPYdaWSq6gMYIytrzj5doC7PrsF0PY=
+X-Gm-Message-State: AOJu0YybkGJs4cAa0Hd67lE3bdDp1zlhmnSYxb+hDDZCkNH5re5DY6YG
+	3RxPhGpXcQUk2GjMfLrF66JE3kFDCjPHPqom0dHT5JSJWGcbX03+rcuw+i3On+k=
+X-Google-Smtp-Source: AGHT+IEESLK6yRlor/BAs+mtT8DWCpjx4vz0GFvh9t3WEDBysSuHBbCc7YBtd8LxA3B7iMwul9UANg==
+X-Received: by 2002:ac2:4901:0:b0:513:a140:fbf8 with SMTP id n1-20020ac24901000000b00513a140fbf8mr6285218lfi.30.1710267289328;
+        Tue, 12 Mar 2024 11:14:49 -0700 (PDT)
+Received: from [172.30.204.193] (UNUSED.212-182-62-129.lubman.net.pl. [212.182.62.129])
+        by smtp.gmail.com with ESMTPSA id c28-20020ac25f7c000000b0051313a9bddasm1675985lfc.252.2024.03.12.11.14.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Mar 2024 09:12:21 -0700 (PDT)
-Message-ID: <83734790-85c5-446f-b353-f3765cb10d41@linaro.org>
-Date: Tue, 12 Mar 2024 17:12:19 +0100
+        Tue, 12 Mar 2024 11:14:48 -0700 (PDT)
+Message-ID: <8e00b2e8-866e-490a-bb81-73a9cb9dc737@linaro.org>
+Date: Tue, 12 Mar 2024 19:14:45 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,50 +61,52 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/7] clk: qcom: clk-alpha-pll: Add HUAYRA_2290 support
+Subject: Re: [PATCH v6 4/7] iommu/arm-smmu-qcom: Use a custom context fault
+ handler for sdm845
 Content-Language: en-US
-To: Trilok Soni <quic_tsoni@quicinc.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
- Michael Turquette <mturquette@baylibre.com>, Stephen Boyd
- <sboyd@kernel.org>, Rob Clark <robdclark@gmail.com>,
- Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
- David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- Konrad Dybcio <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org,
- linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org
-References: <20240219-topic-rb1_gpu-v2-0-2d3d6a0db040@linaro.org>
- <20240219-topic-rb1_gpu-v2-2-2d3d6a0db040@linaro.org>
- <605d9e50-d61b-b0ce-1664-00554ba70b41@quicinc.com>
+To: Georgi Djakov <quic_c_gdjako@quicinc.com>, robh+dt@kernel.org,
+ krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org, will@kernel.org,
+ robin.murphy@arm.com, joro@8bytes.org, iommu@lists.linux.dev
+Cc: devicetree@vger.kernel.org, andersson@kernel.org, robdclark@gmail.com,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com,
+ quic_sukadev@quicinc.com, quic_pdaly@quicinc.com, quic_sudaraja@quicinc.com,
+ djakov@kernel.org
+References: <20240307190525.395291-1-quic_c_gdjako@quicinc.com>
+ <20240307190525.395291-5-quic_c_gdjako@quicinc.com>
 From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <605d9e50-d61b-b0ce-1664-00554ba70b41@quicinc.com>
+In-Reply-To: <20240307190525.395291-5-quic_c_gdjako@quicinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 
 
-On 2/23/24 23:48, Trilok Soni wrote:
-> On 2/23/2024 1:21 PM, Konrad Dybcio wrote:
->> +	/* Wait 50us for PLL_LOCK_DET bit to go high */
->> +	usleep_range(50, 55);
->> +
->> +	/* Enable PLL output */
->> +	regmap_update_bits(regmap, PLL_MODE(pll), PLL_OUTCTRL, PLL_OUTCTRL);
->> +}
->> +EXPORT_SYMBOL(clk_huayra_2290_pll_configure);
+On 3/7/24 20:05, Georgi Djakov wrote:
+> The sdm845 platform now supports TBUs, so let's get additional debug
+> info from the TBUs when a context fault occurs. Implement a custom
+> context fault handler that does both software + hardware page table
+> walks and TLB Invalidate All.
 > 
-> Please use EXPORT_SYMBOL_GPL.
+> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+> ---
 
-Sure, I glanced over this!
+[...]
 
-I've also noticed that it's a very common oversight.. would you be
-interested in extending scripts/checkpatch.pl to suggest the _GPL
-variant?
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 5c7cfc51b57c..7a58b1b96bca 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -422,6 +422,10 @@ static const struct arm_smmu_impl sdm845_smmu_500_impl = {
+>   	.reset = qcom_sdm845_smmu500_reset,
+>   	.write_s2cr = qcom_smmu_write_s2cr,
+>   	.tlb_sync = qcom_smmu_tlb_sync,
+> +#ifdef CONFIG_ARM_SMMU_QCOM_TBU
+> +	.context_fault = qcom_smmu_context_fault,
+> +	.context_fault_needs_threaded_irq = true,
+> +#endif
+
+Is this enough for cases where CONFIG_ARM_SMMU_QCOM_TBU=y but the
+dts changes aren't there? IIUC this will spam the error message in
+qcom_find_tbu()
 
 Konrad
