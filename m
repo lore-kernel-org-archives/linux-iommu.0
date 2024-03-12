@@ -1,180 +1,172 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65C6F6A032
-	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 08:05:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16B1777F09
+	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 08:52:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710230738; cv=none; b=gd9Fi3lzNnAx/pfkv2/GG4AbJhCydcHeUbRj/njAqPkSGcKJkv1wjjBIxXFowDTdJfFHBk0E1Z1GXT/LX/3BCHElQyr6/R72qRBSjxFJRK8KZR3ntNm50MQAw+qPmpK0ov0/1iRAqkzoWTFs4d1IRhCyuRFyaSLAG2FXYQh06qc=
+	t=1710233552; cv=none; b=AsG4lEfEIknQGvJuTRNLIanEUAk0oaCrDLw+rhmkjFgL9HmNQWCGisei46CVJbhZxTsEYSRk1P04sPOEw3eldVIuB2LglRXGuKO2apZVmq+S8sa/hzRf4emlaiHbCGNaMrnhoBFrwKMx6YZojf4X8ltN+Yms1W7fe4n9gfVqo5E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710230738; c=relaxed/simple;
-	bh=br278IECTs6mwg8AYiFME7l+eNV3wXD/c6J7sStxOjI=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=QSsGJWs1mHiKoYq/hVuy0OMLjDYHsUYoPIwSecHqIDVuEltM9G+AesHUkTJX/lRrY/31S722jRJjiYm1xE2jO17D1SBIaPD8FzLu5VFdgYwOYQjwOzGA4i4f7vk0z6pTZqeAGjbEAjRJk/5nMC6MoiXF4+YdOAPWWg7VnHQmsQM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=nNUaRaw3; arc=none smtp.client-ip=209.85.167.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1710233552; c=relaxed/simple;
+	bh=liEg0VlHYQEiCJFBhq1fhNzu+OH4K3HVGJRT0OXS+mc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Dsvta7Pbb+8co6gTif8MEX7dOUPzL3vYz5jFsB3JMJF1AiL01HvWu0jzsSnP7gudMMEkJ2UhWfVtTyJaiPOLzrVr2S7UqfwJqP/+uV8UOG304cGwYf+4q1ba6CvwAivqOYm2l2Z1bJf+nxbgk1pWKsra14DIpvOVAg9LUyAxL3s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=lPwTuhuE; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="nNUaRaw3"
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-512e4f4e463so7139501e87.1
-        for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 01:05:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1710230734; x=1710835534; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=jNhIiSk+Z5h7g58HyZqwQPvyGLzPtdGbAZ8dMYbx7vI=;
-        b=nNUaRaw3htqg5WgXxQJbwNSrzwmRU3dbDIdH25ZB7GmUhzNM7Ta69BcJk42KaZVA/D
-         JMu4bKi16dw+P/jMsTzDsnXbqNFxI/HgandieYg5gO4e43hCL1flBotrLFOinq6G9XvA
-         njic9wpDH/qJwZYrXSge4py8NailoZhnll2im4n65ZPy7pPxdGTZZ9jlvsQmafLy/TAK
-         QFMb0oaYEZj0qx7mPDaMDici1dLX0tj6InyhJ4XU1JulnZJQXCSOW9Rm6nV27zmn0b+F
-         h+zOFPIzpTKORjAOacJ674gSwGBcnz0M4+am4xMw59Sobw/G8/O0AsxRg8TCzyoRToUA
-         kkzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710230734; x=1710835534;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :references:cc:to:content-language:subject:reply-to:from:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=jNhIiSk+Z5h7g58HyZqwQPvyGLzPtdGbAZ8dMYbx7vI=;
-        b=NflLFFrCaPxtori98dO5s0Qrug+FKElWZ3LL2+u75uRBkEgrJ74pimxJAqwRPphMGO
-         YG9tlPdog919/FOoPsWAdcXbTuIC9NwaYvtFiUhIqUsfSN+20YopRuHEoGuWu/ptv7vn
-         I7N12RApwuBB/UmFybJ4cWfR9XvetW1EQ3xipbebUcM74Z2QFAnuGfD0yDBo6909JXWg
-         O1vUZPauIc6ABvlo088vnqZOyB3PZZdZKBrSZWOmFhYmn4D39M0WLchiRQuTpaTqmWt+
-         NokcmiqQWu6VrD0ydgdH3zq5r9AuLO5xEc3e/Cxx2jIBVieb1lLIZMigAlFHILIRKuUt
-         oBIw==
-X-Forwarded-Encrypted: i=1; AJvYcCVs8UWe/bRWLKyYVmemRW3hZciAo7AApVndzkZOqc4QXpV6m+XurXOZ6Rx/4u5oN4aYhVWEzYhfHh6QcP2hmu+0OW3X7Ok=
-X-Gm-Message-State: AOJu0YzUHzzXSMJMjTAsL/2jTN5nMeNfTnr5yv0bURKo8zqEu9hG0dQr
-	yvZc/eX78D7QLnnlkitZe5J85sEV3RRQdxnePu3HOneoLaR8i8mkXzm4nW7dBjE=
-X-Google-Smtp-Source: AGHT+IG4QPJ/TiB3jCYWhKuqaIF6uwCpxH4sxUSkpI/eODFRgTCdlGv3wdSZiCSU8jKcNYNuaJYh1A==
-X-Received: by 2002:a05:6512:3b12:b0:513:2329:4308 with SMTP id f18-20020a0565123b1200b0051323294308mr2609363lfv.14.1710230734412;
-        Tue, 12 Mar 2024 01:05:34 -0700 (PDT)
-Received: from ?IPV6:2a01:e0a:982:cbb0:8238:61bd:7273:ad90? ([2a01:e0a:982:cbb0:8238:61bd:7273:ad90])
-        by smtp.gmail.com with ESMTPSA id co11-20020a0560000a0b00b0033e94233284sm5231038wrb.78.2024.03.12.01.05.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Mar 2024 01:05:33 -0700 (PDT)
-Message-ID: <fd983e63-b546-4260-93ec-ebee4d158f21@linaro.org>
-Date: Tue, 12 Mar 2024 09:05:32 +0100
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="lPwTuhuE"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 36378190ED2;
+	Tue, 12 Mar 2024 09:52:25 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1710233545; bh=KaQesOMo7Ot2NB/psa/g57OWMeyShuFU5y/avfSsZHQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=lPwTuhuEyyihwpH9Bu0VNNBpPSzKSfJGXx4xA56/5S3lYUmFvK7yd0xyXLtPeoqoT
+	 k+/yQOFlX/tPaerm0ZWk8FVBME7hN29jHDx+Qmk/94mDbUF6pNjaJ4qALWltqDcQZY
+	 8cFotjGFCSvG8PUFk7vXWzJLxEmfFMiTHtk6AHaEr9OSK+uuaSyXGDcwgc9+7qygP2
+	 qaW80qg7uQJS5lX8T/kWtNiLpN+fC97Ez9fM6aU76/Fzu63HhobMn+ceNmzL38i4nd
+	 HZ28pDhps4kf7JhyBOtpG5m8vGrwtdnbQfGSFSRvX+/9B8Xf8QMUMsOFknVQtN6tVK
+	 CrrGM+w2Guz5w==
+Date: Tue, 12 Mar 2024 09:52:23 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Will Deacon <will@kernel.org>
+Cc: Michael Kelley <mhklinux@outlook.com>, Nicolin Chen
+ <nicolinc@nvidia.com>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "kernel-team@android.com"
+ <kernel-team@android.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
+ Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
+ <decui@microsoft.com>
+Subject: Re: [PATCH v6 4/6] swiotlb: Fix alignment checks when both
+ allocation and DMA masks are present
+Message-ID: <20240312095223.7a05d5b8@meshulam.tesarici.cz>
+In-Reply-To: <20240311224910.GA28426@willie-the-truck>
+References: <20240308152829.25754-1-will@kernel.org>
+	<20240308152829.25754-5-will@kernel.org>
+	<20240311210507.217daf8b@meshulam.tesarici.cz>
+	<SN6PR02MB41576E58DDF5A56FC6FC1EB6D4242@SN6PR02MB4157.namprd02.prod.outlook.com>
+	<20240311224910.GA28426@willie-the-truck>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Neil Armstrong <neil.armstrong@linaro.org>
-Reply-To: neil.armstrong@linaro.org
-Subject: Re: [PATCH v3 6/7] arm64: dts: qcom: sm8650: add GPU nodes
-Content-Language: en-US, fr
-To: Konrad Dybcio <konrad.dybcio@linaro.org>, Rob Clark
- <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Bjorn Andersson <andersson@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-References: <20240216-topic-sm8650-gpu-v3-0-eb1f4b86d8d3@linaro.org>
- <20240216-topic-sm8650-gpu-v3-6-eb1f4b86d8d3@linaro.org>
- <58d5b209-94f6-43be-89e0-b14f5e30fd8c@linaro.org>
-Autocrypt: addr=neil.armstrong@linaro.org; keydata=
- xsBNBE1ZBs8BCAD78xVLsXPwV/2qQx2FaO/7mhWL0Qodw8UcQJnkrWmgTFRobtTWxuRx8WWP
- GTjuhvbleoQ5Cxjr+v+1ARGCH46MxFP5DwauzPekwJUD5QKZlaw/bURTLmS2id5wWi3lqVH4
- BVF2WzvGyyeV1o4RTCYDnZ9VLLylJ9bneEaIs/7cjCEbipGGFlfIML3sfqnIvMAxIMZrvcl9
- qPV2k+KQ7q+aXavU5W+yLNn7QtXUB530Zlk/d2ETgzQ5FLYYnUDAaRl+8JUTjc0CNOTpCeik
- 80TZcE6f8M76Xa6yU8VcNko94Ck7iB4vj70q76P/J7kt98hklrr85/3NU3oti3nrIHmHABEB
- AAHNKk5laWwgQXJtc3Ryb25nIDxuZWlsLmFybXN0cm9uZ0BsaW5hcm8ub3JnPsLAkQQTAQoA
- OwIbIwULCQgHAwUVCgkICwUWAgMBAAIeAQIXgBYhBInsPQWERiF0UPIoSBaat7Gkz/iuBQJk
- Q5wSAhkBAAoJEBaat7Gkz/iuyhMIANiD94qDtUTJRfEW6GwXmtKWwl/mvqQtaTtZID2dos04
- YqBbshiJbejgVJjy+HODcNUIKBB3PSLaln4ltdsV73SBcwUNdzebfKspAQunCM22Mn6FBIxQ
- GizsMLcP/0FX4en9NaKGfK6ZdKK6kN1GR9YffMJd2P08EO8mHowmSRe/ExAODhAs9W7XXExw
- UNCY4pVJyRPpEhv373vvff60bHxc1k/FF9WaPscMt7hlkbFLUs85kHtQAmr8pV5Hy9ezsSRa
- GzJmiVclkPc2BY592IGBXRDQ38urXeM4nfhhvqA50b/nAEXc6FzqgXqDkEIwR66/Gbp0t3+r
- yQzpKRyQif3OwE0ETVkGzwEIALyKDN/OGURaHBVzwjgYq+ZtifvekdrSNl8TIDH8g1xicBYp
- QTbPn6bbSZbdvfeQPNCcD4/EhXZuhQXMcoJsQQQnO4vwVULmPGgtGf8PVc7dxKOeta+qUh6+
- SRh3vIcAUFHDT3f/Zdspz+e2E0hPV2hiSvICLk11qO6cyJE13zeNFoeY3ggrKY+IzbFomIZY
- 4yG6xI99NIPEVE9lNBXBKIlewIyVlkOaYvJWSV+p5gdJXOvScNN1epm5YHmf9aE2ZjnqZGoM
- Mtsyw18YoX9BqMFInxqYQQ3j/HpVgTSvmo5ea5qQDDUaCsaTf8UeDcwYOtgI8iL4oHcsGtUX
- oUk33HEAEQEAAcLAXwQYAQIACQUCTVkGzwIbDAAKCRAWmrexpM/4rrXiB/sGbkQ6itMrAIfn
- M7IbRuiSZS1unlySUVYu3SD6YBYnNi3G5EpbwfBNuT3H8//rVvtOFK4OD8cRYkxXRQmTvqa3
- 3eDIHu/zr1HMKErm+2SD6PO9umRef8V82o2oaCLvf4WeIssFjwB0b6a12opuRP7yo3E3gTCS
- KmbUuLv1CtxKQF+fUV1cVaTPMyT25Od+RC1K+iOR0F54oUJvJeq7fUzbn/KdlhA8XPGzwGRy
- 4zcsPWvwnXgfe5tk680fEKZVwOZKIEuJC3v+/yZpQzDvGYJvbyix0lHnrCzq43WefRHI5XTT
- QbM0WUIBIcGmq38+OgUsMYu4NzLu7uZFAcmp6h8g
-Organization: Linaro Developer Services
-In-Reply-To: <58d5b209-94f6-43be-89e0-b14f5e30fd8c@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On 12/03/2024 01:20, Konrad Dybcio wrote:
-> 
-> 
-> On 2/16/24 12:03, Neil Armstrong wrote:
->> Add GPU nodes for the SM8650 platform.
->>
->> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
->> ---
->>   arch/arm64/boot/dts/qcom/sm8650.dtsi | 166 +++++++++++++++++++++++++++++++++++
->>   1 file changed, 166 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/sm8650.dtsi b/arch/arm64/boot/dts/qcom/sm8650.dtsi
->> index 62e6ae93a9a8..27dcef27b6ad 100644
->> --- a/arch/arm64/boot/dts/qcom/sm8650.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sm8650.dtsi
->> @@ -2589,6 +2589,128 @@ tcsr: clock-controller@1fc0000 {
->>               #reset-cells = <1>;
->>           };
->> +        gpu: gpu@3d00000 {
->> +            compatible = "qcom,adreno-43051401", "qcom,adreno";
->> +            reg = <0x0 0x03d00000 0x0 0x40000>,
->> +                  <0x0 0x03d9e000 0x0 0x1000>,
->> +                  <0x0 0x03d61000 0x0 0x800>;
->> +            reg-names = "kgsl_3d0_reg_memory",
->> +                    "cx_mem",
->> +                    "cx_dbgc";
->> +
->> +            interrupts = <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>;
->> +
->> +            iommus = <&adreno_smmu 0 0x0>,
->> +                 <&adreno_smmu 1 0x0>;
->> +
->> +            operating-points-v2 = <&gpu_opp_table>;
->> +
->> +            qcom,gmu = <&gmu>;
->> +
->> +            status = "disabled";
->> +
->> +            zap-shader {
->> +                memory-region = <&gpu_micro_code_mem>;
->> +            };
->> +
->> +            /* Speedbin needs more work on A740+, keep only lower freqs */
->> +            gpu_opp_table: opp-table {
->> +                compatible = "operating-points-v2";
->> +
->> +                opp-680000000 {
->> +                    opp-hz = /bits/ 64 <680000000>;
->> +                    opp-level = <RPMH_REGULATOR_LEVEL_SVS_L1>;
->> +                };
-> 
-> I got a memo from krzk that we should be sorting OPPs low-to-high,
-> could you please reorder these (and under gmu)?
+On Mon, 11 Mar 2024 22:49:11 +0000
+Will Deacon <will@kernel.org> wrote:
 
-Ack, I also add 3 more OPPs that works with all speedbins.
+> On Mon, Mar 11, 2024 at 09:36:10PM +0000, Michael Kelley wrote:
+> > From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> =20
+> > > On Fri,  8 Mar 2024 15:28:27 +0000
+> > > Will Deacon <will@kernel.org> wrote: =20
+> > > > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> > > > index c20324fba814..c381a7ed718f 100644
+> > > > --- a/kernel/dma/swiotlb.c
+> > > > +++ b/kernel/dma/swiotlb.c
+> > > > @@ -981,8 +981,7 @@ static int swiotlb_search_pool_area(struct devi=
+ce *dev, struct io_tlb_pool *pool
+> > > >  	dma_addr_t tbl_dma_addr =3D
+> > > >  		phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
+> > > >  	unsigned long max_slots =3D get_max_slots(boundary_mask);
+> > > > -	unsigned int iotlb_align_mask =3D
+> > > > -		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
+> > > > +	unsigned int iotlb_align_mask =3D dma_get_min_align_mask(dev);
+> > > >  	unsigned int nslots =3D nr_slots(alloc_size), stride;
+> > > >  	unsigned int offset =3D swiotlb_align_offset(dev, orig_addr);
+> > > >  	unsigned int index, slots_checked, count =3D 0, i;
+> > > > @@ -993,6 +992,14 @@ static int swiotlb_search_pool_area(struct dev=
+ice *dev, struct io_tlb_pool *pool
+> > > >  	BUG_ON(!nslots);
+> > > >  	BUG_ON(area_index >=3D pool->nareas);
+> > > >
+> > > > +	/*
+> > > > +	 * Ensure that the allocation is at least slot-aligned and update
+> > > > +	 * 'iotlb_align_mask' to ignore bits that will be preserved when
+> > > > +	 * offsetting into the allocation.
+> > > > +	 */
+> > > > +	alloc_align_mask |=3D (IO_TLB_SIZE - 1);
+> > > > +	iotlb_align_mask &=3D ~alloc_align_mask;
+> > > > + =20
+> > >=20
+> > > I have started writing the KUnit test suite, and the results look
+> > > incorrect to me for this case.
+> > >=20
+> > > I'm calling swiotlb_tbl_map_single() with:
+> > >=20
+> > > * alloc_align_mask =3D 0xfff
+> > > * a device with min_align_mask =3D 0xfff
+> > > * the 12 lowest bits of orig_addr are 0xfa0
+> > >=20
+> > > The min_align_mask becomes zero after the masking added by this patch,
+> > > and the 12 lowest bits of the returned address are 0x7a0, i.e. not
+> > > equal to 0xfa0. =20
+> >=20
+> > The address returned by swiotlb_tbl_map_single() is the slot index
+> > converted to an address, plus the offset modulo the min_align_mask for
+> > the device.  The local variable "offset" in swiotlb_tbl_map_single()
+> > should be 0xfa0.  The slot index should be an even number to meet
+> > the alloc_align_mask requirement.  And the pool->start address should
+> > be at least page aligned, producing a page-aligned address *before* the
+> > offset is added. Can you debug which of these isn't true for the case
+> > you are seeing? =20
+>=20
+> I was just looking into this, and I think the problem starts because
+> swiotlb_align_offset() doesn't return the offset modulo the min_align_mas=
+k,
+> but instead returns the offset *into the slot*:
+>=20
+> 	return addr & dma_get_min_align_mask(dev) & (IO_TLB_SIZE - 1);
+>=20
+> so this presumably lops off bit 11 without adjusting the slot number.
 
-Neil
+Yes. You will never see an offset bigger than IO_TLB_SIZE.
 
-> 
-> Otherwise lgtm
-> 
-> Konrad
+> I don't think swiotlb_find_slots() should be handling this though; it's
+> more about how swiotlb_tbl_map_single() puts the address back together
+> again.
+> > > In other words, the min_align_mask constraint is not honored. Of cour=
+se,
+> > > given the above values, it is not possible to honor both min_align_ma=
+sk
+> > > and alloc_align_mask.  =20
+> >=20
+> > When orig_addr is specified and min_align_mask is set, alloc_align_mask
+> > governs the address of the _allocated_ space, which is not necessarily =
+the
+> > returned physical address.  The min_align_mask may dictate some
+> > pre-padding of size "offset" within the allocated space, and the return=
+ed
+> > address is *after* that pre-padding.  In this way, both can be honored.=
+ =20
+>=20
+> I agree, modulo the issue with the offset calculation.
 
+*sigh*
+
+This is exactly what I tried to suggest here:
+
+  https://lore.kernel.org/linux-iommu/20240301180853.5ac20b27@meshulam.tesa=
+rici.cz/
+
+To which Robin Murphy replied:
+
+> That doesn't make sense - a caller asks to map some range of kernel=20
+> addresses and they get back a corresponding range of DMA addresses; they=
+=20
+> cannot make any reasonable assumptions about DMA addresses *outside*=20
+> that range.=20
+
+It sounded like a misunderstanding back then already, but in light of
+the present findings, should I send the corresponding patch after all?
+
+Petr T
