@@ -1,145 +1,148 @@
-Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2044.outbound.protection.outlook.com [40.107.94.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E678370
-	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 00:20:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710202829; cv=none; b=XyHdihELJA291CSWm8H+W+d2yX8B2Kwroi5fhxfyzk37MrV1n5cuko+FcBlyxgdcKCRXCET22jo5CvSnFbP6dGjBkt4rZpfNRR5DavC/GuPp6BTilLF07x4T31ImXYoLNqPolZYSuigaCEmgvD+xXll2pbUT0gWefF0GuGRGZ00=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710202829; c=relaxed/simple;
-	bh=qOWrAr6bPBzvoLLPTAz0C9dXtVXWGeptHGJUKAp80jI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ee/NofHZsGGRUQ17ParfIyoZ8PFg+f+kSCPT4OzgaJt4LIsDv/gMLTQcjhOwHdpwl7cyFd5ktd2eEg2OWSiINJBhcv7pxBlwtM62lID6RZvvTZsUXqIF43oq4kGS/ni9yQdLNQkZg8wGe5MLINAUue0fZHRtQi4z7OvRVr9R83U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=OHk67HVw; arc=none smtp.client-ip=209.85.167.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC354653
+	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 00:52:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1710204779; cv=fail; b=hP5fr3Gfpycqai+4b8gABPT9dVIZcKYK/vJWNZP1lwtdzeku6Xk6XRJq/fz4NkLGW4LIDTtJn2r5GT9czct1mRSLeCPJENJTr6SIPJP01SVn21UuKy9wgTGnLGPiC/K92SCCblooc0U/f5WFO78M7Oe+0BTbMoC1z04/TdpWtCY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1710204779; c=relaxed/simple;
+	bh=ikWChl78pb0ae4+iV3dIlSdAj6mVDcDp79QQOfDTmxE=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=GEyPopB5Kp4WRNAdoL7wfLQiuFgNBJPK00C5s+lKrrdXdm+1f1x4GtcO+QUvKmFw5+vRKX+Ix7/SH9xNqhgU2vYmuZ6HpvIEQL5akI5yMybBf2RoYXRwEZPZ1zF1xBTF4lo2mMd/dE6gwgX9tGhtS1429xekOyO8nDmrGnLHjL0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=XQ2VdGSP; arc=fail smtp.client-ip=40.107.94.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OHk67HVw"
-Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-512b3b04995so3873444e87.3
-        for <iommu@lists.linux.dev>; Mon, 11 Mar 2024 17:20:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1710202825; x=1710807625; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Y6Qj+d193V6vAwzUIxkG37xPPAUPTTqW49/CnKjXQd8=;
-        b=OHk67HVw6xOOvPICk+74Tkyxr1DoGS3A+kv5wdrnTdt4YIxbk730WSAYO1K8JfOJ91
-         Y/KRkDNgVxRgfu+uHy4RPBxOBuuGPrR/zQAdDhKXLeD/BZ+Q1212YnneRTa8NXiyT47P
-         mpwmv9Jzc8iyBv5+o6FhGGQRrIcYBDtkSzaufO9dm4VSqgofIsLU+8V/FGjPuRuTfaDy
-         kgVGbxKqiTXJSwxCP3j4FEA7U0Lqg90sj3IjN0FoGaSHCNfb/WCNGNKKDaw1lOVZ71E2
-         mC9Cy5QsHJXtcVumrzKVHf2VF6KVT6o8L8kweF7Bek0DHBo+MyJXS/dHSfXIpkm21Jtz
-         XZtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710202825; x=1710807625;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Y6Qj+d193V6vAwzUIxkG37xPPAUPTTqW49/CnKjXQd8=;
-        b=KhaaAc+b3y87Nv3yLknkdZQhUNvlrq3ficCzujTmWa9U8SRhbdVe85qGZfr69xjG6R
-         4t4Ddg7BWpggudy3kD0qGf5m5vGE5bpcE9FTyFy0VBsnIX8Y1/0ePl8QO9Y4l+joSz5v
-         D2gzfyn59WOwlbfz/IDmsV64mm1dTPxDQ+KfiazkU7195PR+Oe9fBb+LfpId6rZev9+K
-         A9ngm82sVWgvkz/fQibo+hI+d1djCWKmzYmqr6Et9Rb5rp/VEpjrVAP2ZsZ3rLjZYPnx
-         k9wgbntTNWLmACWCFeQRDJXDyKmYgHgi9PbFZ13JVhblIwFuM/efQm9g1QGSK7sFjGNF
-         lFWg==
-X-Forwarded-Encrypted: i=1; AJvYcCUavYVQ5Pjr0UwRCLXWqTdrOMVCJxV05umw2YDA7e3ZfjPgSx/C5vB/hdGp/ExgbyYYcNaVujYsWwbz+S2bPZmy23Jfb6o=
-X-Gm-Message-State: AOJu0YzYN8iP/esOq48G4BJSYtAaWwz+PJe+Rl3HYm68kHovIoXUxEyQ
-	Fc4WWDIfEWBhR9E93vsjRB84pi2nY7P4Dlz72a4hDp8XKQOv+C/ToAJXwfpAa0Q=
-X-Google-Smtp-Source: AGHT+IECykpsirV8o3fAnfpG+ZqnLDETPl8qxRjl1ccJmT0u7F6lmAy4sP57NbpxufW8iWZ12UsN4w==
-X-Received: by 2002:ac2:485c:0:b0:513:c3:1d94 with SMTP id 28-20020ac2485c000000b0051300c31d94mr4909736lfy.52.1710202825462;
-        Mon, 11 Mar 2024 17:20:25 -0700 (PDT)
-Received: from [172.30.205.61] (UNUSED.212-182-62-129.lubman.net.pl. [212.182.62.129])
-        by smtp.gmail.com with ESMTPSA id h18-20020a056512221200b0051354f006b9sm1316460lfu.56.2024.03.11.17.20.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Mar 2024 17:20:25 -0700 (PDT)
-Message-ID: <58d5b209-94f6-43be-89e0-b14f5e30fd8c@linaro.org>
-Date: Tue, 12 Mar 2024 01:20:21 +0100
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="XQ2VdGSP"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CxgZWihFRe5rbt4hHjDEre35eBxH4ZzG3nHzaPH8f6Iq/FsfCUVa+DjGhsPLZbWJy2JRaWeH5sH9/H5L9X2VTFv/JakrmS7x83mHtQezbacJp1n30ZVb4uvvLEBlb6mwtGbSuyfNZTN7A9Rse7YaGSvIQppnzLCUlJJy2iLOL8RB+iyL4+D8q2rNw3TYjGJVX7Tdw9W0IxnxMmzAmBLW0CalJL4mvgPo+S/rXj8n4yxjr7X88/zI8tUrQFrkQfuHxfJv0OIKFBv0hgCjOpTR6/37Kz98/C9j7IlsJApVyhgFyP25QjgZBwVQMQPPOonq0C1yAxW8f1/HeDKEad+/vg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=M/UlMVhNULMCD9xMdj87hULzGcX4fnehHFK1alxUWmU=;
+ b=RqZtP/h5rm9ADIb+fyXzfaXG7gpOBZOPD6sPaRB/A2HrrPZspMWdJZVX4DhSxfTBUyYu1u9UGXwoH4WArm3sx3rvSVmukHwI9Pur72HL41cin5QpXp2OlLo32VSSTZXDQgwUr7RNA0QcDWwCI/k5tAXRQ6TN+igrNVUe19wfwXbwNa7RWbDLA0L4zgR5IEosKSlJkqs6Q2b18hsDylzay45HmXKcl9JJduUIcng+NNpg2dd284KMqqdFrUaqAjP7PB1KtTpjyXIa1twYWyfO7ODZgPHn31MSBlH2vU6JyJAkM0Vp3N56JoL5WVhQwnRzYA4cLSQMsvo9YhaMzdgd/g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=tesarici.cz smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=M/UlMVhNULMCD9xMdj87hULzGcX4fnehHFK1alxUWmU=;
+ b=XQ2VdGSPU8VeFSbBc0VbzEjpA/Rd6wEEunkOcW/UezXLybID8bvXIqy9VajMZD+DV2gb6ufJX/GCLSuXwC0O5wYbviDVePU5d1dhMKTCp/YYuk6PTJs0H33NsvG5ztArMmTZxS4/29Zg5D967v8RtUKQ4Cusnj2QwB932a3q87KlC0bqd0wiWUXLB7MszjYYWnbiIRxhx47QAOcTmuufV/rPIes5aXjIEwME1F3Yke/cOdk/UJtc1e18H5fkFxDY15cPD2E7p9DMWHySoPT8mlW1oWx8gcgjgI5BGoUsSgUx5fv+311Qhbit5JcwZGXooGm/KAlCApcxRWW18QZ6RQ==
+Received: from BN0PR02CA0046.namprd02.prod.outlook.com (2603:10b6:408:e5::21)
+ by IA0PR12MB7555.namprd12.prod.outlook.com (2603:10b6:208:43d::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.36; Tue, 12 Mar
+ 2024 00:52:52 +0000
+Received: from BN1PEPF0000468B.namprd05.prod.outlook.com
+ (2603:10b6:408:e5:cafe::de) by BN0PR02CA0046.outlook.office365.com
+ (2603:10b6:408:e5::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.36 via Frontend
+ Transport; Tue, 12 Mar 2024 00:52:52 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ BN1PEPF0000468B.mail.protection.outlook.com (10.167.243.136) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7386.12 via Frontend Transport; Tue, 12 Mar 2024 00:52:51 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Mon, 11 Mar
+ 2024 17:52:33 -0700
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12; Mon, 11 Mar
+ 2024 17:52:33 -0700
+Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
+ Transport; Mon, 11 Mar 2024 17:52:32 -0700
+Date: Mon, 11 Mar 2024 17:52:31 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>, Michael Kelley
+	<mhklinux@outlook.com>
+CC: Will Deacon <will@kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "kernel-team@android.com"
+	<kernel-team@android.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>, Petr Tesarik
+	<petr.tesarik1@huawei-partners.com>, Dexuan Cui <decui@microsoft.com>
+Subject: Re: [PATCH v6 4/6] swiotlb: Fix alignment checks when both
+ allocation and DMA masks are present
+Message-ID: <Ze+nT+4Radnd/iyw@Asurada-Nvidia>
+References: <20240308152829.25754-1-will@kernel.org>
+ <20240308152829.25754-5-will@kernel.org>
+ <20240311210507.217daf8b@meshulam.tesarici.cz>
+ <SN6PR02MB41576E58DDF5A56FC6FC1EB6D4242@SN6PR02MB4157.namprd02.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 6/7] arm64: dts: qcom: sm8650: add GPU nodes
-Content-Language: en-US
-To: Neil Armstrong <neil.armstrong@linaro.org>,
- Rob Clark <robdclark@gmail.com>, Abhinav Kumar <quic_abhinavk@quicinc.com>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>, Sean Paul <sean@poorly.run>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- David Airlie <airlied@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Bjorn Andersson <andersson@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- freedreno@lists.freedesktop.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-References: <20240216-topic-sm8650-gpu-v3-0-eb1f4b86d8d3@linaro.org>
- <20240216-topic-sm8650-gpu-v3-6-eb1f4b86d8d3@linaro.org>
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-In-Reply-To: <20240216-topic-sm8650-gpu-v3-6-eb1f4b86d8d3@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <SN6PR02MB41576E58DDF5A56FC6FC1EB6D4242@SN6PR02MB4157.namprd02.prod.outlook.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: BN1PEPF0000468B:EE_|IA0PR12MB7555:EE_
+X-MS-Office365-Filtering-Correlation-Id: a75a6d77-22b9-4bda-f791-08dc422ebf28
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	0kESdDY42AG9EqQOIPsTaRT7HS1jre3FGGwTSK5UaXmqUrt+BQXzikw8pdxVESDNdZOAQIeodmpMbEciK/YcAHCfPoYbhMJM3cAplvJyo+GhizrZwfO+bklelXj3U1gmuMCb5GRZf2n32gGWMhXq9sZTh/gyQd6kGH0spalqIEdzFDsezFy28meutY5dduUEWU0b0j5zin7pW9DxwlqdBycZ36f+rdjR1hrH0udyUSYYCTp9mx+PV8+TYd1IIyeKqPERTBMRuROe+JJ0LNX17pbg1C4n8ycqt4jCf9yDWZZtqwEZfe7FC9NuabtXhv6lDuQMiPKybRKu0Y8MNnk8s1C9KwCpe2fM79jlSCoxjI0LV8rgfVJ2o7paKnO0D3fDjtl3e6O7gnxUO8/XdiKccdSjgvoTEUeeIROc4/r3c6dNF3JxZ6TElh1Hi2J2kpHWDcCYCfO+2h1GhHYy/g7iGuulvV5/q3RJ+LLGeEKdxn1yV4BthC6CXXf+nMh14Zl44lIE4b++zrs7x8+XvbEqdRHsnjRj2/hFXBucxyi/eklPVmhoNxhUgBN2oZUe5IgEEFzx9yNot/YcWvl0V8PKP2c35oKzSyDEauDumZQKd3mRWcSxzzlwqEqUex4QLHBfLpu12qZbRJLQAj9g9PjgRcznqVu1+YnS5jrxxbRrX0NUA75IbPWyZdk1LhLTsZLz0Jf+bFEI3bVv0ClJ/o6cZrmPvgtV1yoSl8OTIc7zZPfUx2L7YBoTINxRHTYj3Vxun1cbmk6iDBufm0I8rNTKHWY9ZfX1i71C48KVCWxFhEE=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(1800799015)(7416005)(82310400014)(376005)(32650700005)(36860700004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2024 00:52:51.8923
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a75a6d77-22b9-4bda-f791-08dc422ebf28
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	BN1PEPF0000468B.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB7555
 
-
-
-On 2/16/24 12:03, Neil Armstrong wrote:
-> Add GPU nodes for the SM8650 platform.
+On Mon, Mar 11, 2024 at 09:36:10PM +0000, Michael Kelley wrote:
+> From: Petr Tesařík <petr@tesarici.cz>
+> > I find it somewhat surprising that NVMe does not
+> > in fact require that the NVME_CTRL_PAGE_SHIFT low bits are preserved,
+> > as suggested by Nicolin's successful testing.
+> >
+> > Why is that?
 > 
-> Signed-off-by: Neil Armstrong <neil.armstrong@linaro.org>
-> ---
->   arch/arm64/boot/dts/qcom/sm8650.dtsi | 166 +++++++++++++++++++++++++++++++++++
->   1 file changed, 166 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sm8650.dtsi b/arch/arm64/boot/dts/qcom/sm8650.dtsi
-> index 62e6ae93a9a8..27dcef27b6ad 100644
-> --- a/arch/arm64/boot/dts/qcom/sm8650.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sm8650.dtsi
-> @@ -2589,6 +2589,128 @@ tcsr: clock-controller@1fc0000 {
->   			#reset-cells = <1>;
->   		};
->   
-> +		gpu: gpu@3d00000 {
-> +			compatible = "qcom,adreno-43051401", "qcom,adreno";
-> +			reg = <0x0 0x03d00000 0x0 0x40000>,
-> +			      <0x0 0x03d9e000 0x0 0x1000>,
-> +			      <0x0 0x03d61000 0x0 0x800>;
-> +			reg-names = "kgsl_3d0_reg_memory",
-> +				    "cx_mem",
-> +				    "cx_dbgc";
-> +
-> +			interrupts = <GIC_SPI 300 IRQ_TYPE_LEVEL_HIGH>;
-> +
-> +			iommus = <&adreno_smmu 0 0x0>,
-> +				 <&adreno_smmu 1 0x0>;
-> +
-> +			operating-points-v2 = <&gpu_opp_table>;
-> +
-> +			qcom,gmu = <&gmu>;
-> +
-> +			status = "disabled";
-> +
-> +			zap-shader {
-> +				memory-region = <&gpu_micro_code_mem>;
-> +			};
-> +
-> +			/* Speedbin needs more work on A740+, keep only lower freqs */
-> +			gpu_opp_table: opp-table {
-> +				compatible = "operating-points-v2";
-> +
-> +				opp-680000000 {
-> +					opp-hz = /bits/ 64 <680000000>;
-> +					opp-level = <RPMH_REGULATOR_LEVEL_SVS_L1>;
-> +				};
+> I saw only one stack trace from Nicolin, and it was file system buffer
+> flushing code that initiated the I/O.  In such cases, it's very likely that the
+> original address is at least 4K aligned.  Hence the offset is zero and
+> the low bits will typically be correct.
 
-I got a memo from krzk that we should be sorting OPPs low-to-high,
-could you please reorder these (and under gmu)?
+Though I didn't dig any deeper here, I do see some unaligned
+original addresses passed in at the top level:
+       fsck.ext4-286     [004] .....     2.594190: iommu_dma_map_page: calling swiotlb_tbl_map_single with phys: be750600
+       fsck.ext4-286     [004] .....     2.613032: iommu_dma_map_page: calling swiotlb_tbl_map_single with phys: be780400
+       fsck.ext4-286     [004] .....     2.614096: iommu_dma_map_page: calling swiotlb_tbl_map_single with phys: be7c0600
+       fsck.ext4-286     [004] .....     2.614103: iommu_dma_map_page: calling swiotlb_tbl_map_single with phys: be7e0400
+           mount-288     [005] .....     2.615157: iommu_dma_map_page: calling swiotlb_tbl_map_single with phys: be800400
+      multipathd-405     [003] .....     3.062878: iommu_dma_map_page: calling swiotlb_tbl_map_single with phys: bda40218
+      multipathd-502     [002] .....     3.231721: iommu_dma_map_page: calling swiotlb_tbl_map_single with phys: bd3107b8
+           mount-525     [002] .....     3.250281: iommu_dma_map_page: calling swiotlb_tbl_map_single with phys: bd340200
+      multipathd-529     [004] .....     3.259053: iommu_dma_map_page: calling swiotlb_tbl_map_single with phys: be620478
+      multipathd-571     [005] .....     3.292893: iommu_dma_map_page: calling swiotlb_tbl_map_single with phys: be900328
+      multipathd-580     [005] .....     3.318832: iommu_dma_map_page: calling swiotlb_tbl_map_single with phys: be9207c8
 
-Otherwise lgtm
+Or is that a different "original address"?
 
-Konrad
+Thanks
+Nicolin
