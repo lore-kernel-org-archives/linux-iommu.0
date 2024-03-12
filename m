@@ -1,109 +1,192 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFACB55E73
-	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 10:44:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1190227711
+	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 12:57:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710240252; cv=none; b=e7Y7x1aJNyqR3nM0PBj6HxeKBkeAkb6AWOQW746lZtW/I0pc4pd5YFztJHtrYiEQfvp1XxdpBcGuNkIwXJvZlgXSBBdgj5NkeyB4YvVKkHWFdMUcUiogj/Zql+hoOy6el0V3j6EQgFgneHd+A3j2xvlKZLxJoTwXWFNUy1pf4kc=
+	t=1710248229; cv=none; b=Yw3dMLvApozlE5o5490gy/AzXrhJOtXdwbB8uZXRErrstFGVA1H2HQVZdCmJ07LlnPnIOwelyPjIZDgmJpddJ+1QFYpWGnWucXLLv/80zSrq7MfF81B/thMslyOGvUh+504p5EfOHalgZ5muVn+KcDPEiZEIjNoyKVABXARBSSU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710240252; c=relaxed/simple;
-	bh=IvsQlHr33C+BlhA4MSbkk54Qsryx8yzEIHkCOnKNFjg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RZTbrcJdxo32g4usUvitgkbt9rSJuPY1HJSMsBlAXNKDWgIgTgGvDL6+/yzFQKiQcIlzdJcLrBM3xAcdbd1qizlOL9kHlynagxv5k+80tSfayNJeCclhAUzsgAWAoWs+G+IF9UvMlBD21VhWDkdSbArq0Ap/eNgK/GSrjS3TCR4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=kQh2ipPA; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="kQh2ipPA"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id D7F06192F81;
-	Tue, 12 Mar 2024 11:44:06 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1710240247; bh=ITLwhGMEZ24CbUrHEJA7iFp8qXIC6P69efW9R3b30Xk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=kQh2ipPAvoEV0qxucFcQ465bMg8jOaopCLq4e2wmGWwB4QWYe9e+DMbqBMVDHiLoM
-	 dW3HTWBxWK2vjD+qkaKnEm7ahmnFbErOQ+39VIc15U3oENnQ0l60gBwbfXUE9JW9D9
-	 47yrNmEuu8Ww0eaQPPQmy/IWk5hNFlpNeDjluB4gkRVmnVVZA0YQt0P6MHojKVo3oz
-	 8kdQ+0Y31hObogc7F+n3dqGFzsvM40dCIROeG8nuLyYT6plQB1kZ9UJYIVH38SJKr0
-	 evPv1kw4jbXccgLItIq3YSC8wZksR1Ww2D/MU+XfdOmUKJ4uy/ahp17MSmYc6KFzCO
-	 kEBY88ej4Rtdw==
-Date: Tue, 12 Mar 2024 11:44:06 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: Michael Kelley <mhklinux@outlook.com>, Will Deacon <will@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "kernel-team@android.com" <kernel-team@android.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Christoph Hellwig
- <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
- <robin.murphy@arm.com>, Petr Tesarik <petr.tesarik1@huawei-partners.com>,
- Dexuan Cui <decui@microsoft.com>
-Subject: Re: [PATCH v6 4/6] swiotlb: Fix alignment checks when both
- allocation and DMA masks are present
-Message-ID: <20240312114406.792cc8f9@meshulam.tesarici.cz>
-In-Reply-To: <Ze+nT+4Radnd/iyw@Asurada-Nvidia>
-References: <20240308152829.25754-1-will@kernel.org>
-	<20240308152829.25754-5-will@kernel.org>
-	<20240311210507.217daf8b@meshulam.tesarici.cz>
-	<SN6PR02MB41576E58DDF5A56FC6FC1EB6D4242@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<Ze+nT+4Radnd/iyw@Asurada-Nvidia>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	s=arc-20240116; t=1710248229; c=relaxed/simple;
+	bh=zR7cKbwRBy8RFNiYd/NNWkRCprZVVOYJ3f/Llk4/OCg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ZK442uI+PlXkPgT7OH+HdV5OvrYiwURSD89Pkl3HIZXFG++HYylsbCA28VPHs0o14bQ80d/j8bfV9UyoZ5S9hgzlW5arT4FMnrWlbbA/1HcHXLCpLjE/xddWPkygHqoSQ59HzUEgs8EuDqfn8MXbqXPAkPwPCG+JdaLLxsDXdxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A6D291007;
+	Tue, 12 Mar 2024 05:57:43 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E09F93F762;
+	Tue, 12 Mar 2024 05:57:04 -0700 (PDT)
+Message-ID: <da27a0a6-1320-42c0-8365-f915bed00376@arm.com>
+Date: Tue, 12 Mar 2024 12:57:03 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 4/6] swiotlb: Fix alignment checks when both allocation
+ and DMA masks are present
+To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
+Cc: Will Deacon <will@kernel.org>, Michael Kelley <mhklinux@outlook.com>,
+ Nicolin Chen <nicolinc@nvidia.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "kernel-team@android.com" <kernel-team@android.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
+ Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+ Dexuan Cui <decui@microsoft.com>
+References: <20240308152829.25754-1-will@kernel.org>
+ <20240308152829.25754-5-will@kernel.org>
+ <20240311210507.217daf8b@meshulam.tesarici.cz>
+ <SN6PR02MB41576E58DDF5A56FC6FC1EB6D4242@SN6PR02MB4157.namprd02.prod.outlook.com>
+ <20240311224910.GA28426@willie-the-truck>
+ <20240312095223.7a05d5b8@meshulam.tesarici.cz>
+ <2612acb1-48f9-4117-ae06-9b8f430034ca@arm.com>
+ <20240312105103.0f3b6a80@meshulam.tesarici.cz>
+Content-Language: en-GB
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240312105103.0f3b6a80@meshulam.tesarici.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Mon, 11 Mar 2024 17:52:31 -0700
-Nicolin Chen <nicolinc@nvidia.com> wrote:
+On 12/03/2024 9:51 am, Petr Tesařík wrote:
+> On Tue, 12 Mar 2024 09:38:36 +0000
+> Robin Murphy <robin.murphy@arm.com> wrote:
+> 
+>> On 2024-03-12 8:52 am, Petr Tesařík wrote:
+>>> On Mon, 11 Mar 2024 22:49:11 +0000
+>>> Will Deacon <will@kernel.org> wrote:
+>>>    
+>>>> On Mon, Mar 11, 2024 at 09:36:10PM +0000, Michael Kelley wrote:
+>>>>> From: Petr Tesařík <petr@tesarici.cz>
+>>>>>> On Fri,  8 Mar 2024 15:28:27 +0000
+>>>>>> Will Deacon <will@kernel.org> wrote:
+>>>>>>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+>>>>>>> index c20324fba814..c381a7ed718f 100644
+>>>>>>> --- a/kernel/dma/swiotlb.c
+>>>>>>> +++ b/kernel/dma/swiotlb.c
+>>>>>>> @@ -981,8 +981,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+>>>>>>>    	dma_addr_t tbl_dma_addr =
+>>>>>>>    		phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
+>>>>>>>    	unsigned long max_slots = get_max_slots(boundary_mask);
+>>>>>>> -	unsigned int iotlb_align_mask =
+>>>>>>> -		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
+>>>>>>> +	unsigned int iotlb_align_mask = dma_get_min_align_mask(dev);
+>>>>>>>    	unsigned int nslots = nr_slots(alloc_size), stride;
+>>>>>>>    	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+>>>>>>>    	unsigned int index, slots_checked, count = 0, i;
+>>>>>>> @@ -993,6 +992,14 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+>>>>>>>    	BUG_ON(!nslots);
+>>>>>>>    	BUG_ON(area_index >= pool->nareas);
+>>>>>>>
+>>>>>>> +	/*
+>>>>>>> +	 * Ensure that the allocation is at least slot-aligned and update
+>>>>>>> +	 * 'iotlb_align_mask' to ignore bits that will be preserved when
+>>>>>>> +	 * offsetting into the allocation.
+>>>>>>> +	 */
+>>>>>>> +	alloc_align_mask |= (IO_TLB_SIZE - 1);
+>>>>>>> +	iotlb_align_mask &= ~alloc_align_mask;
+>>>>>>> +
+>>>>>>
+>>>>>> I have started writing the KUnit test suite, and the results look
+>>>>>> incorrect to me for this case.
+>>>>>>
+>>>>>> I'm calling swiotlb_tbl_map_single() with:
+>>>>>>
+>>>>>> * alloc_align_mask = 0xfff
+>>>>>> * a device with min_align_mask = 0xfff
+>>>>>> * the 12 lowest bits of orig_addr are 0xfa0
+>>>>>>
+>>>>>> The min_align_mask becomes zero after the masking added by this patch,
+>>>>>> and the 12 lowest bits of the returned address are 0x7a0, i.e. not
+>>>>>> equal to 0xfa0.
+>>>>>
+>>>>> The address returned by swiotlb_tbl_map_single() is the slot index
+>>>>> converted to an address, plus the offset modulo the min_align_mask for
+>>>>> the device.  The local variable "offset" in swiotlb_tbl_map_single()
+>>>>> should be 0xfa0.  The slot index should be an even number to meet
+>>>>> the alloc_align_mask requirement.  And the pool->start address should
+>>>>> be at least page aligned, producing a page-aligned address *before* the
+>>>>> offset is added. Can you debug which of these isn't true for the case
+>>>>> you are seeing?
+>>>>
+>>>> I was just looking into this, and I think the problem starts because
+>>>> swiotlb_align_offset() doesn't return the offset modulo the min_align_mask,
+>>>> but instead returns the offset *into the slot*:
+>>>>
+>>>> 	return addr & dma_get_min_align_mask(dev) & (IO_TLB_SIZE - 1);
+>>>>
+>>>> so this presumably lops off bit 11 without adjusting the slot number.
+>>>
+>>> Yes. You will never see an offset bigger than IO_TLB_SIZE.
+>>>    
+>>>> I don't think swiotlb_find_slots() should be handling this though; it's
+>>>> more about how swiotlb_tbl_map_single() puts the address back together
+>>>> again.
+>>>>>> In other words, the min_align_mask constraint is not honored. Of course,
+>>>>>> given the above values, it is not possible to honor both min_align_mask
+>>>>>> and alloc_align_mask.
+>>>>>
+>>>>> When orig_addr is specified and min_align_mask is set, alloc_align_mask
+>>>>> governs the address of the _allocated_ space, which is not necessarily the
+>>>>> returned physical address.  The min_align_mask may dictate some
+>>>>> pre-padding of size "offset" within the allocated space, and the returned
+>>>>> address is *after* that pre-padding.  In this way, both can be honored.
+>>>>
+>>>> I agree, modulo the issue with the offset calculation.
+>>>
+>>> *sigh*
+>>>
+>>> This is exactly what I tried to suggest here:
+>>>
+>>>     https://lore.kernel.org/linux-iommu/20240301180853.5ac20b27@meshulam.tesarici.cz/
+>>>
+>>> To which Robin Murphy replied:
+>>>    
+>>>> That doesn't make sense - a caller asks to map some range of kernel
+>>>> addresses and they get back a corresponding range of DMA addresses; they
+>>>> cannot make any reasonable assumptions about DMA addresses *outside*
+>>>> that range.
+>>>
+>>> It sounded like a misunderstanding back then already, but in light of
+>>> the present findings, should I send the corresponding patch after all?
+>>
+>> No, that comment was in reference to the idea of effectively forcing
+>> alloc_align_mask in order to honour min_align_mask - specifically that
+>> the reasoning given for it was spurious, but it's clear now it would
+>> also simply exacerbate this problem.
+>>
+>> Simply put, if min_align_mask is specified alone, SWIOTLB can allocate a
+>> roughly-aligned range of slots such that the bounce offset is always
+>> less than IO_TLB_SIZE from the start of the allocation; if both
+>> min_align_mask and alloc_align_mask are specified, then the bounce
+>> offset may be larger than IO_TLB_SIZE, and SWIOTLB needs to be able to
+>> handle that correctly. There is still no benefit in forcing the latter
+>> case to happen more often than it needs to.
+> 
+> So yes, it was a misunderstanding. Here's what I wrote:
+> 
+> I thought about it some more, and I believe I know what should happen
+> if the first two constraints appear to be mutually exclusive.
+> 
+> I thought it was clear that the two constraints "appear mutually
+> exclusive" only if both are specified. Admittedly, I also tried to
+> combine the historic page alignment with the explicit alloc_align_mask
+> somehow, so that could have caused confusion.
 
-> On Mon, Mar 11, 2024 at 09:36:10PM +0000, Michael Kelley wrote:
-> > From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> =20
-> > > I find it somewhat surprising that NVMe does not
-> > > in fact require that the NVME_CTRL_PAGE_SHIFT low bits are preserved,
-> > > as suggested by Nicolin's successful testing.
-> > >
-> > > Why is that? =20
-> >=20
-> > I saw only one stack trace from Nicolin, and it was file system buffer
-> > flushing code that initiated the I/O.  In such cases, it's very likely =
-that the
-> > original address is at least 4K aligned.  Hence the offset is zero and
-> > the low bits will typically be correct. =20
->=20
-> Though I didn't dig any deeper here, I do see some unaligned
-> original addresses passed in at the top level:
->        fsck.ext4-286     [004] .....     2.594190: iommu_dma_map_page: ca=
-lling swiotlb_tbl_map_single with phys: be750600
->        fsck.ext4-286     [004] .....     2.613032: iommu_dma_map_page: ca=
-lling swiotlb_tbl_map_single with phys: be780400
->        fsck.ext4-286     [004] .....     2.614096: iommu_dma_map_page: ca=
-lling swiotlb_tbl_map_single with phys: be7c0600
->        fsck.ext4-286     [004] .....     2.614103: iommu_dma_map_page: ca=
-lling swiotlb_tbl_map_single with phys: be7e0400
->            mount-288     [005] .....     2.615157: iommu_dma_map_page: ca=
-lling swiotlb_tbl_map_single with phys: be800400
->       multipathd-405     [003] .....     3.062878: iommu_dma_map_page: ca=
-lling swiotlb_tbl_map_single with phys: bda40218
->       multipathd-502     [002] .....     3.231721: iommu_dma_map_page: ca=
-lling swiotlb_tbl_map_single with phys: bd3107b8
->            mount-525     [002] .....     3.250281: iommu_dma_map_page: ca=
-lling swiotlb_tbl_map_single with phys: bd340200
->       multipathd-529     [004] .....     3.259053: iommu_dma_map_page: ca=
-lling swiotlb_tbl_map_single with phys: be620478
->       multipathd-571     [005] .....     3.292893: iommu_dma_map_page: ca=
-lling swiotlb_tbl_map_single with phys: be900328
->       multipathd-580     [005] .....     3.318832: iommu_dma_map_page: ca=
-lling swiotlb_tbl_map_single with phys: be9207c8
+The constraints aren't mutually exclusive though, since they represent 
+different (but slightly overlapping) things. Any context in which they 
+appear to be is simply wrong.
 
-Thank you. Indeed, bit 11 of the physical address was zero in all the
-above calls, and that's why it works.
+> Anyway, let me send the patch and discuss it in a new thread.
 
-Petr T
+I think it gets worse - looks like swiotlb_release_slots() actually 
+relies on offset < IO_TLB_SIZE and will free the wrong slots if not. And 
+since it no longer has the original alloc_align_mask, that seems... 
+tricky :(
+
+Thanks,
+Robin.
