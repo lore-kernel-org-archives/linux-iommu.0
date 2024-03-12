@@ -1,192 +1,193 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1190227711
-	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 12:57:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from frasgout13.his.huawei.com (frasgout13.his.huawei.com [14.137.139.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 965747A15A
+	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 13:42:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=14.137.139.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710248229; cv=none; b=Yw3dMLvApozlE5o5490gy/AzXrhJOtXdwbB8uZXRErrstFGVA1H2HQVZdCmJ07LlnPnIOwelyPjIZDgmJpddJ+1QFYpWGnWucXLLv/80zSrq7MfF81B/thMslyOGvUh+504p5EfOHalgZ5muVn+KcDPEiZEIjNoyKVABXARBSSU=
+	t=1710250945; cv=none; b=MiWqcdO8Cr6WzXgBTEuSpFaH9vH61acfZ8pDC2LaFLsWmauH8dfV8KF/p2iM2jjB+X1FIG+Sf79wWKgU++MvSayUkjHi+soMTUxc4sl19Xn0pCFP0Ts/VbxUAk31tdgrRH/ar2VU142fuYAAvNnUSyeyOszi4bYVPv9gGdIc+iA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710248229; c=relaxed/simple;
-	bh=zR7cKbwRBy8RFNiYd/NNWkRCprZVVOYJ3f/Llk4/OCg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZK442uI+PlXkPgT7OH+HdV5OvrYiwURSD89Pkl3HIZXFG++HYylsbCA28VPHs0o14bQ80d/j8bfV9UyoZ5S9hgzlW5arT4FMnrWlbbA/1HcHXLCpLjE/xddWPkygHqoSQ59HzUEgs8EuDqfn8MXbqXPAkPwPCG+JdaLLxsDXdxY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A6D291007;
-	Tue, 12 Mar 2024 05:57:43 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E09F93F762;
-	Tue, 12 Mar 2024 05:57:04 -0700 (PDT)
-Message-ID: <da27a0a6-1320-42c0-8365-f915bed00376@arm.com>
-Date: Tue, 12 Mar 2024 12:57:03 +0000
+	s=arc-20240116; t=1710250945; c=relaxed/simple;
+	bh=4LOfLz//4stF1IyW6kG8Qzj1vCEfzfpLV6bnrTyxpQI=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=MNFaBNCSDUyMnQuUBDvNvYW8fQW1W72JYWJi5tLTBQV7Ii4ou/8RbMaltTtaRLWMjjTdz1NcPit1LaU75tBSNpBfGdRMPpto0vNQHRE33hm/9MNPviHqWIBPthNsN76eyDJC5evEds178NWK2D+lT5v/3S/tkb1s56lKBTh2hJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com; spf=pass smtp.mailfrom=huaweicloud.com; arc=none smtp.client-ip=14.137.139.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huaweicloud.com
+Received: from mail.maildlp.com (unknown [172.18.186.51])
+	by frasgout13.his.huawei.com (SkyGuard) with ESMTP id 4TvDtq6c1Kz9xsCn
+	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 21:26:27 +0800 (CST)
+Received: from mail02.huawei.com (unknown [7.182.16.47])
+	by mail.maildlp.com (Postfix) with ESMTP id 209CB14041A
+	for <iommu@lists.linux.dev>; Tue, 12 Mar 2024 21:42:09 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.48.131.93])
+	by APP1 (Coremail) with SMTP id LxC2BwD3oBmmW_BlDi4zBA--.21282S2;
+	Tue, 12 Mar 2024 14:42:08 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>,
+	Michael Kelley <mhklinux@outlook.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS),
+	linux-kernel@vger.kernel.org (open list)
+Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>
+Subject: [PATCH 1/1] swiotlb: extend buffer pre-padding to alloc_align_mask if necessary
+Date: Tue, 12 Mar 2024 14:41:49 +0100
+Message-Id: <20240312134149.497-1-petrtesarik@huaweicloud.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 4/6] swiotlb: Fix alignment checks when both allocation
- and DMA masks are present
-To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
-Cc: Will Deacon <will@kernel.org>, Michael Kelley <mhklinux@outlook.com>,
- Nicolin Chen <nicolinc@nvidia.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "kernel-team@android.com" <kernel-team@android.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>,
- Petr Tesarik <petr.tesarik1@huawei-partners.com>,
- Dexuan Cui <decui@microsoft.com>
-References: <20240308152829.25754-1-will@kernel.org>
- <20240308152829.25754-5-will@kernel.org>
- <20240311210507.217daf8b@meshulam.tesarici.cz>
- <SN6PR02MB41576E58DDF5A56FC6FC1EB6D4242@SN6PR02MB4157.namprd02.prod.outlook.com>
- <20240311224910.GA28426@willie-the-truck>
- <20240312095223.7a05d5b8@meshulam.tesarici.cz>
- <2612acb1-48f9-4117-ae06-9b8f430034ca@arm.com>
- <20240312105103.0f3b6a80@meshulam.tesarici.cz>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240312105103.0f3b6a80@meshulam.tesarici.cz>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:LxC2BwD3oBmmW_BlDi4zBA--.21282S2
+X-Coremail-Antispam: 1UD129KBjvJXoW3Xw4rZr4xXw1fZw4fKrW5trb_yoW7XrW3pF
+	4fKa1rKFWDJFyxCanFka18KF1F934kAry5CF4S9ryY9r1kXF98XF98A34Yga4FqFWv9FW2
+	qFyrur40kF47Jr7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUBS14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+	6F4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4j6r
+	4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+	I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+	n2kIc2xKxwCY1x0262kKe7AKxVW8ZVWrXwCY1x0264kExVAvwVAq07x20xyl42xK82IYc2
+	Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s02
+	6x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0x
+	vE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE
+	42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87
+	Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjTRWbyCUUUUU
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 
-On 12/03/2024 9:51 am, Petr Tesařík wrote:
-> On Tue, 12 Mar 2024 09:38:36 +0000
-> Robin Murphy <robin.murphy@arm.com> wrote:
-> 
->> On 2024-03-12 8:52 am, Petr Tesařík wrote:
->>> On Mon, 11 Mar 2024 22:49:11 +0000
->>> Will Deacon <will@kernel.org> wrote:
->>>    
->>>> On Mon, Mar 11, 2024 at 09:36:10PM +0000, Michael Kelley wrote:
->>>>> From: Petr Tesařík <petr@tesarici.cz>
->>>>>> On Fri,  8 Mar 2024 15:28:27 +0000
->>>>>> Will Deacon <will@kernel.org> wrote:
->>>>>>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
->>>>>>> index c20324fba814..c381a7ed718f 100644
->>>>>>> --- a/kernel/dma/swiotlb.c
->>>>>>> +++ b/kernel/dma/swiotlb.c
->>>>>>> @@ -981,8 +981,7 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
->>>>>>>    	dma_addr_t tbl_dma_addr =
->>>>>>>    		phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
->>>>>>>    	unsigned long max_slots = get_max_slots(boundary_mask);
->>>>>>> -	unsigned int iotlb_align_mask =
->>>>>>> -		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
->>>>>>> +	unsigned int iotlb_align_mask = dma_get_min_align_mask(dev);
->>>>>>>    	unsigned int nslots = nr_slots(alloc_size), stride;
->>>>>>>    	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
->>>>>>>    	unsigned int index, slots_checked, count = 0, i;
->>>>>>> @@ -993,6 +992,14 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
->>>>>>>    	BUG_ON(!nslots);
->>>>>>>    	BUG_ON(area_index >= pool->nareas);
->>>>>>>
->>>>>>> +	/*
->>>>>>> +	 * Ensure that the allocation is at least slot-aligned and update
->>>>>>> +	 * 'iotlb_align_mask' to ignore bits that will be preserved when
->>>>>>> +	 * offsetting into the allocation.
->>>>>>> +	 */
->>>>>>> +	alloc_align_mask |= (IO_TLB_SIZE - 1);
->>>>>>> +	iotlb_align_mask &= ~alloc_align_mask;
->>>>>>> +
->>>>>>
->>>>>> I have started writing the KUnit test suite, and the results look
->>>>>> incorrect to me for this case.
->>>>>>
->>>>>> I'm calling swiotlb_tbl_map_single() with:
->>>>>>
->>>>>> * alloc_align_mask = 0xfff
->>>>>> * a device with min_align_mask = 0xfff
->>>>>> * the 12 lowest bits of orig_addr are 0xfa0
->>>>>>
->>>>>> The min_align_mask becomes zero after the masking added by this patch,
->>>>>> and the 12 lowest bits of the returned address are 0x7a0, i.e. not
->>>>>> equal to 0xfa0.
->>>>>
->>>>> The address returned by swiotlb_tbl_map_single() is the slot index
->>>>> converted to an address, plus the offset modulo the min_align_mask for
->>>>> the device.  The local variable "offset" in swiotlb_tbl_map_single()
->>>>> should be 0xfa0.  The slot index should be an even number to meet
->>>>> the alloc_align_mask requirement.  And the pool->start address should
->>>>> be at least page aligned, producing a page-aligned address *before* the
->>>>> offset is added. Can you debug which of these isn't true for the case
->>>>> you are seeing?
->>>>
->>>> I was just looking into this, and I think the problem starts because
->>>> swiotlb_align_offset() doesn't return the offset modulo the min_align_mask,
->>>> but instead returns the offset *into the slot*:
->>>>
->>>> 	return addr & dma_get_min_align_mask(dev) & (IO_TLB_SIZE - 1);
->>>>
->>>> so this presumably lops off bit 11 without adjusting the slot number.
->>>
->>> Yes. You will never see an offset bigger than IO_TLB_SIZE.
->>>    
->>>> I don't think swiotlb_find_slots() should be handling this though; it's
->>>> more about how swiotlb_tbl_map_single() puts the address back together
->>>> again.
->>>>>> In other words, the min_align_mask constraint is not honored. Of course,
->>>>>> given the above values, it is not possible to honor both min_align_mask
->>>>>> and alloc_align_mask.
->>>>>
->>>>> When orig_addr is specified and min_align_mask is set, alloc_align_mask
->>>>> governs the address of the _allocated_ space, which is not necessarily the
->>>>> returned physical address.  The min_align_mask may dictate some
->>>>> pre-padding of size "offset" within the allocated space, and the returned
->>>>> address is *after* that pre-padding.  In this way, both can be honored.
->>>>
->>>> I agree, modulo the issue with the offset calculation.
->>>
->>> *sigh*
->>>
->>> This is exactly what I tried to suggest here:
->>>
->>>     https://lore.kernel.org/linux-iommu/20240301180853.5ac20b27@meshulam.tesarici.cz/
->>>
->>> To which Robin Murphy replied:
->>>    
->>>> That doesn't make sense - a caller asks to map some range of kernel
->>>> addresses and they get back a corresponding range of DMA addresses; they
->>>> cannot make any reasonable assumptions about DMA addresses *outside*
->>>> that range.
->>>
->>> It sounded like a misunderstanding back then already, but in light of
->>> the present findings, should I send the corresponding patch after all?
->>
->> No, that comment was in reference to the idea of effectively forcing
->> alloc_align_mask in order to honour min_align_mask - specifically that
->> the reasoning given for it was spurious, but it's clear now it would
->> also simply exacerbate this problem.
->>
->> Simply put, if min_align_mask is specified alone, SWIOTLB can allocate a
->> roughly-aligned range of slots such that the bounce offset is always
->> less than IO_TLB_SIZE from the start of the allocation; if both
->> min_align_mask and alloc_align_mask are specified, then the bounce
->> offset may be larger than IO_TLB_SIZE, and SWIOTLB needs to be able to
->> handle that correctly. There is still no benefit in forcing the latter
->> case to happen more often than it needs to.
-> 
-> So yes, it was a misunderstanding. Here's what I wrote:
-> 
-> I thought about it some more, and I believe I know what should happen
-> if the first two constraints appear to be mutually exclusive.
-> 
-> I thought it was clear that the two constraints "appear mutually
-> exclusive" only if both are specified. Admittedly, I also tried to
-> combine the historic page alignment with the explicit alloc_align_mask
-> somehow, so that could have caused confusion.
+From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 
-The constraints aren't mutually exclusive though, since they represent 
-different (but slightly overlapping) things. Any context in which they 
-appear to be is simply wrong.
+Allow a buffer pre-padding of up to alloc_align_mask. If the allocation
+alignment is bigger than IO_TLB_SIZE and min_align_mask covers any non-zero
+bits in the original address between IO_TLB_SIZE and alloc_align_mask,
+these bits are not preserved in the swiotlb buffer address.
 
-> Anyway, let me send the patch and discuss it in a new thread.
+To fix this case, increase the allocation size and use a larger offset
+within the allocated buffer. As a result, extra padding slots may be
+allocated before the mapping start address.
 
-I think it gets worse - looks like swiotlb_release_slots() actually 
-relies on offset < IO_TLB_SIZE and will free the wrong slots if not. And 
-since it no longer has the original alloc_align_mask, that seems... 
-tricky :(
+Set the orig_addr in these padding slots to INVALID_PHYS_ADDR, because they
+do not correspond to any CPU buffer and the data must never be synced.
 
-Thanks,
-Robin.
+The padding slots should be automatically released when the buffer is
+unmapped. However, swiotlb_tbl_unmap_single() takes only the address of the
+DMA buffer slot, not the first padding slot. Save the number of padding
+slots in struct io_tlb_slot and use it to adjust the slot index in
+swiotlb_release_slots(), so all allocated slots are properly freed.
+
+Fixes: 2fd4fa5d3fb5 ("swiotlb: Fix alignment checks when both allocation and DMA masks are present")
+Link: https://lore.kernel.org/linux-iommu/20240311210507.217daf8b@meshulam.tesarici.cz/
+Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+---
+ kernel/dma/swiotlb.c | 34 +++++++++++++++++++++++++++++-----
+ 1 file changed, 29 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 86fe172b5958..8ce11abc691f 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -69,11 +69,13 @@
+  * @alloc_size:	Size of the allocated buffer.
+  * @list:	The free list describing the number of free entries available
+  *		from each index.
++ * @padding:    Number of preceding padding slots.
+  */
+ struct io_tlb_slot {
+ 	phys_addr_t orig_addr;
+ 	size_t alloc_size;
+ 	unsigned int list;
++	unsigned int padding;
+ };
+ 
+ static bool swiotlb_force_bounce;
+@@ -287,6 +289,7 @@ static void swiotlb_init_io_tlb_pool(struct io_tlb_pool *mem, phys_addr_t start,
+ 					 mem->nslabs - i);
+ 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+ 		mem->slots[i].alloc_size = 0;
++		mem->slots[i].padding = 0;
+ 	}
+ 
+ 	memset(vaddr, 0, bytes);
+@@ -1328,11 +1331,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		unsigned long attrs)
+ {
+ 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+-	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
++	unsigned int offset;
+ 	struct io_tlb_pool *pool;
+ 	unsigned int i;
+ 	int index;
+ 	phys_addr_t tlb_addr;
++	unsigned int padding;
+ 
+ 	if (!mem || !mem->nslabs) {
+ 		dev_warn_ratelimited(dev,
+@@ -1349,6 +1353,15 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		return (phys_addr_t)DMA_MAPPING_ERROR;
+ 	}
+ 
++	/*
++	 * Calculate buffer pre-padding within the allocated space. Use it to
++	 * preserve the low bits of the original address according to device's
++	 * min_align_mask. Limit the padding to alloc_align_mask or slot size
++	 * (whichever is bigger); higher bits of the original address are
++	 * preserved by selecting a suitable IO TLB slot.
++	 */
++	offset = orig_addr & dma_get_min_align_mask(dev) &
++		(alloc_align_mask | (IO_TLB_SIZE - 1));
+ 	index = swiotlb_find_slots(dev, orig_addr,
+ 				   alloc_size + offset, alloc_align_mask, &pool);
+ 	if (index == -1) {
+@@ -1364,6 +1377,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	 * This is needed when we sync the memory.  Then we sync the buffer if
+ 	 * needed.
+ 	 */
++	padding = 0;
++	while (offset >= IO_TLB_SIZE) {
++		pool->slots[index++].orig_addr = INVALID_PHYS_ADDR;
++		pool->slots[index].padding = ++padding;
++		offset -= IO_TLB_SIZE;
++	}
+ 	for (i = 0; i < nr_slots(alloc_size + offset); i++)
+ 		pool->slots[index + i].orig_addr = slot_addr(orig_addr, i);
+ 	tlb_addr = slot_addr(pool->start, index) + offset;
+@@ -1385,12 +1404,16 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
+ 	struct io_tlb_pool *mem = swiotlb_find_pool(dev, tlb_addr);
+ 	unsigned long flags;
+ 	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
+-	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
+-	int nslots = nr_slots(mem->slots[index].alloc_size + offset);
+-	int aindex = index / mem->area_nslabs;
+-	struct io_tlb_area *area = &mem->areas[aindex];
++	int index, nslots, aindex;
++	struct io_tlb_area *area;
+ 	int count, i;
+ 
++	index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
++	index -= mem->slots[index].padding;
++	nslots = nr_slots(mem->slots[index].alloc_size + offset);
++	aindex = index / mem->area_nslabs;
++	area = &mem->areas[aindex];
++
+ 	/*
+ 	 * Return the buffer to the free list by setting the corresponding
+ 	 * entries to indicate the number of contiguous entries available.
+@@ -1413,6 +1436,7 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
+ 		mem->slots[i].list = ++count;
+ 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+ 		mem->slots[i].alloc_size = 0;
++		mem->slots[i].padding = 0;
+ 	}
+ 
+ 	/*
+-- 
+2.34.1
+
