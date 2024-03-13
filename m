@@ -1,67 +1,67 @@
-Received: from mail-qt1-f175.google.com (mail-qt1-f175.google.com [209.85.160.175])
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 19CF343AB3
-	for <iommu@lists.linux.dev>; Wed, 13 Mar 2024 12:13:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 519743F9CE
+	for <iommu@lists.linux.dev>; Wed, 13 Mar 2024 12:16:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710332031; cv=none; b=gmJFC6tDprphcPXjuFv4ib3+157yWsgViRjdttSu7EKsC6IIKJQfMx2y9Sfr1IrfdQ3ZFyjgQQ3bQ4LaFpN3Z+DXh3kbsZmqf8CLgM1NTeh+nZ0jQhgfFEbc4Nb8rxxKiNifRz7n8LRKcyBDxPJgodY9aHPEtglxPwM4tohUsdU=
+	t=1710332196; cv=none; b=XlF4OS9iAxtCufUBSTRvr7w2Q88rmlOrVdIlDbttoq0x9P0FJzBwjphPjEU4LxcuUmeHEVJ8edVgSghnwisTOaBvr4u0bLGr96US/9FYXLAA+LkKZqDe6z7AFVUye8h1J9C94KiXUFHyUIajmhHrBv0rTlixHCG+GM8LOJPHCtY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710332031; c=relaxed/simple;
-	bh=We/AqJo9hlwNvxYiAWT0ji/cHWRTr3rMUnwUD5mg0VY=;
+	s=arc-20240116; t=1710332196; c=relaxed/simple;
+	bh=w/UkJqZx0+qbMq9vIxxvT9MqRUVJpm/VyAiU/3tjtcc=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=K3hu8bRALZ2e3Q+/DKerPxkvSUxVYkXQ2At03nN3kCg+dOKyQxUWf0mucViC3wLBppxfrHW5r7BcE72sQGwFazmEejNNSzk85c8HOcn8mRzZJjjn2lJIZDFSPRqJKSGwqw7rKbvrlOtqVDTXjp+jwGXByyg0M2IB7HDV1/WMnHg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=d8XWacMz; arc=none smtp.client-ip=209.85.160.175
+	 To:Cc:Content-Type; b=LRD4WXzBJY6iJYjsLyRAgJh1vrIM3tAW5/2DqEUDM4sC8EQaUSCGJmNtQLSYQqjy8DdLi6hbBpPUPC9rBOjVkh2eHajSQBoB7CQs//nG6aaLpDtczaX/qe/IEEJe2BNhh2jKx5+wmkFL9Ab0+sJGAJRAinnEEyliYEDUXJS6638=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GIuXbhsI; arc=none smtp.client-ip=209.85.160.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="d8XWacMz"
-Received: by mail-qt1-f175.google.com with SMTP id d75a77b69052e-428405a0205so261341cf.1
-        for <iommu@lists.linux.dev>; Wed, 13 Mar 2024 05:13:49 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GIuXbhsI"
+Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-428405a0205so261871cf.1
+        for <iommu@lists.linux.dev>; Wed, 13 Mar 2024 05:16:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1710332029; x=1710936829; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1710332194; x=1710936994; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=dq86sGc7kgbDi1Ozz/5XKtC5jE0ZqJpFQ1cl3Fy4Q2Q=;
-        b=d8XWacMzyhXkUqY4bL5qYfAzbS3KQ2Nrb0YDbRLrRgBOtvirjBAMaiCLg1YPWUEAMo
-         XPXJa/IC4yPa37E4D8qqGbaZ9I94P5tdjIkf/Mgp0ZtsKFZArAdtZbW8T7zOuaU6G2oD
-         udzI7lDpYipHhQgJlTYDzYfFnD0dyxW0Z9oEgkFQKzPN3wON6QUvp2FuwISaHh+lnE0A
-         RFdxRqUMXNMN32Ut7W3KyPgkYhsOCdO5RYkaqvpJthJqsgVedtBN2kO1s0YDw52mVay6
-         8emXojiU61wdwuuaY7UYTMFhU3QtvDk7Gexe1BfLxwIyPr+vLiRquHyKw69lu9BCgsce
-         brdA==
+        bh=7EVdmJZss4pChUCgxVts8qpcnh//A1w80+RPNXQA7KU=;
+        b=GIuXbhsIwZG7uOvjHaVBdQBpIs9q6cUZ7wV+k6XE9Go82Xw7ZbZNR//oKRWKZmZ+U1
+         LYKgErDxuENLqD1OaswBaweKA0HsD8c8iyV7kOzXTTvnPcCrDca4mr7Eb5dgJ2L+bjsd
+         ftcpog7nkQb/4ajxcIm2KOqqDT636JkFzflck9Z9qcyW0i3VFvjTQVCYjhdfhxEpmxwA
+         cUUrt6wBOZ2/S6yGu22Sl9+NjqQoMi8dflZQxK4qyZQLDV4uQ1q5MMQgB+RmuewTouYp
+         iFlqbjXViZHedbWYSyjUL7x4LCb953JTOGGOWi3FBEIvXngoFuQPPAYwxAJ/vAqGzewX
+         LC4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710332029; x=1710936829;
+        d=1e100.net; s=20230601; t=1710332194; x=1710936994;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=dq86sGc7kgbDi1Ozz/5XKtC5jE0ZqJpFQ1cl3Fy4Q2Q=;
-        b=oSShXAhAydjDEkqbOasetV4sSt57zaRmTptlHChi20I9JGS7j/6m45NLRRJtDloLeb
-         XDkVyu4JOx5k5UkQHdaNPPoaH+P909llsPH3UoDTglaJpc+9YpauewqEG+f9sWJQKpFG
-         JxUvvqvxOJIzYju1HgAceqaW81JhKqU2HAJtK5tjAYotCo2bzkeL1WLRgbSOMPxIYSZk
-         zmaP2UNqSrMLVoSRcRtwTl53f+uE1TVYR5BDtDNc4wQuIHUWZTSR4tqOMdr43Hyfq02F
-         yiakdO04Up1zNDYdvwOVkZBroW/vPFlkTIYqzvCZ89ljqbPcmwrSFGcN4hoGQBI7hjGv
-         ExjQ==
-X-Gm-Message-State: AOJu0YzG56hjvYMsx7Yc3rVJULMknqd8rZ3zZ9lPLv6xXV7ckzlRSqic
-	QTlTg5gHnM+u6ecb+OIUpulgxq48bYx5tzkpvyX1qMCSo9pKtfKXEQOG27dEE9UN9iQ/bMLbiMf
-	MrYCBwJ/3bpBcRa59OYYOiRBKRonobk6qSeDR
-X-Google-Smtp-Source: AGHT+IGge+uN95azTWzuq6D12tYisFcwkc/srRJjUzcC3FDQGrB33HBmJxoiURnXIth5SyJ1ogVML4RxH0knsEBSUfo=
-X-Received: by 2002:ac8:5198:0:b0:42f:5938:a50 with SMTP id
- c24-20020ac85198000000b0042f59380a50mr237977qtn.23.1710332028711; Wed, 13 Mar
- 2024 05:13:48 -0700 (PDT)
+        bh=7EVdmJZss4pChUCgxVts8qpcnh//A1w80+RPNXQA7KU=;
+        b=Xd7TGUXs5Ie5/jCgr05JcXA1bk34uN+0rCW4h2icl6ppbP37XydG8bIVag1/9iHCXa
+         fEJezv746fury687f7VSb6x78GCodu3R/2W+Rd9TBTxp1XcM7sNReeCzaS8Z5qLHifQN
+         C1Ueq5CrEaXwMDoDgkC846oERvP/bPnOGP/02+y6cH62pIEL0VGE5FohHwd1Mu/dupAp
+         gBGo/t20w7P/ProkuT6sP6H1TwgDhyzK4Z1n3MnhGUUl7+2+iF+GEzIem9qBPAV4O9uI
+         TTInpim5/Oj/phHl/dRBKXdwHNFjKPVNUqRsQ0/90bOFAXA+pF6oWQ5+Z7pdNGfoZstF
+         N2Zw==
+X-Gm-Message-State: AOJu0Yx71tEttObZIN80XLvCIVwXy1KCI9b6fv5LTUV+Vnrtr1xCM0a/
+	/UGzfqHr3XiX32OyI1R7LnX2TZvoluxOtlD3RrLiqzAWrUpWor5mlEr4yl6Kyy9AOeTHF3yw6Nt
+	UyoNlHBj9eOKw6XNaIJ3KMbPnOAOwL05RM/vf
+X-Google-Smtp-Source: AGHT+IFPFaRuah0y+5hvgjxFJHH654TyA2LF1EZuJewxZs0nS3L6K76nZEDX7El7F1wQc5i0+qYPeE4ehCd3GZihrNw=
+X-Received: by 2002:ac8:53d2:0:b0:42f:a3c:2d44 with SMTP id
+ c18-20020ac853d2000000b0042f0a3c2d44mr212682qtq.5.1710332194074; Wed, 13 Mar
+ 2024 05:16:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com> <7-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
-In-Reply-To: <7-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com> <8-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+In-Reply-To: <8-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
 From: Michael Shavit <mshavit@google.com>
-Date: Wed, 13 Mar 2024 20:13:12 +0800
-Message-ID: <CAKHBV25_FzGHY8zEsXtR=vsTi3k2F8Pm4nY9wYRKudJmnk2LWw@mail.gmail.com>
-Subject: Re: [PATCH v5 07/27] iommu/arm-smmu-v3: Move the CD generation for S1
- domains into a function
+Date: Wed, 13 Mar 2024 20:15:58 +0800
+Message-ID: <CAKHBV24+-n6MCF3YCv6NS1nUWUDxXVTmTHnduQk_bvEcYYFRnw@mail.gmail.com>
+Subject: Re: [PATCH v5 08/27] iommu/arm-smmu-v3: Move allocation of the
+ cdtable into arm_smmu_get_cd_ptr()
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
 	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
@@ -75,220 +75,56 @@ Content-Transfer-Encoding: quoted-printable
 On Tue, Mar 5, 2024 at 7:44=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
 te:
 >
-> Introduce arm_smmu_make_s1_cd() to build the CD from the paging S1 domain=
-,
-> and reorganize all the places programming S1 domain CD table entries to
-> call it.
->
-> Split arm_smmu_update_s1_domain_cd_entry() from
-> arm_smmu_update_ctx_desc_devices() so that the S1 path has its own call
-> chain separate from the unrelated SVA path.
->
-> arm_smmu_update_s1_domain_cd_entry() only works on S1 domains
-> attached to RIDs and refreshes all their CDs.
->
-> Remove the forced clear of the CD during S1 domain attach,
-> arm_smmu_write_cd_entry() will do this automatically if necessary.
+> No reason to force callers to do two steps. Make arm_smmu_get_cd_ptr()
+> able to return an entry in all cases except OOM.
 >
 > Tested-by: Nicolin Chen <nicolinc@nvidia.com>
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 25 +++++++-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 60 +++++++++++++------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  8 +++
->  3 files changed, 75 insertions(+), 18 deletions(-)
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 >
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/io=
-mmu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index bb9bb6fd7914ce..6acc65f6d00a71 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -54,6 +54,29 @@ static void arm_smmu_update_ctx_desc_devices(struct ar=
-m_smmu_domain *smmu_domain
->         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
->  }
->
-> +static void
-> +arm_smmu_update_s1_domain_cd_entry(struct arm_smmu_domain *smmu_domain)
-> +{
-> +       struct arm_smmu_master *master;
-> +       struct arm_smmu_cd target_cd;
-> +       unsigned long flags;
-> +
-> +       spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> +       list_for_each_entry(master, &smmu_domain->devices, domain_head) {
-> +               struct arm_smmu_cd *cdptr;
-> +
-> +               /* S1 domains only support RID attachment right now */
-> +               cdptr =3D arm_smmu_get_cd_ptr(master, IOMMU_NO_PASID);
-> +               if (WARN_ON(!cdptr))
-> +                       continue;
-> +
-> +               arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
-> +               arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
-> +                                       &target_cd);
-> +       }
-> +       spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-> +}
-> +
->  /*
->   * Check if the CPU ASID is available on the SMMU side. If a private con=
-text
->   * descriptor is using it, try to replace it.
-> @@ -97,7 +120,7 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
->          * be some overlap between use of both ASIDs, until we invalidate=
- the
->          * TLB.
->          */
-> -       arm_smmu_update_ctx_desc_devices(smmu_domain, IOMMU_NO_PASID, cd)=
-;
-> +       arm_smmu_update_s1_domain_cd_entry(smmu_domain);
-
-Not to be too nitpicky, but is calling this
-arm_smmu_update_s1_domain_cd_entry the right choice here?  Yes the RID
-domain has type "ARM_SMMU_DOMAIN_S1", but CDs are also stage 1
-translations.
-
->
->         /* Invalidate TLB entries previously associated with that context=
- */
->         arm_smmu_tlb_inv_asid(smmu, asid);
 > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
 arm/arm-smmu-v3/arm-smmu-v3.c
-> index 3fb4a1523d1d3f..e25dbb982feeee 100644
+> index e25dbb982feeee..2dd6cb17112e98 100644
 > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1222,8 +1222,8 @@ static void arm_smmu_write_cd_l1_desc(__le64 *dst,
->         WRITE_ONCE(*dst, cpu_to_le64(val));
->  }
+> @@ -106,6 +106,7 @@ static struct arm_smmu_option_prop arm_smmu_options[]=
+ =3D {
 >
-> -static struct arm_smmu_cd *arm_smmu_get_cd_ptr(struct arm_smmu_master *m=
-aster,
-> -                                              u32 ssid)
-> +struct arm_smmu_cd *arm_smmu_get_cd_ptr(struct arm_smmu_master *master,
-> +                                       u32 ssid)
+>  static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
+>                                     struct arm_smmu_device *smmu);
+> +static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master);
+>
+>  static void parse_driver_options(struct arm_smmu_device *smmu)
 >  {
->         __le64 *l1ptr;
->         unsigned int idx;
-> @@ -1288,9 +1288,9 @@ static const struct arm_smmu_entry_writer_ops arm_s=
-mmu_cd_writer_ops =3D {
->         .num_entry_qwords =3D sizeof(struct arm_smmu_cd) / sizeof(u64),
->  };
+> @@ -1231,6 +1232,11 @@ struct arm_smmu_cd *arm_smmu_get_cd_ptr(struct arm=
+_smmu_master *master,
+>         struct arm_smmu_device *smmu =3D master->smmu;
+>         struct arm_smmu_ctx_desc_cfg *cd_table =3D &master->cd_table;
 >
-> -static void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int =
-ssid,
-> -                                   struct arm_smmu_cd *cdptr,
-> -                                   const struct arm_smmu_cd *target)
-> +void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
-> +                            struct arm_smmu_cd *cdptr,
-> +                            const struct arm_smmu_cd *target)
->  {
->         struct arm_smmu_cd_writer cd_writer =3D {
->                 .writer =3D {
-> @@ -1303,6 +1303,32 @@ static void arm_smmu_write_cd_entry(struct arm_smm=
-u_master *master, int ssid,
->         arm_smmu_write_entry(&cd_writer.writer, cdptr->data, target->data=
-);
->  }
+> +       if (!master->cd_table.cdtab) {
+> +               if (arm_smmu_alloc_cd_tables(master))
+> +                       return NULL;
+> +       }
+> +
+>         if (cd_table->s1fmt =3D=3D STRTAB_STE_0_S1FMT_LINEAR)
+>                 return (struct arm_smmu_cd *)(cd_table->cdtab +
+>                                               ssid * CTXDESC_CD_DWORDS);
+> @@ -2719,12 +2725,6 @@ static int arm_smmu_attach_dev(struct iommu_domain=
+ *domain, struct device *dev)
+>                 struct arm_smmu_cd target_cd;
+>                 struct arm_smmu_cd *cdptr;
 >
-> +void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
-> +                        struct arm_smmu_master *master,
-> +                        struct arm_smmu_domain *smmu_domain)
-> +{
-> +       struct arm_smmu_ctx_desc *cd =3D &smmu_domain->cd;
-> +
-> +       memset(target, 0, sizeof(*target));
-> +
-> +       target->data[0] =3D cpu_to_le64(
-> +               cd->tcr |
-> +#ifdef __BIG_ENDIAN
-> +               CTXDESC_CD_0_ENDI |
-> +#endif
-> +               CTXDESC_CD_0_V |
-> +               CTXDESC_CD_0_AA64 |
-> +               (master->stall_enabled ? CTXDESC_CD_0_S : 0) |
-> +               CTXDESC_CD_0_R |
-> +               CTXDESC_CD_0_A |
-> +               CTXDESC_CD_0_ASET |
-> +               FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid)
-> +               );
-> +
-> +       target->data[1] =3D cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK=
-);
-> +       target->data[3] =3D cpu_to_le64(cd->mair);
-> +}
-> +
->  void arm_smmu_clear_cd(struct arm_smmu_master *master, ioasid_t ssid)
->  {
->         struct arm_smmu_cd target =3D {};
-> @@ -2689,29 +2715,29 @@ static int arm_smmu_attach_dev(struct iommu_domai=
-n *domain, struct device *dev)
->         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
->
->         switch (smmu_domain->stage) {
-> -       case ARM_SMMU_DOMAIN_S1:
-> +       case ARM_SMMU_DOMAIN_S1: {
-> +               struct arm_smmu_cd target_cd;
-> +               struct arm_smmu_cd *cdptr;
-> +
->                 if (!master->cd_table.cdtab) {
->                         ret =3D arm_smmu_alloc_cd_tables(master);
->                         if (ret)
->                                 goto out_list_del;
-> -               } else {
-> -                       /*
-> -                        * arm_smmu_write_ctx_desc() relies on the entry =
-being
-> -                        * invalid to work, clear any existing entry.
-> -                        */
-> -                       ret =3D arm_smmu_write_ctx_desc(master, IOMMU_NO_=
-PASID,
-> -                                                     NULL);
+> -               if (!master->cd_table.cdtab) {
+> -                       ret =3D arm_smmu_alloc_cd_tables(master);
 > -                       if (ret)
 > -                               goto out_list_del;
->                 }
->
-> -               ret =3D arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID, &=
-smmu_domain->cd);
-> -               if (ret)
-> +               cdptr =3D arm_smmu_get_cd_ptr(master, IOMMU_NO_PASID);
-> +               if (!cdptr) {
-> +                       ret =3D -ENOMEM;
->                         goto out_list_del;
-> +               }
->
-> +               arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
-> +               arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
-> +                                       &target_cd);
->                 arm_smmu_make_cdtable_ste(&target, master);
->                 arm_smmu_install_ste_for_dev(master, &target);
->                 break;
-> +       }
->         case ARM_SMMU_DOMAIN_S2:
->                 arm_smmu_make_s2_domain_ste(&target, master, smmu_domain)=
-;
->                 arm_smmu_install_ste_for_dev(master, &target);
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/=
-arm/arm-smmu-v3/arm-smmu-v3.h
-> index 87a7b57f566fbc..d32da11058aab6 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -750,6 +750,14 @@ extern struct mutex arm_smmu_asid_lock;
->  extern struct arm_smmu_ctx_desc quiet_cd;
->
->  void arm_smmu_clear_cd(struct arm_smmu_master *master, ioasid_t ssid);
-> +struct arm_smmu_cd *arm_smmu_get_cd_ptr(struct arm_smmu_master *master,
-> +                                       u32 ssid);
-> +void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
-> +                        struct arm_smmu_master *master,
-> +                        struct arm_smmu_domain *smmu_domain);
-> +void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
-> +                            struct arm_smmu_cd *cdptr,
-> +                            const struct arm_smmu_cd *target);
->
->  int arm_smmu_write_ctx_desc(struct arm_smmu_master *smmu_master, int ssi=
-d,
->                             struct arm_smmu_ctx_desc *cd);
+> -               }
+> -
+>                 cdptr =3D arm_smmu_get_cd_ptr(master, IOMMU_NO_PASID);
+>                 if (!cdptr) {
+>                         ret =3D -ENOMEM;
 > --
 > 2.43.2
 >
