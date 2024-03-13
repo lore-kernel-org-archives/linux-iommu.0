@@ -1,160 +1,109 @@
-Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C84D3FB1D
-	for <iommu@lists.linux.dev>; Wed, 13 Mar 2024 12:18:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A16D3FB1D
+	for <iommu@lists.linux.dev>; Wed, 13 Mar 2024 12:20:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=60.244.123.138
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710332317; cv=none; b=qqg87g3j50uCAi3dko2Bn+eT//VbGEguQR/Sv2A5bNVfd8GnuvjOXrD1waqjLzg5gEHn2Vcvs5HC6VcVDpv/lCr6k5XWL0Eg93dgg5Fq8GO0e2BdW7MlO7XCcKAfIL+juYaHL03hC8tP/ct7hi6ZbXoywaLPCgxHXdaSv5tnGN8=
+	t=1710332410; cv=none; b=QAb5PkCfx7ysp2uAS86EQyXpF8irHwIF6pXEsl49WsqaTlVBTh1eLeggVaM9M5WQoMn7a4Tw2SCh7Nv+4zmnEekWKWHWOKQbrdHBSqZLzD6dJfO/vlKAQ8by6FlGY+CSe+h1uRk4iZnCEqBdgrEHmDypjD9ARn2iRcf8tya202Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710332317; c=relaxed/simple;
-	bh=gjuLgDGzXZzF3WLsvlkWyTc021i3jvnNuX+n8BNYv2U=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Ut9xM27li2zO0GncDQT9rt1nkXaX12TGjfvohYq8cN/kpGTYVN03eKV8KMwFjXjXLACox/Y8DXFYH3UIsajh0ZLAFEm/wQ67DsbGiaTVp24vESAVTLArvqEQvcAbtaCPqdMyZMDhx6mywBrvBwS0zkfzTaZgWhH/7a/ay1e7NPY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=pDCmUnJx; arc=none smtp.client-ip=209.85.160.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1710332410; c=relaxed/simple;
+	bh=kRcXtIS0ZB+5A1tH+RAb/Y3bMwHWyq/xrkLxiZ8FCuI=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=GlRO1JqC9jA2Hwh98kO2ly1bGfk4jlTnTXvejPdtjq+zPu+SceMScF1e181hNnNcOoLe/eo9XdAumafaHz3AlE+P3OSZoEOuwBsipuAMYXnQTzINnWmzqsizEkR23FdBnGal51nZ5VY6AsyOHS+qIhkEdBptqPr8OZ9JZyOVjzw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com; spf=pass smtp.helo=mailgw01.mediatek.com; dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b=OJFNyDrt; arc=none smtp.client-ip=60.244.123.138
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=mediatek.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.helo=mailgw01.mediatek.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="pDCmUnJx"
-Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-42ee0c326e8so270491cf.0
-        for <iommu@lists.linux.dev>; Wed, 13 Mar 2024 05:18:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1710332315; x=1710937115; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iLn+BrGEruRWKJhXmprGU+vP3u8AhLt4gVX4bmdMLwM=;
-        b=pDCmUnJxcOIstOjlVL+pZeTCFUy8gAlntJDAZv03u4PFqQNB1dzVIi6tiJAaXmwM6h
-         7v62s/m7eRvwiflb2g61J3LUaJCuk8N4sdOmUwWwsHsvIug3zr3WBrJGct0PsVm7ZGLk
-         X/B0+POrm+TkWKjPI70PhuO4qdwhLYV+bb0wviEPXge3RibcQGKfqhcw+SJjYs4yGSc7
-         sE4QbFiM9RbDxenqRXekG/lrEqOXj0s5BzO5zJil+Q0HtIZ/a4a2vV4ADhHPn2ocfVGn
-         MD/JOpYJ2jhz44gGzz33OXJ4v9adVc146X2XeODZ7FW7OrbUXCjaX2k0aJ6dfOrYqj4l
-         hFZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710332315; x=1710937115;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=iLn+BrGEruRWKJhXmprGU+vP3u8AhLt4gVX4bmdMLwM=;
-        b=NfiUkrkhOVCUKSoTORJh5tGAYr9jWz4D9lvIJPEy/HcCcpLzSQF4EXE8K43c2pscoW
-         SHj4c1bjw+hWyCNyGvtsvJeyoufs70NlOpA0KJwtCkOa8slgCssWCZNEahmkMB/CsROA
-         AxemEp/Zc7yFfo8aHRKn0gWyz9rnecCAD2gSk/J+jRCaS1Dl6y3baLBtb89qQ3EM61a9
-         L37nIRTTyS+Uv5CRBkc8g3p+FpfuBSyZz47cllGlM5RNDzYBbDDWl3rs4AmSQLOtLtU5
-         J5AQDxOyFIGMRBQ6diTiEThdKBb8lQpG2zqrKD5duB//1OSdEWEt/BK/9wHVLiqxQ3Hp
-         Zlfg==
-X-Gm-Message-State: AOJu0YwDWrnEg7/pfuJSiqlVUPWci3kcpaE+S7sLKNyoSeeANjwRSg53
-	LiPxgDePbvy6udSkX0QSAcEVF1/J+YgmtpgDqGweryD/pBiJffPKD+psqG6zxecEvSKd673u8Nx
-	njbt1P+DJRGul84jagxe0+quFBfkKgdQmacsf
-X-Google-Smtp-Source: AGHT+IG92bWegcnD1SP0e2pgvkVGvP2ZsPHit+vBqyei1aoiaxGkBYxhJsA4v1V+Gpa3r1Nj2YtlWqB3CfyBPlicSWI=
-X-Received: by 2002:ac8:75d5:0:b0:42f:a3c:2d4a with SMTP id
- z21-20020ac875d5000000b0042f0a3c2d4amr228974qtq.11.1710332314840; Wed, 13 Mar
- 2024 05:18:34 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="OJFNyDrt"
+X-UUID: 0542496ee13411eeb8927bc1f75efef4-20240313
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+	h=Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From; bh=or3eZs8Nrn7r67hSRxouiC9/TCgQeXLDBKP3b0Zq57o=;
+	b=OJFNyDrtC3+oQbXmk5FsU5zXM1+tzZHvj/J5qyvfWsMtHLD1AgslKEOeNhlycK8tcUFyA3akbVofeu1D7cgkg84q7sBHWfwhXFy7b1X1ACIoXd4fr4xTE/W97WuHImBtJ68G1yiD0PJ8/AYvB1WtQMcysUDiqOUEs/6Uo62r8IQ=;
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.37,REQID:607074f0-30ea-4ce9-a3c9-c7fe5cb0a1dd,IP:0,U
+	RL:0,TC:0,Content:-5,EDM:10,RT:0,SF:0,FILE:0,BULK:0,RULE:Release_Ham,ACTIO
+	N:release,TS:5
+X-CID-META: VersionHash:6f543d0,CLOUDID:0fc95b90-e2c0-40b0-a8fe-7c7e47299109,B
+	ulkID:nil,BulkQuantity:0,Recheck:0,SF:nil,TC:nil,Content:0,EDM:20,IP:nil,U
+	RL:0,File:nil,RT:nil,Bulk:nil,QS:nil,BEC:nil,COL:0,OSI:0,OSA:0,AV:0,LES:1,
+	SPR:NO,DKR:0,DKP:0,BRR:0,BRE:0
+X-CID-BVR: 0
+X-CID-BAS: 0,_,0,_
+X-CID-FACTOR: TF_CID_SPAM_SNR
+X-UUID: 0542496ee13411eeb8927bc1f75efef4-20240313
+Received: from mtkmbs13n2.mediatek.inc [(172.21.101.108)] by mailgw01.mediatek.com
+	(envelope-from <empty.sender@empty.domain>)
+	(Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+	with ESMTP id 1803951228; Wed, 13 Mar 2024 20:20:03 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.26; Wed, 13 Mar 2024 20:20:02 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.1118.26 via Frontend Transport; Wed, 13 Mar 2024 20:20:02 +0800
+From: John Hsu <john.hsu@mediatek.com>
+To: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, "Matthias
+ Brugger" <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+	<angelogioacchino.delregno@collabora.com>
+CC: <surenb@google.com>, John Hsu <john.hsu@mediatek.com>, Chinwen Chang
+	<chinwen.change@mediatek.com>, Casper Li <casper.li@mediatek.com>, "Kuan-Ying
+ Lee" <Kuan-Ying.Lee@mediatek.com>, <iommu@lists.linux.dev>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-mediatek@lists.infradead.org>
+Subject: [PATCH] direct-dma: WARN_ON_ONCE when the page is not addressable by device's coherent_dma_mask
+Date: Wed, 13 Mar 2024 20:19:30 +0800
+Message-ID: <20240313121933.15839-1-john.hsu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com> <9-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
-In-Reply-To: <9-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Wed, 13 Mar 2024 20:17:58 +0800
-Message-ID: <CAKHBV248Zsm+yY3qgwGQtMX3VPX0L0+qOuq2tcQVQYUvfAhAvw@mail.gmail.com>
-Subject: Re: [PATCH v5 09/27] iommu/arm-smmu-v3: Allocate the CD table entry
- in advance
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, 
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-TM-AS-Product-Ver: SMEX-14.0.0.3152-9.1.1006-23728.005
+X-TM-AS-Result: No-10--8.982500-8.000000
+X-TMASE-MatchedRID: ApWTbtae/ntKpt0bXTOsseIfK/Jd5eHm5Y0kb0hqatzb6Y+fnTZULx8+
+	XHETeZCzWC2b8unx+lIBXdtZPWfJ2ti5OqTR/Gdcdj6ndECc9fQwCmrLlx+Sdd9RlPzeVuQQrWv
+	A11V1iKmeI7jQOR42AmzlLAWyLHZTHxPMjOKY7A+Wlioo2ZbGwdmzcdRxL+xwKrauXd3MZDWuik
+	CL8VXXTOdCoM5AWaTNQYSNUwqrAIm7Om/jsUAZXIZt0Zt5H8bBdGByp+zdaDg=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--8.982500-8.000000
+X-TMASE-Version: SMEX-14.0.0.3152-9.1.1006-23728.005
+X-TM-SNTS-SMTP: DDC29104D7E7600799E9307E9FEDE743D00DAE66AF562F97600BD1818E0CF95B2000:8
+X-MTK: N
 
-On Tue, Mar 5, 2024 at 7:44=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
-te:
->
-> Avoid arm_smmu_attach_dev() having to undo the changes to the
-> smmu_domain->devices list, acquire the cdptr earlier so we don't need to
-> handle that error.
->
-> Now there is a clear break in arm_smmu_attach_dev() where all the
-> prep-work has been done non-disruptively and we commit to making the HW
-> change, which cannot fail.
->
-> This completes transforming arm_smmu_attach_dev() so that it does not
-> disturb the HW if it fails.
->
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 24 +++++++--------------
->  1 file changed, 8 insertions(+), 16 deletions(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
-arm/arm-smmu-v3/arm-smmu-v3.c
-> index 2dd6cb17112e98..39081d828a2132 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2676,6 +2676,7 @@ static int arm_smmu_attach_dev(struct iommu_domain =
-*domain, struct device *dev)
->         struct arm_smmu_device *smmu;
->         struct arm_smmu_domain *smmu_domain =3D to_smmu_domain(domain);
->         struct arm_smmu_master *master;
-> +       struct arm_smmu_cd *cdptr;
->
->         if (!fwspec)
->                 return -ENOENT;
-> @@ -2704,6 +2705,12 @@ static int arm_smmu_attach_dev(struct iommu_domain=
- *domain, struct device *dev)
->         if (ret)
->                 return ret;
->
-> +       if (smmu_domain->stage =3D=3D ARM_SMMU_DOMAIN_S1) {
-> +               cdptr =3D arm_smmu_get_cd_ptr(master, IOMMU_NO_PASID);
-> +               if (!cdptr)
-> +                       return -ENOMEM;
-> +       }
-> +
->         /*
->          * Prevent arm_smmu_share_asid() from trying to change the ASID
->          * of either the old or new domain while we are working on it.
-> @@ -2723,13 +2730,6 @@ static int arm_smmu_attach_dev(struct iommu_domain=
- *domain, struct device *dev)
->         switch (smmu_domain->stage) {
->         case ARM_SMMU_DOMAIN_S1: {
->                 struct arm_smmu_cd target_cd;
-> -               struct arm_smmu_cd *cdptr;
-> -
-> -               cdptr =3D arm_smmu_get_cd_ptr(master, IOMMU_NO_PASID);
-> -               if (!cdptr) {
-> -                       ret =3D -ENOMEM;
-> -                       goto out_list_del;
-> -               }
->
->                 arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
->                 arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
-> @@ -2746,16 +2746,8 @@ static int arm_smmu_attach_dev(struct iommu_domain=
- *domain, struct device *dev)
->         }
->
->         arm_smmu_enable_ats(master, smmu_domain);
-> -       goto out_unlock;
-> -
-> -out_list_del:
-> -       spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> -       list_del_init(&master->domain_head);
-> -       spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-> -
-> -out_unlock:
->         mutex_unlock(&arm_smmu_asid_lock);
-> -       return ret;
-> +       return 0;
->  }
->
->  static int arm_smmu_attach_dev_ste(struct device *dev,
-> --
-> 2.43.2
->
-Reviewed-by: Michael Shavit <mshavit@google.com>
+From: JohnHsu <john.hsu@mediatek.com>
+
+The dma_direct_alloc() may return null in some cases. For example, the
+allocated page is not addressable for the device's coherent_dma_mask,
+and the allocated page will be assigned to null.
+
+This patch can WARN_ON_ONCE() when the returned page is null in
+dma_direct_alloc. It helps the developers position the root cause of
+allocation failure rapidly.
+
+Signed-off-by: JohnHsu <john.hsu@mediatek.com>
+---
+ kernel/dma/direct.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 9596ae1aa0da..a73b8ad1ef9e 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -156,6 +156,8 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+ 		}
+ 	}
+ 
++	WARN_ON_ONCE(!page);
++
+ 	return page;
+ }
+ 
+-- 
+2.18.0
+
