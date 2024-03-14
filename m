@@ -1,155 +1,133 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2072.outbound.protection.outlook.com [40.107.220.72])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EEC41E480
-	for <iommu@lists.linux.dev>; Wed, 13 Mar 2024 23:51:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.72
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710373888; cv=fail; b=RTrOhmXEU3q1BQXUf9v2er7qxWoXLGgUtYgYjJUSHP525qFDq8oSKUP7xupvZ50ER+sGIz/2oHZrjr3/8XmReiXNl/iCnnwtgIH7R2lma81WSDrX8dbiM3wLaUe9ufaUT2bC2UKuLpFUYluhOOOu/RWT8FbbkibNBZNS0QkTO3o=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710373888; c=relaxed/simple;
-	bh=ZQPlTHC3vRUVGFRYG1ZsceOlmjN4uB4ySzNwdn4zYzA=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ord5ql6q01/UAPuR/MH6Bhb8z8XZA0Er4RRYQy+NE1NYa7VI9qUaOmVqzKrnPm3jsLUKmVQLzMu3JzHfBP6zFhdg865Yk9UzMXjBqPEf2X+FD3DVRHAL/adFxaDtnsFDSgcdb+0/BbBGU8XO95nB+dDVy1Eka6EXEfPXknKYeHs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Lv6GVHnN; arc=fail smtp.client-ip=40.107.220.72
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B85CA5C8E1
+	for <iommu@lists.linux.dev>; Thu, 14 Mar 2024 07:41:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1710402091; cv=none; b=cQwNS2JlDLoU++TYKRnTxHsF2S4a8l7BvBvevb6uLrCRuYCq/6PdRR5Wi5/HD5OttegUc/RuxBe6bZ+GvBnb6fXffJ2TRr5bkM9CJI+X6TSZ8/VBRZon4Q4sGy5g/lvUJuZr7QaSpPAZnMi/m+gVrJaZn2XD+ctGT9Qtn6aKOto=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1710402091; c=relaxed/simple;
+	bh=tYLRFrjCwOGp9whBxYAiRelcKZZjcsXaVqhFiwh3zBg=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=AfzDCX69EkKL7cYc0zKok5DMG50tMpSNz18j2r+/4o6jc3AqtLFx3t/1XUOtLiMfzjEDSd+LJ66Z4jHsjHFu1PPvjDmakdfUdw0rRqDM3FIgxdO67T6+INZB08/Jlyo7b4+1zFOHH9i4OaZUYRoArBMD9Er+OJhjIHI+KFVMaN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lKnZC05/; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Lv6GVHnN"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FBGa6VkirM75ThHsbDXz+VGLBNXjRg9EHPQAaaqAd+lT9yfjowdrDRKnWrEV6cfD0BhuqIoLMBEpZcb4t8xhjuLgqk7pEbaX8STG4+jE9cCRLBy64+6fsr5jPXRkgVc/YKhM1+3hI4am2LyPIuAUJTp9SJr0XbPz/6IaDQsQui9vGkAl/M1SEFc4dp6r67KMGVL02p/6mFHfXc+ab+e6feFunaZusj6/pKV0SVb3SfxKOaKfBBS0puVftwueEoPQocGtPY4SUwadYGi7B4McywfiQlRnjlZ4w9m8NmG/bT4lFaUK1mWMF5HQz0eBmO7u3RVqDMF0lbK7h+CYdNth9g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ltVsRxKIx6B60l+Oa6F5ntVzJJV8lbS43MgQWBfwqvI=;
- b=A8gpBtd37sYW7odqDZ98E2kl74LFz9CITeDGTfSG4MvED8AP0NdYZYVPoFeL5/nl/HEEZnFf2i3WjLzgOF/251d/oCVmd+k3a6QM3fQWPFPaZOW+EA2+Q4NeXLVr6RLgMN1iD42X2mtcdSBvB6FCbOdCbBL6h/7EqNuA7oIF0UPWWhEvT5KUHeRSPzJeN8BZba02TeCBk33OuZ3rPGkdlFaEx3CTYhOC83nnTOImt2C59v6z+gKrqNO+Ta/bBL8GRbrIbUm6MBjphQ6ryFB+o3WbmRdAUoCTDKd3pMGXwTLKwtsUYZ7tMFokvYRi8KXyUhwZSRmimwINDcP8F6XwMQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.161) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ltVsRxKIx6B60l+Oa6F5ntVzJJV8lbS43MgQWBfwqvI=;
- b=Lv6GVHnNpECH8wlucimNuycCWx6Gw3bbQTQpqO9uXsGtZIftr8c4gf8iVIcuWTit3EWUL2z0MFi4mHNKn6mUltfjyPuqqgJgZcejDuqVSjxsXTQWZBaFxvm+BS0hGC8v2GvwW2yU+P81fNFKft1l5NKZn8dZvgdtDQrteDcLyIHcjJ7fnCVMlh6JzGc1U6uf3hfUDsSPbJTs12lhd7anyoIxLSAQwjwE6q3I56vmoTzNh9syrzBoQKYNXYZcN9pGrewDPXhJ/AQ/rUirKtxnj8bKiQTaKdZlmK7yaEBduA3uqSJjXqcSPRl90iqZweAAEr/bP1pnCpjOdSa5FhUedw==
-Received: from PH1PEPF000132FF.namprd07.prod.outlook.com (2603:10b6:518:1::10)
- by DS0PR12MB8814.namprd12.prod.outlook.com (2603:10b6:8:14e::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.36; Wed, 13 Mar
- 2024 23:51:22 +0000
-Received: from SN1PEPF0002BA51.namprd03.prod.outlook.com
- (2a01:111:f403:f90c::) by PH1PEPF000132FF.outlook.office365.com
- (2603:1036:903:47::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7362.36 via Frontend
- Transport; Wed, 13 Mar 2024 23:51:21 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.161) by
- SN1PEPF0002BA51.mail.protection.outlook.com (10.167.242.74) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7386.12 via Frontend Transport; Wed, 13 Mar 2024 23:51:20 +0000
-Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
- (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Wed, 13 Mar
- 2024 16:51:00 -0700
-Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
- (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12; Wed, 13 Mar
- 2024 16:51:00 -0700
-Received: from Asurada-Nvidia (10.127.8.14) by mail.nvidia.com (10.129.68.6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
- Transport; Wed, 13 Mar 2024 16:50:59 -0700
-Date: Wed, 13 Mar 2024 16:50:58 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-CC: Jason Gunthorpe <jgg@nvidia.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Linuxarm <linuxarm@huawei.com>, Zhangfei Gao
-	<zhangfei.gao@linaro.org>, Michael Shavit <mshavit@google.com>, Eric Auger
-	<eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>
-Subject: Re: Query on ARM SMMUv3 nested support
-Message-ID: <ZfI74miZ1ss9+Kz0@Asurada-Nvidia>
-References: <b8c1b2fb281246da94b35ceb5e27b538@huawei.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lKnZC05/"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1710402090; x=1741938090;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=tYLRFrjCwOGp9whBxYAiRelcKZZjcsXaVqhFiwh3zBg=;
+  b=lKnZC05/PYJxO0Z1yvcMAYhmyGAou0uNS0pInR9Xio/Si915ITUd8D/+
+   SQmEMpCOfaDw7AJFe7uzu5FmaK0SOUpad6Pp6cJ2+zqAOw5Nl/CB3l8Wc
+   uVFnODm6qRBiYrivD+O/PawHUWm6FU0obtyk6eObCU/0JtXs6V/oTTT6m
+   GX4T5CMsOhYWiAwQluN8RKhmN+pQHurhhTG3qVZdD7XwOKR6aXWwxoD52
+   TC5i/dEyR3/I//MasyQi3C8F4m0Ol5BSffrecmN9I5wlu47+eXuQMKqkJ
+   auOFXkGO9PhkOhphb3RP7odPHEYGL/zjnIgyMnirg3X+1vVm8G+xIGuii
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11012"; a="30644720"
+X-IronPort-AV: E=Sophos;i="6.07,124,1708416000"; 
+   d="scan'208";a="30644720"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 00:41:29 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,124,1708416000"; 
+   d="scan'208";a="16798366"
+Received: from schen8x-mobl.ccr.corp.intel.com (HELO [10.255.29.38]) ([10.255.29.38])
+  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 00:41:26 -0700
+Message-ID: <b33bf29b-2fe5-4a2a-a2ce-9fd8d67c5f6f@linux.intel.com>
+Date: Thu, 14 Mar 2024 15:41:23 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <b8c1b2fb281246da94b35ceb5e27b538@huawei.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SN1PEPF0002BA51:EE_|DS0PR12MB8814:EE_
-X-MS-Office365-Filtering-Correlation-Id: 267eec97-7b7f-43d1-a4a2-08dc43b87ba5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	MMm7tJqQssXRzUsHbsleI8PfdIV9Nxg/V4gOOnNBFmt2YrQrVevTs2Y/9ROXg8NsVLdbEsfGK2E/DYvDCG1XapaiUI285xiTEXWhPYhRS6VEDxN4sR6ZXoLTuNxtUWOADqqbKJXx4O8lYlIQvdtReIXsmNVvAbN9py1X9j/N0E/A+5U3Eg9zhZEc2/uAPwnXiC8HmYTGcVJPjF97qFq5wTMCurL1n8NwpEnIncGTv//yYIpJwSBQo0/o/xQ9bPwAXH98Ve7XRnyZexpuNmu3jIA+/ZlAV0A+PxuJpHbTaON/njEB1uXPdTmdvUghWLBs2s+IrWzDrJYhOKlTnAZ0TiqTMhqNfL3QfuMPQGtaM98B61qnyR3Baj1nXayiqLbFK/SdHj3o3fTyuN5hk+gG4x0dwBfPu5y7AyGk0bU06aGyjHI8syASgvUU1ZwHNzOWX1r3x3tN8nEddMz+Kiu4Y6+c2afvpAq5BGucp15q3miu7cRxdSJn23EKly7/QUBBHJqIp5Hb2wcwl/ywZ0VLe1GdLJndY3XZGFOEYUMKJBow2ztD4viJx0aEMLUSYxvNoUQDj9QqTFRPAtVwiBwOoIGEZxpWpUdYXRruOcvIiXUe2JCcoFCyZjoYiACFqU7QlW/44KesTVqNtaB51LPK3tFMohehePx1nWtZoWWTJ/WJAL8cct4RYUjP8EbH7wioxM8++3slFp5N8xtACJXf+7OvIGVu1wQF4Gu3d8ourfjDcgj3WMrA0bIAPwpm8u5VjiD/oIhdEXweXPOPiD3zGg==
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(82310400014)(1800799015)(36860700004)(376005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Mar 2024 23:51:20.5859
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 267eec97-7b7f-43d1-a4a2-08dc43b87ba5
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1PEPF0002BA51.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB8814
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
+ virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/8] iommu/sva: Use iopf domain attach/detach interface
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
+ <20240122073903.24406-3-baolu.lu@linux.intel.com>
+ <20240308174605.GV9225@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240308174605.GV9225@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Mar 13, 2024 at 10:13:58AM +0000, Shameerali Kolothum Thodi wrote:
-> Hi Nicolin,
+On 2024/3/9 1:46, Jason Gunthorpe wrote:
+> On Mon, Jan 22, 2024 at 03:38:57PM +0800, Lu Baolu wrote:
+>> @@ -215,7 +202,23 @@ static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
+>>   		group = abort_group;
+>>   	}
+>>   
+>> +	cookie = iopf_pasid_cookie_get(iopf_param->dev, pasid);
+>> +	if (!cookie && pasid != IOMMU_NO_PASID)
+>> +		cookie = iopf_pasid_cookie_get(iopf_param->dev, IOMMU_NO_PASID);
+>> +	if (IS_ERR(cookie) || !cookie) {
+>> +		/*
+>> +		 * The PASID of this device was not attached by an I/O-capable
+>> +		 * domain. Ask the caller to abort handling of this fault.
+>> +		 * Otherwise, the reference count will be switched to the new
+>> +		 * iopf group and will be released in iopf_free_group().
+>> +		 */
+>> +		kfree(group);
+>> +		group = abort_group;
+>> +		cookie = NULL;
+>> +	}
 > 
-> Thanks for the latest repos with basic SMMUv3 nested support enabled[1].
-> I did some  basic sanity runs on a HiSilicon platform and they seems to work as
-> expected. The only problem being we can't assign two devices to the VM if
-> they are on different physical SMMUs.
+> If this is the main point of the cookie mechansim - why not just have
+> a refcount inside the domain itself?
 > 
-> qemu-system-aarch64: -device
-> vfio-pci,host=0000:75:00.1,iommufd=iommufd0: [iommufd=29] error attach
-> 0000:75:00.1 (36) to id=4: Invalid argument
-> qemu-system-aarch64: -device
-> vfio-pci,host=0000:75:00.1,iommufd=iommufd0: Unable to attach dev to
-> stage-2 HW pagetable: -1
-> Segmentation fault (core dumped)
-> ...
+> I'm really having a hard time making sense of this cookie thing, we
+> have a lifetime issue on the domain pointer, why is adding another
+> structure the answer?
+
+The whole cookie mechanism aims to address two things:
+
+- Extend the domain lifetime until all pending page faults are resolved.
+- Associate information about the iommu device with each attachment of
+   the domain so that the iommufd device object ID could be quickly
+   retrieved in the fault delivering path.
+
+
+> I see we also need to stick a pointer in the domain for iommufd to get
+> back to the hwpt, but that doesn't seem to need such a big system to
+> accomplish - just add a void *. It would make sense for the domain to
+> have some optional pointer to a struct for all the fault related data
+> that becomes allocated when a PRI domain is created..
+
+It's not getting back hwpt from domain, just getting the iommufd_device
+in the fault delivering path. The iommufd_device is not per-domain, but
+per-domain-attachment.
+
 > 
-> I see that on the Qemu side we now allocate a single s2 hwpt and attach that into
-> all the devices . But this will only work currently if all the assigned devices
-> are under the same physical SMMUv3 as we have a check in kernel
-> whether domains are having the same SMMUv3. I remember Jason mentioning
-> that he is planning to relax that. So are the Qemu side changes based on that
-> assumption? And any idea how we are planning to relax that restriction? We
-> do a check for compatibility of the phys SMMUv3s and then allow/restrict in kernel?
-> Do Qemu can then try allocating a separate s2 hwpt for those and attach again?
-> Sorry if this was already discussed elsewhere and I missed that.
+> Also, I thought we'd basically said that domain detatch is supposed to
+> flush any open PRIs before returning, what happened to that as a
+> solution to the lifetime problem?
 
-You are very right about this. I haven't thought about supporting
-that case yet. Likely I need to spare some time to refine the QEMU
-part in the coming weeks or so (have been waiting for Zhenzhong's
-full nesting patches).
+If I remember it correctly, what we discussed was to flush all pending
+page faults when disabling PRI. Anyway, the current driver behavior is
+to flush faults during domain detachment. And if we keep this behavior,
+we no longer need to worry about domain lifetime anymore.
 
-Also, NVIDIA has an interest to support CMDQ-V accelerator, where
-we need more vSMMU instances, than just one. I haven't decided how
-to handle this for both single-vSMMU and multi-vSMMU versions.
+> 
+> Regardless I think we should split this into two series - improve the PRI
+> lifetime model for domains and then put iommufd on top of it..
 
-Yet, some of the ongoing work might help:
-https://github.com/nicolinc/iommufd/commit/b7520901184fd9fa127abb88c1f0be16b9967cff
-https://github.com/nicolinc/iommufd/commit/d969ffeac899491d3a6e54557bf6a46d52b95865
-So, each device should poll hw_info to get its SMMU ID, if it is
-not in the S2 list of the vSMMU's, add it and allocate a new S2.
+Yes, agreed. Let's tackle those two points in a separate series.
 
-Jason is on vacation. I believe we'll have a more solid discussion
-later.
-
-Thanks
-Nicolin
+Best regards,
+baolu
