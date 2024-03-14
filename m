@@ -1,178 +1,202 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60BBA5C5F3
-	for <iommu@lists.linux.dev>; Thu, 14 Mar 2024 13:41:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD6CCDF53;
+	Thu, 14 Mar 2024 16:58:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710423713; cv=none; b=d9Seu7Mwa9lfM/j3AbWmQxL7kcMvMMJwwtXmC3xZyZccCEQyKuW7yz7pXVaK2KXB0MT91YkIe8YWCKvvKjaGsLKOaJlWTe6GaOmL25ms9mKU+2dAPVXoezTuStbNES2uY7BJviGYs4wb+iWK9rIjUn7/XxhN/XPckaVEjXuI7AY=
+	t=1710435484; cv=none; b=MGfwMaPYKmvpEgy1b+4RsO3mStvdbPGYacDrL20va9iC5V3l0CNhZRlVM1rMe+dtdtbKZgx+4/yD35KmauYRGGAMgcWBnGQRnR83+3PzWvigdEiWcCmSmXKwCLmMFvUtDKpeEh/EgmDBRZ4ctKpgvxpUpvUPfZvkNSfBJoP0fWc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710423713; c=relaxed/simple;
-	bh=FghQcZsR6VC2YmekzMAzZOpVy/lU5ooLVH+PhXP0tmI=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=aKbFZIiRE8/5PSrwlK0DgmRFYe6BB0kt12wqP7sdpb/hZSGH/KjcW5nbBu64xpuuHxInkP8QcKPdn7X78txpqJUUroTDWQWVMpIhOmHaP/elR0JnPdZlQH82UsggoGEkNFx3rfdJVkA1N1sY9DkOYaIho2B04Rw3ORvaV6sNG4g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q2PLnj96; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1710435484; c=relaxed/simple;
+	bh=fcf8GvnNI2NlxwWa/BLBUBs674hhRLyrkoAa66D2RKo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KUp8eX0BR2WWsNQYDNN9WdtuilgAPObBrk64jCwr1PrKldvtOOrL1hYoZY2ASwPSA+gjVHZRRLo8mzwKpISfXW+brZTSWVODrUAjQPIxz3rrLM2Qci6w4ENA01Bt/DA2nH3JPC+UvKQg5DDEaM/ssH2B1MOGRxTnPBu2QFrdeIk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=F49o9o6f; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q2PLnj96"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F49o9o6f"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1710423712; x=1741959712;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FghQcZsR6VC2YmekzMAzZOpVy/lU5ooLVH+PhXP0tmI=;
-  b=Q2PLnj96YYqO42GlxFsrx197PlPgiVvvL+KKeoWO+l8FqKBHIt0ovjxO
-   SbX7s1xbqSdRlOF7uP21x2Oqj/ykLM0Io5NTcPuXmBTrCo74qSLuH4ERf
-   W47Mmi4a3pxN/Z+1K+EglNF72vLSa32xKSKhR8JNPvpbhiWeiw6VtVo6i
-   8J9ajefeGt4eSoPz/idtEsZKNOXUe8xNtCDCTkQkRzVul+iqnl1UesNma
-   slrf1Ngz2NAeYKEj+vZx58Xq6jdlBvHCrecjTdY+IX78hK6vIa8zFYWvR
-   S6irw1G/DBmkaDeQZyFC6TPsDaRbOW7kkRbTL6YKict1Og0IQ4sBdHy6d
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11012"; a="30679641"
-X-IronPort-AV: E=Sophos;i="6.07,125,1708416000"; 
-   d="scan'208";a="30679641"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 06:41:51 -0700
+  t=1710435483; x=1741971483;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=fcf8GvnNI2NlxwWa/BLBUBs674hhRLyrkoAa66D2RKo=;
+  b=F49o9o6f1wA2+0hKn2KaNWoiU1UaqF5OSDbpLsz7FOXcrELL9HyUrEm2
+   Q7o/CPG+e7ansTYgABaa4woiQvX89RKbkPHj+bcgh3tYYn0XGK646ElkI
+   HrgYq/7XfEdsyNtraXvIPPPL9YendLYAIydJX7fyXvsyOkFSLKRZSD2KS
+   /viwGMOLdRhlZ5Ia5FECnv7rM7SLSFF6MvtJ9znOXtJRdgwbP4P/BZ58s
+   J7j0afF+CVkZ4pph2QI+dRrCHA03wcMHd7Ly3thCHCt+6jI+JMAnuKqhK
+   T122oCRSneZNdNILJL0gsQT3+Fp4ao8P7KOOXtiUwYbhAvSMXWpouRApx
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11013"; a="22731673"
+X-IronPort-AV: E=Sophos;i="6.07,126,1708416000"; 
+   d="scan'208";a="22731673"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 09:58:02 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,125,1708416000"; 
-   d="scan'208";a="17023702"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.29.38]) ([10.255.29.38])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 06:41:48 -0700
-Message-ID: <43ef5e3f-8a8e-4765-8025-b8207fd05f91@linux.intel.com>
-Date: Thu, 14 Mar 2024 21:41:45 +0800
+X-IronPort-AV: E=Sophos;i="6.07,126,1708416000"; 
+   d="scan'208";a="16952403"
+Received: from aschofie-mobl2.amr.corp.intel.com (HELO aschofie-mobl2) ([10.209.72.214])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 09:57:59 -0700
+Date: Thu, 14 Mar 2024 09:57:57 -0700
+From: Alison Schofield <alison.schofield@intel.com>
+To: Steven Rostedt <rostedt@goodmis.org>
+Cc: LKML <linux-kernel@vger.kernel.org>,
+	Linux Trace Kernel <linux-trace-kernel@vger.kernel.org>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-cxl@vger.kernel.org,
+	linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+	intel-xe@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+	freedreno@lists.freedesktop.org, virtualization@lists.linux.dev,
+	linux-rdma@vger.kernel.org, linux-pm@vger.kernel.org,
+	iommu@lists.linux.dev, linux-tegra@vger.kernel.org,
+	netdev@vger.kernel.org, linux-hyperv@vger.kernel.org,
+	ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+	ath11k@lists.infradead.org, ath12k@lists.infradead.org,
+	brcm80211@lists.linux.dev, brcm80211-dev-list.pdl@broadcom.com,
+	linux-usb@vger.kernel.org, linux-bcachefs@vger.kernel.org,
+	linux-nfs@vger.kernel.org, ocfs2-devel@lists.linux.dev,
+	linux-cifs@vger.kernel.org, linux-xfs@vger.kernel.org,
+	linux-edac@vger.kernel.org, selinux@vger.kernel.org,
+	linux-btrfs@vger.kernel.org, linux-erofs@lists.ozlabs.org,
+	linux-f2fs-devel@lists.sourceforge.net, linux-hwmon@vger.kernel.org,
+	io-uring@vger.kernel.org, linux-sound@vger.kernel.org,
+	bpf@vger.kernel.org, linux-wpan@vger.kernel.org,
+	dev@openvswitch.org, linux-s390@vger.kernel.org,
+	tipc-discussion@lists.sourceforge.net,
+	Julia Lawall <Julia.Lawall@inria.fr>
+Subject: Re: [FYI][PATCH] tracing/treewide: Remove second parameter of
+ __assign_str()
+Message-ID: <ZfMslbCmCtyEaEWN@aschofie-mobl2>
+References: <20240223125634.2888c973@gandalf.local.home>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
- virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/8] iommufd: Add fault and response message
- definitions
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
- <20240122073903.24406-4-baolu.lu@linux.intel.com>
- <20240308175007.GW9225@ziepe.ca>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240308175007.GW9225@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240223125634.2888c973@gandalf.local.home>
 
-On 2024/3/9 1:50, Jason Gunthorpe wrote:
-> On Mon, Jan 22, 2024 at 03:38:58PM +0800, Lu Baolu wrote:
+On Fri, Feb 23, 2024 at 12:56:34PM -0500, Steven Rostedt wrote:
+> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 > 
->> +/**
->> + * enum iommu_hwpt_pgfault_flags - flags for struct iommu_hwpt_pgfault
->> + * @IOMMU_PGFAULT_FLAGS_PASID_VALID: The pasid field of the fault data is
->> + *                                   valid.
->> + * @IOMMU_PGFAULT_FLAGS_LAST_PAGE: It's the last fault of a fault group.
->> + */
->> +enum iommu_hwpt_pgfault_flags {
->> +	IOMMU_PGFAULT_FLAGS_PASID_VALID		= (1 << 0),
->> +	IOMMU_PGFAULT_FLAGS_LAST_PAGE		= (1 << 1),
->> +};
->> +
->> +/**
->> + * enum iommu_hwpt_pgfault_perm - perm bits for struct iommu_hwpt_pgfault
->> + * @IOMMU_PGFAULT_PERM_READ: request for read permission
->> + * @IOMMU_PGFAULT_PERM_WRITE: request for write permission
->> + * @IOMMU_PGFAULT_PERM_EXEC: request for execute permission
->> + * @IOMMU_PGFAULT_PERM_PRIV: request for privileged permission
+> [
+>    This is a treewide change. I will likely re-create this patch again in
+>    the second week of the merge window of v6.9 and submit it then. Hoping
+>    to keep the conflicts that it will cause to a minimum.
+> ]
 > 
-> You are going to have to elaborate what PRIV is for.. We don't have
-> any concept of this in the UAPI for iommufd so what is a userspace
-> supposed to do if it hits this? EXEC is similar, we can't actually
-> enable exec permissions from userspace IIRC..
-
-The PCIe spec, section "10.4.1 Page Request Message" and "6.20.2 PASID
-Information Layout":
-
-The PCI PASID TLP Prefix defines "Execute Requested" and "Privileged
-Mode Requested" bits.
-
-PERM_EXEC indicates a page request with a PASID that has the "Execute
-Requested" bit set. Similarly, PERM_PRIV indicates a page request with a
-  PASID that has "Privileged Mode Requested" bit set.
-
+> With the rework of how the __string() handles dynamic strings where it
+> saves off the source string in field in the helper structure[1], the
+> assignment of that value to the trace event field is stored in the helper
+> value and does not need to be passed in again.
 > 
->> +enum iommu_hwpt_pgfault_perm {
->> +	IOMMU_PGFAULT_PERM_READ			= (1 << 0),
->> +	IOMMU_PGFAULT_PERM_WRITE		= (1 << 1),
->> +	IOMMU_PGFAULT_PERM_EXEC			= (1 << 2),
->> +	IOMMU_PGFAULT_PERM_PRIV			= (1 << 3),
->> +};
->> +
->> +/**
->> + * struct iommu_hwpt_pgfault - iommu page fault data
->> + * @size: sizeof(struct iommu_hwpt_pgfault)
->> + * @flags: Combination of enum iommu_hwpt_pgfault_flags
->> + * @dev_id: id of the originated device
->> + * @pasid: Process Address Space ID
->> + * @grpid: Page Request Group Index
->> + * @perm: Combination of enum iommu_hwpt_pgfault_perm
->> + * @addr: page address
->> + */
->> +struct iommu_hwpt_pgfault {
->> +	__u32 size;
->> +	__u32 flags;
->> +	__u32 dev_id;
->> +	__u32 pasid;
->> +	__u32 grpid;
->> +	__u32 perm;
->> +	__u64 addr;
->> +};
+> This means that with:
 > 
-> Do we need an addr + size here? I've seen a few things where I wonder
-> if that might become an enhancment someday.
-
-I am not sure. The page size is not part of ATS/PRI. Can you please
-elaborate a bit about how the size could be used? Perhaps I
-misunderstood here?
-
+>   __string(field, mystring)
 > 
->> +/**
->> + * struct iommu_hwpt_page_response - IOMMU page fault response
->> + * @size: sizeof(struct iommu_hwpt_page_response)
->> + * @flags: Must be set to 0
->> + * @dev_id: device ID of target device for the response
->> + * @pasid: Process Address Space ID
->> + * @grpid: Page Request Group Index
->> + * @code: response code. The supported codes include:
->> + *        0: Successful; 1: Response Failure; 2: Invalid Request.
+> Which use to be assigned with __assign_str(field, mystring), no longer
+> needs the second parameter and it is unused. With this, __assign_str()
+> will now only get a single parameter.
 > 
-> This should be an enum
-
-Sure.
-
+> There's over 700 users of __assign_str() and because coccinelle does not
+> handle the TRACE_EVENT() macro I ended up using the following sed script:
 > 
->> + * @addr: The fault address. Must match the addr field of the
->> + *        last iommu_hwpt_pgfault of a reported iopf group.
->> + */
->> +struct iommu_hwpt_page_response {
->> +	__u32 size;
->> +	__u32 flags;
->> +	__u32 dev_id;
->> +	__u32 pasid;
->> +	__u32 grpid;
->> +	__u32 code;
->> +	__u64 addr;
->> +};
+>   git grep -l __assign_str | while read a ; do
+>       sed -e 's/\(__assign_str([^,]*[^ ,]\) *,[^;]*/\1)/' $a > /tmp/test-file;
+>       mv /tmp/test-file $a;
+>   done
 > 
-> Do we want some kind of opaque ID value from the kernel here to match
-> request with response exactly? Or is the plan to search on the addr?
+> I then searched for __assign_str() that did not end with ';' as those
+> were multi line assignments that the sed script above would fail to catch.
+> 
+> Note, the same updates will need to be done for:
+> 
+>   __assign_str_len()
+>   __assign_rel_str()
+>   __assign_rel_str_len()
+>   __assign_bitmask()
+>   __assign_rel_bitmask()
+>   __assign_cpumask()
+>   __assign_rel_cpumask()
+> 
+> [1] https://lore.kernel.org/linux-trace-kernel/20240222211442.634192653@goodmis.org/
+> 
+> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> ---
+>  arch/arm64/kernel/trace-events-emulation.h    |   2 +-
+>  arch/powerpc/include/asm/trace.h              |   4 +-
+>  arch/x86/kvm/trace.h                          |   2 +-
+>  drivers/base/regmap/trace.h                   |  18 +--
+>  drivers/base/trace.h                          |   2 +-
+>  drivers/block/rnbd/rnbd-srv-trace.h           |  12 +-
+>  drivers/cxl/core/trace.h                      |  24 ++--
 
-I am using the "addr" as the opaque data to search request in this
-series. Is it enough?
+snip to CXL
 
-Best regards,
-baolu
+
+> diff --git a/drivers/cxl/core/trace.h b/drivers/cxl/core/trace.h
+> index bdf117a33744..07ba4e033347 100644
+> --- a/drivers/cxl/core/trace.h
+> +++ b/drivers/cxl/core/trace.h
+
+snip to poison
+
+> @@ -668,8 +668,8 @@ TRACE_EVENT(cxl_poison,
+>  	    ),
+>  
+>  	TP_fast_assign(
+> -		__assign_str(memdev, dev_name(&cxlmd->dev));
+> -		__assign_str(host, dev_name(cxlmd->dev.parent));
+> +		__assign_str(memdev);
+> +		__assign_str(host);
+
+I think I get that the above changes work because the TP_STRUCT__entry for
+these did:
+	__string(memdev, dev_name(&cxlmd->dev))
+	__string(host, dev_name(cxlmd->dev.parent))
+
+>  		__entry->serial = cxlmd->cxlds->serial;
+>  		__entry->overflow_ts = cxl_poison_overflow(flags, overflow_ts);
+>  		__entry->dpa = cxl_poison_record_dpa(record);
+> @@ -678,12 +678,12 @@ TRACE_EVENT(cxl_poison,
+>  		__entry->trace_type = trace_type;
+>  		__entry->flags = flags;
+>  		if (region) {
+> -			__assign_str(region, dev_name(&region->dev));
+> +			__assign_str(region);
+>  			memcpy(__entry->uuid, &region->params.uuid, 16);
+>  			__entry->hpa = cxl_trace_hpa(region, cxlmd,
+>  						     __entry->dpa);
+>  		} else {
+> -			__assign_str(region, "");
+> +			__assign_str(region);
+>  			memset(__entry->uuid, 0, 16);
+>  			__entry->hpa = ULLONG_MAX;
+
+For the above 2, there was no helper in TP_STRUCT__entry. A recently
+posted patch is fixing that up to be __string(region, NULL) See [1],
+with the actual assignment still happening in TP_fast_assign.
+
+Does that assign logic need to move to the TP_STRUCT__entry definition
+when you merge these changes? I'm not clear how much logic is able to be
+included, ie like 'C' style code in the TP_STRUCT__entry.
+
+[1]
+https://lore.kernel.org/linux-cxl/20240314044301.2108650-1-alison.schofield@intel.com/
+
+Thanks for helping,
+Alison
+
+
+>  		}
+
+
+
