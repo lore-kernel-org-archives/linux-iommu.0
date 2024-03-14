@@ -1,168 +1,142 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from fout4-smtp.messagingengine.com (fout4-smtp.messagingengine.com [103.168.172.147])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F39117350B;
-	Thu, 14 Mar 2024 18:32:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D360C73196
+	for <iommu@lists.linux.dev>; Thu, 14 Mar 2024 19:06:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.147
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710441121; cv=none; b=EZoUVEHF++UUYYt9fb4/hpjdkwvysB7w0VUIEI9O2BDkfjP0eTCf6ipD2zul41ZM0Vay59ZbvyxbNemQA6K2KZ/JiceRnVHizaFGaAt7qQxyvwHP8orXEaXHYptopGpdU5Qq6kM/b2cyAyj/DouG1jAfxb0+2g+ND+dPzIeYFjc=
+	t=1710443206; cv=none; b=Zmp1HFVcPoUr0Oe+PLc9WRfXj0gBnBC5qzNOhUGlOx4hl8NrJMQ25vG7DKtyt5C5WJ/j3p3sXQ4VkfnXm7lXPVQU71cRZbeVcqL4dt9Mzc0ehsnY07CUFsvXfS2Cgpw+/7ykUiHsRsfeHqCwEnvPazxicJRHfssGAgkllcrBzRY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710441121; c=relaxed/simple;
-	bh=mvdnoLfy3ROkxmfR7t2H/wROfPIdheF/nBqPtCWPX4A=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=caLa/U/pxbHZR3c2cgLYTWNfRiA+6oquCYVT0Zmwd3BR/OrkH/rbhZk1lY5pP3oWRjph2JZwAmOZLHBdGaQYp7AYEQdESRFcyNEAwWBKfS3IFbfttuB+96ugNrUdTjPMYwMOfjTBCQ7G8BRIlMWMFp5hWA2G/VbK2/563kweVw8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A243FC43390;
-	Thu, 14 Mar 2024 18:31:55 +0000 (UTC)
-Date: Thu, 14 Mar 2024 14:34:06 -0400
-From: Steven Rostedt <rostedt@goodmis.org>
-To: Alison Schofield <alison.schofield@intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, Linux Trace Kernel
- <linux-trace-kernel@vger.kernel.org>, Masami Hiramatsu
- <mhiramat@kernel.org>, Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org,
- linux-block@vger.kernel.org, linux-cxl@vger.kernel.org,
- linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
- amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
- intel-xe@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
- freedreno@lists.freedesktop.org, virtualization@lists.linux.dev,
- linux-rdma@vger.kernel.org, linux-pm@vger.kernel.org,
- iommu@lists.linux.dev, linux-tegra@vger.kernel.org, netdev@vger.kernel.org,
- linux-hyperv@vger.kernel.org, ath10k@lists.infradead.org,
- linux-wireless@vger.kernel.org, ath11k@lists.infradead.org,
- ath12k@lists.infradead.org, brcm80211@lists.linux.dev,
- brcm80211-dev-list.pdl@broadcom.com, linux-usb@vger.kernel.org,
- linux-bcachefs@vger.kernel.org, linux-nfs@vger.kernel.org,
- ocfs2-devel@lists.linux.dev, linux-cifs@vger.kernel.org,
- linux-xfs@vger.kernel.org, linux-edac@vger.kernel.org,
- selinux@vger.kernel.org, linux-btrfs@vger.kernel.org,
- linux-erofs@lists.ozlabs.org, linux-f2fs-devel@lists.sourceforge.net,
- linux-hwmon@vger.kernel.org, io-uring@vger.kernel.org,
- linux-sound@vger.kernel.org, bpf@vger.kernel.org,
- linux-wpan@vger.kernel.org, dev@openvswitch.org,
- linux-s390@vger.kernel.org, tipc-discussion@lists.sourceforge.net, Julia
- Lawall <Julia.Lawall@inria.fr>
-Subject: Re: [FYI][PATCH] tracing/treewide: Remove second parameter of
- __assign_str()
-Message-ID: <20240314143406.6289a060@gandalf.local.home>
-In-Reply-To: <ZfMslbCmCtyEaEWN@aschofie-mobl2>
-References: <20240223125634.2888c973@gandalf.local.home>
-	<ZfMslbCmCtyEaEWN@aschofie-mobl2>
-X-Mailer: Claws Mail 3.19.1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1710443206; c=relaxed/simple;
+	bh=6u41PBoWA/dHSyhaL4eR+nAg2BC9TcZOlGX4UYE8FGE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HsMXGNvhZqWbU+ylI5EN19Od6BqUdCqOik2V5Xv1zm6ma5hw1wOyJVMxOrQWlqFYkBCQY1k5TzRWfU+2k7wUJsR35ZUxHyis2oOs+Lgw6n+XAuh39CwMAKo9vxC5ZND/VbzDMSAEXRvxMoCObrwK+51uWsja7SIQj/XdxF9SO9s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tyhicks.com; spf=pass smtp.mailfrom=tyhicks.com; dkim=pass (2048-bit key) header.d=tyhicks.com header.i=@tyhicks.com header.b=YLCJfRNw; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=XG8uDL+y; arc=none smtp.client-ip=103.168.172.147
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tyhicks.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tyhicks.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=tyhicks.com header.i=@tyhicks.com header.b="YLCJfRNw";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="XG8uDL+y"
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+	by mailfout.nyi.internal (Postfix) with ESMTP id EF3E513800C5;
+	Thu, 14 Mar 2024 15:06:43 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Thu, 14 Mar 2024 15:06:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tyhicks.com; h=
+	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:in-reply-to:message-id:mime-version:references:reply-to:subject
+	:subject:to:to; s=fm1; t=1710443203; x=1710529603; bh=RCQmlGp3k6
+	bvYN0RNI3MYCaArrm2bXBnNGldMBKv0+M=; b=YLCJfRNw4qk13Tk78J9I9IIvgz
+	rKpSA5JCPdGaFpSiMuOt6mw/mYgvhqQsvgDDWbTMa7LrZGxa2Wp5NWfu1cqJ31nL
+	GNNGe+zOhA6IaVfKOE2DxwWusgnaU8jHP+IDzf3K8qx6+zTyXa3VEV4FyQxE5Mue
+	2x553yNefdBa+QG61GP0r+E6Z8R/WBuPTJoKxDPs9SXIG0olBBzueVSAxw/KQlPv
+	pjUr4jhqSRxGirNbfGV+1itvpe8KpWxBTy2lBRJk0IFC8QDSkcNAZDbsnZEA3Bny
+	+CbwragPCCtsQ5bz/CLXSum1zQ2gpxbiTv+VScgALJeUoI4AyzKWYLM8ElMg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+	:message-id:mime-version:references:reply-to:subject:subject:to
+	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+	fm1; t=1710443203; x=1710529603; bh=RCQmlGp3k6bvYN0RNI3MYCaArrm2
+	bXBnNGldMBKv0+M=; b=XG8uDL+ylScJRiGrCkiVidUj4YLfN+EQNZKm7bLCAnxG
+	Vt+n8L8Th2tykaWeNv8xbaZiyyYEMf/DWv0EFzOiPaflx32XJjQm58S4XEt179MS
+	bJvAViFIko7XxKv3unGw3BCr9+88IseWiN9/pdyymPtu1j6O2WGy8FVKtY7uj8j2
+	V0a6RpL/OG/8aU9b9ZZCySn0BXMyFD9+SV4z8D3XFZy7QjhmW3MpkVIFgUJ4bU/v
+	QV9edp2cYZakyFIP0e+eRXTiE587rB1XJAODraG8p8yyGlfB44dCJRQEUaezii46
+	zrqUFkYhIhF99pCzORwXWbOh4D31Kf9nylDMVQp05g==
+X-ME-Sender: <xms:wkrzZTm3X2z1kPOEM0VN_ST1bY5HEk37rQlxy3QpS49AUbhU85_Egg>
+    <xme:wkrzZW1V4MFhAkHFqRRFrpgwGECPtVe7ZYKhnTiIQq7atW3ZlKo9zcJ3-lRr1ss9h
+    ms6Ju4YAu77uQYFW8Y>
+X-ME-Received: <xmr:wkrzZZqlIFep2D75EhXrfV0zsd-6gadufwc-hY5lw21glxgzeLufu-GPv-8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrjeejgdduudekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepvfihlhgv
+    rhcujfhitghkshcuoegtohguvgesthihhhhitghkshdrtghomheqnecuggftrfgrthhtvg
+    hrnhepgfegkeeiffethefgteffudfhfeejhedvjefhjeekudelffdulefhfeekieeludej
+    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpegtohguvgesthihhhhitghkshdrtghomh
+X-ME-Proxy: <xmx:wkrzZblKiuiTM8ni1rpAIXxmUXEmITqwifQj1TYv4Lj-tM1z8Rt0Rg>
+    <xmx:wkrzZR3L085MQGYgcRz-Om_p-QxoKEpxLFYF7N-pvsQRYyoeShE9ug>
+    <xmx:wkrzZaslTD7QpwoiG0ZHiJJFdh5Vhr5Y_z2m6LR-auw1IFRyXFy6aA>
+    <xmx:wkrzZVU9hWbNGbtchumdcYlPSUd5shXgkdIUC-mimrk4VI4eF69Klg>
+    <xmx:w0rzZate56TlPuywl8bA1AqPowO_2puZpr4eFIAhICEr-x4lSOGnXQ>
+Feedback-ID: i78e14604:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 14 Mar 2024 15:06:41 -0400 (EDT)
+Date: Thu, 14 Mar 2024 14:06:39 -0500
+From: Tyler Hicks <code@tyhicks.com>
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Jerry Snitselaar <jsnitsel@redhat.com>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+	Easwar Hariharan <eahariha@linux.microsoft.com>
+Subject: Re: Why is the ARM SMMU v1/v2 put into bypass mode on kexec?
+Message-ID: <ZfNKv70oqqwMwIeS@sequoia>
+References: <ZfKsAIt8RY/JcL/V@sequoia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZfKsAIt8RY/JcL/V@sequoia>
 
-On Thu, 14 Mar 2024 09:57:57 -0700
-Alison Schofield <alison.schofield@intel.com> wrote:
-
-> On Fri, Feb 23, 2024 at 12:56:34PM -0500, Steven Rostedt wrote:
-> > From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
-> > 
-> > [
-> >    This is a treewide change. I will likely re-create this patch again in
-> >    the second week of the merge window of v6.9 and submit it then. Hoping
-> >    to keep the conflicts that it will cause to a minimum.
-> > ]
-
-Note, change of plans. I plan on sending this in the next merge window, as
-this merge window I have this patch:
-
-  https://lore.kernel.org/linux-trace-kernel/20240312113002.00031668@gandalf.local.home/
-
-That will warn if the source string of __string() is different than the
-source string of __assign_str(). I want to make sure they are identical
-before just dropping one of them.
-
-
+On 2024-03-14 09:55:46, Tyler Hicks wrote:
+> Given that drivers are only optionally asked to implement the .shutdown
+> hook, which is required to properly quiesce devices before a kexec, why
+> is it that we put the ARM SMMU v1/v2 into bypass mode in the arm-smmu
+> driver's own .shutdown hook?
 > 
-> > diff --git a/drivers/cxl/core/trace.h b/drivers/cxl/core/trace.h
-> > index bdf117a33744..07ba4e033347 100644
-> > --- a/drivers/cxl/core/trace.h
-> > +++ b/drivers/cxl/core/trace.h  
+>  arm_smmu_device_shutdown() -> set SMMU_sCR0.CLIENTPD bit to 1
 > 
-> snip to poison
+> Driver authors often forget to even implement a .shutdown hook, which
+> results in some hard-to-debug memory corruption issues in the kexec'ed
+> target kernel due to pending DMA operations happening on untranslated
+> addresses. Why not leave the SMMU in translate mode but clear the stream
+> mapping table (or maybe even call arm_smmu_device_reset()) in the SMMU's
+> .shutdown hook to prevent the memory corruption from happening in the
+> first place?
 > 
-> > @@ -668,8 +668,8 @@ TRACE_EVENT(cxl_poison,
-> >  	    ),
-> >  
-> >  	TP_fast_assign(
-> > -		__assign_str(memdev, dev_name(&cxlmd->dev));
-> > -		__assign_str(host, dev_name(cxlmd->dev.parent));
-> > +		__assign_str(memdev);
-> > +		__assign_str(host);  
+> Fully acknowledging that the proper fix is to quiesce the devices, I
+> feel like resetting the SMMU and leaving it in translate mode across
+> kexec would be more consistent with the intent behind v5.2 commit
+> 954a03be033c ("iommu/arm-smmu: Break insecure users by disabling bypass
+> by default"). The incoming transactions of devices, that weren't
+> properly quiesced during a kexec, would be blocked until their drivers
+> have a chance to reinitialize the devices in the new kernel.
 > 
-> I think I get that the above changes work because the TP_STRUCT__entry for
-> these did:
-> 	__string(memdev, dev_name(&cxlmd->dev))
-> 	__string(host, dev_name(cxlmd->dev.parent))
+> I appreciate any help understanding why bypass mode is utilized here as
+> I'm sure there are nuances that I haven't considered. Thank you!
 
-That's the point. They have to be identical or you will likely bug.
+I now see that Will has previously mentioned that he'd be open to such a
+change:
 
-The __string(name, src) is used to find the string length of src which
-allocates the necessary length on the ring buffer. The __assign_str(name, src)
-will copy src into the ring buffer.
+ One thing I would be in favour of is changing the ->shutdown() code to
+ honour disable_bypass=1 so that we put the SMMU in an aborting state
+ instead of passthrough. Would that help at all? It would at least
+ avoid the memory corruption on missing shutdown callback.
 
-Similar to:
+ - https://lore.kernel.org/linux-arm-kernel/20200608113852.GA3108@willie-the-truck/
 
-	len = strlen(src);
-	buf = malloc(len);
-	strcpy(buf, str);
+Robin mentions the need to support kexec into a non-SMMU-aware OS. I
+hadn't considered that bit of complexity:
 
-Where __string() is strlen() and __assign_str() is strcpy(). It doesn't
-make sense to use two different strings, and if you did, it would likely be
-a bug.
+ ... consider if the first kernel *did* leave it enabled with whatever
+ left-over translations in place, and kexec'ed into another OS that
+ wasn't SMMU-aware...
 
-But the magic behind __string() does much more than just get the length of
-the string, and it could easily save the pointer to the string (along with
-its length) and have it copy that in the __assign_str() call, making the
-src parameter of __assign_str() useless.
+ - https://lore.kernel.org/linux-arm-kernel/e072f61a-d6cf-2e34-efd5-c1db38c5c622@arm.com/
 
-> 
-> >  		__entry->serial = cxlmd->cxlds->serial;
-> >  		__entry->overflow_ts = cxl_poison_overflow(flags, overflow_ts);
-> >  		__entry->dpa = cxl_poison_record_dpa(record);
-> > @@ -678,12 +678,12 @@ TRACE_EVENT(cxl_poison,
-> >  		__entry->trace_type = trace_type;
-> >  		__entry->flags = flags;
-> >  		if (region) {
-> > -			__assign_str(region, dev_name(&region->dev));
-> > +			__assign_str(region);
-> >  			memcpy(__entry->uuid, &region->params.uuid, 16);
-> >  			__entry->hpa = cxl_trace_hpa(region, cxlmd,
-> >  						     __entry->dpa);
-> >  		} else {
-> > -			__assign_str(region, "");
-> > +			__assign_str(region);
-> >  			memset(__entry->uuid, 0, 16);
-> >  			__entry->hpa = ULLONG_MAX;  
-> 
-> For the above 2, there was no helper in TP_STRUCT__entry. A recently
-> posted patch is fixing that up to be __string(region, NULL) See [1],
-> with the actual assignment still happening in TP_fast_assign.
+Now that we're 3-4 years removed from that conversation, has anything
+changed? Will, is there anything we'd need to watch out for if we were
+to prototype this sort of change? For example, would it be wise to
+disable fault interrupts when putting the SMMU in an aborting state
+before kexec'ing?
 
-__string(region, NULL) doesn't make sense. It's like:
+Thanks again!
 
-	len = strlen(NULL);
-	buf = malloc(len);
-	strcpy(buf, NULL);
-
-??
-
-I'll reply to that email.
-
--- Steve
-
-> 
-> Does that assign logic need to move to the TP_STRUCT__entry definition
-> when you merge these changes? I'm not clear how much logic is able to be
-> included, ie like 'C' style code in the TP_STRUCT__entry.
-> 
-> [1]
-> https://lore.kernel.org/linux-cxl/20240314044301.2108650-1-alison.schofield@intel.com/
+Tyler
