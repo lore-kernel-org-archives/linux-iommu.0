@@ -1,112 +1,178 @@
-Received: from fout5-smtp.messagingengine.com (fout5-smtp.messagingengine.com [103.168.172.148])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CF855DF30
-	for <iommu@lists.linux.dev>; Thu, 14 Mar 2024 07:49:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.148
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60BBA5C5F3
+	for <iommu@lists.linux.dev>; Thu, 14 Mar 2024 13:41:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710402578; cv=none; b=cI4L2/jPAMte0lmJ/A3J3dBXFTjylSLyzGLrb50JWUXYveYLyYbPJz9DnyageIBBcIZqPLsuFHGHpp3/JaYUc7fHnxPc88+5fCWUhqVUFdXYCcL2u4N1iX9SbKtekZIH2PipLrrtO8pFqPhgXnHqvzN0DYh2zPQuZmWKLIlR704=
+	t=1710423713; cv=none; b=d9Seu7Mwa9lfM/j3AbWmQxL7kcMvMMJwwtXmC3xZyZccCEQyKuW7yz7pXVaK2KXB0MT91YkIe8YWCKvvKjaGsLKOaJlWTe6GaOmL25ms9mKU+2dAPVXoezTuStbNES2uY7BJviGYs4wb+iWK9rIjUn7/XxhN/XPckaVEjXuI7AY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710402578; c=relaxed/simple;
-	bh=eFzKJGcTUwYXn5hAxNPYqKluD4AtrRYvx3RqPw+fqD4=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=a9UDTkZZT1DXSB5BA2Da4rnO4CKYYviGp+HLxX7YMJjd+f8BlfuawsyVexPUQvrUatm405pB3D715huCUSm0OlN/AwGOA7GtNwIuIbf59CpeXCzRt0bynxcePzbbMEWuOeAsi5F1brFvs51PaYEUhEn54vkX+oIzMhiWILkkNMY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tyhicks.com; spf=pass smtp.mailfrom=tyhicks.com; dkim=pass (2048-bit key) header.d=tyhicks.com header.i=@tyhicks.com header.b=hBoLVHzW; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=khkqkkxh; arc=none smtp.client-ip=103.168.172.148
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tyhicks.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tyhicks.com
+	s=arc-20240116; t=1710423713; c=relaxed/simple;
+	bh=FghQcZsR6VC2YmekzMAzZOpVy/lU5ooLVH+PhXP0tmI=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=aKbFZIiRE8/5PSrwlK0DgmRFYe6BB0kt12wqP7sdpb/hZSGH/KjcW5nbBu64xpuuHxInkP8QcKPdn7X78txpqJUUroTDWQWVMpIhOmHaP/elR0JnPdZlQH82UsggoGEkNFx3rfdJVkA1N1sY9DkOYaIho2B04Rw3ORvaV6sNG4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q2PLnj96; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tyhicks.com header.i=@tyhicks.com header.b="hBoLVHzW";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="khkqkkxh"
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-	by mailfout.nyi.internal (Postfix) with ESMTP id 4B594138006A;
-	Thu, 14 Mar 2024 03:49:36 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute4.internal (MEProxy); Thu, 14 Mar 2024 03:49:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tyhicks.com; h=
-	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:message-id:mime-version:reply-to:subject:subject:to:to; s=fm1;
-	 t=1710402576; x=1710488976; bh=eFzKJGcTUwYXn5hAxNPYqKluD4AtrRYv
-	x3RqPw+fqD4=; b=hBoLVHzWZMOW7v8w3KEqmi7MJDckEd0KLubqQak0nNxGSLq6
-	EZjdIkaPCTmXAOWQT4sEvg3UHwQ9Smq/9SS625opDwlDyr86wTdqKZq3UdpHrapf
-	y+tAjTXcSoMbmhO7i+Ar9DqYq+k7HPZSfLvpJDKLAcUFSQZsnzJj3Fsp+5gUwwQB
-	W2yKieZN30BFt4X5EOqrsiAid24owuJLgY7v5jC8qQhNLfFCTW/FsxYw8GRmxSvW
-	047rhipyCWqqntVCxKLyia/y+X/7eOwgPbdo2gaS4jgXJjGgM1FD/kY0VlEHMthk
-	MVg87RKwwvqYEnyUmUBlae7idkBG5DLf3cIbMA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:message-id
-	:mime-version:reply-to:subject:subject:to:to:x-me-proxy
-	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
-	1710402576; x=1710488976; bh=eFzKJGcTUwYXn5hAxNPYqKluD4AtrRYvx3R
-	qPw+fqD4=; b=khkqkkxhzgn+acuDvZ1+DmOf+Rlf7+40P5Uhd8HOdUmUkk342Mr
-	9/k6p4Ozp2XwoYQ29/U4fE+n9cBInFYeGgzkz+NaCBXbo94ZW2+54xseriUD/Ydy
-	Ms17bGa93b+tPku77xZAIJ4qv/OpoIHOjWAVENayNGwsFGmgjpVegpKSyXcMiBb/
-	AAUhA3wAXHzYHuANXfiUg9DWZvINPhYhf+R3aM0B7jgvCkSh0vPn37Ej7vh3cPiJ
-	+We1UcQXsHw7WzpiXETSYSuKmLu92xOVBI7YyWQUXzi+WPf8ESOnU8bFk2HZGIGj
-	zRuwxP3cjuDEfkG4I18z6Kd7K7YzdxfNmng==
-X-ME-Sender: <xms:D6zyZQkJ9AA3DlC3svyrzUugBLtt_FT4RysFrQaqoy8jGeTMEp45Jg>
-    <xme:D6zyZf0KSBIXsAkhz46Ml9rXi_hacXR-DL5O27vU_xoV9tQZPOkt9nwUPg-Ao0tNr
-    VK1ng4bljfums_daQM>
-X-ME-Received: <xmr:D6zyZepTKAFwQK6p5VbGSs6pAa9D5wZS5xwDynvjMUbeonyJ3L-64gSMEGc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrjeeigddutdekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkgggtugesthdtredttddtvdenucfhrhhomhepvfihlhgvrhcu
-    jfhitghkshcuoegtohguvgesthihhhhitghkshdrtghomheqnecuggftrfgrthhtvghrnh
-    epheekvdehveffvdefudefiefhveetieekvedvleetfedufffgfffhgfeggefhkeetnecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheptghouggvse
-    hthihhihgtkhhsrdgtohhm
-X-ME-Proxy: <xmx:EKzyZcliK0at3ljym3fy80BdOMQBixcPJlD0_c2CDNbSzPXkwI92WQ>
-    <xmx:EKzyZe1pyXaEBXBDQomJEKwCkUpHlabv833CgJxR_bZ-6oQiSYEYeA>
-    <xmx:EKzyZTukTzZhp3spMjAHDWY1XlVk3RnRX7ltdiDDG2fB6AmV7v2M8A>
-    <xmx:EKzyZaWAd7Dbbjpt9mGSGQWa3RG7N98NZB4b7_6eDUwBxCr1zaIMmg>
-    <xmx:EKzyZXtRwisssyDxdyzPRwVU3UyD1DcWf8TA1Z1MjIYVXOJqlE2Uzw>
-Feedback-ID: i78e14604:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 14 Mar 2024 03:49:35 -0400 (EDT)
-Date: Thu, 14 Mar 2024 02:49:20 -0500
-From: Tyler Hicks <code@tyhicks.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Jerry Snitselaar <jsnitsel@redhat.com>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-	Easwar Hariharan <eahariha@linux.microsoft.com>
-Subject: Why is the ARM SMMU v1/v2 put into bypass mode on kexec?
-Message-ID: <ZfKsAIt8RY/JcL/V@sequoia>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q2PLnj96"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1710423712; x=1741959712;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FghQcZsR6VC2YmekzMAzZOpVy/lU5ooLVH+PhXP0tmI=;
+  b=Q2PLnj96YYqO42GlxFsrx197PlPgiVvvL+KKeoWO+l8FqKBHIt0ovjxO
+   SbX7s1xbqSdRlOF7uP21x2Oqj/ykLM0Io5NTcPuXmBTrCo74qSLuH4ERf
+   W47Mmi4a3pxN/Z+1K+EglNF72vLSa32xKSKhR8JNPvpbhiWeiw6VtVo6i
+   8J9ajefeGt4eSoPz/idtEsZKNOXUe8xNtCDCTkQkRzVul+iqnl1UesNma
+   slrf1Ngz2NAeYKEj+vZx58Xq6jdlBvHCrecjTdY+IX78hK6vIa8zFYWvR
+   S6irw1G/DBmkaDeQZyFC6TPsDaRbOW7kkRbTL6YKict1Og0IQ4sBdHy6d
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11012"; a="30679641"
+X-IronPort-AV: E=Sophos;i="6.07,125,1708416000"; 
+   d="scan'208";a="30679641"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 06:41:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,125,1708416000"; 
+   d="scan'208";a="17023702"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.29.38]) ([10.255.29.38])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 06:41:48 -0700
+Message-ID: <43ef5e3f-8a8e-4765-8025-b8207fd05f91@linux.intel.com>
+Date: Thu, 14 Mar 2024 21:41:45 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
+ virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/8] iommufd: Add fault and response message
+ definitions
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
+ <20240122073903.24406-4-baolu.lu@linux.intel.com>
+ <20240308175007.GW9225@ziepe.ca>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240308175007.GW9225@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Given that drivers are only optionally asked to implement the .shutdown
-hook, which is required to properly quiesce devices before a kexec, why
-is it that we put the ARM SMMU v1/v2 into bypass mode in the arm-smmu
-driver's own .shutdown hook?
+On 2024/3/9 1:50, Jason Gunthorpe wrote:
+> On Mon, Jan 22, 2024 at 03:38:58PM +0800, Lu Baolu wrote:
+> 
+>> +/**
+>> + * enum iommu_hwpt_pgfault_flags - flags for struct iommu_hwpt_pgfault
+>> + * @IOMMU_PGFAULT_FLAGS_PASID_VALID: The pasid field of the fault data is
+>> + *                                   valid.
+>> + * @IOMMU_PGFAULT_FLAGS_LAST_PAGE: It's the last fault of a fault group.
+>> + */
+>> +enum iommu_hwpt_pgfault_flags {
+>> +	IOMMU_PGFAULT_FLAGS_PASID_VALID		= (1 << 0),
+>> +	IOMMU_PGFAULT_FLAGS_LAST_PAGE		= (1 << 1),
+>> +};
+>> +
+>> +/**
+>> + * enum iommu_hwpt_pgfault_perm - perm bits for struct iommu_hwpt_pgfault
+>> + * @IOMMU_PGFAULT_PERM_READ: request for read permission
+>> + * @IOMMU_PGFAULT_PERM_WRITE: request for write permission
+>> + * @IOMMU_PGFAULT_PERM_EXEC: request for execute permission
+>> + * @IOMMU_PGFAULT_PERM_PRIV: request for privileged permission
+> 
+> You are going to have to elaborate what PRIV is for.. We don't have
+> any concept of this in the UAPI for iommufd so what is a userspace
+> supposed to do if it hits this? EXEC is similar, we can't actually
+> enable exec permissions from userspace IIRC..
 
- arm_smmu_device_shutdown() -> set SMMU_sCR0.CLIENTPD bit to 1
+The PCIe spec, section "10.4.1 Page Request Message" and "6.20.2 PASID
+Information Layout":
 
-Driver authors often forget to even implement a .shutdown hook, which
-results in some hard-to-debug memory corruption issues in the kexec'ed
-target kernel due to pending DMA operations happening on untranslated
-addresses. Why not leave the SMMU in translate mode but clear the stream
-mapping table (or maybe even call arm_smmu_device_reset()) in the SMMU's
-.shutdown hook to prevent the memory corruption from happening in the
-first place?
+The PCI PASID TLP Prefix defines "Execute Requested" and "Privileged
+Mode Requested" bits.
 
-Fully acknowledging that the proper fix is to quiesce the devices, I
-feel like resetting the SMMU and leaving it in translate mode across
-kexec would be more consistent with the intent behind v5.2 commit
-954a03be033c ("iommu/arm-smmu: Break insecure users by disabling bypass
-by default"). The incoming transactions of devices, that weren't
-properly quiesced during a kexec, would be blocked until their drivers
-have a chance to reinitialize the devices in the new kernel.
+PERM_EXEC indicates a page request with a PASID that has the "Execute
+Requested" bit set. Similarly, PERM_PRIV indicates a page request with a
+  PASID that has "Privileged Mode Requested" bit set.
 
-I appreciate any help understanding why bypass mode is utilized here as
-I'm sure there are nuances that I haven't considered. Thank you!
+> 
+>> +enum iommu_hwpt_pgfault_perm {
+>> +	IOMMU_PGFAULT_PERM_READ			= (1 << 0),
+>> +	IOMMU_PGFAULT_PERM_WRITE		= (1 << 1),
+>> +	IOMMU_PGFAULT_PERM_EXEC			= (1 << 2),
+>> +	IOMMU_PGFAULT_PERM_PRIV			= (1 << 3),
+>> +};
+>> +
+>> +/**
+>> + * struct iommu_hwpt_pgfault - iommu page fault data
+>> + * @size: sizeof(struct iommu_hwpt_pgfault)
+>> + * @flags: Combination of enum iommu_hwpt_pgfault_flags
+>> + * @dev_id: id of the originated device
+>> + * @pasid: Process Address Space ID
+>> + * @grpid: Page Request Group Index
+>> + * @perm: Combination of enum iommu_hwpt_pgfault_perm
+>> + * @addr: page address
+>> + */
+>> +struct iommu_hwpt_pgfault {
+>> +	__u32 size;
+>> +	__u32 flags;
+>> +	__u32 dev_id;
+>> +	__u32 pasid;
+>> +	__u32 grpid;
+>> +	__u32 perm;
+>> +	__u64 addr;
+>> +};
+> 
+> Do we need an addr + size here? I've seen a few things where I wonder
+> if that might become an enhancment someday.
 
-Tyler
+I am not sure. The page size is not part of ATS/PRI. Can you please
+elaborate a bit about how the size could be used? Perhaps I
+misunderstood here?
+
+> 
+>> +/**
+>> + * struct iommu_hwpt_page_response - IOMMU page fault response
+>> + * @size: sizeof(struct iommu_hwpt_page_response)
+>> + * @flags: Must be set to 0
+>> + * @dev_id: device ID of target device for the response
+>> + * @pasid: Process Address Space ID
+>> + * @grpid: Page Request Group Index
+>> + * @code: response code. The supported codes include:
+>> + *        0: Successful; 1: Response Failure; 2: Invalid Request.
+> 
+> This should be an enum
+
+Sure.
+
+> 
+>> + * @addr: The fault address. Must match the addr field of the
+>> + *        last iommu_hwpt_pgfault of a reported iopf group.
+>> + */
+>> +struct iommu_hwpt_page_response {
+>> +	__u32 size;
+>> +	__u32 flags;
+>> +	__u32 dev_id;
+>> +	__u32 pasid;
+>> +	__u32 grpid;
+>> +	__u32 code;
+>> +	__u64 addr;
+>> +};
+> 
+> Do we want some kind of opaque ID value from the kernel here to match
+> request with response exactly? Or is the plan to search on the addr?
+
+I am using the "addr" as the opaque data to search request in this
+series. Is it enough?
+
+Best regards,
+baolu
