@@ -1,133 +1,112 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from fout5-smtp.messagingengine.com (fout5-smtp.messagingengine.com [103.168.172.148])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B85CA5C8E1
-	for <iommu@lists.linux.dev>; Thu, 14 Mar 2024 07:41:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CF855DF30
+	for <iommu@lists.linux.dev>; Thu, 14 Mar 2024 07:49:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.148
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710402091; cv=none; b=cQwNS2JlDLoU++TYKRnTxHsF2S4a8l7BvBvevb6uLrCRuYCq/6PdRR5Wi5/HD5OttegUc/RuxBe6bZ+GvBnb6fXffJ2TRr5bkM9CJI+X6TSZ8/VBRZon4Q4sGy5g/lvUJuZr7QaSpPAZnMi/m+gVrJaZn2XD+ctGT9Qtn6aKOto=
+	t=1710402578; cv=none; b=cI4L2/jPAMte0lmJ/A3J3dBXFTjylSLyzGLrb50JWUXYveYLyYbPJz9DnyageIBBcIZqPLsuFHGHpp3/JaYUc7fHnxPc88+5fCWUhqVUFdXYCcL2u4N1iX9SbKtekZIH2PipLrrtO8pFqPhgXnHqvzN0DYh2zPQuZmWKLIlR704=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710402091; c=relaxed/simple;
-	bh=tYLRFrjCwOGp9whBxYAiRelcKZZjcsXaVqhFiwh3zBg=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=AfzDCX69EkKL7cYc0zKok5DMG50tMpSNz18j2r+/4o6jc3AqtLFx3t/1XUOtLiMfzjEDSd+LJ66Z4jHsjHFu1PPvjDmakdfUdw0rRqDM3FIgxdO67T6+INZB08/Jlyo7b4+1zFOHH9i4OaZUYRoArBMD9Er+OJhjIHI+KFVMaN0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lKnZC05/; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1710402578; c=relaxed/simple;
+	bh=eFzKJGcTUwYXn5hAxNPYqKluD4AtrRYvx3RqPw+fqD4=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=a9UDTkZZT1DXSB5BA2Da4rnO4CKYYviGp+HLxX7YMJjd+f8BlfuawsyVexPUQvrUatm405pB3D715huCUSm0OlN/AwGOA7GtNwIuIbf59CpeXCzRt0bynxcePzbbMEWuOeAsi5F1brFvs51PaYEUhEn54vkX+oIzMhiWILkkNMY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tyhicks.com; spf=pass smtp.mailfrom=tyhicks.com; dkim=pass (2048-bit key) header.d=tyhicks.com header.i=@tyhicks.com header.b=hBoLVHzW; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=khkqkkxh; arc=none smtp.client-ip=103.168.172.148
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tyhicks.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tyhicks.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lKnZC05/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1710402090; x=1741938090;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=tYLRFrjCwOGp9whBxYAiRelcKZZjcsXaVqhFiwh3zBg=;
-  b=lKnZC05/PYJxO0Z1yvcMAYhmyGAou0uNS0pInR9Xio/Si915ITUd8D/+
-   SQmEMpCOfaDw7AJFe7uzu5FmaK0SOUpad6Pp6cJ2+zqAOw5Nl/CB3l8Wc
-   uVFnODm6qRBiYrivD+O/PawHUWm6FU0obtyk6eObCU/0JtXs6V/oTTT6m
-   GX4T5CMsOhYWiAwQluN8RKhmN+pQHurhhTG3qVZdD7XwOKR6aXWwxoD52
-   TC5i/dEyR3/I//MasyQi3C8F4m0Ol5BSffrecmN9I5wlu47+eXuQMKqkJ
-   auOFXkGO9PhkOhphb3RP7odPHEYGL/zjnIgyMnirg3X+1vVm8G+xIGuii
-   w==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11012"; a="30644720"
-X-IronPort-AV: E=Sophos;i="6.07,124,1708416000"; 
-   d="scan'208";a="30644720"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 00:41:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,124,1708416000"; 
-   d="scan'208";a="16798366"
-Received: from schen8x-mobl.ccr.corp.intel.com (HELO [10.255.29.38]) ([10.255.29.38])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 00:41:26 -0700
-Message-ID: <b33bf29b-2fe5-4a2a-a2ce-9fd8d67c5f6f@linux.intel.com>
-Date: Thu, 14 Mar 2024 15:41:23 +0800
+	dkim=pass (2048-bit key) header.d=tyhicks.com header.i=@tyhicks.com header.b="hBoLVHzW";
+	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="khkqkkxh"
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+	by mailfout.nyi.internal (Postfix) with ESMTP id 4B594138006A;
+	Thu, 14 Mar 2024 03:49:36 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Thu, 14 Mar 2024 03:49:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tyhicks.com; h=
+	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
+	:message-id:mime-version:reply-to:subject:subject:to:to; s=fm1;
+	 t=1710402576; x=1710488976; bh=eFzKJGcTUwYXn5hAxNPYqKluD4AtrRYv
+	x3RqPw+fqD4=; b=hBoLVHzWZMOW7v8w3KEqmi7MJDckEd0KLubqQak0nNxGSLq6
+	EZjdIkaPCTmXAOWQT4sEvg3UHwQ9Smq/9SS625opDwlDyr86wTdqKZq3UdpHrapf
+	y+tAjTXcSoMbmhO7i+Ar9DqYq+k7HPZSfLvpJDKLAcUFSQZsnzJj3Fsp+5gUwwQB
+	W2yKieZN30BFt4X5EOqrsiAid24owuJLgY7v5jC8qQhNLfFCTW/FsxYw8GRmxSvW
+	047rhipyCWqqntVCxKLyia/y+X/7eOwgPbdo2gaS4jgXJjGgM1FD/kY0VlEHMthk
+	MVg87RKwwvqYEnyUmUBlae7idkBG5DLf3cIbMA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	messagingengine.com; h=cc:cc:content-type:content-type:date:date
+	:feedback-id:feedback-id:from:from:in-reply-to:message-id
+	:mime-version:reply-to:subject:subject:to:to:x-me-proxy
+	:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=
+	1710402576; x=1710488976; bh=eFzKJGcTUwYXn5hAxNPYqKluD4AtrRYvx3R
+	qPw+fqD4=; b=khkqkkxhzgn+acuDvZ1+DmOf+Rlf7+40P5Uhd8HOdUmUkk342Mr
+	9/k6p4Ozp2XwoYQ29/U4fE+n9cBInFYeGgzkz+NaCBXbo94ZW2+54xseriUD/Ydy
+	Ms17bGa93b+tPku77xZAIJ4qv/OpoIHOjWAVENayNGwsFGmgjpVegpKSyXcMiBb/
+	AAUhA3wAXHzYHuANXfiUg9DWZvINPhYhf+R3aM0B7jgvCkSh0vPn37Ej7vh3cPiJ
+	+We1UcQXsHw7WzpiXETSYSuKmLu92xOVBI7YyWQUXzi+WPf8ESOnU8bFk2HZGIGj
+	zRuwxP3cjuDEfkG4I18z6Kd7K7YzdxfNmng==
+X-ME-Sender: <xms:D6zyZQkJ9AA3DlC3svyrzUugBLtt_FT4RysFrQaqoy8jGeTMEp45Jg>
+    <xme:D6zyZf0KSBIXsAkhz46Ml9rXi_hacXR-DL5O27vU_xoV9tQZPOkt9nwUPg-Ao0tNr
+    VK1ng4bljfums_daQM>
+X-ME-Received: <xmr:D6zyZepTKAFwQK6p5VbGSs6pAa9D5wZS5xwDynvjMUbeonyJ3L-64gSMEGc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrjeeigddutdekucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkgggtugesthdtredttddtvdenucfhrhhomhepvfihlhgvrhcu
+    jfhitghkshcuoegtohguvgesthihhhhitghkshdrtghomheqnecuggftrfgrthhtvghrnh
+    epheekvdehveffvdefudefiefhveetieekvedvleetfedufffgfffhgfeggefhkeetnecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheptghouggvse
+    hthihhihgtkhhsrdgtohhm
+X-ME-Proxy: <xmx:EKzyZcliK0at3ljym3fy80BdOMQBixcPJlD0_c2CDNbSzPXkwI92WQ>
+    <xmx:EKzyZe1pyXaEBXBDQomJEKwCkUpHlabv833CgJxR_bZ-6oQiSYEYeA>
+    <xmx:EKzyZTukTzZhp3spMjAHDWY1XlVk3RnRX7ltdiDDG2fB6AmV7v2M8A>
+    <xmx:EKzyZaWAd7Dbbjpt9mGSGQWa3RG7N98NZB4b7_6eDUwBxCr1zaIMmg>
+    <xmx:EKzyZXtRwisssyDxdyzPRwVU3UyD1DcWf8TA1Z1MjIYVXOJqlE2Uzw>
+Feedback-ID: i78e14604:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 14 Mar 2024 03:49:35 -0400 (EDT)
+Date: Thu, 14 Mar 2024 02:49:20 -0500
+From: Tyler Hicks <code@tyhicks.com>
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Jerry Snitselaar <jsnitsel@redhat.com>
+Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+	Easwar Hariharan <eahariha@linux.microsoft.com>
+Subject: Why is the ARM SMMU v1/v2 put into bypass mode on kexec?
+Message-ID: <ZfKsAIt8RY/JcL/V@sequoia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
- virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/8] iommu/sva: Use iopf domain attach/detach interface
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
- <20240122073903.24406-3-baolu.lu@linux.intel.com>
- <20240308174605.GV9225@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240308174605.GV9225@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 2024/3/9 1:46, Jason Gunthorpe wrote:
-> On Mon, Jan 22, 2024 at 03:38:57PM +0800, Lu Baolu wrote:
->> @@ -215,7 +202,23 @@ static struct iopf_group *iopf_group_alloc(struct iommu_fault_param *iopf_param,
->>   		group = abort_group;
->>   	}
->>   
->> +	cookie = iopf_pasid_cookie_get(iopf_param->dev, pasid);
->> +	if (!cookie && pasid != IOMMU_NO_PASID)
->> +		cookie = iopf_pasid_cookie_get(iopf_param->dev, IOMMU_NO_PASID);
->> +	if (IS_ERR(cookie) || !cookie) {
->> +		/*
->> +		 * The PASID of this device was not attached by an I/O-capable
->> +		 * domain. Ask the caller to abort handling of this fault.
->> +		 * Otherwise, the reference count will be switched to the new
->> +		 * iopf group and will be released in iopf_free_group().
->> +		 */
->> +		kfree(group);
->> +		group = abort_group;
->> +		cookie = NULL;
->> +	}
-> 
-> If this is the main point of the cookie mechansim - why not just have
-> a refcount inside the domain itself?
-> 
-> I'm really having a hard time making sense of this cookie thing, we
-> have a lifetime issue on the domain pointer, why is adding another
-> structure the answer?
+Given that drivers are only optionally asked to implement the .shutdown
+hook, which is required to properly quiesce devices before a kexec, why
+is it that we put the ARM SMMU v1/v2 into bypass mode in the arm-smmu
+driver's own .shutdown hook?
 
-The whole cookie mechanism aims to address two things:
+ arm_smmu_device_shutdown() -> set SMMU_sCR0.CLIENTPD bit to 1
 
-- Extend the domain lifetime until all pending page faults are resolved.
-- Associate information about the iommu device with each attachment of
-   the domain so that the iommufd device object ID could be quickly
-   retrieved in the fault delivering path.
+Driver authors often forget to even implement a .shutdown hook, which
+results in some hard-to-debug memory corruption issues in the kexec'ed
+target kernel due to pending DMA operations happening on untranslated
+addresses. Why not leave the SMMU in translate mode but clear the stream
+mapping table (or maybe even call arm_smmu_device_reset()) in the SMMU's
+.shutdown hook to prevent the memory corruption from happening in the
+first place?
 
+Fully acknowledging that the proper fix is to quiesce the devices, I
+feel like resetting the SMMU and leaving it in translate mode across
+kexec would be more consistent with the intent behind v5.2 commit
+954a03be033c ("iommu/arm-smmu: Break insecure users by disabling bypass
+by default"). The incoming transactions of devices, that weren't
+properly quiesced during a kexec, would be blocked until their drivers
+have a chance to reinitialize the devices in the new kernel.
 
-> I see we also need to stick a pointer in the domain for iommufd to get
-> back to the hwpt, but that doesn't seem to need such a big system to
-> accomplish - just add a void *. It would make sense for the domain to
-> have some optional pointer to a struct for all the fault related data
-> that becomes allocated when a PRI domain is created..
+I appreciate any help understanding why bypass mode is utilized here as
+I'm sure there are nuances that I haven't considered. Thank you!
 
-It's not getting back hwpt from domain, just getting the iommufd_device
-in the fault delivering path. The iommufd_device is not per-domain, but
-per-domain-attachment.
-
-> 
-> Also, I thought we'd basically said that domain detatch is supposed to
-> flush any open PRIs before returning, what happened to that as a
-> solution to the lifetime problem?
-
-If I remember it correctly, what we discussed was to flush all pending
-page faults when disabling PRI. Anyway, the current driver behavior is
-to flush faults during domain detachment. And if we keep this behavior,
-we no longer need to worry about domain lifetime anymore.
-
-> 
-> Regardless I think we should split this into two series - improve the PRI
-> lifetime model for domains and then put iommufd on top of it..
-
-Yes, agreed. Let's tackle those two points in a separate series.
-
-Best regards,
-baolu
+Tyler
