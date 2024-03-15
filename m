@@ -1,210 +1,284 @@
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A0101946C
-	for <iommu@lists.linux.dev>; Fri, 15 Mar 2024 10:58:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE2871BF3C
+	for <iommu@lists.linux.dev>; Fri, 15 Mar 2024 12:26:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710500337; cv=none; b=ADK6iyvmqlO0bpszkQnFd2HMJTJlOsKUi6jjo678k7pHmCX+Pb1E1DIdWbsZvGPNzyF+6ezOqzREz35fYxoauWHr6dNGiOgOgtP7l7K5wBjmz+NWjAJfbsymffAxbG+9GTxioTGXQWp8MPd7pgDFkMxiPe8fSuLI2uRB9p2dpL4=
+	t=1710505588; cv=none; b=rcFf77Sl+G1Iby7BiBfovk7wbMT7b9oAuRp2Q8e3jcYTbqqKTgZcgUhhrm6GT3YgkA0SmkYsOmcS1DGDtCtf7RB0TPeSGwDMXTCZsNyFwMeiKhUBCF1Q9XzdUFKUQfIlkppLq/BbmHLeC9nR/j/VL8JFo8Ub4zbbDz7b6pi3W4g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710500337; c=relaxed/simple;
-	bh=bLXi0Kv2aTCp63cNUTwNkTolcU7Fdj7oossLerdiFcs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=mokFSlsCyn/pc7u8J/SYlROAZjToEGytjMRd38KQYxDqX97/yYZSzfmCojICe1c0yKIb/+VvpKnW97Ra/y+Uyag66QqYLf7FJ1prXWqC42yUUPqZEU/7+GM+18hdlIv8sQSBxNVoMrHopWh1SKkTZpo0vfABWVoHo98W2hZtBdQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=kIeV/N+n; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=N4muqVjs; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=kIeV/N+n; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=N4muqVjs; arc=none smtp.client-ip=195.135.223.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
+	s=arc-20240116; t=1710505588; c=relaxed/simple;
+	bh=1fxlJ4/KRUqR2rfFCvZ/fuQqvMdOyXlK+0xVU09W/1g=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=A5RylF/gL4qiar2uuwdViUcODX2nrAAB2MJcns81ZocSOJWQc4JSRZ3I504ItS6RODn4KshYI+I1I4px1wcUrFSnHvGnq8KsW0MiWPW2P9cdy7dpv0TKChVR0P9suLa2GO6nov1Vc1PP6ACifBjJa7MXpEAyvNBarNY2FO5qxps=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=P1X2/M3w; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="kIeV/N+n";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="N4muqVjs";
-	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="kIeV/N+n";
-	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="N4muqVjs"
-Received: from imap1.dmz-prg2.suse.org (imap1.dmz-prg2.suse.org [IPv6:2a07:de40:b281:104:10:150:64:97])
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="P1X2/M3w"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by smtp-out1.suse.de (Postfix) with ESMTPS id 50E4E21DD2;
-	Fri, 15 Mar 2024 10:58:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1710500333; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9muM8bo+rTj/3DcyAeA4j1Dljj8nhnMTXgWWpTVnpQM=;
-	b=kIeV/N+n1Qjn4RwdctLpBJA/ti5qrD6sZCC/MPiMggb17MFzRe5HBe0AQTNROQDaKSju7R
-	a0SLFUAt+MJiKmd9tkmDZZP0d8BIvQQaQcoE33BtEHz87wjWhVe0H/xpFhRF3pbknSydFH
-	TYmRZwi/PzREciTT3ulCpGUJ5who+rQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1710500333;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9muM8bo+rTj/3DcyAeA4j1Dljj8nhnMTXgWWpTVnpQM=;
-	b=N4muqVjs0s0Jytaoa8YUY3ruVKbKV/g3CLqo9GREsnONsvr9go6NQwryE9JTCFZbAjNLnA
-	uwWsA04tQTN0rHCg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-	t=1710500333; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9muM8bo+rTj/3DcyAeA4j1Dljj8nhnMTXgWWpTVnpQM=;
-	b=kIeV/N+n1Qjn4RwdctLpBJA/ti5qrD6sZCC/MPiMggb17MFzRe5HBe0AQTNROQDaKSju7R
-	a0SLFUAt+MJiKmd9tkmDZZP0d8BIvQQaQcoE33BtEHz87wjWhVe0H/xpFhRF3pbknSydFH
-	TYmRZwi/PzREciTT3ulCpGUJ5who+rQ=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-	s=susede2_ed25519; t=1710500333;
-	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-	 mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9muM8bo+rTj/3DcyAeA4j1Dljj8nhnMTXgWWpTVnpQM=;
-	b=N4muqVjs0s0Jytaoa8YUY3ruVKbKV/g3CLqo9GREsnONsvr9go6NQwryE9JTCFZbAjNLnA
-	uwWsA04tQTN0rHCg==
-Received: from imap1.dmz-prg2.suse.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	by imap1.dmz-prg2.suse.org (Postfix) with ESMTPS id B4DD81368C;
-	Fri, 15 Mar 2024 10:58:52 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
-	by imap1.dmz-prg2.suse.org with ESMTPSA
-	id BxitK+wp9GU7dwAAD6G6ig
-	(envelope-from <vbabka@suse.cz>); Fri, 15 Mar 2024 10:58:52 +0000
-Message-ID: <1f51ffe8-e5b9-460f-815e-50e3a81c57bf@suse.cz>
-Date: Fri, 15 Mar 2024 11:58:52 +0100
+	by bee.tesarici.cz (Postfix) with ESMTPSA id 4425C196C4E;
+	Fri, 15 Mar 2024 13:26:15 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1710505575; bh=nUQ+GlUQvTJOM20SXQiuZ/zMFi5PaDtLiTcb8MpIbKs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=P1X2/M3w/cFa5ZWrYRWbi+AORGgfhywL1MiX1Ivqdrlrb6Albg/PqGmjN3rnEZ9eq
+	 WR5jizmeLzcbY4L8Ianlqv++SctAoQpksW7QNS6/B5IPHHpvK/xeIKx8VoSmpqExXn
+	 uWuBMcQjTDWMGQD4EdFDhEgeb/y4BkgWvGpWe9zdnbrHGL/lp5dhFZpJlNtNf8NVSK
+	 VbUOxNK90+qKdE3ptpGTLKEjcKuJHk3dgb7u7L+ZtGgTyuv9VGrJKeXWKv8grrYpj7
+	 GaV0Hpqsnr2qLYN91dZHaQhOll2AM4KIMVKN8nRtIH6Y9NrUnbcE0aERv1E5RwORU6
+	 nFOE0rVCioF5A==
+Date: Fri, 15 Mar 2024 13:26:13 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Christoph Hellwig
+ <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Nicolin Chen
+ <nicolinc@nvidia.com>, "open list:DMA MAPPING HELPERS"
+ <iommu@lists.linux.dev>, open list <linux-kernel@vger.kernel.org>, Roberto
+ Sassu <roberto.sassu@huaweicloud.com>, Petr Tesarik
+ <petr.tesarik1@huawei-partners.com>
+Subject: Re: [PATCH 1/1] swiotlb: extend buffer pre-padding to
+ alloc_align_mask if necessary
+Message-ID: <20240315132613.5a340a69@meshulam.tesarici.cz>
+In-Reply-To: <SN6PR02MB4157FB27CD890E9F29408926D4282@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240312134149.497-1-petrtesarik@huaweicloud.com>
+	<SN6PR02MB4157FB27CD890E9F29408926D4282@SN6PR02MB4157.namprd02.prod.outlook.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 23/37] mm/slab: add allocation accounting into slab
- allocation and free paths
-Content-Language: en-US
-To: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org
-Cc: kent.overstreet@linux.dev, mhocko@suse.com, hannes@cmpxchg.org,
- roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net,
- willy@infradead.org, liam.howlett@oracle.com,
- penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com,
- peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com,
- will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
- dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
- david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
- nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, tj@kernel.org,
- muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
- pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
- dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
- keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
- gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
- vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
- bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
- penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
- glider@google.com, elver@google.com, dvyukov@google.com,
- shakeelb@google.com, songmuchun@bytedance.com, jbaron@akamai.com,
- aliceryhl@google.com, rientjes@google.com, minchan@google.com,
- kaleshsingh@google.com, kernel-team@android.com, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
- linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- linux-mm@kvack.org, linux-modules@vger.kernel.org,
- kasan-dev@googlegroups.com, cgroups@vger.kernel.org
-References: <20240306182440.2003814-1-surenb@google.com>
- <20240306182440.2003814-24-surenb@google.com>
-From: Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20240306182440.2003814-24-surenb@google.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Score: -3.00
-X-Rspamd-Server: rspamd1.dmz-prg2.suse.org
-X-Spam-Flag: NO
-X-Spamd-Result: default: False [-3.00 / 50.00];
-	 RCVD_VIA_SMTP_AUTH(0.00)[];
-	 XM_UA_NO_VERSION(0.01)[];
-	 TO_DN_SOME(0.00)[];
-	 RCVD_COUNT_THREE(0.00)[3];
-	 DKIM_TRACE(0.00)[suse.cz:+];
-	 MX_GOOD(-0.01)[];
-	 RCPT_COUNT_GT_50(0.00)[76];
-	 NEURAL_HAM_SHORT(-0.20)[-1.000];
-	 FROM_EQ_ENVFROM(0.00)[];
-	 MIME_TRACE(0.00)[0:+];
-	 MID_RHS_MATCH_FROM(0.00)[];
-	 BAYES_HAM(-3.00)[100.00%];
-	 ARC_NA(0.00)[];
-	 R_DKIM_ALLOW(-0.20)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 FROM_HAS_DN(0.00)[];
-	 NEURAL_HAM_LONG(-1.00)[-1.000];
-	 TAGGED_RCPT(0.00)[];
-	 MIME_GOOD(-0.10)[text/plain];
-	 TO_MATCH_ENVRCPT_SOME(0.00)[];
-	 DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
-	 DBL_BLOCKED_OPENRESOLVER(0.00)[suse.cz:dkim,suse.cz:email];
-	 FUZZY_BLOCKED(0.00)[rspamd.com];
-	 FREEMAIL_CC(0.00)[linux.dev,suse.com,cmpxchg.org,suse.de,stgolabs.net,infradead.org,oracle.com,i-love.sakura.ne.jp,lwn.net,manifault.com,redhat.com,arm.com,kernel.org,arndb.de,linutronix.de,linux.intel.com,kernel.dk,nvidia.com,soleen.com,google.com,gmail.com,chromium.org,linuxfoundation.org,linaro.org,goodmis.org,linux.com,lge.com,bytedance.com,akamai.com,android.com,vger.kernel.org,lists.linux.dev,kvack.org,googlegroups.com];
-	 RCVD_TLS_ALL(0.00)[];
-	 SUSPICIOUS_RECIPS(1.50)[];
-	 RBL_SPAMHAUS_BLOCKED_OPENRESOLVER(0.00)[2a07:de40:b281:104:10:150:64:97:from]
-X-Spam-Level: 
-Authentication-Results: smtp-out1.suse.de;
-	dkim=pass header.d=suse.cz header.s=susede2_rsa header.b="kIeV/N+n";
-	dkim=pass header.d=suse.cz header.s=susede2_ed25519 header.b=N4muqVjs
-X-Rspamd-Queue-Id: 50E4E21DD2
 
-On 3/6/24 19:24, Suren Baghdasaryan wrote:
-> Account slab allocations using codetag reference embedded into slabobj_ext.
+On Fri, 15 Mar 2024 02:53:10 +0000
+Michael Kelley <mhklinux@outlook.com> wrote:
+
+> From: Petr Tesarik <petrtesarik@huaweicloud.com> Sent: Tuesday, March 12, 2024 6:42 AM
+> > 
+> > Allow a buffer pre-padding of up to alloc_align_mask. If the allocation
+> > alignment is bigger than IO_TLB_SIZE and min_align_mask covers any non-zero
+> > bits in the original address between IO_TLB_SIZE and alloc_align_mask,
+> > these bits are not preserved in the swiotlb buffer address.
+> > 
+> > To fix this case, increase the allocation size and use a larger offset
+> > within the allocated buffer. As a result, extra padding slots may be
+> > allocated before the mapping start address.
+> > 
+> > Set the orig_addr in these padding slots to INVALID_PHYS_ADDR, because they
+> > do not correspond to any CPU buffer and the data must never be synced.
+> > 
+> > The padding slots should be automatically released when the buffer is
+> > unmapped. However, swiotlb_tbl_unmap_single() takes only the address of the
+> > DMA buffer slot, not the first padding slot. Save the number of padding
+> > slots in struct io_tlb_slot and use it to adjust the slot index in
+> > swiotlb_release_slots(), so all allocated slots are properly freed.
+> >   
 > 
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
-> Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> Reviewed-by: Kees Cook <keescook@chromium.org>
+> I've been staring at this the past two days, and have run tests with
+> various min_align_masks and alloc_masks against orig_addr's with
+> various alignments and mapping sizes.  I'm planning to run additional
+> tests over the weekend, but I think it's solid.  See a few comments
+> below.
+> 
+> > Fixes: 2fd4fa5d3fb5 ("swiotlb: Fix alignment checks when both allocation and DMA masks are present")
+> > Link: https://lore.kernel.org/linux-iommu/20240311210507.217daf8b@meshulam.tesarici.cz/
+> > Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+> > ---
+> >  kernel/dma/swiotlb.c | 34 +++++++++++++++++++++++++++++-----
+> >  1 file changed, 29 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> > index 86fe172b5958..8ce11abc691f 100644
+> > --- a/kernel/dma/swiotlb.c
+> > +++ b/kernel/dma/swiotlb.c
+> > @@ -69,11 +69,13 @@
+> >   * @alloc_size:	Size of the allocated buffer.
+> >   * @list:	The free list describing the number of free entries available
+> >   *		from each index.
+> > + * @padding:    Number of preceding padding slots.
+> >   */
+> >  struct io_tlb_slot {
+> >  	phys_addr_t orig_addr;
+> >  	size_t alloc_size;
+> >  	unsigned int list;
+> > +	unsigned int padding;  
+> 
+> Even without the padding field, I presume that in
+> 64-bit builds this struct is already 24 bytes in size so as
+> to maintain 64-bit alignment for the orig_addr and
+> alloc_size fields. If that's the case, then adding the
+> padding field doesn't change the amount of memory
+> required for the slot array.  Is that correct? Both the
+> "list" and "padding" fields contain only small integers,
+> but presumably reducing their size from "int" to "short"
+> wouldn't help except in 32-bit builds.
 
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+That's correct. In 64-bit builds, this is the layout before my patch:
 
-Nit below:
+/* offset      |    size */  type = struct io_tlb_slot {
+/*      0      |       8 */    phys_addr_t orig_addr;
+/*      8      |       8 */    size_t alloc_size;
+/*     16      |       4 */    unsigned int list;
+/* XXX  4-byte padding   */
 
-> @@ -3833,6 +3913,7 @@ void slab_post_alloc_hook(struct kmem_cache *s,	struct obj_cgroup *objcg,
->  			  unsigned int orig_size)
->  {
->  	unsigned int zero_size = s->object_size;
-> +	struct slabobj_ext *obj_exts;
->  	bool kasan_init = init;
->  	size_t i;
->  	gfp_t init_flags = flags & gfp_allowed_mask;
-> @@ -3875,6 +3956,12 @@ void slab_post_alloc_hook(struct kmem_cache *s,	struct obj_cgroup *objcg,
->  		kmemleak_alloc_recursive(p[i], s->object_size, 1,
->  					 s->flags, init_flags);
->  		kmsan_slab_alloc(s, p[i], init_flags);
-> +		obj_exts = prepare_slab_obj_exts_hook(s, flags, p[i]);
-> +#ifdef CONFIG_MEM_ALLOC_PROFILING
-> +		/* obj_exts can be allocated for other reasons */
-> +		if (likely(obj_exts) && mem_alloc_profiling_enabled())
-> +			alloc_tag_add(&obj_exts->ref, current->alloc_tag, s->size);
-> +#endif
+                               /* total size (bytes):   24 */
+                             }
 
-I think you could still do this a bit better:
+And this is the layout after my patch:
 
-Check mem_alloc_profiling_enabled() once before the whole block calling
-prepare_slab_obj_exts_hook() and alloc_tag_add()
-Remove need_slab_obj_ext() check from prepare_slab_obj_exts_hook()
+/* offset      |    size */  type = struct io_tlb_slot {
+/*      0      |       8 */    phys_addr_t orig_addr;
+/*      8      |       8 */    size_t alloc_size;
+/*     16      |       4 */    unsigned int list;
+/*     20      |       4 */    unsigned int padding;
 
->  	}
->  
->  	memcg_slab_post_alloc_hook(s, objcg, flags, size, p);
-> @@ -4353,6 +4440,7 @@ void slab_free(struct kmem_cache *s, struct slab *slab, void *object,
->  	       unsigned long addr)
->  {
->  	memcg_slab_free_hook(s, slab, &object, 1);
-> +	alloc_tagging_slab_free_hook(s, slab, &object, 1);
->  
->  	if (likely(slab_free_hook(s, object, slab_want_init_on_free(s))))
->  		do_slab_free(s, slab, object, object, 1, addr);
-> @@ -4363,6 +4451,7 @@ void slab_free_bulk(struct kmem_cache *s, struct slab *slab, void *head,
->  		    void *tail, void **p, int cnt, unsigned long addr)
->  {
->  	memcg_slab_free_hook(s, slab, p, cnt);
-> +	alloc_tagging_slab_free_hook(s, slab, p, cnt);
->  	/*
->  	 * With KASAN enabled slab_free_freelist_hook modifies the freelist
->  	 * to remove objects, whose reuse must be delayed.
+                               /* total size (bytes):   24 */
+                             }
+
+Admittedly, I haven't really considered 32-bit builds. The layout
+depends on the size of phys_addr_t. For example, on 32-bit Arm with
+32-bit physical addresses, the struct grows from 12 bytes to 16 bytes. 
+With 32-bit physical addresses, it grows from 16 bytes to 24 bytes
+(with a 4-byte padding at the end, due to a stricter Arm ABI alignment
+requirements). On other platforms, it would be only 20 bytes.
+
+The default SWIOTLB size is 64M, divided into 32K slots of 2K each.
+If each slot grows by 8 bytes, runtime memory consumption increases by
+256K. That's not much, but I agree that it can be zero if the type is
+changed to unsigned short. And there is no downside AFAICS.
+
+FTR the maximum value that can be stored in these two fields is
+IO_TLB_SEGSIZE. This constant has never ever changed, but I can add a
+BUILD_BUG_ON() to swiotlb_init_io_tlb_pool(), just to make sure.
+
+> >  };
+> > 
+> >  static bool swiotlb_force_bounce;
+> > @@ -287,6 +289,7 @@ static void swiotlb_init_io_tlb_pool(struct io_tlb_pool *mem, phys_addr_t start,
+> >  					 mem->nslabs - i);
+> >  		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+> >  		mem->slots[i].alloc_size = 0;
+> > +		mem->slots[i].padding = 0;
+> >  	}
+> > 
+> >  	memset(vaddr, 0, bytes);
+> > @@ -1328,11 +1331,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+> >  		unsigned long attrs)
+> >  {
+> >  	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+> > -	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+> > +	unsigned int offset;
+> >  	struct io_tlb_pool *pool;
+> >  	unsigned int i;
+> >  	int index;
+> >  	phys_addr_t tlb_addr;
+> > +	unsigned int padding;
+> > 
+> >  	if (!mem || !mem->nslabs) {
+> >  		dev_warn_ratelimited(dev,
+> > @@ -1349,6 +1353,15 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+> >  		return (phys_addr_t)DMA_MAPPING_ERROR;
+> >  	}
+> > 
+> > +	/*
+> > +	 * Calculate buffer pre-padding within the allocated space. Use it to
+> > +	 * preserve the low bits of the original address according to device's
+> > +	 * min_align_mask. Limit the padding to alloc_align_mask or slot size
+> > +	 * (whichever is bigger); higher bits of the original address are
+> > +	 * preserved by selecting a suitable IO TLB slot.
+> > +	 */
+> > +	offset = orig_addr & dma_get_min_align_mask(dev) &
+> > +		(alloc_align_mask | (IO_TLB_SIZE - 1));
+> >  	index = swiotlb_find_slots(dev, orig_addr,
+> >  				   alloc_size + offset, alloc_align_mask, &pool);
+> >  	if (index == -1) {
+> > @@ -1364,6 +1377,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+> >  	 * This is needed when we sync the memory.  Then we sync the buffer if
+> >  	 * needed.
+> >  	 */
+> > +	padding = 0;
+> > +	while (offset >= IO_TLB_SIZE) {
+> > +		pool->slots[index++].orig_addr = INVALID_PHYS_ADDR;
+> > +		pool->slots[index].padding = ++padding;
+> > +		offset -= IO_TLB_SIZE;
+> > +	}  
+> 
+> Looping to fill in the padding slots seems unnecessary.
+> The orig_addr field should already be initialized to
+> INVALID_PHYS_ADDR, and the padding field should already
+> be initialized to zero.
+
+Ack.
+
+> The value of "padding" should be just
+> (offset / IO_TLB_SIZE), and it only needs to be stored in the
+> first non-padding slot where swiotlb_release_slots() will
+> find it.
+
+This is also right. I asked myself the question what should happen if
+somebody passes a padding slot's address to swiotlb_tbl_unmap_single().
+Of course, it's an invalid address, but as a proponent of defensive
+programming, I still asked what would be the best response? If I store
+padding in each slot, the whole block is released. If I store it only
+in the first non-padding slot, some slots may leak.
+
+On a second thought, the resulting SWIOTLB state is consistent either
+way, and we don't to care about leaking some slots if a driver is
+buggy. Maybe it's even better, because the leak will be noticed.
+
+In short, I agree, let's keep the code simple.
+
+Thank you for your review!
+
+Petr T
+
+> FWIW, your while loop above feels a bit weird in that it
+> updates two different slots each time through the loop,
+> and the padding field of the first padding slot isn't
+> updated. It took me a little while to figure that out. :-)
+> 
+> >  	for (i = 0; i < nr_slots(alloc_size + offset); i++)
+> >  		pool->slots[index + i].orig_addr = slot_addr(orig_addr, i);
+> >  	tlb_addr = slot_addr(pool->start, index) + offset;
+> > @@ -1385,12 +1404,16 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
+> >  	struct io_tlb_pool *mem = swiotlb_find_pool(dev, tlb_addr);
+> >  	unsigned long flags;
+> >  	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
+> > -	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
+> > -	int nslots = nr_slots(mem->slots[index].alloc_size + offset);
+> > -	int aindex = index / mem->area_nslabs;
+> > -	struct io_tlb_area *area = &mem->areas[aindex];
+> > +	int index, nslots, aindex;
+> > +	struct io_tlb_area *area;
+> >  	int count, i;
+> > 
+> > +	index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
+> > +	index -= mem->slots[index].padding;
+> > +	nslots = nr_slots(mem->slots[index].alloc_size + offset);
+> > +	aindex = index / mem->area_nslabs;
+> > +	area = &mem->areas[aindex];
+> > +
+> >  	/*
+> >  	 * Return the buffer to the free list by setting the corresponding
+> >  	 * entries to indicate the number of contiguous entries available.
+> > @@ -1413,6 +1436,7 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
+> >  		mem->slots[i].list = ++count;
+> >  		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+> >  		mem->slots[i].alloc_size = 0;
+> > +		mem->slots[i].padding = 0;
+> >  	}
+> > 
+> >  	/*
+> > --
+> > 2.34.1  
+> 
+> 
 
