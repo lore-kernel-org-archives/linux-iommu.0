@@ -1,165 +1,173 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f176.google.com (mail-yb1-f176.google.com [209.85.219.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCB4F3D0C1
-	for <iommu@lists.linux.dev>; Fri, 15 Mar 2024 15:09:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBDBA3E462
+	for <iommu@lists.linux.dev>; Fri, 15 Mar 2024 15:44:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710515380; cv=none; b=Op3BZIQlJZdcRBcExOR+e/EkeVQBOuKM8rxQ9Cwma2d1eD8WS43AHb5eCxwYv1vSg8sco5ugsfLJmvPbbfuMvvw5CH88yBLZsKUmPVazhnnJTSk5SfFAQPZo0Q9/+8zZKuPgrvWo+6gXijaXx0U2Q8hGuFJYEJ0nKfjMPkpqDTc=
+	t=1710517451; cv=none; b=NHYXU3uGw0vDMFAltIn9jWIqrH1SH1+cV3Hd4AWLUbrkEgq1IuCgFcPKuzQJgd397FroLEc60ExSvqxn/NtKnhGSykM3o790vsQYKa7zv3wOgXrnMaKBcjKN1LRdHdLtQCkzJ/jcrHGd/6dCEn2+n0FneyWtYrxyuwQF4hEEdQg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710515380; c=relaxed/simple;
-	bh=uysj4L8dszCTthjgDSnBVbbbyoveIsByuEO6DJzqfWE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JNjroHDPpdvFHlCytwhfk1Tbf21xHlx+VjY6ZRVPbKKxUeHdKk9S2duVUETOoIQYgiundvfU7uig4nK/fDi1J2MfnoDmPHwyiExY6rfY5PAHkoJw2aUbmWp2b+jBJwa0z9Pz+iqELykSUPpUrR+PmgwPixGzw7tn4xA2UPWXRY0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=vO5BaKxl; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1710517451; c=relaxed/simple;
+	bh=jLfgDHVGzLGqs8bVPCHj+06YQWXtnZrPss4BVdlJYT4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=dNj1+3Vu/TlKGuP/Mi1bUfevI2MTA8HZZ/JJILHnIubrWrGZMASLJxPK6D6/XeKdA+cGmEmh3LtyJm7SpSofiyu8DVs25H7z/SZMWZjzsDOSn+bxSx+fD30xl7JnPoTnUhfW6sq+oz7XekSuV6FiRiYTlc6LBkdPo35VgKLqkBc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=hpyCjpwk; arc=none smtp.client-ip=209.85.219.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="vO5BaKxl"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 0AE88196E57;
-	Fri, 15 Mar 2024 16:09:33 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1710515373; bh=6T0BIzOuPE5LuqB1wHjUl+/fIgb/2kuGQnVeMY/YX2w=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=vO5BaKxl3e9SUXW4uSTkVJ11QsDMqP5wxHIeZ5KyjOkM5TxkPkgVN8VeO79q2Hkm1
-	 GToh2cK9Y420JuptkfHcSrQcnACwXCZGkFjEK21DH9GZzrfK9vyf1tg122+Iusj5T7
-	 qarBmwhEsb9gFrRNOlecDMXTCTO3kNQ9AeUuM/Y4G6rGX0Trr2bbq7jPdkKyPrlGFx
-	 B0u/f3KMD20HASGWHOtoZPcxknDMVDdVCbPKtDoQphH6zE3Ck4QZ7k5eCZkcwcgCPR
-	 LTuOYimvDog3ULTKdBMXnQM8wxblsXCLnZ/hjCFd1ElBwOAnqGzG1A8avc+C85Gw3b
-	 oLaXbdIwyEJ9g==
-Date: Fri, 15 Mar 2024 16:09:31 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: Petr Tesarik <petrtesarik@huaweicloud.com>, Christoph Hellwig
- <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
- <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Nicolin Chen
- <nicolinc@nvidia.com>, "open list:DMA MAPPING HELPERS"
- <iommu@lists.linux.dev>, open list <linux-kernel@vger.kernel.org>, Roberto
- Sassu <roberto.sassu@huaweicloud.com>, Petr Tesarik
- <petr.tesarik1@huawei-partners.com>
-Subject: Re: [PATCH 1/1] swiotlb: extend buffer pre-padding to
- alloc_align_mask if necessary
-Message-ID: <20240315160931.48879f5c@meshulam.tesarici.cz>
-In-Reply-To: <SN6PR02MB41574FB8FF2FA08C26682EC1D4282@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240312134149.497-1-petrtesarik@huaweicloud.com>
-	<SN6PR02MB4157FB27CD890E9F29408926D4282@SN6PR02MB4157.namprd02.prod.outlook.com>
-	<20240315132613.5a340a69@meshulam.tesarici.cz>
-	<SN6PR02MB41574FB8FF2FA08C26682EC1D4282@SN6PR02MB4157.namprd02.prod.outlook.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="hpyCjpwk"
+Received: by mail-yb1-f176.google.com with SMTP id 3f1490d57ef6-dcc84ae94c1so2072120276.1
+        for <iommu@lists.linux.dev>; Fri, 15 Mar 2024 08:44:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1710517448; x=1711122248; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=clGRLHEdZJU1hIbUHWzW6z0FfJkCL+OJ6aU0ekE5bnA=;
+        b=hpyCjpwkFAOwypDaGZFKblo9eLV0YwExAlfXDdOGoqNqcgmlgGqnafemP6uoRz1pGS
+         qQl69NhUTK04KMli3mMvoOUzw4kDtHcrPJ1AGYJFQe9whzgBio5sGnEsGoGVNvUSbBnD
+         x2y+E/4YCJ8fX4k7WnTmBWY4MmoCe+9h5KXhFwyvLMRFpg5ggkvBCLyNU0pN4H7mC3DQ
+         PFKBNm+z5baHdCR1TBwE0eDBGodRRl9sSlrkdC8lsHgVbCNePeDpV+B7GxlcjsQWJdQ/
+         yh+ZFvfNi0bekbFTdqSRe5hSjvU12k8UtmuCb4Wr0XnCFxrELLdTao5nMpAepVuI1qQ3
+         42gA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1710517448; x=1711122248;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=clGRLHEdZJU1hIbUHWzW6z0FfJkCL+OJ6aU0ekE5bnA=;
+        b=bQDhGgwFhsHRJvMHDleqER1Ak+yXp89wsLc3/Ft1MK9zWZETe6HlzwdX2PJb31QLsf
+         dN4zi27efpM6qOOCd37MQ2G0BYdy6mwkVWS2F0keTstn+/TMR2E72fxk0dwccbjTdCkB
+         iQuthPoOgzyD+56MzhDvl3cc3GXS5wF/3ChX/uyMTY/5P9SGppINxiWPOWf+31R/v1Cx
+         UkU0glx7ytYaHXSyKMnbC2Vo63v1FcNcWI/D0V72z2lnSxfzHzPXHwsnrogDrK1HvhXE
+         ZqMeFkzKy0QKZBpOoarjpoXPSE0t3wanzx5eEC9cH+ufkNPiIfjizpxIB0oC0MxXGZ/1
+         Pe0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXNcvwqn0jB7iVLSUIafsEA1ZeCqUSLPEyZ/bALsiabYc3HvfhJCVFHyXEcOYP9RzPfWdSjRencY5V5KnhhfB9OlZdyKeU=
+X-Gm-Message-State: AOJu0YzrLuHermmQBoQpmpjeSzcXd1FiwFeAYh4kTi54WheSBnEMIlNb
+	fNuW+SpQUwJzeavJxA6JM00DbMX8P6EpctDZ3atokOO+Ji/ryCqvyn7V1D8IDpLjLf3Z1NoKj2W
+	MSLdERkKfVbNgCPB+NFiawwhPRnWH3P5KcVF6
+X-Google-Smtp-Source: AGHT+IGAJ13N7pVvU4k2+lrRs5QxLZCCWdNXmROcACjXHKoXZPNi1NEiRR6CnqJxwRRq0iV9XWDMKjHgawP1NzMi2X0=
+X-Received: by 2002:a25:2fc2:0:b0:dd0:e439:cec6 with SMTP id
+ v185-20020a252fc2000000b00dd0e439cec6mr4700323ybv.18.1710517447501; Fri, 15
+ Mar 2024 08:44:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20240306182440.2003814-1-surenb@google.com> <20240306182440.2003814-24-surenb@google.com>
+ <1f51ffe8-e5b9-460f-815e-50e3a81c57bf@suse.cz>
+In-Reply-To: <1f51ffe8-e5b9-460f-815e-50e3a81c57bf@suse.cz>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Fri, 15 Mar 2024 08:43:53 -0700
+Message-ID: <CAJuCfpE5mCXiGLHTm1a8PwLXrokexx9=QrrRF4fWVosTh5Q7BA@mail.gmail.com>
+Subject: Re: [PATCH v5 23/37] mm/slab: add allocation accounting into slab
+ allocation and free paths
+To: Vlastimil Babka <vbabka@suse.cz>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
+	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, tj@kernel.org, 
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, 
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com, 
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
+	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com, 
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
+	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
+	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
+	glider@google.com, elver@google.com, dvyukov@google.com, shakeelb@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, aliceryhl@google.com, 
+	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
+	kernel-team@android.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 15 Mar 2024 14:59:08 +0000
-Michael Kelley <mhklinux@outlook.com> wrote:
+On Fri, Mar 15, 2024 at 3:58=E2=80=AFAM Vlastimil Babka <vbabka@suse.cz> wr=
+ote:
+>
+> On 3/6/24 19:24, Suren Baghdasaryan wrote:
+> > Account slab allocations using codetag reference embedded into slabobj_=
+ext.
+> >
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
+> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+> > Reviewed-by: Kees Cook <keescook@chromium.org>
+>
+> Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+>
+> Nit below:
+>
+> > @@ -3833,6 +3913,7 @@ void slab_post_alloc_hook(struct kmem_cache *s, s=
+truct obj_cgroup *objcg,
+> >                         unsigned int orig_size)
+> >  {
+> >       unsigned int zero_size =3D s->object_size;
+> > +     struct slabobj_ext *obj_exts;
+> >       bool kasan_init =3D init;
+> >       size_t i;
+> >       gfp_t init_flags =3D flags & gfp_allowed_mask;
+> > @@ -3875,6 +3956,12 @@ void slab_post_alloc_hook(struct kmem_cache *s, =
+       struct obj_cgroup *objcg,
+> >               kmemleak_alloc_recursive(p[i], s->object_size, 1,
+> >                                        s->flags, init_flags);
+> >               kmsan_slab_alloc(s, p[i], init_flags);
+> > +             obj_exts =3D prepare_slab_obj_exts_hook(s, flags, p[i]);
+> > +#ifdef CONFIG_MEM_ALLOC_PROFILING
+> > +             /* obj_exts can be allocated for other reasons */
+> > +             if (likely(obj_exts) && mem_alloc_profiling_enabled())
+> > +                     alloc_tag_add(&obj_exts->ref, current->alloc_tag,=
+ s->size);
+> > +#endif
+>
+> I think you could still do this a bit better:
+>
+> Check mem_alloc_profiling_enabled() once before the whole block calling
+> prepare_slab_obj_exts_hook() and alloc_tag_add()
+> Remove need_slab_obj_ext() check from prepare_slab_obj_exts_hook()
 
-> From: Petr Tesa=C5=99=C3=ADk <petr@tesarici.cz> Sent: Friday, March 15, 2=
-024 5:26 AM
-> >=20
-> > On Fri, 15 Mar 2024 02:53:10 +0000
-> > Michael Kelley <mhklinux@outlook.com> wrote:
-> >  =20
-> > > From: Petr Tesarik <petrtesarik@huaweicloud.com> Sent: Tuesday, March=
- 12, 2024 6:42 AM =20
-> > > > =20
->=20
-> [snip]
->=20
-> > > > @@ -1349,6 +1353,15 @@ phys_addr_t swiotlb_tbl_map_single(struct de=
-vice *dev, phys_addr_t orig_addr,
-> > > >  		return (phys_addr_t)DMA_MAPPING_ERROR;
-> > > >  	}
-> > > >
-> > > > +	/*
-> > > > +	 * Calculate buffer pre-padding within the allocated space. Use i=
-t to
-> > > > +	 * preserve the low bits of the original address according to dev=
-ice's
-> > > > +	 * min_align_mask. Limit the padding to alloc_align_mask or slot =
-size
-> > > > +	 * (whichever is bigger); higher bits of the original address are
-> > > > +	 * preserved by selecting a suitable IO TLB slot.
-> > > > +	 */
-> > > > +	offset =3D orig_addr & dma_get_min_align_mask(dev) &
-> > > > +		(alloc_align_mask | (IO_TLB_SIZE - 1));
-> > > >  	index =3D swiotlb_find_slots(dev, orig_addr,
-> > > >  				   alloc_size + offset, alloc_align_mask, &pool);
-> > > >  	if (index =3D=3D -1) {
-> > > > @@ -1364,6 +1377,12 @@ phys_addr_t swiotlb_tbl_map_single(struct de=
-vice *dev, phys_addr_t orig_addr,
-> > > >  	 * This is needed when we sync the memory.  Then we sync the buff=
-er if
-> > > >  	 * needed.
-> > > >  	 */
-> > > > +	padding =3D 0;
-> > > > +	while (offset >=3D IO_TLB_SIZE) {
-> > > > +		pool->slots[index++].orig_addr =3D INVALID_PHYS_ADDR;
-> > > > +		pool->slots[index].padding =3D ++padding;
-> > > > +		offset -=3D IO_TLB_SIZE;
-> > > > +	} =20
-> > >
-> > > Looping to fill in the padding slots seems unnecessary.
-> > > The orig_addr field should already be initialized to
-> > > INVALID_PHYS_ADDR, and the padding field should already
-> > > be initialized to zero. =20
-> >=20
-> > Ack.
-> >  =20
-> > > The value of "padding" should be just
-> > > (offset / IO_TLB_SIZE), and it only needs to be stored in the
-> > > first non-padding slot where swiotlb_release_slots() will
-> > > find it. =20
-> >=20
-> > This is also right. I asked myself the question what should happen if
-> > somebody passes a padding slot's address to swiotlb_tbl_unmap_single().
-> > Of course, it's an invalid address, but as a proponent of defensive
-> > programming, I still asked what would be the best response? If I store
-> > padding in each slot, the whole block is released. If I store it only
-> > in the first non-padding slot, some slots may leak.
-> >=20
-> > On a second thought, the resulting SWIOTLB state is consistent either
-> > way, and we don't to care about leaking some slots if a driver is
-> > buggy. Maybe it's even better, because the leak will be noticed.
-> >=20
-> > In short, I agree, let's keep the code simple.
-> >  =20
->=20
-> One other thought:  Fundamentally, fixing the core problem
-> requires swiotlb_tbl_unmap_single() to have some information
-> it doesn't have in the current code.  It needs to know the
-> number of padding slots, so that it can free them correctly.
-> Your solution is to store the # of padding slots in the
-> io_tlb_slot array.
->=20
-> Another approach would be to have callers pass the
-> alloc_align_mask as an argument to swiotlb_tbl_unmap_single().
-> It can then calculate the offset and the number of padding
-> slots just like swiotlb_tbl_map_single() does.  Nothing
-> additional would need to be stored in the io_tlb_slot array.
-> The IOMMU code is the only caller than uses a non-zero
-> alloc_align_mask.  From a quick look at that code, the
-> unmap path has the iova_mask() available, so that would
-> work.  Other callers would pass zero, just like they do for
-> swiotlb_tbl_map_single().
->=20
-> I don't immediately have a strong opinion either way, but
-> it's something to think about a bit more.
+Agree about checking mem_alloc_profiling_enabled() early and one time,
+except I would like to use need_slab_obj_ext() instead of
+mem_alloc_profiling_enabled() for that check. Currently they are
+equivalent but if there are more slab_obj_ext users in the future then
+there will be cases when we need to prepare_slab_obj_exts_hook() even
+when mem_alloc_profiling_enabled()=3D=3Dfalse. need_slab_obj_ext() will be
+easy to extend for such cases.
+Thanks,
+Suren.
 
-I believe it's slightly more robust to store how the buffer was
-actually allocated than to rely on the caller. It seems to me that this
-was also a design goal of the original author. For example, note that
-swiotlb_tbl_unmap_single() uses mapping_size only to do the final
-buffer sync, but not to determine how many slots should be released.
-This information is taken from struct io_tlb_slot.alloc_size.
-
-Petr T
+>
+> >       }
+> >
+> >       memcg_slab_post_alloc_hook(s, objcg, flags, size, p);
+> > @@ -4353,6 +4440,7 @@ void slab_free(struct kmem_cache *s, struct slab =
+*slab, void *object,
+> >              unsigned long addr)
+> >  {
+> >       memcg_slab_free_hook(s, slab, &object, 1);
+> > +     alloc_tagging_slab_free_hook(s, slab, &object, 1);
+> >
+> >       if (likely(slab_free_hook(s, object, slab_want_init_on_free(s))))
+> >               do_slab_free(s, slab, object, object, 1, addr);
+> > @@ -4363,6 +4451,7 @@ void slab_free_bulk(struct kmem_cache *s, struct =
+slab *slab, void *head,
+> >                   void *tail, void **p, int cnt, unsigned long addr)
+> >  {
+> >       memcg_slab_free_hook(s, slab, p, cnt);
+> > +     alloc_tagging_slab_free_hook(s, slab, p, cnt);
+> >       /*
+> >        * With KASAN enabled slab_free_freelist_hook modifies the freeli=
+st
+> >        * to remove objects, whose reuse must be delayed.
+>
