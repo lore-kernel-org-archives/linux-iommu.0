@@ -1,355 +1,123 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2082.outbound.protection.outlook.com [40.107.244.82])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D1537475
-	for <iommu@lists.linux.dev>; Fri, 15 Mar 2024 01:46:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710467211; cv=none; b=E5sMQPWVUesbDXyQpa4c6Z9z780O3UFe7/uyR1juRixvh4xBEXh5pT7NLo2tYXqex6QMW8T9DZ917IMzWun7AY9m2mX7lU0P+xE9u7ZViGZRibS0h/kAsedaCNGJrSlcLzR/7EgyJZUEcTEvBckqA4Qnnbn5ZoxmQRF+zsJOPyA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710467211; c=relaxed/simple;
-	bh=l81d10+lHaftFL1YK7CpbPytTHQnfGv0yfai+oBbApQ=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=ARArxIBsNNDPRiW+L/FgfHiZvJftdBlhD7BirOwprZ8MyAVB1Fw99dqCE5Zn+NqcKrsFn4EAgkckatzIZ+ZCDNE4yxq/Sh9qpQEu8JXK9U8WpIpC2sIMKfxroMLFiZh6UXp/TA2nHiuNUTg+GiDIeD0OktR+zk44/J+XC28kiLg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QlBYgVYF; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C74166FB8;
+	Fri, 15 Mar 2024 02:25:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.82
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1710469509; cv=fail; b=bSUwU9OEhWY2X5GZo9sCwe0DciiUONIt2keyzgYLRLEAGNYxB1Qu06TF73DWcZ1VuLriUrMdBLS50kQTg4C2NjW30MXMzK364SuHJQN6j/LllIPOQZY3htbeRJauG1G/1ex5hSr+O9RhmfXfcjvbrzW0ebSclwafH2EgfbtQ1HE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1710469509; c=relaxed/simple;
+	bh=Lu0C1dZlJM+12sb1HkPDu+UKk73+j8Jg2Obir+ef0vs=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EDwtAuuiynT6GGXgQqTWW5cUw9QTk8iDr9h++VSBIWPtaNaGtTTeZ4ohXpla1DF+TYOWATa26SLS4sr4etEvSCLXZcFtOtGScs5rxK2xQFGrqGJj+XbIa/gZVT4kq4eKf9RV23DRebvcaxmQaS7kty1PdizQgU3fbyInoTaqTII=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=KjzuUNY5; arc=fail smtp.client-ip=40.107.244.82
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QlBYgVYF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1710467209; x=1742003209;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=l81d10+lHaftFL1YK7CpbPytTHQnfGv0yfai+oBbApQ=;
-  b=QlBYgVYFOmG1NHIPlnCM3emSqu1VD1h+WaoZlqXcpIwTCv3SyHjOImLd
-   Dul/BdaLYbZqdw4MfBXBpa224WvJ6z3zrUn9BRiTkzcxMcuS/PZpWEsrx
-   Dt2ePNTmQ8wqEmI+P8cskLVbPrK1Fgjd3Cg4Qa1fMbK0D6vnyu1xOhAWL
-   52PhSxvnLKzE7xvL2WtmqFPBptJNf/D2JVnlaeETXNcZsBUyawRG5as0B
-   vkRd7Zpie3e3PqLHuRWxuHc/fmAFSNPZDUNPiQyv933D4mYf0c1Gzljxe
-   lebkPwThBwsK1wvXNU/7h9m+WOKctnJp1Tuo6jay7m12iJ2Ere7HOVLU3
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11013"; a="22780097"
-X-IronPort-AV: E=Sophos;i="6.07,127,1708416000"; 
-   d="scan'208";a="22780097"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 18:46:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,127,1708416000"; 
-   d="scan'208";a="12412987"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa010.jf.intel.com with ESMTP; 14 Mar 2024 18:46:45 -0700
-Message-ID: <e66064d7-c384-4f14-9459-ea21809b51b5@linux.intel.com>
-Date: Fri, 15 Mar 2024 09:46:06 +0800
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="KjzuUNY5"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XuEy9r/+FSAdc6WSeSYPglyic8zJj0KB9mJmu7ySpas+SxZ7U7nTg/nGsGZHv4x2NMENYHko39bu4acW2SoLtoy3uwqWde0aFpeTyiB6OgMvBpIgLZPGB15mGi0FTYfIbL/EX0s6YzttlWzeI4bNqbO1WgbIMvg4yVKBzCPBqvjD6xcIn+CIIEzJtZdAPWdTHwryK6ojowuwkCqWvRflgR+6CkzfN/OGt9EQ+LE1rsW9uQ8V0gjDRh9DCUdmWqH1HA/Boq3ypNY1qvbAgDAowDlwIV2N3i8OU/5sK29GvBmOODLTn4AdNEJcUe/gtCKUpgzwHNKGkkhKD4UPoQvVkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bhMP0IVF6JwXTKqioNF9krWbmsyp1OHLvPkSwe13PcY=;
+ b=cDnVnEYE9f4OgSkIZDn/QGjsHsGFcx0KatsNPeqnqSoMXcwcypATt6XXxjZoGOkzM5R0S6wf0neMg4o996D+pbTMB3ENkoLZaZuteCE6fJ7keijwO9eNzSj9aCuulBMeOkABqCBJi3ElD0i8T3Ck7XpDc5rFMRxyW70cP4m6Wrj7LbYXvYTcwUXS0BhQeHtiCvs/aWEPNHH70A/APJapdHWuem2JSvYcC+Dhf2vddHr9m+6wvxdb0TorHZj0WbXxeRk8XolLJGyBQ3cgdsYt6mYRo+zU4l/ZBzrJ5vcIcVq1dvgcz+gq9qVGUUW+rgKQk8DfdzLeIihs63jL/lRPaQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bhMP0IVF6JwXTKqioNF9krWbmsyp1OHLvPkSwe13PcY=;
+ b=KjzuUNY5nG7MaBs+S+uBsWCk1nF9fK6ZSKWyxVms5Gt+DJbCuoYl/8QB7OlmygzhlycMgHt1IxAT78xP2CjAbY3p9DvZq/pnqvbl8xqBJJMPmp/6H+VmzZ7vHalHLW8E7OA6Z13BjqnFXjnth9F8nf+t3bY7tMdlCrBk2AZhmf2KxE1/Z04xnlBPptttvhU4le8tabnW95Qdef1thMSsZwwwno+l6mvmycgQUSQf0aBfv99dEu1VDBqbMzoewY3V4q1KdrDmlHhzKYqlrDG5lVnb9YwzWU2QOScfzgiQTNpHB8g65KqPqNlwXdL2hCZonzyyk5XS+9QhU04/jVWP0w==
+Received: from CH0PR03CA0238.namprd03.prod.outlook.com (2603:10b6:610:e7::33)
+ by DS0PR12MB7777.namprd12.prod.outlook.com (2603:10b6:8:153::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.18; Fri, 15 Mar
+ 2024 02:25:05 +0000
+Received: from CH1PEPF0000AD76.namprd04.prod.outlook.com
+ (2603:10b6:610:e7:cafe::2b) by CH0PR03CA0238.outlook.office365.com
+ (2603:10b6:610:e7::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.18 via Frontend
+ Transport; Fri, 15 Mar 2024 02:25:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ CH1PEPF0000AD76.mail.protection.outlook.com (10.167.244.53) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7386.12 via Frontend Transport; Fri, 15 Mar 2024 02:25:04 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 14 Mar
+ 2024 19:24:57 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.12; Thu, 14 Mar 2024 19:24:57 -0700
+Received: from nvidia.com (10.127.8.13) by mail.nvidia.com (10.126.190.180)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
+ Transport; Thu, 14 Mar 2024 19:24:55 -0700
+Date: Thu, 14 Mar 2024 19:24:52 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
+	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer
+	<mdf@kernel.org>, Michael Shavit <mshavit@google.com>,
+	<patches@lists.linux.dev>, Shameerali Kolothum Thodi
+	<shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v5 02/27] iommu/arm-smmu-v3: Do not ATC invalidate the
+ entire domain
+Message-ID: <ZfOxdJ9SpqMALU6s@nvidia.com>
+References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+ <2-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
- virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 4/8] iommufd: Add iommufd fault object
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
- <20240122073903.24406-5-baolu.lu@linux.intel.com>
- <20240308180332.GX9225@ziepe.ca>
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240308180332.GX9225@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <2-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH1PEPF0000AD76:EE_|DS0PR12MB7777:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2ad2a283-a775-4f7a-58e5-08dc44972022
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	Y1vb1y2GusN33AroV5pCkm1qsKyUMYdsrvrh1zr4/CDtGHoXkVV9kXhLBeSqvgP4TKj/fWKq4HYjpxbGBOPYeBammswkilJ1yfDY8YkbM1oaKUS0i6h7UGusnkObDXNmBPpAd05FUREp+wwx2y4Q2NJhnQvrVqijsIPgrQDwgu8z6vUFdz/YCcAXzWy16yhcjHxjdauayD/MRGl2irC01t9gajsX2/AlnzYg3cVfhCcqE18TQvc96b279TElXxhei/BSWjiAL0+SXl73nCOchgmUWpKzCQ4drh/djo9nHCOkCgtG1REahhKI6G2X1tPx06d+vX9QxqGh13VEl0DHCJ5f8++XBHm5IytAqvoTI5AtGPjX7rrGx37sgrHeZvFBczndzaWXg65f/pi/mhKgCIlLhvMB9swnj4i+p0Sv4iENIfchEgJQyIGYGULQXWGG1ZZyzpiGmu1YbDvPp2WEVTMW0ogig01wsRX3axA63Balsv4VkzhL9sWUVkdTs6ss5RM9AyB7lrYPW1zl2A86HVJiTut0MYqKq/DGQNCxAWbgD3wW7nwCf60v1VgnNtZv+d/BzIrIM/4OwwMBzEhWA8LznNVIEWLTj3EQaq6caYZAfWZzAziSzkiT4yTPjfwe1rz7vH0cDOiNL0L2d6rS/U9yPv0BYekftWyWXDw4HbrJWioB5ONFN2fK4HWWWnJV668TrrJtO938aaQxG43hsp/ZMMxqxJ65kSIu0OsH7eIIH5P7vQXQwKD24QdK3hIp
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(1800799015)(7416005)(376005)(82310400014)(36860700004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2024 02:25:04.8233
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ad2a283-a775-4f7a-58e5-08dc44972022
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH1PEPF0000AD76.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB7777
 
-On 3/9/24 2:03 AM, Jason Gunthorpe wrote:
-> On Mon, Jan 22, 2024 at 03:38:59PM +0800, Lu Baolu wrote:
->> --- /dev/null
->> +++ b/drivers/iommu/iommufd/fault.c
->> @@ -0,0 +1,255 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/* Copyright (C) 2024 Intel Corporation
->> + */
->> +#define pr_fmt(fmt) "iommufd: " fmt
->> +
->> +#include <linux/file.h>
->> +#include <linux/fs.h>
->> +#include <linux/module.h>
->> +#include <linux/mutex.h>
->> +#include <linux/iommufd.h>
->> +#include <linux/poll.h>
->> +#include <linux/anon_inodes.h>
->> +#include <uapi/linux/iommufd.h>
->> +
->> +#include "iommufd_private.h"
->> +
->> +static int device_add_fault(struct iopf_group *group)
->> +{
->> +	struct iommufd_device *idev = group->cookie->private;
->> +	void *curr;
->> +
->> +	curr = xa_cmpxchg(&idev->faults, group->last_fault.fault.prm.grpid,
->> +			  NULL, group, GFP_KERNEL);
->> +
->> +	return curr ? xa_err(curr) : 0;
->> +}
->> +
->> +static void device_remove_fault(struct iopf_group *group)
->> +{
->> +	struct iommufd_device *idev = group->cookie->private;
->> +
->> +	xa_store(&idev->faults, group->last_fault.fault.prm.grpid,
->> +		 NULL, GFP_KERNEL);
+On Mon, Mar 04, 2024 at 07:43:50PM -0400, Jason Gunthorpe wrote:
+> At this point we know which master we are going to change the PCI config
+> on, this is the only device we need to invalidate. Switch
+> arm_smmu_atc_inv_domain() for arm_smmu_atc_inv_master().
 > 
-> xa_erase ?
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
-Yes. Sure.
-
-> Is grpid OK to use this way? Doesn't it come from the originating
-> device?
-
-The group ID is generated by the hardware. Here, we use it as an index
-in the fault array to ensure it can be quickly retrieved in the page
-fault response path.
-
->> +void iommufd_fault_destroy(struct iommufd_object *obj)
->> +{
->> +	struct iommufd_fault *fault = container_of(obj, struct iommufd_fault, obj);
->> +	struct iopf_group *group, *next;
->> +
->> +	mutex_lock(&fault->mutex);
->> +	list_for_each_entry_safe(group, next, &fault->deliver, node) {
->> +		list_del(&group->node);
->> +		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
->> +		iopf_free_group(group);
->> +	}
->> +	list_for_each_entry_safe(group, next, &fault->response, node) {
->> +		list_del(&group->node);
->> +		device_remove_fault(group);
->> +		iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
->> +		iopf_free_group(group);
->> +	}
->> +	mutex_unlock(&fault->mutex);
->> +
->> +	mutex_destroy(&fault->mutex);
-> 
-> It is really weird to lock a mutex we are about to destroy? At this
-> point the refcount on the iommufd_object is zero so there had better
-> not be any other threads with access to this pointer!
-
-You are right. I will remove the lock/unlock and add a comment instead.
-
-> 
->> +static ssize_t iommufd_fault_fops_read(struct file *filep, char __user *buf,
->> +				       size_t count, loff_t *ppos)
->> +{
->> +	size_t fault_size = sizeof(struct iommu_hwpt_pgfault);
->> +	struct iommufd_fault *fault = filep->private_data;
->> +	struct iommu_hwpt_pgfault data;
->> +	struct iommufd_device *idev;
->> +	struct iopf_group *group;
->> +	struct iopf_fault *iopf;
->> +	size_t done = 0;
->> +	int rc;
->> +
->> +	if (*ppos || count % fault_size)
->> +		return -ESPIPE;
->> +
->> +	mutex_lock(&fault->mutex);
->> +	while (!list_empty(&fault->deliver) && count > done) {
->> +		group = list_first_entry(&fault->deliver,
->> +					 struct iopf_group, node);
->> +
->> +		if (list_count_nodes(&group->faults) * fault_size > count - done)
->> +			break;
->> +
->> +		idev = (struct iommufd_device *)group->cookie->private;
->> +		list_for_each_entry(iopf, &group->faults, list) {
->> +			iommufd_compose_fault_message(&iopf->fault, &data, idev);
->> +			rc = copy_to_user(buf + done, &data, fault_size);
->> +			if (rc)
->> +				goto err_unlock;
->> +			done += fault_size;
->> +		}
->> +
->> +		rc = device_add_fault(group);
-> 
-> See I wonder if this should be some xa_alloc or something instead of
-> trying to use the grpid?
-
-So this magic number will be passed to user space in the fault message.
-And the user will then include this number in its response message. The
-response message is valid only when the magic number matches. Do I get
-you correctly?
-
-> 
->> +	while (!list_empty(&fault->response) && count > done) {
->> +		rc = copy_from_user(&response, buf + done, response_size);
->> +		if (rc)
->> +			break;
->> +
->> +		idev = container_of(iommufd_get_object(fault->ictx,
->> +						       response.dev_id,
->> +						       IOMMUFD_OBJ_DEVICE),
->> +				    struct iommufd_device, obj);
-> 
-> It seems unfortunate we do this lookup for every iteration of the loop,
-> I would lift it up and cache it..
-
-Okay.
-
-> 
->> +		if (IS_ERR(idev))
->> +			break;
->> +
->> +		group = device_get_fault(idev, response.grpid);
-> 
-> This looks locked wrong, it should hold the fault mutex here and we
-> should probably do xchng to zero it at the same time we fetch it.
-
-Okay, will fix it.
-
-> 
->> +		if (!group ||
->> +		    response.addr != group->last_fault.fault.prm.addr ||
->> +		    ((group->last_fault.fault.prm.flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID) &&
->> +		      response.pasid != group->last_fault.fault.prm.pasid)) {
-> 
-> Why? If grpid is unique then just trust it.
-
-I was just considering that we should add some sanity check here to
-ensure the response message is composed in the right way.
-
-> 
->> +			iommufd_put_object(fault->ictx, &idev->obj);
->> +			break;
->> +		}
->> +
->> +		iopf_group_response(group, response.code);
->> +
->> +		mutex_lock(&fault->mutex);
->> +		list_del(&group->node);
->> +		mutex_unlock(&fault->mutex);
->> +
->> +		device_remove_fault(group);
->> +		iopf_free_group(group);
->> +		done += response_size;
->> +
->> +		iommufd_put_object(fault->ictx, &idev->obj);
->> +	}
->> +
->> +	return done;
->> +}
->> +
->> +static __poll_t iommufd_fault_fops_poll(struct file *filep,
->> +					struct poll_table_struct *wait)
->> +{
->> +	struct iommufd_fault *fault = filep->private_data;
->> +	__poll_t pollflags = 0;
->> +
->> +	poll_wait(filep, &fault->wait_queue, wait);
->> +	mutex_lock(&fault->mutex);
->> +	if (!list_empty(&fault->deliver))
->> +		pollflags = EPOLLIN | EPOLLRDNORM;
->> +	mutex_unlock(&fault->mutex);
->> +
->> +	return pollflags;
->> +}
->> +
->> +static const struct file_operations iommufd_fault_fops = {
->> +	.owner		= THIS_MODULE,
->> +	.open		= nonseekable_open,
->> +	.read		= iommufd_fault_fops_read,
->> +	.write		= iommufd_fault_fops_write,
->> +	.poll		= iommufd_fault_fops_poll,
->> +	.llseek		= no_llseek,
->> +};
-> 
-> No release? That seems wrong..
-
-Yes. Will fix it.
-
-> 
->> +static int get_fault_fd(struct iommufd_fault *fault)
->> +{
->> +	struct file *filep;
->> +	int fdno;
->> +
->> +	fdno = get_unused_fd_flags(O_CLOEXEC);
->> +	if (fdno < 0)
->> +		return fdno;
->> +
->> +	filep = anon_inode_getfile("[iommufd-pgfault]", &iommufd_fault_fops,
->> +				   fault, O_RDWR);
->                                     ^^^^^^
-> 
-> See here you stick the iommufd_object into the FD but we don't
-> refcount it...
-> 
-> And iommufd_fault_destroy() doesn't do anything about this, so it just
-> UAFs the fault memory in the FD.
-> 
-> You need to refcount the iommufd_object here and add a release
-> function for the fd to put it back
-> 
-> *and* this FD needs to take a reference on the base iommufd_ctx fd too
-> as we can't tolerate them being destroyed out of sequence.
-
-Good catch. I will fix it.
-
-> 
->> +int iommufd_fault_alloc(struct iommufd_ucmd *ucmd)
->> +{
->> +	struct iommu_fault_alloc *cmd = ucmd->cmd;
->> +	struct iommufd_fault *fault;
->> +	int rc;
->> +
->> +	if (cmd->flags)
->> +		return -EOPNOTSUPP;
->> +
->> +	fault = iommufd_object_alloc(ucmd->ictx, fault, IOMMUFD_OBJ_FAULT);
->> +	if (IS_ERR(fault))
->> +		return PTR_ERR(fault);
->> +
->> +	fault->ictx = ucmd->ictx;
->> +	INIT_LIST_HEAD(&fault->deliver);
->> +	INIT_LIST_HEAD(&fault->response);
->> +	mutex_init(&fault->mutex);
->> +	init_waitqueue_head(&fault->wait_queue);
->> +
->> +	rc = get_fault_fd(fault);
->> +	if (rc < 0)
->> +		goto out_abort;
-> 
-> And this is ordered wrong, fd_install has to happen after return to
-> user space is guarenteed as it cannot be undone.
-> 
->> +	cmd->out_fault_id = fault->obj.id;
->> +	cmd->out_fault_fd = rc;
->> +
->> +	rc = iommufd_ucmd_respond(ucmd, sizeof(*cmd));
->> +	if (rc)
->> +		goto out_abort;
->> +	iommufd_object_finalize(ucmd->ictx, &fault->obj);
-> 
-> fd_install() goes here
-
-Yes. Sure.
-
-> 
->> +	return 0;
->> +out_abort:
->> +	iommufd_object_abort_and_destroy(ucmd->ictx, &fault->obj);
->> +
->> +	return rc;
->> +}
-> 
-> Jason
-
-Best regards,
-baolu
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
