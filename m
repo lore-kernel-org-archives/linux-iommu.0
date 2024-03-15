@@ -1,142 +1,121 @@
-Received: from fout4-smtp.messagingengine.com (fout4-smtp.messagingengine.com [103.168.172.147])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D360C73196
-	for <iommu@lists.linux.dev>; Thu, 14 Mar 2024 19:06:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.168.172.147
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 826B515BF
+	for <iommu@lists.linux.dev>; Fri, 15 Mar 2024 01:17:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710443206; cv=none; b=Zmp1HFVcPoUr0Oe+PLc9WRfXj0gBnBC5qzNOhUGlOx4hl8NrJMQ25vG7DKtyt5C5WJ/j3p3sXQ4VkfnXm7lXPVQU71cRZbeVcqL4dt9Mzc0ehsnY07CUFsvXfS2Cgpw+/7ykUiHsRsfeHqCwEnvPazxicJRHfssGAgkllcrBzRY=
+	t=1710465447; cv=none; b=kuiX9jrLqBeRYXQ9KaAfvjkMNcElYo34Je75smbfUsneFKDtYhLogjW/7hlKZAeaQFCjf0iIh1S6yrp2yNY39l0+MMg7NvXhqfSTjVNMwCANx+fGDLQwdax+HlvSW4pV+jEPm73QIUjvG/0SKCNFC/VbiZb/S+yA0qnKnYOIP4E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710443206; c=relaxed/simple;
-	bh=6u41PBoWA/dHSyhaL4eR+nAg2BC9TcZOlGX4UYE8FGE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HsMXGNvhZqWbU+ylI5EN19Od6BqUdCqOik2V5Xv1zm6ma5hw1wOyJVMxOrQWlqFYkBCQY1k5TzRWfU+2k7wUJsR35ZUxHyis2oOs+Lgw6n+XAuh39CwMAKo9vxC5ZND/VbzDMSAEXRvxMoCObrwK+51uWsja7SIQj/XdxF9SO9s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tyhicks.com; spf=pass smtp.mailfrom=tyhicks.com; dkim=pass (2048-bit key) header.d=tyhicks.com header.i=@tyhicks.com header.b=YLCJfRNw; dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b=XG8uDL+y; arc=none smtp.client-ip=103.168.172.147
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tyhicks.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tyhicks.com
+	s=arc-20240116; t=1710465447; c=relaxed/simple;
+	bh=RINii3wGGnlUbE3ZLF3vQV3MCY+kCa38spzuhHObNjs=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=iYSdae/M/TjW+M9tpOH5w3ueyYfFxCtZutA7+5fd6+/NYW9UcArfaYkj3vEGRTMwf/cUoalcFrvzH1sLJh8AQVFaDfdeTC/8T/cW5wX5FaB4ATjRdELu7px+sHReHIbkYF1uJPMtCfKvn7WrUlr9HkJQpjRiByVdLe6L6bD/HHQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MeAC9nCE; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tyhicks.com header.i=@tyhicks.com header.b="YLCJfRNw";
-	dkim=pass (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="XG8uDL+y"
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-	by mailfout.nyi.internal (Postfix) with ESMTP id EF3E513800C5;
-	Thu, 14 Mar 2024 15:06:43 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Thu, 14 Mar 2024 15:06:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tyhicks.com; h=
-	cc:cc:content-type:content-type:date:date:from:from:in-reply-to
-	:in-reply-to:message-id:mime-version:references:reply-to:subject
-	:subject:to:to; s=fm1; t=1710443203; x=1710529603; bh=RCQmlGp3k6
-	bvYN0RNI3MYCaArrm2bXBnNGldMBKv0+M=; b=YLCJfRNw4qk13Tk78J9I9IIvgz
-	rKpSA5JCPdGaFpSiMuOt6mw/mYgvhqQsvgDDWbTMa7LrZGxa2Wp5NWfu1cqJ31nL
-	GNNGe+zOhA6IaVfKOE2DxwWusgnaU8jHP+IDzf3K8qx6+zTyXa3VEV4FyQxE5Mue
-	2x553yNefdBa+QG61GP0r+E6Z8R/WBuPTJoKxDPs9SXIG0olBBzueVSAxw/KQlPv
-	pjUr4jhqSRxGirNbfGV+1itvpe8KpWxBTy2lBRJk0IFC8QDSkcNAZDbsnZEA3Bny
-	+CbwragPCCtsQ5bz/CLXSum1zQ2gpxbiTv+VScgALJeUoI4AyzKWYLM8ElMg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	messagingengine.com; h=cc:cc:content-type:content-type:date:date
-	:feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
-	:message-id:mime-version:references:reply-to:subject:subject:to
-	:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-	fm1; t=1710443203; x=1710529603; bh=RCQmlGp3k6bvYN0RNI3MYCaArrm2
-	bXBnNGldMBKv0+M=; b=XG8uDL+ylScJRiGrCkiVidUj4YLfN+EQNZKm7bLCAnxG
-	Vt+n8L8Th2tykaWeNv8xbaZiyyYEMf/DWv0EFzOiPaflx32XJjQm58S4XEt179MS
-	bJvAViFIko7XxKv3unGw3BCr9+88IseWiN9/pdyymPtu1j6O2WGy8FVKtY7uj8j2
-	V0a6RpL/OG/8aU9b9ZZCySn0BXMyFD9+SV4z8D3XFZy7QjhmW3MpkVIFgUJ4bU/v
-	QV9edp2cYZakyFIP0e+eRXTiE587rB1XJAODraG8p8yyGlfB44dCJRQEUaezii46
-	zrqUFkYhIhF99pCzORwXWbOh4D31Kf9nylDMVQp05g==
-X-ME-Sender: <xms:wkrzZTm3X2z1kPOEM0VN_ST1bY5HEk37rQlxy3QpS49AUbhU85_Egg>
-    <xme:wkrzZW1V4MFhAkHFqRRFrpgwGECPtVe7ZYKhnTiIQq7atW3ZlKo9zcJ3-lRr1ss9h
-    ms6Ju4YAu77uQYFW8Y>
-X-ME-Received: <xmr:wkrzZZqlIFep2D75EhXrfV0zsd-6gadufwc-hY5lw21glxgzeLufu-GPv-8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvledrjeejgdduudekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepvfihlhgv
-    rhcujfhitghkshcuoegtohguvgesthihhhhitghkshdrtghomheqnecuggftrfgrthhtvg
-    hrnhepgfegkeeiffethefgteffudfhfeejhedvjefhjeekudelffdulefhfeekieeludej
-    necuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpegtohguvgesthihhhhitghkshdrtghomh
-X-ME-Proxy: <xmx:wkrzZblKiuiTM8ni1rpAIXxmUXEmITqwifQj1TYv4Lj-tM1z8Rt0Rg>
-    <xmx:wkrzZR3L085MQGYgcRz-Om_p-QxoKEpxLFYF7N-pvsQRYyoeShE9ug>
-    <xmx:wkrzZaslTD7QpwoiG0ZHiJJFdh5Vhr5Y_z2m6LR-auw1IFRyXFy6aA>
-    <xmx:wkrzZVU9hWbNGbtchumdcYlPSUd5shXgkdIUC-mimrk4VI4eF69Klg>
-    <xmx:w0rzZate56TlPuywl8bA1AqPowO_2puZpr4eFIAhICEr-x4lSOGnXQ>
-Feedback-ID: i78e14604:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 14 Mar 2024 15:06:41 -0400 (EDT)
-Date: Thu, 14 Mar 2024 14:06:39 -0500
-From: Tyler Hicks <code@tyhicks.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Jerry Snitselaar <jsnitsel@redhat.com>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-	Easwar Hariharan <eahariha@linux.microsoft.com>
-Subject: Re: Why is the ARM SMMU v1/v2 put into bypass mode on kexec?
-Message-ID: <ZfNKv70oqqwMwIeS@sequoia>
-References: <ZfKsAIt8RY/JcL/V@sequoia>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MeAC9nCE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1710465446; x=1742001446;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=RINii3wGGnlUbE3ZLF3vQV3MCY+kCa38spzuhHObNjs=;
+  b=MeAC9nCECWlGJBKO4FZmZNb2/k2ImDeJ95+EULFVo1+NdDbidkVtOpmx
+   IaVnTBv5CVhfcklNLJS5YeUN1wl5rt1Mclge/5+2ld0NundhS5NxJYdNJ
+   /mcWZIH+6o1PcaIGIGIDz8uOJn5102HUkFJkXfIRjELHfkl3KnhRevdKD
+   ZraYlxrjieKFWB7d3gpxwK5e/t2khbW+yb9oSWiqOCSAgLMtMlHXuECOe
+   KFWYEicfkag2zFLANHRwmPr6CY1tB+laq3JGPP7rzbWx0Ov7B2/ndO7rw
+   v4AXdy2bJQUhL1fhJJ5ah2BjDuHb88mJMzZhQ+6OvuoPzk6nDBVhEAl9n
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11013"; a="5175570"
+X-IronPort-AV: E=Sophos;i="6.07,127,1708416000"; 
+   d="scan'208";a="5175570"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Mar 2024 18:17:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,127,1708416000"; 
+   d="scan'208";a="12947095"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa007.jf.intel.com with ESMTP; 14 Mar 2024 18:17:21 -0700
+Message-ID: <7a6ac83b-3165-4abe-91be-a58f69656f8a@linux.intel.com>
+Date: Fri, 15 Mar 2024 09:16:43 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZfKsAIt8RY/JcL/V@sequoia>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
+ virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 5/8] iommufd: Associate fault object with
+ iommufd_hw_pgtable
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
+ <20240122073903.24406-6-baolu.lu@linux.intel.com>
+ <20240308190539.GY9225@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240308190539.GY9225@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 2024-03-14 09:55:46, Tyler Hicks wrote:
-> Given that drivers are only optionally asked to implement the .shutdown
-> hook, which is required to properly quiesce devices before a kexec, why
-> is it that we put the ARM SMMU v1/v2 into bypass mode in the arm-smmu
-> driver's own .shutdown hook?
+On 3/9/24 3:05 AM, Jason Gunthorpe wrote:
+> On Mon, Jan 22, 2024 at 03:39:00PM +0800, Lu Baolu wrote:
 > 
->  arm_smmu_device_shutdown() -> set SMMU_sCR0.CLIENTPD bit to 1
+>> @@ -411,6 +414,8 @@ enum iommu_hwpt_data_type {
+>>    * @__reserved: Must be 0
+>>    * @data_type: One of enum iommu_hwpt_data_type
+>>    * @data_len: Length of the type specific data
+>> + * @fault_id: The ID of IOMMUFD_FAULT object. Valid only if flags field of
+>> + *            IOMMU_HWPT_FAULT_ID_VALID is set.
+>>    * @data_uptr: User pointer to the type specific data
+>>    *
+>>    * Explicitly allocate a hardware page table object. This is the same object
+>> @@ -441,6 +446,7 @@ struct iommu_hwpt_alloc {
+>>   	__u32 __reserved;
+>>   	__u32 data_type;
+>>   	__u32 data_len;
+>> +	__u32 fault_id;
+>>   	__aligned_u64 data_uptr;
+>>   };
 > 
-> Driver authors often forget to even implement a .shutdown hook, which
-> results in some hard-to-debug memory corruption issues in the kexec'ed
-> target kernel due to pending DMA operations happening on untranslated
-> addresses. Why not leave the SMMU in translate mode but clear the stream
-> mapping table (or maybe even call arm_smmu_device_reset()) in the SMMU's
-> .shutdown hook to prevent the memory corruption from happening in the
-> first place?
+> ?? We can't add fault_id in the middle of the struct??
+
+Yes. I should add the new field at the end.
+
+By the way, with a __u32 added, this data structure is not 64-byte-
+aligned anymore. Do we need to add another unused u32 entry, or just let
+the compiler handle it?
+
 > 
-> Fully acknowledging that the proper fix is to quiesce the devices, I
-> feel like resetting the SMMU and leaving it in translate mode across
-> kexec would be more consistent with the intent behind v5.2 commit
-> 954a03be033c ("iommu/arm-smmu: Break insecure users by disabling bypass
-> by default"). The incoming transactions of devices, that weren't
-> properly quiesced during a kexec, would be blocked until their drivers
-> have a chance to reinitialize the devices in the new kernel.
+>> +	if (cmd->flags & IOMMU_HWPT_FAULT_ID_VALID) {
+>> +		struct iommufd_fault *fault;
+>> +
+>> +		fault = iommufd_get_fault(ucmd, cmd->fault_id);
+>> +		if (IS_ERR(fault)) {
+>> +			rc = PTR_ERR(fault);
+>> +			goto out_hwpt;
+>> +		}
+>> +		hwpt->fault = fault;
+>> +		hwpt->domain->iopf_handler = iommufd_fault_iopf_handler;
+>> +		hwpt->domain->fault_data = hwpt;
+>> +		hwpt->fault_capable = true;
 > 
-> I appreciate any help understanding why bypass mode is utilized here as
-> I'm sure there are nuances that I haven't considered. Thank you!
+> I wonder if there should be an iommu API to make a domain fault
+> capable?
 
-I now see that Will has previously mentioned that he'd be open to such a
-change:
+The iommu core identifies a fault-capable domain by checking its
+domain->iopf_handler. Anyway, what's the difference between a fault or
+non-fault capable domain from iommu core's point of view?
 
- One thing I would be in favour of is changing the ->shutdown() code to
- honour disable_bypass=1 so that we put the SMMU in an aborting state
- instead of passthrough. Would that help at all? It would at least
- avoid the memory corruption on missing shutdown callback.
-
- - https://lore.kernel.org/linux-arm-kernel/20200608113852.GA3108@willie-the-truck/
-
-Robin mentions the need to support kexec into a non-SMMU-aware OS. I
-hadn't considered that bit of complexity:
-
- ... consider if the first kernel *did* leave it enabled with whatever
- left-over translations in place, and kexec'ed into another OS that
- wasn't SMMU-aware...
-
- - https://lore.kernel.org/linux-arm-kernel/e072f61a-d6cf-2e34-efd5-c1db38c5c622@arm.com/
-
-Now that we're 3-4 years removed from that conversation, has anything
-changed? Will, is there anything we'd need to watch out for if we were
-to prototype this sort of change? For example, would it be wise to
-disable fault interrupts when putting the SMMU in an aborting state
-before kexec'ing?
-
-Thanks again!
-
-Tyler
+Best regards,
+baolu
