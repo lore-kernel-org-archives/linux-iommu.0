@@ -1,170 +1,109 @@
-Received: from mail-yw1-f202.google.com (mail-yw1-f202.google.com [209.85.128.202])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 584961C280
-	for <iommu@lists.linux.dev>; Sat, 16 Mar 2024 18:15:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.202
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2912123741;
+	Mon, 18 Mar 2024 01:31:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710612948; cv=none; b=Q3nuIT7IYGRHIUioMF51QHwx+EZYkWs3GBRq+faJkxozfiaCjVAs0Lk2hf/eeEy4vc27djhUZNH6uUk0BmkvCV8z4fm46loj+yjITC1dKvlZtjh37kBuCjD3bF69Z9KQ98IPCZzofkRd0u6rPlJPWI7BrewHVvRSy3z4eSchwng=
+	t=1710725515; cv=none; b=flsQH6mXq9ufSiAKp/oItAS9JcoUhEtiQhOXTsG5oz6I7xHOBtp4EUmDiUrHLNHnI6S5Z6x4oTPUteOTVQUPLH6ldQvb36WPvEW7lOpyRi9l2hYb2Ryb9iBPqunZDaimyyib+9PpAO7BDKcaqxWIHeySWAJ/EuZwpDqx1hbkAJE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710612948; c=relaxed/simple;
-	bh=ev1HtT5dgYPbzyvqfFCfe3PhfTYNlQSkRFxKxDOZuIY=;
-	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
-	 To:Cc:Content-Type; b=oBKMr4mSWbfgWJZvrLUxTVu45PxdVCKMojeFxafv40p3sAePkdTHGM0DQIDT+gOxDfLmHjZEFUxD6vsj+iYtQzeSAOOxw/bRwyFkQv38f+oev8MI9nVlDTueP8/H7B+Lu+ra0Alle7NP0Yd8wqzmj5wkOOHtE23v3ZFX0QlwLX4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--moritzf.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=eVWZKI0f; arc=none smtp.client-ip=209.85.128.202
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--moritzf.bounces.google.com
+	s=arc-20240116; t=1710725515; c=relaxed/simple;
+	bh=RNW2aU4AGeGtJeBkdfUoXrquQxQjFBGeXU40AmnU96g=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=egLs8SwrFJA0Vv28m5L38ccyntS0nvK66153swKzG7fz7WXuGaCzW5EDibd+DKUa2GeO62BJ36j7CXOqFuvDeXc01mvQuE7tQN3m6e7ptR9N4sXuSm2sK+EiF0Q6J+I5t6Z010EuYFs1zrm9kQf0Uapp7ec/vYlAFWv2IPnvMPE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lltLGczZ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="eVWZKI0f"
-Received: by mail-yw1-f202.google.com with SMTP id 00721157ae682-610b7e95152so4800537b3.0
-        for <iommu@lists.linux.dev>; Sat, 16 Mar 2024 11:15:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1710612945; x=1711217745; darn=lists.linux.dev;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5aXFSQ++Ub55Rlf8aCL3bodnfyEF61EjD4/9Gb9NGlM=;
-        b=eVWZKI0fxu4MDNUrpE8UTsNpz6AvH+o5cQEl+RQkFoB3k6lKqWMZquP7fJcY2RXsHi
-         50TG+pIczlkibRx5xiOmbCSwNbGu5Ww3DtDAoIS/Wc0jjPeZ9uR9VDYqUG758IKZYXAP
-         QT/h8mZzotQFYmFCFfsXIpgXhWDvTg8nkQOuxcZSv9++PPXOiJMCy7f9LFaPePtzd2yV
-         6DfoWoywenzkN3yXqEj1ihzGBs5WgTbYkVxT9JXFbInc9wkTUF12PbUS9bn5KqS8tGIw
-         eYHhWJzEN9hD5FimuqnzIlLvU8aBBKIZnu493KQRsP0Wzv+NsiBv48xgHh0ALC4SkKT0
-         lJfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710612945; x=1711217745;
-        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
-         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5aXFSQ++Ub55Rlf8aCL3bodnfyEF61EjD4/9Gb9NGlM=;
-        b=rtHPorDRDzs41K1HfCq4zLL0HgcU2GP6iKGPtbeoMAyrdNv7yWtNtCnc781PbbPHKA
-         1BSLgZyR9BalaKi985wOzXpGuVpOBz0FkKdh+rZtsht/toGBVUowKFvYPe8ZuCrZkzAa
-         ykzFrAhdlHOfpRa9H2coL2XCgeXpm+oCLnmGis5IxVVWoXd9eGBBIL6wDR8m2kPJr+7w
-         ZSN+87ViewzoJcc86Kk4AMwreCPuIJ1i84qKaKdhMfsGDIoi69bymjhnGCsyMcG6GKWz
-         9tLwz0hDLU3twDw8XaMFraSBoqatxt9FtEYGJavNN9Tjho573C9dQjVHkw4hKrTbv83+
-         ZAGw==
-X-Gm-Message-State: AOJu0Yw7pmxR6HBmGR1mPvYnSd8zRKTB7YH1yijXELR+pSVIEx70dhoA
-	BZl+DQEWkHZ5X/1TXJ7ZsjvuCHk+jdGRe1IZqa2ZGoJV6RLHSHWKYUrRUXKoE6pg6cTz5Is7jVC
-	0KjrxPg==
-X-Google-Smtp-Source: AGHT+IH+Rvxyk7aSx1/W7pYZK7zqyyCzMwEBBdvr7Mv+uONRopm//oUHb3l5Sm+tykzNniQuZnRvBeLp/Tvp
-X-Received: from morats.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:d9e])
- (user=moritzf job=sendgmr) by 2002:a05:690c:a15:b0:60c:ca8a:4c10 with SMTP id
- cg21-20020a05690c0a1500b0060cca8a4c10mr2046847ywb.2.1710612945476; Sat, 16
- Mar 2024 11:15:45 -0700 (PDT)
-Date: Sat, 16 Mar 2024 18:15:44 +0000
-In-Reply-To: <6-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lltLGczZ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83FB8C433C7;
+	Mon, 18 Mar 2024 01:31:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1710725514;
+	bh=RNW2aU4AGeGtJeBkdfUoXrquQxQjFBGeXU40AmnU96g=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=lltLGczZUEYWiXjWPLT/E5ad6r6E4M5SzIbTQk7mPFqBHbcEXaNpK5/fD+S0+TMQY
+	 gDzown5dOEiyOzEUNzFTAH4BTO8H2XMD6PSCiuCppogyVrj7Xou/K3K7sTlsuvsvxp
+	 dHa0xQhd+Inmg5K7WOSzsaQ3vfolfw8wca1WZXpas9CWy1vdBi0uHY/FWKXn+ZvVy8
+	 RvXkUXIoZBmuwFVZKYpFimXKlcdsdpxiJGGNJQiMgWBXe+2C2s7WXEY5/7UI20Bsbq
+	 IwC3q4QfowYGQpjwBNgb6xMmaK/ccC52x1g3PIVDMoaWXeG7CHxDQSqTEbT6C33Gqw
+	 rfmPGvQcufwyw==
+Date: Sun, 17 Mar 2024 20:31:51 -0500
+From: Bjorn Andersson <andersson@kernel.org>
+To: Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+	Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>, 
+	Marijn Suijten <marijn.suijten@somainline.org>, linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev, 
+	Johan Hovold <johan+linaro@kernel.org>
+Subject: Re: [PATCH v2 2/2] arm64: dts: qcom: sc8280xp: Describe the PCIe
+ SMMUv3
+Message-ID: <phledylmdu23yrw6f4x7fkefntrejuwagazebsnkgyxsweodzg@pddhnc2gwexz>
+References: <20231219-topic-8280_smmuv3-v2-0-c67bd3226687@linaro.org>
+ <20231219-topic-8280_smmuv3-v2-2-c67bd3226687@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com> <6-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
-Message-ID: <e2tgk4mlnq6ef5sb5ngh35o73iy4xmxzfcy43ouewj4cfzkhhp@cq2drrbkzcxl>
-Subject: Re: [PATCH v5 06/27] iommu/arm-smmu-v3: Consolidate clearing a CD
- table entry
-From: Moritz Fischer <moritzf@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, 
-	Michael Shavit <mshavit@google.com>, Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20231219-topic-8280_smmuv3-v2-2-c67bd3226687@linaro.org>
 
-On Mon, Mar 04, 2024 at 07:43:54PM -0400, Jason Gunthorpe wrote:
-> A cleared entry is all 0's. Make arm_smmu_clear_cd() do this sequence.
+On Sat, Mar 09, 2024 at 02:31:10PM +0100, Konrad Dybcio wrote:
+> SC8280XP actually has a third SMMU, which can be seen in e.g. the IORT
+> ACPI table and is used for the PCIe hosts.
+> 
+> Unfortunately though, the secure firmware seems to be configured in a
+> way such that Linux can't touch it, not even read back the ID registers.
+> It also seems like the SMMU is configured to run in some sort of bypass
+> mode, completely opaque to the OS.
+> 
+> Describe it so that one can configure it when running Linux as a
+> hypervisor (e.g with [1]) and for hardware description completeness.
+> 
+> [1] https://github.com/TravMurav/slbounce
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 
-> If we are clearing an entry and for some reason it is not already
-> allocated in the CD table then something has gone wrong.
+Have this information been validated? Or are you suggesting we add it
+for documentation purposes?
 
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Regards,
+Bjorn
+
 > ---
->   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  2 +-
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 20 ++++++++++++++-----
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  2 ++
->   3 files changed, 18 insertions(+), 6 deletions(-)
-
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c  
-> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index 347c2fdd865c1a..bb9bb6fd7914ce 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -558,7 +558,7 @@ void arm_smmu_sva_remove_dev_pasid(struct  
-> iommu_domain *domain,
-
->   	mutex_lock(&sva_lock);
-
-> -	arm_smmu_write_ctx_desc(master, id, NULL);
-> +	arm_smmu_clear_cd(master, id);
-
->   	list_for_each_entry(t, &master->bonds, list) {
->   		if (t->mm == mm) {
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c  
-> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 237fd6d92c880b..3fb4a1523d1d3f 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1303,6 +1303,19 @@ static void arm_smmu_write_cd_entry(struct  
-> arm_smmu_master *master, int ssid,
->   	arm_smmu_write_entry(&cd_writer.writer, cdptr->data, target->data);
->   }
-
-> +void arm_smmu_clear_cd(struct arm_smmu_master *master, ioasid_t ssid)
-> +{
-> +	struct arm_smmu_cd target = {};
-> +	struct arm_smmu_cd *cdptr;
+>  arch/arm64/boot/dts/qcom/sc8280xp.dtsi | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> index a5b194813079..28edd30a9c04 100644
+> --- a/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc8280xp.dtsi
+> @@ -4648,6 +4648,22 @@ cci3_i2c1_sleep: cci3-i2c1-sleep-pins {
+>  			};
+>  		};
+>  
+> +		pcie_smmu: iommu@14f80000 {
+> +			compatible = "qcom,sc8280xp-smmu-v3", "arm,smmu-v3";
+> +			reg = <0 0x14f80000 0 0x80000>;
+> +			interrupts = <GIC_SPI 951 IRQ_TYPE_EDGE_RISING>,
+> +				     <GIC_SPI 955 IRQ_TYPE_EDGE_RISING>,
+> +				     <GIC_SPI 953 IRQ_TYPE_EDGE_RISING>;
+> +			interrupt-names = "eventq",
+> +					  "gerror",
+> +					  "cmdq-sync";
+> +			#iommu-cells = <1>;
+> +			dma-coherent;
 > +
-> +	if (!master->cd_table.cdtab)
-> +		return;
-> +	cdptr = arm_smmu_get_cd_ptr(master, ssid);
-> +	if (WARN_ON(!cdptr))
-> +		return;
-> +	arm_smmu_write_cd_entry(master, ssid, cdptr, &target);
-> +}
+> +			/* The hypervisor prevents register access from Linux */
+> +			status = "reserved";
+> +		};
 > +
->   int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
->   			    struct arm_smmu_ctx_desc *cd)
->   {
-> @@ -2702,9 +2715,7 @@ static int arm_smmu_attach_dev(struct iommu_domain  
-> *domain, struct device *dev)
->   	case ARM_SMMU_DOMAIN_S2:
->   		arm_smmu_make_s2_domain_ste(&target, master, smmu_domain);
->   		arm_smmu_install_ste_for_dev(master, &target);
-> -		if (master->cd_table.cdtab)
-> -			arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID,
-> -						      NULL);
-> +		arm_smmu_clear_cd(master, IOMMU_NO_PASID);
->   		break;
->   	}
-
-> @@ -2752,8 +2763,7 @@ static int arm_smmu_attach_dev_ste(struct device  
-> *dev,
->   	 * arm_smmu_domain->devices to avoid races updating the same context
->   	 * descriptor from arm_smmu_share_asid().
->   	 */
-> -	if (master->cd_table.cdtab)
-> -		arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID, NULL);
-> +	arm_smmu_clear_cd(master, IOMMU_NO_PASID);
->   	return 0;
->   }
-
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h  
-> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 7078ed569fd4d3..87a7b57f566fbc 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -749,6 +749,8 @@ extern struct xarray arm_smmu_asid_xa;
->   extern struct mutex arm_smmu_asid_lock;
->   extern struct arm_smmu_ctx_desc quiet_cd;
-
-> +void arm_smmu_clear_cd(struct arm_smmu_master *master, ioasid_t ssid);
-> +
->   int arm_smmu_write_ctx_desc(struct arm_smmu_master *smmu_master, int  
-> ssid,
->   			    struct arm_smmu_ctx_desc *cd);
->   void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid);
-> --
-> 2.43.2
-
-
-Reviewed-by: Moritz Fischer <moritzf@google.com>
+>  		apps_smmu: iommu@15000000 {
+>  			compatible = "qcom,sc8280xp-smmu-500", "arm,mmu-500";
+>  			reg = <0 0x15000000 0 0x100000>;
+> 
+> -- 
+> 2.44.0
+> 
