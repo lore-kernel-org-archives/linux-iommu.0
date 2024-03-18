@@ -1,28 +1,27 @@
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
+Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D7413BBE7
-	for <iommu@lists.linux.dev>; Mon, 18 Mar 2024 13:05:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=14.137.139.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A80524438F
+	for <iommu@lists.linux.dev>; Mon, 18 Mar 2024 13:23:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=14.137.139.23
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710767138; cv=none; b=uVbRnHC8/Cb7UnN/OK48CxLuC4EXXLtfsQzhZO0JybstwV8TLu/dwEU8ixqEx4FzjrcSCJHEnV8iaWZT+CseD+zovy0BLsCKQu47wdtX9n9SwJXYS6jv3NKSvKQKRBc6HqFUI7/DPfbDdyCUEXPiOG2UdT5k5a/Aw3WmWVS3ms0=
+	t=1710768207; cv=none; b=ZjOhIKPsLAPWzLv2QOblCqM6GSULZDJkgY65Wpn9kl669ybVn9RQxKCmWLF2uRCmFkwoFVohJh5YNojjk2Yh/igXvB0a1KWmbWjRrx0DfcfttwQub29nvlDX8BW1LDDi21XSNCIatgKb6zFOIpUo/cSH++nVs7FiZJLnlMh5fXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710767138; c=relaxed/simple;
-	bh=j+WvT6VY0MWDb1dtFDjX5MTHHdryLEFjoY3E/4msKTQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=MxXqbKt82k5QeIU6QtHDdKx1nvCC0giEWQZR++iiXTUHBAUPqjvvTf32QsYAr/2yrLYJumCp/Rxh3roiMdO6OKZjsxVOHdKfwhvSq2a1lBbpJ0fYBYL547jozy5tMGUuLF/x1XGQ+QzkjAdm7SBhsLr1fuW3/CDUvAMszPO37QA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com; spf=pass smtp.mailfrom=huaweicloud.com; arc=none smtp.client-ip=14.137.139.154
+	s=arc-20240116; t=1710768207; c=relaxed/simple;
+	bh=sVMQ2WwTDTCT3C55Gs/Vv2ttOOQ2sw6WqofWzGXj7rw=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=e2g+X+h2cYHJJXPtTIh0kSHmW7hwOKhpmjcGPb8gK6DAIco1M5ARc+jV6PQpL5t6JJYDujdT6i1KUnSx9xbL4/N/NozUv5R9ox0hjINwIUeC/3ti1J+kb4gMEN6y9ryajLTqxQQkFnBp08spofyAvpqJQqBjnrgiD68JAGvhtgQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com; spf=pass smtp.mailfrom=huaweicloud.com; arc=none smtp.client-ip=14.137.139.23
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huaweicloud.com
 Received: from mail.maildlp.com (unknown [172.18.186.51])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4Tyvhg5wKFz9xGYx
-	for <iommu@lists.linux.dev>; Mon, 18 Mar 2024 20:45:23 +0800 (CST)
+	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4Tyvn74Vzgz9v7fY
+	for <iommu@lists.linux.dev>; Mon, 18 Mar 2024 20:49:15 +0800 (CST)
 Received: from mail02.huawei.com (unknown [7.182.16.27])
-	by mail.maildlp.com (Postfix) with ESMTP id D456D1404FC
-	for <iommu@lists.linux.dev>; Mon, 18 Mar 2024 21:05:20 +0800 (CST)
+	by mail.maildlp.com (Postfix) with ESMTP id 31230140496
+	for <iommu@lists.linux.dev>; Mon, 18 Mar 2024 21:05:06 +0800 (CST)
 Received: from huaweicloud.com (unknown [10.81.220.121])
-	by APP2 (Coremail) with SMTP id GxC2BwDXECX4O_hl1WCFBA--.53744S4;
-	Mon, 18 Mar 2024 14:05:20 +0100 (CET)
+	by APP2 (Coremail) with SMTP id GxC2BwDXECX4O_hl1WCFBA--.53744S2;
+	Mon, 18 Mar 2024 14:05:05 +0100 (CET)
 From: Petr Tesarik <petrtesarik@huaweicloud.com>
 To: Christoph Hellwig <hch@lst.de>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
@@ -34,12 +33,10 @@ To: Christoph Hellwig <hch@lst.de>,
 	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS)
 Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
 	Petr Tesarik <petr@tesarici.cz>
-Subject: [PATCH v2 2/2] bug: introduce ASSERT_VAR_CAN_HOLD()
-Date: Mon, 18 Mar 2024 14:04:47 +0100
-Message-Id: <20240318130447.594-3-petrtesarik@huaweicloud.com>
+Subject: [PATCH v2 0/2] swiotlb: allocate padding slots if necessary
+Date: Mon, 18 Mar 2024 14:04:45 +0100
+Message-Id: <20240318130447.594-1-petrtesarik@huaweicloud.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240318130447.594-1-petrtesarik@huaweicloud.com>
-References: <20240318130447.594-1-petrtesarik@huaweicloud.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,73 +44,51 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:GxC2BwDXECX4O_hl1WCFBA--.53744S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7Kw1DWF1xKw4ktr45GrW8tFb_yoW8WFy7pa
-	sxArn5KF4jqFyfZF12934DCF1fK34q9347Cas0gryYvF12qF9aqFWqkrW3WFyvqr4vgF43
-	Cw1SgrWYyw1UArDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUQGb4IE77IF4wAFF20E14v26rWj6s0DM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28IrcIa0xkI8VA2jI8067AKxVWUXw
-	A2048vs2IY020Ec7CjxVAFwI0_Xr0E3s1l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxS
-	w2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxV
-	W8JVWxJwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267AKxVW8
-	Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMc
-	Ij6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_
-	Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I
-	0E8cxan2IY04v7MxkF7I0En4kS14v26r4a6rW5MxkF7I0Ew4C26cxK6c8Ij28IcwCF04k2
-	0xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI
-	8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41l
-	IxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIx
-	AIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2
-	jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0piQtxsUUUUU=
+X-CM-TRANSID:GxC2BwDXECX4O_hl1WCFBA--.53744S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Xr45JFWkJr4DZr18GrW7Jwb_yoWDCFc_AF
+	W8JrWUAw1DZFnYyasagrsrArWvqr4jvr1xCa98XrsxJry3Zw1fZ3Z7KFWjqr1UWan8CFn7
+	tr95WryxCr17KjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUbD8YFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I6I8E6xAIw20E
+	Y4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwV
+	A0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWUJVWUCwA2z4x0Y4vE2Ix0cI8IcVCY1x02
+	67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26r4j6F4UM28EF7xvwVC2z280aVCY1x0267
+	AKxVW8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
+	x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+	0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v
+	6xkF7I0E8cxan2IY04v7MxkF7I0En4kS14v26r4a6rW5MxkF7I0Ew4C26cxK6c8Ij28Icw
+	CF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j
+	6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64
+	vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+	Cr1lIxAIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMI
+	IF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0piG-enUUUUU
+	=
 X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 
 From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 
-Introduce an ASSERT_VAR_CAN_HOLD() macro to check at build time that a
-variable can hold the given value.
+If the allocation alignment is bigger than IO_TLB_SIZE and min_align_mask
+covers some bits in the original address between IO_TLB_SIZE and
+alloc_align_mask, preserve these bits by allocating additional padding
+slots before the actual swiotlb buffer.
 
-Use this macro in swiotlb to make sure that the list and pad_slots fields
-of struct io_tlb_slot are big enough to hold the maximum possible value of
-IO_TLB_SEGSIZE.
+Changes from v1
+---------------
+* Rename padding to pad_slots.
+* Set pad_slots only for the first allocated non-padding slot.
+* Do not bother initializing orig_addr to INVALID_PHYS_ADDR.
+* Change list and pad_slots to unsigned short to avoid growing
+  struct io_tlb_slot on 32-bit targets.
+* Add build-time check that list and pad_slots can hold the maximum
+  allowed value of IO_TLB_SEGSIZE.
 
-Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
----
+Petr Tesarik (2):
+  swiotlb: extend buffer pre-padding to alloc_align_mask if necessary
+  bug: introduce ASSERT_VAR_CAN_HOLD()
+
  include/linux/build_bug.h | 10 ++++++++++
- kernel/dma/swiotlb.c      |  2 ++
- 2 files changed, 12 insertions(+)
+ kernel/dma/swiotlb.c      | 37 +++++++++++++++++++++++++++++++------
+ 2 files changed, 41 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/build_bug.h b/include/linux/build_bug.h
-index 3aa3640f8c18..6e2486508af0 100644
---- a/include/linux/build_bug.h
-+++ b/include/linux/build_bug.h
-@@ -86,4 +86,14 @@
- 		"Offset of " #field " in " #type " has changed.")
- 
- 
-+/*
-+ * Compile time check that a variable can hold the given value
-+ */
-+#define ASSERT_VAR_CAN_HOLD(var, value) ({		\
-+	typeof(value) __val = (value);			\
-+	typeof(var) __tmp = __val;			\
-+	BUILD_BUG_ON_MSG(__tmp != __val,		\
-+		#var " cannot hold " #value ".");	\
-+})
-+
- #endif	/* _LINUX_BUILD_BUG_H */
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index aefb05ff55e7..0737c1283f86 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -285,6 +285,8 @@ static void swiotlb_init_io_tlb_pool(struct io_tlb_pool *mem, phys_addr_t start,
- 		mem->areas[i].used = 0;
- 	}
- 
-+	ASSERT_VAR_CAN_HOLD(mem->slots[0].list, IO_TLB_SEGSIZE);
-+	ASSERT_VAR_CAN_HOLD(mem->slots[0].pad_slots, IO_TLB_SEGSIZE);
- 	for (i = 0; i < mem->nslabs; i++) {
- 		mem->slots[i].list = min(IO_TLB_SEGSIZE - io_tlb_offset(i),
- 					 mem->nslabs - i);
 -- 
 2.34.1
 
