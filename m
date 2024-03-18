@@ -1,142 +1,188 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD86528E39
-	for <iommu@lists.linux.dev>; Mon, 18 Mar 2024 09:21:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96F8335881
+	for <iommu@lists.linux.dev>; Mon, 18 Mar 2024 12:36:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710753681; cv=none; b=hvEg14N9gLDNUDquFcgRJLJKRrzqx3NS4R1GCKrcuche+JpkSYnLxepySrT9krIvB6dXgDa9270XCvRjcBVXiK3Nu5RdYbzvoQEjjs4EVMuthiFBOmjqcidQ/bxfrDdSZMgwTMRkIswasnRtLvy3lwGnltXGMndCiXxFRArXT4Y=
+	t=1710765391; cv=none; b=aD4IKZD+2YbUtvj+VOXuKXcaj5qNFxgZkfOZnMuWTBENOxAuHbcTANQGC9mvUK/ENb65LQzfe3R2YSx2EaQinVg9SbU4nos0gVTSfjGXqggwh6kc1egAyMnqbVSXYueZp7ss/20qIK1xfYBanKv1Q1sLnwOe/cNp5FMtDzHkI+k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710753681; c=relaxed/simple;
-	bh=5+6iTQ0gzis+PQcHuNf7VDmaig60PJvYvukmbUIlpQU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JEEWnh3SigxXYeiTxoESda2oOlu8xhGD/c6A+HAaBxariVmDDEVieizpinXBlz97cVBZGt9ctH3ccVHONNOqQQkPVgrt3k9l0l3WFgWNqo88ItybFxqTozY48kJmgaRnDyWjhSIlTj4AIj/LGCLndv2PxVmW+m0622C+B1r2ZaQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=YI7qyGXJ; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1710765391; c=relaxed/simple;
+	bh=w6v+8z+YhOwW3f6JS0gPrb++ZcNRF8i4d5DT7bIRorI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=CttpLtDcG5HvTDQl57m2/jXQyDb1ATXGw0h4WPi4+W+OLOZ8U8Vq0KThpRqxd32z9DweTvnwfMCQH8VrvmJlwPEoXwoNLWH2vfx5YKYEq9oOjqxL29EKo8mnE+mGYa3a6/QkC4NLajb0Pl/Lkw3HGLOSNYUkiilvebDXH7twmH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=mRC9Q33Y; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="YI7qyGXJ"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2d49f7e5d65so13328691fa.2
-        for <iommu@lists.linux.dev>; Mon, 18 Mar 2024 02:21:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1710753678; x=1711358478; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=lLj/tCGNP2MK0uv/n4AThhr2XVPFu3MQ0EBorGXinCk=;
-        b=YI7qyGXJzFkjOftIF+QMWaCG9RVMZnTyK4Gt8GCuwcV+4VzMqG3oFx7XM5d8am1uqZ
-         6MdV6k2Fr0z49mazwnENTKDgC54h2Nl6slWVn3h7QlT4c2gg7V+nv985uxT5/XgmTWL/
-         rLQWHGEQkACn2HSNadHXuZR/It9xd5rPxbG7yyLWS/m4o1+4WtfzSTtX+UueB4mkXJCQ
-         VMSouPIgkOefNCqDlXJE63ja3Ck3eUukhvSZwOBngr7tTrDTpwzxefv/gnMQ1r+XZzjp
-         ZWXYeSZ9VIuiG35EhoBttiodC9fcGEOcyJ1w1W1ju7z9IdY3I+PIdBmtqrE17mgV4bnF
-         uh4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710753678; x=1711358478;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lLj/tCGNP2MK0uv/n4AThhr2XVPFu3MQ0EBorGXinCk=;
-        b=bPT8pMccFckzQJEy/zv9r1RW57VRdxunZ1OdGkwCH1TyCTs2p3YbXthNZ4ZgljB0iQ
-         YNpFRpwxElrU4OjceUk6bekZbBNrjhre7hQ6RKoOPd23Amis18OybVzrdQdvIMEG/pg/
-         WIxRcenDIq22zDTLdJYdEIzt28w5nDMV7CVBT2B8kwzVo9U9pKx/upY2K8/xcvT1nsi8
-         A5/kqFV/qfuMH4oSIx4+Hbe0M5z45JHrnFrQpYKPASZMcAmnOIi8rndkuaJJgQvmW4sL
-         cXDYGMvuBLgwmWvqpRBwqHxTO+l4VhVh8OB8y/S5WigfdRx1AfJQ6WR2A4XYdR6+msGx
-         r6PA==
-X-Forwarded-Encrypted: i=1; AJvYcCUj89RZDg/zvfHozt+BEb+PQqtFMC+D8vmV8w8KrHb5mzd/w1/RSAly5H0uIpZbylvWnWJMu0D5VVBFRKcst2eb8swqw5Q=
-X-Gm-Message-State: AOJu0Yxr7yEGlEChETAB9Bw4MTWOKoDFQ4Wjy83RRMgxy+IK5F0rds6C
-	VIKvOFd1jqTRpnT/9Vwn+YTrSLehsNgvTK7+6DFlvfbwik1LapKRZJTjPZ6/KEU=
-X-Google-Smtp-Source: AGHT+IEyiY99jR9sVdK1Xei3RjmIYwEQfVpGB3cJ9kv1n8zHC1PY1YHncHzoFF8Q7qYrAKzwaduuLw==
-X-Received: by 2002:a2e:9357:0:b0:2d4:7455:8a02 with SMTP id m23-20020a2e9357000000b002d474558a02mr7412983ljh.21.1710753677917;
-        Mon, 18 Mar 2024 02:21:17 -0700 (PDT)
-Received: from [192.168.52.106] (078088045141.garwolin.vectranet.pl. [78.88.45.141])
-        by smtp.gmail.com with ESMTPSA id g11-20020a2e9ccb000000b002d34c754a9asm1366392ljj.109.2024.03.18.02.21.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Mar 2024 02:21:17 -0700 (PDT)
-Message-ID: <b9724b4c-7c99-4903-aa53-19592df5695f@linaro.org>
-Date: Mon, 18 Mar 2024 10:21:13 +0100
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="mRC9Q33Y"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id E2D3619B6DC;
+	Mon, 18 Mar 2024 13:36:17 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1710765378; bh=uevz9Ld0ob550XOVVlPWlxDGkxF8wBH+ABeMrkoqJgQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=mRC9Q33YkyeEmz7e5nDJkCWpWCKJ0sCZlHTRRhBh8CPDzz9sCbsz668wY9Cb0liir
+	 TxwI9Z0P/8RTh5GJodg010TOHpWrhssZk5tcUzen61w6K7GDGHmGI8t4unVRH0/5BV
+	 6qISg4lxfyiF/+nWU6L0aIYk4u2zPcdJEJ4LfXoz8DmqVhFvppQSQv5BIdo3udq9o0
+	 Oth1BNGR0XoLV3WsE5Y25GfjMGnotN/R9ioN7ldYTfJAI41bad9QPz2gbokCSkWdXO
+	 AvzDtyLuxrj95zQh/zUke88J0WoneTWRxD4FnFVH3GvDFovpju8ISh8Csv90p4foYD
+	 wsWpjdQA5vAjQ==
+Date: Mon, 18 Mar 2024 13:36:16 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: Will Deacon <will@kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "kernel-team@android.com"
+ <kernel-team@android.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
+ Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
+ <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [PATCH v6 1/6] swiotlb: Fix double-allocation of slots due to
+ broken alignment handling
+Message-ID: <20240318133616.18ec5e6e@meshulam.tesarici.cz>
+In-Reply-To: <BN7PR02MB41483F5D16B655F5764D14EBD42D2@BN7PR02MB4148.namprd02.prod.outlook.com>
+References: <20240308152829.25754-1-will@kernel.org>
+	<20240308152829.25754-2-will@kernel.org>
+	<BN7PR02MB41483F5D16B655F5764D14EBD42D2@BN7PR02MB4148.namprd02.prod.outlook.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/2] arm64: dts: qcom: sc8280xp: Describe the PCIe
- SMMUv3
-To: Bjorn Andersson <andersson@kernel.org>
-Cc: Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh@kernel.org>, Marijn Suijten
- <marijn.suijten@somainline.org>, linux-arm-msm@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- Johan Hovold <johan+linaro@kernel.org>
-References: <20231219-topic-8280_smmuv3-v2-0-c67bd3226687@linaro.org>
- <20231219-topic-8280_smmuv3-v2-2-c67bd3226687@linaro.org>
- <phledylmdu23yrw6f4x7fkefntrejuwagazebsnkgyxsweodzg@pddhnc2gwexz>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
- 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
- izWDgYvmBE8=
-In-Reply-To: <phledylmdu23yrw6f4x7fkefntrejuwagazebsnkgyxsweodzg@pddhnc2gwexz>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On 18.03.2024 02:31, Bjorn Andersson wrote:
-> On Sat, Mar 09, 2024 at 02:31:10PM +0100, Konrad Dybcio wrote:
->> SC8280XP actually has a third SMMU, which can be seen in e.g. the IORT
->> ACPI table and is used for the PCIe hosts.
->>
->> Unfortunately though, the secure firmware seems to be configured in a
->> way such that Linux can't touch it, not even read back the ID registers.
->> It also seems like the SMMU is configured to run in some sort of bypass
->> mode, completely opaque to the OS.
->>
->> Describe it so that one can configure it when running Linux as a
->> hypervisor (e.g with [1]) and for hardware description completeness.
->>
->> [1] https://github.com/TravMurav/slbounce
->> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+On Mon, 18 Mar 2024 03:39:07 +0000
+Michael Kelley <mhklinux@outlook.com> wrote:
+
+> From: Will Deacon <will@kernel.org> Sent: Friday, March 8, 2024 7:28 AM
+> > 
+> > 
+> > Fix the problem by treating the allocation alignment separately to any
+> > additional alignment requirements from the device, using the maximum
+> > of the two as the stride to search the buffer slots and taking care
+> > to ensure a minimum of page-alignment for buffers larger than a page.
+> > 
+> > This also resolves swiotlb allocation failures occuring due to the
+> > inclusion of ~PAGE_MASK in 'iotlb_align_mask' for large allocations and
+> > resulting in alignment requirements exceeding swiotlb_max_mapping_size().
+> > 
+> > Fixes: bbb73a103fbb ("swiotlb: fix a braino in the alignment check fix")
+> > Fixes: 0eee5ae10256 ("swiotlb: fix slot alignment checks")
+> > Cc: Christoph Hellwig <hch@lst.de>
+> > Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> > Cc: Robin Murphy <robin.murphy@arm.com>
+> > Cc: Dexuan Cui <decui@microsoft.com>
+> > Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+> > Reviewed-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+> > Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> > Signed-off-by: Will Deacon <will@kernel.org>
+> > ---
+> >  kernel/dma/swiotlb.c | 28 +++++++++++++++-------------
+> >  1 file changed, 15 insertions(+), 13 deletions(-)
+> > 
+> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> > index b079a9a8e087..2ec2cc81f1a2 100644
+> > --- a/kernel/dma/swiotlb.c
+> > +++ b/kernel/dma/swiotlb.c
+> > @@ -982,7 +982,7 @@ static int swiotlb_search_pool_area(struct device
+> > *dev, struct io_tlb_pool *pool
+> >  		phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
+> >  	unsigned long max_slots = get_max_slots(boundary_mask);
+> >  	unsigned int iotlb_align_mask =
+> > -		dma_get_min_align_mask(dev) | alloc_align_mask;
+> > +		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
+> >  	unsigned int nslots = nr_slots(alloc_size), stride;
+> >  	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+> >  	unsigned int index, slots_checked, count = 0, i;
+> > @@ -993,19 +993,18 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+> >  	BUG_ON(!nslots);
+> >  	BUG_ON(area_index >= pool->nareas);
+> > 
+> > +	/*
+> > +	 * For mappings with an alignment requirement don't bother looping to
+> > +	 * unaligned slots once we found an aligned one.
+> > +	 */
+> > +	stride = get_max_slots(max(alloc_align_mask, iotlb_align_mask));
+> > +
+> >  	/*
+> >  	 * For allocations of PAGE_SIZE or larger only look for page aligned
+> >  	 * allocations.
+> >  	 */
+> >  	if (alloc_size >= PAGE_SIZE)
+> > -		iotlb_align_mask |= ~PAGE_MASK;
+> > -	iotlb_align_mask &= ~(IO_TLB_SIZE - 1);
+> > -
+> > -	/*
+> > -	 * For mappings with an alignment requirement don't bother looping to
+> > -	 * unaligned slots once we found an aligned one.
+> > -	 */
+> > -	stride = (iotlb_align_mask >> IO_TLB_SHIFT) + 1;
+> > +		stride = umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
+> > 
+> >  	spin_lock_irqsave(&area->lock, flags);
+> >  	if (unlikely(nslots > pool->area_nslabs - area->used))
+> > @@ -1015,11 +1014,14 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
+> >  	index = area->index;
+> > 
+> >  	for (slots_checked = 0; slots_checked < pool->area_nslabs; ) {
+> > -		slot_index = slot_base + index;
+> > +		phys_addr_t tlb_addr;
+> > 
+> > -		if (orig_addr &&
+> > -		    (slot_addr(tbl_dma_addr, slot_index) &
+> > -		     iotlb_align_mask) != (orig_addr & iotlb_align_mask)) {
+> > +		slot_index = slot_base + index;
+> > +		tlb_addr = slot_addr(tbl_dma_addr, slot_index);
+> > +
+> > +		if ((tlb_addr & alloc_align_mask) ||
+> > +		    (orig_addr && (tlb_addr & iotlb_align_mask) !=
+> > +				  (orig_addr & iotlb_align_mask))) {
+> >  			index = wrap_area_index(pool, index + 1);
+> >  			slots_checked++;
+> >  			continue;
+> > --  
 > 
-> Have this information been validated? Or are you suggesting we add it
-> for documentation purposes?
+> Question for IOMMU folks:  alloc_align_mask is set only in
+> iommu_dma_map_page(), using the IOMMU granule size.
+> Can the granule ever be larger than PAGE_SIZE?
 
-I confirmed the platforms boots up with this if the hypervisor is gone.
+I don't feel as part of the IOMMU folks, but since I have spent one and
+a half aeons looking around DMA-related code, let me answer anyway.
 
-Konrad
+No, this is not possible, see here:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/iommu/iova.c?h=v6.8#n61
+
+HTH
+Petr T
+
+>  If so,
+> swiotlb_search_pool_area() can fail to find slots even when
+> the swiotlb is empty.
+> 
+> The failure happens when alloc_align_mask is larger than
+> PAGE_SIZE and the alloc_size is the swiotlb max of 256 Kbytes
+> (or even a bit smaller in some cases). The swiotlb memory
+> pool is allocated in swiotlb_memblock_alloc() with PAGE_SIZE
+> alignment.  On x86/x64, if alloc_align_mask is 8191 and the
+> pool start address is something like XXXX1000, slot 0 won't
+> satisfy alloc_align_mask.  Slot 1 satisfies alloc_align_mask,
+> but has a size of 127 slots and can't fulfill a 256 Kbyte request.
+> The problem repeats through the entire swiotlb and the
+> allocation fails.
+> 
+> Updating swiotlb_memblock_alloc() to use an alignment of
+> IO_TLB_SIZE * IO_TLB_SEGSIZE (i.e., 256 Kbytes) solves the
+> problem for all viable configurations.
+> 
+> Michael
+> 
+
