@@ -1,188 +1,87 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96F8335881
-	for <iommu@lists.linux.dev>; Mon, 18 Mar 2024 12:36:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A60293FB90
+	for <iommu@lists.linux.dev>; Mon, 18 Mar 2024 13:05:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710765391; cv=none; b=aD4IKZD+2YbUtvj+VOXuKXcaj5qNFxgZkfOZnMuWTBENOxAuHbcTANQGC9mvUK/ENb65LQzfe3R2YSx2EaQinVg9SbU4nos0gVTSfjGXqggwh6kc1egAyMnqbVSXYueZp7ss/20qIK1xfYBanKv1Q1sLnwOe/cNp5FMtDzHkI+k=
+	t=1710767110; cv=none; b=GD1HxBnZ1lKBnecuHf/Lzh5q7v8vYKWUNNo/gNXxfAccS5c4MDtGBW1ABUWbQVswxiW0yrxWF+CUick3WEQwRdOpKaDbGsw6Ebpj6J09/Hg6iD3Iy4TW36lxn9ELgVXIvDbXsdaKQJFDU/1eMibE9s9bbAN8Ldtw6alzs8bT0SA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710765391; c=relaxed/simple;
-	bh=w6v+8z+YhOwW3f6JS0gPrb++ZcNRF8i4d5DT7bIRorI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CttpLtDcG5HvTDQl57m2/jXQyDb1ATXGw0h4WPi4+W+OLOZ8U8Vq0KThpRqxd32z9DweTvnwfMCQH8VrvmJlwPEoXwoNLWH2vfx5YKYEq9oOjqxL29EKo8mnE+mGYa3a6/QkC4NLajb0Pl/Lkw3HGLOSNYUkiilvebDXH7twmH4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=mRC9Q33Y; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="mRC9Q33Y"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id E2D3619B6DC;
-	Mon, 18 Mar 2024 13:36:17 +0100 (CET)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1710765378; bh=uevz9Ld0ob550XOVVlPWlxDGkxF8wBH+ABeMrkoqJgQ=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=mRC9Q33YkyeEmz7e5nDJkCWpWCKJ0sCZlHTRRhBh8CPDzz9sCbsz668wY9Cb0liir
-	 TxwI9Z0P/8RTh5GJodg010TOHpWrhssZk5tcUzen61w6K7GDGHmGI8t4unVRH0/5BV
-	 6qISg4lxfyiF/+nWU6L0aIYk4u2zPcdJEJ4LfXoz8DmqVhFvppQSQv5BIdo3udq9o0
-	 Oth1BNGR0XoLV3WsE5Y25GfjMGnotN/R9ioN7ldYTfJAI41bad9QPz2gbokCSkWdXO
-	 AvzDtyLuxrj95zQh/zUke88J0WoneTWRxD4FnFVH3GvDFovpju8ISh8Csv90p4foYD
-	 wsWpjdQA5vAjQ==
-Date: Mon, 18 Mar 2024 13:36:16 +0100
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: Will Deacon <will@kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "kernel-team@android.com"
- <kernel-team@android.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski
- <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
- Tesarik <petr.tesarik1@huawei-partners.com>, Dexuan Cui
- <decui@microsoft.com>, Nicolin Chen <nicolinc@nvidia.com>
-Subject: Re: [PATCH v6 1/6] swiotlb: Fix double-allocation of slots due to
- broken alignment handling
-Message-ID: <20240318133616.18ec5e6e@meshulam.tesarici.cz>
-In-Reply-To: <BN7PR02MB41483F5D16B655F5764D14EBD42D2@BN7PR02MB4148.namprd02.prod.outlook.com>
-References: <20240308152829.25754-1-will@kernel.org>
-	<20240308152829.25754-2-will@kernel.org>
-	<BN7PR02MB41483F5D16B655F5764D14EBD42D2@BN7PR02MB4148.namprd02.prod.outlook.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
+	s=arc-20240116; t=1710767110; c=relaxed/simple;
+	bh=ZarPO9ClVSp9miIoAdrkxdLyf33d8aB50kRIYFkoTQw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OmVukxA7/tlOu46pZHajy61ghmfUjiy80UnHa+YbWwssppVAq82mnlDhoFGukZovUbn46NgYyy0PMP4rsH+DRzKvk08eAH0eRZVY0Wb/kciKPMRi5OoIdpn93JyyzWVQnE28hPTL3byye2a5zsxPr1npPc/962JC15+JgazVOuI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DCE18DA7;
+	Mon, 18 Mar 2024 06:05:40 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 87B973F23F;
+	Mon, 18 Mar 2024 06:05:04 -0700 (PDT)
+Message-ID: <b4488238-0c05-4d06-a60d-10e00460ea98@arm.com>
+Date: Mon, 18 Mar 2024 13:05:03 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] swiotlb: extend buffer pre-padding to
+ alloc_align_mask if necessary
+Content-Language: en-GB
+To: Michael Kelley <mhklinux@outlook.com>,
+ Petr Tesarik <petrtesarik@huaweicloud.com>, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Will Deacon <will@kernel.org>,
+ Nicolin Chen <nicolinc@nvidia.com>,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+ open list <linux-kernel@vger.kernel.org>
+Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
+ Petr Tesarik <petr.tesarik1@huawei-partners.com>
+References: <20240312134149.497-1-petrtesarik@huaweicloud.com>
+ <SN6PR02MB4157FB27CD890E9F29408926D4282@SN6PR02MB4157.namprd02.prod.outlook.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <SN6PR02MB4157FB27CD890E9F29408926D4282@SN6PR02MB4157.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On Mon, 18 Mar 2024 03:39:07 +0000
-Michael Kelley <mhklinux@outlook.com> wrote:
-
-> From: Will Deacon <will@kernel.org> Sent: Friday, March 8, 2024 7:28 AM
-> > 
-> > 
-> > Fix the problem by treating the allocation alignment separately to any
-> > additional alignment requirements from the device, using the maximum
-> > of the two as the stride to search the buffer slots and taking care
-> > to ensure a minimum of page-alignment for buffers larger than a page.
-> > 
-> > This also resolves swiotlb allocation failures occuring due to the
-> > inclusion of ~PAGE_MASK in 'iotlb_align_mask' for large allocations and
-> > resulting in alignment requirements exceeding swiotlb_max_mapping_size().
-> > 
-> > Fixes: bbb73a103fbb ("swiotlb: fix a braino in the alignment check fix")
-> > Fixes: 0eee5ae10256 ("swiotlb: fix slot alignment checks")
-> > Cc: Christoph Hellwig <hch@lst.de>
-> > Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> > Cc: Robin Murphy <robin.murphy@arm.com>
-> > Cc: Dexuan Cui <decui@microsoft.com>
-> > Reviewed-by: Michael Kelley <mhklinux@outlook.com>
-> > Reviewed-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-> > Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> > Signed-off-by: Will Deacon <will@kernel.org>
-> > ---
-> >  kernel/dma/swiotlb.c | 28 +++++++++++++++-------------
-> >  1 file changed, 15 insertions(+), 13 deletions(-)
-> > 
-> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> > index b079a9a8e087..2ec2cc81f1a2 100644
-> > --- a/kernel/dma/swiotlb.c
-> > +++ b/kernel/dma/swiotlb.c
-> > @@ -982,7 +982,7 @@ static int swiotlb_search_pool_area(struct device
-> > *dev, struct io_tlb_pool *pool
-> >  		phys_to_dma_unencrypted(dev, pool->start) & boundary_mask;
-> >  	unsigned long max_slots = get_max_slots(boundary_mask);
-> >  	unsigned int iotlb_align_mask =
-> > -		dma_get_min_align_mask(dev) | alloc_align_mask;
-> > +		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
-> >  	unsigned int nslots = nr_slots(alloc_size), stride;
-> >  	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
-> >  	unsigned int index, slots_checked, count = 0, i;
-> > @@ -993,19 +993,18 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
-> >  	BUG_ON(!nslots);
-> >  	BUG_ON(area_index >= pool->nareas);
-> > 
-> > +	/*
-> > +	 * For mappings with an alignment requirement don't bother looping to
-> > +	 * unaligned slots once we found an aligned one.
-> > +	 */
-> > +	stride = get_max_slots(max(alloc_align_mask, iotlb_align_mask));
-> > +
-> >  	/*
-> >  	 * For allocations of PAGE_SIZE or larger only look for page aligned
-> >  	 * allocations.
-> >  	 */
-> >  	if (alloc_size >= PAGE_SIZE)
-> > -		iotlb_align_mask |= ~PAGE_MASK;
-> > -	iotlb_align_mask &= ~(IO_TLB_SIZE - 1);
-> > -
-> > -	/*
-> > -	 * For mappings with an alignment requirement don't bother looping to
-> > -	 * unaligned slots once we found an aligned one.
-> > -	 */
-> > -	stride = (iotlb_align_mask >> IO_TLB_SHIFT) + 1;
-> > +		stride = umax(stride, PAGE_SHIFT - IO_TLB_SHIFT + 1);
-> > 
-> >  	spin_lock_irqsave(&area->lock, flags);
-> >  	if (unlikely(nslots > pool->area_nslabs - area->used))
-> > @@ -1015,11 +1014,14 @@ static int swiotlb_search_pool_area(struct device *dev, struct io_tlb_pool *pool
-> >  	index = area->index;
-> > 
-> >  	for (slots_checked = 0; slots_checked < pool->area_nslabs; ) {
-> > -		slot_index = slot_base + index;
-> > +		phys_addr_t tlb_addr;
-> > 
-> > -		if (orig_addr &&
-> > -		    (slot_addr(tbl_dma_addr, slot_index) &
-> > -		     iotlb_align_mask) != (orig_addr & iotlb_align_mask)) {
-> > +		slot_index = slot_base + index;
-> > +		tlb_addr = slot_addr(tbl_dma_addr, slot_index);
-> > +
-> > +		if ((tlb_addr & alloc_align_mask) ||
-> > +		    (orig_addr && (tlb_addr & iotlb_align_mask) !=
-> > +				  (orig_addr & iotlb_align_mask))) {
-> >  			index = wrap_area_index(pool, index + 1);
-> >  			slots_checked++;
-> >  			continue;
-> > --  
+On 15/03/2024 2:53 am, Michael Kelley wrote:
+[...]
+>> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+>> index 86fe172b5958..8ce11abc691f 100644
+>> --- a/kernel/dma/swiotlb.c
+>> +++ b/kernel/dma/swiotlb.c
+>> @@ -69,11 +69,13 @@
+>>    * @alloc_size:	Size of the allocated buffer.
+>>    * @list:	The free list describing the number of free entries available
+>>    *		from each index.
+>> + * @padding:    Number of preceding padding slots.
+>>    */
+>>   struct io_tlb_slot {
+>>   	phys_addr_t orig_addr;
+>>   	size_t alloc_size;
+>>   	unsigned int list;
+>> +	unsigned int padding;
 > 
-> Question for IOMMU folks:  alloc_align_mask is set only in
-> iommu_dma_map_page(), using the IOMMU granule size.
-> Can the granule ever be larger than PAGE_SIZE?
+> Even without the padding field, I presume that in
+> 64-bit builds this struct is already 24 bytes in size so as
+> to maintain 64-bit alignment for the orig_addr and
+> alloc_size fields. If that's the case, then adding the
+> padding field doesn't change the amount of memory
+> required for the slot array.  Is that correct? Both the
+> "list" and "padding" fields contain only small integers,
+> but presumably reducing their size from "int" to "short"
+> wouldn't help except in 32-bit builds.
 
-I don't feel as part of the IOMMU folks, but since I have spent one and
-a half aeons looking around DMA-related code, let me answer anyway.
+Technically I think we could shrink the whole thing down to 16 bytes*, 
+since just 24 bits of size should still be more than enough, with the 
+remaining 8 bits similarly plenty for a padding slot count. Depends if 
+we think the overall memory saving is worth the marginal extra 
+complexity of packing values into bitfields.
 
-No, this is not possible, see here:
+Thanks,
+Robin.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/iommu/iova.c?h=v6.8#n61
 
-HTH
-Petr T
-
->  If so,
-> swiotlb_search_pool_area() can fail to find slots even when
-> the swiotlb is empty.
-> 
-> The failure happens when alloc_align_mask is larger than
-> PAGE_SIZE and the alloc_size is the swiotlb max of 256 Kbytes
-> (or even a bit smaller in some cases). The swiotlb memory
-> pool is allocated in swiotlb_memblock_alloc() with PAGE_SIZE
-> alignment.  On x86/x64, if alloc_align_mask is 8191 and the
-> pool start address is something like XXXX1000, slot 0 won't
-> satisfy alloc_align_mask.  Slot 1 satisfies alloc_align_mask,
-> but has a size of 127 slots and can't fulfill a 256 Kbyte request.
-> The problem repeats through the entire swiotlb and the
-> allocation fails.
-> 
-> Updating swiotlb_memblock_alloc() to use an alignment of
-> IO_TLB_SIZE * IO_TLB_SEGSIZE (i.e., 256 Kbytes) solves the
-> problem for all viable configurations.
-> 
-> Michael
-> 
-
+* The relevance of SWIOTLB to 32-bit builds is primarily going to be for 
+PAE cases where phys_addr_t is still 64-bit.
