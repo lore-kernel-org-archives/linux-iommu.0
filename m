@@ -1,323 +1,95 @@
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 537F08003D
-	for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 13:31:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 37B7281722
+	for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 13:53:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710855119; cv=none; b=rvLDEJHVNhOl/EkHuDRqXZMiD10l2ru/VNZ3zSWZA4d7Zno+CTFwT9L8k674h9wMSnhUR6qbgOF2cOyS/Hz1nAXdI/hvvmj5rqpbonPes3EEXzRTgOCWoD1DzShWR/bgJTQZczD3HTVQwx3E8DwwYiaMd8yswqAG3IqqO3Onud4=
+	t=1710856420; cv=none; b=E37sCljsOah45leqNovwdv6x+8dpgCkbz/nc5ISD47HlocfA4esK4sURQ2iYt0OH3fEbQZeubCnSOVYFcjZ7mw6GKZf0d3XuoKcPdFMVlTJqR/cUa3saVKfyjUX9CcRLg0xtRDALYKAkSe7yxhVVUM56hJcVzBKxKC0g7ZFnG2M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710855119; c=relaxed/simple;
-	bh=gyMSZt5dDhzgsNEYMrfAF2GNRjz+kq0/xKH02bmGLO8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=En/w5tIbOWSxLhL7BIbUk08PlBJxIz2V8tqHYb+LG2aeXGEhRLB0KEqZKkM1MjGa35+5q4OPDS3W0OROd59gA5+iBMC1BdKYeuTKlTpPBhl+vuV6K811DU2FeZFx+jrpn8npobIrVxBZFnz10xdG2GKSoMzSvjGHKoL543hJIIA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=vDvJxFTp; arc=none smtp.client-ip=209.85.160.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="vDvJxFTp"
-Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-430d3fcc511so218751cf.1
-        for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 06:31:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1710855116; x=1711459916; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zCTNKcOemRKHIJbnQDVL6FBmnD6Nifk9uyED08/a8/o=;
-        b=vDvJxFTpTIo53H8jH/i+jOA89qs/ZBIWtPKPPpbQHSPAy9Dqk20IQhh01LTFNRJHxv
-         YrCDmg4/EnfI0xVF0LwYfvsLGW2GU8qjCr+WsTxsn2LpNgVA+XeAUyGmtqUfBq7KflZw
-         9jOYQGDFXO1473Y3NYuqJc0pHszyCWR9Ymox7hYH9HfzPW9Krkhb6QkI6mDABGQBWSMO
-         mAFwgq3JSHIGqsBVFQO1e2NPJel47tBNyzIzKHxjP7XdBIFxf9iWXLqj1N7TqzcMutdR
-         nAPPoRRmOkZd6SOjuzHd/rBEjvwDTyNiAWtV19PftfNMypDmyRutFcogJUh25ZpXzLdF
-         GrEg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710855116; x=1711459916;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zCTNKcOemRKHIJbnQDVL6FBmnD6Nifk9uyED08/a8/o=;
-        b=WtORlaJ178bNO6puXexCmbSszv9cFdvFWeAestwLNs9B12B/LrTHZzoNH6gQITgHgO
-         K0ZEZVjTDd+rgbfIR//2kMzIeKHXVyVSvs1656d1w4D/2kdVqOtb4wuzQMudzUT/hu0W
-         EdOzZNr36BObYnTG9mnr+wK1PWKS774cRMVnCldDyktRcSKe6t/qoo+SgZatppCqFoKC
-         onem2h56aWhvTXxUjRU/KwnM//4qk/0q77A764s1dVA/gYDJLMoz8CBFwg7mIeIHmyTS
-         0rl8eK4QUajP2tb236byg0j5svTYVyjzEUgKIPCwpqjaMvsFjgCdSm0iUtG/IWjeCaEw
-         +vqQ==
-X-Gm-Message-State: AOJu0Yy0pCVCIUbXWZZJosf1BNdrRpgypttbs5y2ccndRW3LXOOMHkgb
-	dFQeC2utDzKjIFChkGSEy7OkK4kdwdsn2ERlAgpKygY1YAsGkr7YVa+BRA+YBGfMpVZ6KmMBI7W
-	VmmijrWKAMSfQCWBC6DfEDsNmccU88zZH6aK6
-X-Google-Smtp-Source: AGHT+IFDxCVQqhylUAnjRaojTSv9eGRLtRx8S0Uu7+luoQb+S355PpxqHLm/0B3umSOhUayv+yxGo1uVOPkDwFF+j3w=
-X-Received: by 2002:a05:622a:134f:b0:430:e9f8:6b03 with SMTP id
- w15-20020a05622a134f00b00430e9f86b03mr181310qtk.7.1710855115949; Tue, 19 Mar
- 2024 06:31:55 -0700 (PDT)
+	s=arc-20240116; t=1710856420; c=relaxed/simple;
+	bh=l1tlpDCQ2bSEpQZ9E3s9/g28w3A6nWny3ZLXbyWSsDQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uVW/jqh8yCp3N6/zeAq+ViFeDeB6lziP/yAcVEz8QwKlQ35zOSJgGXbPVgSHcpx2LCfLdCoIXjkTS9XDEKjl9o8ulpj4IxQOefUlTqIgM/ghuhYtC55LrCw88VWrnTOz70sFEGsn2C5AYT5IZ1aK9/XKQx8pj1I7ycoWcSJ0VOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5F600106F;
+	Tue, 19 Mar 2024 06:54:12 -0700 (PDT)
+Received: from [10.57.52.192] (unknown [10.57.52.192])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 123473F762;
+	Tue, 19 Mar 2024 06:53:34 -0700 (PDT)
+Message-ID: <9b2a681e-1191-4cf7-8da7-14aa2c1fa455@arm.com>
+Date: Tue, 19 Mar 2024 13:53:32 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com> <15-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
-In-Reply-To: <15-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Tue, 19 Mar 2024 21:31:17 +0800
-Message-ID: <CAKHBV24fgg97mpfiTfeppUEPhSDoQN54BG0GRNi1pw3hDdBeqw@mail.gmail.com>
-Subject: Re: [PATCH v5 15/27] iommu/arm-smmu-v3: Add ssid to struct arm_smmu_master_domain
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, 
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/2] dt-bindings: iommu: arm,smmu-v3: Add SC8280XP
+ compatible
+Content-Language: en-GB
+To: Konrad Dybcio <konrad.dybcio@linaro.org>,
+ Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+ Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+ linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, Johan Hovold <johan+linaro@kernel.org>
+References: <20231219-topic-8280_smmuv3-v2-0-c67bd3226687@linaro.org>
+ <20231219-topic-8280_smmuv3-v2-1-c67bd3226687@linaro.org>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20231219-topic-8280_smmuv3-v2-1-c67bd3226687@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Mar 5, 2024 at 7:44=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
-te:
->
-> Prepare to allow a S1 domain to be attached to a PASID as well. Keep trac=
-k
-> of the SSID the domain is using on each master in the
-> arm_smmu_master_domain.
->
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+On 2024-03-09 1:31 pm, Konrad Dybcio wrote:
+> The smmu-v3 binding currently doesn't differentiate the SoCs it's
+> implemented on. This is a poor design choice that may bite in the future,
+> should any quirks surface.
+
+That doesn't seem entirely fair to say - the vast majority of bindings 
+don't have separate compatibles for every known integration of the same 
+implementation in different SoCs. And in this case we don't have 
+per-implementation compatibles for quirks and errata because the 
+implementation is architecturally discoverable from the SMMU_IIDR register.
+
+We have the whole mess for QCom SMMUv2 because the effective 
+*implementation* is a mix of hardware and hypervisor, whose behaviour 
+does seem to vary on almost a per-SoC basis. I'm not at all keen to 
+start repeating that here without very good reason, and that of 
+"documenting" a device which we typically expect to not even be 
+accessible isn't really convincing me...
+
+Thanks,
+Robin.
+
+> 
+> Add a compatible for the instance found on Qualcomm SC8280XP.
+> 
+> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
 > ---
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 15 ++++---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 42 +++++++++++++++----
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  5 ++-
->  3 files changed, 43 insertions(+), 19 deletions(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/io=
-mmu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index 9a285b828e8b12..ab9de8e36c45f5 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -47,13 +47,12 @@ arm_smmu_update_s1_domain_cd_entry(struct arm_smmu_do=
-main *smmu_domain)
->                 struct arm_smmu_master *master =3D master_domain->master;
->                 struct arm_smmu_cd *cdptr;
->
-> -               /* S1 domains only support RID attachment right now */
-> -               cdptr =3D arm_smmu_get_cd_ptr(master, IOMMU_NO_PASID);
-> +               cdptr =3D arm_smmu_get_cd_ptr(master, master_domain->ssid=
-);
->                 if (WARN_ON(!cdptr))
->                         continue;
->
->                 arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
-> -               arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
-> +               arm_smmu_write_cd_entry(master, master_domain->ssid, cdpt=
-r,
->                                         &target_cd);
->         }
->         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-> @@ -293,8 +292,8 @@ static void arm_smmu_mm_arch_invalidate_secondary_tlb=
-s(struct mmu_notifier *mn,
->                                                     smmu_domain);
->         }
->
-> -       arm_smmu_atc_inv_domain(smmu_domain, mm_get_enqcmd_pasid(mm), sta=
-rt,
-> -                               size);
-> +       arm_smmu_atc_inv_domain_sva(smmu_domain, mm_get_enqcmd_pasid(mm),=
- start,
-> +                                   size);
->  }
->
->  static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struc=
-t *mm)
-> @@ -331,7 +330,7 @@ static void arm_smmu_mm_release(struct mmu_notifier *=
-mn, struct mm_struct *mm)
->         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
->
->         arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
-> -       arm_smmu_atc_inv_domain(smmu_domain, mm_get_enqcmd_pasid(mm), 0, =
-0);
-> +       arm_smmu_atc_inv_domain_sva(smmu_domain, mm_get_enqcmd_pasid(mm),=
- 0, 0);
->
->         smmu_mn->cleared =3D true;
->         mutex_unlock(&sva_lock);
-> @@ -410,8 +409,8 @@ static void arm_smmu_mmu_notifier_put(struct arm_smmu=
-_mmu_notifier *smmu_mn)
->          */
->         if (!smmu_mn->cleared) {
->                 arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
-> -               arm_smmu_atc_inv_domain(smmu_domain, mm_get_enqcmd_pasid(=
-mm), 0,
-> -                                       0);
-> +               arm_smmu_atc_inv_domain_sva(smmu_domain,
-> +                                           mm_get_enqcmd_pasid(mm), 0, 0=
-);
->         }
->
->         /* Frees smmu_mn */
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
-arm/arm-smmu-v3/arm-smmu-v3.c
-> index 45f2190fc31786..26c6b9f6f34fd3 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2030,8 +2030,8 @@ static int arm_smmu_atc_inv_master(struct arm_smmu_=
-master *master)
->         return arm_smmu_cmdq_batch_submit(master->smmu, &cmds);
->  }
->
-> -int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssi=
-d,
-> -                           unsigned long iova, size_t size)
-> +static int __arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain=
-,
-> +                                    ioasid_t ssid, unsigned long iova, s=
-ize_t size)
->  {
->         struct arm_smmu_master_domain *master_domain;
->         int i;
-> @@ -2059,8 +2059,6 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain =
-*smmu_domain, int ssid,
->         if (!atomic_read(&smmu_domain->nr_ats_masters))
->                 return 0;
->
-> -       arm_smmu_atc_inv_to_cmd(ssid, iova, size, &cmd);
-> -
->         cmds.num =3D 0;
->
->         spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> @@ -2071,6 +2069,16 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain=
- *smmu_domain, int ssid,
->                 if (!master->ats_enabled)
->                         continue;
->
-> +               /*
-> +                * Non-zero ssid means SVA is co-opting the S1 domain to =
-issue
-> +                * invalidations for SVA PASIDs.
-> +                */
-> +               if (ssid !=3D IOMMU_NO_PASID)
-> +                       arm_smmu_atc_inv_to_cmd(ssid, iova, size, &cmd);
-> +               else
-> +                       arm_smmu_atc_inv_to_cmd(master_domain->ssid, iova=
-, size,
-> +                                               &cmd);
-> +
->                 for (i =3D 0; i < master->num_streams; i++) {
->                         cmd.atc.sid =3D master->streams[i].id;
->                         arm_smmu_cmdq_batch_add(smmu_domain->smmu, &cmds,=
- &cmd);
-> @@ -2081,6 +2089,19 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain=
- *smmu_domain, int ssid,
->         return arm_smmu_cmdq_batch_submit(smmu_domain->smmu, &cmds);
->  }
->
-> +static int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
-> +                                  unsigned long iova, size_t size)
-> +{
-> +       return __arm_smmu_atc_inv_domain(smmu_domain, IOMMU_NO_PASID, iov=
-a,
-> +                                        size);
-> +}
-> +
-> +int arm_smmu_atc_inv_domain_sva(struct arm_smmu_domain *smmu_domain,
-> +                               ioasid_t ssid, unsigned long iova, size_t=
- size)
-> +{
-> +       return __arm_smmu_atc_inv_domain(smmu_domain, ssid, iova, size);
-> +}
-> +
->  /* IO_PGTABLE API */
->  static void arm_smmu_tlb_inv_context(void *cookie)
->  {
-> @@ -2102,7 +2123,7 @@ static void arm_smmu_tlb_inv_context(void *cookie)
->                 cmd.tlbi.vmid   =3D smmu_domain->s2_cfg.vmid;
->                 arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
->         }
-> -       arm_smmu_atc_inv_domain(smmu_domain, IOMMU_NO_PASID, 0, 0);
-> +       arm_smmu_atc_inv_domain(smmu_domain, 0, 0);
->  }
->
->  static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
-> @@ -2200,7 +2221,7 @@ static void arm_smmu_tlb_inv_range_domain(unsigned =
-long iova, size_t size,
->          * Unfortunately, this can't be leaf-only since we may have
->          * zapped an entire table.
->          */
-> -       arm_smmu_atc_inv_domain(smmu_domain, IOMMU_NO_PASID, iova, size);
-> +       arm_smmu_atc_inv_domain(smmu_domain, iova, size);
->  }
->
->  void arm_smmu_tlb_inv_range_asid(unsigned long iova, size_t size, int as=
-id,
-> @@ -2539,7 +2560,8 @@ static void arm_smmu_disable_pasid(struct arm_smmu_=
-master *master)
->
->  static struct arm_smmu_master_domain *
->  arm_smmu_find_master_domain(struct arm_smmu_domain *smmu_domain,
-> -                           struct arm_smmu_master *master)
-> +                           struct arm_smmu_master *master,
-> +                           ioasid_t ssid)
->  {
->         struct arm_smmu_master_domain *master_domain;
->
-> @@ -2547,7 +2569,8 @@ arm_smmu_find_master_domain(struct arm_smmu_domain =
-*smmu_domain,
->
->         list_for_each_entry(master_domain, &smmu_domain->devices,
->                             devices_elm) {
-> -               if (master_domain->master =3D=3D master)
-> +               if (master_domain->master =3D=3D master &&
-> +                   master_domain->ssid =3D=3D ssid)
->                         return master_domain;
->         }
->         return NULL;
-> @@ -2580,7 +2603,8 @@ static void arm_smmu_remove_master_domain(struct ar=
-m_smmu_master *master,
->                 return;
->
->         spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> -       master_domain =3D arm_smmu_find_master_domain(smmu_domain, master=
-);
-> +       master_domain =3D arm_smmu_find_master_domain(smmu_domain, master=
-,
-> +                                                   IOMMU_NO_PASID);
->         if (master_domain) {
->                 list_del(&master_domain->devices_elm);
->                 kfree(master_domain);
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/=
-arm/arm-smmu-v3/arm-smmu-v3.h
-> index c4b79bc52991be..98dc5885c48655 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -738,6 +738,7 @@ struct arm_smmu_domain {
->  struct arm_smmu_master_domain {
->         struct list_head devices_elm;
->         struct arm_smmu_master *master;
-> +       u16 ssid;
->  };
-
-SMMU_IDR1.SSIDSIZE may be up to 20 according to the spec. The value
-read from this register is used to populate iommu.max_pasids as well
-as to compute the smmu/master ssid_bits fields so u16 is insufficient
-here.
-
->
->  static inline struct arm_smmu_domain *to_smmu_domain(struct iommu_domain=
- *dom)
-> @@ -769,8 +770,8 @@ void arm_smmu_tlb_inv_range_asid(unsigned long iova, =
-size_t size, int asid,
->                                  size_t granule, bool leaf,
->                                  struct arm_smmu_domain *smmu_domain);
->  bool arm_smmu_free_asid(struct arm_smmu_ctx_desc *cd);
-> -int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssi=
-d,
-> -                           unsigned long iova, size_t size);
-> +int arm_smmu_atc_inv_domain_sva(struct arm_smmu_domain *smmu_domain,
-> +                               ioasid_t ssid, unsigned long iova, size_t=
- size);
->
->  #ifdef CONFIG_ARM_SMMU_V3_SVA
->  bool arm_smmu_sva_supported(struct arm_smmu_device *smmu);
-> --
-> 2.43.2
->
-
-Apart from ssid size issue
-Reviewed-by: Michael Shavit <mshavit@google.com>
+>   Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml | 6 +++++-
+>   1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> index 75fcf4cb52d9..f284f7b0c1d8 100644
+> --- a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
+> @@ -20,7 +20,11 @@ properties:
+>     $nodename:
+>       pattern: "^iommu@[0-9a-f]*"
+>     compatible:
+> -    const: arm,smmu-v3
+> +    oneOf:
+> +      - items:
+> +          - const: qcom,sc8280xp-smmu-v3
+> +          - const: arm,smmu-v3
+> +      - const: arm,smmu-v3
+>   
+>     reg:
+>       maxItems: 1
+> 
