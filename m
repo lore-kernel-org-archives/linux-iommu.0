@@ -1,131 +1,242 @@
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2099.outbound.protection.outlook.com [40.107.244.99])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8314C81735
-	for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 13:58:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.99
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710856739; cv=fail; b=nwJBGE3BCrNwJsRxOle58VcCV6OpE4Q2F19UDAjWeYEvaECo8fWcPYO5aSnRM4vpkh1WhAtsrsAYfCwWA1xUI/PUSgXDmsg2MEqTTx+/6hmB6AGABed6jbyWRzVUVLWGlEyMzaa8GlALhdj6zU3FBdNuuD9mSJ/vjFllZdRmNLQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710856739; c=relaxed/simple;
-	bh=CV+PABi84XLG6lRivGe+LIk8p5M16ej0zvvhE85Xzwg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=C3QCQjbxA0TvfeBewcNY8CI2ySz8tKvpyHw0i5/6xHb7r/0SrnC0CynrNplHKvgpNsiTsy4XcYf1wRf9P5ehKljLwpm//RKJwSHJ/VCumfbTBP+gOlOJBlttyM7pmoex0F2XbBY2al5puRSwLvnHiXxrifzddawq23qCA5S21gw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PXEXeHqV; arc=fail smtp.client-ip=40.107.244.99
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54D531F608
+	for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 14:52:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.176
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1710859972; cv=none; b=VU3kgiB97ac5cFuWz/R2WvS7PCf+Srdv0zZ1E5HyVb3JpyGr5cNwOASC//kMEDlbYczQUjNY7nhOHs1o0Xx8HrgwQGj63MoSj7LAry0IdNxkhaAmyXW9e3pZ5zO3hmLXgSGzIC/T7In6IBLV4vVboII9+EOXepohm9nt+dgZFyI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1710859972; c=relaxed/simple;
+	bh=50maL6MT4AmNwyc5uXEHxZUumYySzQQtu4H84HyY6nU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=XqosuLTMxbM3RH7IQRlsdPB1TzjBhrRxhWnQf86HDjo3OtRXNBDGKNKDPkUan9duoCOU5nb2fyjDHZkieV8ejVYPUWhYAA33guQSDUgdoxUgqDHRgdh2FXISPPwGXn47H24Ty3USBfbztQGBIbm7bOkGFYns6oscXjV8XGApAV8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=E/BCJrth; arc=none smtp.client-ip=209.85.160.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PXEXeHqV"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FEpvXggE4kNP8MnIvWBtFDZ0RhOFAF0HzQ1AC9cjut0Ffi+E9F0+0YW+27wLr7O3tCXVMwNPdnk0DNdp9BkB91Us+SP0knmI041sj0cjaUPJv651iyRgmOHnq1lMV4/ALGF36yUTZV+0dvsrVa2DHe31V1IuDdVaE+4qJfI7ppS2sUhuguvvMCmZ6m0KBoRccr2hibiI4DCZ/ipMLTjNPhhJnPH2D7pExlXcreR87EtIQ0UQbIunDzoKhK0hdZwyrdHFtRSaKt2ta5VBZMtvJbViTSIqn7pdUT19mjZgtTqqJEAiUqk8OhqSbs/5i4PX79bKirZCL8HUbWginm71Sw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=soINAdAabQmCoWQcZPyan8WqO6U+tYsCxg5eaKQdhSY=;
- b=TUVEbvVi5stIlg+QTXM2DYJ5nBvcejRv+BxO0sGIqcaTfhO9nfqBddSJjp4MjXFkOS9r2apt6iEJRjIpukB0QBSvoMfMUWxlRCFQsqLgnxGYuTUR+DTdF8dMxxDe059nHxmVd8j+8wkcwk7aRJTC+nerwU6xchI7Lks9bjuJQOgkHXerNTT2cesNiH6KPPt+paCCgfdNkW340cPBt/Dy9qes4wzQO5AReIaJpYkxMQpgCLg5yBePvzHmZhvYrZc1NZ5VB3T8qvBRo4eiqmsD61JYpgsPI5o/COd4BorQ8iRzx9Nucn6tS6vo31eBil9x6IO4+kYmDA3atFGyHls9BA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=soINAdAabQmCoWQcZPyan8WqO6U+tYsCxg5eaKQdhSY=;
- b=PXEXeHqV4yaS6MHEhT8HlVqGrp1vc+isk6XjPWXs5tqWSYQHxhh4FmWtZiWaz9sXKN409ZlP1tUYXlId0DBoQX+XF0foshXTFrI/Gm8SK/OC3mdhA7aBCrxXEXeKY+yDVG7wmmFy528fc08XID3NIP1droLtzXk3abCF+9K336sW2d7+zjDFVepkLvSvFe5pHqD+FcCCwUwIAuqQs4AOV1/LSFhsbikvhEMYBp3Q5zVgy/4GJBAhbMTQn8bkvFQSx9k+1vOqqMFpX3IUViKzwg8wp0hr5s3NwgtMw7smzijBoX02vgHWZa7gf9i8EuPCW18COilYTrx1bLyTazidhw==
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by CY5PR12MB6131.namprd12.prod.outlook.com (2603:10b6:930:25::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.27; Tue, 19 Mar
- 2024 13:58:54 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7386.025; Tue, 19 Mar 2024
- 13:58:54 +0000
-Date: Tue, 19 Mar 2024 10:58:52 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
-	Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [BUG] seltests/iommu: runaway ./iommufd consuming 99% CPU after
- a failed assert()
-Message-ID: <20240319135852.GA393211@nvidia.com>
-References: <0d5c3b29-fc5b-41d9-9556-5ce94262dac8@alu.unizg.hr>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0d5c3b29-fc5b-41d9-9556-5ce94262dac8@alu.unizg.hr>
-X-ClientProxiedBy: SA1P222CA0118.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:806:3c5::6) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="E/BCJrth"
+Received: by mail-qt1-f176.google.com with SMTP id d75a77b69052e-430e1e06e75so394991cf.0
+        for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 07:52:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1710859969; x=1711464769; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SJ8ChgJnUWxF2RKWqu8FAxVV0Hj41kixdS2hEOp7xsY=;
+        b=E/BCJrthalLKk6wtgxJrX7F6ByLHPSJVrzohubMs9QccGxm+xWv8ztJ5ZFyMghdZJC
+         uVZbTYs97GRoMm6tzeH0UouN6rAVodq5ShoafkXipQ2EejVSRDHPMTkMJ8pQtL7ewvsh
+         NqSYCLHEbjgo++Svdc+RLeLBoKtmK50ixS4VQLVM/Fd3jso/4t9PrBfwE8QXOeGzGz7E
+         X828fvyRDKCfaNtQr4xcjSgUgVmI1ragSizy1H+TgsiAMZJ4s8+V9bcmlqaYErVCf1Vz
+         4t821tINxO+uTbc5Wu4xis+D6Um/sl2hoWn8YLJfmXprAI42bC7ZSQLgTHOM/1AXy6NQ
+         M5pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1710859969; x=1711464769;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SJ8ChgJnUWxF2RKWqu8FAxVV0Hj41kixdS2hEOp7xsY=;
+        b=sjm9Ojhdz8DJgLEPBvE+OpSZFlz8F1uAStk4xIz8Ot463+BmUvtJI4jgbUnEvmJEK6
+         j8pCwBkcA4r+dErYvEyTZm7oBTywrWoP6QUj3LqSs+5svCkAVz/vfenYGos9ULQ6nfsh
+         Xy0B9u2rk+dmkdfl1TrGwuUbJA03rnowPR3KB0ry+bumUjjExAGoyRqPkX+TopjSnhWN
+         qj1GnFTrpvQSQnKbN3zyU65zmPeq9vliOsryl9xihepjEuZa2e2OTMWMuQAbj6plj2pe
+         qWQTcvErPMSuvTjCFZrtRSB2NFK+3cn09w627EWESOm6/6P7XbDpE38uH15d1fqmJV/L
+         VTMw==
+X-Gm-Message-State: AOJu0Yw2Syz1u+n0ExqeYYObhv146mcdqDJYv0AcJva74IkPZGy+u/Dd
+	G7JK67uJzV8LpidmuUjXavEHOR66cZSfqT7l5XGTFY9ByYZzOB+4njhd97hKjqY5svQw178Lwo2
+	lyi0v94ijzl4uHiAt4WakxcZm6N5tMjIwnQ1g
+X-Google-Smtp-Source: AGHT+IEuC2giTpnRTu8dKl3oA9RxOiGLrvBMmIT31TyTUeXgIeRZFN31AqtvhaF1AD8HyI7jqz7FmpL2c6ypMFdQAEY=
+X-Received: by 2002:ac8:58cf:0:b0:430:ed72:bc2b with SMTP id
+ u15-20020ac858cf000000b00430ed72bc2bmr158076qta.22.1710859969087; Tue, 19 Mar
+ 2024 07:52:49 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|CY5PR12MB6131:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	zbrnOyQEX2Dsqf+nn2ic6nbrrICCyqaA+scwK3WEupz7Lc6/LtCcWMAF1sHa9cUuU2O/TnESDgXvZWIFbn/8gZM2nKWns2IlOJilTR3/a5wMJfvEwq8k2He02BY+x0bfbt2Tw4XSWS7Cy3enzTHYtPYyfywjTKmaqcsCIa7hw/icqBswnHiI6kstwe8skw8OkhXQJiys+qQ5jXvJYn5l7RkzMnZ4PMZSMH/3i2Rd4fWo5Z70JH3FvibIOvGKignCJYBBNWx/Q2j6HX8jCN1mV7UvXP+xwbNP60LlBow+yHJ8iAK5ACUDiBspBog6XSOHBSSGndmMqPPnjAJ6KhDUoqpfJMqBEk3PcRtKK4KAKc1ez5vyBaBJgxNRk2gWlsfneUBPhdI+2L592nfij2leBa4OJyQPyl2Rx3t3ywsJYu2nCs1ZFeOqkjn4CQ2vSC4HPfgeLayKulJTWt7HrDAPUNmsd+GCIKL3YS3MP37e/OISqtFVFeJizGPlf6u0qIfeHqh/CqschZ9m+G86DuZ7kY2hbSHWtUW/7lPpacynhW0Npi4cEbYmUq1Nf0bE//GYp4iKIjAJoF2Tar1UaC7Tuk9RwoKUzJXW04GPfKdHabyoWLBa2e/o22xgz0XEwCBy4qJPEwQcgJzMIwfJjqqjhBx57A0t2Y0EFl1poTGqBSA=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(366007)(376005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?avlX5AQoelfxEEd8tdPsDDdUCOT/e4wPWzFQd7KWsNaC7tZLTrC2lMXgOVEL?=
- =?us-ascii?Q?sAwjmyUhZjE9bgZEyWgVN6Qok/JkXDHJ3h6mPQfydx+wY6HlqV5dJIXh0nFW?=
- =?us-ascii?Q?umla0hDsggKwPZXg4yzuyIwfz9kKVoA+qi4EmVGKtHEFYc11eG1gurgIGx8k?=
- =?us-ascii?Q?wfWhsREb7fZmkWNDp8g1DklEon02ujmRqaoOio9PsCv1TDqtrSI5jIVe5s76?=
- =?us-ascii?Q?swf4UUuVOaN4BxC5DWU9jW9L7f9iajuOCjvkUZlPg2mGKsyKlyD5+KU+IX7u?=
- =?us-ascii?Q?ZAD7N2QXY0H+Bh1oSUIrZaW8mrUkmpRU/isgkjQjVFLP2vKgFgpnmbsoJ8xR?=
- =?us-ascii?Q?LE0np1IBppik3mvZrkEt4Uc+ejSMsZGQGzwhuQCoFEvDVtQ7gW50fkBw8tBz?=
- =?us-ascii?Q?ptTDUg/Zg5+xqAVEf5a2h90nRgV1jdMZu4psMbKzTMp2WSDGJaH3t1TKvCp0?=
- =?us-ascii?Q?WFYSX9h6D1NXUb3YK5HAXQIGq0dgr82bR2q4n8/Ry6zAaacFWhWZasR7cAeU?=
- =?us-ascii?Q?lwmfSG8NIYenXx5c+SwKCNNXgRWhSF7MLophLMbmOIbjYeqvXOVkKWoDOu6R?=
- =?us-ascii?Q?FCEJf9SWQUOhZSqCxzlumypwTkxblSBDwmallmk0CL+t/qYmmQi5aFLC5QN6?=
- =?us-ascii?Q?DAPo1oaNFyA+ko6juoXhffnmnX58XwPHWK4cCrYaTI5l77U7p5M6Lw3YohlU?=
- =?us-ascii?Q?BKIwmMCn9+FbNNOqocz8tvwU9r753Kv2YT72Pts6ch44BnuYuuK7t4vCN2+e?=
- =?us-ascii?Q?Megj/J38piI1ArUOzK8tAfg+9HwPFI9/Mmj+u6E2FmGk+0YysBf6WfGknOu/?=
- =?us-ascii?Q?HzdPRVH1x1bVVSWl8vj7+MnuKa5jIfAFY7hKe+I1WN4whqTNll1WMO26xl2d?=
- =?us-ascii?Q?azRYfKavOz8XU2onvmzYFFe4ZdJVFWGVbQIsVcWHOZkEiXIFUZgG7h7oJG4L?=
- =?us-ascii?Q?AxyNbCJn/l8st7cMsAqxJdlTfxn1p19jxH8tS0ipo+05Lb4HHl4rV6sq6p38?=
- =?us-ascii?Q?PpZtU0bswL55bBYtuQPhFtXZHtlAMBq/MOSit5QYoYXj3KYs0QKH9hrlMZit?=
- =?us-ascii?Q?BDF8tyT/ifSkb13iYCoTMwcwhVsfWF9YL01cNXcE/Ii9sB6oOoBiit3Ol6g2?=
- =?us-ascii?Q?2ruEAeSdA8rZoPI8Vugfi+WwjkrxbArpgmpg5pTxSU+rkjO20pBh7uz4njYM?=
- =?us-ascii?Q?gkUCaQdgR2EajDJTs9UjiPYPLd/X49pBw3crZ5vt9eSv+2MPgq2mYYRWyWsS?=
- =?us-ascii?Q?07gkHi/hJKyoRfJfVu4hqUs/7JaBEaFSxp6JkQfhttehsyqCo+lUbECk6knY?=
- =?us-ascii?Q?P8LPdAoTXvO3Xp2ZQ/5Zr5rZbNBvcn25G5sSXVFBJMkjkWiBAgWFz4WalXso?=
- =?us-ascii?Q?fI1djHx/QDi/Vh5i6zc+bHITaLkkJVlbncuFhq11+tcs9PDG1IVr7fKARpQO?=
- =?us-ascii?Q?H86yxXavcwlFoITaoL3NqS05nMcrAl3fjcxRTvDUpFRMlF09vKMjjAEOD17i?=
- =?us-ascii?Q?kTHH12TjskuoaZrtx6DZos4iHdsPwx3NaXOC1wgLIoZT/YBWOjwPMACYAWWB?=
- =?us-ascii?Q?2UREegnU6dum0mNf0Xk29cyHwrjIcCXBNEI9tWza?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 544b48b2-411d-4f31-1f10-08dc481cb6c6
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Mar 2024 13:58:54.3725
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: aThy+QjTBArT6DhWNI1KYOBq32SB7i34as+cXUszfI/5M4QvSnNRXhipVJqNmwoP
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6131
+References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com> <18-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+In-Reply-To: <18-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Tue, 19 Mar 2024 22:52:11 +0800
+Message-ID: <CAKHBV24C7Vesum8NzkOvTHiQy9F6K4fFFDWfWFHTjbfgiL5EaQ@mail.gmail.com>
+Subject: Re: [PATCH v5 18/27] iommu/arm-smmu-v3: Make SVA allocate a normal arm_smmu_domain
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, 
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Mar 12, 2024 at 07:35:40AM +0100, Mirsad Todorovac wrote:
-> Hi,
-> 
-> (This is verified on the second test box.)
-> 
-> In the most recent 6.8.0 release of torvalds tree kernel with selftest configs on,
-> process ./iommufd appears to consume 99% of a CPU core for quote a while in an
-> endless loop:
+On Tue, Mar 5, 2024 at 7:44=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
+te:
+>
+> Currently the SVA domain is a naked struct iommu_domain, allocate a struc=
+t
+> arm_smmu_domain instead.
+>
+> This is necessary to be able to use the struct arm_master_domain
+> mechanism.
+>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 19 ++++++-----
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 34 +++++++++++--------
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  4 ++-
+>  3 files changed, 33 insertions(+), 24 deletions(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/io=
+mmu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index 82b9c4d4061c3d..d633316f2e45bc 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -654,7 +654,7 @@ static int arm_smmu_sva_set_dev_pasid(struct iommu_do=
+main *domain,
+>
+>  static void arm_smmu_sva_domain_free(struct iommu_domain *domain)
+>  {
+> -       kfree(domain);
+> +       kfree(to_smmu_domain(domain));
+>  }
+>
+>  static const struct iommu_domain_ops arm_smmu_sva_domain_ops =3D {
+> @@ -662,14 +662,17 @@ static const struct iommu_domain_ops arm_smmu_sva_d=
+omain_ops =3D {
+>         .free                   =3D arm_smmu_sva_domain_free
+>  };
+>
+> -struct iommu_domain *arm_smmu_sva_domain_alloc(void)
+> +struct iommu_domain *arm_smmu_sva_domain_alloc(unsigned type)
+>  {
+> -       struct iommu_domain *domain;
+> +       struct arm_smmu_domain *smmu_domain;
+>
+> -       domain =3D kzalloc(sizeof(*domain), GFP_KERNEL);
+> -       if (!domain)
+> -               return NULL;
+> -       domain->ops =3D &arm_smmu_sva_domain_ops;
+> +       if (type !=3D IOMMU_DOMAIN_SVA)
+> +               return ERR_PTR(-EOPNOTSUPP);
+>
+> -       return domain;
+> +       smmu_domain =3D arm_smmu_domain_alloc();
+> +       if (IS_ERR(smmu_domain))
+> +               return ERR_CAST(smmu_domain);
+> +       smmu_domain->domain.ops =3D &arm_smmu_sva_domain_ops;
+> +
+> +       return &smmu_domain->domain;
+>  }
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.c
+> index dd7f841cd19b3c..2db2b822292a87 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2291,23 +2291,10 @@ static bool arm_smmu_capable(struct device *dev, =
+enum iommu_cap cap)
+>         }
+>  }
+>
+> -static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+> -{
+> -
+> -       if (type =3D=3D IOMMU_DOMAIN_SVA)
+> -               return arm_smmu_sva_domain_alloc();
+> -       return ERR_PTR(-EOPNOTSUPP);
+> -}
+> -
+> -static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *=
+dev)
+> +struct arm_smmu_domain *arm_smmu_domain_alloc(void)
 
-There is a "bug" in the ksefltest framework where if you call a
-kselftest assertion from the setup/teardown it infinite loops
+Consider renaming arm_smmu_domain_free as well since there's asymmetry
+between arm_smmu_domain_alloc and arm_smmu_domain_free that could be a
+little confusing:
+1. arm_smmu_domain_alloc is shared between arm_smmu_sva_domain_alloc
+and arm_smmu_domain_alloc_paging
+2. arm_smmu_domain_free is only used by paging domains, with SVA
+domains freed through arm_smmu_sva_domain_free.
 
-The fix I know is to replace kselftest assertions with normal assert()
 
-But I don't see an obvious thing here saying you are hitting that..
-
-Jason
+>  {
+>         struct arm_smmu_domain *smmu_domain;
+>
+> -       /*
+> -        * Allocate the domain and initialise some of its data structures=
+.
+> -        * We can't really do anything meaningful until we've added a
+> -        * master.
+> -        */
+>         smmu_domain =3D kzalloc(sizeof(*smmu_domain), GFP_KERNEL);
+>         if (!smmu_domain)
+>                 return ERR_PTR(-ENOMEM);
+> @@ -2317,6 +2304,23 @@ static struct iommu_domain *arm_smmu_domain_alloc_=
+paging(struct device *dev)
+>         spin_lock_init(&smmu_domain->devices_lock);
+>         INIT_LIST_HEAD(&smmu_domain->mmu_notifiers);
+>
+> +       return smmu_domain;
+> +}
+> +
+> +static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *=
+dev)
+> +{
+> +       struct arm_smmu_domain *smmu_domain;
+> +
+> +       smmu_domain =3D arm_smmu_domain_alloc();
+> +       if (IS_ERR(smmu_domain))
+> +               return ERR_CAST(smmu_domain);
+> +
+> +       /*
+> +        * Allocate the domain and initialise some of its data structures=
+.
+> +        * We can't really do anything meaningful until we've added a
+> +        * master.
+> +        */
+> +
+>         if (dev) {
+>                 struct arm_smmu_master *master =3D dev_iommu_priv_get(dev=
+);
+>                 int ret;
+> @@ -3288,7 +3292,7 @@ static struct iommu_ops arm_smmu_ops =3D {
+>         .identity_domain        =3D &arm_smmu_identity_domain,
+>         .blocked_domain         =3D &arm_smmu_blocked_domain,
+>         .capable                =3D arm_smmu_capable,
+> -       .domain_alloc           =3D arm_smmu_domain_alloc,
+> +       .domain_alloc           =3D arm_smmu_sva_domain_alloc,
+>         .domain_alloc_paging    =3D arm_smmu_domain_alloc_paging,
+>         .probe_device           =3D arm_smmu_probe_device,
+>         .release_device         =3D arm_smmu_release_device,
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.h
+> index 7e1f6af4ce4e79..c47e07d695bef2 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -759,6 +759,8 @@ static inline struct arm_smmu_domain *to_smmu_domain(=
+struct iommu_domain *dom)
+>  extern struct xarray arm_smmu_asid_xa;
+>  extern struct mutex arm_smmu_asid_lock;
+>
+> +struct arm_smmu_domain *arm_smmu_domain_alloc(void);
+> +
+>  void arm_smmu_clear_cd(struct arm_smmu_master *master, ioasid_t ssid);
+>  struct arm_smmu_cd *arm_smmu_get_cd_ptr(struct arm_smmu_master *master,
+>                                         u32 ssid);
+> @@ -791,7 +793,7 @@ int arm_smmu_master_enable_sva(struct arm_smmu_master=
+ *master);
+>  int arm_smmu_master_disable_sva(struct arm_smmu_master *master);
+>  bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master);
+>  void arm_smmu_sva_notifier_synchronize(void);
+> -struct iommu_domain *arm_smmu_sva_domain_alloc(void);
+> +struct iommu_domain *arm_smmu_sva_domain_alloc(unsigned int type);
+>  void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
+>                                    struct device *dev, ioasid_t id);
+>  #else /* CONFIG_ARM_SMMU_V3_SVA */
+> --
+> 2.43.2
+>
+>
+Reviewed-by: Michael Shavit <mshavit@google.com>
