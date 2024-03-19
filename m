@@ -1,70 +1,74 @@
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2D80208D4
-	for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 17:54:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AA62225DA
+	for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 17:54:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710870867; cv=none; b=FvUgHKhHYM/e62sja4f/0fsMgq0ZYTvqUlD3R3kTJ5M4bNQo/RvwVh+cuG7Yve6zKvzb5gz4N1UjEDj71mM/UfwJdi5FbYTS/5yGxd8g2CSGRzoK9MVUl5naHN7Hp/rlK2DmS2NzY8ZEC7LT9NYRt2Z6FSUWNvTpMR6doo7B2aE=
+	t=1710870869; cv=none; b=PoH2/8GZGJeVBH1+QSutN7TNS2yrZySAUm1xfLLlCBywpKvRFB2ce8GWtD+scXO6/m3kEd0kPRZDQB2wNKC+vcygsAz6UjHHOLS+NMPbcU7VD3G58FlkKJRAl4FvbHaaW93giOyIf+HjPSyDFVicX/bc5eSKNFiyTS+iTFLnA3E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710870867; c=relaxed/simple;
-	bh=WgYZaAh/an5kM2/Qd17c2BLNi+637XYmtAq1XWvhQWE=;
+	s=arc-20240116; t=1710870869; c=relaxed/simple;
+	bh=B9HuiwQg7X+0lbII8qyF6ES+SfD7F1pHs2MmLusxi84=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NGn+rT68rp1lOEXH3xce1gCoZ8c5ZB/EZwx/WwoYJzCxZDfiN5gld2G3+dfjc+5/2+bHgz6jLfqMAhPS1h0ftaBkzvmFoZgMihLF05SEggmj45GYJpPgugfIYIN4N0JPmED+M88o9R7G7zNglgMsqnk9BTo/r2S04+U0CTicJ6I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MP6vvL9K; arc=none smtp.client-ip=209.85.166.181
+	 Content-Type:Content-Disposition:In-Reply-To; b=QrL0y4HtgAzYw7r0p5JD5bYUy13ZjhwadNgSUoUlDrR0PvsG6IZ+klJN30GexSRajuwv23kbV9kcuwSn73mcJLOaZLiF12Kph3+Y4qdZJ3L5Q7DduI7e8IXcHbM3ZWBHt6iLg81SNtuAq9UUEt0eHDjFOTurIadSzG7jUvT5k00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=pFKv6MFx; arc=none smtp.client-ip=209.85.160.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MP6vvL9K"
-Received: by mail-il1-f181.google.com with SMTP id e9e14a558f8ab-367d6dbeed2so6336705ab.2
-        for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 10:54:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="pFKv6MFx"
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-22200c78d4fso2467863fac.1
+        for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 10:54:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1710870865; x=1711475665; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1710870866; x=1711475666; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=BAs48D+Y1lc4NqcdaLZCa426XdrD2SaO6kILaPcQ53Y=;
-        b=MP6vvL9KSohNKl+45rwLZKE6r9QQf9BrwalmNlXA5quRVv5jbCTW2iJtLeGWqUvXQI
-         q9glY45NQKP0oVab3C75mWKIpzsxMsqSTZU3w8CS/zEY6XXob3P6K2CPiALnHo+UVegB
-         9/yDr0e5EnkQcMWRPXZ/ucM/MBLssfDpbBFXoXo1Vlur3T2N8fzR7AmB6dYWdHFU5b44
-         0zXNJqoTyLXxMdMCzRiVbvL1deuZNbwhBc7If4t/19Tjz96jzgVK7MI2BF4a9p8K2TTo
-         tqm/5GK6SoAYECXUXewFGIbzJ1uGYV1GF+0qQ9FwZWKTaVYXILSY1SdAcN9uZi1quwxC
-         hkZg==
+        bh=B9HuiwQg7X+0lbII8qyF6ES+SfD7F1pHs2MmLusxi84=;
+        b=pFKv6MFxPN0uotImiAqtz/f6JCRu0AiJNC/U5woGwE4s+3DtWCAl95erBX6hhdJXUs
+         kl4a7yR1+9bv/cYkpDbsOgeLMnnCfaCIBZRLZpUc+9aNfur5KkmQOb9WHHJCHT/Couni
+         q7s9ZSho4G3At+YpeykGsaXFpl0n/+wghsDfCxO+2EvKMAUBhnVYLzypQthcvFwPH7qT
+         isNQsBMocPjE3xr9w6aLFMaIXHeStE1v906N7L1cY57rXbrKpwV7klMRHivJypwi6/we
+         2wU8JjsBKWFfBR0Z+5vkJQIHbo6NxEO+Js2+RuWEzETEcwh/MuTTUwqqtJAR+5nguXnY
+         Z2KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710870865; x=1711475665;
+        d=1e100.net; s=20230601; t=1710870866; x=1711475666;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BAs48D+Y1lc4NqcdaLZCa426XdrD2SaO6kILaPcQ53Y=;
-        b=wHcM9Vghx0tPsYDRUoMBR9304+quNpA5fqqgS3LWhroP2LAiXg8ZRyTmK5rzfZ29vO
-         bzj3NuUPIHhEChbSgyOgbdJFIl86DGMie5INoid7Squcnvx/BS9TfyVY08k20lkkn58K
-         jTZyziI77XzpOrfPf1Qowi7Qhp7ZZMx1dijUtGPYlInS8p22sJzV1NOEOJhHHpAO64Um
-         4yHVse41cPnVKfXAGJA2jXurCemg/qlywrHCg7x2IrQvAGTURqLAV+wGS1GIlYZ6d0pk
-         AwSEAHnipKpzM/7aSzO7Lhozjuoagd5SRBvYlTXw9S7zLMYfcECSsitXOoUsNDE1CqBk
-         4Kgw==
-X-Gm-Message-State: AOJu0YwPVWnLf1+CgKxeISlLTynckwWGlgz17w/3ng9NsBoc+CNDqnlE
-	PdGUrBkz4fD2U81Em3yXyN+YSNq4QQNAp2LtMyETNVt+W6GM6JA+gqBpXNbRLz4=
-X-Google-Smtp-Source: AGHT+IH2H/de6WGasPgOKBZZyKNNNt5pIRVXC0bR+NeZhqo5c9CDUTe+REPsKB+OX0BsBFULYqpM6w==
-X-Received: by 2002:a05:6e02:12b1:b0:363:812d:d6a3 with SMTP id f17-20020a056e0212b100b00363812dd6a3mr13898574ilr.20.1710870864855;
-        Tue, 19 Mar 2024 10:54:24 -0700 (PDT)
+        bh=B9HuiwQg7X+0lbII8qyF6ES+SfD7F1pHs2MmLusxi84=;
+        b=AnL6fJjUTNCUCFsNc7nQZ4KQ+s+73yYTPfSrSgMG73eaRzZLi/orp2ArHXXy5k5Rtc
+         DN0OG9ZFATZhdn2tN9VGRRlloSnvsneX1eMWYvjVyoeDBMFdJI1WNAkOaLI6BsCk4WCe
+         P2XIGp/vhy2TiAZ7CIgHsa+YJQdNGlHHNYswNy6FCwq9Lsbi1tVGxLpGXPgJV+T1Gypr
+         cSY1mQiJyRr6BL8a8vPgeS2zi7h2wxqiE3ms2QmlXH2LPiasPWPXXB3RV/UJVlBYod7j
+         0M9Ikp0qH0UOZgq/VTRZskZ5Mw2hIlxnCn4TG4sTpTe6qx2/ixtMysPCSaj2+RHJUBPm
+         nTHg==
+X-Forwarded-Encrypted: i=1; AJvYcCXTPxFDVXGtjXj+QUapQxfC1NHT0ZXxLmPH53BfIF28YUX1ZJrb0AQzRY9OYvlKbn3dlbOJNN1+NDNhrIGsdGne33zH+zo=
+X-Gm-Message-State: AOJu0YxXCLJ6RBabC7GORJpsPIpK5nBWsN7FAggEJZuydPoOM6NSqKLt
+	jRhLkAJIfkE5zYw4m3BcB6UFXnv1cu7bZ747Qo86T9edVGjZYxzzPxOg0Fua93w=
+X-Google-Smtp-Source: AGHT+IEd8KsCy6GqIl+1n0Sol2b9f0f/25EaZRJ80XDCZoyr9TJbEhweqbC03Izk0lN9FbayxSp4fw==
+X-Received: by 2002:a05:6870:524f:b0:221:bf42:cf76 with SMTP id o15-20020a056870524f00b00221bf42cf76mr16367906oai.10.1710870866557;
+        Tue, 19 Mar 2024 10:54:26 -0700 (PDT)
 Received: from ziepe.ca ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id gh11-20020a056638698b00b00477716fcbb8sm2429986jab.40.2024.03.19.10.54.23
+        by smtp.gmail.com with ESMTPSA id gh11-20020a056638698b00b00477716fcbb8sm2429986jab.40.2024.03.19.10.54.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Mar 2024 10:54:23 -0700 (PDT)
+        Tue, 19 Mar 2024 10:54:25 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1rmdfJ-001l0s-I3;
-	Tue, 19 Mar 2024 14:54:21 -0300
-Date: Tue, 19 Mar 2024 14:54:21 -0300
+	id 1rmdbD-001kiW-EG;
+	Tue, 19 Mar 2024 14:50:07 -0300
+Date: Tue, 19 Mar 2024 14:50:07 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com
-Subject: Re: [PATCH v6 11/15] iommu/amd: Add IO page fault notifier handler
-Message-ID: <20240319175421.GD66976@ziepe.ca>
-References: <20240209112930.63663-1-vasant.hegde@amd.com>
- <20240209112930.63663-12-vasant.hegde@amd.com>
- <20240305004001.GF9225@ziepe.ca>
- <4007d5e6-c76d-d869-9e0d-5a25251db98f@amd.com>
+To: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, Tyler Hicks <code@tyhicks.com>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+	Easwar Hariharan <eahariha@linux.microsoft.com>
+Subject: Re: Why is the ARM SMMU v1/v2 put into bypass mode on kexec?
+Message-ID: <20240319175007.GC66976@ziepe.ca>
+References: <ZfKsAIt8RY/JcL/V@sequoia>
+ <ZfNKv70oqqwMwIeS@sequoia>
+ <120d0dec-450f-41f8-9e05-fd763e84f6dd@arm.com>
+ <20240319154756.GB2901@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -73,29 +77,63 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4007d5e6-c76d-d869-9e0d-5a25251db98f@amd.com>
+In-Reply-To: <20240319154756.GB2901@willie-the-truck>
 
-On Mon, Mar 11, 2024 at 04:30:14PM +0530, Vasant Hegde wrote:
-> >> +	/*
-> >> +	 * PASID zero is used for requests from the I/O device without
-> >> +	 * a PASID
-> >> +	 */
-> >> +	dev_data = dev_iommu_priv_get(&pdev->dev);
-> >> +	if (event.fault.prm.pasid == 0 ||
-> >> +	    event.fault.prm.pasid >= dev_data->max_pasids) {
-> >> +		pr_info_ratelimited("Invalid PASID : 0x%x, device : 0x%x\n",
-> >> +				    event.fault.prm.pasid, pdev->dev.id);
-> >> +		goto out;
-> >> +	}
-> > 
-> > Why even do this check? The core code is perfectly fine to take in a
-> > big pasid value, it will not match anything in the xarray and just be
-> > completed with error anyhow.
-> 
-> We just wanted to make sure device/IOMMU can handle PASID or not before passing
-> it to iommu_report_device_fault().
+On Tue, Mar 19, 2024 at 03:47:56PM +0000, Will Deacon wrote:
 
-If it can't handle PASID then the pasid xarray will be empty and it
-will be fine.
+> Right, it's hard to win if DMA-active devices weren't quiesced properly
+> by the outgoing kernel. Either the SMMU was left in abort (leading to the
+> problems you list above) or the SMMU is left in bypass (leading to possible
+> data corruption). Which is better?
+
+For whatever reason (and I really don't like this design) alot of work
+was done on x86 so that device continues to work as-was right up until
+the crash kernel does the first DMA operation. Including having the
+crash kernel non disruptively inherit and retain the IOMMU
+configuration. (eg see translation_pre_enabled() stuff in intel
+driver)
+
+I think the idea was that the crash kernel driver will recover control
+of the device prior to trying to do DMA. Devices without a driver or
+devices that are not operated by the crash kernel just keep going as
+they were.
+
+In general practice this is unworkable as some devices can't be
+recovered without doing DMA in the first place creating a catch-22.
+
+So now lots of devices use their shutdown handler to quiet the device
+before handing over to the crash kernel.
+
+I think this emerged as some 'small work' to try and make crash
+kernels functional at all. Implementing every shutdown handler would
+be pretty hard, but many (?) devices seem to work OK if the crash
+kernel drivers runs for a bit before destroying their DMA setup. We
+don't trigger weird platform crashes or anything due to failing DMA
+operations either.
+
+Now we have all kinds of infrastructure and deployed crash kernels
+that have this assumption baked in. :( It sure would be nice to not
+spread this full complexity to ARM.
+
+If the original kernel could signal to the crash kernel that specific
+devices are quieted and then the crash kernel could simply ignore
+unquieted devices and set the IOMMU to abort them and don't allow any
+crash drivers to attach. (or maybe FLR them?) If someone wants a
+device to be usuable in the crash kernel then the original kernel
+needs to implement the shutdown handler.
+
+Regardless, I think if your goal is to support crash kernels then you
+have to do at least a bit of the x86 'keep the iommu unchanged'. The
+iommu shutdown should do less like x86 does and the iommu startup
+should detect the special case and try to atomic switch to the new STE
+table that aborts unquieted devices.
+
+Booting a non-crash OS is a different matter and in that case you
+really want every bit of HW put back to a clean "just booted" state,
+and arguably it can't work unless the original kernel implements all
+the shutdown handlers... I don't know if x86 kexec actually support
+this, it looks like it only works on Linux OS and things like the
+Linux iommu driver have code to support the crash focused hand over
+even in non crash cases.
 
 Jason
