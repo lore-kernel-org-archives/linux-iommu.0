@@ -1,121 +1,286 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8C44A3CF5E
-	for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 12:57:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5979E8002A
+	for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 13:09:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710853080; cv=none; b=s+bl+gy7LH+zUNDoe9klfuOWltFgu2JuPUsigx6aUqxKbsED/AEo7IHJs3ExOxRAzq291m2NtggyyrA0+mV6rQRmpx0uqHqkmKeE8nDdB4pmPYWEdJBL8MyCxWBjgTkiqoBdIDN4ZRzfceYPbkh0Lg1zjrsb+9+HqQP9DEZ6QqE=
+	t=1710853784; cv=none; b=gfPkAzz36qEdr5zmIopw7lAFnVKGoDDFKeQGSxsDbcLvsYSNfwF/7dD0QLR8fcIa4vbyrnsvGVT6XZEbr0MKLlBJeweNaVON8gD2ztMxOmqh9H3vlpd6OERkxAEG3sLBSJ9dfAe8Lh29r5neCu2yWHSto3RLDUoJUF4Yq69KuRM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710853080; c=relaxed/simple;
-	bh=gPy0dzKldnkL8GYlabeRrMPsaq+rydPOynPMmkrLYYg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=VM2xUVWK/YSJuyqGo1Gku3su/KhR6ISuYNK1PHlDivIiBfpak0IgC/w7eUc6eBTSC44RbH7Kpg3NCoQhzL1YQhGvxBzodXILqMUTHqVdzPjheJlOif5f7NdzU773ssq3cI+Ihebmit0S/u+8bAzZfCd+4WUbemTJETg+fb3s780=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9284E106F;
-	Tue, 19 Mar 2024 05:58:31 -0700 (PDT)
-Received: from [10.57.52.192] (unknown [10.57.52.192])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2E1C43F762;
-	Tue, 19 Mar 2024 05:57:55 -0700 (PDT)
-Message-ID: <120d0dec-450f-41f8-9e05-fd763e84f6dd@arm.com>
-Date: Tue, 19 Mar 2024 12:57:52 +0000
+	s=arc-20240116; t=1710853784; c=relaxed/simple;
+	bh=m8eQJUjQf9SsLufdEs1WSSnvmZMf9kFoVHaNlvkn3EM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=aBjXyOTmHo3+2BlKjAw/OlwcjaPOs53k4knRnFxHIJsL4Kf+x9wNEn/qQopy7QiuS/UusBem+xr34iEXb5sDgknBAJ/V7isU5T8maOhQHQaRsMvBM8BCqEnehnFe5E/AkVyg8tWs+azxdnLj+nOfl8+j1uY6O6u0ttzuvOSCMzo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UqYV/SA6; arc=none smtp.client-ip=209.85.160.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UqYV/SA6"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-428405a0205so294851cf.1
+        for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 06:09:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1710853781; x=1711458581; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MghlcANp/ubj6EldaICUW15V5GROTir69c/LW5qGo7o=;
+        b=UqYV/SA6I8o56R6xiN/buijWBo5qZOBPJXGb6H2nplPaZjeOhXQYa3z9NDLK1KNyLg
+         tzhLX8wT5gUfX4Z6VWd2SQuXQuL9nU8plc/366vCSaXuhYfqQ7Bzd0S0zTOxJlitpLGA
+         TJ61ywkiwpeubB1BDziUN2UUs/Z6bqBoRCUbOf/cUvYNr4aUe27wogvnxZzcO757WUTR
+         PzTygHVstFR6rQuIeAOICHbq3y9+Vnsawy6CR8yoNT9zSzlQmvyOp3YZdbCR6Jm3Hz7c
+         F2NCoV32C0q3j+EyQSlp2nygVVDzaGTmXD9raYO3aJn3F2lReZWGsNNNcazq5Pl0/5M+
+         Jmqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1710853781; x=1711458581;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=MghlcANp/ubj6EldaICUW15V5GROTir69c/LW5qGo7o=;
+        b=DiJOsyAKFLQKYbbzrabbNGxRdUM2ja8hadZ6YCiOiccB1J4bxGNz1+09kcdv1cDmRW
+         RBtXv+FA4ZRgpzFd+sbfP4uNshMtHzaMAi4Lqvt5Ewr3Z1ST0yM14UTncywZ1lBNP6Et
+         KI6j9u/5PErJKHM27pxSy5AJixcpx+xlwfMlEt3YHv+rUA1I88/YGzwRnQDGTfA36WoM
+         0+r7tBe7UokqLVFQq5MyiYh0LdGaRz88YNWAJuvON9EtI+e4pwOgC/zMNwo4wLEN92rx
+         CZaYLWKo4Hv2sOO9OZUmsfxLJN94pI1fxeYuBciY43JJ1Qpkl8qA6FtMGpK8BiVuyX/j
+         H0JQ==
+X-Gm-Message-State: AOJu0YyvGFSKA0RTbl1GuRrh6eewIkAFwwHb0wjNuntgKlBgDjfg/8xI
+	q1V/Vo+tf+IpX3MLr/MhjflAkPO2Ihr+mf0Ao36PImGZxlp5lzmS6TS62cGc183AOOwBe9WZDEe
+	snbJirp7J7k1wmm22alnA1NhTltseujzpY5HD
+X-Google-Smtp-Source: AGHT+IFMBeRoFnQzBZT6LjmbsqOUYqa2fKnjDevwFQWsDxj5SmlbnwNjBf6iKAGvnekj6PJNJQbWXqnG3cWJF/5cYC8=
+X-Received: by 2002:a05:622a:10b:b0:430:ed72:bc0d with SMTP id
+ u11-20020a05622a010b00b00430ed72bc0dmr114017qtw.26.1710853781068; Tue, 19 Mar
+ 2024 06:09:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Why is the ARM SMMU v1/v2 put into bypass mode on kexec?
-Content-Language: en-GB
-To: Tyler Hicks <code@tyhicks.com>, Will Deacon <will@kernel.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, Jerry Snitselaar <jsnitsel@redhat.com>
-Cc: linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
- Easwar Hariharan <eahariha@linux.microsoft.com>
-References: <ZfKsAIt8RY/JcL/V@sequoia> <ZfNKv70oqqwMwIeS@sequoia>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZfNKv70oqqwMwIeS@sequoia>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com> <13-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+In-Reply-To: <13-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Tue, 19 Mar 2024 21:09:03 +0800
+Message-ID: <CAKHBV277RwYh0eK0UCzYaJcKOJ66XgakmeQ+q7CX6mDnGZ1vwA@mail.gmail.com>
+Subject: Re: [PATCH v5 13/27] iommu/arm-smmu-v3: Make smmu_domain->devices
+ into an allocated list
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, 
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2024-03-14 7:06 pm, Tyler Hicks wrote:
-> On 2024-03-14 09:55:46, Tyler Hicks wrote:
->> Given that drivers are only optionally asked to implement the .shutdown
->> hook, which is required to properly quiesce devices before a kexec, why
->> is it that we put the ARM SMMU v1/v2 into bypass mode in the arm-smmu
->> driver's own .shutdown hook?
->>
->>   arm_smmu_device_shutdown() -> set SMMU_sCR0.CLIENTPD bit to 1
->>
->> Driver authors often forget to even implement a .shutdown hook, which
->> results in some hard-to-debug memory corruption issues in the kexec'ed
->> target kernel due to pending DMA operations happening on untranslated
->> addresses. Why not leave the SMMU in translate mode but clear the stream
->> mapping table (or maybe even call arm_smmu_device_reset()) in the SMMU's
->> .shutdown hook to prevent the memory corruption from happening in the
->> first place?
->>
->> Fully acknowledging that the proper fix is to quiesce the devices, I
->> feel like resetting the SMMU and leaving it in translate mode across
->> kexec would be more consistent with the intent behind v5.2 commit
->> 954a03be033c ("iommu/arm-smmu: Break insecure users by disabling bypass
->> by default"). The incoming transactions of devices, that weren't
->> properly quiesced during a kexec, would be blocked until their drivers
->> have a chance to reinitialize the devices in the new kernel.
->>
->> I appreciate any help understanding why bypass mode is utilized here as
->> I'm sure there are nuances that I haven't considered. Thank you!
-> 
-> I now see that Will has previously mentioned that he'd be open to such a
-> change:
-> 
->   One thing I would be in favour of is changing the ->shutdown() code to
->   honour disable_bypass=1 so that we put the SMMU in an aborting state
->   instead of passthrough. Would that help at all? It would at least
->   avoid the memory corruption on missing shutdown callback.
-> 
->   - https://lore.kernel.org/linux-arm-kernel/20200608113852.GA3108@willie-the-truck/
-> 
-> Robin mentions the need to support kexec into a non-SMMU-aware OS. I
-> hadn't considered that bit of complexity:
-> 
->   ... consider if the first kernel *did* leave it enabled with whatever
->   left-over translations in place, and kexec'ed into another OS that
->   wasn't SMMU-aware...
-> 
->   - https://lore.kernel.org/linux-arm-kernel/e072f61a-d6cf-2e34-efd5-c1db38c5c622@arm.com/
-> 
-> Now that we're 3-4 years removed from that conversation, has anything
-> changed? Will, is there anything we'd need to watch out for if we were
-> to prototype this sort of change? For example, would it be wise to
-> disable fault interrupts when putting the SMMU in an aborting state
-> before kexec'ing?
-
-Fundamentally, we expect the SMMU to be disabled at initial boot, so per 
-the intent of kexec we put it back in that state. That also seems the 
-most likely expectation of anything we could kexec into, given that it 
-is the natural state of an untouched SMMU after a hard reset, and thus 
-comes out as the least-worst option.
-
-Beyond properly quiescing and resetting the system back to a boot-time 
-state, the outgoing kernel in a kexec can only really do things which 
-affect itself. Sure, we *could* configure the SMMU to block all traffic 
-and disable the interrupt to avoid getting stuck in a storm of faults on 
-the way out, but what does that mean for the incoming kexec payload? 
-That it can have the pleasure of discovering the SMMU, innocently 
-enabling the interrupt and getting stuck in an unexpected storm of 
-faults. Or perhaps just resetting the SMMU into a disabled state and 
-thus still unwittingly allowing its memory to be corrupted by the 
-previous kernel not supporting kexec properly.
-
-So no, I would not say that anything has changed here, at least not in 
-favour of this idea. If anything, it's become even more impractical now 
-that we have RMRs to properly support cases like an EFI framebuffer 
-where neither the outgoing nor incoming kernels necessarily have the 
-ability to quiesce the underlying DMA or recover it from faults, thus we 
-have to be even more careful.
-
-Thanks,
-Robin.
+On Tue, Mar 5, 2024 at 7:44=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
+te:
+>
+> The next patch will need to store the same master twice (with different
+> SSIDs), so allocate memory for each list element.
+>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 11 ++++--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 39 ++++++++++++++++---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  7 +++-
+>  3 files changed, 47 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/io=
+mmu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index e1fa2074c0b37b..9a285b828e8b12 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -38,12 +38,13 @@ static DEFINE_MUTEX(sva_lock);
+>  static void
+>  arm_smmu_update_s1_domain_cd_entry(struct arm_smmu_domain *smmu_domain)
+>  {
+> -       struct arm_smmu_master *master;
+> +       struct arm_smmu_master_domain *master_domain;
+>         struct arm_smmu_cd target_cd;
+>         unsigned long flags;
+>
+>         spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> -       list_for_each_entry(master, &smmu_domain->devices, domain_head) {
+> +       list_for_each_entry(master_domain, &smmu_domain->devices, devices=
+_elm) {
+> +               struct arm_smmu_master *master =3D master_domain->master;
+>                 struct arm_smmu_cd *cdptr;
+>
+>                 /* S1 domains only support RID attachment right now */
+> @@ -300,7 +301,7 @@ static void arm_smmu_mm_release(struct mmu_notifier *=
+mn, struct mm_struct *mm)
+>  {
+>         struct arm_smmu_mmu_notifier *smmu_mn =3D mn_to_smmu(mn);
+>         struct arm_smmu_domain *smmu_domain =3D smmu_mn->domain;
+> -       struct arm_smmu_master *master;
+> +       struct arm_smmu_master_domain *master_domain;
+>         unsigned long flags;
+>
+>         mutex_lock(&sva_lock);
+> @@ -314,7 +315,9 @@ static void arm_smmu_mm_release(struct mmu_notifier *=
+mn, struct mm_struct *mm)
+>          * but disable translation.
+>          */
+>         spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> -       list_for_each_entry(master, &smmu_domain->devices, domain_head) {
+> +       list_for_each_entry(master_domain, &smmu_domain->devices,
+> +                           devices_elm) {
+> +               struct arm_smmu_master *master =3D master_domain->master;
+>                 struct arm_smmu_cd target;
+>                 struct arm_smmu_cd *cdptr;
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.c
+> index 7a0be7dd719793..51a1e7198fd1af 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2031,10 +2031,10 @@ static int arm_smmu_atc_inv_master(struct arm_smm=
+u_master *master)
+>  int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssi=
+d,
+>                             unsigned long iova, size_t size)
+>  {
+> +       struct arm_smmu_master_domain *master_domain;
+>         int i;
+>         unsigned long flags;
+>         struct arm_smmu_cmdq_ent cmd;
+> -       struct arm_smmu_master *master;
+>         struct arm_smmu_cmdq_batch cmds;
+>
+>         if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS))
+> @@ -2062,7 +2062,10 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain=
+ *smmu_domain, int ssid,
+>         cmds.num =3D 0;
+>
+>         spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> -       list_for_each_entry(master, &smmu_domain->devices, domain_head) {
+> +       list_for_each_entry(master_domain, &smmu_domain->devices,
+> +                           devices_elm) {
+> +               struct arm_smmu_master *master =3D master_domain->master;
+> +
+>                 if (!master->ats_enabled)
+>                         continue;
+>
+> @@ -2554,9 +2557,26 @@ static void arm_smmu_disable_pasid(struct arm_smmu=
+_master *master)
+>         pci_disable_pasid(pdev);
+>  }
+>
+> +static struct arm_smmu_master_domain *
+> +arm_smmu_find_master_domain(struct arm_smmu_domain *smmu_domain,
+> +                           struct arm_smmu_master *master)
+> +{
+> +       struct arm_smmu_master_domain *master_domain;
+> +
+> +       lockdep_assert_held(&smmu_domain->devices_lock);
+> +
+> +       list_for_each_entry(master_domain, &smmu_domain->devices,
+> +                           devices_elm) {
+> +               if (master_domain->master =3D=3D master)
+> +                       return master_domain;
+> +       }
+> +       return NULL;
+> +}
+> +
+>  static void arm_smmu_detach_dev(struct arm_smmu_master *master)
+>  {
+>         struct iommu_domain *domain =3D iommu_get_domain_for_dev(master->=
+dev);
+> +       struct arm_smmu_master_domain *master_domain;
+>         struct arm_smmu_domain *smmu_domain;
+>         unsigned long flags;
+>
+> @@ -2567,7 +2587,11 @@ static void arm_smmu_detach_dev(struct arm_smmu_ma=
+ster *master)
+>         arm_smmu_disable_ats(master, smmu_domain);
+>
+>         spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> -       list_del_init(&master->domain_head);
+> +       master_domain =3D arm_smmu_find_master_domain(smmu_domain, master=
+);
+> +       if (master_domain) {
+> +               list_del(&master_domain->devices_elm);
+> +               kfree(master_domain);
+> +       }
+>         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+>
+>         master->ats_enabled =3D false;
+> @@ -2581,6 +2605,7 @@ static int arm_smmu_attach_dev(struct iommu_domain =
+*domain, struct device *dev)
+>         struct iommu_fwspec *fwspec =3D dev_iommu_fwspec_get(dev);
+>         struct arm_smmu_device *smmu;
+>         struct arm_smmu_domain *smmu_domain =3D to_smmu_domain(domain);
+> +       struct arm_smmu_master_domain *master_domain;
+>         struct arm_smmu_master *master;
+>         struct arm_smmu_cd *cdptr;
+>
+> @@ -2617,6 +2642,11 @@ static int arm_smmu_attach_dev(struct iommu_domain=
+ *domain, struct device *dev)
+>                         return -ENOMEM;
+>         }
+>
+> +       master_domain =3D kzalloc(sizeof(*master_domain), GFP_KERNEL);
+> +       if (!master_domain)
+> +               return -ENOMEM;
+> +       master_domain->master =3D master;
+> +
+>         /*
+>          * Prevent arm_smmu_share_asid() from trying to change the ASID
+>          * of either the old or new domain while we are working on it.
+> @@ -2630,7 +2660,7 @@ static int arm_smmu_attach_dev(struct iommu_domain =
+*domain, struct device *dev)
+>         master->ats_enabled =3D arm_smmu_ats_supported(master);
+>
+>         spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> -       list_add(&master->domain_head, &smmu_domain->devices);
+> +       list_add(&master_domain->devices_elm, &smmu_domain->devices);
+>         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+>
+>         switch (smmu_domain->stage) {
+> @@ -2949,7 +2979,6 @@ static struct iommu_device *arm_smmu_probe_device(s=
+truct device *dev)
+>         master->dev =3D dev;
+>         master->smmu =3D smmu;
+>         INIT_LIST_HEAD(&master->bonds);
+> -       INIT_LIST_HEAD(&master->domain_head);
+>         dev_iommu_priv_set(dev, master);
+>
+>         ret =3D arm_smmu_insert_master(smmu, master);
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.h
+> index ab0a6587e07ec8..c4b79bc52991be 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -695,7 +695,6 @@ struct arm_smmu_stream {
+>  struct arm_smmu_master {
+>         struct arm_smmu_device          *smmu;
+>         struct device                   *dev;
+> -       struct list_head                domain_head;
+>         struct arm_smmu_stream          *streams;
+>         /* Locked by the iommu core using the group mutex */
+>         struct arm_smmu_ctx_desc_cfg    cd_table;
+> @@ -729,12 +728,18 @@ struct arm_smmu_domain {
+>
+>         struct iommu_domain             domain;
+>
+> +       /* List of struct arm_smmu_master_domain */
+>         struct list_head                devices;
+>         spinlock_t                      devices_lock;
+>
+>         struct list_head                mmu_notifiers;
+>  };
+>
+> +struct arm_smmu_master_domain {
+> +       struct list_head devices_elm;
+> +       struct arm_smmu_master *master;
+> +};
+> +
+>  static inline struct arm_smmu_domain *to_smmu_domain(struct iommu_domain=
+ *dom)
+>  {
+>         return container_of(dom, struct arm_smmu_domain, domain);
+> --
+> 2.43.2
+>
+Reviewed-by: Michael Shavit <mshavit@google.com>
