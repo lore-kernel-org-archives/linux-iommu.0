@@ -1,241 +1,150 @@
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1053C2D05E
-	for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 15:10:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FF22657D3;
+	Tue, 19 Mar 2024 15:48:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710861006; cv=none; b=nMajqz+Yz5pPkf+ORLGOlAfSjR6nG6G6RryWyyCMPyYseyro3plW6NLgngfas57UlkB0qiwch2uPBk0bm2UTmqImcZ3UInAUoSeq/rEqnPhOZ8yYB736Ki/aR7z6QEIDQXzW9vb5LlkVZZlk6RTeElUmhbHMa4FWpPqyrtAWyj0=
+	t=1710863282; cv=none; b=tu3JzoEpH8Rmus7298Via0HcFc8WBO6lUTS3RPqepvjcUEc8AnDDj9G44xTfySn59O2E0Pdt7Oa5j1wdOqmy8RxMa133z/AnIPbWhHqPIStvKdg4TOQPB/tuiXQFR06grCuC5/gqzgXPm7VbkiEf5ipsWkqu2Fk/mX4bAtJPN0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710861006; c=relaxed/simple;
-	bh=wtQ0qM6S23AEiNjS00UjSpHz41jnOmFYuaTxVXh0ClM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=nf6PFv0XSeMfGdbFFXtnWQfGBfBwHcG2+aTFFM4fHbTuO2bH1kAQOqJGQdaKPtmAj/nmZrHn+OsWn4ShBvbv81cAGvhgFOuVZNj/K6ka91CK5PLASO7BRq3b1FNYRQVaBT6h4BmxsGs8gMii32rkcIa8ibr/gFL42/6w6b9BhNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=aOIAlmY4; arc=none smtp.client-ip=209.85.160.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1710863282; c=relaxed/simple;
+	bh=eHlATGPtHi4Dvca5jjoXEJntrvdbTpLgFF3K6HWMAzY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ndYwGMDp0HzAOTnFpzCckyNv8OewHm0DM3Cw9KaLQTqzqYZ27DEUV5CtfX4mEBZF8wutRC0Pr6D5xqpfO8AK/MQ7RsCo2gjf3MIgjOI19ZOEIdvWT2d+OBGUX5Z6Czmg8b5GflO6W7kUzHIZtfMKpD22gCucfU955m7P4PRKqdY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VsE+Dgj7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="aOIAlmY4"
-Received: by mail-qt1-f178.google.com with SMTP id d75a77b69052e-430e1e06e75so404591cf.0
-        for <iommu@lists.linux.dev>; Tue, 19 Mar 2024 08:10:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1710861004; x=1711465804; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=e3nDS1TFkM/P04Hm28o9nB5crZnsavj1XrT2oYhN9xU=;
-        b=aOIAlmY4wrxHR1K4uoxnTZg8IxPypacan+Zyd8vahaKbDzsDowHbkLgNe3trEaPf25
-         lZOM7hnGtTQ3tLjmv9UYOjqZkf9ziOniulDY4fuS+42rqalxIhKd0UOFf8ZxCXuNuEz8
-         X+cNYb3NO/zT7wf+8ee4u+1gvL5/ThjTgfySwwEz/pkYSdku6DxuGJowl1JowEPFnCK8
-         IzPN+7p6NrT3RKNWpU0vP0cvgj8AlCdTSr6exwl/SMLbIb/qjNkgdb+rYZdfrRxAUrJJ
-         /MPnh64lIkG831QYuwsAgJ+FnyQJGRP9xTPh8btTDRIHGU64MLbGHTrnFKWLiQbV+Orm
-         Uoag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1710861004; x=1711465804;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=e3nDS1TFkM/P04Hm28o9nB5crZnsavj1XrT2oYhN9xU=;
-        b=ryfoxQ1/4Xv6MtKZqlH9ah6erONMGezmf56MEelrzgAyH16xdbw7Gq4GOLG2t9D0tK
-         A/D734SH21ib/Sttriy/AmPXgE7N+lHg+MYxz0NwAlcr89+7JwMLu210uVGH2XJCcUJE
-         2uA81anKrEE+C2w3ggb2mufl/YYRGWdiLbAy4CwAnoE35blX82FOrTFZKDhbhsnXuSU2
-         IAWu2+pPIv3hkOwe/1qUEuyiu/5MOzUzeP4e4rE23k9+oDkluM7gxNy8m4pNvB2jTmyE
-         Hn104uL/eXLbRFObyp4nNmNwgg4VB/pBXI0Ad/PEfX3hkSOG/a7eYAEFrPGlWPnZ8Rvq
-         MxUQ==
-X-Gm-Message-State: AOJu0Yweg0L2mQNO7itaHEHbJVMPcJnIWLYlMxt3ttL/GcLDefiNpgkb
-	iVTRXzIw6ka2SggmvbfJw2jvMLrSV7GvxQ4KYToPvTnJ2NJGbfeuYdHinWu9FBEkjE+eneUNH98
-	BhfnocoK2MHM2cnucRfPKRU0p5e6axxcO9kT/
-X-Google-Smtp-Source: AGHT+IE2dIbHwHLF81gLz+1R0LMSOY4rRcLnjiOH5JmdyZNSQpaH0QPkg41TsWlctGcQyZt7uwSK9r58RkbC7mSo5a4=
-X-Received: by 2002:a05:622a:2d1:b0:430:ea89:df93 with SMTP id
- a17-20020a05622a02d100b00430ea89df93mr182912qtx.0.1710861003658; Tue, 19 Mar
- 2024 08:10:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VsE+Dgj7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11012C433F1;
+	Tue, 19 Mar 2024 15:47:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1710863281;
+	bh=eHlATGPtHi4Dvca5jjoXEJntrvdbTpLgFF3K6HWMAzY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=VsE+Dgj7KK5X9edOigr2E9e0soVH+z1IP9FfEPEuF2WC5aZzxXt8QUODUToTIwdWA
+	 TSPeAV/m5dgZiwVBZy90MnQQ2RNSdiLA9yaPtSRLQQzU/AEWAjcxcwKcbbDoyGTlZK
+	 GlXC/lllWrTuWCvXbilzgE3r129QA0y2Ob7DGXN6uNylVU3NeQXDJG0X0KfRK+QUb6
+	 aMnjD5FMNGWA6xhWtzJTEi1l6tzWDhvUgfNzAuh8dwlu7zkFCLYRQxJgBxm+aQSzgZ
+	 M+2Zsx5jNwi40c3wns11IgtOBLZK93TYDsR5ys30AHgc6wbRIscvljvw1d+riJF9Kh
+	 oCF7zuBJr3/Yw==
+Date: Tue, 19 Mar 2024 15:47:56 +0000
+From: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Tyler Hicks <code@tyhicks.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+	Easwar Hariharan <eahariha@linux.microsoft.com>
+Subject: Re: Why is the ARM SMMU v1/v2 put into bypass mode on kexec?
+Message-ID: <20240319154756.GB2901@willie-the-truck>
+References: <ZfKsAIt8RY/JcL/V@sequoia>
+ <ZfNKv70oqqwMwIeS@sequoia>
+ <120d0dec-450f-41f8-9e05-fd763e84f6dd@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com> <20-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
-In-Reply-To: <20-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Tue, 19 Mar 2024 23:09:27 +0800
-Message-ID: <CAKHBV25UCJsxSGqPQLnOOm8CcUjCjhLakx6MCf52guCTSrwtzA@mail.gmail.com>
-Subject: Re: [PATCH v5 20/27] iommu: Add ops->domain_alloc_sva()
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
-	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
-	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, 
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <120d0dec-450f-41f8-9e05-fd763e84f6dd@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Tue, Mar 5, 2024 at 7:44=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
-te:
->
-> Make a new op that receives the device and the mm_struct that the SVA
-> domain should be created for. Unlike domain_alloc_paging() the dev
-> argument is never NULL here.
->
-> This allows drivers to fully initialize the SVA domain and allocate the
-> mmu_notifier during allocation. It allows the notifier lifetime to follow
-> the lifetime of the iommu_domain.
->
-> Since we have only one call site, upgrade the new op to return ERR_PTR
-> instead of NULL.
->
-> Change SMMUv3 to use the new op.
->
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 11 +++++++----
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c     |  2 +-
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h     |  6 +++++-
->  drivers/iommu/iommu-sva.c                       |  4 ++--
->  drivers/iommu/iommu.c                           | 12 +++++++++---
->  include/linux/iommu.h                           |  3 +++
->  6 files changed, 27 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/io=
-mmu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> index d633316f2e45bc..30b1cf587efffb 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-> @@ -662,17 +662,20 @@ static const struct iommu_domain_ops arm_smmu_sva_d=
-omain_ops =3D {
->         .free                   =3D arm_smmu_sva_domain_free
->  };
->
-> -struct iommu_domain *arm_smmu_sva_domain_alloc(unsigned type)
-> +struct iommu_domain *arm_smmu_sva_domain_alloc(struct device *dev,
-> +                                              struct mm_struct *mm)
->  {
-> +       struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
-> +       struct arm_smmu_device *smmu =3D master->smmu;
->         struct arm_smmu_domain *smmu_domain;
->
-> -       if (type !=3D IOMMU_DOMAIN_SVA)
-> -               return ERR_PTR(-EOPNOTSUPP);
-> -
->         smmu_domain =3D arm_smmu_domain_alloc();
->         if (IS_ERR(smmu_domain))
->                 return ERR_CAST(smmu_domain);
-> +
-> +       smmu_domain->domain.type =3D IOMMU_DOMAIN_SVA;
->         smmu_domain->domain.ops =3D &arm_smmu_sva_domain_ops;
-> +       smmu_domain->smmu =3D smmu;
->
->         return &smmu_domain->domain;
->  }
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
-arm/arm-smmu-v3/arm-smmu-v3.c
-> index 6d15fe3a160acf..a255a02a5fc8a9 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -3311,8 +3311,8 @@ static struct iommu_ops arm_smmu_ops =3D {
->         .identity_domain        =3D &arm_smmu_identity_domain,
->         .blocked_domain         =3D &arm_smmu_blocked_domain,
->         .capable                =3D arm_smmu_capable,
-> -       .domain_alloc           =3D arm_smmu_sva_domain_alloc,
->         .domain_alloc_paging    =3D arm_smmu_domain_alloc_paging,
-> +       .domain_alloc_sva       =3D arm_smmu_sva_domain_alloc,
->         .probe_device           =3D arm_smmu_probe_device,
->         .release_device         =3D arm_smmu_release_device,
->         .device_group           =3D arm_smmu_device_group,
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/=
-arm/arm-smmu-v3/arm-smmu-v3.h
-> index c47e07d695bef2..f62bd2ef36a18d 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -793,7 +793,8 @@ int arm_smmu_master_enable_sva(struct arm_smmu_master=
- *master);
->  int arm_smmu_master_disable_sva(struct arm_smmu_master *master);
->  bool arm_smmu_master_iopf_supported(struct arm_smmu_master *master);
->  void arm_smmu_sva_notifier_synchronize(void);
-> -struct iommu_domain *arm_smmu_sva_domain_alloc(unsigned int type);
-> +struct iommu_domain *arm_smmu_sva_domain_alloc(struct device *dev,
-> +                                              struct mm_struct *mm);
->  void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
->                                    struct device *dev, ioasid_t id);
->  #else /* CONFIG_ARM_SMMU_V3_SVA */
-> @@ -839,5 +840,8 @@ static inline void arm_smmu_sva_remove_dev_pasid(stru=
-ct iommu_domain *domain,
->                                                  ioasid_t id)
->  {
->  }
-> +
-> +#define arm_smmu_sva_domain_alloc NULL
-> +
->  #endif /* CONFIG_ARM_SMMU_V3_SVA */
->  #endif /* _ARM_SMMU_V3_H */
-> diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-> index 65814cbc840200..aa20ee6a1d8ae7 100644
-> --- a/drivers/iommu/iommu-sva.c
-> +++ b/drivers/iommu/iommu-sva.c
-> @@ -108,8 +108,8 @@ struct iommu_sva *iommu_sva_bind_device(struct device=
- *dev, struct mm_struct *mm
->
->         /* Allocate a new domain and set it on device pasid. */
->         domain =3D iommu_sva_domain_alloc(dev, mm);
-> -       if (!domain) {
-> -               ret =3D -ENOMEM;
-> +       if (IS_ERR(domain)) {
-> +               ret =3D PTR_ERR(domain);
->                 goto out_free_handle;
->         }
->
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index d14413916f93a0..f9a2b8363ad941 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3629,9 +3629,15 @@ struct iommu_domain *iommu_sva_domain_alloc(struct=
- device *dev,
->         const struct iommu_ops *ops =3D dev_iommu_ops(dev);
->         struct iommu_domain *domain;
->
-> -       domain =3D ops->domain_alloc(IOMMU_DOMAIN_SVA);
-> -       if (!domain)
-> -               return NULL;
-> +       if (ops->domain_alloc_sva) {
-> +               domain =3D ops->domain_alloc_sva(dev, mm);
-> +               if (IS_ERR(domain))
-> +                       return domain;
-> +       } else {
-> +               domain =3D ops->domain_alloc(IOMMU_DOMAIN_SVA);
-> +               if (!domain)
-> +                       return ERR_PTR(-ENOMEM);
-> +       }
->
->         domain->type =3D IOMMU_DOMAIN_SVA;
->         mmgrab(mm);
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 5e27cb3a3be99b..0274044f1fb084 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -419,6 +419,7 @@ static inline int __iommu_copy_struct_from_user_array=
-(
->   *                     Upon failure, ERR_PTR must be returned.
->   * @domain_alloc_paging: Allocate an iommu_domain that can be used for
->   *                       UNMANAGED, DMA, and DMA_FQ domain types.
-> + * @domain_alloc_sva: Allocate an iommu_domain for Shared Virtual Addres=
-sing.
->   * @probe_device: Add device to iommu driver handling
->   * @release_device: Remove device from iommu driver handling
->   * @probe_finalize: Do final setup work after the device is added to an =
-IOMMU
-> @@ -459,6 +460,8 @@ struct iommu_ops {
->                 struct device *dev, u32 flags, struct iommu_domain *paren=
-t,
->                 const struct iommu_user_data *user_data);
->         struct iommu_domain *(*domain_alloc_paging)(struct device *dev);
-> +       struct iommu_domain *(*domain_alloc_sva)(struct device *dev,
-> +                                                struct mm_struct *mm);
->
->         struct iommu_device *(*probe_device)(struct device *dev);
->         void (*release_device)(struct device *dev);
-> --
-> 2.43.2
->
-Reviewed-by: Michael Shavit <mshavit@google.com>
+On Tue, Mar 19, 2024 at 12:57:52PM +0000, Robin Murphy wrote:
+> On 2024-03-14 7:06 pm, Tyler Hicks wrote:
+> > On 2024-03-14 09:55:46, Tyler Hicks wrote:
+> > > Given that drivers are only optionally asked to implement the .shutdown
+> > > hook, which is required to properly quiesce devices before a kexec, why
+> > > is it that we put the ARM SMMU v1/v2 into bypass mode in the arm-smmu
+> > > driver's own .shutdown hook?
+> > > 
+> > >   arm_smmu_device_shutdown() -> set SMMU_sCR0.CLIENTPD bit to 1
+> > > 
+> > > Driver authors often forget to even implement a .shutdown hook, which
+> > > results in some hard-to-debug memory corruption issues in the kexec'ed
+> > > target kernel due to pending DMA operations happening on untranslated
+> > > addresses. Why not leave the SMMU in translate mode but clear the stream
+> > > mapping table (or maybe even call arm_smmu_device_reset()) in the SMMU's
+> > > .shutdown hook to prevent the memory corruption from happening in the
+> > > first place?
+> > > 
+> > > Fully acknowledging that the proper fix is to quiesce the devices, I
+> > > feel like resetting the SMMU and leaving it in translate mode across
+> > > kexec would be more consistent with the intent behind v5.2 commit
+> > > 954a03be033c ("iommu/arm-smmu: Break insecure users by disabling bypass
+> > > by default"). The incoming transactions of devices, that weren't
+> > > properly quiesced during a kexec, would be blocked until their drivers
+> > > have a chance to reinitialize the devices in the new kernel.
+> > > 
+> > > I appreciate any help understanding why bypass mode is utilized here as
+> > > I'm sure there are nuances that I haven't considered. Thank you!
+> > 
+> > I now see that Will has previously mentioned that he'd be open to such a
+> > change:
+> > 
+> >   One thing I would be in favour of is changing the ->shutdown() code to
+> >   honour disable_bypass=1 so that we put the SMMU in an aborting state
+> >   instead of passthrough. Would that help at all? It would at least
+> >   avoid the memory corruption on missing shutdown callback.
+> > 
+> >   - https://lore.kernel.org/linux-arm-kernel/20200608113852.GA3108@willie-the-truck/
+> > 
+> > Robin mentions the need to support kexec into a non-SMMU-aware OS. I
+> > hadn't considered that bit of complexity:
+> > 
+> >   ... consider if the first kernel *did* leave it enabled with whatever
+> >   left-over translations in place, and kexec'ed into another OS that
+> >   wasn't SMMU-aware...
+> > 
+> >   - https://lore.kernel.org/linux-arm-kernel/e072f61a-d6cf-2e34-efd5-c1db38c5c622@arm.com/
+> > 
+> > Now that we're 3-4 years removed from that conversation, has anything
+> > changed? Will, is there anything we'd need to watch out for if we were
+> > to prototype this sort of change? For example, would it be wise to
+> > disable fault interrupts when putting the SMMU in an aborting state
+> > before kexec'ing?
+
+I've grown older and wiser in those four years and no longer think that's
+a good idea :) Well, older maybe, but the reality is that the code around
+the driver has evolved and 'disable_bypass' is even more of a hack now
+than it used to be.
+
+> Fundamentally, we expect the SMMU to be disabled at initial boot, so per the
+> intent of kexec we put it back in that state. That also seems the most
+> likely expectation of anything we could kexec into, given that it is the
+> natural state of an untouched SMMU after a hard reset, and thus comes out as
+> the least-worst option.
+
+Heh, that sounded too good to be true when I read it so I went and looked at
+the code:
+
+SMMUv3: arm_smmu_device_shutdown() -> clears CR0 but doesn't touch GBPA
+SMMUv2: arm_smmu_device_shutdown() -> writes CLIENTPD to CR0
+
+So it's a bit of a muddle afaict; SMMUv2 explicitly goes into bypass
+whereas SMMUv3 probably does honour disable_bypass=false! Did I miss
+something?
+
+As discussed elsewhere, if we remove disable_bypass from SMMUv3, then
+we should be able to be consistent here. The question is, what's the
+right behaviour?
+
+> Beyond properly quiescing and resetting the system back to a boot-time
+> state, the outgoing kernel in a kexec can only really do things which affect
+> itself. Sure, we *could* configure the SMMU to block all traffic and disable
+> the interrupt to avoid getting stuck in a storm of faults on the way out,
+> but what does that mean for the incoming kexec payload? That it can have the
+> pleasure of discovering the SMMU, innocently enabling the interrupt and
+> getting stuck in an unexpected storm of faults. Or perhaps just resetting
+> the SMMU into a disabled state and thus still unwittingly allowing its
+> memory to be corrupted by the previous kernel not supporting kexec properly.
+
+Right, it's hard to win if DMA-active devices weren't quiesced properly
+by the outgoing kernel. Either the SMMU was left in abort (leading to the
+problems you list above) or the SMMU is left in bypass (leading to possible
+data corruption). Which is better?
+
+The best solution is obviously to implement those missing ->shutdown()
+callbacks.
+
+Will
