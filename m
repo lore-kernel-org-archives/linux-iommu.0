@@ -1,168 +1,155 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2079.outbound.protection.outlook.com [40.107.237.79])
+Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1C846A8DB;
-	Wed, 20 Mar 2024 18:36:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.79
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710959763; cv=fail; b=sHoN8qVDEfAQPZ+IPMAL2EP9G69chrrWUCTXukESklz/VlXBuCzlIqFNYZB4U8cmPPCd39E1bf3lS+lhT/l4rs3Ai2l2BWdHR85XDZ+gcbIMW4WiCC4DsLFEYlPrw7nFtJkbd/5ctp4YpBJWMD1T70FZ3BWSTaef4BwnfkaIKvs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710959763; c=relaxed/simple;
-	bh=XxTK9zgaU6GDeUkToZOOjBCUA8T6rH5trfPSK5UF91o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=k+J4xj0vNztOu6s+zQI4DpUSQ+2h6/G4LPINq3b1OVeYUP8tx0+zZOnyQfRVsVLou/NPHgOEI+ewtbBuv80dNyOiQ2aPZI3MGHL1y2KcPfKVCCTRQ1E1k77jzViCvRh6a1nQavo5e9CcwtDjnhq1FPaHcvU6RdRFlhIMNg7eLfA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=X0FzOKpI; arc=fail smtp.client-ip=40.107.237.79
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88D8585623
+	for <iommu@lists.linux.dev>; Wed, 20 Mar 2024 19:15:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1710962119; cv=none; b=TSN4hwVK2XrMe3K+P2zYbkW5djcfSSvStO+0f0UHusx6UnoHMJOf4lIfmXlUbT5nwbwvPjxlMTca1x8ULLlRex4xlbiMmlvDTIcQpelNgxxpZJL7ddSGYB3pR2aURJ9zkNlpsuvh0IYjfxXZc/6GuUoXAHsFq0qil2akS+Fvl8Y=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1710962119; c=relaxed/simple;
+	bh=z+JJu0xQoW3dM54mrpxZ3kL3VRvxY9C0AzdnCinEaxc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ljCXjXV6U49IYwqZigBfPKSpZgYFdRN7iPxndATNITuP4JtV6t5Kek+9N9iQt+90lC8x917VD7ih19JnHfDMnOpU95UKel+eNyk1gtuk74KFqubWS7gM485Z90fW5zYRWYVW9avNdmg0+2liHu2xAh9PYyEG6DklgRlnQymQAYo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=B1VWiDKI; arc=none smtp.client-ip=46.235.227.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="X0FzOKpI"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k5XF7hisb16vgRFHK1l5qoMhIoBs9Ial5tt5z2E6c5cnUNZkOFmZuX3Lrms/XnIpYFhYrUm2k9n4pC6zHAyiIrIUajxqCSnDwOmUko/ige7srF5MJtZc9z5qrK2sK/gNp1+8SMn90lS45xYKZOzaz62wC64QXOEW67IbxyNiZ0wapVmMl8lB/dK+L4whYBLZKTQM/Kc2kkTbEtZxp6GDP36SU0eIYgyeMQgaxza+ZfK4e4D3q72MSMeKPngxIGNWVZzfKsxF22/c7TJYaVCxbhVCdcvHOkcYrBrdUb3YQwEdZsgvBaPoC1hjKuN1UeHgIBKivH2IEoHHsFli2mLMZw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mK/VOdK6yBiOnkEA/y+YgZNeilmKXKn0rW6isxsRY2M=;
- b=BEZChIUha+nlv7DSy96niUwm5n+XU2nvfNEgYOY3LuyzO9aUvEHjl/g9RAd9sBIVg0Ff1vM3ukZa4yBAhPxqZ3NBv0GFxJigE/eIXyQpDmnhgLMIy2hy1thT/icDFx46ooCalO/CfH9KtjOGJawUNnLZJKcgNG2PHO1Pu73czERW8P9FpRyDCqwDQLOzyoSH3rNErsfYyNt4id5/dGgzjMxcAryWa5b00DOYVA//w9P6/kSWxGaOSiWarbpgzEl4hGrxyHw1c/YalfZnlHygv88anQqVAyXACD9e9LKP1mYWqb6xVQmI6yq4F08buVTXQR29DmbcyPjlJ7YMiTr1WQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mK/VOdK6yBiOnkEA/y+YgZNeilmKXKn0rW6isxsRY2M=;
- b=X0FzOKpI1QuIoWRHr/+fF0fPlMRmFrASNuOPqwLYWACn3sMaHANa9Id0WELieanwtA1dVCVm0AYwflbdgN1BrekH9AuyJyjxcnVZQYdpPkMrbGzY8WERx3khirYtUXIBYM1V7Q2UuWxQkpsmeA5lXeVuN7ZYNFXGCwcDdDAQtCeUxfUUh7Md/JDHIJ8jHCj6CZEbnPdQyqdbXSuLHSpVRu5gBEhacohU6VfSzJGlirk1IgObd+heX2tahclJ/Fypn7LNe7yx5c+yheoCr6Mq5e4xnaeiT2kRNOg6s1yLFhFlLMxh0/qgyRy4Uuo+8Y5ihEg+1u8MAQaF/PVCKhheHg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by DM6PR12MB4388.namprd12.prod.outlook.com (2603:10b6:5:2a9::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.34; Wed, 20 Mar
- 2024 18:35:58 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7386.030; Wed, 20 Mar 2024
- 18:35:56 +0000
-Date: Wed, 20 Mar 2024 15:35:55 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Michael Shavit <mshavit@google.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>, Nicolin Chen <nicolinc@nvidia.com>,
-	patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v5 21/27] iommu/arm-smmu-v3: Put the SVA mmu notifier in
- the smmu_domain
-Message-ID: <20240320183555.GH1044235@nvidia.com>
-References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
- <21-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
- <CAKHBV24+c4ZB2ehRgp+hRX4LcQtTr8ZeU==+==gwbT+-J28Zmw@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKHBV24+c4ZB2ehRgp+hRX4LcQtTr8ZeU==+==gwbT+-J28Zmw@mail.gmail.com>
-X-ClientProxiedBy: MN2PR16CA0047.namprd16.prod.outlook.com
- (2603:10b6:208:234::16) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="B1VWiDKI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1710962115;
+	bh=z+JJu0xQoW3dM54mrpxZ3kL3VRvxY9C0AzdnCinEaxc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=B1VWiDKI1tUhF4pRktoC0eVPZNgiRldDLP2xGOb75MPTlScONOBZX0rX4t3ATjZVG
+	 oGRD9jWNegiZ6o80vmfWoCL7PCBh7MmHCrGLPGKT/aTG5+qcEKrRUuk2VvR5nkegrv
+	 UCa5mSiGxrbyTF+FvV0iWAftyrJmb6mhk9A92+N9Ih+LgUP2gRWKLZSIuMngwTu9U8
+	 Krpx6FxqZCTBuiKaPTl01PEWE0UI26CNo7wd0SsWBMkKcwvzcoQiaiW6UjmIm49p7s
+	 XeAn6D7Zm8HIEu17xszWTg4ck4Vgqneq6usFWY33lTKV2CAC4Tm/KPWbR/eAjOheuj
+	 mZjW/02iYvGQA==
+Received: from mercury (cola.collaboradmins.com [195.201.22.229])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: sre)
+	by madrid.collaboradmins.com (Postfix) with ESMTPSA id 99D173780BFE;
+	Wed, 20 Mar 2024 19:15:15 +0000 (UTC)
+Received: by mercury (Postfix, from userid 1000)
+	id 3C9B21060704; Wed, 20 Mar 2024 20:15:15 +0100 (CET)
+Date: Wed, 20 Mar 2024 20:15:15 +0100
+From: Sebastian Reichel <sebastian.reichel@collabora.com>
+To: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Cc: linux-kernel@vger.kernel.org, 
+	Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>, Philipp Zabel <p.zabel@pengutronix.de>, 
+	Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Cristian Ciocaltea <cristian.ciocaltea@collabora.com>, 
+	Dragan Simic <dsimic@manjaro.org>, Shreeya Patel <shreeya.patel@collabora.com>, 
+	Chris Morgan <macromorgan@hotmail.com>, Andy Yan <andy.yan@rock-chips.com>, 
+	Nicolas Frattaroli <frattaroli.nicolas@gmail.com>, linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org, 
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+Subject: Re: [PATCH 1/4] dt-bindings: iommu: rockchip: Fix rk3588 variant
+Message-ID: <uund5em6hnexqpzxj3iazpu5gjbfwtdcolhkit4cljgfldiqyf@4jmgeh6aaw7v>
+References: <20240320173736.2720778-1-linkmauve@linkmauve.fr>
+ <20240320173736.2720778-2-linkmauve@linkmauve.fr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|DM6PR12MB4388:EE_
-X-MS-Office365-Filtering-Correlation-Id: f8474b78-c378-4fff-5b27-08dc490c94c4
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	CaT/AAftGKuJgIWcqYm7RZkUdN1d8/J98pn79z6GOrdkZfLW+UvfkeWrvOI68GnNacdf5f4c6L7NMVT2Em5WwVVtyuF3QwmYVLBEfKdrL8RII/+YGLmKGyuATy/2CXxQUVgRjRuAg8qidRo+gma9hOdI9uCRs6kb0LFzOiJTYNFEHRFmvKLJxcedj238yD99UJrrf1r4iU5JcgjzIlCtiUzqz9lSgxamcnYeiX2/ToVF4IZoBcHhULuOK3VmrfEHJYP7GGVVDAkkmcMmHhkn1KThxzxWTC3CqQaL/UleqCNGGHa/yxOjWhIHZeS61d4hCS3bZgvRAp2ueG6t4KStg+HPoyur/9nn/Lq/2VbW1zDVq5P1kfSqv44250ZSMZVgIxvBQLiLFIS8/WNr+cwcw8/HnGAVAWClPw0RQQaQbh0CbwGSgTOcoq2copqkmKm6zGgqlOCJjkOxs246XSEaMP6aJ6mzTyH5kruDyNw7bfVxSDYg/LCn53phSwHXymnK1hnhCPZLQ+H58tBmD7ik2j4rOws6OYIC1eNoji+bLCA2i72PQjFocd7DjT1sBD4gd7FsjkKH9Qoy/wYh4tI7h0Fn5nPz897fkdNc8TdEaClRatH73c70RiY3oJPoXHtY4KOQGss2rQwj4Ix3UrV+b3GS6DZyQsq3DV9VtI6Mdys=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(366007)(1800799015)(7416005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?RCmK4Dp1VgdJDTkPeq3DaFoqnbGe1dTAbfqAlInjmeFgf3C1hWtaRuGfPhFT?=
- =?us-ascii?Q?xnQH88FEf9V6NXkrcKyreimz4S9MbKRBDCkfqDwpjptMdLKMX5zixEViYxoM?=
- =?us-ascii?Q?a0C6eyEppQbA2RgZaB6sJ2/r418TLV2wICgQFpFvwog8kimpgcq+aF0aEM1O?=
- =?us-ascii?Q?O5Kl62+QLQ7f79cFkmI7PY/vCFpKVD11ja/qyhR/Pf2+YWTY80er7I4RxyJK?=
- =?us-ascii?Q?6Y9loDZFXL7jWGgTQEDoWLgworsGj1TI1+OATWHvrbRIr9hwXdQXPCnkgIRa?=
- =?us-ascii?Q?761qPL/ZlaPVZsyaP2WAJXqOT0fpdsN34gy/rz4znXjMv6zXFlOauhc5+twl?=
- =?us-ascii?Q?PcyC5rAiShl+MoK/cbIpxPT07lJImiuUo1LzPe72/Foh9UHm8Cm2lqpQzXIa?=
- =?us-ascii?Q?SXOdR79KMVEAjOlfrStiKqtgYf6RiGMzJiWZn6RR+nfGTmLLscIdmV9iDy4B?=
- =?us-ascii?Q?gYGBMnFM8UPbKV64cs14A13vQ/9k248vQc8dbnHP6ixSC9JMMUwYRcO1hY7D?=
- =?us-ascii?Q?fsLhsTbUTucbOY1mF5LKbzwnUZrphArSDZi/LIinNRrSAtIVaBHgIucz4pDu?=
- =?us-ascii?Q?Xu34u5eA4gp4DpAs6eoygTPF16UiaduhHNmmc+hXhiszfqncqJ3+APfZU0vd?=
- =?us-ascii?Q?CG8ddQZBaH7WZD34uiGJaRYgXdUMOCRAAtZDa3Upf/sXzN21oOC5CTpxFV9R?=
- =?us-ascii?Q?ma563JDWyg3gNm7LhNYmDBbjc80jaMaKcI2+CFce94WL83FAmPz8Kdy4stBe?=
- =?us-ascii?Q?XtLKoTh5LJayvomvcThQhwGFvDiH3oE2YlSA8XRlWnpIiz9bHBaogYAgauWQ?=
- =?us-ascii?Q?ievatK8Ox82giqcgaQGFY2I2ij6PWqDDsDsI6eWC/FsAlI4LAy8obOHX7W0e?=
- =?us-ascii?Q?UYIJPNVZy1q5u1sTpBS4dP3xY/35EX+2yaxL4BlmkYLyZKFnkag5P2VCZMrX?=
- =?us-ascii?Q?FznE7r6OjDYLQN74FYKinmipIb5IQdbWWQZFXs+Z3TOtxVlf2xSE/WXmC/S9?=
- =?us-ascii?Q?ZwY4tQy7zdl5XsgON3/bvjDkezDFO4uk+ja2YUYurydOJ0aFhIwk2QmPUYjR?=
- =?us-ascii?Q?iKJfTSNVH7wxO9pLPLTq954/ukEI2JD9/JhuNZardFd+ehJkoaAGrQPOMtEe?=
- =?us-ascii?Q?n0HpMqzPAKrFeWyIxqSZJHDyDvuil7h1ZJLNYTMlXHT26EQYKSAKsSOt+4Nd?=
- =?us-ascii?Q?WIhlPhIrHwzT+nRCWl62DZlcBnr8m/v2IG6HTs+osU9LI6XK4TGqlOl3Rdz1?=
- =?us-ascii?Q?Jr8XSyIJysc/6Gqvu+aMN8WqxasECOL4joUqctHdqy2rGheN+hINI7ILfMb4?=
- =?us-ascii?Q?oJyf9AkDk8C4xpl8ayPFN+NokpH4cUiAsDVJizrwe6r+Bvvp4rbBjwlUPbWW?=
- =?us-ascii?Q?rh8s0FJ4CIZLmr25m/00XNba97T8IyDZdPcybw9pMZ2tPM3wYrGEOo9ESZRZ?=
- =?us-ascii?Q?PXGbQwV2G/hOa7v7iCVT5s5UMFwsq6UBZsBrkHZvYz2JrtG0Rdi+JtW2MJvw?=
- =?us-ascii?Q?2lfeOwpnnfF8lEDBWbZLcAVjBNzUhcW8NM4vBFmV6Qgk3TUZVWEuFuPb1DPa?=
- =?us-ascii?Q?eGALCcKLfL9pyVrqskd7/L01gBrQ1xD26dWcgxsk?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f8474b78-c378-4fff-5b27-08dc490c94c4
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2024 18:35:56.5882
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /ayvCvYwNlrWjSq97096z+lfjBp0ghBu6f+eBdnHwIMKnDYlq4dJMn0OC9KwQwhU
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4388
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="hcmholarfddiyvvu"
+Content-Disposition: inline
+In-Reply-To: <20240320173736.2720778-2-linkmauve@linkmauve.fr>
 
-On Wed, Mar 20, 2024 at 12:23:02AM +0800, Michael Shavit wrote:
-> >  static void arm_smmu_sva_domain_free(struct iommu_domain *domain)
-> >  {
-> > -       kfree(to_smmu_domain(domain));
-> > +       struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> > +
-> > +       /*
-> > +        * Ensure the ASID is empty in the iommu cache before allowing reuse.
-> > +        */
-> > +       arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_domain->cd.asid);
-> > +
-> > +       /*
-> > +        * Notice that the arm_smmu_mm_arch_invalidate_secondary_tlbs op can
-> > +        * still be called/running at this point. We allow the ASID to be
-> > +        * reused, and if there is a race then it just suffers harmless
-> > +        * unnecessary invalidation.
-> > +        */
-> > +       xa_erase(&arm_smmu_asid_xa, smmu_domain->cd.asid);
-> > +
-> > +       /*
-> > +        * Actual free is defered to the SRCU callback
-> > +        * arm_smmu_mmu_notifier_free()
-> > +        */
-> > +       mmu_notifier_put(&smmu_domain->mmu_notifier);
-> >  }
-> 
-> I'm far from familiar with mmu_notifier and how the sva layers manage
-> its reference count....but is calling mmu_notifier_unregister instead
-> of mmu_notifier_put possible here? 
 
-Possible yes, but it is not good for performance..
+--hcmholarfddiyvvu
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-The reason I created the mmnut_notifier_put() scheme is to avoid the
-synchronize_srcu() penalty in places like this. We don't want to wait
-around for a grace period just to destroy an iommu_domain.
+Hello Emmanuel,
 
-So the put scheme piggybacks on the call_srcu that the does the rest
-of the cleanup and we get the last bits of freeing done asynchronously.
+On Wed, Mar 20, 2024 at 06:37:30PM +0100, Emmanuel Gil Peyrot wrote:
+> The documentation got added in f8aa519976b38e67aae02d2db3e2998513305e80,
+> but it hasn=E2=80=99t been added to the driver so it was unused.
+>=20
+> Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+> ---
 
-All of this is because the notifier ops callers are protected by srcu
-locks for performance and we can't guarentee no ops are running
-without a grace period.
+Everything is fine with f8aa519976b38e67aae02d2db3e2998513305e80
+(well the patch description could be better :)) and this patch is
+just wrong. The documentation explicitly adds the combination of
+rk3588-iommu with rk3568-iommu as fallback. The idea is, that the
+driver handles it just like an rk3568 iommu. If some differences
+are found in the future, the driver can switch to handle the more
+specific compatible without any DT changes (which is ABI).
 
-Jason
+I suggest watching this presentation:
+
+https://www.youtube.com/watch?v=3D6iguKSJJfxo
+
+Greetings,
+
+-- Sebastian
+
+>  arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 2 +-
+>  drivers/iommu/rockchip-iommu.c            | 3 +++
+>  2 files changed, 4 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi b/arch/arm64/boot/=
+dts/rockchip/rk3588s.dtsi
+> index 87b83c87bd55..2a23b4dc36e4 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+> +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
+> @@ -704,7 +704,7 @@ vp3: port@3 {
+>  	};
+> =20
+>  	vop_mmu: iommu@fdd97e00 {
+> -		compatible =3D "rockchip,rk3588-iommu", "rockchip,rk3568-iommu";
+> +		compatible =3D "rockchip,rk3588-iommu";
+>  		reg =3D <0x0 0xfdd97e00 0x0 0x100>, <0x0 0xfdd97f00 0x0 0x100>;
+>  		interrupts =3D <GIC_SPI 156 IRQ_TYPE_LEVEL_HIGH 0>;
+>  		clocks =3D <&cru ACLK_VOP>, <&cru HCLK_VOP>;
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iomm=
+u.c
+> index da79d9f4cf63..da0e93c139d1 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -1361,6 +1361,9 @@ static const struct of_device_id rk_iommu_dt_ids[] =
+=3D {
+>  	{	.compatible =3D "rockchip,rk3568-iommu",
+>  		.data =3D &iommu_data_ops_v2,
+>  	},
+> +	{	.compatible =3D "rockchip,rk3588-iommu",
+> +		.data =3D &iommu_data_ops_v2,
+> +	},
+>  	{ /* sentinel */ }
+>  };
+> =20
+> --=20
+> 2.44.0
+>=20
+
+--hcmholarfddiyvvu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAmX7Nb8ACgkQ2O7X88g7
++po3QA//ZGRsC3BtWsJE9IZElMcFAVIscBSPpnfwYskq0O3KIoMWwvFQGlHgRQ9G
+dAvpcGMTmFuhv3ZIqiltdO/+bIeOUztINGSzbWNz7uGhpXvTkVkjFzraNUnUKvNh
+oR3U29wGba+FJJODcJ3uSapaPsX8RbCk/nZ2dV32SC1/XK6nOeKXHiqGHJoDNzKL
+OIBE8QDo5+YuElwXkDFs336VtOo1jsyUTefahIfAlJh0MNCXJ8Gq+IoK9Rb0gBH5
+HFmrJY4GodMvwQcNrAIW+FHnV/QNXIGZmbf57ktHUDU3oXqqTr313xTLwcbQO9bL
+Go7UEqWBQV2iUtfsz8eKnmh001LQ6iPyBW/Da+Xv979UrgGemV4yZbn9gZnWeDiC
+wUAnrdQGuyQBNYmdAL5LucuDnoWupwuPI6v6UuxkWI7aTUvESvuNGDHEK2ZhV15U
+Y1Cz3x6g1o9RXKeMST767Xd1AOC/Zs3sunicG3elgWRvMEThrweqZ35fM9b5LSeW
+q2JvJ5C85XF1Ast3dIXZ6EM/WwozjzzCGV+YjX8g7rmx/+3AixhXyzVLKHM81/j8
+YVEwVmIXpBlwxf9mnUyduc7buIGMPYAevwrdk8R08ROhJN5D0YDEfvMGkiPRFiNx
+TTunFW/jz6+B0GOKl9HomDGWAowhIlJvpJWLRtQ3uetHzFgW9LI=
+=7AoS
+-----END PGP SIGNATURE-----
+
+--hcmholarfddiyvvu--
