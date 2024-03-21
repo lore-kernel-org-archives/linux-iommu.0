@@ -1,109 +1,97 @@
-Received: from sipsolutions.net (s3.sipsolutions.net [168.119.38.16])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E21AA383A4;
-	Thu, 21 Mar 2024 19:14:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=168.119.38.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A00E5680;
+	Thu, 21 Mar 2024 20:31:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711048477; cv=none; b=ldatn8DbGumm63WVrt2b0aEMt40dEUmeFfJVRotHsUbhTFvN7XnasYZZl7YILITvNyqMF+cuvnbIaKBZgOd0l2b1h3WNIetmvI1UwSMk+rrPFzpiK+420IJc+h2UbBN+7IdiTwI2aeK4Y8Csv74FmCRGhnuyU0hArade3hS+zx8=
+	t=1711053111; cv=none; b=U8f0onOFfhAERUKKryZoe7bfx9AAEsYqbeRp9UhkdEtPE5JYse6Ee8sn15F08GlQ1ZnnZ/iFDFY9McLbcQa91UpvvSRdHNrSB2WNDU6SFFXjGge6x3Y2yzY5o/DQs/nly50FYYYwqzw4oHHx0cdEf6fZJe+7PXWLERSOu/uzdPY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711048477; c=relaxed/simple;
-	bh=NfFW5kCLFafWVBiNpJ5W+QaU+TMnoueVsQ3m1t2yNsk=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=WYOePpDB8VtHBurpDxUavMwkNWPQKO4mreK+r1a+cr7cBdPb2TgMuWsHwjwHztVkcUBg+OmcD/VJdzC2baGe8T/z+3UgLA8NP/BIDFeCVwhCxtcCcWnh8fUjaj5lofQv0c8PvdGaxMc+1SNBsC156tCt+wNQ6pa3y1fAro7OdKY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sipsolutions.net; spf=pass smtp.mailfrom=sipsolutions.net; dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b=vzvrKFy8; arc=none smtp.client-ip=168.119.38.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sipsolutions.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sipsolutions.net
+	s=arc-20240116; t=1711053111; c=relaxed/simple;
+	bh=baRa6A2qOinOd5YVAtWej5lfyO2Yw47YmlHbzlE1Jvg=;
+	h=Date:From:To:Cc:Subject:Message-Id:In-Reply-To:References:
+	 Mime-Version:Content-Type; b=OE+semlzvoEKhY1+ZzXqxt61kWAta5CLgzXWUp+ilDqSxYI7VV0Ph2ix9CoWZfcqW2kCbGRn7dS9UOtC3oi5eUO1q5uskRm4BbLtWW+Tj97ajKqTsszNZDCtkpG0pNDWJtf7DX8Z/WrShhh+73u78YkN0+T2fHOxMItE6xc0lZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b=myqqqaYb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sipsolutions.net header.i=@sipsolutions.net header.b="vzvrKFy8"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-	Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-	:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-	Resent-Cc:Resent-Message-ID; bh=NfFW5kCLFafWVBiNpJ5W+QaU+TMnoueVsQ3m1t2yNsk=;
-	t=1711048475; x=1712258075; b=vzvrKFy8EWu2P5bteKVdyjhdKQBx9z5cqoUFnFBfTb4XLgD
-	s5XeSJn7V10NZlXpMYG77NtCEZ9jUu4y7fKHa6aEXcFzbihclNoCmh3bzLKxYimeA19BVy0xV+O11
-	MbUNBm5dCb5s5QkWDM+IIqk4js3qTtOSmVF2GxFOqAP74xiZL3T6UVh3WIrx/xdkVBoUKbh89WMos
-	otOXrGWprbht0R6ZlgzHsiFn1H3yGoXoTXA+Z4nhTuZzJBLwh766uXGXMET354FjJAGltw0PNmTEl
-	u3kMdelTJXFvSBcSxADmLkIp/+fHw13DZ4/5I/ymg3m466BXuCQ+8XsjIy491E/Q==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-	(Exim 4.97)
-	(envelope-from <johannes@sipsolutions.net>)
-	id 1rnNrn-00000008deO-075c;
-	Thu, 21 Mar 2024 20:14:19 +0100
-Message-ID: <55125648b2553ce746b92092a009d4939d1eb6b8.camel@sipsolutions.net>
-Subject: Re: ath11k and vfio-pci support
-From: Johannes Berg <johannes@sipsolutions.net>
-To: David Woodhouse <dwmw2@infradead.org>, Baochen Qiang
-	 <quic_bqiang@quicinc.com>, Alex Williamson <alex.williamson@redhat.com>, 
-	Kalle Valo <kvalo@kernel.org>
-Cc: Jose Ignacio Tornos Martinez <jtornosm@redhat.com>, James Prestwood
-	 <prestwoj@gmail.com>, linux-wireless@vger.kernel.org, 
-	ath11k@lists.infradead.org, iommu@lists.linux.dev
-Date: Thu, 21 Mar 2024 20:14:17 +0100
-In-Reply-To: <57d20bd812ccf8d1a5815ad41b5dcea3925d4fe1.camel@infradead.org>
-References: <adcb785e-4dc7-4c4a-b341-d53b72e13467@gmail.com>
-	 <8734v5zhol.fsf@kernel.org>
-	 <87fa5220-6fd9-433d-879b-c55ac67a0748@gmail.com>
-	 <87r0ipcn7j.fsf@kernel.org>
-	 <356e0b05-f396-4ad7-9b29-c492b54af834@gmail.com>
-	 <26119c3f-9012-47bb-948e-7e976d4773a7@quicinc.com>
-	 <87mstccmk6.fsf@kernel.org>
-	 <df9fd970-5af3-468c-b1f1-18f91215cf44@gmail.com>
-	 <8734v4auc4.fsf@kernel.org>
-	 <e8878979-1f3f-4635-a716-9ac381c617d9@gmail.com>
-	 <285b84d0-229c-4c83-a7d6-4c3c23139597@quicinc.com>
-	 <4607fb37-8227-49a3-9e8c-10c9b117ec7b@gmail.com>
-	 <3d22a730-aee5-4f2a-9ddc-b4b5bd4d62fe@quicinc.com>
-	 <87il3w7zjh.fsf@kernel.org>
-	 <20240115104658.0b56bd35.alex.williamson@redhat.com>
-	 <543d9d2f-e132-4fdb-8454-68595cd20515@quicinc.com>
-	 <57d20bd812ccf8d1a5815ad41b5dcea3925d4fe1.camel@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.50.4 (3.50.4-1.fc39) 
+	dkim=pass (1024-bit key) header.d=linux-foundation.org header.i=@linux-foundation.org header.b="myqqqaYb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C826DC433C7;
+	Thu, 21 Mar 2024 20:31:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+	s=korg; t=1711053110;
+	bh=baRa6A2qOinOd5YVAtWej5lfyO2Yw47YmlHbzlE1Jvg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=myqqqaYbliRJE7PVgZhrPNW4VsZSILLB+0SlZqyShzqltI9nE6pTdWnygoFZn4dbb
+	 cd7SNGeTgLc7GfmU2xwl33gTqeb9pkt91tBji4fk8llEMAbUkAQtFXJU5/LCiWBvgC
+	 EtAkHaVZ9tqLwxhvUHQb1iYeHrpwdBWq8Zx/XJf4=
+Date: Thu, 21 Mar 2024 13:31:47 -0700
+From: Andrew Morton <akpm@linux-foundation.org>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
+ hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de,
+ dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com,
+ penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com,
+ peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com,
+ will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com,
+ dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com,
+ david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
+ nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, tj@kernel.org,
+ muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org,
+ pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com,
+ dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com,
+ keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com,
+ gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
+ vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org,
+ bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com,
+ penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com,
+ glider@google.com, elver@google.com, dvyukov@google.com,
+ songmuchun@bytedance.com, jbaron@akamai.com, aliceryhl@google.com,
+ rientjes@google.com, minchan@google.com, kaleshsingh@google.com,
+ kernel-team@android.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+ linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ linux-mm@kvack.org, linux-modules@vger.kernel.org,
+ kasan-dev@googlegroups.com, cgroups@vger.kernel.org, Alexander Viro
+ <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v6 05/37] fs: Convert alloc_inode_sb() to a macro
+Message-Id: <20240321133147.6d05af5744f9d4da88234fb4@linux-foundation.org>
+In-Reply-To: <20240321163705.3067592-6-surenb@google.com>
+References: <20240321163705.3067592-1-surenb@google.com>
+	<20240321163705.3067592-6-surenb@google.com>
+X-Mailer: Sylpheed 3.8.0beta1 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Given the "ewww" patch to make a module parameter workaround for this:
-https://lore.kernel.org/linux-wireless/20240321172402.346191-1-jtornosm@red=
-hat.com/T/#u
+On Thu, 21 Mar 2024 09:36:27 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
 
+> From: Kent Overstreet <kent.overstreet@linux.dev>
+> 
+> We're introducing alloc tagging, which tracks memory allocations by
+> callsite. Converting alloc_inode_sb() to a macro means allocations will
+> be tracked by its caller, which is a bit more useful.
 
-On Tue, 2024-01-16 at 11:41 +0100, David Woodhouse wrote:
->=20
-> How exactly is the content of this register then given back to the
-> firmware? Is that communication snoopable by the VMM?
+I'd have thought that there would be many similar
+inlines-which-allocate-memory.  Such as, I dunno, jbd2_alloc_inode(). 
+Do we have to go converting things to macros as people report
+misleading or less useful results, or is there some more general
+solution to this?
 
-If I'm reading the code correctly, it's just a write to a register in a
-memory mapped region, possibly in multiple locations (different queues
-or something). Possibly indirect (see __ath11k_pcic_write32), but
-someone would have to trace it or know the HW better to understand which
-locations it's written to.
+> --- a/include/linux/fs.h
+> +++ b/include/linux/fs.h
+> @@ -3083,11 +3083,7 @@ int setattr_should_drop_sgid(struct mnt_idmap *idmap,
+>   * This must be used for allocating filesystems specific inodes to set
+>   * up the inode reclaim context correctly.
+>   */
+> -static inline void *
+> -alloc_inode_sb(struct super_block *sb, struct kmem_cache *cache, gfp_t gfp)
+> -{
+> -	return kmem_cache_alloc_lru(cache, &sb->s_inode_lru, gfp);
+> -}
+> +#define alloc_inode_sb(_sb, _cache, _gfp) kmem_cache_alloc_lru(_cache, &_sb->s_inode_lru, _gfp)
 
-But yeah seems totally feasible to just translate that back in the VMM.
-
-> > > Off hand I don't have a good solution for this, the hardware is
-> > > essentially imposing a unique requirement for MSI programming that th=
-e
-> > > driver needs visibility of the physical MSI address and data.
-> > >=20
->=20
-> Strictly, the driver doesn't need visibility to the actual values used
-> by the hardware. Another way of it looking at it would be to say that
-> the driver programs the MSI through this non-standard method, it just
-> needs the VMM to trap and handle that, just as the VMM does for the
-> standard MSI table.=20
-
-Indeed. Much better than having a module parameter.
-
-> Which is what I thought we'd already seen on some Atheros devices.
-
-It probably also affects ath12k, seems similar.
-
-johannes
+Parenthesizing __sb seems sensible here?  
