@@ -1,63 +1,53 @@
-Received: from out-183.mta1.migadu.com (out-183.mta1.migadu.com [95.215.58.183])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE07913667B
-	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 22:17:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.183
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 186A18489
+	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 22:39:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711059460; cv=none; b=BSFVBYZGC44fedkHVO2NmVRJ9QiLjnAs0MGbgULloxj2I1IwU4hKoTIVrnhzHNiVTxxa6Ryx9dPM4DwcjGWhNICnJX/CwuP2eYkJNnJYmVDNHylwxdNHsemgNo2BP/y9LqQh1yZwsG2dpQRw8GuqREiK2+rHxY7JiQ67GrmYQ5U=
+	t=1711060762; cv=none; b=aTlcYNbfRkEP5McPAXY9jXJW03zbeJXpOyu64Iysd9J+yw9RelEqYf1GR/a/72HMaC5LnGqdIyrfpAG9ay4E9ZovqA9lu98K9nCSWm31l/gKrsyjJ7S9NCwQlRNNAtSuD3xuTA4e6d2CtHY6YDbtnYeTw1WY5sCqR5I59+DE3QE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711059460; c=relaxed/simple;
-	bh=48MDU/nc47hzkUWjchZtFQewyGLXSQIKOvEvF3GhbhU=;
+	s=arc-20240116; t=1711060762; c=relaxed/simple;
+	bh=jl9wIcbi+M6xIcqdg2/AXtdvAbhe18vrLYJvJlJmxKM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Kw946ZiXmGVU/F43xEkPwD9rG8A5LYx6HtGAQdlGbK04Evw33L6RNxO6oeD0nio8up4luXfXRhv7G9X1iTNltHZkLm0IoLdG0fNTCzU9vUYOPier0k4d3DC+UayshFSZfnst921zIuFYhhgL+cSv2cOSiwzRTuFm+UqWu/bXGxs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=FZysDbxQ; arc=none smtp.client-ip=95.215.58.183
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="FZysDbxQ"
-Date: Thu, 21 Mar 2024 18:17:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1711059455;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Avwu9Obvo7iLXBxmizf/EO08qQLthSdSW59GBeW8H+I=;
-	b=FZysDbxQhjIXqR1pi+xqtUgFMzj7/eEwMfqFXVNrKP4hKoq2eMyg+mr0CCyz9L7KqFOgHR
-	p5O/ufNLq1uDGvJZh6zage2q2y2AKKbqhiaE8rWYbulPbyHbczbhEbHNktWz0RHQl+5yfX
-	htak4lBJXiAjgjdWctvpqD6B01G3FgE=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Andrew Morton <akpm@linux-foundation.org>
-Cc: Suren Baghdasaryan <surenb@google.com>, mhocko@suse.com, 
-	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
-	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, 
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org, 
-	peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, 
-	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, 
-	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, 
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
-	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, aliceryhl@google.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, cgroups@vger.kernel.org, 
-	Alexander Viro <viro@zeniv.linux.org.uk>
-Subject: Re: [PATCH v6 05/37] fs: Convert alloc_inode_sb() to a macro
-Message-ID: <bliyhrwtskv5xhg3rxxszouxntrhnm3nxhcmrmdwwk4iyx5wdo@vodd22dbtn75>
-References: <20240321163705.3067592-1-surenb@google.com>
- <20240321163705.3067592-6-surenb@google.com>
- <20240321133147.6d05af5744f9d4da88234fb4@linux-foundation.org>
- <gnqztvimdnvz2hcepdh3o3dpg4cmvlkug4sl7ns5vd4lm7hmao@dpstjnacdubq>
- <20240321150908.48283ba55a6c786dee273ec3@linux-foundation.org>
+	 Content-Type:Content-Disposition:In-Reply-To; b=VQ5z0QbXBy7j2nXRoEaDyWSSnqWi2pi43hf4b+2X/B2p8uUErj4QDmC7k+986kI5QwyZ1ftHUaNCDjf+nzhdY/P4lEBDm2BpiKmNTQdBRJy1OAh5TwPzbw6lpnb/qYzJEqsM4Sn2+vjNA3zP273sJJenrcoA4f2rTJJhwsNSYZQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 879B968BEB; Thu, 21 Mar 2024 23:39:11 +0100 (CET)
+Date: Thu, 21 Mar 2024 23:39:10 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
+	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Bart Van Assche <bvanassche@acm.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Amir Goldstein <amir73il@gmail.com>,
+	"josef@toxicpanda.com" <josef@toxicpanda.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"daniel@iogearbox.net" <daniel@iogearbox.net>,
+	Dan Williams <dan.j.williams@intel.com>,
+	"jack@suse.com" <jack@suse.com>, Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two
+ steps
+Message-ID: <20240321223910.GA22663@lst.de>
+References: <20240306162022.GB28427@lst.de> <20240306174456.GO9225@ziepe.ca> <20240306221400.GA8663@lst.de> <20240307000036.GP9225@ziepe.ca> <20240307150505.GA28978@lst.de> <20240307210116.GQ9225@ziepe.ca> <20240308164920.GA17991@lst.de> <20240308202342.GZ9225@ziepe.ca> <20240309161418.GA27113@lst.de> <20240319153620.GB66976@ziepe.ca>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -66,36 +56,60 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240321150908.48283ba55a6c786dee273ec3@linux-foundation.org>
-X-Migadu-Flow: FLOW_OUT
+In-Reply-To: <20240319153620.GB66976@ziepe.ca>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Thu, Mar 21, 2024 at 03:09:08PM -0700, Andrew Morton wrote:
-> On Thu, 21 Mar 2024 17:15:39 -0400 Kent Overstreet <kent.overstreet@linux.dev> wrote:
+On Tue, Mar 19, 2024 at 12:36:20PM -0300, Jason Gunthorpe wrote:
+> I kind of understand your thinking on the DMA side, but I don't see
+> how this is good for users of the API beyond BIO.
 > 
-> > On Thu, Mar 21, 2024 at 01:31:47PM -0700, Andrew Morton wrote:
-> > > On Thu, 21 Mar 2024 09:36:27 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
-> > > 
-> > > > From: Kent Overstreet <kent.overstreet@linux.dev>
-> > > > 
-> > > > We're introducing alloc tagging, which tracks memory allocations by
-> > > > callsite. Converting alloc_inode_sb() to a macro means allocations will
-> > > > be tracked by its caller, which is a bit more useful.
-> > > 
-> > > I'd have thought that there would be many similar
-> > > inlines-which-allocate-memory.  Such as, I dunno, jbd2_alloc_inode(). 
-> > > Do we have to go converting things to macros as people report
-> > > misleading or less useful results, or is there some more general
-> > > solution to this?
-> > 
-> > No, this is just what we have to do.
-> 
-> Well, this is something we strike in other contexts - kallsyms gives us
-> an inlined function and it's rarely what we wanted.
-> 
-> I think kallsyms has all the data which is needed to fix this - how
-> hard can it be to figure out that a particular function address lies
-> within an outer function?  I haven't looked...
+> How will this make RDMA better? We have one MR, the MR has pages, the
+> HW doesn't care about the SW distinction of p2p, swiotlb, direct,
+> encrypted, iommu, etc. It needs to create one HW page list for
+> whatever user VA range was given.
 
-This is different, though - even if a function is inlined in multiple
-places there's only going to be one instance of a static var defined
-within that function.
+Well, the hardware (as in the PCIe card) never cares.  But the setup
+path for the IOMMU does, and something in the OS needs to know about
+it.  So unless we want to stash away a 'is this P2P' flag in every
+page / SG entry / bvec, or a do a lookup to find that out for each
+of them we need to manage chunks at these boundaries.  And that's
+what I'm proposing.
+
+> Or worse, whatever thing is inside a DMABUF from a DRM
+> driver. DMABUF's can have a (dynamic!) mixture of P2P and regular
+> AFAIK based on the GPU's migration behavior.
+
+And that's fine.  We just need to track it efficiently.
+
+> 
+> Or triple worse, ODP can dynamically change on a page by page basis
+> the type depending on what hmm_range_fault() returns.
+
+Same.  If this changes all the time you need to track it.  And we
+should find a way to shared the code if we have multiple users for it.
+
+But most DMA API consumers will never see P2P, and when they see it
+it will be static.  So don't build the DMA API to automically do
+the (not exactly super cheap) checks and add complexity for it.
+
+> So I take it as a requirement that RDMA MUST make single MR's out of a
+> hodgepodge of page types. RDMA MRs cannot be split. Multiple MR's are
+> not a functional replacement for a single MR.
+
+But MRs consolidate multiple dma addresses anyway.
+
+> Go back to the start of what are we trying to do here:
+>  1) Make a DMA API that can support hmm_range_fault() users in a
+>     sensible and performant way
+>  2) Make a DMA API that can support RDMA MR's backed by DMABUF's, and
+>     user VA's without restriction
+>  3) Allow to remove scatterlist from BIO paths
+>  4) Provide a DMABUF API that is not scatterlist that can feed into
+>     the new DMA API - again supporting DMABUF's hodgepodge of types.
+> 
+> I'd like to do all of these things. I know 3 is your highest priority,
+> but it is my lowest :)
+
+Well, 3 an 4.  And 3 is not just limited to bio, but all the other
+pointless scatterlist uses.
+
