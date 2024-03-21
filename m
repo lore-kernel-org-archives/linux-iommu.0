@@ -1,181 +1,550 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2063.outbound.protection.outlook.com [40.107.102.63])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 938BC76038
-	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 12:21:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.63
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711023666; cv=fail; b=ckKUNrVSTglspnMXhC/bQ2v+DkX0vDfn4jPbFntWLrPqoyzvMy7cIk5g/4xWGxJ+kuZ9RRb9vBBFgDvMRZoqMQsspBFcryeOBZbro9a131WlZNTYwaOTSXyK0jB7mFLq6++Kwv9L7iLquFV67Ttet+RF3+g8VEVSx9pcnODm4pM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711023666; c=relaxed/simple;
-	bh=jQPd6cvsVu4mQktSqBfgcngJrfIVtb/wBXVFYZ9GB64=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=ST6c+IhgmZ6y73JyjvJT6lOxuCH5N5vnuml65+0vzujAKxSicnpMtckp217yDhJ1Qu6eAMtOmOR/85ROANJ4Zg3XK8IM4Hl6CjFyNTS4z/tGoWykwT8Gy6gnUXhhUI7K8hQuUMSGndKTBjJPuGOsE9YUnDnhwoZv4pIVrCQvI7U=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=n9SEt14e; arc=fail smtp.client-ip=40.107.102.63
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EA9759B68
+	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 12:27:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.170
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711024045; cv=none; b=KFMS3KpPuHjHM+rkOYlc90RH8feleFgUMGAsTbafRXKxnsr5yCqScsDSY85Jr5edAdT/P19SE+3+l9BL+TfT3lTBS0C4gd7Ja2SSOua7DO5aXXUWJ64v7Yn8gnQOmh6lnBTExiEXV7iHrN56AEn8T/D22dOhUaKvLshBsiGmt94=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711024045; c=relaxed/simple;
+	bh=hWtvnOlvd1FQc2W6IvCooZnO0DRpSjeAuLOaw74zKyY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=eninEabZf4PCMxRNFIwHAiav2XUv+Nl/IvKfBUwEJjhwE2LHxEKZmpqUs+LFKhwqIMgmW4Hw3vQSxLJT1IWtNoNeUDxBdUUPuut1/lW4Vf2wJsyOanmpSYm2xTm2paydjhpbERQVITvNg0acm6qRzr1jq6nw+XqVFcwC4D083Tg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=YXLKGstq; arc=none smtp.client-ip=209.85.160.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="n9SEt14e"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cC8UEQcqAKhpJXfGmiY1NL5KGD2DOALOh8owgQ1kGepnDQcNmRfM+2BYSRPfhmjHUhcNRpKOFkHyI0F4G+TPI0Pi9b/EJ9NHGtwhNQSiW+5sZOLGy6c5d9JichG8JW8p/RZXE6dPPZHaooYLPvESy12nSsfhMdPWp4SOmRMHTqSKbAXBtyuhFCljyhdg67DzoaANuo3qpoMoSW7lAc1H0XWThyKZtY4hHEpMHYxmnRsq3ET0qDTz1iPyAlZcMFTcsO+2v8E8AoHDStCOD4lCfBiiflF7y/p+OS9Qkr/OpPcTgVDLwgJzTqKEn9uw2jVwbQ7OTRTBY3FcWsus5BdXeA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LT8nA4i0LOk5junzXH5nk+eGkTi7XKyhTzr6VFE9vCI=;
- b=hhVhcasvSADADVGK1nNKIZ+8R5bTqbtX3ErszqF5jbIsre6Vauf06uZUMSm8iK9TiL0cw8jbfIIE+ctuIw6SA74j0arv9KkNKQkpT012S4eg2z32Uy9U0g4fnbvSmlCtJC1A5AKG6ath0GNUWT/Epeo4RGc0wQCaXXZqF/blIb6L/P7ddpBRKGttq9r/2wEDFCLocFnMwmfqa3U+60hxlbyfEK9Icye06KNY3RgP18c4HL5xIEJnW0/gsIe4QlUXs2vDH3U/GTRVGEuwohPpWN8vdH+9916tvmt1b7P6+Jwp5ogxqg+Skk39iQHCfI82PmSA5rNBn6+/eT6rOK+Tcg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LT8nA4i0LOk5junzXH5nk+eGkTi7XKyhTzr6VFE9vCI=;
- b=n9SEt14ehqdlXCbRrcaESHK7qDSoqiwspTn2ABikmIjj+5o+OBSAFyExhu8jb2NXyiemE2cRrMVApcjRgBO8yt04TNjSZ/iMSqO2SWsix1mYbj7jeiAAjXPn/Ck1Qg7tbS6bkQ6ORIUyglaXogDtwu74HTycpbtBKZxAXcge76dvC+sJgiJ0L3A9Lvfe+fkEmVFIcNef1tc2xBSF7kif+ybomXWBK7mmEYxO+dZZsoKC47JPVBPWF7d4PlP+GU6AFk73M8Fo25rA8h+tGvw/4ITG5l57E6cLE+mueistEaWR0HKDow4d0pBnLFQyTFNzqlG8GTg5XC3bqwWOZbkcTA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by SJ2PR12MB8689.namprd12.prod.outlook.com (2603:10b6:a03:53d::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.29; Thu, 21 Mar
- 2024 12:21:00 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7386.030; Thu, 21 Mar 2024
- 12:21:00 +0000
-Date: Thu, 21 Mar 2024 09:20:59 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"cohuck@redhat.com" <cohuck@redhat.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"mjrosato@linux.ibm.com" <mjrosato@linux.ibm.com>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"yi.y.sun@linux.intel.com" <yi.y.sun@linux.intel.com>,
-	"peterx@redhat.com" <peterx@redhat.com>,
-	"jasowang@redhat.com" <jasowang@redhat.com>,
-	"shameerali.kolothum.thodi@huawei.com" <shameerali.kolothum.thodi@huawei.com>,
-	"lulu@redhat.com" <lulu@redhat.com>,
-	"suravee.suthikulpanit@amd.com" <suravee.suthikulpanit@amd.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
-	"joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
-	"Zeng, Xin" <xin.zeng@intel.com>,
-	"Zhao, Yan Y" <yan.y.zhao@intel.com>
-Subject: Re: [PATCH 1/8] iommu: Introduce a replace API for device pasid
-Message-ID: <20240321122059.GF159172@nvidia.com>
-References: <c831bf5e-f623-402d-9347-8718987d1610@intel.com>
- <BN9PR11MB52766161477C2540969C83568C242@BN9PR11MB5276.namprd11.prod.outlook.com>
- <585423de-9173-4c97-b596-71e1564d8b4e@intel.com>
- <87a2be0d-6a24-4ca8-be30-35287072dda4@linux.intel.com>
- <749b23c7-ab0e-42b4-9992-e1867fc7d4d7@intel.com>
- <20240318165247.GD5825@nvidia.com>
- <13645a9f-239a-46c9-bde2-a1d5c365df4f@intel.com>
- <20240320123803.GD159172@nvidia.com>
- <65c517a9-72dc-4342-b2f2-c3c44735bfad@intel.com>
- <7a4777dd-2359-4bcd-839e-c2d0b5f6be14@intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7a4777dd-2359-4bcd-839e-c2d0b5f6be14@intel.com>
-X-ClientProxiedBy: BLAPR05CA0047.namprd05.prod.outlook.com
- (2603:10b6:208:335::28) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="YXLKGstq"
+Received: by mail-qt1-f170.google.com with SMTP id d75a77b69052e-428405a0205so265691cf.1
+        for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 05:27:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1711024042; x=1711628842; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Bp3Ucnr4Xw7XoX2DZ6/e8KgdNiT0bH6dYM7rQrlas2M=;
+        b=YXLKGstqC1I54iqEXuqAxHBQw6rGsReOe1iK1eoz4m2zeNm2eG2s65HV5YcAc1rJGo
+         ZDUedhvqGX8FPqm4oI78RaINuZVXYnAGXXMK3O1IMYd+vTIW0rcj4hbkRRN1nMFrJa+X
+         zwua6nJWAhdSg/gF9k7UiUPbjjcdeemMzjVFOJFDLN0vzhl4/iDZChUhh+MhOMHkPgL3
+         N0BGSWRg3PlRS5dFITH0RTHAeRHOKrsEHxAbRx/QxiyH1HHDoiplQcP4NzORsMcLU/rY
+         g0haiEvl0OyfmAdNsdTGGpMjkNZMHBfb1vq/BnC/AeKc/3+ZCnLKATAYDB+8zp2dc8aU
+         EPFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711024042; x=1711628842;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Bp3Ucnr4Xw7XoX2DZ6/e8KgdNiT0bH6dYM7rQrlas2M=;
+        b=Tm1Fp5Q82qUonrlvS9wsJY9dLO2T/xUJCmP8BBsEgDMkfmtPz4v+z7dNclZNIoLlNN
+         NuTVjQrxoEYLsTyUtmTEk3bxTxqZIl+ShU/dww9I+pK5pPtH4os2BFhk971yJMvWOkQE
+         UgnT9TMt/teSW7lEGmkv0jb9ZK1FxnZFOXC0SHr2m/hWNKiovU7gckWsZYNhoJ2woxfu
+         9tWueIM1siX2woFEQHzHlzRuOg4sre1IxNF9O2FpHGX4MoWBXYR65EcrHtHqPOv9vCTP
+         JAkNl88BokaC6GPSs0zmKHh1DFIhKlEBDD3IM81okC5uob/unZg6GlywPqwJA+KYu0N4
+         qhKg==
+X-Gm-Message-State: AOJu0YzH+Z7HNDmzGP0Nf5NhXzsiUDkHbjKok1hghZliUUmdrEUAKYnC
+	v0EvthBXGIpAuVKwWgOC+mv7FcdReEM1wcpHcfpwMnRdpt23bTSvtFqbyoWo78Ieyp6okSnc4w1
+	/xsu8ox/ebfluuJSo4WGPbwICBKB1O0avQrQZ
+X-Google-Smtp-Source: AGHT+IHLaL/MKMUzCY9Q43gkWlDa5G8D/GFMEdZBtxL80/dMioSZNq8aCkJJZEGH2Be5BbkbxXlSuAbyGy71dhEV8e0=
+X-Received: by 2002:ac8:5ad4:0:b0:431:2a26:2121 with SMTP id
+ d20-20020ac85ad4000000b004312a262121mr8064qtd.25.1711024042130; Thu, 21 Mar
+ 2024 05:27:22 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|SJ2PR12MB8689:EE_
-X-MS-Office365-Filtering-Correlation-Id: c0d5742d-4024-4f24-33af-08dc49a15e5a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	VwPUh74zcyOir6DFPClVxZFKgm6l8KhFwvb93BWMlGc1GpprObBqMXMDeHnfual6Fu11hvtEDMmEe4YMh/SlJfrb/R2od9jpGOC3U1ubZsdXGHzT7fylR8wZhF6a44LHYl34uuMiXaaZne+wMuVGaHd+sc5w69WZECryMTrblix2iVaIap/tZHBLfg5gp2RopdASJoMakeIMdY8WmIlRNJJJ7+iljAp2CwsxDhF2uI9gZlIu+82reMef3N43yzGi/1/WEykY8+TUnxiaLTApDPDTlXCgxW776l3UY6Frum/rUot80V8s973mf3bOC85mBNejYJXAY6TZDN72W9mDqo/FjWmGGuqipDbsqcwIY3SnDK/Cv0KnTXewCvCkShJ7m9bE2+gDS+QDlZdET80aKuMniDwXgdVy39ypsc762RIe61YiEpH/KEmWuFr0ijPJbPeRkqzFIF7n9MLGSI3BuCYvt5FS6rG802jpBMXxjCo6ruKSw75STZfUsKVk5pYCmNMiE3Pq3bQEyWPCspydgfzBbNToZt8+/IaPmJyz7G0jBa2NlVu7tEQ830TN7n82B3uSDMKLZ5FSkOoOCh9kxBIwC2LzO3x5qY56Lhh4C83lIU9yt5jDjEsSc3mLehlCIjUZ+MQOnHs1qmJUVt9OVxwrX7gDLPMHbryWH1AV7nw=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7416005)(376005)(1800799015)(366007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?7zWrlVUZyxNYv7TY/qnbzek2HMFETLZ/Kh4rRtLn5TB0ZM7G/7Yhh5vans7x?=
- =?us-ascii?Q?scHwusie6tucSdOy1yWDPgEbczh5wfh1OVZFMa9yqT8mF3fgTMPb47NSGVHN?=
- =?us-ascii?Q?JYeMZqFnBAy1EKKfT2nwzBBKHFppUXlhsSIvrgIUdEnwGO+I6AcUM9RaipOM?=
- =?us-ascii?Q?9kNm59lrlBf+JtqoYp2ZykRr6sXXULSODOWraTL82GfrHd12PG/Z/PWz3KXc?=
- =?us-ascii?Q?RQXNaj0QhdmmCn7GnV1RhSkxYBzPKFaCrC8FYv3GSR1UdLBTKYziedE4RbwN?=
- =?us-ascii?Q?5TSy24h6zGvRE1GzHroO04A/OfMNEDX809Z5RxCeA/ZGmKzpNl7EoEyuZ2R8?=
- =?us-ascii?Q?4lDSKKmM6HEPpA3J6C/vVcr0vfwWTfA+C70G2KOKAsVPOlvwP58a2fWrrEWS?=
- =?us-ascii?Q?Z2b91y4AWOm2RQfWntpXDluRGpwpL4GixAZc5hPruS7Mcoriu2VvQ1w73nXN?=
- =?us-ascii?Q?jBQJTykxV/fBVEs+o4COmstn/hNmMAc7mDbevizymJLkmHK4tKBCNAjm6KW7?=
- =?us-ascii?Q?eRoCw/EFCUy8LSC42vHHjcOgNQgDJginBiU8goB4vXo6r3MNeHcWlmWwqerQ?=
- =?us-ascii?Q?4M0skb24uPns7XAOxUPr0+YYL/InDBLNrL95/kFPsHP+3/uX517t2LDv66St?=
- =?us-ascii?Q?A0mYo21z00/KIKPJ0ZrFDij3JyQs7GUXzFe9lJpzH/weO+7df+RGTf1GONqe?=
- =?us-ascii?Q?7DAXOORGPacvlh2srtCc5Sl4MS1opD6KPxdWC+c5NkSfc50YU7xyWOZgo0pk?=
- =?us-ascii?Q?Q4KkQmaNI5IScCEolRLkL/C4U7XhsOQahgrnKAz1sMq1m9XeLjQRvtG6Pxre?=
- =?us-ascii?Q?jXLs00HZ4SX/O5qUddbmg0U1uz01FVmDv+SN6sye2mAy8lzEvrbL3WP4+Km9?=
- =?us-ascii?Q?B0ekQKrRLVaMG9+P3e3fAXKoZWW8qa/OUQB+3bzg/W6h/VtUPs9f2HbsKxp8?=
- =?us-ascii?Q?MPxY237fGf9q+BMLOCeJl/1Pc8mNdfuFQubVxYN+S17xH2BGNg1v9GchZXEp?=
- =?us-ascii?Q?yAV3iC7fos8WRO2kHdyTVZ0HPeclT0ULe7gWdM3fNtf3kGiV/KQLVRthLIkJ?=
- =?us-ascii?Q?u1RT4ydfytDf0UAVmYIFTXMV7Yb5z3q3Tn4tdK736kOr+TIdeqHiHNnZuY1o?=
- =?us-ascii?Q?VLkIVmpRDZJxHxK84ajoDOXo/3ikKxXi0EMuQcCqn07lMqdowBCXZ9InLIRt?=
- =?us-ascii?Q?95e4Zu7Tiit0NU745j61mIE716N4A+X0qPSJoIpDkKPYNSbpCij5J9NYUgOo?=
- =?us-ascii?Q?as5Ku2uzWaG3njFNQrubckEfusc8qlWrEdP39dusi6z1yg5K1TmWMF7iW0gr?=
- =?us-ascii?Q?4qAL2SqyHFYNJFd+y2I1ce6QYq7xjVBUmmk6Kqd//NyO6+bd9X/bKlsdaNyt?=
- =?us-ascii?Q?QSKmbNzMBazGcSPli44PM6bnFWbkz6b24GGclq2sH28bi6tZuB+KCDK8MpQF?=
- =?us-ascii?Q?RnsPVa2i4hNXSYPo3Swssvjz3feZSv4+vNL5XNRjYjTB6RMDhHpS09SKmVyb?=
- =?us-ascii?Q?8Tdll1v6la+3+WUIOFJPR1i+F/pPK8Hx+cct4Y+oEdkorV6hmxNra0tTuMqV?=
- =?us-ascii?Q?4DDIZmCMZqDV/22SxmYUUd57fuqPh8tiadviIAnR?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c0d5742d-4024-4f24-33af-08dc49a15e5a
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Mar 2024 12:21:00.2374
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DzOUFdPR9Mpb3auK80b61qne9uemaiYPO8MvN7CUqyU4Y3cbS2n5NqrdohcqoEwu
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8689
+References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com> <14-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+In-Reply-To: <14-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+From: Michael Shavit <mshavit@google.com>
+Date: Thu, 21 Mar 2024 20:26:43 +0800
+Message-ID: <CAKHBV25xx51EuDXK91-o9BnFq5TZ66TAPuZ4YEdJ1UPq8sr7ZQ@mail.gmail.com>
+Subject: Re: [PATCH v5 14/27] iommu/arm-smmu-v3: Make changing domains be
+ hitless for ATS
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>, 
+	linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>, 
+	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Moritz Fischer <mdf@kernel.org>, 
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev, 
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 21, 2024 at 07:26:41PM +0800, Yi Liu wrote:
-> > yes, the correct way is to undo what have been done before the fail
-> > device. However, I somehow remember that pasid capability is only
-> > available when the group is singleton. So iterate all devices of the
-> > devices just means one device in fact. If this is true, then the
-> > current code is fine although a bit confusing.
+On Tue, Mar 5, 2024 at 7:44=E2=80=AFAM Jason Gunthorpe <jgg@nvidia.com> wro=
+te:
+>
+> The core code allows the domain to be changed on the fly without a forced
+> stop in BLOCKED/IDENTITY. In this flow the driver should just continually
+> maintain the ATS with no change while the STE is updated.
+>
+> ATS relies on a linked list smmu_domain->devices to keep track of which
+> masters have the domain programmed, but this list is also used by
+> arm_smmu_share_asid(), unrelated to ats.
+>
+> Create two new functions to encapsulate this combined logic:
+>  arm_smmu_attach_prepare()
+>  <caller generates and sets the STE>
+>  arm_smmu_attach_commit()
+>
+> The two functions can sequence both enabling ATS and disabling across
+> the STE store. Have every update of the STE use this sequence.
+>
+> Installing a S1/S2 domain always enables the ATS if the PCIe device
+> supports it.
+>
+> The enable flow is now ordered differently to allow it to be hitless:
+>
+>   1) Add the master to the new smmu_domain->devices list
+>   2) Program the STE
+>   3) Enable ATS at PCIe
+>   4) Remove the master from the old smmu_domain
+>
+> This flow ensures that invalidations to either domain will generate an AT=
+C
+> invalidation to the device while the STE is being switched. Thus we don't
+> need to turn off the ATS anymore for correctness.
+>
+> The disable flow is the reverse:
+>  1) Disable ATS at PCIe
+>  2) Program the STE
+>  3) Invalidate the ATC
+>  4) Remove the master from the old smmu_domain
+>
+> Move the nr_ats_masters adjustments to be close to the list
+> manipulations. It is a count of the number of ATS enabled masters
+> currently in the list. This is stricly before and after the STE/CD are
+> revised, and done under the list's spin_lock.
+>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 198 ++++++++++++++------
+>  1 file changed, 140 insertions(+), 58 deletions(-)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/=
+arm/arm-smmu-v3/arm-smmu-v3.c
+> index 51a1e7198fd1af..45f2190fc31786 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -1527,7 +1527,8 @@ static void arm_smmu_make_bypass_ste(struct arm_smm=
+u_ste *target)
+>  }
+>
+>  static void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
+> -                                     struct arm_smmu_master *master)
+> +                                     struct arm_smmu_master *master,
+> +                                     bool ats_enabled)
+>  {
+>         struct arm_smmu_ctx_desc_cfg *cd_table =3D &master->cd_table;
+>         struct arm_smmu_device *smmu =3D master->smmu;
+> @@ -1550,7 +1551,7 @@ static void arm_smmu_make_cdtable_ste(struct arm_sm=
+mu_ste *target,
+>                          STRTAB_STE_1_S1STALLD :
+>                          0) |
+>                 FIELD_PREP(STRTAB_STE_1_EATS,
+> -                          master->ats_enabled ? STRTAB_STE_1_EATS_TRANS =
+: 0));
+> +                          ats_enabled ? STRTAB_STE_1_EATS_TRANS : 0));
+>
+>         if (smmu->features & ARM_SMMU_FEAT_E2H) {
+>                 /*
+> @@ -1578,7 +1579,8 @@ static void arm_smmu_make_cdtable_ste(struct arm_sm=
+mu_ste *target,
+>
+>  static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
+>                                         struct arm_smmu_master *master,
+> -                                       struct arm_smmu_domain *smmu_doma=
+in)
+> +                                       struct arm_smmu_domain *smmu_doma=
+in,
+> +                                       bool ats_enabled)
+>  {
+>         struct arm_smmu_s2_cfg *s2_cfg =3D &smmu_domain->s2_cfg;
+>         const struct io_pgtable_cfg *pgtbl_cfg =3D
+> @@ -1594,7 +1596,7 @@ static void arm_smmu_make_s2_domain_ste(struct arm_=
+smmu_ste *target,
+>
+>         target->data[1] =3D cpu_to_le64(
+>                 FIELD_PREP(STRTAB_STE_1_EATS,
+> -                          master->ats_enabled ? STRTAB_STE_1_EATS_TRANS =
+: 0) |
+> +                          ats_enabled ? STRTAB_STE_1_EATS_TRANS : 0) |
+>                 FIELD_PREP(STRTAB_STE_1_SHCFG,
+>                            STRTAB_STE_1_SHCFG_INCOMING));
+>
+> @@ -2470,22 +2472,16 @@ static bool arm_smmu_ats_supported(struct arm_smm=
+u_master *master)
+>         return dev_is_pci(dev) && pci_ats_supported(to_pci_dev(dev));
+>  }
+>
+> -static void arm_smmu_enable_ats(struct arm_smmu_master *master,
+> -                               struct arm_smmu_domain *smmu_domain)
+> +static void arm_smmu_enable_ats(struct arm_smmu_master *master)
+>  {
+>         size_t stu;
+>         struct pci_dev *pdev;
+>         struct arm_smmu_device *smmu =3D master->smmu;
+>
+> -       /* Don't enable ATS at the endpoint if it's not enabled in the ST=
+E */
+> -       if (!master->ats_enabled)
+> -               return;
+> -
+>         /* Smallest Translation Unit: log2 of the smallest supported gran=
+ule */
+>         stu =3D __ffs(smmu->pgsize_bitmap);
+>         pdev =3D to_pci_dev(master->dev);
+>
+> -       atomic_inc(&smmu_domain->nr_ats_masters);
+>         /*
+>          * ATC invalidation of PASID 0 causes the entire ATC to be flushe=
+d.
+>          */
+> @@ -2494,22 +2490,6 @@ static void arm_smmu_enable_ats(struct arm_smmu_ma=
+ster *master,
+>                 dev_err(master->dev, "Failed to enable ATS (STU %zu)\n", =
+stu);
+>  }
+>
+> -static void arm_smmu_disable_ats(struct arm_smmu_master *master,
+> -                                struct arm_smmu_domain *smmu_domain)
+> -{
+> -       if (!master->ats_enabled)
+> -               return;
+> -
+> -       pci_disable_ats(to_pci_dev(master->dev));
+> -       /*
+> -        * Ensure ATS is disabled at the endpoint before we issue the
+> -        * ATC invalidation via the SMMU.
+> -        */
+> -       wmb();
+> -       arm_smmu_atc_inv_master(master);
+> -       atomic_dec(&smmu_domain->nr_ats_masters);
+> -}
+> -
+>  static int arm_smmu_enable_pasid(struct arm_smmu_master *master)
+>  {
+>         int ret;
+> @@ -2573,39 +2553,145 @@ arm_smmu_find_master_domain(struct arm_smmu_doma=
+in *smmu_domain,
+>         return NULL;
+>  }
+>
+> -static void arm_smmu_detach_dev(struct arm_smmu_master *master)
+> +/*
+> + * If the domain uses the smmu_domain->devices list return the arm_smmu_=
+domain
+> + * structure, otherwise NULL. These domains track attached devices so th=
+ey can
+> + * issue invalidations.
+> + */
+> +static struct arm_smmu_domain *
+> +to_smmu_domain_devices(struct iommu_domain *domain)
+>  {
+> -       struct iommu_domain *domain =3D iommu_get_domain_for_dev(master->=
+dev);
+> +       /* The domain can be NULL only when processing the first attach *=
+/
+> +       if (!domain)
+> +               return NULL;
+> +       if (domain->type & __IOMMU_DOMAIN_PAGING)
+> +               return to_smmu_domain(domain);
+> +       return NULL;
+> +}
+> +
+> +static void arm_smmu_remove_master_domain(struct arm_smmu_master *master=
+,
+> +                                         struct iommu_domain *domain)
+> +{
+> +       struct arm_smmu_domain *smmu_domain =3D to_smmu_domain_devices(do=
+main);
+>         struct arm_smmu_master_domain *master_domain;
+> -       struct arm_smmu_domain *smmu_domain;
+>         unsigned long flags;
+>
+> -       if (!domain || !(domain->type & __IOMMU_DOMAIN_PAGING))
+> +       if (!smmu_domain)
+>                 return;
+>
+> -       smmu_domain =3D to_smmu_domain(domain);
+> -       arm_smmu_disable_ats(master, smmu_domain);
+> -
+>         spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+>         master_domain =3D arm_smmu_find_master_domain(smmu_domain, master=
+);
+>         if (master_domain) {
+>                 list_del(&master_domain->devices_elm);
+>                 kfree(master_domain);
+> +               if (master->ats_enabled)
+> +                       atomic_dec(&smmu_domain->nr_ats_masters);
+>         }
+>         spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+> +}
+>
+> -       master->ats_enabled =3D false;
+> +struct attach_state {
+> +       bool want_ats;
+> +       bool disable_ats;
+> +};
+> +
+> +/*
+> + * Prepare to attach a domain to a master. If disable_ats is not set thi=
+s will
+> + * turn on ATS if supported. smmu_domain can be NULL if the domain being
+> + * attached does not have a page table and does not require invalidation
+> + * tracking.
+> + */
+> +static int arm_smmu_attach_prepare(struct arm_smmu_master *master,
+> +                                  struct iommu_domain *domain,
+> +                                  struct attach_state *state)
+> +{
+> +       struct arm_smmu_domain *smmu_domain =3D
+> +               to_smmu_domain_devices(domain);
+> +       struct arm_smmu_master_domain *master_domain;
+> +       unsigned long flags;
+> +
+> +       /*
+> +        * arm_smmu_share_asid() must not see two domains pointing to the=
+ same
+> +        * arm_smmu_master_domain contents otherwise it could randomly wr=
+ite one
+> +        * or the other to the CD.
+> +        */
+> +       lockdep_assert_held(&arm_smmu_asid_lock);
+> +
+> +       state->want_ats =3D !state->disable_ats && arm_smmu_ats_supported=
+(master);
+> +
+> +       if (smmu_domain) {
+> +               master_domain =3D kzalloc(sizeof(*master_domain), GFP_KER=
+NEL);
+> +               if (!master_domain)
+> +                       return -ENOMEM;
+> +               master_domain->master =3D master;
+> +
+> +               /*
+> +                * During prepare we want the current smmu_domain and new
+> +                * smmu_domain to be in the devices list before we change=
+ any
+> +                * HW. This ensures that both domains will send ATS
+> +                * invalidations to the master until we are done.
+> +                *
+> +                * It is tempting to make this list only track masters th=
+at are
+> +                * using ATS, but arm_smmu_share_asid() also uses this to=
+ change
+> +                * the ASID of a domain, unrelated to ATS.
+> +                *
+> +                * Notice if we are re-attaching the same domain then the=
+ list
+> +                * will have two identical entries and commit will remove=
+ only
+> +                * one of them.
+> +                */
+> +               spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> +               if (state->want_ats)
+> +                       atomic_inc(&smmu_domain->nr_ats_masters);
+> +               list_add(&master_domain->devices_elm, &smmu_domain->devic=
+es);
+> +               spin_unlock_irqrestore(&smmu_domain->devices_lock, flags)=
+;
+> +       }
+> +
+> +       if (!state->want_ats && master->ats_enabled) {
+> +               pci_disable_ats(to_pci_dev(master->dev));
+> +               /*
+> +                * This is probably overkill, but the config write for di=
+sabling
+> +                * ATS should complete before the STE is configured to ge=
+nerate
+> +                * UR to avoid AER noise.
+> +                */
+> +               wmb();
+> +       }
+> +       return 0;
+> +}
+> +
+> +/*
+> + * Commit is done after the STE/CD are configured with the EATS setting.=
+ It
+> + * completes synchronizing the PCI device's ATC and finishes manipulatin=
+g the
+> + * smmu_domain->devices list.
+> + */
+> +static void arm_smmu_attach_commit(struct arm_smmu_master *master,
+> +                                  struct attach_state *state)
+> +{
+> +       lockdep_assert_held(&arm_smmu_asid_lock);
+> +
+> +       if (state->want_ats && !master->ats_enabled) {
+> +               arm_smmu_enable_ats(master);
+> +       } else if (master->ats_enabled) {
+> +               /*
+> +                * The translation has changed, flush the ATC. At this po=
+int the
+> +                * SMMU is translating for the new domain and both the ol=
+d&new
+> +                * domain will issue invalidations.
+> +                */
+> +               arm_smmu_atc_inv_master(master);
+> +       }
+> +       master->ats_enabled =3D state->want_ats;
+> +
+> +       arm_smmu_remove_master_domain(master,
+> +                                     iommu_get_domain_for_dev(master->de=
+v));
+>  }
+>
+>  static int arm_smmu_attach_dev(struct iommu_domain *domain, struct devic=
+e *dev)
+>  {
+>         int ret =3D 0;
+> -       unsigned long flags;
+>         struct arm_smmu_ste target;
+>         struct iommu_fwspec *fwspec =3D dev_iommu_fwspec_get(dev);
+>         struct arm_smmu_device *smmu;
+>         struct arm_smmu_domain *smmu_domain =3D to_smmu_domain(domain);
+> -       struct arm_smmu_master_domain *master_domain;
+> +       struct attach_state state =3D {};
+>         struct arm_smmu_master *master;
+>         struct arm_smmu_cd *cdptr;
+>
+> @@ -2642,11 +2728,6 @@ static int arm_smmu_attach_dev(struct iommu_domain=
+ *domain, struct device *dev)
+>                         return -ENOMEM;
+>         }
+>
+> -       master_domain =3D kzalloc(sizeof(*master_domain), GFP_KERNEL);
+> -       if (!master_domain)
+> -               return -ENOMEM;
+> -       master_domain->master =3D master;
+> -
+>         /*
+>          * Prevent arm_smmu_share_asid() from trying to change the ASID
+>          * of either the old or new domain while we are working on it.
+> @@ -2655,13 +2736,11 @@ static int arm_smmu_attach_dev(struct iommu_domai=
+n *domain, struct device *dev)
+>          */
+>         mutex_lock(&arm_smmu_asid_lock);
+>
+> -       arm_smmu_detach_dev(master);
+> -
+> -       master->ats_enabled =3D arm_smmu_ats_supported(master);
+> -
+> -       spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+> -       list_add(&master_domain->devices_elm, &smmu_domain->devices);
+> -       spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
+> +       ret =3D arm_smmu_attach_prepare(master, domain, &state);
+> +       if (ret) {
+> +               mutex_unlock(&arm_smmu_asid_lock);
+> +               return ret;
+> +       }
+>
+>         switch (smmu_domain->stage) {
+>         case ARM_SMMU_DOMAIN_S1: {
+> @@ -2670,18 +2749,19 @@ static int arm_smmu_attach_dev(struct iommu_domai=
+n *domain, struct device *dev)
+>                 arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
+>                 arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
+>                                         &target_cd);
+> -               arm_smmu_make_cdtable_ste(&target, master);
+> +               arm_smmu_make_cdtable_ste(&target, master, state.want_ats=
+);
+>                 arm_smmu_install_ste_for_dev(master, &target);
+>                 break;
+>         }
+>         case ARM_SMMU_DOMAIN_S2:
+> -               arm_smmu_make_s2_domain_ste(&target, master, smmu_domain)=
+;
+> +               arm_smmu_make_s2_domain_ste(&target, master, smmu_domain,
+> +                                           state.want_ats);
+>                 arm_smmu_install_ste_for_dev(master, &target);
+>                 arm_smmu_clear_cd(master, IOMMU_NO_PASID);
+>                 break;
+>         }
+>
+> -       arm_smmu_enable_ats(master, smmu_domain);
+> +       arm_smmu_attach_commit(master, &state);
+>         mutex_unlock(&arm_smmu_asid_lock);
+>         return 0;
+>  }
+> @@ -2715,10 +2795,11 @@ void arm_smmu_remove_pasid(struct arm_smmu_master=
+ *master,
+>         arm_smmu_clear_cd(master, pasid);
+>  }
+>
+> -static int arm_smmu_attach_dev_ste(struct device *dev,
+> -                                  struct arm_smmu_ste *ste)
+> +static int arm_smmu_attach_dev_ste(struct iommu_domain *domain,
+> +                                  struct device *dev, struct arm_smmu_st=
+e *ste)
+>  {
+>         struct arm_smmu_master *master =3D dev_iommu_priv_get(dev);
+> +       struct attach_state state =3D {};
+>
+>         if (arm_smmu_master_sva_enabled(master))
+>                 return -EBUSY;
+> @@ -2736,9 +2817,10 @@ static int arm_smmu_attach_dev_ste(struct device *=
+dev,
+>          * the stream (STE.EATS =3D=3D 0b00), causing F_BAD_ATS_TREQ and
+>          * F_TRANSL_FORBIDDEN events (IHI0070Ea 5.2 Stream Table Entry).
+>          */
+> -       arm_smmu_detach_dev(master);
+> -
+> +       state.disable_ats =3D true;
+> +       arm_smmu_attach_prepare(master, domain, &state);
+>         arm_smmu_install_ste_for_dev(master, ste);
+> +       arm_smmu_attach_commit(master, &state);
+>         mutex_unlock(&arm_smmu_asid_lock);
+>
+>         /*
+> @@ -2756,7 +2838,7 @@ static int arm_smmu_attach_dev_identity(struct iomm=
+u_domain *domain,
+>         struct arm_smmu_ste ste;
+>
+>         arm_smmu_make_bypass_ste(&ste);
+> -       return arm_smmu_attach_dev_ste(dev, &ste);
+> +       return arm_smmu_attach_dev_ste(domain, dev, &ste);
+>  }
+>
+>  static const struct iommu_domain_ops arm_smmu_identity_ops =3D {
+> @@ -2774,7 +2856,7 @@ static int arm_smmu_attach_dev_blocked(struct iommu=
+_domain *domain,
+>         struct arm_smmu_ste ste;
+>
+>         arm_smmu_make_abort_ste(&ste);
+> -       return arm_smmu_attach_dev_ste(dev, &ste);
+> +       return arm_smmu_attach_dev_ste(domain, dev, &ste);
+>  }
+>
+>  static const struct iommu_domain_ops arm_smmu_blocked_ops =3D {
+> --
+> 2.43.2
+>
 
-Platform devicse don't have that limitation.. It is PCI only.
+Overall I think the patch works, but it took me a while to really
+digest the big picture. Just to make sure I fully understand:
 
-> > > And the whole thing is easier to reason about if an input argument
-> > > specifies the current attached domain instead of having the driver
-> > > read it from the xarray.
-> > 
-> > yep, will correct it as a fix patch.
-> 
-> Hi Jason,
-> 
-> It appears there are two solutions here.
-> 
-> First, only undo the devices that have set_dev_pasid successfully in
-> the __iommu_set_group_pasid(), so the problematic
-> __iommu_remove_group_pasid() call at line 3378 [1] would go away.
-> This also makes the helper more self-contained. Draft patch in [2]
-> 
-> Second, pass in the domain to remove_dev_pasid(). Draft patch in [3]
-> 
-> Either of the above two should be able to solve the mistake you mentioned.
-> BTW. They are orthogonal, so it's also possible to apply both of them.
-> Which one is your preference then?
+We're trying to satisfy the following invariants for correctness:
+1. Devices cannot get translations from a domain that was detached
+after arm_smmu_attach_dev() returns.
+2. Devices cannot get cached translations from a domain after
+arm_smmu_atc_inv_domain() returns, regardless of whether the domain is
+simultaneously being attached/detached from a device.
 
-I would do both because I also think it is not nice that the drivers
-always have to have the boiler plate to read the xarray in their
-remove..
+Apart from note point 2. above, the behaviour of translations while in
+the middle of an arm_smmu_attach_dev doesn't have well defined
+requirements:
+1. Before this patch, devices may get translations belonging to the
+old domain, then aborts or identity translations, and then the new
+domain while arm_smmu_attach_dev() is in progress.
+2. Ater this patch, devices may get an arbitrary mix of translations
+belonging to the old domain and the new domain while
+arm_smmu_attach_dev() is in progress.
 
-Jason
+While disabling and re-enabling ATS inside arm_smmu_attach_dev() would
+meet the same requirements as this patch, it's not optimal since the
+device may still have traffic on other pasids than the one being
+manipulated.
