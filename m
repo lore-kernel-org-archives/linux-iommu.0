@@ -1,67 +1,68 @@
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F04B3135A67
-	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 21:08:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C49371369AC
+	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 21:13:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711055331; cv=none; b=tZPIBqei1uRyTqw6GknQlBoqWUvNhc89xKp9NkxIcJ6TatUKFhq/KtojipM+2oEwj5Zw0rE+UN2Ys+n2qlzehj54gvn7DV67LshUeuZ/2sY94jdQco3Ws9AbugyHCBG0eXojXkoxQw6i9gifkBIAyEidnBWH7uS3ulhk5Mu+Z/4=
+	t=1711055597; cv=none; b=grP7g40UK40DNKvMDtqJJhoekz6PtX/2wEJjuY9SA8PENrV1vxu+tnCkoE9Vxf6PGqadxj7J/s8Bis+4mD8y7ykAd83Ogosll8Uow2eVTSBEgWHrkkaF8o5IBozFHjbLMhbFrFKuGpnB0Ai7c1WhRRguMmRM01t6lamLdLbWajU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711055331; c=relaxed/simple;
-	bh=y6UZilsub+NKtJrG/hhdATKtBTFYxelRy9AM56Z6Tnc=;
+	s=arc-20240116; t=1711055597; c=relaxed/simple;
+	bh=QdWLuurPKKnAKd/0efIBlHX1KMwle2RKzlVXv6YtTy4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kcqhj8Q6rlUUDcpfTkqVF08NvmfBgzqiFZ7njwLUwLmuM3Nl+GNuN55cllvxy9kuiIrjli8usJVUulHl5lMZNK6D0wXu7rPIRxi2JIy0PIz8whaRgX2fB2fKUYJwYvkd2pVTo/0j5AGqj3ALSjooJVB+C5g2tsaux8Q4MeVMf0U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=CCQwbc+3; arc=none smtp.client-ip=209.85.219.175
+	 To:Cc:Content-Type; b=Wjen8vQDCwqqaJ/mxR3QHEcyEdw3N9x+9cWZV/SqAMvzrqsYo9iDpkJqWegUHNr4mkYt20SlPzNVa/Wkjocw7YUCXAdK72GMuF7dDqIHblyoUrF5gP4TrI2tcWGGf1VzIbB5tJ2sm9xTxT9G0+7H2QSrCHb4z2EIDeRd5hj+VPU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XUZk5Zh3; arc=none smtp.client-ip=209.85.219.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="CCQwbc+3"
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-dd10ebcd702so1426237276.2
-        for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 14:08:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XUZk5Zh3"
+Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-dc74e33fe1bso1500325276.0
+        for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 14:13:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1711055328; x=1711660128; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1711055595; x=1711660395; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=NRNPrWHMxiQDcKwm3DA9WZxrfwYc+pk9Whir/OXbLVs=;
-        b=CCQwbc+3n6q1WV3/Z17t5k3qcUSL7+3rJ3zkkyJh72Ln5ydljVSIkrk2GqQe9fTL6e
-         aEFxNY4dOFEWkIajfIiiHflb4dPO2oM6qjjVkib7uw5r05VsMJGkoBfGwx/XFJz2TY5H
-         uKnG75s2Gss4wlPiuIa5BvLa1owx257eDXUGsPVaGMV8FbQih2Jcd745O0IjU2J3yc2A
-         sSPyRK69ulOd5OZrmPr2OS8ztW+wftJVkS8lF9Yjmv3Pp+svG6PTbcLCMV47/d/nNe3k
-         7SbMPWt0KSUlqJw91RBJXLCnaC/oGd9i7BG19xy30Raakouwp84QsWqoy1SzONIOeGx9
-         BLZA==
+        bh=ebQxy1c2E58rfYFrtDF0LlwrADqhUaZL+Ah6PQaZrV4=;
+        b=XUZk5Zh34WeAqMDPDHO4+wmnlOdaY0/B41mjFTYLTRlskpaQ+pAB2ZvD2m0/rr9LOT
+         kLGnavoWkWpz3RBvjRgTBs49F2k02Muei8OJXXPKqDbUXlPvPYEIINMkBxcgjHmTyiiI
+         dN+Q9lULPt+DO3jKZoghMJQu2EM+HrfiArnlvlPTz7UEtdHlTiV0jQNrIH9HaYxEKsvc
+         WsIahXt5dGLdOYeDCqJI/ZbaH6cyzdQF56roaXcEHAMFxJrlRni9kF24kmQNL5HdEmbq
+         p3y3/1sJwq+mxVdjvsXPK1OGd3xtEU9BrQEfDACLPmpk+40dgTDl4SvX/QMB7+xATNe4
+         qgaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711055328; x=1711660128;
+        d=1e100.net; s=20230601; t=1711055595; x=1711660395;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=NRNPrWHMxiQDcKwm3DA9WZxrfwYc+pk9Whir/OXbLVs=;
-        b=mKiwLdYnPlNGjhlt5hHoFw7D8fxxOWcHdCZDJ0oAZ5V1QxWxQd1dEkiiIwVloKHMAX
-         iY5Y6rOTtn+hhrlNT4AR5eUub5XlQr+GEHM8DeK9xhI3xGC1xCGhCxTgd/NptM4wBYyI
-         LRxUJq/4xjYFQKB57K00Z6CkiQqC3YA2NVMBdg2C4N2VO+hwLqay0YhIrnVG3oVVfLS3
-         R2KcPqb9bnwJW/yLW6JebPxRE5xrbulDmTjAs7WfvQZRTzmA4W42kX0/Q24tJA69+Y4d
-         HQi/5fYK/jGayaYTJVplpKc4XsFFdZri+lghJC8Gxq0CWV8UwUqQDD9ZTTm4Yw+Tx20G
-         MXcQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW1goNExhRU2hyOcedxCqbulyokPegS01zH5ooriCIpMbw5FvG1RtepRmMEVy546eRFGMVSDbgc7E5lCCDxp9FUxyL3Se0=
-X-Gm-Message-State: AOJu0YzurRjrNLMm3MuCs+VCbkBfj0KQi4mx0IQ7OsrEYRTa5Dmrx0ai
-	+UJ7/fiQ0EkAjbQffjCXlFEnfcXRgYP8uOa2iBrXAeTbJGZtcGx3+JkzcAE33+TwYd20S2jNXaI
-	/oaMhd50q5gU+ENLbKMx8Nvmt5sfTCyyLw2Jt
-X-Google-Smtp-Source: AGHT+IFQjWJqcUXxfuhd8any/MYD5BWIbsIOeqDcrZmmixvYhOq+BO7q8gQSEJbNPKfsdpWwwz0LdvkayxzWMZVyrx4=
-X-Received: by 2002:a25:6903:0:b0:dcf:f78f:a570 with SMTP id
- e3-20020a256903000000b00dcff78fa570mr390215ybc.7.1711055327530; Thu, 21 Mar
- 2024 14:08:47 -0700 (PDT)
+        bh=ebQxy1c2E58rfYFrtDF0LlwrADqhUaZL+Ah6PQaZrV4=;
+        b=drDAcB3O0zjJZksYnyJzcsMeOvZFfBCk4Sq/4rCl8kwu6P+bIFUT1spZqCslBzUq+c
+         E/tMl/75tEaDfWPCsjc+LgJAScqdzB0dsQ0vQpqVx5CuOjLn4FM9yMuk1qDzHj9vVp8E
+         XH0tE3n6PCtAlHEhE/DwGt/PfBLbVvXjf7vwfcEpL5peiMgChuy5myrqCJVzV1SBp9sF
+         1/PBPCoIDhmD0vcuxKdJMzRegxvfQi6BVjkVUsA+sKaQCSBIseNJYBMK/qdCqaoCImQr
+         y1q8+MXsDknaFSDZdhc0xYI01wMY1NKr9OqT7X+WHPpPjjsdnPrsoV8WjTRjhO0zD81i
+         YdDA==
+X-Forwarded-Encrypted: i=1; AJvYcCUK4Gx7na4eLVBUq48UA27oziniiZ2z9CZLTNXWssvDX+1qyPvTcd5Dug98TWy75IF0AhQtSw2LkBZyeEMcrsNHSAiUg0o=
+X-Gm-Message-State: AOJu0YzVDwgWqmO+8MffTOljKTant9xE6tKQLAknPa/S23soRnkzMhrQ
+	Yl65fTZ0KnC2+2lU8dGzhhjy9UU85Vzqpqk/kzVqnXoGpvLPopmRDWE5Z9N0LTfXTiyyYEH04Nk
+	+jKFSSlepi1nz3AMCMZuqxVCkL8VcoREpziqL
+X-Google-Smtp-Source: AGHT+IGpQFVT0N1V6MSTPFGK3hczVIPcNsqNEuin7eWXL8IMpmHm2qxsutqSmIFxZ5BpkxVe8WmaXZz7+fehjNgm2MU=
+X-Received: by 2002:a25:f40f:0:b0:dc7:4367:2527 with SMTP id
+ q15-20020a25f40f000000b00dc743672527mr366083ybd.49.1711055594451; Thu, 21 Mar
+ 2024 14:13:14 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240321163705.3067592-1-surenb@google.com> <20240321134157.212f0fbe1c03479c01e8a69e@linux-foundation.org>
-In-Reply-To: <20240321134157.212f0fbe1c03479c01e8a69e@linux-foundation.org>
+References: <20240321163705.3067592-1-surenb@google.com> <20240321163705.3067592-6-surenb@google.com>
+ <20240321133147.6d05af5744f9d4da88234fb4@linux-foundation.org>
+In-Reply-To: <20240321133147.6d05af5744f9d4da88234fb4@linux-foundation.org>
 From: Suren Baghdasaryan <surenb@google.com>
-Date: Thu, 21 Mar 2024 14:08:34 -0700
-Message-ID: <CAJuCfpG-KiE-MyOR0ZCghOswDMKS-9SmBh_UEdzSf4GHTB1wBg@mail.gmail.com>
-Subject: Re: [PATCH v6 00/37] Memory allocation profiling
+Date: Thu, 21 Mar 2024 14:13:03 -0700
+Message-ID: <CAJuCfpFtXx=NH-Zykh+dfO2fAASV8eObLLxC4Fu_Zu2Y=idZuw@mail.gmail.com>
+Subject: Re: [PATCH v6 05/37] fs: Convert alloc_inode_sb() to a macro
 To: Andrew Morton <akpm@linux-foundation.org>
 Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz, 
 	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
@@ -87,42 +88,53 @@ Cc: kent.overstreet@linux.dev, mhocko@suse.com, vbabka@suse.cz,
 	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
 	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
 	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
+	cgroups@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 21, 2024 at 1:42=E2=80=AFPM Andrew Morton <akpm@linux-foundatio=
+On Thu, Mar 21, 2024 at 1:31=E2=80=AFPM Andrew Morton <akpm@linux-foundatio=
 n.org> wrote:
 >
-> On Thu, 21 Mar 2024 09:36:22 -0700 Suren Baghdasaryan <surenb@google.com>=
+> On Thu, 21 Mar 2024 09:36:27 -0700 Suren Baghdasaryan <surenb@google.com>=
  wrote:
 >
-> > Low overhead [1] per-callsite memory allocation profiling. Not just for
-> > debug kernels, overhead low enough to be deployed in production.
+> > From: Kent Overstreet <kent.overstreet@linux.dev>
 > >
-> > Example output:
-> >   root@moria-kvm:~# sort -rn /proc/allocinfo
-> >    127664128    31168 mm/page_ext.c:270 func:alloc_page_ext
-> >     56373248     4737 mm/slub.c:2259 func:alloc_slab_page
-> >     14880768     3633 mm/readahead.c:247 func:page_cache_ra_unbounded
-> >     14417920     3520 mm/mm_init.c:2530 func:alloc_large_system_hash
-> >     13377536      234 block/blk-mq.c:3421 func:blk_mq_alloc_rqs
-> >     11718656     2861 mm/filemap.c:1919 func:__filemap_get_folio
-> >      9192960     2800 kernel/fork.c:307 func:alloc_thread_stack_node
-> >      4206592        4 net/netfilter/nf_conntrack_core.c:2567 func:nf_ct=
-_alloc_hashtable
-> >      4136960     1010 drivers/staging/ctagmod/ctagmod.c:20 [ctagmod] fu=
-nc:ctagmod_start
-> >      3940352      962 mm/memory.c:4214 func:alloc_anon_folio
-> >      2894464    22613 fs/kernfs/dir.c:615 func:__kernfs_new_node
+> > We're introducing alloc tagging, which tracks memory allocations by
+> > callsite. Converting alloc_inode_sb() to a macro means allocations will
+> > be tracked by its caller, which is a bit more useful.
 >
-> Did you consider adding a knob to permit all the data to be wiped out?
-> So people can zap everything, run the chosen workload then go see what
-> happened?
->
-> Of course, this can be done in userspace by taking a snapshot before
-> and after, then crunching on the two....
+> I'd have thought that there would be many similar
+> inlines-which-allocate-memory.  Such as, I dunno, jbd2_alloc_inode().
+> Do we have to go converting things to macros as people report
+> misleading or less useful results, or is there some more general
+> solution to this?
 
-Yeah, that's exactly what I was envisioning. Don't think we need to
-complicate more by adding a reset functionality unless there are other
-reasons for it. Thanks!
+Yeah, that's unfortunately inevitable. Even if we had compiler support
+we would have to add annotations for such inlined functions.
+For the given example of jbd2_alloc_inode() it's not so bad since it's
+used only from one location but in general yes, that's something we
+will have to improve as we find more such cases.
+
+>
+> > --- a/include/linux/fs.h
+> > +++ b/include/linux/fs.h
+> > @@ -3083,11 +3083,7 @@ int setattr_should_drop_sgid(struct mnt_idmap *i=
+dmap,
+> >   * This must be used for allocating filesystems specific inodes to set
+> >   * up the inode reclaim context correctly.
+> >   */
+> > -static inline void *
+> > -alloc_inode_sb(struct super_block *sb, struct kmem_cache *cache, gfp_t=
+ gfp)
+> > -{
+> > -     return kmem_cache_alloc_lru(cache, &sb->s_inode_lru, gfp);
+> > -}
+> > +#define alloc_inode_sb(_sb, _cache, _gfp) kmem_cache_alloc_lru(_cache,=
+ &_sb->s_inode_lru, _gfp)
+>
+> Parenthesizing __sb seems sensible here?
+
+Ack.
+Let's wait for more comments and then I'll post fixes.
+Thanks!
