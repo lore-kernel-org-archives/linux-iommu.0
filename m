@@ -1,150 +1,119 @@
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E27508592D
-	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 17:19:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EC8D133413
+	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 17:19:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=14.137.139.23
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711041583; cv=none; b=mO4pvekDJQWlyFDCrauPPxtjfMjGxWXSjTBxN+TssD2QbTo6/4X1wAe2AdBrX9kodobC/k45x2YvPvKRXqYSxW2hMy7LtYo7XhnI9MVre4Iq3BF4yx9awUUiF7tSx2ccUNaRcOnoI6l/c88fTO8KRbFyN55WcN3CbHDGGyIuxBs=
+	t=1711041595; cv=none; b=f0kCg1M2SDPlmCU8uevHr6A4EqkHxGe5hcOg7Zka1AUPRWNlze91O09FzjCAIzePlf9ti0sBu0RTbbeJvX6dj/YUtibwyQBrkSM1TCOdF2m7C0zfuVbDMU3IoOXlNqOEQSr4GtkpbAxSwmxaT9OoLicJbA0PjC2TXF+9vo+Ev1c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711041583; c=relaxed/simple;
-	bh=H+LJEeBQNsEayEy62NES0fpvH5c8qtUySXf9WjZsL7Q=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OU6bpo8bkQYYIV90womA7wHCGo5zYPOtAPPTLQFtk2a9VnRxT+OssaNlxPS0xSfG0LoJTN+/p9vj7iPBtrF7AukrUnTlKz1kV64OgQuDINy4igli5nDKVPs2qKx9BReUqQoo5J7PQNLum8nRJhj+CJh/5iCnQzwBVeajPG4sVh4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=L1KMbdSI; arc=none smtp.client-ip=209.85.128.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="L1KMbdSI"
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-60a434ea806so13203677b3.3
-        for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 10:19:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1711041581; x=1711646381; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tqvfQSGh+Xzm8qjoxKwBWCT5Q1J0hViT+VZ+PA5jO/g=;
-        b=L1KMbdSIpJ2P/AuKSjt+PU4bo2ibSZDcrKnpx15igqNSf1eG/m77aBEHvBThmWnT1d
-         kjzarjRWV6SvVFVEOrpSBACxer4zKLmytvKGYNXSpFcvw4YP+2JV78ublgSGqfxjN6zI
-         HfFu8s1xiKuipnCciu4H9BJHcUmiBAenk56z6ObGnJGuNgw/yMfG8MU018TZlOLH2sAc
-         XdUX5uFEWQ0KF3xqXhbMQDqcbbPr6O4bQLRL76zKhKYBY2QTM5KrX4Zw5XH6oLMZF2n0
-         xqxYHV6cK9QD2AhNXa04jJQxvzcnBnw4p5aZyvGxvWahAELYm51cZE6MFnVzDWBTdTLL
-         L8Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711041581; x=1711646381;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tqvfQSGh+Xzm8qjoxKwBWCT5Q1J0hViT+VZ+PA5jO/g=;
-        b=L+eTmpmIRmhYd8zgz4zU8D5XAfxF3pIKcW9j+Kw58M2P/6iXsPEetuJgDGYkXLRW34
-         8xrgI+cUg1tpP9nvdDj7L9ypimAjt+THLy2gZyQ8dYaSze2/P8HXih7uaSoUL3qnAilE
-         7qwl2wmb7B4K+9PyrwiNTE5I0CmMnt81j2wwmelD6LvlF7AL4A7C6mupihYKnsI/DMHt
-         22z9iA6ODFoMneRfwwOac9USVldQTPJJ7XGdOgO8I8tiDxj+SJcyuDsJo4pIXAuivDaC
-         qhJL3E2EUXqVM+wuaKSmgCzeAhlf7aOSQyXWlhVGMc11YEVmyrvxSkwFI1ZQzBZrT/+6
-         M8KQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUrm4hZs+6zD6nvmVzod1iSKAJlonkHJIa830ZkXq77W0UNjdl6jysPgu9fkDy0MLx2fISo6j8qCtATlB36He1iMHY/Sd0=
-X-Gm-Message-State: AOJu0YwWK3/yN425sTaDfoS8NSLZuDiwvtB7hgvGkpvIjhD33NUXBNWG
-	m2QyOnovs9PDtZ4WNz1LU7HlS/s4sQ1cdTl4lRE/rpUg/1Ru6NZtVblGcuppV0mB+49jvB4+gU2
-	h/N3vr4Q8vPeKyrIfhK3RinDrabHmPf6EF1gn
-X-Google-Smtp-Source: AGHT+IFQSVcpwYKqTi4u5vLJp+bH/Ul0qxjQJHN69s16T75E6/ejSMbPrhKw6oCEZl5ggVcRzfP6qAeH1y6UeIwfGAA=
-X-Received: by 2002:a25:dc4a:0:b0:dcd:4e54:9420 with SMTP id
- y71-20020a25dc4a000000b00dcd4e549420mr19795790ybe.5.1711041580565; Thu, 21
- Mar 2024 10:19:40 -0700 (PDT)
+	s=arc-20240116; t=1711041595; c=relaxed/simple;
+	bh=u1+YL1chG1fDzrnBGltFxRHMEuYiPqoh/58IrrzbAxE=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=ah6xIMvExd8uOwUXZr9VqflCQ0Mm9N0DdzWvCvOhN9L4b6lErBFj2HPGWCHOMYAgnsadPZrkzFcyiTK8/9aDLCiCnKA68+BtlO41ojrBGgbOhS4Wj+FmNl7XD0PqJWNyYyCX9wQ6h5SMnG0M2gQv0DhU0W5/Exb/liHgaZCvLOU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com; spf=pass smtp.mailfrom=huaweicloud.com; arc=none smtp.client-ip=14.137.139.23
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huaweicloud.com
+Received: from mail.maildlp.com (unknown [172.18.186.51])
+	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4V0sHN6x9Hz9xGgs
+	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 01:03:44 +0800 (CST)
+Received: from mail02.huawei.com (unknown [7.182.16.47])
+	by mail.maildlp.com (Postfix) with ESMTP id 4C817140133
+	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 01:19:39 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.81.213.73])
+	by APP1 (Coremail) with SMTP id LxC2BwAH_BQNbPxlII6+BA--.51964S4;
+	Thu, 21 Mar 2024 18:19:38 +0100 (CET)
+From: Petr Tesarik <petrtesarik@huaweicloud.com>
+To: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Michael Kelley <mhklinux@outlook.com>,
+	Will Deacon <will@kernel.org>,
+	linux-kernel@vger.kernel.org (open list),
+	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS)
+Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
+	Petr Tesarik <petr@tesarici.cz>
+Subject: [PATCH v3 2/2] bug: introduce ASSERT_VAR_CAN_HOLD()
+Date: Thu, 21 Mar 2024 18:19:02 +0100
+Message-Id: <20240321171902.85-3-petrtesarik@huaweicloud.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240321171902.85-1-petrtesarik@huaweicloud.com>
+References: <20240321171902.85-1-petrtesarik@huaweicloud.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240321163705.3067592-1-surenb@google.com> <20240321163705.3067592-21-surenb@google.com>
- <Zfxk9aFhF7O_-T3c@casper.infradead.org> <ZfxohXDDCx-_cJYa@casper.infradead.org>
-In-Reply-To: <ZfxohXDDCx-_cJYa@casper.infradead.org>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Thu, 21 Mar 2024 10:19:28 -0700
-Message-ID: <CAJuCfpHjfKYNyGeALZzwJ1k_AKOm_qcgKkx5zR+X6eyWmsZTLw@mail.gmail.com>
-Subject: Re: [PATCH v6 20/37] mm: fix non-compound multi-order memory
- accounting in __free_pages
-To: Matthew Wilcox <willy@infradead.org>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
-	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
-	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, tj@kernel.org, 
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, 
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com, 
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
-	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com, 
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
-	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
-	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
-	glider@google.com, elver@google.com, dvyukov@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, aliceryhl@google.com, 
-	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
-	kernel-team@android.com, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:LxC2BwAH_BQNbPxlII6+BA--.51964S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7Kw1DWF1xKw4ktr45GrW8tFb_yoW8WFy7pF
+	9xArn5KF4jqFyxZF12k3srCF1fK34v9347Cas0gryYvr17tF9aqFWDKrW3Wa4qqr4vgF4a
+	kw1FgrWYyw1UArDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUm014x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
+	x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
+	Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l84
+	ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UM2AI
+	xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
+	vE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
+	r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04
+	v7MxkF7I0Ew4C26cxK6c8Ij28IcwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWU
+	JVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67
+	kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY
+	6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0x
+	vEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVj
+	vjDU0xZFpf9x0JUzWlgUUUUU=
+X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 
-On Thu, Mar 21, 2024 at 10:04=E2=80=AFAM Matthew Wilcox <willy@infradead.or=
-g> wrote:
->
-> On Thu, Mar 21, 2024 at 04:48:53PM +0000, Matthew Wilcox wrote:
-> > On Thu, Mar 21, 2024 at 09:36:42AM -0700, Suren Baghdasaryan wrote:
-> > > +++ b/mm/page_alloc.c
-> > > @@ -4700,12 +4700,15 @@ void __free_pages(struct page *page, unsigned=
- int order)
-> > >  {
-> > >     /* get PageHead before we drop reference */
-> > >     int head =3D PageHead(page);
-> > > +   struct alloc_tag *tag =3D pgalloc_tag_get(page);
-> > >
-> > >     if (put_page_testzero(page))
-> > >             free_the_page(page, order);
-> > > -   else if (!head)
-> > > +   else if (!head) {
-> > > +           pgalloc_tag_sub_pages(tag, (1 << order) - 1);
-> > >             while (order-- > 0)
-> > >                     free_the_page(page + (1 << order), order);
-> > > +   }
-> >
-> > Why do you need these new functions instead of just:
-> >
-> > +     else if (!head) {
-> > +             pgalloc_tag_sub(page, (1 << order) - 1);
-> >               while (order-- > 0)
-> >                       free_the_page(page + (1 << order), order);
-> > +     }
->
-> Actually, I'm not sure this is safe (I don't fully understand codetags,
-> so it may be safe).  What can happen is that the put_page() can come in
-> before the pgalloc_tag_sub(), and then that page can be allocated again.
-> Will that cause confusion?
+From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 
-So, there are two reasons I unfortunately can't reuse pgalloc_tag_sub():
+Introduce an ASSERT_VAR_CAN_HOLD() macro to check at build time that a
+variable can hold the given value.
 
-1. We need to subtract `bytes` counter from the codetag but not the
-`calls` counter, otherwise the final accounting will be incorrect.
-This is because we effectively allocated multiple pages with one call
-but freeing them with separate calls here. pgalloc_tag_sub_pages()
-subtracts bytes but keeps calls counter the same. I mentioned this in
-here: https://lore.kernel.org/all/CAJuCfpEgh1OiYNE_uKG-BqW2x97sOL9+AaTX4Jct=
-3=3DWHzAv+kg@mail.gmail.com/
-2. The codetag object itself is stable, it's created at build time.
-The exception is when we unload modules and the codetag section gets
-freed but during module unloading we check that all module codetags
-are not referenced anymore and we prevent unloading this section if
-any of them are still referenced (should not normally happen). That
-said, the reference to the codetag (in this case from the page_ext)
-might change from under us and we have to make sure it's valid. We
-ensure that here by getting the codetag itself with pgalloc_tag_get()
-*before* calling put_page_testzero(), which ensures its stability.
+Use this macro in swiotlb to make sure that the list and pad_slots fields
+of struct io_tlb_slot are big enough to hold the maximum possible value of
+IO_TLB_SEGSIZE.
 
->
+Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+---
+ include/linux/build_bug.h | 10 ++++++++++
+ kernel/dma/swiotlb.c      |  2 ++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/include/linux/build_bug.h b/include/linux/build_bug.h
+index 3aa3640f8c18..6e2486508af0 100644
+--- a/include/linux/build_bug.h
++++ b/include/linux/build_bug.h
+@@ -86,4 +86,14 @@
+ 		"Offset of " #field " in " #type " has changed.")
+ 
+ 
++/*
++ * Compile time check that a variable can hold the given value
++ */
++#define ASSERT_VAR_CAN_HOLD(var, value) ({		\
++	typeof(value) __val = (value);			\
++	typeof(var) __tmp = __val;			\
++	BUILD_BUG_ON_MSG(__tmp != __val,		\
++		#var " cannot hold " #value ".");	\
++})
++
+ #endif	/* _LINUX_BUILD_BUG_H */
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 3779a48eec9b..8256fcdc0cf6 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -285,6 +285,8 @@ static void swiotlb_init_io_tlb_pool(struct io_tlb_pool *mem, phys_addr_t start,
+ 		mem->areas[i].used = 0;
+ 	}
+ 
++	ASSERT_VAR_CAN_HOLD(mem->slots[0].list, IO_TLB_SEGSIZE);
++	ASSERT_VAR_CAN_HOLD(mem->slots[0].pad_slots, IO_TLB_SEGSIZE);
+ 	for (i = 0; i < mem->nslabs; i++) {
+ 		mem->slots[i].list = min(IO_TLB_SEGSIZE - io_tlb_offset(i),
+ 					 mem->nslabs - i);
+-- 
+2.34.1
+
