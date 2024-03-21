@@ -1,198 +1,150 @@
-Received: from frasgout12.his.huawei.com (frasgout12.his.huawei.com [14.137.139.154])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A832F56768
-	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 17:19:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=14.137.139.154
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E27508592D
+	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 17:19:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711041582; cv=none; b=C1E4C99BWMlNxE6WdQg2BitnYuQZYBjshQh2rFq7lOHRlW0VZRSlG4sJ8cppFZLlhXTpwtfLto44/afgRWnCW2WORzUufoU/Ue/mt+1mUi+S/V+KMQpFDg9zZinw53VcKy6gmj6ao+aX0ZYmSmwEtTS8rxgpe5JqhDFbndOMwz8=
+	t=1711041583; cv=none; b=mO4pvekDJQWlyFDCrauPPxtjfMjGxWXSjTBxN+TssD2QbTo6/4X1wAe2AdBrX9kodobC/k45x2YvPvKRXqYSxW2hMy7LtYo7XhnI9MVre4Iq3BF4yx9awUUiF7tSx2ccUNaRcOnoI6l/c88fTO8KRbFyN55WcN3CbHDGGyIuxBs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711041582; c=relaxed/simple;
-	bh=QjWpu69ZB2LapPnVRTCp2NWYirB57rkknXUmKx7p4XQ=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=k4f1YbGu7GElFZ34J2Wijd9ELvn+EpjEXKF95U7/+oFX3kZQg9TC9yFjY8Q9dcYl/D8L1YEpUYkmLcXbW3prF5MXhj09DRhft4ogt9Vf7TX6McT9Yk2a0XCp4VuIbHYtHJ8fBd29QvwSobJG82+J4qGSWqtgnbpPU64Rr4JZ2EA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com; spf=pass smtp.mailfrom=huaweicloud.com; arc=none smtp.client-ip=14.137.139.154
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huaweicloud.com
-Received: from mail.maildlp.com (unknown [172.18.186.29])
-	by frasgout12.his.huawei.com (SkyGuard) with ESMTP id 4V0sBR09tsz9v7Z2
-	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 00:59:27 +0800 (CST)
-Received: from mail02.huawei.com (unknown [7.182.16.47])
-	by mail.maildlp.com (Postfix) with ESMTP id CCFCD14037D
-	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 01:19:31 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.81.213.73])
-	by APP1 (Coremail) with SMTP id LxC2BwAH_BQNbPxlII6+BA--.51964S3;
-	Thu, 21 Mar 2024 18:19:29 +0100 (CET)
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
-	Michael Kelley <mhklinux@outlook.com>,
-	Will Deacon <will@kernel.org>,
-	linux-kernel@vger.kernel.org (open list),
-	iommu@lists.linux.dev (open list:DMA MAPPING HELPERS)
-Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	Petr Tesarik <petr@tesarici.cz>
-Subject: [PATCH v3 1/2] swiotlb: extend buffer pre-padding to alloc_align_mask if necessary
-Date: Thu, 21 Mar 2024 18:19:01 +0100
-Message-Id: <20240321171902.85-2-petrtesarik@huaweicloud.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240321171902.85-1-petrtesarik@huaweicloud.com>
-References: <20240321171902.85-1-petrtesarik@huaweicloud.com>
+	s=arc-20240116; t=1711041583; c=relaxed/simple;
+	bh=H+LJEeBQNsEayEy62NES0fpvH5c8qtUySXf9WjZsL7Q=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=OU6bpo8bkQYYIV90womA7wHCGo5zYPOtAPPTLQFtk2a9VnRxT+OssaNlxPS0xSfG0LoJTN+/p9vj7iPBtrF7AukrUnTlKz1kV64OgQuDINy4igli5nDKVPs2qKx9BReUqQoo5J7PQNLum8nRJhj+CJh/5iCnQzwBVeajPG4sVh4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=L1KMbdSI; arc=none smtp.client-ip=209.85.128.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="L1KMbdSI"
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-60a434ea806so13203677b3.3
+        for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 10:19:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1711041581; x=1711646381; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tqvfQSGh+Xzm8qjoxKwBWCT5Q1J0hViT+VZ+PA5jO/g=;
+        b=L1KMbdSIpJ2P/AuKSjt+PU4bo2ibSZDcrKnpx15igqNSf1eG/m77aBEHvBThmWnT1d
+         kjzarjRWV6SvVFVEOrpSBACxer4zKLmytvKGYNXSpFcvw4YP+2JV78ublgSGqfxjN6zI
+         HfFu8s1xiKuipnCciu4H9BJHcUmiBAenk56z6ObGnJGuNgw/yMfG8MU018TZlOLH2sAc
+         XdUX5uFEWQ0KF3xqXhbMQDqcbbPr6O4bQLRL76zKhKYBY2QTM5KrX4Zw5XH6oLMZF2n0
+         xqxYHV6cK9QD2AhNXa04jJQxvzcnBnw4p5aZyvGxvWahAELYm51cZE6MFnVzDWBTdTLL
+         L8Xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711041581; x=1711646381;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=tqvfQSGh+Xzm8qjoxKwBWCT5Q1J0hViT+VZ+PA5jO/g=;
+        b=L+eTmpmIRmhYd8zgz4zU8D5XAfxF3pIKcW9j+Kw58M2P/6iXsPEetuJgDGYkXLRW34
+         8xrgI+cUg1tpP9nvdDj7L9ypimAjt+THLy2gZyQ8dYaSze2/P8HXih7uaSoUL3qnAilE
+         7qwl2wmb7B4K+9PyrwiNTE5I0CmMnt81j2wwmelD6LvlF7AL4A7C6mupihYKnsI/DMHt
+         22z9iA6ODFoMneRfwwOac9USVldQTPJJ7XGdOgO8I8tiDxj+SJcyuDsJo4pIXAuivDaC
+         qhJL3E2EUXqVM+wuaKSmgCzeAhlf7aOSQyXWlhVGMc11YEVmyrvxSkwFI1ZQzBZrT/+6
+         M8KQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUrm4hZs+6zD6nvmVzod1iSKAJlonkHJIa830ZkXq77W0UNjdl6jysPgu9fkDy0MLx2fISo6j8qCtATlB36He1iMHY/Sd0=
+X-Gm-Message-State: AOJu0YwWK3/yN425sTaDfoS8NSLZuDiwvtB7hgvGkpvIjhD33NUXBNWG
+	m2QyOnovs9PDtZ4WNz1LU7HlS/s4sQ1cdTl4lRE/rpUg/1Ru6NZtVblGcuppV0mB+49jvB4+gU2
+	h/N3vr4Q8vPeKyrIfhK3RinDrabHmPf6EF1gn
+X-Google-Smtp-Source: AGHT+IFQSVcpwYKqTi4u5vLJp+bH/Ul0qxjQJHN69s16T75E6/ejSMbPrhKw6oCEZl5ggVcRzfP6qAeH1y6UeIwfGAA=
+X-Received: by 2002:a25:dc4a:0:b0:dcd:4e54:9420 with SMTP id
+ y71-20020a25dc4a000000b00dcd4e549420mr19795790ybe.5.1711041580565; Thu, 21
+ Mar 2024 10:19:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:LxC2BwAH_BQNbPxlII6+BA--.51964S3
-X-Coremail-Antispam: 1UD129KBjvJXoW3Xw4rZr4xXw1furyDCrW5Awb_yoW7Xw4kpF
-	1fta1rKFWUJF1xCanFka18GF1ru34kCry5CF4SgryY9r1kXrn8XF90y3yYga4FqrWv9FW2
-	va4rur48CF47Xr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUm014x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jr4l82xGYIkIc2
-	x26xkF7I0E14v26r4j6ryUM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-	Y4vE2Ix0cI8IcVAFwI0_Jr0_JF4l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1l84
-	ACjcxK6I8E87Iv67AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UM2AI
-	xVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20x
-	vE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xv
-	r2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxan2IY04
-	v7MxkF7I0Ew4C26cxK6c8Ij28IcwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWU
-	JVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67
-	kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY
-	6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0x
-	vEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVj
-	vjDU0xZFpf9x0pRlfOrUUUUU=
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
+References: <20240321163705.3067592-1-surenb@google.com> <20240321163705.3067592-21-surenb@google.com>
+ <Zfxk9aFhF7O_-T3c@casper.infradead.org> <ZfxohXDDCx-_cJYa@casper.infradead.org>
+In-Reply-To: <ZfxohXDDCx-_cJYa@casper.infradead.org>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Thu, 21 Mar 2024 10:19:28 -0700
+Message-ID: <CAJuCfpHjfKYNyGeALZzwJ1k_AKOm_qcgKkx5zR+X6eyWmsZTLw@mail.gmail.com>
+Subject: Re: [PATCH v6 20/37] mm: fix non-compound multi-order memory
+ accounting in __free_pages
+To: Matthew Wilcox <willy@infradead.org>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, liam.howlett@oracle.com, 
+	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, tj@kernel.org, 
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, 
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com, 
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
+	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com, 
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
+	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
+	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
+	glider@google.com, elver@google.com, dvyukov@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, aliceryhl@google.com, 
+	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
+	kernel-team@android.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+On Thu, Mar 21, 2024 at 10:04=E2=80=AFAM Matthew Wilcox <willy@infradead.or=
+g> wrote:
+>
+> On Thu, Mar 21, 2024 at 04:48:53PM +0000, Matthew Wilcox wrote:
+> > On Thu, Mar 21, 2024 at 09:36:42AM -0700, Suren Baghdasaryan wrote:
+> > > +++ b/mm/page_alloc.c
+> > > @@ -4700,12 +4700,15 @@ void __free_pages(struct page *page, unsigned=
+ int order)
+> > >  {
+> > >     /* get PageHead before we drop reference */
+> > >     int head =3D PageHead(page);
+> > > +   struct alloc_tag *tag =3D pgalloc_tag_get(page);
+> > >
+> > >     if (put_page_testzero(page))
+> > >             free_the_page(page, order);
+> > > -   else if (!head)
+> > > +   else if (!head) {
+> > > +           pgalloc_tag_sub_pages(tag, (1 << order) - 1);
+> > >             while (order-- > 0)
+> > >                     free_the_page(page + (1 << order), order);
+> > > +   }
+> >
+> > Why do you need these new functions instead of just:
+> >
+> > +     else if (!head) {
+> > +             pgalloc_tag_sub(page, (1 << order) - 1);
+> >               while (order-- > 0)
+> >                       free_the_page(page + (1 << order), order);
+> > +     }
+>
+> Actually, I'm not sure this is safe (I don't fully understand codetags,
+> so it may be safe).  What can happen is that the put_page() can come in
+> before the pgalloc_tag_sub(), and then that page can be allocated again.
+> Will that cause confusion?
 
-Allow a buffer pre-padding of up to alloc_align_mask. If the allocation
-alignment is bigger than IO_TLB_SIZE and min_align_mask covers any non-zero
-bits in the original address between IO_TLB_SIZE and alloc_align_mask,
-these bits are not preserved in the swiotlb buffer address.
+So, there are two reasons I unfortunately can't reuse pgalloc_tag_sub():
 
-To fix this case, increase the allocation size and use a larger offset
-within the allocated buffer. As a result, extra padding slots may be
-allocated before the mapping start address.
+1. We need to subtract `bytes` counter from the codetag but not the
+`calls` counter, otherwise the final accounting will be incorrect.
+This is because we effectively allocated multiple pages with one call
+but freeing them with separate calls here. pgalloc_tag_sub_pages()
+subtracts bytes but keeps calls counter the same. I mentioned this in
+here: https://lore.kernel.org/all/CAJuCfpEgh1OiYNE_uKG-BqW2x97sOL9+AaTX4Jct=
+3=3DWHzAv+kg@mail.gmail.com/
+2. The codetag object itself is stable, it's created at build time.
+The exception is when we unload modules and the codetag section gets
+freed but during module unloading we check that all module codetags
+are not referenced anymore and we prevent unloading this section if
+any of them are still referenced (should not normally happen). That
+said, the reference to the codetag (in this case from the page_ext)
+might change from under us and we have to make sure it's valid. We
+ensure that here by getting the codetag itself with pgalloc_tag_get()
+*before* calling put_page_testzero(), which ensures its stability.
 
-Leave orig_addr in these padding slots initialized to INVALID_PHYS_ADDR.
-These slots do not correspond to any CPU buffer, so attempts to sync the
-data should be ignored.
-
-The padding slots should be automatically released when the buffer is
-unmapped. However, swiotlb_tbl_unmap_single() takes only the address of the
-DMA buffer slot, not the first padding slot. Save the number of padding
-slots in struct io_tlb_slot and use it to adjust the slot index in
-swiotlb_release_slots(), so all allocated slots are properly freed.
-
-Fixes: 2fd4fa5d3fb5 ("swiotlb: Fix alignment checks when both allocation and DMA masks are present")
-Link: https://lore.kernel.org/linux-iommu/20240311210507.217daf8b@meshulam.tesarici.cz/
-Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
----
- kernel/dma/swiotlb.c | 35 +++++++++++++++++++++++++++++------
- 1 file changed, 29 insertions(+), 6 deletions(-)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 86fe172b5958..3779a48eec9b 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -69,11 +69,14 @@
-  * @alloc_size:	Size of the allocated buffer.
-  * @list:	The free list describing the number of free entries available
-  *		from each index.
-+ * @pad_slots:	Number of preceding padding slots. Valid only in the first
-+ *		allocated non-padding slot.
-  */
- struct io_tlb_slot {
- 	phys_addr_t orig_addr;
- 	size_t alloc_size;
--	unsigned int list;
-+	unsigned short list;
-+	unsigned short pad_slots;
- };
- 
- static bool swiotlb_force_bounce;
-@@ -287,6 +290,7 @@ static void swiotlb_init_io_tlb_pool(struct io_tlb_pool *mem, phys_addr_t start,
- 					 mem->nslabs - i);
- 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
- 		mem->slots[i].alloc_size = 0;
-+		mem->slots[i].pad_slots = 0;
- 	}
- 
- 	memset(vaddr, 0, bytes);
-@@ -1328,11 +1332,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		unsigned long attrs)
- {
- 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
--	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
-+	unsigned int offset;
- 	struct io_tlb_pool *pool;
- 	unsigned int i;
- 	int index;
- 	phys_addr_t tlb_addr;
-+	unsigned short pad_slots;
- 
- 	if (!mem || !mem->nslabs) {
- 		dev_warn_ratelimited(dev,
-@@ -1349,6 +1354,15 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		return (phys_addr_t)DMA_MAPPING_ERROR;
- 	}
- 
-+	/*
-+	 * Calculate buffer pre-padding within the allocated space. Use it to
-+	 * preserve the low bits of the original address according to device's
-+	 * min_align_mask. Limit the padding to alloc_align_mask or slot size
-+	 * (whichever is bigger); higher bits of the original address are
-+	 * preserved by selecting a suitable IO TLB slot.
-+	 */
-+	offset = orig_addr & dma_get_min_align_mask(dev) &
-+		(alloc_align_mask | (IO_TLB_SIZE - 1));
- 	index = swiotlb_find_slots(dev, orig_addr,
- 				   alloc_size + offset, alloc_align_mask, &pool);
- 	if (index == -1) {
-@@ -1364,6 +1378,10 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	 * This is needed when we sync the memory.  Then we sync the buffer if
- 	 * needed.
- 	 */
-+	pad_slots = offset / IO_TLB_SIZE;
-+	offset %= IO_TLB_SIZE;
-+	index += pad_slots;
-+	pool->slots[index].pad_slots = pad_slots;
- 	for (i = 0; i < nr_slots(alloc_size + offset); i++)
- 		pool->slots[index + i].orig_addr = slot_addr(orig_addr, i);
- 	tlb_addr = slot_addr(pool->start, index) + offset;
-@@ -1385,12 +1403,16 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
- 	struct io_tlb_pool *mem = swiotlb_find_pool(dev, tlb_addr);
- 	unsigned long flags;
- 	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
--	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
--	int nslots = nr_slots(mem->slots[index].alloc_size + offset);
--	int aindex = index / mem->area_nslabs;
--	struct io_tlb_area *area = &mem->areas[aindex];
-+	int index, nslots, aindex;
-+	struct io_tlb_area *area;
- 	int count, i;
- 
-+	index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
-+	index -= mem->slots[index].pad_slots;
-+	nslots = nr_slots(mem->slots[index].alloc_size + offset);
-+	aindex = index / mem->area_nslabs;
-+	area = &mem->areas[aindex];
-+
- 	/*
- 	 * Return the buffer to the free list by setting the corresponding
- 	 * entries to indicate the number of contiguous entries available.
-@@ -1413,6 +1435,7 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
- 		mem->slots[i].list = ++count;
- 		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
- 		mem->slots[i].alloc_size = 0;
-+		mem->slots[i].pad_slots = 0;
- 	}
- 
- 	/*
--- 
-2.34.1
-
+>
