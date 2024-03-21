@@ -1,159 +1,101 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from out-183.mta1.migadu.com (out-183.mta1.migadu.com [95.215.58.183])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40CC0136655
-	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 22:09:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE07913667B
+	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 22:17:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.183
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711058980; cv=none; b=JUaytMU8ycf8fImp4wrLReIaxnC4gJqlmV0dpP2ooUyv1fD0Y3EndQ9CZZhDQ1uYiZVuU2nkpNO5DHyqmnHjY/n9qhTVyVw19hPxLHqXrQ4NgK8J+DbbAkI9rYIGY2+ylRE+jgJbLKjVeE6t+RH2ZdN1HTPdtU4pAhLW4NyqwVk=
+	t=1711059460; cv=none; b=BSFVBYZGC44fedkHVO2NmVRJ9QiLjnAs0MGbgULloxj2I1IwU4hKoTIVrnhzHNiVTxxa6Ryx9dPM4DwcjGWhNICnJX/CwuP2eYkJNnJYmVDNHylwxdNHsemgNo2BP/y9LqQh1yZwsG2dpQRw8GuqREiK2+rHxY7JiQ67GrmYQ5U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711058980; c=relaxed/simple;
-	bh=A9Tj9AR0ZR+h7MolLz8S04z6JYhfQeCOuRIBcl5Zv5A=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UwEWAMH8/p9yHtgXNv+4TgjPWgYhuW4r5e72tVNcGf2gWfzCdHFUw6WBwJJAiiEfiulP1C8PAGqiqQxUfWLEMboaFb9a/J+1ZuM6N+Vq1ZhkoI56yaJJBViL/6W5VdSawbH9+qPLG92b9qreAh8hd6WS6w6IraemdpdbaOoxL/0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HflWwjK2; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1711059460; c=relaxed/simple;
+	bh=48MDU/nc47hzkUWjchZtFQewyGLXSQIKOvEvF3GhbhU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Kw946ZiXmGVU/F43xEkPwD9rG8A5LYx6HtGAQdlGbK04Evw33L6RNxO6oeD0nio8up4luXfXRhv7G9X1iTNltHZkLm0IoLdG0fNTCzU9vUYOPier0k4d3DC+UayshFSZfnst921zIuFYhhgL+cSv2cOSiwzRTuFm+UqWu/bXGxs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=FZysDbxQ; arc=none smtp.client-ip=95.215.58.183
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HflWwjK2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711058978; x=1742594978;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=A9Tj9AR0ZR+h7MolLz8S04z6JYhfQeCOuRIBcl5Zv5A=;
-  b=HflWwjK2zErCteEyH1aJBpY76ArTOEAPFcC5Deu0WPTOrBkdtg+4Itp/
-   kfXqMmo/LPB+wz495jLLTg+MhBOpTZ1v4NYTgzsOo5aY/EdM6dV5ng4To
-   L2H9encn5WU1fB0mjtJJ5pqF4dxssQGZIxfiKgvpq7xkJ00Fd1fPtjFYd
-   VpDkVCKvI8oPbzr/tBJR5aNuiY3p+9fobbagtmra7iDn+ZYyN4dEcpXY4
-   5OSqJg3zgXK9JUOCB5KRqIQncyXjPFeAePrxS9yZaoBcqAJQ5gsxVQX7j
-   zFhB/OyqomZAVPpXzPYTiJ5W1BlAs3euMWHTXAjnT26oWobnaoTaT4uKp
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11020"; a="31525039"
-X-IronPort-AV: E=Sophos;i="6.07,144,1708416000"; 
-   d="scan'208";a="31525039"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2024 15:09:37 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,144,1708416000"; 
-   d="scan'208";a="52112421"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2024 15:09:37 -0700
-Date: Thu, 21 Mar 2024 15:13:57 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Dimitri Sivanich <sivanich@hpe.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, David Woodhouse
- <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
- <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Steve Wahl <steve.wahl@hpe.com>, Russ
- Anderson <russ.anderson@hpe.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH] Allocate DMAR fault interrupts locally
-Message-ID: <20240321151357.1d18127f@jacob-builder>
-In-Reply-To: <Ze9r47riIq9ovBCY@hpe.com>
-References: <ZeDj/LK56borSxO4@hpe.com>
-	<87plwe7w3m.ffs@tglx>
-	<Ze9r47riIq9ovBCY@hpe.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="FZysDbxQ"
+Date: Thu, 21 Mar 2024 18:17:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1711059455;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Avwu9Obvo7iLXBxmizf/EO08qQLthSdSW59GBeW8H+I=;
+	b=FZysDbxQhjIXqR1pi+xqtUgFMzj7/eEwMfqFXVNrKP4hKoq2eMyg+mr0CCyz9L7KqFOgHR
+	p5O/ufNLq1uDGvJZh6zage2q2y2AKKbqhiaE8rWYbulPbyHbczbhEbHNktWz0RHQl+5yfX
+	htak4lBJXiAjgjdWctvpqD6B01G3FgE=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Andrew Morton <akpm@linux-foundation.org>
+Cc: Suren Baghdasaryan <surenb@google.com>, mhocko@suse.com, 
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
+	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, 
+	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org, 
+	peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, 
+	masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, 
+	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, 
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, 
+	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
+	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
+	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
+	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
+	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
+	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, aliceryhl@google.com, rientjes@google.com, 
+	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, cgroups@vger.kernel.org, 
+	Alexander Viro <viro@zeniv.linux.org.uk>
+Subject: Re: [PATCH v6 05/37] fs: Convert alloc_inode_sb() to a macro
+Message-ID: <bliyhrwtskv5xhg3rxxszouxntrhnm3nxhcmrmdwwk4iyx5wdo@vodd22dbtn75>
+References: <20240321163705.3067592-1-surenb@google.com>
+ <20240321163705.3067592-6-surenb@google.com>
+ <20240321133147.6d05af5744f9d4da88234fb4@linux-foundation.org>
+ <gnqztvimdnvz2hcepdh3o3dpg4cmvlkug4sl7ns5vd4lm7hmao@dpstjnacdubq>
+ <20240321150908.48283ba55a6c786dee273ec3@linux-foundation.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240321150908.48283ba55a6c786dee273ec3@linux-foundation.org>
+X-Migadu-Flow: FLOW_OUT
 
-Hi Dimitri,
+On Thu, Mar 21, 2024 at 03:09:08PM -0700, Andrew Morton wrote:
+> On Thu, 21 Mar 2024 17:15:39 -0400 Kent Overstreet <kent.overstreet@linux.dev> wrote:
+> 
+> > On Thu, Mar 21, 2024 at 01:31:47PM -0700, Andrew Morton wrote:
+> > > On Thu, 21 Mar 2024 09:36:27 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
+> > > 
+> > > > From: Kent Overstreet <kent.overstreet@linux.dev>
+> > > > 
+> > > > We're introducing alloc tagging, which tracks memory allocations by
+> > > > callsite. Converting alloc_inode_sb() to a macro means allocations will
+> > > > be tracked by its caller, which is a bit more useful.
+> > > 
+> > > I'd have thought that there would be many similar
+> > > inlines-which-allocate-memory.  Such as, I dunno, jbd2_alloc_inode(). 
+> > > Do we have to go converting things to macros as people report
+> > > misleading or less useful results, or is there some more general
+> > > solution to this?
+> > 
+> > No, this is just what we have to do.
+> 
+> Well, this is something we strike in other contexts - kallsyms gives us
+> an inlined function and it's rarely what we wanted.
+> 
+> I think kallsyms has all the data which is needed to fix this - how
+> hard can it be to figure out that a particular function address lies
+> within an outer function?  I haven't looked...
 
-On Mon, 11 Mar 2024 15:38:59 -0500, Dimitri Sivanich <sivanich@hpe.com>
-wrote:
-
-> Thomas!
-> 
-> On Thu, Feb 29, 2024 at 11:18:37PM +0100, Thomas Gleixner wrote:
-> > Dimitri!
-> > 
-> > On Thu, Feb 29 2024 at 14:07, Dimitri Sivanich wrote:
-> >   
-> > > +}
-> > > +
-> > > +static int __init assign_dmar_vectors(void)
-> > > +{
-> > > +	struct work_struct irq_remap_work;
-> > > +	int nid;
-> > > +
-> > > +	INIT_WORK(&irq_remap_work,
-> > > irq_remap_enable_fault_handling_thr);
-> > > +	cpus_read_lock();
-> > > +	for_each_online_node(nid) {
-> > > +		/* Boot cpu dmar vectors are assigned before the
-> > > rest */
-> > > +		if (nid == cpu_to_node(get_boot_cpu_id()))
-> > > +			continue;
-> > > +		schedule_work_on(cpumask_first(cpumask_of_node(nid)),
-> > > +				 &irq_remap_work);
-> > > +		flush_work(&irq_remap_work);
-> > > +	}
-> > > +	cpus_read_unlock();
-> > > +	return 0;
-> > > +}
-> > > +
-> > > +arch_initcall(assign_dmar_vectors);  
-> > 
-> > Stray newline before arch_initcall(), but that's not the problem.
-> > 
-> > The real problems are:
-> > 
-> >  1) This approach only works when _ALL_ APs have been brought up during
-> >     boot. With 'maxcpus=N' on the command line this will fail to enable
-> >     fault handling when the APs which have not been brought up initially
-> >     are onlined later on.
-> > 
-> >     This might be working in practice because intel_iommu_init() will
-> >     enable the interrupts later on via init_dmars() unconditionally, but
-> >     that's far from correct because IRQ_REMAP does not depend on
-> >     INTEL_IOMMU.
-> > 
-> >  2) It leaves a gap where the reporting is not working between bringing
-> >     up the APs during boot and this initcall. Mostly theoretical, but
-> >     that does not make it more correct either.
-> > 
-> > What you really want is a cpu hotplug state in the CPUHP_BP_PREPARE_DYN
-> > space which enables the interrupt for the node _before_ the first AP of
-> > the node is brought up. That will solve the problem nicely w/o any of
-> > the above issues.
-> >  
-> 
-> Initially this sounds like a good approach.  As things currently stand,
-> however, there are (at least) several problems with attempting to
-> allocate interrupts on cpus that are not running yet via the existing
-> dmar_set_interrupt path.
-> 
-> - The code relies on node_to_cpumask_map (cpumask_of_node()), which has
-> been allocated, but not populated at the CPUHP_BP_PREPARE_DYN stage.
-> 
-> - The irq_matrix cpumaps do not indicate being online or initialized yet,
-> except for the boot cpu instance, of course.
-> 
-> So things still revert to boot cpu allocation, until we exhaust the
-> vectors.
-> 
-> Of course, running the dmar_set_interrupt code from a CPUHP_AP_ONLINE_DYN
-> state does work (although I believe there is a concurrency issue that
-> could show up with the current dmar_set_interrupt path).
-> 
-> So the code seems to have been designed based on the assumption that it
-> will be run on an already active (though not necessarily fully onlined?)
-> cpu.  To make this work, any code based on that assumption would need to
-> be fixed.  Otherwise, a different approach is needed.
-This may not be pretty but since DMAR fault is for unrecoverable faults,
-they are rare and infrequent, should never happen on a healthy system. Can
-we share one BSP vector for all DMARs? i.e. let dmar_fault() handler search
-for the offending DMAR for fault reasons.
-
-
-Thanks,
-
-Jacob
+This is different, though - even if a function is inlined in multiple
+places there's only going to be one instance of a static var defined
+within that function.
