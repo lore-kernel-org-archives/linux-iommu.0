@@ -1,257 +1,160 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F421B6BB27
-	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 18:43:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E2A36E5EE
+	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 19:07:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711133014; cv=none; b=K98z/KCv4+dzpJiy7GEB1h4lMRC0Sk4K7Hi8za0DBlSY4ymNwmVN2tZC1Zm0abz6OLmHwmEfH8fbcCw9ap9pjnwyVxtqQ3LntMzjqV/nuemmet1FigJCyY5BZ4Rj0nBIM/f0nHte6lK7mbf2vI3uCQwR3pvacG2Clrtj6wXPXLA=
+	t=1711134438; cv=none; b=LITHmRFRJ9LBDDC4BwtKNcdlB8B6Vmzq1UQCx4bjGJBtAWBU+uEorgEzzp20A1nQCztKc19e5RBmxM2z0AVS4/pJJCajfjjBYlt3C0OlF6md9xQu87lpfH+1J4FhmO4agOOKMenc4RNvPfZZ4Nd1hSt438FImlBmdjLcAuEmru0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711133014; c=relaxed/simple;
-	bh=GvQkjDWyqo+rghsqOlGEglCNlFD0oHAv/CYM8uzWhmE=;
+	s=arc-20240116; t=1711134438; c=relaxed/simple;
+	bh=5clcENVPl84v7thAD523MC8hq38AuZBiMpmV/P8IXN8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Emp1VffkcPxZcrWlq/rIvxZjLjUlz53lbfY/Ivs1iP3wWNCw5uZ7FHY3E7Gu8UfrXvaDrZtYDyUFm2x3i+SQY5nIo3NhkZG1js8LmWsIcmzLW45zQlqQlx5WRtn7Nl47EzXZG3LYUIa2Z2wcIYxs2dlk5LijmHo4345V1riu8Xo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JQngt1OU; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=u0gU5P2eJs3Fid0M7rcSHn7zFp6LB6wqWivqtfnBAy1HTP960zabSxMUSN7uvd1zpTE5GGTwScCRCfhHpZYW+XFmWljMs87DLmwsvRxo9ASDs/VKvLHZeLWfJjAchxMz6fvJSyRN8MeC8mOf5jLLnmbKZGD1AI6kHaoMrcLP5a0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=GasikVqr; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JQngt1OU"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-42e29149883so9769941cf.2
-        for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 11:43:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="GasikVqr"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-413f8c8192eso14925e9.0
+        for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 12:07:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1711133012; x=1711737812; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=07q//JdJmCCvVOn8q/irpx1t9tAUng9qf5/QnHEsi64=;
-        b=JQngt1OUe+oKv8dFVhTMw0hldVVaMcN6yGFI2CSni1kxBNONTiC6tmrDmwh+BnrszO
-         4EpNMVJDo0zFMlZbsV5IXCTanlKlRq8F3iIiur09Bl3IeHoGkjkREsHwebmKJ2n3WzqG
-         4Z2k366jP+R0VX4yhbP2ZltgcELTKorVM4ei4oQ8uRy/JIyoFYBNslbtH++wTZ9RFV5+
-         WNALWom6szsPBhmnam7FAmrdak5iRA20r/1LD2NhDxWwot0L5PbM2957/NbRXadh4ugs
-         yXc7HMSIJT1AO+Z5rhg1skCC+eRvUUfpfeUj+ZJs1VW+Y4fvNBAJ8y1MjWHYtLBkbv2C
-         Q9rw==
+        d=google.com; s=20230601; t=1711134435; x=1711739235; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=LYZVGNnxMtJXmO/rMtm5YPA7SokYhXE01EEUSWS+tyg=;
+        b=GasikVqrJktaOYlx370eaM9zq74Oi//j4eAfMYZfW5fKGW8bYlhrEfJCqe0D7klKke
+         RZZ6pUnH/ZYjnd00+jXuzzlG1NenMBImzkYnO9OrTGsr6dXNLyVTguFsIMfc02SFiR8S
+         8oFFXmD2HPzM4f3MQlomohcIkSbV7lh26Rb8MwsnoZJ7SZbnDxCBqPXCun9U5xsRKeZf
+         iWlQkoMIwsT87zNxzmxUxvDVrD5FjqAr6HOyUjNUT1SOxxcWRnTHR5a3ync85S8hDOsO
+         EQI7zW+BidPh9CU42K4oaX8ILl/7SjMVG4KA/flD4Ow7OXjK8rvsqQryK8OYlsSKbxLR
+         krQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711133012; x=1711737812;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=07q//JdJmCCvVOn8q/irpx1t9tAUng9qf5/QnHEsi64=;
-        b=fuNCIcuNgPa0mmAebuAvm4FUobGc7AzgRijZdVHBy6OkCfUA3AdFHUswLQTFsq5X5i
-         7gystsHqwVhGT+hQfs4rbkiZQWMtmWUM1ObwBkGIypCgMaGdenSwDHoVrilj90ClBnLA
-         mXgiauy6Xmk7iLqVpDoqq/fphwmYf+1lgxerCFHYp+9D0G3bBe0ff0whrbsAYM06HkB2
-         kGfPSiIvXOP5vIAX3Lf80ZKgUlV1a73TFYDnMce/QMjQ9TqPPDhk+ot8qne7iCHXkjCr
-         a2N/qjA9Lt3WsStFxwQywvIgZ97POVtC9i8Uq+Fvof7SZLg6c9y/jg8zZIlG9ZQKv0Lr
-         tHoQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU8LnSx+qjOoT/hfq8Q5WpyeJlZqRvW25rwrGWRGbMzaLpnY1In4fx2/kFY/+icX0BKB79c8VvN9zo/loqaipLP+DoCfaE=
-X-Gm-Message-State: AOJu0YwtKeduNTMKXs9ZdaVorgTXXtS4TsqOW4EwgcMyKs+934yrFSbi
-	/iIklfIIZcQXwPJ8jc4w28SrFRZEh7vdDKUx6xQj6AkwWTQniAzVioiJcODhDBE=
-X-Google-Smtp-Source: AGHT+IGXOk5dcQgdVkv6EYgSp4tZ+XXQ52Ta863vabfcwug61wLkQ0Ayg5iISSk/K2qeTKcn+PXm/w==
-X-Received: by 2002:a05:6214:21ab:b0:690:3ca2:1858 with SMTP id t11-20020a05621421ab00b006903ca21858mr295314qvc.4.1711133011811;
-        Fri, 22 Mar 2024 11:43:31 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id n13-20020a0cfbcd000000b00696731ceef6sm435222qvp.2.2024.03.22.11.43.31
+        d=1e100.net; s=20230601; t=1711134435; x=1711739235;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=LYZVGNnxMtJXmO/rMtm5YPA7SokYhXE01EEUSWS+tyg=;
+        b=p9IUyQruR9mgBAQjh2nT4JC2j5c1ajUelQtUoYtEDuG6xz3Ef1XjQvZgi6w3dfzxVb
+         joY3B5tyx0Tcs4oScQEFqRvCroduXN8hoZqdp1zb0rtGa27LyZgQAhiojhs5AM32RvHL
+         r8KM6u0ysMEMig7O1+bOWTO1mjkGuuDkxXQslAF09Jvnw4NSN6TnRvnQU39v3ku+jAfN
+         b8CidcDP9cH7ipH6/UkckRR0i9kvrg2kVJou/uMMlse3sGMeQ0+G/hEZraxlBRhAF8Py
+         mNK3EYl/1ZG4AvgN0fsk0YuRLpUSHfskChqYESSO1KgqcTBbPBd424O5cPDyXpeWX6F+
+         Xo9w==
+X-Gm-Message-State: AOJu0Yw/bOekSrbTtIAR7A6RGwvfQ++kk1QadZGgW8sivXDHqz6t4gT/
+	m5u0h5RPSWhFUFMWUBWf0MIuFvht43XaDeZotIWnFey0nMPkKhExbn9ymBFw/g==
+X-Google-Smtp-Source: AGHT+IHNc62m491wU+HcWk/9byQ0VfDf2/ltTaBrjP1Nag9akn0HzUFm/eSmTJ1AFlgyZ9X7wmhRpA==
+X-Received: by 2002:a05:600c:1d22:b0:414:76df:2d42 with SMTP id l34-20020a05600c1d2200b0041476df2d42mr414216wms.4.1711134434744;
+        Fri, 22 Mar 2024 12:07:14 -0700 (PDT)
+Received: from google.com (180.232.140.34.bc.googleusercontent.com. [34.140.232.180])
+        by smtp.gmail.com with ESMTPSA id u12-20020a056000038c00b0033e456f6e7csm2773566wrf.1.2024.03.22.12.07.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Mar 2024 11:43:31 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rnjrW-00Cg1F-Pb;
-	Fri, 22 Mar 2024 15:43:30 -0300
-Date: Fri, 22 Mar 2024 15:43:30 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
-	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Bart Van Assche <bvanassche@acm.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Amir Goldstein <amir73il@gmail.com>,
-	"josef@toxicpanda.com" <josef@toxicpanda.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	"daniel@iogearbox.net" <daniel@iogearbox.net>,
-	Dan Williams <dan.j.williams@intel.com>,
-	"jack@suse.com" <jack@suse.com>, Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two steps
-Message-ID: <20240322184330.GL66976@ziepe.ca>
-References: <20240306174456.GO9225@ziepe.ca>
- <20240306221400.GA8663@lst.de>
- <20240307000036.GP9225@ziepe.ca>
- <20240307150505.GA28978@lst.de>
- <20240307210116.GQ9225@ziepe.ca>
- <20240308164920.GA17991@lst.de>
- <20240308202342.GZ9225@ziepe.ca>
- <20240309161418.GA27113@lst.de>
- <20240319153620.GB66976@ziepe.ca>
- <20240321223910.GA22663@lst.de>
+        Fri, 22 Mar 2024 12:07:14 -0700 (PDT)
+Date: Fri, 22 Mar 2024 19:07:10 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v5 08/27] iommu/arm-smmu-v3: Move allocation of the
+ cdtable into arm_smmu_get_cd_ptr()
+Message-ID: <Zf3W3lo8dXZuKbgm@google.com>
+References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+ <8-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240321223910.GA22663@lst.de>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <8-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
 
-On Thu, Mar 21, 2024 at 11:39:10PM +0100, Christoph Hellwig wrote:
-> On Tue, Mar 19, 2024 at 12:36:20PM -0300, Jason Gunthorpe wrote:
-> > I kind of understand your thinking on the DMA side, but I don't see
-> > how this is good for users of the API beyond BIO.
-> > 
-> > How will this make RDMA better? We have one MR, the MR has pages, the
-> > HW doesn't care about the SW distinction of p2p, swiotlb, direct,
-> > encrypted, iommu, etc. It needs to create one HW page list for
-> > whatever user VA range was given.
+Hi Jason,
+
+On Mon, Mar 04, 2024 at 07:43:56PM -0400, Jason Gunthorpe wrote:
+> No reason to force callers to do two steps. Make arm_smmu_get_cd_ptr()
+> able to return an entry in all cases except OOM
+
+I believe the current code is more clear, as it is explicit about which path
+is expected to allocate.
+
+As there are many callers for arm_smmu_get_cd_ptr() directly and indirectly,
+and it read-modify-writes the cdtable, it would be a pain to debug not
+knowing which one could allocate, and this patch only abstracts one
+allocating call, so it is not much code less.
+
+For example, (again I don’t know much about SVA) I think there might be a
+race condition as follows:
+arm_smmu_attach_dev
+	arm_smmu_domain_finalise() => set domain stage
+	[....]
+	arm_smmu_get_cd_ptr() => RMW master->cd_table
+
+arm_smmu_sva_set_dev_pasid
+	__arm_smmu_sva_bind
+		Check stage is valid
+		[...]
+		arm_smmu_write_ctx_desc
+			arm_smmu_get_cd_ptr => RMW master->cd_table
+
+If this path is true though, I guess the in current code, we would need some
+barriers in arm_smmu_get_cd_ptr(), arm_smmu_get_cd_ptr()
+
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 > 
-> Well, the hardware (as in the PCIe card) never cares.  But the setup
-> path for the IOMMU does, and something in the OS needs to know about
-> it.  So unless we want to stash away a 'is this P2P' flag in every
-> page / SG entry / bvec, or a do a lookup to find that out for each
-> of them we need to manage chunks at these boundaries.  And that's
-> what I'm proposing.
-
-Okay, if we look at the struct-page-less world (which we want for
-DMABUF) then we need to keep track for sure. What I had drafted was to
-keep track in the new "per-SG entry" because that seemed easiest to
-migrate existing code into.
-
-Though the datastructure could also be written to be a list of uniform
-memory types and then a list of SG entries. (more like how bio is
-organized)
-
-No idea right now which is better, and I'm happy make it go either
-way.
-
-But Leon's series is not quite getting to this, it it still struct
-page based and struct page itself has all the metadata - though as you
-say it is a bit expensive to access.
-
-> > Or worse, whatever thing is inside a DMABUF from a DRM
-> > driver. DMABUF's can have a (dynamic!) mixture of P2P and regular
-> > AFAIK based on the GPU's migration behavior.
-> 
-> And that's fine.  We just need to track it efficiently.
-
-Right, DMABUF/etc will return a something that has a list of physical
-addresses and some meta-data to indicate the "p2p memory provider" for
-the P2P part.
-
-Perhaps it could be as simple as 1 bit in the physical address/length
-and a global "P2P memory provider" pointer for the entire DMA
-BUF. Unclear to me right now, but sure.
-
-> > Or triple worse, ODP can dynamically change on a page by page basis
-> > the type depending on what hmm_range_fault() returns.
-> 
-> Same.  If this changes all the time you need to track it.  And we
-> should find a way to shared the code if we have multiple users for it.
-
-ODP (for at least the forseeable furture) is simpler because it is
-always struct page based so we don't need more metadata if we pay the
-cost to reach into the struct page. I suspect that is the right trade
-off for hmm_range_fault users.
-
-> But most DMA API consumers will never see P2P, and when they see it
-> it will be static.  So don't build the DMA API to automically do
-> the (not exactly super cheap) checks and add complexity for it.
-
-Okay, I think I get what you'd like to see.
-
-If we are going to make caller provided uniformity a requirement, lets
-imagine a formal memory type idea to help keep this a little
-abstracted?
-
- DMA_MEMORY_TYPE_NORMAL
- DMA_MEMORY_TYPE_P2P_NOT_ACS
- DMA_MEMORY_TYPE_ENCRYPTED
- DMA_MEMORY_TYPE_BOUNCE_BUFFER  // ??
-
-Then maybe the driver flow looks like:
-
-	if (transaction.memory_type == DMA_MEMORY_TYPE_NORMAL && dma_api_has_iommu(dev)) {
-		struct dma_api_iommu_state state;
-
-		dma_api_iommu_start(&state, transaction.num_pages);
-		for_each_range(transaction, range)
-			dma_api_iommu_map_range(&state, range.start_page, range.length);
-		num_hwsgls = 1;
-		hwsgl.addr = state.iova;
-		hwsgl.length = transaction.length
-		dma_api_iommu_batch_done(&state);
-	} else if (transaction.memory_type == DMA_MEMORY_TYPE_P2P_NOT_ACS) {
-		num_hwsgls = transcation.num_sgls;
-		for_each_range(transaction, range) {
-			hwsgl[i].addr = dma_api_p2p_not_acs_map(range.start_physical, range.length, p2p_memory_provider);
-			hwsgl[i].len = range.size;
-		}
-	} else {
-		/* Must be DMA_MEMORY_TYPE_NORMAL, DMA_MEMORY_TYPE_ENCRYPTED, DMA_MEMORY_TYPE_BOUNCE_BUFFER? */
-		num_hwsgls = transcation.num_sgls;
-		for_each_range(transaction, range) {
-			hwsgl[i].addr = dma_api_map_cpu_page(range.start_page, range.length);
-			hwsgl[i].len = range.size;
-		}
-	}
-
-And the hmm_range_fault case is sort of like:
-
-		struct dma_api_iommu_state state;
-		dma_api_iommu_start(&state, mr.num_pages);
-
-		[..]
-		hmm_range_fault(...)
-		if (present)
-			dma_link_page(&state, faulting_address_offset, page);
-		else
-			dma_unlink_page(&state, faulting_address_offset, page);
-
-Is this looking closer?
-
-> > So I take it as a requirement that RDMA MUST make single MR's out of a
-> > hodgepodge of page types. RDMA MRs cannot be split. Multiple MR's are
-> > not a functional replacement for a single MR.
-> 
-> But MRs consolidate multiple dma addresses anyway.
-
-I'm not sure I understand this?
- 
-> > Go back to the start of what are we trying to do here:
-> >  1) Make a DMA API that can support hmm_range_fault() users in a
-> >     sensible and performant way
-> >  2) Make a DMA API that can support RDMA MR's backed by DMABUF's, and
-> >     user VA's without restriction
-> >  3) Allow to remove scatterlist from BIO paths
-> >  4) Provide a DMABUF API that is not scatterlist that can feed into
-> >     the new DMA API - again supporting DMABUF's hodgepodge of types.
-> > 
-> > I'd like to do all of these things. I know 3 is your highest priority,
-> > but it is my lowest :)
-> 
-> Well, 3 an 4.  And 3 is not just limited to bio, but all the other
-> pointless scatterlist uses.
-
-Well, I didn't write a '5) remove all the other pointless scatterlist
-case' :)
-
-Anyhow, I think we all agree on the high level objective, we just need
-to get to an API that fuses all of these goals together.
-
-To go back to my main thesis - I would like a high performance low
-level DMA API that is capable enough that it could implement
-scatterlist dma_map_sg() and thus also implement any future
-scatterlist_v2, bio, hmm_range_fault or any other thing we come up
-with on top of it. This is broadly what I thought we agreed to at LSF
-last year.
-
-Jason
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index e25dbb982feeee..2dd6cb17112e98 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -106,6 +106,7 @@ static struct arm_smmu_option_prop arm_smmu_options[] = {
+>  
+>  static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
+>  				    struct arm_smmu_device *smmu);
+> +static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master);
+>  
+>  static void parse_driver_options(struct arm_smmu_device *smmu)
+>  {
+> @@ -1231,6 +1232,11 @@ struct arm_smmu_cd *arm_smmu_get_cd_ptr(struct arm_smmu_master *master,
+>  	struct arm_smmu_device *smmu = master->smmu;
+>  	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
+>  
+> +	if (!master->cd_table.cdtab) {
+> +		if (arm_smmu_alloc_cd_tables(master))
+> +			return NULL;
+> +	}
+> +
+>  	if (cd_table->s1fmt == STRTAB_STE_0_S1FMT_LINEAR)
+>  		return (struct arm_smmu_cd *)(cd_table->cdtab +
+>  					      ssid * CTXDESC_CD_DWORDS);
+> @@ -2719,12 +2725,6 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  		struct arm_smmu_cd target_cd;
+>  		struct arm_smmu_cd *cdptr;
+>  
+> -		if (!master->cd_table.cdtab) {
+> -			ret = arm_smmu_alloc_cd_tables(master);
+> -			if (ret)
+> -				goto out_list_del;
+> -		}
+> -
+>  		cdptr = arm_smmu_get_cd_ptr(master, IOMMU_NO_PASID);
+>  		if (!cdptr) {
+>  			ret = -ENOMEM;
+> -- 
+> 2.43.2
+>
+Thanks,
+Mostafa
