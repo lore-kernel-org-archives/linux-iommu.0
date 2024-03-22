@@ -1,228 +1,162 @@
-Received: from frasgout11.his.huawei.com (frasgout11.his.huawei.com [14.137.139.23])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com [209.85.217.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73E3638DDD
-	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 10:29:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=14.137.139.23
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A94F4E1DD
+	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 14:57:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711103387; cv=none; b=AdtEUilhXDyvGeaTFU4RX8Tx/prIu4wdyOaLCqfaVfT2YcmFhyYGIUNLploQ01vlVkZBxQjfa5ZPAJ8lshEbvYfP9HyW7luUkZ0rKwqY2BxZqrahuPvPfzI8DDBAq+iTZfC5XAM1/p31Gij79EdoKLoIrM+7o9NN86MenzT+Z14=
+	t=1711119437; cv=none; b=Cwq/1J2R5aEia8kUCATsS+mKZlEQtwcyjcpcW8LjbaJXZQAJG8C8NhxidZ64BgaOx+04C50kU8Jc/GRxT2zitBC6nNeyhH/cgQy+5VebKog8IWKK+dknOks+LrNHhesTVg/M7ur+tfBYeNHkV+0TS32LE2WFQcp2wcwO3xsLANc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711103387; c=relaxed/simple;
-	bh=TzuZKg4wTSaypun8Dhv4hpmvRrycXdOakEwS2qR1tPA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=N7xvMq5B2/LC8yj9dcMzf/n7jYec9LIMEYkKveWzxjc20GTffEEh4ojVLi9QV/TGBopAWzo5BKapAG8vEi3Q/UbmtmeQC0ZfOPuJ9uOk2fVwuIfPckvH+hhI5tHZc8OgF3zopx+z+3snQUX5qtG2z5aCzsWV+saPQB/K+ldD1Jo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com; spf=pass smtp.mailfrom=huaweicloud.com; arc=none smtp.client-ip=14.137.139.23
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huaweicloud.com
-Received: from mail.maildlp.com (unknown [172.18.186.51])
-	by frasgout11.his.huawei.com (SkyGuard) with ESMTP id 4V1J7m751gz9xFQY
-	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 18:13:40 +0800 (CST)
-Received: from mail02.huawei.com (unknown [7.182.16.47])
-	by mail.maildlp.com (Postfix) with ESMTP id 2CF3014037E
-	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 18:29:36 +0800 (CST)
-Received: from [10.48.131.63] (unknown [10.48.131.63])
-	by APP1 (Coremail) with SMTP id LxC2BwB3bheFXf1lrYTJBA--.54462S2;
-	Fri, 22 Mar 2024 11:29:35 +0100 (CET)
-Message-ID: <7287376a-f2d8-4f7a-84b8-1f445ae69968@huaweicloud.com>
-Date: Fri, 22 Mar 2024 11:29:21 +0100
+	s=arc-20240116; t=1711119437; c=relaxed/simple;
+	bh=o3JhQ0qHV6zswN/4yjEibtmn3jJU5IgKzMreC96p6CA=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=YKShhoFj6uHB3Dg4CQ3LzCh5adhqDm0BzUrtwGf7drr0uiQ7g+vkempOOZhjE9DzO4I6Zo1gVTvp1awtvHB/1+hHxy2Fo49x2xxRwdOQ2UfTTUMiKOBmqfRS0HY9TLklM/++Z3ccW0L195sxG0NjJTOchd6KxbpIkl4a5pawTqc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ndufresne.ca; spf=none smtp.mailfrom=ndufresne.ca; dkim=pass (2048-bit key) header.d=ndufresne-ca.20230601.gappssmtp.com header.i=@ndufresne-ca.20230601.gappssmtp.com header.b=vnohXErv; arc=none smtp.client-ip=209.85.217.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ndufresne.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ndufresne.ca
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=ndufresne-ca.20230601.gappssmtp.com header.i=@ndufresne-ca.20230601.gappssmtp.com header.b="vnohXErv"
+Received: by mail-vs1-f51.google.com with SMTP id ada2fe7eead31-4765c5905a8so800701137.0
+        for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 07:57:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ndufresne-ca.20230601.gappssmtp.com; s=20230601; t=1711119434; x=1711724234; darn=lists.linux.dev;
+        h=mime-version:user-agent:content-transfer-encoding:autocrypt
+         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ZorJDZHV3S35zuqaxSThGm8XOeoTPpTjb5tz8dN4eJI=;
+        b=vnohXErvbRTFxGcvKSHcS+oF4F1l5jxTpMOK/waH8+elD80s7/TuaRZ/5IVczZR9hh
+         NzTFfbwZjqgBaQDwO/9uaE586R0D5UG0YnraBNCL1pq76EtGGOBUujI8Mnlul2m7u3bw
+         bA8fM98rr5VCpBh5iytLfvgcARX8Kx2C/JZ/dVRmli+5TV0zzT2xfw/Bbwl4Xoarx+RZ
+         DvgEmvV8OZ3Oo5l3oHc+9aHVPN+Lju9ioUR/+tQ27saD6Y3XOY9m/UNFjgrJXPX2M0xX
+         XeS+YYZqOJaMeXZR8kxshUWwTWD7OWcibUj18LMXGDVY5NQtwShlp690hp9VwQKV1zo4
+         eh4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711119434; x=1711724234;
+        h=mime-version:user-agent:content-transfer-encoding:autocrypt
+         :references:in-reply-to:date:cc:to:from:subject:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ZorJDZHV3S35zuqaxSThGm8XOeoTPpTjb5tz8dN4eJI=;
+        b=P4zvluAhla15HyurZRmvIa0pb9g6hL/yqGmviN1mTtg7Z+QCd/ojZc2wgGyVn0jGR5
+         z2pMBzMETYkwGC8jQizvjxPwijZwgRNTexp9yU5yRhJ4+G3+Kv3AIbVU2G7GMyc1cXQg
+         Tq3rItyR4XNDsg/XjmLyAAQGxVzzqLl4RgTYYOXfslSsY8a4IkPQzrXIEx/1PZLlumlN
+         K71TbFb7AxGeYeIxzrzFIHWP2vB69rL+9rPQDWXbV7Rt/+3GHYTXRf7pio60UGO0R9QR
+         fsv5wef3nT6G2LhSkzuoPvl9yIVh6IPbE872PAza1660pwtqznzq5QInzIqyxxCQcFcy
+         MBAw==
+X-Forwarded-Encrypted: i=1; AJvYcCUkyu9mPVndwc90+ryPw1JgnBM8Heb7HN/UNiF0hsF9VcOsJ8X9PN+eDcuAYL7D8PFcGf/7rD8sozR5qlzJXW1w8bHfxL0=
+X-Gm-Message-State: AOJu0Yy6xamnyFruNasMYx3OaYGEwvhgrNREm9jckyhbFMMxMKVaEsy+
+	60yDfSYEDBzJdjSr9W4Ufq6GUHDgztUQf01F7QcOTwHOHiDFmxM1lC2niodDAWQ=
+X-Google-Smtp-Source: AGHT+IF7KOamQ/ZSV2W2kGIMahMBrt6DfYcXh8dFA2yNq70TGAUvTUROE3goyGZT3KN/zY040q01ew==
+X-Received: by 2002:a05:6102:1789:b0:476:577f:aad8 with SMTP id je9-20020a056102178900b00476577faad8mr2952736vsb.14.1711119434492;
+        Fri, 22 Mar 2024 07:57:14 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain ([2606:6d00:10:d05::7a9])
+        by smtp.gmail.com with ESMTPSA id e10-20020a37db0a000000b00789fc91dcf1sm816098qki.87.2024.03.22.07.57.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Mar 2024 07:57:14 -0700 (PDT)
+Message-ID: <f490bd15fd8ee36cd3e759483bbcfb3288cace74.camel@ndufresne.ca>
+Subject: Re: [PATCH 2/4] media: dt-binding: media: Document
+ =?UTF-8?Q?rk3588=E2=80=99s?= vepu121
+From: Nicolas Dufresne <nicolas@ndufresne.ca>
+To: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>, Emmanuel Gil Peyrot
+ <linkmauve@linkmauve.fr>, linux-kernel@vger.kernel.org, Krzysztof Kozlowski
+ <krzysztof.kozlowski@linaro.org>
+Cc: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Mauro Carvalho Chehab <mchehab@kernel.org>, Rob
+ Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, Sebastian Reichel
+ <sebastian.reichel@collabora.com>, Cristian Ciocaltea
+ <cristian.ciocaltea@collabora.com>, Dragan Simic <dsimic@manjaro.org>, 
+ Shreeya Patel <shreeya.patel@collabora.com>, Chris Morgan
+ <macromorgan@hotmail.com>, Andy Yan <andy.yan@rock-chips.com>, Nicolas
+ Frattaroli <frattaroli.nicolas@gmail.com>,  linux-media@vger.kernel.org,
+ linux-rockchip@lists.infradead.org,  devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,  iommu@lists.linux.dev
+Date: Fri, 22 Mar 2024 10:57:12 -0400
+In-Reply-To: <2798331.BEx9A2HvPv@diego>
+References: <20240320173736.2720778-1-linkmauve@linkmauve.fr>
+	 <855507987.0ifERbkFSE@diego>
+	 <70439a01-7949-46bf-a701-c82ba961171a@linaro.org>
+	 <2798331.BEx9A2HvPv@diego>
+Autocrypt: addr=nicolas@ndufresne.ca; prefer-encrypt=mutual; keydata=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
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.50.4 (3.50.4-1.fc39) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/2] swiotlb: extend buffer pre-padding to
- alloc_align_mask if necessary
-To: Michael Kelley <mhklinux@outlook.com>, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>,
- Petr Tesarik <petr.tesarik1@huawei-partners.com>,
- Will Deacon <will@kernel.org>, open list <linux-kernel@vger.kernel.org>,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
-Cc: Roberto Sassu <roberto.sassu@huaweicloud.com>,
- Petr Tesarik <petr@tesarici.cz>
-References: <20240321171902.85-1-petrtesarik@huaweicloud.com>
- <20240321171902.85-2-petrtesarik@huaweicloud.com>
- <SN6PR02MB4157AC19CFB8B800EA9748B3D4312@SN6PR02MB4157.namprd02.prod.outlook.com>
-Content-Language: en-US
-From: Petr Tesarik <petrtesarik@huaweicloud.com>
-In-Reply-To: <SN6PR02MB4157AC19CFB8B800EA9748B3D4312@SN6PR02MB4157.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID:LxC2BwB3bheFXf1lrYTJBA--.54462S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3WF17Jr1rXry5JFW8Aw4rGrg_yoWxCr45pr
-	WfJa1rKFWkJFyxCan29a18JF1S9w1kCrW7CF43KFyY9ryDXr1rWF98A3yYga4Sqr4v9FW2
-	v3WF9r4xu3W7XrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUkC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-	rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-	1l84ACjcxK6xIIjxv20xvE14v26r1j6r1xM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r1j
-	6r4UM28EF7xvwVC2z280aVAFwI0_Gr0_Cr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r4j6r
-	4UJwAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-	I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-	4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kI
-	c2xKxwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
-	v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkG
-	c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
-	0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_
-	Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UU
-	UUU
-X-CM-SenderInfo: hshw23xhvd2x3n6k3tpzhluzxrxghudrp/
 
-On 3/22/2024 5:29 AM, Michael Kelley wrote:
-> From: Petr Tesarik <petrtesarik@huaweicloud.com> Sent: Thursday, March 21, 2024 10:19 AM
->>
->> Allow a buffer pre-padding of up to alloc_align_mask. If the allocation
->> alignment is bigger than IO_TLB_SIZE and min_align_mask covers any non-zero
->> bits in the original address between IO_TLB_SIZE and alloc_align_mask,
->> these bits are not preserved in the swiotlb buffer address.
->>
->> To fix this case, increase the allocation size and use a larger offset
->> within the allocated buffer. As a result, extra padding slots may be
->> allocated before the mapping start address.
->>
->> Leave orig_addr in these padding slots initialized to INVALID_PHYS_ADDR.
->> These slots do not correspond to any CPU buffer, so attempts to sync the
->> data should be ignored.
->>
->> The padding slots should be automatically released when the buffer is
->> unmapped. However, swiotlb_tbl_unmap_single() takes only the address of the
->> DMA buffer slot, not the first padding slot. Save the number of padding
->> slots in struct io_tlb_slot and use it to adjust the slot index in
->> swiotlb_release_slots(), so all allocated slots are properly freed.
->>
->> Fixes: 2fd4fa5d3fb5 ("swiotlb: Fix alignment checks when both allocation and DMA masks are present")
->> Link: https://lore.kernel.org/linux-iommu/20240311210507.217daf8b@meshulam.tesarici.cz/
->> Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
->> ---
->>  kernel/dma/swiotlb.c | 35 +++++++++++++++++++++++++++++------
->>  1 file changed, 29 insertions(+), 6 deletions(-)
->>
->> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
->> index 86fe172b5958..3779a48eec9b 100644
->> --- a/kernel/dma/swiotlb.c
->> +++ b/kernel/dma/swiotlb.c
->> @@ -69,11 +69,14 @@
->>   * @alloc_size:	Size of the allocated buffer.
->>   * @list:	The free list describing the number of free entries available
->>   *		from each index.
->> + * @pad_slots:	Number of preceding padding slots. Valid only in the first
->> + *		allocated non-padding slot.
->>   */
->>  struct io_tlb_slot {
->>  	phys_addr_t orig_addr;
->>  	size_t alloc_size;
->> -	unsigned int list;
->> +	unsigned short list;
->> +	unsigned short pad_slots;
->>  };
->>
->>  static bool swiotlb_force_bounce;
->> @@ -287,6 +290,7 @@ static void swiotlb_init_io_tlb_pool(struct io_tlb_pool *mem, phys_addr_t start,
->>  					 mem->nslabs - i);
->>  		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
->>  		mem->slots[i].alloc_size = 0;
->> +		mem->slots[i].pad_slots = 0;
->>  	}
->>
->>  	memset(vaddr, 0, bytes);
->> @@ -1328,11 +1332,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
->>  		unsigned long attrs)
->>  {
->>  	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
->> -	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
->> +	unsigned int offset;
->>  	struct io_tlb_pool *pool;
->>  	unsigned int i;
->>  	int index;
->>  	phys_addr_t tlb_addr;
->> +	unsigned short pad_slots;
->>
->>  	if (!mem || !mem->nslabs) {
->>  		dev_warn_ratelimited(dev,
->> @@ -1349,6 +1354,15 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
->>  		return (phys_addr_t)DMA_MAPPING_ERROR;
->>  	}
->>
->> +	/*
->> +	 * Calculate buffer pre-padding within the allocated space. Use it to
->> +	 * preserve the low bits of the original address according to device's
->> +	 * min_align_mask. Limit the padding to alloc_align_mask or slot size
->> +	 * (whichever is bigger); higher bits of the original address are
->> +	 * preserved by selecting a suitable IO TLB slot.
->> +	 */
->> +	offset = orig_addr & dma_get_min_align_mask(dev) &
->> +		(alloc_align_mask | (IO_TLB_SIZE - 1));
->>  	index = swiotlb_find_slots(dev, orig_addr,
->>  				   alloc_size + offset, alloc_align_mask, &pool);
->>  	if (index == -1) {
->> @@ -1364,6 +1378,10 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
->>  	 * This is needed when we sync the memory.  Then we sync the buffer if
->>  	 * needed.
->>  	 */
->> +	pad_slots = offset / IO_TLB_SIZE;
->> +	offset %= IO_TLB_SIZE;
->> +	index += pad_slots;
->> +	pool->slots[index].pad_slots = pad_slots;
->>  	for (i = 0; i < nr_slots(alloc_size + offset); i++)
->>  		pool->slots[index + i].orig_addr = slot_addr(orig_addr, i);
->>  	tlb_addr = slot_addr(pool->start, index) + offset;
->> @@ -1385,12 +1403,16 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
->>  	struct io_tlb_pool *mem = swiotlb_find_pool(dev, tlb_addr);
->>  	unsigned long flags;
->>  	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
->> -	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
->> -	int nslots = nr_slots(mem->slots[index].alloc_size + offset);
->> -	int aindex = index / mem->area_nslabs;
->> -	struct io_tlb_area *area = &mem->areas[aindex];
->> +	int index, nslots, aindex;
->> +	struct io_tlb_area *area;
->>  	int count, i;
->>
->> +	index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
->> +	index -= mem->slots[index].pad_slots;
->> +	nslots = nr_slots(mem->slots[index].alloc_size + offset);
->> +	aindex = index / mem->area_nslabs;
->> +	area = &mem->areas[aindex];
->> +
->>  	/*
->>  	 * Return the buffer to the free list by setting the corresponding
->>  	 * entries to indicate the number of contiguous entries available.
->> @@ -1413,6 +1435,7 @@ static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
->>  		mem->slots[i].list = ++count;
->>  		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
->>  		mem->slots[i].alloc_size = 0;
->> +		mem->slots[i].pad_slots = 0;
->>  	}
->>
->>  	/*
->> --
->> 2.34.1
-> 
-> I've tested this patch in conjunction with Will's series of 6 patches, and
-> all looks good.  I tested on x86/x64 w/4K page size and on arm64
-> w/64K page size and a variety of min_align_mask values, alloc_align_mask
-> values, mapping size values, and orig_addr low order bits.  The tests are
-> doing disk I/O through the bounce buffers, and they verify that the data
-> written can be read back correctly.  So the bouncing is working correctly
-> with the slots that are being set up.
-> 
-> I'm not able to test with min_align_mask less than 4K, because my
-> synthetic disk driver doesn't work if that alignment isn't maintained.
-> But min_align_mask values of 8K, 16K, and 64K work correctly.  I've
-> seen up to 5 padding slots be allocated.
+Le jeudi 21 mars 2024 =C3=A0 10:32 +0100, Heiko St=C3=BCbner a =C3=A9crit=
+=C2=A0:
+> Am Donnerstag, 21. M=C3=A4rz 2024, 10:19:54 CET schrieb Krzysztof Kozlows=
+ki:
+> > On 21/03/2024 09:47, Heiko St=C3=BCbner wrote:
+> > > > >      enum:
+> > > > >        - rockchip,rk3568-vepu
+> > > > > +      - rockchip,rk3588-vepu121
+> > > >=20
+> > > > What is 121?
+> > >=20
+> > > That is the strange naming of the ip block inside the soc.
+> > >=20
+> > > I.e. the rk3588 TRM lists a number of different video encoders and de=
+coders:
+> > > - VDPU121 is decoding h.263 and mpeg1,2,4
+> > > - VDPU381 is decoding h.265, h.264 and some more
+> > > - VDPU720 is decoding jpeg
+> > > - VDPU981 decodes AV1
+> > > - VEPU121 is the jpeg encoder above
+> > > - VEPU580 encodes h.264 and h.265
+> > >=20
+> > > Each of those are separate IP blocks with their own io-memory, their =
+own
+> > > interrupts and their own iommus, etc.
+> >=20
+> > Thanks for explanation. Short introduction in commit msg would be nice
+> > (e.g. VEPU121, one of two VEPU encoders). OTOH, why not documenting all
+> > of them? Bindings are supposed to be as complete as possible.
+>=20
+> We have a concurrent series for the vdpu121 running at
+>   https://lore.kernel.org/all/20240316071100.2419369-1-liujianfeng1994@gm=
+ail.com
+>=20
+> I think not all of those encoders/decoders are based on the Hantro IP
+> or at least at the moment we don't know this yet.
+> Hence people adding compatibles for the blocks they have actually
+> managed to run on their hardware.
 
-Thank you for this extensive testing. Just wow!
+Correct, on top of this legacy core, only VDPU981 (AV1 decode) is a chip fr=
+om
+Hantro / Verisilicon. Everything else looks like their own design and deriv=
+ed
+from their original rkvdec codec pack. We didn't name this AV1 decoder afte=
+r VSI
+brand as we didn't have the proper version information available, but we su=
+spect
+that is variant of their VSI9000D cores. In short, we tried to avoid docume=
+nting
+our speculation, even if we believe we are right.
 
-> I have not tried any 32-bit builds.
+>=20
+> Bindings are supposed to be as complete as possible, but revising a wrong
+> binding later is very hard. And the whole media part is full of binary li=
+braries
+> in the vendor kernel and has not the best documentation.
 
-I have at least tried my KUnit test with --arch=arm, and that passes all
-tests. But I agree it doesn't prove much.
+I agree with this, but I must give to RK that despite the lack of documenta=
+tion,
+their CODEC software is fully open-source and blob free on this platform.
 
-Petr T
+>=20
+> So I guess people are just cautious ;-)
+>=20
 
-> Overall, it looks solid to me.
-> 
-> Tested-by: Michael Kelley <mhklinux@outlook.com>
-> Reviewed-by: Michael Kelley <mhklinux@outlook.com>
+exactly!
+
+Nicolas
 
