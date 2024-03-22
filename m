@@ -1,335 +1,274 @@
-Received: from mail-yb1-f177.google.com (mail-yb1-f177.google.com [209.85.219.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10olkn2091.outbound.protection.outlook.com [40.92.40.91])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A8CC2FB6
-	for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 22:47:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.177
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711061281; cv=none; b=k9ROGdadd+WM+kJ6T1FR1k8aHqubBZXqP+3tYGhQiE5GPcIUihMgp9aGd37JYrfg9NBSuSVyF45yPC2Uq6YdGdnSSMrC1GT8rrB9aMFCdtS3RkhYrNMxv+rkW3HiKqaz5T2ltWdPAGLReCLJs7DanNM0EwBuBAzROW40F8fPRH0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711061281; c=relaxed/simple;
-	bh=EwwVucOL3SWalyTW56zmelV6w60sbsIsKcfCIBixIWA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MDWT+AL4THzpljyiIJmLVI1iiU5iM6PhdnUOcAmcSydUxH1DI3gzgxCEQsJUxnABYOb7wu+zAgGxM9V2F1isROukvPVI3x+6SWcEnE1kaPjicXMZ9h4Y7u33uYOjYDBhriOlnXLvp6lintsbft5u4VkGQmfbxIq+SMZ3byOAVAg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=rTl4hZ7b; arc=none smtp.client-ip=209.85.219.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB9476FB0
+	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 04:29:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.40.91
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711081762; cv=fail; b=ZA34x1NEkqxeXjB0vqcl66SFR9gQ7H4OUtnhtHmi0zGG2138kyC2ohWRn2QgsNE7I1K96PIg2WwuA6JcJDSTMp26AQ8JsXe+WF0NrAPSAJiePl1nkoIFxXZ5jZfTE36ChPYC+a//AeXtUsjQXEZMGedCunhoogbErg1E1oZSDNM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711081762; c=relaxed/simple;
+	bh=bPXt9RIpZzHLpbkh8EfFb+GK7PNGvG1iChEs/o1SvhI=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=Hra3Ck6io1dZJ6QF4D5DB5+OF3vdwRAmkdnobuwYXZQjDodcWCAHbWdvskIbFvJEQ0ExS/FhyMieFj+TZpr0ouYtnaDJLRqodS5KDQq6E29i1dgWSG5aonMalSOD58raZA2LJLR4Go8gy9JSMdwM1NIh/vm4KP4uBk/QM0kk2eo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=mY41arhE; arc=fail smtp.client-ip=40.92.40.91
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="rTl4hZ7b"
-Received: by mail-yb1-f177.google.com with SMTP id 3f1490d57ef6-dcd7c526cc0so1615815276.1
-        for <iommu@lists.linux.dev>; Thu, 21 Mar 2024 15:47:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1711061278; x=1711666078; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pZUn+CabKddPK7NEf/S7R2Utterh/ASXmWz24mderPg=;
-        b=rTl4hZ7b+c1DupgFjRaFhNsDUrqr/9aj1MMHNib/Yaz4Wy+jZq4WYvhcbyvpCW7E2h
-         j3FpGyX/dsECpcS4u7UIRdlKr/yYeOk+PI/pDpIKzbDYh/mw5hU3UwknuxGCIubcTNy8
-         TxphqPK20r03audx1KbthLz6bcoI70fstDMzg40Xo1T8aUsfr/EtPmfxlBY6m1vvI2Hn
-         5VDCaNddDORbt2bffTU/MwW8YNTbr2/eoH5VQVoPfgr8pdk/OOhxN7/fXhsAeqiwuJS+
-         oc9axjIrUEzayapfVHWmhKEcrGvjMgkFBLnXgDd4vVUYG8zIj55y/EfcoctzbvfGxXv/
-         z0vA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711061278; x=1711666078;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=pZUn+CabKddPK7NEf/S7R2Utterh/ASXmWz24mderPg=;
-        b=rtaiNVZohYmPFlqUqCCJZkGIRL8AHI2UJiWubakJRoLXqToH2woQFM5L2I+Y7LxwaN
-         vlUCUzEmq+t0ucVXZfrQ257hGfjvR2zSVyduWqT4jFvhmHEP2hW9JlKnP8MRqiceeSXy
-         0uyDfaJDODBgSXlVo0hP9r4h8diWoQN8yNIgCKPu/EjhJwWE48dpfBQ9NdO2dpPsJdVk
-         yyty53p/GyOkIDu8+s1GJiMc1owC7swS5lxPnE2FlPFnLd68Zivbt02Qs1RGRXUCoP4W
-         eFtOjptS6STfDNmo6lO71lKwtVHzyoLPvdUBgTLhXI7qYmhUfh0SyaoYxGcFwpPlvHHW
-         v+GQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVR6HQvedRl7mHo70yQ90UdKeedID3PqtJiKhfCYrkqDKM0sUCXGsVDTwu2Ew8QyEHKQ62faJMBrKhrs/L0w2wfHp1e0tM=
-X-Gm-Message-State: AOJu0YyOHb1q6nJInDaTQk/dFBxSQjywV/jy0fwUjs8bm8E6gHVEJR29
-	orzvGKq5wDyeg0mqdFJ0u0LmcKnSYj/ZpuQV3zejPMMF0KKCwIDVmg30osu7Ao2Os89BDv1gUkF
-	68U/KN5owZWAGYlDqv/woOkqGMheYBFG1LrZO
-X-Google-Smtp-Source: AGHT+IGTw1XuAorKpNX3Gh3/aZ4ugL4PM6jVqN6SCRojDxfSlrpu19ifc/cFi9jRyUBtPtqG+w5x/ZJTfS8KJ2Dmf6E=
-X-Received: by 2002:a25:8047:0:b0:dda:aace:9665 with SMTP id
- a7-20020a258047000000b00ddaaace9665mr551844ybn.60.1711061278005; Thu, 21 Mar
- 2024 15:47:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="mY41arhE"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KuA9h4s9faA1SLiVe7jSJnqCmJC/eMYHlaqfXXvuPbLqLJtTQAGsMHDokDb1HuVv9kId4bRbJn++npqtOWQD7uaHm8TQH+YRXPIWGuE8JJOP4aGWt7Gpc/pc0awOCzfscK49rqyIO2256Z9JXtRdg6xDd7zxp04paLrV3HrtknnYfBRvpBe5q3LFzLiahu+LrlhOLLi0ZH1i1Y7tlyd0WTY9q4mXQGcWWEpDLdDcElpYzBAiUC7S9glKAVcRf/KvqRI/Zu22k+BZTuPPoi25ymAwfvwFVb27tk7JGU46+5UIx85aismr8OspopDvmFtRzXjEgJ76f8YImz+3ZeRCGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3qR96Y3K9B/bs2tyFawkyxRvBXMqcNofoaZDJRUu3Mc=;
+ b=PSahAJQiWNyE5IVME1Os+1ilnGc574XD45rpf0nr0xM98jog/mf/r1GowB6qmjpqDrOrTnt+l9so0NQE+AYxm1sOFcxWprRUBMV/89UEpCeR51dT7Jsra3iuuUDzhpJnZFKLQYjn7TH/zKmpz6TppI1/lzoAL2l3rqKtEx0mYGLqNbfsb79fQ38ThAxriZW50oSN9UVVUKdZfggo6BlPxc9on5lOzWfdWt4hV9qe8MM7AFlKvggJQs9eRdOsgHFcSZRojt317L4aWj1PcKFtxeM8B+5J7tx/Gj6TkP2kR/6HANsP0zRTR4hrzuOC7ysD1+Y/JaXtrLqobB6ITzuVwA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3qR96Y3K9B/bs2tyFawkyxRvBXMqcNofoaZDJRUu3Mc=;
+ b=mY41arhE5XPJ66FSRA/V3t9A7fvR7hUNgvn7pP/AURI0h5rsztfL95tA4O8judrFlLPVwEUuBAxHm/sNXRlOujDo60PltXRZEiHXXNe7Lr+illA2QTaxc+MHyeUY2DiTLEmL+DtZvlqKRuwpq1cOMR2wvAYy9OGFlA6160rg+ayO1f91AIbx0hRKwm6OshPn0GQdPOa+5AafEMJwrRlN4bytfkBiRtI1aS37rnL0FqOP8/lBBo/hHEAOUwVugZQCq8g5Vd/kLxriIJ5vzItmMU3Ai3/JkosswjBguOkccgXGbloQ/VtixUW967iUImsv0Y3gARoiN8mfYTJE03Dz9g==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by LV8PR02MB10336.namprd02.prod.outlook.com (2603:10b6:408:1f5::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.24; Fri, 22 Mar
+ 2024 04:29:16 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::67a9:f3c0:f57b:86dd]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::67a9:f3c0:f57b:86dd%5]) with mapi id 15.20.7386.030; Fri, 22 Mar 2024
+ 04:29:16 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Petr Tesarik <petrtesarik@huaweicloud.com>, Christoph Hellwig
+	<hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+	<robin.murphy@arm.com>, Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Will Deacon <will@kernel.org>, open list <linux-kernel@vger.kernel.org>,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>
+CC: Roberto Sassu <roberto.sassu@huaweicloud.com>, Petr Tesarik
+	<petr@tesarici.cz>
+Subject: RE: [PATCH v3 1/2] swiotlb: extend buffer pre-padding to
+ alloc_align_mask if necessary
+Thread-Topic: [PATCH v3 1/2] swiotlb: extend buffer pre-padding to
+ alloc_align_mask if necessary
+Thread-Index: AQHae7P1v9J3nfpwTEKyNy18gy4LeLFDKKig
+Date: Fri, 22 Mar 2024 04:29:14 +0000
+Message-ID:
+ <SN6PR02MB4157AC19CFB8B800EA9748B3D4312@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240321171902.85-1-petrtesarik@huaweicloud.com>
+ <20240321171902.85-2-petrtesarik@huaweicloud.com>
+In-Reply-To: <20240321171902.85-2-petrtesarik@huaweicloud.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-tmn: [saLfv108V/7YksT/pnUHpKrgJlaeiFlF]
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|LV8PR02MB10336:EE_
+x-ms-office365-filtering-correlation-id: ace95a29-a6f0-4b27-9211-08dc4a28a181
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ r5jgzUFaQ6d7lb/ZKTn5HOyv+tWxLzQu6wnBRQv9cmiINTLCO20f9ah+nHLuCCznR3ZhQmtdrGV/HPG4X4Q7Kvtk0pGKBoq+PqFVsEIX605m0iOg6aEUm+yDcwj11JuOG5iwWq1DpLGk6uTzRuS7mRXOayF8TjcBvea74GInqJFAfWtXu6dpphbh1/YBdtBqNuJbkk1xfnAqLIDgiDJLAthmFM2s0yx58H8THdckhlE7RvYn2exqifq1kKv62shLlsxV+7+cpf/x5dp/yA4W1MaVtFemcUt6jy3fHL++Yg4EUokrj/oJK+dYCicyurPj6+GvOx3YjMcjPUzL54XvpRphvIVsKW2caljTpx7Ub3f2lx2IKGjQvBeAGZ34sfAeF+WWWXagNtiWm0fDJKp/Q58JjHGnJq7rrIDVlQ96BYsqTq6qqsas4BlT/FbDm7loIjZQx9zdO9WoZi6eYsTrFcbuRTK4euuSzc0aMSpOUNPSaB/UchXjzstQbLxAyFBh0ER+kdVn7OyxX2Q+EmeRpgZW6RBleIvxQpPNTygaPcedW2eRytFqtPRou9e4F9s0jWDrCiUZmvMDDpg/291jKUEOHK4PU4G+F+528KJSwf+iBFzkNzvV4w5VCKfyxG/9zVhjQGNzrWXJefVVcfg3sJz+XGzl/3jkCSPDtiU0Vy0=
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?E2MC81VjILT59ZfTEj7vfvMU9NyLRihGthb6chejX/On0kPegeKrFvsIz2g0?=
+ =?us-ascii?Q?hbtr5IAtqXHGQahBp9hDn1n35kiHP8KeXTgo76LCLzbd32XnhpJUBDgEszTW?=
+ =?us-ascii?Q?LUkEJ0tVtykwFBbDe4Oclmz4KAt4iR0fZZgB9+QiSvaNPxP6YPIoLp/WIRV4?=
+ =?us-ascii?Q?0G8KfDtVidLhdFiNjy2lGQsqM0GnzYpAJw+LWABXYwLXnJ/ZfK8Tde6xYcND?=
+ =?us-ascii?Q?IdsvxYM1EHiXHVxnMUWIhdfbE8vOR77rBtqiWPj4e7wkIAv3L0sWkTDEMYcJ?=
+ =?us-ascii?Q?MnrKel2NDqZRGPZUqES+UmZ8BeSkfMRWiyEXGP6vHdkdbVJ88hy8QR34x2w5?=
+ =?us-ascii?Q?RhHinA3/lQKWW8KnAFkvF4rBwqQwNS7Md9sMvxubP0/J9UXhylTSSvKLWLOB?=
+ =?us-ascii?Q?AypR+Odv9GZiITEJHZGA8DRVoJafFZwAFgqLGyXjKXjw8gkHrqZs1+tNrwkg?=
+ =?us-ascii?Q?8SZyRXIDF0rQ7om8uRMn/+Ka97o/uCy3ODrQqNaOVNQD7Rk4shB7CLD+6pKz?=
+ =?us-ascii?Q?Cz75UsTZXnCG8yaInu8JeG9XdUEX3pS3uDZmnMvlBN/aQMmmtNd7QhzIFsnN?=
+ =?us-ascii?Q?o/N1ZWRBXxXZ1wt75o54OBV6uEBVrcf28yiqDDnT22FC8h6LXvY/cjDAMd1i?=
+ =?us-ascii?Q?dzmvKHpDf1Uf+/VWDHwgOryv2DNmYJzU1Sy1NbwYxGiIc8cyk/KYAkMyJB+J?=
+ =?us-ascii?Q?PxCqblJYjCz+o5khRemwUEe71/EyG6Sbl9HQy1mxVMUhHB4xtBKXE0XGl0xJ?=
+ =?us-ascii?Q?8h6prEHNm0jxdE9v6gb+stiINCjZ0g9++HXYzzX31TIk77Zhazjwgiw97EJe?=
+ =?us-ascii?Q?lK7tOgALvH6a5lYc0eRQUGSz1ORUxVmDSPpEiAac367IuyHZ4EXlot8WT4oz?=
+ =?us-ascii?Q?Q9/5Fv8HnNqvwzcw8iAEU/T2kPP+nTINxSAqDLvhE4Pga3KqpQhXC5KdXPVh?=
+ =?us-ascii?Q?g86llAbHziIQMerJYKll7O5bMrCxmdeReVLt5lKHQ/VLjY+Nqp76YWYeCaUO?=
+ =?us-ascii?Q?01OHxnUzhyejfG4/rsfWwh6Crn6B41dgi7eGWgoBuF4fcIxkCcmwppIpR7B6?=
+ =?us-ascii?Q?R5rrYtiW5UCjRWPtP8mI9ywfxO4SFfmxm+qst9QTxfN2J+XJ0R07GJM/5VXb?=
+ =?us-ascii?Q?5ICq70d/8wjDBfM7jJsiKByJTsb+QTTaL3IM1HkKNfStevAffgPg3Pe4RG0R?=
+ =?us-ascii?Q?bC1uQJfFYerMvSOKXtNxyOlxup4u1CFKd8OGEQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240321163705.3067592-1-surenb@google.com> <20240321163705.3067592-6-surenb@google.com>
- <20240321133147.6d05af5744f9d4da88234fb4@linux-foundation.org>
- <gnqztvimdnvz2hcepdh3o3dpg4cmvlkug4sl7ns5vd4lm7hmao@dpstjnacdubq>
- <20240321150908.48283ba55a6c786dee273ec3@linux-foundation.org> <bliyhrwtskv5xhg3rxxszouxntrhnm3nxhcmrmdwwk4iyx5wdo@vodd22dbtn75>
-In-Reply-To: <bliyhrwtskv5xhg3rxxszouxntrhnm3nxhcmrmdwwk4iyx5wdo@vodd22dbtn75>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Thu, 21 Mar 2024 15:47:44 -0700
-Message-ID: <CAJuCfpEO4NjYysJ7X8ME_GjHc41u-_dK4AhrhmaSMh_9mxaHSA@mail.gmail.com>
-Subject: Re: [PATCH v6 05/37] fs: Convert alloc_inode_sb() to a macro
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Andrew Morton <akpm@linux-foundation.org>, mhocko@suse.com, vbabka@suse.cz, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
-	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
-	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
-	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, tj@kernel.org, 
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, 
-	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com, 
-	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
-	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com, 
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
-	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
-	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
-	glider@google.com, elver@google.com, dvyukov@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, aliceryhl@google.com, 
-	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
-	kernel-team@android.com, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org, Alexander Viro <viro@zeniv.linux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: ace95a29-a6f0-4b27-9211-08dc4a28a181
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Mar 2024 04:29:14.8450
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV8PR02MB10336
 
-On Thu, Mar 21, 2024 at 3:17=E2=80=AFPM Kent Overstreet
-<kent.overstreet@linux.dev> wrote:
->
-> On Thu, Mar 21, 2024 at 03:09:08PM -0700, Andrew Morton wrote:
-> > On Thu, 21 Mar 2024 17:15:39 -0400 Kent Overstreet <kent.overstreet@lin=
-ux.dev> wrote:
-> >
-> > > On Thu, Mar 21, 2024 at 01:31:47PM -0700, Andrew Morton wrote:
-> > > > On Thu, 21 Mar 2024 09:36:27 -0700 Suren Baghdasaryan <surenb@googl=
-e.com> wrote:
-> > > >
-> > > > > From: Kent Overstreet <kent.overstreet@linux.dev>
-> > > > >
-> > > > > We're introducing alloc tagging, which tracks memory allocations =
-by
-> > > > > callsite. Converting alloc_inode_sb() to a macro means allocation=
-s will
-> > > > > be tracked by its caller, which is a bit more useful.
-> > > >
-> > > > I'd have thought that there would be many similar
-> > > > inlines-which-allocate-memory.  Such as, I dunno, jbd2_alloc_inode(=
-).
-> > > > Do we have to go converting things to macros as people report
-> > > > misleading or less useful results, or is there some more general
-> > > > solution to this?
-> > >
-> > > No, this is just what we have to do.
-> >
-> > Well, this is something we strike in other contexts - kallsyms gives us
-> > an inlined function and it's rarely what we wanted.
-> >
-> > I think kallsyms has all the data which is needed to fix this - how
-> > hard can it be to figure out that a particular function address lies
-> > within an outer function?  I haven't looked...
->
-> This is different, though - even if a function is inlined in multiple
-> places there's only going to be one instance of a static var defined
-> within that function.
+From: Petr Tesarik <petrtesarik@huaweicloud.com> Sent: Thursday, March 21, =
+2024 10:19 AM
+>=20
+> Allow a buffer pre-padding of up to alloc_align_mask. If the allocation
+> alignment is bigger than IO_TLB_SIZE and min_align_mask covers any non-ze=
+ro
+> bits in the original address between IO_TLB_SIZE and alloc_align_mask,
+> these bits are not preserved in the swiotlb buffer address.
+>=20
+> To fix this case, increase the allocation size and use a larger offset
+> within the allocated buffer. As a result, extra padding slots may be
+> allocated before the mapping start address.
+>=20
+> Leave orig_addr in these padding slots initialized to INVALID_PHYS_ADDR.
+> These slots do not correspond to any CPU buffer, so attempts to sync the
+> data should be ignored.
+>=20
+> The padding slots should be automatically released when the buffer is
+> unmapped. However, swiotlb_tbl_unmap_single() takes only the address of t=
+he
+> DMA buffer slot, not the first padding slot. Save the number of padding
+> slots in struct io_tlb_slot and use it to adjust the slot index in
+> swiotlb_release_slots(), so all allocated slots are properly freed.
+>=20
+> Fixes: 2fd4fa5d3fb5 ("swiotlb: Fix alignment checks when both allocation =
+and DMA masks are present")
+> Link: https://lore.kernel.org/linux-iommu/20240311210507.217daf8b@meshula=
+m.tesarici.cz/
+> Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+> ---
+>  kernel/dma/swiotlb.c | 35 +++++++++++++++++++++++++++++------
+>  1 file changed, 29 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 86fe172b5958..3779a48eec9b 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -69,11 +69,14 @@
+>   * @alloc_size:	Size of the allocated buffer.
+>   * @list:	The free list describing the number of free entries available
+>   *		from each index.
+> + * @pad_slots:	Number of preceding padding slots. Valid only in the firs=
+t
+> + *		allocated non-padding slot.
+>   */
+>  struct io_tlb_slot {
+>  	phys_addr_t orig_addr;
+>  	size_t alloc_size;
+> -	unsigned int list;
+> +	unsigned short list;
+> +	unsigned short pad_slots;
+>  };
+>=20
+>  static bool swiotlb_force_bounce;
+> @@ -287,6 +290,7 @@ static void swiotlb_init_io_tlb_pool(struct io_tlb_po=
+ol *mem, phys_addr_t start,
+>  					 mem->nslabs - i);
+>  		mem->slots[i].orig_addr =3D INVALID_PHYS_ADDR;
+>  		mem->slots[i].alloc_size =3D 0;
+> +		mem->slots[i].pad_slots =3D 0;
+>  	}
+>=20
+>  	memset(vaddr, 0, bytes);
+> @@ -1328,11 +1332,12 @@ phys_addr_t swiotlb_tbl_map_single(struct device =
+*dev, phys_addr_t orig_addr,
+>  		unsigned long attrs)
+>  {
+>  	struct io_tlb_mem *mem =3D dev->dma_io_tlb_mem;
+> -	unsigned int offset =3D swiotlb_align_offset(dev, orig_addr);
+> +	unsigned int offset;
+>  	struct io_tlb_pool *pool;
+>  	unsigned int i;
+>  	int index;
+>  	phys_addr_t tlb_addr;
+> +	unsigned short pad_slots;
+>=20
+>  	if (!mem || !mem->nslabs) {
+>  		dev_warn_ratelimited(dev,
+> @@ -1349,6 +1354,15 @@ phys_addr_t swiotlb_tbl_map_single(struct device *=
+dev, phys_addr_t orig_addr,
+>  		return (phys_addr_t)DMA_MAPPING_ERROR;
+>  	}
+>=20
+> +	/*
+> +	 * Calculate buffer pre-padding within the allocated space. Use it to
+> +	 * preserve the low bits of the original address according to device's
+> +	 * min_align_mask. Limit the padding to alloc_align_mask or slot size
+> +	 * (whichever is bigger); higher bits of the original address are
+> +	 * preserved by selecting a suitable IO TLB slot.
+> +	 */
+> +	offset =3D orig_addr & dma_get_min_align_mask(dev) &
+> +		(alloc_align_mask | (IO_TLB_SIZE - 1));
+>  	index =3D swiotlb_find_slots(dev, orig_addr,
+>  				   alloc_size + offset, alloc_align_mask, &pool);
+>  	if (index =3D=3D -1) {
+> @@ -1364,6 +1378,10 @@ phys_addr_t swiotlb_tbl_map_single(struct device *=
+dev, phys_addr_t orig_addr,
+>  	 * This is needed when we sync the memory.  Then we sync the buffer if
+>  	 * needed.
+>  	 */
+> +	pad_slots =3D offset / IO_TLB_SIZE;
+> +	offset %=3D IO_TLB_SIZE;
+> +	index +=3D pad_slots;
+> +	pool->slots[index].pad_slots =3D pad_slots;
+>  	for (i =3D 0; i < nr_slots(alloc_size + offset); i++)
+>  		pool->slots[index + i].orig_addr =3D slot_addr(orig_addr, i);
+>  	tlb_addr =3D slot_addr(pool->start, index) + offset;
+> @@ -1385,12 +1403,16 @@ static void swiotlb_release_slots(struct device *=
+dev, phys_addr_t tlb_addr)
+>  	struct io_tlb_pool *mem =3D swiotlb_find_pool(dev, tlb_addr);
+>  	unsigned long flags;
+>  	unsigned int offset =3D swiotlb_align_offset(dev, tlb_addr);
+> -	int index =3D (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
+> -	int nslots =3D nr_slots(mem->slots[index].alloc_size + offset);
+> -	int aindex =3D index / mem->area_nslabs;
+> -	struct io_tlb_area *area =3D &mem->areas[aindex];
+> +	int index, nslots, aindex;
+> +	struct io_tlb_area *area;
+>  	int count, i;
+>=20
+> +	index =3D (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
+> +	index -=3D mem->slots[index].pad_slots;
+> +	nslots =3D nr_slots(mem->slots[index].alloc_size + offset);
+> +	aindex =3D index / mem->area_nslabs;
+> +	area =3D &mem->areas[aindex];
+> +
+>  	/*
+>  	 * Return the buffer to the free list by setting the corresponding
+>  	 * entries to indicate the number of contiguous entries available.
+> @@ -1413,6 +1435,7 @@ static void swiotlb_release_slots(struct device *de=
+v, phys_addr_t tlb_addr)
+>  		mem->slots[i].list =3D ++count;
+>  		mem->slots[i].orig_addr =3D INVALID_PHYS_ADDR;
+>  		mem->slots[i].alloc_size =3D 0;
+> +		mem->slots[i].pad_slots =3D 0;
+>  	}
+>=20
+>  	/*
+> --
+> 2.34.1
 
-I guess one simple way to detect the majority of these helpers would
-be to filter all entries from /proc/allocinfo which originate from
-header files.
+I've tested this patch in conjunction with Will's series of 6 patches, and
+all looks good.  I tested on x86/x64 w/4K page size and on arm64
+w/64K page size and a variety of min_align_mask values, alloc_align_mask
+values, mapping size values, and orig_addr low order bits.  The tests are
+doing disk I/O through the bounce buffers, and they verify that the data
+written can be read back correctly.  So the bouncing is working correctly
+with the slots that are being set up.
 
-~# grep ".*\.h:." /proc/allocinfo
-      933888      228 include/linux/mm.h:2863 func:pagetable_alloc
-         848       53 include/linux/mm_types.h:1175 func:mm_alloc_cid
-           0        0 include/linux/bpfptr.h:70 func:kvmemdup_bpfptr
-           0        0 include/linux/bpf.h:2237 func:bpf_map_kmalloc_node
-           0        0 include/linux/bpf.h:2256 func:bpf_map_alloc_percpu
-           0        0 include/linux/bpf.h:2256 func:bpf_map_alloc_percpu
-           0        0 include/linux/bpf.h:2237 func:bpf_map_kmalloc_node
-           0        0 include/linux/bpf.h:2249 func:bpf_map_kvcalloc
-           0        0 include/linux/bpf.h:2243 func:bpf_map_kzalloc
-           0        0 include/linux/bpf.h:2237 func:bpf_map_kmalloc_node
-           0        0 include/linux/ptr_ring.h:471
-func:__ptr_ring_init_queue_alloc
-           0        0 include/linux/bpf.h:2256 func:bpf_map_alloc_percpu
-           0        0 include/linux/bpf.h:2237 func:bpf_map_kmalloc_node
-           0        0 include/net/tcx.h:80 func:tcx_entry_create
-           0        0 arch/x86/include/asm/pgalloc.h:156 func:p4d_alloc_one
-      487424      119 include/linux/mm.h:2863 func:pagetable_alloc
-           0        0 include/linux/mm.h:2863 func:pagetable_alloc
-         832       13 include/linux/jbd2.h:1607 func:jbd2_alloc_inode
-           0        0 include/linux/jbd2.h:1591 func:jbd2_alloc_handle
-           0        0 fs/nfs/iostat.h:51 func:nfs_alloc_iostats
-           0        0 include/net/netlabel.h:281 func:netlbl_secattr_cache_=
-alloc
-           0        0 include/net/netlabel.h:381 func:netlbl_secattr_alloc
-           0        0 include/crypto/internal/acompress.h:76
-func:__acomp_request_alloc
-        8064       84 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-        1016       74 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-         384        4 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-         704        3 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-          32        1 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-          64        1 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-          40        2 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-          32        1 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-       30000      625 include/acpi/platform/aclinuxex.h:67
-func:acpi_os_acquire_object
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-           0        0 include/acpi/platform/aclinuxex.h:67
-func:acpi_os_acquire_object
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-         512        1 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-         192        6 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-           0        0 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-         192        3 include/acpi/platform/aclinuxex.h:52 func:acpi_os_all=
-ocate
-       61992      861 include/acpi/platform/aclinuxex.h:67
-func:acpi_os_acquire_object
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 include/acpi/platform/aclinuxex.h:67
-func:acpi_os_acquire_object
-           0        0 include/acpi/platform/aclinuxex.h:57
-func:acpi_os_allocate_zeroed
-           0        0 drivers/iommu/amd/amd_iommu.h:141 func:alloc_pgtable_=
-page
-           0        0 drivers/iommu/amd/amd_iommu.h:141 func:alloc_pgtable_=
-page
-           0        0 drivers/iommu/amd/amd_iommu.h:141 func:alloc_pgtable_=
-page
-           0        0 include/linux/dma-fence-chain.h:91
-func:dma_fence_chain_alloc
-           0        0 include/linux/dma-fence-chain.h:91
-func:dma_fence_chain_alloc
-           0        0 include/linux/dma-fence-chain.h:91
-func:dma_fence_chain_alloc
-           0        0 include/linux/dma-fence-chain.h:91
-func:dma_fence_chain_alloc
-           0        0 include/linux/dma-fence-chain.h:91
-func:dma_fence_chain_alloc
-           0        0 include/linux/hid_bpf.h:154 func:call_hid_bpf_rdesc_f=
-ixup
-           0        0 include/linux/skbuff.h:3392 func:__dev_alloc_pages
-      114688       56 include/linux/ptr_ring.h:471
-func:__ptr_ring_init_queue_alloc
-           0        0 include/linux/skmsg.h:415 func:sk_psock_init_link
-           0        0 include/linux/bpf.h:2237 func:bpf_map_kmalloc_node
-           0        0 include/linux/ptr_ring.h:628 func:ptr_ring_resize_mul=
-tiple
-       24576        3 include/linux/ptr_ring.h:471
-func:__ptr_ring_init_queue_alloc
-           0        0 include/net/netlink.h:1896 func:nla_memdup
-           0        0 include/linux/sockptr.h:97 func:memdup_sockptr
-           0        0 include/net/request_sock.h:131 func:reqsk_alloc
-           0        0 include/net/tcp.h:2456 func:tcp_v4_save_options
-           0        0 include/net/tcp.h:2456 func:tcp_v4_save_options
-           0        0 include/crypto/hash.h:586 func:ahash_request_alloc
-           0        0 include/linux/sockptr.h:97 func:memdup_sockptr
-           0        0 include/linux/sockptr.h:97 func:memdup_sockptr
-           0        0 net/sunrpc/auth_gss/auth_gss_internal.h:38
-func:simple_get_netobj
-           0        0 include/crypto/hash.h:586 func:ahash_request_alloc
-           0        0 include/net/netlink.h:1896 func:nla_memdup
-           0        0 include/crypto/skcipher.h:869 func:skcipher_request_a=
-lloc
-           0        0 include/net/fq_impl.h:361 func:fq_init
-           0        0 include/net/netlabel.h:316 func:netlbl_catmap_alloc
+I'm not able to test with min_align_mask less than 4K, because my
+synthetic disk driver doesn't work if that alignment isn't maintained.
+But min_align_mask values of 8K, 16K, and 64K work correctly.  I've
+seen up to 5 padding slots be allocated.
 
-and it finds our example:
+I have not tried any 32-bit builds.
 
-         832       13 include/linux/jbd2.h:1607 func:jbd2_alloc_inode
+Overall, it looks solid to me.
 
-Interestingly the inlined functions which are called from multiple
-places will have multiple entries with the same file+line:
-
-           0        0 include/linux/dma-fence-chain.h:91
-func:dma_fence_chain_alloc
-           0        0 include/linux/dma-fence-chain.h:91
-func:dma_fence_chain_alloc
-           0        0 include/linux/dma-fence-chain.h:91
-func:dma_fence_chain_alloc
-           0        0 include/linux/dma-fence-chain.h:91
-func:dma_fence_chain_alloc
-           0        0 include/linux/dma-fence-chain.h:91
-func:dma_fence_chain_alloc
-
-So, duplicate entries can be also used as an indication of an inlined alloc=
-ator.
-I'll go chase these down and will post a separate patch converting them.
+Tested-by: Michael Kelley <mhklinux@outlook.com>
+Reviewed-by: Michael Kelley <mhklinux@outlook.com>
