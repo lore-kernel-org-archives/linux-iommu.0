@@ -1,170 +1,114 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BA827827C
-	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 19:15:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 970FA3EA6F
+	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 19:31:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711134918; cv=none; b=SsXUVGO+gqskMcua71K/Gb8Mq+GJMoSPty+CEfzyymAyQOg5CeSBXAq7uE1EwL9qg55ZPOpWiqxIx6+QoIS4uasXW9CgEW3dZ1nx1tYqYwAP71y2t7FjoQzAUgBEtQNgIXIP00xAZjz26FENWpDoNA7eCKYSuZTx8xCItS/UUh0=
+	t=1711135897; cv=none; b=ZYGw4zsWot9cxcMojwP+BQDxavjC6dsv9gImCH9gYPoYJreQi3qkMwqOLKY3ftOw40JYYJXp+XkEG3oiMIiYg/gxyiXnLat0+YXIkbT343D8RhS0KQCrE8w+mKLOXp5P0l0R0GAs+pXuCcZLjB0+UCCharRyxYOQVzka9KvSpBQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711134918; c=relaxed/simple;
-	bh=nquismUMtJbdmPgTSsZdryuDeqLxycmHVim+dtrmKe8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NPDtVRYN6554Dv53db6MfiFpQ+p7bQ3MgbjhHoRCkFnkVapqhOmU2w2MjJjcEslZrbeXjtDwCxZ+D82lOGJ4gsVdyuiMsPmtiRn4nJwTj1fkISmxnN2lIHm2A3GZ849O5bmSQdJcl+CIlRWI+Yuw5uvV7LBcbntNfhIhJ2YCDiM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UjrEyny6; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1711135897; c=relaxed/simple;
+	bh=wiDjAEmrChnZ9+d36sTPwtpOJeaqnxoA2oNJ20wLimk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VejsG9a8elHHJKosAiRQcoT7WihywUBoN6XUEQSQ/K790kUlc82YTAeVqEM92wouLsqe3mON7m9e7Lz6x7TPbb0VYChMxaNBQfeom9TwmdVi2AUA/KsY8vxaY22XmA2oQdPzBzYHsEy2VWs7oBH9dHBNFSmF2FHRrFw6XmCApV8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=Zllok9So; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UjrEyny6"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-41428b378b9so14135e9.1
-        for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 12:15:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1711134916; x=1711739716; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=iBmwPWfj+P0UyE+jUv3x1rbO+OO3VlNB3fzoExTZCpI=;
-        b=UjrEyny6wn7gvweu3B7Oph5ENnkuj26xBxj0RSfWYrJmMvU+jsDPsMn+4D+6JV3hVx
-         /LqrkxuxEvquGnnjZTXnsvhtuM8Dcnmmax2VOPiuJuEHy0BoSFl+Xo9l/HekmHIZPJ5c
-         bTAQIhSNkVKL2G4xqWLsZlBNfQD0gk/YFc8ylS9dF+AIDmlaf1UWVEMOlPMSe6A6Fm0Z
-         wl+JY2hiu1KKrzURBpcBG+N5tsIO7yiXbYbWskYPTY7diFFIzrRskPG8vQzqpwWx+ob5
-         qw7QYz3QpctnTbKt0qyf0MWNR2qMGik+kP+JYdZEhOqqjwetLQKHcSXvWe4c2/QhKaeH
-         5ogQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711134916; x=1711739716;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iBmwPWfj+P0UyE+jUv3x1rbO+OO3VlNB3fzoExTZCpI=;
-        b=fmMTL2h0mPEwVmspUI4oRgM4A8U7VuNfhVxFLjYCLqCaL9qyKgcrlWvcatGy5Vcx6+
-         7JA18+wKr0a9MZT/GNvdqNp75HTZLlOJJjA9GjRmOgg0au32u4t5IRHwIMNEGUFfvvWt
-         9KXEUFFnZOT0/4AP/bi6rSyjOWrY3pS2rPAhfx/wBu7gtg/W+5E5AjNQ01QnAfy4wJAR
-         SwNB+Lcfr1alU2HmCVgJgDLHtFoYk4swqy9JW/g81jtR6exHCqHEpjdhjdSONNs7Mhp4
-         vaUSg7xr5uxwAISSWbXVjHSbEkR6f8zhzmDlfKOmEunozw7vNtKNEJLV3gqcchudWsDp
-         zG2w==
-X-Gm-Message-State: AOJu0YwM+0DRru5+PylPbr1Hu1Wg87+fHXAYmh7XrPa33kOR+XNTboYn
-	dqL0qoaNjLTkhibaQmTG6vAfF+Sd4/LHiQxC4Ju8itg4ajgN7MrDfU2POCFOhQ==
-X-Google-Smtp-Source: AGHT+IFCfF66X3KOP2ZhTbkhD7eO1ULUJHDki2BPmbB/rZoGnUCW/kWVXFNirPzcY13hMF06gu5a/Q==
-X-Received: by 2002:a05:600c:3b94:b0:413:f266:c654 with SMTP id n20-20020a05600c3b9400b00413f266c654mr520651wms.1.1711134915484;
-        Fri, 22 Mar 2024 12:15:15 -0700 (PDT)
-Received: from google.com (180.232.140.34.bc.googleusercontent.com. [34.140.232.180])
-        by smtp.gmail.com with ESMTPSA id v9-20020a5d43c9000000b0033ec9007bacsm2679247wrr.20.2024.03.22.12.15.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Mar 2024 12:15:14 -0700 (PDT)
-Date: Fri, 22 Mar 2024 19:15:11 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v5 09/27] iommu/arm-smmu-v3: Allocate the CD table entry
- in advance
-Message-ID: <Zf3Yv4kzZH49RNq0@google.com>
-References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
- <9-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="Zllok9So"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-b985-910f-39e1-703f.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:b985:910f:39e1:703f])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id EE3641AA9FB;
+	Fri, 22 Mar 2024 20:31:31 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1711135892; bh=w74Za9hBQ3UeFMcx0KUozrt8Rr0VROAJBUkRHOKEG6w=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Zllok9SoGpD9B4+u0as4vvDzaNUJRcIm0CmjV/f/OtZ7ePPMrElNZme31fgkLaF4j
+	 4hk4NT2kYkIgJnfwKTrFsNsxXCbXrWPbmpK/gMBuB0HXqQZGfAb5Yiy98aXCzWYh9x
+	 T2AiFU7bRm3j59z1whQycPEw+uyuy+MzdFYakYOWD7IGKi60DGaaB5doRY/4gHeRS/
+	 eRSegpUIBQYvUtWqhWxte2XptwpFdycIhp+QBgQTK1Qvk47cx//HyDCZuF23xUyLkN
+	 spIZqdfB0sNQ1NOh1u3t0Z/GQkuIHvVN2Utx4OnCyxYRQQVTCJzeoqMLxZ5sBnGDXF
+	 Xq+nHqXKg3+aA==
+Date: Fri, 22 Mar 2024 20:31:31 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: Will Deacon <will@kernel.org>, Petr Tesarik
+ <petrtesarik@huaweicloud.com>, Christoph Hellwig <hch@lst.de>, Marek
+ Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>,
+ Petr Tesarik <petr.tesarik1@huawei-partners.com>, open list
+ <linux-kernel@vger.kernel.org>, "open list:DMA MAPPING HELPERS"
+ <iommu@lists.linux.dev>, Roberto Sassu <roberto.sassu@huaweicloud.com>
+Subject: Re: [PATCH v3 0/2] swiotlb: allocate padding slots if necessary
+Message-ID: <20240322203131.207519c5@meshulam.tesarici.cz>
+In-Reply-To: <SN6PR02MB41574F4837E875F3D158B329D4312@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240321171902.85-1-petrtesarik@huaweicloud.com>
+	<20240322150941.GA5634@willie-the-truck>
+	<SN6PR02MB41574F4837E875F3D158B329D4312@SN6PR02MB4157.namprd02.prod.outlook.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <9-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Jason,
+On Fri, 22 Mar 2024 18:11:50 +0000
+Michael Kelley <mhklinux@outlook.com> wrote:
 
-On Mon, Mar 04, 2024 at 07:43:57PM -0400, Jason Gunthorpe wrote:
-> Avoid arm_smmu_attach_dev() having to undo the changes to the
-> smmu_domain->devices list, acquire the cdptr earlier so we don't need to
-> handle that error.
+> From: Will Deacon <will@kernel.org> Sent: Friday, March 22, 2024 8:10 AM
+> > 
+> > Hi Petr,
+> > 
+> > On Thu, Mar 21, 2024 at 06:19:00PM +0100, Petr Tesarik wrote:  
+> > > From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+> > >
+> > > If the allocation alignment is bigger than IO_TLB_SIZE and min_align_mask
+> > > covers some bits in the original address between IO_TLB_SIZE and
+> > > alloc_align_mask, preserve these bits by allocating additional padding
+> > > slots before the actual swiotlb buffer.  
+> > 
+> > Thanks for fixing this! I was out at a conference last week, so I didn't
+> > get very far with it myself, but I ended up in a pickle trying to avoid
+> > extending 'struct io_tlb_slot'. Your solution is much better than the
+> > crazy avenue I started going down...
+> > 
+> > With your changes, can we now simplify swiotlb_align_offset() to ignore
+> > dma_get_min_align_mask() altogether and just:
+> > 
+> > 	return addr & (IO_TLB_SIZE - 1);
+> > 
+> > ?
+> >   
 > 
-> Now there is a clear break in arm_smmu_attach_dev() where all the
-> prep-work has been done non-disruptively and we commit to making the HW
-> change, which cannot fail.
+> I don't think such a change is correct, since we want to allow the
+> DMA min_align_mask to work if it is set to 0x3FF or 0x1FF or
+> something else smaller than IO_TLB_SIZE - 1.
 > 
-> This completes transforming arm_smmu_attach_dev() so that it does not
-> disturb the HW if it fails.
+> Petr's new offset calculation in swiotlb_tbl_map_single() is this:
 > 
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 24 +++++++--------------
->  1 file changed, 8 insertions(+), 16 deletions(-)
+> offset = orig_addr & dma_get_min_align_mask(dev) &
+>                 (alloc_align_mask | (IO_TLB_SIZE - 1));
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 2dd6cb17112e98..39081d828a2132 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2676,6 +2676,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  	struct arm_smmu_device *smmu;
->  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->  	struct arm_smmu_master *master;
-> +	struct arm_smmu_cd *cdptr;
->  
->  	if (!fwspec)
->  		return -ENOENT;
-> @@ -2704,6 +2705,12 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  	if (ret)
->  		return ret;
->  
-> +	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
-> +		cdptr = arm_smmu_get_cd_ptr(master, IOMMU_NO_PASID);
-> +		if (!cdptr)
-> +			return -ENOMEM;
-> +	}
-> +
->  	/*
->  	 * Prevent arm_smmu_share_asid() from trying to change the ASID
->  	 * of either the old or new domain while we are working on it.
-> @@ -2723,13 +2730,6 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  	switch (smmu_domain->stage) {
->  	case ARM_SMMU_DOMAIN_S1: {
->  		struct arm_smmu_cd target_cd;
-> -		struct arm_smmu_cd *cdptr;
-> -
-> -		cdptr = arm_smmu_get_cd_ptr(master, IOMMU_NO_PASID);
-> -		if (!cdptr) {
-> -			ret = -ENOMEM;
-> -			goto out_list_del;
-> -		}
->  
->  		arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
->  		arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
-> @@ -2746,16 +2746,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  	}
->  
->  	arm_smmu_enable_ats(master, smmu_domain);
-> -	goto out_unlock;
-> -
-> -out_list_del:
-> -	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> -	list_del_init(&master->domain_head);
-> -	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-> -
-> -out_unlock:
->  	mutex_unlock(&arm_smmu_asid_lock);
-> -	return ret;
-> +	return 0;
->  }
->  
->  static int arm_smmu_attach_dev_ste(struct device *dev,
-> -- 
-> 2.43.2
->
-I believe this is fine, I couldn’t break it. With the comment on the previous
-patch, where we explicitly allocate the CD here and not inside
-arm_smmu_get_cd_ptr().
+> In the normal stream mapping case, where alloc_align_mask is
+> zero, Petr's new statement is equivalent to swiotlb_align_offset().
+> And I think it needs to continue to be equivalent so that
+> swiotlb_search_pool_area(), swiotlb_bounce()  and
+> swiotlb_release_slots() calculate the same offset as
+> swiotlb_tbl_map_single() uses after it separately processes
+> the padding slots.
+> 
+> Perhaps a better approach to maintaining the equivalence is
+> to modify swiotlb_align_offset() to be Petr's new calculation,
+> with alloc_align_mask passed as an argument.
+> swiotlb_search_pool_area(), swiotlb_bounce(), and
+> swiotlb_release_slots() would all pass 0 as the alloc_align_mask
+> argument.
 
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
+I like this idea.
 
-
-Thanks,
-Mostafa
+Petr T
