@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67A92481B3;
-	Fri, 22 Mar 2024 15:09:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15B6B524DF;
+	Fri, 22 Mar 2024 15:37:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711120187; cv=none; b=YCk638+GQ0VIHW409/WY1U6qnjKJHPtLaujtgKaqhpOh2kl+ETVJhPDcuDUZ9uFlNWf4tbJ/LDOB9xEl1ZoKKU1dMCgEKyD5ANyXGiizMjxGGQSryQ1wiKY+s48JpQISMaAOSBQUa8x/j5FRI1wjcvvsD7yXhCLzww8leY3MGL0=
+	t=1711121865; cv=none; b=p3BIsiPYhPXNQBSI3PSTju1zkBR5uHCUtYQlGgmdG4PzJckcmslkni9FIpl4hWeFvufYVo2pSQaIFagSQQtoXkwdFTdpf2gpiUxqp7R2ybzjeN2OgwTR0GSXtWuZsYp4u6f1fl0HoxBgdRXG8uWD4eF4k/Sn4Y+DDvKXzbN2fOY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711120187; c=relaxed/simple;
-	bh=UXgPa4p5wBn1d97FInWzLgeWdHJZdB/ycE6abVVuEHE=;
+	s=arc-20240116; t=1711121865; c=relaxed/simple;
+	bh=GzNKDIuOGjs6k2ffastjq4w0MJc1MWTYP5L+bid8nNs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BeMeWAnVUGKB9Cl6n4d/zBIJ5/7Y0U+w9SSQXj9XiQa9sObGXFF/NMzy/jG6/EmOgpRE+pcMuTWLp+wsBBjLw9EOEw2UiLypPP2jgUKoVv4lv8hPO8+WQ3i80M1x88Sl7rLlqKehQX0P20+g2hS6mt7fgVCoEBhjKQ+bvAHifII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VPlLRpNd; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=pLlFV5S8+kf7wEHRlbsit2M9IXnxH0AQli1t1KQ8BrHi1ZUqhelTK+OwOQzb+z3nLHxhqZdYbDiDmPuGt4l7SgGaZcB4q2rRqoC4FLCARXkv1/v2KrU0MF06vqPuioGuQbLPdTyKLhOIN52CkdB43gGIWglLNjEWgkSPTQK03KA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=na1dbiZm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VPlLRpNd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD70C433F1;
-	Fri, 22 Mar 2024 15:09:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="na1dbiZm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6846C433C7;
+	Fri, 22 Mar 2024 15:37:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711120187;
-	bh=UXgPa4p5wBn1d97FInWzLgeWdHJZdB/ycE6abVVuEHE=;
+	s=k20201202; t=1711121864;
+	bh=GzNKDIuOGjs6k2ffastjq4w0MJc1MWTYP5L+bid8nNs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=VPlLRpNdS0FHw4DD9EZneTwobhZblVezN/Y/Y5CiXqGdaxw4FLFxImpc4d2HP/RgC
-	 ZxPntCPNxSokHzmY+inIKJlDcfRR4ldf1ugOGXa8ymSMVizhTL5WxdKOI2FoyjI/bm
-	 IXvjvB+JROneBphP6GvK4+3fwFQqnawdTrWzKIvGCSk7bLXbFVATkEsTIVhZ2YGML/
-	 IiOPbS3Za+YsVysbG+t96OHjLmyG+sGkXdzJSfSJOaO0WFegSZJ59z7siq0zr/ehIa
-	 5g7e++IWf253Io63or2ImSQ127kTbhSZyn4JtO6yk+IfNLkKFnecTd+0RCZjNai8Kr
-	 uTOAqNF1rftag==
-Date: Fri, 22 Mar 2024 15:09:41 +0000
+	b=na1dbiZmzOLr8mIcs9+E2IaW2RUObCivfYvEzZKPG4SFSlvf9aq8eObRqP1IiD7wi
+	 IDHtIaNcAMoWlxkFxZOSzpRS2+ZSZQUPoYd3peMdiBa2YeMNNAogI1/B/v/ljLHlGk
+	 tjua4Bci0DInz97kRAPhVLM8s2xMOQukUw4UUWIcNK0ByHz6itpkD1UoGxykcwPFRP
+	 BiIeWb4OS3zPFWNzTMtX9mnW1FRWibMz3sBaOhM6Z+vCnAVU0VX5ltSWBB+fHkw4rM
+	 BxN6LPaYgIzD2wsfyGRTsSeYvl7obc/bNlsa2tohVoeZqxptYrWNVxon8+fpaahzVO
+	 bUuy2wue7+X9w==
+Date: Fri, 22 Mar 2024 15:37:38 +0000
 From: Will Deacon <will@kernel.org>
 To: Petr Tesarik <petrtesarik@huaweicloud.com>
 Cc: Christoph Hellwig <hch@lst.de>,
@@ -38,9 +38,10 @@ Cc: Christoph Hellwig <hch@lst.de>,
 	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
 	Roberto Sassu <roberto.sassu@huaweicloud.com>,
 	Petr Tesarik <petr@tesarici.cz>
-Subject: Re: [PATCH v3 0/2] swiotlb: allocate padding slots if necessary
-Message-ID: <20240322150941.GA5634@willie-the-truck>
+Subject: Re: [PATCH v3 2/2] bug: introduce ASSERT_VAR_CAN_HOLD()
+Message-ID: <20240322153738.GC5634@willie-the-truck>
 References: <20240321171902.85-1-petrtesarik@huaweicloud.com>
+ <20240321171902.85-3-petrtesarik@huaweicloud.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,29 +50,51 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240321171902.85-1-petrtesarik@huaweicloud.com>
+In-Reply-To: <20240321171902.85-3-petrtesarik@huaweicloud.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-Hi Petr,
-
-On Thu, Mar 21, 2024 at 06:19:00PM +0100, Petr Tesarik wrote:
+On Thu, Mar 21, 2024 at 06:19:02PM +0100, Petr Tesarik wrote:
 > From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 > 
-> If the allocation alignment is bigger than IO_TLB_SIZE and min_align_mask
-> covers some bits in the original address between IO_TLB_SIZE and
-> alloc_align_mask, preserve these bits by allocating additional padding
-> slots before the actual swiotlb buffer.
+> Introduce an ASSERT_VAR_CAN_HOLD() macro to check at build time that a
+> variable can hold the given value.
+> 
+> Use this macro in swiotlb to make sure that the list and pad_slots fields
+> of struct io_tlb_slot are big enough to hold the maximum possible value of
+> IO_TLB_SEGSIZE.
+> 
+> Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+> ---
+>  include/linux/build_bug.h | 10 ++++++++++
+>  kernel/dma/swiotlb.c      |  2 ++
+>  2 files changed, 12 insertions(+)
+> 
+> diff --git a/include/linux/build_bug.h b/include/linux/build_bug.h
+> index 3aa3640f8c18..6e2486508af0 100644
+> --- a/include/linux/build_bug.h
+> +++ b/include/linux/build_bug.h
+> @@ -86,4 +86,14 @@
+>  		"Offset of " #field " in " #type " has changed.")
+>  
+>  
+> +/*
+> + * Compile time check that a variable can hold the given value
+> + */
+> +#define ASSERT_VAR_CAN_HOLD(var, value) ({		\
+> +	typeof(value) __val = (value);			\
+> +	typeof(var) __tmp = __val;			\
+> +	BUILD_BUG_ON_MSG(__tmp != __val,		\
+> +		#var " cannot hold " #value ".");	\
+> +})
 
-Thanks for fixing this! I was out at a conference last week, so I didn't
-get very far with it myself, but I ended up in a pickle trying to avoid
-extending 'struct io_tlb_slot'. Your solution is much better than the
-crazy avenue I started going down...
+nit, but I think this prevents putting negative values into unsigned
+types. Not sure whether we care? Arguably it's even correct to complain.
 
-With your changes, can we now simplify swiotlb_align_offset() to ignore
-dma_get_min_align_mask() altogether and just:
+e.g.
 
-	return addr & (IO_TLB_SIZE - 1);
+	u16 s;
+	ASSERT_VAR_CAN_HOLD(s, -1);
 
-?
+explodes for me.
 
 Will
