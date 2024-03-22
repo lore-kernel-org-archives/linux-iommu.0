@@ -1,197 +1,163 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM06-DM3-obe.outbound.protection.outlook.com (mail-dm3nam06olkn2052.outbound.protection.outlook.com [40.92.33.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB892605C4
-	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 17:52:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711129945; cv=none; b=m4sLXgypR9qecveGqgt7TgIN3yB/7XVgvTGYzksdsBKqI81P+F5LubWVzCCTLQYOzV65NUmLLT6SgUDwZPdR/hnGJtpAE+JxPim8daEQ9eMlT9BXFuHlsYk6AZhx+Zp8OZneCUO2gKs5A64it0Xb0DnPdVSkX5bsPz/Jp8bEues=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711129945; c=relaxed/simple;
-	bh=2dco4Cp7gHDSJYMxBQIxVotRD/Rta+qI5bnqZqq5OTc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=thwxcI+Jlag2aBUbQ4DPSKPeQz02vTC8crwRGBJI80acH0P4+wqVnAk+vUU4VQgdhdq6iT5wyybWVdplDt0tB5gbyTyyE/nFdqrxMEWavfJtmzQBiGGEJ4LDrIEsfxMI7nxh/y/9DxbwEN0m/ptn7D4yKdOnyVQcikyi5Yk+Rqo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Y1wLomNB; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69FEB629E0
+	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 18:11:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.33.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711131118; cv=fail; b=TBeRVnLYov6qky103qGXgW5lH7PtXdQasnoc9/+WEHegfH5oEWHr2IxW72yTHdpwdNjtAO7+mkYc7noTy5yqIcV2mmMG0dgcQEkrqca0DNkRCnhn0pYvDhfp1cXTFDNnoa89m5kIb+9PTZ/3sIF63QYq69vil0z2M8W1SyAFbX0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711131118; c=relaxed/simple;
+	bh=xXxsVXr/QzT3qAnDFcSeXvdOH77CWqI/U89Ht/ZOH8Y=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=cXZa5YsqrQJXiKwLgSD8kbQmWKf8aAPSyrMg8gF+18YdyCPeebfbkmdyl6puua1JOwtiBA/4ddgoEHktb8ieVSg3wobBdPj2pRlvIwnlRX93Dl3i1RL/D5/iL69Ip6+WGtTxuC520WrGTr3TU4Z642X6KhoCL0IpDhgkFFsh4h0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=trxkjJ1T; arc=fail smtp.client-ip=40.92.33.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Y1wLomNB"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4146f72e2dfso6935e9.1
-        for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 10:52:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1711129942; x=1711734742; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=R9oMrg7TwImkd0pYqNwG2LgH+fmS6/ZJ6R8JYrsRy8A=;
-        b=Y1wLomNBdOH+nla0WPgpa8/v0pNoJ67DzQSjECl7ZlTIALJlJUgwf4ZZvFGhwMbWcT
-         pHJ50zN/jhE0DE4EnOarJ/NwSufspXR5EfV3RsLcbl5TUQ7N7rw1BIVo+FrTT3YE8m5W
-         sd0MinowFLKLCSh/DXe1lHA4IXdm7/aHOwiDV9VTQgWYB5S511Y4j4+Fw1Oo3E9OPJzQ
-         6qFdhxl5pMGrEdrGgtfU0fN1bwD/XRKfpnDkiA2uYEVYAZEglTdxlVEYhD5ZxyQjzzvN
-         lkeUuhv8vovZUzTlAvAowHqcT0itWnXkH5F8UVD1N/mQyC7Hs1DA84aD26suXThReOkg
-         MZfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711129942; x=1711734742;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=R9oMrg7TwImkd0pYqNwG2LgH+fmS6/ZJ6R8JYrsRy8A=;
-        b=UozS1f+qrWNam4Ovu1b4j0ukG0KLJDmuBlXVpbUBtKCD1dRUFAnqBqR56fiApdyREn
-         t7ZLtI8lPObbqGF6b6gn7wMnBbCQaXhReV0u270jtFN+hrGRyCw66idf7tAc4bIFG4Lp
-         4ndwR5OLLM1XqArMhjWqLVZJNuNY/0aUv6LJdhHTE2D7pekKnH0Em5Ubx2hsDmyr8Bmq
-         J4tys1wOBUqLbBY3QNbexWsxYy2xnfKrAzTyVVBySl/xSxayO+1zNfrD/Kbt3l/fAKW1
-         7Tb7T0JmmkgvW/YYyAilopbhQAYu/mQ00UPbq/ujfotTRe9or8EidmRs+aqVgBa8grE4
-         RNdg==
-X-Gm-Message-State: AOJu0YynaqVsRjoWaz7v3CDEcrzRpzGhC+FJpwJxIpdQhTzxDgXmLXur
-	ABAPHvx3/pRyonwkarBE4HHfjH5doLZGxjB9YFRcPC8BfqWJQvxMnaaig9G3UiuQNeK8ZbhWTEf
-	r2A==
-X-Google-Smtp-Source: AGHT+IHjj0LOYPDRfLbOApiA9FqEKKJaqaDdBH5Vx421Ez+M6eX4Mh4lnvz3MgI9eUzeo+z4tILx6g==
-X-Received: by 2002:a05:600c:4f47:b0:414:6467:3471 with SMTP id m7-20020a05600c4f4700b0041464673471mr501995wmq.1.1711129941796;
-        Fri, 22 Mar 2024 10:52:21 -0700 (PDT)
-Received: from google.com (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
-        by smtp.gmail.com with ESMTPSA id t21-20020a05600c451500b004146e58cc35sm141612wmo.46.2024.03.22.10.52.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Mar 2024 10:52:21 -0700 (PDT)
-Date: Fri, 22 Mar 2024 17:52:17 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v5 03/27] iommu/arm-smmu-v3: Add a type for the CD entry
-Message-ID: <Zf3FUestghRLc3XX@google.com>
-References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
- <3-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="trxkjJ1T"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LSxmSbxi4YsYcciZRTn7JYZLbBpmghrRsNYV/tCB1xtnNuBOCe+NSuLa4HAVR02nm5C5fdxwcZBLdw7q0cY2TjfEI7FSHNN1slpW7N/qqMV14cE5iqxc6znRTi9NvtTo2b82KQOSsZ4QZ5OG45Hc+2A07eZ9PJUQLL9FDhUk82BJ/TwcLwuz/BehIZfWSV7oWkuX9klpoz0sNpuKmlwZju4JGaSBkgNPNcYvyi9Em11cObkiog1rRR6EA8cx9oXWRR19BxPksvoPDVPfssAXTGw2J22y2TScOKraZqOCqjFtT/Lqgyzdv4fWRapYrzelH0paa1rgm2TJZcYd8w/TqA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aTvLV3U94Q11Y4CESr0zXsak/18u+4rZXZVbtHmCJSY=;
+ b=lmuk3YbnhgQFtdY1UOjbiXKR1pE3qwhLoxAtFaDHaxhBqYzWQ4hSUzZqzfJKsboKj7KqujfmV3gDg61CERWAY3zwxjZSIOe9UsBjoLdOCcQjcCHlUkA2f+N3tODOkOqK7dD4vsMAyNswa7NJKBiF2gcY0OsbMiFDgKTa/e7Dts5x4nYww/aODiSwysAWfRRCt1GqPn13jl/SxFpSnS1g2lw+rgkf9g2MLLMJCBba5IUMVuk8q/3FLPuFjQzpYP5On2j5VwVB4vpN2wUDrtxRWf5zItIoV4ZZtIDhixHLYMqLyHK6h1D/Iqpm7sIWznxfynGq+ssanaDoQetbzp0sKg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aTvLV3U94Q11Y4CESr0zXsak/18u+4rZXZVbtHmCJSY=;
+ b=trxkjJ1TCq89/+lwm0eFrH7ur52ukCYsQUhWS42RJDafcRHhCLB2JTlXF25+KjuYfF0oEVQWAfbT2AOUDYINjv/X1p5rq90esuz4gdiDTXEZem+63+zt3dmlbXt65dIoApqsaM5/YJT4pzfKe657+uawKrGkePchUSVbNY1MKjUvMxZyLgL86IYuMm1ViIS13cqV1fd0aIaJuXbwY+X+dsBwNtimoyJ+bHr1ovNLHR1jDY/yILpQxFBh+UrlJR+KMBPcANKizrtGAL4Xk6jrV3bq7mYmByVq7FasL8rFRODM+CGHMBBqIW69QMKMB8ly8l+XMDkI29ViTg7Or3Fo7A==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by SN3PEPF00013E2A.namprd02.prod.outlook.com (2603:10b6:82c:400:0:3:0:a) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.26; Fri, 22 Mar
+ 2024 18:11:50 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::1276:e87b:ae1:a596]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::1276:e87b:ae1:a596%5]) with mapi id 15.20.7409.023; Fri, 22 Mar 2024
+ 18:11:50 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Will Deacon <will@kernel.org>, Petr Tesarik <petrtesarik@huaweicloud.com>
+CC: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr Tesarik
+	<petr.tesarik1@huawei-partners.com>, open list
+	<linux-kernel@vger.kernel.org>, "open list:DMA MAPPING HELPERS"
+	<iommu@lists.linux.dev>, Roberto Sassu <roberto.sassu@huaweicloud.com>, Petr
+ Tesarik <petr@tesarici.cz>
+Subject: RE: [PATCH v3 0/2] swiotlb: allocate padding slots if necessary
+Thread-Topic: [PATCH v3 0/2] swiotlb: allocate padding slots if necessary
+Thread-Index: AQHae7Pv4SNgrMIt8ky2VYTC2f59Y7FD3oWAgAAqOwA=
+Date: Fri, 22 Mar 2024 18:11:50 +0000
+Message-ID:
+ <SN6PR02MB41574F4837E875F3D158B329D4312@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240321171902.85-1-petrtesarik@huaweicloud.com>
+ <20240322150941.GA5634@willie-the-truck>
+In-Reply-To: <20240322150941.GA5634@willie-the-truck>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-tmn: [XGqVcN2MdnpUDOuHikYKfkhi5SkWfctk]
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|SN3PEPF00013E2A:EE_
+x-ms-office365-filtering-correlation-id: 99a20e44-2544-43e2-5cda-08dc4a9b8bab
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ 394aM7hl/5n3MOq79lG5YwpcSBvRIii3bzGi2ZnFbkzUMMsgFZRKXrNJSimr5irPm42FxQdxr0KwfLILG20AG+T2TQKNHoxPCAvsDttt//vpQ6aGamZiSeq+pHDR/KPLL6MxUnvM/m9DLXd1vS/jy9czB0jYR3H7do9roudgFFIvmHR3Eo7kvNWcwwSGTqbObyh8boVotaNdmcf55Z6e4yRbEZf+TWLJ7a5KzBmSwjBz+AfrkdC6mHIkOYnrmf2O5nDvEtk1F/Un7TX0Ue65yhzDcLN3WJkVedHFLmpdnmbMNhNZzIiv0ZNZSaeK19lZzGEE996rDTZ7bDq+5occoiRhi4xj5ZiO7eAhWd5I/8wSTr01hgz2iKy/FRifIBB3YUyk0o8L50p1vM47NgheGdWM6g3q8JACEbXsGTaM+DGi8ZaVIDPV9Qf9Q+oK6lxAbpnwjiNrYXT4YX3pf4wxg59VsrMq7O1GYjcS/5/RU0He4u74Tz+TZ48JZtONtMXmtuIvzNFXWyVLkMnfW/XsyL0S3fwzGJ/Xv8lTWk5HwX+1F43aWnjuQzNjMh6mF4Xp
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?iShP3LE8mZfp8+FO6QJPouqCjfJkbqIZyGs34gzKyd96GC+AkrdkjSWexyTz?=
+ =?us-ascii?Q?ukHz7jx6XkrkiqcuOGa78qB6oAFntqYIxmt0VD+H/jhrcRvA90nlTFQMDi7G?=
+ =?us-ascii?Q?XNpzfxw05590mWkWJMC9DHV22v2f39Lv1abc4uq+bME414iXF440/xmhdD2j?=
+ =?us-ascii?Q?yMK4fyMJvZNF2Wpn9g1/buclher6pSWsT9wasQeMUsgfRTsO5+wE7SNbQ3jt?=
+ =?us-ascii?Q?msFrbPu5op5I9drMFr5n6Hsp6FJfXzpGoURBa7rIpbpHH4LT0XxjJXhcPr2p?=
+ =?us-ascii?Q?ohcrNe/VQkj6uIrU1vfr+om5Y/l3tSmn175FIlbpR00TuC7TFGPv8dYM4GK7?=
+ =?us-ascii?Q?X35P23jV/lw8U/WKi8fPmq+xqbTJKmXLWp8vqCIYxCXpqFjdMjAhL5Fpr5H6?=
+ =?us-ascii?Q?VAkL7/bnJJNXOkcb7tTLw1R5BfdyF9oXtJc3hSrD3sATuMsV88liiPE6v71X?=
+ =?us-ascii?Q?BYEw3KWOfc9n4OQgy0xfJAFT4SDLQnv6LQmdODZjsvkhFO68e5rgBEPGv/aH?=
+ =?us-ascii?Q?wtz7skUng0i42dFSh3zn0ThwxH7kH2I6fvSZdufuWJZ0bjEDjwVkFfRQnjjq?=
+ =?us-ascii?Q?tyH7z/Llx0nUaVDC54NjpHZN+RXlMWAmds8IN+dVOAP0nOhALdsJvLRz2lAc?=
+ =?us-ascii?Q?aRgEZs7TkLtctAw7Wl+5yNg4F6RAsEXaXKDWXHnWvrqWwvy5bw6coslkEfm6?=
+ =?us-ascii?Q?LLn8qBHBqOYNI+OGiISEmVr9omjF0M1B4VDHdp6dcg1wj3y7ufUViVamUP5t?=
+ =?us-ascii?Q?FshK2/5YCcVFtmptEfE/MEI5IQSnSRvEmHLQU6jvy1wGKxiU6G2KO4PMSjwO?=
+ =?us-ascii?Q?vKHlCt51acZ32VtUqm4k0h3m/iT1OsC+9sF2ukrxBNwIL0hW2VrmHNCE6dtq?=
+ =?us-ascii?Q?oSJy0y3aI4eVLzc4WCSTng1uvV0MfbZ7kTAX1AdnmWbh713+/j5yenegRvm1?=
+ =?us-ascii?Q?e4lejrFRIvOG7nFysSWay3HIWRDAmmBNTPsvLCuqnh8206w8qeoj6ApbhNdF?=
+ =?us-ascii?Q?umguan7eAKNAuEwG6j+JYtfoYaTgPaCNDD4n+KVL+fNp4uHCacpYKfPE906s?=
+ =?us-ascii?Q?lFcY0G8WUf+7P6QrkgB0HislKnpKFAVG4yUQv7/sPRkKQ1MLIrV+k1cgnDVo?=
+ =?us-ascii?Q?/XK6vPaeWidHzRuRD1Nq8L7794j2jUD0RRD/r5wD/bvAeT5cWAn4V99Qclts?=
+ =?us-ascii?Q?GTk23h4rUOkHxXc5WIoeqQIa+Hua+2QdarrZZA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99a20e44-2544-43e2-5cda-08dc4a9b8bab
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Mar 2024 18:11:50.3402
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN3PEPF00013E2A
 
-On Mon, Mar 04, 2024 at 07:43:51PM -0400, Jason Gunthorpe wrote:
-> Instead of passing a naked __le16 * around to represent a CD table entry
-> wrap it in a "struct arm_smmu_cd" with an array of the correct size. This
-> makes it much clearer which functions will comprise the "CD API".
-> 
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 20 +++++++++++---------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  7 ++++++-
->  2 files changed, 17 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 9e9233331c4636..c60b067c1f553e 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -1219,7 +1219,8 @@ static void arm_smmu_write_cd_l1_desc(__le64 *dst,
->  	WRITE_ONCE(*dst, cpu_to_le64(val));
->  }
->  
-> -static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
-> +static struct arm_smmu_cd *arm_smmu_get_cd_ptr(struct arm_smmu_master *master,
-> +					       u32 ssid)
->  {
->  	__le64 *l1ptr;
->  	unsigned int idx;
-> @@ -1228,7 +1229,8 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
->  	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
->  
->  	if (cd_table->s1fmt == STRTAB_STE_0_S1FMT_LINEAR)
-> -		return cd_table->cdtab + ssid * CTXDESC_CD_DWORDS;
-> +		return (struct arm_smmu_cd *)(cd_table->cdtab +
-> +					      ssid * CTXDESC_CD_DWORDS);
->  
->  	idx = ssid >> CTXDESC_SPLIT;
->  	l1_desc = &cd_table->l1_desc[idx];
-> @@ -1242,7 +1244,7 @@ static __le64 *arm_smmu_get_cd_ptr(struct arm_smmu_master *master, u32 ssid)
->  		arm_smmu_sync_cd(master, ssid, false);
->  	}
->  	idx = ssid & (CTXDESC_L2_ENTRIES - 1);
-> -	return l1_desc->l2ptr + idx * CTXDESC_CD_DWORDS;
-> +	return &l1_desc->l2ptr[idx];
->  }
->  
->  int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
-> @@ -1261,7 +1263,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
->  	 */
->  	u64 val;
->  	bool cd_live;
-> -	__le64 *cdptr;
-> +	struct arm_smmu_cd *cdptr;
->  	struct arm_smmu_ctx_desc_cfg *cd_table = &master->cd_table;
->  	struct arm_smmu_device *smmu = master->smmu;
->  
-> @@ -1272,7 +1274,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
->  	if (!cdptr)
->  		return -ENOMEM;
->  
-> -	val = le64_to_cpu(cdptr[0]);
-> +	val = le64_to_cpu(cdptr->data[0]);
->  	cd_live = !!(val & CTXDESC_CD_0_V);
->  
->  	if (!cd) { /* (5) */
-> @@ -1289,9 +1291,9 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
->  		 * this substream's traffic
->  		 */
->  	} else { /* (1) and (2) */
-> -		cdptr[1] = cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK);
-> -		cdptr[2] = 0;
-> -		cdptr[3] = cpu_to_le64(cd->mair);
-> +		cdptr->data[1] = cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK);
-> +		cdptr->data[2] = 0;
-> +		cdptr->data[3] = cpu_to_le64(cd->mair);
->  
->  		/*
->  		 * STE may be live, and the SMMU might read dwords of this CD in any
-> @@ -1323,7 +1325,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
->  	 *   field within an aligned 64-bit span of a structure can be altered
->  	 *   without first making the structure invalid.
->  	 */
-> -	WRITE_ONCE(cdptr[0], cpu_to_le64(val));
-> +	WRITE_ONCE(cdptr->data[0], cpu_to_le64(val));
->  	arm_smmu_sync_cd(master, ssid, true);
->  	return 0;
->  }
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> index 23baf117e7e4b5..7078ed569fd4d3 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-> @@ -282,6 +282,11 @@ struct arm_smmu_ste {
->  #define CTXDESC_L1_DESC_L2PTR_MASK	GENMASK_ULL(51, 12)
->  
->  #define CTXDESC_CD_DWORDS		8
-> +
-> +struct arm_smmu_cd {
-> +	__le64 data[CTXDESC_CD_DWORDS];
-> +};
-> +
->  #define CTXDESC_CD_0_TCR_T0SZ		GENMASK_ULL(5, 0)
->  #define CTXDESC_CD_0_TCR_TG0		GENMASK_ULL(7, 6)
->  #define CTXDESC_CD_0_TCR_IRGN0		GENMASK_ULL(9, 8)
-> @@ -591,7 +596,7 @@ struct arm_smmu_ctx_desc {
->  };
->  
->  struct arm_smmu_l1_ctx_desc {
-> -	__le64				*l2ptr;
-> +	struct arm_smmu_cd		*l2ptr;
->  	dma_addr_t			l2ptr_dma;
->  };
->  
-> -- 
-> 2.43.2
->
+From: Will Deacon <will@kernel.org> Sent: Friday, March 22, 2024 8:10 AM
+>=20
+> Hi Petr,
+>=20
+> On Thu, Mar 21, 2024 at 06:19:00PM +0100, Petr Tesarik wrote:
+> > From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+> >
+> > If the allocation alignment is bigger than IO_TLB_SIZE and min_align_ma=
+sk
+> > covers some bits in the original address between IO_TLB_SIZE and
+> > alloc_align_mask, preserve these bits by allocating additional padding
+> > slots before the actual swiotlb buffer.
+>=20
+> Thanks for fixing this! I was out at a conference last week, so I didn't
+> get very far with it myself, but I ended up in a pickle trying to avoid
+> extending 'struct io_tlb_slot'. Your solution is much better than the
+> crazy avenue I started going down...
+>=20
+> With your changes, can we now simplify swiotlb_align_offset() to ignore
+> dma_get_min_align_mask() altogether and just:
+>=20
+> 	return addr & (IO_TLB_SIZE - 1);
+>=20
+> ?
+>=20
 
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
+I don't think such a change is correct, since we want to allow the
+DMA min_align_mask to work if it is set to 0x3FF or 0x1FF or
+something else smaller than IO_TLB_SIZE - 1.
 
-Thanks,
-Mostafa
+Petr's new offset calculation in swiotlb_tbl_map_single() is this:
+
+offset =3D orig_addr & dma_get_min_align_mask(dev) &
+                (alloc_align_mask | (IO_TLB_SIZE - 1));
+
+In the normal stream mapping case, where alloc_align_mask is
+zero, Petr's new statement is equivalent to swiotlb_align_offset().
+And I think it needs to continue to be equivalent so that
+swiotlb_search_pool_area(), swiotlb_bounce()  and
+swiotlb_release_slots() calculate the same offset as
+swiotlb_tbl_map_single() uses after it separately processes
+the padding slots.
+
+Perhaps a better approach to maintaining the equivalence is
+to modify swiotlb_align_offset() to be Petr's new calculation,
+with alloc_align_mask passed as an argument.
+swiotlb_search_pool_area(), swiotlb_bounce(), and
+swiotlb_release_slots() would all pass 0 as the alloc_align_mask
+argument.
+
+Michael
