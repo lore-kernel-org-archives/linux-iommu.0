@@ -1,239 +1,166 @@
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAFB147F7A;
-	Fri, 22 Mar 2024 15:04:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.147.86
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6537B47F7A
+	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 15:04:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711119878; cv=none; b=Tzu4dD3Y1W69AyjxRp230khF9s/NtCtU7xaM3JQEGz816Yn9G7HiB13y9QcZGd5hyGlsOsz098xEXiUQlnM0u9QR2Ra5Q9NZ3Gzb6J6hPxSAB/RrkptgtQk0Lykumd8YYwTDIiWw0R7e52mRKQd/DINXYY/ME9BR8WG5mKOBXpk=
+	t=1711119894; cv=none; b=AqcBYzRU0E3iyLHZoCAjEyLw+UkoRw2rDwA5MZCH+D8eJGBA3VWf99UUQEvQKoifU78uRIjnoZ1BJURVL/dvvHNypBuqkuVEkCMSRu/YI5GAJQ7c2MCNbzsuNK/nc2UexTGrgx1DpYMrFBWwYER8i8DVXuhpojBqJPviIeItylk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711119878; c=relaxed/simple;
-	bh=pMw41LK2md1lsVOBw+1WHPfP+SWaN25vqSCRAp+WiEA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fveeW+ua+Ugm2wI7fvf2uvI3syJ7rYrQqV48w+fs5X/Q2fofdoStOqhP6GAlPrm20a8E9iDU9Ydbk2Wz8rBC7i2Sbaesam1ENTW3tBCFHSW5WZ13Pf9QRFsGLq5xIUD8RgTjg+lax9wBttGkzEtPLAPLYSUhVMMdT/t4gF5+2Ag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com; spf=pass smtp.mailfrom=hpe.com; dkim=pass (2048-bit key) header.d=hpe.com header.i=@hpe.com header.b=cKiOBsy4; arc=none smtp.client-ip=148.163.147.86
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hpe.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hpe.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hpe.com header.i=@hpe.com header.b="cKiOBsy4"
-Received: from pps.filterd (m0134420.ppops.net [127.0.0.1])
-	by mx0b-002e3701.pphosted.com (8.17.1.19/8.17.1.19) with ESMTP id 42MAIIRi009939;
-	Fri, 22 Mar 2024 15:03:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pps0720; bh=R+DjamXJ2Os+RkrubU6SEUzUiFfgGVeCbQ1FHdoKBsk=;
- b=cKiOBsy4/LBLdMHPMfIVL+Nij1OMzO7VrCUlP0/3KptUPK+WhIpJTHCDpxD3+NmNuxng
- 0oMMGKZL+eFRe3UXaP0rUIRhgE7JNWms17P1u+9q0zJwRHW2FWxRBETJSYjiFdOOmCQk
- tOLLxxHrBIC7lKPHfMIuHcJTsbgLeHpZCEiN6oHM9gUxa0Cd2EV0PI/1DSqQW7mwzcCt
- 2IxYpyY3gXrjgJsr3Uxylh7dz8NED+8H97eUO9VdhdKJC22A06Ad/atVMj86kv+ha7hM
- dJanaDa9EMs2MA5FypKvjzBAXmNGq8jc84ONhdFapu7uedk9D+xtiT2AlAA7PxqpJ3SZ 1A== 
-Received: from p1lg14881.it.hpe.com ([16.230.97.202])
-	by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3x0wyey3tp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 22 Mar 2024 15:03:30 +0000
-Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by p1lg14881.it.hpe.com (Postfix) with ESMTPS id 6B0E0804DC5;
-	Fri, 22 Mar 2024 15:03:27 +0000 (UTC)
-Received: from hpe.com (unknown [16.231.227.36])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTPS id AE82E800EF5;
-	Fri, 22 Mar 2024 15:03:20 +0000 (UTC)
-Date: Fri, 22 Mar 2024 10:03:16 -0500
-From: Dimitri Sivanich <sivanich@hpe.com>
-To: "Zhang, Tina" <tina.zhang@intel.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Joerg Roedel <joro@8bytes.org>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-        Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>,
-        YueHaibing <yuehaibing@huawei.com>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Steve Wahl <steve.wahl@hpe.com>,
-        "Anderson, Russ" <russ.anderson@hpe.com>
-Subject: Re: [PATCH v2] iommu/vt-d: Allocate DMAR fault interrupts locally
-Message-ID: <Zf2dtAczygAAa2vg@hpe.com>
-References: <Zfydpp2Hm+as16TY@hpe.com>
- <MW5PR11MB58815A2B9929D89F5B32371989312@MW5PR11MB5881.namprd11.prod.outlook.com>
+	s=arc-20240116; t=1711119894; c=relaxed/simple;
+	bh=JMW/wS+YLEbt8TSyWtcLBP3bnqOJvUQU5pwGJLQgORo=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=IuNWaCVzWPbUZM/ma88lf8LubvT5tg71szkOhasEPBhtHcQtx4qMrlHQ4I2iM9fd5dR57M/5dnIfIgL7zXvMo5mMWX3szAWSAsRLfA0W2UQfGX2FqDBAn4eH0YF64m2kEpiGTscVtNWFXvpDcioV2oylSoYw+zz/cf1YL+4eM1U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.163.44])
+	by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4V1QZk60jsz1vxQZ;
+	Fri, 22 Mar 2024 23:03:58 +0800 (CST)
+Received: from dggems705-chm.china.huawei.com (unknown [10.3.19.182])
+	by mail.maildlp.com (Postfix) with ESMTPS id 114B1140133;
+	Fri, 22 Mar 2024 23:04:46 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ dggems705-chm.china.huawei.com (10.3.19.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Fri, 22 Mar 2024 23:04:44 +0800
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
+ Fri, 22 Mar 2024 15:04:42 +0000
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, Linuxarm <linuxarm@huawei.com>, Zhangfei Gao
+	<zhangfei.gao@linaro.org>, Michael Shavit <mshavit@google.com>, Eric Auger
+	<eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
+Subject: RE: Query on ARM SMMUv3 nested support
+Thread-Topic: Query on ARM SMMUv3 nested support
+Thread-Index: Adp1KtDVvB0XiTw1RNC3mrRboX3icgAdnrMAAbGUUaA=
+Date: Fri, 22 Mar 2024 15:04:42 +0000
+Message-ID: <4a37c695bf84425ea5159b82c202cb81@huawei.com>
+References: <b8c1b2fb281246da94b35ceb5e27b538@huawei.com>
+ <ZfI74miZ1ss9+Kz0@Asurada-Nvidia>
+In-Reply-To: <ZfI74miZ1ss9+Kz0@Asurada-Nvidia>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MW5PR11MB58815A2B9929D89F5B32371989312@MW5PR11MB5881.namprd11.prod.outlook.com>
-X-Proofpoint-GUID: O9BFYHYfEBnF7POTx4qlHaBYnB6uevQ_
-X-Proofpoint-ORIG-GUID: O9BFYHYfEBnF7POTx4qlHaBYnB6uevQ_
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-03-22_08,2024-03-21_02,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- suspectscore=0 phishscore=0 lowpriorityscore=0 adultscore=0 clxscore=1011
- mlxscore=0 bulkscore=0 spamscore=0 mlxlogscore=999 priorityscore=1501
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2403210000 definitions=main-2403220107
 
-Hi Tina,
 
-On Fri, Mar 22, 2024 at 04:41:01AM +0000, Zhang, Tina wrote:
-> Hi Dimitri,
-> 
-> 
-> > -----Original Message-----
-> > From: Dimitri Sivanich <sivanich@hpe.com>
-> > Sent: Friday, March 22, 2024 4:51 AM
-> > To: Thomas Gleixner <tglx@linutronix.de>; Joerg Roedel <joro@8bytes.org>;
-> > Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>; Will Deacon
-> > <will@kernel.org>; Robin Murphy <robin.murphy@arm.com>; David
-> > Woodhouse <dwmw2@infradead.org>; Lu Baolu <baolu.lu@linux.intel.com>;
-> > Mark Rutland <mark.rutland@arm.com>; Peter Zijlstra
-> > <peterz@infradead.org>; Arnd Bergmann <arnd@arndb.de>; YueHaibing
-> > <yuehaibing@huawei.com>; iommu@lists.linux.dev; Dimitri Sivanich
-> > <sivanich@hpe.com>
-> > Cc: linux-kernel@vger.kernel.org; Steve Wahl <steve.wahl@hpe.com>;
-> > Anderson, Russ <russ.anderson@hpe.com>
-> > Subject: [PATCH v2] iommu/vt-d: Allocate DMAR fault interrupts locally
-> > 
-> > The Intel IOMMU code currently tries to allocate all DMAR fault interrupt
-> > vectors on the boot cpu.  On large systems with high DMAR counts this
-> > results in vector exhaustion, and most of the vectors are not initially allocated
-> > socket local.
-> > 
-> > Instead, have a cpu on each node do the vector allocation for the DMARs on
-> > that node.  The boot cpu still does the allocation for its node during its boot
-> > sequence.
-> > 
-> > Signed-off-by: Dimitri Sivanich <sivanich@hpe.com>
-> > ---
-> > 
-> > v2: per Thomas Gleixner, implement this from a DYN CPU hotplug state,
-> > though
-> >     this implementation runs in CPUHP_AP_ONLINE_DYN space rather than
-> >     CPUHP_BP_PREPARE_DYN space.
-> > 
-> >  drivers/iommu/amd/amd_iommu.h | 2 +-
-> >  drivers/iommu/amd/init.c      | 2 +-
-> >  drivers/iommu/intel/dmar.c    | 9 +++++++--
-> >  drivers/iommu/irq_remapping.c | 5 ++++-  drivers/iommu/irq_remapping.h |
-> > 2 +-
-> >  include/linux/dmar.h          | 2 +-
-> >  6 files changed, 15 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/amd/amd_iommu.h
-> > b/drivers/iommu/amd/amd_iommu.h index f482aab420f7..410c360e7e24
-> > 100644
-> > --- a/drivers/iommu/amd/amd_iommu.h
-> > +++ b/drivers/iommu/amd/amd_iommu.h
-> > @@ -33,7 +33,7 @@ int amd_iommu_prepare(void);  int
-> > amd_iommu_enable(void);  void amd_iommu_disable(void);  int
-> > amd_iommu_reenable(int mode); -int amd_iommu_enable_faulting(void);
-> > +int amd_iommu_enable_faulting(unsigned int cpu);
-> >  extern int amd_iommu_guest_ir;
-> >  extern enum io_pgtable_fmt amd_iommu_pgtable;  extern int
-> > amd_iommu_gpt_level; diff --git a/drivers/iommu/amd/init.c
-> > b/drivers/iommu/amd/init.c index e7a44929f0da..4782f690ed97 100644
-> > --- a/drivers/iommu/amd/init.c
-> > +++ b/drivers/iommu/amd/init.c
-> > @@ -3389,7 +3389,7 @@ int amd_iommu_reenable(int mode)
-> >  	return 0;
-> >  }
-> > 
-> > -int __init amd_iommu_enable_faulting(void)
-> > +int __init amd_iommu_enable_faulting(unsigned int cpu)
-> >  {
-> >  	/* We enable MSI later when PCI is initialized */
-> >  	return 0;
-> > diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c index
-> > 36d7427b1202..7644a42f283c 100644
-> > --- a/drivers/iommu/intel/dmar.c
-> > +++ b/drivers/iommu/intel/dmar.c
-> > @@ -2122,7 +2122,7 @@ int dmar_set_interrupt(struct intel_iommu
-> > *iommu)
-> >  	return ret;
-> >  }
-> > 
-> > -int __init enable_drhd_fault_handling(void)
-> > +int enable_drhd_fault_handling(unsigned int cpu)
-> >  {
-> >  	struct dmar_drhd_unit *drhd;
-> >  	struct intel_iommu *iommu;
-> > @@ -2132,7 +2132,12 @@ int __init enable_drhd_fault_handling(void)
-> >  	 */
-> >  	for_each_iommu(iommu, drhd) {
-> >  		u32 fault_status;
-> > -		int ret = dmar_set_interrupt(iommu);
-> > +		int ret;
-> > +
-> > +		if (iommu->irq || iommu->node != cpu_to_node(cpu))
-> > +			continue;
-> If iommu->irq is set, current logic will clear any previous faults by accessing DMAR_FSTS_REG. However, the code change in this patch seems missing it.
 
-Yes, the current logic does clear the faults even in the iommu->irq!=0 case,
-but enable_drhd_fault_handling is currently only run once by the boot cpu,
-prior to startup of the other processors.  So each iommu will, initially at
-least, only have its faults cleared once.
+> -----Original Message-----
+> From: Nicolin Chen <nicolinc@nvidia.com>
+> Sent: Wednesday, March 13, 2024 11:51 PM
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> Cc: Jason Gunthorpe <jgg@nvidia.com>; iommu@lists.linux.dev; Linuxarm
+> <linuxarm@huawei.com>; Zhangfei Gao <zhangfei.gao@linaro.org>; Michael
+> Shavit <mshavit@google.com>; Eric Auger <eric.auger@redhat.com>; Moritz
+> Fischer <mdf@kernel.org>
+> Subject: Re: Query on ARM SMMUv3 nested support
+>=20
+> On Wed, Mar 13, 2024 at 10:13:58AM +0000, Shameerali Kolothum Thodi
+> wrote:
+> > Hi Nicolin,
+> >
+> > Thanks for the latest repos with basic SMMUv3 nested support enabled[1]=
+.
+> > I did some  basic sanity runs on a HiSilicon platform and they seems to
+> work as
+> > expected. The only problem being we can't assign two devices to the VM =
+if
+> > they are on different physical SMMUs.
+> >
+> > qemu-system-aarch64: -device
+> > vfio-pci,host=3D0000:75:00.1,iommufd=3Diommufd0: [iommufd=3D29] error
+> attach
+> > 0000:75:00.1 (36) to id=3D4: Invalid argument
+> > qemu-system-aarch64: -device
+> > vfio-pci,host=3D0000:75:00.1,iommufd=3Diommufd0: Unable to attach dev t=
+o
+> > stage-2 HW pagetable: -1
+> > Segmentation fault (core dumped)
+> > ...
+> >
+> > I see that on the Qemu side we now allocate a single s2 hwpt and attach
+> that into
+> > all the devices . But this will only work currently if all the assigned=
+ devices
+> > are under the same physical SMMUv3 as we have a check in kernel
+> > whether domains are having the same SMMUv3. I remember Jason
+> mentioning
+> > that he is planning to relax that. So are the Qemu side changes based o=
+n
+> that
+> > assumption? And any idea how we are planning to relax that restriction?
+> We
+> > do a check for compatibility of the phys SMMUv3s and then allow/restric=
+t
+> in kernel?
+> > Do Qemu can then try allocating a separate s2 hwpt for those and attach
+> again?
+> > Sorry if this was already discussed elsewhere and I missed that.
+>=20
+> You are very right about this. I haven't thought about supporting
+> that case yet. Likely I need to spare some time to refine the QEMU
+> part in the coming weeks or so (have been waiting for Zhenzhong's
+> full nesting patches).
+>=20
+> Also, NVIDIA has an interest to support CMDQ-V accelerator, where
+> we need more vSMMU instances, than just one. I haven't decided how
+> to handle this for both single-vSMMU and multi-vSMMU versions.
+>=20
+> Yet, some of the ongoing work might help:
+> https://github.com/nicolinc/iommufd/commit/b7520901184fd9fa127abb88c
+> 1f0be16b9967cff
+> https://github.com/nicolinc/iommufd/commit/d969ffeac899491d3a6e54557
+> bf6a46d52b95865
+> So, each device should poll hw_info to get its SMMU ID, if it is
+> not in the S2 list of the vSMMU's, add it and allocate a new S2.
 
-With this patch, enable_drhd_fault_handling will still run on the boot cpu
-prior to the startup of other processors, but will also run on each AP as it is
-brought up (hotplugged).  It will now only operate on the iommus that are on
-its own socket, however.  If we add back the fault clearing for the
-iommu->irq!=0 case, each iommu on a socket would end up having faults cleared
-once for each cpu on the socket (so 120 times for a 60-core socket with HT
-enabled).  In addition, this would happen again each time a cpu is hot-plugged
-after having been hot-unplugged.
+Thanks for the reference to above CMDQ-V. Looks interesting.
+I think we can have a go with retry logic first to allocate a new hwpt
+if the attach fails. For now, I have a temp fix where I allocate a new
+hwpt every time.
 
-So is there a specific reason why faults would need to be cleared if the
-iommu->irq has already been set, since I assume they would've already been
-cleared during this boot?
+I also noticed another problem with the commit below,
+6691a2f("hw/arm/smmu-common: Use sysmem for get_address _space until !!s2_h=
+wpti")
 
-I'm definitely willing to add back the fault clearing for the iommu->irq!=0
-case, but am looking for guidance from others like yourself on this.
+This actually breaks a virtio-pci dev assignment when that is the only=20
+assigned device to the Guest without any pass-through dev in nested
+scenario.
 
-> 
-> The current logic:
-> int dmar_set_interrupt(struct intel_iommu *iommu)
-> {
->         int irq, ret;
-> 
->         /*
->          * Check if the fault interrupt is already initialized.
->          */
->         if (iommu->irq)
->                 return 0;
->         ...
-> 
-> int __init enable_drhd_fault_handling(void)
-> {
-> 	...
->         for_each_iommu(iommu, drhd) {
->                 u32 fault_status;
->                 int ret = dmar_set_interrupt(iommu);
-> 
->                 if (ret) {
->                         pr_err("DRHD %Lx: failed to enable fault, interrupt, ret %d\n",
->                                (unsigned long long)drhd->reg_base_addr, ret);
->                         return -1;
->                 }
-> 
->                 /*
->                  * Clear any previous faults.
->                  */
->                 dmar_fault(iommu->irq, iommu);
->                 fault_status = readl(iommu->reg + DMAR_FSTS_REG);
->                 writel(fault_status, iommu->reg + DMAR_FSTS_REG);
->         }
-> 	...
-> 
-> Regards,
-> 
-> -Tina
+I have a temp fix for that as well here,
+https://github.com/hisilicon/qemu/commit/ff0230e9593ba1a172aa7ec9162967d6ae=
+6875b0
+
+(I know it is ugly!). I will revisit that again. Please let me know if you =
+have
+any ideas.
+
+FWIW, I have a working branch for vSVA here,
+https://github.com/hisilicon/qemu/tree/iommufd_vsmmu-02292024-vsva-wip-v2
+
+I still have that io_uring write issue mentioned in the other thread[1],
+but for now I use io_uring API only for read and make use of normal write()
+for updating kernel with page response.
+
+I have done some basic sanity runs with our ACC devices and those seems
+to work(of course needs more testing).=20
+
+Please have a look and let me know if you spot anything.
+
+Thanks,
+Shameer
+1. https://lore.kernel.org/all/ad4575588dd247fa8beae60963f36404@huawei.com/
+
+
