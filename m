@@ -1,92 +1,118 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0B2E5FDDD;
-	Fri, 22 Mar 2024 17:46:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29CED604BC
+	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 17:48:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711129581; cv=none; b=oHQQzj2pe6g0c89w0nZB+6tgP87sT3/zpcVGkG/2Du8ys3O16yuYdAwjeb4gxPo3fJK06eLFTHIsKiDIIeSZxQwmnsD4uaKIVNq84tLpgzIRoRa9KoRJZJYkDsTn9UJTPH6xYqT+pWtUrQhB77AYYUanjex9kc+JNp8Y1nYWzHU=
+	t=1711129739; cv=none; b=RZbShqUnh2FZSQJwiakHhThNL+bqevR+wcS6oE5fdrZDnrHa+uiKtUCuvICsWeNcRLbEOEWUSryjLYbXjUGTqHWji3kJfDLuQYNTc4QSsGCkoBGv1YseiycE98N4/V6JuB+HEMF3lGS+1bBJKg10pEPb1kNQWGlcyNvxQLxcwF0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711129581; c=relaxed/simple;
-	bh=tPnSfU7iDXbv5Aanu3qQZ/bdHhZW5HEkKrMaj/r/t3E=;
+	s=arc-20240116; t=1711129739; c=relaxed/simple;
+	bh=r+4PuloVCi8RDOAoyLYF9VmfzCqPgx10kp/bvJjIT/8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=t1fFWZ00mlSUzvKAV2Tn9hcnz8Hhk9dbnHULQI5Hs4Z3yauEUBxYICPy43tNMnRh7j0PLSM8RCDZI4N4DIvdTAzciqqvPetms2v/8nzV4IjiNj+ki2T+ou3zyNZHNryywghdwYmcNkLL5VHz8FzEK4vJzXD9/rdjt6Rb2NKYB3E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZHS5yTT4; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=lkDvAdj2FgT0epdgYdzYmo17DMA1NQm0pU842J9uuOUpl+vjupPLwbf8a5j7cskKStNcmdOnI/WqEnzSQDtrKlhbP/EVok0YZkIA8K+k5SGNOrokROE4syVa3s6GMnvtJn81Uhm4F03PJIT9oGn8meJrNVCG0sjloITSj6cusxg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uyo/gwlZ; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZHS5yTT4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B06FDC43390;
-	Fri, 22 Mar 2024 17:46:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711129581;
-	bh=tPnSfU7iDXbv5Aanu3qQZ/bdHhZW5HEkKrMaj/r/t3E=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZHS5yTT4bbaMRlgftNPH4s3/BHy6Y/pMfuNyl8v8f5cbM9wT0nJywOThE9XO9o+Yo
-	 sQrbBVvHpfJ/GkmHADMgsyejjED5TS3WA9xA7CAd8LGMMBj72qkOP6L4xJgAnibISZ
-	 qNFyWWuGRtKqmNbYceSiJMbEfqG1Js9LGbaa9G2SXsAMGNlvbn99etRqhzGPHQquR2
-	 /pbuuEEFXd6WzmZyO515+46vj9pZRkjqcnsndSlqoffLvES8FRzNSO3QY42zxkNADr
-	 DC5hb9KvKEkeYTKUZ64FdwpBihsRuGbAw0oCeOVQ5Q/D7ca6clZI9B8s4YtiHLB9rj
-	 nO/n9c2+vHn/w==
-Date: Fri, 22 Mar 2024 19:46:17 +0200
-From: Leon Romanovsky <leon@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
-	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Bart Van Assche <bvanassche@acm.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Amir Goldstein <amir73il@gmail.com>,
-	"josef@toxicpanda.com" <josef@toxicpanda.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	"daniel@iogearbox.net" <daniel@iogearbox.net>,
-	Dan Williams <dan.j.williams@intel.com>,
-	"jack@suse.com" <jack@suse.com>, Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two steps
-Message-ID: <20240322174617.GD14887@unreal>
-References: <20240306221400.GA8663@lst.de>
- <20240307000036.GP9225@ziepe.ca>
- <20240307150505.GA28978@lst.de>
- <20240307210116.GQ9225@ziepe.ca>
- <20240308164920.GA17991@lst.de>
- <20240308202342.GZ9225@ziepe.ca>
- <20240309161418.GA27113@lst.de>
- <20240319153620.GB66976@ziepe.ca>
- <20240320085536.GA14887@unreal>
- <20240321224013.GB22663@lst.de>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uyo/gwlZ"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-413f8c8192eso7775e9.0
+        for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 10:48:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1711129736; x=1711734536; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=Mzqp/6dLgjMqKDQyf3mrQct0p3T2914IUgA3ZIQhwEo=;
+        b=uyo/gwlZ+Gnh/pAeOd7xnbka/IeM9WNbURPgG0ybEGZkaxsE4kd5Nu2/bLawsU7VSt
+         G6urUY/bITaEFPN6977GP2wBgrCL4S8h+bUdYwi1Lo2DRTmZ0u6hJNSADjh3mqD4dEzo
+         mn8bY1bHFcxmg2z5RzIDGahTP3uRu3YA/yYMoBS1XjA50YlsOXw5592QVp/srKU5cqbz
+         +UHaiolZJtLHOPHSgM0DPhbt35RCpvZNkR6wwyUMxbCGnt+AWbly7mAX4uMMY2NsEYtg
+         HcfvZrgfJgj9NhjBwcqVL73ygGb52snPy68hI4gnO9yUdHXt7lcNNF1zpO4IUchC8YLS
+         jY4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711129736; x=1711734536;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Mzqp/6dLgjMqKDQyf3mrQct0p3T2914IUgA3ZIQhwEo=;
+        b=cn6JyBZOfQqpRSzNxlYnHMwxez5DDL7xkPhrwHsNErQHyK5/oKTCMgyED+10RT/nZR
+         Ghpq/iktu+q+XiRFAVefmUjxtbvjkBU8wnNKU4SLHf71ktlqv5AR4W41stSqcT87pUoD
+         TlqRUCqyswE1+vjn2ZDWjMlTKDc74aU2HmLgcVAvtaRcVS+04/r19KFtYdo8l8Qb5QI4
+         mzVSyterr5A2fIDWFv5mhIveiyL3NJ3RSexWNmC0G/n6Bpln1OGUS2ow9u/k1L81u/Kq
+         VMqvJTPBB3LxpKjEzV8HgtYgIu5sYJqTKIAzNJLuRhTIo8kiuaAOIdWszfV5bqXavltP
+         +PHQ==
+X-Gm-Message-State: AOJu0YzPpzCam4pbuV/AjP4x1w+l0oDZZf7ucWFFPr6MCPrEvXh6Ek5m
+	3Ma+73AyFThtKCCN8jDPnL2bHXyFSrP1qBfBS5qVdL9Ky8ShlF0BPLMEdNXlTQ==
+X-Google-Smtp-Source: AGHT+IGHu63FaJns9JaXXBeuHGQZAWu5RyrwAL0IsGUibXz84z8HGlng2x1LsE39qLp74E9EsXarBg==
+X-Received: by 2002:a7b:c40a:0:b0:414:11:ec14 with SMTP id k10-20020a7bc40a000000b004140011ec14mr534253wmi.6.1711129736458;
+        Fri, 22 Mar 2024 10:48:56 -0700 (PDT)
+Received: from google.com (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
+        by smtp.gmail.com with ESMTPSA id d1-20020a05600c34c100b004147dd0915dsm152246wmq.21.2024.03.22.10.48.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Mar 2024 10:48:55 -0700 (PDT)
+Date: Fri, 22 Mar 2024 17:48:52 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v5 01/27] iommu/arm-smmu-v3: Do not allow a SVA domain to
+ be set on the wrong PASID
+Message-ID: <Zf3EhA5ZBNwF2XOr@google.com>
+References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+ <1-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240321224013.GB22663@lst.de>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
 
-On Thu, Mar 21, 2024 at 11:40:13PM +0100, Christoph Hellwig wrote:
-> On Wed, Mar 20, 2024 at 10:55:36AM +0200, Leon Romanovsky wrote:
-> > Something like this will do the trick.
+Hi Jason,
+
+On Mon, Mar 04, 2024 at 07:43:49PM -0400, Jason Gunthorpe wrote:
+> The SVA code is wired to assume that the SVA is programmed onto the
+> mm->pasid. The current core code always does this, so it is fine.
 > 
-> As far as I can tell it totally misses the point.  Which is not to never
-> return non-P2P if the flag is set, but to return either all P2P or non-P2
-> P and not create a boundary in the single call.
+> Add a check for clarity.
+> 
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index 2610e82c0ecd0d..347c2fdd865c1a 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -581,6 +581,9 @@ static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
+>  	int ret = 0;
+>  	struct mm_struct *mm = domain->mm;
+>  
+> +	if (mm_get_enqcmd_pasid(mm) != id)
+> +		return -EINVAL;
+> +
+I am not sure if that is needed, the only caller in the tree is the IOMMU code
+and it does the right thing, as that check is removed later anyway, I don’t
+think this patch adds much.
 
-You are treating FOLL_PCI_P2PDMA as a hint, but in iov_iter_extract_user_pages()
-you set it only for p2p queues. I was under impression that you want only p2p pages
-in these queues.
+>  	mutex_lock(&sva_lock);
+>  	ret = __arm_smmu_sva_bind(dev, id, mm);
+>  	mutex_unlock(&sva_lock);
+> -- 
+> 2.43.2
 
-Anyway, I can prepare other patch that will return or p2p or non-p2p pages in one shot.
-
-Thanks
+Thanks,
+Mostafa
