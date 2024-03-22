@@ -1,115 +1,104 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88C47605B4
-	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 17:51:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EBA37605C0
+	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 17:51:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711129871; cv=none; b=muMks8BPafOVAUpddi6jUY7NShb0TfEbbR6nFLSoHkMa/wYh3OtYypN8BQYOirh0unpzkZGcy8CHPvaKOgDq452Xw3yXnwR/XuKzyiMZdFcLlb9qMUEgYoE8/lWTWd93wWFHk7weINTgT6plbgnp7f2DF30+TN+1cZ94SmCPLdM=
+	t=1711129903; cv=none; b=AmgkzNom9zfVYYEkN1+oNULhfkMnUpwLe1chaIe+wKi8klJObA/dGUM8z1evxGDOCmJJQyfyt8w7GzmFpnKjaOpTBNVHi6Ws/Lfilu5oo0pA+3vf/TkjryZ2ErTBCLAFmKYIv+Yg9pG0VKfbFqATTRH+o/tpSL0dwgU9Gph4CXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711129871; c=relaxed/simple;
-	bh=B26xAHkjaWc8Ytd0vcrUSK8pxm6Eyu4Y89+p93t+Qbs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=k17ioNCA7VUqBmF/2rHPgG6Ck4UXqY7UazIuAuLMRkxGfT8uljwzXr38VeLZNPo0lfNqwSy0PSB/YfJ3a0uGZhz1Do4itDuIMZ64vnERGTaLVOFwxJAzYEi0BM1mrvvnTFGnkcVBS9RVUgLAFXH5wrWFPTWkxDgWdRS95UoeLqA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XV23DjkS; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1711129903; c=relaxed/simple;
+	bh=Xy6fuGyBECIuY3ohH/7MY26gAGWyuhCMWaGAqdMGGpI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=CaJYPLASWC3wGfPJ8Br8jAywupZNS9ha+X5br33TSWXEp4xL8ZueXWMEnC14J+77mLicgyuYu6mgZrRye9t2rSWShI628pLuiHBEK3dfDSNXWsMQqBpX28PfC6Gt7AgsLuc18hFax8ewPP7J2AsLVnMfH22UnMyO/bo7cdzwcg4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=CIWEdOc/; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XV23DjkS"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4140eed8a4fso8235e9.0
-        for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 10:51:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1711129868; x=1711734668; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=TD8wow2OS08EXkll41wG+2OWJgdRcKgoxTd9QmAS51w=;
-        b=XV23DjkSGv9p4hU98vyhRp9ptYeAcLEiDUnOo4iROSMp2nonqTGCnZ69XQKyTNJSs7
-         CDGNMB6SuWHCznjM7rboTACauHv6Q4cJ+3Uvy1MXR4J02kleHr72fw/+E+c3QKt3UsS2
-         sYq7O3v3rE0i7/YCUqNdp+gl/LqqAf86FRrQaH3mTO93B+M93tiXhhOKpS6Zrhi7VRA9
-         Qn+oeBDNG14bDvcpBMmkbAceRircBMN5lX7XNO6Pv6dXpx27M8xQTj3Iw7jsTJ6BDg+t
-         JeH3Ui6X/d5t7sTr255rYpyI2OzblBdloVrWePulF2W51igfkCIfnx3VN7YToBcJnmR2
-         ua1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711129868; x=1711734668;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TD8wow2OS08EXkll41wG+2OWJgdRcKgoxTd9QmAS51w=;
-        b=JHFxdWF1EYxKQM0R9v8XT44jRJpWnG9pKGHSFcibZWtWpzhDMMuOeXDLazSd1EVJ0k
-         Vk8FOxx8wEoOBodJJcF+c1fnP68MGfB9n/rs+Q/Fps/y3YMfvCLlAxBpCvecpIUnll5X
-         6l4xYsd4XEazwR4Ifc1oiYaNNjEYq3Jzv04i0eG4k9gYLfMV1FF2tzlUZYOfnPErj5TC
-         OxYuPsHa5t7ncI3Kf7/fQzTBqyoHYoznP+/mwL9c9gEy2meZl6NFiV+9XeE+aPiE+V1C
-         2uLKxnKWQbUWokU5tiRSt+DyJnCLvFoF5EV7BnXZUvluOPqbRicFbnjAhCyZ/TitWeH2
-         B7iA==
-X-Gm-Message-State: AOJu0Yxgz6pF9NFVdK0NKqprYJcLutNqdps/T+XRccTtHm7SwItfhwfc
-	zFOOKrU/7f78E0lGlkoVt74bxOi3X0X8zUivR7faGWrc9qhoON1bsJrbLh0OjQ==
-X-Google-Smtp-Source: AGHT+IF+yj96IjCX1EMz/Pt0bDbPQTk6WDPsn7ok0J8RLbHozW2+cvsxJL8Ng4N/Lk7Z45oOH64boQ==
-X-Received: by 2002:a05:600c:4856:b0:414:1400:a776 with SMTP id j22-20020a05600c485600b004141400a776mr499710wmo.5.1711129867768;
-        Fri, 22 Mar 2024 10:51:07 -0700 (PDT)
-Received: from google.com (216.131.76.34.bc.googleusercontent.com. [34.76.131.216])
-        by smtp.gmail.com with ESMTPSA id a13-20020a056000050d00b0033e239040d8sm2527556wrf.84.2024.03.22.10.51.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Mar 2024 10:51:07 -0700 (PDT)
-Date: Fri, 22 Mar 2024 17:51:03 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v5 02/27] iommu/arm-smmu-v3: Do not ATC invalidate the
- entire domain
-Message-ID: <Zf3FB3N0yjALqscA@google.com>
-References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
- <2-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="CIWEdOc/"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-b985-910f-39e1-703f.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:b985:910f:39e1:703f])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id C1B5F1AB84A;
+	Fri, 22 Mar 2024 18:51:39 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1711129900; bh=sCQm32WrW4hxeQOlo4+CbAT/ApEBh72zUZUhSQ2FlmU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=CIWEdOc/zZZOq3Ugq1EiC64RPQBV1sLQ2pjEBrhs3AXf9pxLWNPAPFapLHzEiRjpN
+	 PPb1mJLNvqMLoPONcnTd2HhDQYQH8QdMXabERrfl4fTn51uy7THsY+Z14WkuZfWXKM
+	 Vl+vBWlDxL2V4dDrypYmn0cz+a4lEpF+8RiZ4SEW4WU5RiRSoxnHsyW5GS5LdjUWo/
+	 fiNEQeSRvP0cUGmu/dJUxftJz9le+ZR6mrOI0I+v4/D6HjsHDAANceeEbuNtcpA8Si
+	 wMQmrT5zH0hBbUbkAeYTivIOM3bGCQA6Ecq8x9xnYr4RXnhr9zWngSAt7+qVRUtFna
+	 8omHoOUpjRsqw==
+Date: Fri, 22 Mar 2024 18:51:38 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Will Deacon <will@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, Petr
+ Tesarik <petr.tesarik1@huawei-partners.com>, Michael Kelley
+ <mhklinux@outlook.com>, open list <linux-kernel@vger.kernel.org>, "open
+ list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>, Roberto Sassu
+ <roberto.sassu@huaweicloud.com>
+Subject: Re: [PATCH v3 0/2] swiotlb: allocate padding slots if necessary
+Message-ID: <20240322185138.1af83c61@meshulam.tesarici.cz>
+In-Reply-To: <20240322150941.GA5634@willie-the-truck>
+References: <20240321171902.85-1-petrtesarik@huaweicloud.com>
+	<20240322150941.GA5634@willie-the-truck>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.39; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Jason,
+On Fri, 22 Mar 2024 15:09:41 +0000
+Will Deacon <will@kernel.org> wrote:
 
-On Mon, Mar 04, 2024 at 07:43:50PM -0400, Jason Gunthorpe wrote:
-> At this point we know which master we are going to change the PCI config
-> on, this is the only device we need to invalidate. Switch
-> arm_smmu_atc_inv_domain() for arm_smmu_atc_inv_master().
+> Hi Petr,
 > 
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
+> On Thu, Mar 21, 2024 at 06:19:00PM +0100, Petr Tesarik wrote:
+> > From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+> > 
+> > If the allocation alignment is bigger than IO_TLB_SIZE and min_align_mask
+> > covers some bits in the original address between IO_TLB_SIZE and
+> > alloc_align_mask, preserve these bits by allocating additional padding
+> > slots before the actual swiotlb buffer.  
 > 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index d1bc151a5dff8c..9e9233331c4636 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2447,7 +2447,10 @@ static void arm_smmu_enable_ats(struct arm_smmu_master *master,
->  	pdev = to_pci_dev(master->dev);
->  
->  	atomic_inc(&smmu_domain->nr_ats_masters);
-> -	arm_smmu_atc_inv_domain(smmu_domain, IOMMU_NO_PASID, 0, 0);
-> +	/*
-> +	 * ATC invalidation of PASID 0 causes the entire ATC to be flushed.
-> +	 */
-> +	arm_smmu_atc_inv_master(master);
->  	if (pci_enable_ats(pdev, stu))
->  		dev_err(master->dev, "Failed to enable ATS (STU %zu)\n", stu);
->  }
-> -- 
-> 2.43.2
+> Thanks for fixing this! I was out at a conference last week, so I didn't
+> get very far with it myself, but I ended up in a pickle trying to avoid
+> extending 'struct io_tlb_slot'. Your solution is much better than the
+> crazy avenue I started going down...
+> 
+> With your changes, can we now simplify swiotlb_align_offset() to ignore
+> dma_get_min_align_mask() altogether and just:
+> 
+> 	return addr & (IO_TLB_SIZE - 1);
 
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
+I have also thought about this but I don't think it's right. If we
+removed dma_get_min_align_mask() from swiotlb_align_offset(), we would
+always ask to preserve the lowest IO_TLB_SHIFT bits. This may cause
+less efficient use of the SWIOTLB.
 
-Thanks,
-Mostafa
+For example, if a device does not specify any min_align_mask, it is
+presumably happy with any buffer alignment, so SWIOTLB may allocate at
+the beginning of a slot, like here:
+
+orig_addr   |      ++|++      |
+tlb_addr    |++++    |        |
+
+Without dma_get_min_align_mask() in swiotlb_align_offset(), it would
+have to allocate two mostly-empty slots:
+
+tlb_addr    |      ++|++      |
+
+where:
+  | mark a multiple of IO_TLB_SIZE (in physical address space)
+  + used memory
+    free memory
+
+Petr T
