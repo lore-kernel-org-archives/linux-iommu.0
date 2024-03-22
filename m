@@ -1,57 +1,57 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A4455A4EF
-	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 18:14:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB8C969973
+	for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 18:36:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711131273; cv=none; b=UzMYQieDLMdhu4MdDUHQfVj45HjjYtYGBwx8d6WTkQ1Qp1n6y3v3UmKT0pwEFV5qIKxzbzqketIVRcKtKYQV9LKbVen5zzHaMptDaufNySV2ZugqXvI1QTVZL4wChKMvdtG6ptSoCdutmZelMkZSO1uRKTi1gZcMhW7EUcZAOrE=
+	t=1711132586; cv=none; b=EF0SXyyFtFEQSUAPefogOAWsqd+Ohx7iJf1pjhYKp6auvmYL/ropZzJprK6av+E2YbMMoEFA2nkykK1vYxozbFNk5vS4lYJ3aUbCtJiJChUB1PQ0WsQJ0QI4Gf337hQMky/+CElM2vsmVWWp404MNOdLkWwKRpi6j/8dXHHg+5g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711131273; c=relaxed/simple;
-	bh=Ulh2+U57NPF9A35k/OArrt2i9+CAkPAY0qErvvEfms0=;
+	s=arc-20240116; t=1711132586; c=relaxed/simple;
+	bh=JoClKObtEAGJ+tT2fQIpky3Dipfqc32Ut+GvILAfph0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CwhUg3KkTQZQh/x/eyug/PyfBRBMw1Ng9Nslpjgmryp3VhKZcZ5ct/mLNZQ7vHq5fylKq6lsz/TpcZqzFbaJLifXsi32yWnKPmQY87RT9axlMXLt3MgYGGnJAXnUFUKCi2Pjp9CtIeU3NNFxhtQ8FstB+ki+k3M6ihZZDjTaQ3w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=EFeWjj0I; arc=none smtp.client-ip=209.85.128.52
+	 Content-Type:Content-Disposition:In-Reply-To; b=BF0N9Fty3r8Yevp1t+Zog7FPldS2JRs3I2E20CP5qmkO18jV4Ct4BII+l1+zLmKzGu64ifdAyQmhcdaB0NFMkTR+SUOomQ7cg79IRrIBDkEN6wmep1ke2G6l3UXChuU2Bxndz3d1I+vnYpgFbBudYQxt6txt651R5FiA0VYfpjc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iWpukIG5; arc=none smtp.client-ip=209.85.214.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="EFeWjj0I"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-41428b378b9so9475e9.1
-        for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 11:14:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iWpukIG5"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-1deddb82b43so18245ad.0
+        for <iommu@lists.linux.dev>; Fri, 22 Mar 2024 11:36:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1711131270; x=1711736070; darn=lists.linux.dev;
+        d=google.com; s=20230601; t=1711132584; x=1711737384; darn=lists.linux.dev;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=Tg7FK1adNy9kVBWtxm5M01gQDSSIPZ6QTtS5XJqEjTE=;
-        b=EFeWjj0If7kIswmNJwDm6+QcuJt3KRnUQ5BLi2IoFT/E8Eu40TkErAA5ZgEf5kEvZx
-         UtIQU+4vZr3gWS/aalVWAdi6/AlTxEM5NM9rX676gyBRQPPCJ/qEbloYLqWRrYTPwoBa
-         2xdujWEeOzGVoNi+cyf7tHpKWdiqDC/N+bfeFptTyoFgMMCdYLeNwSmlXlcKkV+/Rwgz
-         6OAedA3n6tj3ndpBj2q2/biDN82cz7zQ7x0N331NNXJvqALkWqATkAaSjmi/1NbRCNFp
-         VANzVLwucErXhrmnUl4q1r+k5YcdEqf2YWXQ6vIkVdonjbfsjXv4GXyIv62o8RG3Ixkd
-         8y5A==
+        bh=nVPoc0zBfC9U1ic1aSzwWnoSA6XoyfQtm0d93m0EMpw=;
+        b=iWpukIG5k1tDs7/3wEIPNqyjncJneQUNdaRWGYMJi0J1noDuDwWgHkn0jRaP8l2jjf
+         NroZfe/omjadWVOa36tRvLyY/5dzEtYHNrSp29viz6+msymqKhevQjDlW8ntJPsdjmOM
+         BWklyIVBM6+Byj1g1bROm5DRUIWY5SzBQ2lj/GotFZpBpVA/yaR2LMBIw63z7ye3q+lu
+         tV149Ug8GWDKv1Re76ttEkIWOUO1qhH6BsX53BB1i4YuUZV/P2iFdU4Ov/dwFB3WDDAK
+         NkUTRMo7Lzr5KuWAUROf7l3jvUK+9aMP+LhPEr7xk7YF/+/BQoa56q9+nAuRG7XBsqR9
+         lXZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711131270; x=1711736070;
+        d=1e100.net; s=20230601; t=1711132584; x=1711737384;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Tg7FK1adNy9kVBWtxm5M01gQDSSIPZ6QTtS5XJqEjTE=;
-        b=tXeGQB5Lfa8HA9KaHLTCb4+J+3/pB2b+WzWPOUCcn8E6Z+7K5I7vXG6+PkpplJEM8o
-         eoQibQ8VgPTUCSrrtx11F68V122KkNOpFPOpKC7BRRCZoH9l5z8pB8P6Ym9TDJUQeZmf
-         HrmZs9HYtpDix2a45XXdqYLwCiVglgRt4lrbTUnpgSp5vRAKykllNLVIS7IOicalxAVu
-         qmdKZygLX+lMtH18vI/HcbfWH4gi87rHQAqxNFRDayMx/Q8yXArFFLDV7hWjikoZEz8h
-         DjDYxt9tTvzgqg0umlpdX6fXRfJGBs/L8uM00TEDkdCZvA+494xzFsrQAy2+vibX2N1y
-         kG+w==
-X-Gm-Message-State: AOJu0YwRyD23JvwZjKLFC13yuE31p4maJt6dQKyHiTQl3a05EF6NCL/o
-	S/C+oH0ltMSiMO04dJ1wEiyITn1AXywBzRVo9xC28x/mINPQjWgfR9PK9M/+Qw==
-X-Google-Smtp-Source: AGHT+IFlAz1VWtABt9QEIqbX69Q4NML8xtukhkG+yMimaYpYIEIBbyT8vCbvi1HwwGOkvRDTRZqDFQ==
-X-Received: by 2002:a05:600c:1c8d:b0:414:800f:f992 with SMTP id k13-20020a05600c1c8d00b00414800ff992mr10631wms.2.1711131269544;
-        Fri, 22 Mar 2024 11:14:29 -0700 (PDT)
+        bh=nVPoc0zBfC9U1ic1aSzwWnoSA6XoyfQtm0d93m0EMpw=;
+        b=ALOHEmCSpF+6OKGh+4cAoCHwbKZIKCHS/us19EgkaVgBsQAs0xqN9eEbHCHFBQtvGh
+         0RoyDG/ITzGxJRU9ZrzO+ORGIS6MJ36R/AlgZPftObee+JtKYvLAzaN52XKdylS7IMh5
+         UdAMTS1XN/Yo3Js64s9oa5LYi/tah1CA6uT8razlAXhVCny2gR9g69U1E9tX4RkAanqI
+         XB2CYdMWlN+fz3o3NROTIBCqVXcTsRlDMAZsK4Qze8umQf0xEmB+AqPlCntf6m3icgpF
+         3mmIL85WzoJLPlc2bk7kfpQk9mhKtxzfTvDXwNoNOrtb3GG4ZXurEoR9LgWH+7VNIamC
+         ngqQ==
+X-Gm-Message-State: AOJu0YyEKDpXwFK231nkAKlAURxMELyffQCr+Kzu28P4KMRGjyhrMyz5
+	YPrBK+UHa87YTB8vl3b95laT61KukPvyb20hPNwqqRKUkXmJVp3d31uF7bW8NA==
+X-Google-Smtp-Source: AGHT+IEqcUEHz846wp32mZoycYvHFc25nLCog9QUGkMqh5QA3Top43vW55sXYxEXlOBafcwvEnZn3A==
+X-Received: by 2002:a17:902:ce81:b0:1e0:9f59:ed0e with SMTP id f1-20020a170902ce8100b001e09f59ed0emr67263plg.25.1711132583667;
+        Fri, 22 Mar 2024 11:36:23 -0700 (PDT)
 Received: from google.com (180.232.140.34.bc.googleusercontent.com. [34.140.232.180])
-        by smtp.gmail.com with ESMTPSA id n14-20020a5d51ce000000b0033e9fca1e49sm2573790wrv.60.2024.03.22.11.14.28
+        by smtp.gmail.com with ESMTPSA id v7-20020aa799c7000000b006e77dcba6a2sm62198pfi.207.2024.03.22.11.36.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Mar 2024 11:14:28 -0700 (PDT)
-Date: Fri, 22 Mar 2024 18:14:24 +0000
+        Fri, 22 Mar 2024 11:36:23 -0700 (PDT)
+Date: Fri, 22 Mar 2024 18:36:17 +0000
 From: Mostafa Saleh <smostafa@google.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
@@ -63,11 +63,11 @@ Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
 	Michael Shavit <mshavit@google.com>,
 	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
 	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v5 04/27] iommu/arm-smmu-v3: Add an ops indirection to
- the STE code
-Message-ID: <Zf3KgGj4Tfc8ytgi@google.com>
+Subject: Re: [PATCH v5 06/27] iommu/arm-smmu-v3: Consolidate clearing a CD
+ table entry
+Message-ID: <Zf3PoRy_q7dC_SA9@google.com>
 References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
- <4-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+ <6-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -77,333 +77,104 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <4-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+In-Reply-To: <6-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
 
 Hi Jason,
 
-On Mon, Mar 04, 2024 at 07:43:52PM -0400, Jason Gunthorpe wrote:
-> Prepare to put the CD code into the same mechanism. Add an ops indirection
-> around all the STE specific code and make the worker functions independent
-> of the entry content being processed.
+On Mon, Mar 04, 2024 at 07:43:54PM -0400, Jason Gunthorpe wrote:
+> A cleared entry is all 0's. Make arm_smmu_clear_cd() do this sequence.
 > 
-> get_used and sync ops are provided to hook the correct code.
+> If we are clearing an entry and for some reason it is not already
+> allocated in the CD table then something has gone wrong.
 > 
-> Signed-off-by: Michael Shavit <mshavit@google.com>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
 > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 > ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 172 ++++++++++++--------
->  1 file changed, 104 insertions(+), 68 deletions(-)
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  2 +-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 20 ++++++++++++++-----
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  2 ++
+>  3 files changed, 18 insertions(+), 6 deletions(-)
 > 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> index 347c2fdd865c1a..bb9bb6fd7914ce 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+> @@ -558,7 +558,7 @@ void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
+>  
+>  	mutex_lock(&sva_lock);
+>  
+> -	arm_smmu_write_ctx_desc(master, id, NULL);
+> +	arm_smmu_clear_cd(master, id);
+>  
+>  	list_for_each_entry(t, &master->bonds, list) {
+>  		if (t->mm == mm) {
 > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index c60b067c1f553e..b7f947e36f596f 100644
+> index 237fd6d92c880b..3fb4a1523d1d3f 100644
 > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -48,8 +48,20 @@ enum arm_smmu_msi_index {
->  	ARM_SMMU_MAX_MSIS,
->  };
->  
-> -static void arm_smmu_sync_ste_for_sid(struct arm_smmu_device *smmu,
-> -				      ioasid_t sid);
-> +struct arm_smmu_entry_writer_ops;
-> +struct arm_smmu_entry_writer {
-> +	const struct arm_smmu_entry_writer_ops *ops;
-> +	struct arm_smmu_master *master;
-> +};
-> +
-> +struct arm_smmu_entry_writer_ops {
-> +	unsigned int num_entry_qwords;
-> +	__le64 v_bit;
-> +	void (*get_used)(const __le64 *entry, __le64 *used);
-> +	void (*sync)(struct arm_smmu_entry_writer *writer);
-> +};
-> +
-> +#define NUM_ENTRY_QWORDS (sizeof(struct arm_smmu_ste) / sizeof(u64))
->
->  static phys_addr_t arm_smmu_msi_cfg[ARM_SMMU_MAX_MSIS][3] = {
->  	[EVTQ_MSI_INDEX] = {
-> @@ -982,43 +994,42 @@ void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
->   * would be nice if this was complete according to the spec, but minimally it
->   * has to capture the bits this driver uses.
->   */
-> -static void arm_smmu_get_ste_used(const struct arm_smmu_ste *ent,
-> -				  struct arm_smmu_ste *used_bits)
-> +static void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
->  {
-> -	unsigned int cfg = FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(ent->data[0]));
-> +	unsigned int cfg = FIELD_GET(STRTAB_STE_0_CFG, le64_to_cpu(ent[0]));
->  
-> -	used_bits->data[0] = cpu_to_le64(STRTAB_STE_0_V);
-> -	if (!(ent->data[0] & cpu_to_le64(STRTAB_STE_0_V)))
-> +	used_bits[0] = cpu_to_le64(STRTAB_STE_0_V);
-> +	if (!(ent[0] & cpu_to_le64(STRTAB_STE_0_V)))
->  		return;
->  
-> -	used_bits->data[0] |= cpu_to_le64(STRTAB_STE_0_CFG);
-> +	used_bits[0] |= cpu_to_le64(STRTAB_STE_0_CFG);
->  
->  	/* S1 translates */
->  	if (cfg & BIT(0)) {
-> -		used_bits->data[0] |= cpu_to_le64(STRTAB_STE_0_S1FMT |
-> -						  STRTAB_STE_0_S1CTXPTR_MASK |
-> -						  STRTAB_STE_0_S1CDMAX);
-> -		used_bits->data[1] |=
-> +		used_bits[0] |= cpu_to_le64(STRTAB_STE_0_S1FMT |
-> +					    STRTAB_STE_0_S1CTXPTR_MASK |
-> +					    STRTAB_STE_0_S1CDMAX);
-> +		used_bits[1] |=
->  			cpu_to_le64(STRTAB_STE_1_S1DSS | STRTAB_STE_1_S1CIR |
->  				    STRTAB_STE_1_S1COR | STRTAB_STE_1_S1CSH |
->  				    STRTAB_STE_1_S1STALLD | STRTAB_STE_1_STRW |
->  				    STRTAB_STE_1_EATS);
-> -		used_bits->data[2] |= cpu_to_le64(STRTAB_STE_2_S2VMID);
-> +		used_bits[2] |= cpu_to_le64(STRTAB_STE_2_S2VMID);
->  	}
->  
->  	/* S2 translates */
->  	if (cfg & BIT(1)) {
-> -		used_bits->data[1] |=
-> +		used_bits[1] |=
->  			cpu_to_le64(STRTAB_STE_1_EATS | STRTAB_STE_1_SHCFG);
-> -		used_bits->data[2] |=
-> +		used_bits[2] |=
->  			cpu_to_le64(STRTAB_STE_2_S2VMID | STRTAB_STE_2_VTCR |
->  				    STRTAB_STE_2_S2AA64 | STRTAB_STE_2_S2ENDI |
->  				    STRTAB_STE_2_S2PTW | STRTAB_STE_2_S2R);
-> -		used_bits->data[3] |= cpu_to_le64(STRTAB_STE_3_S2TTB_MASK);
-> +		used_bits[3] |= cpu_to_le64(STRTAB_STE_3_S2TTB_MASK);
->  	}
->  
->  	if (cfg == STRTAB_STE_0_CFG_BYPASS)
-> -		used_bits->data[1] |= cpu_to_le64(STRTAB_STE_1_SHCFG);
-> +		used_bits[1] |= cpu_to_le64(STRTAB_STE_1_SHCFG);
+> @@ -1303,6 +1303,19 @@ static void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
+>  	arm_smmu_write_entry(&cd_writer.writer, cdptr->data, target->data);
 >  }
 >  
->  /*
-> @@ -1027,57 +1038,55 @@ static void arm_smmu_get_ste_used(const struct arm_smmu_ste *ent,
->   * unused_update is an intermediate value of entry that has unused bits set to
->   * their new values.
->   */
-> -static u8 arm_smmu_entry_qword_diff(const struct arm_smmu_ste *entry,
-> -				    const struct arm_smmu_ste *target,
-> -				    struct arm_smmu_ste *unused_update)
-> +static u8 arm_smmu_entry_qword_diff(struct arm_smmu_entry_writer *writer,
-> +				    const __le64 *entry, const __le64 *target,
-> +				    __le64 *unused_update)
->  {
-> -	struct arm_smmu_ste target_used = {};
-> -	struct arm_smmu_ste cur_used = {};
-> +	__le64 target_used[NUM_ENTRY_QWORDS] = {};
-> +	__le64 cur_used[NUM_ENTRY_QWORDS] = {};
-This is confusing to me, the function was modified to be generic, so its has
-args are __le64 * instead of struct arm_smmu_ste *.
-But NUM_ENTRY_QWORDS is defined as “(sizeof(struct arm_smmu_ste) / sizeof(u64))”
-and in the same function writer->ops->num_entry_qwords is used nterchangeably,
-I understand that this not a constant and the compiler would complain.
-But since for any other num_entry_qwords larger than NUM_ENTRY_QWORDS it fails,
-and we know STEs and CDs both have the same size, we simplify the code and make
-it a constant everywhere.
+> +void arm_smmu_clear_cd(struct arm_smmu_master *master, ioasid_t ssid)
+> +{
+> +	struct arm_smmu_cd target = {};
+> +	struct arm_smmu_cd *cdptr;
+> +
+> +	if (!master->cd_table.cdtab)
+> +		return;
+> +	cdptr = arm_smmu_get_cd_ptr(master, ssid);
+> +	if (WARN_ON(!cdptr))
+> +		return;
 
-I see in the next patch, that this is redefined to be the max between STE and
-CD, but again, this hardware and it never changes, so my opinion is to simplify
-the code, as there is no need to generalize this part.
+I don’t understand the SVA code enough, but AFAICT, arm_smmu_sva_set_dev_pasid
+can allocate the L2 CD table through arm_smmu_write_ctx_desc. And if it failed
+before allocating the CD table, then remove_dev_pasid would be called, which
+warns here, the previous code would tolerate that, but that might regress on
+systems with panic_on_warn, so I am not sure if that is necessary.
 
->  	u8 used_qword_diff = 0;
->  	unsigned int i;
->  
-> -	arm_smmu_get_ste_used(entry, &cur_used);
-> -	arm_smmu_get_ste_used(target, &target_used);
-> +	writer->ops->get_used(entry, cur_used);
-> +	writer->ops->get_used(target, target_used);
->  
-> -	for (i = 0; i != ARRAY_SIZE(target_used.data); i++) {
-> +	for (i = 0; i != writer->ops->num_entry_qwords; i++) {
->  		/*
->  		 * Check that masks are up to date, the make functions are not
->  		 * allowed to set a bit to 1 if the used function doesn't say it
->  		 * is used.
->  		 */
-> -		WARN_ON_ONCE(target->data[i] & ~target_used.data[i]);
-> +		WARN_ON_ONCE(target[i] & ~target_used[i]);
->  
->  		/* Bits can change because they are not currently being used */
-> -		unused_update->data[i] = (entry->data[i] & cur_used.data[i]) |
-> -					 (target->data[i] & ~cur_used.data[i]);
-> +		unused_update[i] = (entry[i] & cur_used[i]) |
-> +				   (target[i] & ~cur_used[i]);
->  		/*
->  		 * Each bit indicates that a used bit in a qword needs to be
->  		 * changed after unused_update is applied.
->  		 */
-> -		if ((unused_update->data[i] & target_used.data[i]) !=
-> -		    target->data[i])
-> +		if ((unused_update[i] & target_used[i]) != target[i])
->  			used_qword_diff |= 1 << i;
->  	}
->  	return used_qword_diff;
->  }
->  
-> -static bool entry_set(struct arm_smmu_device *smmu, ioasid_t sid,
-> -		      struct arm_smmu_ste *entry,
-> -		      const struct arm_smmu_ste *target, unsigned int start,
-> +static bool entry_set(struct arm_smmu_entry_writer *writer, __le64 *entry,
-> +		      const __le64 *target, unsigned int start,
->  		      unsigned int len)
->  {
->  	bool changed = false;
->  	unsigned int i;
->  
->  	for (i = start; len != 0; len--, i++) {
-> -		if (entry->data[i] != target->data[i]) {
-> -			WRITE_ONCE(entry->data[i], target->data[i]);
-> +		if (entry[i] != target[i]) {
-> +			WRITE_ONCE(entry[i], target[i]);
->  			changed = true;
->  		}
->  	}
->  
->  	if (changed)
-> -		arm_smmu_sync_ste_for_sid(smmu, sid);
-> +		writer->ops->sync(writer);
->  	return changed;
->  }
->  
-> @@ -1107,17 +1116,15 @@ static bool entry_set(struct arm_smmu_device *smmu, ioasid_t sid,
->   * V=0 process. This relies on the IGNORED behavior described in the
->   * specification.
->   */
-> -static void arm_smmu_write_ste(struct arm_smmu_master *master, u32 sid,
-> -			       struct arm_smmu_ste *entry,
-> -			       const struct arm_smmu_ste *target)
-> +static void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer,
-> +				 __le64 *entry, const __le64 *target)
->  {
-> -	unsigned int num_entry_qwords = ARRAY_SIZE(target->data);
-> -	struct arm_smmu_device *smmu = master->smmu;
-> -	struct arm_smmu_ste unused_update;
-> +	unsigned int num_entry_qwords = writer->ops->num_entry_qwords;
-> +	__le64 unused_update[NUM_ENTRY_QWORDS];
->  	u8 used_qword_diff;
->  
->  	used_qword_diff =
-> -		arm_smmu_entry_qword_diff(entry, target, &unused_update);
-> +		arm_smmu_entry_qword_diff(writer, entry, target, unused_update);
->  	if (hweight8(used_qword_diff) == 1) {
->  		/*
->  		 * Only one qword needs its used bits to be changed. This is a
-> @@ -1133,22 +1140,21 @@ static void arm_smmu_write_ste(struct arm_smmu_master *master, u32 sid,
->  		 * writing it in the next step anyways. This can save a sync
->  		 * when the only change is in that qword.
->  		 */
-> -		unused_update.data[critical_qword_index] =
-> -			entry->data[critical_qword_index];
-> -		entry_set(smmu, sid, entry, &unused_update, 0, num_entry_qwords);
-> -		entry_set(smmu, sid, entry, target, critical_qword_index, 1);
-> -		entry_set(smmu, sid, entry, target, 0, num_entry_qwords);
-> +		unused_update[critical_qword_index] =
-> +			entry[critical_qword_index];
-> +		entry_set(writer, entry, unused_update, 0, num_entry_qwords);
-> +		entry_set(writer, entry, target, critical_qword_index, 1);
-> +		entry_set(writer, entry, target, 0, num_entry_qwords);
->  	} else if (used_qword_diff) {
->  		/*
->  		 * At least two qwords need their inuse bits to be changed. This
->  		 * requires a breaking update, zero the V bit, write all qwords
->  		 * but 0, then set qword 0
->  		 */
-> -		unused_update.data[0] = entry->data[0] &
-> -					cpu_to_le64(~STRTAB_STE_0_V);
-> -		entry_set(smmu, sid, entry, &unused_update, 0, 1);
-> -		entry_set(smmu, sid, entry, target, 1, num_entry_qwords - 1);
-> -		entry_set(smmu, sid, entry, target, 0, 1);
-> +		unused_update[0] = entry[0] & (~writer->ops->v_bit);
-> +		entry_set(writer, entry, unused_update, 0, 1);
-> +		entry_set(writer, entry, target, 1, num_entry_qwords - 1);
-> +		entry_set(writer, entry, target, 0, 1);
->  	} else {
->  		/*
->  		 * No inuse bit changed. Sanity check that all unused bits are 0
-> @@ -1156,18 +1162,7 @@ static void arm_smmu_write_ste(struct arm_smmu_master *master, u32 sid,
->  		 * compute_qword_diff().
->  		 */
->  		WARN_ON_ONCE(
-> -			entry_set(smmu, sid, entry, target, 0, num_entry_qwords));
-> -	}
-> -
-> -	/* It's likely that we'll want to use the new STE soon */
-> -	if (!(smmu->options & ARM_SMMU_OPT_SKIP_PREFETCH)) {
-> -		struct arm_smmu_cmdq_ent
-> -			prefetch_cmd = { .opcode = CMDQ_OP_PREFETCH_CFG,
-> -					 .prefetch = {
-> -						 .sid = sid,
-> -					 } };
-> -
-> -		arm_smmu_cmdq_issue_cmd(smmu, &prefetch_cmd);
-> +			entry_set(writer, entry, target, 0, num_entry_qwords));
->  	}
->  }
->  
-> @@ -1440,17 +1435,58 @@ arm_smmu_write_strtab_l1_desc(__le64 *dst, struct arm_smmu_strtab_l1_desc *desc)
->  	WRITE_ONCE(*dst, cpu_to_le64(val));
->  }
->  
-> -static void arm_smmu_sync_ste_for_sid(struct arm_smmu_device *smmu, u32 sid)
-> +struct arm_smmu_ste_writer {
-> +	struct arm_smmu_entry_writer writer;
-> +	u32 sid;
-> +};
-> +
-> +static void arm_smmu_ste_writer_sync_entry(struct arm_smmu_entry_writer *writer)
->  {
-> +	struct arm_smmu_ste_writer *ste_writer =
-> +		container_of(writer, struct arm_smmu_ste_writer, writer);
->  	struct arm_smmu_cmdq_ent cmd = {
->  		.opcode	= CMDQ_OP_CFGI_STE,
->  		.cfgi	= {
-> -			.sid	= sid,
-> +			.sid	= ste_writer->sid,
->  			.leaf	= true,
->  		},
->  	};
->  
-> -	arm_smmu_cmdq_issue_cmd_with_sync(smmu, &cmd);
-> +	arm_smmu_cmdq_issue_cmd_with_sync(writer->master->smmu, &cmd);
+Otherwise, Reviewed-by: Mostafa Saleh <smostafa@google.com>
+
+> +	arm_smmu_write_cd_entry(master, ssid, cdptr, &target);
 > +}
 > +
-> +static const struct arm_smmu_entry_writer_ops arm_smmu_ste_writer_ops = {
-> +	.sync = arm_smmu_ste_writer_sync_entry,
-> +	.get_used = arm_smmu_get_ste_used,
-> +	.v_bit = cpu_to_le64(STRTAB_STE_0_V),
-> +	.num_entry_qwords = sizeof(struct arm_smmu_ste) / sizeof(u64),
-> +};
-> +
-> +static void arm_smmu_write_ste(struct arm_smmu_master *master, u32 sid,
-> +			       struct arm_smmu_ste *ste,
-> +			       const struct arm_smmu_ste *target)
-> +{
-> +	struct arm_smmu_device *smmu = master->smmu;
-> +	struct arm_smmu_ste_writer ste_writer = {
-> +		.writer = {
-> +			.ops = &arm_smmu_ste_writer_ops,
-> +			.master = master,
-> +		},
-> +		.sid = sid,
-> +	};
-> +
-> +	arm_smmu_write_entry(&ste_writer.writer, ste->data, target->data);
-> +
-> +	/* It's likely that we'll want to use the new STE soon */
-> +	if (!(smmu->options & ARM_SMMU_OPT_SKIP_PREFETCH)) {
-> +		struct arm_smmu_cmdq_ent
-> +			prefetch_cmd = { .opcode = CMDQ_OP_PREFETCH_CFG,
-> +					 .prefetch = {
-> +						 .sid = sid,
-> +					 } };
-> +
-> +		arm_smmu_cmdq_issue_cmd(smmu, &prefetch_cmd);
-> +	}
+>  int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
+>  			    struct arm_smmu_ctx_desc *cd)
+>  {
+> @@ -2702,9 +2715,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  	case ARM_SMMU_DOMAIN_S2:
+>  		arm_smmu_make_s2_domain_ste(&target, master, smmu_domain);
+>  		arm_smmu_install_ste_for_dev(master, &target);
+> -		if (master->cd_table.cdtab)
+> -			arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID,
+> -						      NULL);
+> +		arm_smmu_clear_cd(master, IOMMU_NO_PASID);
+>  		break;
+>  	}
+>  
+> @@ -2752,8 +2763,7 @@ static int arm_smmu_attach_dev_ste(struct device *dev,
+>  	 * arm_smmu_domain->devices to avoid races updating the same context
+>  	 * descriptor from arm_smmu_share_asid().
+>  	 */
+> -	if (master->cd_table.cdtab)
+> -		arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID, NULL);
+> +	arm_smmu_clear_cd(master, IOMMU_NO_PASID);
+>  	return 0;
 >  }
 >  
->  static void arm_smmu_make_abort_ste(struct arm_smmu_ste *target)
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 7078ed569fd4d3..87a7b57f566fbc 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -749,6 +749,8 @@ extern struct xarray arm_smmu_asid_xa;
+>  extern struct mutex arm_smmu_asid_lock;
+>  extern struct arm_smmu_ctx_desc quiet_cd;
+>  
+> +void arm_smmu_clear_cd(struct arm_smmu_master *master, ioasid_t ssid);
+> +
+>  int arm_smmu_write_ctx_desc(struct arm_smmu_master *smmu_master, int ssid,
+>  			    struct arm_smmu_ctx_desc *cd);
+>  void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid);
 > -- 
 > 2.43.2
 >
