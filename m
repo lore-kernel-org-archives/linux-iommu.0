@@ -1,47 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15B6B524DF;
-	Fri, 22 Mar 2024 15:37:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F20550278;
+	Fri, 22 Mar 2024 15:52:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711121865; cv=none; b=p3BIsiPYhPXNQBSI3PSTju1zkBR5uHCUtYQlGgmdG4PzJckcmslkni9FIpl4hWeFvufYVo2pSQaIFagSQQtoXkwdFTdpf2gpiUxqp7R2ybzjeN2OgwTR0GSXtWuZsYp4u6f1fl0HoxBgdRXG8uWD4eF4k/Sn4Y+DDvKXzbN2fOY=
+	t=1711122724; cv=none; b=LecxSpnAifj8jntPna3Qnx6bfgFqm/klTQoNymebWmrJfR+JYI2Nm708X5dz7vAlWAsBVbl81BabTv+aZlEkW01jFUy+AMfbBe/5Tb3yxK8Igu9kvwDOl9TQvm4uTzBshW4HvrjFxaue+FI1hSW3H+ChQxkLGLy/Z79qWwSUjn0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711121865; c=relaxed/simple;
-	bh=GzNKDIuOGjs6k2ffastjq4w0MJc1MWTYP5L+bid8nNs=;
+	s=arc-20240116; t=1711122724; c=relaxed/simple;
+	bh=a9x0EjWyPdwufxgTEjOLoHdDlBCO8EawXvsde+dmWeI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pLlFV5S8+kf7wEHRlbsit2M9IXnxH0AQli1t1KQ8BrHi1ZUqhelTK+OwOQzb+z3nLHxhqZdYbDiDmPuGt4l7SgGaZcB4q2rRqoC4FLCARXkv1/v2KrU0MF06vqPuioGuQbLPdTyKLhOIN52CkdB43gGIWglLNjEWgkSPTQK03KA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=na1dbiZm; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=T4RND8EFbrQU+kzjd/ZRZ6EMhHrY04K1O2Xya1/18Va3BsY1k2vQAv4oFtc6kLXBRy4Lxx6Tga0twUvFPz9on4flEpEAo7W5Shr+qbl6E0mMd8tvj1+JJP4iFL3CcpGUZn0HQwSZvzFabCtkPX4l0Ep4bpLt0VeuvWEtbid06h0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i9cSUxp8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="na1dbiZm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6846C433C7;
-	Fri, 22 Mar 2024 15:37:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i9cSUxp8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3439FC433F1;
+	Fri, 22 Mar 2024 15:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711121864;
-	bh=GzNKDIuOGjs6k2ffastjq4w0MJc1MWTYP5L+bid8nNs=;
+	s=k20201202; t=1711122723;
+	bh=a9x0EjWyPdwufxgTEjOLoHdDlBCO8EawXvsde+dmWeI=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=na1dbiZmzOLr8mIcs9+E2IaW2RUObCivfYvEzZKPG4SFSlvf9aq8eObRqP1IiD7wi
-	 IDHtIaNcAMoWlxkFxZOSzpRS2+ZSZQUPoYd3peMdiBa2YeMNNAogI1/B/v/ljLHlGk
-	 tjua4Bci0DInz97kRAPhVLM8s2xMOQukUw4UUWIcNK0ByHz6itpkD1UoGxykcwPFRP
-	 BiIeWb4OS3zPFWNzTMtX9mnW1FRWibMz3sBaOhM6Z+vCnAVU0VX5ltSWBB+fHkw4rM
-	 BxN6LPaYgIzD2wsfyGRTsSeYvl7obc/bNlsa2tohVoeZqxptYrWNVxon8+fpaahzVO
-	 bUuy2wue7+X9w==
-Date: Fri, 22 Mar 2024 15:37:38 +0000
+	b=i9cSUxp8ZpIaCT3GAK0ljz4aaFQiOh8lWr7QbjXiQWGqvohorTAQ3bfaTZ9VWhyrK
+	 ZJbRUrIFWyi/EhtRHlBVNvjYEN7KmNYZO6KO8SBWMYO8XICuGNJoD95TIsox7wWhZQ
+	 Qt0gevJauPkZ42w7AfvqdolJJQ2RoympO2lhgD5h+y+jdigNwb/5Rs+EV3acskoXen
+	 fRMzThDcSIGhiGKfZBfPtPLMpZt9IFJhliLwp8swnGVWOlOXRnVL9i1EqxDRM+fLKp
+	 cy/UmhjPIG6VeCIvbLEYBqcLf0Isi1pUwTFjJI85U/X8q1IWF6sqsBsoWMOkZG9hR1
+	 l5s2EUWeIGXWw==
+Date: Fri, 22 Mar 2024 15:51:57 +0000
 From: Will Deacon <will@kernel.org>
-To: Petr Tesarik <petrtesarik@huaweicloud.com>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
-	Michael Kelley <mhklinux@outlook.com>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	Roberto Sassu <roberto.sassu@huaweicloud.com>,
-	Petr Tesarik <petr@tesarici.cz>
-Subject: Re: [PATCH v3 2/2] bug: introduce ASSERT_VAR_CAN_HOLD()
-Message-ID: <20240322153738.GC5634@willie-the-truck>
-References: <20240321171902.85-1-petrtesarik@huaweicloud.com>
- <20240321171902.85-3-petrtesarik@huaweicloud.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Tyler Hicks <code@tyhicks.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Jerry Snitselaar <jsnitsel@redhat.com>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+	Easwar Hariharan <eahariha@linux.microsoft.com>
+Subject: Re: Why is the ARM SMMU v1/v2 put into bypass mode on kexec?
+Message-ID: <20240322155157.GD5634@willie-the-truck>
+References: <ZfKsAIt8RY/JcL/V@sequoia>
+ <ZfNKv70oqqwMwIeS@sequoia>
+ <120d0dec-450f-41f8-9e05-fd763e84f6dd@arm.com>
+ <20240319154756.GB2901@willie-the-truck>
+ <5b19ab13-a7a0-48e2-99a4-357a9f4aeafa@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -50,51 +49,40 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240321171902.85-3-petrtesarik@huaweicloud.com>
+In-Reply-To: <5b19ab13-a7a0-48e2-99a4-357a9f4aeafa@arm.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Thu, Mar 21, 2024 at 06:19:02PM +0100, Petr Tesarik wrote:
-> From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+On Tue, Mar 19, 2024 at 06:17:39PM +0000, Robin Murphy wrote:
+> In terms of the shutdown behaviour, I think it actually works out as-is. For
+> the normal case we haven't touched GBPA, so we are truly returning to the
+> boot-time condition; in the unexpected case where SMMUEN was already enabled
+> then we'll go into an explicit GPBA abort state, but that seems a
+> not-unreasonable compromise for not preserving the entire boot-time Stream
+> Table etc., whose presence kind of implies it wouldn't have been bypassing
+> everything anyway.
 > 
-> Introduce an ASSERT_VAR_CAN_HOLD() macro to check at build time that a
-> variable can hold the given value.
-> 
-> Use this macro in swiotlb to make sure that the list and pad_slots fields
-> of struct io_tlb_slot are big enough to hold the maximum possible value of
-> IO_TLB_SEGSIZE.
-> 
-> Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-> ---
->  include/linux/build_bug.h | 10 ++++++++++
->  kernel/dma/swiotlb.c      |  2 ++
->  2 files changed, 12 insertions(+)
-> 
-> diff --git a/include/linux/build_bug.h b/include/linux/build_bug.h
-> index 3aa3640f8c18..6e2486508af0 100644
-> --- a/include/linux/build_bug.h
-> +++ b/include/linux/build_bug.h
-> @@ -86,4 +86,14 @@
->  		"Offset of " #field " in " #type " has changed.")
->  
->  
-> +/*
-> + * Compile time check that a variable can hold the given value
-> + */
-> +#define ASSERT_VAR_CAN_HOLD(var, value) ({		\
-> +	typeof(value) __val = (value);			\
-> +	typeof(var) __tmp = __val;			\
-> +	BUILD_BUG_ON_MSG(__tmp != __val,		\
-> +		#var " cannot hold " #value ".");	\
-> +})
+> The more I look at the remaining aspect of disable_bypass for controlling
+> broken-DT behaviour the more I suspect it can't actually be useful either
+> way, especially not since default domains. I have no memory of what my
+> original reasoning might have been, so I'm inclined to just rip that all out
+> and let probe fail. I see no reason these days not to expect a broken DT to
+> leads to a broken system, especially not now with DTSchema validation.
 
-nit, but I think this prevents putting negative values into unsigned
-types. Not sure whether we care? Arguably it's even correct to complain.
+That sounds reasonable to me, although we may end up having to back it
+out if we regress systems with borked firmware :(
 
-e.g.
+> Then there's just the kdump warning it suppresses, of which I also have no
+> idea why it's there either, but apparently that one's on you :P
 
-	u16 s;
-	ASSERT_VAR_CAN_HOLD(s, -1);
+I think _that_ one is because the previous (crashed) kernel won't have
+torn anything down, so there could be active DMA using translations in
+the SMMU. In that case, the crashkernel (which is running from some
+carveout) may find the SMMU enabled, but it really can't stick it into
+bypass mode because that's likely to corrupt random memory. So in that
+case, we do stick it into abort before we reinitialise it and then we
+disabling fault reporting altogether to avoid the log spam:
 
-explodes for me.
+	if (is_kdump_kernel())
+		enables &= ~(CR0_EVTQEN | CR0_PRIQEN)
 
 Will
