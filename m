@@ -1,219 +1,237 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-wm1-f73.google.com (mail-wm1-f73.google.com [209.85.128.73])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E52771A38F6
-	for <iommu@lists.linux.dev>; Sat, 23 Mar 2024 13:38:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F98B1E87C
+	for <iommu@lists.linux.dev>; Sat, 23 Mar 2024 13:47:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711201092; cv=none; b=LoETWpmWDdAfKc7WyF1nAJqSBMY0DQ/EYfBYccVuliEXrTISdllqa5VpBKRtwTA0g3jKMHljmqYiC9rJj1LO2Ufel+PFXgl8I+pjLDQFa+bMqM9YX3MJeEjx731Nhto0EsxxjJiUstj1/TktHuwqs5hZwNJazHRj3sBlheqCIY0=
+	t=1711201652; cv=none; b=eo1O3L7qfSfIaOntOGtzaC/9AfEMPEZYFxPTVTkQM5Tk+Y+g2WJRrQ4RAxRLMq3pNWZOe8tzg0Xs9y1nSQFgvnCPgw7Zi0jo/mmP8fGC7LbhFkKHTXcl58TwjzyOrI0kspkIir3BhaIJXJpLca7i7mlhXWcqGyO3qcg+9/3PQi0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711201092; c=relaxed/simple;
-	bh=Jzbk+C2s5wxMp72wmVe/UdYj7O3NNOwtIgGdoLPoaT8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PUMbEi4fpWBHGPfwcZfrpz8IvWBd3Y0viX7IpK+hd8B21pABZAiWyoWrzLvGSeNHxXGqyDIWZJoJWStIswDvERw3fElRc90I1bNBS0ypzkqT4nLSXvAikSWik2nZvDPHJcAcyiC5XrrWdnS9n8kABZJWOdBVJr4rsrNlL/w6naY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ZNixfBO+; arc=none smtp.client-ip=209.85.128.45
+	s=arc-20240116; t=1711201652; c=relaxed/simple;
+	bh=gIdRxjhlfc39xJ6QlY+t/oQxzd0oKhzjAVoDO3Da65c=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=MKSLbUaDKRJzBqpWJRWsYcl03mczBGo55gt8iq3mVrY8TH1KGl1C7cepIoYgxv2d9uR7kdFL7rJCJteFtajx5QiNXCd0QDIuO7VWnFRu3ZSRyNKqAEOU+280W2igTlJUj05LIz6LXLeAbPo/jdbYTWteOOdOGFj/5bGv6IYP46A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=NsRpvVcj; arc=none smtp.client-ip=209.85.128.73
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--smostafa.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ZNixfBO+"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4140eed8a4fso31815e9.0
-        for <iommu@lists.linux.dev>; Sat, 23 Mar 2024 06:38:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="NsRpvVcj"
+Received: by mail-wm1-f73.google.com with SMTP id 5b1f17b1804b1-40e4478a3afso15108995e9.1
+        for <iommu@lists.linux.dev>; Sat, 23 Mar 2024 06:47:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1711201089; x=1711805889; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=X2lObstm1ERvlU1Nkp+L7+Kxf3ZnfKU4Wltlmi3CA3w=;
-        b=ZNixfBO+LRE4sV7miHZZoKvPk+tFzlQaNRbALLEvOWY3i+Wmy/vOJu+Bex+9DLlcYk
-         F4gCY9Ly8xtPdZ906LTzMnd3vMMJ4FVHUnw31R9HK6gu02UGX3jELHypu6zzAO2Uxp/E
-         caW9REdoDKAYw1dkC22Sp4b9ZDt0xVSFCygwwv4WV9LefPsrGd09DNfrq2HZeYdgh9sF
-         3DFoeiIVrJz4LXZgt4huQeVsBOXNgbVKmEAKZ7QYy9iRNZuvoRMALUH7esmJywEugruW
-         vJJQ/Xj2QgpuUuD1F+74eFzhvpf6LlQ6pJ8M9mNuTvv6niQKUT3Jf1Yj04W9MKb0KMnZ
-         x6SQ==
+        d=google.com; s=20230601; t=1711201648; x=1711806448; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=L5mqrlzEcSeLbU4x0lm0UyptckFT3/FDeJJIWvKSG/k=;
+        b=NsRpvVcj7ksTjhSSbG0YGBjkaezdxfg4gFUHb7SgsgqHVg0wwwO/a3x52UNoArdR5n
+         p1tlJpJk7FeTqWDv5/GV5IiuEf/147HWwO0lcuSF6JKP+Vas8dq5eO7prmuE1ZQl/zBI
+         gr82NBFcHGemh2cvPTdPFdkS5COC66r9ldP5+ZM25recYsTTt/cr669DEN710meF6y0V
+         wEyBll1/v4AkGJZ4TMi+r1I88yZ74/eZnDMYplgka5JE9wrOD2Hue0JabvC5YUjq3st/
+         X8VrPjRyd6OZbzE+mjHDPxX+5Nbtiphvmg3D+YGrm1DsVCrseLPaWefm6BMzXWDIYCB3
+         w5hA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711201089; x=1711805889;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=X2lObstm1ERvlU1Nkp+L7+Kxf3ZnfKU4Wltlmi3CA3w=;
-        b=xB+VUUco7CMDn61Y6/IMK70yLt4LzX6KLAtALMUjBETrbU915hKk50PzCw4+GeIMK1
-         WS4EKu78f9Wp+E4PHP/Mdun3XlAzdVIz4zw0/cJo37i0+lf+w6DrGrUfsi4IXEg2rm52
-         Lty3ZDSwBqsyJzrmVLa+WJ9UPgzZILohsddsYL6U65IFO8wRslBTd5LCwZi6/gcPKZNM
-         M3lcUgBnj3QH2W5Xh/5sERQE9t0Q+S7FB1xT3/cH5cYK8085wAvDx23VnPQyPKHvPvIv
-         Y0XjoKgMkrLaavQgT8/l5vL7+Yr3Y9STOfJusqPHc78EyMnX+msE+/yjJ39Q8qQO2C2N
-         /GVA==
-X-Gm-Message-State: AOJu0Yybb4tP/o/MH+8Q0//kIHlX42RXWrcqy/FZ7zCsBdeFqEYNx6ZM
-	F4QvSZFyEF4whOD5Jha+t8s6BjWjzJlx/tjPTEMp9gJ6g9mBWRZs88p5Z296HQ==
-X-Google-Smtp-Source: AGHT+IH0YEkJX+tjrjcL88W6+N0EJawA09q6e87WEWXzxMNv3w8fp9nad4+db5XgANVhctp+gnzw1g==
-X-Received: by 2002:a05:600c:4856:b0:414:1400:a776 with SMTP id j22-20020a05600c485600b004141400a776mr641509wmo.5.1711201089204;
-        Sat, 23 Mar 2024 06:38:09 -0700 (PDT)
-Received: from google.com (180.232.140.34.bc.googleusercontent.com. [34.140.232.180])
-        by smtp.gmail.com with ESMTPSA id n14-20020a5d51ce000000b0033e9fca1e49sm4446933wrv.60.2024.03.23.06.38.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Mar 2024 06:38:08 -0700 (PDT)
-Date: Sat, 23 Mar 2024 13:38:04 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v5 00/27] Update SMMUv3 to the modern iommu API (part 2/3)
-Message-ID: <Zf7bPOtRg9tLSOKT@google.com>
-References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+        d=1e100.net; s=20230601; t=1711201648; x=1711806448;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=L5mqrlzEcSeLbU4x0lm0UyptckFT3/FDeJJIWvKSG/k=;
+        b=pqUSFKzhssEpF9du4zEHRDALi8Q8DtO7LcBc94p2l+HdK+exwAUUusMyTIKhoO4w9E
+         r/clo7Ai/Q+DxFlC79kieDdrQT8Rg1v5bGuPqYOhM6Fze+1ukbDUHuijd+p2VSsswqgO
+         XoVgZEjKhr3R/+O294CaRuBwTs6r0vkXPLprtX39stVN87D+o9ey+Jg2zf0U5Lq2oKND
+         BzydBgGvtpzMB9ZM8oacP4/EtTHPcj7kyIhQRou6KE3nzKd07QtViWwX8PkxP2WKUnlB
+         n0Q6TwOvqHiz5dHiqXedwitOLpkSZm0BPRtOEKpetjPXtHW600vQ3UfGS7P0wEa9nINA
+         CqyA==
+X-Forwarded-Encrypted: i=1; AJvYcCVkyShpnyZpLqV6Cq9socTTkShSAYty2wGt53d1AxewaaRvoOtWallME7BJm0RL56e5hgleF1KChPVeThCPkpBOfNRAXTU=
+X-Gm-Message-State: AOJu0YzE9zc2pxD9TuYSDpeiXtZ5ejezTm8hLqt9oz6NBmw8VfC/YeSZ
+	kzXEEHWYrnoOnwCEgWZY5SFXdSkUrsy1dcvdiA8UHxd6IDEnYXG7QhqOLhkEn0LHfI0dYk4vvDt
+	XojSdRqT2UQ==
+X-Google-Smtp-Source: AGHT+IG+JI3sPve5ePIPK/vQYX0yMjUamOquW/TsOAtvbYQNtUr1z8F27dMpXxNCU8Wnje0iwBUQu33ESBx5/g==
+X-Received: from mostafa.c.googlers.com ([fda3:e722:ac3:cc00:28:9cb1:c0a8:333c])
+ (user=smostafa job=sendgmr) by 2002:a05:600c:3b07:b0:414:8e1:7185 with SMTP
+ id m7-20020a05600c3b0700b0041408e17185mr79580wms.3.1711201647880; Sat, 23 Mar
+ 2024 06:47:27 -0700 (PDT)
+Date: Sat, 23 Mar 2024 13:46:58 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.44.0.396.g6e790dbe36-goog
+Message-ID: <20240323134658.464743-1-smostafa@google.com>
+Subject: [PATCH] iommu/arm-smmu-v3: Fix access for STE.SHCFG
+From: Mostafa Saleh <smostafa@google.com>
+To: will@kernel.org, robin.murphy@arm.com, 
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
+Cc: linux-kernel@vger.kernel.org, joro@8bytes.org, jgg@nvidia.com, 
+	nicolinc@nvidia.com, mshavit@google.com, Mostafa Saleh <smostafa@google.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Jason,
+STE attributes(NSCFG, PRIVCFG, INSTCFG) use value 0 for "Use Icomming",
+for some reason SHCFG doesn't follow that, and it is defined as "0b01".
 
-On Mon, Mar 04, 2024 at 07:43:48PM -0400, Jason Gunthorpe wrote:
-> Continuing the work of part 1 this focuses on the CD, PASID and SVA
-> components:
-> 
->  - attach_dev failure does not change the HW configuration.
-> 
->  - Full PASID API support including:
->     - S1/SVA domains attached to PASIDs
+Currently the driver sets SHCFG to Use Incoming for stage-2 and bypass
+domains.
 
-I am still going through the series, but I see at the end the main SMMUv3
-driver has set_dev_pasid operation, are there any in-tree drivers that
-use that? (and how can I test it).
+However according to the User Manual (ARM IHI 0070 F.b):
+	When SMMU_IDR1.ATTR_TYPES_OVR == 0, this field is RES0 and the
+	incoming Shareability attribute is used.
 
->     - IDENTITY/BLOCKED/S1 attached to RID
->     - Change of the RID domain while PASIDs are attached
-> 
->  - Streamlined SVA support using the core infrastructure
-> 
->  - Hitless, whenever possible, change between two domains
+This patch adds a condition for writing SHCFG to Use incoming to be
+compliant with the architecture, and defines ATTR_TYPE_OVR as a new
+feature discovered from IDR1.
+This also required to propagate the SMMU through some functions args.
 
-Can you please clarify what cases are expected to be hitless?
-From what I see if ASID and TTB0 changes that would break the CD.
-> 
-> Making the CD programming work like the new STE programming allows
-> untangling some of the confusing SVA flows. From there the focus is on
-> building out the core infrastructure for dealing with PASID and CD
-> entries, then keeping track of unique SSID's for ATS invalidation.
-> 
-> The ATS ordering is generalized so that the PASID flow can use it and put
-> into a form where it is fully hitless, whenever possible. Care is taken to
-> ensure that ATC flushes are present after any change in translation.
-> 
-> Finally we simply kill the entire outdated SVA mmu_notifier implementation
-> in one shot and switch it over to the newly created generic PASID & CD
-> code. This avoids the messy and confusing approach of trying to
-> incrementally untangle this in place. The new code is small and simple
-> enough this is much better than trying to figure out smaller steps.
-> 
-> Once SVA is resting on the right CD code it is straightforward to make the
-> PASID interface functionally complete.
-> 
-> It achieves the same goals as the several series from Michael and the S1DSS
-> series from Nicolin that were trying to improve portions of the API.
-> 
-> This is on github:
-> https://github.com/jgunthorpe/linux/commits/smmuv3_newapi
-> 
-> v5:
->  - Rebase on v6.8-rc7 & Will's tree
->  - Accomdate the SVA rc patch removing the master list iteration
->  - Move the kfree(to_smmu_domain(domain)) hunk to the right patch
->  - Move S1DSS get_used hunk to "Allow IDENTITY/BLOCKED to be set while
->    PASID is used"
-> v4: https://lore.kernel.org/r/0-v4-e7091cdd9e8d+43b1-smmuv3_newapi_p2_jgg@nvidia.com
->  - Rebase on v6.8-rc1, adjust to use mm_get_enqcmd_pasid() and eventually
->    remove all references from ARM. Move the new ARM_SMMU_FEAT_STALL_FORCE
->    stuff to arm_smmu_make_sva_cd()
->  - Adjust to use the new shared STE/CD writer logic. Disable some of the
->    sanity checks for the interior of the series
->  - Return ERR_PTR from domain_alloc functions
->  - Move the ATS disablement flow into arm_smmu_attach_prepare()/commit()
->    which lets all the STE update flows use the same sequence. This is
->    needed for nesting in part 3
->  - Put ssid in attach_state
->  - Replace to_smmu_domain_safe() with to_smmu_domain_devices()
-> v3: https://lore.kernel.org/r/0-v3-9083a9368a5c+23fb-smmuv3_newapi_p2_jgg@nvidia.com
->  - Rebase on the latest part 1
->  - update comments and commit messages
->  - Fix error exit in arm_smmu_set_pasid()
->  - Fix inverted logic for btm_invalidation
->  - Add missing ATC invalidation on mm release
->  - Add a big comment explaining that BTM is not enabled and what is
->    missing to enable it.
-> v2: https://lore.kernel.org/r/0-v2-16665a652079+5947-smmuv3_newapi_p2_jgg@nvidia.com
->  - Rebased on iommmufd + Joerg's tree
->  - Use sid_smmu_domain consistently to refer to the domain attached to the
->    device (eg the PCIe RID)
->  - Rework how arm_smmu_attach_*() and callers flow to be more careful
->    about ordering around ATC invalidation. The ATC must be invalidated
->    after it is impossible to establish stale entires.
->  - ATS disable is now entirely part of arm_smmu_attach_dev_ste(), which is
->    the only STE type that ever disables ATS.
->  - Remove the 'existing_master_domain' optimization, the code is
->    functionally fine without it.
->  - Whitespace, spelling, and checkpatch related items
->  - Fixed wrong value stored in the xa for the BTM flows
->  - Use pasid more consistently instead of id
-> v1: https://lore.kernel.org/r/0-v1-afbb86647bbd+5-smmuv3_newapi_p2_jgg@nvidia.com
-> 
-> Jason Gunthorpe (27):
->   iommu/arm-smmu-v3: Do not allow a SVA domain to be set on the wrong
->     PASID
->   iommu/arm-smmu-v3: Do not ATC invalidate the entire domain
->   iommu/arm-smmu-v3: Add a type for the CD entry
->   iommu/arm-smmu-v3: Add an ops indirection to the STE code
->   iommu/arm-smmu-v3: Make CD programming use arm_smmu_write_entry()
->   iommu/arm-smmu-v3: Consolidate clearing a CD table entry
->   iommu/arm-smmu-v3: Move the CD generation for S1 domains into a
->     function
->   iommu/arm-smmu-v3: Move allocation of the cdtable into
->     arm_smmu_get_cd_ptr()
->   iommu/arm-smmu-v3: Allocate the CD table entry in advance
->   iommu/arm-smmu-v3: Move the CD generation for SVA into a function
->   iommu/arm-smmu-v3: Build the whole CD in arm_smmu_make_s1_cd()
->   iommu/arm-smmu-v3: Start building a generic PASID layer
->   iommu/arm-smmu-v3: Make smmu_domain->devices into an allocated list
->   iommu/arm-smmu-v3: Make changing domains be hitless for ATS
->   iommu/arm-smmu-v3: Add ssid to struct arm_smmu_master_domain
->   iommu/arm-smmu-v3: Keep track of valid CD entries in the cd_table
->   iommu/arm-smmu-v3: Thread SSID through the arm_smmu_attach_*()
->     interface
->   iommu/arm-smmu-v3: Make SVA allocate a normal arm_smmu_domain
->   iommu/arm-smmu-v3: Keep track of arm_smmu_master_domain for SVA
->   iommu: Add ops->domain_alloc_sva()
->   iommu/arm-smmu-v3: Put the SVA mmu notifier in the smmu_domain
->   iommu/arm-smmu-v3: Consolidate freeing the ASID/VMID
->   iommu/arm-smmu-v3: Move the arm_smmu_asid_xa to per-smmu like vmid
->   iommu/arm-smmu-v3: Bring back SVA BTM support
->   iommu/arm-smmu-v3: Allow IDENTITY/BLOCKED to be set while PASID is
->     used
->   iommu/arm-smmu-v3: Allow a PASID to be set when RID is
->     IDENTITY/BLOCKED
->   iommu/arm-smmu-v3: Allow setting a S1 domain to a PASID
-> 
->  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  639 +++++-----
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 1036 +++++++++++------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   79 +-
->  drivers/iommu/iommu-sva.c                     |    4 +-
->  drivers/iommu/iommu.c                         |   12 +-
->  include/linux/iommu.h                         |    3 +
->  6 files changed, 1024 insertions(+), 749 deletions(-)
-> 
-> 
-> base-commit: 98b23ebb0c84657a135957d727eedebd1280cbbf
-> -- 
-> 2.43.2
-> 
+There is no need to add similar condition for the newly introduced function
+arm_smmu_get_ste_used() as the values of the STE are the same before and
+after any transition, so this will not trigger any change. (we already
+do the same for the VMID).
 
-Thansks,
-Mostafa
+Although this is a misconfiguration from the driver, this has been there
+for a long time, so probably no HW running Linux is affected by it.
+
+Reported-by: Will Deacon <will@kernel.org>
+Closes: https://lore.kernel.org/all/20240215134952.GA690@willie-the-truck/
+
+Signed-off-by: Mostafa Saleh <smostafa@google.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 35 ++++++++++++++-------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
+ 2 files changed, 25 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 5ed036225e69..67149fe68199 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1453,14 +1453,17 @@ static void arm_smmu_make_abort_ste(struct arm_smmu_ste *target)
+ 		FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_ABORT));
+ }
+ 
+-static void arm_smmu_make_bypass_ste(struct arm_smmu_ste *target)
++static void arm_smmu_make_bypass_ste(struct arm_smmu_device *smmu,
++				     struct arm_smmu_ste *target)
+ {
+ 	memset(target, 0, sizeof(*target));
+ 	target->data[0] = cpu_to_le64(
+ 		STRTAB_STE_0_V |
+ 		FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_BYPASS));
+-	target->data[1] = cpu_to_le64(
+-		FIELD_PREP(STRTAB_STE_1_SHCFG, STRTAB_STE_1_SHCFG_INCOMING));
++
++	if (smmu->features & ARM_SMMU_FEAT_ATTR_TYPES_OVR)
++		target->data[1] = cpu_to_le64(FIELD_PREP(STRTAB_STE_1_SHCFG,
++							 STRTAB_STE_1_SHCFG_INCOMING));
+ }
+ 
+ static void arm_smmu_make_cdtable_ste(struct arm_smmu_ste *target,
+@@ -1523,6 +1526,7 @@ static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
+ 	typeof(&pgtbl_cfg->arm_lpae_s2_cfg.vtcr) vtcr =
+ 		&pgtbl_cfg->arm_lpae_s2_cfg.vtcr;
+ 	u64 vtcr_val;
++	struct arm_smmu_device *smmu = master->smmu;
+ 
+ 	memset(target, 0, sizeof(*target));
+ 	target->data[0] = cpu_to_le64(
+@@ -1531,9 +1535,11 @@ static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
+ 
+ 	target->data[1] = cpu_to_le64(
+ 		FIELD_PREP(STRTAB_STE_1_EATS,
+-			   master->ats_enabled ? STRTAB_STE_1_EATS_TRANS : 0) |
+-		FIELD_PREP(STRTAB_STE_1_SHCFG,
+-			   STRTAB_STE_1_SHCFG_INCOMING));
++			   master->ats_enabled ? STRTAB_STE_1_EATS_TRANS : 0));
++
++	if (smmu->features & ARM_SMMU_FEAT_ATTR_TYPES_OVR)
++		target->data[1] |= cpu_to_le64(FIELD_PREP(STRTAB_STE_1_SHCFG,
++							  STRTAB_STE_1_SHCFG_INCOMING));
+ 
+ 	vtcr_val = FIELD_PREP(STRTAB_STE_2_VTCR_S2T0SZ, vtcr->tsz) |
+ 		   FIELD_PREP(STRTAB_STE_2_VTCR_S2SL0, vtcr->sl) |
+@@ -1560,7 +1566,8 @@ static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
+  * This can safely directly manipulate the STE memory without a sync sequence
+  * because the STE table has not been installed in the SMMU yet.
+  */
+-static void arm_smmu_init_initial_stes(struct arm_smmu_ste *strtab,
++static void arm_smmu_init_initial_stes(struct arm_smmu_device *smmu,
++				       struct arm_smmu_ste *strtab,
+ 				       unsigned int nent)
+ {
+ 	unsigned int i;
+@@ -1569,7 +1576,7 @@ static void arm_smmu_init_initial_stes(struct arm_smmu_ste *strtab,
+ 		if (disable_bypass)
+ 			arm_smmu_make_abort_ste(strtab);
+ 		else
+-			arm_smmu_make_bypass_ste(strtab);
++			arm_smmu_make_bypass_ste(smmu, strtab);
+ 		strtab++;
+ 	}
+ }
+@@ -1597,7 +1604,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ 		return -ENOMEM;
+ 	}
+ 
+-	arm_smmu_init_initial_stes(desc->l2ptr, 1 << STRTAB_SPLIT);
++	arm_smmu_init_initial_stes(smmu, desc->l2ptr, 1 << STRTAB_SPLIT);
+ 	arm_smmu_write_strtab_l1_desc(strtab, desc);
+ 	return 0;
+ }
+@@ -2637,8 +2644,9 @@ static int arm_smmu_attach_dev_identity(struct iommu_domain *domain,
+ 					struct device *dev)
+ {
+ 	struct arm_smmu_ste ste;
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
+ 
+-	arm_smmu_make_bypass_ste(&ste);
++	arm_smmu_make_bypass_ste(master->smmu, &ste);
+ 	return arm_smmu_attach_dev_ste(dev, &ste);
+ }
+ 
+@@ -3264,7 +3272,7 @@ static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
+ 	reg |= FIELD_PREP(STRTAB_BASE_CFG_LOG2SIZE, smmu->sid_bits);
+ 	cfg->strtab_base_cfg = reg;
+ 
+-	arm_smmu_init_initial_stes(strtab, cfg->num_l1_ents);
++	arm_smmu_init_initial_stes(smmu, strtab, cfg->num_l1_ents);
+ 	return 0;
+ }
+ 
+@@ -3777,6 +3785,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 		return -ENXIO;
+ 	}
+ 
++	if (reg & IDR1_ATTR_TYPES_OVR)
++		smmu->features |= ARM_SMMU_FEAT_ATTR_TYPES_OVR;
++
+ 	/* Queue sizes, capped to ensure natural alignment */
+ 	smmu->cmdq.q.llq.max_n_shift = min_t(u32, CMDQ_MAX_SZ_SHIFT,
+ 					     FIELD_GET(IDR1_CMDQS, reg));
+@@ -3992,7 +4003,7 @@ static void arm_smmu_rmr_install_bypass_ste(struct arm_smmu_device *smmu)
+ 			 * STE table is not programmed to HW, see
+ 			 * arm_smmu_initial_bypass_stes()
+ 			 */
+-			arm_smmu_make_bypass_ste(
++			arm_smmu_make_bypass_ste(smmu,
+ 				arm_smmu_get_step_for_sid(smmu, rmr->sids[i]));
+ 		}
+ 	}
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index 23baf117e7e4..2a19bb63e5c6 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -44,6 +44,7 @@
+ #define IDR1_TABLES_PRESET		(1 << 30)
+ #define IDR1_QUEUES_PRESET		(1 << 29)
+ #define IDR1_REL			(1 << 28)
++#define IDR1_ATTR_TYPES_OVR		(1 << 27)
+ #define IDR1_CMDQS			GENMASK(25, 21)
+ #define IDR1_EVTQS			GENMASK(20, 16)
+ #define IDR1_PRIQS			GENMASK(15, 11)
+@@ -647,6 +648,7 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_SVA		(1 << 17)
+ #define ARM_SMMU_FEAT_E2H		(1 << 18)
+ #define ARM_SMMU_FEAT_NESTING		(1 << 19)
++#define ARM_SMMU_FEAT_ATTR_TYPES_OVR	(1 << 20)
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+-- 
+2.44.0.396.g6e790dbe36-goog
+
