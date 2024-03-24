@@ -1,51 +1,56 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DC4CF9D4
-	for <iommu@lists.linux.dev>; Sun, 24 Mar 2024 20:05:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 221E4182DD
+	for <iommu@lists.linux.dev>; Sun, 24 Mar 2024 21:05:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711310740; cv=none; b=cDiHV9R2GZ9AApdeCq7uiTUt7xNAx4Fkbq5kWIs6dbP73jk49FfI/qvGIfSFNAWO8PFDIlPL91BRG9oLHsxF++36Pfc39ucO0JM7mSe2+MhzYa8ELa0uMAwMZkSFnXCJQECu4HN39sZ4JbZqXoW9wucPm/+yE/mFvhUYIaHe76o=
+	t=1711314341; cv=none; b=ErCE/vqSNDElWLYFBcaIBXHwa2oeVpxkwT8/ggY3HrapjlXdEkaLs4QVZk+erxyGSA6R2OVSJZGGXC8KM4KWsazd6RC8X/22wmLDNw2Qnw2fI0gUBzLlFu9QmSkykkawF24McK+7uogEgITLoKhKEedmz1zBQqRfutdE460xRv4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711310740; c=relaxed/simple;
-	bh=MklU3DYa778v4ZDWFXMxmTI+sKqEUz89Ifhdj7zrlEE=;
-	h=From:To:Cc:Subject:In-Reply-To:Date:Message-ID:MIME-Version:
-	 Content-Type; b=lapRmOhkAZGKzvjRTk6TWkQ7q6Krue/lwmtCTR1/I8KLkBd6tS6vHTI/2sJJeQOpwV/WQbU7Mcop9fGLgHGfrg4260xtVVWO4fNRMNYVwzIfj8WsnWqA/DlFgyxvJ68C5lb6CK/0n0rdCp97HwD9x8cs88Y/+Bli0/4GzKMckNI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=AxQ5Ls9W; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=1bl5OoF1; arc=none smtp.client-ip=193.142.43.55
+	s=arc-20240116; t=1711314341; c=relaxed/simple;
+	bh=eIWsYgeCvuULR3OVAMxcSHtDf1Ppf8K414oZ8pPgvDk=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=L7dWsEC8COnqTEIg4mJ9Z8hb1uE36GPZMw1QACM4hiWANaY3TGTnX3FEGUhi3g4sIlU2AUmBwXRF26bFRwMpGipBd1WFAEtw0RwU5KIjOVdAGLet7T642kLEwh3l0Uvwxo/yy+cVeokxl5UchHS2FDHZs29yNZqGuVggjoNtn50=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=UO2eYZCY; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=+Kosm0xv; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="AxQ5Ls9W";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="1bl5OoF1"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="UO2eYZCY";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="+Kosm0xv"
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1711310736;
+	s=2020; t=1711314336;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to; bh=tEQkubM2Zqs51Lu+6zFTonIBP1O9zapY/XByNh3O9KE=;
-	b=AxQ5Ls9WHGsg+/L7l6fVJ+FYRs0dCJZhZqv4lzn8ilJUG7/281abD67NSBHWg+ADOz4zhg
-	NYCg/az9ZqQBYNIKcyfy3SZCJvphBFPZQQ7XwBybUXtnKZHNU8G0fiqNHFgfGnhVmf21t5
-	DyJ0ybGwqyPeRdceWPdtnZe2K6VyF3vINjRZ69yt90PbTW9ZjMPhUKQKgOjDhP0Tt9Kcr+
-	w1diJI0jdyGiWOBGYtPpOb0IXL/wb9ihxpFXmoMm7MnQztl3DG7ZP3mwzdHiC7zJ1D65nJ
-	iTTEkrHKfcLKoznPgtP/YyXwAfIDN+mbJ5gdTXqv7sREShefdAjxsryidstGVA==
+	 in-reply-to:in-reply-to:references:references;
+	bh=GOl9H6TQJGR2f/SWJSnA/4BR3k9Fhg4eknY4AbucXbk=;
+	b=UO2eYZCYpjesx2fP1TkVAZZ4u5YMXz56TGrRNBtvp1NMwh2prZPQg8DhydNXcUIJgUaiim
+	4b4KNQ4BJycRML2sf37b1Qdzoezt9/LOK3Qlk//rnEpkiclUeyamFLrWIaV5b63uRcrtmA
+	wTYKuz5B98WjM8U5QyCXa756BbPCKSqjRM4ktEvHvpYSTPI1wzYWjZ9fwG52I7yEU8D6jd
+	DVd33ey1xyJyGhDJCz5SvJgMtZaaJ6HiUE6qT3pBn12v1NKNBA9PBEgu4MEVVBYRj7AXKJ
+	IFGLJLYz4agzOeBm+hPwIsBtmdx6O0INB1ag/mchG9uemKnqYwv9czjYpsTldA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1711310736;
+	s=2020e; t=1711314336;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to; bh=tEQkubM2Zqs51Lu+6zFTonIBP1O9zapY/XByNh3O9KE=;
-	b=1bl5OoF135n3KM4dsxyeTA6m6aUzU53gitNgkAs88vPDVUOxVSsDgnFBtIkwP8qgThS4hk
-	VtCqDd0u15GMqFAQ==
-To: Dimitri Sivanich <sivanich@hpe.com>
+	 in-reply-to:in-reply-to:references:references;
+	bh=GOl9H6TQJGR2f/SWJSnA/4BR3k9Fhg4eknY4AbucXbk=;
+	b=+Kosm0xvj+xhHpE/g1uaxNM83+/Ggqe+5faIVpoIaTKgMg65tfDHf45MmSszP9nap7onsB
+	Pg2W0TScem0EhWBA==
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Dimitri Sivanich
+ <sivanich@hpe.com>
 Cc: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
  <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
  <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Steve Wahl
- <steve.wahl@hpe.com>, Russ Anderson <russ.anderson@hpe.com>, Dimitri
- Sivanich <sivanich@hpe.com>
+ <steve.wahl@hpe.com>, Russ
+ Anderson <russ.anderson@hpe.com>, jacob.jun.pan@linux.intel.com
 Subject: Re: [PATCH] Allocate DMAR fault interrupts locally
-In-Reply-To: <Ze9r47riIq9ovBCY@hpe.com>
-Date: Sun, 24 Mar 2024 21:05:35 +0100
-Message-ID: <87plvjfl9s.ffs@tglx>
+In-Reply-To: <20240321151357.1d18127f@jacob-builder>
+References: <ZeDj/LK56borSxO4@hpe.com> <87plwe7w3m.ffs@tglx>
+ <Ze9r47riIq9ovBCY@hpe.com> <20240321151357.1d18127f@jacob-builder>
+Date: Sun, 24 Mar 2024 22:05:35 +0100
+Message-ID: <87msqnfihs.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,56 +59,124 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Dimitri!
+Jacob!
 
-On Mon, Mar 11 2024 at 15:38, Dimitri Sivanich wrote:
-> On Thu, Feb 29, 2024 at 11:18:37PM +0100, Thomas Gleixner wrote:
->> What you really want is a cpu hotplug state in the CPUHP_BP_PREPARE_DYN
->> space which enables the interrupt for the node _before_ the first AP of
->> the node is brought up. That will solve the problem nicely w/o any of
->> the above issues.
->>
+On Thu, Mar 21 2024 at 15:13, Jacob Pan wrote:
+> On Mon, 11 Mar 2024 15:38:59 -0500, Dimitri Sivanich <sivanich@hpe.com>
+> wrote:
+>> So the code seems to have been designed based on the assumption that it
+>> will be run on an already active (though not necessarily fully onlined?)
+>> cpu.  To make this work, any code based on that assumption would need to
+>> be fixed.  Otherwise, a different approach is needed.
 >
-> Initially this sounds like a good approach.  As things currently stand, however,
-> there are (at least) several problems with attempting to allocate interrupts on
-> cpus that are not running yet via the existing dmar_set_interrupt path.
->
-> - The code relies on node_to_cpumask_map (cpumask_of_node()), which has been
->   allocated, but not populated at the CPUHP_BP_PREPARE_DYN stage.
->
-> - The irq_matrix cpumaps do not indicate being online or initialized yet, except
->   for the boot cpu instance, of course.
->
-> So things still revert to boot cpu allocation, until we exhaust the
-> vectors.
+> This may not be pretty but since DMAR fault is for unrecoverable faults,
+> they are rare and infrequent, should never happen on a healthy system. Can
+> we share one BSP vector for all DMARs? i.e. let dmar_fault() handler search
+> for the offending DMAR for fault reasons.
 
-I thought about the following:
+It might not be pretty on the first thought, but it has a charm.
 
-    CPUHP_BP_PREPARE_DYN allocates the hardware interrupt on the control
-    CPU (the boot CPU during early boot).
-    
-    CPUHP_AP_ONLINE_DYN moves it over to the AP. This needs to set
-    affinity and then retrigger the interrupt so that the horrible
-    non-remapped MSI migration logic is invoked.
+You are right. If DMAR faults happen then there is an issue which is
+going to affect the machine badly anyway, so the extra search through
+the iommu list is not necessarily horrible and it does not matter at all
+whether the access is local or not.
 
-Though that does not work for parallel bringup as then the prepare stage
-is invoked for all CPUs before any of them gets to the online phase,
-which obviously ends up with the same problem.
+But there are two interrupts involved. The DMAR one and the SVM one.
 
-> Of course, running the dmar_set_interrupt code from a CPUHP_AP_ONLINE_DYN state
-> does work (although I believe there is a concurrency issue that could show up
-> with the current dmar_set_interrupt path).
+And all of that DMAR/SVM code is built around the assumption that
+everything can be set up at boot time on the BSP.
 
-Which concurrency issue? CPU hotplug is fully serialized.
-
-> So the code seems to have been designed based on the assumption that it will be
-> run on an already active (though not necessarily fully onlined?) cpu.  To make
-> this work, any code based on that assumption would need to be fixed.  Otherwise,
-> a different approach is needed.
-
-Yes, the interrupt vector code it is designed that way and for the
-general case this is absolutely the right thing to do.
+The DMAR case definitely is solvable by sharing the interrupt, see the
+uncompiled below. I still need to wrap my brain around the SVM part, but
+feel free to beat me to it or preferrably explain to me that it's not
+necessary at all :)
 
 Thanks,
 
         tglx
+---
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1182,7 +1182,6 @@ static void free_iommu(struct intel_iomm
+ 			iommu->pr_irq = 0;
+ 		}
+ 		free_irq(iommu->irq, iommu);
+-		dmar_free_hwirq(iommu->irq);
+ 		iommu->irq = 0;
+ 	}
+ 
+@@ -1956,17 +1955,21 @@ void dmar_msi_mask(struct irq_data *data
+ 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+ }
+ 
+-void dmar_msi_write(int irq, struct msi_msg *msg)
++static void dmar_iommu_msi_write(struct intel_iommu *iommu, struct msi_msg *msg)
+ {
+-	struct intel_iommu *iommu = irq_get_handler_data(irq);
+ 	int reg = dmar_msi_reg(iommu, irq);
+-	unsigned long flag;
++	unsigned long flags;
+ 
+-	raw_spin_lock_irqsave(&iommu->register_lock, flag);
++	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+ 	writel(msg->data, iommu->reg + reg + 4);
+ 	writel(msg->address_lo, iommu->reg + reg + 8);
+ 	writel(msg->address_hi, iommu->reg + reg + 12);
+-	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
++	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
++}
++
++void dmar_msi_write(int irq, struct msi_msg *msg)
++{
++	dmar_iommu_msi_write(irq_get_handler_data(irq), msg);
+ }
+ 
+ void dmar_msi_read(int irq, struct msi_msg *msg)
+@@ -2100,23 +2103,37 @@ irqreturn_t dmar_fault(int irq, void *de
+ 
+ int dmar_set_interrupt(struct intel_iommu *iommu)
+ {
+-	int irq, ret;
++	static int dmar_irq;
++	int ret;
+ 
+-	/*
+-	 * Check if the fault interrupt is already initialized.
+-	 */
++	/* Don't initialize it twice for a given iommu */
+ 	if (iommu->irq)
+ 		return 0;
+ 
+-	irq = dmar_alloc_hwirq(iommu->seq_id, iommu->node, iommu);
+-	if (irq > 0) {
+-		iommu->irq = irq;
++	/*
++	 * There is one shared interrupt for all IOMMUs to prevent vector
++	 * exhaustion.
++	 */
++	if (!dmar_irq) {
++		int irq = dmar_alloc_hwirq(iommu->seq_id, iommu->node, iommu);
++
++		if (irq <= 0) {
++			pr_err("No free IRQ vectors\n");
++			return -EINVAL;
++		}
++		dmar_irq = irq;
+ 	} else {
+-		pr_err("No free IRQ vectors\n");
+-		return -EINVAL;
++		struct msi_msg msg;
++
++		/*
++		 * Get the MSI message from the shared interrupt and write
++		 * it to the iommu MSI registers.
++		 */
++		dmar_msi_read(dmar_irq, &msg);
++		dmar_iommu_msi_write(iommu, &msg);
+ 	}
+ 
+-	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
++	ret = request_irq(dmar_irq, dmar_fault, IRQF_NO_THREAD | IRQF_SHARED, iommu->name, iommu);
+ 	if (ret)
+ 		pr_err("Can't request irq\n");
+ 	return ret;
