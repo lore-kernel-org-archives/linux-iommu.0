@@ -1,182 +1,73 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 221E4182DD
-	for <iommu@lists.linux.dev>; Sun, 24 Mar 2024 21:05:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BABD422C659
+	for <iommu@lists.linux.dev>; Sun, 24 Mar 2024 23:16:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711314341; cv=none; b=ErCE/vqSNDElWLYFBcaIBXHwa2oeVpxkwT8/ggY3HrapjlXdEkaLs4QVZk+erxyGSA6R2OVSJZGGXC8KM4KWsazd6RC8X/22wmLDNw2Qnw2fI0gUBzLlFu9QmSkykkawF24McK+7uogEgITLoKhKEedmz1zBQqRfutdE460xRv4=
+	t=1711322180; cv=none; b=KULK+AXSgIesUhTOeEEnOla+A8Fi7mBNG7Odh9JMYQU6vuxqJSHzURzjJRQioL0Toqi8NzLgZA7pWKczy8rb5DSE1A90OPvhRzjpRIeF+5kQWTtAXUqWCHtWBnfHhsM8dCOYElpd5HETwOD64tpPvcMUrDd5dBvg+c1OKdhByS8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711314341; c=relaxed/simple;
-	bh=eIWsYgeCvuULR3OVAMxcSHtDf1Ppf8K414oZ8pPgvDk=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=L7dWsEC8COnqTEIg4mJ9Z8hb1uE36GPZMw1QACM4hiWANaY3TGTnX3FEGUhi3g4sIlU2AUmBwXRF26bFRwMpGipBd1WFAEtw0RwU5KIjOVdAGLet7T642kLEwh3l0Uvwxo/yy+cVeokxl5UchHS2FDHZs29yNZqGuVggjoNtn50=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=UO2eYZCY; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=+Kosm0xv; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="UO2eYZCY";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="+Kosm0xv"
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1711314336;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=GOl9H6TQJGR2f/SWJSnA/4BR3k9Fhg4eknY4AbucXbk=;
-	b=UO2eYZCYpjesx2fP1TkVAZZ4u5YMXz56TGrRNBtvp1NMwh2prZPQg8DhydNXcUIJgUaiim
-	4b4KNQ4BJycRML2sf37b1Qdzoezt9/LOK3Qlk//rnEpkiclUeyamFLrWIaV5b63uRcrtmA
-	wTYKuz5B98WjM8U5QyCXa756BbPCKSqjRM4ktEvHvpYSTPI1wzYWjZ9fwG52I7yEU8D6jd
-	DVd33ey1xyJyGhDJCz5SvJgMtZaaJ6HiUE6qT3pBn12v1NKNBA9PBEgu4MEVVBYRj7AXKJ
-	IFGLJLYz4agzOeBm+hPwIsBtmdx6O0INB1ag/mchG9uemKnqYwv9czjYpsTldA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1711314336;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=GOl9H6TQJGR2f/SWJSnA/4BR3k9Fhg4eknY4AbucXbk=;
-	b=+Kosm0xvj+xhHpE/g1uaxNM83+/Ggqe+5faIVpoIaTKgMg65tfDHf45MmSszP9nap7onsB
-	Pg2W0TScem0EhWBA==
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Dimitri Sivanich
- <sivanich@hpe.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, Lu Baolu
- <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Steve Wahl
- <steve.wahl@hpe.com>, Russ
- Anderson <russ.anderson@hpe.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH] Allocate DMAR fault interrupts locally
-In-Reply-To: <20240321151357.1d18127f@jacob-builder>
-References: <ZeDj/LK56borSxO4@hpe.com> <87plwe7w3m.ffs@tglx>
- <Ze9r47riIq9ovBCY@hpe.com> <20240321151357.1d18127f@jacob-builder>
-Date: Sun, 24 Mar 2024 22:05:35 +0100
-Message-ID: <87msqnfihs.ffs@tglx>
+	s=arc-20240116; t=1711322180; c=relaxed/simple;
+	bh=Y+++sfCOOqMd/jN8jYmvU8/LoJkxzD+F97Ejdpsn/YE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=kQ1mYCN1+nxjDV0kogGz0CKPygAoOyzPFebTRn+1Hg112ftt041T5vs3Rmk+LIu5UHrvT933lfzJVcDu6+l7/ysIg2yl+YZuniHW/uKsn9qdjmz/6q683tqfpvMKQjM0AK4J5hUnmGsiqvJKswaVIr8pE3gtb4EeXKDepO/HpIM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 38CAF68D13; Mon, 25 Mar 2024 00:16:12 +0100 (CET)
+Date: Mon, 25 Mar 2024 00:16:11 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Leon Romanovsky <leon@kernel.org>
+Cc: Christoph Hellwig <hch@lst.de>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
+	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Bart Van Assche <bvanassche@acm.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Amir Goldstein <amir73il@gmail.com>,
+	"josef@toxicpanda.com" <josef@toxicpanda.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"daniel@iogearbox.net" <daniel@iogearbox.net>,
+	Dan Williams <dan.j.williams@intel.com>,
+	"jack@suse.com" <jack@suse.com>, Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two
+ steps
+Message-ID: <20240324231611.GB20765@lst.de>
+References: <20240307000036.GP9225@ziepe.ca> <20240307150505.GA28978@lst.de> <20240307210116.GQ9225@ziepe.ca> <20240308164920.GA17991@lst.de> <20240308202342.GZ9225@ziepe.ca> <20240309161418.GA27113@lst.de> <20240319153620.GB66976@ziepe.ca> <20240320085536.GA14887@unreal> <20240321224013.GB22663@lst.de> <20240322174617.GD14887@unreal>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240322174617.GD14887@unreal>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-Jacob!
+On Fri, Mar 22, 2024 at 07:46:17PM +0200, Leon Romanovsky wrote:
+> > As far as I can tell it totally misses the point.  Which is not to never
+> > return non-P2P if the flag is set, but to return either all P2P or non-P2
+> > P and not create a boundary in the single call.
+> 
+> You are treating FOLL_PCI_P2PDMA as a hint, but in iov_iter_extract_user_pages()
+> you set it only for p2p queues. I was under impression that you want only p2p pages
+> in these queues.
 
-On Thu, Mar 21 2024 at 15:13, Jacob Pan wrote:
-> On Mon, 11 Mar 2024 15:38:59 -0500, Dimitri Sivanich <sivanich@hpe.com>
-> wrote:
->> So the code seems to have been designed based on the assumption that it
->> will be run on an already active (though not necessarily fully onlined?)
->> cpu.  To make this work, any code based on that assumption would need to
->> be fixed.  Otherwise, a different approach is needed.
->
-> This may not be pretty but since DMAR fault is for unrecoverable faults,
-> they are rare and infrequent, should never happen on a healthy system. Can
-> we share one BSP vector for all DMARs? i.e. let dmar_fault() handler search
-> for the offending DMAR for fault reasons.
+FOLL_PCI_P2PDMA is an indicator that the caller can cope with P2P
+pages.  Most callers simply can't.
 
-It might not be pretty on the first thought, but it has a charm.
-
-You are right. If DMAR faults happen then there is an issue which is
-going to affect the machine badly anyway, so the extra search through
-the iommu list is not necessarily horrible and it does not matter at all
-whether the access is local or not.
-
-But there are two interrupts involved. The DMAR one and the SVM one.
-
-And all of that DMAR/SVM code is built around the assumption that
-everything can be set up at boot time on the BSP.
-
-The DMAR case definitely is solvable by sharing the interrupt, see the
-uncompiled below. I still need to wrap my brain around the SVM part, but
-feel free to beat me to it or preferrably explain to me that it's not
-necessary at all :)
-
-Thanks,
-
-        tglx
----
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1182,7 +1182,6 @@ static void free_iommu(struct intel_iomm
- 			iommu->pr_irq = 0;
- 		}
- 		free_irq(iommu->irq, iommu);
--		dmar_free_hwirq(iommu->irq);
- 		iommu->irq = 0;
- 	}
- 
-@@ -1956,17 +1955,21 @@ void dmar_msi_mask(struct irq_data *data
- 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
- }
- 
--void dmar_msi_write(int irq, struct msi_msg *msg)
-+static void dmar_iommu_msi_write(struct intel_iommu *iommu, struct msi_msg *msg)
- {
--	struct intel_iommu *iommu = irq_get_handler_data(irq);
- 	int reg = dmar_msi_reg(iommu, irq);
--	unsigned long flag;
-+	unsigned long flags;
- 
--	raw_spin_lock_irqsave(&iommu->register_lock, flag);
-+	raw_spin_lock_irqsave(&iommu->register_lock, flags);
- 	writel(msg->data, iommu->reg + reg + 4);
- 	writel(msg->address_lo, iommu->reg + reg + 8);
- 	writel(msg->address_hi, iommu->reg + reg + 12);
--	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
-+	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
-+}
-+
-+void dmar_msi_write(int irq, struct msi_msg *msg)
-+{
-+	dmar_iommu_msi_write(irq_get_handler_data(irq), msg);
- }
- 
- void dmar_msi_read(int irq, struct msi_msg *msg)
-@@ -2100,23 +2103,37 @@ irqreturn_t dmar_fault(int irq, void *de
- 
- int dmar_set_interrupt(struct intel_iommu *iommu)
- {
--	int irq, ret;
-+	static int dmar_irq;
-+	int ret;
- 
--	/*
--	 * Check if the fault interrupt is already initialized.
--	 */
-+	/* Don't initialize it twice for a given iommu */
- 	if (iommu->irq)
- 		return 0;
- 
--	irq = dmar_alloc_hwirq(iommu->seq_id, iommu->node, iommu);
--	if (irq > 0) {
--		iommu->irq = irq;
-+	/*
-+	 * There is one shared interrupt for all IOMMUs to prevent vector
-+	 * exhaustion.
-+	 */
-+	if (!dmar_irq) {
-+		int irq = dmar_alloc_hwirq(iommu->seq_id, iommu->node, iommu);
-+
-+		if (irq <= 0) {
-+			pr_err("No free IRQ vectors\n");
-+			return -EINVAL;
-+		}
-+		dmar_irq = irq;
- 	} else {
--		pr_err("No free IRQ vectors\n");
--		return -EINVAL;
-+		struct msi_msg msg;
-+
-+		/*
-+		 * Get the MSI message from the shared interrupt and write
-+		 * it to the iommu MSI registers.
-+		 */
-+		dmar_msi_read(dmar_irq, &msg);
-+		dmar_iommu_msi_write(iommu, &msg);
- 	}
- 
--	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name, iommu);
-+	ret = request_irq(dmar_irq, dmar_fault, IRQF_NO_THREAD | IRQF_SHARED, iommu->name, iommu);
- 	if (ret)
- 		pr_err("Can't request irq\n");
- 	return ret;
