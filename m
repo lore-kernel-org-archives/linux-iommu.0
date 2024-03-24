@@ -1,81 +1,164 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2051.outbound.protection.outlook.com [40.107.20.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69BB319E;
-	Sun, 24 Mar 2024 00:07:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711238842; cv=none; b=lSj4xQ/YAisctfn96Oigq8+gk6wFqzM2q6gCg91Qr/bPNmwBVCBEm7e9KHH9IGsHltmB9xTnr+Zk0kawjxie2MIvcm00ApHMDHDJvid4nSwrAnOchx+8b+NeqfRC6P+Okdle/ts3YI62/IClniA9//1fBRoASnLbE0sj+d6uYOc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711238842; c=relaxed/simple;
-	bh=GS7gNRT7PexvXxuEFt3v2Enrciz6Z+dU+tKwg55TQt8=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=olxFCKqZyADIX7mMPGN1lIkHbfuC82Pukl1QUQknRebANmNU5gD2UYySrJ6eNP5IB9pqXXzTA/2wHrf5pj3rQgMIFEXW7ZjQAUrClxBOV7isTPJkunlQfiluCy7P0oD9VgVYe0eNXTaxiVMARd8Qv/Zk4jUe/6VPPDAI54lsQMs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=l+0EGp6d; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BB64179AF
+	for <iommu@lists.linux.dev>; Sun, 24 Mar 2024 12:20:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.20.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711282854; cv=fail; b=W5oaj813r+nxe0hyvzB0EQaC4mdAnOZ2roMuYIXMpOU9jnoKow2qvblhlEmQQTpCZx5Wm0D5HpMn99sB6CvTVzpe0xLedo+BNMu5sS1kQtZeBF+BctGzYvVVNdW/A/RMaQXO9WvlXli+whFNW0ffnithQZVnG7oD6ihg7+Jx5s0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711282854; c=relaxed/simple;
+	bh=s/cWqj24kjpME4NCiI/Hx6vxW6OsMO093cb3/6nL1lE=;
+	h=From:Subject:Date:Message-Id:Content-Type:To:Cc:MIME-Version; b=WYI7/G0VPRQxWQLE+PgXAA+DawVa9AohavQiACU/thjqwWmO4RJ3L+msS5jxw3RYj2wbB7r7dvxBgvpyTNG2IEx77+KT/Ne6/qOL6UGRnyFTuWjnjgQypUHH7DGBxiSTRBDRwprO1YIyCWi900+TCprRqrWgdjAHDunbxY7uG90=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com; spf=pass smtp.mailfrom=oss.nxp.com; dkim=pass (1024-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b=Wy7qE3ow; arc=fail smtp.client-ip=40.107.20.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=oss.nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.nxp.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="l+0EGp6d"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
-	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-	Content-Description:In-Reply-To:References;
-	bh=bkNbDv/jXWfri6VlbU+GiesUQ/cf40GorjdK3AmoNuE=; b=l+0EGp6dd8T961i3D1AL/SBR+M
-	D/qYWvbGxFHfaOM2ErCVC/ZXlvAKGtohWh8QNPntftHvL0ymS0J2cVtHCqWbHmXI1ZktjHwKru54v
-	zJHmg0FtaXIxr8J5fmgLbLB3jGJT4e2ulKotCSS8wjtrRQ3D5axyX/i28f0dS2ebQ+wjMxN2QZC95
-	qQqDRAKJNjzzPRG5+z82KS5psnUIuScy+kyLVXmdfV5RPQY7fiXl5SYxyZk6YobgwZIZn737zR5o8
-	G8KYRdSrcX+pxQ5TObrL205AleGdwzeyiZcp4RnBiQ3lGtJoVzUYjdW2yZYlin5VquwMtCv1vfX/e
-	moT9Nu4w==;
-Received: from [111.223.108.129] (helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1roBOP-0000000BRY3-1vUI;
-	Sun, 24 Mar 2024 00:07:17 +0000
-Date: Sun, 24 Mar 2024 08:07:11 +0800
-From: Christoph Hellwig <hch@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: [GIT PULL] dma-mapping fixes for Linux 6.9
-Message-ID: <Zf9ur7uQA0JLleTU@infradead.org>
+	dkim=pass (1024-bit key) header.d=NXP1.onmicrosoft.com header.i=@NXP1.onmicrosoft.com header.b="Wy7qE3ow"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a1ghJ4stsYDA4OKkXIzii3GP+RZo1n47BEqeQWICPU2GeisuiG5a3+TVEa8Ki+vvqyNtJ0pbcaY+DpsumEj+0U3Y7+OUWBSBPCq31XgC61j4VNuy3TqOxWSEA3FEhBHiL5QVRgBWAalgr6YFiREHJ0EDhJg4BZxpzPwLSzSFiCnLXIbXCJU7c+YmAJN/f+JCNI3nmm3IrVEXQV1Jpe8EAUk1nQlvMK+e2iCJqECdQHrlN58S0QnmnM3l7SCXiv8nKr+yKUWqMejA2Y6KEle2thX5arLyGn1e1Igd7OwZ3XhW6FIcoDH5LNolQMQ8dTNS9n66jAf+RM35jhr8cs1uGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IhPASNj3ACADanKWtr3Th9k+TfknSsbDgvXdFKr9U6Y=;
+ b=LqB1evqKyJI5ZMb0hARa4hjSJ7q1Puq4RAOjl8qOs7MAZWplzK8gm8bVA5znAX3UJt51LbLuxEkwf5jtONqef+Ob0QMe52oqZ9MoZjuAEftow99qz194YRZlx97ZkHmTvCYFQJl+tcjcIKwdDGoQyflIqKC9TffARnH5Ph5hmmFkPuUVvO9IAcjDwRl2VRHS6xvJN4lBVow3FE69IEH0YUFCb7o0BaxUpM1IBzpc82xkA33m+pzF59VzkMUXhHsulKd+6bIh5PfcNkKjhMfM0+f+J4uDQCfxNj3wkgGdUlHUJ2t+T1B9qNo2MuF3RM/G7vtyCNZKykUhJwNYB/E1bw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IhPASNj3ACADanKWtr3Th9k+TfknSsbDgvXdFKr9U6Y=;
+ b=Wy7qE3owmHyw95LiN7ufc+r/AkO/20HBeFlsDTDbbiBiyONc/M6VsBH6wy+AMgEnE8AfqEt1nnp6u2DYqp5a2dgEMYqCfHQyijM4rYuItUMY3eq1KcMSVSxXLYsHruSL4djcsfI9vYuXtWESApICDTEiu3hHC5Gg1xHS+EkZ3J0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by GVXPR04MB9901.eurprd04.prod.outlook.com (2603:10a6:150:113::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.30; Sun, 24 Mar
+ 2024 12:20:47 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::d30b:44e7:e78e:662d]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::d30b:44e7:e78e:662d%4]) with mapi id 15.20.7386.037; Sun, 24 Mar 2024
+ 12:20:47 +0000
+From: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+Subject: [PATCH 0/3] iommu/smmu-v3: support suspend/resume
+Date: Sun, 24 Mar 2024 20:28:57 +0800
+Message-Id: <20240324-smmu-v3-v1-0-11bc96e156a5@nxp.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAIkcAGYC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIxMDYyMT3eLc3FLdMmNd87QUw0QT49QUc2NTJaDqgqLUtMwKsEnRsbW1APM
+ 2ko1ZAAAA
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, Thomas Gleixner <tglx@linutronix.de>, 
+ Marc Zyngier <maz@kernel.org>
+Cc: Bixuan Cui <cuibixuan@huawei.com>, linux-arm-kernel@lists.infradead.org, 
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+ Peng Fan <peng.fan@nxp.com>
+X-Mailer: b4 0.12.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1711283345; l=934;
+ i=peng.fan@nxp.com; s=20230812; h=from:subject:message-id;
+ bh=s/cWqj24kjpME4NCiI/Hx6vxW6OsMO093cb3/6nL1lE=;
+ b=fxMEub+XS5omc4TW73HPvKQ/eTvnc7lmm+bnwOgTvvHtTfCcy1DZXGhEaOKNiwiYzF+N6ewoD
+ 3+/TGjktUGDDfAAz/iNc46rgvlNk4oYklxO/yVno9BV7UxcYpyFAHo7
+X-Developer-Key: i=peng.fan@nxp.com; a=ed25519;
+ pk=I4sJg7atIT1g63H7bb5lDRGR2gJW14RKDD0wFL8TT1g=
+X-ClientProxiedBy: SI2PR01CA0017.apcprd01.prod.exchangelabs.com
+ (2603:1096:4:191::19) To DU0PR04MB9417.eurprd04.prod.outlook.com
+ (2603:10a6:10:358::11)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DU0PR04MB9417:EE_|GVXPR04MB9901:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2339e18e-03da-4b6b-0475-08dc4bfcd5b5
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	8RfHnLjLDo2+yrutgmPW1DMASB31A6IKvndd9C70f3uaEQ7aJdSvtqbr4sGo5CmSSFoPeyWI1dJuUGRn4wlDvg7lDoEB57UfEq+X8ap3P5CUfiFMrXmJ67J+idIApHMH/9dYvasYFvt6b2xnHklyzBb7cqaSoLO/6l8BsQvTi0CFh/ljkgGnbbmyLbDNlGIxhkz4U8ersb8DBYhSi9ZkclMMv/WncOTmPOu+PGShJv6WhBTSDZMSwNBwuzu4aW1uxkl44/m0e7aKcdL8EjgaLdSdYEGilmuVdZ9q6I1Q93vP3zpNBLDGaXM6adJhUIKf6HZtsOqWXdy5nSNBvTSh7QJvFOmZ70xzj9PXwyCbGY8tLdfvAX+adfG7TCjlvw1AZC1zY35aPhMlQAVwqgM7iyeaqDGZ3FwSJ4RzGZdzvXxA3ghKBbS+ksM329RY+M8WiKwtqIl2cSIynd8nTypyq6kMN4vA4YfnF9P5qe9ZltScz5Z4CbqfIIakNOXG694uSu+nrEtc9HTDZZh1nAtGZI1wqW0cu42xGiWJCZvxHy9WzsAOjgeuywukhNYR6dyAUJM0AIImu5sdVW/N6yUdN6fY9oMdLlgP4EvWupU9P8Ft9GeEO+Q3rO2ATipsLEl2COQQ28WvJN9lt/oaoDN4mDValuxKEr3Hf67H1AxtQHo=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(52116005)(1800799015)(376005)(366007)(38350700005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?aUdzWTFNKzlpNUlwa2dySUZvRkZOSy9xNkRsKzQyVTFWSkhRTk9yT2g3ZThn?=
+ =?utf-8?B?aVJ6YnhGcG5MOCtlckJTUEVJWFl6dEpCdXlUWjdMWStqcktReStZbmFLS0hl?=
+ =?utf-8?B?VFVUOEl6L2JHQlpSeHRxa0Z4NXRNb0t5Qk1IL0NsbmVMZ2FMem9wMHBOZ0xs?=
+ =?utf-8?B?UEhCQS9DeW9oaXlnWHBXVTVaM0JjR2E0YjAyd3hvL0ExQ1JLN3VLclpNaW0r?=
+ =?utf-8?B?Z1ZZSmM3VWI5TXQrR2dJWUxvazZvZWdWUmpwV1RFN2FJZVZtaSt5NWlpQUlo?=
+ =?utf-8?B?UTM3eUVFYmxjRE5Pdmt0Tyt6dUJhZkFtUGROTmVITVI3Qkl5SDJTaE9BNGJT?=
+ =?utf-8?B?b1F5dExXRlptcnFGOWRKa2dDeGdub1BpdEErTWNOWDlyMnB1Q09yTjJGNCtK?=
+ =?utf-8?B?ZSs5cGxLRGh2MzlMOStrV0JqUnZwbERZaXVPb2NDeC9nRmgyTE5KU0xDdWt3?=
+ =?utf-8?B?K1ZSem9VM1VEVy9rbEUrYURDdWMxQ2tXOGpIQVVGcTJRdzA5blRZTkRzVjFV?=
+ =?utf-8?B?eHhOK0pHZjJZQ0tzd2tsL3c0bWRERDVYVm5zbVMwSE1TN3dMYit5aVBtMjh6?=
+ =?utf-8?B?NExoMTFMWExDZ3ZyVGdYYnBJNlBCWWV6dzJCRitZUzQvaG5Sc09kdEdTamVk?=
+ =?utf-8?B?Q0JXSG9pNUJQcWFpS1A4VXNHU3J5aHZKZHNmOTd1VlhJTy85dWhSUVArdUxR?=
+ =?utf-8?B?UytDamRzak1rWGttaHp3Nm5zU1ViNUNzZytBemRhNThQdWJRZGdaTXhUUTRI?=
+ =?utf-8?B?T2VMNEZ2UXJEWEZxaVBNTlBLcTlPa2pFTEpoRnR3dGs3clBWZ1diTlV6UHVt?=
+ =?utf-8?B?UWR6aGp6Z2V6YWZvc0hSOTExdnpFWE43bHR1UGZQcFFKanE0K3ZyekhFL2c5?=
+ =?utf-8?B?UFJtYkNjbHEvQmhBOXkzQWxMUGFTOXFoNFFqU1pmb2tIdXU2TDYwajM1S1VT?=
+ =?utf-8?B?NEZDK2F1cUZzTkNSb2JJTFBCbWpiUVE1eWFtSFFZVGdGZlFJRWpqdmhvMmN4?=
+ =?utf-8?B?WkV4a081RmFhcFNuTjJzcStRTVlHQmhlV0VBUHZjQ3FmZFgwTUQvQ2gxKzJF?=
+ =?utf-8?B?R2wwaUJTUCsvNnRLYkdvMEh1enNPTmtYVHZWNTRHM3FDOWtNcFNORFF3U2lZ?=
+ =?utf-8?B?MS81K3RPeG1KekpscmY5UE5ORFNlOEhpQjd2SVUzWFlMNTJieldhYmJDNkhF?=
+ =?utf-8?B?L0QxclpOS2syRC8rR2tac1BRcHNZckg2bitrZnVpNjEzU3hKd3dkTHVlWUNq?=
+ =?utf-8?B?Z0RlWTlOU2tCRG12T3I4TEI5T0ZxbzZSNFJnZ0MvdHJuTWxwV0h3L2MrOUZs?=
+ =?utf-8?B?SE9WZkIyK0dDKzk1VWRqUUo0emV3QVRqRzJnWkdReHJBakVGQTIrekdjS3BB?=
+ =?utf-8?B?em1CWlYrb2liNEYwS1EzdzN5MG1yYWwrWndNVmtTNm42Q1AyV1lCWDZzYWRO?=
+ =?utf-8?B?eWI5cThWdDdiQS9RUWhYUTR0amZvaXkyVEJxVG1ubFFPMDRWbXpjQXZlSVlj?=
+ =?utf-8?B?RXJaZmF2UjhDWEpUNy9aMTZCcFB3TzFESUU3N2JTTWVGaU9FTEJFdHBCK1RM?=
+ =?utf-8?B?bXgvczNUODNXYTFXK2tSeTFDWDlwandUSWNKYmdqYjM4Ymg1WkRLejZScWl3?=
+ =?utf-8?B?VlZISE52em5WVStzWkdxeEhCZVB2QXRsTTFvSnVjbGNRNXhETU5RQlk4YWJC?=
+ =?utf-8?B?NUprWWl4azlJRjQzRytqUGVwdU1XbHNxVUpYem9LWUpjdzZqWXdjc1MzUExi?=
+ =?utf-8?B?RzdnRklOeXp6Nno1L2VQRFJWYXQ0NndLOW1TdUQwV2s1SGkzeW9pMGFTSlIr?=
+ =?utf-8?B?RHBEeDFlTlN3VVBDYmpPa0VJU0I1VGJ3dHBXSGxqTXdFdndJYlBrL2pNbXl0?=
+ =?utf-8?B?NG1NYlNGa0F5NXdYMWFkOTV4ZFBXUXkvVVY2QWFrMk8vNzFTcUtqLytiV3JH?=
+ =?utf-8?B?YnduUE1GcDFkUUFaYzNkRDJjQnZLUEVRdkx3ZHFZYkFNTFU1eThyangvSlRp?=
+ =?utf-8?B?bFBETmJua1Q5ZFZ6QWE5WHJmTytSanoyQml5SlFkZHJxTXIxb000eDJPOGdq?=
+ =?utf-8?B?TW95M2gxYlJJT1FZWVhDekUrWktDbWUwWndWVnE3SlUwQXhxRlB4cHpNcDhr?=
+ =?utf-8?Q?t+gT493y1Oo8Ie+Hf3XzSfDkD?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2339e18e-03da-4b6b-0475-08dc4bfcd5b5
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2024 12:20:47.1260
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: K6b/PfmkFf3X+VftSEZFnQVVb/F6pfeQWCpvSXIw1R5oCUKvcBd1BJ14zhcLQ414+HpP+PO2ORyr2gB6m/5c0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR04MB9901
 
-The following changes since commit b9fa16949d18e06bdf728a560f5c8af56d2bdcaf:
+This patchset takes [1] for reference.
+Patchset was tested on NXP i.MX95, but since i.MX95 not has SMMU MSI,
+so not able to test MSI part. If anyone could help test, that would be
+great.
 
-  dma-direct: Leak pages on dma_set_decrypted() failure (2024-02-28 05:31:38 -0800)
+[1]:
+https://lore.kernel.org/lkml/20210721013350.17664-1-cuibixuan@huawei.com/T/#m06bf92e2306ba52c106f2d4d24765921d4e9781e
 
-are available in the Git repository at:
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+---
+Peng Fan (3):
+      iommu/arm-smmu-v3: save bypass in smmu device structure
+      genirq/msi: cache the last msi msg
+      iommu/arm-smmu-v3: support suspend/resume
 
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.9-2024-03-24
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 76 +++++++++++++++++++++++++----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 +
+ kernel/irq/msi.c                            |  3 ++
+ 3 files changed, 70 insertions(+), 10 deletions(-)
+---
+base-commit: 13ee4a7161b6fd938aef6688ff43b163f6d83e37
+change-id: 20240324-smmu-v3-7fd1a43ed735
 
-for you to fetch changes up to 14cebf689a78e8a1c041138af221ef6eac6bc7da:
+Best regards,
+-- 
+Peng Fan <peng.fan@nxp.com>
 
-  swiotlb: Reinstate page-alignment for mappings >= PAGE_SIZE (2024-03-13 11:39:34 -0700)
-
-----------------------------------------------------------------
-dma-mapping fixes for Linux 6.9
-
-This has a set of swiotlb alignment fixes for sometimes very long
-standing bugs from Will.  We've been discussion them for a while and they
-should be solid now.
-
-----------------------------------------------------------------
-Nicolin Chen (1):
-      iommu/dma: Force swiotlb_max_mapping_size on an untrusted device
-
-Will Deacon (5):
-      swiotlb: Fix double-allocation of slots due to broken alignment handling
-      swiotlb: Enforce page alignment in swiotlb_alloc()
-      swiotlb: Honour dma_alloc_coherent() alignment in swiotlb_alloc()
-      swiotlb: Fix alignment checks when both allocation and DMA masks are present
-      swiotlb: Reinstate page-alignment for mappings >= PAGE_SIZE
-
- drivers/iommu/dma-iommu.c |  9 +++++++++
- kernel/dma/swiotlb.c      | 45 +++++++++++++++++++++++++++++++++------------
- 2 files changed, 42 insertions(+), 12 deletions(-)
