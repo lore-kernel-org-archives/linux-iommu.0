@@ -1,158 +1,545 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2084.outbound.protection.outlook.com [40.107.92.84])
+Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71F3C6F534
-	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 13:52:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.84
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711374737; cv=fail; b=rCQFVMRvp/wHlHksHCHjqVZc4bjx7SgN6YKZcI1ElqHP6RuYMxmBPGbi+P4rU9dBwthPfVvMj7g5P8DoE8N/QR9sBzKjrvpyZdVlV4cgYVXi0vn6B6xGTplO1/5Rp5E9Zn11T1YykT+unKKbwtfL7e/VeLxJJoQHnfJHyVwl+2U=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711374737; c=relaxed/simple;
-	bh=vgBw/lvSPvhiZkOX73ShzmtPeo3pwn2GtgeyZllcgOY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=SP9QkGxkcE42tsmZil6ZZgw2W0sqUcPWqaZ3F0ZSAzFnDgKPFBmaOwx1vIDvTFAzaLOvw/2KvCAdyxvBwA6SeECLQ0dVrdmk9eKrl79RlJ9GISpVnhn/GukWQlg9tmLiYZqBW8TdJMTjfYMp5infFOya8ZU4k1sFYHHGYWIaTJ8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=QBfAb9S/; arc=fail smtp.client-ip=40.107.92.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C965B433BA
+	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 14:06:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711375608; cv=none; b=ja4Y6u1TXGsGdFcp7Cc2y+1V1inmeddQhdRj/2UJ2EWESQsDQulKuBQAHYkVfOUinhX4sdEuC4zoBVpnx3KMDhpfIXSghXS43aDaX5Mj8gEzWu8cYR9HFltXK8+At/lSIIBFScdTA6sW7ZQ3iu9APDcaysztWsGaC367X/JND/o=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711375608; c=relaxed/simple;
+	bh=whCGAWo+4IdQWlqI1uXsHuZAKQymFmPeY9MTgmqXwDY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=JNS2GXcmp7YNPNc8xnclRXkdzd/Cvkb14Plf4rllxgBuZCiYewxe87H+lSXSi+1+RFhWU79mPQQsPFaJpmY/sbBQs2dcabkjns1/qReO6Aycl4t6rCQnMNLjfJ2FGsVjGF5ODfUe6j9fcxHBmTNKu0cjLswOTuWPW3jwjCUcP/c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=QKMAynZw; arc=none smtp.client-ip=37.205.15.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="QBfAb9S/"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V63IcgneWP9NjwiBd2Fj4AdMJsQDXvyo4v+REI2cgWHgbJmVOC7t2Vi5nfSiYnOP5Xz9KdSuCnUR7Dd+o4DCltPxHtYgn/cYhHNbTzS5pmOaojCPjwcFpT8V8Tlr2Q50WlGcC7iVZ/W63AMOIyzvfHsMFyASh5Zv1jlHdVJZ2WnxAFk0v1zssh44Q5hzoadra49ireBRV8jG6UhQXLvk+FNG5pRD5KNvH4NFb1ckR76xW6lgMLWKgmhf/0vhROFkN6gC9XtSDXv+GSpV4N8bBxGH4fjuiw/gy/RQ6C0k1OG21TlUPq/GMJXufjsS0+qISvdLDPvKYZysZuY8pJy3EA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=VInfZXlmEabrTX3WOJNt9EMrULZ7qnchyC/VuUPkElI=;
- b=RubdDLAZZH/q8UNj3Dr2kcz0l/WzOl85cQ/TFC/yUjabFgd0jBogko4J/3R3qasR2b8UrnD1qRoMQm6DnP9mvw6s9ibEmqK+EJXHuk3EEg7vjMwWufMOv/VDak6z5VcNgegsfp29G1ZhE/pOgMCX6WyXlf4bwQMk2CJNVvQ0fm6OwMwN6rXqkF16Sy6p0RFaw/YujuZdQUV0DJta3qsson53ANzOuVmnbySPeBYYEf3V3ot/Nn285VRKG/XCu+Nq+HFWRCuP9gwRgeIKNBRivI38ADjQ3NwCOvOBmnySWP/Ux3jFz1bEsnX7Y5n1rQkUeYAEInKyANIFR4UOW2j6jA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VInfZXlmEabrTX3WOJNt9EMrULZ7qnchyC/VuUPkElI=;
- b=QBfAb9S/GleBs2uljJBx9RKTlj9dpwWdFyJSrQcuG+ARHBxuhsqyEQMUuJCjbEzCT6sX4aPTmTJXe9sObWAvT+qJQxEO784z4Tn/J+GRQ+mC8tM1Z9y/dK/7I1lyoi9RHTTbaEDo65oyYO7o7erq1NDgxY+3ENqjoXOAXGzt4CdtmPrnhNEgulR8DVu0MN/kJ/hnMEdnZhGDm00eGCpZPUDZ8+6DVAVEexuL/yhFunjd6oHms/V0vpnXW3y/MiQL+Dv/7LJZUB68kGYoFsL739HcKW7ZS0axhPzajFYZygREitWROMne3nKd4AV+O7Syyyjma4hoTMmvbaeK36TywQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by DS0PR12MB6391.namprd12.prod.outlook.com (2603:10b6:8:cd::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.32; Mon, 25 Mar
- 2024 13:52:09 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7409.028; Mon, 25 Mar 2024
- 13:52:08 +0000
-Date: Mon, 25 Mar 2024 10:52:07 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Joao Martins <joao.m.martins@oracle.com>
-Cc: Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>, iommu@lists.linux.dev,
-	Kevin Tian <kevin.tian@intel.com>, Shuah Khan <shuah@kernel.org>,
-	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [BUG] seltests/iommu: runaway ./iommufd consuming 99% CPU after
- a failed assert()
-Message-ID: <20240325135207.GC6245@nvidia.com>
-References: <0d5c3b29-fc5b-41d9-9556-5ce94262dac8@alu.unizg.hr>
- <20240319135852.GA393211@nvidia.com>
- <a692d5d7-11d5-4c1b-9abc-208d2194ccde@alu.unizg.hr>
- <cdc9c46b-1bad-41cd-8f98-38cc2171186a@oracle.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <cdc9c46b-1bad-41cd-8f98-38cc2171186a@oracle.com>
-X-ClientProxiedBy: BL1P221CA0025.NAMP221.PROD.OUTLOOK.COM
- (2603:10b6:208:2c5::13) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="QKMAynZw"
+Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by bee.tesarici.cz (Postfix) with ESMTPSA id D09231AFA98;
+	Mon, 25 Mar 2024 15:06:42 +0100 (CET)
+Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
+	t=1711375603; bh=f/PdNOhTrx6gPUxS313xg4uJei38LtyoZx0x4Dnq9xE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=QKMAynZwmp7EZd6pU/aLEOSFdcLHxMQol3W1RjNisaHSlPC1Tdtn7vSvo41vtJnpS
+	 psIFXtmBCN0WxIPEXq2cp/x+eAZSe/W8mBq0O/70qn1GYOAsFM0G73DLxR3GkW6XGG
+	 1hlJz3AKF4Hb3XBgmjGX8PDaRdQeHxpyONkVBovs8c7/A4HtxAgF8in+f3vSy0kjjE
+	 +DvBwV0MPiR0TGe9Lu8FX89RA4AcEyfkyOGWn3EB04Zs3FVEyJc1XMX/mcIhXdzTQu
+	 /FR0unjEbYQHGvvTwlPuIqi8ql+MA449BrAKEa9J3NmTM/6RcUwdgQCA9HnWnakjlI
+	 9Zx4/Qpqh8qYQ==
+Date: Mon, 25 Mar 2024 15:06:41 +0100
+From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+To: Petr Tesarik <petrtesarik@huaweicloud.com>
+Cc: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+ <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org (open list), iommu@lists.linux.dev (open
+ list:DMA MAPPING HELPERS), Will Deacon <will@kernel.org>, Michael Kelley
+ <mhklinux@outlook.com>, Roberto Sassu <roberto.sassu@huaweicloud.com>
+Subject: Re: [PATCH 1/1] swiotlb: add a KUnit test suite
+Message-ID: <20240325150641.0c7b2d73@meshulam.tesarici.cz>
+In-Reply-To: <20240313092740.192-1-petrtesarik@huaweicloud.com>
+References: <20240313092740.192-1-petrtesarik@huaweicloud.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-suse-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|DS0PR12MB6391:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8b3ae69d-5c08-4924-4449-08dc4cd2c372
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	FBeY9oB/9A84mNgW+IFv39AfJ2KAL2AxEgYGiYHGMgbJJPhfK4k77c7ykrnyj+lrxbs8WJ81d/uMLof0A8RRcYxLPfULHtetPoFZuATUjk7SNMnQuH9poAHDW4/xK8wy7uu6Y2mo/iAqUpFLE1Ho6eqz/jRAcOSdC3fU3SY5O//rHsVnE/um8WlOemmQLHoPYM7elaoIH/O4pp3e5FCcY3NC4u5DJKdySMLHEH5KBV+LAa5GbD4KzlRv7noxV9VrFoWxvKottrwTMBWEXY6Fql+iAWQdfNlJjcrZUNSJwDCRPArVLSqX4pP5+iuAwSbqLCAAPpXLg1oCrqUYqUxCTnTe5X4EXiKL04N2Yw+X8dTP0OeToV5GJQYKwBSEtAGvrldppuWmGwvrbcFqn0PalmIUU2R7vAAm5dxzlNl4fNlbr9cw3xRumiX5H3kIL8v5T4xbwN65e1jopl0FAp0TcSBLeHG/dDQAmyDar0WYwNyKZNNqzFJM7FIx2/EZD4qGeftmmqkScPZMXbd7LzaBBN3+aHpMhGewdCgLERFPo1kvShHgNoGGqbrjAeufWN0GpF91TKOQc127YnlucQVlEVIJjBkGCi2bkU5/XyytKNlhv+gPkH83kc7KZQynRu4uMQSemZIcbymRvr9IViGSKEV0zGuFmWhY2C0PDNXaed0=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(366007)(1800799015);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?U2V0U3BKdUovdC9qbFRUZFhqeXJFenYxYkxUb0U1NnRIcDArdUw2NUlkYlZa?=
- =?utf-8?B?MUtoTUZwWHBuSTY1S0NGbkhWRjFndklrdys1cG1OTkozN1NhYUdjSzRLU0xw?=
- =?utf-8?B?S1hSenp4b1JuaEVRVUdlNDhVWWUvdDJRYUZpU3lkclhYZitSZTVKSEZLV1JR?=
- =?utf-8?B?bWFDNFUrZ1dneForNW9qNElPSFhDRkpqU2xxV1JhaTFBTEdCSUpjWEIyRktB?=
- =?utf-8?B?M3JKbGNMd3VqTklqV3BKYTRXTWhkRDFhRjlpZG92U1pMcGEycjhhKzF2WDNZ?=
- =?utf-8?B?MnI1V0xhSStOVUgydlhKakFxV1FEelltQmVyWUQ0UDk0dlJvNTFaQmgxa01x?=
- =?utf-8?B?a21DNmk2YmJiRHhtSGZQT1VpcjQrdzl4Y2t1cjBoN0RYNEtBdFZjdkRPZ3hB?=
- =?utf-8?B?L3VZcFZFOUh3dDk1VWRtUUE4VXFtWWtvUVBNMFZwUW9vc1FnMnBhcHdDVGNO?=
- =?utf-8?B?RVZEWjdzTjdWV1hzR1h2MUgydHdHNE0wNDJnOUZpREJwYTQ5QnBkQXpjUFJB?=
- =?utf-8?B?czFXUXYzY1pZKzZzRmVWY3g2elY4SkxPR2VPZS9abS9tdVlDUTEyMDZBeTVI?=
- =?utf-8?B?TzdJRmVxVlVWb3VJRXl3ZFFoOHZqNHlTdExjOEZjbWRmaGo3cFd5aGNYZkN5?=
- =?utf-8?B?djBGeWFKUHFUd1RydThMNWU5eTVaMjZLRy93OC84Q0tWYUVvSFg4TW5iR2p4?=
- =?utf-8?B?ZlI3a0M0S3FvWlBvZmMrd2pOSjNuVFk1bTNpSWJnRS92OXFQVWN2amFMRmZi?=
- =?utf-8?B?cmdGNng2dkFkaStlZ2RYV2JkWm1QMkZLQVdrQlZ3M1Zjc0pMdUd6WXFTR0Ft?=
- =?utf-8?B?QW1EaWNpd2pjcFVWdUFIaEFjUE85c2xDZVBVV0NkRkdQN0Izb295dGU2S2xR?=
- =?utf-8?B?aWI4ZS9vYVpwNml4Y0laOTRFSm9ranA0dWFPbEtacG5YaU9vdmF3R3dIR2xl?=
- =?utf-8?B?R2ExK1FWZTNjdTFwaUZTeitsRUxWbUt3aUlrY2IyQktwWWZXM2FMYThwb0ZP?=
- =?utf-8?B?QW42TVA0c05UdFo5VUNYR05ZSWYxQ1BScDBPSXF5SVdFQkpyNWVHbnpzd29w?=
- =?utf-8?B?U3BMdzArQlVtTHkyNnBSc0J0R2QraHlsRS9nNXNZVnNXdVNUQjFFOFlJZWpX?=
- =?utf-8?B?VXdXVnN3S3F2OFhSbWRWK0VvRVcwS0JuWVQ5cks4Y3RDVExWOWd3aXB4RG1W?=
- =?utf-8?B?L2VnRW1Gb01GZGVWZlFyUy9Bc2s0WUZNd1cvMklWM2I0bk1CWVQ3VWxqdnFW?=
- =?utf-8?B?U1JBd09LQ3g5ek1jWldGWVRCNS9Xc21wWS9RTE1vVVBzSkpEeldZY25TeGg2?=
- =?utf-8?B?a3ExT240ck5BOUNjbVE4ZWd1VXFpZ002em9ZWjFDMjlOVkd4K1NWbDg1Nzcx?=
- =?utf-8?B?V3BpWVZmSjFhelJ1QTU5ZCtxVVhaRmEwN3Fuc2lmWkR4aDBVZVdHSlowZ2JB?=
- =?utf-8?B?T3doR0dqazJSbGJFY0d3ZkdNc0RkVjUyMHdGclNYbWY4WkFtYmd1czJJY1lo?=
- =?utf-8?B?ZmliNi9reEFTVVhwWEhqLzNDUWRWTXljbjhmdFpCT25PVVI3cTJnZisxZTR2?=
- =?utf-8?B?a3VoVjdFRjRsbVBJcmIvbVZPUGswSElzeVBkVk5lWDZLOUVvUHhUc1hBQlhp?=
- =?utf-8?B?THRXREgzclZWSEpGTFdURlkwRlNCeTdRaGJkVFN6WnYrK3RnbDM2UFA1bFhZ?=
- =?utf-8?B?TmRPRTMvaHhjSy9rNjNZaVFDdTVwMll4WGNBV1hFZlZQRlJHeGJPNFhSVjVD?=
- =?utf-8?B?MTRRbUFzNDZrSHVDa1VwWlVDOG5TUEYyRWUzWGVyU0dROVlxQzFQTDdZVk1E?=
- =?utf-8?B?SEhKUVVQVFlSVHJTYzAvZGxuUnNxSVdPajd2TUcvYjR6WXFLT0p4emVFV0gz?=
- =?utf-8?B?VE9BYXptK0dPMXNBWERVbi9jYzVSaHd1TWdVUDhjSHp5RC8rL2dNSVo2T1kr?=
- =?utf-8?B?TTFweUdPQTNxZW9nelVEakxtcVNPWWFDVVZFbmx3amVjdm4zb2JjNmFZUXNT?=
- =?utf-8?B?NXJ4VURtejg3TU5HZDJ3cExmQVdrWFlIcElUb3hlVW0wN1MrNnhPb0Ztc1Az?=
- =?utf-8?B?emlQMmFlSDdLOENxMk5oeXB5aklvSzRnMk40dHJEZlRvL3JRSHBNM1ExbzN2?=
- =?utf-8?Q?8tRzs+T6o5jmySRkmDjuhwdXs?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8b3ae69d-5c08-4924-4449-08dc4cd2c372
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2024 13:52:08.6723
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HCxfFnT5C8rZhrZOVTnyWipPbsFLcIvA6gPTCZinJ3pIgTyb4s6ynjT+3KsbP27J
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR12MB6391
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, Mar 25, 2024 at 12:17:28PM +0000, Joao Martins wrote:
-> > However, I am not smart enough to figure out why ...
-> > 
-> > Apparently, from the source, mmap() fails to allocate pages on the desired address:
-> > 
-> >   1746         assert((uintptr_t)self->buffer % HUGEPAGE_SIZE == 0);
-> >   1747         vrc = mmap(self->buffer, variant->buffer_size, PROT_READ |
-> > PROT_WRITE,
-> >   1748                    mmap_flags, -1, 0);
-> > → 1749         assert(vrc == self->buffer);
-> >   1750
-> > 
-> > But I am not that deep into the source to figure our what was intended and what
-> > went
-> > wrong :-/
+On Wed, 13 Mar 2024 10:27:40 +0100
+Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
+
+> From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 > 
-> I can SKIP() the test rather assert() in here if it helps. Though there are
-> other tests that fail if no hugetlb pages are reserved.
+> Add unit tests to help avoid regressions in the SWIOTLB code.
 > 
-> But I am not sure if this is problem here as the initial bug email had an
-> enterily different set of failures? Maybe all you need is an assert() and it
-> gets into this state?
+> These features are covered by the test suite:
+> 
+> * basic functionality (map, sync)
+> * alignment based on mapping size
+> * alignment based on min_align_mask
+> * explicit alignment with alloc_align_mask
+> * combination of alignment constraints
+> 
+> Select CONFIG_SWIOTLB rather than depend on it, because it allows to run
+> the test with UML (default KUnit target).
 
-I feel like there is something wrong with the kselftest framework,
-there should be some way to fail the setup/teardown operations without
-triggering an infinite loop :(
+Hi all,
 
-Jason
+I know it's not super-urgent, but I'm just curious: Has anyone had time
+to try out this patch? Did it work for you?
+
+Petr T
+
+> Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+> ---
+>  kernel/dma/Kconfig        |  13 ++
+>  kernel/dma/Makefile       |   1 +
+>  kernel/dma/swiotlb_test.c | 413 ++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 427 insertions(+)
+>  create mode 100644 kernel/dma/swiotlb_test.c
+> 
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index d62f5957f36b..44c62faa8d89 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -103,6 +103,19 @@ config SWIOTLB_DYNAMIC
+>  
+>  	  If unsure, say N.
+>  
+> +config SWIOTLB_KUNIT_TEST
+> +	tristate "Unit tests for software IO TLB" if !KUNIT_ALL_TESTS
+> +	select SWIOTLB
+> +	depends on KUNIT
+> +	default KUNIT_ALL_TESTS
+> +	help
+> +	  Build unit tests for software IO TLB.
+> +
+> +	  For more information on KUnit and unit tests in general, please refer
+> +	  to the KUnit documentation in Documentation/dev-tools/kunit/.
+> +
+> +	  If unsure, say N.
+> +
+>  config DMA_BOUNCE_UNALIGNED_KMALLOC
+>  	bool
+>  	depends on SWIOTLB
+> diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
+> index 21926e46ef4f..bfb130020219 100644
+> --- a/kernel/dma/Makefile
+> +++ b/kernel/dma/Makefile
+> @@ -7,6 +7,7 @@ obj-$(CONFIG_DMA_CMA)			+= contiguous.o
+>  obj-$(CONFIG_DMA_DECLARE_COHERENT)	+= coherent.o
+>  obj-$(CONFIG_DMA_API_DEBUG)		+= debug.o
+>  obj-$(CONFIG_SWIOTLB)			+= swiotlb.o
+> +obj-$(CONFIG_SWIOTLB_KUNIT_TEST)	+= swiotlb_test.o
+>  obj-$(CONFIG_DMA_COHERENT_POOL)		+= pool.o
+>  obj-$(CONFIG_MMU)			+= remap.o
+>  obj-$(CONFIG_DMA_MAP_BENCHMARK)		+= map_benchmark.o
+> diff --git a/kernel/dma/swiotlb_test.c b/kernel/dma/swiotlb_test.c
+> new file mode 100644
+> index 000000000000..46e4d8055ef5
+> --- /dev/null
+> +++ b/kernel/dma/swiotlb_test.c
+> @@ -0,0 +1,413 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2024 Huawei Technologies Duesseldorf GmbH
+> + */
+> +
+> +#include <kunit/test.h>
+> +#include <kunit/device.h>
+> +
+> +#include <linux/device.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/io.h>
+> +#include <linux/kdev_t.h>
+> +#include <linux/swiotlb.h>
+> +
+> +/* Alignment check repeat count. */
+> +#define NUM_CHECK_ALIGNED	5
+> +
+> +/* Offset of mapped data inside the allocated buffer. */
+> +#define MAP_OFF	128
+> +
+> +#define PASS	0x600d600d
+> +#define FAIL	0xbad00bad
+> +
+> +static struct {
+> +	unsigned char pad1[MAP_OFF];
+> +	unsigned long value;
+> +	unsigned char pad2[PAGE_SIZE];
+> +} test_data __page_aligned_bss;
+> +
+> +/**************************************************************
+> + * Various helper functions.
+> + */
+> +
+> +static int swiotlb_suite_init(struct kunit_suite *suite)
+> +{
+> +	if (is_swiotlb_allocated())
+> +		return 0;
+> +
+> +	return swiotlb_init_late(swiotlb_size_or_default(), GFP_KERNEL, NULL);
+> +}
+> +
+> +static int swiotlb_drv_probe(struct device *dev)
+> +{
+> +	dev->dma_parms = devm_kzalloc(dev, sizeof(*dev->dma_parms),
+> +				      GFP_KERNEL);
+> +	if (!dev->dma_parms)
+> +		return -ENOMEM;
+> +
+> +	return 0;
+> +}
+> +
+> +static int swiotlb_test_init(struct kunit *test)
+> +{
+> +	struct device_driver *driver;
+> +
+> +	driver = kunit_driver_create(test, "swiotlb_driver");
+> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, driver);
+> +	driver->probe = swiotlb_drv_probe;
+> +
+> +	test->priv = driver;
+> +	return 0;
+> +}
+> +
+> +/**
+> + * test_device() - get a dummy device for testing
+> + * @test:  KUnit test instance.
+> + *
+> + * Allocate a device suitable for SWIOTLB.
+> + */
+> +static struct device *test_device(struct kunit *test)
+> +{
+> +	struct device_driver *driver = test->priv;
+> +	struct device *dev;
+> +	u64 mask;
+> +
+> +	dev = kunit_device_register_with_driver(test, "swiotlb", driver);
+> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, dev);
+> +
+> +	mask = DMA_BIT_MASK(64);
+> +	KUNIT_ASSERT_EQ(test, dma_coerce_mask_and_coherent(dev, mask), 0);
+> +
+> +	return dev;
+> +}
+> +
+> +/**
+> + * check_aligned() - check that bounce buffers are aligned
+> + * @test:   KUnit test instance.
+> + * @dev:    Device.
+> + * @buf:    Pointer to the original buffer.
+> + * @size:   Size of the original buffer.
+> + * @align:  Allocation alignment (in bytes).
+> + * @check_bits:
+> + *          Number of low bits checked in the swiotlb address.
+> + * @preserve_bits:
+> + *          Number of low bits preserved from the original address.
+> + *
+> + * Mapping is repeated a few times, and a small buffer is allocated after
+> + * each attempt. This should cover the case when the first free slot merely
+> + * happens to be suitably aligned.
+> + */
+> +static void check_aligned(struct kunit *test, struct device *dev,
+> +			  void *buf, size_t size, unsigned long align,
+> +			  int check_bits, int preserve_bits)
+> +{
+> +	dma_addr_t tlb_addr[NUM_CHECK_ALIGNED];
+> +	dma_addr_t pad_addr[NUM_CHECK_ALIGNED];
+> +	u64 check_mask, check_val;
+> +	phys_addr_t phys_addr;
+> +	char *orig, *tlb;
+> +	int i;
+> +
+> +	orig = (char *)buf;
+> +	phys_addr = virt_to_phys(buf);
+> +	check_mask = DMA_BIT_MASK(check_bits);
+> +	check_val = phys_addr & DMA_BIT_MASK(preserve_bits);
+> +
+> +	for (i = 0; i < NUM_CHECK_ALIGNED; ++i) {
+> +		tlb_addr[i] =
+> +			swiotlb_tbl_map_single(dev, phys_addr, size, size,
+> +					       align - 1, DMA_TO_DEVICE, 0);
+> +		KUNIT_ASSERT_NE(test, tlb_addr[i], DMA_MAPPING_ERROR);
+> +		KUNIT_EXPECT_TRUE(test, is_swiotlb_buffer(dev, tlb_addr[i]));
+> +		KUNIT_EXPECT_EQ(test, tlb_addr[i] & check_mask, check_val);
+> +
+> +		/* Check sync in both directions. */
+> +		tlb = phys_to_virt(tlb_addr[i]);
+> +		KUNIT_EXPECT_EQ(test, *orig, *tlb);
+> +		*orig ^= 0xff;
+> +		swiotlb_sync_single_for_device(dev, tlb_addr[i], sizeof(*orig),
+> +					       DMA_TO_DEVICE);
+> +		KUNIT_EXPECT_EQ(test, *orig, *tlb);
+> +		*tlb ^= 0xff;
+> +		swiotlb_sync_single_for_cpu(dev, tlb_addr[i], sizeof(*orig),
+> +					    DMA_FROM_DEVICE);
+> +		KUNIT_EXPECT_EQ(test, *orig, *tlb);
+> +
+> +		pad_addr[i] = swiotlb_map(dev, phys_addr, sizeof(long),
+> +					  DMA_TO_DEVICE, 0);
+> +		KUNIT_ASSERT_NE(test, pad_addr[i], DMA_MAPPING_ERROR);
+> +	}
+> +
+> +	for (i = 0; i < NUM_CHECK_ALIGNED; ++i) {
+> +		swiotlb_tbl_unmap_single(dev, pad_addr[i], sizeof(long),
+> +					 DMA_FROM_DEVICE, 0);
+> +		swiotlb_tbl_unmap_single(dev, tlb_addr[i], size,
+> +					 DMA_FROM_DEVICE, 0);
+> +	}
+> +}
+> +
+> +/**************************************************************
+> + * Map a DMA buffer.
+> + *
+> + * Test that a DMA buffer can be mapped and synced.
+> + */
+> +
+> +static void swiotlb_test_map(struct kunit *test)
+> +{
+> +	struct device *dev = test_device(test);
+> +	phys_addr_t phys_addr;
+> +	dma_addr_t tlb_addr;
+> +	unsigned long *tlb;
+> +
+> +	phys_addr = virt_to_phys(&test_data.value);
+> +	test_data.value = PASS;
+> +	tlb_addr = swiotlb_map(dev, phys_addr, sizeof(unsigned long),
+> +			       DMA_TO_DEVICE, 0);
+> +	KUNIT_ASSERT_NE(test, tlb_addr, DMA_MAPPING_ERROR);
+> +	KUNIT_EXPECT_TRUE(test, is_swiotlb_buffer(dev, tlb_addr));
+> +	tlb = phys_to_virt(tlb_addr);
+> +
+> +	/* Bounce buffer is initialized to original buffer. */
+> +	KUNIT_EXPECT_EQ(test, *tlb, PASS);
+> +
+> +	/* Bounce buffer is updated on sync to device. */
+> +	test_data.value = PASS + 1;
+> +	swiotlb_sync_single_for_device(dev, tlb_addr, sizeof(unsigned long),
+> +				       DMA_TO_DEVICE);
+> +	KUNIT_EXPECT_EQ(test, *tlb, PASS + 1);
+> +
+> +	/* Original buffer is updated on sync from device. */
+> +	*tlb = PASS + 2;
+> +	swiotlb_sync_single_for_cpu(dev, tlb_addr, sizeof(unsigned long),
+> +				    DMA_FROM_DEVICE);
+> +	KUNIT_EXPECT_EQ(test, test_data.value, PASS + 2);
+> +
+> +	/* Original buffer is also updated on unmap. */
+> +	*tlb = PASS + 3;
+> +	swiotlb_tbl_unmap_single(dev, tlb_addr, sizeof(unsigned long),
+> +				 DMA_FROM_DEVICE, 0);
+> +	KUNIT_EXPECT_EQ(test, test_data.value, PASS + 3);
+> +}
+> +
+> +/**************************************************************
+> + * Map DMA buffer as bi-directional.
+> + *
+> + * Test that buffer is synced with DMA_BIDIRECTIONAL.
+> + */
+> +
+> +static void swiotlb_test_bidirectional(struct kunit *test)
+> +{
+> +	struct device *dev = test_device(test);
+> +	phys_addr_t phys_addr;
+> +	dma_addr_t tlb_addr;
+> +	unsigned long *tlb;
+> +
+> +	test_data.value = PASS;
+> +	phys_addr = virt_to_phys(&test_data.value);
+> +	tlb_addr = swiotlb_map(dev, phys_addr, sizeof(unsigned long),
+> +			       DMA_BIDIRECTIONAL, 0);
+> +	KUNIT_ASSERT_NE(test, tlb_addr, DMA_MAPPING_ERROR);
+> +	KUNIT_EXPECT_TRUE(test, is_swiotlb_buffer(dev, tlb_addr));
+> +	tlb = phys_to_virt(tlb_addr);
+> +
+> +	/* Bounce buffer is initialized to original buffer. */
+> +	KUNIT_EXPECT_EQ(test, *tlb, PASS);
+> +
+> +	/* Original buffer is updated on unmap. */
+> +	*tlb = PASS + 1;
+> +	swiotlb_tbl_unmap_single(dev, tlb_addr, sizeof(unsigned long),
+> +				 DMA_BIDIRECTIONAL, 0);
+> +	KUNIT_EXPECT_EQ(test, test_data.value, PASS + 1);
+> +}
+> +
+> +/**************************************************************
+> + * Skip sync on unmap.
+> + *
+> + * Test that sync does not happen with DMA_ATTR_SKIP_CPU_SYNC.
+> + * On swiotlb_map(), this flag skips only sync for non-coherent
+> + * DMA; the bounce buffer itself is always synced to the
+> + * original buffer.
+> + */
+> +
+> +static void swiotlb_test_skip_sync(struct kunit *test)
+> +{
+> +	struct device *dev = test_device(test);
+> +	phys_addr_t phys_addr;
+> +	dma_addr_t tlb_addr;
+> +	unsigned long *tlb;
+> +
+> +	test_data.value = PASS;
+> +	phys_addr = virt_to_phys(&test_data.value);
+> +	tlb_addr = swiotlb_map(dev, phys_addr, sizeof(unsigned long),
+> +			       DMA_TO_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
+> +	KUNIT_ASSERT_NE(test, tlb_addr, DMA_MAPPING_ERROR);
+> +	KUNIT_EXPECT_TRUE(test, is_swiotlb_buffer(dev, tlb_addr));
+> +	tlb = phys_to_virt(tlb_addr);
+> +
+> +	/* Bounce buffer is initialized to original buffer anyway. */
+> +	KUNIT_EXPECT_EQ(test, *tlb, PASS);
+> +
+> +	/* Original buffer is not updated on unmap. */
+> +	*tlb = FAIL;
+> +	swiotlb_tbl_unmap_single(dev, tlb_addr, sizeof(unsigned long),
+> +				 DMA_FROM_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
+> +	KUNIT_EXPECT_EQ(test, test_data.value, PASS);
+> +}
+> +
+> +/**************************************************************
+> + * Historical page alignment.
+> + *
+> + * Test that mappings of at least PAGE_SIZE get a page-aligned
+> + * DMA address.
+> + */
+> +
+> +static void swiotlb_test_page_align(struct kunit *test)
+> +{
+> +	struct device *dev = test_device(test);
+> +
+> +	/* Bounce buffer is page-aligned. */
+> +	check_aligned(test, dev, &test_data, sizeof(test_data), 1,
+> +		      PAGE_SHIFT, 0);
+> +
+> +	/* Even if the original buffer is not page-aligned. */
+> +	check_aligned(test, dev, &test_data.value, PAGE_SIZE, 1,
+> +		      PAGE_SHIFT, 0);
+> +}
+> +
+> +/**************************************************************
+> + * Device physical address alignment.
+> + *
+> + * Test that physical address low bits are preserved.
+> + */
+> +
+> +static void check_min_align(struct kunit *test, int bits)
+> +{
+> +	u64 min_align_mask = DMA_BIT_MASK(bits);
+> +	struct device *dev = test_device(test);
+> +	unsigned long vaddr;
+> +	void *ptr;
+> +
+> +	KUNIT_ASSERT_EQ(test, dma_set_min_align_mask(dev, min_align_mask), 0);
+> +
+> +	vaddr = devm_get_free_pages(dev, GFP_KERNEL,
+> +				    bits > PAGE_SHIFT ? bits - PAGE_SHIFT : 0);
+> +	KUNIT_ASSERT_NE(test, vaddr, 0);
+> +
+> +	/* Check low bits */
+> +	ptr = (void *)vaddr + MAP_OFF;
+> +	check_aligned(test, dev, ptr, sizeof(long), 1, bits, bits);
+> +
+> +	/* Check high bits */
+> +	ptr = (void *)vaddr + (1UL << bits) - MAP_OFF - sizeof(long);
+> +	check_aligned(test, dev, ptr, sizeof(long), 1, bits, bits);
+> +
+> +	kunit_device_unregister(test, dev);
+> +}
+> +
+> +static void swiotlb_test_min_align(struct kunit *test)
+> +{
+> +	check_min_align(test, 12);
+> +	check_min_align(test, PAGE_SHIFT);
+> +	check_min_align(test, 16);
+> +}
+> +
+> +/**************************************************************
+> + * Explicit allocation alignment.
+> + *
+> + * Test that the bounce buffer is aligned to an explicit value
+> + * regardless of allocation size.
+> + */
+> +
+> +static void check_alloc_align(struct kunit *test, int bits)
+> +{
+> +	struct device *dev = test_device(test);
+> +	void *base, *ptr;
+> +	size_t size;
+> +
+> +	size = 1UL << bits;
+> +	base = devm_kmalloc(dev, size, GFP_KERNEL);
+> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, base);
+> +
+> +	/* Check low bits */
+> +	ptr = base + MAP_OFF;
+> +	check_aligned(test, dev, ptr, sizeof(long), size, bits, 0);
+> +
+> +	/* Check high bits */
+> +	ptr = base + size - MAP_OFF - sizeof(long);
+> +	check_aligned(test, dev, ptr, sizeof(long), size, bits, 0);
+> +
+> +	kunit_device_unregister(test, dev);
+> +}
+> +
+> +static void swiotlb_test_alloc_align(struct kunit *test)
+> +{
+> +	check_alloc_align(test, 12);
+> +	check_alloc_align(test, 14);
+> +}
+> +
+> +/**************************************************************
+> + * Both allocation and device physical address alignment.
+> + *
+> + * Test that the bounce buffer is aligned to an explicit value
+> + * regardless of allocation size and it also preserves physical
+> + * address low bits.
+> + */
+> +
+> +static void check_both_align(struct kunit *test, int min_align_bits,
+> +			     int alloc_align_bits)
+> +{
+> +	u64 min_align_mask = DMA_BIT_MASK(min_align_bits);
+> +	struct device *dev = test_device(test);
+> +	void *base, *ptr;
+> +	size_t size;
+> +
+> +	KUNIT_ASSERT_EQ(test, dma_set_min_align_mask(dev, min_align_mask), 0);
+> +
+> +	size = 1UL << max(min_align_bits, alloc_align_bits);
+> +	base = devm_kmalloc(dev, size, GFP_KERNEL);
+> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, base);
+> +
+> +	/* Check low bits */
+> +	ptr = base + MAP_OFF;
+> +	check_aligned(test, dev, ptr, sizeof(long), size,
+> +		      min_align_bits, min_align_bits);
+> +
+> +	/* Check high bits */
+> +	ptr = base + size - MAP_OFF - sizeof(long);
+> +	check_aligned(test, dev, ptr, sizeof(long), size,
+> +		      min_align_bits, min_align_bits);
+> +
+> +	kunit_device_unregister(test, dev);
+> +}
+> +
+> +static void swiotlb_test_both_align(struct kunit *test)
+> +{
+> +	check_both_align(test, 12, 12);
+> +	check_both_align(test, 12, 16);
+> +	check_both_align(test, 14, 16);
+> +}
+> +
+> +/**************************************************************
+> + * Test suite metadata.
+> + */
+> +
+> +static struct kunit_case swiotlb_test_cases[] = {
+> +	KUNIT_CASE(swiotlb_test_map),
+> +	KUNIT_CASE(swiotlb_test_bidirectional),
+> +	KUNIT_CASE(swiotlb_test_skip_sync),
+> +	KUNIT_CASE(swiotlb_test_page_align),
+> +	KUNIT_CASE(swiotlb_test_min_align),
+> +	KUNIT_CASE(swiotlb_test_alloc_align),
+> +	KUNIT_CASE(swiotlb_test_both_align),
+> +	{}
+> +};
+> +
+> +static struct kunit_suite swiotlb_test_suite = {
+> +	.name = "swiotlb",
+> +	.suite_init = swiotlb_suite_init,
+> +	.init = swiotlb_test_init,
+> +	.test_cases = swiotlb_test_cases,
+> +};
+> +
+> +kunit_test_suites(&swiotlb_test_suite);
+
