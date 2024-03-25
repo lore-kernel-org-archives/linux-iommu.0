@@ -1,136 +1,150 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C4B224A887
-	for <iommu@lists.linux.dev>; Sun, 24 Mar 2024 23:22:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6780C1553AE
+	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 02:18:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711322544; cv=none; b=Elgpk4sRNNqEVf91biUgW0hNnVoVKrjc0KuCmt8q9ggI9qfVX1vlHyhG3A5+1X3SghcmrN2zi2MYS3WvCXw2pHhD4hyYV2ukkYOcFa92FQyFuSrRJUXzFAiSKBL2J57BYfikUPInViilGbt3SKBgBWOmDiuXf+Yj7MBh88HR2nk=
+	t=1711333114; cv=none; b=PKjt/uTurEsPMvkT2S2LYe3dBU/egVZ9CJJr0V0E2u3GWUw78eKISMErUxJ92XcxP4dXrq2xUyLiheOTJpdt0NCPAyukL9SlSXjmlwvpHPptpKDSSTmIbECvKuNfN4AmAVUuL1Z0M81IRxBWw5Vsm+cvkxfHgX9N/FZNcZk5Fbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711322544; c=relaxed/simple;
-	bh=QD2J7s+PbQMl/4TLX0Q9/+FJg4j9efgCpQRUHwRCQyI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Gb1myotSpjoCGx4CMmtCWx++AN5XWxxh9W2rckZU5Qzgr/5V/d7UR4N2H5dmytnhsDVpgICCaDV14rf41cKc6jdzVjxge1h/hajw+BCNaY3aVFyoOQWSJdzSybyKwC2yS+ZDhGj9PsZ7Qowu470j+B3riPQCqW50+BolkhpHvto=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 08B4F68D0F; Mon, 25 Mar 2024 00:22:16 +0100 (CET)
-Date: Mon, 25 Mar 2024 00:22:15 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Christoph Hellwig <hch@lst.de>, Leon Romanovsky <leon@kernel.org>,
+	s=arc-20240116; t=1711333114; c=relaxed/simple;
+	bh=Z4N9WjZXB3Uq7GgVWrBbRtPl6f+yBep/k+sWPTppZwU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=sfkxy37DYzcPHfjvqlJ/SdSEhoAKOVO9LpQBZZvtIbNk3U7wnZmGekrFYhetC9HBMs6CgHvc+nN2EvO9OozfZvOvPPoAPpkVkbnFrDEMB9NzEOsjEFF6+leCCwVFGim5Y14aaWTvsTFoaKMphayemuZhrdozfLxbFVAOAIxaQrE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LnbyqRiZ; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LnbyqRiZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1711333113; x=1742869113;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Z4N9WjZXB3Uq7GgVWrBbRtPl6f+yBep/k+sWPTppZwU=;
+  b=LnbyqRiZLnPwJUiyEONEepEEkFe8mKSIH8/XfUEWeyNDrVegENWfxp7C
+   psC1IiD9jGkuKZWHf7M4ruqV+A41Y2QbNhnU77VkNqEUzgevWKLiAqQrU
+   seEV7z1spDcaAKv6kXMzfLhgcID66JVDZ+1pur65eHtc7JNDHhha0uyy5
+   Jx9+xGD7l6wnaMKmYEo4LzTuOkmUhrjKIiWHLUzhMrSVCjctcbzpsBX1Q
+   UOIYBibGjIuzPr9Li9LWpX3PArN0ss3MAZ60UyGU2AgPFNxnO9f6bLhtX
+   vb+vcXiK2VU2H5H8uBdDy0V0iZMd4mEXCeZ4zjvIVKVrP32edhlqogTxA
+   w==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11023"; a="9271465"
+X-IronPort-AV: E=Sophos;i="6.07,152,1708416000"; 
+   d="scan'208";a="9271465"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2024 19:18:32 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,152,1708416000"; 
+   d="scan'208";a="15354011"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orviesa010.jf.intel.com with ESMTP; 24 Mar 2024 19:18:29 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
-	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
 	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Bart Van Assche <bvanassche@acm.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Amir Goldstein <amir73il@gmail.com>,
-	"josef@toxicpanda.com" <josef@toxicpanda.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	"daniel@iogearbox.net" <daniel@iogearbox.net>,
-	Dan Williams <dan.j.williams@intel.com>,
-	"jack@suse.com" <jack@suse.com>, Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two
- steps
-Message-ID: <20240324232215.GC20765@lst.de>
-References: <20240306221400.GA8663@lst.de> <20240307000036.GP9225@ziepe.ca> <20240307150505.GA28978@lst.de> <20240307210116.GQ9225@ziepe.ca> <20240308164920.GA17991@lst.de> <20240308202342.GZ9225@ziepe.ca> <20240309161418.GA27113@lst.de> <20240319153620.GB66976@ziepe.ca> <20240321223910.GA22663@lst.de> <20240322184330.GL66976@ziepe.ca>
+	Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Tina Zhang <tina.zhang@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Vasant Hegde <vasant.hegde@amd.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 11/12] iommu: Add ops->domain_alloc_sva()
+Date: Mon, 25 Mar 2024 10:17:04 +0800
+Message-Id: <20240325021705.249769-12-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240325021705.249769-1-baolu.lu@linux.intel.com>
+References: <20240325021705.249769-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240322184330.GL66976@ziepe.ca>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Transfer-Encoding: 8bit
 
-On Fri, Mar 22, 2024 at 03:43:30PM -0300, Jason Gunthorpe wrote:
-> If we are going to make caller provided uniformity a requirement, lets
-> imagine a formal memory type idea to help keep this a little
-> abstracted?
-> 
->  DMA_MEMORY_TYPE_NORMAL
->  DMA_MEMORY_TYPE_P2P_NOT_ACS
->  DMA_MEMORY_TYPE_ENCRYPTED
->  DMA_MEMORY_TYPE_BOUNCE_BUFFER  // ??
-> 
-> Then maybe the driver flow looks like:
-> 
-> 	if (transaction.memory_type == DMA_MEMORY_TYPE_NORMAL && dma_api_has_iommu(dev)) {
+From: Jason Gunthorpe <jgg@nvidia.com>
 
-Add a nice helper to make this somewhat readable, but yes.
+Make a new op that receives the device and the mm_struct that the SVA
+domain should be created for. Unlike domain_alloc_paging() the dev
+argument is never NULL here.
 
-> 	} else if (transaction.memory_type == DMA_MEMORY_TYPE_P2P_NOT_ACS) {
-> 		num_hwsgls = transcation.num_sgls;
-> 		for_each_range(transaction, range) {
-> 			hwsgl[i].addr = dma_api_p2p_not_acs_map(range.start_physical, range.length, p2p_memory_provider);
-> 			hwsgl[i].len = range.size;
-> 		}
-> 	} else {
-> 		/* Must be DMA_MEMORY_TYPE_NORMAL, DMA_MEMORY_TYPE_ENCRYPTED, DMA_MEMORY_TYPE_BOUNCE_BUFFER? */
-> 		num_hwsgls = transcation.num_sgls;
-> 		for_each_range(transaction, range) {
-> 			hwsgl[i].addr = dma_api_map_cpu_page(range.start_page, range.length);
-> 			hwsgl[i].len = range.size;
-> 		}
->
+This allows drivers to fully initialize the SVA domain and allocate the
+mmu_notifier during allocation. It allows the notifier lifetime to follow
+the lifetime of the iommu_domain.
 
-And these two are really the same except that we call a different map
-helper underneath.  So I think as far as the driver is concerned
-they should be the same, the DMA API just needs to key off the
-memory tap.
+Since we have only one call site, upgrade the new op to return ERR_PTR
+instead of NULL.
 
-> And the hmm_range_fault case is sort of like:
-> 
-> 		struct dma_api_iommu_state state;
-> 		dma_api_iommu_start(&state, mr.num_pages);
-> 
-> 		[..]
-> 		hmm_range_fault(...)
-> 		if (present)
-> 			dma_link_page(&state, faulting_address_offset, page);
-> 		else
-> 			dma_unlink_page(&state, faulting_address_offset, page);
-> 
-> Is this looking closer?
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+[Removed smmu3 related changes - Vasant]
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+Reviewed-by: Tina Zhang <tina.zhang@intel.com>
+Link: https://lore.kernel.org/r/20240311090843.133455-15-vasant.hegde@amd.com
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ include/linux/iommu.h     |  3 +++
+ drivers/iommu/iommu-sva.c | 16 +++++++++++-----
+ 2 files changed, 14 insertions(+), 5 deletions(-)
 
-Yes.
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 2e925b5eba53..8aabe83af8f2 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -518,6 +518,7 @@ static inline int __iommu_copy_struct_from_user_array(
+  *                     Upon failure, ERR_PTR must be returned.
+  * @domain_alloc_paging: Allocate an iommu_domain that can be used for
+  *                       UNMANAGED, DMA, and DMA_FQ domain types.
++ * @domain_alloc_sva: Allocate an iommu_domain for Shared Virtual Addressing.
+  * @probe_device: Add device to iommu driver handling
+  * @release_device: Remove device from iommu driver handling
+  * @probe_finalize: Do final setup work after the device is added to an IOMMU
+@@ -558,6 +559,8 @@ struct iommu_ops {
+ 		struct device *dev, u32 flags, struct iommu_domain *parent,
+ 		const struct iommu_user_data *user_data);
+ 	struct iommu_domain *(*domain_alloc_paging)(struct device *dev);
++	struct iommu_domain *(*domain_alloc_sva)(struct device *dev,
++						 struct mm_struct *mm);
+ 
+ 	struct iommu_device *(*probe_device)(struct device *dev);
+ 	void (*release_device)(struct device *dev);
+diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
+index 640acc804e8c..18a35e798b72 100644
+--- a/drivers/iommu/iommu-sva.c
++++ b/drivers/iommu/iommu-sva.c
+@@ -108,8 +108,8 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev, struct mm_struct *mm
+ 
+ 	/* Allocate a new domain and set it on device pasid. */
+ 	domain = iommu_sva_domain_alloc(dev, mm);
+-	if (!domain) {
+-		ret = -ENOMEM;
++	if (IS_ERR(domain)) {
++		ret = PTR_ERR(domain);
+ 		goto out_free_handle;
+ 	}
+ 
+@@ -283,9 +283,15 @@ struct iommu_domain *iommu_sva_domain_alloc(struct device *dev,
+ 	const struct iommu_ops *ops = dev_iommu_ops(dev);
+ 	struct iommu_domain *domain;
+ 
+-	domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
+-	if (!domain)
+-		return NULL;
++	if (ops->domain_alloc_sva) {
++		domain = ops->domain_alloc_sva(dev, mm);
++		if (IS_ERR(domain))
++			return domain;
++	} else {
++		domain = ops->domain_alloc(IOMMU_DOMAIN_SVA);
++		if (!domain)
++			return ERR_PTR(-ENOMEM);
++	}
+ 
+ 	domain->type = IOMMU_DOMAIN_SVA;
+ 	mmgrab(mm);
+-- 
+2.34.1
 
-> > > So I take it as a requirement that RDMA MUST make single MR's out of a
-> > > hodgepodge of page types. RDMA MRs cannot be split. Multiple MR's are
-> > > not a functional replacement for a single MR.
-> > 
-> > But MRs consolidate multiple dma addresses anyway.
-> 
-> I'm not sure I understand this?
-
-The RDMA MRs take a a list of PFNish address, (or SGLs with the
-enhanced MRs from Mellanox) and give you back a single rkey/lkey.
-
-> To go back to my main thesis - I would like a high performance low
-> level DMA API that is capable enough that it could implement
-> scatterlist dma_map_sg() and thus also implement any future
-> scatterlist_v2, bio, hmm_range_fault or any other thing we come up
-> with on top of it. This is broadly what I thought we agreed to at LSF
-> last year.
-
-I think the biggest underlying problem of the scatterlist based
-DMA implementation for IOMMUs is that it's trying to handle to much,
-that is magic coalescing even if the segments boundaries don't align
-with the IOMMU page size.  If we can get rid of that misfeature I
-think we'd greatly simply the API and implementation.
