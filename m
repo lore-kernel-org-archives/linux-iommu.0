@@ -1,55 +1,54 @@
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A6F745973
-	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 17:29:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1386012B14B
+	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 17:40:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711387746; cv=none; b=G0UDWbCXsJhsst/Rg2sG+mYQUwlhO1EiFLQvt129iHpaIPkthtJrjjWyiQfK0Uyocg18prpt5lS8/Qc8AkTHLeFwKWAMxPH/MVjQx4AT6MdpYvwEz4iVCWdFEgzbgMLNtF0SX+/mxNhVgIMAOvc0lbksvRnyL1MH4Hm5TMo9VxE=
+	t=1711388461; cv=none; b=gkm20rAAQd/j4aL2lLRcRCBQ0Im4tYHVQuf0kV7+aotgYzO1+IeWvx3g3sQPiNX/hi26kH+VWPALgsvaP4DUtVpepPMUa9rBxbd9rS85gZm/9VEJPJ/UgPYfDPueiW2HLzLkXyMbm8Ka4CmTMOqjp/B1N6QhEU2aIJQ9aBhQYBk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711387746; c=relaxed/simple;
-	bh=AJt1U9vTruj17U/R5Stf0nTDii3e+Z/CWmJMiKxifSc=;
+	s=arc-20240116; t=1711388461; c=relaxed/simple;
+	bh=pHokYGdGQkEJ9+IjLb+73a4lmnWUxZDuSDnAyDRJASg=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Vle6ymo39zSlbLbovgEXUR2HF8Alxh3M6GiHB++UB+81JF4cLB+Xccm79vWAZNiSWKyPAeavXLdPtU6QJBWqp1KN5IzTPfgGRywT2MMHx3xrVO2bVkvWV3by6c7LinwiVBa+SXqrC8juLfajooL0lEHzQ6eFdK9MMRG+n9pO6Kc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=D6f93+Zw; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=ADqaJtST; arc=none smtp.client-ip=193.142.43.55
+	 MIME-Version:Content-Type; b=DK/TC3BL8z6agj6V3mCrypCF2TkpG+nnvI4w+Uzx2UqIfN+0nW2bbaWX7ZjXRr4bvyCnIjSs2A6aKZAAiQ2s149/8wEASIW3GlEEo3AlcPuYnk33u6QNV1S5FVvEINpJp14Vqz2jVnvGuWYoPJZU2UXQIqSb+pMQgW6eZox2Gys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=aAK6G8El; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=bHIDaqqo; arc=none smtp.client-ip=193.142.43.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="D6f93+Zw";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="ADqaJtST"
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="aAK6G8El";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="bHIDaqqo"
 From: Thomas Gleixner <tglx@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1711387743;
+	s=2020; t=1711388458;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=DK75XUtlMLk9/6ARSoFxcVcx+16IzV8AtSC+x6vyvg0=;
-	b=D6f93+ZwVXOucjhz90HFPRG8UrmlmLHw5luAhexA228uzsatRdCZEo6Cf0rgIb3vIf4Yv5
-	WBn4yUi8Vs53n1nP2RcYibCv+Ry9Lz56+lIzphC8B1gp+QICHV0oXc+P0gpn4PfZM8ZL/j
-	Opsz07yxMw4nNK1+fGJa+XNfvb3C2s6kSoCK329vxCJBdVBPAesaYWUJleFB6NAAbWwviI
-	QdqOt5MXbqv3MplJ5ZaQ5hw4BdX6wbibi4eWU9oAXMxw/T8jiN2VFIIjeHgA0g5e0NNuaU
-	5sN2nDBcIOa/9Rk60SYId7qHKjaJEMY4wtq1mtTlfo+qKqiYTxNPLAXNdy/3aw==
+	bh=Xmzb+eW330TUASaWKG2wSZdy0QxEcVUyM2WdEc5Izc0=;
+	b=aAK6G8ElBaGz3aXo/UA9razEyWcBZRcJ+5cVa+60XUd4Jkb1/SO8MesWRi1u3xmAl309ZI
+	0NBJE+ltFsNrs3dMkvkm4APaoaYtVLekPEE2+/7yjJ4/E6i0MVaVWy3EJt0SgseJ8Py0j1
+	CXWms2Gs0CN9cZDUt9yFxlm1OEYGtL3z/wM//Ddld5tJ8jnYhGw4ibN3yDBybuNaFwPe3/
+	OoigBJqrDf4ALjtUn/ASohHwFI2GMEcO8bh3w6Sh0/dUcUqHTKfn0BYgNQ7lu6WNHyyOFU
+	uYzI3otrMBlSbncKt8Vivbm9WREfdZqGzhBHTd0USBELhvvLAJ9F9m/RFgijpg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1711387743;
+	s=2020e; t=1711388458;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=DK75XUtlMLk9/6ARSoFxcVcx+16IzV8AtSC+x6vyvg0=;
-	b=ADqaJtSTgua0QpmlQ9S4WNkb+UhTfDqmg9pUgccPc2/fxJseO/HvWkPVtOMfNJ7AGF035A
-	VdvNBAQgh8+vNcCQ==
-To: Jason Gunthorpe <jgg@ziepe.ca>, "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Marc Zyngier <maz@kernel.org>, Bixuan Cui
- <cuibixuan@huawei.com>, linux-arm-kernel@lists.infradead.org,
+	bh=Xmzb+eW330TUASaWKG2wSZdy0QxEcVUyM2WdEc5Izc0=;
+	b=bHIDaqqoMRjarqEGazNFrdIwC2Fqjk3r89j5otyheYgKoAN2/orw+lrQcUqZ92PNtDl84X
+	biOkOk8IDzh/E3DA==
+To: "Peng Fan (OSS)" <peng.fan@oss.nxp.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Marc
+ Zyngier <maz@kernel.org>
+Cc: Bixuan Cui <cuibixuan@huawei.com>, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux.dev, linux-kernel@vger.kernel.org, Peng Fan
  <peng.fan@nxp.com>
-Subject: Re: [PATCH 3/3] iommu/arm-smmu-v3: support suspend/resume
-In-Reply-To: <20240325134848.GA8419@ziepe.ca>
+Subject: Re: [PATCH 2/3] genirq/msi: cache the last msi msg
+In-Reply-To: <20240324-smmu-v3-v1-2-11bc96e156a5@nxp.com>
 References: <20240324-smmu-v3-v1-0-11bc96e156a5@nxp.com>
- <20240324-smmu-v3-v1-3-11bc96e156a5@nxp.com>
- <20240325134848.GA8419@ziepe.ca>
-Date: Mon, 25 Mar 2024 18:29:03 +0100
-Message-ID: <87bk72fcf4.ffs@tglx>
+ <20240324-smmu-v3-v1-2-11bc96e156a5@nxp.com>
+Date: Mon, 25 Mar 2024 18:40:58 +0100
+Message-ID: <878r26fbv9.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -58,40 +57,33 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-On Mon, Mar 25 2024 at 10:48, Jason Gunthorpe wrote:
-> On Sun, Mar 24, 2024 at 08:29:00PM +0800, Peng Fan (OSS) wrote:
->> +static void arm_smmu_resume_unique_irqs(struct arm_smmu_device *smmu)
->> +{
->> +	struct device *dev = smmu->dev;
->> +	struct msi_desc *desc;
->> +	struct msi_msg msg;
->> +
->> +	if (!dev->msi.domain)
->> +		return;
->> +
->> +	desc = irq_get_msi_desc(smmu->evtq.q.irq);
->> +	if (desc) {
->> +		get_cached_msi_msg(smmu->evtq.q.irq, &msg);
->> +		arm_smmu_write_msi_msg(desc, &msg);
->> +	}
->> +
->> +	desc = irq_get_msi_desc(smmu->gerr_irq);
->> +	if (desc) {
->> +		get_cached_msi_msg(smmu->gerr_irq, &msg);
->> +		arm_smmu_write_msi_msg(desc, &msg);
->> +	}
->> +
->> +	if (smmu->features & ARM_SMMU_FEAT_PRI) {
->> +		desc = irq_get_msi_desc(smmu->priq.q.irq);
->> +		if (desc) {
->> +			get_cached_msi_msg(smmu->priq.q.irq, &msg);
->> +			arm_smmu_write_msi_msg(desc, &msg);
->> +		}
->> +	}
->> +}
+On Sun, Mar 24 2024 at 20:28, Peng Fan (OSS) wrote:
+> From: Peng Fan <peng.fan@nxp.com>
 >
-> I wonder if this should be done instead by converting the driver away
-> from platform MSI to the new MSI mechanism?
+> Cache the last msi msg which will be used for ARM SMMU V3 resume
+>
+> Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> ---
+>  kernel/irq/msi.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+> index f90952ebc494..9d7e0a675089 100644
+> --- a/kernel/irq/msi.c
+> +++ b/kernel/irq/msi.c
+> @@ -617,6 +617,9 @@ static unsigned int msi_domain_get_hwsize(struct device *dev, unsigned int domid
+>  static inline void irq_chip_write_msi_msg(struct irq_data *data,
+>  					  struct msi_msg *msg)
+>  {
+> +	struct msi_desc *desc = irq_data_get_msi_desc(data);
+> +
+> +	desc->msg = *msg;
+>  	data->chip->irq_write_msi_msg(data, msg);
+>  }
 
-There is work in progress for that. Should come around in the next
-weeks.
+This should remove the very same line in the PCI/MSI code, no?
+
+Thanks,
+
+        tglx
+
