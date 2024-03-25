@@ -1,46 +1,46 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E9C9819
-	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 03:52:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E56E178883
+	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 04:03:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711338781; cv=none; b=h9pi9jrYl8pvmxZXoFSCTiawl6EVl70RnR03wpp4lXc9owICvK4VJXNSMsTuDSwpODYygs05hV56WcRgA/iGT6XWJp/FjTFaXLEhiYlKAh3afvawO+5WLHiJUfDEs/IJMyrmQIKsja9nxHAnoUR5SPdOBLDDVkWqVPGME/INveY=
+	t=1711339423; cv=none; b=gTzDvzPcM9cdVI+GFVN/tnZ0LhKOhd/tuGXYmv/LriSO6xy8nf1d+UpxJqSjZL1k8ISdg12w6WXi9qiATXS41vSpqACE0S10U/W5GVVIEkeu71WAYL+CHrNVTy4ldGzTOyMhm8SnGz+9bzvan3Br2ejYYP66ZEVteTTY83Ya7uI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711338781; c=relaxed/simple;
-	bh=fm/ErcL7W49rS5AmQMWHiVhN2nRexSlcv3UfZogZWnk=;
+	s=arc-20240116; t=1711339423; c=relaxed/simple;
+	bh=alvrRycuvN6pDESIAsTl9Hn3uiuLSuA+BX27ZLzTuY0=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=VChrBmoEAdSHTcvLy1DL8inKJwLsokyGe1R9VbGLOIrO9YQeHJrRzZPd+1D6XZrRyYBnjYiM9POC1P4x7yOumCg/egYgVAijRHxm+2yXQY6GCn+7N/0qsLZvBpm8Q0SCWBZCPUptJpvILypb4q6DQA0s5NH0ObRJhW6DLj0lAdY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WPOMWbjP; arc=none smtp.client-ip=192.198.163.12
+	 In-Reply-To:Content-Type; b=iKRDORc75IluM/LzxCraevJbm1hl6oVuWRPwzGwyEKvbiPII/zcjfF4EnE9s0cJknQbLtqdrkKMSrjw2luOtcUhb+Rn7kC9PvggGHrJM0HN/hLIhMJxZN0cr2uVn+EqjGrp44r9qxo26WzrU5aPiECmEs3eXHM1OBEEHeZXgo/Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jeNxEWIy; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WPOMWbjP"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jeNxEWIy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711338780; x=1742874780;
+  t=1711339423; x=1742875423;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=fm/ErcL7W49rS5AmQMWHiVhN2nRexSlcv3UfZogZWnk=;
-  b=WPOMWbjPRmN/eLqR6OU8Ksj08ghAzXII61kN4QRPiNscP5IexGgAwUpv
-   1qjKZCbIlc6tuginF08hhL8VKcJZRPN9x0MuvzS7WeLQYo6nKO0Y9Nco5
-   LW9/ugcg/kwoy7WKzIz5VxVwB8qAsdOaZpuCTT8TIgnuSXtwEokFvMwB5
-   dOS5rMMPw/HY7FQHaIYm8Dyp1u/yqGYhSyTJBTroiPgOGqxVqwYh/OpXZ
-   k5gnxJmcY8/nznNWLmvHZgt6xX2n36l+lFIRrPWZZ4U2fFkDT9bQBtXVO
-   yovy7hbk3cDWMMNt4G/UbRQb3dQqUdGBtUul6MgNvGZV4yqWiBEOoICWn
+  bh=alvrRycuvN6pDESIAsTl9Hn3uiuLSuA+BX27ZLzTuY0=;
+  b=jeNxEWIyYtscQIyDMPLswSlx3doZTocVRmz5xOP1WUqPNXWCcWCIaYCt
+   faU8JcnTkU+Ez8SFTzWJNdJg4U67FEFDPlrpPh0lbuBJv+nBrJ7g5fMRG
+   YS4CdneICKD0n/000DYHg/1HGwObSXJPhnChuhyF9OiOqUmEnrzCMhgLF
+   +esugn42blR7ZlHHyPYy+hcGGUSk3Pl7RLRQk54noVMn/8qo1PF42I/JF
+   hk7jBhCiz2ZBO7zymQgPN1y43K7qOhE+nxyk1KbFbbDC//q5Mab8hoX6F
+   BRNgI/ifstWtuVkRnUjqMvefcS+I/U7vBowKVnUEr+QN5m6ZOcqWczOy0
    g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11023"; a="10093988"
+X-IronPort-AV: E=McAfee;i="6600,9927,11023"; a="17717928"
 X-IronPort-AV: E=Sophos;i="6.07,152,1708416000"; 
-   d="scan'208";a="10093988"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2024 20:52:59 -0700
+   d="scan'208";a="17717928"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2024 21:03:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,152,1708416000"; 
-   d="scan'208";a="20033103"
+   d="scan'208";a="38594548"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa003.fm.intel.com with ESMTP; 24 Mar 2024 20:52:55 -0700
-Message-ID: <0d12a5f4-0380-4e00-8c23-b4f63e3b93e7@linux.intel.com>
-Date: Mon, 25 Mar 2024 11:52:05 +0800
+  by fmviesa002.fm.intel.com with ESMTP; 24 Mar 2024 21:03:38 -0700
+Message-ID: <4c226b87-3716-4987-b6ef-1693733614bd@linux.intel.com>
+Date: Mon, 25 Mar 2024 12:02:47 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,53 +54,79 @@ Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
  Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
- virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/8] iommu/sva: Use iopf domain attach/detach interface
+ Joel Granados <j.granados@samsung.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 4/8] iommufd: Add iommufd fault object
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
 References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
- <20240122073903.24406-3-baolu.lu@linux.intel.com>
- <20240308174605.GV9225@ziepe.ca>
- <b33bf29b-2fe5-4a2a-a2ce-9fd8d67c5f6f@linux.intel.com>
- <20240322165927.GG66976@ziepe.ca>
+ <20240122073903.24406-5-baolu.lu@linux.intel.com>
+ <ad4575588dd247fa8beae60963f36404@huawei.com>
+ <20240322172232.GK66976@ziepe.ca>
+ <45fc6507-f077-4626-98cb-96cda1585718@linux.intel.com>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240322165927.GG66976@ziepe.ca>
+In-Reply-To: <45fc6507-f077-4626-98cb-96cda1585718@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-
-
-On 3/23/24 12:59 AM, Jason Gunthorpe wrote:
-> On Thu, Mar 14, 2024 at 03:41:23PM +0800, Baolu Lu wrote:
-> 
->> The whole cookie mechanism aims to address two things:
+On 3/25/24 11:26 AM, Baolu Lu wrote:
+> On 3/23/24 1:22 AM, Jason Gunthorpe wrote:
+>> On Wed, Mar 20, 2024 at 04:18:05PM +0000, Shameerali Kolothum Thodi 
+>> wrote:
+>>> What I have noticed is that,
+>>> -read interface works fine and I can receive struct 
+>>> tiommu_hwpt_pgfault data.
+>>> -But once Guest handles the page faults and returns the page response,
+>>>   the write to fault fd never reaches the kernel. The sequence is 
+>>> like below,
+>>>    sqe = io_uring_get_sqe(ring);
+>>>    io_uring_prep_write(sqe, hwpt->fault_fd, resp, sizeof(*resp), 0);
+>>>    io_uring_sqe_set_data(sqe, resp);
+>>>    io_uring_submit(ring);
+>>>    ret = io_uring_wait_cqe(ring, &cqe);
+>>>    ....
+>>> Please find the function here[2]
+>>>
+>>> The above cqe wait never returns and hardware times out without 
+>>> receiving
+>>> page response. My understanding of io_uring default op is that it 
+>>> tries to
+>>> issue an sqe as non-blocking first. But it looks like the above write 
+>>> sequence
+>>> ends up in kernel poll_wait() as well.Not sure how we can avoid that for
+>>> write.
+>> Ah, right, it is because poll can't be choosy about read/write, it has
+>> to work equally for both directions. iommufd_fault_fops_poll() never
+>> returns EPOLLOUT
 >>
->> - Extend the domain lifetime until all pending page faults are
->> resolved.
-> Like you answered, I think the flush is a simpler scheme..
-
-Yeah! Let me head this direction.
-
+>> It should just always return EPOLLOUT because we don't have any queue
+>> to manage.
 > 
->> - Associate information about the iommu device with each attachment of
->>    the domain so that the iommufd device object ID could be quickly
->>    retrieved in the fault delivering path.
->   
->>> I see we also need to stick a pointer in the domain for iommufd to get
->>> back to the hwpt, but that doesn't seem to need such a big system to
->>> accomplish - just add a void *. It would make sense for the domain to
->>> have some optional pointer to a struct for all the fault related data
->>> that becomes allocated when a PRI domain is created..
->> It's not getting back hwpt from domain, just getting the iommufd_device
->> in the fault delivering path. The iommufd_device is not per-domain, but
->> per-domain-attachment.
-> It does make sense you'd need that, but I think something like this is
-> a more direct way to get it. Caller allocates the handle struct. The
-> iopf will provide the handle from the XA to the
-> callback. container_of() not void * is used to in the caller's API.
+> Are you suggesting the poll file operation to be like below?
+> 
+> static __poll_t iommufd_fault_fops_poll(struct file *filep,
+>                                          struct poll_table_struct *wait)
+> {
+>          struct iommufd_fault *fault = filep->private_data;
+>          __poll_t pollflags = EPOLLOUT;
+> 
+>          poll_wait(filep, &fault->wait_queue, wait);
+>          mutex_lock(&fault->mutex);
+>          if (!list_empty(&fault->deliver))
+>                  pollflags = EPOLLIN | EPOLLRDNORM;
 
-Your code looks attractive to me. It's much simpler. Thank you!
+If I understood it correctly, here it should be,
+
+		pollflags |= EPOLLIN | EPOLLRDNORM;
+
+>          mutex_unlock(&fault->mutex);
+> 
+>          return pollflags;
+> }
 
 Best regards,
 baolu
