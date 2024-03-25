@@ -1,217 +1,249 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0CE1F54279;
-	Mon, 25 Mar 2024 18:20:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7958B79DF
+	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 18:52:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711390815; cv=none; b=PoTls2y7Q52HYdMmbEWPwtTM8ca3oGeM0EquyX6ikYC4EfbcctRhOOq3BlTBuRmxX8YQsmq4axsgzsTZhJJzBJtycr/5/ZcXb/jRl7x1TZ+AkmjG9zsoa4krWLfvacx3mvm+OKbBO8LivBfF6Sf+X5htp5elAOWZ+AAif4BjOH0=
+	t=1711392741; cv=none; b=mfV13/y9Ko8/JcJbGt6s6lkST+MohhyigVuJR/oxy5YzdyswRRN4nBgDzjb/uAK2UrRlEcjrbSFznMG3ENetPMe08VgdbAM607lPAagGL4c4lWiNS49wJiEcbGMaC3aJAd2/ZYhasf63PflXFYHL1MDOk6jxELVelGY92bKS8VI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711390815; c=relaxed/simple;
-	bh=Z9fYLG7lM7QRd2z1J6VDOsa2mnKl/0CwjKf7s97CFbc=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gJ8hk3j21gfz1Ig44K/1qX+QMr+YyBJcu82q7/mh5YZgw/QNcJPRfEJHSRZYaqc+tPP3uHPdbTixIAZLFvHPJ7TgbmTslnM6+g3FHpAbJDWRJiJXoZPKiYtBlKAju7bknyeubekdb1GBvPHabzQ04eRjVpuPOi7YeUaPiP+bIKQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XEkb4FbW; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1711392741; c=relaxed/simple;
+	bh=lmYFhkv+i14ePbwiixcKpM1Q4Qmdn2SsVSrrKa2tT8w=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WSPo7iiwEVG5571mydT/Q/GU3yoTOMZ2ycQ8ml2h3QXkQb+ox/TzNdijqkj5ACP8OeJcolnp4hO7ak5yW5D290zt8t7MwQ9wxn8SpMoTYo4lvnRhDeCFTrt/Nwxji41S6eOc8uE1pAlheAORNnoUPAFJszTVpdPabfUrXzWosZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EzeZitHa; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XEkb4FbW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55A0CC433F1;
-	Mon, 25 Mar 2024 18:20:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711390814;
-	bh=Z9fYLG7lM7QRd2z1J6VDOsa2mnKl/0CwjKf7s97CFbc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=XEkb4FbWOn67uvoG4OVtv6eeAU5F3GTqMnsnd6vPKrCjkAKU2Fa2ZY15zDyx6e0Qt
-	 Aj5NNS8ijJOk6L1H5Iivvs3F2JB4/v5GWKD8R3RbddWydHUHUxjff5crBS4mHSIAU1
-	 7QuXHPDFEbPyddq7eScELmxnvylfgwSjlxBxWIfuYxnpBgRoyVeXaGV2sUCsWFm3F8
-	 HpNF55tk7Q3aUQHyV0NkKzspllvZsRloFZQVN2ngZVwXevH4uWn66roa2ABgA8HFKi
-	 EpkMG8QuSsPcKgcz/EWGIQIxt9sYlmspKP0eS2DCcj8W8pz8ie2DwPgILuJnVQVq8z
-	 MD1BHbcKXCaLQ==
-From: SeongJae Park <sj@kernel.org>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: SeongJae Park <sj@kernel.org>,
-	vbabka@suse.cz,
-	hannes@cmpxchg.org,
-	roman.gushchin@linux.dev,
-	mgorman@suse.de,
-	dave@stgolabs.net,
-	willy@infradead.org,
-	liam.howlett@oracle.com,
-	penguin-kernel@i-love.sakura.ne.jp,
-	corbet@lwn.net,
-	void@manifault.com,
-	peterz@infradead.org,
-	juri.lelli@redhat.com,
-	catalin.marinas@arm.com,
-	will@kernel.org,
-	arnd@arndb.de,
-	tglx@linutronix.de,
-	mingo@redhat.com,
-	dave.hansen@linux.intel.com,
-	x86@kernel.org,
-	peterx@redhat.com,
-	david@redhat.com,
-	axboe@kernel.dk,
-	mcgrof@kernel.org,
-	masahiroy@kernel.org,
-	nathan@kernel.org,
-	dennis@kernel.org,
-	jhubbard@nvidia.com,
-	tj@kernel.org,
-	muchun.song@linux.dev,
-	rppt@kernel.org,
-	paulmck@kernel.org,
-	pasha.tatashin@soleen.com,
-	yosryahmed@google.com,
-	yuzhao@google.com,
-	dhowells@redhat.com,
-	hughd@google.com,
-	andreyknvl@gmail.com,
-	keescook@chromium.org,
-	ndesaulniers@google.com,
-	vvvvvv@google.com,
-	gregkh@linuxfoundation.org,
-	ebiggers@google.com,
-	ytcoode@gmail.com,
-	vincent.guittot@linaro.org,
-	dietmar.eggemann@arm.com,
-	rostedt@goodmis.org,
-	bsegall@google.com,
-	bristot@redhat.com,
-	vschneid@redhat.com,
-	cl@linux.com,
-	penberg@kernel.org,
-	iamjoonsoo.kim@lge.com,
-	42.hyeyoo@gmail.com,
-	glider@google.com,
-	elver@google.com,
-	dvyukov@google.com,
-	songmuchun@bytedance.com,
-	jbaron@akamai.com,
-	aliceryhl@google.com,
-	rientjes@google.com,
-	minchan@google.com,
-	kaleshsingh@google.com,
-	kernel-team@android.com,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-modules@vger.kernel.org,
-	kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH v6 30/37] mm: vmalloc: Enable memory allocation profiling
-Date: Mon, 25 Mar 2024 11:20:07 -0700
-Message-Id: <20240325182007.233780-1-sj@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <CAJuCfpGiuCnMFtViD0xsoaLVO_gJddBQ1NpL6TpnsfN8z5P6fA@mail.gmail.com>
-References: 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EzeZitHa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1711392738; x=1742928738;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=lmYFhkv+i14ePbwiixcKpM1Q4Qmdn2SsVSrrKa2tT8w=;
+  b=EzeZitHa12szJ4cvKHNnQLSwyJiTjerqInWRww/cAiV6VfSqFLVQLmoG
+   oFojiCBP/b0n325Ej6X48+8Oczyem7bmXeUXpCjEiTapr+WePa6o9HMMi
+   BqLutsMq0q8ceQR2lW/8eFKfTvuBZJFF1qVSRq8lRaNSU47F6XTKkbVLG
+   lcMgU0IHZiXFJFVnZ11hvLOXF17M5FOjUWuV8DCOPIGI72Zl7S/WsxMQ6
+   TEiV/eGiq2UQB7L2JOmDFUhq+JnKpiaVhyBuw9EOQ5LhLyi9napzaY6g1
+   mQf5a5WSRKFAcusBEmBFoLAxA7TbeNPRElgKkGrESHDkRpd6oleSLLGon
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11024"; a="17047409"
+X-IronPort-AV: E=Sophos;i="6.07,154,1708416000"; 
+   d="scan'208";a="17047409"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2024 11:52:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,154,1708416000"; 
+   d="scan'208";a="15765917"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2024 11:52:17 -0700
+Date: Mon, 25 Mar 2024 11:56:38 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Dimitri Sivanich <sivanich@hpe.com>, David Woodhouse
+ <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Steve Wahl <steve.wahl@hpe.com>, Russ
+ Anderson <russ.anderson@hpe.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH] Allocate DMAR fault interrupts locally
+Message-ID: <20240325115638.342716e5@jacob-builder>
+In-Reply-To: <87msqnfihs.ffs@tglx>
+References: <ZeDj/LK56borSxO4@hpe.com>
+	<87plwe7w3m.ffs@tglx>
+	<Ze9r47riIq9ovBCY@hpe.com>
+	<20240321151357.1d18127f@jacob-builder>
+	<87msqnfihs.ffs@tglx>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, 25 Mar 2024 10:59:01 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
+Hi Thomas,
 
-> On Mon, Mar 25, 2024 at 10:49 AM SeongJae Park <sj@kernel.org> wrote:
-> >
-> > On Mon, 25 Mar 2024 14:56:01 +0000 Suren Baghdasaryan <surenb@google.com> wrote:
-> >
-> > > On Sat, Mar 23, 2024 at 6:05 PM SeongJae Park <sj@kernel.org> wrote:
-> > > >
-> > > > Hi Suren and Kent,
-> > > >
-> > > > On Thu, 21 Mar 2024 09:36:52 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
-> > > >
-> > > > > From: Kent Overstreet <kent.overstreet@linux.dev>
-> > > > >
-> > > > > This wrapps all external vmalloc allocation functions with the
-> > > > > alloc_hooks() wrapper, and switches internal allocations to _noprof
-> > > > > variants where appropriate, for the new memory allocation profiling
-> > > > > feature.
-> > > >
-> > > > I just noticed latest mm-unstable fails running kunit on my machine as below.
-> > > > 'git-bisect' says this is the first commit of the failure.
-> > > >
-> > > >     $ ./tools/testing/kunit/kunit.py run --build_dir ../kunit.out/
-> > > >     [10:59:53] Configuring KUnit Kernel ...
-> > > >     [10:59:53] Building KUnit Kernel ...
-> > > >     Populating config with:
-> > > >     $ make ARCH=um O=../kunit.out/ olddefconfig
-> > > >     Building with:
-> > > >     $ make ARCH=um O=../kunit.out/ --jobs=36
-> > > >     ERROR:root:/usr/bin/ld: arch/um/os-Linux/main.o: in function `__wrap_malloc':
-> > > >     main.c:(.text+0x10b): undefined reference to `vmalloc'
-> > > >     collect2: error: ld returned 1 exit status
-> > > >
-> > > > Haven't looked into the code yet, but reporting first.  May I ask your idea?
-> > >
-> > > Hi SeongJae,
-> > > Looks like we missed adding "#include <linux/vmalloc.h>" inside
-> > > arch/um/os-Linux/main.c in this patch:
-> > > https://lore.kernel.org/all/20240321163705.3067592-2-surenb@google.com/.
-> > > I'll be posing fixes for all 0-day issues found over the weekend and
-> > > will include a fix for this. In the meantime, to work around it you
-> > > can add that include yourself. Please let me know if the issue still
-> > > persists after doing that.
-> >
-> > Thank you, Suren.  The change made the error message disappears.  However, it
-> > introduced another one.
+On Sun, 24 Mar 2024 22:05:35 +0100, Thomas Gleixner <tglx@linutronix.de>
+wrote:
+
+> Jacob!
 > 
-> Ok, let me investigate and I'll try to get a fix for it today evening.
+> On Thu, Mar 21 2024 at 15:13, Jacob Pan wrote:
+> > On Mon, 11 Mar 2024 15:38:59 -0500, Dimitri Sivanich <sivanich@hpe.com>
+> > wrote:  
+> >> So the code seems to have been designed based on the assumption that it
+> >> will be run on an already active (though not necessarily fully
+> >> onlined?) cpu.  To make this work, any code based on that assumption
+> >> would need to be fixed.  Otherwise, a different approach is needed.  
+> >
+> > This may not be pretty but since DMAR fault is for unrecoverable faults,
+> > they are rare and infrequent, should never happen on a healthy system.
+> > Can we share one BSP vector for all DMARs? i.e. let dmar_fault()
+> > handler search for the offending DMAR for fault reasons.  
+> 
+> It might not be pretty on the first thought, but it has a charm.
+> 
+> You are right. If DMAR faults happen then there is an issue which is
+> going to affect the machine badly anyway, so the extra search through
+> the iommu list is not necessarily horrible and it does not matter at all
+> whether the access is local or not.
+> 
+> But there are two interrupts involved. The DMAR one and the SVM one.
+Actually, there are three. perfmon for the newer SoCs with enhanced command
+interface.
 
-Thank you for this kind reply.  Nonetheless, this is not blocking some real
-thing from me.  So, no rush.  Plese take your time :)
+> And all of that DMAR/SVM code is built around the assumption that
+> everything can be set up at boot time on the BSP.
+> 
+> The DMAR case definitely is solvable by sharing the interrupt, see the
+> uncompiled below. I still need to wrap my brain around the SVM part, but
+> feel free to beat me to it or preferrably explain to me that it's not
+> necessary at all :)
+> 
+I don't think it is necessary for SVM (page request interrupts) nor PERMON
+IRQs. Their affinity already set to their local node and spread out.
+Unlike DMAR fault IRQ, they are performance critical. SVM PRQ needs to have
+access to local queues (see potential bug below).
+
+So on my dual socket system. IRQ 40-47 are DMAR-prq (SVM). I see:
+
+root@984fee003c4f:~/jacob/irqstat# for i in {40..47}; do     cat /sys/kernel/debug/irq/irqs/$i | grep -e eff;done
+effectiv: 2
+effectiv: 3
+effectiv: 4
+effectiv: 5
+effectiv: 49
+effectiv: 50
+effectiv: 51
+effectiv: 52
+(reverse-i-search)`nom': sudo apt-get install g^Cme-settings-daemon
+root@984fee003c4f:~/jacob/irqstat# numactl --hardware
+available: 2 nodes (0-1)
+node 0 cpus: 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36
+103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 1
+node 0 size: 64198 MB
+node 0 free: 60458 MB
+node 1 cpus: 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 8
+7 148 149 150 151 152 153 154 155 156 157 158 159 160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175
+90 191
+node 1 size: 64437 MB
+node 1 free: 62793 MB
+node distances:
+node   0   1
+  0:  10  21
+  1:  21  10
+
+I will give the code below a try, perhaps use a built-in device to
+trigger DMAR faults.
+
+On a separate note, just found out that page request queues are not
+allocated locally, probably should be:
+
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -67,7 +67,8 @@ int intel_svm_enable_prq(struct intel_iommu *iommu)
+        struct page *pages;
+        int irq, ret;
+ 
+-       pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, PRQ_ORDER);
++       pages = alloc_pages_node(iommu->node, GFP_KERNEL | __GFP_ZERO, PRQ_ORDER);
++
+> ---
+> --- a/drivers/iommu/intel/dmar.c
+> +++ b/drivers/iommu/intel/dmar.c
+> @@ -1182,7 +1182,6 @@ static void free_iommu(struct intel_iomm
+>  			iommu->pr_irq = 0;
+>  		}
+>  		free_irq(iommu->irq, iommu);
+> -		dmar_free_hwirq(iommu->irq);
+>  		iommu->irq = 0;
+>  	}
+>  
+> @@ -1956,17 +1955,21 @@ void dmar_msi_mask(struct irq_data *data
+>  	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+>  }
+>  
+> -void dmar_msi_write(int irq, struct msi_msg *msg)
+> +static void dmar_iommu_msi_write(struct intel_iommu *iommu, struct
+> msi_msg *msg) {
+> -	struct intel_iommu *iommu = irq_get_handler_data(irq);
+>  	int reg = dmar_msi_reg(iommu, irq);
+> -	unsigned long flag;
+> +	unsigned long flags;
+>  
+> -	raw_spin_lock_irqsave(&iommu->register_lock, flag);
+> +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+>  	writel(msg->data, iommu->reg + reg + 4);
+>  	writel(msg->address_lo, iommu->reg + reg + 8);
+>  	writel(msg->address_hi, iommu->reg + reg + 12);
+> -	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+> +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+> +}
+> +
+> +void dmar_msi_write(int irq, struct msi_msg *msg)
+> +{
+> +	dmar_iommu_msi_write(irq_get_handler_data(irq), msg);
+>  }
+>  
+>  void dmar_msi_read(int irq, struct msi_msg *msg)
+> @@ -2100,23 +2103,37 @@ irqreturn_t dmar_fault(int irq, void *de
+>  
+>  int dmar_set_interrupt(struct intel_iommu *iommu)
+>  {
+> -	int irq, ret;
+> +	static int dmar_irq;
+> +	int ret;
+>  
+> -	/*
+> -	 * Check if the fault interrupt is already initialized.
+> -	 */
+> +	/* Don't initialize it twice for a given iommu */
+>  	if (iommu->irq)
+>  		return 0;
+>  
+> -	irq = dmar_alloc_hwirq(iommu->seq_id, iommu->node, iommu);
+> -	if (irq > 0) {
+> -		iommu->irq = irq;
+> +	/*
+> +	 * There is one shared interrupt for all IOMMUs to prevent vector
+> +	 * exhaustion.
+> +	 */
+> +	if (!dmar_irq) {
+> +		int irq = dmar_alloc_hwirq(iommu->seq_id, iommu->node,
+> iommu); +
+> +		if (irq <= 0) {
+> +			pr_err("No free IRQ vectors\n");
+> +			return -EINVAL;
+> +		}
+> +		dmar_irq = irq;
+>  	} else {
+> -		pr_err("No free IRQ vectors\n");
+> -		return -EINVAL;
+> +		struct msi_msg msg;
+> +
+> +		/*
+> +		 * Get the MSI message from the shared interrupt and
+> write
+> +		 * it to the iommu MSI registers.
+> +		 */
+> +		dmar_msi_read(dmar_irq, &msg);
+> +		dmar_iommu_msi_write(iommu, &msg);
+>  	}
+>  
+> -	ret = request_irq(irq, dmar_fault, IRQF_NO_THREAD, iommu->name,
+> iommu);
+> +	ret = request_irq(dmar_irq, dmar_fault, IRQF_NO_THREAD |
+> IRQF_SHARED, iommu->name, iommu); if (ret)
+>  		pr_err("Can't request irq\n");
+>  	return ret;
 
 
 Thanks,
-SJ
 
-> Thanks,
-> Suren.
-> 
-> >
-> >     $ git diff
-> >     diff --git a/arch/um/os-Linux/main.c b/arch/um/os-Linux/main.c
-> >     index c8a42ecbd7a2..8fe274e9f3a4 100644
-> >     --- a/arch/um/os-Linux/main.c
-> >     +++ b/arch/um/os-Linux/main.c
-> >     @@ -16,6 +16,7 @@
-> >      #include <kern_util.h>
-> >      #include <os.h>
-> >      #include <um_malloc.h>
-> >     +#include <linux/vmalloc.h>
-> >
-> >      #define PGD_BOUND (4 * 1024 * 1024)
-> >      #define STACKSIZE (8 * 1024 * 1024)
-> >     $
-> >     $ ./tools/testing/kunit/kunit.py run --build_dir ../kunit.out/
-> >     [10:43:13] Configuring KUnit Kernel ...
-> >     [10:43:13] Building KUnit Kernel ...
-> >     Populating config with:
-> >     $ make ARCH=um O=../kunit.out/ olddefconfig
-> >     Building with:
-> >     $ make ARCH=um O=../kunit.out/ --jobs=36
-> >     ERROR:root:In file included from .../arch/um/kernel/asm-offsets.c:1:
-> >     .../arch/x86/um/shared/sysdep/kernel-offsets.h:9:6: warning: no previous prototype for ‘foo’ [-Wmissing-prototypes]
-> >         9 | void foo(void)
-> >           |      ^~~
-> >     In file included from .../include/linux/alloc_tag.h:8,
-> >                      from .../include/linux/vmalloc.h:5,
-> >                      from .../arch/um/os-Linux/main.c:19:
-> >     .../include/linux/bug.h:5:10: fatal error: asm/bug.h: No such file or directory
-> >         5 | #include <asm/bug.h>
-> >           |          ^~~~~~~~~~~
-> >     compilation terminated.
-> >
-> >
-> > Thanks,
-> > SJ
-> >
-> > [...]
-> 
+Jacob
