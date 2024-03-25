@@ -1,46 +1,46 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E56E178883
-	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 04:03:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 725A415ECE6
+	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 03:58:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711339423; cv=none; b=gTzDvzPcM9cdVI+GFVN/tnZ0LhKOhd/tuGXYmv/LriSO6xy8nf1d+UpxJqSjZL1k8ISdg12w6WXi9qiATXS41vSpqACE0S10U/W5GVVIEkeu71WAYL+CHrNVTy4ldGzTOyMhm8SnGz+9bzvan3Br2ejYYP66ZEVteTTY83Ya7uI=
+	t=1711339091; cv=none; b=ZBPSE56v/IWBeXYxHmBBCqfjD5AqMa38UQ6BVikBeGgs4dgw6DFxp50KHILixuP41XRbKL/eNIn6zcZJUQQDjS5ld6Y+vGA9zF77UlALRu2vZBsZDIukUFzjw3LkgXb/E5qHS9yI1Q8hKS4jnDHoBIIBPZp8nKaaRWOehLEAOTg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711339423; c=relaxed/simple;
-	bh=alvrRycuvN6pDESIAsTl9Hn3uiuLSuA+BX27ZLzTuY0=;
+	s=arc-20240116; t=1711339091; c=relaxed/simple;
+	bh=qmHtWDM22Y7Pif9OF/b0d7AyT0SLY8IGS1SO0qYxiss=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=iKRDORc75IluM/LzxCraevJbm1hl6oVuWRPwzGwyEKvbiPII/zcjfF4EnE9s0cJknQbLtqdrkKMSrjw2luOtcUhb+Rn7kC9PvggGHrJM0HN/hLIhMJxZN0cr2uVn+EqjGrp44r9qxo26WzrU5aPiECmEs3eXHM1OBEEHeZXgo/Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jeNxEWIy; arc=none smtp.client-ip=192.198.163.10
+	 In-Reply-To:Content-Type; b=O7VloOFY09XTYr/xaAgw0N/7bLxi/7Y0g7O1CrLfRECqxOTgJpHcDAzVmjKNdscrFgf3629ZX0tPmJgXEfLx/Lu+35W9QBMv9azFBaYgaUgs+fFYoDw0Fkv+KtdbPxASaADwuGjqe8RIQsKi2mGcBnjw7b+XEnOc2rsBc1Laefs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lpJhwLuE; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jeNxEWIy"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lpJhwLuE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711339423; x=1742875423;
+  t=1711339091; x=1742875091;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=alvrRycuvN6pDESIAsTl9Hn3uiuLSuA+BX27ZLzTuY0=;
-  b=jeNxEWIyYtscQIyDMPLswSlx3doZTocVRmz5xOP1WUqPNXWCcWCIaYCt
-   faU8JcnTkU+Ez8SFTzWJNdJg4U67FEFDPlrpPh0lbuBJv+nBrJ7g5fMRG
-   YS4CdneICKD0n/000DYHg/1HGwObSXJPhnChuhyF9OiOqUmEnrzCMhgLF
-   +esugn42blR7ZlHHyPYy+hcGGUSk3Pl7RLRQk54noVMn/8qo1PF42I/JF
-   hk7jBhCiz2ZBO7zymQgPN1y43K7qOhE+nxyk1KbFbbDC//q5Mab8hoX6F
-   BRNgI/ifstWtuVkRnUjqMvefcS+I/U7vBowKVnUEr+QN5m6ZOcqWczOy0
-   g==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11023"; a="17717928"
+  bh=qmHtWDM22Y7Pif9OF/b0d7AyT0SLY8IGS1SO0qYxiss=;
+  b=lpJhwLuED+fsrmi6IMPQ0Gu888IQmOiwPE8KaHkk87vlNXsP0m7zSgxs
+   0RvOMTGRVljqLukieEVMRxMRQ7fLdxPSn97WSnYxRxYZEENWCWddl8R10
+   XQM1jJeJWDeH/UNMUL+4pbRGDwwT+l2324kZpuiEal9SECX2kl8iYTb+s
+   f71CRhZP8GQxE4hjNjAnlKI8OBEivUzDX3QOfFrjWJhFICMDJwtBYuUj1
+   CJMY4aGfuVIjfeCKFvY1DdOVHI8Kw7fO0zl8YnHzDIemaarPsjtR8gzK+
+   LtTVlyhwSu/1qUGD9uf7860pu/VuuIlMBkorYEPZtRFagCVcDQzw5d/Ud
+   Q==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11023"; a="10094410"
 X-IronPort-AV: E=Sophos;i="6.07,152,1708416000"; 
-   d="scan'208";a="17717928"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2024 21:03:42 -0700
+   d="scan'208";a="10094410"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2024 20:58:10 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,152,1708416000"; 
-   d="scan'208";a="38594548"
+   d="scan'208";a="16147457"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa002.fm.intel.com with ESMTP; 24 Mar 2024 21:03:38 -0700
-Message-ID: <4c226b87-3716-4987-b6ef-1693733614bd@linux.intel.com>
-Date: Mon, 25 Mar 2024 12:02:47 +0800
+  by orviesa008.jf.intel.com with ESMTP; 24 Mar 2024 20:58:06 -0700
+Message-ID: <2ddd01fb-ec7d-4a7e-984b-31da78211f91@linux.intel.com>
+Date: Mon, 25 Mar 2024 11:57:15 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,79 +54,47 @@ Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
  Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Joel Granados <j.granados@samsung.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 4/8] iommufd: Add iommufd fault object
+ Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
+ virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/8] iommufd: Add fault and response message
+ definitions
 Content-Language: en-US
-To: Jason Gunthorpe <jgg@ziepe.ca>,
- Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>
 References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
- <20240122073903.24406-5-baolu.lu@linux.intel.com>
- <ad4575588dd247fa8beae60963f36404@huawei.com>
- <20240322172232.GK66976@ziepe.ca>
- <45fc6507-f077-4626-98cb-96cda1585718@linux.intel.com>
+ <20240122073903.24406-4-baolu.lu@linux.intel.com>
+ <20240308175007.GW9225@ziepe.ca>
+ <43ef5e3f-8a8e-4765-8025-b8207fd05f91@linux.intel.com>
+ <20240322170410.GH66976@ziepe.ca>
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <45fc6507-f077-4626-98cb-96cda1585718@linux.intel.com>
+In-Reply-To: <20240322170410.GH66976@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 3/25/24 11:26 AM, Baolu Lu wrote:
-> On 3/23/24 1:22 AM, Jason Gunthorpe wrote:
->> On Wed, Mar 20, 2024 at 04:18:05PM +0000, Shameerali Kolothum Thodi 
->> wrote:
->>> What I have noticed is that,
->>> -read interface works fine and I can receive struct 
->>> tiommu_hwpt_pgfault data.
->>> -But once Guest handles the page faults and returns the page response,
->>>   the write to fault fd never reaches the kernel. The sequence is 
->>> like below,
->>>    sqe = io_uring_get_sqe(ring);
->>>    io_uring_prep_write(sqe, hwpt->fault_fd, resp, sizeof(*resp), 0);
->>>    io_uring_sqe_set_data(sqe, resp);
->>>    io_uring_submit(ring);
->>>    ret = io_uring_wait_cqe(ring, &cqe);
->>>    ....
->>> Please find the function here[2]
->>>
->>> The above cqe wait never returns and hardware times out without 
->>> receiving
->>> page response. My understanding of io_uring default op is that it 
->>> tries to
->>> issue an sqe as non-blocking first. But it looks like the above write 
->>> sequence
->>> ends up in kernel poll_wait() as well.Not sure how we can avoid that for
->>> write.
->> Ah, right, it is because poll can't be choosy about read/write, it has
->> to work equally for both directions. iommufd_fault_fops_poll() never
->> returns EPOLLOUT
->>
->> It should just always return EPOLLOUT because we don't have any queue
->> to manage.
+On 3/23/24 1:04 AM, Jason Gunthorpe wrote:
+>>>> +struct iommu_hwpt_pgfault {
+>>>> +	__u32 size;
+>>>> +	__u32 flags;
+>>>> +	__u32 dev_id;
+>>>> +	__u32 pasid;
+>>>> +	__u32 grpid;
+>>>> +	__u32 perm;
+>>>> +	__u64 addr;
+>>>> +};
+>>> Do we need an addr + size here? I've seen a few things where I wonder
+>>> if that might become an enhancment someday.
+>> I am not sure. The page size is not part of ATS/PRI. Can you please
+>> elaborate a bit about how the size could be used? Perhaps I
+>> misunderstood here?
+> size would be an advice how much data the requestor is expecting to
+> fetch. Eg of the PRI initiator knows it is going to do a 10MB transfer
+> it could fill in 10MB and the OS could pre-fault in 10MB of IOVA.
 > 
-> Are you suggesting the poll file operation to be like below?
-> 
-> static __poll_t iommufd_fault_fops_poll(struct file *filep,
->                                          struct poll_table_struct *wait)
-> {
->          struct iommufd_fault *fault = filep->private_data;
->          __poll_t pollflags = EPOLLOUT;
-> 
->          poll_wait(filep, &fault->wait_queue, wait);
->          mutex_lock(&fault->mutex);
->          if (!list_empty(&fault->deliver))
->                  pollflags = EPOLLIN | EPOLLRDNORM;
+> It is not in the spec, it may never be in the spec, but it seems like
+> it would be good to consider it, at least make sure we have
+> compatability to add it later.
 
-If I understood it correctly, here it should be,
-
-		pollflags |= EPOLLIN | EPOLLRDNORM;
-
->          mutex_unlock(&fault->mutex);
-> 
->          return pollflags;
-> }
+Thanks for the explanation. It sounds reasonable. I will take it and add
+some comments to explain the motivation as you described above.
 
 Best regards,
 baolu
