@@ -1,110 +1,141 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C432B14AD09
-	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 02:18:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D60126CC0F
+	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 03:27:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711333098; cv=none; b=ObTxJstVOQCPBs8I6G+6x/xBTCplIJ4crwhe7fTD3HlXW7jvPk8gSwzzxB1jiSndN10vPgYZnM8hlT6MOewashzxMXfP1ssAUbBg9nkmhEmRBDr2+COfgur3tLyhTiFTk8EQgXMxPAb/oVawxJM0yuS2TXPJXt1xfqzRAxTiVgU=
+	t=1711337274; cv=none; b=Qa9ILxpUjRIBXB3U7hzFWk4hWNFvjeJwYlc0Yul67llzfefA8aqBzcxHUv2UGFExqcVpKB0aqUzLS+yvdLy2a0jMZ9SnBBOhR8aNaqDPwx5vp2YGEMi9cx/eDTlrj4ysMvg2ErybDTv3q8g2RUuIS557L7Oj23c4fKiGh4W1jy0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711333098; c=relaxed/simple;
-	bh=+OAkQ+xgV6iFnsM2Piz46SFV5ZnSYjQLnEdHmWb5riU=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=N6zK7K9Dfs15eaWui5FNTMoj27ZLoCSTbAjBFRcW8vEHzO4JlBCB5d1LSRNUDlIy86O4KAbdpMTjgH3ys71rHxs4Q5bNkBRTYjGPQBgcAaNKRDXdXPo+en1yZsiGgz3DcZ2YdXWhaFVquFSMjATPw/STccSflS/L4rS0Jiy3LsY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lXMxDa+6; arc=none smtp.client-ip=192.198.163.13
+	s=arc-20240116; t=1711337274; c=relaxed/simple;
+	bh=8GEkeuAmsQ5Ut/QQW7+jcdbWaLfMKQm0ScLz9EoS63Q=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=EOU9Cm/XUh9oBnTmxH1/vJ7qL2rHsmsqVdXp3BnGLcttAS7bwxXl2cubYlYbahqIXibLPT7SXmG3DI/wTZHpXautgi8uJfcXVo51JNNquPf1T6H4SVYhxB7AQ4BXoJarLxsM5vgXm9DlFSJIPeuOSQY3rykZ71D3I9tof1RdvoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bmAEkXFt; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lXMxDa+6"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bmAEkXFt"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711333096; x=1742869096;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=+OAkQ+xgV6iFnsM2Piz46SFV5ZnSYjQLnEdHmWb5riU=;
-  b=lXMxDa+6iFrC7dNFH2kd5vdK7M5ueGsDCXsNITeiAHUrE3o6niBolrVZ
-   0PLnyKqv5j8M4DA1BNkk1N5Rhh040jNeh4dKtStbiDVgBoKpbv43U+h2r
-   pezD3NQdM/TATcz5lNluUt3yta8T+Lepx4N56tr9BWEJ6Z1JPwyC18V/l
-   ZK3a2pLcURD5OA32Zohe8Cp/anhxZbrzbu3uh/MHqJbCj5uUTlmdaBBSD
-   nw0uyz5AYFFvLXlCRtRHFZYuQ6XWk+mqm+4Y8DzRXATIse8fNVMYgxhiO
-   TzWn9xNW0zdiaG+KY5LtnpSXTYttlQqYVe0Wgrna/oe9XLsH0coTLT+3D
-   Q==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11023"; a="9271360"
+  t=1711337273; x=1742873273;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=8GEkeuAmsQ5Ut/QQW7+jcdbWaLfMKQm0ScLz9EoS63Q=;
+  b=bmAEkXFtIN58LMOa6p+WPujjm33DyhfQN2IjxEbjeGsrHoAMkwGtLpOo
+   IGvGwgXSshe2ueSq4zzzIxU5iTEsf5LGppcskQ066g1+wTn+N4dxdXQRl
+   oBD3Q+VuPLWvVtrZSo8XDpxloGsow1fr8U1/0I7sN5DwbjumUp4QImbSF
+   UuVTK0qXXXb6AfAhzy7AropnA8+sbrQif0o9vPHV8dsYMXi8ec8Mt3j6u
+   oxgufrPEjaWGoVCzHkGLh98v+GclzpvbUZhSg5vloLV1DVS61ahB5Ulu0
+   dWyL2AaywnAeYr0kln+i9zsp5WgDYhRgf2smucKCXCXGY35GwalSqtB4i
+   A==;
+X-IronPort-AV: E=McAfee;i="6600,9927,11023"; a="6177061"
 X-IronPort-AV: E=Sophos;i="6.07,152,1708416000"; 
-   d="scan'208";a="9271360"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2024 19:18:14 -0700
+   d="scan'208";a="6177061"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2024 20:27:51 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,152,1708416000"; 
-   d="scan'208";a="15353954"
-Received: from allen-box.sh.intel.com ([10.239.159.127])
-  by orviesa010.jf.intel.com with ESMTP; 24 Mar 2024 19:18:12 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Tina Zhang <tina.zhang@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH 05/12] iommu/vt-d: Use cache_tag_flush_range() in tlb_sync
-Date: Mon, 25 Mar 2024 10:16:58 +0800
-Message-Id: <20240325021705.249769-6-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240325021705.249769-1-baolu.lu@linux.intel.com>
-References: <20240325021705.249769-1-baolu.lu@linux.intel.com>
+   d="scan'208";a="19951825"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmviesa005.fm.intel.com with ESMTP; 24 Mar 2024 20:27:48 -0700
+Message-ID: <45fc6507-f077-4626-98cb-96cda1585718@linux.intel.com>
+Date: Mon, 25 Mar 2024 11:26:57 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Joel Granados <j.granados@samsung.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "virtualization@lists.linux-foundation.org"
+ <virtualization@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 4/8] iommufd: Add iommufd fault object
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+ Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+References: <20240122073903.24406-1-baolu.lu@linux.intel.com>
+ <20240122073903.24406-5-baolu.lu@linux.intel.com>
+ <ad4575588dd247fa8beae60963f36404@huawei.com>
+ <20240322172232.GK66976@ziepe.ca>
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240322172232.GK66976@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The tlb_sync callback is called by the iommu core to flush a range of
-caches for the affected domain. Use cache_tag_flush_range() in this
-callback.
+On 3/23/24 1:22 AM, Jason Gunthorpe wrote:
+> On Wed, Mar 20, 2024 at 04:18:05PM +0000, Shameerali Kolothum Thodi wrote:
+>> What I have noticed is that,
+>> -read interface works fine and I can receive struct tiommu_hwpt_pgfault data.
+>> -But once Guest handles the page faults and returns the page response,
+>>   the write to fault fd never reaches the kernel. The sequence is like below,
+>>   
+>>    sqe = io_uring_get_sqe(ring);
+>>    io_uring_prep_write(sqe, hwpt->fault_fd, resp, sizeof(*resp), 0);
+>>    io_uring_sqe_set_data(sqe, resp);
+>>    io_uring_submit(ring);
+>>    ret = io_uring_wait_cqe(ring, &cqe);
+>>    ....
+>> Please find the function here[2]
+>>
+>> The above cqe wait never returns and hardware times out without receiving
+>> page response. My understanding of io_uring default op is that it tries to
+>> issue an sqe as non-blocking first. But it looks like the above write sequence
+>> ends up in kernel poll_wait() as well.Not sure how we can avoid that for
+>> write.
+> Ah, right, it is because poll can't be choosy about read/write, it has
+> to work equally for both directions. iommufd_fault_fops_poll() never
+> returns EPOLLOUT
+> 
+> It should just always return EPOLLOUT because we don't have any queue
+> to manage.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 21 ++-------------------
- 1 file changed, 2 insertions(+), 19 deletions(-)
+Are you suggesting the poll file operation to be like below?
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 4ce98f23917c..1c03d2dafb9d 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4112,25 +4112,8 @@ static size_t intel_iommu_unmap_pages(struct iommu_domain *domain,
- static void intel_iommu_tlb_sync(struct iommu_domain *domain,
- 				 struct iommu_iotlb_gather *gather)
- {
--	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
--	unsigned long iova_pfn = IOVA_PFN(gather->start);
--	size_t size = gather->end - gather->start;
--	struct iommu_domain_info *info;
--	unsigned long start_pfn;
--	unsigned long nrpages;
--	unsigned long i;
--
--	nrpages = aligned_nrpages(gather->start, size);
--	start_pfn = mm_to_dma_pfn_start(iova_pfn);
--
--	xa_for_each(&dmar_domain->iommu_array, i, info)
--		iommu_flush_iotlb_psi(info->iommu, dmar_domain,
--				      start_pfn, nrpages,
--				      list_empty(&gather->freelist), 0);
--
--	if (dmar_domain->nested_parent)
--		parent_domain_flush(dmar_domain, start_pfn, nrpages,
--				    list_empty(&gather->freelist));
-+	cache_tag_flush_range(to_dmar_domain(domain), gather->start,
-+			      gather->end, list_empty(&gather->freelist));
- 	put_pages_list(&gather->freelist);
- }
- 
--- 
-2.34.1
+static __poll_t iommufd_fault_fops_poll(struct file *filep,
+                                         struct poll_table_struct *wait)
+{
+         struct iommufd_fault *fault = filep->private_data;
+         __poll_t pollflags = EPOLLOUT;
 
+         poll_wait(filep, &fault->wait_queue, wait);
+         mutex_lock(&fault->mutex);
+         if (!list_empty(&fault->deliver))
+                 pollflags = EPOLLIN | EPOLLRDNORM;
+         mutex_unlock(&fault->mutex);
+
+         return pollflags;
+}
+
+The diff is,
+
+diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
+index ede16702d433..a33f8aa92575 100644
+--- a/drivers/iommu/iommufd/fault.c
++++ b/drivers/iommu/iommufd/fault.c
+@@ -175,7 +175,7 @@ static __poll_t iommufd_fault_fops_poll(struct file 
+*filep,
+                                         struct poll_table_struct *wait)
+  {
+         struct iommufd_fault *fault = filep->private_data;
+-       __poll_t pollflags = 0;
++       __poll_t pollflags = EPOLLOUT;
+
+         poll_wait(filep, &fault->wait_queue, wait);
+         mutex_lock(&fault->mutex);
+
+
+I was originally thinking that poll file operation is specifically
+designed for polling on read events associated with IOMMU faults.
+
+Best regards,
+baolu
