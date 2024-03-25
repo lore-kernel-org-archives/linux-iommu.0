@@ -1,148 +1,225 @@
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10olkn2059.outbound.protection.outlook.com [40.92.42.59])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6168F3C6A4
-	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 20:10:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.42.59
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711397454; cv=fail; b=Rg1QLyflZzWmC/EFtauyz+/kzYL7YVsCEPtN3djaebL+NiCsje5QaGaCvCb/+YDj4jSU4H/pZEBJtq2WxXk8PgzjDEaiONhhcfbc8nuM3Wz6fMmY4nC0ogjTOKd4yx6fcbZp/s9JBeni5pgAapfUDz2xoBiVorK65/5iThcwjBg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711397454; c=relaxed/simple;
-	bh=YrU0XYUvyoe2ertzpajLqMYVfJ3BULs/yakzwyFye5A=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=GnVlHZkmyx446S9j5G6LhsJx8q31WiFYhSdXGsEZurRh3HZFz4zctKV3lmKEUmOMGkJw8dbf3CwOLO1LkJjSTXHkFbJ+/N53lUWsh+/ZwWlZbXvFaIDnihpdHvLNC+CRYc/uCxL6Cb0r3xOOR4aI1bVVJJdoSDSHrvLIFMtlrUU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=Q2AwBBDB; arc=fail smtp.client-ip=40.92.42.59
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4FDD5B1E8
+	for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 21:01:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711400481; cv=none; b=QVLO/kg6eQAKp1lWxu03sn83gSIDQHnVRKpO/l12Ns7TB1MAc3DBkcTd3QWidLYCG5CPDL4TsV5O7TEj5BryX04OcR0gZ/yP3YXrZ41sY3W3BCg7MXHekNOsI1jd8sWthgQHY5U+pSmyrdBsrkybNRnubaZyTUk29LFt5KgrWPA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711400481; c=relaxed/simple;
+	bh=ZrvNaSQpio37WJx1/1lHRbAENb/ZzWXOqMOiPrnKiJ0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HiCMPUZRQtnvlSE8YUCM/mR3O6gBmhBRuOIkhF6TrTlQw8tK6ETXihy6qHlyo+dVDi1VVEm9oLarUArNqwRGtyEsLrpH1GNo6JAOW+H4nzNj//axQZQFUX0vVRL6kQeKNcetLC5MoDAHDCNQaN3dARKVzPypMw6ljcQr6kdPRqw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=uKAFxkA5; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="Q2AwBBDB"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hh3SnZ/ekA9mw89SBSVplU+y2pNbi+ep8URzsYXHY2n1K0JMxBrYaiHbA50q5zl53faSPV8grXypWQAwGY+MZ0cFaT3WKGp6dHUr+kPNOv/VWGnuCDNPQxtK42lZ4Vdje2wttX4YXcSU57Mn6S0T6mZ7pMGujGx885Jq26F/Qc3dewXMvH2kPCzQ94oLJpHjt8vmEvLfdwb3nIUxCfBIEVPXIktJtm0zqe3nvf8hI3h8XTCDzxwjRWHhv2iJzXO27ej7ahprTZum7Z2kbvgy1ooPNuGIAw1CS9Ds76OdLrExtYWPbcl0YnNmNP3Y6f4WhPq0UdNCHo+k8nygHj0ETg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wMyDKbheXEM5DPOywjJn40rkxzd4VU4M8Z9IXJXzpK4=;
- b=Jytlz1YwZSFtSwSVsEza4DmJ/9Avyj574J15JgOeAzny0Tn2Vym54DN5nzvXn4HkogO2SXHfqbGXgrHrmjArNFh7IkPZGb/EigWJ/hr8eYH4fRnkttvh047mVPgZgPZjImZXr8BvgycIeVwn8a7DYXm9q+AGuNeOCGsgQ0QhXFu5E37/HjkYVd0OqFEwdLnHmICGZwWUyBC6WLGr1WrqyEBn9c1Xfmxr3oWbQjTsE0EuaOqtbDnlFivP92Jfgo6BrufHhtzxXT+2zYQg12ZFl8qmtysAOdOxbu8iTsDLfL3sDU7VFJYW3m2O9qvngfAsy3L3UgAw2RQM67FTzP0sQQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wMyDKbheXEM5DPOywjJn40rkxzd4VU4M8Z9IXJXzpK4=;
- b=Q2AwBBDBLUtsvozQ8OgV3RghKoVKzqrHEUzBDdKMvRyk4atyl0z3IDLLHjzxW1b9kBjhy9bJP/sH2foG7aM7ecjLzRgVxqliF8YIEGSCSBIiCsYOUQ1+RANF3Y1lx7UHHF5ZBMqciDzAg8z4EDSz4s2zG/8G0dsczPHdMD73fHHET+F653OqOJZ+Pqrq21u3gTcsLnuVHMM8CzWjroI3udlGSZ7xU+LphfsUbjn1KGRXrqJhvdIhaWtAVPU5Yp2gDiFeq5lM+cjWb/NuohmRvRR7LSoQ4cUlOMb/UMDmnGvdEuuFpMZKA7l8jsX91Oj7UQJVeQeg6Gds0vUCz17bgw==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by BL3PR02MB8866.namprd02.prod.outlook.com (2603:10b6:208:3b1::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.31; Mon, 25 Mar
- 2024 20:10:49 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::1276:e87b:ae1:a596]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::1276:e87b:ae1:a596%5]) with mapi id 15.20.7409.028; Mon, 25 Mar 2024
- 20:10:49 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: =?iso-8859-2?Q?Petr_Tesa=F8=EDk?= <petr@tesarici.cz>, Petr Tesarik
-	<petrtesarik@huaweicloud.com>
-CC: Christoph Hellwig <hch@lst.de>, Marek Szyprowski
-	<m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, open list
-	<linux-kernel@vger.kernel.org>, "open list:DMA MAPPING HELPERS"
-	<iommu@lists.linux.dev>, Will Deacon <will@kernel.org>, Roberto Sassu
-	<roberto.sassu@huaweicloud.com>
-Subject: RE: [PATCH 1/1] swiotlb: add a KUnit test suite
-Thread-Topic: [PATCH 1/1] swiotlb: add a KUnit test suite
-Thread-Index: AQHadSjFkQAbswHN/0CHWY8wcxBdj7FIkQCAgABlAWA=
-Date: Mon, 25 Mar 2024 20:10:49 +0000
-Message-ID:
- <SN6PR02MB4157992232ED1362C41804DED4362@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240313092740.192-1-petrtesarik@huaweicloud.com>
- <20240325150641.0c7b2d73@meshulam.tesarici.cz>
-In-Reply-To: <20240325150641.0c7b2d73@meshulam.tesarici.cz>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [YWHbQo7uZJnkbbLcFcWg+7mzx77NrFni]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|BL3PR02MB8866:EE_
-x-ms-office365-filtering-correlation-id: 688f9820-ee56-45ff-bd0b-08dc4d07aa14
-x-ms-exchange-slblob-mailprops:
- igNrEvV8uhFs9rO1mK5NDxwqkoYDlhzR1mFl43RjkvymBBhaPV4h1HZXp1Z8o2jRABreDrmKGXyd5JZPjWMbHIZ+SMFhET0/r/zpGAmzWTWrfm+b2WR1gvxgrXRzrlp1M64pKDwEcEHcsFzxmJRFWYcIBFBomF/QJmJFx7Mu57ZnxIhtBJJeuQw7OxOG9zQ6sBYo55DCKZDcG7tcul41kBbDQy0QmZkmUabmmyvghzVntHkFFo8FaHmKlvtjK3nKQdFDWLh5PrEwJIfSOYlQEngbIlEHTr94gQKcyUW41w6JcgSjCB6OVmGC/Ep1RmW62Ke9maWyKnm1H33X/CrcDzvCrPE/ddyhYG7ZYvsteWsU8wZy2ztnlZXeCd07SEyQuXlheQyjaKtILbFhxqyS0pfRtqfg/QJbFec7nidg46ic0P4EBP6OKDhby7BGlwvGyH11xYlyB7ADEcim2mY3ZpOVUHBLB70k9d5bFq8+lFGSj+Q6ocCUfV4HTTnOsCGDa/0KWoeq/o8zPiF4q2CvWrybyFNtH0YxQeS22yGglCKNBPKeMm4EMfgLcmcckUO3cCsGB1zPFGcshnClVSQoPa1xNvWY+nmNQNXGGdL9a2drpT8coA0N+J+VuRGj9CoEfg1x9+4suGn5e8cajTO78YD++pxl6I6OYdQRzcqjqp/DO4VOjYDo/WnbmLIyY9EZl3QoXlfQebQ=
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- mEDaFvQPyeENTLV9wpwQYDzM9vfyQPbEIP4IDVXyBqgcbnzdObrkh9Mv7qHRRg9gYRraqkhXR9F4eIXMbE1W9m+u8kppLj2jb93CY8PbaeFfCJrEU7ckeRqOnb7FgX0AIIx6Vic+2caudqaBTAzEzkd/5CJzMQkJ59BO8aSk9ZeSLR1KUrFaz3ehC17m+qjuXJQLStOIYzhYsYOC6emfKmT0989RcSY/wDKkIZCizwVVndlYoj7oNfJN0UpvSfhgUW35bEIMyQXgkYXfk8h63NSJ4zvS5FrJ8RavpanvahQDYunkHzGIqcbP2Vmw7MovzjPxAH6V+A9Azk02rCpmQrJ+rf29fQXwlKT1cG7wg1HCab845C51B4R7F26EMEoo4f6cKtzzQCd8ZnyZrhq4eJyuA2RPkZK8e5J5pn7T4fDdSBwjiaYQUIKMKmL4Zsb0gTC1ECo41Jeqt4MNIDeePYRJw5Gv5C6FOhwmgx3f+sVaQbbJm1Mi+D1M95Gvvfs5RNDkuq2P6DaknMBjnawrpsseoAcFBXyBIwxd3pLzE8edozEyYwHxghlLLJQ3F46x
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-2?Q?xpF3ORWm31U/f+j7Po8q2Fr0fk+jGtOLD5oSNjf3gEEFkvurl2bcmbFUWB?=
- =?iso-8859-2?Q?njNZAF5tfvrHXM9NfLJYVUZnSoCWfCc7AL++temLI2SpaeSmnhlzTcFfeA?=
- =?iso-8859-2?Q?Lh8YxQSmCmP8R/DXt5PxR1+wUoinrivPtGtdxlaielNVgMAKWXe5jhpn9x?=
- =?iso-8859-2?Q?9MwrON0hkp8ehhphgOPKTRqIaFwO9mVp6Yr0WaaBX5P0P48vdmEfLXNrZj?=
- =?iso-8859-2?Q?yZmvUvQSMsBylOtK2XJxTmB7kmY33RfbVsfWP+7ZiwyHfXhtQCvhHEsBPK?=
- =?iso-8859-2?Q?5LnUexpkOIEF/97Yf+X6SxqjH7GrKU11zZcmabknB5VmonP5ADHtvJadKd?=
- =?iso-8859-2?Q?Phs8N2Z0mmfX3N/WhRr73YcSSyEiAN/7jAopYFXczwDgMS4YC+svLcte7x?=
- =?iso-8859-2?Q?kAs7QJ6BNDAb/h2tWxmNqhJ2R0+P7lgWe8R65X7DGgjwhPXAFNv22Qd6Do?=
- =?iso-8859-2?Q?UFZANJbyy5+de58nHw4YeFJsJEmPWTsD0yktch/Ztt8CKCgzqkxqNpkrrF?=
- =?iso-8859-2?Q?U3ouK31zw8VhwCKwY3LM4tapRSnnCIO8N96jCgAa2bKXVjJcccO8q5F4o3?=
- =?iso-8859-2?Q?wL7iQkr0PzmSRXJhdY08sdC3Gf0GHiEdKJDf4miHvlUR2m/bOWGoXbbvAI?=
- =?iso-8859-2?Q?ohjv45rnV2FdT2frR40MKRWNbDAtnXsdMgkT+KbCrFZWMiNb/rIhEHCrkT?=
- =?iso-8859-2?Q?Wvv+ELPsnGfnXp3Hko4tizCxw+lbNMyiB/tRmXbT2rDR1+IliDZeYuoYql?=
- =?iso-8859-2?Q?geKQc7EoDx6CEI5g9PGT7mFf5y4iJB4qlk4e8bjgo0L37P/iZ8DKNjHkwl?=
- =?iso-8859-2?Q?VohOgE5YwCzy4924Xe47iqHKDlLCoql8ch3B6kG8vIAKD9HRxpOYIT91aT?=
- =?iso-8859-2?Q?kuFOYN+2rlbLa2+Dj7mSl4Kyz9y6RMOE6KTqSQetUetMWG26MJvb3FQxVm?=
- =?iso-8859-2?Q?oze+tTVLo8hF7neITBqIEgoGe9t0lyV7IoSwAWpIs0Aqlnw3qfUrry2FYs?=
- =?iso-8859-2?Q?+4ik855X838s3nv4SzX8gO3rphZl7PYHGZTA22M/JFG2w6ueXp3/ipTLr3?=
- =?iso-8859-2?Q?nZATCb+Ea3CuX4caXxV3nm4JbKK4+M1WpHl92HpWd2giKldtQzEm4W0meA?=
- =?iso-8859-2?Q?Av4uvgVxroRuXU5vnUD4pxcEJLRhiyUub2Xjzc7qiuvcaLhP+hJBTDBB63?=
- =?iso-8859-2?Q?/7efgYr9PmwRcRodtZJagoAayU3s+Ey0Z0yZJLmwsbmrRZZB0nVoHEr+4R?=
- =?iso-8859-2?Q?tsVqMxTigGf+mcPj2l0g=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="uKAFxkA5"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4148c09ec6bso5845e9.1
+        for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 14:01:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1711400478; x=1712005278; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=hYzMTzG76jpXXtR/0jOj7ycyCch1YdLUEqtA0Q2kJns=;
+        b=uKAFxkA5tb4X825ygkPmzXF9xf5NiaoPY8SrYVaz5Ad7eLPQNTpoOBUCkFC3L2D7Zw
+         MFFEyMen+OOGwH1+dQmSGhSlhDDJuVl/0IJUc18zBDceVaGls+yWcRyFrwCfXsVQKIdr
+         j430sTzXjn03Ms5IkFPCh5qW94gtaKsL+fAbOdV/ezDQpUMFIWzc/XFqJAHoUIUIK93c
+         8LY5NGXp6rsp4KoEjL4KFz/E36s6K9zIDkg/TsVQaI0iSk3kWyJrPXQ6HT3IoUHwmhIY
+         UOHtPesQaHrNqWJ0hLO4aiUiMFl5RqebZz1TbWWJrzWMFldeqMYjmzggwD8S+/7rxObV
+         4LWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711400478; x=1712005278;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=hYzMTzG76jpXXtR/0jOj7ycyCch1YdLUEqtA0Q2kJns=;
+        b=wq+SgTtcQRwNSeU3BQyR9mrySFawc+LQcOZ+C+uvQFH0kdCaxFiG86m5EmNybdpHNG
+         6cVrL8GSRXNZjeAZkEMA8VEJKr0GeUvcubkqpvEMhV7xW40kU644ZeCB3AoMMKKuf1zW
+         0fY11Tz9fgUI4NnMuBWpr+U35w6WmkSZl3sxwzMGwICF1l2BKtqhuzsELPDlZlcFXHk/
+         92RIQ9DRanoXgJZpMDq1riiSvPr1jrd+QlzzjqKtCahB+mzYYhhmr0AViWEJ95fVnst8
+         nzjo3INkOj+jc1HNEMexMjqsLQeOr9+V2YUOWU5bPwe0ssAIsX+PBPlVNqz+CaU/6mJI
+         P5Aw==
+X-Gm-Message-State: AOJu0YyRB2/Vy+Fszt+xb/QjmoKnMONfh7cc37FZ16Dse+tJ93Ro7Ws9
+	5kWUk9WzJZB94l8KcItWypaOrgd23FgCEBWCrQ+Z41sPpSoWNoOV4CoOlYVvCw==
+X-Google-Smtp-Source: AGHT+IH0RK7M14lG8X+xGmmxWIzwMNfLP7hfCwPVIxCthT5HX5RV8W05k3kUnWTtVb8NaUxXC32pVA==
+X-Received: by 2002:a05:600c:1ca5:b0:414:381:ad5f with SMTP id k37-20020a05600c1ca500b004140381ad5fmr15682wms.7.1711400478034;
+        Mon, 25 Mar 2024 14:01:18 -0700 (PDT)
+Received: from google.com (180.232.140.34.bc.googleusercontent.com. [34.140.232.180])
+        by smtp.gmail.com with ESMTPSA id o32-20020a05600c512000b004148a5e3188sm3377606wms.25.2024.03.25.14.01.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Mar 2024 14:01:17 -0700 (PDT)
+Date: Mon, 25 Mar 2024 21:01:13 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Moritz Fischer <mdf@kernel.org>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v5 04/27] iommu/arm-smmu-v3: Add an ops indirection to
+ the STE code
+Message-ID: <ZgHmGbZ4mSrbhUI3@google.com>
+References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+ <4-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
+ <Zf3KgGj4Tfc8ytgi@google.com>
+ <20240325141132.GA110546@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 688f9820-ee56-45ff-bd0b-08dc4d07aa14
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Mar 2024 20:10:49.3139
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL3PR02MB8866
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240325141132.GA110546@nvidia.com>
 
-From: Petr Tesa=F8=EDk <petr@tesarici.cz> Sent: Monday, March 25, 2024 7:07=
- AM
->=20
-> On Wed, 13 Mar 2024 10:27:40 +0100
-> Petr Tesarik <petrtesarik@huaweicloud.com> wrote:
->=20
-> > From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-> >
-> > Add unit tests to help avoid regressions in the SWIOTLB code.
-> >
-> > These features are covered by the test suite:
-> >
-> > * basic functionality (map, sync)
-> > * alignment based on mapping size
-> > * alignment based on min_align_mask
-> > * explicit alignment with alloc_align_mask
-> > * combination of alignment constraints
-> >
-> > Select CONFIG_SWIOTLB rather than depend on it, because it allows to ru=
-n
-> > the test with UML (default KUnit target).
->=20
-> Hi all,
->=20
-> I know it's not super-urgent, but I'm just curious: Has anyone had time
-> to try out this patch? Did it work for you?
->=20
+On Mon, Mar 25, 2024 at 11:11:32AM -0300, Jason Gunthorpe wrote:
+> On Fri, Mar 22, 2024 at 06:14:24PM +0000, Mostafa Saleh wrote:
+> > > @@ -1027,57 +1038,55 @@ static void arm_smmu_get_ste_used(const struct arm_smmu_ste *ent,
+> > >   * unused_update is an intermediate value of entry that has unused bits set to
+> > >   * their new values.
+> > >   */
+> > > -static u8 arm_smmu_entry_qword_diff(const struct arm_smmu_ste *entry,
+> > > -				    const struct arm_smmu_ste *target,
+> > > -				    struct arm_smmu_ste *unused_update)
+> > > +static u8 arm_smmu_entry_qword_diff(struct arm_smmu_entry_writer *writer,
+> > > +				    const __le64 *entry, const __le64 *target,
+> > > +				    __le64 *unused_update)
+> > >  {
+> > > -	struct arm_smmu_ste target_used = {};
+> > > -	struct arm_smmu_ste cur_used = {};
+> > > +	__le64 target_used[NUM_ENTRY_QWORDS] = {};
+> > > +	__le64 cur_used[NUM_ENTRY_QWORDS] = {};
+> > This is confusing to me, the function was modified to be generic, so its has
+> > args are __le64 * instead of struct arm_smmu_ste *.
+> 
+> Right
+> 
+> > But NUM_ENTRY_QWORDS is defined as “(sizeof(struct arm_smmu_ste) / sizeof(u64))”
+> > and in the same function writer->ops->num_entry_qwords is used
+> > nterchangeably,
+> 
+> Right
+> 
+> > I understand that this not a constant and the compiler would complain.
+> > But since for any other num_entry_qwords larger than NUM_ENTRY_QWORDS it fails,
+> > and we know STEs and CDs both have the same size, we simplify the code and make
+> > it a constant everywhere.
+> 
+> So you say to get rid of num_entry_qwords and just use the constant?
 
-I've read through the patch code, but I haven't run it.  I'll need to
-do some reading on Kunit as it's not something I've used before.
-I'm not sure when/if I will get to it.
+In my opinion, yes, that looks easier to understand, and avoids the MAX
+stuff as there is no reason for the extra generalisation.
 
-Michael
+> > I see in the next patch, that this is redefined to be the max between STE and
+> > CD, but again, this hardware and it never changes, so my opinion is to simplify
+> > the code, as there is no need to generalize this part.
+> 
+> Yes, we need a constant.
+> 
+> It would look like this, it is a little bit simpler:
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index a54062faccde38..d015f41900d802 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -63,9 +63,9 @@ enum arm_smmu_msi_index {
+>  	ARM_SMMU_MAX_MSIS,
+>  };
+>  
+> -#define NUM_ENTRY_QWORDS                                                \
+> -	(max(sizeof(struct arm_smmu_ste), sizeof(struct arm_smmu_cd)) / \
+> -	 sizeof(u64))
+> +#define NUM_ENTRY_QWORDS 8
+> +static_assert(sizeof(struct arm_smmu_ste) == NUM_ENTRY_QWORDS * sizeof(u64));
+> +static_assert(sizeof(struct arm_smmu_cd) == NUM_ENTRY_QWORDS * sizeof(u64));
+>  
+>  static phys_addr_t arm_smmu_msi_cfg[ARM_SMMU_MAX_MSIS][3] = {
+>  	[EVTQ_MSI_INDEX] = {
+> @@ -1045,7 +1045,7 @@ static u8 arm_smmu_entry_qword_diff(struct arm_smmu_entry_writer *writer,
+>  	writer->ops->get_used(entry, cur_used);
+>  	writer->ops->get_used(target, target_used);
+>  
+> -	for (i = 0; i != writer->ops->num_entry_qwords; i++) {
+> +	for (i = 0; i != NUM_ENTRY_QWORDS; i++) {
+>  		/*
+>  		 * Check that masks are up to date, the make functions are not
+>  		 * allowed to set a bit to 1 if the used function doesn't say it
+> @@ -1114,7 +1114,6 @@ static bool entry_set(struct arm_smmu_entry_writer *writer, __le64 *entry,
+>  void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer, __le64 *entry,
+>  			  const __le64 *target)
+>  {
+> -	unsigned int num_entry_qwords = writer->ops->num_entry_qwords;
+>  	__le64 unused_update[NUM_ENTRY_QWORDS];
+>  	u8 used_qword_diff;
+>  
+> @@ -1137,9 +1136,9 @@ void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer, __le64 *entry,
+>  		 */
+>  		unused_update[critical_qword_index] =
+>  			entry[critical_qword_index];
+> -		entry_set(writer, entry, unused_update, 0, num_entry_qwords);
+> +		entry_set(writer, entry, unused_update, 0, NUM_ENTRY_QWORDS);
+>  		entry_set(writer, entry, target, critical_qword_index, 1);
+> -		entry_set(writer, entry, target, 0, num_entry_qwords);
+> +		entry_set(writer, entry, target, 0, NUM_ENTRY_QWORDS);
+>  	} else if (used_qword_diff) {
+>  		/*
+>  		 * At least two qwords need their inuse bits to be changed. This
+> @@ -1148,7 +1147,7 @@ void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer, __le64 *entry,
+>  		 */
+>  		unused_update[0] = entry[0] & (~writer->ops->v_bit);
+>  		entry_set(writer, entry, unused_update, 0, 1);
+> -		entry_set(writer, entry, target, 1, num_entry_qwords - 1);
+> +		entry_set(writer, entry, target, 1, NUM_ENTRY_QWORDS - 1);
+>  		entry_set(writer, entry, target, 0, 1);
+>  	} else {
+>  		/*
+> @@ -1157,7 +1156,7 @@ void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer, __le64 *entry,
+>  		 * compute_qword_diff().
+>  		 */
+>  		WARN_ON_ONCE(
+> -			entry_set(writer, entry, target, 0, num_entry_qwords));
+> +			entry_set(writer, entry, target, 0, NUM_ENTRY_QWORDS));
+>  	}
+>  }
+>  
+> @@ -1272,7 +1271,6 @@ static const struct arm_smmu_entry_writer_ops arm_smmu_cd_writer_ops = {
+>  	.sync = arm_smmu_cd_writer_sync_entry,
+>  	.get_used = arm_smmu_get_cd_used,
+>  	.v_bit = cpu_to_le64(CTXDESC_CD_0_V),
+> -	.num_entry_qwords = sizeof(struct arm_smmu_cd) / sizeof(u64),
+>  };
+>  
+>  void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
+> @@ -1460,7 +1458,6 @@ static const struct arm_smmu_entry_writer_ops arm_smmu_ste_writer_ops = {
+>  	.sync = arm_smmu_ste_writer_sync_entry,
+>  	.get_used = arm_smmu_get_ste_used,
+>  	.v_bit = cpu_to_le64(STRTAB_STE_0_V),
+> -	.num_entry_qwords = sizeof(struct arm_smmu_ste) / sizeof(u64),
+>  };
+>  
+>  static void arm_smmu_write_ste(struct arm_smmu_master *master, u32 sid,
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 8ba07b00bf6056..5936dc5f76786a 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -779,7 +779,6 @@ struct arm_smmu_entry_writer {
+>  };
+>  
+>  struct arm_smmu_entry_writer_ops {
+> -	unsigned int num_entry_qwords;
+>  	__le64 v_bit;
+>  	void (*get_used)(const __le64 *entry, __le64 *used);
+>  	void (*sync)(struct arm_smmu_entry_writer *writer);
+> 
+
+Thanks,
+Mostafa
