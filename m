@@ -1,260 +1,578 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 274641CD11
-	for <iommu@lists.linux.dev>; Tue, 26 Mar 2024 01:31:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAE7228EA
+	for <iommu@lists.linux.dev>; Tue, 26 Mar 2024 03:09:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.148.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711416688; cv=none; b=osqEaIjRcmNwcFd2vSKru7q00sCUTjlWOpa077Uz6D3iJdxNWSuoLNfjkOdqW5bR5x2Gk69t3vnuCYCBSwwk7hGXzZ9SJMnHx4ueGK0bFgcsxEOCj56NDpf63k04YvaCFSowAlRwWLQahuWQSq10IeeD30fXQlIjnWl8Uh58JN8=
+	t=1711422554; cv=none; b=lZ671KB83wFPyQtEL6xp7yluSBmrySiH7lsgFW3RrkA+DjltxADOdg+pJ+LU/4R7wKYyoHaITXKqWjRGsBxWPCRXz/cM5ijrwWJ2rxyKS43MgLKohJadhd159xusybY8yXwWkMxbLN7DBNRS5vinn2dqz00hsDqZsBoD1+rYb2U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711416688; c=relaxed/simple;
-	bh=Fl+yRjd0UrHOAiD6WIaH4FFdnBSi6P1vaZZG/JCGnkU=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=LIqnFQnqX6wX9pCubh6JVlfDgnO1zFqaGJRTgK8WziPk2OleMX34UDfYeqSQPg6J4+4B/158ObZWjsG0brXtWsvnsMw7e8qnHhnUO9Lw7BvPlTDYhc68otF+rJRDKxD3ueF8B+Wq+yDb7BKkpqp42lcsPZZUtAqn7jyyaE5cbQ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=UbCuzYSc; arc=none smtp.client-ip=209.85.210.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
+	s=arc-20240116; t=1711422554; c=relaxed/simple;
+	bh=NdC+FWDPDP18jvWCn2+cfisvoLxcARg0puIr7yAJ5Lo=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WPXlx/AvLwp0HJc3yh/M/L4EQt2KkF/HE9TX1P/ufoFwW6NYgb0ZoFkMm4aZmaviFr1/jnPD/GuclhjS5UeXY06rinn1n3kP68CtauIs8/5I7HWGaCOFCS9MMG14c1WMmHRCeLvEvQvoBvj+Tni2AB/DWfoBg7QSazRBta5ylas=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=marvell.com; spf=pass smtp.mailfrom=marvell.com; dkim=pass (2048-bit key) header.d=marvell.com header.i=@marvell.com header.b=SIr5uZ16; arc=none smtp.client-ip=67.231.148.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=marvell.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=marvell.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="UbCuzYSc"
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-6e6b22af648so3929931b3a.0
-        for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 18:31:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1711416686; x=1712021486; darn=lists.linux.dev;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=xL3rc040eKk6aS3kn8YpvfEGan/cVzm8MFiFJYrFFIA=;
-        b=UbCuzYScfDb7ifVqkKTq/pccPi6asO4/dLWNwQbVRwTAthJ8nSJWvMV7UliE3INZbk
-         BOBJEbSRCh+L3SKkmL044TyRS8orjJb8uR6/N5HMaUtn+3yDvOy+36Ri8eDwcYuXreh/
-         KZJCMeVHF9ZNiaX+imlA/eRQUef9iRhFHGoJO5MwYCCfcwsB/64w1zbSJQTlt1dQ5Ckr
-         7cOqnGdxYl/Gax3dCgR/S7sdbQNahqtapPOe+hp6I297kVl+Cqk3+ayzqjl03KcBE+vb
-         QWzXyQelnOoe3UpnSeRcKcEXZUNC+20HGvYuV0e9QXz1Kc+weHvLuqFwWuT28JuEKWxv
-         Oc4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711416686; x=1712021486;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=xL3rc040eKk6aS3kn8YpvfEGan/cVzm8MFiFJYrFFIA=;
-        b=hu3aeeh2os5UfAbwUqtUtbHo6t9oCa/YV3MIAXFCGTlGNQSXJ53nKMqQGNFbMHEzej
-         nKmvJJclHzWeeU7EI5XwdsZYMbXyN+LkHwPuT+atminy6Zxi14S+LQodV2B/gtvwGmbt
-         eg0q2ztG198fGJHyhESVfCAw5Dj8XO30ruuH51aVU34+UkX/b37DAOzdqBkFM0RqloUF
-         nrGAzu/JlEf4J+de20a/gXbZ+difbsvsYWaySkYO93U1I4WfknAVAIdJKBSpUzPXV/M8
-         MfA6Jv9rIpD79P56+/do48CPeva3HfYhppFWKHCRagh0oVdUHF1vrJEo/8OPQe6hDZ2z
-         QbJQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX8yJnv3nZ0tMmfAadGSs3yIRH11AcX8ohKbqHRyRd1ApaNgy+xMrdmqsKVeG1ZkV562tP4bFcbYj/+4M7q930z0b/ZXUo=
-X-Gm-Message-State: AOJu0YyI8P4wSUTbnt2fxz3DdbaHHzZXMVA+2z5DSkHwKX6Lu03QjUIE
-	hBVL0DE7vTj3b2+jBb9KD7satWtq0QuXCpOsqgNaA3j2GOEzqebdt9OjiTUNmZo=
-X-Google-Smtp-Source: AGHT+IG9ZhWQHv78QSHczCurjPGCufikynH54sKO+XOUJb+NA4j/kl8/nWQa7OAQoYkmCdzpzJl8fQ==
-X-Received: by 2002:a05:6a20:3950:b0:1a3:c8ab:5a7c with SMTP id r16-20020a056a20395000b001a3c8ab5a7cmr105666pzg.22.1711416686296;
-        Mon, 25 Mar 2024 18:31:26 -0700 (PDT)
-Received: from hsinchu26.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id d18-20020a63d712000000b005bdbe9a597fsm6396157pgg.57.2024.03.25.18.31.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Mar 2024 18:31:25 -0700 (PDT)
-From: Zong Li <zong.li@sifive.com>
-To: geert+renesas@glider.be
-Cc: arnd@arndb.de,
-	hca@linux.ibm.com,
-	iommu@lists.linux.dev,
-	joro@8bytes.org,
-	jstultz@google.com,
-	kai.heng.feng@canonical.com,
-	krzk@kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-clk@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-pm@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	linux@armlinux.org.uk,
-	magnus.damm@gmail.com,
-	mturquette@baylibre.com,
-	npiggin@gmail.com,
-	peterz@infradead.org,
-	rafael.j.wysocki@intel.com,
-	robin.murphy@arm.com,
-	s.nawrocki@samsung.com,
-	sboyd@kernel.org,
-	tero.kristo@linux.intel.com,
-	tglx@linutronix.de,
-	tomasz.figa@gmail.com,
-	tony@atomide.com,
-	ulf.hansson@linaro.org,
-	vincent.guittot@linaro.org,
-	will@kernel.org,
-	wsa+renesas@sang-engineering.com,
-	yoshihiro.shimoda.uh@renesas.com,
-	zhengdejin5@gmail.com
-Subject: Re: [PATCH v3 2/7] iopoll: Do not use timekeeping in read_poll_timeout_atomic()
-Date: Tue, 26 Mar 2024 09:31:19 +0800
-Message-Id: <20240326013119.10591-1-zong.li@sifive.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <3d2a2f4e553489392d871108797c3be08f88300b.1685692810.git.geert+renesas@glider.be>
-References: <3d2a2f4e553489392d871108797c3be08f88300b.1685692810.git.geert+renesas@glider.be>
+	dkim=pass (2048-bit key) header.d=marvell.com header.i=@marvell.com header.b="SIr5uZ16"
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+	by mx0a-0016f401.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 42Q2O692018472;
+	Mon, 25 Mar 2024 20:08:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=
+	date:from:to:cc:subject:message-id:references:mime-version
+	:content-type:in-reply-to; s=pfpt0220; bh=VT2SPnx1HUhMwAnAmLKupb
+	c4KDgy06WgoWy6Y66J9Fk=; b=SIr5uZ168nphjEutZJsSlQd0AktWHVGnLmRDiK
+	Bmlnl0biJ7N3d17yIDA2sJ1i9ETy7VUSROpMOcSf5ainuQ3aXs8GHRg1Yrn1h0+K
+	ZqKX8t6/7khqFATxuk2uWr84QuPu+6C08OiO7EblkAoDAoRCcPIHW7+JjBf6kj/Q
+	L44FW9cSVYNDWi1HjY/53D81416Q9JnZ8t7Mq0ts8aYs8aOjh39xvJiOFRQsl/OK
+	XDx5l26UStqhDvS2fgjZ/x5JEV+Ye392N6IREJFX0CiqSkuEnwZS0h4SDkqu9s7D
+	hn4i7qinI4GCccayFP7ZM+ZJGqPgepJrCa+lvTEBJyJF7tJg==
+Received: from pps.reinject (localhost [127.0.0.1])
+	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3x3nht8460-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 25 Mar 2024 20:08:56 -0700 (PDT)
+Received: from m0045849.ppops.net (m0045849.ppops.net [127.0.0.1])
+	by pps.reinject (8.17.1.24/8.17.1.24) with ESMTP id 42Q2wV69031074;
+	Mon, 25 Mar 2024 20:08:56 -0700
+Received: from dc5-exch05.marvell.com ([199.233.59.128])
+	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3x3nht845v-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 25 Mar 2024 20:08:56 -0700 (PDT)
+Received: from DC5-EXCH05.marvell.com (10.69.176.209) by
+ DC5-EXCH05.marvell.com (10.69.176.209) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Mon, 25 Mar 2024 20:08:55 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH05.marvell.com
+ (10.69.176.209) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
+ Transport; Mon, 25 Mar 2024 20:08:55 -0700
+Received: from hyd1403.caveonetworks.com (unknown [10.29.37.84])
+	by maili.marvell.com (Postfix) with SMTP id 268E33F704D;
+	Mon, 25 Mar 2024 20:08:51 -0700 (PDT)
+Date: Tue, 26 Mar 2024 08:38:51 +0530
+From: Linu Cherian <lcherian@marvell.com>
+To: Petr Tesarik <petrtesarik@huaweicloud.com>
+CC: Christoph Hellwig <hch@lst.de>,
+        Marek Szyprowski
+	<m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        open list
+	<linux-kernel@vger.kernel.org>,
+        "open list:DMA MAPPING HELPERS"
+	<iommu@lists.linux.dev>,
+        Will Deacon <will@kernel.org>, Michael Kelley
+	<mhklinux@outlook.com>,
+        Roberto Sassu <roberto.sassu@huaweicloud.com>,
+        Petr
+ Tesarik <petr@tesarici.cz>
+Subject: Re: [PATCH 1/1] swiotlb: add a KUnit test suite
+Message-ID: <20240326030851.GA64024@hyd1403.caveonetworks.com>
+References: <20240313092740.192-1-petrtesarik@huaweicloud.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240313092740.192-1-petrtesarik@huaweicloud.com>
+X-Proofpoint-GUID: 1K8lZCqhMEw0dhK2t8aVjwvSkr3G7LhF
+X-Proofpoint-ORIG-GUID: dBp2EdjjRykq1ugCvQk9Dgdkldo2Cd6P
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-03-25_26,2024-03-21_02,2023-05-22_02
 
-On Fri, Jun 02, 2023 at 10:50:37AM +0200, Geert Uytterhoeven wrote:
-> read_poll_timeout_atomic() uses ktime_get() to implement the timeout
-> feature, just like its non-atomic counterpart.  However, there are
-> several issues with this, due to its use in atomic contexts:
+On 2024-03-13 at 14:57:40, Petr Tesarik (petrtesarik@huaweicloud.com) wrote:
+> From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+
+Hi,
+
 > 
->   1. When called in the s2ram path (as typically done by clock or PM
->      domain drivers), timekeeping may be suspended, triggering the
->      WARN_ON(timekeeping_suspended) in ktime_get():
+> Add unit tests to help avoid regressions in the SWIOTLB code.
 > 
-> 	WARNING: CPU: 0 PID: 654 at kernel/time/timekeeping.c:843 ktime_get+0x28/0x78
+> These features are covered by the test suite:
 > 
->      Calling ktime_get_mono_fast_ns() instead of ktime_get() would get
->      rid of that warning.  However, that would break timeout handling,
->      as (at least on systems with an ARM architectured timer), the time
->      returned by ktime_get_mono_fast_ns() does not advance while
->      timekeeping is suspended.
->      Interestingly, (on the same ARM systems) the time returned by
->      ktime_get() does advance while timekeeping is suspended, despite
->      the warning.
+> * basic functionality (map, sync)
+> * alignment based on mapping size
+> * alignment based on min_align_mask
+> * explicit alignment with alloc_align_mask
+> * combination of alignment constraints
 > 
->   2. Depending on the actual clock source, and especially before a
->      high-resolution clocksource (e.g. the ARM architectured timer)
->      becomes available, time may not advance in atomic contexts, thus
->      breaking timeout handling.
+> Select CONFIG_SWIOTLB rather than depend on it, because it allows to run
+> the test with UML (default KUnit target).
 > 
-> Fix this by abandoning the idea that one can rely on timekeeping to
-> implement timeout handling in all atomic contexts, and switch from a
-> global time-based to a locally-estimated timeout handling.  In most
-> (all?) cases the timeout condition is exceptional and an error
-> condition, hence any additional delays due to underestimating wall clock
-> time are irrelevant.
->
-
-Hi Geert,
-I tested this patch on the FPGA, and I noticed the timeout duration
-was much longer than expected. I tested it by removing the op operation
-and break condition for avoiding the influence of other factors.
-The code would look like as follows:
-
-for (;;) {
-        if (__timeout_us && __left_ns < 0)
-                break;
-        if (__delay_us) {
-                udelay(__delay_us);
-                if (__timeout_us)
-                        __left_ns -= __delay_ns;;
-	cpu_relex();
-        if (__timeout_us)
-                __left_ns--;
-        }
-}
-
-Despite setting the timeout to 1 second, it actually takes 25 seconds
-to reach the specified timeout value. I displayed the value of
-__left_ns when a timeout occurred. As follows: __delay_us is 1, when
-__left_ns counts down to -1, the system has run for 25 seconds.
-
-[   26.016213] __timeout_us: 1000000 __left_ns: -1
-[   50.818585] __timeout_us: 1000000  __left_ns: -1
-[   75.620467] __timeout_us: 1000000  __left_ns: -1
-[  100.422664] __timeout_us: 1000000  __left_ns: -1
-[  125.224775] __timeout_us: 1000000  __left_ns: -1
-...
-
-I attempted to blend the two versions (e.g., ktime version and the
-current version) for discarding the value of __left_ns. The resulting
-output is as follows: __delay_us is 1, when it exceeds 1 second
-according to ktime, __left_ns only counts around 40 ms.
-
-[    6.734482] __timeout_us: 1000000  __left_ns: 961699000
-[    7.738485] __timeout_us: 1000000  __left_ns: 961228000
-[    8.812797] __timeout_us: 1000000  __left_ns: 961755000
-[    9.814021] __timeout_us: 1000000  __left_ns: 961542000
-[   10.815373] __timeout_us: 1000000 __left_ns: 962464000
-[   11.816184] __timeout_us: 1000000 __left_ns: 961536000
-[   12.817137] __timeout_us: 1000000 __left_ns: 961121000
-...
-
-Per your suggestion, I attempted to increase delay_us to 10 us,
-it really helps to eliminate the underestimation. The actual
-timeout became 3 secs on the FPGA.
-
-I moved on my host x86 machine, the timeout has been reduced to
-2 seconds even if the delay_us is 1. And the timeout can be
-precise 1 seconds when delay_us is 10. I'm not sure if the clock
-frequency or RTC frequency might also determine the underestimation
-of wall clock time? Is there a suggested value of delay_us for a
-driver that runs on various platforms?
-What is your perspective for those situation?
-
-Thanks.
-
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
-> Reviewed-by: Tony Lindgren <tony@atomide.com>
-> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+> Signed-off-by: Petr Tesarik <petr.tesarik1@huawei-partners.com>
 > ---
-> The first issue was seen with the rcar-sysc driver in the BSP, as the
-> BSP contains modifications to the resume sequence of various PM Domains.
+>  kernel/dma/Kconfig        |  13 ++
+>  kernel/dma/Makefile       |   1 +
+>  kernel/dma/swiotlb_test.c | 413 ++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 427 insertions(+)
+>  create mode 100644 kernel/dma/swiotlb_test.c
 > 
-> v3:
->   - Add Acked-by, Reviewed-by,
->   - Add comment about not using timekeeping, and its impact,
-> 
-> v2:
->   - New.
-> ---
->  include/linux/iopoll.h | 22 +++++++++++++++++-----
->  1 file changed, 17 insertions(+), 5 deletions(-)
-> 
-> diff --git a/include/linux/iopoll.h b/include/linux/iopoll.h
-> index 0417360a6db9b0d6..19a7b00baff43595 100644
-> --- a/include/linux/iopoll.h
-> +++ b/include/linux/iopoll.h
-> @@ -74,6 +74,10 @@
->   * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
->   * case, the last read value at @args is stored in @val.
->   *
-> + * This macro does not rely on timekeeping.  Hence it is safe to call even when
-> + * timekeeping is suspended, at the expense of an underestimation of wall clock
-> + * time, which is rather minimal with a non-zero delay_us.
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index d62f5957f36b..44c62faa8d89 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -103,6 +103,19 @@ config SWIOTLB_DYNAMIC
+>  
+>  	  If unsure, say N.
+>  
+> +config SWIOTLB_KUNIT_TEST
+> +	tristate "Unit tests for software IO TLB" if !KUNIT_ALL_TESTS
+> +	select SWIOTLB
+> +	depends on KUNIT
+> +	default KUNIT_ALL_TESTS
+> +	help
+> +	  Build unit tests for software IO TLB.
+> +
+> +	  For more information on KUnit and unit tests in general, please refer
+> +	  to the KUnit documentation in Documentation/dev-tools/kunit/.
+> +
+> +	  If unsure, say N.
+> +
+>  config DMA_BOUNCE_UNALIGNED_KMALLOC
+>  	bool
+>  	depends on SWIOTLB
+> diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
+> index 21926e46ef4f..bfb130020219 100644
+> --- a/kernel/dma/Makefile
+> +++ b/kernel/dma/Makefile
+> @@ -7,6 +7,7 @@ obj-$(CONFIG_DMA_CMA)			+= contiguous.o
+>  obj-$(CONFIG_DMA_DECLARE_COHERENT)	+= coherent.o
+>  obj-$(CONFIG_DMA_API_DEBUG)		+= debug.o
+>  obj-$(CONFIG_SWIOTLB)			+= swiotlb.o
+> +obj-$(CONFIG_SWIOTLB_KUNIT_TEST)	+= swiotlb_test.o
+>  obj-$(CONFIG_DMA_COHERENT_POOL)		+= pool.o
+>  obj-$(CONFIG_MMU)			+= remap.o
+>  obj-$(CONFIG_DMA_MAP_BENCHMARK)		+= map_benchmark.o
+> diff --git a/kernel/dma/swiotlb_test.c b/kernel/dma/swiotlb_test.c
+> new file mode 100644
+> index 000000000000..46e4d8055ef5
+> --- /dev/null
+> +++ b/kernel/dma/swiotlb_test.c
+> @@ -0,0 +1,413 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (C) 2024 Huawei Technologies Duesseldorf GmbH
+> + */
+> +
+> +#include <kunit/test.h>
+> +#include <kunit/device.h>
+> +
+> +#include <linux/device.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/io.h>
+> +#include <linux/kdev_t.h>
+> +#include <linux/swiotlb.h>
+> +
+> +/* Alignment check repeat count. */
+> +#define NUM_CHECK_ALIGNED	5
+> +
+> +/* Offset of mapped data inside the allocated buffer. */
+> +#define MAP_OFF	128
+> +
+> +#define PASS	0x600d600d
+> +#define FAIL	0xbad00bad
+> +
+> +static struct {
+> +	unsigned char pad1[MAP_OFF];
+> +	unsigned long value;
+> +	unsigned char pad2[PAGE_SIZE];
+> +} test_data __page_aligned_bss;
+> +
+> +/**************************************************************
+> + * Various helper functions.
+> + */
+> +
+> +static int swiotlb_suite_init(struct kunit_suite *suite)
+> +{
+> +	if (is_swiotlb_allocated())
+> +		return 0;
+> +
+> +	return swiotlb_init_late(swiotlb_size_or_default(), GFP_KERNEL, NULL);
+> +}
+> +
+> +static int swiotlb_drv_probe(struct device *dev)
+> +{
+> +	dev->dma_parms = devm_kzalloc(dev, sizeof(*dev->dma_parms),
+> +				      GFP_KERNEL);
+> +	if (!dev->dma_parms)
+> +		return -ENOMEM;
+> +
+> +	return 0;
+> +}
+> +
+> +static int swiotlb_test_init(struct kunit *test)
+> +{
+> +	struct device_driver *driver;
+> +
+> +	driver = kunit_driver_create(test, "swiotlb_driver");
+> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, driver);
+> +	driver->probe = swiotlb_drv_probe;
+> +
+> +	test->priv = driver;
+> +	return 0;
+> +}
+> +
+> +/**
+> + * test_device() - get a dummy device for testing
+> + * @test:  KUnit test instance.
 > + *
->   * When available, you'll probably want to use one of the specialized
->   * macros defined below rather than this macro directly.
->   */
-> @@ -81,22 +85,30 @@
->  					delay_before_read, args...) \
->  ({ \
->  	u64 __timeout_us = (timeout_us); \
-> +	s64 __left_ns = __timeout_us * NSEC_PER_USEC; \
->  	unsigned long __delay_us = (delay_us); \
-> -	ktime_t __timeout = ktime_add_us(ktime_get(), __timeout_us); \
-> -	if (delay_before_read && __delay_us) \
-> +	u64 __delay_ns = __delay_us * NSEC_PER_USEC; \
-> +	if (delay_before_read && __delay_us) { \
->  		udelay(__delay_us); \
-> +		if (__timeout_us) \
-> +			__left_ns -= __delay_ns; \
-> +	} \
->  	for (;;) { \
->  		(val) = op(args); \
->  		if (cond) \
->  			break; \
-> -		if (__timeout_us && \
-> -		    ktime_compare(ktime_get(), __timeout) > 0) { \
-> +		if (__timeout_us && __left_ns < 0) { \
->  			(val) = op(args); \
->  			break; \
->  		} \
-> -		if (__delay_us) \
-> +		if (__delay_us) { \
->  			udelay(__delay_us); \
-> +			if (__timeout_us) \
-> +				__left_ns -= __delay_ns; \
-> +		} \
->  		cpu_relax(); \
-> +		if (__timeout_us) \
-> +			__left_ns--; \
->  	} \
->  	(cond) ? 0 : -ETIMEDOUT; \
->  })
+> + * Allocate a device suitable for SWIOTLB.
+> + */
+> +static struct device *test_device(struct kunit *test)
+> +{
+> +	struct device_driver *driver = test->priv;
+> +	struct device *dev;
+> +	u64 mask;
+> +
+> +	dev = kunit_device_register_with_driver(test, "swiotlb", driver);
+> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, dev);
+> +
+> +	mask = DMA_BIT_MASK(64);
+> +	KUNIT_ASSERT_EQ(test, dma_coerce_mask_and_coherent(dev, mask), 0);
+> +
+> +	return dev;
+> +}
+> +
+> +/**
+> + * check_aligned() - check that bounce buffers are aligned
+> + * @test:   KUnit test instance.
+> + * @dev:    Device.
+> + * @buf:    Pointer to the original buffer.
+> + * @size:   Size of the original buffer.
+> + * @align:  Allocation alignment (in bytes).
+> + * @check_bits:
+> + *          Number of low bits checked in the swiotlb address.
+> + * @preserve_bits:
+> + *          Number of low bits preserved from the original address.
+> + *
+> + * Mapping is repeated a few times, and a small buffer is allocated after
+> + * each attempt. This should cover the case when the first free slot merely
+> + * happens to be suitably aligned.
+> + */
+> +static void check_aligned(struct kunit *test, struct device *dev,
+> +			  void *buf, size_t size, unsigned long align,
+> +			  int check_bits, int preserve_bits)
+> +{
+> +	dma_addr_t tlb_addr[NUM_CHECK_ALIGNED];
+> +	dma_addr_t pad_addr[NUM_CHECK_ALIGNED];
+> +	u64 check_mask, check_val;
+> +	phys_addr_t phys_addr;
+> +	char *orig, *tlb;
+> +	int i;
+> +
+> +	orig = (char *)buf;
+> +	phys_addr = virt_to_phys(buf);
+> +	check_mask = DMA_BIT_MASK(check_bits);
+> +	check_val = phys_addr & DMA_BIT_MASK(preserve_bits);
+> +
+> +	for (i = 0; i < NUM_CHECK_ALIGNED; ++i) {
+> +		tlb_addr[i] =
+> +			swiotlb_tbl_map_single(dev, phys_addr, size, size,
+> +					       align - 1, DMA_TO_DEVICE, 0);
+> +		KUNIT_ASSERT_NE(test, tlb_addr[i], DMA_MAPPING_ERROR);
+> +		KUNIT_EXPECT_TRUE(test, is_swiotlb_buffer(dev, tlb_addr[i]));
+> +		KUNIT_EXPECT_EQ(test, tlb_addr[i] & check_mask, check_val);
+> +
+> +		/* Check sync in both directions. */
+> +		tlb = phys_to_virt(tlb_addr[i]);
+> +		KUNIT_EXPECT_EQ(test, *orig, *tlb);
+> +		*orig ^= 0xff;
+> +		swiotlb_sync_single_for_device(dev, tlb_addr[i], sizeof(*orig),
+> +					       DMA_TO_DEVICE);
+> +		KUNIT_EXPECT_EQ(test, *orig, *tlb);
+> +		*tlb ^= 0xff;
+> +		swiotlb_sync_single_for_cpu(dev, tlb_addr[i], sizeof(*orig),
+> +					    DMA_FROM_DEVICE);
+> +		KUNIT_EXPECT_EQ(test, *orig, *tlb);
+> +
+> +		pad_addr[i] = swiotlb_map(dev, phys_addr, sizeof(long),
+> +					  DMA_TO_DEVICE, 0);
+> +		KUNIT_ASSERT_NE(test, pad_addr[i], DMA_MAPPING_ERROR);
+> +	}
+> +
+> +	for (i = 0; i < NUM_CHECK_ALIGNED; ++i) {
+> +		swiotlb_tbl_unmap_single(dev, pad_addr[i], sizeof(long),
+> +					 DMA_FROM_DEVICE, 0);
+> +		swiotlb_tbl_unmap_single(dev, tlb_addr[i], size,
+> +					 DMA_FROM_DEVICE, 0);
+> +	}
+> +}
+> +
+> +/**************************************************************
+> + * Map a DMA buffer.
+> + *
+> + * Test that a DMA buffer can be mapped and synced.
+> + */
+> +
+> +static void swiotlb_test_map(struct kunit *test)
+> +{
+> +	struct device *dev = test_device(test);
+> +	phys_addr_t phys_addr;
+> +	dma_addr_t tlb_addr;
+> +	unsigned long *tlb;
+> +
+> +	phys_addr = virt_to_phys(&test_data.value);
+> +	test_data.value = PASS;
+> +	tlb_addr = swiotlb_map(dev, phys_addr, sizeof(unsigned long),
+> +			       DMA_TO_DEVICE, 0);
+> +	KUNIT_ASSERT_NE(test, tlb_addr, DMA_MAPPING_ERROR);
+> +	KUNIT_EXPECT_TRUE(test, is_swiotlb_buffer(dev, tlb_addr));
+> +	tlb = phys_to_virt(tlb_addr);
+> +
+> +	/* Bounce buffer is initialized to original buffer. */
+> +	KUNIT_EXPECT_EQ(test, *tlb, PASS);
+> +
+> +	/* Bounce buffer is updated on sync to device. */
+> +	test_data.value = PASS + 1;
+> +	swiotlb_sync_single_for_device(dev, tlb_addr, sizeof(unsigned long),
+> +				       DMA_TO_DEVICE);
+> +	KUNIT_EXPECT_EQ(test, *tlb, PASS + 1);
+> +
+> +	/* Original buffer is updated on sync from device. */
+> +	*tlb = PASS + 2;
+> +	swiotlb_sync_single_for_cpu(dev, tlb_addr, sizeof(unsigned long),
+> +				    DMA_FROM_DEVICE);
+> +	KUNIT_EXPECT_EQ(test, test_data.value, PASS + 2);
+
+Should we not try this on a buffer that is mapped with DMA_FROM_DEVICE ?
+
+> +
+> +	/* Original buffer is also updated on unmap. */
+> +	*tlb = PASS + 3;
+> +	swiotlb_tbl_unmap_single(dev, tlb_addr, sizeof(unsigned long),
+> +				 DMA_FROM_DEVICE, 0);
+> +	KUNIT_EXPECT_EQ(test, test_data.value, PASS + 3);
+> +}
+> +
+> +/**************************************************************
+> + * Map DMA buffer as bi-directional.
+> + *
+> + * Test that buffer is synced with DMA_BIDIRECTIONAL.
+> + */
+> +
+> +static void swiotlb_test_bidirectional(struct kunit *test)
+> +{
+> +	struct device *dev = test_device(test);
+> +	phys_addr_t phys_addr;
+> +	dma_addr_t tlb_addr;
+> +	unsigned long *tlb;
+> +
+> +	test_data.value = PASS;
+> +	phys_addr = virt_to_phys(&test_data.value);
+> +	tlb_addr = swiotlb_map(dev, phys_addr, sizeof(unsigned long),
+> +			       DMA_BIDIRECTIONAL, 0);
+> +	KUNIT_ASSERT_NE(test, tlb_addr, DMA_MAPPING_ERROR);
+> +	KUNIT_EXPECT_TRUE(test, is_swiotlb_buffer(dev, tlb_addr));
+> +	tlb = phys_to_virt(tlb_addr);
+> +
+> +	/* Bounce buffer is initialized to original buffer. */
+> +	KUNIT_EXPECT_EQ(test, *tlb, PASS);
+> +
+> +	/* Original buffer is updated on unmap. */
+> +	*tlb = PASS + 1;
+> +	swiotlb_tbl_unmap_single(dev, tlb_addr, sizeof(unsigned long),
+> +				 DMA_BIDIRECTIONAL, 0);
+> +	KUNIT_EXPECT_EQ(test, test_data.value, PASS + 1);
+> +}
+> +
+> +/**************************************************************
+> + * Skip sync on unmap.
+> + *
+> + * Test that sync does not happen with DMA_ATTR_SKIP_CPU_SYNC.
+> + * On swiotlb_map(), this flag skips only sync for non-coherent
+> + * DMA; the bounce buffer itself is always synced to the
+> + * original buffer.
+> + */
+> +
+> +static void swiotlb_test_skip_sync(struct kunit *test)
+> +{
+> +	struct device *dev = test_device(test);
+> +	phys_addr_t phys_addr;
+> +	dma_addr_t tlb_addr;
+> +	unsigned long *tlb;
+> +
+> +	test_data.value = PASS;
+> +	phys_addr = virt_to_phys(&test_data.value);
+> +	tlb_addr = swiotlb_map(dev, phys_addr, sizeof(unsigned long),
+> +			       DMA_TO_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
+> +	KUNIT_ASSERT_NE(test, tlb_addr, DMA_MAPPING_ERROR);
+> +	KUNIT_EXPECT_TRUE(test, is_swiotlb_buffer(dev, tlb_addr));
+> +	tlb = phys_to_virt(tlb_addr);
+> +
+> +	/* Bounce buffer is initialized to original buffer anyway. */
+> +	KUNIT_EXPECT_EQ(test, *tlb, PASS);
+> +
+> +	/* Original buffer is not updated on unmap. */
+> +	*tlb = FAIL;
+> +	swiotlb_tbl_unmap_single(dev, tlb_addr, sizeof(unsigned long),
+> +				 DMA_FROM_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
+> +	KUNIT_EXPECT_EQ(test, test_data.value, PASS);
+> +}
+> +
+> +/**************************************************************
+> + * Historical page alignment.
+> + *
+> + * Test that mappings of at least PAGE_SIZE get a page-aligned
+> + * DMA address.
+> + */
+> +
+> +static void swiotlb_test_page_align(struct kunit *test)
+> +{
+> +	struct device *dev = test_device(test);
+> +
+> +	/* Bounce buffer is page-aligned. */
+> +	check_aligned(test, dev, &test_data, sizeof(test_data), 1,
+> +		      PAGE_SHIFT, 0);
+> +
+> +	/* Even if the original buffer is not page-aligned. */
+> +	check_aligned(test, dev, &test_data.value, PAGE_SIZE, 1,
+> +		      PAGE_SHIFT, 0);
+> +}
+> +
+> +/**************************************************************
+> + * Device physical address alignment.
+> + *
+> + * Test that physical address low bits are preserved.
+> + */
+> +
+> +static void check_min_align(struct kunit *test, int bits)
+> +{
+> +	u64 min_align_mask = DMA_BIT_MASK(bits);
+> +	struct device *dev = test_device(test);
+> +	unsigned long vaddr;
+> +	void *ptr;
+> +
+> +	KUNIT_ASSERT_EQ(test, dma_set_min_align_mask(dev, min_align_mask), 0);
+> +
+> +	vaddr = devm_get_free_pages(dev, GFP_KERNEL,
+> +				    bits > PAGE_SHIFT ? bits - PAGE_SHIFT : 0);
+> +	KUNIT_ASSERT_NE(test, vaddr, 0);
+> +
+> +	/* Check low bits */
+> +	ptr = (void *)vaddr + MAP_OFF;
+> +	check_aligned(test, dev, ptr, sizeof(long), 1, bits, bits);
+> +
+> +	/* Check high bits */
+> +	ptr = (void *)vaddr + (1UL << bits) - MAP_OFF - sizeof(long);
+> +	check_aligned(test, dev, ptr, sizeof(long), 1, bits, bits);
+> +
+> +	kunit_device_unregister(test, dev);
+> +}
+> +
+> +static void swiotlb_test_min_align(struct kunit *test)
+> +{
+> +	check_min_align(test, 12);
+> +	check_min_align(test, PAGE_SHIFT);
+> +	check_min_align(test, 16);
+> +}
+> +
+> +/**************************************************************
+> + * Explicit allocation alignment.
+> + *
+> + * Test that the bounce buffer is aligned to an explicit value
+> + * regardless of allocation size.
+> + */
+> +
+> +static void check_alloc_align(struct kunit *test, int bits)
+> +{
+> +	struct device *dev = test_device(test);
+> +	void *base, *ptr;
+> +	size_t size;
+> +
+> +	size = 1UL << bits;
+> +	base = devm_kmalloc(dev, size, GFP_KERNEL);
+> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, base);
+> +
+> +	/* Check low bits */
+> +	ptr = base + MAP_OFF;
+> +	check_aligned(test, dev, ptr, sizeof(long), size, bits, 0);
+> +
+> +	/* Check high bits */
+> +	ptr = base + size - MAP_OFF - sizeof(long);
+> +	check_aligned(test, dev, ptr, sizeof(long), size, bits, 0);
+> +
+> +	kunit_device_unregister(test, dev);
+> +}
+> +
+> +static void swiotlb_test_alloc_align(struct kunit *test)
+> +{
+> +	check_alloc_align(test, 12);
+> +	check_alloc_align(test, 14);
+> +}
+> +
+> +/**************************************************************
+> + * Both allocation and device physical address alignment.
+> + *
+> + * Test that the bounce buffer is aligned to an explicit value
+> + * regardless of allocation size and it also preserves physical
+> + * address low bits.
+> + */
+> +
+> +static void check_both_align(struct kunit *test, int min_align_bits,
+> +			     int alloc_align_bits)
+> +{
+> +	u64 min_align_mask = DMA_BIT_MASK(min_align_bits);
+> +	struct device *dev = test_device(test);
+> +	void *base, *ptr;
+> +	size_t size;
+> +
+> +	KUNIT_ASSERT_EQ(test, dma_set_min_align_mask(dev, min_align_mask), 0);
+> +
+> +	size = 1UL << max(min_align_bits, alloc_align_bits);
+> +	base = devm_kmalloc(dev, size, GFP_KERNEL);
+> +	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, base);
+> +
+> +	/* Check low bits */
+> +	ptr = base + MAP_OFF;
+> +	check_aligned(test, dev, ptr, sizeof(long), size,
+> +		      min_align_bits, min_align_bits);
+> +
+> +	/* Check high bits */
+> +	ptr = base + size - MAP_OFF - sizeof(long);
+> +	check_aligned(test, dev, ptr, sizeof(long), size,
+> +		      min_align_bits, min_align_bits);
+> +
+> +	kunit_device_unregister(test, dev);
+> +}
+> +
+> +static void swiotlb_test_both_align(struct kunit *test)
+> +{
+> +	check_both_align(test, 12, 12);
+> +	check_both_align(test, 12, 16);
+> +	check_both_align(test, 14, 16);
+> +}
+> +
+> +/**************************************************************
+> + * Test suite metadata.
+> + */
+> +
+> +static struct kunit_case swiotlb_test_cases[] = {
+> +	KUNIT_CASE(swiotlb_test_map),
+> +	KUNIT_CASE(swiotlb_test_bidirectional),
+
+For better coverage, can we keep seperate tests for each direction ?
+May be we could have a common function that takes direction as an
+argument.
+
+> +	KUNIT_CASE(swiotlb_test_skip_sync),
+> +	KUNIT_CASE(swiotlb_test_page_align),
+> +	KUNIT_CASE(swiotlb_test_min_align),
+> +	KUNIT_CASE(swiotlb_test_alloc_align),
+> +	KUNIT_CASE(swiotlb_test_both_align),
+> +	{}
+> +};
+> +
+> +static struct kunit_suite swiotlb_test_suite = {
+> +	.name = "swiotlb",
+> +	.suite_init = swiotlb_suite_init,
+> +	.init = swiotlb_test_init,
+> +	.test_cases = swiotlb_test_cases,
+> +};
+> +
+> +kunit_test_suites(&swiotlb_test_suite);
 > -- 
 > 2.34.1
 > 
