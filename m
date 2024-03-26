@@ -1,49 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D9571C6BB;
-	Tue, 26 Mar 2024 17:23:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 487F51C6A0;
+	Tue, 26 Mar 2024 17:23:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711473827; cv=none; b=d/fvT1QgAsjFyfszSRqnUYkvSWtQBh0AMrxL2+FhL0yNZP1bx7jqzW2UKZmZkj8naZ9oQTD0aR/Mwr69c3C6f2g/skd9Pm1OOa4abnE0BogDUll3K+NNZLCqJjuslqYsaT9Q3XjsdjX0xd8KAkW8R2iPx2ZnNEOBL/yZJYl+O88=
+	t=1711473837; cv=none; b=TUcCP9+98FYCTdHvnTtmaq4vhHfNeWf4U0zQ6TXTU902UbliuskJUm9gr9uS8aiiaGKo/94xqaU99cw72SQKV412i2cZ104df5rmMNwk0m15DrcvPOYjxU4c4bFvrd594yNS1mVmyAjudLsKSe1m7YRTTDcbFxE760U0P2WtNSY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711473827; c=relaxed/simple;
-	bh=QJQbY7ol0tz5vhAdueXo6pMJWaVuwhL4mLpoErSBJME=;
+	s=arc-20240116; t=1711473837; c=relaxed/simple;
+	bh=HRBtzkJ1pX+jhcAjFkL9mb/xPm8GrXvFzAWcUwwYUGc=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UKCTmuVryrJEIu7ZdhX8Yd3j4+UTKIdrjTf0BbOF+xNdvSFZu2qAMUsroYdkyO8QJs1LE/vuAWZ5gNMPFIUPjph0wt45AFrFb+tJi0PIuPfX4ZL/0+d6abNmMfQPDuOfW28iDneqSiYmGL4Smf/y1t5iAO4KJXBvzz6lRU5QDc0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SZlc+H+z; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=YH891Mx6Dz50Asi9CrKz6EKwaMwNe8xULy3LzqudZwngI1qkwbg6y3kLN8SbAp8ORzpG1s5VXc1Wl+jzvgqmU7jP5gOqDzC/n+hHr7xQZtcMtawqkTQDY2w18ZI+Rey8eYHt1Mp0PHbcM8IA5pQgUqG5974NObV2oJZlc9JqThE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QnxQ3DuY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SZlc+H+z"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19050C433F1;
-	Tue, 26 Mar 2024 17:23:43 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QnxQ3DuY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98704C433F1;
+	Tue, 26 Mar 2024 17:23:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711473826;
-	bh=QJQbY7ol0tz5vhAdueXo6pMJWaVuwhL4mLpoErSBJME=;
+	s=k20201202; t=1711473836;
+	bh=HRBtzkJ1pX+jhcAjFkL9mb/xPm8GrXvFzAWcUwwYUGc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=SZlc+H+z8VXyJUkFxan7PI2uZ45FlY5VxlBTIVdWE1b9xP9zoTo+w1VsoGk7nh+73
-	 eZxF7B8s9m8aZyEBUg8ixmC4MXsaoFF+eAbeAh8aFtHFy1rmSsj1kRF8l+/Z5o5RDE
-	 h/7FkJDpVQskZ21y7RiFytr0sIecpnxEKn+tZFq/QS8a1ZON5wEWoC4cNqtxZq06va
-	 ZU+tSlGkf5iDo8rCT1QRdWNVuiAw/S2j+GNFUeEmYXdHTpYuB3Itx8YHvvd6Bytr+f
-	 xwFFw3udS5oq1J6ftB9mBi0QPxa1iqxU/RbpntPVhB0j3GrSz8/+IN7brJj2OxALKQ
-	 FOFAs4VGvhT6Q==
+	b=QnxQ3DuY2B9Y+YJtijJIzcsk1tt6BsE2CmrIOzBKiXyo6jgrCT/+SULBA/22A8XJQ
+	 H35MKgwLTXFog5kUDCHE8sd2JKSPxw/+NKGAsizph0s8zhSow4kf32D4vBe3I6fQ9h
+	 Md4m57/xPEfcHck/5bCr7xuFytxsmAbwsVwYsv+oF1XNeatgdq53TMNfh3gVjC0OUI
+	 63Jh6mW2hByZKdSLqZ03jfqOPqPt/0xDIhLG6js6wW/fACgcY8fctPBweGIHbt9ONd
+	 8IBWY0YXbLrTWWPlZjCAIRtUS6D8RdmgDky2WkbSU1zMnU9rqh91LRX4REvKIc1+CS
+	 SNOYkR6MOpAJA==
 From: Will Deacon <will@kernel.org>
-To: iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
+To: robin.murphy@arm.com,
 	linux-arm-kernel@lists.infradead.org,
-	Jason Gunthorpe <jgg@ziepe.ca>
+	iommu@lists.linux.dev,
+	Mostafa Saleh <smostafa@google.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	kernel test robot <lkp@intel.com>,
-	Michael Shavit <mshavit@google.com>,
-	patches@lists.linux.dev,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Add cpu_to_le64() around STRTAB_STE_0_V
-Date: Tue, 26 Mar 2024 17:23:17 +0000
-Message-Id: <171144985938.34712.7805099046790657214.b4-ty@kernel.org>
+	linux-kernel@vger.kernel.org,
+	joro@8bytes.org,
+	nicolinc@nvidia.com,
+	mshavit@google.com,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Fix access for STE.SHCFG
+Date: Tue, 26 Mar 2024 17:23:18 +0000
+Message-Id: <171145006028.35099.17017166136066755497.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <0-v1-98b23ebb0c84+9f-smmu_cputole_jgg@nvidia.com>
-References: <0-v1-98b23ebb0c84+9f-smmu_cputole_jgg@nvidia.com>
+In-Reply-To: <20240323134658.464743-1-smostafa@google.com>
+References: <20240323134658.464743-1-smostafa@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -53,18 +54,23 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Mon, 04 Mar 2024 15:50:08 -0400, Jason Gunthorpe wrote:
-> STRTAB_STE_0_V is a CPU value, it needs conversion for sparse to be clean.
+On Sat, 23 Mar 2024 13:46:58 +0000, Mostafa Saleh wrote:
+> STE attributes(NSCFG, PRIVCFG, INSTCFG) use value 0 for "Use Icomming",
+> for some reason SHCFG doesn't follow that, and it is defined as "0b01".
 > 
-> The missing annotation was a mistake introduced by splitting the ops out
-> from the STE writer.
+> Currently the driver sets SHCFG to Use Incoming for stage-2 and bypass
+> domains.
 > 
+> However according to the User Manual (ARM IHI 0070 F.b):
+> 	When SMMU_IDR1.ATTR_TYPES_OVR == 0, this field is RES0 and the
+> 	incoming Shareability attribute is used.
 > 
+> [...]
 
 Applied to will (for-joerg/arm-smmu/fixes), thanks!
 
-[1/1] iommu/arm-smmu-v3: Add cpu_to_le64() around STRTAB_STE_0_V
-      https://git.kernel.org/will/c/0493e739ccc6
+[1/1] iommu/arm-smmu-v3: Fix access for STE.SHCFG
+      https://git.kernel.org/will/c/ec9098d6bffe
 
 Cheers,
 -- 
