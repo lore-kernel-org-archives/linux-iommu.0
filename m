@@ -1,102 +1,92 @@
-Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04CB357314;
-	Tue, 26 Mar 2024 03:13:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1F1A128826
+	for <iommu@lists.linux.dev>; Tue, 26 Mar 2024 03:15:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711422793; cv=none; b=b8l+RZyQNKuVhJCP8p57XO2l2LgvOVMgKSKmNx8CHfqyiiWhV2gCxY7L5cQJS+QSXMMGQaevOuSQYr6Ym7YIAysiMYO/Y0we0zyde9mgkttFIvZZJjh+LDx8GJuaii7NiHxvWY5UIL8IaxdYICmUxvKnA5Jz4MXqmg2SPc6SlZs=
+	t=1711422923; cv=none; b=thVimtI+UCZmuuXVkPDGhFxYKpHasJxmYQhzUxTVS5n9/meZfNVXIcoJBwmlRou7ER+WatGgoADPdB4Nu5mvwMPMvwlwN6Ha6Dp67AME2LnlhlJDN+XrXnUnqyoVf5FwrBEVIoSuNzIl0WOl2eX6QeC3ebq6LkKckVooP0QSo3g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711422793; c=relaxed/simple;
-	bh=FwGoHomiC96TQlvY/JajBwhK2/NC3YF4AOwU6GXj5Nw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GO/bxbpU8acTQ71fF+2QUhPZBq43earJUHlDi2doOzyH5F8lzuP9+RMPLOgzJp5hwrxGDEUTuNlqMOi2Hmms94oYOI0c56nCG6Z6fSZfRX/xu/oGtyy0Q6yIn/sESKlzEmfxRLyFmQVxqG/3BKsAG8v/BgKALcBgvYW/tjbzb4A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=SCLuPgk5; arc=none smtp.client-ip=90.155.50.34
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1711422923; c=relaxed/simple;
+	bh=uU+SdB9hv9VPV/MPXHQAweqQt038vPR1r3h/RhWxy4s=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sVHdR3ELPtDhPz8XKVi9POu7rHr/mRfTjP6FAz0aixDD7xuAdN/zXz/Q13lszRYFWfmJC5o2SJyhEODZWfCNlXbMY8pFJUOn3BKyoUzHD15o/PtsRDD5yBfEfmYx7q8nU3qkNrF9gWwfQgtMCfbJOt8oFouaeSOsN6V4SruQ7oU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=C7nbBrQz; arc=none smtp.client-ip=209.85.208.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="SCLuPgk5"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=oyTIYfAEgFR5EqikXW3EqaVFHy5A7Gf0H+FFygqy/tY=; b=SCLuPgk5eGRHTeejI7Po8CxJNS
-	bbsYrw4YA1RuHwQTN3lJSqv0cJSQcoH3NsUnHsCLUTRrfJWekmABSNIEgOKhEMlB8dnHghsjIdFjH
-	tbov3PTpb0mXI/yE5w3u/IVAXlC1QXni5Bz5wSTdDFmtmk3/lUQVqBMRUB9JCEGMaZRxGPpLSKzI8
-	AkEU50g2pNUrPdELPskDeHhnLyEAClZf8W9he7Cc9V+7bQe2F0mZfyzWa1l9zDCSP6kaY+j2mVk7o
-	yGjKWP4eAvQ2SZs4EGAA8NkZAxQg0NaXHyaK9US3OwjCxbPOUVpB0PZEswh/elWS8A6JeJkH0GU+N
-	ub3NBf9A==;
-Received: from willy by casper.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1roxEn-00000000Lm5-3f0u;
-	Tue, 26 Mar 2024 03:12:34 +0000
-Date: Tue, 26 Mar 2024 03:12:33 +0000
-From: Matthew Wilcox <willy@infradead.org>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
-	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
-	mgorman@suse.de, dave@stgolabs.net, liam.howlett@oracle.com,
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net,
-	void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de,
-	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com,
-	x86@kernel.org, peterx@redhat.com, david@redhat.com,
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org,
-	nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com,
-	tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
-	paulmck@kernel.org, pasha.tatashin@soleen.com,
-	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com,
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org,
-	ndesaulniers@google.com, vvvvvv@google.com,
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com,
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
-	iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
-	elver@google.com, dvyukov@google.com, songmuchun@bytedance.com,
-	jbaron@akamai.com, aliceryhl@google.com, rientjes@google.com,
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH v6 14/37] lib: introduce support for page allocation
- tagging
-Message-ID: <ZgI9Iejn6DanJZ-9@casper.infradead.org>
-References: <20240321163705.3067592-1-surenb@google.com>
- <20240321163705.3067592-15-surenb@google.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="C7nbBrQz"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-56bde8ea904so5819a12.0
+        for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 20:15:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1711422920; x=1712027720; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=h59Ujb231n94iPcWksCPCK+dVGEbVXi1Rid0ia0yVGY=;
+        b=C7nbBrQzzMavQjI/NTfrIIDeB0oDuoMOxYrVLQa9YmH8Ql391TzZYK/lcKbGazB+Sq
+         D3i9ho6rHcDmJ4T+gfZcgRnPeD6+Ww8ht8aHEqoRFAaxh2tXUMEyENBadm1NtKemc52+
+         NojWgzIEuIAYxI8brqhlTElL3weymo8T81hQSQoTv2eNkZWEz55xcoqwZ0kUJo5sHcFZ
+         Dy3BqQINgqma3WAAOoVrAialDEFPwGk4ilMXlAlXxH//hUb1hP6FnHI1ZsWAw4ms4Dvn
+         VT8ruFj3hFcKQ5I49pc23NJ9beTR1kKuwIwwwzKUUsNY2ijRWp0EMRIF8tDdoxyXCZIV
+         movQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711422920; x=1712027720;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=h59Ujb231n94iPcWksCPCK+dVGEbVXi1Rid0ia0yVGY=;
+        b=HMF/FM3cM67cP0yaRpGuvuRz0sezZTTXMiLJB/MlB+U4elMu2iM10x8fJUDGFXtNA6
+         CWOi2naSICOgbj4BiubqGyTndwY4wUbpkdRCbtnrc+llgAGeZrsvqb3nTXRxmvPbwMq1
+         eFoxPhc8k/kYt5ZFos0RuP1pPrepZmw+yEqwDR482PSkcKQ1fkdlW/voRY0gArEMZEKu
+         Z4iLXXzIkHmyCDiQP513BmjYVP+08PY6MEG6X3PcCnI0npZbVTkmtN7G1GiTLXxYvHr2
+         jnObe4RQj0SjnFX8YNJ1pdWi7tS4zaR1QtZyZAj4Y49EcLnKByz2+2IJSHGsPboQu3iA
+         dfxA==
+X-Forwarded-Encrypted: i=1; AJvYcCUZhXKW3Sw5i+5roUPNUbbMGWpD6MSfwjowEpbETw0Qw9CFg6XVdrSYpRS4b8z2bynL7RzvnTC8nw+U7kMBJUfiWOILMDw=
+X-Gm-Message-State: AOJu0YwKvvNidlTkmNmcfQK7fzOILRpgHe9DISssxzUqSkvwbmHPHxXu
+	QYxoNcjMRRkI9AAHsNG+CMkPI07nb637GGO2nZW/RTGlhlQs88MoXHbIN7DOklzznNTT/z6LXJR
+	T9PT9XRbydbt7GAMbps9ZmSR51kNc10vx0Pxr
+X-Google-Smtp-Source: AGHT+IGP6HGOjwqsoe8xIsHMkHVJvmdde3hdIBhpI2QSUDVcMgFZE7xVDsp9PhdopqxGx8UfD/7LwsgDAQgcLR5w+Pw=
+X-Received: by 2002:a05:6402:7c2:b0:56c:9ae:274a with SMTP id
+ u2-20020a05640207c200b0056c09ae274amr28269edy.7.1711422919954; Mon, 25 Mar
+ 2024 20:15:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240321163705.3067592-15-surenb@google.com>
+References: <20230928150428.199929-1-mlevitsk@redhat.com>
+In-Reply-To: <20230928150428.199929-1-mlevitsk@redhat.com>
+From: Jim Mattson <jmattson@google.com>
+Date: Mon, 25 Mar 2024 20:15:06 -0700
+Message-ID: <CALMp9eSSCUSOpP64Ho16sU6iV1urbjfTafJ0nThAWGHE6oOkLw@mail.gmail.com>
+Subject: Re: [PATCH 0/5] AVIC bugfixes and workarounds
+To: Maxim Levitsky <mlevitsk@redhat.com>
+Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, 
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Thomas Gleixner <tglx@linutronix.de>, 
+	Paolo Bonzini <pbonzini@redhat.com>, x86@kernel.org, Robin Murphy <robin.murphy@arm.com>, 
+	iommu@lists.linux.dev, Ingo Molnar <mingo@redhat.com>, Joerg Roedel <joro@8bytes.org>, 
+	Sean Christopherson <seanjc@google.com>, "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org, 
+	David Rientjes <rientjes@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 21, 2024 at 09:36:36AM -0700, Suren Baghdasaryan wrote:
-> +++ b/include/linux/pgalloc_tag.h
-> @@ -0,0 +1,78 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * page allocation tagging
-> + */
-> +#ifndef _LINUX_PGALLOC_TAG_H
-> +#define _LINUX_PGALLOC_TAG_H
-> +
-> +#include <linux/alloc_tag.h>
-> +
-> +#ifdef CONFIG_MEM_ALLOC_PROFILING
-> +
-> +#include <linux/page_ext.h>
-> +
-> +extern struct page_ext_operations page_alloc_tagging_ops;
-> +extern struct page_ext *page_ext_get(struct page *page);
-> +extern void page_ext_put(struct page_ext *page_ext);
+On Thu, Sep 28, 2023 at 8:05=E2=80=AFAM Maxim Levitsky <mlevitsk@redhat.com=
+> wrote:
+>
+> Hi!
+>
+> This patch series includes several fixes to AVIC I found while working
+> on a new version of nested AVIC code.
+>
+> Also while developing it I realized that a very simple workaround for
+> AVIC's errata #1235 exists and included it in this patch series as well.
+>
+> Best regards,
+>         Maxim Levitsky
 
-Why are you duplicating theses two declarations?
-
-I just deleted them locally and don't see any build problems.  tested with
-x86-64 defconfig (full build), allnoconfig full build and allmodconfig
-mm/ and fs/ (nobody has time to build allmodconfig drivers/)
+Can someone explain why we're still unwilling to enable AVIC by
+default? Have the performance issues that plagued the Rome
+implementation been fixed? What is AMD's guidance?
