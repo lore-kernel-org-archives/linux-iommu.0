@@ -1,185 +1,155 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1CE613CA98;
-	Tue, 26 Mar 2024 15:40:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6E1112DD9E
+	for <iommu@lists.linux.dev>; Tue, 26 Mar 2024 15:59:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711467600; cv=none; b=LHyID/sSExbpmKVrXMMbveQoakX4DGhoV61/d8o/Uz2DSbdjtJvCEaPfgsZHTOeRBFujZqHmM7jBkt4Zc5j9qsll120Fa1dWLvMA+iryg8r+lya7H4rsEfz7XQqx4iMOjLiVOyk4wHEHB2Zwy5YnhZylfkL80qfX4RFq6FGB5n0=
+	t=1711468777; cv=none; b=TJDFls/bce9vn/dwpQuK0uLm61Fp0fUG5LXzvfvj5qQBUi3t0LZsE8JHZW8glWUVQ7RSQSFis4kwBV6V0JRgiyCN+uR8vsCBWBYXrilP8IMQlXpEQFAT0lsbKW/J5BTjsfgiS9reDod9jq40zrGlWccuNGfO3ujnCVqr6AVeScg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711467600; c=relaxed/simple;
-	bh=ztmkPAB0U1ULXqxkAJmpV7w+Ysid9k8KKpLkRxinnKg=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=k4SjJzMzURlofj6p5aT3RHyl2YauItKHy+EjvHDPz2o+ula0vZo0ejVqcN4iU9TagpIPZXOENPWITnjI3op2/Z5gh7HmjV9OxbFvDWAWG+xLQAWZ/7wuCn4UdmUOLGgHfbUuilOpCJQEvDfZ+bPxbO0DuY8xMy8KQTNI32bxXZI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qyKA41Y/; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1711468777; c=relaxed/simple;
+	bh=uIDA+qfvtQb0K31mBBmZfAOm2EF2v0rpbL8b210RRzw=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=g2nNwPEGvxuzXSZfKd+MiAvRYJMofJsI+hk6Ngh37eu6n95ezk7sIWs6RvyJfCZu7voojeUX5FVIvKpA6AQCXBxcw4khkiRKI4xDT1QtgYI1eGntRl+8r7dmYWC8Pg2gt/jKAylTmmomm8L7V9GLVbmlFpkX8+Nbpk6fks8drRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=L/7AdboJ; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qyKA41Y/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9697C433F1;
-	Tue, 26 Mar 2024 15:39:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711467600;
-	bh=ztmkPAB0U1ULXqxkAJmpV7w+Ysid9k8KKpLkRxinnKg=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=qyKA41Y/u8Cszywiz7OK3FbbmiKGQ9C4dXlmSowzO0eODtV3XQMYhndL6LqSSCExc
-	 gSr5KriK7AK/eduOXCzUuM9/M/JTph42YYV7yXqy/Ep5e4C8RdOMDwEY3NB+TWhosG
-	 ynhFk3x5fLusreKA62Lb5K8LI+Hrn02SMQKKQERtg/F9T4BStRFCcanXEuZXn7koxg
-	 lsnbct8Q5TAF/wUov8x/pcO/9j1j/+eoZC8z34hhlBPd/+k36MCtc3hIUbdc3qsQoD
-	 O7ZTB0GZ/L4AyBehCj5ri1j5aP5jWLIf/OTq2a320InuObeAqCv/u7gXamunek3p0/
-	 fkdWsgil6eNBQ==
-From: SeongJae Park <sj@kernel.org>
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: SeongJae Park <sj@kernel.org>,
-	hannes@cmpxchg.org,
-	roman.gushchin@linux.dev,
-	mgorman@suse.de,
-	dave@stgolabs.net,
-	willy@infradead.org,
-	liam.howlett@oracle.com,
-	penguin-kernel@i-love.sakura.ne.jp,
-	corbet@lwn.net,
-	void@manifault.com,
-	peterz@infradead.org,
-	juri.lelli@redhat.com,
-	catalin.marinas@arm.com,
-	will@kernel.org,
-	arnd@arndb.de,
-	tglx@linutronix.de,
-	mingo@redhat.com,
-	dave.hansen@linux.intel.com,
-	x86@kernel.org,
-	peterx@redhat.com,
-	david@redhat.com,
-	axboe@kernel.dk,
-	mcgrof@kernel.org,
-	masahiroy@kernel.org,
-	nathan@kernel.org,
-	dennis@kernel.org,
-	jhubbard@nvidia.com,
-	tj@kernel.org,
-	muchun.song@linux.dev,
-	rppt@kernel.org,
-	paulmck@kernel.org,
-	pasha.tatashin@soleen.com,
-	yosryahmed@google.com,
-	yuzhao@google.com,
-	dhowells@redhat.com,
-	hughd@google.com,
-	andreyknvl@gmail.com,
-	keescook@chromium.org,
-	ndesaulniers@google.com,
-	vvvvvv@google.com,
-	gregkh@linuxfoundation.org,
-	ebiggers@google.com,
-	ytcoode@gmail.com,
-	vincent.guittot@linaro.org,
-	dietmar.eggemann@arm.com,
-	rostedt@goodmis.org,
-	bsegall@google.com,
-	bristot@redhat.com,
-	vschneid@redhat.com,
-	cl@linux.com,
-	penberg@kernel.org,
-	iamjoonsoo.kim@lge.com,
-	42.hyeyoo@gmail.com,
-	glider@google.com,
-	elver@google.com,
-	dvyukov@google.com,
-	songmuchun@bytedance.com,
-	jbaron@akamai.com,
-	aliceryhl@google.com,
-	rientjes@google.com,
-	minchan@google.com,
-	kaleshsingh@google.com,
-	kernel-team@android.com,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-arch@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org,
-	linux-mm@kvack.org,
-	linux-modules@vger.kernel.org,
-	kasan-dev@googlegroups.com,
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH v6 30/37] mm: vmalloc: Enable memory allocation profiling
-Date: Tue, 26 Mar 2024 08:39:54 -0700
-Message-Id: <20240326153954.89199-1-sj@kernel.org>
-X-Mailer: git-send-email 2.39.2
-In-Reply-To: <CAJuCfpGwLRBWKegYq5XY++fCPWO4mpzrhifw9QGvzJ5Uf9S4jw@mail.gmail.com>
-References: 
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="L/7AdboJ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1711468774;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=uIDA+qfvtQb0K31mBBmZfAOm2EF2v0rpbL8b210RRzw=;
+	b=L/7AdboJ2CT8z/bG37GvIWEG9VgL4t5smjOQxYbnhNN3S+vvjZ0JPsRjA4+/7F3mNp8Bwf
+	AbTDgHL5MWwnuXymhJrZ0lt8iTN2vQpPdKF5MRmhc4QkXO8ausu0iSoo74iJmw1q8taZJ6
+	rzwY86AIjZCpeFF9HqE7tmaMh9fJeoE=
+Received: from mail-oa1-f72.google.com (mail-oa1-f72.google.com
+ [209.85.160.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-418-pjfc01zMNyC3VnhXploDXg-1; Tue, 26 Mar 2024 11:59:33 -0400
+X-MC-Unique: pjfc01zMNyC3VnhXploDXg-1
+Received: by mail-oa1-f72.google.com with SMTP id 586e51a60fabf-22a1bb369f8so2657966fac.2
+        for <iommu@lists.linux.dev>; Tue, 26 Mar 2024 08:59:33 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711468773; x=1712073573;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jQ8clIjXc4soz7eWewvwlvASClEQyBetLO4fGly13aQ=;
+        b=CIQVPfoax1A4gV9hVysQCjnjiEVu0IsjtD9Dok/fkwkFu2p/fATqkrXTt/2e6frR5K
+         uQyNFoa4DiQbR47OvJp5ty3DhiH3UOhm3DY9onhhKVPXkeaW6f8i6myslzD30uY5L/lr
+         /xlYoa8lmERskq76HFnzJQncosDUzg8buIW1K70fpbANHdslrbm+uGxz4c2K7tprCaYc
+         i9qVTNT8LFe4LB+xrL0iS7Kl1myBQaWTMRjm9rT46VbpC1VkqkG/LV8Hl2Z8yxgc9ZdH
+         9VFJZS5jVYMskBZWqjFpExJS6ymrStCjsqhiz2If7QdMWGCu17jof+Bmc3JPJHKEMLaU
+         QSqg==
+X-Forwarded-Encrypted: i=1; AJvYcCW9RZcuO65PHF7yHkw+lgERE+uuA4XKHdxBoUoQMSDWnxgc7T/4BTtr4v9jOJ+nGdFM7MIwP5ixgYTmEEOSQEgKl1AGf6U=
+X-Gm-Message-State: AOJu0YyQRbfpYBld5bfRGKEmEWr/M6Ul7+93vZH1tgVixZoLUxHuKgF/
+	4mqtuvbPbTKkMqtVCCHETyfwuGFEFPrv9YxL/Dr3BE5s6TZ1U0Teja6nbwel5IbJOR6Ee+sLHKE
+	6onnTJaI4Z6nKTZKlL1xA1eMptpYl2/UC/Cmv8uFcBp3jSH38MB3/
+X-Received: by 2002:a05:6871:2b0e:b0:222:5ff6:43f1 with SMTP id dr14-20020a0568712b0e00b002225ff643f1mr1841627oac.16.1711468772789;
+        Tue, 26 Mar 2024 08:59:32 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHgzBoNk7aHkGsNEwNVhcEMsbOfldxjSZnKhmacfHPBzgsBueev9oXHbaC3XghCk7h6QPy9yA==
+X-Received: by 2002:a05:6871:2b0e:b0:222:5ff6:43f1 with SMTP id dr14-20020a0568712b0e00b002225ff643f1mr1841604oac.16.1711468772497;
+        Tue, 26 Mar 2024 08:59:32 -0700 (PDT)
+Received: from [192.168.8.125] ([173.34.154.202])
+        by smtp.gmail.com with ESMTPSA id fv24-20020a05622a4a1800b00430dbd6edf9sm3788120qtb.68.2024.03.26.08.59.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Mar 2024 08:59:32 -0700 (PDT)
+Message-ID: <22be7d6156e38dfba1a055cc3e9cc3d10de75dbb.camel@redhat.com>
+Subject: Re: [PATCH 0/5] AVIC bugfixes and workarounds
+From: mlevitsk@redhat.com
+To: Jim Mattson <jmattson@google.com>
+Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>, Borislav Petkov
+ <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, Suravee
+ Suthikulpanit <suravee.suthikulpanit@amd.com>, Thomas Gleixner
+ <tglx@linutronix.de>, Paolo Bonzini <pbonzini@redhat.com>, x86@kernel.org,
+ Robin Murphy <robin.murphy@arm.com>,  iommu@lists.linux.dev, Ingo Molnar
+ <mingo@redhat.com>, Joerg Roedel <joro@8bytes.org>, Sean Christopherson
+ <seanjc@google.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ linux-kernel@vger.kernel.org, David Rientjes <rientjes@google.com>
+Date: Tue, 26 Mar 2024 11:59:30 -0400
+In-Reply-To: <CALMp9eSSCUSOpP64Ho16sU6iV1urbjfTafJ0nThAWGHE6oOkLw@mail.gmail.com>
+References: <20230928150428.199929-1-mlevitsk@redhat.com>
+	 <CALMp9eSSCUSOpP64Ho16sU6iV1urbjfTafJ0nThAWGHE6oOkLw@mail.gmail.com>
+User-Agent: Evolution 3.44.4 (3.44.4-3.fc36)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 26 Mar 2024 00:51:21 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
+On Mon, 2024-03-25 at 20:15 -0700, Jim Mattson wrote:
+> > On Thu, Sep 28, 2023 at 8:05=E2=80=AFAM Maxim Levitsky <mlevitsk@redhat=
+.com> wrote:
+> > > >=20
+> > > > Hi!
+> > > >=20
+> > > > This patch series includes several fixes to AVIC I found while work=
+ing
+> > > > on a new version of nested AVIC code.
+> > > >=20
+> > > > Also while developing it I realized that a very simple workaround f=
+or
+> > > > AVIC's errata #1235 exists and included it in this patch series as =
+well.
+> > > >=20
+> > > > Best regards,
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Maxim Levitsky
+> >=20
+> > Can someone explain why we're still unwilling to enable AVIC by
+> > default? Have the performance issues that plagued the Rome
+> > implementation been fixed? What is AMD's guidance?
+> >=20
+Hi
 
-> On Mon, Mar 25, 2024 at 11:20 AM SeongJae Park <sj@kernel.org> wrote:
-> >
-> > On Mon, 25 Mar 2024 10:59:01 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
-> >
-> > > On Mon, Mar 25, 2024 at 10:49 AM SeongJae Park <sj@kernel.org> wrote:
-> > > >
-> > > > On Mon, 25 Mar 2024 14:56:01 +0000 Suren Baghdasaryan <surenb@google.com> wrote:
-> > > >
-> > > > > On Sat, Mar 23, 2024 at 6:05 PM SeongJae Park <sj@kernel.org> wrote:
-> > > > > >
-> > > > > > Hi Suren and Kent,
-> > > > > >
-> > > > > > On Thu, 21 Mar 2024 09:36:52 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
-> > > > > >
-> > > > > > > From: Kent Overstreet <kent.overstreet@linux.dev>
-> > > > > > >
-> > > > > > > This wrapps all external vmalloc allocation functions with the
-> > > > > > > alloc_hooks() wrapper, and switches internal allocations to _noprof
-> > > > > > > variants where appropriate, for the new memory allocation profiling
-> > > > > > > feature.
-> > > > > >
-> > > > > > I just noticed latest mm-unstable fails running kunit on my machine as below.
-> > > > > > 'git-bisect' says this is the first commit of the failure.
-> > > > > >
-> > > > > >     $ ./tools/testing/kunit/kunit.py run --build_dir ../kunit.out/
-> > > > > >     [10:59:53] Configuring KUnit Kernel ...
-> > > > > >     [10:59:53] Building KUnit Kernel ...
-> > > > > >     Populating config with:
-> > > > > >     $ make ARCH=um O=../kunit.out/ olddefconfig
-> > > > > >     Building with:
-> > > > > >     $ make ARCH=um O=../kunit.out/ --jobs=36
-> > > > > >     ERROR:root:/usr/bin/ld: arch/um/os-Linux/main.o: in function `__wrap_malloc':
-> > > > > >     main.c:(.text+0x10b): undefined reference to `vmalloc'
-> > > > > >     collect2: error: ld returned 1 exit status
-> > > > > >
-> > > > > > Haven't looked into the code yet, but reporting first.  May I ask your idea?
-> > > > >
-> > > > > Hi SeongJae,
-> > > > > Looks like we missed adding "#include <linux/vmalloc.h>" inside
-> > > > > arch/um/os-Linux/main.c in this patch:
-> > > > > https://lore.kernel.org/all/20240321163705.3067592-2-surenb@google.com/.
-> > > > > I'll be posing fixes for all 0-day issues found over the weekend and
-> > > > > will include a fix for this. In the meantime, to work around it you
-> > > > > can add that include yourself. Please let me know if the issue still
-> > > > > persists after doing that.
-> > > >
-> > > > Thank you, Suren.  The change made the error message disappears.  However, it
-> > > > introduced another one.
-> > >
-> > > Ok, let me investigate and I'll try to get a fix for it today evening.
-> >
-> > Thank you for this kind reply.  Nonetheless, this is not blocking some real
-> > thing from me.  So, no rush.  Plese take your time :)
-> 
-> I posted a fix here:
-> https://lore.kernel.org/all/20240326073750.726636-1-surenb@google.com/
-> Please let me know if this resolves the issue.
+This is what I know:
 
-I confirmed it is fixing the issue, and replied to the patch with my Tested-by:
-tag.  Thank you for this kind fix, Suren.
+Zen1:
+=09I never tested it, so I don't know how well AVIC works there and if it h=
+as any erratas.
+
+Zen2:
+=09Has CPU errata in regard to IPI virtualization that makes it unusable in=
+ production,
+ =09but if AVIC's IPI virtualization (borrowing the Intel term here) is dis=
+abled,
+=09then it works just fine and 1:1 equivalent to APICv without IPI.
+
+=09I posted patches for this several times, latest version is here, it stil=
+l applies I think:
+=09https://lkml.iu.edu/hypermail/linux/kernel/2310.0/00790.html
+
+Zen3:
+=09For some reason AVIC got disabled by AMD in CPUID. It is still there tho=
+ugh and force_avic=3D1 kvm_amd option
+=09can make KVM use it and AFAIK it works just fine.
+
+=09It is possible that it got disabled due to Zen2 errata that is fixed on =
+Zen3,
+=09but maybe AMD wasn't sure back then that it will be fixed or it might be=
+ due to performance issues with broadcast
+=09IPIs which I think ended up being a software issue and was fixed a long =
+time ago.
+
+Zen4+
+=09I haven't tested it much, but AFAIK it should work out of the box. It al=
+so got x2avic mode which allows
+=09to use AVIC with VMs that have more that 254 vCPUs.
+
+IMHO if we merge the workaround I have for IPI virtualization and make IPI =
+virtualization off for Zen2
+(and maybe Zen1 as well), then I don't see why we can't make AVIC be the de=
+fault on.
+
+Best regards,
+=09Maxim Levitsky
 
 
-Thanks,
-SJ
-
-[...]
