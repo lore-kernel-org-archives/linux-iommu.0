@@ -1,101 +1,185 @@
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 309E413C3F4
-	for <iommu@lists.linux.dev>; Tue, 26 Mar 2024 15:03:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1CE613CA98;
+	Tue, 26 Mar 2024 15:40:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711465425; cv=none; b=UU4Ar6gdqG17ff0p6eh/nLlG3M0yZt8v7O0Y1xyxV6iIQEiVguCHYSoSx1NOJxrpBAndvGLUyeSAjKdeTogqG0Q30kQnBhvHqhnfQNlYrAOXZa+PMX1FXFXRLTmwh1YLk5MhRFmN4D5lQx5A5g2Eor/WDsKheIyCCi5vSJ27HJI=
+	t=1711467600; cv=none; b=LHyID/sSExbpmKVrXMMbveQoakX4DGhoV61/d8o/Uz2DSbdjtJvCEaPfgsZHTOeRBFujZqHmM7jBkt4Zc5j9qsll120Fa1dWLvMA+iryg8r+lya7H4rsEfz7XQqx4iMOjLiVOyk4wHEHB2Zwy5YnhZylfkL80qfX4RFq6FGB5n0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711465425; c=relaxed/simple;
-	bh=ExcLTQp7iKT4c7ldvFWHhVLbBQ0J2Wt1RPxz2DBljGc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Sh4msfYqlmJ8d7Tn22ilu9eS9VvoG+iPlE0E43LkDYzKJBsyCWnVm0A3RX2iZPlOfmYSXTgfFnrwIjWFS6TDvATDGWZzjSOn7/WUReRIy+4D/cw8If1moY1rDhZTNX3ozV6OM0vCz7iMfOXH88yA9AiQZDZObrLqLNnuxMenSmI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=HWZ//fsu; arc=none smtp.client-ip=209.85.160.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1711467600; c=relaxed/simple;
+	bh=ztmkPAB0U1ULXqxkAJmpV7w+Ysid9k8KKpLkRxinnKg=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=k4SjJzMzURlofj6p5aT3RHyl2YauItKHy+EjvHDPz2o+ula0vZo0ejVqcN4iU9TagpIPZXOENPWITnjI3op2/Z5gh7HmjV9OxbFvDWAWG+xLQAWZ/7wuCn4UdmUOLGgHfbUuilOpCJQEvDfZ+bPxbO0DuY8xMy8KQTNI32bxXZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qyKA41Y/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="HWZ//fsu"
-Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-430b74c17aaso41387021cf.3
-        for <iommu@lists.linux.dev>; Tue, 26 Mar 2024 08:03:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1711465422; x=1712070222; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=yZmVXdcDWPhXaTMyPMBaD6/fwX/FAGo/S1sSULtN0q0=;
-        b=HWZ//fsu+cCLZ1V9KYQm5KJIz34s7dIT8en2FpH+tgGw7KTVqx3UA4m2x/1x6kDkb3
-         cfoStAou61komeYHIQt0weO6GiX4sqR6Jlv+Vx3TNbo8iESyuWAiSxDySLbGXycSO0u6
-         quloVWPut8/+dLLmSXkxf6bMBakoKe5MBCjramb6O21HEBAGMGiCbH9UtXJK4lTe4Par
-         n+SPQACq9bIhX6EDfHT+YYCblRwNAPfmBORrvaUSbRWZihKcN0bTwEheG1FIokCBN8yp
-         HAxsi7vB9WoL1V5P+Sf5zhzUsvVsJwXCQGKQ8jlhCsrtBFiU532b+Jf5kf9q/4fLx7im
-         rD8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711465422; x=1712070222;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=yZmVXdcDWPhXaTMyPMBaD6/fwX/FAGo/S1sSULtN0q0=;
-        b=GWJSmQL4OtMqZH+pjvumXwv5kGsHo3BIOdSyb3di5xOQTPRwDbEro//JewYlUeQl2p
-         1oy+nhuPjtZI3fAnnYtFzr1qv5Q8y2yW5BOZdjnAsBLvBILFB2DbPo0GdGVI6JYS3dPz
-         vZjCPGGys9lzqZ+Qj18uk97WqipgjPXwjz7grrMaPnYKPSZjSPoeg0/v5kOcxN3eYBj1
-         0rmJUGH15h7JKW9Cc7mvxdLbHzW3VysAzMUjcbqbKwUTM4Q8d/Ke9xdD0OF25cnZV38q
-         pWOWRNWAP4rYerxy9GKaCrF22CCKHH8PvIK71h1gIdU+7/CFEYhhR9Uj5id7wm5+G8nQ
-         Px6A==
-X-Forwarded-Encrypted: i=1; AJvYcCUAYpbFIzv0G0iP0UWwr699UXZCZ4ahdKbWXcGNJhU2LOCFaEZgEEXnKpQ3Mq0qhQBTmLfUMVCAl0DgPgc8sEGYRa+5Hgs=
-X-Gm-Message-State: AOJu0YzGuSr+zbExGA8LFzaTHFZQ2jS0ZCzez03/b8DwQ/5m/GBU1qae
-	yXd+zfsrNfZ2EpAIaF2nrmrdAhDgvJCQ04ElzC43i4rZPkKy3xlL2t0m1ar8wpQ=
-X-Google-Smtp-Source: AGHT+IFbkghKVs0qjyIKFqbeUkN1cAZXdAcHb14STOhbg3JBqfd/rhDdojP76IXrbvnTZ+ibjllo/w==
-X-Received: by 2002:a05:622a:1ba1:b0:431:32c1:e8b5 with SMTP id bp33-20020a05622a1ba100b0043132c1e8b5mr11952271qtb.50.1711465421858;
-        Tue, 26 Mar 2024 08:03:41 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id gd14-20020a05622a5c0e00b0042f21fe66f7sm3749489qtb.73.2024.03.26.08.03.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Mar 2024 08:03:41 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rp8Ky-003QqR-SO;
-	Tue, 26 Mar 2024 12:03:40 -0300
-Date: Tue, 26 Mar 2024 12:03:40 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc: kernel@collabora.com, iommu@lists.linux.dev,
-	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Kevin Tian <kevin.tian@intel.com>, Shuah Khan <shuah@kernel.org>
-Subject: Re: [PATCH] selftests: iommu: add config needed for iommufd_fail_nth
-Message-ID: <20240326150340.GE8419@ziepe.ca>
-References: <20240325090048.1423908-1-usama.anjum@collabora.com>
- <31fcc276-acd6-4277-bd6c-4a871c7fb28a@collabora.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qyKA41Y/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9697C433F1;
+	Tue, 26 Mar 2024 15:39:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1711467600;
+	bh=ztmkPAB0U1ULXqxkAJmpV7w+Ysid9k8KKpLkRxinnKg=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=qyKA41Y/u8Cszywiz7OK3FbbmiKGQ9C4dXlmSowzO0eODtV3XQMYhndL6LqSSCExc
+	 gSr5KriK7AK/eduOXCzUuM9/M/JTph42YYV7yXqy/Ep5e4C8RdOMDwEY3NB+TWhosG
+	 ynhFk3x5fLusreKA62Lb5K8LI+Hrn02SMQKKQERtg/F9T4BStRFCcanXEuZXn7koxg
+	 lsnbct8Q5TAF/wUov8x/pcO/9j1j/+eoZC8z34hhlBPd/+k36MCtc3hIUbdc3qsQoD
+	 O7ZTB0GZ/L4AyBehCj5ri1j5aP5jWLIf/OTq2a320InuObeAqCv/u7gXamunek3p0/
+	 fkdWsgil6eNBQ==
+From: SeongJae Park <sj@kernel.org>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: SeongJae Park <sj@kernel.org>,
+	hannes@cmpxchg.org,
+	roman.gushchin@linux.dev,
+	mgorman@suse.de,
+	dave@stgolabs.net,
+	willy@infradead.org,
+	liam.howlett@oracle.com,
+	penguin-kernel@i-love.sakura.ne.jp,
+	corbet@lwn.net,
+	void@manifault.com,
+	peterz@infradead.org,
+	juri.lelli@redhat.com,
+	catalin.marinas@arm.com,
+	will@kernel.org,
+	arnd@arndb.de,
+	tglx@linutronix.de,
+	mingo@redhat.com,
+	dave.hansen@linux.intel.com,
+	x86@kernel.org,
+	peterx@redhat.com,
+	david@redhat.com,
+	axboe@kernel.dk,
+	mcgrof@kernel.org,
+	masahiroy@kernel.org,
+	nathan@kernel.org,
+	dennis@kernel.org,
+	jhubbard@nvidia.com,
+	tj@kernel.org,
+	muchun.song@linux.dev,
+	rppt@kernel.org,
+	paulmck@kernel.org,
+	pasha.tatashin@soleen.com,
+	yosryahmed@google.com,
+	yuzhao@google.com,
+	dhowells@redhat.com,
+	hughd@google.com,
+	andreyknvl@gmail.com,
+	keescook@chromium.org,
+	ndesaulniers@google.com,
+	vvvvvv@google.com,
+	gregkh@linuxfoundation.org,
+	ebiggers@google.com,
+	ytcoode@gmail.com,
+	vincent.guittot@linaro.org,
+	dietmar.eggemann@arm.com,
+	rostedt@goodmis.org,
+	bsegall@google.com,
+	bristot@redhat.com,
+	vschneid@redhat.com,
+	cl@linux.com,
+	penberg@kernel.org,
+	iamjoonsoo.kim@lge.com,
+	42.hyeyoo@gmail.com,
+	glider@google.com,
+	elver@google.com,
+	dvyukov@google.com,
+	songmuchun@bytedance.com,
+	jbaron@akamai.com,
+	aliceryhl@google.com,
+	rientjes@google.com,
+	minchan@google.com,
+	kaleshsingh@google.com,
+	kernel-team@android.com,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-arch@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-modules@vger.kernel.org,
+	kasan-dev@googlegroups.com,
+	cgroups@vger.kernel.org
+Subject: Re: [PATCH v6 30/37] mm: vmalloc: Enable memory allocation profiling
+Date: Tue, 26 Mar 2024 08:39:54 -0700
+Message-Id: <20240326153954.89199-1-sj@kernel.org>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <CAJuCfpGwLRBWKegYq5XY++fCPWO4mpzrhifw9QGvzJ5Uf9S4jw@mail.gmail.com>
+References: 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <31fcc276-acd6-4277-bd6c-4a871c7fb28a@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Tue, Mar 26, 2024 at 06:09:34PM +0500, Muhammad Usama Anjum wrote:
-> Even after applying this config patch and following snippet (which doesn't
-> terminate the program if mmap doesn't allocate exactly as the hint), I'm
-> finding failed tests.
+On Tue, 26 Mar 2024 00:51:21 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
+
+> On Mon, Mar 25, 2024 at 11:20 AM SeongJae Park <sj@kernel.org> wrote:
+> >
+> > On Mon, 25 Mar 2024 10:59:01 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
+> >
+> > > On Mon, Mar 25, 2024 at 10:49 AM SeongJae Park <sj@kernel.org> wrote:
+> > > >
+> > > > On Mon, 25 Mar 2024 14:56:01 +0000 Suren Baghdasaryan <surenb@google.com> wrote:
+> > > >
+> > > > > On Sat, Mar 23, 2024 at 6:05 PM SeongJae Park <sj@kernel.org> wrote:
+> > > > > >
+> > > > > > Hi Suren and Kent,
+> > > > > >
+> > > > > > On Thu, 21 Mar 2024 09:36:52 -0700 Suren Baghdasaryan <surenb@google.com> wrote:
+> > > > > >
+> > > > > > > From: Kent Overstreet <kent.overstreet@linux.dev>
+> > > > > > >
+> > > > > > > This wrapps all external vmalloc allocation functions with the
+> > > > > > > alloc_hooks() wrapper, and switches internal allocations to _noprof
+> > > > > > > variants where appropriate, for the new memory allocation profiling
+> > > > > > > feature.
+> > > > > >
+> > > > > > I just noticed latest mm-unstable fails running kunit on my machine as below.
+> > > > > > 'git-bisect' says this is the first commit of the failure.
+> > > > > >
+> > > > > >     $ ./tools/testing/kunit/kunit.py run --build_dir ../kunit.out/
+> > > > > >     [10:59:53] Configuring KUnit Kernel ...
+> > > > > >     [10:59:53] Building KUnit Kernel ...
+> > > > > >     Populating config with:
+> > > > > >     $ make ARCH=um O=../kunit.out/ olddefconfig
+> > > > > >     Building with:
+> > > > > >     $ make ARCH=um O=../kunit.out/ --jobs=36
+> > > > > >     ERROR:root:/usr/bin/ld: arch/um/os-Linux/main.o: in function `__wrap_malloc':
+> > > > > >     main.c:(.text+0x10b): undefined reference to `vmalloc'
+> > > > > >     collect2: error: ld returned 1 exit status
+> > > > > >
+> > > > > > Haven't looked into the code yet, but reporting first.  May I ask your idea?
+> > > > >
+> > > > > Hi SeongJae,
+> > > > > Looks like we missed adding "#include <linux/vmalloc.h>" inside
+> > > > > arch/um/os-Linux/main.c in this patch:
+> > > > > https://lore.kernel.org/all/20240321163705.3067592-2-surenb@google.com/.
+> > > > > I'll be posing fixes for all 0-day issues found over the weekend and
+> > > > > will include a fix for this. In the meantime, to work around it you
+> > > > > can add that include yourself. Please let me know if the issue still
+> > > > > persists after doing that.
+> > > >
+> > > > Thank you, Suren.  The change made the error message disappears.  However, it
+> > > > introduced another one.
+> > >
+> > > Ok, let me investigate and I'll try to get a fix for it today evening.
+> >
+> > Thank you for this kind reply.  Nonetheless, this is not blocking some real
+> > thing from me.  So, no rush.  Plese take your time :)
 > 
-> @@ -1746,7 +1748,7 @@ FIXTURE_SETUP(iommufd_dirty_tracking)
->         assert((uintptr_t)self->buffer % HUGEPAGE_SIZE == 0);
->         vrc = mmap(self->buffer, variant->buffer_size, PROT_READ | PROT_WRITE,
->                    mmap_flags, -1, 0);
-> -       assert(vrc == self->buffer);
-> +       assert(vrc == self->buffer);// ???
-> 
-> On x86:
-> # Totals: pass:176 fail:4 xfail:0 xpass:0 skip:0 error:0
-> On ARM64:
-> # Totals: pass:166 fail:14 xfail:0 xpass:0 skip:0 error:0
-> 
-> The log files are attached.
+> I posted a fix here:
+> https://lore.kernel.org/all/20240326073750.726636-1-surenb@google.com/
+> Please let me know if this resolves the issue.
 
-You probably don't have enough transparent huge pages available to the process
+I confirmed it is fixing the issue, and replied to the patch with my Tested-by:
+tag.  Thank you for this kind fix, Suren.
 
-      echo 1024 > /proc/sys/vm/nr_hugepages
 
-Jason
+Thanks,
+SJ
+
+[...]
