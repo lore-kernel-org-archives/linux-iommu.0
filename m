@@ -1,166 +1,260 @@
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2128.outbound.protection.outlook.com [40.107.20.128])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD7951CAB5
-	for <iommu@lists.linux.dev>; Tue, 26 Mar 2024 01:26:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.20.128
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711416366; cv=fail; b=adrZ532R3Zbc9Jeu+doEghCnbFbXJJk+BH1GwgXMmnjKz1Rgo6gtQhIho5/w9rsy90LhPG4pvrIDAF4fGwwlIlYzzZUedr9h0yIziARAM7E6sBd0wAs11lqGYY+Zxtc9klIxmTismPhKKSpPVI8M+Pc1cpGgO8tPIfL91Jp3XIQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711416366; c=relaxed/simple;
-	bh=rTwsC946haF1AzmFBOhmn37TAGsRwoAu3QiekoCSxvU=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=XZGfhUBn06WA7O22XeLmvSglPt2gfo57ZJejAEIeRPk3Di/PfUh8/xhiuB6vRYUN5xHDDwdinwKu+GNejmWNux2ERVUtb8t2B7kG3f/iea7+UtVADUgFxut7AL7GAApbeIUcw+hySCDTfHYaeQnQWKR/D7LDFTgIZGCn3K5a+Zo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b=s5AAqABs; arc=fail smtp.client-ip=40.107.20.128
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 274641CD11
+	for <iommu@lists.linux.dev>; Tue, 26 Mar 2024 01:31:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711416688; cv=none; b=osqEaIjRcmNwcFd2vSKru7q00sCUTjlWOpa077Uz6D3iJdxNWSuoLNfjkOdqW5bR5x2Gk69t3vnuCYCBSwwk7hGXzZ9SJMnHx4ueGK0bFgcsxEOCj56NDpf63k04YvaCFSowAlRwWLQahuWQSq10IeeD30fXQlIjnWl8Uh58JN8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711416688; c=relaxed/simple;
+	bh=Fl+yRjd0UrHOAiD6WIaH4FFdnBSi6P1vaZZG/JCGnkU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=LIqnFQnqX6wX9pCubh6JVlfDgnO1zFqaGJRTgK8WziPk2OleMX34UDfYeqSQPg6J4+4B/158ObZWjsG0brXtWsvnsMw7e8qnHhnUO9Lw7BvPlTDYhc68otF+rJRDKxD3ueF8B+Wq+yDb7BKkpqp42lcsPZZUtAqn7jyyaE5cbQ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=UbCuzYSc; arc=none smtp.client-ip=209.85.210.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="s5AAqABs"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SA5UYUa2gPi7JjthrL+b6hYpz5uuhTaDXzSMZKjzUEV9UPJsX4xNrH2nbkj1apwV/S15NxILqKkPDbMraYe8pHqdZZKvLnf11ZTs6IlFRqZ3/FpSgUCQWAkUnF3gTaE9HgzDbJ/Ba2AiR1L2Zd4UPpdtx596PgM5Fsa7JqA52Tng22B+RRqoxoYJDy4uoEFSYNKigTAQw8mMOn3ODPolcg75rHSSoowEdkrTUuPhghrBUsbWil83Ok4E61bnT3CCUmr/4KmI0JghA/3GqllapFF0KpqxbfgAo5zfII4DePKjCQQl8CKDUjpqmmAey4mvNBMR3JxeyZldwK/itfsnyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AqNM+wNuW8IN2D/fumsv/R/Q2OzlUeH8RtCOyMU6bWE=;
- b=dNeAf7z+4MsdmqxU5KltxcsrxvG3/5zbiIf7yJ6VrMLaIOVKCo5niX8AMLuNCkOA7ejEfkw4LIYaUHbQ3drVrhKzVLzfdlpfnN99mAcqHVuk1GcegjtKxOax716dV2MQIVxJBD0biCGJilMHx+003DYHVnQitRytciNVEoG4/wveWdqMBml3qalSuQlOlUUdkZhbO115bB6C7i1B3GZAOrmnmMH8UxtB4ZqaMxKwnyRHr1m+IQx8Hq1NY7CeoWGZCJ/ZJgk1vm1Xysn+FNKopK+wVRGXlQJvq60Lfbau3bnCX7+tCSsP/XewauYXJgDlRUE8+KtqTumDdZV/n3o5qQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AqNM+wNuW8IN2D/fumsv/R/Q2OzlUeH8RtCOyMU6bWE=;
- b=s5AAqABs9WsZnOkIWLwamIo/YLkhcf54fwBDLxm3zdZbw2gqD8u0oTp++VzQ8TnUJJr5VS7AMGhr8HqnG6WUeFgNzvYMbFEd7yv8/r3butzWSccmGj7xTVq7GVnOlaEP5sf1mnvRR1cjEopRWvSDaHmEZgK31OE6GavRApvnX+g=
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by DB9PR04MB9867.eurprd04.prod.outlook.com (2603:10a6:10:4c0::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.31; Tue, 26 Mar
- 2024 01:26:01 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::d30b:44e7:e78e:662d]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::d30b:44e7:e78e:662d%4]) with mapi id 15.20.7386.037; Tue, 26 Mar 2024
- 01:26:01 +0000
-From: Peng Fan <peng.fan@nxp.com>
-To: Thomas Gleixner <tglx@linutronix.de>, Jason Gunthorpe <jgg@ziepe.ca>,
-	"Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-CC: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Joerg
- Roedel <joro@8bytes.org>, Marc Zyngier <maz@kernel.org>, Bixuan Cui
-	<cuibixuan@huawei.com>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 3/3] iommu/arm-smmu-v3: support suspend/resume
-Thread-Topic: [PATCH 3/3] iommu/arm-smmu-v3: support suspend/resume
-Thread-Index: AQHafeW5Y57Zt6YgTUODhc56ZNJBpbFIeocAgAA9iYCAAIRpIA==
-Date: Tue, 26 Mar 2024 01:26:01 +0000
-Message-ID:
- <DU0PR04MB941779A13906E00ACAC987AA88352@DU0PR04MB9417.eurprd04.prod.outlook.com>
-References: <20240324-smmu-v3-v1-0-11bc96e156a5@nxp.com>
- <20240324-smmu-v3-v1-3-11bc96e156a5@nxp.com> <20240325134848.GA8419@ziepe.ca>
- <87bk72fcf4.ffs@tglx>
-In-Reply-To: <87bk72fcf4.ffs@tglx>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: DU0PR04MB9417:EE_|DB9PR04MB9867:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info:
- TNpbo9m4BE71xLIFW5sycMHd4PcoGD+mstcMx72UyRwlNWPBv/smCTSzuXdUt5CeaePwP75O+/DO/J1mm9QexJQXXYhAtq5XBsKOFQQ+iNv2yuvS0K4K34DPi1z+MWqtYP3yDOi+ihegU0zBnBhK4UEohuxTTVTIXSr5jw3FnvMI8T0QC+7dRO6QQxnuRMn2nTf53StjGuXYxd5fzYAKjFyN/bYDLYakyADV5parqQq1U5tsLAtgvlbpI1ZERA0bzvrWOpLTbbRMt3gT7TDI1+m0Ud16Wn42WAPf67rmnoFBRILOftLY4psqWDDMV7i8bB51AbsLlc1o/wl5DDM6pTkD1Za4f/Or1psAzTv0qwgnLnkhFwPhJhFHmhD5z/cMuUrSBCIheD8ZCUa0VYBgz1LRCF1cajNyxmjPxbdUPRZgeE5qJag23yEGeC6kS31H/CdepP/xED1qcdIPwJgmR09pctPyixtIDgZZwUs/UmkUwMBBuKTO/9RhSMx58+MmplZEse50VuvQ6QtCyMnxtwigo3UjNPYlClNPdkqzKwovPjmQGdasD6BJWO9sRWPVYlusW5FCHwANHdAEksdQ/gzK0lfqUFmE6rpL3QhBO4dVDz0SzefbvWILMUat0/kLgj+NaTXz1jnIpH1m4snBGGtFSiZNMZ0uBn4ziYyczIk=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(7416005)(366007)(376005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?+2r99nOaAtZXfoPJw3+sJ0P+P3x4t351O6E5nv3ewoE70OAQKjWexG0q10/A?=
- =?us-ascii?Q?4fvUlkQVUUc6uDO9H/tCNEw7aCe3TDVDM6MYIIVozrENIaJ5sqRW17sIoG36?=
- =?us-ascii?Q?9AKzxa6TpAk+r9hxPBCxe6ipBI5wOCpFPp3KdHKh8+9VmxcyuGvVAGSf2wH7?=
- =?us-ascii?Q?lwq39EDW6GjZPKXZzi92AP8wSZqz69cg/oSSO6GqH1OEpmSu1w/URpsLvxWo?=
- =?us-ascii?Q?BNwrsmhplmHHMA11haqE88FXLHa9zzRJ27TbdLE7RTz3XPEhyFMbc8Fg/8LV?=
- =?us-ascii?Q?fnB9J/M1d4pxNxRYkZvKplOhO0pEEq57orHRy6wd5ZwOkXtjDKONHsj1Q62b?=
- =?us-ascii?Q?fSu2J2DgMEf9b3zxWum47P3KxRlJax9QniNSumDpO0k5qdL7RRQirnUhZOMl?=
- =?us-ascii?Q?BWYwZhHflV+KK5gdFCt4XpcNaHpzKDrdeEr36P13tzJMTnyM7yaZZ6Qxw6Ld?=
- =?us-ascii?Q?L0ihcYEsNphp6VVVd16Wbt4fGzh3JqnEWyI7VrvQIAc/HQUoeytmgQGSmehM?=
- =?us-ascii?Q?SsQ2Ys/dgIRcKIFfMQqqD+jVjf99kvwYmR3KW3IWknmk0+xHzH/FAc2Laorh?=
- =?us-ascii?Q?EWcj7ZBcWezpsy1m3pXV1Wo1+QG1aV1DTN+HpEmS2qJay/wpRwadSzv/U536?=
- =?us-ascii?Q?pGGhqiEgpOjeoJ4u0MS7kzAF/g64x1L4vaDedxnIy324wPMeq01eiMHwd6TO?=
- =?us-ascii?Q?6zri2b/1U9jJliEOu4PHfC/eegic7LapBnaSM69eo2RNwSylsgvtZ41+NKdW?=
- =?us-ascii?Q?g4nxWUmIyMJGAY00hOSTU8decvnZyOpQwLhz7kFNE9U6wpVV1G3OkfyQDeMs?=
- =?us-ascii?Q?N6b7UH+IUUslNE4TpzHQUdQ1cOuTS/7SYmPdtIOayYTAAR1qwBrObfzwS9ZF?=
- =?us-ascii?Q?gA1oKHvaGH62NkhwLUwDBRmw2kPsIZtBZSYmcpjA0k2h2LwWr4sh7JDi15/a?=
- =?us-ascii?Q?dSxCeM3qjF5q4ypnJ/sJ78oVv8to01flMDit/2658bpiIIP0P+F1VJ2Ap+WB?=
- =?us-ascii?Q?qTpFbGqCewezmjLmw8RCNPlxYsVb+aY83hQs6Vm8tLGamWtMnUuPvqdagwSG?=
- =?us-ascii?Q?uyfu3tna2mGoPCZX/H/uInmK9Dr5bsTW8KSnUo6FlQDuMCTtbL0wUKMMcDqm?=
- =?us-ascii?Q?43PjmrlTpxE4M1+YR2YBodlBxO4vscozcVdobKpal/yl5wTxPdxJu0iVW1th?=
- =?us-ascii?Q?KaXejnJjXWltHpoJleQ6HWzM6jL7TfrOqwTCzb40izWZbDHUxSmdNlPsxYl4?=
- =?us-ascii?Q?lWJ9xAfpaIEvIvvJ+kz46XGvZw8A3JKFQok9zQ8zqZRfh5tNVXOMTYLOPI4f?=
- =?us-ascii?Q?th6l3ZXoKMSmL7bgOtErDRjUwOAnaPWtFkf9PVWuxMvG7ZCSRF8Nb3Y11Cc3?=
- =?us-ascii?Q?NLKJi/xVvZQm0qbSS3LMTDudAwSR6I4Zj7q4/wYwh/5y/3T2xq6rJ0jxiVg7?=
- =?us-ascii?Q?lw+3doWMSHT60EBZLPd6DiLFtPoMyWhNtitHuKJFKlnSGyZhGpxcenExT92v?=
- =?us-ascii?Q?lWfiVURu1i52LyXNr7RDDCMDVV1lHibxaUxpUNY14VOztJTIpdcwAPJyn31E?=
- =?us-ascii?Q?kEaNEWUxRnvUxHKlokc=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="UbCuzYSc"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-6e6b22af648so3929931b3a.0
+        for <iommu@lists.linux.dev>; Mon, 25 Mar 2024 18:31:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google; t=1711416686; x=1712021486; darn=lists.linux.dev;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=xL3rc040eKk6aS3kn8YpvfEGan/cVzm8MFiFJYrFFIA=;
+        b=UbCuzYScfDb7ifVqkKTq/pccPi6asO4/dLWNwQbVRwTAthJ8nSJWvMV7UliE3INZbk
+         BOBJEbSRCh+L3SKkmL044TyRS8orjJb8uR6/N5HMaUtn+3yDvOy+36Ri8eDwcYuXreh/
+         KZJCMeVHF9ZNiaX+imlA/eRQUef9iRhFHGoJO5MwYCCfcwsB/64w1zbSJQTlt1dQ5Ckr
+         7cOqnGdxYl/Gax3dCgR/S7sdbQNahqtapPOe+hp6I297kVl+Cqk3+ayzqjl03KcBE+vb
+         QWzXyQelnOoe3UpnSeRcKcEXZUNC+20HGvYuV0e9QXz1Kc+weHvLuqFwWuT28JuEKWxv
+         Oc4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711416686; x=1712021486;
+        h=references:in-reply-to:message-id:date:subject:cc:to:from
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=xL3rc040eKk6aS3kn8YpvfEGan/cVzm8MFiFJYrFFIA=;
+        b=hu3aeeh2os5UfAbwUqtUtbHo6t9oCa/YV3MIAXFCGTlGNQSXJ53nKMqQGNFbMHEzej
+         nKmvJJclHzWeeU7EI5XwdsZYMbXyN+LkHwPuT+atminy6Zxi14S+LQodV2B/gtvwGmbt
+         eg0q2ztG198fGJHyhESVfCAw5Dj8XO30ruuH51aVU34+UkX/b37DAOzdqBkFM0RqloUF
+         nrGAzu/JlEf4J+de20a/gXbZ+difbsvsYWaySkYO93U1I4WfknAVAIdJKBSpUzPXV/M8
+         MfA6Jv9rIpD79P56+/do48CPeva3HfYhppFWKHCRagh0oVdUHF1vrJEo/8OPQe6hDZ2z
+         QbJQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX8yJnv3nZ0tMmfAadGSs3yIRH11AcX8ohKbqHRyRd1ApaNgy+xMrdmqsKVeG1ZkV562tP4bFcbYj/+4M7q930z0b/ZXUo=
+X-Gm-Message-State: AOJu0YyI8P4wSUTbnt2fxz3DdbaHHzZXMVA+2z5DSkHwKX6Lu03QjUIE
+	hBVL0DE7vTj3b2+jBb9KD7satWtq0QuXCpOsqgNaA3j2GOEzqebdt9OjiTUNmZo=
+X-Google-Smtp-Source: AGHT+IG9ZhWQHv78QSHczCurjPGCufikynH54sKO+XOUJb+NA4j/kl8/nWQa7OAQoYkmCdzpzJl8fQ==
+X-Received: by 2002:a05:6a20:3950:b0:1a3:c8ab:5a7c with SMTP id r16-20020a056a20395000b001a3c8ab5a7cmr105666pzg.22.1711416686296;
+        Mon, 25 Mar 2024 18:31:26 -0700 (PDT)
+Received: from hsinchu26.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
+        by smtp.gmail.com with ESMTPSA id d18-20020a63d712000000b005bdbe9a597fsm6396157pgg.57.2024.03.25.18.31.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Mar 2024 18:31:25 -0700 (PDT)
+From: Zong Li <zong.li@sifive.com>
+To: geert+renesas@glider.be
+Cc: arnd@arndb.de,
+	hca@linux.ibm.com,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	jstultz@google.com,
+	kai.heng.feng@canonical.com,
+	krzk@kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-clk@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	linux@armlinux.org.uk,
+	magnus.damm@gmail.com,
+	mturquette@baylibre.com,
+	npiggin@gmail.com,
+	peterz@infradead.org,
+	rafael.j.wysocki@intel.com,
+	robin.murphy@arm.com,
+	s.nawrocki@samsung.com,
+	sboyd@kernel.org,
+	tero.kristo@linux.intel.com,
+	tglx@linutronix.de,
+	tomasz.figa@gmail.com,
+	tony@atomide.com,
+	ulf.hansson@linaro.org,
+	vincent.guittot@linaro.org,
+	will@kernel.org,
+	wsa+renesas@sang-engineering.com,
+	yoshihiro.shimoda.uh@renesas.com,
+	zhengdejin5@gmail.com
+Subject: Re: [PATCH v3 2/7] iopoll: Do not use timekeeping in read_poll_timeout_atomic()
+Date: Tue, 26 Mar 2024 09:31:19 +0800
+Message-Id: <20240326013119.10591-1-zong.li@sifive.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <3d2a2f4e553489392d871108797c3be08f88300b.1685692810.git.geert+renesas@glider.be>
+References: <3d2a2f4e553489392d871108797c3be08f88300b.1685692810.git.geert+renesas@glider.be>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b32f518-a8c2-478a-50a3-08dc4d33b2d0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Mar 2024 01:26:01.7926
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PvsCvVLjO5l8xh+yHBtkrjvSDDFrZj5epW2WCis+SbdNQDKua4xBpaexiLlyp/hJiU032eycCQoCcsDA3lghvg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB9867
 
-> Subject: Re: [PATCH 3/3] iommu/arm-smmu-v3: support suspend/resume
->=20
-> On Mon, Mar 25 2024 at 10:48, Jason Gunthorpe wrote:
-> > On Sun, Mar 24, 2024 at 08:29:00PM +0800, Peng Fan (OSS) wrote:
-> >> +static void arm_smmu_resume_unique_irqs(struct arm_smmu_device
-> >> +*smmu) {
-> >> +	struct device *dev =3D smmu->dev;
-> >> +	struct msi_desc *desc;
-> >> +	struct msi_msg msg;
-> >> +
-> >> +	if (!dev->msi.domain)
-> >> +		return;
-> >> +
-> >> +	desc =3D irq_get_msi_desc(smmu->evtq.q.irq);
-> >> +	if (desc) {
-> >> +		get_cached_msi_msg(smmu->evtq.q.irq, &msg);
-> >> +		arm_smmu_write_msi_msg(desc, &msg);
-> >> +	}
-> >> +
-> >> +	desc =3D irq_get_msi_desc(smmu->gerr_irq);
-> >> +	if (desc) {
-> >> +		get_cached_msi_msg(smmu->gerr_irq, &msg);
-> >> +		arm_smmu_write_msi_msg(desc, &msg);
-> >> +	}
-> >> +
-> >> +	if (smmu->features & ARM_SMMU_FEAT_PRI) {
-> >> +		desc =3D irq_get_msi_desc(smmu->priq.q.irq);
-> >> +		if (desc) {
-> >> +			get_cached_msi_msg(smmu->priq.q.irq, &msg);
-> >> +			arm_smmu_write_msi_msg(desc, &msg);
-> >> +		}
-> >> +	}
-> >> +}
-> >
-> > I wonder if this should be done instead by converting the driver away
-> > from platform MSI to the new MSI mechanism?
->=20
-> There is work in progress for that. Should come around in the next weeks.
+On Fri, Jun 02, 2023 at 10:50:37AM +0200, Geert Uytterhoeven wrote:
+> read_poll_timeout_atomic() uses ktime_get() to implement the timeout
+> feature, just like its non-atomic counterpart.  However, there are
+> several issues with this, due to its use in atomic contexts:
+> 
+>   1. When called in the s2ram path (as typically done by clock or PM
+>      domain drivers), timekeeping may be suspended, triggering the
+>      WARN_ON(timekeeping_suspended) in ktime_get():
+> 
+> 	WARNING: CPU: 0 PID: 654 at kernel/time/timekeeping.c:843 ktime_get+0x28/0x78
+> 
+>      Calling ktime_get_mono_fast_ns() instead of ktime_get() would get
+>      rid of that warning.  However, that would break timeout handling,
+>      as (at least on systems with an ARM architectured timer), the time
+>      returned by ktime_get_mono_fast_ns() does not advance while
+>      timekeeping is suspended.
+>      Interestingly, (on the same ARM systems) the time returned by
+>      ktime_get() does advance while timekeeping is suspended, despite
+>      the warning.
+> 
+>   2. Depending on the actual clock source, and especially before a
+>      high-resolution clocksource (e.g. the ARM architectured timer)
+>      becomes available, time may not advance in atomic contexts, thus
+>      breaking timeout handling.
+> 
+> Fix this by abandoning the idea that one can rely on timekeeping to
+> implement timeout handling in all atomic contexts, and switch from a
+> global time-based to a locally-estimated timeout handling.  In most
+> (all?) cases the timeout condition is exceptional and an error
+> condition, hence any additional delays due to underestimating wall clock
+> time are irrelevant.
+>
 
-Then I need to wait for your patches, and rebase this patchset, or could
-the non-msi part be reviewed first?
+Hi Geert,
+I tested this patch on the FPGA, and I noticed the timeout duration
+was much longer than expected. I tested it by removing the op operation
+and break condition for avoiding the influence of other factors.
+The code would look like as follows:
 
-Thanks,
-Peng.
+for (;;) {
+        if (__timeout_us && __left_ns < 0)
+                break;
+        if (__delay_us) {
+                udelay(__delay_us);
+                if (__timeout_us)
+                        __left_ns -= __delay_ns;;
+	cpu_relex();
+        if (__timeout_us)
+                __left_ns--;
+        }
+}
+
+Despite setting the timeout to 1 second, it actually takes 25 seconds
+to reach the specified timeout value. I displayed the value of
+__left_ns when a timeout occurred. As follows: __delay_us is 1, when
+__left_ns counts down to -1, the system has run for 25 seconds.
+
+[   26.016213] __timeout_us: 1000000 __left_ns: -1
+[   50.818585] __timeout_us: 1000000  __left_ns: -1
+[   75.620467] __timeout_us: 1000000  __left_ns: -1
+[  100.422664] __timeout_us: 1000000  __left_ns: -1
+[  125.224775] __timeout_us: 1000000  __left_ns: -1
+...
+
+I attempted to blend the two versions (e.g., ktime version and the
+current version) for discarding the value of __left_ns. The resulting
+output is as follows: __delay_us is 1, when it exceeds 1 second
+according to ktime, __left_ns only counts around 40 ms.
+
+[    6.734482] __timeout_us: 1000000  __left_ns: 961699000
+[    7.738485] __timeout_us: 1000000  __left_ns: 961228000
+[    8.812797] __timeout_us: 1000000  __left_ns: 961755000
+[    9.814021] __timeout_us: 1000000  __left_ns: 961542000
+[   10.815373] __timeout_us: 1000000 __left_ns: 962464000
+[   11.816184] __timeout_us: 1000000 __left_ns: 961536000
+[   12.817137] __timeout_us: 1000000 __left_ns: 961121000
+...
+
+Per your suggestion, I attempted to increase delay_us to 10 us,
+it really helps to eliminate the underestimation. The actual
+timeout became 3 secs on the FPGA.
+
+I moved on my host x86 machine, the timeout has been reduced to
+2 seconds even if the delay_us is 1. And the timeout can be
+precise 1 seconds when delay_us is 10. I'm not sure if the clock
+frequency or RTC frequency might also determine the underestimation
+of wall clock time? Is there a suggested value of delay_us for a
+driver that runs on various platforms?
+What is your perspective for those situation?
+
+Thanks.
+
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> Acked-by: Arnd Bergmann <arnd@arndb.de>
+> Reviewed-by: Tony Lindgren <tony@atomide.com>
+> Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+> ---
+> The first issue was seen with the rcar-sysc driver in the BSP, as the
+> BSP contains modifications to the resume sequence of various PM Domains.
+> 
+> v3:
+>   - Add Acked-by, Reviewed-by,
+>   - Add comment about not using timekeeping, and its impact,
+> 
+> v2:
+>   - New.
+> ---
+>  include/linux/iopoll.h | 22 +++++++++++++++++-----
+>  1 file changed, 17 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/linux/iopoll.h b/include/linux/iopoll.h
+> index 0417360a6db9b0d6..19a7b00baff43595 100644
+> --- a/include/linux/iopoll.h
+> +++ b/include/linux/iopoll.h
+> @@ -74,6 +74,10 @@
+>   * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
+>   * case, the last read value at @args is stored in @val.
+>   *
+> + * This macro does not rely on timekeeping.  Hence it is safe to call even when
+> + * timekeeping is suspended, at the expense of an underestimation of wall clock
+> + * time, which is rather minimal with a non-zero delay_us.
+> + *
+>   * When available, you'll probably want to use one of the specialized
+>   * macros defined below rather than this macro directly.
+>   */
+> @@ -81,22 +85,30 @@
+>  					delay_before_read, args...) \
+>  ({ \
+>  	u64 __timeout_us = (timeout_us); \
+> +	s64 __left_ns = __timeout_us * NSEC_PER_USEC; \
+>  	unsigned long __delay_us = (delay_us); \
+> -	ktime_t __timeout = ktime_add_us(ktime_get(), __timeout_us); \
+> -	if (delay_before_read && __delay_us) \
+> +	u64 __delay_ns = __delay_us * NSEC_PER_USEC; \
+> +	if (delay_before_read && __delay_us) { \
+>  		udelay(__delay_us); \
+> +		if (__timeout_us) \
+> +			__left_ns -= __delay_ns; \
+> +	} \
+>  	for (;;) { \
+>  		(val) = op(args); \
+>  		if (cond) \
+>  			break; \
+> -		if (__timeout_us && \
+> -		    ktime_compare(ktime_get(), __timeout) > 0) { \
+> +		if (__timeout_us && __left_ns < 0) { \
+>  			(val) = op(args); \
+>  			break; \
+>  		} \
+> -		if (__delay_us) \
+> +		if (__delay_us) { \
+>  			udelay(__delay_us); \
+> +			if (__timeout_us) \
+> +				__left_ns -= __delay_ns; \
+> +		} \
+>  		cpu_relax(); \
+> +		if (__timeout_us) \
+> +			__left_ns--; \
+>  	} \
+>  	(cond) ? 0 : -ETIMEDOUT; \
+>  })
+> -- 
+> 2.34.1
+> 
