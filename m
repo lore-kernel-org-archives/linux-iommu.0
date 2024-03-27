@@ -1,138 +1,107 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66D6A14F113
-	for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 19:23:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D966A14F9DD;
+	Wed, 27 Mar 2024 19:42:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711567438; cv=none; b=Tli65UxsuQFq7/hBU22YgoCOsmbpRpnx65K0NbZlqi8vOPUCTxnTcIxqQdYFDfhDELvCRX7aclIP2sKC2gnFtAEaw41Egjt9s7rXK8OFToMPISEdoIng+kt0V8CoFtmTZPJ5+jOL9lqORGED86C/5+AMwj1FWOz7ekEO/oabht4=
+	t=1711568526; cv=none; b=QFbR9X37yBnbNXYhb4D1VxyDKqTF3a7dmCzhp8VEz/JKWOW5uIIMm7Z1rXKU0wcK2dYRFWtrCJjZyqs1l0aS1fAlv042GiN0AQIKt65rkD3/82M0pwy67Vhh+TbgJY8058zmob9d5zjiBBOHHnndquU8YlAf5IGyqYWIWToJL1s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711567438; c=relaxed/simple;
-	bh=vjEvrisXs0PaTIn6yTzeC7Qp/wJlnRMLb5/DytcPMgc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AlmUqpMEGVI1qSfZ0/f52dLTnVzxskRHt+NARRH4ZS0HGKCUxUSCbERAauVCqn+vU5muNXSGoLHjTjQ4m1ZFsveMvM0u9oskaM9pXV/kPr8kNkRmgPz1lFJ8n8wfYsWiR0AsyUwa+YQrwN8NHPHqNvvtitGBS/nUf06u1t0UhMg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=BpEaooDA; arc=none smtp.client-ip=209.85.218.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1711568526; c=relaxed/simple;
+	bh=PsoqOSc/ZsnGjVOPPElixDYOJ7dkP9VdeqNpiyZI00A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Aqwab01CMfDtWbjsrk2IcfQC+xEsasfQygGu/gfABESlXReBQh80jtQIrHaR7JdiP/HQDGBasNj7RSw1kkR4GjZzC/BeT8DKowjsHF574yNh7MRPWYdEKnDF7qK829x56u9pq9Sv0ajAWal+uvtwrrFb/gU0VLPzTVQQ4ety7/w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b748I/Rb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="BpEaooDA"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-a46ea03c2a5so40731266b.1
-        for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 12:23:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1711567435; x=1712172235; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=mXh1hk1oPeStdknju80ZXZITRIxNJc+CZyjjCVnDwcI=;
-        b=BpEaooDAk9OtBg34charHqKu7n6qaWmF66qd0SR5x3cNcJNz3gqnsL+H0Ulu0n3spS
-         6B/s04MFzwX+B0iKt7q36o3zphNOANpdHJWvhQdkBT8Ub8G9jvI7Hvhro1jx62TF18wk
-         keBhfbUWp7wxmGyE/MCoxSEd6pCeoukG3fpI0YfoEO3KwNA57aGYNhsZ2MBXDf5IN4c8
-         Cp8XXz5Jsx4NjDmXxFoVEvXeLDCVAjWOYEkYOZW5bbk/0G027nfiLVGfGawXhEv4KmHf
-         dJSNwmnkUl/1KfIGD//pkYLJ44R8SzZBPZ0D60qXdtBQr78zEcYV4t6SEmVV0IGAUAmh
-         s/pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711567435; x=1712172235;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mXh1hk1oPeStdknju80ZXZITRIxNJc+CZyjjCVnDwcI=;
-        b=jEXUx73LUhEtwU0jmMIL5s+tkkZufE1TFc48lJTdhb3KnltZU5gWzD1OUnzY0Ua9C5
-         5mKUd1mlIq3VD7nM7rWPTviMoDGX70+T0X4io2fht5obc2xNNbAcmPSwEGVtPYvAKcbt
-         HPOiwpKnVh/XyDAYbOjFPiIp2HeEd4UC4iiqaqnX1IfgLnoM6DGjslYDVn1Rabh7HDrC
-         XrgqDaggyXDMcwc7T8TnOdn/lwoa4J1+7oEKCTkXkviMofGPRcgrjKCE4fPJS50EqgHO
-         Cuo2uUapSE4wIorImc4QydCNB/SCMxzb3i5zSUksX1CKTImfkPL6uh2ZzDLCD5/zViam
-         k+9Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUkF7lgLgptZH0qlxrNdj2f0OF5qHONFRnBWT5wCO2z8Aoq2+IceQ+3F5+QiGdW+89K+ZEevwZ3yYVdXZRIVtnDgXvjoSg=
-X-Gm-Message-State: AOJu0YzKA+ZbhebN0NCuW7bnWUzGICizSv0E6g/xiwRihbQEqjgvwElF
-	oqpTGndgLxg+XJxLkSLkgSCFkKXcxsh1O8trd4G4+DZqCEnZe50fr8oQXs5fWgE=
-X-Google-Smtp-Source: AGHT+IGWWBaCyjo8hryoRHrSa9yjNZ26cymjZzL1fb8Jp2J2Fo3NE7EzwYtjC5Qmh4YUteTcnyJNDQ==
-X-Received: by 2002:a17:906:57c7:b0:a47:3cd5:b3f1 with SMTP id u7-20020a17090657c700b00a473cd5b3f1mr182772ejr.35.1711567434658;
-        Wed, 27 Mar 2024 12:23:54 -0700 (PDT)
-Received: from [192.168.92.47] (078088045141.garwolin.vectranet.pl. [78.88.45.141])
-        by smtp.gmail.com with ESMTPSA id i10-20020a170906250a00b00a47459e7371sm5425614ejb.79.2024.03.27.12.23.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Mar 2024 12:23:54 -0700 (PDT)
-Message-ID: <65669ccc-3d95-496f-aa82-4ecbf4c11290@linaro.org>
-Date: Wed, 27 Mar 2024 20:23:51 +0100
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b748I/Rb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4F6BC433C7;
+	Wed, 27 Mar 2024 19:42:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1711568526;
+	bh=PsoqOSc/ZsnGjVOPPElixDYOJ7dkP9VdeqNpiyZI00A=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=b748I/RbWhZJV3AxMeOrTcHuMLbzL1ocVl7qHn/xvp9P/MwKhxWQeq5FuIcBP5JHn
+	 DcpEe64QIsTLiAoIE1xxp5ZybwxHIgAKXRHRJ/V0CTwVE7TO6f3gIrZy9wULp1SpBd
+	 7ukVgrHzkzmLeju6LdhgAZH9XVYgkf86tShw0luVvX/WeNsFVsR5m3uhSaZzjl1lAA
+	 GXDN491AnrTvWyuuvN1z7X72VSe9iMDZpc3kCjKIv/eaKn/U3pXkxtM6t8Eu8Kfxs/
+	 GGLiRyz1f/DvsuzoxdOmSy0IhmuBFbYpmz5Ub6Vljnq/WVErAl5UT6stRjWpsBPsVD
+	 B7UKb7ga6Cj8Q==
+Date: Wed, 27 Mar 2024 19:42:01 +0000
+From: Will Deacon <will@kernel.org>
+To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
+Cc: Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
+	Michael Kelley <mhklinux@outlook.com>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
+	Roberto Sassu <roberto.sassu@huaweicloud.com>
+Subject: Re: [PATCH v3 0/2] swiotlb: allocate padding slots if necessary
+Message-ID: <20240327194200.GA12000@willie-the-truck>
+References: <20240321171902.85-1-petrtesarik@huaweicloud.com>
+ <20240322150941.GA5634@willie-the-truck>
+ <20240322185138.1af83c61@meshulam.tesarici.cz>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] dt-bindings: iommu: arm,smmu-v3: Add SC8280XP
- compatible
-To: Robin Murphy <robin.murphy@arm.com>,
- Bjorn Andersson <andersson@kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
- Conor Dooley <conor+dt@kernel.org>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Rob Herring <robh@kernel.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>,
- linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, Johan Hovold <johan+linaro@kernel.org>
-References: <20231219-topic-8280_smmuv3-v2-0-c67bd3226687@linaro.org>
- <20231219-topic-8280_smmuv3-v2-1-c67bd3226687@linaro.org>
- <9b2a681e-1191-4cf7-8da7-14aa2c1fa455@arm.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@linaro.org>
-Autocrypt: addr=konrad.dybcio@linaro.org; keydata=
- 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
- izWDgYvmBE8=
-In-Reply-To: <9b2a681e-1191-4cf7-8da7-14aa2c1fa455@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240322185138.1af83c61@meshulam.tesarici.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 19.03.2024 2:53 PM, Robin Murphy wrote:
-> On 2024-03-09 1:31 pm, Konrad Dybcio wrote:
->> The smmu-v3 binding currently doesn't differentiate the SoCs it's
->> implemented on. This is a poor design choice that may bite in the future,
->> should any quirks surface.
+On Fri, Mar 22, 2024 at 06:51:38PM +0100, Petr Tesařík wrote:
+> On Fri, 22 Mar 2024 15:09:41 +0000
+> Will Deacon <will@kernel.org> wrote:
 > 
-> That doesn't seem entirely fair to say - the vast majority of bindings don't have separate compatibles for every known integration of the same implementation in different SoCs. And in this case we don't have per-implementation compatibles for quirks and errata because the implementation is architecturally discoverable from the SMMU_IIDR register.
+> > Hi Petr,
+> > 
+> > On Thu, Mar 21, 2024 at 06:19:00PM +0100, Petr Tesarik wrote:
+> > > From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
+> > > 
+> > > If the allocation alignment is bigger than IO_TLB_SIZE and min_align_mask
+> > > covers some bits in the original address between IO_TLB_SIZE and
+> > > alloc_align_mask, preserve these bits by allocating additional padding
+> > > slots before the actual swiotlb buffer.  
+> > 
+> > Thanks for fixing this! I was out at a conference last week, so I didn't
+> > get very far with it myself, but I ended up in a pickle trying to avoid
+> > extending 'struct io_tlb_slot'. Your solution is much better than the
+> > crazy avenue I started going down...
+> > 
+> > With your changes, can we now simplify swiotlb_align_offset() to ignore
+> > dma_get_min_align_mask() altogether and just:
+> > 
+> > 	return addr & (IO_TLB_SIZE - 1);
 > 
-> We have the whole mess for QCom SMMUv2 because the effective *implementation* is a mix of hardware and hypervisor, whose behaviour does seem to vary on almost a per-SoC basis. I'm not at all keen to start repeating that here without very good reason, and that of "documenting" a device which we typically expect to not even be accessible isn't really convincing me...
+> I have also thought about this but I don't think it's right. If we
+> removed dma_get_min_align_mask() from swiotlb_align_offset(), we would
+> always ask to preserve the lowest IO_TLB_SHIFT bits. This may cause
+> less efficient use of the SWIOTLB.
+> 
+> For example, if a device does not specify any min_align_mask, it is
+> presumably happy with any buffer alignment, so SWIOTLB may allocate at
+> the beginning of a slot, like here:
+> 
+> orig_addr   |      ++|++      |
+> tlb_addr    |++++    |        |
+> 
+> Without dma_get_min_align_mask() in swiotlb_align_offset(), it would
+> have to allocate two mostly-empty slots:
+> 
+> tlb_addr    |      ++|++      |
+> 
+> where:
+>   | mark a multiple of IO_TLB_SIZE (in physical address space)
+>   + used memory
+>     free memory
 
-From my POV as an arch dts maintainer, this often ends up being the only
-way to retroactively add some conditional action into the code - the kernel
-is supposed to be backwards compatible with older device trees.
+Thanks for the patient explanation. I'd got so caught up with the DMA
+alignment mask that I forgot the usual case where it's not specified at
+all!
 
-And so far it's been almost by luck that all of the smmuv3 implementations
-have been a straight copy-and-paste of the reference design (or close enough),
-I don't believe this will be for much longer.
-
-Konrad
+Will
