@@ -1,224 +1,187 @@
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2080.outbound.protection.outlook.com [40.107.93.80])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 888441C06;
-	Wed, 27 Mar 2024 16:42:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.93.80
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711557777; cv=fail; b=ORa18Vead7AyYKY0hfvqvEBwTlYAPKfsfESSVS+MkPHl7QNDF569wBXtd9OoVIbHhwsW54vN1vEIzKUBrmy/rOqQnvx8akiTEsH9dq3SwL5ogt6RovUceEHiThEXUFsnGDarbntLPQTMXe+/6nHNLmPf6LzB4jSYwXtoQ9i/FxU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711557777; c=relaxed/simple;
-	bh=N/aTnbAj7beEWJzkqSteIMO2704PeAmwc3FoYOD3MbU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=A1vDaI0Xgq3ZWYc9TF5iBY7QL82PUDBiw3utWnxjSZzNI1zFNRMJDNj3m/TkZzc2MgtPMEGlPc+39jcj+xFFBXdjOatQJqYBrA5UCHbKcqke230yUEWT9gkZp/firKJq6NffLowMPXlHRROwRKdFPXUBXO5pVcxvXXPQzDd9mgI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Vu/ACAvn; arc=fail smtp.client-ip=40.107.93.80
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2DF5130AFC
+	for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 17:15:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.181
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711559714; cv=none; b=px2nc3nkA7OFSnAVN3D4Dke2+A5cP9AAvN3FTBrK465xw47DremeDku93Wy1RIKy/hfEVEIsaEfK/9wEsni5xzZY1X0uX+0+0laS979xQgy4wZZyGNvQYvjCEXM04KTHT1GsnuSEsjvkesw3OBo91vUjIVel2kzIbYaapgriJtM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711559714; c=relaxed/simple;
+	bh=9tnsRuZ5G7QjnwFgOQWvg/3sPZordPoR8Q1151meHlI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iRxpodjs9FHlNVB1G9+NB5uWyq0DGLBI64TllqhpAITJM69nbifm71lULbsQyUYoH+QPlBz4lURRq91TtbVlAifIb7jZ/3Bv/2fJgiEocWNVLXhSgm30pGNW8oQlSk24rg70cQZEu5oF3gNW+Zrv0ryduFXuVJmhNVSV55NdsHc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hLFU3nEk; arc=none smtp.client-ip=209.85.167.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Vu/ACAvn"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U2Cg1MDQqGhrH/daPr+jcPW0LUUwH9Zg2pgy88pWW7e/1K/PwALUzyRrww3cJkIABUVVETnZLIgGb79QN/lyNYvwg9JNaaz60iClS+mczieD9FjjyBOiX4K9Elyom4RCPN6cyiQ3KxPiA9jHy0wYudQssp3W8WtEH0yaW0IHyJ5Y8p4cxuoX1MoJXBGc1EIawBD5/VzBzCxcm8R6HpmK49IXG2tl5UFIDbdV6ml5jdHbpVraaUrqPg4quWmNHc6aEgdappciCLUXf4hFykpNE8Nd2ra7TfjjbjjjSSDki/dwvKS54pKFpbvG12iE6HU4E3MEjqTsXU4OJcSurZy+Gw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dBYMtVj8WzKk2WV55QTynzdA6eh8syT1stetzHsyj0c=;
- b=QMxJotOKnzAXmU5ehKGUfOC8d6k9zhoC72syqgtpH/mH1g3v3H1SHPOmG0P6ggKmgqiHJdf7deDMhYHMZM8m7KUJsPCHBCwykI83v8X+0LPEGLkG+1/pdrAWCf/pgg7TXnbQananXV0Tovhq8TD+JHDZVqqmauNRxhBWbj1rodJwEOR4DW/mnoy8ur5HVm27M2Yl/w34/esrWQt+uLfQrMswdIZygpNOG30nMlJjaTIXdn7BLb+PUOREQY53Of8mGuzXos0u7vEfejPFxz+TbArVz5QVBdfW2JIHQj7xMTh6+DZ3yIJM91xIgRzwJh917BHqUYw3RC0YYcPuCtvyHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dBYMtVj8WzKk2WV55QTynzdA6eh8syT1stetzHsyj0c=;
- b=Vu/ACAvnm6xNzcMZiEWCGu1g9ZCLHg5EW8l791b2/hydYH3a+3w6WxHXBWntWnKXid6stcKDt9tloL4yYYcVTzpiGlVd0zF0OJ46bJKIMFlFDGgIGkNiM77Aceec/GA/0Pm8apOqxYxQ2smXh35advvXEBPipv/Y8vWaDEY9aX0jnLZIFCoXeYXklykSd8HN9HY235OF2Q9pAJRC5Sx197LTqSQsEwE/CAua5S+XaLpoBamXvXcI5JGFuugYvyg5gbqKshfO2sQaSJtXG4nqbU4s+PeQaK6Nwhqn+lR8Bs2hzUsnm6MRuhl1MMvR2dxmhlyg51vJcPvT7B1YZyKaRA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by IA1PR12MB7686.namprd12.prod.outlook.com (2603:10b6:208:422::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.31; Wed, 27 Mar
- 2024 16:42:52 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7409.031; Wed, 27 Mar 2024
- 16:42:52 +0000
-Date: Wed, 27 Mar 2024 13:42:51 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Mostafa Saleh <smostafa@google.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Moritz Fischer <mdf@kernel.org>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v5 05/27] iommu/arm-smmu-v3: Make CD programming use
- arm_smmu_write_entry()
-Message-ID: <20240327164251.GL946323@nvidia.com>
-References: <0-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
- <5-v5-9a37e0c884ce+31e3-smmuv3_newapi_p2_jgg@nvidia.com>
- <Zf7S109OKJlRVXiR@google.com>
- <20240326183055.GL6245@nvidia.com>
- <ZgMeNZP08aZu-nVe@google.com>
- <20240326222758.GB946323@nvidia.com>
- <ZgPqnzA_a4ZdYGXM@google.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ZgPqnzA_a4ZdYGXM@google.com>
-X-ClientProxiedBy: MN2PR04CA0016.namprd04.prod.outlook.com
- (2603:10b6:208:d4::29) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hLFU3nEk"
+Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-3bd4e6a7cb0so46850b6e.3
+        for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 10:15:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1711559712; x=1712164512; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=MyfMHWP1Z5kFosJnJ/cLT9vrDNlc6F3RpHcMzwkJjx8=;
+        b=hLFU3nEkq2wZkQI9iYrCPo8uffcj8FaGd6OYTIwmgq/AvEatgEQ9JvD2MncngrrOI4
+         36Yat/i2OtMBgq8/LWCMKx/TW5DWPYzEoqhhmq/QrNrrnb1wW0YZUlWKFWS86YkFxDrj
+         ZCbbBsZyk27QoniNzp64Q3lpSx6avyv/b+dtwhIYzMCFpsTgeT/e8I0eSqaxzQNoIKpq
+         ZOdPX2ks1aIiGaaCQDS/kiLWkB1fEZk5O7k7ovNj0KTXTNFFDsgCDyr7pxi/7BMao4Bq
+         R7qmcjr+fXb2/acXfM4DQK8HEurAsPCPCGtoryJBxX79+3ovvuNoAhH4LSD6CkNE9cMT
+         ba6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711559712; x=1712164512;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MyfMHWP1Z5kFosJnJ/cLT9vrDNlc6F3RpHcMzwkJjx8=;
+        b=cprYKe79UxQMuAoQgO67yaA5xFXJlWPLfGTQCo9H8MeEpNkQkBJu6ZxeSIpHJY8+ox
+         aPY1uIy0XyQNi6mFbj8DcFvmjPht92SBdHju/nh2xrJX/TMHqXa/N8VdqgfdBvFBsaCW
+         9oIPv20BgGZeIaBDjm4nLKcTLREK0chbAkfpk+uACvDfOLxNOtG1pKfbeEE9odqLGh67
+         Byr+eB1TZoalAQOil9oS8Zav+e4wr9nOFg6JQ/gUSJbGSHYUTUMHXT249u/gU3BCW5SH
+         dwnyzKWfHT6Bot8YOU9cKZHXIFzaQMcqRjzs4QeoF/E/YkG894ifTDeJdZVHTPk+Rgk2
+         kutQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVl7qmj/xsQ2ZXAKSAMf8GR/c9lP9BYVBufCpkFkLg6MnNARtClmHywzVX9M8NsoAuWTMAKmGcisHi1hccDgfe2/HRQOko=
+X-Gm-Message-State: AOJu0YwHR3Ms6YPzuwXd3ZnVIMtbA5IyYz7iNbWBsUX6qWDGCkgFLce1
+	vyZJObBF1kCNnOgwph44wNBgCe2qj7Yrj/1ZnHjaNkq7AlXi96aBivEs3AS2No8=
+X-Google-Smtp-Source: AGHT+IGQ+Fbz7qR1SW5qNkJYopwwdBYDjEYKQNSO/4NiABanB9dU3kXOL1kwvcUdEQ/e1ORbwkUJTQ==
+X-Received: by 2002:a05:6808:64b:b0:3c3:d56d:a5dd with SMTP id z11-20020a056808064b00b003c3d56da5ddmr357972oih.18.1711559712027;
+        Wed, 27 Mar 2024 10:15:12 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id kd9-20020a056214400900b00696b117a325sm499925qvb.108.2024.03.27.10.14.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Mar 2024 10:14:48 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rpWr2-005ajV-OE;
+	Wed, 27 Mar 2024 14:14:24 -0300
+Date: Wed, 27 Mar 2024 14:14:24 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Christoph Hellwig <hch@lst.de>
+Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
+	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Bart Van Assche <bvanassche@acm.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Amir Goldstein <amir73il@gmail.com>,
+	"josef@toxicpanda.com" <josef@toxicpanda.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"daniel@iogearbox.net" <daniel@iogearbox.net>,
+	Dan Williams <dan.j.williams@intel.com>,
+	"jack@suse.com" <jack@suse.com>, Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two steps
+Message-ID: <20240327171424.GI8419@ziepe.ca>
+References: <20240307000036.GP9225@ziepe.ca>
+ <20240307150505.GA28978@lst.de>
+ <20240307210116.GQ9225@ziepe.ca>
+ <20240308164920.GA17991@lst.de>
+ <20240308202342.GZ9225@ziepe.ca>
+ <20240309161418.GA27113@lst.de>
+ <20240319153620.GB66976@ziepe.ca>
+ <20240321223910.GA22663@lst.de>
+ <20240322184330.GL66976@ziepe.ca>
+ <20240324232215.GC20765@lst.de>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|IA1PR12MB7686:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3569f967-c005-4b04-719d-08dc4e7cf1d5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	WcjGtnKCrbFe44hIu1jL0oMrCyzBqJUJasOTFi4hc0pBNgObTPgDDTLTOEUscV27/3cZwNBT4koaoWUENyXRAEwRJbfeuZOjvcOBnArnx45146si96PqnIzM0jJ00yl6TUadK1j3U2YGTPxr53BhYXd6nD8aykjRlCR15LRMjm3OqnKwIVje81NYxDTGerRSg7OSGrX8RWJA6m9KxoNms/EkvHqlyRrm1dPrely1MiXFqSTotkoHMpBsqk5vBZ4jZoWTBc27j3cg2KsmlXE945FxH70K9C2/RDJvlK7LzLS5w1ecpm5UtsiykCyNBgzNUUG/qLzRlbyJ9H0Jj76RRYt3Xq/oazbhwVsmHdm4LkPVkP58CLIA7Cy2UCydPYahXdMcYlOV2iYqjWMm5H/2fEAWmAbvd9r7Xxt5dIXjiodrIFq1sMkIcqGktpRtZWwzpoXoMyLJGLZPAq+YKDbCR0adUxPv4cjp3ViLvtV5Loa6NI4WqgEkxGm+weZN4bOEy1VGV+zpu/N3QMBRZSrdX8L3xRcCzAdufbApDHvmN8Y3xxGaFhWp9/FEow+V/RpG4cbN3oVJs4D5pBPSvpkjA7tWpwnu6Z/CejM4RwQlDbGAWdISCOJ5dAkcz9MkeL/SaVx8lRmOr1rNLbH40StZHA==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7416005)(376005)(1800799015)(366007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?BeLeRcLGjrcTCrAim0StBFJ+FosxLCGq8p6Yp4bOKKlmOxIDSkjuVB/OWlgH?=
- =?us-ascii?Q?m38c5vf0A5Biao8TpV5JpWQTgMXp9ZdISyhRO6MZVcpA9XBpSIgwjzMpzFsy?=
- =?us-ascii?Q?aNJv4evZXVgsM4K+KyTikADsRDhuBe0bYet2BELPYXXezy7gGsIvMEFyBF50?=
- =?us-ascii?Q?O7wUiQSSW4Q+rdGLwhixKcWJa62M1WqcSO6sz4NsMtvU5xTBdlhKGpg2jpwR?=
- =?us-ascii?Q?odCuZtFyeUOsC4AyQDu/bJ2PzGQL8VmbQKevDcjPiDQrw/AgfdqB3tfyYA1n?=
- =?us-ascii?Q?ws9lBxN2cYKXo5FvclxlbAMr7yap2DWUeDXLjESK7W18DPCA8d3KUZYMc5oc?=
- =?us-ascii?Q?4sqSmkJ5xSqQRiR/OWx6FqVWTYvVJ4JXSkmhBQzz9dD841uBpM9RENL3+o7c?=
- =?us-ascii?Q?n+jJ08Pl+RmXhOjjqSF3AEgyhsKp+9mUyO8G8nNToaJOXCjE85+wClge7zzG?=
- =?us-ascii?Q?8ewauG6ZlVSnOtlJTlal67Hmr27uviMHZCCLju6ZkTSj/M5z8RoeQKd7tbBA?=
- =?us-ascii?Q?zRHECMfNcDWtN3fOKyXr+vxpE76umKp7Gibq4tvvFb1bDo1th1ZzMHII14mI?=
- =?us-ascii?Q?DUVfWk1mjK7mOJJfE8Hx7lDPe3i8foSlNOc4B5ylKwQCkURKR4Vhy7IEBi2k?=
- =?us-ascii?Q?l5p/B1tFRnIQbR24xlpkM5FgQH1RtMXW2o4yeBs+Bp06BE9B1A88Sna0W4EG?=
- =?us-ascii?Q?WFni29px+oYoqwdqcaccGnXPo9hguKWdvRAlKMlrUX/5hE2hrkkyP85wKUHM?=
- =?us-ascii?Q?1RAMpXSriMWpsIEiAjBUAsmsKFRJWkLLSKeAWS70Ke4WCB9xqgqW1yrHpVUh?=
- =?us-ascii?Q?fJOsi/3R0tdjc3O63egdZ3Xqztvbk8QBPVA6fUhUinhZ/vZDUxy8tADoNSfs?=
- =?us-ascii?Q?O62Are6tUDjc7Y/f5bqEaVCM2TclJSHPvA4t4lVqS76Eek7qHP1MoFX3NNKD?=
- =?us-ascii?Q?j27nCmof/4fO1nvZh/tAny81bVs/IgFJKyquGqdrUUQ3zmheUde4JW6ByXEw?=
- =?us-ascii?Q?xm+cOkBIAl0ctoswNWWJciu1HLpCiWdCkEA0A2OqrdDAB5fzNLWfBwgiUV2x?=
- =?us-ascii?Q?YtPKgZYU6cqw7LtbCvuyfzy6dgPv/tLl3OW6EKbM7VQo+FAliAuFg+ee5gb9?=
- =?us-ascii?Q?4qeGOkxFFXJ5PgHY5do9UILiXzqMhfxWOwgO+kXyMYKkvZQv9+6fEPEaOyAM?=
- =?us-ascii?Q?p/lxonBeFkPrjCIK0c3COzFS8HhZEO1nlZ4YHWfOoVSSz009KuyVa0IkWLrG?=
- =?us-ascii?Q?lmsScbyEqzfaThz0A+b5Cyw3V+w4QpNIewdQaO+IrZT2oq7Sa1XT4F/k/8Iv?=
- =?us-ascii?Q?ZK3tpv7irMWt0WxDLUFmOto2V089RnDZQYOibestA6XL7I9MNrwDHrg9soxR?=
- =?us-ascii?Q?mj1OiNM8qoz+Wi22aHGWvtZnSnMioZNpfE/eDO/Hov805BvOThRK4B+yeQFj?=
- =?us-ascii?Q?GlK1Wq29EO2nMB+eKXtVwoRoIRLh+XsNGpxHj63efDb03oussqDe/ExAssBb?=
- =?us-ascii?Q?akZ+dYNrOae9dWWarcy63R+F0lC4LJXM8yk8nV5dU8TyONpqo6JTQNimOs7j?=
- =?us-ascii?Q?VXpr3sNG79yzJ1dqt2uisQzIeLV+T2ZRMhBNiFLN?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3569f967-c005-4b04-719d-08dc4e7cf1d5
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2024 16:42:52.1281
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GgD1m18OiEa8JQQuF4iNpFpZLOe+iUzpSifp4TTn+IqTDYZGM6nSbJuXDOuQpmpk
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB7686
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240324232215.GC20765@lst.de>
 
-On Wed, Mar 27, 2024 at 09:45:03AM +0000, Mostafa Saleh wrote:
-> On Tue, Mar 26, 2024 at 07:27:58PM -0300, Jason Gunthorpe wrote:
-> > On Tue, Mar 26, 2024 at 07:12:53PM +0000, Mostafa Saleh wrote:
-> > > On Tue, Mar 26, 2024 at 03:30:55PM -0300, Jason Gunthorpe wrote:
-> > > > On Sat, Mar 23, 2024 at 01:02:15PM +0000, Mostafa Saleh wrote:
-> > > > > > +static void arm_smmu_get_cd_used(const __le64 *ent, __le64 *used_bits)
-> > > > > > +{
-> > > > > > +	used_bits[0] = cpu_to_le64(CTXDESC_CD_0_V);
-> > > > > > +	if (!(ent[0] & cpu_to_le64(CTXDESC_CD_0_V)))
-> > > > > > +		return;
-> > > > > > +	memset(used_bits, 0xFF, sizeof(struct arm_smmu_cd));
-> > > > > 
-> > > > > This is a slightly different approach than what the driver does for STEs,
-> > > > > where it explicitly sets the used bits. Is there a reason for that?
-> > > > 
-> > > > It is just more compact this way
-> > > 
-> > > IMHO, it seems too much to have this mechanism for CDs for just one
-> > > SVA case, but I'll need to go through the whole seires first to make
-> > > sure I am not missing anything.
+On Mon, Mar 25, 2024 at 12:22:15AM +0100, Christoph Hellwig wrote:
+> On Fri, Mar 22, 2024 at 03:43:30PM -0300, Jason Gunthorpe wrote:
+> > If we are going to make caller provided uniformity a requirement, lets
+> > imagine a formal memory type idea to help keep this a little
+> > abstracted?
 > > 
-> > It is pretty ugly if you try to do it that way. You still need to
-> > create some ops because the entry_set should be re-used (I mean I
-> > guess you could copy it as well). Then you have to open code the
-> > logic. And then the EPD0 path is somewhat fragile. Something sort of
-> > like this:
+> >  DMA_MEMORY_TYPE_NORMAL
+> >  DMA_MEMORY_TYPE_P2P_NOT_ACS
+> >  DMA_MEMORY_TYPE_ENCRYPTED
+> >  DMA_MEMORY_TYPE_BOUNCE_BUFFER  // ??
 > > 
-> > void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
-> > 			     struct arm_smmu_cd *cdptr,
-> > 			     const struct arm_smmu_cd *target)
-> > {
-> > 	bool target_valid = target->data[0] & cpu_to_le64(CTXDESC_CD_0_V);
-> > 	bool cur_valid = cdptr->data[0] & cpu_to_le64(CTXDESC_CD_0_V);
-> > 	struct arm_smmu_cd_writer cd_writer = {
-> > 		.writer = {
-> > 			.ops = &arm_smmu_cd_writer_ops,
-> > 			.master = master,
-> > 		},
-> > 		.ssid = ssid,
-> > 	};
+> > Then maybe the driver flow looks like:
 > > 
-> > 	if (ssid != IOMMU_NO_PASID && cur_valid != target_valid) {
-> > 		if (cur_valid)
-> > 			master->cd_table.used_ssids--;
-> > 		else
-> > 			master->cd_table.used_ssids++;
-> > 	}
-> > 
-> > 	/* Force a V=0/V=1 update*/
-> > 	__le64 update = target[0] & ~cpu_to_le64(CTXDESC_CD_0_V);
-> > 	entry_set(&cd_writer.writer, cdptr->data, &update, 0, 1);
-> > 	entry_set(&cd_writer.writer, cdptr->data, target->data, 1, NUM_ENTRY_QWORDS - 1);
-> > 	entry_set(&cd_writer.writer, cdptr->data, target->data, 0, 1);
-> > }
-> > 
-> > void arm_smmu_write_cd_entry_epd0(struct arm_smmu_master *master, int ssid,
-> > 				  struct arm_smmu_cd *cdptr,
-> > 				  const struct arm_smmu_cd *target)
-> > {
-> > 	struct arm_smmu_cd_writer cd_writer = {
-> > 		.writer = {
-> > 			.ops = &arm_smmu_cd_writer_ops,
-> > 			.master = master,
-> > 		},
-> > 		.ssid = ssid,
-> > 	};
-> > 
-> > 	/*
-> > 	 * Target must the EPD0 = 1 version of the existing CD entry, caller
-> > 	 * must enforce it. Assume used_ssids doesn't need updating
-> > 	 * for this reason.
-> > 	 */
-> > 	/* Update EPD0 */
-> > 	entry_set(&cd_writer.writer, cdptr->data, target->data, 0, 1);
-> > 	/* Update everthing else */
-> > 	entry_set(&cd_writer.writer, cdptr->data, target->data, 0, NUM_ENTRY_QWORDS - 1);
-> > }
-> > 
-> > IMOH, at this point it is saner to have just implemented the used
-> > function and use the mechanism robustly. Less special cases, less
-> > fragility, less duplication.
-> > 
+> > 	if (transaction.memory_type == DMA_MEMORY_TYPE_NORMAL && dma_api_has_iommu(dev)) {
 > 
-> But that adds extra cost of adding ops, indirection, modifying STE
-> code..., for a case that is not common, so I think special casing it
-> is actually better for readability and maintainability.
+> Add a nice helper to make this somewhat readable, but yes.
+> 
+> > 	} else if (transaction.memory_type == DMA_MEMORY_TYPE_P2P_NOT_ACS) {
+> > 		num_hwsgls = transcation.num_sgls;
+> > 		for_each_range(transaction, range) {
+> > 			hwsgl[i].addr = dma_api_p2p_not_acs_map(range.start_physical, range.length, p2p_memory_provider);
+> > 			hwsgl[i].len = range.size;
+> > 		}
+> > 	} else {
+> > 		/* Must be DMA_MEMORY_TYPE_NORMAL, DMA_MEMORY_TYPE_ENCRYPTED, DMA_MEMORY_TYPE_BOUNCE_BUFFER? */
+> > 		num_hwsgls = transcation.num_sgls;
+> > 		for_each_range(transaction, range) {
+> > 			hwsgl[i].addr = dma_api_map_cpu_page(range.start_page, range.length);
+> > 			hwsgl[i].len = range.size;
+> > 		}
+> >
+> 
+> And these two are really the same except that we call a different map
+> helper underneath.  So I think as far as the driver is concerned
+> they should be the same, the DMA API just needs to key off the
+> memory tap.
 
-The above is what the special case would have to look like. This
-programming work is not trivial. The programmer code was always
-intended to be re-used for the CD and STE together so there is only
-one logic, not two or three copies.
+Yeah.. If the caller is going to have compute the memory type of the
+range then lets pass it to the helper
 
-Reducing duplicated logic in such a tricky area is worth it, IMHO.
+dma_api_map_memory_type(transaction.memory_type, range.start_page, range.length);
 
+Then we can just hide all the differences under the API without doing
+duplicated work.
+
+Function names need some work ...
+
+> > > > So I take it as a requirement that RDMA MUST make single MR's out of a
+> > > > hodgepodge of page types. RDMA MRs cannot be split. Multiple MR's are
+> > > > not a functional replacement for a single MR.
+> > > 
+> > > But MRs consolidate multiple dma addresses anyway.
+> > 
+> > I'm not sure I understand this?
+> 
+> The RDMA MRs take a a list of PFNish address, (or SGLs with the
+> enhanced MRs from Mellanox) and give you back a single rkey/lkey.
+
+Yes, that is the desire.
+ 
+> > To go back to my main thesis - I would like a high performance low
+> > level DMA API that is capable enough that it could implement
+> > scatterlist dma_map_sg() and thus also implement any future
+> > scatterlist_v2, bio, hmm_range_fault or any other thing we come up
+> > with on top of it. This is broadly what I thought we agreed to at LSF
+> > last year.
+> 
+> I think the biggest underlying problem of the scatterlist based
+> DMA implementation for IOMMUs is that it's trying to handle to much,
+> that is magic coalescing even if the segments boundaries don't align
+> with the IOMMU page size.  If we can get rid of that misfeature I
+> think we'd greatly simply the API and implementation.
+
+Yeah, that stuff is not easy at all and takes extra computation to
+figure out. I always assumed it was there for block...
+
+Leon & Chaitanya will make a RFC v2 along these lines, lets see how it
+goes.
+
+Thanks,
 Jason
