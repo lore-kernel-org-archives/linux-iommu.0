@@ -1,193 +1,210 @@
-Received: from luna.linkmauve.fr (luna.linkmauve.fr [82.65.109.163])
+Received: from mail-lj1-f173.google.com (mail-lj1-f173.google.com [209.85.208.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F108B12EBF6
-	for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 12:40:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=82.65.109.163
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6909A144D13
+	for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 12:41:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711543227; cv=none; b=Q/gNXsFYBRmUHC/1RP7Mew+t02VmwN1LfJcfYYobhmwvH7lATQCFlfFFX0jWmK5aPoqzYVrSwau6o5Um3aogOllbUe06rUP2YF2VrvUe0CIJtoRODWS9fX1+eKb84Rw74wd/z8KZNjEykHdMae6Dr1uNwQroyzC9H4dar/gwUw0=
+	t=1711543303; cv=none; b=HJAoyjNNovu20QnNFW+rMMD/WZHcMMKdQQ8B/65t0vOBiSlrRxsIbLrPpJ4WZ9TX/ebbksxk60eWpZZR+4MQcOi0foanFV/hWPfeP/KvtOGOrZvrDnKKZ/aK09WWvLgM76l57qHPPTQBaw7YgwumeEL03uep3X5cHFszRdOLPwY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711543227; c=relaxed/simple;
-	bh=CTTAq3BkhgMsFNfaZctwV7dwPAN7MSkPKrtMZ4zwGFY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UGumNKWONYBnhHTFnHBMf5qg67jFMAG738AkVKLtdc9MiAJ9tXkXXwy70JTF9Tj8PAAaeNlPwQkE79SVZ6SipADKswXF2Cc6fsN5vyEctrovw6XHV3Ahcr1tzXTO8KxLLzioBrJnhYRSBGIqFvMxpLYtQ2ARjewY5LyiK1Pr6GA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr; spf=pass smtp.mailfrom=linkmauve.fr; arc=none smtp.client-ip=82.65.109.163
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linkmauve.fr
-Received: by luna.linkmauve.fr (Postfix, from userid 1000)
-	id F19C3101A8A5; Wed, 27 Mar 2024 13:40:15 +0100 (CET)
-Date: Wed, 27 Mar 2024 13:40:15 +0100
-From: Link Mauve <linkmauve@linkmauve.fr>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-	linux-kernel@vger.kernel.org,
-	Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
-	Dragan Simic <dsimic@manjaro.org>,
-	Shreeya Patel <shreeya.patel@collabora.com>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Andy Yan <andy.yan@rock-chips.com>,
-	Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-	linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: Re: [PATCH 3/4] arm64: dts: rockchip: Add VEPU121 to rk3588
-Message-ID: <ZgQTrwOUtdZ1nRs0@desktop>
-References: <20240320173736.2720778-1-linkmauve@linkmauve.fr>
- <20240320173736.2720778-4-linkmauve@linkmauve.fr>
- <a60f6017-bd19-431e-8cff-7d73f6f114fe@linaro.org>
+	s=arc-20240116; t=1711543303; c=relaxed/simple;
+	bh=ZqxqBePx9O0aSeYwWfac5JC18N8WH4wazKZPUDWtyb4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=q4dWkbC/+RBkmBC+qnTRkmbEmEmGCgvQuOJvqOLBLII2M1szX4IAXYQHv9skE2oEc9IZRAurVwv/cDt+q01LZGecsXyZHYnuqmOdYv5SorebHiLGV4TQsIb5AUhqzOJqbBisDpMz2xelqtSI/m1ippmmBJ106nvhvHO+YkuQFQ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=WmTj86bT; arc=none smtp.client-ip=209.85.208.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WmTj86bT"
+Received: by mail-lj1-f173.google.com with SMTP id 38308e7fff4ca-2d485886545so116599481fa.2
+        for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 05:41:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1711543298; x=1712148098; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=AFaFw1OZuXizkw4uNoNpzMqxfCxSvA28jWrn6rdqU5M=;
+        b=WmTj86bTLfl1Tzlh25M1ZmXMUUAQ73EnhTPDLSNzucQyISVfrIG/RXNbgbiCIeFtcD
+         DHr8r6RCHt6VDNKDv+47isF19/FRYji17WTzUs0lotXN2Y/3Cdc3ViU3bnAWICKwnYgn
+         YmZgoVpz7GnXq9Rl6fHYmHrMMWj/Kt1GIFfn3mcxxJslgz00CBIi4AgwxmnwBWnOKjCk
+         6YoYcYGtBycrlxWoQQk/xuGikXyKLFhy4EasJkMPeOwkPtqHyrQJqJxl4tve2MaRN6BH
+         izniqhEXK8rbAJgnYk/IKSsS1/KfZrjhWFDIuBs6KNf5gc8J8C4TGlpkNMFDTVzDWUOz
+         gxZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711543298; x=1712148098;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AFaFw1OZuXizkw4uNoNpzMqxfCxSvA28jWrn6rdqU5M=;
+        b=UjdftZpfxdOcXNI6EKXHk5GWesmx9yragFZrvC3CVVa1nk4CoSCEVs2b1l5gIXnp+w
+         6ei5p1qWIZXKvA0VLBwcMoANerGMn0MKM0rxEiI+QYyuaCfS5B1cz8lNZXjtvMZB4op7
+         /hX7LfyD9ityRHFQE5P+YuBba2VirX4Gkz6U5UG3xSDA41XytDCL0quse0ebqJuTngn7
+         +dILTTEc00zr9n5dip9Mg9Hz8gDAc4TUFwS7qk4msPdu7MlYzRBfnMWb1xvGzL00QOP2
+         +tnUzXwW9YSScnwVwUKKuruZJ4Xms7RtXPijDyvIoDT+6tHignDvwBm/ii6seJ35JhH0
+         dKcw==
+X-Forwarded-Encrypted: i=1; AJvYcCWm3pPCWoQRkxyer4CdCj5RW5ekH1IXErZ5ZBmeXhEIKrw2GoqVcuM9SNK2PIdA5GTEq7Y0xFUXhX9Uj/66rxcUkj39SUc=
+X-Gm-Message-State: AOJu0YyMCIKo2wUKXdFOJWPawPiMut2HYNq+p+xh7cwP8UMjLJEXUu0i
+	BVlkSXuuvI5cGJaMWMxaqvsaXFvLTXTtRzuvsksAW0urfYKmeqCwpEgo9xKRc5o=
+X-Google-Smtp-Source: AGHT+IFS1x7gpjA7jUKSh2w40PflGxs4LWIU8D0QvTuDe3IphcKfLGKJ6nGMGd9SaTSRJh693GFsRg==
+X-Received: by 2002:a2e:3a1a:0:b0:2d6:e148:2463 with SMTP id h26-20020a2e3a1a000000b002d6e1482463mr2074785lja.24.1711543298562;
+        Wed, 27 Mar 2024 05:41:38 -0700 (PDT)
+Received: from [127.0.1.1] ([178.197.206.205])
+        by smtp.gmail.com with ESMTPSA id gx16-20020a170906f1d000b00a4707ec7c34sm5379175ejb.166.2024.03.27.05.41.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Mar 2024 05:41:38 -0700 (PDT)
+From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 00/22] virtio: store owner from modules with
+ register_virtio_driver()
+Date: Wed, 27 Mar 2024 13:40:53 +0100
+Message-Id: <20240327-module-owner-virtio-v1-0-0feffab77d99@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="vIGEYjDZeTRTEtgU"
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <a60f6017-bd19-431e-8cff-7d73f6f114fe@linaro.org>
-Jabber-ID: linkmauve@linkmauve.fr
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIANUTBGYC/x3MSQqAMAxA0atI1gY0dQCvIi4coga0ldQJxLtbX
+ L7F/w94VmEPVfSA8ilenA1I4wj6ubUTowzBQAlliaESVzccC6O7LCueors4zLOiLExn+pYIQrk
+ pj3L/17p53w9578lCZQAAAA==
+To: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, 
+ Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Richard Weinberger <richard@nod.at>, 
+ Anton Ivanov <anton.ivanov@cambridgegreys.com>, 
+ Johannes Berg <johannes@sipsolutions.net>, 
+ Paolo Bonzini <pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, 
+ Jens Axboe <axboe@kernel.dk>, Marcel Holtmann <marcel@holtmann.org>, 
+ Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
+ Olivia Mackall <olivia@selenic.com>, 
+ Herbert Xu <herbert@gondor.apana.org.au>, Amit Shah <amit@kernel.org>, 
+ Arnd Bergmann <arnd@arndb.de>, 
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 
+ Gonglei <arei.gonglei@huawei.com>, "David S. Miller" <davem@davemloft.net>, 
+ Viresh Kumar <vireshk@kernel.org>, Linus Walleij <linus.walleij@linaro.org>, 
+ Bartosz Golaszewski <brgl@bgdev.pl>, David Airlie <airlied@redhat.com>, 
+ Gerd Hoffmann <kraxel@redhat.com>, 
+ Gurchetan Singh <gurchetansingh@chromium.org>, 
+ Chia-I Wu <olvaffe@gmail.com>, 
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, 
+ Joerg Roedel <joro@8bytes.org>, Alexander Graf <graf@amazon.com>, 
+ Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, 
+ Paolo Abeni <pabeni@redhat.com>, Eric Van Hensbergen <ericvh@kernel.org>, 
+ Latchesar Ionkov <lucho@ionkov.net>, 
+ Dominique Martinet <asmadeus@codewreck.org>, 
+ Christian Schoenebeck <linux_oss@crudebyte.com>, 
+ Stefano Garzarella <sgarzare@redhat.com>, Kalle Valo <kvalo@kernel.org>, 
+ Dan Williams <dan.j.williams@intel.com>, 
+ Vishal Verma <vishal.l.verma@intel.com>, Dave Jiang <dave.jiang@intel.com>, 
+ Ira Weiny <ira.weiny@intel.com>, 
+ Pankaj Gupta <pankaj.gupta.linux@gmail.com>, 
+ Bjorn Andersson <andersson@kernel.org>, 
+ Mathieu Poirier <mathieu.poirier@linaro.org>, 
+ "Martin K. Petersen" <martin.petersen@oracle.com>, 
+ Vivek Goyal <vgoyal@redhat.com>, Miklos Szeredi <miklos@szeredi.hu>, 
+ Anton Yakovlev <anton.yakovlev@opensynergy.com>, 
+ Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc: virtualization@lists.linux.dev, linux-doc@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-um@lists.infradead.org, 
+ linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org, 
+ linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
+ linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org, 
+ iommu@lists.linux.dev, netdev@vger.kernel.org, v9fs@lists.linux.dev, 
+ kvm@vger.kernel.org, linux-wireless@vger.kernel.org, nvdimm@lists.linux.dev, 
+ linux-remoteproc@vger.kernel.org, linux-scsi@vger.kernel.org, 
+ linux-fsdevel@vger.kernel.org, alsa-devel@alsa-project.org, 
+ linux-sound@vger.kernel.org, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.13.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3506;
+ i=krzysztof.kozlowski@linaro.org; h=from:subject:message-id;
+ bh=ZqxqBePx9O0aSeYwWfac5JC18N8WH4wazKZPUDWtyb4=;
+ b=owEBbQKS/ZANAwAKAcE3ZuaGi4PXAcsmYgBmBBPZS5yGoH1UVP3T0Npm8blJRoVKIHSae5kBq
+ HxYGiIbwMaJAjMEAAEKAB0WIQTd0mIoPREbIztuuKjBN2bmhouD1wUCZgQT2QAKCRDBN2bmhouD
+ 12zhD/9C6ukv+8iXJ63iu65KAxWO0209no/Zk8V5PPOIg8YWF23fhUh5Tg2IbxFs1SDSIqOKCGf
+ 078xrARdl7OLN91lsOjjrbjnZZrO+3UXwHxBg6rRfwtkp+kgAzLzR84hoSWqyqlq+JpiqE73Ex1
+ fNyOEu1Il2sVbtLvNN9ZvBBGDNN/h7JC9ywVxJ0Fa0LD8kwtsV8pUIgsVva8ILQKkMQBTP09QPM
+ 7DW97OEmYao/IN0z9JQ8xmwCXf08ciDibfQZ884ZF4dVW/paLFkgw4OyR+22WTqneeBTsJKdlH1
+ Os9//BH9zlvxyZG6vpAg3g6NvH7MxigyNbztqSw7Uqw1jx1u1032qs/yjWHbs7c4pNm32w5Sc2U
+ BWMIQlsiyt2Gg33SxWybhDqMfp72LBlT04SmQHYDlMTlPA4vvgeUK/H/oYmg/uzy5MM/kx9WGtR
+ pNCFFDPI2B6EAqAvrzZWEGv2PVNujF5tHSLKVqxYwXHWIDIqg8LnCgQeizyqp/tqjoQFY7vGlzI
+ B3wE5riIQuaCN41Id+3PH7pVc6tEQlepaRhz7jRIFh+JEA53CORhQ62m1PpLMq7z8zNhn+Igsh+
+ AB69huA3C3eKILpuFw33OXJybFczTX0Vd0F95nDwyWCahIwaUlrRfoO1JQlJFdOgChtyx0ws9Uf
+ xOnSxyBfnZ9hbow==
+X-Developer-Key: i=krzysztof.kozlowski@linaro.org; a=openpgp;
+ fpr=9BD07E0E0C51F8D59677B7541B93437D3B41629B
 
+Merging
+=======
+All further patches depend on the first virtio patch, therefore please ack
+and this should go via one tree: virtio?
 
---vIGEYjDZeTRTEtgU
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Description
+===========
+Modules registering driver with register_virtio_driver() often forget to
+set .owner field.
 
-On Thu, Mar 21, 2024 at 09:15:38AM +0100, Krzysztof Kozlowski wrote:
-> On 20/03/2024 18:37, Emmanuel Gil Peyrot wrote:
-> > The TRM (version 1.0 page 385) lists five VEPU121 cores, but only four
-> > interrupts are listed (on page 24), so I’ve only enabled four of them
-> > for now.
-> > 
-> > Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
-> > ---
-> >  arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 80 +++++++++++++++++++++++
-> >  1 file changed, 80 insertions(+)
-> > 
-> > diff --git a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-> > index 2a23b4dc36e4..fe77b56ac9a0 100644
-> > --- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-> > +++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-> > @@ -2488,6 +2488,86 @@ gpio4: gpio@fec50000 {
-> >  		};
-> >  	};
-> >  
-> > +	jpeg_enc0: video-codec@fdba0000 {
-> > +		compatible = "rockchip,rk3588-vepu121";
-> > +		reg = <0x0 0xfdba0000 0x0 0x800>;
-> > +		interrupts = <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH 0>;
-> > +		clocks = <&cru ACLK_JPEG_ENCODER0>, <&cru HCLK_JPEG_ENCODER0>;
-> > +		clock-names = "aclk", "hclk";
-> > +		iommus = <&jpeg_enc0_mmu>;
-> > +		power-domains = <&power RK3588_PD_VDPU>;
-> > +	};
-> > +
-> > +	jpeg_enc0_mmu: iommu@fdba0800 {
-> > +		compatible = "rockchip,rk3588-iommu";
-> 
-> It does not look like you tested the DTS against bindings. Please run
-> `make dtbs_check W=1` (see
-> Documentation/devicetree/bindings/writing-schema.rst or
-> https://www.linaro.org/blog/tips-and-tricks-for-validating-devicetree-sources-with-the-devicetree-schema/
-> for instructions).
+Solve the problem by moving this task away from the drivers to the core
+amba bus code, just like we did for platform_driver in commit
+9447057eaff8 ("platform_device: use a macro instead of
+platform_driver_register").
 
-Even on master I get an exception about this unresolvable file:
-referencing.exceptions.Unresolvable: cache-controller.yaml#
+Best regards,
+Krzysztof
 
-Yet it seems to be present in only three files, all of them unrelated to
-the rockchip board I’m interested in (it seems), so I’m not sure what to
-do about that.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+Krzysztof Kozlowski (22):
+      virtio: store owner from modules with register_virtio_driver()
+      um: virt-pci: drop owner assignment
+      virtio_blk: drop owner assignment
+      bluetooth: virtio: drop owner assignment
+      hwrng: virtio: drop owner assignment
+      virtio_console: drop owner assignment
+      crypto: virtio - drop owner assignment
+      firmware: arm_scmi: virtio: drop owner assignment
+      gpio: virtio: drop owner assignment
+      drm/virtio: drop owner assignment
+      iommu: virtio: drop owner assignment
+      misc: nsm: drop owner assignment
+      net: caif: virtio: drop owner assignment
+      net: virtio: drop owner assignment
+      net: 9p: virtio: drop owner assignment
+      net: vmw_vsock: virtio: drop owner assignment
+      wireless: mac80211_hwsim: drop owner assignment
+      nvdimm: virtio_pmem: drop owner assignment
+      rpmsg: virtio: drop owner assignment
+      scsi: virtio: drop owner assignment
+      fuse: virtio: drop owner assignment
+      sound: virtio: drop owner assignment
 
-The full stack trace is attached.
+ Documentation/driver-api/virtio/writing_virtio_drivers.rst | 1 -
+ arch/um/drivers/virt-pci.c                                 | 1 -
+ drivers/block/virtio_blk.c                                 | 1 -
+ drivers/bluetooth/virtio_bt.c                              | 1 -
+ drivers/char/hw_random/virtio-rng.c                        | 1 -
+ drivers/char/virtio_console.c                              | 2 --
+ drivers/crypto/virtio/virtio_crypto_core.c                 | 1 -
+ drivers/firmware/arm_scmi/virtio.c                         | 1 -
+ drivers/gpio/gpio-virtio.c                                 | 1 -
+ drivers/gpu/drm/virtio/virtgpu_drv.c                       | 1 -
+ drivers/iommu/virtio-iommu.c                               | 1 -
+ drivers/misc/nsm.c                                         | 1 -
+ drivers/net/caif/caif_virtio.c                             | 1 -
+ drivers/net/virtio_net.c                                   | 1 -
+ drivers/net/wireless/virtual/mac80211_hwsim.c              | 1 -
+ drivers/nvdimm/virtio_pmem.c                               | 1 -
+ drivers/rpmsg/virtio_rpmsg_bus.c                           | 1 -
+ drivers/scsi/virtio_scsi.c                                 | 1 -
+ drivers/virtio/virtio.c                                    | 6 ++++--
+ fs/fuse/virtio_fs.c                                        | 1 -
+ include/linux/virtio.h                                     | 7 +++++--
+ net/9p/trans_virtio.c                                      | 1 -
+ net/vmw_vsock/virtio_transport.c                           | 1 -
+ sound/virtio/virtio_card.c                                 | 1 -
+ 24 files changed, 9 insertions(+), 27 deletions(-)
+---
+base-commit: 7fdcff3312e16ba8d1419f8a18f465c5cc235ecf
+change-id: 20240327-module-owner-virtio-546763b3ca22
 
-> 
-> Best regards,
-> Krzysztof
-> 
-
+Best regards,
 -- 
-Link Mauve
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
---vIGEYjDZeTRTEtgU
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: attachment; filename="CHECK_DTBS=y W=1"
-
-% make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CHECK_DTBS=y W=1 rockchip/rk3588-rock-5b.dtb
-make[1]: Entering directory '/home/linkmauve/dev/linux'
-  DTC_CHK arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dtb
-Traceback (most recent call last):
-  File "/usr/lib/python3.11/site-packages/referencing/_core.py", line 417, in get_or_retrieve
-    resource = registry._retrieve(uri)
-               ^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.11/site-packages/jsonschema/validators.py", line 111, in _warn_for_remote_retrieve
-    request = Request(uri, headers=headers)  # noqa: S310
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.11/urllib/request.py", line 322, in __init__
-    self.full_url = url
-    ^^^^^^^^^^^^^
-  File "/usr/lib/python3.11/urllib/request.py", line 348, in full_url
-    self._parse()
-  File "/usr/lib/python3.11/urllib/request.py", line 377, in _parse
-    raise ValueError("unknown url type: %r" % self.full_url)
-ValueError: unknown url type: 'cache-controller.yaml'
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/usr/lib/python3.11/site-packages/referencing/_core.py", line 667, in lookup
-    retrieved = self._registry.get_or_retrieve(uri)
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.11/site-packages/referencing/_core.py", line 424, in get_or_retrieve
-    raise exceptions.Unretrievable(ref=uri) from error
-referencing.exceptions.Unretrievable: 'cache-controller.yaml'
-
-The above exception was the direct cause of the following exception:
-
-Traceback (most recent call last):
-  File "/usr/bin/dt-validate", line 8, in <module>
-    sys.exit(main())
-             ^^^^^^
-  File "/usr/lib/python3.11/site-packages/dtschema/dtb_validate.py", line 144, in main
-    sg.check_dtb(filename)
-  File "/usr/lib/python3.11/site-packages/dtschema/dtb_validate.py", line 89, in check_dtb
-    self.check_subtree(dt, subtree, False, "/", "/", filename)
-  File "/usr/lib/python3.11/site-packages/dtschema/dtb_validate.py", line 82, in check_subtree
-    self.check_subtree(tree, value, disabled, name, fullname + name, filename)
-  File "/usr/lib/python3.11/site-packages/dtschema/dtb_validate.py", line 82, in check_subtree
-    self.check_subtree(tree, value, disabled, name, fullname + name, filename)
-  File "/usr/lib/python3.11/site-packages/dtschema/dtb_validate.py", line 77, in check_subtree
-    self.check_node(tree, subtree, disabled, nodename, fullname, filename)
-  File "/usr/lib/python3.11/site-packages/dtschema/dtb_validate.py", line 33, in check_node
-    for error in self.validator.iter_errors(node, filter=match_schema_file):
-  File "/usr/lib/python3.11/site-packages/dtschema/validator.py", line 413, in iter_errors
-    for error in self.DtValidator(sch,
-  File "/usr/lib/python3.11/site-packages/jsonschema/validators.py", line 371, in iter_errors
-    for error in errors:
-  File "/usr/lib/python3.11/site-packages/jsonschema/_keywords.py", line 386, in if_
-    yield from validator.descend(instance, then, schema_path="then")
-  File "/usr/lib/python3.11/site-packages/jsonschema/validators.py", line 419, in descend
-    for error in errors:
-  File "/usr/lib/python3.11/site-packages/jsonschema/_legacy_keywords.py", line 423, in unevaluatedProperties_draft2019
-    evaluated_keys = find_evaluated_property_keys_by_schema(
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.11/site-packages/jsonschema/_legacy_keywords.py", line 399, in find_evaluated_property_keys_by_schema
-    evaluated_keys += find_evaluated_property_keys_by_schema(
-                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.11/site-packages/jsonschema/_legacy_keywords.py", line 342, in find_evaluated_property_keys_by_schema
-    resolved = validator._resolver.lookup(ref)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.11/site-packages/referencing/_core.py", line 671, in lookup
-    raise exceptions.Unresolvable(ref=ref) from error
-referencing.exceptions.Unresolvable: cache-controller.yaml#
-make[1]: Leaving directory '/home/linkmauve/dev/linux'
-
---vIGEYjDZeTRTEtgU--
