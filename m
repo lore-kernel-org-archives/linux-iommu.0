@@ -1,107 +1,123 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from domac.alu.hr (domac.alu.unizg.hr [161.53.235.3])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D966A14F9DD;
-	Wed, 27 Mar 2024 19:42:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0969152DF4
+	for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 20:04:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=161.53.235.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711568526; cv=none; b=QFbR9X37yBnbNXYhb4D1VxyDKqTF3a7dmCzhp8VEz/JKWOW5uIIMm7Z1rXKU0wcK2dYRFWtrCJjZyqs1l0aS1fAlv042GiN0AQIKt65rkD3/82M0pwy67Vhh+TbgJY8058zmob9d5zjiBBOHHnndquU8YlAf5IGyqYWIWToJL1s=
+	t=1711569871; cv=none; b=iQIROD4On3zzX1jJf/kohZV4lh08VMuKUkbMViYhj+3RmHb4TtBQUrcBBgA0n/qaFkk0G50h5IeOCBH0UnfRDWAizLv9UJssBV1T8lnzD9DllaRCu11Vhsc3jOjKEpYE1zNDxm9c5tELSUQWqQv9/neFlfPsjzORiHkmzHGu1is=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711568526; c=relaxed/simple;
-	bh=PsoqOSc/ZsnGjVOPPElixDYOJ7dkP9VdeqNpiyZI00A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Aqwab01CMfDtWbjsrk2IcfQC+xEsasfQygGu/gfABESlXReBQh80jtQIrHaR7JdiP/HQDGBasNj7RSw1kkR4GjZzC/BeT8DKowjsHF574yNh7MRPWYdEKnDF7qK829x56u9pq9Sv0ajAWal+uvtwrrFb/gU0VLPzTVQQ4ety7/w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b748I/Rb; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1711569871; c=relaxed/simple;
+	bh=Ld6HrLqtuw7crMLsCyP8gsr/CSuqB+o5MzFpyBX3MuU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sMopCdejrgjrcz6nEYJp4hOXMWEOpv4n4wwIysYl0A4oVB0fYzXhZhtfoOyKP045bQK8Q7Lq6Yfr+LNampo5ujNIhDfMc8qKDWmBsnoOKHpIuKnMpaJq+vtupvYwZTQMeIsvxioOfN25IbOZ23HZ7S++z0y/2fPxet2rzwOVxRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alu.unizg.hr; spf=pass smtp.mailfrom=alu.unizg.hr; dkim=pass (2048-bit key) header.d=alu.unizg.hr header.i=@alu.unizg.hr header.b=PC2+GKS7; dkim=pass (2048-bit key) header.d=alu.unizg.hr header.i=@alu.unizg.hr header.b=lWFJtavM; arc=none smtp.client-ip=161.53.235.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=alu.unizg.hr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=alu.unizg.hr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b748I/Rb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4F6BC433C7;
-	Wed, 27 Mar 2024 19:42:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711568526;
-	bh=PsoqOSc/ZsnGjVOPPElixDYOJ7dkP9VdeqNpiyZI00A=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=b748I/RbWhZJV3AxMeOrTcHuMLbzL1ocVl7qHn/xvp9P/MwKhxWQeq5FuIcBP5JHn
-	 DcpEe64QIsTLiAoIE1xxp5ZybwxHIgAKXRHRJ/V0CTwVE7TO6f3gIrZy9wULp1SpBd
-	 7ukVgrHzkzmLeju6LdhgAZH9XVYgkf86tShw0luVvX/WeNsFVsR5m3uhSaZzjl1lAA
-	 GXDN491AnrTvWyuuvN1z7X72VSe9iMDZpc3kCjKIv/eaKn/U3pXkxtM6t8Eu8Kfxs/
-	 GGLiRyz1f/DvsuzoxdOmSy0IhmuBFbYpmz5Ub6Vljnq/WVErAl5UT6stRjWpsBPsVD
-	 B7UKb7ga6Cj8Q==
-Date: Wed, 27 Mar 2024 19:42:01 +0000
-From: Will Deacon <will@kernel.org>
-To: Petr =?utf-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Petr Tesarik <petr.tesarik1@huawei-partners.com>,
-	Michael Kelley <mhklinux@outlook.com>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:DMA MAPPING HELPERS" <iommu@lists.linux.dev>,
-	Roberto Sassu <roberto.sassu@huaweicloud.com>
-Subject: Re: [PATCH v3 0/2] swiotlb: allocate padding slots if necessary
-Message-ID: <20240327194200.GA12000@willie-the-truck>
-References: <20240321171902.85-1-petrtesarik@huaweicloud.com>
- <20240322150941.GA5634@willie-the-truck>
- <20240322185138.1af83c61@meshulam.tesarici.cz>
+	dkim=pass (2048-bit key) header.d=alu.unizg.hr header.i=@alu.unizg.hr header.b="PC2+GKS7";
+	dkim=pass (2048-bit key) header.d=alu.unizg.hr header.i=@alu.unizg.hr header.b="lWFJtavM"
+Received: from localhost (localhost [127.0.0.1])
+	by domac.alu.hr (Postfix) with ESMTP id CF2436015E;
+	Wed, 27 Mar 2024 21:04:17 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+	t=1711569857; bh=Ld6HrLqtuw7crMLsCyP8gsr/CSuqB+o5MzFpyBX3MuU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=PC2+GKS7Ac4kwpM4fTB41Rare2g71xW+I3p+wGU1pvbY0zx269WaEIvMJH7wiPOSp
+	 trSdOquY9FRFfy20rezD4w4lg+TyDCXGLeUJ6LpdHfXJ1ueQhSUJaDv1R2NYSFoAZG
+	 y997SVPUiBp/SgPCzuNweTTfpLJJ660YE7bT1SxXFEjEbwMs53G5sJnRzgCWFROVvO
+	 /bz1XnXn1Ay7RUGZlDPw0eF4+/DeqTO1Ai5sdOl3zjjlL2l1iFUVxHx2UwzBO7Rkev
+	 v10R1r6tl26bKhVhWSJVp5iGbSro6e0Ushwp6KfLXaFc7D+oSvlAAiMBR4nVkK1z4s
+	 JV9KzKOM8wt+A==
+X-Virus-Scanned: Debian amavisd-new at domac.alu.hr
+Received: from domac.alu.hr ([127.0.0.1])
+	by localhost (domac.alu.hr [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id VXsdPIWA-2IT; Wed, 27 Mar 2024 21:04:15 +0100 (CET)
+Received: from [192.168.178.20] (dh207-41-201.xnet.hr [88.207.41.201])
+	by domac.alu.hr (Postfix) with ESMTPSA id 24FA16015F;
+	Wed, 27 Mar 2024 21:04:15 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=alu.unizg.hr; s=mail;
+	t=1711569855; bh=Ld6HrLqtuw7crMLsCyP8gsr/CSuqB+o5MzFpyBX3MuU=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=lWFJtavMe5WgV7tBQiIC1mIUZqOAeFey4enMQD67L6kMIQHtRpxRrxbe5iiFWxBMI
+	 sRMBZfOkZxK6k+ngBYIzOJ1G26WZCqKwWP4P1Vxv0Jh+W+ieFsLIVfFtFrPFweWXZO
+	 86jVFYXA2E+UFXtfYKvQCaBfxw02AJbulwUqxnX8TvYmRHY0RHA9GwoenhOanO1l1T
+	 yg0sCh/Nseo9VcT/lMlKVJeXeDUtwcGFwBmu0/foy2pdgK2iDQJmk6HnYhHTQHiqVC
+	 kGUYA69hOnoQCKiH0qR2d71matlP7QdjzNY27qh/idLGkNnCUv3iy2ysSC7RdxLPaI
+	 NjChKfqX7c9Cg==
+Message-ID: <08a13b79-e94a-4f80-96e9-ce223d928b3e@alu.unizg.hr>
+Date: Wed, 27 Mar 2024 21:04:10 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [BUG] seltests/iommu: runaway ./iommufd consuming 99% CPU after a
+ failed assert()
+To: Joao Martins <joao.m.martins@oracle.com>, Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>,
+ Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <0d5c3b29-fc5b-41d9-9556-5ce94262dac8@alu.unizg.hr>
+ <20240319135852.GA393211@nvidia.com>
+ <a692d5d7-11d5-4c1b-9abc-208d2194ccde@alu.unizg.hr>
+ <cdc9c46b-1bad-41cd-8f98-38cc2171186a@oracle.com>
+ <20240325135207.GC6245@nvidia.com>
+ <f8e03425-98cf-4076-8959-d85eda846bab@oracle.com>
+Content-Language: en-US
+From: Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>
+In-Reply-To: <f8e03425-98cf-4076-8959-d85eda846bab@oracle.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240322185138.1af83c61@meshulam.tesarici.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Fri, Mar 22, 2024 at 06:51:38PM +0100, Petr Tesařík wrote:
-> On Fri, 22 Mar 2024 15:09:41 +0000
-> Will Deacon <will@kernel.org> wrote:
-> 
-> > Hi Petr,
-> > 
-> > On Thu, Mar 21, 2024 at 06:19:00PM +0100, Petr Tesarik wrote:
-> > > From: Petr Tesarik <petr.tesarik1@huawei-partners.com>
-> > > 
-> > > If the allocation alignment is bigger than IO_TLB_SIZE and min_align_mask
-> > > covers some bits in the original address between IO_TLB_SIZE and
-> > > alloc_align_mask, preserve these bits by allocating additional padding
-> > > slots before the actual swiotlb buffer.  
-> > 
-> > Thanks for fixing this! I was out at a conference last week, so I didn't
-> > get very far with it myself, but I ended up in a pickle trying to avoid
-> > extending 'struct io_tlb_slot'. Your solution is much better than the
-> > crazy avenue I started going down...
-> > 
-> > With your changes, can we now simplify swiotlb_align_offset() to ignore
-> > dma_get_min_align_mask() altogether and just:
-> > 
-> > 	return addr & (IO_TLB_SIZE - 1);
-> 
-> I have also thought about this but I don't think it's right. If we
-> removed dma_get_min_align_mask() from swiotlb_align_offset(), we would
-> always ask to preserve the lowest IO_TLB_SHIFT bits. This may cause
-> less efficient use of the SWIOTLB.
-> 
-> For example, if a device does not specify any min_align_mask, it is
-> presumably happy with any buffer alignment, so SWIOTLB may allocate at
-> the beginning of a slot, like here:
-> 
-> orig_addr   |      ++|++      |
-> tlb_addr    |++++    |        |
-> 
-> Without dma_get_min_align_mask() in swiotlb_align_offset(), it would
-> have to allocate two mostly-empty slots:
-> 
-> tlb_addr    |      ++|++      |
-> 
-> where:
->   | mark a multiple of IO_TLB_SIZE (in physical address space)
->   + used memory
->     free memory
 
-Thanks for the patient explanation. I'd got so caught up with the DMA
-alignment mask that I forgot the usual case where it's not specified at
-all!
 
-Will
+On 3/27/24 11:41, Joao Martins wrote:
+> On 25/03/2024 13:52, Jason Gunthorpe wrote:
+>> On Mon, Mar 25, 2024 at 12:17:28PM +0000, Joao Martins wrote:
+>>>> However, I am not smart enough to figure out why ...
+>>>>
+>>>> Apparently, from the source, mmap() fails to allocate pages on the desired address:
+>>>>
+>>>>    1746         assert((uintptr_t)self->buffer % HUGEPAGE_SIZE == 0);
+>>>>    1747         vrc = mmap(self->buffer, variant->buffer_size, PROT_READ |
+>>>> PROT_WRITE,
+>>>>    1748                    mmap_flags, -1, 0);
+>>>> → 1749         assert(vrc == self->buffer);
+>>>>    1750
+>>>>
+>>>> But I am not that deep into the source to figure our what was intended and what
+>>>> went
+>>>> wrong :-/
+>>>
+>>> I can SKIP() the test rather assert() in here if it helps. Though there are
+>>> other tests that fail if no hugetlb pages are reserved.
+>>>
+>>> But I am not sure if this is problem here as the initial bug email had an
+>>> enterily different set of failures? Maybe all you need is an assert() and it
+>>> gets into this state?
+>>
+>> I feel like there is something wrong with the kselftest framework,
+>> there should be some way to fail the setup/teardown operations without
+>> triggering an infinite loop :(
+> 
+> I am now wondering if the problem is the fact that we have an assert() in the
+> middle of FIXTURE_{TEST,SETUP} whereby we should be having ASSERT_TRUE() (or any
+> other kselftest macro that). The expect/assert macros from kselftest() don't do
+> asserts and it looks like we are failing mid tests in the assert().
+> 
+> Maybe it is OK for setup_sizes(), but maybe not OK for the rest (i.e. during the
+> actual setup / tests). I can throw a patch there to see if this helps Mirsad.
+
+Well, we are in the job of making the kernel better and as bug free as we can.
+
+Maybe we should not delve too much into detail: is this a kernel bug, or the kselftest
+program bug?
+
+Some people already mentioned that I might have sysctl variable problems. I don't see
+what the mmap() HUGEPAGE allocation at fixed address was meant to prove?
+
+Thanks,
+Mirsad
