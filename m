@@ -1,187 +1,130 @@
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2DF5130AFC
-	for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 17:15:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34D6B1304A6;
+	Wed, 27 Mar 2024 17:23:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711559714; cv=none; b=px2nc3nkA7OFSnAVN3D4Dke2+A5cP9AAvN3FTBrK465xw47DremeDku93Wy1RIKy/hfEVEIsaEfK/9wEsni5xzZY1X0uX+0+0laS979xQgy4wZZyGNvQYvjCEXM04KTHT1GsnuSEsjvkesw3OBo91vUjIVel2kzIbYaapgriJtM=
+	t=1711560213; cv=none; b=MwGS8B7BQo1LdZY0nvO4NlFyf+uvWQRq1CkV8ACTPx6oUoo2FxL3z30q5jgZFC61t4g/GhzBxK7J6Ue3h5FkObKN2hcjpbay4Jtd5JuAkGRy0ghvesQm52wCiNW2y0TOCNawGCg43JW1MJZY8o6rspxHIHbYGuwStj2fuO5eioA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711559714; c=relaxed/simple;
-	bh=9tnsRuZ5G7QjnwFgOQWvg/3sPZordPoR8Q1151meHlI=;
+	s=arc-20240116; t=1711560213; c=relaxed/simple;
+	bh=IVW7vlTiLrTDILy6sOFcmkVPU3+mDVNBvceJINH+rOM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iRxpodjs9FHlNVB1G9+NB5uWyq0DGLBI64TllqhpAITJM69nbifm71lULbsQyUYoH+QPlBz4lURRq91TtbVlAifIb7jZ/3Bv/2fJgiEocWNVLXhSgm30pGNW8oQlSk24rg70cQZEu5oF3gNW+Zrv0ryduFXuVJmhNVSV55NdsHc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hLFU3nEk; arc=none smtp.client-ip=209.85.167.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=Tw2w7YuD+QQtrPFVaHi3BnF7jq5XDb4BO9wFCAVTLoI2b3P43Nk49qml3zmCpqpuWM20oXUUUiQWCY94WN6s+BggVVqTvYuiFLNrAG6tyXtS+Prh2+d/nij7ZnIORdlYf6T4EiwssZsvTGa45vUHx23Y0xtfvIMpnCwEHPPqbvM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XloCsd3H; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hLFU3nEk"
-Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-3bd4e6a7cb0so46850b6e.3
-        for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 10:15:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1711559712; x=1712164512; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=MyfMHWP1Z5kFosJnJ/cLT9vrDNlc6F3RpHcMzwkJjx8=;
-        b=hLFU3nEkq2wZkQI9iYrCPo8uffcj8FaGd6OYTIwmgq/AvEatgEQ9JvD2MncngrrOI4
-         36Yat/i2OtMBgq8/LWCMKx/TW5DWPYzEoqhhmq/QrNrrnb1wW0YZUlWKFWS86YkFxDrj
-         ZCbbBsZyk27QoniNzp64Q3lpSx6avyv/b+dtwhIYzMCFpsTgeT/e8I0eSqaxzQNoIKpq
-         ZOdPX2ks1aIiGaaCQDS/kiLWkB1fEZk5O7k7ovNj0KTXTNFFDsgCDyr7pxi/7BMao4Bq
-         R7qmcjr+fXb2/acXfM4DQK8HEurAsPCPCGtoryJBxX79+3ovvuNoAhH4LSD6CkNE9cMT
-         ba6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711559712; x=1712164512;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=MyfMHWP1Z5kFosJnJ/cLT9vrDNlc6F3RpHcMzwkJjx8=;
-        b=cprYKe79UxQMuAoQgO67yaA5xFXJlWPLfGTQCo9H8MeEpNkQkBJu6ZxeSIpHJY8+ox
-         aPY1uIy0XyQNi6mFbj8DcFvmjPht92SBdHju/nh2xrJX/TMHqXa/N8VdqgfdBvFBsaCW
-         9oIPv20BgGZeIaBDjm4nLKcTLREK0chbAkfpk+uACvDfOLxNOtG1pKfbeEE9odqLGh67
-         Byr+eB1TZoalAQOil9oS8Zav+e4wr9nOFg6JQ/gUSJbGSHYUTUMHXT249u/gU3BCW5SH
-         dwnyzKWfHT6Bot8YOU9cKZHXIFzaQMcqRjzs4QeoF/E/YkG894ifTDeJdZVHTPk+Rgk2
-         kutQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVl7qmj/xsQ2ZXAKSAMf8GR/c9lP9BYVBufCpkFkLg6MnNARtClmHywzVX9M8NsoAuWTMAKmGcisHi1hccDgfe2/HRQOko=
-X-Gm-Message-State: AOJu0YwHR3Ms6YPzuwXd3ZnVIMtbA5IyYz7iNbWBsUX6qWDGCkgFLce1
-	vyZJObBF1kCNnOgwph44wNBgCe2qj7Yrj/1ZnHjaNkq7AlXi96aBivEs3AS2No8=
-X-Google-Smtp-Source: AGHT+IGQ+Fbz7qR1SW5qNkJYopwwdBYDjEYKQNSO/4NiABanB9dU3kXOL1kwvcUdEQ/e1ORbwkUJTQ==
-X-Received: by 2002:a05:6808:64b:b0:3c3:d56d:a5dd with SMTP id z11-20020a056808064b00b003c3d56da5ddmr357972oih.18.1711559712027;
-        Wed, 27 Mar 2024 10:15:12 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id kd9-20020a056214400900b00696b117a325sm499925qvb.108.2024.03.27.10.14.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Mar 2024 10:14:48 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rpWr2-005ajV-OE;
-	Wed, 27 Mar 2024 14:14:24 -0300
-Date: Wed, 27 Mar 2024 14:14:24 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Leon Romanovsky <leon@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
-	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
-	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
-	Yishai Hadas <yishaih@nvidia.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
-	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
-	kvm@vger.kernel.org, linux-mm@kvack.org,
-	Bart Van Assche <bvanassche@acm.org>,
-	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-	Amir Goldstein <amir73il@gmail.com>,
-	"josef@toxicpanda.com" <josef@toxicpanda.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	"daniel@iogearbox.net" <daniel@iogearbox.net>,
-	Dan Williams <dan.j.williams@intel.com>,
-	"jack@suse.com" <jack@suse.com>, Zhu Yanjun <zyjzyj2000@gmail.com>
-Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two steps
-Message-ID: <20240327171424.GI8419@ziepe.ca>
-References: <20240307000036.GP9225@ziepe.ca>
- <20240307150505.GA28978@lst.de>
- <20240307210116.GQ9225@ziepe.ca>
- <20240308164920.GA17991@lst.de>
- <20240308202342.GZ9225@ziepe.ca>
- <20240309161418.GA27113@lst.de>
- <20240319153620.GB66976@ziepe.ca>
- <20240321223910.GA22663@lst.de>
- <20240322184330.GL66976@ziepe.ca>
- <20240324232215.GC20765@lst.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XloCsd3H"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA95C433C7;
+	Wed, 27 Mar 2024 17:23:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1711560212;
+	bh=IVW7vlTiLrTDILy6sOFcmkVPU3+mDVNBvceJINH+rOM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=XloCsd3HB0EhyIQa5CzYWfgKyeewc6Oqo0by9UfFEbxWZIexiepINomz0U7NH5PpD
+	 F7bO68lQDu8aBGYCYKPh66JaFzTlN2DyebgDzfYB4hNllLQDTQQJxjeyQ5rsGCWop3
+	 NY2JuvbsjVzpVoLUX2m4D3n/TPYD45DL2vRUvg0QtaVGIeoGYg/860IfICZRzrBHmW
+	 swdOfcf5VB1xJkpsYGQ4LUKJzG0fsn5jzUqOvxKvJVukcS+rdwwTX6aVBmNFHsvWrP
+	 UykPBL0SCRFrQXScdsu6Vh8CVXQmMixz4lSY0QfeN8TIFNjWADxiNWPKZsetBKIVXd
+	 wUw//P4t3xOXQ==
+Date: Wed, 27 Mar 2024 17:23:26 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
+Cc: linux-kernel@vger.kernel.org,
+	Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
+	Dragan Simic <dsimic@manjaro.org>,
+	Shreeya Patel <shreeya.patel@collabora.com>,
+	Chris Morgan <macromorgan@hotmail.com>,
+	Andy Yan <andy.yan@rock-chips.com>,
+	Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
+	linux-media@vger.kernel.org, linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev
+Subject: Re: [PATCH v2 1/2] media: =?utf-8?Q?dt-bin?=
+ =?utf-8?Q?ding=3A_media=3A_Document_rk3588=E2=80=99s?= VEPU121
+Message-ID: <20240327-doze-uncheck-475f3feaee57@spud>
+References: <20240327134115.424846-1-linkmauve@linkmauve.fr>
+ <20240327134115.424846-2-linkmauve@linkmauve.fr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="4zuSRA0OEooBf1eF"
+Content-Disposition: inline
+In-Reply-To: <20240327134115.424846-2-linkmauve@linkmauve.fr>
+
+
+--4zuSRA0OEooBf1eF
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240324232215.GC20765@lst.de>
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, Mar 25, 2024 at 12:22:15AM +0100, Christoph Hellwig wrote:
-> On Fri, Mar 22, 2024 at 03:43:30PM -0300, Jason Gunthorpe wrote:
-> > If we are going to make caller provided uniformity a requirement, lets
-> > imagine a formal memory type idea to help keep this a little
-> > abstracted?
-> > 
-> >  DMA_MEMORY_TYPE_NORMAL
-> >  DMA_MEMORY_TYPE_P2P_NOT_ACS
-> >  DMA_MEMORY_TYPE_ENCRYPTED
-> >  DMA_MEMORY_TYPE_BOUNCE_BUFFER  // ??
-> > 
-> > Then maybe the driver flow looks like:
-> > 
-> > 	if (transaction.memory_type == DMA_MEMORY_TYPE_NORMAL && dma_api_has_iommu(dev)) {
-> 
-> Add a nice helper to make this somewhat readable, but yes.
-> 
-> > 	} else if (transaction.memory_type == DMA_MEMORY_TYPE_P2P_NOT_ACS) {
-> > 		num_hwsgls = transcation.num_sgls;
-> > 		for_each_range(transaction, range) {
-> > 			hwsgl[i].addr = dma_api_p2p_not_acs_map(range.start_physical, range.length, p2p_memory_provider);
-> > 			hwsgl[i].len = range.size;
-> > 		}
-> > 	} else {
-> > 		/* Must be DMA_MEMORY_TYPE_NORMAL, DMA_MEMORY_TYPE_ENCRYPTED, DMA_MEMORY_TYPE_BOUNCE_BUFFER? */
-> > 		num_hwsgls = transcation.num_sgls;
-> > 		for_each_range(transaction, range) {
-> > 			hwsgl[i].addr = dma_api_map_cpu_page(range.start_page, range.length);
-> > 			hwsgl[i].len = range.size;
-> > 		}
-> >
-> 
-> And these two are really the same except that we call a different map
-> helper underneath.  So I think as far as the driver is concerned
-> they should be the same, the DMA API just needs to key off the
-> memory tap.
+On Wed, Mar 27, 2024 at 02:41:11PM +0100, Emmanuel Gil Peyrot wrote:
+> This encoder-only device is present four times on this SoC, and should
+> support everything the rk3568 vepu supports (so JPEG, H.264 and VP8
+> encoding).
+>=20
+> According to the TRM[1], there is also the VEPU580 encoder which
+> supports H.264 and H.265, and various VDPU* decoders, of which only the
+> VDPU981 is currently supported.  This patch describes only the VEPU121.
+>=20
+> [1] https://github.com/FanX-Tek/rk3588-TRM-and-Datasheet
+>=20
+> Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
 
-Yeah.. If the caller is going to have compute the memory type of the
-range then lets pass it to the helper
-
-dma_api_map_memory_type(transaction.memory_type, range.start_page, range.length);
-
-Then we can just hide all the differences under the API without doing
-duplicated work.
-
-Function names need some work ...
-
-> > > > So I take it as a requirement that RDMA MUST make single MR's out of a
-> > > > hodgepodge of page types. RDMA MRs cannot be split. Multiple MR's are
-> > > > not a functional replacement for a single MR.
-> > > 
-> > > But MRs consolidate multiple dma addresses anyway.
-> > 
-> > I'm not sure I understand this?
-> 
-> The RDMA MRs take a a list of PFNish address, (or SGLs with the
-> enhanced MRs from Mellanox) and give you back a single rkey/lkey.
-
-Yes, that is the desire.
- 
-> > To go back to my main thesis - I would like a high performance low
-> > level DMA API that is capable enough that it could implement
-> > scatterlist dma_map_sg() and thus also implement any future
-> > scatterlist_v2, bio, hmm_range_fault or any other thing we come up
-> > with on top of it. This is broadly what I thought we agreed to at LSF
-> > last year.
-> 
-> I think the biggest underlying problem of the scatterlist based
-> DMA implementation for IOMMUs is that it's trying to handle to much,
-> that is magic coalescing even if the segments boundaries don't align
-> with the IOMMU page size.  If we can get rid of that misfeature I
-> think we'd greatly simply the API and implementation.
-
-Yeah, that stuff is not easy at all and takes extra computation to
-figure out. I always assumed it was there for block...
-
-Leon & Chaitanya will make a RFC v2 along these lines, lets see how it
-goes.
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 
 Thanks,
-Jason
+Conor.
+
+> ---
+>  .../devicetree/bindings/media/rockchip,rk3568-vepu.yaml   | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/media/rockchip,rk3568-vepu=
+=2Eyaml b/Documentation/devicetree/bindings/media/rockchip,rk3568-vepu.yaml
+> index 9d90d8d0565a..4c6cb21da041 100644
+> --- a/Documentation/devicetree/bindings/media/rockchip,rk3568-vepu.yaml
+> +++ b/Documentation/devicetree/bindings/media/rockchip,rk3568-vepu.yaml
+> @@ -15,8 +15,12 @@ description:
+> =20
+>  properties:
+>    compatible:
+> -    enum:
+> -      - rockchip,rk3568-vepu
+> +    oneOf:
+> +      - const: rockchip,rk3568-vepu
+> +      - items:
+> +          - enum:
+> +              - rockchip,rk3588-vepu121
+> +          - const: rockchip,rk3568-vepu
+> =20
+>    reg:
+>      maxItems: 1
+> --=20
+> 2.44.0
+>=20
+
+--4zuSRA0OEooBf1eF
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZgRWDgAKCRB4tDGHoIJi
+0lutAP9RUO+UBR6Pi5FROQ2xaLNqi5TaQoaK43MSDUy1PTIC0AEA7wsfYNyJUltg
+R8OsUeBnoheFQXxeCQ5knEZaXqMNKQ0=
+=eiO7
+-----END PGP SIGNATURE-----
+
+--4zuSRA0OEooBf1eF--
