@@ -1,170 +1,182 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2086.outbound.protection.outlook.com [40.107.92.86])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 342BA58AD0
-	for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 11:40:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.86
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711539636; cv=fail; b=aneZTFywZD3AGxTGSKOcHX/b6GW6TwCzwfqng0E74pu7+y4uh5Ox3rJEQKyPYTJABtc3x1xbA5AB9o+MlY9KLJaIb6Jm+g9pCzZGNGnOSELzlMjQEjBJjq/EfIAkQ+JpRz+/8s/aZBuPsPoncUsYmlgGN91GvqtsYt/RzucPDHA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711539636; c=relaxed/simple;
-	bh=L8yM5bAEnoLa/uofoKOojU1hXsPHn0RfVeE9Tq+7NGI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=V1bCEpzDvYVKyOnnJGAh7CKoolUClsLWTaILy7owZrc/zygFXS8riTaCmBm3uk7CV/4jh/oqDyfrxjOGaXVAW3F5kM8bXMqXxVrdgdRyI7mruXNGfoJo6HaSB84qHtB4b2rojNh8v2j8zWWTGKwNJC9jSsWcFfPJnAc7KxWua8Q=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=jqWV1w4J; arc=fail smtp.client-ip=40.107.92.86
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6B7A12BEA2
+	for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 11:50:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711540203; cv=none; b=q6o+tAmsK1RHwbshohMBYyyAsC5n5ZYLvPy0wAECceKBPt3xz8zX2EiEFaSba/la85fLclgqXo0QWj1DWf8DQVLzpcpulZnHGjrtSgc/THhYkCTZ1qK1dxJOWIadNd7m4sKicn5W4oxYLrS+iWKR14mBC7kQidMkgPT7jfOw8yY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711540203; c=relaxed/simple;
+	bh=jUGLMXfJA53XClr/yZYHyekFyse0uCD0AkZBZQ9HFPg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VMAVG3qiTPU3iBko1WmW/RCg9O16cDInbH2c+ggKRojr51NNd3GOl3K2kBQDQSAQqQcDQo7oDX++Kd756RvyRSwg7z0EWyx4Bvd+1CF3kXGA3OF2d1HH9PLXY5u6czhuq9C9L37r/X0mf+ds5TryIibekVH+3WGRFckPUqDkd04=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=fT+OoOP7; arc=none smtp.client-ip=209.85.222.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="jqWV1w4J"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kd7rTmid0K5CZIJmj9r/c4LunDxUotws3o1MVsFymJaDGoc+zbGKn1MXVzKUFbjj7RXo4jQudwYj63l9MoXXCcNA4i9emtY9ahD2x2hBwUqmfFXgJ3AU5CLv1cEICeUX1r6VztjgCJ1sOZoXXUVr9sL6cOTFR9k/LtGrH07w4vvo5YfZq+m+WYVHGQdIunB/o4t0nZhnNMn2fUm5miuPjBPEy5Y5FH1nZUv5VmcRw+34W7QG/J+Lt6+ItG7+NzOml3a0MSW9UfrJ7FnbyoyLb3ahnjVI/8vysLH5AuTrb1uZVqx/r7v0HzY0PK4iCFABc4UMN7H+UPlH0PeBreGtNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3LJ6byHNF2VmlVFbuwoPHuGJEgZtn0FpoRv+NiVeSrs=;
- b=erqALgy9DDALJVsum21YEo4uRizWOHalNDgM33DQT/5Za6TCWoAvebSY/oPwnAySlX0P0oo3HSkGIbrOC1oS6SwdNP9xnUuXhi6wKPpWlvFTVJjxtzie/992KwxL/ZBXoOF32fKd2KJv4FbZ8DxgKPResxOe/5nGQcW/ch62FRJpL/9KOMxrVCEK/OewRdi5eJBNtqEoK8WrxFE4fAE0a3YQPo61TeL5B1q0iSKACbkPFMVkdg/69VZH2HsEYTo2TOEg2Rklgujp0VUrnsBIwlABK+dRw6XFUOg37Yyd48S0UYYAiz7kjOTkMjA5kOO93TQ4sLgJiPZVpubbeCTUqQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3LJ6byHNF2VmlVFbuwoPHuGJEgZtn0FpoRv+NiVeSrs=;
- b=jqWV1w4JQ2IuM/0an+pIsZ+oSlh4dLwFvXdO34GisL5RXVNjT+tnFY9FoHvIAZ+QpW6ORcIht/q5AcNWQXArFHNSzBayi+yWSNaItAJwnSvsZOJTRNDydCU9QBl0jy5Kf86nJ5jz3thWt8bq+O+1ofp9iweJAWnahHCi2QIxEnml69Qm5ao85kOtAgHWSZ8tgEnGQC3mjkJPdmaNgz+84QfQS5PgEuk2ctJLsrarUDTDFbOrgela8xmlf7OoA6QkeMJxmHOldDNXhwR91tlIsmLej3xpVDbcM6OLuCkpPd/k5hvN6WT8nma3qA40BBuPg84f1kVy42NEbcxl926xnw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by DM4PR12MB5938.namprd12.prod.outlook.com (2603:10b6:8:69::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7409.32; Wed, 27 Mar 2024 11:40:30 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7409.031; Wed, 27 Mar 2024
- 11:40:30 +0000
-Date: Wed, 27 Mar 2024 08:40:29 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Joao Martins <joao.m.martins@oracle.com>
-Cc: Mirsad Todorovac <mirsad.todorovac@alu.unizg.hr>, iommu@lists.linux.dev,
-	Kevin Tian <kevin.tian@intel.com>, Shuah Khan <shuah@kernel.org>,
-	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [BUG] seltests/iommu: runaway ./iommufd consuming 99% CPU after
- a failed assert()
-Message-ID: <20240327114029.GC946323@nvidia.com>
-References: <0d5c3b29-fc5b-41d9-9556-5ce94262dac8@alu.unizg.hr>
- <20240319135852.GA393211@nvidia.com>
- <a692d5d7-11d5-4c1b-9abc-208d2194ccde@alu.unizg.hr>
- <cdc9c46b-1bad-41cd-8f98-38cc2171186a@oracle.com>
- <20240325135207.GC6245@nvidia.com>
- <f8e03425-98cf-4076-8959-d85eda846bab@oracle.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f8e03425-98cf-4076-8959-d85eda846bab@oracle.com>
-X-ClientProxiedBy: MN2PR20CA0041.namprd20.prod.outlook.com
- (2603:10b6:208:235::10) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="fT+OoOP7"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-78a26aaefc8so397768085a.1
+        for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 04:50:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1711540200; x=1712145000; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=cRCwxUtywPyv/sfMfB7vDdhGhWd2UBJnlU1eKR4NMmg=;
+        b=fT+OoOP7SObsM4zRTsTsphRvVW+gtEoj1FefQH7dK1oGm3BRK1vvOZExa+CYqEIXlI
+         n2I/MQNzEqZyihpH1pm0mSaVOowaqafAJZ8avy6FwNtU4vlprTVwvV+r6Jyh3+uKi66x
+         TA2DWe4Jd1Rkc3ipn6j/YM5m8B1Y13REy+CCH0rBLdzMbuopqRInepi71vn1cisZUsea
+         L4ns5Y+6Q6HK5GqTp63dyv6uaI6EQNASvTuY8SjFaIFJRR+XOXNK7aKruKGmfC/Fva4T
+         kZ146xWgJ5Vr8RpQug4FSwDBol2rtqU9wT6HPvlTwu7zlm94u6v4bGFNpSJakzKM0sxK
+         CLfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1711540200; x=1712145000;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=cRCwxUtywPyv/sfMfB7vDdhGhWd2UBJnlU1eKR4NMmg=;
+        b=Ut5/r8xn6iU0JAIGl/XQQQxK4zF16ji1mBwPeK2f01WjPD7GucD9kU92JSCiK9yOVo
+         JCvwv3dMuogSXIoYI8oAIHTRcdsc1H+jP5/nPqs+5E2CwaCumOsHc+LSV6dEw96h35CG
+         xVqFKWsPlI9qMHrsLbHEGBETloFyyQWFv0relMj+c82y6Fr8Za6Wswxq8Gy2Rc7HHofq
+         xbWxSFlMBBw/KdPsQHa4tuvM5ZLS84qXsvFMSUoVySBt24h6YgRPY8mmbH5tPEO8/Y2x
+         ppUNYXMbbaxh7edjH3hK/XFGMFx6eu4K6izXTB+RZIWgXYIMVgP5Oc5EiKkcrEhXMlb6
+         bPIw==
+X-Forwarded-Encrypted: i=1; AJvYcCVD5rEwaQSv6gFOq/XO5jzBUzGkAUm2HD3Fz/yTdwl9uuHZeo6ItIfDX39KJDv1NFbYizOQd0JY7TT1kbcTeF5QfMja/1E=
+X-Gm-Message-State: AOJu0Yx+D22bXA8ad1lPJhgW4BYFVhBq1zrtSlrrp32GlryCOEm+zwh8
+	IJEWWqM0jVpoN527QCvD24ousKHa02q7DFK50g+FU3MZ+uIEhZYaIziTT2wyA2U=
+X-Google-Smtp-Source: AGHT+IHwk5sSFKdm6Uh7Tlt4FGOA8xWOgg7e771JOsFUfYRAlXL6Y42sG4BEWKBvccGOUUtZiQb1mA==
+X-Received: by 2002:ae9:f407:0:b0:78a:5feb:d3aa with SMTP id y7-20020ae9f407000000b0078a5febd3aamr995720qkl.15.1711540199785;
+        Wed, 27 Mar 2024 04:49:59 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id k26-20020a05620a0b9a00b00789e2961225sm3808233qkh.61.2024.03.27.04.49.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Mar 2024 04:49:59 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rpRn4-0051gL-Np;
+	Wed, 27 Mar 2024 08:49:58 -0300
+Date: Wed, 27 Mar 2024 08:49:58 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Muhammad Usama Anjum <usama.anjum@collabora.com>,
+	Joao Martins <joao.m.martins@oracle.com>,
+	Nicolin Chen <nicolinc@nvidia.com>
+Cc: kernel@collabora.com, iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Kevin Tian <kevin.tian@intel.com>, Shuah Khan <shuah@kernel.org>
+Subject: Re: [PATCH] selftests: iommu: add config needed for iommufd_fail_nth
+Message-ID: <20240327114958.GG8419@ziepe.ca>
+References: <20240325090048.1423908-1-usama.anjum@collabora.com>
+ <31fcc276-acd6-4277-bd6c-4a871c7fb28a@collabora.com>
+ <20240326150340.GE8419@ziepe.ca>
+ <56cc8b9e-c1cf-4520-ba45-b1237e8b7b64@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|DM4PR12MB5938:EE_
-X-MS-Office365-Filtering-Correlation-Id: 59516d3f-030f-4cc9-6380-08dc4e52b462
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	rVcKwg8gjjji47c7h4So5wJ2ZOBFH97R4+FyLTr92TI+34crpMpMFh0nvRFLlchRB4ZLofJgR1gn1BFmrio81geHO8rTvTKuinUa/q89YXXArhvPGw6uqXnxinLWqOkeefaPEl6xBplnrgDMm0thmGDe8gpiPTm5YKP3TGZUgv1FLUzJiiK+wCkY4dIeL8wfbJoO/PmvN7cvEa1lolL9VeuYucW+KUH0gHl2fw+WCVu8TdFvYkC8N0YIvDUn8Kwwqkbvg03hVESBtc9jaTQeZGA4aBIvG73zStJcF0E+pXYnKejtC3gMgguE0e6MLSq0B1FHav7XUB83A0aeNY6syVZ6spRWiU8gU2+aXzGsYs6w21cU7Og2OW02WGoPWSkulUZbEB1XsDziM1G+lh/NH01nBm4gOqoBB/z9flgl1ORtYnmzCW2iaR7nMIpPOkuzZSEfj1JjP754aMPeOke+Exp9CqvCIzANdC40fzwhyM3hQQyXgEdA1dRiNsk/DWsR5O16qVvKbBL7l+egcuaNhTfi//ZPZBbNoUwtw/tgXVn4SeqNYv744BoE6mtWWBRXHMv03isTAlc7D+LsJlxxjk4i9RbX+WwM31j3a5IetZjaJaUaqHLV+z8IabtbAy+7IcFTh7C9BaGHqCbyVJy+CVuRxpFhBtmoEXT3cliuDVE=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TzN5UkRvSzdnUEtFQ3V4N3djTlArbmRySXBtQlNwL1M2UDYyTkVSM056V3pZ?=
- =?utf-8?B?N3JNQVZBNllkcUNDdVdQaVFiY2RYTktFc2ZVdnYxc0JxOXZTbDQybkR0YWtB?=
- =?utf-8?B?VlBXUnFJMEYxbC9oTG1MLzBrZ2RwZ0NjWVJNYnFpRnNQK3g5YitJVnRFbHBa?=
- =?utf-8?B?YjR0LzJES3RMRVlPT3Y0TnlaS3NXNDZTaSs2alBCN1RST3JwVnVlNjlCVU9i?=
- =?utf-8?B?MWdacE5rUHFkdDR1L3hHeXh3dC9mN0trR2J6TWNuUlFlOVh1aHI4Z2laKzF1?=
- =?utf-8?B?bG1scTRobUROZlZjTlFDckZMTUFLaVR5dzJBbUNZeWVCUEE4Y1VnV240TWs2?=
- =?utf-8?B?SWd3SXJUVEdIT1JEZ050aWxUVmVyREsyVjgxeWQ0eWZ6enB0OEJYSUkzTVlm?=
- =?utf-8?B?UCtudndRSGdoYlBVUllBNHIvUFZEZFVZNDVzSTRUY0RLemlYYUZ3cktoeW1p?=
- =?utf-8?B?bU5SVG1LYWdWKzJHNnFTbEJ4RHROWmRlWkxUZ3JYb1Uyd2N6WkxTYmttRHBZ?=
- =?utf-8?B?NHlPVzF2YWFwSTFNbFNjT2ZxSzQ2cWU5Z2J4cVVnS1JYMUNNNGpIUmFMMitw?=
- =?utf-8?B?NFJtc0ttWENnZk5ZMnNiUjZreWdudGNlS2tIYXRqMkthVEZKTVhNSTBwcVZK?=
- =?utf-8?B?SUJublUrd0dQeXAxY04wdHZyTXR3SUZibC91QTNSMGI4L3lodTRkNDBnUG5D?=
- =?utf-8?B?VlNoVk52dTN4UTh1Q01lTlcyNEZLYzBlc2h5eUNLZ2QvakFrelpVS1kxZDEr?=
- =?utf-8?B?aStxWTNyaVY0Sm5jaHExYlI2TVpOeUhWNVg4dkVJZFBUWGNnTTdqTnd4T0Mr?=
- =?utf-8?B?ak1ubWdMYUVHNFlwdC82N2RBMXlhSDJrTE9pQjl4cThlTWp6QVRtalhWSUl4?=
- =?utf-8?B?UTVFbkp6ZldtKzNwVUpLeGQrcUI4WHhydE92bUVWejBYcndiSXZnRFlXZ2lG?=
- =?utf-8?B?ZktzSWRxQU5KN2psZ09MQW9WNEZ3SFZGbDVBS016eUprRmhVaHA0c1lmYU55?=
- =?utf-8?B?VzNnQ2lKd0VIY0FYbkVvS3NuRTlDRGZwb0RjWG9OYmRMNUhrQ0xyTlc5ZGRr?=
- =?utf-8?B?VW13N0ZKb29CcWkxQ3VicG9LbWpMSjBsYWFuMGw4RGJldkZ5NE5oM3kzaktG?=
- =?utf-8?B?VytFT3RCZWU4VDBDbmFmY1VMdHZhTHB4Z1F4MTVmVEg1R1ZKczhGaXFndU5v?=
- =?utf-8?B?SXdaSHE5dFNyNFZrQ0hqUVZOY2tJSnNDRXlSWVhPRGpINXFMcGJlYkZ2Q3Nm?=
- =?utf-8?B?dzZadXYwYXAwMW9pRHk5WXloOGpHWkNBazVkeGxQcjJoTEVDNFE4K1NEUlJl?=
- =?utf-8?B?b1dTUHlVakFSNWdIR2Fna2E5MGtoaWVoeG52R0huR2xKVWtQYnV2S0FJcXN2?=
- =?utf-8?B?a1AvZXZBcWVlV25ickkyNmVldExDbWhNM1RLRHBlOWNyQjk3TkM3T09YTFQr?=
- =?utf-8?B?V1pKRzQ4V3lBbjRuaHExSlhGemE4Ykt2azRpSDZIR3dOZ1FWbWZwcitzSkhh?=
- =?utf-8?B?UFZETDhjbkY4ckRkNDM5Ym1HRk5lSmhPV28wUTc0Y0N4ZzZyUklQME5hVjNm?=
- =?utf-8?B?T0tjUTJ6VmdhbndkSzM3NzB1dHRZQlF3dGJqK0VzYVhtUjQxRmE2K0dhbE12?=
- =?utf-8?B?cTNnS2pLNE0wZERBVTlINDVaTzA3Tng1eGhmRHBTYTFLdnFtZ0ZXTWE4SVBU?=
- =?utf-8?B?SWd5U0FKdXczZ2VvTTNCZ0JJbFZlcmdHNW0vSVZ0STdPalgxZnV6VWVWd3p5?=
- =?utf-8?B?Mll5c0Q0R0NlOUw2WEpabXZabUt0Z2FQWitDc2hiT3pvV3RsTWlyVC9CL09m?=
- =?utf-8?B?aWZQcFA1WS8xb2wzZXhxZVpDLzZuMFZhMmtibnM2VWlTalg2SUViWGVPa1RY?=
- =?utf-8?B?OWs1eFFOemN4WTgvTDdaeUxpNm4xYzFrdmFRUExqdFIyTGNjcll1a281eUVN?=
- =?utf-8?B?WEI0V2cwRkNSYitWeE1PYUxVeDlNNGRZb09rOENMNXBkM3BIcjZLMmw1RWNF?=
- =?utf-8?B?L1lXZ2I4U1NaYW1GWVVTaEdBcVNRcEhGbnpySEdpNnFUSXdNN0hlS2RuLzcv?=
- =?utf-8?B?aklNUm5STmFRL05uQlRVWHBEVjNTQTl5YWYyZk1EQTNVbVNsT21TdVphc0VO?=
- =?utf-8?Q?eWgeS/WkodgJKZIuE/MMefn32?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59516d3f-030f-4cc9-6380-08dc4e52b462
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Mar 2024 11:40:30.1619
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0Khe17rxqiZFNdR/GsO+pQSbfkmCHzeI61k0dwN8CGDhyw4EItiCcn6CS68WV5Hd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5938
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <56cc8b9e-c1cf-4520-ba45-b1237e8b7b64@collabora.com>
 
-On Wed, Mar 27, 2024 at 10:41:52AM +0000, Joao Martins wrote:
-> On 25/03/2024 13:52, Jason Gunthorpe wrote:
-> > On Mon, Mar 25, 2024 at 12:17:28PM +0000, Joao Martins wrote:
-> >>> However, I am not smart enough to figure out why ...
-> >>>
-> >>> Apparently, from the source, mmap() fails to allocate pages on the desired address:
-> >>>
-> >>>   1746         assert((uintptr_t)self->buffer % HUGEPAGE_SIZE == 0);
-> >>>   1747         vrc = mmap(self->buffer, variant->buffer_size, PROT_READ |
-> >>> PROT_WRITE,
-> >>>   1748                    mmap_flags, -1, 0);
-> >>> → 1749         assert(vrc == self->buffer);
-> >>>   1750
-> >>>
-> >>> But I am not that deep into the source to figure our what was intended and what
-> >>> went
-> >>> wrong :-/
+On Wed, Mar 27, 2024 at 03:14:25PM +0500, Muhammad Usama Anjum wrote:
+> On 3/26/24 8:03 PM, Jason Gunthorpe wrote:
+> > On Tue, Mar 26, 2024 at 06:09:34PM +0500, Muhammad Usama Anjum wrote:
+> >> Even after applying this config patch and following snippet (which doesn't
+> >> terminate the program if mmap doesn't allocate exactly as the hint), I'm
+> >> finding failed tests.
 > >>
-> >> I can SKIP() the test rather assert() in here if it helps. Though there are
-> >> other tests that fail if no hugetlb pages are reserved.
+> >> @@ -1746,7 +1748,7 @@ FIXTURE_SETUP(iommufd_dirty_tracking)
+> >>         assert((uintptr_t)self->buffer % HUGEPAGE_SIZE == 0);
+> >>         vrc = mmap(self->buffer, variant->buffer_size, PROT_READ | PROT_WRITE,
+> >>                    mmap_flags, -1, 0);
+> >> -       assert(vrc == self->buffer);
+> >> +       assert(vrc == self->buffer);// ???
 > >>
-> >> But I am not sure if this is problem here as the initial bug email had an
-> >> enterily different set of failures? Maybe all you need is an assert() and it
-> >> gets into this state?
+> >> On x86:
+> >> # Totals: pass:176 fail:4 xfail:0 xpass:0 skip:0 error:0
+> >> On ARM64:
+> >> # Totals: pass:166 fail:14 xfail:0 xpass:0 skip:0 error:0
+> >>
+> >> The log files are attached.
 > > 
-> > I feel like there is something wrong with the kselftest framework,
-> > there should be some way to fail the setup/teardown operations without
-> > triggering an infinite loop :(
-> 
-> I am now wondering if the problem is the fact that we have an assert() in the
-> middle of FIXTURE_{TEST,SETUP} whereby we should be having ASSERT_TRUE() (or any
-> other kselftest macro that). The expect/assert macros from kselftest() don't do
-> asserts and it looks like we are failing mid tests in the assert().
+> > You probably don't have enough transparent huge pages available to the process
+> > 
+> >       echo 1024 > /proc/sys/vm/nr_hugepages
+> After making huge pages available, the iommufd test always passed on x86.
+> But there are still failures on arm64. I'm looking into the failures.
 
-Those ASSERT_TRUE cause infinite loops when used within the setup
-context, I removed them and switched to assert because of this - which
-did work OK in my testing at least.
+Oh that is really strange. Joao? Nicolin?
 
-Jason
+> #  RUN           iommufd_dirty_tracking.domain_dirty128k.get_dirty_bitmap ...
+> # iommufd_utils.h:374:get_dirty_bitmap:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty128k.get_dirty_bitmap
+> not ok 139 iommufd_dirty_tracking.domain_dirty128k.get_dirty_bitmap
+
+> #  RUN           iommufd_dirty_tracking.domain_dirty128k.get_dirty_bitmap_no_clear ...
+> # iommufd_utils.h:374:get_dirty_bitmap_no_clear:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap_no_clear: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty128k.get_dirty_bitmap_no_clear
+> not ok 140 iommufd_dirty_tracking.domain_dirty128k.get_dirty_bitmap_no_clear
+
+> #  RUN           iommufd_dirty_tracking.domain_dirty256k.get_dirty_bitmap ...
+> # iommufd_utils.h:374:get_dirty_bitmap:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty256k.get_dirty_bitmap
+> not ok 144 iommufd_dirty_tracking.domain_dirty256k.get_dirty_bitmap
+
+> #  RUN           iommufd_dirty_tracking.domain_dirty256k.get_dirty_bitmap_no_clear ...
+> # iommufd_utils.h:374:get_dirty_bitmap_no_clear:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap_no_clear: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty256k.get_dirty_bitmap_no_clear
+> not ok 145 iommufd_dirty_tracking.domain_dirty256k.get_dirty_bitmap_no_clear
+
+> #  RUN           iommufd_dirty_tracking.domain_dirty640k.get_dirty_bitmap ...
+> # iommufd_utils.h:374:get_dirty_bitmap:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty640k.get_dirty_bitmap
+> not ok 149 iommufd_dirty_tracking.domain_dirty640k.get_dirty_bitmap
+
+> #  RUN           iommufd_dirty_tracking.domain_dirty640k.get_dirty_bitmap_no_clear ...
+> # iommufd_utils.h:374:get_dirty_bitmap_no_clear:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap_no_clear: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty640k.get_dirty_bitmap_no_clear
+> not ok 150 iommufd_dirty_tracking.domain_dirty640k.get_dirty_bitmap_no_clear
+
+> #  RUN           iommufd_dirty_tracking.domain_dirty128M_huge.get_dirty_bitmap ...
+> # iommufd_utils.h:374:get_dirty_bitmap:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty128M_huge.get_dirty_bitmap
+> not ok 159 iommufd_dirty_tracking.domain_dirty128M_huge.get_dirty_bitmap
+
+> #  RUN           iommufd_dirty_tracking.domain_dirty128M_huge.get_dirty_bitmap_no_clear ...
+> # iommufd_utils.h:374:get_dirty_bitmap_no_clear:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap_no_clear: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty128M_huge.get_dirty_bitmap_no_clear
+> not ok 160 iommufd_dirty_tracking.domain_dirty128M_huge.get_dirty_bitmap_no_clear
+
+> #  RUN           iommufd_dirty_tracking.domain_dirty256M.get_dirty_bitmap ...
+> # iommufd_utils.h:374:get_dirty_bitmap:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty256M.get_dirty_bitmap
+> not ok 164 iommufd_dirty_tracking.domain_dirty256M.get_dirty_bitmap
+
+> #  RUN           iommufd_dirty_tracking.domain_dirty256M.get_dirty_bitmap_no_clear ...
+> # iommufd_utils.h:374:get_dirty_bitmap_no_clear:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap_no_clear: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty256M.get_dirty_bitmap_no_clear
+> not ok 165 iommufd_dirty_tracking.domain_dirty256M.get_dirty_bitmap_no_clear
+
+> #  RUN           iommufd_dirty_tracking.domain_dirty256M_huge.get_dirty_bitmap ...
+> # iommufd_utils.h:374:get_dirty_bitmap:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty256M_huge.get_dirty_bitmap
+> not ok 169 iommufd_dirty_tracking.domain_dirty256M_huge.get_dirty_bitmap
+
+> #  RUN           iommufd_dirty_tracking.domain_dirty256M_huge.get_dirty_bitmap_no_clear ...
+> # iommufd_utils.h:374:get_dirty_bitmap_no_clear:Expected j < npte (1) == test_bit(i + j, (unsigned long *)bitmap) (0)
+> # get_dirty_bitmap_no_clear: Test terminated by assertion
+> #          FAIL  iommufd_dirty_tracking.domain_dirty256M_huge.get_dirty_bitmap_no_clear
+> not ok 170 iommufd_dirty_tracking.domain_dirty256M_huge.get_dirty_bitmap_no_clear
+
