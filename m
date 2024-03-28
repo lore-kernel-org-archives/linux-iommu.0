@@ -1,81 +1,77 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D2A3208C1
-	for <iommu@lists.linux.dev>; Thu, 28 Mar 2024 07:12:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CC0251C21
+	for <iommu@lists.linux.dev>; Thu, 28 Mar 2024 07:39:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.18
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711609933; cv=fail; b=dA6VqimNzc4ajAD/tQedVpibSAfDa1EhrwP9Ac1FbA996uJ6QlRbZfD3raqOwYi3s6GWeZdRO3FmE8yhKlFQrZgSAtIxxRxYxwNqav5m2kJUF1/eVuI31CjNm2x7RgficLzVOGI9E0NczIquiBIG4ZzZtKh0ZmSs+A3p5MENBMg=
+	t=1711611583; cv=fail; b=pCC65XYNY8BfmqHv+3ZP/8r66/KmxyhkTg87aRSyyEuvqGcyKCaS1qxIeruuQSRC661P95Y5xybxLLHk/bOCAtklWOQHO605CFWFgi2vmCXFmujDn0sb3FuSjiZYwmLBDAMXBNgDoLq5kUHSAce8jkkZVvEEPgrmuAXiiqmkIZg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711609933; c=relaxed/simple;
-	bh=Bpd9RulmhBOILYOSI1f8VrgBEOpx4E9vdoSRyROhUc8=;
+	s=arc-20240116; t=1711611583; c=relaxed/simple;
+	bh=cLif9aNQqm5IcaG3sCJIrEzBU8fV54yBzUxMJoSCxps=;
 	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=p2F1T1Y5de6xbtW/B/PbT3gGMzOWAzBAryNk/jCFuYG3uaUdxbhhWOAOJpmsI9qPwJsZQH6vfO86AoJnROzZrukNFYVWsShxZS/Iwx3rWXeZAWqHiXiM+5mqwQA2KlwQYI62Oi/Nh5l+Yh3RuHzd1iP7HeWAyo2z2l6ws94J/pY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gGZhXlhx; arc=fail smtp.client-ip=192.198.163.8
+	 Content-Type:MIME-Version; b=MX8xD8r5Pnw0PjiemqhMoazCzGnoVHGLGDZSonDIsyvc2QO0SsEZwhItSpUDsiC2y00YSaXsogCwIuQOqtJXNOEyxntZebGJZIpAMQ+lUvRpn+TOZZ2rStMO4JOJabueUAQr7CMh79tfrjnFW4m4/OVanqdFDWWlqL5MjUFyggg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QmHHqylG; arc=fail smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gGZhXlhx"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QmHHqylG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711609931; x=1743145931;
+  t=1711611582; x=1743147582;
   h=from:to:cc:subject:date:message-id:references:
    in-reply-to:content-transfer-encoding:mime-version;
-  bh=Bpd9RulmhBOILYOSI1f8VrgBEOpx4E9vdoSRyROhUc8=;
-  b=gGZhXlhxG7va5q06w64NH2+NsDzq/AtLAIwsTqjc2o9Kl3C0ihR1pWjM
-   kqWL92QNc6vnA2Umin49fpeXTFsHWLqYZjkeIXMjaXAYf99STdv5kmcLq
-   JYe1U++W1/QsJSmthimejFiMzaItOVTqCizzvYrtUXhwgto8NJCiXvnq+
-   ah+9RRc9niwHn17SH4TbYuhRU7DWswh9fL2xU5NKX7qxxu2mQHB/Dx1KG
-   qBXeB4WQCzciUd1g8nnLnVyCroMtdUsMT2/ykzN+b+FElOIeKL35pEX6N
-   Glq5gaWJin9c4SYHhbCcvGTNE0rad5DBjKhfuDkvnyI+iNlriVcENeoq/
-   A==;
-X-CSE-ConnectionGUID: cv//Rnl8SgKFI8hdKe3m0w==
-X-CSE-MsgGUID: sQcS4qZMTLm8YcaOznFxjw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11026"; a="24239002"
+  bh=cLif9aNQqm5IcaG3sCJIrEzBU8fV54yBzUxMJoSCxps=;
+  b=QmHHqylG6Gi34Rq4f2QjxZqCboChiXn9b5VrRgzD66eiBckUuBWR+hYU
+   a8e6irgcMEPs9/JtdfKltvvh9N2Z3ESSouvwMiUsDayUMPXtrUXWkLtgf
+   tS0WnRZ5z6vGVcyTPE5d3FHUCUZRDv7PJ6SfEB+OvmdI5DkPCModj13a4
+   kok3Cocn5ItlH+HeduLtXitHAxnXO2LaSgwpzTWw11NBnqH4zUKnIP+6Y
+   J7xhIutHhGiVfyZat6r1PFNzCza5JJdHGdYexyUOfdvZxMOJJwth8pey5
+   H1JrN+DF1Iu65Ht1NycF5sMqjs+P5E9WuJ9kcGIMlZPL2YGlPWaKVxZ0U
+   g==;
+X-CSE-ConnectionGUID: UOA8Gx1ITa+SdJFdNRRWyA==
+X-CSE-MsgGUID: t/D4IhBvTMSrNdIWwdtaYw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11026"; a="6878270"
 X-IronPort-AV: E=Sophos;i="6.07,161,1708416000"; 
-   d="scan'208";a="24239002"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2024 00:12:10 -0700
+   d="scan'208";a="6878270"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2024 00:39:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,161,1708416000"; 
-   d="scan'208";a="16378240"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orviesa010.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 28 Mar 2024 00:12:10 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+   d="scan'208";a="21062150"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by fmviesa003.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 28 Mar 2024 00:39:41 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Thu, 28 Mar 2024 00:12:09 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ 15.1.2507.35; Thu, 28 Mar 2024 00:39:40 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Thu, 28 Mar 2024 00:12:08 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Thu, 28 Mar 2024 00:12:08 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.100)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ 15.1.2507.35 via Frontend Transport; Thu, 28 Mar 2024 00:39:40 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Thu, 28 Mar 2024 00:12:08 -0700
+ 15.1.2507.35; Thu, 28 Mar 2024 00:39:33 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HyUBkvXCoA011/TRcoMExufRNgV7zByv6GbM0ssVVMNBlxFW2TTr4dGIDWLKvRzK5DXjoEYC8gz45C+pkXtUCgZvkTx+viOQ2Wis7i5gjrBx4GY17/o7mkArV/dDQRlg6/WsIBk56d8v99hFUik/oOweNRW9YHRi3PrTCz6QW7MUG+BwI6UrXyVWQnhffdpOaAqTBb2C0wap4El/VCB9jptswh+/B1/RoJ4m9yiBlLnyxMU8t4NZH3oPciEU1F5GGZqM9KRYfeSc6+n7gnG+bNQysGJRkIw7c1H0YqEDcNRKYNneSB67IY8RUN6K2foi4phq4Rux1Xm9jC58iK7EtA==
+ b=LUKZAoNmLOM+8LtptqAfbeNts0Js64dJGXMJuW6VoylY4Y89bTJs0PkYk/lBqhtmiwrYnO9nPwidcaFkZCfMM+zFwBnOfT7WOzFDi1tqwjMOIjoeF4oXGb7tz1vNMOBRi/xgar6wytDqJk9+6Ct2WjNcgXVYcoRmPsRgcPUWgCFvEcne1pi4+yDUicdsHIfc8W76ZBNmVgpxIhuEmGxIBKQIBXQ+9sRHNMgaleM+pmWs9rinbeIdbgDSOHrvFEcW30goXelOqzgUKzvzWJ0dUEpKNiFw0YHMmko42xln5tgItF7x9h7Lsv/7F5QNF7XMsAY60pFxwErLaCSVs3xr1A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PiGnPnXzyt28EolXN3vmd2si+vRzzGWzo2IVJ5+OS2s=;
- b=KBTjgMGf5TYEQWhMrP1vXDxBzwFWLU6h8NbEIBC50S4PPb2NimlGqu5iy4lpEFbLFMwfG95t6DaAze/qxNJ0O5tVEq3nb6cn8pBSx2UGs9pdYafidfvzkOE2NFh5czA1qvyqT8ud3o0SKq8v5E9lf1UL0ZCHqDSujWyMNPg/z9dz+0q992Zm52BiAu0U+9qlbzMXFoUj03q4mjZFRP/j+FORipwKwJGTgDRWqGEFxz48Qp3ZEMsQyahNgATPxF7jEAWft26RAr7hKNJzckrt9IpY+i+swTMj4kCmFjWd98ueDU0UDt6l15gXhSTM0FPCKRjw56+FWvlDOE2dIIsqNQ==
+ bh=kNdW8h+vIw3z3Lmi4ueglsrXL7RhfQh+uSp2plKqUyA=;
+ b=SIYQVnDB+N0tn5zLQUFLHrz5Zms/0zy2IMlNcL263SctAITpwQdDg0MjyhE3IsorW8AMyzj0N3451jMCmW2ZddJAEySYFQ3/ekPUtgwfiOWeJqrbouy8LF+Dh8NbkvmdFm0qA+z+v63lniMoWpN4AlxUf7+e7Fi3G/cPK05rYsxQ2/1VJ4ziGr/jjz9h5YBqBsgtkoEv5TvoV6oQusA7zKIPM9eCONxDNWGEBavDFozok/HAHRtrCfXtHhqTZkzQptdkH4I2r7caTQo1NTd7+ntu6Pg4z6u5Lrdidz2hEtU1xeomLO4By2eJVOO/hcS20YOc2t5ZMgsZJhVIL4zzzQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by IA0PR11MB7282.namprd11.prod.outlook.com (2603:10b6:208:43a::13) with
+ by BL1PR11MB5288.namprd11.prod.outlook.com (2603:10b6:208:316::22) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.26; Thu, 28 Mar
- 2024 07:12:07 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.32; Thu, 28 Mar
+ 2024 07:39:32 +0000
 Received: from BN9PR11MB5276.namprd11.prod.outlook.com
  ([fe80::6c9f:86e:4b8e:8234]) by BN9PR11MB5276.namprd11.prod.outlook.com
  ([fe80::6c9f:86e:4b8e:8234%6]) with mapi id 15.20.7409.039; Thu, 28 Mar 2024
- 07:12:06 +0000
+ 07:39:32 +0000
 From: "Tian, Kevin" <kevin.tian@intel.com>
 To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
  Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Jason
@@ -83,14 +79,14 @@ To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Will
 CC: "Zhang, Tina" <tina.zhang@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 01/12] iommu/vt-d: Add cache tag assignment interface
-Thread-Topic: [PATCH 01/12] iommu/vt-d: Add cache tag assignment interface
-Thread-Index: AQHaflqwfTup1ArZ00iKq9wT+H7xNLFMvHPg
-Date: Thu, 28 Mar 2024 07:12:06 +0000
-Message-ID: <BN9PR11MB5276A6DDE82623A32FF80F4F8C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Subject: RE: [PATCH 02/12] iommu/vt-d: Add cache tag invalidation helpers
+Thread-Topic: [PATCH 02/12] iommu/vt-d: Add cache tag invalidation helpers
+Thread-Index: AQHaflqwAocS3d3S90WqoPDmpOE9v7FMwc/Q
+Date: Thu, 28 Mar 2024 07:39:32 +0000
+Message-ID: <BN9PR11MB52769F48D89273B0CCAA0B7C8C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
 References: <20240325021705.249769-1-baolu.lu@linux.intel.com>
- <20240325021705.249769-2-baolu.lu@linux.intel.com>
-In-Reply-To: <20240325021705.249769-2-baolu.lu@linux.intel.com>
+ <20240325021705.249769-3-baolu.lu@linux.intel.com>
+In-Reply-To: <20240325021705.249769-3-baolu.lu@linux.intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -98,41 +94,41 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|IA0PR11MB7282:EE_
-x-ms-office365-filtering-correlation-id: 24f50580-c462-498b-64f6-08dc4ef66098
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|BL1PR11MB5288:EE_
+x-ms-office365-filtering-correlation-id: ca3a8690-b03f-40cc-3734-08dc4efa3543
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gcYjThJdR8cA+QpW81k9Jx4fa2NpgXxUcVwhxOF0IDEY2Cj1Y9EHHm25id5r9elo2atXs7uFMVRLJ3wM+D24f1n8pxOUQTOxuGlP0yQcBu07V98avcdt3RjFAsG9bShy2GZUSgRYNPHEz+XNHYV3FoudyKaZi4F4jhbH3p7xiXJH9rfszvrxGoz/sTMG18/+eK/3DamXrOJO4JoBHi5NLM5FllDm/qO81SSIKNmOLKBCQp+jzncURQoV0E/SOl9iYeTP875gqfTcWox5cUW5+VZM20uP9Azz21zNNpn5x195SvKR6mYi6J/soKqepry8NVMGnLRSfaCryM6951IYTEERixRDm+UmE9CU2CB8eoTHv8woYcphvuN7a4iLpdbagpyM63v6waghKrd3R4X/PSst4ZkD9Q6rUOY9IMG2sgcG9A1AiXshPgdc8ul8O4bBF5nFLEtaqINTpLBe+CyXarLw92VYuN2ANZedCM2ny0F48WzGaX/qbHbNy9jXR3B/k6X9QrnohcpMXAKlBLY31OOPT4Ja24ulPgeDuFAUJSoQLu11ZVFqzVRmiRHtzGIGuYt/vnJBu8t9OEluSlv32/8Bb5uZLpXwHRviz/P5uPZShHjpcxGK7F78Q/6TQlNCjFpSADzY2w3vwMZy+XYdyv9jLQjhkU5hmT7QuWDOTErMd8yGbm1eK9FBIw9DuC72xZwqj8yKelgAaNY1dOxrsecSuUZrlAL3rPdy1eh3y08=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015)(38070700009);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: 9cT7L8PZ+wpAk8agLoJmIAT7cEC5vM2CxUjpPHJCToPtefqiFsNecmjt1C1+72tRxBwYiW+LQkMzQxEiJpxLzGxVeCOF+KOR5o2kC82QbXUrH/hZS8hRn0CMoFXRMfQTTMtLg8ra0i4ypBQ9OyBrJava78HUAzUqvbayWFOikxbhZz08Q0/ySZdUGivvz5gpP1SID/PcSxpNH22FjZLtU3kzueAPeL8NUk8ygpvvwTxP9wukGW4bKOjd0dZ3E4MZASNZ+JopfG11nVpypfk6uu4TGHgdUITh/gVo59MZT0LL/KkbkDWDQhRuSI0XHMrkPDlRAkNSCR/wDJUnl0FpbuQCLfFBCTvCg08nWRKFvhGm2LojWgxSbCdpbrzN6RIvCjgSnbS1tXmhr+8CARu2C5cM/EwplCxnJJWRx6BdiMkyTGjdyCjah5V7U1C8tYqhxSGf9VcT+ys09MPwM92k2CZU9gyXwQs2cGwP5emigIqYi1u8c9C2xEQZd6AFHtfYro8y9av7yuztPGmc7oDCuL1cdbNdBvgjqhWTvNN81E6H4P/B2fPGQFpgvz9+qnC7ZL/297rDvxu0p9s8yNIia+6ke1v9Cc7DvppNEY9+DRL10ImXpsDP8wO+z2yG6VD9QDbt/9tnXKyMlrSabMpV/zxjBbA3eMxlheiw/o6mJRMNtdLdy6ZxLrR5B3FWVYT+Y07MiW+d7Eqmkak1/c8qYyqbdLoFfVGQQ3DtImR9n+8=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(366007)(376005)(38070700009);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?LZ5Lm041xeGVIn2tc4zqsYi0qycyDFn9yhxdB28q+cReehgpCImzVAiHSzRr?=
- =?us-ascii?Q?VD5NrBi6E2FrgzcbeOqxVFC/37mO6wplGBpzTiCsuIJ6E2FLbYS1mVYWaRcw?=
- =?us-ascii?Q?5ronuVypl+q5dRW1D4epkFb8BvMkpE/EJ2mdQuN9lDlIMWeiAVA3nzSVJsPl?=
- =?us-ascii?Q?HJ0rwHXF0F6BrN3+mwAlMdvpTo+tK5PC662bzngyha4WvDTG7YUj0C5bhK1p?=
- =?us-ascii?Q?B09RjmWJZiBJPmEOjyoXG6sJZ//5k70rqIPrqGszuD/3I1mh9rJb9pqr7V2J?=
- =?us-ascii?Q?KrIFAhq5OKpKU/j1Jye2da7Zamk5wOWXEjcM/hCF3SRcC7HSi1DPsepr0PdH?=
- =?us-ascii?Q?pv0SFNHwvocbkahe90opNeFDe0dHHNt1seiAVXbY7CL0gIdd2zpH/wN5Df4D?=
- =?us-ascii?Q?0DAOBYYi7V3tTr5VwG1264GQbAANprlTZ7C9cg2UJAkWRppnou3+QuwujZR0?=
- =?us-ascii?Q?5TBPjv4/N4LfjtHw3xX5KZf7gZnB2Vh+3KXYbfJQ132FCPxzHJVkZroVbSa1?=
- =?us-ascii?Q?IvBKlQDclq9K/1CL417Uz9KIcE9MY4i20llnArRrfx/vVu4f5n7SzDHFTz+B?=
- =?us-ascii?Q?7J7IwQ3Q/n2Y6eT6XgpU4ZgQ0z/INatI6GvFAfsOdjubx9/WXe2cxRFa3DBb?=
- =?us-ascii?Q?W8wIdblZrqaEP4qXHKNkfnm/raylCl5O43h/h1u5+56/U44nUSoLFUd8uy1w?=
- =?us-ascii?Q?KqogKAb6nfpjkNiLM7O1YsukofNu+JRhsbqssQv4ik1MZt3v3pyQmLAEfuM+?=
- =?us-ascii?Q?z0rvF+IDxJ1BArR8l/lK3n7EQP/wfxEaD/RlK7O158FmGnGQykqgr9U8mXfS?=
- =?us-ascii?Q?h9vJcyYhoUBrDzgLzCcmYqfy4LZ4unsU809t7xqlHvnQy5Cgs29WtY2w6f+L?=
- =?us-ascii?Q?uEnPvXSiRE/jcAQbD/fZuEjSXi7KUGf0pGMIYD8vGD9PAtIEyVcZZ/WBXlfc?=
- =?us-ascii?Q?rAdU/FPd4v0XceHJiikcgOkhb5dTFC9VUyZgdUNEedX3H7m6+fFbr6FaaJT3?=
- =?us-ascii?Q?nK6bc+gMYg/80Afg5uTp6qtynMAUmViGv5f6FoQOstGsIfot9kj6hQ/biSNd?=
- =?us-ascii?Q?aeoZYyk5RbtTW9AZPTkK+8gqOjTknFVPUaJi4+9cdiZJqln87GZ1cK6GqLuQ?=
- =?us-ascii?Q?LbnofqDJJvhDzuMNOy0wFRC0xfsjwS4F4lBN4lIEf2viKdh80DGM2LrfYXGd?=
- =?us-ascii?Q?tTCepDQsqO6PjOaOWLsvJYSs7OPNwk8yeogAaGue0r2NJ7H89vhGGlUanyay?=
- =?us-ascii?Q?M8j9UdqO7tow+/rH4aTl6ej1yUAQ6YsT5Bdf6h7lKX15J040Y388S+hFvSYR?=
- =?us-ascii?Q?b3SbpxdZAMYcIkYhmsN6eGaGafL+VjpW+Nw+XWcGfSWMkoLKA0j/ZTMYbexa?=
- =?us-ascii?Q?ayrnzySuXoxpAa/ragG1V/NUr6sC9BxmqPU+EiXau+aZ20FlidkNa0U4RWHf?=
- =?us-ascii?Q?72SoD1Vp6etYE/t8Cl8BpvfyZIbHVLSjZdYxNEBrVr4DIOBmO6AQAJ/B2HaH?=
- =?us-ascii?Q?V7T6HCyqyWzpOdi4vVdzsIDI3LVZsYMkMAqvQfY3fE3XUrRvs70glu2f55Kt?=
- =?us-ascii?Q?/HFYMNfVpRL6MwwuMVnK1ENAXHgoyyYa+naIC/Xd?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?7Z+lx5wOpa/fHVXfSwGlwEBwDcGUVbA9Gx6PmsQDz+fvVrqhopVKbBBN45hp?=
+ =?us-ascii?Q?8wEVl+YDTOX6tCx+ObLDJ/uUHekygOZUXV1o21cORqpDgrbU9DasSxvcJIaF?=
+ =?us-ascii?Q?PwiwqS3tG9KkVYUiBbZiFH9UowOPIHXV3OTTQqPkIOVY0fsDEwHNs8gfEqPt?=
+ =?us-ascii?Q?mGhuqguQeH2+g1X1UHukfaRDrlW5IEl4omOzIN06ppJnmpQG/YSsZ6X/NC4I?=
+ =?us-ascii?Q?X1cSBg3m760kIOgAjHHjTXlfukQQXb9mlU7LaQulB3I3Q61tbTmNW1OaLCmS?=
+ =?us-ascii?Q?TKT93s4HyRLTy8RtiyG9adVGohuBer6f27Ukw+Wr1q5lZEyYZHWN6ajf2lRQ?=
+ =?us-ascii?Q?DZq+Qk6euRBEAmotCcRe9ZKUE4jMrfcPi8ouHFkJ/H8T+O8B92yb6pQ7yhgo?=
+ =?us-ascii?Q?0+u05NcoJCIjmPwQFfmg0cnPHYRbrRQcqI659k/AxgnW/PvPyGxiKinc69FI?=
+ =?us-ascii?Q?ryhA+kO/kw8MJM6rFlPHl3cLbmzBIarnlAEa0xc0naUAm4FpfvNKxU0p4IIG?=
+ =?us-ascii?Q?UGFhXc/ChlHB9n+W6sIMVO1Np60ctxKecxxWHGEGOz6XkBJGDCEXBhHHx5ij?=
+ =?us-ascii?Q?M5cinOjt40S6shhWw8XSLULp0aftPtCpPZ6IvIGVgyD/pg02Tzy/D5r3CnGN?=
+ =?us-ascii?Q?FhdVYwkCWsAhNbhHk1s6Qpi3Ucbg3M0V1qR6clniUVtFKD8bZ35BPkCsKv7f?=
+ =?us-ascii?Q?/aobaJOcEgQxpJKCEAciZ+4yj50ZS767r+oCA1pf6CtokJK9JIlRy4bJo6XX?=
+ =?us-ascii?Q?SMGuGa9cLD2C8iB+rxUkHtnb6BF5+qoAripU0bGZ/K4ENldHltUYrD/LBJZb?=
+ =?us-ascii?Q?4/WkSP8KRukxQae2v5J8348/inxO7BqS2j4QEwfibs0deJT3EtxYWcBWrnkw?=
+ =?us-ascii?Q?PNMJYHuQzVa+6/j9UGJ08s4W50sH0TiwE98lcS8d7RCuMUR9tUHzk1lmVATC?=
+ =?us-ascii?Q?P6VMZSPnn59S1kDOylRP1rCUNs8rS/il3JSu9ip1Tl6lSpcBKiqa9z+R1/kU?=
+ =?us-ascii?Q?ToKxv6nwGnrxA6yIr95LpA685pD5KfjJ4VjykaEayQbBDX90GmXvqwIPrgpu?=
+ =?us-ascii?Q?9OeChPr/8nm3WK3ztk2gXSkDf7tMLlExP/vepHmsg3KyTdq33tcyWq4jChSO?=
+ =?us-ascii?Q?ul3SJ10c23VTZkHHS5hAfCCu27jzwi3PNccg+ANtjzgLmnHkqZ2ibTTbSnbY?=
+ =?us-ascii?Q?KXyDrsufTxJLl7viuRzI3GkQDZ7Iu6YNvKbQoqwTz8+5uzw6BPGyZYEgLAr4?=
+ =?us-ascii?Q?79ZPXVaf23qUp/p84UIIq5RXM+VOk/IITMep8IYv2S0ve3LifPRFXJMZdAaU?=
+ =?us-ascii?Q?d61L3KeoCeI6tfT4P12FgZ89Q78GF6ALhRbzJoR3yBPuLSa8aIr/tdDvtRDo?=
+ =?us-ascii?Q?aJPuxd8V1Mp0GJ+ba0v1RR1EJHnUhJuHuYjR4w8rTqgq1Q0SaROKMED0lL+M?=
+ =?us-ascii?Q?dcXtk4Tr30GJze1+gctGWpi/1QYGbTxjGaPOARALWfVO1592unFXS5JsDCQN?=
+ =?us-ascii?Q?KTk+mRjek5rerJmxrZ7+/nyAk6NPV3y4XYjUbKG429fTWezZvwD0FMLBB/+c?=
+ =?us-ascii?Q?W7KQLLmuBMehQ5nYEGQmTtgWpvELZYoy2VajZzPA?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -143,116 +139,174 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 24f50580-c462-498b-64f6-08dc4ef66098
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Mar 2024 07:12:06.9142
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca3a8690-b03f-40cc-3734-08dc4efa3543
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Mar 2024 07:39:32.1607
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iRjY1mmrTzMThOPg6F4MjPTacKVZHI+Hk+QhbdALiGiK/qsDN5VQeMmTatnilKzanIyt5uVD2u1WNX/d74ilVw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR11MB7282
+X-MS-Exchange-CrossTenant-userprincipalname: 6k7/K5G6nZlN+5VXf5ZAFaZmyFGN77xtB4Sa3yx5ECQbalFYLiXIZS8ZFuW7Cx/yCG7Ct0U2bBUoMCGiI7H2+g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR11MB5288
 X-OriginatorOrg: intel.com
 
 > From: Lu Baolu <baolu.lu@linux.intel.com>
 > Sent: Monday, March 25, 2024 10:17 AM
 >=20
-> +enum cache_tag_type {
-> +	CACHE_TAG_TYPE_IOTLB,
-> +	CACHE_TAG_TYPE_DEVTLB,
-> +	CACHE_TAG_TYPE_PARENT_IOTLB,
-> +	CACHE_TAG_TYPE_PARENT_DEVTLB,
-> +};
-
-'_TYPE_' can be removed to make it shorter
-
 > +
-> +/* Checks if an existing cache tag can be reused for a new association. =
-*/
-> +static bool cache_tag_reusable(struct cache_tag *tag, u16 domain_id,
-> +			       struct intel_iommu *iommu, struct device *dev,
-> +			       ioasid_t pasid, enum cache_tag_type type)
-
-cache_tage_match()
-
+> +static unsigned long calculate_psi_aligned_address(unsigned long start,
+> +						   unsigned long end,
+> +						   unsigned long *_pages,
+> +						   unsigned long *_mask)
 > +{
-> +	if (tag->type !=3D type)
-> +		return false;
-> +
-> +	if (tag->domain_id !=3D domain_id || tag->pasid !=3D pasid)
-> +		return false;
-> +
-> +	if (type =3D=3D CACHE_TAG_TYPE_IOTLB)
-> +		return tag->iommu =3D=3D iommu;
-> +
-> +	if (type =3D=3D CACHE_TAG_TYPE_DEVTLB)
-> +		return tag->dev =3D=3D dev;
-> +
-> +	return false;
+> +	unsigned long pages =3D (end - start + VTD_PAGE_SIZE - 1) >>
+> VTD_PAGE_SHIFT;
 
-why do you disallow PARENT_TYPE from reusing? It's not uncommon
-to have two devices attached to a same nested domain hence with
-the same parent domain. Disallowing tag reuse implies unnecessarily
-duplicated cache flushes...
+this doesn't sound correct. You'd want to follow aligned_nrpages().
 
-> +}
+> +		case CACHE_TAG_TYPE_DEVTLB:
+> +			if (tag->pasid =3D=3D IOMMU_NO_PASID)
+> +				qi_flush_dev_iotlb(iommu, sid, info->pfsid,
+> +						   info->ats_qdep, addr,
+> mask);
+> +			else
+> +				qi_flush_dev_iotlb_pasid(iommu, sid, info-
+> >pfsid,
+> +							 tag->pasid, info-
+> >ats_qdep,
+> +							 addr, mask);
 > +
-> +/* Assign a cache tag with specified type to domain. */
-> +static int cache_tag_assign(struct dmar_domain *domain, u16 did,
-> +			    struct device *dev, ioasid_t pasid,
-> +			    enum cache_tag_type type)
+> +			quirk_extra_dev_tlb_flush(info, addr, mask, tag-
+> >pasid, info->ats_qdep);
+> +			break;
+> +		case CACHE_TAG_TYPE_PARENT_DEVTLB:
+> +			/*
+> +			 * Address translation cache in device side caches the
+> +			 * result of nested translation. There is no easy way
+> +			 * to identify the exact set of nested translations
+> +			 * affected by a change in S2. So just flush the entire
+> +			 * device cache.
+> +			 */
+> +			qi_flush_dev_iotlb(iommu, sid, info->pfsid, info-
+> >ats_qdep,
+> +					   0, MAX_AGAW_PFN_WIDTH);
+> +			quirk_extra_dev_tlb_flush(info, 0,
+> MAX_AGAW_PFN_WIDTH,
+> +						  IOMMU_NO_PASID, info-
+> >ats_qdep);
+> +			break;
+
+parent devtlb can has pasid too, though not enabled now. As core helpers
+probably we can support it now leading to simpler code:
+
+	case CACHE_TAG_TYPE_PARENT_DEVTLB:
+		//change addr/mask
+		//fallthrough
+	case CACHE_TAG_TYPE_DEVTLB:
+		//what this patch does
+
+> +void cache_tag_flush_all(struct dmar_domain *domain)
 > +{
-> +	struct device_domain_info *info =3D dev_iommu_priv_get(dev);
-> +	struct intel_iommu *iommu =3D info->iommu;
-> +	struct cache_tag *tag, *temp;
+> +	struct cache_tag *tag;
 > +	unsigned long flags;
 > +
-> +	tag =3D kzalloc(sizeof(*tag), GFP_KERNEL);
-> +	if (!tag)
-> +		return -ENOMEM;
+> +	spin_lock_irqsave(&domain->cache_lock, flags);
+> +	list_for_each_entry(tag, &domain->cache_tags, node) {
+> +		struct device_domain_info *info =3D dev_iommu_priv_get(tag-
+> >dev);
+> +		struct intel_iommu *iommu =3D tag->iommu;
+> +		u16 sid =3D PCI_DEVID(info->bus, info->devfn);
 > +
-> +	tag->type =3D type;
-> +	tag->iommu =3D iommu;
-> +	tag->dev =3D dev;
+> +		switch (tag->type) {
+> +		case CACHE_TAG_TYPE_IOTLB:
+> +		case CACHE_TAG_TYPE_PARENT_IOTLB:
+> +			if (domain->use_first_level)
+> +				qi_flush_piotlb(iommu, tag->domain_id,
+> +						tag->pasid, 0, -1, 0);
+> +			else
+> +				iommu->flush.flush_iotlb(iommu, tag-
+> >domain_id,
+> +							 0, 0,
+> DMA_TLB_DSI_FLUSH);
+> +			break;
+> +		case CACHE_TAG_TYPE_DEVTLB:
+> +		case CACHE_TAG_TYPE_PARENT_DEVTLB:
+> +			qi_flush_dev_iotlb(iommu, sid, info->pfsid, info-
+> >ats_qdep,
+> +					   0, MAX_AGAW_PFN_WIDTH);
+> +			quirk_extra_dev_tlb_flush(info, 0,
+> MAX_AGAW_PFN_WIDTH,
+> +						  IOMMU_NO_PASID, info-
+> >ats_qdep);
+> +			break;
+> +		}
+> +	}
 
-should we set tag->dev only for DEVTLB type? It's a bit confusing to set
-it for IOTLB type which doesn't care about device. Actually doing so
-is instead misleading as the 1st device creating the tag may have been
-detached but then it will still show up in the trace when the last device
-detach destroying the tag.
-
-> +static int __cache_tag_assign_parent_domain(struct dmar_domain
-> *domain, u16 did,
-> +					    struct device *dev, ioasid_t pasid)
-
-this pair is similar to the earlier one except the difference on type.
-
-what about keeping just one pair which accepts a 'parent' argument to
-decide the type internally?
-
+could this loop be consolidated with the one in previous helper? anyway
+the only difference is on addr/mask...
 
 > +/*
-> + * Assigns cache tags to a domain when it's associated with a device's
-> + * PASID using a specific domain ID.
+> + * Invalidate a range of IOVA when IOMMU is in caching mode and new
+> mappings
+> + * are added to the target domain.
+> + */
+> +void cache_tag_flush_cm_range(struct dmar_domain *domain, unsigned
+> long start,
+> +			      unsigned long end)
+> +{
 
-s/Assigns/Assign/
+I'm also not sure why this is worth a separate helper. why couldn't it
+be managed by previous flush_range()?=20
+
+> +	unsigned long pages, mask, addr;
+> +	struct cache_tag *tag;
+> +	unsigned long flags;
+> +
+> +	addr =3D calculate_psi_aligned_address(start, end, &pages, &mask);
+> +
+> +	spin_lock_irqsave(&domain->cache_lock, flags);
+> +	list_for_each_entry(tag, &domain->cache_tags, node) {
+> +		struct intel_iommu *iommu =3D tag->iommu;
+> +
+> +		/*
+> +		 * When IOMMU is enabled in caching mode some non-
+> present
+> +		 * mappings may be cached by the IOTLB if it uses second-
+> +		 * only translation.
+> +		 */
+> +		if (!cap_caching_mode(iommu->cap) || domain-
+> >use_first_level) {
+> +			iommu_flush_write_buffer(iommu);
+> +			continue;
+> +		}
+
+the comment really doesn't tell what this block does. from its intention
+it probably more suitable to be in the caller side as today.
 
 > +
-> +	did =3D domain_id_iommu(domain, iommu);
-> +	ret =3D cache_tag_assign_domain(domain, did, dev,
-> IOMMU_NO_PASID);
+> +		if (tag->type =3D=3D CACHE_TAG_TYPE_IOTLB ||
+> +		    tag->type =3D=3D CACHE_TAG_TYPE_PARENT_IOTLB) {
+> +			/*
+> +			 * Fallback to domain selective flush if no
+> +			 * PSI support or the size is too big.
+> +			 */
+> +			if (!cap_pgsel_inv(iommu->cap) ||
+> +			    mask > cap_max_amask_val(iommu->cap))
+> +				iommu->flush.flush_iotlb(iommu, tag-
+> >domain_id,
+> +							 0, 0,
+> DMA_TLB_DSI_FLUSH);
+> +			else
+> +				iommu->flush.flush_iotlb(iommu, tag-
+> >domain_id,
+> +							 addr, mask,
+> +
+> DMA_TLB_PSI_FLUSH);
+> +		}
+> +	}
 
-there are many occurrences of this pattern. What about passing in
-a 'iommu' parameter and getting 'did' inside the helper? for svm
-it can be specialized internally too.
+You skipped devtlb invalidation. yes it's not necessary based on current
+nested translation design and this part is inconsistent in different paths.
 
-> @@ -4607,10 +4623,11 @@ static void
-> intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
->  	 */
->  	if (domain->type =3D=3D IOMMU_DOMAIN_SVA) {
->  		intel_svm_remove_dev_pasid(dev, pasid);
-> +		cache_tag_unassign_domain(dmar_domain,
-> +					  FLPT_DEFAULT_DID, dev, pasid);
-
-is it correct to destroy the tag before teardown completes, e.g. iotlb stil=
-l
-needs to be flushed in intel_pasid_tear_down_entry()?
+but as a semantics change you may want to first make removing devtlb
+invalidation a separate patch and then do this cleanup, so bisect is easier=
+.
