@@ -1,99 +1,112 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B5E7F42052
-	for <iommu@lists.linux.dev>; Thu, 28 Mar 2024 08:18:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711613905; cv=none; b=h7FIDSQOG9+8dxAead+pxYA2sJA5SmDLB4i6ZcJK+xy7LddyYB7abJKHOw1O+P3t7ncPcRcGhY+6mnKDgpdotNHPvZglMgGIXqjSVdPMszgno/Y5JULhSPIYV9k7P6+EHqsAvYZwheJ2pFpvErVUZ0V1h3vuQhJ9rOMGG0XgUCY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711613905; c=relaxed/simple;
-	bh=E4W+r8TfulGjSmOA1LdOpEM8S3uPAlvCQu3lib2TuNg=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=WOZXCBUtHZ4xTzCgf909wH4CeW9r2I7bzSoj0kkWFHv3oJMfYiacWNxeS5JbZFcjvmNEb/weSaWx1FVfIdDSD1dO4Yoj+VpCMD4yA/bMtXUsEZvZuFUlM5sXx6nh9lV5n8IpPkERSgCXoqKDIQlRBwXvUXDNXzQ3BmA17q0okkg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=IG34/QgP; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="IG34/QgP"
-Received: from 8bytes.org (p4ffe1eea.dip0.t-ipconnect.de [79.254.30.234])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 72C052810A1;
-	Thu, 28 Mar 2024 09:18:20 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1711613900;
-	bh=E4W+r8TfulGjSmOA1LdOpEM8S3uPAlvCQu3lib2TuNg=;
-	h=Date:From:To:Cc:Subject:From;
-	b=IG34/QgPa0IP27cm2dZWuDmVArq8mQEmiYfzGlXQSoE7lXXjo0DbqMEt6I7ehsHTD
-	 OGFwyrG/zwdXb0hjZF7LaiAVJ8wnJt+hMHF4bx4zGuUwWL33m/3Rg9e48Put9IMxXA
-	 wsuSJyr3lxUfFX/gLJ5njoD7FlvvBkqZslYCH1CI1HkKyWJdubvX8egmW4UhAPl+mY
-	 kHuhb/A08lp61uK69qzR/WNwyd0vt3HEqivK07uS8C3pE3w0PuDvZFPbXsQuIHWXSS
-	 x+IWE9E5d45p/BVid6sq+C1vMTEsINWLuWl/xzvn7mfsfcHLI+TbUtoRPDi6n+ZXWt
-	 TbvONu6RgVXdQ==
-Date: Thu, 28 Mar 2024 09:18:18 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fixes for Linux v6.9-rc1
-Message-ID: <ZgUnyqosVrEtULhz@8bytes.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89D6A7D084
+	for <iommu@lists.linux.dev>; Thu, 28 Mar 2024 12:30:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1711629002; cv=none; b=mneYvdWXd+zrAh1O1uqjwW6Fb/PNQEZvWQkucM50ti891HA0XAn71FoySm5WYam3tMPhJoSWjENkePHUBHUqflvqLxxR0yDbBGRPpABZtTkHyoem8H34rukfGHl7FwRTG1ODsduR6+oStOwXfb8tRlss3xSS3D/HFTHPFOh70qo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1711629002; c=relaxed/simple;
+	bh=V4X5Mgzj5RO3nYJCCI8M8/zfMP4g0aia9ewIHZHCjIM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=uf2MeF3gLxlrFO2cS7B+Y0ws78qNYEUebmYGWCIRfxQf6ZLGXfFPJRVf7Lk4SnUENluyr97btvfw+NIkJtjgsOt7oBFnb3iTupy8dSW56kXG4xAD4ZvJvKc2NHMQYp1GzIWPIBW90uuqTIWyRNmfHEft+UsY1YAXkg2DRDupZ9E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a0hPxs/6; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a0hPxs/6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1711629001; x=1743165001;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=V4X5Mgzj5RO3nYJCCI8M8/zfMP4g0aia9ewIHZHCjIM=;
+  b=a0hPxs/6bgsSpIIS/SI2b45fQ3ynM2YFM3DuMsX1O36w5eY9+4BJrqM0
+   o+AGCzUdCn/R8UMl1evPAcfw99wvm1Fgri42buGfy1mSUofI9Eam9gmhR
+   ZSJCe1zlnt41OVg0IOFdAltkJnF1jQ6UCrJ0NzQLiVki5YlytQ19nTZL1
+   XM56ZE//B6bM6rqsmYZhxciClsX5JWZMNdm2C5HMvT4PshPKeI1RFz5DE
+   31bgEFC0VGwRlS+hu6UQM9Ya0Se/uYv+QPpN5F0UJjRkVPdGdOJjwnhuI
+   qZXm6l5BKvT/hEYqcu67hkNGwcRT0D87VNEpTi5N1KmfQy77nrCBg3BoQ
+   g==;
+X-CSE-ConnectionGUID: bPpVbiu1Qo+M5AyrYeTafQ==
+X-CSE-MsgGUID: BSckJlBaTHKZpfdSH74bXg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11026"; a="18212535"
+X-IronPort-AV: E=Sophos;i="6.07,161,1708416000"; 
+   d="scan'208";a="18212535"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Mar 2024 05:30:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,161,1708416000"; 
+   d="scan'208";a="17038470"
+Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
+  by orviesa007.jf.intel.com with ESMTP; 28 Mar 2024 05:30:00 -0700
+From: Yi Liu <yi.l.liu@intel.com>
+To: joro@8bytes.org,
+	jgg@nvidia.com,
+	kevin.tian@intel.com,
+	baolu.lu@linux.intel.com
+Cc: alex.williamson@redhat.com,
+	robin.murphy@arm.com,
+	eric.auger@redhat.com,
+	nicolinc@nvidia.com,
+	kvm@vger.kernel.org,
+	chao.p.peng@linux.intel.com,
+	yi.l.liu@intel.com,
+	iommu@lists.linux.dev,
+	zhenzhong.duan@intel.com,
+	jacob.jun.pan@intel.com
+Subject: [PATCH v2 0/2] Two enhancements to iommu_at[de]tach_device_pasid()
+Date: Thu, 28 Mar 2024 05:29:56 -0700
+Message-Id: <20240328122958.83332-1-yi.l.liu@intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-Hi Linus,
+There are minor mistakes in the iommu set_dev_pasid() and remove_dev_pasid()
+paths. The set_dev_pasid() path updates the group->pasid_array first, and
+then call into remove_dev_pasid() in error handling when there are devices
+within the group that failed to set_dev_pasid. The remove_dev_pasid()
+callbacks of the underlying iommu drivers get the domain for pasid from the
+group->pasid_array. So the remove_dev_pasid() callback may get a wrong domain
+in the set_dev_pasid() path. [1] Even if the group is singleton, the existing
+code logic would have unnecessary warnings in the error handling of the
+set_dev_pasid() path. e.g. intel iommu driver.
 
-The following changes since commit 4cece764965020c22cff7665b18a012006359095:
+The above issue can be fixed by improving the error handling in the
+set_dev_pasid() path. Also, this reminds that it is not reliable for the
+underlying iommu driver callback to get the domain from group->pasid_array.
+So, the second patch of this series passes the domain to remove_dev_pasid
+op.
 
-  Linux 6.9-rc1 (2024-03-24 14:10:05 -0700)
+[1] https://lore.kernel.org/linux-iommu/20240320123803.GD159172@nvidia.com/
 
-are available in the Git repository at:
+Change log:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.9-rc1
+v2:
+ - Make clear that the patch 1/2 of v1 does not fix the problem (Kevin)
+ - Swap the order of patch 1/2 and 2/2 of v1. In this new series, patch 1/2
+   fixes the real issue, patch 2/2 is to avoid potential issue in the future.
 
-for you to fetch changes up to c404f55c26fc23c70a9f2262f3f36a69fc46289b:
+v1: https://lore.kernel.org/linux-iommu/20240327125433.248946-1-yi.l.liu@intel.com/
 
-  iommu: Validate the PASID in iommu_attach_device_pasid() (2024-03-28 06:38:40 +0100)
+Regards,
+	Yi Liu
 
-----------------------------------------------------------------
-IOMMU Fixes for Linux v6.9-rc1:
+Yi Liu (2):
+  iommu: Undo pasid attachment only for the devices that have succeeded
+  iommu: Pass domain to remove_dev_pasid() op
 
-Including:
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  9 ++-----
+ drivers/iommu/intel/iommu.c                 | 11 +++-----
+ drivers/iommu/iommu.c                       | 28 ++++++++++++++-------
+ include/linux/iommu.h                       |  3 ++-
+ 4 files changed, 26 insertions(+), 25 deletions(-)
 
-	- ARM SMMU fixes:
+-- 
+2.34.1
 
-	  - Fix swabbing of the STE fields in the unlikely event of
-	    running on a big-endian machine.
-	  - Fix setting of STE.SHCFG on hardware that doesn't implement
-	    support for attribute overrides.
-
-	- IOMMU core:
-
-	  - PASID validation fix in device attach path
-
-----------------------------------------------------------------
-Jason Gunthorpe (2):
-      iommu/arm-smmu-v3: Add cpu_to_le64() around STRTAB_STE_0_V
-      iommu: Validate the PASID in iommu_attach_device_pasid()
-
-Joerg Roedel (1):
-      Merge tag 'arm-smmu-fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/will/linux into iommu/fixes
-
-Mostafa Saleh (1):
-      iommu/arm-smmu-v3: Fix access for STE.SHCFG
-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 38 +++++++++++++++++++----------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  2 ++
- drivers/iommu/iommu.c                       | 11 ++++++++-
- 3 files changed, 37 insertions(+), 14 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
