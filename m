@@ -1,115 +1,44 @@
-Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F7AB40861
-	for <iommu@lists.linux.dev>; Thu, 28 Mar 2024 05:16:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D2DF045957
+	for <iommu@lists.linux.dev>; Thu, 28 Mar 2024 05:37:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711602998; cv=none; b=mkCJX0Q8nKS70fotnbIwh22frb4cVOEdEC5APdfZGCn0VQfLl14SzEp+OYCtnxPqHl0o2QiaIqMQ/mFXGS7zEeJnRwoMsjzaqFpxg/7ocSlOtdw7wp3FCjDSiw/yojtl1WzqU4U1fFdOs9BatuQ9qZwenq6jiHNinfpBH2otyu8=
+	t=1711604252; cv=none; b=oxYHmMl41r82tYH+TWn8AdvvTa0Axgg5jPG6Yr1iQo6iLoIE+CxGHVGIt7y+YPZk8mrccvyIiTrCB/R4WD5N0bNuYpGyPOBG3ft7HE74mw2K8hZ1ZG+PzXf3iJh4HW4oDWwTaM1lGVLkDi6528EZMVN7/aD7nsfcL7+d9/XidX0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711602998; c=relaxed/simple;
-	bh=sBPTJcGEYTbv3hcgUwqNauzYtskOKb+GWpnb7br0MOg=;
+	s=arc-20240116; t=1711604252; c=relaxed/simple;
+	bh=zA0sQ5lqjv7OoNTN8I18ArieYI10QoG2cgk6L4+07+w=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lbSKhW5A/+hpvvIL1eV++hH/cbKIwU4PeM849tC0zZfq6YP6K2P0umvdJ7Y8mrcxfFNssLMcygGXHWjHYuVrC6tUtTEIVrSbv/eBR3RPtl2deNwZ8Th02pL7PhmFmOL4qpj7QckhwOeRaEZzH+4cQF9NhwwWtfLZ8LB6IaIUFd8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=cHgMJrvU; arc=none smtp.client-ip=209.85.161.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	 Content-Type:Content-Disposition:In-Reply-To; b=ChvXXQ8WTD1Q1GBspL26FEwZd5gO0icpSAG/bvbrZ4IX2HWbG8QJRxNJVqbjQPFdMamaS7eTGMfnf8XVoiiQRA3KJ5HPPIXhbKlSNt9GdbPK7YitDHypm5x9hL2e/OMdJAU6Qd0eHLzNXF7D8luAR/JdrH0TlJSDcmfyiH3QVtM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=RiYCCzYb; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="cHgMJrvU"
-Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-5a53d5aaaa4so284756eaf.2
-        for <iommu@lists.linux.dev>; Wed, 27 Mar 2024 22:16:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1711602994; x=1712207794; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=NCBBqATkrmhAqNvcc7V5yUc6Bj0MDD2J9Hd2vuTQUac=;
-        b=cHgMJrvUnb2PD1Oof8B3R/yBuTD8xTU/oKbU/K57hm4zxFGGBxCZiKpQd6q6JpR6IK
-         QUiUAmAJt1W15jf34xLRAzPr6MpBpu6DtZHEhfOXI+Lk9F5t1egIY9P3fZ5mQf+cFffA
-         IcSiYK474na2fIQ/Zu1WTw1ZDiIdASt+umyc9tmGtXIEUlyTPEdLHio+adAu0rUS52n6
-         2JaalArhzpecCw7Z5Axnj8ndfh1jA5XS026w21sj7xOFdScEnxQzkW+kWw5mj7aPXArE
-         92HelhGwyh3pDaA61QyvcF9/h2qCos9BbMSTs8fqABUsMSoilo4s0cu9men8+VyzOj50
-         FwMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1711602994; x=1712207794;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NCBBqATkrmhAqNvcc7V5yUc6Bj0MDD2J9Hd2vuTQUac=;
-        b=sMj/jAA85QwWZ+MXS31bBoacqMmH8yo6V0TfDAdFwyT5V8yvN8q5Kexr8Yd3NtETYu
-         VZg8JKIi1nFUgCuxfFYlzXxf3i1pHYJ1N0TU3C6t7JFC9RmZJlF9iBnFd/6hrz0vCYs6
-         4BrAR/XCTfGfTVzRUdfH4BJf8KcffKZTO4k0hAMIucRy8JHjL5TUYxD3Hs1x9K3eBm4B
-         fgRbL/OK+J8/f7ZlXzrLdBkfjMI+iLphAR+AK00OtX9K04Bqzcft+5nbgBJjtp/YjZ3Z
-         rrYOkH2s3AsUmuRY5IgMnoaX2NLK9AiLGOfhFgqXMxzexwk6zM59GBWm8+VquJT/GsOW
-         8vJg==
-X-Forwarded-Encrypted: i=1; AJvYcCW49Xd4t1VqCZGZG6Y4ySf4fIqRirjWDJy7NFoUwzDySrd82e8+kipvQClKLSfO/3vNMx6MgY2yI85jVdq8cl/4LCUbsSo=
-X-Gm-Message-State: AOJu0Yz2LHHyQvw8vViGVTESSoZd2IA+a8HrySbQXsGyHRvSLcyny2Xj
-	LZuk7inB5RFTU/K0sxki6oUMxdggugdwItw7nYLvkYX2hbCWo+b3c0qH235netM=
-X-Google-Smtp-Source: AGHT+IENjWm30W77Sho1F7STKjVDKRSghd/5qoLRwkalJNx2D7PN+W1+MnXgZZvq+TiwN/1tI/fojA==
-X-Received: by 2002:a05:6358:5307:b0:17e:8f90:dd31 with SMTP id n7-20020a056358530700b0017e8f90dd31mr1555244rwf.32.1711602994298;
-        Wed, 27 Mar 2024 22:16:34 -0700 (PDT)
-Received: from localhost ([122.172.85.206])
-        by smtp.gmail.com with ESMTPSA id u23-20020a63df17000000b005e857bba96csm433309pgg.10.2024.03.27.22.16.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Mar 2024 22:16:33 -0700 (PDT)
-Date: Thu, 28 Mar 2024 10:46:31 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Richard Weinberger <richard@nod.at>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Stefan Hajnoczi <stefanha@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Olivia Mackall <olivia@selenic.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Gonglei <arei.gonglei@huawei.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Viresh Kumar <vireshk@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Bartosz Golaszewski <brgl@bgdev.pl>,
-	David Airlie <airlied@redhat.com>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joerg Roedel <joro@8bytes.org>, Alexander Graf <graf@amazon.com>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Eric Van Hensbergen <ericvh@kernel.org>,
-	Latchesar Ionkov <lucho@ionkov.net>,
-	Dominique Martinet <asmadeus@codewreck.org>,
-	Christian Schoenebeck <linux_oss@crudebyte.com>,
-	Stefano Garzarella <sgarzare@redhat.com>,
-	Kalle Valo <kvalo@kernel.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Vishal Verma <vishal.l.verma@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>, Ira Weiny <ira.weiny@intel.com>,
-	Pankaj Gupta <pankaj.gupta.linux@gmail.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Mathieu Poirier <mathieu.poirier@linaro.org>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	Vivek Goyal <vgoyal@redhat.com>, Miklos Szeredi <miklos@szeredi.hu>,
-	Anton Yakovlev <anton.yakovlev@opensynergy.com>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	virtualization@lists.linux.dev, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-um@lists.infradead.org,
-	linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-	linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	iommu@lists.linux.dev, netdev@vger.kernel.org, v9fs@lists.linux.dev,
-	kvm@vger.kernel.org, linux-wireless@vger.kernel.org,
-	nvdimm@lists.linux.dev, linux-remoteproc@vger.kernel.org,
-	linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	alsa-devel@alsa-project.org, linux-sound@vger.kernel.org
-Subject: Re: [PATCH 09/22] gpio: virtio: drop owner assignment
-Message-ID: <20240328051631.c5eitp4mzaj4bh6i@vireshk-i7>
-References: <20240327-module-owner-virtio-v1-0-0feffab77d99@linaro.org>
- <20240327-module-owner-virtio-v1-9-0feffab77d99@linaro.org>
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="RiYCCzYb"
+Received: from 8bytes.org (p4ffe1eea.dip0.t-ipconnect.de [79.254.30.234])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 0C11E280F7D;
+	Thu, 28 Mar 2024 06:37:22 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1711604242;
+	bh=zA0sQ5lqjv7OoNTN8I18ArieYI10QoG2cgk6L4+07+w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=RiYCCzYbspGp7fe3esU7bz5KgcNmqh0aBu6sJ9P0wovHaJ3RLqtZ8N7TOTLcnhW4s
+	 h2Dy3/ETTyVOjqd8Htc67YZC30DFUVA/ddEnECJlHw0YqLlaIcCFsRGt+74wT964sO
+	 lcHzrq7WtIE97ubvmb7HdANHbjE995Cq5ecB2HZhR00E9DX8vWoqAbPM6zPYHGGko9
+	 vBchvqAl96K4zR4JE1iVyy91HX1vESLZXy55F5CW5A1rkPf6uuiT7WxH1mWBSXJ+kk
+	 k5wYLA1fSVn04ecR0J0noO2IWRq3Zt8nNgePYwF43sJBDnkI4gFom3PhPl7z3h/Rpn
+	 pL7gmvp8eQwaQ==
+Date: Thu, 28 Mar 2024 06:37:20 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, robin.murphy@arm.com,
+	kernel-team@android.com
+Subject: Re: [GIT PULL] iommu/arm-smmu: Fixes for 6.9-rc
+Message-ID: <ZgUCEIpXB_7rDoNz@8bytes.org>
+References: <20240327181310.GA11801@willie-the-truck>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -118,34 +47,9 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240327-module-owner-virtio-v1-9-0feffab77d99@linaro.org>
+In-Reply-To: <20240327181310.GA11801@willie-the-truck>
 
-On 27-03-24, 13:41, Krzysztof Kozlowski wrote:
-> virtio core already sets the .owner, so driver does not need to.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> 
-> ---
-> 
-> Depends on the first patch.
-> ---
->  drivers/gpio/gpio-virtio.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/gpio/gpio-virtio.c b/drivers/gpio/gpio-virtio.c
-> index fcc5e8c08973..9fae8e396c58 100644
-> --- a/drivers/gpio/gpio-virtio.c
-> +++ b/drivers/gpio/gpio-virtio.c
-> @@ -653,7 +653,6 @@ static struct virtio_driver virtio_gpio_driver = {
->  	.remove			= virtio_gpio_remove,
->  	.driver			= {
->  		.name		= KBUILD_MODNAME,
-> -		.owner		= THIS_MODULE,
->  	},
->  };
->  module_virtio_driver(virtio_gpio_driver);
+On Wed, Mar 27, 2024 at 06:13:11PM +0000, Will Deacon wrote:
+>   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-fixes
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-
--- 
-viresh
+Pulled. Thanks Will.
