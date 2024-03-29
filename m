@@ -1,54 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 832951487D5;
-	Fri, 29 Mar 2024 12:28:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A467D157481;
+	Fri, 29 Mar 2024 12:31:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711715322; cv=none; b=GPkJGlmt8OyC71Aaa9FUESnmvudERJihfxqKMRfI0DJQfIBM9ixQPJJUisAcWoMts18uSf+BzcZP6GvN1ZuIP002wT31uDS8XHiPcEdOCg9jWxOEWgebAaiG61GL7fj9/gzxMh73hTLgmqOPTg0OI4m/8wsYnVAOqRhuz93O6Ww=
+	t=1711715473; cv=none; b=EjO2PHK/kTjr/6PzWJItpLRcyP+4Muz5UCX0QwuKtvMqn7cR2wXGGGXMgdfGO7so5Jj9GF0On8QFZqVnfAIHo5ThqaaRkhA5NCuebsq2OxqOO24cRQNGSbRgvcHM7d84ZZ67xLpOTlWeljtyCTR+PsE1fNaWi0kXeVFuf9txCMU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711715322; c=relaxed/simple;
-	bh=Gy/fCpdLTfmFkgTs9RjvmJNa3ujJqwIxDi6ILMKZabo=;
+	s=arc-20240116; t=1711715473; c=relaxed/simple;
+	bh=k3zuf16/TCQid4I2XHlZ7Fg+DXFG1/Fja7b3voOoAZM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=kHQLorVvwscCnlUAdEA8354IPLZzD9aL09989u7mc1B9kolS7u7lJNAQYIdrvmcbrdNADwng+zxXQnN4/FzrVA9M2oVu57NwZls0MEs+G3vw1qhK9hOW/BKrIW4mlWplrardwRTu6WToAVBGbkezDHviNP+62jlVIK91w2GLi0A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uMLPCsBi; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=u2wkskhUSiApgqy3qpWYy4kZOfedXAeiqXOX9jG6vrBSwuJM8MwKNXPqRSliWwfu6jX9xMACyfMo4JcFyhOyaCkAOL8k099ZkNRfvFOmQRhMpizL721ps1mTJjcMDeg01qmo2uaRoj/G6uMdtM/apjMdkS91AA/cTjPhJZezokA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QiOSPVSy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uMLPCsBi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB09BC433A6;
-	Fri, 29 Mar 2024 12:28:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QiOSPVSy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76C2BC43399;
+	Fri, 29 Mar 2024 12:31:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711715322;
-	bh=Gy/fCpdLTfmFkgTs9RjvmJNa3ujJqwIxDi6ILMKZabo=;
+	s=k20201202; t=1711715473;
+	bh=k3zuf16/TCQid4I2XHlZ7Fg+DXFG1/Fja7b3voOoAZM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=uMLPCsBiIf6Sj2e6aKUMWLPNxVAmQf9uL/B/eAmxZ1GDhrcFIy2PfTnnGcPm1MpKu
-	 2NQzMmR7OooFGGf08UfBWSOsK43m8JH3jGXLM/93GQ5w4/vlnzJq3fte/Px1AWzxka
-	 EPLW45xXdQHo+LGoRBBJh+0ZZa8schMtHTt0hRt0FGwMMOiYAzervssxKYsInGbPo5
-	 PGpwZ2VNYV4Yutr2BE9jAHdJCUOTtPM3laDXFbmBlOgd6kpCQGXpndHhFdQTS+W4rn
-	 oWHvrdAV01xX89d2mHlNDI+q/eb7l8MOqJX1x6BKE5cZgecCC/xiYBUYajNVPYf3Mi
-	 X2S2envqNeMfA==
+	b=QiOSPVSyzXi5kzzfmGn2LGvsGlNA4c8Dtfh1+BASpbr9wjwOjQ0r427U4Cci2ftKj
+	 uzRLPftJ3P32RDyq52TFmFEx1WX4Ky69jUnScRy77CYv+eV+oHKZeLwqUwepGIMQjA
+	 h27KlaMocs85tBfZ5p0c3rcYZyuayzT20zU3ja/KwkV4OTuRpfgr1e4SnGt0LmeUQd
+	 TKr+2EscLzQoMIjxvGtIGx7+30t3nFzVfBT501D+tUMKJvAQcjvO+sZrsPNP6OL68O
+	 25WEPQix0YpPUF/j1DCTq3TMhnbAuKS31ikhSkh2F/La8ZKkKy2JMpwatCGFZK7kgx
+	 79Vz7jmFh+dUA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Cc: Jason Gunthorpe <jgg@nvidia.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Mostafa Saleh <smostafa@google.com>,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Moritz Fischer <moritzf@google.com>,
-	Will Deacon <will@kernel.org>,
+Cc: Rick Edgecombe <rick.p.edgecombe@intel.com>,
+	Christoph Hellwig <hch@lst.de>,
 	Sasha Levin <sashal@kernel.org>,
-	joro@8bytes.org,
-	jgg@ziepe.ca,
-	robin.murphy@arm.com,
-	baolu.lu@linux.intel.com,
-	linux-arm-kernel@lists.infradead.org,
+	m.szyprowski@samsung.com,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.8 52/68] iommu/arm-smmu-v3: Hold arm_smmu_asid_lock during all of attach_dev
-Date: Fri, 29 Mar 2024 08:25:48 -0400
-Message-ID: <20240329122652.3082296-52-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.6 36/52] dma-direct: Leak pages on dma_set_decrypted() failure
+Date: Fri, 29 Mar 2024 08:29:06 -0400
+Message-ID: <20240329122956.3083859-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240329122652.3082296-1-sashal@kernel.org>
-References: <20240329122652.3082296-1-sashal@kernel.org>
+In-Reply-To: <20240329122956.3083859-1-sashal@kernel.org>
+References: <20240329122956.3083859-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -57,131 +48,66 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.8.2
+X-stable-base: Linux 6.6.23
 Content-Transfer-Encoding: 8bit
 
-From: Jason Gunthorpe <jgg@nvidia.com>
+From: Rick Edgecombe <rick.p.edgecombe@intel.com>
 
-[ Upstream commit 9f7c68911579bc15c57d227d021ccd253da2b635 ]
+[ Upstream commit b9fa16949d18e06bdf728a560f5c8af56d2bdcaf ]
 
-The BTM support wants to be able to change the ASID of any smmu_domain.
-When it goes to do this it holds the arm_smmu_asid_lock and iterates over
-the target domain's devices list.
+On TDX it is possible for the untrusted host to cause
+set_memory_encrypted() or set_memory_decrypted() to fail such that an
+error is returned and the resulting memory is shared. Callers need to
+take care to handle these errors to avoid returning decrypted (shared)
+memory to the page allocator, which could lead to functional or security
+issues.
 
-During attach of a S1 domain we must ensure that the devices list and
-CD are in sync, otherwise we could miss CD updates or a parallel CD update
-could push an out of date CD.
+DMA could free decrypted/shared pages if dma_set_decrypted() fails. This
+should be a rare case. Just leak the pages in this case instead of
+freeing them.
 
-This is pretty complicated, and almost works today because
-arm_smmu_detach_dev() removes the master from the linked list before
-working on the CD entries, preventing parallel update of the CD.
-
-However, it does have an issue where the CD can remain programed while the
-domain appears to be unattached. arm_smmu_share_asid() will then not clear
-any CD entriess and install its own CD entry with the same ASID
-concurrently. This creates a small race window where the IOMMU can see two
-ASIDs pointing to different translations.
-
-       CPU0                                   CPU1
-arm_smmu_attach_dev()
-   arm_smmu_detach_dev()
-     spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-     list_del(&master->domain_head);
-     spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-
-				      arm_smmu_mmu_notifier_get()
-				       arm_smmu_alloc_shared_cd()
-					arm_smmu_share_asid():
-                                          // Does nothing due to list_del above
-					  arm_smmu_update_ctx_desc_devices()
-					  arm_smmu_tlb_inv_asid()
-				       arm_smmu_write_ctx_desc()
-					 ** Now the ASID is in two CDs
-					    with different translation
-
-     arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID, NULL);
-
-Solve this by wrapping most of the attach flow in the
-arm_smmu_asid_lock. This locks more than strictly needed to prepare for
-the next patch which will reorganize the order of the linked list, STE and
-CD changes.
-
-Move arm_smmu_detach_dev() till after we have initialized the domain so
-the lock can be held for less time.
-
-Reviewed-by: Michael Shavit <mshavit@google.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
-Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Tested-by: Moritz Fischer <moritzf@google.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Link: https://lore.kernel.org/r/5-v6-96275f25c39d+2d4-smmuv3_newapi_p1_jgg@nvidia.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Rick Edgecombe <rick.p.edgecombe@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 22 ++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ kernel/dma/direct.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 0ffb1cf17e0b2..f3f2e47b6d488 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2398,8 +2398,6 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		return -EBUSY;
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 9596ae1aa0dac..fc2d10b2aca6f 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -295,7 +295,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 	} else {
+ 		ret = page_address(page);
+ 		if (dma_set_decrypted(dev, ret, size))
+-			goto out_free_pages;
++			goto out_leak_pages;
  	}
  
--	arm_smmu_detach_dev(master);
--
- 	mutex_lock(&smmu_domain->init_mutex);
+ 	memset(ret, 0, size);
+@@ -316,6 +316,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ out_free_pages:
+ 	__dma_direct_free_pages(dev, page, size);
+ 	return NULL;
++out_leak_pages:
++	return NULL;
+ }
  
- 	if (!smmu_domain->smmu) {
-@@ -2414,6 +2412,16 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	if (ret)
- 		return ret;
+ void dma_direct_free(struct device *dev, size_t size,
+@@ -378,12 +380,11 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
  
-+	/*
-+	 * Prevent arm_smmu_share_asid() from trying to change the ASID
-+	 * of either the old or new domain while we are working on it.
-+	 * This allows the STE and the smmu_domain->devices list to
-+	 * be inconsistent during this routine.
-+	 */
-+	mutex_lock(&arm_smmu_asid_lock);
-+
-+	arm_smmu_detach_dev(master);
-+
- 	master->domain = smmu_domain;
- 
- 	/*
-@@ -2439,13 +2447,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 			}
- 		}
- 
--		/*
--		 * Prevent SVA from concurrently modifying the CD or writing to
--		 * the CD entry
--		 */
--		mutex_lock(&arm_smmu_asid_lock);
- 		ret = arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID, &smmu_domain->cd);
--		mutex_unlock(&arm_smmu_asid_lock);
- 		if (ret) {
- 			master->domain = NULL;
- 			goto out_list_del;
-@@ -2455,13 +2457,15 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	arm_smmu_install_ste_for_dev(master);
- 
- 	arm_smmu_enable_ats(master);
--	return 0;
-+	goto out_unlock;
- 
- out_list_del:
- 	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
- 	list_del(&master->domain_head);
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
-+out_unlock:
-+	mutex_unlock(&arm_smmu_asid_lock);
- 	return ret;
+ 	ret = page_address(page);
+ 	if (dma_set_decrypted(dev, ret, size))
+-		goto out_free_pages;
++		goto out_leak_pages;
+ 	memset(ret, 0, size);
+ 	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
+ 	return page;
+-out_free_pages:
+-	__dma_direct_free_pages(dev, page, size);
++out_leak_pages:
+ 	return NULL;
  }
  
 -- 
