@@ -1,107 +1,108 @@
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C3A95225A8
-	for <iommu@lists.linux.dev>; Fri, 29 Mar 2024 20:42:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=13.77.154.182
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50DEC2BB0D;
+	Fri, 29 Mar 2024 21:07:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711744952; cv=none; b=XhaK8gSGuO2O9CzBOOOzcEIjn5jY2PnW9ieLhcBwDptjDoNblQaS72BFbwoNBKvcs/9FavA0b13L+bJR7VD0fkdSjW7WzEc90Pj1A1gA8VHpS7znBDHly7mJdvpedUZeH3Y0XfMPOWA2zHOzIzcE/yy91PVE0soZmjQQinAI1jk=
+	t=1711746441; cv=none; b=WO2DFYUWD7WygisTCybNO99hSHxfmQEI67RHT5rmP7ZyRCuPfMjIQPQbXQ+6K2vIjsHwNBQVIoCn1kPqSu1FHuft2DjFh6MQ2qnlb2L6nRUTb/FbAMrR2pfsdeHdUyUZLajfFsD6KgtyMyAO8Hd0CwiU5LlRiQO21W0bHas3f6g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711744952; c=relaxed/simple;
-	bh=hz5RR0GReCD0o+TbGpPzwpXzow8mvQnlmHPDe6BzQNU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cDuFMISyU/0W7NAamxJut++EEeR83zlIzZH/qiyJsJdnezPQCTHk2wjeLq6Db47PjB0SJ2aCKz+TP4vUVoiDi6K2DJQWiWFuGeStNdVbfbI+WCVX4YqhhYGxNszGGGOIZ0a6HxnLuiJ+S7OJ5hg2KSP1zz+KxfUS6k9Dsj5j9Jc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com; spf=pass smtp.mailfrom=linux.microsoft.com; dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b=XqiX32Sj; arc=none smtp.client-ip=13.77.154.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.microsoft.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.microsoft.com
+	s=arc-20240116; t=1711746441; c=relaxed/simple;
+	bh=ndoVGcEPZTeW65Jpuo0QNLQhBOiAh4hrgmZGAAZ/Um0=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=RcuoZwoBHe8mlokV9quu2N+h+dtlxfIzdJF/RlD/Pku3n0jMiB4fE7RUSvP0XdLsF3HN+KFsaxOCEH3ACbETqGd4s0L4xT98J6/NLetB2k05t8LJ9bNPglLm41PVYjNklUMzL5Jn2AKtBlFQw9JEd+RaicMVBBu4zP35KG2zen4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=ASAZPkgP; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.microsoft.com header.i=@linux.microsoft.com header.b="XqiX32Sj"
-Received: from [100.64.65.59] (unknown [20.29.225.195])
-	by linux.microsoft.com (Postfix) with ESMTPSA id 0787420E6F42;
-	Fri, 29 Mar 2024 13:42:29 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0787420E6F42
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-	s=default; t=1711744950;
-	bh=T3bq+rfTxoFcrWlHxiM/MsuE/8OiSBnZvhXgUAsFCnQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=XqiX32SjGqD3vk/hUo4BhZDOk+DdTVyaYWF0zAdPXk7zAPwBavYyWo7D6sBZ68dFM
-	 L/TJp4duCoEIVCMuOHHW4ZCL+J6aZF4kQn9MMkQ/Rrv/qeFr0jl+jI9CJ8Ck9rFn6n
-	 NPijVBOT4MeX1n6mROxFMxLlPNRa1eBx5dJHF0DM=
-Message-ID: <9336949d-6fa4-457c-8d7e-9aaa5d62cbd7@linux.microsoft.com>
-Date: Fri, 29 Mar 2024 13:42:27 -0700
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="ASAZPkgP"
+Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 42TKKAuM004397;
+	Fri, 29 Mar 2024 21:07:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	from:to:cc:subject:date:message-id:in-reply-to:references
+	:mime-version:content-transfer-encoding:content-type; s=
+	qcppdkim1; bh=jqzwN1vuCFLLJR0ky4qG5pZmihPpcc82QgRh0kKcLxI=; b=AS
+	AZPkgPFB6PbbawradyCxpFMbQYF6EZiZ0KNjhqrgGsVAf1XPyaZcKI6jfeejscMS
+	gQ1aBug5eq4OPcfQF7wkd6f0vi26CnKW1Sk7Tj2Tvidv85OOlzb/Dje4LQN076qG
+	umtmmqxlMYoRRTgXKSTR8KzhS4ssC9aBLY1wHmPCbWZiMmNEggDepZer4QDX+jTM
+	h7VxzWUhKcol2WbIMLW9sEEpe4hOu9KAJ0ZeHEeb2ZA5o3Xj+EM9F7Nrwwl2Ifia
+	zkTc/nn9Eb8F6pJuafLvcsG73uaAO463bPyLuBmkKwcd7bYG6klk2AYlNEh1qisr
+	Oj27pEAIxgTN/uWKkuMQ==
+Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3x60wd8nht-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 29 Mar 2024 21:07:10 +0000 (GMT)
+Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
+	by NASANPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 42TL79WM023843
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 29 Mar 2024 21:07:09 GMT
+Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1118.40; Fri, 29 Mar 2024 14:07:08 -0700
+From: Georgi Djakov <quic_c_gdjako@quicinc.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+        <iommu@lists.linux.dev>
+CC: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <conor+dt@kernel.org>, <devicetree@vger.kernel.org>,
+        <andersson@kernel.org>, <konrad.dybcio@linaro.org>,
+        <robdclark@gmail.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        <quic_cgoldswo@quicinc.com>, <quic_sukadev@quicinc.com>,
+        <quic_pdaly@quicinc.com>, <quic_sudaraja@quicinc.com>,
+        <djakov@kernel.org>
+Subject: [PATCH v7 6/7] iommu/arm-smmu-qcom: Use the custom fault handler on more platforms
+Date: Fri, 29 Mar 2024 14:06:37 -0700
+Message-ID: <20240329210638.3647523-7-quic_c_gdjako@quicinc.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240329210638.3647523-1-quic_c_gdjako@quicinc.com>
+References: <20240329210638.3647523-1-quic_c_gdjako@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] swiotlb: Do not set total_used to 0 in
- swiotlb_create_debugfs_files()
-To: Dexuan Cui <decui@microsoft.com>, "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "zhangpeng362@huawei.com" <zhangpeng362@huawei.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "mhklinux@outlook.com" <mhklinux@outlook.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>
-References: <20240329192809.17318-1-decui@microsoft.com>
- <07ed50c1-75a9-494c-8a6a-5edcc2d6f932@linux.microsoft.com>
- <CY5PR21MB3759BEE344CCD8F20FBB4E4CBF3A2@CY5PR21MB3759.namprd21.prod.outlook.com>
- <CY5PR21MB3759C7C9F4637F6D157635A1BF3A2@CY5PR21MB3759.namprd21.prod.outlook.com>
-Content-Language: en-CA
-From: Easwar Hariharan <eahariha@linux.microsoft.com>
-In-Reply-To: <CY5PR21MB3759C7C9F4637F6D157635A1BF3A2@CY5PR21MB3759.namprd21.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: WEMYc9oo_6QkfLAWvhOI3NeHbWu4GY63
+X-Proofpoint-ORIG-GUID: WEMYc9oo_6QkfLAWvhOI3NeHbWu4GY63
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-03-29_13,2024-03-28_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=999
+ malwarescore=0 spamscore=0 lowpriorityscore=0 impostorscore=0 mlxscore=0
+ phishscore=0 clxscore=1015 bulkscore=0 suspectscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2403210001
+ definitions=main-2403290188
 
-On 3/29/2024 1:30 PM, Dexuan Cui wrote:
->> From: Dexuan Cui
->> Sent: Friday, March 29, 2024 1:23 PM
->> To: Easwar Hariharan <eahariha@linux.microsoft.com>; hch@lst.de;
->> m.szyprowski@samsung.com; robin.murphy@arm.com;
->> zhangpeng362@huawei.com; iommu@lists.linux.dev;
->> mhklinux@outlook.com
->> Cc: linux-kernel@vger.kernel.org; stable@vger.kernel.org
->> Subject: RE: [PATCH] swiotlb: Do not set total_used to 0 in
->> swiotlb_create_debugfs_files()
->>
->>> From: Easwar Hariharan <eahariha@linux.microsoft.com>
->>> Sent: Friday, March 29, 2024 12:47 PM
->>> [...]
->>> Sorry, I'm missing a why in this commit message. Can you say what
->> happens
->>> if the total_used and used_hiwater IS blindly set to 0? Is the only effect
->>> the change  in the readout of the swiotlb debugfs files?
->>>
->>> Thanks,
->>> Easwar
->>
->> Right, when the system is not doing any I/O, the readout may
->> return a huge number while it should return 0. This is the only effect.
->>
->> Thanks,
->> Dexuan
-> 
-> Let me share more details.
-> 
-> kernel/dma/swiotlb.c uses inc_used_and_hiwater() and dec_used()
-> to do the accounting.
-> 
-> The issue happens this way:
-> 
-> 1. inc_used_and_hiwater() adds n to total_used.
-> 2. swiotlb_create_debugfs_files() sets total_used to 0.
-> 3. dec_used() decreases total_used by n, i.e. total_used incorrectly 
-> becomes a negative number -n, which is a huge number since
-> mem_used() converts the 'long' to 'unsigned long'.
-> 
-> Thanks,
-> Dexuan
-> 
+The TBU support is now available, so let's allow it to be used on other
+platforms that have the Qualcomm SMMU-500 implementation with TBUs. This
+will allow the context fault handler to query the TBUs when a context
+fault occurs.
 
-Thanks for the detail. I only ask because the patch is marked for stable, and
-I was wondering if it meets the criteria. But, as you mentioned off list, two Fixes
-tags probably do meet the bar.
+Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Thanks,
-Easwar
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 7a58b1b96bca..08e0ad325bab 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -413,6 +413,10 @@ static const struct arm_smmu_impl qcom_smmu_500_impl = {
+ 	.reset = arm_mmu500_reset,
+ 	.write_s2cr = qcom_smmu_write_s2cr,
+ 	.tlb_sync = qcom_smmu_tlb_sync,
++#ifdef CONFIG_ARM_SMMU_QCOM_TBU
++	.context_fault = qcom_smmu_context_fault,
++	.context_fault_needs_threaded_irq = true,
++#endif
+ };
+ 
+ static const struct arm_smmu_impl sdm845_smmu_500_impl = {
