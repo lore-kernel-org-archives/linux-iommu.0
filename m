@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A467D157481;
-	Fri, 29 Mar 2024 12:31:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA21415D5C0;
+	Fri, 29 Mar 2024 12:32:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711715473; cv=none; b=EjO2PHK/kTjr/6PzWJItpLRcyP+4Muz5UCX0QwuKtvMqn7cR2wXGGGXMgdfGO7so5Jj9GF0On8QFZqVnfAIHo5ThqaaRkhA5NCuebsq2OxqOO24cRQNGSbRgvcHM7d84ZZ67xLpOTlWeljtyCTR+PsE1fNaWi0kXeVFuf9txCMU=
+	t=1711715566; cv=none; b=ED+pVMVbSWrIbAiaUg5lHsRlNhKv3xaxm5SUvDyOSnx/SrABcRJleKi2lYKFDapaEwbXiO6xfce256rr8R6J87k33jdXk1Ha84pQWbnoYJMyjrctIB183PZV13gEUE85xPuZzMghoQ7Xr7lYutzC9iPQqQM8noNLnR5NmOReNZ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711715473; c=relaxed/simple;
-	bh=k3zuf16/TCQid4I2XHlZ7Fg+DXFG1/Fja7b3voOoAZM=;
+	s=arc-20240116; t=1711715566; c=relaxed/simple;
+	bh=k817z/wiq1ZdzswJB0vLMttW1moO1DxXigH8OAcdidA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=u2wkskhUSiApgqy3qpWYy4kZOfedXAeiqXOX9jG6vrBSwuJM8MwKNXPqRSliWwfu6jX9xMACyfMo4JcFyhOyaCkAOL8k099ZkNRfvFOmQRhMpizL721ps1mTJjcMDeg01qmo2uaRoj/G6uMdtM/apjMdkS91AA/cTjPhJZezokA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QiOSPVSy; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=gAwI9ZVvUyRgfT8B9C/MvjYufLMM4oZwi4JfZYuESTd9bRIWXcbFklt1neRLIxqytVFkDsU49dypPPOxWLgM1SUE+0jHTnkLJOhB5HR1dPojHc6non6dFPEmYr9WNITds7CDypmTEnGgNwwdDxDDCsi+zLrjD/Vf/7u+IwACF78=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lhLVWLDL; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QiOSPVSy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76C2BC43399;
-	Fri, 29 Mar 2024 12:31:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lhLVWLDL"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91B6DC433B1;
+	Fri, 29 Mar 2024 12:32:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1711715473;
-	bh=k3zuf16/TCQid4I2XHlZ7Fg+DXFG1/Fja7b3voOoAZM=;
+	s=k20201202; t=1711715566;
+	bh=k817z/wiq1ZdzswJB0vLMttW1moO1DxXigH8OAcdidA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=QiOSPVSyzXi5kzzfmGn2LGvsGlNA4c8Dtfh1+BASpbr9wjwOjQ0r427U4Cci2ftKj
-	 uzRLPftJ3P32RDyq52TFmFEx1WX4Ky69jUnScRy77CYv+eV+oHKZeLwqUwepGIMQjA
-	 h27KlaMocs85tBfZ5p0c3rcYZyuayzT20zU3ja/KwkV4OTuRpfgr1e4SnGt0LmeUQd
-	 TKr+2EscLzQoMIjxvGtIGx7+30t3nFzVfBT501D+tUMKJvAQcjvO+sZrsPNP6OL68O
-	 25WEPQix0YpPUF/j1DCTq3TMhnbAuKS31ikhSkh2F/La8ZKkKy2JMpwatCGFZK7kgx
-	 79Vz7jmFh+dUA==
+	b=lhLVWLDL8pyHbaAcEvLaSkPP8ibiKWVNK0l15xWbtxFOwxOHSgeFaY6po9HO+T8aS
+	 b/1u9aZbSHNJcymPMiQws/IGlg0xoJBLXcYzxhs5nVTrY2Tyu8NLYOsjuTycCHJEun
+	 DiqResj23pPFFPqK2jUy/1evAuv63Uih7uO+qP6OhXic0UTtZSTLfzbNUS5jHSoqZR
+	 iHIaN19xr6yfyhk8Qmrf6NN0zJtuC/WZD8PojkI5I2ql0WZ7EEDKIS1wMsFR6NnhTw
+	 BRqXf3JNeepdK1qVOOVquPWBf7HVpL8Gv+j/ZQqz6ilze5IETvKHt+VULFTPcljx8y
+	 Y9DBEg2iioqUg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -34,12 +34,12 @@ Cc: Rick Edgecombe <rick.p.edgecombe@intel.com>,
 	Sasha Levin <sashal@kernel.org>,
 	m.szyprowski@samsung.com,
 	iommu@lists.linux.dev
-Subject: [PATCH AUTOSEL 6.6 36/52] dma-direct: Leak pages on dma_set_decrypted() failure
-Date: Fri, 29 Mar 2024 08:29:06 -0400
-Message-ID: <20240329122956.3083859-36-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.1 19/31] dma-direct: Leak pages on dma_set_decrypted() failure
+Date: Fri, 29 Mar 2024 08:31:38 -0400
+Message-ID: <20240329123207.3085013-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240329122956.3083859-1-sashal@kernel.org>
-References: <20240329122956.3083859-1-sashal@kernel.org>
+In-Reply-To: <20240329123207.3085013-1-sashal@kernel.org>
+References: <20240329123207.3085013-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -48,7 +48,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.6.23
+X-stable-base: Linux 6.1.83
 Content-Transfer-Encoding: 8bit
 
 From: Rick Edgecombe <rick.p.edgecombe@intel.com>
@@ -74,10 +74,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 9596ae1aa0dac..fc2d10b2aca6f 100644
+index 63859a101ed83..d4215739efc71 100644
 --- a/kernel/dma/direct.c
 +++ b/kernel/dma/direct.c
-@@ -295,7 +295,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+@@ -296,7 +296,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
  	} else {
  		ret = page_address(page);
  		if (dma_set_decrypted(dev, ret, size))
@@ -86,7 +86,7 @@ index 9596ae1aa0dac..fc2d10b2aca6f 100644
  	}
  
  	memset(ret, 0, size);
-@@ -316,6 +316,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+@@ -317,6 +317,8 @@ void *dma_direct_alloc(struct device *dev, size_t size,
  out_free_pages:
  	__dma_direct_free_pages(dev, page, size);
  	return NULL;
@@ -95,7 +95,7 @@ index 9596ae1aa0dac..fc2d10b2aca6f 100644
  }
  
  void dma_direct_free(struct device *dev, size_t size,
-@@ -378,12 +380,11 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
+@@ -379,12 +381,11 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
  
  	ret = page_address(page);
  	if (dma_set_decrypted(dev, ret, size))
