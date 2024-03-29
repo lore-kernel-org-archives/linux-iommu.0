@@ -1,193 +1,69 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mx2.usergate.com (mx2.usergate.com [46.229.79.1])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 963533A28D
-	for <iommu@lists.linux.dev>; Fri, 29 Mar 2024 07:32:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF01B4F20C;
+	Fri, 29 Mar 2024 09:52:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.229.79.1
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711697532; cv=none; b=jFBAceL+MFctXnX5SdHhusD0jM2vP4oRxff8WLDlVhFFYzvxZO3al+CpHQ58dm1+B7iIhIqwAUx9nWu0RdUGIW8CLfpaFmqRrnLhAMia3AP4fhPzaNCadgNEzim/yQF5V4SCSOvfagzrh8l3SC5QAxb7JCVD/IhHakIC4M4q2Oc=
+	t=1711705942; cv=none; b=atq8sGCdxI1BWMLgRo1Uf80rzVKZR/T3poP8GFHDVPsawIg7ElbA+HN/sAkdRdNJJ8IA+G73OlSHtXk7q6OeelrsXHz4iC6qKIf6+1+M0MiA3KnwPA8FHah+ZXtTJu+Le4NSec51S6THsSMQBURGhXrc7XeVvuEVlsrzw6FCpPw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711697532; c=relaxed/simple;
-	bh=3M6OWiyX2jCszgbg+gKZllism2OVuQShgvdmfShoSr8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EVOpdPYDQ7LgKbGojFjrOtZpGSORCL71wKtPazCbt8ZJnEk34btFq1rDORNzNs0UQ6sftrM+6MPH35ncnZAwubBfK/fhQRwiyASbfcSVsk8W1vnK6L6RM1DncO6YWsCnVArQOniWDle9I59wn8oa7vH1w5Hoa+74BhCe8fRFdVM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NZlFXF9r; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NZlFXF9r"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1711697529; x=1743233529;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=3M6OWiyX2jCszgbg+gKZllism2OVuQShgvdmfShoSr8=;
-  b=NZlFXF9rHVWYWPPKRop1GhOBIIEM+a71uzw6TYQYj93oiPyocNg7r5GZ
-   0uHKuFJjrvuxqOKEth+yYdDpKbwHGsbMPlodY6Hx35vHL8AJAWAgxENaQ
-   Mz1lpOk3rvryKi8wkAAATZaF2bIFGUFFem0AJsXCSn7rW6AcBdNxv686F
-   Vsnbfy9zz0DGYNon3bLdCmRRZXHmgfcmYDBqs3Z9O42AjgPk0RPEF4IjY
-   LcdXxNr9o6bZgCmIMA2+wnxuAJN58s4YMzf8TdbiFTOoDWl4h5b1BctjP
-   UsYvnzYT/+Jr8MPvuAxcBWvtx2mnJz/RCOVa+wNTHfiw6XJ8FcZFIaox6
-   Q==;
-X-CSE-ConnectionGUID: ybU0TN5TQOqobAuq5r8kwA==
-X-CSE-MsgGUID: w0Hwv6xhQTKD6uvVsTT7vw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11027"; a="17605212"
-X-IronPort-AV: E=Sophos;i="6.07,164,1708416000"; 
-   d="scan'208";a="17605212"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2024 00:32:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,164,1708416000"; 
-   d="scan'208";a="16785904"
-Received: from zengguan-mobl1.ccr.corp.intel.com (HELO [10.238.3.174]) ([10.238.3.174])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Mar 2024 00:32:03 -0700
-Message-ID: <a4f169fa-663d-4a94-878b-d783f67d48c9@intel.com>
-Date: Fri, 29 Mar 2024 15:32:00 +0800
+	s=arc-20240116; t=1711705942; c=relaxed/simple;
+	bh=nbsv75XQCiH2AvOR06HHv/kG/5nDx6VaDVmXGKqDVt4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=HxtqKKxe1VSCQiCi+ONkzbH1zzg3O+r/QvdS43awbuACsLkbemsB+spO3pC9DjHFtDUsccOZxzU1XRBtq/Vnpk4I1gT9UA+pXPVBeeZPxpAxHvfW+lKx6EKcxEmDDklH20iYMdXOJwA4Q1kM0y8f1xRtZzX35ld758IuIqYmbaI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=usergate.com; spf=pass smtp.mailfrom=usergate.com; arc=none smtp.client-ip=46.229.79.1
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=usergate.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=usergate.com
+Received: from mail.usergate.com[192.168.90.36] by mx2.usergate.com with ESMTP id
+	 BC4409493A1E471D95606304D683D4D4; Fri, 29 Mar 2024 16:51:58 +0700
+From: Aleksandr Aprelkov <aaprelkov@usergate.com>
+To: Will Deacon <will@kernel.org>
+CC: Aleksandr Aprelkov <aaprelkov@usergate.com>,Robin Murphy <robin.murphy@arm.com>,Joerg Roedel <joro@8bytes.org>,Jason Gunthorpe <jgg@ziepe.ca>,Nicolin Chen <nicolinc@nvidia.com>,Michael Shavit <mshavit@google.com>,Lu Baolu <baolu.lu@linux.intel.com>,Marc Zyngier <maz@kernel.org>,<linux-arm-kernel@lists.infradead.org>,<iommu@lists.linux.dev>,<linux-kernel@vger.kernel.org>
+Subject: [PATCH] iommu/arm-smmu-v3: Free MSIs in case of ENOMEM
+Date: Fri, 29 Mar 2024 16:51:33 +0700
+Message-ID: <20240329095133.576605-1-aaprelkov@usergate.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 09/15] x86/irq: Install posted MSI notification handler
-Content-Language: en-US
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
- Peter Zijlstra <peterz@infradead.org>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- Thomas Gleixner <tglx@linutronix.de>, Lu Baolu <baolu.lu@linux.intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Hansen, Dave" <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>,
- "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>,
- Ingo Molnar <mingo@redhat.com>
-Cc: "Luse, Paul E" <paul.e.luse@intel.com>,
- "Williams, Dan J" <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>,
- "Raj, Ashok" <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- "maz@kernel.org" <maz@kernel.org>, "seanjc@google.com" <seanjc@google.com>,
- Robin Murphy <robin.murphy@arm.com>
-References: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
- <20240126234237.547278-10-jacob.jun.pan@linux.intel.com>
-From: Zeng Guang <guang.zeng@intel.com>
-In-Reply-To: <20240126234237.547278-10-jacob.jun.pan@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: ESLSRV-EXCH-01.esafeline.com (192.168.90.36) To
+ nsk02-mbx01.esafeline.com (10.10.1.35)
+X-Message-Id: E2443D9AE363436E83C57DC670C39DEC
+X-MailFileId: BB9C20720B464D518296C717F3B14E88
 
+If devm_add_action() returns ENOMEM, then MSIs allocated but
+not freed on teardown.
 
-On 1/27/2024 7:42 AM, Jacob Pan wrote:
-> @@ -353,6 +360,111 @@ void intel_posted_msi_init(void)
->   	pid->nv = POSTED_MSI_NOTIFICATION_VECTOR;
->   	pid->ndst = this_cpu_read(x86_cpu_to_apicid);
->   }
-> +
-> +/*
-> + * De-multiplexing posted interrupts is on the performance path, the code
-> + * below is written to optimize the cache performance based on the following
-> + * considerations:
-> + * 1.Posted interrupt descriptor (PID) fits in a cache line that is frequently
-> + *   accessed by both CPU and IOMMU.
-> + * 2.During posted MSI processing, the CPU needs to do 64-bit read and xchg
-> + *   for checking and clearing posted interrupt request (PIR), a 256 bit field
-> + *   within the PID.
-> + * 3.On the other side, the IOMMU does atomic swaps of the entire PID cache
-> + *   line when posting interrupts and setting control bits.
-> + * 4.The CPU can access the cache line a magnitude faster than the IOMMU.
-> + * 5.Each time the IOMMU does interrupt posting to the PIR will evict the PID
-> + *   cache line. The cache line states after each operation are as follows:
-> + *   CPU		IOMMU			PID Cache line state
-> + *   ---------------------------------------------------------------
-> + *...read64					exclusive
-> + *...lock xchg64				modified
-> + *...			post/atomic swap	invalid
-> + *...-------------------------------------------------------------
-> + *
-> + * To reduce L1 data cache miss, it is important to avoid contention with
-> + * IOMMU's interrupt posting/atomic swap. Therefore, a copy of PIR is used
-> + * to dispatch interrupt handlers.
-> + *
-> + * In addition, the code is trying to keep the cache line state consistent
-> + * as much as possible. e.g. when making a copy and clearing the PIR
-> + * (assuming non-zero PIR bits are present in the entire PIR), it does:
-> + *		read, read, read, read, xchg, xchg, xchg, xchg
-> + * instead of:
-> + *		read, xchg, read, xchg, read, xchg, read, xchg
-> + */
-> +static __always_inline inline bool handle_pending_pir(u64 *pir, struct pt_regs *regs)
-> +{
-> +	int i, vec = FIRST_EXTERNAL_VECTOR;
-> +	unsigned long pir_copy[4];
-> +	bool handled = false;
-> +
-> +	for (i = 0; i < 4; i++)
-> +		pir_copy[i] = pir[i];
-> +
-> +	for (i = 0; i < 4; i++) {
-> +		if (!pir_copy[i])
-> +			continue;
-> +
-> +		pir_copy[i] = arch_xchg(pir, 0);
+Found by Linux Verification Center (linuxtesting.org) with SVACE.
 
-Here is a problem that pir_copy[i] will always be written as pir[0]. 
-This leads to handle spurious posted MSIs later.
+Fixes: 166bdbd23161 ("iommu/arm-smmu: Add support for MSI on SMMUv3")
+Signed-off-by: Aleksandr Aprelkov <aaprelkov@usergate.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-> +		handled = true;
-> +	}
-> +
-> +	if (handled) {
-> +		for_each_set_bit_from(vec, pir_copy, FIRST_SYSTEM_VECTOR)
-> +			call_irq_handler(vec, regs);
-> +	}
-> +
-> +	return handled;
-> +}
-> +
-> +/*
-> + * Performance data shows that 3 is good enough to harvest 90+% of the benefit
-> + * on high IRQ rate workload.
-> + */
-> +#define MAX_POSTED_MSI_COALESCING_LOOP 3
-> +
-> +/*
-> + * For MSIs that are delivered as posted interrupts, the CPU notifications
-> + * can be coalesced if the MSIs arrive in high frequency bursts.
-> + */
-> +DEFINE_IDTENTRY_SYSVEC(sysvec_posted_msi_notification)
-> +{
-> +	struct pt_regs *old_regs = set_irq_regs(regs);
-> +	struct pi_desc *pid;
-> +	int i = 0;
-> +
-> +	pid = this_cpu_ptr(&posted_interrupt_desc);
-> +
-> +	inc_irq_stat(posted_msi_notification_count);
-> +	irq_enter();
-> +
-> +	/*
-> +	 * Max coalescing count includes the extra round of handle_pending_pir
-> +	 * after clearing the outstanding notification bit. Hence, at most
-> +	 * MAX_POSTED_MSI_COALESCING_LOOP - 1 loops are executed here.
-> +	 */
-> +	while (++i < MAX_POSTED_MSI_COALESCING_LOOP) {
-> +		if (!handle_pending_pir(pid->pir64, regs))
-> +			break;
-> +	}
-> +
-> +	/*
-> +	 * Clear outstanding notification bit to allow new IRQ notifications,
-> +	 * do this last to maximize the window of interrupt coalescing.
-> +	 */
-> +	pi_clear_on(pid);
-> +
-> +	/*
-> +	 * There could be a race of PI notification and the clearing of ON bit,
-> +	 * process PIR bits one last time such that handling the new interrupts
-> +	 * are not delayed until the next IRQ.
-> +	 */
-> +	handle_pending_pir(pid->pir64, regs);
-> +
-> +	apic_eoi();
-> +	irq_exit();
-> +	set_irq_regs(old_regs);
->   }
->   #endif /* X86_POSTED_MSI */
->   
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 41f93c3ab160..136d0cdce6a9 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -3402,7 +3402,12 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+ 	smmu->priq.q.irq = msi_get_virq(dev, PRIQ_MSI_INDEX);
+ 
+ 	/* Add callback to free MSIs on teardown */
+-	devm_add_action(dev, arm_smmu_free_msis, dev);
++	ret = devm_add_action(dev, arm_smmu_free_msis, dev);
++	if (ret) {
++		dev_warn(dev, "failed to add free MSIs callback - falling back to wired irqs\n");
++		arm_smmu_free_msis(dev);
++		return;
++	}
+ }
+ 
+ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+-- 
+2.34.1
+
