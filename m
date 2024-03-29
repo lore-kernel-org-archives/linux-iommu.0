@@ -1,954 +1,152 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2041.outbound.protection.outlook.com [40.107.236.41])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2049.outbound.protection.outlook.com [40.107.92.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29C1D4436E
-	for <iommu@lists.linux.dev>; Fri, 29 Mar 2024 06:15:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5D3E3BB55
+	for <iommu@lists.linux.dev>; Fri, 29 Mar 2024 07:14:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.92.49
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711692942; cv=fail; b=V+UI6AFG2AgAdblSIsp64GoR5YNss2IADFtO/HYo5XueGMyGYdjN1/CfldjLXnd4WvQr+1xVLbTISof63xjEW6Nq+3zBoBYOgLtaYYSsrtk+DRu64MDyBzZW6+YJNeo89taxUDrY5IbJwpsC7FjwBKZC3XTYejI3f4vc06Adr5Y=
+	t=1711696461; cv=fail; b=Rac4zaJeqbhhQX2iiQmy9VYWCii3/rs9uYP+20TGArtm+VKhDe2AbezAWnj9LA7xDDC/ZDkiPMDAXWdQrmMCLxXRyDfaAnn1UZkhGNoUvOiuFiJg/jTeF8rIoZo0QHzQFNLswf6pQ6/+E9i8dKLWXWYJeFYqk4SolEkJ4XL2ugE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1711692942; c=relaxed/simple;
-	bh=ojAAwQmC+YY3KWLZvGCDMfkA6isQ4O8nTMvUky+mESo=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gHtWy62yM9EzT1EXS9Fv8kSOfAciqU/rTkYLApsWHcYtK+QFSDkKKpD8gaAlzE1R8RlgEiNJWZTpmFrzXsc5RgMElGnQRIIhHNpRfjdsWKa9sv1vgAnuQeI5stN3NcOAT6sk62JYWrZ1x0c9mH+29J8fQ+LYbLg96WV2K1JHwjw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=jDNFQfyi; arc=fail smtp.client-ip=40.107.236.41
+	s=arc-20240116; t=1711696461; c=relaxed/simple;
+	bh=Bufla3PEgCQCjutDNwgXuyS+hcn2BmeGKEHGHQRMZu8=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=t86MOzqtQIoKG761g/dUaawjZJYD7qjb4GCSiBkza6LB+N2gbAYamrV33+GscSKgQ5XE2WK4jJ59dWFh2j5moJVJCG8jnDJt6elMrF9zYlZ5M42ZCune8hr8gVjCg2u1tBQ3YkLIdx7cI8UZFMHKJjCIBkJkzo4Nz+3jB6yDBgo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Qx+OzPmo; arc=fail smtp.client-ip=40.107.92.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="jDNFQfyi"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Qx+OzPmo"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KoiZCyKiYTIYPk+bnEdda50kD3gqn0IKrE9BFsl7XI/RrSiaQcYKV+1AELr8bbDjzxk+VE4boE3hSScFybSX68ptRIta/v/zv/lS9+4rJoCu5Rbj8hWf+v/qfOrdSM5RWtEtLDXL/7Png0Xko+7Vi3NEFIANSend81LfX+8pvDbCnK5DMzzrDBMZX2Y/5f5dsW0wsnUk7LfcaX4+2CCkobKDTgvRR0g9pIn6jj34L1qOouel3tk9T7aAd1g1Lh559WrAXfD47gEIsD4hnfWKfFkOVLoQblLwjXX8lUqodqoUaBj0VJnkofEtL28lWPskCn+PXdDQxx7Bt7oiHAD+cg==
+ b=WbTVqJPnAc7RY0K+bDnKTHoJPRDBUnE6mA4UfAFvsesDlrJyKnuHopIAHNePgsmkSn7e6YNxU7nZWS2TmoK36pKLOKy+5lumxSwOyVr+iU0dRf/wVnWkFCQxP8UYUY8cJReIEcaFl6Kw5Jij3x4QYupHACoH1GSQ3eMz+fXvPc1Yh4pfO7F7TL9gnqf6Jn8zSoaBrIQCTRPy6hhzySeu9BHTAGBUUpV0WMOGSl1KubXv5J7SICQ7u8ioECe+ultMkbPsklajoWK2EyTc6ZTsUpwTASyP9HBy9WNncjGC2EHu0x138LkFkf2ELPnUS8b2aedEAt08P/s/K0YzzxMmvw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=X5b5S57VndnN5sTUmYsqvhl46CqKwFsi7IdwZGkYII0=;
- b=K6647ZKWDiveuQrsUYVwpL6QPmAi8e7XAMy3MSXjeiwJIkuC/nYwTVUZnC970eUP7xUyRhYXuWQVC+1+axkWOg4lbN8JZSdk9K1eqxeqdKU6a/00o6AFuw1DVZHLkCoDRmpvZk2NWdNgofIaHSb3/0UtILCIpQjpmKRfoji+pLLf5XBU9Ofm1CXo7CE7cZh4xJu1GCSaofNoyw9f9m1UuQvjg9d93vZK+KfqbfsMr1a/VOYDfT5SHXyD16Me4/o3pwjrJsmrj/kNtiNjbod62nuMp83wW2lNm6qodzQT1a1Xx41bfKTfUFitYs4aydLkwhNfX8uZdQ++53yLnaSdmA==
+ bh=mw1olCfHBbuc2YYkeBohROxjromMzBqw80HjlrjRivA=;
+ b=SnJZYDlN0zn8peeeudhYhScqdYjxtzMgLAP7yKwSBD0Vj6brrYtDz8RsZmnYxGLZGnnTR6f2ifBm1E1QrTGbOqk9VOJ4G5tKlQ+FbiQHsvH+CcKTCRwm1wSIOw+gteT6bMzqMKFobApec02e6fAdPjWDkfPwyiTOPgYB1KrQcJo5tsAAqIMu4lDpAnZxCIS9iLPzFwm7IbumN/rafgItCLS2wH6sgfRjToHzIsvQanHB+h9Jt+IMR1NSYUl8UmrnyufD+mLo2xj+SmSkp0OWX/z9mA+Szli2HQK0of1cy9WZhWNNB/FIS3I/oZ3J4AXOPyG29ZoqeHTzQNE1ofA32Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.233) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ 216.228.117.161) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none (0)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=X5b5S57VndnN5sTUmYsqvhl46CqKwFsi7IdwZGkYII0=;
- b=jDNFQfyiiq/XxH32QINq+CBAf7FQsNWLZFsS0ukirKuE3BzG8y6S5v1dmzCneZLRa1BiVF5BQcMb5cT4ahysvt5ee4JE9Meu20Y8s25KoQjVBxElWimApYo/W+F3wuORTaXrLpm7exS5B9TFX3kW67OF1TgdyYwAuDypUr7WDTI7H5w1NtNQDqHjIS+Gl+8qZuFldxLRw5Lm8W0C5Y7Cnib246rwVGPWYCWT4UgXEml88yy5yutKkuZmmd45uRSX4EoB8iiYC0sr/xxAq2LFteDDYkVlTDWixsuIMJrRCJCVh5Rx6j+7N56gm6UNcgkUNZBMnEmXLbowKNY1kmEbsg==
-Received: from BN1PR12CA0028.namprd12.prod.outlook.com (2603:10b6:408:e1::33)
- by MN2PR12MB4080.namprd12.prod.outlook.com (2603:10b6:208:1d9::16) with
+ bh=mw1olCfHBbuc2YYkeBohROxjromMzBqw80HjlrjRivA=;
+ b=Qx+OzPmoh7fvkg5hoOZcYT/0MqabznRW3I3qwIle/m8QbG+Zp5B/PnD5T8j1sUb1NtqOXI580veX8kzNePQK+NGqFIdrK0J86Z4Q04EI7S4AJGxhthtxOT12OQ6AlffDR9MvtGARUYyGz6bzt0SYHz8A6RMft8aVrxEoSN8SjG0DYqKkyQhzhp7bwEXerd2KmU6dNQiDh33JGKWohls0s1KHLnQAG6xR2QUn6QUoUcgueMswwtgw/K3s6NFeYTNyeo3yWvvGoRF3jOvIyC+aizKWANpRbpcQ+RukLcN5ecIh82K+eGdmJaQAVlKmSh5XfTTVxF3Gdc+WeF5UCem+1A==
+Received: from DS7PR03CA0255.namprd03.prod.outlook.com (2603:10b6:5:3b3::20)
+ by DM4PR12MB6037.namprd12.prod.outlook.com (2603:10b6:8:b0::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.40; Fri, 29 Mar
- 2024 06:15:33 +0000
-Received: from BN2PEPF0000449D.namprd02.prod.outlook.com
- (2603:10b6:408:e1:cafe::e7) by BN1PR12CA0028.outlook.office365.com
- (2603:10b6:408:e1::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.13 via Frontend
- Transport; Fri, 29 Mar 2024 06:15:32 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ 2024 07:14:12 +0000
+Received: from DS1PEPF00017092.namprd03.prod.outlook.com
+ (2603:10b6:5:3b3:cafe::81) by DS7PR03CA0255.outlook.office365.com
+ (2603:10b6:5:3b3::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.39 via Frontend
+ Transport; Fri, 29 Mar 2024 07:14:11 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.233) by
- BN2PEPF0000449D.mail.protection.outlook.com (10.167.243.148) with Microsoft
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DS1PEPF00017092.mail.protection.outlook.com (10.167.17.135) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7409.10 via Frontend Transport; Fri, 29 Mar 2024 06:15:32 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Thu, 28 Mar
- 2024 23:15:18 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.12; Thu, 28 Mar 2024 23:15:17 -0700
-Received: from Asurada-Nvidia.nvidia.com (10.127.8.9) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server id 15.2.1258.12 via Frontend
- Transport; Thu, 28 Mar 2024 23:15:17 -0700
+ 15.20.7409.10 via Frontend Transport; Fri, 29 Mar 2024 07:14:09 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Fri, 29 Mar
+ 2024 00:13:58 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12; Fri, 29 Mar
+ 2024 00:13:57 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
+ Transport; Fri, 29 Mar 2024 00:13:57 -0700
+Date: Fri, 29 Mar 2024 00:13:55 -0700
 From: Nicolin Chen <nicolinc@nvidia.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>
-CC: <joro@8bytes.org>, <jgg@nvidia.com>, <thierry.reding@gmail.com>,
-	<vdumpa@nvidia.com>, <jonathanh@nvidia.com>, <linux-kernel@vger.kernel.org>,
-	<iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-tegra@vger.kernel.org>
-Subject: [PATCH v4 5/6] iommu/arm-smmu-v3: Add in-kernel support for NVIDIA Tegra241 (Grace) CMDQV
-Date: Thu, 28 Mar 2024 23:14:09 -0700
-Message-ID: <98e72b164485b530991d434554d1fa5dc0eb4027.1711690673.git.nicolinc@nvidia.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1711690673.git.nicolinc@nvidia.com>
-References: <cover.1711690673.git.nicolinc@nvidia.com>
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, Linuxarm <linuxarm@huawei.com>, Zhangfei Gao
+	<zhangfei.gao@linaro.org>, Michael Shavit <mshavit@google.com>, Eric Auger
+	<eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
+Subject: Re: Query on ARM SMMUv3 nested support
+Message-ID: <ZgZqMymQY4pL77iw@Asurada-Nvidia>
+References: <b8c1b2fb281246da94b35ceb5e27b538@huawei.com>
+ <ZfI74miZ1ss9+Kz0@Asurada-Nvidia>
+ <4a37c695bf84425ea5159b82c202cb81@huawei.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <4a37c695bf84425ea5159b82c202cb81@huawei.com>
 X-NV-OnPremToCloud: ExternallySecured
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: BN2PEPF0000449D:EE_|MN2PR12MB4080:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6d19947b-db76-4907-5817-08dc4fb7a409
+X-MS-TrafficTypeDiagnostic: DS1PEPF00017092:EE_|DM4PR12MB6037:EE_
+X-MS-Office365-Filtering-Correlation-Id: 01bcdbbf-a91c-437f-f5c5-08dc4fbfd459
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
 X-Microsoft-Antispam-Message-Info:
-	dvyFPN8YnhF4wNtu2IWyxLrWGfYvg2G61bBZxrjyDpSzLmQO7DY8Pzcdyl3uMPnU0wzPG6qE4p93Pl/nme7GWOEXyOH9oTpE9KYmZK4NVnlQQj72c14ESxoYOvCMUPoQE+9ZvuS5KSdCT2dyImgdZ9jttt6bq9EijlAo/TLk9XdAIGX8E58n8wi0oC0Ir0o7MLz6odAOKSV/PtvkxpuXrbfdjgrS5iAHLgzwtX9+Dr3PemVI6fBZiuS3Pi3uje07UijVKNMNBxymxpvvWq7b/6SbLNVl00uSWAjVa6zos0fdyJFFFGVAK4HWA33SJhxIw25wGCKWfs4FtpgWnvuPeqMf+iy2eThlTCcaYs5fwQid4QLax+vMpk7BkWxaoKLTV3Nwsrzqb3GF4SIr4edWR+Ux6nH7UT3Q+c43rIozPesJEz8HicMwSzgMGbg/pCDNEwXZ+BCClVPAeBr/+KpRUvjbSU8XFRKzajBfuCohMBTjXJsoQWKESLObsWpWGFL6aJo0NfP8+ojtFPaQQqD1+LK4kcZ/MAq9i3SmKz95LdzuLv/Ibe3LzvQSRggmHBnwXCYGOZlxr7yRC4FMuvXIOLC75yHs9gKzUo4icH96wmTaHwE/upUpgDA7aKSqJ8VxFByRaFUTeYwGuuVIhHCU8JuqQd7KOTO3ygWFHed1m1crl2BJ9XHdkKZmeKFhtfyOg1xvyGrH8jMEU1hNJgAVc/ZjkF5DrwOVqGhFkJgRp9kznw+L+WgVf7sN6dwrPBZ2
+	oHkIjtM1h07NaRRK6QM0ZVkgWtWoMgAXpPTSZViYjb/YKoDq7Yke162ue61rALKvA+5bxr02HE/1uSVMQ7U82YM98fMl3m0bS0G7cl79ZQuE4ggvhvmUJKtD1Oz32eXhGz2ylH77SG6AMiVcyM4SjjannQR+irxx11gBPztN3D27AQrxUz/PR1czWNlobwmHg1r3i8ZDBbRe17xSgtw15Z1ldRODoSfb73n9g8yHIHVVDoL6T7IYoMEBZkDgLPcFwVyzPjsTjamNSppJbhI4q4XeAnzVcFAhs83DJzvxVMF1WDBotLcWfVmxrIWOf1Jskw0xe2o/uUw3TnHm4MSNEXlc8YMGUbgzYcl1dg7ZpbPa/Ms/RecSIIaLCf5FIofu36f9npHK6js+yZRIm1SWauUHMgXar14QGMSbUfmVlSSaP/35G+SM29RFkmXkPXVcYT9Iu5Xba1zrzbu6hpsNoaUKW6L285lM7+MNwLiNIRMQB1Lpi585Jeav/K8/J0/jwIp20TJCn/0bqn/dzqoCMlL41hFYyApZPjAH1msJFQg90Xihqg9JWuv4ym+BweqqnDNSrAdZFVnmpyU9Wvei2cn+RszdKJJ5bF0D4bvuT0RowPFTCUWkhkyO7GSJo9Bs/L2ieRzJVjv3GaadNqKEjsdeDI+xheV8/WKTJLJl1b/A3ptXk07RgLa3mOIvXFxxghFEKOL4/qIgvbykJTPgw0rx/chPkW+tmcgxM6IZRRla3rXTi6SySrdblVaR7bsO
 X-Forefront-Antispam-Report:
-	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(1800799015)(376005)(82310400014)(36860700004);DIR:OUT;SFP:1101;
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(36860700004)(82310400014)(376005)(1800799015);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2024 06:15:32.7578
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Mar 2024 07:14:09.8218
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d19947b-db76-4907-5817-08dc4fb7a409
+X-MS-Exchange-CrossTenant-Network-Message-Id: 01bcdbbf-a91c-437f-f5c5-08dc4fbfd459
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	BN2PEPF0000449D.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DS1PEPF00017092.namprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4080
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB6037
 
-From: Nate Watterson <nwatterson@nvidia.com>
+Hi Shameer,
 
-NVIDIA's Tegra241 Soc has a CMDQ-Virtualization (CMDQV) hardware, extending
-the standard ARM SMMU v3 IP to support multiple VCMDQs with virtualization
-capabilities. In terms of command queue, they are very like a standard SMMU
-CMDQ (or ECMDQs), but only support CS_NONE in the CS field of CMD_SYNC.
+Sorry for the late reply. Having been occupied by multiple tasks
+lately.
 
-Add a new tegra241-cmdqv driver, and insert its structure pointer into the
-existing arm_smmu_device, and then add related function calls in the SMMUv3
-driver to interact with the CMDQV driver.
+On Fri, Mar 22, 2024 at 03:04:42PM +0000, Shameerali Kolothum Thodi wrote:
 
-In the CMDQV driver, add a minimal part for the in-kernel support: reserve
-VINTF0 for in-kernel use, and assign some of the VCMDQs to the VINTF0, and
-select one VCMDQ based on the current CPU ID to execute supported commands.
-This multi-queue design for in-kernel use gives some limited improvements:
-up to 20% reduction of invalidation time was measured by a multi-threaded
-DMA unmap benchmark, compared to a single queue.
+> Thanks for the reference to above CMDQ-V. Looks interesting.
+> I think we can have a go with retry logic first to allocate a new hwpt
+> if the attach fails. For now, I have a temp fix where I allocate a new
+> hwpt every time.
+> 
+> I also noticed another problem with the commit below,
+> 6691a2f("hw/arm/smmu-common: Use sysmem for get_address _space until !!s2_hwpti")
+> 
+> This actually breaks a virtio-pci dev assignment when that is the only
+> assigned device to the Guest without any pass-through dev in nested
+> scenario.
+>
+> I have a temp fix for that as well here,
+> (I know it is ugly!). I will revisit that again. Please let me know if you have
+> any ideas.
 
-The other part of the CMDQV driver will be user-space support that gives a
-hypervisor running on the host OS to talk to the driver for virtualization
-use cases, allowing VMs to use VCMDQs without trappings, i.e. no VM Exits.
-This is currently WIP based on IOMMUFD, and will be sent for review after
-SMMU nesting patches are getting merged. This part will provide a guest OS
-a bigger improvement: 70% to 90% reductions of TLB invalidation time were
-measured by DMA unmap tests running in a guest OS, compared to nested SMMU
-CMDQ (with trappings).
+I am not quite getting the case here. Is that virtio-pci device
+behind a nested-SMMU while there is no S2 hwpt? In that case, why
+does this virtio-pci device require a "nested-smmuv3"?
 
-However, it is very important for this in-kernel support to get merged and
-installed to VMs running on Grace-powered servers as soon as possible. So,
-later those servers would only need to upgrade their host kernels for the
-user-space support.
+> I still have that io_uring write issue mentioned in the other thread[1],
+> but for now I use io_uring API only for read and make use of normal write()
+> for updating kernel with page response.
+> 
+> I have done some basic sanity runs with our ACC devices and those seems
+> to work(of course needs more testing).
+> 
+> Please have a look and let me know if you spot anything.
 
-As the initial version, the CMDQV driver only supports ACPI configurations.
+I'm glad that you include the fault handling support. I'll give
+that a try.
 
-Signed-off-by: Nate Watterson <nwatterson@nvidia.com>
-Co-developed-by: Nicolin Chen <nicolinc@nvidia.com>
-Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
----
- MAINTAINERS                                   |   1 +
- drivers/iommu/Kconfig                         |  12 +
- drivers/iommu/arm/arm-smmu-v3/Makefile        |   1 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  22 +-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  37 ++
- .../iommu/arm/arm-smmu-v3/tegra241-cmdqv.c    | 623 ++++++++++++++++++
- 6 files changed, 690 insertions(+), 6 deletions(-)
- create mode 100644 drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index aa3b947fb080..ebe8f720fffc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21719,6 +21719,7 @@ M:	Thierry Reding <thierry.reding@gmail.com>
- R:	Krishna Reddy <vdumpa@nvidia.com>
- L:	linux-tegra@vger.kernel.org
- S:	Supported
-+F:	drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
- F:	drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
- F:	drivers/iommu/tegra*
- 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 0af39bbbe3a3..82e557de31e3 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -410,6 +410,18 @@ config ARM_SMMU_V3_SVA
- 	  Say Y here if your system supports SVA extensions such as PCIe PASID
- 	  and PRI.
- 
-+config TEGRA241_CMDQV
-+	bool "NVIDIA Tegra241 CMDQ-V extension support for ARM SMMUv3"
-+	depends on ARM_SMMU_V3
-+	depends on ACPI
-+	help
-+	  Support for NVIDIA CMDQ-Virtualization extension for ARM SMMUv3. The
-+	  CMDQ-V extension is similar to v3.3 ECMDQ for multi command queues
-+	  support, except with virtualization capabilities.
-+
-+	  Say Y here if your system is NVIDIA Tegra241 (Grace) or it has the same
-+	  CMDQ-V extension.
-+
- config S390_IOMMU
- 	def_bool y if S390 && PCI
- 	depends on S390 && PCI
-diff --git a/drivers/iommu/arm/arm-smmu-v3/Makefile b/drivers/iommu/arm/arm-smmu-v3/Makefile
-index 54feb1ecccad..8dff2bc4c7f3 100644
---- a/drivers/iommu/arm/arm-smmu-v3/Makefile
-+++ b/drivers/iommu/arm/arm-smmu-v3/Makefile
-@@ -2,4 +2,5 @@
- obj-$(CONFIG_ARM_SMMU_V3) += arm_smmu_v3.o
- arm_smmu_v3-objs-y += arm-smmu-v3.o
- arm_smmu_v3-objs-$(CONFIG_ARM_SMMU_V3_SVA) += arm-smmu-v3-sva.o
-+arm_smmu_v3-objs-$(CONFIG_TEGRA241_CMDQV) += tegra241-cmdqv.o
- arm_smmu_v3-objs := $(arm_smmu_v3-objs-y)
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 7630c1dd5235..d12e048ddd93 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -354,6 +354,9 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 
- static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu)
- {
-+	if (smmu->tegra241_cmdqv)
-+		return tegra241_cmdqv_get_cmdq(smmu);
-+
- 	return &smmu->cmdq;
- }
- 
-@@ -3095,12 +3098,10 @@ static struct iommu_ops arm_smmu_ops = {
- };
- 
- /* Probing and initialisation functions */
--static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
--				   struct arm_smmu_queue *q,
--				   void __iomem *page,
--				   unsigned long prod_off,
--				   unsigned long cons_off,
--				   size_t dwords, const char *name)
-+int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
-+			    struct arm_smmu_queue *q, void __iomem *page,
-+			    unsigned long prod_off, unsigned long cons_off,
-+			    size_t dwords, const char *name)
- {
- 	size_t qsz;
- 
-@@ -3635,6 +3636,12 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
- 		return ret;
- 	}
- 
-+	if (smmu->tegra241_cmdqv) {
-+		ret = tegra241_cmdqv_device_reset(smmu);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	return 0;
- }
- 
-@@ -3928,6 +3935,9 @@ static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
- 	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
- 		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
- 
-+	smmu->tegra241_cmdqv =
-+		tegra241_cmdqv_acpi_probe(smmu, node->identifier);
-+
- 	return 0;
- }
- #else
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 3046c1028e66..22270de3aed7 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -625,6 +625,8 @@ struct arm_smmu_strtab_cfg {
- 	u32				strtab_base_cfg;
- };
- 
-+struct tegra241_cmdqv;
-+
- /* An SMMUv3 instance */
- struct arm_smmu_device {
- 	struct device			*dev;
-@@ -687,6 +689,12 @@ struct arm_smmu_device {
- 
- 	struct rb_root			streams;
- 	struct mutex			streams_mutex;
-+
-+	/*
-+	 * Pointer to NVIDIA Tegra241 CMDQ-Virtualization Extension support,
-+	 * similar to v3.3 ECMDQ except with virtualization capabilities.
-+	 */
-+	struct tegra241_cmdqv		*tegra241_cmdqv;
- };
- 
- struct arm_smmu_stream {
-@@ -761,6 +769,10 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
- int arm_smmu_cmdq_init(struct arm_smmu_device *smmu,
- 		       struct arm_smmu_cmdq *cmdq);
- void __arm_smmu_cmdq_skip_err(struct device *dev, struct arm_smmu_queue *q);
-+int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
-+			    struct arm_smmu_queue *q, void __iomem *page,
-+			    unsigned long prod_off, unsigned long cons_off,
-+			    size_t dwords, const char *name);
- 
- #ifdef CONFIG_ARM_SMMU_V3_SVA
- bool arm_smmu_sva_supported(struct arm_smmu_device *smmu);
-@@ -817,4 +829,29 @@ static inline void arm_smmu_sva_remove_dev_pasid(struct iommu_domain *domain,
- {
- }
- #endif /* CONFIG_ARM_SMMU_V3_SVA */
-+
-+#ifdef CONFIG_TEGRA241_CMDQV
-+struct tegra241_cmdqv *
-+tegra241_cmdqv_acpi_probe(struct arm_smmu_device *smmu, int id);
-+int tegra241_cmdqv_device_reset(struct arm_smmu_device *smmu);
-+struct arm_smmu_cmdq *tegra241_cmdqv_get_cmdq(struct arm_smmu_device *smmu);
-+#else /* CONFIG_TEGRA241_CMDQV */
-+static inline struct tegra241_cmdqv *
-+tegra241_cmdqv_acpi_probe(struct arm_smmu_device *smmu, int id)
-+{
-+	return NULL;
-+}
-+
-+static inline int tegra241_cmdqv_device_reset(struct arm_smmu_device *smmu)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline struct arm_smmu_cmdq *
-+tegra241_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
-+{
-+	return NULL;
-+}
-+#endif /* CONFIG_TEGRA241_CMDQV */
-+
- #endif /* _ARM_SMMU_V3_H */
-diff --git a/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-new file mode 100644
-index 000000000000..4bfddeb658e2
---- /dev/null
-+++ b/drivers/iommu/arm/arm-smmu-v3/tegra241-cmdqv.c
-@@ -0,0 +1,623 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/* Copyright (C) 2021-2024 NVIDIA CORPORATION & AFFILIATES. */
-+
-+#define dev_fmt(fmt) "tegra241_cmdqv: " fmt
-+
-+#include <linux/acpi.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/interrupt.h>
-+#include <linux/iommu.h>
-+#include <linux/iopoll.h>
-+
-+#include <acpi/acpixf.h>
-+
-+#include "arm-smmu-v3.h"
-+
-+#define TEGRA241_CMDQV_HID		"NVDA200C"
-+
-+/* CMDQV register page base and size defines */
-+#define TEGRA241_CMDQV_CONFIG_BASE	(0)
-+#define TEGRA241_CMDQV_CONFIG_SIZE	(SZ_64K)
-+#define TEGRA241_VCMDQ_PAGE0_BASE	(TEGRA241_CMDQV_CONFIG_BASE + SZ_64K)
-+#define TEGRA241_VCMDQ_PAGE1_BASE	(TEGRA241_VCMDQ_PAGE0_BASE + SZ_64K)
-+#define TEGRA241_VINTF_VCMDQ_BASE	(TEGRA241_VCMDQ_PAGE1_BASE + SZ_64K)
-+
-+/* CMDQV global config regs */
-+#define TEGRA241_CMDQV_CONFIG		0x0000
-+#define  CMDQV_EN			BIT(0)
-+
-+#define TEGRA241_CMDQV_PARAM		0x0004
-+#define  CMDQV_NUM_VINTF_LOG2		GENMASK(11, 8)
-+#define  CMDQV_NUM_VCMDQ_LOG2		GENMASK(7, 4)
-+
-+#define TEGRA241_CMDQV_STATUS		0x0008
-+#define  CMDQV_STATUS			GENMASK(2, 1)
-+#define  CMDQV_ENABLED			BIT(0)
-+
-+#define TEGRA241_CMDQV_VINTF_ERR_MAP	0x0014
-+#define TEGRA241_CMDQV_VINTF_INT_MASK	0x001C
-+#define TEGRA241_CMDQV_VCMDQ_ERR_MAP0	0x0024
-+#define TEGRA241_CMDQV_VCMDQ_ERR_MAP(i)	(0x0024 + 0x4*(i))
-+
-+#define TEGRA241_CMDQV_CMDQ_ALLOC(q)	(0x0200 + 0x4*(q))
-+#define  CMDQV_CMDQ_ALLOC_VINTF		GENMASK(20, 15)
-+#define  CMDQV_CMDQ_ALLOC_LVCMDQ	GENMASK(7, 1)
-+#define  CMDQV_CMDQ_ALLOCATED		BIT(0)
-+
-+/* VINTF config regs */
-+#define TEGRA241_VINTF(v)		(0x1000 + 0x100*(v))
-+
-+#define TEGRA241_VINTF_CONFIG		0x0000
-+#define  VINTF_HYP_OWN			BIT(17)
-+#define  VINTF_VMID			GENMASK(16, 1)
-+#define  VINTF_EN			BIT(0)
-+
-+#define TEGRA241_VINTF_STATUS		0x0004
-+#define  VINTF_STATUS			GENMASK(3, 1)
-+#define  VINTF_ENABLED			BIT(0)
-+
-+#define TEGRA241_VINTF_CMDQ_ERR_MAP(m)	(0x00C0 + 0x4*(m))
-+
-+/* VCMDQ config regs */
-+/* -- PAGE0 -- */
-+#define TEGRA241_VCMDQ_PAGE0(q)		(TEGRA241_VCMDQ_PAGE0_BASE + 0x80*(q))
-+
-+#define TEGRA241_VCMDQ_CONS		0x00000
-+#define  VCMDQ_CONS_ERR			GENMASK(30, 24)
-+
-+#define TEGRA241_VCMDQ_PROD		0x00004
-+
-+#define TEGRA241_VCMDQ_CONFIG		0x00008
-+#define  VCMDQ_EN			BIT(0)
-+
-+#define TEGRA241_VCMDQ_STATUS		0x0000C
-+#define  VCMDQ_ENABLED			BIT(0)
-+
-+#define TEGRA241_VCMDQ_GERROR		0x00010
-+#define TEGRA241_VCMDQ_GERRORN		0x00014
-+
-+/* -- PAGE1 -- */
-+#define TEGRA241_VCMDQ_PAGE1(q)		(TEGRA241_VCMDQ_PAGE1_BASE + 0x80*(q))
-+#define  VCMDQ_ADDR			GENMASK(47, 5)
-+#define  VCMDQ_LOG2SIZE			GENMASK(4, 0)
-+
-+#define TEGRA241_VCMDQ_BASE		0x00000
-+#define TEGRA241_VCMDQ_CONS_INDX_BASE	0x00008
-+
-+/* VINTF logical-VCMDQ pages */
-+#define TEGRA241_VINTFi_PAGE0(i)	(TEGRA241_VINTF_VCMDQ_BASE + SZ_128K*(i))
-+#define TEGRA241_VINTFi_PAGE1(i)	(TEGRA241_VINTFi_PAGE0(i) + SZ_64K)
-+#define TEGRA241_VINTFi_VCMDQ_PAGE0(i, q) \
-+					(TEGRA241_VINTFi_PAGE0(i) + 0x80*(q))
-+#define TEGRA241_VINTFi_VCMDQ_PAGE1(i, q) \
-+					(TEGRA241_VINTFi_PAGE1(i) + 0x80*(q))
-+
-+/* MMIO helpers */
-+#define cmdqv_readl(reg) \
-+	readl(cmdqv->base + TEGRA241_CMDQV_##reg)
-+#define cmdqv_readl_relaxed(reg) \
-+	readl_relaxed(cmdqv->base + TEGRA241_CMDQV_##reg)
-+#define cmdqv_write(val, reg) \
-+	writel((val), cmdqv->base + TEGRA241_CMDQV_##reg)
-+#define cmdqv_writel_relaxed(val, reg) \
-+	writel_relaxed((val), cmdqv->base + TEGRA241_CMDQV_##reg)
-+
-+#define vintf_readl(reg) \
-+	readl(vintf->base + TEGRA241_VINTF_##reg)
-+#define vintf_readl_relaxed(reg) \
-+	readl_relaxed(vintf->base + TEGRA241_VINTF_##reg)
-+#define vintf_writel(val, reg) \
-+	writel((val), vintf->base + TEGRA241_VINTF_##reg)
-+#define vintf_writel_relaxed(val, reg) \
-+	writel_relaxed((val), vintf->base + TEGRA241_VINTF_##reg)
-+
-+#define vcmdq_page0_readl(reg) \
-+	readl(vcmdq->page0 + TEGRA241_VCMDQ_##reg)
-+#define vcmdq_page0_readl_relaxed(reg) \
-+	readl_relaxed(vcmdq->page0 + TEGRA241_VCMDQ_##reg)
-+#define vcmdq_page0_writel(val, reg) \
-+	writel((val), vcmdq->page0 + TEGRA241_VCMDQ_##reg)
-+#define vcmdq_page0_writel_relaxed(val, reg) \
-+	writel_relaxed((val), vcmdq->page0 + TEGRA241_VCMDQ_##reg)
-+
-+#define vcmdq_page1_readl(reg) \
-+	readl(vcmdq->page1 + TEGRA241_VCMDQ_##reg)
-+#define vcmdq_page1_readl_relaxed(reg) \
-+	readl_relaxed(vcmdq->page1 + TEGRA241_VCMDQ_##reg)
-+#define vcmdq_page1_writel(val, reg) \
-+	writel((val), vcmdq->page1 + TEGRA241_VCMDQ_##reg)
-+#define vcmdq_page1_writel_relaxed(val, reg) \
-+	writel_relaxed((val), vcmdq->page1 + TEGRA241_VCMDQ_##reg)
-+#define vcmdq_page1_writeq(val, reg) \
-+	writeq((val), vcmdq->page1 + TEGRA241_VCMDQ_##reg)
-+#define vcmdq_page1_writeq_relaxed(val, reg) \
-+	writeq_relaxed((val), vcmdq->page1 + TEGRA241_VCMDQ_##reg)
-+
-+/* Logging helpers */
-+#define cmdqv_warn(fmt, ...) \
-+	dev_warn(cmdqv->dev, fmt, ##__VA_ARGS__)
-+#define cmdqv_err(fmt, ...) \
-+	dev_err(cmdqv->dev, fmt, ##__VA_ARGS__)
-+#define cmdqv_info(fmt, ...) \
-+	dev_info(cmdqv->dev, fmt, ##__VA_ARGS__)
-+#define cmdqv_dbg(fmt, ...) \
-+	dev_dbg(cmdqv->dev, fmt, ##__VA_ARGS__)
-+
-+#define vintf_warn(fmt, ...) \
-+	dev_warn(cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
-+#define vintf_err(fmt, ...) \
-+	dev_err(cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
-+#define vintf_info(fmt, ...) \
-+	dev_info(cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
-+#define vintf_dbg(fmt, ...) \
-+	dev_dbg(cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
-+
-+#define vcmdq_warn(fmt, ...)                                       \
-+	do {                                                       \
-+		if (vcmdq->vintf)                                  \
-+			vintf_warn("VCMDQ%u/LVCMDQ%u: " fmt,       \
-+				   vcmdq->idx, vcmdq->logical_idx, \
-+				   ##__VA_ARGS__);                 \
-+		else                                               \
-+			dev_warn(cmdqv->dev, "VCMDQ%u: " fmt,      \
-+				 vcmdq->idx, ##__VA_ARGS__);       \
-+	} while (0)
-+#define vcmdq_err(fmt, ...)                                        \
-+	do {                                                       \
-+		if (vcmdq->vintf)                                  \
-+			vintf_err("VCMDQ%u/LVCMDQ%u: " fmt,        \
-+				  vcmdq->idx, vcmdq->logical_idx,  \
-+				  ##__VA_ARGS__);                  \
-+		else                                               \
-+			dev_err(cmdqv->dev, "VCMDQ%u: " fmt,       \
-+				vcmdq->idx, ##__VA_ARGS__);        \
-+	} while (0)
-+#define vcmdq_info(fmt, ...)                                       \
-+	do {                                                       \
-+		if (vcmdq->vintf)                                  \
-+			vintf_info("VCMDQ%u/LVCMDQ%u: " fmt,       \
-+				   vcmdq->idx, vcmdq->logical_idx, \
-+				   ##__VA_ARGS__);                 \
-+		else                                               \
-+			dev_info(cmdqv->dev, "VCMDQ%u: " fmt,      \
-+				 vcmdq->idx, ##__VA_ARGS__);       \
-+	} while (0)
-+#define vcmdq_dbg(fmt, ...)                                        \
-+	do {                                                       \
-+		if (vcmdq->vintf)                                  \
-+			vintf_dbg("VCMDQ%u/LVCMDQ%u: " fmt,        \
-+				  vcmdq->idx, vcmdq->logical_idx,  \
-+				  ##__VA_ARGS__);                  \
-+		else                                               \
-+			dev_dbg(cmdqv->dev, "VCMDQ%u: " fmt,       \
-+				vcmdq->idx, ##__VA_ARGS__);        \
-+	} while (0)
-+
-+static bool disable_cmdqv;
-+module_param(disable_cmdqv, bool, 0444);
-+MODULE_PARM_DESC(disable_cmdqv,
-+	"This allows to disable CMDQV and use default SMMU internal CMDQ.");
-+
-+struct tegra241_vcmdq {
-+	u16 idx;
-+	u16 logical_idx;
-+
-+	struct arm_smmu_cmdq cmdq;
-+	struct tegra241_vintf *vintf;
-+
-+	void __iomem *page0;
-+	void __iomem *page1;
-+};
-+
-+struct tegra241_vintf {
-+	u16 idx;
-+
-+	bool enabled;
-+	atomic_t error;
-+
-+	struct tegra241_cmdqv *cmdqv;
-+	struct tegra241_vcmdq **vcmdqs;
-+
-+	void __iomem *base;
-+};
-+
-+struct tegra241_cmdqv {
-+	struct arm_smmu_device *smmu;
-+
-+	struct device *dev;
-+	struct resource res;
-+	void __iomem *base;
-+	int irq;
-+
-+	/* CMDQV Hardware Params */
-+	u16 num_total_vintfs;
-+	u16 num_total_vcmdqs;
-+	u16 num_vcmdqs_per_vintf;
-+
-+	struct xarray vcmdqs;
-+	struct xarray vintfs;
-+
-+	struct tegra241_vintf **vintf;
-+};
-+
-+static void tegra241_cmdqv_handle_vintf0_error(struct tegra241_cmdqv *cmdqv)
-+{
-+	struct tegra241_vintf *vintf = cmdqv->vintf[0];
-+	bool error;
-+	int i;
-+
-+	/* Cache error status to bypass VCMDQs until error is recovered */
-+	error = !!FIELD_GET(VINTF_STATUS, vintf_readl_relaxed(STATUS));
-+	atomic_set(&vintf->error, error);
-+
-+	for (i = 0; i < 4; i++) {
-+		u32 lvcmdq_err_map = vintf_readl_relaxed(CMDQ_ERR_MAP(i));
-+
-+		while (lvcmdq_err_map) {
-+			int qidx = ffs(lvcmdq_err_map) - 1;
-+			struct tegra241_vcmdq *vcmdq = vintf->vcmdqs[qidx];
-+			u32 gerrorn, gerror;
-+
-+			lvcmdq_err_map &= ~BIT(qidx);
-+
-+			__arm_smmu_cmdq_skip_err(cmdqv->dev, &vcmdq->cmdq.q);
-+
-+			gerrorn = vcmdq_page0_readl_relaxed(GERRORN);
-+			gerror = vcmdq_page0_readl_relaxed(GERROR);
-+
-+			vcmdq_page0_writel(gerror, GERRORN);
-+		}
-+	}
-+
-+	/* Now error status should be clean, cache it again */
-+	error = !!FIELD_GET(VINTF_STATUS, vintf_readl_relaxed(STATUS));
-+	atomic_set(&vintf->error, error);
-+}
-+
-+static irqreturn_t tegra241_cmdqv_isr(int irq, void *devid)
-+{
-+	struct tegra241_cmdqv *cmdqv = (struct tegra241_cmdqv *)devid;
-+	u32 vintf_errs[2];
-+	u32 vcmdq_errs[4];
-+
-+	vintf_errs[0] = cmdqv_readl_relaxed(VINTF_ERR_MAP);
-+	vintf_errs[1] = cmdqv_readl_relaxed(VINTF_ERR_MAP + 0x4);
-+
-+	vcmdq_errs[0] = cmdqv_readl_relaxed(VCMDQ_ERR_MAP(0));
-+	vcmdq_errs[1] = cmdqv_readl_relaxed(VCMDQ_ERR_MAP(1));
-+	vcmdq_errs[2] = cmdqv_readl_relaxed(VCMDQ_ERR_MAP(2));
-+	vcmdq_errs[3] = cmdqv_readl_relaxed(VCMDQ_ERR_MAP(3));
-+
-+	cmdqv_warn("unexpected cmdqv error reported\n");
-+	cmdqv_warn(" vintf_map: 0x%08X%08X\n", vintf_errs[1], vintf_errs[0]);
-+	cmdqv_warn(" vcmdq_map: 0x%08X%08X%08X%08X\n",
-+		   vcmdq_errs[3], vcmdq_errs[2], vcmdq_errs[1], vcmdq_errs[0]);
-+
-+	/* Handle VINTF0 and its VCMDQs */
-+	if (vintf_errs[0] & 0x1)
-+		tegra241_cmdqv_handle_vintf0_error(cmdqv);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+/* Adapt struct arm_smmu_cmdq init sequences from arm-smmu-v3.c for VCMDQs */
-+static int tegra241_cmdqv_init_one_vcmdq(struct tegra241_vcmdq *vcmdq)
-+{
-+	struct tegra241_cmdqv *cmdqv = vcmdq->vintf->cmdqv;
-+	struct arm_smmu_cmdq *cmdq = &vcmdq->cmdq;
-+	struct arm_smmu_queue *q = &cmdq->q;
-+	char name[16];
-+	int ret;
-+
-+	sprintf(name, "vcmdq%u", vcmdq->idx);
-+
-+	q->llq.max_n_shift = ilog2(SZ_64K >> CMDQ_ENT_SZ_SHIFT);
-+
-+	/* Use the common helper to init the VCMDQ, and then... */
-+	ret = arm_smmu_init_one_queue(cmdqv->smmu, q, vcmdq->page0,
-+				      TEGRA241_VCMDQ_PROD, TEGRA241_VCMDQ_CONS,
-+				      CMDQ_ENT_DWORDS, name);
-+	if (ret)
-+		return ret;
-+
-+	/* ...override q_base to write VCMDQ_BASE registers */
-+	q->q_base = q->base_dma & VCMDQ_ADDR;
-+	q->q_base |= FIELD_PREP(VCMDQ_LOG2SIZE, q->llq.max_n_shift);
-+
-+	/* All VCMDQs support CS_NONE only for CMD_SYNC */
-+	q->quirks = CMDQ_QUIRK_SYNC_CS_NONE_ONLY;
-+
-+	return arm_smmu_cmdq_init(cmdqv->smmu, cmdq);
-+}
-+
-+struct arm_smmu_cmdq *tegra241_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
-+{
-+	struct tegra241_cmdqv *cmdqv = smmu->tegra241_cmdqv;
-+	struct tegra241_vintf *vintf = cmdqv->vintf[0];
-+	u16 qidx;
-+
-+	/* Use SMMU CMDQ if vintf[0] is uninitialized */
-+	if (!vintf->enabled)
-+		return &smmu->cmdq;
-+
-+	/* Use SMMU CMDQ if vintf[0] has error status */
-+	if (atomic_read(&vintf->error))
-+		return &smmu->cmdq;
-+
-+	/*
-+	 * Select a vcmdq to use. Here we use a temporal solution to
-+	 * balance out traffic on cmdq issuing: each cmdq has its own
-+	 * lock, if all cpus issue cmdlist using the same cmdq, only
-+	 * one CPU at a time can enter the process, while the others
-+	 * will be spinning at the same lock.
-+	 */
-+	qidx = smp_processor_id() % cmdqv->num_vcmdqs_per_vintf;
-+	return &vintf->vcmdqs[qidx]->cmdq;
-+}
-+
-+static int tegra241_vintf0_init_vcmdq(struct tegra241_vcmdq *vcmdq)
-+{
-+	struct tegra241_vintf *vintf = vcmdq->vintf;
-+	struct tegra241_cmdqv *cmdqv = vintf->cmdqv;
-+	u32 regval;
-+	int ret;
-+
-+	/* Setup struct arm_smmu_cmdq data members */
-+	tegra241_cmdqv_init_one_vcmdq(vcmdq);
-+
-+	/* Configure and enable the vcmdq */
-+	vcmdq_page0_writel_relaxed(0, PROD);
-+	vcmdq_page0_writel_relaxed(0, CONS);
-+
-+	vcmdq_page1_writeq_relaxed(vcmdq->cmdq.q.q_base, BASE);
-+	vcmdq_page0_writel_relaxed(VCMDQ_EN, CONFIG);
-+
-+	ret = readl_poll_timeout(vcmdq->page0 + TEGRA241_VCMDQ_STATUS,
-+				 regval, regval == VCMDQ_ENABLED,
-+				 1, ARM_SMMU_POLL_TIMEOUT_US);
-+	if (ret) {
-+		u32 gerror = vcmdq_page0_readl_relaxed(GERROR);
-+		u32 gerrorn = vcmdq_page0_readl_relaxed(GERRORN);
-+		u32 cons = vcmdq_page0_readl_relaxed(CONS);
-+
-+		vcmdq_err("failed to enable\n");
-+		vcmdq_err("  GERROR=0x%X\n", gerror);
-+		vcmdq_err("  GERRORN=0x%X\n", gerrorn);
-+		vcmdq_err("  CONS=0x%X\n", cons);
-+		return ret;
-+	}
-+
-+	vcmdq_info("inited\n");
-+	return 0;
-+}
-+
-+int tegra241_cmdqv_device_reset(struct arm_smmu_device *smmu)
-+{
-+	struct tegra241_cmdqv *cmdqv = smmu->tegra241_cmdqv;
-+	struct tegra241_vintf *vintf = cmdqv->vintf[0];
-+	u32 regval;
-+	u16 qidx;
-+	int ret;
-+
-+	/* Setup vintf[0] for host kernel */
-+	vintf->idx = 0;
-+	vintf->cmdqv = cmdqv;
-+	atomic_set(&vintf->error, 0);
-+	vintf->base = cmdqv->base + TEGRA241_VINTF(0);
-+
-+	regval = FIELD_PREP(VINTF_HYP_OWN, 1);
-+	vintf_writel(regval, CONFIG);
-+
-+	regval |= FIELD_PREP(VINTF_EN, 1);
-+	vintf_writel(regval, CONFIG);
-+
-+	ret = readl_relaxed_poll_timeout(vintf->base + TEGRA241_VINTF_STATUS,
-+					 regval, regval & VINTF_ENABLED,
-+					 1, ARM_SMMU_POLL_TIMEOUT_US);
-+	if (ret) {
-+		vintf_err("failed to enable: STATUS = 0x%08X\n", regval);
-+		return ret;
-+	}
-+
-+	vintf->enabled = true;
-+
-+	/* Allocate vcmdqs to vintf */
-+	for (qidx = 0; qidx < cmdqv->num_vcmdqs_per_vintf; qidx++) {
-+		regval  = FIELD_PREP(CMDQV_CMDQ_ALLOC_VINTF, vintf->idx);
-+		regval |= FIELD_PREP(CMDQV_CMDQ_ALLOC_LVCMDQ, qidx);
-+		regval |= CMDQV_CMDQ_ALLOCATED;
-+		cmdqv_writel_relaxed(regval, CMDQ_ALLOC(qidx));
-+	}
-+
-+	/* Build an arm_smmu_cmdq for each vcmdq allocated to vintf */
-+	vintf->vcmdqs = devm_kcalloc(cmdqv->dev, cmdqv->num_vcmdqs_per_vintf,
-+				     sizeof(*vintf->vcmdqs), GFP_KERNEL);
-+	if (!vintf->vcmdqs)
-+		return -ENOMEM;
-+
-+	for (qidx = 0; qidx < cmdqv->num_vcmdqs_per_vintf; qidx++) {
-+		struct tegra241_vcmdq *vcmdq;
-+
-+		vcmdq = devm_kzalloc(cmdqv->dev, sizeof(*vcmdq), GFP_KERNEL);
-+		if (!vcmdq)
-+			return -ENOMEM;
-+		vcmdq->vintf = vintf;
-+		vcmdq->idx = vcmdq->logical_idx = qidx;
-+		vcmdq->page0 = cmdqv->base + TEGRA241_VCMDQ_PAGE0(qidx);
-+		vcmdq->page1 = cmdqv->base + TEGRA241_VCMDQ_PAGE1(qidx);
-+		ret = tegra241_vintf0_init_vcmdq(vcmdq);
-+		if (ret)
-+			return ret;
-+		vintf->vcmdqs[qidx] = vcmdq;
-+	}
-+
-+	/* Reserve vintf[0] for kernel and hypervisor use */
-+	xa_init_flags(&cmdqv->vintfs, XA_FLAGS_ALLOC1 | XA_FLAGS_ACCOUNT);
-+	xa_init_flags(&cmdqv->vcmdqs, XA_FLAGS_ALLOC | XA_FLAGS_ACCOUNT);
-+
-+	if (cmdqv->vintf && cmdqv->vintf[0])
-+		cmdqv->vintf[0] = vintf;
-+
-+	return 0;
-+}
-+
-+static int tegra241_cmdqv_acpi_is_memory(struct acpi_resource *res, void *data)
-+{
-+	struct resource_win win;
-+
-+	return !acpi_dev_resource_address_space(res, &win);
-+}
-+
-+static int tegra241_cmdqv_acpi_get_irqs(struct acpi_resource *ares, void *data)
-+{
-+	struct resource r;
-+	int *irq = data;
-+
-+	if (*irq <= 0 && acpi_dev_resource_interrupt(ares, 0, &r))
-+		*irq = r.start;
-+	return 1; /* No need to add resource to the list */
-+}
-+
-+static struct tegra241_cmdqv *
-+tegra241_cmdqv_find_resource(struct arm_smmu_device *smmu, int id)
-+{
-+	struct tegra241_cmdqv *cmdqv = NULL;
-+	struct device *dev = smmu->dev;
-+	struct list_head resource_list;
-+	struct resource_entry *rentry;
-+	struct acpi_device *adev;
-+	const char *match_uid;
-+	int ret;
-+
-+	if (acpi_disabled)
-+		return NULL;
-+
-+	/* Look for a device in the DSDT whose _UID matches the SMMU node ID */
-+	match_uid = kasprintf(GFP_KERNEL, "%u", id);
-+	adev = acpi_dev_get_first_match_dev(TEGRA241_CMDQV_HID, match_uid, -1);
-+	kfree(match_uid);
-+
-+	if (!adev)
-+		return NULL;
-+
-+	dev_info(dev, "found companion CMDQV device, %s\n",
-+		 dev_name(&adev->dev));
-+
-+	INIT_LIST_HEAD(&resource_list);
-+	ret = acpi_dev_get_resources(adev, &resource_list,
-+				     tegra241_cmdqv_acpi_is_memory, NULL);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to get memory resource: %d\n", ret);
-+		goto put_dev;
-+	}
-+
-+	cmdqv = devm_kzalloc(dev, sizeof(*cmdqv), GFP_KERNEL);
-+	if (!cmdqv)
-+		goto free_list;
-+
-+	cmdqv->dev = dev;
-+	cmdqv->smmu = smmu;
-+
-+	rentry = list_first_entry_or_null(&resource_list,
-+					  struct resource_entry, node);
-+	if (!rentry) {
-+		cmdqv_err("failed to get memory resource entry\n");
-+		goto free_cmdqv;
-+	}
-+
-+	cmdqv->res = *(rentry->res);
-+
-+	cmdqv->base = devm_ioremap_resource(smmu->dev, rentry->res);
-+	if (IS_ERR(cmdqv->base)) {
-+		cmdqv_err("failed to ioremap: %ld\n", PTR_ERR(cmdqv->base));
-+		goto free_cmdqv;
-+	}
-+
-+	acpi_dev_free_resource_list(&resource_list);
-+
-+	INIT_LIST_HEAD(&resource_list);
-+
-+	ret = acpi_dev_get_resources(adev, &resource_list,
-+				     tegra241_cmdqv_acpi_get_irqs, &cmdqv->irq);
-+	if (ret < 0 || cmdqv->irq <= 0) {
-+		cmdqv_warn("no cmdqv interrupt. errors will not be reported\n");
-+	} else {
-+		ret = devm_request_irq(smmu->dev, cmdqv->irq,
-+				       tegra241_cmdqv_isr, 0,
-+				       "tegra241-cmdqv", cmdqv);
-+		if (ret) {
-+			cmdqv_err("failed to request irq (%d): %d\n",
-+				  cmdqv->irq, ret);
-+			goto iounmap;
-+		}
-+	}
-+
-+	goto free_list;
-+
-+iounmap:
-+	devm_iounmap(cmdqv->dev, cmdqv->base);
-+free_cmdqv:
-+	devm_kfree(cmdqv->dev, cmdqv);
-+	cmdqv = NULL;
-+free_list:
-+	acpi_dev_free_resource_list(&resource_list);
-+put_dev:
-+	put_device(&adev->dev);
-+
-+	return cmdqv;
-+}
-+
-+struct tegra241_cmdqv *
-+tegra241_cmdqv_acpi_probe(struct arm_smmu_device *smmu, int id)
-+{
-+	struct tegra241_cmdqv *cmdqv;
-+	u32 regval;
-+
-+	cmdqv = tegra241_cmdqv_find_resource(smmu, id);
-+	if (!cmdqv)
-+		return NULL;
-+
-+	regval = cmdqv_readl_relaxed(CONFIG);
-+	if (disable_cmdqv) {
-+		cmdqv_info("disable_cmdqv=true. Falling back to SMMU CMDQ\n");
-+		cmdqv_writel_relaxed(regval & ~CMDQV_EN, CONFIG);
-+		goto free_res;
-+	}
-+
-+	cmdqv_writel_relaxed(regval | CMDQV_EN, CONFIG);
-+
-+	regval = cmdqv_readl_relaxed(STATUS);
-+	if (!FIELD_GET(CMDQV_ENABLED, regval) ||
-+	    FIELD_GET(CMDQV_STATUS, regval)) {
-+		cmdqv_err("CMDQV h/w not ready: CMDQV_STATUS=0x%08X\n", regval);
-+		goto free_res;
-+	}
-+
-+	regval = cmdqv_readl_relaxed(PARAM);
-+	cmdqv->num_total_vintfs = 1 << FIELD_GET(CMDQV_NUM_VINTF_LOG2, regval);
-+	cmdqv->num_total_vcmdqs = 1 << FIELD_GET(CMDQV_NUM_VCMDQ_LOG2, regval);
-+	cmdqv->num_vcmdqs_per_vintf =
-+		cmdqv->num_total_vcmdqs / cmdqv->num_total_vintfs;
-+
-+	cmdqv->vintf = devm_kcalloc(cmdqv->dev, cmdqv->num_total_vintfs,
-+				    sizeof(*cmdqv->vintf), GFP_KERNEL);
-+	if (!cmdqv->vintf)
-+		goto free_res;
-+
-+	cmdqv->vintf[0] = devm_kzalloc(cmdqv->dev, sizeof(*(cmdqv->vintf[0])),
-+				       GFP_KERNEL);
-+	if (!cmdqv->vintf[0])
-+		goto free_vintf;
-+
-+	return cmdqv;
-+
-+free_vintf:
-+	devm_kfree(cmdqv->dev, cmdqv->vintf);
-+free_res:
-+	if (cmdqv->irq > 0)
-+		devm_free_irq(smmu->dev, cmdqv->irq, cmdqv);
-+	devm_iounmap(smmu->dev, cmdqv->base);
-+	devm_kfree(smmu->dev, cmdqv);
-+
-+	return NULL;
-+}
--- 
-2.43.0
-
+Thanks
+Nicolin
