@@ -1,159 +1,123 @@
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD1E115E1FA
-	for <iommu@lists.linux.dev>; Tue,  2 Apr 2024 20:34:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4829815E7EB
+	for <iommu@lists.linux.dev>; Tue,  2 Apr 2024 21:22:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712090086; cv=none; b=D4EbrDjWGb5V1Ntf5mDuITHcAq7WSOXM72rT/C0JT9pqUNpWCbPDzj87noYf9cYeWIHRA1lL5cIhT75bALFgBWtdIuREvjTftzhIuEtxhINdWzKczhgRcM+W9ND+caKaUhHVUvIsn67fkwRsbnvqv8N5iZjRCCLXlJAI/a2HSmI=
+	t=1712092958; cv=none; b=fNHFCWH5CpEA9Pn81mVS1b76mQ4JFQoh8+0Cyca7CwPSxnR3ejCy3C7ZBZrZAyiLX3f7RXQtNUi7VAAcgRxTzzJ7Zb7K3Q1Q+zRjBFSqBlXETmXLjcR53INlgGK6Fo8T/9hjGXbOkxhDPKUfEMuatHY1eNQxMD26rkvKbU8Q9uU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712090086; c=relaxed/simple;
-	bh=PbCYgrPVbVOdhV1jC/4KII4virJ8WGK/ifPusT5Ym9k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=f3Y8WXW/VT+TXf76n/y5SA01VVDi1vyHCqIet0gCTiwWT0p/eq/xDblvKQRUHMImBZBJcAtYg+89XJXdNMYu/iof5UdxJ3FMtvZUVTZTOpnpXhy6aufu2Vk88Ocgjzwl9Bcsa1GcC5vb+CWISIpLUxC35TbaAy7+uvPAJx7phAE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=GFmTVCau; arc=none smtp.client-ip=170.10.129.124
+	s=arc-20240116; t=1712092958; c=relaxed/simple;
+	bh=q3S2mnJx+F4UQixEHJqph9CgI4kKyg6Ln+k0xeSrGWM=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=DziS+r56QoBZpiTNt7a5c7RLi8ieol+TuQtBaUPtVIlL4vDgNYlelrmYY1JC7EJCxQbgK7YOpHU6Y19/gIJWuh9z+HKlP7zdVBfX3iT35YhZwBdLvJ6rzXg1lNvbroTTcDx71GGHF7eKwQPuX6iQQ5Ut0p19TRb2X45Ix82ohLg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=YWakp0Cc; arc=none smtp.client-ip=170.10.129.124
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="GFmTVCau"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="YWakp0Cc"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1712090083;
+	s=mimecast20190719; t=1712092956;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=OmliKS7IXk0y+y9ssPc7arVQxLqF15p8TNQCcmbmlpA=;
-	b=GFmTVCau6lWWVvGEaMdlAc5ShtK/UioXnp/lh8++6nrF9qaioP9ZAqfEfbmC//gZ0xbOp7
-	w1EXP3GtTxJMK6VS3qMwpw46uVNC+6eb4a5ngvQeL0wX8iq8GaV6Zd1wrmbnejFdvkXLCy
-	GedhKCpu4zRyMiVXEqcg2t6nLaFR2Fo=
-Received: from mimecast-mx02.redhat.com (mx-ext.redhat.com [66.187.233.73])
- by relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-637-M7s17IMyP86NjAj3PJZL_Q-1; Tue,
- 02 Apr 2024 16:34:41 -0400
-X-MC-Unique: M7s17IMyP86NjAj3PJZL_Q-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id BEB671C29EA4;
-	Tue,  2 Apr 2024 20:34:38 +0000 (UTC)
-Received: from localhost (unknown [10.39.193.21])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 6A6D640C6DAE;
-	Tue,  2 Apr 2024 20:34:37 +0000 (UTC)
-Date: Tue, 2 Apr 2024 16:34:18 -0400
-From: Stefan Hajnoczi <stefanha@redhat.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	David Hildenbrand <david@redhat.com>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Richard Weinberger <richard@nod.at>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Paolo Bonzini <pbonzini@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Olivia Mackall <olivia@selenic.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Gonglei <arei.gonglei@huawei.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	Cristian Marussi <cristian.marussi@arm.com>,
-	Viresh Kumar <vireshk@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Bartosz Golaszewski <brgl@bgdev.pl>,
-	David Airlie <airlied@redhat.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alexander Graf <graf@amazon.com>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Eric Van Hensbergen <ericvh@kernel.org>,
-	Latchesar Ionkov <lucho@ionkov.net>,
-	Dominique Martinet <asmadeus@codewreck.org>,
-	Christian Schoenebeck <linux_oss@crudebyte.com>,
-	Stefano Garzarella <sgarzare@redhat.com>,
-	Kalle Valo <kvalo@kernel.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Vishal Verma <vishal.l.verma@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>, Ira Weiny <ira.weiny@intel.com>,
-	Pankaj Gupta <pankaj.gupta.linux@gmail.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Mathieu Poirier <mathieu.poirier@linaro.org>,
-	"James E.J. Bottomley" <jejb@linux.ibm.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	Vivek Goyal <vgoyal@redhat.com>, Miklos Szeredi <miklos@szeredi.hu>,
-	Anton Yakovlev <anton.yakovlev@opensynergy.com>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	virtualization@lists.linux.dev, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-um@lists.infradead.org,
-	linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-	linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	iommu@lists.linux.dev, netdev@vger.kernel.org, v9fs@lists.linux.dev,
-	kvm@vger.kernel.org, linux-wireless@vger.kernel.org,
-	nvdimm@lists.linux.dev, linux-remoteproc@vger.kernel.org,
-	linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	alsa-devel@alsa-project.org, linux-sound@vger.kernel.org
-Subject: Re: [PATCH v2 24/25] fuse: virtio: drop owner assignment
-Message-ID: <20240402203418.GG2507314@fedora>
-References: <20240331-module-owner-virtio-v2-0-98f04bfaf46a@linaro.org>
- <20240331-module-owner-virtio-v2-24-98f04bfaf46a@linaro.org>
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+	bh=8hNfivdEHncz+gXdoBc2TvCcxwRvihYErqITo3fHY+Y=;
+	b=YWakp0CczC9YQZT3BsxCaoUM0Ut+93Xy0CQtGC8pf/xah5l+zDRppooJ6pVvEe7/wLgrsM
+	IWVIK4hhnGw0pMnBly/wvdGdNGF64lNjjwcS/yQhyZG7TQtdUohVPuq95WTt0WIBoS3Pee
+	6P1rw0+XA9lUR6X9cU7V5pBv3ZJNVKM=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-397-fPr5BQOiPmGK6pubKMU2Gw-1; Tue, 02 Apr 2024 17:22:35 -0400
+X-MC-Unique: fPr5BQOiPmGK6pubKMU2Gw-1
+Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-69917a759b6so9344426d6.1
+        for <iommu@lists.linux.dev>; Tue, 02 Apr 2024 14:22:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712092954; x=1712697754;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=8hNfivdEHncz+gXdoBc2TvCcxwRvihYErqITo3fHY+Y=;
+        b=vg27Z/64GhSN2p6p4I3cQXKjph7/e77xNbak5NBJulh3Jm99lklsgF7qrIrpBoZXXe
+         7qWyXSwECjVp8yRSgHdnZFV4fg/gqzi0Hvvc4xtaGWKjU2bCKs0WdI5uHb+R6I53kiDO
+         qVD86v5WodTh7yCoW8d5L0iHI+gZQeEa2jd07q0J0y852rA6bNbgXgV9v7WRH8KjbR0D
+         8dYUxFpjC5VLnZZSE38Rb/mrB9248FlyXLggY7PYsWvqtgoroJ8jJ+hkJEtFYJ4An4Vx
+         VZPnzHyw4LVskNkt8Ag/voBy6j5mqxM4xlCNCXlBln9fZUsvMnCROYwqw18zS+nMgdDW
+         TGfw==
+X-Forwarded-Encrypted: i=1; AJvYcCUjxzWMFJTHKNZeGJrkGJrHSfAsM3Gv3zAKMYpBv1zeSNZGKdYfKAUBP8WIvYLI0kzre6+sQHG/EJ8asl0QDSJPdmj1YCM=
+X-Gm-Message-State: AOJu0YzLZAgBzPx0TuHcGcvZ2l15qsYCs+EggDe8w0n49m2V47LVG6q9
+	7oQYHB1Jvti+hwWaD85EckDyG2XTRpIWo6idnkQbCc0cIV0oa9XGhauQMyo0Apv4Q+NO57qi9CR
+	wveZCBNBwuU4enHvSePBtRq5mt2ETMf2Y+wziHSHM807tMw2npZF+
+X-Received: by 2002:a05:6214:5641:b0:696:70a0:207f with SMTP id mh1-20020a056214564100b0069670a0207fmr13472821qvb.47.1712092954417;
+        Tue, 02 Apr 2024 14:22:34 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IHNxjYHmkw3DNwM015sO8CT5ni9l4MnhSrijQA1HDNB2Asce/Cml84DxWTD1ZKs/VhptXKAJw==
+X-Received: by 2002:a05:6214:5641:b0:696:70a0:207f with SMTP id mh1-20020a056214564100b0069670a0207fmr13472804qvb.47.1712092953962;
+        Tue, 02 Apr 2024 14:22:33 -0700 (PDT)
+Received: from x1gen2nano ([2600:1700:1ff0:d0e0::33])
+        by smtp.gmail.com with ESMTPSA id s15-20020a0562140caf00b00698fd63d167sm3591259qvs.123.2024.04.02.14.22.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 02 Apr 2024 14:22:33 -0700 (PDT)
+Date: Tue, 2 Apr 2024 16:22:31 -0500
+From: Andrew Halaney <ahalaney@redhat.com>
+To: linux-arm-msm@vger.kernel.org
+Cc: robdclark@gmail.com, will@kernel.org, iommu@lists.linux.dev, 
+	joro@8bytes.org, linux-arm-kernel@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, quic_c_gdjako@quicinc.com, quic_cgoldswo@quicinc.com, 
+	quic_sukadev@quicinc.com, quic_pdaly@quicinc.com, quic_sudaraja@quicinc.com
+Subject: sa8775p-ride: What's a normal SMMU TLB sync time?
+Message-ID: <kord5qq6mywc7rbkzeoliz2cklrlljxm74qmrfwwjf6irx4fp7@6f5wsonafstt>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="y2TTKZujScqhsi/4"
-Content-Disposition: inline
-In-Reply-To: <20240331-module-owner-virtio-v2-24-98f04bfaf46a@linaro.org>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.2
-
-
---y2TTKZujScqhsi/4
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Sun, Mar 31, 2024 at 10:44:11AM +0200, Krzysztof Kozlowski wrote:
-> virtio core already sets the .owner, so driver does not need to.
->=20
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->=20
-> ---
->=20
-> Depends on the first patch.
-> ---
->  fs/fuse/virtio_fs.c | 1 -
->  1 file changed, 1 deletion(-)
+Hey,
 
-Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+Sorry for the wide email, but I figured someone recently contributing
+to / maintaining the Qualcomm SMMU driver may have some proper insights
+into this.
 
---y2TTKZujScqhsi/4
-Content-Type: application/pgp-signature; name="signature.asc"
+Recently I remembered that performance on some Qualcomm platforms
+takes a major hit when you use iommu.strict=1/CONFIG_IOMMU_DEFAULT_DMA_STRICT.
 
------BEGIN PGP SIGNATURE-----
+On the sa8775p-ride, I see most TLB sync calls to be about 150 us long,
+with some spiking to 500 us, etc:
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmYMa8oACgkQnKSrs4Gr
-c8hVnAf/cA3xbyK70jAgkZV9EtimcENA8Vicjc5wwuE2Vt1WSOZUWtD+a8KtqIDS
-ICvCIk7XlMHoB7BYaP8qlXQ0kjkARmT7hwEQyqEDL/MzEgyKhChus/pV8g6Cvywl
-OdPkT57aujxEBU5+l5t8TnP2I8CziPoDf0uizIpf5r2pZstP0q/mRVNFevjTDeSu
-L+LjxHElpmAVApGciiGOH+cpPYuKAejObzy5z92m7jZgh/LfHtcK29bhoWwNTL1l
-e6ryz/B2YrpyrVdDjqUD1iJ2WR2qxEUAI3moU5ySGqG/w5Lg0+ji+9TlCE46xoQ/
-U1ALdKDyNFUB1iRXdA00oKhEe6MUOw==
-=AQF3
------END PGP SIGNATURE-----
+    [root@qti-snapdragon-ride4-sa8775p-09 ~]# trace-cmd start -p function_graph -g qcom_smmu_tlb_sync --max-graph-depth 1
+      plugin 'function_graph'
+    [root@qti-snapdragon-ride4-sa8775p-09 ~]# trace-cmd show
+    # tracer: function_graph
+    #
+    # CPU  DURATION                  FUNCTION CALLS
+    # |     |   |                     |   |   |   |
+     0) ! 144.062 us  |  qcom_smmu_tlb_sync();
 
---y2TTKZujScqhsi/4--
+On my sc8280xp-lenovo-thinkpad-x13s (only other Qualcomm platform I can compare
+with) I see around 2-15 us with spikes up to 20-30 us. That's thanks to this
+patch[0], which I guess improved the platform from 1-2 ms to the ~10 us number.
+
+It's not entirely clear to me how a DPU specific programming affects system
+wide SMMU performance, but I'm curious if this is the only way to achieve this?
+sa8775p doesn't have the DPU described even right now, so that's a bummer
+as there's no way to make a similar immediate optimization, but I'm still struggling
+to understand what that patch really did to improve things so maybe I'm missing
+something.
+
+I'm honestly not even sure what a "typical" range for TLB sync time would be,
+but on sa8775p-ride its bad enough that some IRQs like UFS can cause RCU stalls
+(pretty easy to reproduce with fio basic-verify.fio for example on the platform).
+It also makes running with iommu.strict=1 impractical as performance for UFS,
+ethernet, etc drops 75-80%.
+
+Does anyone have any bright ideas on how to improve this, or if I'm even in
+the right for assuming that time is suspiciously long?
+
+Thanks,
+Andrew
+
+[0] https://lore.kernel.org/linux-arm-msm/CAF6AEGs9PLiCZdJ-g42-bE6f9yMR6cMyKRdWOY5m799vF9o4SQ@mail.gmail.com/
 
