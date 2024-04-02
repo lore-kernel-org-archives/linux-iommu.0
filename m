@@ -1,92 +1,159 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C3C1D1756A
-	for <iommu@lists.linux.dev>; Tue,  2 Apr 2024 16:32:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED59C15E5A2
+	for <iommu@lists.linux.dev>; Tue,  2 Apr 2024 20:33:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712075581; cv=none; b=gctTZb+MzbXprxbRKwVflZhX1tLuCtvoXq14lKwMXW0Un8lQeT/ScuwLeM/2WsKX59tXn4zE1ufQXKuUblkzrV5bO2sr8s/BG4zjZBoUiadGoKxT0/V2kvMNILvI8R547uUNWsxxV9J2gEYWLy9AEMaLbqAj2f7LGijRHW1ZD9c=
+	t=1712090021; cv=none; b=c8pFbo+Tq47NmYzlYLcMMWwhHadc3kfhcXWi6TSp4ciQ5fkETBsrJE5Bn9r62IlF7YIO9udNnFWK01iVa0PFq1CZlP9KNzgAIseDArcFDxQ022Oc/ikxlK1WpGJ7NE2hoySDjOPAXgPJbPD6f2oH4V6wJWz9Ln20isO4Mdey9sk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712075581; c=relaxed/simple;
-	bh=8ft5cAT3h96pvAWq8Rdilwr2A6Dd7vQvMP4oRbhVZ5I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=JQbn74O/qcICfzkNEBRybAJJ6Fe3HpMesh4mZ2cpWWea3iSca+AhBfvysvE/N71XSF8oIMOLGy/tv3k25jxhFlfkJgp4kZyPTR9mH59ty7ou9ufDW1pJUBes75omynuQ9lpFZAj+5dtpYaweda1o7fdO+BTbd57GafGtX+bwK5E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 918151007;
-	Tue,  2 Apr 2024 09:33:30 -0700 (PDT)
-Received: from [10.1.28.13] (010265703453.arm.com [10.1.28.13])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C01923F64C;
-	Tue,  2 Apr 2024 09:32:57 -0700 (PDT)
-Message-ID: <67afde12-3fed-4298-9c5e-fbb4819c52a8@arm.com>
-Date: Tue, 2 Apr 2024 17:32:49 +0100
+	s=arc-20240116; t=1712090021; c=relaxed/simple;
+	bh=ROySLNzi2sYnSa/JtIXRjIYuaaAEqJzMqCJdYS2UTqE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NyLXbhJE0F3NwogDmFB9tp+/U3Yc3i35yoB73d2V9hebUu0a5DD/QYglTP1LjFNP634RzGlcpobRLmVmBUJuPYM3WDpjkbUwJSztetGH1+f8t2xAo3SWw1pqKRNNLHkCV79qEJ31zBHKP8K/IkK+FUufgH61HEuii4frTMBvkzQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=gbdox2z5; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="gbdox2z5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1712090019;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=XkVVzn7sUlZgXUm5P4BgsrM9gYYoxT1YIoFUz7D2uhU=;
+	b=gbdox2z5eqlCum1f+R9yh3rfbbyPyiJtXk46KwUanB13ie8QqUm94DYXifZ3FJX11mEmm7
+	4NTucvGki1x5ZWGm66FVGHvH9sWrH+Tojde980UOP9HECUsJ/Aot96uPOW2q0iCOQMvE53
+	nCaaQFjhDsU3GjgzvnvPAWHDa2a9EzA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-455-jOxgHkElN6C86aO7WEzYtw-1; Tue, 02 Apr 2024 16:33:33 -0400
+X-MC-Unique: jOxgHkElN6C86aO7WEzYtw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 16F5010B0702;
+	Tue,  2 Apr 2024 20:33:31 +0000 (UTC)
+Received: from localhost (unknown [10.39.193.21])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id EF28B17AA0;
+	Tue,  2 Apr 2024 20:33:26 +0000 (UTC)
+Date: Tue, 2 Apr 2024 16:33:21 -0400
+From: Stefan Hajnoczi <stefanha@redhat.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	David Hildenbrand <david@redhat.com>,
+	Gerd Hoffmann <kraxel@redhat.com>,
+	Richard Weinberger <richard@nod.at>,
+	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>,
+	Paolo Bonzini <pbonzini@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+	Marcel Holtmann <marcel@holtmann.org>,
+	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+	Olivia Mackall <olivia@selenic.com>,
+	Herbert Xu <herbert@gondor.apana.org.au>,
+	Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Gonglei <arei.gonglei@huawei.com>,
+	"David S. Miller" <davem@davemloft.net>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	Cristian Marussi <cristian.marussi@arm.com>,
+	Viresh Kumar <vireshk@kernel.org>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>,
+	David Airlie <airlied@redhat.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>,
+	Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+	Maxime Ripard <mripard@kernel.org>,
+	Thomas Zimmermann <tzimmermann@suse.de>,
+	Daniel Vetter <daniel@ffwll.ch>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alexander Graf <graf@amazon.com>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	Eric Van Hensbergen <ericvh@kernel.org>,
+	Latchesar Ionkov <lucho@ionkov.net>,
+	Dominique Martinet <asmadeus@codewreck.org>,
+	Christian Schoenebeck <linux_oss@crudebyte.com>,
+	Stefano Garzarella <sgarzare@redhat.com>,
+	Kalle Valo <kvalo@kernel.org>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Vishal Verma <vishal.l.verma@intel.com>,
+	Dave Jiang <dave.jiang@intel.com>, Ira Weiny <ira.weiny@intel.com>,
+	Pankaj Gupta <pankaj.gupta.linux@gmail.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Mathieu Poirier <mathieu.poirier@linaro.org>,
+	"James E.J. Bottomley" <jejb@linux.ibm.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	Vivek Goyal <vgoyal@redhat.com>, Miklos Szeredi <miklos@szeredi.hu>,
+	Anton Yakovlev <anton.yakovlev@opensynergy.com>,
+	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+	virtualization@lists.linux.dev, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-um@lists.infradead.org,
+	linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+	linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
+	iommu@lists.linux.dev, netdev@vger.kernel.org, v9fs@lists.linux.dev,
+	kvm@vger.kernel.org, linux-wireless@vger.kernel.org,
+	nvdimm@lists.linux.dev, linux-remoteproc@vger.kernel.org,
+	linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	alsa-devel@alsa-project.org, linux-sound@vger.kernel.org
+Subject: Re: [PATCH v2 06/25] virtio_blk: drop owner assignment
+Message-ID: <20240402203321.GD2507314@fedora>
+References: <20240331-module-owner-virtio-v2-0-98f04bfaf46a@linaro.org>
+ <20240331-module-owner-virtio-v2-6-98f04bfaf46a@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Why is the ARM SMMU v1/v2 put into bypass mode on kexec?
-To: Will Deacon <will@kernel.org>
-Cc: Tyler Hicks <code@tyhicks.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- Jerry Snitselaar <jsnitsel@redhat.com>,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
- Easwar Hariharan <eahariha@linux.microsoft.com>
-References: <ZfKsAIt8RY/JcL/V@sequoia> <ZfNKv70oqqwMwIeS@sequoia>
- <120d0dec-450f-41f8-9e05-fd763e84f6dd@arm.com>
- <20240319154756.GB2901@willie-the-truck>
- <5b19ab13-a7a0-48e2-99a4-357a9f4aeafa@arm.com>
- <20240322155157.GD5634@willie-the-truck>
-Content-Language: en-GB
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240322155157.GD5634@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="n4/kSvCMF0M05hCx"
+Content-Disposition: inline
+In-Reply-To: <20240331-module-owner-virtio-v2-6-98f04bfaf46a@linaro.org>
+X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.5
 
-On 2024-03-22 3:51 pm, Will Deacon wrote:
-> On Tue, Mar 19, 2024 at 06:17:39PM +0000, Robin Murphy wrote:
->> In terms of the shutdown behaviour, I think it actually works out as-is. For
->> the normal case we haven't touched GBPA, so we are truly returning to the
->> boot-time condition; in the unexpected case where SMMUEN was already enabled
->> then we'll go into an explicit GPBA abort state, but that seems a
->> not-unreasonable compromise for not preserving the entire boot-time Stream
->> Table etc., whose presence kind of implies it wouldn't have been bypassing
->> everything anyway.
->>
->> The more I look at the remaining aspect of disable_bypass for controlling
->> broken-DT behaviour the more I suspect it can't actually be useful either
->> way, especially not since default domains. I have no memory of what my
->> original reasoning might have been, so I'm inclined to just rip that all out
->> and let probe fail. I see no reason these days not to expect a broken DT to
->> leads to a broken system, especially not now with DTSchema validation.
-> 
-> That sounds reasonable to me, although we may end up having to back it
-> out if we regress systems with borked firmware :(
-> 
->> Then there's just the kdump warning it suppresses, of which I also have no
->> idea why it's there either, but apparently that one's on you :P
-> 
-> I think _that_ one is because the previous (crashed) kernel won't have
-> torn anything down, so there could be active DMA using translations in
-> the SMMU. In that case, the crashkernel (which is running from some
-> carveout) may find the SMMU enabled, but it really can't stick it into
-> bypass mode because that's likely to corrupt random memory. So in that
-> case, we do stick it into abort before we reinitialise it and then we
-> disabling fault reporting altogether to avoid the log spam:
-> 
-> 	if (is_kdump_kernel())
-> 		enables &= ~(CR0_EVTQEN | CR0_PRIQEN)
 
-Oh, I know why we do what we do for the kdump situation in general - it 
-was merely the matter of why we chose to demand that the user explicitly 
-tells us to do what we know is the right thing (and scream at them if 
-they don't), rather than to just go ahead and do the right thing anyway.
+--n4/kSvCMF0M05hCx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-(the significance of disable_bypass for kdump is after we turn the SMMU 
-back on from GBPA Abort state - we don't want any ongoing traffic being 
-able to inadvertently bypass via an STE config either)
+On Sun, Mar 31, 2024 at 10:43:53AM +0200, Krzysztof Kozlowski wrote:
+> virtio core already sets the .owner, so driver does not need to.
+>=20
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>=20
+> ---
+>=20
+> Depends on the first patch.
+> ---
+>  drivers/block/virtio_blk.c | 1 -
+>  1 file changed, 1 deletion(-)
 
-Cheers,
-Robin.
+Reviewed-by: Stefan Hajnoczi <stefanha@redhat.com>
+
+--n4/kSvCMF0M05hCx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmYMa5EACgkQnKSrs4Gr
+c8j8dggAqO8KJXvt+0JqXmgxsfDAxN196OA9Q6Rm7VF0fuMhGpVUUh/iuOtkH59k
+ho0oB9szUvz/1tXZEJPtShx/omt2iENmq22unjzWE7ZmNimALVjtXPaZNTCkYxJn
+Z9//Ks9v/lHCNFzLjSiKC94ktRVJLDXSmG7uEpbeutDrzN9TWRJ8DNnylKmm+qWR
+VDiL3/2+03gC5B/LovTli4ozZuS4JlG37Tnh2Z8ACNrcFC74nv45KtNuQLR+hNy8
+12jEUGkhADWps+fQH7bZebswT9ePfwTfA1xh0pXeeWKCkaiKcgFhZH+JcNQLkwkx
+fC80yZK4qnvU1SmzK2tpfzAk7jUMtQ==
+=5tJl
+-----END PGP SIGNATURE-----
+
+--n4/kSvCMF0M05hCx--
+
