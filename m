@@ -1,105 +1,157 @@
-Received: from out-186.mta1.migadu.com (out-186.mta1.migadu.com [95.215.58.186])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BCC015667F
-	for <iommu@lists.linux.dev>; Wed,  3 Apr 2024 22:57:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.186
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F15D15699D
+	for <iommu@lists.linux.dev>; Wed,  3 Apr 2024 23:41:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712185064; cv=none; b=ogGyMeKr0Izepn9xURt0Vwsou2Wpp6vw7jMvtRoTf/JTxV6Jaqu7zSeDCTCxvyM62l5i/qM0NX0xmca9GTLzVwaHoG4odxZIMsmT99o77kWnBdMeFpYzad75smO+ohf8pWVIMlVzXYNKkVmmd1HOq98Aig8fcdgAXWRhYYPrivE=
+	t=1712187685; cv=none; b=cJiJ45xknZlFcejZ5ofdXP2iUjBxVMR/Z7q6d4XOYuFsCCrGpSZ1FeL7GFdIUHR3KSIHJ5IFPhtS/j2uSq4CLMnXmN4UlHN7i5c6YfTfkByET8HuFI1nIqE5PNLTXLsXvrT0ksYIkZ+3LxKYceLEPv8DnKUnb98ESUpfL6MF1dw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712185064; c=relaxed/simple;
-	bh=rSC5AEVZmjhxZcqf+HrPUcVtv4hsU7DupAfE4SmRWDc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VbYuBILgXEA6oBy5yE7MiYTnoXHWt53ygcdXdSTcwaziLPAe+NjZuQ4XU6gQJkWoRId/hCMRNkzMHjeH1Xln9zmIU1q01jPdTaTZJ7IRYjhIwJk77Agq/6O7h6Npeo9BFA6sv3DPmh4aYnzt93UXTlj1fx2Za5Us3RvObPVD9ao=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=altBgIa+; arc=none smtp.client-ip=95.215.58.186
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1712187685; c=relaxed/simple;
+	bh=i3JFYctDTzbA0EHATWBXApDbgtgZ0KAnnqv0/18o6Zw=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=XMwm6Ej4azSmWycMI8hsushy3w69hrmLOQAiOqpTJDdO9BK4JLQk/yf5PsRMIKl7i5ngSiwkPcKmFQcv7cG/09UGvpWHWwJeRPkGsPJvPo8SGErKMS6uPE4Jwa7kTV7n6DHjSK0B+JC71xPgLzgf4dsktG1COO3vU/dYktthZuc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OQqZzWhB; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="altBgIa+"
-Date: Wed, 3 Apr 2024 18:57:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1712185059;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=AWtiyFTqYKwdJDHyaCD82L5617uAdz2F4Sz0PAghbhE=;
-	b=altBgIa+MeRE72rlksdac4u+jogeiW19C04WbQpYqlQTv7yFrJi+DeOIswL1ev0MHQMoJz
-	3P/blHm1a9ObCUExPNH7tB1oeAvKxRHvqrARJ69T91VOSSObtkLUGmQ7Nd8eHpwXRM9vPE
-	nRIje5E5zoSDcqJDGAKpSrukrB99Ej0=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: David Hildenbrand <david@redhat.com>
-Cc: Nathan Chancellor <nathan@kernel.org>, 
-	Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org, mhocko@suse.com, vbabka@suse.cz, 
-	hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, dave@stgolabs.net, 
-	willy@infradead.org, liam.howlett@oracle.com, penguin-kernel@i-love.sakura.ne.jp, 
-	corbet@lwn.net, void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com, 
-	catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de, 
-	mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, dennis@kernel.org, 
-	jhubbard@nvidia.com, tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org, 
-	paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com, 
-	yuzhao@google.com, dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
-	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com, 
-	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
-	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
-	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
-	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com, 
-	elver@google.com, dvyukov@google.com, songmuchun@bytedance.com, jbaron@akamai.com, 
-	aliceryhl@google.com, rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
-	kernel-team@android.com, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
-	linux-mm@kvack.org, linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
-	cgroups@vger.kernel.org
-Subject: Re: [PATCH v6 01/37] fix missing vmalloc.h includes
-Message-ID: <qyyo6mjctqm734utdjen4ozhoo3t4ikswzjfjnemp7olwdgyt4@qifwishdzul4>
-References: <20240321163705.3067592-1-surenb@google.com>
- <20240321163705.3067592-2-surenb@google.com>
- <20240403211240.GA307137@dev-arch.thelio-3990X>
- <4qk7f3ra5lrqhtvmipmacgzo5qwnugrfxn5dd3j4wubzwqvmv4@vzdhpalbmob3>
- <9e2d09f8-2234-42f3-8481-87bbd9ad4def@redhat.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OQqZzWhB"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712187684; x=1743723684;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=i3JFYctDTzbA0EHATWBXApDbgtgZ0KAnnqv0/18o6Zw=;
+  b=OQqZzWhBeyi2cVHCKB6P90lY+FO8AL6dbzJsU2ORorMbsBChSenkSZL6
+   wQiwvt93bwIRPhzO2AFec6xCxGi2CcO40dHzoNW3jLVQFBAR7y6uP/fhT
+   KVDwzBdULzFfAJZ0lTxqvflGxxcDmUweTObxkJS+db3SBUgi4JF+6CrBG
+   wzMfAnmZKUduL8/TO+ThTEMPh5X0x66e5erf8zswwNLZrQayMgkdUELD5
+   uwqEL6yXeHcZ2AUXahP8e+Hv6fTDdKzLEWIbCedHKVe5YRDAFxj0O7MRB
+   Mt3RtvVdtGS9wzegHb1OZoti5ViO4LdQUqMZOK++6v2WO/suipAL35Ttu
+   A==;
+X-CSE-ConnectionGUID: b1nQrqjdSJGkzUA2rXfl1A==
+X-CSE-MsgGUID: XVmPd5OtTAiaBc6hL1oegQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="10418996"
+X-IronPort-AV: E=Sophos;i="6.07,178,1708416000"; 
+   d="scan'208";a="10418996"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2024 16:41:23 -0700
+X-CSE-ConnectionGUID: VvdqvG2qSxSU4JHoRHVbpQ==
+X-CSE-MsgGUID: iYwV/h5tRk2bZOoz0Hst/w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,178,1708416000"; 
+   d="scan'208";a="19052508"
+Received: from jacob-builder.jf.intel.com ([10.54.39.125])
+  by orviesa006.jf.intel.com with ESMTP; 03 Apr 2024 16:41:23 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: sivanich@hpe.com,
+	Thomas Gleixner <tglx@linutronix.de>,
+	LKML <linux-kernel@vger.kernel.org>,
+	iommu@lists.linux.dev,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	steve.wahl@hpe.com,
+	russ.anderson@hpe.com,
+	Peter Zijlstra <peterz@infradead.org>,
+	"Will Deacon" <will@kernel.org>,
+	"Robin Murphy" <robin.murphy@arm.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 1/2] iommu/vt-d: Rename fault IRQ variable
+Date: Wed,  3 Apr 2024 16:45:47 -0700
+Message-Id: <20240403234548.989061-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9e2d09f8-2234-42f3-8481-87bbd9ad4def@redhat.com>
-X-Migadu-Flow: FLOW_OUT
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 03, 2024 at 11:48:12PM +0200, David Hildenbrand wrote:
-> On 03.04.24 23:41, Kent Overstreet wrote:
-> > On Wed, Apr 03, 2024 at 02:12:40PM -0700, Nathan Chancellor wrote:
-> > > On Thu, Mar 21, 2024 at 09:36:23AM -0700, Suren Baghdasaryan wrote:
-> > > > From: Kent Overstreet <kent.overstreet@linux.dev>
-> > > > 
-> > > > The next patch drops vmalloc.h from a system header in order to fix
-> > > > a circular dependency; this adds it to all the files that were pulling
-> > > > it in implicitly.
-> > > > 
-> > > > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> > > > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > > > Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
-> > > 
-> > > I bisected an error that I see when building ARCH=loongarch allmodconfig
-> > > to commit 302519d9e80a ("asm-generic/io.h: kill vmalloc.h dependency")
-> > > in -next, which tells me that this patch likely needs to contain
-> > > something along the following lines, as LoongArch was getting
-> > > include/linux/sizes.h transitively through the vmalloc.h include in
-> > > include/asm-generic/io.h.
-> > 
-> > gcc doesn't appear to be packaged for loongarch for debian (most other
-> > cross compilers are), so that's going to make it hard for me to test
-> > anything...
-> 
-> The latest cross-compilers from Arnd [1] include a 13.2.0 one for
-> loongarch64 that works for me. Just in case you haven't heard of Arnds work
-> before and want to give it a shot.
-> 
-> [1] https://mirrors.edge.kernel.org/pub/tools/crosstool/
+Originally, DMAR fault IRQ was the only source of interrupts for VT-d
+itself, thus simply named 'irq'. Newer interrupt sources were added later
+for page requests and perfmon with proper names, i.e. pr_irq and perf_irq.
 
-Thanks for the pointer - but something seems to be busted with the
-loongarch build, if I'm not mistaken; one of the included headers
-references loongarch-def.h, but that's not included.
+Rename the fault IRQ to reflect its usage. This avoids confusion when
+programming MSI messages for the three possible sources.
+
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/iommu/intel/dmar.c  | 16 ++++++++--------
+ drivers/iommu/intel/iommu.h |  2 +-
+ 2 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 36d7427b1202..ab325af93f71 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1175,15 +1175,15 @@ static void free_iommu(struct intel_iommu *iommu)
+ 
+ 	free_iommu_pmu(iommu);
+ 
+-	if (iommu->irq) {
++	if (iommu->fault_irq) {
+ 		if (iommu->pr_irq) {
+ 			free_irq(iommu->pr_irq, iommu);
+ 			dmar_free_hwirq(iommu->pr_irq);
+ 			iommu->pr_irq = 0;
+ 		}
+-		free_irq(iommu->irq, iommu);
+-		dmar_free_hwirq(iommu->irq);
+-		iommu->irq = 0;
++		free_irq(iommu->fault_irq, iommu);
++		dmar_free_hwirq(iommu->fault_irq);
++		iommu->fault_irq = 0;
+ 	}
+ 
+ 	if (iommu->qi) {
+@@ -1918,7 +1918,7 @@ static const char *dmar_get_fault_reason(u8 fault_reason, int *fault_type)
+ 
+ static inline int dmar_msi_reg(struct intel_iommu *iommu, int irq)
+ {
+-	if (iommu->irq == irq)
++	if (iommu->fault_irq == irq)
+ 		return DMAR_FECTL_REG;
+ 	else if (iommu->pr_irq == irq)
+ 		return DMAR_PECTL_REG;
+@@ -2105,12 +2105,12 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
+ 	/*
+ 	 * Check if the fault interrupt is already initialized.
+ 	 */
+-	if (iommu->irq)
++	if (iommu->fault_irq)
+ 		return 0;
+ 
+ 	irq = dmar_alloc_hwirq(iommu->seq_id, iommu->node, iommu);
+ 	if (irq > 0) {
+-		iommu->irq = irq;
++		iommu->fault_irq = irq;
+ 	} else {
+ 		pr_err("No free IRQ vectors\n");
+ 		return -EINVAL;
+@@ -2143,7 +2143,7 @@ int __init enable_drhd_fault_handling(void)
+ 		/*
+ 		 * Clear any previous faults.
+ 		 */
+-		dmar_fault(iommu->irq, iommu);
++		dmar_fault(iommu->fault_irq, iommu);
+ 		fault_status = readl(iommu->reg + DMAR_FSTS_REG);
+ 		writel(fault_status, iommu->reg + DMAR_FSTS_REG);
+ 	}
+diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
+index 404d2476a877..deebd4817d27 100644
+--- a/drivers/iommu/intel/iommu.h
++++ b/drivers/iommu/intel/iommu.h
+@@ -699,7 +699,7 @@ struct intel_iommu {
+ 	int		seq_id;	/* sequence id of the iommu */
+ 	int		agaw; /* agaw of this iommu */
+ 	int		msagaw; /* max sagaw of this iommu */
+-	unsigned int	irq, pr_irq, perf_irq;
++	unsigned int	fault_irq, pr_irq, perf_irq;
+ 	u16		segment;     /* PCI segment# */
+ 	unsigned char 	name[13];    /* Device Name */
+ 
+-- 
+2.25.1
+
