@@ -1,123 +1,170 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4829815E7EB
-	for <iommu@lists.linux.dev>; Tue,  2 Apr 2024 21:22:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08519FC01
+	for <iommu@lists.linux.dev>; Wed,  3 Apr 2024 01:16:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712092958; cv=none; b=fNHFCWH5CpEA9Pn81mVS1b76mQ4JFQoh8+0Cyca7CwPSxnR3ejCy3C7ZBZrZAyiLX3f7RXQtNUi7VAAcgRxTzzJ7Zb7K3Q1Q+zRjBFSqBlXETmXLjcR53INlgGK6Fo8T/9hjGXbOkxhDPKUfEMuatHY1eNQxMD26rkvKbU8Q9uU=
+	t=1712106985; cv=none; b=KfrWA7gifcYt9CQE9RVTdJwbjiMtWgLotaBMYGr2WvIWMWa74X0/2pRQht7+lj0F263qD4ITn49Kz0PkOYpgBtNMdz9Rn5cliJP/Ztm/PFZkYrAi4GQAzrbmWoL0PRIk9Iydl/TkEXLIiPTNujHL2qpr6wAuwv5gr52QGZYVmUE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712092958; c=relaxed/simple;
-	bh=q3S2mnJx+F4UQixEHJqph9CgI4kKyg6Ln+k0xeSrGWM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=DziS+r56QoBZpiTNt7a5c7RLi8ieol+TuQtBaUPtVIlL4vDgNYlelrmYY1JC7EJCxQbgK7YOpHU6Y19/gIJWuh9z+HKlP7zdVBfX3iT35YhZwBdLvJ6rzXg1lNvbroTTcDx71GGHF7eKwQPuX6iQQ5Ut0p19TRb2X45Ix82ohLg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=YWakp0Cc; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1712106985; c=relaxed/simple;
+	bh=C/LU1Jlwpb7DB0AiR4br+N1SMTz6Vau5VN7TeJPZZAE=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=iwgiN6PZ+/lpxqJxZw1biI0TxZJYin6bWSapNbrwdQvatEBe5ymLaBWyjb7HMCg71GrMXAvcowYe7CXfExDf6L2dkrSlj+c0Vs0pXTglD2gpqhQNuKXj+/H8CNhgVoh2MFpd+aMVsFlUz3THa3NGmDPbqZWXvvH+tx9dJfl88Kw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FaZO+v56; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="YWakp0Cc"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1712092956;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-	bh=8hNfivdEHncz+gXdoBc2TvCcxwRvihYErqITo3fHY+Y=;
-	b=YWakp0CczC9YQZT3BsxCaoUM0Ut+93Xy0CQtGC8pf/xah5l+zDRppooJ6pVvEe7/wLgrsM
-	IWVIK4hhnGw0pMnBly/wvdGdNGF64lNjjwcS/yQhyZG7TQtdUohVPuq95WTt0WIBoS3Pee
-	6P1rw0+XA9lUR6X9cU7V5pBv3ZJNVKM=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-397-fPr5BQOiPmGK6pubKMU2Gw-1; Tue, 02 Apr 2024 17:22:35 -0400
-X-MC-Unique: fPr5BQOiPmGK6pubKMU2Gw-1
-Received: by mail-qv1-f69.google.com with SMTP id 6a1803df08f44-69917a759b6so9344426d6.1
-        for <iommu@lists.linux.dev>; Tue, 02 Apr 2024 14:22:34 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712092954; x=1712697754;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8hNfivdEHncz+gXdoBc2TvCcxwRvihYErqITo3fHY+Y=;
-        b=vg27Z/64GhSN2p6p4I3cQXKjph7/e77xNbak5NBJulh3Jm99lklsgF7qrIrpBoZXXe
-         7qWyXSwECjVp8yRSgHdnZFV4fg/gqzi0Hvvc4xtaGWKjU2bCKs0WdI5uHb+R6I53kiDO
-         qVD86v5WodTh7yCoW8d5L0iHI+gZQeEa2jd07q0J0y852rA6bNbgXgV9v7WRH8KjbR0D
-         8dYUxFpjC5VLnZZSE38Rb/mrB9248FlyXLggY7PYsWvqtgoroJ8jJ+hkJEtFYJ4An4Vx
-         VZPnzHyw4LVskNkt8Ag/voBy6j5mqxM4xlCNCXlBln9fZUsvMnCROYwqw18zS+nMgdDW
-         TGfw==
-X-Forwarded-Encrypted: i=1; AJvYcCUjxzWMFJTHKNZeGJrkGJrHSfAsM3Gv3zAKMYpBv1zeSNZGKdYfKAUBP8WIvYLI0kzre6+sQHG/EJ8asl0QDSJPdmj1YCM=
-X-Gm-Message-State: AOJu0YzLZAgBzPx0TuHcGcvZ2l15qsYCs+EggDe8w0n49m2V47LVG6q9
-	7oQYHB1Jvti+hwWaD85EckDyG2XTRpIWo6idnkQbCc0cIV0oa9XGhauQMyo0Apv4Q+NO57qi9CR
-	wveZCBNBwuU4enHvSePBtRq5mt2ETMf2Y+wziHSHM807tMw2npZF+
-X-Received: by 2002:a05:6214:5641:b0:696:70a0:207f with SMTP id mh1-20020a056214564100b0069670a0207fmr13472821qvb.47.1712092954417;
-        Tue, 02 Apr 2024 14:22:34 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IHNxjYHmkw3DNwM015sO8CT5ni9l4MnhSrijQA1HDNB2Asce/Cml84DxWTD1ZKs/VhptXKAJw==
-X-Received: by 2002:a05:6214:5641:b0:696:70a0:207f with SMTP id mh1-20020a056214564100b0069670a0207fmr13472804qvb.47.1712092953962;
-        Tue, 02 Apr 2024 14:22:33 -0700 (PDT)
-Received: from x1gen2nano ([2600:1700:1ff0:d0e0::33])
-        by smtp.gmail.com with ESMTPSA id s15-20020a0562140caf00b00698fd63d167sm3591259qvs.123.2024.04.02.14.22.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 02 Apr 2024 14:22:33 -0700 (PDT)
-Date: Tue, 2 Apr 2024 16:22:31 -0500
-From: Andrew Halaney <ahalaney@redhat.com>
-To: linux-arm-msm@vger.kernel.org
-Cc: robdclark@gmail.com, will@kernel.org, iommu@lists.linux.dev, 
-	joro@8bytes.org, linux-arm-kernel@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, quic_c_gdjako@quicinc.com, quic_cgoldswo@quicinc.com, 
-	quic_sukadev@quicinc.com, quic_pdaly@quicinc.com, quic_sudaraja@quicinc.com
-Subject: sa8775p-ride: What's a normal SMMU TLB sync time?
-Message-ID: <kord5qq6mywc7rbkzeoliz2cklrlljxm74qmrfwwjf6irx4fp7@6f5wsonafstt>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FaZO+v56"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712106984; x=1743642984;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=C/LU1Jlwpb7DB0AiR4br+N1SMTz6Vau5VN7TeJPZZAE=;
+  b=FaZO+v56EWI4Bt4pOg/2aZfulB6JmfAQ8I6PYPgEzCo7/lmSq20gcsTI
+   H9JO+A8qEkiBYqpV1v3G2imnXkvnq/7YiGh70kU0vi6pnz5pFbjdC+Rtx
+   1dEcF9rgn4BY5T/kBNj5enOaehh0nKRvBwbMw1G1OulntvSTZ3P04cN3c
+   B8om/1yZL8k4kHDC/qmAc0O2uaBrkVVKKEQTNETiotZGXTVd6ADhy3Gnm
+   Xtq4khfqwbUiEnoDi69EIC2aOknpaJj2x98Cha40CWj5nXvI9u4MszEzj
+   IKId7VwC73LaUbyU3tWJD4fUgGBCJx+EfAkwnukVjlUrKWmSAUIbcJjTe
+   g==;
+X-CSE-ConnectionGUID: EDRslwliTOCrKR0KGjNMLQ==
+X-CSE-MsgGUID: BDKRY23dQDKVbbDzIBhGHA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11032"; a="7439702"
+X-IronPort-AV: E=Sophos;i="6.07,176,1708416000"; 
+   d="scan'208";a="7439702"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Apr 2024 18:16:23 -0700
+X-CSE-ConnectionGUID: SonVAOAOSMC875vBrUutvQ==
+X-CSE-MsgGUID: 0cNtGg+NQk6i+4OEZGq6eA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,176,1708416000"; 
+   d="scan'208";a="22953257"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by orviesa003.jf.intel.com with ESMTP; 02 Apr 2024 18:16:20 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Joel Granados <j.granados@samsung.com>
+Cc: iommu@lists.linux.dev,
+	virtualization@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v4 0/9] IOMMUFD: Deliver IO page faults to user space
+Date: Wed,  3 Apr 2024 09:15:10 +0800
+Message-Id: <20240403011519.78512-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 
-Hey,
+This series implements the functionality of delivering IO page faults to
+user space through the IOMMUFD framework. One feasible use case is the
+nested translation. Nested translation is a hardware feature that
+supports two-stage translation tables for IOMMU. The second-stage
+translation table is managed by the host VMM, while the first-stage
+translation table is owned by user space. This allows user space to
+control the IOMMU mappings for its devices.
 
-Sorry for the wide email, but I figured someone recently contributing
-to / maintaining the Qualcomm SMMU driver may have some proper insights
-into this.
+When an IO page fault occurs on the first-stage translation table, the
+IOMMU hardware can deliver the page fault to user space through the
+IOMMUFD framework. User space can then handle the page fault and respond
+to the device top-down through the IOMMUFD. This allows user space to
+implement its own IO page fault handling policies.
 
-Recently I remembered that performance on some Qualcomm platforms
-takes a major hit when you use iommu.strict=1/CONFIG_IOMMU_DEFAULT_DMA_STRICT.
+User space application that is capable of handling IO page faults should
+allocate a fault object, and bind the fault object to any domain that it
+is willing to handle the fault generatd for them. On a successful return
+of fault object allocation, the user can retrieve and respond to page
+faults by reading or writing to the file descriptor (FD) returned.
 
-On the sa8775p-ride, I see most TLB sync calls to be about 150 us long,
-with some spiking to 500 us, etc:
+The iommu selftest framework has been updated to test the IO page fault
+delivery and response functionality.
 
-    [root@qti-snapdragon-ride4-sa8775p-09 ~]# trace-cmd start -p function_graph -g qcom_smmu_tlb_sync --max-graph-depth 1
-      plugin 'function_graph'
-    [root@qti-snapdragon-ride4-sa8775p-09 ~]# trace-cmd show
-    # tracer: function_graph
-    #
-    # CPU  DURATION                  FUNCTION CALLS
-    # |     |   |                     |   |   |   |
-     0) ! 144.062 us  |  qcom_smmu_tlb_sync();
+The series and related patches are available on GitHub:
+https://github.com/LuBaolu/intel-iommu/commits/iommufd-io-pgfault-delivery-v4
 
-On my sc8280xp-lenovo-thinkpad-x13s (only other Qualcomm platform I can compare
-with) I see around 2-15 us with spikes up to 20-30 us. That's thanks to this
-patch[0], which I guess improved the platform from 1-2 ms to the ~10 us number.
+Change log:
 
-It's not entirely clear to me how a DPU specific programming affects system
-wide SMMU performance, but I'm curious if this is the only way to achieve this?
-sa8775p doesn't have the DPU described even right now, so that's a bummer
-as there's no way to make a similar immediate optimization, but I'm still struggling
-to understand what that patch really did to improve things so maybe I'm missing
-something.
+v4:
+ - Add the iommu domain attachment handle to replace the iopf-specific
+   domain attachment interfaces introduced in the previous v3.
+ - Replace the iommu_sva with iommu domain attachment handle.
+ - Refine some fields in the fault and response message encoding
+   according to feedback collected during v3 review period.
+ - Refine and fix some problems in the fault FD implementation.
+ - Miscellaneous cleanup.
 
-I'm honestly not even sure what a "typical" range for TLB sync time would be,
-but on sa8775p-ride its bad enough that some IRQs like UFS can cause RCU stalls
-(pretty easy to reproduce with fio basic-verify.fio for example on the platform).
-It also makes running with iommu.strict=1 impractical as performance for UFS,
-ethernet, etc drops 75-80%.
+v3: https://lore.kernel.org/linux-iommu/20240122073903.24406-1-baolu.lu@linux.intel.com/
+ - Add iopf domain attach/detach/replace interfaces to manage the
+   reference counters of hwpt and device, ensuring that both can only be
+   destroyed after all outstanding IOPFs have been responded to. 
+ - Relocate the fault handling file descriptor from hwpt to a fault
+   object to enable a single fault handling object to be utilized
+   across multiple domains.
+ - Miscellaneous cleanup and performance improvements.
 
-Does anyone have any bright ideas on how to improve this, or if I'm even in
-the right for assuming that time is suspiciously long?
+v2: https://lore.kernel.org/linux-iommu/20231026024930.382898-1-baolu.lu@linux.intel.com/
+ - Move all iommu refactoring patches into a sparated series and discuss
+   it in a different thread. The latest patch series [v6] is available at
+   https://lore.kernel.org/linux-iommu/20230928042734.16134-1-baolu.lu@linux.intel.com/
+ - We discussed the timeout of the pending page fault messages. We
+   agreed that we shouldn't apply any timeout policy for the page fault
+   handling in user space.
+   https://lore.kernel.org/linux-iommu/20230616113232.GA84678@myrica/
+ - Jason suggested that we adopt a simple file descriptor interface for
+   reading and responding to I/O page requests, so that user space
+   applications can improve performance using io_uring.
+   https://lore.kernel.org/linux-iommu/ZJWjD1ajeem6pK3I@ziepe.ca/
 
-Thanks,
-Andrew
+v1: https://lore.kernel.org/linux-iommu/20230530053724.232765-1-baolu.lu@linux.intel.com/
 
-[0] https://lore.kernel.org/linux-arm-msm/CAF6AEGs9PLiCZdJ-g42-bE6f9yMR6cMyKRdWOY5m799vF9o4SQ@mail.gmail.com/
+Lu Baolu (9):
+  iommu: Introduce domain attachment handle
+  iommu: Replace sva_iommu with iommu_attach_handle
+  iommu: Add attachment handle to struct iopf_group
+  iommufd: Fault-capable hw page table attach/detach/replace
+  iommufd: Add fault and response message definitions
+  iommufd: Add iommufd fault object
+  iommufd: Associate fault object with iommufd_hw_pgtable
+  iommufd/selftest: Add IOPF support for mock device
+  iommufd/selftest: Add coverage for IOPF test
+
+ include/linux/iommu.h                         |  33 +-
+ include/linux/uacce.h                         |   2 +-
+ drivers/dma/idxd/idxd.h                       |   2 +-
+ drivers/iommu/iommu-priv.h                    |   9 +
+ drivers/iommu/iommufd/iommufd_private.h       |  43 ++
+ drivers/iommu/iommufd/iommufd_test.h          |   8 +
+ include/uapi/linux/iommufd.h                  | 122 ++++++
+ tools/testing/selftests/iommu/iommufd_utils.h |  84 +++-
+ drivers/dma/idxd/cdev.c                       |   4 +-
+ drivers/iommu/io-pgfault.c                    |  37 +-
+ drivers/iommu/iommu-sva.c                     |  64 ++-
+ drivers/iommu/iommu.c                         | 158 +++++++-
+ drivers/iommu/iommufd/device.c                |  16 +-
+ drivers/iommu/iommufd/fault.c                 | 372 ++++++++++++++++++
+ drivers/iommu/iommufd/hw_pagetable.c          |  36 +-
+ drivers/iommu/iommufd/main.c                  |   6 +
+ drivers/iommu/iommufd/selftest.c              |  63 +++
+ drivers/misc/uacce/uacce.c                    |   2 +-
+ tools/testing/selftests/iommu/iommufd.c       |  18 +
+ .../selftests/iommu/iommufd_fail_nth.c        |   2 +-
+ drivers/iommu/iommufd/Makefile                |   1 +
+ 21 files changed, 968 insertions(+), 114 deletions(-)
+ create mode 100644 drivers/iommu/iommufd/fault.c
+
+-- 
+2.34.1
 
