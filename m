@@ -1,125 +1,116 @@
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC8BD134CCA
-	for <iommu@lists.linux.dev>; Wed,  3 Apr 2024 11:59:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E54841482EA
+	for <iommu@lists.linux.dev>; Wed,  3 Apr 2024 13:19:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712145557; cv=none; b=hXmU5zIbvrmghnUYLTPh1BAK+EQjIziB7aba+ZYtFkkg21e6ycmtp+e+eMZ7qD4sW6i07o8tHr1dSAHoBf0SgSnEJyLK+10M/6+Tik426ZKs5rHh/EMs71z5tLLy7FpUbq4xrtAgRerMBgX7VnSbplOXGHzlVEwF8wLE/c8/Mc0=
+	t=1712150353; cv=none; b=XMszMgI73vnwVLBLHYnPPBV1PPxf3DVrpr5Gi5RDHpCjEsbITiiT7RPgEDzbvXysWmJI3e6bkV7Qm60euTxGoo0v5vzGnjxeVrCWQdE1pzLjIOXTHF5dNthb4YhJlr3RmySWolAVGWjjRR6+TTDSnTxjtx1DBn/0ApDhjzsUJMc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712145557; c=relaxed/simple;
-	bh=XFcCHGaOu8ShUjCIksZfpjmaj4CJ7be6Fa9HhQO/fo8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AMy57T/YFNo0SHsdy6/BztwfWikEIN6Hgk3qENPDUdnvLA2I/BR9BdlozU5DfRp4/OCHjh08C07GjvD2DzQfvwaE8sDeLJiR2Igbna+x0xUmOFMuRR1M0YfhiAKVBS+F6Y3qp4JsUU1t2Gy0RzPt/MvWU8C6HtDzgJ0giyJf0gA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=oBw315eg; arc=none smtp.client-ip=209.85.160.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1712150353; c=relaxed/simple;
+	bh=cWyJ3cJLCpRglG8Yk4xFCKIFWdrd8x6dZaV75Jxrvbw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sv2+0fqUDAPJzDDXXms6EHybzh/vyXukWqTrBnN/e5sxEH9TCVR1VzMqa3ehIQ5cgiBFjF7cLpPwhb9sZN8lwuHjiBclDgeIB4T8RHVDiK+iB6d4V+j3CyzhvJrDZZeEKUaBUjIcDHWnQ21U8/j6bwRRznG0KPEqKrRSWEX5sQ8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=nEZB8p0W; arc=none smtp.client-ip=209.85.160.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="oBw315eg"
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-22e8652090aso703680fac.2
-        for <iommu@lists.linux.dev>; Wed, 03 Apr 2024 04:59:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="nEZB8p0W"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-432b72c706cso8392461cf.1
+        for <iommu@lists.linux.dev>; Wed, 03 Apr 2024 06:19:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1712145555; x=1712750355; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=gKnBqN3AR3ILG1kqJKOi7mh33arGTjn/cFRm8lVOtNo=;
-        b=oBw315egRXklypFl2pmoZZV8gR16+Nxk1e4Sh4cxADtYlf1CZYtRuGcyR0fJDpLEEp
-         7Bo2OqjbjW5CD1IYYYku/qQrF8xNN2kttDZI/vcIegHh1BTv/cYrQTk9yfHDKWdFuc+W
-         jekPVjfZJzYe/pMV4qYsCphH5f46WGXZQudQYUaYdZI3GbtB8F98WZFu0713au4XIDr5
-         1qCBBY3DrtwEtIx/ZMBC9JuapxC+Q3aVkVOzAgmK8EA0/6ZRiWMWrxeWX5ktLT/P6hJy
-         schMXhEE/LzfsgS9iTmYv89nktDX6mqdvueJCFDrDx76/VVGBqxBOTefEwo+C/ykvbRD
-         hRDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712145555; x=1712750355;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1712150350; x=1712755150; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gKnBqN3AR3ILG1kqJKOi7mh33arGTjn/cFRm8lVOtNo=;
-        b=AwejaQZj4UHFPIFrUuUsj/lflBkK9Wk5HJtcp64kyFvwwfaAAsmIgc0MohJgRhm8vf
-         0NXY8lLX6H+V2neXn1xpB8gyCqQOSSjhSgwzHtvaPn/t6OrYkgPcCgVEHgpGOXqZntWF
-         KzNpQ1fjeRxGju2oZS0xWNH8CHnqxutjLV8KjxPaQ3Ky4SXRby8EsN/Jm4Po4gKoK1xQ
-         YJrthBydh1Z2gWoI00upflwQ5Frp/E577z1rZ8aGgWJ9SXGlHrstgM0DhWzLt4va0n+t
-         LSgrkqO8WQ1a83JorpQ+QI+NLywasp4D83HNBPYdWW16XUG2j6/WWNieyoR7ZwnPicZR
-         WlpQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV9Px5L3i1oeRPeI5WB/xQrkWE3eDHxgwnQBpXHCG+PWsHID3Prawl4qbywm9ji8dGd4veOokJpVmlUhlR9pRxnPFkS9/I=
-X-Gm-Message-State: AOJu0YwEKv5NtcQ9iPO7pzd81ao+Atyd8agH1+BAUy5Fkm0XSI2kd0pc
-	8iVGwLUag+9drhAcGKmoZDOcwO0Io8luB9OL8lnPCyXZEAkNKjnFiyTig9vGaeI=
-X-Google-Smtp-Source: AGHT+IEcrh3sfjtdruqsJXaJuUdnZAhAWtheqUdpYYQNj/BaEl7xqFHk1YKUrYVoGspTRvSJh+dkig==
-X-Received: by 2002:a05:6870:414a:b0:222:8943:df2b with SMTP id r10-20020a056870414a00b002228943df2bmr16943300oad.16.1712145555075;
-        Wed, 03 Apr 2024 04:59:15 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id lk8-20020a0568703e0800b0022e9af4f5a8sm199096oab.34.2024.04.03.04.59.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Apr 2024 04:59:14 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rrzGr-007GCe-4l;
-	Wed, 03 Apr 2024 08:59:13 -0300
-Date: Wed, 3 Apr 2024 08:59:13 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/9] iommu: Replace sva_iommu with iommu_attach_handle
-Message-ID: <20240403115913.GC1363414@ziepe.ca>
-References: <20240403011519.78512-1-baolu.lu@linux.intel.com>
- <20240403011519.78512-3-baolu.lu@linux.intel.com>
+        bh=cWyJ3cJLCpRglG8Yk4xFCKIFWdrd8x6dZaV75Jxrvbw=;
+        b=nEZB8p0Wn30FGunX5cmm6HqFhrwCfW12G+RGhYeyann8apyl+TnUy2WS6Qhjp6JTrR
+         Z6A1AVif+Za2B9t43oSVLyZleuF5AgfoZd9SPZNu+eJAiTDswU4A8uJxeEQ1R1BAXqnZ
+         t1wUhyIGjPWI+o+zeDzIyqHRei7HSXX0hR7bzOM+eChFIC35NplPS2iFV6ALsTK0GSE9
+         vmoXVOk3ao9TVCsWtV+qv0LajyrKAZTZCJr9rhsS6vDsIOm251goam0IFvOusYC9ofwV
+         0zHcjYZqd7U8hPdM5IE67wQk5fpjih4rpFqPMqYbFEQ0mG14ueLr5+H2qGqpsdOqVeZF
+         o3CA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712150350; x=1712755150;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cWyJ3cJLCpRglG8Yk4xFCKIFWdrd8x6dZaV75Jxrvbw=;
+        b=bmmtY+hisHoeLiYh7DTc/gttYf+EXHw4kvZ+Crz8Xn5I8lOod7Vtt566fYRVgz6gzh
+         M8lfFMvT/m32RukVhJnzy7DgUOMX8qyPnCDDcxeKU23UU/owPhU7CNrLF5wp5OOz/nXJ
+         ph6PPEbSZApgZH+c+CyCmxX5E0uPj/3jXugTYNzZKGV1XoNduuqFaNx0lchW0YsL62vB
+         bf4CB1t21P45oA9t7ZFgw2x5aZNYZVXTESOp7aPLgdk5SVMyVDIXsPD8FCOjXRN4qODG
+         sYm4FiZjBrriGKWkhF5ZVM00k6a6TJc7nw3rI7WHo+9eud4lXO1QgaXcUdn/UH9vrs7X
+         VI1g==
+X-Forwarded-Encrypted: i=1; AJvYcCUd+1do+68dDnKv1TmSZkoFlQnQeg5wNUGidF1DjUcHmf09GAid4Hx0moODV0+DW7/vL2+wukPdJGNTHkOyQYgmxthZ5AI=
+X-Gm-Message-State: AOJu0YzcarQ9Yk1gxb57XOhLlhoZD6N1vjnUJQSqwdYFMot5mOz28ZC2
+	CdA8iFZ33/yEKf7dbsJlmtd62LxdCnclVExuAWxlgh1J/CM/WJQPSwDwqY9bUF0pQKv14Ts11Tx
+	ic8bkBqSW0qsIwJG189CYhfGtwSpzjwKdfHjWeQ==
+X-Google-Smtp-Source: AGHT+IEGVCWVaM3OZyGBYvZk7eIME6rUXSm4/CdsRsbb+oN0keiU95giarhKtyBsTd58XnIkGQv2TzNnxS90eOdz7ws=
+X-Received: by 2002:a05:622a:104c:b0:434:338c:31ac with SMTP id
+ f12-20020a05622a104c00b00434338c31acmr3549454qte.14.1712150349909; Wed, 03
+ Apr 2024 06:19:09 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240403011519.78512-3-baolu.lu@linux.intel.com>
+References: <20240222173942.1481394-1-pasha.tatashin@soleen.com>
+ <00555af4-8786-b772-7897-aef1e912b368@google.com> <ZfTDUGSshZUbs13-@8bytes.org>
+In-Reply-To: <ZfTDUGSshZUbs13-@8bytes.org>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Wed, 3 Apr 2024 09:18:33 -0400
+Message-ID: <CA+CK2bC7jd65=eZoN7szWJKSO2TLsxxKFH8D6WjHS3_2U7=McA@mail.gmail.com>
+Subject: Re: [PATCH v5 00/11] IOMMU memory observability
+To: Joerg Roedel <joro@8bytes.org>
+Cc: David Rientjes <rientjes@google.com>, Andrew Morton <akpm@linux-foundation.org>, 
+	alim.akhtar@samsung.com, alyssa@rosenzweig.io, asahi@lists.linux.dev, 
+	baolu.lu@linux.intel.com, bhelgaas@google.com, cgroups@vger.kernel.org, 
+	corbet@lwn.net, david@redhat.com, dwmw2@infradead.org, hannes@cmpxchg.org, 
+	heiko@sntech.de, iommu@lists.linux.dev, jernej.skrabec@gmail.com, 
+	jonathanh@nvidia.com, krzysztof.kozlowski@linaro.org, 
+	linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-rockchip@lists.infradead.org, linux-samsung-soc@vger.kernel.org, 
+	linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org, 
+	lizefan.x@bytedance.com, marcan@marcan.st, mhiramat@kernel.org, 
+	m.szyprowski@samsung.com, paulmck@kernel.org, rdunlap@infradead.org, 
+	robin.murphy@arm.com, samuel@sholland.org, suravee.suthikulpanit@amd.com, 
+	sven@svenpeter.dev, thierry.reding@gmail.com, tj@kernel.org, 
+	tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org, will@kernel.org, 
+	yu-cheng.yu@intel.com, bagasdotme@gmail.com, mkoutny@suse.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Apr 03, 2024 at 09:15:12AM +0800, Lu Baolu wrote:
-> +	/* A bond already exists, just take a reference`. */
-> +	handle = iommu_attach_handle_get(group, iommu_mm->pasid);
-> +	if (handle) {
-> +		mutex_unlock(&iommu_sva_lock);
-> +		return handle;
->  	}
+On Fri, Mar 15, 2024 at 5:53=E2=80=AFPM Joerg Roedel <joro@8bytes.org> wrot=
+e:
+>
+> Hi David,
+>
+> On Fri, Mar 15, 2024 at 02:33:53PM -0700, David Rientjes wrote:
+> > Joerg, is this series anticipated to be queued up in the core branch of
+> > git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git so it gets into
+> > linux-next?
+> >
+> > This observability seems particularly useful so that we can monitor and
+> > alert on any unexpected increases (unbounded memory growth from this
+> > subsystem has in the past caused us issues before the memory is otherwi=
+se
+> > not observable by host software).
+> >
+> > Or are we still waiting on code reviews from some folks that we should
+> > ping?
+>
+> A few more reviews would certainly help, but I will also do a review on
+> my own. If things are looking good I can merge it into the iommu tree
+> when 6.9-rc3 is released (which is the usual time I start merging new
+> stuff).
 
-At least in this context this is not enough we need to ensure that the
-domain on the PASID is actually an SVA domain and it was installed by
-this mechanism, not an iommufd domain for instance.
+Hi Joerg,
 
-ie you probably need a type field in the iommu_attach_handle to tell
-what the priv is.
+Would it make sense to stage this series in an unstable branch to get
+more test coverage from the 0-day robots?
 
-Otherwise this seems like a great idea!
-
-> -	iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
-> -	if (--domain->users == 0) {
-> -		list_del(&domain->next);
-> -		iommu_domain_free(domain);
-> +	iommu_attach_handle_put(handle);
-> +	if (refcount_read(&handle->users) == 1) {
-> +		iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
-> +		if (--domain->users == 0) {
-> +			list_del(&domain->next);
-> +			iommu_domain_free(domain);
-> +		}
->  	}
-
-Though I'm not convinced the refcount should be elevated into the core
-structure. The prior patch I showed you where the caller can provide
-the memory for the handle and we don't have a priv would make it easy
-to put the refcount in a SVA dervied handle struct without more
-allocation. Then we don't need this weirdness.
-
->  	mutex_unlock(&iommu_sva_lock);
-> -	kfree(handle);
-
-Also do we need iommu_sva_lock here anymore? I wonder if the group
-mutex would be sufficient..
-
-Jason
+Thank you,
+Pasha
