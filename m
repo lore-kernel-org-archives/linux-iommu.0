@@ -1,89 +1,130 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from out-179.mta1.migadu.com (out-179.mta1.migadu.com [95.215.58.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82AE715686D
-	for <iommu@lists.linux.dev>; Wed,  3 Apr 2024 21:35:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF567156872
+	for <iommu@lists.linux.dev>; Wed,  3 Apr 2024 21:42:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712180145; cv=none; b=bJJfe3ppuG5qUKRmbv0cq5epOpgX2q+TVurIkV46W46pwTKVPpGdA8ppUF9HLFHpnkZkSUZBfMwpkNjRZnhWOQxUAUu+Rk8JwsCObr1jiLPp4XohxhkpXia/nDTkGLka8OfbgE7KmhrLBC442dGp3RrzyEZEiTehw4UkkGVxPi8=
+	t=1712180532; cv=none; b=eaZDqVu1WMeKuYG3UDUlAlT8T7naGkwZi9T06wT+PIKe+/9ymOQD1y0Glk0lo5DaL1qoPLIcwWE3SpkjbtOX9Yk3md1efm8efNTLsS5CjiaA6RVx0+ziAVUTRknWVC16TVgqiMX77nlWToet++LHR6uAZs9hG2+A0R6Wwgy/g7I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712180145; c=relaxed/simple;
-	bh=5velOTIExN+yC0MZHPBQnGuRcYai9BnR3d+mvItiUjg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=FkYv2JAO76xxOnSxT6VZVWPWmrprNInovFDj6bfWOnCzOHAIdzcctS3GZfmYkqw8jakNtN5lLS1LO49qzN5P1iNFtBg9E6pEbPw++ITIYLdX25zr1lI9951wHiGGVR2vEIfs+/w9rFeXVHxbN3ugnz8FEArjXWmVrqPh5fCcna0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DIlZmHm1; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712180532; c=relaxed/simple;
+	bh=x+FV5GoB+NEz6+1MxtrN8DBzkMq3eDfL9fgL9YEpHyw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=JIrBvvs/b9Oy3zxuhuVQooPyOmWgADusGWIYRsGs7zcgDAlNuMvfMtGzHQBQ56oFn5jjxyUViefu7xGX6Z+qCdUJdGVibp1dtvDQBdmePSZkHo5Jzbj6EqoGZUdqn4ApbZvXDe0b1PDwjpfJkPZLKYvAgDmcPS5ycyxBrbKKxnc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=lGMlDuct; arc=none smtp.client-ip=95.215.58.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DIlZmHm1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712180141; x=1743716141;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=5velOTIExN+yC0MZHPBQnGuRcYai9BnR3d+mvItiUjg=;
-  b=DIlZmHm1kYOV27pnD/PsdeM7mwyFYiDJnJdRkHUj2IBrataYKj83QC+k
-   G+Nt+6rtISKL/n6DKhsD2WgUU6zNcDazkL73OqPiuLhutn1CPg49yK7Hl
-   HXHKzsoZXGiUW0e/1znDS5ZamoJiN5PuRSurczRXYSi5NtCkX0a6rB9SV
-   W8iL1bVTi7vRzWGSPjIFzrwsHBA2ug7AoPDzktOhSRuh6vnHTkLlykTTS
-   SII6yZdFqy9LwaflLCn0LRrzxmId8MbzZukUR8B93IxSDsWDW0LUMrKYb
-   mOGdRjGUYGuyF+xWEt1ylqnOODTxtjq5BoDHmGSlgfTj+90n5MKt+k/gi
-   g==;
-X-CSE-ConnectionGUID: jeF/iVTVQ3mr6+ieYivWSA==
-X-CSE-MsgGUID: m1f02Jb0TlCKpqin3UbvdA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11033"; a="18014659"
-X-IronPort-AV: E=Sophos;i="6.07,178,1708416000"; 
-   d="scan'208";a="18014659"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2024 14:35:40 -0700
-X-CSE-ConnectionGUID: 5SFAvSoTT4u22VlaEsqO8g==
-X-CSE-MsgGUID: ++kFMv6DS9WbzHYa0SquyQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,178,1708416000"; 
-   d="scan'208";a="18681402"
-Received: from jacob-builder.jf.intel.com ([10.54.39.125])
-  by fmviesa008.fm.intel.com with ESMTP; 03 Apr 2024 14:35:42 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: LKML <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux.dev,
-	"Lu Baolu" <baolu.lu@linux.intel.com>,
-	Joerg Roedel <joro@8bytes.org>
-Cc: Raj Ashok <ashok.raj@intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH] iommu/vt-d: Allocate local memory for page request queue
-Date: Wed,  3 Apr 2024 14:40:07 -0700
-Message-Id: <20240403214007.985600-1-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="lGMlDuct"
+Date: Wed, 3 Apr 2024 17:41:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+	t=1712180527;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=I8oAok5It38shVDkwL940Pa8qX3ifwx6XR6MQgkhnY4=;
+	b=lGMlDuctByVDszORVgYlbk2emZzNfH18lVbOM3PP8QqASVaLVaaVhE4vLYrvnQGixqKQn+
+	JoBwih61WSwFWMdg5hVCAoj/8hdJcJ9cfeJ6GbrYKLCxCnMqAOBy1GlT1ZzritCAT4+N6a
+	jWAURONL2YqX3Zp+MfY4wq5MmwF4PmI=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From: Kent Overstreet <kent.overstreet@linux.dev>
+To: Nathan Chancellor <nathan@kernel.org>
+Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org, 
+	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, 
+	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, peterz@infradead.org, 
+	juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, 
+	tglx@linutronix.de, mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org, 
+	peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, 
+	masahiroy@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, tj@kernel.org, 
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
+	yosryahmed@google.com, yuzhao@google.com, dhowells@redhat.com, hughd@google.com, 
+	andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com, 
+	vvvvvv@google.com, gregkh@linuxfoundation.org, ebiggers@google.com, 
+	ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com, 
+	rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, 
+	cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
+	glider@google.com, elver@google.com, dvyukov@google.com, songmuchun@bytedance.com, 
+	jbaron@akamai.com, aliceryhl@google.com, rientjes@google.com, minchan@google.com, 
+	kaleshsingh@google.com, kernel-team@android.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, linux-modules@vger.kernel.org, 
+	kasan-dev@googlegroups.com, cgroups@vger.kernel.org
+Subject: Re: [PATCH v6 01/37] fix missing vmalloc.h includes
+Message-ID: <4qk7f3ra5lrqhtvmipmacgzo5qwnugrfxn5dd3j4wubzwqvmv4@vzdhpalbmob3>
+References: <20240321163705.3067592-1-surenb@google.com>
+ <20240321163705.3067592-2-surenb@google.com>
+ <20240403211240.GA307137@dev-arch.thelio-3990X>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240403211240.GA307137@dev-arch.thelio-3990X>
+X-Migadu-Flow: FLOW_OUT
 
-The page request queue is per IOMMU, its allocation should be made
-NUMA-aware for performance reasons.
+On Wed, Apr 03, 2024 at 02:12:40PM -0700, Nathan Chancellor wrote:
+> On Thu, Mar 21, 2024 at 09:36:23AM -0700, Suren Baghdasaryan wrote:
+> > From: Kent Overstreet <kent.overstreet@linux.dev>
+> > 
+> > The next patch drops vmalloc.h from a system header in order to fix
+> > a circular dependency; this adds it to all the files that were pulling
+> > it in implicitly.
+> > 
+> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
+> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> > Reviewed-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> 
+> I bisected an error that I see when building ARCH=loongarch allmodconfig
+> to commit 302519d9e80a ("asm-generic/io.h: kill vmalloc.h dependency")
+> in -next, which tells me that this patch likely needs to contain
+> something along the following lines, as LoongArch was getting
+> include/linux/sizes.h transitively through the vmalloc.h include in
+> include/asm-generic/io.h.
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iommu/intel/svm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+gcc doesn't appear to be packaged for loongarch for debian (most other
+cross compilers are), so that's going to make it hard for me to test
+anything...
 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index c1bed89b1026..ee3b469e2da1 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -66,7 +66,7 @@ int intel_svm_enable_prq(struct intel_iommu *iommu)
- 	struct page *pages;
- 	int irq, ret;
- 
--	pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, PRQ_ORDER);
-+	pages = alloc_pages_node(iommu->node, GFP_KERNEL | __GFP_ZERO, PRQ_ORDER);
- 	if (!pages) {
- 		pr_warn("IOMMU: %s: Failed to allocate page request queue\n",
- 			iommu->name);
--- 
-2.25.1
-
+> 
+> Cheers,
+> Nathan
+> 
+>   In file included from arch/loongarch/include/asm/io.h:11,
+>                    from include/linux/io.h:13,
+>                    from arch/loongarch/mm/mmap.c:6:
+>   include/asm-generic/io.h: In function 'ioport_map':
+>   arch/loongarch/include/asm/addrspace.h:124:25: error: 'SZ_32M' undeclared (first use in this function); did you mean 'PS_32M'?
+>     124 | #define PCI_IOSIZE      SZ_32M
+>         |                         ^~~~~~
+>   arch/loongarch/include/asm/addrspace.h:126:26: note: in expansion of macro 'PCI_IOSIZE'
+>     126 | #define IO_SPACE_LIMIT  (PCI_IOSIZE - 1)
+>         |                          ^~~~~~~~~~
+>   include/asm-generic/io.h:1113:17: note: in expansion of macro 'IO_SPACE_LIMIT'
+>    1113 |         port &= IO_SPACE_LIMIT;
+>         |                 ^~~~~~~~~~~~~~
+>   arch/loongarch/include/asm/addrspace.h:124:25: note: each undeclared identifier is reported only once for each function it appears in
+>     124 | #define PCI_IOSIZE      SZ_32M
+>         |                         ^~~~~~
+>   arch/loongarch/include/asm/addrspace.h:126:26: note: in expansion of macro 'PCI_IOSIZE'
+>     126 | #define IO_SPACE_LIMIT  (PCI_IOSIZE - 1)
+>         |                          ^~~~~~~~~~
+>   include/asm-generic/io.h:1113:17: note: in expansion of macro 'IO_SPACE_LIMIT'
+>    1113 |         port &= IO_SPACE_LIMIT;
+>         |                 ^~~~~~~~~~~~~~
+> 
+> diff --git a/arch/loongarch/include/asm/addrspace.h b/arch/loongarch/include/asm/addrspace.h
+> index b24437e28c6e..7bd47d65bf7a 100644
+> --- a/arch/loongarch/include/asm/addrspace.h
+> +++ b/arch/loongarch/include/asm/addrspace.h
+> @@ -11,6 +11,7 @@
+>  #define _ASM_ADDRSPACE_H
+>  
+>  #include <linux/const.h>
+> +#include <linux/sizes.h>
+>  
+>  #include <asm/loongarch.h>
+>  
