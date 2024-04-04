@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35ECE12BEA7
-	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 17:13:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E9FC12CD9C
+	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 17:33:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712250792; cv=none; b=hnTnQ3KmpNJsMuR7xp3gw5E45SSazTV8DyZjI8hkbEsHdbyVmZnqGDEG1GJKog/3BG3WotaxzzR/zBPkHx8tPv7LMoGrppNR0XKS7jOgBTh81cfoCUKV0ysvWJI8OEDcA7USdyUQ3T5A5A9X20/iFZURrKVb/Kwpy5oXQZenK/g=
+	t=1712251996; cv=none; b=phRHDMPYb5m0wWvH9H11/F/98+FvOHvSxgBK1HAZo8KFMhZEsOPenVcj4acPStpD0hFcfSeGpJocuiwtzz+lEutXknqGMHZ/o0VP+epZvNM0ZuZpoSkj0HKe+ipQcMhQToUNDALmWm+LAQ04+SKZmZzHgENSd+o8sOJvuj4HsVI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712250792; c=relaxed/simple;
-	bh=Dlr+aCFuoxfoWJLhEEPEJmaI0L43dBfu9cHqUL4lZ9c=;
+	s=arc-20240116; t=1712251996; c=relaxed/simple;
+	bh=WhycKvDs8Nm0e2yE6FewUWSMhX4pZiW2qepdqQnqjQU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HW7zKNpOGB2XfPj9JiU2DjHRA+RdqtSIpG6RvGXUEgiC+mYNQ6fKG78xnX91qCiHq+RN6OyQTVmqb3UJWOttnYlLJHO2Mzc8GkpWIyTLnx+2VLtmRbCPzmbNNbTgmPhRMaKPjfQkGyADsHoisc4d6g67F+MFiO4FIpGr8ph8GBQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Lga1EpiR; arc=none smtp.client-ip=192.198.163.8
+	 MIME-Version:Content-Type; b=sAZUh9SJZkEoFU+9+mN3oU3m8YC8wE2SrAmPC6Nk98lRs6aZ6vie7UkAuINZnzEleTU+KgMCcs9miagB4vnFq4AxwwhT9vPG47HDEWsUwdtLhpKn2XgHDwj9Qrba3QSE9IFB9ciOOiY0OfHKOXEPrlmEgj13g48DKUfZ7cYvBeU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gLSSquWR; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Lga1EpiR"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gLSSquWR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712250790; x=1743786790;
+  t=1712251995; x=1743787995;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Dlr+aCFuoxfoWJLhEEPEJmaI0L43dBfu9cHqUL4lZ9c=;
-  b=Lga1EpiRtfAqsXLK08fO1lDl30cK1LcqSk1S15uEYITkaXTsNrai+SnW
-   +jaZyJo+qnr0xLIfDqXAjpuJzEg4W2CHtgo8AHtjWE0nzhLv8hhFIAK6G
-   fQxoJzNpVXgr2NGmwMtkfLmJC6J6KSw7QJt1tqKgfJ0G/S0iIliWhlQkX
-   rD3CXyf8MMiCgL76M9nz/oqiZW0YhzWeNVYKm3nR9m9+dQb0VV8aPaep0
-   sqThTR7WOuumdbYhuRETKhqWt00sbMygQyp5cDQMGKHejTNur7bHACDCm
-   D8b6yxIkr9vJTfJcE41BmDUFo6aReHfXNrdtxY9oArn5WL2iyIcwlVz1W
+  bh=WhycKvDs8Nm0e2yE6FewUWSMhX4pZiW2qepdqQnqjQU=;
+  b=gLSSquWRbOk30KJOLa1Pxfr+fIXQGvKqAm1+bWUcE3J723rn7DVOLihZ
+   upoXGlliFQ1XKgOuuKNn1JMjaM52YLSwRkIKwJBIgA3uKFlg0J1O1DWaY
+   6JziuEH437sZ0afJ+qBr+VVBjoA3G851z3ARjIaYbj71EoU6OHXC+bh7+
+   StT7knzN8Lxeqz7b58c3o2ageC6dtfw/44AFr3p5Ny+K+lvTvky6c/4SX
+   bbuTPU4F16Vp99CNrk58ULrsmX1BCv0uzvjzoBs+KJcjM7d41uu2iwbtc
+   2bsp0Yjdpk8XrzNp/iUoqjgj9NOprBZlMBq5mcW2hxVAFnjHLaf2rQ3lE
    Q==;
-X-CSE-ConnectionGUID: EsuRIcp+R8+ca+OzHUrE7Q==
-X-CSE-MsgGUID: pW1wgR3HQxO9BdAEOy0kTA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11034"; a="25058754"
+X-CSE-ConnectionGUID: pqANAA+LQzGFeUwO8q/YTg==
+X-CSE-MsgGUID: 88ReG1i4QrqQLfQLAfkXmA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11034"; a="7709656"
 X-IronPort-AV: E=Sophos;i="6.07,179,1708416000"; 
-   d="scan'208";a="25058754"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2024 10:13:09 -0700
-X-CSE-ConnectionGUID: YvT/tSvUSe2R+yQRAF8VxA==
-X-CSE-MsgGUID: eiA5oN3tS7aoaA6Umgebjw==
+   d="scan'208";a="7709656"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2024 10:33:09 -0700
+X-CSE-ConnectionGUID: TuJmPMI7T6u58LeAAqTTfg==
+X-CSE-MsgGUID: ximBQxIZSoGR85aXhPDCVQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,179,1708416000"; 
-   d="scan'208";a="18773748"
+   d="scan'208";a="23356605"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2024 10:13:08 -0700
-Date: Thu, 4 Apr 2024 10:17:35 -0700
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Apr 2024 10:33:08 -0700
+Date: Thu, 4 Apr 2024 10:37:35 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: Robert Hoo <robert.hoo.linux@gmail.com>
 Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
@@ -55,14 +55,13 @@ Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
  <paul.e.luse@intel.com>, Dan Williams <dan.j.williams@intel.com>, Jens
  Axboe <axboe@kernel.dk>, Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin"
  <kevin.tian@intel.com>, maz@kernel.org, seanjc@google.com, Robin Murphy
- <robin.murphy@arm.com>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH 05/15] x86/irq: Reserve a per CPU IDT vector for posted
- MSIs
-Message-ID: <20240404101735.402feec8@jacob-builder>
-In-Reply-To: <9734e080-96e4-4119-8ae6-28abb7877a3c@gmail.com>
+ <robin.murphy@arm.com>, jacob.jun.pan@linux.intel.com, Bjorn Helgaas
+ <helgaas@kernel.org>
+Subject: Re: [PATCH 00/15] Coalesced Interrupt Delivery with posted MSI
+Message-ID: <20240404103735.003ed5a3@jacob-builder>
+In-Reply-To: <fe40498a-3bb2-43c6-b3e2-1e4e10205db1@gmail.com>
 References: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
-	<20240126234237.547278-6-jacob.jun.pan@linux.intel.com>
-	<9734e080-96e4-4119-8ae6-28abb7877a3c@gmail.com>
+	<fe40498a-3bb2-43c6-b3e2-1e4e10205db1@gmail.com>
 Organization: OTC
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -72,51 +71,71 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
 Hi Robert,
 
-On Thu, 4 Apr 2024 21:38:34 +0800, Robert Hoo <robert.hoo.linux@gmail.com>
+On Thu, 4 Apr 2024 21:45:05 +0800, Robert Hoo <robert.hoo.linux@gmail.com>
 wrote:
 
 > On 1/27/2024 7:42 AM, Jacob Pan wrote:
-> > When posted MSI is enabled, all device MSIs are multiplexed into a
-> > single notification vector. MSI handlers will be de-multiplexed at
-> > run-time by system software without IDT delivery.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >   arch/x86/include/asm/irq_vectors.h | 9 ++++++++-
-> >   1 file changed, 8 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/arch/x86/include/asm/irq_vectors.h
-> > b/arch/x86/include/asm/irq_vectors.h index 3a19904c2db6..08329bef5b1d
-> > 100644 --- a/arch/x86/include/asm/irq_vectors.h
-> > +++ b/arch/x86/include/asm/irq_vectors.h
-> > @@ -99,9 +99,16 @@
-> >   
-> >   #define LOCAL_TIMER_VECTOR		0xec
-> >   
-> > +/*
-> > + * Posted interrupt notification vector for all device MSIs delivered
-> > to
-> > + * the host kernel.
-> > + */
-> > +#define POSTED_MSI_NOTIFICATION_VECTOR	0xeb
-> >   #define NR_VECTORS			 256
-> >   
-> > -#ifdef CONFIG_X86_LOCAL_APIC
-> > +#ifdef X86_POSTED_MSI  
-> 
-> X86_POSTED_MSI --> CONFIG_X86_POSTED_MSI?
-Indeed, thanks for catching that!
+> > Hi Thomas and all,
+> >=20
+> > This patch set is aimed to improve IRQ throughput on Intel Xeon by
+> > making use of posted interrupts.
+> >=20
+> > There is a session at LPC2023 IOMMU/VFIO/PCI MC where I have presented
+> > this topic.
+> >=20
+> > https://lpc.events/event/17/sessions/172/#20231115
+> >=20
+> > Background
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > On modern x86 server SoCs, interrupt remapping (IR) is required and
+> > turned on by default to support X2APIC. Two interrupt remapping modes
+> > can be supported by IOMMU/VT-d:
+> >=20
+> > - Remappable 	(host)
+> > - Posted	(guest only so far)
+> >=20
+> > With remappable mode, the device MSI to CPU process is a HW flow
+> > without system software touch points, it roughly goes as follows:
+> >=20
+> > 1.	Devices issue interrupt requests with writes to 0xFEEx_xxxx
+> > 2.	The system agent accepts and remaps/translates the IRQ
+> > 3.	Upon receiving the translation response, the system agent
+> > notifies the destination CPU with the translated MSI
+> > 4.	CPU's local APIC accepts interrupts into its IRR/ISR registers
+> > 5.	Interrupt delivered through IDT (MSI vector)
+> >=20
+> > The above process can be inefficient under high IRQ rates. The
+> > notifications in step #3 are often unnecessary when the destination CPU
+> > is already overwhelmed with handling bursts of IRQs. On some
+> > architectures, such as Intel Xeon, step #3 is also expensive and
+> > requires strong ordering w.r.t DMA.  =20
+>=20
+> Can you tell more on this "step #3 requires strong ordering w.r.t. DMA"?
+>=20
+I am not sure how much micro architecture details I can disclose but the
+point is that there are ordering rules related to DMA read/writes
+and posted MSI writes. I am not a hardware expert.
 
-> > +#define FIRST_SYSTEM_VECTOR
-> > POSTED_MSI_NOTIFICATION_VECTOR +#elif defined(CONFIG_X86_LOCAL_APIC)
-> >   #define FIRST_SYSTEM_VECTOR		LOCAL_TIMER_VECTOR
-> >   #else
-> >   #define FIRST_SYSTEM_VECTOR		NR_VECTORS  
-> 
+=46rom PCIe pov, my understanding is that the upstream writes tested here on
+NVMe drives as the result of 4K random reads are relaxed ordered. I can see
+lspci showing: RlxdOrd+ on my Samsung drives.
+
+DevCtl: CorrErr+ NonFatalErr+ FatalErr+ UnsupReq-
+                        RlxdOrd+ ExtTag+ PhantFunc- AuxPwr- NoSnoop+ FLRese=
+t-
+                        MaxPayload 512 bytes, MaxReadReq 4096 bytes
+
+But MSIs are strictly ordered afaik.
+
+> > As a result, slower
+> > IRQ rates can become a limiting factor for DMA I/O performance.
+> >  =20
+>=20
+>=20
 
 
 Thanks,
