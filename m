@@ -1,124 +1,106 @@
-Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38E0886630
-	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 13:45:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAC48128361
+	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 13:51:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712238317; cv=none; b=BIaaaAJ3/UhXjoQqC/506kZwUh2+zPjUYBEKSwF7qIDnd1/TRBRUglFUylJs5UHPjo38bCnm+7A514CQbpBdnyeqS1PlURzduPq6Y/ZOpMY3QdNOyBqqNyZUG7Y0nnuUN+6KjtFD+bWOePkNzXNbcshyq+KWZ5pMVyXvGNBUp2o=
+	t=1712238699; cv=none; b=s1GLmYHODjR79ueqd/S1IYlrdbZi3XOf6/o5ZVQjVkFhQ/Wzy74uwulL7uXzZP7uWlBKwb2Q4jeaSXcU0qcygM6NxhQiLvDkXwV9fzNjC7GU32kMEr6CaPiTKHJ2+JAnKcl2Q9CwU9o+RuVclQGM/9YP8xVYGCBZAVK3n/7tdb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712238317; c=relaxed/simple;
-	bh=eNFxWhJpWGn4MVKyzZRbjgkh8DaGFUxZWhNvYbMxGkI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=dmBWMyIBqQkW6Ej3XHSuZAaKIrrBCAz9++Xktpk5syhfnUQoVerKPN1wPDr28ii7VeTeyP61DjO6H2n3tQFVxAOBueB1HX7TvcPF1TqgsonqxGamFNHCVYMgZomIoG+oOMkOBGxcbVWuWYlZodqri5VDPSd11c/yPlqXIsav8x4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ap0Ht6gS; arc=none smtp.client-ip=209.85.216.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1712238699; c=relaxed/simple;
+	bh=1F5VA5YE599dOlO3zQ9ZskLhNBoOk9J98W5SFXY1QOs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=OWsBDtY85Y7F0w7/Q3O9Xu5Vu+b4kh9460rTAZXvTfqN5wyUT0rMwj+Ib1LBXw/LytJnfUN0wuf//NjFREtliBtEpqQk/vti+FQN2TOWikWYgmq9LmoNi7ERHFAniOguiygCAvP9OiMWXN0+qgU4MBRghyh992S6AlOGF2XJn7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=WfKl8THH; arc=none smtp.client-ip=209.85.160.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ap0Ht6gS"
-Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-2a28b11db68so627623a91.2
-        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 06:45:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="WfKl8THH"
+Received: by mail-qt1-f169.google.com with SMTP id d75a77b69052e-432fe06d76fso5630301cf.3
+        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 06:51:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712238315; x=1712843115; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=WxzZmInBFuAtLU4NoG0liW28RCj7raug1tFQ+0Qn6gc=;
-        b=Ap0Ht6gSIG2keIdBc2gGVnPuZg1WqRO8ZvTO6rf0x2awwXS8gL4gklQo7yNl6Vm0GI
-         n9baKzeE1IouYsgkTaYvnpgMBao/HfDSM9jl+1E1gP9VzugbGk6l2hH3oJ0HTvLdRolS
-         3vlq21DhVwNl9tqUZ0NUQI6Hl5qqtyS2zgns2/KwxohdSy8ykEdY4Nduzr29j7+8yFdZ
-         8aCh6WIMjhzRmMn6Df+hLulGYTuBLHZ17TazvPXllHIDO94DJyEPIGT20uPUjPVqpeuh
-         yPbGdJq2q/qA+eM0KQptnneOZ1cwXHoUPEbHHQowLnA7C5HNMbSUm6kGBz72Ab6YXurK
-         gNnA==
+        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1712238696; x=1712843496; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=GEhrf+Xnwdm4P0BoHyd6IIElLQSsz5Bym9Fr83GNG8o=;
+        b=WfKl8THHQ012giU/jZ2dHwP9wUx4yS9PbBaB/Pjv3o6EbyEHFeFJZNA39Aa2RcjY0M
+         mH2EhWGxDIdvO+9dx3sKJ/iyHtJk6VhSHAvXIcalQbkE0B3Hs+aUrXwhJpVpcsJtB8SW
+         ZO+rMcaFCUcxX8cVg9R2hvzfxw4CSkY1ytoZrZAI9WB7VRVMltQkKFfgpk5hlXiTbpxt
+         /NPrWrSfUpn3rG1PBMGUGbz30csm4C5rVlZNsJgug36xV0UP0aRkwBRvC7CEXx1/GCb6
+         ajlkpr0VdL0veAAbJwqMWRMLAxo49EbOCgWkRUSpK7wYQT2BEHG66N6FWCCkuLAL1tdE
+         2gog==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712238315; x=1712843115;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=WxzZmInBFuAtLU4NoG0liW28RCj7raug1tFQ+0Qn6gc=;
-        b=T9xEljvdVtnbj91jXii9Xr+a3L9WbdJ06DcxAU7ln3ZmkofnXHH/6ozh+gcggHTxMK
-         Acu2s2d989SZlEsHOmQkv1o6dvi7CEV/LQ1Yx5eotM2WE8T6S67Or9QpFd7neTe3jHE4
-         m+ZvAKxYzJHAgVshqw8vEciIeM+72x/OOkgqaJDNfDZ25dQWvqIIqrOOIUooaroIGGU3
-         d+njFal1zLbLpCYTZWbnfaCNue4zI169MHBuvr2VoBRs8IpTFhNaNVStSF5jRkmPzB9D
-         LyLRN+VMBH4PiKx4CHrXTxVf834Kr7wRkuU4Zk6jki04zB+1q0LTnIH8JBBeZXqMvzuZ
-         de2Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXgrczjJ9UMZQL4UMC0LDmjh0wP8Bif6fcmQ1qf5D/Yk2og0yHm5UNwlNVv1aH/TrCslxisH9DIRJ+YNKhrLouE84lhdyY=
-X-Gm-Message-State: AOJu0YzXVZMLZC2KG9o244rxALa29md2ugaPINh2cPlofwuLXDiW1VzT
-	C36b7m+KpAvdq6urSrllzvkH36wUcfsiek3ZpNfyGeeyQrC8k2k2
-X-Google-Smtp-Source: AGHT+IGwHkPA46yLsNudscd7HWEyOutrM8mgbI2iygtOCqjw2DmR57hI0OfHbI9BXGLrzxboQP/BNg==
-X-Received: by 2002:a17:90a:17cb:b0:2a2:c430:fc30 with SMTP id q69-20020a17090a17cb00b002a2c430fc30mr2515476pja.21.1712238315089;
-        Thu, 04 Apr 2024 06:45:15 -0700 (PDT)
-Received: from [172.27.237.1] (ec2-16-163-40-128.ap-east-1.compute.amazonaws.com. [16.163.40.128])
-        by smtp.gmail.com with ESMTPSA id d4-20020a17090ac24400b002a2fe0998f0sm54885pjx.19.2024.04.04.06.45.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Apr 2024 06:45:14 -0700 (PDT)
-Message-ID: <fe40498a-3bb2-43c6-b3e2-1e4e10205db1@gmail.com>
-Date: Thu, 4 Apr 2024 21:45:05 +0800
+        d=1e100.net; s=20230601; t=1712238696; x=1712843496;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=GEhrf+Xnwdm4P0BoHyd6IIElLQSsz5Bym9Fr83GNG8o=;
+        b=MFMlwByjPAIg7llFLeqegsOI4vSFiRR8RFulQEvJD+e5rDO8Pxr48SMNZAg3tcQQ7R
+         74hA49AsYm6LtZus3oUkAAsAjRznMsP9TrwOKRt/C+217kj9fWXf9drJBjboYXlQyGeC
+         G4EFvocQFHxn0xVyvZf5mdYaiAgT03/zMEyBwBH2RqW6wWMybLW8SRyvSIViIF21CRJW
+         A0Fid+E5aA+uUpg9gx3dHOWCqYptI+he2Ye5mlBLX33yggjNsEmhgTkGoTYcBaUePDDu
+         8o20grtuVDrPkOhiLsS4JH++hdWmWpzhma8Xo7z2a8j4R7jQq9VN3HmOjFwXqS4LHuQw
+         OIbg==
+X-Forwarded-Encrypted: i=1; AJvYcCV7LbF+I2WmtXhGHyeC9lyii64pAucqSgNxVC2FUQbsbRNMA/nY94Ctaa4cQdCkFdiLfUQm243dBZiJhROTaUZgBUk2yug=
+X-Gm-Message-State: AOJu0Yzgd8dTkMOldwCvw53UtbdrHAg+ZBDthbmkwKOgdkgHTpa7S9up
+	TF0+XmNm+RTbDD9WIUc9MckNK7gncWBjaRFKwK8cet4bChuY55Eji7v7LJ4Rlg4sSuy/UbWGBAj
+	wswlrh4IYDdaKSs1lOnUSZVHb2xcBi396VmxfAA==
+X-Google-Smtp-Source: AGHT+IG34VfsrO/bFBQm1+tAdMAMjkEMbTIL7Igt83TuV9+7PUf7aasZynC6bg9Q2hezj4QPdzlhPGGLCOEcmSFudGM=
+X-Received: by 2002:a05:622a:20d:b0:431:8135:6fa9 with SMTP id
+ b13-20020a05622a020d00b0043181356fa9mr2490307qtx.61.1712238696692; Thu, 04
+ Apr 2024 06:51:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/15] Coalesced Interrupt Delivery with posted MSI
-Content-Language: en-US
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
- Peter Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev,
- Thomas Gleixner <tglx@linutronix.de>, Lu Baolu <baolu.lu@linux.intel.com>,
- kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>,
- Joerg Roedel <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>,
- Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>
-Cc: Paul Luse <paul.e.luse@intel.com>, Dan Williams
- <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>,
- Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- maz@kernel.org, seanjc@google.com, Robin Murphy <robin.murphy@arm.com>
-References: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
-From: Robert Hoo <robert.hoo.linux@gmail.com>
-In-Reply-To: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20240222173942.1481394-1-pasha.tatashin@soleen.com> <20240404005803.GA102637@hyd1403.caveonetworks.com>
+In-Reply-To: <20240404005803.GA102637@hyd1403.caveonetworks.com>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Thu, 4 Apr 2024 09:50:59 -0400
+Message-ID: <CA+CK2bAiM_eC6k2EVL93uuOwB+hhV1WkDDK0YROo9-wAh=ju-w@mail.gmail.com>
+Subject: Re: [PATCH v5 00/11] IOMMU memory observability
+To: Linu Cherian <lcherian@marvell.com>
+Cc: akpm@linux-foundation.org, alim.akhtar@samsung.com, alyssa@rosenzweig.io, 
+	asahi@lists.linux.dev, baolu.lu@linux.intel.com, bhelgaas@google.com, 
+	cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com, 
+	dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de, 
+	iommu@lists.linux.dev, jernej.skrabec@gmail.com, jonathanh@nvidia.com, 
+	joro@8bytes.org, krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mm@kvack.org, linux-rockchip@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
+	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st, 
+	mhiramat@kernel.org, m.szyprowski@samsung.com, paulmck@kernel.org, 
+	rdunlap@infradead.org, robin.murphy@arm.com, samuel@sholland.org, 
+	suravee.suthikulpanit@amd.com, sven@svenpeter.dev, thierry.reding@gmail.com, 
+	tj@kernel.org, tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org, 
+	will@kernel.org, yu-cheng.yu@intel.com, rientjes@google.com, 
+	bagasdotme@gmail.com, mkoutny@suse.com
+Content-Type: text/plain; charset="UTF-8"
 
-On 1/27/2024 7:42 AM, Jacob Pan wrote:
-> Hi Thomas and all,
-> 
-> This patch set is aimed to improve IRQ throughput on Intel Xeon by making use of
-> posted interrupts.
-> 
-> There is a session at LPC2023 IOMMU/VFIO/PCI MC where I have presented this
-> topic.
-> 
-> https://lpc.events/event/17/sessions/172/#20231115
-> 
-> Background
-> ==========
-> On modern x86 server SoCs, interrupt remapping (IR) is required and turned
-> on by default to support X2APIC. Two interrupt remapping modes can be supported
-> by IOMMU/VT-d:
-> 
-> - Remappable 	(host)
-> - Posted	(guest only so far)
-> 
-> With remappable mode, the device MSI to CPU process is a HW flow without system
-> software touch points, it roughly goes as follows:
-> 
-> 1.	Devices issue interrupt requests with writes to 0xFEEx_xxxx
-> 2.	The system agent accepts and remaps/translates the IRQ
-> 3.	Upon receiving the translation response, the system agent notifies the
-> 	destination CPU with the translated MSI
-> 4.	CPU's local APIC accepts interrupts into its IRR/ISR registers
-> 5.	Interrupt delivered through IDT (MSI vector)
-> 
-> The above process can be inefficient under high IRQ rates. The notifications in
-> step #3 are often unnecessary when the destination CPU is already overwhelmed
-> with handling bursts of IRQs. On some architectures, such as Intel Xeon, step #3
-> is also expensive and requires strong ordering w.r.t DMA. 
+> > Description
+> > ----------------------------------------------------------------------
+> > IOMMU subsystem may contain state that is in gigabytes. Majority of that
+> > state is iommu page tables. Yet, there is currently, no way to observe
+> > how much memory is actually used by the iommu subsystem.
+> >
+> > This patch series solves this problem by adding both observability to
+> > all pages that are allocated by IOMMU, and also accountability, so
+> > admins can limit the amount if via cgroups.
+> >
+> > The system-wide observability is using /proc/meminfo:
+> > SecPageTables:    438176 kB
+> >
+> > Contains IOMMU and KVM memory.
+>
+> Can you please clarify what does KVM memory refers to here ?
+> Does it mean the VFIO map / virtio-iommu invoked ones for a guest VM?
 
-Can you tell more on this "step #3 requires strong ordering w.r.t. DMA"?
+This means that nested page tables that are managed by KVM, and device
+page tables that are managed by IOMMU are all accounted in
+SecPageTables (secondary page tables). The decision to account them
+both in one field of meminfo was made at LPC'23.
 
-> As a result, slower
-> IRQ rates can become a limiting factor for DMA I/O performance.
-> 
-
-
+Pasha
