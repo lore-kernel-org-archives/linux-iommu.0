@@ -1,59 +1,59 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+Received: from mail-pj1-f46.google.com (mail-pj1-f46.google.com [209.85.216.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6519E12880D
-	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 13:38:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38E0886630
+	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 13:45:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712237927; cv=none; b=lcCKTOXd87kBPzx5NkhmqonUa6l4E9tYOLH2W/NhfqnWEsncRV8Zr/PK1pUMze1wYAsfwoq/UbtNYDt2VeyNFyYDdEHarjKf+Ol0cnaKW/tmzPsf68F7OKH7xEcBd/3qAjhu8r6fF/RYtj+mOopOk0HmRy9laT8ZpdyGIvZUhnk=
+	t=1712238317; cv=none; b=BIaaaAJ3/UhXjoQqC/506kZwUh2+zPjUYBEKSwF7qIDnd1/TRBRUglFUylJs5UHPjo38bCnm+7A514CQbpBdnyeqS1PlURzduPq6Y/ZOpMY3QdNOyBqqNyZUG7Y0nnuUN+6KjtFD+bWOePkNzXNbcshyq+KWZ5pMVyXvGNBUp2o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712237927; c=relaxed/simple;
-	bh=x8Lyghgp6/F9G9gkl5wcYiiVhCfyHgsqvEtMNlGYbZ8=;
+	s=arc-20240116; t=1712238317; c=relaxed/simple;
+	bh=eNFxWhJpWGn4MVKyzZRbjgkh8DaGFUxZWhNvYbMxGkI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uBn6edHR25IaZBVgb3tG9a5oON8uNYnnujWaA68C9+LIlgT1p14tHwz7AOKBVpc8eDKMnsCQDJh7P1CEtACQUZb1PvxHG7mYCLqu/Hje0zE4gajjbsJMTVT7ybWZ1gMPBurshZc9r4LfsG9c/X7608lqvCXMcSldHQeNt+doLY8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kYFbsyMO; arc=none smtp.client-ip=209.85.210.177
+	 In-Reply-To:Content-Type; b=dmBWMyIBqQkW6Ej3XHSuZAaKIrrBCAz9++Xktpk5syhfnUQoVerKPN1wPDr28ii7VeTeyP61DjO6H2n3tQFVxAOBueB1HX7TvcPF1TqgsonqxGamFNHCVYMgZomIoG+oOMkOBGxcbVWuWYlZodqri5VDPSd11c/yPlqXIsav8x4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ap0Ht6gS; arc=none smtp.client-ip=209.85.216.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kYFbsyMO"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-6ecea46e1bfso684797b3a.3
-        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 06:38:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ap0Ht6gS"
+Received: by mail-pj1-f46.google.com with SMTP id 98e67ed59e1d1-2a28b11db68so627623a91.2
+        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 06:45:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712237926; x=1712842726; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1712238315; x=1712843115; darn=lists.linux.dev;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=Tft6OeeDgSbfAOUrN5Xx5Zopkyg1jcKnp2CiC8iZD30=;
-        b=kYFbsyMOWlYs825X5I7vP83GrMS+3TfjZ8cFpNNxUi4QnJxh7h9zpZB+s1wohxJSAD
-         7oPkbnHKYYc4NnitJBDwPW/5YDPXTRjAUVUYKVx+j/bMvujAHMhTOJq8XgyaKeGYhJcg
-         J1+I/WPs/q/heBN+XzCVWiRUzbkNBWKyVvbT7zTSVNZXg1QbcpLmybNh2eIndJAyRgnC
-         +51UyffIX5BBTIW5ZNq9HP0R9lbO7+8wHppBEGLxUX4EybD0gAevgrmIbhXe1EUsLfce
-         zfdhiMBYsp2FqnUzWvSSAWixKzGxgzuteQZL6xtXZx15yxflAGFJqkpQebHdvCg/01Gf
-         J8cQ==
+        bh=WxzZmInBFuAtLU4NoG0liW28RCj7raug1tFQ+0Qn6gc=;
+        b=Ap0Ht6gSIG2keIdBc2gGVnPuZg1WqRO8ZvTO6rf0x2awwXS8gL4gklQo7yNl6Vm0GI
+         n9baKzeE1IouYsgkTaYvnpgMBao/HfDSM9jl+1E1gP9VzugbGk6l2hH3oJ0HTvLdRolS
+         3vlq21DhVwNl9tqUZ0NUQI6Hl5qqtyS2zgns2/KwxohdSy8ykEdY4Nduzr29j7+8yFdZ
+         8aCh6WIMjhzRmMn6Df+hLulGYTuBLHZ17TazvPXllHIDO94DJyEPIGT20uPUjPVqpeuh
+         yPbGdJq2q/qA+eM0KQptnneOZ1cwXHoUPEbHHQowLnA7C5HNMbSUm6kGBz72Ab6YXurK
+         gNnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712237926; x=1712842726;
+        d=1e100.net; s=20230601; t=1712238315; x=1712843115;
         h=content-transfer-encoding:in-reply-to:from:references:cc:to
          :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Tft6OeeDgSbfAOUrN5Xx5Zopkyg1jcKnp2CiC8iZD30=;
-        b=Ibq7diYxpL/G5xFMXK3tLzXuwOaJ0I9iX79UJ+yGJgqhYv+T2naXySsdh2JAx2VuLM
-         y7Btv7Re8vwnHsNI9eKih/efFNYP8dKqX5rdELwaLMLaGPRUtXYvnjg7IVfXSpeyrfdB
-         yhJxHBObDNK4HoFEEgGQPiGsO5Wq7ZnswxvMUI8HOKin4F5r+uLAIAktHlVScZp5kD+W
-         OBZ5BZaVeZJBMCosyrGg1UMTajNtQo1xqxD/EDV4g++I0+gmMv1PVItOIjWy2rkCoG4v
-         dJAHNqZqJm3MD0D7sCO0s9u6K8XBT1LvhPCDGy7rljXxPBOV2fZWOvmiCFre5noZxvmJ
-         imFw==
-X-Forwarded-Encrypted: i=1; AJvYcCXLt1jvewnntxhUaMScIQKF3zYfn14q3Pz4hDMPSB1uydVfzH2/UeClJlCy6/06towwVjPOaUmfP7VEs/1z/JMvoKoNYgQ=
-X-Gm-Message-State: AOJu0YyiIX4x82VAZAiIpzLOXYjUIY5rtgWD3kZtuNMfFJEAtiCHcUxJ
-	X8duepSzehabQYH1EAvtQjEMhrMiOqWDly5spS/qV6PORp8UH6Wm
-X-Google-Smtp-Source: AGHT+IGwYVCu7BN5Om9yXuxMS4L968QGnax7Rwa27cBqDVDI8qtrAZwX1+ZMyVsGVLwlnJVcobYbTw==
-X-Received: by 2002:a05:6a20:3254:b0:1a3:bd8a:141f with SMTP id hm20-20020a056a20325400b001a3bd8a141fmr2516552pzc.54.1712237925633;
-        Thu, 04 Apr 2024 06:38:45 -0700 (PDT)
+        bh=WxzZmInBFuAtLU4NoG0liW28RCj7raug1tFQ+0Qn6gc=;
+        b=T9xEljvdVtnbj91jXii9Xr+a3L9WbdJ06DcxAU7ln3ZmkofnXHH/6ozh+gcggHTxMK
+         Acu2s2d989SZlEsHOmQkv1o6dvi7CEV/LQ1Yx5eotM2WE8T6S67Or9QpFd7neTe3jHE4
+         m+ZvAKxYzJHAgVshqw8vEciIeM+72x/OOkgqaJDNfDZ25dQWvqIIqrOOIUooaroIGGU3
+         d+njFal1zLbLpCYTZWbnfaCNue4zI169MHBuvr2VoBRs8IpTFhNaNVStSF5jRkmPzB9D
+         LyLRN+VMBH4PiKx4CHrXTxVf834Kr7wRkuU4Zk6jki04zB+1q0LTnIH8JBBeZXqMvzuZ
+         de2Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXgrczjJ9UMZQL4UMC0LDmjh0wP8Bif6fcmQ1qf5D/Yk2og0yHm5UNwlNVv1aH/TrCslxisH9DIRJ+YNKhrLouE84lhdyY=
+X-Gm-Message-State: AOJu0YzXVZMLZC2KG9o244rxALa29md2ugaPINh2cPlofwuLXDiW1VzT
+	C36b7m+KpAvdq6urSrllzvkH36wUcfsiek3ZpNfyGeeyQrC8k2k2
+X-Google-Smtp-Source: AGHT+IGwHkPA46yLsNudscd7HWEyOutrM8mgbI2iygtOCqjw2DmR57hI0OfHbI9BXGLrzxboQP/BNg==
+X-Received: by 2002:a17:90a:17cb:b0:2a2:c430:fc30 with SMTP id q69-20020a17090a17cb00b002a2c430fc30mr2515476pja.21.1712238315089;
+        Thu, 04 Apr 2024 06:45:15 -0700 (PDT)
 Received: from [172.27.237.1] (ec2-16-163-40-128.ap-east-1.compute.amazonaws.com. [16.163.40.128])
-        by smtp.gmail.com with ESMTPSA id g21-20020a631115000000b005df58c83e89sm13472352pgl.84.2024.04.04.06.38.38
+        by smtp.gmail.com with ESMTPSA id d4-20020a17090ac24400b002a2fe0998f0sm54885pjx.19.2024.04.04.06.45.08
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Apr 2024 06:38:45 -0700 (PDT)
-Message-ID: <9734e080-96e4-4119-8ae6-28abb7877a3c@gmail.com>
-Date: Thu, 4 Apr 2024 21:38:34 +0800
+        Thu, 04 Apr 2024 06:45:14 -0700 (PDT)
+Message-ID: <fe40498a-3bb2-43c6-b3e2-1e4e10205db1@gmail.com>
+Date: Thu, 4 Apr 2024 21:45:05 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -61,8 +61,7 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 05/15] x86/irq: Reserve a per CPU IDT vector for posted
- MSIs
+Subject: Re: [PATCH 00/15] Coalesced Interrupt Delivery with posted MSI
 Content-Language: en-US
 To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
  LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
@@ -76,45 +75,50 @@ Cc: Paul Luse <paul.e.luse@intel.com>, Dan Williams
  Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
  maz@kernel.org, seanjc@google.com, Robin Murphy <robin.murphy@arm.com>
 References: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
- <20240126234237.547278-6-jacob.jun.pan@linux.intel.com>
 From: Robert Hoo <robert.hoo.linux@gmail.com>
-In-Reply-To: <20240126234237.547278-6-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 1/27/2024 7:42 AM, Jacob Pan wrote:
-> When posted MSI is enabled, all device MSIs are multiplexed into a single
-> notification vector. MSI handlers will be de-multiplexed at run-time by
-> system software without IDT delivery.
+> Hi Thomas and all,
 > 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->   arch/x86/include/asm/irq_vectors.h | 9 ++++++++-
->   1 file changed, 8 insertions(+), 1 deletion(-)
+> This patch set is aimed to improve IRQ throughput on Intel Xeon by making use of
+> posted interrupts.
 > 
-> diff --git a/arch/x86/include/asm/irq_vectors.h b/arch/x86/include/asm/irq_vectors.h
-> index 3a19904c2db6..08329bef5b1d 100644
-> --- a/arch/x86/include/asm/irq_vectors.h
-> +++ b/arch/x86/include/asm/irq_vectors.h
-> @@ -99,9 +99,16 @@
->   
->   #define LOCAL_TIMER_VECTOR		0xec
->   
-> +/*
-> + * Posted interrupt notification vector for all device MSIs delivered to
-> + * the host kernel.
-> + */
-> +#define POSTED_MSI_NOTIFICATION_VECTOR	0xeb
->   #define NR_VECTORS			 256
->   
-> -#ifdef CONFIG_X86_LOCAL_APIC
-> +#ifdef X86_POSTED_MSI
+> There is a session at LPC2023 IOMMU/VFIO/PCI MC where I have presented this
+> topic.
+> 
+> https://lpc.events/event/17/sessions/172/#20231115
+> 
+> Background
+> ==========
+> On modern x86 server SoCs, interrupt remapping (IR) is required and turned
+> on by default to support X2APIC. Two interrupt remapping modes can be supported
+> by IOMMU/VT-d:
+> 
+> - Remappable 	(host)
+> - Posted	(guest only so far)
+> 
+> With remappable mode, the device MSI to CPU process is a HW flow without system
+> software touch points, it roughly goes as follows:
+> 
+> 1.	Devices issue interrupt requests with writes to 0xFEEx_xxxx
+> 2.	The system agent accepts and remaps/translates the IRQ
+> 3.	Upon receiving the translation response, the system agent notifies the
+> 	destination CPU with the translated MSI
+> 4.	CPU's local APIC accepts interrupts into its IRR/ISR registers
+> 5.	Interrupt delivered through IDT (MSI vector)
+> 
+> The above process can be inefficient under high IRQ rates. The notifications in
+> step #3 are often unnecessary when the destination CPU is already overwhelmed
+> with handling bursts of IRQs. On some architectures, such as Intel Xeon, step #3
+> is also expensive and requires strong ordering w.r.t DMA. 
 
-X86_POSTED_MSI --> CONFIG_X86_POSTED_MSI?
+Can you tell more on this "step #3 requires strong ordering w.r.t. DMA"?
 
-> +#define FIRST_SYSTEM_VECTOR		POSTED_MSI_NOTIFICATION_VECTOR
-> +#elif defined(CONFIG_X86_LOCAL_APIC)
->   #define FIRST_SYSTEM_VECTOR		LOCAL_TIMER_VECTOR
->   #else
->   #define FIRST_SYSTEM_VECTOR		NR_VECTORS
+> As a result, slower
+> IRQ rates can become a limiting factor for DMA I/O performance.
+> 
+
 
