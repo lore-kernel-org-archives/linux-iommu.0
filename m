@@ -1,147 +1,183 @@
-Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A814312E1C7
-	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 17:47:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0330813C3F5
+	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 22:17:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712252845; cv=none; b=B3y3rzj9LUaxmSwAfbE0vcMO9WvbiWO2Rii81ayjhYcrleRSfScaN/BO4XIrbBPhBgHLGUS+hPcROD9TXX0H08e3tFP7P+/Xbuirmdi3p1aWquK04eCSYW+Sz1TICznrehy1o61yfXOHnR4eTmrg0Mou3yXcJtE74oohsoissfM=
+	t=1712269082; cv=none; b=WdK5+nNihSXQdqMAXvIGLAHIhC4+s0ZEQ2cCOBGI1gIxC1F31ba1k0L8eC+qCeufVMwX4Y2DqBKbccHr/eUJ2tsuBtIXaAWmbt5Tc0JXutwijiCr2DjgJzQfG30euQzFqmmJQgPbjQuzXprfIydrUPIfQNCEkn7FUChxNyrYYaM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712252845; c=relaxed/simple;
-	bh=Df1N/JsbpoM5tVgnsaIXlExMnPcBwi9zV4v1t15+iVw=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Sb6nlFq3c+u/q9gc7Etuy8jhBYMkf83EDikg+xlpgJhf3I1niLfLDcClhSM+sLbdb1Z5lxZStVGDrEYw0ubiG5fdVTGPJY/6r5z3KLreoZ8AZdYLkCRQC4GSbfN3tVXH0T11O/xIWj/50WvBsns05p8CfP17EgBp8+eMKem4Qbo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ndufresne.ca; spf=none smtp.mailfrom=ndufresne.ca; dkim=pass (2048-bit key) header.d=ndufresne-ca.20230601.gappssmtp.com header.i=@ndufresne-ca.20230601.gappssmtp.com header.b=C6UU/Bzj; arc=none smtp.client-ip=209.85.219.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ndufresne.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ndufresne.ca
+	s=arc-20240116; t=1712269082; c=relaxed/simple;
+	bh=RZPrq+xVDjiyzuvgmiC5bztMCL91wQIMW6JQhQhfvYY=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=jdvAjDTqCzYknPWOo5B2OjzQGlRoQ6X1u4O0tz+hhUUvrUUxRhDWpU2KsQb1cnieQDgnr//r5cfGxqnygytDCypOsAhR3x46mlgMADjQXeSRHxVEjVBB3qR4tD10u9UMF/GVb+41CtQ2LrZlYdb79hq/ZkpFDf/vHIwUf/IVIrM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=s0sqT5p7; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ndufresne-ca.20230601.gappssmtp.com header.i=@ndufresne-ca.20230601.gappssmtp.com header.b="C6UU/Bzj"
-Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-69107859bedso6021186d6.2
-        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 10:47:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="s0sqT5p7"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4162a3e2d22so9477155e9.1
+        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 15:17:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ndufresne-ca.20230601.gappssmtp.com; s=20230601; t=1712252842; x=1712857642; darn=lists.linux.dev;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Bh4syO4yTXa1buMPAEQiJy3KlJ/ZvLVegoAl1qaUj7k=;
-        b=C6UU/Bzj4Av1GNCdAN7QtsxsPejEI5UtTHuMzPoXvkzRMCa2PkltT3mVH8mkuIl1On
-         Xv692yBL/Dsx0ZXrYJVNtLrNlnU356HBVaC2bvull7yGvZLc1cWtPGbr79MSy3XAPlsw
-         nlYe/tlVV4kX6439g68zBmB4XBtRTRuu69IFAPo+HhHf4mOKNjK3wDBgl10LvpEemugZ
-         HuFAep2ccjw4xdPJ2tF5bxXh+PhjO6AFCRL0OxtpZXRtZYYfjX6CbA+VhBJtJzrbse/G
-         1agcGUoCwtqSDm0eovAHCrcNP+R0Vm+TbA6Fx0nPPWuOrVHNeIyJk3XAVW6YWsvd+heu
-         ta9g==
+        d=google.com; s=20230601; t=1712269077; x=1712873877; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=eIW+Z3FuH4Tlrbj9QrjroPzWQnEb4hQ4AxEw1tDZfk4=;
+        b=s0sqT5p78RAA72HAwuO/M9ukDuXsWyKJqzh3nlm9hAja/+jBiLXqVkPTDzCei36OP/
+         NxwYmTMzHK1S9IVmmGhSvRf6Zu9+q05tAaKeceH4yF9tLElZDZVsw/Lb3bsup2bmvwhj
+         W9r7WvFM+wbP4a/qkoQyvlcx21Fw0oUskPrXncj6QauLLKBKfHgZ6VyFBZgcfphUvp0N
+         Lrlkm6MHZVUUyL+Jxh3dqcnE0NWvVtIsybBOuPvblDlGCa3FrBmTFo/gLnGqUtXh75Qx
+         1dlokgFzZEDr3tXfgwtx1cV8nOH1x7n+txBw7E/IMBaouV9ezAemcVZ6SAXmZfbxxZqz
+         GNzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712252842; x=1712857642;
-        h=mime-version:user-agent:content-transfer-encoding:autocrypt
-         :references:in-reply-to:date:cc:to:from:subject:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Bh4syO4yTXa1buMPAEQiJy3KlJ/ZvLVegoAl1qaUj7k=;
-        b=ujemadNA6D4zBwVqgzAMBxfyTAdVNtbZuFNhJzclVeexpNStx+fYmrf2FzZZ5C2lhN
-         neoVXMQtbT6TRWmhrfcMR1Cxud1nBWcenLJD/xrdFJg+eHyM75XpzQ0j56B+BDfxlNjg
-         t5fRnWikhF0duOWpTZ/jsYZ+cDb0DG2wpiWBDR3h9JmLZMNc6xIG2GYbNtFNGVxFMF2L
-         oVQs/DZFnQh6tBa7xNb/EtoGZ0NnbcGVT5o+idrZROOoGWIzZAP0ZDQe48Mvk+YKSKZQ
-         gH/gOn9mf6Tt3aarKOF0M+stLRPFstH/vQZpG31D4XDbd1UK/lyVrOEThqoUSm/Mm3OU
-         aXuQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVAjeJKE5YuWY0GuNEXjPM5xzFebv/L8brXCs1FjcRanqsNoKJyzSPrEh5fXfFDb5EJHYnm9O/Ro2WenWVutEj4qdn1MfE=
-X-Gm-Message-State: AOJu0Yxu7FymAVtDRp++KPVIJKWGo2RwoxKl0FxOFehuvP+ecOwYjyx8
-	Crcd4AeMVKPWx4itG1NWXecv5VAjZBJloQKjR0tsJsmZDFjW5a+8DpG5ZrF47w0=
-X-Google-Smtp-Source: AGHT+IG4zBdkV6V/ZyVOK3aZ5bvPMw6tYO7Y3Ma8A6A6AqVPlienLH1DcvIkKVgvPkWN6NmWDpr8Rg==
-X-Received: by 2002:a05:6214:5084:b0:699:2071:6c64 with SMTP id kk4-20020a056214508400b0069920716c64mr3544763qvb.0.1712252842440;
-        Thu, 04 Apr 2024 10:47:22 -0700 (PDT)
-Received: from nicolas-tpx395.localdomain ([2606:6d00:17:6448:fa75:a4ff:fe45:b56])
-        by smtp.gmail.com with ESMTPSA id 3-20020ad45b83000000b00698f7eb9997sm2586753qvp.54.2024.04.04.10.47.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Apr 2024 10:47:22 -0700 (PDT)
-Message-ID: <85b4deecf8306562fe798af6ee07af27369692d3.camel@ndufresne.ca>
-Subject: Re: [PATCH v2 1/2] media: dt-binding: media: Document
- =?UTF-8?Q?rk3588=E2=80=99s?= VEPU121
-From: Nicolas Dufresne <nicolas@ndufresne.ca>
-To: Conor Dooley <conor@kernel.org>, Emmanuel Gil Peyrot
-	 <linkmauve@linkmauve.fr>
-Cc: linux-kernel@vger.kernel.org, Ezequiel Garcia
- <ezequiel@vanguardiasur.com.ar>, Philipp Zabel <p.zabel@pengutronix.de>, 
- Mauro Carvalho Chehab <mchehab@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley
- <conor+dt@kernel.org>,  Heiko Stuebner <heiko@sntech.de>, Joerg Roedel
- <joro@8bytes.org>, Will Deacon <will@kernel.org>,  Robin Murphy
- <robin.murphy@arm.com>, Sebastian Reichel
- <sebastian.reichel@collabora.com>, Cristian Ciocaltea
- <cristian.ciocaltea@collabora.com>, Dragan Simic <dsimic@manjaro.org>,
- Shreeya Patel <shreeya.patel@collabora.com>, Chris Morgan
- <macromorgan@hotmail.com>, Andy Yan <andy.yan@rock-chips.com>, Nicolas
- Frattaroli <frattaroli.nicolas@gmail.com>,  linux-media@vger.kernel.org,
- linux-rockchip@lists.infradead.org,  devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,  iommu@lists.linux.dev
-Date: Thu, 04 Apr 2024 13:47:19 -0400
-In-Reply-To: <20240327-doze-uncheck-475f3feaee57@spud>
-References: <20240327134115.424846-1-linkmauve@linkmauve.fr>
-	 <20240327134115.424846-2-linkmauve@linkmauve.fr>
-	 <20240327-doze-uncheck-475f3feaee57@spud>
-Autocrypt: addr=nicolas@ndufresne.ca; prefer-encrypt=mutual; keydata=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
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.50.4 (3.50.4-1.fc39) 
+        d=1e100.net; s=20230601; t=1712269077; x=1712873877;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=eIW+Z3FuH4Tlrbj9QrjroPzWQnEb4hQ4AxEw1tDZfk4=;
+        b=MWhsKoPSjoaEzdawUUokjSjBBBh6emqmfrO6ldPWJ8eThzBjs/LyGPasgJeuMllDoy
+         gF2EjSMZSwqnI2BifgRr9ytQNTW5WP5YyGlIkcpqVtcBZsTr1Z3Glsu3UdDyW4yHZ8ax
+         krK7yOA9MB5ZechoyWr5rPdutPTCEubvf0Fi09sBfVswJHc4OehPVO6s/3mk2RIumXyf
+         uGgpI801Cq7FGAIOrN3F2xqJudcsQbKHvkgIOFAIzbMd83vUq7ND2ejG0jtP41yquAEE
+         X7cp7/E4nJx3KMc/OHY24iitziORV6H1UfyaX2541gAhNBwW234IaErOLjJYJx28BKzP
+         9M6Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVaD/IgsPal1cFog9LIvu4GkMN2FBtTkp67Sp8rl8GBaQNIMHY0veW9p1/oEfaoHYQqixGtBcVGSgaWnhVtWgHflQ5MdvA=
+X-Gm-Message-State: AOJu0YzD1kabRDybe8gWuOWp338f0+xFOJU6XcRxfnZrH5DlHJecgW/c
+	IzQHOzOPB7DD1rpnsMSXptE0yY70qEPConG13cLjGRgDrbY5fBnQ7OvP7eSv5IyRMvigUQ4JGbD
+	MX8mTMAhCgeUUleerxPzoyrIibukt4GnJ23ty
+X-Google-Smtp-Source: AGHT+IEoGycg7Q6yz1U10yVcrqSmmGhsvl59dTKCzdbY+AGkKJwTyJBRF58S2bqCqewHCyhhbzL+kREAY0nZt0Z/KC8=
+X-Received: by 2002:a5d:56cd:0:b0:343:a117:7d2 with SMTP id
+ m13-20020a5d56cd000000b00343a11707d2mr434133wrw.71.1712269077043; Thu, 04 Apr
+ 2024 15:17:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+References: <20240404165404.3805498-1-surenb@google.com> <Zg7dmp5VJkm1nLRM@casper.infradead.org>
+ <CAJuCfpHbTCwDERz+Hh+aLZzNdtSFKA+Q7sW-xzvmFmtyHCqROg@mail.gmail.com>
+In-Reply-To: <CAJuCfpHbTCwDERz+Hh+aLZzNdtSFKA+Q7sW-xzvmFmtyHCqROg@mail.gmail.com>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Thu, 4 Apr 2024 15:17:43 -0700
+Message-ID: <CAJuCfpHy5Xo76S7h9rEuA3cQ1pVqurL=wmtQ2cx9-xN1aa_C_A@mail.gmail.com>
+Subject: Re: [PATCH 1/1] mm: change inlined allocation helpers to account at
+ the call site
+To: Matthew Wilcox <willy@infradead.org>
+Cc: akpm@linux-foundation.org, joro@8bytes.org, will@kernel.org, 
+	trond.myklebust@hammerspace.com, anna@kernel.org, arnd@arndb.de, 
+	herbert@gondor.apana.org.au, davem@davemloft.net, jikos@kernel.org, 
+	benjamin.tissoires@redhat.com, tytso@mit.edu, jack@suse.com, 
+	dennis@kernel.org, tj@kernel.org, cl@linux.com, jakub@cloudflare.com, 
+	penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com, 
+	vbabka@suse.cz, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
+	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
+	linux-nfs@vger.kernel.org, linux-acpi@vger.kernel.org, 
+	acpica-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
+	linux-crypto@vger.kernel.org, bpf@vger.kernel.org, 
+	linux-input@vger.kernel.org, linux-ext4@vger.kernel.org, linux-mm@kvack.org, 
+	netdev@vger.kernel.org, linux-security-module@vger.kernel.org, 
+	kent.overstreet@linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Le mercredi 27 mars 2024 =C3=A0 17:23 +0000, Conor Dooley a =C3=A9crit=C2=
-=A0:
-> On Wed, Mar 27, 2024 at 02:41:11PM +0100, Emmanuel Gil Peyrot wrote:
-> > This encoder-only device is present four times on this SoC, and should
-> > support everything the rk3568 vepu supports (so JPEG, H.264 and VP8
-> > encoding).
-> >=20
-> > According to the TRM[1], there is also the VEPU580 encoder which
-> > supports H.264 and H.265, and various VDPU* decoders, of which only the
-> > VDPU981 is currently supported.  This patch describes only the VEPU121.
-> >=20
-> > [1] https://github.com/FanX-Tek/rk3588-TRM-and-Datasheet
-> >=20
-> > Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
->=20
-> Acked-by: Conor Dooley <conor.dooley@microchip.com>
+On Thu, Apr 4, 2024 at 10:08=E2=80=AFAM Suren Baghdasaryan <surenb@google.c=
+om> wrote:
+>
+> On Thu, Apr 4, 2024 at 10:04=E2=80=AFAM Matthew Wilcox <willy@infradead.o=
+rg> wrote:
+> >
+> > On Thu, Apr 04, 2024 at 09:54:04AM -0700, Suren Baghdasaryan wrote:
+> > > +++ b/include/linux/dma-fence-chain.h
+> > > @@ -86,10 +86,7 @@ dma_fence_chain_contained(struct dma_fence *fence)
+> > >   *
+> > >   * Returns a new struct dma_fence_chain object or NULL on failure.
+> > >   */
+> > > -static inline struct dma_fence_chain *dma_fence_chain_alloc(void)
+> > > -{
+> > > -     return kmalloc(sizeof(struct dma_fence_chain), GFP_KERNEL);
+> > > -};
+> > > +#define dma_fence_chain_alloc()      kmalloc(sizeof(struct dma_fence=
+_chain), GFP_KERNEL)
+> >
+> > You've removed some typesafety here.  Before, if I wrote:
+> >
+> >         struct page *page =3D dma_fence_chain_alloc();
+> >
+> > the compiler would warn me that I've done something stupid.  Now it
+> > can't tell.  Suggest perhaps:
+> >
+> > #define dma_fence_chain_alloc()                                        =
+   \
+> >         (struct dma_fence_chain *)kmalloc(sizeof(struct dma_fence_chain=
+), \
+> >                                                 GFP_KERNEL)
+> >
+> > but maybe there's a better way of doing that.  There are a few other
+> > occurrences of the same problem in this monster patch.
+>
+> Got your point.
 
-I'd like to prevent this change until we fix the driver. It should not expo=
-se 1
-video device per core, it should instead do schedule around these cores.
+Ironically, checkpatch generates warnings for these type casts:
 
-Nicolas
+WARNING: unnecessary cast may hide bugs, see
+http://c-faq.com/malloc/mallocnocast.html
+#425: FILE: include/linux/dma-fence-chain.h:90:
++ ((struct dma_fence_chain *)kmalloc(sizeof(struct dma_fence_chain),
+GFP_KERNEL))
 
->=20
-> Thanks,
-> Conor.
->=20
-> > ---
-> >  .../devicetree/bindings/media/rockchip,rk3568-vepu.yaml   | 8 ++++++--
-> >  1 file changed, 6 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/media/rockchip,rk3568-ve=
-pu.yaml b/Documentation/devicetree/bindings/media/rockchip,rk3568-vepu.yaml
-> > index 9d90d8d0565a..4c6cb21da041 100644
-> > --- a/Documentation/devicetree/bindings/media/rockchip,rk3568-vepu.yaml
-> > +++ b/Documentation/devicetree/bindings/media/rockchip,rk3568-vepu.yaml
-> > @@ -15,8 +15,12 @@ description:
-> > =20
-> >  properties:
-> >    compatible:
-> > -    enum:
-> > -      - rockchip,rk3568-vepu
-> > +    oneOf:
-> > +      - const: rockchip,rk3568-vepu
-> > +      - items:
-> > +          - enum:
-> > +              - rockchip,rk3588-vepu121
-> > +          - const: rockchip,rk3568-vepu
-> > =20
-> >    reg:
-> >      maxItems: 1
-> > --=20
-> > 2.44.0
-> >=20
+I guess I can safely ignore them in this case (since we cast to the
+expected type)?
 
+>
+> >
+> > > +++ b/include/linux/hid_bpf.h
+> > > @@ -149,10 +149,7 @@ static inline int hid_bpf_connect_device(struct =
+hid_device *hdev) { return 0; }
+> > >  static inline void hid_bpf_disconnect_device(struct hid_device *hdev=
+) {}
+> > >  static inline void hid_bpf_destroy_device(struct hid_device *hid) {}
+> > >  static inline void hid_bpf_device_init(struct hid_device *hid) {}
+> > > -static inline u8 *call_hid_bpf_rdesc_fixup(struct hid_device *hdev, =
+u8 *rdesc, unsigned int *size)
+> > > -{
+> > > -     return kmemdup(rdesc, *size, GFP_KERNEL);
+> > > -}
+> > > +#define call_hid_bpf_rdesc_fixup(_hdev, _rdesc, _size) kmemdup(_rdes=
+c, *(_size), GFP_KERNEL)
+> >
+> > here
+> >
+> > > -static inline handle_t *jbd2_alloc_handle(gfp_t gfp_flags)
+> > > -{
+> > > -     return kmem_cache_zalloc(jbd2_handle_cache, gfp_flags);
+> > > -}
+> > > +#define jbd2_alloc_handle(_gfp_flags)        kmem_cache_zalloc(jbd2_=
+handle_cache, _gfp_flags)
+> >
+> > here
+> >
+> > > +++ b/include/linux/skmsg.h
+> > > @@ -410,11 +410,8 @@ void sk_psock_stop_verdict(struct sock *sk, stru=
+ct sk_psock *psock);
+> > >  int sk_psock_msg_verdict(struct sock *sk, struct sk_psock *psock,
+> > >                        struct sk_msg *msg);
+> > >
+> > > -static inline struct sk_psock_link *sk_psock_init_link(void)
+> > > -{
+> > > -     return kzalloc(sizeof(struct sk_psock_link),
+> > > -                    GFP_ATOMIC | __GFP_NOWARN);
+> > > -}
+> > > +#define sk_psock_init_link() \
+> > > +             kzalloc(sizeof(struct sk_psock_link), GFP_ATOMIC | __GF=
+P_NOWARN)
+> >
+> > here
+> >
+> > ... I kind of gave up at this point.  You'll want to audit for yourself
+> > anyway ;-)
+>
+> Yes, I'll go over it and will make the required changes. Thanks for
+> looking into it!
+> Suren.
