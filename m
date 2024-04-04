@@ -1,121 +1,147 @@
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BC635D734
-	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 11:41:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89F3B83A09
+	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 11:48:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712230893; cv=none; b=kEQkONczLN3PPiW229C6TYVOwg4/enVKKJemNqB6gbNtCCjYfYyzHSQwaRZNsmCrLtMpUt1XZ2JEG89MtKO2jAgr9PiYxVQXKrWvQze8y1LgNudlsoOrza8gaY3AIyqhhWbBVQOrcwGXUozAT8+dRHGCfKiqkGtnMXlkIG05o6A=
+	t=1712231298; cv=none; b=u+wOFECmwBcpR468dEmMVoOhBPGDGZPLgSvU1nCCXO8280k78OhyDcibUY8n0e5b6YLbgGc6D19btO3mWkxnF/tCFhM3Kn5jphjzdDLSxDWx8fjY2iRUEOLq72CaeoJbRPnmnCrGjdrpcsqfqAxUvqmiomcSbiVQOViaRFo16is=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712230893; c=relaxed/simple;
-	bh=xTu/IdCn/048THaVHddyM991QlKheudeHaOzDUEba/4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CbnfdACCpKM7Uc4gFzSIuRFwmKigKjPc5Isqa3rKxlnO63rflNgyWp4oa0Igwxjgy2oh4JUrhAaah0aW3A+CPVh9rXkfOvXd7DPrtRkicJR4IW2sgEQ52w1orcJR64JjxayzrJEsSVFNY9/+GTeLqwau8Gxc92lTxEoXyw1GGzM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=j/l193E/; arc=none smtp.client-ip=209.85.219.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1712231298; c=relaxed/simple;
+	bh=X+2uugPuVrXC1l1UkYxfOwgJq2ar4xrcrs39UDAIhSQ=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=AtlOYboXCeT7c+fogq9RCA7SBYnMypDvZiLO+8Ro47oHikhEdTGNBcQitA+gQZIOnrCWwq3ftwwQ3wO2x7fqsaKvtQjlNHPmGPKlAYpVpfxJJyn9QDvQsNyqGEI3JLbdNTjmSE1IL38FQsvvThZ1rzFHOy2X0rEYNiV5rd6PVNQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=EMxuqA/C; arc=none smtp.client-ip=46.235.227.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="j/l193E/"
-Received: by mail-yb1-f170.google.com with SMTP id 3f1490d57ef6-dc6d8bd612dso977864276.1
-        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 04:41:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1712230889; x=1712835689; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xTu/IdCn/048THaVHddyM991QlKheudeHaOzDUEba/4=;
-        b=j/l193E/44huoJ04oBkRB2ZnTXE6+p/NUCx8c35Myr8DR1iqSOtfR2Fz16hDbeJ1OH
-         tUExXpGQ28dkceUDdMpyO8EbZRjSCrex+1svJMWBUgMGjtORV2tIu1aUU7tRrlTqseAW
-         3xBtk7B1sZWDxq6CBSHE23og4y4Uf0xWMmAPTgeKpXcaQUESIoqY/A0oYtntVtq9wzjm
-         lJOxkU+B0t80gJwZe9OA2Oo42MF8k5j1NhzpyvqPDfPA7+hO00Q1BN72ZWALO04aNEn/
-         BY01VUCN7ueDh8EfydFPuyA/LoG6wR5CeAWHszNIXog+FGeMZVY6ZzFMUx6QC5hmrLKo
-         Veng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712230889; x=1712835689;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=xTu/IdCn/048THaVHddyM991QlKheudeHaOzDUEba/4=;
-        b=mPtNGdp0s9000oKAjrLZv3ARS1PhRl64swWnnMOnTgDHygvBcK+wZrvx3rHNGSiCJG
-         H8ZDemgmGRL/Ef6fxbtZOIe3+0gGT8d1tmHQdxXw6gmuQ+Oqx4TdC81H809icW8svCG/
-         9qF+hVoF4UdhlHSjfuzpsKFb+e0prf/0Ak0btc9NBoXT16e0Lt1wMrwNoc4FMjjIyeRQ
-         Nj5Tgx/d5pXGtj22r6qmHx54SJw4XbRzPdxT0EQGMv2lx4SQxffHqA7F7QsUK/2rlysG
-         EFpBtYvwpqackfYZW7Hp06zXo2QyFl6x1lH/C2TwHx1lEETzrjC896gE1WouA2GVccJJ
-         njDw==
-X-Forwarded-Encrypted: i=1; AJvYcCUug/cMgLHqHrnJB9CTyKVX45XwhSXvenSSmbARbrwBR49yfHgF1r5JPS1gTFC1R4DLZu22i8YX0cm6pjkSd6pWQJI9IQE=
-X-Gm-Message-State: AOJu0YzEqD0uecdyY6kQW2oDXPoC25PXBg9ksOS+Hb8Q32jLv30UQuPo
-	jrSc2ASV3IxIYyeiMYsn7iaJRx/vTax17mxytz1Fo4SWWLgZSqrBdNvZn/MxY4tBSa+oMzR3W02
-	odyLsZZfta4h6U3L9BBVFmMMASasDrtQPamlUOA==
-X-Google-Smtp-Source: AGHT+IEhL+O4bSIOCRsSy+Vdywn61xtrVBJ3li47sHwN1FOt8H7g9W+tj2/Or7rao9/9euGeRsXbtXq4vPMz7+GnZRc=
-X-Received: by 2002:a25:ba86:0:b0:dd1:6fab:81e4 with SMTP id
- s6-20020a25ba86000000b00dd16fab81e4mr2034373ybg.37.1712230889318; Thu, 04 Apr
- 2024 04:41:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="EMxuqA/C"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1712231293;
+	bh=X+2uugPuVrXC1l1UkYxfOwgJq2ar4xrcrs39UDAIhSQ=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=EMxuqA/CkRRKiGL1H3kwhSO7t636rfKNJSFagYNeGkQi30BSxSuudOK9sLwgDMZp0
+	 Fia08ny7dQml2JGL7l9z9aS/DIGbLZjzTEWFiv1phdhXd+AAx2TloQ+TuDEpGRbzvy
+	 mlxddAgHGqHi+Xy3YxPIYgPlE6Ujn25yvx9W5yzdYFRAaJ6f6frVKii5ugs+padpNk
+	 Jb2PKX1LccI2BIKtoOalTPb03IfZBJQVMXTbZ3XrgjDXv5STV72e7/0AvVZ3jlU7pK
+	 qhsbWWC3Ddy/368QXMnwwDOK634Le/UlmFEeOU2omFPnEWB8+6xteo81rmnmAkKq0P
+	 z6D62BJUak7RQ==
+Received: from [10.193.1.1] (broslavsky.collaboradmins.com [68.183.210.73])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: usama.anjum)
+	by madrid.collaboradmins.com (Postfix) with ESMTPSA id 82AAC378200D;
+	Thu,  4 Apr 2024 11:48:11 +0000 (UTC)
+Message-ID: <18b3976e-49a5-43d2-8d1b-bb87f2a312eb@collabora.com>
+Date: Thu, 4 Apr 2024 16:48:43 +0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240331-module-owner-virtio-v2-0-98f04bfaf46a@linaro.org> <20240331-module-owner-virtio-v2-12-98f04bfaf46a@linaro.org>
-In-Reply-To: <20240331-module-owner-virtio-v2-12-98f04bfaf46a@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Thu, 4 Apr 2024 13:41:18 +0200
-Message-ID: <CACRpkdYpVUq1SgxnPVfRdTiNg3o8dcBePxoxu9GRYy6LdzUE5A@mail.gmail.com>
-Subject: Re: [PATCH v2 12/25] gpio: virtio: drop owner assignment
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, 
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Jonathan Corbet <corbet@lwn.net>, 
-	David Hildenbrand <david@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>, 
-	Richard Weinberger <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>, 
-	Johannes Berg <johannes@sipsolutions.net>, Paolo Bonzini <pbonzini@redhat.com>, 
-	Stefan Hajnoczi <stefanha@redhat.com>, Jens Axboe <axboe@kernel.dk>, 
-	Marcel Holtmann <marcel@holtmann.org>, Luiz Augusto von Dentz <luiz.dentz@gmail.com>, 
-	Olivia Mackall <olivia@selenic.com>, Herbert Xu <herbert@gondor.apana.org.au>, 
-	Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>, 
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Gonglei <arei.gonglei@huawei.com>, 
-	"David S. Miller" <davem@davemloft.net>, Sudeep Holla <sudeep.holla@arm.com>, 
-	Cristian Marussi <cristian.marussi@arm.com>, Viresh Kumar <vireshk@kernel.org>, 
-	Bartosz Golaszewski <brgl@bgdev.pl>, David Airlie <airlied@redhat.com>, 
-	Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>, 
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard <mripard@kernel.org>, 
-	Thomas Zimmermann <tzimmermann@suse.de>, Daniel Vetter <daniel@ffwll.ch>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Alexander Graf <graf@amazon.com>, 
-	Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, 
-	Eric Van Hensbergen <ericvh@kernel.org>, Latchesar Ionkov <lucho@ionkov.net>, 
-	Dominique Martinet <asmadeus@codewreck.org>, Christian Schoenebeck <linux_oss@crudebyte.com>, 
-	Stefano Garzarella <sgarzare@redhat.com>, Kalle Valo <kvalo@kernel.org>, 
-	Dan Williams <dan.j.williams@intel.com>, Vishal Verma <vishal.l.verma@intel.com>, 
-	Dave Jiang <dave.jiang@intel.com>, Ira Weiny <ira.weiny@intel.com>, 
-	Pankaj Gupta <pankaj.gupta.linux@gmail.com>, Bjorn Andersson <andersson@kernel.org>, 
-	Mathieu Poirier <mathieu.poirier@linaro.org>, "James E.J. Bottomley" <jejb@linux.ibm.com>, 
-	"Martin K. Petersen" <martin.petersen@oracle.com>, Vivek Goyal <vgoyal@redhat.com>, 
-	Miklos Szeredi <miklos@szeredi.hu>, Anton Yakovlev <anton.yakovlev@opensynergy.com>, 
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, virtualization@lists.linux.dev, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-um@lists.infradead.org, linux-block@vger.kernel.org, 
-	linux-bluetooth@vger.kernel.org, linux-crypto@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org, 
-	dri-devel@lists.freedesktop.org, iommu@lists.linux.dev, 
-	netdev@vger.kernel.org, v9fs@lists.linux.dev, kvm@vger.kernel.org, 
-	linux-wireless@vger.kernel.org, nvdimm@lists.linux.dev, 
-	linux-remoteproc@vger.kernel.org, linux-scsi@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, alsa-devel@alsa-project.org, 
-	linux-sound@vger.kernel.org, 
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>, Viresh Kumar <viresh.kumar@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Cc: Muhammad Usama Anjum <usama.anjum@collabora.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, kernel@collabora.com,
+ iommu@lists.linux.dev, linux-kselftest@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
+ Shuah Khan <shuah@kernel.org>
+Subject: Re: [PATCH] selftests: iommu: add config needed for iommufd_fail_nth
+To: Jason Gunthorpe <jgg@ziepe.ca>, Joao Martins <joao.m.martins@oracle.com>
+References: <20240325090048.1423908-1-usama.anjum@collabora.com>
+ <31fcc276-acd6-4277-bd6c-4a871c7fb28a@collabora.com>
+ <20240326150340.GE8419@ziepe.ca>
+ <56cc8b9e-c1cf-4520-ba45-b1237e8b7b64@collabora.com>
+ <20240327114958.GG8419@ziepe.ca>
+ <51f493a9-08e7-44d8-ae4a-58b2994ea276@oracle.com>
+ <f78b685d-a147-4b59-beb2-cde9d34ce22a@collabora.com>
+ <e9cb60bf-5035-4fed-9b36-ca2edf048fe8@oracle.com>
+ <20240327182050.GA1363414@ziepe.ca>
+ <ccab9229-c0de-4c38-bb5c-7f32cbd7fa2b@collabora.com>
+Content-Language: en-US
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <ccab9229-c0de-4c38-bb5c-7f32cbd7fa2b@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Mar 31, 2024 at 10:45=E2=80=AFAM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
+On 3/28/24 1:13 AM, Muhammad Usama Anjum wrote:
+> On 3/27/24 11:20 PM, Jason Gunthorpe wrote:
+>> On Wed, Mar 27, 2024 at 06:09:37PM +0000, Joao Martins wrote:
+>>> On 27/03/2024 17:49, Muhammad Usama Anjum wrote:
+>>>> On 3/27/24 7:59 PM, Joao Martins wrote:
+>>>>> On 27/03/2024 11:49, Jason Gunthorpe wrote:
+>>>>>> On Wed, Mar 27, 2024 at 03:14:25PM +0500, Muhammad Usama Anjum wrote:
+>>>>>>> On 3/26/24 8:03 PM, Jason Gunthorpe wrote:
+>>>>>>>> On Tue, Mar 26, 2024 at 06:09:34PM +0500, Muhammad Usama Anjum wrote:
+>>>>>>>>> Even after applying this config patch and following snippet (which doesn't
+>>>>>>>>> terminate the program if mmap doesn't allocate exactly as the hint), I'm
+>>>>>>>>> finding failed tests.
+>>>>>>>>>
+>>>>>>>>> @@ -1746,7 +1748,7 @@ FIXTURE_SETUP(iommufd_dirty_tracking)
+>>>>>>>>>         assert((uintptr_t)self->buffer % HUGEPAGE_SIZE == 0);
+>>>>>>>>>         vrc = mmap(self->buffer, variant->buffer_size, PROT_READ | PROT_WRITE,
+>>>>>>>>>                    mmap_flags, -1, 0);
+>>>>>>>>> -       assert(vrc == self->buffer);
+>>>>>>>>> +       assert(vrc == self->buffer);// ???
+>>>>>>>>>
+>>>>>>>>> On x86:
+>>>>>>>>> # Totals: pass:176 fail:4 xfail:0 xpass:0 skip:0 error:0
+>>>>>>>>> On ARM64:
+>>>>>>>>> # Totals: pass:166 fail:14 xfail:0 xpass:0 skip:0 error:0
+>>>>>>>>>
+>>>>>>>>> The log files are attached.
+>>>>>>>>
+>>>>>>>> You probably don't have enough transparent huge pages available to the process
+>>>>>>>>
+>>>>>>>>       echo 1024 > /proc/sys/vm/nr_hugepages
+>>>>>>> After making huge pages available, the iommufd test always passed on x86.
+>>>>>>> But there are still failures on arm64. I'm looking into the failures.
+>>>>>>
+>>>>>> Oh that is really strange. Joao? Nicolin?
+>>>>>>
+>>>>> Definitely strange, I'll have a look.
+>>>>>
+>>>>> So it set the expected number of dirty bits as that assert doesn't fail, but it
+>>>>> is failing when we check that even bits are set but not odd ones. Like it's
+>>>>> hasn't set those bits.
+>>>>>
+>>>>> For mock tests there should be no difference between x86 and ARM assuming the
+>>>>> typical 4K page-size. Maybe this is 64k base pages in ARM? That's the only thing
+>>>>> that I can think of that affected mock domain.
+>>>> The config is attached. The defaults are being used i.e., 4k page.
+>>>
+>>> Looks like CONFIG_IOMMUFD_DRIVER is not defined :(
+>>>
+>>> Thus no bits are being set.
+>>
+>> Oh! 
+>>
+>> --- a/drivers/iommu/iommufd/Kconfig
+>> +++ b/drivers/iommu/iommufd/Kconfig
+>> @@ -37,6 +37,7 @@ config IOMMUFD_TEST
+>>         depends on DEBUG_KERNEL
+>>         depends on FAULT_INJECTION
+>>         depends on RUNTIME_TESTING_MENU
+>> +       select IOMMUFD_DRIVER
+>>         default n
+>>         help
+>>           This is dangerous, do not enable unless running
+>>
+> Tested this patch on my system and it fixes all issues for ARM64. Please
+> add tag for this Kconfig patch:
+> Tested by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> 
+> Also please accept the patch in this current series.
+Please let me know if you need me to send the config patch. Please accept
+the config patch as well.
 
-> virtio core already sets the .owner, so driver does not need to.
->
-> Acked-by: Bartosz Golaszewski <bartosz.golaszewski@linaro.org>
-> Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>>
+>> ???
+>>
+>> Jason
+> 
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
+-- 
+BR,
+Muhammad Usama Anjum
