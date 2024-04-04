@@ -1,220 +1,164 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C8848665A
-	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 17:37:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C8BC12B163
+	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 17:41:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712252240; cv=none; b=mtVzlJ3dTnC1QJJ25wGFEoP9/cys8U56vBD5z5kH4QTJsBWK4rgWUCUY4VK+oROwVdDjwZm7D/cvzaqiwTZbY3jirSLweX4Ty3atrWSv8bhRT9aHXsVxgt1xMMlcnl6XRyfAaq7zYySxZO/MgYK6MkRp0cSJn1mlRBZHWgpHhUw=
+	t=1712252479; cv=none; b=iTOyyLV+A9/HdBN+t57i5nrM55sv52MFY2fA1HLgp8O+3M3KKiA3nZzyITjzpl9cXCn9guOWSpGCRe7aNexJFHqblOuF8t7DApA6IrVB9ppzZw8z8Z8zc6m6QWdEj+Y9muaBgwK2H47hbbw3+O1zDcKgPiTNTpKH0BvUTmdvgV4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712252240; c=relaxed/simple;
-	bh=qNxmB9dvz4cGF0PgT9uMqcRVLK8IoGpeK+milK+2GFg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=P1kcbCmqhyF4vGErjknkVht3e7QYmN5j9Cfdo8qAhKysUekrvnZcOOrtbWeq5DSE4kOkcpjne7frFhkQcxOGYlxlUnAvyU8xka6H7zLewYj51wj+A4I+nPjCFtu5r/IGSoO1jnfpdvlYcOw8jn+H3i9pg5jTY4c7LA/LOolTmqg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=RrBFxG/O; arc=none smtp.client-ip=209.85.216.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
+	s=arc-20240116; t=1712252479; c=relaxed/simple;
+	bh=OA/jUJ05jo1vzjvMVzohJkoM+kxDKZwUgLxh7dqwh/8=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=cqY1wn5QxqrOg3aaZnJLe8Uu9IzYjtNn5vE39bBMmvuZ3cBBkQZrRfw7f1eqA6EddDgtdd2qPzGLIiiTxYQJMlTeZCR30faGsWa706cckVn6MFtoBl1QdJa8BiaEyLKRZNdkvA53/U9IlmKe6l3Cws4AjXJlJuLkpIcbO/Pv5aw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ndufresne.ca; spf=none smtp.mailfrom=ndufresne.ca; dkim=pass (2048-bit key) header.d=ndufresne-ca.20230601.gappssmtp.com header.i=@ndufresne-ca.20230601.gappssmtp.com header.b=t2Gx4hur; arc=none smtp.client-ip=209.85.210.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ndufresne.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=ndufresne.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="RrBFxG/O"
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-2a28b11db68so827524a91.2
-        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 10:37:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ndufresne-ca.20230601.gappssmtp.com header.i=@ndufresne-ca.20230601.gappssmtp.com header.b="t2Gx4hur"
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-6e50e8dcc72so617649a34.3
+        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 10:41:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1712252236; x=1712857036; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Q0YGAbo5VsMRKNvr6HUFHGXg4ydusoh6NcFGvWhqL/0=;
-        b=RrBFxG/OIow28PUr6ZYTdGT/KlfdAkEvR+6SyidvaYMAEoi1pcq6/Xgd4l0IuRdFAe
-         KqJa3g05DSD9c1wzLUFVV5+2+oRZNnI+E+RlTKHp0mE8jFwx5YdgXWsJAzAiUp6H60pq
-         oK89SY2b5O9wlmDxQTElPjFA/TsQv+QVNovcGU6+vKGKstbavYX3+hnuqtzZvsiaxXg+
-         rs1FM0HgHMUJ3P80cxFrP6/mY5v9ixhBxMKu+xICQJZS8ZXY5J0VKFTAt+dsIDC9Wmbg
-         J5/zdymCdxRP9+pd2NzsRWElpscGPNtF9zpmonZmaMMKesmDIcuT92Wv04ep2CRpOI1X
-         wMrg==
+        d=ndufresne-ca.20230601.gappssmtp.com; s=20230601; t=1712252476; x=1712857276; darn=lists.linux.dev;
+        h=mime-version:user-agent:content-transfer-encoding:autocrypt
+         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=PDCUlJMzIv/laHrjUCGrOmU4Uxm0ZKwh32oebCX4CUg=;
+        b=t2Gx4hurtjaiiNFSrwHYYpP9Wp9yAhVNrtSr5DWIFLNpJtFsQD9VA4xp6t9PQMGinQ
+         kXE/P3yp1VUwYfut+tfmf7My6c1IHvKWPV1PDQYibmrxjMMfQUFlqupRtVvgoSVAwZlP
+         5NGI3hGNJVOMzqZ7kaQGmktcrmgziqOe38KO4nodOyd3TDS3u60JQYLnTDnVaI7Fr/Tb
+         5iVdVqmmEm6MR0lZlkFJ2cB7voyFfw9VCbXxdVMyxhKrLdiS/gjXSvSh4GqRJ8WE14lh
+         3qNkFrObYVdw8bEd3aTicRSKbKxfKKo0zUN0MVWAzo3z8WiimtFoLoXAjLGQNo5KiSZD
+         h8jQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712252236; x=1712857036;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Q0YGAbo5VsMRKNvr6HUFHGXg4ydusoh6NcFGvWhqL/0=;
-        b=Jcoj/Enst364KpCREbV4H3cYz7PVOW+rInJDxfKnXNLRs5Kz7HWD++O+CsQuBM0m98
-         m82dGhI9m1MUJLa8UT0cHklJPGYHfLOYzRXPp0EPZQ8+lVhbNrzRsvjaOdy3lOcPc9U9
-         YRWIQcoTUximODLAoOKyROwWBSjYarrqjKVL364y7ehMjuOC1MxGnuA5nAdje5qpAlxr
-         /gFq5yf1wyBGAmA0Myh/or8EtKPRBIrTaAZxfEnTDuKgWURkT02PFp/ryhSKglgdxm65
-         gpdEki7PrTcc2Du+L9XUtF4H+pclMO6tfzGdxyEXT6WOKwSZKm/j3h5DybgjC8FhNlqC
-         80pA==
-X-Forwarded-Encrypted: i=1; AJvYcCU54sV7ao2eazq1NTK/7oIPGWXoMFwa7k6lC0dAsbx+BjWvq7jkgUIMSL+blNYPrh3i1qMyyn+HEOX2JFRR2j2v3eI0q8U=
-X-Gm-Message-State: AOJu0YzXtbFEzkBaDryeG1ZZi49Lt9a1zco+V0fnKxQHG327SdgK6g3E
-	ySrnrQjFiM3Pn707SvFl64vh3d2asH3SqvqYYrGEDQpQfIxR38s5QyzReEQtiNJyTTtHUH0fx+a
-	Pec2aAh2duQseNLGcDiv37JlkxN4lPK7XZfFoDg==
-X-Google-Smtp-Source: AGHT+IE0DwpVP9FvdgUiEaX9DyIxnkxvkjXoN3ggf7SGLxyoGEAQiYNn0vs3zY4qK/tte6bUofAXx0ODGxiK9gbQHcs=
-X-Received: by 2002:a17:90a:34c9:b0:2a2:bc66:1ead with SMTP id
- m9-20020a17090a34c900b002a2bc661eadmr3184921pjf.38.1712252236354; Thu, 04 Apr
- 2024 10:37:16 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1712252476; x=1712857276;
+        h=mime-version:user-agent:content-transfer-encoding:autocrypt
+         :references:in-reply-to:date:cc:to:from:subject:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PDCUlJMzIv/laHrjUCGrOmU4Uxm0ZKwh32oebCX4CUg=;
+        b=SuC9sFymoTW5hMhsySLjTSmzafss/4uL/xBWfO9seOG2KNdKbtglU1A5QI47+q8m6G
+         DA11sBBMeoq+E+8dL2bikLaMPcMAsrBct+OO2MvbG3CX5mwIjhxFYe7CDYhAjWRzrOFj
+         Xj9rS/30/GV3a8GUu9SqNxrDJhdezGrDp2arf7dWqKZBIc7NvDIggUCH2g+z6y0beZFa
+         QPZVbNgkN5uLLh/jK+lnNvSov6mLoFe6+Rjyp06WJESV2IsgRNw5cZo36QEQODDangXa
+         Yo00TefVsVaYG7UU5AKlFmJEp4MbssjwaRaCnyCLzCUtrn/lPd1zlqGiMrUci7dl/a+V
+         /ong==
+X-Forwarded-Encrypted: i=1; AJvYcCWLCc22FEY8aNH9Se32g6u0dsZicrdSZ3QbKyD6qupa/Q7KvOPlG3AM2WTkkfNJqv3KwzeZT7LdkxtJpVyqoVutb9WwySc=
+X-Gm-Message-State: AOJu0YyHkffL9jjYIKJqNA51ecYGICBVo/iRi2xoe517PVGYp74q5QU0
+	43yp6bApbHTinb1YEekmO64YcH7xcigR0XugWdASkFnSnxwbhR1kDHM6hP4Lyio=
+X-Google-Smtp-Source: AGHT+IH6SPgr9ERE/vwlY2jNucRJ8k5kekJ4QNJCT/jjb/z1ac1mW4/lQwO5MYeuUEjOj8KsCc0l4g==
+X-Received: by 2002:a05:6870:c194:b0:22e:15fd:e247 with SMTP id h20-20020a056870c19400b0022e15fde247mr3396329oad.5.1712252476562;
+        Thu, 04 Apr 2024 10:41:16 -0700 (PDT)
+Received: from nicolas-tpx395.localdomain ([2606:6d00:17:6448:fa75:a4ff:fe45:b56])
+        by smtp.gmail.com with ESMTPSA id l13-20020a37f50d000000b0078a4d950935sm6051176qkk.12.2024.04.04.10.41.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Apr 2024 10:41:16 -0700 (PDT)
+Message-ID: <bbcb66e9499120a86b367e7abdac2d8e2e704bfb.camel@ndufresne.ca>
+Subject: Re: [PATCH v2 0/2] Enable JPEG encoding on rk3588
+From: Nicolas Dufresne <nicolas@ndufresne.ca>
+To: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>, 
+	linux-kernel@vger.kernel.org
+Cc: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>, Philipp Zabel
+ <p.zabel@pengutronix.de>, Mauro Carvalho Chehab <mchehab@kernel.org>, Rob
+ Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzysztof.kozlowski+dt@linaro.org>, Conor Dooley <conor+dt@kernel.org>,
+ Heiko Stuebner <heiko@sntech.de>, Joerg Roedel <joro@8bytes.org>, Will
+ Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, Sebastian
+ Reichel <sebastian.reichel@collabora.com>,  Cristian Ciocaltea
+ <cristian.ciocaltea@collabora.com>, Dragan Simic <dsimic@manjaro.org>,
+ Shreeya Patel <shreeya.patel@collabora.com>, Chris Morgan
+ <macromorgan@hotmail.com>, Andy Yan <andy.yan@rock-chips.com>, Nicolas
+ Frattaroli <frattaroli.nicolas@gmail.com>,  linux-media@vger.kernel.org,
+ linux-rockchip@lists.infradead.org,  devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,  iommu@lists.linux.dev
+Date: Thu, 04 Apr 2024 13:41:15 -0400
+In-Reply-To: <20240327134115.424846-1-linkmauve@linkmauve.fr>
+References: <20240327134115.424846-1-linkmauve@linkmauve.fr>
+Autocrypt: addr=nicolas@ndufresne.ca; prefer-encrypt=mutual; keydata=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
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.50.4 (3.50.4-1.fc39) 
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1689792825.git.tjeznach@rivosinc.com> <CAHCEehJKYu3-GSX2L6L4_VVvYt1MagRgPJvYTbqekrjPw3ZSkA@mail.gmail.com>
- <CANXhq0qsZS7sB-npPKdnFaWi2+yUc_dROCsVXZDHo07-a34wcw@mail.gmail.com>
-In-Reply-To: <CANXhq0qsZS7sB-npPKdnFaWi2+yUc_dROCsVXZDHo07-a34wcw@mail.gmail.com>
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Thu, 4 Apr 2024 10:37:05 -0700
-Message-ID: <CAH2o1u6seMkt5stxkpr4JCdmU3ZXDid5gDL7+9abNg=zPqdFdQ@mail.gmail.com>
-Subject: Re: [PATCH 00/13] Linux RISC-V IOMMU Support
-To: Zong Li <zong.li@sifive.com>
-Cc: Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt <palmer@dabbelt.com>, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, 
-	Anup Patel <apatel@ventanamicro.com>, Albert Ou <aou@eecs.berkeley.edu>, 
-	Greentime Hu <greentime.hu@sifive.com>, linux@rivosinc.com, 
-	"linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>, Sebastien Boeuf <seb@rivosinc.com>, iommu@lists.linux.dev, 
-	Nick Kossifidis <mick@ics.forth.gr>, linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 23, 2024 at 6:04=E2=80=AFAM Zong Li <zong.li@sifive.com> wrote:
->
-> >
-> > The RISC-V IOMMU specification is now ratified as-per the RISC-V intern=
-ational
-> > process [1]. The latest frozen specifcation can be found at:
-> > https://github.com/riscv-non-isa/riscv-iommu/releases/download/v1.0/ris=
-cv-iommu.pdf
-> >
-> > At a high-level, the RISC-V IOMMU specification defines:
-> > 1) Memory-mapped programming interface
-> >    - Mandatory and optional registers layout and description.
-> >    - Software guidelines for device initialization and capabilities dis=
-covery.
-> > 2) In-memory queue interface
-> >    - A command-queue used by software to queue commands to the IOMMU.
-> >    - A fault/event queue used to bring faults and events to software=E2=
-=80=99s attention.
-> >    - A page-request queue used to report =E2=80=9CPage Request=E2=80=9D=
- messages received from
-> >      PCIe devices.
-> >    - Message-signalled and wire-signaled interrupt mechanism.
-> > 3) In-memory data structures
-> >    - Device-context: used to associate a device with an address space a=
-nd to hold
-> >      other per-device parameters used by the IOMMU to perform address t=
-ranslations.
-> >    - Process-contexts: used to associate a different virtual address sp=
-ace based on
-> >      device provided process identification number.
-> >    - MSI page table configuration used to direct an MSI to a guest inte=
-rrupt file
-> >      in an IMSIC. The MSI page table formats are defined by the Advance=
-d Interrupt
-> >      Architecture specification [2].
-> >
-> > This series introduces complete single-level translation support, inclu=
-ding shared
-> > virtual address (SVA), ATS/PRI interfaces in the kernel driver. Patches=
- adding MSI
-> > identity remapping and G-Stage translation (GPA to SPA) are added only =
-to excercise
-> > hardware interfaces, to be complemented with AIA/KVM bindings in follow=
--up series.
-> >
-> > This series is a logical regrouping of series of incremental patches ba=
-sed on
-> > RISC-V International IOMMU Task Group discussions and specification dev=
-elopment
-> > process. Original series can be found at the maintainer's repository br=
-anch [3].
-> >
-> > These patches can also be found in the riscv_iommu_v1 branch at:
-> > https://github.com/tjeznach/linux/tree/riscv_iommu_v1
-> >
-> > To test this series, use QEMU/OpenSBI with RISC-V IOMMU implementation =
-available in
-> > the riscv_iommu_v1 branch at:
-> > https://github.com/tjeznach/qemu/tree/riscv_iommu_v1
-> >
-> > References:
-> > [1] - https://wiki.riscv.org/display/HOME/Specification+Status
-> > [2] - https://github.com/riscv/riscv-aia/releases/download/1.0/riscv-in=
-terrupts-1.0.pdf
-> > [3] - https://github.com/tjeznach/qemu/tree/tjeznach/riscv-iommu-202307=
-19
-> >
-> >
-> > Anup Patel (1):
-> >   dt-bindings: Add RISC-V IOMMU bindings
-> >
-> > Tomasz Jeznach (10):
-> >   RISC-V: drivers/iommu: Add RISC-V IOMMU - Ziommu support.
-> >   RISC-V: arch/riscv/config: enable RISC-V IOMMU support
-> >   MAINTAINERS: Add myself for RISC-V IOMMU driver
-> >   RISC-V: drivers/iommu/riscv: Add sysfs interface
-> >   RISC-V: drivers/iommu/riscv: Add command, fault, page-req queues
-> >   RISC-V: drivers/iommu/riscv: Add device context support
-> >   RISC-V: drivers/iommu/riscv: Add page table support
-> >   RISC-V: drivers/iommu/riscv: Add SVA with PASID/ATS/PRI support.
-> >   RISC-V: drivers/iommu/riscv: Add MSI identity remapping
-> >   RISC-V: drivers/iommu/riscv: Add G-Stage translation support
-> >
-> >  .../bindings/iommu/riscv,iommu.yaml           |  146 ++
-> >  MAINTAINERS                                   |    7 +
-> >  arch/riscv/configs/defconfig                  |    1 +
-> >  drivers/iommu/Kconfig                         |    1 +
-> >  drivers/iommu/Makefile                        |    2 +-
-> >  drivers/iommu/io-pgtable.c                    |    3 +
-> >  drivers/iommu/riscv/Kconfig                   |   22 +
-> >  drivers/iommu/riscv/Makefile                  |    1 +
-> >  drivers/iommu/riscv/io_pgtable.c              |  266 ++
-> >  drivers/iommu/riscv/iommu-bits.h              |  704 ++++++
-> >  drivers/iommu/riscv/iommu-pci.c               |  206 ++
-> >  drivers/iommu/riscv/iommu-platform.c          |  160 ++
-> >  drivers/iommu/riscv/iommu-sysfs.c             |  183 ++
-> >  drivers/iommu/riscv/iommu.c                   | 2130 +++++++++++++++++
-> >  drivers/iommu/riscv/iommu.h                   |  165 ++
-> >  include/linux/io-pgtable.h                    |    2 +
-> >  16 files changed, 3998 insertions(+), 1 deletion(-)
-> >  create mode 100644 Documentation/devicetree/bindings/iommu/riscv,iommu=
-.yaml
-> >  create mode 100644 drivers/iommu/riscv/Kconfig
-> >  create mode 100644 drivers/iommu/riscv/Makefile
-> >  create mode 100644 drivers/iommu/riscv/io_pgtable.c
-> >  create mode 100644 drivers/iommu/riscv/iommu-bits.h
-> >  create mode 100644 drivers/iommu/riscv/iommu-pci.c
-> >  create mode 100644 drivers/iommu/riscv/iommu-platform.c
-> >  create mode 100644 drivers/iommu/riscv/iommu-sysfs.c
-> >  create mode 100644 drivers/iommu/riscv/iommu.c
-> >  create mode 100644 drivers/iommu/riscv/iommu.h
-> >
-> > --
-> > 2.34.1
-> >
-> >
-> > _______________________________________________
-> > linux-riscv mailing list
-> > linux-riscv@lists.infradead.org
-> > http://lists.infradead.org/mailman/listinfo/linux-riscv
->
-> Hi Tomasz,
-> Could I know if you have a plan for the next version and if you have
-> any estimates for when the v2 patch will be ready? We have some
-> patches based on top of your old implementation, and it would be great
-> if we can rebase them onto your next version. Thanks.
+Hi,
 
-Hi Zong,
+Le mercredi 27 mars 2024 =C3=A0 14:41 +0100, Emmanuel Gil Peyrot a =C3=A9cr=
+it=C2=A0:
+> Only the JPEG encoder is available for now, although there are patches
+> for the undocumented VP8 encoder floating around[0].
 
-Thank you for your interest. Next version of the iommu/riscv is almost read=
-y to
-be sent in next few days.
-There is a number of bug fixes and design changes based on the testing and
-great feedback after v1 was published.
-Upcoming patch set will be smaller, with core functionality only, hopefully=
- to
-make the review easier. Functionality related to the MSI remapping, shared
-virtual addressing, nested translations will be moved to separate patch set=
-s.
+[0] seems like a broken link. The VP8 encoder RFC is for RK3399 (and Hantro=
+ H1
+posted by ST more recently). The TRM says "VEPU121(JPEG encoder only)", whi=
+ch
+suggest that the H.264 and VP8 encoders usually found on the VEPU121 are
+removed. As Rockchip have remove the synthesize register while modifying th=
+e H1
+IP, it is difficult to verify. Confusingly the H.264 specific registers are
+documented in the TRM around VEPU121.
 
-Complete, up to date revision is always available at
-https://github.com/tjeznach/linux/
+>=20
+> This has been tested on a rock-5b, resulting in four /dev/video*
+> encoders.  The userspace program I=E2=80=99ve been using to test them is
+> Onix[1], using the jpeg-encoder example, it will pick one of these four
+> at random (but displays the one it picked):
+> % ffmpeg -i <input image> -pix_fmt yuvj420p temp.yuv
+> % jpeg-encoder temp.yuv <width> <height> NV12 <quality> output.jpeg
 
-regards,
-- Tomasz
+I don't like that we exposing each identical cores a separate video nodes. =
+I
+think we should aim for 1 device, and then multi-plex and schedule de cores=
+ from
+inside the Linux kernel.
+
+Not doing this now means we'll never have an optimal hardware usage
+distribution. Just consider two userspace software wanting to do jpeg encod=
+ing.
+If they both take a guess, they may endup using a single core. Where with p=
+roper
+scheduling in V4L2, the kernel will be able to properly distribute the load=
+. I
+insist on this, since if we merge you changes it becomes an ABI and we can'=
+t
+change it anymore.
+
+I understand that this impose a rework of the mem2mem framework so that we =
+can
+run multiple jobs, but this will be needed anyway on RK3588, since the rkvd=
+ec2,
+which we don't have a driver yet is also multi-core, but you need to use 2 =
+cores
+when the resolution is close to 8K.
+
+Nicolas
+
+>=20
+> [0] https://patchwork.kernel.org/project/linux-rockchip/list/?series=3D78=
+9885
+> [1] https://crates.io/crates/onix
+>=20
+> Changes since v1:
+> - Dropped patches 1 and 4.
+> - Use the proper compatible form, since this device should be fully
+>   compatible with the VEPU of rk356x.
+> - Describe where the VEPU121 name comes from, and list other encoders
+>   and decoders present in this SoC.
+> - Properly test the device tree changes, I previously couldn=E2=80=99t si=
+nce I
+>   was using a too recent version of python-jsonschema=E2=80=A6
+>=20
+> Emmanuel Gil Peyrot (2):
+>   media: dt-binding: media: Document rk3588=E2=80=99s VEPU121
+>   arm64: dts: rockchip: Add VEPU121 to rk3588
+>=20
+>  .../bindings/media/rockchip,rk3568-vepu.yaml  |  8 +-
+>  arch/arm64/boot/dts/rockchip/rk3588s.dtsi     | 80 +++++++++++++++++++
+>  2 files changed, 86 insertions(+), 2 deletions(-)
+>=20
+
