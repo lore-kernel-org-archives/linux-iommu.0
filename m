@@ -1,110 +1,133 @@
-Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D891FC1D
-	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 02:29:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AC781BC5C
+	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 03:25:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712284151; cv=none; b=l1eI/z55k3ILgv6An03HyGOZHakp7oFUMZ+2Z4VreQN+xJdh2GNmYmUpWd6GPDS/qHIYOrtQJnKbhsao5WIo+kmhktz5FCETHHM14SxW+6DNlkKOFffupEKWciNOJDgi87p7AXd5KGaPZjCwc1+5FBc7uzNxzS1ykbd186pg/bI=
+	t=1712287516; cv=none; b=nRfUYxIYkZyzhfboaKG2ddttRH0pWBmehCJgsEMtnt7TN5auez2SIrDXdkyrZSvfBpdjodHNRIyCB+BttNp4p0pmK7fJhvHH0ZixNQ3/qWwH8yvOLeTxNRm9UST8icnY0hdAnpMqepXpXOAa2O/IwcTemOf+j7AYNLTKntz0c+Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712284151; c=relaxed/simple;
-	bh=5iT0uqVet1JZZBeE+SsSnki7j0+tNPTR4KLa4UdOnew=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uq8SsfQK0376VSpCppIw8qhiRtzt8QPeQ0mUaKzgUs/KAdKJPHPjg59BjCW0dGYVgmuUAC9rAXSWITVLJNCcBZNCEpg8BsXv/i4G7mJbT5+HlZmkQ2ZfPEaIXVmGmUOGPX2iodwhLBV7UMXU0AnA2CrgcLluEOXUpU6QvZ4CkJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=btf2NLhM; arc=none smtp.client-ip=209.85.215.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1712287516; c=relaxed/simple;
+	bh=cXdbJLTNqU91g03IUWPDt9s3dcd9a7zvX2yVIwFMzkg=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AIXmipY+xn1NhKD7LpTn3NYR/yq2+W8uR76dPYtkZS4kcpXYei0ZdQT9IivR34s8Utbln7H+xEpgYbixXj2idicGtL+e4samd7elJW32K/PXlQAMqf2xf5qQuc2f02NRbRku25/3WeLeYyGjHGE2X2q5ODZXoUf4UiZXqK4fSdM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=VjKdmhCR; arc=none smtp.client-ip=205.220.180.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="btf2NLhM"
-Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-5d81b08d6f2so1439863a12.0
-        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 19:29:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712284149; x=1712888949; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=wlRh9t6fwDbcB6l82RhAGGRXkd0+A6r2FWZKWmCGJk0=;
-        b=btf2NLhM9Erh3TF1fYySDfn4hbAhlhYxLurDrbnDr3SNs9GhPMm1WG7eNrvNFWB5oh
-         LxA0F1eylSeknjB4EaQn/gexD0ylUV/EJMyDyiPnFTbIzicpiKXn9nrocsrjQx1IA2a3
-         aNgE9yb2gMDeAXyTfuajBhGOmOKoy+HZcT/dkL5cf0kBNlZ4ljYHP2PMW1sxuT2oVYWT
-         CcX7Q3lUfUF9nXgnx0z0UEGl4LmIVVubGI0nPATwTUt0B9ysxAIisg3FV6CY3BR6WPZN
-         XmJ6A5GJ+9dAoVzi/EvsIoBL8HkPjztl6GNE18HzBbLXyvZs5GJcDXy1NK7D5CDq51p2
-         iQSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712284149; x=1712888949;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wlRh9t6fwDbcB6l82RhAGGRXkd0+A6r2FWZKWmCGJk0=;
-        b=DWfnt7lwpJdF2RtD1JY/eZLqhpSgMaUinECykrsxrQzwgBXfSjhTweYOQ4Hn2bgnzO
-         oedN0CeNe+qKwdZeUxsLHC1EWEF/VW5h2AH8UqfS/Lh2DUZKqr7iwnYK319/BgKp7lYT
-         TBXTQb5jVpPqzu3auaL5fOi4JTxx3AqwPuFMbt9c3b1oBzrnrvfAibS+3XehtNbB3U2O
-         ll9Vuo9B4iUh3Oa9XyBP9vGTUlFa/mx/EC4wNA45BS+gCEgXHFNP1nlIpgDxnM4Zx+zH
-         AvsPxrfWwwNlWB16j2877Oj4uK6ACMo7spumsgjJQHRGvSg4lgKLQqi6Ba+Ocg3MGKYE
-         iUgA==
-X-Forwarded-Encrypted: i=1; AJvYcCXIUhi3xUd0jrvYCmBcvI+dFJxvJd1RFCH9IkZNnIPWP6EKlfPgGCe4/p2zxIr1QuRxXn4ruYWauIz+pYVHnuWbC8LN9XQ=
-X-Gm-Message-State: AOJu0YzkNeqRRAy4t6NiHCDOMD31cz11d7WLTf554Lw934t4/4EcbW8x
-	/+qKp+iSHEhnBcq9K33Nq/KVQu/jJk8q0fU9DrDFTn5FOAvSZcKf
-X-Google-Smtp-Source: AGHT+IE6K8Dogp7cIhU87tgYJHEdNXuzdYzmuYSOQRiZ/4ZaEUUr/jmu5B9zeknKbQ1DHiHJdxU7lw==
-X-Received: by 2002:a17:902:f690:b0:1e2:887a:68a7 with SMTP id l16-20020a170902f69000b001e2887a68a7mr204162plg.33.1712284149371;
-        Thu, 04 Apr 2024 19:29:09 -0700 (PDT)
-Received: from [172.27.237.2] (ec2-16-163-40-128.ap-east-1.compute.amazonaws.com. [16.163.40.128])
-        by smtp.gmail.com with ESMTPSA id mo13-20020a1709030a8d00b001e2b36fd291sm351651plb.171.2024.04.04.19.29.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 04 Apr 2024 19:29:08 -0700 (PDT)
-Message-ID: <89927174-6ca9-4299-8157-a0404b30b156@gmail.com>
-Date: Fri, 5 Apr 2024 10:28:59 +0800
+	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="VjKdmhCR"
+Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 4352MsDR017309;
+	Fri, 5 Apr 2024 03:25:07 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
+	date:from:to:cc:subject:message-id:references:mime-version
+	:content-type:in-reply-to; s=qcppdkim1; bh=O7pAdYq0gXOgAPMzGRLRY
+	4J+NTxIeiW5B+fKq2Jblkc=; b=VjKdmhCR2DqBfiSGs5KIDs2vvtA3TCPpPG4Qs
+	909hppOeReNK9fubIFvFD2+3C3nVCkZ9hWypVEHggQptJNNZ1USy3WaoqC1qjkQW
+	nCv+SclwSXTepllJwcXHINswpzW/r+eERH3Q81CZEmSiFDqUs5nRfuknaJBkOsrD
+	7ryAk3cLeWNSxoAiiPwd+nu7KgWRS+wCmMrrgpyJW/VRDpcuBIX2ahHhUCYV3by4
+	sbpnAUDPCD/TqeEkG40vbOsxvzRYfsEw14y7HBO5aZBzsvsIVx/kenGMvCV8cjsI
+	e57SOq4JxW1VoA71cJ4MQ2h35lfeIZ6kG58qoXbHrx8zFuK/Q==
+Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3xa8fc02fe-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 05 Apr 2024 03:25:06 +0000 (GMT)
+Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
+	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 4353P5U4029645
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 5 Apr 2024 03:25:05 GMT
+Received: from hu-bjorande-lv.qualcomm.com (10.49.16.6) by
+ nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Thu, 4 Apr 2024 20:25:05 -0700
+Date: Thu, 4 Apr 2024 20:25:04 -0700
+From: Bjorn Andersson <quic_bjorande@quicinc.com>
+To: Andrew Halaney <ahalaney@redhat.com>
+CC: <linux-arm-msm@vger.kernel.org>, <robdclark@gmail.com>, <will@kernel.org>,
+        <iommu@lists.linux.dev>, <joro@8bytes.org>,
+        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <quic_c_gdjako@quicinc.com>, <quic_cgoldswo@quicinc.com>,
+        <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
+        <quic_sudaraja@quicinc.com>
+Subject: Re: sa8775p-ride: What's a normal SMMU TLB sync time?
+Message-ID: <Zg9vEJV5JyGoM8KY@hu-bjorande-lv.qualcomm.com>
+References: <kord5qq6mywc7rbkzeoliz2cklrlljxm74qmrfwwjf6irx4fp7@6f5wsonafstt>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 04/15] x86/irq: Add a Kconfig option for posted MSI
-Content-Language: en-US
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
- Peter Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev,
- Thomas Gleixner <tglx@linutronix.de>, Lu Baolu <baolu.lu@linux.intel.com>,
- kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>,
- Joerg Roedel <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>,
- Borislav Petkov <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>
-Cc: Paul Luse <paul.e.luse@intel.com>, Dan Williams
- <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>,
- Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- maz@kernel.org, seanjc@google.com, Robin Murphy <robin.murphy@arm.com>
-References: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
- <20240126234237.547278-5-jacob.jun.pan@linux.intel.com>
-From: Robert Hoo <robert.hoo.linux@gmail.com>
-In-Reply-To: <20240126234237.547278-5-jacob.jun.pan@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <kord5qq6mywc7rbkzeoliz2cklrlljxm74qmrfwwjf6irx4fp7@6f5wsonafstt>
+X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
+ nalasex01c.na.qualcomm.com (10.47.97.35)
+X-QCInternal: smtphost
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
+X-Proofpoint-GUID: kkGa_eprPLj8gEcvkM7IOIyfEexXuxYn
+X-Proofpoint-ORIG-GUID: kkGa_eprPLj8gEcvkM7IOIyfEexXuxYn
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
+ definitions=2024-04-05_02,2024-04-04_01,2023-05-22_02
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0 mlxscore=0
+ malwarescore=0 mlxlogscore=576 bulkscore=0 suspectscore=0 clxscore=1011
+ priorityscore=1501 adultscore=0 phishscore=0 impostorscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2404010003
+ definitions=main-2404050023
 
-On 1/27/2024 7:42 AM, Jacob Pan wrote:
-> This option will be used to support delivering MSIs as posted
-> interrupts. Interrupt remapping is required.
+On Tue, Apr 02, 2024 at 04:22:31PM -0500, Andrew Halaney wrote:
+> Hey,
 > 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->   arch/x86/Kconfig | 11 +++++++++++
->   1 file changed, 11 insertions(+)
+> Sorry for the wide email, but I figured someone recently contributing
+> to / maintaining the Qualcomm SMMU driver may have some proper insights
+> into this.
 > 
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 5edec175b9bf..79f04ee2b91c 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -463,6 +463,17 @@ config X86_X2APIC
->   
->   	  If you don't know what to do here, say N.
->   
-> +config X86_POSTED_MSI
-> +	bool "Enable MSI and MSI-x delivery by posted interrupts"
-> +	depends on X86_X2APIC && X86_64 && IRQ_REMAP
+> Recently I remembered that performance on some Qualcomm platforms
+> takes a major hit when you use iommu.strict=1/CONFIG_IOMMU_DEFAULT_DMA_STRICT.
+> 
+> On the sa8775p-ride, I see most TLB sync calls to be about 150 us long,
+> with some spiking to 500 us, etc:
+> 
+>     [root@qti-snapdragon-ride4-sa8775p-09 ~]# trace-cmd start -p function_graph -g qcom_smmu_tlb_sync --max-graph-depth 1
+>       plugin 'function_graph'
+>     [root@qti-snapdragon-ride4-sa8775p-09 ~]# trace-cmd show
+>     # tracer: function_graph
+>     #
+>     # CPU  DURATION                  FUNCTION CALLS
+>     # |     |   |                     |   |   |   |
+>      0) ! 144.062 us  |  qcom_smmu_tlb_sync();
+> 
+> On my sc8280xp-lenovo-thinkpad-x13s (only other Qualcomm platform I can compare
+> with) I see around 2-15 us with spikes up to 20-30 us. That's thanks to this
+> patch[0], which I guess improved the platform from 1-2 ms to the ~10 us number.
+> 
+> It's not entirely clear to me how a DPU specific programming affects system
+> wide SMMU performance, but I'm curious if this is the only way to achieve this?
+> sa8775p doesn't have the DPU described even right now, so that's a bummer
+> as there's no way to make a similar immediate optimization, but I'm still struggling
+> to understand what that patch really did to improve things so maybe I'm missing
+> something.
+> 
 
-Does posted_msi really depend on x2APIC? PID.NDST encoding supports both xAPIC 
-and x2APIC.
-If posted_msi posts more stringent requirement, I think it deserves an 
-explanation in this patch's description.
+The cause was that the TLB sync is synchronized with the display updates,
+but without appropriate safe_lut_tlb values the display side wouldn't
+play nice.
 
-And, X86_X2APIC already depends on IRQ_REMAP, can we just list one of them here?
+Regards,
+Bjorn
+
+> I'm honestly not even sure what a "typical" range for TLB sync time would be,
+> but on sa8775p-ride its bad enough that some IRQs like UFS can cause RCU stalls
+> (pretty easy to reproduce with fio basic-verify.fio for example on the platform).
+> It also makes running with iommu.strict=1 impractical as performance for UFS,
+> ethernet, etc drops 75-80%.
+> 
+> Does anyone have any bright ideas on how to improve this, or if I'm even in
+> the right for assuming that time is suspiciously long?
+> 
+> Thanks,
+> Andrew
+> 
+> [0] https://lore.kernel.org/linux-arm-msm/CAF6AEGs9PLiCZdJ-g42-bE6f9yMR6cMyKRdWOY5m799vF9o4SQ@mail.gmail.com/
+> 
