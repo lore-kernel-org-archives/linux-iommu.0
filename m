@@ -1,133 +1,224 @@
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.223.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4AC781BC5C
-	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 03:25:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.180.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B511161329;
+	Fri,  5 Apr 2024 09:53:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.135.223.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712287516; cv=none; b=nRfUYxIYkZyzhfboaKG2ddttRH0pWBmehCJgsEMtnt7TN5auez2SIrDXdkyrZSvfBpdjodHNRIyCB+BttNp4p0pmK7fJhvHH0ZixNQ3/qWwH8yvOLeTxNRm9UST8icnY0hdAnpMqepXpXOAa2O/IwcTemOf+j7AYNLTKntz0c+Y=
+	t=1712310813; cv=none; b=mSOpTrbkd06bbBrVT6nx/TSXcZS2n0vcxj0G/3/BVYBSOCJPWKS7Oerl0fE9RBpBL3myLc3K7iCQ/22+0r99ZxEt53xIFcKih1wRzrPuUlNams7BcTEIALtVuEtHKFKk7SI94XQgOwsagH7ngRhmOsK06NHjdi+HEbRcJakeex8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712287516; c=relaxed/simple;
-	bh=cXdbJLTNqU91g03IUWPDt9s3dcd9a7zvX2yVIwFMzkg=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AIXmipY+xn1NhKD7LpTn3NYR/yq2+W8uR76dPYtkZS4kcpXYei0ZdQT9IivR34s8Utbln7H+xEpgYbixXj2idicGtL+e4samd7elJW32K/PXlQAMqf2xf5qQuc2f02NRbRku25/3WeLeYyGjHGE2X2q5ODZXoUf4UiZXqK4fSdM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=VjKdmhCR; arc=none smtp.client-ip=205.220.180.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1712310813; c=relaxed/simple;
+	bh=iG4O7MMO9gnBVtJZSYs1Hq2UvQRfp2O+8N10zEhPJQc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uwROAyvGnRTEOgRtUWcp/SCzcn0kvaixwCz1t2xon0c/VBpibny3gaisE2rqvN+rSmIei95au/qE/JQrhsfWlyAiT4epN8JLqo2bhLnyHgalKl5vnTQmrXi6BJfy84BigJ20CemGZgYABQRX7KkoqtCzh7oKAyXSbNWaw0FQFfo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz; spf=pass smtp.mailfrom=suse.cz; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=0AXR3Sr9; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=mv3acM2x; dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b=Z0+7rq6f; dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b=lVccGfCI; arc=none smtp.client-ip=195.135.223.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=suse.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="VjKdmhCR"
-Received: from pps.filterd (m0279873.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 4352MsDR017309;
-	Fri, 5 Apr 2024 03:25:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	date:from:to:cc:subject:message-id:references:mime-version
-	:content-type:in-reply-to; s=qcppdkim1; bh=O7pAdYq0gXOgAPMzGRLRY
-	4J+NTxIeiW5B+fKq2Jblkc=; b=VjKdmhCR2DqBfiSGs5KIDs2vvtA3TCPpPG4Qs
-	909hppOeReNK9fubIFvFD2+3C3nVCkZ9hWypVEHggQptJNNZ1USy3WaoqC1qjkQW
-	nCv+SclwSXTepllJwcXHINswpzW/r+eERH3Q81CZEmSiFDqUs5nRfuknaJBkOsrD
-	7ryAk3cLeWNSxoAiiPwd+nu7KgWRS+wCmMrrgpyJW/VRDpcuBIX2ahHhUCYV3by4
-	sbpnAUDPCD/TqeEkG40vbOsxvzRYfsEw14y7HBO5aZBzsvsIVx/kenGMvCV8cjsI
-	e57SOq4JxW1VoA71cJ4MQ2h35lfeIZ6kG58qoXbHrx8zFuK/Q==
-Received: from nalasppmta02.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3xa8fc02fe-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 05 Apr 2024 03:25:06 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 4353P5U4029645
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 5 Apr 2024 03:25:05 GMT
-Received: from hu-bjorande-lv.qualcomm.com (10.49.16.6) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.4; Thu, 4 Apr 2024 20:25:05 -0700
-Date: Thu, 4 Apr 2024 20:25:04 -0700
-From: Bjorn Andersson <quic_bjorande@quicinc.com>
-To: Andrew Halaney <ahalaney@redhat.com>
-CC: <linux-arm-msm@vger.kernel.org>, <robdclark@gmail.com>, <will@kernel.org>,
-        <iommu@lists.linux.dev>, <joro@8bytes.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        <quic_c_gdjako@quicinc.com>, <quic_cgoldswo@quicinc.com>,
-        <quic_sukadev@quicinc.com>, <quic_pdaly@quicinc.com>,
-        <quic_sudaraja@quicinc.com>
-Subject: Re: sa8775p-ride: What's a normal SMMU TLB sync time?
-Message-ID: <Zg9vEJV5JyGoM8KY@hu-bjorande-lv.qualcomm.com>
-References: <kord5qq6mywc7rbkzeoliz2cklrlljxm74qmrfwwjf6irx4fp7@6f5wsonafstt>
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="0AXR3Sr9";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="mv3acM2x";
+	dkim=pass (1024-bit key) header.d=suse.cz header.i=@suse.cz header.b="Z0+7rq6f";
+	dkim=permerror (0-bit key) header.d=suse.cz header.i=@suse.cz header.b="lVccGfCI"
+Received: from imap2.dmz-prg2.suse.org (imap2.dmz-prg2.suse.org [10.150.64.98])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by smtp-out1.suse.de (Postfix) with ESMTPS id 65BF721A2E;
+	Fri,  5 Apr 2024 09:53:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1712310809; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=kxLJbVvPYqfzG83pwvoYNu5wMFXj9ZScFtz4XZeGAUk=;
+	b=0AXR3Sr9XfI+c7rTPImw5uCIqUd0/09qhqdILdsZtrOOOTHNThWW8IWO2LavomosrDlGR4
+	r5zcQ7aU/RB1e9VhO2PeMNtjvZCEdKzHqupTEPNLaoS68JZ7HFWh4OFd1ckPqsmFOlBB7H
+	mcwM4kvxTwfCAYfvPvAMLZZtKWx5vB8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1712310809;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=kxLJbVvPYqfzG83pwvoYNu5wMFXj9ZScFtz4XZeGAUk=;
+	b=mv3acM2xzaAtD0goPoMaKRbxprQYlRRQRdWeBSj+XgsIgB6XYwFswsOsyAWM2lrdH+uuj0
+	DSsBpoDlTl2n1rDQ==
+Authentication-Results: smtp-out1.suse.de;
+	none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+	t=1712310808; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=kxLJbVvPYqfzG83pwvoYNu5wMFXj9ZScFtz4XZeGAUk=;
+	b=Z0+7rq6fcjYyrOGJFwhu7EPjxeB2YzEP6/GI4QJE77wXmTpoCFc1mE9dE1Bj/PEGY1tu49
+	ESTilKNYDaC1JrKhdHCnLw44UtjznYqGrEfN+CtNGBPA2Dt9MhQgjmAw2Ok0XXX+qUvUQJ
+	M0o1kG24lT0V2nbGjew3Qb50utPv0T0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+	s=susede2_ed25519; t=1712310808;
+	h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+	 mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=kxLJbVvPYqfzG83pwvoYNu5wMFXj9ZScFtz4XZeGAUk=;
+	b=lVccGfCILCM4svVbHjo2v2GSsNkbxp/3kUm/GIkdwdP1GGRDcHYdF3Ew32qMBI0ItKMWtc
+	2n16V0vgVrwCANAQ==
+Received: from imap2.dmz-prg2.suse.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by imap2.dmz-prg2.suse.org (Postfix) with ESMTPS id 5716C139F1;
+	Fri,  5 Apr 2024 09:53:28 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([2a07:de40:b281:106:10:150:64:167])
+	by imap2.dmz-prg2.suse.org with ESMTPSA
+	id 2Ig+FRjKD2a3YAAAn2gu4w
+	(envelope-from <jack@suse.cz>); Fri, 05 Apr 2024 09:53:28 +0000
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+	id 0505DA0814; Fri,  5 Apr 2024 11:53:27 +0200 (CEST)
+Date: Fri, 5 Apr 2024 11:53:27 +0200
+From: Jan Kara <jack@suse.cz>
+To: Suren Baghdasaryan <surenb@google.com>
+Cc: Kent Overstreet <kent.overstreet@linux.dev>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Matthew Wilcox <willy@infradead.org>, joro@8bytes.org,
+	will@kernel.org, trond.myklebust@hammerspace.com, anna@kernel.org,
+	arnd@arndb.de, herbert@gondor.apana.org.au, davem@davemloft.net,
+	jikos@kernel.org, benjamin.tissoires@redhat.com, tytso@mit.edu,
+	jack@suse.com, dennis@kernel.org, tj@kernel.org, cl@linux.com,
+	jakub@cloudflare.com, penberg@kernel.org, rientjes@google.com,
+	iamjoonsoo.kim@lge.com, vbabka@suse.cz, edumazet@google.com,
+	kuba@kernel.org, pabeni@redhat.com, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-nfs@vger.kernel.org,
+	linux-acpi@vger.kernel.org, acpica-devel@lists.linux.dev,
+	linux-arch@vger.kernel.org, linux-crypto@vger.kernel.org,
+	bpf@vger.kernel.org, linux-input@vger.kernel.org,
+	linux-ext4@vger.kernel.org, linux-mm@kvack.org,
+	netdev@vger.kernel.org, linux-security-module@vger.kernel.org
+Subject: Re: [PATCH 1/1] mm: change inlined allocation helpers to account at
+ the call site
+Message-ID: <20240405095327.ufsimeplwahh6mem@quack3>
+References: <20240404165404.3805498-1-surenb@google.com>
+ <Zg7dmp5VJkm1nLRM@casper.infradead.org>
+ <CAJuCfpHbTCwDERz+Hh+aLZzNdtSFKA+Q7sW-xzvmFmtyHCqROg@mail.gmail.com>
+ <CAJuCfpHy5Xo76S7h9rEuA3cQ1pVqurL=wmtQ2cx9-xN1aa_C_A@mail.gmail.com>
+ <Zg8qstJNfK07siNn@casper.infradead.org>
+ <jb25mtkveqf63bv74jhynf6ncxmums5s37esveqsv52yurh4z7@5q55ttv34bia>
+ <20240404154150.c25ba3a0b98023c8c1eff3a4@linux-foundation.org>
+ <jpaw4hdd73ngt7mvtcdryqscivx6m2ic76ikfkcopceb47becp@vox5czt5bec3>
+ <CAJuCfpF10COO2nh1nt3CcaZOFe4iSXszsup+a0qAEQ1ngyy5tQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <kord5qq6mywc7rbkzeoliz2cklrlljxm74qmrfwwjf6irx4fp7@6f5wsonafstt>
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: kkGa_eprPLj8gEcvkM7IOIyfEexXuxYn
-X-Proofpoint-ORIG-GUID: kkGa_eprPLj8gEcvkM7IOIyfEexXuxYn
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-04-05_02,2024-04-04_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0 mlxscore=0
- malwarescore=0 mlxlogscore=576 bulkscore=0 suspectscore=0 clxscore=1011
- priorityscore=1501 adultscore=0 phishscore=0 impostorscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.19.0-2404010003
- definitions=main-2404050023
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJuCfpF10COO2nh1nt3CcaZOFe4iSXszsup+a0qAEQ1ngyy5tQ@mail.gmail.com>
+X-Spam-Level: 
+X-Spamd-Result: default: False [-3.80 / 50.00];
+	BAYES_HAM(-3.00)[100.00%];
+	NEURAL_HAM_LONG(-1.00)[-1.000];
+	MID_RHS_NOT_FQDN(0.50)[];
+	NEURAL_HAM_SHORT(-0.20)[-1.000];
+	MIME_GOOD(-0.10)[text/plain];
+	MISSING_XM_UA(0.00)[];
+	MIME_TRACE(0.00)[0:+];
+	RCPT_COUNT_TWELVE(0.00)[39];
+	ARC_NA(0.00)[];
+	TO_DN_SOME(0.00)[];
+	RCVD_VIA_SMTP_AUTH(0.00)[];
+	FROM_HAS_DN(0.00)[];
+	R_RATELIMIT(0.00)[to_ip_from(RLinodumkc3pofpwycnya9d5a9)];
+	TO_MATCH_ENVRCPT_ALL(0.00)[];
+	FROM_EQ_ENVFROM(0.00)[];
+	RCVD_COUNT_THREE(0.00)[3];
+	RCVD_TLS_LAST(0.00)[];
+	DKIM_SIGNED(0.00)[suse.cz:s=susede2_rsa,suse.cz:s=susede2_ed25519];
+	FUZZY_BLOCKED(0.00)[rspamd.com];
+	DBL_BLOCKED_OPENRESOLVER(0.00)[c-faq.com:url,suse.com:email,imap2.dmz-prg2.suse.org:helo,imap2.dmz-prg2.suse.org:rdns,linux.dev:email]
+X-Spam-Score: -3.80
+X-Spam-Flag: NO
 
-On Tue, Apr 02, 2024 at 04:22:31PM -0500, Andrew Halaney wrote:
-> Hey,
+On Thu 04-04-24 16:16:15, Suren Baghdasaryan wrote:
+> On Thu, Apr 4, 2024 at 4:01 PM Kent Overstreet
+> <kent.overstreet@linux.dev> wrote:
+> >
+> > On Thu, Apr 04, 2024 at 03:41:50PM -0700, Andrew Morton wrote:
+> > > On Thu, 4 Apr 2024 18:38:39 -0400 Kent Overstreet <kent.overstreet@linux.dev> wrote:
+> > >
+> > > > On Thu, Apr 04, 2024 at 11:33:22PM +0100, Matthew Wilcox wrote:
+> > > > > On Thu, Apr 04, 2024 at 03:17:43PM -0700, Suren Baghdasaryan wrote:
+> > > > > > Ironically, checkpatch generates warnings for these type casts:
+> > > > > >
+> > > > > > WARNING: unnecessary cast may hide bugs, see
+> > > > > > http://c-faq.com/malloc/mallocnocast.html
+> > > > > > #425: FILE: include/linux/dma-fence-chain.h:90:
+> > > > > > + ((struct dma_fence_chain *)kmalloc(sizeof(struct dma_fence_chain),
+> > > > > > GFP_KERNEL))
+> > > > > >
+> > > > > > I guess I can safely ignore them in this case (since we cast to the
+> > > > > > expected type)?
+> > > > >
+> > > > > I find ignoring checkpatch to be a solid move 99% of the time.
+> > > > >
+> > > > > I really don't like the codetags.  This is so much churn, and it could
+> > > > > all be avoided by just passing in _RET_IP_ or _THIS_IP_ depending on
+> > > > > whether we wanted to profile this function or its caller.  vmalloc
+> > > > > has done it this way since 2008 (OK, using __builtin_return_address())
+> > > > > and lockdep has used _THIS_IP_ / _RET_IP_ since 2006.
+> > > >
+> > > > Except you can't. We've been over this; using that approach for tracing
+> > > > is one thing, using it for actual accounting isn't workable.
+> > >
+> > > I missed that.  There have been many emails.  Please remind us of the
+> > > reasoning here.
+> >
+> > I think it's on the other people claiming 'oh this would be so easy if
+> > you just do it this other way' to put up some code - or at least more
+> > than hot takes.
+> >
+> > But, since you asked - one of the main goals of this patchset was to be
+> > fast enough to run in production, and if you do it by return address
+> > then you've added at minimum a hash table lookup to every allocate and
+> > free; if you do that, running it in production is completely out of the
+> > question.
+> >
+> > Besides that - the issues with annotating and tracking the correct
+> > callsite really don't go away, they just shift around a bit. It's true
+> > that the return address approach would be easier initially, but that's
+> > not all we're concerned with; we're concerned with making sure
+> > allocations get accounted to the _correct_ callsite so that we're giving
+> > numbers that you can trust, and by making things less explicit you make
+> > that harder.
+> >
+> > Additionally: the alloc_hooks() macro is for more than this. It's also
+> > for more usable fault injection - remember every thread we have where
+> > people are begging for every allocation to be __GFP_NOFAIL - "oh, error
+> > paths are hard to test, let's just get rid of them" - never mind that
+> > actually do have to have error paths - but _per callsite_ selectable
+> > fault injection will actually make it practical to test memory error
+> > paths.
+> >
+> > And Kees working on stuff that'll make use of the alloc_hooks() macro
+> > for segregating kmem_caches.
 > 
-> Sorry for the wide email, but I figured someone recently contributing
-> to / maintaining the Qualcomm SMMU driver may have some proper insights
-> into this.
-> 
-> Recently I remembered that performance on some Qualcomm platforms
-> takes a major hit when you use iommu.strict=1/CONFIG_IOMMU_DEFAULT_DMA_STRICT.
-> 
-> On the sa8775p-ride, I see most TLB sync calls to be about 150 us long,
-> with some spiking to 500 us, etc:
-> 
->     [root@qti-snapdragon-ride4-sa8775p-09 ~]# trace-cmd start -p function_graph -g qcom_smmu_tlb_sync --max-graph-depth 1
->       plugin 'function_graph'
->     [root@qti-snapdragon-ride4-sa8775p-09 ~]# trace-cmd show
->     # tracer: function_graph
->     #
->     # CPU  DURATION                  FUNCTION CALLS
->     # |     |   |                     |   |   |   |
->      0) ! 144.062 us  |  qcom_smmu_tlb_sync();
-> 
-> On my sc8280xp-lenovo-thinkpad-x13s (only other Qualcomm platform I can compare
-> with) I see around 2-15 us with spikes up to 20-30 us. That's thanks to this
-> patch[0], which I guess improved the platform from 1-2 ms to the ~10 us number.
-> 
-> It's not entirely clear to me how a DPU specific programming affects system
-> wide SMMU performance, but I'm curious if this is the only way to achieve this?
-> sa8775p doesn't have the DPU described even right now, so that's a bummer
-> as there's no way to make a similar immediate optimization, but I'm still struggling
-> to understand what that patch really did to improve things so maybe I'm missing
-> something.
-> 
+> Yeah, that pretty much summarizes it. Note that we don't have to make
+> the conversions in this patch and accounting will still work but then
+> all allocations from different callers will be accounted to the helper
+> function and that's less useful than accounting at the call site.
+> It's a sizable churn but the conversions are straight-forward and we
+> do get accurate, performant and easy to use memory accounting.
 
-The cause was that the TLB sync is synchronized with the display updates,
-but without appropriate safe_lut_tlb values the display side wouldn't
-play nice.
+OK, fair enough. I guess I can live with the allocation macros in jbd2 if
+type safety is preserved. But please provide a short summary of why we need
+these macros (e.g. instead of RET_IP approach) in the changelog (or at
+least a link to some email explaining this if the explanation would get too
+long). Because I was wondering about the same as Andrew (and yes, this is
+because I wasn't really following the huge discussion last time).
 
-Regards,
-Bjorn
-
-> I'm honestly not even sure what a "typical" range for TLB sync time would be,
-> but on sa8775p-ride its bad enough that some IRQs like UFS can cause RCU stalls
-> (pretty easy to reproduce with fio basic-verify.fio for example on the platform).
-> It also makes running with iommu.strict=1 impractical as performance for UFS,
-> ethernet, etc drops 75-80%.
-> 
-> Does anyone have any bright ideas on how to improve this, or if I'm even in
-> the right for assuming that time is suspiciously long?
-> 
-> Thanks,
-> Andrew
-> 
-> [0] https://lore.kernel.org/linux-arm-msm/CAF6AEGs9PLiCZdJ-g42-bE6f9yMR6cMyKRdWOY5m799vF9o4SQ@mail.gmail.com/
-> 
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
