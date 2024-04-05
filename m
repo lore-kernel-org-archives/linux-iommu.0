@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D7B21779B2
-	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 22:26:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FB8C176FD5
+	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 22:26:52 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712356013; cv=none; b=O3ROSB7ZAaHdU2xi/H8qY1Hx47b6268WDlrFeX4dwISejW5wp8issxEn43nDWvIRgFfisJ1DAMMUWSjdeT1Nc7Rsl39SSA/sI93P7e2l9uBx+5/ai83/14avWscfpJ3qN9STBFrGT1AJE5rqffwheqbPCgt9T67CV4dS8Cbq8DA=
+	t=1712356014; cv=none; b=LvgOHxLxVf2vkf8EBdNt+J2PUcjB4aWpiWqFu7mgE2qSOXJxgGP2KMYwlgf4PgQkytqKFZIhygZd7Z83geaN8zBxvLz8gQlkRg9l8qwsaK3WHlpOen5nyLFdjBzQLcugeQUTdc7FNJxz2soVGvfK0or1whBbIFgqPWzmLXwPJpc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712356013; c=relaxed/simple;
-	bh=UOx0iCctnoI4CxYoYH2BoshQQWoeZtr8Db2m4Zrt2wA=;
+	s=arc-20240116; t=1712356014; c=relaxed/simple;
+	bh=H0TGjg1UoYwF5qFJJyPYA+APS27Sn0hasVdnhJ92ypQ=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=tqcjw86bxh2rJ64q5YJFn0zjYKuRs5Pt/Csx5sako14F3IYFO0gtdJcFpbHCC604+C6iGt4ZlkoHRkNFAC4IIq6cDIXzHFN8cziZzvefjaFCbp/MHcqV3Z6VPKKp1w/03o3yttdTFtsv6uEr4NoZKvhtuq6vR2MTMOOX+c96QvY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AbdRyA1j; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version; b=oK6K6b4OkYZO/W4DU4xO+15EIY0LgbHH7yJKkfA098fSOofWQ289/U9nTdTazGd9DDaGiyNih0ICQo+ddPFZzpCosb+lRBIg/N2hEw4/htkhswi98pt/Q461uhsmkbq6xqY6rmJNr6uqYAudGDrAaGbRX960XxoJAqvLeLWTpRw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QeavWFWh; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AbdRyA1j"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QeavWFWh"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712356012; x=1743892012;
+  t=1712356013; x=1743892013;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=UOx0iCctnoI4CxYoYH2BoshQQWoeZtr8Db2m4Zrt2wA=;
-  b=AbdRyA1jcRswUiJ7jITxWQBqgL0zTa5IZhqSfDfTTIyYMtYNEh2GCfLO
-   DLTTTQYClsJYCrWcCpuY/bblDJ5I2fuWSLfedYm0ksIWobMCQQnzF5K0k
-   EvT7Dh23H3i7zneDEO5XLUR6PaTHaViIN/C3PYyQXZkEDeYVD3+XYzdLI
-   fiyKH6O3ljdt5iL1dsuiHwwa64U5bkIniwvS7A/VQEraekn+BRgquuARW
-   /qRGrYncFWIsTV+A9RZadAbxP7eIx8yS3gPx9FIXC4RWavNRxOm2juW1F
-   ZUvQFr2MKuTKbNF8TGdjCBDb22Agb/3V+1FBb4sdZV+huvqV3GLhJbr+y
-   Q==;
-X-CSE-ConnectionGUID: QHBgVHSwQnqL0Oh+6zFurw==
-X-CSE-MsgGUID: QKZd5vucR3uegpqULSBeYA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="19062775"
+  bh=H0TGjg1UoYwF5qFJJyPYA+APS27Sn0hasVdnhJ92ypQ=;
+  b=QeavWFWhHaPj/eIADbbRVVKA04Q5MQRzVTBrctUalAaf8KqYBVWLS/R9
+   o00G2EdagukR8oLZAXhU/iY5vUM9lggWBzNRZDWjxKxoCOATMkv7diilQ
+   P736B2chKmioLiBrjD9B52zDYD0yRfeIEnEg5fEeXeRHeUQvwY/EM332B
+   r4AL1mlzfUA3rESHhZIMVbt4u7Xt+pAqeAMgpJIsJTF0b9r5WJIKXMDHQ
+   Z900qvIR7z9/yBWK/wr3o1QqZJbRhpDeN15gLZusaj+ELd7PhKezPAizu
+   avH924j+vGalA8+tDgI64ro7QC847cIcXQOfnG+AIEWOaiMIrW22EkHD3
+   g==;
+X-CSE-ConnectionGUID: iVp5rRpqT0KSmn/Tm7rlpw==
+X-CSE-MsgGUID: +0Kx9HrZSi27SCbcI4wk9Q==
+X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="19062805"
 X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="19062775"
+   d="scan'208";a="19062805"
 Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 15:26:50 -0700
-X-CSE-ConnectionGUID: zaJw613uTSe3BubvMvJJWw==
-X-CSE-MsgGUID: NnCsgckpQSq8xOEmxpEMuQ==
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 15:26:52 -0700
+X-CSE-ConnectionGUID: CcfzkElUSke4mF1BjCAwnw==
+X-CSE-MsgGUID: Zz+SdyguRFaEXm2dCFFyfA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="23928329"
+   d="scan'208";a="23928336"
 Received: from jacob-builder.jf.intel.com ([10.54.39.125])
-  by fmviesa004.fm.intel.com with ESMTP; 05 Apr 2024 15:26:49 -0700
+  by fmviesa004.fm.intel.com with ESMTP; 05 Apr 2024 15:26:50 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: LKML <linux-kernel@vger.kernel.org>,
 	X86 Kernel <x86@kernel.org>,
@@ -70,9 +70,9 @@ Cc: Paul Luse <paul.e.luse@intel.com>,
 	guang.zeng@intel.com,
 	robert.hoo.linux@gmail.com,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v2 08/13] x86/irq: Install posted MSI notification handler
-Date: Fri,  5 Apr 2024 15:31:05 -0700
-Message-Id: <20240405223110.1609888-9-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 10/13] x86/irq: Extend checks for pending vectors to posted interrupts
+Date: Fri,  5 Apr 2024 15:31:07 -0700
+Message-Id: <20240405223110.1609888-11-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
 References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
@@ -84,235 +84,101 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-All MSI vectors are multiplexed into a single notification vector when
-posted MSI is enabled. It is the responsibility of the notification
-vector handler to demultiplex MSI vectors. In this handler, for each
-pending bit, MSI vector handlers are dispatched without IDT delivery.
+During interrupt affinity change, it is possible to have interrupts delivered
+to the old CPU after the affinity has changed to the new one. To prevent lost
+interrupts, local APIC IRR is checked on the old CPU. Similar checks must be
+done for posted MSIs given the same reason.
 
-For example, the interrupt flow will change as follows:
-(3 MSIs of different vectors arrive in a a high frequency burst)
+Consider the following scenario:
+	Device		system agent		iommu		memory 		CPU/LAPIC
+1	FEEX_XXXX
+2			Interrupt request
+3						Fetch IRTE	->
+4						->Atomic Swap PID.PIR(vec)
+						Push to Global Observable(GO)
+5						if (ON*)
+	i						done;*
+						else
+6							send a notification ->
 
-BEFORE:
-interrupt(MSI)
-    irq_enter()
-    handler() /* EOI */
-    irq_exit()
-        process_softirq()
-interrupt(MSI)
-    irq_enter()
-    handler() /* EOI */
-    irq_exit()
-        process_softirq()
-interrupt(MSI)
-    irq_enter()
-    handler() /* EOI */
-    irq_exit()
-        process_softirq()
+* ON: outstanding notification, 1 will suppress new notifications
 
-AFTER:
-interrupt /* Posted MSI notification vector */
-    irq_enter()
-	atomic_xchg(PIR)
-	handler()
-	handler()
-	handler()
-	pi_clear_on()
-    apic_eoi()
-    irq_exit()
-        process_softirq()
+If the affinity change happens between 3 and 5 in IOMMU, the old CPU's posted
+interrupt request (PIR) could have pending bit set for the vector being moved.
 
-Except for the leading MSI, CPU notifications are skipped/coalesced.
-
-For MSIs arrive at a low frequency, the demultiplexing loop does not
-wait for more interrupts to coalesce. Therefore, there's no additional
-latency other than the processing time.
+This patch adds a helper function to check individual vector status.
+Then use the helper to check for pending interrupts on the source CPU's
+PID.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
 ---
-v2:
-   - Delete extra inline attribute
-   - Fix pir pointer in xchg (Zeng Guang)
+v2: Fold in helper function patch.
 ---
- arch/x86/include/asm/hardirq.h  |   3 +
- arch/x86/include/asm/idtentry.h |   3 +
- arch/x86/kernel/idt.c           |   3 +
- arch/x86/kernel/irq.c           | 113 ++++++++++++++++++++++++++++++++
- 4 files changed, 122 insertions(+)
+ arch/x86/include/asm/apic.h        |  3 ++-
+ arch/x86/include/asm/posted_intr.h | 18 ++++++++++++++++++
+ 2 files changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/hardirq.h b/arch/x86/include/asm/hardirq.h
-index 01ea52859462..ee0c05366dec 100644
---- a/arch/x86/include/asm/hardirq.h
-+++ b/arch/x86/include/asm/hardirq.h
-@@ -44,6 +44,9 @@ typedef struct {
- 	unsigned int irq_hv_reenlightenment_count;
- 	unsigned int hyperv_stimer0_count;
- #endif
-+#ifdef CONFIG_X86_POSTED_MSI
-+	unsigned int posted_msi_notification_count;
-+#endif
- } ____cacheline_aligned irq_cpustat_t;
+diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
+index ebf80718912d..5bf0d6c2523b 100644
+--- a/arch/x86/include/asm/apic.h
++++ b/arch/x86/include/asm/apic.h
+@@ -13,6 +13,7 @@
+ #include <asm/mpspec.h>
+ #include <asm/msr.h>
+ #include <asm/hardirq.h>
++#include <asm/posted_intr.h>
  
- DECLARE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
-diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
-index 749c7411d2f1..5a6fc7593cfc 100644
---- a/arch/x86/include/asm/idtentry.h
-+++ b/arch/x86/include/asm/idtentry.h
-@@ -701,6 +701,9 @@ DECLARE_IDTENTRY_SYSVEC(ERROR_APIC_VECTOR,		sysvec_error_interrupt);
- DECLARE_IDTENTRY_SYSVEC(SPURIOUS_APIC_VECTOR,		sysvec_spurious_apic_interrupt);
- DECLARE_IDTENTRY_SYSVEC(LOCAL_TIMER_VECTOR,		sysvec_apic_timer_interrupt);
- DECLARE_IDTENTRY_SYSVEC(X86_PLATFORM_IPI_VECTOR,	sysvec_x86_platform_ipi);
-+# ifdef CONFIG_X86_POSTED_MSI
-+DECLARE_IDTENTRY_SYSVEC(POSTED_MSI_NOTIFICATION_VECTOR,	sysvec_posted_msi_notification);
-+# endif
- #endif
+ #define ARCH_APICTIMER_STOPS_ON_C3	1
  
- #ifdef CONFIG_SMP
-diff --git a/arch/x86/kernel/idt.c b/arch/x86/kernel/idt.c
-index fc37c8d83daf..f445bec516a0 100644
---- a/arch/x86/kernel/idt.c
-+++ b/arch/x86/kernel/idt.c
-@@ -163,6 +163,9 @@ static const __initconst struct idt_data apic_idts[] = {
- # endif
- 	INTG(SPURIOUS_APIC_VECTOR,		asm_sysvec_spurious_apic_interrupt),
- 	INTG(ERROR_APIC_VECTOR,			asm_sysvec_error_interrupt),
-+# ifdef CONFIG_X86_POSTED_MSI
-+	INTG(POSTED_MSI_NOTIFICATION_VECTOR,	asm_sysvec_posted_msi_notification),
-+# endif
- #endif
- };
+@@ -507,7 +508,7 @@ static inline bool is_vector_pending(unsigned int vector)
+ 	if (irr  & (1 << (vector % 32)))
+ 		return true;
  
-diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
-index c54de9378943..8772b0a3abf6 100644
---- a/arch/x86/kernel/irq.c
-+++ b/arch/x86/kernel/irq.c
-@@ -183,6 +183,13 @@ int arch_show_interrupts(struct seq_file *p, int prec)
- 		seq_printf(p, "%10u ",
- 			   irq_stats(j)->kvm_posted_intr_wakeup_ipis);
- 	seq_puts(p, "  Posted-interrupt wakeup event\n");
-+#endif
-+#ifdef CONFIG_X86_POSTED_MSI
-+	seq_printf(p, "%*s: ", prec, "PMN");
-+	for_each_online_cpu(j)
-+		seq_printf(p, "%10u ",
-+			   irq_stats(j)->posted_msi_notification_count);
-+	seq_puts(p, "  Posted MSI notification event\n");
- #endif
- 	return 0;
+-	return false;
++	return pi_pending_this_cpu(vector);
  }
-@@ -361,6 +368,112 @@ void intel_posted_msi_init(void)
- 	destination = x2apic_enabled() ? apic_id : apic_id << 8;
- 	this_cpu_write(posted_interrupt_desc.ndst, destination);
+ 
+ /*
+diff --git a/arch/x86/include/asm/posted_intr.h b/arch/x86/include/asm/posted_intr.h
+index 4e5eea2d20e0..8aaa15515490 100644
+--- a/arch/x86/include/asm/posted_intr.h
++++ b/arch/x86/include/asm/posted_intr.h
+@@ -1,6 +1,7 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
+ #ifndef _X86_POSTED_INTR_H
+ #define _X86_POSTED_INTR_H
++#include <asm/irq_vectors.h>
+ 
+ #define POSTED_INTR_ON  0
+ #define POSTED_INTR_SN  1
+@@ -81,9 +82,26 @@ static inline bool pi_test_sn(struct pi_desc *pi_desc)
  }
-+
+ 
+ #ifdef CONFIG_X86_POSTED_MSI
 +/*
-+ * De-multiplexing posted interrupts is on the performance path, the code
-+ * below is written to optimize the cache performance based on the following
-+ * considerations:
-+ * 1.Posted interrupt descriptor (PID) fits in a cache line that is frequently
-+ *   accessed by both CPU and IOMMU.
-+ * 2.During posted MSI processing, the CPU needs to do 64-bit read and xchg
-+ *   for checking and clearing posted interrupt request (PIR), a 256 bit field
-+ *   within the PID.
-+ * 3.On the other side, the IOMMU does atomic swaps of the entire PID cache
-+ *   line when posting interrupts and setting control bits.
-+ * 4.The CPU can access the cache line a magnitude faster than the IOMMU.
-+ * 5.Each time the IOMMU does interrupt posting to the PIR will evict the PID
-+ *   cache line. The cache line states after each operation are as follows:
-+ *   CPU		IOMMU			PID Cache line state
-+ *   ---------------------------------------------------------------
-+ *...read64					exclusive
-+ *...lock xchg64				modified
-+ *...			post/atomic swap	invalid
-+ *...-------------------------------------------------------------
-+ *
-+ * To reduce L1 data cache miss, it is important to avoid contention with
-+ * IOMMU's interrupt posting/atomic swap. Therefore, a copy of PIR is used
-+ * to dispatch interrupt handlers.
-+ *
-+ * In addition, the code is trying to keep the cache line state consistent
-+ * as much as possible. e.g. when making a copy and clearing the PIR
-+ * (assuming non-zero PIR bits are present in the entire PIR), it does:
-+ *		read, read, read, read, xchg, xchg, xchg, xchg
-+ * instead of:
-+ *		read, xchg, read, xchg, read, xchg, read, xchg
++ * Not all external vectors are subject to interrupt remapping, e.g. IOMMU's
++ * own interrupts. Here we do not distinguish them since those vector bits in
++ * PIR will always be zero.
 + */
-+static __always_inline bool handle_pending_pir(u64 *pir, struct pt_regs *regs)
++static inline bool pi_pending_this_cpu(unsigned int vector)
 +{
-+	int i, vec = FIRST_EXTERNAL_VECTOR;
-+	unsigned long pir_copy[4];
-+	bool handled = false;
++	struct pi_desc *pid = this_cpu_ptr(&posted_interrupt_desc);
 +
-+	for (i = 0; i < 4; i++)
-+		pir_copy[i] = pir[i];
++	if (WARN_ON_ONCE(vector > NR_VECTORS || vector < FIRST_EXTERNAL_VECTOR))
++		return false;
 +
-+	for (i = 0; i < 4; i++) {
-+		if (!pir_copy[i])
-+			continue;
-+
-+		pir_copy[i] = arch_xchg(&pir[i], 0);
-+		handled = true;
-+	}
-+
-+	if (handled) {
-+		for_each_set_bit_from(vec, pir_copy, FIRST_SYSTEM_VECTOR)
-+			call_irq_handler(vec, regs);
-+	}
-+
-+	return handled;
++	return test_bit(vector, (unsigned long *)pid->pir);
 +}
 +
-+/*
-+ * Performance data shows that 3 is good enough to harvest 90+% of the benefit
-+ * on high IRQ rate workload.
-+ */
-+#define MAX_POSTED_MSI_COALESCING_LOOP 3
+ extern void intel_posted_msi_init(void);
+ 
+ #else
++static inline bool pi_pending_this_cpu(unsigned int vector) { return false; }
 +
-+/*
-+ * For MSIs that are delivered as posted interrupts, the CPU notifications
-+ * can be coalesced if the MSIs arrive in high frequency bursts.
-+ */
-+DEFINE_IDTENTRY_SYSVEC(sysvec_posted_msi_notification)
-+{
-+	struct pt_regs *old_regs = set_irq_regs(regs);
-+	struct pi_desc *pid;
-+	int i = 0;
-+
-+	pid = this_cpu_ptr(&posted_interrupt_desc);
-+
-+	inc_irq_stat(posted_msi_notification_count);
-+	irq_enter();
-+
-+	/*
-+	 * Max coalescing count includes the extra round of handle_pending_pir
-+	 * after clearing the outstanding notification bit. Hence, at most
-+	 * MAX_POSTED_MSI_COALESCING_LOOP - 1 loops are executed here.
-+	 */
-+	while (++i < MAX_POSTED_MSI_COALESCING_LOOP) {
-+		if (!handle_pending_pir(pid->pir64, regs))
-+			break;
-+	}
-+
-+	/*
-+	 * Clear outstanding notification bit to allow new IRQ notifications,
-+	 * do this last to maximize the window of interrupt coalescing.
-+	 */
-+	pi_clear_on(pid);
-+
-+	/*
-+	 * There could be a race of PI notification and the clearing of ON bit,
-+	 * process PIR bits one last time such that handling the new interrupts
-+	 * are not delayed until the next IRQ.
-+	 */
-+	handle_pending_pir(pid->pir64, regs);
-+
-+	apic_eoi();
-+	irq_exit();
-+	set_irq_regs(old_regs);
-+}
+ static inline void intel_posted_msi_init(void) {};
+ 
  #endif /* X86_POSTED_MSI */
- 
- #ifdef CONFIG_HOTPLUG_CPU
 -- 
 2.25.1
 
