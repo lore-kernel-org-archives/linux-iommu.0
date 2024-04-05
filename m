@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DA1D178CEB
-	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 22:26:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4A4E179219
+	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 22:26:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712356015; cv=none; b=OL2V5ZyWiavE9MqbYyUIpst3v7cm412Oyj4AVFvxOchysots/lrm8hPXjVueO4FEWzPFZ9Pw69GUPE3N+6MxgW2qFlRfBUoFakWZ5RSgPyccPeMFThWVisbd9oclAGLYFANpax9p7SU1GTwxsLRd5rInC05fA3GjKv+ZbnCBc3c=
+	t=1712356015; cv=none; b=MHRYe+gGTza7qckoXTUJaacjrPkr2Hv/rNefPpqocp2bamDliEU+1A9ipE9m8br6UQQW3Y+xNSpTAB1OXfeNDsRcNNLe5ajGMW/MDPRSMAEFf+SG+IgqQd/xBZGSjCwsaAySEwv+Eqp6qQ0nlRhucMZNPVgfUbS73daYxrVxV1Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1712356015; c=relaxed/simple;
-	bh=LkTbi44XEjcmD+H9V0/r7+1X5xEeMnDv3K3o3ANyhmw=;
+	bh=ki4jrj4UXSWxXrhulX5LioleJEjgSCmUEPsdgUkrskk=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Tme879AQ8RGl/z3r3/RT9Nz21uJZ2H0mK/1sGPVwJSlkkFfhtU4SVkLwrF2elGRuW1qZqYtYTQJe1IsKAmPe9TU/G2yVbPJAXusB6IC1PYL11KvMrPXU9IiTonzA9c2ODgAklxTbAQG4sFcdM6b8zm0GvGXM7EacWM7VPGK3piw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XuC4K53N; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version; b=Hn35xc+rQjIwchCAscoy1Fl33kCMHN7pRrRxVsBMSzbjCTxeeT7ujj/C7dC8Xv1uQaV6z8Vz3PYjUb0kDjefGvJhpfW81r9iCHJAash3yUuCimXtXLIUDgiLH7xh5GlyvoQobhZNgxLZRxbhnoX81qgxAti2deApIr9vVYBR4XA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZmaRQILT; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XuC4K53N"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZmaRQILT"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712356012; x=1743892012;
+  t=1712356014; x=1743892014;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=LkTbi44XEjcmD+H9V0/r7+1X5xEeMnDv3K3o3ANyhmw=;
-  b=XuC4K53NYfb+5G1j4S6v88rWn96xuexhGSTIKfU2ss7e26WMpJgqeWv1
-   Xho0t5zRGP3dk40ZJ7ae+Xo8fXVVO/s0EhAMeYzv8XlgEC+rwBQElbzq4
-   4Kh5VnYCnr8Fbh6cmrsFzIBMJIrT2auXrjM3tejIXLUs1cyRQx0aSkUW4
-   eHUp0osKB95EqFGtpH3O5bWO5hmcdTQ0HFYgCpj9S7oapA4aZDHcEa/A2
-   xsWVROCl4WpH9KpbKBWAo5/nE2qT+J9nIUz0BJkbkoX0s1dVza/Yzk6H1
-   Vz5XZwLsBX8dctExTZ9cGUNrb8b7M6GGtPPn3u35A46b7wacwAzMxDDGz
-   g==;
-X-CSE-ConnectionGUID: 1oB1zFozTGCUToFnvc9sOw==
-X-CSE-MsgGUID: gGRlwDZkS0mFSPOONzgXZA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="19062789"
+  bh=ki4jrj4UXSWxXrhulX5LioleJEjgSCmUEPsdgUkrskk=;
+  b=ZmaRQILTndojmMC8iz7ZFpTo0yR49+M4j9dsSgykxS0slcQMFwcCS3zs
+   3AGzitEnAjkoxha8HHXc7UhnV+7QH6SNVaKDgLOnyB/0VisdX35nBOWZQ
+   PJvh5EgqBTD5NR5pjpSKiurbEa8s2oWaZStBkKav6VY5FsWESolWqWqDU
+   oXBB6FbzTncSmpBXS54kWaf2xfB5JGJS9GiPed3TQT4FcJC7dFgXO5vxK
+   gOP8+ZrDzs8TxFOMXCyRIGfRZh1LcX9COVCLgH17PcDOvxH6h/PTAYaD4
+   w6bLeNg92xt9ZtOPIN41kT/MvAB7uyQW1RnOK55nqTs/fNrai5rge4d2T
+   A==;
+X-CSE-ConnectionGUID: QuPVkcItTYiyqTKrvafXdw==
+X-CSE-MsgGUID: CNPZoJlbStCRUY3vwBIxeQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="19062819"
 X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="19062789"
+   d="scan'208";a="19062819"
 Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 15:26:51 -0700
-X-CSE-ConnectionGUID: cOkIIhzfSXisjOEM48bJGQ==
-X-CSE-MsgGUID: zH4owt0ZTBS8MP9bwG+JrQ==
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 15:26:52 -0700
+X-CSE-ConnectionGUID: l268QKSvQXOxZq6H118Ylg==
+X-CSE-MsgGUID: iNNQOOp0RZeFkQxr0/UccQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="23928332"
+   d="scan'208";a="23928343"
 Received: from jacob-builder.jf.intel.com ([10.54.39.125])
-  by fmviesa004.fm.intel.com with ESMTP; 05 Apr 2024 15:26:50 -0700
+  by fmviesa004.fm.intel.com with ESMTP; 05 Apr 2024 15:26:51 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: LKML <linux-kernel@vger.kernel.org>,
 	X86 Kernel <x86@kernel.org>,
@@ -70,9 +70,9 @@ Cc: Paul Luse <paul.e.luse@intel.com>,
 	guang.zeng@intel.com,
 	robert.hoo.linux@gmail.com,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v2 09/13] x86/irq: Factor out common code for checking pending interrupts
-Date: Fri,  5 Apr 2024 15:31:06 -0700
-Message-Id: <20240405223110.1609888-10-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 11/13] iommu/vt-d: Make posted MSI an opt-in cmdline option
+Date: Fri,  5 Apr 2024 15:31:08 -0700
+Message-Id: <20240405223110.1609888-12-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
 References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
@@ -84,87 +84,83 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Use a common function for checking pending interrupt vector in APIC IRR
-instead of duplicated open coding them.
+Add a command line opt-in option for posted MSI if CONFIG_X86_POSTED_MSI=y.
 
-Additional checks for posted MSI vectors can then be contained in this
-function.
+Also introduce a helper function for testing if posted MSI is supported on
+the platform.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- arch/x86/include/asm/apic.h   | 11 +++++++++++
- arch/x86/kernel/apic/vector.c |  5 ++---
- arch/x86/kernel/irq.c         |  5 ++---
- 3 files changed, 15 insertions(+), 6 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt |  1 +
+ arch/x86/include/asm/irq_remapping.h            | 11 +++++++++++
+ drivers/iommu/irq_remapping.c                   | 13 ++++++++++++-
+ 3 files changed, 24 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
-index 94ce0f7c9d3a..ebf80718912d 100644
---- a/arch/x86/include/asm/apic.h
-+++ b/arch/x86/include/asm/apic.h
-@@ -499,6 +499,17 @@ static inline bool lapic_vector_set_in_irr(unsigned int vector)
- 	return !!(irr & (1U << (vector % 32)));
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index bb884c14b2f6..e5fd02423c4c 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -2251,6 +2251,7 @@
+ 			no_x2apic_optout
+ 				BIOS x2APIC opt-out request will be ignored
+ 			nopost	disable Interrupt Posting
++			posted_msi enable MSIs delivered as posted interrupts
+ 
+ 	iomem=		Disable strict checking of access to MMIO memory
+ 		strict	regions from userspace.
+diff --git a/arch/x86/include/asm/irq_remapping.h b/arch/x86/include/asm/irq_remapping.h
+index 7a2ed154a5e1..e46bde61029b 100644
+--- a/arch/x86/include/asm/irq_remapping.h
++++ b/arch/x86/include/asm/irq_remapping.h
+@@ -50,6 +50,17 @@ static inline struct irq_domain *arch_get_ir_parent_domain(void)
+ 	return x86_vector_domain;
  }
  
-+static inline bool is_vector_pending(unsigned int vector)
++#ifdef CONFIG_X86_POSTED_MSI
++extern int enable_posted_msi;
++
++static inline bool posted_msi_supported(void)
 +{
-+	unsigned int irr;
-+
-+	irr = apic_read(APIC_IRR + (vector / 32 * 0x10));
-+	if (irr  & (1 << (vector % 32)))
-+		return true;
-+
-+	return false;
++	return enable_posted_msi && irq_remapping_cap(IRQ_POSTING_CAP);
 +}
++#else
++static inline bool posted_msi_supported(void) { return false; };
++#endif
 +
- /*
-  * Warm reset vector position:
-  */
-diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
-index 185738c72766..9eec52925fa3 100644
---- a/arch/x86/kernel/apic/vector.c
-+++ b/arch/x86/kernel/apic/vector.c
-@@ -965,7 +965,7 @@ static void __vector_cleanup(struct vector_cleanup *cl, bool check_irr)
- 	lockdep_assert_held(&vector_lock);
+ #else  /* CONFIG_IRQ_REMAP */
  
- 	hlist_for_each_entry_safe(apicd, tmp, &cl->head, clist) {
--		unsigned int irr, vector = apicd->prev_vector;
-+		unsigned int vector = apicd->prev_vector;
+ static inline bool irq_remapping_cap(enum irq_remap_cap cap) { return 0; }
+diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+index ee59647c2050..5672783c9f1f 100644
+--- a/drivers/iommu/irq_remapping.c
++++ b/drivers/iommu/irq_remapping.c
+@@ -24,6 +24,10 @@ int no_x2apic_optout;
  
- 		/*
- 		 * Paranoia: Check if the vector that needs to be cleaned
-@@ -979,8 +979,7 @@ static void __vector_cleanup(struct vector_cleanup *cl, bool check_irr)
- 		 * fixup_irqs() was just called to scan IRR for set bits and
- 		 * forward them to new destination CPUs via IPIs.
- 		 */
--		irr = check_irr ? apic_read(APIC_IRR + (vector / 32 * 0x10)) : 0;
--		if (irr & (1U << (vector % 32))) {
-+		if (check_irr && is_vector_pending(vector)) {
- 			pr_warn_once("Moved interrupt pending in old target APIC %u\n", apicd->irq);
- 			rearm = true;
- 			continue;
-diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
-index 8772b0a3abf6..3206d48f380d 100644
---- a/arch/x86/kernel/irq.c
-+++ b/arch/x86/kernel/irq.c
-@@ -480,7 +480,7 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_posted_msi_notification)
- /* A cpu has been removed from cpu_online_mask.  Reset irq affinities. */
- void fixup_irqs(void)
- {
--	unsigned int irr, vector;
-+	unsigned int vector;
- 	struct irq_desc *desc;
- 	struct irq_data *data;
- 	struct irq_chip *chip;
-@@ -507,8 +507,7 @@ void fixup_irqs(void)
- 		if (IS_ERR_OR_NULL(__this_cpu_read(vector_irq[vector])))
- 			continue;
+ int disable_irq_post = 0;
  
--		irr = apic_read(APIC_IRR + (vector / 32 * 0x10));
--		if (irr  & (1 << (vector % 32))) {
-+		if (is_vector_pending(vector)) {
- 			desc = __this_cpu_read(vector_irq[vector]);
++#ifdef CONFIG_X86_POSTED_MSI
++int enable_posted_msi;
++#endif
++
+ static int disable_irq_remap;
+ static struct irq_remap_ops *remap_ops;
  
- 			raw_spin_lock(&desc->lock);
+@@ -70,7 +74,14 @@ static __init int setup_irqremap(char *str)
+ 			no_x2apic_optout = 1;
+ 		else if (!strncmp(str, "nopost", 6))
+ 			disable_irq_post = 1;
+-
++#ifdef CONFIG_X86_POSTED_MSI
++		else if (!strncmp(str, "posted_msi", 10)) {
++			if (disable_irq_post || disable_irq_remap)
++				pr_warn("Posted MSI not enabled due to conflicting options!");
++			else
++				enable_posted_msi = 1;
++		}
++#endif
+ 		str += strcspn(str, ",");
+ 		while (*str == ',')
+ 			str++;
 -- 
 2.25.1
 
