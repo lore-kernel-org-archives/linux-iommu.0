@@ -1,149 +1,118 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADE5213B595
-	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 15:38:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1AA416F901
+	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 15:50:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712331487; cv=none; b=DTjt1Vpx4tHo8XaHyvftcIZ3Jg46PepK+mmgiJYmxxX9gpnxqyI28fRyx59BTN+Re35ZYJyMEonQPY7OIEF80rHNJ+nozx3L/LsQBPqMqjZBgbBsetyKFTLzLU6QHYDfE1IVolxLwtyhlLXVpsEnvzqSsNsgMOMaFIeW2Fa+F0I=
+	t=1712332230; cv=none; b=krIU4VJEm6z30fiDkWR/qTptyaVBEexMM3DHsahQjYe6nkbsg47PkmXZTH7Xwa5o9YFGpvM22PYrcLMpGzcPBzKIDYIw8OJaF0Qvmm4/RquUc/HDp+bv64aWLGnIDP6DzBjhlfGEjUjlXV/tOfH1UeQUkDSn4wBniDZ4IWOk3ZI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712331487; c=relaxed/simple;
-	bh=dPM81dfP4eacKZ5qLTkJlDyNq94WsZPQVAMWDYyYoJQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cHO7LxAtm52WLatNGql5xMzCEjApaOvCpd1PAxINsJ7JXoxsBCoZsYSCKLJitoGkIyUReL7j8+O0EvQ75EzbwoR3Fo6RE1I4v7BOlrEhpNF9uvAVvOUDOiEwTDIELTTX3tMS5UNJdoP7Y+wLsnuQKtqYgdeABnDAgbtBnuQbJcM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dBy6Bzuy; arc=none smtp.client-ip=209.85.167.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1712332230; c=relaxed/simple;
+	bh=JuwIBPyywPFitWU0GAYwZuSb8x811YnAxbc/FR7Z6kg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VwjP0BN5IBs4sO7qNoxiEkckd2PzvoAWhSXycmvTVp7++Jnwg1pVa3FbNvyMw+hOh7Hy+LnQebW2lZphOaeflaUdsThzmbDD8tPRzl/V2HF0Gb43i60k+gzsUlCOo5071G8Kf0c5Y1N8oK/IwFokI5jqhFjXUgq30vMkbCO6AHE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mDejj3ET; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dBy6Bzuy"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-516b6e75dc3so3043945e87.3
-        for <iommu@lists.linux.dev>; Fri, 05 Apr 2024 08:38:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712331484; x=1712936284; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=A5HKjia/bBxV9bwJewCR86FUIvkQ6YbpSmsf0h/yiVw=;
-        b=dBy6BzuybHtDlvBy1QOV/GPFASD3xGHUvfoH2d1zGNPMmK78vcrq48tNn7sUJ5HSS9
-         21vijgUZQIvbQPis62Cg/cAqKVo0szZ/MntYXIEzwi+x0hkBhI++3GpqgrDsgdwelaX1
-         ZLrosJz49x10WkfLZvFSyOxEGZLSY1j+drPbVqDyRI4nw/4H0wwZ8PcU/o9qp4ipybmC
-         N0K7DcPS1wBNwDURjg7CBxSotQJNXP2/DuB2xWPM6H5sYv36QQTBdGzZEQQCH+ylDFRk
-         HQcObBFavc76VkbIAFViFtQg7qtZTAJqu0qVcMa/XngnH5ZyP5l/H5KplVY3VXWLcLcq
-         zMyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712331484; x=1712936284;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=A5HKjia/bBxV9bwJewCR86FUIvkQ6YbpSmsf0h/yiVw=;
-        b=hcluum3z+6kaoI9jh/0ajg1huGQc+NRun7fRHDeMSLivU2P5tKZLdUP7KvgJAfKqto
-         ZXDvbEHDUzVsRUHPsQytC9CmlR7FXCkDuZARTgYh3ayKz0tYgLHDc4Vo517/WjCFwMys
-         KCJomOqjj5Q5B9BFsZCbHqwhLwWTZtYVoeuIXQqngZ5b3BokyRqgY/JsWWAfqKcBFnD5
-         bx0dvIpxF6pV6zy5DIXPxPQDEP7wpAmvX93h8LkfJUCd+7WNQV077bYGg0JgqzoPQR7c
-         olr66Zv0YPBpOKBsmsTJ2tbM/fUgUDoWH4YeI4RJ1gXg/oDk+NJIzroGwhUghvdXrryg
-         bq8Q==
-X-Forwarded-Encrypted: i=1; AJvYcCV0xkHo2WNgtcSpPXwy1lX4W+6rQH1dzsJijCBNYVbKTjh9UzOpZBjfxxOhWW6gi3MwmS4QDmjW1buxFgUbkrIQEowR+6I=
-X-Gm-Message-State: AOJu0YyI8QAlQGh9oqsyGXr4NQAU8yNY10z82LXeOC3KMYkXQL8swQv5
-	GDGm8ZtkM1gW02hZvAsbEuj10lcrjML61LHVW3uwLDXklPG6/FfE
-X-Google-Smtp-Source: AGHT+IEIEEmughiSiBHY8eCIsSnqVoMqZUWDTHfuKcBEPEydDjJRjHpHyQHuQL28VLtLT7iqCSGbkw==
-X-Received: by 2002:a05:6512:2fa:b0:516:d029:b513 with SMTP id m26-20020a05651202fa00b00516d029b513mr1341784lfq.69.1712331483357;
-        Fri, 05 Apr 2024 08:38:03 -0700 (PDT)
-Received: from ?IPV6:2001:678:a5c:1202:2659:d6e4:5d55:b864? (soda.int.kasm.eu. [2001:678:a5c:1202:2659:d6e4:5d55:b864])
-        by smtp.gmail.com with ESMTPSA id j11-20020a056512344b00b0051589cc26afsm218610lfr.72.2024.04.05.08.38.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Apr 2024 08:38:02 -0700 (PDT)
-Message-ID: <3d496797-4173-43de-b597-af3668fd0eca@gmail.com>
-Date: Fri, 5 Apr 2024 17:37:59 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mDejj3ET"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712332229; x=1743868229;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=JuwIBPyywPFitWU0GAYwZuSb8x811YnAxbc/FR7Z6kg=;
+  b=mDejj3ETBMQC3/UBpoaBLyPhW94V8rkm/P03UDmXMLfTpQPQp+is3t2s
+   VIjeBble3YCNSruCKVEp+1PrkGqMS9U1Mx1UpDwonWsEPNHTigC7XIupg
+   EEas9o2WnYkZT9r+Lx7rZiCsfkLsKxz14dvneTgcH1++SsTrDZ/rISp7o
+   EJWdQCBncoiEoqdKTFAoMSY42drhBKfDUWaLbJFVmClcmTaclZTRF+cHM
+   3asCrbsPy0m39UxlaDIRqAFrU2rB1It1mvri/xOkpfkhF1ZaCrgzY+suT
+   e0tc1pYTf0IjvbSjtlw1XULiu3wGfplKm3mjxVozb6G4i9ri7/5Pp4v3l
+   g==;
+X-CSE-ConnectionGUID: zAbJl+QMQu2LqOZH3h8MJA==
+X-CSE-MsgGUID: Y1poc9ByQTGxPDX953qPBw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="7830973"
+X-IronPort-AV: E=Sophos;i="6.07,181,1708416000"; 
+   d="scan'208";a="7830973"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 08:50:19 -0700
+X-CSE-ConnectionGUID: b+flWz2dSiyMWDRXybRuQw==
+X-CSE-MsgGUID: xBkY6l/yQaKUhOjf4ieNSA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,181,1708416000"; 
+   d="scan'208";a="23905135"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 08:50:19 -0700
+Date: Fri, 5 Apr 2024 08:54:46 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Robert Hoo <robert.hoo.linux@gmail.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
+ Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev, Thomas Gleixner
+ <tglx@linutronix.de>, Lu Baolu <baolu.lu@linux.intel.com>,
+ kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
+ <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
+ <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Paul Luse
+ <paul.e.luse@intel.com>, Dan Williams <dan.j.williams@intel.com>, Jens
+ Axboe <axboe@kernel.dk>, Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, maz@kernel.org, seanjc@google.com, Robin Murphy
+ <robin.murphy@arm.com>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 04/15] x86/irq: Add a Kconfig option for posted MSI
+Message-ID: <20240405085001.2bb3e8ad@jacob-builder>
+In-Reply-To: <89927174-6ca9-4299-8157-a0404b30b156@gmail.com>
+References: <20240126234237.547278-1-jacob.jun.pan@linux.intel.com>
+ <20240126234237.547278-5-jacob.jun.pan@linux.intel.com>
+ <89927174-6ca9-4299-8157-a0404b30b156@gmail.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 00/37] Memory allocation profiling
-To: Suren Baghdasaryan <surenb@google.com>
-Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com,
- vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev,
- mgorman@suse.de, dave@stgolabs.net, willy@infradead.org,
- liam.howlett@oracle.com, penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net,
- void@manifault.com, peterz@infradead.org, juri.lelli@redhat.com,
- catalin.marinas@arm.com, will@kernel.org, arnd@arndb.de, tglx@linutronix.de,
- mingo@redhat.com, dave.hansen@linux.intel.com, x86@kernel.org,
- peterx@redhat.com, david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org,
- masahiroy@kernel.org, nathan@kernel.org, dennis@kernel.org,
- jhubbard@nvidia.com, tj@kernel.org, muchun.song@linux.dev, rppt@kernel.org,
- paulmck@kernel.org, pasha.tatashin@soleen.com, yosryahmed@google.com,
- yuzhao@google.com, dhowells@redhat.com, hughd@google.com,
- andreyknvl@gmail.com, keescook@chromium.org, ndesaulniers@google.com,
- vvvvvv@google.com, gregkh@linuxfoundation.org, ebiggers@google.com,
- ytcoode@gmail.com, vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
- rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com,
- vschneid@redhat.com, cl@linux.com, penberg@kernel.org,
- iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, glider@google.com,
- elver@google.com, dvyukov@google.com, songmuchun@bytedance.com,
- jbaron@akamai.com, aliceryhl@google.com, rientjes@google.com,
- minchan@google.com, kaleshsingh@google.com, kernel-team@android.com,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, linux-arch@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
- linux-modules@vger.kernel.org, kasan-dev@googlegroups.com,
- cgroups@vger.kernel.org
-References: <20240321163705.3067592-1-surenb@google.com>
- <c14cd89b-c879-4474-a800-d60fc29c1820@gmail.com>
- <CAJuCfpHEt2n6sA7m5zvc-F+z=3-twVEKfVGCa0+y62bT10b0Bw@mail.gmail.com>
- <41328d5a-3e41-4936-bcb7-c0a85e6ce332@gmail.com>
- <CAJuCfpERj52X8DB64b=6+9WLcnuEBkpjnfgYBgvPs0Rq7kxOkw@mail.gmail.com>
-Content-Language: en-US, sv-SE
-From: Klara Modin <klarasmodin@gmail.com>
-In-Reply-To: <CAJuCfpERj52X8DB64b=6+9WLcnuEBkpjnfgYBgvPs0Rq7kxOkw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+Hi Robert,
 
+On Fri, 5 Apr 2024 10:28:59 +0800, Robert Hoo <robert.hoo.linux@gmail.com>
+wrote:
 
-On 2024-04-05 17:20, Suren Baghdasaryan wrote:
-> On Fri, Apr 5, 2024 at 7:30 AM Klara Modin <klarasmodin@gmail.com> wrote:
->>
->> On 2024-04-05 16:14, Suren Baghdasaryan wrote:
->>> On Fri, Apr 5, 2024 at 6:37 AM Klara Modin <klarasmodin@gmail.com> wrote:
->>>> If I enable this, I consistently get percpu allocation failures. I can
->>>> occasionally reproduce it in qemu. I've attached the logs and my config,
->>>> please let me know if there's anything else that could be relevant.
->>>
->>> Thanks for the report!
->>> In debug_alloc_profiling.log I see:
->>>
->>> [    7.445127] percpu: limit reached, disable warning
->>>
->>> That's probably the reason. I'll take a closer look at the cause of
->>> that and how we can fix it.
->>
->> Thanks!
+> On 1/27/2024 7:42 AM, Jacob Pan wrote:
+> > This option will be used to support delivering MSIs as posted
+> > interrupts. Interrupt remapping is required.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >   arch/x86/Kconfig | 11 +++++++++++
+> >   1 file changed, 11 insertions(+)
+> > 
+> > diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+> > index 5edec175b9bf..79f04ee2b91c 100644
+> > --- a/arch/x86/Kconfig
+> > +++ b/arch/x86/Kconfig
+> > @@ -463,6 +463,17 @@ config X86_X2APIC
+> >   
+> >   	  If you don't know what to do here, say N.
+> >   
+> > +config X86_POSTED_MSI
+> > +	bool "Enable MSI and MSI-x delivery by posted interrupts"
+> > +	depends on X86_X2APIC && X86_64 && IRQ_REMAP  
 > 
-> In the build that produced debug_alloc_profiling.log I think we are
-> consuming all the per-cpu memory reserved for the modules. Could you
-> please try this change and see if that fixes the issue:
-> 
->   include/linux/percpu.h | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/percpu.h b/include/linux/percpu.h
-> index a790afba9386..03053de557cf 100644
-> --- a/include/linux/percpu.h
-> +++ b/include/linux/percpu.h
-> @@ -17,7 +17,7 @@
->   /* enough to cover all DEFINE_PER_CPUs in modules */
->   #ifdef CONFIG_MODULES
->   #ifdef CONFIG_MEM_ALLOC_PROFILING
-> -#define PERCPU_MODULE_RESERVE (8 << 12)
-> +#define PERCPU_MODULE_RESERVE (8 << 13)
->   #else
->   #define PERCPU_MODULE_RESERVE (8 << 10)
->   #endif
-> 
+> Does posted_msi really depend on x2APIC? PID.NDST encoding supports both
+> xAPIC and x2APIC.
+No, posted_msi works with xAPIC as well. I just fixed a bug in NDST xAPIC
+encoding, will be in v2.
 
-Yeah, that patch fixes the issue for me.
+I was thinking from the performance advantage of x2APIC. But you are right
+they are orthogonal.
+
+> If posted_msi posts more stringent requirement, I think it deserves an 
+> explanation in this patch's description.
+> And, X86_X2APIC already depends on IRQ_REMAP, can we just list one of
+> them here?
+Will drop X2APIC dependency.
 
 Thanks,
-Tested-by: Klara Modin
+
+Jacob
