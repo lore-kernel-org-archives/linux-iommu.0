@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F4088175563
-	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 22:26:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D892C176FAD
+	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 22:26:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712356010; cv=none; b=Xa4tEmktmoe+Ybjr6awPvYs+kW5k+YqoK4AjRARvk+GTKc/LnHdyGafaIRRmPDDsN8ZnpthBjg6DWZkbOPGp6zB+UCJhnGHsznf72uW72LhPlsQ7mAk25j8KX8qSH6rVqs0uqULMEQAizw+XoxRT//0GPIgJThPoK5yxWnYgRh4=
+	t=1712356011; cv=none; b=lnnuGC1UpMwD7cq1yI5/6I9Td1MspHrXc2jD27oL4hKX8NRYlxZC9X5zSKmuCcxJxpjVlHqP3q9DwdaWa49/O99e3EdlXLxab50jMfpMJv0Asj4uQqR5m7wOWxrHLtxh3L2i/eXX+BJBTo6PbJbxkW2UbmUrwXBvJaAA8WP6IPo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712356010; c=relaxed/simple;
-	bh=BpLqiaNgpSDbcOwdg5E2m/UG/ZOHZCK4TD1uJoCRw+g=;
+	s=arc-20240116; t=1712356011; c=relaxed/simple;
+	bh=0w0uJEzA4z9kskjV3ew8MBQxd2yM5o3G1Z9OFkj0BDg=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=QSIAbDk0yNf/J4qT9eoL6ETFdp9pnLscW34kK/H+TnuILT+D6mTxwZVQkecWGsydauHsDNmBj5PsJQhTU9afBPIVbX7RjLYnSXHUwMON3MvFqlSMK+d9TsM0wY/1gktE5FHEKlmYV+PcXo/VUG5+dPJGrs2QuDjkGJZtE10Z5To=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IVEqZ1Ga; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version; b=ZMLuTeSDHxG2qw85hYgZDPsVII1xZaOjaDWElyuH+h8BAurh75Er3dcSsYguIDg8ARnn190DXVt09WoEj8nkKScP+gXnwxdcp8tdtQV9Hv3hEDECjiJyLNUmfpyeUMvbpTfT3d5mlaWSQDWyuAqmDnO65ZYAwP0jK6Ql1DMfURw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PVixcInh; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IVEqZ1Ga"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PVixcInh"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712356009; x=1743892009;
+  t=1712356010; x=1743892010;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=BpLqiaNgpSDbcOwdg5E2m/UG/ZOHZCK4TD1uJoCRw+g=;
-  b=IVEqZ1Ga+2+EYjqst1gzCuYLsw3QuoxkqnJ95nmLC/RLdXd9vFus0ycx
-   KCjtF9ZGNpEiU7UAkzkDabmi6C1PgEjtMlBw3QAf4b4Ql9m6Qv0uUCCuV
-   lO7Tm65eXYgWbMIS8L5uTa46RWEeZkmmf9A4yHewjAoOzTzHGoE2gw3bD
-   BcegDYj/2Ec0QOcnYQjIC/hb8y844naG5DejYhoHZkPrJV3dG/hIOXqe/
-   RZPtYOrxX/HPd6RRMXIwrs4vhhBBFloJlAJwGrrvnyyNKhn79nSMC8PMy
-   zKneDeu+0oOePZJfHqneb9rNM6KHu9YPTn55FHK79diGX7S52BYBmSzlf
-   w==;
-X-CSE-ConnectionGUID: l1PhqT5WQxOz0XiHif7vGg==
-X-CSE-MsgGUID: bpz1oN9aSL6tyi+3dmoK1w==
-X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="19062716"
+  bh=0w0uJEzA4z9kskjV3ew8MBQxd2yM5o3G1Z9OFkj0BDg=;
+  b=PVixcInhTvo7UD1kYgCSxxz3PMCX389W6QOtoepLADiuhMSrPPvJoosX
+   y0zfH60FAJykVgdvSAQzY54t32oM/rGTaudZ/h7DgA5YYwkAASfpr3SUj
+   Mz0boQrM4lMrj34gbxBG1qy+SKirDHttOzNH1rfxU/zN3CnGTK7wC6f/s
+   FVDEUBOLFDYTa+gkO93BAJNAsWGy301iiT9uNYtxD8QNqBGxpV40Lf+Ty
+   lSTTl7OqQHXxcvsEkbp4PXpwKF/Q+UaB5r1whBKZC+Y6QLwYEciDecnsv
+   IysCD+Mv+7Xjtc9X29TLWLCQHAB2zih5+gUx0tbHP3bHsKqeNUepunc/A
+   Q==;
+X-CSE-ConnectionGUID: Lu/IQ+V2Q26Q9WeBFaQX+g==
+X-CSE-MsgGUID: PWZOju04Q2GeaT/iGczkJA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="19062732"
 X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="19062716"
+   d="scan'208";a="19062732"
 Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 15:26:47 -0700
-X-CSE-ConnectionGUID: 13qTgNPtQAOkBjpU3IPkgQ==
-X-CSE-MsgGUID: mpnrgrsBTUWcfeColep1OQ==
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 15:26:48 -0700
+X-CSE-ConnectionGUID: YpW3/WDlS+mgWCYtHA3Bjw==
+X-CSE-MsgGUID: WoQPFCO3SEuXJvtd4IBqrg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="23928317"
+   d="scan'208";a="23928320"
 Received: from jacob-builder.jf.intel.com ([10.54.39.125])
-  by fmviesa004.fm.intel.com with ESMTP; 05 Apr 2024 15:26:46 -0700
+  by fmviesa004.fm.intel.com with ESMTP; 05 Apr 2024 15:26:47 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: LKML <linux-kernel@vger.kernel.org>,
 	X86 Kernel <x86@kernel.org>,
@@ -70,9 +70,9 @@ Cc: Paul Luse <paul.e.luse@intel.com>,
 	guang.zeng@intel.com,
 	robert.hoo.linux@gmail.com,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v2 04/13] x86/irq: Add a Kconfig option for posted MSI
-Date: Fri,  5 Apr 2024 15:31:01 -0700
-Message-Id: <20240405223110.1609888-5-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 05/13] x86/irq: Reserve a per CPU IDT vector for posted MSIs
+Date: Fri,  5 Apr 2024 15:31:02 -0700
+Message-Id: <20240405223110.1609888-6-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
 References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
@@ -84,39 +84,65 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This option will be used to support delivering MSIs as posted
-interrupts. Interrupt remapping is required.
+When posted MSI is enabled, all device MSIs are multiplexed into a single
+notification vector. MSI handlers will be de-multiplexed at run-time by
+system software without IDT delivery.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
 ---
-v2: Remove x2apic dependency
+v2:
+ - Add missing CONFIG_ in #ifdef
+ - Extend changes to x86 tools
 ---
- arch/x86/Kconfig | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/x86/include/asm/irq_vectors.h       | 9 ++++++++-
+ tools/arch/x86/include/asm/irq_vectors.h | 9 ++++++++-
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 39886bab943a..f5688f4e299b 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -464,6 +464,17 @@ config X86_X2APIC
+diff --git a/arch/x86/include/asm/irq_vectors.h b/arch/x86/include/asm/irq_vectors.h
+index d18bfb238f66..1ee00be8218d 100644
+--- a/arch/x86/include/asm/irq_vectors.h
++++ b/arch/x86/include/asm/irq_vectors.h
+@@ -97,9 +97,16 @@
  
- 	  If you don't know what to do here, say N.
+ #define LOCAL_TIMER_VECTOR		0xec
  
-+config X86_POSTED_MSI
-+	bool "Enable MSI and MSI-x delivery by posted interrupts"
-+	depends on X86_64 && IRQ_REMAP
-+	help
-+	  This enables MSIs that are under interrupt remapping to be delivered as
-+	  posted interrupts to the host kernel. Interrupt throughput can
-+	  potentially be improved by coalescing CPU notifications during high
-+	  frequency bursts.
-+
-+	  If you don't know what to do here, say N.
-+
- config X86_MPPARSE
- 	bool "Enable MPS table" if ACPI
- 	default y
++/*
++ * Posted interrupt notification vector for all device MSIs delivered to
++ * the host kernel.
++ */
++#define POSTED_MSI_NOTIFICATION_VECTOR	0xeb
+ #define NR_VECTORS			 256
+ 
+-#ifdef CONFIG_X86_LOCAL_APIC
++#ifdef CONFIG_X86_POSTED_MSI
++#define FIRST_SYSTEM_VECTOR		POSTED_MSI_NOTIFICATION_VECTOR
++#elif defined(CONFIG_X86_LOCAL_APIC)
+ #define FIRST_SYSTEM_VECTOR		LOCAL_TIMER_VECTOR
+ #else
+ #define FIRST_SYSTEM_VECTOR		NR_VECTORS
+diff --git a/tools/arch/x86/include/asm/irq_vectors.h b/tools/arch/x86/include/asm/irq_vectors.h
+index 3f73ac3ed3a0..989816ca7c9e 100644
+--- a/tools/arch/x86/include/asm/irq_vectors.h
++++ b/tools/arch/x86/include/asm/irq_vectors.h
+@@ -99,9 +99,16 @@
+ 
+ #define LOCAL_TIMER_VECTOR		0xec
+ 
++/*
++ * Posted interrupt notification vector for all device MSIs delivered to
++ * the host kernel.
++ */
++#define POSTED_MSI_NOTIFICATION_VECTOR	0xeb
+ #define NR_VECTORS			 256
+ 
+-#ifdef CONFIG_X86_LOCAL_APIC
++#ifdef CONFIG_X86_POSTED_MSI
++#define FIRST_SYSTEM_VECTOR		POSTED_MSI_NOTIFICATION_VECTOR
++#elif defined(CONFIG_X86_LOCAL_APIC)
+ #define FIRST_SYSTEM_VECTOR		LOCAL_TIMER_VECTOR
+ #else
+ #define FIRST_SYSTEM_VECTOR		NR_VECTORS
 -- 
 2.25.1
 
