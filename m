@@ -1,196 +1,167 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9569617164B
-	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 16:52:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712335938; cv=none; b=G7Y6VxzRPyYnJ217iy6tugX8xZDfXXFd9Mt9sNJtQXM7wIa715Nrov6zjw3Bs26eTVkC8d2OyUpEblPovZi20yhBnMN1B2nNQaJ12p5OK9ye4ihJCFFFDwBPD+wIh7bCd0/XUNLfiwPNiJSn83u6bYOE5KA0i4RkiJ3L65a5zXc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712335938; c=relaxed/simple;
-	bh=GvkVtk/ILH10QcBitICz24vLolUmiAVj3m7vk23vOnU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=uzk7+/bYZ+oKp6OWXL7d2gIH55JU4graq8Fb/n4yZvrNUwUInYY55SVnV4WEFhbvHRAJci+DXv2MKf2e2QcjWBzF0EC8oHzTd+2i2i3801T/LK7/Gtm5OR7ZJfwo8CC1GPKvZMAXUlTlhS8LSnOfeBse8z0qTcE0Tv1IZHFV7Os=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 84127FEC;
-	Fri,  5 Apr 2024 09:52:46 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 310563F64C;
-	Fri,  5 Apr 2024 09:52:15 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: will@kernel.org,
-	joro@8bytes.org
-Cc: iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH] iommu/arm-smmu-v3: Retire disable_bypass parameter
-Date: Fri,  5 Apr 2024 17:52:07 +0100
-Message-Id: <ea3ac4cd595a81b5511729601b2f7d4668178438.1712335927.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2113.outbound.protection.outlook.com [40.107.102.113])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E96F171E47
+	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 18:18:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.113
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712341086; cv=fail; b=M1+vfxcydmCzBi0DMIQrwXScTYsyn8K5/ZM5AonEyt6uy/qQJUWVdpeh02n6GNE7PSdb8ZLkkxetmc3FvnJeL4qKKYaqeFXmBoqdp+Qlb1J+0MW3i1F/J41oukE/VtimX/zCn5mIkgN3cLnQvwLPdL6FsJ4wKTvtlFKHnVnHl94=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712341086; c=relaxed/simple;
+	bh=AktZo+p+Izp4YxNpkfjlRgw/RekL4XJXvwdt+rlyRLg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=cIZzb88SiR1V87DRu5yXvPf6yh5oGpFwQEXtyyrLjizE6Y3+TodEpel4QXfVCPDNczRqd6OmdzmLjw03+lYN1wpiMj6X81wZupNxg1fRlSAY/IDNy4SJtxBrp3rvqfumwa2AxgEeAB5bGV217Yjkm7oh8+OPv95Din5d/MxtwAs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=KRzxh5Mu; arc=fail smtp.client-ip=40.107.102.113
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="KRzxh5Mu"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mlW1k3X669SkkLRoiD6r9ZuSQRmDu4A071yx0U4Z9xrl2cYML+rjxg9KyQWYhC1lF3G30WnFsmgbkNRtkpy4b0b4oaUTh3WfsCcZypKmkN1Y98Bvvr2/WlA+GAJLSvGCuTl4Szvvj3FO6aAbX6HbGbrflZNdvJ+j7xelDh+8qJfpsOQUa1ZkiMlYf0ACm3tNbbyPdqbY0mgIk3pp1Skw5/bBsBSWyR4ds9Wa6b8cD3xdR2/DLLv8VsU1J36++bc559obQuOyAGmjGSdfadCsXjemwYsEgOn4EUorfYwGVf9VNuGZj736yIrMuY1QUy9ffsxA6NHgdlVUZIWf1nMeTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7ihn6yG5h32jMQ+iJ6FsgSfqqFl4iZZob958RXo6S04=;
+ b=WcarITvyfEPOmmeRdsvvpbL/+mzevv0PpaA95JXummePkKmjTb9psTTdN7cWEdZtLbpISR0MdlnfW4yL0U+EMpSIT53BlZYxzC5xXJ+E0acUes/qOJLcC0LRVAdqoy7qduY9uQn6hMYlvtOeFxXVLxfJwEB3ung6+YpAaR0I+quneESKEDXShsqBbpCOYxUo4wzNtxo8X6lDzxxtHrzn7UbqEdkiQlWPXuI63PRoY+XSpjRcYVfwXfSEZyDyOafWe401ZmYk21w/OfSEB+Xo4sxV9LUwaMogLcgSC1kKMeCof/SpM6ZQt/s9R4JyvbxUqEXjndoHOyldnBhWv3qD8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7ihn6yG5h32jMQ+iJ6FsgSfqqFl4iZZob958RXo6S04=;
+ b=KRzxh5Muqrmy4/FNhx/9Vw4cJhxpqsdXnmlJp22owJzABG5EyFZ5SNyUe8Z8DpFtgprn3lvv1Xmwi561vn0vadMzL8b+kBanx/hPEec/uoMtdrzdum75opNatq/Kruapr0VTXWIyFzog1evJ/g1ViOaik+JGg1RU73Qp/s0zTbYQUJ4ij+HE4oz+xUWd5YfvAaN22RBlYnoKonURLYm3GflBMx7IkHQ6yopkdY54vJsD04Y71rwb4E/6pb7A2OmsouDIe3God2qc9Vqbygn28QyEojcKzyvekI4+CkquU68cAYOSj/VBX1yexWn6oYs2i7WUJhNVCyzIHfNUE1kk+Q==
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by SA3PR12MB7831.namprd12.prod.outlook.com (2603:10b6:806:311::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.46; Fri, 5 Apr
+ 2024 18:18:01 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7409.042; Fri, 5 Apr 2024
+ 18:18:00 +0000
+Date: Fri, 5 Apr 2024 15:17:59 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org,
+	kevin.tian@intel.com, alex.williamson@redhat.com,
+	robin.murphy@arm.com, eric.auger@redhat.com, nicolinc@nvidia.com,
+	kvm@vger.kernel.org, chao.p.peng@linux.intel.com,
+	iommu@lists.linux.dev, zhenzhong.duan@intel.com,
+	jacob.jun.pan@intel.com
+Subject: Re: [PATCH v2 2/2] iommu: Pass domain to remove_dev_pasid() op
+Message-ID: <20240405181759.GI5383@nvidia.com>
+References: <20240328122958.83332-1-yi.l.liu@intel.com>
+ <20240328122958.83332-3-yi.l.liu@intel.com>
+ <ffa58b7e-aada-4ff7-a645-f946e658785a@linux.intel.com>
+ <735f81a8-a605-41c0-8252-15715e4d8884@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <735f81a8-a605-41c0-8252-15715e4d8884@intel.com>
+X-ClientProxiedBy: BL1PR13CA0013.namprd13.prod.outlook.com
+ (2603:10b6:208:256::18) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|SA3PR12MB7831:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	U97wOas5MoG8Dwvskel5ojbsVV/iZnYMDE9HaHmNxv5bNxjsVsLsEPkkvkflkGjJ3ym5agOgNEiH7I2kXI0CJECQWJKIzGIzb4lxmhaWz5NUZ+CNww7Jz4eg3mg8DeaXXI5C9hQk4pbEIgf0blVT5k7bj2XaGDXP98VOgsXsKWyzBeTKIZZwB8JvO+HcR4tk4YHEGIVoIIaLIoof+1lqUxEt0ktkZPxqqso9bbC/KEock3XuCqD4Q4xPqLkpOSS6CHouwZDW2pjujxXdpaxF9gqvhXyawuOamMIQQxpNOtgx80BOOjMg9mq3g7ECAvckBQUuyoPdcXz/YEPYXAcO7a4pFQqzp2RHqLv7z66DX5JghF8mdgOZTrYoRS2I7tcsMku0hGPaZ/8xenUWtM6TzAioQmXZf6jQpw91rZOid6FaoxZ6Tmxb4qgGNfZ4giaJCASJpo4Dh60QO0MXTQYrz+i8tddP2vAVucCE+vnto3jlvNeiTuYmphdgJX8XBOFnOb6nlZcfGCNkLdWDRPdTe073knLHsHYXAYPiUtgnpZrEwcjaRM0V6qCil/djzI36exUp5OkDArzvyAMaIvHHYZtPHr5jtu3mSDQSRH2m/sntvUka41jgceJLXlICxL8W67xSrADaWC//5S/ppbsVf+BDNFIqmFBJJaDqg2OtJ9E=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(1800799015)(366007)(7416005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SHVJZW12Mm1pcmVhZE0xTTFyL3paSENjMWxzUFZUTXFZTzJhMEFBeElFTXFZ?=
+ =?utf-8?B?b1VXQTZRSHJtL013NzV3OG5IR3QzOUVjaDdWTlJpMDZZTk1aU0NkM1lXT0VE?=
+ =?utf-8?B?QndEbHFkYnpIckM1RHVrMFgyQ05RaVB4aW4xZ214bk5TbG42NnBlUHloaGt3?=
+ =?utf-8?B?SzAzQWJwMC9IaG5iMXZKUHBNTWlSWnhkbm83STlKb0dRN1RIT2kzdzhyOTI5?=
+ =?utf-8?B?VHJ3VlN4ZjR6bkV4T04vNGdqa2ovUUl1TGg2c2p0WUo2NnlIeURBQkc3OGhC?=
+ =?utf-8?B?dTJvcXBKWGdheWNzcjVqZHF3MUpmVUpnV1lxbllxWWJtdXBucm1hd3JtWGky?=
+ =?utf-8?B?SVdNdElqbE56OHFKUThQRDloNS9pbHBHS3dGcXpBWEZKWXRId1dJdVR2YlY5?=
+ =?utf-8?B?VUJwelljdlRudjFoUmFqNUJQeXZDQlROWWUva1BaT2tUY250RVlyTjNxdGFr?=
+ =?utf-8?B?c2JzSWU0azROSDlzS2kwSC9Eb2w1QlFXSEJYa2s5a2M1czc5WXphLzZ6Y2sy?=
+ =?utf-8?B?M0c5YnlMbUhNQXNuSnJFVmpPYTBJSktaNmxQRSs3YUwrS0J2WGs5RTJMRHRQ?=
+ =?utf-8?B?dFduS2dlemYxQ1JTU3pBa0J6VEVGMHorZmcxaml3bmUyU3c2cFdXM2JvUnNU?=
+ =?utf-8?B?MnVzSTBXQ2lmbHBPcHpNWnY5akNaUzNXVEdVWGNtOGs4c3NRZFdibmhJYVYx?=
+ =?utf-8?B?dmt0V3grRm5ndTBFaHF0cUh3OXIvcVVVNW0yMGdQTlRQYXVFeWlYM1crcTdF?=
+ =?utf-8?B?bHJGZFh1N1RPVXQ5c2l0ekl4WENGWjlYb0o1cHY5dWJwcFJQMC9vR0g1Nm9J?=
+ =?utf-8?B?OTNuSndINHI0MVhrdjZjejNIUWJpUk9NVVliVVdOUU9XdHB6NXBDK2pTeHp6?=
+ =?utf-8?B?Rm10UjlPM1lTMzhKb0JEcjJ0Zk5SRnhpSzdJNkdTbE1EUDE0ZlNBWU1xR2c2?=
+ =?utf-8?B?Sk9saVVyUmdxUmE0bGRXeFhSM0k1a2ZXeEdRblBEZ1M1L3hPVUNEWWtrZHVs?=
+ =?utf-8?B?c05HUU13UmtJOUlOb09UL0pPTjJmZmRWdmJxWlNJMFF0RVFYWkNJT3hreHVz?=
+ =?utf-8?B?VkhMZ052Z0tMSkdzZ2UvZ0FqeG1tZUxZZ2V4cEFNR2hnWlpRM0srQWZRNTND?=
+ =?utf-8?B?c3hRQkZ2SllacEV5RlNNVHdwM01xR0txWWpJUzhBUzFLZjgvQXNkTms5QkNX?=
+ =?utf-8?B?U0ozdHBYM3Fmbk9oVko1NGMxcUx1UERlWElvemJ3R0FyNUcySHJqR25XT0ZG?=
+ =?utf-8?B?VytQNGhKZVpTNFg1NW1mWHNKQi9salZGamZQSFo2VDJNZWFaaTkyMWwzYTNk?=
+ =?utf-8?B?THpxK2pabmhaVnUvbEorYnlZZ2FuYWpqaFRhNjNzOVdiQmxtWldYYVBJL1pE?=
+ =?utf-8?B?bXhvbUtoUGtSNFlaNTNmN3NEbVhSTVU0bm1Ld3RhZHdhM2kzSkhHNHQxdEds?=
+ =?utf-8?B?UTdCNHpuWDY3YWlhd2hRUUs4dU9RUnJxa0E3eGRON1FXMDZkWlFPSFlyd1V5?=
+ =?utf-8?B?Z3YyVHJlL05pSE12d1cwaHl0NFBZaWlvMEN0SDV4elZnblVWVUFyMzI2c1c4?=
+ =?utf-8?B?UHBGQmFONkJyRFJkNE9GSjMxRGl4SFdUbG5RRnBUM2NDR3EyRjdNbE0vUjNn?=
+ =?utf-8?B?NGF0VmlSRGtXWWlPM3hMdWpOU0VMVWJpRDZrbG5jMCtzNTlVTmhReGhkM2dn?=
+ =?utf-8?B?d2VNV0x4QlJwdThuL0NPR0NsUzE0MXo3VEZNUUlNVDA5S3dZVXF4bWFtZ3hG?=
+ =?utf-8?B?ZjlFcmhEUSs5VGI0aTQwU255ZjBIUnd0MWNUZDhOZU1SMDF1S1Axd2pxOXMr?=
+ =?utf-8?B?ejEybndSdlhOVWM2SHQzcDNwK1RGNzVaa0tOMi8rYkorYmZXUzVJbmVadDlQ?=
+ =?utf-8?B?NUhVOXNsZ0ZQRjY0OEsrNDE5MXhOKzNDeklET1l4eWVseGN6RGtsTEdNTWM4?=
+ =?utf-8?B?RWFqdzVtQTErYndHajdOaEFtWUFDaU1nSkVEMEswQUdJenhMYXJUZ1lkVmFn?=
+ =?utf-8?B?TVhJS0hqVGxBMGVMRWoxbytnbG56dEQ3NHJ0Zk0rZGtyMGxyUjEzTkxDZllv?=
+ =?utf-8?B?RTVJQlRBZitmVERJNWNnNmdJNFoxSFp1aC9XaGpRb2MrN2VCZ1pvN2d1UDNO?=
+ =?utf-8?Q?kA58tvGqDY874zXJLt0jV87HC?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87015e9b-3f48-4cf9-a474-08dc559cba38
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2024 18:18:00.8353
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3dm9jIV42KcijCCRVh/mN8s3LiCDJ1CEmDpjxpE4gKmWY4RoNHYBECCo1dUcfwnP
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7831
 
-The disable_bypass parameter has been mostly meaningless for a long time
-since the introduction of default domains. Its original intent is now
-fulfilled by the controls users have over the default domain type, and
-its remaining effect in the brief window between Stream Table
-initialisation and default domain creation hardly seems worth the
-complication. Furthermore, thanks to 2-level Stream Tables, disabling
-disable_bypass (there's another reason not to like it right there) has
-never guaranteed that any particular StreamID *will* bypass anyway - any
-device which might actually care about that wants RMRs - so there's not
-really much lost by taking away that option (which has already been
-non-default for nearing 6 years now).
+On Wed, Apr 03, 2024 at 11:25:35AM +0800, Yi Liu wrote:
+> On 2024/4/3 11:04, Baolu Lu wrote:
+> > On 3/28/24 8:29 PM, Yi Liu wrote:
+> > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> > > index 2e925b5eba53..40dd439307e8 100644
+> > > --- a/include/linux/iommu.h
+> > > +++ b/include/linux/iommu.h
+> > > @@ -578,7 +578,8 @@ struct iommu_ops {
+> > >                     struct iommu_page_response *msg);
+> > >       int (*def_domain_type)(struct device *dev);
+> > > -    void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
+> > > +    void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid,
+> > > +                 struct iommu_domain *domain);
+> > 
+> > Previously, this callback said "Hey, remove any domain associated with
+> > this pasid".
+> > 
+> > Now this callback changes to "Hey, please remove *this* domain from the
+> > pasid". What the driver should do if it doesn't match the previously
+> > attached domain, or the pasid hasn't been attached to any domain?
+> 
+> I think the caller of this callback should know very well whether
+> a pasid has been attached to this domain or not. So the problem
+> you described should not happen at all. Otherwise, it is a bug in
+> the iommu layer.
+> 
+> Actually, there is similar concern in the iommu_detach_device_pasid().
+> The input domain may be different with what iommu layer tracks. If
+> so there is a warn. This means the external callers of this API are
+> buggy. While, I have more faith on iommu layer. :)
 
-As part of this, also remove the weird behaviour where we "successfully"
-probe and register a non-functional SMMU if the DT "#iommu-cells"
-property is wrong. I have no memory of what possessed me to think that
-was a good idea at the time, and by now I suspect it's likely to break
-things worse than simply failing probe would.
+Yeah, the iommu layer should obtain the domain from the pasid xarray
+and every driver today also obtains the domain from the pasid
+xarray. It is not something different, it is just moving code around.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 46 ++++++---------------
- 1 file changed, 13 insertions(+), 33 deletions(-)
+The core code should guarentee the invariant.
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 41f93c3ab160..4eb74f0ad13b 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -30,11 +30,6 @@
- #include "arm-smmu-v3.h"
- #include "../../dma-iommu.h"
- 
--static bool disable_bypass = true;
--module_param(disable_bypass, bool, 0444);
--MODULE_PARM_DESC(disable_bypass,
--	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
--
- static bool disable_msipolling;
- module_param(disable_msipolling, bool, 0444);
- MODULE_PARM_DESC(disable_msipolling,
-@@ -1567,17 +1562,13 @@ static void arm_smmu_make_s2_domain_ste(struct arm_smmu_ste *target,
-  * This can safely directly manipulate the STE memory without a sync sequence
-  * because the STE table has not been installed in the SMMU yet.
-  */
--static void arm_smmu_init_initial_stes(struct arm_smmu_device *smmu,
--				       struct arm_smmu_ste *strtab,
-+static void arm_smmu_init_initial_stes(struct arm_smmu_ste *strtab,
- 				       unsigned int nent)
- {
- 	unsigned int i;
- 
- 	for (i = 0; i < nent; ++i) {
--		if (disable_bypass)
--			arm_smmu_make_abort_ste(strtab);
--		else
--			arm_smmu_make_bypass_ste(smmu, strtab);
-+		arm_smmu_make_abort_ste(strtab);
- 		strtab++;
- 	}
- }
-@@ -1605,7 +1596,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
- 		return -ENOMEM;
- 	}
- 
--	arm_smmu_init_initial_stes(smmu, desc->l2ptr, 1 << STRTAB_SPLIT);
-+	arm_smmu_init_initial_stes(desc->l2ptr, 1 << STRTAB_SPLIT);
- 	arm_smmu_write_strtab_l1_desc(strtab, desc);
- 	return 0;
- }
-@@ -2915,10 +2906,10 @@ static void arm_smmu_release_device(struct device *dev)
- 		iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
- 
- 	/* Put the STE back to what arm_smmu_init_strtab() sets */
--	if (disable_bypass && !dev->iommu->require_direct)
--		arm_smmu_attach_dev_blocked(&arm_smmu_blocked_domain, dev);
--	else
-+	if (dev->iommu->require_direct)
- 		arm_smmu_attach_dev_identity(&arm_smmu_identity_domain, dev);
-+	else
-+		arm_smmu_attach_dev_blocked(&arm_smmu_blocked_domain, dev);
- 
- 	arm_smmu_disable_pasid(master);
- 	arm_smmu_remove_master(master);
-@@ -3273,7 +3264,7 @@ static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
- 	reg |= FIELD_PREP(STRTAB_BASE_CFG_LOG2SIZE, smmu->sid_bits);
- 	cfg->strtab_base_cfg = reg;
- 
--	arm_smmu_init_initial_stes(smmu, strtab, cfg->num_l1_ents);
-+	arm_smmu_init_initial_stes(strtab, cfg->num_l1_ents);
- 	return 0;
- }
- 
-@@ -3503,7 +3494,7 @@ static int arm_smmu_device_disable(struct arm_smmu_device *smmu)
- 	return ret;
- }
- 
--static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
-+static int arm_smmu_device_reset(struct arm_smmu_device *smmu)
- {
- 	int ret;
- 	u32 reg, enables;
-@@ -3513,7 +3504,6 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_CR0);
- 	if (reg & CR0_SMMUEN) {
- 		dev_warn(smmu->dev, "SMMU currently enabled! Resetting...\n");
--		WARN_ON(is_kdump_kernel() && !disable_bypass);
- 		arm_smmu_update_gbpa(smmu, GBPA_ABORT, 0);
- 	}
- 
-@@ -3620,14 +3610,8 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
- 	if (is_kdump_kernel())
- 		enables &= ~(CR0_EVTQEN | CR0_PRIQEN);
- 
--	/* Enable the SMMU interface, or ensure bypass */
--	if (!bypass || disable_bypass) {
--		enables |= CR0_SMMUEN;
--	} else {
--		ret = arm_smmu_update_gbpa(smmu, 0, GBPA_ABORT);
--		if (ret)
--			return ret;
--	}
-+	/* Enable the SMMU interface */
-+	enables |= CR0_SMMUEN;
- 	ret = arm_smmu_write_reg_sync(smmu, enables, ARM_SMMU_CR0,
- 				      ARM_SMMU_CR0ACK);
- 	if (ret) {
-@@ -4019,7 +4003,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	resource_size_t ioaddr;
- 	struct arm_smmu_device *smmu;
- 	struct device *dev = &pdev->dev;
--	bool bypass;
- 
- 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
- 	if (!smmu)
-@@ -4030,12 +4013,9 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 		ret = arm_smmu_device_dt_probe(pdev, smmu);
- 	} else {
- 		ret = arm_smmu_device_acpi_probe(pdev, smmu);
--		if (ret == -ENODEV)
--			return ret;
- 	}
--
--	/* Set bypass mode according to firmware probing result */
--	bypass = !!ret;
-+	if (ret)
-+		return ret;
- 
- 	/* Base address */
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-@@ -4099,7 +4079,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	arm_smmu_rmr_install_bypass_ste(smmu);
- 
- 	/* Reset the device */
--	ret = arm_smmu_device_reset(smmu, bypass);
-+	ret = arm_smmu_device_reset(smmu);
- 	if (ret)
- 		return ret;
- 
--- 
-2.39.2.101.g768bb238c484.dirty
-
+Jason
