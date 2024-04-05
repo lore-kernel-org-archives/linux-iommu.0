@@ -1,165 +1,93 @@
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2563F13C3D1
-	for <iommu@lists.linux.dev>; Thu,  4 Apr 2024 23:16:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 963794C74
+	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 00:10:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712272591; cv=none; b=oqQBL4odXk4M/uMPuULtftXKJqaqntCOBLIA+SYDaxAXMxgB+jkzJ9kEpqaFuxyPZtBrefd8uHt2TP32RUGJ/XZhjv6WOJ6RivwzKCtOL9v9v6b0WoGw+z9V3p+vX/95q3LY4E83VDMsRzcqk82HO8Tdk2U7r9sLbwOle4VpLsA=
+	t=1712275824; cv=none; b=gyXvrkOiK7w8gaNVvYYgMz/CXAE4vqAcbyBhXX5+gwB+l3lAxxSISdq/V3tJjJj9qih59NM68jZtde4Y5h5M1WE6s2eva00i3btx9xRnlqDWjg/4b/MTqFvGzfkz4qTXrVm6JxmydWxAUjGgMNLmMPVaJNkoqhesIrgja4LzG0c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712272591; c=relaxed/simple;
-	bh=APEooEWI1lH4C+bL4GyHHSZ5KchOvO14ONUoet0RRr0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=cRhfsrWfcvdf0Ws96JVvKVoHN3/I2B8uhIH1HC8icJnJpLFDJAZE6NTTvJ6FuoenNMJAKf6xDpxocsLnRIXUUx/BlU4N7Picvo/uSE03JEJ8JAhR5jvfkQQXqK4CUvaR9DmjF2JOSKJ24c6j5wHWVN+8zfkPYiUS/yKigm3Iumw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=k6uJnnRy; arc=none smtp.client-ip=209.85.219.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1712275824; c=relaxed/simple;
+	bh=sPDQJ05/TQ4qe3SR/jxdqKkXBS1tuENTJJthlGc29hk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=VuoIQetCCiEcBEy3twdOvWDhXFOceUaaLaKueEXKdLDYpYX3yuMPJ2wI0Wsz91Ynqrm1gp1fK63sjN7U1SLUxq/0xr2gMxPYRdpjdgwjZngofRFceJWKF93uzSvl8bSzGqDiWutGmmkbOPk7JmbUT9X8k9PlPvqzHax6ARL9xXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=SZueSM09; arc=none smtp.client-ip=209.85.210.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="k6uJnnRy"
-Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-dc74435c428so1624566276.2
-        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 16:16:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="SZueSM09"
+Received: by mail-ot1-f46.google.com with SMTP id 46e09a7af769-6e6db4dfd7aso1037916a34.2
+        for <iommu@lists.linux.dev>; Thu, 04 Apr 2024 17:10:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1712272588; x=1712877388; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=px33Bjt2eInHJiP0NeuRgUTO3pjhGqqLrEOvRjM23DI=;
-        b=k6uJnnRyelfMoRtV/5qfV0rHvduD8GP6W0g9NyQP1+OY0Of3J1pYQqqgy7KwmqV0ly
-         Va2PARGEin+V8jSMVKstcS2nobJtejRS2AGB+/p2K689uPJbAI3CPMDNt1n8pXPK2B50
-         ikEyci6b9s1ulYRBPp/TQ01IstkFukK5newMWja6h6Y1JIr7nEFWSetRf2F2cH3aI0HN
-         ZgadBcaPbEViyDm0A8gOazV39cj+IK8HX/v33pNII+SBgMY0I9IoNRAkEv7JX3ZWlpak
-         957NjNJiXFt2o1rGKLsaUtLbjFMG1DdFA7LmFPopxVpl690jNiMtc5iWfCXYyAJFOriO
-         gC4w==
+        d=ziepe.ca; s=google; t=1712275822; x=1712880622; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=4+Ek+p9fVawjZ7qm9N+x1SgR6NYTn+xc7F3vNghiclw=;
+        b=SZueSM09hezF1aP1wCUYLmjlsNjiDYnWGIRDrzVF9Tp4Kufogpez6JwfeEuNF2+7sd
+         BSt1ycPf6cHfAoUIPqaTw1WxIzRXheFv8O9mkgGb3JkQWv0hl77G8FjkytNdEicLFlZc
+         yOgBtsh+jUtbrj9DaxCgied7UHhilu5Zw4NABpxfIXrg3490IyrXqxsGsiQI8nBBdj7B
+         FMLiStc4Dfe2HryBdQSWrDBDGSVp96ofb30UgMkyh7py5SR6Y/3NX+yrV0pvivcIHLWx
+         6aJvBqW8FqrY99n77gMvoiBqj4GCFEIP9dgzu9PXs5b0Y0IGMUCPuDqXkDOhQxcL+1NA
+         sI/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712272588; x=1712877388;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=px33Bjt2eInHJiP0NeuRgUTO3pjhGqqLrEOvRjM23DI=;
-        b=BatgCcdBYlCGjYtv+i+29n3dzN11zdY62XB1eu8Is1u/eroeexrCmeR5673ozYnljg
-         AD5SIWKni2xxq50PXz8vx3/T32Dbaeq/Vx33iiL2lVN0tkwLb+mz4UTJgQsxGxh7DO4T
-         03kC+CQCVv/NlcZCJX5ccWt9GivG/QQYfeD7crcAKQC1SshKQG9IeG4wIWMFspEw/k/a
-         7ZB0/ztMU8cEQtr8QoYR5g5aRd49EYWz+5Hfzf19YukLPid6xUJQMNrM7DQUuSTxQR1o
-         VE38XbGF5B8YaVO60/cAq0uiEwswFvFhFh5ctpmd7bx3K3bSWb5xFJ3eQk0Yb1fiWgu4
-         2pVw==
-X-Forwarded-Encrypted: i=1; AJvYcCWZFiZUv1aTQ2ImlN0UXka7J2XBkpA50EKZRZbGXtnyZLmDQ5BKpFDv3h4CxRh0E0PIuOQxozyywwbajlaTq59AZ+TLwTM=
-X-Gm-Message-State: AOJu0Yxf9M9b7WGm7ZH7bhaCYAQkXr4PjbwQGjymV45wKej/MoU53hKh
-	aRNm3Hv2EU5or6dVdZfWJs7VbpmsqICSai2+PTITiO9POmRJR99rzZQD3LhoXwJLDa5KLJW/PW9
-	Sk7dXECBwW2MjSqAeEmktZZ2gYpkZMe3WX8m8
-X-Google-Smtp-Source: AGHT+IFqOT0sdB5Mq8Em3ez8wUqwsDenflcnFBaGGydYTj8cPQz4oQR3/fK7VmQ9yLCyTSRCqikRdMTTYcQR8Kj+db8=
-X-Received: by 2002:a25:c7c6:0:b0:dcc:d5aa:af36 with SMTP id
- w189-20020a25c7c6000000b00dccd5aaaf36mr1095387ybe.44.1712272587959; Thu, 04
- Apr 2024 16:16:27 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1712275822; x=1712880622;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4+Ek+p9fVawjZ7qm9N+x1SgR6NYTn+xc7F3vNghiclw=;
+        b=ab1T5k1IPRuaQWqXQ2/g/tD0OCEB9edgqJm4VxbMQ2UwmQMQHj6bwQW/U38Hgo1th+
+         fRT4m8jVoop4qjrAD1I3jBqkX9NlbHz331vXNQ1hJT0xsHsYbVuaVSaO1ggbUiKepwwf
+         55LpBqNF6fWZnITLsRUZB8GGyiWID7xsTQv1MrfDzdvaETubeB71sdBYWZeBUHkfMmd5
+         DO77kfqXFZocUiIOmJCfTdav5QiSOemAForhr6/4GUNUeQ25iGTSWAxTmGon9bAO3nbi
+         9yjU9zoz+dSyrqFQCVF9pWlUWy6QLPq8bHWadMkx42iYW0RyiXaH4/rv7GQVUg34QSQZ
+         4kXA==
+X-Forwarded-Encrypted: i=1; AJvYcCWUGV4zTyQYdHBXw73+klwP5lAtZlitPE33T4taYbGQC2eX5WypCQAYX0weru2CRQHz/rqM1V+kPtA24fniMCBHmpxV3vY=
+X-Gm-Message-State: AOJu0Yyu3U9nkJS7zHyzVy4OiUW3YteIt7yWo7j6ibVYD79bL/kXRZO5
+	iINUoHjHacKo/Iag+ciZBScIpz2Ed4RjApf5y9CACFg2GomP+Hd+XlYSpuiIw8M=
+X-Google-Smtp-Source: AGHT+IEKMKYTQECfUlI5Xqkk2n1CcC+Bn9kk/cYoX2vF7L9C8xyQOyAac6X58xIRZYOETJnlR1vW7A==
+X-Received: by 2002:a9d:6511:0:b0:6e6:c9a5:6585 with SMTP id i17-20020a9d6511000000b006e6c9a56585mr1312038otl.23.1712275821781;
+        Thu, 04 Apr 2024 17:10:21 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id bn11-20020a05620a2acb00b00789f221a46bsm193731qkb.119.2024.04.04.17.10.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 04 Apr 2024 17:10:21 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rsX9w-0002Iz-Kz;
+	Thu, 04 Apr 2024 21:10:20 -0300
+Date: Thu, 4 Apr 2024 21:10:20 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Muhammad Usama Anjum <usama.anjum@collabora.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Shuah Khan <shuah@kernel.org>,
+	kernel@collabora.com, iommu@lists.linux.dev,
+	linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests: iommu: add config needed for iommufd_fail_nth
+Message-ID: <20240405001020.GB5792@ziepe.ca>
+References: <20240325090048.1423908-1-usama.anjum@collabora.com>
+ <45b4d209-675a-4b42-b62c-6644bafa36c0@collabora.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240404165404.3805498-1-surenb@google.com> <Zg7dmp5VJkm1nLRM@casper.infradead.org>
- <CAJuCfpHbTCwDERz+Hh+aLZzNdtSFKA+Q7sW-xzvmFmtyHCqROg@mail.gmail.com>
- <CAJuCfpHy5Xo76S7h9rEuA3cQ1pVqurL=wmtQ2cx9-xN1aa_C_A@mail.gmail.com>
- <Zg8qstJNfK07siNn@casper.infradead.org> <jb25mtkveqf63bv74jhynf6ncxmums5s37esveqsv52yurh4z7@5q55ttv34bia>
- <20240404154150.c25ba3a0b98023c8c1eff3a4@linux-foundation.org> <jpaw4hdd73ngt7mvtcdryqscivx6m2ic76ikfkcopceb47becp@vox5czt5bec3>
-In-Reply-To: <jpaw4hdd73ngt7mvtcdryqscivx6m2ic76ikfkcopceb47becp@vox5czt5bec3>
-From: Suren Baghdasaryan <surenb@google.com>
-Date: Thu, 4 Apr 2024 16:16:15 -0700
-Message-ID: <CAJuCfpF10COO2nh1nt3CcaZOFe4iSXszsup+a0qAEQ1ngyy5tQ@mail.gmail.com>
-Subject: Re: [PATCH 1/1] mm: change inlined allocation helpers to account at
- the call site
-To: Kent Overstreet <kent.overstreet@linux.dev>
-Cc: Andrew Morton <akpm@linux-foundation.org>, Matthew Wilcox <willy@infradead.org>, joro@8bytes.org, 
-	will@kernel.org, trond.myklebust@hammerspace.com, anna@kernel.org, 
-	arnd@arndb.de, herbert@gondor.apana.org.au, davem@davemloft.net, 
-	jikos@kernel.org, benjamin.tissoires@redhat.com, tytso@mit.edu, jack@suse.com, 
-	dennis@kernel.org, tj@kernel.org, cl@linux.com, jakub@cloudflare.com, 
-	penberg@kernel.org, rientjes@google.com, iamjoonsoo.kim@lge.com, 
-	vbabka@suse.cz, edumazet@google.com, kuba@kernel.org, pabeni@redhat.com, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org, 
-	linux-nfs@vger.kernel.org, linux-acpi@vger.kernel.org, 
-	acpica-devel@lists.linux.dev, linux-arch@vger.kernel.org, 
-	linux-crypto@vger.kernel.org, bpf@vger.kernel.org, 
-	linux-input@vger.kernel.org, linux-ext4@vger.kernel.org, linux-mm@kvack.org, 
-	netdev@vger.kernel.org, linux-security-module@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <45b4d209-675a-4b42-b62c-6644bafa36c0@collabora.com>
 
-On Thu, Apr 4, 2024 at 4:01=E2=80=AFPM Kent Overstreet
-<kent.overstreet@linux.dev> wrote:
->
-> On Thu, Apr 04, 2024 at 03:41:50PM -0700, Andrew Morton wrote:
-> > On Thu, 4 Apr 2024 18:38:39 -0400 Kent Overstreet <kent.overstreet@linu=
-x.dev> wrote:
-> >
-> > > On Thu, Apr 04, 2024 at 11:33:22PM +0100, Matthew Wilcox wrote:
-> > > > On Thu, Apr 04, 2024 at 03:17:43PM -0700, Suren Baghdasaryan wrote:
-> > > > > Ironically, checkpatch generates warnings for these type casts:
-> > > > >
-> > > > > WARNING: unnecessary cast may hide bugs, see
-> > > > > http://c-faq.com/malloc/mallocnocast.html
-> > > > > #425: FILE: include/linux/dma-fence-chain.h:90:
-> > > > > + ((struct dma_fence_chain *)kmalloc(sizeof(struct dma_fence_chai=
-n),
-> > > > > GFP_KERNEL))
-> > > > >
-> > > > > I guess I can safely ignore them in this case (since we cast to t=
-he
-> > > > > expected type)?
-> > > >
-> > > > I find ignoring checkpatch to be a solid move 99% of the time.
-> > > >
-> > > > I really don't like the codetags.  This is so much churn, and it co=
-uld
-> > > > all be avoided by just passing in _RET_IP_ or _THIS_IP_ depending o=
-n
-> > > > whether we wanted to profile this function or its caller.  vmalloc
-> > > > has done it this way since 2008 (OK, using __builtin_return_address=
-())
-> > > > and lockdep has used _THIS_IP_ / _RET_IP_ since 2006.
-> > >
-> > > Except you can't. We've been over this; using that approach for traci=
-ng
-> > > is one thing, using it for actual accounting isn't workable.
-> >
-> > I missed that.  There have been many emails.  Please remind us of the
-> > reasoning here.
->
-> I think it's on the other people claiming 'oh this would be so easy if
-> you just do it this other way' to put up some code - or at least more
-> than hot takes.
->
-> But, since you asked - one of the main goals of this patchset was to be
-> fast enough to run in production, and if you do it by return address
-> then you've added at minimum a hash table lookup to every allocate and
-> free; if you do that, running it in production is completely out of the
-> question.
->
-> Besides that - the issues with annotating and tracking the correct
-> callsite really don't go away, they just shift around a bit. It's true
-> that the return address approach would be easier initially, but that's
-> not all we're concerned with; we're concerned with making sure
-> allocations get accounted to the _correct_ callsite so that we're giving
-> numbers that you can trust, and by making things less explicit you make
-> that harder.
->
-> Additionally: the alloc_hooks() macro is for more than this. It's also
-> for more usable fault injection - remember every thread we have where
-> people are begging for every allocation to be __GFP_NOFAIL - "oh, error
-> paths are hard to test, let's just get rid of them" - never mind that
-> actually do have to have error paths - but _per callsite_ selectable
-> fault injection will actually make it practical to test memory error
-> paths.
->
-> And Kees working on stuff that'll make use of the alloc_hooks() macro
-> for segregating kmem_caches.
+On Mon, Mar 25, 2024 at 02:11:41PM +0500, Muhammad Usama Anjum wrote:
+> On 3/25/24 2:00 PM, Muhammad Usama Anjum wrote:
+> > Add FAULT_INJECTION_DEBUG_FS and FAILSLAB configurations which are
+> > needed by iommufd_fail_nth test.
+> > 
+> > Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> > ---
+> > While building and running these tests on x86, defconfig had these
+> > configs enabled. But ARM64's defconfig doesn't enable these configs.
+> > Hence the config options are being added explicitly in this patch.
+> Please disregard this extra comment. Overall this patch is needed to enable
+> these config options of x86 and ARM both.
 
-Yeah, that pretty much summarizes it. Note that we don't have to make
-the conversions in this patch and accounting will still work but then
-all allocations from different callers will be accounted to the helper
-function and that's less useful than accounting at the call site.
-It's a sizable churn but the conversions are straight-forward and we
-do get accurate, performant and easy to use memory accounting.
+I picked this and the other patch up, thanks
 
->
-> This is all stuff that I've explained before; let's please dial back on
-> the whining - or I'll just bookmark this for next time...
+Jason
