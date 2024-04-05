@@ -1,167 +1,487 @@
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2113.outbound.protection.outlook.com [40.107.102.113])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E96F171E47
-	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 18:18:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.113
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712341086; cv=fail; b=M1+vfxcydmCzBi0DMIQrwXScTYsyn8K5/ZM5AonEyt6uy/qQJUWVdpeh02n6GNE7PSdb8ZLkkxetmc3FvnJeL4qKKYaqeFXmBoqdp+Qlb1J+0MW3i1F/J41oukE/VtimX/zCn5mIkgN3cLnQvwLPdL6FsJ4wKTvtlFKHnVnHl94=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712341086; c=relaxed/simple;
-	bh=AktZo+p+Izp4YxNpkfjlRgw/RekL4XJXvwdt+rlyRLg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=cIZzb88SiR1V87DRu5yXvPf6yh5oGpFwQEXtyyrLjizE6Y3+TodEpel4QXfVCPDNczRqd6OmdzmLjw03+lYN1wpiMj6X81wZupNxg1fRlSAY/IDNy4SJtxBrp3rvqfumwa2AxgEeAB5bGV217Yjkm7oh8+OPv95Din5d/MxtwAs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=KRzxh5Mu; arc=fail smtp.client-ip=40.107.102.113
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95B06174ECA
+	for <iommu@lists.linux.dev>; Fri,  5 Apr 2024 22:26:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712356008; cv=none; b=QB1UQgQlXQnBj5cgQyzaIfef7dFSSUlM7/zK+X1MGHw/ABCEMnEN9pC+lNgiRcXIeZelhtfse9IMfynynTJGBkEuiFdJxwGlFk6x0KQLJF169iQ/sGHsrW431vzjbLlZOT7x+uxlNKHG+0PqHhqjBGf1c/kK51mtX0Q7FhLjEZA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712356008; c=relaxed/simple;
+	bh=HBMA8Ear6PZ/X9UeO8E/idiaY+79on5xxLQZ5AwjeI4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=LGzahcU2rpy70RXhyBkp3r+MnSnU+G8sTOTiJ+iHewHIkcoGPL7PMML+22kfRxi87HBQq8XOQt9aMm8VnnIfWXLEHItae7kIDZNjhkvTqBu7MhUq4be0IIctBO/zf+fxCZze4/qGugBMk3ScsuUYhPxwmAa2TtaCyyIDOrBqZbM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KpAMN+af; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="KRzxh5Mu"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mlW1k3X669SkkLRoiD6r9ZuSQRmDu4A071yx0U4Z9xrl2cYML+rjxg9KyQWYhC1lF3G30WnFsmgbkNRtkpy4b0b4oaUTh3WfsCcZypKmkN1Y98Bvvr2/WlA+GAJLSvGCuTl4Szvvj3FO6aAbX6HbGbrflZNdvJ+j7xelDh+8qJfpsOQUa1ZkiMlYf0ACm3tNbbyPdqbY0mgIk3pp1Skw5/bBsBSWyR4ds9Wa6b8cD3xdR2/DLLv8VsU1J36++bc559obQuOyAGmjGSdfadCsXjemwYsEgOn4EUorfYwGVf9VNuGZj736yIrMuY1QUy9ffsxA6NHgdlVUZIWf1nMeTA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7ihn6yG5h32jMQ+iJ6FsgSfqqFl4iZZob958RXo6S04=;
- b=WcarITvyfEPOmmeRdsvvpbL/+mzevv0PpaA95JXummePkKmjTb9psTTdN7cWEdZtLbpISR0MdlnfW4yL0U+EMpSIT53BlZYxzC5xXJ+E0acUes/qOJLcC0LRVAdqoy7qduY9uQn6hMYlvtOeFxXVLxfJwEB3ung6+YpAaR0I+quneESKEDXShsqBbpCOYxUo4wzNtxo8X6lDzxxtHrzn7UbqEdkiQlWPXuI63PRoY+XSpjRcYVfwXfSEZyDyOafWe401ZmYk21w/OfSEB+Xo4sxV9LUwaMogLcgSC1kKMeCof/SpM6ZQt/s9R4JyvbxUqEXjndoHOyldnBhWv3qD8Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7ihn6yG5h32jMQ+iJ6FsgSfqqFl4iZZob958RXo6S04=;
- b=KRzxh5Muqrmy4/FNhx/9Vw4cJhxpqsdXnmlJp22owJzABG5EyFZ5SNyUe8Z8DpFtgprn3lvv1Xmwi561vn0vadMzL8b+kBanx/hPEec/uoMtdrzdum75opNatq/Kruapr0VTXWIyFzog1evJ/g1ViOaik+JGg1RU73Qp/s0zTbYQUJ4ij+HE4oz+xUWd5YfvAaN22RBlYnoKonURLYm3GflBMx7IkHQ6yopkdY54vJsD04Y71rwb4E/6pb7A2OmsouDIe3God2qc9Vqbygn28QyEojcKzyvekI4+CkquU68cAYOSj/VBX1yexWn6oYs2i7WUJhNVCyzIHfNUE1kk+Q==
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by SA3PR12MB7831.namprd12.prod.outlook.com (2603:10b6:806:311::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.46; Fri, 5 Apr
- 2024 18:18:01 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7409.042; Fri, 5 Apr 2024
- 18:18:00 +0000
-Date: Fri, 5 Apr 2024 15:17:59 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, joro@8bytes.org,
-	kevin.tian@intel.com, alex.williamson@redhat.com,
-	robin.murphy@arm.com, eric.auger@redhat.com, nicolinc@nvidia.com,
-	kvm@vger.kernel.org, chao.p.peng@linux.intel.com,
-	iommu@lists.linux.dev, zhenzhong.duan@intel.com,
-	jacob.jun.pan@intel.com
-Subject: Re: [PATCH v2 2/2] iommu: Pass domain to remove_dev_pasid() op
-Message-ID: <20240405181759.GI5383@nvidia.com>
-References: <20240328122958.83332-1-yi.l.liu@intel.com>
- <20240328122958.83332-3-yi.l.liu@intel.com>
- <ffa58b7e-aada-4ff7-a645-f946e658785a@linux.intel.com>
- <735f81a8-a605-41c0-8252-15715e4d8884@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <735f81a8-a605-41c0-8252-15715e4d8884@intel.com>
-X-ClientProxiedBy: BL1PR13CA0013.namprd13.prod.outlook.com
- (2603:10b6:208:256::18) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KpAMN+af"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712356007; x=1743892007;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=HBMA8Ear6PZ/X9UeO8E/idiaY+79on5xxLQZ5AwjeI4=;
+  b=KpAMN+afQ/Z15+9S5lzjg2KdW0IYGF1OX7EaY1FkcnVwUA1YpRJyPKZ8
+   Z2Q4w94pwDQLL0G/Kemvxr6RQUMOhQWAlXudcpUr82+V8se21ROwQ9/6y
+   /gSsEAIct8+tg1gsTSd6BiRiwMP8XttlqF5jecMahhCAJDQEkaM1mjDXN
+   OdIrn700YoBb6eA+3XbpB60l4dCNSefxWgS2OPl+WhWJlDxQRnSIQ3m8G
+   k0bDNaMTDhOICkKEzGScnVl+Tzzdl5DadBsmS496GjUmGY5mOK/9jv1Wb
+   +5zct1NAH8GpFUx9oKd720UKR7ppsNXzYoGE6C1l7FBMhcPJVeRfVuvEg
+   g==;
+X-CSE-ConnectionGUID: tWlAkpTIQfuy5zNEmqHHTQ==
+X-CSE-MsgGUID: YsLYWWKIRRCchUAClbqJ0Q==
+X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="19062656"
+X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
+   d="scan'208";a="19062656"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 15:26:45 -0700
+X-CSE-ConnectionGUID: ojjwhLfhT3KQKTsFe+aWQw==
+X-CSE-MsgGUID: mCQy61CLRCeCqf+6maXeaA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
+   d="scan'208";a="23928305"
+Received: from jacob-builder.jf.intel.com ([10.54.39.125])
+  by fmviesa004.fm.intel.com with ESMTP; 05 Apr 2024 15:26:44 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: LKML <linux-kernel@vger.kernel.org>,
+	X86 Kernel <x86@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>,
+	iommu@lists.linux.dev,
+	Thomas Gleixner <tglx@linutronix.de>,
+	"Lu Baolu" <baolu.lu@linux.intel.com>,
+	kvm@vger.kernel.org,
+	Dave Hansen <dave.hansen@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	"H. Peter Anvin" <hpa@zytor.com>,
+	"Borislav Petkov" <bp@alien8.de>,
+	"Ingo Molnar" <mingo@redhat.com>
+Cc: Paul Luse <paul.e.luse@intel.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Jens Axboe <axboe@kernel.dk>,
+	Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	maz@kernel.org,
+	seanjc@google.com,
+	"Robin Murphy" <robin.murphy@arm.com>,
+	jim.harris@samsung.com,
+	a.manzanares@samsung.com,
+	"Bjorn Helgaas" <helgaas@kernel.org>,
+	guang.zeng@intel.com,
+	robert.hoo.linux@gmail.com,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 00/13] Coalesced Interrupt Delivery with posted MSI
+Date: Fri,  5 Apr 2024 15:30:57 -0700
+Message-Id: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|SA3PR12MB7831:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	U97wOas5MoG8Dwvskel5ojbsVV/iZnYMDE9HaHmNxv5bNxjsVsLsEPkkvkflkGjJ3ym5agOgNEiH7I2kXI0CJECQWJKIzGIzb4lxmhaWz5NUZ+CNww7Jz4eg3mg8DeaXXI5C9hQk4pbEIgf0blVT5k7bj2XaGDXP98VOgsXsKWyzBeTKIZZwB8JvO+HcR4tk4YHEGIVoIIaLIoof+1lqUxEt0ktkZPxqqso9bbC/KEock3XuCqD4Q4xPqLkpOSS6CHouwZDW2pjujxXdpaxF9gqvhXyawuOamMIQQxpNOtgx80BOOjMg9mq3g7ECAvckBQUuyoPdcXz/YEPYXAcO7a4pFQqzp2RHqLv7z66DX5JghF8mdgOZTrYoRS2I7tcsMku0hGPaZ/8xenUWtM6TzAioQmXZf6jQpw91rZOid6FaoxZ6Tmxb4qgGNfZ4giaJCASJpo4Dh60QO0MXTQYrz+i8tddP2vAVucCE+vnto3jlvNeiTuYmphdgJX8XBOFnOb6nlZcfGCNkLdWDRPdTe073knLHsHYXAYPiUtgnpZrEwcjaRM0V6qCil/djzI36exUp5OkDArzvyAMaIvHHYZtPHr5jtu3mSDQSRH2m/sntvUka41jgceJLXlICxL8W67xSrADaWC//5S/ppbsVf+BDNFIqmFBJJaDqg2OtJ9E=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(1800799015)(366007)(7416005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?SHVJZW12Mm1pcmVhZE0xTTFyL3paSENjMWxzUFZUTXFZTzJhMEFBeElFTXFZ?=
- =?utf-8?B?b1VXQTZRSHJtL013NzV3OG5IR3QzOUVjaDdWTlJpMDZZTk1aU0NkM1lXT0VE?=
- =?utf-8?B?QndEbHFkYnpIckM1RHVrMFgyQ05RaVB4aW4xZ214bk5TbG42NnBlUHloaGt3?=
- =?utf-8?B?SzAzQWJwMC9IaG5iMXZKUHBNTWlSWnhkbm83STlKb0dRN1RIT2kzdzhyOTI5?=
- =?utf-8?B?VHJ3VlN4ZjR6bkV4T04vNGdqa2ovUUl1TGg2c2p0WUo2NnlIeURBQkc3OGhC?=
- =?utf-8?B?dTJvcXBKWGdheWNzcjVqZHF3MUpmVUpnV1lxbllxWWJtdXBucm1hd3JtWGky?=
- =?utf-8?B?SVdNdElqbE56OHFKUThQRDloNS9pbHBHS3dGcXpBWEZKWXRId1dJdVR2YlY5?=
- =?utf-8?B?VUJwelljdlRudjFoUmFqNUJQeXZDQlROWWUva1BaT2tUY250RVlyTjNxdGFr?=
- =?utf-8?B?c2JzSWU0azROSDlzS2kwSC9Eb2w1QlFXSEJYa2s5a2M1czc5WXphLzZ6Y2sy?=
- =?utf-8?B?M0c5YnlMbUhNQXNuSnJFVmpPYTBJSktaNmxQRSs3YUwrS0J2WGs5RTJMRHRQ?=
- =?utf-8?B?dFduS2dlemYxQ1JTU3pBa0J6VEVGMHorZmcxaml3bmUyU3c2cFdXM2JvUnNU?=
- =?utf-8?B?MnVzSTBXQ2lmbHBPcHpNWnY5akNaUzNXVEdVWGNtOGs4c3NRZFdibmhJYVYx?=
- =?utf-8?B?dmt0V3grRm5ndTBFaHF0cUh3OXIvcVVVNW0yMGdQTlRQYXVFeWlYM1crcTdF?=
- =?utf-8?B?bHJGZFh1N1RPVXQ5c2l0ekl4WENGWjlYb0o1cHY5dWJwcFJQMC9vR0g1Nm9J?=
- =?utf-8?B?OTNuSndINHI0MVhrdjZjejNIUWJpUk9NVVliVVdOUU9XdHB6NXBDK2pTeHp6?=
- =?utf-8?B?Rm10UjlPM1lTMzhKb0JEcjJ0Zk5SRnhpSzdJNkdTbE1EUDE0ZlNBWU1xR2c2?=
- =?utf-8?B?Sk9saVVyUmdxUmE0bGRXeFhSM0k1a2ZXeEdRblBEZ1M1L3hPVUNEWWtrZHVs?=
- =?utf-8?B?c05HUU13UmtJOUlOb09UL0pPTjJmZmRWdmJxWlNJMFF0RVFYWkNJT3hreHVz?=
- =?utf-8?B?VkhMZ052Z0tMSkdzZ2UvZ0FqeG1tZUxZZ2V4cEFNR2hnWlpRM0srQWZRNTND?=
- =?utf-8?B?c3hRQkZ2SllacEV5RlNNVHdwM01xR0txWWpJUzhBUzFLZjgvQXNkTms5QkNX?=
- =?utf-8?B?U0ozdHBYM3Fmbk9oVko1NGMxcUx1UERlWElvemJ3R0FyNUcySHJqR25XT0ZG?=
- =?utf-8?B?VytQNGhKZVpTNFg1NW1mWHNKQi9salZGamZQSFo2VDJNZWFaaTkyMWwzYTNk?=
- =?utf-8?B?THpxK2pabmhaVnUvbEorYnlZZ2FuYWpqaFRhNjNzOVdiQmxtWldYYVBJL1pE?=
- =?utf-8?B?bXhvbUtoUGtSNFlaNTNmN3NEbVhSTVU0bm1Ld3RhZHdhM2kzSkhHNHQxdEds?=
- =?utf-8?B?UTdCNHpuWDY3YWlhd2hRUUs4dU9RUnJxa0E3eGRON1FXMDZkWlFPSFlyd1V5?=
- =?utf-8?B?Z3YyVHJlL05pSE12d1cwaHl0NFBZaWlvMEN0SDV4elZnblVWVUFyMzI2c1c4?=
- =?utf-8?B?UHBGQmFONkJyRFJkNE9GSjMxRGl4SFdUbG5RRnBUM2NDR3EyRjdNbE0vUjNn?=
- =?utf-8?B?NGF0VmlSRGtXWWlPM3hMdWpOU0VMVWJpRDZrbG5jMCtzNTlVTmhReGhkM2dn?=
- =?utf-8?B?d2VNV0x4QlJwdThuL0NPR0NsUzE0MXo3VEZNUUlNVDA5S3dZVXF4bWFtZ3hG?=
- =?utf-8?B?ZjlFcmhEUSs5VGI0aTQwU255ZjBIUnd0MWNUZDhOZU1SMDF1S1Axd2pxOXMr?=
- =?utf-8?B?ejEybndSdlhOVWM2SHQzcDNwK1RGNzVaa0tOMi8rYkorYmZXUzVJbmVadDlQ?=
- =?utf-8?B?NUhVOXNsZ0ZQRjY0OEsrNDE5MXhOKzNDeklET1l4eWVseGN6RGtsTEdNTWM4?=
- =?utf-8?B?RWFqdzVtQTErYndHajdOaEFtWUFDaU1nSkVEMEswQUdJenhMYXJUZ1lkVmFn?=
- =?utf-8?B?TVhJS0hqVGxBMGVMRWoxbytnbG56dEQ3NHJ0Zk0rZGtyMGxyUjEzTkxDZllv?=
- =?utf-8?B?RTVJQlRBZitmVERJNWNnNmdJNFoxSFp1aC9XaGpRb2MrN2VCZ1pvN2d1UDNO?=
- =?utf-8?Q?kA58tvGqDY874zXJLt0jV87HC?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 87015e9b-3f48-4cf9-a474-08dc559cba38
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Apr 2024 18:18:00.8353
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3dm9jIV42KcijCCRVh/mN8s3LiCDJ1CEmDpjxpE4gKmWY4RoNHYBECCo1dUcfwnP
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA3PR12MB7831
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 03, 2024 at 11:25:35AM +0800, Yi Liu wrote:
-> On 2024/4/3 11:04, Baolu Lu wrote:
-> > On 3/28/24 8:29 PM, Yi Liu wrote:
-> > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > > index 2e925b5eba53..40dd439307e8 100644
-> > > --- a/include/linux/iommu.h
-> > > +++ b/include/linux/iommu.h
-> > > @@ -578,7 +578,8 @@ struct iommu_ops {
-> > >                     struct iommu_page_response *msg);
-> > >       int (*def_domain_type)(struct device *dev);
-> > > -    void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid);
-> > > +    void (*remove_dev_pasid)(struct device *dev, ioasid_t pasid,
-> > > +                 struct iommu_domain *domain);
-> > 
-> > Previously, this callback said "Hey, remove any domain associated with
-> > this pasid".
-> > 
-> > Now this callback changes to "Hey, please remove *this* domain from the
-> > pasid". What the driver should do if it doesn't match the previously
-> > attached domain, or the pasid hasn't been attached to any domain?
-> 
-> I think the caller of this callback should know very well whether
-> a pasid has been attached to this domain or not. So the problem
-> you described should not happen at all. Otherwise, it is a bug in
-> the iommu layer.
-> 
-> Actually, there is similar concern in the iommu_detach_device_pasid().
-> The input domain may be different with what iommu layer tracks. If
-> so there is a warn. This means the external callers of this API are
-> buggy. While, I have more faith on iommu layer. :)
+Hi Thomas and all,
 
-Yeah, the iommu layer should obtain the domain from the pasid xarray
-and every driver today also obtains the domain from the pasid
-xarray. It is not something different, it is just moving code around.
+This patch set is aimed to improve IRQ throughput on Intel Xeon by making use of
+posted interrupts.
 
-The core code should guarentee the invariant.
+There is a session at LPC2023 IOMMU/VFIO/PCI MC where I have presented this
+topic.
 
-Jason
+https://lpc.events/event/17/sessions/172/#20231115
+
+Background
+==========
+On modern x86 server SoCs, interrupt remapping (IR) is required and turned
+on by default to support X2APIC. Two interrupt remapping modes can be supported
+by IOMMU/VT-d:
+
+- Remappable 	(host)
+- Posted	(guest only so far)
+
+With remappable mode, the device MSI to CPU process is a HW flow without system
+software touch points, it roughly goes as follows:
+
+1.	Devices issue interrupt requests with writes to 0xFEEx_xxxx
+2.	The system agent accepts and remaps/translates the IRQ
+3.	Upon receiving the translation response, the system agent notifies the
+	destination CPU with the translated MSI
+4.	CPU's local APIC accepts interrupts into its IRR/ISR registers
+5.	Interrupt delivered through IDT (MSI vector)
+
+The above process can be inefficient under high IRQ rates. The notifications in
+step #3 are often unnecessary when the destination CPU is already overwhelmed
+with handling bursts of IRQs. On some architectures, such as Intel Xeon, step #3
+is also expensive and requires strong ordering w.r.t DMA. As a result, slower
+IRQ rates can become a limiting factor for DMA I/O performance.
+
+For example, on Intel Xeon Sapphire Rapids SoC, as more NVMe disks are attached
+to the same socket, FIO (libaio engine) 4K block random read performance
+per-disk drops quickly.
+
+# of disks  	2  	4  	8
+-------------------------------------
+IOPS(million)  	1.991	1.136  	0.834
+(NVMe Gen 5 Samsung PM174x)
+
+With posted mode enabled in interrupt remapping, the interrupt flow is divided
+into two parts: posting (storing pending IRQ vector information in memory) and
+CPU notification.
+
+The above remappable IRQ flow becomes the following (1 and 2 unchanged):
+3.	Notifies the destination CPU with a notification vector
+	- IOMMU suppresses CPU notification
+	- IOMMU atomic swap/store IRQ status to memory-resident posted interrupt
+	descriptor (PID)
+4.	CPU's local APIC accepts the notification interrupt into its IRR/ISR
+	registers
+5.	Interrupt delivered through IDT (notification vector handler)
+	System SW allows new notifications by clearing outstanding notification
+	(ON) bit in PID.
+(The above flow is not in Linux today since we only use posted mode for VM)
+
+Note that the system software can now suppress CPU notifications at runtime as
+needed. This allows the system software to coalesce the expensive CPU
+notifications and in turn, improve IRQ throughput and DMA performance.
+
+Consider the following scenario when MSIs arrive at a CPU in high-frequency
+bursts:
+
+Time ----------------------------------------------------------------------->
+    	^ ^ ^       	^ ^ ^ ^     	^   	^
+MSIs	A B C       	D E F G     	H   	I
+
+RI  	N  N'  N'     	N  N'  N'  N'  	N   	N
+
+PI  	N           	N           	N   	N
+
+RI: remappable interrupt;  PI:  posted interrupt;
+N: interrupt notification, N': superfluous interrupt notification
+
+With remappable interrupt (row titled RI), every MSI generates a notification
+event to the CPU.
+
+With posted interrupts enabled in this patch set (row titled PI), CPU
+notifications are coalesced during IRQ bursts. N's are eliminated in the flow
+above. We refer to this mechanism Coalesced Interrupt Delivery (CID).
+
+Post interrupts have existed for a long time, they have been used for
+virtualization where MSIs from directly assigned devices can be delivered to
+the guest kernel without VMM intervention. On x86 Intel platforms, posted
+interrupts can be used on the host as well. Only host physical address of
+Posted interrupt descriptor (PID) is used.
+
+This patch set enables a new usage of posted interrupts on existing (and
+new hardware) for host kernel device MSIs. It is referred to as Posted MSIs
+throughout this patch set.
+
+Performance (with this patch set):
+==================================
+Test #1. NVMe FIO
+
+FIO libaio (million IOPS/sec/disk) Gen 5 NVMe Samsung PM174x disks on a single
+socket, Intel Xeon Sapphire Rapids. Random read with 4k block size. NVMe IRQ
+affinity is managed by the kernel with one vector per CPU.
+
+#disks	Before		After		%Gain
+---------------------------------------------
+8	0.834		1.943		132%
+4	1.136		2.023		78%
+
+Other observations:
+- Increased block sizes shows diminishing benefits, e.g. with 4 NVME disks on
+one x16 PCIe slot, the combined IOPS looks like:
+
+    Block Size	Baseline	PostedMSI
+    -------------------------------------
+    4K		6475		8778
+    8K		5727		5896
+    16k		2864		2900
+    32k		1546		1520
+    128k	397		398
+
+- Submission/Completion latency (usec) also improved at 4K block size only
+  FIO report SLAT
+  ---------------------------------------
+  Block Size	Baseline	postedMSI
+  4k		2177		2282
+  8k		4416		3967
+  16k		2950		3053
+  32k		3453		3505
+  128k		5911		5801
+
+  FIO report CLAT
+  ---------------------------------------
+  Block Size	Baseline	postedMSI
+  4k		313		230
+  8k		352		343
+  16k		711		702
+  32k		1320		1343
+  128k		5146		5137
+
+
+Test #2. Intel Data Streaming Accelerator
+
+Two dedicated workqueues from two PCI root complex integrated endpoint
+(RCIEP) devices, pin IRQ affinity of the two interrupts to a single CPU.
+
+				Before		After		%Gain
+				-------------------------------------
+DSA memfill (mil IRQs/sec)	5.157		8.987		74%
+
+DMA throughput has similar improvements.
+
+At lower IRQ rate (< 1 million/second), no performance benefits nor regression
+observed so far.
+
+No harm tests also performed to ensure no performance regression on workloads
+that do not have high interrupt rate. These tests include:
+- kernel compile time
+- file copy
+- FIO NVME random writes
+
+Implementation choices:
+======================
+- Transparent to the device drivers
+
+- System-wide option instead of per-device or per-IRQ opt-in, i.e. once enabled
+  all device MSIs are posted. The benefit is that we only need to change IR
+  irq_chip and domain layer. No change to PCI MSI.
+  Exceptions are: IOAPIC, HPET, and VT-d's own IRQs
+
+- Limit the number of polling/demuxing loops per CPU notification event
+
+- Only change Intel-IR in IRQ domain hierarchy VECTOR->INTEL-IR->PCI-MSI,
+
+- X86 Intel only so far, can be extended to other architectures with posted
+  interrupt support (ARM and AMD), RFC.
+
+- Bare metal only, no posted interrupt capable virtual IOMMU.
+
+
+Changes and implications (moving from remappable to posted mode)
+===============================
+1. All MSI vectors are multiplexed into a single notification vector for each
+CPU MSI vectors are then de-multiplexed by SW, no IDT delivery for MSIs
+
+2. Losing the following features compared to the remappable mode (AFAIK, none of
+the below matters for device MSIs)
+- Control of delivery mode, e.g. NMI for MSIs
+- No logical destinations, posted interrupt destination is x2APIC
+  physical APIC ID
+- No per vector stack, since all MSI vectors are multiplexed into one
+
+
+Runtime changes
+===============
+The IRQ runtime behavior has changed with this patch, here is a pseudo trace
+comparison for 3 MSIs of different vectors arriving in a burst on the same CPU.
+A system vector interrupt (e.g. timer) arrives randomly.
+
+BEFORE:
+interrupt(MSI)
+    irq_enter()
+    handler() /* EOI */
+    irq_exit()
+        process_softirq()
+
+interrupt(timer)
+
+interrupt(MSI)
+    irq_enter()
+    handler() /* EOI */
+    irq_exit()
+        process_softirq()
+
+interrupt(MSI)
+    irq_enter()
+    handler() /* EOI */
+    irq_exit()
+        process_softirq()
+
+
+AFTER:
+interrupt /* Posted MSI notification vector */
+    irq_enter()
+	atomic_xchg(PIR)
+	handler()
+	handler()
+	handler()
+	pi_clear_on()
+    apic_eoi()
+    irq_exit()
+interrupt(timer)
+        process_softirq()
+
+With posted MSI (as pointed out by Thomas Gleixner), both high-priority
+interrupts (system interrupt vectors) and softIRQs are blocked during MSI vector
+demux loop. Some can be timing sensitive.
+
+Here are the options I have attempted or still working on:
+
+1. Use self-IPI to invoke MSI vector handler but that took away the majority of
+the performance benefits.
+
+2. Limit the # of demuxing loops, this is implemented in this patch. Note that
+today, we already allow one low priority MSI to block system interrupts. System
+vector can preempt MSI vectors without waiting for EOI but we have IRQ disabled
+in the ISR.
+
+Performance data (on DSA with MEMFILL) also shows that coalescing more than 3
+loops yields diminishing benefits. Therefore, the max loops for coalescing is
+set to 3 in this patch.
+	MaxLoop		IRQ/sec		bandwidth Mbps
+-------------------------------------------------------------------------
+	2		6157107 		25219
+	3		6226611 		25504
+	4		6557081 		26857
+	5		6629683 		27155
+	6		6662425 		27289
+
+3. limit the time that system interrupts can be blocked (WIP).
+
+In addition, posted MSI uses atomic xchg from both CPU and IOMMU. Compared to
+remappable mode, there may be additional cache line ownership contention over
+PID. However, we have not observed performance regression at lower IRQ rates.
+At high interrupt rate, posted mode always wins.
+
+Testing:
+========
+
+The following tests have been performed and continue to be evaluated.
+- IRQ affinity change, migration
+- CPU offlining
+- Multi vector coalescing
+- Low IRQ rate, general no-harm test
+- VM device assignment via VFIO
+- General no harm test, performance regressions have not been observed for low
+IRQ rate workload.
+
+
+With the patch, a new entry in /proc/interrupts is added.
+cat /proc/interrupts | grep PMN
+PMN:         13868907 Posted MSI notification event
+
+No change to the device MSI accounting.
+
+A new INTEL-IR-POST irq_chip is visible at IRQ debugfs, e.g.
+domain:  IR-PCI-MSIX-0000:6f:01.0-12
+ hwirq:   0x8
+ chip:    IR-PCI-MSIX-0000:6f:01.0
+  flags:   0x430
+             IRQCHIP_SKIP_SET_WAKE
+             IRQCHIP_ONESHOT_SAFE
+ parent:
+    domain:  INTEL-IR-12-13
+     hwirq:   0x90000
+     chip:    INTEL-IR-POST /* For posted MSIs */
+      flags:   0x0
+     parent:
+        domain:  VECTOR
+         hwirq:   0x65
+         chip:    APIC
+
+
+Acknowledgment
+==============
+
+- Rajesh Sankaran and Ashok Raj for the original idea
+
+- Thomas Gleixner for reviewing and guiding the upstream direction of PoC
+patches. Help correct my many misunderstandings of the IRQ subsystem.
+
+- Jie J Yan(Jeff), Sebastien Lemarie, and Dan Liang for performance evaluation
+with NVMe and network workload
+
+- Bernice Zhang and Scott Morris for functional validation
+
+- Michael Prinke helped me understand how VT-d HW works
+
+- Sanjay Kumar for providing the DSA IRQ test suite
+
+
+Changelogs:
+
+V2:
+- Code change logs are in individual patches.
+- Use "Originally-by" and "Suggested-by" tags to clarify
+  credits/responsibilities.
+- More performance evaluation done on FIO
+4K rand read test. Four Samsung PM174x NVMe drives on a single x16 PCIe gen5
+lane. Fixed CPU frequency at 2.7GHz (p1, highest non-turbo).
+
+      	    	IOPS*	CPU%	sys%	 user%	Ints/sec	IOPS/CPU	LAT**
+AIO (before)	6231	55.5	39.7	 15.8	5714721		112.2702703	328
+AIO (after)	8936	71.5	51.5	 20	7397543		124.979021	229
+
+IOURING(before)	6880	43.7	30.3	13.4	6512402		157.4370709	149
+IOURING(after)	8688	58.3	41.3	17	7625158		149.0222985	118
+
+IOURING POLLEDQ	13100	100	85.1	14.9	8000		131		156
+
+* x1000 4 drives combined
+** 95% usec.
+
+This patchset improves IOPS, IRQ throughput, and reduces latency for non-polled
+queues.
+
+V1 (since RFC)
+   - Removed mentioning of wishful features, IRQ preemption, separate and
+     full MSI vector space
+   - Refined MSI handler de-multiplexing loop based on suggestions from
+     Peter and Thomas. Reduced xchg() usage and code duplication
+   - Assign the new posted IR irq_chip only to device MSI/x, avoid changing
+     IO-APIC code
+   - Extract and use common code for preventing lost interrupt during
+     affinity change
+   - Added more test results to the cover letter
+
+
+
+Thanks,
+
+Jacob
+
+
+
+Jacob Pan (13):
+  x86/irq: Move posted interrupt descriptor out of vmx code
+  x86/irq: Unionize PID.PIR for 64bit access w/o casting
+  x86/irq: Remove bitfields in posted interrupt descriptor
+  x86/irq: Add a Kconfig option for posted MSI
+  x86/irq: Reserve a per CPU IDT vector for posted MSIs
+  x86/irq: Set up per host CPU posted interrupt descriptors
+  x86/irq: Factor out calling ISR from common_interrupt
+  x86/irq: Install posted MSI notification handler
+  x86/irq: Factor out common code for checking pending interrupts
+  x86/irq: Extend checks for pending vectors to posted interrupts
+  iommu/vt-d: Make posted MSI an opt-in cmdline option
+  iommu/vt-d: Add an irq_chip for posted MSIs
+  iommu/vt-d: Enable posted mode for device MSIs
+
+ .../admin-guide/kernel-parameters.txt         |   1 +
+ arch/x86/Kconfig                              |  11 ++
+ arch/x86/include/asm/apic.h                   |  12 ++
+ arch/x86/include/asm/hardirq.h                |   6 +
+ arch/x86/include/asm/idtentry.h               |   3 +
+ arch/x86/include/asm/irq_remapping.h          |  11 ++
+ arch/x86/include/asm/irq_vectors.h            |   9 +-
+ arch/x86/include/asm/posted_intr.h            | 108 ++++++++++++
+ arch/x86/kernel/apic/vector.c                 |   5 +-
+ arch/x86/kernel/cpu/common.c                  |   3 +
+ arch/x86/kernel/idt.c                         |   3 +
+ arch/x86/kernel/irq.c                         | 164 ++++++++++++++++--
+ arch/x86/kvm/vmx/posted_intr.c                |   4 +-
+ arch/x86/kvm/vmx/posted_intr.h                |  93 +---------
+ arch/x86/kvm/vmx/vmx.c                        |   3 +-
+ arch/x86/kvm/vmx/vmx.h                        |   2 +-
+ drivers/iommu/intel/irq_remapping.c           | 115 +++++++++++-
+ drivers/iommu/irq_remapping.c                 |  13 +-
+ tools/arch/x86/include/asm/irq_vectors.h      |   9 +-
+ 19 files changed, 457 insertions(+), 118 deletions(-)
+ create mode 100644 arch/x86/include/asm/posted_intr.h
+
+-- 
+2.25.1
+
