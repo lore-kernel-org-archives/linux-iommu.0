@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3BF5208D4
-	for <iommu@lists.linux.dev>; Sat,  6 Apr 2024 06:29:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95BEF22323
+	for <iommu@lists.linux.dev>; Sat,  6 Apr 2024 12:55:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712384992; cv=none; b=ursqYAFDLoxeslBtX3b6kAkydJhMZSUn/ehUrYqJASm5+WIxYBHs8/cU1LUB+5XFyoiBn/yhwbQ8e5qDE0u0dZPPg6x8oZiTZBBXOuzd9shReafBZdjYYvpLKiyP1aMzHkEMd4ALrJ9g/rOtEak/rrEtiy+raaok1hAVrxhBjQI=
+	t=1712408151; cv=none; b=EnN2AukfHei+vhwp6LcO/1lefxQ5MBt1qXr4N99X3iKwK2cVoIubEJgx7Mj4D5lKpaBt2BgERPD2jYXv3fAKrbxLO0BgQhN20HqP4kHARLWf7wMPWZ3jb4m67nbcXM6+aoiP7hC/hFmQRHZaHP0mSZ+hggHBRguVK2dGVknaLYc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712384992; c=relaxed/simple;
-	bh=UMB1y8DSo+UPVEoOObQx/TI5qIqyG6i7IBdbk9Misvg=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Eu5ql8gtgDn2Rpdm//Tp9C8ftxSgB2QE/CTEij9L86r0rYzjeZUu9nJpBiviCI3prqJU+Mc64gzP/M86XTU7AjkHMsxTFzSqY42eq6pp3qsQkdsA3pDZxN3fBwlAcxucguSgpsPqc0rVCoyRwuNvvtbudqeaBIz9WViV7ZHYbb0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gQBVvc4t; arc=none smtp.client-ip=198.175.65.19
+	s=arc-20240116; t=1712408151; c=relaxed/simple;
+	bh=0uBq/I9RS48908VoKoeGWXDGV1SpEnf+QHjKl8GwSbA=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=FlDCiWKGaw8weMO6CHSTz3MRcqJU5iBegR5qh6ZLvwFJM7/fZzhc7f/r+5oqwCuM9dKg+92vcARAlC5MyyiSU0xhyulbhzimx1yvoWCZYU3hZl9nsUGDn9pprVeUXe9VqqiLdGLZ2cCwNnj/m/AsPWNc3fV9ab1GlXscCJ1OC30=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FzIWa8CV; arc=none smtp.client-ip=198.175.65.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gQBVvc4t"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FzIWa8CV"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712384991; x=1743920991;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=UMB1y8DSo+UPVEoOObQx/TI5qIqyG6i7IBdbk9Misvg=;
-  b=gQBVvc4tB2rMdX4lWCPe9oNyjXloP4nfQoeJeASjc1tv/ZXBQeoQMw4w
-   A6BaCv3MKqQk8JIVD41mdiaDX3Pt13BuO6+Jt6kFGsBD+jaxF6Ku+M2NE
-   H8xPn9ZmHkF0s8xJOiY1Lp1Y4FHwZdquwngvcN39i9xZXxYhGt7D1mGe1
-   PSTDLGP9OtQlTtyHsgniUwbW8fIBUzBG1y989iJuv1Hsl5lj++Yl4eIiK
-   DNZ57pMVh6PufHZU8sDYrI9nPsp6s0eUUZPdF4oA37R7Y83tg9fhWSnnk
-   Do4DVdQDTXty4fsR2ktTOZkvonlHEQUDhqXsru5H7D2BvLdw/E1r7qiLx
-   A==;
-X-CSE-ConnectionGUID: /EQQTmS0TUW6kdAGSPXzrw==
-X-CSE-MsgGUID: uv/VsCaBQ7WYLRXT7jVaiw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="7580661"
-X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="7580661"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 23:29:50 -0700
-X-CSE-ConnectionGUID: bd3muIeKTE6+/DabsIqkTQ==
-X-CSE-MsgGUID: iFs4qfuWTYqwAmrMEpV2hw==
+  t=1712408150; x=1743944150;
+  h=message-id:date:mime-version:from:subject:to:cc:
+   references:in-reply-to:content-transfer-encoding;
+  bh=0uBq/I9RS48908VoKoeGWXDGV1SpEnf+QHjKl8GwSbA=;
+  b=FzIWa8CVczqS4R06DC9PviuCGP3Agx7eppMHwaV93RmaWwcZdGmPT1/X
+   bfrY0swZ2RB5OnWPKfwDv41FWsIVvtSaQGa32JWnxUkrA9MXUD43YEicI
+   himGRd0NupEeq1R4jXADv4cfF1pBWmEgvEjEXh2//PUAXbYRSLJdkt2rd
+   5ow8vcoPYelZ0MeFNCkDGPnnfkHluyIJY3WQui5sMWLi693k6j37N3fPJ
+   YE9WQnirWuDwxQiq9s43/wVrGxUYENO+3HOeP3FCkGR4gGx+tkrBQiwkB
+   Ka0BFCNDUlVfb4PrxpOBq9qIPDffY0xd04RBfeTeC7MAiWrvCZBz4G38i
+   g==;
+X-CSE-ConnectionGUID: QNGNxwk/Rlay8rbCwBQwcw==
+X-CSE-MsgGUID: B7gU41zNQIWaQvBh5qYGDQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11036"; a="7828780"
+X-IronPort-AV: E=Sophos;i="6.07,183,1708416000"; 
+   d="scan'208";a="7828780"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2024 05:55:49 -0700
+X-CSE-ConnectionGUID: Ed8uX/PySGuFDLerWXEjsQ==
+X-CSE-MsgGUID: K4es7CR1QTity8fq2mpi/w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="56858666"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa001.jf.intel.com with ESMTP; 05 Apr 2024 23:29:47 -0700
-Message-ID: <8b71bd41-dc1a-4a28-a380-8f470264f8da@linux.intel.com>
-Date: Sat, 6 Apr 2024 14:28:42 +0800
+X-IronPort-AV: E=Sophos;i="6.07,183,1708416000"; 
+   d="scan'208";a="50641083"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.29.89]) ([10.255.29.89])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2024 05:55:46 -0700
+Message-ID: <bc76bb64-8304-4fdf-ae16-03f3e545fd67@linux.intel.com>
+Date: Sat, 6 Apr 2024 20:55:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,64 +52,175 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
- virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/9] iommu: Replace sva_iommu with iommu_attach_handle
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240403011519.78512-1-baolu.lu@linux.intel.com>
- <20240403011519.78512-3-baolu.lu@linux.intel.com>
- <20240403115913.GC1363414@ziepe.ca>
-Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240403115913.GC1363414@ziepe.ca>
+Subject: Re: [PATCH 01/12] iommu/vt-d: Add cache tag assignment interface
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+Cc: baolu.lu@linux.intel.com, "Zhang, Tina" <tina.zhang@intel.com>,
+ "Liu, Yi L" <yi.l.liu@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20240325021705.249769-1-baolu.lu@linux.intel.com>
+ <20240325021705.249769-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276A6DDE82623A32FF80F4F8C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+In-Reply-To: <BN9PR11MB5276A6DDE82623A32FF80F4F8C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 4/3/24 7:59 PM, Jason Gunthorpe wrote:
->> -	iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
->> -	if (--domain->users == 0) {
->> -		list_del(&domain->next);
->> -		iommu_domain_free(domain);
->> +	iommu_attach_handle_put(handle);
->> +	if (refcount_read(&handle->users) == 1) {
->> +		iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
->> +		if (--domain->users == 0) {
->> +			list_del(&domain->next);
->> +			iommu_domain_free(domain);
->> +		}
->>   	}
-> Though I'm not convinced the refcount should be elevated into the core
-> structure. The prior patch I showed you where the caller can provide
-> the memory for the handle and we don't have a priv would make it easy
-> to put the refcount in a SVA dervied handle struct without more
-> allocation. Then we don't need this weirdness.
+Hi Kevin,
 
-It's fine to move the refcount out of the core and allow the caller to
-specify and manage its own attach handler. The refcount would then be
-managed by the SVA code.
+Thanks for your review comments.
 
-For the IOMMUFD case, we've discussed that all outstanding iopf's
-should be automatically responded in the detach process. This ensures
-the attach handle won't be used once the detach process completes.
-Therefore, if this is true, there appears to be no need for a refcount
-for IOMMUFD.
+On 3/28/24 3:12 PM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Monday, March 25, 2024 10:17 AM
+>>
+>> +enum cache_tag_type {
+>> +	CACHE_TAG_TYPE_IOTLB,
+>> +	CACHE_TAG_TYPE_DEVTLB,
+>> +	CACHE_TAG_TYPE_PARENT_IOTLB,
+>> +	CACHE_TAG_TYPE_PARENT_DEVTLB,
+>> +};
+> 
+> '_TYPE_' can be removed to make it shorter
+
+Okay.
 
 > 
->>   	mutex_unlock(&iommu_sva_lock);
->> -	kfree(handle);
-> Also do we need iommu_sva_lock here anymore? I wonder if the group
-> mutex would be sufficient..
+>> +
+>> +/* Checks if an existing cache tag can be reused for a new association. */
+>> +static bool cache_tag_reusable(struct cache_tag *tag, u16 domain_id,
+>> +			       struct intel_iommu *iommu, struct device *dev,
+>> +			       ioasid_t pasid, enum cache_tag_type type)
+> 
+> cache_tage_match()
 
-The iommu_sva_lock protects the whole process of a mm binding, from
-pasid allocation to domain attachment. While the group mutex only
-protects the data within it structure. I don't think we could replace
-iommu_sva_lock with group mutex in this patch. Or any misunderstanding?
+Okay.
 
-Best regards,
+> 
+>> +{
+>> +	if (tag->type != type)
+>> +		return false;
+>> +
+>> +	if (tag->domain_id != domain_id || tag->pasid != pasid)
+>> +		return false;
+>> +
+>> +	if (type == CACHE_TAG_TYPE_IOTLB)
+>> +		return tag->iommu == iommu;
+>> +
+>> +	if (type == CACHE_TAG_TYPE_DEVTLB)
+>> +		return tag->dev == dev;
+>> +
+>> +	return false;
+> 
+> why do you disallow PARENT_TYPE from reusing? It's not uncommon
+> to have two devices attached to a same nested domain hence with
+> the same parent domain. Disallowing tag reuse implies unnecessarily
+> duplicated cache flushes...
+
+PARENT_TYPE could be reused. The new helper looks like the following:
+
+/* Checks if an existing cache tag can be reused for a new association. */
+static bool cache_tage_match(struct cache_tag *tag, u16 domain_id,
+                                struct intel_iommu *iommu, struct device 
+*dev,
+                                ioasid_t pasid, enum cache_tag_type type)
+{
+         if (tag->type != type)
+                 return false;
+
+         if (tag->domain_id != domain_id || tag->pasid != pasid)
+                 return false;
+
+         if (type == CACHE_TAG_IOTLB || type == CACHE_TAG_PARENT_IOTLB)
+                 return tag->iommu == iommu;
+
+         if (type == CACHE_TAG_DEVTLB || type == CACHE_TAG_PARENT_DEVTLB)
+                 return tag->dev == dev;
+
+         return false;
+}
+
+>> +}
+>> +
+>> +/* Assign a cache tag with specified type to domain. */
+>> +static int cache_tag_assign(struct dmar_domain *domain, u16 did,
+>> +			    struct device *dev, ioasid_t pasid,
+>> +			    enum cache_tag_type type)
+>> +{
+>> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>> +	struct intel_iommu *iommu = info->iommu;
+>> +	struct cache_tag *tag, *temp;
+>> +	unsigned long flags;
+>> +
+>> +	tag = kzalloc(sizeof(*tag), GFP_KERNEL);
+>> +	if (!tag)
+>> +		return -ENOMEM;
+>> +
+>> +	tag->type = type;
+>> +	tag->iommu = iommu;
+>> +	tag->dev = dev;
+> 
+> should we set tag->dev only for DEVTLB type? It's a bit confusing to set
+> it for IOTLB type which doesn't care about device. Actually doing so
+> is instead misleading as the 1st device creating the tag may have been
+> detached but then it will still show up in the trace when the last device
+> detach destroying the tag.
+
+For IOTLB types, perhaps we could add a struct device pointer for the
+iommu. This way, the tag->dev could more directly indicate the device
+implementing the cache.
+
+> 
+>> +static int __cache_tag_assign_parent_domain(struct dmar_domain
+>> *domain, u16 did,
+>> +					    struct device *dev, ioasid_t pasid)
+> 
+> this pair is similar to the earlier one except the difference on type.
+> 
+> what about keeping just one pair which accepts a 'parent' argument to
+> decide the type internally?
+
+Okay, let try to refine it.
+
+> 
+> 
+>> +/*
+>> + * Assigns cache tags to a domain when it's associated with a device's
+>> + * PASID using a specific domain ID.
+> 
+> s/Assigns/Assign/
+
+Done.
+
+> 
+>> +
+>> +	did = domain_id_iommu(domain, iommu);
+>> +	ret = cache_tag_assign_domain(domain, did, dev,
+>> IOMMU_NO_PASID);
+> 
+> there are many occurrences of this pattern. What about passing in
+> a 'iommu' parameter and getting 'did' inside the helper? for svm
+> it can be specialized internally too.
+
+Perhaps, let me try it later and see what the code looks like.
+
+> 
+>> @@ -4607,10 +4623,11 @@ static void
+>> intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+>>   	 */
+>>   	if (domain->type == IOMMU_DOMAIN_SVA) {
+>>   		intel_svm_remove_dev_pasid(dev, pasid);
+>> +		cache_tag_unassign_domain(dmar_domain,
+>> +					  FLPT_DEFAULT_DID, dev, pasid);
+> 
+> is it correct to destroy the tag before teardown completes, e.g. iotlb still
+> needs to be flushed in intel_pasid_tear_down_entry()?
+
+You are right. iotlb still needs to be there until the teardown
+completes. I will investigate this more later.
+
+Beset regards,
 baolu
