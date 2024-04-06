@@ -1,226 +1,155 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95BEF22323
-	for <iommu@lists.linux.dev>; Sat,  6 Apr 2024 12:55:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D3484EB51
+	for <iommu@lists.linux.dev>; Sat,  6 Apr 2024 21:42:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712408151; cv=none; b=EnN2AukfHei+vhwp6LcO/1lefxQ5MBt1qXr4N99X3iKwK2cVoIubEJgx7Mj4D5lKpaBt2BgERPD2jYXv3fAKrbxLO0BgQhN20HqP4kHARLWf7wMPWZ3jb4m67nbcXM6+aoiP7hC/hFmQRHZaHP0mSZ+hggHBRguVK2dGVknaLYc=
+	t=1712439776; cv=none; b=dqYNjmUo4THBApVPecd1K7eOBJZv7ZJY4tRj/yZnQa4YCpFI3aoqD169sXGhv0nXAMMweVOKea8Ck9ANFs4oGISRQ3ZJZU2FDpqbOAl6rai/Oht07r9p36dRMSSAlFwzmhNA4vZ6CRC1ySAc/00WAxRWcUaZI/+QVtlTIJ3Qc1E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712408151; c=relaxed/simple;
-	bh=0uBq/I9RS48908VoKoeGWXDGV1SpEnf+QHjKl8GwSbA=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=FlDCiWKGaw8weMO6CHSTz3MRcqJU5iBegR5qh6ZLvwFJM7/fZzhc7f/r+5oqwCuM9dKg+92vcARAlC5MyyiSU0xhyulbhzimx1yvoWCZYU3hZl9nsUGDn9pprVeUXe9VqqiLdGLZ2cCwNnj/m/AsPWNc3fV9ab1GlXscCJ1OC30=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FzIWa8CV; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712439776; c=relaxed/simple;
+	bh=fYYeF3MecFw24NiAZ+QMoa0g1C92UzUGo1u5gHhYFXk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=IN8BXeuYvpg1lyJofwu6DUrrScp9yRkfgbxW0VHET4WcH78TGyFG0Vqeko0l09vLUBzG0gne8FE67ip3snx+sSW4OdYxM1MKqPfvyqcZ2BkW3aI8ysKbSSfYgQJdNp1n2A5OjbY8oPEzE0NfMBE9REP/bJ85lI4S64v3GM5T6OA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=UsXv/3UK; arc=none smtp.client-ip=209.85.167.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FzIWa8CV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712408150; x=1743944150;
-  h=message-id:date:mime-version:from:subject:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=0uBq/I9RS48908VoKoeGWXDGV1SpEnf+QHjKl8GwSbA=;
-  b=FzIWa8CVczqS4R06DC9PviuCGP3Agx7eppMHwaV93RmaWwcZdGmPT1/X
-   bfrY0swZ2RB5OnWPKfwDv41FWsIVvtSaQGa32JWnxUkrA9MXUD43YEicI
-   himGRd0NupEeq1R4jXADv4cfF1pBWmEgvEjEXh2//PUAXbYRSLJdkt2rd
-   5ow8vcoPYelZ0MeFNCkDGPnnfkHluyIJY3WQui5sMWLi693k6j37N3fPJ
-   YE9WQnirWuDwxQiq9s43/wVrGxUYENO+3HOeP3FCkGR4gGx+tkrBQiwkB
-   Ka0BFCNDUlVfb4PrxpOBq9qIPDffY0xd04RBfeTeC7MAiWrvCZBz4G38i
-   g==;
-X-CSE-ConnectionGUID: QNGNxwk/Rlay8rbCwBQwcw==
-X-CSE-MsgGUID: B7gU41zNQIWaQvBh5qYGDQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11036"; a="7828780"
-X-IronPort-AV: E=Sophos;i="6.07,183,1708416000"; 
-   d="scan'208";a="7828780"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2024 05:55:49 -0700
-X-CSE-ConnectionGUID: Ed8uX/PySGuFDLerWXEjsQ==
-X-CSE-MsgGUID: K4es7CR1QTity8fq2mpi/w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,183,1708416000"; 
-   d="scan'208";a="50641083"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.255.29.89]) ([10.255.29.89])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2024 05:55:46 -0700
-Message-ID: <bc76bb64-8304-4fdf-ae16-03f3e545fd67@linux.intel.com>
-Date: Sat, 6 Apr 2024 20:55:44 +0800
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="UsXv/3UK"
+Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-3c3aeef1385so2183599b6e.3
+        for <iommu@lists.linux.dev>; Sat, 06 Apr 2024 14:42:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1712439773; x=1713044573; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=m1G9gUrNc9dGzPe7AYM33DPZfjgc9cVYEl/DEKm89Aw=;
+        b=UsXv/3UK5PrngwCKLG5QPufxpONL+HCguL69CgV348/jRYZS9pCGmL1lZqB9zW7PRB
+         mOc5vNT8k2Tj/e5H0QzR1HPAv9Rlk0X5p5TFVrShU6aigrpOX9QYLJTCzMX8/JJgShVj
+         XRMiYHIuyHZV6egdD3ExofS50vLXNJZqzkUAQdWxaCyyZ/B7yR8gYyGpys+z1RUG4t/D
+         itpenq3Wf3wHBVl1iYjeY7KE7gwwcd29yUpmqpE/NQFhkeHj/1Ut0tnj8lXca6oot1eV
+         KOAdSldiv/vQvMXsHTGN3maTkBRBMKU/87db1BJlXGMxn/bTLEzL7L2rIE1stb0dND2c
+         ZNEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712439773; x=1713044573;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=m1G9gUrNc9dGzPe7AYM33DPZfjgc9cVYEl/DEKm89Aw=;
+        b=e/CVMKaUfQy3QGQFmRQPYW4wIgMkFIP22eBRRYNmbJp7fROvK6AM6KGbECk5V9dgB+
+         jeiTgl6PJ33Uosi9aHUjHkM5A9fEB3DXQK/CfcpJ8EbawKnAzsDORe5sTYqX4xwvKxCb
+         si7NMcmFabC61GPXM0PQyHVg655p/JwcH+IGmn+oMi7lep6AoS6zEY6WwxiDQWPJ1npm
+         uzfbn6MBLufpcXXap97x4B0/phMMd2l3c8fWBGCQhyGaQuO6tqKArydeZO2v5qt5Uou1
+         207H5IBzeo4CdD0OX1Dgb6oUfppfmGJ7dP/2qzi5yfLEJpcP/mKRo1fA8tvDbBa8OL4i
+         wyfA==
+X-Forwarded-Encrypted: i=1; AJvYcCVhh+u4V8Vz+iTDdPIR7MJJi4hrIm5AC3oRcQ0WkTGuHcnO+oCdzyRIR1PR1THAQQkQjV52+RnzeJTR/foER+fznkxeyho=
+X-Gm-Message-State: AOJu0YxFoZBgtGg68J+ZNUfLw/hWSyiAA65JmCBh9NKZcDtXy3vHZIg5
+	w27aRJwcEtw+2u8qvYxgvynBFhLUvBb6mFxgTAQ+b9ggM3JmhiR5EnhIosXAQeiU/8o/JPrl8nB
+	m89xvDmHZdGSXpcZZ6VGySUdBi1soV/F/6J4u
+X-Google-Smtp-Source: AGHT+IEy/KQG2Rqx5HErdblj8QUCCqwueXsecSytEtIs4U2W0lIYmqOxwok485xQsC2WwPFvE/PMCfWXWAWd2KQRtS8=
+X-Received: by 2002:a05:6808:3084:b0:3c3:dcfc:f694 with SMTP id
+ bl4-20020a056808308400b003c3dcfcf694mr5989197oib.47.1712439773006; Sat, 06
+ Apr 2024 14:42:53 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Baolu Lu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 01/12] iommu/vt-d: Add cache tag assignment interface
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>
-Cc: baolu.lu@linux.intel.com, "Zhang, Tina" <tina.zhang@intel.com>,
- "Liu, Yi L" <yi.l.liu@intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20240325021705.249769-1-baolu.lu@linux.intel.com>
- <20240325021705.249769-2-baolu.lu@linux.intel.com>
- <BN9PR11MB5276A6DDE82623A32FF80F4F8C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-In-Reply-To: <BN9PR11MB5276A6DDE82623A32FF80F4F8C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20240321163705.3067592-1-surenb@google.com> <c14cd89b-c879-4474-a800-d60fc29c1820@gmail.com>
+ <CAJuCfpHEt2n6sA7m5zvc-F+z=3-twVEKfVGCa0+y62bT10b0Bw@mail.gmail.com>
+ <41328d5a-3e41-4936-bcb7-c0a85e6ce332@gmail.com> <CAJuCfpERj52X8DB64b=6+9WLcnuEBkpjnfgYBgvPs0Rq7kxOkw@mail.gmail.com>
+ <3d496797-4173-43de-b597-af3668fd0eca@gmail.com>
+In-Reply-To: <3d496797-4173-43de-b597-af3668fd0eca@gmail.com>
+From: Suren Baghdasaryan <surenb@google.com>
+Date: Sat, 6 Apr 2024 14:42:40 -0700
+Message-ID: <CAJuCfpHXr=183+4AJPC_TwrLsNOn0BZ1jSXipoP0LE+hd7Ehfw@mail.gmail.com>
+Subject: Re: [PATCH v6 00/37] Memory allocation profiling
+To: Klara Modin <klarasmodin@gmail.com>
+Cc: akpm@linux-foundation.org, kent.overstreet@linux.dev, mhocko@suse.com, 
+	vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, mgorman@suse.de, 
+	dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
+	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
+	peterz@infradead.org, juri.lelli@redhat.com, catalin.marinas@arm.com, 
+	will@kernel.org, arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
+	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, 
+	david@redhat.com, axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
+	nathan@kernel.org, dennis@kernel.org, jhubbard@nvidia.com, tj@kernel.org, 
+	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, 
+	pasha.tatashin@soleen.com, yosryahmed@google.com, yuzhao@google.com, 
+	dhowells@redhat.com, hughd@google.com, andreyknvl@gmail.com, 
+	keescook@chromium.org, ndesaulniers@google.com, vvvvvv@google.com, 
+	gregkh@linuxfoundation.org, ebiggers@google.com, ytcoode@gmail.com, 
+	vincent.guittot@linaro.org, dietmar.eggemann@arm.com, rostedt@goodmis.org, 
+	bsegall@google.com, bristot@redhat.com, vschneid@redhat.com, cl@linux.com, 
+	penberg@kernel.org, iamjoonsoo.kim@lge.com, 42.hyeyoo@gmail.com, 
+	glider@google.com, elver@google.com, dvyukov@google.com, 
+	songmuchun@bytedance.com, jbaron@akamai.com, aliceryhl@google.com, 
+	rientjes@google.com, minchan@google.com, kaleshsingh@google.com, 
+	kernel-team@android.com, linux-doc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, 
+	cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Kevin,
+On Fri, Apr 5, 2024 at 8:38=E2=80=AFAM Klara Modin <klarasmodin@gmail.com> =
+wrote:
+>
+>
+>
+> On 2024-04-05 17:20, Suren Baghdasaryan wrote:
+> > On Fri, Apr 5, 2024 at 7:30=E2=80=AFAM Klara Modin <klarasmodin@gmail.c=
+om> wrote:
+> >>
+> >> On 2024-04-05 16:14, Suren Baghdasaryan wrote:
+> >>> On Fri, Apr 5, 2024 at 6:37=E2=80=AFAM Klara Modin <klarasmodin@gmail=
+.com> wrote:
+> >>>> If I enable this, I consistently get percpu allocation failures. I c=
+an
+> >>>> occasionally reproduce it in qemu. I've attached the logs and my con=
+fig,
+> >>>> please let me know if there's anything else that could be relevant.
+> >>>
+> >>> Thanks for the report!
+> >>> In debug_alloc_profiling.log I see:
+> >>>
+> >>> [    7.445127] percpu: limit reached, disable warning
+> >>>
+> >>> That's probably the reason. I'll take a closer look at the cause of
+> >>> that and how we can fix it.
+> >>
+> >> Thanks!
+> >
+> > In the build that produced debug_alloc_profiling.log I think we are
+> > consuming all the per-cpu memory reserved for the modules. Could you
+> > please try this change and see if that fixes the issue:
+> >
+> >   include/linux/percpu.h | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/include/linux/percpu.h b/include/linux/percpu.h
+> > index a790afba9386..03053de557cf 100644
+> > --- a/include/linux/percpu.h
+> > +++ b/include/linux/percpu.h
+> > @@ -17,7 +17,7 @@
+> >   /* enough to cover all DEFINE_PER_CPUs in modules */
+> >   #ifdef CONFIG_MODULES
+> >   #ifdef CONFIG_MEM_ALLOC_PROFILING
+> > -#define PERCPU_MODULE_RESERVE (8 << 12)
+> > +#define PERCPU_MODULE_RESERVE (8 << 13)
+> >   #else
+> >   #define PERCPU_MODULE_RESERVE (8 << 10)
+> >   #endif
+> >
+>
+> Yeah, that patch fixes the issue for me.
+>
+> Thanks,
+> Tested-by: Klara Modin
 
-Thanks for your review comments.
-
-On 3/28/24 3:12 PM, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Monday, March 25, 2024 10:17 AM
->>
->> +enum cache_tag_type {
->> +	CACHE_TAG_TYPE_IOTLB,
->> +	CACHE_TAG_TYPE_DEVTLB,
->> +	CACHE_TAG_TYPE_PARENT_IOTLB,
->> +	CACHE_TAG_TYPE_PARENT_DEVTLB,
->> +};
-> 
-> '_TYPE_' can be removed to make it shorter
-
-Okay.
-
-> 
->> +
->> +/* Checks if an existing cache tag can be reused for a new association. */
->> +static bool cache_tag_reusable(struct cache_tag *tag, u16 domain_id,
->> +			       struct intel_iommu *iommu, struct device *dev,
->> +			       ioasid_t pasid, enum cache_tag_type type)
-> 
-> cache_tage_match()
-
-Okay.
-
-> 
->> +{
->> +	if (tag->type != type)
->> +		return false;
->> +
->> +	if (tag->domain_id != domain_id || tag->pasid != pasid)
->> +		return false;
->> +
->> +	if (type == CACHE_TAG_TYPE_IOTLB)
->> +		return tag->iommu == iommu;
->> +
->> +	if (type == CACHE_TAG_TYPE_DEVTLB)
->> +		return tag->dev == dev;
->> +
->> +	return false;
-> 
-> why do you disallow PARENT_TYPE from reusing? It's not uncommon
-> to have two devices attached to a same nested domain hence with
-> the same parent domain. Disallowing tag reuse implies unnecessarily
-> duplicated cache flushes...
-
-PARENT_TYPE could be reused. The new helper looks like the following:
-
-/* Checks if an existing cache tag can be reused for a new association. */
-static bool cache_tage_match(struct cache_tag *tag, u16 domain_id,
-                                struct intel_iommu *iommu, struct device 
-*dev,
-                                ioasid_t pasid, enum cache_tag_type type)
-{
-         if (tag->type != type)
-                 return false;
-
-         if (tag->domain_id != domain_id || tag->pasid != pasid)
-                 return false;
-
-         if (type == CACHE_TAG_IOTLB || type == CACHE_TAG_PARENT_IOTLB)
-                 return tag->iommu == iommu;
-
-         if (type == CACHE_TAG_DEVTLB || type == CACHE_TAG_PARENT_DEVTLB)
-                 return tag->dev == dev;
-
-         return false;
-}
-
->> +}
->> +
->> +/* Assign a cache tag with specified type to domain. */
->> +static int cache_tag_assign(struct dmar_domain *domain, u16 did,
->> +			    struct device *dev, ioasid_t pasid,
->> +			    enum cache_tag_type type)
->> +{
->> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
->> +	struct intel_iommu *iommu = info->iommu;
->> +	struct cache_tag *tag, *temp;
->> +	unsigned long flags;
->> +
->> +	tag = kzalloc(sizeof(*tag), GFP_KERNEL);
->> +	if (!tag)
->> +		return -ENOMEM;
->> +
->> +	tag->type = type;
->> +	tag->iommu = iommu;
->> +	tag->dev = dev;
-> 
-> should we set tag->dev only for DEVTLB type? It's a bit confusing to set
-> it for IOTLB type which doesn't care about device. Actually doing so
-> is instead misleading as the 1st device creating the tag may have been
-> detached but then it will still show up in the trace when the last device
-> detach destroying the tag.
-
-For IOTLB types, perhaps we could add a struct device pointer for the
-iommu. This way, the tag->dev could more directly indicate the device
-implementing the cache.
-
-> 
->> +static int __cache_tag_assign_parent_domain(struct dmar_domain
->> *domain, u16 did,
->> +					    struct device *dev, ioasid_t pasid)
-> 
-> this pair is similar to the earlier one except the difference on type.
-> 
-> what about keeping just one pair which accepts a 'parent' argument to
-> decide the type internally?
-
-Okay, let try to refine it.
-
-> 
-> 
->> +/*
->> + * Assigns cache tags to a domain when it's associated with a device's
->> + * PASID using a specific domain ID.
-> 
-> s/Assigns/Assign/
-
-Done.
-
-> 
->> +
->> +	did = domain_id_iommu(domain, iommu);
->> +	ret = cache_tag_assign_domain(domain, did, dev,
->> IOMMU_NO_PASID);
-> 
-> there are many occurrences of this pattern. What about passing in
-> a 'iommu' parameter and getting 'did' inside the helper? for svm
-> it can be specialized internally too.
-
-Perhaps, let me try it later and see what the code looks like.
-
-> 
->> @@ -4607,10 +4623,11 @@ static void
->> intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
->>   	 */
->>   	if (domain->type == IOMMU_DOMAIN_SVA) {
->>   		intel_svm_remove_dev_pasid(dev, pasid);
->> +		cache_tag_unassign_domain(dmar_domain,
->> +					  FLPT_DEFAULT_DID, dev, pasid);
-> 
-> is it correct to destroy the tag before teardown completes, e.g. iotlb still
-> needs to be flushed in intel_pasid_tear_down_entry()?
-
-You are right. iotlb still needs to be there until the teardown
-completes. I will investigate this more later.
-
-Beset regards,
-baolu
+Official fix is posted at
+https://lore.kernel.org/all/20240406214044.1114406-1-surenb@google.com/
+Thanks,
+Suren.
