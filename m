@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C4E7208D0
-	for <iommu@lists.linux.dev>; Sat,  6 Apr 2024 06:10:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3BF5208D4
+	for <iommu@lists.linux.dev>; Sat,  6 Apr 2024 06:29:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712383844; cv=none; b=ql2ai4Vn28YlJOP91JyCDaXoJO1WmQ5dt1F76Bzzr2eDCzK8+lTxguoAQuhIpiYpU4zHRct4ZFkJYFKujxib64SPlmrMSIICg+wmCtfeCwqurd2mwAog31ZGrAmBfcOREPLpRz+AuA+NDVp8yM0ydRbaHlGnmzOrQkHMkrNpchg=
+	t=1712384992; cv=none; b=ursqYAFDLoxeslBtX3b6kAkydJhMZSUn/ehUrYqJASm5+WIxYBHs8/cU1LUB+5XFyoiBn/yhwbQ8e5qDE0u0dZPPg6x8oZiTZBBXOuzd9shReafBZdjYYvpLKiyP1aMzHkEMd4ALrJ9g/rOtEak/rrEtiy+raaok1hAVrxhBjQI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712383844; c=relaxed/simple;
-	bh=oW5lJbl5v3kR/8gLXMDQPaUPUS+d2GARjElgdEIrEZI=;
+	s=arc-20240116; t=1712384992; c=relaxed/simple;
+	bh=UMB1y8DSo+UPVEoOObQx/TI5qIqyG6i7IBdbk9Misvg=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=h1qBNxskJXM5GjZe/kc5TySJPWIiL+B7eFHhvat3zFWfe8FdO0W2LCrtPfo/HQQv5tztXHYuiF4vdW2z53TmQ2mWrzU419e7zsE1U05OgZjldDZKGET5rMOmjuX6PjoUKmASWVVIlMJN8YHps4m+6s8FaqE8O1i56yCYS8wu2qY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f99RlXL9; arc=none smtp.client-ip=192.198.163.13
+	 In-Reply-To:Content-Type; b=Eu5ql8gtgDn2Rpdm//Tp9C8ftxSgB2QE/CTEij9L86r0rYzjeZUu9nJpBiviCI3prqJU+Mc64gzP/M86XTU7AjkHMsxTFzSqY42eq6pp3qsQkdsA3pDZxN3fBwlAcxucguSgpsPqc0rVCoyRwuNvvtbudqeaBIz9WViV7ZHYbb0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gQBVvc4t; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f99RlXL9"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gQBVvc4t"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712383842; x=1743919842;
+  t=1712384991; x=1743920991;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=oW5lJbl5v3kR/8gLXMDQPaUPUS+d2GARjElgdEIrEZI=;
-  b=f99RlXL9aaPLIBmFGsIc16cs66eIwuY+D5ZVdIVdzt9IynVmvImaDn4f
-   /xGdeM+yogF+Oo6g1Acxco0TLAj7+r9CWH0ao/Htpd/aZzWovFxvFL2Gi
-   eVCamp6yb6hvFENXaUQtuQ7HZsBdLtdCUiF2e+liqP6VMg9npqiURHN+M
-   bBk7UQvOv3qk/dxyVjwaHWR0LX9XrHeYloufX1B5Z0SXvH4qeX3dcsOov
-   WpNjsnP5pJ3VvAWw5hwDM+nnmC7mxo7W3yQ5CBnOswU7mWMNPUHmMJASf
-   tii+hE3eNhooiR6nM3NhtYlCHR9hTzXrCzO+66mF4KDpVm1J2jM7AYkWB
-   g==;
-X-CSE-ConnectionGUID: ScXbUVoGTCewym91Bxh1Ww==
-X-CSE-MsgGUID: O/hwfr+dSHK6uXgmM9kTRA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="10695208"
+  bh=UMB1y8DSo+UPVEoOObQx/TI5qIqyG6i7IBdbk9Misvg=;
+  b=gQBVvc4tB2rMdX4lWCPe9oNyjXloP4nfQoeJeASjc1tv/ZXBQeoQMw4w
+   A6BaCv3MKqQk8JIVD41mdiaDX3Pt13BuO6+Jt6kFGsBD+jaxF6Ku+M2NE
+   H8xPn9ZmHkF0s8xJOiY1Lp1Y4FHwZdquwngvcN39i9xZXxYhGt7D1mGe1
+   PSTDLGP9OtQlTtyHsgniUwbW8fIBUzBG1y989iJuv1Hsl5lj++Yl4eIiK
+   DNZ57pMVh6PufHZU8sDYrI9nPsp6s0eUUZPdF4oA37R7Y83tg9fhWSnnk
+   Do4DVdQDTXty4fsR2ktTOZkvonlHEQUDhqXsru5H7D2BvLdw/E1r7qiLx
+   A==;
+X-CSE-ConnectionGUID: /EQQTmS0TUW6kdAGSPXzrw==
+X-CSE-MsgGUID: uv/VsCaBQ7WYLRXT7jVaiw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11035"; a="7580661"
 X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="10695208"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 23:10:41 -0700
-X-CSE-ConnectionGUID: 4IAu7IDhRMaelDhzLtb65w==
-X-CSE-MsgGUID: +ETBezDHT6uZW0kFO/rxxA==
+   d="scan'208";a="7580661"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Apr 2024 23:29:50 -0700
+X-CSE-ConnectionGUID: bd3muIeKTE6+/DabsIqkTQ==
+X-CSE-MsgGUID: iFs4qfuWTYqwAmrMEpV2hw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,182,1708416000"; 
-   d="scan'208";a="24097072"
+   d="scan'208";a="56858666"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa004.jf.intel.com with ESMTP; 05 Apr 2024 23:10:38 -0700
-Message-ID: <e3f526e3-6474-49ff-b8d6-995aaf1c1830@linux.intel.com>
-Date: Sat, 6 Apr 2024 14:09:34 +0800
+  by orviesa001.jf.intel.com with ESMTP; 05 Apr 2024 23:29:47 -0700
+Message-ID: <8b71bd41-dc1a-4a28-a380-8f470264f8da@linux.intel.com>
+Date: Sat, 6 Apr 2024 14:28:42 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -72,81 +72,44 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 4/3/24 7:59 PM, Jason Gunthorpe wrote:
-> On Wed, Apr 03, 2024 at 09:15:12AM +0800, Lu Baolu wrote:
->> +	/* A bond already exists, just take a reference`. */
->> +	handle = iommu_attach_handle_get(group, iommu_mm->pasid);
->> +	if (handle) {
->> +		mutex_unlock(&iommu_sva_lock);
->> +		return handle;
+>> -	iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
+>> -	if (--domain->users == 0) {
+>> -		list_del(&domain->next);
+>> -		iommu_domain_free(domain);
+>> +	iommu_attach_handle_put(handle);
+>> +	if (refcount_read(&handle->users) == 1) {
+>> +		iommu_detach_device_pasid(domain, dev, iommu_mm->pasid);
+>> +		if (--domain->users == 0) {
+>> +			list_del(&domain->next);
+>> +			iommu_domain_free(domain);
+>> +		}
 >>   	}
-> At least in this context this is not enough we need to ensure that the
-> domain on the PASID is actually an SVA domain and it was installed by
-> this mechanism, not an iommufd domain for instance.
+> Though I'm not convinced the refcount should be elevated into the core
+> structure. The prior patch I showed you where the caller can provide
+> the memory for the handle and we don't have a priv would make it easy
+> to put the refcount in a SVA dervied handle struct without more
+> allocation. Then we don't need this weirdness.
+
+It's fine to move the refcount out of the core and allow the caller to
+specify and manage its own attach handler. The refcount would then be
+managed by the SVA code.
+
+For the IOMMUFD case, we've discussed that all outstanding iopf's
+should be automatically responded in the detach process. This ensures
+the attach handle won't be used once the detach process completes.
+Therefore, if this is true, there appears to be no need for a refcount
+for IOMMUFD.
+
 > 
-> ie you probably need a type field in the iommu_attach_handle to tell
-> what the priv is.
-> 
-> Otherwise this seems like a great idea!
+>>   	mutex_unlock(&iommu_sva_lock);
+>> -	kfree(handle);
+> Also do we need iommu_sva_lock here anymore? I wonder if the group
+> mutex would be sufficient..
 
-Yes, you are right. For the SVA case, I will add the following changes.
-The IOMMUFD path will also need such enhancement. I will update it in
-the next version.
-
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index 08c0667cef54..9aee70f87a21 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -28,9 +28,22 @@ void iommu_device_unregister_bus(struct iommu_device 
-*iommu,
-  				 const struct bus_type *bus,
-  				 struct notifier_block *nb);
-
-+enum attach_handle_type {
-+	ATTACH_HANDLE_TYPE_DEFAULT = 0,
-+	ATTACH_HANDLE_TYPE_SVA,
-+	ATTACH_HANDLE_TYPE_IOMMUFD,
-+};
-+
-  struct iommu_attach_handle {
-  	struct iommu_domain		*domain;
-  	refcount_t			users;
-+
-+	/*
-+	 * Set by the attach interface callers. The type field could be used
-+	 * by the caller to identify whether the priv field was installed by
-+	 * them.
-+	 */
-+	enum attach_handle_type		type;
-  	void				*priv;
-  };
-
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index c66cf26137bf..3eb664cc3f3a 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -90,7 +90,11 @@ struct iommu_attach_handle 
-*iommu_sva_bind_device(struct device *dev, struct mm_
-  	handle = iommu_attach_handle_get(group, iommu_mm->pasid);
-  	if (handle) {
-  		mutex_unlock(&iommu_sva_lock);
--		return handle;
-+		if (handle->type == ATTACH_HANDLE_TYPE_SVA)
-+			return handle;
-+
-+		iommu_attach_handle_put(handle);
-+		return ERR_PTR(-EBUSY);
-  	}
-
-  	/* Search for an existing domain. */
-@@ -118,6 +122,7 @@ struct iommu_attach_handle 
-*iommu_sva_bind_device(struct device *dev, struct mm_
-  out:
-  	handle = iommu_attach_handle_get(group, iommu_mm->pasid);
-  	mutex_unlock(&iommu_sva_lock);
-+	handle->type = ATTACH_HANDLE_TYPE_SVA;
-  	handle->priv = dev;
-
-  	return handle;
+The iommu_sva_lock protects the whole process of a mm binding, from
+pasid allocation to domain attachment. While the group mutex only
+protects the data within it structure. I don't think we could replace
+iommu_sva_lock with group mutex in this patch. Or any misunderstanding?
 
 Best regards,
 baolu
