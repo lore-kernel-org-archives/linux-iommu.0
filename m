@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F054A7464
-	for <iommu@lists.linux.dev>; Sun,  7 Apr 2024 04:36:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E1CA6AC0
+	for <iommu@lists.linux.dev>; Sun,  7 Apr 2024 05:34:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712464572; cv=none; b=GsT3RYfqv6Lu4ZR/UtxhfRowDBXwO5MF3ikgWO7RkOB3tclbogWfN9Lh3ZuAeiI5+E/kmNIdk5cOnXapch0GLA3SWv3SvISln8En6fqV7p5muCCNpP10QgHEVVRyGh8EBsPiWE9gvKA8RK2+vY7mA1i0Q8yit/D6RXoRoHt7pf8=
+	t=1712468051; cv=none; b=QuX5I04QX3AAMYABhuq53oBoWB6xz4Mgtsz+Rk6YuYtHxqtCQsRXd/xg8ixdwVGFofjBKzUkxaR32+CECAc8CGby7xVB29QoYcazaG8pLTcLSALS5Sav1OSIB0wJDyMFhdEBAeglzkOsjFrhwVFHYHkptGjecRgDLl9q7Bz06bA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712464572; c=relaxed/simple;
-	bh=7LtA2O4jNW0QEKqaE7GEt/9iEp+LnlPXIzfTbvAjKeM=;
+	s=arc-20240116; t=1712468051; c=relaxed/simple;
+	bh=hS14BoUXabQE9RbhnDRWpPJPj15kQ0oX5ql7Imy7tbg=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=MoJL9b9i6zSgMdv/bxTOx1jubiAjqqqzQgBNx+uwcQa0DyBOEt+0K1nEVga0lKH8CHVRmkNBNSLYz6dsA+kQ9WSDU02zHZHFGsmPeEJHsD4YaGinqySOaPU55YbhjplTt81v2PAx/Q4WDiiQq6jWIrwT6+VSm6Hp83QtF4hHhgg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bmsVQ4VO; arc=none smtp.client-ip=192.198.163.14
+	 In-Reply-To:Content-Type; b=RfBeCiMQeavWWn/b3aZmI5zsMUyoFbe4gumsGXHqtDVXUdxAQ5ybCPgiG6pK32g8WSdt/plxIx51ly1d2nBRy8Ttqv6MXPaX4QSpCCCDI8EQZwu88wYwrcrRt901QEb8sIIB6sEUP8XYoizPt/nji24gCCB7U2FplhQcTlxZ8TU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Vh8e95ri; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bmsVQ4VO"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Vh8e95ri"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712464570; x=1744000570;
+  t=1712468050; x=1744004050;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=7LtA2O4jNW0QEKqaE7GEt/9iEp+LnlPXIzfTbvAjKeM=;
-  b=bmsVQ4VO/xH80+jFvfFj4rI5lxF5Sxq21wLybie7XP6P+VffMoFByDwn
-   MN+okvR9s/0+YDP0NHyUvS9cIYQKmx8QrTwl9quO4U4ddgnjxLJdzD2xf
-   dDDh1yjacH64gpczzmZzlfAAzziPYhR0fFNd3gsudwX5FoQgB1z9T9GAi
-   qSj5ebuaxTZF/Dk4qQZ/qsXnmGBDKT1/HTjzq8H5MmupavUmzfIUaYyd0
-   yQ/uxjz3z5An/WcViabTBKG6aKRLlfHJdaeEmIYXo6dgDOSrWF95uJtcQ
-   2ePQCDzwHPpCTtWRzoblFpx3XLAjJOnbesl+HU5W18ZLa504UZSLpkCtS
+  bh=hS14BoUXabQE9RbhnDRWpPJPj15kQ0oX5ql7Imy7tbg=;
+  b=Vh8e95riOHwf5PGWscTH55T4+Tv4ZF5LD74XBUhcOFXxo81/AA9R+Mbz
+   wxI3OZJOb7i5o5z0RScO5Co+9iC2C4Vw1JxehWEXXeHKi0OYUx2jSwhdu
+   JlPYAA4ZVskDsuBsfDqbcq+5MHDXtfEuoLIH2XJ8K2CJ1HABL9hiQqhIx
+   q3DL8KMzM2Wa7rHB7E8rhd/eUqcaZb475hUtLFl8VcQMUFg79YMJTB5Ll
+   amqh0NC8LiMbEJ7rvo32vkR77BlB55zss2GwctiUjj/TbfWEkBiwXqtGR
+   N5DFnyjWpt+c/Tdr5RMSTDej83jorwtkGgqWfN4nvDzu7t0kJ2KSDwTy6
    g==;
-X-CSE-ConnectionGUID: vsCQIuZASCi0Va5d5y/kaw==
-X-CSE-MsgGUID: reaHpUuKT6ivHoadFUEteA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11036"; a="7987596"
+X-CSE-ConnectionGUID: 0fzj5nQxRMCWpiS/KuAXLA==
+X-CSE-MsgGUID: C0AW1A7VQvSJIN2njhx7eg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11036"; a="8334131"
 X-IronPort-AV: E=Sophos;i="6.07,184,1708416000"; 
-   d="scan'208";a="7987596"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2024 21:36:09 -0700
-X-CSE-ConnectionGUID: NmBd8fijQGa2dgnngkSc1A==
-X-CSE-MsgGUID: 6hc9UWefTuKuY3t3i2iRag==
+   d="scan'208";a="8334131"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2024 22:34:09 -0700
+X-CSE-ConnectionGUID: 3snujzdnQQeW0hmoBOLzQw==
+X-CSE-MsgGUID: VvFcIJIeTFuRWKvRCUiFmQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,184,1708416000"; 
-   d="scan'208";a="24305028"
+   d="scan'208";a="24046191"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa005.jf.intel.com with ESMTP; 06 Apr 2024 21:36:07 -0700
-Message-ID: <ae40a717-5a16-4872-a4fd-69c792905a0e@linux.intel.com>
-Date: Sun, 7 Apr 2024 12:35:01 +0800
+  by fmviesa005.fm.intel.com with ESMTP; 06 Apr 2024 22:34:06 -0700
+Message-ID: <9aeb7dfd-e8af-4da8-b67e-274f3227efa4@linux.intel.com>
+Date: Sun, 7 Apr 2024 13:33:00 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,40 +56,237 @@ Cc: baolu.lu@linux.intel.com, "Zhang, Tina" <tina.zhang@intel.com>,
  "Liu, Yi L" <yi.l.liu@intel.com>,
  "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 01/12] iommu/vt-d: Add cache tag assignment interface
+Subject: Re: [PATCH 02/12] iommu/vt-d: Add cache tag invalidation helpers
 To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Jason Gunthorpe <jgg@ziepe.ca>
 References: <20240325021705.249769-1-baolu.lu@linux.intel.com>
- <20240325021705.249769-2-baolu.lu@linux.intel.com>
- <BN9PR11MB5276A6DDE82623A32FF80F4F8C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <bc76bb64-8304-4fdf-ae16-03f3e545fd67@linux.intel.com>
+ <20240325021705.249769-3-baolu.lu@linux.intel.com>
+ <BN9PR11MB52769F48D89273B0CCAA0B7C8C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <bc76bb64-8304-4fdf-ae16-03f3e545fd67@linux.intel.com>
+In-Reply-To: <BN9PR11MB52769F48D89273B0CCAA0B7C8C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 4/6/24 8:55 PM, Baolu Lu wrote:
+On 3/28/24 3:39 PM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Monday, March 25, 2024 10:17 AM
 >>
->>> @@ -4607,10 +4623,11 @@ static void
->>> intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
->>>        */
->>>       if (domain->type == IOMMU_DOMAIN_SVA) {
->>>           intel_svm_remove_dev_pasid(dev, pasid);
->>> +        cache_tag_unassign_domain(dmar_domain,
->>> +                      FLPT_DEFAULT_DID, dev, pasid);
->>
->> is it correct to destroy the tag before teardown completes, e.g. iotlb 
->> still
->> needs to be flushed in intel_pasid_tear_down_entry()?
+>> +
+>> +static unsigned long calculate_psi_aligned_address(unsigned long start,
+>> +						   unsigned long end,
+>> +						   unsigned long *_pages,
+>> +						   unsigned long *_mask)
+>> +{
+>> +	unsigned long pages = (end - start + VTD_PAGE_SIZE - 1) >>
+>> VTD_PAGE_SHIFT;
 > 
-> You are right. iotlb still needs to be there until the teardown
-> completes. I will investigate this more later.
+> this doesn't sound correct. You'd want to follow aligned_nrpages().
 
-I reviewed this again. Cache tags are designed specifically for mapping
-and unmapping paths. Therefore, there is no required order for attaching
-and detaching paths.
+Okay, I will make it like below.
+
+	unsigned long pages = aligned_nrpages(start, end - start + 1);
+
+> 
+>> +		case CACHE_TAG_TYPE_DEVTLB:
+>> +			if (tag->pasid == IOMMU_NO_PASID)
+>> +				qi_flush_dev_iotlb(iommu, sid, info->pfsid,
+>> +						   info->ats_qdep, addr,
+>> mask);
+>> +			else
+>> +				qi_flush_dev_iotlb_pasid(iommu, sid, info-
+>>> pfsid,
+>> +							 tag->pasid, info-
+>>> ats_qdep,
+>> +							 addr, mask);
+>> +
+>> +			quirk_extra_dev_tlb_flush(info, addr, mask, tag-
+>>> pasid, info->ats_qdep);
+>> +			break;
+>> +		case CACHE_TAG_TYPE_PARENT_DEVTLB:
+>> +			/*
+>> +			 * Address translation cache in device side caches the
+>> +			 * result of nested translation. There is no easy way
+>> +			 * to identify the exact set of nested translations
+>> +			 * affected by a change in S2. So just flush the entire
+>> +			 * device cache.
+>> +			 */
+>> +			qi_flush_dev_iotlb(iommu, sid, info->pfsid, info-
+>>> ats_qdep,
+>> +					   0, MAX_AGAW_PFN_WIDTH);
+>> +			quirk_extra_dev_tlb_flush(info, 0,
+>> MAX_AGAW_PFN_WIDTH,
+>> +						  IOMMU_NO_PASID, info-
+>>> ats_qdep);
+>> +			break;
+> 
+> parent devtlb can has pasid too, though not enabled now. As core helpers
+> probably we can support it now leading to simpler code:
+> 
+> 	case CACHE_TAG_TYPE_PARENT_DEVTLB:
+> 		//change addr/mask
+> 		//fallthrough
+> 	case CACHE_TAG_TYPE_DEVTLB:
+> 		//what this patch does
+
+Yes. Yours is better. I will make it like below:
+
++               case CACHE_TAG_PARENT_DEVTLB:
++                       /*
++                        * Address translation cache in device side 
+caches the
++                        * result of nested translation. There is no 
+easy way
++                        * to identify the exact set of nested translations
++                        * affected by a change in S2. So just flush the 
+entire
++                        * device cache.
++                        */
++                       addr = 0;
++                       mask = MAX_AGAW_PFN_WIDTH;
++                       fallthrough;
+                 case CACHE_TAG_DEVTLB:
+
+
+>> +void cache_tag_flush_all(struct dmar_domain *domain)
+>> +{
+>> +	struct cache_tag *tag;
+>> +	unsigned long flags;
+>> +
+>> +	spin_lock_irqsave(&domain->cache_lock, flags);
+>> +	list_for_each_entry(tag, &domain->cache_tags, node) {
+>> +		struct device_domain_info *info = dev_iommu_priv_get(tag-
+>>> dev);
+>> +		struct intel_iommu *iommu = tag->iommu;
+>> +		u16 sid = PCI_DEVID(info->bus, info->devfn);
+>> +
+>> +		switch (tag->type) {
+>> +		case CACHE_TAG_TYPE_IOTLB:
+>> +		case CACHE_TAG_TYPE_PARENT_IOTLB:
+>> +			if (domain->use_first_level)
+>> +				qi_flush_piotlb(iommu, tag->domain_id,
+>> +						tag->pasid, 0, -1, 0);
+>> +			else
+>> +				iommu->flush.flush_iotlb(iommu, tag-
+>>> domain_id,
+>> +							 0, 0,
+>> DMA_TLB_DSI_FLUSH);
+>> +			break;
+>> +		case CACHE_TAG_TYPE_DEVTLB:
+>> +		case CACHE_TAG_TYPE_PARENT_DEVTLB:
+>> +			qi_flush_dev_iotlb(iommu, sid, info->pfsid, info-
+>>> ats_qdep,
+>> +					   0, MAX_AGAW_PFN_WIDTH);
+>> +			quirk_extra_dev_tlb_flush(info, 0,
+>> MAX_AGAW_PFN_WIDTH,
+>> +						  IOMMU_NO_PASID, info-
+>>> ats_qdep);
+>> +			break;
+>> +		}
+>> +	}
+> 
+> could this loop be consolidated with the one in previous helper? anyway
+> the only difference is on addr/mask...
+> 
+>> +/*
+>> + * Invalidate a range of IOVA when IOMMU is in caching mode and new
+>> mappings
+>> + * are added to the target domain.
+>> + */
+>> +void cache_tag_flush_cm_range(struct dmar_domain *domain, unsigned
+>> long start,
+>> +			      unsigned long end)
+>> +{
+> 
+> I'm also not sure why this is worth a separate helper. why couldn't it
+> be managed by previous flush_range()?
+This is only my preference. I'd like to separate things belonging to
+different paths, so that it's easier for maintenance. For example, if,
+in the future, we need to add or enhance something for a specific case,
+we don't need to care about other cases.
+
+> 
+>> +	unsigned long pages, mask, addr;
+>> +	struct cache_tag *tag;
+>> +	unsigned long flags;
+>> +
+>> +	addr = calculate_psi_aligned_address(start, end, &pages, &mask);
+>> +
+>> +	spin_lock_irqsave(&domain->cache_lock, flags);
+>> +	list_for_each_entry(tag, &domain->cache_tags, node) {
+>> +		struct intel_iommu *iommu = tag->iommu;
+>> +
+>> +		/*
+>> +		 * When IOMMU is enabled in caching mode some non-
+>> present
+>> +		 * mappings may be cached by the IOTLB if it uses second-
+>> +		 * only translation.
+>> +		 */
+>> +		if (!cap_caching_mode(iommu->cap) || domain-
+>>> use_first_level) {
+>> +			iommu_flush_write_buffer(iommu);
+>> +			continue;
+>> +		}
+> 
+> the comment really doesn't tell what this block does. from its intention
+> it probably more suitable to be in the caller side as today.
+
+Yes, agreed. Will remove it.
+
+> 
+>> +
+>> +		if (tag->type == CACHE_TAG_TYPE_IOTLB ||
+>> +		    tag->type == CACHE_TAG_TYPE_PARENT_IOTLB) {
+>> +			/*
+>> +			 * Fallback to domain selective flush if no
+>> +			 * PSI support or the size is too big.
+>> +			 */
+>> +			if (!cap_pgsel_inv(iommu->cap) ||
+>> +			    mask > cap_max_amask_val(iommu->cap))
+>> +				iommu->flush.flush_iotlb(iommu, tag-
+>>> domain_id,
+>> +							 0, 0,
+>> DMA_TLB_DSI_FLUSH);
+>> +			else
+>> +				iommu->flush.flush_iotlb(iommu, tag-
+>>> domain_id,
+>> +							 addr, mask,
+>> +
+>> DMA_TLB_PSI_FLUSH);
+>> +		}
+>> +	}
+> 
+> You skipped devtlb invalidation. yes it's not necessary based on current
+> nested translation design and this part is inconsistent in different paths.
+> 
+> but as a semantics change you may want to first make removing devtlb
+> invalidation a separate patch and then do this cleanup, so bisect is easier.
+
+This helper is designed for map paths when the IOMMU is in caching mode.
+Caching mode doesn't impact the device TLB, so we should not invalidate
+the device TLB here.
+
+I guess the confusing thing is about the code below.
+
+
+         /*
+          * In caching mode, changes of pages from non-present to 
+present require
+          * flush. However, device IOTLB doesn't need to be flushed in 
+this case.
+          */
+         if (!cap_caching_mode(iommu->cap) || !map)
+                 iommu_flush_dev_iotlb(domain, addr, mask);
+
+The real code doesn't match the comments, and I think the comments
+describe the right thing. So perhaps the code should be changed to match
+the comments.
+
+	if (!map)
+		iommu_flush_dev_iotlb(domain, addr, mask);
+
+??
 
 Best regards,
 baolu
