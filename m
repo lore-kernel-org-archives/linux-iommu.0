@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B17FF17F0
-	for <iommu@lists.linux.dev>; Sun,  7 Apr 2024 05:57:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FB5B747F
+	for <iommu@lists.linux.dev>; Sun,  7 Apr 2024 06:42:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712469463; cv=none; b=Nr0bG4GegftolGT+ITz9pKgXN+/QnLFvGMKis12Ss2n+n/NJvCS006TaSMOc+aDoB8fTbU7z/PE/wvmMC2KocsH/XZ9pAGRU8mvNb+6EdGc8eUvN7LUiK2BO90TuI5qGn+NdbLjDcwHcCfviIcvFFxzKoZHzYKMk3OE/OXYKcDE=
+	t=1712472142; cv=none; b=VEL7/JNs3k6/PFx08Ch2htD5OelOGcyOEk4ndO3n6iRMUPL8xfdF3emcAH0NyWFFQROHpRowznkJNTexwwm5DaNwx5XOCAo/ZmArjlgh6rWgBLTEGQq9hmGSj+kbSI0IcIVzr4El3qojPv4VwPOLiVunnv1IALTiMHVYrnIteT0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712469463; c=relaxed/simple;
-	bh=usnhH0DZ5udvhO6SlC0QrBBmTfCt/zDw+XLfv5wegGA=;
+	s=arc-20240116; t=1712472142; c=relaxed/simple;
+	bh=KdK5I71E3njctY0Z+Vx14Q5I2n0CIhVqzT7SMjXlfpg=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=l4pSJ+iVaJGp/r2aVWiANy8QMOVjexf4dqLXLX3EecoDKe5mN7/fJelVfn4pH8Ux1t/DIpnMsz5qqr3mtvwiDkwudeSQ9D6WtUfmLAPvv2gZvRSy5fYBhXb9kH6ebPSKb7j4onEXHzQ9zgpv2J1KMlpaQgs3wzV7uEkpmKamZT0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bMqMhEsL; arc=none smtp.client-ip=198.175.65.11
+	 In-Reply-To:Content-Type; b=rpk4mLWGew+4t3TdRfr/umzrvnqCm0PKYCtAb6I+/0wr1cbwMyb/4wMmN4bNr20jrhKcZmNkFF3s7iKwall7EvBkVIQy2+BLtB1CLk6UJSHHFFkmmwUurSDua8IY6AX2pNVSfmMWNfA37ZhrJ0iAfyd2EG9a1oIJ4+NW0671fFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ejz+f8TA; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bMqMhEsL"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ejz+f8TA"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712469461; x=1744005461;
+  t=1712472141; x=1744008141;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=usnhH0DZ5udvhO6SlC0QrBBmTfCt/zDw+XLfv5wegGA=;
-  b=bMqMhEsL1nqHPMvYjOHAB8aIxeX2lL463gQg0sv22oqgVHLjYh3FZxFF
-   3OR4hnnUZmFACnWzvVdPqG8TcwBrXwYzTDebK+/YlJg5NMYnsOYo3g+SM
-   jd3JsKEU1rMOfwXsE8HkWlNXGkrm8n2g3rByxHycdKKXjcfvvcXbdc2hJ
-   MwNVglJhJDzG/5ee/ZaYhm/C/e+vf8ffyrngwL23bkiKuk+0NN7zl+hLq
-   x6lwQvVM1EJjEwps9eCQDuwj6fg42OYdCT49J8kppW7e+DefatUolFPSr
-   bUht//xTXGetI60IQts2MOeqQpNi/YGkCAk3Xo7ZiK+LDSWyMqXEXsChC
-   w==;
-X-CSE-ConnectionGUID: h36GYi92SiWLpR3vx+z+Kg==
-X-CSE-MsgGUID: VwHv2iJdRrWVkGb1Sh5BpQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11036"; a="18331564"
+  bh=KdK5I71E3njctY0Z+Vx14Q5I2n0CIhVqzT7SMjXlfpg=;
+  b=ejz+f8TArtGNemyjn2FHRuN1sYU0+o67jd/smlJeSYi7IjUmbbiQuvsQ
+   19RI+XuT/6P/rCBeBc/vuXzxSl2ubpQhcXItIylwekLxbS6MgNu0sMgDE
+   jlsACCRUxpNUYqUzhExBO+5qiyd6r1sT9hUz97vv//gwRREZ9jTY7rY6A
+   M+SF+PSuiJuaxTb4RraeeWKIR8iQ0ga3yWf/kKQt6u9cr08GtP0bkTkhG
+   ZlCzcwa46VMtvDFbym6OQfN9CY7h2e5FDpT44wbVAG/z96Ou8yl/CBhb5
+   ih8dVpfiSunGxG7GthPAxv7O5rGkTwK6ElyaQ3+JtegJc1vDD3yA73pgT
+   A==;
+X-CSE-ConnectionGUID: paBkYFZbTt+HBCRTEEZUcQ==
+X-CSE-MsgGUID: eA3AjVOAT3eX/zqOo+dt1w==
+X-IronPort-AV: E=McAfee;i="6600,9927,11036"; a="18487744"
 X-IronPort-AV: E=Sophos;i="6.07,184,1708416000"; 
-   d="scan'208";a="18331564"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2024 22:57:40 -0700
-X-CSE-ConnectionGUID: GO9L8XFIR1eAW4c6f438xQ==
-X-CSE-MsgGUID: B1s9+5aoStWPY5roNix+wA==
+   d="scan'208";a="18487744"
+Received: from fmviesa004.fm.intel.com ([10.60.135.144])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2024 23:42:20 -0700
+X-CSE-ConnectionGUID: 4GjG8IfkTBarLkzihfKe9g==
+X-CSE-MsgGUID: RMwI1UwQR4uGFqX1dLDcYg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,184,1708416000"; 
-   d="scan'208";a="24044702"
+   d="scan'208";a="24194089"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa003.fm.intel.com with ESMTP; 06 Apr 2024 22:57:36 -0700
-Message-ID: <75766e12-0797-462a-93d9-2d1095b5959c@linux.intel.com>
-Date: Sun, 7 Apr 2024 13:56:31 +0800
+  by fmviesa004.fm.intel.com with ESMTP; 06 Apr 2024 23:42:18 -0700
+Message-ID: <7657779b-bda0-4303-96c5-33949cf6457c@linux.intel.com>
+Date: Sun, 7 Apr 2024 14:41:12 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,89 +56,78 @@ Cc: baolu.lu@linux.intel.com, "Zhang, Tina" <tina.zhang@intel.com>,
  "Liu, Yi L" <yi.l.liu@intel.com>,
  "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 04/12] iommu/vt-d: Use cache_tag_flush_all() in
- flush_iotlb_all
+Subject: Re: [PATCH 06/12] iommu/vt-d: Use cache_tag_flush_cm_range() in
+ iotlb_sync_map
 To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Jason Gunthorpe <jgg@ziepe.ca>
 References: <20240325021705.249769-1-baolu.lu@linux.intel.com>
- <20240325021705.249769-5-baolu.lu@linux.intel.com>
- <BN9PR11MB5276A9E7198B3C9E0A61A1A78C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240325021705.249769-7-baolu.lu@linux.intel.com>
+ <BN9PR11MB52766C4CA9A27F34419AEE258C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276A9E7198B3C9E0A61A1A78C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB52766C4CA9A27F34419AEE258C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 3/28/24 3:47 PM, Tian, Kevin wrote:
+On 3/28/24 3:48 PM, Tian, Kevin wrote:
 >> From: Lu Baolu <baolu.lu@linux.intel.com>
 >> Sent: Monday, March 25, 2024 10:17 AM
 >>
->> The flush_iotlb_all callback is called by the iommu core to flush
->> all caches for the affected domain. Use cache_tag_flush_all() in
->> this callback.
+>> The iotlb_sync_map callback is called by the iommu core after non-present
+>> to present mappings are created. The iommu driver uses this callback to
+>> invalidate caches if IOMMU is working in caching mode and second-only
+>> translation is used for the domain. Use cache_tag_flush_cm_range() in this
+>> callback.
 >>
 >> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 >> ---
->>   drivers/iommu/intel/iommu.c | 21 +--------------------
->>   1 file changed, 1 insertion(+), 20 deletions(-)
+>>   drivers/iommu/intel/iommu.c | 22 +---------------------
+>>   1 file changed, 1 insertion(+), 21 deletions(-)
 >>
 >> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 93e4422c9b10..4ce98f23917c 100644
+>> index 1c03d2dafb9d..2dcab1e5cd4d 100644
 >> --- a/drivers/iommu/intel/iommu.c
 >> +++ b/drivers/iommu/intel/iommu.c
->> @@ -1560,26 +1560,7 @@ static void parent_domain_flush(struct
->> dmar_domain *domain,
->>
->>   static void intel_flush_iotlb_all(struct iommu_domain *domain)
->>   {
->> -	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
->> -	struct iommu_domain_info *info;
->> -	unsigned long idx;
->> -
->> -	xa_for_each(&dmar_domain->iommu_array, idx, info) {
->> -		struct intel_iommu *iommu = info->iommu;
->> -		u16 did = domain_id_iommu(dmar_domain, iommu);
->> -
->> -		if (dmar_domain->use_first_level)
->> -			domain_flush_pasid_iotlb(iommu, dmar_domain, 0,
->> -1, 0);
->> -		else
->> -			iommu->flush.flush_iotlb(iommu, did, 0, 0,
->> -						 DMA_TLB_DSI_FLUSH);
->> -
->> -		if (!cap_caching_mode(iommu->cap))
->> -			iommu_flush_dev_iotlb(dmar_domain, 0,
->> MAX_AGAW_PFN_WIDTH);
->> -	}
->> -
->> -	if (dmar_domain->nested_parent)
->> -		parent_domain_flush(dmar_domain, 0, -1, 0);
->> +	cache_tag_flush_all(to_dmar_domain(domain));
+>> @@ -1504,20 +1504,6 @@ static void iommu_flush_iotlb_psi(struct
+>> intel_iommu *iommu,
+>>   		iommu_flush_dev_iotlb(domain, addr, mask);
 >>   }
 >>
+>> -/* Notification for newly created mappings */
+>> -static void __mapping_notify_one(struct intel_iommu *iommu, struct
+>> dmar_domain *domain,
+>> -				 unsigned long pfn, unsigned int pages)
+>> -{
+>> -	/*
+>> -	 * It's a non-present to present mapping. Only flush if caching mode
+>> -	 * and second level.
+>> -	 */
+>> -	if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
+>> -		iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0, 1);
+>> -	else
+>> -		iommu_flush_write_buffer(iommu);
+>> -}
 > 
-> this replacement causes a functional change. Now devtlb is always
-> invalidated while old code doesn't do so for caching mode.
+> iommu_flush_write_buffer is for a quite different issue. it's clearer to
+> keep it separated from the iotlb helpers.
 
-You are right.
+The VT-d spec describes the write buffer flushing in section 6.8. It
+states,
 
-As my understanding of the VT-d spec, caching mode has nothing to do
-with the device TLB, hence we should remove all checks on caching mode
-before a device TLB invalidation.
+1. Write buffer flushing is required only for earlier VT-d hardware
+    implementations. Newer hardware implementations are expected to NOT
+    require this.
+2. Write buffer flushing is related to cache invalidation. The hardware
+    performs an implicit write-buffer-flushing as a pre-condition to
+    the invalidation operations.
 
-I understand that people are leveraging the cache mode to avoid the
-unnecessary VMEXIT from the guest OS since the host iommu unmap() path
-ensures that device TLB is also invalidated.
+According to this, write buffer flushing is only required in the map
+path when IOMMU is not in caching mode and the RWBF iommu capability is
+set, which perfectly matches the case of cache_tag_flush_cm_range().
 
-Our direction should be to use the batched queue invalidation requests.
-As we are consolidating code to a common place, that becomes much
-easier. :-)
-
-> Probably you may want to first clean up all inconsistent devtlb
-> invalidation policies for caching mode before going to this series...
-
-Sure thing!
+By doing it in cache_tag_flush_cm_range(), the code will be simpler and
+easier for maintenance.
 
 Best regards,
 baolu
