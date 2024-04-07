@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FB5B747F
-	for <iommu@lists.linux.dev>; Sun,  7 Apr 2024 06:42:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C16D87460
+	for <iommu@lists.linux.dev>; Sun,  7 Apr 2024 07:07:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712472142; cv=none; b=VEL7/JNs3k6/PFx08Ch2htD5OelOGcyOEk4ndO3n6iRMUPL8xfdF3emcAH0NyWFFQROHpRowznkJNTexwwm5DaNwx5XOCAo/ZmArjlgh6rWgBLTEGQq9hmGSj+kbSI0IcIVzr4El3qojPv4VwPOLiVunnv1IALTiMHVYrnIteT0=
+	t=1712473637; cv=none; b=BqCPBkgBmXpa2QPR2xXVK4WKf3GfOR1jkQXQxmA7IkX6rgsqKMYuAOjZOzqcqt/fHn9CNo20StDZB6tKyUHzacCsRmXMYiFVIzJ1L235lPHtU+DnKMcEbDnKdWwaU9T6e8EsZDA2p+UZ3nkXupLTxsvxq7BVlJGzpaUFH6WY748=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712472142; c=relaxed/simple;
-	bh=KdK5I71E3njctY0Z+Vx14Q5I2n0CIhVqzT7SMjXlfpg=;
+	s=arc-20240116; t=1712473637; c=relaxed/simple;
+	bh=tgEywHxjn59cCDE/HA3qL/5sa4sUH3MpCD/WA25CFYw=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=rpk4mLWGew+4t3TdRfr/umzrvnqCm0PKYCtAb6I+/0wr1cbwMyb/4wMmN4bNr20jrhKcZmNkFF3s7iKwall7EvBkVIQy2+BLtB1CLk6UJSHHFFkmmwUurSDua8IY6AX2pNVSfmMWNfA37ZhrJ0iAfyd2EG9a1oIJ4+NW0671fFM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ejz+f8TA; arc=none smtp.client-ip=192.198.163.9
+	 In-Reply-To:Content-Type; b=g4psKIRWRMLeVgn0KLXY+NP5CFEPtgp7kk7UnYMbYq9lFdJ7HrHxGM1vgAO6kmVJOv89LbSSWj/HtW7w8VGz0dvAzFmdVvIvKEw/qR+cPcUmA6g4OOetDtyFd5tsJlPR1UK6Khec8ys4vOYmgu+NKsNUp9FSPBr4nkU/LitkKmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HbmNfSHj; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ejz+f8TA"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HbmNfSHj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712472141; x=1744008141;
+  t=1712473635; x=1744009635;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=KdK5I71E3njctY0Z+Vx14Q5I2n0CIhVqzT7SMjXlfpg=;
-  b=ejz+f8TArtGNemyjn2FHRuN1sYU0+o67jd/smlJeSYi7IjUmbbiQuvsQ
-   19RI+XuT/6P/rCBeBc/vuXzxSl2ubpQhcXItIylwekLxbS6MgNu0sMgDE
-   jlsACCRUxpNUYqUzhExBO+5qiyd6r1sT9hUz97vv//gwRREZ9jTY7rY6A
-   M+SF+PSuiJuaxTb4RraeeWKIR8iQ0ga3yWf/kKQt6u9cr08GtP0bkTkhG
-   ZlCzcwa46VMtvDFbym6OQfN9CY7h2e5FDpT44wbVAG/z96Ou8yl/CBhb5
-   ih8dVpfiSunGxG7GthPAxv7O5rGkTwK6ElyaQ3+JtegJc1vDD3yA73pgT
-   A==;
-X-CSE-ConnectionGUID: paBkYFZbTt+HBCRTEEZUcQ==
-X-CSE-MsgGUID: eA3AjVOAT3eX/zqOo+dt1w==
-X-IronPort-AV: E=McAfee;i="6600,9927,11036"; a="18487744"
+  bh=tgEywHxjn59cCDE/HA3qL/5sa4sUH3MpCD/WA25CFYw=;
+  b=HbmNfSHjdxcPx+bA3/08rVm2LxDGotch9wOOYHCXZe6tges1Jxh4O6s2
+   Ptyjy0UwP35MrKlUneBUXPinQV9E4hgfMwfI8Vtr5po56wkG1j16E36Ai
+   una83BCCXQDbQfiSljc/DtYISqQPYclB8TYJZAZ5nBOnn3TYZNINoSoWt
+   f2iRbouqpGWX+z8phM0WRXHySGoBSSjaP7x5LdoOWfHjXGh8Ua5YQmxaR
+   yF8mkRpoczaDJ2zxZJqA+quRRI3Qzv/1FpWjSd5sfqwYkO56RmsZp1HqL
+   a5830Hb6KB/dYdzxdQZydAD3LIIDRMen9/TSWc2szknLFrGyvXdFQHOZv
+   w==;
+X-CSE-ConnectionGUID: xP28eCcASn2DVsE0D9OVMg==
+X-CSE-MsgGUID: MDVDPelcTSyKVkfvU4LKVg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11036"; a="7887173"
 X-IronPort-AV: E=Sophos;i="6.07,184,1708416000"; 
-   d="scan'208";a="18487744"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2024 23:42:20 -0700
-X-CSE-ConnectionGUID: 4GjG8IfkTBarLkzihfKe9g==
-X-CSE-MsgGUID: RMwI1UwQR4uGFqX1dLDcYg==
+   d="scan'208";a="7887173"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Apr 2024 00:07:15 -0700
+X-CSE-ConnectionGUID: bXfkXhFZSC+gJfvAkL3SuA==
+X-CSE-MsgGUID: XxjV79ECRGa7TirvvMvVDw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,184,1708416000"; 
-   d="scan'208";a="24194089"
+   d="scan'208";a="50779181"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa004.fm.intel.com with ESMTP; 06 Apr 2024 23:42:18 -0700
-Message-ID: <7657779b-bda0-4303-96c5-33949cf6457c@linux.intel.com>
-Date: Sun, 7 Apr 2024 14:41:12 +0800
+  by fmviesa001.fm.intel.com with ESMTP; 07 Apr 2024 00:07:12 -0700
+Message-ID: <a0e2bde5-1ec0-4b42-aa52-5f86e9e0822e@linux.intel.com>
+Date: Sun, 7 Apr 2024 15:06:07 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,78 +56,42 @@ Cc: baolu.lu@linux.intel.com, "Zhang, Tina" <tina.zhang@intel.com>,
  "Liu, Yi L" <yi.l.liu@intel.com>,
  "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 06/12] iommu/vt-d: Use cache_tag_flush_cm_range() in
- iotlb_sync_map
+Subject: Re: [PATCH 07/12] iommu/vt-d: Cleanup use of iommu_flush_iotlb_psi()
 To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Jason Gunthorpe <jgg@ziepe.ca>
 References: <20240325021705.249769-1-baolu.lu@linux.intel.com>
- <20240325021705.249769-7-baolu.lu@linux.intel.com>
- <BN9PR11MB52766C4CA9A27F34419AEE258C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240325021705.249769-8-baolu.lu@linux.intel.com>
+ <BN9PR11MB52762CD9DB4CB9DFA3C26A6C8C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52766C4CA9A27F34419AEE258C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB52762CD9DB4CB9DFA3C26A6C8C3B2@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 3/28/24 3:48 PM, Tian, Kevin wrote:
+On 3/28/24 3:50 PM, Tian, Kevin wrote:
 >> From: Lu Baolu <baolu.lu@linux.intel.com>
 >> Sent: Monday, March 25, 2024 10:17 AM
 >>
->> The iotlb_sync_map callback is called by the iommu core after non-present
->> to present mappings are created. The iommu driver uses this callback to
->> invalidate caches if IOMMU is working in caching mode and second-only
->> translation is used for the domain. Use cache_tag_flush_cm_range() in this
->> callback.
+>> Use cache_tag_flush_range() in switch_to_super_page() to invalidate the
+>> necessary caches when switching mappings from normal to super pages. The
+>> iommu_flush_iotlb_psi() call in intel_iommu_memory_notifier() is
+>> unnecessary since there should be no cache invalidation for the identity
+>> domain.
 >>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel/iommu.c | 22 +---------------------
->>   1 file changed, 1 insertion(+), 21 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index 1c03d2dafb9d..2dcab1e5cd4d 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -1504,20 +1504,6 @@ static void iommu_flush_iotlb_psi(struct
->> intel_iommu *iommu,
->>   		iommu_flush_dev_iotlb(domain, addr, mask);
->>   }
->>
->> -/* Notification for newly created mappings */
->> -static void __mapping_notify_one(struct intel_iommu *iommu, struct
->> dmar_domain *domain,
->> -				 unsigned long pfn, unsigned int pages)
->> -{
->> -	/*
->> -	 * It's a non-present to present mapping. Only flush if caching mode
->> -	 * and second level.
->> -	 */
->> -	if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
->> -		iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0, 1);
->> -	else
->> -		iommu_flush_write_buffer(iommu);
->> -}
 > 
-> iommu_flush_write_buffer is for a quite different issue. it's clearer to
-> keep it separated from the iotlb helpers.
+> what about a software identity domain?
 
-The VT-d spec describes the write buffer flushing in section 6.8. It
-states,
+Software identity domain is used to fake the hardware passthrough
+capability, on early VT-d hardware which doesn't implement the
+passthrough mode. It's not any kind of protection domain, hence the OS
+is not required to manage the cache synchronization.
 
-1. Write buffer flushing is required only for earlier VT-d hardware
-    implementations. Newer hardware implementations are expected to NOT
-    require this.
-2. Write buffer flushing is related to cache invalidation. The hardware
-    performs an implicit write-buffer-flushing as a pre-condition to
-    the invalidation operations.
-
-According to this, write buffer flushing is only required in the map
-path when IOMMU is not in caching mode and the RWBF iommu capability is
-set, which perfectly matches the case of cache_tag_flush_cm_range().
-
-By doing it in cache_tag_flush_cm_range(), the code will be simpler and
-easier for maintenance.
+Although I hope we can remove it someday and force the DMA domain
+instead, we still need to carry it nowadays. However, we need to make it
+consistent with the hardware passthrough. That is, hardware passthrough
+doesn't require any cache invalidation in memory hot-plug paths, the
+software passthrough should not either.
 
 Best regards,
 baolu
