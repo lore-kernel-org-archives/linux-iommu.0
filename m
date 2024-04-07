@@ -1,345 +1,167 @@
-Received: from out-178.mta0.migadu.com (out-178.mta0.migadu.com [91.218.175.178])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D589535A5
-	for <iommu@lists.linux.dev>; Sat,  6 Apr 2024 21:48:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA193A35
+	for <iommu@lists.linux.dev>; Sun,  7 Apr 2024 01:15:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712440092; cv=none; b=H0CtHBGNXXhlsWLtZzZu8MqA0jXmK8HMI65AXf/M232gd376nNs+qR5dX1GasKXzZ0ERZAQNDRsof6kcjk3W9sEtrG5ubxIw8y7+FgrBOJ19763AOcPvrVqxyHWs6irbBx3bKcRhNFpmoPMJg7n7Vd59D/c360Uc4KBJ2jFFTCc=
+	t=1712452545; cv=none; b=n75tfCX/CBFiC31hS95Zti609Fh29Smb8KQHa0IImNcZjjFGHGrbdSFOOJEaOJjPeGt8o3OekwXw8AoU8iK1E+wjpVLqyKoxFXWWZNPWhitiXaQb/n/7wp2Kgge5ttDjvb8ZPy+VriepzXE7ns1W25rYisZKWgnUqLdzrOFYkKA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712440092; c=relaxed/simple;
-	bh=F9S24iTwcnGWGKz+ubfXX8T4hECUmmw6+EfiXYVl3+U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SFReMkEsqtr5jQE7DnRYK5nWzunsz5VY9FDDfAv50ag762wfgjC4x1gfy92mNWTfs25YP0zgHZPAUETUsvTmoQfTHiC0Za5ktF9u8QzMdrbb69sy6OQHyEkaRwGwuXrZHoztac3fnZzKR9NgIcxq2f5CUSAW29YFqlO+ks98ngs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=N4KxHh/O; arc=none smtp.client-ip=91.218.175.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
+	s=arc-20240116; t=1712452545; c=relaxed/simple;
+	bh=+kujYBSPT2TlGChGH3hiu9gHz9tx2MJoU2QSPezOmKc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=A2rLvlXkCO57J/MRtesx4d0sIuvIoMDurrg8TktuHDatpb4zwoH+fsGYLM/iqBtLWaSqGY6O7i2U6wtBgjZe3eTVUekQcMoCTpZtwsMH55z4Pj/FiIOLOH7pIJRB6LHT0LgHNf54gxL16as8YkV38lAvbuDpTP5Cq+/fBxSZyqE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KgaZlXKM; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="N4KxHh/O"
-Date: Sat, 6 Apr 2024 17:47:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1712440087;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=zidy/ZuQ9llHF4A0yXUONl+ELs1p92Ps6Z+2FVfH0JQ=;
-	b=N4KxHh/O87aO6WD/h/r5q8UlwdJoVcfJbPza8mnrpFRrkCd3NiG6ydYvvYT0bOS4m65xa9
-	mNHFONZPqGuMWVm+a+/RpiFQmShel4tR7LMJPQ/+EpclHNUDvS9KApR0qxLP/+bcEWmxrV
-	83fUuJvP9Z8rar/KsHD/T/F22UAYjpA=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Kent Overstreet <kent.overstreet@linux.dev>
-To: Klara Modin <klarasmodin@gmail.com>
-Cc: Suren Baghdasaryan <surenb@google.com>, akpm@linux-foundation.org, 
-	mhocko@suse.com, vbabka@suse.cz, hannes@cmpxchg.org, roman.gushchin@linux.dev, 
-	mgorman@suse.de, dave@stgolabs.net, willy@infradead.org, liam.howlett@oracle.com, 
-	penguin-kernel@i-love.sakura.ne.jp, corbet@lwn.net, void@manifault.com, 
-	"Peter Zijlstra (Intel)" <peterz@infradead.org>, juri.lelli@redhat.com, catalin.marinas@arm.com, will@kernel.org, 
-	arnd@arndb.de, tglx@linutronix.de, mingo@redhat.com, 
-	dave.hansen@linux.intel.com, x86@kernel.org, peterx@redhat.com, david@redhat.com, 
-	axboe@kernel.dk, mcgrof@kernel.org, masahiroy@kernel.org, 
-	Nathan Chancellor <nathan@kernel.org>, dennis@kernel.org, jhubbard@nvidia.com, tj@kernel.org, 
-	muchun.song@linux.dev, rppt@kernel.org, paulmck@kernel.org, pasha.tatashin@soleen.com, 
-	yosryahmed@google.com, yuzhao@google.com, David Howells <dhowells@redhat.com>, 
-	hughd@google.com, andreyknvl@gmail.com, keescook@chromium.org, 
-	ndesaulniers@google.com, vvvvvv@google.com, gregkh@linuxfoundation.org, 
-	ebiggers@google.com, ytcoode@gmail.com, vincent.guittot@linaro.org, 
-	dietmar.eggemann@arm.com, rostedt@goodmis.org, bsegall@google.com, bristot@redhat.com, 
-	vschneid@redhat.com, cl@linux.com, penberg@kernel.org, iamjoonsoo.kim@lge.com, 
-	42.hyeyoo@gmail.com, glider@google.com, elver@google.com, dvyukov@google.com, 
-	songmuchun@bytedance.com, jbaron@akamai.com, aliceryhl@google.com, rientjes@google.com, 
-	minchan@google.com, kaleshsingh@google.com, kernel-team@android.com, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
-	linux-arch@vger.kernel.org, linux-fsdevel@vger.kernel.org, linux-mm@kvack.org, 
-	linux-modules@vger.kernel.org, kasan-dev@googlegroups.com, cgroups@vger.kernel.org
-Subject: Re: [PATCH v6 13/37] lib: add allocation tagging support for memory
- allocation profiling
-Message-ID: <76nf3dl4cqptqv5oh54njnp4rizot7bej32fufjjtreizzcw3w@rkbjbgujk6pk>
-References: <6b8149f3-80e6-413c-abcb-1925ecda9d8c@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KgaZlXKM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712452543; x=1743988543;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+kujYBSPT2TlGChGH3hiu9gHz9tx2MJoU2QSPezOmKc=;
+  b=KgaZlXKMGSieHLselYF+bQnuK2tIylrf1TxZJ2zrejDB8wqkozwtXARj
+   ZKxijlpEeaMjdzFaAG2Hi3FDcjP5nTYDerMlnyGiG1YKzYrtOwQt7FMx8
+   Lx0B8mav7mMHlpFByJBLs9FjE08S8b6PGtfQxmyb+SfZcRfwwqFpAiqo9
+   sv2EQ3WTlEl0SWehJVdepYTxk8fnGkeR4/AF6kToIdFgxJg6zzlhBASrb
+   8bj9Oj3c0+8rddf5Xas8+I1O9KmaXQhXR3K6ya2zadAMsouSvoC3PcTrO
+   WzqNwMFf4uH4D0WB9CSCGdCsalkmmjLXRHWCrDJKfSCnoXrq8dK+fF8tC
+   w==;
+X-CSE-ConnectionGUID: YS+p66LMRZC10tOpI5OOIQ==
+X-CSE-MsgGUID: KahRFx/VRsa45krqtybaaw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11036"; a="18890574"
+X-IronPort-AV: E=Sophos;i="6.07,184,1708416000"; 
+   d="scan'208";a="18890574"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Apr 2024 18:15:42 -0700
+X-CSE-ConnectionGUID: vSAnGY7PR9CmZnEF+uDsqw==
+X-CSE-MsgGUID: sQXCFUACT5WiOI1OrZSs/g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,184,1708416000"; 
+   d="scan'208";a="24015175"
+Received: from allen-box.sh.intel.com ([10.239.159.127])
+  by fmviesa003.fm.intel.com with ESMTP; 06 Apr 2024 18:15:39 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux.dev
+Cc: Jason Gunthorpe <jgg@ziepe.ca>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Fix WARN_ON in iommu probe path
+Date: Sun,  7 Apr 2024 09:14:29 +0800
+Message-Id: <20240407011429.136282-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <6b8149f3-80e6-413c-abcb-1925ecda9d8c@gmail.com>
-X-Migadu-Flow: FLOW_OUT
 
-On Fri, Apr 05, 2024 at 03:54:45PM +0200, Klara Modin wrote:
-> Hi,
-> 
-> On 2024-03-21 17:36, Suren Baghdasaryan wrote:
-> > Introduce CONFIG_MEM_ALLOC_PROFILING which provides definitions to easily
-> > instrument memory allocators. It registers an "alloc_tags" codetag type
-> > with /proc/allocinfo interface to output allocation tag information when
-> > the feature is enabled.
-> > CONFIG_MEM_ALLOC_PROFILING_DEBUG is provided for debugging the memory
-> > allocation profiling instrumentation.
-> > Memory allocation profiling can be enabled or disabled at runtime using
-> > /proc/sys/vm/mem_profiling sysctl when CONFIG_MEM_ALLOC_PROFILING_DEBUG=n.
-> > CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT enables memory allocation
-> > profiling by default.
-> > 
-> > Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> > Co-developed-by: Kent Overstreet <kent.overstreet@linux.dev>
-> > Signed-off-by: Kent Overstreet <kent.overstreet@linux.dev>
-> 
-> With this commit (9e2dcefa791e9d14006b360fba3455510fd3325d in
-> next-20240404), randconfig with KCONFIG_SEED=0xE6264236 fails to build
-> with the attached error. The following patch fixes the build error for me,
-> but I don't know if it's correct.
+Commit 1a75cc710b95 ("iommu/vt-d: Use rbtree to track iommu probed
+devices") adds all devices probed by the iommu driver in a rbtree
+indexed by the source ID of each device. It assumes that each device
+has a unique source ID. This assumption is incorrect and the VT-d
+spec doesn't state this requirement either.
 
-Looks good - if you sound out an official patch I'll ack it.
+The reason for using a rbtree to track devices is to look up the device
+with PCI bus and devfunc in the paths of handling ATS invalidation time
+out error and the PRI I/O page faults. Both are PCI ATS feature related.
 
-> 
-> Kind regards,
-> Klara Modin
-> 
-> diff --git a/include/linux/alloc_tag.h b/include/linux/alloc_tag.h
-> index 100ddf66eb8e..1c765d80298b 100644
-> --- a/include/linux/alloc_tag.h
-> +++ b/include/linux/alloc_tag.h
-> @@ -12,6 +12,7 @@
->  #include <asm/percpu.h>
->  #include <linux/cpumask.h>
->  #include <linux/static_key.h>
-> +#include <linux/irqflags.h>
-> 
->  struct alloc_tag_counters {
->         u64 bytes;
-> 
-> > diff --git a/include/linux/alloc_tag.h b/include/linux/alloc_tag.h
-> > new file mode 100644
-> > index 000000000000..b970ff1c80dc
-> > --- /dev/null
-> > +++ b/include/linux/alloc_tag.h
-> > @@ -0,0 +1,145 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +/*
-> > + * allocation tagging
-> > + */
-> > +#ifndef _LINUX_ALLOC_TAG_H
-> > +#define _LINUX_ALLOC_TAG_H
-> > +
-> > +#include <linux/bug.h>
-> > +#include <linux/codetag.h>
-> > +#include <linux/container_of.h>
-> > +#include <linux/preempt.h>
-> > +#include <asm/percpu.h>
-> > +#include <linux/cpumask.h>
-> > +#include <linux/static_key.h>
-> > +
-> > +struct alloc_tag_counters {
-> > +     u64 bytes;
-> > +     u64 calls;
-> > +};
-> > +
-> > +/*
-> > + * An instance of this structure is created in a special ELF section at every
-> > + * allocation callsite. At runtime, the special section is treated as
-> > + * an array of these. Embedded codetag utilizes codetag framework.
-> > + */
-> > +struct alloc_tag {
-> > +     struct codetag                  ct;
-> > +     struct alloc_tag_counters __percpu      *counters;
-> > +} __aligned(8);
-> > +
-> > +#ifdef CONFIG_MEM_ALLOC_PROFILING
-> > +
-> > +static inline struct alloc_tag *ct_to_alloc_tag(struct codetag *ct)
-> > +{
-> > +     return container_of(ct, struct alloc_tag, ct);
-> > +}
-> > +
-> > +#ifdef ARCH_NEEDS_WEAK_PER_CPU
-> > +/*
-> > + * When percpu variables are required to be defined as weak, static percpu
-> > + * variables can't be used inside a function (see comments for DECLARE_PER_CPU_SECTION).
-> > + */
-> > +#error "Memory allocation profiling is incompatible with ARCH_NEEDS_WEAK_PER_CPU"
-> > +#endif
-> > +
-> > +#define DEFINE_ALLOC_TAG(_alloc_tag)                                         \
-> > +     static DEFINE_PER_CPU(struct alloc_tag_counters, _alloc_tag_cntr);      \
-> > +     static struct alloc_tag _alloc_tag __used __aligned(8)                  \
-> > +     __section("alloc_tags") = {                                             \
-> > +             .ct = CODE_TAG_INIT,                                            \
-> > +             .counters = &_alloc_tag_cntr };
-> > +
-> > +DECLARE_STATIC_KEY_MAYBE(CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT,
-> > +                     mem_alloc_profiling_key);
-> > +
-> > +static inline bool mem_alloc_profiling_enabled(void)
-> > +{
-> > +     return static_branch_maybe(CONFIG_MEM_ALLOC_PROFILING_ENABLED_BY_DEFAULT,
-> > +                                &mem_alloc_profiling_key);
-> > +}
-> > +
-> > +static inline struct alloc_tag_counters alloc_tag_read(struct alloc_tag *tag)
-> > +{
-> > +     struct alloc_tag_counters v = { 0, 0 };
-> > +     struct alloc_tag_counters *counter;
-> > +     int cpu;
-> > +
-> > +     for_each_possible_cpu(cpu) {
-> > +             counter = per_cpu_ptr(tag->counters, cpu);
-> > +             v.bytes += counter->bytes;
-> > +             v.calls += counter->calls;
-> > +     }
-> > +
-> > +     return v;
-> > +}
-> > +
-> > +#ifdef CONFIG_MEM_ALLOC_PROFILING_DEBUG
-> > +static inline void alloc_tag_add_check(union codetag_ref *ref, struct alloc_tag *tag)
-> > +{
-> > +     WARN_ONCE(ref && ref->ct,
-> > +               "alloc_tag was not cleared (got tag for %s:%u)\n",
-> > +               ref->ct->filename, ref->ct->lineno);
-> > +
-> > +     WARN_ONCE(!tag, "current->alloc_tag not set");
-> > +}
-> > +
-> > +static inline void alloc_tag_sub_check(union codetag_ref *ref)
-> > +{
-> > +     WARN_ONCE(ref && !ref->ct, "alloc_tag was not set\n");
-> > +}
-> > +#else
-> > +static inline void alloc_tag_add_check(union codetag_ref *ref, struct alloc_tag *tag) {}
-> > +static inline void alloc_tag_sub_check(union codetag_ref *ref) {}
-> > +#endif
-> > +
-> > +/* Caller should verify both ref and tag to be valid */
-> > +static inline void __alloc_tag_ref_set(union codetag_ref *ref, struct alloc_tag *tag)
-> > +{
-> > +     ref->ct = &tag->ct;
-> > +     /*
-> > +      * We need in increment the call counter every time we have a new
-> > +      * allocation or when we split a large allocation into smaller ones.
-> > +      * Each new reference for every sub-allocation needs to increment call
-> > +      * counter because when we free each part the counter will be decremented.
-> > +      */
-> > +     this_cpu_inc(tag->counters->calls);
-> > +}
-> > +
-> > +static inline void alloc_tag_add(union codetag_ref *ref, struct alloc_tag *tag, size_t bytes)
-> > +{
-> > +     alloc_tag_add_check(ref, tag);
-> > +     if (!ref || !tag)
-> > +             return;
-> > +
-> > +     __alloc_tag_ref_set(ref, tag);
-> > +     this_cpu_add(tag->counters->bytes, bytes);
-> > +}
-> > +
-> > +static inline void alloc_tag_sub(union codetag_ref *ref, size_t bytes)
-> > +{
-> > +     struct alloc_tag *tag;
-> > +
-> > +     alloc_tag_sub_check(ref);
-> > +     if (!ref || !ref->ct)
-> > +             return;
-> > +
-> > +     tag = ct_to_alloc_tag(ref->ct);
-> > +
-> > +     this_cpu_sub(tag->counters->bytes, bytes);
-> > +     this_cpu_dec(tag->counters->calls);
-> > +
-> > +     ref->ct = NULL;
-> > +}
-> > +
-> > +#else /* CONFIG_MEM_ALLOC_PROFILING */
-> > +
-> > +#define DEFINE_ALLOC_TAG(_alloc_tag)
-> > +static inline bool mem_alloc_profiling_enabled(void) { return false; }
-> > +static inline void alloc_tag_add(union codetag_ref *ref, struct alloc_tag *tag,
-> > +                              size_t bytes) {}
-> > +static inline void alloc_tag_sub(union codetag_ref *ref, size_t bytes) {}
-> > +
-> > +#endif /* CONFIG_MEM_ALLOC_PROFILING */
-> > +
-> > +#endif /* _LINUX_ALLOC_TAG_H */
+Only track the devices that have PCI ATS capabilities in the rbtree to
+avoid unnecessary WARN_ON in the iommu probe path. Otherwise, on some
+platforms below kernel splat will be displayed and the iommu probe results
+in failure.
 
-> In file included from ./arch/x86/include/asm/percpu.h:615,
->                  from ./arch/x86/include/asm/preempt.h:6,
->                  from ./include/linux/preempt.h:79,
->                  from ./include/linux/alloc_tag.h:11,
->                  from lib/alloc_tag.c:2:
-> ./include/linux/alloc_tag.h: In function ‘__alloc_tag_ref_set’:
-> ./include/asm-generic/percpu.h:155:9: error: implicit declaration of function ‘raw_local_irq_save’ [-Werror=implicit-function-declaration]
->   155 |         raw_local_irq_save(__flags);                                    \
->       |         ^~~~~~~~~~~~~~~~~~
-> ./include/asm-generic/percpu.h:410:41: note: in expansion of macro ‘this_cpu_generic_to_op’
->   410 | #define this_cpu_add_8(pcp, val)        this_cpu_generic_to_op(pcp, val, +=)
->       |                                         ^~~~~~~~~~~~~~~~~~~~~~
-> ./include/linux/percpu-defs.h:368:25: note: in expansion of macro ‘this_cpu_add_8’
->   368 |                 case 8: stem##8(variable, __VA_ARGS__);break;           \
->       |                         ^~~~
-> ./include/linux/percpu-defs.h:491:41: note: in expansion of macro ‘__pcpu_size_call’
->   491 | #define this_cpu_add(pcp, val)          __pcpu_size_call(this_cpu_add_, pcp, val)
->       |                                         ^~~~~~~~~~~~~~~~
-> ./include/linux/percpu-defs.h:501:41: note: in expansion of macro ‘this_cpu_add’
->   501 | #define this_cpu_inc(pcp)               this_cpu_add(pcp, 1)
->       |                                         ^~~~~~~~~~~~
-> ./include/linux/alloc_tag.h:106:9: note: in expansion of macro ‘this_cpu_inc’
->   106 |         this_cpu_inc(tag->counters->calls);
->       |         ^~~~~~~~~~~~
-> ./include/asm-generic/percpu.h:157:9: error: implicit declaration of function ‘raw_local_irq_restore’ [-Werror=implicit-function-declaration]
->   157 |         raw_local_irq_restore(__flags);                                 \
->       |         ^~~~~~~~~~~~~~~~~~~~~
-> ./include/asm-generic/percpu.h:410:41: note: in expansion of macro ‘this_cpu_generic_to_op’
->   410 | #define this_cpu_add_8(pcp, val)        this_cpu_generic_to_op(pcp, val, +=)
->       |                                         ^~~~~~~~~~~~~~~~~~~~~~
-> ./include/linux/percpu-defs.h:368:25: note: in expansion of macro ‘this_cpu_add_8’
->   368 |                 case 8: stem##8(variable, __VA_ARGS__);break;           \
->       |                         ^~~~
-> ./include/linux/percpu-defs.h:491:41: note: in expansion of macro ‘__pcpu_size_call’
->   491 | #define this_cpu_add(pcp, val)          __pcpu_size_call(this_cpu_add_, pcp, val)
->       |                                         ^~~~~~~~~~~~~~~~
-> ./include/linux/percpu-defs.h:501:41: note: in expansion of macro ‘this_cpu_add’
->   501 | #define this_cpu_inc(pcp)               this_cpu_add(pcp, 1)
->       |                                         ^~~~~~~~~~~~
-> ./include/linux/alloc_tag.h:106:9: note: in expansion of macro ‘this_cpu_inc’
->   106 |         this_cpu_inc(tag->counters->calls);
->       |         ^~~~~~~~~~~~
-> cc1: some warnings being treated as errors
-> make[3]: *** [scripts/Makefile.build:244: lib/alloc_tag.o] Error 1
-> make[2]: *** [scripts/Makefile.build:485: lib] Error 2
-> make[1]: *** [/home/klara/git/linux/Makefile:1919: .] Error 2
-> make: *** [Makefile:240: __sub-make] Error 2
+ WARNING: CPU: 3 PID: 166 at drivers/iommu/intel/iommu.c:158 intel_iommu_probe_device+0x319/0xd90
+ Call Trace:
+  <TASK>
+  ? __warn+0x7e/0x180
+  ? intel_iommu_probe_device+0x319/0xd90
+  ? report_bug+0x1f8/0x200
+  ? handle_bug+0x3c/0x70
+  ? exc_invalid_op+0x18/0x70
+  ? asm_exc_invalid_op+0x1a/0x20
+  ? intel_iommu_probe_device+0x319/0xd90
+  ? debug_mutex_init+0x37/0x50
+  __iommu_probe_device+0xf2/0x4f0
+  iommu_probe_device+0x22/0x70
+  iommu_bus_notifier+0x1e/0x40
+  notifier_call_chain+0x46/0x150
+  blocking_notifier_call_chain+0x42/0x60
+  bus_notify+0x2f/0x50
+  device_add+0x5ed/0x7e0
+  platform_device_add+0xf5/0x240
+  mfd_add_devices+0x3f9/0x500
+  ? preempt_count_add+0x4c/0xa0
+  ? up_write+0xa2/0x1b0
+  ? __debugfs_create_file+0xe3/0x150
+  intel_lpss_probe+0x49f/0x5b0
+  ? pci_conf1_write+0xa3/0xf0
+  intel_lpss_pci_probe+0xcf/0x110 [intel_lpss_pci]
+  pci_device_probe+0x95/0x120
+  really_probe+0xd9/0x370
+  ? __pfx___driver_attach+0x10/0x10
+  __driver_probe_device+0x73/0x150
+  driver_probe_device+0x19/0xa0
+  __driver_attach+0xb6/0x180
+  ? __pfx___driver_attach+0x10/0x10
+  bus_for_each_dev+0x77/0xd0
+  bus_add_driver+0x114/0x210
+  driver_register+0x5b/0x110
+  ? __pfx_intel_lpss_pci_driver_init+0x10/0x10 [intel_lpss_pci]
+  do_one_initcall+0x57/0x2b0
+  ? kmalloc_trace+0x21e/0x280
+  ? do_init_module+0x1e/0x210
+  do_init_module+0x5f/0x210
+  load_module+0x1d37/0x1fc0
+  ? init_module_from_file+0x86/0xd0
+  init_module_from_file+0x86/0xd0
+  idempotent_init_module+0x17c/0x230
+  __x64_sys_finit_module+0x56/0xb0
+  do_syscall_64+0x6e/0x140
+  entry_SYSCALL_64_after_hwframe+0x71/0x79
 
+Fixes: 1a75cc710b95 ("iommu/vt-d: Use rbtree to track iommu probed devices")
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-> # bad: [2b3d5988ae2cb5cd945ddbc653f0a71706231fdd] Add linux-next specific files for 20240404
-> git bisect start 'next/master'
-> # status: waiting for good commit(s), bad commit known
-> # good: [39cd87c4eb2b893354f3b850f916353f2658ae6f] Linux 6.9-rc2
-> git bisect good 39cd87c4eb2b893354f3b850f916353f2658ae6f
-> # bad: [cc7b62666779616ff52d389a344ffe2c041e36e2] Merge branch 'master' of git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git
-> git bisect bad cc7b62666779616ff52d389a344ffe2c041e36e2
-> # bad: [d6b7dd0f8d84f9fdf2af65fceb608e3206276e81] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/qcom/linux.git
-> git bisect bad d6b7dd0f8d84f9fdf2af65fceb608e3206276e81
-> # bad: [ad6a31687713a8f12165e730e0eb6e0de3beae56] Merge branch 'mm-everything' of git://git.kernel.org/pub/scm/linux/kernel/git/akpm/mm
-> git bisect bad ad6a31687713a8f12165e730e0eb6e0de3beae56
-> # good: [59266d9886adb5c9e240129ccc606727fd3a881d] Merge branch 'fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git
-> git bisect good 59266d9886adb5c9e240129ccc606727fd3a881d
-> # bad: [085e5fe7388cf36ab5c02d91022229e5fade5b30] mm: merge folio_is_secretmem() and folio_fast_pin_allowed() into gup_fast_folio_allowed()
-> git bisect bad 085e5fe7388cf36ab5c02d91022229e5fade5b30
-> # bad: [f6a61baa9139d174170acdae8667b3246ce44db6] lib: add memory allocations report in show_mem()
-> git bisect bad f6a61baa9139d174170acdae8667b3246ce44db6
-> # good: [302519d9e80a7fbf2cf8d0b8961d491af648759f] asm-generic/io.h: kill vmalloc.h dependency
-> git bisect good 302519d9e80a7fbf2cf8d0b8961d491af648759f
-> # bad: [e6942003e682e3883847459c3d07e23c796a2782] mm: create new codetag references during page splitting
-> git bisect bad e6942003e682e3883847459c3d07e23c796a2782
-> # good: [ed97151dec736c1541bfac2b801108d54ebee5bc] lib: code tagging module support
-> git bisect good ed97151dec736c1541bfac2b801108d54ebee5bc
-> # bad: [95767bde5020afefef4205b60e71f4ebf96da74e] lib: introduce early boot parameter to avoid page_ext memory overhead
-> git bisect bad 95767bde5020afefef4205b60e71f4ebf96da74e
-> # bad: [9e2dcefa791e9d14006b360fba3455510fd3325d] lib: add allocation tagging support for memory allocation profiling
-> git bisect bad 9e2dcefa791e9d14006b360fba3455510fd3325d
-> # good: [0eccd42fbf9d7c4ae0cbec48cce637da89813c2c] lib: prevent module unloading if memory is not freed
-> git bisect good 0eccd42fbf9d7c4ae0cbec48cce637da89813c2c
-> # first bad commit: [9e2dcefa791e9d14006b360fba3455510fd3325d] lib: add allocation tagging support for memory allocation profiling
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 50eb9aed47cc..a7ecd90303dc 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4299,9 +4299,11 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ 	}
+ 
+ 	dev_iommu_priv_set(dev, info);
+-	ret = device_rbtree_insert(iommu, info);
+-	if (ret)
+-		goto free;
++	if (pdev && pci_ats_supported(pdev)) {
++		ret = device_rbtree_insert(iommu, info);
++		if (ret)
++			goto free;
++	}
+ 
+ 	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
+ 		ret = intel_pasid_alloc_table(dev);
+@@ -4336,7 +4338,8 @@ static void intel_iommu_release_device(struct device *dev)
+ 	struct intel_iommu *iommu = info->iommu;
+ 
+ 	mutex_lock(&iommu->iopf_lock);
+-	device_rbtree_remove(info);
++	if (dev_is_pci(dev) && pci_ats_supported(to_pci_dev(dev)))
++		device_rbtree_remove(info);
+ 	mutex_unlock(&iommu->iopf_lock);
+ 
+ 	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev) &&
+-- 
+2.34.1
 
