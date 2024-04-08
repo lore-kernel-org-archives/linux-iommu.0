@@ -1,161 +1,122 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 086B125619
-	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 07:36:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.8
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712561768; cv=fail; b=YyF6EO3lOLUdCsg5h1ABMQPOyJFY8Inz9rqwo0R14yMiDh3h5E2ff2u8sCUFkkWWtx7kf3n3Y4PRBE0MSGZ21ZQG9iWS7ZPf64si7Q7Lo7uuGBjHDacSrxmstZW2XyqT2nuy6oxs5kncNA5vL9Pub0WESK7wT3m8j8L0tWqYPvU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712561768; c=relaxed/simple;
-	bh=DBJI1RZsLdYoCJwPlbABDBiNIpYfcm9fv2vZXdL/sA4=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=iJ1wLx18KeGDmJvA8srzwYlufCWpeurwBr+VdldPA1y/eTFKFYY0GhZ/S8UrxGeITv9QH8l1qt5Qv6icPtOMOO95bx847txEtLce9/QleSQ4FiXM0CAFfu7wMN4lcM2DUcepolmxIL2PjcKcUCu/y1y8073a/UiHy7O2NgfDMTE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XaB9NXAo; arc=fail smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A45A524A6
+	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 07:43:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712562192; cv=none; b=d+HePcu19oHX+WKESa9lg8Zyy13omHjlenHJwrnyEayro8HCg3uvKn4GoXThBfVpuY7OiY/BJDRc5/qX0KJmci4S9xx3AAs++dGlvwAZoBojSpi3vK+ImhOfBN1A01oNEzFE5cCJGBE+puj27bLWXK88mE28/vSUO3bLxZMNbf0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712562192; c=relaxed/simple;
+	bh=K5WJ2W39hUxbbbMrk1S6G3tlaQWOrb0wWioYQgx/+rI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=flIK/C7GiOWor3ZpkRROKyNTe1maaeoR5ztq92LrA7bBsINyN6wKxCkcegccPcZ+q4gsWek62DInl+sJBr01/RvqOXHwHl+qmJXu5HpjB2dWpu//dk6+ic2Mva1Xw0QL8FouFDLJhNCx6JEzgh3S1MRjS3OJoW3i+9XUNjpg8+Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I0geMGJe; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XaB9NXAo"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I0geMGJe"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712561766; x=1744097766;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=DBJI1RZsLdYoCJwPlbABDBiNIpYfcm9fv2vZXdL/sA4=;
-  b=XaB9NXAo8V8Zlm0NKUKVuWdFxRhBntWpfRykFzpHjMv1GB34tL27241U
-   xQv7StZAsBApgIcbRlnzv2Duk5i/8UYAN4fmxS8htZkb3YAB8RCQKqqak
-   JiXQj5Fx14n/Q/MJtwNPVzvqBvjiRvm+U6UnQJyQKkZjqTgfPACam0ORC
-   03qN+moS+Lm47VEc/BX5Le7ZIv2o+Du92bP87rZgXJIKOjhRgVCNugi9Q
-   zX82gjTiC/BNwV+32kYjr9ykhacmpMnT3WDzApJHaBALNXppVfEPJ2xUg
-   Xm6wuqkaXq+wPp3E/5fFrdxcd8oQPZQPIAnIcug1eAwjUqKp6kLDZe3gm
-   g==;
-X-CSE-ConnectionGUID: TmAOsO9CS/yvnp24SiFOaw==
-X-CSE-MsgGUID: ApGT9LsLQ8yLVB1+jNH1YA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11037"; a="25323281"
+  t=1712562191; x=1744098191;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=K5WJ2W39hUxbbbMrk1S6G3tlaQWOrb0wWioYQgx/+rI=;
+  b=I0geMGJecpQgpzPJD9d066htkluR29asBPEfTMri5elrjZgfqO20jGY6
+   cSNPqrHBF7fSw6cVDtNiu1Suq6cq5Kt2obMu9auDJ7Wbfi8l8h/ZK+dBT
+   fD36C/KN6P+6CkyH9Hu085QsL+UK891V8DuFxrvAywiIaPYr4Ln0adYac
+   FWWxMChDWLmZlPO5jmkEyIHcy1hONkd1HLL4NbByyddVgDBjVoePUOIvB
+   Ki4vr/ks/XGDPUotwimhpjdj2rNYAxlUNxSeezvJ9g/CoJq6rQr7Nod4L
+   rKFvRWHPZDHGE+PEhYMPsZZbyetZv3JH67tehXrC9YEEb9eUgodKZPTxE
+   Q==;
+X-CSE-ConnectionGUID: S/0RrHfpSCuYRxsaMCYoiw==
+X-CSE-MsgGUID: QXSmxBp6Q02AXDw+18EE+A==
+X-IronPort-AV: E=McAfee;i="6600,9927,11037"; a="18397845"
 X-IronPort-AV: E=Sophos;i="6.07,186,1708416000"; 
-   d="scan'208";a="25323281"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 00:36:05 -0700
-X-CSE-ConnectionGUID: IE7tZUnLTjqdvehO3x0prg==
-X-CSE-MsgGUID: 3ANsVI/TTeqOWKxNensG6Q==
+   d="scan'208";a="18397845"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 00:43:11 -0700
+X-CSE-ConnectionGUID: NmKFEepXRrenryLgOnl8Vg==
+X-CSE-MsgGUID: p3CWK1mwStGplzcEbbhlzg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,186,1708416000"; 
-   d="scan'208";a="24435595"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmviesa004.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 08 Apr 2024 00:36:05 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 8 Apr 2024 00:36:04 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Mon, 8 Apr 2024 00:36:04 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Mon, 8 Apr 2024 00:36:04 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Mon, 8 Apr 2024 00:36:04 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j1VIACJNXwSuC6hupY2JeH37JcEYHq8aUleTAnh9Id31Nq/66I86yOGqSqJBjYmw56Z4gK1c3aBUKB6iCpBSpZ57JheXAcq2erUtKiSrCbBh/2CkU4dhOPJomfaa5DEv3MpdtH10TSvOX+WTlKGprGxNIwnTZaBBVG//dLHI4wOa9uY3qWgJlAGUbMajq1DZTkSUr2gmOo9+6e4251edlS4cDKIgIh9T1mzZ2X6hoHSUYsSr/qsnHFk8AeF9+zIlDXH4IZKVpaW8SoEP5PP6lWOnKbSYLQp6UmBbmdClBB1S9H+aTLsbDmpGUbl8c9uby9K2Lxu8PAmt1LEb2RS21A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DBJI1RZsLdYoCJwPlbABDBiNIpYfcm9fv2vZXdL/sA4=;
- b=Co6+6fK9wJfCjHra/oiVo2ykFZcSKVb326I6WwSwccJi3KQR0JblWbwg2L57ClyQ2qn1pcbz8SLkyNi/FXzaCXpPr1gq39ZtpyN8FvGvSKm+zpfWN735/Gjh/ncU4ej2YiPsbwqK9+C6aNQPzAmhLyJGuFUH70YUp5xmzKwJNeAxwx19CL0y7imI9W5S/qM8hjcrFGs6vDoD8uuc0w4A3nIu8GUSjlwYXSAVyxpaKK04zj149rXEJ/NM25HmjiUcMds4TvPXjOnBm0LQwCqO6qRUT5vVWUJpfgc+ncO7iDZJPp9oX/Oyu6RdEYhpTIbUevw1/XNAHvqQ9CMRkVSwBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by DS0PR11MB8018.namprd11.prod.outlook.com (2603:10b6:8:116::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.31; Mon, 8 Apr
- 2024 07:36:02 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::6c9f:86e:4b8e:8234]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::6c9f:86e:4b8e:8234%6]) with mapi id 15.20.7452.019; Mon, 8 Apr 2024
- 07:36:02 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML
-	<linux-kernel@vger.kernel.org>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel
-	<joro@8bytes.org>
-CC: "Raj, Ashok" <ashok.raj@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: RE: [PATCH] iommu/vt-d: Allocate local memory for page request queue
-Thread-Topic: [PATCH] iommu/vt-d: Allocate local memory for page request queue
-Thread-Index: AQHahg7nUUsdzXomSUekhTNuGLg2T7FeAmeA
-Date: Mon, 8 Apr 2024 07:36:02 +0000
-Message-ID: <BN9PR11MB52760B3710E7DDFFC458A35B8C002@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240403214007.985600-1-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <20240403214007.985600-1-jacob.jun.pan@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|DS0PR11MB8018:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Z0v7M6DqN4WONb4eT1jn/qwlLqkngU5xmjQ4CMzJ3j93ebeH8YcQOrB6UG545SOqO+k+xLMo2x6AF/WGLunUH4i68270k0Fs6gIlhsBWUPDbkBhD74XmGSa/YhjsY4vZJk3NC/gkHeaqikAjZJakruvekXBktiUt4nzJ4y94omXSU+qdasAEeGaQFsDr632QgBrpPOHaBbkiFZHk4Z0hZIVnL46Wb5tsPLkFUOYV/f4EdbY95IzV8XGApKVUdOoA4cfBNl5amVXMMORDzs7XT+3ePhvEo6KLM8Y8Dozk1NvOcwPfjojyWp7fZt1xQLF+tOhifw9ZcfBOMu6Qs4chwpYj3mzJ/xODSjOvPOxPsBiB5MAAjH8Qx4CvGaJxXIeApE3N0s3SrKPg43+fs5gr9KGlWMJEyZCAZgejzPn3Z8obOd9G3dthtlx/kXLSna/t2j0dIOt1iP2LgRhzVe5WXoAk/p0CtcakCM+7iGgHJQREP+TuLAFzo6SkiIXuAr75lxPQtaHVoMrx8yuzsoTjmTgHAWwjhBw2u7bfPQDFcSzxj99HMprnrTrnNUsl/2vyh38Wl2lrlJf1kMPf7vyPR6nvTsPCyXwLQkTngiX41duRdl4DJERXn10jb5YIiIiqAvRhhIGdOgE9FWmZwOFwj6O2SdHKJ5smOl8Jl56M9v4=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(1800799015)(366007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?jvJWroTDckohOqQPKaVJm5EIo+Yv3D+c1E012RNIMcWU3KA9MSSSeX/42qc1?=
- =?us-ascii?Q?DTC1XMHdkvKr+nptnVm/o/igFJd0P8cOSIS0Snly4rvbRge5exRx9eOjCqc9?=
- =?us-ascii?Q?FemtZ9DvbCbyT7EqQq6R9W7Xeg9Kv3jkhoCyCKxOUWwEtDLwYXppcV5e/eCo?=
- =?us-ascii?Q?OzFKmqLlesOcQV2yylkIwLSKX3OR/H3fSa2yd1RMX6wDwO2ung3A2ef/u6+I?=
- =?us-ascii?Q?a89RbsYwOvDSgN0hX+YeLVadCARDj3suUyFBvd9d/Tyserfb6Mjd3RRzrpI3?=
- =?us-ascii?Q?gOfSArlfFcuOY6Pl/TwNho8abHd9A83cEZaFHVseWfKCt491RWquWAzqXjMD?=
- =?us-ascii?Q?3Q6pzfr2SuFUy2RoWiD5yxz9Y4GaJb7JcNoUH2TZnHF2lWQAWUSDQNXgJWzX?=
- =?us-ascii?Q?w28qG+tX5EN0tbAb+VKp6R9b90IKNi0FBQKeJJoj/13roPTaUuWerCZyLAs1?=
- =?us-ascii?Q?sakwDVCLZNCZFoW/XUHRuauQRnNRiAA98rQl0guEYecVe3bsqp9SxMjAOuKN?=
- =?us-ascii?Q?AXvgYQyPs6/zbZKTVg7BMYx3/bAM1wYh3SYIXEzr4lc3ydrFUPZawv6W5YGk?=
- =?us-ascii?Q?M+ODmwkoyRu955cxUvbZ5kpv8ARGGX1MfqwAMLOCNgSfY7MlOUtmYjNyh/Xn?=
- =?us-ascii?Q?L6roN+zLH0keITYrjitcHi1egp6V/Kkq6gzrki4qkByKIrICScJy0fRne7Qj?=
- =?us-ascii?Q?NMwsbDKpGsaGtowlbolvTRz4nZBR4BpGLTfFImVjT8CIX8tY3gW45bZ0UgbW?=
- =?us-ascii?Q?UuPM9+Y1Qd1F8n/iL1JfP+JafBhXBA+IFExtbEE4eTmXVwT/EnRWA27xGK3V?=
- =?us-ascii?Q?PzIhkcFprKjHrk4SGWFaXjBcK4Sm8HaTDdsjRbhyXx9Sj+Yw0SwID9Rv+MaU?=
- =?us-ascii?Q?cS1y7ise3uCTErQ01fAr3NEiUQrqoGfG0e4sS+R6c4GqzBP4dkOE7HAAdFS5?=
- =?us-ascii?Q?qca6f/ZKOZoSaJ5jXBbGbUEX/0/0IaQdnb7mKSXawax+Y4IS+M2Mnd8EZLV6?=
- =?us-ascii?Q?oJw4lLQ+8Hc+x1Wwj+HamFf7/scb7PymtCNIHV+9Zo+hUg5T/Vu4+gAIbK6t?=
- =?us-ascii?Q?A+uyXC/TDKNr4EE0mUOtRf/dCwlwhgEAKqkhldDuaMiQCv/xhPDo5mmTiyho?=
- =?us-ascii?Q?OILECUabWyHSL+JbRuPmlfMpP5mtHbtlAIW6u3XJuGy+C7YSAZda1ndKHvAQ?=
- =?us-ascii?Q?b3L3pMG4USJxHUtbDQvAzFjetOrftCm50Mr3sL8Xcp1jSRLfWedtww0autOg?=
- =?us-ascii?Q?zOE/kCimRfQMMQteCJEkpsIORpUAoTzOChmCYxFedFklWKKYbjm7UUVRkdPu?=
- =?us-ascii?Q?5Z72FnL1CcQ6nw+hQNKFGEg6P/9sPcIzaOm7qQCG+x8bkxa15ocYT5Gv2gJG?=
- =?us-ascii?Q?SG7v8Zb/ofk8T7NXmocYbIzhI8NQs2obhvcyRvQbVq8YNGc+ODIkxSyMRl45?=
- =?us-ascii?Q?PX5R9L0UvSHcaRaflRBl05JPpzXAWZgz1SITBB56pwNRYuxpMCv/y6h6f0dB?=
- =?us-ascii?Q?HMxger4NtpZkeoGVe2IdIwXIkuo4lbCpRTXIxOLh5lJhEfUdTRqjp3aYAszg?=
- =?us-ascii?Q?u0h4Oft4nfqCCIlqxnSRO/6gfc4BZDc6AX8NX+93?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="20362104"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.124.229.115]) ([10.124.229.115])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 00:43:07 -0700
+Message-ID: <435ea410-6c48-4b0c-9bd3-fa8d85c24668@linux.intel.com>
+Date: Mon, 8 Apr 2024 15:43:04 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 103658d9-6b26-49c7-c3aa-08dc579e8af1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Apr 2024 07:36:02.7033
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PsHfq/lXCWkPryN+hLpogSIF1qZNdnvfs1aebywEkYoScET1p+4mF2DaES5LP8PsypL0q/3N4xIFxUNACw6i2w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB8018
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iommu/vt-d: Remove caching mode check before devtlb
+ flush
+To: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev
+Cc: Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
+References: <20240407144232.190355-1-baolu.lu@linux.intel.com>
+ <20240407144232.190355-2-baolu.lu@linux.intel.com>
+ <d2440682-b5f7-47dd-af0b-6eadd3af6220@linux.intel.com>
+ <cf0804fe-5d2c-490c-b28f-b23cb3db4b84@linux.intel.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <cf0804fe-5d2c-490c-b28f-b23cb3db4b84@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Sent: Thursday, April 4, 2024 5:40 AM
->=20
-> The page request queue is per IOMMU, its allocation should be made
-> NUMA-aware for performance reasons.
->=20
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+On 4/8/2024 3:23 PM, Baolu Lu wrote:
+> On 2024/4/8 15:21, Ethan Zhao wrote:
+>> On 4/7/2024 10:42 PM, Lu Baolu wrote:
+>>> The Caching Mode (CM) of the Intel IOMMU indicates if the hardware
+>>> implementation caches not-present or erroneous translation-structure
+>>> entries except the first-stage translation. The caching mode is
+>>> unrelated to the device TLB , therefore there is no need to check
+>>> it before a device TLB invalidation operation.
+>>>
+>>> Before the scalable mode is introduced, caching mode is treated as
+>>> an indication that the driver is running in a VM guest. This is just
+>>> a software contract as shadow page table is the only way to implement
+>>> a virtual IOMMU. But the VT-d spec doesn't state this anywhere. After
+>>> the scalable mode is introduced, this doesn't stand for anymore, as
+>>> caching mode is not relevant for the first-stage translation. A virtual
+>>> IOMMU implementation is free to support first-stage translation only
+>>> with caching mode cleared.
+>>>
+>>> Remove the caching mode check before device TLB invalidation to ensure
+>>> compatibility with the scalable mode use cases.
+>>>
+>>> Fixes: 792fb43ce2c9 ("iommu/vt-d: Enable Intel IOMMU scalable mode 
+>>> by default")
+>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>>> ---
+>>>   drivers/iommu/intel/iommu.c | 5 ++---
+>>>   1 file changed, 2 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>>> index 493b6a600394..681789b1258d 100644
+>>> --- a/drivers/iommu/intel/iommu.c
+>>> +++ b/drivers/iommu/intel/iommu.c
+>>> @@ -1501,7 +1501,7 @@ static void iommu_flush_iotlb_psi(struct 
+>>> intel_iommu *iommu,
+>>>       else
+>>>           __iommu_flush_iotlb_psi(iommu, did, pfn, pages, ih);
+>>> -    if (!cap_caching_mode(iommu->cap) && !map)
+>>> +    if (!map)
+>>
+>> My understanding, we don't need patch[1/2] at all, and customer is 
+>> just asking
+>> about the CM & tlb flushing, it is great to have this commit [2/2].
+>
+> Actually they fix different problems.
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Yup, progress view.
+
+Thanks,
+Ethan
+
+>
+> Best regards,
+> baolu
