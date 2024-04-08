@@ -1,112 +1,159 @@
-Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CBA71272C7
-	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 14:19:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D59F413E893
+	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 16:01:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712585991; cv=none; b=FTVHzPtGnWBTBkOxeLTNDETzMAQddgsDdhZfhO+hz4lS2uiPA7yimUJDfNzHEt8ZmzC8rN8Pc6VQdQ5yjRhx32WzfFqz53t/eW7U5AQer8j5Qgq9DPyy5ZvgKbgLGnLqkaFVeTd8EC5plB/ufCBVqLz8nZ+2xpRCCB1tkFtfSmY=
+	t=1712592094; cv=none; b=Zug9wY3K+HDSmjPakmtQ5dB/vjlpcG/Jq6fjxZTqhJfI/LpiLcx50uMwPu2+RNQFuIXtnpzhxm3XzvsBxM4NlyczUY+cvL6cbJnSyUgds02l0sJfFeIup8UzwItTresYxpgmp2VvKLBgk1lUGo3ynL0MzdsnRvGKn3x0epE/mfs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712585991; c=relaxed/simple;
-	bh=aOckf8npwbeO73onf1zvZsoS3mECBJj89vWb1uXTPPg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eAhbfpZbRydtW8xTJVYgo1Zf7kawuoeUyYo5CP4FDv4nJU5saqvl3PiUNinWvYKfGVesyvRq4FmOFor6+CLphXl+J8cXbxHkZyvjpn/D7ADcthyXfj+L8afM3lQbyWXFYN/UruE7GtJWFadBy2o5YS8jo73v+g/Pq10slBG2vog=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=afIc284D; arc=none smtp.client-ip=209.85.219.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1712592094; c=relaxed/simple;
+	bh=Ygi3/4LFZQsuI5V6cl+E49vdQAx7C3y5XXwlxvBn2is=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=QxkgPoam5bNup/Akvu55P/2aLWyKcwzDncufmMg04fFunPsC0kVu3Ws0oxvSh6IHG3NcMBqekdzqo7aKuhpmmyw/7IL04eQSBUn6zCO3tArEa9NBozESPNQpQX0MRt9q8PUiHaafx37GfQsIjWt7DVUJao7PEqzIIEG8nAQIeR0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b5JzUbpx; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="afIc284D"
-Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-69629b4ae2bso36451046d6.3
-        for <iommu@lists.linux.dev>; Mon, 08 Apr 2024 07:19:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1712585988; x=1713190788; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=8/gkgj06mHoGEBTKOjzdrcRyFw1djs3fy2Wv1GZpCOs=;
-        b=afIc284DqChhxMLJWJoBAreDJzaa+LJl8Bp+hl7kJmTAfu2KDxyYo7wNknCfA/htST
-         OyB2nsOjWv5NhkDfaPggtQWOr45HF4px+gcaok+mAlA25Rbl7TQo3X0AIB8iQJnmaeg0
-         szCnthj5U13EaAmA0NuB5b/MkuUYMHVxMa5u9asvndS7QZ8GhwteEb0EoaBjPLiiwtZt
-         Q+bO+vIR7q0COP8I6/P5N18AjgthBpG50EjNvv/YA2y+7a6+XqIUaO8fYKMK9xAmDC4k
-         HUdLwvvCuSVwL119ZT0eESN/miHiGMgc6AdAeGO/jmQqtutLh0oQaVi9fUhjY1PGyKkN
-         xNpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712585988; x=1713190788;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8/gkgj06mHoGEBTKOjzdrcRyFw1djs3fy2Wv1GZpCOs=;
-        b=tRLmaOPqlXGqK7zcMgQCxA9D3WBiw2jdO6m2kcVs1awqP1TvH1lkFca2xWbpFsS6ne
-         hbiHiZXNMsFlTflatUTQCmc6y+XjAHlfovu1HugWVCcS3KRsf9ML4rB5SGllPCBuHzfH
-         uUiJ7C3J6nVbdQ5ZkHXd4sI4iXsFhwWKgww9CGFe6jH/iHR2El7fxBdpp6VkcJgJDUQ1
-         /eKUlqrSK0ug4FkD+Z5jU1nd7QBHRAoxTsAQNTjO2w7tUiJaY5x45UhMrdbo7nvScgTL
-         264AbZ8mupfWodslCIbXFTPTdoYJO21MbHqhFgcVMfcOfnnnG2lrZiEEI+LiUO3vpXof
-         Q5hA==
-X-Forwarded-Encrypted: i=1; AJvYcCWXBFcsk4sbNqz7jClWCkxgx27t9YUOcytdiQk6iKANtLSQYZYp5drEoOIEN+K8Sb8Cp/6fFYX1f7opbQU/pDadStYRuAM=
-X-Gm-Message-State: AOJu0YwZJ1O/PBLwsAqg2Ijefpg6iBnayEAsS5S7Id8cDe2bzWJLKc63
-	DYsTaOlWvDVMLWQbpJkCMaSnyLTvH5wQhqZ2IP+PHveRLmv+4E1VBew+LL36Jkw=
-X-Google-Smtp-Source: AGHT+IE8Gxhq268X4xisT4dmVwJbupLs0jwAwPMQeWGGRMXB87HiENKFwyhJYlQDe1J23nu23fbpaw==
-X-Received: by 2002:ad4:5763:0:b0:696:9df4:58e5 with SMTP id r3-20020ad45763000000b006969df458e5mr10787694qvx.1.1712585988440;
-        Mon, 08 Apr 2024 07:19:48 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id p4-20020a0cf684000000b0069b215adb5csm410376qvn.25.2024.04.08.07.19.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Apr 2024 07:19:47 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rtpqc-005GwN-7j;
-	Mon, 08 Apr 2024 11:19:46 -0300
-Date: Mon, 8 Apr 2024 11:19:46 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/9] iommu: Replace sva_iommu with iommu_attach_handle
-Message-ID: <20240408141946.GB223006@ziepe.ca>
-References: <20240403011519.78512-1-baolu.lu@linux.intel.com>
- <20240403011519.78512-3-baolu.lu@linux.intel.com>
- <20240403115913.GC1363414@ziepe.ca>
- <e3f526e3-6474-49ff-b8d6-995aaf1c1830@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b5JzUbpx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712592093; x=1744128093;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Ygi3/4LFZQsuI5V6cl+E49vdQAx7C3y5XXwlxvBn2is=;
+  b=b5JzUbpxGfY/T/7XNN3SldXqZ72bXiu0/TPwg5jnG3/ymRQiKgfsJAJI
+   wplb8zXThVV6j2qlOgpux57uk+mcjZy8jyYRzRA4GiAdB6Jmmd6y1XwvL
+   kyYppTnMCHbVwuZlr2IPkhFs0NuyYIYJfGnalZx8ZOKHhro32hsE+eklm
+   L90L1sNgUoNNZQ1bWOptfQoiodxq8sfseBRUaY7Xmyzbu310GEbmnFpXj
+   vVn7Xu3hb70SZA1AIm2Jp4MX8eOpFig8iAtK4Y4LnYf+qy5aFxNFTf0an
+   JP/Tjpl5y5GXL2j99XYxmXosyKsidq0eVsZ9qSYtEf6ZvcPcOUiBsBfBG
+   A==;
+X-CSE-ConnectionGUID: 6cOu9MopQVm6/7p0/EutRg==
+X-CSE-MsgGUID: cAHxj8OCRJGkakEzBoNp+A==
+X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="11656110"
+X-IronPort-AV: E=Sophos;i="6.07,187,1708416000"; 
+   d="scan'208";a="11656110"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 09:01:31 -0700
+X-CSE-ConnectionGUID: INLreHreTUSw5gvULrK0Mw==
+X-CSE-MsgGUID: e2IUKgdJRnS2RmR0O3qmPQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,187,1708416000"; 
+   d="scan'208";a="20054868"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 09:01:27 -0700
+Date: Mon, 8 Apr 2024 09:05:56 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: "sivanich@hpe.com" <sivanich@hpe.com>, Thomas Gleixner
+ <tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Lu Baolu
+ <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Liu, Yi L"
+ <yi.l.liu@intel.com>, "steve.wahl@hpe.com" <steve.wahl@hpe.com>, "Anderson,
+ Russ" <russ.anderson@hpe.com>, "Peter Zijlstra" <peterz@infradead.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 2/2] iommu/vt-d: Share DMAR fault IRQ to prevent vector
+ exhaustion
+Message-ID: <20240408090556.6165e603@jacob-builder>
+In-Reply-To: <BN9PR11MB527677A69A2004A951165CC38C002@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240403234548.989061-1-jacob.jun.pan@linux.intel.com>
+	<20240403234548.989061-2-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB527677A69A2004A951165CC38C002@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e3f526e3-6474-49ff-b8d6-995aaf1c1830@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sat, Apr 06, 2024 at 02:09:34PM +0800, Baolu Lu wrote:
-> On 4/3/24 7:59 PM, Jason Gunthorpe wrote:
-> > On Wed, Apr 03, 2024 at 09:15:12AM +0800, Lu Baolu wrote:
-> > > +	/* A bond already exists, just take a reference`. */
-> > > +	handle = iommu_attach_handle_get(group, iommu_mm->pasid);
-> > > +	if (handle) {
-> > > +		mutex_unlock(&iommu_sva_lock);
-> > > +		return handle;
-> > >   	}
-> > At least in this context this is not enough we need to ensure that the
-> > domain on the PASID is actually an SVA domain and it was installed by
-> > this mechanism, not an iommufd domain for instance.
+Hi Kevin,
+
+On Mon, 8 Apr 2024 08:48:54 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
+
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Thursday, April 4, 2024 7:46 AM
 > > 
-> > ie you probably need a type field in the iommu_attach_handle to tell
-> > what the priv is.
-> > 
-> > Otherwise this seems like a great idea!
+> > DMAR fault interrupt is used for per-IOMMU unrecoverable fault
+> > reporting, it occurs only if there is a kernel programming error or
+> > serious hardware failure. In other words, they should never occur under
+> > normal circumstances.  
 > 
-> Yes, you are right. For the SVA case, I will add the following changes.
-> The IOMMUFD path will also need such enhancement. I will update it in
-> the next version.
+> this is not accurate. When a device is assigned to a malicious guest then
+> it's not unusual to observe faults.
+> 
+Right, a malicious guest kernel could cause unrecoverable faults, e.g.
+wrong privilege.
 
-The only use for this is the PRI callbacks right? Maybe instead of
-adding a handle type let's just check domain->iopf_handler  ?
+> in this context you probably meant that it's not a performance path hence
+> sharing the vector is acceptable.
+> 
+Yes.
+> >
+> > @@ -1182,7 +1182,6 @@ static void free_iommu(struct intel_iommu
+> > *iommu)
+> >  			iommu->pr_irq = 0;
+> >  		}
+> >  		free_irq(iommu->fault_irq, iommu);
+> > -		dmar_free_hwirq(iommu->fault_irq);  
+> 
+> You still want to free the vector for the iommu which first gets the
+> vector allocated.
+> 
+I think we always want to keep this vector since the system always needs
+one vector to share. We will never offline all the IOMMUs, right?
 
-Ie SVA will pass &ommu_sva_iopf_handler as its "type"
+> > @@ -1956,9 +1955,8 @@ void dmar_msi_mask(struct irq_data *data)
+> >  	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+> >  }
+> > 
+> > -void dmar_msi_write(int irq, struct msi_msg *msg)
+> > +static void dmar_msi_write_msg(struct intel_iommu *iommu, int irq,
+> > struct msi_msg *msg)
+> >  {  
+> 
+> what about iommu_msi_write_msg() to match the first parameter?
+> 
+> otherwise it leads to a slightly circled calltrace:
+> 	dmar_msi_write_msg()
+> 		dmar_msi_write()
+> 			dmar_msi_write_msg()
+> 
+Good point, will do.
 
-Jason
+> > +
+> > +	/*
+> > +	 * Only the owner IOMMU of the shared IRQ has its fault event
+> > +	 * interrupt unmasked after request_irq(), the rest are
+> > explicitly
+> > +	 * unmasked.
+> > +	 */
+> > +	if (!(iommu->flags & VTD_FLAG_FAULT_IRQ_OWNER))
+> > +		dmar_fault_irq_unmask(iommu);
+> > +  
+> 
+> em there is a problem in dmar_msi_mask() and dmar_msi_mask()
+> which only touches the owner IOMMU. With this shared vector
+> approach we should mask/unmask all IOMMU's together. 
+I thought about this as well, in addition to fault_irq,
+dmar_msi_mask/unmask() are used for other DMAR irqs, page request and
+perfmon. So we need a special case for fault_irq there, it is not pretty.
+
+I added a special case here in this patch, thinking we never mask the
+fault_irq since we need to cover the lifetime of the system. I have looked
+at:
+1.IOMMU suspend/resume, no mask/unmask
+2.IRQ migration, added IRQF_NOBALANCING
+
+maybe I missed some cases?
+
+
+Thanks,
+
+Jacob
