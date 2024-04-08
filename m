@@ -1,55 +1,57 @@
-Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
+Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E87C1CAA4
-	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 04:12:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66C5F1CD38
+	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 04:12:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712549539; cv=none; b=PUUiu5PNfBn0JrYKuREcKvpBwfqwEJae27UHkCzjQH9S5Xn3FDC6X3ChIFcdrURZ+4tgbfHSGirbHgW34f59Kd2jq1mlTQZY8k+eLvS18a4sZh39cZqKRAgvTXFsC2Fgke88FJzqFj7PGBFtxvZdXHwHUj9i3ftyghhXCMQYc7Y=
+	t=1712549539; cv=none; b=LD1HBVKDh6ZJlv2Z0S7OydqrPFsG8/bK+K1e0CKyrk9jburk7WGZL9WRKYYy7JRC3+mPmt2FCmJsBGtLFEdQU5eZvV7eMETY7YNVfgfKmLZYnNxmU1jv94x10ZsxKI10A/ZZPqGT/wzhtCGEl/35fUZCYSn4eVzLVk1EnDkKZEU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1712549539; c=relaxed/simple;
-	bh=OVTO7Zslu5D6nkoFCb675ngPBEtipPv4ybdfltH69Cg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=IfrhAqNdMJ8Rlt7gSWcrcCY4HBUIXXMCOH/VJejVLcSUc/qxDed8/g1Rip7dSqhKkHNzqmVZTwX6sPee/f/aVnQWYpE4IaREF4QQUEh4qPjUda/5XOrUfXO/Rr9QNbdhsUWh5fVPV+fet8tA88OfshPBOx8NFfSe3UO39mxkq9c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DzNZtVus; arc=none smtp.client-ip=209.85.214.178
+	bh=Id1MZoVrSSM3hObMgDp0MUvlPMjMRmawf9jxYCMg/d8=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=SjulRle2D4Ah9wI2cg01YRQQB+M0dE2CdFPfZBLgEl+3Jy+AYObTbK/zdeqUiH/8h0ujm9th8CWQy95OG4RLX1f07C0/xsl1fnbs6WOZATtrzbuRGs7SwdnSeEBa9jqW9FRjP2cEt+tV+08xPgAqOP3Frc5tU3JfbX8TRRA23tg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Je/tjRQz; arc=none smtp.client-ip=209.85.214.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DzNZtVus"
-Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-1e0b889901bso32120415ad.1
-        for <iommu@lists.linux.dev>; Sun, 07 Apr 2024 21:12:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Je/tjRQz"
+Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-1e2232e30f4so35334935ad.2
+        for <iommu@lists.linux.dev>; Sun, 07 Apr 2024 21:12:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712549536; x=1713154336; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:reply-to:message-id:date
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=GMSQhLrDPilrzUC346KcRMtXyNYWEOyJ6WX8+UinkkA=;
-        b=DzNZtVusqpUUUgOMAjyWV1BqQkX8804LDV0q7uz/VtBw9OXC7SGdDEWCEwItXB3kcC
-         XqrtAC99Us478F1eFuIGKQ4lq7qJBWR7Tb+DMLcQKzd9YYW2NraFdcTxCNucFtyM7/nD
-         BCTDo/Qtt7gPEHh/qaWoe0dju/pGDIrR/roc9axCB3i6xhbbLxfD1P9BQU1jXrobBqkD
-         fuSAw+P/kkI1quhodB3/N1fpNsBjmRFqFtx1p2alO6xCsJDQ7Pq0aZifhvEFWfHmN/+r
-         Opk3/Juq9RBcthNqupf+PBqN9wv5pRAQ6a1nohXlOHC2VKpoYW/LAe5m6qywjs/NjwxS
-         XMNg==
+        d=gmail.com; s=20230601; t=1712549538; x=1713154338; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:reply-to:references
+         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=SjsV4HsSTItvj/ELiLD1hTF0cgJwLOFyNGElV0Kd8Z8=;
+        b=Je/tjRQzLljGqiGVM16rE8QIYXRIEeSPE6ritTOOxPc6PrtwU1Vv0+qyb15kf7zq7F
+         C1ku09WWbPnoMyxfyhQF77Zjc/6PLHwNsmCahvTHf5Kaw546N1X/1TFkje3oSO50KTo6
+         t6y/kGk1zi1jAkNoBVZETyFO4rPiAf3u1pXAG7OrXfol95lMS9Pyn7Ddz9IbRwq9O20T
+         bG9vKGmNDe6gctjX7znhyWLg/hVJuFu2BakebgCDJJMEZUa/6fv+F/XHtAoV2LVpr5R6
+         N00lfMTVEUPp7HYGh5R4N9Y/vVMVVDEt0+kHkOtZ6DmGq0rfgf3DytTv4hLhJwT0p5R6
+         e4Fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712549537; x=1713154337;
-        h=content-transfer-encoding:mime-version:reply-to:message-id:date
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=GMSQhLrDPilrzUC346KcRMtXyNYWEOyJ6WX8+UinkkA=;
-        b=T+Kgr6gSvgP2ZpsmYzjfH3niA1zcZ1tMyOKV26U7qvjq5jy8NrX/gAPSFgrJS/n2F6
-         RZdJ3CEOfSzYqIFoandgvxXOvIL/O+PQFdCpHSQEAeotENmD/nQkglnUkcOsPAZ3nWof
-         Xj4nICMCT82tuFs5VzcyYdgA7jaVqSJBb+/lGJ/ScAG3A9WDj5jCh38wa9JH7hQEHiBK
-         kUN2mkgaWVdKX+xDC91peNEJ05dtBDe/4U8wKErQarkHPzWOOxdEtVpX+Ix24uYWe2rh
-         4/izdre2lPSduKjnFgnQY4E67rw3ChRnaeEMDTKRLGWJ6r0pDl+kqN7Mt8Se6g1fgf9I
-         V/nA==
-X-Forwarded-Encrypted: i=1; AJvYcCWOUozr9o4Y+HHh9am9XCf7RNjfr9eSOaWKLIg+qlRGj5mZL7rbD/JV4nlpxfPmvdPuvNVGQWJ43IonAnrCTMpUZXzKJ+A=
-X-Gm-Message-State: AOJu0YwsGApGsB7wtVuESFsVe9fstIzOceUxinxWbBSaxNvhv+E7k/ho
-	fPxto4IFuQcmN3xji4BV/L/+1wu/PaG38Wg3wcRc+/dKxSK1+Rxt
-X-Google-Smtp-Source: AGHT+IGJ2H/R5OdFFo2sWuPhTY0GzQYPe7tpoRBe4DrZ/4S9V3guChofxwL81b6WIsmX5otyZzTeOw==
-X-Received: by 2002:a17:903:1ce:b0:1e4:4a3f:9a88 with SMTP id e14-20020a17090301ce00b001e44a3f9a88mr488986plh.46.1712549536492;
-        Sun, 07 Apr 2024 21:12:16 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1712549538; x=1713154338;
+        h=content-transfer-encoding:mime-version:reply-to:references
+         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SjsV4HsSTItvj/ELiLD1hTF0cgJwLOFyNGElV0Kd8Z8=;
+        b=nclA+YMEdCmdxl9filk9tNsSrNX++MHkbdP7zi0B7A0oaXsskevDi8VHMgFpVvAFcz
+         fbEQV9qpLzxzED6RmvV7VzK6HGQnwTrmFPL3dWAOEanJ6/4gz2AS8xQxxweKztfsVkgM
+         yf9pJ4dSd1DLXlaxwt63oQENm/L+6qdniSV62IQIkJl2PSCr88shnzSSvwWMxq82T5MU
+         ANR77AptElOmTcvG8H1XLfFqD24iizk42l2YXYvPNEXXQLSHICnROvJutjyIn2vSx8AU
+         ZplDJ/dEFVrEH4DX7WZbOHK0sF6f89hPmwbPbT5S17mFOE4Cr3kjTpA7oGGO9fBG5Sg/
+         x0HQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWlOGUaEkqg4TZRi2BZ6k8gHnEp7hh2F4Ph/k+/zRGSCL6bAHJOK8MCO4G5qG0QzHlsDWnJWfjDEbcZdth0znqHEw4D4wk=
+X-Gm-Message-State: AOJu0YwzJi9jSeYFcGmq1LseBIeAoF6phY2VWFqS0nFnbzjgsqsVE/HT
+	oWgz2zgkdAF5FieZnSlCKI47j4EnM7A+S2gi7hzPrJJmU8Y82P9S
+X-Google-Smtp-Source: AGHT+IEj4y4ne2ojXfNRa+AYfBs5hBPbD1UVM1VUfINpDFwALspJKDqHWO1VwvTTYi56XGeWrvjrIg==
+X-Received: by 2002:a17:903:246:b0:1e2:6b80:95b0 with SMTP id j6-20020a170903024600b001e26b8095b0mr7483729plh.6.1712549537683;
+        Sun, 07 Apr 2024 21:12:17 -0700 (PDT)
 Received: from localhost.localdomain (c-73-254-87-52.hsd1.wa.comcast.net. [73.254.87.52])
-        by smtp.gmail.com with ESMTPSA id u17-20020a17090341d100b001e3f0cde2desm2474666ple.253.2024.04.07.21.12.15
+        by smtp.gmail.com with ESMTPSA id u17-20020a17090341d100b001e3f0cde2desm2474666ple.253.2024.04.07.21.12.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Apr 2024 21:12:16 -0700 (PDT)
+        Sun, 07 Apr 2024 21:12:17 -0700 (PDT)
 From: mhkelley58@gmail.com
 X-Google-Original-From: mhklinux@outlook.com
 To: robin.murphy@arm.com,
@@ -65,10 +67,12 @@ To: robin.murphy@arm.com,
 	xen-devel@lists.xenproject.org
 Cc: petr@tesarici.cz,
 	roberto.sassu@huaweicloud.com
-Subject: [PATCH 1/2] swiotlb: Remove alloc_size argument to swiotlb_tbl_map_single()
-Date: Sun,  7 Apr 2024 21:11:41 -0700
-Message-Id: <20240408041142.665563-1-mhklinux@outlook.com>
+Subject: [PATCH 2/2] iommu/dma: Fix zero'ing of bounce buffer padding used by untrusted devices
+Date: Sun,  7 Apr 2024 21:11:42 -0700
+Message-Id: <20240408041142.665563-2-mhklinux@outlook.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20240408041142.665563-1-mhklinux@outlook.com>
+References: <20240408041142.665563-1-mhklinux@outlook.com>
 Reply-To: mhklinux@outlook.com
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -80,218 +84,134 @@ Content-Transfer-Encoding: 8bit
 
 From: Michael Kelley <mhklinux@outlook.com>
 
-Currently swiotlb_tbl_map_single() takes alloc_align_mask and
-alloc_size arguments to specify an swiotlb allocation that is
-larger than mapping_size. This larger allocation is used solely
-by iommu_dma_map_single() to handle untrusted devices that should
-not have DMA visibility to memory pages that are partially used
-for unrelated kernel data.
+iommu_dma_map_page() allocates swiotlb memory as a bounce buffer when
+an untrusted device wants to map only part of the memory in an
+granule. The goal is to disallow the untrusted device having
+DMA access to unrelated kernel data that may be sharing the granule.
+To meet this goal, the bounce buffer itself is zero'ed, and any
+additional swiotlb memory up to alloc_size after the bounce buffer
+end (i.e., "post-padding") is also zero'ed.
 
-Having two arguments to specify the allocation is redundant. While
-alloc_align_mask naturally specifies the alignment of the starting
-address of the allocation, it can also implicitly specify the size
-by rounding up the mapping_size to that alignment.
+However, as of commit 901c7280ca0d ("Reinstate some of "swiotlb: rework
+"fix info leak with DMA_FROM_DEVICE"""), swiotlb_tbl_map_single()
+always initializes the contents of the bounce buffer to the original
+memory. Zero'ing the bounce buffer is redundant and probably wrong per
+the discussion in that commit. Only the post-padding needs to be
+zero'ed.
 
-Additionally, the current approach has an edge case bug.
-iommu_dma_map_page() already does the rounding up to compute the
-alloc_size argument. But swiotlb_tbl_map_single() then calculates
-the alignment offset based on the DMA min_align_mask, and adds
-that offset to alloc_size. If the offset is non-zero, the addition
-may result in a value that is larger than the max the swiotlb can
-allocate. If the rounding up is done _after_ the alignment offset is
-added to the mapping_size (and the original mapping_size conforms to
-the value returned by swiotlb_max_mapping_size), then the max that the
-swiotlb can allocate will not be exceeded.
+Also, when the DMA min_align_mask is non-zero, the allocated bounce
+buffer space may not start on a granule boundary. The swiotlb memory
+from the granule boundary to the start of the allocated bounce buffer
+might belong to some unrelated bounce buffer. So as described in the
+"second issue" in [1], it can't be zero'ed to protect against untrusted
+devices. But as of commit XXXXXXXXXXXX ("swiotlb: extend buffer
+pre-padding to alloc_align_mask if necessary"), swiotlb_tbl_map_single()
+allocates pre-padding slots when necessary to meet min_align_mask
+requirements, making it possible to zero the pre-padding area as well.
 
-In view of these issues, simplify the swiotlb_tbl_map_single() interface
-by removing the alloc_size argument. Most call sites pass the same
-value for mapping_size and alloc_size, and they pass alloc_align_mask
-as zero. Just remove the redundant argument from these callers, as they
-will see no functional change. For iommu_dma_map_page() also remove
-the alloc_size argument, and have swiotlb_tbl_map_single() compute
-the alloc_size by rounding up mapping_size after adding the offset
-based on min_align_mask. This has the side effect of fixing the
-edge case bug but with no other functional change.
+Finally, iommu_dma_map_page() uses the swiotlb for untrusted devices
+and also for certain kmalloc() memory. Current code does the zero'ing
+for both cases, but it is needed only for the untrusted device case.
 
-Also add a sanity test on the alloc_align_mask. While IOMMU code
-currently ensures the granule is not larger than PAGE_SIZE, if
-that guarantee were to be removed in the future, the downstream
-effect on the swiotlb might go unnoticed until strange allocation
-failures occurred.
+Fix all of this by updating iommu_dma_map_page() to zero both the
+pre-padding and post-padding areas, but not the actual bounce buffer.
+Do this only in the case where the bounce buffer is used because
+of an untrusted device.
 
-Tested on an ARM64 system with 16K page size and some kernel
-test-only hackery to allow modifying the DMA min_align_mask and
-the granule size that becomes the alloc_align_mask. Tested these
-combinations with a variety of original memory addresses and
-sizes, including those that reproduce the edge case bug:
-
-* 4K granule and 0 min_align_mask
-* 4K granule and 0xFFF min_align_mask (4K - 1)
-* 16K granule and 0xFFF min_align_mask
-* 64K granule and 0xFFF min_align_mask
-* 64K granule and 0x3FFF min_align_mask (16K - 1)
-
-With the changes, all combinations pass.
+[1] https://lore.kernel.org/all/20210929023300.335969-1-stevensd@google.com/
 
 Signed-off-by: Michael Kelley <mhklinux@outlook.com>
 ---
-I've haven't used any "Fixes:" tags. This patch really should be
-backported only if all the other recent swiotlb fixes get backported,
-and I'm unclear on whether that will happen.
+I've wondered if this code for zero'ing the pre- and post-padding
+should go in swiotlb_tbl_map_single(). The bounce buffer proper is
+already being initialized there. But swiotlb_tbl_map_single()
+would need to test for an untrusted device (or have a "zero the
+padding" flag passed in as part of the "attrs" argument), which
+adds complexity. Thoughts?
 
-I saw the brief discussion about removing the "dir" parameter from
-swiotlb_tbl_map_single(). That removal could easily be done as part
-of this patch, since it's already changing the swiotlb_tbl_map_single()
-parameters. But I think the conclusion of the discussion was to leave
-the "dir" parameter for symmetry with the swiotlb_sync_*() functions.
-Please correct me if that's wrong, and I'll respin this patch to do
-the removal.
+The commit ID of Petr's patch is X'ed out above because Petr's patch
+hasn't gone into Linus' tree yet. We can add the real commit ID once
+this patch is ready to go in.
 
- drivers/iommu/dma-iommu.c |  2 +-
- drivers/xen/swiotlb-xen.c |  2 +-
- include/linux/swiotlb.h   |  2 +-
- kernel/dma/swiotlb.c      | 56 +++++++++++++++++++++++++++++----------
- 4 files changed, 45 insertions(+), 17 deletions(-)
+Also I've haven't used any "Fixes:" tags. This patch really should
+be backported only if all the other recent swiotlb fixes get
+backported, and I'm unclear on whether that will happen.
+
+ drivers/iommu/dma-iommu.c | 29 ++++++++++++++++-------------
+ include/linux/iova.h      |  5 +++++
+ 2 files changed, 21 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 07d087eecc17..c21ef1388499 100644
+index c21ef1388499..ecac39b3190d 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -1165,7 +1165,7 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+@@ -1154,9 +1154,6 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+ 	 */
+ 	if (dev_use_swiotlb(dev, size, dir) &&
+ 	    iova_offset(iovad, phys | size)) {
+-		void *padding_start;
+-		size_t padding_size, aligned_size;
+-
+ 		if (!is_swiotlb_active(dev)) {
+ 			dev_warn_once(dev, "DMA bounce buffers are inactive, unable to map unaligned transaction.\n");
+ 			return DMA_MAPPING_ERROR;
+@@ -1164,24 +1161,30 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+ 
  		trace_swiotlb_bounced(dev, phys, size);
  
- 		aligned_size = iova_align(iovad, size);
--		phys = swiotlb_tbl_map_single(dev, phys, size, aligned_size,
-+		phys = swiotlb_tbl_map_single(dev, phys, size,
+-		aligned_size = iova_align(iovad, size);
+ 		phys = swiotlb_tbl_map_single(dev, phys, size,
  					      iova_mask(iovad), dir, attrs);
  
  		if (phys == DMA_MAPPING_ERROR)
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 1c4ef5111651..6579ae3f6dac 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -216,7 +216,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
- 	 */
- 	trace_swiotlb_bounced(dev, dev_addr, size);
+ 			return DMA_MAPPING_ERROR;
  
--	map = swiotlb_tbl_map_single(dev, phys, size, size, 0, dir, attrs);
-+	map = swiotlb_tbl_map_single(dev, phys, size, 0, dir, attrs);
- 	if (map == (phys_addr_t)DMA_MAPPING_ERROR)
- 		return DMA_MAPPING_ERROR;
+-		/* Cleanup the padding area. */
+-		padding_start = phys_to_virt(phys);
+-		padding_size = aligned_size;
++		/*
++		 * Untrusted devices should not see padding areas with random
++		 * leftover kernel data, so zero the pre- and post-padding.
++		 * swiotlb_tbl_map_single() has initialized the bounce buffer
++		 * proper to the contents of the original memory buffer.
++		 */
++		if (dev_is_untrusted(dev)) {
++			size_t start, virt = (size_t)phys_to_virt(phys);
  
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index ea23097e351f..14bc10c1bb23 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -43,7 +43,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
- extern void __init swiotlb_update_mem_attributes(void);
+-		if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+-		    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)) {
+-			padding_start += size;
+-			padding_size -= size;
+-		}
++			/* Pre-padding */
++			start = iova_align_down(iovad, virt);
++			memset((void *)start, 0, virt - start);
  
- phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,
--		size_t mapping_size, size_t alloc_size,
-+		size_t mapping_size,
- 		unsigned int alloc_aligned_mask, enum dma_data_direction dir,
- 		unsigned long attrs);
- 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index a5e0dfc44d24..046da973a7e2 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -1340,15 +1340,40 @@ static unsigned long mem_used(struct io_tlb_mem *mem)
- 
- #endif /* CONFIG_DEBUG_FS */
- 
-+/**
-+ * swiotlb_tbl_map_single() - bounce buffer map a single contiguous physical area
-+ * @dev:		Device which maps the buffer.
-+ * @orig_addr:		Original (non-bounced) physical IO buffer address
-+ * @mapping_size:	Requested size of the actual bounce buffer, excluding
-+ *			any pre- or post-padding for alignment
-+ * @alloc_align_mask:	Required start and end alignment of the allocated buffer
-+ * @dir:		DMA direction
-+ * @attrs:		Optional DMA attributes for the map operation
-+ *
-+ * Find and allocate a suitable sequence of IO TLB slots for the request.
-+ * The allocated space starts at an alignment specified by alloc_align_mask,
-+ * and the size of the allocated space is rounded up so that the total amount
-+ * of allocated space is a multiple of (alloc_align_mask + 1). If
-+ * alloc_align_mask is zero, the allocated space may be at any alignment and
-+ * the size is not rounded up.
-+ *
-+ * The returned address is within the allocated space and matches the bits
-+ * of orig_addr that are specified in the DMA min_align_mask for the device. As
-+ * such, this returned address may be offset from the beginning of the allocated
-+ * space. The bounce buffer space starting at the returned address for
-+ * mapping_size bytes is initialized to the contents of the original IO buffer
-+ * area. Any pre-padding (due to an offset) and any post-padding (due to
-+ * rounding-up the size) is not initialized.
-+ */
- phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
--		size_t mapping_size, size_t alloc_size,
--		unsigned int alloc_align_mask, enum dma_data_direction dir,
--		unsigned long attrs)
-+		size_t mapping_size, unsigned int alloc_align_mask,
-+		enum dma_data_direction dir, unsigned long attrs)
- {
- 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	unsigned int offset;
- 	struct io_tlb_pool *pool;
- 	unsigned int i;
-+	size_t size;
- 	int index;
- 	phys_addr_t tlb_addr;
- 	unsigned short pad_slots;
-@@ -1362,20 +1387,24 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
- 		pr_warn_once("Memory encryption is active and system is using DMA bounce buffers\n");
- 
--	if (mapping_size > alloc_size) {
--		dev_warn_once(dev, "Invalid sizes (mapping: %zd bytes, alloc: %zd bytes)",
--			      mapping_size, alloc_size);
--		return (phys_addr_t)DMA_MAPPING_ERROR;
--	}
-+	/*
-+	 * The default swiotlb memory pool is allocated with PAGE_SIZE
-+	 * alignment. If a mapping is requested with larger alignment,
-+	 * the mapping may be unable to use the initial slot(s) in all
-+	 * sets of IO_TLB_SEGSIZE slots. In such case, a mapping request
-+	 * of or near the maximum mapping size would always fail.
-+	 */
-+	dev_WARN_ONCE(dev, alloc_align_mask > ~PAGE_MASK,
-+		"Alloc alignment may prevent fulfilling requests with max mapping_size\n");
- 
- 	offset = swiotlb_align_offset(dev, alloc_align_mask, orig_addr);
--	index = swiotlb_find_slots(dev, orig_addr,
--				   alloc_size + offset, alloc_align_mask, &pool);
-+	size = ALIGN(mapping_size + offset, alloc_align_mask + 1);
-+	index = swiotlb_find_slots(dev, orig_addr, size, alloc_align_mask, &pool);
- 	if (index == -1) {
- 		if (!(attrs & DMA_ATTR_NO_WARN))
- 			dev_warn_ratelimited(dev,
- 	"swiotlb buffer is full (sz: %zd bytes), total %lu (slots), used %lu (slots)\n",
--				 alloc_size, mem->nslabs, mem_used(mem));
-+				 size, mem->nslabs, mem_used(mem));
- 		return (phys_addr_t)DMA_MAPPING_ERROR;
+-		memset(padding_start, 0, padding_size);
++			/* Post-padding */
++			start = virt + size;
++			memset((void *)start, 0,
++			       iova_align(iovad, start) - start);
++		}
  	}
  
-@@ -1388,7 +1417,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	offset &= (IO_TLB_SIZE - 1);
- 	index += pad_slots;
- 	pool->slots[index].pad_slots = pad_slots;
--	for (i = 0; i < nr_slots(alloc_size + offset); i++)
-+	for (i = 0; i < (nr_slots(size) - pad_slots); i++)
- 		pool->slots[index + i].orig_addr = slot_addr(orig_addr, i);
- 	tlb_addr = slot_addr(pool->start, index) + offset;
- 	/*
-@@ -1543,8 +1572,7 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t paddr, size_t size,
+ 	if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 83c00fac2acb..d2c4fd923efa 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -65,6 +65,11 @@ static inline size_t iova_align(struct iova_domain *iovad, size_t size)
+ 	return ALIGN(size, iovad->granule);
+ }
  
- 	trace_swiotlb_bounced(dev, phys_to_dma(dev, paddr), size);
- 
--	swiotlb_addr = swiotlb_tbl_map_single(dev, paddr, size, size, 0, dir,
--			attrs);
-+	swiotlb_addr = swiotlb_tbl_map_single(dev, paddr, size, 0, dir, attrs);
- 	if (swiotlb_addr == (phys_addr_t)DMA_MAPPING_ERROR)
- 		return DMA_MAPPING_ERROR;
- 
++static inline size_t iova_align_down(struct iova_domain *iovad, size_t size)
++{
++	return ALIGN_DOWN(size, iovad->granule);
++}
++
+ static inline dma_addr_t iova_dma_addr(struct iova_domain *iovad, struct iova *iova)
+ {
+ 	return (dma_addr_t)iova->pfn_lo << iova_shift(iovad);
 -- 
 2.25.1
 
