@@ -1,68 +1,67 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E8CA142652
-	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 16:35:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446D9143C56
+	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 17:34:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712594103; cv=none; b=VGH4lclL+AzIQnNAb3V44DBmRjZiuUSxnueZTipWGIJ7BIdU70pFzEIY7n2UyE2geWVAF43YYC8S1ALEC13zn+YBjaWZZKiTOkS0kgXPDgLlL/5J5sqqwfCV64ifVeK7sknXJxSWGFPJSes9iVaUfZYp/xrdX0DTYqXQWsKj6Rs=
+	t=1712597656; cv=none; b=L0l1AcpVrSGK/3H/S1cHoTxH8UddVwENU5ntKnHYoDiHfsUke3+PGDJjK4InQs+v5GH3z8n7ToqYArPbgNVkJebM3RH5Vfzp16sv+c1koWUqBnmcYTXVGEPjnfONVL+o1E/szgtNnjHqy287bPuIvXEEPMnAy+QJwzu2wpdq6W4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712594103; c=relaxed/simple;
-	bh=MwPlIh32++bFzV6p+9AvCTR3WEciP8K3VR75lLJlj6U=;
+	s=arc-20240116; t=1712597656; c=relaxed/simple;
+	bh=A7AnKL5OtCbZhPZ0wVqa7j0KGeqg924itu34xq7YRqc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GK+nE1rLM7cxF4/psDaFhFdyRNL1nWcp9scrRbQrBSwweaLgrOd8MmLJnLOmBiWvc74arkeV9VSIlXw9ktsGe7Ar72UVP27tk2WL23KPC5mhJn54MoTYWMSTKKr+MI43wPfimDJooQSiBQRQ5eanPRjCIk9DiiJzqE8wBmHfN38=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GCgEgaAZ; arc=none smtp.client-ip=198.175.65.12
+	 MIME-Version:Content-Type; b=uV7ZyfHhpwC4pZuocDKTDADnZeKrJ6iKvv98rRLR1n78aXfxw7XLmf9v3mqM0LIhxW7SmHDzh228f7ORY9JEKrmZr+um14vvbaMDBxHe1rcCM7lvZ9knHFZyQxoifHx5QGh9KYVxIjBot4dnrz6caIQeXDLoLW2L3i55dVXXtxc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Q4RSEkgR; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GCgEgaAZ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Q4RSEkgR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712594103; x=1744130103;
+  t=1712597655; x=1744133655;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=MwPlIh32++bFzV6p+9AvCTR3WEciP8K3VR75lLJlj6U=;
-  b=GCgEgaAZIlAFM/JfLXxMN0e1qy7q3Z7zqGe3BFNn9K2c2opu5qKPIjzt
-   WEUoAjmzMp64laCPoqcBkYrsH93rG7zWbJuOzirBkkSaITC+VrjPBT+XL
-   79o18CsSLajfHeRPhYBjVaH1K2ev7kF1fETiNzFrLBbzBj3umA882A8m2
-   BKP09XK2ZaWpSOyRiK0GQA6SpDdeGwNTPNPOfibTtiS8ZyGGTcKEVZUfM
-   9cdBSWJkE6vCJaZM6lXyfHrhQsrRzdcLqP5fO7KA3vxGNOTimN2tgIBFQ
-   lV6UFocQ0pG5DIcNP521heSll+PipzWDcH4OZzCx6HfZ6miTh5dgoo27x
-   w==;
-X-CSE-ConnectionGUID: sT7XCN7uQT2vn0ybSsZtIA==
-X-CSE-MsgGUID: M9EsLqwoQqu39EibFnEKfw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="19315640"
+  bh=A7AnKL5OtCbZhPZ0wVqa7j0KGeqg924itu34xq7YRqc=;
+  b=Q4RSEkgR7tk/B1r4bM8p3pA9zX2Rx0qQOM9z8+Hjw4eNpFFLd3vZvTkK
+   0jSq2Xl/ofbOs7gzi61iewMW4Ws9dE0L5UaT8pHxHAH05QCHY04esuSFk
+   nwdo4fU5lxYRZLk5SXVdkivYSbbhMIEqgK09I0OIFXdRPY+bgagZ1MSgK
+   pvYUyayFbfgla16+CN26AOG9Sue1CSevam8PxT5od8T8frTT6FGZcGOsR
+   HWyiC46Q/zmdRNrMFVA8HxeIZi+a+//IFQUuvwqyX2IXQUfQy+eC7ou53
+   vYfFyHX30l8+DCrn2MPvjT3gDp/K0hkz2+kyxTVvRHMy+0zJXGInEUR9I
+   g==;
+X-CSE-ConnectionGUID: Z1+zGGRJTUmeouZIMJRv+g==
+X-CSE-MsgGUID: B/KbAuGSRBqHYJeJdHeUGg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="11726291"
 X-IronPort-AV: E=Sophos;i="6.07,187,1708416000"; 
-   d="scan'208";a="19315640"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 09:35:02 -0700
-X-CSE-ConnectionGUID: 3aJmJTHiTKCgnbKS8eC6EA==
-X-CSE-MsgGUID: scKAYNiSRYObcLzhJQ55sg==
+   d="scan'208";a="11726291"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 10:34:15 -0700
+X-CSE-ConnectionGUID: 2JPrym/DRYyWLtfKRWZAAQ==
+X-CSE-MsgGUID: UQC/oHn7TGGzL/BMFN+r+Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,187,1708416000"; 
-   d="scan'208";a="43113931"
+   d="scan'208";a="24656650"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 09:35:01 -0700
-Date: Mon, 8 Apr 2024 09:39:30 -0700
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 10:34:14 -0700
+Date: Mon, 8 Apr 2024 10:38:44 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, Dimitri Sivanich
- <sivanich@hpe.com>, Thomas Gleixner <tglx@linutronix.de>, Joerg Roedel
- <joro@8bytes.org>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, David
- Woodhouse <dwmw2@infradead.org>, Mark Rutland <mark.rutland@arm.com>, Peter
- Zijlstra <peterz@infradead.org>, Arnd Bergmann <arnd@arndb.de>, YueHaibing
- <yuehaibing@huawei.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Steve Wahl
- <steve.wahl@hpe.com>, "Anderson, Russ" <russ.anderson@hpe.com>,
+Cc: "sivanich@hpe.com" <sivanich@hpe.com>, Thomas Gleixner
+ <tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>, Lu Baolu
+ <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Liu, Yi L"
+ <yi.l.liu@intel.com>, "steve.wahl@hpe.com" <steve.wahl@hpe.com>, "Anderson,
+ Russ" <russ.anderson@hpe.com>, "Peter Zijlstra" <peterz@infradead.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2] iommu/vt-d: Allocate DMAR fault interrupts locally
-Message-ID: <20240408093930.45422bc1@jacob-builder>
-In-Reply-To: <BN9PR11MB527627689CCBBFEAFC6745568C002@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <Zfydpp2Hm+as16TY@hpe.com>
-	<BN9PR11MB52765241E3261B58BE93E8A88C002@BN9PR11MB5276.namprd11.prod.outlook.com>
-	<ec0ff625-855c-4dba-b19f-db050671fbfb@linux.intel.com>
-	<BN9PR11MB527627689CCBBFEAFC6745568C002@BN9PR11MB5276.namprd11.prod.outlook.com>
+Subject: Re: [PATCH 2/2] iommu/vt-d: Share DMAR fault IRQ to prevent vector
+ exhaustion
+Message-ID: <20240408103844.1b567bce@jacob-builder>
+In-Reply-To: <20240408090556.6165e603@jacob-builder>
+References: <20240403234548.989061-1-jacob.jun.pan@linux.intel.com>
+	<20240403234548.989061-2-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB527677A69A2004A951165CC38C002@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240408090556.6165e603@jacob-builder>
 Organization: OTC
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -74,50 +73,103 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Hi Kevin,
+Hi Jacob,
 
-On Mon, 8 Apr 2024 09:00:05 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
+On Mon, 8 Apr 2024 09:05:56 -0700, Jacob Pan
+<jacob.jun.pan@linux.intel.com> wrote:
 
-> > From: Baolu Lu <baolu.lu@linux.intel.com>
-> > Sent: Monday, April 8, 2024 3:22 PM
-> > 
-> > On 2024/4/8 14:54, Tian, Kevin wrote:  
-> > >> From: Dimitri Sivanich <sivanich@hpe.com>
-> > >> Sent: Friday, March 22, 2024 4:51 AM
-> > >>
-> > >> The Intel IOMMU code currently tries to allocate all DMAR fault
-> > >> interrupt vectors on the boot cpu.  On large systems with high DMAR
-> > >> counts this results in vector exhaustion, and most of the vectors
-> > >> are not initially allocated socket local.
-> > >>
-> > >> Instead, have a cpu on each node do the vector allocation for the
-> > >> DMARs  
-> > on  
-> > >> that node.  The boot cpu still does the allocation for its node
-> > >> during its boot sequence.
-> > >>
-> > >> Signed-off-by: Dimitri Sivanich <sivanich@hpe.com>  
-> > >
-> > > Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> > >  
-> > 
-> > Kevin,
-> > 
-> > Jacob has another proposal which shares the irq among all IOMMUs.
-> > 
-> > https://lore.kernel.org/linux-iommu/20240403234548.989061-1-
-> > jacob.jun.pan@linux.intel.com/
-> > 
-> > How do you like this?
-> >   
+> Hi Kevin,
 > 
-> I'm a bit concerning about the need of looping all IOMMU's in DMAR
-> irqchip mask/unmask handlers. this one sounds simpler to me.
-The difference is that with this patch, we still burn a few vectors on BSP
-and the leading CPU of each socket.
+> On Mon, 8 Apr 2024 08:48:54 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+> wrote:
+> 
+> > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > Sent: Thursday, April 4, 2024 7:46 AM
+> > > 
+> > > DMAR fault interrupt is used for per-IOMMU unrecoverable fault
+> > > reporting, it occurs only if there is a kernel programming error or
+> > > serious hardware failure. In other words, they should never occur
+> > > under normal circumstances.    
+> > 
+> > this is not accurate. When a device is assigned to a malicious guest
+> > then it's not unusual to observe faults.
+> >   
+> Right, a malicious guest kernel could cause unrecoverable faults, e.g.
+> wrong privilege.
+> 
+> > in this context you probably meant that it's not a performance path
+> > hence sharing the vector is acceptable.
+> >   
+> Yes.
+> > >
+> > > @@ -1182,7 +1182,6 @@ static void free_iommu(struct intel_iommu
+> > > *iommu)
+> > >  			iommu->pr_irq = 0;
+> > >  		}
+> > >  		free_irq(iommu->fault_irq, iommu);
+> > > -		dmar_free_hwirq(iommu->fault_irq);    
+> > 
+> > You still want to free the vector for the iommu which first gets the
+> > vector allocated.
+> >   
+> I think we always want to keep this vector since the system always needs
+> one vector to share. We will never offline all the IOMMUs, right?
+> 
+> > > @@ -1956,9 +1955,8 @@ void dmar_msi_mask(struct irq_data *data)
+> > >  	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+> > >  }
+> > > 
+> > > -void dmar_msi_write(int irq, struct msi_msg *msg)
+> > > +static void dmar_msi_write_msg(struct intel_iommu *iommu, int irq,
+> > > struct msi_msg *msg)
+> > >  {    
+> > 
+> > what about iommu_msi_write_msg() to match the first parameter?
+> > 
+> > otherwise it leads to a slightly circled calltrace:
+> > 	dmar_msi_write_msg()
+> > 		dmar_msi_write()
+> > 			dmar_msi_write_msg()
+> >   
+> Good point, will do.
+> 
+> > > +
+> > > +	/*
+> > > +	 * Only the owner IOMMU of the shared IRQ has its fault event
+> > > +	 * interrupt unmasked after request_irq(), the rest are
+> > > explicitly
+> > > +	 * unmasked.
+> > > +	 */
+> > > +	if (!(iommu->flags & VTD_FLAG_FAULT_IRQ_OWNER))
+> > > +		dmar_fault_irq_unmask(iommu);
+> > > +    
+> > 
+> > em there is a problem in dmar_msi_mask() and dmar_msi_mask()
+> > which only touches the owner IOMMU. With this shared vector
+> > approach we should mask/unmask all IOMMU's together.   
+> I thought about this as well, in addition to fault_irq,
+> dmar_msi_mask/unmask() are used for other DMAR irqs, page request and
+> perfmon. So we need a special case for fault_irq there, it is not pretty.
+> 
+> I added a special case here in this patch, thinking we never mask the
+> fault_irq since we need to cover the lifetime of the system. I have looked
+> at:
+> 1.IOMMU suspend/resume, no mask/unmask
+Actually, we do call mask/unmask in suspend/unmask noirq phase.
+And DMAR-MSI chip has IRQCHIP_SKIP_SET_WAKE flag.
 
-e.g. on sapphire rapids, we lose 8 vectors to DMAR fault IRQ on BSP.
+So you are right, I am missing this case where non-owner IOMMU's fault_irqs
+are not masked/unmasked.
+
+> 2.IRQ migration, added IRQF_NOBALANCING
+> 
+> maybe I missed some cases?
+> 
+> 
+> Thanks,
+> 
+> Jacob
+
 
 Thanks,
 
