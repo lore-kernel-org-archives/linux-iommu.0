@@ -1,61 +1,70 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDF89146D6F
-	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 20:59:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64D2F4437C
+	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 23:28:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712609942; cv=none; b=JdnZGhzYDmM6t4ruzM5QdN0vbdG/cAY7H3D2yKZnR7cHjbfw7PQMCQrExAwO/4vJ/35jRA5U0f2qLXM9NirwePI9Z1jn+Bi/PNE34VAgKbDVcAj7eOUtrZzU4uYmUBAih99evEuFXXJP4Gmh/4F4NihJataokzeOElVfg9GC5p0=
+	t=1712618925; cv=none; b=JO2LeXK0vLBL7yOXXo9/X2x1SiUchkzOAdEKJ9wVfEFktd8MdgNF3BhYAc5eXnASL+0416alSd5nyhOYQ2C0/8GKq3sFOqSnqzd++DuOSQYCazw9hShDQ31ARQ+s/ncJI1r4vpHmOFwFDUBmSQEDR3Lo5t5KrLZrZJXgctmRswM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712609942; c=relaxed/simple;
-	bh=Sp8ULhDiuUc9igWncb9vXY5dJILFO+9U0kIAbBLTpnI=;
+	s=arc-20240116; t=1712618925; c=relaxed/simple;
+	bh=K69mSg4Q2UMBAOgrSeKGYQMKDq1NHnlIbV87U1U9Jj0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Kfz1weL5L3G2/fg3rZ62YC5B0cb02jDGWXtXvr/W1yRYapIkg7yW+8kXKOWx6kfbIEqa4IXG9NVka6X1grbM0Dopx1HX/V0+g3hE2i7scdPb29cyN1l6vNRN301ngwR9kToKfOhAldn7CSICpPCkJcXzkMNOFJk6JEsS0w3q7jA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CC4fYGAo; arc=none smtp.client-ip=192.198.163.10
+	 MIME-Version:Content-Type; b=brv3BEJSVn3GHHbtasxRZkkxVJbiVK7wcIpCrbDnqjg5x0WdtATxLQyerAnbFzHs5E5gpfSV+1QJv/KYLr2DYK+hMoFMubtcAQ+IR/iVtzNg4mHhUCFcINACceArPCw7rOzZJyXb7IdAwq5F3Y/YYkxFyfsbDEQCGnX34cXpv7Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IQvSTHAr; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CC4fYGAo"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IQvSTHAr"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712609941; x=1744145941;
+  t=1712618924; x=1744154924;
   h=date:from:to:cc:subject:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Sp8ULhDiuUc9igWncb9vXY5dJILFO+9U0kIAbBLTpnI=;
-  b=CC4fYGAoUcsXwQ5Opdww9fsC4u6JsacTv1I9hHCkvMDIGtzvEb4AlTkT
-   roY4ZYxMeIw6diMOPTdSeDKZMEpyE6xkOrFKF7CZNW8RuGeHgm8FxK8t7
-   dfu97PWfVks3J8G8AxCQ6dCVt7/SOGWoOo1G2tNzybIFgnluF9MO8WUsK
-   88cckYt+eAdCyBw+4+sOeXnqeKGDAbmB6U98zDomK3k1OCOUDBsH+XTJ5
-   FPrgnLwDFqiYadlvqDdIygG5+VGI2GW2XXqtE4mSRQjsJzu/w46+r+kob
-   vvhT6GXljqFUX8Oe2vGjqrUdGGoKEiwxGN2y/1AqLUfG08yL/yC4yjEGP
+  bh=K69mSg4Q2UMBAOgrSeKGYQMKDq1NHnlIbV87U1U9Jj0=;
+  b=IQvSTHAr3ebA4BwWWkoo0Spk/+geENTQ06MUuPOTltwWk3/TK21ErygG
+   E/hcbmPhUkEQSI1oNLAiHY/qiACHGUn4zGALary43OiupK3ArnphMg4ib
+   rNOgMStvJNRoqOmgvP05BiASyhCsY6wwABPNQqas0usCkrdeYVDxlOnhp
+   7bEt0rjQPL/oyrPsTSzP8fdM9OMLXB146QyRpMnGsay9DD9TEid63wqJm
+   r/wVPwIx4Ke7YMTza7esKEGztq12llJ7Hw8p3kXopuVVuxjgyz0sEwbhN
+   93GQ7n+p2lc9trRaYKlQDhNNbUaBk0BgLaqXnLnAC3RKbh+9GuVv8Qgec
    w==;
-X-CSE-ConnectionGUID: jPMRzMttSriTrtwOKqp5aQ==
-X-CSE-MsgGUID: nLQoVihvReaMI3nMhfHXlQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="19289637"
+X-CSE-ConnectionGUID: b1x49HJ2Srm7KbI9hnmOqw==
+X-CSE-MsgGUID: yl5ZBzVNRIO0eYsM2u59Lg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="7790439"
 X-IronPort-AV: E=Sophos;i="6.07,187,1708416000"; 
-   d="scan'208";a="19289637"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 13:59:00 -0700
-X-CSE-ConnectionGUID: yhOEEWpNTwC+KnlTevbKCQ==
-X-CSE-MsgGUID: zYNBIbgvRQi+m5Cu9bJqdg==
+   d="scan'208";a="7790439"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 16:28:43 -0700
+X-CSE-ConnectionGUID: 6RT2yAbSTEyC1B/bT5rWYQ==
+X-CSE-MsgGUID: HBafZJIBSSuzHCB6yj8LSg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,187,1708416000"; 
-   d="scan'208";a="20055284"
+   d="scan'208";a="24521853"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 13:59:00 -0700
-Date: Mon, 8 Apr 2024 14:03:29 -0700
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 16:28:43 -0700
+Date: Mon, 8 Apr 2024 16:33:12 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH 2/2] iommu/vt-d: Remove caching mode check before devtlb
- flush
-Message-ID: <20240408140329.6290377f@jacob-builder>
-In-Reply-To: <20240407144232.190355-2-baolu.lu@linux.intel.com>
-References: <20240407144232.190355-1-baolu.lu@linux.intel.com>
-	<20240407144232.190355-2-baolu.lu@linux.intel.com>
+To: Robert Hoo <robert.hoo.linux@gmail.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
+ Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev, Thomas Gleixner
+ <tglx@linutronix.de>, Lu Baolu <baolu.lu@linux.intel.com>,
+ kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
+ <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
+ <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Paul Luse
+ <paul.e.luse@intel.com>, Dan Williams <dan.j.williams@intel.com>, Jens
+ Axboe <axboe@kernel.dk>, Raj Ashok <ashok.raj@intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, maz@kernel.org, seanjc@google.com, Robin Murphy
+ <robin.murphy@arm.com>, jim.harris@samsung.com, a.manzanares@samsung.com,
+ Bjorn Helgaas <helgaas@kernel.org>, guang.zeng@intel.com,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 11/13] iommu/vt-d: Make posted MSI an opt-in cmdline
+ option
+Message-ID: <20240408163312.7b7f3d18@jacob-builder>
+In-Reply-To: <8871e541-4991-44f3-aab7-d3a657fc59db@gmail.com>
+References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
+	<20240405223110.1609888-12-jacob.jun.pan@linux.intel.com>
+	<8871e541-4991-44f3-aab7-d3a657fc59db@gmail.com>
 Organization: OTC
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -67,79 +76,101 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Hi Lu,
+Hi Robert,
 
-On Sun,  7 Apr 2024 22:42:32 +0800, Lu Baolu <baolu.lu@linux.intel.com>
+On Sat, 6 Apr 2024 12:31:14 +0800, Robert Hoo <robert.hoo.linux@gmail.com>
 wrote:
 
-> The Caching Mode (CM) of the Intel IOMMU indicates if the hardware
-> implementation caches not-present or erroneous translation-structure
-> entries except the first-stage translation. The caching mode is
-> unrelated to the device TLB , therefore there is no need to check
-> it before a device TLB invalidation operation.
+> On 4/6/2024 6:31 AM, Jacob Pan wrote:
+> > Add a command line opt-in option for posted MSI if
+> > CONFIG_X86_POSTED_MSI=y.
+> > 
+> > Also introduce a helper function for testing if posted MSI is supported
+> > on the platform.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >   Documentation/admin-guide/kernel-parameters.txt |  1 +
+> >   arch/x86/include/asm/irq_remapping.h            | 11 +++++++++++
+> >   drivers/iommu/irq_remapping.c                   | 13 ++++++++++++-
+> >   3 files changed, 24 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/Documentation/admin-guide/kernel-parameters.txt
+> > b/Documentation/admin-guide/kernel-parameters.txt index
+> > bb884c14b2f6..e5fd02423c4c 100644 ---
+> > a/Documentation/admin-guide/kernel-parameters.txt +++
+> > b/Documentation/admin-guide/kernel-parameters.txt @@ -2251,6 +2251,7 @@
+> >   			no_x2apic_optout
+> >   				BIOS x2APIC opt-out request will be
+> > ignored nopost	disable Interrupt Posting
+> > +			posted_msi enable MSIs delivered as posted
+> > interrupts 
+> >   	iomem=		Disable strict checking of access to
+> > MMIO memory strict	regions from userspace.
+> > diff --git a/arch/x86/include/asm/irq_remapping.h
+> > b/arch/x86/include/asm/irq_remapping.h index 7a2ed154a5e1..e46bde61029b
+> > 100644 --- a/arch/x86/include/asm/irq_remapping.h
+> > +++ b/arch/x86/include/asm/irq_remapping.h
+> > @@ -50,6 +50,17 @@ static inline struct irq_domain
+> > *arch_get_ir_parent_domain(void) return x86_vector_domain;
+> >   }
+> >   
+> > +#ifdef CONFIG_X86_POSTED_MSI
+> > +extern int enable_posted_msi;
+> > +
+> > +static inline bool posted_msi_supported(void)
+> > +{
+> > +	return enable_posted_msi && irq_remapping_cap(IRQ_POSTING_CAP);
+> > +}  
 > 
-> Before the scalable mode is introduced, caching mode is treated as
-> an indication that the driver is running in a VM guest. This is just
-> a software contract as shadow page table is the only way to implement
-> a virtual IOMMU. But the VT-d spec doesn't state this anywhere. After
-> the scalable mode is introduced, this doesn't stand for anymore, as
-> caching mode is not relevant for the first-stage translation. A virtual
-> IOMMU implementation is free to support first-stage translation only
-> with caching mode cleared.
+> Out of this patch set's scope, but, dropping into irq_remappping_cap(),
+> I'd like to bring this change for discussion:
 > 
-> Remove the caching mode check before device TLB invalidation to ensure
-> compatibility with the scalable mode use cases.
+> diff --git a/drivers/iommu/irq_remapping.c b/drivers/iommu/irq_remapping.c
+> index 4047ac396728..ef2de9034897 100644
+> --- a/drivers/iommu/irq_remapping.c
+> +++ b/drivers/iommu/irq_remapping.c
+> @@ -98,7 +98,7 @@ void set_irq_remapping_broken(void)
 > 
-I agree with the changes below, what about this CM check:
-
-/* Notification for newly created mappings */
-static void __mapping_notify_one(struct intel_iommu *iommu, struct dmar_domain *domain,
-				 unsigned long pfn, unsigned int pages)
-{
-	/*
-	 * It's a non-present to present mapping. Only flush if caching mode
-	 * and second level.
-	 */
-	if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
-		iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0, 1);
-
-We are still tying devTLB flush to CM=1, no?
-
-If we are running in the guest with second level page table (shadowed), can
-we decide if devTLB flush is needed based on ATS enable just as the rest of
-the cases?
-
-
-> Fixes: 792fb43ce2c9 ("iommu/vt-d: Enable Intel IOMMU scalable mode by
-> default") Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel/iommu.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
+>   bool irq_remapping_cap(enum irq_remap_cap cap)
+>   {
+> -       if (!remap_ops || disable_irq_post)
+> +       if (!remap_ops || disable_irq_remap)
+>                  return false;
 > 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 493b6a600394..681789b1258d 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1501,7 +1501,7 @@ static void iommu_flush_iotlb_psi(struct
-> intel_iommu *iommu, else
->  		__iommu_flush_iotlb_psi(iommu, did, pfn, pages, ih);
->  
-> -	if (!cap_caching_mode(iommu->cap) && !map)
-> +	if (!map)
->  		iommu_flush_dev_iotlb(domain, addr, mask);
->  }
->  
-> @@ -1575,8 +1575,7 @@ static void intel_flush_iotlb_all(struct
-> iommu_domain *domain) iommu->flush.flush_iotlb(iommu, did, 0, 0,
->  						 DMA_TLB_DSI_FLUSH);
->  
-> -		if (!cap_caching_mode(iommu->cap))
-> -			iommu_flush_dev_iotlb(dmar_domain, 0,
-> MAX_AGAW_PFN_WIDTH);
-> +		iommu_flush_dev_iotlb(dmar_domain, 0,
-> MAX_AGAW_PFN_WIDTH); }
->  
->  	if (dmar_domain->nested_parent)
+>          return (remap_ops->capability & (1 << cap));
+> 
+> 
+> 1. irq_remapping_cap() is to exam some cap, though at present it has only
+> 1 cap, i.e. IRQ_POSTING_CAP, simply return false just because of
+> disable_irq_post isn't good. Instead, IRQ_REMAP is the foundation of all
+> remapping caps. 2. disable_irq_post is used by Intel iommu code only,
+> here irq_remapping_cap() is common code. e.g. AMD iommu code doesn't use
+> it to judge set cap of irq_post or not.
+I agree, posting should be treated as a sub-capability of remapping.
+IRQ_POSTING_CAP is only set when remapping is on.
+
+We need to delete this such that posting is always off when remapping is
+off.
+
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -1038,11 +1038,7 @@ static void disable_irq_remapping(void)
+                iommu_disable_irq_remapping(iommu);
+        }
+ 
+-       /*
+-        * Clear Posted-Interrupts capability.
+-        */
+-       if (!disable_irq_post)
+-               intel_irq_remap_ops.capability &= ~(1 << IRQ_POSTING_CAP);
++       intel_irq_remap_ops.capability &= ~(1 << IRQ_POSTING_CAP);
+ } 
+
+> > +#else
+> > +static inline bool posted_msi_supported(void) { return false; };
+> > +#endif  
+> 
 
 
 Thanks,
