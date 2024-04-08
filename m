@@ -1,47 +1,62 @@
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2137.outbound.protection.outlook.com [40.107.220.137])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f41.google.com (mail-qv1-f41.google.com [209.85.219.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9786B80BE7
-	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 14:05:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.137
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712585158; cv=fail; b=uR4sgHYwhmNjInIKmecIjxsJPBi5xMPqxdORn7Sdu1X146atZfpPaO27VdaKbvLM5GioAwlsUP95GAXLFohGyJYSTR4VXAKZDZ4WYXZYmZS4FJmEaZPLtPtbpTWE0C/yaxqfadAMKdjGgbd7lNDlJbKxBAdJZSTa6Un7yOlwlwM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712585158; c=relaxed/simple;
-	bh=vB0jZscvV8VEj9/e0tgK/akp773qIs6nuJoANSHRz/8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=j0CePYssmU9oB7SJes7DSZViDpBL21eTsaGJT+BWNqYZa4rWyxezXR/iaCc3Zr6uYOMGCG93G1YtnthG/6EJdo80m0x5P1Ia2ehVeJcxCxu+i7BRKqOcDhA3jI2Fjn3bNTwd4UJQMSOcfcd6rxGZ7DpNQxtySsdna3DPEXjFlbo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=XRJGBqfa; arc=fail smtp.client-ip=40.107.220.137
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CBA71272C7
+	for <iommu@lists.linux.dev>; Mon,  8 Apr 2024 14:19:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.41
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712585991; cv=none; b=FTVHzPtGnWBTBkOxeLTNDETzMAQddgsDdhZfhO+hz4lS2uiPA7yimUJDfNzHEt8ZmzC8rN8Pc6VQdQ5yjRhx32WzfFqz53t/eW7U5AQer8j5Qgq9DPyy5ZvgKbgLGnLqkaFVeTd8EC5plB/ufCBVqLz8nZ+2xpRCCB1tkFtfSmY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712585991; c=relaxed/simple;
+	bh=aOckf8npwbeO73onf1zvZsoS3mECBJj89vWb1uXTPPg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eAhbfpZbRydtW8xTJVYgo1Zf7kawuoeUyYo5CP4FDv4nJU5saqvl3PiUNinWvYKfGVesyvRq4FmOFor6+CLphXl+J8cXbxHkZyvjpn/D7ADcthyXfj+L8afM3lQbyWXFYN/UruE7GtJWFadBy2o5YS8jo73v+g/Pq10slBG2vog=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=afIc284D; arc=none smtp.client-ip=209.85.219.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="XRJGBqfa"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Zpd8NxVt0mNtT4nYrReGRgFytpgJr/wahUstHQNQW8zxARUi2PH7VdLH/IV0ebr6PpkZoSYItLy3r3XifzEZT9eMHQNiSsiNYUZarih2ALhZG6wvgr88R1jMV6D61bsy6vwSsrcJHeNK0VT5ebCIz8MvHGSyKV8elGdGxL8wK5gX4/5BogUS80THEcG1nddcezConhWnYqfkheEv4gO3cF5ZgqYjeQRhCylkGEuEBnUgb5TGcYPZrqkofzSMVjseKEFDUXmuZcWi6gMizAy+qLVm8afF0fRzPpM9izCDZtGTNTVK6NB3CE1nJkMptJGd1s8uL+8VkMFIcarJFM+cmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NIZv46+iiO0BOLsyF5DPp6HnHSuS2U1T9oahVwb56uw=;
- b=nIiw/DNnSByTosU2euJc8c5OwypjQ52db21qim4cLOoYufX0ynhOfYRKleASXxZQqMQFXYfmfbnasAPEWibsFaBcuaEozLiPAfYZLiiM1s8dYidn8m2uVAWqQtGuftZ9pV/yYLBrUYJn9bkSQRfG6Lx9ZV4y0z8MEGTtUyoHypQaMdY8JzyvsIwSMQQJE+RDENLbQDu/tscFQtx1ve23EfcLlZa+/IaWLfjfThPHNEoBVrL1TXp8upCAsyzAFCMCJdPlIps9eLCc/bF4ZEV74kTdQq84lUqMeXNhMw9rrQBH1mjNW/YRea+lZgzLe60SFXq4WRnOodd4ndtNQSzAVQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NIZv46+iiO0BOLsyF5DPp6HnHSuS2U1T9oahVwb56uw=;
- b=XRJGBqfaxCTp0JQ5gEomjIoLUXUwv0byntC5mn5uQWEgcVa8BuKgUm1Q7BqHyU+lQXLuo9IoIUYBj+sxckUb9YWA8Ts2zO8UD/NU2GLeWsF3z97kJr3E8/y7ynApx0gbBU1Zq7tejPlLxogThyV8s5dMv0Tnx4FnWOuGjJaHiMVK7aQpXp4oZJ27OAC51nkGJPBSuSJAiSNN85ZrImmxAhZ16vuFZ69hDy2qigqQ7E53Dl0y9bxEuYJDGQwenccKZw2/VbYVIzMzm2TOFIifd3lF1eUR0fjjLefBPk1ITWBWdoAvlCChdTpyz1/H/7fXkxRFK/KufIE7VU2b9lR/Xg==
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by PH8PR12MB7182.namprd12.prod.outlook.com (2603:10b6:510:229::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.32; Mon, 8 Apr
- 2024 14:05:50 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7409.053; Mon, 8 Apr 2024
- 14:05:49 +0000
-Date: Mon, 8 Apr 2024 11:05:48 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="afIc284D"
+Received: by mail-qv1-f41.google.com with SMTP id 6a1803df08f44-69629b4ae2bso36451046d6.3
+        for <iommu@lists.linux.dev>; Mon, 08 Apr 2024 07:19:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1712585988; x=1713190788; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=8/gkgj06mHoGEBTKOjzdrcRyFw1djs3fy2Wv1GZpCOs=;
+        b=afIc284DqChhxMLJWJoBAreDJzaa+LJl8Bp+hl7kJmTAfu2KDxyYo7wNknCfA/htST
+         OyB2nsOjWv5NhkDfaPggtQWOr45HF4px+gcaok+mAlA25Rbl7TQo3X0AIB8iQJnmaeg0
+         szCnthj5U13EaAmA0NuB5b/MkuUYMHVxMa5u9asvndS7QZ8GhwteEb0EoaBjPLiiwtZt
+         Q+bO+vIR7q0COP8I6/P5N18AjgthBpG50EjNvv/YA2y+7a6+XqIUaO8fYKMK9xAmDC4k
+         HUdLwvvCuSVwL119ZT0eESN/miHiGMgc6AdAeGO/jmQqtutLh0oQaVi9fUhjY1PGyKkN
+         xNpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712585988; x=1713190788;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8/gkgj06mHoGEBTKOjzdrcRyFw1djs3fy2Wv1GZpCOs=;
+        b=tRLmaOPqlXGqK7zcMgQCxA9D3WBiw2jdO6m2kcVs1awqP1TvH1lkFca2xWbpFsS6ne
+         hbiHiZXNMsFlTflatUTQCmc6y+XjAHlfovu1HugWVCcS3KRsf9ML4rB5SGllPCBuHzfH
+         uUiJ7C3J6nVbdQ5ZkHXd4sI4iXsFhwWKgww9CGFe6jH/iHR2El7fxBdpp6VkcJgJDUQ1
+         /eKUlqrSK0ug4FkD+Z5jU1nd7QBHRAoxTsAQNTjO2w7tUiJaY5x45UhMrdbo7nvScgTL
+         264AbZ8mupfWodslCIbXFTPTdoYJO21MbHqhFgcVMfcOfnnnG2lrZiEEI+LiUO3vpXof
+         Q5hA==
+X-Forwarded-Encrypted: i=1; AJvYcCWXBFcsk4sbNqz7jClWCkxgx27t9YUOcytdiQk6iKANtLSQYZYp5drEoOIEN+K8Sb8Cp/6fFYX1f7opbQU/pDadStYRuAM=
+X-Gm-Message-State: AOJu0YwZJ1O/PBLwsAqg2Ijefpg6iBnayEAsS5S7Id8cDe2bzWJLKc63
+	DYsTaOlWvDVMLWQbpJkCMaSnyLTvH5wQhqZ2IP+PHveRLmv+4E1VBew+LL36Jkw=
+X-Google-Smtp-Source: AGHT+IE8Gxhq268X4xisT4dmVwJbupLs0jwAwPMQeWGGRMXB87HiENKFwyhJYlQDe1J23nu23fbpaw==
+X-Received: by 2002:ad4:5763:0:b0:696:9df4:58e5 with SMTP id r3-20020ad45763000000b006969df458e5mr10787694qvx.1.1712585988440;
+        Mon, 08 Apr 2024 07:19:48 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id p4-20020a0cf684000000b0069b215adb5csm410376qvn.25.2024.04.08.07.19.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Apr 2024 07:19:47 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rtpqc-005GwN-7j;
+	Mon, 08 Apr 2024 11:19:46 -0300
+Date: Mon, 8 Apr 2024 11:19:46 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Baolu Lu <baolu.lu@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
@@ -51,163 +66,47 @@ Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
 	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
 	virtualization@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/9] iommu: Introduce domain attachment handle
-Message-ID: <20240408140548.GO5383@nvidia.com>
+Subject: Re: [PATCH v4 2/9] iommu: Replace sva_iommu with iommu_attach_handle
+Message-ID: <20240408141946.GB223006@ziepe.ca>
 References: <20240403011519.78512-1-baolu.lu@linux.intel.com>
- <20240403011519.78512-2-baolu.lu@linux.intel.com>
- <20240403115851.GA1723999@nvidia.com>
- <3b740988-7fe6-4328-8ce2-d66d9a2ab497@linux.intel.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3b740988-7fe6-4328-8ce2-d66d9a2ab497@linux.intel.com>
-X-ClientProxiedBy: BLAPR03CA0052.namprd03.prod.outlook.com
- (2603:10b6:208:32d::27) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+ <20240403011519.78512-3-baolu.lu@linux.intel.com>
+ <20240403115913.GC1363414@ziepe.ca>
+ <e3f526e3-6474-49ff-b8d6-995aaf1c1830@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|PH8PR12MB7182:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	ciqdHZMdbrmWnDYSuDo4GHesya1jYF3hxtp6fCus0D6kv8lCjq7XmDxW1AWXWdnIlv3Mis2JxkNzPn4Yqi7wEfagrGLOcX8JPBBsO/q9VyHPPBJ9ONQ5+AQpBaBgRZ2nhrGRT1+OdVRoEXlUJJTCkDf40xF3k0a4gKKY6x8alL9AgeTa/Sce4iGscN8Ofl03JXGIDMPcnGJXspbbAW52is8/PbfQZGk4k8cNddG4+35KXQqGoVi3KlYYjpDTF+3kOnsu6FGng2mERIlBtHjvS0nQezENbF1ZSo6iq+8D9Vlp0aV4TsaQXChTpq6ZA6bUvT0N2MHAo58PxZ0B7J1AeCgfjM4lOPx+i6PlzlivnAH3cPYKzmzQwQo2CnRxPOj8bUaQ1WnbcQtLtQG/5xX1cp6I2UiY24SkoYlCw7RixVJob3Vy5qrS8ZVOa7gGWtlyEhcTAIGEWk0j+kMrjBd81JmAfxJTuugqBTchgSun7XCSmemmBGbjpli90+AL2J5Ek6dnNy7HvbOovgeo42s6JNMMTr7PWnVdK/c9mmW5zzaFScYUm7YISfeAk+AUlQPTmvNZX0RjJSWUIFB26uxOGPV/bZ6ssukBeR3be/k9AabrG1lZCg+Y5LZkvHThJKGBk+aTtAe/sGfybm5e6HqqnKCD/2/4gU0d/at1ltmUyMA=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(7416005)(376005)(366007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ml/DAetkcEBfrQ/MV5G2GkMAZeVqCj+PZXT+neoQyThTM+XcS89uA/EPJ9QO?=
- =?us-ascii?Q?LuADlJpRic7EXalNRZdsmbJrrVoXJiGCuumcL1pMiyDsLnh8OCUSU3UCVi5O?=
- =?us-ascii?Q?c6hZTi5pFTAHvxgxhxEj5OQ9yGBqBG487ezWRPCNQ8wehpDUetwQwcFrnGP2?=
- =?us-ascii?Q?+CXezgoEPeuYB7V4WU42/svMr0ruuE2ufPh5eO2Ju5NiZAZOPqKzYToet3Yu?=
- =?us-ascii?Q?yIcLUbiVnD9ncuWzLy+Ixd+Jh3soBbJ+ikU9mAxSuiSKyQmM+wh8Nsx75qQC?=
- =?us-ascii?Q?uMZv4c9Nh+anPqxJ8z+p2cyJRO62uOdIo+IZHA7KcR46Y1CJOAb05qizpbB6?=
- =?us-ascii?Q?NKLFAGNR4uEGsN4YDBhpAHL63TtNtyDU/+HkEnJYUZ1jdui4qBlBZmq5aK+0?=
- =?us-ascii?Q?thacEoxxWJiTe1nPxkLHzJ4/3dHm4W8n+0hRKuEpmwhe35cliS5pfVrqhpVP?=
- =?us-ascii?Q?OSazelNnMfUDB3ot/eBQ0zgWaCE+Xqx3IwKdxSA0ZLsWcnOZ+FaQfwGMv4Cw?=
- =?us-ascii?Q?SlL7B95n3OjbPegNUyH3HpOPrx0q7Bda4Fq7yWrF8UwtFpeBSZuliBobrWEP?=
- =?us-ascii?Q?2BrqPdnbPCo6hU/e/phhCyLkgtu4S27uzGha/CVxL+zZXKG1bd93PMLfsHYh?=
- =?us-ascii?Q?sx1//9/zrfs+5pOKx4GGmZxlCNf1ytINGNjSjvquuK8zkoipNOXKGrurgkd6?=
- =?us-ascii?Q?u/Iithcz3rBfUu2Ltho+2WsW5vMUPHdqq09mHLcs9goD56HY6tzcNuZUEkmK?=
- =?us-ascii?Q?eOYwjITHGDi47K+YV2wSiTaNf9OUaRrnD1fKQqKkRzX2SSvMrFFIFEnZJlP7?=
- =?us-ascii?Q?o+g0qEN6QSt3BnP7eWIeP+9Tb8XzfMOCNxPPdlMygwIUh2d5WNxHTZ1krCS8?=
- =?us-ascii?Q?R03jzx27+5mukySv8dRYcz7V3krBwmOTSbl/4RALR8TIrPRGl1nZhZwtmUJC?=
- =?us-ascii?Q?E65wDoZH4/FskJ6JjiHUIfFV5HXrwestU2LA64z92+MKfsWAcjJSP2TseyXD?=
- =?us-ascii?Q?DUuVUYf3U0eXGXbXaDoq+zj+5V2qSonL9VSeMegofsflMoOlJ/cdqLcVwGRj?=
- =?us-ascii?Q?BibhzlXpT7kdUwhKTTRqruDz6SIQ5E0+Fzg03b/XSAn5x9XU8BFCE7m+Koa3?=
- =?us-ascii?Q?zTHgXhuyD5W7RhSytOFW/06lSjD0YZt8h0gwldmk7frfhDlJ9r9EGz/Ret1c?=
- =?us-ascii?Q?OmsuE3BvVVeVXwFB7POgeAUwaXR3T5L66liAxcO2E4qm+pDjc3kXN7pbSpUB?=
- =?us-ascii?Q?mgDOZBNLlx9jkTKS/Xd3dbCKVtgQ4NnlHMbN8ukLT/yO/p96DYbjRonlbgIM?=
- =?us-ascii?Q?hT8lXXZFHpf3EXaEagswFcvVVh5zFPcGCkfJfENdKWOCr4mQk3CY6G6Tt0o0?=
- =?us-ascii?Q?xfrUaEw38CU7Cs6aOUWNa0XhPo8LqXnMlTssYWQpHrbKa69tjxzN0U8CFDHp?=
- =?us-ascii?Q?L8nBNCFLu1c9IzM5Ak2zaGEE+LclHFugc5Md8iDP+3DrT+R/Z9KLbDHBeCW9?=
- =?us-ascii?Q?/bVukoaWMBiH9zm74E9zubZynNmlAOK9RAq0WS8f6UiZkPJbYH0DHKQXvrUT?=
- =?us-ascii?Q?VAr6SV7NkQzFBggeodU=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 098920d8-f9c9-4282-7a33-08dc57d4fe81
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2024 14:05:49.6061
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xIMnn0Kg87HcbmQimeO/WnX8oTvEcYF1j/Ow9aRs4gvgSOYBxdvlzEshQW7izr2N
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH8PR12MB7182
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e3f526e3-6474-49ff-b8d6-995aaf1c1830@linux.intel.com>
 
-On Sat, Apr 06, 2024 at 12:34:14PM +0800, Baolu Lu wrote:
-> On 4/3/24 7:58 PM, Jason Gunthorpe wrote:
-> > On Wed, Apr 03, 2024 at 09:15:11AM +0800, Lu Baolu wrote:
-> > > Currently, when attaching a domain to a device or its PASID, domain is
-> > > stored within the iommu group. It could be retrieved for use during the
-> > > window between attachment and detachment.
-> > > 
-> > > With new features introduced, there's a need to store more information
-> > > than just a domain pointer. This information essentially represents the
-> > > association between a domain and a device. For example, the SVA code
-> > > already has a custom struct iommu_sva which represents a bond between
-> > > sva domain and a PASID of a device. Looking forward, the IOMMUFD needs
-> > > a place to store the iommufd_device pointer in the core, so that the
-> > > device object ID could be quickly retrieved in the critical fault handling
-> > > path.
-> > > 
-> > > Introduce domain attachment handle that explicitly represents the
-> > > attachment relationship between a domain and a device or its PASID.
-> > > A caller-specific data field can be used by the caller to store additional
-> > > information beyond a domain pointer, depending on its specific use case.
-> > > 
-> > > Co-developed-by: Jason Gunthorpe<jgg@nvidia.com>
-> > > Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
-> > > Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> > > ---
-> > >   drivers/iommu/iommu-priv.h |   9 +++
-> > >   drivers/iommu/iommu.c      | 158 +++++++++++++++++++++++++++++++++----
-> > >   2 files changed, 153 insertions(+), 14 deletions(-)
-> > > 
-> > > diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-> > > index 5f731d994803..08c0667cef54 100644
-> > > --- a/drivers/iommu/iommu-priv.h
-> > > +++ b/drivers/iommu/iommu-priv.h
-> > > @@ -28,4 +28,13 @@ void iommu_device_unregister_bus(struct iommu_device *iommu,
-> > >   				 const struct bus_type *bus,
-> > >   				 struct notifier_block *nb);
-> > > +struct iommu_attach_handle {
-> > > +	struct iommu_domain		*domain;
-> > > +	refcount_t			users;
-> > I don't understand how the refcounting can be generally useful. There
-> > is no way to free this:
+On Sat, Apr 06, 2024 at 02:09:34PM +0800, Baolu Lu wrote:
+> On 4/3/24 7:59 PM, Jason Gunthorpe wrote:
+> > On Wed, Apr 03, 2024 at 09:15:12AM +0800, Lu Baolu wrote:
+> > > +	/* A bond already exists, just take a reference`. */
+> > > +	handle = iommu_attach_handle_get(group, iommu_mm->pasid);
+> > > +	if (handle) {
+> > > +		mutex_unlock(&iommu_sva_lock);
+> > > +		return handle;
+> > >   	}
+> > At least in this context this is not enough we need to ensure that the
+> > domain on the PASID is actually an SVA domain and it was installed by
+> > this mechanism, not an iommufd domain for instance.
 > > 
-> > > +	void				*priv;
-> > When the refcount goes to zero.
+> > ie you probably need a type field in the iommu_attach_handle to tell
+> > what the priv is.
+> > 
+> > Otherwise this seems like a great idea!
 > 
-> This field is set by the caller, so the caller ensures that the pointer
-> can only be freed after iommu domain detachment. For iopf, the caller
-> should automatically respond to all outstanding iopf's in the domain
-> detach path.
-> 
-> In the sva case, which uses the workqueue to handle iopf,
-> flush_workqueue() is called in the domain detach path to ensure that all
-> outstanding iopf's are completed before detach completion.
+> Yes, you are right. For the SVA case, I will add the following changes.
+> The IOMMUFD path will also need such enhancement. I will update it in
+> the next version.
 
-Which is back to what is the point of the refcount at all?
+The only use for this is the PRI callbacks right? Maybe instead of
+adding a handle type let's just check domain->iopf_handler  ?
 
-> +static void iommufd_auto_response_handle(struct iommufd_fault *fault,
-> +                                        struct iommu_attach_handle *handle)
-> +{
-> +       struct iommufd_device *idev = handle->priv;
-
-The caller already has the iommufd_device, don't need the handler.
-
-> +       struct iopf_group *group;
-> +       unsigned long index;
-> +
-> +       mutex_lock(&fault->mutex);
-> +       xa_for_each(&idev->faults, index, group) {
-> +               xa_erase(&idev->faults, index);
-> +               iopf_group_response(group, IOMMU_PAGE_RESP_INVALID);
-> +       }
-> +       mutex_unlock(&fault->mutex);
-
-This makes sense, yes..
-
->  void iommufd_fault_domain_detach_dev(struct iommufd_hw_pagetable *hwpt,
->                                      struct iommufd_device *idev)
->  {
-> +       struct iommufd_fault *fault = hwpt->fault;
-> +       struct iommu_attach_handle *handle;
-> +
->         if (WARN_ON(!hwpt->fault_capable))
->                 return;
-> 
-> +       handle = iommu_attach_handle_get(idev->igroup->group,
-> IOMMU_NO_PASID);
->         iommu_detach_group(hwpt->domain, idev->igroup->group);
->         iommufd_fault_iopf_disable(idev);
-
-But is this right? Couldn't there be PASID's doing PRI?
+Ie SVA will pass &ommu_sva_iopf_handler as its "type"
 
 Jason
