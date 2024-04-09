@@ -1,78 +1,102 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4550012D777
-	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 12:55:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D506D13329C
+	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 12:58:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712667310; cv=none; b=bwpxayQrxTKmwosLUoc+KFjGv7NXkRsfkC44d6PrgJLXmSf5UEc2Gphb2MeXHD5YvljaOIdSTmWZoZCLyzmxqBvTQTsU5Tiws4lJp0MLVyD92X7F6EVvox6HydiCnLA7xfl41kV4OBxBg0rlneVUM+l8R6T8OJ0DqJxTYhgKu4w=
+	t=1712667536; cv=none; b=p0jneG/eodF7xDi8V/QfA0aq/05w3aXoZvHjgRIVCJDMQFkYAG4RbuBJJu28Z3rUiz0mI9+LLBcg1BYK0V0TaUYWTV7QUfVKk58Vvb3QXvclAyH76pV6yWxhET2U9ApLuAk9VI0xyhjoOzhET4fWhNF0kkWp9FEnKaYonrb1Yso=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712667310; c=relaxed/simple;
-	bh=1GMf6gi2TilKqPUOlziTNFGEK7FxrHiyZIVKlRxnKuE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=p20D4WpSWSzNWxrAfbthibp3NJxJsVi5siOxDPHKldnOnrkkdJ83g/wcPhuqNPk/AC/YKn+EEiNADiIalX9nCx0raifXJgqU+M5BSx4ZjJfwgbbehsFwtne1vqOc/GSULJeQ8VcF827EqomsVDU8qkn7qWBzUGAgWOZgLe1TDvE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mfdj7q3F; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712667536; c=relaxed/simple;
+	bh=I0krt7w7sD25rjlSCZbI3lOT+9qyYPxjoGm8i8ESdyQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=JPzkoPU3NIsLonudTd0hRDBQkQElhzybG33O2T8WnxWThpPh791usTzHCKsEo/BsIKiA3higQn+dOW1Sj/GMhnw+IWDmRA8YJ0nAZMeAIgfHb3hpCJ44aUqxiHunABnxeHy1SG4uCQCUHUny0OpLFIzaA8fhs436lmZjZacL4Sk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hrmhit8O; arc=none smtp.client-ip=198.175.65.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mfdj7q3F"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62ACFC43399;
-	Tue,  9 Apr 2024 12:55:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712667309;
-	bh=1GMf6gi2TilKqPUOlziTNFGEK7FxrHiyZIVKlRxnKuE=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Mfdj7q3FuSi5lkqIxIgRdWOt2OeCjFa5VypgwRWRbBL+uK5GUYncO5DlHC0uqjGsT
-	 BhwyVYQx1yScdqJW5i3II8ATunOCmF6yCWk7k2ncYlWFWg8CG0uQu91iyNcPU8nsRw
-	 KQimUPyWaVguG5yiz+u31YcFC+8Gk/V3XYF2Mr9Qk0116JbSmbAMo+C9f5L/1ZcvaK
-	 BNmY64AyghC2DE3oGCe6zyhEwQaoN1QIEfdCFquQGD2Fom2CG2tzFQ5ry1WvD+FyEo
-	 AyjMMxiVz0LIuiD9h3pmfaTEZTT0nN+b37yJ9wijli55IP3ywymGmcDpyXp64wSaTZ
-	 I5sS3lOlB1Llw==
-From: Will Deacon <will@kernel.org>
-To: joro@8bytes.org,
-	Robin Murphy <robin.murphy@arm.com>
-Cc: catalin.marinas@arm.com,
-	kernel-team@android.com,
-	Will Deacon <will@kernel.org>,
-	iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Retire disable_bypass parameter
-Date: Tue,  9 Apr 2024 13:55:00 +0100
-Message-Id: <171265821067.1454498.16197081447570903681.b4-ty@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <ea3ac4cd595a81b5511729601b2f7d4668178438.1712335927.git.robin.murphy@arm.com>
-References: <ea3ac4cd595a81b5511729601b2f7d4668178438.1712335927.git.robin.murphy@arm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hrmhit8O"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712667534; x=1744203534;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=I0krt7w7sD25rjlSCZbI3lOT+9qyYPxjoGm8i8ESdyQ=;
+  b=hrmhit8ONhkVIrSJHt7vMmCR94ZwfiGVSL9SFqoKE6JOVQm7Nk1tyZRJ
+   lAbSdVQZW0HnjHiRv8jPHy9s0AiQCBrU+zCmFHDjO1lw8+yllCX5grMCe
+   D2uRq8yPxKwiQKMxGDQjqdbYzpykQ2pXfYS7QZvqs1Dxu2NhSZp5btOOs
+   V+/bw7HZOEShd2jOD8oRrHo3f1Fq+KhTSgZosrTAAhYOUXXEsjKQ9GHNu
+   I2evuXZK6S6lXH9U+/4TqorYavCLbYiJoMV3LB8e9oz6TX0KeDpi5Oz4o
+   vqQH3LR0nWrrJRDGnLFZSrnoN5g6TJAvc+dfJnhkHTsmLiAxAk9rzW9+L
+   w==;
+X-CSE-ConnectionGUID: AqxeHJZeRAumd41J+ZKvJQ==
+X-CSE-MsgGUID: KfOEgXJVRpyE63Fa9MlO5w==
+X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="11773181"
+X-IronPort-AV: E=Sophos;i="6.07,189,1708416000"; 
+   d="scan'208";a="11773181"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 05:58:54 -0700
+X-CSE-ConnectionGUID: FmaBK7cgSUemDlJkVvYhKA==
+X-CSE-MsgGUID: Zfitb4pVTsifTd0P8pluAw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,189,1708416000"; 
+   d="scan'208";a="20332129"
+Received: from linux.intel.com ([10.54.29.200])
+  by fmviesa008.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 05:58:53 -0700
+Received: from [10.213.177.168] (kliang2-mobl1.ccr.corp.intel.com [10.213.177.168])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by linux.intel.com (Postfix) with ESMTPS id 4279C20B573A;
+	Tue,  9 Apr 2024 05:58:50 -0700 (PDT)
+Message-ID: <5e29fc2d-0f75-4929-af74-224c5f891c2f@linux.intel.com>
+Date: Tue, 9 Apr 2024 08:58:48 -0400
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iommu/vt-d: fix wrong use of pasid config
+To: Xuchun Shang <xuchun.shang@linux.alibaba.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev
+References: <20240401060753.3321318-1-xuchun.shang@linux.alibaba.com>
+Content-Language: en-US
+From: "Liang, Kan" <kan.liang@linux.intel.com>
+In-Reply-To: <20240401060753.3321318-1-xuchun.shang@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, 05 Apr 2024 17:52:07 +0100, Robin Murphy wrote:
-> The disable_bypass parameter has been mostly meaningless for a long time
-> since the introduction of default domains. Its original intent is now
-> fulfilled by the controls users have over the default domain type, and
-> its remaining effect in the brief window between Stream Table
-> initialisation and default domain creation hardly seems worth the
-> complication. Furthermore, thanks to 2-level Stream Tables, disabling
-> disable_bypass (there's another reason not to like it right there) has
-> never guaranteed that any particular StreamID *will* bypass anyway - any
-> device which might actually care about that wants RMRs - so there's not
-> really much lost by taking away that option (which has already been
-> non-default for nearing 6 years now).
+
+
+On 2024-04-01 2:07 a.m., Xuchun Shang wrote:
+> The commit "iommu/vt-d: Add IOMMU perfmon support" introduce IOMMU
+> PMU feature, but use the wrong config when set pasid filter.
 > 
-> [...]
+> Fixes: 7232ab8b89e9 ("iommu/vt-d: Add IOMMU perfmon support")
+> Signed-off-by: Xuchun Shang <xuchun.shang@linux.alibaba.com>
 
-Applied to will (for-joerg/arm-smmu/updates), thanks!
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
 
-[1/1] iommu/arm-smmu-v3: Retire disable_bypass parameter
-      https://git.kernel.org/will/c/734554fdfce6
+Thanks,
+Kan
 
-Cheers,
--- 
-Will
-
-https://fixes.arm64.dev
-https://next.arm64.dev
-https://will.arm64.dev
+> ---
+>  drivers/iommu/intel/perfmon.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/intel/perfmon.c b/drivers/iommu/intel/perfmon.c
+> index cf43e798eca4..44083d01852d 100644
+> --- a/drivers/iommu/intel/perfmon.c
+> +++ b/drivers/iommu/intel/perfmon.c
+> @@ -438,7 +438,7 @@ static int iommu_pmu_assign_event(struct iommu_pmu *iommu_pmu,
+>  	iommu_pmu_set_filter(domain, event->attr.config1,
+>  			     IOMMU_PMU_FILTER_DOMAIN, idx,
+>  			     event->attr.config1);
+> -	iommu_pmu_set_filter(pasid, event->attr.config1,
+> +	iommu_pmu_set_filter(pasid, event->attr.config2,
+>  			     IOMMU_PMU_FILTER_PASID, idx,
+>  			     event->attr.config1);
+>  	iommu_pmu_set_filter(ats, event->attr.config2,
