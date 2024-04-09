@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2E2879E1
-	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 01:54:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD4BD4E1DA
+	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 02:12:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712627680; cv=none; b=H0bLX2hKJvEOoFzZDTBRlyN0GSVUZII2zutbn/Lv90mkDubSkZl5H1m4EymNlqGeoq2E3OPTfVH2POXskq5cmY2wlxTxpyfM1M5LenYjCKjrBKjdMPY4okjjNphfLjXKGhNQCANd7IpKOXlEpkzScQLoNVvgQNSUdQtHluo2xUY=
+	t=1712628762; cv=none; b=BOgEeFrYjDV4zH3qfq94nR2OQo+sypZxGRtWyB9xbM0O9JLhBWJXXcn9M7JPl4f7eWpUxjUMnuZ1KOtDiGFKjBxVJH5IwbdX2IcFLGJNvVqqsf8dkCCAjOu9G1v4awpcusEPsQCEqvO+etmzq9QPsKQnCpgk2HcG0uK10S5JDOY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712627680; c=relaxed/simple;
-	bh=cP1SbuC4f3QZPYcto5RfNrOvo22XXm4PnBqKOlfeabw=;
+	s=arc-20240116; t=1712628762; c=relaxed/simple;
+	bh=8eK+10VMJe90oRq0AJ/aDRfzlyzRnsxQ71/YrliutVo=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=gUI4d0wT4onrRr8a5etcrNUT0szIQOr4+wWYKiw3HhlW+PQRupHR8nUud3JNXQOM8PmgZuBnxY87HqvRjuGDOI+D1pthqU4VOjmBYhYG5AztEh36bilStlI+djVB3YeW6BHgE/YuXKhQD5uZgs3iy7JYgGQFADaL2uKRe7vVoxc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XdeHlM6Y; arc=none smtp.client-ip=198.175.65.12
+	 In-Reply-To:Content-Type; b=TkWPDaYgiaswRzhW548/1U5UKDWZw4UfNWo7By1LPb1NZusEz9ubqJMRfB4BPHqdLRkgpsCKY+LcnzMXDvowBLMGnrM9N6JLzwFsTyHfbh3kkR8xarY7zwjBCspmzVvgdn9w1ntyh0Bbq5JWrzg0z8QapjRVSGoPx3In6KMFiPE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L0JpQGOq; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XdeHlM6Y"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L0JpQGOq"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712627679; x=1744163679;
+  t=1712628761; x=1744164761;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=cP1SbuC4f3QZPYcto5RfNrOvo22XXm4PnBqKOlfeabw=;
-  b=XdeHlM6YWIL9DNa9RrH6kzl4afUKa9WDFPD8iipwx960sPIa1nGA/6iE
-   lCbdJWANATZ33Qaku8walmeftlcPrTPmq5zeMeRGKy4LLKyeOHFP0q4Xm
-   NZDxuk7ZqfJW2i24SmmhgYTiDu+fq9CaXXcKSP8N8UTC//nbvOhBtoyir
-   SPolokqYXJU/n+063zoyVo5m5ZPE+BH/iTX7pCAPobpmjuJqshdZkYi6j
-   TSp0m/YNdwtzAqdiFqejhNh1trVAjTwuVVHl4r+sw6sTGEwyRKerxZlhv
-   ojkm8KUqHZEl6XqaHCCHBxUq1IsCefLcZYoQHKsjKKqlHpZZXbTJTRdQD
-   A==;
-X-CSE-ConnectionGUID: fWlQWvb/RZKcFcWWLjtkGg==
-X-CSE-MsgGUID: OoQcOwCkSNqaM3Ek+GPkpg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="19363453"
+  bh=8eK+10VMJe90oRq0AJ/aDRfzlyzRnsxQ71/YrliutVo=;
+  b=L0JpQGOqc7kvtzMjn02KqoOMcAOU9I5//3EQVkBx2b7tpKe3HaPzXlZB
+   oI+K7DFIcN/mNcWMtKKVyl+r5RXe4MVzyqg8llTikBPabaCdSbE954zMa
+   7Mj8D3lv7cu9uxcid9VNn0mtr/eEfyiz4wFv/dK2iBuzodSH9r6Ff2nNv
+   roKcdSaMcp4bH9ty219YCWJvyRhROjD0BsploFn8OBG4YJxdQfOCvTXcB
+   EdzYESHV86QQH3geKsP4meZX0ORp5dTcDR72YvzWgYV//PC8UFNxosTFE
+   ZbsBwy7yEdjzVj2i94FgB+/8UPHcUAbhbX1k0NIoXghzuK3bATWnBP7HA
+   w==;
+X-CSE-ConnectionGUID: FLelR762Q9aN5IdZamgbYg==
+X-CSE-MsgGUID: oVo82A/vSgGvpOC/6eBvFw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="11709436"
 X-IronPort-AV: E=Sophos;i="6.07,188,1708416000"; 
-   d="scan'208";a="19363453"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 18:54:38 -0700
-X-CSE-ConnectionGUID: XDdYf3l8Q4S5Rs0iB+gAcA==
-X-CSE-MsgGUID: APDLEsHJT3my+ORT1HG5+w==
+   d="scan'208";a="11709436"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 19:12:40 -0700
+X-CSE-ConnectionGUID: w4k0UXTzRUS7xxPqU7gLjA==
+X-CSE-MsgGUID: hT9REQAWQjW3sSHkLMgkOA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,188,1708416000"; 
-   d="scan'208";a="24814545"
+   d="scan'208";a="20105232"
 Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa004.jf.intel.com with ESMTP; 08 Apr 2024 18:54:34 -0700
-Message-ID: <4c07d54f-6c6c-47be-9e5a-3cff8162dd3b@linux.intel.com>
-Date: Tue, 9 Apr 2024 09:53:26 +0800
+  by fmviesa006.fm.intel.com with ESMTP; 08 Apr 2024 19:12:37 -0700
+Message-ID: <86e723e7-c3be-41b1-95d8-dbdf86bbdab5@linux.intel.com>
+Date: Tue, 9 Apr 2024 10:11:28 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,61 +60,60 @@ Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
  Jacob Pan <jacob.jun.pan@linux.intel.com>,
  Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
  virtualization@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/9] iommu: Introduce domain attachment handle
-To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v4 2/9] iommu: Replace sva_iommu with iommu_attach_handle
+To: Jason Gunthorpe <jgg@ziepe.ca>
 References: <20240403011519.78512-1-baolu.lu@linux.intel.com>
- <20240403011519.78512-2-baolu.lu@linux.intel.com>
- <20240403115851.GA1723999@nvidia.com>
- <3b740988-7fe6-4328-8ce2-d66d9a2ab497@linux.intel.com>
- <20240408140548.GO5383@nvidia.com>
+ <20240403011519.78512-3-baolu.lu@linux.intel.com>
+ <20240403115913.GC1363414@ziepe.ca>
+ <e3f526e3-6474-49ff-b8d6-995aaf1c1830@linux.intel.com>
+ <20240408141946.GB223006@ziepe.ca>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240408140548.GO5383@nvidia.com>
+In-Reply-To: <20240408141946.GB223006@ziepe.ca>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 4/8/24 10:05 PM, Jason Gunthorpe wrote:
->> void iommufd_fault_domain_detach_dev(struct iommufd_hw_pagetable *hwpt,
->>                                       struct iommufd_device *idev)
->>   {
->> +       struct iommufd_fault *fault = hwpt->fault;
->> +       struct iommu_attach_handle *handle;
->> +
->>          if (WARN_ON(!hwpt->fault_capable))
->>                  return;
->>
->> +       handle = iommu_attach_handle_get(idev->igroup->group,
->> IOMMU_NO_PASID);
->>          iommu_detach_group(hwpt->domain, idev->igroup->group);
->>          iommufd_fault_iopf_disable(idev);
-> But is this right? Couldn't there be PASID's doing PRI?
+On 4/8/24 10:19 PM, Jason Gunthorpe wrote:
+> On Sat, Apr 06, 2024 at 02:09:34PM +0800, Baolu Lu wrote:
+>> On 4/3/24 7:59 PM, Jason Gunthorpe wrote:
+>>> On Wed, Apr 03, 2024 at 09:15:12AM +0800, Lu Baolu wrote:
+>>>> +	/* A bond already exists, just take a reference`. */
+>>>> +	handle = iommu_attach_handle_get(group, iommu_mm->pasid);
+>>>> +	if (handle) {
+>>>> +		mutex_unlock(&iommu_sva_lock);
+>>>> +		return handle;
+>>>>    	}
+>>> At least in this context this is not enough we need to ensure that the
+>>> domain on the PASID is actually an SVA domain and it was installed by
+>>> this mechanism, not an iommufd domain for instance.
+>>>
+>>> ie you probably need a type field in the iommu_attach_handle to tell
+>>> what the priv is.
+>>>
+>>> Otherwise this seems like a great idea!
+>> Yes, you are right. For the SVA case, I will add the following changes.
+>> The IOMMUFD path will also need such enhancement. I will update it in
+>> the next version.
+> The only use for this is the PRI callbacks right? Maybe instead of
+> adding a handle type let's just check domain->iopf_handler  ?
+> 
+> Ie SVA will pass &ommu_sva_iopf_handler as its "type"
 
-As far as I can see, there are two types of user PASID.
+Sorry that I don't fully understand the proposal here.
 
-1. When a device is assigned to userspace, the PASID table is managed by
-    the userspace.
+We need to get the attach handle at least in below cases:
 
-    Userspace doesn't need PASID attach/detach/replace uAPIs in this
-    scenario. All I/O page faults are directed to userspace through the
-    hw pagetable attached to the RID.
+1. In the iommu_sva_bind_device() path so that the existing bind could
+    be reused.
 
-    If hw pagetable is detached from the RID, or a non-iopf-capable
-    hw pagetable is attached the RID, the PRI for user PASID is already
-    broken.
+2. In the iommu_report_device_fault() path so that the context-specific
+    data could be used in the fault handler.
 
-2. When a device is assigned to userspace, the PASID table is managed by
-    the host kernel. Userspace then needs PASID attach/detach/replace
-    uAPIs to manage the hw page table for each PASID. Each PASID has its
-    own hw page table for handling I/O page faults.
-
-    Here, disabling PRI is only safe after all iopf-capable hw page
-    tables for both the RID and all PASIDs are detached.
-
-    The current code base doesn't yet support PASID attach/detach/replace
-    uAPIs. Therefore, above code is safe and reasonable. However, we will
-    need to revisit this code when those APIs become available.
-
-Please correct me if my understanding is incorrect.
+The problem is that the context code (SVA, IOMMUFD, etc.) needs to make
+sure that the attach handle is really what it has installed during
+domain attachment. The context code needs some mechanism to include some
+kind of "owner cookie" in the attach handle, so that it could check
+against it later for valid use.
 
 Best regards,
 baolu
