@@ -1,134 +1,108 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7EAD8127B7B
-	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 11:47:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DDAE127B5A;
+	Tue,  9 Apr 2024 12:40:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712663223; cv=none; b=A7rYvrvFsmDahui6VvMfMEnupNJGbogsZSVgUWr6TS66q/c0cLUfidTuILFHoYC3EUK/cvKiNMoiJXUNN/oQxzBvAxx0E7jXiNHoLGpHpVC5iM3Lvg1v13XkN4JoiB+8GONFgDAm3vAiRrNnycUsSjP0Uc2IqQSxI9+45ub14qw=
+	t=1712666416; cv=none; b=o5OSlicDZGyQDQljSxMJiww5NhyDxNBN80OqApnqMEev6eKHF9mPeN1yqrsMEYmbdcCO7KWJFoi5hxPEqODdTUnizs6F6e7e0DkSgKW0Tkiv2cN3CGlHodTYXN2UdYU4KSvP8m92x9A1r3kdA9YuFrQn5xWOb9/SqzLZzUFyB1I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712663223; c=relaxed/simple;
-	bh=i5AH29WhKinYbSz33pvKiQWhYew5DFICwVHBn8QBFcc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=uNlc6mHO6yxXDN6UlAHxhgYDkavzzV6nWNKtKOs2nGfge44K/+idFtJ/phVDBWNVp72EoyF99fqNPu53pFccrSTAL8D7dSerlCtmAgb3mdX1g2KQUqguq0P8+S2SgHdMNszvEsqLGWkQjZucc89brlJT7KAxl7ZjygjGTlZeZNc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 349A51007;
-	Tue,  9 Apr 2024 04:47:31 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 94BEF3F766;
-	Tue,  9 Apr 2024 04:46:59 -0700 (PDT)
-Message-ID: <2af66586-c528-43be-adee-e1eb6baf00fd@arm.com>
-Date: Tue, 9 Apr 2024 12:46:58 +0100
+	s=arc-20240116; t=1712666416; c=relaxed/simple;
+	bh=+oqtJgeLiQ0pjuqUx6N0owLTORtI1+SJb+pgZb0B7B0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=uLAPOV5HXbgrQif0N9OgR1nxlJmlj9JvgSrXfel/hcsErlmULIiZnI4uFFdYIDEQ1jbiLxMpixK69jsia8S7F4VdrtC3ohqoCztM/K0ndcLv2A7gbLUTjM6w7tPYwu+HtTISwjrBirz67NlNvcLFENBaL45+Lq0BNIrqDpxymy4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=opBd4bFw; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="opBd4bFw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9EA3C433C7;
+	Tue,  9 Apr 2024 12:40:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1712666415;
+	bh=+oqtJgeLiQ0pjuqUx6N0owLTORtI1+SJb+pgZb0B7B0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=opBd4bFwh1SvyD9npvzfIJPDVOAHXGngLOhXLea03J17iznEmmzHxE2lnLZtcJt8B
+	 a41boBSXXEJyG56uPR3UHOofhMxlPobHi78QVSxTxlWjl6fVvlTlgqhiHlcuSqCjSn
+	 CyvYeoyMcklfDuPuI5L+GzfxiFyNwRoXPQQU8tTfFM55XkpYy6N5GjzcIjSHjyx4jG
+	 gwSHSkD0g2pyVMC6cpekwFGOnJBwqzWGwr0srnKJyTRzRuNPy7N7YWSHKcuC060jW3
+	 PAPfhidyH3MDWoemddMDYEKQUCYdSTE6vVi5Z7PmByeGHfEedqvBxwZWIKG99jUz7d
+	 xcXFNyRXjzhbQ==
+Date: Tue, 9 Apr 2024 13:40:08 +0100
+From: Will Deacon <will@kernel.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Eric Auger <eric.auger@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
+	kernel test robot <lkp@intel.com>, Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>, Tony Zhu <tony.zhu@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>, Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH v6 06/29] iommu/arm-smmu-v3: Add an ops indirection to
+ the STE code
+Message-ID: <20240409124007.GA23088@willie-the-truck>
+References: <0-v6-228e7adf25eb+4155-smmuv3_newapi_p2_jgg@nvidia.com>
+ <6-v6-228e7adf25eb+4155-smmuv3_newapi_p2_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Free MSIs in case of ENOMEM
-Content-Language: en-GB
-To: Mostafa Saleh <smostafa@google.com>
-Cc: Aleksandr Aprelkov <aaprelkov@usergate.com>, Will Deacon
- <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
- Michael Shavit <mshavit@google.com>, Lu Baolu <baolu.lu@linux.intel.com>,
- Marc Zyngier <maz@kernel.org>, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240403053759.643164-1-aaprelkov@usergate.com>
- <ZhUbw6gAeBjpFz5C@google.com> <8a7f0218-39e3-4e4b-ba99-7fe4389fb703@arm.com>
- <ZhUnK1-Pvcix5dyI@google.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <ZhUnK1-Pvcix5dyI@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6-v6-228e7adf25eb+4155-smmuv3_newapi_p2_jgg@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On 09/04/2024 12:31 pm, Mostafa Saleh wrote:
-> Hi Robin,
+On Wed, Mar 27, 2024 at 03:07:52PM -0300, Jason Gunthorpe wrote:
+> Prepare to put the CD code into the same mechanism. Add an ops indirection
+> around all the STE specific code and make the worker functions independent
+> of the entry content being processed.
 > 
-> On Tue, Apr 09, 2024 at 12:17:54PM +0100, Robin Murphy wrote:
->> On 09/04/2024 11:43 am, Mostafa Saleh wrote:
->>> Hi Aleksandr,
->>>
->>> On Wed, Apr 03, 2024 at 12:37:59PM +0700, Aleksandr Aprelkov wrote:
->>>> If devm_add_action() returns ENOMEM, then MSIs allocated but
->>>> not freed on teardown.
->>>>
->>>> Found by Linux Verification Center (linuxtesting.org) with SVACE.
->>>>
->>>> Fixes: 166bdbd23161 ("iommu/arm-smmu: Add support for MSI on SMMUv3")
->>>> Signed-off-by: Aleksandr Aprelkov <aaprelkov@usergate.com>
->>>> ---
->>>> v2: Use appropriate function for registration failure as
->>>> Jonathan Cameron <Jonathan.Cameron@Huawei.com> suggested.
->>>>
->>>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 +++-
->>>>    1 file changed, 3 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>> index 41f93c3ab160..8800af041e5f 100644
->>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>> @@ -3402,7 +3402,9 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
->>>>    	smmu->priq.q.irq = msi_get_virq(dev, PRIQ_MSI_INDEX);
->>>>    	/* Add callback to free MSIs on teardown */
->>>> -	devm_add_action(dev, arm_smmu_free_msis, dev);
->>>> +	ret = devm_add_action_or_reset(dev, arm_smmu_free_msis, dev);
->>>> +	if (ret)
->>>> +		dev_warn(dev, "failed to add free MSIs callback - falling back to wired irqs\n");
->>>
->>> I am not sure that is the right fix, as allowing the driver to probe
->>> without MSIs, seems worse than leaking MSI memory.
->>>
->>> IMHO, we can just add something like:
->>>       dev_err(smmu->dev, “Can’t allocate devm action, MSIs are never freed! !\n”) ;
->>
->> Honestly I don't think this matters. If we ever really did fail to allocate
->> 16 bytes, SLUB would already be screaming and spewing stacktraces, and the
->> system is dead already.
->>
->>> Also, we can’t unconditionally fallback to wired irqs if MSI exists,
->>> according to the user manual:
->>>       An implementation must support one of, or optionally both of,
->>>       wired interrupts and MSIs
->>>       ...
->>>       The discovery of support for wired interrupts is IMPLEMENTATION DEFINED.
->>>
->>> We can add some logic, to check dt/acpi irqs and to choose to fallback
->>> or not based on that, but, if we get -ENOMEM, (especially early at
->>> probe) something really went wrong, so I am not sure it’s worth
->>> the complexity.
->>
->> That logic already exists in arm_smmu_setup_unique_irqs() - the messages
->> here are in the sense of "we're giving up on MSIs and falling back to trying
->> whatever wired IRQs we may or may not have." The critical point is that
->> we're not using MSIs for some potentially actionable reason, i.e. if the
->> user does expect the system to be MSI-capable, then it could be an
->> indication of perhaps a wrong or missing msi-parent, for which they may
->> pursue a firmware fix. In other cases it's normal and expected not to use
->> MSIs though (e.g. the system just doesn't have an ITS), so we don't want to
->> be *too* noisy about it.
+> get_used and sync ops are provided to hook the correct code.
 > 
-> The case I am worried about in this patch, is for systems with
-> MSIs only.
-> With this patch, that means, we fallback to wired irqs which don't
-> exist, so the driver will probe with no interrupts at all, which in my
-> opinion worse than leaking the memory.
+> Signed-off-by: Michael Shavit <mshavit@google.com>
+> Reviewed-by: Michael Shavit <mshavit@google.com>
+> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 170 ++++++++++++--------
+>  1 file changed, 102 insertions(+), 68 deletions(-)
 
-True, the logic looks a bit off at first glance - I was halfway through 
-writing a reply to that effect - but then if you look past the reality 
-that this is all academic since it's never really going to happen 
-anyway, if we *did* fail to allocate 16 bytes here, there's an 
-incredibly high chance that immediately proceeding into 
-iommu_device_sysfs_add() is also going to result in another (larger) 
-allocation failure which ends up aborting the whole probe anyway. Plus 
-the chance of subsequently being able to allocate any 
-domains/pagetables/etc. for any meaningful IOMMU usage would seem slim.
+Any chance we can pull the STE testing stuff forward from Michael once
+we have the entry writing ops indirection, please? It would be nice to
+land that before adding the CD support, I think.
 
-Honestly I'd be inclined to do nothing more than add the _or_reset to 
-shut the static checkers up, and not waste code and data on a useless 
-message for a theoretical condition at all.
+> @@ -1102,17 +1111,14 @@ static bool entry_set(struct arm_smmu_device *smmu, ioasid_t sid,
+>   * V=0 process. This relies on the IGNORED behavior described in the
+>   * specification.
+>   */
+> -static void arm_smmu_write_ste(struct arm_smmu_master *master, u32 sid,
+> -			       struct arm_smmu_ste *entry,
+> -			       const struct arm_smmu_ste *target)
+> +static void arm_smmu_write_entry(struct arm_smmu_entry_writer *writer,
+> +				 __le64 *entry, const __le64 *target)
+>  {
+> -	unsigned int num_entry_qwords = ARRAY_SIZE(target->data);
+> -	struct arm_smmu_device *smmu = master->smmu;
+> -	struct arm_smmu_ste unused_update;
+> +	__le64 unused_update[NUM_ENTRY_QWORDS];
+>  	u8 used_qword_diff;
+>  
+>  	used_qword_diff =
+> -		arm_smmu_entry_qword_diff(entry, target, &unused_update);
+> +		arm_smmu_entry_qword_diff(writer, entry, target, unused_update);
+>  	if (hweight8(used_qword_diff) == 1) {
+>  		/*
+>  		 * Only one qword needs its used bits to be changed. This is a
 
-Cheers,
-Robin.
+nit: This comment (lost in the diff context) refers to STEs a couple of
+times. Please update to e.g. "STE/CD".
+
+Will
