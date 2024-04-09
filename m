@@ -1,165 +1,118 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp-fw-52003.amazon.com (smtp-fw-52003.amazon.com [52.119.213.152])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78DBE12D75B
-	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 11:32:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3281586AF4;
+	Tue,  9 Apr 2024 11:45:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.119.213.152
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712662324; cv=none; b=dVFYFt2MrMeCiiCBShyyYAYrI3zbO5bxEwoRbOpnBL4atLRF9vKM6NEB0sZtbbH+unU6i9JwXpTYIvkGQn6NObmGdgyfnxOLW55qK/3Rqtc+2m3k2ro1EF+w9AerRumnH7x8+m9Tqj2IeEulk5wSkwTlha1va8eVVXxV1wQH++Y=
+	t=1712663152; cv=none; b=fh1NBwGqho9YbKjaQLz/bYK/+6uH75ubXRKqL2aUOtZ9M7S1xP0poKVGhry7fVxtSMUmhcd79Gma0Dz74egnPtpaeKNoSmoHNFHgPDkIJJtgmuE5pTtp9rOMVaepKcdwDiM0mhPW5bJdD8vaACmo5LG4wg9LyAXXeN1iEmsjXyQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712662324; c=relaxed/simple;
-	bh=e7xh7zUpQO/f7HZi7UU4sg3MF2Z15fxZPQmiWM4x8uM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=quTFOMCHLdJRazajqirv1cdcGpTtT063u7mPSzzgyxiyclyeQ5DtS3stUPPLgXHtSQZe4tARqIBqvU4iZl19IeY7FvmdiEYLfKirFbRl4p7zQVPyolIWJ4JwkJ/hvW4NDF6wCEOHCHiJ2wLah5EU6Pilv8ECdGamGj5G21e3yOw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=iZjk1iEn; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1712663152; c=relaxed/simple;
+	bh=GFjr+qUI/xJlRfC49pDYbbQ+5mOHCUk/2gN5wZX0VPA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
+	 In-Reply-To:Content-Type; b=hh55wpvHymdkrSEv2OdJtyWBeuRe9tpC3+b8hqL/f7AiN09ygLnhCRKoilSvVBRff2X5nDwCzU1mfpJ0bhjOxzdYhR9PqcC1kovil7n+lmvGNCBA+jFuxlM56/cH7FYnWAEMo4ZtkK6ATcjELv/T6PEoFqGZkoCovvWX9qOFShU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.de; dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b=Re2MZHX5; arc=none smtp.client-ip=52.119.213.152
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="iZjk1iEn"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4154d38ce9dso72345e9.0
-        for <iommu@lists.linux.dev>; Tue, 09 Apr 2024 04:32:01 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b="Re2MZHX5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1712662320; x=1713267120; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=E4DFnz/WvqbVMqJ3REDURlQMNEnJzpbcoDSyqNDWBm4=;
-        b=iZjk1iEnMA2KZNGqDd+B5k/AzV4cJptsb3RsqsSiqrVonPriFkaakTHYkguTX7IeAY
-         Kwe9zfL/HCJyucLdMNwBKeXMv1qtQFtykK3qsKBOjKO7tIfZ/dJ+aQnOx2gIV1dQr3P+
-         h+co+/iqe2HsCZnYEOw5ZZCkwP8aqlO8xNtCZmYic38lpfOKIBNwX5MEpcpwKc8qGPz5
-         g/Mywhvu28LVJ2fyDciZnjWLgYez1cAv6rlNt4vRIZRGjMt+LIFN1Bx29ZI+6njFS+iy
-         QYd1gvGlKXVk0SVWvQT5w5+W3mYtGKePXfKUm0tM5L92/vF/BTWa1XSvb7t3LHOTswhX
-         aE1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712662320; x=1713267120;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=E4DFnz/WvqbVMqJ3REDURlQMNEnJzpbcoDSyqNDWBm4=;
-        b=lzYYdU4bCVjjCgMVh0Ckw9FR1PBp9Atuo120XWmp5/fhDb9xX0ZXedCf3vlTkuGv+U
-         bwO/wqbIr21knCCz3jgGppWxR3MHAt/9/j8/0fyew6nYBSyT3r6ajaIsDZ8JNxzorpci
-         Q677+i4DX1vCBlIrET/eNUHvcZQx563TAEGdok2RRb86QLIwmvU2aPMKJhCKNgGb8BsG
-         6wd46LjByb9WH6B2S0Vx6tpf5uWmA3TzuqEyHBQAiEGlNJFhoyz8iwKZyzoYCPXJ4e7k
-         7pS6vWxt1wARPGCEJCBDMwpoUPL3q/7GX6S6O309rYlp4KPFVST965bID51CpYcptk2n
-         HirA==
-X-Forwarded-Encrypted: i=1; AJvYcCU7f5NKwYth+o9I9FCZVSHL2FybMvmGp+Ro+V21jQFhc4lQ5wkr/oRigp6FAvCB95dTUTGoN7irxzIeriXYao4LJEuJ/vc=
-X-Gm-Message-State: AOJu0YyonrVB3RhAlhXZWDJLSI6sIHp0wqb4czGbOiHYMjIybGSbKbdH
-	tZD/0Gdhx0T+hx/rdUxIutITWfspJJUa5T8Afxel00Q9pjlRg29EYahdXFegWA==
-X-Google-Smtp-Source: AGHT+IEKhWdjBCLhSgPhpTkaQshxax9sUIa24Y/ydpxEHLgbRl9WWQbrCX4RqHImsXU0Q6eJ0iLhyA==
-X-Received: by 2002:a05:600c:1e0a:b0:414:1400:a776 with SMTP id ay10-20020a05600c1e0a00b004141400a776mr121340wmb.5.1712662319674;
-        Tue, 09 Apr 2024 04:31:59 -0700 (PDT)
-Received: from google.com (180.232.140.34.bc.googleusercontent.com. [34.140.232.180])
-        by smtp.gmail.com with ESMTPSA id h16-20020a05600c315000b00416b8da335esm400432wmo.48.2024.04.09.04.31.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Apr 2024 04:31:59 -0700 (PDT)
-Date: Tue, 9 Apr 2024 11:31:55 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Aleksandr Aprelkov <aaprelkov@usergate.com>,
-	Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
-	Michael Shavit <mshavit@google.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>, Marc Zyngier <maz@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Free MSIs in case of ENOMEM
-Message-ID: <ZhUnK1-Pvcix5dyI@google.com>
-References: <20240403053759.643164-1-aaprelkov@usergate.com>
- <ZhUbw6gAeBjpFz5C@google.com>
- <8a7f0218-39e3-4e4b-ba99-7fe4389fb703@arm.com>
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1712663151; x=1744199151;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=GFjr+qUI/xJlRfC49pDYbbQ+5mOHCUk/2gN5wZX0VPA=;
+  b=Re2MZHX5GydCM8B6KilkbcXlSGPSLv0DHVNAFcmqvWsd0IZ1NH+wl46p
+   jp+rvzqYg9VvAX9wn3JpJghaHuXQWE2yPEhE8P08rq+2tVNxto7uD3tbV
+   QrLFtsNiMvuJGKG0kOuG7Rz2NIhkvDaaqqVhKqvF/2RhKVIbglEWBhS4x
+   g=;
+X-IronPort-AV: E=Sophos;i="6.07,189,1708387200"; 
+   d="scan'208";a="650727234"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO smtpout.prod.us-west-2.prod.farcaster.email.amazon.dev) ([10.43.8.6])
+  by smtp-border-fw-52003.iad7.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 11:45:43 +0000
+Received: from EX19MTAUWC002.ant.amazon.com [10.0.21.151:49900]
+ by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.27.169:2525] with esmtp (Farcaster)
+ id 3f52ccb2-10c8-4639-a2de-4651f9e21034; Tue, 9 Apr 2024 11:45:42 +0000 (UTC)
+X-Farcaster-Flow-ID: 3f52ccb2-10c8-4639-a2de-4651f9e21034
+Received: from EX19D020UWC004.ant.amazon.com (10.13.138.149) by
+ EX19MTAUWC002.ant.amazon.com (10.250.64.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.28; Tue, 9 Apr 2024 11:45:38 +0000
+Received: from [0.0.0.0] (10.253.83.51) by EX19D020UWC004.ant.amazon.com
+ (10.13.138.149) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.28; Tue, 9 Apr
+ 2024 11:45:22 +0000
+Message-ID: <7c82670e-6063-4b0f-9bbf-805a0d949d84@amazon.com>
+Date: Tue, 9 Apr 2024 13:45:18 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <8a7f0218-39e3-4e4b-ba99-7fe4389fb703@arm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 15/25] misc: nsm: drop owner assignment
+Content-Language: en-US
+To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, "Michael S. Tsirkin"
+	<mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Xuan Zhuo
+	<xuanzhuo@linux.alibaba.com>, Jonathan Corbet <corbet@lwn.net>, "David
+ Hildenbrand" <david@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>, "Richard
+ Weinberger" <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+	Johannes Berg <johannes@sipsolutions.net>, Paolo Bonzini
+	<pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, Jens Axboe
+	<axboe@kernel.dk>, Marcel Holtmann <marcel@holtmann.org>, "Luiz Augusto von
+ Dentz" <luiz.dentz@gmail.com>, Olivia Mackall <olivia@selenic.com>, Herbert
+ Xu <herbert@gondor.apana.org.au>, Amit Shah <amit@kernel.org>, Arnd Bergmann
+	<arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Gonglei
+	<arei.gonglei@huawei.com>, "David S. Miller" <davem@davemloft.net>, "Sudeep
+ Holla" <sudeep.holla@arm.com>, Cristian Marussi <cristian.marussi@arm.com>,
+	Viresh Kumar <vireshk@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>, David Airlie <airlied@redhat.com>,
+	Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>,
+	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
+	<mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, Daniel Vetter
+	<daniel@ffwll.ch>, Jean-Philippe Brucker <jean-philippe@linaro.org>, "Joerg
+ Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+	<robin.murphy@arm.com>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
+	<kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Eric Van Hensbergen
+	<ericvh@kernel.org>, Latchesar Ionkov <lucho@ionkov.net>, Dominique Martinet
+	<asmadeus@codewreck.org>, Christian Schoenebeck <linux_oss@crudebyte.com>,
+	Stefano Garzarella <sgarzare@redhat.com>, Kalle Valo <kvalo@kernel.org>, "Dan
+ Williams" <dan.j.williams@intel.com>, Vishal Verma
+	<vishal.l.verma@intel.com>, Dave Jiang <dave.jiang@intel.com>, Ira Weiny
+	<ira.weiny@intel.com>, "Pankaj Gupta" <pankaj.gupta.linux@gmail.com>, Bjorn
+ Andersson <andersson@kernel.org>, Mathieu Poirier
+	<mathieu.poirier@linaro.org>, "James E.J. Bottomley" <jejb@linux.ibm.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>, Vivek Goyal
+	<vgoyal@redhat.com>, Miklos Szeredi <miklos@szeredi.hu>, "Anton Yakovlev"
+	<anton.yakovlev@opensynergy.com>, Jaroslav Kysela <perex@perex.cz>, Takashi
+ Iwai <tiwai@suse.com>
+CC: <virtualization@lists.linux.dev>, <linux-doc@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-um@lists.infradead.org>,
+	<linux-block@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
+	<linux-crypto@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-gpio@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+	<iommu@lists.linux.dev>, <netdev@vger.kernel.org>, <v9fs@lists.linux.dev>,
+	<kvm@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
+	<nvdimm@lists.linux.dev>, <linux-remoteproc@vger.kernel.org>,
+	<linux-scsi@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+	<alsa-devel@alsa-project.org>, <linux-sound@vger.kernel.org>
+References: <20240331-module-owner-virtio-v2-0-98f04bfaf46a@linaro.org>
+ <20240331-module-owner-virtio-v2-15-98f04bfaf46a@linaro.org>
+From: Alexander Graf <graf@amazon.com>
+In-Reply-To: <20240331-module-owner-virtio-v2-15-98f04bfaf46a@linaro.org>
+X-ClientProxiedBy: EX19D035UWA002.ant.amazon.com (10.13.139.60) To
+ EX19D020UWC004.ant.amazon.com (10.13.138.149)
+Content-Type: text/plain; charset="utf-8"; format="flowed"
+Content-Transfer-Encoding: base64
 
-Hi Robin,
+Ck9uIDMxLjAzLjI0IDEwOjQ0LCBLcnp5c3p0b2YgS296bG93c2tpIHdyb3RlOgo+IHZpcnRpbyBj
+b3JlIGFscmVhZHkgc2V0cyB0aGUgLm93bmVyLCBzbyBkcml2ZXIgZG9lcyBub3QgbmVlZCB0by4K
+Pgo+IFNpZ25lZC1vZmYtYnk6IEtyenlzenRvZiBLb3psb3dza2kgPGtyenlzenRvZi5rb3psb3dz
+a2lAbGluYXJvLm9yZz4KCgpSZXZpZXdlZC1ieTogQWxleGFuZGVyIEdyYWYgPGdyYWZAYW1hem9u
+LmNvbT4KCgpBbGV4CgoKCgpBbWF6b24gRGV2ZWxvcG1lbnQgQ2VudGVyIEdlcm1hbnkgR21iSApL
+cmF1c2Vuc3RyLiAzOAoxMDExNyBCZXJsaW4KR2VzY2hhZWZ0c2Z1ZWhydW5nOiBDaHJpc3RpYW4g
+U2NobGFlZ2VyLCBKb25hdGhhbiBXZWlzcwpFaW5nZXRyYWdlbiBhbSBBbXRzZ2VyaWNodCBDaGFy
+bG90dGVuYnVyZyB1bnRlciBIUkIgMTQ5MTczIEIKU2l0ejogQmVybGluClVzdC1JRDogREUgMjg5
+IDIzNyA4NzkKCgo=
 
-On Tue, Apr 09, 2024 at 12:17:54PM +0100, Robin Murphy wrote:
-> On 09/04/2024 11:43 am, Mostafa Saleh wrote:
-> > Hi Aleksandr,
-> > 
-> > On Wed, Apr 03, 2024 at 12:37:59PM +0700, Aleksandr Aprelkov wrote:
-> > > If devm_add_action() returns ENOMEM, then MSIs allocated but
-> > > not freed on teardown.
-> > > 
-> > > Found by Linux Verification Center (linuxtesting.org) with SVACE.
-> > > 
-> > > Fixes: 166bdbd23161 ("iommu/arm-smmu: Add support for MSI on SMMUv3")
-> > > Signed-off-by: Aleksandr Aprelkov <aaprelkov@usergate.com>
-> > > ---
-> > > v2: Use appropriate function for registration failure as
-> > > Jonathan Cameron <Jonathan.Cameron@Huawei.com> suggested.
-> > > 
-> > >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 +++-
-> > >   1 file changed, 3 insertions(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > index 41f93c3ab160..8800af041e5f 100644
-> > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > @@ -3402,7 +3402,9 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
-> > >   	smmu->priq.q.irq = msi_get_virq(dev, PRIQ_MSI_INDEX);
-> > >   	/* Add callback to free MSIs on teardown */
-> > > -	devm_add_action(dev, arm_smmu_free_msis, dev);
-> > > +	ret = devm_add_action_or_reset(dev, arm_smmu_free_msis, dev);
-> > > +	if (ret)
-> > > +		dev_warn(dev, "failed to add free MSIs callback - falling back to wired irqs\n");
-> > 
-> > I am not sure that is the right fix, as allowing the driver to probe
-> > without MSIs, seems worse than leaking MSI memory.
-> > 
-> > IMHO, we can just add something like:
-> >      dev_err(smmu->dev, “Can’t allocate devm action, MSIs are never freed! !\n”) ;
-> 
-> Honestly I don't think this matters. If we ever really did fail to allocate
-> 16 bytes, SLUB would already be screaming and spewing stacktraces, and the
-> system is dead already.
-> 
-> > Also, we can’t unconditionally fallback to wired irqs if MSI exists,
-> > according to the user manual:
-> >      An implementation must support one of, or optionally both of,
-> >      wired interrupts and MSIs
-> >      ...
-> >      The discovery of support for wired interrupts is IMPLEMENTATION DEFINED.
-> > 
-> > We can add some logic, to check dt/acpi irqs and to choose to fallback
-> > or not based on that, but, if we get -ENOMEM, (especially early at
-> > probe) something really went wrong, so I am not sure it’s worth
-> > the complexity.
-> 
-> That logic already exists in arm_smmu_setup_unique_irqs() - the messages
-> here are in the sense of "we're giving up on MSIs and falling back to trying
-> whatever wired IRQs we may or may not have." The critical point is that
-> we're not using MSIs for some potentially actionable reason, i.e. if the
-> user does expect the system to be MSI-capable, then it could be an
-> indication of perhaps a wrong or missing msi-parent, for which they may
-> pursue a firmware fix. In other cases it's normal and expected not to use
-> MSIs though (e.g. the system just doesn't have an ITS), so we don't want to
-> be *too* noisy about it.
-
-The case I am worried about in this patch, is for systems with
-MSIs only.
-With this patch, that means, we fallback to wired irqs which don't
-exist, so the driver will probe with no interrupts at all, which in my
-opinion worse than leaking the memory.
-
-Thanks,
-Mostafa
-> 
-> Thanks,
-> Robin.
-> 
-> > 
-> > >   }
-> > >   static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
-> > > -- 
-> > > 2.34.1
-> > > 
-> > Thanks,
-> > Mostafa
