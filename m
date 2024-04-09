@@ -1,138 +1,164 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2069.outbound.protection.outlook.com [40.107.243.69])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B23EB54BCA
-	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 03:13:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712632413; cv=none; b=GKXxdnDjuUx3/ONjp8OX/3Bi0LR1bZTNq3xuD0oQpDF3fFiHm7qGyG8e09hAzVvQdFpXP0O5vBZ45AGYsEgsSfrWchjmnb36ox3yRZUabvm6VuCUjbDPjs9TOQYZ+G5bbDf0aiTyXEHvrUs3mGiswDDS6nlvWB1jLgOIZ6gPx6c=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712632413; c=relaxed/simple;
-	bh=1kaSOndBlWdCwwnNgxhFKJd0Bhrm4rCSDmsluZI84SA=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=XiBSsMkqlem3BYDV2efSxwGyMVKxbxrP7mA5fWNwD4ybYbR8XeTVyfFcsZU7IKQRovgNU9uy5TyMF3/kUFQsN4z0LJsPc75//nHn70VX/FinALmlbQfFHZPIYN6/xKNSwqix9C3+raXwdgPPM/RokMcQdiZCLmQaV9wQ6OSZ4kY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TdlTELSu; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D8F3433C8
+	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 05:14:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.69
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712639674; cv=fail; b=uK6x7Esw4TH3YHCDUaIRB8ZFPhPtVjjLk2MRy9C18E8X/7DNGadnV39D6nvA022ByxAdCGaG1tCxMKLA6+sIY7/e2+B98nADVX2KcKwsvhGocRpG5ZY7aruylqWO6SBc3YC9M4IX+Fy5RL0GbfsKOgCDqGAHyLoJCpmOLr1HPn0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712639674; c=relaxed/simple;
+	bh=8PNapSFzbYEz9uf3cCxTYYa39cHDWoZmoWzQ7GuBaD4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ruHFR5uJwfdYsJ83zU7W+XbOO5YpTbxuhx+mfsRAa7rIrDmnPxk6VK7JjOyZHvpm9uOd2m4ffQkNuIAcWWJWn8lT2073wiQdMGJYQkkz/nSWnoaSMKY+zS181g8ObQEP/Bpow8X34kHn9mj2ujh7LUcRxVx3lzsSnmKMK5k+tWs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=WnHWLEhi; arc=fail smtp.client-ip=40.107.243.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TdlTELSu"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712632412; x=1744168412;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=1kaSOndBlWdCwwnNgxhFKJd0Bhrm4rCSDmsluZI84SA=;
-  b=TdlTELSuB3B3Op7j6XMPXFXrzqgrTEFRdVlJmZey3Xb50UneMd7uYWyu
-   sbzo4ab2diRqiefzb3At4NJzvSS1+T5k45SoT2E3obj899DtZ8szjPQGO
-   vCoBncxuJAnpG31Im53MYOEgl6qBSUBC1sE9R+BcPQ81Iiy3Dscyr8xtD
-   qXyXTHsB0NGH1Yg3NZHTzuj9WRrzoAi1mG6G6SgPLvSv6ajwwq8hNGVYo
-   89wKhPXyqmk8YJPDOMqJKIRKnZFYXG1b+mcOBC3g3I6nLQzrPKeS3Mz+G
-   AHMW7WNlH0zQ+xhorxBGXdzDJM1MlFbGYQaF0uWxozLu/c2QASNOV9uQ0
-   w==;
-X-CSE-ConnectionGUID: fQd0ae1fSwCMup4REcA2Qw==
-X-CSE-MsgGUID: Doo6WY+sRMSILqF4KpLF9w==
-X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="25435318"
-X-IronPort-AV: E=Sophos;i="6.07,188,1708416000"; 
-   d="scan'208";a="25435318"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 20:13:31 -0700
-X-CSE-ConnectionGUID: GPF679Y3QhS8iAKBJWA5CA==
-X-CSE-MsgGUID: wMtsLq4JRoy9HRUFM4lBEA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,188,1708416000"; 
-   d="scan'208";a="24575021"
-Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa003.fm.intel.com with ESMTP; 08 Apr 2024 20:13:28 -0700
-Message-ID: <aff42b8f-b757-4422-9ebe-741a4b894b6c@linux.intel.com>
-Date: Tue, 9 Apr 2024 11:12:20 +0800
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="WnHWLEhi"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=K0VwkYJ9Mu1ZK/hRnAXzEqjjctmagWZOOJzQ8HinjfObZTbfaU/+hiNH3gJjy8EzSS4RAdhQxR/aNAUvmF5WhgHJKVlb8zYaHccd3sRvKXf5oC8JP10XaefzxHQz73gCHvZKDoGk8/pYHjFFRC/T/9XsxX5NXDLHHuixQcuvA7nsT4v3ZQKT7srvBXXoJEfEZPMT2u2lkqyxCR3R/wYhbkW7jPgYWkHdro97/8a2XBmZtSjljjivFOXj/2PXrZoIooKDzC7spnaKp3mkn74ar9BGk/+D8je9FWg7Y2g9A4GdZQdVt6ZE1CVvaYU/4OuC/2dMvgUXA0uL0kBo2oJgiA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uUrSmRO5rLpun/y92gCI4c19bpzFkLgyu3or9GnDBGM=;
+ b=eWOB0tO6YT4oUX78Uznw/k8cHI9MWwS1NejipIwjI8FcIm0jbTq8x7gT/7+GdJ7p2bXNLQ61Bx+WNAILnWm4DyM9bjvkK7dj2x6vNFvufBPllB6Cw2llh/KolReshZWRlgK6TPmh84GVblt9p8biqGa1KaN2OWvtzgeeflpMgkKbHrFE+x2a69qqq09Rdyt+sYpYzxiVAbeGWt40td5UPUhq3k4ev6us85OZjYpGxINAeOtW2KCApS2CSvcg+zT6qKiptPuOtHBLnLBP1X+V/JBkOOVVcdjjS3E3xZf1kB0ihGKfU7Jqn4nK9mmsf7sKjlo1Pc4k51uJszgttK2Gsg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=uUrSmRO5rLpun/y92gCI4c19bpzFkLgyu3or9GnDBGM=;
+ b=WnHWLEhihY7q7W5hmz2LWAah2+kw7ZZl8VPa8og63yf+lGVDUigoF8CFD6jLIHvC7UUUyxKmCvLOSByDkJHWcJRJ9jpfklIsh8A3OLcPrRsKxzR08P3Pjl2lK96NMog06omZejQ107SWCDtEWZYaNpPIun44NQn2uK0avmAv6yc=
+Received: from CH2PR05CA0018.namprd05.prod.outlook.com (2603:10b6:610::31) by
+ SJ2PR12MB8034.namprd12.prod.outlook.com (2603:10b6:a03:4cb::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7409.46; Tue, 9 Apr 2024 05:14:28 +0000
+Received: from CH2PEPF0000013B.namprd02.prod.outlook.com
+ (2603:10b6:610:0:cafe::42) by CH2PR05CA0018.outlook.office365.com
+ (2603:10b6:610::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.19 via Frontend
+ Transport; Tue, 9 Apr 2024 05:14:28 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CH2PEPF0000013B.mail.protection.outlook.com (10.167.244.68) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7452.22 via Frontend Transport; Tue, 9 Apr 2024 05:14:27 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Tue, 9 Apr
+ 2024 00:14:24 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <suravee.suthikulpanit@amd.com>, <bp@alien8.de>, Vasant Hegde
+	<vasant.hegde@amd.com>, Ashish Kalra <ashish.kalra@amd.com>, Michael Roth
+	<michael.roth@amd.com>, Tom Lendacky <thomas.lendacky@amd.com>
+Subject: [PATCH v2 rc] iommu/amd: Do not enable SNP when V2 page table is enabled
+Date: Tue, 9 Apr 2024 05:13:54 +0000
+Message-ID: <20240409051354.26429-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, iommu@lists.linux.dev,
- Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iommu/vt-d: Remove caching mode check before devtlb
- flush
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20240407144232.190355-1-baolu.lu@linux.intel.com>
- <20240407144232.190355-2-baolu.lu@linux.intel.com>
- <20240408140329.6290377f@jacob-builder>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240408140329.6290377f@jacob-builder>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CH2PEPF0000013B:EE_|SJ2PR12MB8034:EE_
+X-MS-Office365-Filtering-Correlation-Id: 54da2458-af10-4ffb-cb49-08dc5853ee1d
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	J1NMTf++HuXVlii0SxViGW+mY7bm5m5N1eV7AJL2nb/yetTG4Emz8OQMGtUJt9Q396D2o9dFlgjsKKGy08x/mnD6G21qr5uIZvq0B3mbR2Yzb7xevaj1r/Gvg2dNtpmm6OAVNC7syfORw2L1EhnxwFjnO1x3e8kA0KVn3zhFvWawh3PBr5oxgg/Ehate980G1u6fmW6SOIlqT4/lUwbPxHLtKQ7HabL6RCKP4HWtZigfknH2RajvssMNDvNlCCCQJQetQhkP4Ygkbb0rQeal4/xSMVzxifw89dQY0wU5isZ5QXhU+3URrBf8n2i4dSFwV6xLWnCoXmUalaziuErhrfKJ2p1VgjinvykAaD9mTZn4d50NpyOzX5nIBioJwxljqaZUm2ALAG2eeEc/vSkmpjVAuGA3FDWAo8ROcJh4JPVvMbiHGyXaAgaA0pdoO5HonGXAnHTw1noLIAA+noQ2fU0yOf87VooLnLGJtX8+JV1VK+AD2MqqUkhc5zgh7n/N6vTiU7fx98JurAoflYx/5dSosByF74YubyeSNThhHreV4kVXs9/gCrvOdjbajKFfXbrhSSdWStNOJGS8gwX2gMQUKD8GPSDBVHA97rAVsbAGnOzxwMgW3Vt4TULETLfPZLeZXsGpYM9muhjPIkWN23d+ThldF9LHAQ7SBpFGP0f1/xImMSWVD+Fjc5JZ8zf1V5pVbpMtlh/JfDKk0ebSJUDKvsFhm5/WO3Z4LknIu2Gqd7DfcS8nyeV4OV6a7V1K
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(36860700004)(82310400014)(1800799015)(376005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2024 05:14:27.9602
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 54da2458-af10-4ffb-cb49-08dc5853ee1d
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CH2PEPF0000013B.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB8034
 
-On 4/9/24 5:03 AM, Jacob Pan wrote:
-> Hi Lu,
+DTE[Mode]=0 is not supported when SNP is enabled in the host. That means
+to support SNP, IOMMU must be configured with V1 page table (See IOMMU
+spec [1] for the details). If user passes kernel command line to configure
+IOMMU domains with v2 page table (amd_iommu=pgtbl_v2) then disable SNP.
 
-Hi Jacob,
+[1] https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf
 
-> 
-> On Sun,  7 Apr 2024 22:42:32 +0800, Lu Baolu<baolu.lu@linux.intel.com>
-> wrote:
-> 
->> The Caching Mode (CM) of the Intel IOMMU indicates if the hardware
->> implementation caches not-present or erroneous translation-structure
->> entries except the first-stage translation. The caching mode is
->> unrelated to the device TLB , therefore there is no need to check
->> it before a device TLB invalidation operation.
->>
->> Before the scalable mode is introduced, caching mode is treated as
->> an indication that the driver is running in a VM guest. This is just
->> a software contract as shadow page table is the only way to implement
->> a virtual IOMMU. But the VT-d spec doesn't state this anywhere. After
->> the scalable mode is introduced, this doesn't stand for anymore, as
->> caching mode is not relevant for the first-stage translation. A virtual
->> IOMMU implementation is free to support first-stage translation only
->> with caching mode cleared.
->>
->> Remove the caching mode check before device TLB invalidation to ensure
->> compatibility with the scalable mode use cases.
->>
-> I agree with the changes below, what about this CM check:
-> 
-> /* Notification for newly created mappings */
-> static void __mapping_notify_one(struct intel_iommu *iommu, struct dmar_domain *domain,
-> 				 unsigned long pfn, unsigned int pages)
-> {
-> 	/*
-> 	 * It's a non-present to present mapping. Only flush if caching mode
-> 	 * and second level.
-> 	 */
-> 	if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
-> 		iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0, 1);
-> 
-> We are still tying devTLB flush to CM=1, no?
+Cc: Ashish Kalra <ashish.kalra@amd.com>
+Cc: Michael Roth <michael.roth@amd.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+---
+Changes in v2:
+  - Rebased on top of v6.9-rc3 and resolved the conflict.
 
-__mapping_notify_one() is called in the path where some PTEs are changed
-from non-present to present.
+-Vasant
 
-In this scenario,
+ drivers/iommu/amd/init.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-- if CM is set and first-stage translation is not used, the IOTLB caches
-   are required to be explicitly flushed.
-- else if hardware requires write buffer flushing, do it.
-- Otherwise, no op.
-- devtlb invalidation is irrelevant to this path.
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 005981c2f96a..0d9b69765099 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -3215,28 +3215,29 @@ static void iommu_snp_enable(void)
+ 		return;
+ 	/*
+ 	 * The SNP support requires that IOMMU must be enabled, and is
+-	 * not configured in the passthrough mode.
++	 * configured with V1 page table (DTE[Mode] = 0 is not supported).
+ 	 */
+ 	if (no_iommu || iommu_default_passthrough()) {
+ 		pr_err("SNP: IOMMU disabled or configured in passthrough mode, SNP cannot be supported.\n");
+-		cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
+-		return;
++		goto disable_snp;
++	}
++
++	if (amd_iommu_pgtable != AMD_IOMMU_V1) {
++		pr_warn("SNP: IOMMU is configured with V2 page table mode, SNP cannot be supported.\n");
++		goto disable_snp;
+ 	}
+ 
+ 	amd_iommu_snp_en = check_feature(FEATURE_SNP);
+ 	if (!amd_iommu_snp_en) {
+ 		pr_err("SNP: IOMMU SNP feature not enabled, SNP cannot be supported.\n");
+-		cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
+-		return;
++		goto disable_snp;
+ 	}
+ 
+ 	pr_info("IOMMU SNP support enabled.\n");
++	return;
+ 
+-	/* Enforce IOMMU v1 pagetable when SNP is enabled. */
+-	if (amd_iommu_pgtable != AMD_IOMMU_V1) {
+-		pr_warn("Forcing use of AMD IOMMU v1 page table due to SNP.\n");
+-		amd_iommu_pgtable = AMD_IOMMU_V1;
+-	}
++disable_snp:
++	cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
+ #endif
+ }
+ 
+-- 
+2.31.1
 
-The code after the fix appears to do the right thing. devTLB is not
-invalidated in iommu_flush_iotlb_psi() since it's a map (map == 1).
-
-Or perhaps I overlooked anything?
-
-> 
-> If we are running in the guest with second level page table (shadowed), can
-> we decide if devTLB flush is needed based on ATS enable just as the rest of
-> the cases?
-
-I think the ATS check should be consistent. It's generic no matter how
-the IOMMU is implemented (in hardware or emulated in software).
-
-Best regards,
-baolu
