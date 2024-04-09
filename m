@@ -1,49 +1,25 @@
-Received: from smtp-fw-52003.amazon.com (smtp-fw-52003.amazon.com [52.119.213.152])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3281586AF4;
-	Tue,  9 Apr 2024 11:45:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=52.119.213.152
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 7EAD8127B7B
+	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 11:47:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712663152; cv=none; b=fh1NBwGqho9YbKjaQLz/bYK/+6uH75ubXRKqL2aUOtZ9M7S1xP0poKVGhry7fVxtSMUmhcd79Gma0Dz74egnPtpaeKNoSmoHNFHgPDkIJJtgmuE5pTtp9rOMVaepKcdwDiM0mhPW5bJdD8vaACmo5LG4wg9LyAXXeN1iEmsjXyQ=
+	t=1712663223; cv=none; b=A7rYvrvFsmDahui6VvMfMEnupNJGbogsZSVgUWr6TS66q/c0cLUfidTuILFHoYC3EUK/cvKiNMoiJXUNN/oQxzBvAxx0E7jXiNHoLGpHpVC5iM3Lvg1v13XkN4JoiB+8GONFgDAm3vAiRrNnycUsSjP0Uc2IqQSxI9+45ub14qw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712663152; c=relaxed/simple;
-	bh=GFjr+qUI/xJlRfC49pDYbbQ+5mOHCUk/2gN5wZX0VPA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:CC:References:From:
-	 In-Reply-To:Content-Type; b=hh55wpvHymdkrSEv2OdJtyWBeuRe9tpC3+b8hqL/f7AiN09ygLnhCRKoilSvVBRff2X5nDwCzU1mfpJ0bhjOxzdYhR9PqcC1kovil7n+lmvGNCBA+jFuxlM56/cH7FYnWAEMo4ZtkK6ATcjELv/T6PEoFqGZkoCovvWX9qOFShU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com; spf=pass smtp.mailfrom=amazon.de; dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b=Re2MZHX5; arc=none smtp.client-ip=52.119.213.152
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amazon.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=amazon.de
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amazon.com header.i=@amazon.com header.b="Re2MZHX5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1712663151; x=1744199151;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=GFjr+qUI/xJlRfC49pDYbbQ+5mOHCUk/2gN5wZX0VPA=;
-  b=Re2MZHX5GydCM8B6KilkbcXlSGPSLv0DHVNAFcmqvWsd0IZ1NH+wl46p
-   jp+rvzqYg9VvAX9wn3JpJghaHuXQWE2yPEhE8P08rq+2tVNxto7uD3tbV
-   QrLFtsNiMvuJGKG0kOuG7Rz2NIhkvDaaqqVhKqvF/2RhKVIbglEWBhS4x
-   g=;
-X-IronPort-AV: E=Sophos;i="6.07,189,1708387200"; 
-   d="scan'208";a="650727234"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO smtpout.prod.us-west-2.prod.farcaster.email.amazon.dev) ([10.43.8.6])
-  by smtp-border-fw-52003.iad7.amazon.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 11:45:43 +0000
-Received: from EX19MTAUWC002.ant.amazon.com [10.0.21.151:49900]
- by smtpin.naws.us-west-2.prod.farcaster.email.amazon.dev [10.0.27.169:2525] with esmtp (Farcaster)
- id 3f52ccb2-10c8-4639-a2de-4651f9e21034; Tue, 9 Apr 2024 11:45:42 +0000 (UTC)
-X-Farcaster-Flow-ID: 3f52ccb2-10c8-4639-a2de-4651f9e21034
-Received: from EX19D020UWC004.ant.amazon.com (10.13.138.149) by
- EX19MTAUWC002.ant.amazon.com (10.250.64.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1258.28; Tue, 9 Apr 2024 11:45:38 +0000
-Received: from [0.0.0.0] (10.253.83.51) by EX19D020UWC004.ant.amazon.com
- (10.13.138.149) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.28; Tue, 9 Apr
- 2024 11:45:22 +0000
-Message-ID: <7c82670e-6063-4b0f-9bbf-805a0d949d84@amazon.com>
-Date: Tue, 9 Apr 2024 13:45:18 +0200
+	s=arc-20240116; t=1712663223; c=relaxed/simple;
+	bh=i5AH29WhKinYbSz33pvKiQWhYew5DFICwVHBn8QBFcc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uNlc6mHO6yxXDN6UlAHxhgYDkavzzV6nWNKtKOs2nGfge44K/+idFtJ/phVDBWNVp72EoyF99fqNPu53pFccrSTAL8D7dSerlCtmAgb3mdX1g2KQUqguq0P8+S2SgHdMNszvEsqLGWkQjZucc89brlJT7KAxl7ZjygjGTlZeZNc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 349A51007;
+	Tue,  9 Apr 2024 04:47:31 -0700 (PDT)
+Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 94BEF3F766;
+	Tue,  9 Apr 2024 04:46:59 -0700 (PDT)
+Message-ID: <2af66586-c528-43be-adee-e1eb6baf00fd@arm.com>
+Date: Tue, 9 Apr 2024 12:46:58 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -51,68 +27,108 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 15/25] misc: nsm: drop owner assignment
-Content-Language: en-US
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, "Michael S. Tsirkin"
-	<mst@redhat.com>, Jason Wang <jasowang@redhat.com>, Xuan Zhuo
-	<xuanzhuo@linux.alibaba.com>, Jonathan Corbet <corbet@lwn.net>, "David
- Hildenbrand" <david@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>, "Richard
- Weinberger" <richard@nod.at>, Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Johannes Berg <johannes@sipsolutions.net>, Paolo Bonzini
-	<pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>, Jens Axboe
-	<axboe@kernel.dk>, Marcel Holtmann <marcel@holtmann.org>, "Luiz Augusto von
- Dentz" <luiz.dentz@gmail.com>, Olivia Mackall <olivia@selenic.com>, Herbert
- Xu <herbert@gondor.apana.org.au>, Amit Shah <amit@kernel.org>, Arnd Bergmann
-	<arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Gonglei
-	<arei.gonglei@huawei.com>, "David S. Miller" <davem@davemloft.net>, "Sudeep
- Holla" <sudeep.holla@arm.com>, Cristian Marussi <cristian.marussi@arm.com>,
-	Viresh Kumar <vireshk@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
-	Bartosz Golaszewski <brgl@bgdev.pl>, David Airlie <airlied@redhat.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>, Maxime Ripard
-	<mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>, Daniel Vetter
-	<daniel@ffwll.ch>, Jean-Philippe Brucker <jean-philippe@linaro.org>, "Joerg
- Roedel" <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
-	<robin.murphy@arm.com>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski
-	<kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Eric Van Hensbergen
-	<ericvh@kernel.org>, Latchesar Ionkov <lucho@ionkov.net>, Dominique Martinet
-	<asmadeus@codewreck.org>, Christian Schoenebeck <linux_oss@crudebyte.com>,
-	Stefano Garzarella <sgarzare@redhat.com>, Kalle Valo <kvalo@kernel.org>, "Dan
- Williams" <dan.j.williams@intel.com>, Vishal Verma
-	<vishal.l.verma@intel.com>, Dave Jiang <dave.jiang@intel.com>, Ira Weiny
-	<ira.weiny@intel.com>, "Pankaj Gupta" <pankaj.gupta.linux@gmail.com>, Bjorn
- Andersson <andersson@kernel.org>, Mathieu Poirier
-	<mathieu.poirier@linaro.org>, "James E.J. Bottomley" <jejb@linux.ibm.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>, Vivek Goyal
-	<vgoyal@redhat.com>, Miklos Szeredi <miklos@szeredi.hu>, "Anton Yakovlev"
-	<anton.yakovlev@opensynergy.com>, Jaroslav Kysela <perex@perex.cz>, Takashi
- Iwai <tiwai@suse.com>
-CC: <virtualization@lists.linux.dev>, <linux-doc@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-um@lists.infradead.org>,
-	<linux-block@vger.kernel.org>, <linux-bluetooth@vger.kernel.org>,
-	<linux-crypto@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-gpio@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-	<iommu@lists.linux.dev>, <netdev@vger.kernel.org>, <v9fs@lists.linux.dev>,
-	<kvm@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
-	<nvdimm@lists.linux.dev>, <linux-remoteproc@vger.kernel.org>,
-	<linux-scsi@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-	<alsa-devel@alsa-project.org>, <linux-sound@vger.kernel.org>
-References: <20240331-module-owner-virtio-v2-0-98f04bfaf46a@linaro.org>
- <20240331-module-owner-virtio-v2-15-98f04bfaf46a@linaro.org>
-From: Alexander Graf <graf@amazon.com>
-In-Reply-To: <20240331-module-owner-virtio-v2-15-98f04bfaf46a@linaro.org>
-X-ClientProxiedBy: EX19D035UWA002.ant.amazon.com (10.13.139.60) To
- EX19D020UWC004.ant.amazon.com (10.13.138.149)
-Content-Type: text/plain; charset="utf-8"; format="flowed"
-Content-Transfer-Encoding: base64
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Free MSIs in case of ENOMEM
+Content-Language: en-GB
+To: Mostafa Saleh <smostafa@google.com>
+Cc: Aleksandr Aprelkov <aaprelkov@usergate.com>, Will Deacon
+ <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Nicolin Chen <nicolinc@nvidia.com>,
+ Michael Shavit <mshavit@google.com>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Marc Zyngier <maz@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240403053759.643164-1-aaprelkov@usergate.com>
+ <ZhUbw6gAeBjpFz5C@google.com> <8a7f0218-39e3-4e4b-ba99-7fe4389fb703@arm.com>
+ <ZhUnK1-Pvcix5dyI@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <ZhUnK1-Pvcix5dyI@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-Ck9uIDMxLjAzLjI0IDEwOjQ0LCBLcnp5c3p0b2YgS296bG93c2tpIHdyb3RlOgo+IHZpcnRpbyBj
-b3JlIGFscmVhZHkgc2V0cyB0aGUgLm93bmVyLCBzbyBkcml2ZXIgZG9lcyBub3QgbmVlZCB0by4K
-Pgo+IFNpZ25lZC1vZmYtYnk6IEtyenlzenRvZiBLb3psb3dza2kgPGtyenlzenRvZi5rb3psb3dz
-a2lAbGluYXJvLm9yZz4KCgpSZXZpZXdlZC1ieTogQWxleGFuZGVyIEdyYWYgPGdyYWZAYW1hem9u
-LmNvbT4KCgpBbGV4CgoKCgpBbWF6b24gRGV2ZWxvcG1lbnQgQ2VudGVyIEdlcm1hbnkgR21iSApL
-cmF1c2Vuc3RyLiAzOAoxMDExNyBCZXJsaW4KR2VzY2hhZWZ0c2Z1ZWhydW5nOiBDaHJpc3RpYW4g
-U2NobGFlZ2VyLCBKb25hdGhhbiBXZWlzcwpFaW5nZXRyYWdlbiBhbSBBbXRzZ2VyaWNodCBDaGFy
-bG90dGVuYnVyZyB1bnRlciBIUkIgMTQ5MTczIEIKU2l0ejogQmVybGluClVzdC1JRDogREUgMjg5
-IDIzNyA4NzkKCgo=
+On 09/04/2024 12:31 pm, Mostafa Saleh wrote:
+> Hi Robin,
+> 
+> On Tue, Apr 09, 2024 at 12:17:54PM +0100, Robin Murphy wrote:
+>> On 09/04/2024 11:43 am, Mostafa Saleh wrote:
+>>> Hi Aleksandr,
+>>>
+>>> On Wed, Apr 03, 2024 at 12:37:59PM +0700, Aleksandr Aprelkov wrote:
+>>>> If devm_add_action() returns ENOMEM, then MSIs allocated but
+>>>> not freed on teardown.
+>>>>
+>>>> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+>>>>
+>>>> Fixes: 166bdbd23161 ("iommu/arm-smmu: Add support for MSI on SMMUv3")
+>>>> Signed-off-by: Aleksandr Aprelkov <aaprelkov@usergate.com>
+>>>> ---
+>>>> v2: Use appropriate function for registration failure as
+>>>> Jonathan Cameron <Jonathan.Cameron@Huawei.com> suggested.
+>>>>
+>>>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 +++-
+>>>>    1 file changed, 3 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> index 41f93c3ab160..8800af041e5f 100644
+>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>>> @@ -3402,7 +3402,9 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+>>>>    	smmu->priq.q.irq = msi_get_virq(dev, PRIQ_MSI_INDEX);
+>>>>    	/* Add callback to free MSIs on teardown */
+>>>> -	devm_add_action(dev, arm_smmu_free_msis, dev);
+>>>> +	ret = devm_add_action_or_reset(dev, arm_smmu_free_msis, dev);
+>>>> +	if (ret)
+>>>> +		dev_warn(dev, "failed to add free MSIs callback - falling back to wired irqs\n");
+>>>
+>>> I am not sure that is the right fix, as allowing the driver to probe
+>>> without MSIs, seems worse than leaking MSI memory.
+>>>
+>>> IMHO, we can just add something like:
+>>>       dev_err(smmu->dev, “Can’t allocate devm action, MSIs are never freed! !\n”) ;
+>>
+>> Honestly I don't think this matters. If we ever really did fail to allocate
+>> 16 bytes, SLUB would already be screaming and spewing stacktraces, and the
+>> system is dead already.
+>>
+>>> Also, we can’t unconditionally fallback to wired irqs if MSI exists,
+>>> according to the user manual:
+>>>       An implementation must support one of, or optionally both of,
+>>>       wired interrupts and MSIs
+>>>       ...
+>>>       The discovery of support for wired interrupts is IMPLEMENTATION DEFINED.
+>>>
+>>> We can add some logic, to check dt/acpi irqs and to choose to fallback
+>>> or not based on that, but, if we get -ENOMEM, (especially early at
+>>> probe) something really went wrong, so I am not sure it’s worth
+>>> the complexity.
+>>
+>> That logic already exists in arm_smmu_setup_unique_irqs() - the messages
+>> here are in the sense of "we're giving up on MSIs and falling back to trying
+>> whatever wired IRQs we may or may not have." The critical point is that
+>> we're not using MSIs for some potentially actionable reason, i.e. if the
+>> user does expect the system to be MSI-capable, then it could be an
+>> indication of perhaps a wrong or missing msi-parent, for which they may
+>> pursue a firmware fix. In other cases it's normal and expected not to use
+>> MSIs though (e.g. the system just doesn't have an ITS), so we don't want to
+>> be *too* noisy about it.
+> 
+> The case I am worried about in this patch, is for systems with
+> MSIs only.
+> With this patch, that means, we fallback to wired irqs which don't
+> exist, so the driver will probe with no interrupts at all, which in my
+> opinion worse than leaking the memory.
 
+True, the logic looks a bit off at first glance - I was halfway through 
+writing a reply to that effect - but then if you look past the reality 
+that this is all academic since it's never really going to happen 
+anyway, if we *did* fail to allocate 16 bytes here, there's an 
+incredibly high chance that immediately proceeding into 
+iommu_device_sysfs_add() is also going to result in another (larger) 
+allocation failure which ends up aborting the whole probe anyway. Plus 
+the chance of subsequently being able to allocate any 
+domains/pagetables/etc. for any meaningful IOMMU usage would seem slim.
+
+Honestly I'd be inclined to do nothing more than add the _or_reset to 
+shut the static checkers up, and not waste code and data on a useless 
+message for a theoretical condition at all.
+
+Cheers,
+Robin.
