@@ -1,134 +1,178 @@
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam04on2136.outbound.protection.outlook.com [40.107.101.136])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D0C3158DCD
-	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 23:48:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.177
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712706484; cv=none; b=n3K4H18y+hKJowNH1VpC1X4LGKi4en3IKi0LmPzh7aS+Gs8TTD2OhoHQyYCAHxfzjTz9REqIdoiurGWG8yrp4dDeIbpijPFsOjIk/G9KaTwRDStuTz7iEiZ4f9xRseBMBZgsXcZ9RPcpR2v/GovHe+jS+N4s5c48UMeCQ07q8Q4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712706484; c=relaxed/simple;
-	bh=08qq5HCWlZ+kc23Un20MVp8h4gAK+quDdzQ4miFER2U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PZHHIdjPbZXbgVSF1QF3NRX/6qWUOUMG5iAEGJAUe4qaPoFUSxsK18U4iTEHAI/v2wNDqT/02CoKQh+NmneNTx6nnocxtNi1viBxf4oDcbgbIq9ZpJMyayyqGYW5mkXv1Arr3DOASINK88fNpBXrcAjz/1dMdL/aPpid8lN3RFg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=jLtwv090; arc=none smtp.client-ip=209.85.222.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9108158851;
+	Tue,  9 Apr 2024 23:55:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.101.136
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712706918; cv=fail; b=likPtUuoDE0t9EixbD1hgH/dvo6DTtIZT2vB4fEN5kZvTL28qQOaP7NuVIeEzB4H/mhPmwyuxmfejJ9AsgjNs6/jpYCrlKVKLGYpaDbBx55R/BtCkg1MBlcQWbzA/7/5y7kvsX/TeiVn5UCJg7s6nPsb9jw+3MyL/xfc2pHFhyM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712706918; c=relaxed/simple;
+	bh=CzQQUkwKG9Uz8tce+QZcYK1QiXvG+BABYA8yNBTQAo0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=TUG/3STSPkcoZtENC78G6a9X/bpnpCGtvpfaRAinid78fH3r3PoILfj0oqfeSlmNK5qKTo49qO7s0x+szhi39R45+5gFbwxs7vCtHYu2GtGG2ougatDia9+q5nSpeSk06kBVb2WXk1aT3VldvC/y9lucLifRT2mWYD9osIQOes8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=JWzr/7er; arc=fail smtp.client-ip=40.107.101.136
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="jLtwv090"
-Received: by mail-qk1-f177.google.com with SMTP id af79cd13be357-78d555254b7so292624285a.1
-        for <iommu@lists.linux.dev>; Tue, 09 Apr 2024 16:48:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1712706482; x=1713311282; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=VhYxjqqqLEZ4NmXo+SZfv1SY139w6T7h5FSNcRUkNNQ=;
-        b=jLtwv090u1/uRFHigKJne97B0Hz6SMOBiPsdnVzGG28cJByeeWcjTK/zp3lWHd4xZ+
-         +vKyCIwKoy8TNmH7KeApmqkZqOLO5k+aibl5LAMzSC4x3UMP7Vo70U/m2bYYIn+OXv9F
-         Ma4fnybGHi+OTg0qSnq+xf9MpEyUSk+v0JdaOS++TNHrg6HOQUqGrGmpld341v89B5+Z
-         n34pIgbEj0L/Tnz7GOj1NzzJxJTlA4Exe5PCUBsq1pih2gwHAw3mGym08mr1z7wL+Dte
-         wqpmOpDwhNr2J/5Hh75Wog1/P4AQeEt5/Euo/w7LE7IZPh346cAO6p0yC+p25GSJqtCq
-         evrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712706482; x=1713311282;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VhYxjqqqLEZ4NmXo+SZfv1SY139w6T7h5FSNcRUkNNQ=;
-        b=VqTQW2pam00lJXiOy98GlprHSeFn2SdybqudBiALAHsxd7YRw4kii7kjK0v0aLT0K0
-         IjfRmWGjrFoMK8x5/O00lgojxbQGKvG4i8iCqjDayDL6dsl5315hDRvhAEEDLVxp7r3Q
-         TviGNI6uQZG0KW5H6cupl67BZQBcZFJVKiI51oYB54z9tzw0qRftUBvdm1Do9pwskJYx
-         Kc/fs5dUiAsBOTZPXT2h2vQLni4zR8a2705L5iGaDdxuo81Dt9UAHvwac/Yv2/dvjvMw
-         gfrGRMpSauF8tPMQrdinVC4aY1VC3hMX9aJJfv71mZplsIHyOzb8FyoH+rcLF+MtRXa8
-         WPyw==
-X-Forwarded-Encrypted: i=1; AJvYcCUhI4OtcIwW+pdsqxw8RrzXKXdxrWuGyMVnaDEMAG4Kgsq4cQXOKKpzELuQkB0uYGwG76r7sNABF1lXAOlMFnxesPrOWm4=
-X-Gm-Message-State: AOJu0YzapX5+RwXoZ/VgLcsXmWaTqeHEOjBgfkNg1V+oYHXWgdJo8IpK
-	YHStaTBE1BA+GjbHu7m2F8Q5HAS9IvZ+eY2ZWnkaa5w8ZpFe+nB7Em+tCA8wSfQ=
-X-Google-Smtp-Source: AGHT+IF1pNgXaBW/Yn6UlU21y660oCrae0FfmY/a+9BPxXzGL3pwhOQklD3p33dxkbP8tOGj4Kgh6A==
-X-Received: by 2002:a05:620a:370b:b0:78d:37bf:74cf with SMTP id de11-20020a05620a370b00b0078d37bf74cfmr6318076qkb.5.1712706481980;
-        Tue, 09 Apr 2024 16:48:01 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id j26-20020ac84c9a000000b00434f880039asm428978qtv.70.2024.04.09.16.48.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Apr 2024 16:48:01 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1ruLC4-007GFW-Ju;
-	Tue, 09 Apr 2024 20:48:00 -0300
-Date: Tue, 9 Apr 2024 20:48:00 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="JWzr/7er"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Glt23dBocv6icH21A2abW4wBUMWjwotFpJL00lokCAbkYiSVUuW+9Wqa0Y8SuOryteU2nWsGSgdxuLQdwpdv/tIu33u2iteZpDVwbk6jsDtpTYIVeF4YS1jv0r77OyiReu8G1fZoH1h5a3LA5mcV5uK7tEbHd8UcLMfP1iNnKeUY999UxSqgO2bi1SJFJyWIXP+tLQZNECwEui8TuBoL8TP7mL8VFOoR1LzD1P3GEJZWvzExrDdZA0Njtvwvqih42y+w4QpYLV/X1uLQKVdhS721gWpYS2tIHJUZVz+b/RgAIFe8RkcDx1pWm/YJdc5yXGRNelBLoicYsbaB64XCaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aKB3S7fO9qynBggZ2CqLbdoD1ufspL3iD71dFVHX1ZA=;
+ b=O0rx5vbJw86VDKAZ7QSny2uXpybLSE6DVf7M/K7+ieO/CRT4FBVBg4I/mJN4Del6whc3gFCXmL0Q72LMCJwBJriTHY6useFE60OWDYHOjO05M0/Xw5WWcqjsoJeF+nB28wUIVox49bL8mV4miiarkcqg+2c185F8RKi+a6W/kaNg9gx19eaONM6tWkx5u64rUnRpfA2rf5eJYvbZ3QTvx58vwGSQfKES3DDBm7fhPnKcIslEesaJ15WicW0te+2RX3xn9/+77ioekqS4hMNnajRInEj/F5E8ADO26Qo7rHP8TmcG/5byx/VXP+4ulpO73AmThV8yk68cMDe2RDb2iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aKB3S7fO9qynBggZ2CqLbdoD1ufspL3iD71dFVHX1ZA=;
+ b=JWzr/7ernqRDTCSImUy//cbY0MjN/hKTS2xjJF7oedXEZjN9nL6wFWss2gJeNaJREOfNl3P+tFRjGScKl2JFnPfyJUp+iMgM9usqeuwflt7vJnPSauwBPFATzizYFPrcvHU1OWgdNNNHn+7EIeoFcSF6KIPrWvbo1V6Xz80yNn5b3t5gLYVbClH7EUfM/4rBke2sqPLgqSX70nwuK0AqccjmQ6SsbMMyzAuVrhdzlYrVxpXS6849w0rtu5Ddbt7iU30BJkSIdrR4Oj9n3LK3jk957JDvsBIirLB7Ioe9PM6pgwZp8pI/oSeZ/1iptSATIUG28Ml/zt5IWbdirOXJug==
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by SN7PR12MB6768.namprd12.prod.outlook.com (2603:10b6:806:268::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.46; Tue, 9 Apr
+ 2024 23:55:13 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7409.053; Tue, 9 Apr 2024
+ 23:55:13 +0000
+Date: Tue, 9 Apr 2024 20:55:12 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Eric Auger <eric.auger@redhat.com>,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/9] iommu: Replace sva_iommu with iommu_attach_handle
-Message-ID: <20240409234800.GD223006@ziepe.ca>
-References: <20240403011519.78512-1-baolu.lu@linux.intel.com>
- <20240403011519.78512-3-baolu.lu@linux.intel.com>
- <20240403115913.GC1363414@ziepe.ca>
- <e3f526e3-6474-49ff-b8d6-995aaf1c1830@linux.intel.com>
- <20240408141946.GB223006@ziepe.ca>
- <86e723e7-c3be-41b1-95d8-dbdf86bbdab5@linux.intel.com>
+	Joerg Roedel <jroedel@suse.de>, Kevin Tian <kevin.tian@intel.com>,
+	kernel test robot <lkp@intel.com>, Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>, Tony Zhu <tony.zhu@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>, Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH v6 06/29] iommu/arm-smmu-v3: Add an ops indirection to
+ the STE code
+Message-ID: <20240409235512.GK5383@nvidia.com>
+References: <0-v6-228e7adf25eb+4155-smmuv3_newapi_p2_jgg@nvidia.com>
+ <6-v6-228e7adf25eb+4155-smmuv3_newapi_p2_jgg@nvidia.com>
+ <20240409124007.GA23088@willie-the-truck>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240409124007.GA23088@willie-the-truck>
+X-ClientProxiedBy: MN2PR02CA0036.namprd02.prod.outlook.com
+ (2603:10b6:208:fc::49) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <86e723e7-c3be-41b1-95d8-dbdf86bbdab5@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|SN7PR12MB6768:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	iha2ONaMvoRy4+M9ATiHy3fCnBEkqTTTLm5wFl+YWvFqKWsCfMZ9KxBK3dO2Y9aNGnrdj3qdDGLAzkO74qUK7yDHl1P2nhy1wfDHTxMMmd8+U+DrHh7Nw0rTnf/cAsrvH0KuJna2OO8uxyBamAq0jZNjLrvo3LZvuMC3B25/MZq9D91b3hQPkdOEL+Agp35+S/ZltGyic3XPjP9xF4iE1CLU78+R4drYQgA6YvUSskZ7gHFpSOw5SMu5CmMdBrRzhWPgCJUnVuQUoZxt4gwZlfxutjgCA2NxGsvDu2rCRq++n5Noss6DUs2/oZcsxr9lTw/glBo9rck1NDn/jzTQdcfI/cVQWNHPVUoYopVNWB3n453ShzvVejqFUeGBXXVs3Fybrn9/Vk8xdwwJqRxzy/7BsIhLK3INCNwvXw8/prHZj4L6lL8soETuF7mHnnStzgEqw5/Ua7JHilmAFpHtEKPSXohHqSMN4AdKDtbuGjniCNKsc47lliObABZIENhIKfR9RjQoOc3Fn0LOejZfFsUt80SWnevbddNa7pejDuXCw1BmWSCSECx2iGzmEjbIyTA7roXoxJ6DDP5IrBwGozE0Lzb27gm+pfDnrYBfQtP0boPPtQZ1qQjK2hqOpFpWtI+6IcnPMl8u+nKxAknA443V7T5NZK8Cn72FF98EF7s=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(7416005)(376005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?MDV9lA1CrWcXOuhwbYeRb2SxaDH4SqNmEC1jaMmUI4Is7dIcPAFWk7by1uQj?=
+ =?us-ascii?Q?yCYA+Bi6BVnIjJvww/2D+IIBV22pHtn5TC0Op2kM2LFEVb2FrREUzY2SZSjI?=
+ =?us-ascii?Q?jHDFp26W3QHyjiNdsQUzJkwLNbGxIH0MLMQudybnc8Sb4bi7PElVi01lKNwm?=
+ =?us-ascii?Q?Ezn3ktcj8++jWZq0yqWh8RID8q3r6mNs3F9QzqeiiXZO/TBw02eO+HR4CvQQ?=
+ =?us-ascii?Q?gkBYESy/e+Rc5aYPVHPpWYNgSIhRXukoi306Lx7SdMIu4y7POQHjBg807dAK?=
+ =?us-ascii?Q?seGpf7erjchmwWF65wXvfr94afpqLVcxbQEn8bGQETgJ9ATkYjYQ5WGNUHX5?=
+ =?us-ascii?Q?2p/5CrZdos37mR4BZKliZjhSMhQEYSc6YLWglR7w1Hbtz0zHcf56LVCD5C09?=
+ =?us-ascii?Q?lowdDhjfbLIux/xs+DE8ATqq/e8QQ1UFzsnxd/Soemz/EAvj2VGxmoiSAyUC?=
+ =?us-ascii?Q?OLNgo4EOGRclWd9Q6bm4XHrSqQ9RcT+cGoOK7lqpjLmVUDkjeO5tVFf236fd?=
+ =?us-ascii?Q?oa7qlBBUec+XRRarOS8xMxD70sxT7l+atH6ty5fS0CX4/VBKYom6c3j6wXPJ?=
+ =?us-ascii?Q?OW1nEn+hUv+b/QRO1s79RbGLE9x2msZIxCWD9jS7OlRlXJIfU1jXRNFZT8g4?=
+ =?us-ascii?Q?UqDSThcydS0HedP5Tha8SyC9XdvJn6QpgCCDC5OJcEjiY1TDcFFL62dVvhqR?=
+ =?us-ascii?Q?n777mEFgS5OioJe4CyPPuuhTv3b8my4orKfxICO67OdvSljDUFSLED5aB6ij?=
+ =?us-ascii?Q?Ejgt4cUdgnT1FLqnhDxsfyifrxfyDM2l2PDN6K+fPzsq294hB1MsxwaqQKnB?=
+ =?us-ascii?Q?qOKfLzEZPQmeDR2gx53THQvTGF7QRkNQROmihtTU6zs2U4vi1K2isT6/zIQ8?=
+ =?us-ascii?Q?9zVYJzveIgycCxrtp77tz36T64QWkRGPLYAx8HBpUNI71S9x2fiP+Dvo2nEv?=
+ =?us-ascii?Q?zcCQ+LtU7IztFc5IiLB2mV8Empe20E8F7hhA+RxkPwVhAhy0p3rt7PRaqtYm?=
+ =?us-ascii?Q?ACMkboA3wP4+HCEyn8tYzi4L/hvWZZxMkOkz4b42HIPjeRNywc+ljMb9zXjb?=
+ =?us-ascii?Q?IJwT70X1MsdzzfYZn/89d+eNmkBcJiYRLLglm6/EBvSskfJcj+Rg6sEVxJnF?=
+ =?us-ascii?Q?o8X+cuUZ5C2MbzZrnVmC2HBxoqt5XC5rEccrA1IjHRT4K8zwRZvoZ35O/ARt?=
+ =?us-ascii?Q?BWVWFLlEUoM+6ejB4stIZ2pjqlvAPzqRS5lGizu3ssIHb/PlF3YPfx+2KUh0?=
+ =?us-ascii?Q?6gWLs1EkQeprHvuJHlIemcsDTIGeAhiBCkmmmXFTVXSVqvl7VBRFZRYaWuu1?=
+ =?us-ascii?Q?afWqPMHKd1GCM4pHuzwBvJBZtMl1ULZxv237lIECtHFQhWWBdK/S6WHSMMNE?=
+ =?us-ascii?Q?vzPmm7E+07DgGy0m5CcfA1/PPKbKt8014bAxguHSwGCZwJe8fxEgChhy89JH?=
+ =?us-ascii?Q?x6wJv266XoXNsVM4o1KbabcR1UlsdawjIncOEZ59L5ySyIyJ/+vm7Xo2yZyy?=
+ =?us-ascii?Q?M8yY/IqJLD5fIxMKl1Zb/fxC8xGrqOA5yyDphdj5fEpQ+DOewoOej0mQgqZD?=
+ =?us-ascii?Q?lkd3vDpTv8qqO57z6tsPxWWoSoiUvLka0dguczvz?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f31e57cd-3365-4c60-c661-08dc58f07f67
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2024 23:55:13.4059
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: IbuGLN4vzm4CkiQgl4/vi14niBne2wp8Q6Cn+MWKS1vwyTenMJYCTmfi6LgNBpig
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6768
 
-On Tue, Apr 09, 2024 at 10:11:28AM +0800, Baolu Lu wrote:
-> On 4/8/24 10:19 PM, Jason Gunthorpe wrote:
-> > On Sat, Apr 06, 2024 at 02:09:34PM +0800, Baolu Lu wrote:
-> > > On 4/3/24 7:59 PM, Jason Gunthorpe wrote:
-> > > > On Wed, Apr 03, 2024 at 09:15:12AM +0800, Lu Baolu wrote:
-> > > > > +	/* A bond already exists, just take a reference`. */
-> > > > > +	handle = iommu_attach_handle_get(group, iommu_mm->pasid);
-> > > > > +	if (handle) {
-> > > > > +		mutex_unlock(&iommu_sva_lock);
-> > > > > +		return handle;
-> > > > >    	}
-> > > > At least in this context this is not enough we need to ensure that the
-> > > > domain on the PASID is actually an SVA domain and it was installed by
-> > > > this mechanism, not an iommufd domain for instance.
-> > > > 
-> > > > ie you probably need a type field in the iommu_attach_handle to tell
-> > > > what the priv is.
-> > > > 
-> > > > Otherwise this seems like a great idea!
-> > > Yes, you are right. For the SVA case, I will add the following changes.
-> > > The IOMMUFD path will also need such enhancement. I will update it in
-> > > the next version.
-> > The only use for this is the PRI callbacks right? Maybe instead of
-> > adding a handle type let's just check domain->iopf_handler  ?
+On Tue, Apr 09, 2024 at 01:40:08PM +0100, Will Deacon wrote:
+> On Wed, Mar 27, 2024 at 03:07:52PM -0300, Jason Gunthorpe wrote:
+> > Prepare to put the CD code into the same mechanism. Add an ops indirection
+> > around all the STE specific code and make the worker functions independent
+> > of the entry content being processed.
 > > 
-> > Ie SVA will pass &ommu_sva_iopf_handler as its "type"
+> > get_used and sync ops are provided to hook the correct code.
+> > 
+> > Signed-off-by: Michael Shavit <mshavit@google.com>
+> > Reviewed-by: Michael Shavit <mshavit@google.com>
+> > Tested-by: Nicolin Chen <nicolinc@nvidia.com>
+> > Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > ---
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 170 ++++++++++++--------
+> >  1 file changed, 102 insertions(+), 68 deletions(-)
 > 
-> Sorry that I don't fully understand the proposal here.
+> Any chance we can pull the STE testing stuff forward from Michael once
+> we have the entry writing ops indirection, please? It would be nice to
+> land that before adding the CD support, I think.
 
-I was talking specifically about the type field you suggested adding
-to the handle struct.
+Yes, I can. There is a bit more work because the CD testing is still
+not finished, but I can probably do that.
 
-Instead of adding a type field check the domain->iopf_handler to
-determine the domain and thus handle type.
+How about this, I split part 2 into half and the first half ends at
+"iommu/arm-smmu-v3: Build the whole CD in arm_smmu_make_s1_cd()" (it
+finishes changing the CD programming to look like the STE). I'll pull
+forward the selftest patch into that series. That is another 9 patches
+from what you have taken so far.
 
-> The problem is that the context code (SVA, IOMMUFD, etc.) needs to make
-> sure that the attach handle is really what it has installed during
-> domain attachment. The context code needs some mechanism to include some
-> kind of "owner cookie" in the attach handle, so that it could check
-> against it later for valid use.
+The second half is all about "building a generic pasid layer".
 
-Right, you have a derived struct for each user and you need a way to
-check if casting from the general handle struct to the derived struct
-is OK.
+Those 8 patches have all been looked at now, so if we pick them up
+soonish we can more easially focus on the latter patches.
 
-I'm suggesting using domain->iopf_handle as the type key.
+Agree?
 
+> >  	used_qword_diff =
+> > -		arm_smmu_entry_qword_diff(entry, target, &unused_update);
+> > +		arm_smmu_entry_qword_diff(writer, entry, target, unused_update);
+> >  	if (hweight8(used_qword_diff) == 1) {
+> >  		/*
+> >  		 * Only one qword needs its used bits to be changed. This is a
+> 
+> nit: This comment (lost in the diff context) refers to STEs a couple of
+> times. Please update to e.g. "STE/CD".
+
+Ok, I'll check them
+
+Thanks,
 Jason
