@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B26E58BF9
-	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 01:35:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2E2879E1
+	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 01:54:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712626526; cv=none; b=XzAz9kHpP/bxIEzqtaRQ6lkCzb3JrkA3D7hCfOSGXGXotqVIa+Mjgni1EU6HrILZI3Z/RTGaBfRatdou6pzj0QeZCGY5reO//S+9/wl28jG0tMGCP6uch3E3drMMuxvEj9yEe/TUA0S/N60AgX9CsPzyuQrgBdkxgHPQjqMbqqs=
+	t=1712627680; cv=none; b=H0bLX2hKJvEOoFzZDTBRlyN0GSVUZII2zutbn/Lv90mkDubSkZl5H1m4EymNlqGeoq2E3OPTfVH2POXskq5cmY2wlxTxpyfM1M5LenYjCKjrBKjdMPY4okjjNphfLjXKGhNQCANd7IpKOXlEpkzScQLoNVvgQNSUdQtHluo2xUY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712626526; c=relaxed/simple;
-	bh=IhuMnUPP6sRdUkY89cClHaimdn+5/NV34NjQx6c1MCI=;
+	s=arc-20240116; t=1712627680; c=relaxed/simple;
+	bh=cP1SbuC4f3QZPYcto5RfNrOvo22XXm4PnBqKOlfeabw=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=byIHIiwxFaUuLL4ueT4+o3K3ZZMKzEJS8iCHmn9iJ7ZJEIr3kILraPuDKLllv+oLdyRvnxBzbCvZp/YMZIeQInhsEbibv9xtx1RnuHDvOlSQKxYdqBXuLyLxejVeRTdrqO9WwEKGF76JBRLL/MXfatq/fm216mnhuSjP4/oKcnk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jIOqBAui; arc=none smtp.client-ip=198.175.65.12
+	 In-Reply-To:Content-Type; b=gUI4d0wT4onrRr8a5etcrNUT0szIQOr4+wWYKiw3HhlW+PQRupHR8nUud3JNXQOM8PmgZuBnxY87HqvRjuGDOI+D1pthqU4VOjmBYhYG5AztEh36bilStlI+djVB3YeW6BHgE/YuXKhQD5uZgs3iy7JYgGQFADaL2uKRe7vVoxc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XdeHlM6Y; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jIOqBAui"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XdeHlM6Y"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712626525; x=1744162525;
+  t=1712627679; x=1744163679;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=IhuMnUPP6sRdUkY89cClHaimdn+5/NV34NjQx6c1MCI=;
-  b=jIOqBAuieiLTcy4mk2/bLN+78ALXVFl+y40An/Qp3ip0MmQhPogYcIcI
-   EeP+HgPWs7vsz6UySa3XU/3iojuvQSwMlZCy0lUDlH3XPWY4GYGzOLerp
-   sxUh/hQd4EYxee7/8GhAJkt8/oS0rrz2RU91CgHVbzcm4NdNqyhgldYVx
-   h/6dQxvPjhOFZZCQw2VYzANiDEJe7hO+yjV3D7em4rpJ4/MTLzfCbBVCm
-   QxKQTWMTAeRtcdH4Xc30URoGLMeMdvPQUh0k7jrU5+tVmo6V8J1YYiYh2
-   MnAf+3OuWkVhlConqfdykl4fdaNMbQMgDD97gNaS2Z96MlGZBrG7K4XMD
-   Q==;
-X-CSE-ConnectionGUID: xcVYvCUdS9uBDPbML0hdNA==
-X-CSE-MsgGUID: ARTHyMZvSeeK4dygVDSylg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="19361589"
+  bh=cP1SbuC4f3QZPYcto5RfNrOvo22XXm4PnBqKOlfeabw=;
+  b=XdeHlM6YWIL9DNa9RrH6kzl4afUKa9WDFPD8iipwx960sPIa1nGA/6iE
+   lCbdJWANATZ33Qaku8walmeftlcPrTPmq5zeMeRGKy4LLKyeOHFP0q4Xm
+   NZDxuk7ZqfJW2i24SmmhgYTiDu+fq9CaXXcKSP8N8UTC//nbvOhBtoyir
+   SPolokqYXJU/n+063zoyVo5m5ZPE+BH/iTX7pCAPobpmjuJqshdZkYi6j
+   TSp0m/YNdwtzAqdiFqejhNh1trVAjTwuVVHl4r+sw6sTGEwyRKerxZlhv
+   ojkm8KUqHZEl6XqaHCCHBxUq1IsCefLcZYoQHKsjKKqlHpZZXbTJTRdQD
+   A==;
+X-CSE-ConnectionGUID: fWlQWvb/RZKcFcWWLjtkGg==
+X-CSE-MsgGUID: OoQcOwCkSNqaM3Ek+GPkpg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="19363453"
 X-IronPort-AV: E=Sophos;i="6.07,188,1708416000"; 
-   d="scan'208";a="19361589"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 18:35:25 -0700
-X-CSE-ConnectionGUID: 3zTA48w7Ql2n7NUmoEcYDg==
-X-CSE-MsgGUID: wn/ezkeaRKeE/7Q/ssGKEg==
+   d="scan'208";a="19363453"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Apr 2024 18:54:38 -0700
+X-CSE-ConnectionGUID: XDdYf3l8Q4S5Rs0iB+gAcA==
+X-CSE-MsgGUID: APDLEsHJT3my+ORT1HG5+w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,188,1708416000"; 
-   d="scan'208";a="24706304"
+   d="scan'208";a="24814545"
 Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa004.fm.intel.com with ESMTP; 08 Apr 2024 18:35:20 -0700
-Message-ID: <ff7ed901-fb4d-4bb1-adf1-8c83409b7a80@linux.intel.com>
-Date: Tue, 9 Apr 2024 09:34:12 +0800
+  by orviesa004.jf.intel.com with ESMTP; 08 Apr 2024 18:54:34 -0700
+Message-ID: <4c07d54f-6c6c-47be-9e5a-3cff8162dd3b@linux.intel.com>
+Date: Tue, 9 Apr 2024 09:53:26 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -74,74 +74,47 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 4/8/24 10:05 PM, Jason Gunthorpe wrote:
-> On Sat, Apr 06, 2024 at 12:34:14PM +0800, Baolu Lu wrote:
->> On 4/3/24 7:58 PM, Jason Gunthorpe wrote:
->>> On Wed, Apr 03, 2024 at 09:15:11AM +0800, Lu Baolu wrote:
->>>> Currently, when attaching a domain to a device or its PASID, domain is
->>>> stored within the iommu group. It could be retrieved for use during the
->>>> window between attachment and detachment.
->>>>
->>>> With new features introduced, there's a need to store more information
->>>> than just a domain pointer. This information essentially represents the
->>>> association between a domain and a device. For example, the SVA code
->>>> already has a custom struct iommu_sva which represents a bond between
->>>> sva domain and a PASID of a device. Looking forward, the IOMMUFD needs
->>>> a place to store the iommufd_device pointer in the core, so that the
->>>> device object ID could be quickly retrieved in the critical fault handling
->>>> path.
->>>>
->>>> Introduce domain attachment handle that explicitly represents the
->>>> attachment relationship between a domain and a device or its PASID.
->>>> A caller-specific data field can be used by the caller to store additional
->>>> information beyond a domain pointer, depending on its specific use case.
->>>>
->>>> Co-developed-by: Jason Gunthorpe<jgg@nvidia.com>
->>>> Signed-off-by: Jason Gunthorpe<jgg@nvidia.com>
->>>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->>>> ---
->>>>    drivers/iommu/iommu-priv.h |   9 +++
->>>>    drivers/iommu/iommu.c      | 158 +++++++++++++++++++++++++++++++++----
->>>>    2 files changed, 153 insertions(+), 14 deletions(-)
->>>>
->>>> diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
->>>> index 5f731d994803..08c0667cef54 100644
->>>> --- a/drivers/iommu/iommu-priv.h
->>>> +++ b/drivers/iommu/iommu-priv.h
->>>> @@ -28,4 +28,13 @@ void iommu_device_unregister_bus(struct iommu_device *iommu,
->>>>    				 const struct bus_type *bus,
->>>>    				 struct notifier_block *nb);
->>>> +struct iommu_attach_handle {
->>>> +	struct iommu_domain		*domain;
->>>> +	refcount_t			users;
->>> I don't understand how the refcounting can be generally useful. There
->>> is no way to free this:
->>>
->>>> +	void				*priv;
->>> When the refcount goes to zero.
->> This field is set by the caller, so the caller ensures that the pointer
->> can only be freed after iommu domain detachment. For iopf, the caller
->> should automatically respond to all outstanding iopf's in the domain
->> detach path.
+>> void iommufd_fault_domain_detach_dev(struct iommufd_hw_pagetable *hwpt,
+>>                                       struct iommufd_device *idev)
+>>   {
+>> +       struct iommufd_fault *fault = hwpt->fault;
+>> +       struct iommu_attach_handle *handle;
+>> +
+>>          if (WARN_ON(!hwpt->fault_capable))
+>>                  return;
 >>
->> In the sva case, which uses the workqueue to handle iopf,
->> flush_workqueue() is called in the domain detach path to ensure that all
->> outstanding iopf's are completed before detach completion.
-> Which is back to what is the point of the refcount at all?
+>> +       handle = iommu_attach_handle_get(idev->igroup->group,
+>> IOMMU_NO_PASID);
+>>          iommu_detach_group(hwpt->domain, idev->igroup->group);
+>>          iommufd_fault_iopf_disable(idev);
+> But is this right? Couldn't there be PASID's doing PRI?
 
-Yeah, refcount is not generally useful. It's context-specific, so it
-needs to move out of the core.
+As far as I can see, there are two types of user PASID.
 
-The SVA code needs refcount because it allows multiple attachments
-between a SVA domain and a PASID. This is not a common case.
+1. When a device is assigned to userspace, the PASID table is managed by
+    the userspace.
 
-> 
->> +static void iommufd_auto_response_handle(struct iommufd_fault *fault,
->> +                                        struct iommu_attach_handle *handle)
->> +{
->> +       struct iommufd_device *idev = handle->priv;
-> The caller already has the iommufd_device, don't need the handler.
+    Userspace doesn't need PASID attach/detach/replace uAPIs in this
+    scenario. All I/O page faults are directed to userspace through the
+    hw pagetable attached to the RID.
 
-Yes.
+    If hw pagetable is detached from the RID, or a non-iopf-capable
+    hw pagetable is attached the RID, the PRI for user PASID is already
+    broken.
+
+2. When a device is assigned to userspace, the PASID table is managed by
+    the host kernel. Userspace then needs PASID attach/detach/replace
+    uAPIs to manage the hw page table for each PASID. Each PASID has its
+    own hw page table for handling I/O page faults.
+
+    Here, disabling PRI is only safe after all iopf-capable hw page
+    tables for both the RID and all PASIDs are detached.
+
+    The current code base doesn't yet support PASID attach/detach/replace
+    uAPIs. Therefore, above code is safe and reasonable. However, we will
+    need to revisit this code when those APIs become available.
+
+Please correct me if my understanding is incorrect.
 
 Best regards,
 baolu
