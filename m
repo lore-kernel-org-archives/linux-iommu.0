@@ -1,204 +1,245 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2040.outbound.protection.outlook.com [40.107.223.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDCAF155A29
-	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 17:27:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712683639; cv=none; b=gYOSKBWlTyXnHgBzbZCLjCy68UKdpfX78tPhs3fEGfIvL4oE/0NyMSwoPx83WvDw3dEZoIRWdjSk5jIUOWFl4ai/SEireJwntjSiLb77f/+gePcFfCchQWrePphjEiSvRWIai35HNFHoj0xWR6vOhz5oVwqwJ/WA2g2ErAnLmEc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712683639; c=relaxed/simple;
-	bh=ov5V6UUHjBzKmLOJ3+BcZdJeRQ2EaCxb3pY7asEm1lI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=t0b475ec5KiRcnSHdLResF45gTMSTyNN7x2FlMed2l5s9z9Dyd+7xfEAEj9XnMSKWcLsFyT8lES+Lt+JF5X2SHtGGtywOyuoS3MhkXaAUOfzyWvHDMl+/kkmB7snTufBFyHipKJJlMp/gkJdrjiU+2T5kjWsXny7ZIyLDsWHx7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BkOvB/vq; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 924C31E89E
+	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 19:47:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.40
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712692071; cv=fail; b=RRdCIGrgCss/F6sZrHlFB5TbpL4er38cF/pwytYANCOzdX00pbqSGJGKRkkhXIfKY9tcg8uW0KlRzwK+iWgVCSPn2RYqsiBd+c6pMZPgqaiYoTfodPAKIPFI/1vrFeaQKKiKRwbAObzLmBMfd/QAQ3i6cTQmLUv0AlycA8r0prk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712692071; c=relaxed/simple;
+	bh=i/VhhNXBUPxvv5fI9j/4HlhgmfA01CjNPouCgEoGEts=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lsW+XDuQqKDdnT4ridM6YQRmjG4x7WjGaKDRZYxriDroyX84dMcp6N2qi0xLI2aGdpyx3jzX1hlGBMjyGLXFbD0WvX7s/7Nhg0SaPdb907z+JkVbja4JOld7zekYeOi21hIApa9IuGiH0IGPqGWNAttxSVr6AdkXgp291FAEl8A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=VB9b7+Rn; arc=fail smtp.client-ip=40.107.223.40
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BkOvB/vq"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712683638; x=1744219638;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ov5V6UUHjBzKmLOJ3+BcZdJeRQ2EaCxb3pY7asEm1lI=;
-  b=BkOvB/vqEnBxQLlUYl28ge2RS3WytKChJu3UaZziNSv0fk8tCG9ZDPze
-   ibyI4m26/CpFKmKzSpcyFfqHbQMus8NhAvtX8NCWS9jltWfvcpq6+89wF
-   SEJ2ASFA4cN5ocd7FQBsEUx8yVoqL/9djFst6LnT6uBZ1suSXIGoaRH5X
-   JpoBndpYQlQz+zItrY6d84gZdkl7Gi91k5q5RLuTSo1PcrjgF1w2gegGM
-   1Orn4qMSIQ0lR3asYRNIPej1zIqPuiL3E4Y8Me6enbGmcKKjkp4G6Ee+d
-   kI+ZzAI3daK/+uP9D9dKYXB8s93a1YbBE318xAY1WvC5LNw8HU1CQofM2
-   g==;
-X-CSE-ConnectionGUID: 8STgd329TUCd9nejHHBuzg==
-X-CSE-MsgGUID: 3AWxaRLATpukVpJbPv0Qng==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="33418086"
-X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="33418086"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 10:27:17 -0700
-X-CSE-ConnectionGUID: 77NcuDNEQ+SbvlNSD97f4g==
-X-CSE-MsgGUID: G4EZT2SVQZC/uu10CKOQJA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="24964206"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 10:27:17 -0700
-Date: Tue, 9 Apr 2024 10:31:46 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: iommu@lists.linux.dev, Kevin Tian <kevin.tian@intel.com>, Yi Liu
- <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
- <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH 2/2] iommu/vt-d: Remove caching mode check before devtlb
- flush
-Message-ID: <20240409103146.0d155e45@jacob-builder>
-In-Reply-To: <aff42b8f-b757-4422-9ebe-741a4b894b6c@linux.intel.com>
-References: <20240407144232.190355-1-baolu.lu@linux.intel.com>
-	<20240407144232.190355-2-baolu.lu@linux.intel.com>
-	<20240408140329.6290377f@jacob-builder>
-	<aff42b8f-b757-4422-9ebe-741a4b894b6c@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="VB9b7+Rn"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ScUf17/OmkYELqcL12aK7Ffgq4NM5uiGlqJCSKKf0aP8uWWxC6NmYQCYVlw5G/92tqprW6g5ALv/kxfncOHd4PfEc6qQYhTK9xyjCtpP6cN1ZV1U5SfkcH3HK2eKzrnDlmsnbTIRq/V/t9rbGTztLtnm4cMWiMdyqhtu+JWVjk1Kw1b7sA3b/tPRi9t37tDyqxglx8K16weGi9Q39Vw8BX3yc9g6t/cUkcEj+3E+QyfBJc1oWlSohPNyOu65WbITK1P2kQL0g/UHY9g/KmTRIMUK1A5G7p7yxeRInXMsCgH1ziL5oUbJrnGMwHCAXVY9zt2QYfh1ZmBIVGzxh6G+iQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RHsZCyQQeJBSGzIeOBEZbOxCUUoZ6GJyR48rYjQKlkk=;
+ b=jd1CQJQ1JcaNRi/8wnKlAne4TrR3TR9lS4SUT5wQUrsuKMSHtmQOWafAbblmxKP+qpSMgN1uB1mjDwM6OsCHpvf5mDcwYD5BQQ4lD6LmR/mYWJGtpAOljLzIYhjcDHIYQIrB3x7vtH2LISQqROjT+XMtc9WxtTRn6gCD5ueqxBeyXO8MGdMUXy7POnAYklwWUOnB7LuRCsH64y2x0obwed+/Ig48rGCsMoARU9amkdLaj/SHEyjr30xStMVqOdGTnkuwKfEvbWqMgykFNLp1f7VeYOevaltu8jIS4Cpbs1HaBWcN3YB3+0woLbY/DnnZiRzILb36G3hXs7BcQ8LtIw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=redhat.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RHsZCyQQeJBSGzIeOBEZbOxCUUoZ6GJyR48rYjQKlkk=;
+ b=VB9b7+Rnu+HrAk7fzCyHHZ4YHWgCrczOIkH2zIAsYuc0Ue+7BueIMI2Q3dTcZdgxf7p3dMU5l9PLFkfY5gzE+mgwxHiqzecSA8RhKV1BED7CNJRRWBBvzniPLK7yNlFM4K5VUlrl3kx4XKpHHB4iQVXQCtGESDCOo4isgyMq8pN5zs+V3BQn4rFiutaCCbeubE9ZqDoC0T+J0PEiKBTlP19SPsZPbS8RQM2MCMhl2OCK/gumTj/bPIdgogYThejW0BXW9Z/zr7u4TOYdJSqAbxIlLMAcre1iRH7I8xHLUMa/QX/nAEzbJpWZHt5gNIB5pdU8dod8EZ7Z+rqB8+gcmA==
+Received: from SJ0PR05CA0060.namprd05.prod.outlook.com (2603:10b6:a03:33f::35)
+ by SJ0PR12MB6711.namprd12.prod.outlook.com (2603:10b6:a03:44d::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.55; Tue, 9 Apr
+ 2024 19:47:46 +0000
+Received: from CO1PEPF000044EF.namprd05.prod.outlook.com
+ (2603:10b6:a03:33f:cafe::d5) by SJ0PR05CA0060.outlook.office365.com
+ (2603:10b6:a03:33f::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.19 via Frontend
+ Transport; Tue, 9 Apr 2024 19:47:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ CO1PEPF000044EF.mail.protection.outlook.com (10.167.241.69) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7452.22 via Frontend Transport; Tue, 9 Apr 2024 19:47:45 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Tue, 9 Apr 2024
+ 12:47:44 -0700
+Received: from drhqmail202.nvidia.com (10.126.190.181) by
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1258.12; Tue, 9 Apr 2024 12:47:44 -0700
+Received: from Asurada-Nvidia (10.127.8.9) by mail.nvidia.com (10.126.190.181)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
+ Transport; Tue, 9 Apr 2024 12:47:43 -0700
+Date: Tue, 9 Apr 2024 12:47:42 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Eric Auger <eric.auger@redhat.com>, Shameerali Kolothum Thodi
+	<shameerali.kolothum.thodi@huawei.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, Linuxarm <linuxarm@huawei.com>, Zhangfei Gao
+	<zhangfei.gao@linaro.org>, Michael Shavit <mshavit@google.com>, "Moritz
+ Fischer" <mdf@kernel.org>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>
+Subject: Re: Query on ARM SMMUv3 nested support
+Message-ID: <ZhWbXkl4fzWGR+VR@Asurada-Nvidia>
+References: <b8c1b2fb281246da94b35ceb5e27b538@huawei.com>
+ <ZfI74miZ1ss9+Kz0@Asurada-Nvidia>
+ <4a37c695bf84425ea5159b82c202cb81@huawei.com>
+ <ZgZqMymQY4pL77iw@Asurada-Nvidia>
+ <02f3fbc5145d4449b3313eb802ecfa2c@huawei.com>
+ <ZhTcaSGOvsIkZDy1@Asurada-Nvidia>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ZhTcaSGOvsIkZDy1@Asurada-Nvidia>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CO1PEPF000044EF:EE_|SJ0PR12MB6711:EE_
+X-MS-Office365-Filtering-Correlation-Id: a3f67a82-0b7d-46ca-2f31-08dc58cdedbe
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	JiIFtLgJ/Ok0taDI9J96GYM0LisqkVsPFeQYqavJSoXbhPifUKFnRvPoFvgrVaUG8uMuV/b7fmhJU1Tt5zCL/iN8iib3obCpz3KZXG9lI4Z6dCkefCwKZpToQGZCCHj4rNvuRe8pu9cHGxSJ6W2YGeImwP73FMIJHOrZ25m6agFBaUrbhCrBiRCT8XNbtNgpGMYs6Rbw5lhLXPlp2yNq6otXJNCWqts1l7M2mW8FTAardp8V0QzglEuh1IIs3pD1vRew8aQbqF+iGx01tCTVpifMe/ST91DVP4RCMzMAV0RaDNZX81oHKpLJaUncLdimwHOgQI+Axwk0PqdkJmDRWnYTljeLRArqBp9to/ieg8YRJr0ykRHIS4a5HfVkwvJmC5wfEnqK2hXvMSGI3oYhDdrceZdgXIMUiDwqpDvI9dHZeC6Yc15PboprIQC3dh/0p+FbkcOrdx+tyETO+x2m7g4TTaiAcGGQgMMcnw1oDGyr9wz/cIl5rcGkyFWDiTnxswD+16smMKaXO8713VlRjcUUJ83LNCQ3mp38aG+Pk8W8hVuBanEHVxWCpWXYP9vaWkpPw7pmNkkM38b4QjxJE6uuI7TuNgHLFxznx91f9hHoJv9625iuBdE6tUMo+fSwaosk3QdBDKd+8jUCTi54psJUrFcKeIlCUsXtIvTokXJnoyneDkxUOBuJdbnZD1XZ2jdw7UUczVf7MZ/P0E7tyPYI+jV4gmDdyvqAYkf6ZQRIknO3PCtsPklb+9YUFylm
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(1800799015)(82310400014)(36860700004)(376005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2024 19:47:45.9034
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: a3f67a82-0b7d-46ca-2f31-08dc58cdedbe
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1PEPF000044EF.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB6711
 
-Hi Baolu,
-
-On Tue, 9 Apr 2024 11:12:20 +0800, Baolu Lu <baolu.lu@linux.intel.com>
-wrote:
-
-> On 4/9/24 5:03 AM, Jacob Pan wrote:
-> > Hi Lu,  
+On Mon, Apr 08, 2024 at 11:13:02PM -0700, Nicolin Chen wrote:
+> Sorry for my belated reply.
 > 
-> Hi Jacob,
+> On Tue, Apr 02, 2024 at 07:25:56AM +0000, Shameerali Kolothum Thodi wrote:
 > 
+> > Here we have specified nested-smmuv3 and have  a PCIe root port(ioh3420) and
+> > a virtio-pci dev(for virtfs). Once this VM is up and running, both the ioh3420
+> > and virtio-9p-pci will not work as expected as we return sysmem address space
+> > for them.
 > > 
-> > On Sun,  7 Apr 2024 22:42:32 +0800, Lu Baolu<baolu.lu@linux.intel.com>
-> > wrote:
-> >   
-> >> The Caching Mode (CM) of the Intel IOMMU indicates if the hardware
-> >> implementation caches not-present or erroneous translation-structure
-> >> entries except the first-stage translation. The caching mode is
-> >> unrelated to the device TLB , therefore there is no need to check
-> >> it before a device TLB invalidation operation.
-> >>
-> >> Before the scalable mode is introduced, caching mode is treated as
-> >> an indication that the driver is running in a VM guest. This is just
-> >> a software contract as shadow page table is the only way to implement
-> >> a virtual IOMMU. But the VT-d spec doesn't state this anywhere. After
-> >> the scalable mode is introduced, this doesn't stand for anymore, as
-> >> caching mode is not relevant for the first-stage translation. A virtual
-> >> IOMMU implementation is free to support first-stage translation only
-> >> with caching mode cleared.
-> >>
-> >> Remove the caching mode check before device TLB invalidation to ensure
-> >> compatibility with the scalable mode use cases.
-> >>  
-> > I agree with the changes below, what about this CM check:
+> > And then later when you try to hotplug a vfio dev to the PCIe root port,
+> > device_add vfio-pci,host=0000:7d:02.1,bus=rp1,id=net1,iommufd=iommufd0
 > > 
-> > /* Notification for newly created mappings */
-> > static void __mapping_notify_one(struct intel_iommu *iommu, struct
-> > dmar_domain *domain, unsigned long pfn, unsigned int pages)
-> > {
-> > 	/*
-> > 	 * It's a non-present to present mapping. Only flush if caching
-> > mode
-> > 	 * and second level.
-> > 	 */
-> > 	if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
-> > 		iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0, 1);
+> > it won't work either because the address space for ioh3420 is wrong.
 > > 
-> > We are still tying devTLB flush to CM=1, no?  
-> 
-> __mapping_notify_one() is called in the path where some PTEs are changed
-> from non-present to present.
-> 
-> In this scenario,
-> 
-> - if CM is set and first-stage translation is not used, the IOTLB caches
->    are required to be explicitly flushed.
-> - else if hardware requires write buffer flushing, do it.
-> - Otherwise, no op.
-> - devtlb invalidation is irrelevant to this path.
-> 
-> The code after the fix appears to do the right thing. devTLB is not
-> invalidated in iommu_flush_iotlb_psi() since it's a map (map == 1).
-> 
-> Or perhaps I overlooked anything?
-My confusion is that, on one side, this patch is saying devTLB flush has
-nothing to do with CM. But here, if CMD==1, we don't flush devTLB since
-map==1.
-
-If the guest uses SL page tables in vIOMMU, we don;t expose ATS to the
-guest. So ATS is not relevant here, does't matter map or unmap.
-
-Can we remove the map argument in iommu_flush_iotlb_psi(iommu, domain,pfn,
-pages, 0, 1)?
-
-Then devTLB flush will naturally be skipped in the guest (CM=1, SL) since
-ATS is not enabled.
-iommu_flush_dev_iotlb(domain, addr, mask);
-
-i.e.
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 50eb9aed47cc..ee3e5a1af0c5 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -1483,7 +1483,7 @@ static void __iommu_flush_iotlb_psi(struct intel_iommu *iommu, u16 did,
- static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
-                                  struct dmar_domain *domain,
-                                  unsigned long pfn, unsigned int pages,
--                                 int ih, int map)
-+                                 int ih)
- {
-        unsigned int aligned_pages = __roundup_pow_of_two(pages);
-        unsigned int mask = ilog2(aligned_pages);
-@@ -1501,12 +1501,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
-        else
-                __iommu_flush_iotlb_psi(iommu, did, pfn, pages, ih);
- 
--       /*
--        * In caching mode, changes of pages from non-present to present require
--        * flush. However, device IOTLB doesn't need to be flushed in this case.
--        */
--       if (!cap_caching_mode(iommu->cap) || !map)
--               iommu_flush_dev_iotlb(domain, addr, mask);
-+       iommu_flush_dev_iotlb(domain, addr, mask);
- }
- 
- /* Notification for newly created mappings */
-@@ -1518,7 +1513,7 @@ static void __mapping_notify_one(struct intel_iommu *iommu, struct dmar_domain *
-         * and second level.
-         */
-        if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
--               iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0, 1);
-+               iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0);
-        else
-                iommu_flush_write_buffer(iommu);
- }
-
-
-
+> > Taking another look at this, I think we can replace my earlier attempt to fix
+> > this by detecting if the dev is vfio or not and add that into the check below,
 > > 
-> > If we are running in the guest with second level page table (shadowed),
-> > can we decide if devTLB flush is needed based on ATS enable just as the
-> > rest of the cases?  
+> > --- a/hw/arm/smmu-common.c
+> > +++ b/hw/arm/smmu-common.c
+> > @@ -619,8 +619,15 @@ static AddressSpace *smmu_find_add_as(PCIBus
+> > *bus, void *opaque, int devfn)
+> >      SMMUState *s = opaque;
+> >      SMMUPciBus *sbus = smmu_get_sbus(s, bus);
+> >      SMMUDevice *sdev = smmu_get_sdev(s, sbus, bus, devfn);
+> > +    bool is_vfio = false;
+> > +    PCIDevice *pdev;
+> > 
+> > -    if (s->nested && !s->s2_hwpt) {
+> > +    pdev = pci_find_device(bus, pci_bus_num(bus), devfn);
+> > +    if (object_dynamic_cast(OBJECT(pdev), "vfio-pci")) {
+> > +        is_vfio = true;
+> > +    }
+> > +
+> > +    if (is_vfio && s->nested && !s->s2_hwpt) {
+> >          return &sdev->as_sysmem;
+> >      } else {
+> >          return &sdev->as;
+> > 
+> > Please let me know your thoughts on this.
 > 
-> I think the ATS check should be consistent. It's generic no matter how
-> the IOMMU is implemented (in hardware or emulated in software).
+> Hmm, checking "vfio-pci" here feels a bit of layer violation..
+> But I understand how you got there...
 > 
-> Best regards,
-> baolu
+> I think that the current way of enabling the "nested" flag for
+> a device is a bit messy:
+>     if -machine has "iommu=nested-smmuv3" &&
+>        -device is "vfio_pci" &&
+>        -device has "iommufd"
+> 
+> Any other device that doesn't meet the latter two conditions
+> is ambiguously added to a soft smmuv3, which feels wrong to
+> me now.
+> 
+> Also, the callbacks from hw/vfio/pci.c to iommu are tricky as
+> well:
+>     vfio_realize() {
+>         pci_device_iommu_address_space() {
+>             smmu_find_add_as();   // Can only assume vfio-pci is behind
+>                                   // a nested SMMU. So returns system AS
+>         }
+>         vfio_attach_device() {
+>             ioctl(VFIO_DEVICE_BIND_IOMMUFD);
+>             ioctl(VFIO_DEVICE_ATTACH_IOMMUFD_PT);
+>             listener_add_address_space() {
+>                 if (memory_region_is_iommu(section->mr)) { // Skip
+>                     iommu_notifier_init(IOMMU_NOTIFIER_IOTLB_EVENTS);
+>                     memory_region_iommu_replay();
+>                 }
+>             }
+>         }
+>     }
+> 
+> In my view, we should sort this out with a cleaner enabling
+> command first. And then, as Jason pointed out, other devices
+> (non vfio-pci) should probably not be added to the SMMU, i.e.
+> they might need to be added to a separate PCI bus/bridge with
+> out iommu. In this case, the vSMMU module would not need an
+> iommu AS at all when "iommu=nested-smmuv3".
 
+Just recalled that kvm_arch_fixup_msi_route still requires a
+"vfio-pci" device to return an IOMMUMemoryRegion v.s. system
+memory. And that's why there's a "!s2_hwpt" condition (hack)
+when returning the system AS, so that (at the beginning) the
+vfio attach could bypass the iotlb registeration using system
+AS and (after s2_hwpt is allocated) MSI could translate the
+MSI address using iommu AS.
 
-Thanks,
+Otherwise, such a device could (likely "should" in my view)
+stay with the system AS, since it doesn't need the emulated 
+iotlb/cache at all. Yet in that case, we would need another
+pci_device_msi_address_space for MSI..
 
-Jacob
+@Eric,
+Would it be possible for you shed some light also?
+
+In a summary, we have the following opens:
+1. How should we enable "nesting" for a passthrough device?
+   - Currently is a bit ambiguous:
+     if -machine has "iommu=nested-smmuv3" &&
+        -device is "vfio_pci" &&
+        -device has "iommufd"
+   - Actually "-device has 'iommufd'" only guarantees using
+     the IOMMUFD cdev APIs v.s. the legacy one, i.e. it's not
+     necessary to enable nesting supposedly?
+
+2. How should we handle a non passthrough device (no nesting)?
+   - Current is a bit ambiguous again by adding it to the soft
+     SMMUv3. But, is it necessary? It doesn't seem to have any
+     positive performance gain.
+   - Yet not adding it behind the SMMUv3 would require another
+     noiommu PCI bus to dock such a device, I assume?
+
+3. Should we keep a nesting-enabled passthrough device in the
+   system AS v.s. iommu AS?
+   - The reasoning is that it doesn't need an emulated iotlb
+     or cache since it uses the HW one.
+   - Also, with a HW-accelerated VCMDQ on NVIDIA Grace, the
+     emulated iotlb should be turned off because there will be
+     no TLBI/ATC command trapped by QEMU, as all those commands
+     will be issued to the VCMDQ HW directly.
+   - The only usage of an iommu AS is the MSI code, as it's a
+     bit unique requiring for a gIOVA to gPA translation. So,
+     keeping such a device in the system AS would need another
+     pci_device_msi_address_space, which feels reasonable since
+     we need something similar in the kernel too:
+     https://lore.kernel.org/lkml/f65a3d7e3e0e0c7b2f5cfc03ada9618aa8b523bb.1683688960.git.nicolinc@nvidia.com/
+
+Thanks
+Nicolin
