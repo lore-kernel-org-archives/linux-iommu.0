@@ -1,99 +1,134 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D7BB84A56;
-	Tue,  9 Apr 2024 10:20:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D18C81725
+	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 10:43:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712658040; cv=none; b=lR4EEOLtRs9h7HHrqYCdjWXkdRynKcOq3BIWwcDqgqbPiF2gx6vbAcJzOF9gP/rkb4VxJ5IV1slalQlu6/ze/QYUYkAw4EsMU5TQ7JuVddIO7LI0OuC0Tlw7tNQssvftUtw8MjdFewVFAdDok11MTJQNfqBHzEx7InyOIgVAMVw=
+	t=1712659404; cv=none; b=L4vGi7pO3VXkwWFxrFIcEfoaEr8McXp4csZW5ikWvRJpqaM90DcAD8uoLoHJp4920En6iF+VBLs+mcaDuZnrQplC2fwP3JOLe5Ay4tnOtFIvnIHxMLCKaDXLHzWH8puxqx7RUjb4LT4UW0/RVerHK/QvikRW1Acc8WJOLxs/QUY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712658040; c=relaxed/simple;
-	bh=pzdCSbr5SHBon91syIJCTeDKf1rySdQBVpzt6jNEgQk=;
+	s=arc-20240116; t=1712659404; c=relaxed/simple;
+	bh=P1drV4PVyYjqV1TiHKD9r5Q92b00wwuRopyWCFjwIO8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dpmPYm+ZPOuz2Xr1e3hi7DhEbFARFCdjz2Vg6FZiBIqKvG38hYjQeBqxnRkHVEWC1dPMPVEMi0bqocay/3Jzlp/e7YOeRWNw6pJJb2bXZNTPSy7It+5PfUfpagCTNlxWFHaccUyjxGUmaokmSdPPyo9oAl4LrtUH1ulVZvOYNi4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mBWiiQ6H; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=g6WoxxfOm/xgqiFMwiAyGIWt0MjE6OIeVGjqUvSeU4Lgb5YlCLl9yVc+1Q9HLsQbj4iktXZvObiDJyTMcqvsZLfaVM/2ys3Ct7JurPYZX+ZzKP6AYPJnNR9Kk/5S1pdIayth8wmKdTohidZlkufBXczA2xyV6rmRBTmoPXdwyT8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=HgN/Sw+4; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mBWiiQ6H"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B258EC433B1;
-	Tue,  9 Apr 2024 10:20:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712658040;
-	bh=pzdCSbr5SHBon91syIJCTeDKf1rySdQBVpzt6jNEgQk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=mBWiiQ6HYjrUnXh8pi5Y+nI2VufkIDxZO/XmS5JqHzIzKKCTFyV7b+JdB1J8eljk3
-	 uY8uLDeRFlIO9Mf7//GhUc8688Q2OwdPcgwwYYl28hlq8nQ41g08WfBnB6QBbxdmkH
-	 3Z570Zzg4S9m8kgE+sKCOw9kk6Hp+LC3g5QVd1AfXrgITn04uJvxjMPSWhcfr2as2X
-	 rYCNFvJgG3PWZrt2crQLnTvwakDXiQQT1Glsur+x5qO899l1UwfNjZiXmXq1hO6K0k
-	 H/FEtUgK+F7Hh3ALnjh3eW2REylKT0rje563SEAVGjrCEA2sFNwt7ygTwY9xdN/rOq
-	 +Dqbxn3Gq6Thg==
-Date: Tue, 9 Apr 2024 11:20:33 +0100
-From: Will Deacon <will@kernel.org>
-To: Georgi Djakov <quic_c_gdjako@quicinc.com>
-Cc: robin.murphy@arm.com, joro@8bytes.org, iommu@lists.linux.dev,
-	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-	conor+dt@kernel.org, devicetree@vger.kernel.org,
-	andersson@kernel.org, konrad.dybcio@linaro.org, robdclark@gmail.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com,
-	quic_sukadev@quicinc.com, quic_pdaly@quicinc.com,
-	quic_sudaraja@quicinc.com, djakov@kernel.org
-Subject: Re: [PATCH v7 2/7] iommu/arm-smmu-qcom-tbu: Add Qualcomm TBU driver
-Message-ID: <20240409102033.GA22381@willie-the-truck>
-References: <20240329210638.3647523-1-quic_c_gdjako@quicinc.com>
- <20240329210638.3647523-3-quic_c_gdjako@quicinc.com>
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="HgN/Sw+4"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-41699bbfb91so66945e9.0
+        for <iommu@lists.linux.dev>; Tue, 09 Apr 2024 03:43:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1712659400; x=1713264200; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ikQVwwVGg1QRlqcNnHhwQAmZ6t6nRddh161TyahHqsI=;
+        b=HgN/Sw+4HVdRVY6GG4Oayw0v6ItSkRcMfzZboss1WnHPn2KgN5iTr3QR5eanVwoRk0
+         wUPbZKhdZApW1Ljyrv4T/AgnpZFxOdbuFbiuLJgFRbpMnL3S+LKTRAOd0CAKwDOWHB7E
+         jdXtuVQUr5n6cUSAuRYnAZqPo9LtDG5MoZqHLNiU0yihDyGejevw6/FW0GpLJFyw/xKX
+         2g7tTVNulqFY1D1XIu6IUvNbt0QRH0bmjkTYErAUrhyJq3w8wxK4860OIOCa5HcisYIv
+         Lxhex1Q0MRky7hs3I3HNKWrpUh7QsvT/gs2PHF1HbQMf/m0AqIkUl1WgTdODOTsBUI5V
+         li1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712659400; x=1713264200;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=ikQVwwVGg1QRlqcNnHhwQAmZ6t6nRddh161TyahHqsI=;
+        b=Nj69xMgdmdYA+F1cgBzmmEKvKJvJM4p+NxKA6c5pbWrdHF+0zRztU+tsagYkylxEz0
+         Z7ds1CfyNIsCHXciTW9XnqDfgCtcHCjX1XHcJ9I0uPsulwBR3SKvB5adT4f9sS3aBPUj
+         c0JLjj3LsiKiBiSN+AxmXWM2fIHA+gofg+U3DtQlGhP5K436eyn1IY0p0ogjQGH8Lij0
+         q9VyNyd5ZMftM17hHobwXg/5GNDvruFOrp1AyJsISpDWTgSToEHS8tSwUYDti+o3MV7p
+         AYkEC/xlymeQqn5n08fKxwf5ojzgs9oeoIf9+A5xyxmEWjD7ywEx4iuNGtFm1gyvtc71
+         eU/g==
+X-Forwarded-Encrypted: i=1; AJvYcCU64x1LKhO2xJrHWYX0ctA0neNY55gSC0faI0DQ7uQ4Kju9LkBNyQBsRjzRU4pjdUE9f4MelkEHEUeJ3073G47pzjDJzmM=
+X-Gm-Message-State: AOJu0Yw080sVRsAAgcjImgyCtoBoJ88QOm6bAG0ii1Ih5TQwLlPVHEmn
+	snbDwoED2Kg3Iu8Brq2mP17hG/XvCiX8vfhKsu9iwH2nZVSPzvh9i9d2rEE2MA==
+X-Google-Smtp-Source: AGHT+IEmRPrla3hhCrDIRObyh+HMBsdD+xkXu0Qn4yIa7MpXx8XpCnlB5sSXyw9+afvoI4IVfrqHbg==
+X-Received: by 2002:a05:600c:3b21:b0:416:6b86:852 with SMTP id m33-20020a05600c3b2100b004166b860852mr150180wms.2.1712659399532;
+        Tue, 09 Apr 2024 03:43:19 -0700 (PDT)
+Received: from google.com (180.232.140.34.bc.googleusercontent.com. [34.140.232.180])
+        by smtp.gmail.com with ESMTPSA id s7-20020adff807000000b00343d6c7240fsm11098732wrp.35.2024.04.09.03.43.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Apr 2024 03:43:19 -0700 (PDT)
+Date: Tue, 9 Apr 2024 10:43:15 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Aleksandr Aprelkov <aaprelkov@usergate.com>
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	Michael Shavit <mshavit@google.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>, Marc Zyngier <maz@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Free MSIs in case of ENOMEM
+Message-ID: <ZhUbw6gAeBjpFz5C@google.com>
+References: <20240403053759.643164-1-aaprelkov@usergate.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20240329210638.3647523-3-quic_c_gdjako@quicinc.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240403053759.643164-1-aaprelkov@usergate.com>
 
-On Fri, Mar 29, 2024 at 02:06:33PM -0700, Georgi Djakov wrote:
-> Operating the TBUs (Translation Buffer Units) from Linux on Qualcomm
-> platforms can help with debugging context faults. To help with that,
-> the TBUs can run ATOS (Address Translation Operations) to manually
-> trigger address translation of IOVA to physical address in hardware
-> and provide more details when a context fault happens.
+Hi Aleksandr,
+
+On Wed, Apr 03, 2024 at 12:37:59PM +0700, Aleksandr Aprelkov wrote:
+> If devm_add_action() returns ENOMEM, then MSIs allocated but
+> not freed on teardown.
 > 
-> The driver will control the resources needed by the TBU to allow
-> running the debug operations such as ATOS, check for outstanding
-> transactions, do snapshot capture etc.
+> Found by Linux Verification Center (linuxtesting.org) with SVACE.
 > 
-> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
+> Fixes: 166bdbd23161 ("iommu/arm-smmu: Add support for MSI on SMMUv3")
+> Signed-off-by: Aleksandr Aprelkov <aaprelkov@usergate.com>
 > ---
->  drivers/iommu/Kconfig                         |   9 +
->  drivers/iommu/arm/arm-smmu/Makefile           |   1 +
->  .../iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c    | 372 ++++++++++++++++++
->  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |   2 +
->  drivers/iommu/arm/arm-smmu/arm-smmu.h         |   2 +
->  5 files changed, 386 insertions(+)
->  create mode 100644 drivers/iommu/arm/arm-smmu/arm-smmu-qcom-tbu.c
+> v2: Use appropriate function for registration failure as 
+> Jonathan Cameron <Jonathan.Cameron@Huawei.com> suggested.
 > 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 0af39bbbe3a3..b699e88f42c5 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -374,6 +374,15 @@ config ARM_SMMU_QCOM
->  	  When running on a Qualcomm platform that has the custom variant
->  	  of the ARM SMMU, this needs to be built into the SMMU driver.
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 41f93c3ab160..8800af041e5f 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -3402,7 +3402,9 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+>  	smmu->priq.q.irq = msi_get_virq(dev, PRIQ_MSI_INDEX);
 >  
-> +config ARM_SMMU_QCOM_TBU
-> +	bool "Qualcomm TBU driver"
-> +	depends on ARM_SMMU_QCOM
-> +	help
-> +	  The SMMUs on Qualcomm platforms may include Translation Buffer
-> +	  Units (TBUs) for each master. Enabling support for these units
-> +	  allows to operate the TBUs and obtain additional information
-> +	  when debugging memory management issues like context faults.
-> +
->  config ARM_SMMU_QCOM_DEBUG
+>  	/* Add callback to free MSIs on teardown */
+> -	devm_add_action(dev, arm_smmu_free_msis, dev);
+> +	ret = devm_add_action_or_reset(dev, arm_smmu_free_msis, dev);
+> +	if (ret)
+> +		dev_warn(dev, "failed to add free MSIs callback - falling back to wired irqs\n");
 
-Can we just use ARM_SMMU_QCOM_DEBUG for all of this? Having both
-ARM_SMMU_QCOM_DEBUG and ARM_SMMU_QCOM_TBU for the same hardware is
-pretty confusing, I think.
+I am not sure that is the right fix, as allowing the driver to probe
+without MSIs, seems worse than leaking MSI memory.
 
-Will
+IMHO, we can just add something like:
+    dev_err(smmu->dev, “Can’t allocate devm action, MSIs are never freed! !\n”) ;
+
+Also, we can’t unconditionally fallback to wired irqs if MSI exists,
+according to the user manual:
+    An implementation must support one of, or optionally both of,
+    wired interrupts and MSIs
+    ...
+    The discovery of support for wired interrupts is IMPLEMENTATION DEFINED.
+
+We can add some logic, to check dt/acpi irqs and to choose to fallback
+or not based on that, but, if we get -ENOMEM, (especially early at
+probe) something really went wrong, so I am not sure it’s worth
+the complexity.
+
+>  }
+>  
+>  static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+> -- 
+> 2.34.1
+> 
+Thanks,
+Mostafa
