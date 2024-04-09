@@ -1,240 +1,229 @@
-Received: from mail.tkos.co.il (guitar.tkos.co.il [84.110.109.230])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 894CB74435
-	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 06:25:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.110.109.230
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712643942; cv=none; b=Q1lzddDT6349iOjOV44mgQeIn97Sn1q7g5W0fht9hIetg5UuJe+FslctbDzpP0lZDslNMUn//FGJtwc9ntOqO4a2pQF7A/3BsON5NkljUwb7JUs3o27KO1ESOacivaNFKP23P9XuppKX43BzhHk0GehgqGYmeQ07Xhd3jLiJbsM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712643942; c=relaxed/simple;
-	bh=EIw24HYGCi1y+d787B1Nwod7ac/kZ5Ydc0E1Leu5myU=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=WZCDUkhE2GDlefuV7wz+m+yOQg7yzu0nDLq/zAR3p1i+f3ZyuRaie6DeDht5QRSD/JeThTxhuQ2JfrPgxTgTryMTZdhGAKlxuk+ES0vRw/5jtguDdk9R+x9VU+wnzy9NYuuVaihMxLdjfhM5i5pInLxC24KKYWzWokTRl97sIuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il; spf=pass smtp.mailfrom=tkos.co.il; dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b=n3qLjVAj; arc=none smtp.client-ip=84.110.109.230
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tkos.co.il
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tkos.co.il
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6EB01E498
+	for <iommu@lists.linux.dev>; Tue,  9 Apr 2024 07:07:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712646449; cv=fail; b=CO2Jpdv9TELFoldxS35DuzQUzcU4AorC4OLXP5lt3cJq/ZL2uA5epBCeqzDytm1WtiuZEvFfF/0zYeK5qxPOY/8jH/3eii75jCbOq3TCpWnHfWwmMJpNfUNkh7SGjuCLOn6jlmk5Zxprf3re88htLi6oFzTlGNQ410nWmuySR/U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712646449; c=relaxed/simple;
+	bh=ZseXNn3RUY/igAz7UDgc650toes5P0AzguhBbG4cl4w=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=V09fKR0LMIp7xqlolJwH/WiNivHab2tWZ0cJgawfsJwhnzzFTZwnd7sDaYWyd8B/bdc8/vasGYRp8XBwFciK+Ish2Id+adMYLSCd6NxbwrK7tSDsFcRUVYywTyIzpqMRcNMD5NOdyx02ToP+XK9Ox7eCMNFgY3uUK9rMNoLSQe8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gYVW2AqR; arc=fail smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tkos.co.il header.i=@tkos.co.il header.b="n3qLjVAj"
-Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.tkos.co.il (Postfix) with ESMTPS id 3F5CC4402AC;
-	Tue,  9 Apr 2024 09:17:43 +0300 (IDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-	s=default; t=1712643463;
-	bh=EIw24HYGCi1y+d787B1Nwod7ac/kZ5Ydc0E1Leu5myU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=n3qLjVAj+4pF4UYTEPUfy6hDZc7RQUJl12cdtSQ67feuraSJIcxEnkhhz7svNCZev
-	 WiFYZlsATBak209c0SBVa1hf/ggF4S1N16dWH1g9juf38FTb5MKzO5N4stpAdIfAna
-	 XycYLYvSezvjE/+xRKgPwwodUZL59zZpOmzpRgcA8BeKfxbYcgVXPCzwMXLGQnMVtk
-	 DlpOc9jsgwHZKnFO4YYjqd/gi7etpfY1VBFuqgqhNIsBfzzBbuDvzQy9zRlq1zfL6E
-	 VmsQN9vAyrAP78oOAToGaJR2hb+bhccZVs3Bzit89jiGKrOwxaHmKOAsR2I+1vBZUA
-	 1zf1LjaNsJl3Q==
-From: Baruch Siach <baruch@tkos.co.il>
-To: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Rob Herring <robh@kernel.org>,
-	Saravana Kannan <saravanak@google.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>
-Cc: Baruch Siach <baruch@tkos.co.il>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	linuxppc-dev@lists.ozlabs.org,
-	linux-s390@vger.kernel.org,
-	=?UTF-8?q?Petr=20Tesa=C5=99=C3=ADk?= <petr@tesarici.cz>,
-	Ramon Fried <ramon@neureality.ai>,
-	Elad Nachman <enachman@marvell.com>
-Subject: [PATCH RFC v2 2/5] of: get dma area lower limit
-Date: Tue,  9 Apr 2024 09:17:55 +0300
-Message-ID: <230ea13ef8e9f576df849e1b03406184ca890ba8.1712642324.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <cover.1712642324.git.baruch@tkos.co.il>
-References: <cover.1712642324.git.baruch@tkos.co.il>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gYVW2AqR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712646447; x=1744182447;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=ZseXNn3RUY/igAz7UDgc650toes5P0AzguhBbG4cl4w=;
+  b=gYVW2AqRXXuW0QhRD57OstARuIKRu+Sy9byujmrrSow/SOkinkVhHWxo
+   H2yicUfH3A1eJpIeZwbdD4hUVdngleCgOgBE6CPhGxHtehIrIy2YSJGjm
+   zHk+saDue5QkWa404xHF3gz5mygu2Ox1IQFDp66xN2zwT5oUkNxMrOWtH
+   k2GAyjiiONBfPC6nhed5Gj0oDa0ffDVH39f4q1Qc/+4WaZ+Cx8SXg3lpM
+   +zjNhiq+zhvGhEnaRGDZgYDZNZlHCWOg9/YQx3ROoj/CDjWM0ZIuSGag/
+   osxBbw9RkvAVjI8OsSowf0QYivsANf2vdH1Zi1OjEQQZMhJIQESbhhs/P
+   Q==;
+X-CSE-ConnectionGUID: ewKZqF3wQ224zdL0c2UwZQ==
+X-CSE-MsgGUID: OjF7aTjwTcCHwGW94PehDg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11038"; a="33355067"
+X-IronPort-AV: E=Sophos;i="6.07,188,1708416000"; 
+   d="scan'208";a="33355067"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 00:07:26 -0700
+X-CSE-ConnectionGUID: DzJLbkB8QY6vgUqjT1evuw==
+X-CSE-MsgGUID: g6LmHeEiSxKuHOk0HniofQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,188,1708416000"; 
+   d="scan'208";a="20703424"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orviesa008.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 09 Apr 2024 00:07:27 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Tue, 9 Apr 2024 00:07:25 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Tue, 9 Apr 2024 00:07:25 -0700
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com (104.47.73.169)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Tue, 9 Apr 2024 00:07:25 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aNHAnjfo7z/51QCQHokju2K0aHUT6QomheHBrAuZjdkLuGlPumli/bBo0K3yNQJzPtqi44qYDMX7u3M7mO+9Wu89WntjGOZlFBv6rWwWdX0jgjjxTBrWI0LTUXu/HtTJge7OOUOV7ROWun2YNJoyVgYtDrjEvil4Vx6GXojXzritUw/pHgfadllx+Dsc6xtVOwX+woZ5PpFZSBM9C+U+ucQGf2XpZI/hhnt20xEx4myFwA/Sw5E2MIQhx+S/p6vQr7yTyvGu8bnVUe0r//S8OMjqDMy74h9SBh4kun4vWb98PqjcA0+zwmOqwSQR/w0YcMzgSsjmn59Q/4JaCysDZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=eVn/47zbXLDFVdzFoPvpOAH8plBudyjC4ySrqWj2v/o=;
+ b=f1O7qlwuIOiKCaq9122d4dXgBP9NQ0vnFV4GCo2YvIC74bigv7vZFsts8tAbvX2Po52PzHW6z2oxAHcCfB5GXMwz5BXS6Z5ZnzW4q+t/rZNuLAWntjItY01e+5D3f6xF4XHP6ZKcIYTyEpB6QmN9TkMDm2sxaEUGkVGhkbwgenRTKuyxHSyFOGx0MOoJyx2AOwCWaKnqv8yJIIMMYnL/AIaY85ksjzT/8FHTQxxMwGyB38AojElUsaLM14Pl0ocDMi6fMfjM/CxbgT1xEL53Xqu5lvi+NnwXHy0IRhV9a98kJuiMkS1Nsg5jW/ony4Rcd356Yuqd2w9WmECGItxDeA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by CY8PR11MB7848.namprd11.prod.outlook.com (2603:10b6:930:6c::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7430.46; Tue, 9 Apr
+ 2024 07:07:23 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::6c9f:86e:4b8e:8234]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::6c9f:86e:4b8e:8234%6]) with mapi id 15.20.7452.019; Tue, 9 Apr 2024
+ 07:07:22 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+CC: "sivanich@hpe.com" <sivanich@hpe.com>, Thomas Gleixner
+	<tglx@linutronix.de>, LKML <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, Lu Baolu
+	<baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, "Liu, Yi L"
+	<yi.l.liu@intel.com>, "steve.wahl@hpe.com" <steve.wahl@hpe.com>, "Anderson,
+ Russ" <russ.anderson@hpe.com>, Peter Zijlstra <peterz@infradead.org>, "Will
+ Deacon" <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: RE: [PATCH 2/2] iommu/vt-d: Share DMAR fault IRQ to prevent vector
+ exhaustion
+Thread-Topic: [PATCH 2/2] iommu/vt-d: Share DMAR fault IRQ to prevent vector
+ exhaustion
+Thread-Index: AQHahiB7n7Y2ch8WjEeOJ91b45rj4rFeEdyggAB/KgCAABntAIAA3vIA
+Date: Tue, 9 Apr 2024 07:07:22 +0000
+Message-ID: <BN9PR11MB52763561BFD87DE35FF4A0048C072@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240403234548.989061-1-jacob.jun.pan@linux.intel.com>
+	<20240403234548.989061-2-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB527677A69A2004A951165CC38C002@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240408090556.6165e603@jacob-builder>
+ <20240408103844.1b567bce@jacob-builder>
+In-Reply-To: <20240408103844.1b567bce@jacob-builder>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|CY8PR11MB7848:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xsVMMYkx1U5D7lmZWnt3Qj1vc+zehBG4o94tRmM2Tviyw9Ewjnndm/obkex+uP3dkfDSR1WdCW0h/4T3Gq9WLUfDy+MdFD4eshjr5fjcrX6/LmPAHs6r2zaDKYwGB8mg5riS04rV9nM1fMcRy4w8zfiIgGzZe5eVf8A5tbc5e5MKmJSSSWGwstg1lpD0eFxjZv4g8itqyD1xGNFsGxf758j8cNt30SARj0f+nCP8ulXicRtSEammDmzT3lgcO0Va35TNn/LXL8yZbrl7IVnU0uKSMLRZ9cEBWpxDmNhM+r22I/p9kaWfuot7HWfEoI4iCEh2b/dBfn6NXp1exhZNeZLUMvlKXiutkVvgcAIPpnOeW38sKcowppqZ7U0WPQJq1r45BlZ/9g8ebIXedx/qaKxBZU28UGhqvykeLeDzKaLZ9tuah3plWPPwzxX/Zk9PAsTqT49B0Xcmw8HhFaaKV3lVKflYa2OOzPcdDhzLvtxLJQXrjlTuTbHCGWXCk2kHcvMzeeaJd59J3V51USrRWHQ8JlvKxtrKmlI/BSXSvmMQ9EkAb4kuLeCLed/aE+ATBC7SL/KsSEwF5IrZ1fjch3O7bag4anDgw6OAf6k6uGrI7ukw+MvgzWutM0ry72Ux8kuTX5ZSKXBuZys2y9/5LPFGT7IukuyFfG+sSN5FWiY=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7416005)(376005)(366007)(1800799015);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?UKU5K8jWnipABayClJP5wzN4CziX4PlOOEr1zRt9WeWNKlAPk8ybcBQ3lv++?=
+ =?us-ascii?Q?aMf9tU/D580l5pX4YwHzKFaakFPy01hA70cCfqpgd2lKWdQbdrL9Zt8BA+oK?=
+ =?us-ascii?Q?/WMwZoe3zh01v4l74FoSHji1UxOzIozMNBwiQeNtbrnmbv9zX/ZfjZiQgcTC?=
+ =?us-ascii?Q?7BP0f3us2MnOL0E2OsmoE0VnScB4fG/pH3IqpiR96HpV+7+tQSnIHbNVKFqH?=
+ =?us-ascii?Q?3pjx8M2Dsn7ojLci3lFMvtGwSbRMdibuND41KOUv/ZVyZaVQX+46xZ2rawYQ?=
+ =?us-ascii?Q?/O0/m0i4zwCPComBANX9Dhlq3EMqjXIFeHkvLtjNAMVArX/AvAd7pPuByGJP?=
+ =?us-ascii?Q?Dd63EGaxbJRBt+F1V5IvPg9RU9BQ5EoDHZzK0sPjj/nXwOGRl3cLGkunhHPV?=
+ =?us-ascii?Q?sSoaKdenjDYv8KkQ8wbItZwDV6pUawMGcV0mTfUlqTR5+yxKtWwm6WGWF5nE?=
+ =?us-ascii?Q?yQ+WU8BIPOasTNJ3Co30tat8wHq7ees13LFh7/TFfFnLc4kM51nOSPvMDyRj?=
+ =?us-ascii?Q?Oz4cBV+zWcvXOY7laTZ1cw8PRxgWim9LwwGDUnAw+61inXMJcPKJFwqi/Dsp?=
+ =?us-ascii?Q?iO5a/5lRCbi0PwDSuk7KkT0f/VxnPTJF5fH5hYG9sEpZgpgg32Dg+nso/AvD?=
+ =?us-ascii?Q?/Qv9EUiKbozxilh59ellzeUvZ9txFYKDVidKaivlcG9D4zRc9O1Lih7zrgoe?=
+ =?us-ascii?Q?dFWSMuh7DmmYyJIASSRkYDTJm2/heT67EGeh06RUz9y0kSpuVUoMfyixnbFo?=
+ =?us-ascii?Q?qgNJPulSS5ZgZslIhC0yFMh2P7zEVSYpfVIUQUw4l3rLBuqjuYcm9lghfHwv?=
+ =?us-ascii?Q?atM5hRptH/TKlufUBiobOPMRO4WLcupshEfSzSDV92HZLXwiMgKizOjKGJKW?=
+ =?us-ascii?Q?C5qBNC/NbJYDwTYGCecEAdD5wPDj0mTCn59/aWw6umomdsVSNx8puxvZ1m1p?=
+ =?us-ascii?Q?ZSJ8X6Q8LFHq8TjQPIiOsSzDUnUeqrII68s1hgQPT8Ye8MC/tMrirZjaQ+2W?=
+ =?us-ascii?Q?CFiHrBHFiT73a0zUrp2KtOYZA/JEA7nAy8nUUEh18i9YXuauQwXZGEerbCFP?=
+ =?us-ascii?Q?nT8MxrbAoYGbHMCB21XZcZtbQdGZ7G6OEBTPHnoIcEidr18RVkIhnu0GZB/b?=
+ =?us-ascii?Q?uqE4f/thAIMAUzd+CRhigZ3gPUELrgVJpmmEkXMJUlgicIHADwlJDQaOvump?=
+ =?us-ascii?Q?XY3qz7XZJjpImSypfZ3025Q+V3VccBtctHipCab/29f/PATn7FMkXzvHPeCc?=
+ =?us-ascii?Q?eFydDLudKfGD18+SxWx+cLCNLjdjuRykVmvoYGblT0TgQnYCGMdx1afR1rAE?=
+ =?us-ascii?Q?pyz730NUe27sf/r2eNrdWstkxeD3E+nDbOw+uQGpruvQ6Jy8xloj15Cy9HfT?=
+ =?us-ascii?Q?OrbsolpGzEsW7EonuPo+XX2IJpSXS4ggXFIwz0gTfvr4zPlsHXnenQIQiEu6?=
+ =?us-ascii?Q?EId6xiiTk8EjpryPDduBJn73C8fB86N4pRIVyR2iNd0gJG8D9e34+ufpANkh?=
+ =?us-ascii?Q?0ZovnWwAZEYKSmNbPLCnH2AXREP4Y6wFbd9Su/dawOMOUPEqjxMP6CY49jYJ?=
+ =?us-ascii?Q?b8p7XCA//DueFiw3KMHslgKO5CV4jv60e19+N/8n?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88c29516-b4b3-484d-1fb8-08dc5863b444
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Apr 2024 07:07:22.8857
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: NJXhFT0aomHbnaqQWCK1+92khZIzD8YlgaT29Q5CxmmooBUaUuBuqwt62my8dhPxtzsv+qiQP8MZCgUX2uAu2w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7848
+X-OriginatorOrg: intel.com
 
-of_dma_get_max_cpu_address() returns the highest CPU address that
-devices can use for DMA. The implicit assumption is that all CPU
-addresses below that limit are suitable for DMA. However the
-'dma-ranges' property this code uses also encodes a lower limit for DMA
-that is potentially non zero.
+> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Sent: Tuesday, April 9, 2024 1:39 AM
+>=20
+> Hi Jacob,
+>=20
+> On Mon, 8 Apr 2024 09:05:56 -0700, Jacob Pan
+> <jacob.jun.pan@linux.intel.com> wrote:
+>=20
+> > Hi Kevin,
+> >
+> > On Mon, 8 Apr 2024 08:48:54 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+> > wrote:
+> >
+> > > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > > Sent: Thursday, April 4, 2024 7:46 AM
+> > > >
+> > > > @@ -1182,7 +1182,6 @@ static void free_iommu(struct intel_iommu
+> > > > *iommu)
+> > > >  			iommu->pr_irq =3D 0;
+> > > >  		}
+> > > >  		free_irq(iommu->fault_irq, iommu);
+> > > > -		dmar_free_hwirq(iommu->fault_irq);
+> > >
+> > > You still want to free the vector for the iommu which first gets the
+> > > vector allocated.
+> > >
+> > I think we always want to keep this vector since the system always need=
+s
+> > one vector to share. We will never offline all the IOMMUs, right?
 
-Rename to of_dma_get_cpu_limits(), and extend to retrieve also the lower
-limit for the same 'dma-ranges' property describing the high limit.
+Not about offline. Just about the common rule of cleaning up a resource
+when all of its users are destroyed.
 
-Update callers of of_dma_get_max_cpu_address(). No functional change
-intended.
+> > > > +
+> > > > +	/*
+> > > > +	 * Only the owner IOMMU of the shared IRQ has its fault event
+> > > > +	 * interrupt unmasked after request_irq(), the rest are
+> > > > explicitly
+> > > > +	 * unmasked.
+> > > > +	 */
+> > > > +	if (!(iommu->flags & VTD_FLAG_FAULT_IRQ_OWNER))
+> > > > +		dmar_fault_irq_unmask(iommu);
+> > > > +
+> > >
+> > > em there is a problem in dmar_msi_mask() and dmar_msi_mask()
+> > > which only touches the owner IOMMU. With this shared vector
+> > > approach we should mask/unmask all IOMMU's together.
+> > I thought about this as well, in addition to fault_irq,
+> > dmar_msi_mask/unmask() are used for other DMAR irqs, page request and
+> > perfmon. So we need a special case for fault_irq there, it is not prett=
+y.
 
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
- arch/arm64/mm/init.c  |  2 +-
- drivers/of/address.c  | 38 +++++++++++++++++++++++++++-----------
- drivers/of/unittest.c |  8 ++++----
- include/linux/of.h    | 11 ++++++++---
- 4 files changed, 40 insertions(+), 19 deletions(-)
+yes, that is the part which I don't really like.
 
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index 00508c69ca9e..77e942ca578b 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -128,7 +128,7 @@ static void __init zone_sizes_init(void)
- 
- #ifdef CONFIG_ZONE_DMA
- 	acpi_zone_dma_limit = acpi_iort_dma_get_max_cpu_address();
--	dt_zone_dma_limit = of_dma_get_max_cpu_address(NULL);
-+	of_dma_get_cpu_limits(NULL, &dt_zone_dma_limit, NULL);
- 	zone_dma_limit = min(dt_zone_dma_limit, acpi_zone_dma_limit);
- 	arm64_dma_phys_limit = max_zone_phys(zone_dma_limit);
- 	max_zone_pfns[ZONE_DMA] = PFN_DOWN(arm64_dma_phys_limit);
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index ae46a3605904..ac009b3bb63b 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -964,21 +964,25 @@ int of_dma_get_range(struct device_node *np, const struct bus_dma_region **map)
- #endif /* CONFIG_HAS_DMA */
- 
- /**
-- * of_dma_get_max_cpu_address - Gets highest CPU address suitable for DMA
-+ * of_dma_get_cpu_limits - Gets highest CPU address suitable for DMA
-  * @np: The node to start searching from or NULL to start from the root
-+ * @max: Pointer to high address limit or NULL if not needed
-+ * @min: Pointer to low address limit or NULL if not needed
-  *
-  * Gets the highest CPU physical address that is addressable by all DMA masters
-- * in the sub-tree pointed by np, or the whole tree if NULL is passed. If no
-- * DMA constrained device is found, it returns PHYS_ADDR_MAX.
-+ * in the sub-tree pointed by np, or the whole tree if @np in NULL. If no
-+ * DMA constrained device is found, @*max is PHYS_ADDR_MAX, and @*low is 0.
-  */
--phys_addr_t __init of_dma_get_max_cpu_address(struct device_node *np)
-+void __init of_dma_get_cpu_limits(struct device_node *np,
-+		phys_addr_t *max, phys_addr_t *min)
- {
- 	phys_addr_t max_cpu_addr = PHYS_ADDR_MAX;
- 	struct of_range_parser parser;
--	phys_addr_t subtree_max_addr;
-+	phys_addr_t min_cpu_addr = 0;
- 	struct device_node *child;
- 	struct of_range range;
- 	const __be32 *ranges;
-+	u64 cpu_start = 0;
- 	u64 cpu_end = 0;
- 	int len;
- 
-@@ -988,21 +992,33 @@ phys_addr_t __init of_dma_get_max_cpu_address(struct device_node *np)
- 	ranges = of_get_property(np, "dma-ranges", &len);
- 	if (ranges && len) {
- 		of_dma_range_parser_init(&parser, np);
--		for_each_of_range(&parser, &range)
--			if (range.cpu_addr + range.size > cpu_end)
-+		for_each_of_range(&parser, &range) {
-+			if (range.cpu_addr + range.size > cpu_end) {
- 				cpu_end = range.cpu_addr + range.size - 1;
-+				cpu_start = range.cpu_addr;
-+			}
-+		}
- 
--		if (max_cpu_addr > cpu_end)
-+		if (max_cpu_addr > cpu_end) {
- 			max_cpu_addr = cpu_end;
-+			min_cpu_addr = cpu_start;
-+		}
- 	}
- 
- 	for_each_available_child_of_node(np, child) {
--		subtree_max_addr = of_dma_get_max_cpu_address(child);
--		if (max_cpu_addr > subtree_max_addr)
-+		phys_addr_t subtree_max_addr, subtree_min_addr;
-+
-+		of_dma_get_cpu_limits(child, &subtree_max_addr, &subtree_min_addr);
-+		if (max_cpu_addr > subtree_max_addr) {
- 			max_cpu_addr = subtree_max_addr;
-+			min_cpu_addr = subtree_min_addr;
-+		}
- 	}
- 
--	return max_cpu_addr;
-+	if (max)
-+		*max = max_cpu_addr;
-+	if (min)
-+		*min = min_cpu_addr;
- }
- 
- /**
-diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-index 6b5c36b6a758..2d632d4ec5b1 100644
---- a/drivers/of/unittest.c
-+++ b/drivers/of/unittest.c
-@@ -921,7 +921,7 @@ static void __init of_unittest_changeset(void)
- #endif
- }
- 
--static void __init of_unittest_dma_get_max_cpu_address(void)
-+static void __init of_unittest_dma_get_cpu_limits(void)
- {
- 	struct device_node *np;
- 	phys_addr_t cpu_addr;
-@@ -935,9 +935,9 @@ static void __init of_unittest_dma_get_max_cpu_address(void)
- 		return;
- 	}
- 
--	cpu_addr = of_dma_get_max_cpu_address(np);
-+	of_dma_get_cpu_limits(np, &cpu_addr, NULL);
- 	unittest(cpu_addr == 0x4fffffff,
--		 "of_dma_get_max_cpu_address: wrong CPU addr %pad (expecting %x)\n",
-+		 "of_dma_get_cpu_limits: wrong CPU addr %pad (expecting %x)\n",
- 		 &cpu_addr, 0x4fffffff);
- }
- 
-@@ -4109,7 +4109,7 @@ static int __init of_unittest(void)
- 	of_unittest_changeset();
- 	of_unittest_parse_interrupts();
- 	of_unittest_parse_interrupts_extended();
--	of_unittest_dma_get_max_cpu_address();
-+	of_unittest_dma_get_cpu_limits();
- 	of_unittest_parse_dma_ranges();
- 	of_unittest_pci_dma_ranges();
- 	of_unittest_bus_ranges();
-diff --git a/include/linux/of.h b/include/linux/of.h
-index a0bedd038a05..7756441d3ce0 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -454,7 +454,8 @@ int of_map_id(struct device_node *np, u32 id,
- 	       const char *map_name, const char *map_mask_name,
- 	       struct device_node **target, u32 *id_out);
- 
--phys_addr_t of_dma_get_max_cpu_address(struct device_node *np);
-+void of_dma_get_cpu_limits(struct device_node *np, phys_addr_t *max,
-+		phys_addr_t *min);
- 
- struct kimage;
- void *of_kexec_alloc_and_setup_fdt(const struct kimage *image,
-@@ -880,9 +881,13 @@ static inline int of_map_id(struct device_node *np, u32 id,
- 	return -EINVAL;
- }
- 
--static inline phys_addr_t of_dma_get_max_cpu_address(struct device_node *np)
-+static inline void of_dma_get_cpu_limits(struct device_node *np,
-+		phys_addr_t *max, phys_addr_t *min)
- {
--	return PHYS_ADDR_MAX;
-+	if (max)
-+		*max = PHYS_ADDR_MAX;
-+	if (min)
-+		*min = 0;
- }
- 
- static inline const void *of_device_get_match_data(const struct device *dev)
--- 
-2.43.0
+> >
+> > I added a special case here in this patch, thinking we never mask the
+> > fault_irq since we need to cover the lifetime of the system. I have loo=
+ked
+> > at:
+> > 1.IOMMU suspend/resume, no mask/unmask
+> Actually, we do call mask/unmask in suspend/unmask noirq phase.
+> And DMAR-MSI chip has IRQCHIP_SKIP_SET_WAKE flag.
+>=20
+> So you are right, I am missing this case where non-owner IOMMU's fault_ir=
+qs
+> are not masked/unmasked.
+>=20
 
+and it's not good to code a mask/unmask callback upon fixed assumptions
+on when irq core may call mask/unmask as the latter part can change=20
+w/o noting the broken assumption in such callback.
