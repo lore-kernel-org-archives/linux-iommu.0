@@ -1,172 +1,167 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2077.outbound.protection.outlook.com [40.107.244.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6193413D2A8
-	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 08:02:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712736168; cv=none; b=XpKGgVZH6rYscPUiNh3bWxROIfCK/kYfA+T3dzhH7QcLSQqCdDCm8jFu9tlXdlEDM38lIx0321z06LDeDNhp2YNoBeY2MHhCvBwSoVTZeCXNMgbOtTV8T9GpPojKULiPDf4LR5FetAxDLJK9qncK1Qq5PLb8ppallDy8Rj6rRWM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712736168; c=relaxed/simple;
-	bh=d1PN1Hm45NhCEHeS1enwZRk3BBE6Kbx5SrWseLrZK54=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 In-Reply-To:Content-Type:Content-Disposition; b=jGBb0m11QcadOr0oEztdjUyfVu0PLHjlEVl0qMWisKIFmPxP6Uy/s1rKmuGORC7VXNgUPBHHXD1z6+S9pQeDxcEwxL8HUiUxpRs6zg28QCSI1YPU6/Iga32pMqsTKGKFtrrsh5Ob4E22FOJOxR7IaQV9nuqKA8VfyGLqp4DQ2ns=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=Pk97KuT/; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D75D51494D6
+	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 08:57:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.77
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712739459; cv=fail; b=E/raBgvSmJ2u1/YAU9uwcyP6gl75GiyK4RybXai/WloBnexNY+JNbLIp60C0puk6TjBGr5rUqM/HrkLpYOeWk5ExrjgGMyQ7cYGl3v3LQhVuK67QzU+9+t3vGUGJV5ahewQJlSUFlBlAVUfAfCOtlIUM3ifBN5tDJ9TgNhMFlqk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712739459; c=relaxed/simple;
+	bh=BJ/DEU9kenq/ZDq9OzW6lO572P1gwyD7A1gUvPvOA6M=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=BEzf/L6rJzugztD1+I+z0xMsaTxcHfscqdjAA+X29CqFGldEj7MhGOrpoug1tLYaUK0+5ob9YlRjU0NL3hKewGngf8Qa+YbYM5FpnqGo9mSKhw30KIWkQYZ5mrLbfyE0uS2vX4WTWpc5DW5FiotfIvgFGJJ93hAUWm9RPZOEIgk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=cy3G2NZt; arc=fail smtp.client-ip=40.107.244.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Pk97KuT/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1712736165;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=DXu5GyWFLRYVVgKT/xx47xxPPvyqqTS3jJA/xlCkkm0=;
-	b=Pk97KuT/mE9r5AWVFdqO6INc6z4HesNnp8Eydu2oWb9B1SKZTBktWULMTV6CAv5WHqzYfb
-	lEV3l0VSl46VIecpkz+PButrh4dcw0SGAOKtlkkT+cdzv/cTu9TaijbzP+0LS2xbwPCKPq
-	mqsjrSmvjJQcMxrmicBH/NKgjbxKZms=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-601-ZiKyA8M8P8i4owPvLi5D1g-1; Wed, 10 Apr 2024 04:02:41 -0400
-X-MC-Unique: ZiKyA8M8P8i4owPvLi5D1g-1
-Received: by mail-wm1-f69.google.com with SMTP id 5b1f17b1804b1-41641a8895dso19113115e9.0
-        for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 01:02:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712736160; x=1713340960;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DXu5GyWFLRYVVgKT/xx47xxPPvyqqTS3jJA/xlCkkm0=;
-        b=P3CEzBtXhwZzsstePJxJR5WpSHdWevvLzI/FL9qRfaup9ANzFYiGexwgXXM8aZTXzT
-         DFdvFZpY8ExwFNAXr6Jogomc0WSORitzITKk05CZxU8aecMUzburU5Lf344s0nREzE2x
-         SploNYhEx7HHdL9RqLVjQYh+cvzMPI20AuCCM1+x45Qhr2DlZNA++fTpW7iUZ30PcAGF
-         8jL97PdOrLsZmL9ZlTg4+UY+9TDQA5GKtv5Pb7bqnY0MbBYa8FzQNJv21XG3p1KkCQQk
-         D40OgwtlsjQqUkiWBUUhI14D9f5Zl7MwVLS0McZH+J0yxpP5sontwqRCHWEQYhCZdA4o
-         uIAg==
-X-Forwarded-Encrypted: i=1; AJvYcCU5oKwNqMSIH0qBFviMXs/D9utObcDdr35roD8v3QRDvpIRQzVM1n2TMGA8UlTQMqWV3JceIfJHebsHlo5tjPJxuRrMk7k=
-X-Gm-Message-State: AOJu0Yxlj2gtLNJNuoz3o78xwNjW9CsdOeyXQeOOrrDpwbHJ8U+qZT7d
-	nC+PixoehY2OD+X4JPuC/Jb5u9A21yp5KEU/vOJsvXzMP4xyTmRsDXxQ5n88rNo6vNYzlz4DjtQ
-	3almzlsS2ua5vOjZLkzQ0UJeelxXo50umNrYG0GpV08ettGemXcII
-X-Received: by 2002:a05:600c:1e05:b0:416:6eaa:6179 with SMTP id ay5-20020a05600c1e0500b004166eaa6179mr1616289wmb.6.1712736160199;
-        Wed, 10 Apr 2024 01:02:40 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFmI+bK+Bmn5+2XukodBdn2GXQ92haKG6VohgZt2mHVdjYtyJPyqjLehKUQ4vb5gN6ueySe/w==
-X-Received: by 2002:a05:600c:1e05:b0:416:6eaa:6179 with SMTP id ay5-20020a05600c1e0500b004166eaa6179mr1616221wmb.6.1712736159530;
-        Wed, 10 Apr 2024 01:02:39 -0700 (PDT)
-Received: from redhat.com ([2a02:14f:179:8bde:8cd:63ff:6fae:3872])
-        by smtp.gmail.com with ESMTPSA id t7-20020a05600c198700b00416c160ff88sm1491111wmq.1.2024.04.10.01.02.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Apr 2024 01:02:38 -0700 (PDT)
-Date: Wed, 10 Apr 2024 04:02:23 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc: Jason Wang <jasowang@redhat.com>,
-	Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	David Hildenbrand <david@redhat.com>,
-	Gerd Hoffmann <kraxel@redhat.com>,
-	Richard Weinberger <richard@nod.at>,
-	Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-	Johannes Berg <johannes@sipsolutions.net>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Stefan Hajnoczi <stefanha@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-	Marcel Holtmann <marcel@holtmann.org>,
-	Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-	Olivia Mackall <olivia@selenic.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Amit Shah <amit@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Gonglei <arei.gonglei@huawei.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	Cristian Marussi <cristian.marussi@arm.com>,
-	Viresh Kumar <vireshk@kernel.org>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Bartosz Golaszewski <brgl@bgdev.pl>,
-	David Airlie <airlied@redhat.com>,
-	Gurchetan Singh <gurchetansingh@chromium.org>,
-	Chia-I Wu <olvaffe@gmail.com>,
-	Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-	Maxime Ripard <mripard@kernel.org>,
-	Thomas Zimmermann <tzimmermann@suse.de>,
-	Daniel Vetter <daniel@ffwll.ch>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alexander Graf <graf@amazon.com>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Eric Van Hensbergen <ericvh@kernel.org>,
-	Latchesar Ionkov <lucho@ionkov.net>,
-	Dominique Martinet <asmadeus@codewreck.org>,
-	Christian Schoenebeck <linux_oss@crudebyte.com>,
-	Stefano Garzarella <sgarzare@redhat.com>,
-	Kalle Valo <kvalo@kernel.org>,
-	Dan Williams <dan.j.williams@intel.com>,
-	Vishal Verma <vishal.l.verma@intel.com>,
-	Dave Jiang <dave.jiang@intel.com>, Ira Weiny <ira.weiny@intel.com>,
-	Pankaj Gupta <pankaj.gupta.linux@gmail.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Mathieu Poirier <mathieu.poirier@linaro.org>,
-	"James E.J. Bottomley" <jejb@linux.ibm.com>,
-	"Martin K. Petersen" <martin.petersen@oracle.com>,
-	Vivek Goyal <vgoyal@redhat.com>, Miklos Szeredi <miklos@szeredi.hu>,
-	Anton Yakovlev <anton.yakovlev@opensynergy.com>,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	virtualization@lists.linux.dev, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-um@lists.infradead.org,
-	linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-	linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
-	iommu@lists.linux.dev, netdev@vger.kernel.org, v9fs@lists.linux.dev,
-	kvm@vger.kernel.org, linux-wireless@vger.kernel.org,
-	nvdimm@lists.linux.dev, linux-remoteproc@vger.kernel.org,
-	linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-	alsa-devel@alsa-project.org, linux-sound@vger.kernel.org,
-	Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
-	Viresh Kumar <viresh.kumar@linaro.org>
-Subject: Re: [PATCH v2 00/25] virtio: store owner from modules with
- register_virtio_driver()
-Message-ID: <20240410040140-mutt-send-email-mst@kernel.org>
-References: <20240331-module-owner-virtio-v2-0-98f04bfaf46a@linaro.org>
- <285be63c-8939-495c-8411-ce2a68e25b2b@linaro.org>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="cy3G2NZt"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EGMrvhwF3fHNH07pObRevLNebgqUR8dGaa/DN423d5c5CJcBLu9vl6muRlRPkVwfZNzd3zr6MTkzOdrIzyh8mHQ7kIat3LcMlntsnbQF5U7F0lnDGyrByQLwnNtITwYQrWUyFhApLr64PsdMXZ9C3Y0C0sf6H+xdmnOtEptaKojnMsaMMeYQfoDmcB9A6yncaSszZ+TkN/mtQr2WuqedyLnk45sp15XqiLrW124ZkEaywf6yQUBCNlory778Y6aaPDHsXGsVQoJZsJoC6n9HREEWwU4K17ycaPUDJV1eZB83u6T+xJDspEufWT3Ijmdah35kzm1G4g5X9vTILFVBpg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=lVb7liGjyvtuUDV7uQnyzk1m1tLM2YsMjWV/audpzK4=;
+ b=fBbe9EL1W5BQlY4TTXDy6wJQXsPL696VA9oQY+c4Dvc2H0Dm3Ubs76Gyq3w4D1rIgPgTmt+27MvXTUEyWYRVLzKnueVhP+m5uUc/m6kHXBaEJGzCPNTUm7eeKaJC+POhjj/MZkV7IatqjJ5mjBO9MRlYAYdTj91SUWsCyv386nXk0tVjkvgXncnBGjv4VkmaZGTkL+dgrZpUV5v/3SGeg5rgw4iCG3GiY+iYieNoYzXBa0IoA9Hfa+ZpdT+6U6C+eLXWg7vbBGkgoenQIJdov+Y7Sd6QXpvf6vooBQfU03mKdu3ypjxRCRnAAT8OP2gemaPXZyhx5PhrS6bNVG+X5A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lVb7liGjyvtuUDV7uQnyzk1m1tLM2YsMjWV/audpzK4=;
+ b=cy3G2NZtuLzYAR7tULAGl2iGPqtUe62ohRzhf5wKZRrvXbh/DA3cmkcFftIXSKOpmtoUGYF7Lbkw9JxmUiC6YTRNR3trvERif8xWnfoJsy1Od8m1vyayF/tuDi2xlWAlLIfwbHzSUmIbHdIKBsgQhXAqWs3ZcHMhj3EuQyobQvc=
+Received: from SA0PR11CA0145.namprd11.prod.outlook.com (2603:10b6:806:131::30)
+ by SJ2PR12MB7821.namprd12.prod.outlook.com (2603:10b6:a03:4d2::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.46; Wed, 10 Apr
+ 2024 08:57:35 +0000
+Received: from SA2PEPF00003AE8.namprd02.prod.outlook.com
+ (2603:10b6:806:131:cafe::f0) by SA0PR11CA0145.outlook.office365.com
+ (2603:10b6:806:131::30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.18 via Frontend
+ Transport; Wed, 10 Apr 2024 08:57:34 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ SA2PEPF00003AE8.mail.protection.outlook.com (10.167.248.8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7452.22 via Frontend Transport; Wed, 10 Apr 2024 08:57:34 +0000
+Received: from kali.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Wed, 10 Apr
+ 2024 03:57:31 -0500
+From: Vasant Hegde <vasant.hegde@amd.com>
+To: <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <suravee.suthikulpanit@amd.com>, <bp@alien8.de>, Vasant Hegde
+	<vasant.hegde@amd.com>, Ashish Kalra <ashish.kalra@amd.com>, Michael Roth
+	<michael.roth@amd.com>, Tom Lendacky <thomas.lendacky@amd.com>
+Subject: [PATCH v3 rc] iommu/amd: Do not enable SNP when V2 page table is enabled
+Date: Wed, 10 Apr 2024 08:57:02 +0000
+Message-ID: <20240410085702.31869-1-vasant.hegde@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <285be63c-8939-495c-8411-ce2a68e25b2b@linaro.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SA2PEPF00003AE8:EE_|SJ2PR12MB7821:EE_
+X-MS-Office365-Filtering-Correlation-Id: e347d489-47ad-4c4a-59bd-08dc593c439a
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	UOJscauIvUFxgvwdPfsKBubExM8Y+nR51eAm+sgWmhenAshnSam+t1tvty1LW29VXJ5QM48nPXnquEmJXlBG1K4/kzCb9j5xdlVoVh2O6QqfxU0Eo/9pjO58lEk0JNqHFsY2FzfQKbx3fee9CGO17PBzJz5xA8ll4P44X83VSQEV5Taw75psCyA+uUEbcnKFjVx46eZsfq0cuApNR8I/DmoDQW/D1MAncomBybIkLDtk62RnIdrFEgBMSoo6nJoy+DTzJ06Vqsa6dFGjUrrHNbmEkHDG4zSE7H7jOdeBwblIEfLri3KtSMvym3DZuuaaUeLKIrCSxU2PKegZ9NL3hai8aBnZoPBXCogStz+4s/Ilg/kFcRBqv6PrFTdFKs4H6E4xP3y98MtiG9OZWQdgkJgmaf0rfI6kwLBnBPQBL8Ti7gN6vv+TBxV9/sKCvgbxPdT8iZu8NCK53Do7UrgyQQ3He5sgv5kiXHKo/nn1Mimz6gNc5kAVgw1AQDRVB4739GZt1dCDzWARkJEQExSCVIvG5Cq1WR4lW+XhjkbxcZVohyWzqvhnQog5C+jxIR39xTZ4cCsUXbZIabPkb3j3V33SnX8uzrEmhyPhqP8lFHweE3JQZxX0rLU4iImcfZOHkKXmYcnW140eNI+HXlT8jfYYXITaz7h+fJoASH46vmj8SKjDcIIYpZhbw9T+QZ1OfExxwAJrFvAUfgsi7zpi6g==
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(376005)(36860700004)(1800799015)(82310400014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2024 08:57:34.5460
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e347d489-47ad-4c4a-59bd-08dc593c439a
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SA2PEPF00003AE8.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ2PR12MB7821
 
-On Wed, Apr 10, 2024 at 09:41:57AM +0200, Krzysztof Kozlowski wrote:
-> On 31/03/2024 10:43, Krzysztof Kozlowski wrote:
-> > Changes in v2:
-> > - Three new patches: virtio mem+input+balloon
-> > - Minor commit msg adjustments
-> > - Add tags
-> > - Link to v1: https://lore.kernel.org/r/20240327-module-owner-virtio-v1-0-0feffab77d99@linaro.org
-> > 
-> > Merging
-> > =======
-> > All further patches depend on the first virtio patch, therefore please ack
-> > and this should go via one tree: maybe virtio?
-> 
-> Michael, Jason, Xuan,
-> 
-> Will you be able to take the entire patchset through virtio?
-> 
-> Best regards,
-> Krzysztof
+DTE[Mode]=0 is not supported when SNP is enabled in the host. That means
+to support SNP, IOMMU must be configured with V1 page table (See IOMMU
+spec [1] for the details). If user passes kernel command line to configure
+IOMMU domains with v2 page table (amd_iommu=pgtbl_v2) then disable SNP
+as the user asked by not forcing the page table to v1.
 
+[1] https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf
 
-Hello!
-Yes I intend to take it for the next merge window.
-I am also merging the 1st patch for this release (it's a bugfix).
+Cc: Ashish Kalra <ashish.kalra@amd.com>
+Cc: Michael Roth <michael.roth@amd.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
+---
+Changes in v3:
+  - Updated description and added Reviewed-by tag.
 
+-Vasant
+
+ drivers/iommu/amd/init.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 005981c2f96a..0d9b69765099 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -3215,28 +3215,29 @@ static void iommu_snp_enable(void)
+ 		return;
+ 	/*
+ 	 * The SNP support requires that IOMMU must be enabled, and is
+-	 * not configured in the passthrough mode.
++	 * configured with V1 page table (DTE[Mode] = 0 is not supported).
+ 	 */
+ 	if (no_iommu || iommu_default_passthrough()) {
+ 		pr_err("SNP: IOMMU disabled or configured in passthrough mode, SNP cannot be supported.\n");
+-		cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
+-		return;
++		goto disable_snp;
++	}
++
++	if (amd_iommu_pgtable != AMD_IOMMU_V1) {
++		pr_warn("SNP: IOMMU is configured with V2 page table mode, SNP cannot be supported.\n");
++		goto disable_snp;
+ 	}
+ 
+ 	amd_iommu_snp_en = check_feature(FEATURE_SNP);
+ 	if (!amd_iommu_snp_en) {
+ 		pr_err("SNP: IOMMU SNP feature not enabled, SNP cannot be supported.\n");
+-		cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
+-		return;
++		goto disable_snp;
+ 	}
+ 
+ 	pr_info("IOMMU SNP support enabled.\n");
++	return;
+ 
+-	/* Enforce IOMMU v1 pagetable when SNP is enabled. */
+-	if (amd_iommu_pgtable != AMD_IOMMU_V1) {
+-		pr_warn("Forcing use of AMD IOMMU v1 page table due to SNP.\n");
+-		amd_iommu_pgtable = AMD_IOMMU_V1;
+-	}
++disable_snp:
++	cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
+ #endif
+ }
+ 
 -- 
-MST
+2.31.1
 
