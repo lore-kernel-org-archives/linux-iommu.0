@@ -1,93 +1,228 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41F78179211
-	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 16:19:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E3D0176FCE
+	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 16:37:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712765996; cv=none; b=MTu5pJAOBgMQsCDzHbsfFGXXbuMinQYgqvIVuZD0WdxkjEwa7Q8qsFBwBou3KX+pUMR8F9MTOV4wzu7vDWf+3D24hlwEB5mZDaaEecLoSxbFBTAqyKoGWv6gczs0H7mnoExGyJ+rouUYFgEfnF0wnlRltnFpIq/H9ZPaRFD5IUE=
+	t=1712767032; cv=none; b=tqv5oyqPyZwbwtUizVJQtewFFWArQ4Y3YiyXBCk9ATEZeqBAl6H+XNtsROznI9c9QJbQKYb6cCqLt1gJ/2yPB5QGkbwacCZEY48KSdHLEkC7bvhCBYZeINXWoCoZkXNiJSAOG+Qot1+tg5hqpkf52bod4nT/vCujH5RulaGKiJY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712765996; c=relaxed/simple;
-	bh=nkV9cGAED/z/VIex+b/PSuJe4lylFvXK/ooyXd9u+WY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=U9d17otpR01YHqVxUVU8O5aCp34E0jK6OVKmoeb+QkkISAEIzJUemp2O9RePiScHcCP3JIHBE913m0YaW9mHIYLSnqBP3roEQ87e++bJ+0k9JiXTbINobAnqa2hbaFkFuCrWt18QoxJqXoDzlOsmrb/0LCZWfO309NQmxCsl82s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lXb7xDRX; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lXb7xDRX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712765994; x=1744301994;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=nkV9cGAED/z/VIex+b/PSuJe4lylFvXK/ooyXd9u+WY=;
-  b=lXb7xDRX9XCV574GXJkj2KTBVAz4C0Zl67gg+VDMT9bA7WNDxBe0MmfP
-   Ixv1T7gfrhHbHGX+aOQ5AAzw4CBYOq+PHjVgE9h2d4CFn0CT5by+N2Bxj
-   2RYkkRRaJ3+TWsGenz0ZZKICFPh60I62x6Mwu/OhBoFCXWSV6HjgBmWxH
-   ZGRv1deGvE1nkH5HWPh6ydEwI9xT3PrsyVcuXQaltcyGLU3nxtSqdw6+F
-   aNZr1m+YtmPffZcJnVOpvc38f2NraETNDFblltAYM3yc58iq9k31TysA3
-   SybiHZMb6nYc0Xy2tUK9LsWBcrCslBFVcQyCUHfWX9p9ch3djcTxiOpxs
-   w==;
-X-CSE-ConnectionGUID: /JTHzZ5hSWKV9C4jmYDkOg==
-X-CSE-MsgGUID: 7nxvpUfoQdCgG6bOXstI+A==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="8316626"
-X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="8316626"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 09:15:26 -0700
-X-CSE-ConnectionGUID: bYm3/WcVRy6UqtcJM8vh6g==
-X-CSE-MsgGUID: lJv4/ogSSgGrN2eFG8qM4A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="20570377"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 09:15:25 -0700
-Date: Wed, 10 Apr 2024 09:19:55 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Baolu Lu <baolu.lu@linux.intel.com>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel
- <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH 2/2] iommu/vt-d: Remove caching mode check before devtlb
- flush
-Message-ID: <20240410091955.5c00e411@jacob-builder>
-In-Reply-To: <BN9PR11MB52763F42ED6719E6D03D0D308C062@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240407144232.190355-1-baolu.lu@linux.intel.com>
-	<20240407144232.190355-2-baolu.lu@linux.intel.com>
-	<20240408140329.6290377f@jacob-builder>
-	<aff42b8f-b757-4422-9ebe-741a4b894b6c@linux.intel.com>
-	<20240409103146.0d155e45@jacob-builder>
-	<BN9PR11MB52763F42ED6719E6D03D0D308C062@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1712767032; c=relaxed/simple;
+	bh=wY8a3bi6jEqKcdiIKKypYn3FBf08SvzztehZy4MIMMI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=M7qLq53+LQVMIOH/4Clt1VSNTTQjx97P/DqusOO4OLkv3L6fOTTGuFhkX+85dWW71d5PjbPLH9jY6DfhE812fkcd3W4mtFJ6nsJXu0cwjiMulv9+BHz+IqHwvm96bbCzLOuVyZPUcey31I7+v/D4C8TCD6ceOWxnqJb7MLj+33Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 880A2139F;
+	Wed, 10 Apr 2024 09:37:38 -0700 (PDT)
+Received: from [10.57.53.164] (unknown [10.57.53.164])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 508A53F766;
+	Wed, 10 Apr 2024 09:37:07 -0700 (PDT)
+Message-ID: <0dda6ce6-1b82-4168-93b7-a0e847ce9b08@arm.com>
+Date: Wed, 10 Apr 2024 17:37:06 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/5] iommu: Add static iommu_ops->release_domain
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@ziepe.ca>, Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Kevin Tian <kevin.tian@intel.com>, Eric Badger <ebadger@purestorage.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20240305013305.204605-1-baolu.lu@linux.intel.com>
+ <20240305013305.204605-2-baolu.lu@linux.intel.com>
+ <20240410152606.GF223006@ziepe.ca>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20240410152606.GF223006@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Kevin,
-
-On Wed, 10 Apr 2024 00:32:06 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
-
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Wednesday, April 10, 2024 1:32 AM
-> > 
-> > If the guest uses SL page tables in vIOMMU, we don;t expose ATS to the
-> > guest. So ATS is not relevant here, does't matter map or unmap.
-> >   
+On 2024-04-10 4:26 pm, Jason Gunthorpe wrote:
+> On Tue, Mar 05, 2024 at 09:33:01AM +0800, Lu Baolu wrote:
+>> The current device_release callback for individual iommu drivers does the
+>> following:
+>>
+>> 1) Silent IOMMU DMA translation: It detaches any existing domain from the
+>>     device and puts it into a blocking state (some drivers might use the
+>>     identity state).
+>> 2) Resource release: It releases resources allocated during the
+>>     device_probe callback and restores the device to its pre-probe state.
+>>
+>> Step 1 is challenging for individual iommu drivers because each must check
+>> if a domain is already attached to the device. Additionally, if a deferred
+>> attach never occurred, the device_release should avoid modifying hardware
+>> configuration regardless of the reason for its call.
+>>
+>> To simplify this process, introduce a static release_domain within the
+>> iommu_ops structure. It can be either a blocking or identity domain
+>> depending on the iommu hardware. The iommu core will decide whether to
+>> attach this domain before the device_release callback, eliminating the
+>> need for repetitive code in various drivers.
+>>
+>> Consequently, the device_release callback can focus solely on the opposite
+>> operations of device_probe, including releasing all resources allocated
+>> during that callback.
+>>
+>> Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+>> ---
+>>   include/linux/iommu.h |  1 +
+>>   drivers/iommu/iommu.c | 19 +++++++++++++++----
+>>   2 files changed, 16 insertions(+), 4 deletions(-)
 > 
-> ATS is orthogonal to SL vs. FL. Where is this restriction coming from?
-For practical purposes, what would be the usage to have SL in the guest and
-ATS enabled. i.e. shadowing SL but directly expose ATS? 
+> I looked at all the drivers:
+>   1) Didn't spend time to guess what ipmmu-vmss is doing
+>   2) Several drivers are obviously missing the release_domain behavior
+>      and now be trivially fixed
+>   3) amd, s390, virtio-iommu and arm-smmu should probably support
+>      blocked_domain (I assume that is what their detach does)
+>   4) arm-smmuv3 can use it too once disable_bypass is removed
+>   5) Several drivers don't even have release_device functions.
+>      Probably all of them can do their identiy domains too.
+> 
+> This seems like a pretty reasonable thing to add to this series too:
+> 
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index eb1e62cd499a58..3ddc4b4418a049 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -979,6 +979,7 @@ static void apple_dart_get_resv_regions(struct device *dev,
+>   static const struct iommu_ops apple_dart_iommu_ops = {
+>   	.identity_domain = &apple_dart_identity_domain,
+>   	.blocked_domain = &apple_dart_blocked_domain,
+> +	.release_domain = &apple_dart_blocked_domain,
+>   	.domain_alloc_paging = apple_dart_domain_alloc_paging,
+>   	.probe_device = apple_dart_probe_device,
+>   	.release_device = apple_dart_release_device,
+> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+> index d98c9161948a25..902dc4da44f987 100644
+> --- a/drivers/iommu/exynos-iommu.c
+> +++ b/drivers/iommu/exynos-iommu.c
+> @@ -1424,8 +1424,6 @@ static void exynos_iommu_release_device(struct device *dev)
+>   	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
+>   	struct sysmmu_drvdata *data;
+>   
+> -	WARN_ON(exynos_iommu_identity_attach(&exynos_identity_domain, dev));
+> -
+>   	list_for_each_entry(data, &owner->controllers, owner_node)
+>   		device_link_del(data->link);
+>   }
+> @@ -1471,6 +1469,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
+>   
+>   static const struct iommu_ops exynos_iommu_ops = {
+>   	.identity_domain = &exynos_identity_domain,
+> +	.release_domain = &exynos_identity_domain,
+>   	.domain_alloc_paging = exynos_iommu_domain_alloc_paging,
+>   	.device_group = generic_device_group,
+>   	.probe_device = exynos_iommu_probe_device,
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index b8c47f18bc2612..b5693041b18dd4 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -1012,6 +1012,7 @@ static void mtk_iommu_get_resv_regions(struct device *dev,
+>   
+>   static const struct iommu_ops mtk_iommu_ops = {
+>   	.identity_domain = &mtk_iommu_identity_domain,
+> +	.release_domain = &mtk_iommu_identity_domain,
+>   	.domain_alloc_paging = mtk_iommu_domain_alloc_paging,
+>   	.probe_device	= mtk_iommu_probe_device,
+>   	.release_device	= mtk_iommu_release_device,
+> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> index a9fa2a54dc9b39..9e7205af7d7316 100644
+> --- a/drivers/iommu/mtk_iommu_v1.c
+> +++ b/drivers/iommu/mtk_iommu_v1.c
+> @@ -580,6 +580,7 @@ static int mtk_iommu_v1_hw_init(const struct mtk_iommu_v1_data *data)
+>   
+>   static const struct iommu_ops mtk_iommu_v1_ops = {
+>   	.identity_domain = &mtk_iommu_v1_identity_domain,
+> +	.release_domain = &mtk_iommu_v1_identity_domain,
+>   	.domain_alloc_paging = mtk_iommu_v1_domain_alloc_paging,
+>   	.probe_device	= mtk_iommu_v1_probe_device,
+>   	.probe_finalize = mtk_iommu_v1_probe_finalize,
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index c9528065a59afa..c4c76aaec19e50 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1725,6 +1725,7 @@ static void omap_iommu_release_device(struct device *dev)
+>   
+>   static const struct iommu_ops omap_iommu_ops = {
+>   	.identity_domain = &omap_iommu_identity_domain,
+> +	.release_domain = &omap_iommu_identity_domain,
+>   	.domain_alloc_paging = omap_iommu_domain_alloc_paging,
+>   	.probe_device	= omap_iommu_probe_device,
+>   	.release_device	= omap_iommu_release_device,
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index da79d9f4cf6371..e551c5b143bbd3 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -1162,6 +1162,7 @@ static int rk_iommu_of_xlate(struct device *dev,
+>   
+>   static const struct iommu_ops rk_iommu_ops = {
+>   	.identity_domain = &rk_identity_domain,
+> +	.release_domain = &rk_identity_domain,
+>   	.domain_alloc_paging = rk_iommu_domain_alloc_paging,
+>   	.probe_device = rk_iommu_probe_device,
+>   	.release_device = rk_iommu_release_device,
+> 
+>> +	if (!dev->iommu->attach_deferred && ops->release_domain)
+>> +		ops->release_domain->ops->attach_dev(ops->release_domain, dev);
+> 
+> We should probably be sensitive to the
+> dev->iommu->require_direct flag - generally drivers should prefer the
+> blocked for the release domain, but in case the FW ias asking for
+> require_direct we need to switch to identity.
+
+At this point do we even need release_domain? It sounds like the logic 
+you want to enforce is going to be trivial to resolve directly in the 
+core code. As typed-in-mail-client pseudocode, roughly:
+
+static void iommu_set_release_domain(struct device *dev)
+{
+	const struct iommu_ops *ops = dev_iommu_ops(dev);
+	struct iommu_domain *rd;
+
+	/*
+	 * Static domains are expected not to track any device state,
+	 * and thus be tolerant of devices disappearing once "attached"
+	 */
+	if (ops->blocked_domain && !(dev->iommu->require_direct || 
+other_arch_or_platform_reason))
+		rd = ops->blocked_domain;
+	else if (ops->identity_domain)
+		rd = ops->identity_domain;
+	else /* Hope release_device does the right thing! */
+		return;
+
+	if (!dev->iommu->attach_deferred && rd != dev->iommu_group->domain)
+		__iommu_attach_device(rd, dev);
+}
+
+...no driver churn necessary. (And frankly I think it's a further bonus 
+to avoid risking any notion of release_domain being implementable as its 
+own distinct special thing)
 
 Thanks,
+Robin.
 
-Jacob
+> 
+> Also, may as well avoid switching a domain if the group is already
+> correct and use the common attach function to get the tracing.. So
+> like this?
+> 
+> 	if (!dev->iommu->attach_deferred) {
+> 		struct iommu_domain *release_domain = ops->release_domain;
+> 
+> 		if (dev->iommu->require_direct && ops->identity_domain)
+> 			release_domain = ops->identity_domain;
+> 
+> 		if (release_domain && group->domain != release_domain)
+> 			WARN_ON(__iommu_attach_device(release_domain, dev));
+> 	}
+> 
+> Jason
