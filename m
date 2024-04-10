@@ -1,60 +1,50 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0661C13D28B
-	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 07:42:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D6911C0DD9
+	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 08:02:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712734928; cv=none; b=jWF656QWhec0Y7o53VTscw81sMvhYxlCYDtoXpID96IMMUkmmDFsysDMVuJMzLkIo2BOG0DMGuZn6OJAC+50+ktq4npNIfDydK64PRJ3h9gc+FHCZ6M3DdZnu8mNIKIsLIUerNiJ6a4qx1jO9pHWqa1/eipvUXABPddfWRAP4PA=
+	t=1712736154; cv=none; b=RrzgDaO+AIlSaxuDIjFr/uckyCxu9fnbm+K6Qouq+i/iDRDLQzMN9Z1pYSdEKiYALBM6gpDYStOW5wNjx9ieGmT9noNlG+aUAE7WaGPFlf+GVP9UobGh91bjxo4N9mg6m7ky+E2MhopImVqvWuw2EgBKfzKn5guF+jJrJkZUBxc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712734928; c=relaxed/simple;
-	bh=6JimvKABjGAhaAunVcg5wLuwEFqMbqXRS1l6okPFEp4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=c1lszYVZqTSJNRYCGgavw6L7nwSG6CE22UUo9W3+3EVVZeWTLk92SRPTgR6KjWMAoRHOPTHWG2Zc67JK2W2I2b6tGts/SLH+rF/vh3jaGHsSyP9ek1/7Kf9wK9gd7FiEXvMNvUpdnjIrE95US61/lUk9VfVkR7na+BusrWH4wt8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=tW9Bki4N; arc=none smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1712736154; c=relaxed/simple;
+	bh=ns5iFXaPS2mOe7i63bnwPeaQB9a+vK/75Dv/SXu4kPo=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=oiH3Nucbxr13og/9ejMmk7OnI1/p/M2+5rZ71lGQanIBMc+F6qymZscnkQKKFZ6C8DZbZdDzmLK3LEvIYIHrOjtZDEr7e5irbf6SU67FpfxgvO2c20TnPSrLZWbQbUfb6ZDUDGLEEkhh8R6g54uTJ1+AktW5FUEhjkvqkhuuIzg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hSExtxRg; arc=none smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tW9Bki4N"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-56845954ffeso8569643a12.2
-        for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 00:42:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1712734923; x=1713339723; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=k3mXYs19jtAC2YbwmDdropY4/qIjzCwyc3vsFS2GcGA=;
-        b=tW9Bki4NA4TgIqpLV3Nf2wyFmL+VJ9D37r1bjWs+2bY/66PB127Tj496tWnUK2ntut
-         6yd1H9ZBZPoae/tcsp6t+j58KCWBj24S7Z8bBLC+S2kUDoxJeLKBYJFYo1roIzywheKD
-         O1g+uRmzupf5g9hXLYcGEqlwmchs++U1UiTWvoYVH0ud887n4vQIbf42gHt0jVEX4W5N
-         DhHX/JWmD75A2lWzXzauV5k5gxKKX7v+1MLtU7ljasHYL4iacAs1Y104Uka1GJUCwtPn
-         Lm3CpHJkZvDgoZJVSOyDgJsiHxw/r2bpyzM1G2BfBw4DC9EEvsTt1agFFbyy9oEdE4nA
-         RRNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712734923; x=1713339723;
-        h=content-transfer-encoding:in-reply-to:autocrypt:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=k3mXYs19jtAC2YbwmDdropY4/qIjzCwyc3vsFS2GcGA=;
-        b=fqYTGcM2zdF+gIohWzU8ZsAM4i76Z7QH+x841j/9V1a2g4r6Bzd4/An6mDiHJlUjzm
-         gXduAvV9G6qd1HWnMMnzZRAVA6au6FbxLbZkRGr9oWk0bfvC0naFlVSR59nV2tlW0R78
-         a9oNPUQh9j53J/vkvL+tv3h08o0/B4hKpr6lLUnP7crVT9vGKc/dX3sJkW/tdFHCDD06
-         72jRdGG+vufkNS4m3pLtS/+u42WCGZ907L/O3wc2TF3cAQv04YMftWWoM0HdQYASV2rq
-         6sjS92ewwiz2FmLCAZh7XSvGHuyahXCnulbjhE/eHAFxJ8rYT9+795S4bhE7SbNskeUF
-         l45g==
-X-Forwarded-Encrypted: i=1; AJvYcCXQFktLVljdI5yoqfbH5VU1+Ucx+v2dxjzJZIcHt95m5Gz2ladNR8cVlTQtuSq1+v5ojM0tErrWR0avsfO2KSoEqLfJlIc=
-X-Gm-Message-State: AOJu0YwVsJUBTtMprBWkyFP/MF/G716Ihh61ABlQZ+vpr42yJmWsKg/Q
-	LcRaHL/vxwe57FLQvYgtR7xItIKRW3pvRcHdnYJyeMD4Sl0AGwhasos0gIcrOYs=
-X-Google-Smtp-Source: AGHT+IHbsaGMHaULq45hB1RQzGJ2jQouzCDk/Qs5dl99Xk4dB9Un2GtOpuqSHCNaJjxWq+FiwtopyQ==
-X-Received: by 2002:a17:907:9914:b0:a51:a688:3e9c with SMTP id ka20-20020a170907991400b00a51a6883e9cmr887114ejc.35.1712734923162;
-        Wed, 10 Apr 2024 00:42:03 -0700 (PDT)
-Received: from [192.168.1.20] ([178.197.223.16])
-        by smtp.gmail.com with ESMTPSA id y6-20020a17090668c600b00a46d049ff63sm6575359ejr.21.2024.04.10.00.41.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 10 Apr 2024 00:42:02 -0700 (PDT)
-Message-ID: <285be63c-8939-495c-8411-ce2a68e25b2b@linaro.org>
-Date: Wed, 10 Apr 2024 09:41:57 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hSExtxRg"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712736153; x=1744272153;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=ns5iFXaPS2mOe7i63bnwPeaQB9a+vK/75Dv/SXu4kPo=;
+  b=hSExtxRgLzKZxJFnywSUTnSxtSPPz7K9ty0DLLye0+uijG1Yo3/33p6N
+   ni42G+mPEf8BkQCPvumPUrsf2KXZe9djbtf+lKSq9NqDNlrat7pG00ESz
+   J4d/j/mcTPk8XELV2dCqJrBkFws/Hy79BVEvyjfr+E5Z71MhrHIVfrOKS
+   j1OYPpjjuKcNHkoITyxyyMt1ff7yactwweM7RB6aXAZ5nkKWnmlWudYEQ
+   e4LxHD7ICtwL03Rmq5by5oy+x3YuMemcEi4ZYpSvOlEb+epfMg40tSlZ6
+   APJvF8uR9wlYgEYCBIvgP1j0zPmTo5R/zqURlpFKxPgzl1Xulw7bGgflo
+   w==;
+X-CSE-ConnectionGUID: AhkDqFV0RHuB0csTx2nIhQ==
+X-CSE-MsgGUID: bnMB53jZQkqGO5DlTryQZg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="33488835"
+X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
+   d="scan'208";a="33488835"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 01:02:29 -0700
+X-CSE-ConnectionGUID: YatJKCZ1SROZ0ZlY2uIrig==
+X-CSE-MsgGUID: b4Gf+aVbTmeChF1ZQ+xihg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
+   d="scan'208";a="20365966"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.237.86]) ([10.124.237.86])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 01:02:27 -0700
+Message-ID: <0231631b-44ca-45ee-adf9-0a5c8852cc27@linux.intel.com>
+Date: Wed, 10 Apr 2024 16:02:24 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -62,128 +52,65 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 00/25] virtio: store owner from modules with
- register_virtio_driver()
-To: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
- Xuan Zhuo <xuanzhuo@linux.alibaba.com>, Jonathan Corbet <corbet@lwn.net>,
- David Hildenbrand <david@redhat.com>, Gerd Hoffmann <kraxel@redhat.com>,
- Richard Weinberger <richard@nod.at>,
- Anton Ivanov <anton.ivanov@cambridgegreys.com>,
- Johannes Berg <johannes@sipsolutions.net>,
- Paolo Bonzini <pbonzini@redhat.com>, Stefan Hajnoczi <stefanha@redhat.com>,
- Jens Axboe <axboe@kernel.dk>, Marcel Holtmann <marcel@holtmann.org>,
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
- Olivia Mackall <olivia@selenic.com>, Herbert Xu
- <herbert@gondor.apana.org.au>, Amit Shah <amit@kernel.org>,
- Arnd Bergmann <arnd@arndb.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Gonglei <arei.gonglei@huawei.com>, "David S. Miller" <davem@davemloft.net>,
- Sudeep Holla <sudeep.holla@arm.com>,
- Cristian Marussi <cristian.marussi@arm.com>,
- Viresh Kumar <vireshk@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
- Bartosz Golaszewski <brgl@bgdev.pl>, David Airlie <airlied@redhat.com>,
- Gurchetan Singh <gurchetansingh@chromium.org>, Chia-I Wu
- <olvaffe@gmail.com>, Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Thomas Zimmermann <tzimmermann@suse.de>,
- Daniel Vetter <daniel@ffwll.ch>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Alexander Graf <graf@amazon.com>,
- Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>,
- Paolo Abeni <pabeni@redhat.com>, Eric Van Hensbergen <ericvh@kernel.org>,
- Latchesar Ionkov <lucho@ionkov.net>,
- Dominique Martinet <asmadeus@codewreck.org>,
- Christian Schoenebeck <linux_oss@crudebyte.com>,
- Stefano Garzarella <sgarzare@redhat.com>, Kalle Valo <kvalo@kernel.org>,
- Dan Williams <dan.j.williams@intel.com>,
- Vishal Verma <vishal.l.verma@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ira Weiny <ira.weiny@intel.com>, Pankaj Gupta
- <pankaj.gupta.linux@gmail.com>, Bjorn Andersson <andersson@kernel.org>,
- Mathieu Poirier <mathieu.poirier@linaro.org>,
- "James E.J. Bottomley" <jejb@linux.ibm.com>,
- "Martin K. Petersen" <martin.petersen@oracle.com>,
- Vivek Goyal <vgoyal@redhat.com>, Miklos Szeredi <miklos@szeredi.hu>,
- Anton Yakovlev <anton.yakovlev@opensynergy.com>,
- Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc: virtualization@lists.linux.dev, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-um@lists.infradead.org,
- linux-block@vger.kernel.org, linux-bluetooth@vger.kernel.org,
- linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-gpio@vger.kernel.org, dri-devel@lists.freedesktop.org,
- iommu@lists.linux.dev, netdev@vger.kernel.org, v9fs@lists.linux.dev,
- kvm@vger.kernel.org, linux-wireless@vger.kernel.org, nvdimm@lists.linux.dev,
- linux-remoteproc@vger.kernel.org, linux-scsi@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, alsa-devel@alsa-project.org,
- linux-sound@vger.kernel.org,
- Bartosz Golaszewski <bartosz.golaszewski@linaro.org>,
- Viresh Kumar <viresh.kumar@linaro.org>
-References: <20240331-module-owner-virtio-v2-0-98f04bfaf46a@linaro.org>
+Cc: baolu.lu@linux.intel.com, Kevin Tian <kevin.tian@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/1] iommu/vt-d: Remove caching mode check before
+ device TLB flush
+To: Yi Liu <yi.l.liu@intel.com>, iommu@lists.linux.dev
+References: <20240410055823.264501-1-baolu.lu@linux.intel.com>
+ <7e78917f-f84c-4e98-a612-73b8013ae367@intel.com>
 Content-Language: en-US
-From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Autocrypt: addr=krzysztof.kozlowski@linaro.org; keydata=
- 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
- D2GYIS41Kv4Isx2dEFh+/Q==
-In-Reply-To: <20240331-module-owner-virtio-v2-0-98f04bfaf46a@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <7e78917f-f84c-4e98-a612-73b8013ae367@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On 31/03/2024 10:43, Krzysztof Kozlowski wrote:
-> Changes in v2:
-> - Three new patches: virtio mem+input+balloon
-> - Minor commit msg adjustments
-> - Add tags
-> - Link to v1: https://lore.kernel.org/r/20240327-module-owner-virtio-v1-0-0feffab77d99@linaro.org
+On 2024/4/10 14:30, Yi Liu wrote:
+> On 2024/4/10 13:58, Lu Baolu wrote:
+>> The Caching Mode (CM) of the Intel IOMMU indicates if the hardware
+>> implementation caches not-present or erroneous translation-structure
+>> entries except the first-stage translation. The caching mode is
+>> irrelevant to the device TLB , therefore there is no need to check
+>> it before a device TLB invalidation operation.
+>>
+>> iommu_flush_iotlb_psi() is called in map and unmap paths. The caching
+>> mode check before device TLB invalidation will cause device TLB
+>> invalidation always issued if IOMMU is not running in caching mode.
+>> This is wrong and causes unnecessary performance overhead.
 > 
-> Merging
-> =======
-> All further patches depend on the first virtio patch, therefore please ack
-> and this should go via one tree: maybe virtio?
+> I don't think the original code is wrong. As I replied before, if CM==0,
+> the iommu_flush_iotlb_psi() is only called in unmap path, in which the
+> @map is false. [1] The reason to make the change is to make the logic
+> simpler. 🙂
 
-Michael, Jason, Xuan,
+Oh, I see. There is a magic
 
-Will you be able to take the entire patchset through virtio?
+         if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
+                 iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0, 1);
+
+in __mapping_notify_one().
+
+So if it's caching mode, then
+
+  - iommu_flush_iotlb_psi() will be called with @map=1 from
+    __mapping_notify_one(), "!cap_caching_mode(iommu->cap) || !map" is
+    not true, and device TLB is not invalidated.
+  - iommu_flush_iotlb_psi() will also be called with @map=0 from
+    intel_iommu_tlb_sync(), device TLB is issued there.
+
+That's the expected behavior for caching mode.
+
+If it's not the caching mode, then
+
+  - iommu_flush_iotlb_psi() will be called with @map=0 from
+    intel_iommu_tlb_sync(), device TLB is issued there.
+
+That's also the expected behavior.
+
+So the existing code is correct but obscure and difficult to understand,
+right? If so, we should make this patch as a cleanup rather than a fix.
 
 Best regards,
-Krzysztof
-
+baolu
