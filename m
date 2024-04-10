@@ -1,117 +1,78 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD5DB184134;
-	Wed, 10 Apr 2024 22:13:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DAE9D26D
+	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 22:45:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712787209; cv=none; b=k5H7GvROlM5BjlyeE9+Z8SUW3sqebI408tlsrCAUOUuj/j0Q+PnJxx+2qOLqCRR9jh30sl1EUWvtskJU2P+VdqFXGj30XCYSgORG6DIjBH5H4SI1nE/GnizGwoxUVKGCtAvuC9gTkPgqeF2nfNuLO+4HM1LpjycsFosBNRuh9z8=
+	t=1712789112; cv=none; b=DR9F/FwZUv19I+hTM5+7YBTOgJ0OJ/LNeeFHHvKwTetapQ5NUSK5p+JSYeMMxyBDXtu0B5kn9SSCux576uoWisY805OphgOSCQM8xDUmd/EngN5M9/S5Rx44Jk7/Nk3jJE6xYMz6948Qq775fyW7jzLuKkIMiINCq/9kNJX0i64=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712787209; c=relaxed/simple;
-	bh=5nbfHeG60eNzQJI5iVciR/vfXygkXSoILlSxcVaWD5Q=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=StkHtUXaGvrUrJYq/CuK0YVed7viggIj9C8hdKuPxQjmTgngPZN1l/UpC/4m69xXu4Gyb11fwG/g9c1TQXbQRolz2Nz2YnAETCm8ErKl4/kV0SOh5Ixxqr0Jq8uDq5PkVGhe1HKWQRt2udzdjPTnpHW25BaF/VPzuiDeAOi6FRs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lgeTToln; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712789112; c=relaxed/simple;
+	bh=WeZllxq7TttKSWb/B/xcRfnzOGFwGN/uRbD0A2tilJo=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=c/r5FwMiT3pipPWfrTbQ2q4uT5UGVLesfoaiYlzKY9o7SJj2fsgZ+hcFBXBiYjBy4M/wuJF+RG/3YkNYtc/5dHRb6pEYKwvS7LXz6OrErjIU12dC7Gs/cZSAdmCMR7BXbIkPgY9XA0d5yDePr9NlyAuWkU5dqJdpDuHt4eGkWWc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=x2VUPn7B; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=XHwcKB+F; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lgeTToln"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54C25C433F1;
-	Wed, 10 Apr 2024 22:13:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712787209;
-	bh=5nbfHeG60eNzQJI5iVciR/vfXygkXSoILlSxcVaWD5Q=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lgeTTolnYlCAy8OAzdiKscXxM/dzYw15RbiM3PYRgReAZHNbB4uWRykeO5TnX+B9d
-	 T0hnL0JSff3HCkBFR1loHcYyJQcsrTB2OrX/20n+ga5yTsvDagkUyUxszEhr9DphZ+
-	 6vgaxNTTpN2CgruYbgNVDXCbYz1/cDOs7LFinWBik7WSiHNeQzKa1LlvfRId+gkekb
-	 d2C7n1vP7dJJ6FvCtzmYp8wFKZaEwReUkBPRfuY9s0N4HddmTiyQJHCCTb56uDRpvF
-	 DyCuN4wF0r85D+0olwK5kPOBeuO3enpcR8TUfYbgwN6EES7b9zgY0QO+IaaeByTcXN
-	 5TDPoDvTo61cg==
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: linux-pci@vger.kernel.org,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Marc Zyngier <maz@kernel.org>,
-	Reinette Chatre <reinette.chatre@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Dave Jiang <dave.jiang@intel.com>,
-	Megha Dey <megha.dey@intel.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v2 7/7] Revert "genirq/msi: Provide constants for PCI/IMS support"
-Date: Wed, 10 Apr 2024 17:13:07 -0500
-Message-Id: <20240410221307.2162676-8-helgaas@kernel.org>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="x2VUPn7B";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="XHwcKB+F"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1712789109;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=73LrkXOaXiFL9Q356e61wUHtK1Ks48GRA3mlWdlLbVs=;
+	b=x2VUPn7BPO/ZPg9Pa3S+OrYrnms+v2nZgwRuq9JUk7yDkGtUDyph3q29SQhmYbtFQ+9bXh
+	qN03qDIE1DwOCSK/tcdfXRU6Di73hdHk4Sg7X5PtRO10m6srfh6iYpC2OmJSnnciSGn6tR
+	+MwW92Wo7yksogaJq6LA4d/55jEALi2qV/Tgvra+0RpXUXHvHo3UjlVi4GmqDib8AvxWh3
+	hKSH7tF0tWfx3W5ZhcEhQIRZHIxJ2wvkNA9CAA4z9UHSEhZJQOwmOqjxtFd94pzZ3B8GJd
+	Z31EGJPIpCte0So2Xu2JBMTejmnJjgEVwp/UwcKALmyh1UWA+5gVWge/Wamcbw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1712789109;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=73LrkXOaXiFL9Q356e61wUHtK1Ks48GRA3mlWdlLbVs=;
+	b=XHwcKB+FT/a82sWEvZhG0tMj9ZcsMjAaf3GCAeOU8rR8hQuSGJ1vb45oNC2QvxX4XGe78m
+	vmNC82VPdKduooCw==
+To: Bjorn Helgaas <helgaas@kernel.org>, linux-pci@vger.kernel.org, Joerg
+ Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
+Cc: Kevin Tian <kevin.tian@intel.com>, Marc Zyngier <maz@kernel.org>,
+ Reinette Chatre <reinette.chatre@intel.com>, Jason Gunthorpe
+ <jgg@nvidia.com>, Alex Williamson <alex.williamson@redhat.com>, Dave Jiang
+ <dave.jiang@intel.com>, Megha Dey <megha.dey@intel.com>, Suravee
+ Suthikulpanit <suravee.suthikulpanit@amd.com>, Robin Murphy
+ <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu
+ <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v2 0/7] PCI/MSI: Remove IMS (Interrupt Message Store)
+ support for now
 In-Reply-To: <20240410221307.2162676-1-helgaas@kernel.org>
 References: <20240410221307.2162676-1-helgaas@kernel.org>
+Date: Thu, 11 Apr 2024 00:45:08 +0200
+Message-ID: <87wmp425xn.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+On Wed, Apr 10 2024 at 17:13, Bjorn Helgaas wrote:
+> From: Bjorn Helgaas <bhelgaas@google.com>
+>
+> IMS (Interrupt Message Store) support appeared in v6.2, but there are no
+> users yet.
 
-This reverts commit e23d4192bf9b612bce5b24f22719fd3cc6edaa69.
+Bah.
 
-IMS (Interrupt Message Store) support appeared in v6.2, but there are no
-users yet.
+> Remove it for now.  We can add it back when a user comes along.
+>
+> I propose to merge this via the PCI tree unless somebody else wants it.
 
-Remove it for now.  We can add it back when a user comes along.
+Go wild!
 
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
----
- include/linux/irqdomain_defs.h | 1 -
- include/linux/msi.h            | 2 --
- include/linux/msi_api.h        | 1 -
- 3 files changed, 4 deletions(-)
-
-diff --git a/include/linux/irqdomain_defs.h b/include/linux/irqdomain_defs.h
-index 5c1fe6f1fcde..36653e2ee1c9 100644
---- a/include/linux/irqdomain_defs.h
-+++ b/include/linux/irqdomain_defs.h
-@@ -25,7 +25,6 @@ enum irq_domain_bus_token {
- 	DOMAIN_BUS_PCI_DEVICE_MSIX,
- 	DOMAIN_BUS_DMAR,
- 	DOMAIN_BUS_AMDVI,
--	DOMAIN_BUS_PCI_DEVICE_IMS,
- 	DOMAIN_BUS_DEVICE_MSI,
- 	DOMAIN_BUS_WIRED_TO_MSI,
- };
-diff --git a/include/linux/msi.h b/include/linux/msi.h
-index 26d07e23052e..84859a9aa091 100644
---- a/include/linux/msi.h
-+++ b/include/linux/msi.h
-@@ -573,8 +573,6 @@ enum {
- 	MSI_FLAG_MSIX_CONTIGUOUS	= (1 << 19),
- 	/* PCI/MSI-X vectors can be dynamically allocated/freed post MSI-X enable */
- 	MSI_FLAG_PCI_MSIX_ALLOC_DYN	= (1 << 20),
--	/* Support for PCI/IMS */
--	MSI_FLAG_PCI_IMS		= (1 << 21),
- };
- 
- /**
-diff --git a/include/linux/msi_api.h b/include/linux/msi_api.h
-index 391087ad99b1..5ae72d1912c4 100644
---- a/include/linux/msi_api.h
-+++ b/include/linux/msi_api.h
-@@ -15,7 +15,6 @@ struct device;
-  */
- enum msi_domain_ids {
- 	MSI_DEFAULT_DOMAIN,
--	MSI_SECONDARY_DOMAIN,
- 	MSI_MAX_DEVICE_IRQDOMAINS,
- };
- 
--- 
-2.34.1
-
+Reviewed-by: Thomas Gleixner <tglx@linutronix.de>
