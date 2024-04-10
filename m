@@ -1,45 +1,52 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F165953361;
-	Wed, 10 Apr 2024 16:41:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC2C61836E1;
+	Wed, 10 Apr 2024 22:13:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712767276; cv=none; b=FxIJJ85kPDMfM0Ny+AGndHMFPZ3be9BvUddHJEouekAT49asdf0/AOr6CDQyinUBygC5bvbuXPF/uwttjfeshQp/yZUBCGouhfM/qcM1fl7nSXdSbsKVEWbBnvuPAkWWK7PoRjvY+u98sP+OAN1lK87w1C1mTUZs48KB0utApAE=
+	t=1712787196; cv=none; b=dfpeulsTlWsSfFTLW2YD9TriRAEk4Ft5X5lp+GBcW+txC3uHo4tu6vs6lHA2Lpb4t508ssfklywzzr+hmmNKjFGVQaC4+wmSMCXPYyrkBX/trmu/Xr8/angjHbU1c1mqdq+iVsqY7RLxnTlzCO8MMVJQ85crl3imsvzTKIcElcc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712767276; c=relaxed/simple;
-	bh=UaluD4a0SUmWueDVbNI4ShgReWWH+xE4Os/5Mmqe5rY=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=IcPIyjEKZwzg7SXs+OKyBQPkEZwgjItFTTFDFguE7dMEZPQy8NYbgxNNeqj+4Yr7Vp07+tbko0APlUrSEsj9UB1xs2BDoJkMLPdz/M05eOQuxkAQMd5O+L4P0pkj+PjscJZuZa79+MlLwZWYv+wxcONAo6jPQLS4UUdi/+9SWKA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gRjlNMBW; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712787196; c=relaxed/simple;
+	bh=Inuh6SOkAe0B9b/6nZWABzBrQQ5cUMbAkvImeBVXvkc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=rLfRTra8yZJl4pTkJfMbGTT1rgk1kgpNC3Y6XyYYFvizgoPP/WfT1ZbktTXZxprJLNLrqJ1p3FI7BxbJ3eiRZWBzg8FG5VqUGA90Ki39dFDctvUBTvuIhgFYmH4Jjs9EQUaE2VbleJxuXo8pfGA35NRGhzSq+1tFynB1rj35dyM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=izJui+a1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gRjlNMBW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A653C433F1;
-	Wed, 10 Apr 2024 16:41:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="izJui+a1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E71D1C43390;
+	Wed, 10 Apr 2024 22:13:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712767275;
-	bh=UaluD4a0SUmWueDVbNI4ShgReWWH+xE4Os/5Mmqe5rY=;
+	s=k20201202; t=1712787196;
+	bh=Inuh6SOkAe0B9b/6nZWABzBrQQ5cUMbAkvImeBVXvkc=;
 	h=From:To:Cc:Subject:Date:From;
-	b=gRjlNMBWXV6EELqLlFpjjSSZiUkO+oNkOId39OpfP8dGNqAJJNkLaXL8GPCuCPnJo
-	 rnkIJ4cjyHPzkMgk47yfHBeKrGFVXXMRT8Ab8AyEqiiU4aGI9ugWz4d7SprwyPZEo3
-	 mTBfClS7dRuSFfIE5JqNssENrSF3hmII8SMM4xH0szzt8UZZS2oJqczbMb2uSZoK1x
-	 3MhxoC+++yVt3AVP0/afD/alpHFJ61Jv67JUaRhMLLl/BIR+xugKzXgdXwIrThCN+F
-	 PNuV5KVR5mHeNS6B+/kJKFtajePVkU7x31dGrudr0kxydBMuHxJBCWs9YUf0rLtYg5
-	 Y+6so0qeFCcWQ==
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Yong Wu <yong.wu@mediatek.com>,
+	b=izJui+a1FZNcj3JX3qX81uQKuuQi/gdSgKz+MNJ5lLOwYdu0aMZkC+qZ9piftsVei
+	 Yq8tEpuko2dYmvjLefzWOWD//NmKG+YX2CDglgO0RFZCAM2slNotM9G0t+WVtCZMfL
+	 knHdprhEmJ9kMnqLrC8HYJgOQfyVzrF4/2AEca+vIaXB5CP+Kv6El2ZjBeZjWJrbuw
+	 R8PKt6rwZJdPSAQG0D9SVG7eiLgPEDC4OABbaxaS889oXNHzh5HFuQhjnQjJML3vW4
+	 rHGQ9BtPnd+dSFHn9bHcTuTnv4IrV8ij9TGC6HLZXW5gBwB9wyhu1o60sJJTHnnbPH
+	 rBlD2ZBx3B3UA==
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: linux-pci@vger.kernel.org,
 	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
+	Will Deacon <will@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Reinette Chatre <reinette.chatre@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Dave Jiang <dave.jiang@intel.com>,
+	Megha Dey <megha.dey@intel.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
 	iommu@lists.linux.dev,
-	linux-mediatek@lists.infradead.org,
 	linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Cc: Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH] iommu: mtk: fix module autoloading
-Date: Wed, 10 Apr 2024 18:41:09 +0200
-Message-Id: <20240410164109.233308-1-krzk@kernel.org>
+	Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH v2 0/7] PCI/MSI: Remove IMS (Interrupt Message Store) support for now
+Date: Wed, 10 Apr 2024 17:13:00 -0500
+Message-Id: <20240410221307.2162676-1-helgaas@kernel.org>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -49,39 +56,39 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add MODULE_DEVICE_TABLE(), so modules could be properly autoloaded
-based on the alias from of_device_id table.
+From: Bjorn Helgaas <bhelgaas@google.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- drivers/iommu/mtk_iommu.c    | 1 +
- drivers/iommu/mtk_iommu_v1.c | 1 +
- 2 files changed, 2 insertions(+)
+IMS (Interrupt Message Store) support appeared in v6.2, but there are no
+users yet.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index b8c47f18bc26..6a2707fe7a78 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -1790,6 +1790,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt8365-m4u", .data = &mt8365_data},
- 	{}
- };
-+MODULE_DEVICE_TABLE(of, mtk_iommu_of_ids);
- 
- static struct platform_driver mtk_iommu_driver = {
- 	.probe	= mtk_iommu_probe,
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index a9fa2a54dc9b..d6e4002200bd 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -600,6 +600,7 @@ static const struct of_device_id mtk_iommu_v1_of_ids[] = {
- 	{ .compatible = "mediatek,mt2701-m4u", },
- 	{}
- };
-+MODULE_DEVICE_TABLE(of, mtk_iommu_v1_of_ids);
- 
- static const struct component_master_ops mtk_iommu_v1_com_ops = {
- 	.bind		= mtk_iommu_v1_bind,
+Remove it for now.  We can add it back when a user comes along.
+
+I propose to merge this via the PCI tree unless somebody else wants it.
+
+
+Changes since v1 (https://lore.kernel.org/linux-pci/20240401232326.1794707-1-helgaas@kernel.org/):
+  - Revert other IMS commits in IOMMU, apic, genirq, suggested by Kevin
+
+Bjorn Helgaas (7):
+  Revert "PCI/MSI: Provide stubs for IMS functions"
+  Revert "PCI/MSI: Provide pci_ims_alloc/free_irq()"
+  Revert "PCI/MSI: Provide IMS (Interrupt Message Store) support"
+  Revert "iommu/amd: Enable PCI/IMS"
+  Revert "iommu/vt-d: Enable PCI/IMS"
+  Revert "x86/apic/msi: Enable PCI/IMS"
+  Revert "genirq/msi: Provide constants for PCI/IMS support"
+
+ arch/x86/kernel/apic/msi.c          |  5 ---
+ drivers/iommu/amd/iommu.c           | 17 +--------
+ drivers/iommu/intel/irq_remapping.c | 19 ++--------
+ drivers/pci/msi/api.c               | 50 ------------------------
+ drivers/pci/msi/irqdomain.c         | 59 -----------------------------
+ include/linux/irqdomain_defs.h      |  1 -
+ include/linux/msi.h                 |  2 -
+ include/linux/msi_api.h             |  1 -
+ include/linux/pci.h                 | 26 -------------
+ 9 files changed, 5 insertions(+), 175 deletions(-)
+
 -- 
 2.34.1
 
