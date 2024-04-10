@@ -1,346 +1,198 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2092.outbound.protection.outlook.com [40.107.243.92])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93E5C2A8FE
-	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 02:10:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712715037; cv=none; b=ntV8AInqrAlNhOBBpZrEFnUjd6h8LA1SpXqyK6RbC50GppI2wmXRsLyQWWk3nqfmIc79KNPGYZZoTZJ3g0RL6c9NlTKQT6NzGtB0oJeFPmrcnTXD8XDlfaz9k+XiKJZhtgoYDBomWSEUXiV7zxfNTV7axzPf0xQ+2aM3rXg74xM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712715037; c=relaxed/simple;
-	bh=PpWRvG0ufJ/UB2ZXJs4tHv+Cjj7GBTUSH9Rn4/Owdn8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=iT5x32AIa0IRKTc3vtNSA6Wo9bNpuXn0A2WqTUAMUU8WkA1bb7ssZqnDnCRZEWEX2dhmO21fXnnfN1UAY2hHYz2Qe0QY184vKVigfjDu7LOLeaq9gJ7KrQ+5JbFCe4J3c9zhfCgEfseGHx+ceH4zMUJKNW4KOAHb4X6UROv96hw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ad3W7ixm; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A06AEBA50
+	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 04:23:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.243.92
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712723036; cv=fail; b=fFFw4T2krvWS+DxiTGs+2eOkyapKLzc4RBgdGyk8r5tclGdt3dQgHxSy9mfRNwJLGwO0YdrhtpGTFuKR4N1Bs9GToxKQF9ESC7p6TI8dgsexYhPXM7/9NP9VlVNZW7fM+BEP9n6cJAXT737E9aGNlq4dcRGjtol0n0JRZJs7XnQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712723036; c=relaxed/simple;
+	bh=mk3R8dSLY0A4yc5O3tY8XDFL4yHvJij/g4XLCl+Enww=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Sv/hY3BH9gv8Cj8CS5HfQ9Wqjj7LB3wIZ26fV3Sj8L8EHl5cHGoEsITitT22mfU+MRFgPSwrcyerutGEeGozS9JinsL3JD2poM6ybIbsdanJ+Vr54TTe1xoUTSV8BB0fgUQo0+Ax+nxLOaG95mzkGKvhHnZV2VJvXcRfK4dEwC0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=w9/h4YfM; arc=fail smtp.client-ip=40.107.243.92
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ad3W7ixm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712715036; x=1744251036;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=PpWRvG0ufJ/UB2ZXJs4tHv+Cjj7GBTUSH9Rn4/Owdn8=;
-  b=Ad3W7ixmNqlTtN1mvAV99l98YNuOSVQAa0zgrzH58fzzayeMdirTP5I/
-   ZSre/D2E3aK6FaxEJXeg1oq/wVLkiVvJyovROnZ3y4Cn/I7FOqYrI4aZb
-   6gzrf8jFiVEbir0KCa9g1A39zwiFv8MTiTeveqH2e7rcmpSLa30isfsHO
-   GILKKGt7oUalXlMWcHjaTW/N6GTwBuONicv8Hc03VkoF9xn5aK1PFgX2c
-   lHZxQVEiBGcrKds1VSPRSxaJgGzMViZhwJKZSxW5OIZT6CGMp7nqTZnC4
-   69/RWmz/eZzuL1cBQ9C02Oo2FXJWaDxel/grYy3JkPR/SEYYi3R57qMKw
-   Q==;
-X-CSE-ConnectionGUID: SUeh1oCKTHGK1sTNmh5HAQ==
-X-CSE-MsgGUID: ILbj3q3PSEmTeVmtp+wCjQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="7918638"
-X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="7918638"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Apr 2024 19:10:36 -0700
-X-CSE-ConnectionGUID: AfN4VIDxSJKd7mqzZ36GHQ==
-X-CSE-MsgGUID: 0blSaMAKT5mLW20WbhnUbw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
-   d="scan'208";a="20478947"
-Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
-  by fmviesa007.fm.intel.com with ESMTP; 09 Apr 2024 19:10:32 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Tina Zhang <tina.zhang@intel.com>,
-	Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v2 12/12] iommu/vt-d: Retire struct intel_svm
-Date: Wed, 10 Apr 2024 10:08:44 +0800
-Message-Id: <20240410020844.253535-13-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240410020844.253535-1-baolu.lu@linux.intel.com>
-References: <20240410020844.253535-1-baolu.lu@linux.intel.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="w9/h4YfM"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=of5/kjT+nCxErmnxl2n78B9CNIG+bxIcnjWdrzi/IMy0C4acrOVwHbza15KZlGskJ9z2HozTbMMJFqYss/4LpmHCarmcKm6T+QDbaG70YCiRDhT8ZORzMyg2BPXt0F7JhFtfaIziz6bM4LRFWzoatFhlaWRCUN+Ig03nIsBbBa7f/ZtobOlCEI492cC/W0UVjauhbvdpM+/x1Fxy/ObW0YH/VOtvx3Z76eY/1BS7fwMyS2WQvP3PxE0vZLbOyFpgnlk0Y/I+jP7rtSZSkyT5vejXKdsH9MTiT9h+e3508P6qXHU15WgzNvQ40Yfv2PSBy8KkZXMTk98c0PfXiMJf1A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GtNZMLB4sjZK37fMnFsbcygN5t1O/kyJEOTNJ1RIixw=;
+ b=dKkUBn5IHnNsQH7Rn4u59/eJbFo2m87A+lAQDozMTBN1SIJIaRAn5ODZ+EquZsuAy4lMuyXZnx5ExVKWNoYxeDrDh/lFlFZVVSzzjD0JouUOEnMajOgik+nWz0DfCZBUKfI3RA6HZvjOru8fh0Tc3vQAZHQ2rOpQjlhvCc9S1Q//HWS6wZH3dEOdnJLNBt/+E7dyjsyEHU0ZvPrkMmTxzamOxetSSflqtwya3RR4FoWQecccjC+rnq99H4dXTIOggRy0Z7Ztxem/Hisa8SgH5pUs+Mx2xE/7U5zWrrp0RWSEGtZCPtLRGw79e1WfG33kWofEVEGj/0o7doVICswDoQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GtNZMLB4sjZK37fMnFsbcygN5t1O/kyJEOTNJ1RIixw=;
+ b=w9/h4YfMvIB7MKUpkHRvgqp35AMuCAa7YU4fwI79tlUCu1BBKn5vaDjnEIMxt8Hr6FhvlNAuGE55J7QOMMhXgePrSat/mTk0NFJxd/AzKxrfoQafZGqVg2trfaXxq81GqdkIkiqKMiY+80GKlvwDmf7N4/Vwa9HwdT3Kvc+BXJQ=
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com (2603:10b6:8:9f::5) by
+ MN2PR12MB4159.namprd12.prod.outlook.com (2603:10b6:208:1da::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.55; Wed, 10 Apr
+ 2024 04:23:46 +0000
+Received: from DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::af7d:5f4f:2139:ebd1]) by DS7PR12MB6048.namprd12.prod.outlook.com
+ ([fe80::af7d:5f4f:2139:ebd1%4]) with mapi id 15.20.7409.042; Wed, 10 Apr 2024
+ 04:23:46 +0000
+Message-ID: <7863b2ff-e4f3-464f-8e95-fa3ca0444dbd@amd.com>
+Date: Wed, 10 Apr 2024 09:53:34 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 rc] iommu/amd: Do not enable SNP when V2 page table is
+ enabled
+To: Tom Lendacky <thomas.lendacky@amd.com>,
+ Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev, joro@8bytes.org
+Cc: suravee.suthikulpanit@amd.com, bp@alien8.de,
+ Ashish Kalra <ashish.kalra@amd.com>, Michael Roth <michael.roth@amd.com>
+References: <20240409051354.26429-1-vasant.hegde@amd.com>
+ <9f2ffe44-80bf-d1dc-239a-f5fbff21b237@amd.com>
+Content-Language: en-US
+From: Vasant Hegde <vashegde@amd.com>
+In-Reply-To: <9f2ffe44-80bf-d1dc-239a-f5fbff21b237@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BM1P287CA0018.INDP287.PROD.OUTLOOK.COM
+ (2603:1096:b00:40::22) To DS7PR12MB6048.namprd12.prod.outlook.com
+ (2603:10b6:8:9f::5)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS7PR12MB6048:EE_|MN2PR12MB4159:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	s2CidtmYavriCw2OQyifU18aky7WYS5O8qsekt4JEbpXhRA9Cn39nrQh/dfn1Zntf29WyhOw8ViayLoeP/YKaNS4Xbka4mm+GnKJAM4XzurzlsgkXJ5s5s0WZKSuwFEV0IOTqXtTLCYLwuEoqr4W+35+QrxD7gW3Z++GqGwPnFXyXUza/7+iFYgqDaTK0vghFUJ9LuxWT2gLcNd1PwhoYYOG6u93OAc9pYZbdlbjH8E11hS5yHABQQ3qfRRP8eCnv0T9QukPlvVDrzDgIXw+skrjsMlGXP6h9wfQ59m1PVUqgOucY+xVvoARViY0XXWIu/qjCBwqVg74nJa8egdhOQAd+JzA6d6OhhMBsBcaTKJxtip+0Kzkr3rpw9UPCt85xggsw/0eYSw0pVY6DytXuxh75bY5PKC3K4pV95urZCrlge2hrDPalNbTPi7HsfpU6dYyyjyl8827QnsYCHlScXR26ycPeW2CkdYyywerGaxa8zfJXMTkRpIki7KkG/DIceWIm3uKA1JBFfm+dGM6jxWTXC/zuzze4TKHRl4VQE0ALBHUwXASxJEtRdXQo7w6/Tk4lnQUChDo1PDIeRdLB/r5l7l1UkjIsUg1R61GhEU=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR12MB6048.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(366007)(376005);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?MDZPSTlwcTdSNEpGcGN6eHBGY3RvSmVKY0RoSS9jMVl5OGxqM1lpR1RCcWlH?=
+ =?utf-8?B?cE1KdFV4dEpLeDQrNzVjR09uK3dHTkRUWi9GaGVNRWtSUjAzSEYwazN3eWlk?=
+ =?utf-8?B?Nms3aG5QNTFBcUlPZG1WU3JzQ2FzQkdGNU91MTVheTI1R1ZES0d6Q01pRjMx?=
+ =?utf-8?B?L3FuSnBzTXdqUk4rWjZTVkhQYWpaTXNaa0p4MHQyaS83TVg1cEdoeWFQd1pR?=
+ =?utf-8?B?d01IRlpOMXRnc3E2cUh4eTh6K0xxR2dwRk5FL1ZmbkxGbjZwazdxT1ZqQ2l4?=
+ =?utf-8?B?bytLVkxtRFBscVJWd3pBa0xwVHJLNTI2NjV6b0d3MytjZ1pVaHp6Z29vc3ZQ?=
+ =?utf-8?B?RzV1UjllSnpoUEpURHBEaEMyeGxSMUdtQXIwZEoyKzVCbzFIa3crbnU5cnNE?=
+ =?utf-8?B?YlN6bmkrTS8vSE1EY2hhb1pJMDc1NGlXWmQ0SVc0aVQ3MFU1dTZDR1FQM09n?=
+ =?utf-8?B?ZUpvelBQbGs4Tk1yc09PMXRIVEJVNkJVMkROUG1sWmptYWN4cG5FdUxCZDNL?=
+ =?utf-8?B?dEVQOTdUMW03QTM3VDBIcU9wM1o0VkkvYmJRNStXRUtRYmc2Q1BseDJpSC9Z?=
+ =?utf-8?B?V1BlV3Y4bVBGZG5jTGo3WXV3dWxWWlNKZDV1a1ZaY1JtSWg0QVk3cW14cWdu?=
+ =?utf-8?B?bXhQRzVKNUtwbzZ6OWIveXY4ZjR5eDhSVk9EUmYrQjBMK1gvdFVUSjY0NWJX?=
+ =?utf-8?B?NmxhN0ZLQ2VET3BmdDYrTEpPbENtTFNZZUROR1ZiVmpXSEtKVDVYazF4eTZV?=
+ =?utf-8?B?eUNKcHp5ZlJ4bVBZQktlS1p4clZFdG9NdE1zc25uaGdnOGt0NjZ4VVBXQWFS?=
+ =?utf-8?B?ZHh0NUtkWjJGclkycjNoV09QbFRpZms2cnpuZHVKRXFuMGg4djIvWWxRT0Ur?=
+ =?utf-8?B?dHBFWmFJSFEyZ2hPdnYxK2pQeUZHdGU4SmxFdjZuL0FEcHFGVVdiOVdzUE9p?=
+ =?utf-8?B?akNYM2J5S0xOK1dYU29BbEJIcTRubXhQc1RtbmhzV2I3Mm16bUVxd3lZdk5D?=
+ =?utf-8?B?QUhpUXkrbUVrZGdtd1NTamJiRDJUZnR2ME03WE03VCtqOGVyaDdzdEI1VXFC?=
+ =?utf-8?B?aDRXaTRpNWp4bVFpWVUyT2hpY2ZVZTNiTjF6OEFHNmVOUWVwZlJISFFndjRi?=
+ =?utf-8?B?WUVTNjFvRS9oVVU5SGxHdEdXTlYwSVp5NFZuK2lGQWc5QW4rckVURTdQNW94?=
+ =?utf-8?B?cENGbjU2NDBPblBtSUI3MXkxbU1WQXNMUnUyWmZOdE5KNmFCU3dUL003MzVi?=
+ =?utf-8?B?bjlLVEVGdHovNVAxLzRVNGNGbnIyMnVldHdtbUt2TjIzaXhSbVZuanZ1UEdC?=
+ =?utf-8?B?WGJndk5NUmxDUThFd0FtUGErMVdHVVhZOS92YWlQd2Q1TFFoU3FLckVBTkIz?=
+ =?utf-8?B?V3ZLV1NZVGx4b1JueHIvUXV1MXlRY0xPU0J6UCtYWkNORTNiV0hwa3pXQk12?=
+ =?utf-8?B?dXdlUTgrVExtTUV6b1pWUUJxSjNBbFpMR3g4RGVTYi9NaVdmZWpkSlR0NVVP?=
+ =?utf-8?B?ZGRIWit4L1BtYUNaeDg3NXVEeUhiN0F3MHNSYXNUQVp2M1NVT0s2SURSdEgx?=
+ =?utf-8?B?cy9XR0hEd1VFRlJZZzJqc1hQWGU5Y0lQYlhRUTg2bFZrN0FSUnB6M3FiOWRx?=
+ =?utf-8?B?TW9XWHEzL3Z3UlhySjRiZ3NjbVI0bklRSngxZnhkVWJPcDlkMVROaURCN3Fp?=
+ =?utf-8?B?Q2ZTb1VpQXFraVUvcmFHT0EvZURpbWYzbTNDUGxFMXM5ejhMaDI1ODJXSk1m?=
+ =?utf-8?B?OC85RXFycE5vaDd1LzZhblhkK1ZaVWdBTnJBZTJyNTJSMkk4M2pSejVKcTRR?=
+ =?utf-8?B?VEY0U0R3b0ZqNmtqZlB4WUtZQU5GbnJ6NlN6c2xJbzlaY2lSc0dBKy9FRy9V?=
+ =?utf-8?B?bklIOFYvbFRZV1pUQmUvWWc3S0gvMnlQV2NXSWNjM1BlT2MvZTIzTldvVFRu?=
+ =?utf-8?B?ZXR1d1hOcXpCYmpEaFBhV1NXNkhWWStGWEwwVFZqS3cyVTlKSUE1ZXFJcVl0?=
+ =?utf-8?B?ejFERktPNk9OemJyQnpibTkxcWZyUGEvQ0o5OWZFYW5EV2U2czlpTkNLaEh3?=
+ =?utf-8?B?QVRUV21pL041aGR0RTJVNzgxU0Q0K1RZQ1BhQzB1UXdtRVcrWGhGSHJTRmlh?=
+ =?utf-8?Q?/1Be8VgKS12CvLU499ZfIuD31?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9fccd6a2-97e0-4244-9b92-08dc5916032f
+X-MS-Exchange-CrossTenant-AuthSource: DS7PR12MB6048.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Apr 2024 04:23:46.0835
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4w7sOFZ7aLT+8VJzjaL/oD3WRnpJz94b620NvdFgW8a4WQ8WgYvxWWxEEgh9jX/QOu6xHtP6fwu44MgWlH/wcw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4159
 
-The struct intel_svm was used for keeping attached devices info for sva
-domain. Since sva domain is a kind of iommu_domain, the struct
-dmar_domain should centralize all info of a sva domain, including the
-info of attached devices. Therefore, retire struct intel_svm to clean up
-the code.
+Tom,
 
-Besides, allocate sva domain in domain_alloc_sva() callback which allows
-the memory management notifier lifetime to follow the lifetime of the
-iommu_domain.
 
-Co-developed-by: Tina Zhang <tina.zhang@intel.com>
-Signed-off-by: Tina Zhang <tina.zhang@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.h | 26 ++++------
- drivers/iommu/intel/iommu.c |  9 +---
- drivers/iommu/intel/svm.c   | 94 +++++++++----------------------------
- 3 files changed, 32 insertions(+), 97 deletions(-)
+On 4/9/2024 8:06 PM, Tom Lendacky wrote:
+> On 4/9/24 00:13, Vasant Hegde wrote:
+>> DTE[Mode]=0 is not supported when SNP is enabled in the host. That means
+>> to support SNP, IOMMU must be configured with V1 page table (See IOMMU
+>> spec [1] for the details). If user passes kernel command line to 
+>> configure
+>> IOMMU domains with v2 page table (amd_iommu=pgtbl_v2) then disable SNP.
+> 
+> Might be nice to say that you are doing as the user asked by not forcing 
+> the pagetables to v1.
 
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 90611ec08a7c..0951be947ff9 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -649,8 +649,12 @@ struct dmar_domain {
- 			/* link to parent domain siblings */
- 			struct list_head s2_link;
- 		};
-+
-+		/* SVA domain */
-+		struct {
-+			struct mmu_notifier notifier;
-+		};
- 	};
--	struct intel_svm *svm;
- 
- 	struct iommu_domain domain;	/* generic domain data structure for
- 					   iommu core */
-@@ -1144,26 +1148,16 @@ int intel_svm_enable_prq(struct intel_iommu *iommu);
- int intel_svm_finish_prq(struct intel_iommu *iommu);
- void intel_svm_page_response(struct device *dev, struct iopf_fault *evt,
- 			     struct iommu_page_response *msg);
--struct iommu_domain *intel_svm_domain_alloc(void);
--void intel_svm_remove_dev_pasid(struct iommu_domain *domain);
-+struct iommu_domain *intel_svm_domain_alloc(struct device *dev,
-+					    struct mm_struct *mm);
- void intel_drain_pasid_prq(struct device *dev, u32 pasid);
--
--struct intel_svm {
--	struct mmu_notifier notifier;
--	struct mm_struct *mm;
--	u32 pasid;
--	struct dmar_domain *domain;
--};
- #else
- static inline void intel_svm_check(struct intel_iommu *iommu) {}
- static inline void intel_drain_pasid_prq(struct device *dev, u32 pasid) {}
--static inline struct iommu_domain *intel_svm_domain_alloc(void)
--{
--	return NULL;
--}
--
--static inline void intel_svm_remove_dev_pasid(struct iommu_domain *domain)
-+static inline struct iommu_domain *intel_svm_domain_alloc(struct device *dev,
-+							  struct mm_struct *mm)
- {
-+	return ERR_PTR(-ENODEV);
- }
- #endif
- 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index d7f205cd0aac..b8a0f759a24f 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -3680,8 +3680,6 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- 		return domain;
- 	case IOMMU_DOMAIN_IDENTITY:
- 		return &si_domain->domain;
--	case IOMMU_DOMAIN_SVA:
--		return intel_svm_domain_alloc();
- 	default:
- 		return NULL;
- 	}
-@@ -4388,14 +4386,8 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
- 	WARN_ON_ONCE(!dev_pasid);
- 	spin_unlock_irqrestore(&dmar_domain->lock, flags);
- 
--	/*
--	 * The SVA implementation needs to handle its own stuffs like the mm
--	 * notification. Before consolidating that code into iommu core, let
--	 * the intel sva code handle it.
--	 */
- 	if (domain->type == IOMMU_DOMAIN_SVA) {
- 		cache_tag_unassign_domain(dmar_domain, FLPT_DEFAULT_DID, dev, pasid);
--		intel_svm_remove_dev_pasid(domain);
- 	} else {
- 		did = domain_id_iommu(dmar_domain, iommu);
- 		cache_tag_unassign_domain(dmar_domain, did, dev, pasid);
-@@ -4624,6 +4616,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.hw_info		= intel_iommu_hw_info,
- 	.domain_alloc		= intel_iommu_domain_alloc,
- 	.domain_alloc_user	= intel_iommu_domain_alloc_user,
-+	.domain_alloc_sva	= intel_svm_domain_alloc,
- 	.probe_device		= intel_iommu_probe_device,
- 	.probe_finalize		= intel_iommu_probe_finalize,
- 	.release_device		= intel_iommu_release_device,
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 0b767d16fb71..47e475f67046 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -26,23 +26,6 @@
- 
- static irqreturn_t prq_event_thread(int irq, void *d);
- 
--static DEFINE_XARRAY_ALLOC(pasid_private_array);
--static int pasid_private_add(ioasid_t pasid, void *priv)
--{
--	return xa_alloc(&pasid_private_array, &pasid, priv,
--			XA_LIMIT(pasid, pasid), GFP_ATOMIC);
--}
--
--static void pasid_private_remove(ioasid_t pasid)
--{
--	xa_erase(&pasid_private_array, pasid);
--}
--
--static void *pasid_private_find(ioasid_t pasid)
--{
--	return xa_load(&pasid_private_array, pasid);
--}
--
- int intel_svm_enable_prq(struct intel_iommu *iommu)
- {
- 	struct iopf_queue *iopfq;
-@@ -156,8 +139,7 @@ static void intel_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
- 					struct mm_struct *mm,
- 					unsigned long start, unsigned long end)
- {
--	struct intel_svm *svm = container_of(mn, struct intel_svm, notifier);
--	struct dmar_domain *domain = svm->domain;
-+	struct dmar_domain *domain = container_of(mn, struct dmar_domain, notifier);
- 
- 	if (start == 0 && end == -1UL) {
- 		cache_tag_flush_all(domain);
-@@ -169,8 +151,7 @@ static void intel_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
- 
- static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
- {
--	struct intel_svm *svm = container_of(mn, struct intel_svm, notifier);
--	struct dmar_domain *domain = svm->domain;
-+	struct dmar_domain *domain = container_of(mn, struct dmar_domain, notifier);
- 	struct dev_pasid_info *dev_pasid;
- 	struct device_domain_info *info;
- 	unsigned long flags;
-@@ -210,41 +191,13 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 	struct intel_iommu *iommu = info->iommu;
- 	struct mm_struct *mm = domain->mm;
- 	struct dev_pasid_info *dev_pasid;
--	struct intel_svm *svm;
- 	unsigned long sflags;
- 	unsigned long flags;
- 	int ret = 0;
- 
--	svm = pasid_private_find(pasid);
--	if (!svm) {
--		svm = kzalloc(sizeof(*svm), GFP_KERNEL);
--		if (!svm)
--			return -ENOMEM;
--
--		svm->pasid = pasid;
--		svm->mm = mm;
--
--		svm->notifier.ops = &intel_mmuops;
--		svm->domain = to_dmar_domain(domain);
--		ret = mmu_notifier_register(&svm->notifier, mm);
--		if (ret) {
--			kfree(svm);
--			return ret;
--		}
--
--		ret = pasid_private_add(svm->pasid, svm);
--		if (ret) {
--			mmu_notifier_unregister(&svm->notifier, mm);
--			kfree(svm);
--			return ret;
--		}
--	}
--
--	dmar_domain->svm = svm;
--
- 	dev_pasid = kzalloc(sizeof(*dev_pasid), GFP_KERNEL);
- 	if (!dev_pasid)
--		goto free_svm;
-+		return -ENOMEM;
- 
- 	dev_pasid->dev = dev;
- 	dev_pasid->pasid = pasid;
-@@ -272,30 +225,10 @@ static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
- 				  FLPT_DEFAULT_DID, dev, pasid);
- free_dev_pasid:
- 	kfree(dev_pasid);
--free_svm:
--	if (list_empty(&dmar_domain->dev_pasids)) {
--		mmu_notifier_unregister(&svm->notifier, mm);
--		pasid_private_remove(pasid);
--		kfree(svm);
--	}
- 
- 	return ret;
- }
- 
--void intel_svm_remove_dev_pasid(struct iommu_domain *domain)
--{
--	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
--	struct intel_svm *svm = dmar_domain->svm;
--	struct mm_struct *mm = domain->mm;
--
--	if (list_empty(&dmar_domain->dev_pasids)) {
--		if (svm->notifier.ops)
--			mmu_notifier_unregister(&svm->notifier, mm);
--		pasid_private_remove(svm->pasid);
--		kfree(svm);
--	}
--}
--
- /* Page request queue descriptor */
- struct page_req_dsc {
- 	union {
-@@ -663,7 +596,12 @@ void intel_svm_page_response(struct device *dev, struct iopf_fault *evt,
- 
- static void intel_svm_domain_free(struct iommu_domain *domain)
- {
--	kfree(to_dmar_domain(domain));
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+
-+	if (dmar_domain->notifier.ops)
-+		mmu_notifier_unregister(&dmar_domain->notifier, domain->mm);
-+
-+	kfree(dmar_domain);
- }
- 
- static const struct iommu_domain_ops intel_svm_domain_ops = {
-@@ -671,13 +609,16 @@ static const struct iommu_domain_ops intel_svm_domain_ops = {
- 	.free			= intel_svm_domain_free
- };
- 
--struct iommu_domain *intel_svm_domain_alloc(void)
-+struct iommu_domain *intel_svm_domain_alloc(struct device *dev,
-+					    struct mm_struct *mm)
- {
- 	struct dmar_domain *domain;
-+	int ret;
- 
- 	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
- 	if (!domain)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
-+
- 	domain->domain.ops = &intel_svm_domain_ops;
- 	domain->use_first_level = true;
- 	INIT_LIST_HEAD(&domain->dev_pasids);
-@@ -685,5 +626,12 @@ struct iommu_domain *intel_svm_domain_alloc(void)
- 	spin_lock_init(&domain->cache_lock);
- 	spin_lock_init(&domain->lock);
- 
-+	domain->notifier.ops = &intel_mmuops;
-+	ret = mmu_notifier_register(&domain->notifier, mm);
-+	if (ret) {
-+		kfree(domain);
-+		return ERR_PTR(ret);
-+	}
-+
- 	return &domain->domain;
- }
--- 
-2.34.1
+Sure. I will update the description.
+
+
+> 
+> One minor comment below, otherwise:
+> 
+> Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
+> 
+>>
+>> [1] 
+>> https://www.amd.com/content/dam/amd/en/documents/processor-tech-docs/specifications/48882_IOMMU.pdf
+>>
+>> Cc: Ashish Kalra <ashish.kalra@amd.com>
+>> Cc: Michael Roth <michael.roth@amd.com>
+>> Cc: Tom Lendacky <thomas.lendacky@amd.com>
+>> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
+>> ---
+>> Changes in v2:
+>>    - Rebased on top of v6.9-rc3 and resolved the conflict.
+>>
+>> -Vasant
+>>
+>>   drivers/iommu/amd/init.c | 21 +++++++++++----------
+>>   1 file changed, 11 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+>> index 005981c2f96a..0d9b69765099 100644
+>> --- a/drivers/iommu/amd/init.c
+>> +++ b/drivers/iommu/amd/init.c
+>> @@ -3215,28 +3215,29 @@ static void iommu_snp_enable(void)
+>>           return;
+>>       /*
+>>        * The SNP support requires that IOMMU must be enabled, and is
+>> -     * not configured in the passthrough mode.
+>> +     * configured with V1 page table (DTE[Mode] = 0 is not supported).
+>>        */
+>>       if (no_iommu || iommu_default_passthrough()) {
+>>           pr_err("SNP: IOMMU disabled or configured in passthrough 
+>> mode, SNP cannot be supported.\n");
+>> -        cc_platform_clear(CC_ATTR_HOST_SEV_SNP);
+>> -        return;
+>> +        goto disable_snp;
+>> +    }
+>> +
+>> +    if (amd_iommu_pgtable != AMD_IOMMU_V1) {
+>> +        pr_warn("SNP: IOMMU is configured with V2 page table mode, 
+>> SNP cannot be supported.\n");
+> 
+> In the previous check, pr_err() is used, while here pr_warn() is used. 
+> Should be consistent. Not sure if that means changing the pr_err() to 
+> pr_warn() or making this pr_warn() a pr_err().
+
+Looks like we had this inconsistency from beginning. May be we should 
+convert it to warning. I will post separate fix for that.
+
+
+-Vasant
+
 
