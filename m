@@ -1,61 +1,61 @@
-Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47])
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76EA316F0D7
-	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 15:49:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B8BD15B159
+	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 15:55:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712764195; cv=none; b=C8blsALByNhlxfXKP95vPhukAlAyKTouxwahJGLGAZsuUNSioS+dgIlNj0jCWBCRwI0yskxTm7MrqTNqYPaqk2Dkqn53hWauKw0Q4OkzeWFg8lXEflNCeSiXR/sPi4PZLPM4sbtgOmWhkoZRFDzMTkTUB4mcdMhwi6ccrj6rGwY=
+	t=1712764538; cv=none; b=Hh2fkA9sJjpqbUlXXnbJxZT7ZlxwNCfub23iEnNqG2o1wdo2x+eynuSUvRIgSZ0PM1TE6fw7r8zbHp60K1O6ZHM6z1BNWwCjXIWFjxgTxzqTZ9Ue96dXloXq8MDoldXGakq+OZr5jr2gjPT/55RY0aoZlVhbKudhNUjew8V4eDQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712764195; c=relaxed/simple;
-	bh=AxHwz8VF1NhYu3Vp1CovFU8cr9PNL/8I3H9tcZr+m74=;
+	s=arc-20240116; t=1712764538; c=relaxed/simple;
+	bh=YgnL7jcir981RH55ITpvaqSgvPK1CEMYZBReNU3yk2s=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lc+76Rvny/y6jmrL/PSqiNPHkr3tf4ykwaJvhomGRw53kH9xaJU/dqRwVCEzMS6C5MVLWR6+wEIJNlRiK+/+7WSICaYUsoCBF4yOSdbFod62ZklSmZTJ7ZR48mZYJ3vZXg8+f5nMo9Q3AzaS5z6fWkWEa9jF/rV7gY0ssGNs3Ls=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=ou8X093Y; arc=none smtp.client-ip=209.85.217.47
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ep5Z8KYDSR6y2vWYbbSaNleBTpdjhQiWOnShkWQfFHp2Urj6c7g/raRrkEzpS0LNEPYFGXjmNn3bmoCMWcUX8Ou8Q6TTf9Auz/zbzWSM++5lHSBpkXH37YLZL0lLoejdJ8RlMOUeVStA+reLliL7ATEwDczym/r8t3Vm06xKObY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=OGdoi4x3; arc=none smtp.client-ip=209.85.222.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="ou8X093Y"
-Received: by mail-vs1-f47.google.com with SMTP id ada2fe7eead31-479de34dc36so1754414137.1
-        for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 08:49:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="OGdoi4x3"
+Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-78d68c08df7so194993185a.2
+        for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 08:55:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1712764192; x=1713368992; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1712764536; x=1713369336; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=tvi4RlGA0eUYMMXxvrO6LGP3KPA96p3DhN0FfsCggYI=;
-        b=ou8X093Y6ptzFLc9k/JRfPNVW9c86AkxRZssr2kpKXWspnDcpgqmueIgnNNPb4nC6I
-         dvcrQzgyGB9SIdRqAHydOJCTi2rGl1mZs13C7kzYVTDK8n4xENwHSqbVrZKxO/Se1wjR
-         rzeIohn3oQOcgULka09eIZML0AMxEls9+3bEMv6vInyoj4+mEbT8v4wG6316a/h2lYtY
-         ua73826uD3RMyEoUHExoCYzru9AAM4mUA4sW67z1k+ki+srMHiFvGuzPmxIfVxUVoxbO
-         5HLu8EQXc73lN0GFFjtnhmZBKC/JeHGae0aiFDD+ztbvI3aOxWz8P0Swy9pFnWHvP+6T
-         21EA==
+        bh=AXUImnNxV09JBTgxvo4M2YuJDwI+AB7aa82NvkhuYtk=;
+        b=OGdoi4x35NcBTp+NB8FxVozbwdh4Qso6tbMrKwQquFSDM6uv9YaQhndVATvi9PJMNP
+         uH4QNraT0AqilnQoADJFeveHufUAabX/cjLU9uzLniFehBIme81r0Bj7x/Xw02LWVmAk
+         Rs6W8mMG+JsFvt9l5GdpLkJGRdACHLDl2E4QXY4Q53gL3qGmSw9ks4cawEt0YdtOUTbs
+         brotIKOxE4HKpSvNH3GKpdRgK7Cf+24Lb6UNwfG74xxGeEBOztfiEevSfqCwisUxU5M6
+         7Y7J0qLtBGYG2ny9pRMY40ZX7dne8dCSDHrtDbcQ4SUL5QF1IiX/ddfxIiVot94tJKXm
+         /DYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712764192; x=1713368992;
+        d=1e100.net; s=20230601; t=1712764536; x=1713369336;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=tvi4RlGA0eUYMMXxvrO6LGP3KPA96p3DhN0FfsCggYI=;
-        b=usmRbNIHfm0St+FrSR54Wo/2phfINE2rY6olyXDQyuRcwZn7D1fzST9Ili0hLprdze
-         nb1jPb7pmbdYxQ0ejHNI5GRPm4yvUp1DGITcVSQKXAbh+3KYAdcIxLr3Xp0OvLPnk5Yy
-         sqjM6j9mLPDUMcplplJLN26ajOQ7P3nuSrueTxiT+3YcRiTYA9yHzahsKiKq88F8KqXd
-         +8Ctl6R5uVtR3b7knJOGrUp/bmUGT8hSx+xRaAV7oEwJHjVGPxF8LPorH7ZvDgZvJj34
-         MgyrW0OQCIU7pkCkAx5nGY104UZQPjVcTxIf6H5+R1QcVwGvncDLHgiPQ4wstRQhbiql
-         wFug==
-X-Forwarded-Encrypted: i=1; AJvYcCU3vKarduoiWQeZQO3ybboLP3gSAhgU44KBt0uquBkvWexGutxMYjkA2LoFcfMZBgujDL83ajzlT93HhIasuGoOyBD0hsI=
-X-Gm-Message-State: AOJu0Yxb77+Y9QNkwZ86B5dParN3UzyoI9WKG6/W63H0t2jllPMXjX53
-	B0HO1aB8O+y0lY4bgSTacSPtnQZVgFJ+pCeTpsCWexDA6RKoNPCgTtqDdFUILs4=
-X-Google-Smtp-Source: AGHT+IG4NexykQhPgIIYvHrAfQVQv1FqWNxA12xQmlbTS3BHAvY4jbcX/T8MwL9NLO8gOHdRAeeO6g==
-X-Received: by 2002:a05:6102:38cc:b0:47a:2577:a366 with SMTP id k12-20020a05610238cc00b0047a2577a366mr2319777vst.12.1712764192407;
-        Wed, 10 Apr 2024 08:49:52 -0700 (PDT)
+        bh=AXUImnNxV09JBTgxvo4M2YuJDwI+AB7aa82NvkhuYtk=;
+        b=ZCI8/je+tGegmW2mPQZEzw3TFi8dukif3UoISWoPZS5O6/JhrCBCDvPRE8CTFA9l36
+         SF8QnMLgD6su+7iLAuyKA7rXRyFPZTz3BCAmiF31KfrqZmZDqYvPbRw4mCIes5F9GGh+
+         jxDSogE4cWLySXEFFMOTY3ygb/LXBZ5/MpEjpNTe0bT7OTtmci1ZaoX4u4bRy/x9ZMTv
+         ohY4S0/7aSUvnvQonGGqri+LvwsXn2D/II8wEzgzFOCMtdTFQIWfL6ZHk5wPpqvO6QET
+         lNaMGq1EtNeWkDd2I9l++NeDSyr+oHM1Wu0CNLNUmFOUhQuKgqmrv36/CVRce70Chi+g
+         0/0Q==
+X-Forwarded-Encrypted: i=1; AJvYcCU80wJq8A3/AgXYHLbf9DvTe4SuQR0JSMu9AcFa/OdHUrRw0ZpJTD9qfvLQy0azet4FXp18VXr1vezDg9nUrUwjVjdfdNI=
+X-Gm-Message-State: AOJu0YwyxVQk83dLkeGmrjVH3kQCMA4+zLxPn8IBiqDdbHFOx09sw+vM
+	jDCa7+nNYmrvqrqzhFt7X5tpJfByTNmOA2lXfJ9Nuo3vLFde9SXPmBXs38TNONQ=
+X-Google-Smtp-Source: AGHT+IGnLTu8iKva5GUlMCiRXZBoEBA2BHf3PHT7xxCia8wpcTL3uQ+NzL/WcsUXgwErHK9GXqr3xA==
+X-Received: by 2002:a05:6214:ca4:b0:69b:1930:6914 with SMTP id s4-20020a0562140ca400b0069b19306914mr2957329qvs.28.1712764536057;
+        Wed, 10 Apr 2024 08:55:36 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id b14-20020a0cfb4e000000b0069b17d0f07esm3273815qvq.96.2024.04.10.08.49.51
+        by smtp.gmail.com with ESMTPSA id c8-20020a0cf2c8000000b00698f7eb9997sm5233380qvm.54.2024.04.10.08.55.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Apr 2024 08:49:51 -0700 (PDT)
+        Wed, 10 Apr 2024 08:55:35 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1ruaCt-008FEK-5Z;
-	Wed, 10 Apr 2024 12:49:51 -0300
-Date: Wed, 10 Apr 2024 12:49:51 -0300
+	id 1ruaIR-008Fb1-2n;
+	Wed, 10 Apr 2024 12:55:35 -0300
+Date: Wed, 10 Apr 2024 12:55:35 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -63,10 +63,11 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 	Kevin Tian <kevin.tian@intel.com>,
 	Tina Zhang <tina.zhang@intel.com>, Yi Liu <yi.l.liu@intel.com>,
 	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 12/12] iommu/vt-d: Retire struct intel_svm
-Message-ID: <20240410154951.GH223006@ziepe.ca>
+Subject: Re: [PATCH v2 09/12] iommu/vt-d: Use cache helpers in
+ arch_invalidate_secondary_tlbs
+Message-ID: <20240410155535.GI223006@ziepe.ca>
 References: <20240410020844.253535-1-baolu.lu@linux.intel.com>
- <20240410020844.253535-13-baolu.lu@linux.intel.com>
+ <20240410020844.253535-10-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -75,62 +76,41 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240410020844.253535-13-baolu.lu@linux.intel.com>
+In-Reply-To: <20240410020844.253535-10-baolu.lu@linux.intel.com>
 
-On Wed, Apr 10, 2024 at 10:08:44AM +0800, Lu Baolu wrote:
-> The struct intel_svm was used for keeping attached devices info for sva
-> domain. Since sva domain is a kind of iommu_domain, the struct
-> dmar_domain should centralize all info of a sva domain, including the
-> info of attached devices. Therefore, retire struct intel_svm to clean up
-> the code.
-> 
-> Besides, allocate sva domain in domain_alloc_sva() callback which allows
-> the memory management notifier lifetime to follow the lifetime of the
-> iommu_domain.
-> 
-> Co-developed-by: Tina Zhang <tina.zhang@intel.com>
-> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel/iommu.h | 26 ++++------
->  drivers/iommu/intel/iommu.c |  9 +---
->  drivers/iommu/intel/svm.c   | 94 +++++++++----------------------------
->  3 files changed, 32 insertions(+), 97 deletions(-)
-
-Happy to see the pasid xarray in the driver go away.
-
-> @@ -4388,14 +4386,8 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
->  	WARN_ON_ONCE(!dev_pasid);
->  	spin_unlock_irqrestore(&dmar_domain->lock, flags);
->  
-> -	/*
-> -	 * The SVA implementation needs to handle its own stuffs like the mm
-> -	 * notification. Before consolidating that code into iommu core, let
-> -	 * the intel sva code handle it.
-> -	 */
->  	if (domain->type == IOMMU_DOMAIN_SVA) {
->  		cache_tag_unassign_domain(dmar_domain, FLPT_DEFAULT_DID, dev, pasid);
-> -		intel_svm_remove_dev_pasid(domain);
->  	} else {
->  		did = domain_id_iommu(dmar_domain, iommu);
->  		cache_tag_unassign_domain(dmar_domain, did, dev, pasid);
-
-It seems very strange that SVA has a different DID scheme, why is
-this? PASID and SVA should not be different at this layer.
-
-> @@ -663,7 +596,12 @@ void intel_svm_page_response(struct device *dev, struct iopf_fault *evt,
->  
->  static void intel_svm_domain_free(struct iommu_domain *domain)
+On Wed, Apr 10, 2024 at 10:08:41AM +0800, Lu Baolu wrote:
+>  /* Pages have been freed at this point */
+>  static void intel_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
+>  					struct mm_struct *mm,
+>  					unsigned long start, unsigned long end)
 >  {
-> -	kfree(to_dmar_domain(domain));
-> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +
-> +	if (dmar_domain->notifier.ops)
-> +		mmu_notifier_unregister(&dmar_domain->notifier, domain->mm);
+>  	struct intel_svm *svm = container_of(mn, struct intel_svm, notifier);
+> +	struct dmar_domain *domain = svm->domain;
+>  
+>  	if (start == 0 && end == -1UL) {
 
-This should really use mmu_notifier_put() and a delayed kfree, see my
-part 2 ARM series for how that should look.
+ULONG_MAX ideally.
 
-Otherwise I think it looks fine
+> -		intel_flush_svm_all(svm);
+> +		cache_tag_flush_all(domain);
+>  		return;
+>  	}
+>  
+> -	intel_flush_svm_range(svm, start,
+> -			      (end - start + PAGE_SIZE - 1) >> VTD_PAGE_SHIFT, 0);
+> +	cache_tag_flush_range(domain, start, end, 0);
+
+Be mindful of the note from the ARM driver:
+
+        /*
+         * The mm_types defines vm_end as the first byte after the end address,
+         * different from IOMMU subsystem using the last address of an address
+         * range. So do a simple translation here by calculating size correctly.
+         */
+        size = end - start;
+
+Given that the cache_tag_flush_range's are all tied directly to the
+iommu gather API, this is probably missing a -1 though perhaps it does
+not cause a functional problem here.
 
 Jason
