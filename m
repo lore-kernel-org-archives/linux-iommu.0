@@ -1,228 +1,87 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8E3D0176FCE
-	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 16:37:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F165953361;
+	Wed, 10 Apr 2024 16:41:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712767032; cv=none; b=tqv5oyqPyZwbwtUizVJQtewFFWArQ4Y3YiyXBCk9ATEZeqBAl6H+XNtsROznI9c9QJbQKYb6cCqLt1gJ/2yPB5QGkbwacCZEY48KSdHLEkC7bvhCBYZeINXWoCoZkXNiJSAOG+Qot1+tg5hqpkf52bod4nT/vCujH5RulaGKiJY=
+	t=1712767276; cv=none; b=FxIJJ85kPDMfM0Ny+AGndHMFPZ3be9BvUddHJEouekAT49asdf0/AOr6CDQyinUBygC5bvbuXPF/uwttjfeshQp/yZUBCGouhfM/qcM1fl7nSXdSbsKVEWbBnvuPAkWWK7PoRjvY+u98sP+OAN1lK87w1C1mTUZs48KB0utApAE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712767032; c=relaxed/simple;
-	bh=wY8a3bi6jEqKcdiIKKypYn3FBf08SvzztehZy4MIMMI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=M7qLq53+LQVMIOH/4Clt1VSNTTQjx97P/DqusOO4OLkv3L6fOTTGuFhkX+85dWW71d5PjbPLH9jY6DfhE812fkcd3W4mtFJ6nsJXu0cwjiMulv9+BHz+IqHwvm96bbCzLOuVyZPUcey31I7+v/D4C8TCD6ceOWxnqJb7MLj+33Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 880A2139F;
-	Wed, 10 Apr 2024 09:37:38 -0700 (PDT)
-Received: from [10.57.53.164] (unknown [10.57.53.164])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 508A53F766;
-	Wed, 10 Apr 2024 09:37:07 -0700 (PDT)
-Message-ID: <0dda6ce6-1b82-4168-93b7-a0e847ce9b08@arm.com>
-Date: Wed, 10 Apr 2024 17:37:06 +0100
+	s=arc-20240116; t=1712767276; c=relaxed/simple;
+	bh=UaluD4a0SUmWueDVbNI4ShgReWWH+xE4Os/5Mmqe5rY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=IcPIyjEKZwzg7SXs+OKyBQPkEZwgjItFTTFDFguE7dMEZPQy8NYbgxNNeqj+4Yr7Vp07+tbko0APlUrSEsj9UB1xs2BDoJkMLPdz/M05eOQuxkAQMd5O+L4P0pkj+PjscJZuZa79+MlLwZWYv+wxcONAo6jPQLS4UUdi/+9SWKA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gRjlNMBW; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gRjlNMBW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A653C433F1;
+	Wed, 10 Apr 2024 16:41:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1712767275;
+	bh=UaluD4a0SUmWueDVbNI4ShgReWWH+xE4Os/5Mmqe5rY=;
+	h=From:To:Cc:Subject:Date:From;
+	b=gRjlNMBWXV6EELqLlFpjjSSZiUkO+oNkOId39OpfP8dGNqAJJNkLaXL8GPCuCPnJo
+	 rnkIJ4cjyHPzkMgk47yfHBeKrGFVXXMRT8Ab8AyEqiiU4aGI9ugWz4d7SprwyPZEo3
+	 mTBfClS7dRuSFfIE5JqNssENrSF3hmII8SMM4xH0szzt8UZZS2oJqczbMb2uSZoK1x
+	 3MhxoC+++yVt3AVP0/afD/alpHFJ61Jv67JUaRhMLLl/BIR+xugKzXgdXwIrThCN+F
+	 PNuV5KVR5mHeNS6B+/kJKFtajePVkU7x31dGrudr0kxydBMuHxJBCWs9YUf0rLtYg5
+	 Y+6so0qeFCcWQ==
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Yong Wu <yong.wu@mediatek.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	iommu@lists.linux.dev,
+	linux-mediatek@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Cc: Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [PATCH] iommu: mtk: fix module autoloading
+Date: Wed, 10 Apr 2024 18:41:09 +0200
+Message-Id: <20240410164109.233308-1-krzk@kernel.org>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/5] iommu: Add static iommu_ops->release_domain
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@ziepe.ca>, Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Kevin Tian <kevin.tian@intel.com>, Eric Badger <ebadger@purestorage.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240305013305.204605-1-baolu.lu@linux.intel.com>
- <20240305013305.204605-2-baolu.lu@linux.intel.com>
- <20240410152606.GF223006@ziepe.ca>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20240410152606.GF223006@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2024-04-10 4:26 pm, Jason Gunthorpe wrote:
-> On Tue, Mar 05, 2024 at 09:33:01AM +0800, Lu Baolu wrote:
->> The current device_release callback for individual iommu drivers does the
->> following:
->>
->> 1) Silent IOMMU DMA translation: It detaches any existing domain from the
->>     device and puts it into a blocking state (some drivers might use the
->>     identity state).
->> 2) Resource release: It releases resources allocated during the
->>     device_probe callback and restores the device to its pre-probe state.
->>
->> Step 1 is challenging for individual iommu drivers because each must check
->> if a domain is already attached to the device. Additionally, if a deferred
->> attach never occurred, the device_release should avoid modifying hardware
->> configuration regardless of the reason for its call.
->>
->> To simplify this process, introduce a static release_domain within the
->> iommu_ops structure. It can be either a blocking or identity domain
->> depending on the iommu hardware. The iommu core will decide whether to
->> attach this domain before the device_release callback, eliminating the
->> need for repetitive code in various drivers.
->>
->> Consequently, the device_release callback can focus solely on the opposite
->> operations of device_probe, including releasing all resources allocated
->> during that callback.
->>
->> Co-developed-by: Jason Gunthorpe <jgg@nvidia.com>
->> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
->> ---
->>   include/linux/iommu.h |  1 +
->>   drivers/iommu/iommu.c | 19 +++++++++++++++----
->>   2 files changed, 16 insertions(+), 4 deletions(-)
-> 
-> I looked at all the drivers:
->   1) Didn't spend time to guess what ipmmu-vmss is doing
->   2) Several drivers are obviously missing the release_domain behavior
->      and now be trivially fixed
->   3) amd, s390, virtio-iommu and arm-smmu should probably support
->      blocked_domain (I assume that is what their detach does)
->   4) arm-smmuv3 can use it too once disable_bypass is removed
->   5) Several drivers don't even have release_device functions.
->      Probably all of them can do their identiy domains too.
-> 
-> This seems like a pretty reasonable thing to add to this series too:
-> 
-> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-> index eb1e62cd499a58..3ddc4b4418a049 100644
-> --- a/drivers/iommu/apple-dart.c
-> +++ b/drivers/iommu/apple-dart.c
-> @@ -979,6 +979,7 @@ static void apple_dart_get_resv_regions(struct device *dev,
->   static const struct iommu_ops apple_dart_iommu_ops = {
->   	.identity_domain = &apple_dart_identity_domain,
->   	.blocked_domain = &apple_dart_blocked_domain,
-> +	.release_domain = &apple_dart_blocked_domain,
->   	.domain_alloc_paging = apple_dart_domain_alloc_paging,
->   	.probe_device = apple_dart_probe_device,
->   	.release_device = apple_dart_release_device,
-> diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-> index d98c9161948a25..902dc4da44f987 100644
-> --- a/drivers/iommu/exynos-iommu.c
-> +++ b/drivers/iommu/exynos-iommu.c
-> @@ -1424,8 +1424,6 @@ static void exynos_iommu_release_device(struct device *dev)
->   	struct exynos_iommu_owner *owner = dev_iommu_priv_get(dev);
->   	struct sysmmu_drvdata *data;
->   
-> -	WARN_ON(exynos_iommu_identity_attach(&exynos_identity_domain, dev));
-> -
->   	list_for_each_entry(data, &owner->controllers, owner_node)
->   		device_link_del(data->link);
->   }
-> @@ -1471,6 +1469,7 @@ static int exynos_iommu_of_xlate(struct device *dev,
->   
->   static const struct iommu_ops exynos_iommu_ops = {
->   	.identity_domain = &exynos_identity_domain,
-> +	.release_domain = &exynos_identity_domain,
->   	.domain_alloc_paging = exynos_iommu_domain_alloc_paging,
->   	.device_group = generic_device_group,
->   	.probe_device = exynos_iommu_probe_device,
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index b8c47f18bc2612..b5693041b18dd4 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -1012,6 +1012,7 @@ static void mtk_iommu_get_resv_regions(struct device *dev,
->   
->   static const struct iommu_ops mtk_iommu_ops = {
->   	.identity_domain = &mtk_iommu_identity_domain,
-> +	.release_domain = &mtk_iommu_identity_domain,
->   	.domain_alloc_paging = mtk_iommu_domain_alloc_paging,
->   	.probe_device	= mtk_iommu_probe_device,
->   	.release_device	= mtk_iommu_release_device,
-> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-> index a9fa2a54dc9b39..9e7205af7d7316 100644
-> --- a/drivers/iommu/mtk_iommu_v1.c
-> +++ b/drivers/iommu/mtk_iommu_v1.c
-> @@ -580,6 +580,7 @@ static int mtk_iommu_v1_hw_init(const struct mtk_iommu_v1_data *data)
->   
->   static const struct iommu_ops mtk_iommu_v1_ops = {
->   	.identity_domain = &mtk_iommu_v1_identity_domain,
-> +	.release_domain = &mtk_iommu_v1_identity_domain,
->   	.domain_alloc_paging = mtk_iommu_v1_domain_alloc_paging,
->   	.probe_device	= mtk_iommu_v1_probe_device,
->   	.probe_finalize = mtk_iommu_v1_probe_finalize,
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index c9528065a59afa..c4c76aaec19e50 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1725,6 +1725,7 @@ static void omap_iommu_release_device(struct device *dev)
->   
->   static const struct iommu_ops omap_iommu_ops = {
->   	.identity_domain = &omap_iommu_identity_domain,
-> +	.release_domain = &omap_iommu_identity_domain,
->   	.domain_alloc_paging = omap_iommu_domain_alloc_paging,
->   	.probe_device	= omap_iommu_probe_device,
->   	.release_device	= omap_iommu_release_device,
-> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-> index da79d9f4cf6371..e551c5b143bbd3 100644
-> --- a/drivers/iommu/rockchip-iommu.c
-> +++ b/drivers/iommu/rockchip-iommu.c
-> @@ -1162,6 +1162,7 @@ static int rk_iommu_of_xlate(struct device *dev,
->   
->   static const struct iommu_ops rk_iommu_ops = {
->   	.identity_domain = &rk_identity_domain,
-> +	.release_domain = &rk_identity_domain,
->   	.domain_alloc_paging = rk_iommu_domain_alloc_paging,
->   	.probe_device = rk_iommu_probe_device,
->   	.release_device = rk_iommu_release_device,
-> 
->> +	if (!dev->iommu->attach_deferred && ops->release_domain)
->> +		ops->release_domain->ops->attach_dev(ops->release_domain, dev);
-> 
-> We should probably be sensitive to the
-> dev->iommu->require_direct flag - generally drivers should prefer the
-> blocked for the release domain, but in case the FW ias asking for
-> require_direct we need to switch to identity.
+Add MODULE_DEVICE_TABLE(), so modules could be properly autoloaded
+based on the alias from of_device_id table.
 
-At this point do we even need release_domain? It sounds like the logic 
-you want to enforce is going to be trivial to resolve directly in the 
-core code. As typed-in-mail-client pseudocode, roughly:
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+ drivers/iommu/mtk_iommu.c    | 1 +
+ drivers/iommu/mtk_iommu_v1.c | 1 +
+ 2 files changed, 2 insertions(+)
 
-static void iommu_set_release_domain(struct device *dev)
-{
-	const struct iommu_ops *ops = dev_iommu_ops(dev);
-	struct iommu_domain *rd;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index b8c47f18bc26..6a2707fe7a78 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -1790,6 +1790,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
+ 	{ .compatible = "mediatek,mt8365-m4u", .data = &mt8365_data},
+ 	{}
+ };
++MODULE_DEVICE_TABLE(of, mtk_iommu_of_ids);
+ 
+ static struct platform_driver mtk_iommu_driver = {
+ 	.probe	= mtk_iommu_probe,
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index a9fa2a54dc9b..d6e4002200bd 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -600,6 +600,7 @@ static const struct of_device_id mtk_iommu_v1_of_ids[] = {
+ 	{ .compatible = "mediatek,mt2701-m4u", },
+ 	{}
+ };
++MODULE_DEVICE_TABLE(of, mtk_iommu_v1_of_ids);
+ 
+ static const struct component_master_ops mtk_iommu_v1_com_ops = {
+ 	.bind		= mtk_iommu_v1_bind,
+-- 
+2.34.1
 
-	/*
-	 * Static domains are expected not to track any device state,
-	 * and thus be tolerant of devices disappearing once "attached"
-	 */
-	if (ops->blocked_domain && !(dev->iommu->require_direct || 
-other_arch_or_platform_reason))
-		rd = ops->blocked_domain;
-	else if (ops->identity_domain)
-		rd = ops->identity_domain;
-	else /* Hope release_device does the right thing! */
-		return;
-
-	if (!dev->iommu->attach_deferred && rd != dev->iommu_group->domain)
-		__iommu_attach_device(rd, dev);
-}
-
-...no driver churn necessary. (And frankly I think it's a further bonus 
-to avoid risking any notion of release_domain being implementable as its 
-own distinct special thing)
-
-Thanks,
-Robin.
-
-> 
-> Also, may as well avoid switching a domain if the group is already
-> correct and use the common attach function to get the tracing.. So
-> like this?
-> 
-> 	if (!dev->iommu->attach_deferred) {
-> 		struct iommu_domain *release_domain = ops->release_domain;
-> 
-> 		if (dev->iommu->require_direct && ops->identity_domain)
-> 			release_domain = ops->identity_domain;
-> 
-> 		if (release_domain && group->domain != release_domain)
-> 			WARN_ON(__iommu_attach_device(release_domain, dev));
-> 	}
-> 
-> Jason
