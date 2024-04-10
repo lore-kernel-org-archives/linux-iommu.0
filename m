@@ -1,116 +1,93 @@
-Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B8BD15B159
-	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 15:55:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41F78179211
+	for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 16:19:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712764538; cv=none; b=Hh2fkA9sJjpqbUlXXnbJxZT7ZlxwNCfub23iEnNqG2o1wdo2x+eynuSUvRIgSZ0PM1TE6fw7r8zbHp60K1O6ZHM6z1BNWwCjXIWFjxgTxzqTZ9Ue96dXloXq8MDoldXGakq+OZr5jr2gjPT/55RY0aoZlVhbKudhNUjew8V4eDQ=
+	t=1712765996; cv=none; b=MTu5pJAOBgMQsCDzHbsfFGXXbuMinQYgqvIVuZD0WdxkjEwa7Q8qsFBwBou3KX+pUMR8F9MTOV4wzu7vDWf+3D24hlwEB5mZDaaEecLoSxbFBTAqyKoGWv6gczs0H7mnoExGyJ+rouUYFgEfnF0wnlRltnFpIq/H9ZPaRFD5IUE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712764538; c=relaxed/simple;
-	bh=YgnL7jcir981RH55ITpvaqSgvPK1CEMYZBReNU3yk2s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ep5Z8KYDSR6y2vWYbbSaNleBTpdjhQiWOnShkWQfFHp2Urj6c7g/raRrkEzpS0LNEPYFGXjmNn3bmoCMWcUX8Ou8Q6TTf9Auz/zbzWSM++5lHSBpkXH37YLZL0lLoejdJ8RlMOUeVStA+reLliL7ATEwDczym/r8t3Vm06xKObY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=OGdoi4x3; arc=none smtp.client-ip=209.85.222.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1712765996; c=relaxed/simple;
+	bh=nkV9cGAED/z/VIex+b/PSuJe4lylFvXK/ooyXd9u+WY=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=U9d17otpR01YHqVxUVU8O5aCp34E0jK6OVKmoeb+QkkISAEIzJUemp2O9RePiScHcCP3JIHBE913m0YaW9mHIYLSnqBP3roEQ87e++bJ+0k9JiXTbINobAnqa2hbaFkFuCrWt18QoxJqXoDzlOsmrb/0LCZWfO309NQmxCsl82s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lXb7xDRX; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="OGdoi4x3"
-Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-78d68c08df7so194993185a.2
-        for <iommu@lists.linux.dev>; Wed, 10 Apr 2024 08:55:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1712764536; x=1713369336; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AXUImnNxV09JBTgxvo4M2YuJDwI+AB7aa82NvkhuYtk=;
-        b=OGdoi4x35NcBTp+NB8FxVozbwdh4Qso6tbMrKwQquFSDM6uv9YaQhndVATvi9PJMNP
-         uH4QNraT0AqilnQoADJFeveHufUAabX/cjLU9uzLniFehBIme81r0Bj7x/Xw02LWVmAk
-         Rs6W8mMG+JsFvt9l5GdpLkJGRdACHLDl2E4QXY4Q53gL3qGmSw9ks4cawEt0YdtOUTbs
-         brotIKOxE4HKpSvNH3GKpdRgK7Cf+24Lb6UNwfG74xxGeEBOztfiEevSfqCwisUxU5M6
-         7Y7J0qLtBGYG2ny9pRMY40ZX7dne8dCSDHrtDbcQ4SUL5QF1IiX/ddfxIiVot94tJKXm
-         /DYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712764536; x=1713369336;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AXUImnNxV09JBTgxvo4M2YuJDwI+AB7aa82NvkhuYtk=;
-        b=ZCI8/je+tGegmW2mPQZEzw3TFi8dukif3UoISWoPZS5O6/JhrCBCDvPRE8CTFA9l36
-         SF8QnMLgD6su+7iLAuyKA7rXRyFPZTz3BCAmiF31KfrqZmZDqYvPbRw4mCIes5F9GGh+
-         jxDSogE4cWLySXEFFMOTY3ygb/LXBZ5/MpEjpNTe0bT7OTtmci1ZaoX4u4bRy/x9ZMTv
-         ohY4S0/7aSUvnvQonGGqri+LvwsXn2D/II8wEzgzFOCMtdTFQIWfL6ZHk5wPpqvO6QET
-         lNaMGq1EtNeWkDd2I9l++NeDSyr+oHM1Wu0CNLNUmFOUhQuKgqmrv36/CVRce70Chi+g
-         0/0Q==
-X-Forwarded-Encrypted: i=1; AJvYcCU80wJq8A3/AgXYHLbf9DvTe4SuQR0JSMu9AcFa/OdHUrRw0ZpJTD9qfvLQy0azet4FXp18VXr1vezDg9nUrUwjVjdfdNI=
-X-Gm-Message-State: AOJu0YwyxVQk83dLkeGmrjVH3kQCMA4+zLxPn8IBiqDdbHFOx09sw+vM
-	jDCa7+nNYmrvqrqzhFt7X5tpJfByTNmOA2lXfJ9Nuo3vLFde9SXPmBXs38TNONQ=
-X-Google-Smtp-Source: AGHT+IGnLTu8iKva5GUlMCiRXZBoEBA2BHf3PHT7xxCia8wpcTL3uQ+NzL/WcsUXgwErHK9GXqr3xA==
-X-Received: by 2002:a05:6214:ca4:b0:69b:1930:6914 with SMTP id s4-20020a0562140ca400b0069b19306914mr2957329qvs.28.1712764536057;
-        Wed, 10 Apr 2024 08:55:36 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id c8-20020a0cf2c8000000b00698f7eb9997sm5233380qvm.54.2024.04.10.08.55.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 10 Apr 2024 08:55:35 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1ruaIR-008Fb1-2n;
-	Wed, 10 Apr 2024 12:55:35 -0300
-Date: Wed, 10 Apr 2024 12:55:35 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Kevin Tian <kevin.tian@intel.com>,
-	Tina Zhang <tina.zhang@intel.com>, Yi Liu <yi.l.liu@intel.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 09/12] iommu/vt-d: Use cache helpers in
- arch_invalidate_secondary_tlbs
-Message-ID: <20240410155535.GI223006@ziepe.ca>
-References: <20240410020844.253535-1-baolu.lu@linux.intel.com>
- <20240410020844.253535-10-baolu.lu@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lXb7xDRX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712765994; x=1744301994;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nkV9cGAED/z/VIex+b/PSuJe4lylFvXK/ooyXd9u+WY=;
+  b=lXb7xDRX9XCV574GXJkj2KTBVAz4C0Zl67gg+VDMT9bA7WNDxBe0MmfP
+   Ixv1T7gfrhHbHGX+aOQ5AAzw4CBYOq+PHjVgE9h2d4CFn0CT5by+N2Bxj
+   2RYkkRRaJ3+TWsGenz0ZZKICFPh60I62x6Mwu/OhBoFCXWSV6HjgBmWxH
+   ZGRv1deGvE1nkH5HWPh6ydEwI9xT3PrsyVcuXQaltcyGLU3nxtSqdw6+F
+   aNZr1m+YtmPffZcJnVOpvc38f2NraETNDFblltAYM3yc58iq9k31TysA3
+   SybiHZMb6nYc0Xy2tUK9LsWBcrCslBFVcQyCUHfWX9p9ch3djcTxiOpxs
+   w==;
+X-CSE-ConnectionGUID: /JTHzZ5hSWKV9C4jmYDkOg==
+X-CSE-MsgGUID: 7nxvpUfoQdCgG6bOXstI+A==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="8316626"
+X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
+   d="scan'208";a="8316626"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 09:15:26 -0700
+X-CSE-ConnectionGUID: bYm3/WcVRy6UqtcJM8vh6g==
+X-CSE-MsgGUID: lJv4/ogSSgGrN2eFG8qM4A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,190,1708416000"; 
+   d="scan'208";a="20570377"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 09:15:25 -0700
+Date: Wed, 10 Apr 2024 09:19:55 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel
+ <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH 2/2] iommu/vt-d: Remove caching mode check before devtlb
+ flush
+Message-ID: <20240410091955.5c00e411@jacob-builder>
+In-Reply-To: <BN9PR11MB52763F42ED6719E6D03D0D308C062@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240407144232.190355-1-baolu.lu@linux.intel.com>
+	<20240407144232.190355-2-baolu.lu@linux.intel.com>
+	<20240408140329.6290377f@jacob-builder>
+	<aff42b8f-b757-4422-9ebe-741a4b894b6c@linux.intel.com>
+	<20240409103146.0d155e45@jacob-builder>
+	<BN9PR11MB52763F42ED6719E6D03D0D308C062@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240410020844.253535-10-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Apr 10, 2024 at 10:08:41AM +0800, Lu Baolu wrote:
->  /* Pages have been freed at this point */
->  static void intel_arch_invalidate_secondary_tlbs(struct mmu_notifier *mn,
->  					struct mm_struct *mm,
->  					unsigned long start, unsigned long end)
->  {
->  	struct intel_svm *svm = container_of(mn, struct intel_svm, notifier);
-> +	struct dmar_domain *domain = svm->domain;
->  
->  	if (start == 0 && end == -1UL) {
+Hi Kevin,
 
-ULONG_MAX ideally.
+On Wed, 10 Apr 2024 00:32:06 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-> -		intel_flush_svm_all(svm);
-> +		cache_tag_flush_all(domain);
->  		return;
->  	}
->  
-> -	intel_flush_svm_range(svm, start,
-> -			      (end - start + PAGE_SIZE - 1) >> VTD_PAGE_SHIFT, 0);
-> +	cache_tag_flush_range(domain, start, end, 0);
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Wednesday, April 10, 2024 1:32 AM
+> > 
+> > If the guest uses SL page tables in vIOMMU, we don;t expose ATS to the
+> > guest. So ATS is not relevant here, does't matter map or unmap.
+> >   
+> 
+> ATS is orthogonal to SL vs. FL. Where is this restriction coming from?
+For practical purposes, what would be the usage to have SL in the guest and
+ATS enabled. i.e. shadowing SL but directly expose ATS? 
 
-Be mindful of the note from the ARM driver:
+Thanks,
 
-        /*
-         * The mm_types defines vm_end as the first byte after the end address,
-         * different from IOMMU subsystem using the last address of an address
-         * range. So do a simple translation here by calculating size correctly.
-         */
-        size = end - start;
-
-Given that the cache_tag_flush_range's are all tied directly to the
-iommu gather API, this is probably missing a -1 though perhaps it does
-not cause a functional problem here.
-
-Jason
+Jacob
