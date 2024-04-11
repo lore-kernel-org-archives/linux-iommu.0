@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F254149E10
-	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 12:15:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D475214A4F8
+	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 12:29:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712837749; cv=none; b=QcUgUI+2GPT6FW3WjEvlTDl5i7QGLlvZRkuEQDTxTg8fYmNr1BziMk1r5GSBLlOrW3g6cmRSGmd7F0d2owbzT4FAdawOmiUcXHCCOmrZ7WINIRnwq3WIHJcghS0s+Kgxii2yi1Yj7vxztaLQRWb0ouHfbRkgaMoqCCmRz7EmfEM=
+	t=1712838558; cv=none; b=MJPsUTcOKpuMWkEeKeAY0oQJysGsbuNc/rhnP3JQY8ARBDyiI8XuT965i38P7GNYa9nMxGyCgd6w5sLxEk19tHCa43J7ZweQgAufsWTbpHp7CBr4FAd/y7irY43XLgaHv9cB4A+tVmXaedVOKQXoGR8Foyogo/EHxva4UX7blQ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712837749; c=relaxed/simple;
-	bh=+H0oBngUo6CGYj23lJLfq2hMyMfpU92PpN6nrFaPJvs=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=LWgm62pxl/WKfENOZlVv2Q0NlncPWwIGuHEkPnliYfhsnDoj/WqAoS73ZCf7+Q/4ixi+J7n1sHPAFIekdJLtUCA7KcjEW2syPMW98245AiWgDu9gUM+Wp8wSYafSRX+lsG4FxXXgJD1LZrO+VPywWsWGD2yOD1kXBFpKDBRcfAI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=c+fd63HJ; arc=none smtp.client-ip=198.175.65.12
+	s=arc-20240116; t=1712838558; c=relaxed/simple;
+	bh=T0ns5dvXycLoFSs/ZW0S27KfnrJk+DvUNdebJc1uDsw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PYufBz8bm9pYe2OGVxG7zicObGpQ03ImtGvujfXfYIVle6EwMnTbrU9tZg2VAZYLVRUr9/zjomGAYneCFXPztnG73Xp766HE9C63NMMAVf1cw4dqmGg0gbRNAn/jK/h1AMptjvdCXKtlif1U1cMPrXGUMfGCAcpzeUKgbAQFE08=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MpRBso6X; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="c+fd63HJ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MpRBso6X"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712837748; x=1744373748;
-  h=message-id:date:mime-version:cc:subject:to:references:
+  t=1712838557; x=1744374557;
+  h=message-id:date:mime-version:subject:to:cc:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=+H0oBngUo6CGYj23lJLfq2hMyMfpU92PpN6nrFaPJvs=;
-  b=c+fd63HJYY/Ie5GhP2nYmeaw2W4IJCo9qxw/ziXqFX9GqywEr5SDDSAh
-   BgFnOSob7OeQmL0zcer0p2Fib+pYeqZBUMeOC/VjjssGHbLqVwjJsqQ7D
-   y01JKtvTnj1ZOs8PeYIZg48fGKzcaCGXg2nOYj/RMA3FUaUbgjjgzR/bj
-   APLIGfwyyyN3vNaUGmg4awrsAAyLogLvbBCQNd+9hR8WEnsBlHaevPozc
-   js3um9G9V+2i1oEgGlZco3VCGKTb7okI2qtAAbFiPrOblpOrsfJBvtXJ7
-   VUu5IINVcz6BOXJm/o22yzlR7TJ1CJapyNimP4HsylctjLb0ZmnU48GU5
-   Q==;
-X-CSE-ConnectionGUID: EedeBPM3RoinmWEAPuTFeA==
-X-CSE-MsgGUID: 0kS4uoOTT/mWSokEO3BmTw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="19664062"
+  bh=T0ns5dvXycLoFSs/ZW0S27KfnrJk+DvUNdebJc1uDsw=;
+  b=MpRBso6XnJgZS+Rf3IakfCgG/PyI9pw4ZNL2mowHSWMXjpSEDVQnvjiy
+   0m81R/sq3RSPUmc+RPPuwlrQfSKCwe8MhvIfHISDmho90pgIIV/6jgJpv
+   UNJDgSh2sexEQlZmpHWQ3iuUOMEkK8o51Fxy0fwOqOqLKpL7aBCEwfebA
+   uf6WjfMQNAx42LClGH9EvEkUWTYthAYYfCMN9qzlEpmJ7hk1rp99GY+aR
+   0XCne4BFQXoJgVgPhQfaWN18NGDeFgR9ifHfb0qnp/vYUqS1PUIU3VKXx
+   tAMAUQer7EORf7SMbxKxTXMmJeOPF9VlCqOxyzV1atoUgsqvt0i0/DYo7
+   A==;
+X-CSE-ConnectionGUID: F4ILEhNdSDCV4CM2tFpwlQ==
+X-CSE-MsgGUID: xYsW4HZ3RmeAP1kd3mWFeg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="19665152"
 X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
-   d="scan'208";a="19664062"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 05:15:47 -0700
-X-CSE-ConnectionGUID: +fgJ9b4KRvepFXsl13DhnA==
-X-CSE-MsgGUID: HEng4AKNTwWV3zoESGTQ4w==
+   d="scan'208";a="19665152"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 05:29:17 -0700
+X-CSE-ConnectionGUID: 63HJSZdjRS2Ac3+rV8u/TA==
+X-CSE-MsgGUID: V8CFhsgbRxOeNFNtCoyL1Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
-   d="scan'208";a="25660255"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.237.86]) ([10.124.237.86])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 05:15:45 -0700
-Message-ID: <876a6016-66ec-448d-922e-1964bd1f3f54@linux.intel.com>
-Date: Thu, 11 Apr 2024 20:15:42 +0800
+   d="scan'208";a="20932733"
+Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.124.237.254]) ([10.124.237.254])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 05:29:13 -0700
+Message-ID: <1fa9f7f8-5bf7-4f4f-80f0-9f23e4653242@linux.intel.com>
+Date: Thu, 11 Apr 2024 20:29:10 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,115 +52,138 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix WARN_ON in iommu probe path
+To: "Tian, Kevin" <kevin.tian@intel.com>, Lu Baolu
+ <baolu.lu@linux.intel.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iommu/vt-d: Remove caching mode check before devtlb
- flush
-To: "Zhang, Tina" <tina.zhang@intel.com>, "Tian, Kevin"
- <kevin.tian@intel.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
-References: <20240407144232.190355-1-baolu.lu@linux.intel.com>
- <20240407144232.190355-2-baolu.lu@linux.intel.com>
- <BN9PR11MB52764F42C20B6B18DDE7E66B8C072@BN9PR11MB5276.namprd11.prod.outlook.com>
- <MW5PR11MB5881E15977B2987AE32510B289062@MW5PR11MB5881.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <MW5PR11MB5881E15977B2987AE32510B289062@MW5PR11MB5881.namprd11.prod.outlook.com>
+References: <20240407011429.136282-1-baolu.lu@linux.intel.com>
+ <BN9PR11MB52760913F36DACBC612088668C002@BN9PR11MB5276.namprd11.prod.outlook.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <BN9PR11MB52760913F36DACBC612088668C002@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2024/4/11 7:49, Zhang, Tina wrote:
-> Hi,
-> 
->> -----Original Message-----
->> From: Tian, Kevin <kevin.tian@intel.com>
->> Sent: Tuesday, April 9, 2024 3:30 PM
->> To: Lu Baolu <baolu.lu@linux.intel.com>; iommu@lists.linux.dev
->> Cc: Liu, Yi L <yi.l.liu@intel.com>; Joerg Roedel <joro@8bytes.org>; Will
->> Deacon <will@kernel.org>; Robin Murphy <robin.murphy@arm.com>; linux-
->> kernel@vger.kernel.org
->> Subject: RE: [PATCH 2/2] iommu/vt-d: Remove caching mode check before
->> devtlb flush
+On 4/8/2024 11:52 AM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Sunday, April 7, 2024 9:14 AM
 >>
->>> From: Lu Baolu <baolu.lu@linux.intel.com>
->>> Sent: Sunday, April 7, 2024 10:43 PM
->>>
->>> The Caching Mode (CM) of the Intel IOMMU indicates if the hardware
->>> implementation caches not-present or erroneous translation-structure
->>> entries except the first-stage translation. The caching mode is
->>> unrelated to the device TLB , therefore there is no need to check it
->>> before a device TLB invalidation operation.
->>>
->>> Before the scalable mode is introduced, caching mode is treated as an
->>> indication that the driver is running in a VM guest. This is just a
->>> software contract as shadow page table is the only way to implement a
->>> virtual IOMMU. But the VT-d spec doesn't state this anywhere. After
->>> the scalable mode is introduced, this doesn't stand for anymore, as
->>> caching mode is not relevant for the first-stage translation. A
->>> virtual IOMMU implementation is free to support first-stage
->>> translation only with caching mode cleared.
+>> Commit 1a75cc710b95 ("iommu/vt-d: Use rbtree to track iommu probed
+>> devices") adds all devices probed by the iommu driver in a rbtree
+>> indexed by the source ID of each device. It assumes that each device
+>> has a unique source ID. This assumption is incorrect and the VT-d
+>> spec doesn't state this requirement either.
 >>
->> I didn't get the connection to the scalable mode.
+>> The reason for using a rbtree to track devices is to look up the device
+>> with PCI bus and devfunc in the paths of handling ATS invalidation time
+>> out error and the PRI I/O page faults. Both are PCI ATS feature related.
 >>
->> if required we can still use caching mode to imply running as a guest.
->> Just need to make sure its implementation conforming to the VT-d spec.
->>
->>>
->>> Remove the caching mode check before device TLB invalidation to ensure
->>> compatibility with the scalable mode use cases.
->>>
->>> Fixes: 792fb43ce2c9 ("iommu/vt-d: Enable Intel IOMMU scalable mode by
->>> default")
->>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>> ---
->>>   drivers/iommu/intel/iommu.c | 5 ++---
->>>   1 file changed, 2 insertions(+), 3 deletions(-)
->>>
->>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>> index 493b6a600394..681789b1258d 100644
->>> --- a/drivers/iommu/intel/iommu.c
->>> +++ b/drivers/iommu/intel/iommu.c
->>> @@ -1501,7 +1501,7 @@ static void iommu_flush_iotlb_psi(struct
->>> intel_iommu *iommu,
->>>   	else
->>>   		__iommu_flush_iotlb_psi(iommu, did, pfn, pages, ih);
->>>
->>> -	if (!cap_caching_mode(iommu->cap) && !map)
->>> +	if (!map)
->>>   		iommu_flush_dev_iotlb(domain, addr, mask);
->>
->> as commented earlier better squash this in patch1.
->>
->>>   }
->>>
->>> @@ -1575,8 +1575,7 @@ static void intel_flush_iotlb_all(struct
->>> iommu_domain *domain)
->>>   			iommu->flush.flush_iotlb(iommu, did, 0, 0,
->>>   						 DMA_TLB_DSI_FLUSH);
->>>
->>> -		if (!cap_caching_mode(iommu->cap))
->>> -			iommu_flush_dev_iotlb(dmar_domain, 0,
->>> MAX_AGAW_PFN_WIDTH);
->>> +		iommu_flush_dev_iotlb(dmar_domain, 0,
->>> MAX_AGAW_PFN_WIDTH);
->>>   	}
->>>
->>
->> I'm hesitating to agree with this change. Strictly speaking it's correct.
->> but w/o supporting batch invalidation this implies performance drop on
->> viommu due to more VM-exits and there may incur user complaints when
->> their VMs upgrade to a newer kernel version.
->>
->> So it'd be better to keep this behavior and fix it together with batch
->> invalidation support. Anyway none of the viommu implementations today
->> (either shadow or nested translation) relies on the correct devtlb behavior
->> from the guest otherwise it's already broken.
-> How about we split this change into a patch. I'm working on the batch invalidation patch-set now and I'm happy to include this code change into the batch invalidation series.
+>> Only track the devices that have PCI ATS capabilities in the rbtree to
+>> avoid unnecessary WARN_ON in the iommu probe path. Otherwise, on some
+>> platforms below kernel splat will be displayed and the iommu probe results
+>> in failure.
+> Just be curious. What about two ATS capable devices putting behind
+> a PCI-to-PCIe bridge?
 
-No worries. It turned out that these two checks are just unnecessary.
-Removing them won't cause any driver behavior change. So, I will make it
-a cleanup patch and target it for the next merge window.
+No PCI-to-PCIe bridges such device AFAIK, ATS TLP couldn't be
+routed via PCIe-to-PCI bridge unmodified. ATS is based on PCIe.
 
-Best regards,
-baolu
+But the device-rbtree is possible holding mutiple device nodes behind
+PCIe-to-PCI bridge indexed by the same requester-ID.
+
+Thanks,
+Ethan
+
+>>   WARNING: CPU: 3 PID: 166 at drivers/iommu/intel/iommu.c:158
+>> intel_iommu_probe_device+0x319/0xd90
+>>   Call Trace:
+>>    <TASK>
+>>    ? __warn+0x7e/0x180
+>>    ? intel_iommu_probe_device+0x319/0xd90
+>>    ? report_bug+0x1f8/0x200
+>>    ? handle_bug+0x3c/0x70
+>>    ? exc_invalid_op+0x18/0x70
+>>    ? asm_exc_invalid_op+0x1a/0x20
+>>    ? intel_iommu_probe_device+0x319/0xd90
+>>    ? debug_mutex_init+0x37/0x50
+>>    __iommu_probe_device+0xf2/0x4f0
+>>    iommu_probe_device+0x22/0x70
+>>    iommu_bus_notifier+0x1e/0x40
+>>    notifier_call_chain+0x46/0x150
+>>    blocking_notifier_call_chain+0x42/0x60
+>>    bus_notify+0x2f/0x50
+>>    device_add+0x5ed/0x7e0
+>>    platform_device_add+0xf5/0x240
+>>    mfd_add_devices+0x3f9/0x500
+>>    ? preempt_count_add+0x4c/0xa0
+>>    ? up_write+0xa2/0x1b0
+>>    ? __debugfs_create_file+0xe3/0x150
+>>    intel_lpss_probe+0x49f/0x5b0
+>>    ? pci_conf1_write+0xa3/0xf0
+>>    intel_lpss_pci_probe+0xcf/0x110 [intel_lpss_pci]
+>>    pci_device_probe+0x95/0x120
+>>    really_probe+0xd9/0x370
+>>    ? __pfx___driver_attach+0x10/0x10
+>>    __driver_probe_device+0x73/0x150
+>>    driver_probe_device+0x19/0xa0
+>>    __driver_attach+0xb6/0x180
+>>    ? __pfx___driver_attach+0x10/0x10
+>>    bus_for_each_dev+0x77/0xd0
+>>    bus_add_driver+0x114/0x210
+>>    driver_register+0x5b/0x110
+>>    ? __pfx_intel_lpss_pci_driver_init+0x10/0x10 [intel_lpss_pci]
+>>    do_one_initcall+0x57/0x2b0
+>>    ? kmalloc_trace+0x21e/0x280
+>>    ? do_init_module+0x1e/0x210
+>>    do_init_module+0x5f/0x210
+>>    load_module+0x1d37/0x1fc0
+>>    ? init_module_from_file+0x86/0xd0
+>>    init_module_from_file+0x86/0xd0
+>>    idempotent_init_module+0x17c/0x230
+>>    __x64_sys_finit_module+0x56/0xb0
+>>    do_syscall_64+0x6e/0x140
+>>    entry_SYSCALL_64_after_hwframe+0x71/0x79
+>>
+>> Fixes: 1a75cc710b95 ("iommu/vt-d: Use rbtree to track iommu probed
+>> devices")
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/iommu.c | 11 +++++++----
+>>   1 file changed, 7 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index 50eb9aed47cc..a7ecd90303dc 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -4299,9 +4299,11 @@ static struct iommu_device
+>> *intel_iommu_probe_device(struct device *dev)
+>>   	}
+>>
+>>   	dev_iommu_priv_set(dev, info);
+>> -	ret = device_rbtree_insert(iommu, info);
+>> -	if (ret)
+>> -		goto free;
+>> +	if (pdev && pci_ats_supported(pdev)) {
+>> +		ret = device_rbtree_insert(iommu, info);
+>> +		if (ret)
+>> +			goto free;
+>> +	}
+> probably replace device_rbtree with ats_rbtree?
+>
+>>   	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev)) {
+>>   		ret = intel_pasid_alloc_table(dev);
+>> @@ -4336,7 +4338,8 @@ static void intel_iommu_release_device(struct
+>> device *dev)
+>>   	struct intel_iommu *iommu = info->iommu;
+>>
+>>   	mutex_lock(&iommu->iopf_lock);
+>> -	device_rbtree_remove(info);
+>> +	if (dev_is_pci(dev) && pci_ats_supported(to_pci_dev(dev)))
+>> +		device_rbtree_remove(info);
+>>   	mutex_unlock(&iommu->iopf_lock);
+>>
+>>   	if (sm_supported(iommu) && !dev_is_real_dma_subdevice(dev) &&
+>> --
+>> 2.34.1
+>
