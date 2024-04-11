@@ -1,101 +1,130 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 211261419A6
-	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 09:05:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 821C3145B26
+	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 10:42:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712826339; cv=none; b=pomWM2IYhACL0P7w11YXVK10X6+8vFMlJaeZxrvJfvizB0INgAtgpl4qNwgfiy6QvQkxXEcPP8PTSjGDh5mBDOBOQUe0jJag5q5xl3SPlQw82MGMBAQcl7Y5QchJSRk+1Ovr+T9Gu8rGkbl8YSTe0VCxgZhR7LHocJNOlskMnzE=
+	t=1712832148; cv=none; b=DzezDda9tCeIJOCSPQIUzaVZoAHVAsh/XMtq0aVCGRw8LUS3vpda6cd5gKbbXLcD78KzkrwGI7GVpCE3g32D6SIe2y+PPcs88FgSOvnLyKP+S1oJnJ2/We+aFvU7qzDu/x/wHP9ZnetIYinqBnrSc3DIcpF8GTzWhk5gzCSIOac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712826339; c=relaxed/simple;
-	bh=h1ECHJrI6yDGWiq8/tzickwJ+lsJ6Lz0fibT2Qel/bw=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=UMv9SpGoUGahc0S7f+0fvPWN2YbAFselh3sO6rvJUpqy9rUB0hjRUCtBc0ll2suXCUYPWJKPVtNA9u/5FOw4rlcZTntGyHN34r6/4zRP49b+qgShvQDRhR64pH8WHCeS+iixeDjJBvWiRG31lZRVd6iM/dBlh6cj5dP/MAtrv3w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nXQKWdpK; arc=none smtp.client-ip=209.85.221.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1712832148; c=relaxed/simple;
+	bh=OwXbvvCmxzRGwwaybj47loKYypz/fXRm1xIcyTzXQbM=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=DNJ50GLpmbZVkHHsScZB6bAkfe50+D/fct841ITnjLbCi8etaSkZDVPfdkuaApdPSG3IxoLAmHfZpM+ZTls5DjXHIHVVVPVbUihdkcKfDTJMST2x8OhzZRvWXUKlcTO4eqyq/upD1EcBRdMmm/CH5FgGA+pNdO5hTYYvRrBZ49c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lnSPDfTe; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nXQKWdpK"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-343f62d8124so4150484f8f.2
-        for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 02:05:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1712826336; x=1713431136; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ThLGpbeHjKHISy6v+wWhWzlM1AmHv+Kiehy1oJijdu4=;
-        b=nXQKWdpKim4/MfpK3rGoNJI/IDm0kskMznjYDTKplK6+in6OxdDFoy1Jm3q8bbhwTN
-         aD+aspMcgMuR2YQlG98szUqnydn+QbikWQGlSGZqe6r17QKyuIRyqkGD6Da5tGA6JEFX
-         6no2TpIPwGDPnc1teUifkXYEywplS+GHwrqQMANbobNsyN1MX40TFiZBVFnhRuk8dS/X
-         SWr0ZDgC2OGjcy6elgczjbsE5+Ap1Eu4FLzspcLDdW/TvTkPUeFxLn54WV+kjv1oB2ug
-         YrG46qg8iNGYu51vVZhmCrkNB30AESJ/h6DH7nFFEro1KjD4XTNDFjOqqchtxnmSF+Zk
-         s6xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712826336; x=1713431136;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ThLGpbeHjKHISy6v+wWhWzlM1AmHv+Kiehy1oJijdu4=;
-        b=DZomIvyfDgGK758dUq8pQ7ARNKtZw/G8xh3GPwpm8fajx+IPY9NARdMHUQ4Uoj2LPQ
-         JtDkpfOwt5UHdKxv15Qo5JMjHebh/RxCQIUFW0p2LApuR+NQlmPCsT6hkwuwcdoWYD96
-         tYWgNIpt/ykNacgScvUq4JdiEPTpF0Ktf0Mss6t2QqvvtiUt9w+4kdHjYiuJfxWNbRe1
-         n3BeW7vswyLVnssnqTGmscq6k4bgwdDjKnBJCtcmM21vljILck3ulJCeU38ozQ9o3E5T
-         PF7vOEw4FtTY+zssSizW920Fwp863fTXl3fEqOmRmF8XyFDUOtbsVqgZUHioxBdlEnFb
-         WktQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXHnEgGZdHxuiO99ngNYAi0y8KJTgkyJzL2lQPSmNOL+ESj/ol6NwOcEo16Y8qe3Dakqj1FakGUJtQyD4AcyGRxQuTrijg=
-X-Gm-Message-State: AOJu0Yy2kj0dTLEezMsXRBEtkM0O+flg/3onj8Kungk4daDz1nRP8toE
-	rtUyD8Jds+YuLmgCooUjX7Cvfy0OHjqzIZQ2kLcZiUVWznAUlguI
-X-Google-Smtp-Source: AGHT+IFTY79T++ZLVntjb/YvHujT/vlh2HyBVoWR1sjZgibIrmibZdxv2OPUYMdSc/Jlz/ExOtnfFw==
-X-Received: by 2002:a5d:47c1:0:b0:346:bca2:6184 with SMTP id o1-20020a5d47c1000000b00346bca26184mr949714wrc.0.1712826336250;
-        Thu, 11 Apr 2024 02:05:36 -0700 (PDT)
-Received: from localhost (craw-09-b2-v4wan-169726-cust2117.vm24.cable.virginm.net. [92.238.24.70])
-        by smtp.gmail.com with ESMTPSA id m4-20020adff384000000b0033e7de97214sm1279914wro.40.2024.04.11.02.05.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Apr 2024 02:05:35 -0700 (PDT)
-From: Colin Ian King <colin.i.king@gmail.com>
-To: David Woodhouse <dwmw2@infradead.org>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev
-Cc: kernel-janitors@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH][next] iommu/vt-d: remove redundant assignment to variable err
-Date: Thu, 11 Apr 2024 10:05:35 +0100
-Message-Id: <20240411090535.306326-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.39.2
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lnSPDfTe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712832146; x=1744368146;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=OwXbvvCmxzRGwwaybj47loKYypz/fXRm1xIcyTzXQbM=;
+  b=lnSPDfTeiutikpDgVBtleIoHDyRA96AKx06vScz4LcryhSnKowxz5Sey
+   MIH35bvEoqN7pLvxYpkvk6PWcIkaTxfslU/I3JK/uJvtEur0dtOXcp8my
+   ltkUmKg7sWI1gsNMUovugydv+C7LMmtUYGHP2fZ/h19IBBXjdgTXvHexM
+   xngqOuPYc5WcTcrBTSZbfTLVm9azwGlNtUVpVFdXq54tbo52ySr7rMUng
+   AOGSbb4a8A5z5VrVaFmL+9xCdRLSSuCDm4QcIaIQReQx8s6UcfJlR+oqv
+   EOFwUrdZEJxfUizbbARgjC6wCRDRjJlYSPs+mC/oYDL6UObr7VpZ7WmPc
+   Q==;
+X-CSE-ConnectionGUID: 7BycKRCaTUun6Qv2sMZ7XA==
+X-CSE-MsgGUID: 8C95DbCsQwGxFX9F9VMtEw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="8454302"
+X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
+   d="scan'208";a="8454302"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 03:42:26 -0700
+X-CSE-ConnectionGUID: hDZT6KtFTeuTEAq3eTW6Og==
+X-CSE-MsgGUID: jTcZalKBS2qx+VHLg4eWmg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
+   d="scan'208";a="25515549"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.237.86]) ([10.124.237.86])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 03:42:23 -0700
+Message-ID: <3f0e134a-3da4-4a45-851a-3d15a8786f9a@linux.intel.com>
+Date: Thu, 11 Apr 2024 18:42:20 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "Zhang, Tina" <tina.zhang@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 12/12] iommu/vt-d: Retire struct intel_svm
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240410020844.253535-1-baolu.lu@linux.intel.com>
+ <20240410020844.253535-13-baolu.lu@linux.intel.com>
+ <20240410154951.GH223006@ziepe.ca>
+ <b24f3380-1ac3-41c4-9163-56c1dcff6297@linux.intel.com>
+ <BN9PR11MB52767D3287A7E000AD17BC9B8C052@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52767D3287A7E000AD17BC9B8C052@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Variable err is being assigned a value that is never read. It is
-either being re-assigned later on error exit paths, or never referenced
-on the non-error path.
+On 2024/4/11 16:32, Tian, Kevin wrote:
+>> From: Baolu Lu<baolu.lu@linux.intel.com>
+>> Sent: Thursday, April 11, 2024 3:56 PM
+>>
+>> On 2024/4/10 23:49, Jason Gunthorpe wrote:
+>>> On Wed, Apr 10, 2024 at 10:08:44AM +0800, Lu Baolu wrote:
+>>>> @@ -4388,14 +4386,8 @@ static void
+>> intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+>>>>    	WARN_ON_ONCE(!dev_pasid);
+>>>>    	spin_unlock_irqrestore(&dmar_domain->lock, flags);
+>>>>
+>>>> -	/*
+>>>> -	 * The SVA implementation needs to handle its own stuffs like the
+>> mm
+>>>> -	 * notification. Before consolidating that code into iommu core, let
+>>>> -	 * the intel sva code handle it.
+>>>> -	 */
+>>>>    	if (domain->type == IOMMU_DOMAIN_SVA) {
+>>>>    		cache_tag_unassign_domain(dmar_domain,
+>> FLPT_DEFAULT_DID, dev, pasid);
+>>>> -		intel_svm_remove_dev_pasid(domain);
+>>>>    	} else {
+>>>>    		did = domain_id_iommu(dmar_domain, iommu);
+>>>>    		cache_tag_unassign_domain(dmar_domain, did, dev, pasid);
+>>> It seems very strange that SVA has a different DID scheme, why is
+>>> this? PASID and SVA should not be different at this layer.
+>> The VT-d spec recommends that all SVA domains share a single domain ID.
+>> The PASID is unique to each SVA domain, hence the cache tags are unique.
+>> Currently, the Intel IOMMU driver assigns different domain IDs for all
+>> domains except the SVA type.
+>>
+>> Sharing a domain ID is not specific to SVA. In general, for devices
+>> under a single IOMMU, domains with unique PASIDs can share the same
+>> domain ID.
+>>
+>> In the long term (also on my task list), we will extend the cache tag
+>> code to support sharing domain IDs and remove the domain type check from
+>> the main code. This will also benefit the nesting case, where user
+>> domains nested on the same parent could share a domain ID.
+>>
+> at least above might be changed to a unified call with the helper
+> accepting an iommu parameter and then finding proper did
+> internally based on domain type, e.g.
+> 
+> cache_tag_unassign_domain(domain, iommu, dev, pasid)
+> {
+> 	if (domain->type == IOMMU_DOMAIN_SVA)
+> 		did = FLPT_DEFAULT_DID;
+> 	else
+> 		did = domain_id_iommu(domain, iommu);
+> 
+> 	...
+> }
 
-Cleans up clang scan build warning:
-drivers/iommu/intel/dmar.c:1070:2: warning: Value stored to 'err' is
-never read [deadcode.DeadStores]`
+Yeah, your code is more graceful.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/iommu/intel/dmar.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 36d7427b1202..351be9455214 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1067,7 +1067,6 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 		goto error_free_seq_id;
- 	}
- 
--	err = -EINVAL;
- 	if (!cap_sagaw(iommu->cap) &&
- 	    (!ecap_smts(iommu->ecap) || ecap_slts(iommu->ecap))) {
- 		pr_info("%s: No supported address widths. Not attempting DMA translation.\n",
--- 
-2.39.2
-
+Best regards,
+baolu
