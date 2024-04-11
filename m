@@ -1,25 +1,50 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6DD9214B088
-	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 13:13:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 086D517C
+	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 13:18:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712841219; cv=none; b=Ptuks6gxoRF0ZpJXdMCd8Uxqp78yZfvhsVKhEZqUTu4xO121eBr8h53fgdUr7WH4HqbhFPe7sra/0FBI5vGQCZDZNmkV1pkUHipvcZ7uuWZzG4+GFX3yaGoEHHd5avpyHybEgaUJxOqDx335lDuTLMUiFeG9xbyAAeVbOw7BxGc=
+	t=1712841483; cv=none; b=D5NCKiFGODkVjJfZ1JE8jVb5mAmKvgr4aff6eVU3a9cXGFwK3CY1xXqOteZrq+/zGAyN4QY8T2OajnepONO2au6/+iDonzjfCZ2DK1JsQWFoifjWFYt25kb7+sAK8UXFC/B5UQJ0XTqOUA1KmXv355W83rDNYXwbozEyRE47YBs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712841219; c=relaxed/simple;
-	bh=dOD0KsrLEjg9iH8ZN3UDQmx72Brw6XPTxx41Vx6TG8k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YKyvR9++6bweakp1/R4x+kgx8u/YDYKP/LF0zaOdKMup2HmJR65oBqzxzORmM8a7rki7EOWsKRFJa2NLhI1GbPygCBIg+VN2R4Gj+bjGDlhcL2ZOWFleYikZn9J/+pX/QDOrrCH28JHaO0Y3tiO0ggRvIIBYySY+oGw2xFQTmqo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 48C2011FB;
-	Thu, 11 Apr 2024 06:14:06 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C350E3F64C;
-	Thu, 11 Apr 2024 06:13:35 -0700 (PDT)
-Message-ID: <51055d13-4a72-4000-9a22-b403d8c5b2ff@arm.com>
-Date: Thu, 11 Apr 2024 14:13:34 +0100
+	s=arc-20240116; t=1712841483; c=relaxed/simple;
+	bh=Q6x1T1BSMrCr5eyuBNqAuNAVMxGpPKsZvY0wjxFuhwE=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=TBGj/8aMF2xl+RjjGK91kP2iepR1o+6F/Ms75c+QwfFA4QykDLUgEWM0kZ67RHRFdD6c90HCQu4nF3W7QNF784NFKvygqWdmekmRVAXig6DLzzSceV5W9MQj7u3oRgnm3+mYBMbYNkDqcxU2TKCWT+44mdG6RMU5zu54XdqS0bU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Wm57eC+0; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Wm57eC+0"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712841483; x=1744377483;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Q6x1T1BSMrCr5eyuBNqAuNAVMxGpPKsZvY0wjxFuhwE=;
+  b=Wm57eC+0CeFNYnxY2encVTC2xzyxL6Gd55NseNIgWJ+D/0tQ3v3ZnZqo
+   +h/mo2VYbz0O3Qf1CCWQiHvmZRrm3HJm/zE8tvFLDhStUtdSHXrutd6XR
+   cUeGPnb+HPeDYW8EFITYQxJvZQhESnSJJC3DgQ2i2/FDgLnqbwvOdlY2k
+   52mDxVZIrEezBXLFptHeZFavu34kUpROJ4+66/5I0yIwNzOzd5g7vXAvE
+   9kO6LVGIQa7V1P1sTy9Z1RF8wp+Yyx9CxDvEVaORGm8aEG8Ogq2QuL39B
+   7o/+8zK1CNr8lX+fCZ2jw3JDQqv1QovW0aw7vJEd7oY0L48lsiyvLwSbe
+   w==;
+X-CSE-ConnectionGUID: Jn2IOR+aTAGuLZNTMMCGYg==
+X-CSE-MsgGUID: 0YBMEDgERKaZYRHbOHdYgQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11041"; a="8166103"
+X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
+   d="scan'208";a="8166103"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 06:17:47 -0700
+X-CSE-ConnectionGUID: Cr0FifIJRyOtGhUiap4YEg==
+X-CSE-MsgGUID: oFlnFjwMQ+muWFNBNdGYHg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
+   d="scan'208";a="25691493"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.237.86]) ([10.124.237.86])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 06:17:44 -0700
+Message-ID: <4e47aff7-aa65-4c60-a5dc-b7e0f2737a3e@linux.intel.com>
+Date: Thu, 11 Apr 2024 21:17:41 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -27,82 +52,56 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/1] iommu/vt-d: Remove caching mode check before
- device TLB flush
-To: Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev
-Cc: Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
-References: <20240410055823.264501-1-baolu.lu@linux.intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <20240410055823.264501-1-baolu.lu@linux.intel.com>
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ "Zhang, Tina" <tina.zhang@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 01/12] iommu/vt-d: Add cache tag assignment interface
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240325021705.249769-1-baolu.lu@linux.intel.com>
+ <20240325021705.249769-2-baolu.lu@linux.intel.com>
+ <20240410154134.GG223006@ziepe.ca>
+ <BN9PR11MB5276B57D6E72870C9B1798838C062@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB5276B57D6E72870C9B1798838C062@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 10/04/2024 6:58 am, Lu Baolu wrote:
-> The Caching Mode (CM) of the Intel IOMMU indicates if the hardware
-> implementation caches not-present or erroneous translation-structure
-> entries except the first-stage translation. The caching mode is
-> irrelevant to the device TLB , therefore there is no need to check
-> it before a device TLB invalidation operation.
+On 2024/4/11 7:14, Tian, Kevin wrote:
+>> From: Jason Gunthorpe <jgg@ziepe.ca>
+>> Sent: Wednesday, April 10, 2024 11:42 PM
+>>
+>> On Mon, Mar 25, 2024 at 10:16:54AM +0800, Lu Baolu wrote:
+>>> +static int __cache_tag_assign_parent_domain(struct dmar_domain
+>> *domain, u16 did,
+>>> +					    struct device *dev, ioasid_t pasid)
+>>> +{
+>>> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+>>> +	int ret;
+>>> +
+>>> +	ret = cache_tag_assign(domain, did, dev, pasid,
+>> CACHE_TAG_TYPE_PARENT_IOTLB);
+>>> +	if (ret || !info->ats_enabled)
+>>> +		return ret;
+>>
+>> I'm not sure I understood the point of PARENT_IOTLB? I didn't see any
+>> different implementation?
+>>
+>> Isn't this backwards though? Each domain should have a list of things
+>> to invalidate if the domain itself changes.
+>>
+>> So the nesting parent should have a list of CHILD_DEVTLB's that need
+>> cleaning. That list is changed when the nesting domains are attached
+>> to something.
+>>
 > 
-> iommu_flush_iotlb_psi() is called in map and unmap paths. The caching
-> mode check before device TLB invalidation will cause device TLB
-> invalidation always issued if IOMMU is not running in caching mode.
-> This is wrong and causes unnecessary performance overhead.
-> 
-> The removal of caching mode check in intel_flush_iotlb_all() doesn't
-> impact anything no matter the IOMMU is working in caching mode or not.
-> Commit <29b32839725f> ("iommu/vt-d: Do not use flush-queue when
-> caching-mode is on") has already disabled flush-queue for caching mode,
-> hence caching mode will never call intel_flush_iotlb_all().
+> probably just a naming confusion. it's called PARENT_IOTLB from the
+> angle that this domain is used as a parent domain but actually it
+> tracks the child tags in nested attach.
 
-Well, technically it might still, at domain creation via 
-iommu_create_device_direct_mappings(), but domain->has_iotlb_device 
-should definitely be false at that point :)
+Is NESTING_IOTLB more readable?
 
-Cheers,
-Robin.
-
-> Fixes: bf92df30df90 ("intel-iommu: Only avoid flushing device IOTLB for domain ID 0 in caching mode")
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->   drivers/iommu/intel/iommu.c | 9 ++-------
->   1 file changed, 2 insertions(+), 7 deletions(-)
-> 
-> Change log:
-> 
-> v2:
->   - Squash two patches into a single one.
->   - No functionality changes.
-> 
-> v1: https://lore.kernel.org/linux-iommu/20240407144232.190355-1-baolu.lu@linux.intel.com/
-> 
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index 50eb9aed47cc..681789b1258d 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -1501,11 +1501,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
->   	else
->   		__iommu_flush_iotlb_psi(iommu, did, pfn, pages, ih);
->   
-> -	/*
-> -	 * In caching mode, changes of pages from non-present to present require
-> -	 * flush. However, device IOTLB doesn't need to be flushed in this case.
-> -	 */
-> -	if (!cap_caching_mode(iommu->cap) || !map)
-> +	if (!map)
->   		iommu_flush_dev_iotlb(domain, addr, mask);
->   }
->   
-> @@ -1579,8 +1575,7 @@ static void intel_flush_iotlb_all(struct iommu_domain *domain)
->   			iommu->flush.flush_iotlb(iommu, did, 0, 0,
->   						 DMA_TLB_DSI_FLUSH);
->   
-> -		if (!cap_caching_mode(iommu->cap))
-> -			iommu_flush_dev_iotlb(dmar_domain, 0, MAX_AGAW_PFN_WIDTH);
-> +		iommu_flush_dev_iotlb(dmar_domain, 0, MAX_AGAW_PFN_WIDTH);
->   	}
->   
->   	if (dmar_domain->nested_parent)
+Best regards,
+baolu
