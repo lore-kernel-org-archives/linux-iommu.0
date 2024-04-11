@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8DE814AD24
-	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 12:10:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F254149E10
+	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 12:15:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712837459; cv=none; b=uIgGKwP50lrd+MT5cpohJuZZJnMs98n+9n/XykUpYk6tQ0XJoNMYC2eRQxBIUMOvh2W6MgNq0h8DFbV9JeRocJ31mrv56TUrC4IsUTs9BOsxTIwaZ5Gvg5BWonZH2aUgoxyt9MjUJBwQPosHFpjns8PrcNEWCU67VTo3iemtV0U=
+	t=1712837749; cv=none; b=QcUgUI+2GPT6FW3WjEvlTDl5i7QGLlvZRkuEQDTxTg8fYmNr1BziMk1r5GSBLlOrW3g6cmRSGmd7F0d2owbzT4FAdawOmiUcXHCCOmrZ7WINIRnwq3WIHJcghS0s+Kgxii2yi1Yj7vxztaLQRWb0ouHfbRkgaMoqCCmRz7EmfEM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712837459; c=relaxed/simple;
-	bh=bX6OSCLUI+vJ1fK3gTL9hSh9PUm6yiHfWc9V9WQwdlg=;
+	s=arc-20240116; t=1712837749; c=relaxed/simple;
+	bh=+H0oBngUo6CGYj23lJLfq2hMyMfpU92PpN6nrFaPJvs=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=beIFm/Dm1vGFImMwRKYMUHSOABgufK/wGfUpnKS8mPLi15no9zkdw6iJnL6FUpf6MnnNa/XmSjoHKY3Kfwm5N+mSyvCmtX391GbrrhsNUxfbmBkUgYrQ7K3eJPErwex0SIxsOcLbLBAcS7VZUtze+RTDv9v/IJQMbPl11qrj6fw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cVEJNBqN; arc=none smtp.client-ip=192.198.163.17
+	 In-Reply-To:Content-Type; b=LWgm62pxl/WKfENOZlVv2Q0NlncPWwIGuHEkPnliYfhsnDoj/WqAoS73ZCf7+Q/4ixi+J7n1sHPAFIekdJLtUCA7KcjEW2syPMW98245AiWgDu9gUM+Wp8wSYafSRX+lsG4FxXXgJD1LZrO+VPywWsWGD2yOD1kXBFpKDBRcfAI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=c+fd63HJ; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cVEJNBqN"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="c+fd63HJ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712837457; x=1744373457;
+  t=1712837748; x=1744373748;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=bX6OSCLUI+vJ1fK3gTL9hSh9PUm6yiHfWc9V9WQwdlg=;
-  b=cVEJNBqNOWTmWZggyh+0LX1xvRijra0KGF3Kq6cod87tiZhYxMWrvKOI
-   9hwFMia+HwqjBXXHLmekRivXH2J3VLYLryVtoyvE7W6Rx/vmkQaWknJOL
-   ZkhT7yoQwoFM0frDA8z8mxNw8KKhOdsY9OER605EeBkx13/Cc9i9sCT4u
-   Lg7YUWmYZ9Tu1HBrN2j1emB7jfjhKcIWFGFhaidzVr4DBtoPM5dxksiua
-   mt+cNCBjkB002hK5/jr/lCpEO3SeA4MNnTdpF0j3eTnKYf3bGUqXMzKk/
-   m+wKN1e5bny9wh39MxYVhYAPb8HG6WpqdidO6sZUhHWkl2wXk1PLc+ngX
-   A==;
-X-CSE-ConnectionGUID: laJNXYV1SPqhVCs0uPd5Lw==
-X-CSE-MsgGUID: AltiVZbAT2+uTcWcGx4E4Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="8105887"
+  bh=+H0oBngUo6CGYj23lJLfq2hMyMfpU92PpN6nrFaPJvs=;
+  b=c+fd63HJYY/Ie5GhP2nYmeaw2W4IJCo9qxw/ziXqFX9GqywEr5SDDSAh
+   BgFnOSob7OeQmL0zcer0p2Fib+pYeqZBUMeOC/VjjssGHbLqVwjJsqQ7D
+   y01JKtvTnj1ZOs8PeYIZg48fGKzcaCGXg2nOYj/RMA3FUaUbgjjgzR/bj
+   APLIGfwyyyN3vNaUGmg4awrsAAyLogLvbBCQNd+9hR8WEnsBlHaevPozc
+   js3um9G9V+2i1oEgGlZco3VCGKTb7okI2qtAAbFiPrOblpOrsfJBvtXJ7
+   VUu5IINVcz6BOXJm/o22yzlR7TJ1CJapyNimP4HsylctjLb0ZmnU48GU5
+   Q==;
+X-CSE-ConnectionGUID: EedeBPM3RoinmWEAPuTFeA==
+X-CSE-MsgGUID: 0kS4uoOTT/mWSokEO3BmTw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="19664062"
 X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
-   d="scan'208";a="8105887"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 05:10:57 -0700
-X-CSE-ConnectionGUID: hVb94zt2SliXovopBz0bqg==
-X-CSE-MsgGUID: UhvH6d5OTSOwaO9rbRqT6w==
+   d="scan'208";a="19664062"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 05:15:47 -0700
+X-CSE-ConnectionGUID: +fgJ9b4KRvepFXsl13DhnA==
+X-CSE-MsgGUID: HEng4AKNTwWV3zoESGTQ4w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,193,1708416000"; 
-   d="scan'208";a="51849819"
+   d="scan'208";a="25660255"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.237.86]) ([10.124.237.86])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 05:10:55 -0700
-Message-ID: <4449fe72-78c9-4c39-aa4c-29829de1a545@linux.intel.com>
-Date: Thu, 11 Apr 2024 20:10:52 +0800
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 05:15:45 -0700
+Message-ID: <876a6016-66ec-448d-922e-1964bd1f3f54@linux.intel.com>
+Date: Thu, 11 Apr 2024 20:15:42 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,119 +52,115 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Kevin Tian <kevin.tian@intel.com>, Tina Zhang <tina.zhang@intel.com>,
- Yi Liu <yi.l.liu@intel.com>, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 01/12] iommu/vt-d: Add cache tag assignment interface
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240325021705.249769-1-baolu.lu@linux.intel.com>
- <20240325021705.249769-2-baolu.lu@linux.intel.com>
- <20240410154134.GG223006@ziepe.ca>
+Cc: baolu.lu@linux.intel.com, "Liu, Yi L" <yi.l.liu@intel.com>,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iommu/vt-d: Remove caching mode check before devtlb
+ flush
+To: "Zhang, Tina" <tina.zhang@intel.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20240407144232.190355-1-baolu.lu@linux.intel.com>
+ <20240407144232.190355-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB52764F42C20B6B18DDE7E66B8C072@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <MW5PR11MB5881E15977B2987AE32510B289062@MW5PR11MB5881.namprd11.prod.outlook.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240410154134.GG223006@ziepe.ca>
+In-Reply-To: <MW5PR11MB5881E15977B2987AE32510B289062@MW5PR11MB5881.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 2024/4/10 23:41, Jason Gunthorpe wrote:
-> On Mon, Mar 25, 2024 at 10:16:54AM +0800, Lu Baolu wrote:
->> Caching tag is a combination of tags used by the hardware to cache various
->> translations. Whenever a mapping in a domain is changed, the IOMMU driver
->> should invalidate the caches with the caching tags. The VT-d specification
->> describes caching tags in section 6.2.1, Tagging of Cached Translations.
+On 2024/4/11 7:49, Zhang, Tina wrote:
+> Hi,
+> 
+>> -----Original Message-----
+>> From: Tian, Kevin <kevin.tian@intel.com>
+>> Sent: Tuesday, April 9, 2024 3:30 PM
+>> To: Lu Baolu <baolu.lu@linux.intel.com>; iommu@lists.linux.dev
+>> Cc: Liu, Yi L <yi.l.liu@intel.com>; Joerg Roedel <joro@8bytes.org>; Will
+>> Deacon <will@kernel.org>; Robin Murphy <robin.murphy@arm.com>; linux-
+>> kernel@vger.kernel.org
+>> Subject: RE: [PATCH 2/2] iommu/vt-d: Remove caching mode check before
+>> devtlb flush
 >>
->> Add interface to assign caching tags to an IOMMU domain when attached to a
->> RID or PASID, and unassign caching tags when a domain is detached from a
->> RID or PASID. All caching tags are listed in the per-domain tag list and
->> are protected by a dedicated lock.
+>>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>>> Sent: Sunday, April 7, 2024 10:43 PM
+>>>
+>>> The Caching Mode (CM) of the Intel IOMMU indicates if the hardware
+>>> implementation caches not-present or erroneous translation-structure
+>>> entries except the first-stage translation. The caching mode is
+>>> unrelated to the device TLB , therefore there is no need to check it
+>>> before a device TLB invalidation operation.
+>>>
+>>> Before the scalable mode is introduced, caching mode is treated as an
+>>> indication that the driver is running in a VM guest. This is just a
+>>> software contract as shadow page table is the only way to implement a
+>>> virtual IOMMU. But the VT-d spec doesn't state this anywhere. After
+>>> the scalable mode is introduced, this doesn't stand for anymore, as
+>>> caching mode is not relevant for the first-stage translation. A
+>>> virtual IOMMU implementation is free to support first-stage
+>>> translation only with caching mode cleared.
 >>
->> In addition to the basic IOTLB and devTLB caching tag types, PARENT_IOTLB
->> and PARENT_DEVTLB tag types are also introduced. These tags are used for
->> caches that store translations for DMA accesses through a nested user
->> domain. They are affected by changes to mappings in the parent domain.
+>> I didn't get the connection to the scalable mode.
 >>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel/iommu.h  |  25 +++++
->>   drivers/iommu/intel/cache.c  | 192 +++++++++++++++++++++++++++++++++++
->>   drivers/iommu/intel/iommu.c  |  31 +++++-
->>   drivers/iommu/intel/nested.c |  21 +++-
->>   drivers/iommu/intel/svm.c    |  12 ++-
->>   drivers/iommu/intel/Makefile |   2 +-
->>   6 files changed, 274 insertions(+), 9 deletions(-)
->>   create mode 100644 drivers/iommu/intel/cache.c
+>> if required we can still use caching mode to imply running as a guest.
+>> Just need to make sure its implementation conforming to the VT-d spec.
 >>
->> diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
->> index 404d2476a877..e3723b7a0b31 100644
->> --- a/drivers/iommu/intel/iommu.h
->> +++ b/drivers/iommu/intel/iommu.h
->> @@ -607,6 +607,9 @@ struct dmar_domain {
->>   	struct list_head devices;	/* all devices' list */
->>   	struct list_head dev_pasids;	/* all attached pasids */
->>   
->> +	spinlock_t cache_lock;		/* Protect the cache tag list */
->> +	struct list_head cache_tags;	/* Cache tag list */
-> 
-> That is quite a neat trick - though building a dedicated invalidation
-> list duplicates data stored in the attached devices list?
+>>>
+>>> Remove the caching mode check before device TLB invalidation to ensure
+>>> compatibility with the scalable mode use cases.
+>>>
+>>> Fixes: 792fb43ce2c9 ("iommu/vt-d: Enable Intel IOMMU scalable mode by
+>>> default")
+>>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>>> ---
+>>>   drivers/iommu/intel/iommu.c | 5 ++---
+>>>   1 file changed, 2 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>>> index 493b6a600394..681789b1258d 100644
+>>> --- a/drivers/iommu/intel/iommu.c
+>>> +++ b/drivers/iommu/intel/iommu.c
+>>> @@ -1501,7 +1501,7 @@ static void iommu_flush_iotlb_psi(struct
+>>> intel_iommu *iommu,
+>>>   	else
+>>>   		__iommu_flush_iotlb_psi(iommu, did, pfn, pages, ih);
+>>>
+>>> -	if (!cap_caching_mode(iommu->cap) && !map)
+>>> +	if (!map)
+>>>   		iommu_flush_dev_iotlb(domain, addr, mask);
+>>
+>> as commented earlier better squash this in patch1.
+>>
+>>>   }
+>>>
+>>> @@ -1575,8 +1575,7 @@ static void intel_flush_iotlb_all(struct
+>>> iommu_domain *domain)
+>>>   			iommu->flush.flush_iotlb(iommu, did, 0, 0,
+>>>   						 DMA_TLB_DSI_FLUSH);
+>>>
+>>> -		if (!cap_caching_mode(iommu->cap))
+>>> -			iommu_flush_dev_iotlb(dmar_domain, 0,
+>>> MAX_AGAW_PFN_WIDTH);
+>>> +		iommu_flush_dev_iotlb(dmar_domain, 0,
+>>> MAX_AGAW_PFN_WIDTH);
+>>>   	}
+>>>
+>>
+>> I'm hesitating to agree with this change. Strictly speaking it's correct.
+>> but w/o supporting batch invalidation this implies performance drop on
+>> viommu due to more VM-exits and there may incur user complaints when
+>> their VMs upgrade to a newer kernel version.
+>>
+>> So it'd be better to keep this behavior and fix it together with batch
+>> invalidation support. Anyway none of the viommu implementations today
+>> (either shadow or nested translation) relies on the correct devtlb behavior
+>> from the guest otherwise it's already broken.
+> How about we split this change into a patch. I'm working on the batch invalidation patch-set now and I'm happy to include this code change into the batch invalidation series.
 
-Yes. The device and dev_pasid lists appear to be duplicate. I am about
-to remove these two lists later.
-
-> You didn't try to make it RCU safe for invalidation?
-
-The queued invalidation interface is a bit complicated, especially when
-it comes to device TLB invalidation. Device TLB invalidation might
-result in a timeout, which requires special treatment.
-
->> +struct cache_tag {
->> +	struct list_head node;
->> +	enum cache_tag_type type;
->> +	struct intel_iommu *iommu;
->> +	struct device *dev;
-> 
-> iommu and dev probably don't both need to be stored together. We have
-> iommu_get_iommu_dev() now.. I suppose this is probably a union of the
-> two pointers depending on tag. DEVTLB needs the dev and IOTLB needs
-> the iommu.
-> 
->> +	u16 domain_id;
->> +	ioasid_t pasid;
->> +	int users;
-> 
-> unsigned int
-
-Sure.
-
-> 
->> +static int __cache_tag_assign_parent_domain(struct dmar_domain *domain, u16 did,
->> +					    struct device *dev, ioasid_t pasid)
->> +{
->> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
->> +	int ret;
->> +
->> +	ret = cache_tag_assign(domain, did, dev, pasid, CACHE_TAG_TYPE_PARENT_IOTLB);
->> +	if (ret || !info->ats_enabled)
->> +		return ret;
-> 
-> I'm not sure I understood the point of PARENT_IOTLB? I didn't see any
-> different implementation?
-> 
-> Isn't this backwards though? Each domain should have a list of things
-> to invalidate if the domain itself changes.
-> 
-> So the nesting parent should have a list of CHILD_DEVTLB's that need
-> cleaning. That list is changed when the nesting domains are attached
-> to something.
-> 
-> And a list of CHILD_IOTLBs, but the HW doesn't seem to need that?
-
-This is a partial replacement of below series.
-
-https://lore.kernel.org/all/20240208082307.15759-1-yi.l.liu@intel.com/
+No worries. It turned out that these two checks are just unnecessary.
+Removing them won't cause any driver behavior change. So, I will make it
+a cleanup patch and target it for the next merge window.
 
 Best regards,
 baolu
-
