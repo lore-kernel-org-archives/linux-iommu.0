@@ -1,81 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F71413B5A0
-	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 02:51:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BED7313B5AD
+	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 03:08:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712803896; cv=none; b=Ro0VGy64rtlUL23oX+HtCB/Z2BLMWMn1hOu3+45CBirvG6D2M1X9JA9gESE42yeID8Exo/9iyTB43FcKkVadBrwJPkzB7Ugi7FK2SLwAYQtKl35/2aZGp3/C/Wy5MGB1FMcRW5OSNvnctGjkfQuOLMprfkctyHcVi1F1nRI5PCg=
+	t=1712804939; cv=none; b=QkJMMBkr6CAeWK/NSz+8BLBs7trsE2L6viTkAjOxgdgrcG+CRS4zJEGbocVB6T38Nc5oBaZYX7L2Q1rowbyMIHWP9/lLejmGddlvx7HQBcEPNgnRtVwrwk/xDMUWL2OevitL5oPGiI+fnzhrHSYtUDEkPr07s6QyrOSxWSxMKSc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712803896; c=relaxed/simple;
-	bh=+IjIZMalViYNIFm87QlzJL3Il2vDG4G2fnXAb7Pe05c=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=XctZlTan/JK7PVaMc8VbvuXFouJGWQ/zyow6NhJT7KHVGdjelb2ZLL2mf25ip/AR257YF6NEiZO6cFdVEt1QpzvGRNjcZ2Xmm06V3GveD+LVZTtloGGn/4zqld8CDX3Hypln2dSK5VNaQIRWa+mJCNWPJhl0DrjDi54lDl/556E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aCdBw2kk; arc=none smtp.client-ip=192.198.163.7
+	s=arc-20240116; t=1712804939; c=relaxed/simple;
+	bh=NIGz6endGjRZsn6/+1mnyMEPPi/V1nqZZ0N3qo84bsI=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=rHMzxj4eNLratmj4zusD5OSuYlfQ6OYzipN3Ii19TASzVm34xR2OYY/KOmHnPh9vHzJbLO8hZPxPK5phHc7NmApa9BcVqSJ0e08hROMwpLNXi27cvjJlu9tqBuHfiopcrb23y/zvlG22k5EA83dx9t4nOG6WkUWFZxEjw0u1IQA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Iokp+reL; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aCdBw2kk"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Iokp+reL"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712803895; x=1744339895;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=+IjIZMalViYNIFm87QlzJL3Il2vDG4G2fnXAb7Pe05c=;
-  b=aCdBw2kkTGoM48tmmhxqoerevsvFSE8gO9Wb68SnhzI5aJa8B+7GykVq
-   9T6FPfMsD6vpI1hgcCFW5YVx6CibR5gy4B/1JkrOhVK268UEFmw0LA1Qy
-   ORutVt81QOn0ZK5DDaaWVGsbhBAT40rpHgpgLxQNBS7zPhLk1VMTP3ECH
-   BCfvJ2aNu/7mYXJuXvssO2mf6FMryohrQ/uI16G8wYtqWjDGH//8+5MhG
-   ZcyKI2Dxq4+qjsFlBjWrj/uDLUli5SSAXDYH1OxS6TCqP5cGjkch7QpkP
-   gtLtTcDJoWGRH9R81uBJPk73vAZdAcdNOd3BX/TqFl6FTcWH2Fp2bSIeV
-   w==;
-X-CSE-ConnectionGUID: kW+rNYLvTXiOm3hV87i+iQ==
-X-CSE-MsgGUID: VHNafsnmRQq9lJX5PDk55Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="33596804"
+  t=1712804938; x=1744340938;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NIGz6endGjRZsn6/+1mnyMEPPi/V1nqZZ0N3qo84bsI=;
+  b=Iokp+reLQ4ktFEYE6t8YQHEiKDRE5vVQL048QlMXxDOManJXMV3qBa6c
+   rdHRHR16glsXEXUgYXMAkZNFRaidB3FSkTqBhOQQJ7i50IBp8YMJYiQK2
+   2osIzjnpDKa/lPaH1Np8t1Uz9DRH+t1og0pSV/XVzN8dxtF2bdH9V1kyJ
+   ti0OQf23KZ/VHdKEfBB8GZBsEYUsLZYPsrn6wuTu/eKJZG/wFlbii4jRA
+   G7/IunsnmvMPdXFGc7vzgkCyS+F1qql9Jq1y1qKH93n9ghRjWnKgBLbFt
+   UD+lNTN0E6kt99WsAeERTHEHt497nOJ+GTZst/m9Efphj23MTwh7OatFU
+   Q==;
+X-CSE-ConnectionGUID: Otp0kgGJSHCHcE4ZCHUzmQ==
+X-CSE-MsgGUID: tzdB/+EGSqaRFdcQutFhtw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="30681433"
 X-IronPort-AV: E=Sophos;i="6.07,192,1708416000"; 
-   d="scan'208";a="33596804"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 19:51:34 -0700
-X-CSE-ConnectionGUID: 1jdd4WVgQqmXtxbY0XSdzw==
-X-CSE-MsgGUID: gYLGA8N5Rve38AGIgaxb/Q==
+   d="scan'208";a="30681433"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Apr 2024 20:08:57 -0700
+X-CSE-ConnectionGUID: PRqa8wJQThmImvvAx66Grw==
+X-CSE-MsgGUID: wBc5C4ntS9aZwAnP2BixIQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,192,1708416000"; 
-   d="scan'208";a="21196604"
-Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by orviesa006.jf.intel.com with ESMTP; 10 Apr 2024 19:51:33 -0700
-Message-ID: <8ec541a1-679d-4305-838d-bd679dca647e@linux.intel.com>
-Date: Thu, 11 Apr 2024 10:50:20 +0800
+   d="scan'208";a="20822959"
+Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
+  by fmviesa007.fm.intel.com with ESMTP; 10 Apr 2024 20:08:55 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	Xuchun Shang <xuchun.shang@linux.alibaba.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 0/3] [PULL REQUEST] iommu/vt-d: Fixes for v6.9-rc3
+Date: Thu, 11 Apr 2024 11:07:41 +0800
+Message-Id: <20240411030744.273460-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com
-Subject: Re: [PATCH] iommu/vt-d: fix wrong use of pasid config
-To: "Liang, Kan" <kan.liang@linux.intel.com>,
- Xuchun Shang <xuchun.shang@linux.alibaba.com>, Joerg Roedel
- <joro@8bytes.org>, Will Deacon <will@kernel.org>, iommu@lists.linux.dev
-References: <20240401060753.3321318-1-xuchun.shang@linux.alibaba.com>
- <5e29fc2d-0f75-4929-af74-224c5f891c2f@linux.intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <5e29fc2d-0f75-4929-af74-224c5f891c2f@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 4/9/24 8:58 PM, Liang, Kan wrote:
-> 
-> On 2024-04-01 2:07 a.m., Xuchun Shang wrote:
->> The commit "iommu/vt-d: Add IOMMU perfmon support" introduce IOMMU
->> PMU feature, but use the wrong config when set pasid filter.
->>
->> Fixes: 7232ab8b89e9 ("iommu/vt-d: Add IOMMU perfmon support")
->> Signed-off-by: Xuchun Shang<xuchun.shang@linux.alibaba.com>
-> Reviewed-by: Kan Liang<kan.liang@linux.intel.com>
+Hi Joerg,
 
-Queued for v6.9-rc. Thanks Xuchun and Kan.
+The following patches have been queued for v6.9. They aim to address
+below issues:
+
+- Local memory for PRQ page allocation;
+- Fix WARN_ON in iommu probe path;
+- Fix wrong use of pasid config.
+
+Please consider them for the iommu/fix branch.
 
 Best regards,
-baolu
+Lu Baolu
+
+Jacob Pan (1):
+  iommu/vt-d: Allocate local memory for page request queue
+
+Lu Baolu (1):
+  iommu/vt-d: Fix WARN_ON in iommu probe path
+
+Xuchun Shang (1):
+  iommu/vt-d: Fix wrong use of pasid config
+
+ drivers/iommu/intel/iommu.c   | 11 +++++++----
+ drivers/iommu/intel/perfmon.c |  2 +-
+ drivers/iommu/intel/svm.c     |  2 +-
+ 3 files changed, 9 insertions(+), 6 deletions(-)
+
+-- 
+2.34.1
+
