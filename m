@@ -1,217 +1,194 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B96513DDD4
-	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 07:52:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.17
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712821960; cv=fail; b=m0RTlivMTI7bIzXfmRCZQrVfxOdovUIMAZRZnmZh2XwBZcdvL5lN7uWr+hpMha8am5a/WQ5hnm+vFD/66KYdwAtoEHzoM26VUpSFdaNOnmbG7W9rUP6tOdBJrUoyuq2/hNiQ5Jc9a6bV31cOSBMbAkoKpJvO6dJIUU5XDc0Bt4M=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712821960; c=relaxed/simple;
-	bh=AbUADMaikP4p0EzbX9IFTtExtQwoN9vjdItrY449nQE=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=MPvQ86x1d2OMTa8WDNrdwNgUI3mK0U1cJYAuiGNeeVBC5HgHzz42NUyOeIajWnugbD8yaPmF3EepMWmWIWFOJnT3t90hd4/XxZuqHy3JUrwKVic1d54rJBwQIDvwH7IBahYJVNaDgvLCtkn4TauqOPGAru6KMeo24pWgHykyQzA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JujqDn5i; arc=fail smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 646CC13E88A
+	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 07:55:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712822161; cv=none; b=sRB7RLaIDIUREAhCtHee6tRDsJLbPjFv1CIoQVcq1+3a47vOUpiDjtX40smbnOyM/CCKPn34QWpEojr/mYu9OrWTtsIJitjDIFT4lEisXtyZQ2WtjRj9bBTFm/7KnQb6o1PNPecDpd8zCgQ5ilILKDu02WunhQDlKBSR5OchvDs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712822161; c=relaxed/simple;
+	bh=sQricaFVardeRNoeALXm88UVTwDWrm/8nJe3nCYv/l4=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=UyCE47mI6k+FiUxCSCOStujyHoVSa1/TlnrEIZiWIS+H2tEI1PiWocCScaI6hNdO1IGDoK7lPrpvS5Y0j04bBbdvswN2h97EFXWJSaqQY3+4aTk4tddhQLGxU7cPEhrY/V1QCI2MwSiQ+e7g9VPEXTlm/vP2sqYyE1o/3f0q1+g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MyTIT3eg; arc=none smtp.client-ip=198.175.65.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JujqDn5i"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MyTIT3eg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712821959; x=1744357959;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=AbUADMaikP4p0EzbX9IFTtExtQwoN9vjdItrY449nQE=;
-  b=JujqDn5iLJE/IeexbdBaQlESkzFiuZIy+SQjIoHmFzyd9mSft00XZRQG
-   5B3Tvo6fZN+8p9RHuq5MduaGWBRjMvZ7cnVWMXvq3Ba11m+VXn44neU6E
-   l9I4V5sNlwi1dfLI9HND8K8yHgGgSpwGMxtwOhtbkw5nSNMPsp25LpwRj
-   IZvftF0uJZv3YrNK+LMwfyhGikBZvtRiEXmThRYgfrA7fW0ST53pMfOIR
-   GJ55tZyll8eoWStIkiOnroKXxmeMtfw7Zqchc8yKOK73C0DvwNGD0n4/B
-   KDKiXUU9tR2uhR/Gt3Jwt3IaQno16GMG4eEftwgMNJk01FJ/HbBdzWKFl
+  t=1712822160; x=1744358160;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=sQricaFVardeRNoeALXm88UVTwDWrm/8nJe3nCYv/l4=;
+  b=MyTIT3eghuR9269LPvz2p43MXUc5C1cwv/37OADp22k9p19dDQk42S2G
+   8WULlBGlGf/zkNhvBaQ/X3Jh06XO69a76eCDVnEf0cuNGL/V8J3Ur4Rcv
+   oKp9hQzkJi0mpOsd2ITmhPrty6CGPALszWXx29gVRzXOh4f5qT9/45QE7
+   LMiFqQ5i4w7B/DBaRp4BgBneg3UNYU3Ys6ptllf+AffA937bDva6ZnfGj
+   PRhaZNlWMpDpBW7nHOFfs7zsbS8cfyCUS4x+NO4h/zvX/PJxiT3ep54zb
+   glX2HkZjZBX4H+bQw3b8oy4Z04lEC2RcOnlqmSYtyDApCr1JUyhM/BNOX
    g==;
-X-CSE-ConnectionGUID: 8F7xidYlRrG8Y/tZrBnzig==
-X-CSE-MsgGUID: X1rMlbkyQi6uQab5hcdPhQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="8325576"
+X-CSE-ConnectionGUID: eOOtSDEMQ3WKl+ed0HwwsA==
+X-CSE-MsgGUID: W9w9mpN7S9uEguJvXT5xXA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11039"; a="18778086"
 X-IronPort-AV: E=Sophos;i="6.07,192,1708416000"; 
-   d="scan'208";a="8325576"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 00:52:37 -0700
-X-CSE-ConnectionGUID: rfaUQE5zQZO1IzGGgZg9Cg==
-X-CSE-MsgGUID: kvSIlUTeStmWRK5eqmrByw==
+   d="scan'208";a="18778086"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 00:55:59 -0700
+X-CSE-ConnectionGUID: 1nKsQyOiTkSCQzQS3OzEqA==
+X-CSE-MsgGUID: kJZtlgJVTI+m2W+xPOA37A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,192,1708416000"; 
-   d="scan'208";a="25589665"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orviesa004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 11 Apr 2024 00:52:37 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Thu, 11 Apr 2024 00:52:36 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Thu, 11 Apr 2024 00:52:36 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.169)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Thu, 11 Apr 2024 00:52:36 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dhPvuVifrV3+x65wE8M3p2EebJ1hFMqw2oCL6vJLZbaK1yjGKCT+FejMfIaArU5YfclWV+t27kLFqivgzxNGRGDuSseTqo7+nV4vomvM4KQgjuWH9hMNFsJicrZOnvpuL/NQ0659E91rkJiX4RePA4SsSW7Wp1h9LmWiVDAwAjL7AjcOhDB069yHDOduX2mWoGsBPSr3azd5GgIqY0gZ11yDOBApkx7v3h5mz5kq02nuqUdkqsBcGbLj/9vCLRjuTBz48lIAeuF5e9qsjroAXz+GWQyByVKpKAKMXIIwxzMCLUAw29m+ss0pTYEwhhtR8INlI4aGUC0XLOLOTRT2xg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lTC8Z68BVerooIZ5TtFaa94sS89qQXveC6/kcqVtrZc=;
- b=kDkn0mdrOoUjdDgZNe3ptkNIl+Zcih4Kd8sVELQEkoeFlrqW2wPllA/wl4fhCihuyIxkU84SG+wEUMHhwLAAYKlIGq84UUo3BIXS8xQ+dvYD2Nl7+TJLCnyfNrNfJHu83rwgyrolNFBSt7nRYpFSWNVjwt+g8GFx/t22A9VX7OCb4hsyHH+Kc0YXzXiqdkQLpO4gxo4i3UBt9717Exd2cPiBD9qC2//7YEAv94WlRIVDjqvE+NlGJGd31HkpSfIIrZ/tEO4VCNadZlXbwhUVSCWZ57kTPbhCMC42nkvgdyBW2fi/8XBu3Gj0RIp5D6X1X8zhIY/7+Izlffr7YQydQg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by MW4PR11MB7078.namprd11.prod.outlook.com (2603:10b6:303:219::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7452.26; Thu, 11 Apr
- 2024 07:52:28 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::6c9f:86e:4b8e:8234]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::6c9f:86e:4b8e:8234%6]) with mapi id 15.20.7452.019; Thu, 11 Apr 2024
- 07:52:28 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, LKML
-	<linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter Zijlstra
-	<peterz@infradead.org>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	Thomas Gleixner <tglx@linutronix.de>, Lu Baolu <baolu.lu@linux.intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Hansen, Dave"
-	<dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H. Peter Anvin"
-	<hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
-	<mingo@redhat.com>
-CC: "Luse, Paul E" <paul.e.luse@intel.com>, "Williams, Dan J"
-	<dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>, "Raj, Ashok"
-	<ashok.raj@intel.com>, "maz@kernel.org" <maz@kernel.org>, "seanjc@google.com"
-	<seanjc@google.com>, Robin Murphy <robin.murphy@arm.com>,
-	"jim.harris@samsung.com" <jim.harris@samsung.com>, "a.manzanares@samsung.com"
-	<a.manzanares@samsung.com>, Bjorn Helgaas <helgaas@kernel.org>, "Zeng, Guang"
-	<guang.zeng@intel.com>, "robert.hoo.linux@gmail.com"
-	<robert.hoo.linux@gmail.com>
-Subject: RE: [PATCH v2 08/13] x86/irq: Install posted MSI notification handler
-Thread-Topic: [PATCH v2 08/13] x86/irq: Install posted MSI notification
- handler
-Thread-Index: AQHah6hfZiCSRy/rT0igaUfC7YsDdrFiuYWA
-Date: Thu, 11 Apr 2024 07:52:28 +0000
-Message-ID: <BN9PR11MB5276C4932F6CFD217CC50AD78C052@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
- <20240405223110.1609888-9-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <20240405223110.1609888-9-jacob.jun.pan@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: BN9PR11MB5276:EE_|MW4PR11MB7078:EE_
-x-ms-office365-filtering-correlation-id: 197fd6fe-3abf-47b6-d986-08dc59fc55d4
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: xQGI1oKQfXX0eOEhwnfkUVsMXth/3uQsj1Y5vvDBEffGk2vCeMlxYfg6MdXVbcm6U4AVVY2H5miE+y3NqJmdvzKYDl+OUrRVmjy2wehTe3qbreyam0WhyRFJSI0CzxbMRDIRiIeCLCI3g0oiJc1fNNQCKYaGxRccCVfSfGQOHfZLkeo+leyWTEbpPJktCi9nOsAB2mLB4TR1sk/iqrjy0qmymdfSfbU8ybr3xgGrrYi8DnvPGl4MJv5S6RVkqgNjozqEIBZtmlBfvkbH6elsE7w0DNvyol3Wv51zJ003G87NM7ZF1MWeVKiPgwuKrNTv9apCqGpkJqztHKxEaXPXqvElPjvYozfVRc6/gZWlhvfBp0w7FFRJxbR+YjfjsQLgi6ZA5LumQMCULIlZi8FrclPBZctatxh2phOayeTuON8XOigjCJLaDytX44ChfuxtxAWJf9DxQWonpQL4XdZFYdZ0vQpHQq1Jzl4ud08t/nHkDOPUPS6pAGjGSoQiko4Lvd38jVKT81EKcDzPzUPrZrwOdTPA3RmPpWteEkqzEVUsQHdkkDQspKqiNgEOKi4E5BDECZWoyPpOqga1LPGP9hmA8OeXSG7hAWhUWhCnmhwgUz5ML6QLSXP9D0Hd8w/rvfpfNQFKPDnL3dt9Wz113qbYqhKwwkp9qHkgdK4aHq1hzJQY+3HrZDQUEsBGRbL4JScFi4Q6sT/ir6MQo/VPXYzi/UT7Nup8fd5qoQZgags=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(7416005)(1800799015)(38070700009)(921011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?6+FjnbMCa6UoRUR8XQfSH+u1nFykDLe/ghxthzn5EKq7qm/V06RkJxzOUTQ+?=
- =?us-ascii?Q?cXBRqE/lL0mZ3WSUp61bYZh2ykKRFkx2wr1wDc1IHFVvbrGk3rbZ17XWh+l2?=
- =?us-ascii?Q?19il2onVeYr9R+fnXunVmME5utCAL+PNY6a/kTr3g70P2R+LImkRdl+L6NSb?=
- =?us-ascii?Q?Nw+YHXImex6reSf5tGfQGdDEDvGbNTmJjeIlqeWvH83hwPrFE5DwMxHAs3HK?=
- =?us-ascii?Q?IzEw8Q+HTpY+ez5GWISGCZvltg1KakqzaEj1r5vzmlSa5uXwOt7tIxNjTLI2?=
- =?us-ascii?Q?gEOislJ1wmS99EigD11y2pVv/u6wFUfuKF5xlJo5vrpwJ+J1EIX73QUlwnWP?=
- =?us-ascii?Q?rwlShikXAhwM8z0hr4QbFJcJW/DxZmp9FKFQnhWwZSyzXGcyzUBXkaenVMRz?=
- =?us-ascii?Q?1yHs8nIiA8rv/mu3hrwv6DR6XXDFKLqQpBwgcjrBcI1Yv2IXw1Iid8i0GRWO?=
- =?us-ascii?Q?I1QfTYS5ddg3PljvtXW9mdK/Oi5XoajXRgf+rjxcXgp3nE8mXMpFQryuFgRH?=
- =?us-ascii?Q?x8O8T9x3V/4VDek6DR+R0aL+wRbBLyP5qUxHo5BghKAIPg7KCXTaDNdHuKPQ?=
- =?us-ascii?Q?dvCZWrJ1EbzpcTh2n/6YzSB2bNJDWnjBA68ewHjpRtHYXVM6OYWJXMfcpEk9?=
- =?us-ascii?Q?M1rqesClPTGzdMNNYJgYk3B4keneX2wxCOXlMfwZvGTgN6a/o/xf5YG0HkWy?=
- =?us-ascii?Q?STj4v6lePV9tUYH1DzzxtOiAyyvkB7f74t5e1y+/DVr5hEw7YKUa1CcAcXdV?=
- =?us-ascii?Q?RK2Ig5XOvLHAAc3CLdYXD7/9x8d6pSa8Ua/lrksdGmn02wMPo2bTstGWOSKx?=
- =?us-ascii?Q?pDAsj6FaqJuipgeyCtfDFQ3EckY0I8tl5RQS+3xThfI7F79aRHn/UFWyDlN/?=
- =?us-ascii?Q?ZG4QLs86kc1ipxtN191uzYwi6JqjBcybct1xKv3Y1RtjKesJTkz1kt39qMme?=
- =?us-ascii?Q?Gm7x7txhL6buTMBt1cEoa37dcAQ6dlkARx5Q6JME7XKTAxkXWCALL9wqvR8z?=
- =?us-ascii?Q?H4ck2tr57gqnCDuTqspMKhgRp+rohVqOGhDctaOW7R1vWWWSr1XDBcRvMOr2?=
- =?us-ascii?Q?nOavaUou7g2eSt44iHpuWxWlzeIBVOHoqDDyIa1CqbujDelLlUGDnZ4aeBLn?=
- =?us-ascii?Q?VbTV2p4Ja+qxZYGB3GW7V9AgR2KVtLlRrbx59i0APohYe64zIXLBo5UfhcFV?=
- =?us-ascii?Q?xz1GY5ULlTxluOdVWyADrDyO06XnFxd5Passr852pwHhGc86/NGVXLeYi0+/?=
- =?us-ascii?Q?c/jL1oF66D9KIyXTUI6AlfHtA94Nk18cH6iKXL9g5B4yz4eJxacOvKhz9Fre?=
- =?us-ascii?Q?DC/CZM2X7x0NvrC6vX7kZxvq5agVchtpCXKsyBlsiRl4xZyx5d9cuV7Zb+FO?=
- =?us-ascii?Q?YHPVmkfOtjAp2UiA2jyxAIQfwqc1aR0Av77AaIGVnK0iNfxvwiKolPslDiou?=
- =?us-ascii?Q?iKWWN5iLJHKcf2rXZd0Dqzyx7Q++Yi3/aU1HMt0/5SrVMw/mwNqyLGuMjAy3?=
- =?us-ascii?Q?cQxM2gbJ8lspsNaAWAzFFqVaOgrHIPrhhYLbUkigUjFNrRqW2lmXLp21Vn2A?=
- =?us-ascii?Q?8qByeSc2uTJYGzILAlDEwtVJ4azD3GsjGnm4GtdQ?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+   d="scan'208";a="20827190"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.237.86]) ([10.124.237.86])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Apr 2024 00:55:52 -0700
+Message-ID: <b24f3380-1ac3-41c4-9163-56c1dcff6297@linux.intel.com>
+Date: Thu, 11 Apr 2024 15:55:50 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 197fd6fe-3abf-47b6-d986-08dc59fc55d4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Apr 2024 07:52:28.5993
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gUW/szwC1ouo2qhdTe3rkQj5pnAPqFuuyg1zPaZ9F+EbQtvUllLlpIy6uhGFAfPQqkSyJk9MHNDZlKqMCN49MQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR11MB7078
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Kevin Tian <kevin.tian@intel.com>, Tina Zhang <tina.zhang@intel.com>,
+ Yi Liu <yi.l.liu@intel.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 12/12] iommu/vt-d: Retire struct intel_svm
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240410020844.253535-1-baolu.lu@linux.intel.com>
+ <20240410020844.253535-13-baolu.lu@linux.intel.com>
+ <20240410154951.GH223006@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240410154951.GH223006@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Sent: Saturday, April 6, 2024 6:31 AM
->=20
-> +
-> +/*
-> + * De-multiplexing posted interrupts is on the performance path, the cod=
-e
-> + * below is written to optimize the cache performance based on the
-> following
-> + * considerations:
-> + * 1.Posted interrupt descriptor (PID) fits in a cache line that is freq=
-uently
-> + *   accessed by both CPU and IOMMU.
-> + * 2.During posted MSI processing, the CPU needs to do 64-bit read and
-> xchg
-> + *   for checking and clearing posted interrupt request (PIR), a 256 bit=
- field
-> + *   within the PID.
-> + * 3.On the other side, the IOMMU does atomic swaps of the entire PID
-> cache
-> + *   line when posting interrupts and setting control bits.
-> + * 4.The CPU can access the cache line a magnitude faster than the IOMMU=
-.
-> + * 5.Each time the IOMMU does interrupt posting to the PIR will evict th=
-e
-> PID
-> + *   cache line. The cache line states after each operation are as follo=
-ws:
-> + *   CPU		IOMMU			PID Cache line state
-> + *   ---------------------------------------------------------------
-> + *...read64					exclusive
-> + *...lock xchg64				modified
-> + *...			post/atomic swap	invalid
-> + *...-------------------------------------------------------------
-> + *
+On 2024/4/10 23:49, Jason Gunthorpe wrote:
+> On Wed, Apr 10, 2024 at 10:08:44AM +0800, Lu Baolu wrote:
+>> The struct intel_svm was used for keeping attached devices info for sva
+>> domain. Since sva domain is a kind of iommu_domain, the struct
+>> dmar_domain should centralize all info of a sva domain, including the
+>> info of attached devices. Therefore, retire struct intel_svm to clean up
+>> the code.
+>>
+>> Besides, allocate sva domain in domain_alloc_sva() callback which allows
+>> the memory management notifier lifetime to follow the lifetime of the
+>> iommu_domain.
+>>
+>> Co-developed-by: Tina Zhang <tina.zhang@intel.com>
+>> Signed-off-by: Tina Zhang <tina.zhang@intel.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel/iommu.h | 26 ++++------
+>>   drivers/iommu/intel/iommu.c |  9 +---
+>>   drivers/iommu/intel/svm.c   | 94 +++++++++----------------------------
+>>   3 files changed, 32 insertions(+), 97 deletions(-)
+> 
+> Happy to see the pasid xarray in the driver go away.
 
-According to VT-d spec: 5.2.3 Interrupt-Posting Hardware Operation:
+Yeah, it was really ugly.
 
-"
-- Read contents of the Posted Interrupt Descriptor, claiming exclusive
-  ownership of its hosting cache-line.
-  ...
-- Modify the following descriptor field values atomically:
-  ...
-- Promote the cache-line to be globally observable, so that the modificatio=
-ns
-  are visible to other caching agents. Hardware may write-back the cache-li=
-ne
-  anytime after this step.
-"
+> 
+>> @@ -4388,14 +4386,8 @@ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
+>>   	WARN_ON_ONCE(!dev_pasid);
+>>   	spin_unlock_irqrestore(&dmar_domain->lock, flags);
+>>   
+>> -	/*
+>> -	 * The SVA implementation needs to handle its own stuffs like the mm
+>> -	 * notification. Before consolidating that code into iommu core, let
+>> -	 * the intel sva code handle it.
+>> -	 */
+>>   	if (domain->type == IOMMU_DOMAIN_SVA) {
+>>   		cache_tag_unassign_domain(dmar_domain, FLPT_DEFAULT_DID, dev, pasid);
+>> -		intel_svm_remove_dev_pasid(domain);
+>>   	} else {
+>>   		did = domain_id_iommu(dmar_domain, iommu);
+>>   		cache_tag_unassign_domain(dmar_domain, did, dev, pasid);
+> 
+> It seems very strange that SVA has a different DID scheme, why is
+> this? PASID and SVA should not be different at this layer.
 
-sounds that the PID cache line is not evicted after IOMMU posting?
+The VT-d spec recommends that all SVA domains share a single domain ID.
+The PASID is unique to each SVA domain, hence the cache tags are unique.
+Currently, the Intel IOMMU driver assigns different domain IDs for all
+domains except the SVA type.
+
+Sharing a domain ID is not specific to SVA. In general, for devices
+under a single IOMMU, domains with unique PASIDs can share the same
+domain ID.
+
+In the long term (also on my task list), we will extend the cache tag
+code to support sharing domain IDs and remove the domain type check from
+the main code. This will also benefit the nesting case, where user
+domains nested on the same parent could share a domain ID.
+
+> 
+>> @@ -663,7 +596,12 @@ void intel_svm_page_response(struct device *dev, struct iopf_fault *evt,
+>>   
+>>   static void intel_svm_domain_free(struct iommu_domain *domain)
+>>   {
+>> -	kfree(to_dmar_domain(domain));
+>> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>> +
+>> +	if (dmar_domain->notifier.ops)
+>> +		mmu_notifier_unregister(&dmar_domain->notifier, domain->mm);
+> 
+> This should really use mmu_notifier_put() and a delayed kfree, see my
+> part 2 ARM series for how that should look.
+
+Learning from
+
+https://lore.kernel.org/linux-iommu/23-v6-228e7adf25eb+4155-smmuv3_newapi_p2_jgg@nvidia.com/
+
+I will make it like below
+
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 47e475f67046..41374979eecc 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -178,9 +178,15 @@ static void intel_mm_release(struct mmu_notifier 
+*mn, struct mm_struct *mm)
+
+  }
+
++static void intel_mm_free_notifier(struct mmu_notifier *mn)
++{
++       kfree(container_of(mn, struct dmar_domain, notifier));
++}
++
+  static const struct mmu_notifier_ops intel_mmuops = {
+         .release = intel_mm_release,
+         .arch_invalidate_secondary_tlbs = 
+intel_arch_invalidate_secondary_tlbs,
++       .free_notifier = intel_mm_free_notifier,
+  };
+
+  static int intel_svm_set_dev_pasid(struct iommu_domain *domain,
+@@ -598,10 +604,8 @@ static void intel_svm_domain_free(struct 
+iommu_domain *domain)
+  {
+         struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+
+-       if (dmar_domain->notifier.ops)
+-               mmu_notifier_unregister(&dmar_domain->notifier, domain->mm);
+-
+-       kfree(dmar_domain);
++       /* dmar_domain free is defered to the mmu free_notifier callback. */
++       mmu_notifier_put(&dmar_domain->notifier);
+  }
+
+  static const struct iommu_domain_ops intel_svm_domain_ops = {
+
+> 
+> Otherwise I think it looks fine
+
+Thank you for review.
+
+Best regards,
+baolu
+
