@@ -1,73 +1,76 @@
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
+Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B075314D29E
-	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 13:41:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4531914D6E6
+	for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 13:42:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712842918; cv=none; b=mIYgAiypI7N33WktlufyoDg8RPqYRH5FjE3thqR62l4PaWUeUtJtnyo+TsouJV5EHzNcrHAvGVR6cefga5tNINWLS7ltbY725rfwDVQSBIcx8LvMcZ+uCuBDgvwky/A9UrbDQM52YWKjw7WbXhq4rvzSuJAiHaTRFPWdG9NTiTY=
+	t=1712842944; cv=none; b=gUYkG0E9rQ5XmSb558EVsb9zQKu4v2A2WAA4zFl1ZnGToHrfwHojFhFlQzK1db0j+BN+NdXQBau98xW41Mli67JxaSUMMPXOtzLA1siMJPnqUPM5VdmfIhwG97VtTka3XInl1HTgdAAVEwBsvDziF23+augoS3aeRQrDQYsy/So=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712842918; c=relaxed/simple;
-	bh=3oGpsXWmc3HGA7rtUUVqBCocMMuUmgvht732EoPs5XY=;
+	s=arc-20240116; t=1712842944; c=relaxed/simple;
+	bh=zgR0cR6ogn8YFChqfla+EM8IAhBegygR7tw+SMxmgNY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jpTQdExcyJtUJiWBrILNKms/sdFSbeY7dKMoOB/rCATi4UphPPeV432lp5TMhBO1q+5SukQ1UugIDNCfb+GVytQcfgP/E5pGZ6xErP5dK7edsv5+pERjfhzvKCSMJQ6n8a6y/5pMiNatTGHcSGXX6JESi5e30qhDCmmGA7skCpM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JmvCSLXq; arc=none smtp.client-ip=209.85.160.174
+	 Content-Type:Content-Disposition:In-Reply-To; b=DFAQcZM6McWrRQQQzxM6UGbSy85HGDqOzPWHv7U1SGKWgaFI4EiqxR72hnGX3Pb2EjtfPyMwUoKKUeSC19atw+iKFdc0Ymy7zYVEfWIas3w0y0BeFHoq6FCI9Lxdz2SVJTbnlhUkn36jWFS8bVwQCLbTsz/7mEDJB3bQ9pvXNE8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=N/VwAF5U; arc=none smtp.client-ip=209.85.160.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JmvCSLXq"
-Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-43492c1a8a4so21004901cf.1
-        for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 06:41:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="N/VwAF5U"
+Received: by mail-qt1-f180.google.com with SMTP id d75a77b69052e-434a6024e2fso7104081cf.0
+        for <iommu@lists.linux.dev>; Thu, 11 Apr 2024 06:42:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1712842915; x=1713447715; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1712842942; x=1713447742; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=9v9IYMurW1GEHuOD/BlZrlZ0U0DSGWxEk7s+eTR4EGo=;
-        b=JmvCSLXqykfGXBF12XQRSswa5sOaDngM4FoW38aEMPyItHUSl2q97oUUaccMRXojK5
-         5s1SVbrG252C1FdB2o9Wg1YATYqR/dv0H9Ee+TjRP++eUPzapP0A/bzQo0v6aiiDcIdF
-         hQHLgacaXDUXqkNRNCgSy+4soc+aamrAUt6rpZ/VzJI8Tl7iniRMEzsShg4PSWUhOCjB
-         FkDZYiqENxYbpf99eol45H0/DWCtBVawZ4wQdZsz1J/zHDXuOvQUcsv8zEMlrbfjW2RJ
-         K00C75SzYIvatfkHZxa4kgz/QwpGHBBnTcctF+ZmKYVax6MvVdxF3rGRsXMk3xojL0Xb
-         +cQA==
+        bh=GFCmlim2ishqWRIA11SEYbkXYRYiuK5KGvMdScupqjg=;
+        b=N/VwAF5U3SaHTshDHjATfQJGP1Gv8l4mTGyC3fvAMOS7+NUxSbNFc2ojqLCMsBGQ81
+         /k6sdVP5cKyhTUBt3suhYP4YdQi8l0jPxorpQ2a/Wn2xH85Dq0gjM3/zwPKKLy3/tF2n
+         /B/Rlc8ievjZbTITcYU6yMNyBobMw1wSJC7vfcFoULcc5e8geUmvvTL90kgBYhWYctf+
+         qgFHs31CPPMxsXA+dejH+MFAU9hxNo/UOwq4bQ1kBwhvHCOHX9viNhyuTjHboK6Iqhsb
+         xMzu/TtsN40DYkIRfZ8dBUrjfj/aa9J14P3hgiyx6XpwqYsq99JJhQAB0OS22+iegCs1
+         O63A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712842915; x=1713447715;
+        d=1e100.net; s=20230601; t=1712842942; x=1713447742;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9v9IYMurW1GEHuOD/BlZrlZ0U0DSGWxEk7s+eTR4EGo=;
-        b=MeDe9BdwoS5fLxcuiz5UENr9jVKm4tXgsNCm2avvyb14+I/aYLOzCxOTcgI0kSu47k
-         GD7dRm3PRJBEnOHxa3hSsJfpCv7tlgQt0ss0gC19Gy4GDt+BTMtvqhoGWY0uHmPKlNod
-         k1qMGR6kfH15fFFtyugRpUVJwK/zNHghZ9MsyxE4iHb6hv6coljP5GSdqzFBeGemQVDn
-         V+7FFV3nKNj5C1ELlKgnuuSqGkt/vBIaYZIpPk+PWhMBMxtaHkaQPcYyLt6eNAsbdQh3
-         /iwGEBbKsVW7YNRM7/q++fgYFzl9wIKLdd0LEOab3hO1GAZ1FYvmiD+IkXNAF7wqiypx
-         Np/w==
-X-Forwarded-Encrypted: i=1; AJvYcCUhRPGBSjzp+Ezt0LUj8LM8ZYm2G50AJoYRJrHSK52xQqeJ/exXpEmFiNtFAMzCba+bUiXH+mqOQXzPKXzlpwqZUsP6TRw=
-X-Gm-Message-State: AOJu0Yx49XgVtla+9tEVi9gva7VRXCiu5XIDPpGVvUdLUeBiwxcidGaO
-	CMu0dbCkHa7YBqMUkNCu19Wxj4nRceAwC1i8m58JRuyp3om89Zuf8QpX69G7ciI=
-X-Google-Smtp-Source: AGHT+IG6lO9jxLBIJJs8K37+TPzJ2KkipZ7o4L5la7Szplwxm+9SeI0AwZXwIBZX1UouadNZz1E2sg==
-X-Received: by 2002:a05:6214:5090:b0:69b:17b4:dbb with SMTP id kk16-20020a056214509000b0069b17b40dbbmr6353521qvb.13.1712842915668;
-        Thu, 11 Apr 2024 06:41:55 -0700 (PDT)
+        bh=GFCmlim2ishqWRIA11SEYbkXYRYiuK5KGvMdScupqjg=;
+        b=Ro8H/zODNgEfmVvFlEBGKEe9Z22Feod5B667CJP75IAGPVCgYeRI4tBHXnqvtwOlAh
+         MDvG2DseWF1nUUNIVEFqvxcmsBHFkjz8EnolUZbXlkiw3YyDKjeuu+/+KsLLtMTukfQo
+         M54kN6s1+9tvD96RTHDBR04Kb2t2wp1NewPnQ2gad4Vul9xruEE1j5hvfc+BR+kQ6U+U
+         CeyPocWBgR+D2EGw/LFMf2qhDSagv57RyKLOfHuUZPBZ+n0lnxW7FSx5KEhPJZ5qAHgw
+         1w6/R1zI6RZPgpU+OziTj1qRG1QHoypgvGiGENP+sJiRgCtcq75nrt6/sCSCfh1Uxswn
+         HZUw==
+X-Forwarded-Encrypted: i=1; AJvYcCWYSvybR2bsFuuGf/QrVWZQEO5+BeAp7JvGwM8XdLaVea59m2F6sRbJSbF46VCuyk4yqozvxcGpO1jBLOK0nBCA46kTmfk=
+X-Gm-Message-State: AOJu0Yzuw+cjHUf2VkvlHjKosaVHDUpQD6RYXFgcgeAJL5YkRh2i7paK
+	SdmkFA9G8f8Kjc7gxCUD2EECuB3N3i7++o6l2EkS78gPjxHv5Tm6EWWBwu0fYRA=
+X-Google-Smtp-Source: AGHT+IGL2cbOKCZcGzgMbJlL2z68v+tK6zD101PWXggW/pcyy1RmCVHxVJqaYVopM1k3wQoJqHy5qA==
+X-Received: by 2002:a05:622a:138e:b0:435:fff2:2d57 with SMTP id o14-20020a05622a138e00b00435fff22d57mr4397147qtk.22.1712842942315;
+        Thu, 11 Apr 2024 06:42:22 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id r18-20020ad44052000000b00698e65cdfefsm944079qvp.87.2024.04.11.06.41.54
+        by smtp.gmail.com with ESMTPSA id jr13-20020a05622a800d00b00434c25cb61bsm912364qtb.73.2024.04.11.06.42.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 11 Apr 2024 06:41:54 -0700 (PDT)
+        Thu, 11 Apr 2024 06:42:21 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1ruugc-00AkN5-Ab;
-	Thu, 11 Apr 2024 10:41:54 -0300
-Date: Thu, 11 Apr 2024 10:41:54 -0300
+	id 1ruuh3-00AkQa-C8;
+	Thu, 11 Apr 2024 10:42:21 -0300
+Date: Thu, 11 Apr 2024 10:42:21 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
-	Eric Badger <ebadger@purestorage.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/5] iommu: Add static iommu_ops->release_domain
-Message-ID: <20240411134154.GK223006@ziepe.ca>
-References: <20240305013305.204605-1-baolu.lu@linux.intel.com>
- <20240305013305.204605-2-baolu.lu@linux.intel.com>
- <20240410152606.GF223006@ziepe.ca>
- <0dda6ce6-1b82-4168-93b7-a0e847ce9b08@arm.com>
+To: Baolu Lu <baolu.lu@linux.intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	"Zhang, Tina" <tina.zhang@intel.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 01/12] iommu/vt-d: Add cache tag assignment interface
+Message-ID: <20240411134221.GL223006@ziepe.ca>
+References: <20240325021705.249769-1-baolu.lu@linux.intel.com>
+ <20240325021705.249769-2-baolu.lu@linux.intel.com>
+ <20240410154134.GG223006@ziepe.ca>
+ <BN9PR11MB5276B57D6E72870C9B1798838C062@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <4e47aff7-aa65-4c60-a5dc-b7e0f2737a3e@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,47 +79,43 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0dda6ce6-1b82-4168-93b7-a0e847ce9b08@arm.com>
+In-Reply-To: <4e47aff7-aa65-4c60-a5dc-b7e0f2737a3e@linux.intel.com>
 
-On Wed, Apr 10, 2024 at 05:37:06PM +0100, Robin Murphy wrote:
-> > We should probably be sensitive to the
-> > dev->iommu->require_direct flag - generally drivers should prefer the
-> > blocked for the release domain, but in case the FW ias asking for
-> > require_direct we need to switch to identity.
+On Thu, Apr 11, 2024 at 09:17:41PM +0800, Baolu Lu wrote:
+> On 2024/4/11 7:14, Tian, Kevin wrote:
+> > > From: Jason Gunthorpe <jgg@ziepe.ca>
+> > > Sent: Wednesday, April 10, 2024 11:42 PM
+> > > 
+> > > On Mon, Mar 25, 2024 at 10:16:54AM +0800, Lu Baolu wrote:
+> > > > +static int __cache_tag_assign_parent_domain(struct dmar_domain
+> > > *domain, u16 did,
+> > > > +					    struct device *dev, ioasid_t pasid)
+> > > > +{
+> > > > +	struct device_domain_info *info = dev_iommu_priv_get(dev);
+> > > > +	int ret;
+> > > > +
+> > > > +	ret = cache_tag_assign(domain, did, dev, pasid,
+> > > CACHE_TAG_TYPE_PARENT_IOTLB);
+> > > > +	if (ret || !info->ats_enabled)
+> > > > +		return ret;
+> > > 
+> > > I'm not sure I understood the point of PARENT_IOTLB? I didn't see any
+> > > different implementation?
+> > > 
+> > > Isn't this backwards though? Each domain should have a list of things
+> > > to invalidate if the domain itself changes.
+> > > 
+> > > So the nesting parent should have a list of CHILD_DEVTLB's that need
+> > > cleaning. That list is changed when the nesting domains are attached
+> > > to something.
+> > > 
+> > 
+> > probably just a naming confusion. it's called PARENT_IOTLB from the
+> > angle that this domain is used as a parent domain but actually it
+> > tracks the child tags in nested attach.
 > 
-> At this point do we even need release_domain?
+> Is NESTING_IOTLB more readable?
 
-Ultimately ideally not, but I feel better going through the exercise
-driver-by-driver before we just make the core code do it
-automatically. Maybe I'm being overly pessimistic about the drivers..
-
-Have all the drivers setting identity/blocked domain set release
-domain before we switch to this unconditional method.
-
-Anyhow, I just noticed it went into -rc1 already, so may as well keep
-going.
-
-> static void iommu_set_release_domain(struct device *dev)
-> {
-> 	const struct iommu_ops *ops = dev_iommu_ops(dev);
-> 	struct iommu_domain *rd;
-> 
-> 	/*
-> 	 * Static domains are expected not to track any device state,
-> 	 * and thus be tolerant of devices disappearing once "attached"
-> 	 */
-> 	if (ops->blocked_domain && !(dev->iommu->require_direct ||
-> other_arch_or_platform_reason))
-> 		rd = ops->blocked_domain;
-> 	else if (ops->identity_domain)
-> 		rd = ops->identity_domain;
-> 	else /* Hope release_device does the right thing! */
-> 		return;
-> 
-> 	if (!dev->iommu->attach_deferred && rd != dev->iommu_group->domain)
-> 		__iommu_attach_device(rd, dev);
-> }
-
-Yeah, this is a good end goal.
+Yes
 
 Jason
