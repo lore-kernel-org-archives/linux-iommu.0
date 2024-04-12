@@ -1,44 +1,60 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F31C0535AA
-	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 10:06:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0647453384;
+	Fri, 12 Apr 2024 10:10:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712916415; cv=none; b=ex2ZdYCR/MUFRKkVH0dHUJVTYaOYtB8i5MmLfbFrfJNwl3eBKhQjkT+Lh/X5cLbl+TE7vQs6o8kX6yR2UIDXllRkoKr3Jc9FKGBqUStsiZjxkARoH0juWERCsThl1uV4RVB0kgUT2sXpEhMEPocjmdaBihcegCHriB1xji3TUi4=
+	t=1712916619; cv=none; b=n2hMJmaXIUdCyPKIxKqycwkw8bwG++A9yWUF2tve7JS5jrsay5L21WpXLZpbQy4jWqG2vU2T7KEo1pVbWSQ6ykaCN568fchV5f9Aly2Wwh86R8OlE1fMYwVC0nuMNzjmheANhHUJg0uomGKl0AaoGZrPZX75DGVJh2il0XbKqz4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712916415; c=relaxed/simple;
-	bh=rFJXMLQKoZvovqpOjObobPacPdR63TMJNgor5cU6a2k=;
+	s=arc-20240116; t=1712916619; c=relaxed/simple;
+	bh=E+iVkylCqaTgNVotthxWDOOoCqml/4nGJOpaARXTjK0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gJiftC8j94iLCBMlGbGZSCMkq65JPJ3wqgM2wnZhvpMnLhwAj6vIMp2N3aKyeGLuv9nO9upMx6Rt1L76P6k5f5Gs+cH2gryvKAxEmt08BmK6ZhHzRbc8mCRcQ7wahTzxrjZaFUCzcuT1eQGJCw8LqHmwwnbG77dpnmbhye9tDbg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=VKiHt3wv; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=obYLr5ka/CzZ5wBcAYioLpi6ofINDwBNK9+5O6FlmPJWUY8nW1lD+vjj/zPnEOM+00NTqUgNZ5W/tAJsj/GyZDD/DG4L8gA91V6MCIhA3SXCnHHbWakYHX9mTs8awcTHWw2Lo/ZByg0vyqM+WjFe6Be6kF7czZcoIeJ1ZvKdDOE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=LuZbLWJP; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="VKiHt3wv"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="LuZbLWJP"
 Received: from 8bytes.org (p4ffe0bdf.dip0.t-ipconnect.de [79.254.11.223])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 0E2D7281A38;
-	Fri, 12 Apr 2024 12:06:53 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 51047281A38;
+	Fri, 12 Apr 2024 12:10:16 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1712916413;
-	bh=rFJXMLQKoZvovqpOjObobPacPdR63TMJNgor5cU6a2k=;
+	s=default; t=1712916616;
+	bh=E+iVkylCqaTgNVotthxWDOOoCqml/4nGJOpaARXTjK0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=VKiHt3wvwt/1NCxMQpzfZ+wsSajQJyvIlG3Qm6PcbMmal1QjPWv9fjPFhI9TtPCYZ
-	 0V7/2z0MTCMvG7CB0xUmfUXr32wZBpkRfYlYtRE0rcDxYyDwQVt+jOEBcrxvtTPsKf
-	 QhBkCar7G70zgdaWjGYoBdc3PCnjoLKNF4b8dFUpdqGYe0V7LySBxWGnvFqUG0TIMM
-	 8KjCdY/gOFcEn5hXF+uoTDtmilU6fpBLWyT1xY53DVekvmW7Q1HmqSmGoH78qNPD8f
-	 iGm55t7pVC5Tt8vBAp3M80JR2JhTjbJPyomTl3rAtbFGJfo1//U8R83YM+TYFIe3JP
-	 VLUZJJ5gZSV/g==
-Date: Fri, 12 Apr 2024 12:06:51 +0200
+	b=LuZbLWJPGCLZJPltogQTsk4oQ9NTj4Tsj7ifX4XmlHt9dm9BjBk7wNSRnJEGBBLX0
+	 RR1K295opyq8KNseqPbA6/RWBABghoCfLVi53gLBIUssvvge/FC7qptmqVDcplhzTo
+	 XuBmaDg9QBQ/vnZqdaxAREDkzJpp0Wy4QVBWKVDHOT7296ofu/w9sV3sUJl9A78VIT
+	 Q8HYmCNyUOwMBct7Se9mdxxPDMr4hl0kzCGipNnFTmrP6p8lRL075rML4+cOeADLWK
+	 3bfKf9EbMlshGtJnw/aGnFdGxYsmOkfVQGWHlFj/MJ94e75Lh2o+bnyCKL3btAMYV6
+	 t2ODbB7AbBEpQ==
+Date: Fri, 12 Apr 2024 12:10:14 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Xuchun Shang <xuchun.shang@linux.alibaba.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/3] [PULL REQUEST] iommu/vt-d: Fixes for v6.9-rc3
-Message-ID: <ZhkHuyUAkWwEOFmB@8bytes.org>
-References: <20240411030744.273460-1-baolu.lu@linux.intel.com>
+To: Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc: akpm@linux-foundation.org, alim.akhtar@samsung.com,
+	alyssa@rosenzweig.io, asahi@lists.linux.dev,
+	baolu.lu@linux.intel.com, bhelgaas@google.com,
+	cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com,
+	dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de,
+	iommu@lists.linux.dev, jernej.skrabec@gmail.com,
+	jonathanh@nvidia.com, krzysztof.kozlowski@linaro.org,
+	linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+	linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com,
+	marcan@marcan.st, mhiramat@kernel.org, m.szyprowski@samsung.com,
+	paulmck@kernel.org, rdunlap@infradead.org, robin.murphy@arm.com,
+	samuel@sholland.org, suravee.suthikulpanit@amd.com,
+	sven@svenpeter.dev, thierry.reding@gmail.com, tj@kernel.org,
+	tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org,
+	will@kernel.org, yu-cheng.yu@intel.com, rientjes@google.com,
+	bagasdotme@gmail.com, mkoutny@suse.com
+Subject: Re: [PATCH v5 00/11] IOMMU memory observability
+Message-ID: <ZhkIhtTCWg6bgl1o@8bytes.org>
+References: <20240222173942.1481394-1-pasha.tatashin@soleen.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -47,11 +63,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240411030744.273460-1-baolu.lu@linux.intel.com>
+In-Reply-To: <20240222173942.1481394-1-pasha.tatashin@soleen.com>
 
-On Thu, Apr 11, 2024 at 11:07:41AM +0800, Lu Baolu wrote:
-> - Local memory for PRQ page allocation;
-> - Fix WARN_ON in iommu probe path;
-> - Fix wrong use of pasid config.
+Pasha,
 
-Applied, thanks.
+On Thu, Feb 22, 2024 at 05:39:26PM +0000, Pasha Tatashin wrote:
+> Pasha Tatashin (11):
+>   iommu/vt-d: add wrapper functions for page allocations
+>   iommu/dma: use iommu_put_pages_list() to releae freelist
+>   iommu/amd: use page allocation function provided by iommu-pages.h
+>   iommu/io-pgtable-arm: use page allocation function provided by
+>     iommu-pages.h
+>   iommu/io-pgtable-dart: use page allocation function provided by
+>     iommu-pages.h
+>   iommu/exynos: use page allocation function provided by iommu-pages.h
+>   iommu/rockchip: use page allocation function provided by iommu-pages.h
+>   iommu/sun50i: use page allocation function provided by iommu-pages.h
+>   iommu/tegra-smmu: use page allocation function provided by
+>     iommu-pages.h
+>   iommu: observability of the IOMMU allocations
+>   iommu: account IOMMU allocated memory
+
+Some problems with this:
+
+  1. I get DKIM failures when downloading this patch-set with b4, can
+     you please send them via a mailserver with working DKIM?
+
+  2. They don't apply to v6.9-rc3. Please rebase to that version and
+     are-send.
+
+Thanks,
+
+	Joerg
