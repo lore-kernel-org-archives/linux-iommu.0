@@ -1,97 +1,100 @@
-Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3851914A09E
-	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 17:07:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 731C414C596
+	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 17:50:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712941650; cv=none; b=FZIar/tN0vn1Mc1EfS9iiyhGsmfdkhmQ4P2YEDPNenlJ+jUQM7ldFWpLEXyAFAQfwKhW8vqKZC011akVSLVs4kd2SHPHrS4ChtYHSBiFXpqh8GNnnMbKPeVQUduqFAxDjNUHLvC3Eu680STQntrDmJ11tInkV6UDLsOBohTqaN0=
+	t=1712944210; cv=none; b=fvUz2gvMSM+qw7rJZE/dnYspzSJ5UHXd/76bp32LyWqTAiF+93ZmTMX9Bge9luU1fzj7PjX0AxLzbtUVe6spkVaok6f/NvJJsNeAMHXa3tl5qa1cpdPDjNYX8oDaVK3wryWq4mnKt/GenDGlpLpJRkx1lMgPESaUsAJIY3i6dOA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712941650; c=relaxed/simple;
-	bh=5JFuYVePpmhoWdZk8WbeOoqlnSWSkoUYiXSyfRvyGWg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ii7ELmMO6H5RwV8ZQYW66t8iJM0933uSE7mv1OQRG0gilmOzHuiFq3gljQalcCPSHmYbNR1YpLj1Fu8r6Pgz9RZIjF4ru0CJv5zq5WMugmb5hyrwPcsDNcN2AsCp/OVg8+0eYXGe9hQwHAMrYNMTQmv5mzahZ1lf77CM8VJ3dr8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=NHlkspaW; arc=none smtp.client-ip=209.85.160.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
+	s=arc-20240116; t=1712944210; c=relaxed/simple;
+	bh=sQu31TKj1DykuJKDUxWpDtj7xAwMdG8O2RnnSSWBS5g=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WxnLU+SSaPEMGxobH276nROtM2BCnZomARt346F+eAI0aAXSwa5j7NdBdbifNfQgzan//JV8x+W3V93dgsPHnxKd41h/CPqX9aSNoHVgD1+835sXoJEGO+6VsV4ValXt7nSdcLwQculrop6rJR5t1B0Yy5QQ/pxhBl2/H97Ww/w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nBeigbiD; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="NHlkspaW"
-Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-434da723234so2370921cf.2
-        for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 10:07:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1712941648; x=1713546448; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=ICZfIsGcQEVbd3Zt1qoYBnvko2GDh9Nz2dJVHbfGpSA=;
-        b=NHlkspaWQX9FJJosTayErKC8rUY0/QrkhzaHcvUVug3IhOfoYmLw5RFsLg1dB5dMyk
-         OXuITzcrnEL98pK3QyREnum12sR0rcJMv2qdZhy9Ilja6PFsfSIdoXL2lqpuukjLGL0Z
-         fZEmJ+Ky4/LCsqmQHbtGKaSSFA22HPaVgEL4rDW3L0pR2Zc2ghwy6nyD4Iv7O1LNv6hA
-         lFOllqXKmjUNeUVAsEABAopg+cQtBflDQyJ0neTWnbDaEANoSJLgEumM2ErQC8eGi4kR
-         P7vhfx51tvCJONZLuMbqJy98SzoQuykUXdlg/P4YZiVojW7zp+tZ2BCewUbPtM6ulhlj
-         I0pg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1712941648; x=1713546448;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ICZfIsGcQEVbd3Zt1qoYBnvko2GDh9Nz2dJVHbfGpSA=;
-        b=suNQNN1EhE5rjdJn22/Mj+JQ+LHoIySIHRsT7laYaTAp3WsIWxEbG3eOxLv8zbQJ8H
-         mnJU8YifBG3K7zmcQUxsLaWsiCAVf+JaHkQLgP81KRGGylqga9aVx1eZn69izaT0buww
-         HRfTESKHajRqzNGn0yjv8hhZLbC2FdwuI9a/y6xVy7icSVmWdYZlcXguMeo99wTeTmim
-         +XPssuzZhdoRWwXbTeTJei5HXZt+lLKyOZS4fcj9rIALQTazluIpj91LJUKR4FOJXoN9
-         Whf/GxeVtr9ROHQlSaBG+yzQjNH1GZNpl3PP1T8kC/yOhFuxB4nDI8gSnIg2u4nc4rkR
-         zfhQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVa66QSNrgPnGx0HGxYyyEPQSnL7DYq1tZM6KVvThptUh078IUhUBAw8jzUoPIYWaaGaCDPPLLdSXYpn/Qy/YWOIViKZOk=
-X-Gm-Message-State: AOJu0YzKk1hnOrV65xPfBsy8oibTjEs8QkYFyfQhKNnqS4YAf0sBpED+
-	pD24H3D1/FYlgrLTNL9YGTleLnWDV08I6QrL84o2uBGffAfySMWYGw74BK9ILuKCAP+gbUjXSuA
-	zCQPQxULkXSj1+kMZib1xaLgtg2MF8sAbwsde0Q==
-X-Google-Smtp-Source: AGHT+IEXzcV5Ah/di4pWjeRuzI8bp8L5qdlySBiHU1tn4/tN30fitecIDCoiEvXNx6whVxsKgO+qRvqVW4OxECf95F8=
-X-Received: by 2002:a05:622a:606:b0:434:89af:bd3b with SMTP id
- z6-20020a05622a060600b0043489afbd3bmr3794375qta.40.1712941648259; Fri, 12 Apr
- 2024 10:07:28 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nBeigbiD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712944210; x=1744480210;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=sQu31TKj1DykuJKDUxWpDtj7xAwMdG8O2RnnSSWBS5g=;
+  b=nBeigbiDKJYV6/1ZTKVab89uK9xzVrUosCK2BCdjLXKHHyPPsM43nDvQ
+   DnQmzPmWTgEcH+A4Xfws82dPLYI2nApNvgNoxmAeYppQKuE+8ll9sQ0Hu
+   HCnlQs8cnwPX+067YrJfPiumPwwG0WtJCoy9ofHq2KUlU8OFLvG/9IKf5
+   kWKUK+WNl6PiI+1hSA7J3EdTAw3x10kRcIyNMfs5EePjJKzV+di4oa2MN
+   +RM17pK2jCbyxiXxX25jWoYgcB35O1gcIYGGEJ1ytKya2R9rwOfBeXrL1
+   Oy6TY7CeWEd3cPRXPFGS8jKVoQmzBplzhwctRVHOj8y89KZLJmmHRmTW8
+   A==;
+X-CSE-ConnectionGUID: IEFoHSQHSmqs3BUZhqB4tA==
+X-CSE-MsgGUID: 9M90Ca9USxKd5uOpCpYVLg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11042"; a="8586230"
+X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
+   d="scan'208";a="8586230"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 10:50:09 -0700
+X-CSE-ConnectionGUID: xrZhma/XTdiCshLxpuCXCA==
+X-CSE-MsgGUID: A55UTogyQJ+4WxvqXu3GaA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
+   d="scan'208";a="21380981"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 10:50:08 -0700
+Date: Fri, 12 Apr 2024 10:54:39 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
+ Zijlstra <peterz@infradead.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Thomas Gleixner <tglx@linutronix.de>, Lu Baolu
+ <baolu.lu@linux.intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Hansen, Dave" <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H.
+ Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
+ <mingo@redhat.com>, "Luse, Paul E" <paul.e.luse@intel.com>, "Williams, Dan
+ J" <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>, "Raj, Ashok"
+ <ashok.raj@intel.com>, "maz@kernel.org" <maz@kernel.org>,
+ "seanjc@google.com" <seanjc@google.com>, Robin Murphy
+ <robin.murphy@arm.com>, "jim.harris@samsung.com" <jim.harris@samsung.com>,
+ "a.manzanares@samsung.com" <a.manzanares@samsung.com>, Bjorn Helgaas
+ <helgaas@kernel.org>, "Zeng, Guang" <guang.zeng@intel.com>,
+ "robert.hoo.linux@gmail.com" <robert.hoo.linux@gmail.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 06/13] x86/irq: Set up per host CPU posted interrupt
+ descriptors
+Message-ID: <20240412105439.37aa12cc@jacob-builder>
+In-Reply-To: <BN9PR11MB527696368E4022DBAC9DD7768C042@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
+	<20240405223110.1609888-7-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB527696368E4022DBAC9DD7768C042@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240222173942.1481394-1-pasha.tatashin@soleen.com> <ZhkIhtTCWg6bgl1o@8bytes.org>
-In-Reply-To: <ZhkIhtTCWg6bgl1o@8bytes.org>
-From: Pasha Tatashin <pasha.tatashin@soleen.com>
-Date: Fri, 12 Apr 2024 13:06:52 -0400
-Message-ID: <CA+CK2bCjXGTP7ie=rFtXrmRaWxn_6VmfZb5BXR13z9a3scfETg@mail.gmail.com>
-Subject: Re: [PATCH v5 00/11] IOMMU memory observability
-To: Joerg Roedel <joro@8bytes.org>
-Cc: akpm@linux-foundation.org, alim.akhtar@samsung.com, alyssa@rosenzweig.io, 
-	asahi@lists.linux.dev, baolu.lu@linux.intel.com, bhelgaas@google.com, 
-	cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com, 
-	dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de, 
-	iommu@lists.linux.dev, jernej.skrabec@gmail.com, jonathanh@nvidia.com, 
-	krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org, 
-	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-mm@kvack.org, linux-rockchip@lists.infradead.org, 
-	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
-	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st, 
-	mhiramat@kernel.org, m.szyprowski@samsung.com, paulmck@kernel.org, 
-	rdunlap@infradead.org, robin.murphy@arm.com, samuel@sholland.org, 
-	suravee.suthikulpanit@amd.com, sven@svenpeter.dev, thierry.reding@gmail.com, 
-	tj@kernel.org, tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org, 
-	will@kernel.org, yu-cheng.yu@intel.com, rientjes@google.com, 
-	bagasdotme@gmail.com, mkoutny@suse.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-> Some problems with this:
->
->   1. I get DKIM failures when downloading this patch-set with b4, can
->      you please send them via a mailserver with working DKIM?
+Hi Kevin,
 
-I was in the process of migrating from google domains to a different
-registrar, but I think now the issue is resolved. I will verify it.
+On Fri, 12 Apr 2024 09:16:25 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
->   2. They don't apply to v6.9-rc3. Please rebase to that version and
->      are-send.
-
-I will.
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Saturday, April 6, 2024 6:31 AM
+> > 
+> > +#ifdef CONFIG_X86_POSTED_MSI
+> > +
+> > +/* Posted Interrupt Descriptors for coalesced MSIs to be posted */
+> > +DEFINE_PER_CPU_ALIGNED(struct pi_desc, posted_interrupt_desc);  
+> 
+> 'posted_msi_desc' to be more accurate?
+makes sense, will do.
 
 Thanks,
-Pasha
+
+Jacob
