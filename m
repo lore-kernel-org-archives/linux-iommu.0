@@ -1,180 +1,97 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E1A1148313
-	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 16:45:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3851914A09E
+	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 17:07:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712940355; cv=none; b=N8SC1DQxSpz2PGTEkQdf4TCAYqOPCC8gkFtB6KH05T3pm8MCDLL7KdUyf6LZfCyxa5aw9QFtfVijh6oQMxw9UH2VhdilMkvaNJdyOLRkblQcr0xdl1kFcaE/+bsQUKx8VkSNbcv8UVrd+38OF01b8mlhohmJJ4J+dTzDJwrGEEM=
+	t=1712941650; cv=none; b=FZIar/tN0vn1Mc1EfS9iiyhGsmfdkhmQ4P2YEDPNenlJ+jUQM7ldFWpLEXyAFAQfwKhW8vqKZC011akVSLVs4kd2SHPHrS4ChtYHSBiFXpqh8GNnnMbKPeVQUduqFAxDjNUHLvC3Eu680STQntrDmJ11tInkV6UDLsOBohTqaN0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712940355; c=relaxed/simple;
-	bh=oM4DdzknAHFnE6mRuMA2wl+932rmGVqLnvyBIg43hbc=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OzxFUE1l+pm+iu0UakQTtphg+wV3AoSRL/pbz6zI25XQ1vPfXAvzoohgYXccxt+z3ZEaj+aSvTpFffcM6mu4XqlDdOKpv65Vjt/FbjJIxg+qPSiHajymH6pBOz6SvdRy3IFvgCMyBNuLaBN7Q8Ugp3ClKcDgfMR5o74hsJHgm6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eprr8eHH; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1712941650; c=relaxed/simple;
+	bh=5JFuYVePpmhoWdZk8WbeOoqlnSWSkoUYiXSyfRvyGWg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ii7ELmMO6H5RwV8ZQYW66t8iJM0933uSE7mv1OQRG0gilmOzHuiFq3gljQalcCPSHmYbNR1YpLj1Fu8r6Pgz9RZIjF4ru0CJv5zq5WMugmb5hyrwPcsDNcN2AsCp/OVg8+0eYXGe9hQwHAMrYNMTQmv5mzahZ1lf77CM8VJ3dr8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=NHlkspaW; arc=none smtp.client-ip=209.85.160.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eprr8eHH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1712940354; x=1744476354;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=oM4DdzknAHFnE6mRuMA2wl+932rmGVqLnvyBIg43hbc=;
-  b=eprr8eHHXXfXFNLW7WEPRihqPXeZ+MnbX26R5Y2Ami0pBpVSEkkWBtLD
-   d8tSf7J6XlPHraEYbXrJ1vjBq4SrDRBOqSy8+TcUTaWdsZY5+JO9UVv1M
-   zjzwefHLrMk4fTGgQpRtOsGT6mZcj3QL2cy70nQn4AYBMt1+LkPL6yMzf
-   glaIqLU3PyoOjQLx7EcGF0H5xLO0zgmY0wcrx5MjvDPOh/8h9kT2xB2Pl
-   sUX11YmQYFYi/e4ZDz5sEpYvqGlSw0KpS6AzH0pZYGcG0F9l5BA5yw2Sj
-   yOjsRTsWtw+WA1qB2qd2rGLLJLQTUd+bq7dH7ikkNS6ZJt/ZsBA4zflCe
-   Q==;
-X-CSE-ConnectionGUID: 8QhoGocRTcWTx8IxyMglTA==
-X-CSE-MsgGUID: BM+QXj9uTyuybkUH4zOZCQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11042"; a="8579709"
-X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
-   d="scan'208";a="8579709"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 09:45:53 -0700
-X-CSE-ConnectionGUID: 80Tnr3S/TTO8zdcQeBQRVg==
-X-CSE-MsgGUID: 0APbk5XIQdKfqoIoV9mNrw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
-   d="scan'208";a="21703737"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 09:45:52 -0700
-Date: Fri, 12 Apr 2024 09:50:22 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
- Zijlstra <peterz@infradead.org>, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>, Thomas Gleixner <tglx@linutronix.de>, Lu Baolu
- <baolu.lu@linux.intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Hansen, Dave" <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H.
- Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
- <mingo@redhat.com>, "Luse, Paul E" <paul.e.luse@intel.com>, "Williams, Dan
- J" <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>, "Raj, Ashok"
- <ashok.raj@intel.com>, "maz@kernel.org" <maz@kernel.org>,
- "seanjc@google.com" <seanjc@google.com>, Robin Murphy
- <robin.murphy@arm.com>, "jim.harris@samsung.com" <jim.harris@samsung.com>,
- "a.manzanares@samsung.com" <a.manzanares@samsung.com>, Bjorn Helgaas
- <helgaas@kernel.org>, "Zeng, Guang" <guang.zeng@intel.com>,
- "robert.hoo.linux@gmail.com" <robert.hoo.linux@gmail.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2 07/13] x86/irq: Factor out calling ISR from
- common_interrupt
-Message-ID: <20240412095022.592508c9@jacob-builder>
-In-Reply-To: <BN9PR11MB52769DCDF70B551FCFF22DC58C042@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
-	<20240405223110.1609888-8-jacob.jun.pan@linux.intel.com>
-	<BN9PR11MB52769DCDF70B551FCFF22DC58C042@BN9PR11MB5276.namprd11.prod.outlook.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="NHlkspaW"
+Received: by mail-qt1-f181.google.com with SMTP id d75a77b69052e-434da723234so2370921cf.2
+        for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 10:07:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1712941648; x=1713546448; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=ICZfIsGcQEVbd3Zt1qoYBnvko2GDh9Nz2dJVHbfGpSA=;
+        b=NHlkspaWQX9FJJosTayErKC8rUY0/QrkhzaHcvUVug3IhOfoYmLw5RFsLg1dB5dMyk
+         OXuITzcrnEL98pK3QyREnum12sR0rcJMv2qdZhy9Ilja6PFsfSIdoXL2lqpuukjLGL0Z
+         fZEmJ+Ky4/LCsqmQHbtGKaSSFA22HPaVgEL4rDW3L0pR2Zc2ghwy6nyD4Iv7O1LNv6hA
+         lFOllqXKmjUNeUVAsEABAopg+cQtBflDQyJ0neTWnbDaEANoSJLgEumM2ErQC8eGi4kR
+         P7vhfx51tvCJONZLuMbqJy98SzoQuykUXdlg/P4YZiVojW7zp+tZ2BCewUbPtM6ulhlj
+         I0pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712941648; x=1713546448;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ICZfIsGcQEVbd3Zt1qoYBnvko2GDh9Nz2dJVHbfGpSA=;
+        b=suNQNN1EhE5rjdJn22/Mj+JQ+LHoIySIHRsT7laYaTAp3WsIWxEbG3eOxLv8zbQJ8H
+         mnJU8YifBG3K7zmcQUxsLaWsiCAVf+JaHkQLgP81KRGGylqga9aVx1eZn69izaT0buww
+         HRfTESKHajRqzNGn0yjv8hhZLbC2FdwuI9a/y6xVy7icSVmWdYZlcXguMeo99wTeTmim
+         +XPssuzZhdoRWwXbTeTJei5HXZt+lLKyOZS4fcj9rIALQTazluIpj91LJUKR4FOJXoN9
+         Whf/GxeVtr9ROHQlSaBG+yzQjNH1GZNpl3PP1T8kC/yOhFuxB4nDI8gSnIg2u4nc4rkR
+         zfhQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVa66QSNrgPnGx0HGxYyyEPQSnL7DYq1tZM6KVvThptUh078IUhUBAw8jzUoPIYWaaGaCDPPLLdSXYpn/Qy/YWOIViKZOk=
+X-Gm-Message-State: AOJu0YzKk1hnOrV65xPfBsy8oibTjEs8QkYFyfQhKNnqS4YAf0sBpED+
+	pD24H3D1/FYlgrLTNL9YGTleLnWDV08I6QrL84o2uBGffAfySMWYGw74BK9ILuKCAP+gbUjXSuA
+	zCQPQxULkXSj1+kMZib1xaLgtg2MF8sAbwsde0Q==
+X-Google-Smtp-Source: AGHT+IEXzcV5Ah/di4pWjeRuzI8bp8L5qdlySBiHU1tn4/tN30fitecIDCoiEvXNx6whVxsKgO+qRvqVW4OxECf95F8=
+X-Received: by 2002:a05:622a:606:b0:434:89af:bd3b with SMTP id
+ z6-20020a05622a060600b0043489afbd3bmr3794375qta.40.1712941648259; Fri, 12 Apr
+ 2024 10:07:28 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20240222173942.1481394-1-pasha.tatashin@soleen.com> <ZhkIhtTCWg6bgl1o@8bytes.org>
+In-Reply-To: <ZhkIhtTCWg6bgl1o@8bytes.org>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Fri, 12 Apr 2024 13:06:52 -0400
+Message-ID: <CA+CK2bCjXGTP7ie=rFtXrmRaWxn_6VmfZb5BXR13z9a3scfETg@mail.gmail.com>
+Subject: Re: [PATCH v5 00/11] IOMMU memory observability
+To: Joerg Roedel <joro@8bytes.org>
+Cc: akpm@linux-foundation.org, alim.akhtar@samsung.com, alyssa@rosenzweig.io, 
+	asahi@lists.linux.dev, baolu.lu@linux.intel.com, bhelgaas@google.com, 
+	cgroups@vger.kernel.org, corbet@lwn.net, david@redhat.com, 
+	dwmw2@infradead.org, hannes@cmpxchg.org, heiko@sntech.de, 
+	iommu@lists.linux.dev, jernej.skrabec@gmail.com, jonathanh@nvidia.com, 
+	krzysztof.kozlowski@linaro.org, linux-doc@vger.kernel.org, 
+	linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mm@kvack.org, linux-rockchip@lists.infradead.org, 
+	linux-samsung-soc@vger.kernel.org, linux-sunxi@lists.linux.dev, 
+	linux-tegra@vger.kernel.org, lizefan.x@bytedance.com, marcan@marcan.st, 
+	mhiramat@kernel.org, m.szyprowski@samsung.com, paulmck@kernel.org, 
+	rdunlap@infradead.org, robin.murphy@arm.com, samuel@sholland.org, 
+	suravee.suthikulpanit@amd.com, sven@svenpeter.dev, thierry.reding@gmail.com, 
+	tj@kernel.org, tomas.mudrunka@gmail.com, vdumpa@nvidia.com, wens@csie.org, 
+	will@kernel.org, yu-cheng.yu@intel.com, rientjes@google.com, 
+	bagasdotme@gmail.com, mkoutny@suse.com
+Content-Type: text/plain; charset="UTF-8"
 
-Hi Kevin,
+> Some problems with this:
+>
+>   1. I get DKIM failures when downloading this patch-set with b4, can
+>      you please send them via a mailserver with working DKIM?
 
-On Fri, 12 Apr 2024 09:21:45 +0000, "Tian, Kevin" <kevin.tian@intel.com>
-wrote:
+I was in the process of migrating from google domains to a different
+registrar, but I think now the issue is resolved. I will verify it.
 
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Saturday, April 6, 2024 6:31 AM
-> > 
-> > Prepare for calling external IRQ handlers directly from the posted MSI
-> > demultiplexing loop. Extract the common code with common interrupt to
-> > avoid code duplication.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  arch/x86/kernel/irq.c | 23 ++++++++++++++---------
-> >  1 file changed, 14 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
-> > index f39f6147104c..c54de9378943 100644
-> > --- a/arch/x86/kernel/irq.c
-> > +++ b/arch/x86/kernel/irq.c
-> > @@ -242,18 +242,10 @@ static __always_inline void handle_irq(struct
-> > irq_desc *desc,
-> >  		__handle_irq(desc, regs);
-> >  }
-> > 
-> > -/*
-> > - * common_interrupt() handles all normal device IRQ's (the special SMP
-> > - * cross-CPU interrupts have their own entry points).
-> > - */
-> > -DEFINE_IDTENTRY_IRQ(common_interrupt)
-> > +static __always_inline void call_irq_handler(int vector, struct
-> > pt_regs *regs) {
-> > -	struct pt_regs *old_regs = set_irq_regs(regs);
-> >  	struct irq_desc *desc;
-> > 
-> > -	/* entry code tells RCU that we're not quiescent.  Check it. */
-> > -	RCU_LOCKDEP_WARN(!rcu_is_watching(), "IRQ failed to wake up
-> > RCU");
-> > -
-> >  	desc = __this_cpu_read(vector_irq[vector]);
-> >  	if (likely(!IS_ERR_OR_NULL(desc))) {
-> >  		handle_irq(desc, regs);  
-> 
-> the hidden lines has one problem:
-> 
-> 	} else {
-> 		apic_eoi();
-> 
-> 		if (desc == VECTOR_UNUSED) {
-> 			...
-> 
-> there will be two EOI's for unused vectors, adding the one
-> in sysvec_posted_msi_notification().
+>   2. They don't apply to v6.9-rc3. Please rebase to that version and
+>      are-send.
 
-Indeed this unlikely case could cause lost interrupt. Imagine we have:
-
-- IDT vector N (MSI notification), O, and P (other high-priority
-system vectors).
-- Device MSI vector A which triggers N.
-
-Action 			APIC IRR		APIC ISR
----------------------------------------------------------
-Device MSI A		N
-APIC accepts N		-			N
-New IRQs arrive		O,P			N
-handle_irq(A)
-eoi() due to A's fault	-			O,P
-eoi in post_msi		-			P
-----------------------------------------------------------
-The second EOI clears ISR for vector O but missed processing it.
-
-
-Intel SDM 11.8.4 for background.
-"The IRR contains the active interrupt requests that have been accepted,
-but not yet dispatched to the processor for servicing. When the local APIC
-accepts an interrupt, it sets the bit in the IRR that corresponds the
-vector of the accepted interrupt. When the processor core is ready to
-handle the next interrupt, the local APIC clears the highest priority IRR
-bit that is set and sets the corresponding ISR bit. The vector for the
-highest priority bit set in the ISR is then dispatched to the processor
-core for servicing.
-
-While the processor is servicing the highest priority interrupt, the local
-APIC can send additional fixed interrupts by setting bits in the IRR. When
-the interrupt service routine issues a write to the EOI register (see
-Section 11.8.5, Signaling Interrupt Servicing Completion), the local APIC
-responds by clearing the highest priority ISR bit that is set. It then
-repeats the process of clearing the highest priority bit in the IRR and
-setting the corresponding bit in the ISR. The processor core then begins
-executing the service routing for the highest priority bit set in the ISR
-"
-
-I need to avoid the duplicated EOI in this case and at minimum cost for the
-hot path.
+I will.
 
 Thanks,
-
-Jacob
+Pasha
