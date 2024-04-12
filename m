@@ -1,21 +1,20 @@
 Received: from luna.linkmauve.fr (luna.linkmauve.fr [82.65.109.163])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22B04149C70
-	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 15:15:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E22CD149C45
+	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 15:15:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=82.65.109.163
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712934920; cv=none; b=O5f7jQ0St3oFCKJQjWe6LVp0qn8mNN6lvuZdntaX0sBFxZaa5ymF8Anxhr8lZlC8ql2bIAtHAV2wvPkTzIRekj8RVLUB2z/XqQiKGo3yWD1am5xR2Q5vUolsL7PGtwN332tHkd8i5sXdZvF1M6/CeX5fyUQEAIRKntfMKc9h2wc=
+	t=1712934921; cv=none; b=iJ1wh+bVE9D3kkscmKvyGX+aG6uelbk2iLPOaTdCkjwzLq7DBNB2flnn7WrvrtK19hss+1LrxxWP3q7AohagQs1sNrVt0vHVLFemMFiYFaTWmeMH+u+WYb3hj3vGPY3Rkosbagd9fKEtnTrIgimQNMDfeW/s+/RagFN3y7cTW84=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712934920; c=relaxed/simple;
-	bh=khnIpkn4yrHxzU3ugFrDelJTUu9XiJ/2d4EE3ztbAUQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=jfk6bsDcmNThySM39huZuLoEMhQ+H2OBAL82aw/IeTBA+dQCq55zBHJuwf2GmWssQtASDM3mQudvP0vmN0Q9lbQaVReR/UhzVVr73o5H6jgMdY7XeoMkH4kxuhFgA+ivuyWqau92tlUU9x69GS7SG/3k4CiT95S/FnDIS3XkhB4=
+	s=arc-20240116; t=1712934921; c=relaxed/simple;
+	bh=D3+ff2nIVEmIX8x1WaPKMezVEZTZ8Wnx3xAMNbQKNRo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=RULGEfj6jvTE1SORCJRfE+FZJs+s32DiYaRWc0EIhZq3J5e8fqm0NWlh+yEXk+x3Ob0w/8qmV/HxVjCMJMgCIPFSGzc1XcpJzgQg6eNZPoTYskeKjP0eOd1UOWRPywEQTXinCaxskzg2tLVCK20fJBu9asfz3kq6xU3M73ikaUY=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr; spf=pass smtp.mailfrom=linkmauve.fr; arc=none smtp.client-ip=82.65.109.163
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linkmauve.fr
 Received: by luna.linkmauve.fr (Postfix, from userid 1000)
-	id 7773A10A2677; Fri, 12 Apr 2024 17:15:17 +0200 (CEST)
+	id 7066A10A2673; Fri, 12 Apr 2024 17:15:17 +0200 (CEST)
 From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
 To: linux-kernel@vger.kernel.org
 Cc: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
@@ -41,69 +40,53 @@ Cc: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
 	devicetree@vger.kernel.org,
 	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev
-Subject: [PATCH v3 2/2] arm64: dts: rockchip: Add one VEPU121 to rk3588
-Date: Fri, 12 Apr 2024 17:15:11 +0200
-Message-ID: <20240412151515.837824-3-linkmauve@linkmauve.fr>
+Subject: [PATCH v3 0/2] Enable JPEG encoding on rk3588
+Date: Fri, 12 Apr 2024 17:15:09 +0200
+Message-ID: <20240412151515.837824-1-linkmauve@linkmauve.fr>
 X-Mailer: git-send-email 2.44.0
-In-Reply-To: <20240412151515.837824-1-linkmauve@linkmauve.fr>
-References: <20240412151515.837824-1-linkmauve@linkmauve.fr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The TRM (version 1.0 page 385) lists five VEPU121 cores, but only four
-interrupts are listed (on page 24), and the driver would expose them all
-as different video nodes so only one of them is exposed for now.
+Only the JPEG encoder is available for now, although there are patches
+for the undocumented VP8 encoder floating around[0].
 
-Signed-off-by: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
----
- arch/arm64/boot/dts/rockchip/rk3588s.dtsi | 29 +++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
+This has been tested on a rock-5b, resulting in four /dev/video*
+encoders.  The userspace program I’ve been using to test them is
+Onix[1], using the jpeg-encoder example, it will pick one of these four
+at random (but displays the one it picked):
+% ffmpeg -i <input image> -pix_fmt yuvj420p temp.yuv
+% jpeg-encoder temp.yuv <width> <height> NV12 <quality> output.jpeg
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-index 87b83c87bd55..5c6cc4cd81df 100644
---- a/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3588s.dtsi
-@@ -2488,6 +2488,35 @@ gpio4: gpio@fec50000 {
- 		};
- 	};
- 
-+	/*
-+	 * Currently only one of the four JPEG encoders is exposed, this
-+	 * reduces the optimal throughput by four.
-+	 *
-+	 * Once the driver is made to expose all four devices as a single video
-+	 * node, the rest can be enabled again, see the full patch here:
-+	 * https://lore.kernel.org/linux-media/20240327134115.424846-1-linkmauve@linkmauve.fr/T/#m3a6df0ba15e4af40b998b0ff2a02b0dd0d730c8e
-+	 */
-+
-+	jpeg_enc0: video-codec@fdba0000 {
-+		compatible = "rockchip,rk3588-vepu121", "rockchip,rk3568-vepu";
-+		reg = <0x0 0xfdba0000 0x0 0x800>;
-+		interrupts = <GIC_SPI 122 IRQ_TYPE_LEVEL_HIGH 0>;
-+		clocks = <&cru ACLK_JPEG_ENCODER0>, <&cru HCLK_JPEG_ENCODER0>;
-+		clock-names = "aclk", "hclk";
-+		iommus = <&jpeg_enc0_mmu>;
-+		power-domains = <&power RK3588_PD_VDPU>;
-+	};
-+
-+	jpeg_enc0_mmu: iommu@fdba0800 {
-+		compatible = "rockchip,rk3588-iommu", "rockchip,rk3568-iommu";
-+		reg = <0x0 0xfdba0800 0x0 0x40>;
-+		interrupts = <GIC_SPI 121 IRQ_TYPE_LEVEL_HIGH 0>;
-+		clocks = <&cru ACLK_JPEG_ENCODER0>, <&cru HCLK_JPEG_ENCODER0>;
-+		clock-names = "aclk", "iface";
-+		power-domains = <&power RK3588_PD_VDPU>;
-+		#iommu-cells = <0>;
-+	};
-+
- 	av1d: video-codec@fdc70000 {
- 		compatible = "rockchip,rk3588-av1-vpu";
- 		reg = <0x0 0xfdc70000 0x0 0x800>;
+[0] https://patchwork.kernel.org/project/linux-rockchip/list/?series=789885
+[1] https://crates.io/crates/onix
+
+Changes since v2:
+- Only expose a single VEPU121, since the driver doesn’t yet support
+  exposing them all as a single video node to userspace.
+
+Changes since v1:
+- Dropped patches 1 and 4.
+- Use the proper compatible form, since this device should be fully
+  compatible with the VEPU of rk356x.
+- Describe where the VEPU121 name comes from, and list other encoders
+  and decoders present in this SoC.
+- Properly test the device tree changes, I previously couldn’t since I
+  was using a too recent version of python-jsonschema…
+
+Emmanuel Gil Peyrot (2):
+  media: dt-binding: media: Document rk3588’s VEPU121
+  arm64: dts: rockchip: Add one VEPU121 to rk3588
+
+ .../bindings/media/rockchip,rk3568-vepu.yaml  |  8 +++--
+ arch/arm64/boot/dts/rockchip/rk3588s.dtsi     | 29 +++++++++++++++++++
+ 2 files changed, 35 insertions(+), 2 deletions(-)
+
 -- 
 2.44.0
 
