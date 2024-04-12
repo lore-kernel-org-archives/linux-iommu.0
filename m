@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46BBC50241
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FA5E4F5ED
 	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 08:21:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712910087; cv=none; b=YssYIbbKqO3W7IdmTj6fqpSCV9VEMwI/BH087vQzP6a/w4UDBpM3MSHX8xHd1u3f+SRhuvtDNlgYo/KS1rXWYxUKBdhB8i7kEm6IBBZzQvDZl3dVC/x9HTciORsreUvo4vRVBkAGax3T83NS1bYoprw4Jhn5EB1nqrkmILRm82A=
+	t=1712910088; cv=none; b=OqE5/enmmepu6kwbj04OoDyZfwoWft5LjTr22ekMqK1UOi8YEyV0+sttQsCVH5Gd7W6eeBy2htrVGddgsVU4ixYUBD8y6F7b9sgOw1nlVNWNlLrpb+9Pe6Db5BdypKtN/7DgWo//iMP+/ErG2wQ+g7o9JeGzrMir+M7I83SgiQ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712910087; c=relaxed/simple;
-	bh=jLjMOyugTL5/+7lybaOBxd433Z4MIv3gSjYWbqITPXc=;
+	s=arc-20240116; t=1712910088; c=relaxed/simple;
+	bh=xpCf82BSZgekIxtUm+EvMiqfVBz/KGSVCuqTnIOiUsU=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ZtKG5XtjVeKyi2Han8cU1QdZ0gmHXGJquSGT6V6+n2MNbIL/fHtEm0bEmOlceDRMMrl80dhgDZXVXUIESQX1YR7h7IAMPk+fNNLefRbMyQfnwERxRIq1Q3lvgw/Yb1WnCARfrjmYnrVy6/e+o/h8bHkg1KwEMYdP6lBQl0IMEz0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hxhp+nWa; arc=none smtp.client-ip=192.198.163.9
+	 MIME-Version; b=WGkQzYCNkWaqTjGoMquk3SN0GHy36gbSMxkVWkmOiqq9LK7J5Pv5bvKGPaK2duLyrcssJfujYf4emIMrs/9P39Be1I7YeDW7x7kLEAcHkBXH+gyMkDrc4cdmAnB10ftaFEzyGsKEx0+YafXoQvKARR8YgQhKVl7pVywvGCJnliI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fTUcuxxV; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hxhp+nWa"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fTUcuxxV"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1712910086; x=1744446086;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=jLjMOyugTL5/+7lybaOBxd433Z4MIv3gSjYWbqITPXc=;
-  b=hxhp+nWazzNQWQW0102UsBrHVEYg5g2VJLCKUssjYLzdOrC1OldJVICp
-   R84A8PTB4+JzH/qwpIuaT+zu0ApgjDSLVjCiPD0gAxjwiP81KUqz2W55O
-   wtHr1WlAksCWz/7LxxRwF7dND60ocJnqJ75NV86BNNK5C45su3AJZRUE2
-   +iCNO4pNOBc8MP8/Hr2ByrPNBW5DtoKJukmdvuQ4WfW/6N3FnS12vTFrq
-   LtD8QcMDJMmV4mYecIEwVCHsOOE2idZ/cLpwXREM7jVLe0GF0xP0SBFgH
-   VrDdppOV2OsaJN5/VEZQyLy+x0suTZhFxaKwukaJitxXMnb5isvmFGOit
-   Q==;
-X-CSE-ConnectionGUID: rut4FaryQFa3TUSIiObYbA==
-X-CSE-MsgGUID: xEp2037fTyaP3hFBXawVZw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11041"; a="19069429"
+  bh=xpCf82BSZgekIxtUm+EvMiqfVBz/KGSVCuqTnIOiUsU=;
+  b=fTUcuxxVoJhRi7+cDdNeU5iTSqWHY4ALstiPVSb+Wwd2bRpIzq+BR4Pt
+   2cMzlJHp582Go8laSUXlXQpHuzueIMJcTAI0vy3awuHHXqpVEulIRv5Nh
+   zHI09YlwEVnnpRjdhoT6sU3Pq+KJzzt0Zi7ZMdeFOymRN2QA7bUqjFxhy
+   WaMLK9iDs7vFYo7QtIPgIfc0QMqTXYK9yBnfyttq6MZXRtzw6l/4J1Bef
+   kM3frQxX7lSMByRNCwELYUqLifQITn9LnpOHYNtmfeyRcszdFc1prZE8y
+   +HNiPDj0TjhwlMUQc8MWyUsi+MDCugKFMMjvBe4fxB3dNMNQHlRwR5XTt
+   w==;
+X-CSE-ConnectionGUID: hGa5MBr1RZS2zkCTbVfPqg==
+X-CSE-MsgGUID: geRi+TmBTAy2riaomqUpew==
+X-IronPort-AV: E=McAfee;i="6600,9927,11041"; a="19069422"
 X-IronPort-AV: E=Sophos;i="6.07,195,1708416000"; 
-   d="scan'208";a="19069429"
+   d="scan'208";a="19069422"
 Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 01:21:26 -0700
-X-CSE-ConnectionGUID: yqcSNUxURnmmSB3/gIz9Rg==
-X-CSE-MsgGUID: eVhiK1TzQdakbtwlDeQTSQ==
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 01:21:25 -0700
+X-CSE-ConnectionGUID: lKW4bZxaSaylcWWgUV/TUA==
+X-CSE-MsgGUID: udEdc46zQk2cMlLb4kLCPw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,195,1708416000"; 
-   d="scan'208";a="25836280"
+   d="scan'208";a="25836273"
 Received: from 984fee00a4c6.jf.intel.com ([10.165.58.231])
-  by orviesa003.jf.intel.com with ESMTP; 12 Apr 2024 01:21:26 -0700
+  by orviesa003.jf.intel.com with ESMTP; 12 Apr 2024 01:21:25 -0700
 From: Yi Liu <yi.l.liu@intel.com>
 To: alex.williamson@redhat.com,
 	jgg@nvidia.com,
@@ -58,9 +58,9 @@ Cc: joro@8bytes.org,
 	baolu.lu@linux.intel.com,
 	zhenzhong.duan@intel.com,
 	jacob.jun.pan@intel.com
-Subject: [PATCH v2 4/4] vfio: Report PASID capability via VFIO_DEVICE_FEATURE ioctl
-Date: Fri, 12 Apr 2024 01:21:21 -0700
-Message-Id: <20240412082121.33382-5-yi.l.liu@intel.com>
+Subject: [PATCH v2 3/4] vfio: Add VFIO_DEVICE_PASID_[AT|DE]TACH_IOMMUFD_PT
+Date: Fri, 12 Apr 2024 01:21:20 -0700
+Message-Id: <20240412082121.33382-4-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240412082121.33382-1-yi.l.liu@intel.com>
 References: <20240412082121.33382-1-yi.l.liu@intel.com>
@@ -72,126 +72,179 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Today, vfio-pci hides the PASID capability of devices from userspace. Unlike
-other PCI capabilities, PASID capability is going to be reported to user by
-VFIO_DEVICE_FEATURE. Hence userspace could probe PASID capability by it.
-This is a bit different from the other capabilities which are reported to
-userspace when the user reads the device's PCI configuration space. There
-are two reasons for this.
+This adds ioctls for the userspace to attach/detach a given pasid of a
+vfio device to/from an IOAS/HWPT.
 
- - First, userspace like Qemu by default exposes all the available PCI
-   capabilities in vfio-pci config space to the guest as read-only, so
-   adding PASID capability in the vfio-pci config space will make it
-   exposed to the guest automatically while an old Qemu doesn't really
-   support it.
-
- - Second, the PASID capability does not exist on VFs (instead shares the
-   cap of the PF). Creating a virtual PASID capability in vfio-pci config
-   space needs to find a hole to place it, but doing so may require device
-   specific knowledge to avoid potential conflict with device specific
-   registers like hidden bits in VF's config space. It's simpler to move
-   this burden to the VMM instead of maintaining a quirk system in the kernel.
-
-Suggested-by: Alex Williamson <alex.williamson@redhat.com>
 Signed-off-by: Yi Liu <yi.l.liu@intel.com>
 ---
- drivers/vfio/pci/vfio_pci_core.c | 50 ++++++++++++++++++++++++++++++++
- include/uapi/linux/vfio.h        | 14 +++++++++
- 2 files changed, 64 insertions(+)
+ drivers/vfio/device_cdev.c | 51 +++++++++++++++++++++++++++++++++++
+ drivers/vfio/vfio.h        |  4 +++
+ drivers/vfio/vfio_main.c   |  8 ++++++
+ include/uapi/linux/vfio.h  | 55 ++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 118 insertions(+)
 
-diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-index d94d61b92c1a..ca64e461d435 100644
---- a/drivers/vfio/pci/vfio_pci_core.c
-+++ b/drivers/vfio/pci/vfio_pci_core.c
-@@ -1495,6 +1495,54 @@ static int vfio_pci_core_feature_token(struct vfio_device *device, u32 flags,
+diff --git a/drivers/vfio/device_cdev.c b/drivers/vfio/device_cdev.c
+index e75da0a70d1f..5326f1608ace 100644
+--- a/drivers/vfio/device_cdev.c
++++ b/drivers/vfio/device_cdev.c
+@@ -210,6 +210,57 @@ int vfio_df_ioctl_detach_pt(struct vfio_device_file *df,
  	return 0;
  }
  
-+static int vfio_pci_core_feature_pasid(struct vfio_device *device, u32 flags,
-+				       struct vfio_device_feature_pasid __user *arg,
-+				       size_t argsz)
++int vfio_df_ioctl_pasid_attach_pt(struct vfio_device_file *df,
++				  struct vfio_device_pasid_attach_iommufd_pt __user *arg)
 +{
-+	struct vfio_pci_core_device *vdev =
-+		container_of(device, struct vfio_pci_core_device, vdev);
-+	struct vfio_device_feature_pasid pasid = { 0 };
-+	struct pci_dev *pdev = vdev->pdev;
-+	u32 capabilities = 0;
-+	u16 ctrl = 0;
++	struct vfio_device_pasid_attach_iommufd_pt attach;
++	struct vfio_device *device = df->device;
++	unsigned long minsz;
 +	int ret;
 +
-+	/*
-+	 * Due to no PASID capability per VF, to be consistent, we do not
-+	 * support SET of the PASID capability for both PF and VF.
-+	 */
-+	ret = vfio_check_feature(flags, argsz, VFIO_DEVICE_FEATURE_GET,
-+				 sizeof(pasid));
-+	if (ret != 1)
-+		return ret;
++	minsz = offsetofend(struct vfio_device_pasid_attach_iommufd_pt, pt_id);
 +
-+	/* VF shares the PASID capability of its PF */
-+	if (pdev->is_virtfn)
-+		pdev = pci_physfn(pdev);
-+
-+	if (!pdev->pasid_enabled)
-+		goto out;
-+
-+#ifdef CONFIG_PCI_PASID
-+	pci_read_config_dword(pdev, pdev->pasid_cap + PCI_PASID_CAP,
-+			      &capabilities);
-+	pci_read_config_word(pdev, pdev->pasid_cap + PCI_PASID_CTRL,
-+			     &ctrl);
-+#endif
-+
-+	pasid.width = (capabilities >> 8) & 0x1f;
-+
-+	if (ctrl & PCI_PASID_CTRL_EXEC)
-+		pasid.capabilities |= VFIO_DEVICE_PASID_CAP_EXEC;
-+	if (ctrl & PCI_PASID_CTRL_PRIV)
-+		pasid.capabilities |= VFIO_DEVICE_PASID_CAP_PRIV;
-+
-+out:
-+	if (copy_to_user(arg, &pasid, sizeof(pasid)))
++	if (copy_from_user(&attach, arg, minsz))
 +		return -EFAULT;
++
++	if (attach.argsz < minsz || attach.flags)
++		return -EINVAL;
++
++	if (!device->ops->pasid_attach_ioas)
++		return -EOPNOTSUPP;
++
++	mutex_lock(&device->dev_set->lock);
++	ret = device->ops->pasid_attach_ioas(device, attach.pasid, &attach.pt_id);
++	mutex_unlock(&device->dev_set->lock);
++
++	return ret;
++}
++
++int vfio_df_ioctl_pasid_detach_pt(struct vfio_device_file *df,
++				  struct vfio_device_pasid_detach_iommufd_pt __user *arg)
++{
++	struct vfio_device_pasid_detach_iommufd_pt detach;
++	struct vfio_device *device = df->device;
++	unsigned long minsz;
++
++	minsz = offsetofend(struct vfio_device_pasid_detach_iommufd_pt, pasid);
++
++	if (copy_from_user(&detach, arg, minsz))
++		return -EFAULT;
++
++	if (detach.argsz < minsz || detach.flags)
++		return -EINVAL;
++
++	if (!device->ops->pasid_detach_ioas)
++		return -EOPNOTSUPP;
++
++	mutex_lock(&device->dev_set->lock);
++	device->ops->pasid_detach_ioas(device, detach.pasid);
++	mutex_unlock(&device->dev_set->lock);
++
 +	return 0;
 +}
 +
- int vfio_pci_core_ioctl_feature(struct vfio_device *device, u32 flags,
- 				void __user *arg, size_t argsz)
+ static char *vfio_device_devnode(const struct device *dev, umode_t *mode)
  {
-@@ -1508,6 +1556,8 @@ int vfio_pci_core_ioctl_feature(struct vfio_device *device, u32 flags,
- 		return vfio_pci_core_pm_exit(device, flags, arg, argsz);
- 	case VFIO_DEVICE_FEATURE_PCI_VF_TOKEN:
- 		return vfio_pci_core_feature_token(device, flags, arg, argsz);
-+	case VFIO_DEVICE_FEATURE_PASID:
-+		return vfio_pci_core_feature_pasid(device, flags, arg, argsz);
- 	default:
- 		return -ENOTTY;
+ 	return kasprintf(GFP_KERNEL, "vfio/devices/%s", dev_name(dev));
+diff --git a/drivers/vfio/vfio.h b/drivers/vfio/vfio.h
+index 50128da18bca..20d3cb283ba0 100644
+--- a/drivers/vfio/vfio.h
++++ b/drivers/vfio/vfio.h
+@@ -353,6 +353,10 @@ int vfio_df_ioctl_attach_pt(struct vfio_device_file *df,
+ 			    struct vfio_device_attach_iommufd_pt __user *arg);
+ int vfio_df_ioctl_detach_pt(struct vfio_device_file *df,
+ 			    struct vfio_device_detach_iommufd_pt __user *arg);
++int vfio_df_ioctl_pasid_attach_pt(struct vfio_device_file *df,
++				  struct vfio_device_pasid_attach_iommufd_pt __user *arg);
++int vfio_df_ioctl_pasid_detach_pt(struct vfio_device_file *df,
++				  struct vfio_device_pasid_detach_iommufd_pt __user *arg);
+ 
+ #if IS_ENABLED(CONFIG_VFIO_DEVICE_CDEV)
+ void vfio_init_device_cdev(struct vfio_device *device);
+diff --git a/drivers/vfio/vfio_main.c b/drivers/vfio/vfio_main.c
+index e97d796a54fb..a5cece9fff5e 100644
+--- a/drivers/vfio/vfio_main.c
++++ b/drivers/vfio/vfio_main.c
+@@ -1242,6 +1242,14 @@ static long vfio_device_fops_unl_ioctl(struct file *filep,
+ 		case VFIO_DEVICE_DETACH_IOMMUFD_PT:
+ 			ret = vfio_df_ioctl_detach_pt(df, uptr);
+ 			goto out;
++
++		case VFIO_DEVICE_PASID_ATTACH_IOMMUFD_PT:
++			ret = vfio_df_ioctl_pasid_attach_pt(df, uptr);
++			goto out;
++
++		case VFIO_DEVICE_PASID_DETACH_IOMMUFD_PT:
++			ret = vfio_df_ioctl_pasid_detach_pt(df, uptr);
++			goto out;
+ 		}
  	}
+ 
 diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index 9591dc24b75c..e50e55c67ab4 100644
+index 2b68e6cdf190..9591dc24b75c 100644
 --- a/include/uapi/linux/vfio.h
 +++ b/include/uapi/linux/vfio.h
-@@ -1513,6 +1513,20 @@ struct vfio_device_feature_bus_master {
- };
- #define VFIO_DEVICE_FEATURE_BUS_MASTER 10
+@@ -977,6 +977,61 @@ struct vfio_device_detach_iommufd_pt {
  
-+/**
-+ * Upon VFIO_DEVICE_FEATURE_GET, return the PASID capability for the device.
-+ * Zero width means no support for PASID.
+ #define VFIO_DEVICE_DETACH_IOMMUFD_PT		_IO(VFIO_TYPE, VFIO_BASE + 20)
+ 
++/*
++ * VFIO_DEVICE_PASID_ATTACH_IOMMUFD_PT - _IOW(VFIO_TYPE, VFIO_BASE + 21,
++ *					      struct vfio_device_pasid_attach_iommufd_pt)
++ * @argsz:	User filled size of this data.
++ * @flags:	Must be 0.
++ * @pasid:	The pasid to be attached.
++ * @pt_id:	Input the target id which can represent an ioas or a hwpt
++ *		allocated via iommufd subsystem.
++ *		Output the input ioas id or the attached hwpt id which could
++ *		be the specified hwpt itself or a hwpt automatically created
++ *		for the specified ioas by kernel during the attachment.
++ *
++ * Associate a pasid (of a cdev device) with an address space within the
++ * bound iommufd. Undo by VFIO_DEVICE_PASID_DETACH_IOMMUFD_PT or device fd
++ * close. This is only allowed on cdev fds.
++ *
++ * If a pasid is currently attached to a valid hw_pagetable (hwpt), without
++ * doing a VFIO_DEVICE_PASID_DETACH_IOMMUFD_PT, a second
++ * VFIO_DEVICE_PASID_ATTACH_IOMMUFD_PT ioctl passing in another hwpt id is
++ * allowed. This action, also known as a hwpt replacement, will replace the
++ * pasid's currently attached hwpt with a new hwpt corresponding to the given
++ * @pt_id.
++ *
++ * Return: 0 on success, -errno on failure.
 + */
-+struct vfio_device_feature_pasid {
-+	__u16 capabilities;
-+#define VFIO_DEVICE_PASID_CAP_EXEC	(1 << 0)
-+#define VFIO_DEVICE_PASID_CAP_PRIV	(1 << 1)
-+	__u8 width;
-+	__u8 __reserved;
++struct vfio_device_pasid_attach_iommufd_pt {
++	__u32	argsz;
++	__u32	flags;
++	__u32	pasid;
++	__u32	pt_id;
 +};
 +
-+#define VFIO_DEVICE_FEATURE_PASID 11
++#define VFIO_DEVICE_PASID_ATTACH_IOMMUFD_PT	_IO(VFIO_TYPE, VFIO_BASE + 21)
 +
- /* -------- API for Type1 VFIO IOMMU -------- */
- 
- /**
++/*
++ * VFIO_DEVICE_PASID_DETACH_IOMMUFD_PT - _IOW(VFIO_TYPE, VFIO_BASE + 22,
++ *					      struct vfio_device_pasid_detach_iommufd_pt)
++ * @argsz:	User filled size of this data.
++ * @flags:	Must be 0.
++ * @pasid:	The pasid to be detached.
++ *
++ * Remove the association of a pasid (of a cdev device) and its current
++ * associated address space.  After it, the pasid of the device should be
++ * in a blocking DMA state.  This is only allowed on cdev fds.
++ *
++ * Return: 0 on success, -errno on failure.
++ */
++struct vfio_device_pasid_detach_iommufd_pt {
++	__u32	argsz;
++	__u32	flags;
++	__u32	pasid;
++};
++
++#define VFIO_DEVICE_PASID_DETACH_IOMMUFD_PT	_IO(VFIO_TYPE, VFIO_BASE + 22)
++
+ /*
+  * Provide support for setting a PCI VF Token, which is used as a shared
+  * secret between PF and VF drivers.  This feature may only be set on a
 -- 
 2.34.1
 
