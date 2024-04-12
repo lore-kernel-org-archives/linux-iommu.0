@@ -1,92 +1,180 @@
-Received: from luna.linkmauve.fr (luna.linkmauve.fr [82.65.109.163])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E22CD149C45
-	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 15:15:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=82.65.109.163
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E1A1148313
+	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 16:45:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712934921; cv=none; b=iJ1wh+bVE9D3kkscmKvyGX+aG6uelbk2iLPOaTdCkjwzLq7DBNB2flnn7WrvrtK19hss+1LrxxWP3q7AohagQs1sNrVt0vHVLFemMFiYFaTWmeMH+u+WYb3hj3vGPY3Rkosbagd9fKEtnTrIgimQNMDfeW/s+/RagFN3y7cTW84=
+	t=1712940355; cv=none; b=N8SC1DQxSpz2PGTEkQdf4TCAYqOPCC8gkFtB6KH05T3pm8MCDLL7KdUyf6LZfCyxa5aw9QFtfVijh6oQMxw9UH2VhdilMkvaNJdyOLRkblQcr0xdl1kFcaE/+bsQUKx8VkSNbcv8UVrd+38OF01b8mlhohmJJ4J+dTzDJwrGEEM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712934921; c=relaxed/simple;
-	bh=D3+ff2nIVEmIX8x1WaPKMezVEZTZ8Wnx3xAMNbQKNRo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=RULGEfj6jvTE1SORCJRfE+FZJs+s32DiYaRWc0EIhZq3J5e8fqm0NWlh+yEXk+x3Ob0w/8qmV/HxVjCMJMgCIPFSGzc1XcpJzgQg6eNZPoTYskeKjP0eOd1UOWRPywEQTXinCaxskzg2tLVCK20fJBu9asfz3kq6xU3M73ikaUY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr; spf=pass smtp.mailfrom=linkmauve.fr; arc=none smtp.client-ip=82.65.109.163
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linkmauve.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linkmauve.fr
-Received: by luna.linkmauve.fr (Postfix, from userid 1000)
-	id 7066A10A2673; Fri, 12 Apr 2024 17:15:17 +0200 (CEST)
-From: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>
-To: linux-kernel@vger.kernel.org
-Cc: Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-	Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
-	Dragan Simic <dsimic@manjaro.org>,
-	Shreeya Patel <shreeya.patel@collabora.com>,
-	Chris Morgan <macromorgan@hotmail.com>,
-	Andy Yan <andy.yan@rock-chips.com>,
-	Nicolas Frattaroli <frattaroli.nicolas@gmail.com>,
-	linux-media@vger.kernel.org,
-	linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev
-Subject: [PATCH v3 0/2] Enable JPEG encoding on rk3588
-Date: Fri, 12 Apr 2024 17:15:09 +0200
-Message-ID: <20240412151515.837824-1-linkmauve@linkmauve.fr>
-X-Mailer: git-send-email 2.44.0
+	s=arc-20240116; t=1712940355; c=relaxed/simple;
+	bh=oM4DdzknAHFnE6mRuMA2wl+932rmGVqLnvyBIg43hbc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=OzxFUE1l+pm+iu0UakQTtphg+wV3AoSRL/pbz6zI25XQ1vPfXAvzoohgYXccxt+z3ZEaj+aSvTpFffcM6mu4XqlDdOKpv65Vjt/FbjJIxg+qPSiHajymH6pBOz6SvdRy3IFvgCMyBNuLaBN7Q8Ugp3ClKcDgfMR5o74hsJHgm6M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eprr8eHH; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eprr8eHH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712940354; x=1744476354;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=oM4DdzknAHFnE6mRuMA2wl+932rmGVqLnvyBIg43hbc=;
+  b=eprr8eHHXXfXFNLW7WEPRihqPXeZ+MnbX26R5Y2Ami0pBpVSEkkWBtLD
+   d8tSf7J6XlPHraEYbXrJ1vjBq4SrDRBOqSy8+TcUTaWdsZY5+JO9UVv1M
+   zjzwefHLrMk4fTGgQpRtOsGT6mZcj3QL2cy70nQn4AYBMt1+LkPL6yMzf
+   glaIqLU3PyoOjQLx7EcGF0H5xLO0zgmY0wcrx5MjvDPOh/8h9kT2xB2Pl
+   sUX11YmQYFYi/e4ZDz5sEpYvqGlSw0KpS6AzH0pZYGcG0F9l5BA5yw2Sj
+   yOjsRTsWtw+WA1qB2qd2rGLLJLQTUd+bq7dH7ikkNS6ZJt/ZsBA4zflCe
+   Q==;
+X-CSE-ConnectionGUID: 8QhoGocRTcWTx8IxyMglTA==
+X-CSE-MsgGUID: BM+QXj9uTyuybkUH4zOZCQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11042"; a="8579709"
+X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
+   d="scan'208";a="8579709"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 09:45:53 -0700
+X-CSE-ConnectionGUID: 80Tnr3S/TTO8zdcQeBQRVg==
+X-CSE-MsgGUID: 0APbk5XIQdKfqoIoV9mNrw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
+   d="scan'208";a="21703737"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 09:45:52 -0700
+Date: Fri, 12 Apr 2024 09:50:22 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
+ Zijlstra <peterz@infradead.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Thomas Gleixner <tglx@linutronix.de>, Lu Baolu
+ <baolu.lu@linux.intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Hansen, Dave" <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H.
+ Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
+ <mingo@redhat.com>, "Luse, Paul E" <paul.e.luse@intel.com>, "Williams, Dan
+ J" <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>, "Raj, Ashok"
+ <ashok.raj@intel.com>, "maz@kernel.org" <maz@kernel.org>,
+ "seanjc@google.com" <seanjc@google.com>, Robin Murphy
+ <robin.murphy@arm.com>, "jim.harris@samsung.com" <jim.harris@samsung.com>,
+ "a.manzanares@samsung.com" <a.manzanares@samsung.com>, Bjorn Helgaas
+ <helgaas@kernel.org>, "Zeng, Guang" <guang.zeng@intel.com>,
+ "robert.hoo.linux@gmail.com" <robert.hoo.linux@gmail.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 07/13] x86/irq: Factor out calling ISR from
+ common_interrupt
+Message-ID: <20240412095022.592508c9@jacob-builder>
+In-Reply-To: <BN9PR11MB52769DCDF70B551FCFF22DC58C042@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
+	<20240405223110.1609888-8-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB52769DCDF70B551FCFF22DC58C042@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Only the JPEG encoder is available for now, although there are patches
-for the undocumented VP8 encoder floating around[0].
+Hi Kevin,
 
-This has been tested on a rock-5b, resulting in four /dev/video*
-encoders.  The userspace program I’ve been using to test them is
-Onix[1], using the jpeg-encoder example, it will pick one of these four
-at random (but displays the one it picked):
-% ffmpeg -i <input image> -pix_fmt yuvj420p temp.yuv
-% jpeg-encoder temp.yuv <width> <height> NV12 <quality> output.jpeg
+On Fri, 12 Apr 2024 09:21:45 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-[0] https://patchwork.kernel.org/project/linux-rockchip/list/?series=789885
-[1] https://crates.io/crates/onix
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Saturday, April 6, 2024 6:31 AM
+> > 
+> > Prepare for calling external IRQ handlers directly from the posted MSI
+> > demultiplexing loop. Extract the common code with common interrupt to
+> > avoid code duplication.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  arch/x86/kernel/irq.c | 23 ++++++++++++++---------
+> >  1 file changed, 14 insertions(+), 9 deletions(-)
+> > 
+> > diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+> > index f39f6147104c..c54de9378943 100644
+> > --- a/arch/x86/kernel/irq.c
+> > +++ b/arch/x86/kernel/irq.c
+> > @@ -242,18 +242,10 @@ static __always_inline void handle_irq(struct
+> > irq_desc *desc,
+> >  		__handle_irq(desc, regs);
+> >  }
+> > 
+> > -/*
+> > - * common_interrupt() handles all normal device IRQ's (the special SMP
+> > - * cross-CPU interrupts have their own entry points).
+> > - */
+> > -DEFINE_IDTENTRY_IRQ(common_interrupt)
+> > +static __always_inline void call_irq_handler(int vector, struct
+> > pt_regs *regs) {
+> > -	struct pt_regs *old_regs = set_irq_regs(regs);
+> >  	struct irq_desc *desc;
+> > 
+> > -	/* entry code tells RCU that we're not quiescent.  Check it. */
+> > -	RCU_LOCKDEP_WARN(!rcu_is_watching(), "IRQ failed to wake up
+> > RCU");
+> > -
+> >  	desc = __this_cpu_read(vector_irq[vector]);
+> >  	if (likely(!IS_ERR_OR_NULL(desc))) {
+> >  		handle_irq(desc, regs);  
+> 
+> the hidden lines has one problem:
+> 
+> 	} else {
+> 		apic_eoi();
+> 
+> 		if (desc == VECTOR_UNUSED) {
+> 			...
+> 
+> there will be two EOI's for unused vectors, adding the one
+> in sysvec_posted_msi_notification().
 
-Changes since v2:
-- Only expose a single VEPU121, since the driver doesn’t yet support
-  exposing them all as a single video node to userspace.
+Indeed this unlikely case could cause lost interrupt. Imagine we have:
 
-Changes since v1:
-- Dropped patches 1 and 4.
-- Use the proper compatible form, since this device should be fully
-  compatible with the VEPU of rk356x.
-- Describe where the VEPU121 name comes from, and list other encoders
-  and decoders present in this SoC.
-- Properly test the device tree changes, I previously couldn’t since I
-  was using a too recent version of python-jsonschema…
+- IDT vector N (MSI notification), O, and P (other high-priority
+system vectors).
+- Device MSI vector A which triggers N.
 
-Emmanuel Gil Peyrot (2):
-  media: dt-binding: media: Document rk3588’s VEPU121
-  arm64: dts: rockchip: Add one VEPU121 to rk3588
+Action 			APIC IRR		APIC ISR
+---------------------------------------------------------
+Device MSI A		N
+APIC accepts N		-			N
+New IRQs arrive		O,P			N
+handle_irq(A)
+eoi() due to A's fault	-			O,P
+eoi in post_msi		-			P
+----------------------------------------------------------
+The second EOI clears ISR for vector O but missed processing it.
 
- .../bindings/media/rockchip,rk3568-vepu.yaml  |  8 +++--
- arch/arm64/boot/dts/rockchip/rk3588s.dtsi     | 29 +++++++++++++++++++
- 2 files changed, 35 insertions(+), 2 deletions(-)
 
--- 
-2.44.0
+Intel SDM 11.8.4 for background.
+"The IRR contains the active interrupt requests that have been accepted,
+but not yet dispatched to the processor for servicing. When the local APIC
+accepts an interrupt, it sets the bit in the IRR that corresponds the
+vector of the accepted interrupt. When the processor core is ready to
+handle the next interrupt, the local APIC clears the highest priority IRR
+bit that is set and sets the corresponding ISR bit. The vector for the
+highest priority bit set in the ISR is then dispatched to the processor
+core for servicing.
 
+While the processor is servicing the highest priority interrupt, the local
+APIC can send additional fixed interrupts by setting bits in the IRR. When
+the interrupt service routine issues a write to the EOI register (see
+Section 11.8.5, Signaling Interrupt Servicing Completion), the local APIC
+responds by clearing the highest priority ISR bit that is set. It then
+repeats the process of clearing the highest priority bit in the IRR and
+setting the corresponding bit in the ISR. The processor core then begins
+executing the service routing for the highest priority bit set in the ISR
+"
+
+I need to avoid the duplicated EOI in this case and at minimum cost for the
+hot path.
+
+Thanks,
+
+Jacob
