@@ -1,112 +1,133 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8D9AE14EC4A
-	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 18:04:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712945061; cv=none; b=F67RjIeZ9Lyq+VKPDGAne/TTpID9nfP4L6IX7KTlQoZ8VrTPz+iBMIkoXd4fyign17PBq3Nfc1jhwJB07jk5OMpxS+AC6wxjYqX/hjsXSIRVEV64sS44Tcb9wwBlIkX5ALE52KMoc98uzcqPxiKuw9Tgs8ffDkKFp6r3oAI2V3g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712945061; c=relaxed/simple;
-	bh=qwf4iTktdZ3kogIsYGsuqikgoOEh6G/surgwrdWnqNA=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=LobjUuNX/xxYk5u4D67ivAUove5ApYBFYjCBzMzQ513e+YBgRHDWfYbZi073SE+sKLt7+i6lwe99+qGyALcrNzSzlQpzKgT91Lp6FpLePpXTpxNB5Ti7MXeuF+Q6LFrlcrK2KiaQfAMqNWQtJ9nbF80JB/tq4Zc1igCiG9AEL2w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=4oI3tdmo; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="4oI3tdmo"
-Received: from 8bytes.org (p4ffe0bdf.dip0.t-ipconnect.de [79.254.11.223])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 5714D1C2BD5;
-	Fri, 12 Apr 2024 20:04:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1712945056;
-	bh=qwf4iTktdZ3kogIsYGsuqikgoOEh6G/surgwrdWnqNA=;
-	h=Date:From:To:Cc:Subject:From;
-	b=4oI3tdmol21X4wV3WCicN0mxhTEtT7kSQrM7BeKLpwzStS4i8pWBoptmauGdrvyYt
-	 K60C59/VG7bzlUyABLug7WGIeOPxm7CmA2mjbLOYJIpIvWjBV4bZnS2V1F2ppAHrMc
-	 hxARtbEBWW5ew2fCtaEn0zO6422bEvMjUfSa7V+0oQ9zx2hKHV7IZnrXuoHRsWnb91
-	 LX5TFCI5V0IhA6QKOAoqFclsimLn9Cm7nUtd6k3rsqWX/mzJgLYoeX8A8ANohaiTio
-	 REc4mGIk1U7Zab9oNX5ytskgMUmgiPGHkWDkAFIyvRsAIzXYBBFNHaEOFCgVOCF7So
-	 WPPSTzkcksdEA==
-Date: Fri, 12 Apr 2024 20:04:15 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev
-Subject: [git pull] IOMMU Fixes for Linux v6.9-rc3
-Message-ID: <Zhl3n4fWSWswqzpr@8bytes.org>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 904FE14D44F
+	for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 18:19:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712945941; cv=none; b=OGLgOgzSRkSng0pavjcpsHtHXvjZnImVKphI7vTY/ZBkURMiVFCkAJX4/C1A8RDc2lziMN7VlP2Fy4AqT+e52GZZu+7gZhwNigvukwQtpDq0ONcmRqerX7dlCNHAz2CgsCK9epEmK23wklroYhsKMVZIMKgoNx+Ln41TclSZ3+4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712945941; c=relaxed/simple;
+	bh=qcfdW48aCV8kl2oRwl5wUXBZK6N010eZxw0UUUS0LKk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ienWCaW78/eDv/yW6BINJ9TjeVx2kk9Uz2t9c7sReELIGBnQyiMu5B+CCbGgbPHtbxjkUveaS42C6pweuVx+bWWMrvYctqjGuRPRMvuhzbdxEHPk1FV803op7je8kOjCFRmLW4CBZ8OCYSqqGkVtR8sTkuH+d0WO8FiHjyfGCSc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K/aj0R8O; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K/aj0R8O"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1712945940; x=1744481940;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=qcfdW48aCV8kl2oRwl5wUXBZK6N010eZxw0UUUS0LKk=;
+  b=K/aj0R8Oigo8kB/u6g5F8z3pAWu7f8DEhTl+pKIPsY7h4C/b+cm3wsOx
+   yYwxYCSObhJGjxfUMzOpyYKhQXuB3pVSi0mwgt7abBx6YY813Nuc47TzX
+   Yed+5pJ11dOVg8LipbO5O2LBHj2kyWEpXBaeCA4YF+0Pw14NCfWLZz/HO
+   NGRSOzhtytiqueiN0ihQkGxmqYeMtT5MGHobKdNJGmgTXjEZzIsZBnNr+
+   kaZH1f825rf8Qp70KvUSepoi+Y6nRjj4DC/CLXjSRceYPmyl6TIpPrhSZ
+   l5Af8PKpmkayB6nJxtx79RVQ4QNyK6nlawglKINXeKiKCfjkCj3Y+uGf0
+   g==;
+X-CSE-ConnectionGUID: 47kVlU4vSQOtil1ri6O97Q==
+X-CSE-MsgGUID: RQ1O0capSF2rCGOSOeNUrQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11042"; a="12261429"
+X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
+   d="scan'208";a="12261429"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 11:19:00 -0700
+X-CSE-ConnectionGUID: taCPYSIGSIW2vzeZM8SWig==
+X-CSE-MsgGUID: uApujCAuS+uPPT+UvKgEGA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,196,1708416000"; 
+   d="scan'208";a="21869422"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Apr 2024 11:18:59 -0700
+Date: Fri, 12 Apr 2024 11:23:31 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
+ Zijlstra <peterz@infradead.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Thomas Gleixner <tglx@linutronix.de>, Lu Baolu
+ <baolu.lu@linux.intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Hansen, Dave" <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H.
+ Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
+ <mingo@redhat.com>, "Luse, Paul E" <paul.e.luse@intel.com>, "Williams, Dan
+ J" <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>, "Raj, Ashok"
+ <ashok.raj@intel.com>, "maz@kernel.org" <maz@kernel.org>,
+ "seanjc@google.com" <seanjc@google.com>, Robin Murphy
+ <robin.murphy@arm.com>, "jim.harris@samsung.com" <jim.harris@samsung.com>,
+ "a.manzanares@samsung.com" <a.manzanares@samsung.com>, Bjorn Helgaas
+ <helgaas@kernel.org>, "Zeng, Guang" <guang.zeng@intel.com>,
+ "robert.hoo.linux@gmail.com" <robert.hoo.linux@gmail.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 10/13] x86/irq: Extend checks for pending vectors to
+ posted interrupts
+Message-ID: <20240412112331.5a3c1d18@jacob-builder>
+In-Reply-To: <BN9PR11MB5276215478903C50701D05498C042@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
+	<20240405223110.1609888-11-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB5276215478903C50701D05498C042@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Linus,
+Hi Kevin,
 
-The following changes since commit fec50db7033ea478773b159e0e2efb135270e3b7:
+On Fri, 12 Apr 2024 09:25:57 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
 
-  Linux 6.9-rc3 (2024-04-07 13:22:46 -0700)
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Saturday, April 6, 2024 6:31 AM
+> > 
+> > During interrupt affinity change, it is possible to have interrupts
+> > delivered to the old CPU after the affinity has changed to the new one.
+> > To prevent lost interrupts, local APIC IRR is checked on the old CPU.
+> > Similar checks must be done for posted MSIs given the same reason.
+> > 
+> > Consider the following scenario:
+> > 	Device		system agent		iommu
+> > 	memory CPU/LAPIC
+> > 1	FEEX_XXXX
+> > 2			Interrupt request
+> > 3						Fetch IRTE	->
+> > 4						->Atomic Swap
+> > PID.PIR(vec) Push to Global
+> > Observable(GO)
+> > 5						if (ON*)
+> > 	i						done;*  
+> 
+> there is a stray 'i'
+will fix, thanks
 
-are available in the Git repository at:
+> 
+> > 						else
+> > 6							send a
+> > notification ->
+> > 
+> > * ON: outstanding notification, 1 will suppress new notifications
+> > 
+> > If the affinity change happens between 3 and 5 in IOMMU, the old CPU's
+> > posted
+> > interrupt request (PIR) could have pending bit set for the vector being
+> > moved.  
+> 
+> how could affinity change be possible in 3/4 when the cache line is
+> locked by IOMMU? Strictly speaking it's about a change after 4 and
+> before 6.
+SW can still perform affinity change on IRTE and do the flushing on IR
+cache after IOMMU fectched it (step 3). They are async events.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.9-rc3
+In step 4, the atomic swap is on the PID cacheline, not IRTE.
 
-for you to fetch changes up to b8246a2ad80a810cafbeddb30525278f9d64bca3:
-
-  iommu/amd: Change log message severity (2024-04-12 12:21:46 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v6.9-rc3
-
-Including:
-
-	- Intel VT-d Fixes:
-	  - Allocate local memory for PRQ page
-	  - Fix WARN_ON in iommu probe path
-	  - Fix wrong use of pasid config
-
-	- AMD IOMMU Fixes:
-	  - Lock inversion fix
-	  - Log message severity fix
-	  - Disable SNP when v2 page-tables are used
-
-	- Mediatek driver:
-	  - Fix module autoloading
-
-----------------------------------------------------------------
-Jacob Pan (1):
-      iommu/vt-d: Allocate local memory for page request queue
-
-Krzysztof Kozlowski (1):
-      iommu: mtk: fix module autoloading
-
-Lu Baolu (1):
-      iommu/vt-d: Fix WARN_ON in iommu probe path
-
-Vasant Hegde (3):
-      iommu/amd: Fix possible irq lock inversion dependency issue
-      iommu/amd: Do not enable SNP when V2 page table is enabled
-      iommu/amd: Change log message severity
-
-Xuchun Shang (1):
-      iommu/vt-d: Fix wrong use of pasid config
-
- drivers/iommu/amd/init.c      | 25 +++++++++++++------------
- drivers/iommu/amd/iommu.c     | 11 +++++++----
- drivers/iommu/intel/iommu.c   | 11 +++++++----
- drivers/iommu/intel/perfmon.c |  2 +-
- drivers/iommu/intel/svm.c     |  2 +-
- drivers/iommu/mtk_iommu.c     |  1 +
- drivers/iommu/mtk_iommu_v1.c  |  1 +
- 7 files changed, 31 insertions(+), 22 deletions(-)
-
-Please pull.
 
 Thanks,
 
-	Joerg
+Jacob
