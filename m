@@ -1,63 +1,91 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDA4043AC1;
-	Fri, 12 Apr 2024 20:17:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F13A2F875;
+	Fri, 12 Apr 2024 21:31:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712953050; cv=none; b=W0xo7F7RHZfeigcIbRjLxPBxcdnTIfcsXVOtRn0fCv8OVjsu1CBgWS/Pn41ATxPPMoG1IUtqbuXaCd8Zw8+xA+7sQVWhmO41NTnwi3yJMWlNKeWInoLl4fRpLP8GQkasCOeOg5EoWZIqMeAPlSAZ/bNdrS8WtLUPwGFUyDgQers=
+	t=1712957497; cv=none; b=JQ1YMCqTJMruQI3xYchdt6bIdPigVb7rW+3HetdAFg+3IX0XUI2jcnrnrhq01HM1NUZ0q5ezfERCT135+FnxisBYKQfsEORR/Tx0Zs+joOyOj5K8gmByH1xGe3nrmYf/uCy8iJ9d5WOiRUgWxA4zeddfiZUlxXqBFsx+jzuoM6g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712953050; c=relaxed/simple;
-	bh=XeYKWDAmiU+ijMz8HvnN3e/s2DNlpRN1ouiSnlAL2dE=;
-	h=Subject:From:In-Reply-To:References:Message-Id:Date:To:Cc; b=koWjDOPTXttMMMrUm5BMucYw/kJdU0V2kFuuYFKpaelAhmm1cWFPhCkui8Pb71ZnoiUxRY7rgMqaGDFmqh1/QE7OgWTLJiiPz2P2VEE3WpUKuo5NSV7+uCAvp1di52VtZKoctZoFez6dSpS0ePCCgIK4JsFo5y29xRrSl4WQ8UA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SN3gp99/; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712957497; c=relaxed/simple;
+	bh=ObWfLvWBq6s8s6uqs5mSK6jOY0sHRmTty6j0VqL6iHo=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition:In-Reply-To; b=I7qEiwnLK0GCMQ/oCfIhFj54yaEPTT9Ahw3p0czWMrqP5CupR8xw6tnvBDZRhfVHBKt7vNmrEJOnChhPORr8ibYMwD2nhRZtETWyOjJfebRzwXnRRgm0/9lVnHDGtbJtXBJyzPnrceGk7F3SHP5vaiOw08PpKQiY0bvlcPbr4Sw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hvCl0MJg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SN3gp99/"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C6E0FC113CC;
-	Fri, 12 Apr 2024 20:17:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hvCl0MJg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 891D7C113CC;
+	Fri, 12 Apr 2024 21:31:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712953049;
-	bh=XeYKWDAmiU+ijMz8HvnN3e/s2DNlpRN1ouiSnlAL2dE=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-	b=SN3gp99/53jJDx5ugUHBXUjQz4RTb2Ri+pdkME+i+BNBLbL4C7BI0zoJW0jsg7+X4
-	 dxGoJN8GXtqrGCROM7Jm6JF6hj5L0LRnZEnKb1g4orzut52xN48bn/wKJNHoCZvAr/
-	 zEYac6FYSZjuRw53MnQV8nH4JrSuaq9LlzAL9kCAk3h2ncZ2TPah+gkWG/3/y+rrLZ
-	 VvYYEY9DuLdJakN4enf2XSfDUMaxZwp0PARMlKAddNfP6TdQM7vySZtlM+KHjaMUOU
-	 yXgcBsJYiUCiasZcpESexcQ1itnydIWpoubYQ2jnv/1mM1VEifHuxnepoVMMk3fLDj
-	 n9npaCY41dZ1A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id BD48DDF7855;
-	Fri, 12 Apr 2024 20:17:29 +0000 (UTC)
-Subject: Re: [git pull] IOMMU Fixes for Linux v6.9-rc3
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <Zhl3n4fWSWswqzpr@8bytes.org>
-References: <Zhl3n4fWSWswqzpr@8bytes.org>
-X-PR-Tracked-List-Id: <iommu.lists.linux.dev>
-X-PR-Tracked-Message-Id: <Zhl3n4fWSWswqzpr@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.9-rc3
-X-PR-Tracked-Commit-Id: b8246a2ad80a810cafbeddb30525278f9d64bca3
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c7c4e1304c2ef69fc2b75b39e681d2c0cb9f1d55
-Message-Id: <171295304976.15771.7288432007426362317.pr-tracker-bot@kernel.org>
-Date: Fri, 12 Apr 2024 20:17:29 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>, Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+	s=k20201202; t=1712957496;
+	bh=ObWfLvWBq6s8s6uqs5mSK6jOY0sHRmTty6j0VqL6iHo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:From;
+	b=hvCl0MJgkzpgVnvrmbBdafROrWJnurNYNDoN3iLzVlKXXmSWHvYLVTQIboHDuaII5
+	 0cs/meBAWzu/nfQUtrSYwUNwMi2SuCqBbeVc6Y6m3VUD8ddoq3QdvyYYGNZzmZQdmX
+	 NrHPDKMPJgOR3t9UQmOk2QTWXvHjVl9krrbzXeMWAnPHfTj3n6Wxa89mQHIXnZ0OYA
+	 ZpxPLSPyd6BsiAFd6R+xqImO/SqrN8xOnETgYN4e5ZXheRk1yuVYbshk7KhTiNcAUi
+	 K/dUBAA6TH/2Wz1Qn93FQfrskac4VV/hpt3NeNHn8/lTtG6CNp5hDQkrQZ6tO3ZGkh
+	 +JtRLymU0gKWA==
+Date: Fri, 12 Apr 2024 16:31:34 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: linux-pci@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>, Kevin Tian <kevin.tian@intel.com>,
+	Marc Zyngier <maz@kernel.org>,
+	Reinette Chatre <reinette.chatre@intel.com>,
+	Jason Gunthorpe <jgg@nvidia.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Dave Jiang <dave.jiang@intel.com>, Megha Dey <megha.dey@intel.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
+Subject: Re: [PATCH v2 0/7] PCI/MSI: Remove IMS (Interrupt Message Store)
+ support for now
+Message-ID: <20240412213134.GA19180@bhelgaas>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240410221307.2162676-1-helgaas@kernel.org>
 
-The pull request you sent on Fri, 12 Apr 2024 20:04:15 +0200:
+On Wed, Apr 10, 2024 at 05:13:00PM -0500, Bjorn Helgaas wrote:
+> From: Bjorn Helgaas <bhelgaas@google.com>
+> 
+> IMS (Interrupt Message Store) support appeared in v6.2, but there are no
+> users yet.
+> 
+> Remove it for now.  We can add it back when a user comes along.
+> 
+> I propose to merge this via the PCI tree unless somebody else wants it.
+> 
+> 
+> Changes since v1 (https://lore.kernel.org/linux-pci/20240401232326.1794707-1-helgaas@kernel.org/):
+>   - Revert other IMS commits in IOMMU, apic, genirq, suggested by Kevin
+> 
+> Bjorn Helgaas (7):
+>   Revert "PCI/MSI: Provide stubs for IMS functions"
+>   Revert "PCI/MSI: Provide pci_ims_alloc/free_irq()"
+>   Revert "PCI/MSI: Provide IMS (Interrupt Message Store) support"
+>   Revert "iommu/amd: Enable PCI/IMS"
+>   Revert "iommu/vt-d: Enable PCI/IMS"
+>   Revert "x86/apic/msi: Enable PCI/IMS"
+>   Revert "genirq/msi: Provide constants for PCI/IMS support"
+> 
+>  arch/x86/kernel/apic/msi.c          |  5 ---
+>  drivers/iommu/amd/iommu.c           | 17 +--------
+>  drivers/iommu/intel/irq_remapping.c | 19 ++--------
+>  drivers/pci/msi/api.c               | 50 ------------------------
+>  drivers/pci/msi/irqdomain.c         | 59 -----------------------------
+>  include/linux/irqdomain_defs.h      |  1 -
+>  include/linux/msi.h                 |  2 -
+>  include/linux/msi_api.h             |  1 -
+>  include/linux/pci.h                 | 26 -------------
+>  9 files changed, 5 insertions(+), 175 deletions(-)
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v6.9-rc3
-
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c7c4e1304c2ef69fc2b75b39e681d2c0cb9f1d55
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+I applied this to pci/ims-removal for v6.10.
