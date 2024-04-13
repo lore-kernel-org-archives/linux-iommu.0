@@ -1,91 +1,217 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F13A2F875;
-	Fri, 12 Apr 2024 21:31:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C420179AA
+	for <iommu@lists.linux.dev>; Sat, 13 Apr 2024 00:25:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712957497; cv=none; b=JQ1YMCqTJMruQI3xYchdt6bIdPigVb7rW+3HetdAFg+3IX0XUI2jcnrnrhq01HM1NUZ0q5ezfERCT135+FnxisBYKQfsEORR/Tx0Zs+joOyOj5K8gmByH1xGe3nrmYf/uCy8iJ9d5WOiRUgWxA4zeddfiZUlxXqBFsx+jzuoM6g=
+	t=1712967928; cv=none; b=M+E+/TI0AZnccifHjteinZQxvh+D/FZKb4cTz73yMmKXiva/SpFqR6hne0TzNyaOHlaXSEFmoBL6vMOETJoWLmcA9UOCd9acpt5vfsBiP0NI4s/+OjpjwLzBmCqqdfjSMJJE55FNsL/KNDiv16hUEPqA5b2jzVv6DtWRZI7/9O0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712957497; c=relaxed/simple;
-	bh=ObWfLvWBq6s8s6uqs5mSK6jOY0sHRmTty6j0VqL6iHo=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=I7qEiwnLK0GCMQ/oCfIhFj54yaEPTT9Ahw3p0czWMrqP5CupR8xw6tnvBDZRhfVHBKt7vNmrEJOnChhPORr8ibYMwD2nhRZtETWyOjJfebRzwXnRRgm0/9lVnHDGtbJtXBJyzPnrceGk7F3SHP5vaiOw08PpKQiY0bvlcPbr4Sw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hvCl0MJg; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1712967928; c=relaxed/simple;
+	bh=M3Sws9Xq1UzqxeHQp2ggqKkuvHy+mXvA6zrymX1lBx0=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version; b=LyQHFt2EkG/FOmJKvzHQEmsL5uW4gX+YiU8z1POb1ZUgEmD5a1YWqBWUBfRPdyjh/sD4KCPJnRG7sE05iFefMYX0DKme75mt39TrX22Fco//slk3cniXSHO4b07V/+msrp9thQE2PMAN0c1ygsjDA9xndBCovNOrvuUMmQePACA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=aR34J9pv; arc=none smtp.client-ip=209.85.222.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hvCl0MJg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 891D7C113CC;
-	Fri, 12 Apr 2024 21:31:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1712957496;
-	bh=ObWfLvWBq6s8s6uqs5mSK6jOY0sHRmTty6j0VqL6iHo=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=hvCl0MJgkzpgVnvrmbBdafROrWJnurNYNDoN3iLzVlKXXmSWHvYLVTQIboHDuaII5
-	 0cs/meBAWzu/nfQUtrSYwUNwMi2SuCqBbeVc6Y6m3VUD8ddoq3QdvyYYGNZzmZQdmX
-	 NrHPDKMPJgOR3t9UQmOk2QTWXvHjVl9krrbzXeMWAnPHfTj3n6Wxa89mQHIXnZ0OYA
-	 ZpxPLSPyd6BsiAFd6R+xqImO/SqrN8xOnETgYN4e5ZXheRk1yuVYbshk7KhTiNcAUi
-	 K/dUBAA6TH/2Wz1Qn93FQfrskac4VV/hpt3NeNHn8/lTtG6CNp5hDQkrQZ6tO3ZGkh
-	 +JtRLymU0gKWA==
-Date: Fri, 12 Apr 2024 16:31:34 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: linux-pci@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>, Kevin Tian <kevin.tian@intel.com>,
-	Marc Zyngier <maz@kernel.org>,
-	Reinette Chatre <reinette.chatre@intel.com>,
-	Jason Gunthorpe <jgg@nvidia.com>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Dave Jiang <dave.jiang@intel.com>, Megha Dey <megha.dey@intel.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
-Subject: Re: [PATCH v2 0/7] PCI/MSI: Remove IMS (Interrupt Message Store)
- support for now
-Message-ID: <20240412213134.GA19180@bhelgaas>
+	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="aR34J9pv"
+Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-78ebcfcd3abso93281485a.1
+        for <iommu@lists.linux.dev>; Fri, 12 Apr 2024 17:25:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1712967925; x=1713572725; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=dxPD9e5Q1st8MCbV2NGQC2VF5/nUXXzMpKHuTELQ6SM=;
+        b=aR34J9pv6WZ5SQvf0D2q0zn4Ka+2JApkkt+wpeWTTKBxLp1YbACyA1B0Xp+GHuwVXg
+         b86BudrTGSC+PcbRzqX3e6Q1HK6sp+fp8+E2uCD87lUBfWVLlRGIpZ0A07wm7xA/xoAD
+         EODkEflmkFdfmGAUHuacLZAEtPZ/AOlp7ih/HhaCD5ZefHedXxYFA3Oj40RGv7MvdBS7
+         LgoBGJxyGITCFPj5BmmuxZKSTh6kZChI/4/ti7EjxZrkaeb0BbjcmpAXnWWtpqHrlIAf
+         MOxratSP5ZuxbL7JoI+Jcj26tcgNjyfQjqMA+0rMGVvgYt7ZhT66+VojnkPhUL/tUIs+
+         XA3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712967925; x=1713572725;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dxPD9e5Q1st8MCbV2NGQC2VF5/nUXXzMpKHuTELQ6SM=;
+        b=dpJa6ixS4CXzsNZYw30PoGl9Bk+BXjSLd46AbOXasWQCuZE7bPstAc+BBAr3IW5J/j
+         6zbegizjLv2Ap7WbxpWn2joxoiWN0KjYfYisOxglDbHucULXqOnV3DmFqWuO3JCIg3P8
+         H1qhRFjLbVKoQ4ihvxDLiwnqvWLW4Tk3GuM0laTD45geRu5yV7GmGdYmCJaur1y3CcxV
+         cbIb6IcO3bX37s/E7lT5CG1QFJ9Jp3fQ2JN7ruizWVyvxrCkE3zYkr8cLSM2LgaW+you
+         zadkrQ1llwnPkSfewRL6pMJN8Iksd+9PsB8ZHcMWlYfeEbi1UAZsjlGLynSVE4H3jExl
+         86NQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX3BjODu69Z/SX3wpT1A4kHv9zw18g9EkhodUjNDHmW6/gKgPgCCiY5WGSMsRCP8YcAxiPrEloOO560jfACo0JPGoICr+g=
+X-Gm-Message-State: AOJu0YyePH1WaRgosuY40Cv5E7jZXNOSbRxsuNOkFSnNDXLxZh+IXWeP
+	cF/jCUYWocxwzmnGS7CeIC7u/gsDXe3WWaDZWswuDTz4KYdMbXuISdB836/GP40=
+X-Google-Smtp-Source: AGHT+IF7Vr8g4aGey5MWA+q3W7MDwSCWGzrkZkaE7zDxFxXJB774VSRb4A04gmHX15xeQKDoOQC1aA==
+X-Received: by 2002:a05:620a:c90:b0:78d:39ef:c1e4 with SMTP id q16-20020a05620a0c9000b0078d39efc1e4mr4239836qki.24.1712967925336;
+        Fri, 12 Apr 2024 17:25:25 -0700 (PDT)
+Received: from soleen.c.googlers.com.com (128.174.85.34.bc.googleusercontent.com. [34.85.174.128])
+        by smtp.gmail.com with ESMTPSA id wl25-20020a05620a57d900b0078d5fece9a6sm3053490qkn.101.2024.04.12.17.25.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 12 Apr 2024 17:25:25 -0700 (PDT)
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+To: akpm@linux-foundation.org,
+	alim.akhtar@samsung.com,
+	alyssa@rosenzweig.io,
+	asahi@lists.linux.dev,
+	baolu.lu@linux.intel.com,
+	bhelgaas@google.com,
+	cgroups@vger.kernel.org,
+	corbet@lwn.net,
+	david@redhat.com,
+	dwmw2@infradead.org,
+	hannes@cmpxchg.org,
+	heiko@sntech.de,
+	iommu@lists.linux.dev,
+	jernej.skrabec@gmail.com,
+	jonathanh@nvidia.com,
+	joro@8bytes.org,
+	krzysztof.kozlowski@linaro.org,
+	linux-doc@vger.kernel.org,
+	linux-fsdevel@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-mm@kvack.org,
+	linux-rockchip@lists.infradead.org,
+	linux-samsung-soc@vger.kernel.org,
+	linux-sunxi@lists.linux.dev,
+	linux-tegra@vger.kernel.org,
+	lizefan.x@bytedance.com,
+	marcan@marcan.st,
+	mhiramat@kernel.org,
+	m.szyprowski@samsung.com,
+	pasha.tatashin@soleen.com,
+	paulmck@kernel.org,
+	rdunlap@infradead.org,
+	robin.murphy@arm.com,
+	samuel@sholland.org,
+	suravee.suthikulpanit@amd.com,
+	sven@svenpeter.dev,
+	thierry.reding@gmail.com,
+	tj@kernel.org,
+	tomas.mudrunka@gmail.com,
+	vdumpa@nvidia.com,
+	wens@csie.org,
+	will@kernel.org,
+	yu-cheng.yu@intel.com,
+	rientjes@google.com,
+	bagasdotme@gmail.com,
+	mkoutny@suse.com
+Subject: [PATCH v6 00/11] IOMMU memory observability
+Date: Sat, 13 Apr 2024 00:25:11 +0000
+Message-ID: <20240413002522.1101315-1-pasha.tatashin@soleen.com>
+X-Mailer: git-send-email 2.44.0.683.g7961c838ac-goog
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240410221307.2162676-1-helgaas@kernel.org>
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 10, 2024 at 05:13:00PM -0500, Bjorn Helgaas wrote:
-> From: Bjorn Helgaas <bhelgaas@google.com>
-> 
-> IMS (Interrupt Message Store) support appeared in v6.2, but there are no
-> users yet.
-> 
-> Remove it for now.  We can add it back when a user comes along.
-> 
-> I propose to merge this via the PCI tree unless somebody else wants it.
-> 
-> 
-> Changes since v1 (https://lore.kernel.org/linux-pci/20240401232326.1794707-1-helgaas@kernel.org/):
->   - Revert other IMS commits in IOMMU, apic, genirq, suggested by Kevin
-> 
-> Bjorn Helgaas (7):
->   Revert "PCI/MSI: Provide stubs for IMS functions"
->   Revert "PCI/MSI: Provide pci_ims_alloc/free_irq()"
->   Revert "PCI/MSI: Provide IMS (Interrupt Message Store) support"
->   Revert "iommu/amd: Enable PCI/IMS"
->   Revert "iommu/vt-d: Enable PCI/IMS"
->   Revert "x86/apic/msi: Enable PCI/IMS"
->   Revert "genirq/msi: Provide constants for PCI/IMS support"
-> 
->  arch/x86/kernel/apic/msi.c          |  5 ---
->  drivers/iommu/amd/iommu.c           | 17 +--------
->  drivers/iommu/intel/irq_remapping.c | 19 ++--------
->  drivers/pci/msi/api.c               | 50 ------------------------
->  drivers/pci/msi/irqdomain.c         | 59 -----------------------------
->  include/linux/irqdomain_defs.h      |  1 -
->  include/linux/msi.h                 |  2 -
->  include/linux/msi_api.h             |  1 -
->  include/linux/pci.h                 | 26 -------------
->  9 files changed, 5 insertions(+), 175 deletions(-)
+----------------------------------------------------------------------
+Changelog
+----------------------------------------------------------------------
+v6:
+- Added Acked-bys
+- fixed minor spelling error
+- Synced with Linus master branch (8f2c057754b25075aa3da132cd4fd4478cdab854)
 
-I applied this to pci/ims-removal for v6.10.
+----------------------------------------------------------------------
+Description
+----------------------------------------------------------------------
+IOMMU subsystem may contain state that is in gigabytes. Majority of that
+state is iommu page tables. Yet, there is currently, no way to observe
+how much memory is actually used by the iommu subsystem.
+
+This patch series solves this problem by adding both observability to
+all pages that are allocated by IOMMU, and also accountability, so
+admins can limit the amount if via cgroups.
+
+The system-wide observability is using /proc/meminfo:
+SecPageTables:    438176 kB
+
+Contains IOMMU and KVM memory.
+
+Per-node observability:
+/sys/devices/system/node/nodeN/meminfo
+Node N SecPageTables:    422204 kB
+
+Contains IOMMU and KVM memory in the given NUMA node.
+
+Per-node IOMMU only observability:
+/sys/devices/system/node/nodeN/vmstat
+nr_iommu_pages 105555
+
+Contains number of pages IOMMU allocated in the given node.
+
+Accountability: using sec_pagetables cgroup-v2 memory.stat entry.
+
+With the change, iova_stress[1] stops as limit is reached:
+
+$ ./iova_stress
+iova space:     0T      free memory:   497G
+iova space:     1T      free memory:   495G
+iova space:     2T      free memory:   493G
+iova space:     3T      free memory:   491G
+
+stops as limit is reached.
+
+This series encorporates suggestions that came from the discussion
+at LPC [2].
+----------------------------------------------------------------------
+[1] https://github.com/soleen/iova_stress
+[2] https://lpc.events/event/17/contributions/1466
+----------------------------------------------------------------------
+Previous versions
+v1: https://lore.kernel.org/all/20231128204938.1453583-1-pasha.tatashin@soleen.com
+v2: https://lore.kernel.org/linux-mm/20231130201504.2322355-1-pasha.tatashin@soleen.com
+v3: https://lore.kernel.org/all/20231226200205.562565-1-pasha.tatashin@soleen.com
+v4: https://lore.kernel.org/all/20240207174102.1486130-1-pasha.tatashin@soleen.com
+v5: https://lore.kernel.org/all/20240222173942.1481394-1-pasha.tatashin@soleen.com
+----------------------------------------------------------------------
+
+Pasha Tatashin (11):
+  iommu/vt-d: add wrapper functions for page allocations
+  iommu/dma: use iommu_put_pages_list() to releae freelist
+  iommu/amd: use page allocation function provided by iommu-pages.h
+  iommu/io-pgtable-arm: use page allocation function provided by
+    iommu-pages.h
+  iommu/io-pgtable-dart: use page allocation function provided by
+    iommu-pages.h
+  iommu/exynos: use page allocation function provided by iommu-pages.h
+  iommu/rockchip: use page allocation function provided by iommu-pages.h
+  iommu/sun50i: use page allocation function provided by iommu-pages.h
+  iommu/tegra-smmu: use page allocation function provided by
+    iommu-pages.h
+  iommu: observability of the IOMMU allocations
+  iommu: account IOMMU allocated memory
+
+ Documentation/admin-guide/cgroup-v2.rst |   2 +-
+ Documentation/filesystems/proc.rst      |   4 +-
+ drivers/iommu/amd/amd_iommu.h           |   8 -
+ drivers/iommu/amd/init.c                |  91 ++++++------
+ drivers/iommu/amd/io_pgtable.c          |  13 +-
+ drivers/iommu/amd/io_pgtable_v2.c       |  18 +--
+ drivers/iommu/amd/iommu.c               |  11 +-
+ drivers/iommu/dma-iommu.c               |   7 +-
+ drivers/iommu/exynos-iommu.c            |  14 +-
+ drivers/iommu/intel/dmar.c              |  16 +-
+ drivers/iommu/intel/iommu.c             |  47 ++----
+ drivers/iommu/intel/iommu.h             |   2 -
+ drivers/iommu/intel/irq_remapping.c     |  16 +-
+ drivers/iommu/intel/pasid.c             |  18 +--
+ drivers/iommu/intel/svm.c               |  11 +-
+ drivers/iommu/io-pgtable-arm.c          |  15 +-
+ drivers/iommu/io-pgtable-dart.c         |  37 ++---
+ drivers/iommu/iommu-pages.h             | 186 ++++++++++++++++++++++++
+ drivers/iommu/rockchip-iommu.c          |  14 +-
+ drivers/iommu/sun50i-iommu.c            |   7 +-
+ drivers/iommu/tegra-smmu.c              |  18 ++-
+ include/linux/mmzone.h                  |   5 +-
+ mm/vmstat.c                             |   3 +
+ 23 files changed, 359 insertions(+), 204 deletions(-)
+ create mode 100644 drivers/iommu/iommu-pages.h
+
+-- 
+2.44.0.683.g7961c838ac-goog
+
