@@ -1,223 +1,166 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2E9247F45
-	for <iommu@lists.linux.dev>; Sat, 13 Apr 2024 22:04:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A25661370;
+	Sun, 14 Apr 2024 00:01:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713045866; cv=none; b=Jn3nnrV7TTxhaVAzyWpL5CKylI6OXlFF36mpL6R12BIqambKLMmDPDO1frXwiVsSapcaXkgUy4olwhiCrLpiOg/bLaqx0qXTLQ7e5F6d9U/Kj++Je8vL7eQz/GqO9eMKXHgOizcatNo+gEXJ8IJ40t4tDA3IvaSlwytKKoG/tFY=
+	t=1713052919; cv=none; b=XwZXch6aQQrTOt32qr3A+GitF6SNmTZxTZRh6ZsegWiC1aPV2XO0wAW4xuAAYksHjWJxfnp/JHC8h0tJTKyofju1bRodEvNChfIPhc5UeQ9iogdI8VH8ebmpAsskgEZfDI4zn8rR5lADr/Cmk9P7hCv5yN2Xvk79ScYZikgsC74=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713045866; c=relaxed/simple;
-	bh=lAsvDgwH7jpTKFiJX27S3PISwwa6qiMN0qj5ChnlPJs=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=tjpMufc79/aSCyuEY6dd3jGTN2B90Xr7AQNTaNLyNO37MeVD/2ek/0PKAnCUGTaU2mPZ18m+5eBkkWO4/a8VU0nq/HjqvSc1qzbkdttFo+uU4pQJCPhamIq7/doS2hA588MeR4iPS/4Eu++xArHkZXtnFGKoUfx6Ur4ggAyPuLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SH8GoNNf; arc=none smtp.client-ip=209.85.210.51
+	s=arc-20240116; t=1713052919; c=relaxed/simple;
+	bh=gowBcIVjkrIRCzpktT8xjhDtwrM/kyvyXvSUbC7DTEk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=RUTx8ZBH1ssQO2qHPKOF/4VqiloSfRPs0oW7ctHvtjT9f3kUWMTsTZRPHaiKTvirjXP5rahjHVdmBT5Cx6amh8XEVwcuSUzGSrdXixSZudQKZTgzLo5vfS+54/rpX39558wmioqM6y6UcoCSMoY3OhtA96fNW5zUGCPui5ingb8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Uaxd8VXs; arc=none smtp.client-ip=209.85.216.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SH8GoNNf"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-6eb7036e3bbso535209a34.2
-        for <iommu@lists.linux.dev>; Sat, 13 Apr 2024 15:04:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Uaxd8VXs"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-2a2d248a2e1so2033547a91.0;
+        Sat, 13 Apr 2024 17:01:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713045864; x=1713650664; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=lAsvDgwH7jpTKFiJX27S3PISwwa6qiMN0qj5ChnlPJs=;
-        b=SH8GoNNf1lMGnELvGnYWuq7XY46f3+1F/cY/xTHheK6Kl2IUm7pKQ7TaQIwVBKeBnB
-         8JI3qvAAXrLDwbFEzLKrlZZ+UynBhdcsgx+E61owY52oNO9LntQqU2To14znpHEqP6nw
-         scRbEFBkABvKcFBCrZhChmoI6Oz0isOPe2NfoBQbSNBMQH4sd3t0Sjd4xTepdQ+7ENP6
-         yzQMsZRiedYvTnpfud4i6C409u4GERPYCyH/+A/fhJxuqKoka2HuGt4c6WbElE4NdKZo
-         IWJr6GSVLhWvTcaw+vGdNMx0VDa10Ipku2LxLWCXpeFnypflRLqpJQ5yKNuFBQtGNQp5
-         qDtQ==
+        d=gmail.com; s=20230601; t=1713052917; x=1713657717; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=WufJPRcDUlI9hWQPeCIELs5BadGAqcV8RB9i29rVPSE=;
+        b=Uaxd8VXsFxM1QvWDHNNZ9BdbtTgEV1RNLRPj45fET8VlhWLjPe0B1Ii0rHcjpBD/XS
+         TqdVsNFU/YVdOTjfpDxPmeYEuM4jdh8xQUoZNE3TEjFhpTAWjVbPK1/X4G1f+8Y30TBy
+         NGgAeltMG9AwFkI6s0SOo+MXnGVImAS6Y3fsugEoEu24MnwLadf+DVEX77UguXbT6RhY
+         ZQOiFOxl/lYirkXiwo5We+AYymNf2bgOHhVyuVpkZ1Jaae9NthUfP8KFVO9ziS7KSbkd
+         xRzQ5atUgAKqjoGjODLFne5uMUJzcgNd/allPkgPQat5x8/w/+2PyCvIWZPsrsNHuEfX
+         NQkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713045864; x=1713650664;
-        h=cc:to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=lAsvDgwH7jpTKFiJX27S3PISwwa6qiMN0qj5ChnlPJs=;
-        b=mV/pT1PbEmV9BQ8JHbMA/pbOkUZPAd9rkqZ5ru0YjxqS7tpH9ABMlKfvApeABwohnU
-         qOKBDaKz6rXDFLgoH1OC+0kJhbOZwxGxwGnpOdPTRFN0tMTIViapF9Y+Ab66PXf7bLfq
-         93eU4zH7G5MAQpmJULW3bh26XwaWuQhgO07wazHOCfNIN+DIZ/kOw0RftM+zkPRs1xSt
-         DHysNlH6IH25RtuvhUIaZ1e7Nm/ICWhBHjgS7AhnzJqXTC8KvENDPM4hczv2pZzsY3pq
-         eW0X4QY4WjQztE+UncQ71A/t6NO7bR2XyPtmV+tsLDMaZrEbxZxPNnJWiCBl+F5s0xJt
-         8cGA==
-X-Forwarded-Encrypted: i=1; AJvYcCVKQ8/H+oGAPLelon0EXTx+wuElXkZ1ljIgnAuvthKUoXx/buJn1kTzhPBB9r1t+i8Im4meF139S0NutbiONkhr36+kdFk=
-X-Gm-Message-State: AOJu0YyDejX0ZbnRW8xbh4m49pq355t5T03A0+ij+NKR6PPms1s32K80
-	AHwYTt6iRfeZk1LbWX+ReISoDkWDtiYMUFi8u3aP4hw9jUBedWbJMIKYS60WBjOgZmO0718yg6H
-	bs1yLmz8DK1X0Qfg6fnqYWKSpezw=
-X-Google-Smtp-Source: AGHT+IFtwPQCQNLqkWqwx1jJZM7MCOK/UfGK0+fNpWffbDwMUnJa6NvoE0OmF+lGBZ0HSOUyiVQvJPWECEWobjod7o8=
-X-Received: by 2002:a05:6808:4d2:b0:3c7:999:f5e4 with SMTP id
- a18-20020a05680804d200b003c70999f5e4mr962424oie.5.1713045863845; Sat, 13 Apr
- 2024 15:04:23 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1713052917; x=1713657717;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WufJPRcDUlI9hWQPeCIELs5BadGAqcV8RB9i29rVPSE=;
+        b=ixfXNJLs+8F00qCSj2f4Iq8sQJ60am0e+jDOv4mf9ORWmJfbOpQYhif8Op5oH27rb+
+         CQLH8IfpJD8hkd+G+E+DhUEkFR0fcrQ/zyXwZ+nUMEwEuLrT9Bs7HctCM/bthN2Q+FQE
+         A27TmaC0b9PqZYq9uvv9BqOAj6zLO8ffyYK1cGJYDZNA7Mg9eemzIjV5wdeDqy9tVgIa
+         Ey+QYnTcUfjCPbsXUyeVunEq5rrNS8qWFBqnJyE7kw76LcoRKqruY3qR2aZr9t5mGRth
+         sy7im9Z7hz/aQ2sgVMst+3Y03Ja0Fqbn3sLtlIk4JlL3bzZp2zpbaQ5Z7AajVAP2HQZk
+         iKEA==
+X-Forwarded-Encrypted: i=1; AJvYcCUoGuwyVMC1LiiT37/ae2OvqFsr1RvjiP1Ijl0ey4fhWH5gHKdw3dRXt1jLxwwcZydzgc1zRgOaUXv4deRQ6CSmUyknU63NuKHpSU4oc3cMHbUA38zicfsvXFTSN2cwJiyxbg==
+X-Gm-Message-State: AOJu0YwPth4dC0rxB3jJKHbZSNzNN9JW29B41urueW8TemVHV9Fukpmv
+	b2zxQOAWuSUzt922tjhKS8BUo01L9qg8s9C4ML4c9jLbNw/UCyVx
+X-Google-Smtp-Source: AGHT+IGrAqwuqHFxlxFTtEnyAqnda4cYfCPT+QePK4NluaOztQzsIE/j760N6Zrk/aFwQ0IZHsBe7A==
+X-Received: by 2002:a17:90a:7146:b0:2a5:be1a:6831 with SMTP id g6-20020a17090a714600b002a5be1a6831mr13029487pjs.19.1713052916728;
+        Sat, 13 Apr 2024 17:01:56 -0700 (PDT)
+Received: from archie.me ([103.124.138.155])
+        by smtp.gmail.com with ESMTPSA id y12-20020a17090a154c00b002a52c2d82f0sm9077979pja.1.2024.04.13.17.01.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 13 Apr 2024 17:01:55 -0700 (PDT)
+Received: by archie.me (Postfix, from userid 1000)
+	id C1C0418462BA3; Sun, 14 Apr 2024 07:01:52 +0700 (WIB)
+Date: Sun, 14 Apr 2024 07:01:52 +0700
+From: Bagas Sanjaya <bagasdotme@gmail.com>
+To: Eric Wagner <ewagner12@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Linux Regressions <regressions@lists.linux.dev>
+Subject: Re: Kernel 6.7 regression doesn't boot if using AMD eGPU
+Message-ID: <Zhsc8GZG6HhqCa6h@archie.me>
+References: <CAHudX3zLH6CsRmLE-yb+gRjhh-v4bU5_1jW_xCcxOo_oUUZKYg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Eric Wagner <ewagner12@gmail.com>
-Date: Sat, 13 Apr 2024 18:04:12 -0400
-Message-ID: <CAHudX3zLH6CsRmLE-yb+gRjhh-v4bU5_1jW_xCcxOo_oUUZKYg@mail.gmail.com>
-Subject: Kernel 6.7 regression doesn't boot if using AMD eGPU
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, Robin Murphy <robin.murphy@arm.com>, 
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Content-Type: multipart/mixed; boundary="000000000000336c8f06160192d6"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="DhFDuHrGl5KsKvNz"
+Content-Disposition: inline
+In-Reply-To: <CAHudX3zLH6CsRmLE-yb+gRjhh-v4bU5_1jW_xCcxOo_oUUZKYg@mail.gmail.com>
 
---000000000000336c8f06160192d6
-Content-Type: multipart/alternative; boundary="000000000000336c8e06160192d4"
 
---000000000000336c8e06160192d4
-Content-Type: text/plain; charset="UTF-8"
-
-On my Thinkpad T14s G3 AMD (Ryzen 7 6850U) laptop connected to an AMD RX
-580 in Akitio Node Thunderbolt 3 eGPU. Booting with the eGPU connected
-hangs on kernels 6.7 and 6.8, but worked on 6.6. For debugging, I find that
-adding the kernel parameter amd_iommu=off seems to fix the issue and allows
-booting with the eGPU on 6.7.
-
-I tried bisecting the issue between 6.6 and 6.7 and ended up with:
-"e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2 is the first bad commit" in the
-attached. This seems to indicate an amd iommu issue.
-
-Two others also reported the same issue on AMD Ryzen 7 7840 with AMD RX
-6000 connected as eGPU (https://gitlab.freedesktop.org/drm/amd/-/issues/3182
-).
-
-Let me know if you need more information.
-
---000000000000336c8e06160192d4
-Content-Type: text/html; charset="UTF-8"
+--DhFDuHrGl5KsKvNz
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"ltr"><div>On my Thinkpad T14s G3 AMD (Ryzen 7 6850U) laptop con=
-nected to an AMD RX 580 in Akitio Node Thunderbolt 3 eGPU. Booting with the=
- eGPU connected hangs on kernels 6.7 and 6.8, but worked on 6.6. For debugg=
-ing, I find that adding the kernel parameter amd_iommu=3Doff seems to fix t=
-he issue and allows booting with the eGPU on 6.7.</div><div><br></div>I tri=
-ed bisecting the issue between 6.6 and 6.7 and ended up with: &quot;e8cca46=
-6a84a75f8ff2a7a31173c99ee6d1c59d2 is the first bad commit&quot; in the atta=
-ched. This seems to indicate an amd iommu issue.<br><br><div>Two others als=
-o reported the same issue on AMD Ryzen 7 7840 with AMD RX 6000 connected as=
- eGPU (<a href=3D"https://gitlab.freedesktop.org/drm/amd/-/issues/3182">htt=
-ps://gitlab.freedesktop.org/drm/amd/-/issues/3182</a>).</div><div><br></div=
-><div>Let me know if you need more information.<br></div></div>
+On Sat, Apr 13, 2024 at 06:04:12PM -0400, Eric Wagner wrote:
+> On my Thinkpad T14s G3 AMD (Ryzen 7 6850U) laptop connected to an AMD RX
+> 580 in Akitio Node Thunderbolt 3 eGPU. Booting with the eGPU connected
+> hangs on kernels 6.7 and 6.8, but worked on 6.6. For debugging, I find th=
+at
+> adding the kernel parameter amd_iommu=3Doff seems to fix the issue and al=
+lows
+> booting with the eGPU on 6.7.
+>=20
+> I tried bisecting the issue between 6.6 and 6.7 and ended up with:
+> "e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2 is the first bad commit" in the
+> attached. This seems to indicate an amd iommu issue.
+>=20
+> Two others also reported the same issue on AMD Ryzen 7 7840 with AMD RX
+> 6000 connected as eGPU (https://gitlab.freedesktop.org/drm/amd/-/issues/3=
+182
+> ).
+>=20
+> Let me know if you need more information.
 
---000000000000336c8e06160192d4--
---000000000000336c8f06160192d6
-Content-Type: text/x-log; charset="US-ASCII"; name="bisect.log"
-Content-Disposition: attachment; filename="bisect.log"
-Content-Transfer-Encoding: base64
-Content-ID: <f_luyn1b3d0>
-X-Attachment-Id: f_luyn1b3d0
+> Bisecting: 366 revisions left to test after this (roughly 9 steps)
+> [74e9347ebc5be452935fe4f3eddb150aa5a6f4fe] Merge tag 'loongarch-fixes-6.6=
+-3' of git://git.kernel.org/pub/scm/linux/kernel/git/chenhuacai/linux-loong=
+son
+> Bisecting: 182 revisions left to test after this (roughly 8 steps)
+> [f6176471542d991137543af2ef1c18dae3286079] Merge tag 'mtd/fixes-for-6.6-r=
+c7' of git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux
+> Bisecting: 87 revisions left to test after this (roughly 7 steps)
+> [fe3cfe869d5e0453754cf2b4c75110276b5e8527] Merge tag 'phy-fixes-6.6' of g=
+it://git.kernel.org/pub/scm/linux/kernel/git/phy/linux-phy
+> Bisecting: 43 revisions left to test after this (roughly 6 steps)
+> [c76c067e488ccd55734c3e750799caf2c5956db6] s390/pci: Use dma-iommu layer
+> Bisecting: 27 revisions left to test after this (roughly 5 steps)
+> [aa5cabc4ce8e6b45d170d162dc54b1bac1767c47] Merge tag 'arm-smmu-updates' o=
+f git://git.kernel.org/pub/scm/linux/kernel/git/will/linux into arm/smmu
+> Bisecting: 14 revisions left to test after this (roughly 4 steps)
+> [bbc70e0aec287e164344b1a071bd46466a4f29b3] iommu/dart: Remove the force_b=
+ypass variable
+> Bisecting: 9 revisions left to test after this (roughly 3 steps)
+> [e82c175e63229ea495a0a0b5305a98b5b6ee5346] Revert "iommu/vt-d: Remove unu=
+sed function"
+> Bisecting: 5 revisions left to test after this (roughly 2 steps)
+> [92bce97f0c341d3037b0f364b6839483f6a41cae] s390/pci: Fix reset of IOMMU s=
+oftware counters
+> Bisecting: 3 revisions left to test after this (roughly 2 steps)
+> [3613047280ec42a4e1350fdc1a6dd161ff4008cc] Merge tag 'v6.6-rc7' into core
+> Bisecting: 2 revisions left to test after this (roughly 1 step)
+> [f7da9c081517daba70f9f9342e09d7a6322ba323] iommu/tegra-smmu: Drop unneces=
+sary error check for for debugfs_create_dir()
+> Bisecting: 1 revision left to test after this (roughly 1 step)
+> [9e13ec61de2a51195b122a79461431d8cb99d7b5] iommu/virtio: Add __counted_by=
+ for struct viommu_request and use struct_size()
+> Bisecting: 0 revisions left to test after this (roughly 0 steps)
+> [6e6c6d6bc6c96c2477ddfea24a121eb5ee12b7a3] iommu: Avoid unnecessary cache=
+ invalidations
+> e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2 is the first bad commit
+> commit e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2
+> Merge: 6e6c6d6bc6 f7da9c0815 aa5cabc4ce 9e13ec61de e82c175e63 cedc811c76 =
+3613047280 92bce97f0c
+> Author: Joerg Roedel <jroedel@suse.de>
+> Date:   Fri Oct 27 09:13:40 2023 +0200
+>=20
+>     Merge branches 'iommu/fixes', 'arm/tegra', 'arm/smmu', 'virtio', 'x86=
+/vt-d', 'x86/amd', 'core' and 's390' into next
+>=20
 
-QmlzZWN0aW5nOiAzNjYgcmV2aXNpb25zIGxlZnQgdG8gdGVzdCBhZnRlciB0aGlzIChyb3VnaGx5
-IDkgc3RlcHMpCls3NGU5MzQ3ZWJjNWJlNDUyOTM1ZmU0ZjNlZGRiMTUwYWE1YTZmNGZlXSBNZXJn
-ZSB0YWcgJ2xvb25nYXJjaC1maXhlcy02LjYtMycgb2YgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHVi
-L3NjbS9saW51eC9rZXJuZWwvZ2l0L2NoZW5odWFjYWkvbGludXgtbG9vbmdzb24KQmlzZWN0aW5n
-OiAxODIgcmV2aXNpb25zIGxlZnQgdG8gdGVzdCBhZnRlciB0aGlzIChyb3VnaGx5IDggc3RlcHMp
-CltmNjE3NjQ3MTU0MmQ5OTExMzc1NDNhZjJlZjFjMThkYWUzMjg2MDc5XSBNZXJnZSB0YWcgJ210
-ZC9maXhlcy1mb3ItNi42LXJjNycgb2YgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51
-eC9rZXJuZWwvZ2l0L210ZC9saW51eApCaXNlY3Rpbmc6IDg3IHJldmlzaW9ucyBsZWZ0IHRvIHRl
-c3QgYWZ0ZXIgdGhpcyAocm91Z2hseSA3IHN0ZXBzKQpbZmUzY2ZlODY5ZDVlMDQ1Mzc1NGNmMmI0
-Yzc1MTEwMjc2YjVlODUyN10gTWVyZ2UgdGFnICdwaHktZml4ZXMtNi42JyBvZiBnaXQ6Ly9naXQu
-a2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvcGh5L2xpbnV4LXBoeQpCaXNlY3Rp
-bmc6IDQzIHJldmlzaW9ucyBsZWZ0IHRvIHRlc3QgYWZ0ZXIgdGhpcyAocm91Z2hseSA2IHN0ZXBz
-KQpbYzc2YzA2N2U0ODhjY2Q1NTczNGMzZTc1MDc5OWNhZjJjNTk1NmRiNl0gczM5MC9wY2k6IFVz
-ZSBkbWEtaW9tbXUgbGF5ZXIKQmlzZWN0aW5nOiAyNyByZXZpc2lvbnMgbGVmdCB0byB0ZXN0IGFm
-dGVyIHRoaXMgKHJvdWdobHkgNSBzdGVwcykKW2FhNWNhYmM0Y2U4ZTZiNDVkMTcwZDE2MmRjNTRi
-MWJhYzE3NjdjNDddIE1lcmdlIHRhZyAnYXJtLXNtbXUtdXBkYXRlcycgb2YgZ2l0Oi8vZ2l0Lmtl
-cm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3dpbGwvbGludXggaW50byBhcm0vc21t
-dQpCaXNlY3Rpbmc6IDE0IHJldmlzaW9ucyBsZWZ0IHRvIHRlc3QgYWZ0ZXIgdGhpcyAocm91Z2hs
-eSA0IHN0ZXBzKQpbYmJjNzBlMGFlYzI4N2UxNjQzNDRiMWEwNzFiZDQ2NDY2YTRmMjliM10gaW9t
-bXUvZGFydDogUmVtb3ZlIHRoZSBmb3JjZV9ieXBhc3MgdmFyaWFibGUKQmlzZWN0aW5nOiA5IHJl
-dmlzaW9ucyBsZWZ0IHRvIHRlc3QgYWZ0ZXIgdGhpcyAocm91Z2hseSAzIHN0ZXBzKQpbZTgyYzE3
-NWU2MzIyOWVhNDk1YTBhMGI1MzA1YTk4YjViNmVlNTM0Nl0gUmV2ZXJ0ICJpb21tdS92dC1kOiBS
-ZW1vdmUgdW51c2VkIGZ1bmN0aW9uIgpCaXNlY3Rpbmc6IDUgcmV2aXNpb25zIGxlZnQgdG8gdGVz
-dCBhZnRlciB0aGlzIChyb3VnaGx5IDIgc3RlcHMpCls5MmJjZTk3ZjBjMzQxZDMwMzdiMGYzNjRi
-NjgzOTQ4M2Y2YTQxY2FlXSBzMzkwL3BjaTogRml4IHJlc2V0IG9mIElPTU1VIHNvZnR3YXJlIGNv
-dW50ZXJzCkJpc2VjdGluZzogMyByZXZpc2lvbnMgbGVmdCB0byB0ZXN0IGFmdGVyIHRoaXMgKHJv
-dWdobHkgMiBzdGVwcykKWzM2MTMwNDcyODBlYzQyYTRlMTM1MGZkYzFhNmRkMTYxZmY0MDA4Y2Nd
-IE1lcmdlIHRhZyAndjYuNi1yYzcnIGludG8gY29yZQpCaXNlY3Rpbmc6IDIgcmV2aXNpb25zIGxl
-ZnQgdG8gdGVzdCBhZnRlciB0aGlzIChyb3VnaGx5IDEgc3RlcCkKW2Y3ZGE5YzA4MTUxN2RhYmE3
-MGY5ZjkzNDJlMDlkN2E2MzIyYmEzMjNdIGlvbW11L3RlZ3JhLXNtbXU6IERyb3AgdW5uZWNlc3Nh
-cnkgZXJyb3IgY2hlY2sgZm9yIGZvciBkZWJ1Z2ZzX2NyZWF0ZV9kaXIoKQpCaXNlY3Rpbmc6IDEg
-cmV2aXNpb24gbGVmdCB0byB0ZXN0IGFmdGVyIHRoaXMgKHJvdWdobHkgMSBzdGVwKQpbOWUxM2Vj
-NjFkZTJhNTExOTViMTIyYTc5NDYxNDMxZDhjYjk5ZDdiNV0gaW9tbXUvdmlydGlvOiBBZGQgX19j
-b3VudGVkX2J5IGZvciBzdHJ1Y3QgdmlvbW11X3JlcXVlc3QgYW5kIHVzZSBzdHJ1Y3Rfc2l6ZSgp
-CkJpc2VjdGluZzogMCByZXZpc2lvbnMgbGVmdCB0byB0ZXN0IGFmdGVyIHRoaXMgKHJvdWdobHkg
-MCBzdGVwcykKWzZlNmM2ZDZiYzZjOTZjMjQ3N2RkZmVhMjRhMTIxZWI1ZWUxMmI3YTNdIGlvbW11
-OiBBdm9pZCB1bm5lY2Vzc2FyeSBjYWNoZSBpbnZhbGlkYXRpb25zCmU4Y2NhNDY2YTg0YTc1Zjhm
-ZjJhN2EzMTE3M2M5OWVlNmQxYzU5ZDIgaXMgdGhlIGZpcnN0IGJhZCBjb21taXQKY29tbWl0IGU4
-Y2NhNDY2YTg0YTc1ZjhmZjJhN2EzMTE3M2M5OWVlNmQxYzU5ZDIKTWVyZ2U6IDZlNmM2ZDZiYzYg
-ZjdkYTljMDgxNSBhYTVjYWJjNGNlIDllMTNlYzYxZGUgZTgyYzE3NWU2MyBjZWRjODExYzc2IDM2
-MTMwNDcyODAgOTJiY2U5N2YwYwpBdXRob3I6IEpvZXJnIFJvZWRlbCA8anJvZWRlbEBzdXNlLmRl
-PgpEYXRlOiAgIEZyaSBPY3QgMjcgMDk6MTM6NDAgMjAyMyArMDIwMAoKICAgIE1lcmdlIGJyYW5j
-aGVzICdpb21tdS9maXhlcycsICdhcm0vdGVncmEnLCAnYXJtL3NtbXUnLCAndmlydGlvJywgJ3g4
-Ni92dC1kJywgJ3g4Ni9hbWQnLCAnY29yZScgYW5kICdzMzkwJyBpbnRvIG5leHQKCiBEb2N1bWVu
-dGF0aW9uL2FkbWluLWd1aWRlL2tlcm5lbC1wYXJhbWV0ZXJzLnR4dCAgICB8ICAgOSArLQogLi4u
-L2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUvYXJtLHNtbXUueWFtbCAgICAgICAgfCAgIDIgKwog
-YXJjaC9hcm0vY29uZmlncy9tdWx0aV92N19kZWZjb25maWcgICAgICAgICAgICAgICAgfCAgIDEg
-LQogYXJjaC9hcm0vY29uZmlncy90ZWdyYV9kZWZjb25maWcgICAgICAgICAgICAgICAgICAgfCAg
-IDEgLQogYXJjaC9wb3dlcnBjL2tlcm5lbC9pb21tdS5jICAgICAgICAgICAgICAgICAgICAgICAg
-fCAgNTMgKy0KIGFyY2gvczM5MC9pbmNsdWRlL2FzbS9wY2kuaCAgICAgICAgICAgICAgICAgICAg
-ICAgIHwgIDExIC0KIGFyY2gvczM5MC9pbmNsdWRlL2FzbS9wY2lfY2xwLmggICAgICAgICAgICAg
-ICAgICAgIHwgICAzICsKIGFyY2gvczM5MC9pbmNsdWRlL2FzbS9wY2lfZG1hLmggICAgICAgICAg
-ICAgICAgICAgIHwgMTIxICstLQogYXJjaC9zMzkwL3BjaS9NYWtlZmlsZSAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgfCAgIDIgKy0KIGFyY2gvczM5MC9wY2kvcGNpLmMgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIHwgIDM1ICstCiBhcmNoL3MzOTAvcGNpL3BjaV9idXMuYyAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICB8ICAgNSAtCiBhcmNoL3MzOTAvcGNpL3BjaV9kZWJ1Zy5j
-ICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAxMiArLQogYXJjaC9zMzkwL3BjaS9wY2lfZG1h
-LmMgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCA3NDYgLS0tLS0tLS0tLS0tLS0tCiBhcmNo
-L3MzOTAvcGNpL3BjaV9ldmVudC5jICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAxNyArLQog
-YXJjaC9zMzkwL3BjaS9wY2lfc3lzZnMuYyAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgMTkg
-Ky0KIGRyaXZlcnMvaW9tbXUvS2NvbmZpZyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwg
-IDE1ICstCiBkcml2ZXJzL2lvbW11L01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICB8ICAgMSAtCiBkcml2ZXJzL2lvbW11L2FtZC9LY29uZmlnICAgICAgICAgICAgICAgICAgICAg
-ICAgICB8ICAgOSAtCiBkcml2ZXJzL2lvbW11L2FtZC9NYWtlZmlsZSAgICAgICAgICAgICAgICAg
-ICAgICAgICB8ICAgMSAtCiBkcml2ZXJzL2lvbW11L2FtZC9hbWRfaW9tbXUuaCAgICAgICAgICAg
-ICAgICAgICAgICB8ICAzNSArLQogZHJpdmVycy9pb21tdS9hbWQvYW1kX2lvbW11X3R5cGVzLmgg
-ICAgICAgICAgICAgICAgfCAgNTIgKy0KIGRyaXZlcnMvaW9tbXUvYW1kL2luaXQuYyAgICAgICAg
-ICAgICAgICAgICAgICAgICAgIHwgMTE3ICstLQogZHJpdmVycy9pb21tdS9hbWQvaW9fcGd0YWJs
-ZV92Mi5jICAgICAgICAgICAgICAgICAgfCAgIDggKy0KIGRyaXZlcnMvaW9tbXUvYW1kL2lvbW11
-LmMgICAgICAgICAgICAgICAgICAgICAgICAgIHwgNTc3ICsrKysrLS0tLS0tLQogZHJpdmVycy9p
-b21tdS9hbWQvaW9tbXVfdjIuYyAgICAgICAgICAgICAgICAgICAgICAgfCA5OTYgLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tCiBkcml2ZXJzL2lvbW11L2FwcGxlLWRhcnQuYyAgICAgICAgICAgICAgICAg
-ICAgICAgICB8IDEzOCArLS0KIGRyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11
-LXYzLXN2YS5jICAgIHwgIDcxICstCiBkcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0t
-c21tdS12My5jICAgICAgICB8IDI1MSArKystLS0KIGRyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11
-LXYzL2FybS1zbW11LXYzLmggICAgICAgIHwgIDE3ICstCiBkcml2ZXJzL2lvbW11L2FybS9hcm0t
-c21tdS9hcm0tc21tdS1xY29tLmMgICAgICAgICB8ICAgMiArCiBkcml2ZXJzL2lvbW11L2FybS9h
-cm0tc21tdS9xY29tX2lvbW11LmMgICAgICAgICAgICB8ICA0NSArLQogZHJpdmVycy9pb21tdS9k
-bWEtaW9tbXUuYyAgICAgICAgICAgICAgICAgICAgICAgICAgfCAyMDAgKysrKy0KIGRyaXZlcnMv
-aW9tbXUvZXh5bm9zLWlvbW11LmMgICAgICAgICAgICAgICAgICAgICAgIHwgIDgzICstCiBkcml2
-ZXJzL2lvbW11L2ZzbF9wYW11X2RvbWFpbi5jICAgICAgICAgICAgICAgICAgICB8ICA0MSArLQog
-ZHJpdmVycy9pb21tdS9pbnRlbC9kZWJ1Z2ZzLmMgICAgICAgICAgICAgICAgICAgICAgfCAyMTUg
-KysrKy0KIGRyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYyAgICAgICAgICAgICAgICAgICAgICAg
-IHwgIDE5ICstCiBkcml2ZXJzL2lvbW11L2ludGVsL2lvbW11LmggICAgICAgICAgICAgICAgICAg
-ICAgICB8ICAxNCArCiBkcml2ZXJzL2lvbW11L2lvbW11LmMgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICB8IDQ1NSArKysrKy0tLS0tCiBkcml2ZXJzL2lvbW11L2lvbW11ZmQvc2VsZnRlc3Qu
-YyAgICAgICAgICAgICAgICAgICB8ICAzMCArLQogZHJpdmVycy9pb21tdS9pb3ZhLmMgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgfCAgOTUgKy0KIGRyaXZlcnMvaW9tbXUvaXBtbXUtdm1z
-YS5jICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDcyICstCiBkcml2ZXJzL2lvbW11L21zbV9p
-b21tdS5jICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAzNSArLQogZHJpdmVycy9pb21tdS9t
-dGtfaW9tbXUuYyAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgMzUgKy0KIGRyaXZlcnMvaW9t
-bXUvbXRrX2lvbW11X3YxLmMgICAgICAgICAgICAgICAgICAgICAgIHwgIDI4ICstCiBkcml2ZXJz
-L2lvbW11L29tYXAtaW9tbXUuYyAgICAgICAgICAgICAgICAgICAgICAgICB8ICA2OSArLQogZHJp
-dmVycy9pb21tdS9vbWFwLWlvbW11LmggICAgICAgICAgICAgICAgICAgICAgICAgfCAgIDIgKy0K
-IGRyaXZlcnMvaW9tbXUvcm9ja2NoaXAtaW9tbXUuYyAgICAgICAgICAgICAgICAgICAgIHwgIDU5
-ICstCiBkcml2ZXJzL2lvbW11L3MzOTAtaW9tbXUuYyAgICAgICAgICAgICAgICAgICAgICAgICB8
-IDQyNCArKysrKysrKy0KIGRyaXZlcnMvaW9tbXUvc3ByZC1pb21tdS5jICAgICAgICAgICAgICAg
-ICAgICAgICAgIHwgIDM2ICstCiBkcml2ZXJzL2lvbW11L3N1bjUwaS1pb21tdS5jICAgICAgICAg
-ICAgICAgICAgICAgICB8ICA4MCArLQogZHJpdmVycy9pb21tdS90ZWdyYS1nYXJ0LmMgICAgICAg
-ICAgICAgICAgICAgICAgICAgfCAzNzEgLS0tLS0tLS0KIGRyaXZlcnMvaW9tbXUvdGVncmEtc21t
-dS5jICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDU4ICstCiBkcml2ZXJzL2lvbW11L3ZpcnRp
-by1pb21tdS5jICAgICAgICAgICAgICAgICAgICAgICB8ICAgNCArLQogZHJpdmVycy9tZW1vcnkv
-dGVncmEvbWMuYyAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgMzQgLQogZHJpdmVycy9tZW1v
-cnkvdGVncmEvdGVncmEyMC5jICAgICAgICAgICAgICAgICAgICAgfCAgMjggLQogaW5jbHVkZS9s
-aW51eC9hbWQtaW9tbXUuaCAgICAgICAgICAgICAgICAgICAgICAgICAgfCAxMjAgLS0tCiBpbmNs
-dWRlL2xpbnV4L2lvbW11LmggICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAzOCArLQog
-aW5jbHVkZS9zb2MvdGVncmEvbWMuaCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgMjYg
-LQogNTggZmlsZXMgY2hhbmdlZCwgMjEzOCBpbnNlcnRpb25zKCspLCAzOTA1IGRlbGV0aW9ucygt
-KQogZGVsZXRlIG1vZGUgMTAwNjQ0IGFyY2gvczM5MC9wY2kvcGNpX2RtYS5jCiBkZWxldGUgbW9k
-ZSAxMDA2NDQgZHJpdmVycy9pb21tdS9hbWQvaW9tbXVfdjIuYwogZGVsZXRlIG1vZGUgMTAwNjQ0
-IGRyaXZlcnMvaW9tbXUvdGVncmEtZ2FydC5jCg==
---000000000000336c8f06160192d6--
+Also Cc: regressions ML.
+
+--=20
+An old man doll... just what I always wanted! - Clara
+
+--DhFDuHrGl5KsKvNz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZhsc7AAKCRD2uYlJVVFO
+o3cdAPoDuiz+svWmSHQ3KkcQxl7HN7HflVRo+sFdCU6PzHtpCwEAmCvj14Dl7qnO
+Qa2vk5I7HXJEpWRKVehg+WbWFv4qqAE=
+=vOFu
+-----END PGP SIGNATURE-----
+
+--DhFDuHrGl5KsKvNz--
