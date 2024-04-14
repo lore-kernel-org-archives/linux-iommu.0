@@ -1,80 +1,87 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB33014A85;
-	Sun, 14 Apr 2024 05:09:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60F59134420
+	for <iommu@lists.linux.dev>; Sun, 14 Apr 2024 14:39:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713071393; cv=none; b=ZO8nrZL04IUS1jbMWMfIq/kru38CY6pd1ovVTGV/Yf5/X0Mab6yZSLIIYqU8a3kuXuj151KXxWtE0BVHpTAWgNtPxYBXehNhCpHqcvTk3CMuk+p8VBhOVPcmpojMcdDbgavSlE7rNmZk7l6iW5J9B4fb4eGKRF7nh10PrlB8KBo=
+	t=1713105570; cv=none; b=N1DscI/ntlqQymEbT7UmLs02n0gbD7i8woVuVO1MN3juYv1DEDH+xSOEyDMkvWx/PBqj4zpwU3Th2f6kNIYJDFVoAwh1oVHIuB6Yjy7i+f4bj3wCCnIu0U+z+MF23oKEZS41wlEp4wBOhwaLp2M0UakPxyo7QSQO0UMYZplrRfY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713071393; c=relaxed/simple;
-	bh=cp9Z1qR58iSvTkoZpjiZAkmT8LhFNxcV8cZqWOs6jPU=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=d4UuRh64mOSV0wGlzXcwfSyB8Ra7mO47EXZEegqU5B/89WouG9VTnqeU5u4TUGZhQyGAzcpAomqPkC1W+mBjJ11Z2foFnJvAklcK5Mu3tGE2yATOnGAvKnm5gsenwNL3MjU6anjmZ0QdfEOzYVm7OkQGS5SxNjFx++DsTXxdBbk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=caLozgfT; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	s=arc-20240116; t=1713105570; c=relaxed/simple;
+	bh=QnrMKwGOYsOZJ210O+bWTxyLQa0cpJ6kdUhnlA2EYfY=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=V4hmhZ4yAnIWpCpvJd+KZtwAuOaRZDU9Hsc2N0zc06AaLgHA52xiefcQmuuGG5wKTLkV50zaVDoPu7BOMopCHUD1fOa0PJfgWPaQU8sn7bZFvgIxBPV1FNb284wYsFelkghIcpuREif+S7KjFBQHsiDXosyfFIgb5/Qlwmh90Go=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=U6WKyjZy; arc=none smtp.client-ip=46.235.227.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="caLozgfT"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
-	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-	Content-Description:In-Reply-To:References;
-	bh=tErCRvopM69cM8+J/nOOFMlKG6xN/+5DXfi5u+uW5zI=; b=caLozgfTUjlBTQOR+CDW/rSgic
-	+yPerSAZs327jDZgH62n+4AT5ZeZh4sTK8x6Zh5qxUyhTMznpzI3XoZidhrKyRO+nXgI3rtfkQzEc
-	Pw6Y3AwTTXF5/HEXVJGE38T1/DjTVP5XMOvy3wAEtbF6+wBYjZPTZL8HP2FVU1DlTeWawCLNkC/hy
-	8ye31+qMFDvSUW/zatE7tOI6xRHN3eYpHiz/wf+Qroi8VZCb6GpasG1irnSzgVIIyfQSon5K02CqM
-	Bp2RTKUGIC1t/zclOiEHC0l+0uf0DWTa1LAFJk6zlk4weYTTyq6t7T26oNvhl3AjMM+fxucdnBp50
-	dUnl5G+Q==;
-Received: from 2a02-8389-2341-5b80-39d3-4735-9a3c-88d8.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:39d3:4735:9a3c:88d8] helo=localhost)
-	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1rvs7h-00000004dwl-0AZ9;
-	Sun, 14 Apr 2024 05:09:49 +0000
-Date: Sun, 14 Apr 2024 07:09:44 +0200
-From: Christoph Hellwig <hch@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
-Subject: [GIT PULL] dma-mapping =?utf-8?B?ZtGWeGU=?= =?utf-8?Q?s?= for Linux
- 6.9
-Message-ID: <ZhtlGONZlLq-U0B9@infradead.org>
+	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="U6WKyjZy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+	s=mail; t=1713105566;
+	bh=QnrMKwGOYsOZJ210O+bWTxyLQa0cpJ6kdUhnlA2EYfY=;
+	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
+	b=U6WKyjZyqs+5BMU6c8fF9j2xs3t/zVe7fKj95t0PpCdXG/b6OQxdkECLeL0hWpfl7
+	 P1GSsaERrMuMe8Kzzj3v7hg4LBRQEqP83gADAkJ1SQYZEFwiXPGI8hJaiU1yA1tVHC
+	 uGfxsBLiKD+qrkteSwGyns7SJEOhCybQJ/HscUb/rtg+tbg4OvUDvZ5qM/K1Z2LlU2
+	 FOpcSZaQVoa6H4EVrivon+YK7KV6WembjojYrZSwnAfSByPdsNnfXfBLREAobwZt+b
+	 izA6AnZDE+mOC69/trGjFKd3vo3rMwrfjJmcjGSwyZnjki+6n30xSaTfiunn1Biioq
+	 USOyaXY5vdedA==
+Received: from [100.113.15.66] (ec2-34-240-57-77.eu-west-1.compute.amazonaws.com [34.240.57.77])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: usama.anjum)
+	by madrid.collaboradmins.com (Postfix) with ESMTPSA id 8D4F237809CE;
+	Sun, 14 Apr 2024 14:39:23 +0000 (UTC)
+Message-ID: <b7c437f5-ac70-4611-908d-b665d8e02679@collabora.com>
+Date: Sun, 14 Apr 2024 19:39:58 +0500
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+User-Agent: Mozilla Thunderbird
+Cc: Muhammad Usama Anjum <usama.anjum@collabora.com>,
+ Kevin Tian <kevin.tian@intel.com>, Shuah Khan <shuah@kernel.org>,
+ kernel@collabora.com, iommu@lists.linux.dev,
+ linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests: iommu: add config needed for iommufd_fail_nth
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240325090048.1423908-1-usama.anjum@collabora.com>
+ <45b4d209-675a-4b42-b62c-6644bafa36c0@collabora.com>
+ <20240405001020.GB5792@ziepe.ca>
+Content-Language: en-US
+From: Muhammad Usama Anjum <usama.anjum@collabora.com>
+In-Reply-To: <20240405001020.GB5792@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The following changes since commit 026e680b0a08a62b1d948e5a8ca78700bfac0e6e:
+On 4/5/24 5:10 AM, Jason Gunthorpe wrote:
+> On Mon, Mar 25, 2024 at 02:11:41PM +0500, Muhammad Usama Anjum wrote:
+>> On 3/25/24 2:00 PM, Muhammad Usama Anjum wrote:
+>>> Add FAULT_INJECTION_DEBUG_FS and FAILSLAB configurations which are
+>>> needed by iommufd_fail_nth test.
+>>>
+>>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+>>> ---
+>>> While building and running these tests on x86, defconfig had these
+>>> configs enabled. But ARM64's defconfig doesn't enable these configs.
+>>> Hence the config options are being added explicitly in this patch.
+>> Please disregard this extra comment. Overall this patch is needed to enable
+>> these config options of x86 and ARM both.
+> 
+> I picked this and the other patch up, thanks
+Not sure why but I'm unable to find this patch in next and in your tree:
+https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/log/?h=for-next
 
-  Merge tag 'pwm/for-6.9-rc3-fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/ukleinek/linux (2024-04-01 14:38:55 -0700)
+Maybe this patch was missed?
 
-are available in the Git repository at:
 
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-maping-6.9-2024-04-14
+> 
+> Jason
+> 
 
-for you to fetch changes up to a1255ccab8ecee89905ddb12161139b0d878a7f2:
-
-  swiotlb: do not set total_used to 0 in swiotlb_create_debugfs_files() (2024-04-02 17:08:09 +0200)
-
-----------------------------------------------------------------
-dma-mapping fixes for Linux 6.9
-
- - fix up swiotlb buffer padding even more (Petr Tesarik)
- - fix for partial dma_sync on swiotlb (Michael Kelley)
- - swiotlb debugfs fix (Dexuan Cui)
-
-----------------------------------------------------------------
-Dexuan Cui (1):
-      swiotlb: do not set total_used to 0 in swiotlb_create_debugfs_files()
-
-Michael Kelley (1):
-      swiotlb: fix swiotlb_bounce() to do partial sync's correctly
-
-Petr Tesarik (1):
-      swiotlb: extend buffer pre-padding to alloc_align_mask if necessary
-
- kernel/dma/swiotlb.c | 91 +++++++++++++++++++++++++++++++++-------------------
- 1 file changed, 58 insertions(+), 33 deletions(-)
+-- 
+BR,
+Muhammad Usama Anjum
