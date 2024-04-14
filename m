@@ -1,87 +1,132 @@
-Received: from madrid.collaboradmins.com (madrid.collaboradmins.com [46.235.227.194])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60F59134420
-	for <iommu@lists.linux.dev>; Sun, 14 Apr 2024 14:39:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFD564204F
+	for <iommu@lists.linux.dev>; Sun, 14 Apr 2024 16:25:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713105570; cv=none; b=N1DscI/ntlqQymEbT7UmLs02n0gbD7i8woVuVO1MN3juYv1DEDH+xSOEyDMkvWx/PBqj4zpwU3Th2f6kNIYJDFVoAwh1oVHIuB6Yjy7i+f4bj3wCCnIu0U+z+MF23oKEZS41wlEp4wBOhwaLp2M0UakPxyo7QSQO0UMYZplrRfY=
+	t=1713111909; cv=none; b=rxGdJkT3dH1OPFv4rQQ5/VsdLFqE1s9/bEfpF5anXj1WcHGqtOkovhcUz9jChI0JJS9loCy4TmZPb34QscnfbHt/+BPvh7hhcZT4CX/0yLrLssvoCBFLHNyu6VswE5m7ac4DWXO9Gdf8ieJKLks2kPEvujFRuNmf/in8YdC6RiU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713105570; c=relaxed/simple;
-	bh=QnrMKwGOYsOZJ210O+bWTxyLQa0cpJ6kdUhnlA2EYfY=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=V4hmhZ4yAnIWpCpvJd+KZtwAuOaRZDU9Hsc2N0zc06AaLgHA52xiefcQmuuGG5wKTLkV50zaVDoPu7BOMopCHUD1fOa0PJfgWPaQU8sn7bZFvgIxBPV1FNb284wYsFelkghIcpuREif+S7KjFBQHsiDXosyfFIgb5/Qlwmh90Go=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com; spf=pass smtp.mailfrom=collabora.com; dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b=U6WKyjZy; arc=none smtp.client-ip=46.235.227.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=collabora.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=collabora.com
+	s=arc-20240116; t=1713111909; c=relaxed/simple;
+	bh=x9zY+X01BxCJYs60384+4AxqPsLSpqAW3M0zfApyxdc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=T11rTHhVNAbzXPbQWm7u34iSTE7mFx93uXqaEAQiVquWFUR6uY0Its671BmGiQEWe08kwdR7AURYtIACCceZOuKQZ2CVWzP4S7H0cc4EyK9UEfFFgpm3zgrOtPcL6ClO3AJONXvWzFWVTk7At91H+rKdpvEHjSMI5E6Jrsxm8Uc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m7/JtsVu; arc=none smtp.client-ip=209.85.218.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=collabora.com header.i=@collabora.com header.b="U6WKyjZy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-	s=mail; t=1713105566;
-	bh=QnrMKwGOYsOZJ210O+bWTxyLQa0cpJ6kdUhnlA2EYfY=;
-	h=Date:Cc:Subject:To:References:From:In-Reply-To:From;
-	b=U6WKyjZyqs+5BMU6c8fF9j2xs3t/zVe7fKj95t0PpCdXG/b6OQxdkECLeL0hWpfl7
-	 P1GSsaERrMuMe8Kzzj3v7hg4LBRQEqP83gADAkJ1SQYZEFwiXPGI8hJaiU1yA1tVHC
-	 uGfxsBLiKD+qrkteSwGyns7SJEOhCybQJ/HscUb/rtg+tbg4OvUDvZ5qM/K1Z2LlU2
-	 FOpcSZaQVoa6H4EVrivon+YK7KV6WembjojYrZSwnAfSByPdsNnfXfBLREAobwZt+b
-	 izA6AnZDE+mOC69/trGjFKd3vo3rMwrfjJmcjGSwyZnjki+6n30xSaTfiunn1Biioq
-	 USOyaXY5vdedA==
-Received: from [100.113.15.66] (ec2-34-240-57-77.eu-west-1.compute.amazonaws.com [34.240.57.77])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: usama.anjum)
-	by madrid.collaboradmins.com (Postfix) with ESMTPSA id 8D4F237809CE;
-	Sun, 14 Apr 2024 14:39:23 +0000 (UTC)
-Message-ID: <b7c437f5-ac70-4611-908d-b665d8e02679@collabora.com>
-Date: Sun, 14 Apr 2024 19:39:58 +0500
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m7/JtsVu"
+Received: by mail-ej1-f44.google.com with SMTP id a640c23a62f3a-a44ad785a44so278278166b.3
+        for <iommu@lists.linux.dev>; Sun, 14 Apr 2024 09:25:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1713111906; x=1713716706; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=OVsG3JCtQo4tlTQt5Af4gG7a1SS2UAv4W4YMU6rXC8Y=;
+        b=m7/JtsVuP6aFYhO5G5uCAB0TgLsn5kFNmh3D35+Lzbw4Lfd3L8cN9ss5EM5yQ5Dp71
+         gIwyuW3QmENijNiMVs07/QCU2pqGqJhD1lRrsTLZGRJVIyLTE5zY6NmIbkRpCXNnLt0Y
+         226LVvU+atM+CctL7punxDAugZHLJjlNm+f3j18qZ+78dtD67T4gw5JCAc0tu4z5WX1M
+         RCnMJJfdle6NGWCfa1QkJXgFZ90N0HRhiSxuG0TnnqSj+Uwr3fm8iLoBacwGHsmDGGlJ
+         LTRQ7q58c2M3ZTG/WG50lHxlzD3nK8zN41UfyyMuVyTfaavUgOQ3YmwxlYkFUJu2STuy
+         aLdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713111906; x=1713716706;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=OVsG3JCtQo4tlTQt5Af4gG7a1SS2UAv4W4YMU6rXC8Y=;
+        b=m8IHb1gYUAbRQAR9gJ8zUWQC4pOD56tBqjZw4IAOdSMNoucesekeEp3nXBwtuEGsej
+         hTWDFq8cMzWCXY2toSbX1rxfRSx6R2nPNUiMFcv2RKAE/nq7TROf9Q7MT/g8PHZcKag9
+         3/R7m8G7rQHXDjfEbjwQgZkS4SiKIMLYIUDvjtJTt/ic7Yv+bvzZuLxFoodzUNb4TAyv
+         dowtf7MjipaYpDNMSdlVJBLjuIYvyBXq8ZkPE4PBmEIbav0MrIscG6nk0F/dU8L8XGBh
+         niaaXfrwM1gTpb18GMuNgiLD+sLi00efNoD+FagOl1/j2xjYpyfVyZHmtuXKR0A8YDh8
+         /vzA==
+X-Gm-Message-State: AOJu0Yz9xK0MogZxrrkMKVpt7T+7mk9f4CivYhT2BVoUcBx/Uwn/U7zC
+	dh5DWpnvecBWboIGx1Ptypuxo8IXLodVEGtKywe7qoNpmMSfXEp9Hq82mQ==
+X-Google-Smtp-Source: AGHT+IH9g+mcCrogr0CIRidhtrDFP5KjqkCIgE/JGUqj2zc3wRYfBX9PYIONiFkO0uvOTfch9T1big==
+X-Received: by 2002:a17:906:2932:b0:a51:969e:ba0 with SMTP id v18-20020a170906293200b00a51969e0ba0mr4631415ejd.44.1713111905479;
+        Sun, 14 Apr 2024 09:25:05 -0700 (PDT)
+Received: from localhost.localdomain ([46.248.82.114])
+        by smtp.gmail.com with ESMTPSA id b18-20020a1709063f9200b00a523cf3293fsm2920181ejj.59.2024.04.14.09.25.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Apr 2024 09:25:04 -0700 (PDT)
+From: Uros Bizjak <ubizjak@gmail.com>
+To: iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Cc: Uros Bizjak <ubizjak@gmail.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH] iommu/intel: Use try_cmpxchg64{,_local}() in iommu.c
+Date: Sun, 14 Apr 2024 18:23:11 +0200
+Message-ID: <20240414162454.49584-1-ubizjak@gmail.com>
+X-Mailer: git-send-email 2.42.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: Muhammad Usama Anjum <usama.anjum@collabora.com>,
- Kevin Tian <kevin.tian@intel.com>, Shuah Khan <shuah@kernel.org>,
- kernel@collabora.com, iommu@lists.linux.dev,
- linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] selftests: iommu: add config needed for iommufd_fail_nth
-To: Jason Gunthorpe <jgg@ziepe.ca>
-References: <20240325090048.1423908-1-usama.anjum@collabora.com>
- <45b4d209-675a-4b42-b62c-6644bafa36c0@collabora.com>
- <20240405001020.GB5792@ziepe.ca>
-Content-Language: en-US
-From: Muhammad Usama Anjum <usama.anjum@collabora.com>
-In-Reply-To: <20240405001020.GB5792@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 4/5/24 5:10 AM, Jason Gunthorpe wrote:
-> On Mon, Mar 25, 2024 at 02:11:41PM +0500, Muhammad Usama Anjum wrote:
->> On 3/25/24 2:00 PM, Muhammad Usama Anjum wrote:
->>> Add FAULT_INJECTION_DEBUG_FS and FAILSLAB configurations which are
->>> needed by iommufd_fail_nth test.
->>>
->>> Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
->>> ---
->>> While building and running these tests on x86, defconfig had these
->>> configs enabled. But ARM64's defconfig doesn't enable these configs.
->>> Hence the config options are being added explicitly in this patch.
->> Please disregard this extra comment. Overall this patch is needed to enable
->> these config options of x86 and ARM both.
-> 
-> I picked this and the other patch up, thanks
-Not sure why but I'm unable to find this patch in next and in your tree:
-https://git.kernel.org/pub/scm/linux/kernel/git/jgg/iommufd.git/log/?h=for-next
+Replace this pattern in iommu.c:
 
-Maybe this patch was missed?
+    cmpxchg64{,_local}(*ptr, 0, new) != 0
 
+... with the simpler and faster:
 
-> 
-> Jason
-> 
+    !try_cmpxchg64{,_local}(*ptr, &tmp, new)
 
+The x86 CMPXCHG instruction returns success in the ZF flag, so this change
+saves a compare after the CMPXCHG.
+
+No functional change intended.
+
+Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/intel/iommu.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 50eb9aed47cc..311073494f50 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -865,7 +865,7 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+ 			break;
+ 
+ 		if (!dma_pte_present(pte)) {
+-			uint64_t pteval;
++			uint64_t pteval, tmp;
+ 
+ 			tmp_page = alloc_pgtable_page(domain->nid, gfp);
+ 
+@@ -877,7 +877,8 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+ 			if (domain->use_first_level)
+ 				pteval |= DMA_FL_PTE_XD | DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
+ 
+-			if (cmpxchg64(&pte->val, 0ULL, pteval))
++			tmp = 0ULL;
++			if (!try_cmpxchg64(&pte->val, &tmp, pteval))
+ 				/* Someone else set it while we were thinking; use theirs. */
+ 				free_pgtable_page(tmp_page);
+ 			else
+@@ -2128,8 +2129,8 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 		/* We don't need lock here, nobody else
+ 		 * touches the iova range
+ 		 */
+-		tmp = cmpxchg64_local(&pte->val, 0ULL, pteval);
+-		if (tmp) {
++		tmp = 0ULL;
++		if (!try_cmpxchg64_local(&pte->val, &tmp, pteval)) {
+ 			static int dumps = 5;
+ 			pr_crit("ERROR: DMA PTE for vPFN 0x%lx already set (to %llx not %llx)\n",
+ 				iov_pfn, tmp, (unsigned long long)pteval);
 -- 
-BR,
-Muhammad Usama Anjum
+2.42.0
+
