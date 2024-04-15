@@ -1,141 +1,309 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2056.outbound.protection.outlook.com [40.107.223.56])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EC458249B
-	for <iommu@lists.linux.dev>; Mon, 15 Apr 2024 17:14:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.56
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713201272; cv=fail; b=MkY0nuJyf6bG6Y0GZ3oUP+DoPkUf6eMWiHyq2usNjGQUpnWsVjLLlggOPrNKw2yuBTdQgeQ9TI3FuF6f6BDCbVGt9GHmXQr87VWRvSZ887GjpPg4t9kj1RR6DN/0FhTKjITix+74kKg7YT+xuRWjvQsUP+8p5Gq60vWHtEnimOA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713201272; c=relaxed/simple;
-	bh=panOP/c8StZ5Pa6o//LHz50S2TiUTLc+3FECFyq89ms=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=JEkPP2jd2wQuPVeBqsCz9yZWWQHDIn3LcotCufjFn3neq3GPOBRpgcvvF1SuWcnryTEunolZqDiliZr5s0Ej5KmZZKnb+2zZhj0eRzCy0IRjqFcKoWOxj0k2XhEhwgHYdlBJhTtBs5VzyzZx/ymvNttOQn/5wcQ8JRTzJAcPQtE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=eyJMx3a1; arc=fail smtp.client-ip=40.107.223.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64FA71553A7
+	for <iommu@lists.linux.dev>; Mon, 15 Apr 2024 18:49:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713206969; cv=none; b=p/YbcPxjRlNsmTHdfLB4cVcR/z7f6mACTEibYS1U8Ea8YZ7GTSx2DUkp26jIgFD9hoYn168lzEZeCEKXABdO8iXO+kfS4qtYc+IOLZRDGKxWfWgGg8rlL0ScZw40KGH8wIBeAt2CTCcd5Kl9S7ESR/PVxl/yKY7J6PRmS0XMxQM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713206969; c=relaxed/simple;
+	bh=JcwoKU5gaOsesE8/cuz2DXwstgtBAJ9tf7LhVcS4Jpc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XhoWwrQ34Mx3+U8+XcCyNkuYMQ20rZFanDoWyR7/fUvu5ZjFbTp15gs4fRs+yUl2sn3hQYZRGR3Z1tM7GXCh2S32xmCKUTOCe8ZtaeuR+5KIapcJcaMNI696A19EMhekui/axdQjxl3wfvNOru48u5+v4Vr/IcNfbZll5uyMlPo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kEVMKBUO; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="eyJMx3a1"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gDuKhB6SVH/xGhUSR8ouszyv4xvzqyipJ8LVsWqrCnuak25EUhsN9Hxb//RSNQO4VNp+49jcIkrEwsC0yhzm+Da5RF1IxLMPRZoJudXLwgRUyb5a7ZMlS7JL8jBrN939f4ua+9f5x7DIyCrQnYXg7zo0cpFkDHvSbUrgb1WMACX8+Gsv8Yn3yfbQ/bpA5GKRnkgkui0Tiniiw20jJf8XM7wAw6Np5q0RKluYRgPy+k0MexOxnYDz5W6aeNQEOt6wX4jEs2DjBdvgwfqhLuax5Rtig+ROIf94iVDXsbK/KCjVp5Zc1v0mTtPUAX/ULejK/9d3nUFb6MU5SWnrKQ4hPQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=panOP/c8StZ5Pa6o//LHz50S2TiUTLc+3FECFyq89ms=;
- b=X61522Gubl4hmAcZwHxxK7WxY+cV81J9g8Xmge4QzThpj/MQtESNqtK6RaNvX08DrhejqYuviclYWrF5N2eE5lRFnedb9D33mHVQzAQV4Cad3H8A/2u14L6p2osEBu28fOoTIzK4J7T5lxKA/qH+ZS7lH803zkf5SeUWrOtatDm6KrKNd2dgPX2kJ7McynWmVVL6W58TrEwZuT0e0lrlHphLmj5wmA0ee6uBJQvMrORwuUPbeavcj8pwpgoIh6DVFokDjHp5qPfofu9Z8g3chJ/8yDmV6C4t85pLyqKDDZfAZ9zJOtUv3H6bT50FsTk4SrNT/7AtRa71r6BCfWjj0w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=panOP/c8StZ5Pa6o//LHz50S2TiUTLc+3FECFyq89ms=;
- b=eyJMx3a1vUKB0I6BF4Z7sRFrVa9qCxjNWqErBHZcvOtfZyaTvPyg7RMSBXRg8i1tyhCInNVljasy4hiYDKJhfE11RzKoTB+nAkYArxX4+Qf1tit7qLwptXQ9YinKtgDTEAwmSQ0DXimBHjewD2v9ZdweqHTLEQoyt+WacgpMYMSNGxlYGeNX++pNmhXa3p/jrnXFxZVhBRhQ6k7L0YmP7GopPmUaWPJIW/9upPNsSpMbzFsuwkqeTJ4Ge4fZAoJT5zxbKoLgD4Mfmf2zQ1J3NSnCqzqdLOdPJiSCk7jrh+gadAAcAyvlNMUvYROmo8zooMgdaN8QRFwBK38GrXiS+g==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by DM4PR12MB7768.namprd12.prod.outlook.com (2603:10b6:8:102::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7452.43; Mon, 15 Apr
- 2024 17:14:28 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7452.049; Mon, 15 Apr 2024
- 17:14:28 +0000
-Date: Mon, 15 Apr 2024 14:14:26 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Nicolin Chen <nicolinc@nvidia.com>
-Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
-	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-	Jerry Snitselaar <jsnitsel@redhat.com>
-Subject: Re: [PATCH v5 0/6] Add Tegra241 (Grace) CMDQV Support (part 1/2)
-Message-ID: <20240415171426.GF3637727@nvidia.com>
-References: <cover.1712977210.git.nicolinc@nvidia.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1712977210.git.nicolinc@nvidia.com>
-X-ClientProxiedBy: BL1PR13CA0132.namprd13.prod.outlook.com
- (2603:10b6:208:2bb::17) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kEVMKBUO"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713206967; x=1744742967;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=JcwoKU5gaOsesE8/cuz2DXwstgtBAJ9tf7LhVcS4Jpc=;
+  b=kEVMKBUOZn21nfnDjG27T+RooiI3Wa57epOZAanOugOsDuz8814B19g/
+   8P8c6Z8j8NzncymTB79D/TlcSAVCFxjI88w7HgV35BLxEPzydmKRm9344
+   9yObUryqcOvy+fhE+IwFpkH/9kFKGHsmxtxD8M1/moOYomyKT5aKv4mTD
+   J8SNAI918wRzQu1xIWwGF7qHuho4KKUaszV9qoj+usKdcYQtTOGv1D79X
+   Eza/1xU/UsgkQdcUSUALc4aRFRs1e+0IYLnXAhIxf9lc36FiWEEuSYDx5
+   NstebUIrLW/DQtvqT1QwIZAYRP+Fkxlxkt1BqhW8sa72LpRAUKCB3PutE
+   Q==;
+X-CSE-ConnectionGUID: JKpu/BBTQPe5if0uvuZAEg==
+X-CSE-MsgGUID: Dogme0d/Sca8t8rhpZe4cg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11045"; a="26071476"
+X-IronPort-AV: E=Sophos;i="6.07,203,1708416000"; 
+   d="scan'208";a="26071476"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2024 11:49:27 -0700
+X-CSE-ConnectionGUID: IR/69hUUSYWJtEqmTvufUg==
+X-CSE-MsgGUID: hluXB3c5Sw6A5KEL5ew1jw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,203,1708416000"; 
+   d="scan'208";a="45295772"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2024 11:49:26 -0700
+Date: Mon, 15 Apr 2024 11:53:58 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
+ Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev, Lu Baolu
+ <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, Dave Hansen
+ <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H. Peter Anvin"
+ <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
+ <mingo@redhat.com>, Paul Luse <paul.e.luse@intel.com>, Dan Williams
+ <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ maz@kernel.org, seanjc@google.com, Robin Murphy <robin.murphy@arm.com>,
+ jim.harris@samsung.com, a.manzanares@samsung.com, Bjorn Helgaas
+ <helgaas@kernel.org>, guang.zeng@intel.com, robert.hoo.linux@gmail.com,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 05/13] x86/irq: Reserve a per CPU IDT vector for
+ posted MSIs
+Message-ID: <20240415115358.04e04204@jacob-builder>
+In-Reply-To: <87edbb267x.ffs@tglx>
+References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
+	<20240405223110.1609888-6-jacob.jun.pan@linux.intel.com>
+	<87edbb267x.ffs@tglx>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|DM4PR12MB7768:EE_
-X-MS-Office365-Filtering-Correlation-Id: e31cb13b-f4e3-4a68-8efc-08dc5d6f81a9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	EsFv28XUqCclw+ht7BmOEzXejJKecmnGHoKm+0zZe788Bi2ELTP5f6sbV5hLO1NvHcwsQw/Rd5vYdeMEjV1mYcze6OzYEKa5EAFEgLp/7x+NbMYQdecWelOgtGzL8+pD337f+ulSsrHmk7MkSVnn9NcmhPMi+YASKIDMsD1GKRt3g4Kivp8wv3GFo/hhlfJYw8ZMdQlvtrDbx+jSxjm0VbIgC0rbjKyGON2epDLqwVqdMA0A/rBwMHEExGnryQkXxFMSQpDas4EgFYWRf4LV120T7RQUPPksA08Qkyrr4UlyS8NO2Y7UiJr6qmzkaeEyJsRw8rNf+c5YJiR2HecUml2S/IjFC2ZXQSYhZ4hqU3sQKwQhmquT/fP/fpSaVsOUnCuXXcEiC0uPazZV20HXaMU5HItkAIKnwVB73BRDAKEZsN/P2H0L6vvaQk/TDIJngm7EAMxx0IzEhauFOq4swMC+4QhWp3J1SvAYigTNVybvQA5nduZnsMaRaEjtNRxioHJjpqKaPTRc9LiVGk2VDr6LPT/y87wmKtLAEXGMAGARt7qUv7N+WZN8UV5w6ykOWCJd9XzM8KIvO5lP1pKiDY+sR2c4zH+kPGG+cBL0TZNqKFL8kx6eZU1HDog7B+/hpvO5WHdkJrHnuP13O3KSV7YpVo2SnzWc9O5ji3U23E8=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(366007)(1800799015);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?YcFApMRcqOkhAEhw82sTjBj7eKvU9hqvpT48282g2ZzfJ8G0kjGi3RqcpjhM?=
- =?us-ascii?Q?TJAoCLbyzU8OwdmZcY37fQEKreqk7zsFB1AaHo8eQHy0DenwO4EknvoXbxL3?=
- =?us-ascii?Q?ySzakUIrjYahijGTDvcNrMRhZ/M7o7xWOIRNQb+KjYY1K+mBF9x4UHjWGh0A?=
- =?us-ascii?Q?QERSBmVNLC2V+5ZoQTSG8UFMbvJLjjl3Os3iYTISsJOyUQlvzhUnishbNoDm?=
- =?us-ascii?Q?ZaU5XsAXnCbHq0LXMWonjLxryQI8+enzNxbwdGDSGhlVv+6kvQ/YaGuet3Tj?=
- =?us-ascii?Q?QnL59x3CLvTzkoRbyYCq97Ra1Fmfw+WkGgBclENulVXT6EH8SczBIJdRTRgD?=
- =?us-ascii?Q?Uq8YlIXWIwCMbPFD3iAiAZhLUzWkuIfuMWsxtEP4Fp7TsTS0SrFnCLjbV16k?=
- =?us-ascii?Q?LDddwzZ3ep7hIny8y1pHipDCqhYxlZ1xYpokjFfbHgdJq6SKkuiNRbVwoGEA?=
- =?us-ascii?Q?hhK9ST5zDB2qXRnJw1CPa5cnMDfrgyb+K35Rpw7jIRRebrcXS7MKIUyRTlPO?=
- =?us-ascii?Q?dVC11MmGchYVGj85ZvGXfbuE+vnhHCLtYYcD6MzpzrICp/21CpOOh65pWeHu?=
- =?us-ascii?Q?PZ3eBP2jVx46sI1szMc/+1JBwCvaQY7yqvJvphq7TrOa1l8J7U5wt1YEG6Vq?=
- =?us-ascii?Q?UxXZS/UIt5Udj32UBRh40BoZMQD2Emx9UV2jq9B6RmrI5u/ovMntaihqAfiv?=
- =?us-ascii?Q?kQ/cgUSd0h2LxJ95U7bp3C5EMlavigR8GweFINbQoAE9fNQ1s5TjN7/WEMmr?=
- =?us-ascii?Q?XxHXZvJMbGXIzFsHRvLW2UFpjgk+eWae/lqdXbhjwhb6Z3DpVWv7yddypLol?=
- =?us-ascii?Q?l4FgselvWeflTf5zV0XgVsog3wKCi5Qlk9d+jVKoqLTGo1sGDYUKeqFAiOKH?=
- =?us-ascii?Q?zz2k8ytcqWnbnYky30p8AjINIuwCIxWPh5wSap0PAHf+JKSbWR+am6XIANI5?=
- =?us-ascii?Q?FbTlM6WhkKkXqYsBdYTw1J1T/dUi2H66tZhB3zUuEV8RLIp1BYqf6flHLM17?=
- =?us-ascii?Q?xA7qty2kHqZBK50oAE2qGj/MS6bTA28LMciSaMEwdbTWFRX4TiCnXGgim5Uh?=
- =?us-ascii?Q?kbdBxA2mBqLE7Hy+MYJ7kH0oBio+X9P8hU5zKZAtYGFtmynYXFMonFPK7Vbl?=
- =?us-ascii?Q?WGcX5brVsiSvhKykYXvBAyXVrStQ/tee6HjuaCqslLFrjPeJDJIKBPVUOvXD?=
- =?us-ascii?Q?I9czwYG90jEGRnrnjW/ItE/3fICPHcQ+oUK/Onh6qNssZZ+753bLDlgpaw7h?=
- =?us-ascii?Q?/BUhOFvvEN1yi2pJ1b/zC0sznMA5bQjNSNf/zPPK7Os2Q6bs7FXlP8pkU01S?=
- =?us-ascii?Q?BGhc85D9CzouHQQMOG4JyIU0nkAse/Mw6IExGk8Wn6TsqCiWrD5qKIIHGpUU?=
- =?us-ascii?Q?8W+YUGzmNe3uav5u7VpgdH004i7wHVu+80Z6fQc8sRbi8/T5qI1wx51mjJmm?=
- =?us-ascii?Q?ezxeoMx05MxmKB4z8zaF5+OYlfT/3OrHVu8NCsxuYqGYWyVzcMCzw3e4/umg?=
- =?us-ascii?Q?fPautV/cvtrnekBXGx+3TgbJ8dEGlEQGA12uckfadTW0ErZExzZP3tqacnix?=
- =?us-ascii?Q?JSXssXiQtHMEYsH9ToVYdZ01ENsxzvbRIgXOIRFy?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e31cb13b-f4e3-4a68-8efc-08dc5d6f81a9
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2024 17:14:27.9693
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: chKNvLKGsBDuMA9qON+/U26gVzxs7scSpLdGAR4sBDWQUJzLWXvOxW0MXsmAf8RF
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB7768
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Apr 12, 2024 at 08:43:48PM -0700, Nicolin Chen wrote:
+Hi Thomas,
 
-> The user-space support is to provide uAPIs (via IOMMUFD) for hypervisors
-> in user space to passthrough VCMDQs to VMs, allowing these VMs to access
-> the VCMDQs directly without trappings, i.e. no VM Exits. This gives huge
-> performance improvements: 70% to 90% reductions of TLB invalidation time
-> were measured by various DMA unmap tests running in a guest OS, compared
-> to a nested SMMU CMDQ (with trappings).
+On Thu, 11 Apr 2024 18:51:14 +0200, Thomas Gleixner <tglx@linutronix.de>
+wrote:
 
-So everyone is on the same page, this is the primary point of this
-series. The huge speed up of in-VM performance is necessary for the
-workloads this chip is expected to be running. This series is unique
-from all the rest because it runs inside a VM, often in the from of a
-distro release.
+> On Fri, Apr 05 2024 at 15:31, Jacob Pan wrote:
+> > diff --git a/arch/x86/include/asm/irq_vectors.h
+> > b/arch/x86/include/asm/irq_vectors.h index d18bfb238f66..1ee00be8218d
+> > 100644 --- a/arch/x86/include/asm/irq_vectors.h
+> > +++ b/arch/x86/include/asm/irq_vectors.h
+> > @@ -97,9 +97,16 @@
+> >  
+> >  #define LOCAL_TIMER_VECTOR		0xec
+> >  
+> > +/*
+> > + * Posted interrupt notification vector for all device MSIs delivered
+> > to
+> > + * the host kernel.
+> > + */
+> > +#define POSTED_MSI_NOTIFICATION_VECTOR	0xeb
+> >  #define NR_VECTORS			 256
+> >  
+> > -#ifdef CONFIG_X86_LOCAL_APIC
+> > +#ifdef CONFIG_X86_POSTED_MSI
+> > +#define FIRST_SYSTEM_VECTOR
+> > POSTED_MSI_NOTIFICATION_VECTOR +#elif defined(CONFIG_X86_LOCAL_APIC)
+> >  #define FIRST_SYSTEM_VECTOR		LOCAL_TIMER_VECTOR
+> >  #else
+> >  #define FIRST_SYSTEM_VECTOR		NR_VECTORS  
+> 
+> This is horrible and we had attempts before to make the system vector
+> space dense. They all did not work and making an exception for this is
+> not what we want.
+> 
+> If we really care then we do it proper for _all_ of them. Something like
+> the uncompiled below. There is certainly a smarter way to do the build
+> thing, but my kbuild foo is rusty.
+I too had the concern of the wasting system vectors, but did not know how to
+fix it. But now your code below works well. Tested without KVM in .config
+to show the gaps:
 
-It doesn't need the other series or it's own part 2 as it entirely
-stands alone on bare metal hardware or on top of commercial VM cloud
-instances runing who-knows-what in their hypervisors.
+In VECTOR IRQ domain.
 
-The other parts are substantially about enabling qemu and the open
-ecosystem to have fully functional vSMMU3 virtualization.
+BEFORE:
+System: 46: 0-31,50,235-236,244,246-255
 
-Jason
+AFTER:
+System: 46: 0-31,50,241-242,245-255
+
+The only gap is MANAGED_IRQ_SHUTDOWN_VECTOR(243), which is expected on a
+running system.
+
+Verified in irqvectors.s: .ascii "->MANAGED_IRQ_SHUTDOWN_VECTOR $243
+
+POSTED MSI/first system vector moved up from 235 to 241 for this case.
+
+Will try to let tools/arch/x86/include/asm/irq_vectors.h also use it
+instead of manually copy over each time. Any suggestions greatly
+appreciated.
+
+> ---
+> --- a/arch/x86/Makefile
+> +++ b/arch/x86/Makefile
+> @@ -245,6 +245,7 @@ archscripts: scripts_basic
+>  
+>  archheaders:
+>  	$(Q)$(MAKE) $(build)=arch/x86/entry/syscalls all
+> +	$(Q)$(MAKE) $(build)=arch/x86/kernel/irqvectors all
+>  
+>  ###
+>  # Kernel objects
+> --- a/arch/x86/include/asm/irq_vectors.h
+> +++ b/arch/x86/include/asm/irq_vectors.h
+> @@ -43,59 +43,46 @@
+>   */
+>  #define ISA_IRQ_VECTOR(irq)		(((FIRST_EXTERNAL_VECTOR +
+> 16) & ~15) + irq) 
+> +#ifndef __ASSEMBLY__
+>  /*
+> - * Special IRQ vectors used by the SMP architecture, 0xf0-0xff
+> - *
+> - *  some of the following vectors are 'rare', they are merged
+> - *  into a single vector (CALL_FUNCTION_VECTOR) to save vector space.
+> - *  TLB, reschedule and local APIC vectors are performance-critical.
+> + * Special IRQ vectors used by the SMP architecture, 0xff and downwards
+>   */
+> +enum {
+> +	__SPURIOUS_APIC_VECTOR,
+> +	__ERROR_APIC_VECTOR,
+> +	__RESCHEDULE_VECTOR,
+> +	__CALL_FUNCTION_VECTOR,
+> +	__CALL_FUNCTION_SINGLE_VECTOR,
+> +	__THERMAL_APIC_VECTOR,
+> +	__THRESHOLD_APIC_VECTOR,
+> +	__REBOOT_VECTOR,
+> +	__X86_PLATFORM_IPI_VECTOR,
+> +	__IRQ_WORK_VECTOR,
+> +	__DEFERRED_ERROR_VECTOR,
+>  
+> -#define SPURIOUS_APIC_VECTOR		0xff
+> -/*
+> - * Sanity check
+> - */
+> -#if ((SPURIOUS_APIC_VECTOR & 0x0F) != 0x0F)
+> -# error SPURIOUS_APIC_VECTOR definition error
+> +#if IS_ENABLED(CONFIG_HYPERVISOR_GUEST)
+> +	__HYPERVISOR_CALLBACK_VECTOR,
+>  #endif
+>  
+> -#define ERROR_APIC_VECTOR		0xfe
+> -#define RESCHEDULE_VECTOR		0xfd
+> -#define CALL_FUNCTION_VECTOR		0xfc
+> -#define CALL_FUNCTION_SINGLE_VECTOR	0xfb
+> -#define THERMAL_APIC_VECTOR		0xfa
+> -#define THRESHOLD_APIC_VECTOR		0xf9
+> -#define REBOOT_VECTOR			0xf8
+> -
+> -/*
+> - * Generic system vector for platform specific use
+> - */
+> -#define X86_PLATFORM_IPI_VECTOR		0xf7
+> -
+> -/*
+> - * IRQ work vector:
+> - */
+> -#define IRQ_WORK_VECTOR			0xf6
+> -
+> -/* 0xf5 - unused, was UV_BAU_MESSAGE */
+> -#define DEFERRED_ERROR_VECTOR		0xf4
+> -
+> -/* Vector on which hypervisor callbacks will be delivered */
+> -#define HYPERVISOR_CALLBACK_VECTOR	0xf3
+> -
+> -/* Vector for KVM to deliver posted interrupt IPI */
+> -#define POSTED_INTR_VECTOR		0xf2
+> -#define POSTED_INTR_WAKEUP_VECTOR	0xf1
+> -#define POSTED_INTR_NESTED_VECTOR	0xf0
+> -
+> -#define MANAGED_IRQ_SHUTDOWN_VECTOR	0xef
+> +#if IS_ENABLED(CONFIG_KVM)
+> +	/* Vector for KVM to deliver posted interrupt IPI */
+> +	__POSTED_INTR_VECTOR,
+> +	__POSTED_INTR_WAKEUP_VECTOR,
+> +	__POSTED_INTR_NESTED_VECTOR,
+> +#endif
+> +	__MANAGED_IRQ_SHUTDOWN_VECTOR,
+>  
+>  #if IS_ENABLED(CONFIG_HYPERV)
+> -#define HYPERV_REENLIGHTENMENT_VECTOR	0xee
+> -#define HYPERV_STIMER0_VECTOR		0xed
+> +	__HYPERV_REENLIGHTENMENT_VECTOR,
+> +	__HYPERV_STIMER0_VECTOR,
+>  #endif
+> +	__LOCAL_TIMER_VECTOR,
+> +};
+> +#endif /* !__ASSEMBLY__ */
+>  
+> -#define LOCAL_TIMER_VECTOR		0xec
+> +#ifndef COMPILE_OFFSETS
+> +#include <asm/irqvectors.h>
+> +#endif
+>  
+>  #define NR_VECTORS			 256
+>  
+> --- /dev/null
+> +++ b/arch/x86/kernel/irqvectors/Makefile
+> @@ -0,0 +1,11 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +
+> +irqvectors-file	:=
+> arch/$(SRCARCH)/include/generated/asm/irqvectors.h +targets 	+=
+> arch/$(SRCARCH)/kernel/irqvectors/irqvectors.s +
+> +$(irqvectors-file): arch/$(SRCARCH)/kernel/irqvectors/irqvectors.s FORCE
+> +	$(call filechk,offsets,__ASM_IRQVECTORS_H__)
+> +
+> +PHONY += all
+> +all: $(irqvectors-file)
+> +	@:
+> --- /dev/null
+> +++ b/arch/x86/kernel/irqvectors/irqvectors.c
+> @@ -0,0 +1,42 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#define COMPILE_OFFSETS
+> +
+> +#include <linux/kbuild.h>
+> +#include <asm/irq_vectors.h>
+> +
+> +#define VECNR(v)	(0xFF - __##v)
+> +#define VECTOR(v)	DEFINE(v, VECNR(v))
+> +
+> +static void __used common(void)
+> +{
+> +	VECTOR(SPURIOUS_APIC_VECTOR);
+> +	VECTOR(ERROR_APIC_VECTOR);
+> +	VECTOR(RESCHEDULE_VECTOR);
+> +	VECTOR(CALL_FUNCTION_VECTOR);
+> +	VECTOR(CALL_FUNCTION_SINGLE_VECTOR);
+> +	VECTOR(THERMAL_APIC_VECTOR);
+> +	VECTOR(THRESHOLD_APIC_VECTOR);
+> +	VECTOR(REBOOT_VECTOR);
+> +	VECTOR(X86_PLATFORM_IPI_VECTOR);
+> +	VECTOR(IRQ_WORK_VECTOR);
+> +	VECTOR(DEFERRED_ERROR_VECTOR);
+> +
+> +#if IS_ENABLED(CONFIG_HYPERVISOR_GUEST)
+> +	VECTOR(HYPERVISOR_CALLBACK_VECTOR);
+> +#endif
+> +
+> +#if IS_ENABLED(CONFIG_KVM)
+> +	/* Vector for KVM to deliver posted interrupt IPI */
+> +	VECTOR(POSTED_INTR_VECTOR);
+> +	VECTOR(POSTED_INTR_WAKEUP_VECTOR);
+> +	VECTOR(POSTED_INTR_NESTED_VECTOR);
+> +#endif
+> +	VECTOR(MANAGED_IRQ_SHUTDOWN_VECTOR);
+> +
+> +#if IS_ENABLED(CONFIG_HYPERV)
+> +	VECTOR(HYPERV_REENLIGHTENMENT_VECTOR);
+> +	VECTOR(HYPERV_STIMER0_VECTOR);
+> +#endif
+> +	VECTOR(LOCAL_TIMER_VECTOR);
+> +}
+> +
+> 
+> 
+> 
+
+
+Thanks,
+
+Jacob
