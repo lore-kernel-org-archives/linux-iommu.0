@@ -1,95 +1,173 @@
-Received: from njjs-sys-mailin01.njjs.baidu.com (mx309.baidu.com [180.101.52.12])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 02D7C2C182
-	for <iommu@lists.linux.dev>; Mon, 15 Apr 2024 07:16:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=180.101.52.12
+Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EAC163715E
+	for <iommu@lists.linux.dev>; Mon, 15 Apr 2024 08:04:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713165422; cv=none; b=eCxdce2T3JD2rHx4mpRAKBe4Ydi9l6HjnnfOYYAmWN+JD5VTuNdCrVzzGQgesD7j2PxMTB60tsXG4BjEZbXlc3JZdJKmaJJ7gllfrhSUpU8qmZxePE1Lg+rIrul2/RV8rQK6GFT7J3L+x8EAYzt7xUu28XuXOS+3LGDUVv6rhVI=
+	t=1713168266; cv=none; b=Y+4oPjoVvGLVRQNtKa1+UobOT0xJj9CT8WBHlOWWxfGcZZBJeNrKmDsufjCp00Jo/bYGduHD/Ea+MxgTOCfLUsyot6Q+u/SuuVTrKA3sMh1LlK+AyazX3AtztrjxyVkdx/zmGUuATU1xE38ct+nkIuRxwQpWfGO/GmAqkjUTfjQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713165422; c=relaxed/simple;
-	bh=2hFmfBqp6pUbn73WdzuXin7163COF/w9ovxlX+BGZDo=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=enit//XwYaFjXt0BJlhjBZFTD0cRwyfHSOfj3cF2na4SyNvkoSsjHhzOhAOQyFfHTN3kCg/gXllJ2EWktjHPZxtG+0cQRxhPY8IWtW+7avgV/QsUWW+pG1wAm+W24fg38NHU0BejT/jrKePaqJr5r9wdLTRcMDo6gF8l6x6q348=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; arc=none smtp.client-ip=180.101.52.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
-Received: from localhost (bjhw-sys-rpm015653cc5.bjhw.baidu.com [10.227.53.39])
-	by njjs-sys-mailin01.njjs.baidu.com (Postfix) with ESMTP id 308117F00045;
-	Mon, 15 Apr 2024 14:56:55 +0800 (CST)
-From: Li RongQing <lirongqing@baidu.com>
-To: robin.murphy@arm.com,
-	joro@8bytes.org,
-	will@kernel.org,
-	iommu@lists.linux.dev
-Cc: Li RongQing <lirongqing@baidu.com>
-Subject: [PATCH] iommu/iova: Consider NUMA affinity when allocating memory for per-CPU iova_magazine
-Date: Mon, 15 Apr 2024 14:56:53 +0800
-Message-Id: <20240415065653.33018-1-lirongqing@baidu.com>
-X-Mailer: git-send-email 2.9.4
+	s=arc-20240116; t=1713168266; c=relaxed/simple;
+	bh=+MLwVfz9rwOIvL4WZTuJ04Fbom+ZhHool4fp3bvKc7w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=oVQJDruD5+rH/SiNJKWegSQcwM1Cf9VM1tfbYaDNGt65AOD6/qZYKV2tfpNjbfw9iNMoRqnvNRwTz//nfJk4wUm4SwQzg+VkKa2S1TNcR0ACta/wcY1N6u8Z8qEs9tPNlDidDMz+wS8YpNvjfzDp31oJspoEWvoTdIRr2KJE5xQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=LeEyAzdY; arc=none smtp.client-ip=85.214.250.239
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="LeEyAzdY"
+Received: from 8bytes.org (p4ffe0bdf.dip0.t-ipconnect.de [79.254.11.223])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 53B381C6467;
+	Mon, 15 Apr 2024 10:04:14 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
+	s=default; t=1713168254;
+	bh=+MLwVfz9rwOIvL4WZTuJ04Fbom+ZhHool4fp3bvKc7w=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LeEyAzdYwcq13HRMYuqXIIyo9/ut460vfm8roz0F/7rfRnwTWxQvRp0dhWHcb3I8d
+	 eamrRXPMFtjbMGiMyBSN2eO0uqNSDE1zcpRcGCiSaQ4ylYFbgh/w8DE4tqr6UYZ/qa
+	 owo9e8tiJUi8yJjpxZQxG1UI+D9ZzVn+mUmhyMrVOwuHb5JPLKv8BuzXgAxG12IgdG
+	 XlYD8h50fPB00iwvMbFyNsyViyYR+EHauP6cjJ76BHGXFGPyPAIvzKceDY2FeLKzyq
+	 qQ2YKYWgDzdK5xvlJ9f3/QODFaJ62YwJWx/gMQ/t3a6pHhCBbYQ775DNXKRLQH5sa7
+	 naM62itJcs1gg==
+Date: Mon, 15 Apr 2024 10:04:13 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Eric Wagner <ewagner12@gmail.com>
+Cc: Will Deacon <will@kernel.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, Vasant Hegde <vasant.hegde@amd.com>
+Subject: Re: Kernel 6.7 regression doesn't boot if using AMD eGPU
+Message-ID: <ZhzffQM5YA7HxzSX@8bytes.org>
+References: <CAHudX3zLH6CsRmLE-yb+gRjhh-v4bU5_1jW_xCcxOo_oUUZKYg@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHudX3zLH6CsRmLE-yb+gRjhh-v4bU5_1jW_xCcxOo_oUUZKYg@mail.gmail.com>
 
-per-CPU iova_magazine are dominantly accessed from their own local CPUs,
-so allocate them node-local to improve performance.
+Also adding Vasant.
+On Sat, Apr 13, 2024 at 06:04:12PM -0400, Eric Wagner wrote:
+> On my Thinkpad T14s G3 AMD (Ryzen 7 6850U) laptop connected to an AMD RX 580 in
+> Akitio Node Thunderbolt 3 eGPU. Booting with the eGPU connected hangs on
+> kernels 6.7 and 6.8, but worked on 6.6. For debugging, I find that adding the
+> kernel parameter amd_iommu=off seems to fix the issue and allows booting with
+> the eGPU on 6.7.
 
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
----
- drivers/iommu/iova.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+Do you have any way of getting the boot log of the hang? It is hard to
+debug this without further data on where it hang and what happens
+before.
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index d59d0ea..70f89ea 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -597,11 +597,11 @@ unsigned long iova_rcache_range(void)
- 	return PAGE_SIZE << (IOVA_RANGE_CACHE_MAX_SIZE - 1);
- }
- 
--static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
-+static struct iova_magazine *iova_magazine_alloc_node(gfp_t flags, int node)
- {
- 	struct iova_magazine *mag;
- 
--	mag = kmem_cache_alloc(iova_magazine_cache, flags);
-+	mag = kmem_cache_alloc_node(iova_magazine_cache, flags, node);
- 	if (mag)
- 		mag->size = 0;
- 
-@@ -707,7 +707,7 @@ static void iova_depot_work_func(struct work_struct *work)
- int iova_domain_init_rcaches(struct iova_domain *iovad)
- {
- 	unsigned int cpu;
--	int i, ret;
-+	int i, ret, nid;
- 
- 	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
- 				 sizeof(struct iova_rcache),
-@@ -731,10 +731,11 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
- 		}
- 		for_each_possible_cpu(cpu) {
- 			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
-+			nid = cpu_to_node(cpu);
- 
- 			spin_lock_init(&cpu_rcache->lock);
--			cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
--			cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
-+			cpu_rcache->loaded = iova_magazine_alloc_node(GFP_KERNEL, nid);
-+			cpu_rcache->prev = iova_magazine_alloc_node(GFP_KERNEL, nid);
- 			if (!cpu_rcache->loaded || !cpu_rcache->prev) {
- 				ret = -ENOMEM;
- 				goto out_err;
-@@ -777,7 +778,9 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
- 		swap(cpu_rcache->prev, cpu_rcache->loaded);
- 		can_insert = true;
- 	} else {
--		struct iova_magazine *new_mag = iova_magazine_alloc(GFP_ATOMIC);
-+		int nid = cpu_to_node(raw_smp_processor_id());
-+		struct iova_magazine *new_mag =
-+			iova_magazine_alloc_node(GFP_ATOMIC, nid);
- 
- 		if (new_mag) {
- 			spin_lock(&rcache->lock);
--- 
-2.9.4
+Regards,
+
+	Joerg
+
+> 
+> I tried bisecting the issue between 6.6 and 6.7 and ended up with:
+> "e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2 is the first bad commit" in the
+> attached. This seems to indicate an amd iommu issue.
+> 
+> Two others also reported the same issue on AMD Ryzen 7 7840 with AMD RX 6000
+> connected as eGPU (https://gitlab.freedesktop.org/drm/amd/-/issues/3182).
+> 
+> Let me know if you need more information.
+
+> Bisecting: 366 revisions left to test after this (roughly 9 steps)
+> [74e9347ebc5be452935fe4f3eddb150aa5a6f4fe] Merge tag 'loongarch-fixes-6.6-3' of git://git.kernel.org/pub/scm/linux/kernel/git/chenhuacai/linux-loongson
+> Bisecting: 182 revisions left to test after this (roughly 8 steps)
+> [f6176471542d991137543af2ef1c18dae3286079] Merge tag 'mtd/fixes-for-6.6-rc7' of git://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux
+> Bisecting: 87 revisions left to test after this (roughly 7 steps)
+> [fe3cfe869d5e0453754cf2b4c75110276b5e8527] Merge tag 'phy-fixes-6.6' of git://git.kernel.org/pub/scm/linux/kernel/git/phy/linux-phy
+> Bisecting: 43 revisions left to test after this (roughly 6 steps)
+> [c76c067e488ccd55734c3e750799caf2c5956db6] s390/pci: Use dma-iommu layer
+> Bisecting: 27 revisions left to test after this (roughly 5 steps)
+> [aa5cabc4ce8e6b45d170d162dc54b1bac1767c47] Merge tag 'arm-smmu-updates' of git://git.kernel.org/pub/scm/linux/kernel/git/will/linux into arm/smmu
+> Bisecting: 14 revisions left to test after this (roughly 4 steps)
+> [bbc70e0aec287e164344b1a071bd46466a4f29b3] iommu/dart: Remove the force_bypass variable
+> Bisecting: 9 revisions left to test after this (roughly 3 steps)
+> [e82c175e63229ea495a0a0b5305a98b5b6ee5346] Revert "iommu/vt-d: Remove unused function"
+> Bisecting: 5 revisions left to test after this (roughly 2 steps)
+> [92bce97f0c341d3037b0f364b6839483f6a41cae] s390/pci: Fix reset of IOMMU software counters
+> Bisecting: 3 revisions left to test after this (roughly 2 steps)
+> [3613047280ec42a4e1350fdc1a6dd161ff4008cc] Merge tag 'v6.6-rc7' into core
+> Bisecting: 2 revisions left to test after this (roughly 1 step)
+> [f7da9c081517daba70f9f9342e09d7a6322ba323] iommu/tegra-smmu: Drop unnecessary error check for for debugfs_create_dir()
+> Bisecting: 1 revision left to test after this (roughly 1 step)
+> [9e13ec61de2a51195b122a79461431d8cb99d7b5] iommu/virtio: Add __counted_by for struct viommu_request and use struct_size()
+> Bisecting: 0 revisions left to test after this (roughly 0 steps)
+> [6e6c6d6bc6c96c2477ddfea24a121eb5ee12b7a3] iommu: Avoid unnecessary cache invalidations
+> e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2 is the first bad commit
+> commit e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2
+> Merge: 6e6c6d6bc6 f7da9c0815 aa5cabc4ce 9e13ec61de e82c175e63 cedc811c76 3613047280 92bce97f0c
+> Author: Joerg Roedel <jroedel@suse.de>
+> Date:   Fri Oct 27 09:13:40 2023 +0200
+> 
+>     Merge branches 'iommu/fixes', 'arm/tegra', 'arm/smmu', 'virtio', 'x86/vt-d', 'x86/amd', 'core' and 's390' into next
+> 
+>  Documentation/admin-guide/kernel-parameters.txt    |   9 +-
+>  .../devicetree/bindings/iommu/arm,smmu.yaml        |   2 +
+>  arch/arm/configs/multi_v7_defconfig                |   1 -
+>  arch/arm/configs/tegra_defconfig                   |   1 -
+>  arch/powerpc/kernel/iommu.c                        |  53 +-
+>  arch/s390/include/asm/pci.h                        |  11 -
+>  arch/s390/include/asm/pci_clp.h                    |   3 +
+>  arch/s390/include/asm/pci_dma.h                    | 121 +--
+>  arch/s390/pci/Makefile                             |   2 +-
+>  arch/s390/pci/pci.c                                |  35 +-
+>  arch/s390/pci/pci_bus.c                            |   5 -
+>  arch/s390/pci/pci_debug.c                          |  12 +-
+>  arch/s390/pci/pci_dma.c                            | 746 ---------------
+>  arch/s390/pci/pci_event.c                          |  17 +-
+>  arch/s390/pci/pci_sysfs.c                          |  19 +-
+>  drivers/iommu/Kconfig                              |  15 +-
+>  drivers/iommu/Makefile                             |   1 -
+>  drivers/iommu/amd/Kconfig                          |   9 -
+>  drivers/iommu/amd/Makefile                         |   1 -
+>  drivers/iommu/amd/amd_iommu.h                      |  35 +-
+>  drivers/iommu/amd/amd_iommu_types.h                |  52 +-
+>  drivers/iommu/amd/init.c                           | 117 +--
+>  drivers/iommu/amd/io_pgtable_v2.c                  |   8 +-
+>  drivers/iommu/amd/iommu.c                          | 577 +++++-------
+>  drivers/iommu/amd/iommu_v2.c                       | 996 ---------------------
+>  drivers/iommu/apple-dart.c                         | 138 +--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c    |  71 +-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 251 +++---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  17 +-
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c         |   2 +
+>  drivers/iommu/arm/arm-smmu/qcom_iommu.c            |  45 +-
+>  drivers/iommu/dma-iommu.c                          | 200 ++++-
+>  drivers/iommu/exynos-iommu.c                       |  83 +-
+>  drivers/iommu/fsl_pamu_domain.c                    |  41 +-
+>  drivers/iommu/intel/debugfs.c                      | 215 ++++-
+>  drivers/iommu/intel/iommu.c                        |  19 +-
+>  drivers/iommu/intel/iommu.h                        |  14 +
+>  drivers/iommu/iommu.c                              | 455 +++++-----
+>  drivers/iommu/iommufd/selftest.c                   |  30 +-
+>  drivers/iommu/iova.c                               |  95 +-
+>  drivers/iommu/ipmmu-vmsa.c                         |  72 +-
+>  drivers/iommu/msm_iommu.c                          |  35 +-
+>  drivers/iommu/mtk_iommu.c                          |  35 +-
+>  drivers/iommu/mtk_iommu_v1.c                       |  28 +-
+>  drivers/iommu/omap-iommu.c                         |  69 +-
+>  drivers/iommu/omap-iommu.h                         |   2 +-
+>  drivers/iommu/rockchip-iommu.c                     |  59 +-
+>  drivers/iommu/s390-iommu.c                         | 424 ++++++++-
+>  drivers/iommu/sprd-iommu.c                         |  36 +-
+>  drivers/iommu/sun50i-iommu.c                       |  80 +-
+>  drivers/iommu/tegra-gart.c                         | 371 --------
+>  drivers/iommu/tegra-smmu.c                         |  58 +-
+>  drivers/iommu/virtio-iommu.c                       |   4 +-
+>  drivers/memory/tegra/mc.c                          |  34 -
+>  drivers/memory/tegra/tegra20.c                     |  28 -
+>  include/linux/amd-iommu.h                          | 120 ---
+>  include/linux/iommu.h                              |  38 +-
+>  include/soc/tegra/mc.h                             |  26 -
+>  58 files changed, 2138 insertions(+), 3905 deletions(-)
+>  delete mode 100644 arch/s390/pci/pci_dma.c
+>  delete mode 100644 drivers/iommu/amd/iommu_v2.c
+>  delete mode 100644 drivers/iommu/tegra-gart.c
 
