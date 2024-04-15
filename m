@@ -1,327 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD8C41E492
-	for <iommu@lists.linux.dev>; Mon, 15 Apr 2024 20:40:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 50D82823CE
+	for <iommu@lists.linux.dev>; Mon, 15 Apr 2024 21:44:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713213606; cv=none; b=eJReLuNSn0R5AUywD+0N2mll+CscSkmeu6NMdzfJ5WP/pgNY3KX52GwScnrRGk16whtQnBEt58hyoAzu0Fa6BRBJ8Tj2vYWuBf8P81Q9v4HxP5Z6JBdgV4Ad39pYQVfWpzLXdXJU1fxOBOmyvQ5fH2fmgy8l+ugAcwN2V+nqoMw=
+	t=1713217486; cv=none; b=CUtP+VE06nd2JfB4dsWUC1mRlus5+VD/Wvp/yQaLGm/Ds/NX18STubQ4bBlTBf2iJ0B4FrWSkfCD1MiPu2dTNHwFhGTBpefeHSv+D1C6U5NKzf5dCc1CoQOj61CrDclcn3FfCJl55WLVH7PZeRY+UFqyp+P5gqvgWeOiNKEIei8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713213606; c=relaxed/simple;
-	bh=FcEt0XxkE8fSeSF3sT6N0uD/Tsiupni4uEmvhHUYB44=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=awN4Y59b+96t0VYu7FetCptqO5XonenPqgTHEl5Qp4V/vJ7W5zpB0xVp/Su9OZau0AUU/kY0MAscaLSY055wvRAyFgZ4anK5qR3aCIjNYOmOTmBjvRHLq+tJl5bUCOk6PuIHubszggpSCAeK8zVg+Yg/zp6wooNb6fQVQyOdcVw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XT/gD6To; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XT/gD6To"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713213605; x=1744749605;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FcEt0XxkE8fSeSF3sT6N0uD/Tsiupni4uEmvhHUYB44=;
-  b=XT/gD6ToKqcTLnb8GCccyBp7D/zi2j06IaImQopPiZt4qCD4qOvxuf8b
-   Hd9gn6NARqmLk3DKq3mpg0NZfpUGHsyq3ALQr8lCBIr2hCIgoCm95uY1a
-   V0sUNniL9WbknDGloVKiP++21qSycVbMP/fcVaJRwgBTSu1HARomV/Sa5
-   kQ4Zf2P9yi4bFXPaAxsw/wjd87nZthbeXLYWqZI1TOt0vOe3DNvAwiwhs
-   KtPzhM98z1TJaTG+NjAXmZCEySmWc9XMYLTrr+BTalZdgRZsImg2J5xGm
-   UzG0iCKTjD+81gp42Qc9D4Wk+hMeR9oao32mvNldFsGu57L16Lpxjq7dV
-   A==;
-X-CSE-ConnectionGUID: euVrpJfTQYGiNVIFTx1Nfw==
-X-CSE-MsgGUID: fQi7ZGaETWa2f6XMRe92ag==
-X-IronPort-AV: E=McAfee;i="6600,9927,11045"; a="8747723"
-X-IronPort-AV: E=Sophos;i="6.07,203,1708416000"; 
-   d="scan'208";a="8747723"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2024 13:39:22 -0700
-X-CSE-ConnectionGUID: 2+NnO0HTTBOzXdD/ihfV/g==
-X-CSE-MsgGUID: Z9eyk0xgSyC02nPriCsNOA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,203,1708416000"; 
-   d="scan'208";a="22027406"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2024 13:39:21 -0700
-Date: Mon, 15 Apr 2024 13:43:54 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
- Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev, Lu Baolu
- <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, Dave Hansen
- <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H. Peter Anvin"
- <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
- <mingo@redhat.com>, Paul Luse <paul.e.luse@intel.com>, Dan Williams
- <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>, Raj Ashok
- <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- maz@kernel.org, seanjc@google.com, Robin Murphy <robin.murphy@arm.com>,
- jim.harris@samsung.com, a.manzanares@samsung.com, Bjorn Helgaas
- <helgaas@kernel.org>, guang.zeng@intel.com, robert.hoo.linux@gmail.com,
- jacob.jun.pan@linux.intel.com, acme@kernel.org, kan.liang@intel.com,
- "Kleen, Andi" <andi.kleen@intel.com>
-Subject: Re: [PATCH v2 05/13] x86/irq: Reserve a per CPU IDT vector for
- posted MSIs
-Message-ID: <20240415134354.67c9d1d1@jacob-builder>
-In-Reply-To: <20240415115358.04e04204@jacob-builder>
-References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
-	<20240405223110.1609888-6-jacob.jun.pan@linux.intel.com>
-	<87edbb267x.ffs@tglx>
-	<20240415115358.04e04204@jacob-builder>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1713217486; c=relaxed/simple;
+	bh=YaVEnL7fTVUDsWoGF3mIRRcFiRd8xm30iOoRq9T0wwM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=n6vEY8cdhemGtKs0YPZafW6C62PBRTu5C1UvfxubXfLLT0rzvVzaUfMzmPK8u/ir2/sCStW6PIsGkHad2XGtOa6h6fmzyFGQe6rbPAC9bVrRY3RKx7aoPN9HDiRZmlz/UlTBIdAJexckfYOg163miCw+gr/I9MIMRKOqIdSTfr0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 574E32F4;
+	Mon, 15 Apr 2024 14:45:12 -0700 (PDT)
+Received: from [10.57.19.68] (unknown [10.57.19.68])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7FF4B3F738;
+	Mon, 15 Apr 2024 14:44:42 -0700 (PDT)
+Message-ID: <65d4d7e0-4d90-48d7-8e4a-d16800df148a@arm.com>
+Date: Mon, 15 Apr 2024 22:44:34 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: Kernel 6.7 regression doesn't boot if using AMD eGPU
+To: Eric Wagner <ewagner12@gmail.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <CAHudX3zLH6CsRmLE-yb+gRjhh-v4bU5_1jW_xCcxOo_oUUZKYg@mail.gmail.com>
+ <20240415163056.GP223006@ziepe.ca>
+ <CAHudX3zhagFWBv4isZzAtC8dA7EAAtY6Yk7fkJ31hf0D9zrNqw@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <CAHudX3zhagFWBv4isZzAtC8dA7EAAtY6Yk7fkJ31hf0D9zrNqw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
+On 2024-04-15 7:57 pm, Eric Wagner wrote:
+> Apologies if I made a mistake in the first bisect, I'm new to kernel
+> debugging.
+> 
+> I tested cedc811c76778bdef91d405717acee0de54d8db5 (x86/amd) and
+> 3613047280ec42a4e1350fdc1a6dd161ff4008cc (core) directly and both were good.
+> Then I ran git bisect again with e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2
+> as the bad and 6e6c6d6bc6c96c2477ddfea24a121eb5ee12b7a3 as the good and the
+> bisect log is attached. It ended up at the same commit as before.
+> 
+> I've also attached a picture of the boot screen that occurs when it hangs.
+> 0000:05:00.0 is the PCIe bus address of the RX 580 eGPU that's causing the
+> problem.
 
-On Mon, 15 Apr 2024 11:53:58 -0700, Jacob Pan
-<jacob.jun.pan@linux.intel.com> wrote:
+Looks like 59ddce4418da483 probably broke things most - prior to that, 
+the fact that it's behind a Thunderbolt port would have always taken 
+precedence and forced IOMMU_DOMAIN_DMA regardless of what the driver may 
+have wanted to say, whereas now we ask the driver first, then complain 
+that it conflicts with the untrusted status and ultimately don't 
+configure the IOMMU at all. Meanwhile the GPU driver presumably goes on 
+to believe it's using dma-direct with no IOMMU present, resulting in 
+fireworks when its traffic reaches the IOMMU. Great :(
 
-> Hi Thomas,
-> 
-> On Thu, 11 Apr 2024 18:51:14 +0200, Thomas Gleixner <tglx@linutronix.de>
-> wrote:
-> 
-> > On Fri, Apr 05 2024 at 15:31, Jacob Pan wrote:  
-> > > diff --git a/arch/x86/include/asm/irq_vectors.h
-> > > b/arch/x86/include/asm/irq_vectors.h index d18bfb238f66..1ee00be8218d
-> > > 100644 --- a/arch/x86/include/asm/irq_vectors.h
-> > > +++ b/arch/x86/include/asm/irq_vectors.h
-> > > @@ -97,9 +97,16 @@
-> > >  
-> > >  #define LOCAL_TIMER_VECTOR		0xec
-> > >  
-> > > +/*
-> > > + * Posted interrupt notification vector for all device MSIs delivered
-> > > to
-> > > + * the host kernel.
-> > > + */
-> > > +#define POSTED_MSI_NOTIFICATION_VECTOR	0xeb
-> > >  #define NR_VECTORS			 256
-> > >  
-> > > -#ifdef CONFIG_X86_LOCAL_APIC
-> > > +#ifdef CONFIG_X86_POSTED_MSI
-> > > +#define FIRST_SYSTEM_VECTOR
-> > > POSTED_MSI_NOTIFICATION_VECTOR +#elif defined(CONFIG_X86_LOCAL_APIC)
-> > >  #define FIRST_SYSTEM_VECTOR		LOCAL_TIMER_VECTOR
-> > >  #else
-> > >  #define FIRST_SYSTEM_VECTOR		NR_VECTORS    
-> > 
-> > This is horrible and we had attempts before to make the system vector
-> > space dense. They all did not work and making an exception for this is
-> > not what we want.
-> > 
-> > If we really care then we do it proper for _all_ of them. Something like
-> > the uncompiled below. There is certainly a smarter way to do the build
-> > thing, but my kbuild foo is rusty.  
-> I too had the concern of the wasting system vectors, but did not know how
-> to fix it. But now your code below works well. Tested without KVM in
-> .config to show the gaps:
-> 
-> In VECTOR IRQ domain.
-> 
-> BEFORE:
-> System: 46: 0-31,50,235-236,244,246-255
-> 
-> AFTER:
-> System: 46: 0-31,50,241-242,245-255
-> 
-> The only gap is MANAGED_IRQ_SHUTDOWN_VECTOR(243), which is expected on a
-> running system.
-> 
-> Verified in irqvectors.s: .ascii "->MANAGED_IRQ_SHUTDOWN_VECTOR $243
-> 
-> POSTED MSI/first system vector moved up from 235 to 241 for this case.
-> 
-> Will try to let tools/arch/x86/include/asm/irq_vectors.h also use it
-> instead of manually copy over each time. Any suggestions greatly
-> appreciated.
-> 
-On a second thought, if we make system IRQ vector determined at compile
-time based on different CONFIG options, will it break userspace tools such
-as perf? More importantly the rule of not breaking userspace.
+However the other notable thing that also happened between 6.6 and 6.7 
+was the removal of the AMD iommu_v2 code, so there's some possibility 
+that the GPU driver still may have only been working before due to that 
+also subverting the default domain with its own identity domain, so 
+whether it would actually work again with 
+iommu_get_default_domain_type() sorted out is yet another question... As 
+a first step I'd test the quick hack below, but be prepared for things 
+to still break slightly differently.
 
-+Arnaldo
+Cheers,
+Robin.
 
-> > ---
-> > --- a/arch/x86/Makefile
-> > +++ b/arch/x86/Makefile
-> > @@ -245,6 +245,7 @@ archscripts: scripts_basic
-> >  
-> >  archheaders:
-> >  	$(Q)$(MAKE) $(build)=arch/x86/entry/syscalls all
-> > +	$(Q)$(MAKE) $(build)=arch/x86/kernel/irqvectors all
-> >  
-> >  ###
-> >  # Kernel objects
-> > --- a/arch/x86/include/asm/irq_vectors.h
-> > +++ b/arch/x86/include/asm/irq_vectors.h
-> > @@ -43,59 +43,46 @@
-> >   */
-> >  #define ISA_IRQ_VECTOR(irq)		(((FIRST_EXTERNAL_VECTOR +
-> > 16) & ~15) + irq) 
-> > +#ifndef __ASSEMBLY__
-> >  /*
-> > - * Special IRQ vectors used by the SMP architecture, 0xf0-0xff
-> > - *
-> > - *  some of the following vectors are 'rare', they are merged
-> > - *  into a single vector (CALL_FUNCTION_VECTOR) to save vector space.
-> > - *  TLB, reschedule and local APIC vectors are performance-critical.
-> > + * Special IRQ vectors used by the SMP architecture, 0xff and downwards
-> >   */
-> > +enum {
-> > +	__SPURIOUS_APIC_VECTOR,
-> > +	__ERROR_APIC_VECTOR,
-> > +	__RESCHEDULE_VECTOR,
-> > +	__CALL_FUNCTION_VECTOR,
-> > +	__CALL_FUNCTION_SINGLE_VECTOR,
-> > +	__THERMAL_APIC_VECTOR,
-> > +	__THRESHOLD_APIC_VECTOR,
-> > +	__REBOOT_VECTOR,
-> > +	__X86_PLATFORM_IPI_VECTOR,
-> > +	__IRQ_WORK_VECTOR,
-> > +	__DEFERRED_ERROR_VECTOR,
-> >  
-> > -#define SPURIOUS_APIC_VECTOR		0xff
-> > -/*
-> > - * Sanity check
-> > - */
-> > -#if ((SPURIOUS_APIC_VECTOR & 0x0F) != 0x0F)
-> > -# error SPURIOUS_APIC_VECTOR definition error
-> > +#if IS_ENABLED(CONFIG_HYPERVISOR_GUEST)
-> > +	__HYPERVISOR_CALLBACK_VECTOR,
-> >  #endif
-> >  
-> > -#define ERROR_APIC_VECTOR		0xfe
-> > -#define RESCHEDULE_VECTOR		0xfd
-> > -#define CALL_FUNCTION_VECTOR		0xfc
-> > -#define CALL_FUNCTION_SINGLE_VECTOR	0xfb
-> > -#define THERMAL_APIC_VECTOR		0xfa
-> > -#define THRESHOLD_APIC_VECTOR		0xf9
-> > -#define REBOOT_VECTOR			0xf8
-> > -
-> > -/*
-> > - * Generic system vector for platform specific use
-> > - */
-> > -#define X86_PLATFORM_IPI_VECTOR		0xf7
-> > -
-> > -/*
-> > - * IRQ work vector:
-> > - */
-> > -#define IRQ_WORK_VECTOR			0xf6
-> > -
-> > -/* 0xf5 - unused, was UV_BAU_MESSAGE */
-> > -#define DEFERRED_ERROR_VECTOR		0xf4
-> > -
-> > -/* Vector on which hypervisor callbacks will be delivered */
-> > -#define HYPERVISOR_CALLBACK_VECTOR	0xf3
-> > -
-> > -/* Vector for KVM to deliver posted interrupt IPI */
-> > -#define POSTED_INTR_VECTOR		0xf2
-> > -#define POSTED_INTR_WAKEUP_VECTOR	0xf1
-> > -#define POSTED_INTR_NESTED_VECTOR	0xf0
-> > -
-> > -#define MANAGED_IRQ_SHUTDOWN_VECTOR	0xef
-> > +#if IS_ENABLED(CONFIG_KVM)
-> > +	/* Vector for KVM to deliver posted interrupt IPI */
-> > +	__POSTED_INTR_VECTOR,
-> > +	__POSTED_INTR_WAKEUP_VECTOR,
-> > +	__POSTED_INTR_NESTED_VECTOR,
-> > +#endif
-> > +	__MANAGED_IRQ_SHUTDOWN_VECTOR,
-> >  
-> >  #if IS_ENABLED(CONFIG_HYPERV)
-> > -#define HYPERV_REENLIGHTENMENT_VECTOR	0xee
-> > -#define HYPERV_STIMER0_VECTOR		0xed
-> > +	__HYPERV_REENLIGHTENMENT_VECTOR,
-> > +	__HYPERV_STIMER0_VECTOR,
-> >  #endif
-> > +	__LOCAL_TIMER_VECTOR,
-> > +};
-> > +#endif /* !__ASSEMBLY__ */
-> >  
-> > -#define LOCAL_TIMER_VECTOR		0xec
-> > +#ifndef COMPILE_OFFSETS
-> > +#include <asm/irqvectors.h>
-> > +#endif
-> >  
-> >  #define NR_VECTORS			 256
-> >  
-> > --- /dev/null
-> > +++ b/arch/x86/kernel/irqvectors/Makefile
-> > @@ -0,0 +1,11 @@
-> > +# SPDX-License-Identifier: GPL-2.0
-> > +
-> > +irqvectors-file	:=
-> > arch/$(SRCARCH)/include/generated/asm/irqvectors.h +targets 	+=
-> > arch/$(SRCARCH)/kernel/irqvectors/irqvectors.s +
-> > +$(irqvectors-file): arch/$(SRCARCH)/kernel/irqvectors/irqvectors.s
-> > FORCE
-> > +	$(call filechk,offsets,__ASM_IRQVECTORS_H__)
-> > +
-> > +PHONY += all
-> > +all: $(irqvectors-file)
-> > +	@:
-> > --- /dev/null
-> > +++ b/arch/x86/kernel/irqvectors/irqvectors.c
-> > @@ -0,0 +1,42 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#define COMPILE_OFFSETS
-> > +
-> > +#include <linux/kbuild.h>
-> > +#include <asm/irq_vectors.h>
-> > +
-> > +#define VECNR(v)	(0xFF - __##v)
-> > +#define VECTOR(v)	DEFINE(v, VECNR(v))
-> > +
-> > +static void __used common(void)
-> > +{
-> > +	VECTOR(SPURIOUS_APIC_VECTOR);
-> > +	VECTOR(ERROR_APIC_VECTOR);
-> > +	VECTOR(RESCHEDULE_VECTOR);
-> > +	VECTOR(CALL_FUNCTION_VECTOR);
-> > +	VECTOR(CALL_FUNCTION_SINGLE_VECTOR);
-> > +	VECTOR(THERMAL_APIC_VECTOR);
-> > +	VECTOR(THRESHOLD_APIC_VECTOR);
-> > +	VECTOR(REBOOT_VECTOR);
-> > +	VECTOR(X86_PLATFORM_IPI_VECTOR);
-> > +	VECTOR(IRQ_WORK_VECTOR);
-> > +	VECTOR(DEFERRED_ERROR_VECTOR);
-> > +
-> > +#if IS_ENABLED(CONFIG_HYPERVISOR_GUEST)
-> > +	VECTOR(HYPERVISOR_CALLBACK_VECTOR);
-> > +#endif
-> > +
-> > +#if IS_ENABLED(CONFIG_KVM)
-> > +	/* Vector for KVM to deliver posted interrupt IPI */
-> > +	VECTOR(POSTED_INTR_VECTOR);
-> > +	VECTOR(POSTED_INTR_WAKEUP_VECTOR);
-> > +	VECTOR(POSTED_INTR_NESTED_VECTOR);
-> > +#endif
-> > +	VECTOR(MANAGED_IRQ_SHUTDOWN_VECTOR);
-> > +
-> > +#if IS_ENABLED(CONFIG_HYPERV)
-> > +	VECTOR(HYPERV_REENLIGHTENMENT_VECTOR);
-> > +	VECTOR(HYPERV_STIMER0_VECTOR);
-> > +#endif
-> > +	VECTOR(LOCAL_TIMER_VECTOR);
-> > +}
-> > +
-> > 
-> > 
-> >   
-> 
-> 
-> Thanks,
-> 
-> Jacob
-
-
-Thanks,
-
-Jacob
+----->8-----
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 996e79dc582d..063e1eb32fbd 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1774,7 +1774,7 @@ static int iommu_get_default_domain_type(struct 
+iommu_group *group,
+  				untrusted,
+  				"Device is not trusted, but driver is overriding group %u to %s, 
+refusing to probe.\n",
+  				group->id, iommu_domain_type_str(driver_type));
+-			return -1;
++			//return -1;
+  		}
+  		driver_type = IOMMU_DOMAIN_DMA;
+  	}
