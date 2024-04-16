@@ -1,38 +1,70 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63B4912FF9E;
-	Tue, 16 Apr 2024 14:33:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8381130A64
+	for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 15:29:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713278014; cv=none; b=Zr9bbXLeotnbOZfwsMUvPJtrfa0HWjlNrYsA8DD81FMMbKVbfCKLqCtB5xdlALCt1RUN3LGv/fiacbhxPJ/Jpm7MdmsIyLPhrGMziOh5IjhEZj7NwdXP44qcj9NxCC5q+Ie8WftD2DalCSBn1WppzEhV36uzAWa9pfNeBB0Ivmk=
+	t=1713281387; cv=none; b=tjKPAIdwrt2vhDPnRLYEzIs+0NgAfTGL6Ek0fNbXRraPKXxHciomb9dRrpN8WrLpy4uka+3dLMMHnbkPZKWTZsRFOdtjx33OzhOkAAqPPBJCxUMBz0XjV/2vebYZtUY4Tbdfip0tcMDWQ8mbj9860Awqpz8LInlTwLegjWOH8cM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713278014; c=relaxed/simple;
-	bh=S3+lG+Q4zz1vpzcDH9owuemE4fYStoaS86UMxk5U1J4=;
+	s=arc-20240116; t=1713281387; c=relaxed/simple;
+	bh=N5prF0FaWdPob3YwO19P3byW98fbFcSX6G2WX/kGCXQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ny1QRV7hEUp66NA5ZGl9rLzwEnAz6GDsiZ5UjDc55nL63gv8TDhqY/o9pESgX1nzCJnM2f93MofwTlJ/DsTlcM7eR7XRu5XQP1jOunXOQ2lp62leAkaMeQSnH87JEe6To1gaiBR9vFGPrhcMvTKkXJzI5LJBMYt5cwDCFixWPSs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=0+DyPwlG; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=SfLXgntQ0PS0ulVPnAwxLt04UkGBLeacY5jhlLuEnwoIBQebapyXOd6/vsvgwif4CnRo30/YJZSgPL8BukhEMaTQVdL/DAd+X11Na2ZlxiJtuBgq5b0q+A9Rrkv5l4HbEV08AJ1Qk/lOHq8AL9LGIMMYtNoBPxfs70KHPCcyX/U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=i+/g7QDN; arc=none smtp.client-ip=209.85.222.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="0+DyPwlG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70BAFC32783;
-	Tue, 16 Apr 2024 14:33:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1713278013;
-	bh=S3+lG+Q4zz1vpzcDH9owuemE4fYStoaS86UMxk5U1J4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=0+DyPwlGsaCyAcl74aQcZEoKNlafqD253vXe+at408/lTtSZFqY732I6veMUNTJiD
-	 kAw1rB3SW31dZCwayjZu08nsfjNu+yXxE400hAYlx+zyCxkrjHcdVRP11C3A4k+021
-	 S9nMv/SR9Flg66ICCPZTkKKhhNi+j2aukCNTEIlk=
-Date: Tue, 16 Apr 2024 16:33:30 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="i+/g7QDN"
+Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-78d778e6d3cso397323485a.3
+        for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 08:29:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1713281385; x=1713886185; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=7s25aMASpVRUeKUKXzKd+zK4MQIEa6+60XfUEWUrr9g=;
+        b=i+/g7QDNVozhPW70fkZZD7Dl8LKlmPNqovST75Ca21VrEUlkqlKrfZAYK8LtSNunn8
+         Rvo2rb8BD5n5k5pRDMdS/vwlqy416NADHf9rhC/sjsFLYNp8p9HAFlDohu3pbRC/fs8w
+         yja0mX/RWt/oXb9LVOtAeByQq2IR+KbCfYL3l6PZysF2Tzi7OmagqE7sUce6likbVTuK
+         cUUjzhW7i1YGjWc0We2k/RztAZxZJ2g2OvqV8yKGFWUZCQyZLROn9VE3iqBfPkkFBnZh
+         ZSrA6WMW6oePxR6hlB+7yTq4ZpycY0zSB+VDyxEFlHGvNxpI97w4Kna+hZJtEzk3Kerg
+         TmAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713281385; x=1713886185;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=7s25aMASpVRUeKUKXzKd+zK4MQIEa6+60XfUEWUrr9g=;
+        b=lgHbT0CZnk51WbaZ2GqTkVVYM8SKPSXM77PzQZtuy0Cv5FpZUbSZf+8Ex6xbNrtxaY
+         6kDXMng3/FGiuJvqP6NFYTD7jpRUY0JoeOFT/Yep+u/Y1WpavWG4EddwVSjYug8jow/D
+         bJwAo9XCvQFzOBX1ZOvQ94V4mysdA0aPS8kkplkn+HhmqpBZ1bOMdnxqbhLQsTw+/sT4
+         zjMxAkSAjuvX2fczknNdxSzWEajblsMrEmynyuAx/q/stkn67UoymoqN8IBAM3KjeyfB
+         LGalY91jtiIUGVkKUzF/zW8JcFYQxIyy545KaTRdJ7xzHtc54rZWOrvoeBZu+AaTkKGh
+         6NTw==
+X-Forwarded-Encrypted: i=1; AJvYcCXsWOs7jttZTv0U8QnmmN+mseNAD3GkVCpPfUeKZI7vrteIdC0cf9r9qbQ/IMv5+BgCDs3n1/GgFXKU6GpGFrV1/Frb3xw=
+X-Gm-Message-State: AOJu0Ywt4U0zQRT2XbsruvrK8PA36pf4qxa6WFNip1KcogWGgG2ZidIe
+	tQ0RetVE5cnO1sYr8b3ycYREiuFixRXSpe1tdWFowJ7CkpRz7DTnjQTk9kSIdn8=
+X-Google-Smtp-Source: AGHT+IF/3k1/teQJA1GB8J3pMCstLtjiobAISw7ClEQWRiHFNDW7XzfII5GKKYoGzBoTUGYQ5TEi/Q==
+X-Received: by 2002:a05:622a:1313:b0:437:5ecf:5ef8 with SMTP id v19-20020a05622a131300b004375ecf5ef8mr313548qtk.21.1713281384704;
+        Tue, 16 Apr 2024 08:29:44 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id ol9-20020ac84149000000b0043721c4654csm1820605qtb.30.2024.04.16.08.29.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Apr 2024 08:29:44 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rwkkh-0094DA-GG;
+	Tue, 16 Apr 2024 12:29:43 -0300
+Date: Tue, 16 Apr 2024 12:29:43 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: joro@8bytes.org, will@kernel.org, ewagner12@gmail.com,
-	suravee.suthikulpanit@amd.com, vashegde@amd.com, jgg@ziepe.ca,
+	suravee.suthikulpanit@amd.com, vashegde@amd.com,
 	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
 	regressions@lists.linux.dev
 Subject: Re: [PATCH] iommu: Fix def_domain_type interaction with untrusted
  devices
-Message-ID: <2024041620-brick-stack-6736@gregkh>
+Message-ID: <20240416152943.GU223006@ziepe.ca>
 References: <fa14583e94cbf540b60a6be94b41bb24d0037e75.1713272443.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -54,74 +86,56 @@ On Tue, Apr 16, 2024 at 02:00:43PM +0100, Robin Murphy wrote:
 > so throw our toys out of the pram and refuse to handle the device at
 > all. Regardless of any intent, in practice this leaves the device, and
 > potentially the rest of its group or even the whole IOMMU, in a largely
-> undetermined state, which at worst may render the whole system unusable.
+> undetermined state, which at worst may render the whole system
+> unusable.
+
+For systems supporting untrusted device security the translation must
+be BLOCKED at this point.
+
 > Unfortunately it turns out that this is a realistic situation to run
 > into by connecting a PASID-capable device (e.g. a GPU) to an AMD-based
 > laptop via a Thunderbolt expansion box, since the AMD IOMMU driver needs
 > an identity default domain for PASIDs to be usable, and thus sets a
 > def_domain_type override based on PASID capability.
-> 
+
+The majority of places implementing def_domain_type are using it as a
+statement of HW capability that should not be ignored by the core code:
+
+ - DART
+   * system page size is too small, can't map IOPTEs, force identity
+   * iommu does not support IDENTITY at all, force paging
+ - tegra: Device quirks mean paging and DMA API doesn't work
+ - amd: The driver can't support PAGING when in SNP mode
+ - SMMU: The driver can't support paging when in legacy binding mode and
+         paging domain allocation fails as well
+ - qcom: Looks like these devices have some iommu bypass bus in their
+         HW and paging doesn't work
+ - SMMUv3: The comment says HISI devices cannot support paging due to a HW quirk
+
+For these force overriding the driver knowledge will either result in
+domain allocate/attach failure or a broken DMA environment anyhow.
+
+The AMD PASID thing is actually unique because the driver can still
+fully support PAGING, despite it wrongly telling the core code that it
+can't.
+
+This is happening because it is all just a hack to work around the
+incomplete SW implementation in the AMD driver. When the AMD driver is
+completed its def_domain_type should be removed entirely.
+
+Since actual PASID AMD attach isn't implemented yet we could just
+remove that check from def_domain_type as an RC fix. Vasant can sort
+it out properly by disabling pasid support on untrusted devices until
+the DTE logic is fully completed.
+
 > In general, restoring the old behaviour of forcing translation will not
 > make that device's operation any more broken than leaving it potentially
 > blocked or subject to the rest of a group's translations would, nor will
 > it be any less safe than leaving it potentially bypassed or subject to
 > the rest of a group's translations would, so do that, and let eGPUs work
 > again.
-> 
-> Reported-by: Eric Wagner <ewagner12@gmail.com>
-> Link: https://lore.kernel.org/linux-iommu/CAHudX3zLH6CsRmLE-yb+gRjhh-v4bU5_1jW_xCcxOo_oUUZKYg@mail.gmail.com
-> Fixes: 59ddce4418da ("iommu: Reorganize iommu_get_default_domain_type() to respect def_domain_type()")
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/iommu.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 996e79dc582d..90dbea14d4d6 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1772,9 +1772,8 @@ static int iommu_get_default_domain_type(struct iommu_group *group,
->  		if (driver_type && driver_type != IOMMU_DOMAIN_DMA) {
->  			dev_err_ratelimited(
->  				untrusted,
-> -				"Device is not trusted, but driver is overriding group %u to %s, refusing to probe.\n",
-> +				"IOMMU_DOMAIN_DMA for untrusted device overrides driver request of %s for group %u, expect issues...\n",
->  				group->id, iommu_domain_type_str(driver_type));
-> -			return -1;
->  		}
->  		driver_type = IOMMU_DOMAIN_DMA;
->  	}
-> -- 
-> 2.39.2.101.g768bb238c484.dirty
-> 
-> 
 
-Hi,
+Well, this is true, since we can't handle the probe error it doesn't
+matter what we do.
 
-This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
-a patch that has triggered this response.  He used to manually respond
-to these common problems, but in order to save his sanity (he kept
-writing the same thing over and over, yet to different people), I was
-created.  Hopefully you will not take offence and will fix the problem
-in your patch and resubmit it so that it can be accepted into the Linux
-kernel tree.
-
-You are receiving this message because of the following common error(s)
-as indicated below:
-
-- You have marked a patch with a "Fixes:" tag for a commit that is in an
-  older released kernel, yet you do not have a cc: stable line in the
-  signed-off-by area at all, which means that the patch will not be
-  applied to any older kernel releases.  To properly fix this, please
-  follow the documented rules in the
-  Documentation/process/stable-kernel-rules.rst file for how to resolve
-  this.
-
-If you wish to discuss this problem further, or you have questions about
-how to resolve this issue, please feel free to respond to this email and
-Greg will reply once he has dug out from the pending patches received
-from other developers.
-
-thanks,
-
-greg k-h's patch email bot
+Jason
