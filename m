@@ -1,241 +1,102 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f73.google.com (mail-pj1-f73.google.com [209.85.216.73])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1ADB132C23
-	for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 17:57:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56B34137C35
+	for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 19:27:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.73
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713290250; cv=none; b=KKlB8chF4oxlfd+skpywUUJXM7Yz4HaNitfLoalPfjZ5q2RdL075OmBMNQHn/Xt56Laxg2NJKF8ujBstjYXryyDgeRRO6qqSLP88jwuSyo8B/hW5rbC9R+jMedqeYcANT1xQsSB7RqCZ4G0NwBxOWYvtJz/+BMNI/3CLdsQAV9o=
+	t=1713295662; cv=none; b=hLfxCYmLUrw/1ELuGc4L+Fv4TAGV5ZaviOfM7FwZB9hiC5Jj5o2AeOTih03wu8/KPebZCj3WZNy2Of3NmdRuKbDUEMz1O2ZqN9d9UKgkCCdYdBxim8niHddLnT1et7xXogjuUmZjumGW726oNyAgEIIuXV0yMTsv5ZMssYQQmJA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713290250; c=relaxed/simple;
-	bh=xExRpy8wXynFCJbYy6xypyJfQ2V5WASMyCaCDSKAMyw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nShzFy2Mf2bz6pgQWQ7K3M5RxdKJ1W+0mMepAW6Gq8g1X77mT9mZUSORsxXJsb6Qy4QM/YdPJRdObyHI4qTxmJLbhdoTpEjdS17U27FbxKX9SHEkxW0nHjO0as6Izaa5MUB/oLkShxg7tNbsmb5oRh0WWuzrUlQq/fSpcd6SUbQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=jPLsoXoM; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	s=arc-20240116; t=1713295662; c=relaxed/simple;
+	bh=RufGQt9my60Mib6mWU1jcDTJNb1IE0wkA2B8tPsK8us=;
+	h=Date:In-Reply-To:Mime-Version:References:Message-ID:Subject:From:
+	 To:Cc:Content-Type; b=Wt+WHb8iZLfof4EODLb0zmfTumjTRAvREyuGbyrYsxegePws+YMRElTUXwtxum8rJIIbmMb13yspPGNdTLqTWA/wln0KG3d+a3ddmfwlw4AbtVCwgSpv6c7sChvR7N4EF0v+/MAecT6RkwfqKx22hJpGcUSz/iiT+5A3fGp8xkg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--souravpanda.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=04DT4SiV; arc=none smtp.client-ip=209.85.216.73
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--souravpanda.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="jPLsoXoM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1713290248;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Mu2etZt/hXOiQ3aQe8PNUaAel6IFW0QLmXxEDQFkoRY=;
-	b=jPLsoXoMX3ruEpuQ7ZuGMFdJga0csKbjT1DFJBoT+m+8juCQYSyWMyfbltIa6t2tYCYxSg
-	rtB6r8u54CBOy+PZHw5HmQ9krDFtheAyjhmfCdpAaPMvQ+44LrZDgT1ENAUPJnkVP/H2ny
-	gv8R4a0JYPa+beiNbfp/fjco/NKALNE=
-Received: from mail-ot1-f70.google.com (mail-ot1-f70.google.com
- [209.85.210.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-339-9K_vfxX2MRyKg4JCwlfsgA-1; Tue, 16 Apr 2024 13:57:26 -0400
-X-MC-Unique: 9K_vfxX2MRyKg4JCwlfsgA-1
-Received: by mail-ot1-f70.google.com with SMTP id 46e09a7af769-6ea9a4ec443so3721664a34.1
-        for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 10:57:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="04DT4SiV"
+Received: by mail-pj1-f73.google.com with SMTP id 98e67ed59e1d1-2a49440f7b5so4438333a91.1
+        for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 12:27:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1713295661; x=1713900461; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:from:to:cc:subject:date:message-id:reply-to;
+        bh=KsLs5TwgQbCoTsIhV0PbmPPMuBa5UPbtwmIm4dUFoNk=;
+        b=04DT4SiVFMHym7k+EBBV1Sv/8fHUdsKYGG2ZCx2r32n6uyVTTV0fWYs01FzTH1NxB8
+         Wz38xyDcxa+7yG5HH04xtb+eIt9RcJRvNBCwkI5DWhkc8o9ZmGCe77/7mPBThDTymSjA
+         ZF14yGBPmzRS37yru1BV6KC3Es1iYu32bq9oxu3TFQkTZotOSjwX/Sga+rkRdo91xZ+n
+         YiIXKbKRTkrBnYyzgTxA5XpIusiFYaMC7Nt4ZJvfyBY/FOr1l5nTb7i/hPbDyMNjZTxD
+         ull1HLzieMtP6yg0rs+XT7HUyXJkqAMjgTUMbhik2Eee3ONEXnYOQYQwjwthrzW1XStw
+         Qh6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713290246; x=1713895046;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Mu2etZt/hXOiQ3aQe8PNUaAel6IFW0QLmXxEDQFkoRY=;
-        b=d34AQQiXlbcMjF7WmcPZnrz1m913K617OmSHCZKGhnkzgedDFIkl61e+trarbaXE2p
-         h97cMbfCD56Eu5uWOQzHb5KjlWaQhwXJCTrPDgkWBhqEBKUM7p32V0LAmUQUQCZUytRo
-         jQA5Q7Y/WP+lvSemKCUDHE62dO1YJ6zo9m8oAgM7hDEm8K3I2d+qe7tlnHGo76SBdVF6
-         XfNgqkV4j01rxhJCPDa+UiTc5vc3JRvL1019iEYkD8ZYFzTBmLW9OdU7vCZKu1TV0EP9
-         oZ9Skr7cCVuElqG+Gd2H63XbPH2ue38U4Nyfg3Fcp4LOZc9vwn0yIfJWmzFvklsk8GVx
-         mZJg==
-X-Forwarded-Encrypted: i=1; AJvYcCV1wCa5s5568WdlojlP42MaV1zaRISa44Ovf7fpNk78Ugu18IiF9duBJeCVs3MfBNy2XZobQq5fOXb+iCFp6fmZ4pdqWT8=
-X-Gm-Message-State: AOJu0YzMORrqw72TIKbx/2tFEKE+4NQHU8K80LfhbgsygEIpF+LW2Plw
-	wTw1LwZsgpewAbVuERxysBc378vuFOr030QzNQAsmF2Tfulp6f8ySXZTL4zhfRceAZ8obKkJHRd
-	9X7UKd675KnZvQ3ubYW2DBKBXqxetvjI7GQyLbO8l3xtpZo04dBcm
-X-Received: by 2002:a05:6830:1114:b0:6ea:1849:e5c1 with SMTP id w20-20020a056830111400b006ea1849e5c1mr1321884otq.4.1713290245878;
-        Tue, 16 Apr 2024 10:57:25 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IFsSk/jqSr2cDIr7T3FTPUv7PdsMyxNDWd8b4/STa4VRgh/ghgt1p9s6oeHLRR/ZlUXeSMUwQ==
-X-Received: by 2002:a05:6830:1114:b0:6ea:1849:e5c1 with SMTP id w20-20020a056830111400b006ea1849e5c1mr1321872otq.4.1713290245552;
-        Tue, 16 Apr 2024 10:57:25 -0700 (PDT)
-Received: from redhat.com ([38.15.36.11])
-        by smtp.gmail.com with ESMTPSA id j13-20020a9d768d000000b006eb85b34e48sm585924otl.54.2024.04.16.10.57.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Apr 2024 10:57:25 -0700 (PDT)
-Date: Tue, 16 Apr 2024 11:57:22 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Yi Liu <yi.l.liu@intel.com>
-Cc: jgg@nvidia.com, kevin.tian@intel.com, joro@8bytes.org,
- robin.murphy@arm.com, eric.auger@redhat.com, nicolinc@nvidia.com,
- kvm@vger.kernel.org, chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
- baolu.lu@linux.intel.com, zhenzhong.duan@intel.com, jacob.jun.pan@intel.com
-Subject: Re: [PATCH v2 4/4] vfio: Report PASID capability via
- VFIO_DEVICE_FEATURE ioctl
-Message-ID: <20240416115722.78d4509f.alex.williamson@redhat.com>
-In-Reply-To: <20240412082121.33382-5-yi.l.liu@intel.com>
-References: <20240412082121.33382-1-yi.l.liu@intel.com>
-	<20240412082121.33382-5-yi.l.liu@intel.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
+        d=1e100.net; s=20230601; t=1713295661; x=1713900461;
+        h=cc:to:from:subject:message-id:references:mime-version:in-reply-to
+         :date:x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KsLs5TwgQbCoTsIhV0PbmPPMuBa5UPbtwmIm4dUFoNk=;
+        b=DmWAhSVeL4FrBkpyHbq4QLYNLC582PP8hAUrqHrg/NVuR5rU+sKYn0CouDDO9AGISI
+         t8ErwYMINiNcL33liuVyXHCpPgqvlo6xyowCl1vXiUjQW0Ryrs8bmfI7SF4CFe690xov
+         vDdd2Zt59DBQt2xqTWXJc77gSYAWn4DIAWFbIFK/7UzEZBXx3i7M0Bakc9PFLY5zaT0q
+         /b/M2IqP6oHhkY/cO8e1FoNAVrSkO6KDHFNhWIOhslMwmVC14zdGHJZWmqodaP2IjtQq
+         6AikbZEs34aVusHeJnnt6TDLoQy4UG3ddlY4L0zyzaxMGvxsxfhPIfwUGvl4gAZBQIrU
+         NChA==
+X-Forwarded-Encrypted: i=1; AJvYcCUjPjM1NMK3zDkCjsbzRNKyCjAAlTySruXZcaDyGMLlSeJab9OYsi8dJNNrmYyjHFqAG8qUnR0URLmW2GHcwg+vIGcZuWU=
+X-Gm-Message-State: AOJu0YwjftoyrZ/yEJ23VvCs9xb+qbE+H4XTITRAKJ9t+7RT9T2zR1Nj
+	IO0qaHLc6ngjpwYoL5o24XqcLqXtIaoQdeQD8vrzpiMJu8qC6RDHx7ui+jOisikhG1Kpqb7Vson
+	bn6Kg0nRQV0dFv/73wQNRzQ==
+X-Google-Smtp-Source: AGHT+IED/ON5W+u4mp98k4aqr7W8SbX1tGPdGimAJ5/wpGhdwwYIMlKzk0LXAacFJYRY3XXR8O+beFOD5S0sddsmYg==
+X-Received: from souravbig.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3b3a])
+ (user=souravpanda job=sendgmr) by 2002:a17:90b:3bc8:b0:2a2:8b25:745e with
+ SMTP id ph8-20020a17090b3bc800b002a28b25745emr87242pjb.0.1713295660670; Tue,
+ 16 Apr 2024 12:27:40 -0700 (PDT)
+Date: Tue, 16 Apr 2024 19:27:38 +0000
+In-Reply-To: <20240321163705.3067592-31-surenb@google.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0
+References: <20240321163705.3067592-31-surenb@google.com>
+X-Mailer: git-send-email 2.44.0.683.g7961c838ac-goog
+Message-ID: <20240416192738.3429967-1-souravpanda@google.com>
+Subject: Re: [PATCH v6 30/37] mm: vmalloc: Enable memory allocation profiling
+From: Sourav Panda <souravpanda@google.com>
+To: surenb@google.com
+Cc: 42.hyeyoo@gmail.com, akpm@linux-foundation.org, aliceryhl@google.com, 
+	andreyknvl@gmail.com, arnd@arndb.de, axboe@kernel.dk, bristot@redhat.com, 
+	bsegall@google.com, catalin.marinas@arm.com, cgroups@vger.kernel.org, 
+	cl@linux.com, corbet@lwn.net, dave.hansen@linux.intel.com, dave@stgolabs.net, 
+	david@redhat.com, dennis@kernel.org, dhowells@redhat.com, 
+	dietmar.eggemann@arm.com, dvyukov@google.com, ebiggers@google.com, 
+	elver@google.com, glider@google.com, gregkh@linuxfoundation.org, 
+	hannes@cmpxchg.org, hughd@google.com, iamjoonsoo.kim@lge.com, 
+	iommu@lists.linux.dev, jbaron@akamai.com, jhubbard@nvidia.com, 
+	juri.lelli@redhat.com, kaleshsingh@google.com, kasan-dev@googlegroups.com, 
+	keescook@chromium.org, kent.overstreet@linux.dev, kernel-team@android.com, 
+	liam.howlett@oracle.com, linux-arch@vger.kernel.org, 
+	linux-doc@vger.kernel.org, linux-fsdevel@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-mm@kvack.org, 
+	linux-modules@vger.kernel.org, masahiroy@kernel.org, mcgrof@kernel.org, 
+	mgorman@suse.de, mhocko@suse.com, minchan@google.com, mingo@redhat.com, 
+	muchun.song@linux.dev, nathan@kernel.org, ndesaulniers@google.com, 
+	pasha.tatashin@soleen.com, paulmck@kernel.org, penberg@kernel.org, 
+	penguin-kernel@i-love.sakura.ne.jp, peterx@redhat.com, peterz@infradead.org, 
+	rientjes@google.com, roman.gushchin@linux.dev, rostedt@goodmis.org, 
+	rppt@kernel.org, songmuchun@bytedance.com, tglx@linutronix.de, tj@kernel.org, 
+	vbabka@suse.cz, vincent.guittot@linaro.org, void@manifault.com, 
+	vschneid@redhat.com, vvvvvv@google.com, will@kernel.org, willy@infradead.org, 
+	x86@kernel.org, yosryahmed@google.com, ytcoode@gmail.com, yuzhao@google.com, 
+	souravpanda@google.com
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, 12 Apr 2024 01:21:21 -0700
-Yi Liu <yi.l.liu@intel.com> wrote:
-
-> Today, vfio-pci hides the PASID capability of devices from userspace. Unlike
-> other PCI capabilities, PASID capability is going to be reported to user by
-> VFIO_DEVICE_FEATURE. Hence userspace could probe PASID capability by it.
-> This is a bit different from the other capabilities which are reported to
-> userspace when the user reads the device's PCI configuration space. There
-> are two reasons for this.
-> 
->  - First, userspace like Qemu by default exposes all the available PCI
->    capabilities in vfio-pci config space to the guest as read-only, so
->    adding PASID capability in the vfio-pci config space will make it
->    exposed to the guest automatically while an old Qemu doesn't really
->    support it.
-> 
->  - Second, the PASID capability does not exist on VFs (instead shares the
->    cap of the PF). Creating a virtual PASID capability in vfio-pci config
->    space needs to find a hole to place it, but doing so may require device
->    specific knowledge to avoid potential conflict with device specific
->    registers like hidden bits in VF's config space. It's simpler to move
->    this burden to the VMM instead of maintaining a quirk system in the kernel.
-> 
-> Suggested-by: Alex Williamson <alex.williamson@redhat.com>
-> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-> ---
->  drivers/vfio/pci/vfio_pci_core.c | 50 ++++++++++++++++++++++++++++++++
->  include/uapi/linux/vfio.h        | 14 +++++++++
->  2 files changed, 64 insertions(+)
-> 
-> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-> index d94d61b92c1a..ca64e461d435 100644
-> --- a/drivers/vfio/pci/vfio_pci_core.c
-> +++ b/drivers/vfio/pci/vfio_pci_core.c
-> @@ -1495,6 +1495,54 @@ static int vfio_pci_core_feature_token(struct vfio_device *device, u32 flags,
->  	return 0;
->  }
->  
-> +static int vfio_pci_core_feature_pasid(struct vfio_device *device, u32 flags,
-> +				       struct vfio_device_feature_pasid __user *arg,
-> +				       size_t argsz)
-> +{
-> +	struct vfio_pci_core_device *vdev =
-> +		container_of(device, struct vfio_pci_core_device, vdev);
-> +	struct vfio_device_feature_pasid pasid = { 0 };
-> +	struct pci_dev *pdev = vdev->pdev;
-> +	u32 capabilities = 0;
-> +	u16 ctrl = 0;
-> +	int ret;
-> +
-> +	/*
-> +	 * Due to no PASID capability per VF, to be consistent, we do not
-> +	 * support SET of the PASID capability for both PF and VF.
-> +	 */
-> +	ret = vfio_check_feature(flags, argsz, VFIO_DEVICE_FEATURE_GET,
-> +				 sizeof(pasid));
-> +	if (ret != 1)
-> +		return ret;
-> +
-> +	/* VF shares the PASID capability of its PF */
-> +	if (pdev->is_virtfn)
-> +		pdev = pci_physfn(pdev);
-> +
-> +	if (!pdev->pasid_enabled)
-> +		goto out;
-> +
-> +#ifdef CONFIG_PCI_PASID
-> +	pci_read_config_dword(pdev, pdev->pasid_cap + PCI_PASID_CAP,
-> +			      &capabilities);
-> +	pci_read_config_word(pdev, pdev->pasid_cap + PCI_PASID_CTRL,
-> +			     &ctrl);
-> +#endif
-> +
-> +	pasid.width = (capabilities >> 8) & 0x1f;
-> +
-> +	if (ctrl & PCI_PASID_CTRL_EXEC)
-> +		pasid.capabilities |= VFIO_DEVICE_PASID_CAP_EXEC;
-> +	if (ctrl & PCI_PASID_CTRL_PRIV)
-> +		pasid.capabilities |= VFIO_DEVICE_PASID_CAP_PRIV;
-
-I agree with Kevin here, let's make use of and add helpers to avoid
-#ifdef blocks of code.
-
-> +
-> +out:
-> +	if (copy_to_user(arg, &pasid, sizeof(pasid)))
-> +		return -EFAULT;
-> +	return 0;
-> +}
-> +
->  int vfio_pci_core_ioctl_feature(struct vfio_device *device, u32 flags,
->  				void __user *arg, size_t argsz)
+> -void *__vcalloc(size_t n, size_t size, gfp_t flags)
+> +void *__vcalloc_noprof(size_t n, size_t size, gfp_t flags)
 >  {
-> @@ -1508,6 +1556,8 @@ int vfio_pci_core_ioctl_feature(struct vfio_device *device, u32 flags,
->  		return vfio_pci_core_pm_exit(device, flags, arg, argsz);
->  	case VFIO_DEVICE_FEATURE_PCI_VF_TOKEN:
->  		return vfio_pci_core_feature_token(device, flags, arg, argsz);
-> +	case VFIO_DEVICE_FEATURE_PASID:
-> +		return vfio_pci_core_feature_pasid(device, flags, arg, argsz);
->  	default:
->  		return -ENOTTY;
->  	}
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 9591dc24b75c..e50e55c67ab4 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -1513,6 +1513,20 @@ struct vfio_device_feature_bus_master {
->  };
->  #define VFIO_DEVICE_FEATURE_BUS_MASTER 10
->  
-> +/**
-> + * Upon VFIO_DEVICE_FEATURE_GET, return the PASID capability for the device.
-> + * Zero width means no support for PASID.
+>  	return __vmalloc_array(n, size, flags | __GFP_ZERO);
+>  }
+> -EXPORT_SYMBOL(__vcalloc);
+> +EXPORT_SYMBOL(__vcalloc_noprof);
 
-Why would we do that rather than reporting the feature as unsupported?
-Just return -ENOTTY if PASID is not supported or enabled.
-
-> + */
-> +struct vfio_device_feature_pasid {
-> +	__u16 capabilities;
-> +#define VFIO_DEVICE_PASID_CAP_EXEC	(1 << 0)
-> +#define VFIO_DEVICE_PASID_CAP_PRIV	(1 << 1)
-> +	__u8 width;
-> +	__u8 __reserved;
-> +};
-
-Building on Kevin's comment on the cover letter, if we could describe
-an offset for emulating a PASID capability, this seems like the place
-we'd do it.  I think we're not doing that because we'd like an in-band
-mechanism for a device to report unused config space, such as a DVSEC
-capability, so that it can be implemented on a physical device.  As
-noted in the commit log here, we'd also prefer not to bloat the kernel
-with more device quirks.
-
-In an ideal world we might be able to jump start support of that DVSEC
-option by emulating the DVSEC capability on top of the PASID capability
-for PFs, but unfortunately the PASID capability is 8 bytes while the
-DVSEC capability is at least 12 bytes, so we can't implement that
-generically either.
-
-I don't know there's any good solution here or whether there's actually
-any value to the PASID capability on a PF, but do we need to consider
-leaving a field+flag here to describe the offset for that scenario?
-Would we then allow variant drivers to take advantage of it?  Does this
-then turn into the quirk that we're trying to avoid in the kernel
-rather than userspace and is that a problem?  Thanks,
-
-Alex
-
-> +
-> +#define VFIO_DEVICE_FEATURE_PASID 11
-> +
->  /* -------- API for Type1 VFIO IOMMU -------- */
->  
->  /**
-
+__vmalloc_array should instead be __vmalloc_array_noprof. This is because
+we would want the more specific tag present in /proc/allocinfo
