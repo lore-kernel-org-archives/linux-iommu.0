@@ -1,172 +1,150 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 591177464
-	for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 00:39:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC66417F0
+	for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 00:53:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713227949; cv=none; b=MBsiSxOZkcJGdWt19bSVpoKmJBcfoYL+yX14h5R3awG1rDMYjJE+vAtk3jFa6F8aIHTYd6yUl7Fu9hcNKseWVdKrWH0NnE9amLgf7CG0BGhihxvaAlx47y5f1dGPyZZqTDJjj8aBjrmVsG4n+UQXRQsneT75SWE4FPVL93jG2d8=
+	t=1713228822; cv=none; b=H2RaITwly6oVVm6fxbVpI6OaMbpAt6RjQxNY0XOqqojmNjW7Gs0rCQ848oYR00I2MeooG3hlKx4XCbxp5oaCM7wf647AfC9IDlbC1dwZPd0RvEzVD9V0slZgY9XLHE2olODtLA4EyOOI2JvMRwhyan6VuSUIWCQyvr+8oKakK24=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713227949; c=relaxed/simple;
-	bh=d2bYC2KeiHUqcBLgPzBPOh3gasiU0kpLQmM6QaRtQO8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HCgWbLHMW6OLEoHloMobQe0k1n3dObXDR52I1SLC5+g8UpdnXLSylwKKauUIe9UhARXhi8FbIkgOj0yorWaDmv/Win8pUYmHVG5YuOUfbzJ68bxOBLmZ7OBNVXvA0PiqOLCG/CzQsVOHHeTeSXgtKGZ4sLIWLLJlWxaIvpPxEgA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=XvIt/gwX; arc=none smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1713228822; c=relaxed/simple;
+	bh=4QEEm7R+LYFjuTsSjB6hxpehKVVeoexWojV1jUaHKdQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=sDAI6TzYJnHOhsHxkeTxBBdq5OjI5yzFiHqM+NylKZYblaClq6KCKKWySXiDLmYX4aKpd7KvmIA9ES0jQXP4KFo6k6h2m6w37oxez8x4vTTnPdziJewOTVfUdSaRfnaSHiFhdnc4vheITNbWC7oXKQQghowmAb9sf/1sX95HcCU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fK7LQr/m; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="XvIt/gwX"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-78d5b1a34fdso259007185a.2
-        for <iommu@lists.linux.dev>; Mon, 15 Apr 2024 17:39:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1713227945; x=1713832745; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=SC+OXs/GZF0u24XHwRAC3c8xEl57m2qiEJ4YV7msZrY=;
-        b=XvIt/gwXc5fcgvoBSAN/prDtjpyjBu+11bZHA7eWrR9KxaGQ81kRagaLRddvnxY5/P
-         853763NZiL1k9Zxdy+wqVxr/ebioYmbQQJXufe3w/SuNfs2nDzZqSyx6CvLEyE9MzOPn
-         oahRBqiMZVyUlGs0zdxt0nxy5ZmgEHeXXNU8YckBVXdhWlBbYKcSe5SYxEJe3wEhWOq4
-         cVNIYQJn07GxhmtnTUgWLK5KrakxyXGT89nPCLY22McZpxiJ3aTEZerrEIcVK9KkVJNn
-         NTb41+0c2ajC8KwD6s4d7fzXI8e+UxVwHZPqMu6MaxqEwr0pRoZVeYFWyWK9NO3Ov4CB
-         KvFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713227945; x=1713832745;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=SC+OXs/GZF0u24XHwRAC3c8xEl57m2qiEJ4YV7msZrY=;
-        b=mTGy8ca9MxqdRbfcoXRknCnHYbbMp5zgh1tSwH2WlUI0BiA2UzpqD1PVY/zjNUlDtN
-         U3RwloftvTiR8Np/F6OS9In2l8Il7OanuGqlQytc4KnJjJcooyMvZ7RoFD346KjoGI6C
-         VKzt3dE2T26x/ZOjyN3Ohr6mVXzLrNzWmNS742KIUUh8bnee3H4Dy5mpbQqlD/jSQGyj
-         MGM1cwzFjhksc7VzukfmhFJdvDcgNR1EIVL3mMsl2Fu4KsqGFq7kDo7ICQ80G+jTd9Nl
-         diHwPnYSfdWvCKOvYxf2eyTi3oJKqfg+EZOOAKizIlCfjq/g1CKTS727suaJAY/CFBji
-         /DEg==
-X-Forwarded-Encrypted: i=1; AJvYcCUeLaGfQghQk7ucPRFs5XJDS+1f+chb/DszKUIwvhtC0u6jgd9PRTzaWAojDkyMdivGt5ocny2Rew5iIkXHRQr9D0uZTy8=
-X-Gm-Message-State: AOJu0Yy99tKopXIojAaTEIzg4h5A/2gIzH7ZozqaFK/plI8jp6upshEr
-	j65ohaz8Su6TtcM89cP0LEPWRf12WNAee7Ai3n4OWu6K1WlEMzd3CpEH7cDLAk4=
-X-Google-Smtp-Source: AGHT+IGZ3ByVJiZA7dsHED891rzWwy7eaTLceOAgh8WUU2Lful6iQcmJWnPlR6lkZm6ffVA/3NK9Aw==
-X-Received: by 2002:ad4:58d1:0:b0:69b:1c78:158d with SMTP id dh17-20020ad458d1000000b0069b1c78158dmr10582744qvb.53.1713227945150;
-        Mon, 15 Apr 2024 17:39:05 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id fb20-20020ad44f14000000b0069b4fe0569fsm6341395qvb.109.2024.04.15.17.39.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Apr 2024 17:39:04 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rwWql-007FhP-RG;
-	Mon, 15 Apr 2024 21:39:03 -0300
-Date: Mon, 15 Apr 2024 21:39:03 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>,
-	Vasant Hegde <vasant.hegde@amd.com>
-Cc: Eric Wagner <ewagner12@gmail.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: Kernel 6.7 regression doesn't boot if using AMD eGPU
-Message-ID: <20240416003903.GR223006@ziepe.ca>
-References: <CAHudX3zLH6CsRmLE-yb+gRjhh-v4bU5_1jW_xCcxOo_oUUZKYg@mail.gmail.com>
- <20240415163056.GP223006@ziepe.ca>
- <CAHudX3zhagFWBv4isZzAtC8dA7EAAtY6Yk7fkJ31hf0D9zrNqw@mail.gmail.com>
- <65d4d7e0-4d90-48d7-8e4a-d16800df148a@arm.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fK7LQr/m"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713228821; x=1744764821;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=4QEEm7R+LYFjuTsSjB6hxpehKVVeoexWojV1jUaHKdQ=;
+  b=fK7LQr/m45q5tdwjmidyi0KASjkt1ysdeCbPlCWbsMdDKyCQ7Sd3jXGW
+   wx0tWS+F0/i+OSryzO1c5aRA+po59ook6sBW7ewHEz+GjUGduktOly4LO
+   gT6umZ9fAdsDvc9hviT7IuKchmIONOlwCjONNE7olUC5RGXivhYziAO7w
+   kZlgnrX7wcQ72P0lFoMbluFXhxhTvp0PLcdhimk1NkzCImTVmwm/cbP3S
+   4IP7V4/cj3+z/nR3rU2OhfMB4APe6KZBWthX3JdakqVFIDpR82W6D9h+L
+   X1jR421omWdN5Z3wvS0nNg2etyRswhl5pFJM3DFwYlcM5N1zf2RTuhA/p
+   A==;
+X-CSE-ConnectionGUID: J11K0/ayTQi35jf5hSWU2A==
+X-CSE-MsgGUID: u01F9Lr9TLmWtEoXrcTXgQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11045"; a="9198631"
+X-IronPort-AV: E=Sophos;i="6.07,204,1708416000"; 
+   d="scan'208";a="9198631"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2024 17:53:40 -0700
+X-CSE-ConnectionGUID: e5Z5Dzc0ReiHkR+pNCIv2Q==
+X-CSE-MsgGUID: sqFQzT/QQrC3UAw7i2A8Fg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,204,1708416000"; 
+   d="scan'208";a="22089851"
+Received: from kzhong-mobl1.ccr.corp.intel.com (HELO [10.254.211.186]) ([10.254.211.186])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2024 17:53:37 -0700
+Message-ID: <9ba0b6a2-e6c1-46de-8d30-929567952c54@linux.intel.com>
+Date: Tue, 16 Apr 2024 08:53:34 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <65d4d7e0-4d90-48d7-8e4a-d16800df148a@arm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/1] iommu/vt-d: Remove caching mode check before
+ device TLB flush
+To: Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev
+Cc: Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
+ Jacob Pan <jacob.jun.pan@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org
+References: <20240415013835.9527-1-baolu.lu@linux.intel.com>
+From: Ethan Zhao <haifeng.zhao@linux.intel.com>
+In-Reply-To: <20240415013835.9527-1-baolu.lu@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, Apr 15, 2024 at 10:44:34PM +0100, Robin Murphy wrote:
-> On 2024-04-15 7:57 pm, Eric Wagner wrote:
-> > Apologies if I made a mistake in the first bisect, I'm new to kernel
-> > debugging.
-> > 
-> > I tested cedc811c76778bdef91d405717acee0de54d8db5 (x86/amd) and
-> > 3613047280ec42a4e1350fdc1a6dd161ff4008cc (core) directly and both were good.
-> > Then I ran git bisect again with e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2
-> > as the bad and 6e6c6d6bc6c96c2477ddfea24a121eb5ee12b7a3 as the good and the
-> > bisect log is attached. It ended up at the same commit as before.
-> > 
-> > I've also attached a picture of the boot screen that occurs when it hangs.
-> > 0000:05:00.0 is the PCIe bus address of the RX 580 eGPU that's causing the
-> > problem.
-> 
-> Looks like 59ddce4418da483 probably broke things most - prior to that, the
-> fact that it's behind a Thunderbolt port would have always taken precedence
-> and forced IOMMU_DOMAIN_DMA regardless of what the driver may have wanted to
-> saywhereas now we ask the driver first, then complain that it conflicts
-> with the untrusted status and ultimately don't configure the IOMMU
-> at all.
+On 4/15/2024 9:38 AM, Lu Baolu wrote:
+> The Caching Mode (CM) of the Intel IOMMU indicates if the hardware
+> implementation caches not-present or erroneous translation-structure
+> entries except for the first-stage translation. The caching mode is
+> irrelevant to the device TLB, therefore there is no need to check it
+> before a device TLB invalidation operation.
+>
+> Remove two caching mode checks before device TLB invalidation in the
+> driver. The removal of these checks doesn't change the driver's behavior
+> in critical map/unmap paths. Hence, there is no functionality or
+> performance impact, especially since commit <29b32839725f> ("iommu/vt-d:
+> Do not use flush-queue when caching-mode is on") has already disabled
+> flush-queue for caching mode. Therefore, caching mode will never call
+> intel_flush_iotlb_all().
+>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+> ---
+>   drivers/iommu/intel/iommu.c | 9 ++-------
+>   1 file changed, 2 insertions(+), 7 deletions(-)
+>
+> Change log:
+> v3:
+>   - It turned out that the removals don't change the driver's behavior,
+>     hence change it from a fix patch to a cleanup one.
+>   - No functionality changes.
+> v2: https://lore.kernel.org/lkml/20240410055823.264501-1-baolu.lu@linux.intel.com/
+>   - Squash two patches into a single one.
+>   - No functionality changes.
+> v1: https://lore.kernel.org/linux-iommu/20240407144232.190355-1-baolu.lu@linux.intel.com/
+>
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index a7ecd90303dc..f0a67e9d9faf 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -1501,11 +1501,7 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
+>   	else
+>   		__iommu_flush_iotlb_psi(iommu, did, pfn, pages, ih);
+>   
+> -	/*
+> -	 * In caching mode, changes of pages from non-present to present require
+> -	 * flush. However, device IOTLB doesn't need to be flushed in this case.
+> -	 */
+> -	if (!cap_caching_mode(iommu->cap) || !map)
+> +	if (!map)
+>   		iommu_flush_dev_iotlb(domain, addr, mask);
+>   }
 
-Yes, if the driver wants to force a domain type it should be
-forced. Driver knows best. Eg AMD forces IDENTITY when the HW/driver
-is incapable of supporting otherwise.
+Given devTLB flushing is irrelavent to CM, put iommu_flush_dev_iotlb()
+in iommu_flush_iotlb_psi() and called with CM checking context is not
+reasonable. the logic is buggy.
 
-> Meanwhile the GPU driver presumably goes on to believe it's using dma-direct
-> with no IOMMU present, resulting in fireworks when its traffic reaches the
-> IOMMU. Great :(
+static void __mapping_notify_one(struct intel_iommu *iommu, struct dmar_domain *domain,
+				 unsigned long pfn, unsigned int pages)
+{
+	/*
+	 * It's a non-present to present mapping. Only flush if caching mode
+	 * and second level.
+	 */
+	if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
+		iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0, 1);
+	else
+		iommu_flush_write_buffer(iommu);
 
-I wonder where is the missing error handling.. iommu probe failure
-should not go on to allow driver attach, there is no guarentee any DMA
-works now that many iommus are booting up in BLOCKED.
 
-> However the other notable thing that also happened between 6.6 and 6.7 was
-> the removal of the AMD iommu_v2 code, so there's some possibility that the
-> GPU driver still may have only been working before due to that also
+then how about fold all CM checking logic in iommu_flush_iotlb_psi()
+or speperate iommu_flush_dev_iotlb() from iommu_flush_iotlb_psi() ?
 
-Most likely it is the above change interacting with this patch when
-they are both combined in the merge:
 
-commit 92e2bd56a5f9fc44313fda802a43a63cc2a9c8f6
-Author: Vasant Hegde <vasant.hegde@amd.com>
-Date:   Thu Sep 21 09:21:45 2023 +0000
+Thanks,
+Ethan
 
-    iommu/amd: Introduce iommu_dev_data.flags to track device capabilities
-    
-@@ -2471,7 +2481,7 @@ static int amd_iommu_def_domain_type(struct device *dev)
-         *    and require remapping.
-         *  - SNP is enabled, because it prohibits DTE[Mode]=0.
-         */
--       if (dev_data->iommu_v2 &&
-+       if (pdev_pasid_supported(dev_data) &&
-            !cc_platform_has(CC_ATTR_MEM_ENCRYPT) &&
-            !amd_iommu_snp_en) {
-                return IOMMU_DOMAIN_IDENTITY;
-
-Which, IIRC, was intended to be temporary to work around limitations
-in the DTE programming logic within the driver. Previously iommu_v2 as
-a module option that Eric probably doesn't set, I guess.
-
-The below will probably make it boot, but Vasant should check what
-happens if PASID is eventually attached too.
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index d35c1b8c8e65ce..f3da6a5b6cb1cb 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2758,11 +2758,16 @@ static int amd_iommu_def_domain_type(struct device *dev)
-         *    and require remapping.
-         *  - SNP is enabled, because it prohibits DTE[Mode]=0.
-         */
--       if (pdev_pasid_supported(dev_data) &&
--           !cc_platform_has(CC_ATTR_MEM_ENCRYPT) &&
--           !amd_iommu_snp_en) {
-+       if (!cc_platform_has(CC_ATTR_MEM_ENCRYPT) && !amd_iommu_snp_en)
-+               return IOMMU_DOMAIN_IDENTITY;
-+
-+       /*
-+        * For now driver limitations prevent enabling PASID as a paging domain
-+        * on the RID together.
-+        */
-+       if (dev_is_pci(dev) && !to_pci_dev(dev)->untrusted &&
-+           pdev_pasid_supported(dev_data))
-                return IOMMU_DOMAIN_IDENTITY;
--       }
- 
-        return 0;
- }
-
-Jason
+>   
+> @@ -1579,8 +1575,7 @@ static void intel_flush_iotlb_all(struct iommu_domain *domain)
+>   			iommu->flush.flush_iotlb(iommu, did, 0, 0,
+>   						 DMA_TLB_DSI_FLUSH);
+>   
+> -		if (!cap_caching_mode(iommu->cap))
+> -			iommu_flush_dev_iotlb(dmar_domain, 0, MAX_AGAW_PFN_WIDTH);
+> +		iommu_flush_dev_iotlb(dmar_domain, 0, MAX_AGAW_PFN_WIDTH);
+>   	}
+>   
+>   	if (dmar_domain->nested_parent)
