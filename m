@@ -1,157 +1,164 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFD2CEEAB
-	for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 06:30:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B245E82C8E
+	for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 08:08:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713249046; cv=none; b=gvuR2JLwKCFoLrdAAsdmNkOK1wII97yWy54JrEL31zZDey8yIiU7/7+HQIgg0uWv5fUtBds/E8HrSHr/IUVQFhWdTLbtHKojejqbEwJQOPxBKX78U5sPp9a3BeN22Ui3NWED8Gcpd9Qr6/pDkL8B8upNL58k6TpqzRYjw/FAx7c=
+	t=1713254898; cv=none; b=Dlqhka30KO33R60IZCN17dCElBWF+REjbQoSzYtm8eMenCp1OZuHIJ7B1Py1Lq6TUocVHNIJi9Ov5HZ0n06c69f+SjrjEJA9UrhZAQUGkzJ4wraGsKjXR9EhtPwUQ8DSkMqv9l/UJJKedUr1ihsLrIwmGhJHL0sc7eX1xyaYbn0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713249046; c=relaxed/simple;
-	bh=R8Kkn/zbvxeFSDE1FVJAO/vEL694RCGZhuBpvql9wIQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=WQykjHjHWIOPftNMrhF823yEHzS5B51QgoKiYof9Sk/NQO6aNYVv0K52cAaKILCiTAGi7M4d8gJXaDlcweBqZFLVyxcJAjVg1j1iJpkEC7s2FUcwUOyrw6i1GSxV0+dCyTx0ffqQcUcYh8xNO0/KLLHfKauxKFIH4kS0bUqmPHk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hYHN4zgq; arc=none smtp.client-ip=198.175.65.10
+	s=arc-20240116; t=1713254898; c=relaxed/simple;
+	bh=VhzUrtvuOfZtVOr8Ta9jkiC09pi3LUr3rEnhTlnyq2w=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=i0s9nQYtvjFLO2LPdNFSO3N91TN48FB3YjuNourbfQOxMH/c4PqP8W5HyZfl6x5kRQNjWUYlUQQ2B48pkCbjEBUT9AQOwhoz6c9vS865bUOuUCHP1GGXSab/5+oCQevgNOO2QFrA3ZCrm9rNbc/qTkprTNSy4T1v6YC0McgVmbk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B6yDzMFd; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hYHN4zgq"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B6yDzMFd"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713249045; x=1744785045;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=R8Kkn/zbvxeFSDE1FVJAO/vEL694RCGZhuBpvql9wIQ=;
-  b=hYHN4zgqOiYe6QUpNT0c/Vkq/0dHGOzvBcaeNePbOhlB4P9cpx1VjUWH
-   UOxGH5ElylBXFymbcG7pM7yWUfPJZ7qO1iHIujf4gsuxmafdiYBbTgl0B
-   Y23jfoynaAYXw9UIwdrbPv3y9BK6ZsU764GSKOO4pJGIsN21PBb+8WHRW
-   vus0kcs2CfpX0O/dKUxQgnDvSbNvOTu9opmr/seyr+/ZwileqyyETnG3+
-   WuqK7dws1f90obHUYxodChwSfcrxWh5KYkcBevHmXPla4cSN4UV8667Gs
-   thhfAo5ZviX0RCotDqugLZvAkhfNeEH/CH6zrMdF5JHRtySVsCT49BEJL
+  t=1713254895; x=1744790895;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=VhzUrtvuOfZtVOr8Ta9jkiC09pi3LUr3rEnhTlnyq2w=;
+  b=B6yDzMFdVnBrEQvfizgm2TwMFLtSIrp1Urcs0yLky5ZRGzCZ3NbLriRc
+   bC7a8GDX69So0LX535P0/RGkLliVeiBcBDsH09iba+hEGmXOLAo7aRrik
+   j7HoRSKrikgWI8CZG9BTSijYwfEz3Vyy5swm/Vdu6wOQwpQKXmkQOpyOG
+   SMcAlwviw9InXmtbjQf0WrzpPeN2txJLlZpul20DB2G3ZOiEXC5KRoj4F
+   iKBzzidOLHZCzjMiMspBr35Q/pO2/nTgseCZN3pG/SYx/3Y9z+IvFkyQX
+   GwoO41/gxvJLyHyv/Jo3fVInXPKxW+z0B60XZuCimkItyY0uLzpvCdiPb
    g==;
-X-CSE-ConnectionGUID: UwddjSG5RFiBzXt1IAGV3Q==
-X-CSE-MsgGUID: nu+/qR9WTY6PFCVGNNtGWw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11045"; a="26123261"
+X-CSE-ConnectionGUID: hP5E6wH2Si+hUMBn2S+L1w==
+X-CSE-MsgGUID: 49BRcg2WQ9CqY9idgae1qw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11045"; a="12466423"
 X-IronPort-AV: E=Sophos;i="6.07,205,1708416000"; 
-   d="scan'208";a="26123261"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2024 23:30:45 -0700
-X-CSE-ConnectionGUID: V0zIrX3ySfyAUyEdzoqDqw==
-X-CSE-MsgGUID: 9aVQrBdTRe6tuO+5eZnh9A==
+   d="scan'208";a="12466423"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 01:08:15 -0700
+X-CSE-ConnectionGUID: gd49YCjkRcW/r0kHzr+wKw==
+X-CSE-MsgGUID: TQDMqGY4SmiexAbqNHlm7w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,205,1708416000"; 
-   d="scan'208";a="59606714"
-Received: from zhaohaif-mobl.ccr.corp.intel.com (HELO [10.255.31.180]) ([10.255.31.180])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Apr 2024 23:30:41 -0700
-Message-ID: <916dbee7-5ab1-4def-91fe-546e6ab974de@linux.intel.com>
-Date: Tue, 16 Apr 2024 14:30:38 +0800
+   d="scan'208";a="22077643"
+Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
+  by orviesa010.jf.intel.com with ESMTP; 16 Apr 2024 01:08:13 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Tina Zhang <tina.zhang@intel.com>,
+	Yi Liu <yi.l.liu@intel.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH v3 00/12] Consolidate domain cache invalidation
+Date: Tue, 16 Apr 2024 16:06:44 +0800
+Message-Id: <20240416080656.60968-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/1] iommu/vt-d: Remove caching mode check before
- device TLB flush
-To: Baolu Lu <baolu.lu@linux.intel.com>, iommu@lists.linux.dev
-Cc: Kevin Tian <kevin.tian@intel.com>, Yi Liu <yi.l.liu@intel.com>,
- Jacob Pan <jacob.jun.pan@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org
-References: <20240415013835.9527-1-baolu.lu@linux.intel.com>
- <9ba0b6a2-e6c1-46de-8d30-929567952c54@linux.intel.com>
- <da521760-c2d7-432e-8ace-8793d520ab09@linux.intel.com>
-From: Ethan Zhao <haifeng.zhao@linux.intel.com>
-In-Reply-To: <da521760-c2d7-432e-8ace-8793d520ab09@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 4/16/2024 10:57 AM, Baolu Lu wrote:
-> On 4/16/24 8:53 AM, Ethan Zhao wrote:
->> On 4/15/2024 9:38 AM, Lu Baolu wrote:
->>> The Caching Mode (CM) of the Intel IOMMU indicates if the hardware
->>> implementation caches not-present or erroneous translation-structure
->>> entries except for the first-stage translation. The caching mode is
->>> irrelevant to the device TLB, therefore there is no need to check it
->>> before a device TLB invalidation operation.
->>>
->>> Remove two caching mode checks before device TLB invalidation in the
->>> driver. The removal of these checks doesn't change the driver's 
->>> behavior
->>> in critical map/unmap paths. Hence, there is no functionality or
->>> performance impact, especially since commit <29b32839725f> 
->>> ("iommu/vt-d:
->>> Do not use flush-queue when caching-mode is on") has already disabled
->>> flush-queue for caching mode. Therefore, caching mode will never call
->>> intel_flush_iotlb_all().
->>>
->>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->>> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
->>> ---
->>>   drivers/iommu/intel/iommu.c | 9 ++-------
->>>   1 file changed, 2 insertions(+), 7 deletions(-)
->>>
->>> Change log:
->>> v3:
->>>   - It turned out that the removals don't change the driver's behavior,
->>>     hence change it from a fix patch to a cleanup one.
->>>   - No functionality changes.
->>> v2: 
->>> https://lore.kernel.org/lkml/20240410055823.264501-1-baolu.lu@linux.intel.com/
->>>   - Squash two patches into a single one.
->>>   - No functionality changes.
->>> v1: 
->>> https://lore.kernel.org/linux-iommu/20240407144232.190355-1-baolu.lu@linux.intel.com/
->>>
->>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->>> index a7ecd90303dc..f0a67e9d9faf 100644
->>> --- a/drivers/iommu/intel/iommu.c
->>> +++ b/drivers/iommu/intel/iommu.c
->>> @@ -1501,11 +1501,7 @@ static void iommu_flush_iotlb_psi(struct 
->>> intel_iommu *iommu,
->>>       else
->>>           __iommu_flush_iotlb_psi(iommu, did, pfn, pages, ih);
->>> -    /*
->>> -     * In caching mode, changes of pages from non-present to 
->>> present require
->>> -     * flush. However, device IOTLB doesn't need to be flushed in 
->>> this case.
->>> -     */
->>> -    if (!cap_caching_mode(iommu->cap) || !map)
->>> +    if (!map)
->>>           iommu_flush_dev_iotlb(domain, addr, mask);
->>>   }
->>
->> Given devTLB flushing is irrelavent to CM, put iommu_flush_dev_iotlb()
->> in iommu_flush_iotlb_psi() and called with CM checking context is not
->> reasonable. the logic is buggy.
->>
->> static void __mapping_notify_one(struct intel_iommu *iommu, struct 
->> dmar_domain *domain,
->>                   unsigned long pfn, unsigned int pages)
->> {
->>      /*
->>       * It's a non-present to present mapping. Only flush if caching 
->> mode
->>       * and second level.
->>       */
->>      if (cap_caching_mode(iommu->cap) && !domain->use_first_level)
->>          iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0, 1);
->>      else
->>          iommu_flush_write_buffer(iommu);
->>
->>
->> then how about fold all CM checking logic in iommu_flush_iotlb_psi()
->> or speperate iommu_flush_dev_iotlb() from iommu_flush_iotlb_psi() ?
->
-> I am refactoring the code with a new series.
->
-> https://lore.kernel.org/linux-iommu/20240410020844.253535-1-baolu.lu@linux.intel.com/ 
->
+The IOMMU hardware cache needs to be invalidated whenever the mappings
+in the domain are changed. Currently, domain cache invalidation is
+scattered across different places, causing several issues:
 
-Great, thx.
+- IOMMU IOTLB Invalidation: This is done by iterating through the domain
+  IDs of each domain using the following code:
 
->
-> Best regards,
-> baolu
+        xa_for_each(&dmar_domain->iommu_array, i, info)
+                iommu_flush_iotlb_psi(info->iommu, dmar_domain,
+                                      start_pfn, nrpages,
+                                      list_empty(&gather->freelist), 0);
+
+  This code could theoretically cause a use-after-free problem because
+  there's no lock to protect the "info" pointer within the loop.
+
+- Inconsistent Invalidation Methods: Different domain types implement
+  their own cache invalidation methods, making the code difficult to
+  maintain. For example, the DMA domain, SVA domain, and nested domain
+  have similar cache invalidation code scattered across different files.
+
+- SVA Domain Inconsistency: The SVA domain implementation uses a
+  completely different data structure to track attached devices compared
+  to other domains. This creates unnecessary differences and, even
+  worse, leads to duplicate IOTLB invalidation when an SVA domain is
+  attached to devices belonging to a same IOMMU.
+
+- Nested Domain Dependency: The special overlap between a nested domain
+  and its parent domain requires a dedicated parent_domain_flush()
+  helper function to be called everywhere the parent domain's mapping
+  changes.
+
+- Limited Debugging Support: There are currently no debugging aids
+  available for domain cache invalidation.
+
+By consolidating domain cache invalidation into a common location, we
+can address the issues mentioned above and improve the code's
+maintainability and debuggability.
+
+The series and related patches are available on GitHub:
+https://github.com/LuBaolu/intel-iommu/commits/iommu-vtd-cache-tag-v3
+
+Change log:
+v3:
+ - Fix the difference of range end between mm_types and iommu gather
+   API.
+ - Align invalidation address to page mask.
+ - Use mmu_notifier_put() in intel_svm_domain_free() and defer the
+   domain free in mm free_notifier callback.
+ - Various mics refinements and adjustments.
+
+v2: https://lore.kernel.org/linux-iommu/20240410020844.253535-1-baolu.lu@linux.intel.com/
+ - Allow cache tags of parent_type to be reusable.
+ - Save the the iommu device pointer to @dev of IOTLB tag type to make
+   it present the location of the TLB explicitly.
+ - Rename cache_tag_flush_cm_range() to cache_tag_flush_range_pt() to
+   make it clear that cache_tag_flush_range_pt() is called for PTEs
+   changes from non-present to present.
+ - Split out a patch series to clean up all inconsistent devtlb
+   invalidation policies for caching mode.
+   https://lore.kernel.org/linux-iommu/20240407144232.190355-1-baolu.lu@linux.intel.com/
+ - Fix a bug in intel_nested_cache_invalidate_user() where the @nrpages
+   is misused as @end.
+ - Various mics refinements and adjustments.
+
+v1: https://lore.kernel.org/linux-iommu/20240325021705.249769-1-baolu.lu@linux.intel.com/
+
+Jason Gunthorpe (1):
+  iommu: Add ops->domain_alloc_sva()
+
+Lu Baolu (11):
+  iommu/vt-d: Add cache tag assignment interface
+  iommu/vt-d: Add cache tag invalidation helpers
+  iommu/vt-d: Add trace events for cache tag interface
+  iommu/vt-d: Use cache_tag_flush_all() in flush_iotlb_all
+  iommu/vt-d: Use cache_tag_flush_range() in tlb_sync
+  iommu/vt-d: Use cache_tag_flush_range_np() in iotlb_sync_map
+  iommu/vt-d: Cleanup use of iommu_flush_iotlb_psi()
+  iommu/vt-d: Use cache_tag_flush_range() in cache_invalidate_user
+  iommu/vt-d: Use cache helpers in arch_invalidate_secondary_tlbs
+  iommu/vt-d: Remove intel_svm_dev
+  iommu/vt-d: Remove struct intel_svm
+
+ include/linux/iommu.h        |   3 +
+ drivers/iommu/intel/iommu.h  |  85 +++++--
+ drivers/iommu/intel/trace.h  |  97 ++++++++
+ drivers/iommu/intel/cache.c  | 419 +++++++++++++++++++++++++++++++++++
+ drivers/iommu/intel/iommu.c  | 286 +++---------------------
+ drivers/iommu/intel/nested.c |  69 ++----
+ drivers/iommu/intel/svm.c    | 288 ++++++------------------
+ drivers/iommu/iommu-sva.c    |  16 +-
+ drivers/iommu/intel/Makefile |   2 +-
+ 9 files changed, 707 insertions(+), 558 deletions(-)
+ create mode 100644 drivers/iommu/intel/cache.c
+
+-- 
+2.34.1
+
