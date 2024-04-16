@@ -1,141 +1,249 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8381130A64
-	for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 15:29:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 053E1131737
+	for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 16:03:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713281387; cv=none; b=tjKPAIdwrt2vhDPnRLYEzIs+0NgAfTGL6Ek0fNbXRraPKXxHciomb9dRrpN8WrLpy4uka+3dLMMHnbkPZKWTZsRFOdtjx33OzhOkAAqPPBJCxUMBz0XjV/2vebYZtUY4Tbdfip0tcMDWQ8mbj9860Awqpz8LInlTwLegjWOH8cM=
+	t=1713283422; cv=none; b=FWb1qHYKZcVLGxLZJ7a5XHIveyJyUrdH7mo4DMExq+sWorMwfEAI0YfblXRJ2V7zTwwgW+fCZap65Nqgr/0Iw38e7H9IKi58KSMTjQYRosgADS3HxlHAjegyRZlk/ILk2H3wj8vDddSwai4I7SEb3ZEEtNfEQX7b5r5bclDelI8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713281387; c=relaxed/simple;
-	bh=N5prF0FaWdPob3YwO19P3byW98fbFcSX6G2WX/kGCXQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SfLXgntQ0PS0ulVPnAwxLt04UkGBLeacY5jhlLuEnwoIBQebapyXOd6/vsvgwif4CnRo30/YJZSgPL8BukhEMaTQVdL/DAd+X11Na2ZlxiJtuBgq5b0q+A9Rrkv5l4HbEV08AJ1Qk/lOHq8AL9LGIMMYtNoBPxfs70KHPCcyX/U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=i+/g7QDN; arc=none smtp.client-ip=209.85.222.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1713283422; c=relaxed/simple;
+	bh=si6bSXALhcGafn0TtYNK4HLYq/pmOcGZ8JvxEosmpvw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=GQwK/Y5i+/ky+tEpuYJOueq8Lad52V1FrvCY63xI9hUpJOD+fA9wVrqj99PSuOMcgsmo0GAmGMzQX3SPdSaUL/uAwdIkciLdYQoaEeSksldBtygH/5yZsfrDNa/8O7n3SeuZJf5lI/YvYzTiXMwS+sHY2X1pr4CARQFlFBPrG9E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=T5/DVgwF; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="i+/g7QDN"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-78d778e6d3cso397323485a.3
-        for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 08:29:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1713281385; x=1713886185; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7s25aMASpVRUeKUKXzKd+zK4MQIEa6+60XfUEWUrr9g=;
-        b=i+/g7QDNVozhPW70fkZZD7Dl8LKlmPNqovST75Ca21VrEUlkqlKrfZAYK8LtSNunn8
-         Rvo2rb8BD5n5k5pRDMdS/vwlqy416NADHf9rhC/sjsFLYNp8p9HAFlDohu3pbRC/fs8w
-         yja0mX/RWt/oXb9LVOtAeByQq2IR+KbCfYL3l6PZysF2Tzi7OmagqE7sUce6likbVTuK
-         cUUjzhW7i1YGjWc0We2k/RztAZxZJ2g2OvqV8yKGFWUZCQyZLROn9VE3iqBfPkkFBnZh
-         ZSrA6WMW6oePxR6hlB+7yTq4ZpycY0zSB+VDyxEFlHGvNxpI97w4Kna+hZJtEzk3Kerg
-         TmAA==
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="T5/DVgwF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1713283417;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=V1uoik0NkY6s/5+CwKoUEiuhmIYFgX72G/vMa5Zu8RA=;
+	b=T5/DVgwFpJavXXfLPeiGE4dxfFDWbMLKhwwAOFIuNv1KyJU4lE+NHYlWrJkCbMsGaruXK4
+	DlSYJomT+om3Iuz6nf1Sctqmq0KSuWW4KpgiInnmkT6UlW8EIkZbubTf7t1HwVVqbqjxMn
+	eOpkuc3QG4TDRBOxq1qthiNvsXF6qeM=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-626-DIChk8I9NmaBYLkQ_KdhRA-1; Tue, 16 Apr 2024 12:03:33 -0400
+X-MC-Unique: DIChk8I9NmaBYLkQ_KdhRA-1
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-7d6c32ef13bso340373639f.0
+        for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 09:03:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713281385; x=1713886185;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7s25aMASpVRUeKUKXzKd+zK4MQIEa6+60XfUEWUrr9g=;
-        b=lgHbT0CZnk51WbaZ2GqTkVVYM8SKPSXM77PzQZtuy0Cv5FpZUbSZf+8Ex6xbNrtxaY
-         6kDXMng3/FGiuJvqP6NFYTD7jpRUY0JoeOFT/Yep+u/Y1WpavWG4EddwVSjYug8jow/D
-         bJwAo9XCvQFzOBX1ZOvQ94V4mysdA0aPS8kkplkn+HhmqpBZ1bOMdnxqbhLQsTw+/sT4
-         zjMxAkSAjuvX2fczknNdxSzWEajblsMrEmynyuAx/q/stkn67UoymoqN8IBAM3KjeyfB
-         LGalY91jtiIUGVkKUzF/zW8JcFYQxIyy545KaTRdJ7xzHtc54rZWOrvoeBZu+AaTkKGh
-         6NTw==
-X-Forwarded-Encrypted: i=1; AJvYcCXsWOs7jttZTv0U8QnmmN+mseNAD3GkVCpPfUeKZI7vrteIdC0cf9r9qbQ/IMv5+BgCDs3n1/GgFXKU6GpGFrV1/Frb3xw=
-X-Gm-Message-State: AOJu0Ywt4U0zQRT2XbsruvrK8PA36pf4qxa6WFNip1KcogWGgG2ZidIe
-	tQ0RetVE5cnO1sYr8b3ycYREiuFixRXSpe1tdWFowJ7CkpRz7DTnjQTk9kSIdn8=
-X-Google-Smtp-Source: AGHT+IF/3k1/teQJA1GB8J3pMCstLtjiobAISw7ClEQWRiHFNDW7XzfII5GKKYoGzBoTUGYQ5TEi/Q==
-X-Received: by 2002:a05:622a:1313:b0:437:5ecf:5ef8 with SMTP id v19-20020a05622a131300b004375ecf5ef8mr313548qtk.21.1713281384704;
-        Tue, 16 Apr 2024 08:29:44 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id ol9-20020ac84149000000b0043721c4654csm1820605qtb.30.2024.04.16.08.29.43
+        d=1e100.net; s=20230601; t=1713283412; x=1713888212;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=V1uoik0NkY6s/5+CwKoUEiuhmIYFgX72G/vMa5Zu8RA=;
+        b=MbbhUYbY5CeXGVSDAxERFGNgBvMtu9xg/JUn60jKTHXhf/QNY3awFLiX06QzP1iOHP
+         19KrUaICDBVvD5JA78IdW8AG2kUwcjRifm6SEGRaYEudwNSMGcPKVs+pWITUjhBSY4Rd
+         nzOrgyEqeiteRmBIxbfKK4ejmtnT5SRueCCheXM05emEodiMRrFq1wjMyFuJx2400ZqX
+         KrN7ofC9iE6u/COcXge4FsRSmZDS51zQiWOBRVqHsUPWMBW/J57AQNEt8iPGrXKZVk0h
+         7oQzvmatDcT1pODPsC8KjqUtwkqDOIc5SYxZ8cjZ8zM8YR4KMc1GjbpmU9fv32C3bu2I
+         V3dA==
+X-Forwarded-Encrypted: i=1; AJvYcCVTBKiBjhFzsi9kGYK9t6dwJLf6FATgnTrkxJ/zoJRHWHy13oD9HFEd2D74Q/PE6Q6lSXNcU5ijiEzWdjCs4KR/CKejn0E=
+X-Gm-Message-State: AOJu0YzviKWYz2S3iD04ZdMShSYK5SZ+iQzIvQqp9EOczZ1piKJpitcM
+	ob9s5Zme347W+a3xrS0GTBalbf3YCkXUDjtBPhlFwlVJOribVU9OC7fqw4wlconpLVfej0bcZoE
+	es6+jGeNAtO3zPF/IEuTFxu7Z9sTR0FgJ5PGFBLsg2pBiKahkbSgC
+X-Received: by 2002:a05:6e02:1381:b0:36a:2351:60a with SMTP id d1-20020a056e02138100b0036a2351060amr15722305ilo.25.1713283412571;
+        Tue, 16 Apr 2024 09:03:32 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEP6XbG7AtMfSt8tTbG0ms4D7qY6F6Q/+JOauf6Lfwl470OQ4wnMZZbLNCupK1yrrHtrfsj7Q==
+X-Received: by 2002:a05:6e02:1381:b0:36a:2351:60a with SMTP id d1-20020a056e02138100b0036a2351060amr15722277ilo.25.1713283412251;
+        Tue, 16 Apr 2024 09:03:32 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id ay24-20020a056638411800b0048300215ce3sm1861970jab.155.2024.04.16.09.03.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Apr 2024 08:29:44 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rwkkh-0094DA-GG;
-	Tue, 16 Apr 2024 12:29:43 -0300
-Date: Tue, 16 Apr 2024 12:29:43 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, ewagner12@gmail.com,
-	suravee.suthikulpanit@amd.com, vashegde@amd.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	regressions@lists.linux.dev
-Subject: Re: [PATCH] iommu: Fix def_domain_type interaction with untrusted
- devices
-Message-ID: <20240416152943.GU223006@ziepe.ca>
-References: <fa14583e94cbf540b60a6be94b41bb24d0037e75.1713272443.git.robin.murphy@arm.com>
+        Tue, 16 Apr 2024 09:03:31 -0700 (PDT)
+Date: Tue, 16 Apr 2024 10:03:29 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: jgg@nvidia.com, kevin.tian@intel.com, joro@8bytes.org,
+ robin.murphy@arm.com, eric.auger@redhat.com, nicolinc@nvidia.com,
+ kvm@vger.kernel.org, chao.p.peng@linux.intel.com, iommu@lists.linux.dev,
+ baolu.lu@linux.intel.com, zhenzhong.duan@intel.com,
+ jacob.jun.pan@intel.com, Matthew Wilcox <willy@infradead.org>
+Subject: Re: [PATCH v2 1/4] ida: Add ida_get_lowest()
+Message-ID: <20240416100329.35cede17.alex.williamson@redhat.com>
+In-Reply-To: <20240412082121.33382-2-yi.l.liu@intel.com>
+References: <20240412082121.33382-1-yi.l.liu@intel.com>
+	<20240412082121.33382-2-yi.l.liu@intel.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fa14583e94cbf540b60a6be94b41bb24d0037e75.1713272443.git.robin.murphy@arm.com>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Apr 16, 2024 at 02:00:43PM +0100, Robin Murphy wrote:
-> Previously, an untrusted device forcing IOMMU_DOMAIN_DMA always took
-> precedence over whatever a driver's def_domain_type may have wanted to
-> say. This was intentionally handled in core code since 3 years prior,
-> to avoid drivers poking at the details of what is essentially a policy
-> between the PCI core and the IOMMU core. Now, though, we go to the
-> length of evaluating both constraints to check for any conflict, and if
-> so throw our toys out of the pram and refuse to handle the device at
-> all. Regardless of any intent, in practice this leaves the device, and
-> potentially the rest of its group or even the whole IOMMU, in a largely
-> undetermined state, which at worst may render the whole system
-> unusable.
+On Fri, 12 Apr 2024 01:21:18 -0700
+Yi Liu <yi.l.liu@intel.com> wrote:
 
-For systems supporting untrusted device security the translation must
-be BLOCKED at this point.
+> There is no helpers for user to check if a given ID is allocated or not,
+> neither a helper to loop all the allocated IDs in an IDA and do something
+> for cleanup. With the two needs, a helper to get the lowest allocated ID
+> of a range can help to achieve it.
+> 
+> Caller can check if a given ID is allocated or not by:
+> 	int id = 200, rc;
+> 
+> 	rc = ida_get_lowest(&ida, id, id);
+> 	if (rc == id)
+> 		//id 200 is used
+> 	else
+> 		//id 200 is not used
+> 
+> Caller can iterate all allocated IDs by:
+> 	int id = 0;
+> 
+> 	while (!ida_is_empty(&pasid_ida)) {
+> 		id = ida_get_lowest(pasid_ida, id, INT_MAX);
+> 		if (id < 0)
+> 			break;
+> 		//anything to do with the allocated ID
+> 		ida_free(pasid_ida, pasid);
+> 	}
+> 
+> Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+> ---
+>  include/linux/idr.h |  1 +
+>  lib/idr.c           | 67 +++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 68 insertions(+)
+> 
+> diff --git a/include/linux/idr.h b/include/linux/idr.h
+> index da5f5fa4a3a6..1dae71d4a75d 100644
+> --- a/include/linux/idr.h
+> +++ b/include/linux/idr.h
+> @@ -257,6 +257,7 @@ struct ida {
+>  int ida_alloc_range(struct ida *, unsigned int min, unsigned int max, gfp_t);
+>  void ida_free(struct ida *, unsigned int id);
+>  void ida_destroy(struct ida *ida);
+> +int ida_get_lowest(struct ida *ida, unsigned int min, unsigned int max);
+>  
+>  /**
+>   * ida_alloc() - Allocate an unused ID.
+> diff --git a/lib/idr.c b/lib/idr.c
+> index da36054c3ca0..03e461242fe2 100644
+> --- a/lib/idr.c
+> +++ b/lib/idr.c
+> @@ -476,6 +476,73 @@ int ida_alloc_range(struct ida *ida, unsigned int min, unsigned int max,
+>  }
+>  EXPORT_SYMBOL(ida_alloc_range);
+>  
+> +/**
+> + * ida_get_lowest - Get the lowest used ID.
+> + * @ida: IDA handle.
+> + * @min: Lowest ID to get.
+> + * @max: Highest ID to get.
+> + *
+> + * Get the lowest used ID between @min and @max, inclusive.  The returned
+> + * ID will not exceed %INT_MAX, even if @max is larger.
+> + *
+> + * Context: Any context. Takes and releases the xa_lock.
+> + * Return: The lowest used ID, or errno if no used ID is found.
+> + */
+> +int ida_get_lowest(struct ida *ida, unsigned int min, unsigned int max)
+> +{
+> +	unsigned long index = min / IDA_BITMAP_BITS;
+> +	unsigned int offset = min % IDA_BITMAP_BITS;
+> +	unsigned long *addr, size, bit;
+> +	unsigned long flags;
+> +	void *entry;
+> +	int ret;
+> +
+> +	if (min >= INT_MAX)
+> +		return -EINVAL;
+> +	if (max >= INT_MAX)
+> +		max = INT_MAX;
+> +
 
-> Unfortunately it turns out that this is a realistic situation to run
-> into by connecting a PASID-capable device (e.g. a GPU) to an AMD-based
-> laptop via a Thunderbolt expansion box, since the AMD IOMMU driver needs
-> an identity default domain for PASIDs to be usable, and thus sets a
-> def_domain_type override based on PASID capability.
+Could these be made consistent with the test in ida_alloc_range(), ie:
 
-The majority of places implementing def_domain_type are using it as a
-statement of HW capability that should not be ignored by the core code:
+	if ((int)min < 0)
+		return -EINVAL;
+	if ((int)max < 0)
+		max = INT_MAX;
 
- - DART
-   * system page size is too small, can't map IOPTEs, force identity
-   * iommu does not support IDENTITY at all, force paging
- - tegra: Device quirks mean paging and DMA API doesn't work
- - amd: The driver can't support PAGING when in SNP mode
- - SMMU: The driver can't support paging when in legacy binding mode and
-         paging domain allocation fails as well
- - qcom: Looks like these devices have some iommu bypass bus in their
-         HW and paging doesn't work
- - SMMUv3: The comment says HISI devices cannot support paging due to a HW quirk
 
-For these force overriding the driver knowledge will either result in
-domain allocate/attach failure or a broken DMA environment anyhow.
+> +	xa_lock_irqsave(&ida->xa, flags);
+> +
+> +	entry = xa_find(&ida->xa, &index, max / IDA_BITMAP_BITS, XA_PRESENT);
+> +	if (!entry) {
+> +		ret = -ENOTTY;
 
-The AMD PASID thing is actually unique because the driver can still
-fully support PAGING, despite it wrongly telling the core code that it
-can't.
+-ENOENT?  Same for all below too.
 
-This is happening because it is all just a hack to work around the
-incomplete SW implementation in the AMD driver. When the AMD driver is
-completed its def_domain_type should be removed entirely.
+> +		goto err_unlock;
+> +	}
+> +
+> +	if (index > min / IDA_BITMAP_BITS)
+> +		offset = 0;
+> +	if (index * IDA_BITMAP_BITS + offset > max) {
+> +		ret = -ENOTTY;
+> +		goto err_unlock;
+> +	}
+> +
+> +	if (xa_is_value(entry)) {
+> +		unsigned long tmp = xa_to_value(entry);
+> +
+> +		addr = &tmp;
+> +		size = BITS_PER_XA_VALUE;
+> +	} else {
+> +		addr = ((struct ida_bitmap *)entry)->bitmap;
+> +		size = IDA_BITMAP_BITS;
+> +	}
+> +
+> +	bit = find_next_bit(addr, size, offset);
+> +
+> +	xa_unlock_irqrestore(&ida->xa, flags);
+> +
+> +	if (bit == size ||
+> +	    index * IDA_BITMAP_BITS + bit > max)
+> +		return -ENOTTY;
+> +
+> +	return index * IDA_BITMAP_BITS + bit;
+> +
+> +err_unlock:
+> +	xa_unlock_irqrestore(&ida->xa, flags);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(ida_get_lowest);
 
-Since actual PASID AMD attach isn't implemented yet we could just
-remove that check from def_domain_type as an RC fix. Vasant can sort
-it out properly by disabling pasid support on untrusted devices until
-the DTE logic is fully completed.
+The API is a bit awkward to me, I wonder if it might be helped with
+some renaming and wrappers...
 
-> In general, restoring the old behaviour of forcing translation will not
-> make that device's operation any more broken than leaving it potentially
-> blocked or subject to the rest of a group's translations would, nor will
-> it be any less safe than leaving it potentially bypassed or subject to
-> the rest of a group's translations would, so do that, and let eGPUs work
-> again.
+int ida_find_first_range(struct ida *ida, unsigned int min, unsigned int max);
 
-Well, this is true, since we can't handle the probe error it doesn't
-matter what we do.
+bool ida_exists(struct ida *ida, unsigned int id)
+{
+	return ida_find_first_range(ida, id, id) == id;
+}
 
-Jason
+int ida_find_first(struct ida *ida)
+{
+	return ida_find_first_range(ida, 0, ~0);
+}
+
+_min and _max variations of the latter would align with existing
+ida_alloc variants, but maybe no need to add them preemptively.
+
+Possibly an ida_for_each() could be useful in the use case of
+disassociating each id, but not required for the brute force iterative
+method.  Thanks,
+
+Alex
+
+> +
+>  /**
+>   * ida_free() - Release an allocated ID.
+>   * @ida: IDA handle.
+
