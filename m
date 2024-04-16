@@ -1,135 +1,141 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2063.outbound.protection.outlook.com [40.107.223.63])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27920154C17;
-	Tue, 16 Apr 2024 21:22:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.63
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713302563; cv=fail; b=FPU6EP2F3O3q9A1WrzoZPmQWXOfvIX8/17uy5BqvquecxBEp5YxJsyRFCbUVG1JGUSZhKuj6Gya6gOHJqRbnmUzWYZyKxKB47RUvQYzflIoiWSNrOJ0++N9ct7+AxlWEaTzwDfHG01rnluPNb5AayL0T5yywzvOS1FUZ/dRpLBg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713302563; c=relaxed/simple;
-	bh=faCVAMdjbnUi8TItHYu/HpgsnknDozXaRE5LGvmLBjA=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DM/5LqHg2i/xCqcncXYTta4lSnNPfeGv+AsRTiEsEnKJADbulHACAzhjWw290iOjqIGDIBJV2yM4RpXYHUtSdajcLgmczyFdZOwsEOhvbnSX+XwhaPGB/RwAEcfg3/Z5GcQ9ZdVaHoQXTwUhoAWd0k03EqnvYz1cJfFjMGuO5KI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=Ng+WPBy3; arc=fail smtp.client-ip=40.107.223.63
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C624484D3F
+	for <iommu@lists.linux.dev>; Tue, 16 Apr 2024 22:11:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713305475; cv=none; b=FtaEc6DJm+JllDxbLR6fb8Htyjb3GNkdXd8IxlKWWXiNLNOuTMtTwsu6CqrqTasHMQyjb/lknj/3/0S13a4cN8/DO1mrYqedQaW1ibbq8WX9YWAW7VLKRI16gmQkG29E1lmnfeC2v3/qcxavajFfjDxWl9KiUXpxeHn5Tjzg6S0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713305475; c=relaxed/simple;
+	bh=rdpsXIWGDG4PvT893grQx+rL878rDudcA5OJ2YWiugA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Jq6evJSgj8w6LZcP8HPv5fwjvCi5J7IP/wS20xN6t/nF8oSH7tz9qKLT9C5CQgsohagpZinJPRUfLGWB3cmx4+XET/LIIIBce+eMuyho4kcYl7v37enrSqonUcAkSXoa/jNm8X4HR9onJTHcz77svKkfBSB+6gPvXYHkAKHhfM8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DnbmLz0s; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="Ng+WPBy3"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cgRmuoUeuShTqYJ28pAliklkYJyYoToNUe+mkETmzskusX4E3P6wieA1p/epf8e3c3dB7Y6M+dvxkEhzpw3qW+RmlfTfkuAE6upfi/TcXDscmlKxVo4h8yGXpHeTXvwZogayQMSKcSalFA4SClqEAGFQcjxYqG/vpHaGvvD92qUwAfuJWbB/5Vj24YnkQwUh12CDYVU2VurRToi7MtJOu8p+9ncwTbAwLdXPheFyh91dHQiVaOxv4VId89Qe8+1zryN8unPBsb4ude8lVbMSfVN9gA76gZYyRrCAVjcZdsKIizfIIjZ8p2Ob++5MMKAFXYkhMEZiw1iYf5pIEzyb5A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cl4UVcVNS5EFZ3WeiblZ+P9CAfSLqnBcrqbyurWCPeU=;
- b=NcP75Z9J148N/NHtUP484kkIarqGAVKiH5niGnlwEZEeKxbITAUt79pVxVHr20wpq0YwZ53ugqE9OOgICDxsqZLz8GQKkmacUh/KlApt4k17uXFAuh6mycr0tfkubM2lntobCPH0HhImILxacR7NeryoZbktrySVi1P7F9rEtp7W/iw89tSXnOjvmpaXYcgLzAuBTrULSrbDkdauzH8BLwEvwkd7chJs23yUWq0lZG+FkyfdDxyH/HZaxpzdA7cmtaJ7jmjzH8SSxpJECw9iO0XgdYMk6tJewA4ST6UAlz+hVAMW5HYRfuPyLMvpPzN85fIQ9F0Z5B2qjy1tklMxBQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.117.160) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cl4UVcVNS5EFZ3WeiblZ+P9CAfSLqnBcrqbyurWCPeU=;
- b=Ng+WPBy3Hj8yJD4u27yoRrQ9Xaw4d4H4MZcaCgWHF/Hn3EaVv/shw6sBHkolys7kqCuQTbNov01LsIeI6Mz2RPGK1PWvabh31LHdOG+hhODl8pB+mWHKlBBPQdgRKkoKxIIfY7JNlj8VnNpTXZ/lMJpWcFXCvsmVAXDZWVkGvB6l2QFoCc+If5DlC5REdaXyIffr6p8DRY5d/oHY6eJniCByE1OMZoqxahp+IPH6qFs4g5Eznmgh6PaoFUIdq1YZbQPsYEJ8yX6/X6+0nVhs1YnZBYjrxCTdVJ6dY9A3Vk2ViBpv51bgPD+/QrHOMiQzP2H+jYMe5XV06y3QxKwtDA==
-Received: from SA9PR13CA0001.namprd13.prod.outlook.com (2603:10b6:806:21::6)
- by MN0PR12MB6151.namprd12.prod.outlook.com (2603:10b6:208:3c5::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7452.50; Tue, 16 Apr
- 2024 21:22:38 +0000
-Received: from SA2PEPF00001505.namprd04.prod.outlook.com
- (2603:10b6:806:21:cafe::66) by SA9PR13CA0001.outlook.office365.com
- (2603:10b6:806:21::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7495.19 via Frontend
- Transport; Tue, 16 Apr 2024 21:22:38 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.160)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.117.160 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.117.160; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.117.160) by
- SA2PEPF00001505.mail.protection.outlook.com (10.167.242.37) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7452.22 via Frontend Transport; Tue, 16 Apr 2024 21:22:37 +0000
-Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
- (10.129.200.66) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.41; Tue, 16 Apr
- 2024 14:22:21 -0700
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail201.nvidia.com
- (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12; Tue, 16 Apr
- 2024 14:22:21 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1258.12 via Frontend
- Transport; Tue, 16 Apr 2024 14:22:20 -0700
-Date: Tue, 16 Apr 2024 14:22:19 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <iommu@lists.linux.dev>, Joerg Roedel <joro@8bytes.org>,
-	<linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>, Eric Auger <eric.auger@redhat.com>, "Moritz
- Fischer" <mdf@kernel.org>, Moritz Fischer <moritzf@google.com>, Michael
- Shavit <mshavit@google.com>, <patches@lists.linux.dev>, Shameerali Kolothum
- Thodi <shameerali.kolothum.thodi@huawei.com>, Mostafa Saleh
-	<smostafa@google.com>
-Subject: Re: [PATCH v7 3/9] iommu/arm-smmu-v3: Move the CD generation for S1
- domains into a function
-Message-ID: <Zh7sC0+xPDDgVbhm@Asurada-Nvidia>
-References: <0-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
- <3-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DnbmLz0s"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713305474; x=1744841474;
+  h=date:from:to:cc:subject:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=rdpsXIWGDG4PvT893grQx+rL878rDudcA5OJ2YWiugA=;
+  b=DnbmLz0sIaJCmIiAdcoqj0SC/n7hhg6kVSTlRmSbyVlrsAzdulVbcNpf
+   3tr6LcrNAxHS9Xdzt4N4nwV2PbmDDQVJBAcp9p5ZTCgzvpumOlP2M7UFf
+   PMLJp80ywz7IQyWPUiMWH3mTjVKDItPYpZakPM9nT9Rwmwyj5XVbIjwyG
+   V1ob1OnZf3lzLYzPZ7WWZs6F69Vm/zbzPoN1wyMHeNzWlMcmZDFA6J5DW
+   LfLh96sFunUmGBe5/t+7htlpSYqrnHCMOgXU9NyQGnpnWZu1Q++fM73DF
+   ca++N3RNVYEamiGx9+Ew5uIClf4pjI2lBn0mnekcrJ+gjiNQFf6Lb2lbk
+   w==;
+X-CSE-ConnectionGUID: QBISoHJkRkqo0JyxqbJQCg==
+X-CSE-MsgGUID: /GVPJ82KSBa5tmM21Zn2Hw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11046"; a="19379747"
+X-IronPort-AV: E=Sophos;i="6.07,207,1708416000"; 
+   d="scan'208";a="19379747"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 15:11:13 -0700
+X-CSE-ConnectionGUID: aOB0hx/ZTfejf2l/oBjZZA==
+X-CSE-MsgGUID: pDbsOPGDQQKNgY3FIPHMFw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,207,1708416000"; 
+   d="scan'208";a="22884358"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Apr 2024 15:11:12 -0700
+Date: Tue, 16 Apr 2024 15:15:46 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
+ Zijlstra <peterz@infradead.org>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, Thomas Gleixner <tglx@linutronix.de>, Lu Baolu
+ <baolu.lu@linux.intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Hansen, Dave" <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H.
+ Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
+ <mingo@redhat.com>, "Luse, Paul E" <paul.e.luse@intel.com>, "Williams, Dan
+ J" <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>, "Raj, Ashok"
+ <ashok.raj@intel.com>, "maz@kernel.org" <maz@kernel.org>,
+ "seanjc@google.com" <seanjc@google.com>, Robin Murphy
+ <robin.murphy@arm.com>, "jim.harris@samsung.com" <jim.harris@samsung.com>,
+ "a.manzanares@samsung.com" <a.manzanares@samsung.com>, Bjorn Helgaas
+ <helgaas@kernel.org>, "Zeng, Guang" <guang.zeng@intel.com>,
+ "robert.hoo.linux@gmail.com" <robert.hoo.linux@gmail.com>,
+ jacob.jun.pan@linux.intel.com
+Subject: Re: [PATCH v2 12/13] iommu/vt-d: Add an irq_chip for posted MSIs
+Message-ID: <20240416151546.31a539e8@jacob-builder>
+In-Reply-To: <BN9PR11MB5276051CAD86374C666ACFD48C042@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
+	<20240405223110.1609888-13-jacob.jun.pan@linux.intel.com>
+	<BN9PR11MB5276051CAD86374C666ACFD48C042@BN9PR11MB5276.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <3-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00001505:EE_|MN0PR12MB6151:EE_
-X-MS-Office365-Filtering-Correlation-Id: 333dbf7a-89f4-49d3-9c04-08dc5e5b575d
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	vwmgT++Ehq/rgkoT/zUwgyA0N7iACYBb+4El+ZoDI4fqcM6WCVaCO9JuevzW2teq02hroTmlcYIqLi/FbFiniwCD/K/PPpGPY4JZ8WNSfvZcsf6mXt9x17hr6+zm5vruCiktTC1/w4aJ3LIDmk0VzqiF2vraaPCTh93P44aP2GgRdIhUUK+AgA7VqsxSGjCoit1CThgrl6XaHzYfDOPvIkZlf1q2690+uooiGxfl1AqO6gERxvek2X7GVNFxqW8QxBHPBjHdJYvneekERjbkuJygONdi+jMJhSpDDxJ3fjYyoRGtpT6EZHznoDnL/t7AbxdsEzHwzBxbvuKVY8gmvEEcmxuu9wfWFDYavVX4e/GVHQMx6NBR7gg+zJonS0k3hK81Jg+LfzfJlL8FOERtVW3aTpKkFPmDuT6W95VOMjLbp7/RBtpjHhPW/wPM6ZM/Q0H9FouDxF84R7KZEBaxjxvNasvI+2qIigMBC2v6SLnHl1VJy6d2w3ZBrqKQJ6mi/NsxLVQS+QHGUKcKCZmQCgwzOYFVh0wYcuUMoXEhcc0Lk+iWpH/tpr6ZBcjyu8k7DTgkCTBQxm4CCdPW+C5qKBBUT8qm/r7ZUqt9dQ/densv8RnxwocKHHwsbI6WyjEzhTyROeK2yJkhubgf2ftfGTHBX3WBywNQ7HvbT7PXLce9uk73YzbF6MPaPv1baQMDdSz3+tW02v77xahBDlq87QOgQ9uAGcp7z7aLpdMbB+NUH9DP89Y//TLPXP8VrF//
-X-Forefront-Antispam-Report:
-	CIP:216.228.117.160;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge1.nvidia.com;CAT:NONE;SFS:(13230031)(82310400014)(36860700004)(1800799015)(376005)(7416005);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Apr 2024 21:22:37.9149
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 333dbf7a-89f4-49d3-9c04-08dc5e5b575d
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.160];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00001505.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN0PR12MB6151
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 16, 2024 at 04:28:14PM -0300, Jason Gunthorpe wrote:
-> Introduce arm_smmu_make_s1_cd() to build the CD from the paging S1 domain,
-> and reorganize all the places programming S1 domain CD table entries to
-> call it.
-> 
-> Split arm_smmu_update_s1_domain_cd_entry() from
-> arm_smmu_update_ctx_desc_devices() so that the S1 path has its own call
-> chain separate from the unrelated SVA path.
-> 
-> arm_smmu_update_s1_domain_cd_entry() only works on S1 domains
-> attached to RIDs and refreshes all their CDs.
-> 
-> Remove the forced clear of the CD during S1 domain attach,
-> arm_smmu_write_cd_entry() will do this automatically if necessary.
-> 
-> Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-> Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> Reviewed-by: Michael Shavit <mshavit@google.com>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Hi Kevin,
 
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
+On Fri, 12 Apr 2024 09:36:10 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
+
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Saturday, April 6, 2024 6:31 AM
+> >=20
+> > + *
+> > + * For the example below, 3 MSIs are coalesced into one CPU
+> > notification. Only
+> > + * one apic_eoi() is needed.
+> > + *
+> > + * __sysvec_posted_msi_notification()
+> > + *	irq_enter();
+> > + *		handle_edge_irq()
+> > + *			irq_chip_ack_parent()
+> > + *				dummy(); // No EOI
+> > + *			handle_irq_event()
+> > + *				driver_handler()
+> > + *	irq_enter();
+> > + *		handle_edge_irq()
+> > + *			irq_chip_ack_parent()
+> > + *				dummy(); // No EOI
+> > + *			handle_irq_event()
+> > + *				driver_handler()
+> > + *	irq_enter();
+> > + *		handle_edge_irq()
+> > + *			irq_chip_ack_parent()
+> > + *				dummy(); // No EOI
+> > + *			handle_irq_event()
+> > + *				driver_handler() =20
+>=20
+> typo: you added three irq_enter()'s here
+right, will remove the middle two.
+
+>=20
+> > + *	apic_eoi()
+> > + * irq_exit()
+> > + */
+> > +static struct irq_chip intel_ir_chip_post_msi =3D {
+> > +	.name			=3D "INTEL-IR-POST",
+> > +	.irq_ack		=3D dummy,
+> > +	.irq_set_affinity	=3D intel_ir_set_affinity,
+> > +	.irq_compose_msi_msg	=3D intel_ir_compose_msi_msg,
+> > +	.irq_set_vcpu_affinity	=3D intel_ir_set_vcpu_affinity,
+> > +}; =20
+>=20
+> What about putting this patch at end of the series (combining the
+> change in intel_irq_remapping_alloc()) to finally enable this
+> feature?
+>=20
+> It reads slightly better to me to first get those callbacks extended
+> to deal with the new mechanism (i.e. most changes in patch13)
+> before using them in the new irqchip. =F0=9F=98=8A
+
+makes sense, will do.
+
+Thanks,
+
+Jacob
