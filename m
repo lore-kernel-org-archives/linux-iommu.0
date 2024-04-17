@@ -1,106 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29D2C171657
-	for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 18:29:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48D6839ACD
+	for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 20:07:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713378545; cv=none; b=JhAWJBFObvZtwAt1QK4ZSEBBt/0dT0OrDwAC3+1EE5bfTOAiAMwKiIqIsqXk722sUZEGrLjKajP8tgPwfAlzhw/kcL01D/gBcYo+bedehmB+DRSPhAf6TlX6J+p3DBGH0alTfcTeHKll4Tc7dnPqYscpNuhvE39SX/2yHadXXVM=
+	t=1713384426; cv=none; b=ik3yCmbF2zIl5o11SvXQ28Is7EN6ObLmmCuNyC52psA5yzCCZ2SrI7EZbdDThgOvJrH7eDwIxesTyeopXwg91E3zbFnwUL5zGG2XFH9TVgYwdMqZMLPhPBVu+uiS1IgYcUzayMUVPdx00RzykQdGJ7Fg5S4MqTS7Jg8WmBe9vuA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713378545; c=relaxed/simple;
-	bh=7JxodzQRkS4oLXtGyeYNgNUOYAZp5D+/snGgqcQC0YI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jHUZMlWXGfosDAUnAmmFfn1ZvkmnIJrn/Sv0DWvIvqy7AAOlDCc+QESDNoTHAocpdHwHMWNo4W6tA69J1IbxAT1ByAj9W+FDovJhgy7vFAsWXcqLr1b3SlWeL15iTgvykyK7DQlRnzaFoXQur07T0qqRkUKYhAafX5fc/x/SubQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KWD0C9J9; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1713384426; c=relaxed/simple;
+	bh=FP49noh0itl+WdqHEAWcbgLL5Hde1RFigpB7XfXqmKc=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=E03sDHzArBehKJe+8n0lfXci9DyBKvTRWsKoOysEEOypUcL1HWJuQotEARPuLb0xDxY0aEN6ioPg1QVDA/AzhpsJY4EEC8dTD5E7cqt75Q5um8milFygR6RZEuc09EXgPcUo44z//aRh5RqqlraPq8xHqV0koj0uFiG4FOLfoHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=Ze0znmDD; arc=none smtp.client-ip=209.85.208.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KWD0C9J9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713378544; x=1744914544;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=7JxodzQRkS4oLXtGyeYNgNUOYAZp5D+/snGgqcQC0YI=;
-  b=KWD0C9J9ZkG1JL45yPDa02z7DRhMK994m0fTOtUEqhdYYt1ypfjC3Y2P
-   PFpchHEJgqZKaSbCwg9rK0+vHWDX8Ouz0aYYLkaEtSz2DcGNemEdDqa/1
-   xeMAqANjjOOtCu3Sb19d2pDI4J+TFA0GDw/Yvn5REPYPE0Lf6e38UsHG5
-   waKdIMhPhLeKMNlwmuHMoyHCOMhrr1ugDzbC73wW8yjYeWh3PHKTfKlCi
-   HmqSeciXvSHfadYla9+x8lk0p3zyVMLnsOXR8zQiP7cx3fA7027AF6KF9
-   yr4EEMaWuJtRhGQeToUOq0vXfcBRHBTW8cv43ruTuen5IRYxrkaAtgTiR
-   g==;
-X-CSE-ConnectionGUID: dyS261B1TFugeLZ4N65fJw==
-X-CSE-MsgGUID: nTyA6B20QJOrwGijxbRY0Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11046"; a="19494055"
-X-IronPort-AV: E=Sophos;i="6.07,209,1708416000"; 
-   d="scan'208";a="19494055"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2024 11:29:04 -0700
-X-CSE-ConnectionGUID: d1axhKYFRM+l2l6LO09SLQ==
-X-CSE-MsgGUID: sYo3gvWTTcyX9Sjfi/U3kA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,209,1708416000"; 
-   d="scan'208";a="23306516"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2024 11:29:03 -0700
-Date: Wed, 17 Apr 2024 11:33:37 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Sean Christopherson <seanjc@google.com>
-Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
- Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev, Thomas Gleixner
- <tglx@linutronix.de>, Lu Baolu <baolu.lu@linux.intel.com>,
- kvm@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>, Joerg Roedel
- <joro@8bytes.org>, "H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov
- <bp@alien8.de>, Ingo Molnar <mingo@redhat.com>, Paul Luse
- <paul.e.luse@intel.com>, Dan Williams <dan.j.williams@intel.com>, Jens
- Axboe <axboe@kernel.dk>, Raj Ashok <ashok.raj@intel.com>, Kevin Tian
- <kevin.tian@intel.com>, maz@kernel.org, Robin Murphy
- <robin.murphy@arm.com>, jim.harris@samsung.com, a.manzanares@samsung.com,
- Bjorn Helgaas <helgaas@kernel.org>, guang.zeng@intel.com,
- robert.hoo.linux@gmail.com, jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2 01/13] x86/irq: Move posted interrupt descriptor out
- of vmx code
-Message-ID: <20240417113337.4a594901@jacob-builder>
-In-Reply-To: <Zh8ZHPUlQk4niS7k@google.com>
-References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
-	<20240405223110.1609888-2-jacob.jun.pan@linux.intel.com>
-	<Zh8ZHPUlQk4niS7k@google.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Ze0znmDD"
+Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-57042f84cabso119778a12.2
+        for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 13:07:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1713384423; x=1713989223; darn=lists.linux.dev;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=yXdx5eKBbphyNwU77pSPLcGmccDtrtsrx93Wp2k5WuM=;
+        b=Ze0znmDDX3x2PKBYq4XJRYaMVwwda7i+LPZACH1YEvvE1/LsGwvagGlp36nfM5Fde/
+         uy4tEqq+X0mlDP1JAtPL/hcCodR2if9qYDgDfa7rmYof8olpPMNRDHy8UCu2HrCT0GIU
+         jHhzntYZVGEoQjVMBF+5TqehJuVE5RI8d8LSK7G92DYW3JO7aMxVzb1k94/FHbMocZ+E
+         bUWUnwQqggMnt1qTvrM7TR3SCqgLnAjKVmTDP8q4R+AArqvUeD1NXsZWtkk8gcScW/yk
+         di60NiyfKoNo7pSZ7n8Pe6rwGYwoj26QS7TM9Bx4oiOqiup7Ch15RIT/GIftTf3VpGpm
+         mJkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713384423; x=1713989223;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=yXdx5eKBbphyNwU77pSPLcGmccDtrtsrx93Wp2k5WuM=;
+        b=l6M6sfop8dw79t8ihnYBaPy11xEBr/M2GTqpel119Vjm+IVdWVv9ELNhu2Y0i9ITeW
+         PdmseG4/ISuOwNXMS2DyRDwLt1e2+lZJUndfXl8agP4gVyRgxUAs5GboHCqdBIkXxSE+
+         WSNg9uzrsQwUzfElFfbV+2wtqmOdqWhl1jkPxu6kJFGH5Xd5uGpSWsLv7Od4RYu+oEjK
+         HXH0evim6VOdAy7a4otLoDt+W1YnZhhDpk0ScpdPkFcKnnb4II224GPDSQMwNZ3g6khH
+         VgXivyFvbKQDKNujfoAAwVUYnoNBazM3QY3H8Q30FVNNXZrvIlXi2X/OI5xoDvqkcUkK
+         24Dw==
+X-Gm-Message-State: AOJu0Ywl4WZ7zz0RBCUoqzbWksdjxyrizbDInCw5cQF1pFtHQmmGrAax
+	ElrsrUmuSwNjz45Y4Q7nRVCc7GAH3Jlvki2wntYRvbqd/JM1QdReLzodZaFmE7I=
+X-Google-Smtp-Source: AGHT+IGHTmLXzZ4dbyEnVSVT1MrRjAMRM8nYk4BRv40HrWRSUnLpPYVy0DGHhCrF7OXDSp+mVHyrlw==
+X-Received: by 2002:a17:906:36d1:b0:a52:4edb:6db7 with SMTP id b17-20020a17090636d100b00a524edb6db7mr319651ejc.54.1713384423496;
+        Wed, 17 Apr 2024 13:07:03 -0700 (PDT)
+Received: from [192.168.45.55] (078088045141.garwolin.vectranet.pl. [78.88.45.141])
+        by smtp.gmail.com with ESMTPSA id l1-20020a17090615c100b00a524e3f2f9esm6128057ejd.98.2024.04.17.13.07.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Apr 2024 13:07:02 -0700 (PDT)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Subject: [PATCH 0/2] Small qcom_iommu cleanups
+Date: Wed, 17 Apr 2024 22:06:58 +0200
+Message-Id: <20240416-topic-qcom_iommu-v1-0-fabe55b3b7b3@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAOIrIGYC/x2MQQqAIBAAvxJ7TigJsb4SEbGttQfb0oog/HvSc
+ RhmXogUmCJ0xQuBbo4sW4a6LADXaVtI8ZwZdKWbqqmNOmVnVAeKH1m8v5Qlp02WFluCnO2BHD/
+ /sh9S+gAK8gcnYgAAAA==
+To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux.dev, linux-arm-msm@vger.kernel.org, 
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+ Stephan Gerhold <stephan@gerhold.net>, 
+ Marijn Suijten <marijn.suijten@somainline.org>, 
+ Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1713384421; l=515;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=FP49noh0itl+WdqHEAWcbgLL5Hde1RFigpB7XfXqmKc=;
+ b=5/FbJrPNf4NOjKn27gt1gSHYQTPLvXP3Q/wmxcWPxxhTyDF9y1nO8Yev7Lm6eN7TR1F6ztJIU
+ VEbRiJZYxJWCb1lNQrR88PCttN36W1/IRLJpjwJGHXzSIN1jFYqU75k
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
 
-Hi Sean,
+As it says on the can
 
-On Tue, 16 Apr 2024 17:34:36 -0700, Sean Christopherson <seanjc@google.com>
-wrote:
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+---
+Konrad Dybcio (2):
+      iommu/qcom: Remove useless forward definition
+      iommu/qcom: Always consume all clocks
 
-> "KVM" in the scope would be nice.
-will change to "KVM: VMX:"
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c | 54 +++++++++------------------------
+ 1 file changed, 15 insertions(+), 39 deletions(-)
+---
+base-commit: 2b3d5988ae2cb5cd945ddbc653f0a71706231fdd
+change-id: 20240416-topic-qcom_iommu-8ef262408c9e
 
-> 
-> On Fri, Apr 05, 2024, Jacob Pan wrote:
-> > To prepare native usage of posted interrupt, move PID declaration out of
-> > VMX code such that they can be shared.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  arch/x86/include/asm/posted_intr.h | 88 ++++++++++++++++++++++++++++
-> >  arch/x86/kvm/vmx/posted_intr.h     | 93 +-----------------------------
-> >  arch/x86/kvm/vmx/vmx.c             |  1 +
-> >  arch/x86/kvm/vmx/vmx.h             |  2 +-
-> >  4 files changed, 91 insertions(+), 93 deletions(-)
-> >  create mode 100644 arch/x86/include/asm/posted_intr.h  
-> 
-> Acked-by: Sean Christopherson <seanjc@google.com>
+Best regards,
+-- 
+Konrad Dybcio <konrad.dybcio@linaro.org>
 
-
-Thanks,
-
-Jacob
