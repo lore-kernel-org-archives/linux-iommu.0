@@ -1,125 +1,104 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id D635D13C3CD
-	for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 10:36:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from baidu.com (mx24.baidu.com [111.206.215.185])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 500C213C688
+	for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 12:06:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=111.206.215.185
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713350199; cv=none; b=Z85BFfZy7WrKU8oLcHEuMYpLzB4TIltG6fAgCOQscrseLqBD48i1j1PI2In+g0mTSTh3zB0OVsslbOvPUQ7IOz9P0OjDA8vncF7HeKEI1r2F8ca5R5YdaeS3HrqWBJNnwDoWhSyBHmkjqO1xzgEYKNTPqERFKt6SrI7x2qDukeE=
+	t=1713355612; cv=none; b=cCaIhUYqTu90xv5cp+goLXtRqHp/yErVwfRINEqXQp7bzDqUmffcZIZauYsVmc8mUJ3qgHqt7C9m++U9GNzUn88mo/JIn87tvKZH4sha/aJLE+YEsZ6CAA0nL8wsu0cP3Q8pYhvB4js0ZFYSPKYQ0z0NKuLnBzYclvZ89FoMj4I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713350199; c=relaxed/simple;
-	bh=wK3zkKd+UDmBzbfDsMuwS6Y4b8KUIj/36OIFXRYFiWM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Qif0lPZ/C6PxupChEHRSeplFjaVS8BUn//rFoBexuvFxFpnM4JhKmeOf/l7Eoz3N8qvHJRF6SjTQgsCg8tgRMzWVA6OM87mapWCokMJHwcubph/mtjMAxzCLFlIPRNrF9Xa38qTDZJt6IBuAvzgg9geRDCmMwtEtbx3d7aOfQ08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 215CC339;
-	Wed, 17 Apr 2024 03:37:05 -0700 (PDT)
-Received: from [10.57.19.189] (unknown [10.57.19.189])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D766C3F64C;
-	Wed, 17 Apr 2024 03:36:35 -0700 (PDT)
-Message-ID: <bb417978-06b4-4b2c-bcf6-a39601b079be@arm.com>
-Date: Wed, 17 Apr 2024 11:36:26 +0100
+	s=arc-20240116; t=1713355612; c=relaxed/simple;
+	bh=Hd8BLQzQM2U2+7JV4O3ViZrYi7jkgPT3HUPCmD89Q28=;
+	h=From:To:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=Ol88BNRdUgVBstUCxBQUuYeDuCQl2HbWWxAyifQdgT/I16uMfAl8ZFcTSVXFBG1O9vlCozhlaB9g8441KoKuw6rgaUsq6wFtOCrA533xZC+iKMUDGpzEISK0AgGibdq+VNuEZS3QrrkWoNn7A2lDC1SbI4dvXxb8sug7wFVUtzU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; arc=none smtp.client-ip=111.206.215.185
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
+From: "Li,Rongqing" <lirongqing@baidu.com>
+To: Robin Murphy <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>
+Subject: RE: [PATCH] iommu/iova: Consider NUMA affinity when allocating memory
+ for per-CPU iova_magazine
+Thread-Topic: [PATCH] iommu/iova: Consider NUMA affinity when allocating
+ memory for per-CPU iova_magazine
+Thread-Index: AQHajwIa8X9nNHfPw0KJaN44h4bY7LFo134AgAHhpDA=
+Date: Wed, 17 Apr 2024 12:06:00 +0000
+Message-ID: <b36e1e64d06149f7bdd70add8607ca46@baidu.com>
+References: <20240415065653.33018-1-lirongqing@baidu.com>
+ <1bdeb8a0-4b92-4cf4-93b9-60528fb487a5@arm.com>
+In-Reply-To: <1bdeb8a0-4b92-4cf4-93b9-60528fb487a5@arm.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Kernel 6.7 regression doesn't boot if using AMD eGPU
-To: Vasant Hegde <vashegde@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Eric Wagner <ewagner12@gmail.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <CAHudX3zLH6CsRmLE-yb+gRjhh-v4bU5_1jW_xCcxOo_oUUZKYg@mail.gmail.com>
- <20240415163056.GP223006@ziepe.ca>
- <CAHudX3zhagFWBv4isZzAtC8dA7EAAtY6Yk7fkJ31hf0D9zrNqw@mail.gmail.com>
- <65d4d7e0-4d90-48d7-8e4a-d16800df148a@arm.com>
- <20240416003903.GR223006@ziepe.ca>
- <47d4bfd6-1d76-4bb8-a33c-c9c99b86656b@arm.com>
- <4ec76a54-cb83-40b1-a156-a6da3453da5c@amd.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <4ec76a54-cb83-40b1-a156-a6da3453da5c@amd.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-FEAS-Client-IP: 172.31.51.55
+X-FE-Last-Public-Client-IP: 100.100.100.38
+X-FE-Policy-ID: 15:10:21:SYSTEM
 
-On 2024-04-16 1:44 pm, Vasant Hegde wrote:
-> Robin,
-> 
-> On 4/16/2024 4:55 PM, Robin Murphy wrote:
->> On 2024-04-16 1:39 am, Jason Gunthorpe wrote:
->>> On Mon, Apr 15, 2024 at 10:44:34PM +0100, Robin Murphy wrote:
->>>> On 2024-04-15 7:57 pm, Eric Wagner wrote:
->>>>> Apologies if I made a mistake in the first bisect, I'm new to kernel
->>>>> debugging.
->>>>>
->>>>> I tested cedc811c76778bdef91d405717acee0de54d8db5 (x86/amd) and
->>>>> 3613047280ec42a4e1350fdc1a6dd161ff4008cc (core) directly and both 
->>>>> were good.
->>>>> Then I ran git bisect again with 
->>>>> e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2
->>>>> as the bad and 6e6c6d6bc6c96c2477ddfea24a121eb5ee12b7a3 as the good 
->>>>> and the
->>>>> bisect log is attached. It ended up at the same commit as before.
->>>>>
->>>>> I've also attached a picture of the boot screen that occurs when it 
->>>>> hangs.
->>>>> 0000:05:00.0 is the PCIe bus address of the RX 580 eGPU that's 
->>>>> causing the
->>>>> problem.
-> 
-> .../...
-> 
->>
->> "Failing" iommu_probe_device is merely how we tell ourselves that 
->> we're not interested in a device, and consequently tell the rest of 
->> the kernel it doesn't have an IOMMU (via device_iommu_mapped() 
->> returning false). This is normal and expected for devices which 
->> legitimately have no IOMMU in the first place; conversely we don't do 
->> a great deal for unexpected failures since those typically represent 
->> system-fatal conditions whatever we might try to do. We've never had 
->> much of a notion of expected failures when an IOMMU *is* present, but 
->> even then, denying any trace of the IOMMU and removing ourselves from 
->> the picture is clearly not the ideal way to approach that. We're 
->> running off a bus notifier (or even later), so ultimately our return 
->> value is meaningless; at that point the device already exists and has 
->> been added to its bus, we can't undo that.
->>
->> However it looks to be even more fun if failure occurs in *deferred* 
->> default domain creation via bus_iommu_probe(), since then we give up 
->> and dismiss the entire IOMMU. Except the x86 drivers ignore the return 
->> from iommu_device_register(), so further hilarity ensues...
->>
->> I think I've now satisfied myself that a simple fix for the core code 
->> is appropriate and will write that up now; one other thing I couldn't 
->> quite figure out is whether the AMD driver somehow prevents PASIDs 
->> being used while the group is attached to a non-identity (and 
->> non-nested) domain - that's probably one for Vasant to confirm.
-> 
-> AMD driver supports PASID with below domain type :
->    - Identity domain
->    - DMA translation mode (DMA and DMA_FQ) with AMD v2 page table 
-> (amd_iommu=pgtbl_v2).
-> 
-> 
-> Currently amd_iommu_def_domain_type() tries to put PASID capable devices 
-> in identity domain mode. This is something to fix. Its in my TODO list. 
-> I will try to get into it soon.
-> 
-> Hope this clarifies.
-
-Ooh, I see you now have GIoV to allow that similarly to how SMMUv3 does 
-it - that wasn't in the older version of the spec that I've previously 
-been referring to :)
-
-Can you confirm there's no hardware actually been made to the older 
-spec, supporting v2 and PASIDs but *not* having GIoV? Otherwise, I think 
-you'll still have the problem that if you use the GPA-SPA translation in 
-the DTE to implement IOMMU_DOMAIN_DMA for the RID, it makes all the 
-PASID GVA-GPA mappings useless for host SVA.
-
-Cheers,
-Robin.
+DQoNCj4gT24gMTUvMDQvMjAyNCA3OjU2IGFtLCBMaSBSb25nUWluZyB3cm90ZToNCj4gPiBwZXIt
+Q1BVIGlvdmFfbWFnYXppbmUgYXJlIGRvbWluYW50bHkgYWNjZXNzZWQgZnJvbSB0aGVpciBvd24g
+bG9jYWwNCj4gPiBDUFVzLCBzbyBhbGxvY2F0ZSB0aGVtIG5vZGUtbG9jYWwgdG8gaW1wcm92ZSBw
+ZXJmb3JtYW5jZS4NCj4gDQo+IE5vdGUgdGhhdCB0aGlzIHdpbGwgb25seSBob2xkIGZvciBjZXJ0
+YWluIHdvcmtsb2FkcyAodHlwaWNhbGx5IHJhdGhlciBsaWdodCBvbmVzLCBJJ2QNCj4gZ3Vlc3Mp
+IC0gZG8geW91IGhhdmUgb25lIHdoZXJlIHRoaXMgbWFrZXMgYSBtZWFzdXJhYmxlIGRpZmZlcmVu
+Y2U/IElmIHNvIEknZCBiZQ0KPiBpbnRlcmVzdGVkIHRvIGtub3cgd2hhdCBzb3J0IG9mIG51bWJl
+cnMgd2UncmUgdGFsa2luZyBhYm91dC4NCj4gDQoNCkkgdXNlIGlwZXJmIGRvZXMgc29tZSBzaW1w
+bGUgdGVzdHMgb24gSW50ZWwgc2VydmVycywgbm8gb2J2aW91cyBkaWZmZXJlbmNlLCBtYXliZSBp
+dCBjYW4gZ2l2ZSBhIGdvb2QgcmVzdWx0IG9uIHNvbWUgTlVNQSB1bmZyaWVuZGx5IHN5c3RlbQ0K
+DQo+ID4gU2lnbmVkLW9mZi1ieTogTGkgUm9uZ1FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPg0K
+PiA+IC0tLQ0KPiA+ICAgZHJpdmVycy9pb21tdS9pb3ZhLmMgfCAxNSArKysrKysrKystLS0tLS0N
+Cj4gPiAgIDEgZmlsZSBjaGFuZ2VkLCA5IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pDQo+
+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pb3ZhLmMgYi9kcml2ZXJzL2lvbW11
+L2lvdmEuYyBpbmRleA0KPiA+IGQ1OWQwZWEuLjcwZjg5ZWEgMTAwNjQ0DQo+ID4gLS0tIGEvZHJp
+dmVycy9pb21tdS9pb3ZhLmMNCj4gPiArKysgYi9kcml2ZXJzL2lvbW11L2lvdmEuYw0KPiA+IEBA
+IC01OTcsMTEgKzU5NywxMSBAQCB1bnNpZ25lZCBsb25nIGlvdmFfcmNhY2hlX3JhbmdlKHZvaWQp
+DQo+ID4gICAJcmV0dXJuIFBBR0VfU0laRSA8PCAoSU9WQV9SQU5HRV9DQUNIRV9NQVhfU0laRSAt
+IDEpOw0KPiA+ICAgfQ0KPiA+DQo+ID4gLXN0YXRpYyBzdHJ1Y3QgaW92YV9tYWdhemluZSAqaW92
+YV9tYWdhemluZV9hbGxvYyhnZnBfdCBmbGFncykNCj4gPiArc3RhdGljIHN0cnVjdCBpb3ZhX21h
+Z2F6aW5lICppb3ZhX21hZ2F6aW5lX2FsbG9jX25vZGUoZ2ZwX3QgZmxhZ3MsDQo+ID4gK2ludCBu
+b2RlKQ0KPiA+ICAgew0KPiA+ICAgCXN0cnVjdCBpb3ZhX21hZ2F6aW5lICptYWc7DQo+ID4NCj4g
+PiAtCW1hZyA9IGttZW1fY2FjaGVfYWxsb2MoaW92YV9tYWdhemluZV9jYWNoZSwgZmxhZ3MpOw0K
+PiA+ICsJbWFnID0ga21lbV9jYWNoZV9hbGxvY19ub2RlKGlvdmFfbWFnYXppbmVfY2FjaGUsIGZs
+YWdzLCBub2RlKTsNCj4gPiAgIAlpZiAobWFnKQ0KPiA+ICAgCQltYWctPnNpemUgPSAwOw0KPiA+
+DQo+ID4gQEAgLTcwNyw3ICs3MDcsNyBAQCBzdGF0aWMgdm9pZCBpb3ZhX2RlcG90X3dvcmtfZnVu
+YyhzdHJ1Y3Qgd29ya19zdHJ1Y3QNCj4gKndvcmspDQo+ID4gICBpbnQgaW92YV9kb21haW5faW5p
+dF9yY2FjaGVzKHN0cnVjdCBpb3ZhX2RvbWFpbiAqaW92YWQpDQo+ID4gICB7DQo+ID4gICAJdW5z
+aWduZWQgaW50IGNwdTsNCj4gPiAtCWludCBpLCByZXQ7DQo+ID4gKwlpbnQgaSwgcmV0LCBuaWQ7
+DQo+ID4NCj4gPiAgIAlpb3ZhZC0+cmNhY2hlcyA9IGtjYWxsb2MoSU9WQV9SQU5HRV9DQUNIRV9N
+QVhfU0laRSwNCj4gPiAgIAkJCQkgc2l6ZW9mKHN0cnVjdCBpb3ZhX3JjYWNoZSksDQo+ID4gQEAg
+LTczMSwxMCArNzMxLDExIEBAIGludCBpb3ZhX2RvbWFpbl9pbml0X3JjYWNoZXMoc3RydWN0IGlv
+dmFfZG9tYWluDQo+ICppb3ZhZCkNCj4gPiAgIAkJfQ0KPiA+ICAgCQlmb3JfZWFjaF9wb3NzaWJs
+ZV9jcHUoY3B1KSB7DQo+ID4gICAJCQljcHVfcmNhY2hlID0gcGVyX2NwdV9wdHIocmNhY2hlLT5j
+cHVfcmNhY2hlcywgY3B1KTsNCj4gPiArCQkJbmlkID0gY3B1X3RvX25vZGUoY3B1KTsNCj4gPg0K
+PiA+ICAgCQkJc3Bpbl9sb2NrX2luaXQoJmNwdV9yY2FjaGUtPmxvY2spOw0KPiA+IC0JCQljcHVf
+cmNhY2hlLT5sb2FkZWQgPSBpb3ZhX21hZ2F6aW5lX2FsbG9jKEdGUF9LRVJORUwpOw0KPiA+IC0J
+CQljcHVfcmNhY2hlLT5wcmV2ID0gaW92YV9tYWdhemluZV9hbGxvYyhHRlBfS0VSTkVMKTsNCj4g
+PiArCQkJY3B1X3JjYWNoZS0+bG9hZGVkID0gaW92YV9tYWdhemluZV9hbGxvY19ub2RlKEdGUF9L
+RVJORUwsDQo+IG5pZCk7DQo+ID4gKwkJCWNwdV9yY2FjaGUtPnByZXYgPSBpb3ZhX21hZ2F6aW5l
+X2FsbG9jX25vZGUoR0ZQX0tFUk5FTCwNCj4gbmlkKTsNCj4gDQo+IFRoaXMgbXVjaCBzZWVtcyBy
+ZWFzb25hYmxlIC0gaG93ZXZlciBzbWFsbCB0aGUgYmVuZWZpdCBtaWdodCBiZSwgdGhlcmUncyBs
+aXR0bGUNCj4gaGFybSBpbiBhaW1pbmcgZm9yIG9wdGltYWwgaW5pdGlhbCBjb25kaXRpb25zLCBm
+b3IgYXMgbG9uZyBhcyB0aGV5IGRvIGhhcHBlbiB0bw0KPiBsYXN0Li4uDQo+IA0KPiA+ICAgCQkJ
+aWYgKCFjcHVfcmNhY2hlLT5sb2FkZWQgfHwgIWNwdV9yY2FjaGUtPnByZXYpIHsNCj4gPiAgIAkJ
+CQlyZXQgPSAtRU5PTUVNOw0KPiA+ICAgCQkJCWdvdG8gb3V0X2VycjsNCj4gPiBAQCAtNzc3LDcg
+Kzc3OCw5IEBAIHN0YXRpYyBib29sIF9faW92YV9yY2FjaGVfaW5zZXJ0KHN0cnVjdCBpb3ZhX2Rv
+bWFpbg0KPiAqaW92YWQsDQo+ID4gICAJCXN3YXAoY3B1X3JjYWNoZS0+cHJldiwgY3B1X3JjYWNo
+ZS0+bG9hZGVkKTsNCj4gPiAgIAkJY2FuX2luc2VydCA9IHRydWU7DQo+ID4gICAJfSBlbHNlIHsN
+Cj4gPiAtCQlzdHJ1Y3QgaW92YV9tYWdhemluZSAqbmV3X21hZyA9DQo+IGlvdmFfbWFnYXppbmVf
+YWxsb2MoR0ZQX0FUT01JQyk7DQo+ID4gKwkJaW50IG5pZCA9IGNwdV90b19ub2RlKHJhd19zbXBf
+cHJvY2Vzc29yX2lkKCkpOw0KPiA+ICsJCXN0cnVjdCBpb3ZhX21hZ2F6aW5lICpuZXdfbWFnID0N
+Cj4gPiArCQkJaW92YV9tYWdhemluZV9hbGxvY19ub2RlKEdGUF9BVE9NSUMsIG5pZCk7DQo+IA0K
+PiAuLi5ob3dldmVyIGlmIHdlIGdldCB0byB0aGlzIHBvaW50IHRoZW4gd2UncmUgYWxyZWFkeSBi
+dXN5IGVub3VnaCB0byBiZSBjaHVybmluZw0KPiBtYWdhemluZXMgYmV0d2VlbiB0aGUgQ1BVIGNh
+Y2hlcyBhbmQgdGhlIGdsb2JhbCBkZXBvdCwgc28gaXQncyB1bmxpa2VseSB0aGF0DQo+IG5ldyBv
+bmVzIGFyZSBnb2luZyB0byBzdGF5IENQVS1sb2NhbCBmb3IgdmVyeSBsb25nIGVpdGhlci4NCj4g
+DQoNCldlIGNhbiBkcm9wIHRoaXMgY2hhbmdlDQoNClRoYW5rcw0KDQotTGkNCg0K
