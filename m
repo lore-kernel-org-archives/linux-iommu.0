@@ -1,152 +1,125 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25CB51327E5
-	for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 09:45:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D635D13C3CD
+	for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 10:36:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713347141; cv=none; b=AkQet1goG9s+plP5UCz/AIX+7tk7U+WLvT6YLrOdl846thJVzK65iYKhpkK6h3YFCfjjdpdSfDyt1Bj3r8It7jOH3qrZLZfanV+PCBkj0oIGRw8Hbv50FN09nQ2UYO2stm/shm4fcxg5lyqRrIQy3Ou4uiYSoEQ9T7nuRSIwOpo=
+	t=1713350199; cv=none; b=Z85BFfZy7WrKU8oLcHEuMYpLzB4TIltG6fAgCOQscrseLqBD48i1j1PI2In+g0mTSTh3zB0OVsslbOvPUQ7IOz9P0OjDA8vncF7HeKEI1r2F8ca5R5YdaeS3HrqWBJNnwDoWhSyBHmkjqO1xzgEYKNTPqERFKt6SrI7x2qDukeE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713347141; c=relaxed/simple;
-	bh=KoJBnnMfkQDjTHJ4VXbOujuvynCUV4+zBSTfLBsA10E=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=eIKGN3fUrME0g6YYnBiMa6nhnz70xEL68Qd/srauKemeB+MMShZdTgE3WLKidPsNeDD95uCd94WthQVyCDmcFTh3XrIZsHv9xPyUsL7u4ZiZQtiDylbJL9YaeYW4pR/PejSHF9sDLtpjGcJacGCzRY1tis7yUhefpAP77eSiujs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.231])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4VKGF43Vrnz6F8c6;
-	Wed, 17 Apr 2024 17:43:36 +0800 (CST)
-Received: from lhrpeml100001.china.huawei.com (unknown [7.191.160.183])
-	by mail.maildlp.com (Postfix) with ESMTPS id F2387140B63;
-	Wed, 17 Apr 2024 17:45:35 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- lhrpeml100001.china.huawei.com (7.191.160.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Wed, 17 Apr 2024 10:45:34 +0100
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
- Wed, 17 Apr 2024 10:45:34 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>
-CC: "will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
-	<robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"thierry.reding@gmail.com" <thierry.reding@gmail.com>, "vdumpa@nvidia.com"
-	<vdumpa@nvidia.com>, "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org"
-	<linux-tegra@vger.kernel.org>, Jerry Snitselaar <jsnitsel@redhat.com>
-Subject: RE: [PATCH v5 0/6] Add Tegra241 (Grace) CMDQV Support (part 1/2)
-Thread-Topic: [PATCH v5 0/6] Add Tegra241 (Grace) CMDQV Support (part 1/2)
-Thread-Index: AQHajVTpda5PtrGZ80+YonTPgO6cRrFphU4AgAKXr6CAAB7BMA==
-Date: Wed, 17 Apr 2024 09:45:34 +0000
-Message-ID: <ba3047f946c6475aaf30800f9d3f9afb@huawei.com>
-References: <cover.1712977210.git.nicolinc@nvidia.com>
- <20240415171426.GF3637727@nvidia.com>
- <f92efdb774cc4cd48a59495e7cb69c27@huawei.com>
-In-Reply-To: <f92efdb774cc4cd48a59495e7cb69c27@huawei.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1713350199; c=relaxed/simple;
+	bh=wK3zkKd+UDmBzbfDsMuwS6Y4b8KUIj/36OIFXRYFiWM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Qif0lPZ/C6PxupChEHRSeplFjaVS8BUn//rFoBexuvFxFpnM4JhKmeOf/l7Eoz3N8qvHJRF6SjTQgsCg8tgRMzWVA6OM87mapWCokMJHwcubph/mtjMAxzCLFlIPRNrF9Xa38qTDZJt6IBuAvzgg9geRDCmMwtEtbx3d7aOfQ08=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 215CC339;
+	Wed, 17 Apr 2024 03:37:05 -0700 (PDT)
+Received: from [10.57.19.189] (unknown [10.57.19.189])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D766C3F64C;
+	Wed, 17 Apr 2024 03:36:35 -0700 (PDT)
+Message-ID: <bb417978-06b4-4b2c-bcf6-a39601b079be@arm.com>
+Date: Wed, 17 Apr 2024 11:36:26 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: Kernel 6.7 regression doesn't boot if using AMD eGPU
+To: Vasant Hegde <vashegde@amd.com>, Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Eric Wagner <ewagner12@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <CAHudX3zLH6CsRmLE-yb+gRjhh-v4bU5_1jW_xCcxOo_oUUZKYg@mail.gmail.com>
+ <20240415163056.GP223006@ziepe.ca>
+ <CAHudX3zhagFWBv4isZzAtC8dA7EAAtY6Yk7fkJ31hf0D9zrNqw@mail.gmail.com>
+ <65d4d7e0-4d90-48d7-8e4a-d16800df148a@arm.com>
+ <20240416003903.GR223006@ziepe.ca>
+ <47d4bfd6-1d76-4bb8-a33c-c9c99b86656b@arm.com>
+ <4ec76a54-cb83-40b1-a156-a6da3453da5c@amd.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <4ec76a54-cb83-40b1-a156-a6da3453da5c@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
+On 2024-04-16 1:44 pm, Vasant Hegde wrote:
+> Robin,
+> 
+> On 4/16/2024 4:55 PM, Robin Murphy wrote:
+>> On 2024-04-16 1:39 am, Jason Gunthorpe wrote:
+>>> On Mon, Apr 15, 2024 at 10:44:34PM +0100, Robin Murphy wrote:
+>>>> On 2024-04-15 7:57 pm, Eric Wagner wrote:
+>>>>> Apologies if I made a mistake in the first bisect, I'm new to kernel
+>>>>> debugging.
+>>>>>
+>>>>> I tested cedc811c76778bdef91d405717acee0de54d8db5 (x86/amd) and
+>>>>> 3613047280ec42a4e1350fdc1a6dd161ff4008cc (core) directly and both 
+>>>>> were good.
+>>>>> Then I ran git bisect again with 
+>>>>> e8cca466a84a75f8ff2a7a31173c99ee6d1c59d2
+>>>>> as the bad and 6e6c6d6bc6c96c2477ddfea24a121eb5ee12b7a3 as the good 
+>>>>> and the
+>>>>> bisect log is attached. It ended up at the same commit as before.
+>>>>>
+>>>>> I've also attached a picture of the boot screen that occurs when it 
+>>>>> hangs.
+>>>>> 0000:05:00.0 is the PCIe bus address of the RX 580 eGPU that's 
+>>>>> causing the
+>>>>> problem.
+> 
+> .../...
+> 
+>>
+>> "Failing" iommu_probe_device is merely how we tell ourselves that 
+>> we're not interested in a device, and consequently tell the rest of 
+>> the kernel it doesn't have an IOMMU (via device_iommu_mapped() 
+>> returning false). This is normal and expected for devices which 
+>> legitimately have no IOMMU in the first place; conversely we don't do 
+>> a great deal for unexpected failures since those typically represent 
+>> system-fatal conditions whatever we might try to do. We've never had 
+>> much of a notion of expected failures when an IOMMU *is* present, but 
+>> even then, denying any trace of the IOMMU and removing ourselves from 
+>> the picture is clearly not the ideal way to approach that. We're 
+>> running off a bus notifier (or even later), so ultimately our return 
+>> value is meaningless; at that point the device already exists and has 
+>> been added to its bus, we can't undo that.
+>>
+>> However it looks to be even more fun if failure occurs in *deferred* 
+>> default domain creation via bus_iommu_probe(), since then we give up 
+>> and dismiss the entire IOMMU. Except the x86 drivers ignore the return 
+>> from iommu_device_register(), so further hilarity ensues...
+>>
+>> I think I've now satisfied myself that a simple fix for the core code 
+>> is appropriate and will write that up now; one other thing I couldn't 
+>> quite figure out is whether the AMD driver somehow prevents PASIDs 
+>> being used while the group is attached to a non-identity (and 
+>> non-nested) domain - that's probably one for Vasant to confirm.
+> 
+> AMD driver supports PASID with below domain type :
+>    - Identity domain
+>    - DMA translation mode (DMA and DMA_FQ) with AMD v2 page table 
+> (amd_iommu=pgtbl_v2).
+> 
+> 
+> Currently amd_iommu_def_domain_type() tries to put PASID capable devices 
+> in identity domain mode. This is something to fix. Its in my TODO list. 
+> I will try to get into it soon.
+> 
+> Hope this clarifies.
 
+Ooh, I see you now have GIoV to allow that similarly to how SMMUv3 does 
+it - that wasn't in the older version of the spec that I've previously 
+been referring to :)
 
-> -----Original Message-----
-> From: Shameerali Kolothum Thodi
-> Sent: Wednesday, April 17, 2024 9:01 AM
-> To: 'Jason Gunthorpe' <jgg@nvidia.com>; Nicolin Chen <nicolinc@nvidia.com=
->
-> Cc: will@kernel.org; robin.murphy@arm.com; joro@8bytes.org;
-> thierry.reding@gmail.com; vdumpa@nvidia.com; jonathanh@nvidia.com; linux-
-> kernel@vger.kernel.org; iommu@lists.linux.dev; linux-arm-
-> kernel@lists.infradead.org; linux-tegra@vger.kernel.org; Jerry Snitselaar
-> <jsnitsel@redhat.com>
-> Subject: RE: [PATCH v5 0/6] Add Tegra241 (Grace) CMDQV Support (part 1/2)
->=20
->=20
->=20
-> > -----Original Message-----
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Monday, April 15, 2024 6:14 PM
-> > To: Nicolin Chen <nicolinc@nvidia.com>
-> > Cc: will@kernel.org; robin.murphy@arm.com; joro@8bytes.org;
-> > thierry.reding@gmail.com; vdumpa@nvidia.com; jonathanh@nvidia.com;
-> > linux-kernel@vger.kernel.org; iommu@lists.linux.dev; linux-arm-
-> > kernel@lists.infradead.org; linux-tegra@vger.kernel.org; Jerry Snitsela=
-ar
-> > <jsnitsel@redhat.com>
-> > Subject: Re: [PATCH v5 0/6] Add Tegra241 (Grace) CMDQV Support (part 1/=
-2)
-> >
-> > On Fri, Apr 12, 2024 at 08:43:48PM -0700, Nicolin Chen wrote:
-> >
-> > > The user-space support is to provide uAPIs (via IOMMUFD) for hypervis=
-ors
-> > > in user space to passthrough VCMDQs to VMs, allowing these VMs to
-> > access
-> > > the VCMDQs directly without trappings, i.e. no VM Exits. This gives h=
-uge
-> > > performance improvements: 70% to 90% reductions of TLB invalidation
-> > time
-> > > were measured by various DMA unmap tests running in a guest OS,
-> > compared
-> > > to a nested SMMU CMDQ (with trappings).
-> >
-> > So everyone is on the same page, this is the primary point of this
-> > series. The huge speed up of in-VM performance is necessary for the
-> > workloads this chip is expected to be running. This series is unique
-> > from all the rest because it runs inside a VM, often in the from of a
-> > distro release.
-> >
-> > It doesn't need the other series or it's own part 2 as it entirely
-> > stands alone on bare metal hardware or on top of commercial VM cloud
-> > instances runing who-knows-what in their hypervisors.
-> >
-> > The other parts are substantially about enabling qemu and the open
-> > ecosystem to have fully functional vSMMU3 virtualization.
->=20
-> Hi,
->=20
-> We do have plans to revive the SMMUv3 ECMDQ series posted a while back[0]
-> and looking at this series, I am just wondering whether it makes sense to=
- have
-> a similar one with ECMDQ as well?  I see that the NVIDIA VCMDQ has a spec=
-ial
-> bit
-> to restrict the commands that can be issued from user space. If we end up
-> assigning
-> a ECMDQ to user space, is there any potential risk in doing so?
->=20
-> SMMUV3 spec does say,
-> "Arm expects that the Non-secure Stream table, Command queue, Event queue
-> and
-> PRI queue are controlled by the most privileged Non-secure system softwar=
-e. "
->=20
-> Not clear to me what are the major concerns here and maybe we can come up
-> with
-> something to address that in kernel.
+Can you confirm there's no hardware actually been made to the older 
+spec, supporting v2 and PASIDs but *not* having GIoV? Otherwise, I think 
+you'll still have the problem that if you use the GPA-SPA translation in 
+the DTE to implement IOMMU_DOMAIN_DMA for the RID, it makes all the 
+PASID GVA-GPA mappings useless for host SVA.
 
-Just to add to that. One idea could be like to have a case where when ECMDQ=
-s are=20
-detected, use that for issuing limited set of cmds(like stage 1 TLBIs) and =
-use the
-normal cmdq for rest. Since we use stage 1 for both host and for Guest nest=
-ed cases
-and TLBIs are the bottlenecks in most cases I think this should give perfor=
-mance
-benefits.
-
-Thanks,
-Shameer
+Cheers,
+Robin.
