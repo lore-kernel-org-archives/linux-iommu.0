@@ -1,534 +1,225 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2060.outbound.protection.outlook.com [40.107.220.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA9331422A5;
-	Wed, 17 Apr 2024 13:38:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713361090; cv=none; b=CLZYibowMj9/Kijp5e0dQ9GqWxyg1K/cj9JygYegc37GWWaP2xH8HwmegWoloEa9DEgoI+Gu5dsLxFJnY+8B1kmfmbUMHCTBbPn9co/kY1LCs1X39AqppQgzxdFB6OJBPNEx4jPOTo+9/9GqtPiqfiro6FRQMLEH/aH/CtWSgZI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713361090; c=relaxed/simple;
-	bh=KkhB8w5hvBtm08UZMxyltlP7LGz1wEgYJGknV/iMMEg=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=m9QH285uNxMMKA0qFYcog0Zg2WeGn19QQOy6ei1QGXQTBEYty5XcvbLx+TymsyLw055ZxFtNUYnmCP1/yxS9Hp720UEh14hujIsU2waFZ9pnvVxIi0F6rfbTnaNMJoEipI929dAb3XmPocT5x5HzrSl46VRQ+RRrS4D1crb5A8I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=Kk8rpRGl; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 317D7140397;
+	Wed, 17 Apr 2024 14:16:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.60
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713363388; cv=fail; b=S6PV+0aszwFIPwEko477FlzOz2d3N0hsc2SgVFmKhd4yTrOVuaddZjJq4/EkHgv+Jrr8jRPcSvm6QLq8dcEOhDwQS/gXqtn7VyMC8E1rUrUY2e52eW5wZAKhxWpbKFw00Abt/R5eJcE+8lYB6MSTjauHSCT3L9UlzHQT3TZJhh0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713363388; c=relaxed/simple;
+	bh=N4OV8Xm9O7d52RvnL3RCnrrtfdhskWOp0I2mGVKkXSU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=j4k12cuUNMRJ9qKAxVFdTx6xf7W8ciJA7flL3c90djX97gGfyBEnQTBS1dDFbubDQJkbzvRBuCEnw1U7n+aOfVVDK1u40LHEhZJCGDQ6UOmgpkMKux2BP7Mv4fvXh5poy680VPqY4gIqecUlumoqb+FzFvxIh2wKvLDxyT/+bOc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hX3kxGCx; arc=fail smtp.client-ip=40.107.220.60
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="Kk8rpRGl"
-Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 43HChXWe031451;
-	Wed, 17 Apr 2024 13:37:46 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-transfer-encoding:content-type; s=
-	qcppdkim1; bh=tHvYFmni2lRPLwDSA0B5BICbtujxxKWcWpK0HHq7/0w=; b=Kk
-	8rpRGly4bkiy/6mhL4TjWR6pGjNk8+jq68oi2NbScO6mXwhaJzKuvukbcoi7acXC
-	9WbwZ124uHPZKkRNz8DBlFMJ/DlXptfW21ZSq+4ZGmiBa9vMalbJdzVfkZzkULqF
-	0gX6Vz6uvdx8L2iZSwKKwl5IUR/OJokYKTVaLjzgPet3pYRkPfgoFmDjvTTcChf+
-	X6rGzZiTs98DzOQwbTQK5m59yWehBQWojGj1NHWiDT8sdm4P9qcCrPLCjEK/kXpl
-	ZEzbYepYw1ONBHnG4zOezm4MyoyQOgKvdP7oOQMxvoxi7HPxxkYnobXlpll7Axw1
-	Fl72LmBKQMzyint9qwtw==
-Received: from nasanppmta02.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3xjauprphy-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 17 Apr 2024 13:37:45 +0000 (GMT)
-Received: from nasanex01a.na.qualcomm.com (nasanex01a.na.qualcomm.com [10.52.223.231])
-	by NASANPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 43HDbjH8008628
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 17 Apr 2024 13:37:45 GMT
-Received: from hu-c-gdjako-lv.qualcomm.com (10.49.16.6) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Wed, 17 Apr 2024 06:37:44 -0700
-From: Georgi Djakov <quic_c_gdjako@quicinc.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-        <iommu@lists.linux.dev>
-CC: <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <conor+dt@kernel.org>, <devicetree@vger.kernel.org>,
-        <andersson@kernel.org>, <konrad.dybcio@linaro.org>,
-        <robdclark@gmail.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
-        <quic_cgoldswo@quicinc.com>, <quic_sukadev@quicinc.com>,
-        <quic_pdaly@quicinc.com>, <quic_sudaraja@quicinc.com>,
-        <djakov@kernel.org>
-Subject: [PATCH v8 2/7] iommu/arm-smmu-qcom-debug: Add support for TBUs
-Date: Wed, 17 Apr 2024 06:37:26 -0700
-Message-ID: <20240417133731.2055383-3-quic_c_gdjako@quicinc.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20240417133731.2055383-1-quic_c_gdjako@quicinc.com>
-References: <20240417133731.2055383-1-quic_c_gdjako@quicinc.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hX3kxGCx"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kwKNfo8IWxiEupggqGo8cYOHUgd/51R9pPTMA6aGoL1wA4PDSvyR87BNjKa84zWs/y6mizkeoUhCq6RYz86gYwuc54/omVMNlU7k845a/7hHB9gNzPWIWm+EkJjvvjJBUUAPe5j4gBYYdQFPPctWdvQSLiRvnY9NyuLq3GMBiwgeJjn7ysFgagqxV4SHk9nH+x4uULOOXPx/T2zs8Wxou+ppCeQN1unMjewwTc5xL7gsYh/ckCurXHOQS23ayNRItdUnMxujgHax1MLBsQeBItxXqhyH/bRyqrT2gWiJ8z93tSxr7XbltzO2ACHgH3PZWHOMGc9MVpt2BFBhMmBV7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=XSh5Ps0cp96mHGN3H439ZsVdgaal8gSt7dxlu41Z0NI=;
+ b=Bb/TreklzWXAZy5uAj95c3tvrjtoVt3/vro8vKrQR1G/eRKz1t/DzFa2yKinj9iXzaejKTSl0O0W48V/N+kZOJw+XtF4/ZvI4wUEZ/Yj81kBsnOGpKPNTyI4dtgUVJCFZJ+PglpTcFvf/1uJ1e4AwNWFPMiBISoZgK2YoHbNQrrh7p0Aso3GNP+LgUy3RaZtzkCxjgYbYQtNxSoJLhR6ryRpqoXBdRs7vQFXI5sODYGLyEvdH4rOPDrHoktwyWvUiZTHiScmO8f1hVtpTFkV1Iqztf4nA3qahkJA+Ap8if+Bpibh+JLiiU6nzFULyE9EdMcCsaE2LyCuhI+XR2tTnQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XSh5Ps0cp96mHGN3H439ZsVdgaal8gSt7dxlu41Z0NI=;
+ b=hX3kxGCxqPZ4pHSQnitBwRl5rYKNs4q1Z0zy1kKXOKWuN9HXEhvrRhdaV4YTOzjoKrFDWZEfOxLgwYSjFLm8FraIXaqtl67a/lNmdRBQUYeO8TbD+6sK4j7c7ruT+PHndLedLEHkP5689+QhhefV7QK1R6e135rhxo9JpTvf/hxrtXrWJYiFXqz0doLwEMotHfBjKFKxgSMMcUGWWhieVG8cX55haHoZ1MaPebDDhbv+bhAYDuGd8nvOl5GNeWjo11Q44wuLm1vZcE1k7HVyOWYDwrlKLcxZrlSJo7izFyneUXDBICvtgru2jrsjdwfXYQgSCf6BTTsaccV30WaCWA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by SA1PR12MB9246.namprd12.prod.outlook.com (2603:10b6:806:3ac::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7452.50; Wed, 17 Apr
+ 2024 14:16:23 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7472.037; Wed, 17 Apr 2024
+ 14:16:19 +0000
+Date: Wed, 17 Apr 2024 11:16:18 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>, Michael Shavit <mshavit@google.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>, patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v7 9/9] iommu/arm-smmu-v3: Add unit tests for
+ arm_smmu_write_entry
+Message-ID: <20240417141618.GS3637727@nvidia.com>
+References: <0-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
+ <9-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
+ <Zh+DxJoAMIXy9O/R@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Zh+DxJoAMIXy9O/R@Asurada-Nvidia>
+X-ClientProxiedBy: SN4PR0501CA0021.namprd05.prod.outlook.com
+ (2603:10b6:803:40::34) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: nalasex01c.na.qualcomm.com (10.47.97.35) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: tqCvzAH7WhZqRt34GLZV6cZLsYQmrHtl
-X-Proofpoint-ORIG-GUID: tqCvzAH7WhZqRt34GLZV6cZLsYQmrHtl
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-04-17_10,2024-04-16_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxscore=0
- suspectscore=0 priorityscore=1501 adultscore=0 malwarescore=0 phishscore=0
- spamscore=0 impostorscore=0 clxscore=1015 lowpriorityscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2404010003 definitions=main-2404170094
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|SA1PR12MB9246:EE_
+X-MS-Office365-Filtering-Correlation-Id: c963f90c-52f9-428a-2dd1-08dc5ee8f3dd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?kNKM+t9NE0Pml2in/4lHZFU6YVKYqLe2RioKaWdR+Vf1/vhermZ1QJ6/tVTP?=
+ =?us-ascii?Q?7EU80OYSEEXTmjxmBcQ77EIOcglPP1Lfbq0oNJ26B/d7ci19xJ36oB71hKbD?=
+ =?us-ascii?Q?x7SEPrXMIDrYcqfMQpv/LIfOjJZeuCosV+dPdiPPNjPBLCg29SvJ/3xgwvIe?=
+ =?us-ascii?Q?M1cbd/69EtAJAKzKnQFKAmVyKT56AVKvtD38B+e2wBWGvN8bI1mErQ1qOXVv?=
+ =?us-ascii?Q?P5R+jnQ1szpRMha9kq3skaDZWsbwvrf8may7YSKLnDWRiZdEtSxQ8Fju1kOc?=
+ =?us-ascii?Q?oHZ+gv6X+eOIlP42mevuLQukCc7Wt8sERGFEXwfoAYQW8qC8VV7/7odCUnD8?=
+ =?us-ascii?Q?VWzw9X5YO+jAjWdc3NUdTCQ+euzhqURy6yWontdpydjxzxv9Yh1Yl2Kbn/GM?=
+ =?us-ascii?Q?XTxRTuMOFKCriGCHoZT9G7y3J/y5zJf41j8Su2cQGJiuZD7RXtlqN9rjPdOd?=
+ =?us-ascii?Q?8zKFonlyJJaOFGg39wI9xtr1dAc5KuxtX33PgQAoRdoj+Gi7sAWN2cJO5g+j?=
+ =?us-ascii?Q?Pd0nT+nR1CtMcC+yCFhfiM776z2TKXLw/cvuhbfOH/8Cu6PiShYiCKF2keQF?=
+ =?us-ascii?Q?Uo0j/G4+D98698vBX43GslJyYsg9ThQgNxjvEuykZiRrpNA+AmGlQ07EOAEZ?=
+ =?us-ascii?Q?R6g1Qb9zBjo8Hv9+/dproEo1djUQVatEOjFz253t/9WRYqE4kmGcXv4CdZk5?=
+ =?us-ascii?Q?FTEXmI+ByuJ+BYDZOR0QxnlKYpVaB5uT76XOdKVnf7Y9NFFPSUQm0sqF8Pah?=
+ =?us-ascii?Q?u+Am0dD3ZUwBoIHxMMqlVSrmYTHxwp2KfhiKRlHZteut3anTFQbfmOQ0imfQ?=
+ =?us-ascii?Q?Sp3D4zhJAJRsoWMGHXn4mvSxXqUheqiAXWT9e98xpsV58Lq+abWVxD15PBml?=
+ =?us-ascii?Q?ZBBC1V5sXi65fEcL3k9XJK2dzBtDq95T+CWfLL18QWsI5DHSs2dX1n6LVwXl?=
+ =?us-ascii?Q?RGCRBXwp2uu/wrkJMYyEPPBwZ9t+WbdgGgkWwUpPKBt41b7TctqQwHgFu4Lc?=
+ =?us-ascii?Q?lGWbhR0DXFoWHj495W9ipz4szK91gKR+RBbPws+v4Z2TD3+dreihYl9hhpaU?=
+ =?us-ascii?Q?8X4lrZxAjnKcByD4lxOCbUZsuKwra7J5fY8KUPOaH221L1e5CDCB/BJdE047?=
+ =?us-ascii?Q?WvfpS46OcfHWB+dsU/rRz0ORI0ugraHDmqZoPjRQtycV8CKQ4125jfPCS0Is?=
+ =?us-ascii?Q?GWWw+/yxteS3xEVZnV672fL3I06+n/W/qJCkKp0XxvRxUKywGqipRC5kigxq?=
+ =?us-ascii?Q?ngKq6H3eHTZ1cfHY8uyvoJMjA958U54AJvor0tQLnA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(7416005)(1800799015)(376005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?H2og/3lAhkNGSxcAt/JPRi8tNppnFiz+SFinxrKufjrcTWeAZfxgPsvTmYkq?=
+ =?us-ascii?Q?iXUxZV66M3R/GAaLiJfeCJeCmSE96EyYYojri13T3j70a/hdmuohBkJsugD/?=
+ =?us-ascii?Q?1Qht5X3IqPCe4pEeO0O5FTLj5rwQFOZT9J+SZHpHPkOyKZpCs55FBO0LVScm?=
+ =?us-ascii?Q?fai2hqBFRbLDVEtMp/UUbqu54z44KZg12f2zET+Rl8izFT61t40nbrxZbSsN?=
+ =?us-ascii?Q?IGJQW+3267UgI77BPs26NDwcVAqT+wxKea374QHpos7d0ivmJV5aY2LrDVba?=
+ =?us-ascii?Q?lUXlhJri4fyJTYgi+Uv8fE9EUEqzBYzGZImfxj/JfIuJXz2SS8j0oPLa/n8v?=
+ =?us-ascii?Q?SJT4RwSTJo7t2ngCaGT+YlCJZD3w2I8zHoHdTwpyr0LPvUrfftDFIRn11Xa/?=
+ =?us-ascii?Q?mVctkJTYlWI5Bkc6zEVbqHLlL+wj6LRAL56Dyp+QevzOnn1MGKbr5E7aI/Kw?=
+ =?us-ascii?Q?JKl8YqD6oDd6MnY2+lH6t4n4dcjeiP8wvjajRbDnepxobQ0tFI6P6B9p/9Ak?=
+ =?us-ascii?Q?tIjwU9tXYS100kZyzDXKKGUQ2f33Xa1s9Ag+TxavUhIqHZKMA2+GBjZzmcOK?=
+ =?us-ascii?Q?JPG4SqCN1K089H08ApfsPxxsqldQIwiVW2WXvN3xBM7p16EmSTbT1gNIADeT?=
+ =?us-ascii?Q?FGCtXAUoMOYRc4RcHzceGvuwDRsvLMsXCAHuaHshXz98BLtlC0v9IxzW68kR?=
+ =?us-ascii?Q?OeVv+ORiUpm9Eo5csnsNPb1DVRhGP6WSqtlgGlK775/T1mYheMwUSyrZgYd4?=
+ =?us-ascii?Q?rIb1INb7JZ/qIm1a+1bRpNvfBWixb8zNDR/SImU++0rqYK42gnU3/UPHcAFH?=
+ =?us-ascii?Q?8aurqGRUmIvL+sdWTPIh+Y8guFC+Xq0Jpc68bNHZ6tZPc1CbrmjVz2Zi1mfD?=
+ =?us-ascii?Q?wbN59QfHIRiGbBz4nkPuE8zJSyqvuTwEAEsEJ1+k92hABmyq8rksH52hYAPY?=
+ =?us-ascii?Q?/WwdIVFL1RXfEwqhKix85+ZoEF0QPX4mPhIW3tFY0QC8g3tX7efdyKmvp5+e?=
+ =?us-ascii?Q?Tc69QHTCUDDKvH0bLUfm1GHGCBh8AID466eOUBjaR7/ROA700iZy7qUk89//?=
+ =?us-ascii?Q?ucpChiBATsf38QqK5EudciHiQoQmB+ZJPcup4FBlUncuiaandpmxDaNdEEyO?=
+ =?us-ascii?Q?jVB9xZQDo8I548uVm4B5wbPLT9PsAzMkMnasYMctlEarW/vzwhjiFktbqsqR?=
+ =?us-ascii?Q?zvBVf512hqFNKETkLV34mT8kPy73OMr96fWOem8OND7OkRQOvyWC6PTo2HVW?=
+ =?us-ascii?Q?PeRtTdn1k3x3gzCLKNKbE74d3rpo60q67xXNTu8a+/Cs0gcghn6LdZWal4GK?=
+ =?us-ascii?Q?R61uhqRBjayYSe05klAjWbN3lhmrNreT5vAuc8dHFhvnKuEPURGH3/EeHEsf?=
+ =?us-ascii?Q?EdcM4mrLya9FTU1BdIV9NFxcHa6w9hxl8imVKrAgSepLDVY4SzmyYaWGzgBm?=
+ =?us-ascii?Q?nS604n4tftpmYmikk9qNirnPksivYalYBFm1nFPA5OXOC7G0Spo1F8LHsBKQ?=
+ =?us-ascii?Q?3XWLbLXTW3LYrF1mdsmy9/Wkq2qzOtiWrwHZYGWt69Jm9xpk+BhjoJsmhSMM?=
+ =?us-ascii?Q?3AYMaSzoOh+E5gDoZzqWkt6ETumVjosIDBUb+j4Q?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c963f90c-52f9-428a-2dd1-08dc5ee8f3dd
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2024 14:16:19.8659
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 3yQfnW76vQuS3uDioGLdZAYz7x1KLaOD4+H7D9RUsUa3DQV1fE8NCoelV0uHAlu6
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB9246
 
-Operating the TBUs (Translation Buffer Units) from Linux on Qualcomm
-platforms can help with debugging context faults. To help with that,
-the TBUs can run ATOS (Address Translation Operations) to manually
-trigger address translation of IOVA to physical address in hardware
-and provide more details when a context fault happens.
+On Wed, Apr 17, 2024 at 01:09:40AM -0700, Nicolin Chen wrote:
+> On Tue, Apr 16, 2024 at 04:28:20PM -0300, Jason Gunthorpe wrote:
+> > Add tests for some of the more common STE update operations that we expect
+> > to see, as well as some artificial STE updates to test the edges of
+> > arm_smmu_write_entry. These also serve as a record of which common
+> > operation is expected to be hitless, and how many syncs they require.
+> > 
+> > arm_smmu_write_entry implements a generic algorithm that updates an STE/CD
+> > to any other abritrary STE/CD configuration. The update requires a
+> > sequence of write+sync operations with some invariants that must be held
+> > true after each sync. arm_smmu_write_entry lends itself well to
+> > unit-testing since the function's interaction with the STE/CD is already
+> > abstracted by input callbacks that we can hook to introspect into the
+> > sequence of operations. We can use these hooks to guarantee that
+> > invariants are held throughout the entire update operation.
+> > 
+> > Link: https://lore.kernel.org/r/20240106083617.1173871-3-mshavit@google.com
+> > Signed-off-by: Michael Shavit <mshavit@google.com>
+> > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > ---
+> >  drivers/iommu/Kconfig                         |  12 +-
+> >  drivers/iommu/arm/arm-smmu-v3/Makefile        |   2 +
+> >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   6 +-
+> >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 467 ++++++++++++++++++
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  36 +-
+> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  30 ++
+>  
+> > +config ARM_SMMU_V3_KUNIT_TEST
+> > +	tristate "KUnit tests for arm-smmu-v3 driver"  if !KUNIT_ALL_TESTS
+> > +	depends on KUNIT
+> > +	default KUNIT_ALL_TESTS
+> > +	help
+> > +	  Enable this option to unit-test arm-smmu-v3 driver functions.
+> > +
+> > +	  If unsure, say N.
+> 
+> Forgot that my SVA sanity doesn't cover this patch. And it looks
+> like some problems here when building it with "=m":
+> 
+> ERROR: modpost: missing MODULE_LICENSE() in drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.o
+> ERROR: modpost: "arm_smmu_make_cdtable_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> ERROR: modpost: "arm_smmu_make_bypass_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> ERROR: modpost: "arm_smmu_make_abort_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> ERROR: modpost: "arm_smmu_make_s2_domain_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> ERROR: modpost: "arm_smmu_get_ste_used" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> ERROR: modpost: "arm_smmu_write_entry" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> 
+> Likely needs MODULE_LICENSE and some EXPORT_SYMBOLs.
 
-The driver will control the resources needed by the TBU to allow
-running the debug operations such as ATOS, check for outstanding
-transactions, do snapshot capture etc.
+Oh! The kbuild never tested this kconfig combination...
 
-Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
----
- drivers/iommu/Kconfig                         |  12 +-
- .../iommu/arm/arm-smmu/arm-smmu-qcom-debug.c  | 353 ++++++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h    |   2 +
- drivers/iommu/arm/arm-smmu/arm-smmu.h         |   2 +
- 4 files changed, 365 insertions(+), 4 deletions(-)
+I think just this? Michael?
 
 diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 0af39bbbe3a3..0ac80e1094f3 100644
+index d03c729c4142dc..7b6a4e244e99cf 100644
 --- a/drivers/iommu/Kconfig
 +++ b/drivers/iommu/Kconfig
-@@ -379,10 +379,14 @@ config ARM_SMMU_QCOM_DEBUG
- 	depends on ARM_SMMU_QCOM
+@@ -411,7 +411,7 @@ config ARM_SMMU_V3_SVA
+ 	  and PRI.
+ 
+ config ARM_SMMU_V3_KUNIT_TEST
+-	tristate "KUnit tests for arm-smmu-v3 driver"  if !KUNIT_ALL_TESTS
++	bool "KUnit tests for arm-smmu-v3 driver"  if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
+ 	default KUNIT_ALL_TESTS
  	help
- 	  Support for implementation specific debug features in ARM SMMU
--	  hardware found in QTI platforms.
+diff --git a/drivers/iommu/arm/arm-smmu-v3/Makefile b/drivers/iommu/arm/arm-smmu-v3/Makefile
+index 014a997753a8a2..0b97054b3929b7 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/Makefile
++++ b/drivers/iommu/arm/arm-smmu-v3/Makefile
+@@ -2,6 +2,5 @@
+ obj-$(CONFIG_ARM_SMMU_V3) += arm_smmu_v3.o
+ arm_smmu_v3-objs-y += arm-smmu-v3.o
+ arm_smmu_v3-objs-$(CONFIG_ARM_SMMU_V3_SVA) += arm-smmu-v3-sva.o
++arm_smmu_v3-objs-$(CONFIG_ARM_SMMU_V3_KUNIT_TEST) += arm-smmu-v3-test.o
+ arm_smmu_v3-objs := $(arm_smmu_v3-objs-y)
 -
--	  Say Y here to enable debug for issues such as TLB sync timeouts
--	  which requires implementation defined register dumps.
-+	  hardware found in QTI platforms. This include support for
-+	  the Translation Buffer Units (TBU) that can be used to obtain
-+	  additional information when debugging memory management issues
-+	  like context faults.
-+
-+	  Say Y here to enable debug for issues such as context faults
-+	  or TLB sync timeouts which requires implementation defined
-+	  register dumps.
- 
- config ARM_SMMU_V3
- 	tristate "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-index bb89d49adf8d..eff7ca94ec8d 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
-@@ -1,15 +1,66 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-  * Copyright (c) 2022 Qualcomm Innovation Center, Inc. All rights reserved.
-+ * Copyright (c) 2024 Qualcomm Innovation Center, Inc. All rights reserved.
-  */
- 
-+#include <linux/cleanup.h>
- #include <linux/device.h>
-+#include <linux/interconnect.h>
- #include <linux/firmware/qcom/qcom_scm.h>
-+#include <linux/iopoll.h>
-+#include <linux/list.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/mutex.h>
-+#include <linux/platform_device.h>
- #include <linux/ratelimit.h>
-+#include <linux/spinlock.h>
- 
- #include "arm-smmu.h"
- #include "arm-smmu-qcom.h"
- 
-+#define TBU_DBG_TIMEOUT_US		100
-+#define DEBUG_AXUSER_REG		0x30
-+#define DEBUG_AXUSER_CDMID		GENMASK_ULL(43, 36)
-+#define DEBUG_AXUSER_CDMID_VAL		0xff
-+#define DEBUG_PAR_REG			0x28
-+#define DEBUG_PAR_FAULT_VAL		BIT(0)
-+#define DEBUG_PAR_PA			GENMASK_ULL(47, 12)
-+#define DEBUG_SID_HALT_REG		0x0
-+#define DEBUG_SID_HALT_VAL		BIT(16)
-+#define DEBUG_SID_HALT_SID		GENMASK(9, 0)
-+#define DEBUG_SR_HALT_ACK_REG		0x20
-+#define DEBUG_SR_HALT_ACK_VAL		BIT(1)
-+#define DEBUG_SR_ECATS_RUNNING_VAL	BIT(0)
-+#define DEBUG_TXN_AXCACHE		GENMASK(5, 2)
-+#define DEBUG_TXN_AXPROT		GENMASK(8, 6)
-+#define DEBUG_TXN_AXPROT_PRIV		0x1
-+#define DEBUG_TXN_AXPROT_NSEC		0x2
-+#define DEBUG_TXN_TRIGG_REG		0x18
-+#define DEBUG_TXN_TRIGGER		BIT(0)
-+#define DEBUG_VA_ADDR_REG		0x8
-+
-+static LIST_HEAD(tbu_list);
-+static DEFINE_MUTEX(tbu_list_lock);
-+static DEFINE_SPINLOCK(atos_lock);
-+
-+struct qcom_tbu {
-+	struct device *dev;
-+	struct device_node *smmu_np;
-+	u32 sid_range[2];
-+	struct list_head list;
-+	struct clk *clk;
-+	struct icc_path	*path;
-+	void __iomem *base;
-+	spinlock_t halt_lock; /* multiple halt or resume can't execute concurrently */
-+	int halt_count;
-+};
-+
-+static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
-+{
-+	return container_of(smmu, struct qcom_smmu, smmu);
-+}
-+
- void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu)
- {
- 	int ret;
-@@ -49,3 +100,305 @@ void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu)
- 			tbu_pwr_status, sync_inv_ack, sync_inv_progress);
- 	}
- }
-+
-+static struct qcom_tbu *qcom_find_tbu(struct qcom_smmu *qsmmu, u32 sid)
-+{
-+	struct qcom_tbu *tbu;
-+	u32 start, end;
-+
-+	guard(mutex)(&tbu_list_lock);
-+
-+	if (list_empty(&tbu_list))
-+		return NULL;
-+
-+	list_for_each_entry(tbu, &tbu_list, list) {
-+		start = tbu->sid_range[0];
-+		end = start + tbu->sid_range[1];
-+
-+		if (qsmmu->smmu.dev->of_node == tbu->smmu_np &&
-+		    start <= sid && sid < end)
-+			return tbu;
-+	}
-+	dev_err(qsmmu->smmu.dev, "Unable to find TBU for sid 0x%x\n", sid);
-+
-+	return NULL;
-+}
-+
-+static int qcom_tbu_halt(struct qcom_tbu *tbu, struct arm_smmu_domain *smmu_domain)
-+{
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	int ret = 0, idx = smmu_domain->cfg.cbndx;
-+	u32 val, fsr, status;
-+
-+	guard(spinlock_irqsave)(&tbu->halt_lock);
-+	if (tbu->halt_count) {
-+		tbu->halt_count++;
-+		return ret;
-+	}
-+
-+	val = readl_relaxed(tbu->base + DEBUG_SID_HALT_REG);
-+	val |= DEBUG_SID_HALT_VAL;
-+	writel_relaxed(val, tbu->base + DEBUG_SID_HALT_REG);
-+
-+	fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
-+	if ((fsr & ARM_SMMU_FSR_FAULT) && (fsr & ARM_SMMU_FSR_SS)) {
-+		u32 sctlr_orig, sctlr;
-+
-+		/*
-+		 * We are in a fault. Our request to halt the bus will not
-+		 * complete until transactions in front of us (such as the fault
-+		 * itself) have completed. Disable iommu faults and terminate
-+		 * any existing transactions.
-+		 */
-+		sctlr_orig = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_SCTLR);
-+		sctlr = sctlr_orig & ~(ARM_SMMU_SCTLR_CFCFG | ARM_SMMU_SCTLR_CFIE);
-+		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, sctlr);
-+		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
-+		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_RESUME, ARM_SMMU_RESUME_TERMINATE);
-+		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, sctlr_orig);
-+	}
-+
-+	if (readl_poll_timeout_atomic(tbu->base + DEBUG_SR_HALT_ACK_REG, status,
-+				      (status & DEBUG_SR_HALT_ACK_VAL),
-+				      0, TBU_DBG_TIMEOUT_US)) {
-+		dev_err(tbu->dev, "Timeout while trying to halt TBU!\n");
-+		ret = -ETIMEDOUT;
-+
-+		val = readl_relaxed(tbu->base + DEBUG_SID_HALT_REG);
-+		val &= ~DEBUG_SID_HALT_VAL;
-+		writel_relaxed(val, tbu->base + DEBUG_SID_HALT_REG);
-+
-+		return ret;
-+	}
-+
-+	tbu->halt_count = 1;
-+
-+	return ret;
-+}
-+
-+static void qcom_tbu_resume(struct qcom_tbu *tbu)
-+{
-+	u32 val;
-+
-+	guard(spinlock_irqsave)(&tbu->halt_lock);
-+	if (!tbu->halt_count) {
-+		WARN(1, "%s: halt_count is 0", dev_name(tbu->dev));
-+		return;
-+	}
-+
-+	if (tbu->halt_count > 1) {
-+		tbu->halt_count--;
-+		return;
-+	}
-+
-+	val = readl_relaxed(tbu->base + DEBUG_SID_HALT_REG);
-+	val &= ~DEBUG_SID_HALT_VAL;
-+	writel_relaxed(val, tbu->base + DEBUG_SID_HALT_REG);
-+
-+	tbu->halt_count = 0;
-+}
-+
-+static phys_addr_t qcom_tbu_trigger_atos(struct arm_smmu_domain *smmu_domain,
-+					 struct qcom_tbu *tbu, dma_addr_t iova, u32 sid)
-+{
-+	bool atos_timedout = false;
-+	phys_addr_t phys = 0;
-+	ktime_t timeout;
-+	u64 val;
-+
-+	/* Set address and stream-id */
-+	val = readq_relaxed(tbu->base + DEBUG_SID_HALT_REG);
-+	val &= ~DEBUG_SID_HALT_SID;
-+	val |= FIELD_PREP(DEBUG_SID_HALT_SID, sid);
-+	writeq_relaxed(val, tbu->base + DEBUG_SID_HALT_REG);
-+	writeq_relaxed(iova, tbu->base + DEBUG_VA_ADDR_REG);
-+	val = FIELD_PREP(DEBUG_AXUSER_CDMID, DEBUG_AXUSER_CDMID_VAL);
-+	writeq_relaxed(val, tbu->base + DEBUG_AXUSER_REG);
-+
-+	/* Write-back read and write-allocate */
-+	val = FIELD_PREP(DEBUG_TXN_AXCACHE, 0xf);
-+
-+	/* Non-secure access */
-+	val |= FIELD_PREP(DEBUG_TXN_AXPROT, DEBUG_TXN_AXPROT_NSEC);
-+
-+	/* Privileged access */
-+	val |= FIELD_PREP(DEBUG_TXN_AXPROT, DEBUG_TXN_AXPROT_PRIV);
-+
-+	val |= DEBUG_TXN_TRIGGER;
-+	writeq_relaxed(val, tbu->base + DEBUG_TXN_TRIGG_REG);
-+
-+	timeout = ktime_add_us(ktime_get(), TBU_DBG_TIMEOUT_US);
-+	for (;;) {
-+		val = readl_relaxed(tbu->base + DEBUG_SR_HALT_ACK_REG);
-+		if (!(val & DEBUG_SR_ECATS_RUNNING_VAL))
-+			break;
-+		val = readl_relaxed(tbu->base + DEBUG_PAR_REG);
-+		if (val & DEBUG_PAR_FAULT_VAL)
-+			break;
-+		if (ktime_compare(ktime_get(), timeout) > 0) {
-+			atos_timedout = true;
-+			break;
-+		}
-+	}
-+
-+	val = readq_relaxed(tbu->base + DEBUG_PAR_REG);
-+	if (val & DEBUG_PAR_FAULT_VAL)
-+		dev_err(tbu->dev, "ATOS generated a fault interrupt! PAR = %llx, SID=0x%x\n",
-+			val, sid);
-+	else if (atos_timedout)
-+		dev_err_ratelimited(tbu->dev, "ATOS translation timed out!\n");
-+	else
-+		phys = FIELD_GET(DEBUG_PAR_PA, val);
-+
-+	/* Reset hardware */
-+	writeq_relaxed(0, tbu->base + DEBUG_TXN_TRIGG_REG);
-+	writeq_relaxed(0, tbu->base + DEBUG_VA_ADDR_REG);
-+	val = readl_relaxed(tbu->base + DEBUG_SID_HALT_REG);
-+	val &= ~DEBUG_SID_HALT_SID;
-+	writel_relaxed(val, tbu->base + DEBUG_SID_HALT_REG);
-+
-+	return phys;
-+}
-+
-+static phys_addr_t qcom_iova_to_phys(struct arm_smmu_domain *smmu_domain,
-+				     dma_addr_t iova, u32 sid)
-+{
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-+	int idx = smmu_domain->cfg.cbndx;
-+	struct qcom_tbu *tbu;
-+	u32 sctlr_orig, sctlr;
-+	phys_addr_t phys = 0;
-+	int attempt = 0;
-+	int ret;
-+	u64 fsr;
-+
-+	tbu = qcom_find_tbu(qsmmu, sid);
-+	if (!tbu)
-+		return 0;
-+
-+	ret = icc_set_bw(tbu->path, 0, UINT_MAX);
-+	if (ret)
-+		return ret;
-+
-+	ret = clk_prepare_enable(tbu->clk);
-+	if (ret)
-+		goto disable_icc;
-+
-+	ret = qcom_tbu_halt(tbu, smmu_domain);
-+	if (ret)
-+		goto disable_clk;
-+
-+	/*
-+	 * ATOS/ECATS can trigger the fault interrupt, so disable it temporarily
-+	 * and check for an interrupt manually.
-+	 */
-+	sctlr_orig = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_SCTLR);
-+	sctlr = sctlr_orig & ~(ARM_SMMU_SCTLR_CFCFG | ARM_SMMU_SCTLR_CFIE);
-+	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, sctlr);
-+
-+	fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
-+	if (fsr & ARM_SMMU_FSR_FAULT) {
-+		/* Clear pending interrupts */
-+		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
-+
-+		/*
-+		 * TBU halt takes care of resuming any stalled transcation.
-+		 * Kept it here for completeness sake.
-+		 */
-+		if (fsr & ARM_SMMU_FSR_SS)
-+			arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_RESUME,
-+					  ARM_SMMU_RESUME_TERMINATE);
-+	}
-+
-+	/* Only one concurrent atos operation */
-+	scoped_guard(spinlock_irqsave, &atos_lock) {
-+		/*
-+		 * If the translation fails, attempt the lookup more time."
-+		 */
-+		do {
-+			phys = qcom_tbu_trigger_atos(smmu_domain, tbu, iova, sid);
-+
-+			fsr = arm_smmu_cb_read(smmu, idx, ARM_SMMU_CB_FSR);
-+			if (fsr & ARM_SMMU_FSR_FAULT) {
-+				/* Clear pending interrupts */
-+				arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_FSR, fsr);
-+
-+				if (fsr & ARM_SMMU_FSR_SS)
-+					arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_RESUME,
-+							  ARM_SMMU_RESUME_TERMINATE);
-+			}
-+		} while (!phys && attempt++ < 2);
-+
-+		arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, sctlr_orig);
-+	}
-+	qcom_tbu_resume(tbu);
-+
-+	/* Read to complete prior write transcations */
-+	readl_relaxed(tbu->base + DEBUG_SR_HALT_ACK_REG);
-+
-+disable_clk:
-+	clk_disable_unprepare(tbu->clk);
-+disable_icc:
-+	icc_set_bw(tbu->path, 0, 0);
-+
-+	return phys;
-+}
-+
-+static int qcom_tbu_probe(struct platform_device *pdev)
-+{
-+	struct of_phandle_args args = { .args_count = 2 };
-+	struct device_node *np = pdev->dev.of_node;
-+	struct device *dev = &pdev->dev;
-+	struct qcom_tbu *tbu;
-+
-+	tbu = devm_kzalloc(dev, sizeof(*tbu), GFP_KERNEL);
-+	if (!tbu)
-+		return -ENOMEM;
-+
-+	tbu->dev = dev;
-+	INIT_LIST_HEAD(&tbu->list);
-+	spin_lock_init(&tbu->halt_lock);
-+
-+	if (of_parse_phandle_with_args(np, "qcom,stream-id-range", "#iommu-cells", 0, &args)) {
-+		dev_err(dev, "Cannot parse the 'qcom,stream-id-range' DT property\n");
-+		return -EINVAL;
-+	}
-+
-+	tbu->smmu_np =  args.np;
-+	tbu->sid_range[0] = args.args[0];
-+	tbu->sid_range[1] = args.args[1];
-+	of_node_put(args.np);
-+
-+	tbu->base = devm_of_iomap(dev, np, 0, NULL);
-+	if (IS_ERR(tbu->base))
-+		return PTR_ERR(tbu->base);
-+
-+	tbu->clk = devm_clk_get_optional(dev, NULL);
-+	if (IS_ERR(tbu->clk))
-+		return PTR_ERR(tbu->clk);
-+
-+	tbu->path = devm_of_icc_get(dev, NULL);
-+	if (IS_ERR(tbu->path))
-+		return PTR_ERR(tbu->path);
-+
-+	guard(mutex)(&tbu_list_lock);
-+	list_add_tail(&tbu->list, &tbu_list);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id qcom_tbu_of_match[] = {
-+	{ .compatible = "qcom,sc7280-tbu" },
-+	{ .compatible = "qcom,sdm845-tbu" },
-+	{ }
-+};
-+
-+static struct platform_driver qcom_tbu_driver = {
-+	.driver = {
-+		.name           = "qcom_tbu",
-+		.of_match_table = qcom_tbu_of_match,
-+	},
-+	.probe = qcom_tbu_probe,
-+};
-+builtin_platform_driver(qcom_tbu_driver);
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-index 593910567b88..9bb3ae7d62da 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.h
-@@ -30,6 +30,8 @@ struct qcom_smmu_match_data {
- 	const struct arm_smmu_impl *adreno_impl;
- };
- 
-+irqreturn_t qcom_smmu_context_fault(int irq, void *dev);
-+
- #ifdef CONFIG_ARM_SMMU_QCOM_DEBUG
- void qcom_smmu_tlb_sync_debug(struct arm_smmu_device *smmu);
- #else
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-index 836ed6799a80..1670e95c4637 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-@@ -136,6 +136,7 @@ enum arm_smmu_cbar_type {
- #define ARM_SMMU_CBAR_VMID		GENMASK(7, 0)
- 
- #define ARM_SMMU_GR1_CBFRSYNRA(n)	(0x400 + ((n) << 2))
-+#define ARM_SMMU_CBFRSYNRA_SID		GENMASK(15, 0)
- 
- #define ARM_SMMU_GR1_CBA2R(n)		(0x800 + ((n) << 2))
- #define ARM_SMMU_CBA2R_VMID16		GENMASK(31, 16)
-@@ -238,6 +239,7 @@ enum arm_smmu_cbar_type {
- #define ARM_SMMU_CB_ATSR		0x8f0
- #define ARM_SMMU_ATSR_ACTIVE		BIT(0)
- 
-+#define ARM_SMMU_RESUME_TERMINATE	BIT(0)
- 
- /* Maximum number of context banks per SMMU */
- #define ARM_SMMU_MAX_CBS		128
+-obj-$(CONFIG_ARM_SMMU_V3_KUNIT_TEST) += arm-smmu-v3-test.o
+
+
+Jason
