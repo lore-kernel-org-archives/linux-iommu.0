@@ -1,145 +1,202 @@
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2047.outbound.protection.outlook.com [40.107.102.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED75F148318
-	for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 16:06:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713369999; cv=none; b=VhCikxho8yNXAf0GeB26PTUCrIon4gdRsLp/3fIjFjTVxR6v+6aD8UZLEuWu5z+OdYJMVZ3+MGXbgNfZgbP/HhR6krMSi5Xb6TulOivO5f2ZZ7PNSCrYf87tXEVt+3sg3Il2FugZvGkSIQnhhiH0HjKrMrdjHDSSsiGy/f5z4lw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713369999; c=relaxed/simple;
-	bh=TrPp24tMMwGHm8mD4NKNAejLdtRWmMSKpThXrCtR3P0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FRG2sd7MZCgnTkZ0A5Oos4P/GCFtbTf+KFcmlV1jFPn30ZRcgF4Mne9AnxKqL27Ub5uMBen+QwQriW7IVKZKxN8ojz+7lpkLWzZWtNsXpneYEwQUrtQoZxaszFJKCb2eqAqFdoFleMaz41jJEf+r6+3XLWLm8EdTJcvyF0Oa7+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=IMBPXB0v; arc=none smtp.client-ip=209.85.160.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 212CE1487E2;
+	Wed, 17 Apr 2024 16:13:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.102.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713370419; cv=fail; b=FcyEN01PdW/yeYFe6aayrc5uae9sJc6wlh1wJjGPjv5kDt2+QP0VQlYvH8DpAYfw/fSWZCu3Mw4XvP1s9O33W1IPufDqvgynWuGWQMtTNwVAeLANaagqHzBjvoGc/nPWhaCegSKvlOKKMUNsbHvEVLynXjIq5466hsONRwW32J4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713370419; c=relaxed/simple;
+	bh=wdwfBPJr9tIQRvN4/2H1U1DsixbtKJtD4n8noJNJxLU=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Icc0+0Fts9d3QF8V7eU5qQdNCGzmTLQDW/LrMfZh4jzziQuKTspJs40+TDv9D/hLAqJTCY40Tes/6qZKKW4S7bm4dTYIOhNvQNx0e27Wz9BGPZqYWtNA1e5s568PN4bRz50v4eQYR5nfXmmawQm1gpSM4PXMD0B0k1Dx7d+m2Gk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=pbc0zjH8; arc=fail smtp.client-ip=40.107.102.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="IMBPXB0v"
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-23319017c4cso3836879fac.2
-        for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 09:06:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1713369997; x=1713974797; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=prTQPRIiK+BBCw1mzVVl+h9I6lIr/WlyDI5bHERVORk=;
-        b=IMBPXB0vvS7wrUyMX31/1QAFzY+0kdWQWUXSgM1d2+fK/choTXQ2zFLyaCFHqCbwZM
-         Bc99vBJoTnKY+1sgjVScsl2s1+eEX1bzrs6PgOzqjSxZ63e3XThsVN2/ib1zjqWsCJfl
-         uIAPDMn320D5DNFiUC59WuLE7AD7EsrcKaPbkRF+ebYVlA2oJBrvg7cZwXs7X6/puHNd
-         muwbuLERA7NRY00GPlSKn3UNxUYH8HH3rvfCExM804nqgEEwV7SVenitAPUStv5pV/Da
-         PVKVQFhm+pmIAIUIbVSaIyJ+/cFd5bz/yD9kalfRdmMycwudb1R+mFltcFb3dhNq//1f
-         GY8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713369997; x=1713974797;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=prTQPRIiK+BBCw1mzVVl+h9I6lIr/WlyDI5bHERVORk=;
-        b=To7YG2H0IrAXKVnIwqMewSOhbFBo8Eqp5YRRPZNKPKCNK4USTJhxsJLSvK4Ebk8MxX
-         UTPMG2D92PjTdcXdKGXOqyMx5AQ22ElP+IylycmqON9ELPSJHFlR8QRBP5ZfrlC1NM3f
-         ylKFqeVf4uKwgSOFLEBCYGBJbaJaEQuI2iefjs+Tb0nA49hjdYfAPlEuGnLONzoms4/t
-         B/2p0RWLi22B3c5P8gdRzvMWQs1lO4Z2smX2BSIvOghGV+/3lqHyJzUthHJdl4+Pkw7z
-         Wo/W6TWREpn0f8oqY5IenZCkPZycZ93Dl2zcIKTxGbmyLu5Uot8d0+EZPY69RsyuMz+T
-         h7mg==
-X-Forwarded-Encrypted: i=1; AJvYcCXGKTZEL3e60jLDFISTwXlYVjD27PhZD/4NGAwfhj3aWdV4ddh30J7ABj1EZK/8zGRMhxs7jCFpMohqNUSbPrQLclr0GeA=
-X-Gm-Message-State: AOJu0YzLkDWEjplhHOmF6BhLK3LKYgqVeRMnXpGIHMoZW8C8fUukxqcE
-	8NQ9q9xj4H+nR9wQ0B/cXBCQNqjpwPwK7ckk7mniOGiEEXhzhSVetke68jHOoEU=
-X-Google-Smtp-Source: AGHT+IHgcNp6Ar03nDC8wHH+TgVKXTVJyw64Wiji0FyeRStubLgJ2fQw8iiEdkwOb/DsRK4PEj9nWQ==
-X-Received: by 2002:a05:6870:14d3:b0:22e:e0ef:3d29 with SMTP id l19-20020a05687014d300b0022ee0ef3d29mr18759481oab.13.1713369996806;
-        Wed, 17 Apr 2024 09:06:36 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id gv6-20020a056870aa0600b0023362a0daf6sm3345950oab.4.2024.04.17.09.06.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 17 Apr 2024 09:06:36 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rx7nv-00CQ2l-35;
-	Wed, 17 Apr 2024 13:06:35 -0300
-Date: Wed, 17 Apr 2024 13:06:35 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vashegde@amd.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org,
-	ewagner12@gmail.com, suravee.suthikulpanit@amd.com,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	regressions@lists.linux.dev
-Subject: Re: [PATCH] iommu: Fix def_domain_type interaction with untrusted
- devices
-Message-ID: <20240417160635.GW223006@ziepe.ca>
-References: <fa14583e94cbf540b60a6be94b41bb24d0037e75.1713272443.git.robin.murphy@arm.com>
- <20240416152943.GU223006@ziepe.ca>
- <b0db9b48-e9c6-4e40-9d07-c353ab14e4ce@amd.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="pbc0zjH8"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jqE8ezAv7YsFeoeD9GwKzXUupLidwJW6GNi9GgFOZhQgk1WIvzHWr9lBe1EjtperPT1KWdN/dK0aEDxxhfrComUAcTvl7bu5AQpDiTDCTrckDjMVreQBXGq8g2yt00chTRoj9Sd0Od1Ctop0O6syQIp6jE41JJhPxt4bpNLNuQEflo9tWQsOHf5Qvlr06EYjEy1OModmGg2WdsC+U5J+7xXiX7bVppt/sT0FokFO579dLR+6oSfQW18bJuDM28uBjYF/pF9Rd215ss3dj+3GBdtqLl6GLndQfugQJNgCbH7gL8sQ6XxmzpN57GxusGEEY3UuSglZMiZCjGQgevfOTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=St/uvuWkDdnGfEVKIptWtYT1Gq1F4i9FPERF2mT54YM=;
+ b=XHUGVyaMXsLBcIjY6eeyQGCpJ/HXdb2SdhJFSJM2sYhqTsLYWI6ZAjz8a49fxrIti1NWFFOWlRd6yDu15wq/e04FsiSwqDTwUwAndAXsljzruBKgH8L/bsimfFDeyCBs92tXuByDZ78InMVLui7MvdRh3UAoCEN0EN69TuJLvEwEqfq7Gby2lbzSBHfeHdk6CpDXUbiUwrW2pnYjG9N+QSL6U7CGrp2vbCnrXwGsUdIlO+4OdK5FXv41m5f9/AHGmwbc3H3MU6MDQ+7t8KrAljahzqzDLtMckC4860iAKkwk51LZdrFLMvQ4sVH9p8esRHVkqWndutMLdr9fUKkVGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=google.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=St/uvuWkDdnGfEVKIptWtYT1Gq1F4i9FPERF2mT54YM=;
+ b=pbc0zjH8RnWgAk0CI0k1CyFD/EQfoC4dJMyN8LsTv73PwX3Y9RPqvfEP1L378b109i5+bX4jI8rhBYzlvWmtmlQxto2ag9xc+0UzTfDIc5sERYAYxiOiw3iDOImDMpeAVErWV7eSn++4Sc+U7S6nTDy81i83lBsVI5Cw9weSwFAe6JAq3TsoldfRGc4A73s0TFP6zr4Elhb6C/e18zuNAHIYkkFq453h9XDlDByNofz+gBwvmW/UaFFuMyhTSY46+kRFmmjOSKCNjF/MmTEYJGy7cGyLwiagJVa7/dPnlgx+/qFXYaNtDk0IrZkRlZYdAfSsU2EAi8gP3qPVjtSxjA==
+Received: from BYAPR21CA0028.namprd21.prod.outlook.com (2603:10b6:a03:114::38)
+ by SN7PR12MB6692.namprd12.prod.outlook.com (2603:10b6:806:270::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7452.50; Wed, 17 Apr
+ 2024 16:13:32 +0000
+Received: from MWH0EPF000989E7.namprd02.prod.outlook.com
+ (2603:10b6:a03:114:cafe::35) by BYAPR21CA0028.outlook.office365.com
+ (2603:10b6:a03:114::38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.11 via Frontend
+ Transport; Wed, 17 Apr 2024 16:13:32 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ MWH0EPF000989E7.mail.protection.outlook.com (10.167.241.134) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7452.22 via Frontend Transport; Wed, 17 Apr 2024 16:13:32 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 17 Apr
+ 2024 09:13:14 -0700
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 17 Apr
+ 2024 09:13:13 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Wed, 17 Apr 2024 09:13:13 -0700
+Date: Wed, 17 Apr 2024 09:13:11 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: Michael Shavit <mshavit@google.com>, <iommu@lists.linux.dev>, Joerg Roedel
+	<joro@8bytes.org>, <linux-arm-kernel@lists.infradead.org>, Robin Murphy
+	<robin.murphy@arm.com>, Will Deacon <will@kernel.org>, Eric Auger
+	<eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>, Moritz Fischer
+	<moritzf@google.com>, <patches@lists.linux.dev>, Shameerali Kolothum Thodi
+	<shameerali.kolothum.thodi@huawei.com>, Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v7 9/9] iommu/arm-smmu-v3: Add unit tests for
+ arm_smmu_write_entry
+Message-ID: <Zh/1F6nqvDOEbSfi@Asurada-Nvidia>
+References: <0-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
+ <9-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
+ <Zh+DxJoAMIXy9O/R@Asurada-Nvidia>
+ <20240417141618.GS3637727@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <b0db9b48-e9c6-4e40-9d07-c353ab14e4ce@amd.com>
+In-Reply-To: <20240417141618.GS3637727@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: MWH0EPF000989E7:EE_|SN7PR12MB6692:EE_
+X-MS-Office365-Filtering-Correlation-Id: cc1699bc-ff7f-4331-829c-08dc5ef953a4
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	ezAvgT6nrn5Nng6UvBfqw9YYHB4frF1J8L277ulpmPauvJTDgD5JSao+QQbsV8sArbTDDc+QciROiYEDgUEf+s0oL4SEnckpeiM1qtsC7JutFsb+IAFQp5RQCmAMupoMM+5uc/AvjJY9QpZa5Pao+OS3eXZl9dghmFENpkDK2uKnMeqPTfcsprS2QuldNIUpBqa3L6fDLQkHD8BRsq7z0r4z7n+evZjXt61PqgouRuFHiBCPADO+mdFSeGS3fZn7eENcO5kI8yIbJoAApG1v6BSe0bqH2zgVUbwMIWkh0FV5WK20ayY4zXL+8owolYvJnCWGF624lo2vJ0VMjTDVSWUZmm5XYTKeFhxqc+a9ljGotHWLeQ102M0Z79HQChc6yfQdtlnREwd0ft6F5amnXzKATuTorgkeWrWDQjycdgc+UoGAuZVXKF2q2njdHWk/E+XcY/xwwarhlUbwRCzn+S1hAR6WJrwH/tTTy13lcR/2DEtI6O7+l24MRVcD31F/i19F8FXN6PnfrOlIFJ+xen175IMUN979QackRVhffHJUkX1adOyrIqR61qVA8eRs9ncqYmwp4RY+INWcYJFywdpbDhp2j4I/zu4HaZHheNGSu1AorsBj4LGL30oRUZc2zhtchJBzlwAu+WC4iAdGqkqerojw1I7/9MYfrqiCxG97TWSDYpyRoiWN8Q69ryeRACZ17yLwNEqu+VKJQoNSO9XjrvsRHjMJTwDq0JMFu6jtoL/MF2we+GUAxVTbqRT1
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(36860700004)(7416005)(376005)(82310400014)(1800799015);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2024 16:13:32.1831
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: cc1699bc-ff7f-4331-829c-08dc5ef953a4
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	MWH0EPF000989E7.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6692
 
-On Wed, Apr 17, 2024 at 10:53:00AM +0530, Vasant Hegde wrote:
-> >  - DART
-> >    * system page size is too small, can't map IOPTEs, force identity
-> >    * iommu does not support IDENTITY at all, force paging
-> >  - tegra: Device quirks mean paging and DMA API doesn't work
-> >  - amd: The driver can't support PAGING when in SNP mode
+On Wed, Apr 17, 2024 at 11:16:18AM -0300, Jason Gunthorpe wrote:
+> On Wed, Apr 17, 2024 at 01:09:40AM -0700, Nicolin Chen wrote:
+> > On Tue, Apr 16, 2024 at 04:28:20PM -0300, Jason Gunthorpe wrote:
+> > > Add tests for some of the more common STE update operations that we expect
+> > > to see, as well as some artificial STE updates to test the edges of
+> > > arm_smmu_write_entry. These also serve as a record of which common
+> > > operation is expected to be hitless, and how many syncs they require.
+> > > 
+> > > arm_smmu_write_entry implements a generic algorithm that updates an STE/CD
+> > > to any other abritrary STE/CD configuration. The update requires a
+> > > sequence of write+sync operations with some invariants that must be held
+> > > true after each sync. arm_smmu_write_entry lends itself well to
+> > > unit-testing since the function's interaction with the STE/CD is already
+> > > abstracted by input callbacks that we can hook to introspect into the
+> > > sequence of operations. We can use these hooks to guarantee that
+> > > invariants are held throughout the entire update operation.
+> > > 
+> > > Link: https://lore.kernel.org/r/20240106083617.1173871-3-mshavit@google.com
+> > > Signed-off-by: Michael Shavit <mshavit@google.com>
+> > > Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+> > > ---
+> > >  drivers/iommu/Kconfig                         |  12 +-
+> > >  drivers/iommu/arm/arm-smmu-v3/Makefile        |   2 +
+> > >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |   6 +-
+> > >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c  | 467 ++++++++++++++++++
+> > >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  36 +-
+> > >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  30 ++
+> >  
+> > > +config ARM_SMMU_V3_KUNIT_TEST
+> > > +	tristate "KUnit tests for arm-smmu-v3 driver"  if !KUNIT_ALL_TESTS
+> > > +	depends on KUNIT
+> > > +	default KUNIT_ALL_TESTS
+> > > +	help
+> > > +	  Enable this option to unit-test arm-smmu-v3 driver functions.
+> > > +
+> > > +	  If unsure, say N.
+> > 
+> > Forgot that my SVA sanity doesn't cover this patch. And it looks
+> > like some problems here when building it with "=m":
+> > 
+> > ERROR: modpost: missing MODULE_LICENSE() in drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.o
+> > ERROR: modpost: "arm_smmu_make_cdtable_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> > ERROR: modpost: "arm_smmu_make_bypass_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> > ERROR: modpost: "arm_smmu_make_abort_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> > ERROR: modpost: "arm_smmu_make_s2_domain_ste" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> > ERROR: modpost: "arm_smmu_get_ste_used" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> > ERROR: modpost: "arm_smmu_write_entry" [drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.ko] undefined!
+> > 
+> > Likely needs MODULE_LICENSE and some EXPORT_SYMBOLs.
 > 
-> Actually When SNP (Secure Nested Paging) is enabled in host, AMD driver forces
-> DMA translation mode with AMD V1 page table.
-
-Why does it return IDENTITY?
-
-	if (!cc_platform_has(CC_ATTR_MEM_ENCRYPT) && !amd_iommu_snp_en)
-		return IOMMU_DOMAIN_IDENTITY;
-
-If the HW can't support IDENTITY then it needs to return
-IOMMU_DOMAIN_DMA..
-
-> > Since actual PASID AMD attach isn't implemented yet we could just
-> > remove that check from def_domain_type as an RC fix. Vasant can sort
-> > it out properly by disabling pasid support on untrusted devices until
-> > the DTE logic is fully completed.
+> Oh! The kbuild never tested this kconfig combination...
 > 
-> Keeping PASID support aside, largely the question is who should handle/decide
-> domain type for untrusted device? Is it core IOMMU layer -OR- HW
-> driver?
+> I think just this? Michael?
 
-def_domain_type() should return a HW limitation. It has got muddled up
-with the default domain type stuff, but in essence it's usage right
-now is to tell the core code that a specific device cannot support
-IDENTITY or PAGING. It should be combined with a matching test in
-attach_dev to block the unsupported domain combination.
+Verified with the following change.
 
-The core code should use that information to decice on policy. If the
-device reports it cannot support PAGING and the device is untrusted
-then, IMHO the core code should leave the device blocked and
-inoperable for security.
+Thanks
+Nicolin
 
-The key thing is this API should not be used for the driver to inject
-some kind policy/optimization choice.
-
->   - If its individual driver, then I can try to add fix in AMD driver. But then
-> what is the expectation? Driver is expected to return IOMMU_DOMAIN_DMA -OR- core
-> IOMMU layer is expected to adhere to whatever driver returned?
-
-If driver and HW supports PAGING and IDENTITY attaches to the devices
-RID then it should return 0.
-
-If only PAGING is supported it should return
-IOMMU_DOMAIN_DMA. alloc_domain_paging(dev) should select the correct
-page table format - including a format to enable features like PASID.
-
-If only IDENTITY is supported it should return IOMMU_DOMAIN_IDENTITY.
-
-If AMD SW cannot support PASID & RID PAGING right now then it should
-return 0 and fail that attachment combination during set_dev_pasid().
-
-In the interm you should instruct users to use the command line option
-to force IDENTITY until the driver work is completed.
-
-If there are embedded GPUs or something that have an implementation
-that bypasses the IOMMU for DMA then you need an ID list to check
-against like some of the ARM drivers do.
-
-Jason
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index d03c729c4142dc..7b6a4e244e99cf 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -411,7 +411,7 @@ config ARM_SMMU_V3_SVA
+>  	  and PRI.
+>  
+>  config ARM_SMMU_V3_KUNIT_TEST
+> -	tristate "KUnit tests for arm-smmu-v3 driver"  if !KUNIT_ALL_TESTS
+> +	bool "KUnit tests for arm-smmu-v3 driver"  if !KUNIT_ALL_TESTS
+>  	depends on KUNIT
+>  	default KUNIT_ALL_TESTS
+>  	help
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/Makefile b/drivers/iommu/arm/arm-smmu-v3/Makefile
+> index 014a997753a8a2..0b97054b3929b7 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/Makefile
+> +++ b/drivers/iommu/arm/arm-smmu-v3/Makefile
+> @@ -2,6 +2,5 @@
+>  obj-$(CONFIG_ARM_SMMU_V3) += arm_smmu_v3.o
+>  arm_smmu_v3-objs-y += arm-smmu-v3.o
+>  arm_smmu_v3-objs-$(CONFIG_ARM_SMMU_V3_SVA) += arm-smmu-v3-sva.o
+> +arm_smmu_v3-objs-$(CONFIG_ARM_SMMU_V3_KUNIT_TEST) += arm-smmu-v3-test.o
+>  arm_smmu_v3-objs := $(arm_smmu_v3-objs-y)
+> -
+> -obj-$(CONFIG_ARM_SMMU_V3_KUNIT_TEST) += arm-smmu-v3-test.o
+> 
+> 
+> Jason
