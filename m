@@ -1,93 +1,163 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47F5A481A8
-	for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 20:37:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0BC88565B
+	for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 23:02:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713386260; cv=none; b=hTpt6U7DtGwQW78bxiP1vkMOXJB/hfVpjE/hxiBToQ2+QHz+xEgphVlykiDeg3fPiILlHfWW3yqhqg6RHeQUEwzruG4m0MxZ6ADlYtZxZfVhVVBVwaA31QK1J7H3mo20btobbo0xCYu2UT8X/p4Y4cWclvW3+4RXFblFQQuHxzs=
+	t=1713394945; cv=none; b=cggHAgX9bAB7WTtfcPnJnTYa+9xBe3VobYF0mPMUBiDGdlKCUceCkE1+ZOM7OSmv5ra7MsaT1MfJZ3SxONBL+7DzjYAPzqcZFMLJNH0AYeuVeqzhJ9gSl0mDtmuEftykVtRP6NJLlKzF5A88T/iG1vAAHJOCl9SBkg+CfKbSUsk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713386260; c=relaxed/simple;
-	bh=TOeuYkMhlHWfAApxBOAXbAsDnX6eVjHMCrKl3mloZRQ=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kd06OWSGd2i9xi5jo1r3nkB1QXwhxAmUX6WGR/M64Cx38h8r+IRqw6w981+loFiQp3IrFAyn+2nswDBCqRRPShdxIy9EWlg20s5ia9y/XWuOXxwSuc9sy9fxN6nZfhpP5YvW8w/vfvtHhIbOynzsXC3nARe4Zow2ZCZko2aNaTA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com; spf=pass smtp.mailfrom=quicinc.com; dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b=S2+Zip9X; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=quicinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=quicinc.com
+	s=arc-20240116; t=1713394945; c=relaxed/simple;
+	bh=LBU3fLFom8vb/7JkuEvy+I6UW8qanTPcmH2t8cVFq8c=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rXR3gW1cJkVlON04NSM2n3Qaz8hv0UhGgGCUKRJZ5frO4+qyIqRspaC9KJAI4kaviTwBBgnUyrUdxFm6NiDIlRQkuWu4pBgoDSkELVR9iJlyP64mmMhn+B5utguYtTrkGft6+hsmvE9dw4ZrwWnF/yjnXChir4mUtE2f6ETsYaU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=QK4dy2xV; arc=none smtp.client-ip=170.10.129.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=quicinc.com header.i=@quicinc.com header.b="S2+Zip9X"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.17.1.24/8.17.1.24) with ESMTP id 43HIm7wa017747;
-	Wed, 17 Apr 2024 20:37:25 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=
-	date:from:to:cc:subject:message-id:references:mime-version
-	:content-type:in-reply-to; s=qcppdkim1; bh=LB1zueBv8HZ2hy6OpHG//
-	Rm2TPlzVrzwuNAakK/MJf4=; b=S2+Zip9XfWMeyqOSkREfTXYQkA1QHPu2uceam
-	gUTmPHGM3O7Z9kyNWkaTqF2QWN2yTGai3zsiYNifdJ/f3NGp2hIKhVZ73SqADFlL
-	ZdpSnfC3UQSh2dnSmDxr6SN9c7UzZssoLpUoHFzzlo6KjOnkWgWeKCh6hGnsso24
-	FCySZsvS2iYfFAwWd3fQwqeVaU0k1LoQTln2OcuqjP0VmyV4RVpnU5lp/mZpKbG+
-	8I3Mc+GaOWDi3J16MchUdakZ+kD2zNdkwMCFv6F65WXapdH4t3FeNP8iIsGHIT+B
-	s68mimDpQc7hvpjKLvcQHin/9Z5FlHyawyIk9x9WBHnqH1DFA==
-Received: from nalasppmta05.qualcomm.com (Global_NAT1.qualcomm.com [129.46.96.20])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3xjm0s07e5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 17 Apr 2024 20:37:25 +0000 (GMT)
-Received: from nalasex01c.na.qualcomm.com (nalasex01c.na.qualcomm.com [10.47.97.35])
-	by NALASPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 43HKbOC7022246
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 17 Apr 2024 20:37:24 GMT
-Received: from hu-bjorande-lv.qualcomm.com (10.49.16.6) by
- nalasex01c.na.qualcomm.com (10.47.97.35) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.9; Wed, 17 Apr 2024 13:37:24 -0700
-Date: Wed, 17 Apr 2024 13:37:23 -0700
-From: Bjorn Andersson <quic_bjorande@quicinc.com>
-To: Konrad Dybcio <konrad.dybcio@linaro.org>
-CC: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>,
-        Robin
- Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-        <iommu@lists.linux.dev>, <linux-arm-msm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Marijn Suijten
-	<marijn.suijten@somainline.org>
-Subject: Re: [PATCH 2/2] iommu/qcom: Always consume all clocks
-Message-ID: <ZiAzA+4Xb+OhhLtM@hu-bjorande-lv.qualcomm.com>
-References: <20240416-topic-qcom_iommu-v1-0-fabe55b3b7b3@linaro.org>
- <20240416-topic-qcom_iommu-v1-2-fabe55b3b7b3@linaro.org>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QK4dy2xV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1713394942;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=LV6Nb717r/ECNUv4GKXXSYG0oYIZ4itZI6Tnma6j0S4=;
+	b=QK4dy2xVKoNQRcv1b7qQ2tTwFJHPWiernmqSmXk3IbkX/85jnRdu0GoKm2o8qnPW+6LEdV
+	hawu2rxgaGMBN/MY0hnMlXulewJsJ9cTO5cGfqczq0T9sVZ/3gxvvRaCqoFEIFLJ5QRxhY
+	zGRmAt56Gxcl7MMNSjov2MRG8wxoVu4=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-567-1Fd9SuRNNSyCrhG_vG1bMg-1; Wed, 17 Apr 2024 19:02:21 -0400
+X-MC-Unique: 1Fd9SuRNNSyCrhG_vG1bMg-1
+Received: by mail-oo1-f72.google.com with SMTP id 006d021491bc7-5aa1b55ef83so317620eaf.1
+        for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 16:02:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713394940; x=1713999740;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=LV6Nb717r/ECNUv4GKXXSYG0oYIZ4itZI6Tnma6j0S4=;
+        b=UTEOu39YkeESG2HD8hNesz+zwNwMNDJRDpPlE+SLEm1V3QKO26W8gDlrmsCZ9+dJ2k
+         JzEfYuHRtkqVXXoahKf/6WEmmepBV1GgxFJ5JOBVboteY8wIsIsCmNZTbqO13c+NlrUH
+         UtRBqzQVUWbL+q3Ny1hSexRZzyA1K2KOq9HXEAnv0HKcTlmnUD9wzpSb+lZcjLcdvC3r
+         VHaag+h7J5I7d3VJOW4ogJvGazD9bF1EvCD0aD9x6UmwhcF0kELBjLMsHlJa5cXxJ1hT
+         lsHaszQPHtD5w5RLktvgLLBquuXj+I2HeJp3GRUEPNzVcZqVI7pRsFKbzqmj6hbBySd5
+         f7LQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXW5tmFnDI8ps3nrkPK0gZWikXELhW6YtgQx+qHvGHd5+N6oQuFu24a6z3rXZowKOCktf1jfWfNmmHMk0lk8fIvKdf3Zww=
+X-Gm-Message-State: AOJu0Yxs55IWfmhhiIqpBy8kxlwTaxTIB3eNOiz3qx/Fg0DgaN7WATqO
+	on3kJezyJwtOTfIoYzZ5ttRYQtybEfkOZRBp6qBF4CzZ0Zg6gISrQ4q9x8vJhwiB7s6sR4kJcu4
+	bz+VMIY4tN27DQt1sd/nGk7Ty/CywNv2JxPSPmq5mkFmFvfEVV+Gz
+X-Received: by 2002:a4a:98c6:0:b0:5aa:5252:6efc with SMTP id b6-20020a4a98c6000000b005aa52526efcmr1287484ooj.9.1713394940286;
+        Wed, 17 Apr 2024 16:02:20 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEzaXJdXFiq9LMPiWxQaCBmqb2idfqAHM9IG+BCrxxovArqOWEnbc06EItG1q9EXTRxNzWIYg==
+X-Received: by 2002:a4a:98c6:0:b0:5aa:5252:6efc with SMTP id b6-20020a4a98c6000000b005aa52526efcmr1287472ooj.9.1713394940025;
+        Wed, 17 Apr 2024 16:02:20 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id m7-20020a4aab87000000b005a4a656860bsm77843oon.2.2024.04.17.16.02.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 17 Apr 2024 16:02:19 -0700 (PDT)
+Date: Wed, 17 Apr 2024 17:02:16 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "robin.murphy@arm.com"
+ <robin.murphy@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+ "nicolinc@nvidia.com" <nicolinc@nvidia.com>, "kvm@vger.kernel.org"
+ <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
+ <chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, "baolu.lu@linux.intel.com"
+ <baolu.lu@linux.intel.com>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+ "Pan, Jacob jun" <jacob.jun.pan@intel.com>
+Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
+Message-ID: <20240417170216.1db4334a.alex.williamson@redhat.com>
+In-Reply-To: <20240417122051.GN3637727@nvidia.com>
+References: <20240412082121.33382-1-yi.l.liu@intel.com>
+	<BN9PR11MB5276318EF2CD66BEF826F59A8C082@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240416175018.GJ3637727@nvidia.com>
+	<BN9PR11MB5276E6975F78AE96F8DEC66D8C0F2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240417122051.GN3637727@nvidia.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240416-topic-qcom_iommu-v1-2-fabe55b3b7b3@linaro.org>
-X-ClientProxiedBy: nalasex01b.na.qualcomm.com (10.47.209.197) To
- nalasex01c.na.qualcomm.com (10.47.97.35)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: GiGnL9jHn8vhoI-KmiOsp6OahiHhwS0C
-X-Proofpoint-ORIG-GUID: GiGnL9jHn8vhoI-KmiOsp6OahiHhwS0C
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.272,Aquarius:18.0.1011,Hydra:6.0.619,FMLib:17.11.176.26
- definitions=2024-04-17_17,2024-04-17_01,2023-05-22_02
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 adultscore=0 impostorscore=0 mlxscore=0 mlxlogscore=641
- spamscore=0 priorityscore=1501 phishscore=0 malwarescore=0 clxscore=1015
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.19.0-2404010003 definitions=main-2404170145
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Apr 17, 2024 at 10:07:00PM +0200, Konrad Dybcio wrote:
-> Some platforms provide more clocks than others, we already have the DT
-> schema to ensure sanity here plus these clocks simply need to be on.
+On Wed, 17 Apr 2024 09:20:51 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Wed, Apr 17, 2024 at 07:16:05AM +0000, Tian, Kevin wrote:
+> > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > Sent: Wednesday, April 17, 2024 1:50 AM
+> > > 
+> > > On Tue, Apr 16, 2024 at 08:38:50AM +0000, Tian, Kevin wrote:  
+> > > > > From: Liu, Yi L <yi.l.liu@intel.com>
+> > > > > Sent: Friday, April 12, 2024 4:21 PM
+> > > > >
+> > > > > A userspace VMM is supposed to get the details of the device's PASID
+> > > > > capability
+> > > > > and assemble a virtual PASID capability in a proper offset in the virtual  
+> > > PCI  
+> > > > > configuration space. While it is still an open on how to get the available
+> > > > > offsets. Devices may have hidden bits that are not in the PCI cap chain.  
+> > > For  
+> > > > > now, there are two options to get the available offsets.[2]
+> > > > >
+> > > > > - Report the available offsets via ioctl. This requires device-specific logic
+> > > > >   to provide available offsets. e.g., vfio-pci variant driver. Or may the  
+> > > device  
+> > > > >   provide the available offset by DVSEC.
+> > > > > - Store the available offsets in a static table in userspace VMM. VMM gets  
+> > > the  
+> > > > >   empty offsets from this table.
+> > > > >  
+> > > >
+> > > > I'm not a fan of requesting a variant driver for every PASID-capable
+> > > > VF just for the purpose of reporting a free range in the PCI config space.
+> > > >
+> > > > It's easier to do that quirk in userspace.
+> > > >
+> > > > But I like Alex's original comment that at least for PF there is no reason
+> > > > to hide the offset. there could be a flag+field to communicate it. or
+> > > > if there will be a new variant VF driver for other purposes e.g. migration
+> > > > it can certainly fill the field too.  
+> > > 
+> > > Yes, since this has been such a sticking point can we get a clean
+> > > series that just enables it for PF and then come with a solution for
+> > > VF?
+> > >   
+> > 
+> > sure but we at least need to reach consensus on a minimal required
+> > uapi covering both PF/VF to move forward so the user doesn't need
+> > to touch different contracts for PF vs. VF.  
 > 
-> Use devm_clk_bulk_get_all and get rid of some boilerplate.
-> 
-> Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+> Do we? The situation where the VMM needs to wholly make a up a PASID
+> capability seems completely new and seperate from just using an
+> existing PASID capability as in the PF case.
 
-Reviewed-by: Bjorn Andersson <quic_bjorande@quicinc.com>
+But we don't actually expose the PASID capability on the PF and as
+argued in path 4/ we can't because it would break existing userspace.
 
-Regards,
-Bjorn
+> If it needs to make another system call or otherwise to do that then
+> that seems fine to do incrementally??
+
+With PASID currently hidden, VF and PF support really seem too similar
+not to handle them both at the same time.  What's missing is a
+mechanism to describe unused config space where userspace can implement
+an emulated PASID capability.  Defining a DVSEC capability to handle
+this seemed to be the preferred solution from the LPC discussion.  PF
+and VF devices that implement a TBD DVSEC capability could avoid
+needing a variant driver.  Until then we need to be careful not to
+undermine a future world with that preferred solution by introducing
+side-band mechanisms which only work for variant drivers and PF
+devices.  Thanks,
+
+Alex
+
