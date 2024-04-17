@@ -1,186 +1,152 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D47E56E613
-	for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 09:32:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.14
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713346376; cv=fail; b=ow4DhClp2hLicfMOb346jwYaOk9+Pey2N5/0sPnL6jG66QUGYZmW41aBZQWuu+pe/fWYPJ3ZDKmizH6HTjzl0dCs/t0Cym6nkttIO0uh6qbeN+cEu0Z52/3XpCAdXYSI6SrmSsggX2qgSLDlSm5JdCYAyMYkFCdEHr7CU9wuXdU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713346376; c=relaxed/simple;
-	bh=Z2qOgYBwwm9ultAYTC8ZigQWUBjfiz/kYc9zLFM97+U=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=K+nF5o/mlaAhTQvj32BcyEV1MZtHovCdlE8RMeAbrwysstf8wlfbLxDlYoCHAymR6UX0fI+paVTkfot0HqkNwafxjHt4yNnnO7+E7Us7oF53fkiW7tR9MX2XX94LNsGIsHDV9+js8Em7E6HoqHZh5vTqESNavq/pdkK3X1ZCWsU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AYkjLsQe; arc=fail smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AYkjLsQe"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713346374; x=1744882374;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Z2qOgYBwwm9ultAYTC8ZigQWUBjfiz/kYc9zLFM97+U=;
-  b=AYkjLsQeZ6spGOb+PacPGDQbMnP+2CoTZUrIDtGwdOiS/+IvDii51fq5
-   RR9oWM0/5r1qwERXNfFnxm/n+B58rqF5UsWPO0x94t5zw5AsTDta1AfwD
-   uRDVP7EUcfVms682DM+tgRRPOcrCEOQz+zzUnemvs1ISBCjpDzmY8rlfX
-   f63iVmDb4PaUM8XgjMvklHhH2kFVSYf+xh5SCnrt3AG7vqB5yx3/XfUrl
-   8ARhCY1sfrpPjg1jUwLmoYtKGMmm62Q2EVBSm7unUl7E/Bj0w19UPFA7G
-   DcotxA4tiWKBSx0ZHUeOjuhnQpZI+9fWEhUTdGzOXGHmQWCvt4Y2oqSL4
-   A==;
-X-CSE-ConnectionGUID: V8a4Ay+/TAq0CgmDFgeLPw==
-X-CSE-MsgGUID: 8OkwVflVQhOF1Ai6dsiLTg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11046"; a="12665806"
-X-IronPort-AV: E=Sophos;i="6.07,208,1708416000"; 
-   d="scan'208";a="12665806"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Apr 2024 02:32:54 -0700
-X-CSE-ConnectionGUID: /mwAffH8SR+qpUM8mYtICA==
-X-CSE-MsgGUID: W5LEf2uXT8iiN3zO/yGZDg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,208,1708416000"; 
-   d="scan'208";a="27363758"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orviesa004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 Apr 2024 02:32:54 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Wed, 17 Apr 2024 02:32:52 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Wed, 17 Apr 2024 02:32:52 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.100)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25CB51327E5
+	for <iommu@lists.linux.dev>; Wed, 17 Apr 2024 09:45:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713347141; cv=none; b=AkQet1goG9s+plP5UCz/AIX+7tk7U+WLvT6YLrOdl846thJVzK65iYKhpkK6h3YFCfjjdpdSfDyt1Bj3r8It7jOH3qrZLZfanV+PCBkj0oIGRw8Hbv50FN09nQ2UYO2stm/shm4fcxg5lyqRrIQy3Ou4uiYSoEQ9T7nuRSIwOpo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713347141; c=relaxed/simple;
+	bh=KoJBnnMfkQDjTHJ4VXbOujuvynCUV4+zBSTfLBsA10E=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=eIKGN3fUrME0g6YYnBiMa6nhnz70xEL68Qd/srauKemeB+MMShZdTgE3WLKidPsNeDD95uCd94WthQVyCDmcFTh3XrIZsHv9xPyUsL7u4ZiZQtiDylbJL9YaeYW4pR/PejSHF9sDLtpjGcJacGCzRY1tis7yUhefpAP77eSiujs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.231])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4VKGF43Vrnz6F8c6;
+	Wed, 17 Apr 2024 17:43:36 +0800 (CST)
+Received: from lhrpeml100001.china.huawei.com (unknown [7.191.160.183])
+	by mail.maildlp.com (Postfix) with ESMTPS id F2387140B63;
+	Wed, 17 Apr 2024 17:45:35 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ lhrpeml100001.china.huawei.com (7.191.160.183) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Wed, 17 Apr 2024 02:32:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cBiy/CbXaGKSVHAJ9vVNpUeY0vTXs7Am2NU52m2Jy3Mvh+ZcaSTkNzBYm+p9H2TdlaXBy7YvkMnWl5G+Miki2uHgF56qu/D2uSFWQUqtmpv4o3JuUvF/xuQebox1+G79xC/RQm0ReUI9Hn3dkaUPy4GcExMAeuk38KpO1N/hTuOjTAxRYx/0fuRiVnqPGra2Aw5InmqN7Z65p312HlP2pVxMnH9n4EVheWKlLmzO6ppP9ZIbI4Kdz3XA70X0rnifK9ZV6rKgrduOijcRc1i46DeCS18LRqC5zjIM1sr097Sv0PBgojhWGKrAlIfvo0R8w7hLOO+WSzZDN3jxbKs/ZA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=44A7ulQH1Cw/KnQIoSLFKobVPr5sg4NnXQgzUKERWyM=;
- b=BsIkY7iUNO7DgkCQlfYuapx+TRsFkkWmo19JO/sy/kEgTVT8E4FvhrfYFl591uouB8isDFuWA+wb0zzAorp2iwebdDF91D7XDRuUYQiBC4idTFWltu2+QYsDf8EobyJ7ZcNkCHPLpsXZWFk50yNM9b6C7Htcj+xIpr5kyt4l+tDGW07b3SyMbpAhB1ePydJZimh7orBTBHLhQUl1fK0oknOEUDLFUWUCDV7h9SkBKk+BVgTl43YWTyCDZ15NESTMVdGTbKcEU6FLTTy2CVzMRNxpIW1LwM/PBBNmwuVYWcjZAkXOPnByV2tgO+sgZT6JEzPPdsJ4AeWXWhbrgIkFPg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by DS0PR11MB7768.namprd11.prod.outlook.com (2603:10b6:8:138::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.25; Wed, 17 Apr
- 2024 09:32:51 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%6]) with mapi id 15.20.7452.046; Wed, 17 Apr 2024
- 09:32:51 +0000
-Message-ID: <a25e0d86-1290-423f-8694-192402db5fd1@intel.com>
-Date: Wed, 17 Apr 2024 17:36:26 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 10/12] iommu/vt-d: Return if no dev_pasid is found in
- domain
+ 15.1.2507.35; Wed, 17 Apr 2024 10:45:34 +0100
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
+ Wed, 17 Apr 2024 10:45:34 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>
+CC: "will@kernel.org" <will@kernel.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"thierry.reding@gmail.com" <thierry.reding@gmail.com>, "vdumpa@nvidia.com"
+	<vdumpa@nvidia.com>, "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "linux-tegra@vger.kernel.org"
+	<linux-tegra@vger.kernel.org>, Jerry Snitselaar <jsnitsel@redhat.com>
+Subject: RE: [PATCH v5 0/6] Add Tegra241 (Grace) CMDQV Support (part 1/2)
+Thread-Topic: [PATCH v5 0/6] Add Tegra241 (Grace) CMDQV Support (part 1/2)
+Thread-Index: AQHajVTpda5PtrGZ80+YonTPgO6cRrFphU4AgAKXr6CAAB7BMA==
+Date: Wed, 17 Apr 2024 09:45:34 +0000
+Message-ID: <ba3047f946c6475aaf30800f9d3f9afb@huawei.com>
+References: <cover.1712977210.git.nicolinc@nvidia.com>
+ <20240415171426.GF3637727@nvidia.com>
+ <f92efdb774cc4cd48a59495e7cb69c27@huawei.com>
+In-Reply-To: <f92efdb774cc4cd48a59495e7cb69c27@huawei.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"jgg@nvidia.com" <jgg@nvidia.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>
-CC: "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>
-References: <20240412081516.31168-1-yi.l.liu@intel.com>
- <20240412081516.31168-11-yi.l.liu@intel.com>
- <BN9PR11MB5276F533511EA5E9D0D9BF968C0F2@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <BN9PR11MB5276F533511EA5E9D0D9BF968C0F2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SI2PR01CA0011.apcprd01.prod.exchangelabs.com
- (2603:1096:4:191::6) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|DS0PR11MB7768:EE_
-X-MS-Office365-Filtering-Correlation-Id: fa4ee206-4096-458b-c26e-08dc5ec159d8
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nPyG9MB9T4RXWKszJmyW3W8CuREfUY30Zwnj/VF5lvIedZ/qCwASE10oY798XT+v7wZkUoPPO5XUJxcXeAxvx0HaEamAH0/T6MgYdiztOiSHiHal7W98FVBrldiVCXkFTVT00AdGtiQZqbiPwPeQRd00C+A48UCN3P5jZO0Jb7ZaUQfbQgRWDaaWviz6vtuJTh9ae0zkXc6XA3IMm0szDS9s3Sorq4TS3CL9qKBbLAbJRiMbhmGhrUADkTMReM1uJsHdjbnYjahL/9laaLF2SMELJiXFc9jWhFK7eO1c/9TDZrpfhBPg6m0j11hjRip38DY7iZRW5rthlUNf1iqtUflMg/ys8VZwqKVYJLg12to83JigEAg0En4AK/PXyMmv8KA9l+Iq27PzLsxJj4ylFAK7r5MlHXlcIJof3YkJ30pVy7yc+vP7z15dtwUJGrLIZTXWQB7ls97tfjazqGFc1wVofzWvnVxmCMxqHfCHFfNcxn+dG1ATh7UWjYX/EKmCRYTzGb1eHyuA4T83l9cPRSJ23vTiP9dgWqo5bgzoYqInxtOmPu9QJ5THMZTUxjhcnw5Xil/D2LWvMsvigHcYDvFCf8G2MZmLUuKhbYRNckWkxmwzemLDqOVOQdcoOb8lAm0nWHWcXNCLxF0sX2Msg5ZIjXmApofLPBnyipB+rMY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7416005)(1800799015)(376005)(366007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eWlQcFVnOG12M1Q2RUN5NzI3dUZhUDRBR0JlbWVDNHFvQlpRQVEvUFRwZVlw?=
- =?utf-8?B?d1dkR3NENlV3aGpmT1ZZNFY0Wk1WeHhSWmxDSmQvRy9hMFdrMlc1ZU5mTmpZ?=
- =?utf-8?B?Q0UzQ3M5OVRSenN3Zm1jRktXV0FxUll5b0Rub2ZjVDJjUHdReUVVVW5DSkMz?=
- =?utf-8?B?eUpHUkdsL2FJRm5rQ2w4akZ1czFsY3J5S2U2YXQrclBsOXVkK3hRc2VTampr?=
- =?utf-8?B?K29Jdll5Nm40VlZIcjVCVFpsYlc4VXc2bk5va2pRR3h5YTFJTkFBOWRRYk5F?=
- =?utf-8?B?NFZoS0Eza3FxTTVNa3BnYXdLQzVkTWFWa095cTN1ZEt1OFBSWkhRR0kyUCtZ?=
- =?utf-8?B?SnMwczQvSjNCVlZvMEl1ejVaUXhOV25LK0xHQUZGZ1U4andzNk04RHA4bTJE?=
- =?utf-8?B?a29rZllrSEtweTBjV1U0UlJTTGNpSklBNm1FUVBURzVRUDcrTk5GY2plR3Bi?=
- =?utf-8?B?RURmeUFNQXhRTXVqdEV6dWNqWlBKc1NySHlHZ3Qva0tQdit0U0Z5b1BsUk02?=
- =?utf-8?B?VDlXTmpIa2pFRk02UStaM3h0K1hvVG1WckRKaGErK09zVnQrYkxmWmtmUGx0?=
- =?utf-8?B?VnZrOEN2OHdpRHQ2OHg2YVN1a3VLUTV4dURjL2pxUFU0aG5BOHRNc09RbG10?=
- =?utf-8?B?NEMvTm9XUG04MHNlN2FnMlcxTFpOcVEvUXdmMFUzSy9TcGV2VFgrcHVTWVNE?=
- =?utf-8?B?VXg4YVdTb1JwbytaUXV0bjBwRUk2czNYZ3o3R2dmZk9INld5MHpwQm9KRDZw?=
- =?utf-8?B?TEJJZ1V6eEEzL1hDcmVncHgzYXhteWxvOXlmSmJkSzBocTNpWjZVK0FJN0FK?=
- =?utf-8?B?M1hJUDF2MHU3UmRmSUF5OThpSm5WQmY5RllRYzZseW5ZeExPcEZZUCtSc2E2?=
- =?utf-8?B?aFhqNGk0eGgvT09RbkoweXV1MUYwVS9uVjFMc2pSQjh3UDVzM2hFZVFtZWFR?=
- =?utf-8?B?MjhwdmFjVnViU1VJSTNESm15ZHdUUmNCT0tVNnJiMjl5QkVIQnUyaHI0a1hT?=
- =?utf-8?B?QjRQc0hCSDFUM3ZDZU53Rmh6LzRFSUgxU2RRZFpURnVmUEF0eTgwUEdBS3NF?=
- =?utf-8?B?ZnRJVkNCemlWUm44QkJjM3dESDd3VjNHOThBM2daSm45VE9yY29IMHFCSDU5?=
- =?utf-8?B?OUt3S1dESHVPTWxuWGMra1haSHB1bnI2UnZHa09JUW5DV042NTg5N2w2TU5S?=
- =?utf-8?B?Z2lSbGtlM0ZCSjg1ZFJIckdBWEszTjluN1JtcC9hNUY1ZHE3OFdZWmNhZmNn?=
- =?utf-8?B?ME9jR2E2YWJMcHQwbFBTY1pCTVdPODM2SDFmeitKRjBaZ2VVSW9zYzBBZXN4?=
- =?utf-8?B?ZUNHZkxITGFSVjhrVytNRzFPcWdHTjc3WEJBdTNPak1QejhsWUNNVFRTN0RH?=
- =?utf-8?B?bWJYRWhoWlBtV1Y3RzlNWkJUbndVZ25zcUpHU01sR3hwdENST05vdFA4dHRk?=
- =?utf-8?B?SDZFc0lBVENTNi9kelIzd0VBQWRtbTExYnNWUWZ0djkzNFViWWhBVjZHdjV6?=
- =?utf-8?B?WElpYTNoRXBRci9kK3paWW9Ld2xmYnBRM0ZJSE1MWWdBeEV1aDJwS3I3V1Vn?=
- =?utf-8?B?bEpiYi9uaER5WHY0T0dmVndNNloxMEZ1UG1aVVlSMm5HY1dWNmZVd3NhdE1h?=
- =?utf-8?B?eEhzZHBOYnBHWnhYTGpzNVJpcWpnVTZTSzg4VmRnSFE4VGNsRHpHNTlCbVcr?=
- =?utf-8?B?S3hmSkdkeEFxOEZucmxvQldvZC91YWh5T3B0Z0R1YTNMYTcvYXZOaDVxYW90?=
- =?utf-8?B?SnZDV3FTKzNFOTRBVlp6ZE9NRGVKamhrV1dZY3l0TVUzSDJEcGVSbXdiSjYz?=
- =?utf-8?B?QnZnTTRGMVdNWUhFWGhHcjRsdjRTT3JqOU9BSUxsK3VFU1JIN2tPcmx0MEsz?=
- =?utf-8?B?eS9zSHU2MnZwcGZyVUhLOHExeVRxOVpMTzdwWEJsUVFmTjlrYXBnQlFvNCtr?=
- =?utf-8?B?ZWN4cHU2VVNRQ2pvRjhyTDc2bWRjTW16eHdiVlFLeDdXSzN0aVdwcFY5UGVu?=
- =?utf-8?B?NFcyR3NXSWFQY1Raa05IS0tMV3JPaEM2czF1cXMvZ3hhR29RUnU4QTA0WnI3?=
- =?utf-8?B?VDBqU3V4TWRnWlBlSTNINCt1RFU5K0pxaWZhamxVVitzM3JHbDBZaEJ3QTh6?=
- =?utf-8?Q?j+R0Rn371OL4Ku5XPHrnykrck?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: fa4ee206-4096-458b-c26e-08dc5ec159d8
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2024 09:32:51.1894
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cNQBPjelpieC8bkBNiBrwWA9bCju4j4br9wgUNLz9raMIQ4PK+1KN/nUBUHUhTDJQsWGWpA0/aoitgcsNvB2Ig==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS0PR11MB7768
-X-OriginatorOrg: intel.com
 
-On 2024/4/17 17:03, Tian, Kevin wrote:
->> From: Liu, Yi L <yi.l.liu@intel.com>
->> Sent: Friday, April 12, 2024 4:15 PM
->>
->> If no dev_pasid is found, it should be a problem of caller. So a WARN_ON
->> is fine, but no need to go further as nothing to be cleanup and also it
->> may hit unknown issue.
->>
->> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
-> 
-> with your discussions let's remove it from this series.
-> 
-> If there is anything to further cleanup it can be done alone.
 
-ok. Would drop it from this series.
 
--- 
-Regards,
-Yi Liu
+> -----Original Message-----
+> From: Shameerali Kolothum Thodi
+> Sent: Wednesday, April 17, 2024 9:01 AM
+> To: 'Jason Gunthorpe' <jgg@nvidia.com>; Nicolin Chen <nicolinc@nvidia.com=
+>
+> Cc: will@kernel.org; robin.murphy@arm.com; joro@8bytes.org;
+> thierry.reding@gmail.com; vdumpa@nvidia.com; jonathanh@nvidia.com; linux-
+> kernel@vger.kernel.org; iommu@lists.linux.dev; linux-arm-
+> kernel@lists.infradead.org; linux-tegra@vger.kernel.org; Jerry Snitselaar
+> <jsnitsel@redhat.com>
+> Subject: RE: [PATCH v5 0/6] Add Tegra241 (Grace) CMDQV Support (part 1/2)
+>=20
+>=20
+>=20
+> > -----Original Message-----
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Monday, April 15, 2024 6:14 PM
+> > To: Nicolin Chen <nicolinc@nvidia.com>
+> > Cc: will@kernel.org; robin.murphy@arm.com; joro@8bytes.org;
+> > thierry.reding@gmail.com; vdumpa@nvidia.com; jonathanh@nvidia.com;
+> > linux-kernel@vger.kernel.org; iommu@lists.linux.dev; linux-arm-
+> > kernel@lists.infradead.org; linux-tegra@vger.kernel.org; Jerry Snitsela=
+ar
+> > <jsnitsel@redhat.com>
+> > Subject: Re: [PATCH v5 0/6] Add Tegra241 (Grace) CMDQV Support (part 1/=
+2)
+> >
+> > On Fri, Apr 12, 2024 at 08:43:48PM -0700, Nicolin Chen wrote:
+> >
+> > > The user-space support is to provide uAPIs (via IOMMUFD) for hypervis=
+ors
+> > > in user space to passthrough VCMDQs to VMs, allowing these VMs to
+> > access
+> > > the VCMDQs directly without trappings, i.e. no VM Exits. This gives h=
+uge
+> > > performance improvements: 70% to 90% reductions of TLB invalidation
+> > time
+> > > were measured by various DMA unmap tests running in a guest OS,
+> > compared
+> > > to a nested SMMU CMDQ (with trappings).
+> >
+> > So everyone is on the same page, this is the primary point of this
+> > series. The huge speed up of in-VM performance is necessary for the
+> > workloads this chip is expected to be running. This series is unique
+> > from all the rest because it runs inside a VM, often in the from of a
+> > distro release.
+> >
+> > It doesn't need the other series or it's own part 2 as it entirely
+> > stands alone on bare metal hardware or on top of commercial VM cloud
+> > instances runing who-knows-what in their hypervisors.
+> >
+> > The other parts are substantially about enabling qemu and the open
+> > ecosystem to have fully functional vSMMU3 virtualization.
+>=20
+> Hi,
+>=20
+> We do have plans to revive the SMMUv3 ECMDQ series posted a while back[0]
+> and looking at this series, I am just wondering whether it makes sense to=
+ have
+> a similar one with ECMDQ as well?  I see that the NVIDIA VCMDQ has a spec=
+ial
+> bit
+> to restrict the commands that can be issued from user space. If we end up
+> assigning
+> a ECMDQ to user space, is there any potential risk in doing so?
+>=20
+> SMMUV3 spec does say,
+> "Arm expects that the Non-secure Stream table, Command queue, Event queue
+> and
+> PRI queue are controlled by the most privileged Non-secure system softwar=
+e. "
+>=20
+> Not clear to me what are the major concerns here and maybe we can come up
+> with
+> something to address that in kernel.
+
+Just to add to that. One idea could be like to have a case where when ECMDQ=
+s are=20
+detected, use that for issuing limited set of cmds(like stage 1 TLBIs) and =
+use the
+normal cmdq for rest. Since we use stage 1 for both host and for Guest nest=
+ed cases
+and TLBIs are the bottlenecks in most cases I think this should give perfor=
+mance
+benefits.
+
+Thanks,
+Shameer
