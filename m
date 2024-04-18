@@ -1,147 +1,142 @@
-Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11olkn2096.outbound.protection.outlook.com [40.92.18.96])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E515168AE9
-	for <iommu@lists.linux.dev>; Thu, 18 Apr 2024 14:35:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.177
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713450915; cv=none; b=Ho2Yx3PmL8J/3Smu9paxl+swZMLtqqLShc6jRx1WcoOHu/e0uw6+dh7CO/pQr66QlH/i1p9lLveRvtI9dMZZYkuU/Scx2rmz/c+/j2TcqDOh2aHGTSt6hGJc5Z6tMeyVeWUHZHkF1kv853frHRXQwrQO1VhRS9JDH7JpsbI2qsw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713450915; c=relaxed/simple;
-	bh=/5UZ3wxrxXLscDtPLr4lGfToWV4p3Bm9ZkiHginA+cA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KaBFHDfqbvTJCGx2S7yRYhVKyz63mceexSu+kPnmGLPP4tioSNX+Uo7gfb52WywJi2hESk3hcZrNdIz9ejS3ssVaCbE/aN/5dkng/9eLMdSd38MNyvXi6B4CFmAxupGG6Ql0ORLymAfPnYtS+n8r1jC4xRaBJGP1RjR7LWHRV5s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=d9fHIy/A; arc=none smtp.client-ip=209.85.160.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C86CA16C69B
+	for <iommu@lists.linux.dev>; Thu, 18 Apr 2024 15:25:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.18.96
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713453952; cv=fail; b=aJMWBGF3RxBHeCvq2Fh2Q+xmzb+FgLcNU7q3GJFEcYynRqhmHlSieySE+XBylTxxqJmeYEP7jzEsw0ARPfU6Y8fxW7KYmkkh6Vh1CLlIKEZL6L0XcB5jGeZB+rizGG/s3nln8jiklHKzyz80FGeX8Ae3sfkIDuZoLxcFSqQXvbs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713453952; c=relaxed/simple;
+	bh=k1NuydLhAUmibwDMxM6bSHmVgSD8ZulZDnS5kKChrbg=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=pJ6V77pWqM7xpELQqn0Mn86TXjp6XCcBBRfnOH9kAjcfaImUo6HVeksORm75kLhryO5X5PzBzSmePWgQieQIyGLIGgoR1njA5Aqwq4sBASMU3pt84G/wPuWbleA+F0dnEsPUkKBaFDc4IXUX+thcgdpVgfdYIAbm+zKgaFF1M6o=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=DnHFHmYs; arc=fail smtp.client-ip=40.92.18.96
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="d9fHIy/A"
-Received: by mail-qt1-f177.google.com with SMTP id d75a77b69052e-436ed871225so303761cf.1
-        for <iommu@lists.linux.dev>; Thu, 18 Apr 2024 07:35:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1713450912; x=1714055712; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tpe0IpMn9n10HwYLRdZzoJZP5R40buFZ7aGvGpwJkxU=;
-        b=d9fHIy/ADLgS4lvW+E80UpnXOjWL0177J1hUqqmEc3Go6P/KIW4Y+YV2vuMZt11e6l
-         69nKaZaQdp2jkH79IQ1cBHQX0Ig1vVAIUTgR4YShmqAWyKqef2aHyhsGhJC6edb2bY8B
-         7mmlBDcLqlZ78qMGQHjdAaUQh8wSf+Fvu+zJsOP+oX5L2eBDnICm/3sDMaIVDW+Hsj0F
-         HX0DdjMJzT8LcQMBS4yFgBSyctGNm5z8Rg1We2LqHtv3cFRa3y/NELoCbAZ1AaFlQN4R
-         4Ax3tFCrrddBEfbgaQ3GdCvE5THIGz5jmN4Qbu8yhETAAmWYyummXcpAuXsFV/XT8p/Q
-         7Uzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713450912; x=1714055712;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tpe0IpMn9n10HwYLRdZzoJZP5R40buFZ7aGvGpwJkxU=;
-        b=MDgv3jyrmAreq3yG438KLSUFR1Hf5frUgYhfGlUWBIIz8mXc4zPUH4sRWHH18HhnjR
-         6iQMwfbbQKH8jy6q6RIdBC7p0w4xyn7gEpWr/v5QJLhIF27nNiAHSe2FB9Ty3xP/Z5Ob
-         VgA3ztWBRvrfWFmg77YyMoYhPIFg1Oy3hUukwxaOF/OqeMHyDn5aLpYOs/Bd/v3sUPva
-         5zDWz/6YgGvzZC+xyFdBXODyAE3kICTR4d5A2xfOr8J3nF3/Dg1jEyybizh3ohhUTl9m
-         lXmqTpESgZyLrnMFWzCDWRxC/+jbTsynMpf+KI/UlhIZEyznqP9NaTijz176zIUoAW5B
-         F2mQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWLqCgTyVkdUBWuVrVWEpWerVaE9SsHYKlHedkMkzpnW/hQh+ERELticvlpLPbLSs0XD3ZoK5YpXLj/FMlTr0BnntHPpL4=
-X-Gm-Message-State: AOJu0YzE8fiM2/i0nWh6MRww7xourqOotKMq2ofK0kqV7lKSsSBesc5q
-	Ad5IQ2yC5bMlo/rtjHk9r+a2+XGnm6gJXagxhCqvFS5f0catNEV9sjc84CVHK2jCneeeplOINmd
-	yXPqFSE7I5AFlYpfjidpUKfIadnEzIzguo17e
-X-Google-Smtp-Source: AGHT+IHRbtKl2XA6O61+XJkbpGqYyvF7X0UHrqoxFog/2wZPnsHpPMfh/guAC4N7YCp+D2jmTubfmnp0ZllnOLSAnmI=
-X-Received: by 2002:a05:622a:1486:b0:437:b7bd:322d with SMTP id
- t6-20020a05622a148600b00437b7bd322dmr13207qtx.11.1713450912182; Thu, 18 Apr
- 2024 07:35:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="DnHFHmYs"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TQlwY28pSxH+38t0/u8r/VWqkCTmtli1zmJvrovVVdK5H5QmkEWDdxiMV6xrVhTzHdiuhUd5FH9qljydnej4iSReiDEyWl35UY7jU12ZyzyAe48AD6/yLR+exZ6Z4byikg7HeTt0NVvF+BiwEfvFrQtSHJwlmAu5BUMgobQWQ12JuAmGpdUlg8l2ZvJ8HuGMyzl7Kff2U2Y2nGOgYNJO9hDYPBUj4xkWVdeg/RW96+X28uHKESfCIEy05TyIfY+e4k0Y50Jh6RNtHAYM3D8EWnvhShlnHOukL49wxjLxN4nYdTmwDUNNGtbBKGiMaUkNPMMiGRWWno4GMjSZG9obew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JkdL7xjz4aO/iybJ8lM/saFQhcff1yi/wIEEydrW44g=;
+ b=HNrhUNXrfeLzVccXed6xVg3q8PPYGwah5Q6sTxDhaCzRtd+noPKd74rgjbdm5hmmaf6Co86wO5F/uwg7nFxMn74wsfHkFMkqoUJKLmv9a+0kfTChWLR3GQA1zH1V/7Iv5PPoFpadx0OX0viVDWyl/aQW6rtLRj6WaJD/1i5jszaMvPllqLALbmpL5sNJarH+WmBqiRcJ8nTri0sv3fekek2F2NsgAROTj3xymh9I1TKSboK4qsxTK1BX6DWa36CqkpGp8b3FhvcPob/+v5807nR5cq4ysGFlmfSUtSorkGaKzYAjeFxrGMF4ScjDNg420IfvjQZATUCIKwqyUxxdlw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JkdL7xjz4aO/iybJ8lM/saFQhcff1yi/wIEEydrW44g=;
+ b=DnHFHmYsXH/2iqIGvEHQBqw8B+Ku8/vbjk8iFtEM2s2r+LgkqL3TuhOsi7iqp9/KyQNouCPSal9r3hKutcnmjsoFSu6PdnZib7cyPKgZdDmoEmpzIDgN/jJL7YILWw19uXJkDxkOW9aTfdKpkdm4HLE5pYzwz8J3lZQfsIOzvcfVVvAmjlz2Qy1kFNes6nPwIbeTLCA/beqbGNQOM8ekbD+TakTFKnMu1KawFs3St95kNSkFrRf6gJmk8se7mR821Q3TfoFbARx0UH2+YZWQw8ys58eAbbDAiTcOzvyKYwPp9hfQXBsKYDBNbQbPOD1sQPilkVhcgLTjkVF4cFsZkw==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by CYYPR02MB9927.namprd02.prod.outlook.com (2603:10b6:930:bf::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.37; Thu, 18 Apr
+ 2024 15:25:48 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::1276:e87b:ae1:a596]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::1276:e87b:ae1:a596%5]) with mapi id 15.20.7472.037; Thu, 18 Apr 2024
+ 15:25:48 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Matthew Wilcox <willy@infradead.org>
+CC: "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
+	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, "hch@lst.de"
+	<hch@lst.de>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"corbet@lwn.net" <corbet@lwn.net>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-doc@vger.kernel.org"
+	<linux-doc@vger.kernel.org>, "petr@tesarici.cz" <petr@tesarici.cz>,
+	"roberto.sassu@huaweicloud.com" <roberto.sassu@huaweicloud.com>
+Subject: RE: [PATCH 1/1] Documentation/core-api: Add swiotlb documentation
+Thread-Topic: [PATCH 1/1] Documentation/core-api: Add swiotlb documentation
+Thread-Index: AQHakZfceiYYTi0lC0K56jdO8yuO3rFuFjoAgAAPoyA=
+Date: Thu, 18 Apr 2024 15:25:47 +0000
+Message-ID:
+ <SN6PR02MB415745AA09BE9E468001EFBED40E2@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240418135213.426671-1-mhklinux@outlook.com>
+ <ZiEuGIoa-FCE0p4X@casper.infradead.org>
+In-Reply-To: <ZiEuGIoa-FCE0p4X@casper.infradead.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-tmn: [cy1y2jeAaiWiOMVLoqpRcDSLQBMqTkn2]
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|CYYPR02MB9927:EE_
+x-ms-office365-filtering-correlation-id: 20262499-b887-4229-d8e6-08dc5fbbd2be
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info:
+ ax6Eb/JSVNu6zWHB32KzAcs7/8sijf767Agd0UnTeasepHWg7VjLEOwZ3Qie27BbdCwzL45YUJHNBur5GTOwUsJq0vHRdIQdd56ExJgO4uqgwUWfYzf+IcORiOvGjyolTMf5cEH3dYRaktdaeU2tf/jKg65AJiHLxGzVnlcJCAreZMOjHgiEROTcA0ces/UDOpc0k5+k021TXGoWcbMJcj2wMBnf9/juAJ3IGMVqcNsHui5ciN8iWItVbWz/4rh17NtWxLwh+RpUCDJluV00AqwjuxuGr/h6VHE5AcOI/bWBW4xTjSwrAPx43m+OsqW1MkFC8k7hovO6iqMyPZ8P1SSO9yWQBYQk7W3KT1SZpdVtdB3AlvBM4hJKSm7h0g+PG68NwrXT7mSBWRpNAJzV7lwlVzOPzufTG7lpWK++gOUmzAc8mSWpYlY8iCOFLpEqQMiUAeMm7KI4nJXVglbX7E3jP4i6BRumDck45VpgbGMsd8IpQAz+O9aMrWI/B4Q4XbeFOYHa2Z8Mz1xPjh7VSJCNJA1Fb0tMxYl8DhfLNP8riqq6lDSGgRzPA66ObHrk
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?+cuhHkOkQS/whAb1sFtEJZzhks9OAW+a0rBNDYQxP6RRBMeRdNB5J+Kn1nKj?=
+ =?us-ascii?Q?dQz82SqkEFGfKJAWj72WzWQ5Wqglvm2pHxQ80l2GukK6Tzp9Gg3rQIu6Qw0b?=
+ =?us-ascii?Q?F4lpKnDaLgeACCpQtUvqn0DQsfSznz3wcILwnplLW6D/j72osxSBX1Ek3wDw?=
+ =?us-ascii?Q?XeYWS+IIh0nQyA67LPRctbjHtV/KItQ7+2qGJxRA8DSpixx5yq0dPR46FTa0?=
+ =?us-ascii?Q?DFcotffYtC7ubNF/OYwDCwX2TJYLoJQ3Vkr2ieuz8K9THm8yq6keMpPjTwBJ?=
+ =?us-ascii?Q?kwqy//4n/pPZalOdGAMNogsELitGdPwlRKn5w4dDlxHGnhWpXQX+pNGE31og?=
+ =?us-ascii?Q?+0tc9c/q2b6eQzvhTWOrswlSbfa0mrkvV4sWBjI/zn39Nd5mY0nUnpKkpL85?=
+ =?us-ascii?Q?cAqgYnARFp92bj5A62HKbp56DIkHzKBHJ5qZ37hdaLUnuOstxKBhERuNSwtG?=
+ =?us-ascii?Q?fwKuVpyqt54q51OIbhq/fqtc0D+gQq97CkdCH9gtUACg4g0YwUp2lQiDzLJo?=
+ =?us-ascii?Q?PY+l07JgAwG0gikb0zd8MOzKEFTCIA+V338Kk/3RT7WvFe10P/rk5UOyRpxh?=
+ =?us-ascii?Q?254NbJm4Uk3ZS/hMh6s37iquq26kV7+YLzXCcEYSvT2bdj7tfeaPe+ITy9UD?=
+ =?us-ascii?Q?vUhZc9PyzwlybWeuMAmGBu648VHl9mItBwlGFBHpFJNmgy4E9UdtAD4aa0ej?=
+ =?us-ascii?Q?ykDvU7dJzmWDy45y1tdUY/h9BZ5f6hkm7GR29P0ON257w0tVEqW5vrz3gH4h?=
+ =?us-ascii?Q?K/qsA0Jz7VVZeWH6duhd4bJ5wzuB3SywQIe5041PF+Awj3jbxOMoQN7zfVBR?=
+ =?us-ascii?Q?i+79U0+7se71fRt6kpyKFOdz5cO7aqgjRtHgO18CUGBz90/IEdDhW3hAMIHR?=
+ =?us-ascii?Q?u8R4PFtXt2qune0wAT3AOMmOy3ZmIGZMDO2A3zTSi+8UpCM95KCNi092caCp?=
+ =?us-ascii?Q?lZlCoTDzvPygv2JgAsp+ZBegIDj5CcWK+tb5/0nSO/cQ1rYE6HP/OUq4h/gP?=
+ =?us-ascii?Q?cCRPZkvGe8/7y5NNc4JQhMZ6Xd7MZX7Wb7CB7giL70wkwsH3zTg1wjoa06z8?=
+ =?us-ascii?Q?8x34KwxMq/be+pG4jsbVrT4H2bJdkImo6txeR+KzUPlkX5BlKx2Z6FgU3RVg?=
+ =?us-ascii?Q?EhaDe/RKPHCLe0SuoRcVXao2I08oywaBlysl+HnwsclWKiolq40zwvBoo9wC?=
+ =?us-ascii?Q?R2Qg5vR36C07kd6Ll2WyqHSxOIFKiBEWP1ZVDw=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <0-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
- <9-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com> <Zh+DxJoAMIXy9O/R@Asurada-Nvidia>
- <20240417141618.GS3637727@nvidia.com> <CAKHBV275bzhRK6oSvDrH7h780qde53z_x8TLVtV3sHACL3gMHA@mail.gmail.com>
- <20240418124852.GA3050601@nvidia.com>
-In-Reply-To: <20240418124852.GA3050601@nvidia.com>
-From: Michael Shavit <mshavit@google.com>
-Date: Thu, 18 Apr 2024 22:34:28 +0800
-Message-ID: <CAKHBV24_YDiH8D_jbfwKdoRRJAA17XLiCaAJ3ioS5f3FO1crrQ@mail.gmail.com>
-Subject: Re: [PATCH v7 9/9] iommu/arm-smmu-v3: Add unit tests for arm_smmu_write_entry
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Nicolin Chen <nicolinc@nvidia.com>, iommu@lists.linux.dev, 
-	Joerg Roedel <joro@8bytes.org>, linux-arm-kernel@lists.infradead.org, 
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, 
-	Eric Auger <eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>, 
-	Moritz Fischer <moritzf@google.com>, patches@lists.linux.dev, 
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, Mostafa Saleh <smostafa@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 20262499-b887-4229-d8e6-08dc5fbbd2be
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Apr 2024 15:25:47.8651
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CYYPR02MB9927
 
-On Thu, Apr 18, 2024 at 8:49=E2=80=AFPM Jason Gunthorpe <jgg@nvidia.com> wr=
-ote:
->
-> On Thu, Apr 18, 2024 at 12:39:29PM +0800, Michael Shavit wrote:
-> > > > Forgot that my SVA sanity doesn't cover this patch. And it looks
-> > > > like some problems here when building it with "=3Dm":
-> > > >
-> > > > ERROR: modpost: missing MODULE_LICENSE() in drivers/iommu/arm/arm-s=
-mmu-v3/arm-smmu-v3-test.o
-> > > > ERROR: modpost: "arm_smmu_make_cdtable_ste" [drivers/iommu/arm/arm-=
-smmu-v3/arm-smmu-v3-test.ko] undefined!
-> > > > ERROR: modpost: "arm_smmu_make_bypass_ste" [drivers/iommu/arm/arm-s=
-mmu-v3/arm-smmu-v3-test.ko] undefined!
-> > > > ERROR: modpost: "arm_smmu_make_abort_ste" [drivers/iommu/arm/arm-sm=
-mu-v3/arm-smmu-v3-test.ko] undefined!
-> > > > ERROR: modpost: "arm_smmu_make_s2_domain_ste" [drivers/iommu/arm/ar=
-m-smmu-v3/arm-smmu-v3-test.ko] undefined!
-> > > > ERROR: modpost: "arm_smmu_get_ste_used" [drivers/iommu/arm/arm-smmu=
--v3/arm-smmu-v3-test.ko] undefined!
-> > > > ERROR: modpost: "arm_smmu_write_entry" [drivers/iommu/arm/arm-smmu-=
-v3/arm-smmu-v3-test.ko] undefined!
-> > > >
-> > > > Likely needs MODULE_LICENSE and some EXPORT_SYMBOLs.
-> > >
-> > > Oh! The kbuild never tested this kconfig combination...
-> > >
-> > > I think just this? Michael?
-> >
-> > Urhh I'm not sure... Should this also depend on ARM_SMMU_V3?
->
-> It does:
->
-> if ARM_SMMU_V3
-> config ARM_SMMU_V3_SVA
->         bool "Shared Virtual Addressing support for the ARM SMMUv3"
->         select IOMMU_SVA
->         select IOMMU_IOPF
->         select MMU_NOTIFIER
->         help
->           Support for sharing process address spaces with devices using t=
-he
->           SMMUv3.
->
->           Say Y here if your system supports SVA extensions such as PCIe =
-PASID
->           and PRI.
->
-> config ARM_SMMU_V3_KUNIT_TEST
->         bool "KUnit tests for arm-smmu-v3 driver"  if !KUNIT_ALL_TESTS
->         depends on KUNIT
->         default KUNIT_ALL_TESTS
->         help
->           Enable this option to unit-test arm-smmu-v3 driver functions.
->
->           If unsure, say N.
-> endif
->
-> The 'if' creates an automatic dependency and groups things into a
-> kconfig menu
+From: Matthew Wilcox <willy@infradead.org> Sent: Thursday, April 18, 2024 7=
+:29 AM
 
-Ohhh, I should have looked more carefully :) . Thanks.
+>=20
+> On Thu, Apr 18, 2024 at 06:52:13AM -0700, mhkelley58@gmail.com wrote:
+> > There's currently no documentation for the swiotlb. Add documentation
+> > describing usage scenarios, the key APIs, and implementation details.
+> > Group the new documentation with other DMA-related documentation.
+>=20
+> This is really well written.  Thank you.  One minor nit below.
+>=20
+> > +Usage Scenarios
+> > +---------------
+> > +The swiotlb was originally created to handle DMA for devices
+> > +with addressing limitations. As physical memory sizes grew
+> > +beyond 4 Gbytes, some devices could only provide 32-bit DMA
+> > +addresses. By allocating bounce buffer memory below the 4 Gbyte
+>=20
+> I'd prefer GiB to Gbytes; we might also prefer GB, Gigabyte or Gibibyte,
+> but Gbytes seems wrong.
 
->
-> > Also what
-> > happens if ARM_SMMU_V3=3Dm and ARM_SMMU_V3_KUNIT_TEST=3Dy ?
->
-> Works fine, the kunit symbols are exported and we still build one
-> module for smmu so we don't need to have internal cross-module stuff
->
-> Jason
+Good point.  I'll update sizes throughout to use the correct terminology.
+
+Michael
+
+>=20
+> You've written a lot here, and I'm not an expert on swiommu, but nothing
+> else leapt out at me.
