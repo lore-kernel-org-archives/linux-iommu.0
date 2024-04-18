@@ -1,120 +1,233 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86422168B06
-	for <iommu@lists.linux.dev>; Thu, 18 Apr 2024 18:05:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 094F65427E
+	for <iommu@lists.linux.dev>; Thu, 18 Apr 2024 20:37:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713463551; cv=none; b=fOEJry655c63Z+UsSzDKvGZEOCaozUztLwkLZrH1pox+Ys4IotQemOt47qZEXmiWMxMpLF5nJkfu+H2KfYqZNQurdS3fO5g3bVDioNqCQE6W0Ypema2mz08UPif01578Aq8V6xG7qjUOZ0fWhKcolKR6OwEqXFdIGi0Td3770gw=
+	t=1713472675; cv=none; b=C7Oc2KtIsRUDrI78fESzoZLeIkoOay1I3SyIOe2KLAqGIUu1bbvY2SyWtkFvQrmLwzsab3e9J0BHdljOdHM0RKpGXjj8G9cf5jOBe51oM0RCn5Q77v/vCSDrfn2Am7Xok0ENksvSfZ6c+yS39Ou2nHfC/72dMmc7P3AIqmaB4Yw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713463551; c=relaxed/simple;
-	bh=UHN9/iLhwy7XwyYNUPmUuZCVMwtBGVwjLhwBImjcW3k=;
+	s=arc-20240116; t=1713472675; c=relaxed/simple;
+	bh=9rCCdJIOXGK5mMIJxWx6y9XaXwhCfvryMYkeNkglHYg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UBzPohBsNyIljeL/WIshUPVZ8nwsL3kCYrvxB4ao4gEORx4IIcnnFAYZEdNqLfJS1ajK4pOwt9QJyMTVUx4gvHlGctpXdLO+LwP5p9ASJktjXFrIugRT0DsWSK9ZupMkiXiTvnOfuH6SLkLLdalYwaGfrIa3szUKlG7vc80zINk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bRQBvS3H; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	 MIME-Version:Content-Type; b=E4zhdjo40h6FAiumI2fydp4f6qGUyqFnxbfOXmxHlUwpKC/m8IkJWqQ5iTNJfgaSsu7eVPwtXfY1aDl+d5AUyyj2XmEXp4MI+Duko+9HDW/rUNdoJrBX59HDE76xAByvv2T/8V2XmXNyS4qVcZpUjRVn+Xril85BKyek9rmCCXo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=cBAbLwMf; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bRQBvS3H"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713463550; x=1744999550;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UHN9/iLhwy7XwyYNUPmUuZCVMwtBGVwjLhwBImjcW3k=;
-  b=bRQBvS3Hs/ruNvL4j2NVTMAvu+YYzFOATLj4UHty4e3z+k8VPSqa3R6d
-   MiFNuTfRTjQP/5KoO5bVP1qoSH4PLIYB6DzHAWQ/LbDUV7BeX/vlhDWzm
-   LceELYuhBtuNREBgLAP54XOX7XjnPwbTu/V52L84yhqjOiqhffLlgjr9+
-   N6G8NydpLoUnZ0uHMGPU+xCS9WGd2n9GJ9UQNSQ/7eTJqEEFawaQS054B
-   AGhXUk5O76GIBvrca8+CIKiV/UyDHQnpWTy7cqnpL+f8BiMlCXmA3YDKL
-   sgluorsVjOWt2qDcB5WfpGlFkSsn/77a896AsM03mmDPUtCdDQ7d4XPcR
-   g==;
-X-CSE-ConnectionGUID: TvL7PRfUTHyhbA+Mo+hisQ==
-X-CSE-MsgGUID: ckC6PYZCTNmiNwPPkbBrvw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11047"; a="11977321"
-X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="11977321"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 11:05:49 -0700
-X-CSE-ConnectionGUID: YaL3ncS1Su+LuCzG6gfi1A==
-X-CSE-MsgGUID: Y6AeD5voQ5qMqlYMs/So9g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,212,1708416000"; 
-   d="scan'208";a="53990641"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Apr 2024 11:05:50 -0700
-Date: Thu, 18 Apr 2024 11:10:24 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Sean Christopherson <seanjc@google.com>, LKML
- <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter Zijlstra
- <peterz@infradead.org>, iommu@lists.linux.dev, Lu Baolu
- <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, Dave Hansen
- <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H. Peter Anvin"
- <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
- <mingo@redhat.com>, Paul Luse <paul.e.luse@intel.com>, Dan Williams
- <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>, Raj Ashok
- <ashok.raj@intel.com>, Kevin Tian <kevin.tian@intel.com>, maz@kernel.org,
- Robin Murphy <robin.murphy@arm.com>, jim.harris@samsung.com,
- a.manzanares@samsung.com, Bjorn Helgaas <helgaas@kernel.org>,
- guang.zeng@intel.com, robert.hoo.linux@gmail.com, oliver.sang@intel.com,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2 03/13] x86/irq: Remove bitfields in posted interrupt
- descriptor
-Message-ID: <20240418111024.615aa95e@jacob-builder>
-In-Reply-To: <87wmouy3w3.ffs@tglx>
-References: <20240405223110.1609888-1-jacob.jun.pan@linux.intel.com>
-	<20240405223110.1609888-4-jacob.jun.pan@linux.intel.com>
-	<Zh8aTitLwSYYlZW5@google.com>
-	<20240417110131.4aaf1d66@jacob-builder>
-	<87wmouy3w3.ffs@tglx>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cBAbLwMf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1713472672;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Pn2/BXHQsJTtbsxPcLAeb1M670ku7QSTpIAaDmdaDfE=;
+	b=cBAbLwMfNQG0lQbG9fmV5FHxM6dXz6p5JT2/b7wnj4xgl1s5g63HRRhIVGs/gfmeig0VoW
+	qhUHJbUxvYul6sHawvn/EaYPj2vQ24SwRtPUKLcfmDsEOPNXXUhtPQKMEjSlVZsUb8OfVr
+	mnfIgoDjldh5Dj6fPh4KVQQmQp/PVxA=
+Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
+ [209.85.166.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-452-YOU4VQmMNviioUpa1RF9mw-1; Thu, 18 Apr 2024 16:37:51 -0400
+X-MC-Unique: YOU4VQmMNviioUpa1RF9mw-1
+Received: by mail-io1-f70.google.com with SMTP id ca18e2360f4ac-7c8a960bd9eso164159939f.0
+        for <iommu@lists.linux.dev>; Thu, 18 Apr 2024 13:37:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713472670; x=1714077470;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Pn2/BXHQsJTtbsxPcLAeb1M670ku7QSTpIAaDmdaDfE=;
+        b=T677m1S2aNvGJr2TUk9S2CtW9gZgPMTOqmbqB/53jGM2YdpIzr0/1LHjImhBJluY8F
+         epebdgEYEaPktkBSQerkyDNgG4vb+NQV3v8IrlkpUrd2hYgauegN4kzuAzz2LD+h3ccl
+         gCzqQ53gMmUKi51iNjCuyErlsRc11gE4Y7ErefvCz2lRNxgS54k+4O1NPC6BNywWFmG/
+         ZA4YiIBbqjkbtf6skMD9BjFBfumM5b7AlTxqVaI/l82N6fvap/Xkvb57UwFeC2donzBj
+         nSKEYKwWG9riQSi22ZKOZlwLGQG+JVUR4BoP7YZJeIo7O3COvdzW75PjkziUF7nCom9K
+         dCJQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV0K4HsM8FT+hvRnvdykbAslUd7aaVBiVODD2LQTx+V7TUwBwWa38Tar6vzyCJ7LPvFKIFcZvVbtr4Tx1Jen8pmmoWYh6o=
+X-Gm-Message-State: AOJu0YzX8lYSa8dIzOCpG/JCI1zAQiWTeI/HX9D63SyizqI+ixeClRLR
+	A9vk6o38fNF1RpNO7iZe5rAfHTAZ1MRJazXd3fMtqnZ2MCSWq3J90QlAdCxtTIZY+PMBDQX63yD
+	013w9/nUtikNCksPtRGbFRDSrWypcYkCW3HYf8j4YBPWDjeptEz4o
+X-Received: by 2002:a05:6e02:1a28:b0:36b:2c7d:cd91 with SMTP id g8-20020a056e021a2800b0036b2c7dcd91mr306704ile.25.1713472670685;
+        Thu, 18 Apr 2024 13:37:50 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IF1WTU9ZaZTA/+3VejLlx0uNmpHA2zKOaPH8HbGoZrE1W44hFuolUWSTZ3FJje7EeKvr4YJ3A==
+X-Received: by 2002:a05:6e02:1a28:b0:36b:2c7d:cd91 with SMTP id g8-20020a056e021a2800b0036b2c7dcd91mr306682ile.25.1713472670299;
+        Thu, 18 Apr 2024 13:37:50 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id y26-20020a056638015a00b004829428d517sm633977jao.63.2024.04.18.13.37.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 18 Apr 2024 13:37:49 -0700 (PDT)
+Date: Thu, 18 Apr 2024 14:37:47 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ "joro@8bytes.org" <joro@8bytes.org>, "robin.murphy@arm.com"
+ <robin.murphy@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+ "nicolinc@nvidia.com" <nicolinc@nvidia.com>, "kvm@vger.kernel.org"
+ <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
+ <chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, "baolu.lu@linux.intel.com"
+ <baolu.lu@linux.intel.com>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+ "Pan, Jacob jun" <jacob.jun.pan@intel.com>
+Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
+Message-ID: <20240418143747.28b36750.alex.williamson@redhat.com>
+In-Reply-To: <4037d5f4-ae6b-4c17-97d8-e0f7812d5a6d@intel.com>
+References: <20240412082121.33382-1-yi.l.liu@intel.com>
+	<BN9PR11MB5276318EF2CD66BEF826F59A8C082@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240416175018.GJ3637727@nvidia.com>
+	<BN9PR11MB5276E6975F78AE96F8DEC66D8C0F2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240417122051.GN3637727@nvidia.com>
+	<20240417170216.1db4334a.alex.williamson@redhat.com>
+	<BN9PR11MB52765314C4E965D4CEADA2178C0E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<4037d5f4-ae6b-4c17-97d8-e0f7812d5a6d@intel.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-Hi Thomas,
+On Thu, 18 Apr 2024 17:03:15 +0800
+Yi Liu <yi.l.liu@intel.com> wrote:
 
-On Thu, 18 Apr 2024 19:30:52 +0200, Thomas Gleixner <tglx@linutronix.de>
-wrote:
+> On 2024/4/18 08:06, Tian, Kevin wrote:
+> >> From: Alex Williamson <alex.williamson@redhat.com>
+> >> Sent: Thursday, April 18, 2024 7:02 AM
+> >>
+> >> On Wed, 17 Apr 2024 09:20:51 -0300
+> >> Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >>  
+> >>> On Wed, Apr 17, 2024 at 07:16:05AM +0000, Tian, Kevin wrote:  
+> >>>>> From: Jason Gunthorpe <jgg@nvidia.com>
+> >>>>> Sent: Wednesday, April 17, 2024 1:50 AM
+> >>>>>
+> >>>>> On Tue, Apr 16, 2024 at 08:38:50AM +0000, Tian, Kevin wrote:  
+> >>>>>>> From: Liu, Yi L <yi.l.liu@intel.com>
+> >>>>>>> Sent: Friday, April 12, 2024 4:21 PM
+> >>>>>>>
+> >>>>>>> A userspace VMM is supposed to get the details of the device's  
+> >> PASID  
+> >>>>>>> capability
+> >>>>>>> and assemble a virtual PASID capability in a proper offset in the  
+> >> virtual  
+> >>>>> PCI  
+> >>>>>>> configuration space. While it is still an open on how to get the  
+> >> available  
+> >>>>>>> offsets. Devices may have hidden bits that are not in the PCI cap  
+> >> chain.  
+> >>>>> For  
+> >>>>>>> now, there are two options to get the available offsets.[2]
+> >>>>>>>
+> >>>>>>> - Report the available offsets via ioctl. This requires device-specific  
+> >> logic  
+> >>>>>>>    to provide available offsets. e.g., vfio-pci variant driver. Or may the  
+> >>>>> device  
+> >>>>>>>    provide the available offset by DVSEC.
+> >>>>>>> - Store the available offsets in a static table in userspace VMM.  
+> >> VMM gets  
+> >>>>> the  
+> >>>>>>>    empty offsets from this table.
+> >>>>>>>  
+> >>>>>>
+> >>>>>> I'm not a fan of requesting a variant driver for every PASID-capable
+> >>>>>> VF just for the purpose of reporting a free range in the PCI config  
+> >> space.  
+> >>>>>>
+> >>>>>> It's easier to do that quirk in userspace.
+> >>>>>>
+> >>>>>> But I like Alex's original comment that at least for PF there is no  
+> >> reason  
+> >>>>>> to hide the offset. there could be a flag+field to communicate it. or
+> >>>>>> if there will be a new variant VF driver for other purposes e.g.  
+> >> migration  
+> >>>>>> it can certainly fill the field too.  
+> >>>>>
+> >>>>> Yes, since this has been such a sticking point can we get a clean
+> >>>>> series that just enables it for PF and then come with a solution for
+> >>>>> VF?
+> >>>>>  
+> >>>>
+> >>>> sure but we at least need to reach consensus on a minimal required
+> >>>> uapi covering both PF/VF to move forward so the user doesn't need
+> >>>> to touch different contracts for PF vs. VF.  
+> >>>
+> >>> Do we? The situation where the VMM needs to wholly make a up a PASID
+> >>> capability seems completely new and seperate from just using an
+> >>> existing PASID capability as in the PF case.  
+> >>
+> >> But we don't actually expose the PASID capability on the PF and as
+> >> argued in path 4/ we can't because it would break existing userspace.
+> > > Come back to this statement.  
+> > 
+> > Does 'break' means that legacy Qemu will crash due to a guest write
+> > to the read-only PASID capability, or just a conceptually functional
+> > break i.e. non-faithful emulation due to writes being dropped?
 
-> On Wed, Apr 17 2024 at 11:01, Jacob Pan wrote:
-> > On Tue, 16 Apr 2024 17:39:42 -0700, Sean Christopherson
-> > <seanjc@google.com> wrote:  
-> >> > diff --git a/arch/x86/kvm/vmx/posted_intr.c
-> >> > b/arch/x86/kvm/vmx/posted_intr.c index af662312fd07..592dbb765675
-> >> > 100644 --- a/arch/x86/kvm/vmx/posted_intr.c
-> >> > +++ b/arch/x86/kvm/vmx/posted_intr.c
-> >> > @@ -107,7 +107,7 @@ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int
-> >> > cpu)
-> >> >  		 * handle task migration (@cpu != vcpu->cpu).
-> >> >  		 */
-> >> >  		new.ndst = dest;
-> >> > -		new.sn = 0;
-> >> > +		new.notif_ctrl &= ~POSTED_INTR_SN;    
-> >> 
-> >> At the risk of creating confusing, would it make sense to add
-> >> double-underscore, non-atomic versions of the set/clear helpers for ON
-> >> and SN?
-> >> 
-> >> I can't tell if that's a net positive versus open coding clear() and
-> >> set() here and below.  
-> > IMHO, we can add non-atomic helpers when we have more than one user for
-> > each operation.
-> >
-> > I do have a stupid bug here, it should be:
-> > -               new.notif_ctrl &= ~POSTED_INTR_SN;
-> > +               new.notif_ctrl &= ~BIT(POSTED_INTR_SN);  
+I expect more the latter.
+
+> > If the latter it's probably not a bad idea to allow exposing the PASID
+> > capability on the PF as a sane guest shouldn't enable the PASID
+> > capability w/o seeing vIOMMU supporting PASID. And there is no
+> > status bit defined in the PASID capability to check back so even
+> > if an insane guest wants to blindly enable PASID it will naturally
+> > write and done. The only niche case is that the enable bits are
+> > defined as RW so ideally reading back those bits should get the
+> > latest written value. But probably this can be tolerated?
+
+Some degree of inconsistency is likely tolerated, the guest is unlikely
+to check that a RW bit was set or cleared.  How would we virtualize the
+control registers for a VF and are they similarly virtualized for a PF
+or would we allow the guest to manipulate the physical PASID control
+registers?
+
+> > With that then should we consider exposing the PASID capability
+> > in PCI config space as the first option? For PF it's simple as how
+> > other caps are exposed. For VF a variant driver can also fake the
+> > PASID capability or emulate a DVSEC capability for unused space
+> > (to motivate the physical implementation so no variant driver is
+> > required in the future)  
 > 
-> That's a perfect reason to use a proper helper.
-I just proved I was wrong:) will do.
+> If kernel exposes pasid cap for PF same as other caps, and in the meantime
+> the variant driver chooses to emulate a DVSEC cap, then userspace follows
+> the below steps to expose pasid cap to VM.
 
-Thanks,
+If we have a variant driver, why wouldn't it expose an emulated PASID
+capability rather than a DVSEC if we're choosing to expose PASID for
+PFs?
 
-Jacob
+> 
+> 1) Check if a pasid cap is already present in the virtual config space
+>     read from kernel. If no, but user wants pasid, then goto step 2).
+> 2) Userspace invokes VFIO_DEVICE_FETURE to check if the device support
+>     pasid cap. If yes, goto step 3).
+
+Why do we need the vfio feature interface if a physical or virtual PASID
+capability on the device exposes the same info?
+
+> 3) Userspace gets an available offset via reading the DVSEC cap.
+
+What's the scenario where we'd have a VF wanting to expose PASID
+support which doesn't also have a variant driver that could implement a
+virtual PASID?
+
+> 4) Userspace assembles a pasid cap and inserts it to the vconfig space.
+> 
+> For PF, step 1) is enough. For VF, it needs to go through all the 4 steps.
+> This is a bit different from what we planned at the beginning. But sounds
+> doable if we want to pursue the staging direction.
+
+Seems like if we decide that we can just expose the PASID capability
+for a PF then we should just have any VF variant drivers also implement
+a virtual PASID capability.  In this case DVSEC would only be used to
+provide information for a purely userspace emulation of PASID (in which
+case it also wouldn't necessarily need the vfio feature because it
+might implicitly know the PASID capabilities of the device).  Thanks,
+
+Alex
+
