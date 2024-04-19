@@ -1,166 +1,157 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 767EB13C831
-	for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 16:56:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713545792; cv=none; b=HgqIpKWndMMylTClnNSL8a95e8ymAWzoIDldqKKvoZzS8O4zdzE/2oei9zqLhry82nbFGtYuoesLYTkG9CTq4B1VPofvM2iYXWssU7awBLo5b4T2pqXEj+SwTIlo1G/9ULtKPuaUnnOFmkcnUVRaye5GtVe2X1MnbiAQkdS2h40=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713545792; c=relaxed/simple;
-	bh=0yp/FZZMQc5hYIr1LfFNeb5WKTxy3Na7JljiqpLCQ/E=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Pl/CG6OWeiuwWRDJB4lL6uYgM7Nf5NHDOMdy6UBS39IBSbBVocWp+NMOmZYTR5BRMQPmv7RNRDiJYBV0NBhPBZvcMajhC+XmVRRlyS8Mfc/92S2xVnJrkE78mwB9+romJinId/WhUY74jCZ97SHIjiGWkekB9K3vFnHepT7n8cs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 414E5153B;
-	Fri, 19 Apr 2024 09:56:59 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C0BC63F792;
-	Fri, 19 Apr 2024 09:56:28 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: Will Deacon <will@kernel.org>,
-	Joerg Roedel <joro@8bytes.org>
-Cc: linux-acpi@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	Rob Herring <robh@kernel.org>,
-	Saravana Kannan <saravanak@google.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH 4/4] iommu: Remove iommu_fwspec ops
-Date: Fri, 19 Apr 2024 17:56:02 +0100
-Message-Id: <3b8cf1725b20beccf009f7589ab4ab41447721b3.1713523251.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
-In-Reply-To: <cover.1713523251.git.robin.murphy@arm.com>
-References: <cover.1713523251.git.robin.murphy@arm.com>
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (mail-dm3nam02on2065.outbound.protection.outlook.com [40.107.95.65])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 350E613A26B
+	for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 17:13:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.95.65
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713546790; cv=fail; b=agwiTKPBl2ruhIsCZgZvL163GN2evNNdnh4+rOjASSipRLPZIWj1QowqhSxP27mUMuHGanYaocCQh8tNRdNsWiYn8Jhan1V1Sw/ft1BUhngU9JiL1VCLmiNU1AbNvgkYAMVuhuVEj5OcDPyYfue2hNadGrcSJVpbk8+DPLYYm+o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713546790; c=relaxed/simple;
+	bh=mqTPclps3AmS3KTDiyEBm6gOyazCCaeWxJytr6fWX2k=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qNUh/d7e+KrmCvQpgJBdsn10zVpQomv/hPHI9bzb/o7S+XI971TTbhi0mQFTEXGomqa+suX520RvPgj2SPJwMH4JucvEoKWPLoJTXk/UkxCr5qdn5lWWcXbW5mTP9mRrETIJreKPWuvYtuF/sXzXTdhvebLwVPMvfmOJuYLhC/A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=RG3PVZFX; arc=fail smtp.client-ip=40.107.95.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="RG3PVZFX"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UVs/BNhuvNy1mWM8c1vo9xRxezsTK4h3A8Pdn1du0UEny6325hfZbSgju/WHrxhr+WLQWtHe/kTCHJTxfcCrLXZfn+wYzqGdOpN66O/3TVoY+qolAiIY9ZSMbQMz4p1yUMjo0+xXrEcgtR2CI9C7rfb3Sp2BoweknS+XN2k8ZQcw7n21PlueIqVKdtR0eY4INdemhU35LKRIcGDxD3SBz7fF+E/fb1cP1GwVhqLdU+g2hDe0QmvCnkt6iXYG4L1C2IesCtisFfyCuxLHRp/Xsj8h7r740WpqfK7DIwjDvWhC2gSSr9poNrR/sdC+hsMtEptsI8ZGuT/wKfHlEXVq0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DvhiYh0CNb7+OKegWC/nYxq0nsiBeCz90VDH4RJPPYM=;
+ b=Gx89USvCmXXvEZkWMEAx9msvZ4d1ZH7Ub5eaoJDD07Z6j/5Rhxby1oJetQFhbxO3/ToeaowDjCLw00J3T7wcCTvIxcOIsDC48FQYk6+XD5XFcixIqSdV1FuWE64J/21LGreBuGkLU7rVL9Hpz5A6CztRO+PuOYgU4soaH0e6SvKBO3UycQcqAccRMZiTRqRIIeu8NYi5hm+Ccf8XNf0anfrP2Wy9viYaaOPuFpqjsymU7smFza4gUCFB2YICJUYTbXpp/uVyDYP5vtDC39WpAmpBQ9y6PtsiNMcH/jC7CiYFpfD1bIWIOiqvvtQPa/JKubPocJij6Nv4deiWt+Jjnw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DvhiYh0CNb7+OKegWC/nYxq0nsiBeCz90VDH4RJPPYM=;
+ b=RG3PVZFXHL0ePs0yrgpfsAV0LGVOvMLnfl5pKWN6B5cLR4vwXl1Vpj7duudr2Z0J1gSUslqZa6NAkpYdAU6AXSoqbI1tMobqpfuSB0wNVxLaLErUl7bwBWpiYwjFbLhDMYp6FZV98ePF/6Tawha1j3FmQ24x/ubylop1/GgAIRly+FlVT1bxU868qmhSQJxTk/9DwXaA+sArS7l9RrXnBeWZEYH+FBOq1d5UhmAcDFT6tSpMO5En0+/RwGpB6rLrIXjqzlSfzxBzRhX3VjJOSZMKi55WtC3NFmJ7JzSH0TKdGzMIpKQ2haRgNas2HH+7DhOpxheUJkI8ZkphClcBBg==
+Received: from SJ0PR03CA0091.namprd03.prod.outlook.com (2603:10b6:a03:333::6)
+ by LV3PR12MB9166.namprd12.prod.outlook.com (2603:10b6:408:19c::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.39; Fri, 19 Apr
+ 2024 17:13:05 +0000
+Received: from DS3PEPF000099E2.namprd04.prod.outlook.com
+ (2603:10b6:a03:333:cafe::24) by SJ0PR03CA0091.outlook.office365.com
+ (2603:10b6:a03:333::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7495.30 via Frontend
+ Transport; Fri, 19 Apr 2024 17:13:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DS3PEPF000099E2.mail.protection.outlook.com (10.167.17.201) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7452.22 via Frontend Transport; Fri, 19 Apr 2024 17:13:04 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 19 Apr
+ 2024 10:12:46 -0700
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Fri, 19 Apr
+ 2024 10:12:46 -0700
+Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com (10.129.68.9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Fri, 19 Apr 2024 10:12:45 -0700
+Date: Fri, 19 Apr 2024 10:12:44 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: <will@kernel.org>, <robin.murphy@arm.com>
+CC: <joro@8bytes.org>, <jgg@nvidia.com>, <thierry.reding@gmail.com>,
+	<vdumpa@nvidia.com>, <jonathanh@nvidia.com>, <linux-kernel@vger.kernel.org>,
+	<iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH v5 1/6] iommu/arm-smmu-v3: Add CS_NONE quirk
+Message-ID: <ZiKmDCAnAc0sRT7K@Asurada-Nvidia>
+References: <cover.1712977210.git.nicolinc@nvidia.com>
+ <10a39a51cae4de9ef47580f0c4439fb6c5373588.1712977210.git.nicolinc@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <10a39a51cae4de9ef47580f0c4439fb6c5373588.1712977210.git.nicolinc@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF000099E2:EE_|LV3PR12MB9166:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8fc9b12d-f107-4729-1f0a-08dc6093f9bb
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?fjTOlyDo0V8VYplXMBxZkaTnJrS2FBBg1me0SOC5vUqZlrbGav8FfPAo/M/u?=
+ =?us-ascii?Q?42T/xoUMZ4u3kxUuuyYViPJjecgznnvtEvpug4DeOQlnMkaaBL/exja3S42X?=
+ =?us-ascii?Q?5k22H6oCO2SEa9Tpm+WLlLC2gGQqmNPtQStdx56aAiadyOtGrg0eek0nqRvi?=
+ =?us-ascii?Q?VcAwO7t7ugSGyh+KTeNG9fpJ43ri0UUfFSQ9WghYs99TvSqOobcrdOPltYmX?=
+ =?us-ascii?Q?3yNNYa/euhB5CCjKr0ajnsy14S5DxeMx4yqyhTzv19FQ/SuVqQ4UEEXSoo3d?=
+ =?us-ascii?Q?tWjj22Hd91iV9Pmn8ZlU+xkf0oRqDuwGuDSHSrEC+7dzYsrNxsDAbLGm2pQN?=
+ =?us-ascii?Q?baugt8xNwAQP/fB3PYxWNdOUK8Jrt2smWiC3Hvi6ePqa/0kJ4wa19srhqIUM?=
+ =?us-ascii?Q?0MAjzN2WqfJL8O6LDBiv3lSyCGiB+B852AAZ2IqUsRDaMif3N0iDMZ6vN+7R?=
+ =?us-ascii?Q?/rUkQ5cZvztY5mKV5bfj4rZ0OxW/7tTK1Lc3s5aK/HY6rLRUZvS932yabrkO?=
+ =?us-ascii?Q?aQolQvPmfDbDUI0+WUxFWcGxuLpUw7JO+GmvYZIeQf/CRImAzFiPYzYK/uhI?=
+ =?us-ascii?Q?DTQ+rJu6j4nco3vAvJTvA8mvAWs3WcvIVjk36JFgq1BvxrUS9FfDTt8nNosz?=
+ =?us-ascii?Q?ZGPA56lrlMqwX/pFGU+RzgsyxkR7qs/GL7BxFuG4MWiHEYF7XSc12TjUoWwl?=
+ =?us-ascii?Q?KNZU3LoW8b0EbygqtP6Akd1HjsW7oiIaGLhFM7x0p7UbWqkibNMsJ6Q75n/4?=
+ =?us-ascii?Q?8rd/bGibYqefz35spJoRNnej2sHCVDZyc4CsGGZMYTInD5xu7yCWmHw8Au9F?=
+ =?us-ascii?Q?uGL+2n9ezL6M1UK+6eWniMfE4b5RcLY4nRYXyD1g99Cd8lZJ0Qqs8Yniuc7B?=
+ =?us-ascii?Q?IrCTGkgBeck/46KAZGdtqJ9fLZyOG2s6PWwDtWk0R2FOIao+L+uUaP20b1Pr?=
+ =?us-ascii?Q?8W2/cbKNTvw+QK9yGleZE5eMwzZFkfxA8bYG/0EDu9Cy/FyqsrJ/RpfaT13o?=
+ =?us-ascii?Q?VHYR2SkCxJtwfmtKiA6VYPi6t6bO0421xL2WRAZGwt8dQCIjcIGfvh5UIJw5?=
+ =?us-ascii?Q?gdsJJoP5XMq62NgPBpDtUhRM7HJv1UMv6aI+p/68QfGNW/9Q5+tDRqhr19D6?=
+ =?us-ascii?Q?rJwJO2u/QoFx4n8AyaYkax9gd0LE3MGklwp1FM02NDsTkzlNbrkDYphZQBWI?=
+ =?us-ascii?Q?U89ylhPls+TF7chYqyZs3PmDJVCVB9qvMp9s90TDW5oWvYlgvAGGtPTy1kT5?=
+ =?us-ascii?Q?ghbw/S9ZfNddPAN+J0Rh2ZIKlr822Fkn9+Ts0GA8RbP4bGJts+DJeI6mAeEi?=
+ =?us-ascii?Q?SsvXRa72kNs5tpWdbPSW4HcQPgiogBEehjE5t3g8clgyla80eyGO8lwMXESC?=
+ =?us-ascii?Q?2rJlBHlSYJxx2OEKnokxnpVJ087/?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(36860700004)(1800799015)(376005)(82310400014);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2024 17:13:04.4610
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8fc9b12d-f107-4729-1f0a-08dc6093f9bb
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF000099E2.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV3PR12MB9166
 
-The ops in iommu_fwspec are only needed for the early configuration and
-probe process, and by now are easy enough to derive on-demand in those
-couple of places which need them, so remove the redundant stored copy.
+On Fri, Apr 12, 2024 at 08:43:49PM -0700, Nicolin Chen wrote:
+> The CMDQV extension in NVIDIA Tegra241 SoC only supports CS_NONE in the
+> CS field of CMD_SYNC. Add a quirk flag to accommodate that.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 ++++++++--
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  4 ++++
+>  2 files changed, 12 insertions(+), 2 deletions(-)
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/iommu-priv.h |  5 +++++
- drivers/iommu/iommu.c      | 11 ++---------
- drivers/iommu/of_iommu.c   |  4 +++-
- include/linux/iommu.h      |  2 --
- 4 files changed, 10 insertions(+), 12 deletions(-)
+> @@ -707,7 +712,8 @@ static int __arm_smmu_cmdq_poll_until_consumed(struct arm_smmu_device *smmu,
+>  static int arm_smmu_cmdq_poll_until_sync(struct arm_smmu_device *smmu,
+>                                          struct arm_smmu_ll_queue *llq)
+>  {
+> -       if (smmu->options & ARM_SMMU_OPT_MSIPOLL)
+> +       if (smmu->options & ARM_SMMU_OPT_MSIPOLL &&
+> +           !(cmdq->q.quirks & CMDQ_QUIRK_SYNC_CS_NONE_ONLY))
+>                 return __arm_smmu_cmdq_poll_until_msi(smmu, llq);
 
-diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-index 078cafcf49b4..a34efed2884b 100644
---- a/drivers/iommu/iommu-priv.h
-+++ b/drivers/iommu/iommu-priv.h
-@@ -19,6 +19,11 @@ static inline const struct iommu_ops *dev_iommu_ops(struct device *dev)
- 
- const struct iommu_ops *iommu_ops_from_fwnode(const struct fwnode_handle *fwnode);
- 
-+static inline const struct iommu_ops *iommu_fwspec_ops(struct iommu_fwspec *fwspec)
-+{
-+	return iommu_ops_from_fwnode(fwspec ? fwspec->iommu_fwnode : NULL);
-+}
-+
- int iommu_group_replace_domain(struct iommu_group *group,
- 			       struct iommu_domain *new_domain);
- 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 07a647e34c72..996e79dc582d 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -510,7 +510,6 @@ DEFINE_MUTEX(iommu_probe_device_lock);
- static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
- {
- 	const struct iommu_ops *ops;
--	struct iommu_fwspec *fwspec;
- 	struct iommu_group *group;
- 	struct group_device *gdev;
- 	int ret;
-@@ -523,12 +522,7 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
- 	 * be present, and that any of their registered instances has suitable
- 	 * ops for probing, and thus cheekily co-opt the same mechanism.
- 	 */
--	fwspec = dev_iommu_fwspec_get(dev);
--	if (fwspec && fwspec->ops)
--		ops = fwspec->ops;
--	else
--		ops = iommu_ops_from_fwnode(NULL);
--
-+	ops = iommu_fwspec_ops(dev_iommu_fwspec_get(dev));
- 	if (!ops)
- 		return -ENODEV;
- 	/*
-@@ -2831,7 +2825,7 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode)
- 		return -EPROBE_DEFER;
- 
- 	if (fwspec)
--		return ops == fwspec->ops ? 0 : -EINVAL;
-+		return ops == iommu_fwspec_ops(fwspec) ? 0 : -EINVAL;
- 
- 	if (!dev_iommu_get(dev))
- 		return -ENOMEM;
-@@ -2843,7 +2837,6 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode)
- 
- 	fwnode_handle_get(iommu_fwnode);
- 	fwspec->iommu_fwnode = iommu_fwnode;
--	fwspec->ops = ops;
- 	dev_iommu_fwspec_set(dev, fwspec);
- 	return 0;
- }
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index a5d6ff8e4e72..fde3053706c0 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -17,6 +17,8 @@
- #include <linux/slab.h>
- #include <linux/fsl/mc.h>
- 
-+#include "iommu-priv.h"
-+
- static int of_iommu_xlate(struct device *dev,
- 			  struct of_phandle_args *iommu_spec)
- {
-@@ -32,7 +34,7 @@ static int of_iommu_xlate(struct device *dev,
- 	if (ret)
- 		return ret;
- 
--	ops = dev_iommu_fwspec_get(dev)->ops;
-+	ops = iommu_ops_from_fwnode(&iommu_spec->np->fwnode);
- 	if (!ops->of_xlate || !try_module_get(ops->owner))
- 		return -ENODEV;
- 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 0614b2736d66..ddfc2c9cdda4 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -965,7 +965,6 @@ extern struct iommu_group *generic_single_device_group(struct device *dev);
- 
- /**
-  * struct iommu_fwspec - per-device IOMMU instance data
-- * @ops: ops for this device's IOMMU
-  * @iommu_fwnode: firmware handle for this device's IOMMU
-  * @flags: IOMMU_FWSPEC_* flags
-  * @num_ids: number of associated device IDs
-@@ -976,7 +975,6 @@ extern struct iommu_group *generic_single_device_group(struct device *dev);
-  * consumers.
-  */
- struct iommu_fwspec {
--	const struct iommu_ops	*ops;
- 	struct fwnode_handle	*iommu_fwnode;
- 	u32			flags;
- 	unsigned int		num_ids;
--- 
-2.39.2.101.g768bb238c484.dirty
+Realized that I should have moved the PATCH-4 to the top for the
+cmdq pointer here. Otherwise it breaks git-bisect... Will fix in
+the next version.
 
+Nicolin
