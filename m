@@ -1,23 +1,23 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 75C9713B29D
-	for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 16:56:26 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2AEA013C831
+	for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 16:56:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713545787; cv=none; b=tOwYr3wA9Qrtx3hZH/7K+GHD4NLuoz8kBlVtEmachKUZI0b4uq/EY/68JQ9sNNqTNuFWDSgL9hQedN6w4SO8RZdh8/0zHsiZgCn6ixI2Ws0g0mzP35ADlUR34+PoLU57yxiDyoNU5RLwmnayANPiCWcFVIUWUKBqoUoXZpdQyzA=
+	t=1713545790; cv=none; b=TxZPeD5nJHAZwfVpuFYTk7JoVe6RGdVsSny3zbQMibdIJxqOi/A0uyTiLyUo3LdwEgPfIfUkMfO4S46EQ+cEsHXKkHqW5wG5x/V7UkVlazfU1FH3iyRYQqmF+U5eSFMkCLdZRjYWFpGsh/kLlgLXcxv95QG3C74EGZn9fUqFBuU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713545787; c=relaxed/simple;
-	bh=9vJmXub9OrgT6L5kb/8WNFjDJmz7ntnxuiLA629DI10=;
+	s=arc-20240116; t=1713545790; c=relaxed/simple;
+	bh=flTdBTtwOQyaAf+NPWtA6POYHGpThO5iFJo8u6ia0hg=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=dU8KSx7hrDi3xvnjMzsuPltYK20Mc/XxI/9LUqpt2KlFYZYDCURuRfek2WeKsDo0wkyHfnB9vg0Vj2CfYiDVfybML5E8ZjwEtHlfouYINLbV7A8MdBG8LVyy+PYEomdmqwjWbiX0hjbrG5+dOS2gH1f/4EO4kEn4XcqNNXNp3fg=
+	 MIME-Version; b=nnrcvvt/+k4sxAbBkzLSP+GwW3sFnZDA+K7pAFBo46TLXszBdfuMyk1M8sWEOFXe8IuhzOZ9tw872afNVi7oudMzQzYgMlQQ1wGPUmrOUUp04MqQxmnlrZMVvtyPW0UzWQ8rg5X//Hd/rYn1JhEL4TRwK3ETlUZKDhd+JufWZ/4=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6F185106F;
-	Fri, 19 Apr 2024 09:56:54 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D298F1424;
+	Fri, 19 Apr 2024 09:56:56 -0700 (PDT)
 Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id EE49D3F792;
-	Fri, 19 Apr 2024 09:56:23 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 5D2603F792;
+	Fri, 19 Apr 2024 09:56:26 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: Will Deacon <will@kernel.org>,
 	Joerg Roedel <joro@8bytes.org>
@@ -34,9 +34,9 @@ Cc: linux-acpi@vger.kernel.org,
 	"Rafael J. Wysocki" <rafael@kernel.org>,
 	Len Brown <lenb@kernel.org>,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH 2/4] ACPI: Retire acpi_iommu_fwspec_ops()
-Date: Fri, 19 Apr 2024 17:56:00 +0100
-Message-Id: <3ae004dfc581fa12fc9432c5008f1225882d5464.1713523251.git.robin.murphy@arm.com>
+Subject: [PATCH 3/4] OF: Simplify of_iommu_configure()
+Date: Fri, 19 Apr 2024 17:56:01 +0100
+Message-Id: <7467a9487b23ebae62d4bda73b9c736d3cb3c68c.1713523251.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.39.2.101.g768bb238c484.dirty
 In-Reply-To: <cover.1713523251.git.robin.murphy@arm.com>
 References: <cover.1713523251.git.robin.murphy@arm.com>
@@ -48,75 +48,144 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Now that iommu_fwspec_init() can signal for probe deferral directly,
-acpi_iommu_fwspec_ops() is unneeded and can be cleaned up.
+We no longer have a notion of partially-initialised fwspecs existing,
+and we also no longer need to use an iommu_ops pointer to return status
+to of_dma_configure(). Clean up the remains of those, which lends itself
+to clarifying the logic around the dma_range_map allocation as well.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/acpi/scan.c | 30 ++++++------------------------
- 1 file changed, 6 insertions(+), 24 deletions(-)
+ drivers/iommu/of_iommu.c | 29 ++++++++++-------------------
+ drivers/of/device.c      | 30 +++++++++++-------------------
+ 2 files changed, 21 insertions(+), 38 deletions(-)
 
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 9d36fc3dc5ac..d6b64dcbf9a6 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -1588,26 +1588,14 @@ int acpi_iommu_fwspec_init(struct device *dev, u32 id,
- 	return ret;
- }
- 
--static inline const struct iommu_ops *acpi_iommu_fwspec_ops(struct device *dev)
--{
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--
--	return fwspec ? fwspec->ops : NULL;
--}
--
- static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index bbfe960cdc13..a5d6ff8e4e72 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -108,7 +108,6 @@ static int of_iommu_configure_device(struct device_node *master_np,
+ int of_iommu_configure(struct device *dev, struct device_node *master_np,
+ 		       const u32 *id)
  {
+-	struct iommu_fwspec *fwspec;
  	int err;
--	const struct iommu_ops *ops;
+ 
+ 	if (!master_np)
+@@ -116,14 +115,9 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
  
  	/* Serialise to make dev->iommu stable under our potential fwspec */
  	mutex_lock(&iommu_probe_device_lock);
--	/*
--	 * If we already translated the fwspec there is nothing left to do,
--	 * return the iommu_ops.
--	 */
--	ops = acpi_iommu_fwspec_ops(dev);
--	if (ops) {
-+	/* If we already translated the fwspec there is nothing left to do */
+-	fwspec = dev_iommu_fwspec_get(dev);
+-	if (fwspec) {
+-		if (fwspec->ops) {
+-			mutex_unlock(&iommu_probe_device_lock);
+-			return 0;
+-		}
+-		/* In the deferred case, start again from scratch */
+-		iommu_fwspec_free(dev);
 +	if (dev_iommu_fwspec_get(dev)) {
- 		mutex_unlock(&iommu_probe_device_lock);
- 		return 0;
++		mutex_unlock(&iommu_probe_device_lock);
++		return 0;
  	}
-@@ -1624,16 +1612,7 @@ static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
- 	if (!err && dev->bus)
- 		err = iommu_probe_device(dev);
  
--	/* Ignore all other errors apart from EPROBE_DEFER */
--	if (err == -EPROBE_DEFER) {
+ 	/*
+@@ -143,20 +137,17 @@ int of_iommu_configure(struct device *dev, struct device_node *master_np,
+ 	} else {
+ 		err = of_iommu_configure_device(master_np, dev, id);
+ 	}
++
++	if (err)
++		iommu_fwspec_free(dev);
+ 	mutex_unlock(&iommu_probe_device_lock);
+ 
+-	if (err == -ENODEV || err == -EPROBE_DEFER)
 -		return err;
--	} else if (err) {
--		dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
--		return -ENODEV;
--	}
--	if (!acpi_iommu_fwspec_ops(dev))
--		return -ENODEV;
+-	if (err)
+-		goto err_log;
++	if (!err && dev->bus)
++		err = iommu_probe_device(dev);
+ 
+-	err = iommu_probe_device(dev);
+-	if (err)
+-		goto err_log;
 -	return 0;
-+	return err;
++	if (err && err != -EPROBE_DEFER)
++		dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
+ 
+-err_log:
+-	dev_dbg(dev, "Adding to IOMMU failed: %pe\n", ERR_PTR(err));
+ 	return err;
  }
  
- #else /* !CONFIG_IOMMU_API */
-@@ -1672,6 +1651,9 @@ int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
- 	ret = acpi_iommu_configure_id(dev, input_id);
- 	if (ret == -EPROBE_DEFER)
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index 312c63361211..edf3be197265 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -96,8 +96,7 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+ 	const struct bus_dma_region *map = NULL;
+ 	struct device_node *bus_np;
+ 	u64 mask, end = 0;
+-	bool coherent;
+-	int iommu_ret;
++	bool coherent, set_map = false;
+ 	int ret;
+ 
+ 	if (np == dev->of_node)
+@@ -118,6 +117,7 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+ 	} else {
+ 		/* Determine the overall bounds of all DMA regions */
+ 		end = dma_range_map_max(map);
++		set_map = true;
+ 	}
+ 
+ 	/*
+@@ -144,7 +144,7 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+ 	dev->coherent_dma_mask &= mask;
+ 	*dev->dma_mask &= mask;
+ 	/* ...but only set bus limit and range map if we found valid dma-ranges earlier */
+-	if (!ret) {
++	if (set_map) {
+ 		dev->bus_dma_limit = end;
+ 		dev->dma_range_map = map;
+ 	}
+@@ -153,29 +153,21 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+ 	dev_dbg(dev, "device is%sdma coherent\n",
+ 		coherent ? " " : " not ");
+ 
+-	iommu_ret = of_iommu_configure(dev, np, id);
+-	if (iommu_ret == -EPROBE_DEFER) {
++	ret = of_iommu_configure(dev, np, id);
++	if (ret == -EPROBE_DEFER) {
+ 		/* Don't touch range map if it wasn't set from a valid dma-ranges */
+-		if (!ret)
++		if (set_map)
+ 			dev->dma_range_map = NULL;
+ 		kfree(map);
  		return -EPROBE_DEFER;
-+	/* Ignore all other errors apart from EPROBE_DEFER */
+-	} else if (iommu_ret == -ENODEV) {
+-		dev_dbg(dev, "device is not behind an iommu\n");
+-	} else if (iommu_ret) {
+-		dev_err(dev, "iommu configuration for device failed with %pe\n",
+-			ERR_PTR(iommu_ret));
+-
+-		/*
+-		 * Historically this routine doesn't fail driver probing
+-		 * due to errors in of_iommu_configure()
+-		 */
+-	} else
+-		dev_dbg(dev, "device is behind an iommu\n");
++	}
++	/* Take all other IOMMU errors to mean we'll just carry on without it */
++	dev_dbg(dev, "device is%sbehind an iommu\n",
++		!ret ? " " : " not ");
+ 
+ 	arch_setup_dma_ops(dev, coherent);
+ 
+-	if (iommu_ret)
 +	if (ret)
-+		dev_dbg(dev, "Adding to IOMMU failed: %d\n", ret);
+ 		of_dma_set_restricted_buffer(dev, np);
  
- 	arch_setup_dma_ops(dev, attr == DEV_DMA_COHERENT);
- 
+ 	return 0;
 -- 
 2.39.2.101.g768bb238c484.dirty
 
