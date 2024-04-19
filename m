@@ -1,282 +1,113 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 19261179204
-	for <iommu@lists.linux.dev>; Thu, 18 Apr 2024 22:07:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54CC1C129
+	for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 04:00:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713478057; cv=none; b=SfhA/PA6oFa8MyBzGaQ31DRT9pF4xp6yeVt2hOcrqHra5pOfmbo3gxGWKVepehPknUXahrBjw8JYpemG0nZjj6+Jfr1C9G7xxY3uPaykIjZ15BA376v6sGQow4czo9q9cGHqGQFVn75wcaCU9PbyMBiFAoDZel45nvPwmUXtjIw=
+	t=1713499236; cv=none; b=Iyq5Lh7ejgpfd7YnLVqTJylclfaxJmvbCKJgPCvuqO8ClqWNP5E+7l3lld68WEHTPE2K5cxusErae6qndyi8LMvcb4u4oGbWq4dnizYleAW7G01rWK8xSvHYZxD0gAwQ5B2f3kJqhWTis/EyzkTi58vMrbebIrXmjRg4sVOHL70=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713478057; c=relaxed/simple;
-	bh=fTO83B9lWQ2Ur2tqdGc4yty66F7+uoKHWYHtE+j6Jis=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=H6Jw6MTex3d1svYnwyzH9M1/2ged/VXPjQy+1E/EpkjwccD6tlVmckOx0RCr33EXonlrhLRxyMczkDzIIT/Bi1AA6Ci0WRhuKqqKyEJuIwyLzSGPrwi6Nk11VqSs4dS3yozIWqL2Twma3A2kCcAQ1R+awPt+53NUAmJAJkaaTLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4A8332F;
-	Thu, 18 Apr 2024 15:08:03 -0700 (PDT)
-Received: from [10.57.20.187] (unknown [10.57.20.187])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3717E3F738;
-	Thu, 18 Apr 2024 15:07:32 -0700 (PDT)
-Message-ID: <08e12daa-3fcc-4ab2-ac55-dee8f69c429a@arm.com>
-Date: Thu, 18 Apr 2024 23:07:31 +0100
+	s=arc-20240116; t=1713499236; c=relaxed/simple;
+	bh=VoP8eWs6X6UpwdEU6DxqE0BQtx+LA81NOt7BFExm19w=;
+	h=From:To:Cc:Subject:In-Reply-To:Date:Message-ID:MIME-Version:
+	 Content-Type; b=O0DHtU+eoMUsH1m74AsdWIXBljYCwHWYEvGjDeZRP6nzFMCmBpXiv9FY4KECD2hsK5fItXc/KEn4sVT0JL+emfSbWWptHJ8Kcbk1FKSoM1p3rstYdmSXxuAGSbhRGLtznM5PS6mGhTanVPJsBSgy7Gs86ThN7mODwgC2ZVAvSvA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=WXDPgm6I; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=PMiG0Y5z; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="WXDPgm6I";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="PMiG0Y5z"
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1713499233;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to; bh=tgzlDnJme9o2gtucDdd8zdE7h5GgA/sTAqIFz7UDrEM=;
+	b=WXDPgm6IvctRQxcXrX6tSm9pkFn4Uz27SX71mqwQgPqsFN4NXYVNJe2xAEeEG036BEZLc+
+	WECVmKyTgocKSb3PyYs1ihSxDs1OdbYJtJw1v3Fu0RFhYM6IdCV2EfoZY+ung4mvQYcoOy
+	R8GYNByD5/EoaxHWktTs7Mt7b0jH2zMVcIGbc7jAImxKyXO7ic4mI0uZaEue0WMVXw3vGu
+	Cfah7ZtTQ/gmagvyItzfZ5I3kObUEzN8NMZzVQPYumUejE8ySO21vJax1c8vsY84vQGJ7Z
+	wneXC+XucG71+B5RA+1DsCkGluarqqT8wr2m6/ERkcdfz7pVeWMCDOX4lptGTw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1713499233;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to; bh=tgzlDnJme9o2gtucDdd8zdE7h5GgA/sTAqIFz7UDrEM=;
+	b=PMiG0Y5znY4WFNYm0eVJzdOnTurK42sJ9GX83OPgjqBau96ZerAFLLNHFzO3xxvpZY7OOi
+	46aPv77kfi2e7ZAg==
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Cc: LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter
+ Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev, Lu Baolu
+ <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, Dave Hansen
+ <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H. Peter Anvin"
+ <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
+ <mingo@redhat.com>, Paul Luse <paul.e.luse@intel.com>, Dan Williams
+ <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>, Raj Ashok
+ <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ maz@kernel.org, seanjc@google.com, Robin Murphy <robin.murphy@arm.com>,
+ jim.harris@samsung.com, a.manzanares@samsung.com, Bjorn Helgaas
+ <helgaas@kernel.org>, guang.zeng@intel.com, robert.hoo.linux@gmail.com,
+ jacob.jun.pan@linux.intel.com, acme@kernel.org, kan.liang@intel.com,
+ "Kleen, Andi" <andi.kleen@intel.com>
+Subject: Re: [PATCH v2 05/13] x86/irq: Reserve a per CPU IDT vector for
+ posted MSIs
+In-Reply-To: <20240415134354.67c9d1d1@jacob-builder>
+Date: Fri, 19 Apr 2024 06:00:24 +0200
+Message-ID: <87jzkuxaqv.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/7] iommu/riscv: Add RISC-V IOMMU PCIe device driver
-To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Paul Walmsley <paul.walmsley@sifive.com>
-Cc: Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Anup Patel <apatel@ventanamicro.com>, Sunil V L <sunilvl@ventanamicro.com>,
- Nick Kossifidis <mick@ics.forth.gr>, Sebastien Boeuf <seb@rivosinc.com>,
- Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
- iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux@rivosinc.com
-References: <cover.1713456597.git.tjeznach@rivosinc.com>
- <4a068da7a7a984a43d419c52310f8ab7d91da46e.1713456598.git.tjeznach@rivosinc.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <4a068da7a7a984a43d419c52310f8ab7d91da46e.1713456598.git.tjeznach@rivosinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-On 2024-04-18 5:32 pm, Tomasz Jeznach wrote:
-> Introduce device driver for PCIe implementation
-> of RISC-V IOMMU architected hardware.
-> 
-> IOMMU hardware and system support for MSI or MSI-X is
-> required by this implementation.
-> 
-> Vendor and device identifiers used in this patch
-> matches QEMU implementation of the RISC-V IOMMU PCIe
-> device, from Rivos VID (0x1efd) range allocated by the PCI-SIG.
-> 
-> Link: https://lore.kernel.org/qemu-devel/20240307160319.675044-1-dbarboza@ventanamicro.com/
-> Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
-> Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
-> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
-> ---
->   MAINTAINERS                     |   1 +
->   drivers/iommu/riscv/Kconfig     |   6 ++
->   drivers/iommu/riscv/Makefile    |   1 +
->   drivers/iommu/riscv/iommu-pci.c | 154 ++++++++++++++++++++++++++++++++
->   4 files changed, 162 insertions(+)
->   create mode 100644 drivers/iommu/riscv/iommu-pci.c
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 051599c76585..4da290d5e9db 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -18975,6 +18975,7 @@ F:	Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
->   F:	drivers/iommu/riscv/Kconfig
->   F:	drivers/iommu/riscv/Makefile
->   F:	drivers/iommu/riscv/iommu-bits.h
-> +F:	drivers/iommu/riscv/iommu-pci.c
->   F:	drivers/iommu/riscv/iommu-platform.c
->   F:	drivers/iommu/riscv/iommu.c
->   F:	drivers/iommu/riscv/iommu.h
-> diff --git a/drivers/iommu/riscv/Kconfig b/drivers/iommu/riscv/Kconfig
-> index d02326bddb4c..711326992585 100644
-> --- a/drivers/iommu/riscv/Kconfig
-> +++ b/drivers/iommu/riscv/Kconfig
-> @@ -14,3 +14,9 @@ config RISCV_IOMMU
->   
->   	  Say Y here if your SoC includes an IOMMU device implementing
->   	  the RISC-V IOMMU architecture.
-> +
-> +config RISCV_IOMMU_PCI
-> +	def_bool y if RISCV_IOMMU && PCI_MSI
-> +	depends on RISCV_IOMMU && PCI_MSI
-> +	help
-> +	  Support for the PCI implementation of RISC-V IOMMU architecture.
+On Mon, Apr 15 2024 at 13:43, Jacob Pan wrote:
+> On Mon, 15 Apr 2024 11:53:58 -0700, Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+>> On Thu, 11 Apr 2024 18:51:14 +0200, Thomas Gleixner <tglx@linutronix.de> wrote:
+>> > If we really care then we do it proper for _all_ of them. Something like
+>> > the uncompiled below. There is certainly a smarter way to do the build
+>> > thing, but my kbuild foo is rusty.  
+>> I too had the concern of the wasting system vectors, but did not know how
+>> to fix it. But now your code below works well. Tested without KVM in
+>> .config to show the gaps:
+>> 
+>> In VECTOR IRQ domain.
+>> 
+>> BEFORE:
+>> System: 46: 0-31,50,235-236,244,246-255
+>> 
+>> AFTER:
+>> System: 46: 0-31,50,241-242,245-255
+>> 
+>> The only gap is MANAGED_IRQ_SHUTDOWN_VECTOR(243), which is expected on a
+>> running system.
+>> 
+>> Verified in irqvectors.s: .ascii "->MANAGED_IRQ_SHUTDOWN_VECTOR $243
+>> 
+>> POSTED MSI/first system vector moved up from 235 to 241 for this case.
+>> 
+>> Will try to let tools/arch/x86/include/asm/irq_vectors.h also use it
+>> instead of manually copy over each time. Any suggestions greatly
+>> appreciated.
+>>
+> On a second thought, if we make system IRQ vector determined at compile
+> time based on different CONFIG options, will it break userspace tools such
+> as perf? More importantly the rule of not breaking userspace.
 
-Similar comments as before.
+tools/arch/x86/include/asm/irq_vectors.h is only used to generate the
+list of system vectors for pretty output. And your change already broke
+that.
 
-> diff --git a/drivers/iommu/riscv/Makefile b/drivers/iommu/riscv/Makefile
-> index e4c189de58d3..f54c9ed17d41 100644
-> --- a/drivers/iommu/riscv/Makefile
-> +++ b/drivers/iommu/riscv/Makefile
-> @@ -1,2 +1,3 @@
->   # SPDX-License-Identifier: GPL-2.0-only
->   obj-$(CONFIG_RISCV_IOMMU) += iommu.o iommu-platform.o
-> +obj-$(CONFIG_RISCV_IOMMU_PCI) += iommu-pci.o
-> diff --git a/drivers/iommu/riscv/iommu-pci.c b/drivers/iommu/riscv/iommu-pci.c
-> new file mode 100644
-> index 000000000000..9263c6e475be
-> --- /dev/null
-> +++ b/drivers/iommu/riscv/iommu-pci.c
-> @@ -0,0 +1,154 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +
-> +/*
-> + * Copyright © 2022-2024 Rivos Inc.
-> + * Copyright © 2023 FORTH-ICS/CARV
-> + *
-> + * RISCV IOMMU as a PCIe device
-> + *
-> + * Authors
-> + *	Tomasz Jeznach <tjeznach@rivosinc.com>
-> + *	Nick Kossifidis <mick@ics.forth.gr>
-> + */
-> +
-> +#include <linux/compiler.h>
-> +#include <linux/init.h>
-> +#include <linux/iommu.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/pci.h>
-> +
-> +#include "iommu-bits.h"
-> +#include "iommu.h"
-> +
-> +/* Rivos Inc. assigned PCI Vendor and Device IDs */
-> +#ifndef PCI_VENDOR_ID_RIVOS
-> +#define PCI_VENDOR_ID_RIVOS             0x1efd
-> +#endif
-> +
-> +#ifndef PCI_DEVICE_ID_RIVOS_IOMMU
-> +#define PCI_DEVICE_ID_RIVOS_IOMMU       0xedf1
-> +#endif
-> +
-> +static int riscv_iommu_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct riscv_iommu_device *iommu;
-> +	int rc, vec;
-> +
-> +	rc = pci_enable_device_mem(pdev);
-> +	if (rc)
-> +		return rc;
-> +
-> +	rc = pci_request_mem_regions(pdev, KBUILD_MODNAME);
-> +	if (rc)
-> +		goto fail;
-> +
-> +	pci_set_master(pdev);
-> +
-> +	if (!(pci_resource_flags(pdev, 0) & IORESOURCE_MEM))
-> +		goto fail;
-> +
-> +	if (pci_resource_len(pdev, 0) < RISCV_IOMMU_REG_SIZE)
-> +		goto fail;
-> +
-> +	iommu = devm_kzalloc(dev, sizeof(*iommu), GFP_KERNEL);
-> +	if (!iommu)
-> +		goto fail;
-> +
-> +	iommu->dev = dev;
-> +	iommu->reg = pci_iomap(pdev, 0, RISCV_IOMMU_REG_SIZE);
+The obvious solution to that is to expose that list in sysfs for
+consumption by perf.
 
-Maybe consider some of the pcim_* devres helpers, to simplify 
-cleanup/remove?
-
-> +
-> +	if (!iommu->reg)
-> +		goto fail;
-> +
-> +	dev_set_drvdata(dev, iommu);
-> +
-> +	/* Check device reported capabilities / features. */
-> +	iommu->caps = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_CAP);
-> +	iommu->fctl = riscv_iommu_readl(iommu, RISCV_IOMMU_REG_FCTL);
-> +
-> +	/* The PCI driver only uses MSIs, make sure the IOMMU supports this */
-> +	switch (FIELD_GET(RISCV_IOMMU_CAP_IGS, iommu->caps)) {
-> +	case RISCV_IOMMU_CAP_IGS_MSI:
-> +	case RISCV_IOMMU_CAP_IGS_BOTH:
-> +		break;
-> +	default:
-> +		dev_err(dev, "unable to use message-signaled interrupts\n");
-> +		rc = -ENODEV;
-> +		goto fail_unmap;
-> +	}
-> +
-> +	/* Allocate and assign IRQ vectors for the various events */
-> +	rc = pci_alloc_irq_vectors(pdev, 1, RISCV_IOMMU_INTR_COUNT,
-> +				   PCI_IRQ_MSIX | PCI_IRQ_MSI);
-> +	if (rc <= 0) {
-> +		dev_err(dev, "unable to allocate irq vectors\n");
-> +		goto fail_unmap;
-> +	}
-> +	for (vec = 0; vec < rc; vec++) {
-> +		iommu->irqs[vec] = msi_get_virq(dev, vec);
-> +		if (!iommu->irqs[vec])
-
-Can that ever fail if the loop is already bounded to the number of 
-vectors successfully allocated?
-
-> +			break;
-> +	}
-> +	iommu->irqs_count = vec;
-> +
-> +	/* Enable message-signaled interrupts, fctl.WSI */
-> +	if (iommu->fctl & RISCV_IOMMU_FCTL_WSI) {
-> +		iommu->fctl ^= RISCV_IOMMU_FCTL_WSI;
-> +		riscv_iommu_writel(iommu, RISCV_IOMMU_REG_FCTL, iommu->fctl);
-> +	}
-> +
-> +	rc = riscv_iommu_init(iommu);
-> +	if (!rc)
-> +		return 0;
-> +
-> +fail_unmap:
-> +	iounmap(iommu->reg);
-> +	pci_free_irq_vectors(pdev);
-> +fail:
-> +	pci_release_regions(pdev);
-> +	pci_clear_master(pdev);
-> +	pci_disable_device(pdev);
-> +	return rc;
-> +}
-> +
-> +static void riscv_iommu_pci_remove(struct pci_dev *pdev)
-> +{
-> +	struct riscv_iommu_device *iommu = dev_get_drvdata(&pdev->dev);
-> +
-> +	riscv_iommu_remove(iommu);
-> +	iounmap(iommu->reg);
-> +	pci_free_irq_vectors(pdev);
-> +	pci_release_regions(pdev);
-> +	pci_clear_master(pdev);
-> +	pci_disable_device(pdev);
-> +}
-> +
-> +static const struct pci_device_id riscv_iommu_pci_tbl[] = {
-> +	{PCI_VENDOR_ID_RIVOS, PCI_DEVICE_ID_RIVOS_IOMMU,
-> +	 PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
-> +	{0,}
-> +};
-> +
-> +MODULE_DEVICE_TABLE(pci, riscv_iommu_pci_tbl);
-> +
-> +static const struct of_device_id riscv_iommu_of_match[] = {
-> +	{.compatible = "riscv,pci-iommu",},
-> +	{},
-> +};
-> +
-> +MODULE_DEVICE_TABLE(of, riscv_iommu_of_match);
-> +
-> +static struct pci_driver riscv_iommu_pci_driver = {
-> +	.name = KBUILD_MODNAME,
-> +	.id_table = riscv_iommu_pci_tbl,
-> +	.probe = riscv_iommu_pci_probe,
-> +	.remove = riscv_iommu_pci_remove,
-> +	.driver = {
-> +		.of_match_table = riscv_iommu_of_match,
-
-Does an of_match_table serve any functional purpose for a PCI driver? I 
-can't find any other examples of this being done.
+But we don't have to do any of that right away. It's an orthogonal
+issue. Just waste the extra system vector to start with and then we can
+add the compile time dependend change on top if we really care about
+gaining back the vectors.
 
 Thanks,
-Robin.
 
-> +		.suppress_bind_attrs = true,
-> +	},
-> +};
-> +
-> +module_pci_driver(riscv_iommu_pci_driver);
+        tglx
+
