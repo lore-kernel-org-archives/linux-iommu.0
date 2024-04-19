@@ -1,75 +1,108 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04on2045.outbound.protection.outlook.com [40.107.100.45])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F44312837C
-	for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 13:34:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.100.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B25C86278
+	for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 13:36:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.12
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713533669; cv=fail; b=g47ah8WiczTL184aIn6ywBlRqTo6WtegFqJfCWJnme7eXZNCHA+39Ku1krMHsCEdOSxkoDXmggqxQUoQfECS8s20sK+8wzmuxkVTa/dV6pOly6lCaN0LF6/RnYPrhudW02Ppe/C7NDk/qQOrBbAL1xWHLdkFcVXp7VWFVPRqfeU=
+	t=1713533811; cv=fail; b=NhIXxI26yMNsV3TW4SIdJsN17NngITJSkEsU4QT0p++iG2I4RXsQLWtGDKpDIU0tGDp4lXQWMmG4ZJ1m/kuM/2COOCacUA44ypA2mAYvAewyPu7FFXDQ2FqV/bARFssXicEJFahOB+tLBfuT7NJLpocgtXQSOz6GRSg381tRnNQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713533669; c=relaxed/simple;
-	bh=qgyW/v19Pv2CQnJ05T6AiUE5KdJbS7uiIo3Bf01ySp8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=ajlS+e4ky1xtSP/J/eBvXP34CamCRW98lEDaljkzoBoXNPI3cHOPMGQUd4ufA6pCGgK7fgsRR2kkDs1jdc3DoWwBMjzLmDVPFLVW2wlambFkgfTYr5uIeOn9DaTOg9N9/2aolSg/W4BE81BgUKBUWxRF5A2aTTPPXBbZlbVpNUA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=HRdw3bsn; arc=fail smtp.client-ip=40.107.100.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1713533811; c=relaxed/simple;
+	bh=zDAixs8K1GPal4WGD7GRlWjfA35YBxeKaBUPjCYBKS4=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Cjos5ZZVf/7V0Q3DTzB4+z+PIkD2CC2+PJYeFXX4fz5GCoiISStLDNh0fiqZ8b3cf8YPFq8o/sYX1DzU1jS09O6hxqSpK1FKkzrODbqNZ91Zld/BIrByt1qSKg9P82yudvIPU5E4kvAhUPySdqFedkmoIAPmCTpm7sigUe3b/1g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LeMb8iJj; arc=fail smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="HRdw3bsn"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LeMb8iJj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713533810; x=1745069810;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=zDAixs8K1GPal4WGD7GRlWjfA35YBxeKaBUPjCYBKS4=;
+  b=LeMb8iJj7epzAm1zcQPRjw/JUNpFEIpGJA7bL7CnrSiBGrSKyTtmplk6
+   rJGsG83+nS/tr+nKRBEgTWgfk7IP6yya3axt//5gIpYRIJczGxxD8uhEA
+   JDjHXMAc3zbc9lhBDQUPRikyg8P2BENMSVZoHj0EI9956mbNTOMBA/Le0
+   DCmTXif9QLneSOzIt8ny+OGohYk7U4kqnzUl96ozZ7k8kA2NybVcwS2oj
+   IlrGffznq0CgoTcpmyfwMZljz4PecinP83WKWi895RhQUA6TpCtZZIOmc
+   mjusHokVFJI1rcv5yvo9+6ktViFCotc48cT0QKJc58LLJsY8SR8M3Vc8G
+   g==;
+X-CSE-ConnectionGUID: K30H3i/ETKGn+NcUnJEoEQ==
+X-CSE-MsgGUID: s6uI0QVETE6bMszt/sZDOQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11049"; a="12915146"
+X-IronPort-AV: E=Sophos;i="6.07,213,1708416000"; 
+   d="scan'208";a="12915146"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2024 06:36:49 -0700
+X-CSE-ConnectionGUID: xRPDpmU+SQKdnu2Oz/a/Mw==
+X-CSE-MsgGUID: QNEiltuTS02Co467PP5nXQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,213,1708416000"; 
+   d="scan'208";a="23774974"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orviesa006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 19 Apr 2024 06:36:49 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Fri, 19 Apr 2024 06:36:47 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Fri, 19 Apr 2024 06:36:46 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Fri, 19 Apr 2024 06:36:46 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.170)
+ by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Fri, 19 Apr 2024 06:36:46 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FDDLLNd7tbcbyVCSDnI6bmPNNd3p7I+FRvmDSctbJVxzLquhRYK2SBvT568wqp883QvZGyIUJod0pQgWFnHJwtqZ+28CpUTMqZXTSRTAirB/5Ta5iIqKMiiYWjfKzunqwvZtcSmE8rerWXPDuXXQ8GLhRb+bpgzlz+mThmqN5Mb0f+Fu/c74FsZu1G/IqrdFRjSmHoi4ix6CCac3+ObF5aQ5Xm5/0vPSaUXMIkIFQPI3N727toEtPUkTI6XdF23TssXPrAodg42zvltj+mYp7op5euKJ7yUoUyMOX8IJJPJQYvRmumZ4C9tb4cg+pQgRuitsQYlNyh2MajTrv+JOfQ==
+ b=TGfwIKbxXzg8kDQaraTsKQb5dO5wnLDLhjQ/zvG7DM3gdQ/x/HICOL4zH754DqucxjypIUl9au5BxU3XdswaXggtn0OGydO3DWotR0NbQivAH4nwLjTvdSSgzZcQ82qpB9BF9ndz0Ad8yO+3cpB4RUuiJSmCmtGo9cOWDsBPVKUmx75HoOvKI7ULMGYz/9HHZa/M6UX2qbNojXmpoulFsLqgumi3rf9366J1yUMCamacUgLsMfxCFPL+y6npqnlOjQZF4hqt0i3Y+FaQxxRc2qXkOmR+CutoLmQhqJD6d9sWF/fh+/y35WYLdi1AP1sapYxnwqzHmCW2wp/7z9PjBA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pUpJspw1hxvmfjxoKTjbl3S/uNuijPL/uDzK+Vyt1ho=;
- b=oK1x5ytcwsDhci/KhGX4+qqGpLHbrUtLsRq8/Q+nY0kjTAeRd3hTHrxBXtZMJoS13WGi56XenwSG1V9usG0nomBOuHIvigrsEPGcE2wjFW/BZrCI/6rxa+eQ9Sbz/gYW+kcADrvDtVED3sy3eeA4up5LmiC+bKbLH7ZqrxrAB2pCXJAKO9xkB4fsYTUPKsxl2RySUa3bTb5WdSQNW8IhGuGM82Sw8y92z/e20jif1l6X75dffEBfmob1DSxn3KBxJoVUHswBRI3AlgNzYp0VHByHr03I2fEl+4DBpJgOBQzl8Kn7kBNTDDE3565ZKEwZsK08T0s4YSbhXJkE02avAQ==
+ bh=S1/mV0kM9zw9ZjWFHe6SDmE8SYerEd2caawyAhpkDuY=;
+ b=ews6umKprUH0WK/3aMBRgbg+8HHvSnDA6Sl1NGo3/Twj2svQLSa+XDixAcl0/U1JM46GuvUR9tlsFG/mntjweMgN3vvoKa7fteevG0P6OBgYIcGcu2mPF4qTiG6B56Z2BQdI8b7+qw3CzohbZaZin3wsYj36dsjFJeSYZ5wyuOSMM9lL4x+3ID41axhe/SrctJnMolQ0XscyF1eosdmWLPiW2eks68SC+lcuFuHFH5b1zc/aeqQdAT4xCYPTUPyIomjuLOJPHW8bC9kEYBJkIp9fImLwLl8jcIzXffQvmVE1Z2EsVN64/UyqeoebXfdq3lWQ+gFbbnJdFWPx4kA9iA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pUpJspw1hxvmfjxoKTjbl3S/uNuijPL/uDzK+Vyt1ho=;
- b=HRdw3bsnn+0pQZgzwfvdVHqFMqkZ+fBr7Szdo0r+A1mWN1w8Bt1ZJQ6KmhJjpZxoCkdClqSDK+E+lpXksrhVJ0JBj9lfee3GhOakkByDCUUoK/2dHix9Z+0ATR7RgBckTKsMbE87+6rDmUyhMhJuwxSxzta4p4QXqoDtjkw+k8ixnZ1PxWXESyvj7wceYXA1knAnZM6gDeNzUSxZEkX+fX7cnATmE9FDK4vIA97tFiqPYWOOfMmNnMViANyJSLD+OABIrlbJSeYfjdFmL7I3QDOwu9x94jpY9oFF6yKivHO6S4dkqHlH5orP7unAo2d4t6n11ZISyxPft2Zmx5AwLg==
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by MW4PR12MB5665.namprd12.prod.outlook.com (2603:10b6:303:187::17) with
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by BY1PR11MB7982.namprd11.prod.outlook.com (2603:10b6:a03:530::12) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.42; Fri, 19 Apr
- 2024 13:34:21 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::6aec:dbca:a593:a222%5]) with mapi id 15.20.7472.044; Fri, 19 Apr 2024
- 13:34:20 +0000
-Date: Fri, 19 Apr 2024 10:34:19 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.26; Fri, 19 Apr
+ 2024 13:36:43 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a%7]) with mapi id 15.20.7519.010; Fri, 19 Apr 2024
+ 13:36:43 +0000
+Message-ID: <0fdfc92c-d5f6-4669-a80a-5f25edee8e3c@intel.com>
+Date: Fri, 19 Apr 2024 21:40:16 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/4] ida: Add ida_get_lowest()
+Content-Language: en-US
 To: Alex Williamson <alex.williamson@redhat.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
-	"Pan, Jacob jun" <jacob.jun.pan@intel.com>
-Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
-Message-ID: <20240419133419.GD3050601@nvidia.com>
+CC: <jgg@nvidia.com>, <kevin.tian@intel.com>, <joro@8bytes.org>,
+	<robin.murphy@arm.com>, <eric.auger@redhat.com>, <nicolinc@nvidia.com>,
+	<kvm@vger.kernel.org>, <chao.p.peng@linux.intel.com>,
+	<iommu@lists.linux.dev>, <baolu.lu@linux.intel.com>,
+	<zhenzhong.duan@intel.com>, <jacob.jun.pan@intel.com>, Matthew Wilcox
+	<willy@infradead.org>
 References: <20240412082121.33382-1-yi.l.liu@intel.com>
- <BN9PR11MB5276318EF2CD66BEF826F59A8C082@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240416175018.GJ3637727@nvidia.com>
- <BN9PR11MB5276E6975F78AE96F8DEC66D8C0F2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240417122051.GN3637727@nvidia.com>
- <20240417170216.1db4334a.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240417170216.1db4334a.alex.williamson@redhat.com>
-X-ClientProxiedBy: SA1PR04CA0011.namprd04.prod.outlook.com
- (2603:10b6:806:2ce::18) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+ <20240412082121.33382-2-yi.l.liu@intel.com>
+ <20240416100329.35cede17.alex.williamson@redhat.com>
+ <e3531550-8644-4a7e-94bd-75bdb52182be@intel.com>
+ <20240418102314.6a3d344a.alex.williamson@redhat.com>
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <20240418102314.6a3d344a.alex.williamson@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TY1PR01CA0195.jpnprd01.prod.outlook.com (2603:1096:403::25)
+ To DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -77,118 +110,307 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|MW4PR12MB5665:EE_
-X-MS-Office365-Filtering-Correlation-Id: 691c6b0d-996d-433b-47e3-08dc60756b3b
+X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|BY1PR11MB7982:EE_
+X-MS-Office365-Filtering-Correlation-Id: fdaaa53c-21a9-43ca-e99d-08dc6075c053
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?dkPcHTvVr7hzFHzh7QfFbEtuCF+uUPIWwHsk6XW2CD1qEY/WTZ5+vxKSFJnd?=
- =?us-ascii?Q?CVXH/cK5xDMxd9O+qJlTsKTkb4Dkll+CzztQd4HQMMZd6lcPO8ZOyjvb+Esh?=
- =?us-ascii?Q?lP/NLqM5TbsOxsA0YbdhCtIUNGxnTZ3v+Ph5eCOQD1OtyJQuWfWxmcC6vhoG?=
- =?us-ascii?Q?1nnvx6EJ1X7gZ9+rCmTVQey3NI+CnT19C4UAH+dEsaXNJQXIx+PdedbQ57Lq?=
- =?us-ascii?Q?bEFYGFRyffh2r52PrrT8QQk7Bhs6fSu8pm8JM/oK2xpPjdI7q+QPGFw0uNeR?=
- =?us-ascii?Q?zwcqH6sNvi8DYc+s7FlNQ2FelPauFlmkWkrghG27052oaM1zzZ1Y6v+aGYUG?=
- =?us-ascii?Q?6YG9kxWl/Zhi80bObybE+rcyggzWLJbjBuWeuO4lw20mnD0GWpyuA+UKInec?=
- =?us-ascii?Q?Hfl2aOtw7jWDo7tOL7hinjdl0obPX7W9AcPvvcZzhQQtUvm+p2+FpaDOixi1?=
- =?us-ascii?Q?6ic5poFlrroCUGOiwwWQxz8z56NdXA1EHIsj6F237JcvJkKviuzsIlwqYRaQ?=
- =?us-ascii?Q?PSwHQbruFiICu+wWZzvsguDDPWc/5lTgay9MENgn7kOopQaxi5cGJAh76NsP?=
- =?us-ascii?Q?5E8FRQWk7BankRVjflySz+OTZU4FUczK91XybmHpo53iPAdHAg4tCjnh7YgE?=
- =?us-ascii?Q?AnuwZCq42dvEsWBII3pgrmwBd4PMVStMqmJeXRkctwFV1NlL36tBwBIb3EJt?=
- =?us-ascii?Q?FtdKgrUjJ+W1+AQHcp20ROL/ymEc4ukNp7nMm3axCXC9+bvXnF5Xz0Nxwvcc?=
- =?us-ascii?Q?IHdSepjypSgZhHEcWgbMv8uD95P5M0h+T4wBPCrrhnYjukVVKRvafUg/CGC2?=
- =?us-ascii?Q?iRCTmybohCnMFyAaN5IeF9TZ7ab6TofgGN4tc6S5mJYJ/UITMoR7+II26bne?=
- =?us-ascii?Q?ghFO3h4G+yNDmOLOn1M2yHWYv8LWA/CaNZ/F/5U2duBY3n2L1TVVyDo/eWoJ?=
- =?us-ascii?Q?C/DllP6SEL6MZS5eGQrqIKA/tnJKQD/wS1wF7Ws72Xdo/+aoatyxUa6AD2Rv?=
- =?us-ascii?Q?ZyVkCmcaBoteWZ1xxMajhxfyPcnvj3fZigNx4iozGtPPAapSRWCRHyn2CEV1?=
- =?us-ascii?Q?TbT7CgLYocYs09wunXelDxefS7nmn3XOEy/IDwK8105kSfAnWNd9vq0m1kjd?=
- =?us-ascii?Q?aJuTJc07AnjrFXOpLeW0vb4e6Pz/QCw0m4JlaExEUz1IDga+uCUth7Pc85j9?=
- =?us-ascii?Q?gmbS+VbpgXVU1JgNsNrqt2oic0C+l5BKvtE6kIPpTMH1xHpLKM/ZoXjpKeTA?=
- =?us-ascii?Q?R2SWP1SV7DDGUES0afyLFFSO6EPOVA8Quf8S65iNVQ=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(7416005)(1800799015);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?dnR6UTFCenJ3ZWx2RWY3aDB1eXl1OTdhM3pQMmFvNjZDRHdPWDdnNUtMalNr?=
+ =?utf-8?B?TWlqdG1jV3lkTU5QcW1PMFhUTTZsT1dHTm4waGFyMFh0Mnh2NUJUYnpDSXRW?=
+ =?utf-8?B?VUxTRXN0N2NTSmFOWDZJRmZBMHBpWVBHTmxCdDNrQnRlUGhhNDE1eGNRYUhl?=
+ =?utf-8?B?aEdsdll3Q00vZUM2MlNnZEh1WEVod1VBNjk5QitYTW4vR3gwVGdjenhDelVh?=
+ =?utf-8?B?Q05xcyszdWJIZFZqc0V4T0NXa3c1Q25kM0NJSlFRSElnTlMxLzBqbXptUUZE?=
+ =?utf-8?B?MlQvbExwQThVTVNmTnFkbEx0UWFsS2FTb1pUeTRreHp6RHNyTjdwT2xiSFRz?=
+ =?utf-8?B?Y01nL0x4Q0x4aCs0ZGRHK2NUaHpkSlRzS1hVRCtxT1BoUmpBeFJFcWcxZjA5?=
+ =?utf-8?B?aS9ZUUxRSGZseFVhTlBqR1ptZ01FWlRKeWlZTE5wNGlPVlRvSkNTaWc3Zm5I?=
+ =?utf-8?B?UFdldEpoZndXTmRzTXhlN0NvK3l1ZGg0WXU1QVQxUXl2c1pCMXVxR1ltK2I0?=
+ =?utf-8?B?bllycCt5azBlbW1ISG5xUnVrUmxrL0dFTkl5Y1QwUGJpYWZzWS9zbDNSVk9F?=
+ =?utf-8?B?RngwR0oxS1paVVd5Qlc4NXdKSUxjTXVPRlpFRjFxWjdXdU5CRXlTQVpOb3JJ?=
+ =?utf-8?B?ZG5iMHVic0U5OVI5bWxkdDVvb2tvS0JqOHRvd3VyVmJWemdYUGEzTkhuemE1?=
+ =?utf-8?B?aE1tOVphTkJQNXBSdzZWMTRlelhNZXUxQ3FMVkhWb3VvMUxnZ0N5My9SY3Zj?=
+ =?utf-8?B?a0YraUQwbVJ2a0U2SngwWEh0MFI0aFhBMnl3SjJ1OTdnOHFPVEFwb0s1NUQ0?=
+ =?utf-8?B?VnNoMHNtemszdkdtRGtqQ25OOTFsbzJOdnVObmhvOVQ5SldRaXJBc0FlSVk5?=
+ =?utf-8?B?dGNqdDRwdjlzNGloYmVCaDd5eW11U0g3cWhTZm9HSXdFcE9jcVhoeEtoakIz?=
+ =?utf-8?B?QVgwRmE1R0pqRU9aUXBVeXRyNkIvN0ZMNlNPVFNpQU5xOUNiemJuOENGNDZy?=
+ =?utf-8?B?SVByZlNXVUJocEc4YVRsSTN4b2VyODcrRkh0djNTU0llYkNDSlhUbkU5L2Ja?=
+ =?utf-8?B?bGI1cXV4M1pVMmJrQjhVY1FGWEpsaGRRZG1SWUt3a012ZitPN0JMOW9aYk5t?=
+ =?utf-8?B?dTlJcE5QNml4NlhWQmpVczVybVJSN1IxU05FMXJsZnM4QmJBTThDT3FGVVcr?=
+ =?utf-8?B?cEEvOVFjcFl6TUYxV09rRDhadFltWUVUQkFSVU93Qk82L3ExU1hheFRFMktO?=
+ =?utf-8?B?VERoeGU4WnJLYWFIaTNJcUwzRDFSeDBWcTY4eVFnWlNGdCsrWlg3Y0Uva1kx?=
+ =?utf-8?B?QlMwbHBwajBoRnRTZ1dMcFpwMk5RMytoUjBuR0Njb1VPUTBIdEdWTnVoNXJT?=
+ =?utf-8?B?cUhHNDMrZ2ViTTlCcmxjK09CSk95WXBJWFZaM1p2ZExjSHlsSHYyUGZ1K1dP?=
+ =?utf-8?B?ZUo3VWhLMnhsSktRL2FSanBTR1VkRE1oN3UzZDFFOGV3cFZjRXk3UERqdzdx?=
+ =?utf-8?B?ai80d09XcFdXYnRQV3czRkM1QjkxV1FPYnc5S0w0Zm90am5KSjdwTkRZeWhP?=
+ =?utf-8?B?LzBhZmZXVzRmVU1VMlA4Ni82bFRVN0hMcXNNamc5WkpGeWtTNHlOUUZrbDcz?=
+ =?utf-8?B?R2VrU0VNdWFvRGgwRFN0NU9NT0czbXNRbUM5RVE1Zkw5MkZEcDMyNEV6aDNa?=
+ =?utf-8?B?Ny81YXpMMjlzWFRIM3hqRGxpZ3VzV2kxOEFwNnRaZHdteFpiODZBcDlBPT0=?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(366007)(7416005)(376005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?/WxaAkErYVKWOAEMlEM1jajEJtqsN9yfEyOXQPELo8Zw71DwQJWyaUwV6olx?=
- =?us-ascii?Q?a9ux3zhAfm4cvjwTDIOnvJwgHFlQLjf7hkhrMacP8Lmc1URdYiRDcydwT0GY?=
- =?us-ascii?Q?Q1jo1/W8g150oUjxk4qTyroHC2qUhqHrYXXAVEDSZ1vpfEtyWzwPRiv0SWn4?=
- =?us-ascii?Q?PSWG+XYVTY4RKYTcXjiZjO3baafnrxm4n80ZV1qaW49V0tg3NFON+0V7DL9P?=
- =?us-ascii?Q?tbVhgdk5f7pUMON8Jq6NizFQay0serubFrbKdDp65D5KP92DT0rVvEi08lKv?=
- =?us-ascii?Q?HFLBj08s3v+wLdi8ySn2N955Ez23qRjlnyKCc6SVmvfRtT1ANuf8uuWfPzuE?=
- =?us-ascii?Q?OZ8RhZPsXVGnU/rr7boEyF/RhrSBE54Rd1h9c/4dZnZcxF91rzUcoF/DUUNV?=
- =?us-ascii?Q?bIKRGBlcHp/XCak6ioWwYSsVZtchaQpsFo6T8SZhfHG99aEdGQFbDHJiLA01?=
- =?us-ascii?Q?c5nz/mnfWDKsWcEO0Nx+K9hwUOrG5DFtui8d7i0032vchrlwKLdZjyYivqXd?=
- =?us-ascii?Q?f+4uY3UiHpVhlC/wR5RVp/cxnwmbAgp+HK7iV9Bh09zvuYSwgyGu6I3o3K1w?=
- =?us-ascii?Q?T9+qYBViT0h9u9P7F469BayfFihpTpLUTzf9Lwt330PjV77LpblnNfZC3fRZ?=
- =?us-ascii?Q?mW1Ui7HZciFO+KXfdPKloqEVQo0MeXQfedrguM13wHBWTrhiKnQIbY24zDxp?=
- =?us-ascii?Q?XZrCeKtHPcyYTnFmgho0DWIH/8eSGBNAtmWB/JH+P4Jqe/oLQEuRSoSNGXiS?=
- =?us-ascii?Q?tKrt97sF7YJluQeWNCrNP67OzXMb7zcCxuJVzgbjVzoFjs9BUd5AmpiqsWyT?=
- =?us-ascii?Q?czf+chSebGk78GetYYqbUCEJyeVO6CgXxbpgdy5U0TpHAnifu/F83wkuxWXA?=
- =?us-ascii?Q?9WJ3fxbuI5PjZQ1x38XZ/8wg33tx/G38grN99ihFpLhxQ0t829Lxzc4WGhIo?=
- =?us-ascii?Q?fCA8A9P9B3fHhXRb+kqhRQl2pqG/nSgCXHkcUZboweKKqMoDZ9BaZkXbxXAe?=
- =?us-ascii?Q?s1zWbZcO4uRldhRR5vzueCwPFuw/a8xWJe8VyWiDT2ve2pgyhZy8XQcHGLhZ?=
- =?us-ascii?Q?rHrgSn0NqXTsT5L0ZqcyMXzsWuir0H8A3/VUhX9xezrO/d1vpR8N0baiFTN7?=
- =?us-ascii?Q?ju3W9Ftlny8vdmoxaCs/jIQHfg0qRPmIMcVj8w0DV8gT26NImfapZnpgXzBc?=
- =?us-ascii?Q?LP7IdM+13G+2W0hiDIOiSMdYyLly/ZMdZpgtrDKySj/HDo7cKuKtpe7sPVy8?=
- =?us-ascii?Q?45I8v6NeivSCiwOFFxTIDImvK9ZV1tHtPddElrh43fAaRaYyxWqOv55F7LrN?=
- =?us-ascii?Q?YsbHVFXqwL1CrMq1lM179HfcLCGClcbyCxqXz4rX48G3AXRutXaV9GOoAFLg?=
- =?us-ascii?Q?zrvPXpmX6VeWBf3j++wsZ2PLbbLuLjDcIuapibMeggXxdBhZDSHz9zKbvrSf?=
- =?us-ascii?Q?VDnmLh1QeYKDjfICuZZGgogec1TK82SG9MEqCCTUwrm1IQHjTaRPFxsHKFcc?=
- =?us-ascii?Q?gzHf2iaS3a0rWtZ+EtZpN9+vS3ZcVwUzYg1Ujcc3TSSR+8xu5oDTEebatb41?=
- =?us-ascii?Q?C6qYZ6A/0/jkaseugMQ=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 691c6b0d-996d-433b-47e3-08dc60756b3b
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WW5rT25DNXlyL2FXOWplMTJHbGdNQnB6SGVPWXcydnVMN2ZxZktUSkgydHVJ?=
+ =?utf-8?B?WG9Ham55RlRYUnVoWEFuRzhMWWNGbEdVMWVldFlLU3d1TjlSaU5IanRUdkxK?=
+ =?utf-8?B?dzROcVI1Nkl2TDRabGcwTURsNElZOGZoOFJKUWRMcU9pbS9wRkUyRm9ZUmkz?=
+ =?utf-8?B?ZzMzOFFMZm1ZeUVES09CRG1ENW8wb05jbktCTlJNOXdtUmIvNExvZUZJSU10?=
+ =?utf-8?B?SHVvQmVaeitEVVNjM2cyV281bnYwTjh3RVRudDkzSVUyMWRZVDJlOENzaTV0?=
+ =?utf-8?B?ak1oYWVoSkRBemJ1WnZmZnpiVjAxbW5GR3E1NUFubEt1NEc0eS8yUWIxbzBa?=
+ =?utf-8?B?c0E4NHk4MjkrdkNsUERTT0xsL2x1dXk5b3FvN3ZrWERmZFFiN1doTTZtVHR4?=
+ =?utf-8?B?QVI2YmVsQlVLM08xZHBkaVBKa21pVGhRRnVUUTJRN0lhMTlWdzIveFgxc1Z2?=
+ =?utf-8?B?VHQ1OG5iTHBKa0lBZWlQWm1obkJLQys3TmNYdVBWUXRiNEVCZTlXM3Awc0Vx?=
+ =?utf-8?B?U3dZYVNqYWFnREZKSFVUdnJ0dU8yOHVHeVpxb1dNWVdtMm9CSlZNeWRzb2hq?=
+ =?utf-8?B?ZklIbnFYbjJEb3BqNGRrU3pwbkw2bUFkM0dOZk5lMWJPN25WeFh2NCtXOEtX?=
+ =?utf-8?B?ZzBwSGw1RFBiZXdZaEhncEJ5OEVVeXhjUWtmakhuY0QyREZaSWtlWXlmMExT?=
+ =?utf-8?B?ZmNzRDNJVzAraVFkcGNacGU2RlVFRmNsZGo0QmhVTWN0aE8rYldEbW9mY0pj?=
+ =?utf-8?B?b1JveXF1MDFhVGM1RGdKSUl4OS9HamtTT3dWVXRYRHByMVh1Mkt4K0NjSE90?=
+ =?utf-8?B?cVZBcGcrVzIwa28xVTQvOXY4QmdVM3NlSGFQYnZ0QnB4L3M5L212TjJUNnRV?=
+ =?utf-8?B?VzV1QUtkUGZsamNqVmRCcG9XS0F6UmJELzJVYk1IUUw2cHJRdlkwREF4d1Qz?=
+ =?utf-8?B?MWZWSGJSSHdGNXBWOUY4dlhWZ3NwWGNUWk5WN0syUnN5UGRlVFA5dGlERkhI?=
+ =?utf-8?B?YUhvTHBtSmdsZTR3QjRYZ2VKU1dhazRWNThuRXppOGpnYzFPM2pId0dsOWJC?=
+ =?utf-8?B?QVE2bnlLRzYxSlVlVXlaczRXVHRTOEx4bXRoV21JZHkvcldIbmJ4Sno2azY5?=
+ =?utf-8?B?ZU1NeHp2UGRxTU52WWZKWXRVRk1FNHkxbCtMSmpselJBeVZwYloyU0U3NlVW?=
+ =?utf-8?B?bGNMSlF6S3NsQnNPa0tVbTFFMEZnRDhkai94TzI1bjZkSXpic1Q5K0VOZG15?=
+ =?utf-8?B?M25lU3RPb3BCRjkrTVZ5d1Ixa1QwWlprdWpYUEV3bHVmTTM1T0czQUp4dkcy?=
+ =?utf-8?B?OG5WK2VmallZSzlqNlhheFZSNmNpN3ZlSDRaQmhKNnRnczM5L0c1d3VZR1dK?=
+ =?utf-8?B?cEJRS0M2NUE0YVV1ZGRKWi80MFZDRlBIQTRacDVXSWRxZ29PWnpQTzRvNjBG?=
+ =?utf-8?B?ZXdabTF6eDh3YU13dE1qRFA5K3lDcWMxV2MvQndnTTc0U2xWdGpURStlK2wx?=
+ =?utf-8?B?VFVtZDdWM0tBN1VPclhiNjhTYjBONk5SbnFpU0NXM1ltTmpZeVoxSHl4aUU2?=
+ =?utf-8?B?eWxXY1hlYnZrSTZUakZIV1hybk5GZ3R1WHBkRDhtb1hNL1N4MS9KQzAwTkZN?=
+ =?utf-8?B?a0QyMXNEVjY2cjdGbGU5YmhOQnVEdU9PRzZiMDdZbkxvcDRHS0VPcjJJSTNW?=
+ =?utf-8?B?a2p2Wk56LzByTUdCNjBqQ1ZxK1dETkMxNUlhYnFJWkk0M2JRUXdMUGNqZTZP?=
+ =?utf-8?B?UXZzd2tGM0NPYmx2ZEFMSkhVdmxqakx3MnBxM0VhdnU3VllxTXFGTFBhbUNo?=
+ =?utf-8?B?TFNSRGlXbDhhSWNMWTZVRDFGb0dTb3JsL01UMGhJUFlUM2kyeVQyM05tdUkv?=
+ =?utf-8?B?NnJJbDR0MjhjcXoyRFFmUzhqWTJMcm5WWmhTUGo3RlcxRTZWaUUzNGxlWDRz?=
+ =?utf-8?B?V3k0dnF4bnZKcHJ4emVHaFJldTJnNVZwVjY1b3pwSlFtZFp5YndZaURleUpa?=
+ =?utf-8?B?M3E2ekJ0c3JFdWttOS9OR1l2RWpvSFRwQ1IxdnRKRmQ2WHVLOHpkSjBGVjEx?=
+ =?utf-8?B?SEVJYVc1R3dZb3ByeTR6SEtEVHN6djBISC8xRkxqMHAvZkpQQ2RTbktRWE5z?=
+ =?utf-8?Q?yb2xFWytnoGnblqlBsP2f/gXv?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: fdaaa53c-21a9-43ca-e99d-08dc6075c053
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2024 13:34:20.8002
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2024 13:36:43.6971
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bXHYdSd68KL7XFDhD3n4iBmtVa8h8xhwChSv2OZCvYg1FJR3dWtW8ZmfWk3pDEPf
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB5665
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8mhMB3MntBjzfNxEk9CL63yxdcdv0fQS6X+43zPjiyN1bjG0IgOHyF5IW462Afzi9+4tRaiAQkKWBVucRKYRmA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY1PR11MB7982
+X-OriginatorOrg: intel.com
 
-On Wed, Apr 17, 2024 at 05:02:16PM -0600, Alex Williamson wrote:
-
-> > > sure but we at least need to reach consensus on a minimal required
-> > > uapi covering both PF/VF to move forward so the user doesn't need
-> > > to touch different contracts for PF vs. VF.  
-> > 
-> > Do we? The situation where the VMM needs to wholly make a up a PASID
-> > capability seems completely new and seperate from just using an
-> > existing PASID capability as in the PF case.
+On 2024/4/19 00:23, Alex Williamson wrote:
+> On Thu, 18 Apr 2024 15:02:46 +0800
+> Yi Liu <yi.l.liu@intel.com> wrote:
 > 
-> But we don't actually expose the PASID capability on the PF and as
-> argued in path 4/ we can't because it would break existing
-> userspace.
-
-Are we sure about that argument? Exposing the PF's PASID cap to qemu
-shouldn't break qemu at all - it will just pass it over into a vPCI
-function?
-
-Ultimately the guest will observe a vPCI device with a PASID cap. This
-is not really so different from plugging in a new PCI device with the
-PASID cap into an old HW system that doesn't support PASID.
-
-So does a guest break? I'd expect no - the viommu's created by qemu
-should not advertise PASID support already. So the guest can't use
-PASID - just like an old HW system.
-
-Is there a known concrete thing that breaks there?
-
-> > If it needs to make another system call or otherwise to do that then
-> > that seems fine to do incrementally??
+>> On 2024/4/17 00:03, Alex Williamson wrote:
+>>> On Fri, 12 Apr 2024 01:21:18 -0700
+>>> Yi Liu <yi.l.liu@intel.com> wrote:
+>>>    
+>>>> There is no helpers for user to check if a given ID is allocated or not,
+>>>> neither a helper to loop all the allocated IDs in an IDA and do something
+>>>> for cleanup. With the two needs, a helper to get the lowest allocated ID
+>>>> of a range can help to achieve it.
+>>>>
+>>>> Caller can check if a given ID is allocated or not by:
+>>>> 	int id = 200, rc;
+>>>>
+>>>> 	rc = ida_get_lowest(&ida, id, id);
+>>>> 	if (rc == id)
+>>>> 		//id 200 is used
+>>>> 	else
+>>>> 		//id 200 is not used
+>>>>
+>>>> Caller can iterate all allocated IDs by:
+>>>> 	int id = 0;
+>>>>
+>>>> 	while (!ida_is_empty(&pasid_ida)) {
+>>>> 		id = ida_get_lowest(pasid_ida, id, INT_MAX);
+>>>> 		if (id < 0)
+>>>> 			break;
+>>>> 		//anything to do with the allocated ID
+>>>> 		ida_free(pasid_ida, pasid);
+>>>> 	}
+>>>>
+>>>> Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
+>>>> Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
+>>>> Signed-off-by: Yi Liu <yi.l.liu@intel.com>
+>>>> ---
+>>>>    include/linux/idr.h |  1 +
+>>>>    lib/idr.c           | 67 +++++++++++++++++++++++++++++++++++++++++++++
+>>>>    2 files changed, 68 insertions(+)
+>>>>
+>>>> diff --git a/include/linux/idr.h b/include/linux/idr.h
+>>>> index da5f5fa4a3a6..1dae71d4a75d 100644
+>>>> --- a/include/linux/idr.h
+>>>> +++ b/include/linux/idr.h
+>>>> @@ -257,6 +257,7 @@ struct ida {
+>>>>    int ida_alloc_range(struct ida *, unsigned int min, unsigned int max, gfp_t);
+>>>>    void ida_free(struct ida *, unsigned int id);
+>>>>    void ida_destroy(struct ida *ida);
+>>>> +int ida_get_lowest(struct ida *ida, unsigned int min, unsigned int max);
+>>>>    
+>>>>    /**
+>>>>     * ida_alloc() - Allocate an unused ID.
+>>>> diff --git a/lib/idr.c b/lib/idr.c
+>>>> index da36054c3ca0..03e461242fe2 100644
+>>>> --- a/lib/idr.c
+>>>> +++ b/lib/idr.c
+>>>> @@ -476,6 +476,73 @@ int ida_alloc_range(struct ida *ida, unsigned int min, unsigned int max,
+>>>>    }
+>>>>    EXPORT_SYMBOL(ida_alloc_range);
+>>>>    
+>>>> +/**
+>>>> + * ida_get_lowest - Get the lowest used ID.
+>>>> + * @ida: IDA handle.
+>>>> + * @min: Lowest ID to get.
+>>>> + * @max: Highest ID to get.
+>>>> + *
+>>>> + * Get the lowest used ID between @min and @max, inclusive.  The returned
+>>>> + * ID will not exceed %INT_MAX, even if @max is larger.
+>>>> + *
+>>>> + * Context: Any context. Takes and releases the xa_lock.
+>>>> + * Return: The lowest used ID, or errno if no used ID is found.
+>>>> + */
+>>>> +int ida_get_lowest(struct ida *ida, unsigned int min, unsigned int max)
+>>>> +{
+>>>> +	unsigned long index = min / IDA_BITMAP_BITS;
+>>>> +	unsigned int offset = min % IDA_BITMAP_BITS;
+>>>> +	unsigned long *addr, size, bit;
+>>>> +	unsigned long flags;
+>>>> +	void *entry;
+>>>> +	int ret;
+>>>> +
+>>>> +	if (min >= INT_MAX)
+>>>> +		return -EINVAL;
+>>>> +	if (max >= INT_MAX)
+>>>> +		max = INT_MAX;
+>>>> +
+>>>
+>>> Could these be made consistent with the test in ida_alloc_range(), ie:
+>>>
+>>> 	if ((int)min < 0)
+>>> 		return -EINVAL;
+>>> 	if ((int)max < 0)
+>>> 		max = INT_MAX;
+>>>    
+>>
+>> sure.
+>>
+>>>> +	xa_lock_irqsave(&ida->xa, flags);
+>>>> +
+>>>> +	entry = xa_find(&ida->xa, &index, max / IDA_BITMAP_BITS, XA_PRESENT);
+>>>> +	if (!entry) {
+>>>> +		ret = -ENOTTY;
+>>>
+>>> -ENOENT?  Same for all below too.
+>>
+>> I see.
+>>
+>>>> +		goto err_unlock;
+>>>> +	}
+>>>> +
+>>>> +	if (index > min / IDA_BITMAP_BITS)
+>>>> +		offset = 0;
+>>>> +	if (index * IDA_BITMAP_BITS + offset > max) {
+>>>> +		ret = -ENOTTY;
+>>>> +		goto err_unlock;
+>>>> +	}
+>>>> +
+>>>> +	if (xa_is_value(entry)) {
+>>>> +		unsigned long tmp = xa_to_value(entry);
+>>>> +
+>>>> +		addr = &tmp;
+>>>> +		size = BITS_PER_XA_VALUE;
+>>>> +	} else {
+>>>> +		addr = ((struct ida_bitmap *)entry)->bitmap;
+>>>> +		size = IDA_BITMAP_BITS;
+>>>> +	}
+>>>> +
+>>>> +	bit = find_next_bit(addr, size, offset);
+>>>> +
+>>>> +	xa_unlock_irqrestore(&ida->xa, flags);
+>>>> +
+>>>> +	if (bit == size ||
+>>>> +	    index * IDA_BITMAP_BITS + bit > max)
+>>>> +		return -ENOTTY;
+>>>> +
+>>>> +	return index * IDA_BITMAP_BITS + bit;
+>>>> +
+>>>> +err_unlock:
+>>>> +	xa_unlock_irqrestore(&ida->xa, flags);
+>>>> +	return ret;
+>>>> +}
+>>>> +EXPORT_SYMBOL(ida_get_lowest);
+>>>
+>>> The API is a bit awkward to me, I wonder if it might be helped with
+>>> some renaming and wrappers...
+>>>
+>>> int ida_find_first_range(struct ida *ida, unsigned int min, unsigned int max);
+>>
+>> ok.
+>>
+>>> bool ida_exists(struct ida *ida, unsigned int id)
+>>> {
+>>> 	return ida_find_first_range(ida, id, id) == id;
+>>> }
+>>
+>> this does helps in next patch.
+>>
+>>>
+>>> int ida_find_first(struct ida *ida)
+>>> {
+>>> 	return ida_find_first_range(ida, 0, ~0);
+>>> }
+>>>   
+>>
+>> perhaps it can be added in future. This series has two usages. One is to
+>> check if a given ID is allocated. This can be covered by your ida_exists().
+>> Another usage is to loop each IDs, do detach and free. This can still use
+>> the ida_find_first_range() like the example in the commit message. The
+>> first loop starts from 0, and next would start from the last found ID.
+>> This may be more efficient than starts from 0 in every loop.
+>>
+>>
+>>> _min and _max variations of the latter would align with existing
+>>> ida_alloc variants, but maybe no need to add them preemptively.
+>>
+>> yes.
+>>
+>>> Possibly an ida_for_each() could be useful in the use case of
+>>> disassociating each id, but not required for the brute force iterative
+>>> method.  Thanks,
+>>
+>> yep. maybe we can start with the below code, no need for ida_for_each()
+>> today.
+>>
+>>
+>>    	int id = 0;
+>>
+>>    	while (!ida_is_empty(&pasid_ida)) {
+>>    		id = ida_find_first_range(pasid_ida, id, INT_MAX);
 > 
-> With PASID currently hidden, VF and PF support really seem too similar
-> not to handle them both at the same time.  What's missing is a
-> mechanism to describe unused config space where userspace can implement
-> an emulated PASID capability. 
+> You've actually already justified the _min function here:
+> 
+> static inline int ida_find_first_min(struct ida *ida, unsigned int min)
+> {
+> 	return ida_find_first_range(ida, min, ~0);
+> }
 
-Yes, sure the unused config space is a great idea. I thought we were
-talking about doing the fixup in userspace, but a kernel solution is
-good too.
+aha, I see. :)
 
-But also if we are set on the dvsec, in kernel or user, then we can
-move ahead with the core PASID enablement immediately?
+> 
+>>    		if (unlikely(WARN_ON(id < 0))
+>> 			break;
+>>    		iommufd_device_pasid_detach();
+>>    		ida_free(pasid_ida, pasid);
+>>    	}
+>>
+>>>    
+>>>> +
+>>>>    /**
+>>>>     * ida_free() - Release an allocated ID.
+>>>>     * @ida: IDA handle.
+>>>    
+>>
+> 
+> 
 
-Jason
+-- 
+Regards,
+Yi Liu
