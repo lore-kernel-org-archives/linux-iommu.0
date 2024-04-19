@@ -1,52 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0171B12AAF4;
-	Fri, 19 Apr 2024 15:33:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 047AB12FB18;
+	Fri, 19 Apr 2024 15:33:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713540788; cv=none; b=EoDe/Y1ANugPh1Avy4HWL+a5Z6Uy5fvAXFPDfjdyaUfOWf7ZzWN1z4YithCPJFb1rwpkQYERYL/ANi52clY1MvKfLY7O9ieITNeBIYaFi8WF9oeiM7GzmT/9uDrHJuywKM6m7zepZLul+y6Bvpa8nwAYFAhUDSceDzVIXqg4Iag=
+	t=1713540798; cv=none; b=Ucq3lxtEu4UXz501nvHsvob5aPMvy1RAkTk04uSDl2QT16UKxO96oAwT32IvL1fRnkKMdRVsHCN8mWQkBc5E5KEE493lYiY6szhRxO5jvilbBnR+UuFgsHMjN0IO+ppyOwW/qQrSaT++qIZ9GkpHw4RvO5mqzHclRx9MpYS3Qqk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713540788; c=relaxed/simple;
-	bh=s2YlNF511b1ugPoK8gPNXpw42GPHoGPjYZZp8GRGfW0=;
+	s=arc-20240116; t=1713540798; c=relaxed/simple;
+	bh=UV8lA/6deS6AcWH+mFYHvm9RlFdafVavLYUZyrTrMKs=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=luzcXo07VtiLLnGdJ8Gz1X0hKZfHK++Qy7TD/UE8RFlAJEYuPS9iaYnfHRzNmhva0tQQRsq1hlUy1K984Sq5DAGJJ3ugeZ0JdtilFkRoNVfpxOj+RtQmxP7+C52RKSZdG7HNYYohIs50xXz4D0aIh2iwVdpfM9biXfB4R9wC+c8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pCbouzFU; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=j7rNlF4WQf2S0rnfMhj/PlgMy+0b0kB4RzivORUTjQifyg9WlupoAgut5N4NkDng5xPvSYGwg8ItXWR0omGaPlFVbEoP7s6KT6ZSv1klB/gjXs1qwtbJ8LZxOHYbHWUwo+LXTncCQw0CfhEEM7FD2eK6uiZbcUCNjfX8HzoeNws=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lJTkAnlO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pCbouzFU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D32B6C072AA;
-	Fri, 19 Apr 2024 15:33:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lJTkAnlO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D38DAC072AA;
+	Fri, 19 Apr 2024 15:33:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713540787;
-	bh=s2YlNF511b1ugPoK8gPNXpw42GPHoGPjYZZp8GRGfW0=;
+	s=k20201202; t=1713540797;
+	bh=UV8lA/6deS6AcWH+mFYHvm9RlFdafVavLYUZyrTrMKs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=pCbouzFUoeBBdBnn1y0uZdUe6YdPbeuxy05dOAEeC5v2BTvjkjvD5nfZfwfQOjG6V
-	 Iriq9/Yb4VNX/Lr44U8vrjrHVvhMXbPAw9k+b9hKJKjlpPIvV2gDnR4liDv89qOV5G
-	 Kbd+KbnoAbcTeQUPEoqTdAReDI1CeLT+6SQkQkO8O8A6xO009ITDeneE94aP9alYl5
-	 G95s8JZ2ejk9aUb/2vnRXGH/HrZ2On44hVbFXTbzQAOqqd9GiI0Be6mdad1+/9vl0h
-	 mHConzuXWk2VEjdwFeFiQIjUp/HTWS05Msc1WVhyCvVDxGOafId0lYzvY6u8ulT4hV
-	 X5NFqVs53MoYg==
+	b=lJTkAnlOwMNMHGlD9vrrDMv+5lzJul4g+9r3kauhakLufOpNXA+cshK2GsBCC5csW
+	 l37A7LLev00EyOtX+vfKHSs6DxylyeEGom2oCrtlULK8A5Sk0pYZwCMKDOxbcvYlxf
+	 zr4s3YLZQCpuXMvBGXkWAOwkNGnmvQ0r7a2d19D76DGMLV0HJ2C6MiDj4MUWWFV4D8
+	 46m0zPm3HICtwza759S+MtjqDB1JGud8z9Qzt4Pkd8mRiK5LR6tD9Qt7SFNTCFQmN2
+	 Qre/8RTL1IlAACc7+l2Hx6A87xsF/70JiGgVxv4076ozGoNuKkKnzWFiEX0uRimG5s
+	 Oqnxdz83bVeqg==
 From: Will Deacon <will@kernel.org>
-To: Aleksandr Aprelkov <aaprelkov@usergate.com>
+To: iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Joerg Roedel <joro@8bytes.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	Michael Shavit <mshavit@google.com>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Marc Zyngier <maz@kernel.org>,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Free MSIs in case of ENOMEM
-Date: Fri, 19 Apr 2024 16:32:56 +0100
-Message-Id: <171345118104.301415.8430851318356217015.b4-ty@kernel.org>
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+	patches@lists.linux.dev
+Subject: Re: [PATCH] iommu/arm-smmu: Convert to domain_alloc_paging()
+Date: Fri, 19 Apr 2024 16:32:59 +0100
+Message-Id: <171345075861.300380.113926608276493245.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20240403053759.643164-1-aaprelkov@usergate.com>
-References: <20240403053759.643164-1-aaprelkov@usergate.com>
+In-Reply-To: <0-v1-3632c65678e0+2f1-smmu_alloc_paging_jgg@nvidia.com>
+References: <0-v1-3632c65678e0+2f1-smmu_alloc_paging_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,18 +52,21 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Wed, 03 Apr 2024 12:37:59 +0700, Aleksandr Aprelkov wrote:
-> If devm_add_action() returns ENOMEM, then MSIs allocated but
-> not freed on teardown.
+On Thu, 11 Apr 2024 14:12:11 -0300, Jason Gunthorpe wrote:
+> Now that the BLOCKED and IDENTITY behaviors are managed with their own
+> domains change to the domain_alloc_paging() op.
 > 
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
+> The check for using_legacy_binding is now redundant,
+> arm_smmu_def_domain_type() always returns IOMMU_DOMAIN_IDENTITY for this
+> mode, so the core code will never attempt to create a DMA domain in the
+> first place.
 > 
-> 
+> [...]
 
 Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-[1/1] iommu/arm-smmu-v3: Free MSIs in case of ENOMEM
-      https://git.kernel.org/will/c/80fea979dd9d
+[1/1] iommu/arm-smmu: Convert to domain_alloc_paging()
+      https://git.kernel.org/will/c/d75d7dc26f29
 
 Cheers,
 -- 
