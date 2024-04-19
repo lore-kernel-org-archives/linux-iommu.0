@@ -1,128 +1,215 @@
-Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com [209.85.221.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E35B131E5D
-	for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 18:14:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0718D10A03;
+	Fri, 19 Apr 2024 20:07:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713550497; cv=none; b=un1qLDt5o2RPdA0KktXPCxHMavNTNLKzQAtSgQPBXv3SAtqxy3BdDzjlaRTc/YkXeDsif4pWKOUSue0hLzDBDAEXytIw3/s4RQMYvcoPA1kXVaE4cHk4zvQ4Bh1lyN1/RJPN7f9bLOTKHtfM9MmPPCT70rdLA9ptxAS6mG5MiF4=
+	t=1713557241; cv=none; b=EWCfgw6IHu+P8Vqjw1DAtj2EMaQ7D08Y8jVSc0yEMlkw+jRPsu2okUhWyHKUKvXnj5SAWtFBL3lDaHC4ZXUZ1ws60qcwJ+DuQtPPHlXqO2d7ml2LH0mQXd61q5uKEaHiYL11R3yvz+kf1MzuDW85kSEpO3Ilb359dWXeolTlSpI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713550497; c=relaxed/simple;
-	bh=Zi9+/2bZWHYcRVwbVahiNExFAIP6YNcPdIl+erVGWAY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=V+VLKDKAGgZ/EQV6tHd6w7Tfk9v6dG+7OrerkFKJ9sisxJCpzmYW+1iTooERNJMQuHNs5pNZaGOmInFlhiAUgwxABVQp0tXK2OVkLN2mD3YuqXC9fXP7emw9pohTqe9qSx3+kiazpsETEa950COgJTotpwm10fSVcVEY8pP37Ew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bF5whSma; arc=none smtp.client-ip=209.85.221.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1713557241; c=relaxed/simple;
+	bh=ycgfHMlt+UlcaG4ketR/yuNNw2hvmApeoBvZ3KPmBP4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KC5eSQxMEInqzmma7a4O3BA0Untk4pIsTRhkS1/ArH+IXfvBu/q+AC8ujkY7JSvXQQ5vVQQz6fQxXDE5ueseOTA8uFrslKZYQvVxHR0iSXikYfPCdlG97nkKRYvVVdR/n7+PZ2dZE2ButJYnaS342Cq1nf9cd/JmKSJTRBAAVSM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QfiCvfRU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bF5whSma"
-Received: by mail-vk1-f171.google.com with SMTP id 71dfb90a1353d-4dcc7c1055bso681098e0c.0
-        for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 11:14:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1713550495; x=1714155295; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=57GABgAlSf9ZFESIWB58CmR4AadAHXOBwDqFNyeDfBw=;
-        b=bF5whSmaaHEtoOkAGo8DhE6Pv/bHXkbz+ICqzCJ1bdedAO0o01DbsO5d5BsbFglxh7
-         epHtPypo4YyMhN2PIf+82E0iaRNEw+yRM9+w9/WrMYqy/tdcnPPMeYqj9mxdF4xjKJoS
-         tADA9ycMcfM1PtEYYoZJuuzOOhRi7n7Og6b0JC2RulPlJAGFOXPwR05C9uYqtWNYQchO
-         hanv6I0k7hg88bjxxG0glrMVpE6LtKvWH8atRYG7g3QXWpJyYA/mgdCWUB2hmYSKYu6N
-         4RCy2xyRuKszbaMhqUNJAHq1sznvv2Z1q+oVXqttQxjQJwdXEhVAY5XKJAxlzE6Qt3eD
-         UV5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713550495; x=1714155295;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=57GABgAlSf9ZFESIWB58CmR4AadAHXOBwDqFNyeDfBw=;
-        b=FJ26rPdiWpI7JFVqSCECd1OFYZ/JoRfJFuOB2z4iGYOxtjT7T1Adpk6/cmEEs6uKzD
-         0FvTXDWx4eq3fDdQw0dERnQOYI/1OoM2QO6cfWRJ37Qde1FkrxyU/PQQaviWkeEeXRbY
-         Hz2vVB/5X+XDpGl/9YG8FkPngK4bPhZqs4e/FW2gun4fRnXzvq4PT8Wz28lbtR5ImPfM
-         7RNO28lKAOHnp3hEoLmE4cHIH6FOmNZ7I7zhNwTUER6RWNERu0ag3C5NxxamN3v4mqdz
-         hWj+wUkkFJ3OGtQ/WW3xDZ8jiuwqgwAMEU/dAsOdm2s99Ser87G5kmYvFVcxF0Bf/u8l
-         k1TA==
-X-Gm-Message-State: AOJu0Yz3Y6/UkV9hKRVe49cySQEYl1zNGAgcpiCZbrEht9neBptWZ7wZ
-	A0h+o0ESmNakii2mBcLuORvd0neUFLsih5ZAkKoIZ9I/uPj+hbc1+pYAgy0lHkX2PMRB4Cx/wBi
-	Mfsle/1aJ3yTjJNUb3PfxAlzK10E=
-X-Google-Smtp-Source: AGHT+IGVyhZzLcyKNeONoHWO5Vpd993PGCkSJRc1acyKtcNVUOAPPV3OLMlto+h5lwlOpuFmo/gfmP457fnzmr00yyc=
-X-Received: by 2002:a05:6122:1810:b0:4d4:be1:8196 with SMTP id
- ay16-20020a056122181000b004d40be18196mr3118848vkb.11.1713550494947; Fri, 19
- Apr 2024 11:14:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QfiCvfRU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1759C072AA;
+	Fri, 19 Apr 2024 20:07:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1713557240;
+	bh=ycgfHMlt+UlcaG4ketR/yuNNw2hvmApeoBvZ3KPmBP4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=QfiCvfRU8afAJ78s4+eQn6qzBAimsQ2168PoqAIHVelV/LRVyalukWuZ6HVlfP68B
+	 FAeSC1pSGwpOwealSFcBOFuDOIU7XREj+dbocpnEGmodtiP0831dOBTYtVLkqHaFy/
+	 a6O81VtJbB5ZZVd7SYwZuKvDZnRFJ6DdxWqL9vTOVXvHFIpXlzjGeJwGjzloMikfA3
+	 8Ogdj9mHkI+ra9Ew6t8V0IiTht/NZ1wxXIy8cHyS+GUIe0JhxNXwvEBnsqo2AWnAhu
+	 RkbLosw5jKAGFaadrKUV2+dhdXWWbgbC/+XS9+imfzkke0f7phdt6hOdEbVMkhsjJi
+	 JCzeiah7YRVZA==
+Date: Fri, 19 Apr 2024 17:07:17 -0300
+From: Arnaldo Carvalho de Melo <acme@kernel.org>
+To: Thomas Gleixner <tglx@linutronix.de>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	LKML <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>,
+	Peter Zijlstra <peterz@infradead.org>, iommu@lists.linux.dev,
+	Lu Baolu <baolu.lu@linux.intel.com>, kvm@vger.kernel.org,
+	Dave Hansen <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>,
+	"H. Peter Anvin" <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>,
+	Ingo Molnar <mingo@redhat.com>, Paul Luse <paul.e.luse@intel.com>,
+	Dan Williams <dan.j.williams@intel.com>,
+	Jens Axboe <axboe@kernel.dk>, Raj Ashok <ashok.raj@intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>, maz@kernel.org,
+	seanjc@google.com, Robin Murphy <robin.murphy@arm.com>,
+	jim.harris@samsung.com, a.manzanares@samsung.com,
+	Bjorn Helgaas <helgaas@kernel.org>, guang.zeng@intel.com,
+	robert.hoo.linux@gmail.com, kan.liang@intel.com,
+	"Kleen, Andi" <andi.kleen@intel.com>
+Subject: Re: [PATCH v2 05/13] x86/irq: Reserve a per CPU IDT vector for
+ posted MSIs
+Message-ID: <ZiLO9RUdMsNlCtI_@x1>
+References: <20240415134354.67c9d1d1@jacob-builder>
+ <87jzkuxaqv.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240419114715.6028-1-vasant.hegde@amd.com>
-In-Reply-To: <20240419114715.6028-1-vasant.hegde@amd.com>
-From: Eric Wagner <ewagner12@gmail.com>
-Date: Fri, 19 Apr 2024 14:14:44 -0400
-Message-ID: <CAHudX3yemW5Yp32aagGPM0T34mr6RO+PqNShkn=YkXjWepP2gg@mail.gmail.com>
-Subject: Re: [PATCH] iommu/amd: Enhance def_domain_type to handle untrusted device
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, joro@8bytes.org, suravee.suthikulpanit@amd.com, 
-	alexander.deucher@amd.com, Robin Murphy <robin.murphy@arm.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, stable@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87jzkuxaqv.ffs@tglx>
 
-On Fri, Apr 19, 2024 at 7:47=E2=80=AFAM Vasant Hegde <vasant.hegde@amd.com>=
- wrote:
->
-> Previously, IOMMU core layer was forcing IOMMU_DOMAIN_DMA domain for
-> untrusted device. This always took precedence over driver's
-> def_domain_type(). Commit 59ddce4418da ("iommu: Reorganize
-> iommu_get_default_domain_type() to respect def_domain_type()") changed
-> the behaviour. Current code calls def_domain_type() but if it doesn't
-> return IOMMU_DOMAIN_DMA for untrusted device it throws error. This
-> results in IOMMU group (and potentially IOMMU itself) in undetermined
-> sstate.
->
-> This patch adds untrusted check in AMD IOMMU driver code. So that it
-> lets eGPUs behind Thunderbolt work again.
->
-> Fine tuning amd_iommu_def_domain_type() will be done later.
->
-> Reported-by: Eric Wagner <ewagner12@gmail.com>
-> Link: https://lore.kernel.org/linux-iommu/CAHudX3zLH6CsRmLE-yb+gRjhh-v4bU=
-5_1jW_xCcxOo_oUUZKYg@mail.gmail.com
-> Fixes: 59ddce4418da ("iommu: Reorganize iommu_get_default_domain_type() t=
-o respect def_domain_type()")
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> Cc: stable@kernel.org # v6.7+
-> Signed-off-by: Vasant Hegde <vasant.hegde@amd.com>
-> ---
-> @Eric,
->   Can you please test this patch?
->
-> -Vasant
->
->  drivers/iommu/amd/iommu.c | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index e692217fcb28..e405714640b0 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2754,6 +2754,10 @@ static int amd_iommu_def_domain_type(struct device=
- *dev)
->         if (!dev_data)
->                 return 0;
->
-> +       /* Always use DMA domain for untrusted device */
-> +       if (to_pci_dev(dev)->untrusted)
-> +               return IOMMU_DOMAIN_DMA;
-> +
->         /*
->          * Do not identity map IOMMUv2 capable devices when:
->          *  - memory encryption is active, because some of those devices
-> --
-> 2.31.1
->
+On Fri, Apr 19, 2024 at 06:00:24AM +0200, Thomas Gleixner wrote:
+> On Mon, Apr 15 2024 at 13:43, Jacob Pan wrote:
+> > On Mon, 15 Apr 2024 11:53:58 -0700, Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+> >> On Thu, 11 Apr 2024 18:51:14 +0200, Thomas Gleixner <tglx@linutronix.de> wrote:
+> >> > If we really care then we do it proper for _all_ of them. Something like
+> >> > the uncompiled below. There is certainly a smarter way to do the build
+> >> > thing, but my kbuild foo is rusty.  
+> >> I too had the concern of the wasting system vectors, but did not know how
+> >> to fix it. But now your code below works well. Tested without KVM in
+> >> .config to show the gaps:
+> >> 
+> >> In VECTOR IRQ domain.
+> >> 
+> >> BEFORE:
+> >> System: 46: 0-31,50,235-236,244,246-255
+> >> 
+> >> AFTER:
+> >> System: 46: 0-31,50,241-242,245-255
+> >> 
+> >> The only gap is MANAGED_IRQ_SHUTDOWN_VECTOR(243), which is expected on a
+> >> running system.
+> >> 
+> >> Verified in irqvectors.s: .ascii "->MANAGED_IRQ_SHUTDOWN_VECTOR $243
+> >> 
+> >> POSTED MSI/first system vector moved up from 235 to 241 for this case.
+> >> 
+> >> Will try to let tools/arch/x86/include/asm/irq_vectors.h also use it
+> >> instead of manually copy over each time. Any suggestions greatly
+> >> appreciated.
+> >>
+> > On a second thought, if we make system IRQ vector determined at compile
+> > time based on different CONFIG options, will it break userspace tools such
+> > as perf? More importantly the rule of not breaking userspace.
 
-Tested the patch and confirmed it fixes the reported issue for me.
+The rule for tools/perf is "don't impose _any requirement_ on the kernel
+developers, they don't have to test if any change they do outside of
+tools/ will break something inside tools/."
+ 
+> tools/arch/x86/include/asm/irq_vectors.h is only used to generate the
+> list of system vectors for pretty output. And your change already broke
+> that.
 
-Tested-by: Eric Wagner <ewagner12@gmail.com>
+Yeah, I even moved that from tools/arch/x86/include/asm/irq_vectors.h
+to tools/perf/trace/beauty/arch/x86/include/asm/irq_vectors.h (for next
+merge window).
+
+Having it in tools/arch/x86/include/asm/irq_vectors.h was a bad decision
+as it, as you mentinoned, is only used to generate string tables:
+
+⬢[acme@toolbox perf-tools-next]$ tools/perf/trace/beauty/tracepoints/x86_irq_vectors.sh 
+static const char *x86_irq_vectors[] = {
+	[0x02] = "NMI",
+	[0x80] = "IA32_SYSCALL",
+	[0xec] = "LOCAL_TIMER",
+	[0xed] = "HYPERV_STIMER0",
+	[0xee] = "HYPERV_REENLIGHTENMENT",
+	[0xef] = "MANAGED_IRQ_SHUTDOWN",
+	[0xf0] = "POSTED_INTR_NESTED",
+	[0xf1] = "POSTED_INTR_WAKEUP",
+	[0xf2] = "POSTED_INTR",
+	[0xf3] = "HYPERVISOR_CALLBACK",
+	[0xf4] = "DEFERRED_ERROR",
+	[0xf6] = "IRQ_WORK",
+	[0xf7] = "X86_PLATFORM_IPI",
+	[0xf8] = "REBOOT",
+	[0xf9] = "THRESHOLD_APIC",
+	[0xfa] = "THERMAL_APIC",
+	[0xfb] = "CALL_FUNCTION_SINGLE",
+	[0xfc] = "CALL_FUNCTION",
+	[0xfd] = "RESCHEDULE",
+	[0xfe] = "ERROR_APIC",
+	[0xff] = "SPURIOUS_APIC",
+};
+
+⬢[acme@toolbox perf-tools-next]$
+
+Used in:
+
+root@number:~# perf trace -a -e irq_vectors:irq_work_entry/max-stack=32/ --max-events=1
+     0.000 kworker/u57:0-/9912 irq_vectors:irq_work_entry(vector: IRQ_WORK)
+                                       __sysvec_irq_work ([kernel.kallsyms])
+                                       __sysvec_irq_work ([kernel.kallsyms])
+                                       sysvec_irq_work ([kernel.kallsyms])
+                                       asm_sysvec_irq_work ([kernel.kallsyms])
+                                       _raw_spin_unlock_irqrestore ([kernel.kallsyms])
+                                       dma_fence_wait_timeout ([kernel.kallsyms])
+                                       intel_atomic_commit_tail ([kernel.kallsyms])
+                                       process_one_work ([kernel.kallsyms])
+                                       worker_thread ([kernel.kallsyms])
+                                       kthread ([kernel.kallsyms])
+                                       ret_from_fork ([kernel.kallsyms])
+                                       ret_from_fork_asm ([kernel.kallsyms])
+root@number:~#
+
+But as the original cset introducing this explains, these irq_vectors:
+tracepoins operate on just one of the vectors, so irq_work_entry(vector:
+IRQ_WORK), irq_vectors:reschedule_exit(vector: RESCHEDULE), etc. 
+
+> The obvious solution to that is to expose that list in sysfs for
+> consumption by perf.
+
+nah, the best thing these days is stop using 'int' for vector and use
+'enum irq_vector', then since we have BTF we can use that to do the enum
+-> string translation, like with (using /sys/kernel/btf/vmlinux, that is
+pretty much available everywhere these days):
+
+root@number:~# pahole clocksource_ids
+enum clocksource_ids {
+	CSID_GENERIC          = 0,
+	CSID_ARM_ARCH_COUNTER = 1,
+	CSID_MAX              = 2,
+};
+
+root@number:~# pahole skb_drop_reason | head
+enum skb_drop_reason {
+	SKB_NOT_DROPPED_YET                     = 0,
+	SKB_CONSUMED                            = 1,
+	SKB_DROP_REASON_NOT_SPECIFIED           = 2,
+	SKB_DROP_REASON_NO_SOCKET               = 3,
+	SKB_DROP_REASON_PKT_TOO_SMALL           = 4,
+	SKB_DROP_REASON_TCP_CSUM                = 5,
+	SKB_DROP_REASON_SOCKET_FILTER           = 6,
+	SKB_DROP_REASON_UDP_CSUM                = 7,
+	SKB_DROP_REASON_NETFILTER_DROP          = 8,
+root@number:~#
+
+Then its easy to go from 0 to CSID_GENERIC, etc.
+
+⬢[acme@toolbox pahole]$ perf stat -e cycles pahole skb_drop_reason > /dev/null
+
+ Performance counter stats for 'pahole skb_drop_reason':
+
+         6,095,427      cpu_atom/cycles:u/                                                      (2.82%)
+       103,694,633      cpu_core/cycles:u/                                                      (97.18%)
+
+       0.039031759 seconds time elapsed
+
+       0.016028000 seconds user
+       0.023007000 seconds sys
+
+
+⬢[acme@toolbox pahole]$
+
+- Arnaldo
+ 
+> But we don't have to do any of that right away. It's an orthogonal
+> issue. Just waste the extra system vector to start with and then we can
+> add the compile time dependend change on top if we really care about
+> gaining back the vectors.
+> 
+> Thanks,
+> 
+>         tglx
