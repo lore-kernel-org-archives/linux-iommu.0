@@ -1,203 +1,132 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B74D128806
-	for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 13:39:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.12
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713533990; cv=fail; b=SqBUAC+Oj9b908ufC1aCS35Y6I8O7SILFwfUF0tt8VLphnStLXEQ6WeyFGvLkqBTTFYwX/5UTBmFOylqXwr52fRq0p+QHaZqwiAymWoEHHLtBlXYheCYhrjgkfD4KVF9ZY24ic2qcvFWiNxhH0ZIM1e4kxZQLJ6r1eCj/PNaNOo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713533990; c=relaxed/simple;
-	bh=VrbGGEa1/Wnz6EJ5rJra0K6DmMYV+DfM9rJUwwasgrs=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=r7qYe9Jrv9FKXecIqqS/p35Q1MCVRiyvLNTl/YwTa/56pCXiVjCapg5oal1yom0iY6ovIIpynPDSKbUJ/vPjQ7dnCKeIWusj/9TxyT6WqWBfGOF7zdk2AeU6AyMDjL0ykTChIGom0H7Z+AvZtL3MFIoOC9E2U+rMUMSElhVcUwA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=G8UjI1UH; arc=fail smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0F7C12C53D
+	for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 13:55:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713534912; cv=none; b=Kecvy0PA5rBzJ5wYy9m+yr11vjEsNVecBybQTGIZG0Eegj/b5miwraLJ3L1B904qfgsTpE0bkRd6BmCrGxXXnpX3OtzXnizDcdtSkCKLD0kkt72ipnv3ypvFJEX7iEW21q5PDfkxlVdHB4ZYyw0Afozzw0lHZ02HiqmlhRu8KA8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713534912; c=relaxed/simple;
+	bh=35xtwLDOwMLSiN0iWProcPjGusx6q1ZiX+FpgyM+nVc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=E4YfRQNaPyIwVTlmhQAm8QG6wzQoDoBgzQumCDR6EQ/fo7Ucqn2STmbB/nZyoKU0lojLFcWW9VWunMM+Mko5HgZSN9wLeWF3XTGE5mZaTQFW4Awp1cpKisrZusjJyjXhMt+7f4nmca2aRWhsQpbkERPT0XpMHFYURHNUCpfsAlg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=PyeSAbMi; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="G8UjI1UH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713533990; x=1745069990;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=VrbGGEa1/Wnz6EJ5rJra0K6DmMYV+DfM9rJUwwasgrs=;
-  b=G8UjI1UHXv5DEJiw4Q55a6JX+1aDdDqYr/8Gw94KGwNjpeO2A2yu0btu
-   uNsvWgdTdUV9UKzQmCGrMoTr0JwfZIkhelRpUMiOX8vpyfCI000iAyOsT
-   vnGgbzJ/UCMNBdk8P9bfOTpQwara0YGnvyDjwPyjchxgtRnUXT5uiMPNo
-   5JKQEBTN8H+lslLRlG7AkfHqVY4aSqMrEPWu1x9f6D+J9ljujBbsLLUhC
-   mYWwWVJnvZKgLvdCtQgW214l8/MN7wODtbwpblEPjCB43SUM6mI0c+jyx
-   +uJ5Iarou6REg9bY4oE5CV5mC1RLFFc81yEK5dElhqBnsr+LYSie89bYu
-   g==;
-X-CSE-ConnectionGUID: ZGKIARWaTWu6cPYAyS7uSw==
-X-CSE-MsgGUID: cB3yoE2USq2hq0EF1J4J/Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11049"; a="12915509"
-X-IronPort-AV: E=Sophos;i="6.07,213,1708416000"; 
-   d="scan'208";a="12915509"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Apr 2024 06:39:49 -0700
-X-CSE-ConnectionGUID: wh/mokT9Sse56RS/y6ja9Q==
-X-CSE-MsgGUID: gIuAAU2oRcCwFdKxKstqwA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,213,1708416000"; 
-   d="scan'208";a="27879074"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmviesa003.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 19 Apr 2024 06:39:48 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 19 Apr 2024 06:39:48 -0700
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Fri, 19 Apr 2024 06:39:47 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Fri, 19 Apr 2024 06:39:47 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.101)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Fri, 19 Apr 2024 06:39:46 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dcriB8ln48b6r17u3weunAKStgN2nM1MArU8Q4BGp69hBV47DXkCsg9KDSIkpk/ka7Of5YSGtUMK2GDoP1oREPGHWCLeYj+9k5AriymMgOaDIm+vtV0jyF7la7GgLUbhJrDfEfSF6GZgWfU71+AjMD6haxvcPZKXw2YRSxYfjZNeGhgkwvFh0lZ6pV87JX5yBANFQmKicJPZfUi3IwIYMxAoQHm9SaCqlxVdK8CaxrVrAF1KdQYIYCMMt+uuMmyW+kX71nTjwROrSrReNJSyDo68JaECb96BCwlNhilnB3ejYxRU4H9my+SfkZGjO9MCKeWAQ2uKnIbJiQDAYmxfyw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4n4DDiRAi7Dazc+tYpoLWxmFEsOCHy6VvqRapaOoG/U=;
- b=kyMgMO8TI+8O9ssD5H6G3kEDJPjuLMSgXbQliSOAZ02GHmR9XXf3Sb3mXuj1WALEJYswJksrsyMQj7arKFYrHHJkkVo/fv9d/AvyxXEQGTF8HPCv8MCX5CFwQZnCqxAkHpuA7mkJmdAM/UUD6bHJ2fIvLmWghhBmTgZVYY7RPISlA8BXO79mGrhHXHiUVWQWxAzOlrtIoIoZjV2E6kjZxubLk/Sw/NbifV0XMWBmzVTIF3p0VCLK7VK8/gffyg/2ZLdt9jD4xb6r9+Uk43v5g9f/48O4tZzVqZojF/ZnBvzbzShECnDJrfSU0yaALktPRoPWgtBmDV5M/JMk0GSMDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by PH7PR11MB7964.namprd11.prod.outlook.com (2603:10b6:510:247::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.16; Fri, 19 Apr
- 2024 13:39:44 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%7]) with mapi id 15.20.7519.010; Fri, 19 Apr 2024
- 13:39:44 +0000
-Message-ID: <d4674745-1978-43b2-9206-3bf05c6cd75a@intel.com>
-Date: Fri, 19 Apr 2024 21:43:17 +0800
-User-Agent: Mozilla Thunderbird
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="PyeSAbMi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1713534909;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=RjqRpX+pS+vo3/Lr5IudRNzeQilnxl4tMq9R6OC0a+0=;
+	b=PyeSAbMitBigz8lXWf/1gjs/paPcIwpG06loPGrXh7DjXjLykfvlsijBz51xOUfN9MjbOv
+	m5u2zMs/EIy/65JEaNbDz50ZvarOeT0TrmQOgzSi6MBVWfGgVBcU+s14boO6z4msPgf2B9
+	60CzWHOgw6OQWnF67qa6zm1UNBYk+/k=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-574-sDPcIjLvPc2YBbp1T39Tag-1; Fri, 19 Apr 2024 09:55:08 -0400
+X-MC-Unique: sDPcIjLvPc2YBbp1T39Tag-1
+Received: by mail-io1-f72.google.com with SMTP id ca18e2360f4ac-7da52a99cbdso69662839f.1
+        for <iommu@lists.linux.dev>; Fri, 19 Apr 2024 06:55:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713534907; x=1714139707;
+        h=content-transfer-encoding:mime-version:organization:references
+         :in-reply-to:message-id:subject:cc:to:from:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=RjqRpX+pS+vo3/Lr5IudRNzeQilnxl4tMq9R6OC0a+0=;
+        b=Uki1ViTwdT0MDeH+2mR+Pj/+Do55K1WxaPQr3KgHseA+X3nXLbpUWkO5UYdfqv+pe2
+         IEOlFoP87R+RhBZwyCsRKrDI1nbJwbWH1uGAnZFF563T05IIwgbFNSytoOwBDANkPCX+
+         QNQSdbZGRIidLMHxmSrIITYbkdKzVnjbsx6er351ROMk6yexwXEDZxpqbfmos6zv2UyC
+         HMhCM6ghNy8k5MbfzRt7P8tyNyrmhu6PQOv8+3QIbHesUC8EqCmyCxB6H12St4ZkbPl9
+         /80++0n+S5AOGnGTOHSP/TKVMvShfCHgeSpylctRvo50IH+RviZ7adte24iC0sjkEsOG
+         86Tw==
+X-Forwarded-Encrypted: i=1; AJvYcCWOlBWkHhPJhUxSeRvM7858RHkE6KX4+H5P759LCtVazKlFHypIWOjQhn0m7BW2DmVokp/lYgBXTgsBRsBS58coPVKB/zY=
+X-Gm-Message-State: AOJu0Yxk32r1DGPqFR+SYy+tftQLm2QA0Xtov5Du6xpkh8H2m6q5AIos
+	G5kGgfafw46RjwFwScLdlRhwLoS/VcJGlHZ/1n/JTaCmSEuUzSb6AqdpkVOfrg6f4XvpZGjDKS1
+	J0eQQg1bgd6YgMNhPJMRGHqdBD4LqhzfFidsJuHTDdpQhj2c/RYwa
+X-Received: by 2002:a5d:8603:0:b0:7d9:e3ba:7971 with SMTP id f3-20020a5d8603000000b007d9e3ba7971mr2501129iol.17.1713534907434;
+        Fri, 19 Apr 2024 06:55:07 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IG2IyxruJ6/BotipF2aVkllUgehptgnXhLyHQJtiyR1xz0obyh3STzQZCR7FRU+Jv1P9PumQw==
+X-Received: by 2002:a5d:8603:0:b0:7d9:e3ba:7971 with SMTP id f3-20020a5d8603000000b007d9e3ba7971mr2501096iol.17.1713534907037;
+        Fri, 19 Apr 2024 06:55:07 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id ha14-20020a0566386b8e00b0047f1b5975e5sm1030494jab.76.2024.04.19.06.55.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 19 Apr 2024 06:55:06 -0700 (PDT)
+Date: Fri, 19 Apr 2024 07:55:04 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: Jason Gunthorpe <jgg@nvidia.com>, <kevin.tian@intel.com>,
+ <joro@8bytes.org>, <robin.murphy@arm.com>, <eric.auger@redhat.com>,
+ <nicolinc@nvidia.com>, <kvm@vger.kernel.org>,
+ <chao.p.peng@linux.intel.com>, <iommu@lists.linux.dev>,
+ <baolu.lu@linux.intel.com>, <zhenzhong.duan@intel.com>,
+ <jacob.jun.pan@intel.com>, Matthew Wilcox <willy@infradead.org>
 Subject: Re: [PATCH v2 1/4] ida: Add ida_get_lowest()
-Content-Language: en-US
-To: Jason Gunthorpe <jgg@nvidia.com>, Alex Williamson
-	<alex.williamson@redhat.com>
-CC: <kevin.tian@intel.com>, <joro@8bytes.org>, <robin.murphy@arm.com>,
-	<eric.auger@redhat.com>, <nicolinc@nvidia.com>, <kvm@vger.kernel.org>,
-	<chao.p.peng@linux.intel.com>, <iommu@lists.linux.dev>,
-	<baolu.lu@linux.intel.com>, <zhenzhong.duan@intel.com>,
-	<jacob.jun.pan@intel.com>, Matthew Wilcox <willy@infradead.org>
+Message-ID: <20240419075504.47dc3d75.alex.williamson@redhat.com>
+In-Reply-To: <d4674745-1978-43b2-9206-3bf05c6cd75a@intel.com>
 References: <20240412082121.33382-1-yi.l.liu@intel.com>
- <20240412082121.33382-2-yi.l.liu@intel.com>
- <20240416100329.35cede17.alex.williamson@redhat.com>
- <e3531550-8644-4a7e-94bd-75bdb52182be@intel.com>
- <20240418102314.6a3d344a.alex.williamson@redhat.com>
- <20240418171208.GC3050601@nvidia.com>
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <20240418171208.GC3050601@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TY2PR06CA0012.apcprd06.prod.outlook.com
- (2603:1096:404:42::24) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+	<20240412082121.33382-2-yi.l.liu@intel.com>
+	<20240416100329.35cede17.alex.williamson@redhat.com>
+	<e3531550-8644-4a7e-94bd-75bdb52182be@intel.com>
+	<20240418102314.6a3d344a.alex.williamson@redhat.com>
+	<20240418171208.GC3050601@nvidia.com>
+	<d4674745-1978-43b2-9206-3bf05c6cd75a@intel.com>
+Organization: Red Hat
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|PH7PR11MB7964:EE_
-X-MS-Office365-Filtering-Correlation-Id: e834d5b3-e26b-4e97-0114-08dc60762bdf
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|1800799015|376005|7416005;
-X-Microsoft-Antispam-Message-Info: F7d+iH6heLnMGsTcqWoiFzXDLlI73dvq6LBz5+bOU/htr/Kz9HoinUL4xo0fqAIVVbBA2K4cjXrSNvA7UGCqHpnufI9sd+AM2Qq83OEWwa+EwUoDWX3rE3cmevCKP4twIdrDbOFbdSxOG9KsgFuEe6+5pm1u5WJYFFP+jQek6iVbVQ3yAXadbbSki0DmByQUR1DX/5X+4qGcATj/F20UJm7iS13gRHuKuyjjL6YwKMzjOqU++cHojv50/iiajaTgwODjpLwuo+1/4PTZ1EGI2qKieDVejfcoZrCggP0T8+6LKBYHs/dkUOoAA4RviWbkLOBQQm5R0FmIsQhtAGBiLG0hz/HDa9kWAMGfYTB91qJudDnlKjL2wjYCqZkH1Jja4z2KMAnYG+4hsPy/aYLnyiqRKLEapdub3xL3GXbWez3CrTcJ0VA+d1Ze8wvBRSQ5rfZRgujhq8Y/dVfKKSQFDDhXQa7Y4+FoKwOYvy/UhKOEmHShe+gDrYf6b2arpVEDqp/qpdYTO25OSCwXNp6hZlHIC1VmzwE319HGeA4dMpZZb27ZU5VD7RD38oPEKGcESKhpJ6/RdWiwPbbk1KuNFsd9CX5NLHIiqmn2H4DGwqYqZ3TlR/MBsKKrhcEKbrFPHKqduME9XnQNhumllNin0AGlylvMvosqNEmQOV+nv9I=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(376005)(7416005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?L3FzeWREQW8vTkdGQ0Z2U0xvUzg0V0NGMklqcmVrenF2SWluRm8rLy9BVDdN?=
- =?utf-8?B?VUVmcU14ODF4WDAxNHNxTEtxREVwS3h3R25EaFpDQ3JWa3FVWDdFNGFoU0VY?=
- =?utf-8?B?Nk1YdnpZUkhuVWdKT0RmZ29kVG02NkdwUDE2RXB2aUhPN20wblRZd3V1ZXZz?=
- =?utf-8?B?am1OeURhR29ub0VBaWpXSE9vc2M5NHZGblZKUWhRdC8xdytqVUo3Mm1BSlE5?=
- =?utf-8?B?VmRJV1FockRWZElFZkJhYTdacHlBVkhTVFk1RDNBejFLRWtuMVlKVGQ0ZmE0?=
- =?utf-8?B?ODZySGxlTVVnNG9ZNElla2k5L1JiWklQdXZXcHZZRy9JR3JDbjJ4alNtaU9q?=
- =?utf-8?B?WDNoUnZyRmZyV0R6bVVyaVN6K2hTSVBCV2lpMlB4WnhNTGpoR3ZudTBFM2J0?=
- =?utf-8?B?ZkVpQ0JSSVRVeFBkTTVQVlNXTlorWUl6OE1WbnErK29LMVdQZldPUVVyTDlI?=
- =?utf-8?B?aXA5U2lWaWMyTU9CWHRaUE9iWnovMTJjeWIvVnB1aE14ejgyYUtPWVJRMHl0?=
- =?utf-8?B?dzBWMmpRUjczK3hWM1h0RHhuUzdqd09Rc3ZQTHkxNzJaS2hUTGdtUVJYU1pa?=
- =?utf-8?B?WW1ISnZlUFB2UTFHZ1h2SWErQjdOTE9va3FKT3p5L243c204KzNPOUt3bXM1?=
- =?utf-8?B?T0dTNzZ3V3V3ZWFmZ0tuamdDNy9NUDJkM25RTk81eGxOWUh2M1hiVFpEdTlI?=
- =?utf-8?B?aFZMLytGMkZvZkZiUDN2T1RVdktYZ2lra3RueHZmZjZoNERyblREV1dmTTQ1?=
- =?utf-8?B?TS9QczQ1dVZ2dVJRYVJqd0JhekxtTE5JZG9kQ1VTSHRmTm42YU80QVkwTzB0?=
- =?utf-8?B?NHJIMzQ4OUgrWVdyMGsrQVhwSVFFY1RTb2VTT2MvRUQ1UkNoVG44VUFndHcy?=
- =?utf-8?B?VWR6ZHdJdGxFN0NIalNQTTh4ZExHQ2xUSzVXdUl4UUhyMGRCVWFHUmVySkov?=
- =?utf-8?B?TFdMVEgzQVhSeldETldOV281YlExR04xY3djT1RIYU1JVi9TWXZLajZlMXZS?=
- =?utf-8?B?akZ3cGtKaEdCb1lhVjJIRHdXRkZ2NTR5WllWOE9UUWUxcXFNMHhJZmplM3dC?=
- =?utf-8?B?SzliNEt5QytKTHR3VnZmelJTUGpnWisxSDVQQnJQM2d2SktrcG4wOU5nN0Q0?=
- =?utf-8?B?SCt2RDVMY25ReTV6VUllcFBTQU83R2FleUxFd0VPaU81VVJZcENDZ29FOUU0?=
- =?utf-8?B?QkQ5TEtxWXAyVEhWT01pZEdueUtkYXhLQUFXeEp5b0ZmMDMyY0lPUUEyUHZl?=
- =?utf-8?B?Rmp6SWtCZlZKVEdLVGZ1dGN6bDd4aG0yOU9aeXJjZFJkQ1FyVE1qNjJoZkM0?=
- =?utf-8?B?LzFTMVhXSEVUR0ZLVWhXSzE2cDBvcUlxNmdPUHJGTGIyWkVnalRLRzIwQTNl?=
- =?utf-8?B?VE1YSDN6NFB4YVcwSitOUGtKejdMOTYyRmJTcy8wN0xXNEhlSFhhbzVsU0ZK?=
- =?utf-8?B?TzFLQTFjY0o3bmlFQ0tOTTZjOVpZQVJteWNhd1hHODV1Smg4YWQvWGJRZFBa?=
- =?utf-8?B?SytqYk5YUHk5K25FWHRuWjc2akZuSEhma2pYM0VscmdtUnN1V0xqSjdkNTM2?=
- =?utf-8?B?TVZKd1VzTWgramZyd3lWTTNVbk02cDhBTlRPRktwcWdyYWtvbGw3UGlqdXMy?=
- =?utf-8?B?VkI1cjEySm1GRE1DOVBIOUx5OHlpem54NHBZWk1ydmJKak5mRE9QbzNvRG1z?=
- =?utf-8?B?Sm4xZTEwYkNwc3VTdnRzMDJUR2ZiL21JM25QeDhJWnlOWnB5UWVwWmxIYlhn?=
- =?utf-8?B?UmNkVWdZSjJuTU8zRmJPdEVUZTZUVmVQZW9EdjdmSEMrZG9QMWFwMEVXKzBQ?=
- =?utf-8?B?ckFpTGV2ZVdMeFdvYnFNSDMzRFE3bDV4RkhQQTlCa1VQcnUwU1ZpYng0eEhE?=
- =?utf-8?B?OEUvMmVZYkcrQTJpa1lBSHNNOUhIaU9KbTMzVHdSVXRhcW1ldXE3b0VXaW5C?=
- =?utf-8?B?TE00LytLZEQ2SGhBZ1JuT0l6VXFFMmRtaUVXNXljZytoZ1Q2djVMSGU1SFFH?=
- =?utf-8?B?VU9SV1c1T2pXTTNOd0lkbDlGWlVSYTc5RGNpMmdEbHpiS2xHUnJ1a1ZYL1da?=
- =?utf-8?B?S1lkRWxVcVlQd2k2ZjFKWnZtTnlYTHo1U3M5RnlScGZ6aldrajdaZzZiMzgy?=
- =?utf-8?Q?baLiHuP8SnEgUHrHlC5NHQ8BX?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: e834d5b3-e26b-4e97-0114-08dc60762bdf
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2024 13:39:44.0543
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: H/bYsMT1j0lEbJTV8zlyN66dc7wSXOC5dmHIA9NSIjLBA0MvZUS6yon2/uVXej3jDDncl9R+6GCrr1LoLbNdXw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR11MB7964
-X-OriginatorOrg: intel.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 2024/4/19 01:12, Jason Gunthorpe wrote:
-> On Thu, Apr 18, 2024 at 10:23:14AM -0600, Alex Williamson wrote:
->>> yep. maybe we can start with the below code, no need for ida_for_each()
->>> today.
->>>
->>>
->>>    	int id = 0;
->>>
->>>    	while (!ida_is_empty(&pasid_ida)) {
->>>    		id = ida_find_first_range(pasid_ida, id, INT_MAX);
->>
->> You've actually already justified the _min function here:
->>
->> static inline int ida_find_first_min(struct ida *ida, unsigned int min)
->> {
->> 	return ida_find_first_range(ida, min, ~0);
->> }
+On Fri, 19 Apr 2024 21:43:17 +0800
+Yi Liu <yi.l.liu@intel.com> wrote:
+
+> On 2024/4/19 01:12, Jason Gunthorpe wrote:
+> > On Thu, Apr 18, 2024 at 10:23:14AM -0600, Alex Williamson wrote:  
+> >>> yep. maybe we can start with the below code, no need for ida_for_each()
+> >>> today.
+> >>>
+> >>>
+> >>>    	int id = 0;
+> >>>
+> >>>    	while (!ida_is_empty(&pasid_ida)) {
+> >>>    		id = ida_find_first_range(pasid_ida, id, INT_MAX);  
+> >>
+> >> You've actually already justified the _min function here:
+> >>
+> >> static inline int ida_find_first_min(struct ida *ida, unsigned int min)
+> >> {
+> >> 	return ida_find_first_range(ida, min, ~0);
+> >> }  
+> > 
+> > It should also always start from 0..  
 > 
-> It should also always start from 0..
+> any special reason to always start from 0? Here we want to loop all the
+> IDs, and remove them. In this usage, it should be more efficient if we
+> start from the last found ID.
 
-any special reason to always start from 0? Here we want to loop all the
-IDs, and remove them. In this usage, it should be more efficient if we
-start from the last found ID.
+In the above version, there's a possibility of an infinite loop, in the
+below there's not.  I don't think the infinite loop is actually
+reachable, but given the xarray backend to ida I'm not sure you're
+gaining much to restart after the previously found id either.  Thanks,
 
-> Ideally written more like:
+Alex
+
+> > Ideally written more like:
+> > 
+> > while ((id = ida_find_first(pasid_ida)) != EMPTY_IDA) {
+> >    ida_remove(id);
+> > }  
 > 
-> while ((id = ida_find_first(pasid_ida)) != EMPTY_IDA) {
->    ida_remove(id);
-> }
 
--- 
-Regards,
-Yi Liu
