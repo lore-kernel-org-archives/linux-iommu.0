@@ -1,48 +1,60 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 047AB12FB18;
-	Fri, 19 Apr 2024 15:33:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBF3512FF77;
+	Fri, 19 Apr 2024 15:33:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713540798; cv=none; b=Ucq3lxtEu4UXz501nvHsvob5aPMvy1RAkTk04uSDl2QT16UKxO96oAwT32IvL1fRnkKMdRVsHCN8mWQkBc5E5KEE493lYiY6szhRxO5jvilbBnR+UuFgsHMjN0IO+ppyOwW/qQrSaT++qIZ9GkpHw4RvO5mqzHclRx9MpYS3Qqk=
+	t=1713540808; cv=none; b=coy152FtDszzn8aMgxe3p5WnmVTvrm7nrkVcnMed6nT52sXInviqAH9c8IaGRTJfP0PtQMqjK5OhOWz2NFI6X2MJdazPXVczCkZ1X3HViT2BsvoHZvFl15UlFqE0+YxPbnwClcleRdNJ7beD2xixeVjRSI/4bSwhjqX50X3GR24=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713540798; c=relaxed/simple;
-	bh=UV8lA/6deS6AcWH+mFYHvm9RlFdafVavLYUZyrTrMKs=;
+	s=arc-20240116; t=1713540808; c=relaxed/simple;
+	bh=b45OKv6+HEEMcsjz7Ivx9yll5x9P0Hi7RFcO7Y2qEJI=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=j7rNlF4WQf2S0rnfMhj/PlgMy+0b0kB4RzivORUTjQifyg9WlupoAgut5N4NkDng5xPvSYGwg8ItXWR0omGaPlFVbEoP7s6KT6ZSv1klB/gjXs1qwtbJ8LZxOHYbHWUwo+LXTncCQw0CfhEEM7FD2eK6uiZbcUCNjfX8HzoeNws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lJTkAnlO; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=rJEx1AqKWEblkY6etf7MJWkKGT67+9Pr44XNEh8FuHWaQGlwj3Q8z2saXY/bN6YW4cSrSx6dvTEEwta1gk9TSwfNga+o9VAo6sOEyk59534pS3XjgDF4ujs6MfZ7Wu/ZiN4K5M7vksnWxqq2jqvtiE70NNBVCC0wiDUB22fz4dU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XkBO24We; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lJTkAnlO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D38DAC072AA;
-	Fri, 19 Apr 2024 15:33:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XkBO24We"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66F71C32786;
+	Fri, 19 Apr 2024 15:33:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713540797;
-	bh=UV8lA/6deS6AcWH+mFYHvm9RlFdafVavLYUZyrTrMKs=;
+	s=k20201202; t=1713540808;
+	bh=b45OKv6+HEEMcsjz7Ivx9yll5x9P0Hi7RFcO7Y2qEJI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=lJTkAnlOwMNMHGlD9vrrDMv+5lzJul4g+9r3kauhakLufOpNXA+cshK2GsBCC5csW
-	 l37A7LLev00EyOtX+vfKHSs6DxylyeEGom2oCrtlULK8A5Sk0pYZwCMKDOxbcvYlxf
-	 zr4s3YLZQCpuXMvBGXkWAOwkNGnmvQ0r7a2d19D76DGMLV0HJ2C6MiDj4MUWWFV4D8
-	 46m0zPm3HICtwza759S+MtjqDB1JGud8z9Qzt4Pkd8mRiK5LR6tD9Qt7SFNTCFQmN2
-	 Qre/8RTL1IlAACc7+l2Hx6A87xsF/70JiGgVxv4076ozGoNuKkKnzWFiEX0uRimG5s
-	 Oqnxdz83bVeqg==
+	b=XkBO24WeB5asEHeLjx4WTk0JhenMVR/4rWsCpdwB4LKORvz+BeNaJLvYKxFpPJ0Td
+	 rc/5YDKvr8iJ34ndVTumbUs8O0mGP4sNSbGojCiIgxO5drSOUDpD1S//bbMg8aWQui
+	 T8fPwyffWD3omsXHpEm2XNyj9Z9nMwlXDi3bmzd2nqEQ2RpzNmy5UMCOxRILu16KUG
+	 AnXPC2gkCwfpl61EjZBHdk1kI+SpmqUI9+VPvbn+9oH3Uswfr9mrvX91v02IFdenWx
+	 RMRYp8Sob5t4TXosQakzq9L/nVuZFprcRg/XdVxUZsuRpB/QBkwQk4jxZcLmT+ugMn
+	 1ITyKMtBGHvXA==
 From: Will Deacon <will@kernel.org>
-To: iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>
+To: robin.murphy@arm.com,
+	joro@8bytes.org,
+	iommu@lists.linux.dev,
+	Georgi Djakov <quic_c_gdjako@quicinc.com>
 Cc: catalin.marinas@arm.com,
 	kernel-team@android.com,
 	Will Deacon <will@kernel.org>,
-	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-	patches@lists.linux.dev
-Subject: Re: [PATCH] iommu/arm-smmu: Convert to domain_alloc_paging()
-Date: Fri, 19 Apr 2024 16:32:59 +0100
-Message-Id: <171345075861.300380.113926608276493245.b4-ty@kernel.org>
+	robh+dt@kernel.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	andersson@kernel.org,
+	konrad.dybcio@linaro.org,
+	robdclark@gmail.com,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org,
+	quic_cgoldswo@quicinc.com,
+	quic_sukadev@quicinc.com,
+	quic_pdaly@quicinc.com,
+	quic_sudaraja@quicinc.com,
+	djakov@kernel.org
+Subject: Re: [PATCH v8 0/7] Add support for Translation Buffer Units
+Date: Fri, 19 Apr 2024 16:33:01 +0100
+Message-Id: <171345168321.302978.15581758312927085763.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <0-v1-3632c65678e0+2f1-smmu_alloc_paging_jgg@nvidia.com>
-References: <0-v1-3632c65678e0+2f1-smmu_alloc_paging_jgg@nvidia.com>
+In-Reply-To: <20240417133731.2055383-1-quic_c_gdjako@quicinc.com>
+References: <20240417133731.2055383-1-quic_c_gdjako@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,21 +64,30 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 
-On Thu, 11 Apr 2024 14:12:11 -0300, Jason Gunthorpe wrote:
-> Now that the BLOCKED and IDENTITY behaviors are managed with their own
-> domains change to the domain_alloc_paging() op.
-> 
-> The check for using_legacy_binding is now redundant,
-> arm_smmu_def_domain_type() always returns IOMMU_DOMAIN_IDENTITY for this
-> mode, so the core code will never attempt to create a DMA domain in the
-> first place.
+On Wed, 17 Apr 2024 06:37:24 -0700, Georgi Djakov wrote:
+> The TCUs (Translation Control Units) and TBUs (Translation Buffer
+> Units) are key components of the MMU-500. Multiple TBUs are connected
+> to a single TCU over an interconnect. Each TBU contains a TLB that
+> caches page tables. The MMU-500 implements a TBU for each connected
+> master, and the TBU is designed, so that it is local to the master.
+> A common TBU DT schema is added to describe the TBUs.
 > 
 > [...]
 
-Applied to will (for-joerg/arm-smmu/updates), thanks!
+Applied driver and binding updates to will (for-joerg/arm-smmu/updates),
+thanks!
 
-[1/1] iommu/arm-smmu: Convert to domain_alloc_paging()
-      https://git.kernel.org/will/c/d75d7dc26f29
+[1/7] dt-bindings: iommu: Add Qualcomm TBU
+      https://git.kernel.org/will/c/54a75d8f14c5
+[2/7] iommu/arm-smmu-qcom-debug: Add support for TBUs
+      https://git.kernel.org/will/c/414ecb030870
+[3/7] iommu/arm-smmu: Allow using a threaded handler for context interrupts
+      https://git.kernel.org/will/c/960be6e10d4f
+[4/7] iommu/arm-smmu-qcom: Use a custom context fault handler for sdm845
+      https://git.kernel.org/will/c/d374555ef993
+
+[6/7] iommu/arm-smmu-qcom: Use the custom fault handler on more platforms
+      https://git.kernel.org/will/c/b8ca7ce709f8
 
 Cheers,
 -- 
