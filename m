@@ -1,76 +1,120 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [195.130.132.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA1AC1391
-	for <iommu@lists.linux.dev>; Mon, 22 Apr 2024 06:37:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F097E4D135
+	for <iommu@lists.linux.dev>; Mon, 22 Apr 2024 07:27:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.130.132.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713767861; cv=none; b=mCjbaqoIbbs+X3eTYWVJOmrgcwJY8MaW0tsSal2doVfRA/ASBpN2inH8mm/sqW6masFZV46HnPiNWDZF0GxG5cRofJgBYQm9sGLAMJLwCcCH8sTl0wnPTl1iQ8KpaJYO/qYFJyRgrnVrrpQ3eivEDHBadMNuiNBesQ7AYc3eY10=
+	t=1713770871; cv=none; b=c+R+nXHS6IWkXHjtiYzvyleSFn8R5PTy8lrFhdipUXCbLOQqF3fxpTj78IHL63UXLrMWP/vT+LA+yiPTXvISiUL7sZfDOmfSNEjz3uYWnf8CmYG2qUDNjYQx1Kn1HXEmJSlTxXsXr/5ZTBLAZzWbWfstZKGkRlStFjaRmq8xLjk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713767861; c=relaxed/simple;
-	bh=JC1IIk6PjUEaa0fE6CEQRFVeHjWHlAFA0r0s8+x8o4E=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nZ0Z/CYx1/qegzFBPPoESzeZArtAj7G8i9Owlepmjh1MHwF1AJUCuFbGdtumMwTb+5YYQCtrigWqgiN/6j6ZPHzbRrp7SPh8+2Jpbp3PQOfKsRvT01F+Yw/vbcRXCiP2HqlcjepzQV0FmZOnq2XuPMKLZIK3tZ6X/4aCMuGfOTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 4A37E227A87; Mon, 22 Apr 2024 08:37:34 +0200 (CEST)
-Date: Mon, 22 Apr 2024 08:37:34 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
-	Vineet Gupta <vgupta@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
-	WANG Xuerui <kernel@xen0n.name>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org,
-	iommu@lists.linux.dev, devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 0/7] iommu, dma-mapping: Simplify
- arch_setup_dma_ops()
-Message-ID: <20240422063734.GA3750@lst.de>
-References: <cover.1713523152.git.robin.murphy@arm.com>
+	s=arc-20240116; t=1713770871; c=relaxed/simple;
+	bh=RWyYEIWJ8XsfZ071NpRMCzhHu+Pnox/bWNT0IZqhBNM=;
+	h=Date:From:To:cc:Subject:In-Reply-To:Message-ID:References:
+	 MIME-Version:Content-Type; b=XTl/LW7jST9Wxw60aeGmZvl/Nkc75RkLA5hjpBAWTrotolCJwr0FcAPNANSxmhfTThbC9uHQrygEM3Zcj1N6kh7w+jttTCpEcxVFuWet7OTMrYGLv90EjDlRDfBZx3x4t8Ks5BIDjfYL/ApewVTKqq1K+uXqJEtiCNDUg3Iv1fc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=none smtp.mailfrom=linux-m68k.org; arc=none smtp.client-ip=195.130.132.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux-m68k.org
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed80:76d0:2bff:fec8:549])
+	by baptiste.telenet-ops.be with bizsmtp
+	id E7TJ2C0080SSLxL017TJcV; Mon, 22 Apr 2024 09:27:40 +0200
+Received: from geert (helo=localhost)
+	by ramsan.of.borg with local-esmtp (Exim 4.95)
+	(envelope-from <geert@linux-m68k.org>)
+	id 1ryo58-001FLD-7g;
+	Mon, 22 Apr 2024 09:27:18 +0200
+Date: Mon, 22 Apr 2024 09:27:18 +0200 (CEST)
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
+cc: Anthony Krowiak <akrowiak@linux.ibm.com>, 
+    Alex Williamson <alex.williamson@redhat.com>, 
+    Bagas Sanjaya <bagasdotme@gmail.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
+    Chaitanya Kulkarni <chaitanyak@nvidia.com>, 
+    Cornelia Huck <cohuck@redhat.com>, Jonathan Corbet <corbet@lwn.net>, 
+    Daniel Jordan <daniel.m.jordan@oracle.com>, 
+    David Gibson <david@gibson.dropbear.id.au>, 
+    Eric Auger <eric.auger@redhat.com>, Eric Farman <farman@linux.ibm.com>, 
+    iommu@lists.linux.dev, Jason Wang <jasowang@redhat.com>, 
+    Jean-Philippe Brucker <jean-philippe@linaro.org>, 
+    Jason Herne <jjherne@linux.ibm.com>, 
+    Joao Martins <joao.m.martins@oracle.com>, 
+    Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org, 
+    Lixiao Yang <lixiao.yang@intel.com>, 
+    Matthew Rosato <mjrosato@linux.ibm.com>, 
+    "Michael S. Tsirkin" <mst@redhat.com>, Nicolin Chen <nicolinc@nvidia.com>, 
+    Halil Pasic <pasic@linux.ibm.com>, 
+    Niklas Schnelle <schnelle@linux.ibm.com>, 
+    Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>, 
+    Yi Liu <yi.l.liu@intel.com>, Yu He <yu.he@intel.com>, 
+    Keqian Zhu <zhukeqian1@huawei.com>
+Subject: Re: [PATCH v6 16/19] iommufd: Add kernel support for testing
+ iommufd
+In-Reply-To: <16-v6-a196d26f289e+11787-iommufd_jgg@nvidia.com>
+Message-ID: <6860aa59-3a8b-74ca-3c33-2f3ec936075@linux-m68k.org>
+References:  <16-v6-a196d26f289e+11787-iommufd_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1713523152.git.robin.murphy@arm.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 
-On Fri, Apr 19, 2024 at 05:54:39PM +0100, Robin Murphy wrote:
-> v3: https://lore.kernel.org/linux-iommu/cover.1707493264.git.robin.murphy@arm.com/
-> 
-> Hi all,
-> 
-> Since this ended up missing the boat for 6.9, here's a rebase and resend
-> with the additional tags from v3 collected.
+ 	Hi Jason,
 
-And just to clarify:  I expect this to go in through the iommu tree.
-If you need further action from me, just let me know.
+On Tue, 29 Nov 2022, Jason Gunthorpe wrote:
+> Provide a mock kernel module for the iommu_domain that allows it to run
+> without any HW and the mocking provides a way to directly validate that
+> the PFNs loaded into the iommu_domain are correct. This exposes the access
+> kAPI toward userspace to allow userspace to explore the functionality of
+> pages.c and io_pagetable.c
+>
+> The mock also simulates the rare case of PAGE_SIZE > iommu page size as
+> the mock will operate at a 2K iommu page size. This allows exercising all
+> of the calculations to support this mismatch.
+>
+> This is also intended to support syzkaller exploring the same space.
+>
+> However, it is an unusually invasive config option to enable all of
+> this. The config option should not be enabled in a production kernel.
+>
+> Tested-by: Matthew Rosato <mjrosato@linux.ibm.com> # s390
+> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 
+Replaying to and old email, after noticing commit 8541323285994528
+("iommufd: Add missing IOMMUFD_DRIVER kconfig for the selftest") in
+v6.9-rc5.
+
+> --- a/drivers/iommu/iommufd/Kconfig
+> +++ b/drivers/iommu/iommufd/Kconfig
+> @@ -10,3 +10,15 @@ config IOMMUFD
+> 	  it relates to managing IO page tables that point at user space memory.
+>
+> 	  If you don't know what to do here, say N.
+> +
+> +if IOMMUFD
+> +config IOMMUFD_TEST
+> +	bool "IOMMU Userspace API Test support"
+> +	depends on DEBUG_KERNEL
+> +	depends on FAULT_INJECTION
+> +	depends on RUNTIME_TESTING_MENU
+> +	default n
+> +	help
+> +	  This is dangerous, do not enable unless running
+> +	  tools/testing/selftests/iommu
+> +endif
+
+How dangerous is this?
+I.e. is it now unsafe to run an allyesconfig or allmodconfig kernel?
+
+Probably this symbol should be tristate?
+
+Gr{oetje,eeting}s,
+
+ 						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+ 							    -- Linus Torvalds
