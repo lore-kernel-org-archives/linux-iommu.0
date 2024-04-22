@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45B3915885B;
-	Mon, 22 Apr 2024 23:58:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8140319DF76;
+	Mon, 22 Apr 2024 23:58:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713830284; cv=none; b=drCG/tiq01l+NTRHgG7JpnMMry3hsk2vSZmwrPFBuGp0wkqOjKUTYgavEiNJ38ISm9UKlEPwaa5s30umycqrXAWnFYCLAL3WsDVD+9+LYSUBNYKc4XamCGOtUy3EeqIQAlJNzXmGRtZ5hf4QqluvfDM/UPUJoPRQ/e7h/8Vg3YY=
+	t=1713830311; cv=none; b=ZRT2LYJwxlNy+zWHG9II1QG+mKl4uuLu/84fZLLMylviNT6MYa13QS+m+Uctc55AtXKgdvJ9e8Nz4/tqEWDrDLIZvUj2tn7tm+McDuGs59fVM2M4/SNHb/n6DTjbtf/8tcxM/mcpInrP5FDbR3HoHZ5nOrnJT7R5QenRuicXXxc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713830284; c=relaxed/simple;
-	bh=ej6Ld74lMeOwzNfWedf8EsdWgF5p/GNnWO/zfutqak8=;
+	s=arc-20240116; t=1713830311; c=relaxed/simple;
+	bh=i1qI41SgWsD0p/gzHp7ffpMwE2vMBIHK3+jdxiiH38I=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=eefooUnUNp0LnoYY3/8u0yRFI8oQXokzkB1UBfv0bOLjNXDRAV8uutdYxUNW544Ax7oT8uKFoOhiqdMTHQPd6ZhdzIUEaDRBHp7RbggZ0qchg6DiUQCkLzbLiamn0wuqe0JOjpY5OBgks9rJd+Qu3jrrJWdGH23o+6dVFui0GnY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KRt9Mb0D; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=Jwkv3zngfH7Am+a3cqC+1Zz2XvvrKXTTVunUxVp8+6rIHFt5aSp7NgX3CyqYnVb7Rkxz1C34pQHtRCRT5zK7uuuH2PymHLr5oXaszzBCMjK13NFnpCGvMqZUkGBqniw1J65v9cvCPaoFbgfbqdbXT64N/zjFEE7t6QRev5iDY20=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MZeHeSjQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KRt9Mb0D"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70CFDC3277B;
-	Mon, 22 Apr 2024 23:58:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MZeHeSjQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5BCCC113CC;
+	Mon, 22 Apr 2024 23:58:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713830283;
-	bh=ej6Ld74lMeOwzNfWedf8EsdWgF5p/GNnWO/zfutqak8=;
+	s=k20201202; t=1713830310;
+	bh=i1qI41SgWsD0p/gzHp7ffpMwE2vMBIHK3+jdxiiH38I=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=KRt9Mb0DapG9hVyP+QR3Dfe9cArOqt5zujGDN/NSI73SLM2+2DhT+ByNmO+LClQ1q
-	 xHKnYCX2C/lUAETTnnTcGUD5o0NWUsusOHaReZCMXnTxkjq1egJxZe5W0PBMb89xau
-	 CsyKwXFlIaMgUliOegu1PLgRkOJ12ldm874K+LUEjieICAJDcQEHSgbw5SRGQg8me2
-	 oypqN5bpsTlEU+mwFjq8Bzc5BBrHfVZtKDRymxL5h6yY0p7ANRsyQ40kilwlRbmVdT
-	 TP75XnRJ+kzZrB9yx1RSxeAMdhgmrP/4tz6IRkxaZRydSBJCcR6EDV9jUuAh082pIj
-	 oJL9vG4usgcfA==
+	b=MZeHeSjQc/RpBM4+bh0g4KoS/KAESqVX62B04WYj9toEBx2jgiv3vPUq0JgDQsLIW
+	 83kOvCEgzPQDf44WPepTt/pLM3GY9QDj1Fsx3iVYBSm9a1ZONjcb+G4mZg+MpJks/W
+	 2FcpYbWzqsI5j36Jn01eyBCwF/DFa4gntLZAZlgXZc9wm6uW5db9LsH7m+/eqZbbWk
+	 L6tBTxCJAjC7RxyXjKgahGUp4bA0cu1urjp7bNnk9H8dYhZNO66ji8Rld6VNOqNz+i
+	 qGacrPQvyP+o12EC02U8vzF7bJ6NsbWovFbpNFicRs80LPFZTv60F3XIngpHDuVUmU
+	 4HkTmz5g/q57g==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -40,12 +40,12 @@ Cc: Krzysztof Kozlowski <krzk@kernel.org>,
 	iommu@lists.linux.dev,
 	linux-mediatek@lists.infradead.org,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 6.1 19/19] iommu: mtk: fix module autoloading
-Date: Mon, 22 Apr 2024 19:18:33 -0400
-Message-ID: <20240422231845.1607921-19-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 10/10] iommu: mtk: fix module autoloading
+Date: Mon, 22 Apr 2024 19:19:23 -0400
+Message-ID: <20240422231929.1611680-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240422231845.1607921-1-sashal@kernel.org>
-References: <20240422231845.1607921-1-sashal@kernel.org>
+In-Reply-To: <20240422231929.1611680-1-sashal@kernel.org>
+References: <20240422231929.1611680-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,7 +54,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.1.87
+X-stable-base: Linux 5.15.156
 Content-Transfer-Encoding: 8bit
 
 From: Krzysztof Kozlowski <krzk@kernel.org>
@@ -74,11 +74,11 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  2 files changed, 2 insertions(+)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 0ba2a63a9538a..576163f88a4a5 100644
+index 2ae46fa6b3dee..04ac40d11fdff 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -1570,6 +1570,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt8195-iommu-vpp",   .data = &mt8195_data_vpp},
+@@ -1101,6 +1101,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
+ 	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
  	{}
  };
 +MODULE_DEVICE_TABLE(of, mtk_iommu_of_ids);
@@ -86,17 +86,17 @@ index 0ba2a63a9538a..576163f88a4a5 100644
  static struct platform_driver mtk_iommu_driver = {
  	.probe	= mtk_iommu_probe,
 diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index a978220eb620e..5dd06bcb507f6 100644
+index fe1c3123a7e77..3a52f6a6ecb32 100644
 --- a/drivers/iommu/mtk_iommu_v1.c
 +++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -602,6 +602,7 @@ static const struct of_device_id mtk_iommu_v1_of_ids[] = {
+@@ -576,6 +576,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
  	{ .compatible = "mediatek,mt2701-m4u", },
  	{}
  };
 +MODULE_DEVICE_TABLE(of, mtk_iommu_v1_of_ids);
  
- static const struct component_master_ops mtk_iommu_v1_com_ops = {
- 	.bind		= mtk_iommu_v1_bind,
+ static const struct component_master_ops mtk_iommu_com_ops = {
+ 	.bind		= mtk_iommu_bind,
 -- 
 2.43.0
 
