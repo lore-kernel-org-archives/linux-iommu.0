@@ -1,108 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE0E22E40B
-	for <iommu@lists.linux.dev>; Mon, 22 Apr 2024 22:28:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24D8C15E81B;
+	Mon, 22 Apr 2024 23:55:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713824896; cv=none; b=mwoKYhxR5Qi4lbCaGT6sl+o0qVWsA+L+LQLmbFbeYrmu3PeF/WbDXH1K8iqCeNEYhQdQU6BRqVpHqOq5fZneNU++YK4PzM1pzLtfjDX1kW3Da7r7bpEuZ4E/TzmDkAjxvF88tVrVecrpUcQZK9glsA3gF7hRpZWF/L7+FEtAwsQ=
+	t=1713830150; cv=none; b=XZNBPyKpcq3/MYDMwYr9Q7W/9CO0AY7wktwUpdcEljUNDxk0f+/lKUT3D321xLkBA66zy48d3hoqvCnb0KlQ1nkjBsosPLIewlcfLasG1eIyI52rTQ/34AbkrpGoQl/jLuK3n3upj+ZmARnG+ARLtfVnu3DxFHpSe1UclBrKD5w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713824896; c=relaxed/simple;
-	bh=LBIdcLeL+hwX+jq1w+Grr6K8OGAVBmubNTZAhnNesCc=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=o3AQcDFqloN0ObBruuL3XuPfphFCG55JqQjy1P4sWsPHImfqh6mlGVAJRhyTPzadGmJFlYH4hE0BuBlxCMJy/mn6pKQzoX7j4pjUGN8nyih7SJihRbyy31aSrn+HndE+8CAX4ug/BSDbE75OKcRFOW39XZmSaE2bY6uUChP5/mg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lyg8Kl2L; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1713830150; c=relaxed/simple;
+	bh=2FqeOWFJ5RPwBVKKuybfSkJp8Q6nO5EybaaGdKCY5uA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=OwzuHIRoqUT5OL3D68OnBCnuyPSMPBlTBMmn5Jm676Qvq9S9fiRvuxtBE4aLQgPU04DYKIBJlxA+icwnauaGMfFt1nQG7PKKcRKmwu4O7yI1GVUYKPzHU/dNiDmTPFr1Ql6uKRUd5DzjPfAQ7fp9mHtNtmJZ6SriCQBtdQgBVBA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UJP5k6EA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lyg8Kl2L"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713824895; x=1745360895;
-  h=date:from:to:cc:subject:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=LBIdcLeL+hwX+jq1w+Grr6K8OGAVBmubNTZAhnNesCc=;
-  b=lyg8Kl2LrAjDWVwCqqku2vrUGzJnd6u5G/DqkFYnuNRRNRuvKbGcrF2p
-   pM/cn49/aWPV4c77UkTXAu0tG7FXQ27efEcSucamuZaHfZP3v4jshV0fM
-   rFHrUgWKiePOd33fmH2tNCJtgUju8Ov2MLfLsWTIyKycAtJgXccUiNwKb
-   7SRx3tM0Nz9Y038G4+dgHwvh+u/mVtN4MQFpbJzISPWpDiOs6VTlHCe/g
-   DQqR1z5T/G6xLHBFtnrNfhSVut04vuzM5uY5L/gdE+3Rh7K69FAy2tSp7
-   158QAFUVsG9G03kessByudmuFl1BKb2yd51h/AMt4wpcEmwAnCxfV877T
-   A==;
-X-CSE-ConnectionGUID: /HoYYrDcRCeg3tQ4sEZuHQ==
-X-CSE-MsgGUID: pTISj9nHT8KSMi16RefMew==
-X-IronPort-AV: E=McAfee;i="6600,9927,11052"; a="13172314"
-X-IronPort-AV: E=Sophos;i="6.07,221,1708416000"; 
-   d="scan'208";a="13172314"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 15:28:14 -0700
-X-CSE-ConnectionGUID: 4GsBA0hISUKUrp2D78M5JQ==
-X-CSE-MsgGUID: g4pAQOoBQwCivuS3JEs+Pw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,221,1708416000"; 
-   d="scan'208";a="28971902"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.54.39.125])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 15:28:14 -0700
-Date: Mon, 22 Apr 2024 15:32:50 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>, LKML
- <linux-kernel@vger.kernel.org>, X86 Kernel <x86@kernel.org>, Peter Zijlstra
- <peterz@infradead.org>, iommu@lists.linux.dev, Lu Baolu
- <baolu.lu@linux.intel.com>, kvm@vger.kernel.org, Dave Hansen
- <dave.hansen@intel.com>, Joerg Roedel <joro@8bytes.org>, "H. Peter Anvin"
- <hpa@zytor.com>, Borislav Petkov <bp@alien8.de>, Ingo Molnar
- <mingo@redhat.com>, Paul Luse <paul.e.luse@intel.com>, Dan Williams
- <dan.j.williams@intel.com>, Jens Axboe <axboe@kernel.dk>, Raj Ashok
- <ashok.raj@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- maz@kernel.org, seanjc@google.com, Robin Murphy <robin.murphy@arm.com>,
- jim.harris@samsung.com, a.manzanares@samsung.com, Bjorn Helgaas
- <helgaas@kernel.org>, guang.zeng@intel.com, robert.hoo.linux@gmail.com,
- kan.liang@intel.com, "Kleen, Andi" <andi.kleen@intel.com>,
- jacob.jun.pan@linux.intel.com
-Subject: Re: [PATCH v2 05/13] x86/irq: Reserve a per CPU IDT vector for
- posted MSIs
-Message-ID: <20240422153250.07331f49@jacob-builder>
-In-Reply-To: <ZiLO9RUdMsNlCtI_@x1>
-References: <20240415134354.67c9d1d1@jacob-builder>
-	<87jzkuxaqv.ffs@tglx>
-	<ZiLO9RUdMsNlCtI_@x1>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UJP5k6EA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53202C2BD11;
+	Mon, 22 Apr 2024 23:55:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1713830149;
+	bh=2FqeOWFJ5RPwBVKKuybfSkJp8Q6nO5EybaaGdKCY5uA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=UJP5k6EAjEKcTbL0hiszQgyiJZH7hC2+XbOQijSLIHMbP0QZUFtfzHM9lzrxJs6Ue
+	 hmRV8nDzw8ihO6eVaTgZfGZ7MKsZd7t/QhqAE1iN0PUiq8sobbkZRZvmuyvZljuypX
+	 MK5f5uCdwzE9Jw1RshIvjdu78pxA/xXAlcD2miQ4K5YunRdPTIZg5BP2DxCrRlMsTX
+	 RIFoeMe8QziJ63p750cvTP9qsa5ZScpqW5o7tfnwvIHxkRXrkaYuvkDPv3Zhybl9x6
+	 GMY4jGZyM+W9Pt4divDiDtUeEUhJcB7saNMcW58Tdyx3m4gdGKoZiBXZfwrBQ06fHz
+	 H9l3/7V4pJZgw==
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Cc: Krzysztof Kozlowski <krzk@kernel.org>,
+	Joerg Roedel <jroedel@suse.de>,
+	Sasha Levin <sashal@kernel.org>,
+	yong.wu@mediatek.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	matthias.bgg@gmail.com,
+	angelogioacchino.delregno@collabora.com,
+	iommu@lists.linux.dev,
+	linux-mediatek@lists.infradead.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 6.8 43/43] iommu: mtk: fix module autoloading
+Date: Mon, 22 Apr 2024 19:14:29 -0400
+Message-ID: <20240422231521.1592991-43-sashal@kernel.org>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20240422231521.1592991-1-sashal@kernel.org>
+References: <20240422231521.1592991-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+X-stable-base: Linux 6.8.7
+Content-Transfer-Encoding: 8bit
 
-Hi Arnaldo,
+From: Krzysztof Kozlowski <krzk@kernel.org>
 
-On Fri, 19 Apr 2024 17:07:17 -0300, Arnaldo Carvalho de Melo
-<acme@kernel.org> wrote:
+[ Upstream commit 7537e31df80cb58c27f3b6fef702534ea87a5957 ]
 
-> > > On a second thought, if we make system IRQ vector determined at
-> > > compile time based on different CONFIG options, will it break
-> > > userspace tools such as perf? More importantly the rule of not
-> > > breaking userspace.  
-> 
-> The rule for tools/perf is "don't impose _any requirement_ on the kernel
-> developers, they don't have to test if any change they do outside of
-> tools/ will break something inside tools/."
->  
-> > tools/arch/x86/include/asm/irq_vectors.h is only used to generate the
-> > list of system vectors for pretty output. And your change already broke
-> > that.  
-> 
-> Yeah, I even moved that from tools/arch/x86/include/asm/irq_vectors.h
-> to tools/perf/trace/beauty/arch/x86/include/asm/irq_vectors.h (for next
-> merge window).
+Add MODULE_DEVICE_TABLE(), so modules could be properly autoloaded
+based on the alias from of_device_id table.
 
-So I will not add anything to the tools directory for my next version.
-Just a heads-up for adding this new vector.
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Link: https://lore.kernel.org/r/20240410164109.233308-1-krzk@kernel.org
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/mtk_iommu.c    | 1 +
+ drivers/iommu/mtk_iommu_v1.c | 1 +
+ 2 files changed, 2 insertions(+)
 
-Thanks,
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 7abe9e85a5706..51d0eba8cbdf3 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -1789,6 +1789,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
+ 	{ .compatible = "mediatek,mt8365-m4u", .data = &mt8365_data},
+ 	{}
+ };
++MODULE_DEVICE_TABLE(of, mtk_iommu_of_ids);
+ 
+ static struct platform_driver mtk_iommu_driver = {
+ 	.probe	= mtk_iommu_probe,
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 25b41222abaec..32cc8341d3726 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -599,6 +599,7 @@ static const struct of_device_id mtk_iommu_v1_of_ids[] = {
+ 	{ .compatible = "mediatek,mt2701-m4u", },
+ 	{}
+ };
++MODULE_DEVICE_TABLE(of, mtk_iommu_v1_of_ids);
+ 
+ static const struct component_master_ops mtk_iommu_v1_com_ops = {
+ 	.bind		= mtk_iommu_v1_bind,
+-- 
+2.43.0
 
-Jacob
