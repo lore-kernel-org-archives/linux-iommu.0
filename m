@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8768B205E0A
-	for <iommu@lists.linux.dev>; Mon, 22 Apr 2024 05:22:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B14C9179AA
+	for <iommu@lists.linux.dev>; Mon, 22 Apr 2024 05:31:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713763358; cv=none; b=Z9r0792OWNBI7kd1hHNjgYBk5tT+kZyBVLV4CC05g996prR6QkqOhmTWhONVRSWvENMe21fBEIpnqRAPS9COT0YFTUdaz9D7B6XdRrMjRgPgEgfZZ6bmwtoIFOvDOw5FjWnJ/7dhMHVFwV0uV6EGoc4x2oFpGmFTPNrSpbVjx/s=
+	t=1713763906; cv=none; b=LlmrWLvZ6xqaWPHsrFbzLwgkwDstRDMBO1SB2s7U+mD4VakUa2Y/IGtC/dt260hnE9LVyWK5njZ5M/ckyNm9H1nFe3ztOobABhRhe3DnvRSz+0sUOYajLsuPWkV8qIp3Rch9pPcK0KpclVuj1kMROmtEgDUsKfrxRPknQWn8r0c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713763358; c=relaxed/simple;
-	bh=ZKqatucqlCT9kWZz8IX/UslCh9aEuPFTXZOmstfs/CU=;
+	s=arc-20240116; t=1713763906; c=relaxed/simple;
+	bh=b35dIzQ8H1LWpzZGyNzi6AKj8qjN/T9a35X9jCsZn5k=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=MQGcraHufh5PqR+Kdqv6HatDqNUqXDvRjf7IK1tYd9/PJQS6AuN6vCfbOf5S+/cqS7XJUdOTJNSQ9lisM+mCLNhCPok/LiMuuzjsbk6d47MaR2z1jYETEuvQ6ymC/lM/02V0BJw/cjP1nWfIpQ+JEAwY2cnN4nWPdT972qNTJzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lE/YPNbh; arc=none smtp.client-ip=192.198.163.7
+	 In-Reply-To:Content-Type; b=stbB346kH7yVjrcNyrLuNwLyIXJIvrcMxcsDvgHs865aK7gR1BriIY9cdlTgrrs/JdHM+FivKnIqRgYW7pRRSW23JI4kknAn+0bcLUXii1icFu6F5Vdd3QcXqNWPDRPk9RKoORzwgY3EEDN3hE26WxWX8f8rLtIF/2nBjkXuFp0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hyp9YZ1L; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lE/YPNbh"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hyp9YZ1L"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713763356; x=1745299356;
+  t=1713763904; x=1745299904;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=ZKqatucqlCT9kWZz8IX/UslCh9aEuPFTXZOmstfs/CU=;
-  b=lE/YPNbhnJwgEwITJyFieqdud+Hsr95PUSs0sHRDw1sktoQSPoPHH9nt
-   nEXUatZQrQc3E+lnRBMoDu2Rc4mSlxE2puInTb0io7HpGx/klZaFpYVKd
-   VR9RmTFzkBhNG6nk5264xZFTUvK402s7bCYucU4vBEE/k7ACk0GRjzjfQ
-   f7vbvhN4OYbgSq1JCn/RbXLyXNxfbi0BD6LPfmq86ZKBOPcXEzy8e0OMU
-   K44ywQe4HBguzo6t3z+1Fxd7Chu1r8AIT4BnGiUW9aFxRrxD3u/zvgxBe
-   UKAYai4kx0YejnhLv2rlnewuYEJ0I+iMNm++cbWOpkNEunUeNSOWYavnz
+  bh=b35dIzQ8H1LWpzZGyNzi6AKj8qjN/T9a35X9jCsZn5k=;
+  b=hyp9YZ1LkUwiDF9Nf+qCj6zfkR04+eKfZBK+LnbFe+nk4znT2z71gDIr
+   smZcWcCFavUyF8/ZpT3DuAFeeIeXqA4xNzj1RNmWalL7Yf+Ieq9kcJZUb
+   Z6giuXb0Q1lmaToMOUkfOdAnc9e6Gz+NMjUWeqpSMUGo+dr7zo0STlnze
+   cjKMI2WmFNXySpgPmS3UtlveHjRRARYp/yW2pdfdPqkm4V//mpyDk9uvw
+   htFqKa3YdYixlq+G9pBBGXXU6K/R7RyWrl8RcFJaaSOPq9qqIsWBxk14f
+   /leYlAflqw0luke8JMaZev3ipucCZgTwMecNI7G0PZlZPpayehq9lRF6N
    g==;
-X-CSE-ConnectionGUID: QpeR37FCRRWfRhUsBHG3kw==
-X-CSE-MsgGUID: nnLUs64gReWNPI5kwnug5Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11051"; a="34683065"
+X-CSE-ConnectionGUID: g7BDfSuvSreu6wAYRttMPg==
+X-CSE-MsgGUID: zmY2FDCdQBWPzQVS+7MltQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11051"; a="26805139"
 X-IronPort-AV: E=Sophos;i="6.07,219,1708416000"; 
-   d="scan'208";a="34683065"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2024 22:22:31 -0700
-X-CSE-ConnectionGUID: 3AUe3Y+NQx2mxryv5T9TlQ==
-X-CSE-MsgGUID: N7gOqtsFQ8W23/Oj5az/fg==
+   d="scan'208";a="26805139"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2024 22:31:43 -0700
+X-CSE-ConnectionGUID: ltzPMmlaTd27KwbEGFQI5w==
+X-CSE-MsgGUID: W5E4fW8LSdip7O2XkH9JvQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,219,1708416000"; 
-   d="scan'208";a="23952539"
+   d="scan'208";a="24347302"
 Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa006.fm.intel.com with ESMTP; 21 Apr 2024 22:22:26 -0700
-Message-ID: <2f2750cd-a5bf-4486-8f50-c93d246f8b0c@linux.intel.com>
-Date: Mon, 22 Apr 2024 13:21:05 +0800
+  by orviesa006.jf.intel.com with ESMTP; 21 Apr 2024 22:31:41 -0700
+Message-ID: <40c3b216-f3bb-4058-88a1-45de433432f3@linux.intel.com>
+Date: Mon, 22 Apr 2024 13:30:19 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,145 +52,147 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Palmer Dabbelt <palmer@dabbelt.com>,
- Albert Ou <aou@eecs.berkeley.edu>, Anup Patel <apatel@ventanamicro.com>,
- Sunil V L <sunilvl@ventanamicro.com>, Nick Kossifidis <mick@ics.forth.gr>,
- Sebastien Boeuf <seb@rivosinc.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, devicetree@vger.kernel.org, iommu@lists.linux.dev,
- linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux@rivosinc.com
-Subject: Re: [PATCH v2 7/7] iommu/riscv: Paging domain support
-To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Paul Walmsley <paul.walmsley@sifive.com>
-References: <cover.1713456597.git.tjeznach@rivosinc.com>
- <301244bc3ff5da484b46d3fecc931cdad7d2806f.1713456598.git.tjeznach@rivosinc.com>
+Cc: baolu.lu@linux.intel.com, Tina Zhang <tina.zhang@intel.com>,
+ Yi Liu <yi.l.liu@intel.com>, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 02/12] iommu/vt-d: Add cache tag invalidation helpers
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Kevin Tian <kevin.tian@intel.com>,
+ Jason Gunthorpe <jgg@ziepe.ca>
+References: <20240416080656.60968-1-baolu.lu@linux.intel.com>
+ <20240416080656.60968-3-baolu.lu@linux.intel.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <301244bc3ff5da484b46d3fecc931cdad7d2806f.1713456598.git.tjeznach@rivosinc.com>
+In-Reply-To: <20240416080656.60968-3-baolu.lu@linux.intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 4/19/24 12:32 AM, Tomasz Jeznach wrote:
-> Introduce first-stage address translation support.
+On 4/16/24 4:06 PM, Lu Baolu wrote:
+> Add several helpers to invalidate the caches after mappings in the
+> affected domain are changed.
 > 
-> Page table configured by the IOMMU driver will use the same format
-> as the CPU’s MMU, and will fallback to identity translation if the
-> page table format configured for the MMU is not supported by the
-> IOMMU hardware.
+> - cache_tag_flush_range() invalidates a range of caches after mappings
+>    within this range are changed. It uses the page-selective cache
+>    invalidation methods.
 > 
-> This change introduces IOTINVAL.VMA command, required to invalidate
-> any cached IOATC entries after mapping is updated and/or removed from
-> the paging domain. Invalidations for the non-leaf page entries will
-> be added to the driver code in separate patch series, following spec
-> update to clarify non-leaf cache invalidation command. With this patch,
-> allowing only 4K mappings and keeping non-leaf page entries in memory
-> this should be a reasonable simplification.
+> - cache_tag_flush_all() invalidates all caches tagged by a domain ID.
+>    It uses the domain-selective cache invalidation methods.
 > 
-> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+> - cache_tag_flush_range_np() invalidates a range of caches when new
+>    mappings are created in the domain and the corresponding page table
+>    entries change from non-present to present.
+> 
+> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
 > ---
->   drivers/iommu/riscv/Kconfig |   1 +
->   drivers/iommu/riscv/iommu.c | 467 +++++++++++++++++++++++++++++++++++-
->   2 files changed, 466 insertions(+), 2 deletions(-)
-> 
+>   drivers/iommu/intel/iommu.h |  14 +++
+>   drivers/iommu/intel/cache.c | 195 ++++++++++++++++++++++++++++++++++++
+>   drivers/iommu/intel/iommu.c |  12 ---
+>   3 files changed, 209 insertions(+), 12 deletions(-)
 
 [...]
 
 > +
->   static int riscv_iommu_attach_domain(struct riscv_iommu_device *iommu,
->   				     struct device *dev,
->   				     struct iommu_domain *iommu_domain)
->   {
->   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +	struct riscv_iommu_domain *domain;
->   	struct riscv_iommu_dc *dc;
-> +	struct riscv_iommu_bond *bond = NULL, *b;
-> +	struct riscv_iommu_command cmd;
->   	u64 fsc, ta, tc;
->   	int i;
->   
-> @@ -769,6 +838,20 @@ static int riscv_iommu_attach_domain(struct riscv_iommu_device *iommu,
->   		ta = 0;
->   		tc = RISCV_IOMMU_DC_TC_V;
->   		fsc = FIELD_PREP(RISCV_IOMMU_DC_FSC_MODE, RISCV_IOMMU_DC_FSC_MODE_BARE);
-> +	} else if (iommu_domain->type & __IOMMU_DOMAIN_PAGING) {
-> +		domain = iommu_domain_to_riscv(iommu_domain);
+> +/*
+> + * Invalidates a range of IOVA from @start (inclusive) to @end (inclusive)
+> + * when the memory mappings in the target domain have been modified.
+> + */
+> +void cache_tag_flush_range(struct dmar_domain *domain, unsigned long start,
+> +			   unsigned long end, int ih)
+> +{
+> +	unsigned long pages, mask, addr;
+> +	struct cache_tag *tag;
+> +	unsigned long flags;
 > +
-> +		ta = FIELD_PREP(RISCV_IOMMU_PC_TA_PSCID, domain->pscid);
-> +		tc = RISCV_IOMMU_DC_TC_V;
-> +		if (domain->amo_enabled)
-> +			tc |= RISCV_IOMMU_DC_TC_SADE;
-> +		fsc = FIELD_PREP(RISCV_IOMMU_PC_FSC_MODE, domain->pgd_mode) |
-> +		      FIELD_PREP(RISCV_IOMMU_PC_FSC_PPN, virt_to_pfn(domain->pgd_root));
+> +	addr = calculate_psi_aligned_address(start, end, &pages, &mask);
 > +
-> +		bond = kzalloc(sizeof(*bond), GFP_KERNEL);
-> +		if (!bond)
-> +			return -ENOMEM;
-> +		bond->dev = dev;
->   	} else {
->   		/* This should never happen. */
->   		return -ENODEV;
-> @@ -787,12 +870,390 @@ static int riscv_iommu_attach_domain(struct riscv_iommu_device *iommu,
->   		xchg64(&dc->ta, ta);
->   		xchg64(&dc->tc, tc);
->   
-> -		/* Device context invalidation will be required. Ignoring for now. */
-> +		if (!(tc & RISCV_IOMMU_DC_TC_V))
-> +			continue;
+> +	spin_lock_irqsave(&domain->cache_lock, flags);
+> +	list_for_each_entry(tag, &domain->cache_tags, node) {
+> +		struct intel_iommu *iommu = tag->iommu;
+> +		struct device_domain_info *info;
+> +		u16 sid;
 > +
-> +		/* Invalidate device context cache */
-> +		riscv_iommu_cmd_iodir_inval_ddt(&cmd);
-> +		riscv_iommu_cmd_iodir_set_did(&cmd, fwspec->ids[i]);
-> +		riscv_iommu_cmd_send(iommu, &cmd, 0);
-> +
-> +		if (FIELD_GET(RISCV_IOMMU_PC_FSC_MODE, fsc) == RISCV_IOMMU_DC_FSC_MODE_BARE)
-> +			continue;
-> +
-> +		/* Invalidate last valid PSCID */
-> +		riscv_iommu_cmd_inval_vma(&cmd);
-> +		riscv_iommu_cmd_inval_set_pscid(&cmd, FIELD_GET(RISCV_IOMMU_DC_TA_PSCID, ta));
-> +		riscv_iommu_cmd_send(iommu, &cmd, 0);
-> +	}
-> +
-> +	/* Synchronize directory update */
-> +	riscv_iommu_cmd_iofence(&cmd);
-> +	riscv_iommu_cmd_send(iommu, &cmd, RISCV_IOMMU_IOTINVAL_TIMEOUT);
-> +
-> +	/* Track domain to devices mapping. */
-> +	if (bond)
-> +		list_add_rcu(&bond->list, &domain->bonds);
-> +
-> +	/* Remove tracking from previous domain, if needed. */
-> +	iommu_domain = iommu_get_domain_for_dev(dev);
-
-Calling iommu_get_domain_for_dev() in the domain attaching path is very
-fragile because it heavily depends on the order of calling the attach
-callback and setting the domain pointer in the core.
-
-Perhaps the driver can use dev_iommu_priv_set/get() to keep the active
-domain in the per-device private data?
-
-> +	if (iommu_domain && !!(iommu_domain->type & __IOMMU_DOMAIN_PAGING)) {
-> +		domain = iommu_domain_to_riscv(iommu_domain);
-> +		bond = NULL;
-> +		rcu_read_lock();
-> +		list_for_each_entry_rcu(b, &domain->bonds, list) {
-> +			if (b->dev == dev) {
-> +				bond = b;
-> +				break;
+> +		switch (tag->type) {
+> +		case CACHE_TAG_IOTLB:
+> +		case CACHE_TAG_NESTING_IOTLB:
+> +			if (domain->use_first_level) {
+> +				qi_flush_piotlb(iommu, tag->domain_id,
+> +						tag->pasid, addr, pages, ih);
+> +			} else {
+> +				/*
+> +				 * Fallback to domain selective flush if no
+> +				 * PSI support or the size is too big.
+> +				 */
+> +				if (!cap_pgsel_inv(iommu->cap) ||
+> +				    mask > cap_max_amask_val(iommu->cap))
+> +					iommu->flush.flush_iotlb(iommu, tag->domain_id,
+> +								 0, 0, DMA_TLB_DSI_FLUSH);
+> +				else
+> +					iommu->flush.flush_iotlb(iommu, tag->domain_id,
+> +								 addr | ih, mask,
+> +								 DMA_TLB_PSI_FLUSH);
 > +			}
-> +		}
-> +		rcu_read_unlock();
+> +			break;
+> +		case CACHE_TAG_NESTING_DEVTLB:
+> +			/*
+> +			 * Address translation cache in device side caches the
+> +			 * result of nested translation. There is no easy way
+> +			 * to identify the exact set of nested translations
+> +			 * affected by a change in S2. So just flush the entire
+> +			 * device cache.
+> +			 */
+> +			addr = 0;
+> +			mask = MAX_AGAW_PFN_WIDTH;
+> +			fallthrough;
+
+I realized that the logic above is not right. Setting both @addr and
+@mask to 0 doesn't means flush all caches on the device. I will change
+it like below:
+
+diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
+index e8418cdd8331..18debb82272a 100644
+--- a/drivers/iommu/intel/cache.c
++++ b/drivers/iommu/intel/cache.c
+@@ -302,9 +302,14 @@ void cache_tag_flush_range(struct dmar_domain 
+*domain, unsigned long start,
+                          * affected by a change in S2. So just flush 
+the entire
+                          * device cache.
+                          */
+-                       addr = 0;
+-                       mask = MAX_AGAW_PFN_WIDTH;
+-                       fallthrough;
++                       info = dev_iommu_priv_get(tag->dev);
++                       sid = PCI_DEVID(info->bus, info->devfn);
++
++                       qi_flush_dev_iotlb(iommu, sid, info->pfsid, 
+info->ats_qdep,
++                                          0, MAX_AGAW_PFN_WIDTH);
++                       quirk_extra_dev_tlb_flush(info, 0, 
+MAX_AGAW_PFN_WIDTH,
++                                                 IOMMU_NO_PASID, 
+info->ats_qdep);
++                       break;
+                 case CACHE_TAG_DEVTLB:
+                         info = dev_iommu_priv_get(tag->dev);
+                         sid = PCI_DEVID(info->bus, info->devfn);
+
+> +		case CACHE_TAG_DEVTLB:
+> +			info = dev_iommu_priv_get(tag->dev);
+> +			sid = PCI_DEVID(info->bus, info->devfn);
 > +
-> +		if (bond) {
-> +			list_del_rcu(&bond->list);
-> +			kfree_rcu(bond, rcu);
+> +			if (tag->pasid == IOMMU_NO_PASID)
+> +				qi_flush_dev_iotlb(iommu, sid, info->pfsid,
+> +						   info->ats_qdep, addr, mask);
+> +			else
+> +				qi_flush_dev_iotlb_pasid(iommu, sid, info->pfsid,
+> +							 tag->pasid, info->ats_qdep,
+> +							 addr, mask);
+> +
+> +			quirk_extra_dev_tlb_flush(info, addr, mask, tag->pasid, info->ats_qdep);
+> +			break;
 > +		}
 > +	}
-> +
-> +	return 0;
-> +}
+> +	spin_unlock_irqrestore(&domain->cache_lock, flags);
 
 Best regards,
 baolu
