@@ -1,105 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A60A84AEC8
-	for <iommu@lists.linux.dev>; Mon, 22 Apr 2024 07:40:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D7A85029D;
+	Mon, 22 Apr 2024 08:18:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=150.107.74.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713771661; cv=none; b=b5NOrs7Hqae6Sbd3nghzBy/f6Dj5RiESMZaFLKs6hwNmwVvPrWj/Z1xB6lqCMiBRGAqKkCY/VQkGJ/GvFk/5U8uEE5H38RQQHVObH2m/hvk3TwMLaLg2ojRX27CKQ8hFUK8iJM0xCjVS3HpCFLJjorLTxpGEKCkNTo9DvykXhZM=
+	t=1713773930; cv=none; b=KTm7pF/s+L1x4s93exkltT3gtWTwvsrb5ODXQhDqV1rnnAEQ3cC/R1o07e8mV5kWKUt9/m0P52Y/SpCWQmj49+zfMhBkfvGYS8rXuoFDEqNLwia2T6OS19rsiHEZugkH98ZHKaimpuWC36p45qdtEJ9VWGvZGdRVj/5IXH1HAes=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713771661; c=relaxed/simple;
-	bh=USR3bFEd40WckrOHmGi8VAlZeJ/vjjPTOFMN/FwP1iw=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=EftwOw/71Y1LoVh3tHlx9VM5luiTqG96RktmsfDERqjhQ2qTC0oUjg3yYM1KuLDxfunetcp3UnZQO+QEwJwywW8d+LDbNksBfq7QBGlFESRw7VKJpIoRmjP0FGEextKpyvaLSu6Pk+/cY95P3wVLl8jWBwYoxEuLqEmYv1DKuU4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=S0qklbmS; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="S0qklbmS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713771660; x=1745307660;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=USR3bFEd40WckrOHmGi8VAlZeJ/vjjPTOFMN/FwP1iw=;
-  b=S0qklbmSM8d0bIkXWJ5FAudZDbh55r1v7Q4NUooJh+XBKGrfPWHacSye
-   u1KZ4gDKgXUu5Vt9Slor/EAjyJLTKfw4jQMxCCenVHhM3x9qIJOBp5bRP
-   r5ysrWGFTEvQkrM9tOYZLdD2zH/b3eGjdCH6c3dl4FXoBmBWu3Q4pBldO
-   2JGsOrDfnlxExNmfZs82RgL1XldRpcwfbl5xUai2pA9R4aKGxWDG3lEKN
-   jrmu7b9lIWOtTFflfzDiuHhcUot9nFb90gDmJOI3t0+FqNupLlwqOrwET
-   1GL7eh/8oDN5VvcqLwCj50G2YNZAmP3t8XcYAqjQZxrf2LdYyeTcyZdX4
-   w==;
-X-CSE-ConnectionGUID: A8daiu4YRWGiAcsL0cMB7w==
-X-CSE-MsgGUID: 1hG/7kZ0QBKK3beQ6wT9mw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11051"; a="20436789"
-X-IronPort-AV: E=Sophos;i="6.07,220,1708416000"; 
-   d="scan'208";a="20436789"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 00:40:59 -0700
-X-CSE-ConnectionGUID: Bhjbqn5PRx+ExxI/+DpaQg==
-X-CSE-MsgGUID: I0j9NBpPT8OLzM2aqsevpQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,220,1708416000"; 
-   d="scan'208";a="24012803"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.225.176]) ([10.124.225.176])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Apr 2024 00:40:54 -0700
-Message-ID: <23ef7fbd-7498-4fb0-895b-81c618acedc1@linux.intel.com>
-Date: Mon, 22 Apr 2024 15:40:51 +0800
+	s=arc-20240116; t=1713773930; c=relaxed/simple;
+	bh=1R0QdiqBkh2lDI1KZWlD4yhHxXvFKtuxtuwBOw/ITOE=;
+	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
+	 MIME-Version:Content-Type; b=a+EoWro1vSYv/ZNn5sKp0LrXGEJL9PtjzaARAm/t9y97X+8es7AW8AXSONV2Xlw2Idw0f5RRs3eFRU0usNcj/3jgG7LtGO7qZ0wpNGQ6XH/onCZ8zFLmgWDArikSSFqCwco1GtxsJ9hEpRRlWDQsvNe7S4QvMQlAie6SNuX1T30=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au; spf=pass smtp.mailfrom=ellerman.id.au; arc=none smtp.client-ip=150.107.74.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ellerman.id.au
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(No client certificate requested)
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 4VNJ6g0Nzdz4x1R;
+	Mon, 22 Apr 2024 18:18:35 +1000 (AEST)
+From: Michael Ellerman <patch-notifications@ellerman.id.au>
+To: linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Michael Ellerman <mpe@ellerman.id.au>, Christophe Leroy <christophe.leroy@csgroup.eu>, Damien Le Moal <dlemoal@kernel.org>, Jiri Kosina <jikos@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>, Corey Minyard <minyard@acm.org>, Peter Huewe <peterhuewe@gmx.de>, Jarkko Sakkinen <jarkko@kernel.org>, Tero Kristo <kristo@kernel.org>, Stephen Boyd <sboyd@kernel.org>, Ian Abbott <abbotti@mev.co.uk>, H Hartley Sweeten <hsweeten@visionengravers.com>, Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Len Brown <lenb@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, John Allen <john.allen@amd.com>, Herbert Xu <herbert@gondor.apana.org.au>, Vinod Koul <vkoul@kernel.org>, Ard Biesheuvel <ardb@kernel.org>, Bjorn Andersson <andersson@kernel.org>, Moritz Fischer <mdf@kernel.org>, Liviu Dudau <liviu.dudau@arm.com>, Benjamin Tissoires <benjamin.tissoires@redhat.com>, Andi Shyti <andi.shyti@kernel.org>, Michael Hennerich <michael.hennerich@analo
+ g.com>, Peter Rosin <peda@axentia.se>, Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>, Markuss Broks <markuss.broks@gmail.com>, Alexandre Torgue <alexandre.torgue@foss.st.com>, Lee Jones <lee@kernel.org>, Jakub Kicinski <kuba@kernel.org>, Shyam Sundar S K <Shyam-sundar.S-k@amd.com>, Iyappan Subramanian <iyappan@os.amperecomputing.com>, Yisen Zhuang <yisen.zhuang@huawei.com>, Stanislaw Gruszka <stf_xl@wp.pl>, Kalle Valo <kvalo@kernel.org>, Sebastian Reichel <sre@kernel.org>, Tony Lindgren <tony@atomide.com>, Mark Brown <broonie@kernel.org>, Alexandre Belloni <alexandre.belloni@bootlin.com>, Xiang Chen <chenxiang66@hisilicon.com>, "Martin K. Petersen" <martin.petersen@oracle.com>, Neil Armstrong <neil.armstrong@linaro.org>, Heiko Stuebner <heiko@sntech.de>, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, Vaibhav Hiremath <hvaibhav.linux@gmail.com>, Alex Elder <elder@kernel.org>, Jiri Slaby <jirislaby@kernel.
+ org>, Jacky Huang <ychuang3@nuvoton.com>, Helge Deller <deller@gmx.de>, Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>, Steven Rostedt <rostedt@goodmis.org>, Masami Hiramatsu <mhiramat@kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Kees Cook <keescook@chromium.org>, Trond Myklebust <trond.myklebust@hammerspace.com>, Anna Schumaker <anna@kernel.org>, Masahiro Yamada <masahiroy@kernel.org>, Nathan Chancellor <nathan@kernel.org>, Takashi Iwai <tiwai@suse.com>, linuxppc-dev@lists.ozlabs.org, linux-ide@vger.kernel.org, openipmi-developer@lists.sourceforge.net, linux-integrity@vger.kernel.org, linux-omap@vger.kernel.org, linux-clk@vger.kernel.org, linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org, linux-efi@vger.kernel.org, linux-arm-msm@vger.kernel.org, linux-fpga@vger.kernel.org, dri-devel@lists.freedesktop.org, linux-input@vger.kernel.org, linux-i2c@vger.kernel.org, linux-iio@vger.kernel.org, linux-stm32@st-md-mailman.stormr
+ eply.com, linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org, linux-leds@vger.kernel.org, linux-wireless@vger.kernel.org, linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org, linux-spi@vger.kernel.org, linux-amlogic@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-samsung-soc@vger.kernel.org, greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev, linux-serial@vger.kernel.org, linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org, iommu@lists.linux.dev, linux-trace-kernel@vger.kernel.org, kasan-dev@googlegroups.com, linux-hardening@vger.kernel.org, linux-nfs@vger.kernel.org, linux-kbuild@vger.kernel.org, alsa-devel@alsa-project.org, linux-sound@vger.kernel.org
+In-Reply-To: <20240403080702.3509288-1-arnd@kernel.org>
+References: <20240403080702.3509288-1-arnd@kernel.org>
+Subject: Re: (subset) [PATCH 00/34] address all -Wunused-const warnings
+Message-Id: <171377378377.1025456.1313405994816400451.b4-ty@ellerman.id.au>
+Date: Mon, 22 Apr 2024 18:16:23 +1000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
- <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Anup Patel <apatel@ventanamicro.com>, Sunil V L <sunilvl@ventanamicro.com>,
- Nick Kossifidis <mick@ics.forth.gr>, Sebastien Boeuf <seb@rivosinc.com>,
- Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
- iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux@rivosinc.com
-Subject: Re: [PATCH v2 7/7] iommu/riscv: Paging domain support
-To: Jason Gunthorpe <jgg@ziepe.ca>, Tomasz Jeznach <tjeznach@rivosinc.com>
-References: <cover.1713456597.git.tjeznach@rivosinc.com>
- <301244bc3ff5da484b46d3fecc931cdad7d2806f.1713456598.git.tjeznach@rivosinc.com>
- <20240419125627.GD223006@ziepe.ca>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <20240419125627.GD223006@ziepe.ca>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 
-On 2024/4/19 20:56, Jason Gunthorpe wrote:
->> +		riscv_iommu_cmd_inval_vma(&cmd);
->> +		riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
->> +		if (len > 0 && len < RISCV_IOMMU_IOTLB_INVAL_LIMIT) {
->> +			for (iova = start; iova < end; iova += PAGE_SIZE) {
->> +				riscv_iommu_cmd_inval_set_addr(&cmd, iova);
->> +				riscv_iommu_cmd_send(iommu, &cmd, 0);
->> +			}
->> +		} else {
->> +			riscv_iommu_cmd_send(iommu, &cmd, 0);
->> +		}
->> +	}
-> This seems suboptimal, you probably want to copy the new design that
-> Intel is doing where you allocate "bonds" that are already
-> de-duplicated. Ie if I have 10 devices on the same iommu sharing the
-> domain the above will invalidate the PSCID 10 times. It should only be
-> done once.
+On Wed, 03 Apr 2024 10:06:18 +0200, Arnd Bergmann wrote:
+> Compilers traditionally warn for unused 'static' variables, but not
+> if they are constant. The reason here is a custom for C++ programmers
+> to define named constants as 'static const' variables in header files
+> instead of using macros or enums.
 > 
-> ie add a "bond" for the (iommu,pscid) and refcount that based on how
-> many devices are used. Then another "bond" for the ATS stuff eventually.
+> In W=1 builds, we get warnings only static const variables in C
+> files, but not in headers, which is a good compromise, but this still
+> produces warning output in at least 30 files. These warnings are
+> almost all harmless, but also trivial to fix, and there is no
+> good reason to warn only about the non-const variables being unused.
+> 
+> [...]
 
-The latest version is under discussion here.
+Applied to powerpc/next.
 
-https://lore.kernel.org/linux-iommu/20240416080656.60968-1-baolu.lu@linux.intel.com/
+[01/34] powerpc/fsl-soc: hide unused const variable
+        https://git.kernel.org/powerpc/c/01acaf3aa75e1641442cc23d8fe0a7bb4226efb1
 
-Supposedly, you can make such optimization after the base code is landed
-in the mainline tree if the change is big.
-
-Best regards,
-baolu
+cheers
