@@ -1,77 +1,147 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F9FC3CF65;
-	Mon, 22 Apr 2024 14:33:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CB8B152E05
+	for <iommu@lists.linux.dev>; Mon, 22 Apr 2024 16:18:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713796386; cv=none; b=O5xAo6dtfla8y0yWfLuNRBPHL9lQAZxDCixS4CGY+DHI0itLHlPNPekUt1w/58DRAjS+jXpHHKfUrzNcifSDjtJbdEXvzGG7pBOGYqWZaXMsDXkDBUx2Xt705P3BGZCb1xnV4y3K+SM/sHWDvzR62NTb+IZUGxtFrxjzNbXrRJA=
+	t=1713802724; cv=none; b=XO5bLakNkrAxPR/28EWh6OcoZa7yrTgGb1UWZy+TW/oEoUs9BzQbq87mLe4O5mRF9tAMbqrjREEtfwvGaSV0sZyNCHBJ52+rlsbXlQ8ngZljVjJat6skme72WJUOTI4m4JURQ0dFEz2hSZhHZ+Iez2lyD7NOKCeSdSLETqldpa8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713796386; c=relaxed/simple;
-	bh=Eslal+HkCbJOCCz+07WuKpSYvYcwfVTwjLdnrpVYsxA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UyFEGLScx+Wb75GhpLojnXbBRNCfcaIP961CLDd+Pc3WK/ZzCfj7FEkkAVGzsy6Eq6ErsVATgpNTtGNBju4jgHKMaLh+NDIwSQKd8k0tW63APDXZHHRecBQtuFOd/9RTyguqNwi47b4cjLc9Ltd9tZpfCmZtSLxFI7ENx7dIeow=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e3PdjdIs; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1713802724; c=relaxed/simple;
+	bh=QR/kzCbyaOuRWiYV19PwDbm3SqBRCcpUe7hr5QMI4Do=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=naQeZ/cdsMzRBOxPOdARr4XHctN9aD0naKujhT/t93E/E1ky9CG9JZDO4fVna5Js8AHgfR05XvixjYylBeDuK7W/z/RDV/W92P97Rn8XQBG+w4ff7CPSFethuB3UWeWNnnEkvPi9+kR7G/iYdvoFxWUzuZQOid3mKTof/guUa70=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kfiPqUqJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e3PdjdIs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 836CAC113CC;
-	Mon, 22 Apr 2024 14:33:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kfiPqUqJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5978C4AF09
+	for <iommu@lists.linux.dev>; Mon, 22 Apr 2024 16:18:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713796385;
-	bh=Eslal+HkCbJOCCz+07WuKpSYvYcwfVTwjLdnrpVYsxA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=e3PdjdIsdNmjMSThGWwW32F9JlSsGp99LHumKwAINAzsjBzBghLuTB8TYBV5jMXky
-	 SY7ZIv9r5Tcun+gvb5SToul5QsLu003+Gn9RXT7C7LrPocI2jfNM34ffJ3BMdbkhNX
-	 Mj/O4O5SbBqrLrPACmEbnyCJFk1/4G7GkIkfBH6iTY2rDbV/1wtJfc6ZKcNJicQuOV
-	 4xxqVGYFD41GstWDqgZ6h7y/Si+iWXGPaiRvqgWaB5NaWE5vYGPla4HTKAjVw3DNSb
-	 AP9ebutqS0CHngVvTb1rI8aXTxtLDyWkK43LIXRQhfP3ye/csHmcilzyGXKJdbaBoS
-	 wn4jRCJGUrHxw==
-Date: Mon, 22 Apr 2024 09:33:03 -0500
-From: Rob Herring <robh@kernel.org>
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Will Deacon <will@kernel.org>, Magnus Damm <magnus.damm@gmail.com>,
-	Joerg Roedel <joro@8bytes.org>, Thanh Le <thanh.le.xv@renesas.com>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	iommu@lists.linux.dev, devicetree@vger.kernel.org,
-	Robin Murphy <robin.murphy@arm.com>,
-	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-	Conor Dooley <conor+dt@kernel.org>,
-	linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: add r8a779h0
- support
-Message-ID: <171379636788.1217601.3918831043392288178.robh@kernel.org>
-References: <13643259be4e8a8e30632de622ad7c685dbb7c61.1713526852.git.geert+renesas@glider.be>
+	s=k20201202; t=1713802723;
+	bh=QR/kzCbyaOuRWiYV19PwDbm3SqBRCcpUe7hr5QMI4Do=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=kfiPqUqJScrWwgk7lkUiivDNZIGJTNbNCOj/OkwFir1rjWyoXaizxSOzuvpziVcX9
+	 SNCPqN8pZseb73IbPoFap1GgpLAFILkdQQOhkyH9g7gK2ZBVyJAkuiVdoQfs8rmMLd
+	 nJH787eE6Tn9Ini1RY09TFnwC8vqu4OBzO3j8NldoEAkt1VOThuRLaVL4JZkmnlpk9
+	 GhEr1kjf2zEkzQndLJqpUR6REoc5sVjHvlZzMm5m8vc6rk3hMLbxfU6gqeZ/j59/MB
+	 cxFgdIN+XnEdR2XjVDlxp2Ab7//BObVI5UGwUFS6DctRnXEXktqid4Bb46CRqc+LqL
+	 W0m0KJ7Jak42A==
+Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-5acdbfa6e95so1045359eaf.3
+        for <iommu@lists.linux.dev>; Mon, 22 Apr 2024 09:18:43 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCX4vwTC6Df6OitRjmBO173cKzgLre6XYw8Jofgj+nT6srnikH+7bTFd0ftIPmdEr4cjw8gbEztIz2ewclRLpWAXzhYEnU0=
+X-Gm-Message-State: AOJu0YwRaYbzekqWiPaSEErip4atnStIKOVBjS2OyF664yxjwwtph0Y2
+	nInh4ZvJQ47+c1EYEGNuPWFnccCvteVrYA/6WUIwV8UsFiZzqNZ6YCxqd5NVD4CPgYri4YRJ0tQ
+	lP0TQtWhBOqk4uNtona5pLxfFMrQ=
+X-Google-Smtp-Source: AGHT+IFESPYVINFnF2ss/dRaMfKVcLtz/mjOYNrxgkasSqC/INJSn+XkVq/aXneWpbNTIE2SYgqkZ572ytK+cUbbuJE=
+X-Received: by 2002:a4a:de19:0:b0:5a7:db56:915c with SMTP id
+ y25-20020a4ade19000000b005a7db56915cmr11836041oot.1.1713802722990; Mon, 22
+ Apr 2024 09:18:42 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <13643259be4e8a8e30632de622ad7c685dbb7c61.1713526852.git.geert+renesas@glider.be>
+References: <cover.1713523251.git.robin.murphy@arm.com> <3ae004dfc581fa12fc9432c5008f1225882d5464.1713523251.git.robin.murphy@arm.com>
+In-Reply-To: <3ae004dfc581fa12fc9432c5008f1225882d5464.1713523251.git.robin.murphy@arm.com>
+From: "Rafael J. Wysocki" <rafael@kernel.org>
+Date: Mon, 22 Apr 2024 18:18:27 +0200
+X-Gmail-Original-Message-ID: <CAJZ5v0iMY1eKYgcH20Uxd1nW0yZ2xt980ob0Rcb_4n4OONWSZA@mail.gmail.com>
+Message-ID: <CAJZ5v0iMY1eKYgcH20Uxd1nW0yZ2xt980ob0Rcb_4n4OONWSZA@mail.gmail.com>
+Subject: Re: [PATCH 2/4] ACPI: Retire acpi_iommu_fwspec_ops()
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>, linux-acpi@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org, 
+	iommu@lists.linux.dev, devicetree@vger.kernel.org, 
+	Rob Herring <robh@kernel.org>, Saravana Kannan <saravanak@google.com>, 
+	Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo <guohanjun@huawei.com>, 
+	Sudeep Holla <sudeep.holla@arm.com>, "Rafael J. Wysocki" <rafael@kernel.org>, Len Brown <lenb@kernel.org>, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
+On Fri, Apr 19, 2024 at 6:56=E2=80=AFPM Robin Murphy <robin.murphy@arm.com>=
+ wrote:
+>
+> Now that iommu_fwspec_init() can signal for probe deferral directly,
+> acpi_iommu_fwspec_ops() is unneeded and can be cleaned up.
+>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-On Fri, 19 Apr 2024 13:42:11 +0200, Geert Uytterhoeven wrote:
-> From: Thanh Le <thanh.le.xv@renesas.com>
-> 
-> Document support for the I/O Memory Management Unit (IPMMU) on the
-> Renesas R-Car V4M (R8A779H0) SoC.
-> 
-> Signed-off-by: Thanh Le <thanh.le.xv@renesas.com>
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+
 > ---
-> Interestingly, the IMSSTR register is documented for R-Car V4M, unlike
-> for R-Car S4 and R-Car V4H, so the second cell of the renesas,ipmmu-main
-> property could be added again.
-> As nothing really uses this register and the associated bit numbers,
-> I think it is better to keep it simple, and not partially revert commit
-> b67ab6fb63bbbe6d ("dt-bindings: iommu: renesas, ipmmu-vmsa: Update for
-> R-Car Gen4").
-> ---
->  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-
-Acked-by: Rob Herring (Arm) <robh@kernel.org>
-
+>  drivers/acpi/scan.c | 30 ++++++------------------------
+>  1 file changed, 6 insertions(+), 24 deletions(-)
+>
+> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+> index 9d36fc3dc5ac..d6b64dcbf9a6 100644
+> --- a/drivers/acpi/scan.c
+> +++ b/drivers/acpi/scan.c
+> @@ -1588,26 +1588,14 @@ int acpi_iommu_fwspec_init(struct device *dev, u3=
+2 id,
+>         return ret;
+>  }
+>
+> -static inline const struct iommu_ops *acpi_iommu_fwspec_ops(struct devic=
+e *dev)
+> -{
+> -       struct iommu_fwspec *fwspec =3D dev_iommu_fwspec_get(dev);
+> -
+> -       return fwspec ? fwspec->ops : NULL;
+> -}
+> -
+>  static int acpi_iommu_configure_id(struct device *dev, const u32 *id_in)
+>  {
+>         int err;
+> -       const struct iommu_ops *ops;
+>
+>         /* Serialise to make dev->iommu stable under our potential fwspec=
+ */
+>         mutex_lock(&iommu_probe_device_lock);
+> -       /*
+> -        * If we already translated the fwspec there is nothing left to d=
+o,
+> -        * return the iommu_ops.
+> -        */
+> -       ops =3D acpi_iommu_fwspec_ops(dev);
+> -       if (ops) {
+> +       /* If we already translated the fwspec there is nothing left to d=
+o */
+> +       if (dev_iommu_fwspec_get(dev)) {
+>                 mutex_unlock(&iommu_probe_device_lock);
+>                 return 0;
+>         }
+> @@ -1624,16 +1612,7 @@ static int acpi_iommu_configure_id(struct device *=
+dev, const u32 *id_in)
+>         if (!err && dev->bus)
+>                 err =3D iommu_probe_device(dev);
+>
+> -       /* Ignore all other errors apart from EPROBE_DEFER */
+> -       if (err =3D=3D -EPROBE_DEFER) {
+> -               return err;
+> -       } else if (err) {
+> -               dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
+> -               return -ENODEV;
+> -       }
+> -       if (!acpi_iommu_fwspec_ops(dev))
+> -               return -ENODEV;
+> -       return 0;
+> +       return err;
+>  }
+>
+>  #else /* !CONFIG_IOMMU_API */
+> @@ -1672,6 +1651,9 @@ int acpi_dma_configure_id(struct device *dev, enum =
+dev_dma_attr attr,
+>         ret =3D acpi_iommu_configure_id(dev, input_id);
+>         if (ret =3D=3D -EPROBE_DEFER)
+>                 return -EPROBE_DEFER;
+> +       /* Ignore all other errors apart from EPROBE_DEFER */
+> +       if (ret)
+> +               dev_dbg(dev, "Adding to IOMMU failed: %d\n", ret);
+>
+>         arch_setup_dma_ops(dev, attr =3D=3D DEV_DMA_COHERENT);
+>
+> --
+> 2.39.2.101.g768bb238c484.dirty
+>
