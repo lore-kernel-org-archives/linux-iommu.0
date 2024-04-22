@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24D8C15E81B;
-	Mon, 22 Apr 2024 23:55:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF7BF17108F;
+	Mon, 22 Apr 2024 23:57:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713830150; cv=none; b=XZNBPyKpcq3/MYDMwYr9Q7W/9CO0AY7wktwUpdcEljUNDxk0f+/lKUT3D321xLkBA66zy48d3hoqvCnb0KlQ1nkjBsosPLIewlcfLasG1eIyI52rTQ/34AbkrpGoQl/jLuK3n3upj+ZmARnG+ARLtfVnu3DxFHpSe1UclBrKD5w=
+	t=1713830234; cv=none; b=qs9kVKpunI2xPCFCMEso0y+98StreUkbqV9OocWbUsNlAXFV2x1IQXjtXIvjFDNxtOaqeJ6rfFc/r0+32mSfgg71KvTc2j7y2tAsbdCFy3A6WxmkqxMZACixy1+kfiHVTyZqhpShGkajcOmFA3xdzDZ/xw/rPKaNwj45ZZg18b0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713830150; c=relaxed/simple;
-	bh=2FqeOWFJ5RPwBVKKuybfSkJp8Q6nO5EybaaGdKCY5uA=;
+	s=arc-20240116; t=1713830234; c=relaxed/simple;
+	bh=65ektcJxj9Rrw0TFcZac08x3l77hf5zTMlc2nDRY7HI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=OwzuHIRoqUT5OL3D68OnBCnuyPSMPBlTBMmn5Jm676Qvq9S9fiRvuxtBE4aLQgPU04DYKIBJlxA+icwnauaGMfFt1nQG7PKKcRKmwu4O7yI1GVUYKPzHU/dNiDmTPFr1Ql6uKRUd5DzjPfAQ7fp9mHtNtmJZ6SriCQBtdQgBVBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UJP5k6EA; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version; b=XjYfxCeW105lti4q5Slsk/HrKnc4PRGX9MJdwRKRqT+yWV9fBo58Du7AHZQmzI40/0GcADnHa0vCaP4ofPF+fVZX7HLc/RdZnaenZTn36NKpN8KjWSppz9QxNPbOFeBAJfk621CCQhh1jKpgHQREz80T0DK+MRQPjGDYmmC48nc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b8pyL2i1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UJP5k6EA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53202C2BD11;
-	Mon, 22 Apr 2024 23:55:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b8pyL2i1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02E5FC113CC;
+	Mon, 22 Apr 2024 23:57:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1713830149;
-	bh=2FqeOWFJ5RPwBVKKuybfSkJp8Q6nO5EybaaGdKCY5uA=;
+	s=k20201202; t=1713830233;
+	bh=65ektcJxj9Rrw0TFcZac08x3l77hf5zTMlc2nDRY7HI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=UJP5k6EAjEKcTbL0hiszQgyiJZH7hC2+XbOQijSLIHMbP0QZUFtfzHM9lzrxJs6Ue
-	 hmRV8nDzw8ihO6eVaTgZfGZ7MKsZd7t/QhqAE1iN0PUiq8sobbkZRZvmuyvZljuypX
-	 MK5f5uCdwzE9Jw1RshIvjdu78pxA/xXAlcD2miQ4K5YunRdPTIZg5BP2DxCrRlMsTX
-	 RIFoeMe8QziJ63p750cvTP9qsa5ZScpqW5o7tfnwvIHxkRXrkaYuvkDPv3Zhybl9x6
-	 GMY4jGZyM+W9Pt4divDiDtUeEUhJcB7saNMcW58Tdyx3m4gdGKoZiBXZfwrBQ06fHz
-	 H9l3/7V4pJZgw==
+	b=b8pyL2i11eKGlMtYagYvO8PDiHRcWMm40gXxz7HhjR7jCtfutzeB5WqQN3/nxftPw
+	 jd076UXm0ONL7GjcaFbVeVhmSw9UuaMcAjftIltKWOjSSJIFlAAJeM5hPdoNiK9Qvh
+	 LKYN9eNdHVDFGx7i2OAaweKj48wMVhgcP43G1qliiKAXyz0Kt9x9/6IqXuFk/TLaJM
+	 ioHg9hCQIebOW6k20U6qfa/G5OnALbTmCV7lGwnTArHtnyZNb9IptQJBCrd+w9quOV
+	 /mSBi5nfX4iMTfpE1LyHKdIlcnhOUKiDN+5vhnwSueLHLxgz8Eu/UFyBukjQ/Qj22u
+	 EK0/Uk7lRhUdg==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
@@ -40,12 +40,12 @@ Cc: Krzysztof Kozlowski <krzk@kernel.org>,
 	iommu@lists.linux.dev,
 	linux-mediatek@lists.infradead.org,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 6.8 43/43] iommu: mtk: fix module autoloading
-Date: Mon, 22 Apr 2024 19:14:29 -0400
-Message-ID: <20240422231521.1592991-43-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 6.6 29/29] iommu: mtk: fix module autoloading
+Date: Mon, 22 Apr 2024 19:17:10 -0400
+Message-ID: <20240422231730.1601976-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20240422231521.1592991-1-sashal@kernel.org>
-References: <20240422231521.1592991-1-sashal@kernel.org>
+In-Reply-To: <20240422231730.1601976-1-sashal@kernel.org>
+References: <20240422231730.1601976-1-sashal@kernel.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,7 +54,7 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-X-stable-base: Linux 6.8.7
+X-stable-base: Linux 6.6.28
 Content-Transfer-Encoding: 8bit
 
 From: Krzysztof Kozlowski <krzk@kernel.org>
@@ -74,10 +74,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  2 files changed, 2 insertions(+)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 7abe9e85a5706..51d0eba8cbdf3 100644
+index fab6c347ce578..de698463e94ad 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -1789,6 +1789,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
+@@ -1773,6 +1773,7 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
  	{ .compatible = "mediatek,mt8365-m4u", .data = &mt8365_data},
  	{}
  };
@@ -86,10 +86,10 @@ index 7abe9e85a5706..51d0eba8cbdf3 100644
  static struct platform_driver mtk_iommu_driver = {
  	.probe	= mtk_iommu_probe,
 diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 25b41222abaec..32cc8341d3726 100644
+index 8a0a5e5d049f4..f1754efcfe74e 100644
 --- a/drivers/iommu/mtk_iommu_v1.c
 +++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -599,6 +599,7 @@ static const struct of_device_id mtk_iommu_v1_of_ids[] = {
+@@ -600,6 +600,7 @@ static const struct of_device_id mtk_iommu_v1_of_ids[] = {
  	{ .compatible = "mediatek,mt2701-m4u", },
  	{}
  };
