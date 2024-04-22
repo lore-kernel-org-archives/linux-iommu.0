@@ -1,104 +1,343 @@
-Received: from fgw21-7.mail.saunalahti.fi (fgw21-7.mail.saunalahti.fi [62.142.5.82])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 068DD14F90
-	for <iommu@lists.linux.dev>; Mon, 22 Apr 2024 05:01:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=62.142.5.82
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D075517548
+	for <iommu@lists.linux.dev>; Mon, 22 Apr 2024 05:13:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713762092; cv=none; b=bqM1G/TM3CvxNlpjM/mi49waAM87UxYPapPULx5Ov2+B8AdDmpzskHxMZcyvW1pktoQm/imxVSe4/93KM40ngINiYIovtibIAnbqXJMVIXak5D67f60xwRjVlWmSZdOkoITK2LQnsTN21baIt+dUahbsx8FbKIAjE7TnIXd7QqY=
+	t=1713762801; cv=none; b=gQl3hnRyYkLjKyb8PTc0SjCn49xfxcBfnk6KnTuEj64gf3BIUS6hLtoUxd91UerTgztoSQVmimE24TGAW5x4cxFBW4VFCmd6FybA8fXzpbI0zG9+kswKKjuaG4vbdnWqvWV45wKwnHAtTxnweChi6aAYfrp3BTMW+PtHFcAT+Io=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713762092; c=relaxed/simple;
-	bh=pA6jdIeParIDDslb0VbpOv9iLNAFp/mbNR9RFF6IuQA=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=umwVDBJ441p8CELULeqwrlBtTtXX5ws8vdkwzFNLQEPaQxWQYbZbL3aLfZF6UXmxHsoa1Ka5DJHYgMWCysD7zkjNY4x/K4MKz/QIqlY1wDBRqBt0SjHFiKTeXVv8MgqYglCmrWy+tCNUiNeSfjA0M/W493ubqdLj45PIg5vqYds=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=62.142.5.82
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
-Received: from localhost (88-113-25-208.elisa-laajakaista.fi [88.113.25.208])
-	by fgw21.mail.saunalahti.fi (Halon) with ESMTP
-	id 3694bb42-0065-11ef-abf4-005056bdd08f;
-	Mon, 22 Apr 2024 08:00:19 +0300 (EEST)
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 22 Apr 2024 08:00:17 +0300
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>,
-	Saravana Kannan <saravanak@google.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH 1/4] iommu: Resolve fwspec ops automatically
-Message-ID: <ZiXu4Tk8lDroOKTA@surfacebook.localdomain>
-References: <cover.1713523251.git.robin.murphy@arm.com>
- <ad80fed9800194f21c0fc581fec68ca3cfb5dac6.1713523251.git.robin.murphy@arm.com>
+	s=arc-20240116; t=1713762801; c=relaxed/simple;
+	bh=DKjA0dK037dChvDf0JvnAQW0/y9B6MEd698fmMfs8IE=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=VQ5y8sOSEAtqGLPudSultOEqL+8UeBqVzLJKGVPDxKsHTYSEpl6NtxD0tsjuyub2KpRJHg0+jdsDtTwU44YAFQdX1Fqbd43wguy9Np+QxCIGHsdrPXoS++F0PVQ1gGukV/qkeFLnodjzSQIjprG+EqnuQ7izh62AsgJVwArdn5U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FPSChSnq; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FPSChSnq"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713762799; x=1745298799;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=DKjA0dK037dChvDf0JvnAQW0/y9B6MEd698fmMfs8IE=;
+  b=FPSChSnq5B6xjcE6bvxUjeiSRzUbjlBXJJQR5fqtcvmRI+7vYfLXEmYn
+   i8NEyKxjlNuG08mnpkia7WcECCdTcXKtRQWjEoj5VQslPUnUVAWFFrora
+   DFQ0twjk77GMmiaArl7jaNLBswl1R8MKy+bKr4neTQXQ+5mtmnPQqKsMU
+   Ol37Sn+iaZOCFfMvudo812/J/Bsbpet5NwbniDnBXcNpvjgJkZ6bAMDq3
+   jzgjXlcTFebIrNN7nMNaN3I7GYdQQy3++T2kdrvNMVM7JKsYTbuo4vYkk
+   mSYGwJKQ5Y6IJQC4XRoqMTlom0I+Wllu1y/omglUo56RPE9Fsz5vqR6/3
+   Q==;
+X-CSE-ConnectionGUID: aSr0fp5cSVWWHWdv4TqhZw==
+X-CSE-MsgGUID: zvq1+NOySWupH+IBvUlhHQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11051"; a="9148164"
+X-IronPort-AV: E=Sophos;i="6.07,219,1708416000"; 
+   d="scan'208";a="9148164"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Apr 2024 22:13:18 -0700
+X-CSE-ConnectionGUID: gCCWIIMWTq+J3iew0YRR0A==
+X-CSE-MsgGUID: CVejsV1ORxqcz60ioG20Kg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,219,1708416000"; 
+   d="scan'208";a="61338676"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by orviesa001.jf.intel.com with ESMTP; 21 Apr 2024 22:13:13 -0700
+Message-ID: <964db2aa-6535-4243-9b3f-e72bff9b6297@linux.intel.com>
+Date: Mon, 22 Apr 2024 13:11:52 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ad80fed9800194f21c0fc581fec68ca3cfb5dac6.1713523251.git.robin.murphy@arm.com>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Palmer Dabbelt <palmer@dabbelt.com>,
+ Albert Ou <aou@eecs.berkeley.edu>, Anup Patel <apatel@ventanamicro.com>,
+ Sunil V L <sunilvl@ventanamicro.com>, Nick Kossifidis <mick@ics.forth.gr>,
+ Sebastien Boeuf <seb@rivosinc.com>, Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, devicetree@vger.kernel.org, iommu@lists.linux.dev,
+ linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux@rivosinc.com
+Subject: Re: [PATCH v2 5/7] iommu/riscv: Device directory management.
+To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Paul Walmsley <paul.walmsley@sifive.com>
+References: <cover.1713456597.git.tjeznach@rivosinc.com>
+ <232b2824d5dfd9b8dcb3553bfd506444273c3305.1713456598.git.tjeznach@rivosinc.com>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <232b2824d5dfd9b8dcb3553bfd506444273c3305.1713456598.git.tjeznach@rivosinc.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Fri, Apr 19, 2024 at 05:55:59PM +0100, Robin Murphy kirjoitti:
-> There's no real need for callers to resolve ops from a fwnode in order
-> to then pass both to iommu_fwspec_init() - it's simpler and more sensible
-> for that to resolve the ops itself. This in turn means we can centralise
-> the notion of checking for a present driver, and enforce that fwspecs
-> aren't allocated unless and until we know they will be usable.
+On 4/19/24 12:32 AM, Tomasz Jeznach wrote:
+> Introduce device context allocation and device directory tree
+> management including capabilities discovery sequence, as described
+> in Chapter 2.1 of the RISC-V IOMMU Architecture Specification.
 > 
-> Also we've grown a generic fwnode_handle_get() since this code was first
-> written, so may as well clear up that ugly mismatch while we're in here.
+> Device directory mode will be auto detected using DDTP WARL property,
+> using highest mode supported by the driver and hardware. If none
+> supported can be configured, driver will fall back to global pass-through.
+> 
+> First level DDTP page can be located in I/O (detected using DDTP WARL)
+> and system memory.
+> 
+> Only identity protection domain is supported by this implementation.
+> 
+> Co-developed-by: Nick Kossifidis <mick@ics.forth.gr>
+> Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
+> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+> ---
+>   drivers/iommu/riscv/iommu.c | 369 +++++++++++++++++++++++++++++++++++-
+>   drivers/iommu/riscv/iommu.h |   5 +
+>   2 files changed, 365 insertions(+), 9 deletions(-)
 
-...
+[ ... ]
 
-> +++ b/drivers/iommu/mtk_iommu_v1.c
+> +
+> +/*
+> + * Discover supported DDT modes starting from requested value,
+> + * configure DDTP register with accepted mode and root DDT address.
+> + * Accepted iommu->ddt_mode is updated on success.
+> + */
+> +static int riscv_iommu_set_ddtp_mode(struct riscv_iommu_device *iommu,
+> +				     unsigned int ddtp_mode)
+> +{
+> +	struct device *dev = iommu->dev;
+> +	u64 ddtp, rq_ddtp;
+> +	unsigned int mode, rq_mode = ddtp_mode;
+> +	int rc;
+> +
+> +	rc = readq_relaxed_poll_timeout(iommu->reg + RISCV_IOMMU_REG_DDTP,
+> +					ddtp, !(ddtp & RISCV_IOMMU_DDTP_BUSY),
+> +					10, RISCV_IOMMU_DDTP_TIMEOUT);
+> +	if (rc < 0)
+> +		return -EBUSY;
+> +
+> +	/* Disallow state transition from xLVL to xLVL. */
+> +	switch (FIELD_GET(RISCV_IOMMU_DDTP_MODE, ddtp)) {
+> +	case RISCV_IOMMU_DDTP_MODE_BARE:
+> +	case RISCV_IOMMU_DDTP_MODE_OFF:
+> +		break;
+> +	default:
+> +		if (rq_mode != RISCV_IOMMU_DDTP_MODE_BARE &&
+> +		    rq_mode != RISCV_IOMMU_DDTP_MODE_OFF)
+> +			return -EINVAL;
 
->  	if (!fwspec) {
-> -		ret = iommu_fwspec_init(dev, &args->np->fwnode, &mtk_iommu_v1_ops);
-> +		ret = iommu_fwspec_init(dev, &args->np->fwnode);
+Is this check duplicate? It appears that it's always true in the default
+branch.
 
-I'm wondering, while at it, if can avoid direct dereference of fwnode by using of_fwnode_handle().
+> +		break;
+> +	}
+> +
+> +	do {
+> +		rq_ddtp = FIELD_PREP(RISCV_IOMMU_DDTP_MODE, rq_mode);
+> +		if (rq_mode > RISCV_IOMMU_DDTP_MODE_BARE)
+> +			rq_ddtp |= phys_to_ppn(iommu->ddt_phys);
+> +
+> +		riscv_iommu_writeq(iommu, RISCV_IOMMU_REG_DDTP, rq_ddtp);
+> +
+> +		rc = readq_relaxed_poll_timeout(iommu->reg + RISCV_IOMMU_REG_DDTP,
+> +						ddtp, !(ddtp & RISCV_IOMMU_DDTP_BUSY),
+> +						10, RISCV_IOMMU_DDTP_TIMEOUT);
+> +		if (rc < 0) {
+> +			dev_warn(dev, "timeout when setting ddtp (ddt mode: %u, read: %llx)\n",
+> +				 rq_mode, ddtp);
+> +			return -EBUSY;
+> +		}
+> +
+> +		/* Verify IOMMU hardware accepts new DDTP config. */
+> +		mode = FIELD_GET(RISCV_IOMMU_DDTP_MODE, ddtp);
+> +
+> +		if (rq_mode == mode)
+> +			break;
+> +
+> +		/* Hardware mandatory DDTP mode has not been accepted. */
+> +		if (rq_mode < RISCV_IOMMU_DDTP_MODE_1LVL && rq_ddtp != ddtp) {
+> +			dev_warn(dev, "DDTP update failed hw: %llx vs %llx\n", ddtp, rq_ddtp);
+> +			return -EINVAL;
+> +		}
+> +
+> +		/*
+> +		 * Mode field is WARL, an IOMMU may support a subset of
+> +		 * directory table levels in which case if we tried to set
+> +		 * an unsupported number of levels we'll readback either
+> +		 * a valid xLVL or off/bare. If we got off/bare, try again
+> +		 * with a smaller xLVL.
+> +		 */
+> +		if (mode < RISCV_IOMMU_DDTP_MODE_1LVL &&
+> +		    rq_mode > RISCV_IOMMU_DDTP_MODE_1LVL) {
+> +			dev_dbg(dev, "DDTP hw mode %u vs %u\n", mode, rq_mode);
+> +			rq_mode--;
+> +			continue;
+> +		}
+> +
+> +		/*
+> +		 * We tried all supported modes and IOMMU hardware failed to
+> +		 * accept new settings, something went very wrong since off/bare
+> +		 * and at least one xLVL must be supported.
+> +		 */
+> +		dev_warn(dev, "DDTP hw mode %u, failed to set %u\n", mode, ddtp_mode);
+> +		return -EINVAL;
+> +	} while (1);
+> +
+> +	iommu->ddt_mode = mode;
+> +	if (mode != ddtp_mode)
+> +		dev_warn(dev, "DDTP failover to %u mode, requested %u\n",
+> +			 mode, ddtp_mode);
+> +
+> +	return 0;
+> +}
+> +
 
->  		if (ret)
->  			return ret;
+[ ... ]
 
-...
+> +
+> +static int riscv_iommu_attach_domain(struct riscv_iommu_device *iommu,
+> +				     struct device *dev,
+> +				     struct iommu_domain *iommu_domain)
+> +{
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	struct riscv_iommu_dc *dc;
+> +	u64 fsc, ta, tc;
+> +	int i;
+> +
+> +	if (!iommu_domain) {
+> +		ta = 0;
+> +		tc = 0;
+> +		fsc = 0;
+> +	} else if (iommu_domain->type == IOMMU_DOMAIN_IDENTITY) {
+> +		ta = 0;
+> +		tc = RISCV_IOMMU_DC_TC_V;
+> +		fsc = FIELD_PREP(RISCV_IOMMU_DC_FSC_MODE, RISCV_IOMMU_DC_FSC_MODE_BARE);
+> +	} else {
+> +		/* This should never happen. */
+> +		return -ENODEV;
+> +	}
 
-> +++ b/drivers/iommu/of_iommu.c
+Move the domain->type check code to the domain-specific ops.
 
-> -	ret = iommu_fwspec_init(dev, fwnode, ops);
-> +	ret = iommu_fwspec_init(dev, &iommu_spec->np->fwnode);
+> +
+> +	/* Update existing or allocate new entries in device directory */
+> +	for (i = 0; i < fwspec->num_ids; i++) {
+> +		dc = riscv_iommu_get_dc(iommu, fwspec->ids[i], !iommu_domain);
+> +		if (!dc && !iommu_domain)
+> +			continue;
+> +		if (!dc)
+> +			return -ENODEV;
+> +
+> +		/* Swap device context, update TC valid bit as the last operation */
+> +		xchg64(&dc->fsc, fsc);
+> +		xchg64(&dc->ta, ta);
+> +		xchg64(&dc->tc, tc);
+> +
+> +		/* Device context invalidation will be required. Ignoring for now. */
+> +	}
+> +
+>   	return 0;
+>   }
+>   
+> +static int riscv_iommu_attach_identity_domain(struct iommu_domain *iommu_domain,
+> +					      struct device *dev)
+> +{
+> +	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+> +
+> +	/* Global pass-through already enabled, do nothing. */
+> +	if (iommu->ddt_mode == RISCV_IOMMU_DDTP_MODE_BARE)
+> +		return 0;
+> +
+> +	return riscv_iommu_attach_domain(iommu, dev, iommu_domain);
+> +}
+> +
+>   static struct iommu_domain riscv_iommu_identity_domain = {
+>   	.type = IOMMU_DOMAIN_IDENTITY,
+>   	.ops = &(const struct iommu_domain_ops) {
+> @@ -82,6 +420,13 @@ static void riscv_iommu_probe_finalize(struct device *dev)
+>   	iommu_setup_dma_ops(dev, 0, U64_MAX);
+>   }
+>   
+> +static void riscv_iommu_release_device(struct device *dev)
+> +{
+> +	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
+> +
+> +	riscv_iommu_attach_domain(iommu, dev, NULL);
 
-Ditto.
+Attaching a NULL domain to a device has already been removed. You can
+use the iommu_ops->release_domain here.
 
-> +	if (ret == -EPROBE_DEFER)
-> +		return driver_deferred_probe_check_state(dev);
->  	if (ret)
->  		return ret;
+> +}
+> +
+>   static const struct iommu_ops riscv_iommu_ops = {
+>   	.owner = THIS_MODULE,
+>   	.of_xlate = riscv_iommu_of_xlate,
+> @@ -90,6 +435,7 @@ static const struct iommu_ops riscv_iommu_ops = {
+>   	.device_group = riscv_iommu_device_group,
+>   	.probe_device = riscv_iommu_probe_device,
+>   	.probe_finalize = riscv_iommu_probe_finalize,
 
-...
+The probe_finalize op will be removed soon.
 
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
+https://lore.kernel.org/linux-iommu/bebea331c1d688b34d9862eefd5ede47503961b8.1713523152.git.robin.murphy@arm.com/
 
-> -	err = iommu_fwspec_init(dev, &dev->of_node->fwnode, ops);
-> +	err = iommu_fwspec_init(dev, &dev->of_node->fwnode);
+> +	.release_device = riscv_iommu_release_device,
+>   };
+>   
+>   static int riscv_iommu_init_check(struct riscv_iommu_device *iommu)
+> @@ -124,6 +470,7 @@ void riscv_iommu_remove(struct riscv_iommu_device *iommu)
+>   {
+>   	iommu_device_unregister(&iommu->iommu);
+>   	iommu_device_sysfs_remove(&iommu->iommu);
+> +	riscv_iommu_set_ddtp_mode(iommu, RISCV_IOMMU_DDTP_MODE_OFF);
+>   }
+>   
+>   int riscv_iommu_init(struct riscv_iommu_device *iommu)
+> @@ -133,12 +480,14 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
+>   	rc = riscv_iommu_init_check(iommu);
+>   	if (rc)
+>   		return dev_err_probe(iommu->dev, rc, "unexpected device state\n");
+> -	/*
+> -	 * Placeholder for a complete IOMMU device initialization.
+> -	 * For now, only bare minimum: enable global identity mapping mode and register sysfs.
+> -	 */
+> -	riscv_iommu_writeq(iommu, RISCV_IOMMU_REG_DDTP,
+> -			   FIELD_PREP(RISCV_IOMMU_DDTP_MODE, RISCV_IOMMU_DDTP_MODE_BARE));
+> +
+> +	rc = riscv_iommu_ddt_alloc(iommu);
+> +	if (WARN(rc, "cannot allocate device directory\n"))
+> +		goto err_init;
+> +
+> +	rc = riscv_iommu_set_ddtp_mode(iommu, RISCV_IOMMU_DDTP_MODE_MAX);
+> +	if (WARN(rc, "cannot enable iommu device\n"))
+> +		goto err_init;
+>   
+>   	rc = iommu_device_sysfs_add(&iommu->iommu, NULL, NULL, "riscv-iommu@%s",
+>   				    dev_name(iommu->dev));
+> @@ -154,5 +503,7 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
+>   err_iommu:
+>   	iommu_device_sysfs_remove(&iommu->iommu);
+>   err_sysfs:
+> +	riscv_iommu_set_ddtp_mode(iommu, RISCV_IOMMU_DDTP_MODE_OFF);
+> +err_init:
+>   	return rc;
+>   }
+> diff --git a/drivers/iommu/riscv/iommu.h b/drivers/iommu/riscv/iommu.h
+> index 700e33dc2446..f1696926582c 100644
+> --- a/drivers/iommu/riscv/iommu.h
+> +++ b/drivers/iommu/riscv/iommu.h
+> @@ -34,6 +34,11 @@ struct riscv_iommu_device {
+>   	/* available interrupt numbers, MSI or WSI */
+>   	unsigned int irqs[RISCV_IOMMU_INTR_COUNT];
+>   	unsigned int irqs_count;
+> +
+> +	/* device directory */
+> +	unsigned int ddt_mode;
+> +	dma_addr_t ddt_phys;
+> +	u64 *ddt_root;
+>   };
+>   
+>   int riscv_iommu_init(struct riscv_iommu_device *iommu);
 
-Ditto.
-
->  	if (err < 0) {
->  		dev_err(dev, "failed to initialize fwspec: %d\n", err);
->  		return err;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Best regards,
+baolu
