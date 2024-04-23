@@ -1,380 +1,192 @@
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2076.outbound.protection.outlook.com [40.107.223.76])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C544B134CFE;
-	Tue, 23 Apr 2024 13:14:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.76
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713878081; cv=fail; b=Q3xgjqG5jCrz2PAksx8hqtuSOzcKKQlYPQtPO/T24/DItcfDMx64ze2cXvcNV2aFvlxge+DRrkNT6mIKwHyiD/2F7/3xXW2Y1Oqb0a9kScwZy9UpEzOgR9tXG8kgDh0/5X1JQkE2ZS2TSz4IrU2hejOJOWJdxqy9GyZ3l2YgQyo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713878081; c=relaxed/simple;
-	bh=QVjpXtofCfJLyzb5uabaSG9nnCOag0Neo2OumvAPo3Q=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=CJGAYrWLwZZxt38bladGTeZd6s5Cg5S9offNPSr/JEVBMraImHoOqnMfRX8tIX1TAGLDbmHrcIrg6VHhUgCu3hzaOXwv6arsyBFFUbsQFnH1oB0UZcCsrb5CGs95HoRATfNYKRHYTrwZnLIUmm/wHHB92wO1AkgLmZSTV9Mf9mk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=BrsW68Sm; arc=fail smtp.client-ip=40.107.223.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3583136E01
+	for <iommu@lists.linux.dev>; Tue, 23 Apr 2024 13:58:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713880731; cv=none; b=T7kcZ2rrHcoy72jT+RMrFag/0PqnM32B8o6RToVSMuM/DqQ8M3HTIN1vSXI8ECULuVSlyWQda+WdDXU1h9dGp2bcaF5pf1TURrN9uN8E/aPiIUPzeFbG8gCJre4H3in6N6MMijA6Zc3pgCjTg4fOA6cipz/wa+KbpCzUkFFPlZs=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713880731; c=relaxed/simple;
+	bh=PM4hKVCgLViTlEhxGEmFa37oVZWQvC3vlHhtyjhGMvA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=tNfQVUvjfHoAgWfsa0evPQ8cZp5uhp6te+75nKM8QYusyU8kNrGA8Dr1VyVmDi7j0wrCVvKZXxqOB6eFtushca3gUREnZqCqUkZVMEpx0yba89pzIDxHvTyjSOy4iT/qHBvLhoMphbGN/hrMepZ+58QpiK49Pee5L0sg95RpTe4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dfi2uLq2; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="BrsW68Sm"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i1JiRTMG9ULnw5Wysy8ZVB2UIhAmb7o+PF1EnGchhr0PMsFIoSyukaakCVB15w1agHv5ESu8YBnXYwmRFBE/TczLo5BuCEoyvaagkCiKf8nakFFS+EmIXww1LD5hYz9HSz0OS7NnbEKs4408yc4hRFYgYveguTNdvl6hpyCB4n/9k5rQ8m5FJqGUw5xOxwL0H7OKpJ7DSgRriEh1oi0tGral3e9nBoEbJb3/CgZGXEKG7a5LX3aYGCI+2JiC+Mhb56XEzaWkYZIxcDxL2d6e78DHVxWk771+AxNHZXpTZ5SUrD8eGxbcb3Z+77rZT7x9TWSYVr+RD8LczEgJBOFVIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=C3Kjb38NvPbvaxls64HEvyCmbmfH7U0ExoyBwEba8nQ=;
- b=YuygVhXooJjluaMsaObp8b4syCdCult8nolm+USIVenwAfYe/ZWt75dqILrYdHiBeMq/elWgmvp0QbdLbDX3jqhuvgr7khtmZmK2YZKe3MeMV5kQiWU8rU0885xn98mTma7fG7z9KGpBKIcIezTUQ1GQnQEwxKCV7dtuOBsWWta/VVlmFiPTRArgmaTZrnlTYOxTblQT8OBWCjxa1JZmGQS4pgZoA0IMN8cvU7txTWbU/Y0lUmx1ESB7fhhTvd7NzAQuRKf9RTqKpcXdItuVW/f8gw/9P7cr7B/NcCVZh2aTFA4HZOZ73D26y0w7vSiGd4Aimwsx9iJV/SRrro3z3w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C3Kjb38NvPbvaxls64HEvyCmbmfH7U0ExoyBwEba8nQ=;
- b=BrsW68SmKIMtz4lM8TATbHsF3XRDZgo4N0L8yTEo4Q21uHXisJM4Ogk7sqN+nuyexJcVYsjWWHzZIgBc1jAjLrI/hrowkRQosdkas4dPWiAMi+cXoDIE8e3OLZIz7g+c/5HTeblUkWxWrnrvLruwyPxa3RDgsq9eok1xPzAvEcFPBYvBWmW20ik8QV/X8bkeZ2ei1R8YKt1jAFoann+h24ZzGK4GELv54l6fmo839AphfpowP4vmzbBYGwuJMmMj1lVHM7i7RFYhWhDhag9bzG7rOH7Gfwn8yx4ArMc+Xz5NNCxffKa715wPUs4vumUCYNFAOkVBPzEL1cekpRB4hg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by SA1PR12MB5672.namprd12.prod.outlook.com (2603:10b6:806:23c::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.44; Tue, 23 Apr
- 2024 13:14:23 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7519.021; Tue, 23 Apr 2024
- 13:14:23 +0000
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: iommu@lists.linux.dev,
-	Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dfi2uLq2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713880730; x=1745416730;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=PM4hKVCgLViTlEhxGEmFa37oVZWQvC3vlHhtyjhGMvA=;
+  b=dfi2uLq288Zmbcqgo/fAuud0TuOT1tc4CNcWBAR5MsldW0QYQl7fiQFH
+   hnah70cS4YJk1bfvl1vkcSi6j9a86k300A1geJKPdh+4yybJ6AvdoUg2c
+   e82dRfe/eP6IHp9iCVgnaNi9C2rgV2ARZAF1413DOldlCi6qzpqqnfp9j
+   gth8BTF+ffI65M5kN9+8Mvwsc0AnUN8dF4kP4hL7EebLtcCYcI79aa37F
+   sRg5Pm5fW8n6fUcQEUgpurREssyhiwsl2qu526zM1Cis5as0aiEYpxUVc
+   3bsLwWbrahfYRs4mHjQZQ5CS8mADQrq4ysHRWfvXubofv5dg+7sI3PTY0
+   w==;
+X-CSE-ConnectionGUID: vMRW07vESkukIcJok4tN2w==
+X-CSE-MsgGUID: LM0RecCRSSqGPJXuUt+xWg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="26921424"
+X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
+   d="scan'208";a="26921424"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 06:58:49 -0700
+X-CSE-ConnectionGUID: If+xOyfqRgibg6Xjd3xxdg==
+X-CSE-MsgGUID: Rz+XMKpcS8KsUB23qWigbg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
+   d="scan'208";a="24431745"
+Received: from newjersey.igk.intel.com ([10.102.20.203])
+  by fmviesa008.fm.intel.com with ESMTP; 23 Apr 2024 06:58:45 -0700
+From: Alexander Lobakin <aleksander.lobakin@intel.com>
+To: "David S. Miller" <davem@davemloft.net>,
+	Eric Dumazet <edumazet@google.com>,
+	Jakub Kicinski <kuba@kernel.org>,
+	Paolo Abeni <pabeni@redhat.com>
+Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Will Deacon <will@kernel.org>
-Cc: Eric Auger <eric.auger@redhat.com>,
-	Moritz Fischer <mdf@kernel.org>,
-	Moritz Fischer <moritzf@google.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: [PATCH v8 3/9] iommu/arm-smmu-v3: Move the CD generation for S1 domains into a function
-Date: Tue, 23 Apr 2024 10:14:08 -0300
-Message-ID: <3-v8-4c4298c63951+13484-smmuv3_newapi_p2_jgg@nvidia.com>
-In-Reply-To: <0-v8-4c4298c63951+13484-smmuv3_newapi_p2_jgg@nvidia.com>
-References:
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0366.namprd13.prod.outlook.com
- (2603:10b6:208:2c0::11) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Magnus Karlsson <magnus.karlsson@intel.com>,
+	nex.sw.ncis.osdt.itp.upstreaming@intel.com,
+	bpf@vger.kernel.org,
+	netdev@vger.kernel.org,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v4 0/7] dma: skip calling no-op sync ops when possible
+Date: Tue, 23 Apr 2024 15:58:25 +0200
+Message-ID: <20240423135832.2271696-1-aleksander.lobakin@intel.com>
+X-Mailer: git-send-email 2.44.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|SA1PR12MB5672:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3306f4cf-7ef5-413a-9263-08dc639746c3
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?0GPSG44pNRhgeWKmOmhul8H/+U1wAPpM8BcsDutDkNJ5D0F+QlSVEdf/cwIQ?=
- =?us-ascii?Q?nauNmeyVNJMECtHFkHpKGXyIFSCQYaaf1wzOLM1KuMt50fFcfYHISDimx9s5?=
- =?us-ascii?Q?9rLp6RAXo1k2XCHaoFv1YweAvFsaf/Gau04SsiYvx550EqJ4bE7Z6dMFTbD9?=
- =?us-ascii?Q?/kujp3QBq3v8bJ6TdClfg+K11N6B11YJ1zgRMJrUz0RouM8tarTzAnd8PMCy?=
- =?us-ascii?Q?8BkxMFsDJQS1OV/UMkeAEIjsgFPMofjxCGhnDVynERa1H3fAj3yvmg7YtI5R?=
- =?us-ascii?Q?ZHtTJU5Hg9/FChIw7FEtT1jXYz6U549SOyniZJrfEDx9NzKefYTlpZub/JoJ?=
- =?us-ascii?Q?P2KiRXYSysY6Szgm27jDG78XGSvaN9cmYnemCzI4mp0D/JuvbTvhHxOwQr+8?=
- =?us-ascii?Q?hXl4cttyR4aYkWdT0slYVw0hrlnl2IWzSrGrlq4+Y+mrvsiMFj5sp/x+sZ2i?=
- =?us-ascii?Q?pwRDg1O04W4ky5iSxj/L55v41viZmwTmU21Zn9JpzzKlcc08YxNlAL4ah3pK?=
- =?us-ascii?Q?GnyMN4BRyij/0/m3U0kNCl4Fl5Y0aSw2rJrAINyvWRj+PhWywT3Buz60hpmw?=
- =?us-ascii?Q?F5/LYKWNCeDkXOjs3i3R++lPF6hPVp9rL/9uJpIkVQXXIPpO+Pjn65luZxOn?=
- =?us-ascii?Q?KIGn+k4ydNzYfQ6+wEDtQK1/R63BiHFsQmhw8JkzlcSB2Icdk7JPYB/4fa17?=
- =?us-ascii?Q?5Hm69ZodLUSDHqCNj85HtbyjjQ0ZuWsHdEYHz0lh3yMaG4Rw1ykRsq5IblGX?=
- =?us-ascii?Q?CApbCa9TUfXQBQMO4VEAwXR4JEHG6CYSl1OC6qylVxiNGM4ER1jno5e8CHHd?=
- =?us-ascii?Q?I2PXNua4XYVbkU9eC+nJXMpZ7ZVzR33EnTLs+SNvKONLJ3MppJsRdsJn+yD4?=
- =?us-ascii?Q?79mxGQWArl4kwiZdFU95oaaHL/BCyWd2jodfAB5xlDJCbz/vUOYZsuQDtMa6?=
- =?us-ascii?Q?YfdoScrGMtSm3s9fLfiBJLwfNP9M8AqlUCtkps9/ChoSnQa0GPS1xadHaSVx?=
- =?us-ascii?Q?gjzpGNyuObLchw5Hb1r5nUvC5t0+VVrIXhhp0fjkYjyUMGk/XF0taQz6mKVb?=
- =?us-ascii?Q?ECmDLzVoyW4sZFu6M42L7JQUvHP02DA/Tg1jPffvPkIPAMVG/FqU/U1rMc0S?=
- =?us-ascii?Q?kn5gmYTZ2VGo7SWjuZr9v3tyrz0AV3HciqTHnBrRkULPBRCL7X4ORySeHbNc?=
- =?us-ascii?Q?qm8BtELYXG9OBNKdAnljN5pnjQnfX1ASj0XgvJxfSWtYHy5C17Z+xi71Yf+/?=
- =?us-ascii?Q?OnDxqYhI5iHYGIvF3u3xivnG7uVZTBiISIjPbIPDOw=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015)(7416005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?J5KmM4bT4G6Hj6mMkLq58rJ275YaITkzo0pOMAbH6XJMCJmM0XO4Q3RTGuYj?=
- =?us-ascii?Q?3kFcgN2v2mFj6Mp/3yBpgprSp3jX+3+Sxfj7n1bn622tDhftN0RxzdMiy7Vv?=
- =?us-ascii?Q?1opvg4jpafpfRuiUMeOYlvJvRnYE3YyQa94l007D94GDgIWnuEm7LRHUEQPP?=
- =?us-ascii?Q?9yUZMD9vsorqXpDWlkDTabTfmjQv89Pj+o2/gb9rz+4+quWwwppNWeL170FH?=
- =?us-ascii?Q?frl33KextIUgwOPVAKhmglO/QYajzY5DgVK7X/FYUENds/EEZ9KbUIiCu2D5?=
- =?us-ascii?Q?ytC+J0mG1hLF/07A2h/bHSOqGxoXXv35R/KBtBB1v2Rt3SqIdvw4admzNK7U?=
- =?us-ascii?Q?uIWScfHQ7Xy0dURh9qvOYWkYcDYkd4UTEmmmQ+NFzVlTGJ9k298JC2mvkGSZ?=
- =?us-ascii?Q?srFEazQG8GYGhikts+Nm2zS/yy29R8ttCpv7UwFXb3UAx65/xCc9ZmkTALm0?=
- =?us-ascii?Q?O/VMSo9DZvZnPdYq23qsunDPRm35kxoCuWV8VQk+eNcjaUarWILM/ldprgyE?=
- =?us-ascii?Q?yXFw9k/Zxeb8dtsjcWU3FR8dF7m2ta9PnYV79N6Ci4Zq5lsdjTaB/eibHYSG?=
- =?us-ascii?Q?OSmi/38zjd5tveoDagOTQI81Ym+5a7woViMMoWAXM400LVfcDsuHf5uwGtkc?=
- =?us-ascii?Q?Ap5tTjm/wB+CMj14yzhp0kXgIQnTRmFkF4Va31wwXlJlGF4HAa1GF/hnCC0g?=
- =?us-ascii?Q?zzc7A0DdFdVWQW8JKm0w/nOucJY4uMpc4UO7Jkwn7/jkIteuhYUus/rSvkvi?=
- =?us-ascii?Q?mkLUhg4YV3I0wJAPOSS551x2QaZTH1evLi2SzXH+u9OwGJas+XKXlc416jZx?=
- =?us-ascii?Q?HwlV5qhtPRHqd+7J8d8SLYVlWEdm0x5GAbiIblAbvdI67BsfiQY493DAyZPs?=
- =?us-ascii?Q?z9RczF0Y+2N9brGL2or29n0AL+4+O0vIIcz3mm0Bwta4kMuWf+XPAqAUevca?=
- =?us-ascii?Q?rNxvAZ0V1FqYX75/quJjDPOmzDPUyRy5c42goS1mSKUJJHON6yNgn0g8wRQU?=
- =?us-ascii?Q?iljlcqZBPCupXHTy/fGCzwfhbCuXvu/iEdtdfB+Mk0ThcAgLXLKq+sQOff51?=
- =?us-ascii?Q?/8plp5aam9k7lqWds5ZoZJyXsEiH6WvGyoZ0Wl41QYSSZoA2I0d0+0puh+2a?=
- =?us-ascii?Q?4DRQEkSPockYBTI7fJabFGwgh0Ogw0NPAA638DOpq1483Flbn1mGPs9m4yaI?=
- =?us-ascii?Q?T2eY9Wsc4h3kOE6pTe+64hxriojkjmqpfYufjP+A5nloGP11QcfZaxbByduC?=
- =?us-ascii?Q?I6HyA/yxviEfT74gYWKMd3YygCqf7STUYUWInOfOobwWtQ+3x//vUqAmUsSE?=
- =?us-ascii?Q?C+hTpurZCAX6wcJBtxYkmQxpKkVV8T1EXitKIE99H29BZepMD+fUydnTJbr1?=
- =?us-ascii?Q?7U3BIzGby6gaDpI3v4mJmUfsF5lwJZnEMeuGYLG538eGr0eYgFd6vvMIZhtf?=
- =?us-ascii?Q?/RnF4Um7mtULCRGu9yqg0Ncua2Q11l0okGqIpxpAmABVWJqbNFeihrdensC3?=
- =?us-ascii?Q?+ooseOJ9odtToY4D2mnO6XeBqvN8wCqJ58OTfqg0rblXBBw3K5NkPx3/VK5a?=
- =?us-ascii?Q?+ME+QARe8CKp5D2rv7yGj6IOWsQ9ZXcJ2PLXpr7n?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3306f4cf-7ef5-413a-9263-08dc639746c3
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2024 13:14:16.0255
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mydxMhd7qxdd0M82R1UKTTO61iTVIYuNf90yYS+368Xd3qHxOMfj5FEx0WVrqw3d
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB5672
+Content-Transfer-Encoding: 8bit
 
-Introduce arm_smmu_make_s1_cd() to build the CD from the paging S1 domain,
-and reorganize all the places programming S1 domain CD table entries to
-call it.
+The series grew from Eric's idea and patch at [0]. The idea of using the
+shortcut for direct DMA as well belongs to Chris.
 
-Split arm_smmu_update_s1_domain_cd_entry() from
-arm_smmu_update_ctx_desc_devices() so that the S1 path has its own call
-chain separate from the unrelated SVA path.
+When an architecture doesn't need DMA synchronization and the buffer is
+not an SWIOTLB buffer, most of times the kernel and the drivers end up
+calling DMA sync operations for nothing.
+Even when DMA is direct, this involves a good non-inline call ladder and
+eats a bunch of CPU time. With IOMMU, this results in calling indirect
+calls on hotpath just to check what is already known and return.
+XSk is been using a custom shortcut for that for quite some time.
+I recently wanted to introduce a similar one for Page Pool. Let's combine
+all this into one generic shortcut, which would cover all DMA sync ops
+and all types of DMA (direct, IOMMU, ...).
 
-arm_smmu_update_s1_domain_cd_entry() only works on S1 domains attached to
-RIDs and refreshes all their CDs. Remove case (3) from
-arm_smmu_write_ctx_desc() as it is now handled by directly calling
-arm_smmu_write_cd_entry().
+* #1 adds stub inlines to be able to compile DMA sync ops out when not
+     needed.
+* #2 adds generic shortcut and enables it for direct DMA.
+* #3 adds ability to skip DMA syncs behind an IOMMU.
+* #4-5 are just cleanups for Page Pool to avoid merge conflicts in future.
+* #6 checks for the shortcut as early as possible in the Page Pool code to
+     make sure no cycles wasted.
+* #7 replaces XSk's shortcut with the generic one.
 
-Remove the forced clear of the CD during S1 domain attach,
-arm_smmu_write_cd_entry() will do this automatically if necessary.
+On 100G NIC, the result is +3-5% for direct DMA and +10-11% for IOMMU.
+As a bonus, XSk core now allows batched buffer allocations for IOMMU
+setups.
+If the shortcut is not available on some system, there should be no
+visible performance regressions.
 
-Tested-by: Nicolin Chen <nicolinc@nvidia.com>
-Tested-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Reviewed-by: Michael Shavit <mshavit@google.com>
-Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
-Reviewed-by: Mostafa Saleh <smostafa@google.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+[0] https://lore.kernel.org/netdev/20221115182841.2640176-1-edumazet@google.com
+
+Alexander Lobakin (7):
+  dma: compile-out DMA sync op calls when not used
+  dma: avoid redundant calls for sync operations
+  iommu/dma: avoid expensive indirect calls for sync operations
+  page_pool: make sure frag API fields don't span between cachelines
+  page_pool: don't use driver-set flags field directly
+  page_pool: check for DMA sync shortcut earlier
+  xsk: use generic DMA sync shortcut instead of a custom one
+
+ kernel/dma/Kconfig                            |   5 +
+ include/net/page_pool/types.h                 |  25 ++++-
+ include/linux/device.h                        |   4 +
+ include/linux/dma-map-ops.h                   |  12 ++
+ include/linux/dma-mapping.h                   | 105 +++++++++++++-----
+ include/net/xdp_sock_drv.h                    |   7 +-
+ include/net/xsk_buff_pool.h                   |  14 +--
+ drivers/iommu/dma-iommu.c                     |   3 +-
+ drivers/net/ethernet/engleder/tsnep_main.c    |   2 +-
+ .../net/ethernet/freescale/dpaa2/dpaa2-xsk.c  |   2 +-
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c    |   2 +-
+ drivers/net/ethernet/intel/ice/ice_xsk.c      |   2 +-
+ drivers/net/ethernet/intel/igc/igc_main.c     |   2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  |   2 +-
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |   2 +-
+ drivers/net/ethernet/netronome/nfp/nfd3/xsk.c |   2 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |   2 +-
+ kernel/dma/mapping.c                          |  69 +++++++++---
+ kernel/dma/swiotlb.c                          |   6 +
+ net/core/page_pool.c                          |  76 ++++++++-----
+ net/xdp/xsk_buff_pool.c                       |  28 +----
+ 22 files changed, 243 insertions(+), 133 deletions(-)
+
 ---
- .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 25 ++++++-
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 71 +++++++++++--------
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  9 +++
- 3 files changed, 76 insertions(+), 29 deletions(-)
+From v3[1]:
+* #1:
+  * don't prefix DMA sync ops with '__', just define them as empty inlines
+    when !DMA_NEED_SYNC (Chris, Robin);
+  * always select DMA_NEED_SYNC when DMA_API_DEBUG (^);
+* #2:
+  * don't use BIT(), keep the style consistent (^);
+  * check for dma_map_ops::sync_sg_*() in dma_setup_need_sync() (^);
+  * don't reset the flag in swiotlb_alloc() as it's not streaming API (^);
+  * instead of 'dma_skip_sync', name the flag 'dma_need_sync' and inverse
+    the logic (^);
+  * setup the shortcut in dma_set_mask() (assuming every driver using DMA
+    must call it on probe) (^);
+  * combine dma_direct() and (ops->flags & CAN_SKIP_SYNC) checks (Robin);
+* #3:
+  - pick Acked-by (Robin).
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-index 41b44baef15e80..d159f60480935e 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
-@@ -53,6 +53,29 @@ static void arm_smmu_update_ctx_desc_devices(struct arm_smmu_domain *smmu_domain
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- }
- 
-+static void
-+arm_smmu_update_s1_domain_cd_entry(struct arm_smmu_domain *smmu_domain)
-+{
-+	struct arm_smmu_master *master;
-+	struct arm_smmu_cd target_cd;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
-+		struct arm_smmu_cd *cdptr;
-+
-+		/* S1 domains only support RID attachment right now */
-+		cdptr = arm_smmu_get_cd_ptr(master, IOMMU_NO_PASID);
-+		if (WARN_ON(!cdptr))
-+			continue;
-+
-+		arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
-+		arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
-+					&target_cd);
-+	}
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+}
-+
- /*
-  * Check if the CPU ASID is available on the SMMU side. If a private context
-  * descriptor is using it, try to replace it.
-@@ -96,7 +119,7 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
- 	 * be some overlap between use of both ASIDs, until we invalidate the
- 	 * TLB.
- 	 */
--	arm_smmu_update_ctx_desc_devices(smmu_domain, IOMMU_NO_PASID, cd);
-+	arm_smmu_update_s1_domain_cd_entry(smmu_domain);
- 
- 	/* Invalidate TLB entries previously associated with that context */
- 	arm_smmu_tlb_inv_asid(smmu, asid);
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 1a61b47eeefe2d..0f4d275fff67b0 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1203,8 +1203,8 @@ static void arm_smmu_write_cd_l1_desc(__le64 *dst,
- 	WRITE_ONCE(*dst, cpu_to_le64(val));
- }
- 
--static struct arm_smmu_cd *arm_smmu_get_cd_ptr(struct arm_smmu_master *master,
--					       u32 ssid)
-+struct arm_smmu_cd *arm_smmu_get_cd_ptr(struct arm_smmu_master *master,
-+					u32 ssid)
- {
- 	__le64 *l1ptr;
- 	unsigned int idx;
-@@ -1269,9 +1269,9 @@ static const struct arm_smmu_entry_writer_ops arm_smmu_cd_writer_ops = {
- 	.get_used = arm_smmu_get_cd_used,
- };
- 
--static void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
--				    struct arm_smmu_cd *cdptr,
--				    const struct arm_smmu_cd *target)
-+void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
-+			     struct arm_smmu_cd *cdptr,
-+			     const struct arm_smmu_cd *target)
- {
- 	struct arm_smmu_cd_writer cd_writer = {
- 		.writer = {
-@@ -1284,6 +1284,32 @@ static void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
- 	arm_smmu_write_entry(&cd_writer.writer, cdptr->data, target->data);
- }
- 
-+void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
-+			 struct arm_smmu_master *master,
-+			 struct arm_smmu_domain *smmu_domain)
-+{
-+	struct arm_smmu_ctx_desc *cd = &smmu_domain->cd;
-+
-+	memset(target, 0, sizeof(*target));
-+
-+	target->data[0] = cpu_to_le64(
-+		cd->tcr |
-+#ifdef __BIG_ENDIAN
-+		CTXDESC_CD_0_ENDI |
-+#endif
-+		CTXDESC_CD_0_V |
-+		CTXDESC_CD_0_AA64 |
-+		(master->stall_enabled ? CTXDESC_CD_0_S : 0) |
-+		CTXDESC_CD_0_R |
-+		CTXDESC_CD_0_A |
-+		CTXDESC_CD_0_ASET |
-+		FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid)
-+		);
-+
-+	target->data[1] = cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK);
-+	target->data[3] = cpu_to_le64(cd->mair);
-+}
-+
- static void arm_smmu_clean_cd_entry(struct arm_smmu_cd *target)
- {
- 	struct arm_smmu_cd used = {};
-@@ -1302,14 +1328,11 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
- 	 *
- 	 * (1) Install primary CD, for normal DMA traffic (SSID = IOMMU_NO_PASID = 0).
- 	 * (2) Install a secondary CD, for SID+SSID traffic.
--	 * (3) Update ASID of a CD. Atomically write the first 64 bits of the
--	 *     CD, then invalidate the old entry and mappings.
- 	 * (4) Quiesce the context without clearing the valid bit. Disable
- 	 *     translation, and ignore any translation fault.
- 	 * (5) Remove a secondary CD.
- 	 */
- 	u64 val;
--	bool cd_live;
- 	struct arm_smmu_cd target;
- 	struct arm_smmu_cd *cdptr = &target;
- 	struct arm_smmu_cd *cd_table_entry;
-@@ -1325,7 +1348,6 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
- 
- 	target = *cd_table_entry;
- 	val = le64_to_cpu(cdptr->data[0]);
--	cd_live = !!(val & CTXDESC_CD_0_V);
- 
- 	if (!cd) { /* (5) */
- 		val = 0;
-@@ -1333,13 +1355,6 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_master *master, int ssid,
- 		if (!(smmu->features & ARM_SMMU_FEAT_STALL_FORCE))
- 			val &= ~(CTXDESC_CD_0_S | CTXDESC_CD_0_R);
- 		val |= CTXDESC_CD_0_TCR_EPD0;
--	} else if (cd_live) { /* (3) */
--		val &= ~CTXDESC_CD_0_ASID;
--		val |= FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid);
--		/*
--		 * Until CD+TLB invalidation, both ASIDs may be used for tagging
--		 * this substream's traffic
--		 */
- 	} else { /* (1) and (2) */
- 		cdptr->data[1] = cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK);
- 		cdptr->data[2] = 0;
-@@ -2644,29 +2659,29 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
- 	switch (smmu_domain->stage) {
--	case ARM_SMMU_DOMAIN_S1:
-+	case ARM_SMMU_DOMAIN_S1: {
-+		struct arm_smmu_cd target_cd;
-+		struct arm_smmu_cd *cdptr;
-+
- 		if (!master->cd_table.cdtab) {
- 			ret = arm_smmu_alloc_cd_tables(master);
- 			if (ret)
- 				goto out_list_del;
--		} else {
--			/*
--			 * arm_smmu_write_ctx_desc() relies on the entry being
--			 * invalid to work, clear any existing entry.
--			 */
--			ret = arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID,
--						      NULL);
--			if (ret)
--				goto out_list_del;
- 		}
- 
--		ret = arm_smmu_write_ctx_desc(master, IOMMU_NO_PASID, &smmu_domain->cd);
--		if (ret)
-+		cdptr = arm_smmu_get_cd_ptr(master, IOMMU_NO_PASID);
-+		if (!cdptr) {
-+			ret = -ENOMEM;
- 			goto out_list_del;
-+		}
- 
-+		arm_smmu_make_s1_cd(&target_cd, master, smmu_domain);
-+		arm_smmu_write_cd_entry(master, IOMMU_NO_PASID, cdptr,
-+					&target_cd);
- 		arm_smmu_make_cdtable_ste(&target, master);
- 		arm_smmu_install_ste_for_dev(master, &target);
- 		break;
-+	}
- 	case ARM_SMMU_DOMAIN_S2:
- 		arm_smmu_make_s2_domain_ste(&target, master, smmu_domain);
- 		arm_smmu_install_ste_for_dev(master, &target);
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index 4b767e0eeeb682..bb08f087ba39e4 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -751,6 +751,15 @@ extern struct xarray arm_smmu_asid_xa;
- extern struct mutex arm_smmu_asid_lock;
- extern struct arm_smmu_ctx_desc quiet_cd;
- 
-+struct arm_smmu_cd *arm_smmu_get_cd_ptr(struct arm_smmu_master *master,
-+					u32 ssid);
-+void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
-+			 struct arm_smmu_master *master,
-+			 struct arm_smmu_domain *smmu_domain);
-+void arm_smmu_write_cd_entry(struct arm_smmu_master *master, int ssid,
-+			     struct arm_smmu_cd *cdptr,
-+			     const struct arm_smmu_cd *target);
-+
- int arm_smmu_write_ctx_desc(struct arm_smmu_master *smmu_master, int ssid,
- 			    struct arm_smmu_ctx_desc *cd);
- void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid);
+From v2[2]:
+* #1:
+  * use two tabs for indenting multi-line function prototypes (Chris);
+* #2:
+  * make shortcut clearing function generic and move it out of the
+    SWIOTLB code (Chris);
+  * remove dma_set_skip_sync(): use direct assignment during the initial
+    setup, not used anywhere else (Chris);
+  * commitmsg: remove "NIC" and the workaround paragraph (Chris).
+
+From v1[3]:
+* #1:
+  * use static inlines instead of macros (Chris);
+  * move CONFIG_DMA_NEED_SYNC check into dma_skip_sync() (Robin);
+* #2:
+  * use a new dma_map_ops flag instead of new callback, assume the same
+    conditions as for direct DMA are enough (Petr, Robin);
+  * add more code comments to make sure the whole idea and path are
+    clear (Petr, Robin, Chris);
+* #2, #3: correct the Git tags and the authorship a bit.
+
+Not addressed in v2:
+* #1:
+  * dma_sync_*range_*() are still wrapped, as some subsystems may want
+    to call the underscored versions directly (e.g. Page Pool);
+* #2:
+  * the new dev->dma_skip_sync bit is still preferred over checking for
+    READ_ONCE(dev->dma_uses_io_tlb) + dev_is_dma_coherent() on hotpath
+    as a faster solution.
+
+[1] https://lore.kernel.org/netdev/20240214162201.4168778-1-aleksander.lobakin@intel.com
+[2] https://lore.kernel.org/netdev/20240205110426.764393-1-aleksander.lobakin@intel.com
+[3] https://lore.kernel.org/netdev/20240126135456.704351-1-aleksander.lobakin@intel.com
 -- 
-2.43.2
+2.44.0
 
