@@ -1,46 +1,46 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BABE142E96
-	for <iommu@lists.linux.dev>; Tue, 23 Apr 2024 17:36:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7EB2413E3FA
+	for <iommu@lists.linux.dev>; Tue, 23 Apr 2024 17:36:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713893818; cv=none; b=H4BbJuBfujeNcUIyYOEUjd6oTzpMIYNl2qdV+rTfLj5ZwjQkgmnU1xlJQG/ar+kx5aip14++8AyNBeqgMnUO8/QbZ6OywkM1p5QrIcjNzNSy7uxMRQ5JOSEn92QMpunMDHf8p43NEs3zvxxlTobbqU/XaN83dF5IQOvhtPhNF48=
+	t=1713893819; cv=none; b=UuRYa0lnNhDcX+fvr6NK40ZSras3L/Jd2sIdkFvNGo7D0bFLALA2dmmCiNicfH4e4MwQApd+yPaZrtBeTgghPG757x8ESAPwWzwXDQ6VbrmG34ryln1mNUZKAxHPS/F7SxyARH06XCItWtqXsVzge2f63Un8J+XjTKikfaVFkcU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713893818; c=relaxed/simple;
-	bh=MGqiHDPtZsSCXG8bvNCAhgbi77LAhqnLcPki4bnuNV8=;
+	s=arc-20240116; t=1713893819; c=relaxed/simple;
+	bh=GxBLTYG+s4PclMc+/uKhnAWlwH60FRMme9HruCm3Yi0=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=lPd7enFccjgoGKapl71G1Hn7cnU6tpD5g/uQnNC94t9NDx1Ke0LISkJBH3L1TaTr+UAvZgqsQ3ekiXExwV9RFx5oPcnW8DKo6L3WlbqQflLs9HIGLrgXipWGCB3LLUMtE/Nkqpxg7g+eDYcTnOyFumJG+LsA7CKLvl5iDrIkVlA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=V5z9jluP; arc=none smtp.client-ip=192.198.163.14
+	 MIME-Version; b=idYPuu5IUGAblhYa437YTdBDTSpPIuYJxSCXTIRYzxy9A7DvdmqlRpCAZMblVkb9x1xowpuxyKCYziM3T/sVRBdGTiSb7U4QeLvEX0CYPtUgPZHX0z0XScJSz1/9VqLIUWTg8ql2Nv0Kz9Hf+bvuDF7FuFs1qxo+OoqYxO+Tyu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VeuIftsQ; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="V5z9jluP"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VeuIftsQ"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713893817; x=1745429817;
+  t=1713893819; x=1745429819;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=MGqiHDPtZsSCXG8bvNCAhgbi77LAhqnLcPki4bnuNV8=;
-  b=V5z9jluPoAPpV10WViJQ7nDPM1uxUgCg8XwB1GciGyryPACvS4LEhrSD
-   OjhhwOUut2LoiOwsSbHSIYXP4A4dq9djmwh+Sp1ul0mClTP0bjJm6IMnm
-   kMGyyWzFhiC1lUUZGTSN1GomJVFDibyH0c6a5jS6VeO6TF8U89jtuJJZp
-   9Kit85h8Do9qvU/Dgvfz3X7JwUx2wTyqVY9vf+0Y/Yb38uBMy9AFsyoJk
-   n8CWNxItjWVpws8EhYboV+M365fK0aqHSPHW4kpywtXQbroHvmVm3n1wQ
-   cK2sAQG/JnC9o/qh6wJKBuBFOriGD+NqxK2437ObjKEDbbhIcz5vOblW4
-   Q==;
-X-CSE-ConnectionGUID: WRKoDdKiQZGY9r9F3iT69w==
-X-CSE-MsgGUID: wVRJdGeGT7uD0j8P/ps41A==
-X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="9712493"
+  bh=GxBLTYG+s4PclMc+/uKhnAWlwH60FRMme9HruCm3Yi0=;
+  b=VeuIftsQaVkVJU8o6cn9nEpTnttQ25A9iOKKR/27eYprvFu9Twr0NsJE
+   mwcSv0cL74RAI3lJYs+JYhl6YOjBAZGH5fEVsJZ6UzazCpBUNl1RO+2BX
+   FVCpBb0pxT50b3uvj8Ve58Qd4ONvZ2gyBuw7F/UZhzJpHVMkttcQ13Nya
+   0lmWVjcSsd/bXcsHurywENlFHiOOACq7cKAKxinRCT2X0GpoISeIY9sNM
+   9yc+UU/Kyl7ymer2Ww2auCLbOg29PPFWWLPkSizy8Nvc/Mt7a+3ncOMeu
+   01xsUoL0zVz9n7vb+0T59V2RsR7aZrAWD4lxnx3PSIXTICozo5Bfj/I1C
+   w==;
+X-CSE-ConnectionGUID: DzG895PXQ6uFCAQP9w4/Vw==
+X-CSE-MsgGUID: b1aog/XbSkuOxJOpOKiYDA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="9712469"
 X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
-   d="scan'208";a="9712493"
+   d="scan'208";a="9712469"
 Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 10:36:47 -0700
-X-CSE-ConnectionGUID: 2MIRNS+kTeip0/SWWPNZhw==
-X-CSE-MsgGUID: jmxyX6T1Tlu94EczzQJ3SA==
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 10:36:46 -0700
+X-CSE-ConnectionGUID: V4e9XLIFTju7Kex1holA2g==
+X-CSE-MsgGUID: Q79w74fRR12lYwpupXYi5A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
-   d="scan'208";a="29097460"
+   d="scan'208";a="29097447"
 Received: from jacob-builder.jf.intel.com ([10.54.39.125])
   by fmviesa004.fm.intel.com with ESMTP; 23 Apr 2024 10:36:45 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -72,9 +72,9 @@ Cc: Paul Luse <paul.e.luse@intel.com>,
 	oliver.sang@intel.com,
 	acme@kernel.org,
 	Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: [PATCH v3  10/12] x86/irq: Extend checks for pending vectors to posted interrupts
-Date: Tue, 23 Apr 2024 10:41:12 -0700
-Message-Id: <20240423174114.526704-11-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v3  09/12] x86/irq: Factor out common code for checking pending interrupts
+Date: Tue, 23 Apr 2024 10:41:11 -0700
+Message-Id: <20240423174114.526704-10-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20240423174114.526704-1-jacob.jun.pan@linux.intel.com>
 References: <20240423174114.526704-1-jacob.jun.pan@linux.intel.com>
@@ -86,101 +86,87 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-During interrupt affinity change, it is possible to have interrupts delivered
-to the old CPU after the affinity has changed to the new one. To prevent lost
-interrupts, local APIC IRR is checked on the old CPU. Similar checks must be
-done for posted MSIs given the same reason.
+Use a common function for checking pending interrupt vector in APIC IRR
+instead of duplicated open coding them.
 
-Consider the following scenario:
-	Device		system agent		iommu		memory 		CPU/LAPIC
-1	FEEX_XXXX
-2			Interrupt request
-3						Fetch IRTE	->
-4						->Atomic Swap PID.PIR(vec)
-						Push to Global Observable(GO)
-5						if (ON*)
-							done;*
-						else
-6							send a notification ->
-
-* ON: outstanding notification, 1 will suppress new notifications
-
-If the affinity change happens between 3 and 5 in IOMMU, the old CPU's posted
-interrupt request (PIR) could have pending bit set for the vector being moved.
-
-This patch adds a helper function to check individual vector status.
-Then use the helper to check for pending interrupts on the source CPU's
-PID.
+Additional checks for posted MSI vectors can then be contained in this
+function.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-
 ---
-v3: Fix a stray letter in the comment, no code change
-v2: Fold in helper function patch.
----
- arch/x86/include/asm/apic.h        |  3 ++-
- arch/x86/include/asm/posted_intr.h | 18 ++++++++++++++++++
- 2 files changed, 20 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/apic.h   | 11 +++++++++++
+ arch/x86/kernel/apic/vector.c |  5 ++---
+ arch/x86/kernel/irq.c         |  5 ++---
+ 3 files changed, 15 insertions(+), 6 deletions(-)
 
 diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
-index 50f9781fa3ed..5644c396713e 100644
+index e6ab0cf15ed5..50f9781fa3ed 100644
 --- a/arch/x86/include/asm/apic.h
 +++ b/arch/x86/include/asm/apic.h
-@@ -14,6 +14,7 @@
- #include <asm/msr.h>
- #include <asm/hardirq.h>
- #include <asm/io.h>
-+#include <asm/posted_intr.h>
- 
- #define ARCH_APICTIMER_STOPS_ON_C3	1
- 
-@@ -508,7 +509,7 @@ static inline bool is_vector_pending(unsigned int vector)
- 	if (irr  & (1 << (vector % 32)))
- 		return true;
- 
--	return false;
-+	return pi_pending_this_cpu(vector);
+@@ -500,6 +500,17 @@ static inline bool lapic_vector_set_in_irr(unsigned int vector)
+ 	return !!(irr & (1U << (vector % 32)));
  }
  
- /*
-diff --git a/arch/x86/include/asm/posted_intr.h b/arch/x86/include/asm/posted_intr.h
-index 6f84f6739d99..de788b400fba 100644
---- a/arch/x86/include/asm/posted_intr.h
-+++ b/arch/x86/include/asm/posted_intr.h
-@@ -1,6 +1,7 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- #ifndef _X86_POSTED_INTR_H
- #define _X86_POSTED_INTR_H
-+#include <asm/irq_vectors.h>
- 
- #define POSTED_INTR_ON  0
- #define POSTED_INTR_SN  1
-@@ -92,8 +93,25 @@ static inline void __pi_clear_sn(struct pi_desc *pi_desc)
- }
- 
- #ifdef CONFIG_X86_POSTED_MSI
-+/*
-+ * Not all external vectors are subject to interrupt remapping, e.g. IOMMU's
-+ * own interrupts. Here we do not distinguish them since those vector bits in
-+ * PIR will always be zero.
-+ */
-+static inline bool pi_pending_this_cpu(unsigned int vector)
++static inline bool is_vector_pending(unsigned int vector)
 +{
-+	struct pi_desc *pid = this_cpu_ptr(&posted_msi_pi_desc);
++	unsigned int irr;
 +
-+	if (WARN_ON_ONCE(vector > NR_VECTORS || vector < FIRST_EXTERNAL_VECTOR))
-+		return false;
++	irr = apic_read(APIC_IRR + (vector / 32 * 0x10));
++	if (irr  & (1 << (vector % 32)))
++		return true;
 +
-+	return test_bit(vector, (unsigned long *)pid->pir);
++	return false;
 +}
 +
- extern void intel_posted_msi_init(void);
- #else
-+static inline bool pi_pending_this_cpu(unsigned int vector) { return false; }
-+
- static inline void intel_posted_msi_init(void) {};
- #endif /* X86_POSTED_MSI */
+ /*
+  * Warm reset vector position:
+  */
+diff --git a/arch/x86/kernel/apic/vector.c b/arch/x86/kernel/apic/vector.c
+index 185738c72766..9eec52925fa3 100644
+--- a/arch/x86/kernel/apic/vector.c
++++ b/arch/x86/kernel/apic/vector.c
+@@ -965,7 +965,7 @@ static void __vector_cleanup(struct vector_cleanup *cl, bool check_irr)
+ 	lockdep_assert_held(&vector_lock);
  
+ 	hlist_for_each_entry_safe(apicd, tmp, &cl->head, clist) {
+-		unsigned int irr, vector = apicd->prev_vector;
++		unsigned int vector = apicd->prev_vector;
+ 
+ 		/*
+ 		 * Paranoia: Check if the vector that needs to be cleaned
+@@ -979,8 +979,7 @@ static void __vector_cleanup(struct vector_cleanup *cl, bool check_irr)
+ 		 * fixup_irqs() was just called to scan IRR for set bits and
+ 		 * forward them to new destination CPUs via IPIs.
+ 		 */
+-		irr = check_irr ? apic_read(APIC_IRR + (vector / 32 * 0x10)) : 0;
+-		if (irr & (1U << (vector % 32))) {
++		if (check_irr && is_vector_pending(vector)) {
+ 			pr_warn_once("Moved interrupt pending in old target APIC %u\n", apicd->irq);
+ 			rearm = true;
+ 			continue;
+diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
+index 578e4f6a5080..385e3a5fc304 100644
+--- a/arch/x86/kernel/irq.c
++++ b/arch/x86/kernel/irq.c
+@@ -484,7 +484,7 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_posted_msi_notification)
+ /* A cpu has been removed from cpu_online_mask.  Reset irq affinities. */
+ void fixup_irqs(void)
+ {
+-	unsigned int irr, vector;
++	unsigned int vector;
+ 	struct irq_desc *desc;
+ 	struct irq_data *data;
+ 	struct irq_chip *chip;
+@@ -511,8 +511,7 @@ void fixup_irqs(void)
+ 		if (IS_ERR_OR_NULL(__this_cpu_read(vector_irq[vector])))
+ 			continue;
+ 
+-		irr = apic_read(APIC_IRR + (vector / 32 * 0x10));
+-		if (irr  & (1 << (vector % 32))) {
++		if (is_vector_pending(vector)) {
+ 			desc = __this_cpu_read(vector_irq[vector]);
+ 
+ 			raw_spin_lock(&desc->lock);
 -- 
 2.25.1
 
