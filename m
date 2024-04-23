@@ -1,121 +1,164 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CBB413774C
-	for <iommu@lists.linux.dev>; Tue, 23 Apr 2024 14:07:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 20B3333993
+	for <iommu@lists.linux.dev>; Tue, 23 Apr 2024 14:41:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713881274; cv=none; b=lHipAa8CvCmwFpsq8gfE7KxjJlJk0d4pWPW+3Jz7ZiIwmBqN3buEi6mifRl56OvunRDhJJM6zUD2hTPoMYkCrbsUPnB3KZex6D7HgezA32xjorRol72naHjB/sd1qISXw3v45AnIwItZJnntPEBsW83dmB1odUGOcgzogNkX0m8=
+	t=1713883297; cv=none; b=EivB9tHazEooGvAUzYZJySAIpTVOpdsFNXlUnb7n0deaKiIceOvpppB2XpcT8APb8e2JLGWMVLl51xNqcD5IaLoG4NYAT8N6W6w6+0uiG2HL40pUNRa+WGM2q02z57FxgzgYkX1qjJswven16+QaYsMHYfPEwahIYQIHMMMJqWQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713881274; c=relaxed/simple;
-	bh=SCCRcYBSUWi6YZAeBOgGaAFk9sSP20YVxD8KQauNigo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mFgtpa/nrzSdbvsWI7894cj82vh36vp7KINHTTanf5VpDVpTMSxSpQxGDv5xKpkpYyQ6Q0OYK/YLsZicYBzo9eJ/Gem4BGtOdqvJszIfCdvChrHGlSxGGgZNmqw+DAbZbCO49MpPnFRBIJXoZ1eMF/LowYG6WHB3AnExzZJYLGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=KSEk6Qxi; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KSEk6Qxi"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-41a5b68eceeso16249375e9.3
-        for <iommu@lists.linux.dev>; Tue, 23 Apr 2024 07:07:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1713881271; x=1714486071; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ivZL1KMf5HVtw/Oo+a4INAZ/yDs5tBPuPTBsYEgRcbc=;
-        b=KSEk6QxiLHnbKk2/uMZGAIy7OkbzopkyKaIe4UeJtRK450Hf+nSLE9L2k81S7bc8cr
-         i7bU0bEPKZB6bcj4guxWLHrg7gVBDolQ4UO3jJFdlo7j4PBwKD8OPVDpSZVh8UgKhJ2k
-         OH3XaBdIm+AG+VtIdfJFgZ54T+MN52LGYlCRJe8k+oN8H3WYZAQDOUoHmsNRoJbBkUWz
-         8OaQ8UDRpBb7950hSzxfu1v1ebZsHKsqy66sTUu670k6r9w92lWKgBG5CGlvmOF/GhYW
-         5Ztq4rTAl7KGfn/o060kJNYwhat/jXlFBk8DeUfmtV9jyoPqvQnnbZao0b+FB/CxCOSL
-         D4pA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713881271; x=1714486071;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ivZL1KMf5HVtw/Oo+a4INAZ/yDs5tBPuPTBsYEgRcbc=;
-        b=uFJudwmmJZTiOublwwXtqiY5TTzr/bI5aVwq1r2a6uE+CW42WczssDP/KnRtdL+BJZ
-         lAwdo9f4lbJQR/xS71DCNoaDXZY57XWn6Txw609mi+mtXv0d6ASg7id5Igyex1AB5id9
-         /OffkVs2XXMKbGsOy41iYIP/VwAQkO6VvAtbMVmcLNZkjL0x7bnKF3jjcl5v8GMHHrox
-         ieyxllizSuxXqpv77IUy0IIIrQfHWZjd2Z8Xa2WzcIlj+HrdqnPL30/Q9ShQRvZjU0a5
-         sV6KnS+yHc1/qnplkzbANCRg5W0dHVWy2hWhoC+Jf8+VWEsCr5MvkKK31mskG7fyxjtt
-         fAmw==
-X-Forwarded-Encrypted: i=1; AJvYcCXzsJP5CIMcmZYgwqp/SwuKp6hdCqDJsCMJm24B9j/fB8QOw7Zb3Q6n8c05JRp5T92AI1wJEA02TPhgRS3KE/P5WgoZqQ4=
-X-Gm-Message-State: AOJu0Yyh1dZ8BmV6FybktXh+/2f2Jj9pvDmS8KTAUitCXNBBUicZRp0s
-	tSI3zw0nEqzJJqFmZuNH6JB27emPwPQ2rP0t8huatm8yoyTYZxhTfECbOyF5Tvk=
-X-Google-Smtp-Source: AGHT+IEIwm2tVBxncnsuTwhWGS/GtsX0X8yGwreFbsWOjkFsI91R+e9ti269gvGnFYpY+RoCeixbxQ==
-X-Received: by 2002:a05:600c:1e1b:b0:41a:7370:85ab with SMTP id ay27-20020a05600c1e1b00b0041a737085abmr4113391wmb.33.1713881270854;
-        Tue, 23 Apr 2024 07:07:50 -0700 (PDT)
-Received: from myrica ([2.221.137.100])
-        by smtp.gmail.com with ESMTPSA id o3-20020a05600c4fc300b00418f7605249sm18226069wmq.24.2024.04.23.07.07.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Apr 2024 07:07:50 -0700 (PDT)
-Date: Tue, 23 Apr 2024 15:08:03 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
-	linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
-	devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>,
-	Saravana Kannan <saravanak@google.com>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Len Brown <lenb@kernel.org>
-Subject: Re: [PATCH 0/4] iommu: Remove iommu_fwspec ops
-Message-ID: <20240423140803.GA931103@myrica>
-References: <cover.1713523251.git.robin.murphy@arm.com>
+	s=arc-20240116; t=1713883297; c=relaxed/simple;
+	bh=DocuAMvwyGGvfPytQrZOEeSJjFxS/MQqyrIdWeU3k8I=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=X89Wbxl7sKV+kAT9v7PKpa7hIbFZQhgf2rC+F4kNj2oDGaT2f89zZMX7nDiIP9JQ1auzqwkTnO6Cmet3APRqb7rxwjstvTtQeKP2DBTAYe3X9tvZwTauo0+32ZXkm4nhSJUyL24vOamq8RPQVUNzDLS6ufKvImCgotu2ipqXySQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 13A02339;
+	Tue, 23 Apr 2024 07:42:02 -0700 (PDT)
+Received: from [10.57.74.127] (unknown [10.57.74.127])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3E04F3F73F;
+	Tue, 23 Apr 2024 07:41:32 -0700 (PDT)
+Message-ID: <3733929c-657e-4d24-b5e9-a5d946645abe@arm.com>
+Date: Tue, 23 Apr 2024 15:41:30 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1713523251.git.robin.murphy@arm.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/4] iommu/arm-smmu-v3: Add feature detection for HTTU
+Content-Language: en-GB
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+ iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
+Cc: joro@8bytes.org, jgg@nvidia.com, kevin.tian@intel.com,
+ nicolinc@nvidia.com, mshavit@google.com, robin.murphy@arm.com,
+ will@kernel.org, joao.m.martins@oracle.com, jiangkunkun@huawei.com,
+ zhukeqian1@huawei.com, linuxarm@huawei.com
+References: <20240222094923.33104-1-shameerali.kolothum.thodi@huawei.com>
+ <20240222094923.33104-2-shameerali.kolothum.thodi@huawei.com>
+From: Ryan Roberts <ryan.roberts@arm.com>
+In-Reply-To: <20240222094923.33104-2-shameerali.kolothum.thodi@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Apr 19, 2024 at 05:55:58PM +0100, Robin Murphy wrote:
-> Hi All,
-> 
-> Building on top of the arch_setup_dma_ops() cleanup[1], the next step
-> down the chain is {acpi,of}_dma_configure()... There's plenty to do
-> here, but it may as well start with this fairly self-contained little
-> cleanup, pruning yet more redundancy and exposed API surface.
+Hi,
 
-Tested with QEMU: SMMUv3 DT/IORT, virtio-iommu builtin/module DT/VIOT arm64/x86
+I'm aiming to (slowly) get more involved with SMMU activities, although I'm sure
+it will take a while to get up to speed and provide useful input. It was
+suggested that this series would be a useful starting point to dip my toe in.
+Please bear with me while I ask stupid questions...
 
-Tested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
+On 22/02/2024 09:49, Shameer Kolothum wrote:
+> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > 
-> Thanks,
-> Robin.
+> If the SMMU supports it and the kernel was built with HTTU support,
+> Probe support for Hardware Translation Table Update (HTTU) which is
+> essentially to enable hardware update of access and dirty flags.
 > 
-> [1] https://lore.kernel.org/linux-iommu/cover.1713523152.git.robin.murphy@arm.com
+> Probe and set the smmu::features for Hardware Dirty and Hardware Access
+> bits. This is in preparation, to enable it on the context descriptors of
+> stage 1 format.
 > 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+
+Except for the nit (feel free to ignore it), LGTM!
+
+Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
+
+
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 32 +++++++++++++++++++++
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  5 ++++
+>  2 files changed, 37 insertions(+)
 > 
-> Robin Murphy (4):
->   iommu: Resolve fwspec ops automatically
->   ACPI: Retire acpi_iommu_fwspec_ops()
->   OF: Simplify of_iommu_configure()
->   iommu: Remove iommu_fwspec ops
-> 
->  drivers/acpi/arm64/iort.c             | 19 +++-------
->  drivers/acpi/scan.c                   | 38 +++++---------------
->  drivers/acpi/viot.c                   | 11 ++----
->  drivers/iommu/arm/arm-smmu/arm-smmu.c |  3 +-
->  drivers/iommu/iommu-priv.h            |  7 ++++
->  drivers/iommu/iommu.c                 | 20 +++++------
->  drivers/iommu/mtk_iommu_v1.c          |  2 +-
->  drivers/iommu/of_iommu.c              | 50 ++++++++++-----------------
->  drivers/iommu/tegra-smmu.c            |  2 +-
->  drivers/of/device.c                   | 30 ++++++----------
->  include/acpi/acpi_bus.h               |  3 +-
->  include/linux/iommu.h                 | 15 ++------
->  12 files changed, 66 insertions(+), 134 deletions(-)
-> 
-> -- 
-> 2.39.2.101.g768bb238c484.dirty
-> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 0606166a8781..bd30739e3588 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -4196,6 +4196,28 @@ static void arm_smmu_device_iidr_probe(struct arm_smmu_device *smmu)
+>  	}
+>  }
+>  
+> +static void arm_smmu_get_httu(struct arm_smmu_device *smmu, u32 reg)
+> +{
+> +	u32 fw_features = smmu->features & (ARM_SMMU_FEAT_HA | ARM_SMMU_FEAT_HD);
+> +	u32 features = 0;
+> +
+> +	switch (FIELD_GET(IDR0_HTTU, reg)) {
+> +	case IDR0_HTTU_ACCESS_DIRTY:
+> +		features |= ARM_SMMU_FEAT_HD;
+> +		fallthrough;
+> +	case IDR0_HTTU_ACCESS:
+> +		features |= ARM_SMMU_FEAT_HA;
+> +	}
+> +
+> +	if (smmu->dev->of_node)
+> +		smmu->features |= features;
+> +	else if (features != fw_features)
+> +		/* ACPI IORT sets the HTTU bits */
+> +		dev_warn(smmu->dev,
+> +			 "IDR0.HTTU overridden by FW configuration (0x%x)\n",
+> +			 fw_features);
+> +}
+> +
+>  static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+>  {
+>  	u32 reg;
+> @@ -4256,6 +4278,8 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+>  			smmu->features |= ARM_SMMU_FEAT_E2H;
+>  	}
+>  
+> +	arm_smmu_get_httu(smmu, reg);
+> +
+>  	/*
+>  	 * The coherency feature as set by FW is used in preference to the ID
+>  	 * register, but warn on mismatch.
+> @@ -4448,6 +4472,14 @@ static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
+>  	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
+>  		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+>  
+> +	switch (FIELD_GET(ACPI_IORT_SMMU_V3_HTTU_OVERRIDE, iort_smmu->flags)) {
+> +	case IDR0_HTTU_ACCESS_DIRTY:
+> +		smmu->features |= ARM_SMMU_FEAT_HD;
+> +		fallthrough;
+> +	case IDR0_HTTU_ACCESS:
+> +		smmu->features |= ARM_SMMU_FEAT_HA;
+> +	}
+> +
+>  	return 0;
+>  }
+>  #else
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> index 45bcd72fcda4..5e51a6c1d55f 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+> @@ -33,6 +33,9 @@
+>  #define IDR0_ASID16			(1 << 12)
+>  #define IDR0_ATS			(1 << 10)
+>  #define IDR0_HYP			(1 << 9)
+> +#define IDR0_HTTU			GENMASK(7, 6)
+> +#define IDR0_HTTU_ACCESS		1
+> +#define IDR0_HTTU_ACCESS_DIRTY		2
+>  #define IDR0_COHACC			(1 << 4)
+>  #define IDR0_TTF			GENMASK(3, 2)
+>  #define IDR0_TTF_AARCH64		2
+> @@ -668,6 +671,8 @@ struct arm_smmu_device {
+>  #define ARM_SMMU_FEAT_SVA		(1 << 17)
+>  #define ARM_SMMU_FEAT_E2H		(1 << 18)
+>  #define ARM_SMMU_FEAT_NESTING		(1 << 19)
+> +#define ARM_SMMU_FEAT_HA		(1 << 20)
+> +#define ARM_SMMU_FEAT_HD		(1 << 21)
+
+nit: HA and HD are a bit opaque, at least to me. I guess they are HW Access and
+HW Dirty? Perhaps ARM_SMMU_FEAT_HW_ACCESS and ARM_SMMU_FEAT_HW_DIRTY are more
+expressive?
+
+>  	u32				features;
+>  
+>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+
