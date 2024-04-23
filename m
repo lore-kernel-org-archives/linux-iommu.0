@@ -1,315 +1,186 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 81F2F13CAB3
-	for <iommu@lists.linux.dev>; Tue, 23 Apr 2024 16:27:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713889637; cv=none; b=G9k+69lDXZ0KMPcOGYUdcf0D0odNfN7Puhl5hiZeJbarMOComTSndW7ZG2M0avsjw7IrXk3y5XuPYCPPK5ZyKXVtdIJRt69dgy8cfghOKTkzMguS09GTQjwiyT9GZX1OPzmChXkOKBkSJqXwCD7GeVPoWterxrsThh3z2ut3gFQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713889637; c=relaxed/simple;
-	bh=1P6+lGyKF3YFfo+NFFCI+RhTKGD/GT3zF7bI5LUW5k8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=g3bgxqeTGbUj+ISSZJZ2JeKMui+B4Rug3eyXmGGrCvEFzpwFm8Q1nt5tXr9M3mCiUUbOQgb9NkQlX+vyVXgQZz0BxH5d/LqAWMXM+pBZn76FPaSbISc99Pox8de8Q4qvmtPYasI3rDmznSAXsaUQZIp49yVkmudLm6kJBM6+GWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AD27D339;
-	Tue, 23 Apr 2024 09:27:42 -0700 (PDT)
-Received: from [10.57.74.127] (unknown [10.57.74.127])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CE6CE3F7BD;
-	Tue, 23 Apr 2024 09:27:11 -0700 (PDT)
-Message-ID: <fa1968eb-9ad0-41a4-8259-6c500fc88521@arm.com>
-Date: Tue, 23 Apr 2024 17:27:09 +0100
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1nam02on2072.outbound.protection.outlook.com [40.107.96.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 871B613CA9F
+	for <iommu@lists.linux.dev>; Tue, 23 Apr 2024 16:40:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.96.72
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713890402; cv=fail; b=ClheSbApxp5grkHraNFzMvy1VF5S1uNff3RNQtuF36R/WOIUuS0FQVlqWW7RTHzAKsGy4qi21Fb57fFR/WisrJkSAcF4cTbREHxqKhC2V7eR5f2/BNsSoINJ3nsizJkw0WgR1IwENs9736D7A6ZDlb6quQpC7Pl69s7l8QvuqNU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713890402; c=relaxed/simple;
+	bh=qE42qxYOq9XdoXT+kFpEQH/Xvb8xKlQNF4kGG5ZK8Do=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=qwDfLsvu+siSH4aKaYQLS16ms7U+A9Kbgzymzbvy+jKKmxFMxijICH5zdJfEMsLcPGSb7sxB9B7Vp2FpiKHNJUUK1hqM+pSarG/nl9qR1TyklmIV1WD51G+Wrd3W5Zqh1lCPBlXzaOymBXCbuilBm91hAHXf9W/v4lFekuRyAQ0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=NxH1jpgS; arc=fail smtp.client-ip=40.107.96.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NxH1jpgS"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FYpaZ7ghUxolVPuCzAKC8IFty8vl/QxDxeUgivuYeHNAIe3CfgBy2hIDGCEskAlG4jqygNZ0/vMt89hSmbg69RhcwTMO74OOBHyuGNM7tKojW7j4QkEtli4ltgHsUPgZTopppEngc+EsTDIdiEJ+sIGbBYnqEqw5ZfZAOflgRB0HYbeCAWwJ/9qdg+ttxBoc7ChZcC2jbAWfCxsXDk0C5KIywYmdNuIzrORjfi55J5BlI+UxxcWQgGMNR94Y0omb7OOrBFaAIOs+M4vu2VvxaNzy890B5S8sZRPAkOBTCt8FWcFC35530ytodtUaGAc4TPpLzSxyoed+EJL5YWE1BA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fniDksOy4/4wfTprQX6phnVZAgWZJ/Zsug2Id3dZYLU=;
+ b=f0VFBdDqyPXjMF1l7fJVqbCmJEnWr5ChCSfZGq6uBK9jgwx+bPJh6+7padbgFwEYQYZftfMzUW2RwQer+xGxwsNPbDPL1cuzYmu88k7ek9jwaGFfZH56q0Nj3pmfmYU4TMznXzgjV/uqV25Yc5UhYdzB0IRVs8AUppWyC8GETc7uKlW6jWZI4OUZEt3dqi0DzhMBqaboiWagD6X33+vPb2IBGf0LRvStpsrRXHHOWlYKovUsHVTfoJDtO2hpSmvDNgyPEKZwmsIY/YLW+SO+BXSm382xwq+R8vTKibAWpHb1jh+8dJMoLMIR55h/gJwecKdSmEJQmdvSVpYwq5YmZg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fniDksOy4/4wfTprQX6phnVZAgWZJ/Zsug2Id3dZYLU=;
+ b=NxH1jpgSWJI8JH+JgwE+p0kf3zpWgtvPOKPxjGWJbf8hlGqvXPp0sctE6Kmr6HR3ly5sV4p3QI8XUPYhLjL+FRwi7RjmEZEivTNBcHKURxL5tutoQnZRYhJN/wgryN2XX7qflbCZ11dQsW/AUvdoc1RuSwcG+J5ED0rgBG8VXILeaCYjGEBxcmiBZjPXSfHCH4gVKh0dq2dznYOqPL7o5/HzZdqV2+mv5xeLVcXXk/B4ATSWMM2p4GDaTtT6G+gIEAxscW+3bjmJ3aexIEIo8UhWpuAO0xNcjlCJjCSGvp/5AbyGzKCCwdjqib/Rq/XTVeiHPRyW+OETMHfIqjsUDQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by IA1PR12MB8238.namprd12.prod.outlook.com (2603:10b6:208:3f9::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.44; Tue, 23 Apr
+ 2024 16:39:56 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7519.021; Tue, 23 Apr 2024
+ 16:39:56 +0000
+Date: Tue, 23 Apr 2024 13:39:54 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Ryan Roberts <ryan.roberts@arm.com>
+Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
+	joro@8bytes.org, kevin.tian@intel.com, nicolinc@nvidia.com,
+	mshavit@google.com, robin.murphy@arm.com, will@kernel.org,
+	joao.m.martins@oracle.com, jiangkunkun@huawei.com,
+	zhukeqian1@huawei.com, linuxarm@huawei.com
+Subject: Re: [PATCH v2 3/4] iommu/arm-smmu-v3: Add support for dirty tracking
+ in domain alloc
+Message-ID: <20240423163954.GA941030@nvidia.com>
+References: <20240222094923.33104-1-shameerali.kolothum.thodi@huawei.com>
+ <20240222094923.33104-4-shameerali.kolothum.thodi@huawei.com>
+ <fa1968eb-9ad0-41a4-8259-6c500fc88521@arm.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fa1968eb-9ad0-41a4-8259-6c500fc88521@arm.com>
+X-ClientProxiedBy: SN7PR04CA0088.namprd04.prod.outlook.com
+ (2603:10b6:806:121::33) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/4] iommu/arm-smmu-v3: Add support for dirty tracking
- in domain alloc
-Content-Language: en-GB
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org
-Cc: joro@8bytes.org, jgg@nvidia.com, kevin.tian@intel.com,
- nicolinc@nvidia.com, mshavit@google.com, robin.murphy@arm.com,
- will@kernel.org, joao.m.martins@oracle.com, jiangkunkun@huawei.com,
- zhukeqian1@huawei.com, linuxarm@huawei.com
-References: <20240222094923.33104-1-shameerali.kolothum.thodi@huawei.com>
- <20240222094923.33104-4-shameerali.kolothum.thodi@huawei.com>
-From: Ryan Roberts <ryan.roberts@arm.com>
-In-Reply-To: <20240222094923.33104-4-shameerali.kolothum.thodi@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|IA1PR12MB8238:EE_
+X-MS-Office365-Filtering-Correlation-Id: ebcfdd7d-e2b8-4ab0-5075-08dc63b4024f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?C+44URMtWHhCPB2ySu5tftU9x2W6+KMh7vg+AhXOyp9ooSUBVgaXYJ7UMH29?=
+ =?us-ascii?Q?kkjm8zObDGjPc+I5T6KzeXIP7vGdpv+3koGeD8xhSa7qt4AjyPe3o3c8A+sc?=
+ =?us-ascii?Q?9WcdY+3Cm1HnZRZj9jAQZtTAG4KVveqaSr+S3Q4MMc6ZuLXbei2lpZ8Q+K6G?=
+ =?us-ascii?Q?uMmXxbkVhSjR0+YI1ojCIVtg0yaKLcUGgslsN6FGaJVxOa5Ur1OPAkktUiq/?=
+ =?us-ascii?Q?R26CE17jBp6wHyYCfNWoQ5Ij2wmD+IB67apzHJQMppAPuDRjAz8kmIaKsiVU?=
+ =?us-ascii?Q?5Mb6yNXVrF3gqOmM+CIkqgs4R+taQvmG6C4Y6wGtrFE1jKIZr2q5i4/gY+N9?=
+ =?us-ascii?Q?K/d7slhKdew93HSG5rXGyobC5An3vV+LWGSq6kClyeKwjXplgTivFCFko6bU?=
+ =?us-ascii?Q?IMGUuSieAA96YzuRexOuyR8Tw5A4Up8iehvcEWjEbc7nFdc6AmaveTeJ3IBL?=
+ =?us-ascii?Q?Z/pH5K6vNRp4MqQh3mZiOMp4w2+oxNyZn2SI1eUtgyvcUZWzzaTQmcYj4wHr?=
+ =?us-ascii?Q?fuGJWwZ+5W8ucgKZ9qVjGPPgnwzCrQgxJeelS8AMErXF8QmkGFuMSKRyucwD?=
+ =?us-ascii?Q?yOmbWVvL8GG13BG7aoNcLpSwxI5neSeSAcYbBP64aUqOfwu2/hraqt19KmxP?=
+ =?us-ascii?Q?cY3kdUdxbCfB0BGgh5RyQoUN8whJLO6YpzweShnll16bCGKjXympnQUqm9ZS?=
+ =?us-ascii?Q?CBTvTU8yK2t2wMzwuGjw6ecetJFqhemYdbWK8jw57AwLQV/rbMAeis9mDKwI?=
+ =?us-ascii?Q?SdlfeDLaz28joWr01gA55A04zhsixRrdJ3ZPOF8WDX46VhDhiSYAtt53WnEc?=
+ =?us-ascii?Q?tCCxPT/pPbiUd1zTbxdFYhaj4tYsKdDc7JbSnYIAsGRAQb0nD7EzEEKQL85u?=
+ =?us-ascii?Q?BUf+PWiJTVTbczdd0oTOp64nQjnUoH0gQjR0qnf5imJg9ypiJn0p88j1Rb3+?=
+ =?us-ascii?Q?6j8XwqPTrfaSrMbfiq43y24dPLSt3VJn76g7eoeaz/im8DdoAJBVwRsnaQR5?=
+ =?us-ascii?Q?M3BRZc71RXfpa1gD/cc+zCulaFbFgyTajYmoKin1Xbb+Z7vdqWVj3qdtHWhb?=
+ =?us-ascii?Q?6bfmC74kDjkbOjVrR8ubDqZ/p+gvwYrlb0IHle0ZQstzb3aOnZUirKFOjER5?=
+ =?us-ascii?Q?sj+JVGS+pbot+0It5oewD2cwusBh48Lxa3PywUPJgZ1q9uO6+nBf9+BdSElA?=
+ =?us-ascii?Q?prdsNb7StTZpreBFUXvF9+6szx/ofQXp4pJJ5JPp9O0Am4GVJrkwK4LU+nqI?=
+ =?us-ascii?Q?iO8ii1xqfRGbB8uuytqF9nik/F/VtX51RWl1dLfKtQ=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(7416005)(366007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?n2UasNozjvFLluCUUFWgsaseKkeBEwNfL+jb+i2/VHaymGMRBzXwqxRVqpl2?=
+ =?us-ascii?Q?8gCnDorfJlL5M8tmCDe5ET9hGc/pS7ndPtRtB6NfOI2pfzFgCpu0gfrof++U?=
+ =?us-ascii?Q?n4/v5ZvJxd5ycbOVpxOjxGUhcWC9s56UWqYSZP3YQj+aXNGv+K5RLVjsy/RP?=
+ =?us-ascii?Q?G3v9hjwN8Os7uEmKIfQGZUlabiJnbi2Sf8krxvyAbIKalap01+fkf1jCTNcK?=
+ =?us-ascii?Q?HlZP39/6nejzdkNN9eBQ8k71k41nZDCwGXB3PbNmIpsUSuIrBAxJP8Ikazxa?=
+ =?us-ascii?Q?YQ46EwW7aWvyJ5mL0IEelxagVVSAG+wjZzpEbA5eCEnKggSkzEnMc/h7NvMX?=
+ =?us-ascii?Q?a2tm2wsQ04jyfzROrj/yomJiQypnpbT4e+hQqoYUp2U2MJbGuqYxxan1jBws?=
+ =?us-ascii?Q?TtAiTck6qdylXY3/mBOqID7qlMvvjuZKF7zTcWk3By9Rdek5dikwSSgvo3tY?=
+ =?us-ascii?Q?c04Mi4pCD9xxC/yZtwOIvdPfvX8buNIWamKAMhpTFQj4zUvkTkPZHodbPO4D?=
+ =?us-ascii?Q?swbVwJd/D3H6ZRL0r2Ufy7hRyIYeFADULf2S9MA8Hyn0DS2ik7xpNuk8NbTq?=
+ =?us-ascii?Q?1H8bMDzyK77C37gOr57tNScZqViTwtnwRew/6VzxMD8ncYGFUtb7mszK0L8I?=
+ =?us-ascii?Q?vxb+bKJQj7gyTeRFOOCG+fW8Hz01BOu23EfRln60z5Av06W3rEHG2ZBgarQX?=
+ =?us-ascii?Q?LPtX7wWt2L95ftk+AGO5TsR4ssmzUctyEDJ2mazOxjmR6wdW/CX0bHYCLNxA?=
+ =?us-ascii?Q?qEv+HfAwa6iwxmvhb36UiZh0ct/Y0X4SncaCYwvVEwbmVWLoKjyKDSB5Qx5R?=
+ =?us-ascii?Q?UnN74SAMiz4iUN4ZwOstCuRvqySqPHW2G2UG3of1x63YzqgM2dD3pC0j12Wx?=
+ =?us-ascii?Q?r9WSOhh7x6kWiaklAKdBBZYIP7oxHSFp2UokzziamRr3229fTXGhkaplCpAW?=
+ =?us-ascii?Q?lUbUglzq22OoYyLtu0jiEkGrR6/8WmOHm5xiEnqCBb5WM6Fm3H+dJDVOwbd3?=
+ =?us-ascii?Q?Cpk39Nr7q6MEUltSTlC84mKaWb8kWz9gERVoF1qpPUjGCEGZ9+H6tdiO8eAi?=
+ =?us-ascii?Q?/WFYFOj6c9YaMwTnG6IfYHlKe0KVAOVbvHpkY3NgP/FT4kxPin9Vbimm9LT5?=
+ =?us-ascii?Q?L1KCyFDlkh+wrUBRIg/ZjnI+6VF0YHuQW8asbuI1KcKiAOFBqSbs+AjY4qXf?=
+ =?us-ascii?Q?xOFJX/xrK8ow+eKCwsRshj894Ca10XX80MVkLAw9L/OQc+IMWxUVgjZXoTJz?=
+ =?us-ascii?Q?++u0QTrEme9YVeYyCUEzGSk3rFKUEbx/OJTtsw8lkNkFquTpURQvyBgdsqCa?=
+ =?us-ascii?Q?GShgiPlojuttXadgvAH4pPCtZ1vA0tCeqjfy6J4LLC9ZjlLd6mw6l4HfD+c0?=
+ =?us-ascii?Q?xtcWElQineUeUUnuC2kgkIKKcoiWulmeLfgb0FXXpmnYWb1jRoCvZ12kgRpG?=
+ =?us-ascii?Q?6Z5BwZDjTPIC06qvEzhihzStOg5Fe6Ny+4AoJRP128TLZRry8D8+VSAgWiQC?=
+ =?us-ascii?Q?PmvO3XrF9/l7LwEw7GC2lcCe0s6PjvubkcPYnvUYosri5+vni4omZUnhLA8l?=
+ =?us-ascii?Q?flqHxYIIwIHm7NnPINE=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ebcfdd7d-e2b8-4ab0-5075-08dc63b4024f
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2024 16:39:56.5215
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pbzHwBayrdTswASMhWcfKmK5pDKDK2D0U131BY1qbBgcbRaf4B4u56Jda44A7zri
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB8238
 
-On 22/02/2024 09:49, Shameer Kolothum wrote:
-> From: Joao Martins <joao.m.martins@oracle.com>
+On Tue, Apr 23, 2024 at 05:27:09PM +0100, Ryan Roberts wrote:
+
+> >  	switch (smmu_domain->stage) {
+> >  	case ARM_SMMU_DOMAIN_S1:
+> >  		ias = (smmu->features & ARM_SMMU_FEAT_VAX) ? 52 : 48;
+> > -		ias = min_t(unsigned long, ias, VA_BITS);
+> > -		oas = smmu->ias;
+> > +		pgtbl_cfg.ias = min_t(unsigned long, ias, VA_BITS);
 > 
-> This provides all the infrastructure to enable dirty tracking if the
-> hardware has the capability and domain alloc request for it.
+> I know this isn't changed by this patch, but do we really mean VA_BITS here?
+> Don't we want vabits_actual? I'm guessing we are intending to limit ias to the
+> size the kernel is using.
+
+I think the intention here is to allow CONFIG_ARM64_VA_BITS to choose
+the number of page table levels in the iommu. Perhaps a SMMU specific
+config option would be clearer.
+
+There is no relationship to the configuration of the S1 paging domain
+and what the MM is doing, there should be no crossing between those
+two worlds.
+
+vabits_actual is used in the SVA code to match the SMMU SVA S1 to the
+mm_struct.
+
+> > @@ -3206,6 +3212,10 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
+> >  	if (user_data)
+> >  		return ERR_PTR(-EINVAL);
+> >  
+> > +	if (enforce_dirty &&
+> > +	    !device_iommu_capable(dev, IOMMU_CAP_DIRTY_TRACKING))
+> > +		return ERR_PTR(-EOPNOTSUPP);
 > 
-> Please note, we still report no support for IOMMU_CAP_DIRTY_TRACKING
-> as it will finally be enabled in a subsequent patch.
-> 
-> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
-> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 95 ++++++++++++++++-----
->  include/linux/io-pgtable.h                  |  4 +
->  2 files changed, 77 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index bd30739e3588..058bbb0dbe2e 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -43,6 +43,7 @@ MODULE_PARM_DESC(disable_msipolling,
->  	"Disable MSI-based polling for CMD_SYNC completion.");
->  
->  static struct iommu_ops arm_smmu_ops;
-> +static struct iommu_dirty_ops arm_smmu_dirty_ops;
->  
->  enum arm_smmu_msi_index {
->  	EVTQ_MSI_INDEX,
-> @@ -86,7 +87,8 @@ static struct arm_smmu_option_prop arm_smmu_options[] = {
->  
->  static void arm_smmu_rmr_install_bypass_ste(struct arm_smmu_device *smmu);
->  static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
-> -				    struct arm_smmu_device *smmu);
-> +				    struct arm_smmu_device *smmu,
-> +				    bool enable_dirty);
->  static int arm_smmu_alloc_cd_tables(struct arm_smmu_master *master);
->  static void arm_smmu_tlb_inv_all_s2(struct arm_smmu_domain *smmu_domain);
->  
-> @@ -2378,7 +2380,7 @@ static struct iommu_domain *arm_smmu_domain_alloc_paging(struct device *dev)
->  		struct arm_smmu_master *master = dev_iommu_priv_get(dev);
->  		int ret;
->  
-> -		ret = arm_smmu_domain_finalise(smmu_domain, master->smmu);
-> +		ret = arm_smmu_domain_finalise(smmu_domain, master->smmu, false);
->  		if (ret) {
->  			kfree(smmu_domain);
->  			return ERR_PTR(ret);
-> @@ -2445,10 +2447,11 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
->  }
->  
->  static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
-> -				    struct arm_smmu_device *smmu)
-> +				    struct arm_smmu_device *smmu,
-> +				    bool enable_dirty)
->  {
->  	int ret;
-> -	unsigned long ias, oas;
-> +	unsigned long ias;
->  	enum io_pgtable_fmt fmt;
->  	struct io_pgtable_cfg pgtbl_cfg;
->  	struct io_pgtable_ops *pgtbl_ops;
-> @@ -2459,31 +2462,31 @@ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
->  	if (!(smmu->features & ARM_SMMU_FEAT_TRANS_S2))
->  		smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
->  
-> +	pgtbl_cfg = (struct io_pgtable_cfg) {
-> +		.pgsize_bitmap	= smmu->pgsize_bitmap,
-> +		.coherent_walk	= smmu->features & ARM_SMMU_FEAT_COHERENCY,
-> +		.tlb		= &arm_smmu_flush_ops,
-> +		.iommu_dev	= smmu->dev,
-> +	};
-> +
->  	switch (smmu_domain->stage) {
->  	case ARM_SMMU_DOMAIN_S1:
->  		ias = (smmu->features & ARM_SMMU_FEAT_VAX) ? 52 : 48;
-> -		ias = min_t(unsigned long, ias, VA_BITS);
-> -		oas = smmu->ias;
-> +		pgtbl_cfg.ias = min_t(unsigned long, ias, VA_BITS);
+> I'm guessing the intention is that only a stage 1 will ever be marked with
+> IOMMU_CAP_DIRTY_TRACKING (there are a few places that assume/check we are
+> dealing with S1)? But is there a reason why stage 2 can't be supported as well?
 
-I know this isn't changed by this patch, but do we really mean VA_BITS here?
-Don't we want vabits_actual? I'm guessing we are intending to limit ias to the
-size the kernel is using.
+Stage 2 really should ultimately be supported..
 
-> +		pgtbl_cfg.oas = smmu->ias;
-> +		if (enable_dirty)
-> +			pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_ARM_HD;
->  		fmt = ARM_64_LPAE_S1;
->  		break;
->  	case ARM_SMMU_DOMAIN_S2:
-> -		ias = smmu->ias;
-> -		oas = smmu->oas;
-> +		pgtbl_cfg.ias = smmu->ias;
-> +		pgtbl_cfg.oas = smmu->oas;
->  		fmt = ARM_64_LPAE_S2;
+I'd say this is a first step as iommufd will naturally prefer the S1
+configuration when not using nesting. After the nesting support is
+merged the vSMMU will require the S2 to do the dirty tracking.
 
-Is it worth adding a WARN_ON(enable_dirty) here?
-
->  		break;
->  	default:
->  		return -EINVAL;
->  	}
->  
-> -	pgtbl_cfg = (struct io_pgtable_cfg) {
-> -		.pgsize_bitmap	= smmu->pgsize_bitmap,
-> -		.ias		= ias,
-> -		.oas		= oas,
-> -		.coherent_walk	= smmu->features & ARM_SMMU_FEAT_COHERENCY,
-> -		.tlb		= &arm_smmu_flush_ops,
-> -		.iommu_dev	= smmu->dev,
-> -	};
-> -
->  	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
->  	if (!pgtbl_ops)
->  		return -ENOMEM;
-> @@ -2491,7 +2494,8 @@ static int arm_smmu_domain_finalise(struct arm_smmu_domain *smmu_domain,
->  	smmu_domain->domain.pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
->  	smmu_domain->domain.geometry.aperture_end = (1UL << pgtbl_cfg.ias) - 1;
->  	smmu_domain->domain.geometry.force_aperture = true;
-> -
-> +	if (enable_dirty && smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
-> +		smmu_domain->domain.dirty_ops = &arm_smmu_dirty_ops;
->  	ret = arm_smmu_domain_alloc_id(smmu, smmu_domain);
->  	if (ret < 0) {
->  		free_io_pgtable_ops(pgtbl_ops);
-> @@ -2811,7 +2815,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  	mutex_lock(&smmu_domain->init_mutex);
->  
->  	if (!smmu_domain->smmu) {
-> -		ret = arm_smmu_domain_finalise(smmu_domain, smmu);
-> +		ret = arm_smmu_domain_finalise(smmu_domain, smmu, false);
->  	} else if (smmu_domain->smmu != smmu)
->  		ret = -EINVAL;
->  
-> @@ -2876,7 +2880,7 @@ static int arm_smmu_s1_set_dev_pasid(struct iommu_domain *domain,
->  
->  	mutex_lock(&smmu_domain->init_mutex);
->  	if (!smmu_domain->smmu)
-> -		ret = arm_smmu_domain_finalise(smmu_domain, smmu);
-> +		ret = arm_smmu_domain_finalise(smmu_domain, smmu, false);
->  	else if (smmu_domain->smmu != smmu)
->  		ret = -EINVAL;
->  	mutex_unlock(&smmu_domain->init_mutex);
-> @@ -3193,7 +3197,9 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
->  			   const struct iommu_user_data *user_data)
->  {
->  	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-> -	const u32 paging_flags = IOMMU_HWPT_ALLOC_NEST_PARENT;
-> +	const u32 paging_flags = IOMMU_HWPT_ALLOC_NEST_PARENT |
-> +				 IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
-> +	bool enforce_dirty = flags & IOMMU_HWPT_ALLOC_DIRTY_TRACKING;
-
-nit: It's called enable_dirty in other places; I think that is more appropriate
-here?
-
->  	struct arm_smmu_domain *smmu_domain;
->  	int ret;
->  
-> @@ -3206,6 +3212,10 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
->  	if (user_data)
->  		return ERR_PTR(-EINVAL);
->  
-> +	if (enforce_dirty &&
-> +	    !device_iommu_capable(dev, IOMMU_CAP_DIRTY_TRACKING))
-> +		return ERR_PTR(-EOPNOTSUPP);
-
-I'm guessing the intention is that only a stage 1 will ever be marked with
-IOMMU_CAP_DIRTY_TRACKING (there are a few places that assume/check we are
-dealing with S1)? But is there a reason why stage 2 can't be supported as well?
-
-> +
->  	smmu_domain = arm_smmu_domain_alloc();
->  	if (!smmu_domain)
->  		return ERR_PTR(-ENOMEM);
-> @@ -3221,7 +3231,7 @@ arm_smmu_domain_alloc_user(struct device *dev, u32 flags,
->  
->  	smmu_domain->domain.type = IOMMU_DOMAIN_UNMANAGED;
->  	smmu_domain->domain.ops = arm_smmu_ops.default_domain_ops;
-> -	ret = arm_smmu_domain_finalise(smmu_domain, master->smmu);
-> +	ret = arm_smmu_domain_finalise(smmu_domain, master->smmu, enforce_dirty);
->  	if (ret)
->  		goto err_free;
->  	return &smmu_domain->domain;
-> @@ -3470,6 +3480,42 @@ static void arm_smmu_release_device(struct device *dev)
->  	kfree(master);
->  }
->  
-> +static int arm_smmu_read_and_clear_dirty(struct iommu_domain *domain,
-> +					 unsigned long iova, size_t size,
-> +					 unsigned long flags,
-> +					 struct iommu_dirty_bitmap *dirty)
-> +{
-> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> +	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
-> +
-> +	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
-> +		return -EINVAL;
-
-You've only attached the dirty_ops if it was S1 in the first place, so this
-check seems overkill to me.
-
-> +
-> +	if (WARN_ON_ONCE(!ops || !ops->read_and_clear_dirty))
-> +		return -ENODEV;
-
-And here; could this be moved to where you attach the dirty_ops?
-
-> +
-> +	return ops->read_and_clear_dirty(ops, iova, size, flags, dirty);
-> +}
-> +
-> +static int arm_smmu_set_dirty_tracking(struct iommu_domain *domain,
-> +				       bool enabled)
-> +{
-> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> +	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
-> +
-> +	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
-> +		return -EINVAL;
-> +
-> +	if (WARN_ON_ONCE(!ops))
-> +		return -ENODEV;
-
-Same comments for the 2 checks.
-
-> +
-> +	/*
-> +	 * Always enabled and the dirty bitmap is cleared prior to
-> +	 * set_dirty_tracking().
-> +	 */
-> +	return 0;
-> +}
-> +
->  static struct iommu_group *arm_smmu_device_group(struct device *dev)
->  {
->  	struct iommu_group *group;
-> @@ -3612,6 +3658,11 @@ static struct iommu_ops arm_smmu_ops = {
->  	}
->  };
->  
-> +static struct iommu_dirty_ops arm_smmu_dirty_ops = {
-> +	.read_and_clear_dirty	= arm_smmu_read_and_clear_dirty,
-> +	.set_dirty_tracking     = arm_smmu_set_dirty_tracking,
-> +};
-> +
->  /* Probing and initialisation functions */
->  static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
->  				   struct arm_smmu_queue *q,
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index 86cf1f7ae389..8e75f944f07a 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -85,6 +85,8 @@ struct io_pgtable_cfg {
->  	 *
->  	 * IO_PGTABLE_QUIRK_ARM_OUTER_WBWA: Override the outer-cacheability
->  	 *	attributes set in the TCR for a non-coherent page-table walker.
-> +	 *
-> +	 * IO_PGTABLE_QUIRK_ARM_HD: Enables dirty tracking in stage 1 pagetable.
->  	 */
->  	#define IO_PGTABLE_QUIRK_ARM_NS			BIT(0)
->  	#define IO_PGTABLE_QUIRK_NO_PERMS		BIT(1)
-> @@ -92,6 +94,8 @@ struct io_pgtable_cfg {
->  	#define IO_PGTABLE_QUIRK_ARM_MTK_TTBR_EXT	BIT(4)
->  	#define IO_PGTABLE_QUIRK_ARM_TTBR1		BIT(5)
->  	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA		BIT(6)
-> +	#define IO_PGTABLE_QUIRK_ARM_HD			BIT(7)
-> +
->  	unsigned long			quirks;
->  	unsigned long			pgsize_bitmap;
->  	unsigned int			ias;
-
+Jason
