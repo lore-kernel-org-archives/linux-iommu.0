@@ -1,238 +1,224 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E59D158851
-	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 08:27:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id D31EE158A1D
+	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 08:28:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713947253; cv=none; b=tfD0rLuJjf70gG9dgIR+VgZXhdOOir86/9s4oCn4XSF/1Quve+p2Yr1oEI6I/9gjpNSRFNl12tHq8BC3PdTjn2oh2nzs1mgcRZVpC6XgdaljZqOf/Weq/TXo6AYo+r01NgwTGgP/2CIhYfqgRWkQ4HZab+qmKTCVmuhP2CwsVJA=
+	t=1713947332; cv=none; b=O177fcKr/WoyLNKF+RjfCv++SYJBS+g8yJoF8S4JYin/clO8DO43/U0DBr2ViP7krjqdfrbn8Pv6/BLHODodc9Jy6nClNcXSlAChB08YqgjKsxHvUwiML7wcEK/mKh5tcM6qL3Lyw3UInTSxEFUgJx3AibqRcVqoBFguvNo365w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713947253; c=relaxed/simple;
-	bh=Mvf8UK8bX8nIPxFJ7fwk7p9KFQRX67WWJCCMMZDDz+E=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=p925TkuR36h3OtM12/RL7GvtwMRWh391eZPZ714keUqoJiPyT/jmNUEMNS6RSoq9AFoXYuSlXD/paoVpivFL6XE5YVhBsVROI1I3NsJcrInC1hX4CFFOMVjH3xTlqisp7ZIqDxDjsntx0VpPdoPq8hpEgd26BxACRg/8CbMVtq0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.216])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4VPXCj0pFcz6H771;
-	Wed, 24 Apr 2024 16:27:13 +0800 (CST)
-Received: from lhrpeml500002.china.huawei.com (unknown [7.191.160.78])
-	by mail.maildlp.com (Postfix) with ESMTPS id EF844140B35;
-	Wed, 24 Apr 2024 16:27:21 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- lhrpeml500002.china.huawei.com (7.191.160.78) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Wed, 24 Apr 2024 09:27:21 +0100
-Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
- lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
- Wed, 24 Apr 2024 09:27:21 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Ryan Roberts <ryan.roberts@arm.com>, Shameerali Kolothum Thodi
-	<shameerali.kolothum.thodi@huawei.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>
-CC: "joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>,
-	"kevin.tian@intel.com" <kevin.tian@intel.com>, "nicolinc@nvidia.com"
-	<nicolinc@nvidia.com>, "mshavit@google.com" <mshavit@google.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "will@kernel.org"
-	<will@kernel.org>, "joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
-	jiangkunkun <jiangkunkun@huawei.com>, zhukeqian <zhukeqian1@huawei.com>
-Subject: RE: [PATCH v2 3/4] iommu/arm-smmu-v3: Add support for dirty tracking
- in domain alloc
-Thread-Topic: [PATCH v2 3/4] iommu/arm-smmu-v3: Add support for dirty tracking
- in domain alloc
-Thread-Index: AQHaZXTSExgSw/uTxUa44V9Mknrnh7F2Wn+AgAEMRnA=
-Date: Wed, 24 Apr 2024 08:27:21 +0000
-Message-ID: <8a6d8f0478fb4fe69d84c85a530bafe2@huawei.com>
-References: <20240222094923.33104-1-shameerali.kolothum.thodi@huawei.com>
- <20240222094923.33104-4-shameerali.kolothum.thodi@huawei.com>
- <fa1968eb-9ad0-41a4-8259-6c500fc88521@arm.com>
-In-Reply-To: <fa1968eb-9ad0-41a4-8259-6c500fc88521@arm.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	s=arc-20240116; t=1713947332; c=relaxed/simple;
+	bh=JNv9pl9+UGomYqsY+qP5irpic8Ub4gCerU17i7pMhbs=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lk5slC9+ouKLqWUPcs5ZzHI6mWrRI+pmL2bJ8DYn4cXCXRAaIZKnQMjdPaA/KxztcVNL0qYOG2y1e1d1rRsteZE+qNLwqzFAwfSaH7EXZdCd/JMnvC4jdhbk9ZFnB4/kSEmBoqbKKYzjEUnWAAaqGcES6BdTs56shOK6RlFJdNo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BA21B339;
+	Wed, 24 Apr 2024 01:29:17 -0700 (PDT)
+Received: from [10.57.74.127] (unknown [10.57.74.127])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2FB513F64C;
+	Wed, 24 Apr 2024 01:28:48 -0700 (PDT)
+Message-ID: <fd3fa848-01f6-4d12-952d-78c953ce891d@arm.com>
+Date: Wed, 24 Apr 2024 09:28:46 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/4] iommu/arm-smmu-v3: Add feature detection for HTTU
+Content-Language: en-GB
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: "joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>,
+ "kevin.tian@intel.com" <kevin.tian@intel.com>,
+ "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+ "mshavit@google.com" <mshavit@google.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "will@kernel.org" <will@kernel.org>,
+ "joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
+ jiangkunkun <jiangkunkun@huawei.com>, zhukeqian <zhukeqian1@huawei.com>,
+ Linuxarm <linuxarm@huawei.com>
+References: <20240222094923.33104-1-shameerali.kolothum.thodi@huawei.com>
+ <20240222094923.33104-2-shameerali.kolothum.thodi@huawei.com>
+ <3733929c-657e-4d24-b5e9-a5d946645abe@arm.com>
+ <fa8707bed7ed45a2b3fdc831b356909c@huawei.com>
+From: Ryan Roberts <ryan.roberts@arm.com>
+In-Reply-To: <fa8707bed7ed45a2b3fdc831b356909c@huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUnlhbiBSb2JlcnRzIDxy
-eWFuLnJvYmVydHNAYXJtLmNvbT4NCj4gU2VudDogVHVlc2RheSwgQXByaWwgMjMsIDIwMjQgNToy
-NyBQTQ0KPiBUbzogU2hhbWVlciBLb2xvdGh1bSA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9kaUBo
-dWF3ZWkuY29tPjsNCj4gaW9tbXVAbGlzdHMubGludXguZGV2OyBsaW51eC1hcm0ta2VybmVsQGxp
-c3RzLmluZnJhZGVhZC5vcmcNCj4gQ2M6IGpvcm9AOGJ5dGVzLm9yZzsgamdnQG52aWRpYS5jb207
-IGtldmluLnRpYW5AaW50ZWwuY29tOw0KPiBuaWNvbGluY0BudmlkaWEuY29tOyBtc2hhdml0QGdv
-b2dsZS5jb207IHJvYmluLm11cnBoeUBhcm0uY29tOw0KPiB3aWxsQGtlcm5lbC5vcmc7IGpvYW8u
-bS5tYXJ0aW5zQG9yYWNsZS5jb207IGppYW5na3Vua3VuQGh1YXdlaS5jb207DQo+IHpodWtlcWlh
-bjFAaHVhd2VpLmNvbTsgbGludXhhcm1AaHVhd2VpLmNvbQ0KPiBTdWJqZWN0OiBSZTogW1BBVENI
-IHYyIDMvNF0gaW9tbXUvYXJtLXNtbXUtdjM6IEFkZCBzdXBwb3J0IGZvciBkaXJ0eSB0cmFja2lu
-Zw0KPiBpbiBkb21haW4gYWxsb2MNCj4gDQo+IE9uIDIyLzAyLzIwMjQgMDk6NDksIFNoYW1lZXIg
-S29sb3RodW0gd3JvdGU6DQo+ID4gRnJvbTogSm9hbyBNYXJ0aW5zIDxqb2FvLm0ubWFydGluc0Bv
-cmFjbGUuY29tPg0KPiA+DQo+ID4gVGhpcyBwcm92aWRlcyBhbGwgdGhlIGluZnJhc3RydWN0dXJl
-IHRvIGVuYWJsZSBkaXJ0eSB0cmFja2luZyBpZiB0aGUNCj4gPiBoYXJkd2FyZSBoYXMgdGhlIGNh
-cGFiaWxpdHkgYW5kIGRvbWFpbiBhbGxvYyByZXF1ZXN0IGZvciBpdC4NCj4gPg0KPiA+IFBsZWFz
-ZSBub3RlLCB3ZSBzdGlsbCByZXBvcnQgbm8gc3VwcG9ydCBmb3IgSU9NTVVfQ0FQX0RJUlRZX1RS
-QUNLSU5HDQo+ID4gYXMgaXQgd2lsbCBmaW5hbGx5IGJlIGVuYWJsZWQgaW4gYSBzdWJzZXF1ZW50
-IHBhdGNoLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogSm9hbyBNYXJ0aW5zIDxqb2FvLm0ubWFy
-dGluc0BvcmFjbGUuY29tPg0KPiA+IFNpZ25lZC1vZmYtYnk6IFNoYW1lZXIgS29sb3RodW0gPHNo
-YW1lZXJhbGkua29sb3RodW0udGhvZGlAaHVhd2VpLmNvbT4NCj4gPiAtLS0NCj4gPiAgZHJpdmVy
-cy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYyB8IDk1ICsrKysrKysrKysrKysr
-KystLQ0KPiAtLS0NCj4gPiAgaW5jbHVkZS9saW51eC9pby1wZ3RhYmxlLmggICAgICAgICAgICAg
-ICAgICB8ICA0ICsNCj4gPiAgMiBmaWxlcyBjaGFuZ2VkLCA3NyBpbnNlcnRpb25zKCspLCAyMiBk
-ZWxldGlvbnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS9hcm0t
-c21tdS12My9hcm0tc21tdS12My5jDQo+IGIvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMv
-YXJtLXNtbXUtdjMuYw0KPiA+IGluZGV4IGJkMzA3MzllMzU4OC4uMDU4YmJiMGRiZTJlIDEwMDY0
-NA0KPiA+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMN
-Cj4gPiArKysgYi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5jDQo+
-ID4gQEAgLTQzLDYgKzQzLDcgQEAgTU9EVUxFX1BBUk1fREVTQyhkaXNhYmxlX21zaXBvbGxpbmcs
-DQo+ID4gIAkiRGlzYWJsZSBNU0ktYmFzZWQgcG9sbGluZyBmb3IgQ01EX1NZTkMgY29tcGxldGlv
-bi4iKTsNCj4gPg0KPiA+ICBzdGF0aWMgc3RydWN0IGlvbW11X29wcyBhcm1fc21tdV9vcHM7DQo+
-ID4gK3N0YXRpYyBzdHJ1Y3QgaW9tbXVfZGlydHlfb3BzIGFybV9zbW11X2RpcnR5X29wczsNCj4g
-Pg0KPiA+ICBlbnVtIGFybV9zbW11X21zaV9pbmRleCB7DQo+ID4gIAlFVlRRX01TSV9JTkRFWCwN
-Cj4gPiBAQCAtODYsNyArODcsOCBAQCBzdGF0aWMgc3RydWN0IGFybV9zbW11X29wdGlvbl9wcm9w
-DQo+IGFybV9zbW11X29wdGlvbnNbXSA9IHsNCj4gPg0KPiA+ICBzdGF0aWMgdm9pZCBhcm1fc21t
-dV9ybXJfaW5zdGFsbF9ieXBhc3Nfc3RlKHN0cnVjdCBhcm1fc21tdV9kZXZpY2UNCj4gKnNtbXUp
-Ow0KPiA+ICBzdGF0aWMgaW50IGFybV9zbW11X2RvbWFpbl9maW5hbGlzZShzdHJ1Y3QgYXJtX3Nt
-bXVfZG9tYWluDQo+ICpzbW11X2RvbWFpbiwNCj4gPiAtCQkJCSAgICBzdHJ1Y3QgYXJtX3NtbXVf
-ZGV2aWNlICpzbW11KTsNCj4gPiArCQkJCSAgICBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11
-LA0KPiA+ICsJCQkJICAgIGJvb2wgZW5hYmxlX2RpcnR5KTsNCj4gPiAgc3RhdGljIGludCBhcm1f
-c21tdV9hbGxvY19jZF90YWJsZXMoc3RydWN0IGFybV9zbW11X21hc3RlciAqbWFzdGVyKTsNCj4g
-PiAgc3RhdGljIHZvaWQgYXJtX3NtbXVfdGxiX2ludl9hbGxfczIoc3RydWN0IGFybV9zbW11X2Rv
-bWFpbg0KPiAqc21tdV9kb21haW4pOw0KPiA+DQo+ID4gQEAgLTIzNzgsNyArMjM4MCw3IEBAIHN0
-YXRpYyBzdHJ1Y3QgaW9tbXVfZG9tYWluDQo+ICphcm1fc21tdV9kb21haW5fYWxsb2NfcGFnaW5n
-KHN0cnVjdCBkZXZpY2UgKmRldikNCj4gPiAgCQlzdHJ1Y3QgYXJtX3NtbXVfbWFzdGVyICptYXN0
-ZXIgPSBkZXZfaW9tbXVfcHJpdl9nZXQoZGV2KTsNCj4gPiAgCQlpbnQgcmV0Ow0KPiA+DQo+ID4g
-LQkJcmV0ID0gYXJtX3NtbXVfZG9tYWluX2ZpbmFsaXNlKHNtbXVfZG9tYWluLCBtYXN0ZXItDQo+
-ID5zbW11KTsNCj4gPiArCQlyZXQgPSBhcm1fc21tdV9kb21haW5fZmluYWxpc2Uoc21tdV9kb21h
-aW4sIG1hc3Rlci0NCj4gPnNtbXUsIGZhbHNlKTsNCj4gPiAgCQlpZiAocmV0KSB7DQo+ID4gIAkJ
-CWtmcmVlKHNtbXVfZG9tYWluKTsNCj4gPiAgCQkJcmV0dXJuIEVSUl9QVFIocmV0KTsNCj4gPiBA
-QCAtMjQ0NSwxMCArMjQ0NywxMSBAQCBzdGF0aWMgdm9pZCBhcm1fc21tdV9kb21haW5fZnJlZShz
-dHJ1Y3QNCj4gaW9tbXVfZG9tYWluICpkb21haW4pDQo+ID4gIH0NCj4gPg0KPiA+ICBzdGF0aWMg
-aW50IGFybV9zbW11X2RvbWFpbl9maW5hbGlzZShzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluDQo+ICpz
-bW11X2RvbWFpbiwNCj4gPiAtCQkJCSAgICBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11KQ0K
-PiA+ICsJCQkJICAgIHN0cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNtbXUsDQo+ID4gKwkJCQkgICAg
-Ym9vbCBlbmFibGVfZGlydHkpDQo+ID4gIHsNCj4gPiAgCWludCByZXQ7DQo+ID4gLQl1bnNpZ25l
-ZCBsb25nIGlhcywgb2FzOw0KPiA+ICsJdW5zaWduZWQgbG9uZyBpYXM7DQo+ID4gIAllbnVtIGlv
-X3BndGFibGVfZm10IGZtdDsNCj4gPiAgCXN0cnVjdCBpb19wZ3RhYmxlX2NmZyBwZ3RibF9jZmc7
-DQo+ID4gIAlzdHJ1Y3QgaW9fcGd0YWJsZV9vcHMgKnBndGJsX29wczsNCj4gPiBAQCAtMjQ1OSwz
-MSArMjQ2MiwzMSBAQCBzdGF0aWMgaW50IGFybV9zbW11X2RvbWFpbl9maW5hbGlzZShzdHJ1Y3QN
-Cj4gYXJtX3NtbXVfZG9tYWluICpzbW11X2RvbWFpbiwNCj4gPiAgCWlmICghKHNtbXUtPmZlYXR1
-cmVzICYgQVJNX1NNTVVfRkVBVF9UUkFOU19TMikpDQo+ID4gIAkJc21tdV9kb21haW4tPnN0YWdl
-ID0gQVJNX1NNTVVfRE9NQUlOX1MxOw0KPiA+DQo+ID4gKwlwZ3RibF9jZmcgPSAoc3RydWN0IGlv
-X3BndGFibGVfY2ZnKSB7DQo+ID4gKwkJLnBnc2l6ZV9iaXRtYXAJPSBzbW11LT5wZ3NpemVfYml0
-bWFwLA0KPiA+ICsJCS5jb2hlcmVudF93YWxrCT0gc21tdS0+ZmVhdHVyZXMgJg0KPiBBUk1fU01N
-VV9GRUFUX0NPSEVSRU5DWSwNCj4gPiArCQkudGxiCQk9ICZhcm1fc21tdV9mbHVzaF9vcHMsDQo+
-ID4gKwkJLmlvbW11X2Rldgk9IHNtbXUtPmRldiwNCj4gPiArCX07DQo+ID4gKw0KPiA+ICAJc3dp
-dGNoIChzbW11X2RvbWFpbi0+c3RhZ2UpIHsNCj4gPiAgCWNhc2UgQVJNX1NNTVVfRE9NQUlOX1Mx
-Og0KPiA+ICAJCWlhcyA9IChzbW11LT5mZWF0dXJlcyAmIEFSTV9TTU1VX0ZFQVRfVkFYKSA/IDUy
-IDogNDg7DQo+ID4gLQkJaWFzID0gbWluX3QodW5zaWduZWQgbG9uZywgaWFzLCBWQV9CSVRTKTsN
-Cj4gPiAtCQlvYXMgPSBzbW11LT5pYXM7DQo+ID4gKwkJcGd0YmxfY2ZnLmlhcyA9IG1pbl90KHVu
-c2lnbmVkIGxvbmcsIGlhcywgVkFfQklUUyk7DQo+IA0KPiBJIGtub3cgdGhpcyBpc24ndCBjaGFu
-Z2VkIGJ5IHRoaXMgcGF0Y2gsIGJ1dCBkbyB3ZSByZWFsbHkgbWVhbiBWQV9CSVRTIGhlcmU/DQo+
-IERvbid0IHdlIHdhbnQgdmFiaXRzX2FjdHVhbD8gSSdtIGd1ZXNzaW5nIHdlIGFyZSBpbnRlbmRp
-bmcgdG8gbGltaXQgaWFzIHRvIHRoZQ0KPiBzaXplIHRoZSBrZXJuZWwgaXMgdXNpbmcuDQoNCkkg
-c2VlIEphc29uIGhhcyByZXBsaWVkIHRvIHRoaXMuDQoNCj4gDQo+ID4gKwkJcGd0YmxfY2ZnLm9h
-cyA9IHNtbXUtPmlhczsNCj4gPiArCQlpZiAoZW5hYmxlX2RpcnR5KQ0KPiA+ICsJCQlwZ3RibF9j
-ZmcucXVpcmtzIHw9IElPX1BHVEFCTEVfUVVJUktfQVJNX0hEOw0KPiA+ICAJCWZtdCA9IEFSTV82
-NF9MUEFFX1MxOw0KPiA+ICAJCWJyZWFrOw0KPiA+ICAJY2FzZSBBUk1fU01NVV9ET01BSU5fUzI6
-DQo+ID4gLQkJaWFzID0gc21tdS0+aWFzOw0KPiA+IC0JCW9hcyA9IHNtbXUtPm9hczsNCj4gPiAr
-CQlwZ3RibF9jZmcuaWFzID0gc21tdS0+aWFzOw0KPiA+ICsJCXBndGJsX2NmZy5vYXMgPSBzbW11
-LT5vYXM7DQo+ID4gIAkJZm10ID0gQVJNXzY0X0xQQUVfUzI7DQo+IA0KPiBJcyBpdCB3b3J0aCBh
-ZGRpbmcgYSBXQVJOX09OKGVuYWJsZV9kaXJ0eSkgaGVyZT8NCg0KTm90IHN1cmUgaXQgbWFrZXMg
-YSBkaWZmZXJlbmNlIGFzIHdlIGRvbuKAmXQgc2V0IHRoZSBxdWlyayBmbGFnIGhlcmUuDQoNCj4g
-DQo+ID4gIAkJYnJlYWs7DQo+ID4gIAlkZWZhdWx0Og0KPiA+ICAJCXJldHVybiAtRUlOVkFMOw0K
-PiA+ICAJfQ0KPiA+DQo+ID4gLQlwZ3RibF9jZmcgPSAoc3RydWN0IGlvX3BndGFibGVfY2ZnKSB7
-DQo+ID4gLQkJLnBnc2l6ZV9iaXRtYXAJPSBzbW11LT5wZ3NpemVfYml0bWFwLA0KPiA+IC0JCS5p
-YXMJCT0gaWFzLA0KPiA+IC0JCS5vYXMJCT0gb2FzLA0KPiA+IC0JCS5jb2hlcmVudF93YWxrCT0g
-c21tdS0+ZmVhdHVyZXMgJg0KPiBBUk1fU01NVV9GRUFUX0NPSEVSRU5DWSwNCj4gPiAtCQkudGxi
-CQk9ICZhcm1fc21tdV9mbHVzaF9vcHMsDQo+ID4gLQkJLmlvbW11X2Rldgk9IHNtbXUtPmRldiwN
-Cj4gPiAtCX07DQo+ID4gLQ0KPiA+ICAJcGd0Ymxfb3BzID0gYWxsb2NfaW9fcGd0YWJsZV9vcHMo
-Zm10LCAmcGd0YmxfY2ZnLCBzbW11X2RvbWFpbik7DQo+ID4gIAlpZiAoIXBndGJsX29wcykNCj4g
-PiAgCQlyZXR1cm4gLUVOT01FTTsNCj4gPiBAQCAtMjQ5MSw3ICsyNDk0LDggQEAgc3RhdGljIGlu
-dCBhcm1fc21tdV9kb21haW5fZmluYWxpc2Uoc3RydWN0DQo+IGFybV9zbW11X2RvbWFpbiAqc21t
-dV9kb21haW4sDQo+ID4gIAlzbW11X2RvbWFpbi0+ZG9tYWluLnBnc2l6ZV9iaXRtYXAgPSBwZ3Ri
-bF9jZmcucGdzaXplX2JpdG1hcDsNCj4gPiAgCXNtbXVfZG9tYWluLT5kb21haW4uZ2VvbWV0cnku
-YXBlcnR1cmVfZW5kID0gKDFVTCA8PA0KPiBwZ3RibF9jZmcuaWFzKSAtIDE7DQo+ID4gIAlzbW11
-X2RvbWFpbi0+ZG9tYWluLmdlb21ldHJ5LmZvcmNlX2FwZXJ0dXJlID0gdHJ1ZTsNCj4gPiAtDQo+
-ID4gKwlpZiAoZW5hYmxlX2RpcnR5ICYmIHNtbXVfZG9tYWluLT5zdGFnZSA9PQ0KPiBBUk1fU01N
-VV9ET01BSU5fUzEpDQo+ID4gKwkJc21tdV9kb21haW4tPmRvbWFpbi5kaXJ0eV9vcHMgPSAmYXJt
-X3NtbXVfZGlydHlfb3BzOw0KPiA+ICAJcmV0ID0gYXJtX3NtbXVfZG9tYWluX2FsbG9jX2lkKHNt
-bXUsIHNtbXVfZG9tYWluKTsNCj4gPiAgCWlmIChyZXQgPCAwKSB7DQo+ID4gIAkJZnJlZV9pb19w
-Z3RhYmxlX29wcyhwZ3RibF9vcHMpOw0KPiA+IEBAIC0yODExLDcgKzI4MTUsNyBAQCBzdGF0aWMg
-aW50IGFybV9zbW11X2F0dGFjaF9kZXYoc3RydWN0DQo+IGlvbW11X2RvbWFpbiAqZG9tYWluLCBz
-dHJ1Y3QgZGV2aWNlICpkZXYpDQo+ID4gIAltdXRleF9sb2NrKCZzbW11X2RvbWFpbi0+aW5pdF9t
-dXRleCk7DQo+ID4NCj4gPiAgCWlmICghc21tdV9kb21haW4tPnNtbXUpIHsNCj4gPiAtCQlyZXQg
-PSBhcm1fc21tdV9kb21haW5fZmluYWxpc2Uoc21tdV9kb21haW4sIHNtbXUpOw0KPiA+ICsJCXJl
-dCA9IGFybV9zbW11X2RvbWFpbl9maW5hbGlzZShzbW11X2RvbWFpbiwgc21tdSwgZmFsc2UpOw0K
-PiA+ICAJfSBlbHNlIGlmIChzbW11X2RvbWFpbi0+c21tdSAhPSBzbW11KQ0KPiA+ICAJCXJldCA9
-IC1FSU5WQUw7DQo+ID4NCj4gPiBAQCAtMjg3Niw3ICsyODgwLDcgQEAgc3RhdGljIGludCBhcm1f
-c21tdV9zMV9zZXRfZGV2X3Bhc2lkKHN0cnVjdA0KPiBpb21tdV9kb21haW4gKmRvbWFpbiwNCj4g
-Pg0KPiA+ICAJbXV0ZXhfbG9jaygmc21tdV9kb21haW4tPmluaXRfbXV0ZXgpOw0KPiA+ICAJaWYg
-KCFzbW11X2RvbWFpbi0+c21tdSkNCj4gPiAtCQlyZXQgPSBhcm1fc21tdV9kb21haW5fZmluYWxp
-c2Uoc21tdV9kb21haW4sIHNtbXUpOw0KPiA+ICsJCXJldCA9IGFybV9zbW11X2RvbWFpbl9maW5h
-bGlzZShzbW11X2RvbWFpbiwgc21tdSwgZmFsc2UpOw0KPiA+ICAJZWxzZSBpZiAoc21tdV9kb21h
-aW4tPnNtbXUgIT0gc21tdSkNCj4gPiAgCQlyZXQgPSAtRUlOVkFMOw0KPiA+ICAJbXV0ZXhfdW5s
-b2NrKCZzbW11X2RvbWFpbi0+aW5pdF9tdXRleCk7DQo+ID4gQEAgLTMxOTMsNyArMzE5Nyw5IEBA
-IGFybV9zbW11X2RvbWFpbl9hbGxvY191c2VyKHN0cnVjdCBkZXZpY2UgKmRldiwNCj4gdTMyIGZs
-YWdzLA0KPiA+ICAJCQkgICBjb25zdCBzdHJ1Y3QgaW9tbXVfdXNlcl9kYXRhICp1c2VyX2RhdGEp
-DQo+ID4gIHsNCj4gPiAgCXN0cnVjdCBhcm1fc21tdV9tYXN0ZXIgKm1hc3RlciA9IGRldl9pb21t
-dV9wcml2X2dldChkZXYpOw0KPiA+IC0JY29uc3QgdTMyIHBhZ2luZ19mbGFncyA9IElPTU1VX0hX
-UFRfQUxMT0NfTkVTVF9QQVJFTlQ7DQo+ID4gKwljb25zdCB1MzIgcGFnaW5nX2ZsYWdzID0gSU9N
-TVVfSFdQVF9BTExPQ19ORVNUX1BBUkVOVCB8DQo+ID4gKwkJCQkgSU9NTVVfSFdQVF9BTExPQ19E
-SVJUWV9UUkFDS0lORzsNCj4gPiArCWJvb2wgZW5mb3JjZV9kaXJ0eSA9IGZsYWdzICYgSU9NTVVf
-SFdQVF9BTExPQ19ESVJUWV9UUkFDS0lORzsNCj4gDQo+IG5pdDogSXQncyBjYWxsZWQgZW5hYmxl
-X2RpcnR5IGluIG90aGVyIHBsYWNlczsgSSB0aGluayB0aGF0IGlzIG1vcmUgYXBwcm9wcmlhdGUN
-Cj4gaGVyZT8NCg0KT2suDQoNCj4gPiAgCXN0cnVjdCBhcm1fc21tdV9kb21haW4gKnNtbXVfZG9t
-YWluOw0KPiA+ICAJaW50IHJldDsNCj4gPg0KPiA+IEBAIC0zMjA2LDYgKzMyMTIsMTAgQEAgYXJt
-X3NtbXVfZG9tYWluX2FsbG9jX3VzZXIoc3RydWN0IGRldmljZQ0KPiAqZGV2LCB1MzIgZmxhZ3Ms
-DQo+ID4gIAlpZiAodXNlcl9kYXRhKQ0KPiA+ICAJCXJldHVybiBFUlJfUFRSKC1FSU5WQUwpOw0K
-PiA+DQo+ID4gKwlpZiAoZW5mb3JjZV9kaXJ0eSAmJg0KPiA+ICsJICAgICFkZXZpY2VfaW9tbXVf
-Y2FwYWJsZShkZXYsIElPTU1VX0NBUF9ESVJUWV9UUkFDS0lORykpDQo+ID4gKwkJcmV0dXJuIEVS
-Ul9QVFIoLUVPUE5PVFNVUFApOw0KPiANCj4gSSdtIGd1ZXNzaW5nIHRoZSBpbnRlbnRpb24gaXMg
-dGhhdCBvbmx5IGEgc3RhZ2UgMSB3aWxsIGV2ZXIgYmUgbWFya2VkIHdpdGgNCj4gSU9NTVVfQ0FQ
-X0RJUlRZX1RSQUNLSU5HICh0aGVyZSBhcmUgYSBmZXcgcGxhY2VzIHRoYXQgYXNzdW1lL2NoZWNr
-IHdlDQo+IGFyZQ0KPiBkZWFsaW5nIHdpdGggUzEpPyBCdXQgaXMgdGhlcmUgYSByZWFzb24gd2h5
-IHN0YWdlIDIgY2FuJ3QgYmUgc3VwcG9ydGVkIGFzIHdlbGw/DQoNCldlIGRvbuKAmXQgaGF2ZSBu
-ZXN0ZWQgc3VwcG9ydCB5ZXQuIFMyIHN1cHBvcnQgd2lsbCBiZSBhZGRlZCBpbiBmdXR1cmUuDQog
-DQo+ID4gKw0KPiA+ICAJc21tdV9kb21haW4gPSBhcm1fc21tdV9kb21haW5fYWxsb2MoKTsNCj4g
-PiAgCWlmICghc21tdV9kb21haW4pDQo+ID4gIAkJcmV0dXJuIEVSUl9QVFIoLUVOT01FTSk7DQo+
-ID4gQEAgLTMyMjEsNyArMzIzMSw3IEBAIGFybV9zbW11X2RvbWFpbl9hbGxvY191c2VyKHN0cnVj
-dCBkZXZpY2UgKmRldiwNCj4gdTMyIGZsYWdzLA0KPiA+DQo+ID4gIAlzbW11X2RvbWFpbi0+ZG9t
-YWluLnR5cGUgPSBJT01NVV9ET01BSU5fVU5NQU5BR0VEOw0KPiA+ICAJc21tdV9kb21haW4tPmRv
-bWFpbi5vcHMgPSBhcm1fc21tdV9vcHMuZGVmYXVsdF9kb21haW5fb3BzOw0KPiA+IC0JcmV0ID0g
-YXJtX3NtbXVfZG9tYWluX2ZpbmFsaXNlKHNtbXVfZG9tYWluLCBtYXN0ZXItPnNtbXUpOw0KPiA+
-ICsJcmV0ID0gYXJtX3NtbXVfZG9tYWluX2ZpbmFsaXNlKHNtbXVfZG9tYWluLCBtYXN0ZXItPnNt
-bXUsDQo+IGVuZm9yY2VfZGlydHkpOw0KPiA+ICAJaWYgKHJldCkNCj4gPiAgCQlnb3RvIGVycl9m
-cmVlOw0KPiA+ICAJcmV0dXJuICZzbW11X2RvbWFpbi0+ZG9tYWluOw0KPiA+IEBAIC0zNDcwLDYg
-KzM0ODAsNDIgQEAgc3RhdGljIHZvaWQgYXJtX3NtbXVfcmVsZWFzZV9kZXZpY2Uoc3RydWN0DQo+
-IGRldmljZSAqZGV2KQ0KPiA+ICAJa2ZyZWUobWFzdGVyKTsNCj4gPiAgfQ0KPiA+DQo+ID4gK3N0
-YXRpYyBpbnQgYXJtX3NtbXVfcmVhZF9hbmRfY2xlYXJfZGlydHkoc3RydWN0IGlvbW11X2RvbWFp
-biAqZG9tYWluLA0KPiA+ICsJCQkJCSB1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXplLA0K
-PiA+ICsJCQkJCSB1bnNpZ25lZCBsb25nIGZsYWdzLA0KPiA+ICsJCQkJCSBzdHJ1Y3QgaW9tbXVf
-ZGlydHlfYml0bWFwICpkaXJ0eSkNCj4gPiArew0KPiA+ICsJc3RydWN0IGFybV9zbW11X2RvbWFp
-biAqc21tdV9kb21haW4gPQ0KPiB0b19zbW11X2RvbWFpbihkb21haW4pOw0KPiA+ICsJc3RydWN0
-IGlvX3BndGFibGVfb3BzICpvcHMgPSBzbW11X2RvbWFpbi0+cGd0Ymxfb3BzOw0KPiA+ICsNCj4g
-PiArCWlmIChzbW11X2RvbWFpbi0+c3RhZ2UgIT0gQVJNX1NNTVVfRE9NQUlOX1MxKQ0KPiA+ICsJ
-CXJldHVybiAtRUlOVkFMOw0KPiANCj4gWW91J3ZlIG9ubHkgYXR0YWNoZWQgdGhlIGRpcnR5X29w
-cyBpZiBpdCB3YXMgUzEgaW4gdGhlIGZpcnN0IHBsYWNlLCBzbyB0aGlzDQo+IGNoZWNrIHNlZW1z
-IG92ZXJraWxsIHRvIG1lLg0KPiANCj4gPiArDQo+ID4gKwlpZiAoV0FSTl9PTl9PTkNFKCFvcHMg
-fHwgIW9wcy0+cmVhZF9hbmRfY2xlYXJfZGlydHkpKQ0KPiA+ICsJCXJldHVybiAtRU5PREVWOw0K
-PiANCj4gQW5kIGhlcmU7IGNvdWxkIHRoaXMgYmUgbW92ZWQgdG8gd2hlcmUgeW91IGF0dGFjaCB0
-aGUgZGlydHlfb3BzPw0KDQpZZXMuIEphc29uIGhhcyBhbHNvIG1hZGUgdGhlIHNhbWUgY29tbWVu
-dCBvbiB0aGlzIGFuZCAgd2lsbCBiZSByZW1vdmVkIGluDQpuZXh0IHJldmlzaW9uLg0KDQo+ID4g
-Kw0KPiA+ICsJcmV0dXJuIG9wcy0+cmVhZF9hbmRfY2xlYXJfZGlydHkob3BzLCBpb3ZhLCBzaXpl
-LCBmbGFncywgZGlydHkpOw0KPiA+ICt9DQo+ID4gKw0KPiA+ICtzdGF0aWMgaW50IGFybV9zbW11
-X3NldF9kaXJ0eV90cmFja2luZyhzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sDQo+ID4gKwkJ
-CQkgICAgICAgYm9vbCBlbmFibGVkKQ0KPiA+ICt7DQo+ID4gKwlzdHJ1Y3QgYXJtX3NtbXVfZG9t
-YWluICpzbW11X2RvbWFpbiA9DQo+IHRvX3NtbXVfZG9tYWluKGRvbWFpbik7DQo+ID4gKwlzdHJ1
-Y3QgaW9fcGd0YWJsZV9vcHMgKm9wcyA9IHNtbXVfZG9tYWluLT5wZ3RibF9vcHM7DQo+ID4gKw0K
-PiA+ICsJaWYgKHNtbXVfZG9tYWluLT5zdGFnZSAhPSBBUk1fU01NVV9ET01BSU5fUzEpDQo+ID4g
-KwkJcmV0dXJuIC1FSU5WQUw7DQo+ID4gKw0KPiA+ICsJaWYgKFdBUk5fT05fT05DRSghb3BzKSkN
-Cj4gPiArCQlyZXR1cm4gLUVOT0RFVjsNCj4gDQo+IFNhbWUgY29tbWVudHMgZm9yIHRoZSAyIGNo
-ZWNrcy4NCg0KU3VyZS4NCiANClRoYW5rcywNClNoYW1lZXINCg==
+On 24/04/2024 09:01, Shameerali Kolothum Thodi wrote:
+> Hi,
+> 
+>> -----Original Message-----
+>> From: Ryan Roberts <ryan.roberts@arm.com>
+>> Sent: Tuesday, April 23, 2024 3:42 PM
+>> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+>> iommu@lists.linux.dev; linux-arm-kernel@lists.infradead.org
+>> Cc: joro@8bytes.org; jgg@nvidia.com; kevin.tian@intel.com;
+>> nicolinc@nvidia.com; mshavit@google.com; robin.murphy@arm.com;
+>> will@kernel.org; joao.m.martins@oracle.com; jiangkunkun
+>> <jiangkunkun@huawei.com>; zhukeqian <zhukeqian1@huawei.com>;
+>> Linuxarm <linuxarm@huawei.com>
+>> Subject: Re: [PATCH v2 1/4] iommu/arm-smmu-v3: Add feature detection for
+>> HTTU
+>>
+>> Hi,
+>>
+>> I'm aiming to (slowly) get more involved with SMMU activities, although I'm
+>> sure
+>> it will take a while to get up to speed and provide useful input. It was
+>> suggested that this series would be a useful starting point to dip my toe in.
+>> Please bear with me while I ask stupid questions...
+> 
+> Thanks for going through the series. I am planning to respin this one soon, once
+> Jason's SMMUv3 refactor series in some good form.
+> 
+>>
+>>
+>> On 22/02/2024 09:49, Shameer Kolothum wrote:
+>>> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>>>
+>>> If the SMMU supports it and the kernel was built with HTTU support,
+>>> Probe support for Hardware Translation Table Update (HTTU) which is
+>>> essentially to enable hardware update of access and dirty flags.
+>>>
+>>> Probe and set the smmu::features for Hardware Dirty and Hardware Access
+>>> bits. This is in preparation, to enable it on the context descriptors of
+>>> stage 1 format.
+>>>
+>>> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>>> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
+>>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>>> Signed-off-by: Shameer Kolothum
+>> <shameerali.kolothum.thodi@huawei.com>
+>>
+>> Except for the nit (feel free to ignore it), LGTM!
+>>
+>> Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
+>>
+>>
+>>> ---
+>>>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 32
+>> +++++++++++++++++++++
+>>>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  5 ++++
+>>>  2 files changed, 37 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> index 0606166a8781..bd30739e3588 100644
+>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> @@ -4196,6 +4196,28 @@ static void arm_smmu_device_iidr_probe(struct
+>> arm_smmu_device *smmu)
+>>>  	}
+>>>  }
+>>>
+>>> +static void arm_smmu_get_httu(struct arm_smmu_device *smmu, u32
+>> reg)
+>>> +{
+>>> +	u32 fw_features = smmu->features & (ARM_SMMU_FEAT_HA |
+>> ARM_SMMU_FEAT_HD);
+>>> +	u32 features = 0;
+>>> +
+>>> +	switch (FIELD_GET(IDR0_HTTU, reg)) {
+>>> +	case IDR0_HTTU_ACCESS_DIRTY:
+>>> +		features |= ARM_SMMU_FEAT_HD;
+>>> +		fallthrough;
+>>> +	case IDR0_HTTU_ACCESS:
+>>> +		features |= ARM_SMMU_FEAT_HA;
+>>> +	}
+>>> +
+>>> +	if (smmu->dev->of_node)
+>>> +		smmu->features |= features;
+>>> +	else if (features != fw_features)
+>>> +		/* ACPI IORT sets the HTTU bits */
+>>> +		dev_warn(smmu->dev,
+>>> +			 "IDR0.HTTU overridden by FW configuration
+>> (0x%x)\n",
+>>> +			 fw_features);
+>>> +}
+>>> +
+>>>  static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+>>>  {
+>>>  	u32 reg;
+>>> @@ -4256,6 +4278,8 @@ static int arm_smmu_device_hw_probe(struct
+>> arm_smmu_device *smmu)
+>>>  			smmu->features |= ARM_SMMU_FEAT_E2H;
+>>>  	}
+>>>
+>>> +	arm_smmu_get_httu(smmu, reg);
+>>> +
+>>>  	/*
+>>>  	 * The coherency feature as set by FW is used in preference to the ID
+>>>  	 * register, but warn on mismatch.
+>>> @@ -4448,6 +4472,14 @@ static int arm_smmu_device_acpi_probe(struct
+>> platform_device *pdev,
+>>>  	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
+>>>  		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+>>>
+>>> +	switch (FIELD_GET(ACPI_IORT_SMMU_V3_HTTU_OVERRIDE,
+>> iort_smmu->flags)) {
+>>> +	case IDR0_HTTU_ACCESS_DIRTY:
+>>> +		smmu->features |= ARM_SMMU_FEAT_HD;
+>>> +		fallthrough;
+>>> +	case IDR0_HTTU_ACCESS:
+>>> +		smmu->features |= ARM_SMMU_FEAT_HA;
+>>> +	}
+>>> +
+>>>  	return 0;
+>>>  }
+>>>  #else
+>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>> b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>>> index 45bcd72fcda4..5e51a6c1d55f 100644
+>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+>>> @@ -33,6 +33,9 @@
+>>>  #define IDR0_ASID16			(1 << 12)
+>>>  #define IDR0_ATS			(1 << 10)
+>>>  #define IDR0_HYP			(1 << 9)
+>>> +#define IDR0_HTTU			GENMASK(7, 6)
+>>> +#define IDR0_HTTU_ACCESS		1
+>>> +#define IDR0_HTTU_ACCESS_DIRTY		2
+>>>  #define IDR0_COHACC			(1 << 4)
+>>>  #define IDR0_TTF			GENMASK(3, 2)
+>>>  #define IDR0_TTF_AARCH64		2
+>>> @@ -668,6 +671,8 @@ struct arm_smmu_device {
+>>>  #define ARM_SMMU_FEAT_SVA		(1 << 17)
+>>>  #define ARM_SMMU_FEAT_E2H		(1 << 18)
+>>>  #define ARM_SMMU_FEAT_NESTING		(1 << 19)
+>>> +#define ARM_SMMU_FEAT_HA		(1 << 20)
+>>> +#define ARM_SMMU_FEAT_HD		(1 << 21)
+>>
+>> nit: HA and HD are a bit opaque, at least to me. I guess they are HW Access
+>> and
+>> HW Dirty? Perhaps ARM_SMMU_FEAT_HW_ACCESS and
+>> ARM_SMMU_FEAT_HW_DIRTY are more
+>> expressive?
+> 
+> Nothing against it. Just that _HW_ is not used in driver anywhere(AFAICS)
+> and HA/HD are used in the specification. 
+
+Ahh yes, I see that now.
+
+> How about we rename to 
+> ARM_SMMU_FEAT_HTTU_HA and ARM_SMMU_FEAT_HTTU_HA?
+
+Yes, that's much more obvious from where I'm standing. But given HA and HD are
+fields in the spec, I'm also fine with leaving as is. Up to you.
+
+> 
+> Thanks,
+> Shameer
+> 
+>>
+>>>  	u32				features;
+>>>
+>>>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+>>
+> 
+
