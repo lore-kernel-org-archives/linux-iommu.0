@@ -1,117 +1,116 @@
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D0011598E3
-	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 13:08:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D23F15B15C
+	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 13:21:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.188
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713964133; cv=none; b=R22lpEBV224mGiK91ULovZR+me6/aHZvCSTwRBHOkCUus5WFEinshsS3epnkwFX7rPpnbHieHHRb7hzo5sfyQmUMPz76k+Marav7CWC8kQHZCYIjxHPeHMLJ2GDiLFd/0WtcAUTMo8Hh6+17bE+9q/L7jsuX1DoE99eSSwaR7qY=
+	t=1713964864; cv=none; b=KONYns4S6MOpLq6LbxnnmRxa8711Jix/DB1Ek9nsk4k77B1b9gvYLYFNYv2SbaZxPiiqDiDt71oQLwABpg1ZU8h1lrQuy+vJc7czyyYgcIA1xwBgwPXO2XtZQsS2AwLHgBHfPN6I+NBooC7iPa0m4QJzmcUMmi+bxt7vGwCABgg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713964133; c=relaxed/simple;
-	bh=MLqG/ayz9pHHmYWBcJHvF3/ul3z6kDZGVuyyMmkOEPw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KxAcUCEN6n1ttMOWXFZdHSDp+3Wa2Ikk01+gM9hX8oii22Eqvg5sLuQKdaqtrbX/kDVzg2UykoAk6PdJd4TdUniuMnq1eXw58ENKyzkVbHkFh/E1eah3JtZHm3s28Zin9BczFHFb6Weh+mSGb/UPL0LqXh8eU5FSlRd396LYlCg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=WTLiuDK3; arc=none smtp.client-ip=209.85.210.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="WTLiuDK3"
-Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-6eb75c202dbso3606073a34.2
-        for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 06:08:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1713964131; x=1714568931; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=UaGiR6whDixYKUk+u+/VLyz5W91RnPjldFm+jW5pc40=;
-        b=WTLiuDK3oIHQctLDsnTPHRgBTvtgM1kxs2t6AuLY/7Eh7+m9fpHQ6XV8sqFb8Uk9yB
-         S/mJ22KA0DNmncWBZDiLOiE9Nc4E+GLjGmGGtCM6G2a31syq9E0NDbyZvlEKDzweWDkW
-         pCC9fPpmf30lbeoow4cpnWLemsn5Hhh7jqtoKEzUbvtzKiAXyLTLpyJYTM2bNipqc/IM
-         nqPjmZ7JtCfCZ97rqFk8/CPIbTCKAthTL54VvZVgmr8eySkHSDijs9bDQzOOF0el5aiK
-         Zfuzcf5BJwMPwa+UNIvWBv5md/cS9g+vb8xDTF3fcPTSFJXZn33xyda112y6xYgQZ2jD
-         FPig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713964131; x=1714568931;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=UaGiR6whDixYKUk+u+/VLyz5W91RnPjldFm+jW5pc40=;
-        b=a560NppH81wtlc295RxwbMRn8UoRYTIBQnnxd7xl1etk+PSI15bOQae/RWIqae7KnV
-         J2a1aeXhL5cS/L0V3zRTc+0gbE8boP2CLGLHG5SAueDiJ2teRKqAgBlNqkTinvixdt7m
-         oONeWncCb8jz+z+UILZhWuSNZz6fEIeTRmy4SSJJhvlxh1XwBJ93fzQcnmxnF9cmsUhl
-         KIv8PNhn9hW5pNlH57QHA9WFV4oQAAzKitS6FtNxwtpVRhJT5E00CWWNnHnzXfKmcWYp
-         ywPxReGGRFAp15SbOcTjCh7rhZsQxNhCUtSBqHPK5dnKrzvT5EzdR+3uE/i73UcBVKlH
-         /1dw==
-X-Forwarded-Encrypted: i=1; AJvYcCXLKkquSvTeFBPz3T420gLVcfqdk5VL/eSMtb2ys0SUZABfhORbHajejNs6a7/vfZtWUPQa+BDE+w6etNEuanoqUef9kFk=
-X-Gm-Message-State: AOJu0YzDuw/MbMR1mE5x70moSClzIQMyjgGwX/S0B9asvcG0dxTrpqkc
-	hQbFsG6xknyMIy+rxlU2/VKuAu7VM2gvvMWDkbmo3K6Nls2QF1p8EG5TUlqFKHE=
-X-Google-Smtp-Source: AGHT+IGweXbyKwjZYdG0QH0zyCcjP72EDqRD1FL9MQKqbJ4LjEfM8xBfHSBXgRJ48yw5Q81FM+m3aQ==
-X-Received: by 2002:a05:6830:1106:b0:6ea:1bf3:9854 with SMTP id w6-20020a056830110600b006ea1bf39854mr2716615otq.12.1713964131462;
-        Wed, 24 Apr 2024 06:08:51 -0700 (PDT)
-Received: from ziepe.ca ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id m2-20020a9d6442000000b006ea1e0fec59sm2369684otl.10.2024.04.24.06.08.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Apr 2024 06:08:51 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rzcMj-007vEl-Tf;
-	Wed, 24 Apr 2024 10:08:49 -0300
-Date: Wed, 24 Apr 2024 10:08:49 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Vasant Hegde <vashegde@amd.com>
-Cc: Robin Murphy <robin.murphy@arm.com>,
-	Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
-	joro@8bytes.org, suravee.suthikulpanit@amd.com,
-	alexander.deucher@amd.com, baolu.lu@linux.intel.com,
-	Eric Wagner <ewagner12@gmail.com>, stable@kernel.org
-Subject: Re: [PATCH v2] iommu/amd: Enhance def_domain_type to handle
- untrusted device
-Message-ID: <20240424130849.GG231144@ziepe.ca>
-References: <20240423111725.5813-1-vasant.hegde@amd.com>
- <6552a5bb-0481-4a0c-a587-84275ab3a179@arm.com>
- <c255ccb1-68ac-485b-807e-a4c38786f116@amd.com>
+	s=arc-20240116; t=1713964864; c=relaxed/simple;
+	bh=4X4w9Ip9WgUC082rsuWxVuyZce+m6SBKio4Pu6WE9lE=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=VfStyDpHYn1xiaSj+5Pmj8GSjY+I9LaH9Ye/WQdH6sL7LCV5X1X9LASTt2ev0p02qHSgYrlt/SVut2hdSvtrR0x1ggahaIQc5VxNTFDHUz4xlDJ+otHhmTrZxDfiMG8mhYQ8Tvbz7qlOmN7dLlwCq9FL92e0bIVD0Y4vy/h0JsE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.188
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.105])
+	by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4VPffb0x3dzXlQG;
+	Wed, 24 Apr 2024 21:17:27 +0800 (CST)
+Received: from dggems705-chm.china.huawei.com (unknown [10.3.19.182])
+	by mail.maildlp.com (Postfix) with ESMTPS id BCED51400D8;
+	Wed, 24 Apr 2024 21:20:56 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ dggems705-chm.china.huawei.com (10.3.19.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Wed, 24 Apr 2024 21:20:55 +0800
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
+ Wed, 24 Apr 2024 14:20:53 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Ryan Roberts <ryan.roberts@arm.com>
+CC: "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>, "joro@8bytes.org" <joro@8bytes.org>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>, "nicolinc@nvidia.com"
+	<nicolinc@nvidia.com>, "mshavit@google.com" <mshavit@google.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "will@kernel.org"
+	<will@kernel.org>, "joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
+	jiangkunkun <jiangkunkun@huawei.com>, zhukeqian <zhukeqian1@huawei.com>,
+	Linuxarm <linuxarm@huawei.com>
+Subject: RE: [PATCH v2 1/4] iommu/arm-smmu-v3: Add feature detection for HTTU
+Thread-Topic: [PATCH v2 1/4] iommu/arm-smmu-v3: Add feature detection for HTTU
+Thread-Index: AQHaZXTEskP344GHbEaXPEKyEBg1Q7F2PPsAgAADG4CAAUHkgIAAJt6AgAAf0tA=
+Date: Wed, 24 Apr 2024 13:20:53 +0000
+Message-ID: <6e434a9e97be4abfad8c19dafe88456d@huawei.com>
+References: <20240222094923.33104-1-shameerali.kolothum.thodi@huawei.com>
+ <20240222094923.33104-2-shameerali.kolothum.thodi@huawei.com>
+ <3733929c-657e-4d24-b5e9-a5d946645abe@arm.com>
+ <20240423145237.GD772409@nvidia.com>
+ <90985ae5-fa1c-40f5-b4b3-57350a16e011@arm.com>
+ <20240424122349.GH941030@nvidia.com>
+In-Reply-To: <20240424122349.GH941030@nvidia.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c255ccb1-68ac-485b-807e-a4c38786f116@amd.com>
 
-On Wed, Apr 24, 2024 at 01:41:57PM +0530, Vasant Hegde wrote:
-> Hi Robin,
-> 
-> 
-> On 4/23/2024 4:56 PM, Robin Murphy wrote:
-> > On 23/04/2024 12:17 pm, Vasant Hegde wrote:
-> >> Previously, IOMMU core layer was forcing IOMMU_DOMAIN_DMA domain for
-> >> untrusted device. This always took precedence over driver's
-> >> def_domain_type(). Commit 59ddce4418da ("iommu: Reorganize
-> >> iommu_get_default_domain_type() to respect def_domain_type()") changed
-> >> the behaviour. Current code calls def_domain_type() but if it doesn't
-> >> return IOMMU_DOMAIN_DMA for untrusted device it throws error. This
-> >> results in IOMMU group (and potentially IOMMU itself) in undetermined
-> >> state.
-> >>
-> >> This patch adds untrusted check in AMD IOMMU driver code. So that it
-> >> allows eGPUs behind Thunderbolt work again.
-> > 
-> > Sorry, but I firmly disagree with this approach - regardless of what the AMD
-> > driver is currently doing and how appropriate it may or may not be, we should
-> > not be duplicating core code policy in drivers, 
 
-Then AMD should remove the PASID stuff from def_domain_type and we
-need to fix it with properly designed core support for this limitation
-before merging the SVA support.
 
-> > and we certainly shouldn't be
-> > doing so to bodge around a breakage in how the core code implements said policy.
+> -----Original Message-----
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Wednesday, April 24, 2024 1:24 PM
+> To: Ryan Roberts <ryan.roberts@arm.com>
+> Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+> iommu@lists.linux.dev; linux-arm-kernel@lists.infradead.org; joro@8bytes.=
+org;
+> kevin.tian@intel.com; nicolinc@nvidia.com; mshavit@google.com;
+> robin.murphy@arm.com; will@kernel.org; joao.m.martins@oracle.com;
+> jiangkunkun <jiangkunkun@huawei.com>; zhukeqian
+> <zhukeqian1@huawei.com>; Linuxarm <linuxarm@huawei.com>
+> Subject: Re: [PATCH v2 1/4] iommu/arm-smmu-v3: Add feature detection for
+> HTTU
+>=20
+> On Wed, Apr 24, 2024 at 11:04:43AM +0100, Ryan Roberts wrote:
+> > On 23/04/2024 15:52, Jason Gunthorpe wrote:
+> > > On Tue, Apr 23, 2024 at 03:41:30PM +0100, Ryan Roberts wrote:
+> > >> Hi,
+> > >>
+> > >> I'm aiming to (slowly) get more involved with SMMU activities, altho=
+ugh I'm
+> sure
+> > >> it will take a while to get up to speed and provide useful input. It=
+ was
+> > >> suggested that this series would be a useful starting point to dip m=
+y toe in.
+> > >> Please bear with me while I ask stupid questions...
+> > >
+> > > Nice!
+> > >
+> > > I would like to see this merged as it was part of the original three
+> > > implementations for iommufd dirty tracking. The other two have been
+> > > merged for a long time now..
+> >
+> > My understanding is that this series should pretty much apply on top of
+> > mainline, is that correct? (in practice there are some conflicts, but I=
+ think
+> > they are trivial).
+>=20
+> It was originally based on my part 2, but I suspect it could apply
+> easially on top of part 2a. I don't think it is worth rebasing to
+> v6.9-rc since I expect Will to take 2a.
 
-It isn't breakage. It is evolution of the API.
+But isn't arm_smmu_domain_alloc_user() gets introduced only in part 3
+of the series? Do we plan to support DIRTY_TRACKING with domain_alloc( )
+itself by default?=20
 
-Hacking in the AMD driver is temprary and Vasant will eventually fix
-it. Regressing the core code to go back to allowing drivers to inform
-policy is much harder to undo.
-
-Jason
+Thanks,
+Shameer
