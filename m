@@ -1,47 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E4B1360
-	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 07:18:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87643360
+	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 07:18:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713943092; cv=none; b=Z04giGr7ILnXLMt9zJpxk0v8jhZGRJGif5eCKQ4gXK2xj74AeEuAcK1MT72QLNEyA/NttMb7IMhYaKAVgqyCTf+p4U4ADFFd3cCq5rq8rGit+g5NpHp7t4qAPrytEd5iC/q4XsY5LZrOrqw80YhyIoOFnsUdmCKTCcYMbxDVs6w=
+	t=1713943094; cv=none; b=UNPUKgfz2blfoubVpu65Q4zBR9qU2d2TO7Cb5wqCLvzZVtempS+qkEDrCoy5qJb+MzsQTgQguuqkPqj27O4z8kZmLegcNSJ0625yRdJZvTt0I5xFWamFhTRNizdwX1Gr1SntgK1Q8DIVTdoD1EVZo4Eu73xGqabOLgeFqbiIPuw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713943092; c=relaxed/simple;
-	bh=fh6/DxXJ6QlVYvQYFKUidpUtVMeGrajPzaBj/RdCU+g=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=C0zKa20AScC3fBYY61WVIjKElyhx2s2RbZILdoJuuFqytOdb57A8vOKBcSOwQU1SbMr9otoAMgIToRxSKbLmLlh2QyoS0kcJNyKPDv2CZriTl62ULO7t1JD+v6fJcQkt/eVsyFeALIplw4eUi76x6byrflYPSVVcSrnZW4XYSKY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oKMi5ahd; arc=none smtp.client-ip=192.198.163.8
+	s=arc-20240116; t=1713943094; c=relaxed/simple;
+	bh=rHvTSou8/1tjMflgd49XX0brDYVz5e086lRWrdYfOqU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=Fcskv2dXKPsZzVL1EMV0S6LORq/l/Bbw5FYQCC5VNA2B2SsUZ/cEHcGsKCRwJVYklLB1vWg92BY97RC2Ecw44w2BlOfCImDyI0IhTMy01+KI4S2NTjIHJ1db7pyEg5wlAMjI94aCAlHaj0d6f1CrikpZoeyOT6YEo6nZdLX2tLU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mSwKTAhm; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oKMi5ahd"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mSwKTAhm"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713943090; x=1745479090;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=fh6/DxXJ6QlVYvQYFKUidpUtVMeGrajPzaBj/RdCU+g=;
-  b=oKMi5ahdECFQ/bvLI5AwfNnr7JHGQLSArsMowS2+n8JGcek1qizXukZT
-   fdEQvi2CBAfJy19+IYObvdhgy3bLpfm6+TAB+Xt4o9zi5QSukDO8UfOyy
-   wPMWuLNoqbLab+X3y6zDrfOvtnxYtuPcwJT+S5JptA26Ai+Nd26mVzNKa
-   khPySd7awhlc66FkMoKFwUB2C5CBF4rabp4GEHKz8l12ek6WUsyWUyvMl
-   JzRd2NV/ik6daBXjx1c09q1aGU1EEL+1fhkkty0DQ08lU+7hXaSBbHAv6
-   mqNIoYirfAYYMgGrVcgyfU9pCIjtl73IdkmdL92AAvkEDTf8Z2UDqK2YB
+  t=1713943093; x=1745479093;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=rHvTSou8/1tjMflgd49XX0brDYVz5e086lRWrdYfOqU=;
+  b=mSwKTAhm1aDJmyC8SxdUhID1XBhTzD7ttWC+5PxqOGmgrX5A5h8ET3Gq
+   smz0c9ZHE5BJnKiwxLMW/SQ8FU9qbvz9logfOsL0+QoLbH6/U32e7HGPd
+   NwvqnxDrozCDxf6xRXTmgIUsXTJQRxKqKhSHvqlbxJa4/NK85Ps6C+AR1
+   pkv3J4PItWDXBHNdD/UJeV0SvpO5xqBv3eNnp9md5iOeB4+rrjM4k9H3N
+   gA4qjaAIjwwyo9gKKKG7W5D0NbQ0o9LPnt+xCiYMq0yBncgIKgUOODQER
+   6NfEVIBuiuQoKe5JhynpP7QXTmnuLIcWtQdNLqs4OrKcUXTy+lEVId2ZS
    A==;
-X-CSE-ConnectionGUID: nj2XktFCRmCJ/SEupWMMuA==
-X-CSE-MsgGUID: tXiXI8mtSs262ne3Oh5pOw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="27073064"
+X-CSE-ConnectionGUID: EpK2feKVR0iVCbrgwUVtoA==
+X-CSE-MsgGUID: Phqdw0xTTBq+lx9sN1fnBg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="27073084"
 X-IronPort-AV: E=Sophos;i="6.07,225,1708416000"; 
-   d="scan'208";a="27073064"
+   d="scan'208";a="27073084"
 Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2024 00:18:10 -0700
-X-CSE-ConnectionGUID: c6Nn8hQVRCmH8gGApFwHJw==
-X-CSE-MsgGUID: UM3Mw8hJSR2Nw6Kg6pt8NA==
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2024 00:18:12 -0700
+X-CSE-ConnectionGUID: dBBdC8bbSQiYj5zuD91yuw==
+X-CSE-MsgGUID: GfVKluqPRAaPI5u/XhXE0A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,225,1708416000"; 
-   d="scan'208";a="24664561"
+   d="scan'208";a="24664637"
 Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
-  by fmviesa010.fm.intel.com with ESMTP; 24 Apr 2024 00:18:07 -0700
+  by fmviesa010.fm.intel.com with ESMTP; 24 Apr 2024 00:18:09 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Jason Gunthorpe <jgg@ziepe.ca>,
@@ -51,10 +52,12 @@ Cc: Jason Gunthorpe <jgg@ziepe.ca>,
 	Colin Ian King <colin.i.king@gmail.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 00/18] [PULL REQUEST] Intel IOMMU updates for v6.10
-Date: Wed, 24 Apr 2024 15:16:26 +0800
-Message-Id: <20240424071644.178250-1-baolu.lu@linux.intel.com>
+Subject: [PATCH 01/18] iommu/vt-d: Remove redundant assignment to variable err
+Date: Wed, 24 Apr 2024 15:16:27 +0800
+Message-Id: <20240424071644.178250-2-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240424071644.178250-1-baolu.lu@linux.intel.com>
+References: <20240424071644.178250-1-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -63,185 +66,35 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hi Joerg,
+From: Colin Ian King <colin.i.king@gmail.com>
 
-The following changes have been queued for v6.10-rc1:
+Variable err is being assigned a value that is never read. It is
+either being re-assigned later on error exit paths, or never referenced
+on the non-error path.
 
- - Consolidate domain cache invalidation
- - Remove private data from page fault message
- - Allocate DMAR fault interrupts locally
- - Cleanup and refactoring
+Cleans up clang scan build warning:
+drivers/iommu/intel/dmar.c:1070:2: warning: Value stored to 'err' is
+never read [deadcode.DeadStores]`
 
-Unfortunately, there is a merge conflict with the next branch, in
-drivers/iommu/intel/iommu.c. I resolved this conflict as below.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Link: https://lore.kernel.org/r/20240411090535.306326-1-colin.i.king@gmail.com
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/dmar.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-All patches are based on v6.9-rc5. The whole code after merging into the
-next branch is available at:
-https://github.com/LuBaolu/intel-iommu/commits/vtd-update-for-v6.10
-
-diff --cc drivers/iommu/intel/iommu.c
-index 916cdb65d849,7abe76f92a3c..daf0e9b067e6
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@@ -860,9 -850,9 +845,9 @@@ static struct dma_pte *pfn_to_dma_pte(s
-  			break;
-  
-  		if (!dma_pte_present(pte)) {
- -			uint64_t pteval;
- +			uint64_t pteval, tmp;
-  
-- 			tmp_page = alloc_pgtable_page(domain->nid, gfp);
-+ 			tmp_page = iommu_alloc_page_node(domain->nid, gfp);
-  
-  			if (!tmp_page)
-  				return NULL;
-@@@ -872,10 -862,9 +857,10 @@@
-  			if (domain->use_first_level)
-  				pteval |= DMA_FL_PTE_XD | DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
-  
- -			if (cmpxchg64(&pte->val, 0ULL, pteval))
- +			tmp = 0ULL;
- +			if (!try_cmpxchg64(&pte->val, &tmp, pteval))
-  				/* Someone else set it while we were thinking; use theirs. */
-- 				free_pgtable_page(tmp_page);
-+ 				iommu_free_page(tmp_page);
-  			else
-  				domain_flush_cache(domain, pte, sizeof(*pte));
-  		}
-@@@ -3226,7 -3402,16 +3211,7 @@@ static int intel_iommu_memory_notifier(
-  			LIST_HEAD(freelist);
-  
-  			domain_unmap(si_domain, start_vpfn, last_vpfn, &freelist);
-- 			put_pages_list(&freelist);
- -
- -			rcu_read_lock();
- -			for_each_active_iommu(iommu, drhd)
- -				iommu_flush_iotlb_psi(iommu, si_domain,
- -					start_vpfn, mhp->nr_pages,
- -					list_empty(&freelist), 0);
- -			rcu_read_unlock();
-+ 			iommu_put_pages_list(&freelist);
-  		}
-  		break;
-  	}
-@@@ -3921,9 -4107,26 +3906,9 @@@ static size_t intel_iommu_unmap_pages(s
-  static void intel_iommu_tlb_sync(struct iommu_domain *domain,
-  				 struct iommu_iotlb_gather *gather)
-  {
- -	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
- -	unsigned long iova_pfn = IOVA_PFN(gather->start);
- -	size_t size = gather->end - gather->start;
- -	struct iommu_domain_info *info;
- -	unsigned long start_pfn;
- -	unsigned long nrpages;
- -	unsigned long i;
- -
- -	nrpages = aligned_nrpages(gather->start, size);
- -	start_pfn = mm_to_dma_pfn_start(iova_pfn);
- -
- -	xa_for_each(&dmar_domain->iommu_array, i, info)
- -		iommu_flush_iotlb_psi(info->iommu, dmar_domain,
- -				      start_pfn, nrpages,
- -				      list_empty(&gather->freelist), 0);
- -
- -	if (dmar_domain->nested_parent)
- -		parent_domain_flush(dmar_domain, start_pfn, nrpages,
- -				    list_empty(&gather->freelist));
- +	cache_tag_flush_range(to_dmar_domain(domain), gather->start,
- +			      gather->end, list_empty(&gather->freelist));
-- 	put_pages_list(&gather->freelist);
-+ 	iommu_put_pages_list(&gather->freelist);
-  }
-  
-  static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
-@@@ -4366,20 -4573,27 +4351,15 @@@ static int intel_iommu_iotlb_sync_map(s
-  	return 0;
-  }
-  
-- static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid)
-+ static void intel_iommu_remove_dev_pasid(struct device *dev, ioasid_t pasid,
-+ 					 struct iommu_domain *domain)
-  {
-  	struct device_domain_info *info = dev_iommu_priv_get(dev);
-+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-  	struct dev_pasid_info *curr, *dev_pasid = NULL;
-  	struct intel_iommu *iommu = info->iommu;
-- 	struct dmar_domain *dmar_domain;
-- 	struct iommu_domain *domain;
-  	unsigned long flags;
-  
-- 	domain = iommu_get_domain_for_dev_pasid(dev, pasid, 0);
-- 	if (WARN_ON_ONCE(!domain))
- -	/*
- -	 * The SVA implementation needs to handle its own stuffs like the mm
- -	 * notification. Before consolidating that code into iommu core, let
- -	 * the intel sva code handle it.
- -	 */
- -	if (domain->type == IOMMU_DOMAIN_SVA) {
- -		intel_svm_remove_dev_pasid(dev, pasid);
---		goto out_tear_down;
-- 	dmar_domain = to_dmar_domain(domain);
- -	}
---
-  	spin_lock_irqsave(&dmar_domain->lock, flags);
-  	list_for_each_entry(curr, &dmar_domain->dev_pasids, link_domain) {
-  		if (curr->dev == dev && curr->pasid == pasid) {
-
-With above in mind, please consider them for v6.10.
-
-Best regards,
-baolu
-
-Colin Ian King (1):
-  iommu/vt-d: Remove redundant assignment to variable err
-
-Dimitri Sivanich (1):
-  iommu/vt-d: Allocate DMAR fault interrupts locally
-
-Jason Gunthorpe (1):
-  iommu: Add ops->domain_alloc_sva()
-
-Jingqi Liu (2):
-  iommu/vt-d: Remove debugfs use of private data field
-  iommu/vt-d: Remove private data use in fault message
-
-Lu Baolu (12):
-  iommu/vt-d: Remove caching mode check before device TLB flush
-  iommu/vt-d: Add cache tag assignment interface
-  iommu/vt-d: Add cache tag invalidation helpers
-  iommu/vt-d: Add trace events for cache tag interface
-  iommu/vt-d: Use cache_tag_flush_all() in flush_iotlb_all
-  iommu/vt-d: Use cache_tag_flush_range() in tlb_sync
-  iommu/vt-d: Use cache_tag_flush_range_np() in iotlb_sync_map
-  iommu/vt-d: Cleanup use of iommu_flush_iotlb_psi()
-  iommu/vt-d: Use cache_tag_flush_range() in cache_invalidate_user
-  iommu/vt-d: Use cache helpers in arch_invalidate_secondary_tlbs
-  iommu/vt-d: Remove intel_svm_dev
-  iommu/vt-d: Remove struct intel_svm
-
-Uros Bizjak (1):
-  iommu/vt-d: Use try_cmpxchg64{,_local}() in iommu.c
-
- include/linux/dmar.h          |   2 +-
- include/linux/iommu.h         |   6 +-
- drivers/iommu/amd/amd_iommu.h |   2 +-
- drivers/iommu/intel/iommu.h   |  86 +++++--
- drivers/iommu/intel/perf.h    |   1 -
- drivers/iommu/intel/trace.h   |  97 ++++++++
- drivers/iommu/irq_remapping.h |   2 +-
- drivers/iommu/amd/init.c      |   2 +-
- drivers/iommu/intel/cache.c   | 419 ++++++++++++++++++++++++++++++++++
- drivers/iommu/intel/debugfs.c |   7 -
- drivers/iommu/intel/dmar.c    |  10 +-
- drivers/iommu/intel/iommu.c   | 300 +++---------------------
- drivers/iommu/intel/nested.c  |  69 ++----
- drivers/iommu/intel/svm.c     | 372 +++++++-----------------------
- drivers/iommu/iommu-sva.c     |  16 +-
- drivers/iommu/irq_remapping.c |   5 +-
- drivers/iommu/intel/Makefile  |   2 +-
- 17 files changed, 743 insertions(+), 655 deletions(-)
- create mode 100644 drivers/iommu/intel/cache.c
-
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 36d7427b1202..351be9455214 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1067,7 +1067,6 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
+ 		goto error_free_seq_id;
+ 	}
+ 
+-	err = -EINVAL;
+ 	if (!cap_sagaw(iommu->cap) &&
+ 	    (!ecap_smts(iommu->ecap) || ecap_slts(iommu->ecap))) {
+ 		pr_info("%s: No supported address widths. Not attempting DMA translation.\n",
 -- 
 2.34.1
 
