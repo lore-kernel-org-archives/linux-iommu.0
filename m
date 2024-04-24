@@ -1,128 +1,117 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CA361598E5
-	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 13:05:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D0011598E3
+	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 13:08:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713963962; cv=none; b=EVrvEGPPUi8+H0jaI+MeWpwpC1ZJmmED74RPGvzGAFDYB3Yawbjs8GoCJHyVeQ4jpklpIXu0ZQ4Hwn3E1ZXAeTRvHT/oHLk0iRJr0ah0i+zY7B0eyECD7qqH8SjEh8qkAK7DsYa95cWM5mTBbPaRyeZUKzkdRS+t8IzyNhw2gzw=
+	t=1713964133; cv=none; b=R22lpEBV224mGiK91ULovZR+me6/aHZvCSTwRBHOkCUus5WFEinshsS3epnkwFX7rPpnbHieHHRb7hzo5sfyQmUMPz76k+Marav7CWC8kQHZCYIjxHPeHMLJ2GDiLFd/0WtcAUTMo8Hh6+17bE+9q/L7jsuX1DoE99eSSwaR7qY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713963962; c=relaxed/simple;
-	bh=viivNmGepG1MIuQie3zNxU/hsNFOPvsbAJiT/FJhqdA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Xg8AJD8x1WW4N4u5u4u01tj3n1grX1dK7RxlTFIJslgH/B9DhJ4D3xvaa7m7luCOd3umW3sGRFO1xDnvylmX9Y/ZS6vXdc6Pm2Shjrhc9LL38wY8tVheCH/kPt7KLlbfRdUo6Io01FawhYsp3G9dW+jZDzgqNlQtBVAVVCKmMUw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=f2Alh3yU; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1713964133; c=relaxed/simple;
+	bh=MLqG/ayz9pHHmYWBcJHvF3/ul3z6kDZGVuyyMmkOEPw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KxAcUCEN6n1ttMOWXFZdHSDp+3Wa2Ikk01+gM9hX8oii22Eqvg5sLuQKdaqtrbX/kDVzg2UykoAk6PdJd4TdUniuMnq1eXw58ENKyzkVbHkFh/E1eah3JtZHm3s28Zin9BczFHFb6Weh+mSGb/UPL0LqXh8eU5FSlRd396LYlCg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=WTLiuDK3; arc=none smtp.client-ip=209.85.210.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="f2Alh3yU"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713963961; x=1745499961;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=viivNmGepG1MIuQie3zNxU/hsNFOPvsbAJiT/FJhqdA=;
-  b=f2Alh3yUjne/23tyxpYcPrrqCSqNmc8Ahk8kocgT02ltC2DXCQG6eY/l
-   GLA635dUsVCxnEA5/tAv+4gt/ZzbcosC6bsZADXMeypoyOaH5bX8c4KEz
-   jgYxosiFB0iQywf4F5Ie1lR5iPRsw8ytrhVsjR8uHsvdifDngLkMyR/S8
-   djjJder8fwVWOHH/FJ4nbEfNzJAk662zipGHwJ/kqV9twePYLbMeqp4j7
-   8IX8z0CigmasCjMbTwzL6R+GHPIjGvItqQTc56yk84ezr9e/hKtuyl4K/
-   S/KKtN99bwlwBUxnlf4Bhug5uSqKvfs0NnRArg6oeRmvgsfIH1uSXMBPC
-   w==;
-X-CSE-ConnectionGUID: nZs2YnQPQtKKL+GdpG4vug==
-X-CSE-MsgGUID: T3eyLbhWSWuAeQV4TR0IMw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11054"; a="9462860"
-X-IronPort-AV: E=Sophos;i="6.07,226,1708416000"; 
-   d="scan'208";a="9462860"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2024 06:06:00 -0700
-X-CSE-ConnectionGUID: G/GASjhURuqGVpdcL5wL3Q==
-X-CSE-MsgGUID: UcZS+KsfQdeL1ob2Ja+iog==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,226,1708416000"; 
-   d="scan'208";a="29183328"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmviesa003.fm.intel.com with ESMTP; 24 Apr 2024 06:05:58 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1001)
-	id 7B736136; Wed, 24 Apr 2024 16:05:56 +0300 (EEST)
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	iommu@lists.linux.dev,
-	Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH] iommu/vt-d: No need to export dmar_platform_optin()
-Date: Wed, 24 Apr 2024 16:05:56 +0300
-Message-ID: <20240424130556.357897-1-mika.westerberg@linux.intel.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="WTLiuDK3"
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-6eb75c202dbso3606073a34.2
+        for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 06:08:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1713964131; x=1714568931; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=UaGiR6whDixYKUk+u+/VLyz5W91RnPjldFm+jW5pc40=;
+        b=WTLiuDK3oIHQctLDsnTPHRgBTvtgM1kxs2t6AuLY/7Eh7+m9fpHQ6XV8sqFb8Uk9yB
+         S/mJ22KA0DNmncWBZDiLOiE9Nc4E+GLjGmGGtCM6G2a31syq9E0NDbyZvlEKDzweWDkW
+         pCC9fPpmf30lbeoow4cpnWLemsn5Hhh7jqtoKEzUbvtzKiAXyLTLpyJYTM2bNipqc/IM
+         nqPjmZ7JtCfCZ97rqFk8/CPIbTCKAthTL54VvZVgmr8eySkHSDijs9bDQzOOF0el5aiK
+         Zfuzcf5BJwMPwa+UNIvWBv5md/cS9g+vb8xDTF3fcPTSFJXZn33xyda112y6xYgQZ2jD
+         FPig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713964131; x=1714568931;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=UaGiR6whDixYKUk+u+/VLyz5W91RnPjldFm+jW5pc40=;
+        b=a560NppH81wtlc295RxwbMRn8UoRYTIBQnnxd7xl1etk+PSI15bOQae/RWIqae7KnV
+         J2a1aeXhL5cS/L0V3zRTc+0gbE8boP2CLGLHG5SAueDiJ2teRKqAgBlNqkTinvixdt7m
+         oONeWncCb8jz+z+UILZhWuSNZz6fEIeTRmy4SSJJhvlxh1XwBJ93fzQcnmxnF9cmsUhl
+         KIv8PNhn9hW5pNlH57QHA9WFV4oQAAzKitS6FtNxwtpVRhJT5E00CWWNnHnzXfKmcWYp
+         ywPxReGGRFAp15SbOcTjCh7rhZsQxNhCUtSBqHPK5dnKrzvT5EzdR+3uE/i73UcBVKlH
+         /1dw==
+X-Forwarded-Encrypted: i=1; AJvYcCXLKkquSvTeFBPz3T420gLVcfqdk5VL/eSMtb2ys0SUZABfhORbHajejNs6a7/vfZtWUPQa+BDE+w6etNEuanoqUef9kFk=
+X-Gm-Message-State: AOJu0YzDuw/MbMR1mE5x70moSClzIQMyjgGwX/S0B9asvcG0dxTrpqkc
+	hQbFsG6xknyMIy+rxlU2/VKuAu7VM2gvvMWDkbmo3K6Nls2QF1p8EG5TUlqFKHE=
+X-Google-Smtp-Source: AGHT+IGweXbyKwjZYdG0QH0zyCcjP72EDqRD1FL9MQKqbJ4LjEfM8xBfHSBXgRJ48yw5Q81FM+m3aQ==
+X-Received: by 2002:a05:6830:1106:b0:6ea:1bf3:9854 with SMTP id w6-20020a056830110600b006ea1bf39854mr2716615otq.12.1713964131462;
+        Wed, 24 Apr 2024 06:08:51 -0700 (PDT)
+Received: from ziepe.ca ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id m2-20020a9d6442000000b006ea1e0fec59sm2369684otl.10.2024.04.24.06.08.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Apr 2024 06:08:51 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1rzcMj-007vEl-Tf;
+	Wed, 24 Apr 2024 10:08:49 -0300
+Date: Wed, 24 Apr 2024 10:08:49 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Vasant Hegde <vashegde@amd.com>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+	Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+	joro@8bytes.org, suravee.suthikulpanit@amd.com,
+	alexander.deucher@amd.com, baolu.lu@linux.intel.com,
+	Eric Wagner <ewagner12@gmail.com>, stable@kernel.org
+Subject: Re: [PATCH v2] iommu/amd: Enhance def_domain_type to handle
+ untrusted device
+Message-ID: <20240424130849.GG231144@ziepe.ca>
+References: <20240423111725.5813-1-vasant.hegde@amd.com>
+ <6552a5bb-0481-4a0c-a587-84275ab3a179@arm.com>
+ <c255ccb1-68ac-485b-807e-a4c38786f116@amd.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c255ccb1-68ac-485b-807e-a4c38786f116@amd.com>
 
-This function is not called anymore outside of this driver so we can
-drop the export and move the declaration to the driver private header.
+On Wed, Apr 24, 2024 at 01:41:57PM +0530, Vasant Hegde wrote:
+> Hi Robin,
+> 
+> 
+> On 4/23/2024 4:56 PM, Robin Murphy wrote:
+> > On 23/04/2024 12:17 pm, Vasant Hegde wrote:
+> >> Previously, IOMMU core layer was forcing IOMMU_DOMAIN_DMA domain for
+> >> untrusted device. This always took precedence over driver's
+> >> def_domain_type(). Commit 59ddce4418da ("iommu: Reorganize
+> >> iommu_get_default_domain_type() to respect def_domain_type()") changed
+> >> the behaviour. Current code calls def_domain_type() but if it doesn't
+> >> return IOMMU_DOMAIN_DMA for untrusted device it throws error. This
+> >> results in IOMMU group (and potentially IOMMU itself) in undetermined
+> >> state.
+> >>
+> >> This patch adds untrusted check in AMD IOMMU driver code. So that it
+> >> allows eGPUs behind Thunderbolt work again.
+> > 
+> > Sorry, but I firmly disagree with this approach - regardless of what the AMD
+> > driver is currently doing and how appropriate it may or may not be, we should
+> > not be duplicating core code policy in drivers, 
 
-No functional changes.
+Then AMD should remove the PASID stuff from def_domain_type and we
+need to fix it with properly designed core support for this limitation
+before merging the SVA support.
 
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
----
- drivers/iommu/intel/dmar.c  | 1 -
- drivers/iommu/intel/iommu.h | 2 ++
- include/linux/dmar.h        | 7 -------
- 3 files changed, 2 insertions(+), 8 deletions(-)
+> > and we certainly shouldn't be
+> > doing so to bodge around a breakage in how the core code implements said policy.
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 36d7427b1202..42b79043241c 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -2480,4 +2480,3 @@ bool dmar_platform_optin(void)
- 
- 	return ret;
- }
--EXPORT_SYMBOL_GPL(dmar_platform_optin);
-diff --git a/drivers/iommu/intel/iommu.h b/drivers/iommu/intel/iommu.h
-index 404d2476a877..4a965848ea0f 100644
---- a/drivers/iommu/intel/iommu.h
-+++ b/drivers/iommu/intel/iommu.h
-@@ -1041,6 +1041,8 @@ static inline void context_set_sm_pre(struct context_entry *context)
- /* Convert value to context PASID directory size field coding. */
- #define context_pdts(pds)	(((pds) & 0x7) << 9)
- 
-+bool dmar_platform_optin(void);
-+
- struct dmar_drhd_unit *dmar_find_matched_drhd_unit(struct pci_dev *dev);
- 
- int dmar_enable_qi(struct intel_iommu *iommu);
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index e34b601b71fd..233ef518dc99 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -173,8 +173,6 @@ static inline int dmar_ir_hotplug(struct dmar_drhd_unit *dmaru, bool insert)
- { return 0; }
- #endif /* CONFIG_IRQ_REMAP */
- 
--extern bool dmar_platform_optin(void);
--
- #else /* CONFIG_DMAR_TABLE */
- 
- static inline int dmar_device_add(void *handle)
-@@ -187,11 +185,6 @@ static inline int dmar_device_remove(void *handle)
- 	return 0;
- }
- 
--static inline bool dmar_platform_optin(void)
--{
--	return false;
--}
--
- static inline void detect_intel_iommu(void)
- {
- }
--- 
-2.43.0
+It isn't breakage. It is evolution of the API.
 
+Hacking in the AMD driver is temprary and Vasant will eventually fix
+it. Regressing the core code to go back to allowing drivers to inform
+policy is much harder to undo.
+
+Jason
