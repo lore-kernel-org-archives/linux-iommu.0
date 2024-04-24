@@ -1,232 +1,237 @@
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2076.outbound.protection.outlook.com [40.107.236.76])
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED4842C1A2
-	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 18:45:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.76
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713984358; cv=fail; b=FcT46R/NU2gomLgRstagpI7YbIUY3mgPpS0dXOj9O7mq2NYpJEhY2jkCrweh8qiQpWZuZtHvtD/d3+1Ilj5xq8wj6+phzvv3UY1XFl313LGYVDE6rejclS9rNqDdzi8YyjAqkmzzUum/eIkzgOfWJaP5OLsBpEuLnfqT4wOyvNs=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713984358; c=relaxed/simple;
-	bh=vlATrwa55dG00UHOD81SvIBBNqvjy6YZO+amzUiIOGE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=cDeAKieU5gfxsdEEkrdUEmikfMb7Oib5fnxLcCa6eJaIz2/A1co1EsTLS+ZdxHcM3ubffw6mt+R3ua0hY/cu//IAwAxGOXa0B1+gHEvbhLHU6rKOBlu4HgbPei4VW9X1uuxg83Gxfk1ByBJjooZfJ9DM+yFaR0xfEAfBcy80FXY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=oYDKzNnk; arc=fail smtp.client-ip=40.107.236.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2BC7143C4E
+	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 20:13:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713989636; cv=none; b=r7iruqYtJ+j+OThY8cQ4l2a2O6lmn8THZhH16xcUgZ41WJUCIU1BSJqCye6UsE74QEPIzILecVBkwS2SW456B21GCMpCFOBaFyd0R04y9ommxNt+irSl5CBV0bN+FgBj69sewYr0Dm0jcRlX/3w0f6yESjxWQFo7IlVimIVeGJQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713989636; c=relaxed/simple;
+	bh=AM1q6e73KfmGBdEpYzRzuKvNqC08OTjFdLkVMj9unpk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=adwrnE7V9mFKudyXjIwF+fueP+7MA+MYuxstLeuFaEEiThCnPaBa6eDljMj6PxWKaVeO3uARVFDyR43XPGv+4tUKbUruvupCcn629S0JYpux3ebczAPDAmRtcbiFEBzkjxMEcLJSy4qsswu4QcJXLR9dZcHGo+7gnR+nQ6pK4J4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=jNzFeCBu; arc=none smtp.client-ip=170.10.133.124
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="oYDKzNnk"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i7zPELH/mIJ/ByrFaCDr87QFw7x99Qj5JnxUEcIhWyQ3UBsEhpTAgTTzmB49WBSrs4i9XbdPoy0HQhuqYB71NzBdjgoJKGKx0/JUHbfOWUb+yxLHT1uekwW7iy9BJgEnVELv4P5yt7y+2IhtSALKAJ7L0stqAKWfbAWe8uO1mISJLiPd3KB2t6KLYofpH1IaWTDIH+94dl3a+H6XDH/F98jeWS56O1aMdG08642+/Yfp6HAK33ufk+661x5CIi/ukh5KBSy0yTqnTPqB9TU4RJrOpAOS3OWtpodLBgwe2eGDxqwr5HXf7rBU0ozBlNjR2ZLLgB4bEl50Om0t2FwHWw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=anATDYfrDgD4ff8Y8adcIaSWYHz0hXXw7hs4yL9gcNk=;
- b=WyiwBpjsfczu2gcdLXsqCVnjQHxtUHQn1ruQ4WfkTTe26seEF8g7Ue10NIlVDi1KpcpJHthcNxqLF7+J5ohhP07naZAXz1bZTvtMXaahSp0ZQqrcN/7/+BEe6ufC7XS0YTtMQgo0401IThkjxh25SJICic1MLTisti3q5KaM4WV8c1bpIb2BxRXONQ97AbDSny6NtUC90eNYoTCFAjbl8inOAfCZnov6xwkKzZXCRc+0UeB2SgoF7zb3FKsC4fjDOGVfFLO8CKsgiEBtLTzbJe9pLstRtaoB/t4uzWH+kDEenFlSwbO4VggFFfnHqYpYmrlhxRUIijaahk1A97YiQA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=anATDYfrDgD4ff8Y8adcIaSWYHz0hXXw7hs4yL9gcNk=;
- b=oYDKzNnksb0fmmL04mERjFKEaX+zrHi74woRVyadaPGF/nhgvwInejrcAalhOtvRKUWXsL/UUN++Nz8A+Gp6QX+vQ8AI6/s/LbK79jxUZJvJcBCMi1Sw6ff0k/VngPioaSlYbwZgbb4xwWg8XPMeNPGYXXXenj/vgNTxRcCt0BPPE+xu3zj3sp9hmvX71MOeI3+W+YwZzxpLhv4Jstc+ePK5eCJw8lNTAD1j+6VX40ZuIhBqVq/7RhDU/4f2UjyXFJIjPnZzJsyOqxM807yDE5D1P18RaQH9Bhk+R1M+xQjsUQDcAIUitdBC9mj2VDsuvNm/e+zhyRhTU0PFODIKEw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by MW6PR12MB8733.namprd12.prod.outlook.com (2603:10b6:303:24c::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.23; Wed, 24 Apr
- 2024 18:45:52 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7519.021; Wed, 24 Apr 2024
- 18:45:52 +0000
-Date: Wed, 24 Apr 2024 15:45:50 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="jNzFeCBu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1713989634;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=J0pNSJhCUzRQ+iJ8HncGThgziJwiZ06q3YEsIpOB3KY=;
+	b=jNzFeCBuUy49d3s/ZmZ6uIWSWehzpjdmmjsgahLcdjXOD9/c1SYccUHPG7GqGV6Wnc7Ru0
+	+pEnnWnsEhTy0om5M5gJMgnim/N2lAxEzYmw/v1bew0nBILbSnwVrjMtx9PAy1pTwRmEpu
+	HwtZSEswu66Fda5/wMAOARJLlWsInXg=
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com
+ [209.85.166.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-608-KFnAxZHJPTedlk6BpZU5Ww-1; Wed, 24 Apr 2024 16:13:52 -0400
+X-MC-Unique: KFnAxZHJPTedlk6BpZU5Ww-1
+Received: by mail-il1-f199.google.com with SMTP id e9e14a558f8ab-36bffeee98dso3012345ab.2
+        for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 13:13:52 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1713989632; x=1714594432;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=J0pNSJhCUzRQ+iJ8HncGThgziJwiZ06q3YEsIpOB3KY=;
+        b=lpU+gF3x45dwh12i6AW4u+p65Mn5mMGlsoeU3v9GTja2Kce3+i4HbViuMObhx0R5QP
+         Es0NyhxsZZyXQVq5NjgCRKLr6f9hLXbWo+DPD0eL3mUN16+3PUttoMnpOtYzMd6VQVjB
+         RtGSjUAj72Ukl4Az04WUEmrqhhJ/BRAKkxOChMsieJrlvCzIsfcizkDNMRvaDODGyRDv
+         wRpzunuB5pz+lyOq2L0PzumnumaZamttX08YSNVJzvxYq7FdmmIjEenn991Al8wMGqJ/
+         v9ZiO7ONJDdxVQ31d4aA7T79MQ1BDx/GzY6bIucrb8XNCd5urLlTtjC3gCXtBe8rWJ1U
+         9Lyw==
+X-Forwarded-Encrypted: i=1; AJvYcCVF7QA7a34bcrSqzJCHBkapqUbm5GiisK8XEwLBPqCfqwkR1qjV+nNhuj2OWZT/WNCx4zPzxnj47usE4cljdboW+f9ScMY=
+X-Gm-Message-State: AOJu0YzcUBGoBbopV9VB4cO/ELAojfNVIJJ202HVFhe4FZStXVHW0tnb
+	aBbWdiDkNrhwcqn9sVoZGn2nW+4pBepiVSex3dmTlWFaS2tm+YPUCKgHUPbwTfQj0Ya7QV/OngQ
+	JnDVWbZ7OjxLy0/zzGHLZJoeZ421NrOBPgghSKz9FMqt8jA1kq+AX
+X-Received: by 2002:a05:6e02:19c9:b0:36a:ff03:d2c9 with SMTP id r9-20020a056e0219c900b0036aff03d2c9mr4276985ill.8.1713989631886;
+        Wed, 24 Apr 2024 13:13:51 -0700 (PDT)
+X-Google-Smtp-Source: AGHT+IEckZt9UvEa5gTTmD8N8zTvp3UVH5oTkGXMywYgKCDGgilCVq6OCUSNQTabnQn/JK0k+rvc8g==
+X-Received: by 2002:a05:6e02:19c9:b0:36a:ff03:d2c9 with SMTP id r9-20020a056e0219c900b0036aff03d2c9mr4276946ill.8.1713989631405;
+        Wed, 24 Apr 2024 13:13:51 -0700 (PDT)
+Received: from redhat.com ([38.15.36.11])
+        by smtp.gmail.com with ESMTPSA id x5-20020a056638160500b00484f72550ccsm3167420jas.174.2024.04.24.13.13.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 24 Apr 2024 13:13:50 -0700 (PDT)
+Date: Wed, 24 Apr 2024 14:13:49 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
 Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
-	"Pan, Jacob jun" <jacob.jun.pan@intel.com>
+ "joro@8bytes.org" <joro@8bytes.org>, "robin.murphy@arm.com"
+ <robin.murphy@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+ "nicolinc@nvidia.com" <nicolinc@nvidia.com>, "kvm@vger.kernel.org"
+ <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
+ <chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
+ <iommu@lists.linux.dev>, "baolu.lu@linux.intel.com"
+ <baolu.lu@linux.intel.com>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+ "Pan, Jacob jun" <jacob.jun.pan@intel.com>, =?UTF-8?B?Q8OpZHJpYw==?= Le
+ Goater <clg@redhat.com>
 Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
-Message-ID: <20240424184550.GU941030@nvidia.com>
-References: <20240418143747.28b36750.alex.williamson@redhat.com>
- <BN9PR11MB5276819C9596480DB4C172228C0D2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240419103550.71b6a616.alex.williamson@redhat.com>
- <BN9PR11MB52766862E17DF94F848575248C112@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240423120139.GD194812@nvidia.com>
- <BN9PR11MB5276B3F627368E869ED828558C112@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240424001221.GF941030@nvidia.com>
- <BN9PR11MB5276183377A6D053EFC837FD8C102@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240424141525.GN941030@nvidia.com>
- <20240424123851.09a32cdf.alex.williamson@redhat.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240424123851.09a32cdf.alex.williamson@redhat.com>
-X-ClientProxiedBy: SN4PR0501CA0054.namprd05.prod.outlook.com
- (2603:10b6:803:41::31) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+Message-ID: <20240424141349.376bdbf9.alex.williamson@redhat.com>
+In-Reply-To: <20240424183626.GT941030@nvidia.com>
+References: <BN9PR11MB52765314C4E965D4CEADA2178C0E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<4037d5f4-ae6b-4c17-97d8-e0f7812d5a6d@intel.com>
+	<20240418143747.28b36750.alex.williamson@redhat.com>
+	<BN9PR11MB5276819C9596480DB4C172228C0D2@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240419103550.71b6a616.alex.williamson@redhat.com>
+	<BN9PR11MB52766862E17DF94F848575248C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240423120139.GD194812@nvidia.com>
+	<BN9PR11MB5276B3F627368E869ED828558C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+	<20240424001221.GF941030@nvidia.com>
+	<20240424122437.24113510.alex.williamson@redhat.com>
+	<20240424183626.GT941030@nvidia.com>
+X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-redhat-linux-gnu)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|MW6PR12MB8733:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7fdd2487-72a4-4b5e-f57b-08dc648ec4a5
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|376005|7416005|366007;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?LAyu2gr8ZZ9iQzMkLDRXU4sZX4afbn0n5adlmTUD8/GDm1pT29lmnGRsGtef?=
- =?us-ascii?Q?EJVDghD3ziaynWEDbS559aGlSVCuLVQrMhvXxirvXeKUDzh2fUcHVl7rt4US?=
- =?us-ascii?Q?pLmKlbhWUd9OeBENiN5MK2KuQYEG0kEuIBlhUSg4gB4zSs99eWWgl2rq1n7r?=
- =?us-ascii?Q?jAgOLA+900N9gQOun/V8ZS14BjHKO0OOJck0ESZkOi8pU4UEfzjEvCpUUR3E?=
- =?us-ascii?Q?aJc9gd/A8pLZYOC0q70NL1VJzLlOfBTk6AUuftCu79gfpPhk6D2rPvH5tEPq?=
- =?us-ascii?Q?laBq65aothXyZBqbQN3qpepgkZy+3WMw3mCefp0DaN6jJeGwgGrBTE5e0U14?=
- =?us-ascii?Q?NdoMGIVEwbUYU5eXxAb64SW71VzK5w3rxGkR9SHG6aiK0Lp09OiEpK8vioNJ?=
- =?us-ascii?Q?/XgCFH6Kkfw91m6kQEHEIe1+lxsUCcGZAKTsIcVosilYxzxWFAa4lA7ls/bp?=
- =?us-ascii?Q?BLiZHHQNqWmk5yoplTxpeRm6N0F/r8XO9UjyCDaBdXg+7ZkXkz3oRZVGAUl9?=
- =?us-ascii?Q?d/P+BWgHIhiVXP6YCk0IwsAGtVgPeSuh6am4VtZ6F20nrsYnzT4wxbKJ/U3/?=
- =?us-ascii?Q?qsZuijo54yHDhp6MrWcf5zI05N7+0jJ17m6WZ7AQElvJIFKZjvxQx1/4+2/h?=
- =?us-ascii?Q?ryipvV39fioekK7sC4t8YypnRzG8tLGpFu0885NtCKv3ilFnFe/KBa0dSknj?=
- =?us-ascii?Q?zFdhF65Cw4NIu7sHWLsR8YauYmYjmxFPWJ5NI8G5bEvNXLg6qvJiNUaEP8a2?=
- =?us-ascii?Q?Mr48Q+KSmm3PGN2KhgxjD5i/MubDI7f67SO/uOshMzIniEV+lERkyDREIhOM?=
- =?us-ascii?Q?Di3Bm5JCFUrzREVb2lyqCMIilmPOBOjioVmsSo85+soAPLy7oeFIEi3TWpu9?=
- =?us-ascii?Q?F8bjYHkJIANyLryNkypGXKwabQP+NmEs7q6xzpVUlcJRVovKwuhZjN41wzVT?=
- =?us-ascii?Q?yGM7VvtZwCqlFOoN7naawyjzRpxk6mv8ESnuuODSl97TgI5Jn7VfFZq3WreH?=
- =?us-ascii?Q?2okaB8YczG8No5KMuilH24/WuBbFV/HeEgy1/CC2kHJsY5tYiMau4RTxLq7s?=
- =?us-ascii?Q?/bDVARyBkMKn5+hUYLbAf4pU6K1hcv+LHTOO1Si99MuZXjnvWOP3G/zunFdP?=
- =?us-ascii?Q?i6kXbFvSM0I0Rc1AS3k35ycqW8ec3Xbeh9zBng9Wjt3XvK7majM5NDe0KCMs?=
- =?us-ascii?Q?lBwv0QHJfUb98+P7U0DBi97N5DO4+I8VvVXhlxfwtUJNnq1z8e/A07oIdIUB?=
- =?us-ascii?Q?91J7R9GfXlkzgx/Xk3DAS0McpT3K2tfeFIbB7PhM1A=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(7416005)(366007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?9NCdkZ0m9lImVK0QoX1KO6WkwpTWEWNsWD7zwJg3l5Szs/sttFvqxyDsfPSI?=
- =?us-ascii?Q?AaKrqrGuO63fOhNuglTX7U5oDjYLsq5vmFScyArn8feab0uozpWTNV+VdkXw?=
- =?us-ascii?Q?X+8M6Rfc4GbCnvvjZa1OBL+/x4pXWE8QgMcTMgSQiHgNjsJd+yFi/1U0b5QI?=
- =?us-ascii?Q?sCBoj445Zk0u0X2yixy8xOyTMyqID8Wa3Evz4eD3AQQCVxK3fqw1pprVWqgw?=
- =?us-ascii?Q?H08iD2YSP0zE6c68lYALtiZ28Xk4sRfHe+yzQC8cRUMs+6EhmY7CvoJFjaXY?=
- =?us-ascii?Q?T+RbWZRnqUGds2NGIaEOyAZioIQZEpzzfan/2/as2W+DUIsokaM1GC3YKL/k?=
- =?us-ascii?Q?+Bt2HNhCy/PUcsq4WHkOtQIg5rpdebnkkgxBVBLF6cIBqu030Q4mhTYp94xj?=
- =?us-ascii?Q?d7I+DWiXO/h4haIWv1SNfsPf4VsnRS9n/qU6CwhyuV1g0HW0C+D1t8Z6OPC4?=
- =?us-ascii?Q?vj4kno8tx4Sacc4cjB4BWJLkZ1MLoNhmguOA3ZVXEZ/Y0s5Cq4R0odkf8qln?=
- =?us-ascii?Q?u4zZanVgArEaX/OBmnlUQp9ZUNiygnmahHuvu3o3YkjId/lDZCAMaAIo6cXu?=
- =?us-ascii?Q?eeK1Gsp+bdu5ypSXiPaBMmPrS2ndSeCACPPe2mdFwNay33BLMVGTKNJ4uUvn?=
- =?us-ascii?Q?SXVYHUZ1/VJ66oIOgt6YiwuGNXaU918CKX9Rxxux7gyUAXL+yzEWieDzhEWE?=
- =?us-ascii?Q?U+Ld7NIKPM0QrpT2Skd15M40F7cUGE20ORrJ93ppv0Te3HHxssfwKtqHk8qO?=
- =?us-ascii?Q?hAz2bo4ymZ53BWmSgt+vOOCmQJGAYMLaY5GnUWcLYKaHhBi46ZzQcleCR3Yn?=
- =?us-ascii?Q?siqtyOG9nPQmJnL0rHO1bTKMfKzjQGtkxuVOKMqR1jXPJvqcIHXF4xNGs/NH?=
- =?us-ascii?Q?qpbVW4tLinTVNit9Ccqb5fD0i0Kx3HDvBMwN90TAmWFFQWDUJRTrQiecePJy?=
- =?us-ascii?Q?qtB5mHaFDdUYDH+MvlBnBOIitlzCD7jAlPU0xOlelPsOj5l6FfpjUGB4+Cvn?=
- =?us-ascii?Q?ntayTonJl5HT4KyKpx5P7RcrpEsIkGy1MmLCjuInJyncLlu/nwglXHa8VOXM?=
- =?us-ascii?Q?I8gn0a6jkFdO9Zq/HUIKs5lpqqeFi5KKSHIx796QL96oOmH5fTeplWiCzSzp?=
- =?us-ascii?Q?209Qa8sr2zEyzslfx6UMMEkkuNf1KGF62dRtl4qz+nsvOVdOuhSg5ukFK5BQ?=
- =?us-ascii?Q?waGz17yooaZEjWaRvINEXAX/PGaOuULUSkaNANVB0WMJkXBA9ElMXIqwmYgI?=
- =?us-ascii?Q?YgUhPbPoCABjKSy5JyBtvm70faLUKxnJL+0tCV85WQVeTJgXEc5yfuG95Hgt?=
- =?us-ascii?Q?vvkrg7p2xghvScJ6JgtXHLyWLJC+YKH+TuvOWvkmYwXQnfTH6MxZqTmsyw+H?=
- =?us-ascii?Q?a0HjmrDwg5lQjajMX+5uWQgEBydo8fWcTyZ8GPNoIP1QJZekQ2kfI2CG2xCH?=
- =?us-ascii?Q?PQdPxjBQsOroO7VvfW5xbGaaLsD1U0zJTf4+J4WW6LZmvzes3Lmgg/onxSwp?=
- =?us-ascii?Q?4SUOKx6MiySEswfrwVZeYWJ6dHdGY7hAKFr3zdeptdWp0DbhT6QqIK2iCUa6?=
- =?us-ascii?Q?W5+jp0zjostvYlYO+DQ=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7fdd2487-72a4-4b5e-f57b-08dc648ec4a5
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2024 18:45:52.8350
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ouun3SOR8OOCFsJ9UztFP78yTBEMruUYjoVs2/kDHAe1Gmc++Tp0GXvHPfdBOlDb
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW6PR12MB8733
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, Apr 24, 2024 at 12:38:51PM -0600, Alex Williamson wrote:
-> On Wed, 24 Apr 2024 11:15:25 -0300
-> Jason Gunthorpe <jgg@nvidia.com> wrote:
+On Wed, 24 Apr 2024 15:36:26 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Wed, Apr 24, 2024 at 12:24:37PM -0600, Alex Williamson wrote:
+> > > The only reason to pass the PF's PASID cap is to give free space to
+> > > the VMM. If we are saying that gaps are free space (excluding a list
+> > > of bad devices) then we don't acutally need to do that anymore.  
+> > 
+> > Are we saying that now??  That's new.  
 > 
-> > On Wed, Apr 24, 2024 at 05:19:31AM +0000, Tian, Kevin wrote:
-> > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > Sent: Wednesday, April 24, 2024 8:12 AM
-> > > > 
-> > > > On Tue, Apr 23, 2024 at 11:47:50PM +0000, Tian, Kevin wrote:  
-> > > > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > > > Sent: Tuesday, April 23, 2024 8:02 PM
-> > > > > >
-> > > > > > It feels simpler if the indicates if PASID and ATS can be supported
-> > > > > > and userspace builds the capability blocks.  
-> > > > >
-> > > > > this routes back to Alex's original question about using different
-> > > > > interfaces (a device feature vs. PCI PASID cap) for VF and PF.  
-> > > > 
-> > > > I'm not sure it is different interfaces..
-> > > > 
-> > > > The only reason to pass the PF's PASID cap is to give free space to
-> > > > the VMM. If we are saying that gaps are free space (excluding a list
-> > > > of bad devices) then we don't acutally need to do that anymore.
-> > > > 
-> > > > VMM will always create a synthetic PASID cap and kernel will always
-> > > > suppress a real one.  
+> I suggested it a few times
+> 
+> >   
+> > > VMM will always create a synthetic PASID cap and kernel will always
+> > > suppress a real one.
 > > > 
-> > > oh you suggest that there won't even be a 1:1 map for PF!  
+> > > An iommufd query will indicate if the vIOMMU can support vPASID on
+> > > that device.
+> > > 
+> > > Same for all the troublesome non-physical caps.
+> > >   
+> > > > > There are migration considerations too - the blocks need to be
+> > > > > migrated over and end up in the same place as well..    
+> > > > 
+> > > > Can you elaborate what is the problem with the kernel emulating
+> > > > the PASID cap in this consideration?    
+> > > 
+> > > If the kernel changes the algorithm, say it wants to do PASID, PRI,
+> > > something_new then it might change the layout
+> > > 
+> > > We can't just have the kernel decide without also providing a way for
+> > > userspace to say what the right layout actually is. :\  
 > > 
-> > Right. No real need..
+> > The capability layout is only relevant to migration, right?    
+> 
+> Yes, proabbly
+> 
+> > A variant
+> > driver that supports migration is a prerequisite and would also be
+> > responsible for exposing the PASID capability.  This isn't as disjoint
+> > as it's being portrayed.  
+> 
+> I guess..  But also not quite. We still have the problem that kernel
+> migration driver V1 could legitimately create a different config space
+> that migration driver V2
+> 
+> And now you are saying that the migration driver has to parse the
+> migration stream and readjust its own layout
+> 
+> And every driver needs to do this?
+> 
+> We can, it is a quite big bit of infrastructure I think, but sure..
+> 
+> I fear the VMM still has to be involved somehow because it still has
+> to know if the source VMM has removed any kernel created caps.
+
+This is kind of an absurd example to portray as a ubiquitous problem.
+Typically the config space layout is a reflection of hardware whether
+the device supports migration or not.  If a driver were to insert a
+virtual capability, then yes it would want to be consistent about it if
+it also cares about migration.  If the driver needs to change the
+location of a virtual capability, problems will arise, but that's also
+not something that every driver needs to do.
+
+Also, how exactly does emulating the capability in the VMM solve this
+problem?  Currently QEMU migration simply applies state to an identical
+VM on the target.  QEMU doesn't modify the target VM to conform to the
+data stream.  So in either case, the problem might be more along the
+lines of how to make a V1 device from a V2 driver, which is more the
+device type/flavor/persona problem.
+
+> > Outside of migration, what does it matter if the cap layout is
+> > different?  A driver should never hard code the address for a
+> > capability.  
+> 
+> Yes, talking about migration here - migration is the hardest case it
+> seems.
+>  
+> > > At least if the VMM is doing this then the VMM can include the
+> > > information in its migration scheme and use it to recreate the PCI
+> > > layout withotu having to create a bunch of uAPI to do so.  
 > > 
-> > > kind of continue with the device_feature method as this series does.
-> > > and it could include all VMM-emulated capabilities which are not
-> > > enumerated properly from vfio pci config space.  
-> > 
-> > 1) VFIO creates the iommufd idev
-> > 2) VMM queries IOMMUFD_CMD_GET_HW_INFO to learn if PASID, PRI, etc,
-> >    etc is supported
-> > 3) VMM locates empty space in the config space
-> > 4) VMM figures out where and what cap blocks to create (considering
-> >    migration needs/etc)
-> > 5) VMM synthesizes the blocks and ties emulation to other iommufd things
-> > 
-> > This works generically for any synthetic vPCI function including a
-> > non-vfio-pci one.
+> > We're again back to migration compatibility, where again the capability
+> > layout would be governed by the migration support in the in-kernel
+> > variant driver.  Once migration is involved the location of a PASID
+> > shouldn't be arbitrary, whether it's provided by the kernel or the VMM.  
 > 
-> Maybe this is the actual value in implementing this in the VMM, one
-> implementation can support multiple device interfaces.
+> I wasn't going in this direction. I was thinking to make the VMM
+> create the config space layout that is approriate and hold it stable
+> as a migration ABI.
 > 
-> > Most likely due to migration needs the exact layout of the PCI config
-> > space should be configured to the VMM, including the location of any
-> > blocks copied from physical and any blocks synthezied. This is the
-> > only way to be sure the config space is actually 100% consistent.
+> I think in practice many VMMs are going to do this anyhow unless we
+> put full support for config space synthesis, stable versions, and
+> version selection in the kernel directly. I was thinking to avoid
+> doing that.
+
+Currently QEMU replies on determinism that a given command line results
+in an identical machine configuration and identical devices.  State of
+that target VM is then populated, not defined by, the migration stream.
+
+> > Regardless, the VMM ultimately has the authority what the guest
+> > sees in config space.  The VMM is not bound to expose the PASID at the
+> > offset provided by the kernel, or bound to expose it at all.  The
+> > kernel exposed PASID can simply provide an available location and set
+> > of enabled capabilities.   
 > 
-> Where is this concern about config space arbitrarily changing coming
-> from?
+> And if the VMM is going to ignore the kernel layout then why do so
+> much work in the kernel to create it?
 
-It is important for migration.
+Ok, let's not ignore it ;)
 
-Today with the drivers we have the devices have to take care of their
-own config space layout only in HW. We are not expecting migration
-drivers to worry about any SW created config space. SW config space is
-a new thing.
+> I think we need to decide, either only the VMM or only the kernel
+> should do this.
 
-> > We may also want a DVSEC to indicate free space - but if vendors are
-> > going to change their devices I'd rather them change to mark the used
-> > space with DVSEC then mark the free space :)
-> 
-> Sure, had we proposed this and had vendor buy-in 10+yrs ago, that'd be
-> great
+What are you actually proposing?  Are you suggesting that if a device
+supports the Power Management capability it will be virtualized at
+offset 0x60, if the device supports the MSI capability it will be
+virtualized at 0x68,... if a device supports PASID it will be
+virtualized at offset 0x300, etc...?
 
-We are applying this going forward to PASID, and PRI, which barely
-exist on devices at all today. We don't need to worry about those
-10+yr old devices that don't support PASID/PRI in the first place.
+That's not only impractical because we can't layout all the capabilities
+within the available space, but also because we will run into masking
+hidden registers and devices where the driver hard codes a capability
+offset.
 
-I think this makes the problem much smaller.
+If the VMM implements the "find a gap" solution then it's just as
+subject to config space changes in hardware or provided by the variant
+driver.
 
-Jason
+If not either of those, are we hard coding a device specific config
+space map into the VMM or providing one on the command line?  I thought
+we were using vfio-pci variant drivers and a defined vfio migration API
+in order to prevent modifying the VMM for every device we want to
+support migration.  Also I'd wonder if the driver itself shouldn't be
+configured to provide a compatible type.  Thanks,
+
+Alex
+
