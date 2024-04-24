@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87643360
-	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 07:18:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B62E21581EE
+	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 07:18:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713943094; cv=none; b=UNPUKgfz2blfoubVpu65Q4zBR9qU2d2TO7Cb5wqCLvzZVtempS+qkEDrCoy5qJb+MzsQTgQguuqkPqj27O4z8kZmLegcNSJ0625yRdJZvTt0I5xFWamFhTRNizdwX1Gr1SntgK1Q8DIVTdoD1EVZo4Eu73xGqabOLgeFqbiIPuw=
+	t=1713943096; cv=none; b=pm23WvCU5sxKTFQA/FrhRgMIJpzpYQ+FtnW0ayjuan0nqiY/WgRFuJufBiIKnu34GQauumNiVr83kYXW9t/0S0iCB2qAa0d7nnUJZbrVSUxfm6GZRmsajpsNjUQdlYD63ADxO8rvLh4b4BDcMKRnfeCBEBK+ClKNIGRcTChllHg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713943094; c=relaxed/simple;
-	bh=rHvTSou8/1tjMflgd49XX0brDYVz5e086lRWrdYfOqU=;
+	s=arc-20240116; t=1713943096; c=relaxed/simple;
+	bh=CgopBTKaZCe/lGwr/TCnJyjo+XR0f8rgTTVctbIZQKs=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Fcskv2dXKPsZzVL1EMV0S6LORq/l/Bbw5FYQCC5VNA2B2SsUZ/cEHcGsKCRwJVYklLB1vWg92BY97RC2Ecw44w2BlOfCImDyI0IhTMy01+KI4S2NTjIHJ1db7pyEg5wlAMjI94aCAlHaj0d6f1CrikpZoeyOT6YEo6nZdLX2tLU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mSwKTAhm; arc=none smtp.client-ip=192.198.163.8
+	 MIME-Version; b=q6xRzX0YbTgeNrjGEUg3s9Bs5lVvkUG+WhZEju0rMomUzZY8yg7HByuvyfu2EeSWlPBPSV/1oktKKKUaExpsnQCBKArKfHajgckaHVgoc+z5bGtguRlMzNxGHdsl8QwyBK06S/M9lwFx+sj5Zdckah5d4GGozV2/t+epS9efaOM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=X44sDN0H; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mSwKTAhm"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="X44sDN0H"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713943093; x=1745479093;
+  t=1713943095; x=1745479095;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=rHvTSou8/1tjMflgd49XX0brDYVz5e086lRWrdYfOqU=;
-  b=mSwKTAhm1aDJmyC8SxdUhID1XBhTzD7ttWC+5PxqOGmgrX5A5h8ET3Gq
-   smz0c9ZHE5BJnKiwxLMW/SQ8FU9qbvz9logfOsL0+QoLbH6/U32e7HGPd
-   NwvqnxDrozCDxf6xRXTmgIUsXTJQRxKqKhSHvqlbxJa4/NK85Ps6C+AR1
-   pkv3J4PItWDXBHNdD/UJeV0SvpO5xqBv3eNnp9md5iOeB4+rrjM4k9H3N
-   gA4qjaAIjwwyo9gKKKG7W5D0NbQ0o9LPnt+xCiYMq0yBncgIKgUOODQER
-   6NfEVIBuiuQoKe5JhynpP7QXTmnuLIcWtQdNLqs4OrKcUXTy+lEVId2ZS
+  bh=CgopBTKaZCe/lGwr/TCnJyjo+XR0f8rgTTVctbIZQKs=;
+  b=X44sDN0HJ7vGewG3k58NKMe01QTJMgpS87I7cBYtO4u6D1XSr6vr7ROi
+   amzPlYoMqg4g9fUZqa6GGDkkKmK+D9Ky9o8MBem91BcqYs5KyWjxvR/J2
+   3rBk0KWo2ESYtZzucYnRqV4Or3ccUNLTkMB0F25jQYPLTmdxd+TzRcJfp
+   IQuxzMcwGp/APfm0JrDJenQcSoakcF6BH+iOeKlN8Z27RZs2BkfIQpyu3
+   UIIdkaPjKw1K0IPLwisY/BRLHSOKihXtCxYp5pW9kt43T+OklecOy+JzK
+   5Y8AVlQbWfrQVggkFg8MgixEW/ZrGzZ/QFCjK2bUILMvMZEzP69hIXWho
    A==;
-X-CSE-ConnectionGUID: EpK2feKVR0iVCbrgwUVtoA==
-X-CSE-MsgGUID: Phqdw0xTTBq+lx9sN1fnBg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="27073084"
+X-CSE-ConnectionGUID: 2gLAn3ZYTnuhEjv0yqtUzA==
+X-CSE-MsgGUID: uafwri6QRCimWU8KL8R5IA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="27073099"
 X-IronPort-AV: E=Sophos;i="6.07,225,1708416000"; 
-   d="scan'208";a="27073084"
+   d="scan'208";a="27073099"
 Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2024 00:18:12 -0700
-X-CSE-ConnectionGUID: dBBdC8bbSQiYj5zuD91yuw==
-X-CSE-MsgGUID: GfVKluqPRAaPI5u/XhXE0A==
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2024 00:18:14 -0700
+X-CSE-ConnectionGUID: hdRNhGS5SQ+th1Jfx+MzRw==
+X-CSE-MsgGUID: /wTxSCbaTSCZHoRz9JKW7g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,225,1708416000"; 
-   d="scan'208";a="24664637"
+   d="scan'208";a="24664711"
 Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
-  by fmviesa010.fm.intel.com with ESMTP; 24 Apr 2024 00:18:09 -0700
+  by fmviesa010.fm.intel.com with ESMTP; 24 Apr 2024 00:18:12 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
 Cc: Jason Gunthorpe <jgg@ziepe.ca>,
@@ -52,9 +52,9 @@ Cc: Jason Gunthorpe <jgg@ziepe.ca>,
 	Colin Ian King <colin.i.king@gmail.com>,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 01/18] iommu/vt-d: Remove redundant assignment to variable err
-Date: Wed, 24 Apr 2024 15:16:27 +0800
-Message-Id: <20240424071644.178250-2-baolu.lu@linux.intel.com>
+Subject: [PATCH 02/18] iommu/vt-d: Use try_cmpxchg64{,_local}() in iommu.c
+Date: Wed, 24 Apr 2024 15:16:28 +0800
+Message-Id: <20240424071644.178250-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20240424071644.178250-1-baolu.lu@linux.intel.com>
 References: <20240424071644.178250-1-baolu.lu@linux.intel.com>
@@ -66,35 +66,68 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Colin Ian King <colin.i.king@gmail.com>
+From: Uros Bizjak <ubizjak@gmail.com>
 
-Variable err is being assigned a value that is never read. It is
-either being re-assigned later on error exit paths, or never referenced
-on the non-error path.
+Replace this pattern in iommu.c:
 
-Cleans up clang scan build warning:
-drivers/iommu/intel/dmar.c:1070:2: warning: Value stored to 'err' is
-never read [deadcode.DeadStores]`
+    cmpxchg64{,_local}(*ptr, 0, new) != 0
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-Link: https://lore.kernel.org/r/20240411090535.306326-1-colin.i.king@gmail.com
+... with the simpler and faster:
+
+    !try_cmpxchg64{,_local}(*ptr, &tmp, new)
+
+The x86 CMPXCHG instruction returns success in the ZF flag, so this change
+saves a compare after the CMPXCHG.
+
+No functional change intended.
+
+Signed-off-by: Uros Bizjak <ubizjak@gmail.com>
+Cc: David Woodhouse <dwmw2@infradead.org>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Link: https://lore.kernel.org/r/20240414162454.49584-1-ubizjak@gmail.com
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel/dmar.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/iommu/intel/iommu.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 36d7427b1202..351be9455214 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1067,7 +1067,6 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 		goto error_free_seq_id;
- 	}
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index a7ecd90303dc..4a2afe89b464 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -865,7 +865,7 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+ 			break;
  
--	err = -EINVAL;
- 	if (!cap_sagaw(iommu->cap) &&
- 	    (!ecap_smts(iommu->ecap) || ecap_slts(iommu->ecap))) {
- 		pr_info("%s: No supported address widths. Not attempting DMA translation.\n",
+ 		if (!dma_pte_present(pte)) {
+-			uint64_t pteval;
++			uint64_t pteval, tmp;
+ 
+ 			tmp_page = alloc_pgtable_page(domain->nid, gfp);
+ 
+@@ -877,7 +877,8 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+ 			if (domain->use_first_level)
+ 				pteval |= DMA_FL_PTE_XD | DMA_FL_PTE_US | DMA_FL_PTE_ACCESS;
+ 
+-			if (cmpxchg64(&pte->val, 0ULL, pteval))
++			tmp = 0ULL;
++			if (!try_cmpxchg64(&pte->val, &tmp, pteval))
+ 				/* Someone else set it while we were thinking; use theirs. */
+ 				free_pgtable_page(tmp_page);
+ 			else
+@@ -2128,8 +2129,8 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 		/* We don't need lock here, nobody else
+ 		 * touches the iova range
+ 		 */
+-		tmp = cmpxchg64_local(&pte->val, 0ULL, pteval);
+-		if (tmp) {
++		tmp = 0ULL;
++		if (!try_cmpxchg64_local(&pte->val, &tmp, pteval)) {
+ 			static int dumps = 5;
+ 			pr_crit("ERROR: DMA PTE for vPFN 0x%lx already set (to %llx not %llx)\n",
+ 				iov_pfn, tmp, (unsigned long long)pteval);
 -- 
 2.34.1
 
