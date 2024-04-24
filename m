@@ -1,69 +1,69 @@
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D52C16D9B2
-	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 22:37:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9615116EBE1
+	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 23:01:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713998247; cv=none; b=QQy8obNYT1ajeaZ/hZVUl7bx4XSeed00CFDVkIZqHk7Z3JXxNbCVdznXtmjACINBWdvOO3UfeOMCB2md9QAr9HCtytqD7JSdsFS5GRzXvqyzCoUD4+GprEQ5bmpnXBAad98aJ7lTZ98bMxsG2f6RhFajOHhZ3pj6GTMOnCTMTH8=
+	t=1713999678; cv=none; b=oyuG7wT6LzQiu1e0W3DSmqnJpiwzWPhMLG3JtkC7BWfQU8LtHictMwXUgXOKDkyl/4Fk1MgvxJxCPvPXMZ1PxpoihgvUq3PRCWhKVmwRwRdDgUFfb9tVX1+LSkbxEMH6qdWQbq9n8yxCyp1oAitrGMG8ttMstjPWZgVb98J6jXs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713998247; c=relaxed/simple;
-	bh=qVRTzUA+MWdKY71cY09kaWnQVDV6+oWl0Dkhha0WLr4=;
+	s=arc-20240116; t=1713999678; c=relaxed/simple;
+	bh=yhLMzqp1hYPnPOJrBVjp3bIJ258YYrgLvoWNmxB+Rg0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=T2cKtm/WNu2+nfhbE3dCoEhu6Ztd3U3/PUD16mA2yDLmTf8WI639rlsI9WJg7z3Nn4y8QmSEqgBKG9Ag9lX+i6y1YTKsdx5xkcYnlKT6IgWoeZ+KDZgfcRczmhjAhgihbOzYvbo3Rc39wzTrOlzErZT28YP6BauQOzi/YTtL6Fc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=MHdiMSEY; arc=none smtp.client-ip=209.85.216.45
+	 To:Cc:Content-Type; b=t/bZuuvKeD/2JDmxlv4TWJV3ryXn6kQzc20suzVCYEG246JSc6AdEHajBnvNp8aFGTp3M0nVP9iBr1Vm4uNXm6G36s7nUMkN6QaLVph20xPtIK1opzIG1Kdt9JUJFidSzR4n/VyuyHbloHeZbY+lZHFCLUyQc51foSWXnNNjbok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=KnwDgJOR; arc=none smtp.client-ip=209.85.216.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="MHdiMSEY"
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-2a2d0ca3c92so334191a91.0
-        for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 15:37:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="KnwDgJOR"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-2a68a2b3747so325896a91.3
+        for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 16:01:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1713998245; x=1714603045; darn=lists.linux.dev;
+        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1713999676; x=1714604476; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=aO8Rp7JUgS7Xhpz5uMrLG4WHnD0bm/FTRd8cK1NaJfI=;
-        b=MHdiMSEYyb8LmXQP/uhj/TYhcvlqPzJ/USXdZWfXkm5HjMzVQ6/DobxKyQAeB1IQtB
-         nznE6uZIvZLPcvlRNk20enqw3adMitw+Zyb/v6oL1p30WPGzBi/eorKE0ARmdMRYuuxS
-         X9fWw93GSWuiLtfFKMdx68fkZSx7baX67yO2RF4742hGOz0b9GE5CD3XrekQ737lz6pe
-         O8r9OKWBHEMzaKcYeV+C0i8pbCqM1jNiPs2saqTIQKudKL9KHAcrnUqRnsnu3nxv40/G
-         DHaFpBy3QtoUwuusAJiIQ3/hIaqgxZXKxi+cE54WMM7kLOAm8hdJDCvVL+N8e/iGXcmO
-         N+3w==
+        bh=o5eYQv4SEnPtJtu5rV+wjwKaumy6GBL26odmvclmovo=;
+        b=KnwDgJOR//ixv5gUkTDOUXrMR0fPrqJuL2sd20assYKZAQW1v5YxuxPq9dl0RKQW4o
+         m6dfrKncTgu3T348jwvgLdqu2bEDqxH/WcDZejn4zGiF+g0S+DZE5OhSQ/Bp/12mSY3C
+         nSJl9ftlInY+lHmgGH2TipcrEMdt9CRmZT9QFrdMWvyHLfcCBZ/xzNmjQi5s8gHcXHsZ
+         OvX29LQ3Qvdp/u/n8gBwsDp2awfQQIMZJMfW/6Ixl5h2SoVfvuW95NEsJRespgCzLgWC
+         SGUDaHnbDeon2wZ5MRdlif1vLimng/+jh88HvMdsjOT9SYvHgEoOqLdlqZkoCVyks0UJ
+         AqMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713998245; x=1714603045;
+        d=1e100.net; s=20230601; t=1713999676; x=1714604476;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=aO8Rp7JUgS7Xhpz5uMrLG4WHnD0bm/FTRd8cK1NaJfI=;
-        b=a2RVKOnGHBdCjIKtS8oLaV+JQlICm3tEPa7UrCutDHJeUMv8nkxhVdKf+suaC6B3Bz
-         vX1OXZwrRiDwrb9u41QYGRop6gfvafBLCWOvep6C4IKIBe0tL+tF1SGM/Owu9uekxdem
-         jyUh++Rg7CAZ6itxAbemTG48vHM0ltwkOCGzohUGRt66u1MNplqudMMg8B3IpDgPW08D
-         u3IVuGa+/Mses/JDKzLWpCEA0nstkxAD0hIBic3sHvaGMF2tON4so5zhN5sJNbO1zGWb
-         V7OHV98rtwIjoFZ4aF2QeqdUtMaXDEl7m0dBTehbQ2kO2BidinqjlLt/f3QDWJ03L77N
-         6cAQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVJ0fWo5XONcu+lxcQ0tspdrei6GyGL1TcAiFQP/DYM5yeBnurkpWhbXXM5gg1Io0lJrL2zaM7AHVf+9dOHwqYWZfABZhM=
-X-Gm-Message-State: AOJu0YxpvyFftvhNh3vjZtaHC/YWNCJyQ6oG4XjRrhtSj3plv/M9yjxV
-	vK6BKo/ZAe2OWQzWDopHK/HZsyo0mUWUDHiqzVtytfxavXViOTcSXCGNFack3p8a8nlRxuXwp88
-	JNxBmCOxHB5vBgdDj7pKEUJGBw3209MtdW0FbAA==
-X-Google-Smtp-Source: AGHT+IGBdslP8DSVdWf46pAwH3oTFPa/IfzzcphPEMB4ixOB3ZSquD8oJqVuF7a4MYQGJ/zf/PV3za+kxLsvBdn4cjU=
-X-Received: by 2002:a17:90b:4d8d:b0:2af:c3ea:8122 with SMTP id
- oj13-20020a17090b4d8d00b002afc3ea8122mr338008pjb.7.1713998245527; Wed, 24 Apr
- 2024 15:37:25 -0700 (PDT)
+        bh=o5eYQv4SEnPtJtu5rV+wjwKaumy6GBL26odmvclmovo=;
+        b=JG8JpFjM6RiuAvTrwgIV4ffH8hCOsfKgjReYv8/z/ymM/FSdKyH11PC1QdmgFivroD
+         HFHznsBTsAzPYJBZ6ImPkUSuNhcUutqnX9nKO/s5zjsjzGWQ1cEi7Cw5pSJlcGUiXR+Z
+         KultQv14JubEctVZbdgkXnl71VEXK495KJyYzJbTZPGDA2Dl5gm3leNo58NY+hUi4mxU
+         VlRRa+/yqndRO6DAg5QvVLDRyWNfJ5VJ2GaM7fKhaGP0IUYCPUKZUniZ9jB825BIYgO7
+         ffPtIp1wwMpw+kFcMmnjQ9o0fMq6KB59GcIvuHUvarF/BDLFsxsjfdoP76wVKK64Hcyu
+         KBpA==
+X-Forwarded-Encrypted: i=1; AJvYcCXvHfc+3V8ymKpJeGpq6TzZW2jkbmYx7u4CwhstcI73+Q5AQtKJaVT/PHLRlpnp5MP9HdxyacvBe2ELppddJfv1NnNKK0k=
+X-Gm-Message-State: AOJu0YyeRj9YoDj+XOaGewPplzpOvN+i5eP9tPVm1LifjtwH2CvQ9aqX
+	IYpXXMVJQwjjhI0P9Mjl1y5I3VV5ydJzXd9aGwtOXBtdN9cqCDLqkBpEMkHTQCf4zI0xyIeGCnq
+	XK+4szwwcNsGdCbKtsvdH154qDOKSAzElbiYv+Q==
+X-Google-Smtp-Source: AGHT+IEmZmY0a/pcbMjVZ7zbn5k9LdZezmxUS44Gf63fTy4Sf2HGSXWIH1nVc43qJR8VXcBqXhgqPnmKQIhIOfhQbP0=
+X-Received: by 2002:a17:90b:1e0a:b0:2ae:e1e0:3d8f with SMTP id
+ pg10-20020a17090b1e0a00b002aee1e03d8fmr3623341pjb.2.1713999675753; Wed, 24
+ Apr 2024 16:01:15 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1713456597.git.tjeznach@rivosinc.com> <c37cb93e7baa7042a3f82130bf30be6831b558dc.1713456598.git.tjeznach@rivosinc.com>
- <20240418-approach-liquefy-04551ddefbc4@spud>
-In-Reply-To: <20240418-approach-liquefy-04551ddefbc4@spud>
+References: <cover.1713456597.git.tjeznach@rivosinc.com> <232b2824d5dfd9b8dcb3553bfd506444273c3305.1713456598.git.tjeznach@rivosinc.com>
+ <20240419124017.GC223006@ziepe.ca>
+In-Reply-To: <20240419124017.GC223006@ziepe.ca>
 From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Wed, 24 Apr 2024 15:37:14 -0700
-Message-ID: <CAH2o1u7_v=_GX5cnV5X14jggTycRTvGEJ1r_9tqtb-xgk=LEkA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/7] dt-bindings: iommu: riscv: Add bindings for RISC-V IOMMU
-To: Conor Dooley <conor@kernel.org>
+Date: Wed, 24 Apr 2024 16:01:04 -0700
+Message-ID: <CAH2o1u7_YBtS6m1-T56tmxud1mda2gb6tLGVpbBSs15FPcjaGQ@mail.gmail.com>
+Subject: Re: [PATCH v2 5/7] iommu/riscv: Device directory management.
+To: Jason Gunthorpe <jgg@ziepe.ca>
 Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
 	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
 	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
@@ -75,109 +75,167 @@ Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Apr 18, 2024 at 10:04=E2=80=AFAM Conor Dooley <conor@kernel.org> wr=
-ote:
+On Fri, Apr 19, 2024 at 5:40=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrot=
+e:
 >
-> On Thu, Apr 18, 2024 at 09:32:19AM -0700, Tomasz Jeznach wrote:
-> > Add bindings for the RISC-V IOMMU device drivers.
+> On Thu, Apr 18, 2024 at 09:32:23AM -0700, Tomasz Jeznach wrote:
+> > @@ -31,13 +32,350 @@ MODULE_LICENSE("GPL");
+> >  /* Timeouts in [us] */
+> >  #define RISCV_IOMMU_DDTP_TIMEOUT     50000
 > >
-> > Co-developed-by: Anup Patel <apatel@ventanamicro.com>
-> > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-> > Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
-> > ---
-> >  .../bindings/iommu/riscv,iommu.yaml           | 149 ++++++++++++++++++
-> >  MAINTAINERS                                   |   7 +
-> >  2 files changed, 156 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iommu/riscv,iommu=
-.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml b=
-/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> > new file mode 100644
-> > index 000000000000..d6522ddd43fa
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iommu/riscv,iommu.yaml
-> > @@ -0,0 +1,149 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iommu/riscv,iommu.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > -static int riscv_iommu_attach_identity_domain(struct iommu_domain *dom=
+ain,
+> > -                                           struct device *dev)
+> > +/* RISC-V IOMMU PPN <> PHYS address conversions, PHYS <=3D> PPN[53:10]=
+ */
+> > +#define phys_to_ppn(va)  (((va) >> 2) & (((1ULL << 44) - 1) << 10))
+> > +#define ppn_to_phys(pn)       (((pn) << 2) & (((1ULL << 44) - 1) << 12=
+))
 > > +
-> > +title: RISC-V IOMMU Architecture Implementation
-> > +
-> > +maintainers:
-> > +  - Tomasz Jeznach <tjeznach@rivosinc.com>
-> > +
-> > +description: |+
+> > +#define dev_to_iommu(dev) \
+> > +     container_of((dev)->iommu->iommu_dev, struct riscv_iommu_device, =
+iommu)
 >
-> FYI, the + here is probably not needed.
+> We have iommu_get_iommu_dev() now
 >
-> > +  The RISC-V IOMMU provides memory address translation and isolation f=
-or
-> > +  input and output devices, supporting per-device translation context,
-> > +  shared process address spaces including the ATS and PRI components o=
-f
-> > +  the PCIe specification, two stage address translation and MSI remapp=
-ing.
-> > +  It supports identical translation table format to the RISC-V address
-> > +  translation tables with page level access and protection attributes.
-> > +  Hardware uses in-memory command and fault reporting queues with wire=
-d
-> > +  interrupt or MSI notifications.
+> > +static unsigned long riscv_iommu_get_pages(struct riscv_iommu_device *=
+iommu, unsigned int order)
+> > +{
+> > +     struct riscv_iommu_devres *devres;
+> > +     struct page *pages;
 > > +
-> > +  Visit https://github.com/riscv-non-isa/riscv-iommu for more details.
-> > +
-> > +  For information on assigning RISC-V IOMMU to its peripheral devices,
-> > +  see generic IOMMU bindings.
-> > +
-> > +properties:
-> > +  # For PCIe IOMMU hardware compatible property should contain the ven=
-dor
-> > +  # and device ID according to the PCI Bus Binding specification.
-> > +  # Since PCI provides built-in identification methods, compatible is =
-not
-> > +  # actually required. For non-PCIe hardware implementations 'riscv,io=
-mmu'
-> > +  # should be specified along with 'reg' property providing MMIO locat=
-ion.
+> > +     pages =3D alloc_pages_node(dev_to_node(iommu->dev),
+> > +                              GFP_KERNEL_ACCOUNT | __GFP_ZERO, order);
+> > +     if (unlikely(!pages)) {
+> > +             dev_err(iommu->dev, "Page allocation failed, order %u\n",=
+ order);
+> > +             return 0;
+> > +     }
 >
-> I dunno, I'd like to see soc-specific compatibles for implementations of
-> the RISC-V IOMMU. If you need a DT compatible for use in QEMU, I'd
-> suggest doing what was done for the aplic and having a dedicated
-> compatible for that and disallow having "riscv,iommu" in isolation.
+> This needs adjusting for the recently merged allocation accounting
+>
+> > +static int riscv_iommu_attach_domain(struct riscv_iommu_device *iommu,
+> > +                                  struct device *dev,
+> > +                                  struct iommu_domain *iommu_domain)
+> > +{
+> > +     struct iommu_fwspec *fwspec =3D dev_iommu_fwspec_get(dev);
+> > +     struct riscv_iommu_dc *dc;
+> > +     u64 fsc, ta, tc;
+> > +     int i;
+> > +
+> > +     if (!iommu_domain) {
+> > +             ta =3D 0;
+> > +             tc =3D 0;
+> > +             fsc =3D 0;
+> > +     } else if (iommu_domain->type =3D=3D IOMMU_DOMAIN_IDENTITY) {
+> > +             ta =3D 0;
+> > +             tc =3D RISCV_IOMMU_DC_TC_V;
+> > +             fsc =3D FIELD_PREP(RISCV_IOMMU_DC_FSC_MODE, RISCV_IOMMU_D=
+C_FSC_MODE_BARE);
+> > +     } else {
+> > +             /* This should never happen. */
+> > +             return -ENODEV;
+> > +     }
+>
+> Please don't write it like this. This function is already being called
+> by functions that are already under specific ops, don't check
+> domain->type here.
+>
+> Instead have the caller compute and pass in the ta/tc/fsc
+> values. Maybe in a tidy struct..
+>
+> > +     /* Update existing or allocate new entries in device directory */
+> > +     for (i =3D 0; i < fwspec->num_ids; i++) {
+> > +             dc =3D riscv_iommu_get_dc(iommu, fwspec->ids[i], !iommu_d=
+omain);
+> > +             if (!dc && !iommu_domain)
+> > +                     continue;
+> > +             if (!dc)
+> > +                     return -ENODEV;
+>
+> But if this fails some of the fwspecs were left in a weird state ?
+>
+> Drivers should try hard to have attach functions that fail and make no
+> change at all or fully succeed.
+>
+> Meaning ideally preallocate any required memory before doing any
+> change to the HW visable structures.
 >
 
-Makes sense.  Will update to something like below:
-  compatible:
-    oneOf:
-      - items:
-          - enum:
-              - qemu,iommu
-          - const: riscv,iommu
-      - items:
-          - enum:
-              - pci1efd,edf1
-          - const: riscv,pci-iommu
+Good point. Done.
+Looking at the fwspec->ids[] I'm assuming nobody will add/modify the
+IDs after iommu_probe_device() completes.
 
-> > +  compatible:
-> > +    oneOf:
-> > +      - items:
-> > +          - const: riscv,pci-iommu
-> > +          - const: pci1efd,edf1
-> > +      - items:
-> > +          - const: pci1efd,edf1
+> > +
+> > +             /* Swap device context, update TC valid bit as the last o=
+peration */
+> > +             xchg64(&dc->fsc, fsc);
+> > +             xchg64(&dc->ta, ta);
+> > +             xchg64(&dc->tc, tc);
 >
-> Why are both versions allowed? If the former is more understandable,
-> can't we just go with that?
+> This doesn't loook right? When you get to adding PAGING suport fsc has
+> the page table pfn and ta has the cache tag, so this will end up
+> tearing the data for sure, eg when asked to replace a PAGING domain
+> with another PAGING domain? That will create a functional/security
+> problem, right?
 >
-> > +      - items:
-> > +          - const: riscv,iommu
+> I would encourage you to re-use the ARM sequencing code, ideally moved
+> to some generic helper library. Every iommu driver dealing with
+> multi-quanta descriptors seems to have this same fundamental
+> sequencing problem.
 >
-> Other than the compatible setup I think this is pretty decent though,
-> Conor.
 
-ACK to other comments,
+Good point. Reworked.
 
-Thanks for the review,
+> > +static void riscv_iommu_release_device(struct device *dev)
+> > +{
+> > +     struct riscv_iommu_device *iommu =3D dev_to_iommu(dev);
+> > +
+> > +     riscv_iommu_attach_domain(iommu, dev, NULL);
+> > +}
+>
+> The release_domain has landed too now. Please don't invent weird NULL
+> domain types that have special meaning. I assume clearing the V bit is
+> a blocking behavior? So please implement a proper blocking domain and
+> set release_domain =3D &riscv_iommu_blocking and just omit this release
+> function.
+>
+
+Updated to use release_domain, should be cleaner now.
+Clearing TC.V is a blocking (but noisy) behavior, should be fine for
+release domain where devices should be quiesced already.
+
+> > @@ -133,12 +480,14 @@ int riscv_iommu_init(struct riscv_iommu_device *i=
+ommu)
+> >       rc =3D riscv_iommu_init_check(iommu);
+> >       if (rc)
+> >               return dev_err_probe(iommu->dev, rc, "unexpected device s=
+tate\n");
+> > -     /*
+> > -      * Placeholder for a complete IOMMU device initialization.
+> > -      * For now, only bare minimum: enable global identity mapping mod=
+e and register sysfs.
+> > -      */
+> > -     riscv_iommu_writeq(iommu, RISCV_IOMMU_REG_DDTP,
+> > -                        FIELD_PREP(RISCV_IOMMU_DDTP_MODE, RISCV_IOMMU_=
+DDTP_MODE_BARE));
+> > +
+> > +     rc =3D riscv_iommu_ddt_alloc(iommu);
+> > +     if (WARN(rc, "cannot allocate device directory\n"))
+> > +             goto err_init;
+>
+> memory allocation failure already makes noisy prints, more prints are
+> not needed..
+>
+> > +     rc =3D riscv_iommu_set_ddtp_mode(iommu, RISCV_IOMMU_DDTP_MODE_MAX=
+);
+> > +     if (WARN(rc, "cannot enable iommu device\n"))
+> > +             goto err_init;
+>
+> This is not a proper use of WARN, it should only be used for things
+> that cannot happen not undesired error paths.
+>
+> Jason
+
+Thanks, ack to all. Will push updated v3 shortly.
 - Tomasz
