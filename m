@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD5146FB8
-	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 01:47:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C094224DC
+	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 01:49:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713923244; cv=none; b=amYINuJzPZZhOin1js9XIq9COz+LjIFmtkAL2XT2B2jVDT8oQCFWPtTudZAJRcIlYgNegQvT9gLqNMDJA95UmSYjK/hNEhp/B+gvLO4Se6vuOliZpnsy2JMMq5xPJJjXaitzkDhlpLBRCPygTpNxA/8sHHJLkrCUecvdcIJOngQ=
+	t=1713923390; cv=none; b=HS3S4OpUjeAfO2Ey9YL+YuQeFMCjoVL7Fc1itcd5O8iDDjr239gIcPeRwTmYr/01PTew01hhr+HpKMB0gtd9A7ylH/r8zbIl6CKfZA/VCt2/0uFivhHEoSmGD0oBb8N3yQcBONZiyHivCpX0nCNMMXwfF5FBXtS2DsIGLNqHjI8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713923244; c=relaxed/simple;
-	bh=ng27yw5ZrSFvmSZy3oZulctMXmjAV6Heti6o2RBiDGQ=;
+	s=arc-20240116; t=1713923390; c=relaxed/simple;
+	bh=IehNd3eMHFd9olgYd7McdkQIzYApTyco7Odwj4K8Z8c=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=cE+gt4HPA0BYMAa0vgqL5T4XT5IIWs9HQAru0m6e3qdGZPVsjJO6uqzTb5MdYCbvh/edKzVWXcKJj6lczxSE+wmRa3+Mv5XnDMG8IqK2CUabg74vfNWruwpfWQ83mmW7bvm2H+1hRgO+fUFgeRq7A8ohc684mtLyK+ayLNcDm5c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PY8/f3X0; arc=none smtp.client-ip=192.198.163.19
+	 In-Reply-To:Content-Type; b=PkOWfH+0gBLbgldMXiQ0X8G2ukIlCOorVwGbIhBnFO6Rjwgje5Kl5YfYbSEi+PPN5Hffh71R8htK0SHORLxHjAbkUBKaNSjzLrcT41SELc+twR7bsALSW7JuVkOfsE46LKFydvDW5XAhL0+22VcMwU6ZRpkYZtqwRcFGgQGX7YU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iOIihpJS; arc=none smtp.client-ip=192.198.163.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PY8/f3X0"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iOIihpJS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1713923243; x=1745459243;
+  t=1713923389; x=1745459389;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=ng27yw5ZrSFvmSZy3oZulctMXmjAV6Heti6o2RBiDGQ=;
-  b=PY8/f3X0aYszp13mN7Np7Wab0ry+s1LR6rD0SxNdik8mHjoujVOPZJTm
-   5rPFCff8XECn5WXWE2HzG16qZW6qt4gnKsoT59l9paNz6kMRd5IA6vt/2
-   1P3J8bD3KP9AxqIiI+385NIgXYSlkcAKPWHftztOE4hvSOEnk3ftQz3mD
-   OkdSvjSHTQIfkBduphX+q6sD/VjXcvpBfHpNWcXQA2VjQ0ioY7hmtvdwU
-   PpQOE+AKUvRAGZ+aQB8+AgmPVyf1yMSa70h0RnzgrqaMHuUSwZy+Mk7/k
-   OyWhmis6iaxcv1Rouy34HDU37Ve9BYg6o2EKwrn5AuoXGATBdS9bc7dmu
-   A==;
-X-CSE-ConnectionGUID: /UHXt0ObSsiJw3FmF7derg==
-X-CSE-MsgGUID: pRyow/KpRQ+m7tyVraKNUQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="9402456"
+  bh=IehNd3eMHFd9olgYd7McdkQIzYApTyco7Odwj4K8Z8c=;
+  b=iOIihpJSfAX71/RzZP5RgaYpT6RPGHiHL9XJq+rQrZOtIkEukuh8AwsJ
+   StqDLXU1taEGcLtA2ZDWqWCUL+joLrOqNa1MLJDKcWBRDVpuXfsv/XFqB
+   gqChe3BAkTuJPAMabfa9aeL//K497+4340TDyPG0gOnNcXwD6nONbUfqq
+   0yjMTV0lI0gkWA+ggT83tueknr5SeFQPo0QVxA6k9JmcQQSmRwAzfN+A9
+   GV/yoAbriHhTS7G8MwfDJW3ghK/2PBCbK0AwUPTbCmpDfmLiXgK56Uqnz
+   EPD9+6gZydAxKY8abOgsdkxwKw4inpthYUcNlREn2mOLQR00uKzWQ9A0d
+   Q==;
+X-CSE-ConnectionGUID: pUEhOLYaSUmHwOkunmmP1Q==
+X-CSE-MsgGUID: BfXUSLQRQjWMFbEhehbujQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11053"; a="9401591"
 X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
-   d="scan'208";a="9402456"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 18:47:22 -0700
-X-CSE-ConnectionGUID: E6DC0E5XSWCxGfB5A4Pdxg==
-X-CSE-MsgGUID: MKeA+Ex/TTuF+cgkG67zhg==
+   d="scan'208";a="9401591"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Apr 2024 18:49:49 -0700
+X-CSE-ConnectionGUID: bVtHcrAgQsaOIZ6nvH7q0w==
+X-CSE-MsgGUID: QqFtSTSBQpq/iyXRriI4Kw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,222,1708416000"; 
-   d="scan'208";a="24590466"
+   d="scan'208";a="24554286"
 Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa007.fm.intel.com with ESMTP; 23 Apr 2024 18:47:20 -0700
-Message-ID: <09cc401c-8dbb-4790-9d38-c94a8b1e4fd4@linux.intel.com>
-Date: Wed, 24 Apr 2024 09:45:56 +0800
+  by fmviesa009.fm.intel.com with ESMTP; 23 Apr 2024 18:49:46 -0700
+Message-ID: <a7b6bc87-b396-4e8b-95a5-8fe77ea3ad5f@linux.intel.com>
+Date: Wed, 24 Apr 2024 09:48:23 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -56,74 +56,30 @@ Cc: baolu.lu@linux.intel.com, "Zhang, Tina" <tina.zhang@intel.com>,
  "Liu, Yi L" <yi.l.liu@intel.com>,
  "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 02/12] iommu/vt-d: Add cache tag invalidation helpers
+Subject: Re: [PATCH v3 01/12] iommu/vt-d: Add cache tag assignment interface
 To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Jason Gunthorpe <jgg@ziepe.ca>
 References: <20240416080656.60968-1-baolu.lu@linux.intel.com>
- <20240416080656.60968-3-baolu.lu@linux.intel.com>
- <40c3b216-f3bb-4058-88a1-45de433432f3@linux.intel.com>
- <BN9PR11MB5276DE66A1052497BB3E215D8C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240416080656.60968-2-baolu.lu@linux.intel.com>
+ <BN9PR11MB52764D1943C9A5CD91666E228C112@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276DE66A1052497BB3E215D8C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+In-Reply-To: <BN9PR11MB52764D1943C9A5CD91666E228C112@BN9PR11MB5276.namprd11.prod.outlook.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-On 4/23/24 4:42 PM, Tian, Kevin wrote:
->> From: Baolu Lu<baolu.lu@linux.intel.com>
->> Sent: Monday, April 22, 2024 1:30 PM
+On 4/23/24 4:17 PM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Tuesday, April 16, 2024 4:07 PM
 >>
->> On 4/16/24 4:06 PM, Lu Baolu wrote:
->>> +		case CACHE_TAG_NESTING_DEVTLB:
->>> +			/*
->>> +			 * Address translation cache in device side caches the
->>> +			 * result of nested translation. There is no easy way
->>> +			 * to identify the exact set of nested translations
->>> +			 * affected by a change in S2. So just flush the entire
->>> +			 * device cache.
->>> +			 */
->>> +			addr = 0;
->>> +			mask = MAX_AGAW_PFN_WIDTH;
->>> +			fallthrough;
->> I realized that the logic above is not right. Setting both @addr and
->> @mask to 0 doesn't means flush all caches on the device. I will change
->> it like below:
-> I didn't get. Above code doesn't set @mask to 0.
-
-Oh!? I have no idea why I read that as "mask = 0" now. Perhaps my brain
-was on vacation earlier. :-)
-
+>> In addition to the basic IOTLB and devTLB caching tag types, PARENT_IOTLB
+>> and PARENT_DEVTLB tag types are also introduced. These tags are used for
 > 
->> diff --git a/drivers/iommu/intel/cache.c b/drivers/iommu/intel/cache.c
->> index e8418cdd8331..18debb82272a 100644
->> --- a/drivers/iommu/intel/cache.c
->> +++ b/drivers/iommu/intel/cache.c
->> @@ -302,9 +302,14 @@ void cache_tag_flush_range(struct dmar_domain
->> *domain, unsigned long start,
->>                            * affected by a change in S2. So just flush
->> the entire
->>                            * device cache.
->>                            */
->> -                       addr = 0;
->> -                       mask = MAX_AGAW_PFN_WIDTH;
->> -                       fallthrough;
->> +                       info = dev_iommu_priv_get(tag->dev);
->> +                       sid = PCI_DEVID(info->bus, info->devfn);
->> +
->> +                       qi_flush_dev_iotlb(iommu, sid, info->pfsid,
->> info->ats_qdep,
->> +                                          0, MAX_AGAW_PFN_WIDTH);
->> +                       quirk_extra_dev_tlb_flush(info, 0,
->> MAX_AGAW_PFN_WIDTH,
->> +                                                 IOMMU_NO_PASID,
->> info->ats_qdep);
->> +                       break;
-> and I didn't get this change. It goes backward by ignoring tag->pasid.
+> it's NESTING_IOTLB/DEVTLB now.
 > 
-> what's the exact problem of the fallthrough logic in original code?
 
-Sorry! Please ignore this.
+Fixed.
 
 Best regards,
 baolu
