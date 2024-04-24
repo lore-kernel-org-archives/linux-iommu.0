@@ -1,112 +1,161 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id C62671EF1A
-	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 07:58:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82F771586F6
+	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 08:01:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.255
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713945527; cv=none; b=ngrTlmsKbVOi1QAiybkDI7Bf7lxRrziZ5KLntlRhcHn/awI0WyYId4FtIAeqE9mA6R5PgTaOqRypqvGVpeopfGAthNylqWYsVxOauvGVa214dk2yleth6fBTmspXScGzOvnIlDo5CaP4uqhBakQSFsngOOGI6fLLZXZdBbYiYic=
+	t=1713945678; cv=none; b=hLOR0G+evpY+hY7sc1zvy093DGxQtgbceRvfd5ITt8kvguNRs/ye+BXDHKxk0FELDdKPhe5Udo7RSdwxM4PDItzKzlr0bfzJnZCLx6VHC6f0Jgr0E9PdIfhU2qCFcNe9iqnfTnY4Y176WPtKcUj+q05atsHkjpJNeoTQneLhV0s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713945527; c=relaxed/simple;
-	bh=qBlu/gLPm5fn2qbaDjWZw70vCAz6VT4XY5Bl5R+9W3c=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jnZunt+5JrWMOTzjH30hFLhvnjYDgVP+/1h2yZ0X6KBi8nuIz+SlXS3F4OqQiIks/QrKv3QUeQBJqX2eoonj5x2OWWzyT7OnAV/k+RJATWDTDe+TJ4QZF/o5y2ny7rfekSLt3k/FrlnJv2/mTkByhu8QJhADmZjen1lknFw6kBU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 955C2339;
-	Wed, 24 Apr 2024 00:59:12 -0700 (PDT)
-Received: from [10.57.74.127] (unknown [10.57.74.127])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2CCBE3F64C;
-	Wed, 24 Apr 2024 00:58:43 -0700 (PDT)
-Message-ID: <adbd2725-25c9-469d-a9e4-14fffc1521aa@arm.com>
-Date: Wed, 24 Apr 2024 08:58:41 +0100
+	s=arc-20240116; t=1713945678; c=relaxed/simple;
+	bh=Ps3m5+BrdzHgjKJMQhrdP1zbfeVPfcB+dQAd4yhLzng=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=c7UI3UQvMAR/r4UAyUvFCJHh7dlPV1adga714v7jm+FvKC26rK/uOAKqPsGlvxxAfnnz8Cy7PbBCp1hbg2p5ANwoQ5w7vrY6/WHmkPHDWyi/Uh6YKF+oIYIAEyk2P1oKPWX14XLWb/mncVvpjmi59tfWNsW1EgsqxUm1dC41OiI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=45.249.212.255
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.19.88.105])
+	by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4VPWZ44Qssz1R5S9;
+	Wed, 24 Apr 2024 15:58:04 +0800 (CST)
+Received: from dggems706-chm.china.huawei.com (unknown [10.3.19.183])
+	by mail.maildlp.com (Postfix) with ESMTPS id 0496114040F;
+	Wed, 24 Apr 2024 16:01:06 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ dggems706-chm.china.huawei.com (10.3.19.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Wed, 24 Apr 2024 16:01:04 +0800
+Received: from lhrpeml500005.china.huawei.com ([7.191.163.240]) by
+ lhrpeml500005.china.huawei.com ([7.191.163.240]) with mapi id 15.01.2507.035;
+ Wed, 24 Apr 2024 09:01:02 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Ryan Roberts <ryan.roberts@arm.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
+CC: "joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>,
+	"kevin.tian@intel.com" <kevin.tian@intel.com>, "nicolinc@nvidia.com"
+	<nicolinc@nvidia.com>, "mshavit@google.com" <mshavit@google.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "will@kernel.org"
+	<will@kernel.org>, "joao.m.martins@oracle.com" <joao.m.martins@oracle.com>,
+	jiangkunkun <jiangkunkun@huawei.com>, zhukeqian <zhukeqian1@huawei.com>,
+	Linuxarm <linuxarm@huawei.com>
+Subject: RE: [PATCH v2 1/4] iommu/arm-smmu-v3: Add feature detection for HTTU
+Thread-Topic: [PATCH v2 1/4] iommu/arm-smmu-v3: Add feature detection for HTTU
+Thread-Index: AQHaZXTEskP344GHbEaXPEKyEBg1Q7F2PPsAgAEicXA=
+Date: Wed, 24 Apr 2024 08:01:02 +0000
+Message-ID: <fa8707bed7ed45a2b3fdc831b356909c@huawei.com>
+References: <20240222094923.33104-1-shameerali.kolothum.thodi@huawei.com>
+ <20240222094923.33104-2-shameerali.kolothum.thodi@huawei.com>
+ <3733929c-657e-4d24-b5e9-a5d946645abe@arm.com>
+In-Reply-To: <3733929c-657e-4d24-b5e9-a5d946645abe@arm.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] iommu/arm-smmu-v3: Enable HTTU for stage1 with
- io-pgtable mapping
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- iommu@lists.linux.dev, linux-arm-kernel@lists.infradead.org,
- joro@8bytes.org, kevin.tian@intel.com, nicolinc@nvidia.com,
- mshavit@google.com, robin.murphy@arm.com, will@kernel.org,
- joao.m.martins@oracle.com, jiangkunkun@huawei.com, zhukeqian1@huawei.com,
- linuxarm@huawei.com
-References: <20240222094923.33104-1-shameerali.kolothum.thodi@huawei.com>
- <20240222094923.33104-5-shameerali.kolothum.thodi@huawei.com>
- <364b6a6f-048c-426c-a9c4-aabef551e0c0@arm.com>
- <20240423173202.GB941030@nvidia.com>
-From: Ryan Roberts <ryan.roberts@arm.com>
-In-Reply-To: <20240423173202.GB941030@nvidia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 
-On 23/04/2024 18:32, Jason Gunthorpe wrote:
-> On Tue, Apr 23, 2024 at 05:45:16PM +0100, Ryan Roberts wrote:
->> On 22/02/2024 09:49, Shameer Kolothum wrote:
->>> From: Kunkun Jiang <jiangkunkun@huawei.com>
->>>
->>> If io-pgtable quirk flag indicates support for hardware update of
->>> dirty state, enable HA/HD bits in the SMMU CD and also set the DBM
->>> bit in the page descriptor.
->>>
->>> And now report the dirty page tracking capability of SMMUv3.
->>>
->>> Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
->>> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
->>> Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
->>> Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
->>> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
->>
->> Section 3.13 of the spec states: "Where translation tables are shared between
->> CDs that contain the same ASID (within a translation regime), the CD HA and HD
->> fields must be identical."
->>
->> I don't think the way that smmu domains work, its possible to end up with a
->> single pgtable shared between multiple CDs? 
-> 
-> It is possible. iommufd can link a single hwpt -> iommu_domain ->
-> smmu_domain to many different RIDs and to different PASIDs each with
-> their own CD.
-
-Ahh ok.
-
-> 
->> So the driver should be able to guarantee this constraint is met?
-> 
-> It is expected to be done by this:
-> 
->>> @@ -1271,6 +1271,12 @@ void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
->>>  		CTXDESC_CD_0_ASET |
->>>  		FIELD_PREP(CTXDESC_CD_0_ASID, smmu_domain->asid)
->>>  		);
->>> +
->>> +	/* To enable dirty flag update, set both Access flag and dirty state update */
->>> +	if (pgtbl_cfg->quirks & IO_PGTABLE_QUIRK_ARM_HD)
->>> +		target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HA |
->>> +					       CTXDESC_CD_0_TCR_HD);
->>> +
-> 
-> This function is the only place that programs the ASID into a CD entry
-> for the domain, and it always derives the HA/HD bits in the same way
-> from some immutable value stored in the iommu_domain structure.
-
-But then I don't understand how this code can make the guarrantee? Whether or
-not dirty tracking is enabled seems to be a property of the domain, not the page
-table. (See arm_smmu_domain_finalise()). So if multiple domains can share a page
-table surely some of those domains could end up with dirty tracking on and
-others with it off. So there would be multiple CDs, all pointing to the same
-pgtable but with different HA/HD values?
-
-Or perhaps I've misunderstood your comment and there is actually always a 1:1
-relationship between domain and pgtable? But a 1:* relationship between domain
-and CD?
-
-> 
-> Jason
-
+SGksDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogUnlhbiBSb2JlcnRz
+IDxyeWFuLnJvYmVydHNAYXJtLmNvbT4NCj4gU2VudDogVHVlc2RheSwgQXByaWwgMjMsIDIwMjQg
+Mzo0MiBQTQ0KPiBUbzogU2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaSA8c2hhbWVlcmFsaS5rb2xv
+dGh1bS50aG9kaUBodWF3ZWkuY29tPjsNCj4gaW9tbXVAbGlzdHMubGludXguZGV2OyBsaW51eC1h
+cm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmcNCj4gQ2M6IGpvcm9AOGJ5dGVzLm9yZzsgamdn
+QG52aWRpYS5jb207IGtldmluLnRpYW5AaW50ZWwuY29tOw0KPiBuaWNvbGluY0BudmlkaWEuY29t
+OyBtc2hhdml0QGdvb2dsZS5jb207IHJvYmluLm11cnBoeUBhcm0uY29tOw0KPiB3aWxsQGtlcm5l
+bC5vcmc7IGpvYW8ubS5tYXJ0aW5zQG9yYWNsZS5jb207IGppYW5na3Vua3VuDQo+IDxqaWFuZ2t1
+bmt1bkBodWF3ZWkuY29tPjsgemh1a2VxaWFuIDx6aHVrZXFpYW4xQGh1YXdlaS5jb20+Ow0KPiBM
+aW51eGFybSA8bGludXhhcm1AaHVhd2VpLmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2MiAx
+LzRdIGlvbW11L2FybS1zbW11LXYzOiBBZGQgZmVhdHVyZSBkZXRlY3Rpb24gZm9yDQo+IEhUVFUN
+Cj4gDQo+IEhpLA0KPiANCj4gSSdtIGFpbWluZyB0byAoc2xvd2x5KSBnZXQgbW9yZSBpbnZvbHZl
+ZCB3aXRoIFNNTVUgYWN0aXZpdGllcywgYWx0aG91Z2ggSSdtDQo+IHN1cmUNCj4gaXQgd2lsbCB0
+YWtlIGEgd2hpbGUgdG8gZ2V0IHVwIHRvIHNwZWVkIGFuZCBwcm92aWRlIHVzZWZ1bCBpbnB1dC4g
+SXQgd2FzDQo+IHN1Z2dlc3RlZCB0aGF0IHRoaXMgc2VyaWVzIHdvdWxkIGJlIGEgdXNlZnVsIHN0
+YXJ0aW5nIHBvaW50IHRvIGRpcCBteSB0b2UgaW4uDQo+IFBsZWFzZSBiZWFyIHdpdGggbWUgd2hp
+bGUgSSBhc2sgc3R1cGlkIHF1ZXN0aW9ucy4uLg0KDQpUaGFua3MgZm9yIGdvaW5nIHRocm91Z2gg
+dGhlIHNlcmllcy4gSSBhbSBwbGFubmluZyB0byByZXNwaW4gdGhpcyBvbmUgc29vbiwgb25jZQ0K
+SmFzb24ncyBTTU1VdjMgcmVmYWN0b3Igc2VyaWVzIGluIHNvbWUgZ29vZCBmb3JtLg0KDQo+IA0K
+PiANCj4gT24gMjIvMDIvMjAyNCAwOTo0OSwgU2hhbWVlciBLb2xvdGh1bSB3cm90ZToNCj4gPiBG
+cm9tOiBKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhpbGlwcGVAbGluYXJvLm9yZz4NCj4g
+Pg0KPiA+IElmIHRoZSBTTU1VIHN1cHBvcnRzIGl0IGFuZCB0aGUga2VybmVsIHdhcyBidWlsdCB3
+aXRoIEhUVFUgc3VwcG9ydCwNCj4gPiBQcm9iZSBzdXBwb3J0IGZvciBIYXJkd2FyZSBUcmFuc2xh
+dGlvbiBUYWJsZSBVcGRhdGUgKEhUVFUpIHdoaWNoIGlzDQo+ID4gZXNzZW50aWFsbHkgdG8gZW5h
+YmxlIGhhcmR3YXJlIHVwZGF0ZSBvZiBhY2Nlc3MgYW5kIGRpcnR5IGZsYWdzLg0KPiA+DQo+ID4g
+UHJvYmUgYW5kIHNldCB0aGUgc21tdTo6ZmVhdHVyZXMgZm9yIEhhcmR3YXJlIERpcnR5IGFuZCBI
+YXJkd2FyZSBBY2Nlc3MNCj4gPiBiaXRzLiBUaGlzIGlzIGluIHByZXBhcmF0aW9uLCB0byBlbmFi
+bGUgaXQgb24gdGhlIGNvbnRleHQgZGVzY3JpcHRvcnMgb2YNCj4gPiBzdGFnZSAxIGZvcm1hdC4N
+Cj4gPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEplYW4tUGhpbGlwcGUgQnJ1Y2tlciA8amVhbi1waGls
+aXBwZUBsaW5hcm8ub3JnPg0KPiA+IFNpZ25lZC1vZmYtYnk6IEpvYW8gTWFydGlucyA8am9hby5t
+Lm1hcnRpbnNAb3JhY2xlLmNvbT4NCj4gPiBSZXZpZXdlZC1ieTogSmFzb24gR3VudGhvcnBlIDxq
+Z2dAbnZpZGlhLmNvbT4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBTaGFtZWVyIEtvbG90aHVtDQo+IDxz
+aGFtZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1YXdlaS5jb20+DQo+IA0KPiBFeGNlcHQgZm9yIHRo
+ZSBuaXQgKGZlZWwgZnJlZSB0byBpZ25vcmUgaXQpLCBMR1RNIQ0KPiANCj4gUmV2aWV3ZWQtYnk6
+IFJ5YW4gUm9iZXJ0cyA8cnlhbi5yb2JlcnRzQGFybS5jb20+DQo+IA0KPiANCj4gPiAtLS0NCj4g
+PiAgZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYyB8IDMyDQo+ICsr
+KysrKysrKysrKysrKysrKysrKw0KPiA+ICBkcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9h
+cm0tc21tdS12My5oIHwgIDUgKysrKw0KPiA+ICAyIGZpbGVzIGNoYW5nZWQsIDM3IGluc2VydGlv
+bnMoKykNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12
+My9hcm0tc21tdS12My5jDQo+IGIvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNt
+bXUtdjMuYw0KPiA+IGluZGV4IDA2MDYxNjZhODc4MS4uYmQzMDczOWUzNTg4IDEwMDY0NA0KPiA+
+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMNCj4gPiAr
+KysgYi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5jDQo+ID4gQEAg
+LTQxOTYsNiArNDE5NiwyOCBAQCBzdGF0aWMgdm9pZCBhcm1fc21tdV9kZXZpY2VfaWlkcl9wcm9i
+ZShzdHJ1Y3QNCj4gYXJtX3NtbXVfZGV2aWNlICpzbW11KQ0KPiA+ICAJfQ0KPiA+ICB9DQo+ID4N
+Cj4gPiArc3RhdGljIHZvaWQgYXJtX3NtbXVfZ2V0X2h0dHUoc3RydWN0IGFybV9zbW11X2Rldmlj
+ZSAqc21tdSwgdTMyDQo+IHJlZykNCj4gPiArew0KPiA+ICsJdTMyIGZ3X2ZlYXR1cmVzID0gc21t
+dS0+ZmVhdHVyZXMgJiAoQVJNX1NNTVVfRkVBVF9IQSB8DQo+IEFSTV9TTU1VX0ZFQVRfSEQpOw0K
+PiA+ICsJdTMyIGZlYXR1cmVzID0gMDsNCj4gPiArDQo+ID4gKwlzd2l0Y2ggKEZJRUxEX0dFVChJ
+RFIwX0hUVFUsIHJlZykpIHsNCj4gPiArCWNhc2UgSURSMF9IVFRVX0FDQ0VTU19ESVJUWToNCj4g
+PiArCQlmZWF0dXJlcyB8PSBBUk1fU01NVV9GRUFUX0hEOw0KPiA+ICsJCWZhbGx0aHJvdWdoOw0K
+PiA+ICsJY2FzZSBJRFIwX0hUVFVfQUNDRVNTOg0KPiA+ICsJCWZlYXR1cmVzIHw9IEFSTV9TTU1V
+X0ZFQVRfSEE7DQo+ID4gKwl9DQo+ID4gKw0KPiA+ICsJaWYgKHNtbXUtPmRldi0+b2Zfbm9kZSkN
+Cj4gPiArCQlzbW11LT5mZWF0dXJlcyB8PSBmZWF0dXJlczsNCj4gPiArCWVsc2UgaWYgKGZlYXR1
+cmVzICE9IGZ3X2ZlYXR1cmVzKQ0KPiA+ICsJCS8qIEFDUEkgSU9SVCBzZXRzIHRoZSBIVFRVIGJp
+dHMgKi8NCj4gPiArCQlkZXZfd2FybihzbW11LT5kZXYsDQo+ID4gKwkJCSAiSURSMC5IVFRVIG92
+ZXJyaWRkZW4gYnkgRlcgY29uZmlndXJhdGlvbg0KPiAoMHgleClcbiIsDQo+ID4gKwkJCSBmd19m
+ZWF0dXJlcyk7DQo+ID4gK30NCj4gPiArDQo+ID4gIHN0YXRpYyBpbnQgYXJtX3NtbXVfZGV2aWNl
+X2h3X3Byb2JlKHN0cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNtbXUpDQo+ID4gIHsNCj4gPiAgCXUz
+MiByZWc7DQo+ID4gQEAgLTQyNTYsNiArNDI3OCw4IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVfZGV2
+aWNlX2h3X3Byb2JlKHN0cnVjdA0KPiBhcm1fc21tdV9kZXZpY2UgKnNtbXUpDQo+ID4gIAkJCXNt
+bXUtPmZlYXR1cmVzIHw9IEFSTV9TTU1VX0ZFQVRfRTJIOw0KPiA+ICAJfQ0KPiA+DQo+ID4gKwlh
+cm1fc21tdV9nZXRfaHR0dShzbW11LCByZWcpOw0KPiA+ICsNCj4gPiAgCS8qDQo+ID4gIAkgKiBU
+aGUgY29oZXJlbmN5IGZlYXR1cmUgYXMgc2V0IGJ5IEZXIGlzIHVzZWQgaW4gcHJlZmVyZW5jZSB0
+byB0aGUgSUQNCj4gPiAgCSAqIHJlZ2lzdGVyLCBidXQgd2FybiBvbiBtaXNtYXRjaC4NCj4gPiBA
+QCAtNDQ0OCw2ICs0NDcyLDE0IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVfZGV2aWNlX2FjcGlfcHJv
+YmUoc3RydWN0DQo+IHBsYXRmb3JtX2RldmljZSAqcGRldiwNCj4gPiAgCWlmIChpb3J0X3NtbXUt
+PmZsYWdzICYgQUNQSV9JT1JUX1NNTVVfVjNfQ09IQUNDX09WRVJSSURFKQ0KPiA+ICAJCXNtbXUt
+PmZlYXR1cmVzIHw9IEFSTV9TTU1VX0ZFQVRfQ09IRVJFTkNZOw0KPiA+DQo+ID4gKwlzd2l0Y2gg
+KEZJRUxEX0dFVChBQ1BJX0lPUlRfU01NVV9WM19IVFRVX09WRVJSSURFLA0KPiBpb3J0X3NtbXUt
+PmZsYWdzKSkgew0KPiA+ICsJY2FzZSBJRFIwX0hUVFVfQUNDRVNTX0RJUlRZOg0KPiA+ICsJCXNt
+bXUtPmZlYXR1cmVzIHw9IEFSTV9TTU1VX0ZFQVRfSEQ7DQo+ID4gKwkJZmFsbHRocm91Z2g7DQo+
+ID4gKwljYXNlIElEUjBfSFRUVV9BQ0NFU1M6DQo+ID4gKwkJc21tdS0+ZmVhdHVyZXMgfD0gQVJN
+X1NNTVVfRkVBVF9IQTsNCj4gPiArCX0NCj4gPiArDQo+ID4gIAlyZXR1cm4gMDsNCj4gPiAgfQ0K
+PiA+ICAjZWxzZQ0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12
+My9hcm0tc21tdS12My5oDQo+IGIvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNt
+bXUtdjMuaA0KPiA+IGluZGV4IDQ1YmNkNzJmY2RhNC4uNWU1MWE2YzFkNTVmIDEwMDY0NA0KPiA+
+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmgNCj4gPiAr
+KysgYi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5oDQo+ID4gQEAg
+LTMzLDYgKzMzLDkgQEANCj4gPiAgI2RlZmluZSBJRFIwX0FTSUQxNgkJCSgxIDw8IDEyKQ0KPiA+
+ICAjZGVmaW5lIElEUjBfQVRTCQkJKDEgPDwgMTApDQo+ID4gICNkZWZpbmUgSURSMF9IWVAJCQko
+MSA8PCA5KQ0KPiA+ICsjZGVmaW5lIElEUjBfSFRUVQkJCUdFTk1BU0soNywgNikNCj4gPiArI2Rl
+ZmluZSBJRFIwX0hUVFVfQUNDRVNTCQkxDQo+ID4gKyNkZWZpbmUgSURSMF9IVFRVX0FDQ0VTU19E
+SVJUWQkJMg0KPiA+ICAjZGVmaW5lIElEUjBfQ09IQUNDCQkJKDEgPDwgNCkNCj4gPiAgI2RlZmlu
+ZSBJRFIwX1RURgkJCUdFTk1BU0soMywgMikNCj4gPiAgI2RlZmluZSBJRFIwX1RURl9BQVJDSDY0
+CQkyDQo+ID4gQEAgLTY2OCw2ICs2NzEsOCBAQCBzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlIHsNCj4g
+PiAgI2RlZmluZSBBUk1fU01NVV9GRUFUX1NWQQkJKDEgPDwgMTcpDQo+ID4gICNkZWZpbmUgQVJN
+X1NNTVVfRkVBVF9FMkgJCSgxIDw8IDE4KQ0KPiA+ICAjZGVmaW5lIEFSTV9TTU1VX0ZFQVRfTkVT
+VElORwkJKDEgPDwgMTkpDQo+ID4gKyNkZWZpbmUgQVJNX1NNTVVfRkVBVF9IQQkJKDEgPDwgMjAp
+DQo+ID4gKyNkZWZpbmUgQVJNX1NNTVVfRkVBVF9IRAkJKDEgPDwgMjEpDQo+IA0KPiBuaXQ6IEhB
+IGFuZCBIRCBhcmUgYSBiaXQgb3BhcXVlLCBhdCBsZWFzdCB0byBtZS4gSSBndWVzcyB0aGV5IGFy
+ZSBIVyBBY2Nlc3MNCj4gYW5kDQo+IEhXIERpcnR5PyBQZXJoYXBzIEFSTV9TTU1VX0ZFQVRfSFdf
+QUNDRVNTIGFuZA0KPiBBUk1fU01NVV9GRUFUX0hXX0RJUlRZIGFyZSBtb3JlDQo+IGV4cHJlc3Np
+dmU/DQoNCk5vdGhpbmcgYWdhaW5zdCBpdC4gSnVzdCB0aGF0IF9IV18gaXMgbm90IHVzZWQgaW4g
+ZHJpdmVyIGFueXdoZXJlKEFGQUlDUykNCmFuZCBIQS9IRCBhcmUgdXNlZCBpbiB0aGUgc3BlY2lm
+aWNhdGlvbi4gSG93IGFib3V0IHdlIHJlbmFtZSB0byANCkFSTV9TTU1VX0ZFQVRfSFRUVV9IQSBh
+bmQgQVJNX1NNTVVfRkVBVF9IVFRVX0hBPw0KDQpUaGFua3MsDQpTaGFtZWVyDQoNCj4gDQo+ID4g
+IAl1MzIJCQkJZmVhdHVyZXM7DQo+ID4NCj4gPiAgI2RlZmluZSBBUk1fU01NVV9PUFRfU0tJUF9Q
+UkVGRVRDSAkoMSA8PCAwKQ0KPiANCg0K
