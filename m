@@ -1,216 +1,118 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2088.outbound.protection.outlook.com [40.107.237.88])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F6B715ECE5
-	for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 14:15:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.88
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713968132; cv=fail; b=YmNS21yjiqlZmhgKJ1jcTBz+sz5TqrhwhCIGTSfft77+PgndZ0gJGBQk1pOPx5pSWb3rWwH+NSA6a6BrFZZYpQq9lFy1bQHi9udrWAjGRmGMYdG8SdlYUCfWQFDb6CzhD6lJc6YF8raLUap0W6okDYFXveoIlO78hkT5g1wp+KE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713968132; c=relaxed/simple;
-	bh=eXzSSFlzcUl16Bhexv387Hf5oLGKUN/4XA8awSWG8r0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=Ada8cKpHRNIyCvMfnPJyKnlGOBExtk9D++r+2gKICuY/pUHafdKF9oWknSGBiCSW236gvFbLmVIZCtIiQii7n6i9DVIdiiT5X9zYkR0mplcq13xzeDgsC4aFCRu/mxyiH7YaxwyvJsC18T1BG6MH514W02eSTMFC2qQMF4Aps6o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=nbEQZhUb; arc=fail smtp.client-ip=40.107.237.88
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30A3515E5B1;
+	Wed, 24 Apr 2024 14:18:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1713968287; cv=none; b=e0mq1bgy3FcH6x39bvdP5hJ1s/y/smvRF99SNjSE5vYVTTIF+uDA9RQTdER7aW9fu9juHISokqZmmKfuFtxJIQfYuvNAJtKmhbg6utfvIeDwA+qy45xeinmKyzKc6xuDlAGRe9CKgdXjwye2Pd4kQNH0T7ZSqpLqcAk2CTb2nvE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1713968287; c=relaxed/simple;
+	bh=At4UvGSHtC3eAHxqHmHEbLvTz/bxsDbV95dLJBgf9C0=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Syn3ymuFyodsuMZHGJikq+oq5TQFXDgpajqafYiZE9Wit0bmTgzM3cDzRxXUEWWViWANG1zXaH58GsGG9GGRKqOvBGZZ0f7IYNDtl0v3tS16wpmI7/mhNHWzE3DlfsJeTBczpPl072M8Ntky9Dh3AVQeWooS1VAdAAa/vJl9B50=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g1WR+rL7; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="nbEQZhUb"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ekpwNpyNuhKuC87+fwcZMM1q0iHqE0bDwmU54hPgGWJFvCtWKSkCrhW8tLjtjE84J7nQMIsJe9PW1bKCTrHRfhezmww0D8xfGcVQCG3pAdNkFPhfQj19oCFn5r91PmzNfmv33Oaj8BaA0vSYfadNmlE7tULm+IIZGPBc4V+sA5epJCMaNbByXJRaBvzzIKucv5U1qm6cKKu4Sk0HRDhC5wgp0lppKkQNbe+BO+agXbcIQwgeAMKPD8YX5fwN68PpYlctS2rgb9t0ZoEffyp0wm78yXI+oUmRDjQU2dJ3EuoYGpYiy12VZWsMLHo6yLbSteZUu9Y/zT2ivxicwFz/3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6yrUKLzVUGlNCoLu3/XEEdtULFWUTsjqE0A31pRkmxg=;
- b=hHEXsWvWpV6t2h3zHXVF4OjksQqTXh2tz/E4hrKqis6EIdmacmtp+fGEvJNSjYVfdUbs4MPgLtPbUXzXtDAmfxUF2Gv+SyATcU4e/FrULK0co4rmJXxfFYCnebu/kvhgI2GkHl4wXwcjyZaeRtcRPm0gjVtxGJDBgqig9YTtRgUQ9e8FiRtR6iCKDDnOb7oSg2DeUyCcdxIPxFLPCKW9endnHsCxqO431J5tOoSB4c9ewTYaWtisWm+T9MEdHWuHjwByOkGRiQcgXeDq0g+DPvbTFwPDJwwr12xF34Ysx8NZfJh6quYQur7VUtAPqPztdEpjG3MRcIAwKrX58Uliqw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6yrUKLzVUGlNCoLu3/XEEdtULFWUTsjqE0A31pRkmxg=;
- b=nbEQZhUb5eQdRRJG+qtJiadSm22wnytLyYbgXf3zcJjf/1gZ9VyXLVpG/pJKw5TUcu5cKRKEESAP1QdVA+Limv/WdWQ9zs+knBFt7dqoCFZJIppOvMlLZTpQ+CeFIE85Sh3Lur3VM5U1F31EHN6NppxHLl5wt4u+WF4mzbV3un+8e/d2J6n7vLV83y8qpZYosce14dgOFHKLGVwzrPCziKD1lVlUmNfa8GnNJCx+jChdhBHSdPwkTiPjHL44cFW3jsMlLseODSf7LbULD9Q9UZ3C145bTNXLYqRDO3buXfAehdwm4Q/2ld4WANVAv7B0ufFTD9EJDCIjPdMTsCLHtg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by LV2PR12MB5872.namprd12.prod.outlook.com (2603:10b6:408:173::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7472.44; Wed, 24 Apr
- 2024 14:15:26 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7519.021; Wed, 24 Apr 2024
- 14:15:26 +0000
-Date: Wed, 24 Apr 2024 11:15:25 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
-	"Pan, Jacob jun" <jacob.jun.pan@intel.com>
-Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
-Message-ID: <20240424141525.GN941030@nvidia.com>
-References: <BN9PR11MB52765314C4E965D4CEADA2178C0E2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <4037d5f4-ae6b-4c17-97d8-e0f7812d5a6d@intel.com>
- <20240418143747.28b36750.alex.williamson@redhat.com>
- <BN9PR11MB5276819C9596480DB4C172228C0D2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240419103550.71b6a616.alex.williamson@redhat.com>
- <BN9PR11MB52766862E17DF94F848575248C112@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240423120139.GD194812@nvidia.com>
- <BN9PR11MB5276B3F627368E869ED828558C112@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240424001221.GF941030@nvidia.com>
- <BN9PR11MB5276183377A6D053EFC837FD8C102@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276183377A6D053EFC837FD8C102@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: SN7PR18CA0006.namprd18.prod.outlook.com
- (2603:10b6:806:f3::8) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g1WR+rL7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1713968286; x=1745504286;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=At4UvGSHtC3eAHxqHmHEbLvTz/bxsDbV95dLJBgf9C0=;
+  b=g1WR+rL7JJ6jSvH8lZdDakr1Kk+yINakQGeAjTZYFa1zd2cJS+S22P7P
+   Kga0ghrCqkPxtLd1Hm1dF7Dc8YagkWBlmx0S+04Rz9Pusj29ZTbNi/qUk
+   rSl5pWEWOq7WOtXfentVxpQk3uEmDl8BddlF0KgyBm04Q1bTuTDAWoGo7
+   tgbAAnz8SR7C78egU+IGLha/03AifZP4j6iVUsWHcG7zd79PRIdegL+xW
+   z0tJUhZ+cBrKNC+eIs5Plf4Pq50/reJLyoPIzHIP9dxVZ3HzvX41eHvU3
+   MTZWrbt7f/6QBRPOkCQ0WV/YnEMR8O0Nk7zZZb9dISpVZJ5WGDr3RRiUl
+   Q==;
+X-CSE-ConnectionGUID: 5wW9yW/vSqaGDaiNG6AWFA==
+X-CSE-MsgGUID: 6ZUIjUT7TVqcdKDlHTdX9g==
+X-IronPort-AV: E=McAfee;i="6600,9927,11054"; a="20217329"
+X-IronPort-AV: E=Sophos;i="6.07,226,1708416000"; 
+   d="scan'208";a="20217329"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2024 07:18:05 -0700
+X-CSE-ConnectionGUID: k2Y9vOx2Rd+ybaax5y0ZUA==
+X-CSE-MsgGUID: 42iMqnkSToGMlw5ObURQlg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,226,1708416000"; 
+   d="scan'208";a="25241509"
+Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.237.86]) ([10.124.237.86])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2024 07:18:02 -0700
+Message-ID: <77fd2bba-fc59-4997-a91a-2d9235ce5cd6@linux.intel.com>
+Date: Wed, 24 Apr 2024 22:18:00 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|LV2PR12MB5872:EE_
-X-MS-Office365-Filtering-Correlation-Id: 29b75038-49f8-4123-764d-08dc6468fd2a
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?/aQW5KY1/e04K+6lDXhZY1zWq5+4fV2gaoFmgR6PMvt8HVftwVHQG7hHloFC?=
- =?us-ascii?Q?1z9wC+RuS9S1T7e0Yu3/UsspfJPoSQbOX6NcnesaaxNLI5FJplzLAxfHjD1p?=
- =?us-ascii?Q?zqzGBVPASvilpg6Xt9PcmDf72u1c0TGitr+ZMlmo+FNNJtV3JjPNX807kCdd?=
- =?us-ascii?Q?6ebkXkLsemorpi6/OCgmzWKbjKQ9BPwWKDfRba5MlUhd1AmpiBCIzBe2q71T?=
- =?us-ascii?Q?cVa49kVqwG5IzZDKMZzH+HSMhFmONggCSSq//5AEh7EHe4ccmRjkLL8DX3tJ?=
- =?us-ascii?Q?I6GZtASRjXYIpmSWw4/kH/KcTYJVprvDbts3IQL6Y7uY4MHIX+IF0jTzJLa5?=
- =?us-ascii?Q?rvRDsRgbu6lCBiluieU9+LEppJB0IyW5aqXLVb+RvIAw2mgN9hvCbZsxjr8q?=
- =?us-ascii?Q?ZfPoGTcw1kDo4nctKirCG2cXAC2c6UiewHzN1CRr7DWWvwQ7QGAEUSwxu8HW?=
- =?us-ascii?Q?vq0QuMy8vv6/vDBIHg5IBug0CQsesqtyxqCoLtn7fK/ajSMJeh0Id3ygSJ6n?=
- =?us-ascii?Q?AEIhmW3kjfaAkWMx55OiGoXgjVKSKCaEQBC5TaC/gvTq0FNwTRs/v32/XEVj?=
- =?us-ascii?Q?dICOSkeg5XbpRQ0l6gElWnMDDx51PrlPpV+S0pqlQlLdIg/00RFuNCJROsaq?=
- =?us-ascii?Q?lRehK40sUTrs3xKEI08ylrgGPwscCpNQ0mrMlaBxDPPttkkrJxqEYahPz4Xb?=
- =?us-ascii?Q?wN5hQvBEoBbRNRcb7gUHz2xFhVvfHatPmzrXmJDY+GyCF4zJXcNyN2lyyXxG?=
- =?us-ascii?Q?eMGX9pZ2RIDNyOyiyQHcsiJzE72d4J0Ml7h4AvFD7zeGPYI5tmQeGLLFhZSO?=
- =?us-ascii?Q?JO5KCjpawoXRUFKKpzvBTvv40FyzQupaHyISx1uNdALlfyNigUrdW3NARqMq?=
- =?us-ascii?Q?+bBmH5rGUr2Lir8rV2kpAp+i4zJCXDD67Q/JlrUfHOavy+54Yo6TC2vezUfN?=
- =?us-ascii?Q?/BY6NsYiK7LfickweuYxEIQIkjf7e2z5Oic78HviTxmFTJLWvrk7GMAW30J0?=
- =?us-ascii?Q?Tm+covbuUBEc5q+QFiMqqeo2cQD11SjYY+w3RV1AFzORxEZD/b661J5plwoF?=
- =?us-ascii?Q?l/tQlpMXbr8GDrd1FD9QSVbD9LvkKsFaoHjNyhBHISomE9h2u8zzMYLWMQzN?=
- =?us-ascii?Q?hgDewW1vtBNdpBa+aeHifVYEv0Rec47vW7p4fKjkNVFykS0bPbz486bfuB0k?=
- =?us-ascii?Q?yiBbl5uuHPvKY9ZRWOEbz2orLHJJQ78V3D5ovWeXEuKwY+E/tKrZwlBai6E4?=
- =?us-ascii?Q?xmBHiQrdB3I86rKciyClHI9oWSe60S70VWXDJ79byg=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(7416005)(1800799015)(376005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?sY1Y2CDYLAy6ekdYnzLi/OSC4ZLTExY9oiTBu50BkLrSbt3ALZiAdam8snVH?=
- =?us-ascii?Q?IeNkat541jQyS+FGHZhmiswHJVS4teyUxE2hzKFmYDQu/B28RPvLrrSDJ9E/?=
- =?us-ascii?Q?ZDjgJZJJ1zPi6li0wlfE+nowB6HwbaZoa1LZUgEO48j+Afp0cz5cF8SCSm4c?=
- =?us-ascii?Q?rFqVMzR1niYvBLmCjvVzuy8SpGf28ExEYbmuDSupCS69Q8XErTf3jy2YcJ8a?=
- =?us-ascii?Q?zVCX6neFyDkuSumkTufgNMxpDUe+95eDwF1yTe4lVBAdMUIFz1gjNGUXmIIZ?=
- =?us-ascii?Q?2lDRkj65ripn6R8bNch2/kISV4nuNAxm3gJ/Npq+cZxfiAUbIxkFMqB65CPM?=
- =?us-ascii?Q?kPGJH2+sMHguuU/rQ/DGD5cOv2O9DUKIUz34o/2eacpl+jhXW/kQbNc1ccrf?=
- =?us-ascii?Q?Gx98pHVnA0ASFxOAnWudrQvpgA7qtF6D4vsHMdUa4xiIe5JWeeCAxe6RmUcm?=
- =?us-ascii?Q?AHkVevmQGSuqEem6F3WbUsjKgKq1wtJgsGCCa4TKXPc0yzdUj7ZlVXe9At66?=
- =?us-ascii?Q?4xjif8wSBk0QqNUPCimPeeZ2pachYM+DZifr+rLNoFCJkTl4fft16txxJ0PN?=
- =?us-ascii?Q?ZgytGGkkzZ/UOvXAgGOYkk2szfoEWquH27zze1ZEdzG4aCg9vPve90Z7R3QX?=
- =?us-ascii?Q?RY3urRF8KcOzNUKV5MsOa/O0NOwlQzVRUtq4a1PWZEdQn88heIXj+PG73894?=
- =?us-ascii?Q?BP22LtB2dHm7yN1ZLsW0tm1KmpuE7BvrtZJ9Nt5FgWhpk+p6j8a/N3AgKzSf?=
- =?us-ascii?Q?Kk0vnSN/lq0hx6hvBYIvpmQla8zGCEs9T+tctfFXv31TbZ32VdxoCkZ6Z6W5?=
- =?us-ascii?Q?1lZjJZRlvxYUYAIPX8NqVTvkIIc/I1FGrr6OkWgNfTpKGpVoVAHNHZx9ChJn?=
- =?us-ascii?Q?V8MxgvOnLG3F9yUPecu7nF4U70x4oVoUf6aPoeuEi8016wnYTb+gk0pmhXZl?=
- =?us-ascii?Q?fwziMvXkk//r1eTdZyZdhH3CvpjsPn9OFnsfqdZ/0SIwzpn6cMxU44w5bQKz?=
- =?us-ascii?Q?TEmNZ/0YmKoN9+p8vPwtKAcU+AfZhUrbP81IyavVC4kn3FejHCGOGqWPWjws?=
- =?us-ascii?Q?glvvkPdx5mKds6UbJ/4qRfB+4PCrf/AEE3rXXcA6SdxSocx/W4U5PvrPvU0C?=
- =?us-ascii?Q?B9ylSKgF8cQQRoJPsoOqlo6/zIyDFlVOyCmV4S/vP4mG35crwACBU0rbOUWf?=
- =?us-ascii?Q?JIN47zl5SYZ1YL4M5QgVPfLva2r24QPRDSNgmv/IX8NFa1JSss+2E62HEPwU?=
- =?us-ascii?Q?F6k9EPkaSOUdTdIa6beGpspzwXF4aIjvI1hIApc6Y9m+B7oUWllLhLcHKBY9?=
- =?us-ascii?Q?6J1O0Zcf/hbd82V0DDmIra3C4PlKr3h3VXo8FZcuUkRp2wevlhoUWrnHo3xm?=
- =?us-ascii?Q?s4PFRnTe2sj4/DTeqP8warDUm7t5XSOFjqeGxHD7zspeCiZ63qCcxUUr0dLG?=
- =?us-ascii?Q?GlwnSM0ur24lNve5WzIeynRYQYGwk5s9Mp8+C7S42yj0NhHsmiv8r1l2gjIr?=
- =?us-ascii?Q?4zBal/0ZLenC4IDVA5iMfXGhTQSAEx1ghOyuc8vtWoEE6rYW7fuwUgo9OamU?=
- =?us-ascii?Q?x+52QOaEgujzKIRAzFo=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 29b75038-49f8-4123-764d-08dc6468fd2a
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2024 14:15:26.7886
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UCiByFlwpdYUzqKIrnYAjOd01llILunX1VrZ2Mfgnn4wiGEfEOfO/NIqWzW7bE20
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5872
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, joro@8bytes.org, will@kernel.org,
+ ewagner12@gmail.com, suravee.suthikulpanit@amd.com, vashegde@amd.com,
+ iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
+ regressions@lists.linux.dev
+Subject: Re: [PATCH] iommu: Fix def_domain_type interaction with untrusted
+ devices
+To: Jason Gunthorpe <jgg@ziepe.ca>, Robin Murphy <robin.murphy@arm.com>
+References: <fa14583e94cbf540b60a6be94b41bb24d0037e75.1713272443.git.robin.murphy@arm.com>
+ <20240416152943.GU223006@ziepe.ca>
+ <3cf97e3c-c8d9-4282-a8ca-e4c1ea383dbd@arm.com>
+ <20240424130457.GF231144@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240424130457.GF231144@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Wed, Apr 24, 2024 at 05:19:31AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Wednesday, April 24, 2024 8:12 AM
-> > 
-> > On Tue, Apr 23, 2024 at 11:47:50PM +0000, Tian, Kevin wrote:
-> > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > > Sent: Tuesday, April 23, 2024 8:02 PM
-> > > >
-> > > > It feels simpler if the indicates if PASID and ATS can be supported
-> > > > and userspace builds the capability blocks.
-> > >
-> > > this routes back to Alex's original question about using different
-> > > interfaces (a device feature vs. PCI PASID cap) for VF and PF.
-> > 
-> > I'm not sure it is different interfaces..
-> > 
-> > The only reason to pass the PF's PASID cap is to give free space to
-> > the VMM. If we are saying that gaps are free space (excluding a list
-> > of bad devices) then we don't acutally need to do that anymore.
-> > 
-> > VMM will always create a synthetic PASID cap and kernel will always
-> > suppress a real one.
+On 2024/4/24 21:04, Jason Gunthorpe wrote:
+>> OK, so after all that you do in fact agree? In that case, why are we still
+>> mucking about proposing hacks on top of hacks in the AMD driver rather than
+>> just fixing the regression sensibly?
+> It is because your proposal is regressing the meaning of
+> def_domain_type back to a policy knob when I've spent a bunch of work
+> emptying out def_domain type implementations to get it into a
+> capability report.
 > 
-> oh you suggest that there won't even be a 1:1 map for PF!
+> def_domain_type is now about*capability*. Does the
+> HW/SW/Driver/system support PAGING/IDENTITY or not.
+> 
+> Meaning if def_domain_type says it is not supported then the core code
+> should not use it. This is how everything was working until AMD
+> changed their driver to lie about what their attach_domain would
+> accept.
+> 
+> I do not want to see def_domain_type regress back to being confused
+> where some drivers are policy advice and some drivers are capability!
+> 
+> AMD should hack their driver for the rc fix and then go and fix it
+> properly to remove the PASID logic entirely from def_domain_type. I
+> will also point again out that in v6.9-rc AMD doesn't even support
+> PASID yet so this abuse of def_domain_type isn't even needed. 🙁
+> 
+> The core code should contiue to treat def_domain_type as capability.
 
-Right. No real need..
+I agree with this. Ideally there should be some mechanism to disallow
+any device driver to bind to the device if there's a conflict between
+the core policy and iommu hw capability because iommu-dma functionality
+is already compromised.
 
-> kind of continue with the device_feature method as this series does.
-> and it could include all VMM-emulated capabilities which are not
-> enumerated properly from vfio pci config space.
+If we all agree with the statement that "the core should treat
+def_domain_type as capability", the intel iommu driver needs some
+enhancement as well.
 
-1) VFIO creates the iommufd idev
-2) VMM queries IOMMUFD_CMD_GET_HW_INFO to learn if PASID, PRI, etc,
-   etc is supported
-3) VMM locates empty space in the config space
-4) VMM figures out where and what cap blocks to create (considering
-   migration needs/etc)
-5) VMM synthesizes the blocks and ties emulation to other iommufd things
+For example, the intel iommu driver allows users to opt-in graphic in
+passthrough mode, in that case def_domain_type will return
+IOMMU_DOMAIN_IDENTITY no matter the device is trusted or not.
 
-This works generically for any synthetic vPCI function including a
-non-vfio-pci one.
+     if ((iommu_identity_mapping & IDENTMAP_GFX) && IS_GFX_DEVICE(pdev))
+          return IOMMU_DOMAIN_IDENTITY;
 
-Most likely due to migration needs the exact layout of the PCI config
-space should be configured to the VMM, including the location of any
-blocks copied from physical and any blocks synthezied. This is the
-only way to be sure the config space is actually 100% consistent.
+this potentially creates same conflict as the amd driver.
 
-For non migration cases to make it automatic we can check the free
-space via gaps. The broken devices that have problems with this can
-either be told to use the explicit approach above,the VMM could
-consult some text file, or vPASID/etc can be left disabled. IMHO the
-support of PASID is so rare today this is probably fine.
-
-Vendors should be *strongly encouraged* to wrap their special used
-config space areas in DVSEC and not hide them in free space.
-
-We may also want a DVSEC to indicate free space - but if vendors are
-going to change their devices I'd rather them change to mark the used
-space with DVSEC then mark the free space :)
-
-Jason
+Best regards,
+baolu
