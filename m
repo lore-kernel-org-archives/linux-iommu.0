@@ -1,142 +1,110 @@
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC0ABA21
-	for <iommu@lists.linux.dev>; Thu, 25 Apr 2024 00:48:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 110C610A14;
+	Thu, 25 Apr 2024 01:43:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714006088; cv=none; b=iC5v9H5M07FDouDo9mw8Yf+WukVn7z6tisfwE81o++cQKctIhf8jshIiPPtIYXqmonIoPdDHY8FCRoccEs+EZvnNAmpLPgurh2r0zLtHf72ZLAxQCYMj3eKEQYGyEg6uAt36z/atzERHSgOErzhF78kL8AKO5o6I+skLq1Ga4JQ=
+	t=1714009393; cv=none; b=l0zNee5584tbBi4o4LKPQSdgxZnTTIcFe1qVke7TbelKWqiDVfd1stUBuZ9hG7eglzdJImDnkTI8gCtl0/auhHr44KvRfl9FN4vChL+k53RoCUOlJBP1lbPnnFk/4QuxKJi/2GmRBNzxb/b15FqeoduZoMdJd4m7IYhx9Xa1LqE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714006088; c=relaxed/simple;
-	bh=1FwFfqE9i616o1VTvMvnmB0Vi4XGdpO5ENmkg5Y9C+c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=spZdkvOlugpxSEZXTGoWCMBbYRMR8Ugl7bLlD9Tt6V7KGRs5Dsl0dAYTP0FY9FE0pySuGEXaDZ7pz4V6xG+crxK0qWqhNfeGzFg5PhRRU6MHhGRit+Km2AYxCFe+UK4ubart9BRp2wbFEm55qi7PysXwlrrUljfUSK7hv2TFsI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=asIiecnP; arc=none smtp.client-ip=209.85.167.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1714009393; c=relaxed/simple;
+	bh=vCTcIpU4tuNNZiG4seFWTcZ8ixen+NgPcl6fLdpAfag=;
+	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=FpGD6ShC6KfD/VIPxvYYRcGZcgQyoyiSn7Gj84beNaO0f7CMckr3oIkVF9hw4Z1fO1/WVUialB16BloUEnpDfLlGAxoDsditGGaDkp1Uoo4BPRy2dlkdi3Hw2UTzpQ7ggXUlq8pFjtNbipLBTfgA7Botgzz/J2wFWHsuVSNaTtI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BO71NDTG; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="asIiecnP"
-Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-3c7510d1bacso322666b6e.1
-        for <iommu@lists.linux.dev>; Wed, 24 Apr 2024 17:48:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1714006086; x=1714610886; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=vuFHLVEWRvr8nT3POIEE+NeoEX4x7+oc0ycZrONvMnY=;
-        b=asIiecnPkCnbLXK1pQC7WVxnOztZH/s8qMpQkdOdXbqSmvgnpSZG/KtnENAFKvRBAU
-         0Q7YxQnB8wCs+Oj9FAs7N73iRxSDIHKnPTVglCIF2aLusTcrfq7VtXdBoXvLIZqOBOjk
-         ykDbPHDlF4oHJ0QUstTIp3wJJSEgQ789rz1hCWTXZKN75Noe6iuHAKEJL3KraSqMb9/x
-         pa2Z15dzS50pNRXswR3b2xa0Q7Dr9NprP0TIDyYS9v3cGub2mtkbCM3ParN2UAD75Blo
-         KlHCrHKllaCmvvupe1lUpDIcGNMgoRN+HTYt+cuiVbW3dZ/XMvO5JjhKkFJ/z0I560GE
-         d7zw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714006086; x=1714610886;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vuFHLVEWRvr8nT3POIEE+NeoEX4x7+oc0ycZrONvMnY=;
-        b=EMPxnlicIbXp1PW68ihH7uSQwHjE/zDRzPHfPyK+I1axUIoGnx0n337i/Rd6rt/yBu
-         GQ4h/gQE6LxZc+b8f7k8qa3mPq7SwCoja0nhEs6ZBERkKIt0OvML/o12NB8PMBcqY32T
-         rfURzk+u5zNzYtw5XqDb8JJ7hD7K3K8ZSvCCBzrn0qB9tVAMFZN3N3K09xVPRnIQZglN
-         ziGhjC/8/cabSXsAD4b+njvztlDkV89nx7JfV+3rFgBLIvfeuT9xvR1geLhXfhuelISm
-         dCumVM3M4tBnLkU1LBQle0WmhR9l77u93Ib3ZcFy3dZB2QkfhOBiNM90n065xt/RfOKi
-         c8rA==
-X-Forwarded-Encrypted: i=1; AJvYcCVjRLL7MMRNf6sbXZk+tu3TUT2ad72KPY5bxHnKd+sQL05jMUm95NbZuj/k8sX/pO2e0pLwCfRKQ1STeUJkEb6Dtkl1Uvk=
-X-Gm-Message-State: AOJu0YyAYRW2Ag9nM7Aoyq5Z6sdOG1s/OFBodC7bWX5Y7Ck+JpvR+heg
-	0RNSH4e64AiObvputMQ4HnWHi6XJqwReyf+PGoEbth9SIpUa6N2pXb2rn5v2ct8=
-X-Google-Smtp-Source: AGHT+IEPuZwS/Tkiq24z8ESvoiDOcfXfHtKEsJScRX3bkfnzRD6SNCxN7/xPfUqfYppgfpYVzUwNDQ==
-X-Received: by 2002:a05:6870:b527:b0:22e:9792:97ed with SMTP id v39-20020a056870b52700b0022e979297edmr5451364oap.38.1714006085784;
-        Wed, 24 Apr 2024 17:48:05 -0700 (PDT)
-Received: from ziepe.ca ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id xi9-20020a0568704f0900b002392041da7dsm2726725oab.48.2024.04.24.17.48.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Apr 2024 17:48:05 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1rznHP-00AEjV-Rj;
-	Wed, 24 Apr 2024 21:48:03 -0300
-Date: Wed, 24 Apr 2024 21:48:03 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Tomasz Jeznach <tjeznach@rivosinc.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Sunil V L <sunilvl@ventanamicro.com>,
-	Nick Kossifidis <mick@ics.forth.gr>,
-	Sebastien Boeuf <seb@rivosinc.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux@rivosinc.com
-Subject: Re: [PATCH v2 7/7] iommu/riscv: Paging domain support
-Message-ID: <20240425004803.GK231144@ziepe.ca>
-References: <cover.1713456597.git.tjeznach@rivosinc.com>
- <301244bc3ff5da484b46d3fecc931cdad7d2806f.1713456598.git.tjeznach@rivosinc.com>
- <20240419125627.GD223006@ziepe.ca>
- <CAH2o1u5+XD9YN=gdMVtfkyhKoKha0UpwKgOVbCAwOQa+saPfRw@mail.gmail.com>
- <20240424233950.GJ231144@ziepe.ca>
- <CAH2o1u4eZ-mRO7hiJzA-pwYDOo0+3vObpBZT3_MXW=zC9mXRbA@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BO71NDTG"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714009392; x=1745545392;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=vCTcIpU4tuNNZiG4seFWTcZ8ixen+NgPcl6fLdpAfag=;
+  b=BO71NDTGWt6mHtJYwNIXW3TBotwuW2W1tefeIZgaB5d16EohOU5SBbtr
+   NcPn9EhPmhgZA2Red3yJs/26Kyux78pIZjEOxTJtf/izZHzvv182p7nPp
+   6b9etFGTGDsZJSYL/eSrfSjZv2Pyz1iVLSNTT8tzB4kbZm8ZS6RtsDfgJ
+   ak6Nv3tl1PJFq8DnMhVbrqiOq7Q/+YICWAdjAGcR65hn21PXb1SNUZ0qx
+   gqY8dVbqn+GOPKwa6gv02tsuH48Bx4LQjd/CgdOH2hM6mChW2cH92EDWn
+   ccc/KLd83Y0aHffyB0g/IApsYufGDzCU2mPYmFFhCE68tb5RwnvGtnTZ/
+   g==;
+X-CSE-ConnectionGUID: 4goZ5vq/RXyH5g2UVpwTxQ==
+X-CSE-MsgGUID: p3WJvmTWRXSo3NEBCP5G9A==
+X-IronPort-AV: E=McAfee;i="6600,9927,11054"; a="12607398"
+X-IronPort-AV: E=Sophos;i="6.07,227,1708416000"; 
+   d="scan'208";a="12607398"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Apr 2024 18:43:11 -0700
+X-CSE-ConnectionGUID: O8KuCFEcTm6KZ535BdsK2A==
+X-CSE-MsgGUID: HNXd/qeESMKjvD4disWUSw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,227,1708416000"; 
+   d="scan'208";a="48151282"
+Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
+  by fmviesa002.fm.intel.com with ESMTP; 24 Apr 2024 18:43:08 -0700
+Message-ID: <7648b859-3685-41d7-a7b9-e137441c98a0@linux.intel.com>
+Date: Thu, 25 Apr 2024 09:41:44 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAH2o1u4eZ-mRO7hiJzA-pwYDOo0+3vObpBZT3_MXW=zC9mXRbA@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
+Cc: baolu.lu@linux.intel.com, Robin Murphy <robin.murphy@arm.com>,
+ joro@8bytes.org, will@kernel.org, ewagner12@gmail.com,
+ suravee.suthikulpanit@amd.com, vashegde@amd.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, regressions@lists.linux.dev
+Subject: Re: [PATCH] iommu: Fix def_domain_type interaction with untrusted
+ devices
+To: Jason Gunthorpe <jgg@ziepe.ca>
+References: <fa14583e94cbf540b60a6be94b41bb24d0037e75.1713272443.git.robin.murphy@arm.com>
+ <20240416152943.GU223006@ziepe.ca>
+ <3cf97e3c-c8d9-4282-a8ca-e4c1ea383dbd@arm.com>
+ <20240424130457.GF231144@ziepe.ca>
+ <77fd2bba-fc59-4997-a91a-2d9235ce5cd6@linux.intel.com>
+ <20240424143702.GH231144@ziepe.ca>
+Content-Language: en-US
+From: Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20240424143702.GH231144@ziepe.ca>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Wed, Apr 24, 2024 at 04:54:01PM -0700, Tomasz Jeznach wrote:
-> On Wed, Apr 24, 2024 at 4:39 PM Jason Gunthorpe <jgg@ziepe.ca> wrote:
-> >
-> > On Wed, Apr 24, 2024 at 04:30:45PM -0700, Tomasz Jeznach wrote:
-> > > > > @@ -46,6 +46,10 @@ MODULE_LICENSE("GPL");
-> > > > >  #define dev_to_iommu(dev) \
-> > > > >       container_of((dev)->iommu->iommu_dev, struct riscv_iommu_device, iommu)
-> > > > >
-> > > > > +/* IOMMU PSCID allocation namespace. */
-> > > > > +static DEFINE_IDA(riscv_iommu_pscids);
-> > > > > +#define RISCV_IOMMU_MAX_PSCID                BIT(20)
-> > > > > +
-> > > >
-> > > > You may consider putting this IDA in the riscv_iommu_device() and move
-> > > > the pscid from the domain to the bond?
-> > > >
-> > >
-> > > I've been considering containing IDA inside riscv_iommu_device at some
-> > > point,  but it made PCSID management more complicated.  In the follow
-> > > up patches it is desired for PSCID to be unique across all IOMMUs in
-> > > the system (within guest's GSCID), as the protection domains might
-> > > (and will) be shared between more than single IOMMU device.
-> >
-> > The PCSID isn't scoped under the GSCID? That doesn't sound very good,
-> > it means VM's can't direct issue invalidation with their local view of
-> > the PCSID space?
-> >
+On 4/24/24 10:37 PM, Jason Gunthorpe wrote:
+> On Wed, Apr 24, 2024 at 10:18:00PM +0800, Baolu Lu wrote:
 > 
-> To clarify: PSCID namespace is per GSCID.
-> However there might be more than one IOMMU in a single system sharing
-> the same GSCID
+>> For example, the intel iommu driver allows users to opt-in graphic in
+>> passthrough mode, in that case def_domain_type will return
+>> IOMMU_DOMAIN_IDENTITY no matter the device is trusted or not.
+>>
+>>      if ((iommu_identity_mapping & IDENTMAP_GFX) && IS_GFX_DEVICE(pdev))
+>>           return IOMMU_DOMAIN_IDENTITY;
+>>
+>> this potentially creates same conflict as the amd driver.
+> These performance policy choices should be done in the core code and
+> they should interact correctly with other policy knobs like untrusted.
+> 
+> If Intel Graphics has some performance reason to prefer IDENTITY then
+> it should work the same no matter the IOMMU it is connected to. I
+> think just because the GPU is co-packaged with the IOMMU isn't a good
+> reason to organize the software like this.
+> 
+> If having a policy of a performance boost to some devices is
+> legitimate then I guess we'd need more levels on the command line:
+>   fast           all IDENTITY
+>   fast-secure    all DMA expect IDENTIY for special devices
+>   mostly-secure  all DMA but unmapping is not strict
+>   secure         all DMA and strict unmapping
+> 
+> How exactly you decide when the performance reason justfies IDENTITY,
+> I don't know.. Would mlx5 800G NICs that can overwhelm most IOMMUs
+> also go in that bucket too?
+> 
+> But yes, I'm quite adament that drivers should not be using
+> def_domain_type as some kind of performance policy thing.
 
-I assume this is because GSCID ends up shared with kvm?
+Yes. I will follow up to address this issue in the intel driver.
 
-> and with e.g. SVA domains attached to more than one
-> IOMMU. It was simpler to manage PCSID globally.
-
-If the PSCID is moved into the invalidation list like Intel structured
-it then it doesn't matter for SVA, or really anything.
-
-AFAIK the only reason to do otherwise is if you have a reason to share
-the ID with the CPU/MM and the IOMMU probably to coordinate
-invalidations. But if you do this then you really just always want to
-use the MM's global ID space in the first place...
-
-So I'm not sure :)
-
-Jason
+Best regards,
+baolu
