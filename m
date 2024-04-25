@@ -1,117 +1,84 @@
-Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from cstnet.cn (smtp21.cstnet.cn [159.226.251.21])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06CC981AA3
-	for <iommu@lists.linux.dev>; Thu, 25 Apr 2024 09:13:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6ADA84FAE
+	for <iommu@lists.linux.dev>; Thu, 25 Apr 2024 09:18:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714036420; cv=none; b=fqFU/FhUk4pyaJEwJida+N75PO+4WF+LbmDZ2aiVBA8kwTdLwiQeuJivTncpRyLjwzfmujdTiqVRo58aeEBbDHtZaBhBy2MTBUtN8mrwCEqmJ2etovuRrGxLzDPTpB+PaXtyVeBFK6Hvx/FIx8dtTmkCtlV/UkuL1s99bEpKFI4=
+	t=1714036723; cv=none; b=YHHZwxgYHyvWcHz4OEH5TPAQPucYtq1kvWPbmTbfUJww4mEpm0r1Eq+xCOa3r92X09FwB9IlQ7IVibfGB3Xm+YHx+x1zyk+t+U/N54jk0/SqJX5bxXlBbdoe8MGkodUBz+o6NSb7CTKbOKT/NRbL+4FzDxOTFodt2b9foRL/Atc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714036420; c=relaxed/simple;
-	bh=eobe3x7c9CyI2IUIU9H13+fYzPpeASRF8Xdxx5XJjYA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BisDirj9ebqHY5F+piGC48z9ZdLI2u7C+mBePH38kfwQWxsfwHNNeFGGbDxnFZzxv5rR2E/bg8GdgRE3kiIkv7J5R1n/sGbxV2EQu1qw9aN4FR4M6nBUx9uwrb0o+hvBpPVAo8UzMUl8qPrkCjnEuMV2TJeizvYDR/aJK8VjREY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Vwb44/ng; arc=none smtp.client-ip=209.85.210.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Vwb44/ng"
-Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-6ed04c91c46so784393b3a.0
-        for <iommu@lists.linux.dev>; Thu, 25 Apr 2024 02:13:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714036418; x=1714641218; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=eobe3x7c9CyI2IUIU9H13+fYzPpeASRF8Xdxx5XJjYA=;
-        b=Vwb44/ngs3MtJu/Yr2l20mfWTaC8suC5F3f88pGfEHQO9/9vjBIrT4Cl9OP9/1aNVp
-         vI1f0NeOBzlS5V++NC51aCGgluP0ZA4jzQZTmUT4pXrusUt46S6eB7k7pJWDm7DxUJFW
-         zw7OM+H04wlnlK1H30yJj2v7N+uc+2x2u6gqeykwqDYw/lggJ9Sv7jh0le45QMjdtiF8
-         8j/GXZF41KC9ziuUYLzYb8bqtyyGPkwvb5B8+6LkoJ1GyfCutycZNKOrszQKDNX9nyId
-         QYolWWDoNLY8WJIyrMIZQUdxi3Mp7G+oUcaI0JDV1ZW0QzZ6tJvFFAzE7kiOg/f4y09u
-         wOug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714036418; x=1714641218;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=eobe3x7c9CyI2IUIU9H13+fYzPpeASRF8Xdxx5XJjYA=;
-        b=sPbhQH2vsNfICOGS3Ug3Hr7kmJbVMIz8gM/s/yx5alx1c2I3a//8L+wtwY+An4SCR8
-         WrfuBdvLLgvsRBRFCBSIZ9WHe4xAR+nY3PzPTrJywAWlOXyUehekZxzVoN/YKhg1UU3s
-         1JVyDjoX4VcI8ulqBGf2+hnfEePHSOBzWFa7OG8MJ+qBj9dUkiUE+FI7qW3dg/dVqdRk
-         zQfhS7ul2D1hm+kf03jeBWBnhIqNTEpZFLR38fHADI6zni5Bwm3bgqhSjlHRELnFrWBV
-         4obqNX/7CA8Mt1wJV03fbpuzffrwzGQRT27aeRQoBCVFRwZi0U53uHFrUEadhthveQ/7
-         FGkA==
-X-Forwarded-Encrypted: i=1; AJvYcCXaTWjaZ1lFpSAK7wps+RLOoOyWUimMaa1nMkp0jeZ9DFwBECoxxaomR0QmvyTDyoXu5NzlFEDWGVls3OwgT2p/XtvMWlo=
-X-Gm-Message-State: AOJu0Yy/iioOUdNQM8FSQx0vuS49Lrc+tuPzLRmw4iL9iKmyjg75hSS0
-	BPIM0vSrsF7x9wIkRasvyvL45/H5TLbfPIoNaX7tgOKDEwoJpckVik/qPg==
-X-Google-Smtp-Source: AGHT+IEcl6IzLLKiM9OnGHl9KJWuISOkQx1HFxAPlzz5abY7e+KR16xrC66zK2tX4k7qPamThBER9w==
-X-Received: by 2002:a05:6a21:350d:b0:1ad:8334:df97 with SMTP id zc13-20020a056a21350d00b001ad8334df97mr5611859pzb.5.1714036418263;
-        Thu, 25 Apr 2024 02:13:38 -0700 (PDT)
-Received: from archie.me ([103.124.138.155])
-        by smtp.gmail.com with ESMTPSA id k124-20020a633d82000000b005f7d61ec8afsm10854365pga.91.2024.04.25.02.13.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 25 Apr 2024 02:13:37 -0700 (PDT)
-Received: by archie.me (Postfix, from userid 1000)
-	id 703DA1995D6D0; Thu, 25 Apr 2024 16:13:33 +0700 (WIB)
-Date: Thu, 25 Apr 2024 16:13:32 +0700
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: mhklinux@outlook.com, robin.murphy@arm.com, joro@8bytes.org,
-	will@kernel.org, hch@lst.de, m.szyprowski@samsung.com,
-	corbet@lwn.net, iommu@lists.linux.dev,
-	Linux Kernel Maling List <linux-kernel@vger.kernel.org>,
-	Linux Documentation <linux-doc@vger.kernel.org>, petr@tesarici.cz,
-	roberto.sassu@huaweicloud.com
-Cc: Mao Zhu <zhumao001@208suo.com>, Ran Sun <sunran001@208suo.com>,
-	Xiang wangx <wangxiang@cdjrlc.com>,
-	Shaomin Deng <dengshaomin@cdjrlc.com>,
-	Charles Han <hanchunchao@inspur.com>,
-	Attreyee M <tintinm2017@gmail.com>, Josh Don <joshdon@google.com>,
-	YouHong Li <liyouhong@kylinos.cn>
-Subject: Re: [PATCH v2 1/1] Documentation/core-api: Add swiotlb documentation
-Message-ID: <ZioevHI3wok_yiSv@archie.me>
-References: <20240424150253.560999-1-mhklinux@outlook.com>
+	s=arc-20240116; t=1714036723; c=relaxed/simple;
+	bh=nLZE1rziuB8Cd4inrqdYD6bDm7SjRGECbSDY54hucVM=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=EQD3oC3PmJemwF5L87x09P1qJ65VsKW/I3y/7t56bxQZFItBNHdocDcW/tb7Ucx/OJqljbIVKwRPa7WSjfxix9V/dkZnW/yGNQFKtvVbkKMIUOTqZpDhGl0/s8y9Zu9UGfTabjBXGayyUQRM3om+o/Cy/k0pYbLqrYM3DSlU9gs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
+Received: from localhost (unknown [124.16.138.129])
+	by APP-01 (Coremail) with SMTP id qwCowABnbBjhHypmRq4sAA--.4146S2;
+	Thu, 25 Apr 2024 17:18:26 +0800 (CST)
+From: Chen Ni <nichen@iscas.ac.cn>
+To: joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	heiko@sntech.de,
+	jeffy.chen@rock-chips.com
+Cc: iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org,
+	linux-rockchip@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Chen Ni <nichen@iscas.ac.cn>
+Subject: [PATCH] iommu/rockchip: Add missing check for of_find_device_by_node
+Date: Thu, 25 Apr 2024 17:18:13 +0800
+Message-Id: <20240425091813.965003-1-nichen@iscas.ac.cn>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="6+EK+eavKzI6maIW"
-Content-Disposition: inline
-In-Reply-To: <20240424150253.560999-1-mhklinux@outlook.com>
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:qwCowABnbBjhHypmRq4sAA--.4146S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7XryxKFW5XrWxuF13XF45trb_yoWfGFc_W3
+	48uFnxWr4vyrs0kw12q34xWrZFkasIvrnrZrWjkw1SyFyDWr1xXw10vr4kJFW7Wr1jyF9r
+	Kryj93yfCryUWjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUIcSsGvfJTRUUUbVkFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
+	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
+	Cr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxVWxJr
+	0_GcWle2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+	2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+	W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+	Y2ka0xkIwI1lc2xSY4AK67AK6r4fMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+	1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+	b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+	vE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
+	cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
+	nxnUUI43ZEXa7VUjMmh5UUUUU==
+X-CM-SenderInfo: xqlfxv3q6l2u1dvotugofq/
 
+Add check for the return value of of_find_device_by_node() and return
+the error if it fails in order to avoid NULL pointer dereference.
 
---6+EK+eavKzI6maIW
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fixes: 5fd577c3eac3 ("iommu/rockchip: Use OF_IOMMU to attach devices automatically")
+Signed-off-by: Chen Ni <nichen@iscas.ac.cn>
+---
+ drivers/iommu/rockchip-iommu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-On Wed, Apr 24, 2024 at 08:02:53AM -0700, mhkelley58@gmail.com wrote:
-> From: Michael Kelley <mhklinux@outlook.com>
->=20
-> There's currently no documentation for the swiotlb. Add documentation
-> describing usage scenarios, the key APIs, and implementation details.
-> Group the new documentation with other DMA-related documentation.
->=20
-> Signed-off-by: Michael Kelley <mhklinux@outlook.com>
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index 4b369419b32c..1225c1df6ef6 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -1152,6 +1152,8 @@ static int rk_iommu_of_xlate(struct device *dev,
+ 		return -ENOMEM;
+ 
+ 	iommu_dev = of_find_device_by_node(args->np);
++	if (!iommu_dev)
++		return -ENODEV;
+ 
+ 	data->iommu = platform_get_drvdata(iommu_dev);
+ 	data->iommu->domain = &rk_identity_domain;
+-- 
+2.25.1
 
-The doc LGTM, thanks!
-
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
-
---=20
-An old man doll... just what I always wanted! - Clara
-
---6+EK+eavKzI6maIW
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZioetwAKCRD2uYlJVVFO
-o3WBAP9d21rIomzf/1Ba3BKC836P2zEVgmENMEMVr3xzUNPp8gEAkEaSxCqc4bbC
-FbUDRlMjRROKs/jYO2ln7Xxgto0xXQ0=
-=uLGe
------END PGP SIGNATURE-----
-
---6+EK+eavKzI6maIW--
