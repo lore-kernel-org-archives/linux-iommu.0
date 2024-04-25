@@ -1,46 +1,46 @@
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCD6414AD15
-	for <iommu@lists.linux.dev>; Thu, 25 Apr 2024 14:31:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.148.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BA7714A087
+	for <iommu@lists.linux.dev>; Thu, 25 Apr 2024 14:42:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=67.231.156.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714055508; cv=none; b=EK0Gc5BaLjgd74tcNkfKYkRdU9x1HM/ZWMnFwVevUSLnLxpUrwDP1kP4K4xUCxbcKVkE7O7JAvnmlmnjiloc32PC6kpoGaHEXoNDcEU++cVcqxHXkXh3rOi+r/It92Pq9ZB5Wzg2ZWfj5Z7r4qrS780A9bPL8hNQq4FlIBgmj4U=
+	t=1714056153; cv=none; b=Q9Y3bHAHkzZraHhap8AtH5fGedz9PpWvuwsIZIbijOx+SndcZxh2pCm4hPfGx3MBADJpU8+uEPS7otsnRahE8C9XQaFz3UzVt9ZGk4RwwhW2RaPAc/5npvu9KrKfk/xkvsTLc251QVLPSyEtIGMOX+bvsXaknPZkoH9Gf83IKwE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714055508; c=relaxed/simple;
-	bh=i6AbbnVow7RKsK+NcoraEZ71oa6l1Y+UAmeFkO9KWk0=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=b8DJEOPRVkVSUdo4+mwYIPocv83s/ojubA5A8oIP/9Cbvp5FGMjoLEvz7v6WRva80prM/3PrPi8213MsZbljlRb57G+DeiyzTiUI2nHlPygtrf2HsaVf+RU/tmjFpDHH5qHS/clSVjGVXsxn+D/pUD/gjpjQGq+fItFvQYYqvg0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=marvell.com; spf=pass smtp.mailfrom=marvell.com; dkim=pass (2048-bit key) header.d=marvell.com header.i=@marvell.com header.b=iFlL/d07; arc=none smtp.client-ip=67.231.148.174
+	s=arc-20240116; t=1714056153; c=relaxed/simple;
+	bh=1Q39ooJCtCdZ42SEdijjI3QfTDUMYcoSf0TS9OtWyMU=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ggNt5LAxNElqJLIFWYoFa85fnA4VHxInVlTWnYiL7Y0d8W5hEHZBVSQVbumb+l7khfTVXMgVDCCNAhW9nd9xYkxpubNv6YZvzCqRAiSB+je0p9tSzAvqoRTYg9CjDcSPJ9twcXxe6iGjQEzQRrl7kucPHIFbcJvtc1Z1A6YX6J0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=marvell.com; spf=pass smtp.mailfrom=marvell.com; dkim=pass (2048-bit key) header.d=marvell.com header.i=@marvell.com header.b=h1I2HmzP; arc=none smtp.client-ip=67.231.156.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=marvell.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=marvell.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=marvell.com header.i=@marvell.com header.b="iFlL/d07"
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-	by mx0a-0016f401.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 43PA4K4g007365;
-	Thu, 25 Apr 2024 07:31:23 -0700
+	dkim=pass (2048-bit key) header.d=marvell.com header.i=@marvell.com header.b="h1I2HmzP"
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+	by mx0b-0016f401.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 43P87NXd011560;
+	Thu, 25 Apr 2024 07:42:09 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=
 	from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding:content-type; s=pfpt0220; bh=jYw/vx1k
-	9Nqv/Lp9uCDaV7RJmIlPtnQxIERYqC1PzH0=; b=iFlL/d07xHnLlF6tVzlghQjF
-	f73rphVOU1ed0SOutDmxchgprcWpy8g8YBo1UYrNqevJOqjdy9XFF/e7J35YXSz3
-	Ji7PgmwOYmS3MmWULKSRcrskG0LWJ6E/T2yMkMhCIIwzdF/eBWpUsYJLmFjhcHs+
-	0RaVEGrYPflOV/VN5Gtu9Ei7a0/rAFeZIReB+43sDYfu6pT3bb88DFr9TYjdTC7S
-	gSJu5LXVHyjxx7VkQ7V8WicH0P1RSdwGl755foM1iUWnKLlUJw16BWUW/Y1t102X
-	HQje/weHBCW8iBgRS+/MOtAyYhN0LpdAc7wWcNMHjPNxEIZWvUjLq+5WFCenGQ==
-Received: from dc6wp-exch02.marvell.com ([4.21.29.225])
-	by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3xqn3n99b1-1
+	:content-transfer-encoding:content-type; s=pfpt0220; bh=YypH+pGp
+	IYpH7WBXp4Imc9+sq/Tm4UKy97IIMOK/RmE=; b=h1I2HmzPehkCQA8VqgZ2uRpM
+	CNdbcdzsWEscAb6q/QQG+uemI3EWCJubtfmLGWEHAhmWw6L8gBPWuSo/pvnLeaky
+	boeFe7mYAikMbpV0T+exSJ4AtVJDDLRmKViaqN48Ilh+v82zS9q0nzMzeRtwh4n7
+	4Iu7RKQQ9UtevKSG9pCL+0Vlio6DO+z28bDu4nou8t3u0HwL4YWTikf2Tv1OsaGD
+	PCjuu9vGjIK3YiTQS4fyZXsfAoe+v9zXFhKwc+JbYLyc5ciL9jEhf+outlA21jn4
+	0mvgghEzS0/ko8IaJbHgpF+GNllcv24RkGiu53vz1UKsii0seDMen/6an9lWhQ==
+Received: from dc5-exch05.marvell.com ([199.233.59.128])
+	by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3xpxn1gh38-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 25 Apr 2024 07:31:22 -0700 (PDT)
-Received: from DC6WP-EXCH02.marvell.com (10.76.176.209) by
- DC6WP-EXCH02.marvell.com (10.76.176.209) with Microsoft SMTP Server
+	Thu, 25 Apr 2024 07:42:09 -0700 (PDT)
+Received: from DC5-EXCH05.marvell.com (10.69.176.209) by
+ DC5-EXCH05.marvell.com (10.69.176.209) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.4; Thu, 25 Apr 2024 07:31:10 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC6WP-EXCH02.marvell.com
- (10.76.176.209) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
- Transport; Thu, 25 Apr 2024 07:31:10 -0700
+ 15.2.1544.4; Thu, 25 Apr 2024 07:42:07 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH05.marvell.com
+ (10.69.176.209) with Microsoft SMTP Server id 15.2.1544.4 via Frontend
+ Transport; Thu, 25 Apr 2024 07:42:07 -0700
 Received: from cn10ka.sclab.marvell.com (unknown [10.106.49.40])
-	by maili.marvell.com (Postfix) with ESMTP id E7ABA3F704A;
-	Thu, 25 Apr 2024 07:31:09 -0700 (PDT)
+	by maili.marvell.com (Postfix) with ESMTP id 5A78E3F705F;
+	Thu, 25 Apr 2024 07:42:07 -0700 (PDT)
 From: Tanmay Jagdale <tanmay@marvell.com>
 To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
         <nicolinc@nvidia.com>, <mshavit@google.com>,
@@ -49,9 +49,9 @@ To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
 CC: <sgoutham@marvell.com>, <gcherian@marvell.com>, <jcm@jonmasters.org>,
         <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux.dev>,
         <linux-kernel@vger.kernel.org>, Tanmay Jagdale <tanmay@marvell.com>
-Subject: [PATCH V3 2/2] iommu/arm-smmu-v3: Ensure that a set of associated commands are inserted in the same ECMDQ
-Date: Thu, 25 Apr 2024 07:31:07 -0700
-Message-ID: <20240425143107.52318-1-tanmay@marvell.com>
+Subject: [PATCH V3 0/2] iommu/arm-smmu-v3: Add support for ECMDQ register mode 
+Date: Thu, 25 Apr 2024 07:41:50 -0700
+Message-ID: <20240425144152.52352-1-tanmay@marvell.com>
 X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
@@ -61,156 +61,80 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: olgSPLhUeyvLkQl6fzW8Zrn6MteoYZlz
-X-Proofpoint-GUID: olgSPLhUeyvLkQl6fzW8Zrn6MteoYZlz
+X-Proofpoint-GUID: QhpJ5mRwvPbdKsHu3Utpc3UIhtEWJvg4
+X-Proofpoint-ORIG-GUID: QhpJ5mRwvPbdKsHu3Utpc3UIhtEWJvg4
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1011,Hydra:6.0.650,FMLib:17.11.176.26
  definitions=2024-04-25_14,2024-04-25_01,2023-05-22_02
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+Resending the patches by Zhen Lei <thunder.leizhen@huawei.com> that add
+support for SMMU ECMDQ feature.
 
-The SYNC command only ensures that the command that precedes it in the
-same ECMDQ must be executed, but cannot synchronize the commands in other
-ECMDQs. If an unmap involves multiple commands, some commands are executed
-on one core, and the other commands are executed on another core. In this
-case, after the SYNC execution is complete, the execution of all preceded
-commands can not be ensured.
+Tested this feature on a Marvell SoC by implementing a smmu-test driver.
+This test driver spawns a thread per CPU and each thread keeps sending
+map, table-walk and unmap requests for a fixed duration.
 
-Prevent the process that performs a set of associated commands insertion
-from being migrated to other cores ensures that all commands are inserted
-into the same ECMDQ.
+Using this test driver, we compared ECMDQ vs SMMU with software batching
+support and saw ~5% improvement with ECMDQ. Performance numbers are
+mentioned below:
 
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-Signed-off-by: Tanmay Jagdale <tanmay@marvell.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 42 +++++++++++++++++----
- 1 file changed, 35 insertions(+), 7 deletions(-)
+                   Total Requests  Average Requests  Difference
+                                      Per CPU         wrt ECMDQ
+-----------------------------------------------------------------
+ECMDQ                 239286381       2991079
+CMDQ Batch Size 1     228232187       2852902         -4.62%
+CMDQ Batch Size 32    233465784       2918322         -2.43%
+CMDQ Batch Size 64    231679588       2895994         -3.18%
+CMDQ Batch Size 128   233189030       2914862         -2.55%
+CMDQ Batch Size 256   230965773       2887072         -3.48%
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 8e088ca4e8e1..d53b808de03f 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -248,6 +248,18 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
- 	return 0;
- }
- 
-+static void arm_smmu_preempt_disable(struct arm_smmu_device *smmu)
-+{
-+	if (smmu->ecmdq_enabled)
-+		preempt_disable();
-+}
-+
-+static void arm_smmu_preempt_enable(struct arm_smmu_device *smmu)
-+{
-+	if (smmu->ecmdq_enabled)
-+		preempt_enable();
-+}
-+
- /* High-level queue accessors */
- static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- {
-@@ -1229,12 +1241,15 @@ static void arm_smmu_sync_cd(struct arm_smmu_master *master,
- 	};
- 
- 	cmds.num = 0;
-+
-+	arm_smmu_preempt_disable(smmu);
- 	for (i = 0; i < master->num_streams; i++) {
- 		cmd.cfgi.sid = master->streams[i].id;
- 		arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
- 	}
- 
- 	arm_smmu_cmdq_batch_submit(smmu, &cmds);
-+	arm_smmu_preempt_enable(smmu);
- }
- 
- static int arm_smmu_alloc_cd_leaf_table(struct arm_smmu_device *smmu,
-@@ -1979,31 +1994,38 @@ arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
- 
- static int arm_smmu_atc_inv_master(struct arm_smmu_master *master)
- {
--	int i;
-+	int i, ret;
- 	struct arm_smmu_cmdq_ent cmd;
- 	struct arm_smmu_cmdq_batch cmds;
-+	struct arm_smmu_device *smmu = master->smmu;
- 
- 	arm_smmu_atc_inv_to_cmd(IOMMU_NO_PASID, 0, 0, &cmd);
- 
- 	cmds.num = 0;
-+
-+	arm_smmu_preempt_disable(smmu);
- 	for (i = 0; i < master->num_streams; i++) {
- 		cmd.atc.sid = master->streams[i].id;
--		arm_smmu_cmdq_batch_add(master->smmu, &cmds, &cmd);
-+		arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
- 	}
- 
--	return arm_smmu_cmdq_batch_submit(master->smmu, &cmds);
-+	ret = arm_smmu_cmdq_batch_submit(smmu, &cmds);
-+	arm_smmu_preempt_enable(smmu);
-+
-+	return ret;
- }
- 
- int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
- 			    unsigned long iova, size_t size)
- {
--	int i;
-+	int i, ret;
- 	unsigned long flags;
- 	struct arm_smmu_cmdq_ent cmd;
- 	struct arm_smmu_master *master;
- 	struct arm_smmu_cmdq_batch cmds;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 
--	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_ATS))
-+	if (!(smmu->features & ARM_SMMU_FEAT_ATS))
- 		return 0;
- 
- 	/*
-@@ -2027,6 +2049,7 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
- 
- 	cmds.num = 0;
- 
-+	arm_smmu_preempt_disable(smmu);
- 	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
- 	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
- 		if (!master->ats_enabled)
-@@ -2034,12 +2057,15 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
- 
- 		for (i = 0; i < master->num_streams; i++) {
- 			cmd.atc.sid = master->streams[i].id;
--			arm_smmu_cmdq_batch_add(smmu_domain->smmu, &cmds, &cmd);
-+			arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
- 		}
- 	}
- 	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
- 
--	return arm_smmu_cmdq_batch_submit(smmu_domain->smmu, &cmds);
-+	ret = arm_smmu_cmdq_batch_submit(smmu, &cmds);
-+	arm_smmu_preempt_enable(smmu);
-+
-+	return ret;
- }
- 
- /* IO_PGTABLE API */
-@@ -2104,6 +2130,7 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
- 
- 	cmds.num = 0;
- 
-+	arm_smmu_preempt_disable(smmu);
- 	while (iova < end) {
- 		if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
- 			/*
-@@ -2135,6 +2162,7 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
- 		iova += inv_range;
- 	}
- 	arm_smmu_cmdq_batch_submit(smmu, &cmds);
-+	arm_smmu_preempt_enable(smmu);
- }
- 
- static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
+
+v2 --> v3:
+1. Rebased on linux 6.9-rc5
+
+v1 --> v2:
+1. Drop patch "iommu/arm-smmu-v3: Add arm_smmu_ecmdq_issue_cmdlist() for
+non-shared ECMDQ" in v1
+2. Drop patch "iommu/arm-smmu-v3: Add support for less than one ECMDQ
+per core" in v1
+3. Replace rwlock with IPI to support lockless protection against the
+write operation to bit
+   'ERRACK' during error handling and the read operation to bit 'ERRACK'
+during command insertion. 
+4. Standardize variable names.
+-	struct arm_smmu_ecmdq *__percpu	*ecmdq;
++	struct arm_smmu_ecmdq *__percpu	*ecmdqs;
+
+5. Add member 'iobase' to struct arm_smmu_device to record the start
+physical
+   address of the SMMU, to replace translation operation
+(vmalloc_to_pfn(smmu->base) << PAGE_SHIFT)
++	phys_addr_t			iobase;
+-	smmu_dma_base = (vmalloc_to_pfn(smmu->base) << PAGE_SHIFT);
+
+6. Cancel below union. Whether ECMDQ is enabled is determined only based
+on 'ecmdq_enabled'.
+-	union {
+-		u32			nr_ecmdq;
+-		u32			ecmdq_enabled;
+-	};
++	u32				nr_ecmdq;
++	bool				ecmdq_enabled;
+
+7. Eliminate some sparse check warnings. For example.
+-	struct arm_smmu_ecmdq *ecmdq;
++	struct arm_smmu_ecmdq __percpu *ecmdq;
+
+
+Zhen Lei (2):
+  iommu/arm-smmu-v3: Add support for ECMDQ register mode
+  iommu/arm-smmu-v3: Ensure that a set of associated commands are
+    inserted in the same ECMDQ
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 261 +++++++++++++++++++-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  33 +++
+ 2 files changed, 286 insertions(+), 8 deletions(-)
+
 -- 
 2.34.1
 
