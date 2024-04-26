@@ -1,150 +1,126 @@
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10olkn2058.outbound.protection.outlook.com [40.92.40.58])
+Received: from casper.infradead.org (casper.infradead.org [90.155.50.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52B3D39FF2
-	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 16:29:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.40.58
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714148983; cv=fail; b=btpdazSvkw8Wr4CEW0+OLHKjAaUY0yYT5TmiCKb5Yk3KfN9Y7tZNhAdda9TTyN2wpEQ0n7jlTGHuJ00Btzv869hN0s6xAo8zR45f92nRJXgxBhZ+2RazExIGac6mCd/aLBy/VMNr5QbOXL1sRnKixyyGJCLUA1Oc7y0rav5S6Nw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714148983; c=relaxed/simple;
-	bh=a0lmqdfOZlymevaO+BzDCdhWvc/QFvn7gqQxkXDvaRQ=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=NZGmk3Fxcqa8EokNb0W8tp87QN/XrYB8kxGEMVsDPy6hIYqDWzRGx0FKrX3e8uvLA0UK/d3Q6/QoH6rzdNEBuNPiQ1v9+Mw94lb1/4WgJB3zmSTchCdeTu0Tg/0XlXDMrbybU5DtaEUizrEqdGbM3IImgkQJm1dEqS9CyrtSrS4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=YXfGWECl; arc=fail smtp.client-ip=40.92.40.58
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 96EE0111A8;
+	Fri, 26 Apr 2024 19:39:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=90.155.50.34
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714160364; cv=none; b=NVYtz/SDTryuEGSrnzg3HW77pEI2LEOZygIqCBpZkAtpW+3TkdTBnI+0fvFBDhvAeycrrKxJ9KUQQh5yxnajW0O0RKhCjByXa71HnKGrcQE8DzU9gbYbeolroX56MJ4R14ekYU2FCm9Cxb1BosMo+fRZ4D2CXa0HQW/DWbYVI18=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714160364; c=relaxed/simple;
+	bh=8v8Bl/JNo7K0IhpqbY1MkBPByJZjD4Tjwu3fmu599ng=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LDI+GNE+kI8jws00LOo1evUDDRYS7klKdGX6W160BrWCQe0HFnEyVCq3MFoBaQT3rIiC6FyimFT+ime1ufQpYB2XC8T4qyIXMLq7AVOQDdPi2CF+OXVTkpev5abtZ69z51Ou3PFYpqj5sWisPvbricUGFD/c6GausIzlzEpXloQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=PAxVX7qP; arc=none smtp.client-ip=90.155.50.34
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="YXfGWECl"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XZ4pIzoZioP/7G5XZ27I9q4RMP4kB2JIgBkkdQh3EpOXvdUSEvL3oE3qd6vsNWeFa2/eQKRRhzfnxPBZt7ct92nbiRGe6B5sIvx0cdvxeB462bQ630x6WnkmDlwSTcN1ZepdIv4EpgAq06JinFCNf85LnZ6bbYQawsnkMen0bDRtsvMaUgQM/LUU5Xl3vdpAsdYO60izQd259ua4k4CzXNIaGPTSi2nmYrJQLMtcziBnXZ3RiFlascB/mrsFFQs0g9G/y2EV4/MPb78f82d5fBkHDxT6AY78pdCjLDKRjoAzbJrP8qaU5naLpFe0SYSBPIRxE9iEEkupyOvUi0ZhqQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ZliPVJaz4ZJL7xQ9Z58tYJvxc0YUmiET9/Uly9gG1aM=;
- b=SBGAR1J9tV0p/MrTfktmXuxcaXx8qdLLLwNMs/suoiI/273KBC+tjvVAqOkYcgQiAZ2ClAEnAXW3udjvWMV/ramA6Mrw7lr5bcTfJqw0OyXNX2JP4M4KVw+GqjGgU3XzNeWO1GsiKiBPhdexYP7gdp+q0EiHC3hwWMiqNLJY7MQVw+0e1qh3irCHBrIWnfg3XSGf2QyDkqPGUos23qXC9TEJbetdZONXldm8qViDsh6BsH/nB46clse+WtRHYiK3ibM9B4fyqJcmabyXLLk0UxC0mMf0rozLW/GG8yf1iUGBOVdliVzgAa9MVaNXuELmSWy3IjZJrubPR4FWkt1fcw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZliPVJaz4ZJL7xQ9Z58tYJvxc0YUmiET9/Uly9gG1aM=;
- b=YXfGWECldM+O09p37Qv0/Y7HIstBZneRJkqWbGgJuxnyAe55rY7yYKjCugp3G7/dRHV0nWB1G0ae1oAq+QnVI7IrsP5fHSNiz0GpQNttvDeU2e/uwTN7s4RYhLB6TF8bDjYLax9uvYwUYYqGriAP63ws5drBytNwQH5PK6mUs0hzdYeGD8gdhrLUeWnG4Rwq/F44KdKeBMTZ5kFiD/+8mgt6rtecWHFUljycQEZF5IxW+YlwtqSionA6XOSvbGJv9tbYeAyf8HyJgyM6lrmz8JAQ7o/8szgICSO+wxD6oMkZnTih/IeDyUkH+4hyc4M3KDS9YgiTcb8K12yjQMQRNQ==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by MN2PR02MB6639.namprd02.prod.outlook.com (2603:10b6:208:15f::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.23; Fri, 26 Apr
- 2024 16:29:35 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::1276:e87b:ae1:a596]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::1276:e87b:ae1:a596%5]) with mapi id 15.20.7519.021; Fri, 26 Apr 2024
- 16:29:35 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: Christoph Hellwig <hch@lst.de>
-CC: "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "corbet@lwn.net"
-	<corbet@lwn.net>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "petr@tesarici.cz"
-	<petr@tesarici.cz>, "roberto.sassu@huaweicloud.com"
-	<roberto.sassu@huaweicloud.com>
-Subject: RE: [PATCH v2 1/1] Documentation/core-api: Add swiotlb documentation
-Thread-Topic: [PATCH v2 1/1] Documentation/core-api: Add swiotlb documentation
-Thread-Index: AQHalliRlUgD/49j1UOuP13GtHeQebF6FoYAgACpi6A=
-Date: Fri, 26 Apr 2024 16:29:35 +0000
-Message-ID:
- <SN6PR02MB415775F2F7B865162D7A534DD4162@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240424150253.560999-1-mhklinux@outlook.com>
- <20240426061852.GA5645@lst.de>
-In-Reply-To: <20240426061852.GA5645@lst.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [JBeJ6XqPXkusfbEAgovGSHNCziqL7npO]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|MN2PR02MB6639:EE_
-x-ms-office365-filtering-correlation-id: a14c2a9e-da0c-4f26-e053-08dc660e0f70
-x-microsoft-antispam:
- BCL:0;ARA:14566002|461199019|102099023|440099019|3412199016;
-x-microsoft-antispam-message-info:
- BXKQP6sztaeCIsYiMkkRh4+1tKJRRlW4JYEf0N69T5t5BHthtAp3JYZ01sAhTs8VUyjqQd8Tk0Y7bbu7he2YwfkMbG004IBQwLdtXtOxZ0S8o/EnKPzYAQJceId1gg5GmNHjY9C1EoT7M8zvBL/KGG3OU9rfYeOshdWuYFiY5F0Ig/z2tj6nrGDXhFjvnkpyWEToblmfUEg169vNlV5ior/ZPUZzQ0PQKNBhxEUvAfln0f1pdLg83Y8yCPyfjeh77Ah4pZpYNTjt+K7dLbiC4mAGIfF4teIZAHXoet6S2bI4HUdJSGBz2jvBmQ0z1xXjE2aX+cyznyBT/8ax1qMTJ1srhs9E2rN4+sK6x3Vu5ygJUuH+s9h9PRHDvILc2b8XHsxcGjv4JVscty+OW0jkpWR0Hx7lIWof93R7jW0Cqj7NBdmMi7ziYa/yS9MzmpZ1bK5Fhim2vqKSwtxKuxl7gFY77ZXeFQQDKX9YB7XQIUNJjZfOq5T0SwFVVOK3b3xIPQ4s5trNoiaer0M0qP8QssHehHq25ABhrqs2bbqghqllyjhw8WRECDdxmL0wUUEi
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?3c57xacJzM7lM2ogUW7jCKGQ+AlBxtPPrVedYI3Hr9cOZYs1IwMYY8oV1n0C?=
- =?us-ascii?Q?u5aaNO4MYo0kG+chdfgBA9PSXtUkUYuiEJ2PdckM5JNf+ICVLlww4ceFHT58?=
- =?us-ascii?Q?lRi7SakxWqQiAWWqFq48hDK3YPGJ3Qn5QVV4TwE65iShlkU2/nTT0tI8iFct?=
- =?us-ascii?Q?o1IJjtxrbTz1kObvseCGUJxdaX86v/Qp/4gtShYPirJVen7PSd0j3yJuxuur?=
- =?us-ascii?Q?hPGm+hsZ3tWwKcBIIbE/BerHMuwjaA3brZwi7eLXviHc4KWpDlPXq5cJ97x3?=
- =?us-ascii?Q?zSBQWcHx3P7fkjyPVXMYzgVRqmxCw9ksdPIKfE3ZozvEjQpU49ffW7PYfEDE?=
- =?us-ascii?Q?ac+7DQa9BDP/JB/+aKD2aoVkb9OG/c5VmF6iEIOcVLP2rzvNPV7HyM0RrPuP?=
- =?us-ascii?Q?aCherdgF955awyN8Zu8eEHk+/lh2juy/wIRvLIa5wV89Bd2S1SmOgNERDfoo?=
- =?us-ascii?Q?tSMrW9E8dfE/gLvoSWmbJ6tY4D3RfaFbp4PyJIZKGGZ+9WAoZFN5y43AMViA?=
- =?us-ascii?Q?0Y+oxhvxvs3d/yj6YmcgA5NTiT3QkjCmv9y4Du1fFk2N/VA2CJmo2JUmdbnz?=
- =?us-ascii?Q?e3zjDQ2TKfgNPk0GmIC5oQWkJoXAtk1z/rme8P7wf8QL4x4mKzy0Zpluvyx8?=
- =?us-ascii?Q?UXkJX/MBw+lF7oiw4btzNOWtwLrhhcy5ym34rp2ntGiSCQrYbEVIunuIUmQh?=
- =?us-ascii?Q?WNCskkL3DOa4z/k/bEs1f/lo04VWWiZ1oErEhPG0lO80Ug7ADvCDHVuDS12T?=
- =?us-ascii?Q?rGbWSeH1gQVszR3kNTxWQWIzVtkrEZoQk/Y4LOHkH3i2ZFtmk4A6a1mnVuNS?=
- =?us-ascii?Q?boyNmu18KZn601rHwtgNkQUXf3QJj4qV3TBDw2UMCkus4Z2g0cSwDCxX3NH5?=
- =?us-ascii?Q?K8zK24NIvFOELHQLMIkn7H/uI0Sn9M8kcV6r93SbTRNqUqi+WnC0jxIs7BHY?=
- =?us-ascii?Q?pR2xFrtGu0pktBnvFexJKiYgXViqxw+zm8hC2J+9IwcB4CEbYvWjg1lY/RJH?=
- =?us-ascii?Q?N3kHf/2L4DHlvpecUPSKCu/+YvRMTukNMuZKXoJllYOpueKrSgsXaw/pF+s/?=
- =?us-ascii?Q?LKuQlK0y+iZF7v0rAsLVGU7zj6d9fih7X+FwQNSzLtwrkxAGFlsqOtHNn400?=
- =?us-ascii?Q?ylvRppJsVj5u4de6SmIGmPP/r1uXQeHArwVhLQGJuSY9tMEs5PeGGX58DC7M?=
- =?us-ascii?Q?OGDaEeMAvc174n04occTrS+PozjrQe8hby0YTQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="PAxVX7qP"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
+	Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
+	Sender:Reply-To:Content-ID:Content-Description;
+	bh=IcQFIAb+DjA34CSrIEaXkKwHCowFIDtU+a9kTz/JhdA=; b=PAxVX7qP8zBfvEtcd5DsTqeqRP
+	6KqPequrKiNcq9tfftLFb063iJbBXxVR5lPQWwRjQUqQ0cPF+0O1gGfEt6QVKqwBXte8V2Mb5LiSI
+	Aqz9wlILClntTHheFeze1bmbmDh/Q0boBakxM+htzJ2ILu+Az4tSbt419IgWW2s29N1To/R0r0MLZ
+	ZOi3qd3Ub8X6qgZEOGCygkc5sDrV5V8ERQh5d9zFmqSJlYNfR+4r0pC7C2XFNGw6ge1WJikuTd/Jf
+	qRDpbYk3zI6H67HQZsvxKtcS7TJ/ZfdK/gRE6G/gS/OzBx4xDYyw4Au8GYI62QPeyCqJlDT954a+Z
+	5c04liCA==;
+Received: from willy by casper.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1s0RPe-00000005snl-3bzF;
+	Fri, 26 Apr 2024 19:39:15 +0000
+Date: Fri, 26 Apr 2024 20:39:14 +0100
+From: Matthew Wilcox <willy@infradead.org>
+To: David Hildenbrand <david@redhat.com>
+Cc: Pasha Tatashin <pasha.tatashin@soleen.com>, akpm@linux-foundation.org,
+	linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+	rientjes@google.com, dwmw2@infradead.org, baolu.lu@linux.intel.com,
+	joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
+	iommu@lists.linux.dev
+Subject: Re: [RFC v2 0/3] iommu/intel: Free empty page tables on unmaps
+Message-ID: <ZiwC4snk03ptUQij@casper.infradead.org>
+References: <20240426034323.417219-1-pasha.tatashin@soleen.com>
+ <2daf168e-e2b2-4b19-9b39-d58b358c8cd9@redhat.com>
+ <CA+CK2bC4SWTCG2bnA16Xe+gX7=N=UYWB1wSns-K-jNqC1yrdvQ@mail.gmail.com>
+ <9bf62e97-dfdd-4537-8fb0-b5f293856f59@redhat.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: a14c2a9e-da0c-4f26-e053-08dc660e0f70
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2024 16:29:35.4320
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR02MB6639
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <9bf62e97-dfdd-4537-8fb0-b5f293856f59@redhat.com>
 
-From: Christoph Hellwig <hch@lst.de> Sent: Thursday, April 25, 2024 11:19 P=
-M
->=20
-> On Wed, Apr 24, 2024 at 08:02:53AM -0700, mhkelley58@gmail.com wrote:
-> > From: Michael Kelley <mhklinux@outlook.com>
-> >
-> > There's currently no documentation for the swiotlb. Add documentation
->=20
-> s/the // ?  (note that this is used in quite a few places)
+On Fri, Apr 26, 2024 at 04:39:05PM +0200, David Hildenbrand wrote:
+> On 26.04.24 15:49, Pasha Tatashin wrote:
+> > On Fri, Apr 26, 2024 at 2:42 AM David Hildenbrand <david@redhat.com> wrote:
+> > > 
+> > > On 26.04.24 05:43, Pasha Tatashin wrote:
+> > > > Changelog
+> > > > ================================================================
+> > > > v2: Use mapcount instead of refcount
+> > > >       Synchronized with IOMMU Observability changes.
+> > > > ================================================================
+> > > > 
+> > > > This series frees empty page tables on unmaps. It intends to be a
+> > > > low overhead feature.
+> > > > 
+> > > > The read-writer lock is used to synchronize page table, but most of
+> > > > time the lock is held is reader. It is held as a writer for short
+> > > > period of time when unmapping a page that is bigger than the current
+> > > > iova request. For all other cases this lock is read-only.
+> > > > 
+> > > > page->mapcount is used in order to track number of entries at each page
+> > > > table.
+> > > 
+> > > I'm wondering if this will conflict with page_type at some point? We're
+> > > already converting other page table users to ptdesc. CCing Willy.
+> > 
+> > Hi David,
+> 
+> Hi!
+> 
+> > 
+> > This contradicts with the following comment in mm_types.h:
+> >   * If your page will not be mapped to userspace, you can also use the four
+> >   * bytes in the mapcount union, but you must call
+> > page_mapcount_reset()
+> >   * before freeing it.
+> 
+> I think the documentation is a bit outdated, because we now have page types
+> that are: "For pages that are never mapped to userspace"
+> 
+> which includes
+> 
+> #define PG_table
+> 
+> (we should update that comment, because we're now also using it for hugetlb
+> that can be mapped to user space, which is fine.)
+> 
+> Right now, using page->_mapcount would likely still be fine, as long as you
+> cannot end up creating a value that would resemble a type (e.g., PG_offline
+> could be bad).
+> 
+> But staring at users of _mapcount and page_mapcount_reset() ... you'd be
+> pretty much the only user of that.
+> 
+> mm/zsmalloc.c calls page_mapcount_reset(), and I am not completely sure why
+> ... I can see it touch page->index but not page->_mapcount.
+> 
+> 
+> Hopefully Willy can comment.
 
-OK.  I'll drop using "the" before "swiotlb".
+I feel like I have to say "no" to Pasha far too often ;-(
 
->=20
-> Can you use up the full 80 characters for your text?  As-is it reads a
-> little odd due to the very short lines.
+Agreed the documentation is out of date.
 
-Will do.
+I think there's a lot of space in the struct page that can be used.
+These are iommu page tables, not cpu page tables, so things are a bit
+different for them.  But should they be converted to use ptdesc?  Maybe!
 
->=20
-> The other thing that strikes me as odd is the placement in the core-api
-> directory together with other drivers-facing documentation.  Swiotlb
-> is internal to the dma-mapping subsystem and not really what is a core
-> API.  I don't really know where else it should be placed, though - nor
-> do I really understand the "modern" hierarchy in Documentation, but maybe
-> Jon has a good idea?
-
-I also wasn't happy with it going under "core-api".  But I agree with Jon's
-comments.  The affinity with the DMA documentation is strong, and in
-the absence of a better place, I'll keep it under core-api.
-
-Michael
-
->=20
-> Except for these nitpicks the documentation looks good to me, thanks
-> a lot!
+I'd suggest putting this into the union with pt_mm and pt_frag_refcount.
+I think it could even go in the union with pt_list, but I think I'd
+rather see it in the pt_mm union.
