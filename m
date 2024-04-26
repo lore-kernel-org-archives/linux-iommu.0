@@ -1,57 +1,98 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC78D82497
-	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 05:02:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+Received: from njjs-sys-mailin01.njjs.baidu.com (mx311.baidu.com [180.101.52.76])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B861913A25D
+	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 05:24:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=180.101.52.76
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714107760; cv=none; b=t6PB7I4/7TnaiU42VltRPMxnRPGt9Avu9O01ZpBlzoBJwPvgmINeoRIXEnlhk3qKuSr1MK/ZDmutGqLJycCKemlQl4sCdsPOokKnOOnwzfHEkSav2QhMKq3XjVbHSyPhSC3B6FuqmHBTRtUwlSZ7RpnCKLTqbqMSdhMc0dLrO7E=
+	t=1714109051; cv=none; b=LwGVdNYJbA1MnriJIkHKgiFnqdyn8owo5VYmGUv+x/sIiGYo0zMXRFobpDL0LmqwFWgBitsL7JQfWob++d1lah+MtvQyQiOvBVbuU+fUBCicxbcblvwi+2foNzAUhe16i2JWO2KumWTjsUeYl3czMhTYlUyTwuIXgQ+zTe7bHtU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714107760; c=relaxed/simple;
-	bh=M63h01ngfO3MyMvYCVDmxUFcqBJ/vp/JP5oOD/9VEh0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JDOx4t04ddfk+J423+8GFLjSn6enHRCGVvyR7QcZu5z2u9v304ZRHBkYbxOmxEk5xBkOlhJOTocTlrjHydSb/W7QwkycYwThHO4bk9mTxJGPAnpsX4KoJl7uNAYTNWmb1gpE3Lex+fJfcktzPhAPisCP9BqPrWpvswVOoHg3tM0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 02490227AA8; Fri, 26 Apr 2024 07:02:29 +0200 (CEST)
-Date: Fri, 26 Apr 2024 07:02:29 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Alexander Lobakin <aleksander.lobakin@intel.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Magnus Karlsson <magnus.karlsson@intel.com>,
-	nex.sw.ncis.osdt.itp.upstreaming@intel.com, bpf@vger.kernel.org,
-	netdev@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v4 6/7] page_pool: check for DMA sync shortcut
- earlier
-Message-ID: <20240426050229.GA4548@lst.de>
-References: <20240423135832.2271696-1-aleksander.lobakin@intel.com> <20240423135832.2271696-7-aleksander.lobakin@intel.com> <81df4e0f-07f3-40f6-8d71-ffad791ab611@intel.com>
+	s=arc-20240116; t=1714109051; c=relaxed/simple;
+	bh=8muSPwFTFdr0aL4RyfHmHKzD4sOC94Pm3k4IODZF0gM=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=iZUIdmg1Fi7+M2jfNChDFhILyir5+GMhWhkwXT6/JWWIMVkDJ9qsfcyQuxzU5q8uTctoXcmj9s36Vxf3wfmnSRyEI91D0SuBq4X4UDAmAdKYqSlCmDhgXz8Jxmr/tGSuy/XVOIOu7LBH7GmK61kPIqg91EZhr/2jflQIpiyBlP0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com; spf=pass smtp.mailfrom=baidu.com; arc=none smtp.client-ip=180.101.52.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=baidu.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baidu.com
+Received: from localhost (bjhw-sys-rpm015653cc5.bjhw.baidu.com [10.227.53.39])
+	by njjs-sys-mailin01.njjs.baidu.com (Postfix) with ESMTP id AAA637F00058;
+	Fri, 26 Apr 2024 13:16:21 +0800 (CST)
+From: Li RongQing <lirongqing@baidu.com>
+To: robin.murphy@arm.com,
+	joro@8bytes.org,
+	will@kernel.org,
+	iommu@lists.linux.dev
+Cc: Li RongQing <lirongqing@baidu.com>
+Subject: [PATCH][v2] iommu/iova: Consider NUMA affinity when allocating per-CPU iova_magazine
+Date: Fri, 26 Apr 2024 13:16:19 +0800
+Message-Id: <20240426051619.10323-1-lirongqing@baidu.com>
+X-Mailer: git-send-email 2.9.4
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <81df4e0f-07f3-40f6-8d71-ffad791ab611@intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Wed, Apr 24, 2024 at 10:52:49AM +0200, Alexander Lobakin wrote:
-> Breh, this breaks builds on !DMA_NEED_SYNC systems, as this function
-> isn't defined there, and my CI didn't catch it in time... I'll ifdef
-> this in the next spin after some reviews for this one.
+per-CPU iova_magazine are dominantly accessed from their own local CPUs,
+so allocate them node-local for performance reason.
 
-I looked over the dma-mapping parts of the series and it looks fine
-to me.  So please resend as the fixed up version as soon as you fine
-time for it.
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+---
+diff with v1: not consider num node in  __iova_rcache_insert 
+
+ drivers/iommu/iova.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index d59d0ea..68697cc 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -597,17 +597,23 @@ unsigned long iova_rcache_range(void)
+ 	return PAGE_SIZE << (IOVA_RANGE_CACHE_MAX_SIZE - 1);
+ }
+ 
+-static struct iova_magazine *iova_magazine_alloc(gfp_t flags)
++static struct iova_magazine *iova_magazine_alloc_node(gfp_t flags, int node)
+ {
+ 	struct iova_magazine *mag;
+ 
+-	mag = kmem_cache_alloc(iova_magazine_cache, flags);
++	mag = kmem_cache_alloc_node(iova_magazine_cache, flags, node);
++
+ 	if (mag)
+ 		mag->size = 0;
+ 
+ 	return mag;
+ }
+ 
++static inline struct iova_magazine *iova_magazine_alloc(gfp_t flags)
++{
++	return iova_magazine_alloc_node(flags, NUMA_NO_NODE);
++}
++
+ static void iova_magazine_free(struct iova_magazine *mag)
+ {
+ 	kmem_cache_free(iova_magazine_cache, mag);
+@@ -707,7 +713,7 @@ static void iova_depot_work_func(struct work_struct *work)
+ int iova_domain_init_rcaches(struct iova_domain *iovad)
+ {
+ 	unsigned int cpu;
+-	int i, ret;
++	int i, ret, nid;
+ 
+ 	iovad->rcaches = kcalloc(IOVA_RANGE_CACHE_MAX_SIZE,
+ 				 sizeof(struct iova_rcache),
+@@ -731,10 +737,11 @@ int iova_domain_init_rcaches(struct iova_domain *iovad)
+ 		}
+ 		for_each_possible_cpu(cpu) {
+ 			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
++			nid = cpu_to_node(cpu);
+ 
+ 			spin_lock_init(&cpu_rcache->lock);
+-			cpu_rcache->loaded = iova_magazine_alloc(GFP_KERNEL);
+-			cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
++			cpu_rcache->loaded = iova_magazine_alloc_node(GFP_KERNEL, nid);
++			cpu_rcache->prev = iova_magazine_alloc_node(GFP_KERNEL, nid);
+ 			if (!cpu_rcache->loaded || !cpu_rcache->prev) {
+ 				ret = -ENOMEM;
+ 				goto out_err;
+-- 
+2.9.4
 
