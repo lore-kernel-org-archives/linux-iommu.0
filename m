@@ -1,196 +1,150 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10olkn2058.outbound.protection.outlook.com [40.92.40.58])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2DD413B595
-	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 14:39:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.133.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714142352; cv=none; b=aBrNtc4i0CAGRhBZcUR4R2/VlAL6uWWzNf8rI8G6FXiWAFLhud7ql4aUy9mS3dkLSDbLGgBq263KU4FCLRut+JsFk1ukmsHemRgmuyoI4Wu9x7+Ax33Enmq9f4+TzBW0jXQgNC6ennmy1J/4amxJDsRoHjYEYYw2yfY+0M86KPo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714142352; c=relaxed/simple;
-	bh=bcmfNZsY5jzoMPlSHya3R2EV0bnWvPrM9VHEHUhKNgw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QPussQkDI2Hb9I4l4CgvhxZ1wndbzn9Kp5O5hGysxWg7s/3FZPV5/OPAlp05dyFn8dSZRpb7Cy+Y30Kr8jdIzX1xvN4hTKtfBXcVesWzN46blCmmKITd5bbBLyjDagHu7ILenYM2l4zQjmwDWHiUL6rQKy0gUVlI4ZIxFcMg0Qw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=hGJATSyP; arc=none smtp.client-ip=170.10.133.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52B3D39FF2
+	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 16:29:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.40.58
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714148983; cv=fail; b=btpdazSvkw8Wr4CEW0+OLHKjAaUY0yYT5TmiCKb5Yk3KfN9Y7tZNhAdda9TTyN2wpEQ0n7jlTGHuJ00Btzv869hN0s6xAo8zR45f92nRJXgxBhZ+2RazExIGac6mCd/aLBy/VMNr5QbOXL1sRnKixyyGJCLUA1Oc7y0rav5S6Nw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714148983; c=relaxed/simple;
+	bh=a0lmqdfOZlymevaO+BzDCdhWvc/QFvn7gqQxkXDvaRQ=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=NZGmk3Fxcqa8EokNb0W8tp87QN/XrYB8kxGEMVsDPy6hIYqDWzRGx0FKrX3e8uvLA0UK/d3Q6/QoH6rzdNEBuNPiQ1v9+Mw94lb1/4WgJB3zmSTchCdeTu0Tg/0XlXDMrbybU5DtaEUizrEqdGbM3IImgkQJm1dEqS9CyrtSrS4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=YXfGWECl; arc=fail smtp.client-ip=40.92.40.58
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="hGJATSyP"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1714142349;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=7LAbhJxCY0/OTL2dKRUHH/gZq1bMdRuFQcrvL6xeSh4=;
-	b=hGJATSyP5GEgEqY7Eb9J+eU7pzRFPRvLYgaUPJL/pbcsWMFUaUhjIXreZLPLkh079JYsl0
-	vfQ9loKmal7Q0dfk/IX8nyEpnw8xaUtLUw2yBRSFwVe5Dcs4DcI6QJpZfYAgvQW2T89bL0
-	3e4L6XudL09iRRmHdBzjfZzkGKAMHQ4=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-280-gbqLgYxsPyKDd_aCdhJ8ug-1; Fri, 26 Apr 2024 10:39:08 -0400
-X-MC-Unique: gbqLgYxsPyKDd_aCdhJ8ug-1
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-417de456340so11381685e9.2
-        for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 07:39:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714142347; x=1714747147;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt
-         :content-language:from:references:cc:to:subject:user-agent
-         :mime-version:date:message-id:x-gm-message-state:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=7LAbhJxCY0/OTL2dKRUHH/gZq1bMdRuFQcrvL6xeSh4=;
-        b=Pew75gaDp0LlXGBVH18fUO+KpYzXOxpyVwDJExrlzzF2BOzscnk8xc5WgSzmIRqwj4
-         Fte0kA4VHDq/MT98V9pyoJ9UvLhxTISKCj3D6UVQuqvPzNpFiXwCftTBV9b/3Akwnydf
-         fuQjMQ7rmsou5RwUWiA6Gv5sy+VZn9+bc9koKHX4pkCz84hx2tDTanmX9b5WLxxFRxL/
-         usAHr966tmqegDDdRPDc/4rmh4AQS8sjNYtU2sMLLBhbPJB3KBh/qace2r0p6E5g5Y8o
-         myu38JhG+WYWaKomxQlZ33w1bROo+9UkT9RxzR2UQcZ6YZujXlGovgYr56v9kTtq3ZTu
-         9m0A==
-X-Forwarded-Encrypted: i=1; AJvYcCXya9c9XtY0dMoyOFhPTUaHA8NWRFCxzOao1y1cHMeDWUh719dWeNoIjtau982rA8YauQTRepTtGbbyFvelg2oWjyXxcoM=
-X-Gm-Message-State: AOJu0YxzH3Qj4a/rZZCf5DiOOLe4EIMdqKfylUNvS50iQPIvPm/IZOUu
-	NuL5ThaRrrYuaxWwRyD0ZT3+wqtebv0+RSksiIiWCqmnpIUNB5UadyeDc4+LQUWgi2KJ3d4gnDF
-	tGAgxf8TMOp7Q/5CDhGUfSQNTp23wrxMe94DMVukD+tnleIWQUgLl
-X-Received: by 2002:a05:600c:358f:b0:416:3f85:d49 with SMTP id p15-20020a05600c358f00b004163f850d49mr2362262wmq.18.1714142347300;
-        Fri, 26 Apr 2024 07:39:07 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IF9PzaUmVi6q/UvBMMZv0Ud9xDfpTnl9gZMBvkcePNOUk3TFUHV7ndCSVu9IlBQ/73CMWAnrQ==
-X-Received: by 2002:a05:600c:358f:b0:416:3f85:d49 with SMTP id p15-20020a05600c358f00b004163f850d49mr2362243wmq.18.1714142346813;
-        Fri, 26 Apr 2024 07:39:06 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c726:6100:20f2:6848:5b74:ca82? (p200300cbc726610020f268485b74ca82.dip0.t-ipconnect.de. [2003:cb:c726:6100:20f2:6848:5b74:ca82])
-        by smtp.gmail.com with ESMTPSA id je12-20020a05600c1f8c00b004183edc31adsm34757800wmb.44.2024.04.26.07.39.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 26 Apr 2024 07:39:06 -0700 (PDT)
-Message-ID: <9bf62e97-dfdd-4537-8fb0-b5f293856f59@redhat.com>
-Date: Fri, 26 Apr 2024 16:39:05 +0200
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="YXfGWECl"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XZ4pIzoZioP/7G5XZ27I9q4RMP4kB2JIgBkkdQh3EpOXvdUSEvL3oE3qd6vsNWeFa2/eQKRRhzfnxPBZt7ct92nbiRGe6B5sIvx0cdvxeB462bQ630x6WnkmDlwSTcN1ZepdIv4EpgAq06JinFCNf85LnZ6bbYQawsnkMen0bDRtsvMaUgQM/LUU5Xl3vdpAsdYO60izQd259ua4k4CzXNIaGPTSi2nmYrJQLMtcziBnXZ3RiFlascB/mrsFFQs0g9G/y2EV4/MPb78f82d5fBkHDxT6AY78pdCjLDKRjoAzbJrP8qaU5naLpFe0SYSBPIRxE9iEEkupyOvUi0ZhqQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZliPVJaz4ZJL7xQ9Z58tYJvxc0YUmiET9/Uly9gG1aM=;
+ b=SBGAR1J9tV0p/MrTfktmXuxcaXx8qdLLLwNMs/suoiI/273KBC+tjvVAqOkYcgQiAZ2ClAEnAXW3udjvWMV/ramA6Mrw7lr5bcTfJqw0OyXNX2JP4M4KVw+GqjGgU3XzNeWO1GsiKiBPhdexYP7gdp+q0EiHC3hwWMiqNLJY7MQVw+0e1qh3irCHBrIWnfg3XSGf2QyDkqPGUos23qXC9TEJbetdZONXldm8qViDsh6BsH/nB46clse+WtRHYiK3ibM9B4fyqJcmabyXLLk0UxC0mMf0rozLW/GG8yf1iUGBOVdliVzgAa9MVaNXuELmSWy3IjZJrubPR4FWkt1fcw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZliPVJaz4ZJL7xQ9Z58tYJvxc0YUmiET9/Uly9gG1aM=;
+ b=YXfGWECldM+O09p37Qv0/Y7HIstBZneRJkqWbGgJuxnyAe55rY7yYKjCugp3G7/dRHV0nWB1G0ae1oAq+QnVI7IrsP5fHSNiz0GpQNttvDeU2e/uwTN7s4RYhLB6TF8bDjYLax9uvYwUYYqGriAP63ws5drBytNwQH5PK6mUs0hzdYeGD8gdhrLUeWnG4Rwq/F44KdKeBMTZ5kFiD/+8mgt6rtecWHFUljycQEZF5IxW+YlwtqSionA6XOSvbGJv9tbYeAyf8HyJgyM6lrmz8JAQ7o/8szgICSO+wxD6oMkZnTih/IeDyUkH+4hyc4M3KDS9YgiTcb8K12yjQMQRNQ==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by MN2PR02MB6639.namprd02.prod.outlook.com (2603:10b6:208:15f::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.23; Fri, 26 Apr
+ 2024 16:29:35 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::1276:e87b:ae1:a596]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::1276:e87b:ae1:a596%5]) with mapi id 15.20.7519.021; Fri, 26 Apr 2024
+ 16:29:35 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Christoph Hellwig <hch@lst.de>
+CC: "robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
+	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "corbet@lwn.net"
+	<corbet@lwn.net>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, "petr@tesarici.cz"
+	<petr@tesarici.cz>, "roberto.sassu@huaweicloud.com"
+	<roberto.sassu@huaweicloud.com>
+Subject: RE: [PATCH v2 1/1] Documentation/core-api: Add swiotlb documentation
+Thread-Topic: [PATCH v2 1/1] Documentation/core-api: Add swiotlb documentation
+Thread-Index: AQHalliRlUgD/49j1UOuP13GtHeQebF6FoYAgACpi6A=
+Date: Fri, 26 Apr 2024 16:29:35 +0000
+Message-ID:
+ <SN6PR02MB415775F2F7B865162D7A534DD4162@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240424150253.560999-1-mhklinux@outlook.com>
+ <20240426061852.GA5645@lst.de>
+In-Reply-To: <20240426061852.GA5645@lst.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-tmn: [JBeJ6XqPXkusfbEAgovGSHNCziqL7npO]
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|MN2PR02MB6639:EE_
+x-ms-office365-filtering-correlation-id: a14c2a9e-da0c-4f26-e053-08dc660e0f70
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|461199019|102099023|440099019|3412199016;
+x-microsoft-antispam-message-info:
+ BXKQP6sztaeCIsYiMkkRh4+1tKJRRlW4JYEf0N69T5t5BHthtAp3JYZ01sAhTs8VUyjqQd8Tk0Y7bbu7he2YwfkMbG004IBQwLdtXtOxZ0S8o/EnKPzYAQJceId1gg5GmNHjY9C1EoT7M8zvBL/KGG3OU9rfYeOshdWuYFiY5F0Ig/z2tj6nrGDXhFjvnkpyWEToblmfUEg169vNlV5ior/ZPUZzQ0PQKNBhxEUvAfln0f1pdLg83Y8yCPyfjeh77Ah4pZpYNTjt+K7dLbiC4mAGIfF4teIZAHXoet6S2bI4HUdJSGBz2jvBmQ0z1xXjE2aX+cyznyBT/8ax1qMTJ1srhs9E2rN4+sK6x3Vu5ygJUuH+s9h9PRHDvILc2b8XHsxcGjv4JVscty+OW0jkpWR0Hx7lIWof93R7jW0Cqj7NBdmMi7ziYa/yS9MzmpZ1bK5Fhim2vqKSwtxKuxl7gFY77ZXeFQQDKX9YB7XQIUNJjZfOq5T0SwFVVOK3b3xIPQ4s5trNoiaer0M0qP8QssHehHq25ABhrqs2bbqghqllyjhw8WRECDdxmL0wUUEi
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?3c57xacJzM7lM2ogUW7jCKGQ+AlBxtPPrVedYI3Hr9cOZYs1IwMYY8oV1n0C?=
+ =?us-ascii?Q?u5aaNO4MYo0kG+chdfgBA9PSXtUkUYuiEJ2PdckM5JNf+ICVLlww4ceFHT58?=
+ =?us-ascii?Q?lRi7SakxWqQiAWWqFq48hDK3YPGJ3Qn5QVV4TwE65iShlkU2/nTT0tI8iFct?=
+ =?us-ascii?Q?o1IJjtxrbTz1kObvseCGUJxdaX86v/Qp/4gtShYPirJVen7PSd0j3yJuxuur?=
+ =?us-ascii?Q?hPGm+hsZ3tWwKcBIIbE/BerHMuwjaA3brZwi7eLXviHc4KWpDlPXq5cJ97x3?=
+ =?us-ascii?Q?zSBQWcHx3P7fkjyPVXMYzgVRqmxCw9ksdPIKfE3ZozvEjQpU49ffW7PYfEDE?=
+ =?us-ascii?Q?ac+7DQa9BDP/JB/+aKD2aoVkb9OG/c5VmF6iEIOcVLP2rzvNPV7HyM0RrPuP?=
+ =?us-ascii?Q?aCherdgF955awyN8Zu8eEHk+/lh2juy/wIRvLIa5wV89Bd2S1SmOgNERDfoo?=
+ =?us-ascii?Q?tSMrW9E8dfE/gLvoSWmbJ6tY4D3RfaFbp4PyJIZKGGZ+9WAoZFN5y43AMViA?=
+ =?us-ascii?Q?0Y+oxhvxvs3d/yj6YmcgA5NTiT3QkjCmv9y4Du1fFk2N/VA2CJmo2JUmdbnz?=
+ =?us-ascii?Q?e3zjDQ2TKfgNPk0GmIC5oQWkJoXAtk1z/rme8P7wf8QL4x4mKzy0Zpluvyx8?=
+ =?us-ascii?Q?UXkJX/MBw+lF7oiw4btzNOWtwLrhhcy5ym34rp2ntGiSCQrYbEVIunuIUmQh?=
+ =?us-ascii?Q?WNCskkL3DOa4z/k/bEs1f/lo04VWWiZ1oErEhPG0lO80Ug7ADvCDHVuDS12T?=
+ =?us-ascii?Q?rGbWSeH1gQVszR3kNTxWQWIzVtkrEZoQk/Y4LOHkH3i2ZFtmk4A6a1mnVuNS?=
+ =?us-ascii?Q?boyNmu18KZn601rHwtgNkQUXf3QJj4qV3TBDw2UMCkus4Z2g0cSwDCxX3NH5?=
+ =?us-ascii?Q?K8zK24NIvFOELHQLMIkn7H/uI0Sn9M8kcV6r93SbTRNqUqi+WnC0jxIs7BHY?=
+ =?us-ascii?Q?pR2xFrtGu0pktBnvFexJKiYgXViqxw+zm8hC2J+9IwcB4CEbYvWjg1lY/RJH?=
+ =?us-ascii?Q?N3kHf/2L4DHlvpecUPSKCu/+YvRMTukNMuZKXoJllYOpueKrSgsXaw/pF+s/?=
+ =?us-ascii?Q?LKuQlK0y+iZF7v0rAsLVGU7zj6d9fih7X+FwQNSzLtwrkxAGFlsqOtHNn400?=
+ =?us-ascii?Q?ylvRppJsVj5u4de6SmIGmPP/r1uXQeHArwVhLQGJuSY9tMEs5PeGGX58DC7M?=
+ =?us-ascii?Q?OGDaEeMAvc174n04occTrS+PozjrQe8hby0YTQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC v2 0/3] iommu/intel: Free empty page tables on unmaps
-To: Pasha Tatashin <pasha.tatashin@soleen.com>
-Cc: akpm@linux-foundation.org, linux-mm@kvack.org,
- linux-kernel@vger.kernel.org, rientjes@google.com, dwmw2@infradead.org,
- baolu.lu@linux.intel.com, joro@8bytes.org, will@kernel.org,
- robin.murphy@arm.com, iommu@lists.linux.dev,
- Matthew Wilcox <willy@infradead.org>
-References: <20240426034323.417219-1-pasha.tatashin@soleen.com>
- <2daf168e-e2b2-4b19-9b39-d58b358c8cd9@redhat.com>
- <CA+CK2bC4SWTCG2bnA16Xe+gX7=N=UYWB1wSns-K-jNqC1yrdvQ@mail.gmail.com>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- WNyWQQ==
-Organization: Red Hat
-In-Reply-To: <CA+CK2bC4SWTCG2bnA16Xe+gX7=N=UYWB1wSns-K-jNqC1yrdvQ@mail.gmail.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: a14c2a9e-da0c-4f26-e053-08dc660e0f70
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Apr 2024 16:29:35.4320
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR02MB6639
 
-On 26.04.24 15:49, Pasha Tatashin wrote:
-> On Fri, Apr 26, 2024 at 2:42 AM David Hildenbrand <david@redhat.com> wrote:
->>
->> On 26.04.24 05:43, Pasha Tatashin wrote:
->>> Changelog
->>> ================================================================
->>> v2: Use mapcount instead of refcount
->>>       Synchronized with IOMMU Observability changes.
->>> ================================================================
->>>
->>> This series frees empty page tables on unmaps. It intends to be a
->>> low overhead feature.
->>>
->>> The read-writer lock is used to synchronize page table, but most of
->>> time the lock is held is reader. It is held as a writer for short
->>> period of time when unmapping a page that is bigger than the current
->>> iova request. For all other cases this lock is read-only.
->>>
->>> page->mapcount is used in order to track number of entries at each page
->>> table.
->>
->> I'm wondering if this will conflict with page_type at some point? We're
->> already converting other page table users to ptdesc. CCing Willy.
-> 
-> Hi David,
+From: Christoph Hellwig <hch@lst.de> Sent: Thursday, April 25, 2024 11:19 P=
+M
+>=20
+> On Wed, Apr 24, 2024 at 08:02:53AM -0700, mhkelley58@gmail.com wrote:
+> > From: Michael Kelley <mhklinux@outlook.com>
+> >
+> > There's currently no documentation for the swiotlb. Add documentation
+>=20
+> s/the // ?  (note that this is used in quite a few places)
 
-Hi!
+OK.  I'll drop using "the" before "swiotlb".
 
-> 
-> This contradicts with the following comment in mm_types.h:
->   * If your page will not be mapped to userspace, you can also use the four
->   * bytes in the mapcount union, but you must call
-> page_mapcount_reset()
->   * before freeing it.
+>=20
+> Can you use up the full 80 characters for your text?  As-is it reads a
+> little odd due to the very short lines.
 
-I think the documentation is a bit outdated, because we now have page 
-types that are: "For pages that are never mapped to userspace"
+Will do.
 
-which includes
+>=20
+> The other thing that strikes me as odd is the placement in the core-api
+> directory together with other drivers-facing documentation.  Swiotlb
+> is internal to the dma-mapping subsystem and not really what is a core
+> API.  I don't really know where else it should be placed, though - nor
+> do I really understand the "modern" hierarchy in Documentation, but maybe
+> Jon has a good idea?
 
-#define PG_table
+I also wasn't happy with it going under "core-api".  But I agree with Jon's
+comments.  The affinity with the DMA documentation is strong, and in
+the absence of a better place, I'll keep it under core-api.
 
-(we should update that comment, because we're now also using it for 
-hugetlb that can be mapped to user space, which is fine.)
+Michael
 
-Right now, using page->_mapcount would likely still be fine, as long as 
-you cannot end up creating a value that would resemble a type (e.g., 
-PG_offline could be bad).
-
-But staring at users of _mapcount and page_mapcount_reset() ... you'd be 
-pretty much the only user of that.
-
-mm/zsmalloc.c calls page_mapcount_reset(), and I am not completely sure 
-why ... I can see it touch page->index but not page->_mapcount.
-
-
-Hopefully Willy can comment.
-
--- 
-Cheers,
-
-David / dhildenb
-
+>=20
+> Except for these nitpicks the documentation looks good to me, thanks
+> a lot!
