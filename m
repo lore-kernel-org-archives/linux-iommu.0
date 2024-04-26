@@ -1,80 +1,111 @@
-Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9B4313D500
-	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 12:56:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.79.88.28
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44778147C89
+	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 13:50:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714136214; cv=none; b=QNYWqRM6UazvD/l3k/koT9KZGPcS2iJ9I0nPJoK17hDmlwIW2298qB5gEZreE3oP5auLpVVdIOSWgKSbFVSpjNVjEUHRt4Ntr34nr9qQXmCTiBPYVVYTOL++tMmsAj6UrNBbqfsj3Wh/UVDXJh+nq+2kmTDqZVcBxdUv8rjoa/Y=
+	t=1714139403; cv=none; b=chUJWc8Ut+B+eDxB0aGsMTcQkRSn/F9gc4sn2n3GfnbC0tAzvMWKi97PKIR485U42g8qTuNtC/r2pWS30DZyLYBhw2ZrWHganbFCChPDgSXu7hkWf/ufBhaOapAZ64KkhDhAPLACGEl8G49u+pmDYbbfskC3hRMbFkRnqXfbyYc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714136214; c=relaxed/simple;
-	bh=Vm1MqXYIrKm3uWWE9OUrBXSWg2xXPd6nhFg9uS9/cpM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=aMLQr+cJeanIjXAhUzwBlookTXr0zJePH9xDtYd5RPvf3uWNm5mzWVcX0L2G4m6vt0e1hebQBs6ncSr6sIJ5e7Lm2fvzUEiuxbdkCiNURg31p6FMra9zugCdIohnMlDsomL/PXhFz+HhEGKi6oyRcMJNuhYI3/LhzmbJFBQqahE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net; spf=pass smtp.mailfrom=lwn.net; dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b=VIrp8gQ3; arc=none smtp.client-ip=45.79.88.28
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lwn.net
+	s=arc-20240116; t=1714139403; c=relaxed/simple;
+	bh=yEHETsmy6A3pdmED7LIQsgDNKtWVkTM6epIFSP8k2Pg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=EMhfBsY0yM1D5QKuW8O8oYvCZQDXOxmnL2tEXEWxybcXo1ENwgEUn9LlW6rOdnMncma68zuVWDU272TxVUVotjtiOHjE/o+wsQoedxMMfv7h/i7vI8oB/pziBPi8LVWnlX6UGEKoeg7kJHzYsjdT6T2lQR90Am5dcw6uVzlmrFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com; spf=pass smtp.mailfrom=soleen.com; dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b=xFls+NBw; arc=none smtp.client-ip=209.85.160.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=soleen.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=soleen.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b="VIrp8gQ3"
-DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 014E647C39
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
-	t=1714136206; bh=O0KvzxSAUIcHusHXbcj1H/WOMoqxs1lLJ3AgneKmmhU=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=VIrp8gQ3zGKC3bogJXtlDT872C3ZWn5cBQvFDniF7CzaqGGCPVqRaj9fFiUpdB98O
-	 ntJfWrbAEHZ9ifvMr6x2IVVCJi9UA+ykHIan7cY5Sagsnkqg1IjalPZB01z6NJJ016
-	 ob4y8BxSpozTC0Hv7xR9Oh5Kph1nLIppJxmm8AQN75KmBTkn8KRAs90dqeRYZeqc0z
-	 vvMF/jklNQgDYofkb4nr6CoErvlGEGqJs+oH0F/l30FK4mdMa3hcigQ0VSR5vLsOgU
-	 QKpj68OJ9/xx3gtnbt1/Z+X36oynzU7Ai5/DK2pCDG3eyoKma7pQfg8IO6v/vrchbj
-	 8E3S7f9QGfYaQ==
-Received: from localhost (unknown [IPv6:2601:280:5e00:625::1fe])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by ms.lwn.net (Postfix) with ESMTPSA id 014E647C39;
-	Fri, 26 Apr 2024 12:56:45 +0000 (UTC)
-From: Jonathan Corbet <corbet@lwn.net>
-To: Christoph Hellwig <hch@lst.de>, mhklinux@outlook.com
-Cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, hch@lst.de,
- m.szyprowski@samsung.com, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, petr@tesarici.cz,
- roberto.sassu@huaweicloud.com
-Subject: Re: [PATCH v2 1/1] Documentation/core-api: Add swiotlb documentation
-In-Reply-To: <20240426061852.GA5645@lst.de>
-References: <20240424150253.560999-1-mhklinux@outlook.com>
- <20240426061852.GA5645@lst.de>
-Date: Fri, 26 Apr 2024 06:56:45 -0600
-Message-ID: <874jbop9iq.fsf@meer.lwn.net>
+	dkim=pass (2048-bit key) header.d=soleen-com.20230601.gappssmtp.com header.i=@soleen-com.20230601.gappssmtp.com header.b="xFls+NBw"
+Received: by mail-qt1-f182.google.com with SMTP id d75a77b69052e-43a5715f71eso8778851cf.0
+        for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 06:50:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=soleen-com.20230601.gappssmtp.com; s=20230601; t=1714139401; x=1714744201; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=hww4hDlFqZRQuN2jVnVqsCqso/mW8GodRjS6lEQgT4E=;
+        b=xFls+NBwAg5miJ/celYvO4gSwY5f4oqVVQTznCt27K/CE0Kk0HojkSymuZlbK8eOwD
+         aKPEODzXdCKOcdi7lsGZgKztwM3a+V4Bx0lpKbtI+RZMWRNrb5gKSrWDGrsoXrwQPg2z
+         o1C5oG3ES4xaQBaTWy+In+UQjrdplffWPm+G7xOsXlnhBZmM9WrKzuOU2wlZnYjKzaH3
+         iX5ypHESORIr37akMpBTU1vduy3NkMW65Vm8C+IN9kil69w7bEFGbvdH7bIC3pyPPNuU
+         n+IaKLgrC9t5fOuVLf5YlNT5A/2c/vsfb83c2mVvz7Wp5c3dJtVEtgT8mZ2u0uxRo8GQ
+         2xjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714139401; x=1714744201;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=hww4hDlFqZRQuN2jVnVqsCqso/mW8GodRjS6lEQgT4E=;
+        b=Hg2voRdoeAOLdbaUcYYXrsYBhmT/wTFkoGnlLmW+47bySmR1EgX+ZwB9kAn8rc99sW
+         IYZEfUk/mXb7J4p7mINHYwCwukF4Lyd9Vt6UJMQ46v9TNha3gWS6cCuytB1KBz/pUBc6
+         d8EFOILydkEhBiKTnQN1m0MTm5Z9KGzWsbIKrpUiipaKb3MDbdYjkzGx9zsxKJbThxm1
+         qVOSYrdLOgZhe8mOJaCGx3HguthJIkQBfzZFcCSFpg4vlW2pgaaTwOABhQkBVkMw6NKY
+         C1Kud9cJq9MFCpTkG0GzKpes+e8vGiZCcyoCndPZUGApQItRYDP5DuL9xo8L10EmQSuX
+         URZA==
+X-Forwarded-Encrypted: i=1; AJvYcCUkVd5D7y3hEe4iCKUNvDAuLKv5fVNESh+55rH6yXWoA1qUnCQTyVinDWqVKwnrFzrc9FEksmC+mkDMBAEQIZxeyHWc5sc=
+X-Gm-Message-State: AOJu0YxBoQjt7Vn+sC4cWOZPzMs4fumQJXUnSrhz3yuSFmiLoiGWw0Na
+	L3aqWBibC7xrRDt+71iDIxvXzpFf0gbinJ6GtDlDpNQAkCDqIUOINloT2DGWvsrNaLZxgTGtlfF
+	O9Bu/ZDdrFryeN7H0HraiiLvBrtoweviRE1tkFw==
+X-Google-Smtp-Source: AGHT+IEQJm6kYqJSWyv4kAgbHk6X+OT2P1LduO5vFa6/5g2dJaFsMcv+gi7fN2vALs5HFxFMrnRXLC5G51Qg8kIXMJw=
+X-Received: by 2002:a05:622a:5286:b0:434:9991:6498 with SMTP id
+ dr6-20020a05622a528600b0043499916498mr3263799qtb.43.1714139401100; Fri, 26
+ Apr 2024 06:50:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20240426034323.417219-1-pasha.tatashin@soleen.com> <2daf168e-e2b2-4b19-9b39-d58b358c8cd9@redhat.com>
+In-Reply-To: <2daf168e-e2b2-4b19-9b39-d58b358c8cd9@redhat.com>
+From: Pasha Tatashin <pasha.tatashin@soleen.com>
+Date: Fri, 26 Apr 2024 09:49:23 -0400
+Message-ID: <CA+CK2bC4SWTCG2bnA16Xe+gX7=N=UYWB1wSns-K-jNqC1yrdvQ@mail.gmail.com>
+Subject: Re: [RFC v2 0/3] iommu/intel: Free empty page tables on unmaps
+To: David Hildenbrand <david@redhat.com>
+Cc: akpm@linux-foundation.org, linux-mm@kvack.org, 
+	linux-kernel@vger.kernel.org, rientjes@google.com, dwmw2@infradead.org, 
+	baolu.lu@linux.intel.com, joro@8bytes.org, will@kernel.org, 
+	robin.murphy@arm.com, iommu@lists.linux.dev, 
+	Matthew Wilcox <willy@infradead.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Christoph Hellwig <hch@lst.de> writes:
-
-> On Wed, Apr 24, 2024 at 08:02:53AM -0700, mhkelley58@gmail.com wrote:
->> From: Michael Kelley <mhklinux@outlook.com>
->> 
->> There's currently no documentation for the swiotlb. Add documentation
+On Fri, Apr 26, 2024 at 2:42=E2=80=AFAM David Hildenbrand <david@redhat.com=
+> wrote:
 >
-> s/the // ?  (note that this is used in quite a few places)
+> On 26.04.24 05:43, Pasha Tatashin wrote:
+> > Changelog
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > v2: Use mapcount instead of refcount
+> >      Synchronized with IOMMU Observability changes.
+> > =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> >
+> > This series frees empty page tables on unmaps. It intends to be a
+> > low overhead feature.
+> >
+> > The read-writer lock is used to synchronize page table, but most of
+> > time the lock is held is reader. It is held as a writer for short
+> > period of time when unmapping a page that is bigger than the current
+> > iova request. For all other cases this lock is read-only.
+> >
+> > page->mapcount is used in order to track number of entries at each page
+> > table.
 >
-> Can you use up the full 80 characters for your text?  As-is it reads a
-> little odd due to the very short lines.
->
-> The other thing that strikes me as odd is the placement in the core-api
-> directory together with other drivers-facing documentation.  Swiotlb
-> is internal to the dma-mapping subsystem and not really what is a core
-> API.  I don't really know where else it should be placed, though - nor
-> do I really understand the "modern" hierarchy in Documentation, but maybe
-> Jon has a good idea?
+> I'm wondering if this will conflict with page_type at some point? We're
+> already converting other page table users to ptdesc. CCing Willy.
 
-I hadn't thought about it, but it seems that putting it with the rest of
-the DMA-API documentation would make sense.  That's core-api, at the
-moment at least...
+Hi David,
 
-Thanks,
+This contradicts with the following comment in mm_types.h:
+ * If your page will not be mapped to userspace, you can also use the four
+ * bytes in the mapcount union, but you must call
+page_mapcount_reset()
+ * before freeing it.
 
-jon
+Thank you,
+Pasha
