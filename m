@@ -1,156 +1,373 @@
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69029139D01
-	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 06:42:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=170.10.129.124
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714113764; cv=none; b=V9OLODx5I4ef6o7hqPdlMd8xrUF7mimlQI4GpdIMlfOUMW5qXlRzKRPOICWKjozf8bmGtF5l3Rv5bcjCEzGmCCxsaG/SvKWBXTyZLQ9HoeMAfivOk7llnJ6C4662L0BRjf5qcyFNYv0OZgCcI7g8wYp8tHQtNfuI9auLmR8ZWJA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714113764; c=relaxed/simple;
-	bh=6sKsWGX0DscQ/3gW0RqbN1uBIZ2Fc4T9143v9V0bwO8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=Fprw23H6eMGWlzNzXIXhMLxkEIZfpueUej4DAC7pxEqtqQvIbohQC+Il7JmnT4YOcLVCF+dsZqIEeb6LGD48xas9KyL7rSsLztz21zqSUxg15f20JjDpj0m5VjRwEXnq9/5Xu3hGdARwTzGRJJYK1GG2O+grjfuyDI7jJMdeuHA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redhat.com; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=eVPHqPpC; arc=none smtp.client-ip=170.10.129.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redhat.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C10113C9CD
+	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 08:58:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.7
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714121902; cv=fail; b=WRb5T7ft1UFjApT9WyFsNn0yZYI5IePgxIN8YXPI8Rde22A0V541X6pkF7WSuGumKU02bXSJ/F6iYPUQYETLApH1+eMBUwdzpQq+fKIMtRiy2h39elvpvPqf8FhYyFgwxOcG/bQy8hSmAqRD6Z1PCauFiKBHR/E9WJrNXIRG2zc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714121902; c=relaxed/simple;
+	bh=rONSEEHRZ2aaDqFfwq/OZttbnZaoqBu1SR41eWGZKgE=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=ZkqBZZAWJeaKPbYF27LjwaTMy9Cj7v1o65siqkXUsbmvYryS2KvDfR+EEnluL3ZvcoVMl57FdKt8tl1wnKVeV7LCi+G0EtYIxih2pbRz+akQ1thYrknHodH3MuV/Rl9nffkLfQUSIp61SUPaBSEbNxChMtQAQvuF6EL9iEtEfDQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SKwpy96Y; arc=fail smtp.client-ip=192.198.163.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="eVPHqPpC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1714113761;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-	bh=E+tYTfs9NKoPLMvY9tId1EcOzjkm6tejW0kCdDKiH8Q=;
-	b=eVPHqPpCI2P/WNxh+MGT8LaU0annf3W314A1nOH2rzcEm+RDktcxHtBDCseWJ7wBrXI3zq
-	ZLKxMoc3+X+rA3FBilYSCjzPdIS/9zpPqmAjQHwMusRZta37GmX4f8h8bK260sRzJ+ZMc8
-	Zbk2YE0dscxZpPt3SpyqjwE88tCQz/8=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
- us-mta-203-M8oLiXw9P1i0xu5DgEDvmQ-1; Fri, 26 Apr 2024 02:42:37 -0400
-X-MC-Unique: M8oLiXw9P1i0xu5DgEDvmQ-1
-Received: by mail-wm1-f71.google.com with SMTP id 5b1f17b1804b1-416ac21981dso9235225e9.1
-        for <iommu@lists.linux.dev>; Thu, 25 Apr 2024 23:42:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714113756; x=1714718556;
-        h=content-transfer-encoding:in-reply-to:organization:autocrypt:from
-         :content-language:references:to:subject:user-agent:mime-version:date
-         :message-id:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=E+tYTfs9NKoPLMvY9tId1EcOzjkm6tejW0kCdDKiH8Q=;
-        b=d/HMZAXIMaeppPpBzBQkd0JxGxGdeRfUpXgBcVY+EaAyF34cOdPdAJ/pHOD8XMs7Tr
-         oZ3u4MeGYA0UBvmX4qY6V+U7YDvUZij4hJEkgzJK3Q1wOS92M78dBh4XFY4V5Hc/6kmV
-         altwd+f1jhYaDJIBTeRC9Vm26NyYLLaaWdOWyDB/9/1JmGQ/3s7m25qKrgu32BFfez3y
-         ZjXmcBBp9/yRof8zKobCv2+7DiLcRVYXntKoE9jCWysaft3YCaLEs2CzCkSRGsZjfqff
-         1Wr7f5JYoesIRFMVFMmAa8JXkxOCFFVPqbpJtSDo2kqIWv5LlcKLlty3kXObEKwryowi
-         MZTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX85GmnZ72fXCbruohBL7f82P5ng7NEVqcIIP8/xs8mUlbEDgYxY2IMJPPV5CxYPoXBXfjD3HvA1u7T9yp+UA7R5/RZM8M=
-X-Gm-Message-State: AOJu0YwiJDSAZNA7KTtgKSET4PhYhq2MJleWyl0gWUmZH2GTrIckhxjX
-	IXODYxi9PI1X5wU4Ol6dkDgDQVRJoWfhSZOWI790EbqE/yTIl9mOMGcOmUiZiWMuQdiu7/O86Sc
-	lnfovs6SYaBdFRKBZnCFqcLwiuY6VEk7bfGkYNDGVWHTBTHx+Z/Ap
-X-Received: by 2002:a05:600c:3109:b0:418:bdcd:e59b with SMTP id g9-20020a05600c310900b00418bdcde59bmr4103851wmo.7.1714113756588;
-        Thu, 25 Apr 2024 23:42:36 -0700 (PDT)
-X-Google-Smtp-Source: AGHT+IGrd76xJZYJPj7b60Y+BNNqXduLXOSbR2oK+w7wzpVZK5jpIt4kYMhfTK7H6XrExGSe1O36JA==
-X-Received: by 2002:a05:600c:3109:b0:418:bdcd:e59b with SMTP id g9-20020a05600c310900b00418bdcde59bmr4103838wmo.7.1714113756149;
-        Thu, 25 Apr 2024 23:42:36 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c726:6100:20f2:6848:5b74:ca82? (p200300cbc726610020f268485b74ca82.dip0.t-ipconnect.de. [2003:cb:c726:6100:20f2:6848:5b74:ca82])
-        by smtp.gmail.com with ESMTPSA id y18-20020a5d4ad2000000b0034a0d3c0715sm21244523wrs.50.2024.04.25.23.42.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 25 Apr 2024 23:42:35 -0700 (PDT)
-Message-ID: <2daf168e-e2b2-4b19-9b39-d58b358c8cd9@redhat.com>
-Date: Fri, 26 Apr 2024 08:42:34 +0200
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SKwpy96Y"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714121901; x=1745657901;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=rONSEEHRZ2aaDqFfwq/OZttbnZaoqBu1SR41eWGZKgE=;
+  b=SKwpy96Y5VVccGlGI8z94X61bIbrLIKmm5522ffMDn+GIbRRFg2QLeKm
+   IWP3Xf7OJ8fk0VaxeEaRSK04u3+rHzULpzAFNZ7uPdKbZavIAB7jyhf11
+   cgHRCW5QC3pdFnPkgSfiNPh14M25+tSA+dCkV/j5U6YuWCMuRI6N4omUS
+   PX3wM3csHkeHqFe5efFenboAXhTpUrPt2U2MVJWwsMzvsB4flf8WFoB8m
+   csrQGZ6ko0atmLYHN0/VL2mAYWLT9gdREx4tfbf0oQOSDETDiNhSTfljH
+   eIXYDFZP5CO3mhatWdb62Q+XfuoIuYlYcInF8d7jvzAaz7MbJ5QeOgUPb
+   Q==;
+X-CSE-ConnectionGUID: h5FEZIO0RyGiY/G0yWkCFg==
+X-CSE-MsgGUID: yRmtEQM6RIylIM5Hav7PLQ==
+X-IronPort-AV: E=McAfee;i="6600,9927,11055"; a="35237968"
+X-IronPort-AV: E=Sophos;i="6.07,232,1708416000"; 
+   d="scan'208";a="35237968"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Apr 2024 01:58:20 -0700
+X-CSE-ConnectionGUID: ayr1jJt0Qga9bmybimlBCA==
+X-CSE-MsgGUID: SDmm6O/sSjCLWH0njPHHQg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,232,1708416000"; 
+   d="scan'208";a="30011773"
+Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
+  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 26 Apr 2024 01:58:20 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Fri, 26 Apr 2024 01:58:19 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Fri, 26 Apr 2024 01:58:19 -0700
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.40) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Fri, 26 Apr 2024 01:58:19 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AfcYMR9+5cV3ddYC6l/hVsYTXu2r0DmSpHOT/Nw2PKTy0d8/c7sruG4BvITvQqXmTlsbPS/DTIev6640Zd9u/oF/y85k0Zyu9j8JHZDPV5U6dJmH8qHdFegH5AicG3F0tbRxftbOs0iHfhXNrVq/T6FZyWivKxhJDl/Um4wLnq9bARwO+b4qbR/BmXfET3rpd0pcoj90R3lZ36JavEvq7v8JgDxXxx0bnZABkVmGgKWh18jb9idjsQ3f7OUODbU4hlc3OgfN4bXVNw8AInxzUgpjK2DGyR7mbqp0R1Az8RwiSykMEmSKkmZU2uQb/z2NqH8zab1Uw4VT4+jh/Dc3nQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=uTLApEuFvBLq4yOsP18DsMDFslAQpAY3Je+nZahRarQ=;
+ b=dvoK6ObpRFsYcsYLU04w/NSd7QG51nd8Xd7P520tLyxC7ElLnPUc/Jwmne3E4SE4NdBTUGFdKqBnd28hhDan+HmB8eSdJWJVT/Q5PL5SNhKtTGlRFtNmmT+TLd0jLuBqg0E+FyzFur51z2Z7PyShHl4r2CYsoKGH3LoA59e0n4U9uuUtenfjcjHdeYuz29vFnn38ZhOw1N7zXy3fbYC/T4xFn0rlcIyS2NqxnaWMxFFAmrGkb4xUTw7/YADvEzNt+29iZtdTypvUHEVFKGJbtBle9aovc37e8gEk2Fuhvi/YwnI0Bs+kFbLB+/i07Bia3EAYPsMw7K5Cs9y0ijI6uA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by CY8PR11MB7394.namprd11.prod.outlook.com (2603:10b6:930:85::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.21; Fri, 26 Apr
+ 2024 08:58:15 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a%7]) with mapi id 15.20.7519.021; Fri, 26 Apr 2024
+ 08:58:15 +0000
+Message-ID: <2ac004ba-2a3f-4e89-8ecb-e613daa10500@intel.com>
+Date: Fri, 26 Apr 2024 17:01:49 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
+Content-Language: en-US
+To: Alex Williamson <alex.williamson@redhat.com>
+CC: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>, "kvm@vger.kernel.org"
+	<kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "baolu.lu@linux.intel.com"
+	<baolu.lu@linux.intel.com>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+	"Pan, Jacob jun" <jacob.jun.pan@intel.com>
+References: <20240417122051.GN3637727@nvidia.com>
+ <20240417170216.1db4334a.alex.williamson@redhat.com>
+ <BN9PR11MB52765314C4E965D4CEADA2178C0E2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <4037d5f4-ae6b-4c17-97d8-e0f7812d5a6d@intel.com>
+ <20240418143747.28b36750.alex.williamson@redhat.com>
+ <BN9PR11MB5276819C9596480DB4C172228C0D2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240419103550.71b6a616.alex.williamson@redhat.com>
+ <BN9PR11MB52766862E17DF94F848575248C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240423120139.GD194812@nvidia.com>
+ <BN9PR11MB5276B3F627368E869ED828558C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240424001221.GF941030@nvidia.com>
+ <20240424122437.24113510.alex.williamson@redhat.com>
+ <07fbea50-b88d-46d8-b438-b4abda0447bb@intel.com>
+ <20240425065827.66b3b9b8.alex.williamson@redhat.com>
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <20240425065827.66b3b9b8.alex.williamson@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: TY2PR02CA0032.apcprd02.prod.outlook.com
+ (2603:1096:404:a6::20) To DS0PR11MB7529.namprd11.prod.outlook.com
+ (2603:10b6:8:141::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC v2 0/3] iommu/intel: Free empty page tables on unmaps
-To: Pasha Tatashin <pasha.tatashin@soleen.com>, akpm@linux-foundation.org,
- linux-mm@kvack.org, linux-kernel@vger.kernel.org, rientjes@google.com,
- dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
- will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev,
- Matthew Wilcox <willy@infradead.org>
-References: <20240426034323.417219-1-pasha.tatashin@soleen.com>
-From: David Hildenbrand <david@redhat.com>
-Autocrypt: addr=david@redhat.com; keydata=
- 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
- WNyWQQ==
-Organization: Red Hat
-In-Reply-To: <20240426034323.417219-1-pasha.tatashin@soleen.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|CY8PR11MB7394:EE_
+X-MS-Office365-Filtering-Correlation-Id: fa28cb0a-d9bf-4420-5ccc-08dc65cf0244
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|376005|7416005|366007;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?aUZZejZFUGE5QWdqU0pldEpabGxZRGVacHhKcWt1RlpKeGFwWjBFYlhtdytU?=
+ =?utf-8?B?SlBrQ3JIVGp6UklhSjJQeXBzMFd1TlFCdStycWJHS0QyQ3NDdUREUzg1VkV3?=
+ =?utf-8?B?aDE4c3RaY2pkeG9oNGNrbWhla0JvNW53cDV1TjVKTGlocmNSVmFSdWVaUGVO?=
+ =?utf-8?B?NUd2ZWhFckFlSTFXYXRqeDlNY0ZyakN0b1lKd2E1RnFLSHlhMGhzaE9ZT0do?=
+ =?utf-8?B?WXlpcFRUa0tSd1E2SHQzNVVrQ05FRVF4T01nSExvaFduTE83NzBWSjhxUlJV?=
+ =?utf-8?B?YUEvUHdFV0Q4OGo4Wk90OXlxZFI0Z1hrclZDeFl3bXNid00yNmg5dThKUGU2?=
+ =?utf-8?B?cDhHUTBsTndSb2QxR3I4OFYwMmQ3cjh5REZzOHpkc2xUSGZWVHFVcUJLbkFZ?=
+ =?utf-8?B?OWZaU3UyaHJZekJrTHJ4SVZXQVZ0QXlCSzBOK3hzcnJpQVBlTUhXWjFVei9U?=
+ =?utf-8?B?LzUxcVFkdk91WnU4dWpQdnV2VXlQT0xuaC9nMTRxVWFQY3lpZzdIeW91d01O?=
+ =?utf-8?B?OWUzL0JRYUZNNDA0c29LOGI4UjdML1Zmbkh6UTBFWklMVlFNbHQ3SlR5Vzhk?=
+ =?utf-8?B?aDIrdE9TTUFuS2lFVXcxWWxoSm1tSXlhMzZPNnYxTWNyaDlVWWxZSXpHcm1H?=
+ =?utf-8?B?RkIwbktPY2NNSTdYYkJ4MFp0M2hDeGxOLytSSngvM0RGUTBRbGx1NkxJaEkr?=
+ =?utf-8?B?QTB1NEFhbTdreEV2cFVXS1o5YVBLeVo5cW00TWIzKzExdUE5TDJvd0lDMmt6?=
+ =?utf-8?B?Q2JkRGFFVHRzakh2RlNPcWFMTnBnaDQrZThQMDV3b2UrOXFLQnF5dWdYYWl0?=
+ =?utf-8?B?WjFsK3hyR0ViWHNreStTazkvaTdBMUF5dGhyb0pEVlpRS0I4K0RTZXp6dmxF?=
+ =?utf-8?B?RTByZkRYRXMvaEdkazFDWFgyYzNMT1EvZ20yT2pIZVpBc0JORk5Gc3IyQmk5?=
+ =?utf-8?B?V0pIelI1cmw5S052S3FhT1NPWks3c08wWUdvRVAwckZYUE5pbVdKQjN2Ulpj?=
+ =?utf-8?B?Rk1WSmRMNjg5aGJPamkxY3BXdnBaeDNjU1ZKU2tmTHRIdWRQOVZpRml1aTdT?=
+ =?utf-8?B?L1V6RTAwOU5ibVRoSFdKdnpGeFlKeTNUZllGZmtTZlNYT1B6NWNVS0VuOGhq?=
+ =?utf-8?B?dTRWYkp3d1hLL1ZGVHAyODNhYjdGdjVBdGVPSG15VDBINTQ2d21FTVFyUkVJ?=
+ =?utf-8?B?REFIOE5aNG5taEloZExreHFocGlxSTQ1RHd5QXcvSjZ0akpRSkJ2d3drQWxO?=
+ =?utf-8?B?QmdpYTdtVXdQbnlQcElhMWl2bFdEck9keldyTllDTGwwWGFrOFo4L1pGcUxw?=
+ =?utf-8?B?UTZoQ0VUT3FoT2pwTnJCZkRnTm9acUFZOU9DYURIMVhaMFYwQUhWQ1AyT0Rq?=
+ =?utf-8?B?VnBCODdGZnZQNjJsSnIzd2JxU3RUb0xtbnhXTGw1V0lPaVBtR2lJTVpaZjVU?=
+ =?utf-8?B?V0pRdXJ6VCtIOFRIS3ZBS2E5K1owMjNSRUhnWHBkaHF5RVF5TWtqNTVJZ0hk?=
+ =?utf-8?B?UlcvL0pucjA1V0plQTRDQUg0SzFzZlZCeHlHQlMyd3RoNkxzaDBPZEwrd1R4?=
+ =?utf-8?B?MlNjT01sdUJ2TXlpNU9qdXJIRXRrL0pzUG5xWGFFNXp3aGpwV1oyTER6WUJa?=
+ =?utf-8?Q?2NisCEgX/5txbDLChp6WYCP0dM/KD1ozEprzejS+FnM0=3D?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(7416005)(366007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Ykd1U3pLVm1IT3VlaXNma0NoUmpNVVlvL3Naa0VrMmpmNC9rZDFOWVpJd29y?=
+ =?utf-8?B?RWVaLzBwMmlHNWtVVGNxTEgyTWxhS1RJZzNvOTZqZm53aE9JTGhPSGorZGM1?=
+ =?utf-8?B?NkQzbE51ZWhXbkQ4d0puMmJLRWlscVBEc0ZuQmN6YlFIVjhJTzRrOUF4RTMr?=
+ =?utf-8?B?TTFXbjRZM1JBaGh4WUx6NjBQcmpSeUk0UjgyWGRGOUJtQ3EvZk5kTUxQTUMz?=
+ =?utf-8?B?N2h3V1VndUlveGFhN0hZSDYxVUlMVDR2Tkttcm5VZ0J0UUhpbE1iZXF0azBI?=
+ =?utf-8?B?dFZrTFNseUxtYnBjcDkzZnBMWTduNm8yOXRiSzd3dDJzMHcvWXFMMi92Vi9n?=
+ =?utf-8?B?RzkrdEdsRTFjMVNkaTA5T2FyeDJMMEhtYTFjVnpmcGkzaGtKdjkrM3c4NkVq?=
+ =?utf-8?B?M3VoaStFNitQeFVlc2h4ZFdqVXN3cUwxWVdjQ2hMVlRPeWZIQktVcG1PQnlO?=
+ =?utf-8?B?L0xLUUlCYmxnLzBCSWdqQ3ZGRW9uVXBaTXI5YjVta0oraWIwcW1zYTJTSVhO?=
+ =?utf-8?B?cUJwUkpsZ0FaZU92OXFNMUdMKy82NnJzdUhoNEV3U1FvSlYxczhBTkFRMG9W?=
+ =?utf-8?B?cEZHMmhXcythRW5Dc3ZCNVRDLzFjelg1Z0ZIL3JBZ0hvR2dNT08wZFFMWTYx?=
+ =?utf-8?B?Y0FyOW5NRHordit2cUdQa0YwV2FuMUFBZXdNTmJQT3NkRkJnQTBRY1JHRXRs?=
+ =?utf-8?B?aE1RbTlqa2Z3WFRMTGlIWExHcU95ZGcxYkl1dEZHd2U1N0gvMUZZNkZhUG5o?=
+ =?utf-8?B?UnBLMlExSW5IcUQ5QVovQ0QzM3JLeHZiTWxqdndyUVk3ZGFWb1VWN3JjbzdL?=
+ =?utf-8?B?UDhmZUNreUlIbjc0NTQ1dHhuM3BvUk10SU5pcUNGL3pHTVFiTXoyWVlrR1Vp?=
+ =?utf-8?B?eG1tRHE0NW1CaFpzNXVaR1FRd290blNRWnFtbzNaaTNIMlcyUUZKNmlFMG1P?=
+ =?utf-8?B?OVNuVW1tZ3lyUEZFS1QzcEF3SVc5bFZWd21vUlZiem9wUmxSU0FHNVJnWUpD?=
+ =?utf-8?B?ODZSVmg0QWFwZjlCOTVjc0NVaDRObXl4NHZqM3dEYTh5eWNNMHIvcXQ0S2hQ?=
+ =?utf-8?B?WXIvRzhQUWo1OGhkL0pGSzZHQWdOUzNXN0JBVTFLcWh2ck5BaDVZajU3MGU2?=
+ =?utf-8?B?cFJiamlvakI3ajc2elBoWFVSYkRIYm13VVZ5UXllMmhoQ08wREhhdE9xL0xu?=
+ =?utf-8?B?MStSZzRjdmNrNDgzazJEblBON2x6S0k0dElNUnMzNXEwaVN6OHVqdWpNcEF1?=
+ =?utf-8?B?c1lFVG9WKys3K0tOSUowVW1CaU9DSnNFcDRFMkNkR25CLzNZYW12NG82ZHBt?=
+ =?utf-8?B?Qi95VksreVJhYjU2alEyY3Q0RW9mT285ZnVEZGJ0WE9heGNxcktkYzJCay9Z?=
+ =?utf-8?B?Q21nMHJHYjV2OE5Ta0QzMmhmeTMxT0FTWkdLaDNxT3RreGJlU29LQkJHak82?=
+ =?utf-8?B?Q3dLN1hIYTVZVnBkU2VsU0xDRDBiZVk1MFVBK1J1WGhiOXBsaWZqVllnak80?=
+ =?utf-8?B?eUZyTnBsQ0NPWWJMTEttaE5KcExvbHhoRlZIc1I1RTFNdWoxblJHd2VOaE4y?=
+ =?utf-8?B?K2VkRkF1ZDd1SExueHNxbERDTjYrY2E2Z0lpZHBHZTdaNmNQbXpyS2E4RU8y?=
+ =?utf-8?B?TnlRVENBbHNzVGwwbzU0QSt2R28rcWhIbzhFSElBOW0wMW9BTWhyV1lRVWc0?=
+ =?utf-8?B?STJIeWVIaFlQWC9QU01JdTA5SDhkcTJHV0NrNDNtT0RUT2ZYOEtLaVNwSXFH?=
+ =?utf-8?B?L2Q3MlBtOUdCcy9RQkNGYk9SMHRTclIvc1lDeVdSenlGZkhIbkRzOEMyakdw?=
+ =?utf-8?B?YkdlbDBxN05pcGJSdTFMMENyTDRyZUJYcnVUSUVjNFJ4b2hrMVg1RjRGcjJv?=
+ =?utf-8?B?dUlzUkphblhOM2lhQmNhTlpSRmkvOXQ5aExCd1kyNGM2Yks2ekRLSVRxT2Jx?=
+ =?utf-8?B?RXRWN1ZXMXkzUkN1ZWxqL2t5NzNHUnl1bDFMTTRIOVJ5alRYYkdReGNiNDdH?=
+ =?utf-8?B?aE5lTUJtSGdYL2RkcU1MRkJrbUIyTDg0TFBWOGZtT1pYRjFhLyt4Wk90WVQr?=
+ =?utf-8?B?NUlVNGRsSk5TZzhzcmNxNGtVeC9aYUViaUlzZWpJb0dkUnNZWmRBbFk4YTdK?=
+ =?utf-8?Q?70/8nupZ7rxrl846lQkD59+JN?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: fa28cb0a-d9bf-4420-5ccc-08dc65cf0244
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Apr 2024 08:58:15.2836
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dHAbwsQcECLiLlA5gXVtWh4VP3W6+ZGK/suvd4rOpOZyzBatPgd16cgEoT31aecR74iKRKxDh9ZYKgLu/U5ojw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR11MB7394
+X-OriginatorOrg: intel.com
 
-On 26.04.24 05:43, Pasha Tatashin wrote:
-> Changelog
-> ================================================================
-> v2: Use mapcount instead of refcount
->      Synchronized with IOMMU Observability changes.
-> ================================================================
+On 2024/4/25 20:58, Alex Williamson wrote:
+> On Thu, 25 Apr 2024 17:26:54 +0800
+> Yi Liu <yi.l.liu@intel.com> wrote:
 > 
-> This series frees empty page tables on unmaps. It intends to be a
-> low overhead feature.
+>> On 2024/4/25 02:24, Alex Williamson wrote:
+>>> On Tue, 23 Apr 2024 21:12:21 -0300
+>>> Jason Gunthorpe <jgg@nvidia.com> wrote:
+>>>    
+>>>> On Tue, Apr 23, 2024 at 11:47:50PM +0000, Tian, Kevin wrote:
+>>>>>> From: Jason Gunthorpe <jgg@nvidia.com>
+>>>>>> Sent: Tuesday, April 23, 2024 8:02 PM
+>>>>>>
+>>>>>> On Tue, Apr 23, 2024 at 07:43:27AM +0000, Tian, Kevin wrote:
+>>>>>>> I'm not sure how userspace can fully handle this w/o certain assistance
+>>>>>>> from the kernel.
+>>>>>>>
+>>>>>>> So I kind of agree that emulated PASID capability is probably the only
+>>>>>>> contract which the kernel should provide:
+>>>>>>>     - mapped 1:1 at the physical location, or
+>>>>>>>     - constructed at an offset according to DVSEC, or
+>>>>>>>     - constructed at an offset according to a look-up table
+>>>>>>>
+>>>>>>> The VMM always scans the vfio pci config space to expose vPASID.
+>>>>>>>
+>>>>>>> Then the remaining open is what VMM could do when a VF supports
+>>>>>>> PASID but unfortunately it's not reported by vfio. W/o the capability
+>>>>>>> of inspecting the PASID state of PF, probably the only feasible option
+>>>>>>> is to maintain a look-up table in VMM itself and assumes the kernel
+>>>>>>> always enables the PASID cap on PF.
+>>>>>>
+>>>>>> I'm still not sure I like doing this in the kernel - we need to do the
+>>>>>> same sort of thing for ATS too, right?
+>>>>>
+>>>>> VF is allowed to implement ATS.
+>>>>>
+>>>>> PRI has the same problem as PASID.
+>>>>
+>>>> I'm surprised by this, I would have guessed ATS would be the device
+>>>> global one, PRI not being per-VF seems problematic??? How do you
+>>>> disable PRI generation to get a clean shutdown?
+>>>>   
+>>>>>> It feels simpler if the indicates if PASID and ATS can be supported
+>>>>>> and userspace builds the capability blocks.
+>>>>>
+>>>>> this routes back to Alex's original question about using different
+>>>>> interfaces (a device feature vs. PCI PASID cap) for VF and PF.
+>>>>
+>>>> I'm not sure it is different interfaces..
+>>>>
+>>>> The only reason to pass the PF's PASID cap is to give free space to
+>>>> the VMM. If we are saying that gaps are free space (excluding a list
+>>>> of bad devices) then we don't acutally need to do that anymore.
+>>>
+>>> Are we saying that now??  That's new.
+>>>    
+>>>> VMM will always create a synthetic PASID cap and kernel will always
+>>>> suppress a real one.
+>>>>
+>>>> An iommufd query will indicate if the vIOMMU can support vPASID on
+>>>> that device.
+>>>>
+>>>> Same for all the troublesome non-physical caps.
+>>>>   
+>>>>>> There are migration considerations too - the blocks need to be
+>>>>>> migrated over and end up in the same place as well..
+>>>>>
+>>>>> Can you elaborate what is the problem with the kernel emulating
+>>>>> the PASID cap in this consideration?
+>>>>
+>>>> If the kernel changes the algorithm, say it wants to do PASID, PRI,
+>>>> something_new then it might change the layout
+>>>>
+>>>> We can't just have the kernel decide without also providing a way for
+>>>> userspace to say what the right layout actually is. :\
+>>>
+>>> The capability layout is only relevant to migration, right?  A variant
+>>> driver that supports migration is a prerequisite and would also be
+>>> responsible for exposing the PASID capability.  This isn't as disjoint
+>>> as it's being portrayed.
+>>>    
+>>>>> Does it talk about a case where the devices between src/dest are
+>>>>> different versions (but backward compatible) with different unused
+>>>>> space layout and the kernel approach may pick up different offsets
+>>>>> while the VMM can guarantee the same offset?
+>>>>
+>>>> That is also a concern where the PCI cap layout may change a bit but
+>>>> they are still migration compatible, but my bigger worry is that the
+>>>> kernel just lays out the fake caps in a different way because the
+>>>> kernel changes.
+>>>
+>>> Outside of migration, what does it matter if the cap layout is
+>      ^^^^^^^^^^^^^^^^^^^^
+>>> different?  A driver should never hard code the address for a
+>>> capability.
+>>>      
+>>
+>> But it may store the offset of capability to make next cap access more
+>> convenient. I noticted struct pci_dev stores the offset of PRI and PASID
+>> cap. So if the layout of config space changed between src and dst, it may
+>> result in problem in guest when guest driver uses the offsets to access
+>> PRI/PASID cap. I can see pci_dev stores offsets of other caps (acs, msi,
+>> msix). So there is already a problem even put aside the PRI and PASID cap.
 > 
-> The read-writer lock is used to synchronize page table, but most of
-> time the lock is held is reader. It is held as a writer for short
-> period of time when unmapping a page that is bigger than the current
-> iova request. For all other cases this lock is read-only.
-> 
-> page->mapcount is used in order to track number of entries at each page
-> table.
+> Yes, I had noted "outside of migration" above.  Config space must be
+> consistent to a running VM.  But the possibility of config space
+> changing like this only exists in the case where the driver supports
+> migration, so I think we're inventing an unrealistic concern that a
+> driver that supports migration would arbitrarily modify the config space
+> layout in order to make an argument for VMM managed layout.  Thanks,
 
-I'm wondering if this will conflict with page_type at some point? We're 
-already converting other page table users to ptdesc. CCing Willy.
+I was considering a case in which the src VM has a v1 hw device, while the
+dst VM has a v2 hw device. Due to whatever reasons, the config space
+layouts are different between v1 and v2 hw. Since the current vfio copies
+the physical layout (except for the hidden caps) to VMM, the layout between
+the src and dst VM would be different. This would result in problem since 
+the cap offsets are stale. It seems to be a problem you mentioned in
+another email of this thread[1]. :)
+
+[1] "So in either case, the problem might be more along the
+lines of how to make a V1 device from a V2 driver, which is more the
+device type/flavor/persona problem.
+" 
+https://lore.kernel.org/linux-iommu/20240424141349.376bdbf9.alex.williamson@redhat.com/
+
+
+> Alex
+> 
+>> #ifdef CONFIG_PCI_PRI
+>> 	u16		pri_cap;	/* PRI Capability offset */
+>> 	u32		pri_reqs_alloc; /* Number of PRI requests allocated */
+>> 	unsigned int	pasid_required:1; /* PRG Response PASID Required */
+>> #endif
+>> #ifdef CONFIG_PCI_PASID
+>> 	u16		pasid_cap;	/* PASID Capability offset */
+>> 	u16		pasid_features;
+>> #endif
+>> #ifdef CONFIG_PCI_P2PDMA
+>> 	struct pci_p2pdma __rcu *p2pdma;
+>> #endif
+>> #ifdef CONFIG_PCI_DOE
+>> 	struct xarray	doe_mbs;	/* Data Object Exchange mailboxes */
+>> #endif
+>> 	u16		acs_cap;	/* ACS Capability offset */
+>>
+>> https://github.com/torvalds/linux/blob/master/include/linux/pci.h#L350
+>>
+>>>> At least if the VMM is doing this then the VMM can include the
+>>>> information in its migration scheme and use it to recreate the PCI
+>>>> layout withotu having to create a bunch of uAPI to do so.
+>>>
+>>> We're again back to migration compatibility, where again the capability
+>>> layout would be governed by the migration support in the in-kernel
+>>> variant driver.  Once migration is involved the location of a PASID
+>>> shouldn't be arbitrary, whether it's provided by the kernel or the VMM.
+>>>
+>>> Regardless, the VMM ultimately has the authority what the guest
+>>> sees in config space.  The VMM is not bound to expose the PASID at the
+>>> offset provided by the kernel, or bound to expose it at all.  The
+>>> kernel exposed PASID can simply provide an available location and set
+>>> of enabled capabilities.  Thanks,
+>>>
+>>> Alex
+>>>    
+>>
+> 
 
 -- 
-Cheers,
-
-David / dhildenb
-
+Regards,
+Yi Liu
