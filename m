@@ -1,51 +1,69 @@
 Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 4B45C140E30
-	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 10:04:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BAC3813F42F
+	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 10:07:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714125888; cv=none; b=hQHLHpC/+7tmD4goYYg6/owgQon6BbE8HoNMfS/abi/qR8WU557XTHZmHV6qLZxFIg9VHY/EK/6SAyIGLtikbg3OekDPA+I7/SxpRfPVRwsXyzGpKmsvHWYw9hP/N8c/ZsdTAUXD4BHEiytECXWbR0HxCkjg8htY/12vtB/xGRY=
+	t=1714126079; cv=none; b=ig8IjSuF4gr3R9j/xjybKQ5LgE2ZvubLjFa3d2Kumd8UU8tUYvGMuiOnk/G4rkMqzaaYyWeRTdqYc7usGG4oZEFOuCzWnAuCcgFkDdNnIzeTH64ra8L5TIXmVtfXQnFSa2whiLY3ct5ydGGNxGoj2HfZkflhPzONtX6hm/wgTIo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714125888; c=relaxed/simple;
-	bh=3z6mQi6GC+f1IGF9aeVW5DUx4MzUimUyjOar6Mh0Dao=;
+	s=arc-20240116; t=1714126079; c=relaxed/simple;
+	bh=ROQPW28f+YqmHnZpNtgoEUCyWbPcwUXFXrPacMNkuDs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KDPqmLGaB3W2sj8c6Io9l/84twGwq97T1wdYFllKo+6raiy2ONScEcluKO9Gwyz2HW+NY86O7PfemNK9ZW12wVQXoyUK84Lv2TV6ze/O3PMj6QutgbedK1I3yTVNiV5PfPtUwETBHvL5ZN/c9/fbrXMxxvDhf31PwFcYSHX4oAA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=mAH2oxQm; arc=none smtp.client-ip=85.214.250.239
+	 Content-Type:Content-Disposition:In-Reply-To; b=j8Fuh1XTEt+cwNP2t/yUwERQ4rrIOTqPdL0TWKoCA23VwzVkhrxcDUY1iJANk7B2ieDVMX6MoFeXPYxqH4GkjbbEtFtet3vJVcFzVqC54y70EcUNS6myDowp1UMHUfj+9rEevFkeC25j0MYYTRYAT3jHJupZJ9GORq/BwMjNWJ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=tkWD9+yC; arc=none smtp.client-ip=85.214.250.239
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="mAH2oxQm"
+	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="tkWD9+yC"
 Received: from 8bytes.org (p4ffe0bdf.dip0.t-ipconnect.de [79.254.11.223])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 231DF1C7E6B;
-	Fri, 26 Apr 2024 12:04:45 +0200 (CEST)
+	by mail.8bytes.org (Postfix) with ESMTPSA id 85D281C7DB9;
+	Fri, 26 Apr 2024 12:07:56 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1714125885;
-	bh=3z6mQi6GC+f1IGF9aeVW5DUx4MzUimUyjOar6Mh0Dao=;
+	s=default; t=1714126076;
+	bh=ROQPW28f+YqmHnZpNtgoEUCyWbPcwUXFXrPacMNkuDs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=mAH2oxQmZCWS96T4wKiV4DrP+x23sWH3VlGoX35OgPr6X375kvdU2eEdSkDxZcu8R
-	 FWfvlhpvfrV5a2nq91RfWPvWjr6t5e/OcbrstM/GBsFAQsqKotyYJTs7kOjU20cY0s
-	 jT0wnvcrujiibu8en7p3BfH8XqKeR054QvLHsMw97s2OUCQPV7EYk7uF6/fDJXd0AM
-	 LweHx2BUAXY0TYVF1AWXuDaKLNKcC8VQ7dvou/CYNeGCrMfkJUBSJcjOqXrGRUvq5V
-	 Y+6CO46RkxhhMW/YOR0lunMLYyIwUMvbSj6jJGKjTviJFyfWQ+5H/G5U88kO/Vd0R/
-	 ZFDdDRW5eNWwg==
-Date: Fri, 26 Apr 2024 12:04:44 +0200
+	b=tkWD9+yC1nQszByH93JUjZ7PJerqv34yWuUQbF2u8uvwyEiig+zAG+QOT5sdjn7Dn
+	 Tvln3lrfMZVYTNIX3BiFCFiBN/kFWY0Oqoe9zylnAY22YK9aYJGUPNpEGVPpASdFU6
+	 tk+DYUrmJoGt1opeoyCB1J01fwrCft0B7P6fj+ImxzcwH4lhtuGSDgY5cXBdFH9Q0n
+	 dT6+0wldLCFgJ2k+63mN4s+/u6ZDDjWot1stiAUmrhnIVVdJO3yPsPkQS7L8624/81
+	 QUHeIj5xgi1oKojsLL/XAyeqMiWwDlJSvSJr2CpwliD1LUuJEyWSuUPWGu+g0+uILg
+	 tITNwtkFB4vFQ==
+Date: Fri, 26 Apr 2024 12:07:55 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-	iommu@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-renesas-soc@vger.kernel.org,
-	Thanh Le <thanh.le.xv@renesas.com>
-Subject: Re: [PATCH] dt-bindings: iommu: renesas,ipmmu-vmsa: add r8a779h0
- support
-Message-ID: <Zit8PF5EBUmAjuaC@8bytes.org>
-References: <13643259be4e8a8e30632de622ad7c685dbb7c61.1713526852.git.geert+renesas@glider.be>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@lst.de>, Vineet Gupta <vgupta@kernel.org>,
+	Russell King <linux@armlinux.org.uk>,
+	Catalin Marinas <catalin.marinas@arm.com>,
+	Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
+	WANG Xuerui <kernel@xen0n.name>,
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Lorenzo Pieralisi <lpieralisi@kernel.org>,
+	Hanjun Guo <guohanjun@huawei.com>,
+	Sudeep Holla <sudeep.holla@arm.com>,
+	"K. Y. Srinivasan" <kys@microsoft.com>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	David Woodhouse <dwmw2@infradead.org>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Niklas Schnelle <schnelle@linux.ibm.com>,
+	Matthew Rosato <mjrosato@linux.ibm.com>,
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Frank Rowand <frowand.list@gmail.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org,
+	iommu@lists.linux.dev, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 0/7] iommu, dma-mapping: Simplify arch_setup_dma_ops()
+Message-ID: <Zit8-z7jfbzLoQKf@8bytes.org>
+References: <cover.1713523152.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -54,16 +72,10 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <13643259be4e8a8e30632de622ad7c685dbb7c61.1713526852.git.geert+renesas@glider.be>
+In-Reply-To: <cover.1713523152.git.robin.murphy@arm.com>
 
-On Fri, Apr 19, 2024 at 01:42:11PM +0200, Geert Uytterhoeven wrote:
-> From: Thanh Le <thanh.le.xv@renesas.com>
-> 
-> Document support for the I/O Memory Management Unit (IPMMU) on the
-> Renesas R-Car V4M (R8A779H0) SoC.
-> 
-> Signed-off-by: Thanh Le <thanh.le.xv@renesas.com>
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On Fri, Apr 19, 2024 at 05:54:39PM +0100, Robin Murphy wrote:
+> Since this ended up missing the boat for 6.9, here's a rebase and resend
+> with the additional tags from v3 collected.
 
 Applied, thanks.
-
