@@ -1,75 +1,80 @@
-Received: from mail.8bytes.org (mail.8bytes.org [85.214.250.239])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id B8F9D143C4D
-	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 10:57:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=85.214.250.239
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714129057; cv=none; b=saNDEsbYUP0XAcG8aQ7G8LfBLKj5nE9XGEnilBAiEMJQqFglFbBEJ7DyRPimMA9p7q8IGD2emgrSabY21UYC+Qsl/IEeRJVAkP6X66C0iSeoLNfvwwuhhYLrrDUslEA5SuIazS3aU1JQdCdw0rWAPjO2gFwtZ0XHicLsgTFEw+M=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714129057; c=relaxed/simple;
-	bh=O2ek7f04QphKDy19NBdVwaX6ovXwR9ovVL7LXVtxGWU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nIYBhDG+Epq5WWqPfjVLrYm6wQqaR2xfxdaMXYfBcFoHF+HfnorK0qpCnkPrZcJpYmUdA4GFTeHSWzJi7srllqZ7VRXLVg10dlITRhEwpi3Tt7FQgpR/g3WjJ8Hg/2o1N8CSoAWHlnoLpW/Ac5C/65Xm6O/JA1rCfxSpDs+meho=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org; spf=pass smtp.mailfrom=8bytes.org; dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b=k9kkdIC1; arc=none smtp.client-ip=85.214.250.239
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=8bytes.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=8bytes.org header.i=@8bytes.org header.b="k9kkdIC1"
-Received: from 8bytes.org (p4ffe0bdf.dip0.t-ipconnect.de [79.254.11.223])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.8bytes.org (Postfix) with ESMTPSA id 6B4891C7F00;
-	Fri, 26 Apr 2024 12:57:34 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=8bytes.org;
-	s=default; t=1714129054;
-	bh=O2ek7f04QphKDy19NBdVwaX6ovXwR9ovVL7LXVtxGWU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=k9kkdIC1gkQT2xbR+zaou//OGg1Ht/KjME2XrobsYOXU0DeZstJ+uTPwSyHsE1Twz
-	 Q1Kn6jE4hVxGSioIWQ92Qn51ML5286o9/kclndIscOPv8ud9g9sJaAgNLCS7NsjKbY
-	 Y/GXZ6eHk6n+OglxVMdKye7qMYXngZYqyVecFnfuZmAq8N7x4s/Fgn9XVGqHAc2pvB
-	 l29upYmPBTvardlAfaXie1k01wuYUpi09QZPmZfEIUB/GR/zKQaqOqZoNYEcq9DyHG
-	 FS4KKaIq8R7TpUq6VA6E5uyX6eAPERsMFU5QHhZP47BjZNIdTICjvEHhwfEAF3Uk5A
-	 s1LWp8gqlp+DQ==
-Date: Fri, 26 Apr 2024 12:57:33 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Vasant Hegde <vasant.hegde@amd.com>
-Cc: iommu@lists.linux.dev, suravee.suthikulpanit@amd.com,
-	wei.huang2@amd.com, jsnitsel@redhat.com, jgg@ziepe.ca
-Subject: Re: [PATCH v8 00/15] iommu/amd: SVA Support (Part 4) - SVA and IOPF
-Message-ID: <ZiuIneLj690wcrIU@8bytes.org>
-References: <20240418103400.6229-1-vasant.hegde@amd.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9B4313D500
+	for <iommu@lists.linux.dev>; Fri, 26 Apr 2024 12:56:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.79.88.28
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714136214; cv=none; b=QNYWqRM6UazvD/l3k/koT9KZGPcS2iJ9I0nPJoK17hDmlwIW2298qB5gEZreE3oP5auLpVVdIOSWgKSbFVSpjNVjEUHRt4Ntr34nr9qQXmCTiBPYVVYTOL++tMmsAj6UrNBbqfsj3Wh/UVDXJh+nq+2kmTDqZVcBxdUv8rjoa/Y=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714136214; c=relaxed/simple;
+	bh=Vm1MqXYIrKm3uWWE9OUrBXSWg2xXPd6nhFg9uS9/cpM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=aMLQr+cJeanIjXAhUzwBlookTXr0zJePH9xDtYd5RPvf3uWNm5mzWVcX0L2G4m6vt0e1hebQBs6ncSr6sIJ5e7Lm2fvzUEiuxbdkCiNURg31p6FMra9zugCdIohnMlDsomL/PXhFz+HhEGKi6oyRcMJNuhYI3/LhzmbJFBQqahE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net; spf=pass smtp.mailfrom=lwn.net; dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b=VIrp8gQ3; arc=none smtp.client-ip=45.79.88.28
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lwn.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lwn.net
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=lwn.net header.i=@lwn.net header.b="VIrp8gQ3"
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 014E647C39
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+	t=1714136206; bh=O0KvzxSAUIcHusHXbcj1H/WOMoqxs1lLJ3AgneKmmhU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=VIrp8gQ3zGKC3bogJXtlDT872C3ZWn5cBQvFDniF7CzaqGGCPVqRaj9fFiUpdB98O
+	 ntJfWrbAEHZ9ifvMr6x2IVVCJi9UA+ykHIan7cY5Sagsnkqg1IjalPZB01z6NJJ016
+	 ob4y8BxSpozTC0Hv7xR9Oh5Kph1nLIppJxmm8AQN75KmBTkn8KRAs90dqeRYZeqc0z
+	 vvMF/jklNQgDYofkb4nr6CoErvlGEGqJs+oH0F/l30FK4mdMa3hcigQ0VSR5vLsOgU
+	 QKpj68OJ9/xx3gtnbt1/Z+X36oynzU7Ai5/DK2pCDG3eyoKma7pQfg8IO6v/vrchbj
+	 8E3S7f9QGfYaQ==
+Received: from localhost (unknown [IPv6:2601:280:5e00:625::1fe])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	by ms.lwn.net (Postfix) with ESMTPSA id 014E647C39;
+	Fri, 26 Apr 2024 12:56:45 +0000 (UTC)
+From: Jonathan Corbet <corbet@lwn.net>
+To: Christoph Hellwig <hch@lst.de>, mhklinux@outlook.com
+Cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, hch@lst.de,
+ m.szyprowski@samsung.com, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, petr@tesarici.cz,
+ roberto.sassu@huaweicloud.com
+Subject: Re: [PATCH v2 1/1] Documentation/core-api: Add swiotlb documentation
+In-Reply-To: <20240426061852.GA5645@lst.de>
+References: <20240424150253.560999-1-mhklinux@outlook.com>
+ <20240426061852.GA5645@lst.de>
+Date: Fri, 26 Apr 2024 06:56:45 -0600
+Message-ID: <874jbop9iq.fsf@meer.lwn.net>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240418103400.6229-1-vasant.hegde@amd.com>
+Content-Type: text/plain
 
-On Thu, Apr 18, 2024 at 10:33:45AM +0000, Vasant Hegde wrote:
-> Jason Gunthorpe (1):
->   iommu: Add ops->domain_alloc_sva()
-> 
-> Suravee Suthikulpanit (3):
->   iommu/amd: Move PPR-related functions into ppr.c
->   iommu/amd: Define per-IOMMU iopf_queue
->   iommu/amd: Add support for page response
-> 
-> Vasant Hegde (9):
->   iommu/amd: Rename amd_iommu_v2_supported() as amd_iommu_pasid_supported()
->   iommu/amd: Introduce per device DTE update function
->   iommu/amd: Fix PPR interrupt processing logic
->   iommu/amd: Introduce iommu_dev_data.max_pasids
->   iommu/amd: Setup GCR3 table in advance if domain is SVA capable
->   iommu/amd: Enable PCI features based on attached domain capability
->   iommu/amd: Add support for enable/disable IOPF
->   iommu/amd: Initial SVA support for AMD IOMMU
->   iommu/amd: Add SVA domain support
-> 
-> Wei Huang (2):
->   iommu/amd: Add support for enabling/disabling IOMMU features
->   iommu/amd: Add IO page fault notifier handler
+Christoph Hellwig <hch@lst.de> writes:
 
-Applied, thanks.
+> On Wed, Apr 24, 2024 at 08:02:53AM -0700, mhkelley58@gmail.com wrote:
+>> From: Michael Kelley <mhklinux@outlook.com>
+>> 
+>> There's currently no documentation for the swiotlb. Add documentation
+>
+> s/the // ?  (note that this is used in quite a few places)
+>
+> Can you use up the full 80 characters for your text?  As-is it reads a
+> little odd due to the very short lines.
+>
+> The other thing that strikes me as odd is the placement in the core-api
+> directory together with other drivers-facing documentation.  Swiotlb
+> is internal to the dma-mapping subsystem and not really what is a core
+> API.  I don't really know where else it should be placed, though - nor
+> do I really understand the "modern" hierarchy in Documentation, but maybe
+> Jon has a good idea?
+
+I hadn't thought about it, but it seems that putting it with the rest of
+the DMA-API documentation would make sense.  That's core-api, at the
+moment at least...
+
+Thanks,
+
+jon
