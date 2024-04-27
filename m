@@ -1,85 +1,111 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D7B33D984;
-	Sat, 27 Apr 2024 05:05:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31D7241760
+	for <iommu@lists.linux.dev>; Sat, 27 Apr 2024 07:17:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714194346; cv=none; b=MpK0DMQmiwAdXPSKaqcb+QGO/vB2C54MkteY1dygrFEQoCCufCJje8TlT7Ckp5Q9vigKqHA6y9lkykXWHnp5Ebkswu7vXJFAVB+npvSamajJjXCGTJbyyG7pn/1AyX3+1C9N3PwFj9ydYois6z+jUzwIzJNmCc2Wq0dUTxMgf80=
+	t=1714202257; cv=none; b=qwCRNCUFx0vC+OlmvGzERj+K+62yE5tdYPStbaKWWdS9gtCrAj065E3ep1vd2zt36VwWK8HktbDxCPqwNd3nwEZYE1TPaTme+suhcdAWzdb21n37NEHURdBWbbZRVanCYC7mOLRCFmBLsW57n88jdXhFRkWlIx0NCIzIV1GS1n8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714194346; c=relaxed/simple;
-	bh=aV03/J5L6wRTVpqXzZpjogDL29eKpBpFKjBKzlh6DQQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qpLktUfKBFNTSPXXVhxBTW/9UFlZUkj40HfpTEJ7ac9XsnM3QXkB3K9f+yTfF3Q/tsJykl/P2q2Ih92XdxSVp6tBIxNSfQssdZHZq70+t1CmM+DosV8WfSzeJkDwC5virM91JtdyXvS0/SBgCk2rw7BIDlANx8XT36YPmdmC2/U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=t1Fx/saU; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
+	s=arc-20240116; t=1714202257; c=relaxed/simple;
+	bh=KsZOuxYIuzP2B3Mk5ljXHJfuM1664KIpR3QMseySPms=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=aVO21Opim6vnE1gn16Yt2ef73dtCUJ5CylG44Npe/kVyCoqdhKriuouLos0Br+cWmnLc5kncYUw3cB1JGbHqXpGfzuAaC3JcNGsI1z2pAlOTjK4B/YIHZhg7JzfPyhdPnTfIN48Yvm4ho+d88W1JiTeKh0rSetVOAbs01ksZAL0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lR3MOz47; arc=none smtp.client-ip=209.85.215.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="t1Fx/saU"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=yj0ibZWO6upsf0Ur4Wa4n3wfBYe9wyP854L58KpwsgQ=; b=t1Fx/saUGWRhzioT0ZIHnAbE+T
-	RpbewQHZ8zke+qwBeFJwU4FBsp2FPOpaGAVu6BstX2gvaLMAz1FoufoEeHvPJLzm3Hr5C96ibKVeF
-	HXPkdDAECCeRZlx9GHbIGJ2MukGGCjSKvGwWH8NG/q6xB9j92Eo/mH/UkH+P8hOlfB48e8eFoJkGH
-	r48pSy4DFQMImmW7mVicxnq4InVDISnuJS3Qa/w9vAh/P2aIhtoJE0VAeIxzSRvEfRil1cb57B6Jr
-	gTKDeOY584LGFUz5egNYjPWreUrN7YiYm1SKN5JshqdlqRe4v/Cg00I5d5aebaPjwAPxBQ7ZrGCYo
-	WNunu5PA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1s0aFk-0000000EqQf-2NHi;
-	Sat, 27 Apr 2024 05:05:36 +0000
-Date: Fri, 26 Apr 2024 22:05:36 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>,
-	"Liu, Yi L" <yi.l.liu@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
-	"Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-	=?iso-8859-1?Q?C=E9dric?= Le Goater <clg@redhat.com>
-Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
-Message-ID: <ZiyHoFGpHppLRW2e@infradead.org>
-References: <BN9PR11MB5276819C9596480DB4C172228C0D2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240419103550.71b6a616.alex.williamson@redhat.com>
- <BN9PR11MB52766862E17DF94F848575248C112@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240423120139.GD194812@nvidia.com>
- <BN9PR11MB5276B3F627368E869ED828558C112@BN9PR11MB5276.namprd11.prod.outlook.com>
- <20240424001221.GF941030@nvidia.com>
- <20240424122437.24113510.alex.williamson@redhat.com>
- <20240424183626.GT941030@nvidia.com>
- <20240424141349.376bdbf9.alex.williamson@redhat.com>
- <20240426141117.GY941030@nvidia.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lR3MOz47"
+Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-53fbf2c42bfso2021909a12.3
+        for <iommu@lists.linux.dev>; Sat, 27 Apr 2024 00:17:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1714202255; x=1714807055; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=X8kCB3I1nqc74i13dcnZcbSCBOzeY8bK9si08l2dEgE=;
+        b=lR3MOz47NIiwrqpSDCIne/k2mN8FbDUhGOrb3ftprqg6n1ZvuYh+tmCuZVHSeFnJAf
+         KNxh64PSXxgV7YNtbFd4comSMWxl1yrQCyTOujy+dwD3yAtyq/E+HwAMy0LxpvR1V4+T
+         DY4Wziq6QuNfe6S5s6XOLbu4lM0kJcG/UdXuv4f8La/qD4rcfdBl5uYqBBOpSPO2Hma/
+         gucpLwULN7gpRbHGbDAWa7Yl9j/cgJj1jul7dP+9MgZ5Qxsh125NeK9aZ9uQ2aEJrQQf
+         cGvx9AORqOHmiEQMb/vw1GgkzaVfkljQhlvBO+spXn6JuX1ABXSUeGmJWAYamocdoq9m
+         6iQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714202255; x=1714807055;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=X8kCB3I1nqc74i13dcnZcbSCBOzeY8bK9si08l2dEgE=;
+        b=kd2OjLuAf0MxTBJLtmcUAqmArfTCbVrYBr7st/vje0UP095nKRC+/cC3OxHwfBguiv
+         CjZKdkM+r+mW8ciCoiVOUfRMU6PXVcjY9graiyV/Gz4SKmTWnrcebjteSPYp9h4oKXXU
+         Wb8Sx+Y6a6XTq+UsJxYDSqt4bbtDBLBqAXTFxp2QwCDmtFQxIzGo0GsJfu67mq1nOY2A
+         RmVzmoteQwG5vk6dYQIYndwkk+LdvfUH/b8IB3d4Quvt1VjPkXFgZgzlkDdZSo+YYWZu
+         TxXFkpzzj6on71AVHUS60lYGpiCVGRxrtHIg21ff/6pm6pDE+WL0Xy4a2uaKbW+dWFxo
+         mTzg==
+X-Forwarded-Encrypted: i=1; AJvYcCWVWuCGCQEWhqwZzbzAJllgdp/da0xPxmp0YS/oQK8WGX1lwGivHLNRGWO28lbmk1IgwqPJAApsYE43HkkuJxo9m9RF420=
+X-Gm-Message-State: AOJu0YyedDyprq77u2AMFwe3eUAiTVotzj+DSrAVmMU1r6ojdamtx+s5
+	7/lmr4FRd7BKMthDXRHTM9HwrzfPooNo539mITrg3no7olmxL9+B
+X-Google-Smtp-Source: AGHT+IHWfWgdcQqxoTVmFJIu2SLzNm3A0qQRERzEXLa7neH1QrNrTJ0T8DF6bh4XJ6eY6mQO553c/Q==
+X-Received: by 2002:a17:90b:1d01:b0:2a2:bd4b:764f with SMTP id on1-20020a17090b1d0100b002a2bd4b764fmr4481541pjb.3.1714202255374;
+        Sat, 27 Apr 2024 00:17:35 -0700 (PDT)
+Received: from toyko-2.5 ([45.32.55.39])
+        by smtp.gmail.com with ESMTPSA id e14-20020a17090ab38e00b002a03456ccabsm17233086pjr.30.2024.04.27.00.16.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 27 Apr 2024 00:17:34 -0700 (PDT)
+From: Jianfeng Liu <liujianfeng1994@gmail.com>
+To: linkmauve@linkmauve.fr
+Cc: andy.yan@rock-chips.com,
+	conor+dt@kernel.org,
+	cristian.ciocaltea@collabora.com,
+	devicetree@vger.kernel.org,
+	dsimic@manjaro.org,
+	ezequiel@vanguardiasur.com.ar,
+	frattaroli.nicolas@gmail.com,
+	heiko@sntech.de,
+	iommu@lists.linux.dev,
+	joro@8bytes.org,
+	krzysztof.kozlowski+dt@linaro.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-media@vger.kernel.org,
+	linux-rockchip@lists.infradead.org,
+	macromorgan@hotmail.com,
+	mchehab@kernel.org,
+	p.zabel@pengutronix.de,
+	robh@kernel.org,
+	robin.murphy@arm.com,
+	sebastian.reichel@collabora.com,
+	shreeya.patel@collabora.com,
+	will@kernel.org,
+	sigmaris@gmail.com,
+	nicolas@ndufresne.ca
+Subject: Re: [PATCH v4 0/2] Enable JPEG encoding on rk3588
+Date: Sat, 27 Apr 2024 15:16:38 +0800
+Message-Id: <20240427071638.79915-1-liujianfeng1994@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20240418141509.2485053-1-linkmauve@linkmauve.fr>
+References: <20240418141509.2485053-1-linkmauve@linkmauve.fr>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240426141117.GY941030@nvidia.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Fri, Apr 26, 2024 at 11:11:17AM -0300, Jason Gunthorpe wrote:
-> On Wed, Apr 24, 2024 at 02:13:49PM -0600, Alex Williamson wrote:
-> 
-> > This is kind of an absurd example to portray as a ubiquitous problem.
-> > Typically the config space layout is a reflection of hardware whether
-> > the device supports migration or not.
-> 
-> Er, all our HW has FW constructed config space. It changes with FW
-> upgrades. We change it during the life of the product. This has to be
-> considered..
+Hi Emmanuel,
 
-FYI, the same is true for just about any storage device I know.  Maybe
-not all of the config space, but definitely parts of it.
+On Thu, 18 Apr 2024 16:15:04 +0200, Emmanuel Gil Peyrot wrote:
+>- Only expose a single VEPU121, since the driver doesn’t yet support
+>  exposing them all as a single video node to userspace.
+I'm also doing work with the hantro node on rk3588 which has both vdpu
+and vepu. Discussions can be found here[1]. If I enable the jpeg encoder
+at feb50000, would it cause any side effects if other jpeg encoders in
+your patch are enabled? And what's the disadvantage of enabling multi
+jpeg endoers in devicetree?
 
+[1] https://patchwork.kernel.org/project/linux-rockchip/patch/20240418111002.83015-3-liujianfeng1994@gmail.com/
+
+Best regards,
+Jianfeng
