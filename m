@@ -1,143 +1,151 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44574611B
-	for <iommu@lists.linux.dev>; Sat, 27 Apr 2024 22:34:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16C4DEC3
+	for <iommu@lists.linux.dev>; Sun, 28 Apr 2024 02:08:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714257242; cv=none; b=A1kKXyd6HpBmgchPKxgCP0h05osWiYWoI4GLzg9eJwF6UhIECvzuopfGYc1b4oHAdAyGhND/XDZqUIgfyCuOrnc6mv/vMUnIM6X6PDfTOHT3UHXzPN7nFKe4AyikMardSRCslLFdXk2rakgRQZQDC+jtNEduzHkD7Q3RHipDMOM=
+	t=1714270122; cv=none; b=UDYI54O64wwBiR+eOgjamd6L/VXJI6Gg99oK9jnGl+6+mpPkM/H5HwkJ+zhl9FVpGmhX0MaAuRE1q9jEUqSVuIiBiimVr6V9LE1W+F2HzIMksrtaJpe2lqopNhghb+ykOvrr6FZMUdw3odBMlJHM0vg4bGDKtLNt25YbNYHhX5U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714257242; c=relaxed/simple;
-	bh=faGX1VOEOHks2i/UTFRkr48rAy4HZ/lma5mgX01V0xQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AkBR5LksjsBzeN46XVD0RWxCGc8kmi4a+NDYlYJoa4DVGVAMuICJjwk+qoPPTyabq9No7p4wTXreE34jd/oiDwKEQbQW3gOBimPQSCCX/TJbahJHxJ13HNVCLLtbCa6jSISwWVzEOfJPKkti5z22Mu8lI/19Zeiw7Ml2OC2S+zU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=XC3cMG5z; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="XC3cMG5z"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-41a428374b9so31335e9.1
-        for <iommu@lists.linux.dev>; Sat, 27 Apr 2024 15:34:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1714257239; x=1714862039; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=V/i8u7CaJgG+Eq6v0eYBH4Z15Kbb3B5gzHjqYZDCiHg=;
-        b=XC3cMG5za9k4NkLSysp6cMq7m98fW4fdTGFJc+V+tBb/fGWR8QQwAI6CZNFLwsWmnw
-         tMP+Hvk8stqLJPDBqJoDlDHWoimNBF8QaUBo9DvY3xmEhy+kWhEYPc7Lyw3MKN4rlksJ
-         zlYQa8gJci22FMR3E9lYgSmw7a+d6R/44zfSpieQtXkplF1aoKwlOj2uQh9CYOtPYffy
-         2UEanRGbMHFvpu3m+EJ1t60P+DKM3/vOv2AI1gGHrFCdid4IaBRrmbYXY8o8mVDnhhTC
-         QqjWtyr8pPogN4CR0kySqiIGJojLENo6MAllcpzfP3ZEPAMyTgG0x876vR1MkBHVleOn
-         Vv+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714257239; x=1714862039;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=V/i8u7CaJgG+Eq6v0eYBH4Z15Kbb3B5gzHjqYZDCiHg=;
-        b=XZgA7g29iPPuyTPRzhh5HEFBoU41P6vhIIKWxqof6aGWSUYRhn6eNYpy01B9JjyMSe
-         ECQ5adi7g5UeFDa6b2W8UlSQjvWepZfRUmqfkNC6aX1BcbJ/JldfzRypzw6C3AkRqUKb
-         wkIHWDJX8kfPjaC0YXjuMNakELmDFEIbVQ92El/dMFbN0egPKGi4wnVwIBMZlccg8Nkk
-         A8QoYRUEOetUU6G0adhgDiZKfB+O1anT+4Xz5eeYkEdtuJbpR0In7IBfHzrzk35Rv2Pt
-         q9PxPIIP1ZnF9IbWnIkyo6ATn2F2lsNYPIEy9f1AVFFyGbjzRY81K8BW3wjVDApv2AkB
-         ANpw==
-X-Gm-Message-State: AOJu0YwCZXVjKlFSjN00lEf87Thj61rAn6Lh8JrXxdZWhQueCOXp4+VU
-	Ld1bOwXiZtk1Eb1Yp3qPhyH2qn2jGIaOzS/PlO4Kr3nqnk61z18XTNKjqhpkmP91AIE9goKZd/W
-	ogA==
-X-Google-Smtp-Source: AGHT+IEipR/v+Af76x/mX+4qD42v1PKzqBQ4TbxCJAuxAMJx1QDtSRh/JXJyyC1j2l74SUgrGFb+8w==
-X-Received: by 2002:a05:600c:470a:b0:41b:ff4e:c8a4 with SMTP id v10-20020a05600c470a00b0041bff4ec8a4mr46926wmo.0.1714257239313;
-        Sat, 27 Apr 2024 15:33:59 -0700 (PDT)
-Received: from google.com (180.232.140.34.bc.googleusercontent.com. [34.140.232.180])
-        by smtp.gmail.com with ESMTPSA id d10-20020a5d4f8a000000b0034cc78572f0sm1193183wru.102.2024.04.27.15.33.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Apr 2024 15:33:58 -0700 (PDT)
-Date: Sat, 27 Apr 2024 22:33:55 +0000
-From: Mostafa Saleh <smostafa@google.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
-	Eric Auger <eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>,
-	Moritz Fischer <moritzf@google.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v7 9/9] iommu/arm-smmu-v3: Add unit tests for
- arm_smmu_write_entry
-Message-ID: <Zi19U2MufT9W3Jxe@google.com>
-References: <0-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
- <9-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
- <ZiLhJKBLdr_YqL_y@google.com>
- <20240422142429.GE49823@nvidia.com>
+	s=arc-20240116; t=1714270122; c=relaxed/simple;
+	bh=sY9d7iZCWewJZB0o112OpLu+XuXr4aUcGYostfUNVDU=;
+	h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+	 In-Reply-To:Content-Type; b=sYl04kQqq7fzMNe4IWknOI3ZQp0Re6LTvlHxQx7+iRYHOTr72HTlwLxuAKchNBTQRXn0v+2sy/HifiIhmaZAmRw5BAqtFaYkdcDlXmEIP66vhiKHf757v84Xez6Afq5oCbxckpYoZQ3pAo1zNVAkBZHZf6mJK1p83YpBacxdzOs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com; spf=pass smtp.mailfrom=huaweicloud.com; arc=none smtp.client-ip=45.249.212.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huaweicloud.com
+Received: from mail.maildlp.com (unknown [172.19.163.235])
+	by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4VRqcj4b9Cz4f3m7G
+	for <iommu@lists.linux.dev>; Sun, 28 Apr 2024 10:08:21 +0800 (CST)
+Received: from mail02.huawei.com (unknown [10.116.40.112])
+	by mail.maildlp.com (Postfix) with ESMTP id 048511A0572
+	for <iommu@lists.linux.dev>; Sun, 28 Apr 2024 10:08:31 +0800 (CST)
+Received: from [10.174.178.55] (unknown [10.174.178.55])
+	by APP1 (Coremail) with SMTP id cCh0CgAn+RGcry1mQyydLA--.54849S3;
+	Sun, 28 Apr 2024 10:08:30 +0800 (CST)
+Subject: Re: [PATCH V3 0/2] iommu/arm-smmu-v3: Add support for ECMDQ register
+ mode
+To: Tanmay Jagdale <tanmay@marvell.com>, will@kernel.org,
+ robin.murphy@arm.com, joro@8bytes.org, nicolinc@nvidia.com,
+ mshavit@google.com, baolu.lu@linux.intel.com, thunder.leizhen@huawei.com,
+ set_pte_at@outlook.com, smostafa@google.com
+Cc: sgoutham@marvell.com, gcherian@marvell.com, jcm@jonmasters.org,
+ linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+References: <20240425144152.52352-1-tanmay@marvell.com>
+From: "Leizhen (ThunderTown)" <thunder.leizhen@huaweicloud.com>
+Message-ID: <b1706177-051d-8a82-97a8-3b482be353af@huaweicloud.com>
+Date: Sun, 28 Apr 2024 10:08:28 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+In-Reply-To: <20240425144152.52352-1-tanmay@marvell.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20240422142429.GE49823@nvidia.com>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID:cCh0CgAn+RGcry1mQyydLA--.54849S3
+X-Coremail-Antispam: 1UD129KBjvJXoWxCF4UAF18trW7AF4DAr1DKFg_yoW5GrWfpw
+	4fWrZIkr45JFn7AwnxX34kZr98Xr48uFy7tw45W39Yqw1qyry0gr1xKa4rW34kCryaqFnx
+	AwnFqayDCr43AFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDU0xBIdaVrnRJUUUvIb4IE77IF4wAFF20E14v26ryj6rWUM7CY07I20VC2zVCF04k2
+	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
+	xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
+	0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
+	6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
+	Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7Mxk0xIA0c2IE
+	e2xFo4CEbIxvr21l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
+	Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a
+	6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
+	kF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE
+	14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf
+	9x07UZ18PUUUUU=
+X-CM-SenderInfo: hwkx0vthuozvpl2kv046kxt4xhlfz01xgou0bp/
 
-On Mon, Apr 22, 2024 at 11:24:29AM -0300, Jason Gunthorpe wrote:
-> On Fri, Apr 19, 2024 at 09:24:52PM +0000, Mostafa Saleh wrote:
-> > > +static void arm_smmu_test_make_sva_release_cd(struct arm_smmu_cd *cd,
-> > > +					      unsigned int asid)
-> > > +{
-> > > +	struct arm_smmu_master master = {
-> > > +		.smmu = &smmu,
-> > > +	};
-> > > +
-> > > +	arm_smmu_make_sva_cd(cd, &master, NULL, asid);
-> > > +}
-> > > +
-> > 
-> > The test doesn’t build with SVA disabled, it fails with:
-> > aarch64-linux-gnu-ld: Unexpected GOT/PLT entries detected!
-> > aarch64-linux-gnu-ld: Unexpected run-time procedure linkages detected!
-> > aarch64-linux-gnu-ld: drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.o: in function `arm_smmu_test_make_sva_release_cd':
-> > .../linux/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c:409:(.text+0x17c): undefined reference to `arm_smmu_make_sva_cd'
-> > aarch64-linux-gnu-ld: drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.o: in function `arm_smmu_test_make_sva_cd':
-> > .../linux/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-test.c:399:(.text+0x230): undefined reference to `arm_smmu_make_sva_cd'
-> > 
-> > I belive this check should be guarded under SVA.
+
+
+On 2024/4/25 22:41, Tanmay Jagdale wrote:
+> Resending the patches by Zhen Lei <thunder.leizhen@huawei.com> that add
+> support for SMMU ECMDQ feature.
 > 
-> Ugh yes, 0-day just hit this too.
+> Tested this feature on a Marvell SoC by implementing a smmu-test driver.
+> This test driver spawns a thread per CPU and each thread keeps sending
+> map, table-walk and unmap requests for a fixed duration.
 > 
-> I'm just going to do this:
+> Using this test driver, we compared ECMDQ vs SMMU with software batching
+> support and saw ~5% improvement with ECMDQ. Performance numbers are
+
+This data is similar to the performance simulated by our EMU.
+
+> mentioned below:
 > 
->  config ARM_SMMU_V3_KUNIT_TEST
->         bool "KUnit tests for arm-smmu-v3 driver"  if !KUNIT_ALL_TESTS
->         depends on KUNIT
-> +       depends on ARM_SMMU_V3_SVA
->         default KUNIT_ALL_TESTS
->         help
->           Enable this option to unit-test arm-smmu-v3 driver functions.
+>                    Total Requests  Average Requests  Difference
+>                                       Per CPU         wrt ECMDQ
+> -----------------------------------------------------------------
+> ECMDQ                 239286381       2991079
+> CMDQ Batch Size 1     228232187       2852902         -4.62%
+> CMDQ Batch Size 32    233465784       2918322         -2.43%
+> CMDQ Batch Size 64    231679588       2895994         -3.18%
+> CMDQ Batch Size 128   233189030       2914862         -2.55%
+> CMDQ Batch Size 256   230965773       2887072         -3.48%
 > 
 > 
-> Instead of adding #ifdefs.  No reason not to test the whole driver?
+> v2 --> v3:
+> 1. Rebased on linux 6.9-rc5
+> 
+> v1 --> v2:
+
+Thanks.
+
+> 1. Drop patch "iommu/arm-smmu-v3: Add arm_smmu_ecmdq_issue_cmdlist() for
+> non-shared ECMDQ" in v1
+> 2. Drop patch "iommu/arm-smmu-v3: Add support for less than one ECMDQ
+> per core" in v1
+> 3. Replace rwlock with IPI to support lockless protection against the
+> write operation to bit
+>    'ERRACK' during error handling and the read operation to bit 'ERRACK'
+> during command insertion. 
+> 4. Standardize variable names.
+> -	struct arm_smmu_ecmdq *__percpu	*ecmdq;
+> +	struct arm_smmu_ecmdq *__percpu	*ecmdqs;
+> 
+> 5. Add member 'iobase' to struct arm_smmu_device to record the start
+> physical
+>    address of the SMMU, to replace translation operation
+> (vmalloc_to_pfn(smmu->base) << PAGE_SHIFT)
+> +	phys_addr_t			iobase;
+> -	smmu_dma_base = (vmalloc_to_pfn(smmu->base) << PAGE_SHIFT);
+> 
+> 6. Cancel below union. Whether ECMDQ is enabled is determined only based
+> on 'ecmdq_enabled'.
+> -	union {
+> -		u32			nr_ecmdq;
+> -		u32			ecmdq_enabled;
+> -	};
+> +	u32				nr_ecmdq;
+> +	bool				ecmdq_enabled;
+> 
+> 7. Eliminate some sparse check warnings. For example.
+> -	struct arm_smmu_ecmdq *ecmdq;
+> +	struct arm_smmu_ecmdq __percpu *ecmdq;
+> 
+> 
+> Zhen Lei (2):
+>   iommu/arm-smmu-v3: Add support for ECMDQ register mode
+>   iommu/arm-smmu-v3: Ensure that a set of associated commands are
+>     inserted in the same ECMDQ
+> 
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 261 +++++++++++++++++++-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  33 +++
+>  2 files changed, 286 insertions(+), 8 deletions(-)
 > 
 
-Sounds good, I guess that option will be only used for development.
+-- 
+Regards,
+  Zhen Lei
 
-Thanks,
-Mostafa
-
-> > > @@ -980,7 +968,7 @@ void arm_smmu_tlb_inv_asid(struct arm_smmu_device *smmu, u16 asid)
-> > >   * would be nice if this was complete according to the spec, but minimally it
-> > >   * has to capture the bits this driver uses.
-> > >   */
-> > > -static void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
-> > > +void arm_smmu_get_ste_used(const __le64 *ent, __le64 *used_bits)
-> > 
-> > IMO we should not export all these low level functions unconditionally.
-> > KUNIT already defines “VISIBLE_IF_KUNIT” which sets symbols to be static
-> > if CONFIG_KUNIT is not enabled. Or maybe even guard it for this test
-> > like what btrfs does with “EXPORT_FOR_TESTS”
-> 
-> Sure, that doesn't look like too much trouble long term.
-> 
-> Thanks,
-> Jason
