@@ -1,152 +1,80 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7105A6A33F
-	for <iommu@lists.linux.dev>; Sun, 28 Apr 2024 12:13:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 564E873163;
+	Sun, 28 Apr 2024 17:01:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.11.138.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714306383; cv=none; b=rp/g6qbFDEYE8LqK8ljdgGZiExs41m+c2rjHGA49CKt00CfGFnwQJ6f2reN+bCI3Ued+9nOqK0NX79/U6/Kd7dPHA8Y93T4+8f8BTqw38JwvOh5D1qFHOUQLwawa37h4I5xFATCr/Dd4eAHX9LAik/zUue02M4eM3k4p9uP+F54=
+	t=1714323718; cv=none; b=nWKhRIiyVG5MFC0doSmG+bRHyO1wB85N4H88Xh9MRNVB12HUqxEe5A6idJ9r0pftRJBH15WTwQhDTrOSJWZXU/81EsGXiK2mTCrj9SJVXNFf2NkA0t7KJxyu2OyevR1VN5ZgrPVV40JPf1axppVr1wu2iv/xx/T98ukIMPA+Wu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714306383; c=relaxed/simple;
-	bh=W/UgtUyxaHLsPcJ+ga9AeASOOdq1iI94EO3mRhaSb80=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=OvPoUlU+ETh/7Ko13q+WbmwdAFEZHzbzPJyWFYTupq9DLhJnanCyhSK/G4RkyAYX4VaJV7nN8WJT9gNu+vAMlsqC4J8LKwlSSBpTEeXCBz7Rdf7+px2f/UMPktzAYLnh5Wk6oriS+P4PAhwTx/z6xlxdcvnQzdCYAmLPvQupebY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Cq9fThlO; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Cq9fThlO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714306381; x=1745842381;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=W/UgtUyxaHLsPcJ+ga9AeASOOdq1iI94EO3mRhaSb80=;
-  b=Cq9fThlO+iE3nE4L+DwqKWw/Gz9nZaWS1V1p34Day/NaWUg36I4DgUgE
-   F1JjCygkuI30a/GU1yUxLH8npoKwGQ5bqG1/5k3f3MREyCQi/cJT1hbVR
-   Ayr/KLxBZxu/+OqxvzCOPVL4oGQj+TQcu34+MrSKeA8mDICrld6x/dSHk
-   UxeweEM7uy1ef3l0V1iYBoLF0/U74ZIEuUCor2+2NndyGJ+1m2clyOTYu
-   5pQ9kOmUYkdQ9POiY21n8xxO5u62CWV1CoIt9xo2Aw9tTyCvFEaUq01YQ
-   mZV9yUUyCZiiW0+aYqlRpcEghXmlK9K+fifBIwdyYmaN6iaVmyehwgTdE
-   g==;
-X-CSE-ConnectionGUID: UB6u4bNaTSKXFyP062bn/w==
-X-CSE-MsgGUID: 4woFu8ktTVyzDMyuZwoc4Q==
-X-IronPort-AV: E=McAfee;i="6600,9927,11057"; a="35373130"
-X-IronPort-AV: E=Sophos;i="6.07,237,1708416000"; 
-   d="scan'208";a="35373130"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2024 05:13:01 -0700
-X-CSE-ConnectionGUID: CMutR6kmRP2Pa6mU08/a7w==
-X-CSE-MsgGUID: EXspfr5dRjuBaLJJUBbVuA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,237,1708416000"; 
-   d="scan'208";a="25872323"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.125.244.72]) ([10.125.244.72])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Apr 2024 05:12:58 -0700
-Message-ID: <850146ff-ce6f-44b3-9326-d44d29550b34@linux.intel.com>
-Date: Sun, 28 Apr 2024 20:12:56 +0800
+	s=arc-20240116; t=1714323718; c=relaxed/simple;
+	bh=Po1NSWnLvUFuIzM7E7i739862Xt2hBqwStVAwBSv2So=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=NL/GiMHEVmeKuymKRvu1ssqQX099v/8rhDJmxFBsTjYeuBQtQ0R5Ud4oOMN2ErtkinqHfSDvNz1WtDbrfNZrLOWwo32KdLRhKAEzxAKiUBBJ8aV0Vk2nyLV0iQiOP82BWE9Y45Wg/9zrSq6YjB90ztk1AN4niHw1as5CBUk3BYc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de; spf=pass smtp.mailfrom=sntech.de; arc=none smtp.client-ip=185.11.138.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sntech.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sntech.de
+Received: from i53875b01.versanet.de ([83.135.91.1] helo=diego.localnet)
+	by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <heiko@sntech.de>)
+	id 1s17uF-0006wg-Pn; Sun, 28 Apr 2024 19:01:39 +0200
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: linkmauve@linkmauve.fr, Jianfeng Liu <liujianfeng1994@gmail.com>
+Cc: andy.yan@rock-chips.com, conor+dt@kernel.org,
+ cristian.ciocaltea@collabora.com, devicetree@vger.kernel.org,
+ dsimic@manjaro.org, ezequiel@vanguardiasur.com.ar,
+ frattaroli.nicolas@gmail.com, iommu@lists.linux.dev, joro@8bytes.org,
+ krzysztof.kozlowski+dt@linaro.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-rockchip@lists.infradead.org, macromorgan@hotmail.com,
+ mchehab@kernel.org, p.zabel@pengutronix.de, robh@kernel.org,
+ robin.murphy@arm.com, sebastian.reichel@collabora.com,
+ shreeya.patel@collabora.com, will@kernel.org, sigmaris@gmail.com,
+ nicolas@ndufresne.ca
+Subject: Re: [PATCH v4 0/2] Enable JPEG encoding on rk3588
+Date: Sun, 28 Apr 2024 19:01:38 +0200
+Message-ID: <3784322.QJadu78ljV@diego>
+In-Reply-To: <20240427071638.79915-1-liujianfeng1994@gmail.com>
+References:
+ <20240418141509.2485053-1-linkmauve@linkmauve.fr>
+ <20240427071638.79915-1-liujianfeng1994@gmail.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, "iommu@lists.linux.dev"
- <iommu@lists.linux.dev>,
- "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Decouple igfx_off from graphic identity
- mapping
-To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, "Wang, Zhenyu Z" <zhenyu.z.wang@intel.com>
-References: <20240428032020.214616-1-baolu.lu@linux.intel.com>
- <BN9PR11MB5276AF4C9A57C3B8D3A25E8E8C142@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB5276AF4C9A57C3B8D3A25E8E8C142@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="UTF-8"
 
-On 2024/4/28 14:45, Tian, Kevin wrote:
->> From: Lu Baolu<baolu.lu@linux.intel.com>
->> Sent: Sunday, April 28, 2024 11:20 AM
->>
->> A kernel command called igfx_off was introduced in commit <ba39592764ed>
->> ("Intel IOMMU: Intel IOMMU driver"). This command allows the user to
->> disable the IOMMU dedicated to SOC-integrated graphic devices.
->>
->> Commit <9452618e7462> ("iommu/intel: disable DMAR for g4x integrated
->> gfx")
->> used this mechanism to disable the graphic-dedicated IOMMU for some
->> problematic devices. Later, more problematic graphic devices were added
->> to the list by commit <1f76249cc3beb> ("iommu/vt-d: Declare Broadwell igfx
->> dmar support snafu").
->>
->> On the other hand, commit <19943b0e30b05> ("intel-iommu: Unify
->> hardware
->> and software passthrough support") uses the identity domain for graphic
->> devices if CONFIG_DMAR_BROKEN_GFX_WA is selected.
->>
->> +       if (iommu_pass_through)
->> +               iommu_identity_mapping = 1;
->> +#ifdef CONFIG_DMAR_BROKEN_GFX_WA
->> +       else
->> +               iommu_identity_mapping = 2;
->> +#endif
->> ...
->>
->> static int iommu_should_identity_map(struct pci_dev *pdev, int startup)
->> {
->> +        if (iommu_identity_mapping == 2)
->> +                return IS_GFX_DEVICE(pdev);
->> ...
->>
->> In the following driver evolution, CONFIG_DMAR_BROKEN_GFX_WA and
->> quirk_iommu_igfx() are mixed together, causing confusion in the driver's
->> device_def_domain_type callback. On one hand, dmar_map_gfx is used to
->> turn
->> off the graphic-dedicated IOMMU as a workaround for some buggy
->> hardware;
->> on the other hand, for those graphic devices, IDENTITY mapping is required
->> for the IOMMU core.
->>
->> Commit <4b8d18c0c986> "iommu/vt-d: Remove
->> INTEL_IOMMU_BROKEN_GFX_WA" has
->> removed the CONFIG_DMAR_BROKEN_GFX_WA option, so the
->> IDENTITY_DOMAIN
->> requirement for graphic devices is no longer needed. Therefore, this
->> requirement can be removed from device_def_domain_type() and igfx_off
->> can
->> be made independent.
->>
->> Fixes: 4b8d18c0c986 ("iommu/vt-d: Remove
->> INTEL_IOMMU_BROKEN_GFX_WA")
->> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel/iommu.c | 19 ++++++-------------
->>   1 file changed, 6 insertions(+), 13 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index fbbf8fda22f3..57a986524502 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -217,12 +217,11 @@ int intel_iommu_sm =
->> IS_ENABLED(CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON);
->>   int intel_iommu_enabled = 0;
->>   EXPORT_SYMBOL_GPL(intel_iommu_enabled);
->>
->> -static int dmar_map_gfx = 1;
->>   static int intel_iommu_superpage = 1;
->>   static int iommu_identity_mapping;
->>   static int iommu_skip_te_disable;
->> +static int disable_igfx_dedicated_iommu;
->>
-> what about 'no_igfx_iommu"? dedicated is implied for igfx
-> so a shorter name might be slightly better.
+Hi Jianfeng,
 
-I like disable_igfx_iommu more. :-)
+Am Samstag, 27. April 2024, 09:16:38 CEST schrieb Jianfeng Liu:
+> Hi Emmanuel,
+>=20
+> On Thu, 18 Apr 2024 16:15:04 +0200, Emmanuel Gil Peyrot wrote:
+> >- Only expose a single VEPU121, since the driver doesn=E2=80=99t yet sup=
+port
+> >  exposing them all as a single video node to userspace.
+> I'm also doing work with the hantro node on rk3588 which has both vdpu
+> and vepu. Discussions can be found here[1]. If I enable the jpeg encoder
+> at feb50000, would it cause any side effects if other jpeg encoders in
+> your patch are enabled? And what's the disadvantage of enabling multi
+> jpeg endoers in devicetree?
 
-Best regards,
-baolu
+the basic problem is that exposing multiple jpeg encoders would require
+userspace to do the scheduling. Which is bad.
+I.e. all userspace programms would need to know the existence of
+all jpeg encoders and then somehow negotiate how to use all of them
+most efficiently.
+
+Think multiple different programs that would need to negotiate to
+spread across all of them in the best way.
+
+Doing this in the kernel, we just expose one encoder (and queue) all
+programs would just pile onto that one encoder and the kernel then
+would be on the hook to do the scheduling - which the kernel can do
+better (with relevant code implemented)
+
+
