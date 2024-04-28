@@ -1,123 +1,193 @@
-Received: from dggsgout11.his.huawei.com (unknown [45.249.212.51])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CB3BEDE
-	for <iommu@lists.linux.dev>; Sun, 28 Apr 2024 02:19:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.249.212.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1654184E
+	for <iommu@lists.linux.dev>; Sun, 28 Apr 2024 03:21:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714270775; cv=none; b=MCu8uvu2iNlDuMl5xf4CJYSOy0RTHKugWSWOfFyURDZlByji7I6eU9xGA9OxAAi+Z2d3+pSx8EUIOz0dH7MuhfKnl3J+2Z0zYLNt1CUT1VQYbdY59qoPbCsv7xFeRdYw1Xm/zy7D6Avn7wNPPdlpEyNlz2cBWkgAowtWpus643I=
+	t=1714274514; cv=none; b=uBqytFQTfMAPGsKs4WHYF7C2PHZvXBy9S0q2Yww88sskIRdsADpz49sJylrs4S637ce4G0dW0Kr1U3aPTPxndbxPDLrCV/GROZPwPjkDanbnk0Vv4wzssA80jkOBuV9TIQLd5Gsj59T1zidZMSswq2atMkEpdsNh16PugPhp7NE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714270775; c=relaxed/simple;
-	bh=tuczu2NeyudK1aZ8g+d3ndX+N2EeGuqQz9kCkH5dAjE=;
-	h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=MijaV2Flm0racR1umI1poluchpSEhTky8AexhY0DfZSwb2aDbuvL67SoTmZwcv691UwmZ3Wff8ve8nRRmJX5xSyDtm+4j+4olOkAhVHg1ruDGqpmW566iCt32EUJkUe4ioD691l2rldwv2F4KoLIke3ffZOajwNwtsVS1UHsWGQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com; spf=pass smtp.mailfrom=huaweicloud.com; arc=none smtp.client-ip=45.249.212.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=huaweicloud.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huaweicloud.com
-Received: from mail.maildlp.com (unknown [172.19.163.235])
-	by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4VRqsM47yvz4f3m7N
-	for <iommu@lists.linux.dev>; Sun, 28 Apr 2024 10:19:19 +0800 (CST)
-Received: from mail02.huawei.com (unknown [10.116.40.112])
-	by mail.maildlp.com (Postfix) with ESMTP id EB66C1A058D
-	for <iommu@lists.linux.dev>; Sun, 28 Apr 2024 10:19:28 +0800 (CST)
-Received: from [10.174.178.55] (unknown [10.174.178.55])
-	by APP1 (Coremail) with SMTP id cCh0CgBnOBEusi1mIt2dLA--.32197S3;
-	Sun, 28 Apr 2024 10:19:28 +0800 (CST)
-Subject: Re: [PATCH V3 1/2] iommu/arm-smmu-v3: Add support for ECMDQ register
- mode
-To: Tanmay Jagdale <tanmay@marvell.com>, will@kernel.org,
- robin.murphy@arm.com, joro@8bytes.org, nicolinc@nvidia.com,
- mshavit@google.com, baolu.lu@linux.intel.com, thunder.leizhen@huawei.com,
- set_pte_at@outlook.com, smostafa@google.com
-Cc: sgoutham@marvell.com, gcherian@marvell.com, jcm@jonmasters.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- linux-kernel@vger.kernel.org
-References: <20240425144152.52352-1-tanmay@marvell.com>
- <20240425144152.52352-2-tanmay@marvell.com>
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huaweicloud.com>
-Message-ID: <85f8d4df-4e4b-0460-4e34-d38588f18639@huaweicloud.com>
-Date: Sun, 28 Apr 2024 10:19:26 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+	s=arc-20240116; t=1714274514; c=relaxed/simple;
+	bh=IVdHCmj095OtQSHZFGMCs8JVzsEX/W37UySgDIDPrAY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=KE5Q/cgWiwn4fcP0ivdaZV2efrdmmH+iDeMSIBtHOC+BHsKxOM3P4sM2LWRVwRTfDR5OOrpZlQrf3VSq3tcQcjbPhw1ieNCGFQwEmVOAwQYXqZkD0EmXlS+1kEtZfk1lMfXVKUeYMtsnFhhQQGa4pNbLC4VYuNpzHYQReWEu8GM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FJeX9bzE; arc=none smtp.client-ip=198.175.65.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FJeX9bzE"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1714274513; x=1745810513;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=IVdHCmj095OtQSHZFGMCs8JVzsEX/W37UySgDIDPrAY=;
+  b=FJeX9bzEDmLCC2asRXDE0zhEJuKl0D6VPrhwua91wHbwbdUijyeolIDx
+   EUUPot55RmmNjEU760OrHTgIvOx/jAm3xW/a2EQig9sAd58i7VHX7YnRW
+   +qrPmpTvmn99iOGcHTvo9+rxFZPXkqSApj20CacUpr9yFApDCxyWDyWU8
+   Z/dtCWoEAqs4HKndJV7YhyZJo/Y5AgVeSHVeqS7Wjp5/Sh0WsyNz6NUKQ
+   n7+MibIomGV1uqAppo8f3r+eExUhsJIQ55RRQ7/lVa9Eju074dg1/2z9O
+   3ePQ+6odQdoIQfeJBUGyK46I5/X5x4IrLn9UQTNrAs7H+Dszo0wj7gay5
+   g==;
+X-CSE-ConnectionGUID: 7K15+ATzTkaSZ/se7BaunQ==
+X-CSE-MsgGUID: BbWWptUaRdigGC/tYnWyKw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11057"; a="10078339"
+X-IronPort-AV: E=Sophos;i="6.07,236,1708416000"; 
+   d="scan'208";a="10078339"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Apr 2024 20:21:52 -0700
+X-CSE-ConnectionGUID: TP3VVQXUTVqvNrXvLagpNw==
+X-CSE-MsgGUID: RlL/geGyTXeZiPWhVMRKTg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,236,1708416000"; 
+   d="scan'208";a="25774755"
+Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.127])
+  by fmviesa007.fm.intel.com with ESMTP; 27 Apr 2024 20:21:50 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Zhenyu Wang <zhenyu.z.wang@intel.com>
+Cc: iommu@lists.linux.dev,
+	intel-gfx@lists.freedesktop.org,
+	linux-kernel@vger.kernel.org,
+	Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 1/1] iommu/vt-d: Decouple igfx_off from graphic identity mapping
+Date: Sun, 28 Apr 2024 11:20:20 +0800
+Message-Id: <20240428032020.214616-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <20240425144152.52352-2-tanmay@marvell.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-CM-TRANSID:cCh0CgBnOBEusi1mIt2dLA--.32197S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7Aw13CF47GrW7Kry3XrW3GFg_yoW8Xrykpr
-	93Ka9rJFy8tF1xZw1FqF1UXF15tw1UJ3W8Gr4UGF93Xw18C34xur4UGw4Fy347Jry7Jr47
-	C34jqasrua1DJrUanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDU0xBIdaVrnRJUUUvab4IE77IF4wAFF20E14v26ryj6rWUM7CY07I20VC2zVCF04k2
-	6cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
-	vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
-	xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
-	0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
-	6I80ewAv7VC0I7IYx2IY67AKxVWUGVWUXwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
-	Cjc4AY6r1j6r4UM4x0Y48IcVAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7Mxk0xIA0c2IE
-	e2xFo4CEbIxvr21l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
-	Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r4a
-	6rW5MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
-	kF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv
-	67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyT
-	uYvjxUo0eHDUUUU
-X-CM-SenderInfo: hwkx0vthuozvpl2kv046kxt4xhlfz01xgou0bp/
+Content-Transfer-Encoding: 8bit
 
+A kernel command called igfx_off was introduced in commit <ba39592764ed>
+("Intel IOMMU: Intel IOMMU driver"). This command allows the user to
+disable the IOMMU dedicated to SOC-integrated graphic devices.
 
+Commit <9452618e7462> ("iommu/intel: disable DMAR for g4x integrated gfx")
+used this mechanism to disable the graphic-dedicated IOMMU for some
+problematic devices. Later, more problematic graphic devices were added
+to the list by commit <1f76249cc3beb> ("iommu/vt-d: Declare Broadwell igfx
+dmar support snafu").
 
-On 2024/4/25 22:41, Tanmay Jagdale wrote:
-> +static int arm_smmu_ecmdq_probe(struct arm_smmu_device *smmu)
-> +{
-> +	int ret, cpu;
-> +	u32 i, nump, numq, gap;
-> +	u32 reg, shift_increment;
-> +	u64 offset;
-> +	void __iomem *cp_regs, *cp_base;
-> +
-> +	/* IDR6 */
-> +	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR6);
-> +	nump = 1 << FIELD_GET(IDR6_LOG2NUMP, reg);
-> +	numq = 1 << FIELD_GET(IDR6_LOG2NUMQ, reg);
-> +	smmu->nr_ecmdq = nump * numq;
-> +	gap = ECMDQ_CP_RRESET_SIZE >> FIELD_GET(IDR6_LOG2NUMQ, reg);
-> +
-> +	cp_regs = ioremap(smmu->iobase + ARM_SMMU_ECMDQ_CP_BASE, PAGE_SIZE);
-> +	if (!cp_regs)
-> +		return -ENOMEM;
-> +
-> +	for (i = 0; i < nump; i++) {
-> +		u64 val, pre_addr = 0;
+On the other hand, commit <19943b0e30b05> ("intel-iommu: Unify hardware
+and software passthrough support") uses the identity domain for graphic
+devices if CONFIG_DMAR_BROKEN_GFX_WA is selected.
 
-This is my mistake. The 'pre_addr' should be defined out of this 'for' loop. Or, you
-can remove all 'pre_addr' related statements, commercially available chips that have
-been tested cannot have such errors.
++       if (iommu_pass_through)
++               iommu_identity_mapping = 1;
++#ifdef CONFIG_DMAR_BROKEN_GFX_WA
++       else
++               iommu_identity_mapping = 2;
++#endif
+...
 
-> +
-> +		val = readq_relaxed(cp_regs + 32 * i);
-> +		if (!(val & ECMDQ_CP_PRESET)) {
-> +			iounmap(cp_regs);
-> +			dev_err(smmu->dev, "ecmdq control page %u is memory mode\n", i);
-> +			return -EFAULT;
-> +		}
-> +
+static int iommu_should_identity_map(struct pci_dev *pdev, int startup)
+{
++        if (iommu_identity_mapping == 2)
++                return IS_GFX_DEVICE(pdev);
+...
 
-                                                     <---------------------------------------------
-> +		if (i && ((val & ECMDQ_CP_ADDR) != (pre_addr + ECMDQ_CP_RRESET_SIZE))) {           |
-> +			iounmap(cp_regs);                                                          |
-> +			dev_err(smmu->dev, "ecmdq_cp memory region is not contiguous\n");          |
-> +			return -EFAULT;                                                            |
-> +		}                                                                                  |
-> +                                                                                                |
-> +		pre_addr = val & ECMDQ_CP_ADDR;                                                    |
-                                                      <--------------------------------------------   feel free remove these
-> +	}
+In the following driver evolution, CONFIG_DMAR_BROKEN_GFX_WA and
+quirk_iommu_igfx() are mixed together, causing confusion in the driver's
+device_def_domain_type callback. On one hand, dmar_map_gfx is used to turn
+off the graphic-dedicated IOMMU as a workaround for some buggy hardware;
+on the other hand, for those graphic devices, IDENTITY mapping is required
+for the IOMMU core.
 
+Commit <4b8d18c0c986> "iommu/vt-d: Remove INTEL_IOMMU_BROKEN_GFX_WA" has
+removed the CONFIG_DMAR_BROKEN_GFX_WA option, so the IDENTITY_DOMAIN
+requirement for graphic devices is no longer needed. Therefore, this
+requirement can be removed from device_def_domain_type() and igfx_off can
+be made independent.
+
+Fixes: 4b8d18c0c986 ("iommu/vt-d: Remove INTEL_IOMMU_BROKEN_GFX_WA")
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 19 ++++++-------------
+ 1 file changed, 6 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index fbbf8fda22f3..57a986524502 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -217,12 +217,11 @@ int intel_iommu_sm = IS_ENABLED(CONFIG_INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON);
+ int intel_iommu_enabled = 0;
+ EXPORT_SYMBOL_GPL(intel_iommu_enabled);
+ 
+-static int dmar_map_gfx = 1;
+ static int intel_iommu_superpage = 1;
+ static int iommu_identity_mapping;
+ static int iommu_skip_te_disable;
++static int disable_igfx_dedicated_iommu;
+ 
+-#define IDENTMAP_GFX		2
+ #define IDENTMAP_AZALIA		4
+ 
+ const struct iommu_ops intel_iommu_ops;
+@@ -261,7 +260,7 @@ static int __init intel_iommu_setup(char *str)
+ 			no_platform_optin = 1;
+ 			pr_info("IOMMU disabled\n");
+ 		} else if (!strncmp(str, "igfx_off", 8)) {
+-			dmar_map_gfx = 0;
++			disable_igfx_dedicated_iommu = 1;
+ 			pr_info("Disable GFX device mapping\n");
+ 		} else if (!strncmp(str, "forcedac", 8)) {
+ 			pr_warn("intel_iommu=forcedac deprecated; use iommu.forcedac instead\n");
+@@ -2196,9 +2195,6 @@ static int device_def_domain_type(struct device *dev)
+ 
+ 		if ((iommu_identity_mapping & IDENTMAP_AZALIA) && IS_AZALIA(pdev))
+ 			return IOMMU_DOMAIN_IDENTITY;
+-
+-		if ((iommu_identity_mapping & IDENTMAP_GFX) && IS_GFX_DEVICE(pdev))
+-			return IOMMU_DOMAIN_IDENTITY;
+ 	}
+ 
+ 	return 0;
+@@ -2499,9 +2495,6 @@ static int __init init_dmars(void)
+ 		iommu_set_root_entry(iommu);
+ 	}
+ 
+-	if (!dmar_map_gfx)
+-		iommu_identity_mapping |= IDENTMAP_GFX;
+-
+ 	check_tylersburg_isoch();
+ 
+ 	ret = si_domain_init(hw_pass_through);
+@@ -2592,7 +2585,7 @@ static void __init init_no_remapping_devices(void)
+ 		/* This IOMMU has *only* gfx devices. Either bypass it or
+ 		   set the gfx_mapped flag, as appropriate */
+ 		drhd->gfx_dedicated = 1;
+-		if (!dmar_map_gfx)
++		if (disable_igfx_dedicated_iommu)
+ 			drhd->ignored = 1;
+ 	}
+ }
+@@ -4621,7 +4614,7 @@ static void quirk_iommu_igfx(struct pci_dev *dev)
+ 		return;
+ 
+ 	pci_info(dev, "Disabling IOMMU for graphics on this chipset\n");
+-	dmar_map_gfx = 0;
++	disable_igfx_dedicated_iommu = 1;
+ }
+ 
+ /* G4x/GM45 integrated gfx dmar support is totally busted. */
+@@ -4702,8 +4695,8 @@ static void quirk_calpella_no_shadow_gtt(struct pci_dev *dev)
+ 
+ 	if (!(ggc & GGC_MEMORY_VT_ENABLED)) {
+ 		pci_info(dev, "BIOS has allocated no shadow GTT; disabling IOMMU for graphics\n");
+-		dmar_map_gfx = 0;
+-	} else if (dmar_map_gfx) {
++		disable_igfx_dedicated_iommu = 1;
++	} else if (!disable_igfx_dedicated_iommu) {
+ 		/* we have to ensure the gfx device is idle before we flush */
+ 		pci_info(dev, "Disabling batched IOTLB flush on Ironlake\n");
+ 		iommu_set_dma_strict();
 -- 
-Regards,
-  Zhen Lei
+2.34.1
 
