@@ -1,139 +1,132 @@
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27CA21836FF
-	for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 21:26:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.171
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id BEFA91779BD
+	for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 22:26:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714426007; cv=none; b=AT2iBSpQ9y76GFj10zfvS8xYtMmeCCBU5HPksWESW3CbcpthIY7WzXPQtHqL58nyJrJMRvdlKKXQay4V5qFPPGSZqUqv8ZBDwcfNYLTAZibOuc8gvW/qDmJ385jA0ohUr+yN+IDJ0Dg1S9cvY4ZOv+cFUb535npF33KeF62yDbk=
+	t=1714429610; cv=none; b=E+fSMgTBb8mloj61MZpxD3E9P/mpBGuGeZIQ4yYFKZa/Rty0/e3ugMeVz8ubo5oPUktDhXQLQsSuf2Aucf1Dve/RzgjcSz5yQyCmnkkzVyYQPq2H7XgIs8ScNFb+3HZE2hYIVBfUSXb86oUoHmXKhdpxEOa/G4QeIMoC0pmeCao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714426007; c=relaxed/simple;
-	bh=Dr1C3G4pbGiXPC5Ti/nKd6k7VSHbUcwlgdfOmEAfcuw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OUj9AIg1mzQP+1P+jyCM6OrYQVdoI9ZgBPzy6eWmdwnTij2cMkuNM/GNLPLyCgaMwR0BDEri/mvSqaafFFfZIjC1bURpGkMAD495MEOumCYBx1WL2FZAhd/W+KebUfndTv0g2SNlwapf8rfFLesyU7cc23DSbUCdO6uA1Bhokr0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=fGyeGDLY; arc=none smtp.client-ip=209.85.219.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fGyeGDLY"
-Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-dcc71031680so4894798276.2
-        for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 14:26:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1714426003; x=1715030803; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=QU/Tws1Y+aFFVGVLoOklo9JtVUD/v/fzs2lzZlQCwNQ=;
-        b=fGyeGDLYfyJmmET/5uL4GGKyDSI8EbI1BdxPBe5uOTN9OBi4y8RzfXPHzQnUiq2yMQ
-         jyQM16K4rs0Ahm8TAj3z+YB7ISXyEYdUu/XOiXZej3P8/Un8TTFxS8SBSgL+SE7Ab/4C
-         /OxhP5YAQe3XC+tS6cHmRCs+C/x+tUaNwS/9Wl1HpBuZL3Ym8eE3XWfjjHDVWTmeHtKm
-         LQcdgxCXB5tDur+18SHuA7PhHfjxsTjL+kcAVSjJL9ljFPq3JoRVNBbVWYak/ODwoOBJ
-         8r0w3mdZWw9O7DGP6Fyf4FpCVP54TNzgu7VNSGde6e5oGvveYHDUBhqrbtdy0UHWxO0F
-         vs0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714426003; x=1715030803;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QU/Tws1Y+aFFVGVLoOklo9JtVUD/v/fzs2lzZlQCwNQ=;
-        b=DEnSgKwf3X/T7b7wPKrYB1Z9F25eu0az98s7XEo+qe7w3wI/s3IPNefJLIl19Cg6LR
-         LzFp4eIX0hxkvZwjkfDIIB3zFLh5vBUTQRQyB0dGQ1X5gphrNqF0Ztx/VJE8smMkNQRd
-         ZnpNRzyAmIOqyLTs7RPtcBTc8AODaA4EL2WMtClWCjw7n9iSeSB4Kmdig4mt0SdOPwRs
-         ZmUQNhQZn+y+SnCZcvj7RWDD7X5HCfEzi8qj0T8tABd5iIicJJ0Dl9nO3PyJnIGoX614
-         o/BHIGE6EbdDzt3r1PxVwAEbS14d/cPgOUcmXtvP4NEwhcQqp/5xPM9HM5IiM0vk71a4
-         qq1g==
-X-Forwarded-Encrypted: i=1; AJvYcCUHsTynujDbxG4vLK1XStqAYELhTlwUch56GPh8gXkiZrz8ZTN2rQAJAMWcOdFXkP5LcO8KxZSW4TSDNuqJRcAEmctH+RM=
-X-Gm-Message-State: AOJu0YwGdsSjndsipP7rZrPO+3o8czODa0OvIO3ysXeCMt7aMqIDRb+J
-	LivEh8+hQ8p1m/8lOAlayfpwc+Oo4QLYzdHWpuGL6MXOacCQR6bOrasKT5WcD3GlkFXfNC86roL
-	O9/TbpdPCL5Zsl7IPz2fKJyCPsjQj6A5QYq4LXQ==
-X-Google-Smtp-Source: AGHT+IGKK3YXyDU+4ECuqi3EgUuBK4bT+CVyxZ6dH/j0Bz4fVxCMiVvjkF3hOLG0ZcsUc7l0RWVJyvbD7ONlUCh2d6s=
-X-Received: by 2002:a25:b910:0:b0:dcc:6112:f90d with SMTP id
- x16-20020a25b910000000b00dcc6112f90dmr10901148ybj.62.1714426003134; Mon, 29
- Apr 2024 14:26:43 -0700 (PDT)
+	s=arc-20240116; t=1714429610; c=relaxed/simple;
+	bh=ObXrOa0TOunXJEpPHw7bthYmANYOzksEBgD7Tq7f27U=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=pXJl9YtI1gLN9EfUZzYMhSqaPtr7blIxeE4UBgRmNj+wgZeF5AAs1/192sTZFk/7sGpdgYcFnIDXwMnFtKN+JWhrswiQ406GKg/EfpjFuCKBAusEwunqMGdrtAkdq2iDf1U1bSNW+sn4e1sup0ygI5RafnPG0TqnU+iQlWBPnxU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 23AB72F4;
+	Mon, 29 Apr 2024 15:27:13 -0700 (PDT)
+Received: from [10.57.2.57] (unknown [10.57.2.57])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3CACA3F762;
+	Mon, 29 Apr 2024 15:26:40 -0700 (PDT)
+Message-ID: <2662a5ba-3115-4fe5-9cec-bff71f703a82@arm.com>
+Date: Mon, 29 Apr 2024 23:26:31 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1713523152.git.robin.murphy@arm.com> <bebea331c1d688b34d9862eefd5ede47503961b8.1713523152.git.robin.murphy@arm.com>
- <Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru>
-In-Reply-To: <Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Tue, 30 Apr 2024 00:26:31 +0300
-Message-ID: <CAA8EJprL8NbNfOvp17hrHoVNkKBpD39xfeu+STm6m9VObF2n9Q@mail.gmail.com>
+User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v4 6/7] iommu/dma: Centralise iommu_setup_dma_ops()
-To: Robin Murphy <robin.murphy@arm.com>, 
-	"open list:DRM DRIVER FOR MSM ADRENO GPU" <linux-arm-msm@vger.kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
-	Konrad Dybcio <konrad.dybcio@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>, Vineet Gupta <vgupta@kernel.org>, 
-	Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, 
-	Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, 
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Paul Walmsley <paul.walmsley@sifive.com>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
-	Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo <guohanjun@huawei.com>, 
-	Sudeep Holla <sudeep.holla@arm.com>, "K. Y. Srinivasan" <kys@microsoft.com>, 
-	Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>, 
-	Dexuan Cui <decui@microsoft.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
-	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
-	Niklas Schnelle <schnelle@linux.ibm.com>, Matthew Rosato <mjrosato@linux.ibm.com>, 
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
-	Jean-Philippe Brucker <jean-philippe@linaro.org>, Rob Herring <robh+dt@kernel.org>, 
-	Frank Rowand <frowand.list@gmail.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Jason Gunthorpe <jgg@ziepe.ca>, linux-kernel@vger.kernel.org, 
-	linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, 
-	iommu@lists.linux.dev, devicetree@vger.kernel.org, 
-	Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="UTF-8"
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
+ Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
+ <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
+References: <cover.1713523152.git.robin.murphy@arm.com>
+ <bebea331c1d688b34d9862eefd5ede47503961b8.1713523152.git.robin.murphy@arm.com>
+ <Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Mon, 29 Apr 2024 at 19:31, Dmitry Baryshkov
-<dmitry.baryshkov@linaro.org> wrote:
->
+On 2024-04-29 5:31 pm, Dmitry Baryshkov wrote:
 > On Fri, Apr 19, 2024 at 05:54:45PM +0100, Robin Murphy wrote:
-> > It's somewhat hard to see, but arm64's arch_setup_dma_ops() should only
-> > ever call iommu_setup_dma_ops() after a successful iommu_probe_device(),
-> > which means there should be no harm in achieving the same order of
-> > operations by running it off the back of iommu_probe_device() itself.
-> > This then puts it in line with the x86 and s390 .probe_finalize bodges,
-> > letting us pull it all into the main flow properly. As a bonus this lets
-> > us fold in and de-scope the PCI workaround setup as well.
-> >
-> > At this point we can also then pull the call up inside the group mutex,
-> > and avoid having to think about whether iommu_group_store_type() could
-> > theoretically race and free the domain if iommu_setup_dma_ops() ran just
-> > *before* iommu_device_use_default_domain() claims it... Furthermore we
-> > replace one .probe_finalize call completely, since the only remaining
-> > implementations are now one which only needs to run once for the initial
-> > boot-time probe, and two which themselves render that path unreachable.
-> >
-> > This leaves us a big step closer to realistically being able to unpick
-> > the variety of different things that iommu_setup_dma_ops() has been
-> > muddling together, and further streamline iommu-dma into core API flows
-> > in future.
-> >
-> > Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com> # For Intel IOMMU
-> > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> > Tested-by: Hanjun Guo <guohanjun@huawei.com>
-> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > ---
-> > v2: Shuffle around to make sure the iommu_group_do_probe_finalize() case
-> >     is covered as well, with bonus side-effects as above.
-> > v3: *Really* do that, remembering the other two probe_finalize sites too.
-> > ---
-> >  arch/arm64/mm/dma-mapping.c  |  2 --
-> >  drivers/iommu/amd/iommu.c    |  8 --------
-> >  drivers/iommu/dma-iommu.c    | 18 ++++++------------
-> >  drivers/iommu/dma-iommu.h    | 14 ++++++--------
-> >  drivers/iommu/intel/iommu.c  |  7 -------
-> >  drivers/iommu/iommu.c        | 20 +++++++-------------
-> >  drivers/iommu/s390-iommu.c   |  6 ------
-> >  drivers/iommu/virtio-iommu.c | 10 ----------
-> >  include/linux/iommu.h        |  7 -------
-> >  9 files changed, 19 insertions(+), 73 deletions(-)
->
+>> It's somewhat hard to see, but arm64's arch_setup_dma_ops() should only
+>> ever call iommu_setup_dma_ops() after a successful iommu_probe_device(),
+>> which means there should be no harm in achieving the same order of
+>> operations by running it off the back of iommu_probe_device() itself.
+>> This then puts it in line with the x86 and s390 .probe_finalize bodges,
+>> letting us pull it all into the main flow properly. As a bonus this lets
+>> us fold in and de-scope the PCI workaround setup as well.
+>>
+>> At this point we can also then pull the call up inside the group mutex,
+>> and avoid having to think about whether iommu_group_store_type() could
+>> theoretically race and free the domain if iommu_setup_dma_ops() ran just
+>> *before* iommu_device_use_default_domain() claims it... Furthermore we
+>> replace one .probe_finalize call completely, since the only remaining
+>> implementations are now one which only needs to run once for the initial
+>> boot-time probe, and two which themselves render that path unreachable.
+>>
+>> This leaves us a big step closer to realistically being able to unpick
+>> the variety of different things that iommu_setup_dma_ops() has been
+>> muddling together, and further streamline iommu-dma into core API flows
+>> in future.
+>>
+>> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com> # For Intel IOMMU
+>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>> Tested-by: Hanjun Guo <guohanjun@huawei.com>
+>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>> ---
+>> v2: Shuffle around to make sure the iommu_group_do_probe_finalize() case
+>>      is covered as well, with bonus side-effects as above.
+>> v3: *Really* do that, remembering the other two probe_finalize sites too.
+>> ---
+>>   arch/arm64/mm/dma-mapping.c  |  2 --
+>>   drivers/iommu/amd/iommu.c    |  8 --------
+>>   drivers/iommu/dma-iommu.c    | 18 ++++++------------
+>>   drivers/iommu/dma-iommu.h    | 14 ++++++--------
+>>   drivers/iommu/intel/iommu.c  |  7 -------
+>>   drivers/iommu/iommu.c        | 20 +++++++-------------
+>>   drivers/iommu/s390-iommu.c   |  6 ------
+>>   drivers/iommu/virtio-iommu.c | 10 ----------
+>>   include/linux/iommu.h        |  7 -------
+>>   9 files changed, 19 insertions(+), 73 deletions(-)
+> 
 > This patch breaks UFS on Qualcomm SC8180X Primus platform:
->
->
+> 
+> 
 > [    3.846856] arm-smmu 15000000.iommu: Unhandled context fault: fsr=0x402, iova=0x1032db3e0, fsynr=0x130000, cbfrsynra=0x300, cb=4
+
+Hmm, a context fault implies that the device did get attached to a DMA 
+domain, thus has successfully been through __iommu_probe_device(), yet 
+somehow still didn't get the right DMA ops (since that "IOVA" looks more 
+like a PA to me). Do you see the "Adding to IOMMU group..." message for 
+this device, and/or any other relevant messages or errors before this 
+point? I'm guessing there's a fair chance probe deferral might be 
+involved as well. I'd like to understand what path(s) this ends up 
+taking through __iommu_probe_device() and of_dma_configure(), or at 
+least the number and order of probe attempts between the UFS and SMMU 
+drivers.
+
+I'll stare at the code in the morning and see if I can spot any 
+overlooked ways in which what I think might be happening could happen, 
+but any more info to help narrow it down would be much appreciated.
+
+Thanks,
+Robin.
+
 > [    3.846880] ufshcd-qcom 1d84000.ufshc: ufshcd_check_errors: saved_err 0x20000 saved_uic_err 0x0
 > [    3.846929] host_regs: 00000000: 1587031f 00000000 00000300 00000000
 > [    3.846935] host_regs: 00000010: 01000000 00010217 00000000 00000000
@@ -148,13 +141,4 @@ On Mon, 29 Apr 2024 at 19:31, Dmitry Baryshkov
 > [    3.847074] ufshcd-qcom 1d84000.ufshc: ufshcd_err_handler started; HBA state eh_fatal; powered 1; shutting down 0; saved_err = 131072; saved_uic_err = 0; force_reset = 0
 > [    4.406550] ufshcd-qcom 1d84000.ufshc: ufshcd_verify_dev_init: NOP OUT failed -11
 > [    4.417953] ufshcd-qcom 1d84000.ufshc: ufshcd_async_scan failed: -11
-
-Just to confirm: reverting f091e93306e0 ("dma-mapping: Simplify
-arch_setup_dma_ops()") and b67483b3c44e ("iommu/dma: Centralise
-iommu_setup_dma_ops()" fixes the issue for me. Please ping me if you'd
-like me to test a fix.
-
-
--- 
-With best wishes
-Dmitry
+> 
