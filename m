@@ -1,68 +1,78 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A6F83DB8E;
-	Mon, 29 Apr 2024 11:17:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF22929CFA
+	for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 11:43:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714389437; cv=none; b=Ix5Q20WHg9zZjIjYtW5QMlFmGdqrOk4kMTRZ6TmiaM31IuwC8IRfsHcBM0N2Iq4st3mRyz3VhEVLFbitNN52zfQaBzMErsiPmGjIYoBwautJ+l42jbEJdoqkPEFIIG/lsTOan/tzlJyGf/m5EGp01il+e/dzYJLAidFtJdF4Fks=
+	t=1714390990; cv=none; b=V2A33IFtomvt0gEjQ46lqRAq+8YUFeVVShtUJEDhPMw596x04ygVxmCjDaS9QRvdSKqtsmz+RD2pO7M2gMv7WNlp2HSTwo3WEWNBJWZJ5PC30IsxTXs/5+grrOAGIKZ4/lDTbPK7a0MZHDHvdtEaPqPdP//XJW2Dq5klqaL1iLs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714389437; c=relaxed/simple;
-	bh=1Eo88DNt750jucwhczOVgMrfucx591HLz2m0Oln95J0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ZCIhSsyX4ktHZyhw1EFf6dUxWC3AbD6mTpZdFQ7auDMEnMH7yB6qOKI97fmUHS9jKcPG5LYvofQsYsXlbwJinDZKVfwErVQ2hjewWhI2+6iGpZQrfTls3/VJxS3be4/yaFcJx+cCa2EVHwb/+yseMhYcmZwrx1MhNGYEtfrwsP4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nfdCmGUm; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1714390990; c=relaxed/simple;
+	bh=8aoPVLJ489On5ztbsvpmdxCALVbdDUa/I32RFYBdJCw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=biINHnIQ4/+zhF3yllNPnVoEQFPZ2vL7ySSEBUW5sOrOglHKJ9NZ1S7T08t8rJPkCShFu/ou1GFveP+EI/BjEJizh5De8buD03ju1y1+YDH2i6tYKXtVnF7ernGDvYyzq8BWbZJ3ceXO8Lof/AKBWLUImiA/K6omqzcwsnHhWbc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=QyOWa4BO; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nfdCmGUm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714389435; x=1745925435;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=1Eo88DNt750jucwhczOVgMrfucx591HLz2m0Oln95J0=;
-  b=nfdCmGUmm9dvlieviyBpO0G8CeGb9YE/+JSClCrB4aRuaoRy+Zzmjwsz
-   gk4Ajgv762RAIykKhw7SFNp7jvpd9foy/Xb2W2k5VovahwiFC5STvedYU
-   AYqjxTpW6LV2ER9e2msYT3vz3vabuJSCkeapgo2LmHjS4DaipQkEjrntN
-   UcqkU7cLrxrAmZgqJTWB6E3nbLNDpli9c39Tpqn6QbEDIMBIDANXjciSG
-   Bnv9HDYcLfzTeRyi0Y5bnZVvhu88zdtzk1YDN+AYrcIyv/ph/XJh8682A
-   WQNB218OyzbMpeu9B5UQjKIIchCmYg8tzW+lk2nr7T+PzaDUlkokoAC+x
-   A==;
-X-CSE-ConnectionGUID: dd7yKKwfRFSIZfby30AoGw==
-X-CSE-MsgGUID: n+ODOUrCT2SbC+OPu2P4wQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11057"; a="21459154"
-X-IronPort-AV: E=Sophos;i="6.07,239,1708416000"; 
-   d="scan'208";a="21459154"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Apr 2024 04:17:15 -0700
-X-CSE-ConnectionGUID: jMiiwx0kSpu99QpjyGYENQ==
-X-CSE-MsgGUID: PqfT1Ps6QFKeiwxu/lFwVQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,239,1708416000"; 
-   d="scan'208";a="26701015"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orviesa008.jf.intel.com with ESMTP; 29 Apr 2024 04:17:11 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id 041C215B; Mon, 29 Apr 2024 14:17:09 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>,
-	Vasant Hegde <vasant.hegde@amd.com>,
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QyOWa4BO"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-41adf3580dbso24812155e9.0
+        for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 04:43:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1714390987; x=1714995787; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=eSPLQ0aSiWlUkLotmQUKbdSZn8q1v5DF9gInw6B0dXM=;
+        b=QyOWa4BOYtv1xhDgm+0Ar1YdM9BFcEBoPIzNx62D/H1cv794S24EjsZho2j1fcA8d3
+         2cNA2NHIDyzSn7eDOej0zG+czgna+vEtSTsLEmvIZXEGWN9f6iKdaRgsR3V8agufBW99
+         1wkoYA+ZoeCdR4/YBBiiV5+Mr8a0cm40eGNKuVu2H7+oM2kj131ph2XUsoZLTV96mb+w
+         1iczOc0bzXTCI5LE6zE9b5o5lobIpvde+16Gsft4zgwFxcCfqRQ2NbyvBwigN+cICzVm
+         S6fbV+JjP7ekhSJFF+m/MYF/m7Wwll9Coy+wXQ/Ip+AK8EJLLMV5ZwhzTrCrM4D1TMo1
+         Pwyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714390987; x=1714995787;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=eSPLQ0aSiWlUkLotmQUKbdSZn8q1v5DF9gInw6B0dXM=;
+        b=nobfLRlIh4Aoc9IKRnrwV8Oe6zadWig4blOYSB74xDDh+4Ae1nsIv/NNCVTzWlhxFA
+         vmFe53LDLXmMgD4Ffwtj5nr6xvUJmGkth6leOmRqdTkPXERWd/+1GvWYjsd1OZd3Sk8n
+         JfycpmsR8GAiagvXQwPRkr+aJYzTRX+TlX5/+TU2H2aTZ+eiU4vHdo8JYi4MzGBsJDOq
+         Cyzmq72SigEsSCTh8s6nzXUf/7WvOoEvSzPcGNEdqKpW+zicloosfsc/2/X1Vbhxt0m+
+         ZWX2eJlyZMko/tIR5hHESdn6gJuTqSSCQzVy5uHQm23b27+4ECnaQlSbJ8yXpwK2ZB60
+         jpQQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUFujXo6WtwhfMAfzJRXf1cn/VtZZFzKbbI9Jn85iBic10Ll5MRU11yJz8v22spDXs6TIP4LFGGaThJ4YWSyfOhuKUPMB8=
+X-Gm-Message-State: AOJu0YwrYgJ/CgXJ2N8wRTvUeq2ICk+1q1h6dMcmicQtRVTZNmRWfKEf
+	pB8CYRqkgeiFb2HSOIGYRIsZVNrjiMfLr6CGTwHBTjtxRRLpPkXaB6tem78G2jM=
+X-Google-Smtp-Source: AGHT+IELIaH77G+cqO9Ae4tGmjB9R1iygWxsWgrPpSX+Zo6NaBJo82SewNNgw3IJ4qO6Jw9lSBHdQQ==
+X-Received: by 2002:a05:600c:1d16:b0:418:5ef3:4a04 with SMTP id l22-20020a05600c1d1600b004185ef34a04mr9650703wms.18.1714390987239;
+        Mon, 29 Apr 2024 04:43:07 -0700 (PDT)
+Received: from localhost.localdomain ([2.221.137.100])
+        by smtp.gmail.com with ESMTPSA id j28-20020a05600c1c1c00b0041bfb176a87sm7006611wms.27.2024.04.29.04.43.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 29 Apr 2024 04:43:06 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: will@kernel.org,
+	lpieralisi@kernel.org,
+	kw@linux.com,
+	robh@kernel.org,
+	bhelgaas@google.com,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	liviu.dudau@arm.com,
+	sudeep.holla@arm.com,
+	joro@8bytes.org
+Cc: robin.murphy@arm.com,
+	nicolinc@nvidia.com,
+	ketanp@nvidia.com,
+	linux-pci@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
 	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	llvm@lists.linux.dev
-Cc: Joerg Roedel <joro@8bytes.org>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Nathan Chancellor <nathan@kernel.org>,
-	Nick Desaulniers <ndesaulniers@google.com>,
-	Bill Wendling <morbo@google.com>,
-	Justin Stitt <justinstitt@google.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] iommu/amd: Fix compilation error
-Date: Mon, 29 Apr 2024 14:17:07 +0300
-Message-ID: <20240429111707.2795194-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.43.0.rc1.1336.g36b5255a03ac
+	devicetree@vger.kernel.org,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: [PATCH 0/3] Enable PCIe ATS for devicetree boot
+Date: Mon, 29 Apr 2024 12:39:36 +0100
+Message-ID: <20240429113938.192706-2-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.44.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -71,32 +81,39 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-With WERROR=y, which is default, clang is not happy:
+Before enabling Address Translation Support (ATS) in endpoints, the OS
+needs to confirm that the Root Complex supports it. Obtain this
+information from the firmware description since there is no architected
+method. ACPI provides a bit via IORT tables, so add the devicetree
+equivalent.
 
-.../amd/pasid.c:168:3: error: call to undeclared function 'mmu_notifier_unregister'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-.../amd/pasid.c:191:8: error: call to undeclared function 'mmu_notifier_register'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-2 errors generated.
+It was discussed a while ago [1], but at the time only a software model
+supported it. Respin it now that hardware is available [2].
 
-Select missed dependency.
+To test this with the Arm RevC model, enable ATS in the endpoint and
+note that ATS is enabled. Address translation is transparent to the OS.
 
-Fixes: a5a91e54846d ("iommu/amd: Add SVA domain support")
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iommu/amd/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+	-C pci.pcie_rc.ahci0.endpoint.ats_supported=1
 
-diff --git a/drivers/iommu/amd/Kconfig b/drivers/iommu/amd/Kconfig
-index 68d8fc107cb9..994063e5586f 100644
---- a/drivers/iommu/amd/Kconfig
-+++ b/drivers/iommu/amd/Kconfig
-@@ -7,6 +7,7 @@ config AMD_IOMMU
- 	select PCI_ATS
- 	select PCI_PRI
- 	select PCI_PASID
-+	select MMU_NOTIFIER
- 	select IOMMU_API
- 	select IOMMU_IOVA
- 	select IOMMU_IO_PGTABLE
+    $ lspci -s 00:1f.0 -vv
+    	Capabilities: [100 v1] Address Translation Service (ATS)
+		ATSCap: Invalidate Queue Depth: 00
+    		ATSCtl: Enable+, Smallest Translation Unit: 00
+
+
+[1] https://lore.kernel.org/linux-iommu/20200213165049.508908-1-jean-philippe@linaro.org/
+[2] https://lore.kernel.org/linux-arm-kernel/ZeJP6CwrZ2FSbTYm@Asurada-Nvidia/
+
+Jean-Philippe Brucker (3):
+  dt-bindings: PCI: generic: Add ats-supported property
+  iommu/of: Support ats-supported device-tree property
+  arm64: dts: fvp: Enable PCIe ATS for Base RevC FVP
+
+ .../devicetree/bindings/pci/host-generic-pci.yaml        | 6 ++++++
+ drivers/iommu/of_iommu.c                                 | 9 +++++++++
+ arch/arm64/boot/dts/arm/fvp-base-revc.dts                | 1 +
+ 3 files changed, 16 insertions(+)
+
 -- 
-2.43.0.rc1.1336.g36b5255a03ac
+2.44.0
 
