@@ -1,92 +1,122 @@
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 323EB7F498
-	for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 14:46:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 749EB7EF18
+	for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 14:47:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714401987; cv=none; b=hb/o5ZOQfGRXbzvGSIYBCnrqoEQNyvdkX9gmGWVqswe+9ni4VCpbmz6YSKnGCW3Ki5zc3I0rRr4OBUeM4eqJU9j5c5NqVGEfEP6jR812FK3uXPLIjE2ar69GVNpI/2XoHbeTegLnC1A1aoOQdr+2AClpjxquefMSaEFY3PXEp6Y=
+	t=1714402053; cv=none; b=R0v7krY4mp5K/0Ta0UtbglMoUmmCG8wEMHsVB753FPt110PHV4o79vvPHG+9ojeOpHhr4kKOSLERVI1lpsLJBJAE7iR7oYgV9NxHxnmD+ctLvpPF7vfhyvINdpqrTWoAONfsdpAuXucsAdlc891G0UlqwMWEdfBftMiFeLrnWtY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714401987; c=relaxed/simple;
-	bh=7ffg10nGRai65DzA6Sm+DBPvuVwQZ6AScKW/4TvgHFo=;
+	s=arc-20240116; t=1714402053; c=relaxed/simple;
+	bh=COZvZVIo5pXIfwu8taNy8p11lpn+iafehtZeaKCUui4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=b4FyxNy8jrHRGTJc22UIin7VD0HHPsYzgS9KNzZrYjVg7uA7UaaQae0+8clADP9QPNRpS+lUdnv8HCK/ud6R+/wLJB5oPYoEPkIof3boVLske0OeNWfRNPFDgb9tf8+dPgHXLeMi3wryi0lKfuyZoV2dGqn8zTYC1jrhLTsiIYY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=QJGVGEUp; arc=none smtp.client-ip=209.85.167.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=NUfOp6pKP59/HxSpUXT1/UmBwfEFY6BY0xVAmV+IAdCaOOKQI6zktXybdaofSlP0jS7tuM5ZBGczfTzuaRFToRLFbTezXTq0W+IpE/7W2nMCKnIfpX4NIP6ymlPLU1l3NaRaTw3Qko3daSN8j33Bty6yEaOib7TCI2ktUR92KR8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=LhGa0VVT; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="QJGVGEUp"
-Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-3c70b652154so2810702b6e.2
-        for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 07:46:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="LhGa0VVT"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-41a428374b9so92425e9.1
+        for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 07:47:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1714401985; x=1715006785; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=PL6tZzyAQb/T1bd4KCzi312ESM92EvfA0363dcOQhRE=;
-        b=QJGVGEUpZq+V14HSP81V3zsGsZbpHjYtgrWcg8jEZnmalmd/WzKePiCR5gSAulqqLZ
-         meT4paJQXa3+OYOOYN8TYXuQpacALQPGsS5Oe/0VVuwfiCoq4zoLCQ+XmH8ChldGmD70
-         NK3IWQ0t0yvS8Q0THKHa0aY6Y9K1Fl6Inp8FT9Y7OyS31qKJkDBWEoYLEfj9TpkO2PMr
-         rclCzt3p+OjjZooJlsC6zJjTkfgBPrN4OcUBE2u8DVtv1L4UfGi8SXdZWemlxJEvnJcp
-         S7IUjLtBapSiU9cWXKxMZueFxagSLFhhVYUDpcfDonP8B7rrtse/quMk9StL7A9jzsar
-         tO3Q==
+        d=google.com; s=20230601; t=1714402051; x=1715006851; darn=lists.linux.dev;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=sXpF4pD7wukxSYdmZaDlYDHlfz3ekIJvwV28C1GdwUE=;
+        b=LhGa0VVTMtSl5oFUDAl4sYcvTeQ9oM04ddo7SoGZ/BZoTheyR9QH7lIc/SpmcKeGig
+         ym2qujWnTXFkp300KSX8zjtSFH33OZwnquJVMV27c16rTvZ4oq+Eo3FHA4PTreT0daJE
+         0cM2QmObEfA5Uhonl7Ej2OZgJD+MK8/r/rjdMBR3tLPTINY2JPJF2WF1ZhvEuQqVIQMm
+         AeMUg5SsoYPtq2/H8w86PdPn0qbUTyGQdvmfZjSroQ2lJ9lC7H5LOalDltcdKta6YE0/
+         y6RXxDcMSboUU167NJ1v9qFG/DJuaJMvVxmDqPIiS5CG13b1XP1cMpO1H0AdPbV2cFnz
+         dUdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714401985; x=1715006785;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PL6tZzyAQb/T1bd4KCzi312ESM92EvfA0363dcOQhRE=;
-        b=VWgxYRDp7s1aeGina97+lnEp7qfAYEcYFaHLmVrmQPXwYCtU5VdgtGXhN4dR3XJgWe
-         W/H5aqXA7rED+ryT3VlTaPzo020bKD0rHlJA6ZXuJCLFTEZwmAOszs0JK7Min31YTR5E
-         qfc0M52UNC8mfodsa/eTAI7SCLc28Mbsw901/JDmo7jb0lxH1R9eGbhZWIYrK5x9hlUc
-         VxokmO/SkXEmfqG9Q8yZWgkhMOoyt3R9yEWzxIqpADnu+Z0V4ZimzPWwDFL/xWGkAHPQ
-         VNfuMtqYDg3JEaRqg7hU/NmTcu3gk4EdgyGOPLnF8mhWcavSBDrjEUNfqjGa8bOtulA+
-         421g==
-X-Forwarded-Encrypted: i=1; AJvYcCUpzdY82uGgNAUxLX9lOc4FGE00ng1TU1zE2jiRi1h81YvsIaCGkf7V1tk9UAuLy1hkGo3OiU761HYDEIHjG5vzP8MdsQ8=
-X-Gm-Message-State: AOJu0YzRwSWKFnsf6G4uspFwefxvfLCEz7NXD0uKV7efTBaQVn+g9oIN
-	QrNZJ+LvwENHVSCiS7GoK2ajuUdHbIpT8LTkGZZe51z0LI+opmzHoxmpRDGsj/w=
-X-Google-Smtp-Source: AGHT+IFOe6gG5Zd5JVe9dZoFq+NoColD5kYFlBUlxnFkxrkFHFXSMMmhpY3dNxMYFJzSXNRqXqK1iQ==
-X-Received: by 2002:a54:408f:0:b0:3c7:45db:3ad2 with SMTP id i15-20020a54408f000000b003c745db3ad2mr31396oii.16.1714401985232;
-        Mon, 29 Apr 2024 07:46:25 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id mi23-20020a056214559700b0069b4cc9780fsm3071361qvb.2.2024.04.29.07.46.24
+        d=1e100.net; s=20230601; t=1714402051; x=1715006851;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=sXpF4pD7wukxSYdmZaDlYDHlfz3ekIJvwV28C1GdwUE=;
+        b=f6P94h6PwltYJ9UbZ5gGgEsuAfTvfZcvq3rEDWtUQA+76e2VIHw8mdTyTsl5RdzFHf
+         PrWIqUn3Y2KTS+GUedAOfmv69RypIic8luwnP8qXbFQbzV8gpwK8eco3QJJdlFv7uxVF
+         Q6T+Fw2MHTUxUjARLA/TIM5KK+UTPiLbbEP4tyUNfJvM3JecqAlajQoe6rNr+nx67Ng8
+         3Eir08Ug0leUbYoNfCOn8c9KFrs07rk8wOWbmRjWZKlSPQjSjgUNTfv4WNubsqM/vClc
+         K6BkaAcH8pz0xzuznTmTN89FDNHNEKS8KGvDIA2TkvMXg3qjfbs5C6eDhssqHt6vhlgD
+         DQ5Q==
+X-Gm-Message-State: AOJu0Yx8/SCN+wSUclnFBeoxu1fN+RPPmhv+gUcavM3rQWT3XSWrx0xv
+	xDS9reQFu3S0xb4E2uYnYgLKi2FSmN5Q83PcyvvtG0oYlzcDCmb/SwXEJhi/Yw==
+X-Google-Smtp-Source: AGHT+IEumJiMM+6KQSyGqx27CMnk+MXJQtk3/BQ/0NixLY9cScd/LoNQiUjE0BVCSn8fHdv0F7Woeg==
+X-Received: by 2002:a05:600c:470a:b0:41b:ff4e:c8a4 with SMTP id v10-20020a05600c470a00b0041bff4ec8a4mr260523wmo.0.1714402050620;
+        Mon, 29 Apr 2024 07:47:30 -0700 (PDT)
+Received: from google.com (180.232.140.34.bc.googleusercontent.com. [34.140.232.180])
+        by smtp.gmail.com with ESMTPSA id j13-20020a05600c190d00b00418a386c17bsm45568804wmq.12.2024.04.29.07.47.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Apr 2024 07:46:24 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1s1SGt-001ToN-OO;
-	Mon, 29 Apr 2024 11:46:23 -0300
-Date: Mon, 29 Apr 2024 11:46:23 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Matthew Wilcox <willy@infradead.org>
-Cc: David Hildenbrand <david@redhat.com>,
-	Pasha Tatashin <pasha.tatashin@soleen.com>,
-	akpm@linux-foundation.org, linux-mm@kvack.org,
-	linux-kernel@vger.kernel.org, rientjes@google.com,
-	dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
-	will@kernel.org, robin.murphy@arm.com, iommu@lists.linux.dev
-Subject: Re: [RFC v2 0/3] iommu/intel: Free empty page tables on unmaps
-Message-ID: <20240429144623.GN231144@ziepe.ca>
-References: <20240426034323.417219-1-pasha.tatashin@soleen.com>
- <2daf168e-e2b2-4b19-9b39-d58b358c8cd9@redhat.com>
- <CA+CK2bC4SWTCG2bnA16Xe+gX7=N=UYWB1wSns-K-jNqC1yrdvQ@mail.gmail.com>
- <9bf62e97-dfdd-4537-8fb0-b5f293856f59@redhat.com>
- <ZiwC4snk03ptUQij@casper.infradead.org>
+        Mon, 29 Apr 2024 07:47:30 -0700 (PDT)
+Date: Mon, 29 Apr 2024 14:47:26 +0000
+From: Mostafa Saleh <smostafa@google.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>, Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
+	Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v7 5/9] iommu/arm-smmu-v3: Make arm_smmu_alloc_cd_ptr()
+Message-ID: <Zi-y_kgb34l0rrRU@google.com>
+References: <0-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
+ <5-v7-cb149db3a320+3b5-smmuv3_newapi_p2_jgg@nvidia.com>
+ <ZiLerRK1pXvt-HML@google.com>
+ <20240422142053.GD49823@nvidia.com>
+ <Zi15-dcNj6E0k4jK@google.com>
+ <20240429140137.GE941030@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <ZiwC4snk03ptUQij@casper.infradead.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240429140137.GE941030@nvidia.com>
 
-On Fri, Apr 26, 2024 at 08:39:14PM +0100, Matthew Wilcox wrote:
+On Mon, Apr 29, 2024 at 11:01:37AM -0300, Jason Gunthorpe wrote:
+> On Sat, Apr 27, 2024 at 10:19:37PM +0000, Mostafa Saleh wrote:
+> 
+> > > I'm not sure what you are asking? We have two versions. One is called
+> > > alloc and one is called get. That have different locking requirements
+> > > on the caller so they have different names. I would not call them both
+> > > get?
+> > > 
+> > 
+> > My point is that arm_smmu_alloc_cd_ptr() doesn’t only allocate the leaf,
+> > but also the L1 through arm_smmu_alloc_cd_tables()
+> 
+> Sure, it is called alloc, it allocs everything to make the CD table
+> entry usable.
 
-> I think there's a lot of space in the struct page that can be used.
-> These are iommu page tables, not cpu page tables, so things are a bit
-> different for them.  But should they be converted to use ptdesc?  Maybe!
+Maybe if it’s called alloc_leaf, it only allocates leafs :)
 
-Definately! Someday we will need more stuff in here..
+> 
+> > IMO, arm_smmu_alloc_cd_ptr() should only allocate leafs. And inside
+> > arm_smmu_attach_dev() it calls arm_smmu_alloc_cd_tables().
+> > This makes it clear which path is expected to allocate the L1 table.
+> 
+> The PASID path sometimes has to allocate the L1 table too, why
+> duplicate the allocation code?
+> 
+> What is different about the L1 vs L2 that it should be open coded?
+> 
 
-Jason
+I don’t think it is a big problem, but my main concern is robustness,
+for example a small erroneous code change might trigger allocation for
+L1 table from a path that shouldn’t, and that might go unnoticed as
+this function will allow it, leading to memory leaks, or other issues
+that might be harder to triage later, instead with limiting which path
+allocates which level, would return a NULL in that case and fail
+immediately.
+
+Thanks,
+Mostafa
+> Jason
