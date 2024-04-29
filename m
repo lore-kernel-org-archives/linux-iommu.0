@@ -1,110 +1,100 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BE7247A64
-	for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 11:43:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8C518061D
+	for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 12:10:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714390992; cv=none; b=DZAJryz3M0bSulzQJRBhGz9zOc0DiLzCzYcqLG77zv/0+mLwvwF8aV/jhe756bR72YrOstbAHQwAV/EJQsvqOWa9IqErvaxthh/ElRmTeHzy/IPStyXTeJw84uGYUJ7wmTAdRA5gAlAGF+RK1qp1Wu7AJhBHDzDqyf0YAtkbUp8=
+	t=1714392604; cv=none; b=BhekvPQHsN5hEsh3Qzxiu/LK/bvzrI1yfN0PlCkIc1lost7haQ9MehAnmuye/aomz4WoU/d1Kesdx4a6TpkGLi9Em4loK0VMRmllo/5mTL8MwyFkIV99Np1Uu0wQeZyb4MnP61dH5YUTd5yMQl/xNkPoRPPCR+Yrfb1SbeLGT9I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714390992; c=relaxed/simple;
-	bh=wlwCiZQhxacSX1iOcX1bXb8eeSP8O9zxMxdtgI9EZUo=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=D98cN9lIMxFzF+ZyrkbOazENwNbaJHJCohA/QCCyRIwhWZUZEFgSjF0E2tKsFtzpAWYWZLGC8uBpN4raJ1Gg256smphZL0JpVYFYneCPQ22pin5FQP+5CfC0D3ElOlVtFwuNZkiV5NZYGRNzuUl4eq7v8knO4DgJNzf7yI0mb9E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=JkYPzAGu; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1714392604; c=relaxed/simple;
+	bh=k3LPaxpQ0t6t3el8UgR64nKFhllhxo4z3vuO4mc314Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=O/tPps+2JXnA9DDNTa1GlAyUZ2s28y0JXNEM/g5f8XWBMKLFvX9SNTdDFtAE451UszMYrwJx3kNjwoAnJkkSJzlOaCxuc2XUf/ukhjH5CM8Nl4ba/lHEhnyc7ZD/jEFYRGrZ4Wb9pP9NnF2iip+SS5zW+bKZdzy5mzNKl9ik408=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MMdkBktP; arc=none smtp.client-ip=209.85.161.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JkYPzAGu"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-41ba1ba55ffso14740925e9.1
-        for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 04:43:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MMdkBktP"
+Received: by mail-oo1-f48.google.com with SMTP id 006d021491bc7-5aa362cc2ccso3150042eaf.3
+        for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 05:10:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1714390989; x=1714995789; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=i14vi0uS6yalE2yHHE98+WWyzuINERvn0mRjSQcogLE=;
-        b=JkYPzAGuUmtGDTa9EcOfhg2s2k4V/qpwQkqkfYc5MBW17ItMyarmUQVB65FOuf0ecI
-         6drKoUiA31T/mYBcsFAIYoZThgQCwh0x3kCinnuntjfUeK6rZdCJ82NgLnhCn5ZaAqP0
-         KHrSYUfHGIKL6RUIGfHYGUvzrUHvfqeRsQ7f29W+aV+U+1ulUR/kYDq/lCAYcwcn9PFx
-         vmosSyqGFl0h8E9hYDMwrvitqIcPqqXADrmBqU0Nnn0VoHBay2DlYLBsAy2tPptp5Cel
-         v2SPikMGMxDd8xXb5tN13S7qucIzKocy34u78mA9EjEzvZD72fHm+DD56Ay5CYv1vQlg
-         LqCQ==
+        d=ziepe.ca; s=google; t=1714392601; x=1714997401; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=EXRgEPH1uU79zQD6+IHe0m9b6rETQiei9x6o058HUWY=;
+        b=MMdkBktPBd1lj7AiJfjsUg7A8n9wYXWBCWMyyc720cpLun8MAYRGvsdkRGwPFKm4m4
+         JALrjDlIlokUr6fW8ihwiumSe6wWMTYzNjwi6M9wsSluHEK6iIaxx/Fxaw6iXYm5YSuL
+         pkVCd1AtDoFlzJJTjrJNfKJILMB/1Phan6x6AiHj8136uCSdJOH1zXc32jAqmjoYEP2h
+         ujLWGhpBknBAY0fRxtR7nVD4XQQegHS/uQUoIebQO2gVvjYA6ar2HTv8XJOC2Rl0oxtZ
+         E2p5YgO0XKVNhE0qafhb/k9ak/e8mr/t/8bYehGR1uKpzmzF5FISx3GL3099sJXJ+XiQ
+         6NBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714390989; x=1714995789;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=i14vi0uS6yalE2yHHE98+WWyzuINERvn0mRjSQcogLE=;
-        b=WPMSb5tQQfE362lPewF7z3WGPzplH1OyCab3SQx8FPHlLHaT/zIxAGsCZ855CWKpkV
-         mKDYlunJvz7E1PRZBACw+pzPzXMjaox/ezNmROrlQoTcwaCwVPOnp7Cp0mUizQ7YnyH2
-         Y4Iafoc0oxeIFG7LCxYvNUSHR+y7v8VCLB3osqRMTPYxkwqaRe3w+cYrj4LOQUAP4yH1
-         EPblMTxwNvMZ3qis5dJOG63wFzyOYVGe5jw20feD0aKh0ZeFOOx+szmd8Vzj/DmcjcRr
-         OCC208RWbf/Ub65gLTpi7NAtFnZsiNZ14HH2VCh/BXKcCbr+wUDx1tcszJYr0+MvATPu
-         P6Vw==
-X-Forwarded-Encrypted: i=1; AJvYcCVsmPmZErVvVTVge+33YNVD5ShnsD6szGeWVMrMe016GV59jV4mDTaibGxSDwjKNypXD4kAWXm5+mwwsrtgjZmXLljMaVc=
-X-Gm-Message-State: AOJu0YwN8rkkY3OSKLlCpCMwYrz2qOG5OluR5GmHS6Ddte9FP9tsGgzj
-	6yeko2d9lMUlOCKHTMtYLBIERHS5TaClC/ESvakIszbfEcP3F1Ok8jumY61nAYs=
-X-Google-Smtp-Source: AGHT+IEI1UVkZOMPYRMSz4HtjyDrrZTWNzj/RlriUs5QHmYdGK5xHJYWjf4nbA7zpSf33ACYcYdQ4A==
-X-Received: by 2002:a05:600c:3587:b0:41b:8c5c:31b9 with SMTP id p7-20020a05600c358700b0041b8c5c31b9mr7553097wmq.14.1714390989553;
-        Mon, 29 Apr 2024 04:43:09 -0700 (PDT)
-Received: from localhost.localdomain ([2.221.137.100])
-        by smtp.gmail.com with ESMTPSA id j28-20020a05600c1c1c00b0041bfb176a87sm7006611wms.27.2024.04.29.04.43.08
+        d=1e100.net; s=20230601; t=1714392601; x=1714997401;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=EXRgEPH1uU79zQD6+IHe0m9b6rETQiei9x6o058HUWY=;
+        b=VjRh7fJfLw3IMYZadsxZ+p50q6EfaOjmstDv7N/9Xbl1iUp3pb/RBY+WpbV2JoL6V1
+         z7dHcRo2gsk1Q2TJRG8GQFqbeXKOFokmhCeHDam9v2ZKPU/BrDxBbVA7zXWj/6FVC+DL
+         Wmna/lMnqkXGBvL8ZZALyoyJyS1NrOaO4EzNMIjGA+lZM9TVUGTBnD+kdSoIL51wbIif
+         8lCtmH9db05cFXNOpJg51xK26C+r1NRyka5UNNi/ViSAK8ERn2pkLLroYHsEOVYWAAby
+         4Y15EiiiiBH8D/u4QTTrRBGmGH9baIa3hNw2v6WQ8Z4PYfa1plvFV8vavMmMhtXfXVXL
+         OWAA==
+X-Forwarded-Encrypted: i=1; AJvYcCXQCXMpt6fivz72MV+/SHOAFnZJSNHqq70xgMPj1bXyo4Wi1EkGvx1jxhrPi+j9vws15v+Gql1q7SkQQ3l5Z0Xg/ZuR2oc=
+X-Gm-Message-State: AOJu0Yy6IcVZ4aVsA2hSyR0O/AsFvxIemedMn7kbhXdAdhu9RwBVeJ3V
+	uLobCGQF++1aLHZsYe/or3O/qiFZ2jECu44dSJeFL7EEohbMW/MOdrDFXempH98=
+X-Google-Smtp-Source: AGHT+IEY0PvXjgaQ9NXclObpxAxFwPAYyqZoUOatV7BjbYwCTbVrRKEXAnTs41fAvifo/8xzoAQp6w==
+X-Received: by 2002:a05:6358:797:b0:186:9d05:5f0 with SMTP id n23-20020a056358079700b001869d0505f0mr12388658rwj.22.1714392600738;
+        Mon, 29 Apr 2024 05:10:00 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id h2-20020ac85682000000b004365ab2894asm10399689qta.51.2024.04.29.05.09.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Apr 2024 04:43:09 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: will@kernel.org,
-	lpieralisi@kernel.org,
-	kw@linux.com,
-	robh@kernel.org,
-	bhelgaas@google.com,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	liviu.dudau@arm.com,
-	sudeep.holla@arm.com,
-	joro@8bytes.org
-Cc: robin.murphy@arm.com,
-	nicolinc@nvidia.com,
-	ketanp@nvidia.com,
-	linux-pci@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev,
-	devicetree@vger.kernel.org,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH 3/3] arm64: dts: fvp: Enable PCIe ATS for Base RevC FVP
-Date: Mon, 29 Apr 2024 12:39:39 +0100
-Message-ID: <20240429113938.192706-5-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.44.0
-In-Reply-To: <20240429113938.192706-2-jean-philippe@linaro.org>
-References: <20240429113938.192706-2-jean-philippe@linaro.org>
+        Mon, 29 Apr 2024 05:10:00 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1s1PpX-000oW0-FJ;
+	Mon, 29 Apr 2024 09:09:59 -0300
+Date: Mon, 29 Apr 2024 09:09:59 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+	Nathan Chancellor <nathan@kernel.org>,
+	Nick Desaulniers <ndesaulniers@google.com>,
+	Bill Wendling <morbo@google.com>,
+	Justin Stitt <justinstitt@google.com>
+Subject: Re: [PATCH v1 1/1] iommu/amd: Fix compilation error
+Message-ID: <20240429120959.GM231144@ziepe.ca>
+References: <20240429111707.2795194-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20240429111707.2795194-1-andriy.shevchenko@linux.intel.com>
 
-Declare that the host controller supports ATS, so the OS can enable it
-for ATS-capable PCIe endpoints.
+On Mon, Apr 29, 2024 at 02:17:07PM +0300, Andy Shevchenko wrote:
+> With WERROR=y, which is default, clang is not happy:
+> 
+> .../amd/pasid.c:168:3: error: call to undeclared function 'mmu_notifier_unregister'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+> .../amd/pasid.c:191:8: error: call to undeclared function 'mmu_notifier_register'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+> 2 errors generated.
+> 
+> Select missed dependency.
+> 
+> Fixes: a5a91e54846d ("iommu/amd: Add SVA domain support")
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/iommu/amd/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
- arch/arm64/boot/dts/arm/fvp-base-revc.dts | 1 +
- 1 file changed, 1 insertion(+)
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-diff --git a/arch/arm64/boot/dts/arm/fvp-base-revc.dts b/arch/arm64/boot/dts/arm/fvp-base-revc.dts
-index 60472d65a3557..85f1c15cc65d0 100644
---- a/arch/arm64/boot/dts/arm/fvp-base-revc.dts
-+++ b/arch/arm64/boot/dts/arm/fvp-base-revc.dts
-@@ -243,6 +243,7 @@ pci: pci@40000000 {
- 		iommu-map = <0x0 &smmu 0x0 0x10000>;
- 
- 		dma-coherent;
-+		ats-supported;
- 	};
- 
- 	smmu: iommu@2b400000 {
--- 
-2.44.0
-
+Jason
