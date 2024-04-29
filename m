@@ -1,164 +1,272 @@
-Received: from mail-lj1-f178.google.com (mail-lj1-f178.google.com [209.85.208.178])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2072.outbound.protection.outlook.com [40.107.236.72])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A73A8DDCD
-	for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 16:31:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.178
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714408286; cv=none; b=PhiZ4jSNou4K0XaZObaf5bw67PV98icuIegfYiZTaPtOKc0P6S1z3bsNJRFSUWZURNzHbtPYFneizRVAr2jPE/vxaofMPkMnvAKlP5puziWGMvRHRjE8L/wMiT/Eo4ZAWw/XV8BTAdywvj6FmC+xv3C2Kor1JoSYFmWSu9B6KjY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714408286; c=relaxed/simple;
-	bh=eDE2L21JKW8N96Vi3ng/YDqFma0PceL01iOHHG7iHr8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=eTHBZb/Cb/CkJ0Zu3V7KfWZ65/Yvj39l3iz4z8VjQOmSRfjTrg15CJz02NldYh0ZQ/Y+NNfp82B4LwqX5UartelIGU4pqDwDN6msj1GhfyYKQP60Rh3Wedu2UscQ816TDn5jsJLtMxYKIdwjRCWs/hozlU8wuMoGkKqJDXxd840=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=ah7kngSf; arc=none smtp.client-ip=209.85.208.178
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69F2E8626D
+	for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 17:15:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.72
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714410923; cv=fail; b=kglFtsfWoOq4gLqU2Ul8oxCawVsn08/zb1VxU451UQJO9ym8pFrLMSap323o/xzAZTB0OPQ6rRJeBFEur8nZsXJx2CXqxSl4xD3O7BVSc5Tvmwk8BPEwzhje4SJXYIVZIBfkc9PYjKXFs7Q1ASbVKFzeHfOj6FKqSV6cDHWPpaI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714410923; c=relaxed/simple;
+	bh=o689VdwwTeJSxxUOv/B3KZAmfBipDLcpJEde+4byNrE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=NyLRCzOAupth3qg9lzXUtGC/4jPIjB8wbPvztMUDdcwJqTtH1TaBcwgOrr/1id3nHc77/Fi9amxoeQa4n/RpJ/3WZwiy4D7c4yz756bh+nWWL02hTjcL11x8GeUsh+se2erxUG6Yp73YnSytIws/0VSbxIBLbVX+u0BYZGwkI7w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=XpLMozBF; arc=fail smtp.client-ip=40.107.236.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ah7kngSf"
-Received: by mail-lj1-f178.google.com with SMTP id 38308e7fff4ca-2e060d49f87so9407701fa.0
-        for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 09:31:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1714408282; x=1715013082; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=AzGLiR69PoJGRhtxNKXAUaM6fxmHvGr503ePlBzc+m0=;
-        b=ah7kngSfzk5S0fOyO2lNh9mCT2/HQKoIES7G0VPy4u1cbx6ylWoHdtUiZ1srLWVILJ
-         uiBsI/GhEJv/5f+hPkf5wvgL2pRDRki9rn2/WYNH5hI384lO+MV0MiP5B2iZWwSp36pc
-         c2rPGmWgwzNUTqx4m0z5m988pPyKid25n80dtBRMB3t+q9VvBn+elcRlx/PY+BYXHMGL
-         Rfrs9kiHE7x2GkabM60HGEA/al2QqwEHRBQABqQdjenFvJykXbY7NGJVPWDW9XaoEw3T
-         /HAM6sK9UG2CaH5LwbQ9ihp/g/jAMgnR1tffseC5n6aXG6JM7NTSrMJ3m9bzISOjKJQe
-         9QWQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714408282; x=1715013082;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AzGLiR69PoJGRhtxNKXAUaM6fxmHvGr503ePlBzc+m0=;
-        b=LmlDbFGs7ptjUl3YSiHc7AsEBWITyftHdCmx8augU6NQzO6OSMypeQ+6DrpyveSpiy
-         YDsW6pSBSuK5yHhMO/p12DtLhFwt1cXukJVmnXxy5yvd+UXuZlINrH6PxFmV/S4z1LnF
-         T2LXaOkmXZqi5UE29HfSOoFsAE6Pbg44ylBqKEMFABWCzIgGHP1HCkeK4OrpEJjjpj5I
-         F1gr7RN2R3NjAvC35vLqXnLGK4Kc/4wj1gR42P3yVlKTSh+blSP39+0k1kpCfAyxDa5P
-         gcVlna3y1+DnZNhVDPga0SovYjHauyP81y6gzdYr/1xXxqgcURkg9aGrPGIRXA70JsGL
-         KhlA==
-X-Forwarded-Encrypted: i=1; AJvYcCUB412z8JvqaXXGX9g3HZ1I1WCk9/YDmTyyWsoU/1E7ULa4a1TuI4gCBqnCNLscjd+w0Poi0ZRWCy55OOKUfrTVAkOV8Dg=
-X-Gm-Message-State: AOJu0Yw6o/Ugk5UiDIgETrB4qoPQ7DIAN3Zt/sCrOvl8iNy6PNqMGcpV
-	L3Qb12QyLEQ1LHZiVcTEWYJD4DMAy/pYNT5F29oRlWJD2VogC0h38vPCo82iFI8=
-X-Google-Smtp-Source: AGHT+IHk3Z5XGDbb0v+Fmz92VybJVjDFdKDawu/AbXxfV/kYiZFIeb4QW5ZOrzeqL0UzpA0hXaFkSQ==
-X-Received: by 2002:a05:651c:1992:b0:2de:6f52:5c8d with SMTP id bx18-20020a05651c199200b002de6f525c8dmr53916ljb.21.1714408281677;
-        Mon, 29 Apr 2024 09:31:21 -0700 (PDT)
-Received: from eriador.lumag.spb.ru (dzdbxzyyyyyyyyyyyykxt-3.rev.dnainternet.fi. [2001:14ba:a0c3:3a00::227])
-        by smtp.gmail.com with ESMTPSA id h22-20020a2eb0f6000000b002dfa8b1a07asm961511ljl.111.2024.04.29.09.31.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Apr 2024 09:31:21 -0700 (PDT)
-Date: Mon, 29 Apr 2024 19:31:19 +0300
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
-	Vineet Gupta <vgupta@kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>,
-	WANG Xuerui <kernel@xen0n.name>,
-	Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Lorenzo Pieralisi <lpieralisi@kernel.org>,
-	Hanjun Guo <guohanjun@huawei.com>,
-	Sudeep Holla <sudeep.holla@arm.com>,
-	"K. Y. Srinivasan" <kys@microsoft.com>,
-	Haiyang Zhang <haiyangz@microsoft.com>,
-	Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-	Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
-	David Woodhouse <dwmw2@infradead.org>,
-	Lu Baolu <baolu.lu@linux.intel.com>,
-	Niklas Schnelle <schnelle@linux.ibm.com>,
-	Matthew Rosato <mjrosato@linux.ibm.com>,
-	Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Frank Rowand <frowand.list@gmail.com>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Jason Gunthorpe <jgg@ziepe.ca>, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org,
-	iommu@lists.linux.dev, devicetree@vger.kernel.org,
-	Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v4 6/7] iommu/dma: Centralise iommu_setup_dma_ops()
-Message-ID: <Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru>
-References: <cover.1713523152.git.robin.murphy@arm.com>
- <bebea331c1d688b34d9862eefd5ede47503961b8.1713523152.git.robin.murphy@arm.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="XpLMozBF"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OUmYgSE6usyUt9VkbXqh3KO/HizL2revtsKRBwM9OqA8Ld8x9JvjoHevetrCZSwvYa4JhujT7EbYDgvzyVari8WFid37JBQifTqe2MhI/yw5cc98gwAwRsmUm06/1QfW+OhfThCWFwnZeVVGIxLkQf8hCgOxiOzYiO+uq1pMZXu7l39Xse+rRmX9HscFI9eCEkGNewIUD1MrHSzUW0y6gq5nYhXb8kfdHVPb85QkqDfLZjdf09dw8xFvyb9p9FjcbGzNhPj17BiGK/yZJrLj62yo8EV/L/nX5ANGTH5bO0aYueMRWe1W9Y0Xzw95RJwP8rmv9kdZL2+K9xD44nIOYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6wLSwk4HRamJ73z26XGBkJnlnVBE8cM6YNCAnTqRfbk=;
+ b=gOaWgwcSyth2ZNjmST1NLQCkbRtFi4hVp6/4UzPKv7IJdRNwYMpp6U8hUjInlAf1D21QEz0BLMu7C/uGh75aE/9np4bMOQ1+KMKvKy/f+gZudhMw+TD52Qbuisl/a08jf7iORcyfOw/6ayTLtwxjDRxPq1i/n32fGYhaWbY0xQj3fCb0MDmvjKCltdssY8WCI/9cLeSfycphfpm9OUNdKyZD/vgqdrjEf8kPchQBOHmoIim6b3lgk+h5Njh0XeXh1kDM9Eu4/DH34ZL7h3Narl0eOYVrfU9efH95nJG0YL76Ay2A4SLD0pEPUGzKcWtrjUOOxmBeKHBSWt7j3uXtoA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=6wLSwk4HRamJ73z26XGBkJnlnVBE8cM6YNCAnTqRfbk=;
+ b=XpLMozBFY9SPhwyfCLFab10LPiNC7EfatJiSfs0huaq331gKWCPRqM52PcW8sniOaOklow5ZTBC87Xp4rp7zEHYmL1Wyxb44pBtKMf5J/5azrgykoUz/Ra7ILZr7mmL4Zf9VvSuJY9heKjBK+6qbqi0eYZPiO3SsgtoZtS0aIKFGdSPh0TZkAirSI3adOTn+NV4Dep0nC8uckUn810evwWD3AZXfAI5RUmHoMOM8Apr4gA4Q29o1R9FwUdV9xXpOzRsE9nFkvNPfr598+4wNtZvX0TCXBxZsAS8fCDUzAx/1JLORYBUj/jB4d62eGgl5aWKgDbKBr9LF2tnmbgX4ng==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by DS7PR12MB5768.namprd12.prod.outlook.com (2603:10b6:8:77::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.35; Mon, 29 Apr
+ 2024 17:15:17 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7519.031; Mon, 29 Apr 2024
+ 17:15:17 +0000
+Date: Mon, 29 Apr 2024 14:15:15 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	"Liu, Yi L" <yi.l.liu@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+	"Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+	=?utf-8?Q?C=C3=A9dric?= Le Goater <clg@redhat.com>
+Subject: Re: [PATCH v2 0/4] vfio-pci support pasid attach/detach
+Message-ID: <20240429171515.GI941030@nvidia.com>
+References: <BN9PR11MB52766862E17DF94F848575248C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240423120139.GD194812@nvidia.com>
+ <BN9PR11MB5276B3F627368E869ED828558C112@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20240424001221.GF941030@nvidia.com>
+ <20240424122437.24113510.alex.williamson@redhat.com>
+ <20240424183626.GT941030@nvidia.com>
+ <20240424141349.376bdbf9.alex.williamson@redhat.com>
+ <20240426141117.GY941030@nvidia.com>
+ <20240426141354.1f003b5f.alex.williamson@redhat.com>
+ <BL1PR11MB527133859BC129E2F65A61718C142@BL1PR11MB5271.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BL1PR11MB527133859BC129E2F65A61718C142@BL1PR11MB5271.namprd11.prod.outlook.com>
+X-ClientProxiedBy: BLAPR03CA0064.namprd03.prod.outlook.com
+ (2603:10b6:208:329::9) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bebea331c1d688b34d9862eefd5ede47503961b8.1713523152.git.robin.murphy@arm.com>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|DS7PR12MB5768:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2b3281ab-df33-4edd-4fe7-08dc686ff0bd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|376005|7416005|1800799015|366007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?U2t1zBzZQd57G+aUKhiRvkZ/ONvxxjkHeziBl1CjosNJ1DTj1kNwSWSIlm1k?=
+ =?us-ascii?Q?Ix8K5y+DWrHi5VIJNYO06uUYHab6BeMFdtX6CvxCrhbIsVahNvGa9C38cfGy?=
+ =?us-ascii?Q?UdCHdt7sOwIiUSY3i13I63WpXeUDap34PzfIRHq247ZTb8HssXuHebj3xpgl?=
+ =?us-ascii?Q?PCTzFAYdj7082R3gTclghvU3ynH9m+yCFP7JMMi/nQq6DzU3nA5sr3ZOVPys?=
+ =?us-ascii?Q?UhqpNAQZ4cVWRPA2eLfbIH7QSaWDGJNcys5glS06+q8If0tj36ns/tuSWtN/?=
+ =?us-ascii?Q?xtBdE31mh5CqcIDC4pc+4RV6rz6Cg8TMZbyU+LJxyEH6357xelaI2DCz7yKf?=
+ =?us-ascii?Q?X9aVs6ByxXwAM/Jn8+NctR54JlcKDvkQyjEQexAxnb+0pvwuR12rnXGmP3dn?=
+ =?us-ascii?Q?oBlX35eANb/sordpUWcPZ90hmOAaYp1ffU1jgMe2DQFURs3/0ru8Gpbv1SIK?=
+ =?us-ascii?Q?f1beGKmCG2DxWsMnSLHvuO/Z4rhL3vRWhtpsrLn24prKPBOFsEGP+3ua1tOa?=
+ =?us-ascii?Q?KTapKRSYmZTJfaiMhOiuoEK3dYSukZMK/+wJWeN1viVvkcQiRc3cpfOeqyOa?=
+ =?us-ascii?Q?2fwIrJRzQLoON5hr0H1/7Nb1y/lHlfnZvQB+ksF6piWQt01ibS5lRs0aHrJG?=
+ =?us-ascii?Q?52pkjLnZbGN/S+IFhVCTR0p7A1QqhflN/Aa1hVolooT7kSoTRIpE/TT51xzL?=
+ =?us-ascii?Q?YLj2O8/OhZqHksE5rUVXLcwuAvYlJt3TSerkua7yQbVmnPKByoSsn84miRB9?=
+ =?us-ascii?Q?vxtefT41XPah/riG8A/AicgC0g+3fuy3n+Dc+VG83Z2aXDWquKCGF3JCMurI?=
+ =?us-ascii?Q?HbFn+51TdhgESKtAMAdP6t262nlF6Sk7UwUiMcWpjz32Szl0KNXzmJK2ba4o?=
+ =?us-ascii?Q?87VqfBhnB6cGPs3sxGxvVEL8sPf3oJfxH+B3U7WO9D1lvQOwM/JiapMkkw4q?=
+ =?us-ascii?Q?4om/p8WqahSkQTXBhljZrRpGuGo9Rb9R4pDmx9Wx1k060hLMq+x7GVvChneo?=
+ =?us-ascii?Q?0C5VjTk5iYG/yRIOL+2EctlrRauIRvBKtbCyd9HEW0S7+LtrZsjx7boRg6Uc?=
+ =?us-ascii?Q?L0KinnTa4U+1fgsBHy2ePq5cgvqBnrqLOJKHgI2dr6fGV9lz8im40uBlAVnU?=
+ =?us-ascii?Q?Fmh+9vsmPWwsW28vWPV6Z0eL3/pCnPjWNEOdcZT9GuEZFo3R2Zzcl/LsuK9d?=
+ =?us-ascii?Q?t0x0DlQB+x/Lz7a4wWPmVjs4iFPba29jjSUjh9+CtlGSqqDs/qdcscQ4HcRY?=
+ =?us-ascii?Q?q5LEN5m7EZ5jb8Zhc39aDSbXdE8sXvdFhyH6ZSZhCw=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(7416005)(1800799015)(366007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?/cPJbb9sTZeW1DTFGDf8I5cdDNmOEw2LAwSRT5coNtMlAz2L0sN/MCZxbcNs?=
+ =?us-ascii?Q?+B4mxYVo5CbppL/fcKUfd9z0eCfWmOLTU5LiA+n1tWNxhermewmjUF5wqxCy?=
+ =?us-ascii?Q?IYcVqIcB+H+HNtsZsq1Qw6t/MHbV8EfIK6tWL7lddSwqZPyjCViCChuumYOF?=
+ =?us-ascii?Q?ldgy62xshviaWYAJqTy7UOmCKX7KJuYvhr/B+HJ8rPRyywSEvlxNVvv4Vds8?=
+ =?us-ascii?Q?ukukhCJJy2lDQDcZ6l7+Aj3DDqOY/uf6HGl/QEuc7LST1N9eivAHXoF8W3E7?=
+ =?us-ascii?Q?CqLr/mzx69zvozukvCI2J+9DbD8jIvVu0/ZefZyVtwanYbefSfZ5muhTC9ol?=
+ =?us-ascii?Q?SKXpEF7MmPyjwORJ2Wl3sn7gDJTUNLODoDIgK1jy6X1QMmYVG0YyvzHQPNb3?=
+ =?us-ascii?Q?aRR7y8c/zMi/cQYQBoRBxXx1muQqB129SS3aI6Xtd9fNvse3xiqhnSyzKbZE?=
+ =?us-ascii?Q?mC7j+Ext3DYv62/2mj2wto4dRSkDoG3RJpyVz1PN/fuizbMtG62ORSLC0c1J?=
+ =?us-ascii?Q?GwdAJ8Ac+eMalFH26FYAH4FClbh549AWm/BYrMaGqJPpCIWYukes/0TbKNwJ?=
+ =?us-ascii?Q?VXTDQF51X0epxb3CtvO8aeYyp7fpVg5EBx1+qaY5tm6sGNDI36oF0c7M/TTg?=
+ =?us-ascii?Q?V31WYzOepArjVWBKQlrR70LRk5lWHfbTfTSIlnZKjPTYCnJRTEjVVUOGY0oV?=
+ =?us-ascii?Q?utGszfjve7QtFppJb3Tqqzu5PCEb2U2mEouTYOXXjcGHMKufLkZ+/ac3Tdsd?=
+ =?us-ascii?Q?v/266uzTt+KaLJoXEk3RJTrcLAE751y2JAWPQYuEt9l7q3NTmbuOhCikmKV5?=
+ =?us-ascii?Q?IBMTVZq4ms1DJPBca0BCEn1emdSv3pN5NeBE9L3lpO9oJf+IMnkSGIdlVtvL?=
+ =?us-ascii?Q?hRDKV9YlpMXDl1fEWYFkY5BOdbqDlZbmdPWcDjOV5+szde28XR6e7jkSdzdP?=
+ =?us-ascii?Q?M2NzXGCN9s6aHNWalqecVPzJWj/DjESz0qqnwwFpMofMhm1nVILZJW34Z2kn?=
+ =?us-ascii?Q?8aBpSWsvQx7Ab6nmxUmhCM1Yf2JIud/nAG4Y7ZMJCaVUDOwYhmKLhNpe1LGa?=
+ =?us-ascii?Q?pYBxqoojUTJIe3aq5W4IXsP71x3tmVQ4fHz7zoo87yIGGZ8UW7MCGpud9aBO?=
+ =?us-ascii?Q?MMf8xv7NTsS2ouVEYQ1zdjist4kG4b4nNGgAnf/6XXoTdeRNRdZWBV15oi35?=
+ =?us-ascii?Q?0dtlIfR+qX/ZNLuhcR77aVN4sw0Xm9d6dY+voL7Gve400rRTZ+5zbSUuN+Bf?=
+ =?us-ascii?Q?heAZdSA/Ca2tkkhEjT/yYVL612FZ4WKIxI4rPySBw1hhhER/gXddIYxUEa+Q?=
+ =?us-ascii?Q?1U5wvii4oth8++NBI81TfkV9qVPoE37qRX0P2Gp6P+t+MBUInRAsqIooXtKJ?=
+ =?us-ascii?Q?Itf2gkfLJSe40/0d/foXVFBkvX6udBVyESxaMv1xT+v3clGAA8qhktUboDTo?=
+ =?us-ascii?Q?F8Pm2+6ZFM2iFMUeC7zoEvqD1amkFq6UK9tbgMMGmSk2wuAOF/MQv6vNt7to?=
+ =?us-ascii?Q?LIYWRB9iIHv7bXe4pDgSSl96sBnQChdYoz+Sy6lKrnYDIe8Wxkb9KBzLu4DR?=
+ =?us-ascii?Q?H7pygReebhKYJIwMPXTuHKhg1AsIWk+zgAmoRD/C?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b3281ab-df33-4edd-4fe7-08dc686ff0bd
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Apr 2024 17:15:17.1197
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2eK5XaKhLJLaEZ3oiJPIUPFSigH+fR12S2+mWcrSU4sOxPGsU8wxY9lj2CGCryJb
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5768
 
-On Fri, Apr 19, 2024 at 05:54:45PM +0100, Robin Murphy wrote:
-> It's somewhat hard to see, but arm64's arch_setup_dma_ops() should only
-> ever call iommu_setup_dma_ops() after a successful iommu_probe_device(),
-> which means there should be no harm in achieving the same order of
-> operations by running it off the back of iommu_probe_device() itself.
-> This then puts it in line with the x86 and s390 .probe_finalize bodges,
-> letting us pull it all into the main flow properly. As a bonus this lets
-> us fold in and de-scope the PCI workaround setup as well.
+On Sun, Apr 28, 2024 at 06:19:29AM +0000, Tian, Kevin wrote:
+> > From: Alex Williamson <alex.williamson@redhat.com>
+> > Sent: Saturday, April 27, 2024 4:14 AM
+> > 
+> > On Fri, 26 Apr 2024 11:11:17 -0300
+> > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> > 
+> > > On Wed, Apr 24, 2024 at 02:13:49PM -0600, Alex Williamson wrote:
+> > >
+> > > > This is kind of an absurd example to portray as a ubiquitous problem.
+> > > > Typically the config space layout is a reflection of hardware whether
+> > > > the device supports migration or not.
+> > >
+> > > Er, all our HW has FW constructed config space. It changes with FW
+> > > upgrades. We change it during the life of the product. This has to be
+> > > considered..
+> > 
+> > So as I understand it, the concern is that you have firmware that
+> > supports migration, but it also openly hostile to the fundamental
+> > aspects of exposing a stable device ABI in support of migration.
+> > 
+> > > > If a driver were to insert a
+> > > > virtual capability, then yes it would want to be consistent about it if
+> > > > it also cares about migration.  If the driver needs to change the
+> > > > location of a virtual capability, problems will arise, but that's also
+> > > > not something that every driver needs to do.
+> > >
+> > > Well, mlx5 has to cope with this. It supports so many devices with so
+> > > many config space layouts :( I don't know if we can just hard wire an
+> > > offset to stick in a PASID cap and expect that to work...
 > 
-> At this point we can also then pull the call up inside the group mutex,
-> and avoid having to think about whether iommu_group_store_type() could
-> theoretically race and free the domain if iommu_setup_dma_ops() ran just
-> *before* iommu_device_use_default_domain() claims it... Furthermore we
-> replace one .probe_finalize call completely, since the only remaining
-> implementations are now one which only needs to run once for the initial
-> boot-time probe, and two which themselves render that path unreachable.
+> Are those config space layout differences usually also coming with
+> mmio-side interface change? 
+
+Not really
+
+> If yes there are more to handle for
+> running V1 instance on V2 device and it'd make sense to manage
+> everything about compatibility in one place.
+
+It's complicated :|
+
+The config space layout can't change once the device is discovered by
+the OS and I have a feeling it can't differ between VFs in a SRIOV.
+
+So even if we did say that a device HW/FW will change it's personality
+on the fly, I'm not sure we actually can and still conform to the
+PCI specs?
+
+> If we pursue the direction deciding the vconfig layout in VMM, does
+> it imply that anything related to mmio layout would also be put in
+> VMM too?
+
+I'd guess no, MMIO doesn't have the OS and standards entanglements. If
+the FW can reprogram the MMIO layout then when it loads the migration
+state, or provisions the device, it should put the MMIO to the right
+configuration.
+
+> Do we envision things like above in the variant driver or in VMM?
+
+In the device itself. I think it would be an extreme case for someone
+to make a device that had a different MMIO layout that could be
+backwards compatible to an old layout and NOT provide a way for the
+device HW to go back to the old layout directly. If so that device
+would have to mediate MMIO in the VMM or kernel. Depends on the
+complexity I suppose where to do it.
+
+> > > Consider standards based migration between wildly different
+> > > devices. The devices will not standardize their physical config space,
+> > > but an operator could generate a consistent vPCI config space that
+> > > works with all the devices in their fleet.
 > 
-> This leaves us a big step closer to realistically being able to unpick
-> the variety of different things that iommu_setup_dma_ops() has been
-> muddling together, and further streamline iommu-dma into core API flows
-> in future.
-> 
-> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com> # For Intel IOMMU
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> Tested-by: Hanjun Guo <guohanjun@huawei.com>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
-> v2: Shuffle around to make sure the iommu_group_do_probe_finalize() case
->     is covered as well, with bonus side-effects as above.
-> v3: *Really* do that, remembering the other two probe_finalize sites too.
-> ---
->  arch/arm64/mm/dma-mapping.c  |  2 --
->  drivers/iommu/amd/iommu.c    |  8 --------
->  drivers/iommu/dma-iommu.c    | 18 ++++++------------
->  drivers/iommu/dma-iommu.h    | 14 ++++++--------
->  drivers/iommu/intel/iommu.c  |  7 -------
->  drivers/iommu/iommu.c        | 20 +++++++-------------
->  drivers/iommu/s390-iommu.c   |  6 ------
->  drivers/iommu/virtio-iommu.c | 10 ----------
->  include/linux/iommu.h        |  7 -------
->  9 files changed, 19 insertions(+), 73 deletions(-)
+> It's hard to believe that 'wildly different' devices only have difference
+> in the layout of vPCI config space. 
 
-This patch breaks UFS on Qualcomm SC8180X Primus platform:
+Well, I mean a device from vendor A and another device from vendor
+B. They don't have anything in common except implementing the
+standard.
 
+The standard perscribes the MMIO layout. Both devices have a way to
+accept a migration stream defined by a standard. The MMIO will be
+adjusted as the standard requires after loading the migration stream.
 
-[    3.846856] arm-smmu 15000000.iommu: Unhandled context fault: fsr=0x402, iova=0x1032db3e0, fsynr=0x130000, cbfrsynra=0x300, cb=4
-[    3.846880] ufshcd-qcom 1d84000.ufshc: ufshcd_check_errors: saved_err 0x20000 saved_uic_err 0x0
-[    3.846929] host_regs: 00000000: 1587031f 00000000 00000300 00000000
-[    3.846935] host_regs: 00000010: 01000000 00010217 00000000 00000000
-[    3.846941] host_regs: 00000020: 00000000 00070ef5 00000000 00000000
-[    3.846946] host_regs: 00000030: 0000000f 00000001 00000000 00000000
-[    3.846951] host_regs: 00000040: 00000000 00000000 00000000 00000000
-[    3.846956] host_regs: 00000050: 032db000 00000001 00000000 00000000
-[    3.846962] host_regs: 00000060: 00000000 80000000 00000000 00000000
-[    3.846967] host_regs: 00000070: 032dd000 00000001 00000000 00000000
-[    3.846972] host_regs: 00000080: 00000000 00000000 00000000 00000000
-[    3.846977] host_regs: 00000090: 00000016 00000000 00000000 0000000c
-[    3.847074] ufshcd-qcom 1d84000.ufshc: ufshcd_err_handler started; HBA state eh_fatal; powered 1; shutting down 0; saved_err = 131072; saved_uic_err = 0; force_reset = 0
-[    4.406550] ufshcd-qcom 1d84000.ufshc: ufshcd_verify_dev_init: NOP OUT failed -11
-[    4.417953] ufshcd-qcom 1d84000.ufshc: ufshcd_async_scan failed: -11
+Config space primiarily remains a problem in this imagined world.
 
--- 
-With best wishes
-Dmitry
+My best view is that it needs to be solved by config space synthesis
+in the hypervisor and not via HW/FW on the physical device.
+
+> and looks this community lacks of a clear criteria on what burden
+> should be put in the kernel vs. in the VMM.
+
+Right, we've always discussed this. I've fairly consistently wanted to
+push things to userspace, principally for security.
+
+> e.g. in earlier nvgrace-gpu discussion a major open was whether
+> the PCI bar emulation should be done by the variant driver or
+> by the VMM (with variant driver providing a device feature).
+
+Sort of, this was actually also about config space synthesis. If we
+had this kind of scheme then perhaps the argument would be different.
+
+> It ends up to be in the variant driver with one major argument
+> that doing so avoids the burden in various VMMs.
+
+Yes, that has always been the argument that has won out.
+
+> btw while this discussion may continue some time, I wonder whether
+> this vPASID reporting open can be handled separately from the
+> pasid attach/detach series so we can move the ball and merge
+> something already in agreement. anyway it's just a read-only cap so
+> won't affect how VFIO/IOMMUFD handles the pasid related requests.
+
+Yes, this makes sense to me. Ultimately we all agree the config space
+will have to be synthesized.
+
+Jason
