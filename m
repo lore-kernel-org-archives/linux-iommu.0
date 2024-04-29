@@ -1,119 +1,160 @@
-Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com [209.85.219.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FE191411DD
-	for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 20:25:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27CA21836FF
+	for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 21:26:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714422303; cv=none; b=B90YFqFXrcxd3Fztx0GnB8g580UO3wXR6b2reY7ljpVHUXnCc1Ns+eWL2ZvQU61x+AqMKwcQY12fZg5+vHTFTDXaPNheYbCQ189vbpdxRb42kpsGG+oMLbCOmGwk+8GOJL4/E11gg63nKX5kmSnoF121qyivxPEX6HWm2tw0PU0=
+	t=1714426007; cv=none; b=AT2iBSpQ9y76GFj10zfvS8xYtMmeCCBU5HPksWESW3CbcpthIY7WzXPQtHqL58nyJrJMRvdlKKXQay4V5qFPPGSZqUqv8ZBDwcfNYLTAZibOuc8gvW/qDmJ385jA0ohUr+yN+IDJ0Dg1S9cvY4ZOv+cFUb535npF33KeF62yDbk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714422303; c=relaxed/simple;
-	bh=hGkJQ2hEBOMlcZ1QQLXlHGuMxkhZEnRo9lDvpVvAHME=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hQeYtHMtEonIK1XPurEDhTOsJ9eVxWZNEgDGUwT4V7223MEuFqVGjxrvdEq31PRQUrVlpHhfrwuS56yIp0/DwqGZj52Wchgh0jmaE3KPQ/DbkRiKMc057C1hUvJiOgYCgZbXXmveU3jotW21QmXie9FggyiT0ed3WsHfZIHOUzE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=eejoqtNM; arc=none smtp.client-ip=209.85.219.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1714426007; c=relaxed/simple;
+	bh=Dr1C3G4pbGiXPC5Ti/nKd6k7VSHbUcwlgdfOmEAfcuw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=OUj9AIg1mzQP+1P+jyCM6OrYQVdoI9ZgBPzy6eWmdwnTij2cMkuNM/GNLPLyCgaMwR0BDEri/mvSqaafFFfZIjC1bURpGkMAD495MEOumCYBx1WL2FZAhd/W+KebUfndTv0g2SNlwapf8rfFLesyU7cc23DSbUCdO6uA1Bhokr0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=fGyeGDLY; arc=none smtp.client-ip=209.85.219.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="eejoqtNM"
-Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-6a06b12027cso54111346d6.0
-        for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 13:25:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fGyeGDLY"
+Received: by mail-yb1-f171.google.com with SMTP id 3f1490d57ef6-dcc71031680so4894798276.2
+        for <iommu@lists.linux.dev>; Mon, 29 Apr 2024 14:26:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1714422300; x=1715027100; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=U10a+UAKqIg3J4+xTDrbP/nR0140IUjBUmVPbfPeBtU=;
-        b=eejoqtNM2DEGzo+xxcc2OQLtaevN/+bhJLqKs1iM2qCOks9u3i8GR3GWB1T7AruStL
-         W6qHLiaQf4RE1K/xSRzXFtniPClCYDkpgoC2GnPxP02TxQ61l36waD7KJ4PxT87O3ijd
-         P/juwI6QSSGpXhSqSuHLG7DRJa2hguJmDCl9CYgbcZGEZepIryWHN1JoqujtZwpyYhwG
-         XdqlIx/ZsneaH0Zv40KS89rCNjU+sNtyPIEN19WnLdDmrat55l8c1Vy0tgnn8K6y9va2
-         3B7bhdHfbtfIQNtSRtWwPCCcxFT8ZL3NtTWypXTJJzj/7d/PR8LplReupmTdxDdqShfl
-         lEYA==
+        d=linaro.org; s=google; t=1714426003; x=1715030803; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=QU/Tws1Y+aFFVGVLoOklo9JtVUD/v/fzs2lzZlQCwNQ=;
+        b=fGyeGDLYfyJmmET/5uL4GGKyDSI8EbI1BdxPBe5uOTN9OBi4y8RzfXPHzQnUiq2yMQ
+         jyQM16K4rs0Ahm8TAj3z+YB7ISXyEYdUu/XOiXZej3P8/Un8TTFxS8SBSgL+SE7Ab/4C
+         /OxhP5YAQe3XC+tS6cHmRCs+C/x+tUaNwS/9Wl1HpBuZL3Ym8eE3XWfjjHDVWTmeHtKm
+         LQcdgxCXB5tDur+18SHuA7PhHfjxsTjL+kcAVSjJL9ljFPq3JoRVNBbVWYak/ODwoOBJ
+         8r0w3mdZWw9O7DGP6Fyf4FpCVP54TNzgu7VNSGde6e5oGvveYHDUBhqrbtdy0UHWxO0F
+         vs0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714422300; x=1715027100;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=U10a+UAKqIg3J4+xTDrbP/nR0140IUjBUmVPbfPeBtU=;
-        b=l8nxnjdupehYtSwrvIRhJ8mcsMqEtc5l172H5RKzBA4HLOvQlk9Zt9POmBr6v/87E0
-         F1Tm+J2CJOnj42aGFcp0lxUvKxWdeoQCJu20FquR12iJ+yX7Hyj1CoOsKRPKg/yM6hr5
-         A7CnyHnAgPXpqpFWMHQiT93ibOhfDM+u+KNc54G1Mds241RHZ1KIEgZ0MGuZ0ZOs8zwp
-         mHIcXM3uGTQXKiSYohAla7LEZidD2qbhNJYUxSFKn45Mox1OT+v/45T4jv4+PA5bT+dM
-         GwuvFCSSYz3jxK8ga75b7TlZQNXCNk+W7r3E11DixeIQVSTSjdINKpDoyH1UCMqypAgD
-         ketA==
-X-Forwarded-Encrypted: i=1; AJvYcCV8M7epv7MQQ57yOqRdDzkFQOUfAqfTLNJxY0j/Mbpbr5+zDpex07Jjyy/dQT5YnsMgaAuLMGq0mock5RTJB7xMpJh81sM=
-X-Gm-Message-State: AOJu0YzoGlR1acGW3kf8G3IlbwpNjFl5/S7dj9aew/3Hib1hkokmFqCB
-	neVBnLtzrYjvmiwG4FUBheXE3XyprPnCm8KYFrRxQ8Pt5OXz0qW2Yq3wcx1515A=
-X-Google-Smtp-Source: AGHT+IF06oYaGQ5jj9Iw6KSync38cZEI2xitY/lo/JDJPZex4PeINFt5C+ktEksqHFLkO2LXKXqFgA==
-X-Received: by 2002:a05:6214:170c:b0:6a0:c155:a650 with SMTP id db12-20020a056214170c00b006a0c155a650mr1291314qvb.23.1714422300544;
-        Mon, 29 Apr 2024 13:25:00 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id x8-20020ad44588000000b0069b432df140sm3829579qvu.121.2024.04.29.13.24.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 29 Apr 2024 13:25:00 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1s1XYY-002rmm-3g;
-	Mon, 29 Apr 2024 17:24:58 -0300
-Date: Mon, 29 Apr 2024 17:24:58 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Nicolin Chen <nicolinc@nvidia.com>, Yi Liu <yi.l.liu@intel.com>,
-	Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
-	virtualization@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/9] iommu: Replace sva_iommu with iommu_attach_handle
-Message-ID: <20240429202458.GR231144@ziepe.ca>
-References: <20240403011519.78512-1-baolu.lu@linux.intel.com>
- <20240403011519.78512-3-baolu.lu@linux.intel.com>
- <20240403115913.GC1363414@ziepe.ca>
- <e3f526e3-6474-49ff-b8d6-995aaf1c1830@linux.intel.com>
- <20240408141946.GB223006@ziepe.ca>
- <86e723e7-c3be-41b1-95d8-dbdf86bbdab5@linux.intel.com>
- <20240409234800.GD223006@ziepe.ca>
- <5871aaec-b81a-4ad4-8eb1-656a04d04bda@linux.intel.com>
+        d=1e100.net; s=20230601; t=1714426003; x=1715030803;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=QU/Tws1Y+aFFVGVLoOklo9JtVUD/v/fzs2lzZlQCwNQ=;
+        b=DEnSgKwf3X/T7b7wPKrYB1Z9F25eu0az98s7XEo+qe7w3wI/s3IPNefJLIl19Cg6LR
+         LzFp4eIX0hxkvZwjkfDIIB3zFLh5vBUTQRQyB0dGQ1X5gphrNqF0Ztx/VJE8smMkNQRd
+         ZnpNRzyAmIOqyLTs7RPtcBTc8AODaA4EL2WMtClWCjw7n9iSeSB4Kmdig4mt0SdOPwRs
+         ZmUQNhQZn+y+SnCZcvj7RWDD7X5HCfEzi8qj0T8tABd5iIicJJ0Dl9nO3PyJnIGoX614
+         o/BHIGE6EbdDzt3r1PxVwAEbS14d/cPgOUcmXtvP4NEwhcQqp/5xPM9HM5IiM0vk71a4
+         qq1g==
+X-Forwarded-Encrypted: i=1; AJvYcCUHsTynujDbxG4vLK1XStqAYELhTlwUch56GPh8gXkiZrz8ZTN2rQAJAMWcOdFXkP5LcO8KxZSW4TSDNuqJRcAEmctH+RM=
+X-Gm-Message-State: AOJu0YwGdsSjndsipP7rZrPO+3o8czODa0OvIO3ysXeCMt7aMqIDRb+J
+	LivEh8+hQ8p1m/8lOAlayfpwc+Oo4QLYzdHWpuGL6MXOacCQR6bOrasKT5WcD3GlkFXfNC86roL
+	O9/TbpdPCL5Zsl7IPz2fKJyCPsjQj6A5QYq4LXQ==
+X-Google-Smtp-Source: AGHT+IGKK3YXyDU+4ECuqi3EgUuBK4bT+CVyxZ6dH/j0Bz4fVxCMiVvjkF3hOLG0ZcsUc7l0RWVJyvbD7ONlUCh2d6s=
+X-Received: by 2002:a25:b910:0:b0:dcc:6112:f90d with SMTP id
+ x16-20020a25b910000000b00dcc6112f90dmr10901148ybj.62.1714426003134; Mon, 29
+ Apr 2024 14:26:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5871aaec-b81a-4ad4-8eb1-656a04d04bda@linux.intel.com>
+References: <cover.1713523152.git.robin.murphy@arm.com> <bebea331c1d688b34d9862eefd5ede47503961b8.1713523152.git.robin.murphy@arm.com>
+ <Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru>
+In-Reply-To: <Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date: Tue, 30 Apr 2024 00:26:31 +0300
+Message-ID: <CAA8EJprL8NbNfOvp17hrHoVNkKBpD39xfeu+STm6m9VObF2n9Q@mail.gmail.com>
+Subject: Re: [PATCH v4 6/7] iommu/dma: Centralise iommu_setup_dma_ops()
+To: Robin Murphy <robin.murphy@arm.com>, 
+	"open list:DRM DRIVER FOR MSM ADRENO GPU" <linux-arm-msm@vger.kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+	Konrad Dybcio <konrad.dybcio@linaro.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>, Vineet Gupta <vgupta@kernel.org>, 
+	Russell King <linux@armlinux.org.uk>, Catalin Marinas <catalin.marinas@arm.com>, 
+	Will Deacon <will@kernel.org>, Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>, 
+	Thomas Bogendoerfer <tsbogend@alpha.franken.de>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+	Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo <guohanjun@huawei.com>, 
+	Sudeep Holla <sudeep.holla@arm.com>, "K. Y. Srinivasan" <kys@microsoft.com>, 
+	Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>, 
+	Dexuan Cui <decui@microsoft.com>, Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>, 
+	David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+	Niklas Schnelle <schnelle@linux.ibm.com>, Matthew Rosato <mjrosato@linux.ibm.com>, 
+	Gerald Schaefer <gerald.schaefer@linux.ibm.com>, 
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Rob Herring <robh+dt@kernel.org>, 
+	Frank Rowand <frowand.list@gmail.com>, Marek Szyprowski <m.szyprowski@samsung.com>, 
+	Jason Gunthorpe <jgg@ziepe.ca>, linux-kernel@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org, 
+	iommu@lists.linux.dev, devicetree@vger.kernel.org, 
+	Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 
-On Sun, Apr 28, 2024 at 06:22:28PM +0800, Baolu Lu wrote:
+On Mon, 29 Apr 2024 at 19:31, Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
+>
+> On Fri, Apr 19, 2024 at 05:54:45PM +0100, Robin Murphy wrote:
+> > It's somewhat hard to see, but arm64's arch_setup_dma_ops() should only
+> > ever call iommu_setup_dma_ops() after a successful iommu_probe_device(),
+> > which means there should be no harm in achieving the same order of
+> > operations by running it off the back of iommu_probe_device() itself.
+> > This then puts it in line with the x86 and s390 .probe_finalize bodges,
+> > letting us pull it all into the main flow properly. As a bonus this lets
+> > us fold in and de-scope the PCI workaround setup as well.
+> >
+> > At this point we can also then pull the call up inside the group mutex,
+> > and avoid having to think about whether iommu_group_store_type() could
+> > theoretically race and free the domain if iommu_setup_dma_ops() ran just
+> > *before* iommu_device_use_default_domain() claims it... Furthermore we
+> > replace one .probe_finalize call completely, since the only remaining
+> > implementations are now one which only needs to run once for the initial
+> > boot-time probe, and two which themselves render that path unreachable.
+> >
+> > This leaves us a big step closer to realistically being able to unpick
+> > the variety of different things that iommu_setup_dma_ops() has been
+> > muddling together, and further streamline iommu-dma into core API flows
+> > in future.
+> >
+> > Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com> # For Intel IOMMU
+> > Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+> > Tested-by: Hanjun Guo <guohanjun@huawei.com>
+> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> > ---
+> > v2: Shuffle around to make sure the iommu_group_do_probe_finalize() case
+> >     is covered as well, with bonus side-effects as above.
+> > v3: *Really* do that, remembering the other two probe_finalize sites too.
+> > ---
+> >  arch/arm64/mm/dma-mapping.c  |  2 --
+> >  drivers/iommu/amd/iommu.c    |  8 --------
+> >  drivers/iommu/dma-iommu.c    | 18 ++++++------------
+> >  drivers/iommu/dma-iommu.h    | 14 ++++++--------
+> >  drivers/iommu/intel/iommu.c  |  7 -------
+> >  drivers/iommu/iommu.c        | 20 +++++++-------------
+> >  drivers/iommu/s390-iommu.c   |  6 ------
+> >  drivers/iommu/virtio-iommu.c | 10 ----------
+> >  include/linux/iommu.h        |  7 -------
+> >  9 files changed, 19 insertions(+), 73 deletions(-)
+>
+> This patch breaks UFS on Qualcomm SC8180X Primus platform:
+>
+>
+> [    3.846856] arm-smmu 15000000.iommu: Unhandled context fault: fsr=0x402, iova=0x1032db3e0, fsynr=0x130000, cbfrsynra=0x300, cb=4
+> [    3.846880] ufshcd-qcom 1d84000.ufshc: ufshcd_check_errors: saved_err 0x20000 saved_uic_err 0x0
+> [    3.846929] host_regs: 00000000: 1587031f 00000000 00000300 00000000
+> [    3.846935] host_regs: 00000010: 01000000 00010217 00000000 00000000
+> [    3.846941] host_regs: 00000020: 00000000 00070ef5 00000000 00000000
+> [    3.846946] host_regs: 00000030: 0000000f 00000001 00000000 00000000
+> [    3.846951] host_regs: 00000040: 00000000 00000000 00000000 00000000
+> [    3.846956] host_regs: 00000050: 032db000 00000001 00000000 00000000
+> [    3.846962] host_regs: 00000060: 00000000 80000000 00000000 00000000
+> [    3.846967] host_regs: 00000070: 032dd000 00000001 00000000 00000000
+> [    3.846972] host_regs: 00000080: 00000000 00000000 00000000 00000000
+> [    3.846977] host_regs: 00000090: 00000016 00000000 00000000 0000000c
+> [    3.847074] ufshcd-qcom 1d84000.ufshc: ufshcd_err_handler started; HBA state eh_fatal; powered 1; shutting down 0; saved_err = 131072; saved_uic_err = 0; force_reset = 0
+> [    4.406550] ufshcd-qcom 1d84000.ufshc: ufshcd_verify_dev_init: NOP OUT failed -11
+> [    4.417953] ufshcd-qcom 1d84000.ufshc: ufshcd_async_scan failed: -11
 
->         /* A bond already exists, just take a reference`. */
->         handle = iommu_attach_handle_get(group, iommu_mm->pasid);
->         if (handle) {
->                 if (handle->domain->iopf_handler != iommu_sva_iopf_handler)
-> {
->                         ret = -EBUSY;
->                         goto out_unlock;
->                 }
-> 
->                 refcount_inc(&handle->users);
->                 mutex_unlock(&iommu_sva_lock);
->                 return handle;
->         }
-> 
-> But it appears that this code is not lock safe. If the domain on the
-> PASID is not a SVA domain, the check of "handle->domain->iopf_handler !=
-> iommu_sva_iopf_handler" could result in a use-after-free issue as the
-> other thread might detach the domain in between the fetch and check
-> lines.
+Just to confirm: reverting f091e93306e0 ("dma-mapping: Simplify
+arch_setup_dma_ops()") and b67483b3c44e ("iommu/dma: Centralise
+iommu_setup_dma_ops()" fixes the issue for me. Please ping me if you'd
+like me to test a fix.
 
-For the above you just need to pass in the iommu_sva_iopf_handler as
-an argument to attach_handle_get() and have it check it under the
-xa_lock.
 
-The whole thing is already protected under the ugly sva_lock.
-
-Ideally it would be protected by the group mutex..
-
-Jason
+-- 
+With best wishes
+Dmitry
