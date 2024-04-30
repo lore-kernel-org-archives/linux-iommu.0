@@ -1,62 +1,105 @@
-Received: from relay03.th.seeweb.it (relay03.th.seeweb.it [5.144.164.164])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A86A517106E
-	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 13:00:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=5.144.164.164
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2A0D1F171
+	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 13:44:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714482023; cv=none; b=S5D8quZbknmDrb/OX39qHXcxFw4NXrwUsJmePc3v5SLrfIpRqooO+0NZKgG+7pL81aa6aUv+o8ARHC8AQkXwgHaLMaYMl5PNO3548h+xc6+IAXGNiq2fzaR9yGiybqmvWLCGPuu1o9SxoUTX17si9W4BHfATG4nNXXCRV6/UGck=
+	t=1714484698; cv=none; b=WITyr+4TVUvMUDpoN9iOz1VJBcFhb4ySWdlwH3IitTuCMyGMfBBk0prijTbyeyw5DRC04L09qAHGnvtCWMebk6Nj9JRgqhgUah0dcOC84f2a3u0Mt1XRSVV5XIe0GQDujDbnRE+KMHCpFFmTSWIG9XnQJiwMuJhX0QKIrqW0xYQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714482023; c=relaxed/simple;
-	bh=bdpn50SxD09dSxa7z+OSnvabNF1NiWYXLMiyWh/ZrSc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Er/KMxSGXXwudWkhssR2YRAULGIrhVbg6Bv4NAjLpIy781ouBOY+eT2tGYfKuS+9wUgG5HmwRH1g3Lg2bHKHttww6o5xcg8jFjkhPipKKcInBKQakfzY9wLVhrohSfAQUdtBGZqtlz2NF8xpD3BICNlvdnBcpUzcQQjGB2pL6bU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=somainline.org; spf=pass smtp.mailfrom=somainline.org; arc=none smtp.client-ip=5.144.164.164
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=somainline.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=somainline.org
-Received: from [192.168.114.15] (078088045141.garwolin.vectranet.pl [78.88.45.141])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 958A920189;
-	Tue, 30 Apr 2024 14:51:29 +0200 (CEST)
-Message-ID: <4a4482a0-4408-4d86-9f61-6589ab78686b@somainline.org>
-Date: Tue, 30 Apr 2024 14:51:28 +0200
+	s=arc-20240116; t=1714484698; c=relaxed/simple;
+	bh=0rwriOyTibpxPBrTFMRsdUFy71bmP/Hor09fQg0mD1Q=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=VN/BXH9MO6glrjiOOCX0uQjyn6WtPdHZdw+m/MqVZ8yDA2O3HNS4fgEYQg8ro7i6LfHmpVK2yzhydtUuDZoQSBq/jBb0QT4+9bVu0k1Td12suSmwimodM/n1mWxVTqnb/wcsg7Rz+3i3w6qW/cZSpzvOS6HzDOR/chrPMeZfN38=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.186.231])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4VTLwP0lN6z6J7JY;
+	Tue, 30 Apr 2024 21:42:13 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
+	by mail.maildlp.com (Postfix) with ESMTPS id CD759140A08;
+	Tue, 30 Apr 2024 21:44:53 +0800 (CST)
+Received: from A2303104131.china.huawei.com (10.126.175.159) by
+ lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Tue, 30 Apr 2024 14:44:43 +0100
+From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+To: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>
+CC: <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
+	<jgg@nvidia.com>, <ryan.roberts@arm.com>, <kevin.tian@intel.com>,
+	<nicolinc@nvidia.com>, <mshavit@google.com>, <eric.auger@redhat.com>,
+	<joao.m.martins@oracle.com>, <jiangkunkun@huawei.com>,
+	<zhukeqian1@huawei.com>, <linuxarm@huawei.com>
+Subject: [PATCH v3 0/4] iommu/smmuv3: Add IOMMUFD dirty tracking support for SMMUv3 
+Date: Tue, 30 Apr 2024 14:43:04 +0100
+Message-ID: <20240430134308.1604-1-shameerali.kolothum.thodi@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] arm64: Properly clean up iommu-dma remnants
-To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org
-Cc: will@kernel.org, catalin.marinas@arm.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-References: <d4cc20cbb0c45175e98dd76bf187e2ad6421296d.1714472573.git.robin.murphy@arm.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <d4cc20cbb0c45175e98dd76bf187e2ad6421296d.1714472573.git.robin.murphy@arm.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
 
+Hi
 
+v2 --> v3
 
-On 30.04.2024 12:22 PM, Robin Murphy wrote:
-> Thanks to the somewhat asymmetrical nature, while removing
-> iommu_setup_dma_ops() from the arch_setup_dma_ops() flow, I managed to
-> forget that arm64's teardown path was also specific to iommu-dma. Clean
-> that up to match, otherwise probe deferral will lead to the arch code
-> erroneously removing DMA ops set elsewhere.
-> 
-> Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Link: https://lore.kernel.org/linux-iommu/Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru/
-> Fixes: b67483b3c44e ("iommu/dma: Centralise iommu_setup_dma_ops()")
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
+ -Rebased on top of the latest of Jason's refactor series git[3].
+ -Addressed comments from Ryan and Jason(patch 2 & 3, Thanks!)
+ -Added R-by tags  to 1 & 4.
 
-Tested-by: Konrad Dybcio <konrad.dybcio@linaro.org> # QC SM8550 QRD
-Reviewed-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Please take a look and let me know your feedback.
+Thanks,
+Shameer
 
-Konrad
+---
+This is revisiting the earlier attempts [1, 2] to use SMMUv3 HTTU feature
+for dirty page tracking. The Intel/AMD support is already mainline.
+
+Basic sanity tests are done using an emulation setup and on a test
+hardware setup. Block page split/merge(BBML) is not part of this
+series. I am planning to send it separately.
+
+v1 --> v2:
+https://lore.kernel.org/linux-iommu/20231128094940.1344-1-shameerali.kolothum.thodi@huawei.com/
+
+Addressed review comments from Jason and Joao(Thanks)
+   -Moved dirty_ops setting to domain finalise(patch #3)
+   -Only enable DBM for stage 1 if domain_alloc_user() requests it.
+   -Changed IO page table walker(patch #2) and tested with 4KB/16KB/64KB
+    with l1/l2/l3 traversal.(The earlier one had a bug where it fails to
+    walk L3 level).
+   -Rearranged patches a bit to improve bi-sectability.
+   -Rebased on top of Jason's v5 of SMMUv3 new API series git.
+
+1. https://lore.kernel.org/lkml/20210413085457.25400-1-zhukeqian1@huawei.com/
+2. https://lore.kernel.org/linux-iommu/20230518204650.14541-1-joao.m.martins@oracle.com/
+3. https://github.com/jgunthorpe/linux/commits/smmuv3_newapi
+
+Jean-Philippe Brucker (1):
+  iommu/arm-smmu-v3: Add feature detection for HTTU
+
+Joao Martins (1):
+  iommu/arm-smmu-v3: Add support for dirty tracking in domain alloc
+
+Kunkun Jiang (1):
+  iommu/arm-smmu-v3: Enable HTTU for stage1 with io-pgtable mapping
+
+Shameer Kolothum (1):
+  iommu/io-pgtable-arm: Add read_and_clear_dirty() support
+
+ drivers/iommu/Kconfig                       |   1 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 129 ++++++++++++++++----
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |   8 ++
+ drivers/iommu/io-pgtable-arm.c              | 110 ++++++++++++++++-
+ include/linux/io-pgtable.h                  |   4 +
+ 5 files changed, 226 insertions(+), 26 deletions(-)
+
+-- 
+2.34.1
+
