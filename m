@@ -1,199 +1,515 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2086.outbound.protection.outlook.com [40.107.237.86])
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2074.outbound.protection.outlook.com [40.107.220.74])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 066B11E4AF
-	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 16:31:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.86
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2D1E184137
+	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 16:35:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.220.74
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714494672; cv=fail; b=SKZvCQiPwed6kLfo7e+Fae4osdmDk4H5hrUbj54nP5GR4byYuNqnHrCEkW6Vxz6jShLeXAURu30phGu7SfOa49Gq0STBsNi+aSk/+bh8YAqPwK/B+GlEcC3G+mQuN64xU6NgTOULQLNHKMXaiwX670XuHCROnYn2OrGQKhIoPpQ=
+	t=1714494953; cv=fail; b=KuCUoVOppQdAsxIFt5tRPcAlUcEou6MJ5ls85aVKtGWTeb8kBAWdKm7DJ8wAnUQZ1rnosmcSuM1xJgYa+xC3bC2nTCGH6w4BeR2I6RUn0O88sH3irJar4PywcQvNvE48JGDa3g2PyqruahR1pd6+MGLzZxeFAiOtUR98HCROYsY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714494672; c=relaxed/simple;
-	bh=v1eezTMSaxKv4ZtAhCPTYLRWTiSz9QiD2AvmxQrx6pw=;
-	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lkmhTUJBgdUgk9VvFrZOL95GQL+c07YD0g5eJLiUWUD4MzRaZeolDrYjXJBQgZ/p/nrbOrP7UAx9KJzzxi062zMyzIZGk0Z+YrQQ5pV2iK2jl/4XFE95m5522CBj3LsJ7wgp+DhXv8Wmgby9f15qX7TsuPHiJjkyT74k0Drlmxk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=mn/kAHep; arc=fail smtp.client-ip=40.107.237.86
+	s=arc-20240116; t=1714494953; c=relaxed/simple;
+	bh=+nddv1SbChNDGQKEXwbBjS/2SRNPxO+ETw07qphAc3Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=Slumj5wZIRIDB3s73khsSZcaSNg+AkHcuSoXf37zjc6bxwCPDy9RRIuq5LLWqsWNWl8VXOUHlYM2vTuERb+PNE2iuE//jeirOJPNzxur/b0RbkSAQp4Wx5tjmNQg86UgmODogH6anWYrX/M2snMNJ+l3E9/nhltSN4itnQZl2b4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=OERjnFA4; arc=fail smtp.client-ip=40.107.220.74
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="mn/kAHep"
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="OERjnFA4"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JtalCH6V5vEfKrKDYT3lsNl9K0oOTbsg1TT1rSuVn2XD6+esDFlZgw+0ZZdSDrQ62yltWC9qKhaMSYYPQDTeirtTH6MSEVZbupuO+GNApXHTJnG1qIEDWcOpVwEd8xsYckFL+kwJN6456xrZ9hlaazyGJQUDb/+WRt90QvNf6hEqYvbbAmrscn2rDUrQsMEzhgxtIxeTqP/tRdtm/GPC7/G3VjjR4dVToxTHj151qZRmph18hS/GThR3Vq71darE7/cu+eLGWjME4jgcVOot1R81BvZWlIIcw8WgT9ZeBf7R/XaBfpLSAnR+y75M2WsFOwMIYKycax55K4sYnEzfmw==
+ b=HohTbs7FVvDzvW/+BzSKIDI8nx80Zi2GG6th6ifxG9FZvrNhxt3rSiPkBIL4qWvCDOQpAkF9JG2H3a1GRPoSrY/3zkR/YiEZoAFSCUsK9fowyysoXPEx1tuYVOL1tWTCsROZ7h2Lq+dDhXMB0ULNVLP2+PZPCJCwuJNGbW7CeRlG+KQG3n7agx/X7HHmlo8YMWhKTfdUGKGyJ1y0SrKLQqgYIpFdvPerDhr1GVdHzfPb9Gbz5QpSTsPKQDUDXIBheaKS1gwGBzuoywh8e2G8EWZ5g2Boyfr2RTgIdnrg+1/LQ46XmHTOiJ6uuLEZfSXnjm9xxk+TG7GMIQsajpVaFA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vlZiHaWdGPOiaSo7GrQKrWC6yDTLRZNWIFqIvAtUeaw=;
- b=JgNYNzaSlKkCLpHjrqBElvIDzW/2Kp7nwkUYN0isG1JW/5tECPjIfu0g3aoEH1XiDaR+p+qynlqIECARY8G9Yq4KPXV9S7IXNF2yCf6JZIgkVdVETl4OPtfSdmnS+b137bZn6XQU++Fx+Q/SRKZyRkYquvSiqP61oxO9jIOlXxvuST/K62C9XSU4v4L/fGRHVXWBEdmrkpRbUkzKPfQWRN7cToLX3HreARWmZQ2SEkEbHAKgREtxrmpALcDLQBeLzXMwD9jxcUC9V1CA0fYF4ty2qerhUaDWZWLQ8pCYJps+wBtVqGbcaH6QK2h8qJji70E4v+bFTE4dA7vX2tb1Sw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none (0)
+ bh=Bg4I3Fr20dtLv3BAl4ttkOQkvDnPE59fyxPVZy2aUZw=;
+ b=CNQkgmf0VhOGXENBBkt35yL40pvua+2Q47REcynxsas9P4qluHt/J087WIpepZPFWqlJZpNLBht6pzthLN0kBb9LG+/ct+iTo+Jzttgm9ndJJARwc0hQcXe/qS49exVVeRgyFUWXGlFUi2656DlRKdJs9p2fL0rns/HzcfFziMHAowdTmcodO82DeheMWZWHMMaqm+SeIo3wIsGg/U8Tt1CnEjZuF31gBv5BeBLdbcZxMOsq+C3B+1trOdLoJOp1/h8HQT7jrqi4GatWjAfypMLi5e6DNY5Ns7Kcb6qQudW4VqI0/7c/LL0eNLOX82j5sEJV2QnLORY1ZyJK6LFcxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vlZiHaWdGPOiaSo7GrQKrWC6yDTLRZNWIFqIvAtUeaw=;
- b=mn/kAHep5arPs7J+ktIECunFxX/OoBUcRJXTAwa1y2UQpexAz3foaypsw+L6NJDkgAaC97h2LCUKpixssOHOrWI5QOGeUU7ggQpRio92u5wqY+5Ac8acQNJsZSV9u9FEhk+cp6AEPWHgDiu+OGQeMchjS1rIf941KFDR7rD7Fb0yFx1KV1HfpEhA/qudeEncWuGW6hU4WF1SNLm34jQCZFozKAzDCNElzHAnVQ0k1IJelBQHRZGFquR1YHny5rSjiFQxPshfoNbKnznJAMr7/g5Yzjr1ICASsmsptXky7jizfb7Ka2hUtTjROMsmG0MWhCBIfvRW9cuAwutcJPRsZQ==
-Received: from DM6PR08CA0004.namprd08.prod.outlook.com (2603:10b6:5:80::17) by
- PH7PR12MB7988.namprd12.prod.outlook.com (2603:10b6:510:26a::22) with
+ bh=Bg4I3Fr20dtLv3BAl4ttkOQkvDnPE59fyxPVZy2aUZw=;
+ b=OERjnFA4jqTzVqhYDzhsyKz9vV3aIget91jUOJcUJlklDXzLvPEtU4vIcOPiFuQ75g9CcURG7I2Sj3TnduTFR6el5JZQjv+/9zLYQDlT+IqORbaOQj58fB4Uno2fzkcdvx67VXBCDqgNLGCrVh6PFOIc791U/nyGYBMqj877yYfCWZH//+Gp81I1qQQXyJ/JvDLVHUrUoZmyXaDWqo6/cG6H3D8EZaQE4B9I8pEJsPACC68Y7KtaaIrGRoBgeUxtP0nTGRzqMehDBsmj4MI8GoF2LjKvAR9EQ0AVCyntJ7Nv9KhimoRHsM75r76ouQX8/ra4s1wi0BlaeQtsmspaAw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by MW4PR12MB7264.namprd12.prod.outlook.com (2603:10b6:303:22e::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.35; Tue, 30 Apr
- 2024 16:31:06 +0000
-Received: from CY4PEPF0000FCC2.namprd03.prod.outlook.com
- (2603:10b6:5:80:cafe::ba) by DM6PR08CA0004.outlook.office365.com
- (2603:10b6:5:80::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.35 via Frontend
- Transport; Tue, 30 Apr 2024 16:31:06 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (216.228.118.232) by
- CY4PEPF0000FCC2.mail.protection.outlook.com (10.167.242.104) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.7544.18 via Frontend Transport; Tue, 30 Apr 2024 16:31:06 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
- (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Tue, 30 Apr
- 2024 09:30:45 -0700
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1544.4; Tue, 30 Apr 2024 09:30:45 -0700
-Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
- Transport; Tue, 30 Apr 2024 09:30:45 -0700
-Date: Tue, 30 Apr 2024 09:30:43 -0700
-From: Nicolin Chen <nicolinc@nvidia.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
-	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
-	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>
-Subject: Re: [PATCH v6 2/6] iommu/arm-smmu-v3: Add CS_NONE quirk
-Message-ID: <ZjEcs4rY1HpPz4Oa@Asurada-Nvidia>
+ 2024 16:35:46 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7519.031; Tue, 30 Apr 2024
+ 16:35:46 +0000
+Date: Tue, 30 Apr 2024 13:35:45 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v6 5/6] iommu/arm-smmu-v3: Add in-kernel support for
+ NVIDIA Tegra241 (Grace) CMDQV
+Message-ID: <20240430163545.GS941030@nvidia.com>
 References: <cover.1714451595.git.nicolinc@nvidia.com>
- <81d79f51c69604a38ea4f72c8ac2c573c52e8609.1714451595.git.nicolinc@nvidia.com>
- <20240430142201.GQ941030@nvidia.com>
+ <63414546b1eafdf8032ac1b95ea514da6d206d63.1714451595.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <63414546b1eafdf8032ac1b95ea514da6d206d63.1714451595.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: MN2PR20CA0049.namprd20.prod.outlook.com
+ (2603:10b6:208:235::18) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20240430142201.GQ941030@nvidia.com>
-X-NV-OnPremToCloud: ExternallySecured
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: CY4PEPF0000FCC2:EE_|PH7PR12MB7988:EE_
-X-MS-Office365-Filtering-Correlation-Id: b8c89b69-ff2e-4bd6-74bb-08dc6932ef3e
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|MW4PR12MB7264:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2b623616-19c6-4d93-0552-08dc69339617
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230031|82310400014|1800799015|376005|36860700004;
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|376005|366007;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?WvKcPAPepP/RAKLXqk4OEwyUt8yI0dkDK8dH6NtTjiVQeAI8Es8pS4h0TVqu?=
- =?us-ascii?Q?9GraMoHpLfNs3VAiBq7KW2K0hyZ2taUT1py8meJtZKfnT402Qu8cjULPWbDc?=
- =?us-ascii?Q?X3xCn/gVpqPkqYYhepPzXAuhKU3B9tMXC3rcyxf9WmEWURmyUKXnbiPD4ok0?=
- =?us-ascii?Q?qqIvCEnKkEe5Hwti2uN5EQU+O1Hmlji4F4hzJgkhCWvQcTCjl7IKqWErIptC?=
- =?us-ascii?Q?VSrThvNda5UBz+bLNMfiDca6l8ka8OyxRr4KK+iPJXifEDzSZotGop/wrxiK?=
- =?us-ascii?Q?P9zpANHx6od7HwGBx4mck0LGh2N4XkNY2vp/D0ULf2NcI7QKtR9qwSuyJrbV?=
- =?us-ascii?Q?u4KY6N8MHTkQpavyYGNK6cC1BypBYmah/E9u5XrsYwFNz7dqPIL5dGfXFmYZ?=
- =?us-ascii?Q?qF8vVbvu6SfP4kSGRkEZkOPiwRkf4V5FRUnCoefSM3tm3phTxbA92pHsJ8Rg?=
- =?us-ascii?Q?Y8O0HN8vJrniet02TlhatJKy7ypnYlNmtGrIKQSQEZtYHc4fRNWAlqTvlFpd?=
- =?us-ascii?Q?8wGgqWXu5Hp8abqMSXgLZRl/MRSQOcYTNOIRYNKmNDH0sgYxmqUbqoQ+g2ww?=
- =?us-ascii?Q?LqJzFbFcctmvD+W5LHjypJcq7oCAddfEKC/zXi6PErqAuCOATY+q6L8APahn?=
- =?us-ascii?Q?0T7Kt+OrjJA8Q8K+cr7R2wbfhB/Zz8LfgS5Kmc2hiyCRU3rIorcHjpv5Dv/6?=
- =?us-ascii?Q?T8qEGRv3vMz2dizAA8C9zncfiiGbdQYVk4gCszh9V1Z7rHdoOnWsJRP8e9M9?=
- =?us-ascii?Q?vXW9DW1r3RVaG0SUjsmERdYxC6BTnD/+lJ1BPkmjTjPODqgknWuJm74ZiR3t?=
- =?us-ascii?Q?bevw2DhSq2BC9knCcqouKMSfHPz8HUcsIcYFQQPxfOypiamltgc09/j3vxaP?=
- =?us-ascii?Q?1ukqmLo9CZaIp/uSTTkgUjtg0BD/TSmifUqTYvXdmxW3fNBHuDziuT9EJWsK?=
- =?us-ascii?Q?1HITgvo6cxG0L0+T8o3fTspkrAUX9aBwTy5dQ7waF9F6U3ttuL8ZLzNN7UUd?=
- =?us-ascii?Q?wnkymcaSDLWed0ymmISjrMwhpWZ8bqxWv5qKZYD968Hxpfqi7bKFPNnVRV6l?=
- =?us-ascii?Q?LL6DBEkfxVeOi38w/+YYYVACeLhBiAlcbYdT5EPbh3DZmeMG3yvwOu4ZYiAB?=
- =?us-ascii?Q?TaGlZpsCwqCRIx7+dezHSOngQLn7c5Yu+DLI4GfsF3B4mkhfsfz/K1n5yGpE?=
- =?us-ascii?Q?MqTj5Bq1j3j5JS38Voqi9kysGbG+ZSWn3HnLVRSOZoLIgSeRqg9zuuroLm6U?=
- =?us-ascii?Q?rbhj/8aEudqSr0DdWgG5KUlAtASqXXmQoLHlAFU6GYMKDGE3ApXXJWz4/RLc?=
- =?us-ascii?Q?AcCemV8jen2bfwugMPgi/nrlM8viKsSDvs90MCCucwt76efXbZtpZrtSA543?=
- =?us-ascii?Q?gJn1QKb3lAAVjl0ZZsS4AuDE445/?=
+	=?us-ascii?Q?IpKFsWUjkRAmooQPTLFRmhFSnrMIc44Lp6X7HLunVlokCugaKY7yQY64jOh8?=
+ =?us-ascii?Q?RyFQst1PzgVhmkqBOvn3446JmFZaCy8UUxeUCmsFMUBtjx9egdkVPDZJs9JU?=
+ =?us-ascii?Q?GBAHYyPGfiT8xhTRztAREVapOIeYR/2hkQCk/iUhzJPhPlzAUdbzaKh3DKbx?=
+ =?us-ascii?Q?dvwmWkF9EmiWAROZyViyIKfNkz72hBRV7pFelckUr5dxFB1PM71B4jY7t7kz?=
+ =?us-ascii?Q?UgpXWV9L1L6odWPyExzhFaro62hLk330iQEdGcsIz9CZ76JAwTT6A9jX5nDB?=
+ =?us-ascii?Q?Q7a29OhV1UiCoBbolIZv9kmq7VEtIA1y3QTnARi5+78snAEparZU6gPnWiE2?=
+ =?us-ascii?Q?o8aYd6atTwLfBiyLPBtm6irRb0CWtm34E6p12WljnnGm12rS860kwqilJCmb?=
+ =?us-ascii?Q?8Ztq1nhHE8ir7J1upCfF6GQTc5Lif9zZVBeS7PtaRZGenQgXCtZr/lwaqPRE?=
+ =?us-ascii?Q?YDF6RbN7D8XB0RDlTEG42zN1tjHrcQH++rfUCDzBmvFoxlsc9mG9ul3zOqhO?=
+ =?us-ascii?Q?kc13ysOL69fszUt4Td8tSp/pt0Y41de7eH2n7DN6GCiKmnVebdP8dp7YkKlR?=
+ =?us-ascii?Q?opJB/W+qYNsErBLdCTKxEp2s8GhBIjbPwrgOPJbUSimFlmOwYr1LQgLhMyNp?=
+ =?us-ascii?Q?aO0bafZO80cmOWQQIQYI2J83YB6W/t4gXXtC5BNlDGhhmYt9LjL4rXu1xQzp?=
+ =?us-ascii?Q?hWRoNSKacLSahkyGCS8otyAJWkPB3P06odbfhgVIpaJqQc5HHFsl+I/cowwY?=
+ =?us-ascii?Q?sYBpQW/2cBzS7jJ47sV9AldBaEX4/BIV2e8SqTzm03alrQVEAz0MlBH45FJn?=
+ =?us-ascii?Q?/p41pFijFdL6Du6hIIhMU4iRacaQwF9FMCNx2vr4Mznjdo5/5ywgbadSScAb?=
+ =?us-ascii?Q?PkR9UgcgABTPyd3swY3lsdwedV+FMIqS/qF+3Po1c75P4mseFBcQqFhtYMsE?=
+ =?us-ascii?Q?qMj1Yt4qL+tMM24xdBO3/jbeRtVqFPN/KBEGEZsAr57vCBgpHdwebXYlU8Nv?=
+ =?us-ascii?Q?vB5ultb3EHI0XYZaiztOJSmkUNv9vOhejTuUTfdh7Mm6LnGL8CaIC8bOS0pg?=
+ =?us-ascii?Q?Id35pYzZ2+XVgTWkXAWjsANZiVxb3De/mEdxZ/PRSIEjfC8CAndc71hd7oye?=
+ =?us-ascii?Q?BbAHVI6dQLL5nKmQt42X9R9UaK65J3isFUydnjspT/e/njXodQtTJeQOENHg?=
+ =?us-ascii?Q?sKtxU8tiL2McGNh5ZnoploqhY9u6e0tsInwPUm+il7hKq/Ukh4Y+LT0cUD6Q?=
+ =?us-ascii?Q?aWsl0wWfXWQMKRCNXmYO3V0otH9gewiWtjKa5/LRfg=3D=3D?=
 X-Forefront-Antispam-Report:
-	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(82310400014)(1800799015)(376005)(36860700004);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(366007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?z1SitkVbIQ65Sc13NwLPMdOJoIfI0gUdlOVDSEdiVKSOGukStV8OsL79/DQM?=
+ =?us-ascii?Q?Yl2plVNyI2TG2sxkjub/30EmN55vwZPwTPKT013IAv0wcrm8gkzf2z7UWgm3?=
+ =?us-ascii?Q?DwKSlhrS//LriNp54RGfp5xHfyThp/jwiC2kLnblg12zDR2oHZVNE8kLQzu9?=
+ =?us-ascii?Q?GW68LbRV1W0Ve555LWKZFnEIFV7CeTC73xdqsO0ylUTvuNEDi5VpH7CnOLQJ?=
+ =?us-ascii?Q?igEmkg7bit8Bl+SIIDK0z/qkf1HkfciF38JwWDjyD7I59jvh1DAIsfCfdgzc?=
+ =?us-ascii?Q?OHYDwScvOClN1u3clGFWDN9xlaPTd+AoP5h8G1TIV7oFD7jKJkzoh0PsKi6m?=
+ =?us-ascii?Q?9ZRG4/z7bP7JpT9+V5g64u9Wy1XX+hKqTZ/FTCV/Tw+Y4qslS3o7iApI9t00?=
+ =?us-ascii?Q?GpBRmxBPRi/J0Se1g4k/DnM/DAmnTOKU7ImYJ8aWnddZnOI2j83TsqcKI5IK?=
+ =?us-ascii?Q?k0rEc6x1ui9j7zl9Iow9dMGlQlj/csEhJIti36KJDGpSmFid6TmfC886AC1V?=
+ =?us-ascii?Q?2JSI91OT8oHhzvr0b0e6mmasJ3keUrfAlMjXAOgcMlnkjWohn+pP7y1KBVNI?=
+ =?us-ascii?Q?EJdcEP/BY4Y9akC6YRZWJ1be1VECvRq7fsy4W+e873iMVUhxLV/rHEKSU2sq?=
+ =?us-ascii?Q?lVlg2+fodTa9oPk2MjxSR/Pp9ULZZrFgwDNYw89xP4+8aBuLAvJEprM2UZ9m?=
+ =?us-ascii?Q?Std3dQLIvDzikXu5tHWFwIjiolAXltn16GYuwGvDx3yCXbR4WK4X6Pc9FQKb?=
+ =?us-ascii?Q?qds795sjABQmh3Qczt8Mx02LVz7GO+Nu8F1znRLQ5xuLLWe4wjjSAp/yydGw?=
+ =?us-ascii?Q?cIad3NslBTIlcAgklIHax+GzlRPZkoARyBFA6KAyHs1WNiFAwbPJ+CsxhFvM?=
+ =?us-ascii?Q?Z0ymuFlEcuIJc9/p2QvK5Pnk263VIbwDmhEt2yVDkOq/dxhyM4dVdMaYSgeZ?=
+ =?us-ascii?Q?tF/+Tvq94TXbJP+9WJrrI4qWyZFlE3Yxag+BwoPNXR9SvzZFZFk5A4nKBBgs?=
+ =?us-ascii?Q?VywX97MP/JO4/dLTjvTMyzDCa27+xcmsd7RHxb5Sstq2SIfEPz+krWjumEGr?=
+ =?us-ascii?Q?gLRuxs/sT/SnjcAmCutS94W1c0NW/3PSL5q6qu8onIriRRnVAtaJk4HSpHR8?=
+ =?us-ascii?Q?87cjftN6vYP1LnFxPrWZx7BC3bbVm0kVSyMLzy52tkvTDH0KxvF1Xs5bRvhg?=
+ =?us-ascii?Q?mQWCXf1BflTMQkY3x/uHXe/TAva3/GrxX4bp9Um/+ZofADfVso0qvSDcrheV?=
+ =?us-ascii?Q?To9Lo8Y2JesPQHrewcUrI6LbAaTMF4TPhEd7KrW/E6FHIp8vVCb07qx1Hfd+?=
+ =?us-ascii?Q?D7wfH/WneXPL5beQyNUP7jSdzg3b59jo7/aFdZiCqOQgVgu+rcjDb3xKTPAF?=
+ =?us-ascii?Q?jqxM6zVr7GclDMSqKXFdozIrKd0gRrkMXIlXVpe+adqMg3nju/NlDRQS3pFA?=
+ =?us-ascii?Q?HIlVjNoiuIW42I6UMxgzUbw5yM557ETWSecMeydAo44V/4UPT2nXtQ+S40zG?=
+ =?us-ascii?Q?OjOr3y+lhIqQEXAGZmeXZWAqXMrQvAgwAJR1xJ3JEZk7cqMYbAdixSmqN3fl?=
+ =?us-ascii?Q?3I/3lMDX6jLdjgrFN+ym3ct0a2S/wzaurXEgDRKk?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2024 16:31:06.1803
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b623616-19c6-4d93-0552-08dc69339617
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2024 16:35:46.4094
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8c89b69-ff2e-4bd6-74bb-08dc6932ef3e
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	CY4PEPF0000FCC2.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB7988
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WRnXNVj9rtIUVSOQ0SKwFhSfbbXc1Vbc0KOvM+wjTHFGlw2px7nJG7XiakFYQ6hx
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR12MB7264
 
-On Tue, Apr 30, 2024 at 11:22:01AM -0300, Jason Gunthorpe wrote:
-> On Mon, Apr 29, 2024 at 09:43:45PM -0700, Nicolin Chen wrote:
-> > The CMDQV extension in NVIDIA Tegra241 SoC only supports CS_NONE in the
-> > CS field of CMD_SYNC. Add a quirk flag to accommodate that.
-> > 
-> > Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
-> > ---
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 10 ++++++++--
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  4 ++++
-> >  2 files changed, 12 insertions(+), 2 deletions(-)
-> 
-> This seems fine, other than the misplaced hunk
-> 
-> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-> 
-> But it might be tidier like the below. There is already a function
-> that is called to build the sync that has the q, just build it
-> directly there and avoid going through the ent?
+On Mon, Apr 29, 2024 at 09:43:48PM -0700, Nicolin Chen wrote:
 
-Yea, and looks like we can have a patch tidying the existing sync
-building function, and then another one adding CS_NONE.
+> static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu)
+> {
+> +	if (smmu->tegra241_cmdqv)
+> +		return tegra241_cmdqv_get_cmdq(smmu);
 
->  static void arm_smmu_cmdq_build_sync_cmd(u64 *cmd, struct arm_smmu_device *smmu,
-> -					 struct arm_smmu_queue *q, u32 prod)
-> +					 struct arm_smmu_queue *q, u32 prod,
-> +					 bool msi)
+Since it is compile time optional it would make some sense to optimize
+this (in all the places) too:
+
+if (arm_smmu_has_smmu_tegra241_cmdqv(smmu))
+   [..]
+
+static inline bool arm_smmu_has_smmu_tegra241_cmdqv(struct arm_smmu_device *smmu)
+{
+	return IS_ENABLED(CONFIG_TEGRA241_CMDQV) && smmu->tegra241_cmdqv;
+}
+
+> @@ -3105,12 +3108,10 @@ static struct iommu_ops arm_smmu_ops = {
+>  };
+>  
+>  /* Probing and initialisation functions */
+> -static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+> -				   struct arm_smmu_queue *q,
+> -				   void __iomem *page,
+> -				   unsigned long prod_off,
+> -				   unsigned long cons_off,
+> -				   size_t dwords, const char *name)
+> +int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+> +			    struct arm_smmu_queue *q, void __iomem *page,
+> +			    unsigned long prod_off, unsigned long cons_off,
+> +			    size_t dwords, const char *name)
 >  {
-...
-> +	if (!msi || !(smmu->options & ARM_SMMU_OPT_MSIPOLL)) {
-> +		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_CS, CMDQ_SYNC_0_CS_SEV);
-> +		return;
+>  	size_t qsz;
+
+This hunk and the .h file part should be moved to the prior patch that
+is de-exporting things.
+
+> +/* MMIO helpers */
+> +#define cmdqv_readl(reg) \
+> +	readl(cmdqv->base + TEGRA241_CMDQV_##reg)
+> +#define cmdqv_readl_relaxed(reg) \
+> +	readl_relaxed(cmdqv->base + TEGRA241_CMDQV_##reg)
+> +#define cmdqv_writel(val, reg) \
+> +	writel((val), cmdqv->base + TEGRA241_CMDQV_##reg)
+> +#define cmdqv_writel_relaxed(val, reg) \
+> +	writel_relaxed((val), cmdqv->base + TEGRA241_CMDQV_##reg)
+
+Please don't hide access to a stack variable in a macro, and I'm not
+keen on the ##reg scheme either - it makes it much harder to search
+for things.
+
+Really this all seems like alot of overkill to make a little bit of
+shorthand. It is not so wordy just to type it out:
+
+  readl(vintf->base + TEGRA241_VINTF_CONFIG) 
+
+> +/* Logging helpers */
+> +#define cmdqv_warn(fmt, ...) \
+> +	dev_warn(cmdqv->dev, "CMDQV: " fmt, ##__VA_ARGS__)
+> +#define cmdqv_err(fmt, ...) \
+> +	dev_err(cmdqv->dev, "CMDQV: " fmt, ##__VA_ARGS__)
+> +#define cmdqv_info(fmt, ...) \
+> +	dev_info(cmdqv->dev, "CMDQV: " fmt, ##__VA_ARGS__)
+> +#define cmdqv_dbg(fmt, ...) \
+> +	dev_dbg(cmdqv->dev, "CMDQV: " fmt, ##__VA_ARGS__)
+
+Really not sure these are necessary, same remark about the stack
+variable.
+
+Also cmdqv->dev is the wrong thing to print, this is part of the smmu driver,
+it should print cmdqv->smmu->dev for consistency
+
+> +#define vintf_warn(fmt, ...) \
+> +	dev_warn(vintf->cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
+> +#define vintf_err(fmt, ...) \
+> +	dev_err(vintf->cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
+> +#define vintf_info(fmt, ...) \
+> +	dev_info(vintf->cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
+> +#define vintf_dbg(fmt, ...) \
+> +	dev_dbg(vintf->cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
+> +
+> +#define vcmdq_warn(fmt, ...)                                                   \
+> +	({                                                                     \
+> +		struct tegra241_vintf *vintf = vcmdq->vintf;                   \
+> +		if (vintf)                                                     \
+> +			vintf_warn("VCMDQ%u/LVCMDQ%u: " fmt,                   \
+> +				   vcmdq->idx, vcmdq->lidx,                    \
+> +				   ##__VA_ARGS__);                             \
+> +		else                                                           \
+> +			dev_warn(vcmdq->cmdqv->dev, "VCMDQ%u: " fmt,           \
+> +				 vcmdq->idx, ##__VA_ARGS__);                   \
+> +	})
+> +#define vcmdq_err(fmt, ...)                                                    \
+> +	({                                                                     \
+> +		struct tegra241_vintf *vintf = vcmdq->vintf;                   \
+> +		if (vintf)                                                     \
+> +			vintf_err("VCMDQ%u/LVCMDQ%u: " fmt,                    \
+> +				  vcmdq->idx, vcmdq->lidx,                     \
+> +				  ##__VA_ARGS__);                              \
+> +		else                                                           \
+> +			dev_err(vcmdq->cmdqv->dev, "VCMDQ%u: " fmt,            \
+> +				vcmdq->idx, ##__VA_ARGS__);                    \
+> +	})
+> +#define vcmdq_info(fmt, ...)                                                   \
+> +	({                                                                     \
+> +		struct tegra241_vintf *vintf = vcmdq->vintf;                   \
+> +		if (vintf)                                                     \
+> +			vintf_info("VCMDQ%u/LVCMDQ%u: " fmt,                   \
+> +				   vcmdq->idx, vcmdq->lidx,                    \
+> +				   ##__VA_ARGS__);                             \
+> +		else                                                           \
+> +			dev_info(vcmdq->cmdqv->dev, "VCMDQ%u: " fmt,           \
+> +				 vcmdq->idx, ##__VA_ARGS__);                   \
+> +	})
+> +#define vcmdq_dbg(fmt, ...)                                                    \
+> +	({                                                                     \
+> +		struct tegra241_vintf *vintf = vcmdq->vintf;                   \
+> +		if (vintf)                                                     \
+> +			vintf_dbg("VCMDQ%u/LVCMDQ%u: " fmt,                    \
+> +				  vcmdq->idx, vcmdq->lidx,                     \
+> +				  ##__VA_ARGS__);                              \
+> +		else                                                           \
+> +			dev_dbg(vcmdq->cmdqv->dev, "VCMDQ%u: " fmt,            \
+> +				vcmdq->idx, ##__VA_ARGS__);                    \
+> +	})
+
+Some of these are barely used, is it worth all these macros??
+
+> +
+> +/* Configuring and polling helpers */
+> +#define tegra241_cmdqv_write_config(_owner, _OWNER, _regval)                   \
+> +	({                                                                     \
+> +		bool _en = (_regval) & _OWNER##_EN;                            \
+> +		u32 _status;                                                   \
+> +		int _ret;                                                      \
+> +		writel((_regval), _owner->base + TEGRA241_##_OWNER##_CONFIG);  \
+> +		_ret = readl_poll_timeout(                                     \
+> +			_owner->base + TEGRA241_##_OWNER##_STATUS, _status,    \
+> +			_en ? (_regval) & _OWNER##_ENABLED :                   \
+> +			      !((_regval) & _OWNER##_ENABLED),                 \
+> +			1, ARM_SMMU_POLL_TIMEOUT_US);                          \
+> +		if (_ret)                                                      \
+> +			_owner##_err("failed to %sable, STATUS = 0x%08X\n",    \
+> +				     _en ? "en" : "dis", _status);             \
+> +		atomic_set(&_owner->status, _status);                          \
+> +		_ret;                                                          \
+> +	})
+
+I feel like this could be an actual inline function without the macro
+wrapper with a little fiddling.
+
+> +
+> +#define cmdqv_write_config(_regval) \
+> +	tegra241_cmdqv_write_config(cmdqv, CMDQV, _regval)
+> +#define vintf_write_config(_regval) \
+> +	tegra241_cmdqv_write_config(vintf, VINTF, _regval)
+> +#define vcmdq_write_config(_regval) \
+> +	tegra241_cmdqv_write_config(vcmdq, VCMDQ, _regval)
+
+More hidden access to stack values
+
+> +/**
+> + * struct tegra241_cmdqv - CMDQ-V for SMMUv3
+> + * @smmu: SMMUv3 pointer
+> + * @dev: Device pointer
+
+This should probably be clarified as the device pointer to the ACPI
+companion device
+
+> +static void tegra241_cmdqv_handle_vintf0_error(struct tegra241_cmdqv *cmdqv)
+> +{
+> +	struct tegra241_vintf *vintf = cmdqv->vintfs[0];
+> +	int i;
+> +
+> +	/* Cache status to bypass VCMDQs until error is recovered */
+> +	atomic_set(&vintf->status, vintf_readl(STATUS));
+> +
+> +	for (i = 0; i < 4; i++) {
+> +		u32 lvcmdq_err_map = vintf_readl_relaxed(CMDQ_ERR_MAP(i));
+> +
+> +		while (lvcmdq_err_map) {
+> +			int lidx = ffs(lvcmdq_err_map) - 1;
+> +			struct tegra241_vcmdq *vcmdq = vintf->vcmdqs[lidx];
+> +			u32 gerrorn, gerror;
+> +
+> +			lvcmdq_err_map &= ~BIT(lidx);
+> +
+> +			__arm_smmu_cmdq_skip_err(cmdqv->smmu, &vcmdq->cmdq.q);
+> +
+> +			gerrorn = vcmdq_page0_readl_relaxed(GERRORN);
+> +			gerror = vcmdq_page0_readl_relaxed(GERROR);
+> +
+> +			vcmdq_page0_writel(gerror, GERRORN);
+> +		}
 > +	}
-...
-> @@ -402,9 +395,6 @@ void __arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu,
->  	u64 cmd[CMDQ_ENT_DWORDS];
->  	u32 cons = readl_relaxed(q->cons_reg);
->  	u32 idx = FIELD_GET(CMDQ_CONS_ERR, cons);
-> -	struct arm_smmu_cmdq_ent cmd_sync = {
-> -		.opcode = CMDQ_OP_CMD_SYNC,
-> -	};
->  
->  	dev_err(smmu->dev, "CMDQ error (cons 0x%08x): %s\n", cons,
->  		idx < ARRAY_SIZE(cerror_str) ?  cerror_str[idx] : "Unknown");
-> @@ -437,11 +427,8 @@ void __arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu,
->  	for (i = 0; i < ARRAY_SIZE(cmd); ++i)
->  		dev_err(smmu->dev, "\t0x%016llx\n", (unsigned long long)cmd[i]);
->  
-> -	if (q->quirks & CMDQ_QUIRK_SYNC_CS_NONE_ONLY)
-> -		cmd_sync.sync.cs_none = true;
-> -
->  	/* Convert the erroneous command into a CMD_SYNC */
-> -	arm_smmu_cmdq_build_cmd(cmd, &cmd_sync);
-> +	arm_smmu_cmdq_build_sync_cmd(cmd, smmu, q, 0, false);
->  
->  	queue_write(Q_ENT(q, cons), cmd, q->ent_dwords);
+> +
+> +	/* Now error status should be clean, cache it again */
+> +	atomic_set(&vintf->status, vintf_readl(STATUS));
+> +}
+> +
+> +static irqreturn_t tegra241_cmdqv_isr(int irq, void *devid)
+> +{
+> +	struct tegra241_cmdqv *cmdqv = (struct tegra241_cmdqv *)devid;
+> +	u32 vintf_errs[2];
+> +	u32 vcmdq_errs[4];
+> +
+> +	vintf_errs[0] = cmdqv_readl_relaxed(VINTF_ERR_MAP);
+> +	vintf_errs[1] = cmdqv_readl_relaxed(VINTF_ERR_MAP + 0x4);
+> +
+> +	vcmdq_errs[0] = cmdqv_readl_relaxed(VCMDQ_ERR_MAP(0));
+> +	vcmdq_errs[1] = cmdqv_readl_relaxed(VCMDQ_ERR_MAP(1));
+> +	vcmdq_errs[2] = cmdqv_readl_relaxed(VCMDQ_ERR_MAP(2));
+> +	vcmdq_errs[3] = cmdqv_readl_relaxed(VCMDQ_ERR_MAP(3));
+> +
+> +	cmdqv_warn("unexpected cmdqv error reported\n");
+> +	cmdqv_warn(" vintf_map: 0x%08X%08X\n", vintf_errs[1], vintf_errs[0]);
+> +	cmdqv_warn(" vcmdq_map: 0x%08X%08X%08X%08X\n",
+> +		   vcmdq_errs[3], vcmdq_errs[2], vcmdq_errs[1], vcmdq_errs[0]);
 
-Here is the only caller for "msi=false". Maybe we could just do:
-+	arm_smmu_cmdq_build_sync_cmd(cmd, smmu, q, cons);
+Put warnings in one print only, spreading them like this just
+increases the risk of tearing.. It doesn't need to be all pretty.
 
-So, no need of "bool msi"? It would slightly change the behavior
-though, a SYNC for ARM_SMMU_OPT_MSIPOLL should be still a SYNC.
+> +struct arm_smmu_cmdq *tegra241_cmdqv_get_cmdq(struct arm_smmu_device *smmu)
+> +{
+> +	struct tegra241_cmdqv *cmdqv = smmu->tegra241_cmdqv;
+> +	struct tegra241_vintf *vintf = cmdqv->vintfs[0];
+> +	struct tegra241_vcmdq *vcmdq;
+> +	u16 lidx;
+> +
+> +	if (bypass_vcmdq)
 
-Thanks
-Nicolin
+READ_ONCE 
+
+> +		return &smmu->cmdq;
+> +
+> +	/* Use SMMU CMDQ if vintfs[0] is uninitialized */
+> +	if (!FIELD_GET(VINTF_ENABLED, atomic_read(&vintf->status)))
+> +		return &smmu->cmdq;
+> +
+> +	/* Use SMMU CMDQ if vintfs[0] has error status */
+> +	if (FIELD_GET(VINTF_STATUS, atomic_read(&vintf->status)))
+> +		return &smmu->cmdq;
+
+Why atomic_read? The unlocked interaction with
+tegra241_cmdqv_handle_vintf0_error() doesn't seem especially sane IMHO
+
+> +static void tegra241_vcmdq_hw_deinit(struct tegra241_vcmdq *vcmdq)
+> +{
+> +	u32 gerrorn, gerror;
+> +
+> +	if (vcmdq_write_config(0)) {
+> +		vcmdq_err("GERRORN=0x%X\n", vcmdq_page0_readl_relaxed(GERRORN));
+> +		vcmdq_err("GERROR=0x%X\n", vcmdq_page0_readl_relaxed(GERROR));
+> +		vcmdq_err("CONS=0x%X\n", vcmdq_page0_readl_relaxed(CONS));
+
+Less prints, include a unique message about why this is being
+printed..
+
+> +	}
+> +	vcmdq_page0_writel_relaxed(0, PROD);
+> +	vcmdq_page0_writel_relaxed(0, CONS);
+> +	vcmdq_page1_writeq_relaxed(0, BASE);
+> +	vcmdq_page1_writeq_relaxed(0, CONS_INDX_BASE);
+> +
+> +	gerrorn = vcmdq_page0_readl_relaxed(GERRORN);
+> +	gerror = vcmdq_page0_readl_relaxed(GERROR);
+> +	if (gerror != gerrorn) {
+> +		vcmdq_info("Uncleared error detected, resetting\n");
+> +		vcmdq_page0_writel(gerror, GERRORN);
+> +	}
+> +
+> +	vcmdq_dbg("deinited\n");
+> +}
+> +
+> +static int tegra241_vcmdq_hw_init(struct tegra241_vcmdq *vcmdq)
+> +{
+> +	int ret;
+> +
+> +	/* Configure and enable the vcmdq */
+> +	tegra241_vcmdq_hw_deinit(vcmdq);
+> +
+> +	vcmdq_page1_writeq_relaxed(vcmdq->cmdq.q.q_base, BASE);
+> +
+> +	ret = vcmdq_write_config(VCMDQ_EN);
+> +	if (ret) {
+> +		vcmdq_err("GERRORN=0x%X\n", vcmdq_page0_readl_relaxed(GERRORN));
+> +		vcmdq_err("GERROR=0x%X\n", vcmdq_page0_readl_relaxed(GERROR));
+> +		vcmdq_err("CONS=0x%X\n", vcmdq_page0_readl_relaxed(CONS));
+> +		return ret;
+
+Same print?
+
+> +static void tegra241_vcmdq_free_smmu_cmdq(struct tegra241_vcmdq *vcmdq)
+> +{
+> +	struct tegra241_cmdqv *cmdqv = vcmdq->cmdqv;
+> +	struct arm_smmu_queue *q = &vcmdq->cmdq.q;
+> +	size_t nents = 1 << q->llq.max_n_shift;
+> +
+> +	dmam_free_coherent(cmdqv->smmu->dev, (nents * CMDQ_ENT_DWORDS) << 3,
+> +			   q->base, q->base_dma);
+
+If we are calling dmam_free, do we really need devm at all?
+
+> +static struct tegra241_vcmdq *
+> +tegra241_vintf_lvcmdq_alloc(struct tegra241_vintf *vintf, u16 lidx)
+> +{
+> +	struct tegra241_cmdqv *cmdqv = vintf->cmdqv;
+> +	struct tegra241_vcmdq *vcmdq;
+> +	int ret;
+> +
+> +	vcmdq = devm_kzalloc(cmdqv->dev, sizeof(*vcmdq), GFP_KERNEL);
+> +	if (!vcmdq)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	ret = tegra241_vintf_lvcmdq_init(vintf, lidx, vcmdq);
+> +	if (ret)
+> +		goto free_vcmdq;
+> +
+> +	/* Setup struct arm_smmu_cmdq data members */
+> +	ret = tegra241_vcmdq_alloc_smmu_cmdq(vcmdq);
+> +	if (ret)
+> +		goto deinit_lvcmdq;
+> +
+> +	ret = tegra241_vcmdq_hw_init(vcmdq);
+> +	if (ret)
+> +		goto free_queue;
+> +
+> +	vcmdq_dbg("allocated\n");
+> +	return vcmdq;
+> +free_queue:
+> +	tegra241_vcmdq_free_smmu_cmdq(vcmdq);
+> +deinit_lvcmdq:
+> +	tegra241_vintf_lvcmdq_deinit(vcmdq);
+> +free_vcmdq:
+> +	devm_kfree(cmdqv->dev, vcmdq);
+> +	return ERR_PTR(ret);
+> +}
+> +
+> +static void tegra241_vintf_lvcmdq_free(struct tegra241_vcmdq *vcmdq)
+> +{
+> +	tegra241_vcmdq_hw_deinit(vcmdq);
+> +	tegra241_vcmdq_free_smmu_cmdq(vcmdq);
+> +	tegra241_vintf_lvcmdq_deinit(vcmdq);
+> +	devm_kfree(vcmdq->cmdqv->dev, vcmdq);
+
+Ditto for devm_kfree.
+
+> +struct tegra241_cmdqv *
+> +tegra241_cmdqv_acpi_probe(struct arm_smmu_device *smmu, int id)
+
+id is a u32. 
+
+It might be clearer to just pass in the struct
+acpi_iort_node *?
+
+> +{
+> +	struct tegra241_cmdqv *cmdqv;
+> +
+> +	cmdqv = tegra241_cmdqv_find_resource(smmu, id);
+> +	if (!cmdqv)
+> +		return NULL;
+> +
+> +	if (tegra241_cmdqv_probe(cmdqv)) {
+> +		if (cmdqv->irq > 0)
+> +			devm_free_irq(smmu->dev, cmdqv->irq, cmdqv);
+> +		devm_iounmap(smmu->dev, cmdqv->base);
+> +		devm_kfree(smmu->dev, cmdqv);
+> +		return NULL;
+
+Oh. Please don't use devm at all in this code then, it is not attached
+to a probed driver with the proper scope, devm isn't going to work in
+sensible way.
+
+Jason
