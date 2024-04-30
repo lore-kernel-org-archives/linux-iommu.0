@@ -1,235 +1,184 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA937127B66
-	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 09:16:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.16
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714468572; cv=fail; b=k40/fBXiUqnu3lvGlNpiFNaprhlVA2jesSagPOFDwWn/pN9vkKOxmlp6xni6BxEd6ELKDRySxQig1utbNgn4nCZOVBQrPObN1x3F5WpyWUAwritLn++iOD66w4GT/lRafqXW9QpsQTX2AvF7eijNzXciCZMFaoakS9vXhFYGSUo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714468572; c=relaxed/simple;
-	bh=PrTEIqms+yG524cCw6CvM6Hdm1QLBrlGqNO0AcKagdk=;
-	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=s+6qSnOUBIpg4Sr1L/TMV/P2eeFjko7jn8NLmt0jrSUE4INF3H3ECoywOdTY2G/0K/YTaWwA6zVzYqL7QgbU2MVLnZGs4Gg+f2HOW0NvN715i1IAHhwT/PlWRQ1ROpF7w8Zq4Ra4b1fNFpReCwnbjzguRL65sRCgC9QhXhbmUoU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fGhIRGHB; arc=fail smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fGhIRGHB"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714468571; x=1746004571;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=PrTEIqms+yG524cCw6CvM6Hdm1QLBrlGqNO0AcKagdk=;
-  b=fGhIRGHB93L6I/xfa1ViW/4h18/Zjrt5myrU0ZuSmD5WuFmVCNpGeyoz
-   vEAgYu8UmUer1c9Wy30gOjHveKG8Qt4Bs7UmG8NUon3oNbKEas5qjyOHX
-   cwxCmiyk9ikWZbrcOt5LONH/e70FgotvNkSUVUwrKbrmGbWeE7qVy4R/9
-   qql4uJb9qXMQlFjmcpCtZfmRastjMNTAf/E6Mj3pyKh2CWgrTqqBuuIXI
-   YkLj3l4luvbwj0WcQFWPOc0aRHbWCrZgW3xl32E/QUFuEgHTnQQJZhz0K
-   E0LeLKfhMksq1ByiHQLm9/u6bUla9b8EB7guiARsLAcvekLjmDwGjcmuw
-   w==;
-X-CSE-ConnectionGUID: dM+jh8bxTLadBq61yafZBg==
-X-CSE-MsgGUID: 9sVc06nXQxmF5tKSfrUhGg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11059"; a="10702899"
-X-IronPort-AV: E=Sophos;i="6.07,241,1708416000"; 
-   d="scan'208";a="10702899"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Apr 2024 02:16:10 -0700
-X-CSE-ConnectionGUID: foCpNHyGTAaDTF+jQTC1Iw==
-X-CSE-MsgGUID: yaXPmyjwSKGxzPXBH7qmXw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,241,1708416000"; 
-   d="scan'208";a="26503556"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by fmviesa006.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 30 Apr 2024 02:16:10 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Tue, 30 Apr 2024 02:16:09 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Tue, 30 Apr 2024 02:16:09 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.169)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Tue, 30 Apr 2024 02:16:08 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hh2rPvgsR85fC/otVhAoyLiZ6kxpEmQI1StKAzUMp5HG+VJKv5ztFbmKJCkUMSDlIXQsbcBEV6ZX8MkpesIosVYS4TfgbZ6CKE+EKiLvY9I7rcGP3d/wIl3RIViuDC2+qGyaWk4k/2PTJUibJsDKtYjYCwW+xt75mA5ZFn2Cj9ykG++9+bxXYWSGkPbmIQdHVfH6Gl+LqIUF8YPWEJHJTE3W+GqJMcLF+KEer4SeKtlpc56+MP5oX8uUDDFYjYW1wsWbkr90jMo6rRYb85pUYfemrepdC7u91DaTPkGbwSAFN6St6S71si030gnDeSoo6iJ5YUaiumYNO7y8Qq8NxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=hdsogOOjTLiVEuP+2DwUIDNJbx0a6zA9U72qOgk6Hco=;
- b=RTRyaEnIQuybRLu1/b8VHNWnJ/kVmlK5lhDWeiJq4qXVzKDTqI+VfWmz/Q5PzLjbUv/VsFMSaXn5rTNaLKzFm5QuwVTKBji/kGaERFjZI0vSFvkV2NZUwPvplTAAhGVaeiDGiTDlefeE7nBqQnK52NpVwGNA7/klMpIYda6prkcMEC2MRWldmUvBxj2AXI2iJfXu8CCgLBw9PwABy9/AtFBnLkFXqtNb965u9gBMCvOMFIGGkYbxPq87iT6EpZW+Px1+KIdPGrZi1FJWCwWaDR0ujoyN7dyG2Ttfm5Sl0LVECFeRXMZEyJZAyeditYI8wUb8uBGuHYshFflKizta2w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
- by MN6PR11MB8243.namprd11.prod.outlook.com (2603:10b6:208:46e::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.34; Tue, 30 Apr
- 2024 09:16:07 +0000
-Received: from DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
- ([fe80::d244:15cd:1060:941a%7]) with mapi id 15.20.7519.031; Tue, 30 Apr 2024
- 09:16:07 +0000
-Message-ID: <d466eb97-8c2b-4262-8213-b6a9987f59ea@intel.com>
-Date: Tue, 30 Apr 2024 17:19:40 +0800
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 12/12] iommu/vt-d: Add set_dev_pasid callback for
- nested domain
-Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
-	"jgg@nvidia.com" <jgg@nvidia.com>, "baolu.lu@linux.intel.com"
-	<baolu.lu@linux.intel.com>
-CC: "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "eric.auger@redhat.com"
-	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
-	<chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
-	<iommu@lists.linux.dev>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>
-References: <20240412081516.31168-1-yi.l.liu@intel.com>
- <20240412081516.31168-13-yi.l.liu@intel.com>
- <BN9PR11MB5276E97AECE1A58D9714B0C38C0F2@BN9PR11MB5276.namprd11.prod.outlook.com>
-From: Yi Liu <yi.l.liu@intel.com>
-In-Reply-To: <BN9PR11MB5276E97AECE1A58D9714B0C38C0F2@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SG2PR02CA0060.apcprd02.prod.outlook.com
- (2603:1096:4:54::24) To DS0PR11MB7529.namprd11.prod.outlook.com
- (2603:10b6:8:141::20)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1BD61272AB
+	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 10:21:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714472466; cv=none; b=LNSR0Bb9CgGAElJhfK8JoV4SrPGk6VTAtzYLsA9hu37H62+2bnai69DPlVXB8djXcwOo/Z0opYpjoBEfO/wM7ocJsERf4SePaLtYK4x7n2qsvjx2Pv230sIrEX5Uja2if5uDVffY763jCe1v+ky5VMBAr5r71uz321NBnsw0Ul0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714472466; c=relaxed/simple;
+	bh=5SgGxFTDFfPD9ogt5nacJQS8JEFOELIWLGAoJWR92JQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ws9GuEAvCJMxIA7sGNFPJpL/5y9xcDXQFg6y/t5HpPhq+oo4J0TZ/cWgUfYdv/FPMiHLuh+BQT8eujzBGGVlP72yh601CB+ML8EIdb63Bk4L0UnXmfjxepHfFQGrX02/+4yN68SIcnLhsLwKmgGFfh3dyucRvfeUkJfykh52ca8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4DC432F4;
+	Tue, 30 Apr 2024 03:21:23 -0700 (PDT)
+Received: from [10.57.1.41] (unknown [10.57.1.41])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F27C13F73F;
+	Tue, 30 Apr 2024 03:20:50 -0700 (PDT)
+Message-ID: <20d44077-d0a8-470a-bf6f-82683db894cf@arm.com>
+Date: Tue, 30 Apr 2024 11:20:46 +0100
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|MN6PR11MB8243:EE_
-X-MS-Office365-Filtering-Correlation-Id: 30e59dff-bbc7-4d9a-af69-08dc68f62abb
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|1800799015|376005|7416005;
-X-Microsoft-Antispam-Message-Info: =?utf-8?B?d1RMa1hXTVdJaGdwem9YbmhnRS9ENm9HQSs3dzc4aUlRMXpZaVorZ0k3VHdw?=
- =?utf-8?B?bk91R1RYLyt0aWltUGwrT0RvR3Vpam9BbUswOStCbjI1ZmVTNmRUbGFxN1ln?=
- =?utf-8?B?QXFTL0U0NTlGZ25KMU5XNlFpL0xFalNPZWpmbjErWm4yNUphL3JpYitnNVNw?=
- =?utf-8?B?NEI1WFJ1VWpCN3g0TWMxRTZNTjlNaHFhb0RtYWpzTjlmRFd5ZDlRRmhGckUw?=
- =?utf-8?B?MHhsSkZoWW1Hczl0WHNXSXJZVnFXR243MlpubjJlWGU3NWlrZ3lUS2ZyYTdR?=
- =?utf-8?B?NkFYcmVGTWJ6UDhVamNvOFZUUFZITjdxb3JLRVhZcG9SZjltT3dXcTh0K0U5?=
- =?utf-8?B?bEFMYnd6bHVmdGExdVZkMkgxZFRNMTV5eGJpYUJFOEhnTUtUMFZlTnFubUdr?=
- =?utf-8?B?QnRaT3h2Z09laFNPekd3TVpKRWNqaHZ1QVFTenhIdjYzZEFvQzB6QkEycC80?=
- =?utf-8?B?c2tsbkx1MXdZa0NrZ2YxZ1RlMiswNmlRSlVOUXpveTJIQThlVHdhbzU3TEx2?=
- =?utf-8?B?R21aSnlDVTA5ak1YckRpdW1jNXp2YjlCcFJRYUhsUDdRU1lTc0Q1aVRMZGhT?=
- =?utf-8?B?MUpPUmF1NGljbWtCeDc1K2JiZG5KZUsxZkIzUHJ3NUlMbUZtZUJGVlZFcTJD?=
- =?utf-8?B?Y3dTakkwNDltTlZ4bUxWam0vc0tKME5mcVU5SkI5NHVLY0VjTXloRzZFblNM?=
- =?utf-8?B?R0QrSElCa3VzWGgzNzdxdm9yQzQxc2l4WDBoVkkwN3ZPbXk0aEhzWHVZZ28r?=
- =?utf-8?B?aEdhRGNTWlUrUEpzenhFcTNvdWpoaDhuWlRSMzgzVVVyajRQaEZ4K3RzaStK?=
- =?utf-8?B?V1FzTWxiTjFFaWpycGM3YmxuVGNyK3F4d2FrQnAwOENtZDh6L0lYa0pRSEg2?=
- =?utf-8?B?MnhsWUpXOERpazZQdEpoL0NkU0RjM3pONDRBTmUvOWV0Z2NkUUQ3MlBFYVox?=
- =?utf-8?B?dUdBbXFCanZ3WGVLQ2RzNjlTMzFBUUlxaVRZb3JBTDdpVmZHZ2dXbW5oYXA3?=
- =?utf-8?B?blI5N2laek1qL3dIa2tnUnMzcjI2S1RMamlsem1BSzdIVWpsc2Y1bWdZZTJn?=
- =?utf-8?B?WURyb0ZmRjlqaldBVXFzcUpVMERRSzFwVXpaQlMxRTVmcENhR1VvUHU5a2JI?=
- =?utf-8?B?S2ZIT2tldXZlQXIwQUU2QXFLRjl4cEdBMkZPaDBZTHFOQ1JZNGdqVFpUc0I4?=
- =?utf-8?B?QkFJZndJNlI2akF4ZjA2YWp6MWxtNUZGZ2hhM1RQRUU3ZFlUZE92N2M4T1FN?=
- =?utf-8?B?NzVMV2lXczA4cXI1djFnMUo3eGVuS3RQOWpocXkvRzc4SzladlFhUkxPY0xH?=
- =?utf-8?B?bDdWWC84bG10cHN5TEUwSUNvbDdkUWxwK2dvVU9vNkFGREkvNnhRQkN6aFBr?=
- =?utf-8?B?clZBb0xBd3dvWG5kL1MrQ0NmNTNBZjNSbUNuR2hTbGJsWGxzMWNGeUpwZ0Iz?=
- =?utf-8?B?eTM5cEZnWU1lL05JMU5NY21iTUJFVzRTTE5uR0pLZDVtT1JtSWpab0taY0Rv?=
- =?utf-8?B?VC82c1F2ZDFJbzFjaXl2UzhjQVZRWkluNVdwRWxjTjlyNTMxQTh0aUtNeXg0?=
- =?utf-8?B?Z2FLYVk1UmFrakE1TXdTdThNc2VXaFUrTHZET0k4ZHFoaVpsRFllUDhyUDVV?=
- =?utf-8?B?NlB1SGRBcGpHMUpEMUNva1ZWeU53QjhYcU11RGttVS9oNmJaTkNRS0R0dWFR?=
- =?utf-8?B?Qm5hcHNRQXcyTTlLZWowSzhWKzVtWEJmZlVTbXMzMGJqb2ROVXVLdHNBPT0=?=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(376005)(7416005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?eHFMazlQUS8vQzNmMG5FbXQ1dHdObkJSKzZzNFV4R1k1VDMrWWxYV1RwWlF3?=
- =?utf-8?B?MlJEaWF4RUdLazRadzBUSkE5aFYvdUJ1VVFmanNUaFRPTVB1aEw3amZqSURk?=
- =?utf-8?B?bVV4MzlYNC9kTkxrSGtwb2d1NDhocWJ4UzA3SGNLRFNvWElORzVxYko0Z2ww?=
- =?utf-8?B?RFhQQjF2SHRPSDdRL3VIdHBwMlZmRXNlYWY3cmpuQXU4Y3hUaXFNY094bGVt?=
- =?utf-8?B?YzFONzExUEpUdFE1QTdSTng5YXkzYzE3MDBDSHk0blF5WjRrK2ZlSElQRDYv?=
- =?utf-8?B?Yk14MEwxZmJ0ang4Vyt6YlZPT0taRHZKdkcxK0VTS0RxbnBsMTNKY2VtQUlP?=
- =?utf-8?B?MXhuYitTdzJhM0MvM0swY0FsUTFoOGxZQ1cwdWNveEVjczZzT3I4OEtMQjNT?=
- =?utf-8?B?d093NVpJWHU1LzVOSFJPMml3RFlRblFvbXRlWURzbXZBOS92STVUOFVUZVlr?=
- =?utf-8?B?eEw0dVUwVjhqR0NyaTNZaTgxVk9yQitLMHJJeWRBYXhDNjQ5bVFLSHVjTStG?=
- =?utf-8?B?ZkNqdGcvWlN4VEFDLzlNQ0p6c0pzSFkrVi9oZGVRTzlkZXdPcEdTN20wOEpu?=
- =?utf-8?B?dlJZWmdDQmNWQ2drV1JiV1c0QlBJWU1Fd01CYSs2blI4bzRpUjVkUDlGOE9t?=
- =?utf-8?B?bjYxMUpmd1krN2ZGWTNKbkNIU1RVOU1YR0FlSDBIOWN5dHRuU29ST0svOWtX?=
- =?utf-8?B?MFFFWW5JdVlYT1ZVS2hQeUw2ZUNBUjZHdldVbFNkbUJlZUJTaDNhbHlnaU5U?=
- =?utf-8?B?Z2NzU25MaVhUMkdFQU5KWDRiOWtXV1hnVUs1MUZBc2RxKy9sRUs5dTg2bTNI?=
- =?utf-8?B?WmpFck9zVGpCYTZHRjhacWQ0UXU3RjhPRGZ5WFpheUlwZDFGK29ZOFBkZk81?=
- =?utf-8?B?dVl2TnJxYTJaQVRzYzBWQzlhN3JHM2VYMThSTVhRYmhnZjh4WW83WHhFckpH?=
- =?utf-8?B?MHVQVVJNV0VnODA1WkNDNDVDS0Z1dXhuSXdRbWFrWTJVWHpLQjhOM2U2OS9B?=
- =?utf-8?B?bkdYN2xGdHdGNDc5MG9HRHFlZEVHUjNZRTdJKzYzNGFkZ294dnFHZFhBcHAy?=
- =?utf-8?B?ZTdNNDZOSkFlakNsRjJTenVMU0dyMHdhdEt3K1lGejJjMzNEWEhDTHk5dndL?=
- =?utf-8?B?a3haRkJRQkhid08zZmI2aGlGN1hPU0hVUHZPQzJTV3dob3Mzd0N1Q2JqdG00?=
- =?utf-8?B?VlViQVo4cHBlVjdUajFOeDFWa01zS0MvVmtWS3V2cnV1Ym1EdlliVXZGQVc2?=
- =?utf-8?B?TXFMZ2JVRlg4alhXVzVVYlNXUkRic2ZUWkltMmtMTGtJeDNNWUliSStxRlhJ?=
- =?utf-8?B?L3R1WmNzOU1PMXlZNElzMUlxR3gvSldjSG9abktZcSt0ZlRrNEdNQnBycWVX?=
- =?utf-8?B?c20yNXM0b005VEJzMTJOaitFdFQwRUJTam5FeDVKMWZoUFlEcDdhRjJmM1Rv?=
- =?utf-8?B?TWNkNnRTaEtvOGlvc3BNajlJZUlaVW5OM1RGem1KQmJPVGNKYnpzM0QyLzhT?=
- =?utf-8?B?TjV1Mjd1QmVsMkpJZVlKU2ZDbWR2T0l6U0JqL0hINEs5dHVFWXlQUW9qc2hu?=
- =?utf-8?B?QStDUFRLOFp4RTlSL0p6TityMWo5VDduOTlUMHVFcytnQWVKRVAyanYvUlFw?=
- =?utf-8?B?bVdaTEI5NEhXYkpwZ3dIODhDOUQ0Nk9IMHRDN0pvRFFOSFlLTU0waVNHY2pB?=
- =?utf-8?B?ZDRzYThGWnVrU1ZvQVFkandlSkdkQkxHM3RjYVZSakRWeHY5T0Vremh1aTEx?=
- =?utf-8?B?UUlLeWEybnFlbWtKWmhXNWd4b2JsZ3ZXeVp3TkRTMUppd0YzZThKWjBydWlJ?=
- =?utf-8?B?Y3M5NHh2cEFtNC9YTk4wazM5SGtRcHk2Tm80bEkyV3hIMGFuRHVPd0ExQzRz?=
- =?utf-8?B?c0tVWUt3YkV1clpUdkg1R2trOFM2eHB6VGN2VU9NalgyZHFhSUhNQW1tYlV3?=
- =?utf-8?B?L0QrNkVrMFRXTmtzYTBmVHJhQ0hObVdGUmxuQWZjRUFWTkNYK2pJejlUNHI3?=
- =?utf-8?B?RmZlcGVzU0VmR1B4UWsyVzBpMTkvMFdWMUR6Z3g4alpBNjhmaW44ZDVsa3NP?=
- =?utf-8?B?NCsyMmZZVXZUc2tvbkhVUW81UHRqRExpeU5Rd2J3SnhCdWpTS1FxNVhnYWwx?=
- =?utf-8?Q?RG/Izj3Qx4NAMYIedlj+e3cYy?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 30e59dff-bbc7-4d9a-af69-08dc68f62abb
-X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2024 09:16:07.1321
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: F9UJjDa8+mnmivZnZ0pAosiDR9s244UnJNeOtePyLDG//4ObBbZRm2QY0lZxa9wXJ7/iHI2L1IBJ/w6UQSvIYw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR11MB8243
-X-OriginatorOrg: intel.com
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 6/7] iommu/dma: Centralise iommu_setup_dma_ops()
+To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
+ Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
+ <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
+ Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
+ <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+ Dexuan Cui <decui@microsoft.com>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Niklas Schnelle <schnelle@linux.ibm.com>,
+ Matthew Rosato <mjrosato@linux.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
+ devicetree@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
+References: <cover.1713523152.git.robin.murphy@arm.com>
+ <bebea331c1d688b34d9862eefd5ede47503961b8.1713523152.git.robin.murphy@arm.com>
+ <Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru>
+ <2662a5ba-3115-4fe5-9cec-bff71f703a82@arm.com>
+ <CAA8EJprxLvYEP8+ggk8fw--kHaK+_QoYan4st2wWpPicHa6_+w@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Content-Language: en-GB
+In-Reply-To: <CAA8EJprxLvYEP8+ggk8fw--kHaK+_QoYan4st2wWpPicHa6_+w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On 2024/4/17 17:25, Tian, Kevin wrote:
->> From: Liu, Yi L <yi.l.liu@intel.com>
->> Sent: Friday, April 12, 2024 4:15 PM
+On 2024-04-30 1:41 am, Dmitry Baryshkov wrote:
+> On Tue, 30 Apr 2024 at 01:26, Robin Murphy <robin.murphy@arm.com> wrote:
 >>
->> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> On 2024-04-29 5:31 pm, Dmitry Baryshkov wrote:
+>>> On Fri, Apr 19, 2024 at 05:54:45PM +0100, Robin Murphy wrote:
+>>>> It's somewhat hard to see, but arm64's arch_setup_dma_ops() should only
+>>>> ever call iommu_setup_dma_ops() after a successful iommu_probe_device(),
+>>>> which means there should be no harm in achieving the same order of
+>>>> operations by running it off the back of iommu_probe_device() itself.
+>>>> This then puts it in line with the x86 and s390 .probe_finalize bodges,
+>>>> letting us pull it all into the main flow properly. As a bonus this lets
+>>>> us fold in and de-scope the PCI workaround setup as well.
+>>>>
+>>>> At this point we can also then pull the call up inside the group mutex,
+>>>> and avoid having to think about whether iommu_group_store_type() could
+>>>> theoretically race and free the domain if iommu_setup_dma_ops() ran just
+>>>> *before* iommu_device_use_default_domain() claims it... Furthermore we
+>>>> replace one .probe_finalize call completely, since the only remaining
+>>>> implementations are now one which only needs to run once for the initial
+>>>> boot-time probe, and two which themselves render that path unreachable.
+>>>>
+>>>> This leaves us a big step closer to realistically being able to unpick
+>>>> the variety of different things that iommu_setup_dma_ops() has been
+>>>> muddling together, and further streamline iommu-dma into core API flows
+>>>> in future.
+>>>>
+>>>> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com> # For Intel IOMMU
+>>>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+>>>> Tested-by: Hanjun Guo <guohanjun@huawei.com>
+>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>>>> ---
+>>>> v2: Shuffle around to make sure the iommu_group_do_probe_finalize() case
+>>>>       is covered as well, with bonus side-effects as above.
+>>>> v3: *Really* do that, remembering the other two probe_finalize sites too.
+>>>> ---
+>>>>    arch/arm64/mm/dma-mapping.c  |  2 --
+>>>>    drivers/iommu/amd/iommu.c    |  8 --------
+>>>>    drivers/iommu/dma-iommu.c    | 18 ++++++------------
+>>>>    drivers/iommu/dma-iommu.h    | 14 ++++++--------
+>>>>    drivers/iommu/intel/iommu.c  |  7 -------
+>>>>    drivers/iommu/iommu.c        | 20 +++++++-------------
+>>>>    drivers/iommu/s390-iommu.c   |  6 ------
+>>>>    drivers/iommu/virtio-iommu.c | 10 ----------
+>>>>    include/linux/iommu.h        |  7 -------
+>>>>    9 files changed, 19 insertions(+), 73 deletions(-)
+>>>
+>>> This patch breaks UFS on Qualcomm SC8180X Primus platform:
+>>>
+>>>
+>>> [    3.846856] arm-smmu 15000000.iommu: Unhandled context fault: fsr=0x402, iova=0x1032db3e0, fsynr=0x130000, cbfrsynra=0x300, cb=4
 >>
->> This allows the upper layers to set a nested type domain to a PASID of a
->> device if the PASID feature is supported by the IOMMU hardware.
->>
->> The set_dev_pasid callback for non-nested domain has already be there, so
->> this only needs to add it for nested domains. Note that the S2 domain with
->> dirty tracking capability is not supported yet as no user for now.
+>> Hmm, a context fault implies that the device did get attached to a DMA
+>> domain, thus has successfully been through __iommu_probe_device(), yet
+>> somehow still didn't get the right DMA ops (since that "IOVA" looks more
+>> like a PA to me). Do you see the "Adding to IOMMU group..." message for
+>> this device, and/or any other relevant messages or errors before this
+>> point?
 > 
-> S2 domain does support dirty tracking. Do you mean the specific
-> check in intel_iommu_set_dev_pasid() i.e. pasid-granular dirty
-> tracking is not supported yet?
-
-yes. We may remove this check when real usage comes. e.g. SIOV.
-
->> +static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
->> +				      struct device *dev, ioasid_t pasid,
->> +				      struct iommu_domain *old)
->> +{
->> +	struct device_domain_info *info = dev_iommu_priv_get(dev);
->> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
->> +	struct intel_iommu *iommu = info->iommu;
->> +
->> +	if (iommu->agaw < dmar_domain->s2_domain->agaw)
->> +		return -EINVAL;
->> +
+> No, nothing relevant.
 > 
-> this check is covered by prepare_domain_attach_device() already.
+> [    8.372395] ufshcd-qcom 1d84000.ufshc: Adding to iommu group 6
+> 
+> (please ignore the timestamp, it comes before ufshc being probed).
+> 
+>> I'm guessing there's a fair chance probe deferral might be
+>> involved as well. I'd like to understand what path(s) this ends up
+>> taking through __iommu_probe_device() and of_dma_configure(), or at
+>> least the number and order of probe attempts between the UFS and SMMU
+>> drivers.
+> 
+> __iommu_probe_device() gets called twice and returns early because ops is NULL.
+> 
+> Then finally of_dma_configure_id() is called. The following branches are taken:
+> 
+> np == dev->of_node
+> of_dma_get_range() returned 0
+> bus_dma_limit and dma_range_map are set
+> __iommu_probe_device() is called, using the `!group->default_domain &&
+> !group_lis` case, then group->default_domain() is not NULL,
+> In the end, iommu_setup_dma_ops() is called.
+> 
+> Then the ufshc probe defers (most likely the PHY is not present or
+> some other device is not there yet).
 
-This was added to avoid modifying the s2_domain's agaw. I'm fine to remove
-it personally as the existing attach path also needs to update domain's
-agaw per device attachment. @Baolu, how about your opinion?
+Ah good, probe deferral. And indeed the half-formed hunch from last 
+night grew into a pretty definite idea by this morning... patch incoming.
 
--- 
-Regards,
-Yi Liu
+Thanks,
+Robin.
+
+> On the next (succeeding) try, of_dma_configure_id() is called again.
+> The call trace is more or less the same, except that
+> __iommu_probe_device() is not called
+> 
+>> I'll stare at the code in the morning and see if I can spot any
+>> overlooked ways in which what I think might be happening could happen,
+>> but any more info to help narrow it down would be much appreciated.
+>>
+>> Thanks,
+>> Robin.
+>>
+>>> [    3.846880] ufshcd-qcom 1d84000.ufshc: ufshcd_check_errors: saved_err 0x20000 saved_uic_err 0x0
+>>> [    3.846929] host_regs: 00000000: 1587031f 00000000 00000300 00000000
+>>> [    3.846935] host_regs: 00000010: 01000000 00010217 00000000 00000000
+>>> [    3.846941] host_regs: 00000020: 00000000 00070ef5 00000000 00000000
+>>> [    3.846946] host_regs: 00000030: 0000000f 00000001 00000000 00000000
+>>> [    3.846951] host_regs: 00000040: 00000000 00000000 00000000 00000000
+>>> [    3.846956] host_regs: 00000050: 032db000 00000001 00000000 00000000
+>>> [    3.846962] host_regs: 00000060: 00000000 80000000 00000000 00000000
+>>> [    3.846967] host_regs: 00000070: 032dd000 00000001 00000000 00000000
+>>> [    3.846972] host_regs: 00000080: 00000000 00000000 00000000 00000000
+>>> [    3.846977] host_regs: 00000090: 00000016 00000000 00000000 0000000c
+>>> [    3.847074] ufshcd-qcom 1d84000.ufshc: ufshcd_err_handler started; HBA state eh_fatal; powered 1; shutting down 0; saved_err = 131072; saved_uic_err = 0; force_reset = 0
+>>> [    4.406550] ufshcd-qcom 1d84000.ufshc: ufshcd_verify_dev_init: NOP OUT failed -11
+>>> [    4.417953] ufshcd-qcom 1d84000.ufshc: ufshcd_async_scan failed: -11
+>>>
+> 
+> 
+> 
