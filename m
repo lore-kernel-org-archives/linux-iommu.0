@@ -1,79 +1,165 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2055.outbound.protection.outlook.com [40.107.236.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2549E152799;
-	Tue, 30 Apr 2024 15:09:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714489797; cv=none; b=XINAyCCleothHE6rfYlIr0PnA+gNVlmBblxhLYR0FP2BJhCbmB+T6HESTUFLwz01/LiTSxQn2pQDH7D+rpDTHwOAq8R2s5SveFsmCnz1CorXvgAqCK/ubU8mlToCvoaj0P/1YhjhY+IJdUY3uX21fYK2i3T/FdAycd13VQYIuLY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714489797; c=relaxed/simple;
-	bh=21NNPMBdF38yzR1UgW+l4G83qO/y+s6ncZ0pzt/V2rU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kI+M6wEeKYXrQO9U5t2tcY1sYaUbaT59/eetuRB+DNNXGyoQ1WAUGAaQMlGlgXz95DphFP7MkxgwVV2KxhkmHQgoZiKHMoD2pZ7hGs9OAw9lgWU0iwY6kUwCrsGDDO2fcq5OK974D+2dE0q9OiuzcrU2XOZEny6Zj1RNDa7HM4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=a7hD6Zux; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A56C143740
+	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 15:25:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.55
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714490702; cv=fail; b=OUcc+lt80/+6EBNcCeh+9UtMCSs370Igjmdf60wsABavcJIWt8o726INFBmNWhtIBID40XnkIwHNbQFe4v4/cRkAR59CXXVqTMnHEuH+9R4NqSoIH05Ix2KpkjlRHiBmGyY5Y7kO4a+7FBVVDrGTzKi5VVLrVofoTZld9iYxaNs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714490702; c=relaxed/simple;
+	bh=ZsAm/8qDULbCMZmUw2Nllf4avr0F/pSlm0kuMx5cJL4=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=cHvLjM4Q5wEbCx4hNFtzGkAiq9o0v1QcrhfrQ75aDUgc0bWSV7aF74Lul5R9ttCNFwz5FxoX7O2EB38siSyKnWD74DpfdLF3ngy4wQZq0iKUPoMlN4jtcZ11aIamRAyXmr2K5nrXPf6MHOyvXl2u0Si/omanY/URrfqTrrUjicE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=RGVFTxp9; arc=fail smtp.client-ip=40.107.236.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="a7hD6Zux"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F306FC4AF1D;
-	Tue, 30 Apr 2024 15:09:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1714489796;
-	bh=21NNPMBdF38yzR1UgW+l4G83qO/y+s6ncZ0pzt/V2rU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=a7hD6ZuxY9/dNmI6Px0Te5atkU9V2hIHyI59zJ5m5wRRnL+/2lF+DIfw0GDp+WtpD
-	 wmO67+OI9lZpuOI2z0KqA8EWs+rjE7sdEFtu1PYNf3WfwPba/dMYlFnCOG6L5QzSts
-	 /Swhl70kuANqKMNfErsyiA45dG4q7BwP1z6kQyTGwXNx83VHNGo5kWKB2tziPpPwjN
-	 9wBIGzthlMp8MOe0aJxy/rl1rX6s3PYem8Ks5tv8qcl2gi2dbkg3hd2E9aomUkxtAO
-	 f8/+RcikzEtXoPguI+Eke8RcwNFRucFbuecZoUvNJGwRW0esbF14qDK2RXKnPmbTkY
-	 F8xIrn+gYY0+w==
-Date: Tue, 30 Apr 2024 16:09:50 +0100
-From: Will Deacon <will@kernel.org>
-To: Tanmay Jagdale <tanmay@marvell.com>
-Cc: robin.murphy@arm.com, joro@8bytes.org, nicolinc@nvidia.com,
-	mshavit@google.com, baolu.lu@linux.intel.com,
-	thunder.leizhen@huawei.com, set_pte_at@outlook.com,
-	smostafa@google.com, sgoutham@marvell.com, gcherian@marvell.com,
-	jcm@jonmasters.org, linux-arm-kernel@lists.infradead.org,
-	iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH V3 0/2] iommu/arm-smmu-v3: Add support for ECMDQ register
- mode
-Message-ID: <20240430150950.GD14187@willie-the-truck>
-References: <20240425144152.52352-1-tanmay@marvell.com>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="RGVFTxp9"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DV1FtynjiEZiMiVH2e9RnKQwOIStOpWLiriEFhKRVNOFwI19kCtkVqZb8JVmsbKFj9b3MkN4GrEVt5/ztWZIrZ8Fsm6KcjiYoTm0MVGC1Jd+vmq5DFQNwpJTTGGZDCGb709HK6jFHEz2E78WXUvf9ZdsA6LQlJbdHXeDSSEbcP6guFeKD2H/1/l3JxgBR0nMjTO/TSqGLxxrqtorWTWmtBMfkhqGN5HLjTS+huxmpAA5P0RbcNRNoJwMxbkBVVy4qmnUHA9XCviCAR6XqQkU7lu8OpsY8WXE/VXyYfqDxR8CgEuHkMYjSIdq4726NpdeVE2k5CNRkBLZ4SVSAHA20g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ZiHDPcEJ8jh9NMbc8mV90pNhBXHsG72zqWLbTqYBrfA=;
+ b=WgUv7R7mARXS5g+hQ0Dn1q6PUI0kTrm6ilhuy/imoKDIAqkmdat9g7G2E2+/5I5vn7ot+kMecxhJsg/4QselrztGN4mk/SUhzu20o0ubzFQI3nuHr7j/0Q40tjB0XrXlOAFIbCEZK2jhpCxCKjTf4qomXbXCEBBmdcHhkbq0EAOQS9qMDyUAwYQaNtpKap5RZAiZ6a5CQFt+PgTUhd2UdJkA6FUnJ5ly1ByYVhIzK5tQKEz94d0KVJyf47OtmCsJ7ChhzlZAxAOU2m2NvNCfK/3pP3+W8LRed87jfwQgum+E2fnhb1vV1EcLzlyzywr2McODXGmuNpcjnv6MN5RjKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
+ dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
+ header.from=amd.com; dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZiHDPcEJ8jh9NMbc8mV90pNhBXHsG72zqWLbTqYBrfA=;
+ b=RGVFTxp9mzRKgmHb0NyeWYaJi4idXM3dQ47UoL8j19FhgzqndGjtRbJTlKtQhiM3Pz9wxR+KV7iEnNgeVl9Z69tVetSWHUM1FvFz5/99SRqnrJ1Z27Ek42MvSIt+TH0KKvDkU6FQ+aoLO+D0yPprOFJhLPSlnJWkIFzzgLTXQp4=
+Received: from PH7PR13CA0005.namprd13.prod.outlook.com (2603:10b6:510:174::8)
+ by PH7PR12MB6881.namprd12.prod.outlook.com (2603:10b6:510:1b7::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.36; Tue, 30 Apr
+ 2024 15:24:57 +0000
+Received: from CY4PEPF0000E9CD.namprd03.prod.outlook.com
+ (2603:10b6:510:174:cafe::a7) by PH7PR13CA0005.outlook.office365.com
+ (2603:10b6:510:174::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.25 via Frontend
+ Transport; Tue, 30 Apr 2024 15:24:57 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CY4PEPF0000E9CD.mail.protection.outlook.com (10.167.241.132) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.7544.18 via Frontend Transport; Tue, 30 Apr 2024 15:24:57 +0000
+Received: from purico-e93dhost.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2507.35; Tue, 30 Apr
+ 2024 10:24:56 -0500
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+To: <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>, <joro@8bytes.org>
+CC: <thomas.lendacky@amd.com>, <vasant.hegde@amd.com>, <michael.roth@amd.com>,
+	<jon.grimm@amd.com>, <rientjes@google.com>, Suravee Suthikulpanit
+	<suravee.suthikulpanit@amd.com>
+Subject: [PATCH 0/9] iommu/amd: Add AMD IOMMU emulation support for SEV-SNP guest kernel
+Date: Tue, 30 Apr 2024 15:24:21 +0000
+Message-ID: <20240430152430.4245-1-suravee.suthikulpanit@amd.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240425144152.52352-1-tanmay@marvell.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9CD:EE_|PH7PR12MB6881:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2a3890f3-76ed-47c5-92ac-08dc6929b1ac
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230031|1800799015|82310400014|36860700004|376005;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?Ils9fupWgesJ7iQ80cWx69R3vJmV5Zs7wCkWQ1EYVt+AssFeiKzXar14DLkZ?=
+ =?us-ascii?Q?reAv/RCvk+F0kb302JjVC4N2CAntwx8fVvS7eqYjnHwVWCTBhkTG0dqTONZi?=
+ =?us-ascii?Q?NUukerCuRm9uAR1Z6RM8wxolUOV2Hi337zl5ZRGw0aTORCq1Bgdx6rJa9zio?=
+ =?us-ascii?Q?o1YJSf81NBlLQ203nzT87aO9YdpjrmTL+MTibt7eOCuRfnwFZxogq8ADdhtq?=
+ =?us-ascii?Q?Ba7+7gX+NcDTX1P4AadeottGbLYAQbI1rKTnnulJQLFkjQLJ6VS8SotTncfZ?=
+ =?us-ascii?Q?HekcTChhmaby82KC/aMCY4tTppin5wNom95L/SKpPiC/nJ4Kdz22ri4yyljJ?=
+ =?us-ascii?Q?vr458/ZSX7Lep4Q/0oq8xVZlQoygkkhJvUovdbzqXUQWrajTRZUo9VRi7z7R?=
+ =?us-ascii?Q?BpM4CYgGoaCgGTIBUyS6EKxw1M3UrF0wCJrZcH4T/RNRqcI4IOmYUyF49Gy+?=
+ =?us-ascii?Q?x3WJVhXgszpSpJV1hgJOOAdt6VERlBdVOKiY3XWnfhhnfex3a3qDpjQmrviZ?=
+ =?us-ascii?Q?HoVrcYQKJJYmBI+wzcvuLOw8PyMm4CN4u4BJhkDcBm4IkA4682Kv8r62GNM8?=
+ =?us-ascii?Q?P4P+n5CqJoRqfh2KFrzmYUjpWwMLBYdE1/VZsOSBkovszELyw8Iuc4ymoV6G?=
+ =?us-ascii?Q?0QriFol1MbyYIkmTwQ/y9o2L+qr7/Nk8YtsRrtBawDRki+BXeMOzyyfS9svN?=
+ =?us-ascii?Q?DfPmOAEIgkGenHJ05+HTnpbiEpNC2KpLwTyPZzQKDLd1mlcojrucuu090axS?=
+ =?us-ascii?Q?PMaJ/MTOU9+Cmy2e3hrjY3wkhfgWzk4S2JZg5EKXLPihrjK0E2VmtkKSPdK3?=
+ =?us-ascii?Q?hyZVQi9hydq9wWLgzQSzlNRp/32MKtC0jWbQj/ZHg6RGAO0eyVdVWGswND5P?=
+ =?us-ascii?Q?FXtf2jJ8yGaMfwMGH4L+FH2gGZfLY8ZRYQnAjhz2RMobDlD/ks5EL4GjJpB+?=
+ =?us-ascii?Q?rcDhW/oEpjwASae2OcyaEPb0u/ZDS0xd1uotDZnmfO7C2hDtO1rercPW8/4Q?=
+ =?us-ascii?Q?3y2sPcPUHm3RBen/iLseLoOQntaSeK4vsGLR2zSb86/RU8ZcTxxNaF9rfBp0?=
+ =?us-ascii?Q?TYmI3r4y+dhCBsj2S9dnpC3McgxVVlKXdCSNqgIBjFiC5Zin3uPHyyqPTJBn?=
+ =?us-ascii?Q?dz+SLyn/awhIjkDYsoIU/9Uot2mP0tEa1iviFNOu3uOTC8i6Ig98OztB+q9H?=
+ =?us-ascii?Q?9hmqHV4uaE1JEJ4el/zK8a9C/DQ74EHByTnll46NvZYdXoyWVOXJ89Biat1k?=
+ =?us-ascii?Q?XPReh5bMNNFLVTA8W4eZqA9JCgbLFzkuDTgJxZlfexCXw4SHGgARpdei8EB2?=
+ =?us-ascii?Q?NVRpgh9iYsHhsKWbCCHOsqhxSPZR9WqHkpzRU2vwn0wErqfRtbBcwNyFh3ru?=
+ =?us-ascii?Q?WQRoyT2waSjTDC+nOoc+FoH1LeNG?=
+X-Forefront-Antispam-Report:
+	CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230031)(1800799015)(82310400014)(36860700004)(376005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2024 15:24:57.4282
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2a3890f3-76ed-47c5-92ac-08dc6929b1ac
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000E9CD.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6881
 
-On Thu, Apr 25, 2024 at 07:41:50AM -0700, Tanmay Jagdale wrote:
-> Resending the patches by Zhen Lei <thunder.leizhen@huawei.com> that add
-> support for SMMU ECMDQ feature.
-> 
-> Tested this feature on a Marvell SoC by implementing a smmu-test driver.
-> This test driver spawns a thread per CPU and each thread keeps sending
-> map, table-walk and unmap requests for a fixed duration.
-> 
-> Using this test driver, we compared ECMDQ vs SMMU with software batching
-> support and saw ~5% improvement with ECMDQ. Performance numbers are
-> mentioned below:
-> 
->                    Total Requests  Average Requests  Difference
->                                       Per CPU         wrt ECMDQ
-> -----------------------------------------------------------------
-> ECMDQ                 239286381       2991079
-> CMDQ Batch Size 1     228232187       2852902         -4.62%
-> CMDQ Batch Size 32    233465784       2918322         -2.43%
-> CMDQ Batch Size 64    231679588       2895994         -3.18%
-> CMDQ Batch Size 128   233189030       2914862         -2.55%
-> CMDQ Batch Size 256   230965773       2887072         -3.48%
+To boot a VM w/ x2APIC ID > 255, guest interrupt remapping emulation 
+is required. For SEV guest, this can be achieved using an emulated
+AMD IOMMU.
 
-These are pretty small improvements in a targetted micro-benchmark. Do
-you have any real-world numbers showing that this is worthwhile? For
-example, running something like netperf.
+In order to support emulated AMD IOMMU in SEV guest, memory pages used
+by the guest IOMMU data structures must be in decrypted mode. Also GPAs
+for these pages must not have the memory encryption bit set.
 
-Will
+Testing:
+  - Booting Linux SEV guest w/ 512 vcpus w/ QEMU emulated amd-iommu with
+    qemu-system-x86_64 option: -device amd-iommu,intremap=on,xtsup=on
+    (emulated devices only for now).
+
+GIT repos:
+* https://github.com/AMDESE/linux-iommu/tree/iommu_next_sev-iommu-v1 
+
+Thanks,
+Suravee
+
+Suravee Suthikulpanit (9):
+  iommu/amd: Introduce helper functions for managing IOMMU memory
+  iommu/amd: Convert Device Table pointer to use struct amd_iommu_mem
+  iommu/amd: Convert Command Buffer pointer to use struct amd_iommu_mem
+  iommu/amd: Convert Completion-Wait Semaphore pointer to use struct
+    amd_iommu_mem
+  iommu/amd: Convert Event Log pointer to use struct amd_iommu_mem
+  iommu/amd: Convert PPR Log pointer to use the struct amd_iommu_mem
+  iommu/amd: Remove iommu_alloc_4k_pages() helper function
+  iommu/amd: Decrypt interrupt remapping table for AMD IOMMU emulation
+    in SEV guest
+  iommu/amd: Set default domain to IDENTITY_DOMAIN when running in SEV
+    guest
+
+ drivers/iommu/amd/amd_iommu.h       |  31 +++++-
+ drivers/iommu/amd/amd_iommu_types.h |  28 ++++--
+ drivers/iommu/amd/init.c            | 144 +++++++++++++++-------------
+ drivers/iommu/amd/iommu.c           | 133 +++++++++++++++++++------
+ drivers/iommu/amd/ppr.c             |  22 +++--
+ 5 files changed, 246 insertions(+), 112 deletions(-)
+
+-- 
+2.34.1
+
