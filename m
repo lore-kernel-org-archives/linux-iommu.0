@@ -1,165 +1,159 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2043.outbound.protection.outlook.com [40.107.223.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F8D8172777
-	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 13:45:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714484752; cv=none; b=X3gzbO7TY5T7wpkjgECdMvhtUxVwBN+ALm3ascSuQ4S0QLcoRHnD2An8cYRGy06ItOeUi0hlsVxtdEby+jqd/501jZc5ayuz8nb4jQUOHB0R72l19G0jBT0a8pyGt3rRWdU0pMSKBRtgzS0SOTZ/IVSqqMay0bE60nNgGCcsY0Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714484752; c=relaxed/simple;
-	bh=WmXV9oJkYpdLg+z+Rr6m1zAz5vJY1myBjGpDGekXiHo=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sO1gBwaFmP7uOBMjxG1qPfq0dlZt1cSE5PcuXl4vY+JpLxiEXcDXMo/MkdV8+87jXnisG2XbeJpnYb2uD3YrYp7vYWd63sLpEVmLb+mfJGpsU06aAPca0bV9oxIyIXr2+dGr/GLoDLxSZJK6lEIaHIiukd9KKvuTUw4miwEODZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.186.31])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4VTLxW0c9Wz6GD6q;
-	Tue, 30 Apr 2024 21:43:11 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (unknown [7.191.163.240])
-	by mail.maildlp.com (Postfix) with ESMTPS id 44961140A30;
-	Tue, 30 Apr 2024 21:45:48 +0800 (CST)
-Received: from A2303104131.china.huawei.com (10.126.175.159) by
- lhrpeml500005.china.huawei.com (7.191.163.240) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Tue, 30 Apr 2024 14:45:38 +0100
-From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-To: <iommu@lists.linux.dev>, <linux-arm-kernel@lists.infradead.org>
-CC: <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>,
-	<jgg@nvidia.com>, <ryan.roberts@arm.com>, <kevin.tian@intel.com>,
-	<nicolinc@nvidia.com>, <mshavit@google.com>, <eric.auger@redhat.com>,
-	<joao.m.martins@oracle.com>, <jiangkunkun@huawei.com>,
-	<zhukeqian1@huawei.com>, <linuxarm@huawei.com>
-Subject: [PATCH v3 4/4] iommu/arm-smmu-v3: Enable HTTU for stage1 with io-pgtable mapping
-Date: Tue, 30 Apr 2024 14:43:08 +0100
-Message-ID: <20240430134308.1604-5-shameerali.kolothum.thodi@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-In-Reply-To: <20240430134308.1604-1-shameerali.kolothum.thodi@huawei.com>
-References: <20240430134308.1604-1-shameerali.kolothum.thodi@huawei.com>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A88C9173321
+	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 13:55:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.223.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714485306; cv=fail; b=dKbHNBZbAJzwwRtiz3ajtnoOML9mg+ic4VjgkCVnXBBNGwPZad/uglOBFEXfiijI9mGf+oKYo0gVxz0yLAfzto4nVJ8uoV9KkqrN/pw+Ut/PnT5gHoWeGCMfbFfYBdPAPqHnstNuSItmmH1Dd9e0yJmGD4Gs/1uz0KChWEQwXvY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714485306; c=relaxed/simple;
+	bh=J48789P/UiYbmDruGqYUG/0kPnhwNY8SfCD/5STgS+U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=XSVQPt8V11FRIcesxyD8KGIyqBnpgZRi8nKNHBdnFjHHfuGlj6b7oIaJpTBtZQ8Tr+tF7k5zuzAmnDwbanlE1D0owbOlnTe1PlWkvjsKOTROe1sL3so1D6UpBg7Y02Hsj+CBwvaP/F6L6v6yaMXrZ769fvGgqQxMZFTL5/uWfJM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=EnGaovm3; arc=fail smtp.client-ip=40.107.223.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="EnGaovm3"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Yi0YswpKbErorRxh2HNhSgW+fCY+7KtGG7kLYDP8OLdBF3X3C/AQrGIMeLqIlAaQpJbbisUwJW4/kf2KSb6t15/5/TahIm7WrKshog1errWJ5nSimYnjU3gUtkjauFSnvMY3NNxR6ieXxUjrPqLvXtkRKVgJrpoev26qoiUWH0k+SLYQ1lLTPxnvyW74FPVAd+muVMUneb2garaK4IQ1paLUa8PA65H8xEa2rUOQ+m1Y2daeuNAnfGcrdrW6l/EDFFTlksY2mdMw/HCkiHS0t5ehvg2KoNDksawOmENkUoZfoSl1yGAx6JRLWWNGNtBQymds9pjBlkeTN2tvPZS/Jg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JcxIyifRRMw+Plw9ZqrHZMuNKTIaNyQZS60WkeiFpf0=;
+ b=DWvtKErTHVciW/O+O634jcpGY4d6LYhgO3f9t0bf0/LaektOMT+8xWNLxxtU7e1YYYLnTvOehlAgfCPJBj1j+gMuKzhJGFyacexRd845WfYAKn8jZYRjyCyLhUeLrhDP4fB0SYSwsMI16+sG7acoPpbrOnG3J1euvK4ickqOFlSHg0o2ml6MxjNSMFUOf0N3EqHnbzNjeNa6tiWnjafJN+tmpk2pYFqB75bLw8Nfk9rGJ804BwpeyhC1nbjS0a78v870uNFN7FLAY1PdQcaw7EqaY6QGtML6yO7CVt9hvKB4weMgS8US/7bNF63wqsxFIgXnX1VGVzP3Ov8CiUwS2g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JcxIyifRRMw+Plw9ZqrHZMuNKTIaNyQZS60WkeiFpf0=;
+ b=EnGaovm3xu2VXOG3iJGXBwRZ0NXHz/EWaRDADH2o+RVogzjYvkaRJfTxCVSuM5Xbz1Eo9MQL9VDbQroHEhuKlm8zpXS+2nDNS8JKIkLImthCTm1OXEoaA1Kfg83xsEG8x7LPtnVsLqiIDT6omIgRGyM/drFGS62Evz7yQVjA5DZstkdZHJ6NvQbFnk/vMfUPmX30WXSkTL6Z5xaNwspiJv6QwAEVD1tiaYvLvCfFQTedvOaSuGFTWHyyodimhk5xf3+EFEkYEIbmrHVu8RUVgQH7qfN/RrB+8z+nyyBn+ASPpv5BHcJJVC6J23cI5dGT/Dulw80PZliLREZUqzZWug==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by CY8PR12MB7169.namprd12.prod.outlook.com (2603:10b6:930:5e::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.32; Tue, 30 Apr
+ 2024 13:55:00 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7519.031; Tue, 30 Apr 2024
+ 13:55:00 +0000
+Date: Tue, 30 Apr 2024 10:54:58 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v6 1/6] iommu/arm-smmu-v3: Pass in cmdq pointer to
+ arm_smmu_cmdq_issue_cmdlist()
+Message-ID: <20240430135458.GO941030@nvidia.com>
+References: <cover.1714451595.git.nicolinc@nvidia.com>
+ <0acb55059f7212abdf4277a81e2f033127072bc9.1714451595.git.nicolinc@nvidia.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0acb55059f7212abdf4277a81e2f033127072bc9.1714451595.git.nicolinc@nvidia.com>
+X-ClientProxiedBy: SA0PR11CA0151.namprd11.prod.outlook.com
+ (2603:10b6:806:1bb::6) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|CY8PR12MB7169:EE_
+X-MS-Office365-Filtering-Correlation-Id: d08aa4b8-de21-44c2-044f-08dc691d20a9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|376005|366007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?Cioz7UwRDjZ1mCzlWziN7BTWO8Z6889mxdQvLfJmskY26YqAj8vgtG/IUifh?=
+ =?us-ascii?Q?La2QwaWUfOA6+/TQcKN81aB6pv43gmqwn1vNj9D8Noc9N/8OrIaScQTfmRfZ?=
+ =?us-ascii?Q?ceMCjMiScxlEMbtnDSEWGqeOJ5FmD+iplv20nJtXXvPQPG/wkdXL5AlKG6zR?=
+ =?us-ascii?Q?+WC/YjxgOG8ih6Al/fuMj3fccZhwq/E+GXmuVbE9ZSju8/AdFIul+18VJwhg?=
+ =?us-ascii?Q?P+2CQoAx1ozatmr9MECa9RZUtHMlHqmUNnFt3q4FxbKb3bQLf+IL9Vgr7AW5?=
+ =?us-ascii?Q?YMyXpaJgGpHqeg2N3oa1GgEL0y7/LDcU2s+ShLyLBdWOh7hQTNnIG5gyx6s3?=
+ =?us-ascii?Q?TezZ2WFBqJtpH3fqlbJ5Y2phR/f+plGEjhLcS/0uJWD0/FuCZh2IN8uAL72E?=
+ =?us-ascii?Q?YL+WcEDdghb1x2TmzJGEDTnRYdooz2ySX7VaQ8IT8abhSgmJVLEpHRUl2Czs?=
+ =?us-ascii?Q?3mjaIhWOB1rYU38IyqNJZIgmhi3a7LfptXdr9+g6RqXheMR7Y1TPR2jc/+AE?=
+ =?us-ascii?Q?hPRtPyA5pwy+ICxxSBFf33n3Mzm2zIe552RpghOZ5CRWnIxHi2gHapdCdeYC?=
+ =?us-ascii?Q?9qc4ZSynNS+DQjbFmUutXE4a5oRnCslySqdcgHE8Gu+g4W15UcO6OCwQOtIi?=
+ =?us-ascii?Q?b1yfN2DuD+mQVE0yMXL5NwzNuS5JtQyOd4lkcLEGQgZjRO2ckMCnHFmpWUTd?=
+ =?us-ascii?Q?KeHG+3mYYzoNQLH8EmnBu3Q7uytfnoLcKFJD1vdlY4kRQNo3f7MHeUIvKXGu?=
+ =?us-ascii?Q?nyeMGiqcYgAHU3oLau0DkYCmFtvweRPjSG34VvEW7S7QlB9CoWb+50Fmsgy/?=
+ =?us-ascii?Q?xooltbxNi9Swczl9sn/TFCxao8U3LAiQD9A+Ywsvg/nkYZ1mzTYPEiSWn95W?=
+ =?us-ascii?Q?Oe4slZWrMUjt6BKqbPQfC4OUkKOjvkW8JXvYPjwHO4OYwou7li8+6F/3rT8k?=
+ =?us-ascii?Q?oJp/BfLkpvRSas6CprWPFeZ/LzrMcfIWnQf2cdwGJhOaGxAE85vTRuZlq24M?=
+ =?us-ascii?Q?wlmjHhDOKmza8tzvxSawbdi5JsHBhRxEqHbbuGE0xnf1vl7CA8rLqn8lVCks?=
+ =?us-ascii?Q?q+qm+KzSGAlF7wdK8PQzoZs2rjFDr8RqI0Qq+HMbsfzrSSrUW63jg0LQda7J?=
+ =?us-ascii?Q?RyVonIsN4V6lOPIcyu1wtbAOMl/T7qvJa6qa4SWTMI0meVydQZxPefFyxvxR?=
+ =?us-ascii?Q?izPeLhIqSZI0ERBS0BakTorh4pcu6NENfWo7dHQY5Nc7o8GNQ7+KiUPrjdu2?=
+ =?us-ascii?Q?+zg8Kza2Vh7AJDKwrJQukDXVeg1mmj4M4CHpQXTYQA=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(366007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?jazuUsGmwZH0ijnMKwFKRiNcYIKPvWsHW8KgeGRP/t8R6qCf2Z/qhPcF7luX?=
+ =?us-ascii?Q?nXAcXf1BSf42E9eAgxLU9Q5s/5sD3ag7q6cpqb6S6phv7+DrrESPq9XA7crv?=
+ =?us-ascii?Q?zvyVma7J1ajHQ+EkNMAx01s3IGz/+SxtxgadEiMg+RnM/AnUxEu8rDVG9n4N?=
+ =?us-ascii?Q?cXzIij53APJ0aGWoD+djZiwzoL3Ms1bScshidubzNbKqugAF10EDI7oDIHkp?=
+ =?us-ascii?Q?UVN8fy5vryx3mWvQd6ykl3h12ptemW3b/8rM9RlAwEB40RFQxqvVLNQ9tZPW?=
+ =?us-ascii?Q?Tp1dbD+D7Z/NxyBJE8uLCY98/tQvEwV0uN0UgNduKuvIIm8wlVc3Te37K6e4?=
+ =?us-ascii?Q?qdgnfaFNsqt5DzT7/uPZAsn6JgKYMr6dqeumQbyLCyd5sxkdTa9aXpIhk7b4?=
+ =?us-ascii?Q?AZAMgjzmu760+tdM+NhEbU5bXetoUz4PQZzNtvjmjiQtgRNjnqF74/1HLVQl?=
+ =?us-ascii?Q?CKh0dz2CSI0+Qq3ctt6mEFiTqkVERsspcdIusGsHY4ISV448FJIVk2YqcKpZ?=
+ =?us-ascii?Q?pHmBVFg9k4g6bizMKkszEq2Nomps9fkzipU5KsCsmNpUfFflUAlbYnlzV5H8?=
+ =?us-ascii?Q?SZ00vc6EqYALJmslDxL+I8vD+7yDlJ0ICop2e9oAKNvkCxwctn5vI/eXMQ3h?=
+ =?us-ascii?Q?Pk96OHQuTMO6Jvf9LNrdEfTEZKP3ZFYpQK4Dyn07/hmMOOymhBLl86IzpXJq?=
+ =?us-ascii?Q?90GbghLd4aLMAKtnRaebywb4LFudEFl7OSfNYphLYR60Fm/+OQmJTJuLLpiB?=
+ =?us-ascii?Q?NTiuCLQxPErEo2YWwYadugkbLBMjTnRy7538samlnT2o9TfCiKnB7mtmxZIc?=
+ =?us-ascii?Q?+isbCuMQcrG/jtS83GuzO0SVem6vBUcNZZovX3bdK3kSwrqinpPRALegyAYa?=
+ =?us-ascii?Q?yR13ZaAabRGGEhYNtTFRsu0xvtaxPgGQR2LRKHLTqlOSH+DwG6v+4NY7QQQu?=
+ =?us-ascii?Q?rptcbdCxnQcm31ykk+JHVU29wS+zRK3bdetpoCTk0EfkU5zrnWkj21KE/P13?=
+ =?us-ascii?Q?wyIT1vqzZ7+64a248OJefkq1Y5fbKl8uyUMZ6zs5lo9qswqDTjc1JVNGl5S1?=
+ =?us-ascii?Q?jdsgcy5D6TKx3cbvV0GU/j16f6PJ0KzFmxM9+wy9s6wZ6PBMrc5l61UWrJxB?=
+ =?us-ascii?Q?xlcZnePx0hP3UtZw1SAMckMe0GvdC6zUGYPk9CDyQ7Flw2zeBOLaA4k83ZS3?=
+ =?us-ascii?Q?s11iHi4NbOSxXwupMDQD2JIBeA10AcfGMeWhW7ZvNSjoHN56QQRuPM6GJGbj?=
+ =?us-ascii?Q?zryhXSwfZ9Eu/Vosw3Udtk11bQ/MbnXWcJTrGKXI4QkHbSIYG3F0WtObzESU?=
+ =?us-ascii?Q?eoed4Xq2EBB0OhzcgFy0upKceQIQdFmHVoNP5ft9agnsIYRN5n+5ASNbWUDU?=
+ =?us-ascii?Q?+3kE96g1et40oEosTTuMtdDWnGqWjJp4ooeT43jOQLnAyp0ynEjKFXo2VFtw?=
+ =?us-ascii?Q?VM3jse1chlP5MHLn/EXoPeDsA/6cVrwEjKeLUJ5nFH1bd84yRTn5Bxoe9prv?=
+ =?us-ascii?Q?fjrZuGfx1mPdoKt1ZgvXqzfIAeDsfflPVeclFsqd18vOtlom2IZCmU+kKg6l?=
+ =?us-ascii?Q?+AB8QrXsJWwt5cjm0bcHQU9FYe64JjQfx8CgcG0g?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d08aa4b8-de21-44c2-044f-08dc691d20a9
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2024 13:55:00.4000
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: kQB10nCy5pK/wzIJY0X92A7aP1rM6bmmPEukNshMFZjYMBOCF27h/+dzsDCfsQQv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY8PR12MB7169
 
-From: Kunkun Jiang <jiangkunkun@huawei.com>
+On Mon, Apr 29, 2024 at 09:43:44PM -0700, Nicolin Chen wrote:
+> The driver currently calls arm_smmu_get_cmdq() helper in different places,
+> although they are all called from the arm_smmu_cmdq_issue_cmdlist().
+> 
+> Allow to pass in the cmdq pointer, instead of calling arm_smmu_get_cmdq()
+> every time.
+> 
+> This will also help CMDQV extension in NVIDIA Tegra241 SoC, as its driver
+> will maintain its own cmdq pointers, then need to redirect arm_smmu->cmdq
+> to one of its vcmdqs upon seeing a supported command.
+> 
+> Signed-off-by: Nicolin Chen <nicolinc@nvidia.com>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 ++++++++-------
+>  1 file changed, 8 insertions(+), 7 deletions(-)
 
-If io-pgtable quirk flag indicates support for hardware update of
-dirty state, enable HA/HD bits in the SMMU CD and also set the DBM
-bit in the page descriptor.
-
-Now report the dirty page tracking capability of SMMUv3 and
-select IOMMUFD_DRIVER for ARM_SMMU_V3 if IOMMUFD is enabled.
-
-Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
-Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
-Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
-Signed-off-by: Joao Martins <joao.m.martins@oracle.com>
 Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Reviewed-by: Ryan Roberts <ryan.roberts@arm.com>
-Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
----
- drivers/iommu/Kconfig                       |  1 +
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 +++++++++++++++
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  3 +++
- drivers/iommu/io-pgtable-arm.c              |  5 ++++-
- 4 files changed, 23 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index f872aeccd820..912cffc9f001 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -390,6 +390,7 @@ config ARM_SMMU_V3
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select GENERIC_MSI_IRQ
-+	select IOMMUFD_DRIVER if IOMMUFD
- 	help
- 	  Support for implementations of the ARM System MMU architecture
- 	  version 3 providing translation support to a PCIe root complex.
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index ad18436c5f7f..e3143be3cfc6 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1333,6 +1333,12 @@ void arm_smmu_make_s1_cd(struct arm_smmu_cd *target,
- 		CTXDESC_CD_0_ASET |
- 		FIELD_PREP(CTXDESC_CD_0_ASID, smmu_domain->asid)
- 		);
-+
-+	/* To enable dirty flag update, set both Access flag and dirty state update */
-+	if (pgtbl_cfg->quirks & IO_PGTABLE_QUIRK_ARM_HD)
-+		target->data[0] |= cpu_to_le64(CTXDESC_CD_0_TCR_HA |
-+					       CTXDESC_CD_0_TCR_HD);
-+
- 	target->data[1] = cpu_to_le64(pgtbl_cfg->arm_lpae_s1_cfg.ttbr &
- 				      CTXDESC_CD_1_TTB0_MASK);
- 	target->data[3] = cpu_to_le64(pgtbl_cfg->arm_lpae_s1_cfg.mair);
-@@ -2264,6 +2270,13 @@ static const struct iommu_flush_ops arm_smmu_flush_ops = {
- 	.tlb_add_page	= arm_smmu_tlb_inv_page_nosync,
- };
- 
-+static bool arm_smmu_dbm_capable(struct arm_smmu_device *smmu)
-+{
-+	u32 features = (ARM_SMMU_FEAT_HD | ARM_SMMU_FEAT_COHERENCY);
-+
-+	return (smmu->features & features) == features;
-+}
-+
- /* IOMMU API */
- static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
- {
-@@ -2276,6 +2289,8 @@ static bool arm_smmu_capable(struct device *dev, enum iommu_cap cap)
- 	case IOMMU_CAP_NOEXEC:
- 	case IOMMU_CAP_DEFERRED_FLUSH:
- 		return true;
-+	case IOMMU_CAP_DIRTY_TRACKING:
-+		return arm_smmu_dbm_capable(master->smmu);
- 	default:
- 		return false;
- 	}
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-index fd60052a9ec6..f684676d0bb5 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
-@@ -312,6 +312,9 @@ struct arm_smmu_cd {
- #define CTXDESC_CD_0_TCR_IPS		GENMASK_ULL(34, 32)
- #define CTXDESC_CD_0_TCR_TBI0		(1ULL << 38)
- 
-+#define CTXDESC_CD_0_TCR_HA            (1UL << 43)
-+#define CTXDESC_CD_0_TCR_HD            (1UL << 42)
-+
- #define CTXDESC_CD_0_AA64		(1UL << 41)
- #define CTXDESC_CD_0_S			(1UL << 44)
- #define CTXDESC_CD_0_R			(1UL << 45)
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index da6cc52859ba..20ac0e833c7b 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -433,6 +433,8 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
- 		pte = ARM_LPAE_PTE_nG;
- 		if (!(prot & IOMMU_WRITE) && (prot & IOMMU_READ))
- 			pte |= ARM_LPAE_PTE_AP_RDONLY;
-+		else if (data->iop.cfg.quirks & IO_PGTABLE_QUIRK_ARM_HD)
-+			pte |= ARM_LPAE_PTE_AP_WRITABLE_CLEAN;
- 		if (!(prot & IOMMU_PRIV))
- 			pte |= ARM_LPAE_PTE_AP_UNPRIV;
- 	} else {
-@@ -923,7 +925,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 
- 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
- 			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
--			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA))
-+			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA |
-+			    IO_PGTABLE_QUIRK_ARM_HD))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
--- 
-2.34.1
-
+Jason
