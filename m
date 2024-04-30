@@ -1,184 +1,99 @@
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id F1BD61272AB
-	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 10:21:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 90BD313D268
+	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 10:22:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714472466; cv=none; b=LNSR0Bb9CgGAElJhfK8JoV4SrPGk6VTAtzYLsA9hu37H62+2bnai69DPlVXB8djXcwOo/Z0opYpjoBEfO/wM7ocJsERf4SePaLtYK4x7n2qsvjx2Pv230sIrEX5Uja2if5uDVffY763jCe1v+ky5VMBAr5r71uz321NBnsw0Ul0=
+	t=1714472569; cv=none; b=uHxVIh74zdbwht5O8eDvw8adrPlw6/9EnzE0aEcpM63tNb3eucLWiejqb1O5nVNxAzvTza8JaYGAFKGn23aEu9UAlIqjLAnfkzr7QKadEB+kgwFtN4vKlf8qX4JFLq1YXi0607v6bPIh/7/0RCUBtUa9bBOQ5sdBxIMmn0BWkBE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714472466; c=relaxed/simple;
-	bh=5SgGxFTDFfPD9ogt5nacJQS8JEFOELIWLGAoJWR92JQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ws9GuEAvCJMxIA7sGNFPJpL/5y9xcDXQFg6y/t5HpPhq+oo4J0TZ/cWgUfYdv/FPMiHLuh+BQT8eujzBGGVlP72yh601CB+ML8EIdb63Bk4L0UnXmfjxepHfFQGrX02/+4yN68SIcnLhsLwKmgGFfh3dyucRvfeUkJfykh52ca8=
+	s=arc-20240116; t=1714472569; c=relaxed/simple;
+	bh=krf2c1GkUobPI6NrzHHAPV2pd3geJngPoEGsQX9XiYg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Cal1xZLlaE5Bu1S9T9BCJUt7uMjB6V9j2WpzxoW3OyStDqQkNXbUwe8il4VjrXFVJZcBRr+uloOflqzRAxyo0cf3Es4rs4INNvwvWdy7S69ljVUzdmWwAJYhQ77U/V96uguT2iTFVWkv1uQUQ70SQCasSVQhTFu21nYtUlZz77g=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4DC432F4;
-	Tue, 30 Apr 2024 03:21:23 -0700 (PDT)
-Received: from [10.57.1.41] (unknown [10.57.1.41])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F27C13F73F;
-	Tue, 30 Apr 2024 03:20:50 -0700 (PDT)
-Message-ID: <20d44077-d0a8-470a-bf6f-82683db894cf@arm.com>
-Date: Tue, 30 Apr 2024 11:20:46 +0100
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 74057339
+	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 03:23:13 -0700 (PDT)
+Received: from e110455-lin.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id BF2203F73F
+	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 03:22:46 -0700 (PDT)
+Date: Tue, 30 Apr 2024 11:22:29 +0100
+From: Liviu Dudau <liviu.dudau@arm.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: will@kernel.org, lpieralisi@kernel.org, kw@linux.com, robh@kernel.org,
+	bhelgaas@google.com, krzk+dt@kernel.org, conor+dt@kernel.org,
+	sudeep.holla@arm.com, joro@8bytes.org, robin.murphy@arm.com,
+	nicolinc@nvidia.com, ketanp@nvidia.com, linux-pci@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: PCI: generic: Add ats-supported property
+Message-ID: <ZjDGZdkTDmlVcUGf@e110455-lin.cambridge.arm.com>
+References: <20240429113938.192706-2-jean-philippe@linaro.org>
+ <20240429113938.192706-3-jean-philippe@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 6/7] iommu/dma: Centralise iommu_setup_dma_ops()
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>, Christoph Hellwig <hch@lst.de>,
- Vineet Gupta <vgupta@kernel.org>, Russell King <linux@armlinux.org.uk>,
- Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
- Huacai Chen <chenhuacai@kernel.org>, WANG Xuerui <kernel@xen0n.name>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Paul Walmsley <paul.walmsley@sifive.com>, Palmer Dabbelt
- <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>,
- Lorenzo Pieralisi <lpieralisi@kernel.org>, Hanjun Guo
- <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
- "K. Y. Srinivasan" <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
- Dexuan Cui <decui@microsoft.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Niklas Schnelle <schnelle@linux.ibm.com>,
- Matthew Rosato <mjrosato@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Jason Gunthorpe <jgg@ziepe.ca>,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux.dev,
- devicetree@vger.kernel.org, Jason Gunthorpe <jgg@nvidia.com>
-References: <cover.1713523152.git.robin.murphy@arm.com>
- <bebea331c1d688b34d9862eefd5ede47503961b8.1713523152.git.robin.murphy@arm.com>
- <Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru>
- <2662a5ba-3115-4fe5-9cec-bff71f703a82@arm.com>
- <CAA8EJprxLvYEP8+ggk8fw--kHaK+_QoYan4st2wWpPicHa6_+w@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <CAA8EJprxLvYEP8+ggk8fw--kHaK+_QoYan4st2wWpPicHa6_+w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20240429113938.192706-3-jean-philippe@linaro.org>
 
-On 2024-04-30 1:41 am, Dmitry Baryshkov wrote:
-> On Tue, 30 Apr 2024 at 01:26, Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 2024-04-29 5:31 pm, Dmitry Baryshkov wrote:
->>> On Fri, Apr 19, 2024 at 05:54:45PM +0100, Robin Murphy wrote:
->>>> It's somewhat hard to see, but arm64's arch_setup_dma_ops() should only
->>>> ever call iommu_setup_dma_ops() after a successful iommu_probe_device(),
->>>> which means there should be no harm in achieving the same order of
->>>> operations by running it off the back of iommu_probe_device() itself.
->>>> This then puts it in line with the x86 and s390 .probe_finalize bodges,
->>>> letting us pull it all into the main flow properly. As a bonus this lets
->>>> us fold in and de-scope the PCI workaround setup as well.
->>>>
->>>> At this point we can also then pull the call up inside the group mutex,
->>>> and avoid having to think about whether iommu_group_store_type() could
->>>> theoretically race and free the domain if iommu_setup_dma_ops() ran just
->>>> *before* iommu_device_use_default_domain() claims it... Furthermore we
->>>> replace one .probe_finalize call completely, since the only remaining
->>>> implementations are now one which only needs to run once for the initial
->>>> boot-time probe, and two which themselves render that path unreachable.
->>>>
->>>> This leaves us a big step closer to realistically being able to unpick
->>>> the variety of different things that iommu_setup_dma_ops() has been
->>>> muddling together, and further streamline iommu-dma into core API flows
->>>> in future.
->>>>
->>>> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com> # For Intel IOMMU
->>>> Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
->>>> Tested-by: Hanjun Guo <guohanjun@huawei.com>
->>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>>> ---
->>>> v2: Shuffle around to make sure the iommu_group_do_probe_finalize() case
->>>>       is covered as well, with bonus side-effects as above.
->>>> v3: *Really* do that, remembering the other two probe_finalize sites too.
->>>> ---
->>>>    arch/arm64/mm/dma-mapping.c  |  2 --
->>>>    drivers/iommu/amd/iommu.c    |  8 --------
->>>>    drivers/iommu/dma-iommu.c    | 18 ++++++------------
->>>>    drivers/iommu/dma-iommu.h    | 14 ++++++--------
->>>>    drivers/iommu/intel/iommu.c  |  7 -------
->>>>    drivers/iommu/iommu.c        | 20 +++++++-------------
->>>>    drivers/iommu/s390-iommu.c   |  6 ------
->>>>    drivers/iommu/virtio-iommu.c | 10 ----------
->>>>    include/linux/iommu.h        |  7 -------
->>>>    9 files changed, 19 insertions(+), 73 deletions(-)
->>>
->>> This patch breaks UFS on Qualcomm SC8180X Primus platform:
->>>
->>>
->>> [    3.846856] arm-smmu 15000000.iommu: Unhandled context fault: fsr=0x402, iova=0x1032db3e0, fsynr=0x130000, cbfrsynra=0x300, cb=4
->>
->> Hmm, a context fault implies that the device did get attached to a DMA
->> domain, thus has successfully been through __iommu_probe_device(), yet
->> somehow still didn't get the right DMA ops (since that "IOVA" looks more
->> like a PA to me). Do you see the "Adding to IOMMU group..." message for
->> this device, and/or any other relevant messages or errors before this
->> point?
+On Mon, Apr 29, 2024 at 12:39:37PM +0100, Jean-Philippe Brucker wrote:
+> Add a way for firmware to tell the OS that ATS is supported by the PCI
+> root complex. An endpoint with ATS enabled may send Translation Requests
+> and Translated Memory Requests, which look just like Normal Memory
+> Requests with a non-zero AT field. So a root controller that ignores the
+> AT field may simply forward the request to the IOMMU as a Normal Memory
+> Request, which could end badly. In any case, the endpoint will be
+> unusable.
 > 
-> No, nothing relevant.
+> The ats-supported property allows the OS to only enable ATS in endpoints
+> if the root controller can handle ATS requests. Only add the property to
+> pcie-host-ecam-generic for the moment. For non-generic root controllers,
+> availability of ATS can be inferred from the compatible string.
 > 
-> [    8.372395] ufshcd-qcom 1d84000.ufshc: Adding to iommu group 6
-> 
-> (please ignore the timestamp, it comes before ufshc being probed).
-> 
->> I'm guessing there's a fair chance probe deferral might be
->> involved as well. I'd like to understand what path(s) this ends up
->> taking through __iommu_probe_device() and of_dma_configure(), or at
->> least the number and order of probe attempts between the UFS and SMMU
->> drivers.
-> 
-> __iommu_probe_device() gets called twice and returns early because ops is NULL.
-> 
-> Then finally of_dma_configure_id() is called. The following branches are taken:
-> 
-> np == dev->of_node
-> of_dma_get_range() returned 0
-> bus_dma_limit and dma_range_map are set
-> __iommu_probe_device() is called, using the `!group->default_domain &&
-> !group_lis` case, then group->default_domain() is not NULL,
-> In the end, iommu_setup_dma_ops() is called.
-> 
-> Then the ufshc probe defers (most likely the PHY is not present or
-> some other device is not there yet).
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-Ah good, probe deferral. And indeed the half-formed hunch from last 
-night grew into a pretty definite idea by this morning... patch incoming.
+Reviewed-by: Liviu Dudau <liviu.dudau@arm.com>
 
-Thanks,
-Robin.
+> ---
+> From a while ago: https://lore.kernel.org/all/20200219222454.GA16221@bogus/
+> ---
+>  Documentation/devicetree/bindings/pci/host-generic-pci.yaml | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/pci/host-generic-pci.yaml b/Documentation/devicetree/bindings/pci/host-generic-pci.yaml
+> index d25423aa71674..94d4a4914a483 100644
+> --- a/Documentation/devicetree/bindings/pci/host-generic-pci.yaml
+> +++ b/Documentation/devicetree/bindings/pci/host-generic-pci.yaml
+> @@ -110,6 +110,12 @@ properties:
+>    iommu-map-mask: true
+>    msi-parent: true
+>  
+> +  ats-supported:
+> +    description:
+> +      Indicates that a PCIe host controller supports ATS, and can handle Memory
+> +      Requests with Address Type (AT).
+> +    type: boolean
+> +
+>  required:
+>    - compatible
+>    - reg
+> -- 
+> 2.44.0
+> 
 
-> On the next (succeeding) try, of_dma_configure_id() is called again.
-> The call trace is more or less the same, except that
-> __iommu_probe_device() is not called
-> 
->> I'll stare at the code in the morning and see if I can spot any
->> overlooked ways in which what I think might be happening could happen,
->> but any more info to help narrow it down would be much appreciated.
->>
->> Thanks,
->> Robin.
->>
->>> [    3.846880] ufshcd-qcom 1d84000.ufshc: ufshcd_check_errors: saved_err 0x20000 saved_uic_err 0x0
->>> [    3.846929] host_regs: 00000000: 1587031f 00000000 00000300 00000000
->>> [    3.846935] host_regs: 00000010: 01000000 00010217 00000000 00000000
->>> [    3.846941] host_regs: 00000020: 00000000 00070ef5 00000000 00000000
->>> [    3.846946] host_regs: 00000030: 0000000f 00000001 00000000 00000000
->>> [    3.846951] host_regs: 00000040: 00000000 00000000 00000000 00000000
->>> [    3.846956] host_regs: 00000050: 032db000 00000001 00000000 00000000
->>> [    3.846962] host_regs: 00000060: 00000000 80000000 00000000 00000000
->>> [    3.846967] host_regs: 00000070: 032dd000 00000001 00000000 00000000
->>> [    3.846972] host_regs: 00000080: 00000000 00000000 00000000 00000000
->>> [    3.846977] host_regs: 00000090: 00000016 00000000 00000000 0000000c
->>> [    3.847074] ufshcd-qcom 1d84000.ufshc: ufshcd_err_handler started; HBA state eh_fatal; powered 1; shutting down 0; saved_err = 131072; saved_uic_err = 0; force_reset = 0
->>> [    4.406550] ufshcd-qcom 1d84000.ufshc: ufshcd_verify_dev_init: NOP OUT failed -11
->>> [    4.417953] ufshcd-qcom 1d84000.ufshc: ufshcd_async_scan failed: -11
->>>
-> 
-> 
-> 
+-- 
+====================
+| I would like to |
+| fix the world,  |
+| but they're not |
+| giving me the   |
+ \ source code!  /
+  ---------------
+    ¯\_(ツ)_/¯
