@@ -1,69 +1,48 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 64A8412B176
-	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 11:00:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24ED317592
+	for <iommu@lists.linux.dev>; Tue, 30 Apr 2024 11:22:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714474860; cv=none; b=u7/KdohU/iX4Wrl1LE+j/zMr31orS6kIWUWE+6dy6hprSiAj9ZuRyC+oHP4KEqoCPkuA5eJv/0UVqV7+neO4zJyaGp1+XVKy4w8ILaaEFpgy6E1sO8k/BAR/rvNyiB5liYOsdC8qTj0jWTyr1M7wTuk9AdmAfvvWOZkEMlFpyEA=
+	t=1714476171; cv=none; b=DyT351y37SNaGeJ5M0uVQTI67TBnFoh/whP+va7VJqlYnZt0H4Ti3BjJ7CDpeZ9FOmsvnB4KHOXT6E4oKvY8dVDwEpaKYTnA8joqGWtfSvxau7nRogpcdG9CchoawAf5anQCRVhxSLa9dWRG0XXwCNeoMSlLgNjCrkt4c0wqpWc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714474860; c=relaxed/simple;
-	bh=ia0m/v3NkfxuBvlrAdojfIkIRk1HopN19vUMuivFtk8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=slwrE1PNLjNwJN2QyMbVpiTMBk6Tj9m1YvxN+WiEXqna8ojW2oWR/5Wlglk+xLKEu8hAjaU7fEHDvgK0SpTTTT8iS1K2WjacV5nL7i64ZcYArxjrT69VyauO8m8ICPZ/ai1ccNCEdWdEgiq7P8U5kZKlqC32vbkQSyUk4c8yYc0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 10C772F4;
-	Tue, 30 Apr 2024 04:01:24 -0700 (PDT)
-Received: from [10.57.1.41] (unknown [10.57.1.41])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7EF2D3F73F;
-	Tue, 30 Apr 2024 04:00:56 -0700 (PDT)
-Message-ID: <658581c0-eb0f-408d-a32e-c97d948103df@arm.com>
-Date: Tue, 30 Apr 2024 12:00:54 +0100
+	s=arc-20240116; t=1714476171; c=relaxed/simple;
+	bh=ryZYQg8ZXpIvAXHOQnWRXIsCu5nVd68sMhv0YfmvMG8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Aaw3XwBQtDrqzKoT8KMQX3Hs/Suj1TNBVq5qq5vVLaRb68LmHKV8+C2zDAb15Wt1O66fISCOfeFDdgy0vZr7flrHL/Yhn4rx4DuzXbN34VaOonHARhpaq+EPj2H4HkEYMyyg7r70EylECCNjBhSlhVNVGXXaL6HBm7Sdehj7Be4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8F41C4AF1B;
+	Tue, 30 Apr 2024 11:22:49 +0000 (UTC)
+Date: Tue, 30 Apr 2024 12:22:47 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: joro@8bytes.org, will@kernel.org, linux-arm-kernel@lists.infradead.org,
+	iommu@lists.linux.dev,
+	Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Subject: Re: [PATCH] arm64: Properly clean up iommu-dma remnants
+Message-ID: <ZjDUhzuRPWJNI_P7@arm.com>
+References: <d4cc20cbb0c45175e98dd76bf187e2ad6421296d.1714472573.git.robin.murphy@arm.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] arm64: Properly clean up iommu-dma remnants
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: joro@8bytes.org, will@kernel.org, catalin.marinas@arm.com,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-References: <d4cc20cbb0c45175e98dd76bf187e2ad6421296d.1714472573.git.robin.murphy@arm.com>
- <CAA8EJprv9At9t-C+EzUt60F1_ke30F78zpGr=vLFBB9Mk1zv+w@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <CAA8EJprv9At9t-C+EzUt60F1_ke30F78zpGr=vLFBB9Mk1zv+w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d4cc20cbb0c45175e98dd76bf187e2ad6421296d.1714472573.git.robin.murphy@arm.com>
 
-On 2024-04-30 11:32 am, Dmitry Baryshkov wrote:
-> On Tue, 30 Apr 2024 at 13:23, Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> Thanks to the somewhat asymmetrical nature, while removing
->> iommu_setup_dma_ops() from the arch_setup_dma_ops() flow, I managed to
->> forget that arm64's teardown path was also specific to iommu-dma. Clean
->> that up to match, otherwise probe deferral will lead to the arch code
->> erroneously removing DMA ops set elsewhere.
->>
->> Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
->> Link: https://lore.kernel.org/linux-iommu/Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru/
->> Fixes: b67483b3c44e ("iommu/dma: Centralise iommu_setup_dma_ops()")
->> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->> ---
->>   arch/arm64/Kconfig          | 1 -
->>   arch/arm64/mm/dma-mapping.c | 8 --------
->>   2 files changed, 9 deletions(-)
+On Tue, Apr 30, 2024 at 11:22:53AM +0100, Robin Murphy wrote:
+> Thanks to the somewhat asymmetrical nature, while removing
+> iommu_setup_dma_ops() from the arch_setup_dma_ops() flow, I managed to
+> forget that arm64's teardown path was also specific to iommu-dma. Clean
+> that up to match, otherwise probe deferral will lead to the arch code
+> erroneously removing DMA ops set elsewhere.
 > 
-> 
-> Thanks!
-> 
-> Tested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Link: https://lore.kernel.org/linux-iommu/Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru/
+> Fixes: b67483b3c44e ("iommu/dma: Centralise iommu_setup_dma_ops()")
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-Great! Always nice when the issue is one of simply not deleting *enough* 
-code :)
-
-Cheers,
-Robin.
+Acked-by: Catalin Marinas <catalin.marinas@arm.com>
