@@ -1,99 +1,99 @@
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DE2F53368
-	for <iommu@lists.linux.dev>; Wed,  1 May 2024 16:17:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9ED5E12FF86;
+	Wed,  1 May 2024 16:20:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714580265; cv=none; b=CMIu1UPTPp/S9MT/dYETmUFpnjw2YJ6ljlKNLx4EsK+D2YqDrxxH57FZra3qpZhMdV4xTt00H8vlNdWGKGeyH4R5bLn02FKl8UASXzAsPAjAGkf6Fo9KdiyL93dqaFGAS5q8RwZK4kVVr2pk5aXvdzmDK3JzKqb7TU33lrvftGM=
+	t=1714580451; cv=none; b=tDPxXX9mSpZd7/Cy2NVzA/vo6xc6mM16NQcxxCMmCo6+79plXheEbAPFXoz3m1xSlMmpm1Rj5iFt16Ti9wFYfIjatldnHumQpuTBqcVS7VqaJzWb0daBQ3Vk4+3XXxzCEW5FPThoKFXXiaz5YydoVVXbZdYYOPJuJCPNW+lm/BQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714580265; c=relaxed/simple;
-	bh=WMbb2YIutbT9nENgsU83J3jQa7ch6qSbwQgGs2qjpog=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FakYGKtZBQTaQnEdXH0bkCW6u9LH5GW9/gyEsCFeS5yr/W0dMJ4iHFeVEcNsMq6sEqAFSJrSWaDcLCJqySfe8ebmihuJIonMR9kkKoxDxtLg8J10iekLEzl8DPv2Et1khI1fWqSWAyDDjg0MLZ1/Z2encbPXkR3Zq/OfkC/OlH0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=BWxxevGD; arc=none smtp.client-ip=209.85.167.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1714580451; c=relaxed/simple;
+	bh=ZlN0D8RAa1eZsrJuv9lZAei8y/f3hGPt88SymFQqb3s=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=RkQsuXiDjX/TXgH8hYRLptH2wrmuGczRZhSF2nEViwecEXQurpdOSGnxJr72GfF6CUb8omSyae/DexMEdmPm/JfOlZPo/ByRowV9TV2J0JLqbb5j+3VrLSjlwLBXXkHoJPY+XS7CawF+Nh2YPQCB5YoGzxh3bmsT2BgGIFyYFpI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PkRs1mE8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="BWxxevGD"
-Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-3c730f599abso4066626b6e.0
-        for <iommu@lists.linux.dev>; Wed, 01 May 2024 09:17:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1714580262; x=1715185062; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=7BPYbga/8HekZBhU29ejBHMNmmO8g5JnLQNHtUS17ag=;
-        b=BWxxevGDtZWx4AS2NFm1vbl+il2tk1Z4lZ5rbAgZp+OwzF6/bWgNw4fhT4lEKrbCGj
-         /IwmBVUFEoDoRmh409eaIqaUWvi/sk5QpYPSabqLdrBWWynhYhI5ZSBUpEnCDsSGELWW
-         V9VvpvkbMDv0hzZaFEQ+KR13Z1vq8wp1MdQi4Qsv8L/5q9Fv8CNOE6rBN5ciyBl1GLvI
-         55GJKY5wIisu/9pyOfc5pVeRtCh5SgH7VNUSSFiDgT2S6jBWR3DXNIVQL8cKCiNq2m6h
-         3kAQNNoLtUARUDqJoTYA9mD5WdLMP1zaESRY7symEdPKW/nmZnUQiYKAQjBD3apsqrG/
-         hCXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714580263; x=1715185063;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7BPYbga/8HekZBhU29ejBHMNmmO8g5JnLQNHtUS17ag=;
-        b=LgFWUFcNAIro4bGyfdNh1DUhGe5YlhyexUAWAh/7LAmwW8Llig3XNEEMLh2F2PPEl4
-         /phmdH1abd/j7eo4MjbLBvdxF6QarRkOmvmrHIaSbypq4e7iNjamTrRZad7G/8dS8jDu
-         vasppnUu8yumx53BkPVtdO6ulFIxe8f3c0Dv5IysyO6+7TP+jsgF6SvASMUW59C7hwAQ
-         ZXCRXPl+l8XvKAfBcUOU3ZktrGpnRwBxDISnI1IXTw5S3DDVLHr+yD7bCH3eC8a7L9gQ
-         dzLGv9SD+r6NKAH7mw1vgHTtIQvoHtioSNAR+f3hpB4lE9rvsZA1eo9tOIKw9rnVNtOB
-         nPaw==
-X-Forwarded-Encrypted: i=1; AJvYcCVQ+p1z/ADsts8bZgZnZZN1p7O6ae5wXQgGkhwoct9p6W+s4BpODkd05FFKiRBXMcKtLVr3vzHP0Ar1ZzGqrmRk40AOTlk=
-X-Gm-Message-State: AOJu0YxqBlbUPG5/5aNeQPgRmfy1Ag/eA5hqinhMnI61rjy9NxvEO2gY
-	98Kd7CjWgpB7Bf173thOIa5pv63uYKKNwL7Ospb2pT6qqeeJgdzmFl33l45lz+4=
-X-Google-Smtp-Source: AGHT+IGy0Y1JrKO8EVr1ZE17EubAJ7KMInc1BkkfIk+jJ2jmtCVQLOnE/yA6PvkgfDmkhDU/+DY2vA==
-X-Received: by 2002:a05:6808:21a0:b0:3c9:506e:3301 with SMTP id be32-20020a05680821a000b003c9506e3301mr1741651oib.57.1714580262701;
-        Wed, 01 May 2024 09:17:42 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id s8-20020ad44388000000b006a0e9eda182sm1164809qvr.124.2024.05.01.09.17.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 May 2024 09:17:41 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1s2CeL-00Dxcn-DD;
-	Wed, 01 May 2024 13:17:41 -0300
-Date: Wed, 1 May 2024 13:17:41 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev, joro@8bytes.org,
-	thomas.lendacky@amd.com, vasant.hegde@amd.com, michael.roth@amd.com,
-	jon.grimm@amd.com, rientjes@google.com
-Subject: Re: [PATCH 1/9] iommu/amd: Introduce helper functions for managing
- IOMMU memory
-Message-ID: <20240501161741.GG1723318@ziepe.ca>
-References: <20240430152430.4245-1-suravee.suthikulpanit@amd.com>
- <20240430152430.4245-2-suravee.suthikulpanit@amd.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PkRs1mE8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13377C072AA;
+	Wed,  1 May 2024 16:20:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1714580451;
+	bh=ZlN0D8RAa1eZsrJuv9lZAei8y/f3hGPt88SymFQqb3s=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=PkRs1mE8t7J/SiZob6avFJsKF0cjbJE8n9E5SYHnkIt4PYCIXVGDJ+jW8KVm5W+72
+	 5IBd8QUooHQxiKnZtDNbJIEXxuTnrxaVipiR0Ix1IY9OfzwCX1EDRIg52hQ9r6Oyq+
+	 cv4GIYPtJxkbz1oUY6cAa6SVvDKqyDQVdytW/28JQZNKUusLEv5qw2xCOT2Wkmban9
+	 G969gKxSBgwlzipOsahdfGfU6aZZ5w52VhXQECjKGAmgpZ3ls/rtG62QghfRU5dGSN
+	 RoVVmu1J+2CPxFgQ8B5DZexQSpi2zVzRzjUHUb3VNsVCLu47XWNmDuHM/5ZtAa0uYL
+	 +3a1gxWMVTxCw==
+From: Will Deacon <will@kernel.org>
+To: iommu@lists.linux.dev,
+	Joerg Roedel <joro@8bytes.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	Jason Gunthorpe <jgg@ziepe.ca>
+Cc: catalin.marinas@arm.com,
+	kernel-team@android.com,
+	Will Deacon <will@kernel.org>,
+	Eric Auger <eric.auger@redhat.com>,
+	Moritz Fischer <mdf@kernel.org>,
+	Moritz Fischer <moritzf@google.com>,
+	Michael Shavit <mshavit@google.com>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	patches@lists.linux.dev,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Mostafa Saleh <smostafa@google.com>
+Subject: Re: [PATCH v9 0/9] Make the SMMUv3 CD logic match the new STE design (part 2a/3)
+Date: Wed,  1 May 2024 17:20:29 +0100
+Message-Id: <171456087391.35017.3249073955778510141.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <0-v9-5040dc602008+177d7-smmuv3_newapi_p2_jgg@nvidia.com>
+References: <0-v9-5040dc602008+177d7-smmuv3_newapi_p2_jgg@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240430152430.4245-2-suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On Tue, Apr 30, 2024 at 03:24:22PM +0000, Suravee Suthikulpanit wrote:
-> Depending on the modes of operation, certain AMD IOMMU data structures are
-> allocated with constraints. For example:
+On Tue, 30 Apr 2024 14:21:32 -0300, Jason Gunthorpe wrote:
+> This is split out from the larger part two which aimes to rework the PASID
+> related code.
 > 
->  * Some buffers must be 4K-aligned when running in SNP-enabled host
+> No new functionality is introduced in theses commits, it just reorganizes
+> the CD logic to follow the same design of the new STE logic using make
+> functions and a single programming flow without leaking details to
+> callers.
 > 
->  * To support AMD IOMMU emulation in an SEV guest, some data structures
->    cannot be encrypted so that the VMM can access the memory successfully.
+> [...]
 
-Uh, this seems like a really bad idea. The VM's integrity strongly
-depends on the correct function of the HW. If the IOMMU datastructures
-are not protected then the whole thing is not secure.
+Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-For instance allowing hostile VMs to manipulate the DTE, or interfere
-with the command queue, destroys any possibility to have secure DMA.
+[1/9] iommu/arm-smmu-v3: Add an ops indirection to the STE code
+	https://git.kernel.org/will/c/de31c3555412
+[2/9] iommu/arm-smmu-v3: Make CD programming use arm_smmu_write_entry()
+	https://git.kernel.org/will/c/78a5fbe8395b
+[3/9] iommu/arm-smmu-v3: Move the CD generation for S1 domains into a function
+	https://git.kernel.org/will/c/e9d1e4ff74b9
+[4/9] iommu/arm-smmu-v3: Consolidate clearing a CD table entry
+	https://git.kernel.org/will/c/af8f0b83ea2b
+[5/9] iommu/arm-smmu-v3: Make arm_smmu_alloc_cd_ptr()
+	https://git.kernel.org/will/c/b2f4c0fcf094
+[6/9] iommu/arm-smmu-v3: Allocate the CD table entry in advance
+	https://git.kernel.org/will/c/13abe4faac43
+[7/9] iommu/arm-smmu-v3: Move the CD generation for SVA into a function
+	https://git.kernel.org/will/c/7b87c93c8b86
+[8/9] iommu/arm-smmu-v3: Build the whole CD in arm_smmu_make_s1_cd()
+	https://git.kernel.org/will/c/04905c17f648
+[9/9] iommu/arm-smmu-v3: Add unit tests for arm_smmu_write_entry
+	https://git.kernel.org/will/c/56e1a4cc2588
 
-Is this some precursor to implementing a secure iommu where the data
-structures will remain encrypted? What is even the point of putting a
-non-secure viommu into a SEV guest anyhow?
+Cheers,
+-- 
+Will
 
-Jason
+https://fixes.arm64.dev
+https://next.arm64.dev
+https://will.arm64.dev
