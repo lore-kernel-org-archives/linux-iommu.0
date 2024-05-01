@@ -1,635 +1,203 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2065.outbound.protection.outlook.com [40.107.244.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2F3512F5BE
-	for <iommu@lists.linux.dev>; Wed,  1 May 2024 16:27:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714580839; cv=none; b=H5OU0avfe1jY2ZFs1c+oYBtkZj+nuVRw+jUhRB4xqj06xlWyt96reSEQ+l84Nwd3JxcFsTyl13ByIfZQFggauz+VuwWX2PN9/1CYsFSll7f2peFgRaqkuxWNI8EVM8kvxPCEwgVCss6hNu0nUnTwqbkvmu8wyfZjvU+5q6EH+CI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714580839; c=relaxed/simple;
-	bh=26WtctVaTLTLc776t9nI7ES3WntMKj7sFyWZDGc/5GE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=u1lcq/38TB4Z8FZj7M392xKXEeYMWoUMYiZN0hB4leTWU2h2E6fSlk8aguf30eJBAZ3nMZ4PBC62LsxghGlvXhM9n3v4J2Nu4r3khHktk647sAlTFx8h2KC+rv6NbfUvNbaYbM2zfsLX2goYwE3hA6E2Aa+IZokEWCigVlEewz0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=hGzxsX1B; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AA09CA40
+	for <iommu@lists.linux.dev>; Wed,  1 May 2024 16:33:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.244.65
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714581189; cv=fail; b=KLH9jyUFMEx5HqZMyZ1jVKOCICLqVqsKNqa3IIf6OHKl1kc9li4POZxxjd8BVbCXchAeaNd6G8+wLJMD4d5+l+l3PHNsamToK1tZanNUInZlp6gZwLfDAcvHNK9aoCHKe0EyVg+0gbKIcDajza6mmG5dvV9Ya5BNQcdacpuuAms=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714581189; c=relaxed/simple;
+	bh=wJbiSiZ11KbZOt1S+/GiQo8RKDzict6kJ8yMTxrRoao=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=PDzjePA2TkfFm5HHtpq9SIO76qJmLFIMLmY5woPYADGX4xo5iWQo18ZRDe5mOuKWE2rX1py+WbIFRpnBa9x6r51kDj0U4KsGgmfDwBTz9dryEGk5CfHn6D0RjPnNVXv33mne0ah33Eym9OdD8k8uzTyCGDuD8BOlKInYNfkXT3g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=FxPZVf4+; arc=fail smtp.client-ip=40.107.244.65
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="hGzxsX1B"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id 680C61B45ED;
-	Wed,  1 May 2024 18:27:07 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1714580827; bh=fBvZZlumoKZqzBJIFGtRRADPHppBYMwkyXFAsAJrVTg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=hGzxsX1Beh+WPSkCo+hhO9K6L9/HcJgEVIfC6gL9/b4yWE2WzJ9QmisZmqY2uJGA6
-	 bZZcOXGmhXNmC+2amRdd0L+EzvY2hXTam5i/4t4u0sbP1PnZDg7MSKFO10Hkdzj86Z
-	 r6id+ZEAUlbUNCLDPlxsiZQ0JNWbN1vfJv+6aRRHqFf/Ydg979aUtV0wjk+LiU5iDd
-	 jGhVpkTPD0cSEH9PJAylMg+LKwGmENE7mcRUKA7QKAX1Owq3Hd1fCZOIeZ1/f3+6nF
-	 WMFgvDDxVFLzpMU4AbFrnBcLM9FK97R6OcGuYzD1i+moWM4v1bmUvrLn2Qor77SnHi
-	 n4eGJtcyn6YKA==
-Date: Wed, 1 May 2024 18:27:05 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: mhkelley58@gmail.com
-Cc: mhklinux@outlook.com, robin.murphy@arm.com, joro@8bytes.org,
- will@kernel.org, hch@lst.de, m.szyprowski@samsung.com, corbet@lwn.net,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, roberto.sassu@huaweicloud.com
-Subject: Re: [PATCH v4 1/1] Documentation/core-api: Add swiotlb
- documentation
-Message-ID: <20240501182705.1fc5af92@meshulam.tesarici.cz>
-In-Reply-To: <20240501151651.2912-1-mhklinux@outlook.com>
-References: <20240501151651.2912-1-mhklinux@outlook.com>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="FxPZVf4+"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ot08mBKmQLHEafVUuL2bV+xXWBL70ROo9yx+OByFo92a5S99uUxnzOzC4aJo8WdDH3YETsFSft5mU0ieU0F4os5EPBDoBVmXIJemMvcEy5lLCpyko2GczaRb5CvLr0r1UIYCbAlM91dBH4y4oelSNFTbK0xuS9BXAcdLue1PbYX4WL1zTOmAozYYuGtyUgSrGmPHzY+SobgENTg82Aq5DmRW9BmcQGMt8Kvr0lpSxbVlPFzuO3Rvh9yA8OqMnVbhHK/ktxSc8hlQlD0sGlA/4cAOvHFnkN6uK7qoD4p1H9s4KbyAJDMMh007KYur8yCvDkzALcz07KgbDJjdoNjb2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=yMpD7sUYyKlkGhc5ODmv2+pF06a3HmO7b9KZFl2so2A=;
+ b=FUt/1P9UqTo1Q69ZJb7xOaU/j1L9uBaEsUwq0/qxWcUE27bJOaZMHPEh7GQ3US9hU+E+/JOQSYYfV9T80eoif518WX9vud6DiZl3Ut+xP1DvGSpUFRGyFMEPp8gfFZMbnB075U995XMdnZKbEVOmar8pLP4jWjjLeB2blo54ZqN9SxanVAYCtiEyi1fzRC3LWga/3tW+JIs95e6HLwmXh+6oQqE9dXZg2nuPo7Tzmx7xDdS4KH7ZuiHWnDCzFWoQ0LCyUgNjtkxBvb+4cIbb4QaQ/tURYCxWAj3Se8zZhQuUffP7Hap/YBPPsSZVrxrAC40290DoMNWcAoLHE6CuYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.232) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yMpD7sUYyKlkGhc5ODmv2+pF06a3HmO7b9KZFl2so2A=;
+ b=FxPZVf4+CI+F+dsPmEf9dfPHbQtxxzSXZnQDKOmDVHK/W2/EYC4pTGitmT/6t42cu07d8G4QyUwdeeDPcuXKbWRjjHUoxh7UEJsYa2blDqSts9napXcj9WR1exCAduh+dCNSsgxxpI44dFHLVswwfA5txTFFg+/6N8HjS/i9lwu9/2SeSYuA9tYaiDkX+tXbxQdtcSU4yEzRxnG7xKZaAJ5ZKlgkt59M3SfIM4OW1AZ5D0Ya+YFd8RKrqRn48nkY4Tiwu2fBo5J6xzF5sMJ4u0oXh3W7tUv2YauSK65aavQva64pGlg0/Zs9O082RbrRq/xWw9XmodC/Dmc0jUgXiQ==
+Received: from CH0PR03CA0105.namprd03.prod.outlook.com (2603:10b6:610:cd::20)
+ by LV2PR12MB5824.namprd12.prod.outlook.com (2603:10b6:408:176::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.35; Wed, 1 May
+ 2024 16:33:00 +0000
+Received: from DS3PEPF0000C37E.namprd04.prod.outlook.com
+ (2603:10b6:610:cd:cafe::fe) by CH0PR03CA0105.outlook.office365.com
+ (2603:10b6:610:cd::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.28 via Frontend
+ Transport; Wed, 1 May 2024 16:33:00 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.232)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.232 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.232; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.232) by
+ DS3PEPF0000C37E.mail.protection.outlook.com (10.167.23.8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7544.18 via Frontend Transport; Wed, 1 May 2024 16:32:59 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by mail.nvidia.com
+ (10.127.129.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 1 May 2024
+ 09:32:47 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Wed, 1 May 2024 09:32:46 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Wed, 1 May 2024 09:32:46 -0700
+Date: Wed, 1 May 2024 09:32:44 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH v6 6/6] iommu/tegra241-cmdqv: Limit CMDs for guest owned
+ VINTF
+Message-ID: <ZjJurCoepdiUMCpX@Asurada-Nvidia>
+References: <cover.1714451595.git.nicolinc@nvidia.com>
+ <4ee1f867e838b90a21de16b12cf2e39ba699eab4.1714451595.git.nicolinc@nvidia.com>
+ <20240430170655.GU941030@nvidia.com>
+ <ZjE/ZKX7okSkztpR@Asurada-Nvidia>
+ <20240501001758.GZ941030@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240501001758.GZ941030@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF0000C37E:EE_|LV2PR12MB5824:EE_
+X-MS-Office365-Filtering-Correlation-Id: e3db6ebf-846f-409c-b113-08dc69fc5d7f
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230031|82310400014|376005|36860700004|1800799015;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?sluIWMMi84hIA5gag5XXo50RrxI3zxN50xMDsCD5N7xuCpPff+T41Pspa1jU?=
+ =?us-ascii?Q?e2y9AeWeac0SbWRCd8z4ayrR9JbhAVJUWyXlOqlFdMV6K70WyusmSPI9moFZ?=
+ =?us-ascii?Q?slDoVOHJeYlxzWk+cz4+FolaymYfYUE71oah8coSPicE1H/jBwtLfouBN8wt?=
+ =?us-ascii?Q?13HrgwsaLgLrPTzEXWmlgWtJycRZJkM2utIZczMnIuEzSn4TlazkUYPepqHN?=
+ =?us-ascii?Q?uAvYhfrP1YM1o6A3dgNF/yYs12JcpvXxIWiomjuOkiNiXk3xellLUtXnNw1s?=
+ =?us-ascii?Q?mfacGrnoTuZ+/w6Vos3DfhUUqKJCUwomhpyIv+EAvdwAKy+RSEWYGGA8hWRM?=
+ =?us-ascii?Q?wLACl2Ii69vGMOr1fcKNLcdBrPM/Gyw1xG/ExmkVXXzyUUO9eYhYxZMSAHK5?=
+ =?us-ascii?Q?LzdNSkmSA+McDD4d9ZwdndnP0TZPQICSyTaYi/bZ/Oc7EmefkZNx9mBDJzKn?=
+ =?us-ascii?Q?7/8d5Mn93i4tbv7kTIYKk4H3vVKZPX2JAth+ZOZ9IyOsPdRZVK7IuNi680gj?=
+ =?us-ascii?Q?2Teb+T7kDFCr/lh+y+5GgvO6qOWz/TQ9cqFSQ2SCYnnhgaRMeo7u/Qj07qz9?=
+ =?us-ascii?Q?78RHT4CLAkPgs4pdZs1Hv74jeohVX2bQXQQWU55nGxrPgtq3pJByIJfXjIaS?=
+ =?us-ascii?Q?A6c83/lMIwf5kG/r5hFv92iRBuahGKeA1KPVTh4PaFhMHJPbjrxVdwLX0EmE?=
+ =?us-ascii?Q?kCOOQfjKTuSfUaM4uCCQcik2nVt2R+tAGkEcGfLdm62NNROJa7Cyoegin8SU?=
+ =?us-ascii?Q?YLEd6nOBrqzgHZrDLuF0lnpEAF7LtASIK1i0F8IQtUigZE2eSRMpnKbdEEap?=
+ =?us-ascii?Q?+LY/Pq/04Jb6KbMtTY+rMD2pBxMXnm+3vgyYNLKIfSfmqEeWh99+o2D0ozc9?=
+ =?us-ascii?Q?gEf2QvDzPwiaARC1F7HRsl5s7iYs/Mg3kumWpDQ6CvjmRcXbKhX13DqkPCM/?=
+ =?us-ascii?Q?/bL4+gJkzEwX4s13AhU4JVMwdFYeW+bBOZ8nlmunVWX1gL4Oh1SN1HUW3ilS?=
+ =?us-ascii?Q?pBxFkpC4SCCxE1E4wqgntjsqz4HfDqFCNrwMGDEINJY8WhcGdpQBPeq05rLm?=
+ =?us-ascii?Q?AcjI13W+gpf8XppmXtDdFMG0JJkNKgzZ0KIOy6pcdT1dzx/5ZIOvDL4LH3ue?=
+ =?us-ascii?Q?YegGP3h4DFX+ePE8mToE1tFC2tcyqtFQu549NW5rbN2hZeCbXhtZywLL7TIt?=
+ =?us-ascii?Q?whOnX0ykFC7rCr2LIM7sOjiMtRJY/jywF7Bn2a09BloKVow8Jr1NgDgs02l9?=
+ =?us-ascii?Q?2md64MOua+ltRIJzs3sOmXP/WYDbG7D3PeNIp7UKIurGbGjpnYcYwp2rW7JA?=
+ =?us-ascii?Q?HiB64UjnAZ7B7s/yLtl4UA7ijLvszPvUcS6Vzvts0fTxSsak9YFTFZUQhl0m?=
+ =?us-ascii?Q?ZYxeha2qaEVdcJ+V0bCU4PPf1tZe?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.232;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge1.nvidia.com;CAT:NONE;SFS:(13230031)(82310400014)(376005)(36860700004)(1800799015);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2024 16:32:59.9686
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e3db6ebf-846f-409c-b113-08dc69fc5d7f
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.232];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF0000C37E.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5824
 
-On Wed,  1 May 2024 08:16:51 -0700
-mhkelley58@gmail.com wrote:
+On Tue, Apr 30, 2024 at 09:17:58PM -0300, Jason Gunthorpe wrote:
+> On Tue, Apr 30, 2024 at 11:58:44AM -0700, Nicolin Chen wrote:
+> 
+> > > Has to push everything, across all the iterations of add/submut, onto
+> > > the same CMDQ otherwise the SYNC won't be properly flushing?
+> > 
+> > ECMDQ seems to have such a limitation, but VCMDQs can get away
+> > as HW can insert a SYNC to a queue that doesn't end with a SYNC.
+> 
+> That seems like a strange thing to do in HW, but I recall you
+> mentioned it once before. Still, I'm not sure there is any merit in
+> relying on it?
 
-> From: Michael Kelley <mhklinux@outlook.com>
->=20
-> There's currently no documentation for the swiotlb. Add documentation
-> describing usage scenarios, the key APIs, and implementation details.
-> Group the new documentation with other DMA-related documentation.
->=20
-> Signed-off-by: Michael Kelley <mhklinux@outlook.com>
+I was hoping to get some idea from the designer. Yet, at this
+moment, let's say there's likely no merit besides SW can care
+less and stay simpler, AFAIK.
 
-Looks perfect now. :-)
+Robin previously remarked that there could be some performance
+impact from such a feature, so I think adding your patch would
+be nicer.
 
-Reviewed-by: Petr Tesarik <petr@tesarici.cz>
+> > > Something sort of like this as another patch?
+> > > 
+> > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > > index 268da20baa4e9c..d8c9597878315a 100644
+> > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > > @@ -357,11 +357,22 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+> > >  	return 0;
+> > >  }
+> > >  
+> > > -static struct arm_smmu_cmdq *arm_smmu_get_cmdq(struct arm_smmu_device *smmu,
+> > > -					       u64 *cmds, int n)
+> > > +enum required_cmds {
+> > > +	CMDS_ALL,
+> > > +	/*
+> > > +	 * Commands will be one of:
+> > > +	 *  CMDQ_OP_ATC_INV, CMDQ_OP_TLBI_EL2_VA, CMDQ_OP_TLBI_NH_VA,
+> > > +	 *  CMDQ_OP_TLBI_EL2_ASID, CMDQ_OP_TLBI_NH_ASID, CMDQ_OP_TLBI_S2_IPA,
+> > > +	 *  CMDQ_OP_TLBI_S12_VMALL, CMDQ_OP_SYNC
+> > > +	 */
+> > > +	CMDS_INVALIDATION,
+> > > +};
+> > 
+> > Hmm, guest-owned VCMDQs don't support EL2 commands. So, it feels
+> > to be somehow complicated to decouple them further in the callers
+> > of arm_smmu_cmdq_batch_add(). And I am not sure if there is a use
+> > case of guest issuing CMDQ_OP_TLBI_S2_IPA/CMDQ_OP_TLBI_S12_VMALL
+> > either, HW surprisingly supports these two though.
+> 
+> These are the max commands that could be issued, but they are all
+> gated based on the feature bits. The ones VCMDQ don't support are not
+> going to be issued because of the feature bits. You could test and
+> enforce this when probing the ECMDQ parts.
 
-Petr T
+Ah, I see. So cmdqv's probe() could check the smmu->features
+against ARM_SMMU_FEAT_E2H, and disable VINTF0 right away, in
+case of guest-owned while E2H is present.
 
-> ---
-> Changes in v4:
-> * Removed "existing" qualifier in describing device drivers that "just wo=
-rk"
->   in a CoCo VM [Petr Tesa=C5=99=C3=ADk]
-> * Added mention of DMA_ATTR_SKIP_CPU_SYNC in describing
->   swiotlb_tbl_unmap_single() [Petr Tesa=C5=99=C3=ADk]
-> * Provided more detail on operation of min_align_mask [Petr Tesa=C5=99=C3=
-=ADk]
->=20
-> Changes in v3:
-> * Reference swiotlb as just "swiotlb", not "the swiotlb" [Christoph Hellw=
-ig]
-> * Lengthen text lines to close to 80 chars instead of 65 [Christoph Hellw=
-ig]
->=20
-> Changes in v2:
-> * Use KiB/MiB/GiB units instead of Kbytes/Mbytes/Gbytes [Matthew Wilcox]
->=20
->  Documentation/core-api/index.rst   |   1 +
->  Documentation/core-api/swiotlb.rst | 321 +++++++++++++++++++++++++++++
->  2 files changed, 322 insertions(+)
->  create mode 100644 Documentation/core-api/swiotlb.rst
->=20
-> diff --git a/Documentation/core-api/index.rst b/Documentation/core-api/in=
-dex.rst
-> index 7a3a08d81f11..89c517665763 100644
-> --- a/Documentation/core-api/index.rst
-> +++ b/Documentation/core-api/index.rst
-> @@ -102,6 +102,7 @@ more memory-management documentation in Documentation=
-/mm/index.rst.
->     dma-api-howto
->     dma-attributes
->     dma-isa-lpc
-> +   swiotlb
->     mm-api
->     genalloc
->     pin_user_pages
-> diff --git a/Documentation/core-api/swiotlb.rst b/Documentation/core-api/=
-swiotlb.rst
-> new file mode 100644
-> index 000000000000..5ad2c9ca85bc
-> --- /dev/null
-> +++ b/Documentation/core-api/swiotlb.rst
-> @@ -0,0 +1,321 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +DMA and swiotlb
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +swiotlb is a memory buffer allocator used by the Linux kernel DMA layer.=
- It is
-> +typically used when a device doing DMA can't directly access the target =
-memory
-> +buffer because of hardware limitations or other requirements. In such a =
-case,
-> +the DMA layer calls swiotlb to allocate a temporary memory buffer that c=
-onforms
-> +to the limitations. The DMA is done to/from this temporary memory buffer=
-, and
-> +the CPU copies the data between the temporary buffer and the original ta=
-rget
-> +memory buffer. This approach is generically called "bounce buffering", a=
-nd the
-> +temporary memory buffer is called a "bounce buffer".
-> +
-> +Device drivers don't interact directly with swiotlb. Instead, drivers in=
-form
-> +the DMA layer of the DMA attributes of the devices they are managing, an=
-d use
-> +the normal DMA map, unmap, and sync APIs when programming a device to do=
- DMA.
-> +These APIs use the device DMA attributes and kernel-wide settings to det=
-ermine
-> +if bounce buffering is necessary. If so, the DMA layer manages the alloc=
-ation,
-> +freeing, and sync'ing of bounce buffers. Since the DMA attributes are per
-> +device, some devices in a system may use bounce buffering while others d=
-o not.
-> +
-> +Because the CPU copies data between the bounce buffer and the original t=
-arget
-> +memory buffer, doing bounce buffering is slower than doing DMA directly =
-to the
-> +original memory buffer, and it consumes more CPU resources. So it is use=
-d only
-> +when necessary for providing DMA functionality.
-> +
-> +Usage Scenarios
-> +---------------
-> +swiotlb was originally created to handle DMA for devices with addressing
-> +limitations. As physical memory sizes grew beyond 4 GiB, some devices co=
-uld
-> +only provide 32-bit DMA addresses. By allocating bounce buffer memory be=
-low
-> +the 4 GiB line, these devices with addressing limitations could still wo=
-rk and
-> +do DMA.
-> +
-> +More recently, Confidential Computing (CoCo) VMs have the guest VM's mem=
-ory
-> +encrypted by default, and the memory is not accessible by the host hyper=
-visor
-> +and VMM. For the host to do I/O on behalf of the guest, the I/O must be
-> +directed to guest memory that is unencrypted. CoCo VMs set a kernel-wide=
- option
-> +to force all DMA I/O to use bounce buffers, and the bounce buffer memory=
- is set
-> +up as unencrypted. The host does DMA I/O to/from the bounce buffer memor=
-y, and
-> +the Linux kernel DMA layer does "sync" operations to cause the CPU to co=
-py the
-> +data to/from the original target memory buffer. The CPU copying bridges =
-between
-> +the unencrypted and the encrypted memory. This use of bounce buffers all=
-ows
-> +device drivers to "just work" in a CoCo VM, with no modifications
-> +needed to handle the memory encryption complexity.
-> +
-> +Other edge case scenarios arise for bounce buffers. For example, when IO=
-MMU
-> +mappings are set up for a DMA operation to/from a device that is conside=
-red
-> +"untrusted", the device should be given access only to the memory contai=
-ning
-> +the data being transferred. But if that memory occupies only part of an =
-IOMMU
-> +granule, other parts of the granule may contain unrelated kernel data. S=
-ince
-> +IOMMU access control is per-granule, the untrusted device can gain acces=
-s to
-> +the unrelated kernel data. This problem is solved by bounce buffering th=
-e DMA
-> +operation and ensuring that unused portions of the bounce buffers do not
-> +contain any unrelated kernel data.
-> +
-> +Core Functionality
-> +------------------
-> +The primary swiotlb APIs are swiotlb_tbl_map_single() and
-> +swiotlb_tbl_unmap_single(). The "map" API allocates a bounce buffer of a
-> +specified size in bytes and returns the physical address of the buffer. =
-The
-> +buffer memory is physically contiguous. The expectation is that the DMA =
-layer
-> +maps the physical memory address to a DMA address, and returns the DMA a=
-ddress
-> +to the driver for programming into the device. If a DMA operation specif=
-ies
-> +multiple memory buffer segments, a separate bounce buffer must be alloca=
-ted for
-> +each segment. swiotlb_tbl_map_single() always does a "sync" operation (i=
-.e., a
-> +CPU copy) to initialize the bounce buffer to match the contents of the o=
-riginal
-> +buffer.
-> +
-> +swiotlb_tbl_unmap_single() does the reverse. If the DMA operation might =
-have
-> +updated the bounce buffer memory and DMA_ATTR_SKIP_CPU_SYNC is not set, =
-the
-> +unmap does a "sync" operation to cause a CPU copy of the data from the b=
-ounce
-> +buffer back to the original buffer. Then the bounce buffer memory is fre=
-ed.
-> +
-> +swiotlb also provides "sync" APIs that correspond to the dma_sync_*() AP=
-Is that
-> +a driver may use when control of a buffer transitions between the CPU an=
-d the
-> +device. The swiotlb "sync" APIs cause a CPU copy of the data between the
-> +original buffer and the bounce buffer. Like the dma_sync_*() APIs, the s=
-wiotlb
-> +"sync" APIs support doing a partial sync, where only a subset of the bou=
-nce
-> +buffer is copied to/from the original buffer.
-> +
-> +Core Functionality Constraints
-> +------------------------------
-> +The swiotlb map/unmap/sync APIs must operate without blocking, as they a=
-re
-> +called by the corresponding DMA APIs which may run in contexts that cann=
-ot
-> +block. Hence the default memory pool for swiotlb allocations must be
-> +pre-allocated at boot time (but see Dynamic swiotlb below). Because swio=
-tlb
-> +allocations must be physically contiguous, the entire default memory poo=
-l is
-> +allocated as a single contiguous block.
-> +
-> +The need to pre-allocate the default swiotlb pool creates a boot-time tr=
-adeoff.
-> +The pool should be large enough to ensure that bounce buffer requests can
-> +always be satisfied, as the non-blocking requirement means requests can'=
-t wait
-> +for space to become available. But a large pool potentially wastes memor=
-y, as
-> +this pre-allocated memory is not available for other uses in the system.=
- The
-> +tradeoff is particularly acute in CoCo VMs that use bounce buffers for a=
-ll DMA
-> +I/O. These VMs use a heuristic to set the default pool size to ~6% of me=
-mory,
-> +with a max of 1 GiB, which has the potential to be very wasteful of memo=
-ry.
-> +Conversely, the heuristic might produce a size that is insufficient, dep=
-ending
-> +on the I/O patterns of the workload in the VM. The dynamic swiotlb featu=
-re
-> +described below can help, but has limitations. Better management of the =
-swiotlb
-> +default memory pool size remains an open issue.
-> +
-> +A single allocation from swiotlb is limited to IO_TLB_SIZE * IO_TLB_SEGS=
-IZE
-> +bytes, which is 256 KiB with current definitions. When a device's DMA se=
-ttings
-> +are such that the device might use swiotlb, the maximum size of a DMA se=
-gment
-> +must be limited to that 256 KiB. This value is communicated to higher-le=
-vel
-> +kernel code via dma_map_mapping_size() and swiotlb_max_mapping_size(). I=
-f the
-> +higher-level code fails to account for this limit, it may make requests =
-that
-> +are too large for swiotlb, and get a "swiotlb full" error.
-> +
-> +A key device DMA setting is "min_align_mask", which is a power of 2 minu=
-s 1
-> +so that some number of low order bits are set, or it may be zero. swiotlb
-> +allocations ensure these min_align_mask bits of the physical address of =
-the
-> +bounce buffer match the same bits in the address of the original buffer.=
- When
-> +min_align_mask is non-zero, it may produce an "alignment offset" in the =
-address
-> +of the bounce buffer that slightly reduces the maximum size of an alloca=
-tion.
-> +This potential alignment offset is reflected in the value returned by
-> +swiotlb_max_mapping_size(), which can show up in places like
-> +/sys/block/<device>/queue/max_sectors_kb. For example, if a device does =
-not use
-> +swiotlb, max_sectors_kb might be 512 KiB or larger. If a device might use
-> +swiotlb, max_sectors_kb will be 256 KiB. When min_align_mask is non-zero,
-> +max_sectors_kb might be even smaller, such as 252 KiB.
-> +
-> +swiotlb_tbl_map_single() also takes an "alloc_align_mask" parameter. This
-> +parameter specifies the allocation of bounce buffer space must start at a
-> +physical address with the alloc_align_mask bits set to zero. But the act=
-ual
-> +bounce buffer might start at a larger address if min_align_mask is non-z=
-ero.
-> +Hence there may be pre-padding space that is allocated prior to the star=
-t of
-> +the bounce buffer. Similarly, the end of the bounce buffer is rounded up=
- to an
-> +alloc_align_mask boundary, potentially resulting in post-padding space. =
-Any
-> +pre-padding or post-padding space is not initialized by swiotlb code. The
-> +"alloc_align_mask" parameter is used by IOMMU code when mapping for untr=
-usted
-> +devices. It is set to the granule size - 1 so that the bounce buffer is
-> +allocated entirely from granules that are not used for any other purpose.
-> +
-> +Data structures concepts
-> +------------------------
-> +Memory used for swiotlb bounce buffers is allocated from overall system =
-memory
-> +as one or more "pools". The default pool is allocated during system boot=
- with a
-> +default size of 64 MiB. The default pool size may be modified with the
-> +"swiotlb=3D" kernel boot line parameter. The default size may also be ad=
-justed
-> +due to other conditions, such as running in a CoCo VM, as described abov=
-e. If
-> +CONFIG_SWIOTLB_DYNAMIC is enabled, additional pools may be allocated lat=
-er in
-> +the life of the system. Each pool must be a contiguous range of physical
-> +memory. The default pool is allocated below the 4 GiB physical address l=
-ine so
-> +it works for devices that can only address 32-bits of physical memory (u=
-nless
-> +architecture-specific code provides the SWIOTLB_ANY flag). In a CoCo VM,=
- the
-> +pool memory must be decrypted before swiotlb is used.
-> +
-> +Each pool is divided into "slots" of size IO_TLB_SIZE, which is 2 KiB wi=
-th
-> +current definitions. IO_TLB_SEGSIZE contiguous slots (128 slots) constit=
-ute
-> +what might be called a "slot set". When a bounce buffer is allocated, it
-> +occupies one or more contiguous slots. A slot is never shared by multiple
-> +bounce buffers. Furthermore, a bounce buffer must be allocated from a si=
-ngle
-> +slot set, which leads to the maximum bounce buffer size being IO_TLB_SIZ=
-E *
-> +IO_TLB_SEGSIZE. Multiple smaller bounce buffers may co-exist in a single=
- slot
-> +set if the alignment and size constraints can be met.
-> +
-> +Slots are also grouped into "areas", with the constraint that a slot set=
- exists
-> +entirely in a single area. Each area has its own spin lock that must be =
-held to
-> +manipulate the slots in that area. The division into areas avoids conten=
-ding
-> +for a single global spin lock when swiotlb is heavily used, such as in a=
- CoCo
-> +VM. The number of areas defaults to the number of CPUs in the system for
-> +maximum parallelism, but since an area can't be smaller than IO_TLB_SEGS=
-IZE
-> +slots, it might be necessary to assign multiple CPUs to the same area. T=
-he
-> +number of areas can also be set via the "swiotlb=3D" kernel boot paramet=
-er.
-> +
-> +When allocating a bounce buffer, if the area associated with the calling=
- CPU
-> +does not have enough free space, areas associated with other CPUs are tr=
-ied
-> +sequentially. For each area tried, the area's spin lock must be obtained=
- before
-> +trying an allocation, so contention may occur if swiotlb is relatively b=
-usy
-> +overall. But an allocation request does not fail unless all areas do not=
- have
-> +enough free space.
-> +
-> +IO_TLB_SIZE, IO_TLB_SEGSIZE, and the number of areas must all be powers =
-of 2 as
-> +the code uses shifting and bit masking to do many of the calculations. T=
-he
-> +number of areas is rounded up to a power of 2 if necessary to meet this
-> +requirement.
-> +
-> +The default pool is allocated with PAGE_SIZE alignment. If an alloc_alig=
-n_mask
-> +argument to swiotlb_tbl_map_single() specifies a larger alignment, one o=
-r more
-> +initial slots in each slot set might not meet the alloc_align_mask crite=
-rium.
-> +Because a bounce buffer allocation can't cross a slot set boundary, elim=
-inating
-> +those initial slots effectively reduces the max size of a bounce buffer.
-> +Currently, there's no problem because alloc_align_mask is set based on I=
-OMMU
-> +granule size, and granules cannot be larger than PAGE_SIZE. But if that =
-were to
-> +change in the future, the initial pool allocation might need to be done =
-with
-> +alignment larger than PAGE_SIZE.
-> +
-> +Dynamic swiotlb
-> +---------------
-> +When CONFIG_DYNAMIC_SWIOTLB is enabled, swiotlb can do on-demand expansi=
-on of
-> +the amount of memory available for allocation as bounce buffers. If a bo=
-unce
-> +buffer request fails due to lack of available space, an asynchronous bac=
-kground
-> +task is kicked off to allocate memory from general system memory and tur=
-n it
-> +into an swiotlb pool. Creating an additional pool must be done asynchron=
-ously
-> +because the memory allocation may block, and as noted above, swiotlb req=
-uests
-> +are not allowed to block. Once the background task is kicked off, the bo=
-unce
-> +buffer request creates a "transient pool" to avoid returning an "swiotlb=
- full"
-> +error. A transient pool has the size of the bounce buffer request, and is
-> +deleted when the bounce buffer is freed. Memory for this transient pool =
-comes
-> +from the general system memory atomic pool so that creation does not blo=
-ck.
-> +Creating a transient pool has relatively high cost, particularly in a Co=
-Co VM
-> +where the memory must be decrypted, so it is done only as a stopgap unti=
-l the
-> +background task can add another non-transient pool.
-> +
-> +Adding a dynamic pool has limitations. Like with the default pool, the m=
-emory
-> +must be physically contiguous, so the size is limited to MAX_PAGE_ORDER =
-pages
-> +(e.g., 4 MiB on a typical x86 system). Due to memory fragmentation, a ma=
-x size
-> +allocation may not be available. The dynamic pool allocator tries smalle=
-r sizes
-> +until it succeeds, but with a minimum size of 1 MiB. Given sufficient sy=
-stem
-> +memory fragmentation, dynamically adding a pool might not succeed at all.
-> +
-> +The number of areas in a dynamic pool may be different from the number o=
-f areas
-> +in the default pool. Because the new pool size is typically a few MiB at=
- most,
-> +the number of areas will likely be smaller. For example, with a new pool=
- size
-> +of 4 MiB and the 256 KiB minimum area size, only 16 areas can be created=
-. If
-> +the system has more than 16 CPUs, multiple CPUs must share an area, crea=
-ting
-> +more lock contention.
-> +
-> +New pools added via dynamic swiotlb are linked together in a linear list.
-> +swiotlb code frequently must search for the pool containing a particular
-> +swiotlb physical address, so that search is linear and not performant wi=
-th a
-> +large number of dynamic pools. The data structures could be improved for
-> +faster searches.
-> +
-> +Overall, dynamic swiotlb works best for small configurations with relati=
-vely
-> +few CPUs. It allows the default swiotlb pool to be smaller so that memor=
-y is
-> +not wasted, with dynamic pools making more space available if needed (as=
- long
-> +as fragmentation isn't an obstacle). It is less useful for large CoCo VM=
-s.
-> +
-> +Data Structure Details
-> +----------------------
-> +swiotlb is managed with four primary data structures: io_tlb_mem, io_tlb=
-_pool,
-> +io_tlb_area, and io_tlb_slot. io_tlb_mem describes a swiotlb memory allo=
-cator,
-> +which includes the default memory pool and any dynamic or transient pools
-> +linked to it. Limited statistics on swiotlb usage are kept per memory al=
-locator
-> +and are stored in this data structure. These statistics are available un=
-der
-> +/sys/kernel/debug/swiotlb when CONFIG_DEBUG_FS is set.
-> +
-> +io_tlb_pool describes a memory pool, either the default pool, a dynamic =
-pool,
-> +or a transient pool. The description includes the start and end addresse=
-s of
-> +the memory in the pool, a pointer to an array of io_tlb_area structures,=
- and a
-> +pointer to an array of io_tlb_slot structures that are associated with t=
-he pool.
-> +
-> +io_tlb_area describes an area. The primary field is the spin lock used to
-> +serialize access to slots in the area. The io_tlb_area array for a pool =
-has an
-> +entry for each area, and is accessed using a 0-based area index derived =
-from the
-> +calling processor ID. Areas exist solely to allow parallel access to swi=
-otlb
-> +from multiple CPUs.
-> +
-> +io_tlb_slot describes an individual memory slot in the pool, with size
-> +IO_TLB_SIZE (2 KiB currently). The io_tlb_slot array is indexed by the s=
-lot
-> +index computed from the bounce buffer address relative to the starting m=
-emory
-> +address of the pool. The size of struct io_tlb_slot is 24 bytes, so the
-> +overhead is about 1% of the slot size.
-> +
-> +The io_tlb_slot array is designed to meet several requirements. First, t=
-he DMA
-> +APIs and the corresponding swiotlb APIs use the bounce buffer address as=
- the
-> +identifier for a bounce buffer. This address is returned by
-> +swiotlb_tbl_map_single(), and then passed as an argument to
-> +swiotlb_tbl_unmap_single() and the swiotlb_sync_*() functions.  The orig=
-inal
-> +memory buffer address obviously must be passed as an argument to
-> +swiotlb_tbl_map_single(), but it is not passed to the other APIs. Conseq=
-uently,
-> +swiotlb data structures must save the original memory buffer address so =
-that it
-> +can be used when doing sync operations. This original address is saved i=
-n the
-> +io_tlb_slot array.
-> +
-> +Second, the io_tlb_slot array must handle partial sync requests. In such=
- cases,
-> +the argument to swiotlb_sync_*() is not the address of the start of the =
-bounce
-> +buffer but an address somewhere in the middle of the bounce buffer, and =
-the
-> +address of the start of the bounce buffer isn't known to swiotlb code. B=
-ut
-> +swiotlb code must be able to calculate the corresponding original memory=
- buffer
-> +address to do the CPU copy dictated by the "sync". So an adjusted origin=
-al
-> +memory buffer address is populated into the struct io_tlb_slot for each =
-slot
-> +occupied by the bounce buffer. An adjusted "alloc_size" of the bounce bu=
-ffer is
-> +also recorded in each struct io_tlb_slot so a sanity check can be perfor=
-med on
-> +the size of the "sync" operation. The "alloc_size" field is not used exc=
-ept for
-> +the sanity check.
-> +
-> +Third, the io_tlb_slot array is used to track available slots. The "list=
-" field
-> +in struct io_tlb_slot records how many contiguous available slots exist =
-starting
-> +at that slot. A "0" indicates that the slot is occupied. A value of "1"
-> +indicates only the current slot is available. A value of "2" indicates t=
-he
-> +current slot and the next slot are available, etc. The maximum value is
-> +IO_TLB_SEGSIZE, which can appear in the first slot in a slot set, and in=
-dicates
-> +that the entire slot set is available. These values are used when search=
-ing for
-> +available slots to use for a new bounce buffer. They are updated when al=
-locating
-> +a new bounce buffer and when freeing a bounce buffer. At pool creation t=
-ime, the
-> +"list" field is initialized to IO_TLB_SEGSIZE down to 1 for the slots in=
- every
-> +slot set.
-> +
-> +Fourth, the io_tlb_slot array keeps track of any "padding slots" allocat=
-ed to
-> +meet alloc_align_mask requirements described above. When
-> +swiotlb_tlb_map_single() allocates bounce buffer space to meet alloc_ali=
-gn_mask
-> +requirements, it may allocate pre-padding space across zero or more slot=
-s. But
-> +when swiotbl_tlb_unmap_single() is called with the bounce buffer address=
-, the
-> +alloc_align_mask value that governed the allocation, and therefore the
-> +allocation of any padding slots, is not known. The "pad_slots" field rec=
-ords
-> +the number of padding slots so that swiotlb_tbl_unmap_single() can free =
-them.
-> +The "pad_slots" value is recorded only in the first non-padding slot all=
-ocated
-> +to the bounce buffer.
-> +
-> +Restricted pools
-> +----------------
-> +The swiotlb machinery is also used for "restricted pools", which are poo=
-ls of
-> +memory separate from the default swiotlb pool, and that are dedicated fo=
-r DMA
-> +use by a particular device. Restricted pools provide a level of DMA memo=
-ry
-> +protection on systems with limited hardware protection capabilities, suc=
-h as
-> +those lacking an IOMMU. Such usage is specified by DeviceTree entries and
-> +requires that CONFIG_DMA_RESTRICTED_POOL is set. Each restricted pool is=
- based
-> +on its own io_tlb_mem data structure that is independent of the main swi=
-otlb
-> +io_tlb_mem.
-> +
-> +Restricted pools add swiotlb_alloc() and swiotlb_free() APIs, which are =
-called
-> +from the dma_alloc_*() and dma_free_*() APIs. The swiotlb_alloc/free() A=
-PIs
-> +allocate/free slots from/to the restricted pool directly and do not go t=
-hrough
-> +swiotlb_tbl_map/unmap_single().
+And we could do the same for ARM_SMMU_FEAT_TRANS_S2, stating
+that the driver does not expect use cases of issuing S2 TLBI
+commands from the guest OS.
 
+Thanks
+Nicolin
