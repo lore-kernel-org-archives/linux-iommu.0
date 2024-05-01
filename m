@@ -1,110 +1,91 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0198D1D6BD
-	for <iommu@lists.linux.dev>; Wed,  1 May 2024 07:39:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 968B784D3F;
+	Wed,  1 May 2024 09:30:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714549197; cv=none; b=YdXXIDNOELkKhkLfWCzok9QbNUmvpFesmuPXKpnTEdYB+PIVOhxCasr3l04CFGanNb6BpcKTt4JcuNUXr/yGMYBadSB17811y3LdTsIIN74fG9ifFGOjm8+/17eAGR9USaXunDat0oTaqeIB0GOnJmdtavx/TeHI9rqPOvvLSU8=
+	t=1714555810; cv=none; b=GdplTVcKtiotKUWYoQQgp0S8hpWvvQ+n+qQ32PcpM3EeY0834Qwg+/94xxcY98FeJFmkvALo2W2pdnbbyXOnoWgeSFhzGscatKuxruymrR8gfSG10KMeV5YBX0s3Ov9cAO8iCcDaqjPH7UCznZODRbMyfAkwmS8zRO5wSYIPqhI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714549197; c=relaxed/simple;
-	bh=5eWuGHYXfyJHepRujiagDpeV3q8qyo9GkPxVCzukQy4=;
-	h=Date:From:To:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=FkxfAegtczwnIfz2Swl+O3l4o0gq8NDXpKaAAGX+AgO7cC6/YcSo+nDOQ/JLiUdU8w0wXBjLI2UFFw9dn9lT8FHWs15X0j65sgk0zZugaUpsQIYIGiRrQorsnRwVc17/ie+sFUB0muLLEtUYvtqDWI9UtwDVjL4iVXwcZWZskzc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=inGayvyJ; arc=none smtp.client-ip=209.85.214.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1714555810; c=relaxed/simple;
+	bh=VKb2Qv4Q48BFrbkgCtOU+TMtJVAe3nV1glvc9i3axIk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tzDLXWQpPiqwxFezs+NBkABzw80XMQYrrvgVPaqh7l5iTxCXlTQ+k2wHNEMEIJLPfNU59UoiMOGtrgqhW3UYUsYqov1jEVWSPQ9EdIng9UhKAbl6kYaStE5l+Ewnzjwsu9JOS7tobxfuL0E/aIBV7KaesNoJ/u+VTaRWpVcmAbo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uXiZGDT6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="inGayvyJ"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-1e5c7d087e1so56431705ad.0
-        for <iommu@lists.linux.dev>; Wed, 01 May 2024 00:39:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714549195; x=1715153995; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=5eWuGHYXfyJHepRujiagDpeV3q8qyo9GkPxVCzukQy4=;
-        b=inGayvyJMMxcCc2OpKLd3yh5wyI1WrFYRnv8IK4q1taO4b8BnIWzqvERtZ6tmClcq0
-         pbl6+L+UUd3iD+arkoqaMfC5EeA2tZdmDBrtouPCprbF+MX5sIxt5zuB4IT3XbvSbqe9
-         CHSsHYTbqkQ+LF6T4Yj0ORse5hVE3ws2m+TPQScbLrWRjFpIByJGXtVJUkR6DzXrjD7P
-         2GBFLg6yLnysyzRW4IcIfQtOueQzMvmI7m0gEywulAQG40hrfuH0udvrOPOdDYyhWXOY
-         t2ZNCoYjCLVf7NhZfypsxZGsw1+2X3WpKAVHpdFXQMIAz/LHu5mg8WBUIMAAgwaQOXc7
-         zhGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714549195; x=1715153995;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5eWuGHYXfyJHepRujiagDpeV3q8qyo9GkPxVCzukQy4=;
-        b=NhvkDzMVQSrVz+Uuo9HA96rf+aWWoJqvKkpqD9McIvSY980PyMy5XDK2f/lH4Swi+s
-         O16Kbv0t1wn0Sl51srwxk3l4DB4BkqJ1selIzeL3eSYGY8Y5++s89024pcFKPKLrELQL
-         NrQBYraf4vYw/FgewdhJMKHoV9NitrAHJQvNmxB2aYta+t7cNZYBcIKJixYjr9eyz8tE
-         DnM4LLuY8nSzaCa1JfK5CZdbLefkCjm5AnoCR052PUT1RyHvfM/dNxekuRm3Jkcf62Y6
-         dQdANI0GnRW4YVysSEcTowMU7CIToW0NGDxvB44aStjvzUbFQtw0WfKst+mGE6jkUodl
-         n5iw==
-X-Forwarded-Encrypted: i=1; AJvYcCUBB0wds6ermlhFVcXaqg4L3QdddricwTszdguAy5rXwkOqJJVATlB0g3JxASnbRZAZNwEzAQ6vHjLGO0fNVkntZq67oug=
-X-Gm-Message-State: AOJu0YwKL6KjyG6IrulQaUIwxE5kelC5oWCT8Zo+FCicjwqUeO85X4gz
-	b2Hs8krSAZOdstxizraPHGt05DrKVovepxRfm519/ko2+/2IOiER
-X-Google-Smtp-Source: AGHT+IGtHhq6yEiiulIYwbWbLH9rp2tc+PgviJAeQI/3SWUvHmKXCvEk5gVgKxrvXwKxyIXXBnfupQ==
-X-Received: by 2002:a17:902:eb8e:b0:1e4:6253:75db with SMTP id q14-20020a170902eb8e00b001e4625375dbmr2093312plg.17.1714549195020;
-        Wed, 01 May 2024 00:39:55 -0700 (PDT)
-Received: from archie.me ([103.124.138.155])
-        by smtp.gmail.com with ESMTPSA id q4-20020a170902edc400b001e29c4b7bd2sm23626709plk.240.2024.05.01.00.39.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 May 2024 00:39:54 -0700 (PDT)
-Received: by archie.me (Postfix, from userid 1000)
-	id 23CFD18462B23; Wed, 01 May 2024 14:39:51 +0700 (WIB)
-Date: Wed, 1 May 2024 14:39:51 +0700
-From: Bagas Sanjaya <bagasdotme@gmail.com>
-To: mhklinux@outlook.com, robin.murphy@arm.com, joro@8bytes.org,
-	will@kernel.org, hch@lst.de, m.szyprowski@samsung.com,
-	corbet@lwn.net, iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org, petr@tesarici.cz,
-	roberto.sassu@huaweicloud.com
-Subject: Re: [PATCH v3 1/1] Documentation/core-api: Add swiotlb documentation
-Message-ID: <ZjHxxzRb-63ARo6Z@archie.me>
-References: <20240429151337.1069470-1-mhklinux@outlook.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uXiZGDT6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75548C113CC;
+	Wed,  1 May 2024 09:30:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1714555810;
+	bh=VKb2Qv4Q48BFrbkgCtOU+TMtJVAe3nV1glvc9i3axIk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=uXiZGDT68FNRdgJJs8fQk/wLVPy+9rj+Vple1CDy4aaCAVWDW87ayl5ZHIqmrkSiZ
+	 6cd7vIpAbsfRShV61HV5CLeHJM7oqPnlIjz2MnLgMt5V4tWCFlwcqyh91EBc9BwuQV
+	 ctStwncTyY+1u0Ec+2T0VwMVn7XifXUyFm5Aj+WcwmhcF0c5sTOQyh9VXelBGfRdKI
+	 c+LipyiB5/TL0O+omtfQixm0FEIDLYCEDiQY2CPnowg0kP934YsllnkjPIs22MJMoi
+	 U69rn8xUzHUdbIrw7T0UFmAHVAzZO5kjJ4cwB1uv0rnzISIySVOKmyrK10gjs70On3
+	 yB4T49c5+rsww==
+Date: Wed, 1 May 2024 10:30:04 +0100
+From: Conor Dooley <conor@kernel.org>
+To: Tomasz Jeznach <tjeznach@rivosinc.com>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Paul Walmsley <paul.walmsley@sifive.com>,
+	Palmer Dabbelt <palmer@dabbelt.com>,
+	Albert Ou <aou@eecs.berkeley.edu>,
+	Anup Patel <apatel@ventanamicro.com>,
+	Sunil V L <sunilvl@ventanamicro.com>,
+	Nick Kossifidis <mick@ics.forth.gr>,
+	Sebastien Boeuf <seb@rivosinc.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
+	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux@rivosinc.com
+Subject: Re: [PATCH v3 1/7] dt-bindings: iommu: riscv: Add bindings for
+ RISC-V IOMMU
+Message-ID: <20240501-glare-occupier-2aee6a0aab06@spud>
+References: <cover.1714494653.git.tjeznach@rivosinc.com>
+ <ef946892252b18f541986a461fc4d37957cc805e.1714494653.git.tjeznach@rivosinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="SQuUPEbHKzRUh2zX"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="/Z5SiWKVwvbIGEtZ"
 Content-Disposition: inline
-In-Reply-To: <20240429151337.1069470-1-mhklinux@outlook.com>
+In-Reply-To: <ef946892252b18f541986a461fc4d37957cc805e.1714494653.git.tjeznach@rivosinc.com>
 
 
---SQuUPEbHKzRUh2zX
-Content-Type: text/plain; charset=utf-8
+--/Z5SiWKVwvbIGEtZ
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Apr 29, 2024 at 08:13:37AM -0700, mhkelley58@gmail.com wrote:
-> From: Michael Kelley <mhklinux@outlook.com>
+On Tue, Apr 30, 2024 at 01:01:51PM -0700, Tomasz Jeznach wrote:
+> Add bindings for the RISC-V IOMMU device drivers.
 >=20
-> There's currently no documentation for the swiotlb. Add documentation
-> describing usage scenarios, the key APIs, and implementation details.
-> Group the new documentation with other DMA-related documentation.
->=20
-> Signed-off-by: Michael Kelley <mhklinux@outlook.com>
+> Co-developed-by: Anup Patel <apatel@ventanamicro.com>
+> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
 
-Other than outstanding reviews, the doc LGTM. Thanks!
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
 
-Reviewed-by: Bagas Sanjaya <bagasdotme@gmail.com>
+Thanks,
+Conor.
 
---=20
-An old man doll... just what I always wanted! - Clara
-
---SQuUPEbHKzRUh2zX
+--/Z5SiWKVwvbIGEtZ
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQSSYQ6Cy7oyFNCHrUH2uYlJVVFOowUCZjHxwgAKCRD2uYlJVVFO
-o3WrAQDvhNlHDw0C1NqqL2yH9OQNIxn9j4y2CY6FFWX/Oz/INwD/WbBcId0StqpV
-oVnntracxxAV03zfP4U6+nARrv12Qg0=
-=zv+C
+iHUEABYIAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCZjILnAAKCRB4tDGHoIJi
+0oaeAQDoRn7fJYpDDfUn0qu2MHETNws6s/wADmGEMh9cFwVRSwD/XtiAqhDnwD1g
+YDrbG5pZWpjKXqM3zLJ9OKiDXJqO7QE=
+=3DCc
 -----END PGP SIGNATURE-----
 
---SQuUPEbHKzRUh2zX--
+--/Z5SiWKVwvbIGEtZ--
