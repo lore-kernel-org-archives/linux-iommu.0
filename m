@@ -1,83 +1,46 @@
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77F5750A77
-	for <iommu@lists.linux.dev>; Wed,  1 May 2024 14:20:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8096E552;
+	Wed,  1 May 2024 14:34:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714573240; cv=none; b=LG6E83BHQTEXLvVNVu/RuycWMw1m//UD2y9cJyCMju1t5Kh8NPRf5awLElPvlo5yBR0hgGSs4l269g14YEdlCP7ZNnQkg2B7XruFwNaPvvpdiPwUjHmsxUVs6nCDXxQtfOdXZMgqbCj+bPhNtKrWEaas0HdueEtNmc3WlL5s78A=
+	t=1714574048; cv=none; b=NEPkJDIuCiGw6qBTvEVsKwvyNXoWLfsn6R9RBBgaCvhTS3Ms5SL4X4VViERpq6ohYf6ilf+aI1DqZ4jI8FZk9JT7rhwIVtdoqh9NhNRy4NYFKNNlef/0Bet0U1lKHo+hi9xW6Yw01R/8wBoj2ctolUNBlDXPDM/9UsiAttfaN/Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714573240; c=relaxed/simple;
-	bh=3R83bnsQbN94HbZn0B0mPqNXN6cnqVI3A+Obu8DuNRc=;
+	s=arc-20240116; t=1714574048; c=relaxed/simple;
+	bh=CWxfucLjZKMuCq9KUz1Dscdcskx00ZJ/clYJpxna/Wk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fek1xwWIIzhzzW4ypS+YUVDRvgD829bMTd9872pj3gWoljw5YY45Eu3fBT5tXwOnEPaD9xpFw1jbgexMOUPi/D+Xt3124YSmdg91i6nYXdAN5UcTzs4aqcS5QbGFiIz3SbadsitEmJp6S8Vt5jrBdXzlpvD87K0yOoyEjb7gji8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=JxP20XHV; arc=none smtp.client-ip=209.85.222.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	 Content-Type:Content-Disposition:In-Reply-To; b=f2Ra0Oj04w0Nwl0ZU/QwhEOv/l+Ww4zI9IXYIHSFBnxXrrPnSbvZnHF6mnKKhCzTHwfTeWyIDibXlH4HvQdQbWvaTmp0moSRiw9z98FWKc2WKzbAaBQZKtr1a2QBQyTBc9++i4d8ogtSJGw8kgQBNuu2zvJoVDqwY5mnJfXQLCo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GxDlY5Y1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="JxP20XHV"
-Received: by mail-qk1-f176.google.com with SMTP id af79cd13be357-790f91b834cso271830985a.0
-        for <iommu@lists.linux.dev>; Wed, 01 May 2024 07:20:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1714573238; x=1715178038; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3OZdviol793TFl9mjb+jCdq8bdDZ0SVd44kIwXS0lLc=;
-        b=JxP20XHVCQYYyiVDm9V0xP6PPnKZZPzZ7U7dmyjW4QTTP9oq61SWjXheSioIgn7QaJ
-         4VaJ3t4u3agf7cKwyl52v0s9C3wwdmfXC01u+MxNc7Dyr66LcQOEKlFBrcfj/j6BvKWi
-         r9q/mfTYqarT9kpCtj4hyRlcjL3mDQfFZqzqKY8ktd3SRQXORUvE3mI4e5AHxlhs0n44
-         puJKIP+kp2F/0ojGcj2osKgFdJM1IoA4GZ0j+9wWBGigFkUzvKUkGSFEXDd/7/pOzDQ4
-         OhLpEeRwqDRaVGfNv2igM/LYXS9S9up9jPTqsnwuUmnsh8ev00S6xYG6Gb91pwcw/3lt
-         uACw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714573238; x=1715178038;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=3OZdviol793TFl9mjb+jCdq8bdDZ0SVd44kIwXS0lLc=;
-        b=o0KRJprAK/ZBusi97FpJgsR3ZS1M5k/fY4r40c8Ir8nBzhLMLkN+nyABgj5m4bnldi
-         jjzBx7dTLPZTOnqff2qUj6dZEoFJBPLxLM/SrmF/Vq+HBnD2qfbShPKru9by8WkJ6Hfl
-         nAUVO4rjgYR61NTOL0jxjoIJ8Nj6+6LRhJR7m4usNk2H0Izv35L/lj/SlIle0Ndbi/o9
-         /g6orR7iUDAOQHTKM8sQY7G4lTosetpELOqWXwMu8Tmle8rPVwMcaE3aDF6XJAgLettP
-         w64G+FB+DWDqpx/V2NHt0oHZjPW+05oUCxpT+gdhWBQKPPy6MwSxukKK5e1UnDCFCeJF
-         /nuA==
-X-Forwarded-Encrypted: i=1; AJvYcCU3w+rH43SXH1wCktU1WjBZYg2DRZ+he0OCXUpLQ0Z9LJbjKmntcVTL3pxzhI32QaOMgFCGl9V8kXiv89QGz3tbhIufBL4=
-X-Gm-Message-State: AOJu0YzImzcce43GsmdweMtiutVX9kMmSielVsGT0LfNOogb/VtZgwzm
-	oEdMjOFScBQCkTjMbKisSOvXJ1Kd+XhJWSiZHmv2JNFyudPX1mMT9wnjvdRfJ3Q=
-X-Google-Smtp-Source: AGHT+IFiJIn1eBd9gVbe/49MW98HCOu6t3+umtKOrKsFADYGs/1ovi0cAzILGroi/jB4gcqE/mL69A==
-X-Received: by 2002:a05:620a:2719:b0:78d:67de:50a0 with SMTP id b25-20020a05620a271900b0078d67de50a0mr3265589qkp.44.1714573238426;
-        Wed, 01 May 2024 07:20:38 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id q24-20020a05620a0c9800b0078d677e72f3sm12388656qki.118.2024.05.01.07.20.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 May 2024 07:20:37 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1s2Ap3-00DSge-F2;
-	Wed, 01 May 2024 11:20:37 -0300
-Date: Wed, 1 May 2024 11:20:37 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Sunil V L <sunilvl@ventanamicro.com>,
-	Nick Kossifidis <mick@ics.forth.gr>,
-	Sebastien Boeuf <seb@rivosinc.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux@rivosinc.com
-Subject: Re: [PATCH v3 2/7] iommu/riscv: Add RISC-V IOMMU platform device
- driver
-Message-ID: <20240501142037.GC1723318@ziepe.ca>
-References: <cover.1714494653.git.tjeznach@rivosinc.com>
- <aa5592da66fe72acd4d4730f544882042e7b5293.1714494653.git.tjeznach@rivosinc.com>
- <6b4a4dc0-ac9e-43cd-bd84-447df2370dde@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GxDlY5Y1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A77C072AA;
+	Wed,  1 May 2024 14:34:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1714574048;
+	bh=CWxfucLjZKMuCq9KUz1Dscdcskx00ZJ/clYJpxna/Wk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GxDlY5Y1ypPthIpoAtKyaQd/ZBIcHSLBpr/2xmEoAGoXygcPxqr51/dxE+AgvpT2h
+	 desQDC+pv+ZldTvWod9pExwhM7IjD3Ryup55foKD4EKmtLb8ayHlP63eor321wLfBP
+	 YjsWuCPgsTYztYTBA7ydpIf/E5DarzDgWJJ3SuCxbZW5zJVHgr6OZ+8WhH1wQwyGP3
+	 XmKLUcYlcfl+ug5TyoX62OvbbrHC80zfCVYaPQrN5FWht2SPjZSTIL/w7cbJ6Oy9zQ
+	 z6kp4yP27xuZlcSId5Jg1Q9ow/Wm6lV8ldyR7ZLFrftpmVVbJiaJKi9LsKawzZkABE
+	 dafvfUzoG6ihQ==
+Date: Wed, 1 May 2024 15:34:01 +0100
+From: Will Deacon <will@kernel.org>
+To: Georgi Djakov <quic_c_gdjako@quicinc.com>
+Cc: robin.murphy@arm.com, joro@8bytes.org, iommu@lists.linux.dev,
+	robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+	conor+dt@kernel.org, devicetree@vger.kernel.org,
+	andersson@kernel.org, konrad.dybcio@linaro.org, robdclark@gmail.com,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, quic_cgoldswo@quicinc.com,
+	quic_sukadev@quicinc.com, quic_pdaly@quicinc.com,
+	quic_sudaraja@quicinc.com, djakov@kernel.org
+Subject: Re: [PATCH v8 2/7] iommu/arm-smmu-qcom-debug: Add support for TBUs
+Message-ID: <20240501143400.GA15503@willie-the-truck>
+References: <20240417133731.2055383-1-quic_c_gdjako@quicinc.com>
+ <20240417133731.2055383-3-quic_c_gdjako@quicinc.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -86,49 +49,66 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6b4a4dc0-ac9e-43cd-bd84-447df2370dde@linux.intel.com>
+In-Reply-To: <20240417133731.2055383-3-quic_c_gdjako@quicinc.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 
-On Wed, May 01, 2024 at 06:26:20PM +0800, Baolu Lu wrote:
-> On 2024/5/1 4:01, Tomasz Jeznach wrote:
-> > +static int riscv_iommu_init_check(struct riscv_iommu_device *iommu)
-> > +{
-> > +	u64 ddtp;
-> > +
-> > +	/*
-> > +	 * Make sure the IOMMU is switched off or in pass-through mode during regular
-> > +	 * boot flow and disable translation when we boot into a kexec kernel and the
-> > +	 * previous kernel left them enabled.
-> > +	 */
-> > +	ddtp = riscv_iommu_readq(iommu, RISCV_IOMMU_REG_DDTP);
-> > +	if (ddtp & RISCV_IOMMU_DDTP_BUSY)
-> > +		return -EBUSY;
-> > +
-> > +	if (FIELD_GET(RISCV_IOMMU_DDTP_MODE, ddtp) > RISCV_IOMMU_DDTP_MODE_BARE) {
-> > +		if (!is_kdump_kernel())
-> 
-> Is kdump supported for RISC-V architectures?  If so, the documentation
-> in Documentation/admin-guide/kdump/kdump.rst might need an update.
-> 
-> There is a possibility of ongoing DMAs during the boot process of the
-> kdump capture kernel because there's a small chance of legacy DMA setups
-> targeting any memory location. Kdump typically allows these ongoing DMA
-> transfers to complete, assuming they were intended for valid memory
-> regions.
-> 
-> The IOMMU subsystem implements a default domain deferred attachment
-> mechanism for this. In the kdump capture kernel, the whole device
-> context tables are copied from the original kernel and will be
-> overridden once the device driver calls the kernel DMA interface for the
-> first time. This assumes that all old DMA transfers are completed after
-> the driver's takeover.
-> 
-> Will you consider this for RISC-V architecture as well?
+Hi Georgi,
 
-It seems we decided not to do that mess in ARM..
+On Wed, Apr 17, 2024 at 06:37:26AM -0700, Georgi Djakov wrote:
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
+> index bb89d49adf8d..eff7ca94ec8d 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
 
-New architectures doing kdump should put the iommu in a full blocking
-state before handing over the next kernel, and this implies that
-devices drivers need to cleanly suspend their DMAs before going into
-the next kernel.
+...
 
-Jason
+> +static const struct of_device_id qcom_tbu_of_match[] = {
+> +	{ .compatible = "qcom,sc7280-tbu" },
+> +	{ .compatible = "qcom,sdm845-tbu" },
+> +	{ }
+> +};
+> +
+> +static struct platform_driver qcom_tbu_driver = {
+> +	.driver = {
+> +		.name           = "qcom_tbu",
+> +		.of_match_table = qcom_tbu_of_match,
+> +	},
+> +	.probe = qcom_tbu_probe,
+> +};
+> +builtin_platform_driver(qcom_tbu_driver);
+
+I just noticed that this breaks a modular build of the arm-smmu driver
+because we now have two init functions for the module:
+
+  ld.lld: error: duplicate symbol: init_module
+  >>> defined at arm-smmu.c
+  >>>            drivers/iommu/arm/arm-smmu/arm-smmu.o:(init_module)
+  >>> defined at arm-smmu-qcom-debug.c
+  >>>            drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.o:(.init.text+0x4)
+
+I think you should initialise the TBU debug feature by calling into it
+manually from qcom_smmu_impl_init().
+
+Please can you send a patch to fix that? For now, I'll bodge it so that
+the qcom debug stuff doesn't build as a module (see below).
+
+Cheers,
+
+Will
+
+--->8
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 032bfd681307..66325210c8c9 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -376,7 +376,7 @@ config ARM_SMMU_QCOM
+
+ config ARM_SMMU_QCOM_DEBUG
+        bool "ARM SMMU QCOM implementation defined debug support"
+-       depends on ARM_SMMU_QCOM
++       depends on ARM_SMMU_QCOM=y
+        help
+          Support for implementation specific debug features in ARM SMMU
+          hardware found in QTI platforms. This include support for
+
