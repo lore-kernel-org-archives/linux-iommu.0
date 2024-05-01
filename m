@@ -1,138 +1,346 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2047.outbound.protection.outlook.com [40.107.94.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3701502BB
-	for <iommu@lists.linux.dev>; Wed,  1 May 2024 11:21:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714562502; cv=none; b=Vl82qkRtLq4uH/lMVgVPZsGugvu/T+a3BXPqMio9W5t+a2GQaH1vWF7WiVOXpMN7rwh9YbNDp0zg55fjxrrj8CGoqCgv6xj4oGLw2A7kGk3qijAZZN6wirjBFVI49X1mGgoe9O/DRKk0UZi1IWstlL7BVrvwwGQu0IzJJtfY9kk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714562502; c=relaxed/simple;
-	bh=aukg8XygoU/tHZmfHQJiWI5+qkxsLkxS+JlmBKyJbLw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=C8KGjPcF6u0OoJ3MWmDMREX+TC+zp7e40lyrZz0ytN/CB72Mi2M5Km95Xh+m3AueN3J+EwqybbhG0xeHfWEaeZSBjvwlbXhHzru7vSbOjFL5MYHy/mLDX6ERmDmkJ/YBdv5cvmGIFLUwXIdUMHpNjfhVdxs/g/QV4HK8g2pySxI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=x7YnD+NQ; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20C5812BEBE
+	for <iommu@lists.linux.dev>; Wed,  1 May 2024 13:00:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714568449; cv=fail; b=D8txICiL4/LECYXSkl8K2bWF+DN3kEuIn/dxgJXZNjnDZjMOI13QZhtu2VoTkbn2AKeYwtb/MUxRZS/1O4tauWerdiFyLRhZH9IgS94M021BWP+8E6FQJqYhwvJ9HUjIiHcbN8itJDJNBO8ovnhq8aqQSuFr7QefOkgVCRf69dc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714568449; c=relaxed/simple;
+	bh=TMZRoVt3EAoZsd6GVOJnNRQ530WlOqmFsUhnVfWKw+0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=kp1Du1rJQYsyjPmKInLKfQi0PsYDV/yXULLKvKghnZXeUw9h+tzlswgkstavnmc/aArP0//+4GB8YL19ng+KZenTsT2SAYWcHSHpbgDtbJeozbSgftraLhd9TEVw/qc7bjclKRbPzBjac3KDcLZCsEFapBVsL0IrFhkL/xepNpA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=PiYDmMeT; arc=fail smtp.client-ip=40.107.94.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="x7YnD+NQ"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id DD01D1B3EAE;
-	Wed,  1 May 2024 13:21:35 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1714562496; bh=yX5KcB4S/Oqw9I+Le8+2EvUssgBuoEZIsBVsDa++6bQ=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=x7YnD+NQizeLFfIPEfS6HPJcDPqVH2aC1DcJ08dc1CY9Q4vyP9qAmhSFnSQd994ML
-	 ZpfhnGzUJIkWXb3k4B1WaUXanOYriGkWp/fZvYGDJBOeBdfMRlyAqbw/1RXs9UqwQ1
-	 5HlZ8qIEwXz/E7i9EX9QFmQsgg+uosJoFlQAbK7VYH5t/FH5O9+JG2UwuMUyAlxjgn
-	 j2ZVCOftiRUCMuYaYfnhg30eoJ0QgKQBWkQH+E7z+G8DbwCohOJm8XVnMEVmtkRpuX
-	 wY7PPUd5SRtX20Oo6mg/UMQR4RJ8HgNILrjHZU1pwyGudT72UOffIFrqULRqLV5teZ
-	 QyGfXSi9db70A==
-Date: Wed, 1 May 2024 13:21:34 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Christoph Hellwig <hch@lst.de>
-Cc: mhkelley58@gmail.com, mhklinux@outlook.com, robin.murphy@arm.com,
- joro@8bytes.org, will@kernel.org, m.szyprowski@samsung.com, corbet@lwn.net,
- iommu@lists.linux.dev, linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org, roberto.sassu@huaweicloud.com
-Subject: Re: [PATCH v3 1/1] Documentation/core-api: Add swiotlb
- documentation
-Message-ID: <20240501132134.24d3d5d8@meshulam.tesarici.cz>
-In-Reply-To: <20240501044910.GD31252@lst.de>
-References: <20240429151337.1069470-1-mhklinux@outlook.com>
-	<20240430132413.69797af1@mordecai>
-	<20240501044910.GD31252@lst.de>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-suse-linux-gnu)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="PiYDmMeT"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Q6FJdR5fee354DN3nYQJVUT3xNUjzyrTMTe6sUz4woQFX4LNY8GZ14opOIbJI20bSsM9xNbu9fhx7OQQNgSl4G81bj/2IFJnmdQkFJFfcJVRIc46Jw8dUArSxn4BsFJCMyXuoWZeJ7ypKlVb5pV7PU8X6h7TSltLKHfofqD0yc9VlwnnbH8As/NA0R/MhXwIHfdJkHDy9MxGfJchcvsb1Ptyzq305A0J6Hj9Mg92lEjqNSxdDe1WZmTNL7nH9vGpbJ1Vx/8K5SHnn6uDL4W24NKBUURTOySnBy2CphcdSuVEZYLLPmCYVbLwpgpRQl9FucTejucITP268OQcmahVjg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fbFwVWbDiNM5d2OdQt1vYophJYlCG5R8loKabQ+9GeE=;
+ b=FWb6gFaz0Qzpmt0GKpbJf7MZJZdg3FLSGX4q7yc8fP0bR7SfpauXhJSeZs2l2Gw6aCS22EP8me99A31EJD4bryHUlWFqC+luyYvkuSsDSBn4J9bpe3yGGbrFXH+Yxs7LDW5USmBGZ+PEbdF6DYA5cQRSwlRYtiZcnQO8RisN5tc/7rM7IwjrmBZo/o9xk7f7KkqEBn5TJ1+ywGk8fOBfQoLGSR/66FeugQ4vEAW8cTeewue7fhgbYOp8eEWTNWU5hPoovDXjJRMqAxcVkgBhAKNuUyAiBJ383gPkiCPd59gzL++MPqVmbuYhx28ybdfxC3I3nna/x9KafWe5c3GrKQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fbFwVWbDiNM5d2OdQt1vYophJYlCG5R8loKabQ+9GeE=;
+ b=PiYDmMeTLGzsEnUNjZ64c3U4vUUfZHfpG61yeSWjyDX/rzlp08x9ly7C+VJUqmbPDDibKzJUiwXMpXmdUsGh+KgUK1VGj+3WNDt8zbuZHUMKomPHDuscB92fDshr59sKP5idWSr3REc5jdYoKFDuUq2m7pSVq4ogcntcmBDcmrvru0oywQ8KwPc6Q+0z/GDKwkBstuJEWoVOwbQGulH8dDwgSonDeglmN3cYDJJxy/wZXwVJw0IPC3mDhGNO1NGjefsBAU+mwzNvO+2lpCsJr2QwK9Vk9HddfOQFAkdjXwUtP8NJkazpv3lThiuw3mmT6lFlZgYrAvXu4FcyppCm2A==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by SA1PR12MB8697.namprd12.prod.outlook.com (2603:10b6:806:385::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.34; Wed, 1 May
+ 2024 13:00:44 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7544.029; Wed, 1 May 2024
+ 13:00:44 +0000
+Date: Wed, 1 May 2024 10:00:42 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Cc: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+	thierry.reding@gmail.com, vdumpa@nvidia.com, jonathanh@nvidia.com,
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
+	linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
+Subject: Re: [PATCH v6 5/6] iommu/arm-smmu-v3: Add in-kernel support for
+ NVIDIA Tegra241 (Grace) CMDQV
+Message-ID: <20240501130042.GC941030@nvidia.com>
+References: <cover.1714451595.git.nicolinc@nvidia.com>
+ <63414546b1eafdf8032ac1b95ea514da6d206d63.1714451595.git.nicolinc@nvidia.com>
+ <20240430163545.GS941030@nvidia.com>
+ <ZjEztwhd5AN1FTCk@Asurada-Nvidia>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ZjEztwhd5AN1FTCk@Asurada-Nvidia>
+X-ClientProxiedBy: BL0PR05CA0004.namprd05.prod.outlook.com
+ (2603:10b6:208:91::14) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|SA1PR12MB8697:EE_
+X-MS-Office365-Filtering-Correlation-Id: 948927d9-63ed-45d6-97f1-08dc69deb5fd
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|376005|366007;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?E5SP/ZUsl9KoTJyaM1D7L6Ph9FetoSOmrFyj/BDYl9ImgWGLaLmxGnBNlIM6?=
+ =?us-ascii?Q?XglLDu07m5Zf3Su6wkt7xYACSc2wQfVEOlgaB6TRfsES/RjJIKvybalKC9mQ?=
+ =?us-ascii?Q?yBGfdQSXQq/rpYAhtCKcCsd3L/lDtXltmOUdzb6I6rA/3dIyqQMjg6h7pNR5?=
+ =?us-ascii?Q?y/HVa4eCSHQhrmcUnpnAllEXTZs0gbpSYQ3xe7EnjdNbn3icOGetiPzbMlP1?=
+ =?us-ascii?Q?0O0JXLJjvkuk4JYX0T4GZM3S3uwnMhJBQtgiy0AtzT5zdMFZKlcRycXfThzO?=
+ =?us-ascii?Q?QVVbtYA6YHA0V9GYD2fUJRIkNFktooSmrdYS2pnD35j0WvSNjwRU+1yvLKlQ?=
+ =?us-ascii?Q?ABvQeM4++cJCoUcJrTzmPq8ZNaPDzGg0WlTRnaTZGCbJjHgCU6fVnUBfQZNP?=
+ =?us-ascii?Q?pZr2T5E+ruV6ZAK4c0lTCIg6ZQboSpvNeAIAbhDtxXhlG2J2Nu2800ETvkOJ?=
+ =?us-ascii?Q?qWJ+iceSdms/+ol2i3Uwfnzjwk2ffFAPGz0g/J+f6xx6EgsG3yc5cNUCBzlL?=
+ =?us-ascii?Q?qTnsXGRou7OFLP4kDyy/Wi4vX9QF7hF24v8OoM1WlYyLGoXQyjWGAFr+sU9C?=
+ =?us-ascii?Q?MXqi6lYsHW1p5GL1NIPXMg7bdpqDWLqn53doRzoc72W1PTCahSovXXWBG+i0?=
+ =?us-ascii?Q?3c6ZCuPcdHEHC7J6U82suKURQo1fjwBwTDhSd4zzEc3ZkMacIlH6CFw6QyEx?=
+ =?us-ascii?Q?wOLweIUly+gFoCuKVGPfKThfFIfrMr80eeOW6amm4MBmmfW1o9A7UG6hoHrL?=
+ =?us-ascii?Q?5/UGVK3ELEvrtKfhMYwM4nCEwiucdSLRnYfp6p0qYuuN/1/CSupuDJRBx9xH?=
+ =?us-ascii?Q?qIxjNY8MMJ9zpgZuoYdPFmaJ2sx2kI/2jSpwDYzxTivA37gXFhqZihE4WHl6?=
+ =?us-ascii?Q?hS6CFZXmbaGK8LpTQNc6IqCL/EfrkBZKxHrgAVggDbZxwGLBQotu4K5muOer?=
+ =?us-ascii?Q?KU7madcWqQ/spzaBpVVlInKqmA2iBl2rBG6wQUbFSX+CXLbRmcUWSHyNoDLg?=
+ =?us-ascii?Q?4z4l6yS9X49YRsS8x/JDVffj6uwSRxVCSRXaK46+35zp8kegbVnCgZJPnJwt?=
+ =?us-ascii?Q?6MwvlPUmPab9xPViQoYejSiYCDjQQ5zbMSk+Jt3G6b8JdzxSABxLoNnk6SpP?=
+ =?us-ascii?Q?+s8FCZ9tUG/DY5rxxEr7gXUNANg5iOrOuV4FO2VUdf8f5IpC50lZs2ucxbXF?=
+ =?us-ascii?Q?nWfxuevGThtQu1HKU0FRffeTr3uPAbwSsa/XMKsNgGlXyA1eZ43Di3CLSOTT?=
+ =?us-ascii?Q?lVTRQ+1pU7OLNtEqLbLp90mRa7X3RrUEIoSznb3Sig=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(366007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?tXOOtAQVsN1dSTOQqIYZuu5rNlq6FsoS2D2NiROE+byD23Ivk2TwlsDUQzwy?=
+ =?us-ascii?Q?FZrjQ/osKpArBECWmGCmJmqEm2YPFLpF92whzWcj3k2EJ0tcDvyZwh+ROORE?=
+ =?us-ascii?Q?IVapbv5FGeL4TnSxUA1JxYsNHBbqqnBjgMl14Ex/lXGQSGAyXAZ2FKJes5xx?=
+ =?us-ascii?Q?ieDMmSJHtFsAVmcYySBNNKWeRmaeZny1i6Sipmk0heZ0J0dlCaXb3a5xtXt7?=
+ =?us-ascii?Q?DDjuB8Bl+x1xqEKxtHoY0lCgB3lwZvzn70jM70ldRwVvpFlUIJtXrvbQJVUp?=
+ =?us-ascii?Q?LGYpzPZye7eSpNo4LESvZxt3IztDbvgIPSSKv6c9csGSgEoqSVRUXW1Cvk/1?=
+ =?us-ascii?Q?WpbV44gnnv6aEeASNdEXFRTZNG9BVE6EOnqmCgTRxfisgN+yPADyxVgvT6J4?=
+ =?us-ascii?Q?M3wIdGmwjfedy0Ymww4xevCEDnL6M34FF+fkXvvz6Mm82d1Fyu11MfSh+R/+?=
+ =?us-ascii?Q?sm/JK8SkX5jvPjaXpPg2JYHE9Y80A0d6nYRJSGEwlSTzCQTfTlldxolVXUs7?=
+ =?us-ascii?Q?gnh39VC0SCzF+AgPZL6JNpx/ev9shKtpabb3s0OguFzCcGa+DFeOxbvFx5Vu?=
+ =?us-ascii?Q?wxV6BpCiA23LzwQSWLz2ZBPHqP975olDY0OhKRaKwT32ooHqwGyYiKntotFd?=
+ =?us-ascii?Q?iC+4UYxn3GWNE+alV3cilvbaz5Bx5Jdy5LA2qwIHy+V1WIVQHs2CaZ1Gi3Lv?=
+ =?us-ascii?Q?69iNQXfCMDehqddJis0AC4TWi2qsh32KA3cHGkl/ZC77JNvfdbwMlWRi1oRQ?=
+ =?us-ascii?Q?rSB8hskr84LrihUBV0T6uBSxQR1sNbUPjmT14dfTFFG9Ctp10do0drCYI4Ls?=
+ =?us-ascii?Q?89FAmjLF/TyNTZEaY9z4CNY7gJ6ahEm3fb+hatGtRfflsC4DrFL6CASdkSVQ?=
+ =?us-ascii?Q?CFKtge+dIO68yCwlJsfCPBpeI0vNdpVoTqU9PhlnbuQ58zZmz/1MCNrN66Sc?=
+ =?us-ascii?Q?A+LnVJvws8p8XpZztZPTAXQjkSB542a2pnEiq7nzIQIJhOyd3TIYmjywr04T?=
+ =?us-ascii?Q?o9WE5E2e4UNGmXgapaFQGWPH6hJrji1/tWN/790Bv2775iNxO1H69Q8gwNJ5?=
+ =?us-ascii?Q?tnuf7eU7lnm2LmKv2m5Lb97sj6zQ3O9n3bZmV+MTNQvkF/hWLAFkOlPT+Vuq?=
+ =?us-ascii?Q?u/3HpFN7j+MGL0FQduh77TLz9zX0cPIJ4DL7gyfNYHflrwIjSj9v0zOeqYy4?=
+ =?us-ascii?Q?f6Lsrso/bOrc8/T28Nnj+wMRpHL7uzy6NS5uLykTIxUJgah1IfUHI/hnmMvy?=
+ =?us-ascii?Q?ZXgGJlBQWfp1I2c6qnj2+JBMoL/AhYyAwYmrocgDFF9+Es0NLdvDIwXQSpqv?=
+ =?us-ascii?Q?VolA/AA/To+g2c7nXGaTJZFiKPZ+xSSGmcXO/c2dnRzak7foZJc0i1BNlVBq?=
+ =?us-ascii?Q?DInjkhNwsMDl/uA9wi+IY/8B92nxR9SPDXSy66wsMiDG1HG0CjT0yCqK1IuP?=
+ =?us-ascii?Q?DptrOM5pElIh1hEvwI2Nfp4gQvJduDz87Ttzv+Zk4CkhAT6eshq4ZHiemOF4?=
+ =?us-ascii?Q?lgPgZT2ebDUnaXcTckegfm1bgZr677jT5whnEYyF/W40lm3sd8C6vltORMKZ?=
+ =?us-ascii?Q?CPzD40MukKJSYZBIfvxmtHJbb0xwh2hVInm0Yhfu?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 948927d9-63ed-45d6-97f1-08dc69deb5fd
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2024 13:00:43.9155
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: dzfyM0hwlhReCMrRfI56emw49mmRIfgSkRtXd/iWfWu/GfAyZRcqVDIWgK/8i8dD
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR12MB8697
 
-On Wed, 1 May 2024 06:49:10 +0200
-Christoph Hellwig <hch@lst.de> wrote:
+On Tue, Apr 30, 2024 at 11:08:55AM -0700, Nicolin Chen wrote:
+> (Removing chunks that I simply ack)
+> 
+> On Tue, Apr 30, 2024 at 01:35:45PM -0300, Jason Gunthorpe wrote:
+> > On Mon, Apr 29, 2024 at 09:43:48PM -0700, Nicolin Chen wrote:
+> 
+> > > +/* MMIO helpers */
+> > > +#define cmdqv_readl(reg) \
+> > > +	readl(cmdqv->base + TEGRA241_CMDQV_##reg)
+> > > +#define cmdqv_readl_relaxed(reg) \
+> > > +	readl_relaxed(cmdqv->base + TEGRA241_CMDQV_##reg)
+> > > +#define cmdqv_writel(val, reg) \
+> > > +	writel((val), cmdqv->base + TEGRA241_CMDQV_##reg)
+> > > +#define cmdqv_writel_relaxed(val, reg) \
+> > > +	writel_relaxed((val), cmdqv->base + TEGRA241_CMDQV_##reg)
+> > 
+> > Please don't hide access to a stack variable in a macro, and I'm not
+> > keen on the ##reg scheme either - it makes it much harder to search
+> > for things.
+> 
+> I can pass in cmdqv/vintf/vcmdq pointers, if it would be better.
+> 
+> > Really this all seems like alot of overkill to make a little bit of
+> > shorthand. It is not so wordy just to type it out:
+> > 
+> >   readl(vintf->base + TEGRA241_VINTF_CONFIG) 
+> 
+> vintf_readl(vintf, CONFIG) is much shorter. Doing so reduced the
+> line breaks at quite a lot places, so overall the driver looks a
+> lot cleaner to me.
 
-> On Tue, Apr 30, 2024 at 01:24:13PM +0200, Petr Tesa=C5=99=C3=ADk wrote:
-> > > +swiotlb was originally created to handle DMA for devices with addres=
-sing
-> > > +limitations. As physical memory sizes grew beyond 4 GiB, some device=
-s could
-> > > +only provide 32-bit DMA addresses. By allocating bounce buffer memor=
-y below
-> > > +the 4 GiB line, these devices with addressing limitations could stil=
-l work and
-> > > +do DMA. =20
-> >=20
-> > IIRC the origins are even older and bounce buffers were used to
-> > overcome the design flaws inherited all the way from the original IBM
-> > PC. =20
->=20
-> [correct, but for swiotlb largely irrelevant PC addressing bits snipped]
->=20
-> swiotlb was added with the merge of the ia64 port to address 32-bit
-> addressing limitations.  The 1MB addressing limitations of the PC did
-> and still do of course exist, but weren't dealt with in any coherent
-> fashion, and still aren't.  Swiotlb isn't related to them.
+We don't have the strict 80 column limit now, it would be fine to go a
+few extra to avoid the breaks.
 
-Thanks for correcting me. Oh, and this is probably why some drivers did
-their own bounce buffering. I was mistaken that swiotlb was supposed to
-clean up the existing mess...
+Certainly preferred to these readability damaging macros.
 
-> > > +data to/from the original target memory buffer. The CPU copying brid=
-ges between
-> > > +the unencrypted and the encrypted memory. This use of bounce buffers=
- allows
-> > > +existing device drivers to "just work" in a CoCo VM, with no modific=
-ations
-> > > +needed to handle the memory encryption complexity. =20
-> >=20
-> > This part might be misleading. It sounds as if SWIOTLB would not be
-> > needed if drivers were smarter. But IIUC that's not the case. SWIOTLB
-> > is used for streaming DMA, where device drivers have little control
-> > over the physical placement of a DMA buffer. For example, when a
-> > process allocates some memory, the kernel cannot know that this memory
-> > will be later passed to a write(2) syscall to do direct I/O of a
-> > properly aligned buffer that can go all the way down to the NVMe driver
-> > with zero copy. =20
->=20
-> I think the statement in the text is fine and easy to understand.  CoCo
-> drivers could instead always map the memory unencrypted (which would have
-> no so nice security and performance properties) or use fixed ringbuffers
-> in shared unencrypted memory (which would require a different driver
-> architecture).
->=20
-> > > +block. Hence the default memory pool for swiotlb allocations must be
-> > > +pre-allocated at boot time (but see Dynamic swiotlb below). Because =
-swiotlb
-> > > +allocations must be physically contiguous, the entire default memory=
- pool is
-> > > +allocated as a single contiguous block. =20
-> >=20
-> > Allocations must be contiguous in target device's DMA address space. In
-> > practice this is achieved by being contiguous in CPU physical address
-> > space (aka "physically contiguous"), but there might be subtle
-> > differences, e.g. in a virtualized environment.
-> >=20
-> > Now that I'm thinking about it, leave the paragraph as is, and I'll
-> > update it if I write the code for it. =20
->=20
-> Heh.  The only think making cpu non-contiguous address space contiguous
-> for a device is an iommu.  And when we have that we only use swiotlb
-> for unaligned iommu pages, so I'm not sure how we'd ever get there.
+> I can probably change these logging helpers to inline functions.
 
-Yes, there's no way to make CPU non-contiguous addresses contiguous for
-a device (except with IOMMU), but there are some real-world bus bridges
-that make a CPU contiguous address range non-contiguous for a target
-device, most often by limiting the address width and overflowing at the
-correspondign boundary.
+Just call the normal logging functions directly.
 
-This is moot anyway, because I suggest to leave the paragraph as is.
+> > > +#define vintf_warn(fmt, ...) \
+> > > +	dev_warn(vintf->cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
+> > > +#define vintf_err(fmt, ...) \
+> > > +	dev_err(vintf->cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
+> > > +#define vintf_info(fmt, ...) \
+> > > +	dev_info(vintf->cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
+> > > +#define vintf_dbg(fmt, ...) \
+> > > +	dev_dbg(vintf->cmdqv->dev, "VINTF%u: " fmt, vintf->idx, ##__VA_ARGS__)
+> > > +
+> > > +#define vcmdq_warn(fmt, ...)                                                   \
+> > > +	({                                                                     \
+> > > +		struct tegra241_vintf *vintf = vcmdq->vintf;                   \
+> > > +		if (vintf)                                                     \
+> > > +			vintf_warn("VCMDQ%u/LVCMDQ%u: " fmt,                   \
+> > > +				   vcmdq->idx, vcmdq->lidx,                    \
+> > > +				   ##__VA_ARGS__);                             \
+> > > +		else                                                           \
+> > > +			dev_warn(vcmdq->cmdqv->dev, "VCMDQ%u: " fmt,           \
+> > > +				 vcmdq->idx, ##__VA_ARGS__);                   \
+> > > +	})
+> 
+> > Some of these are barely used, is it worth all these macros??
+> 
+> Only vcmdq_warn isn't called. But I think it would be useful.
+> I could also find a place to call it, if that's a must.
 
-Petr T
+Just call the normal logging functions, there are so few callers
+typing out the VCMDQ%u is not going to be so bad
+
+
+
+> > > +
+> > > +/* Configuring and polling helpers */
+> > > +#define tegra241_cmdqv_write_config(_owner, _OWNER, _regval)                   \
+> > > +	({                                                                     \
+> > > +		bool _en = (_regval) & _OWNER##_EN;                            \
+> > > +		u32 _status;                                                   \
+> > > +		int _ret;                                                      \
+> > > +		writel((_regval), _owner->base + TEGRA241_##_OWNER##_CONFIG);  \
+> > > +		_ret = readl_poll_timeout(                                     \
+> > > +			_owner->base + TEGRA241_##_OWNER##_STATUS, _status,    \
+> > > +			_en ? (_regval) & _OWNER##_ENABLED :                   \
+> > > +			      !((_regval) & _OWNER##_ENABLED),                 \
+> > > +			1, ARM_SMMU_POLL_TIMEOUT_US);                          \
+> > > +		if (_ret)                                                      \
+> > > +			_owner##_err("failed to %sable, STATUS = 0x%08X\n",    \
+> > > +				     _en ? "en" : "dis", _status);             \
+> > > +		atomic_set(&_owner->status, _status);                          \
+> > > +		_ret;                                                          \
+> > > +	})
+> > 
+> > I feel like this could be an actual inline function without the macro
+> > wrapper with a little fiddling.
+> 
+> It would be unrolled to three mostly identical inline functions:
+> 	tegra241_cmdqv_write_config(cmdqv, regval)
+> 	tegra241_vintf_write_config(vintf, regval)
+> 	tegra241_vcmdq_write_config(vcmdq, regval)
+
+Expand the parameters in the caller:
+
+__do_write_config(owner->base, &owner->status, _CMDQV_EN, TEGRA241_CMDQ_CONFIG,
+                  TEGRA241_CMDQ_STATUS, _CMDQ_ENABLED)
+
+> > > +#define cmdqv_write_config(_regval) \
+> > > +	tegra241_cmdqv_write_config(cmdqv, CMDQV, _regval)
+> > > +#define vintf_write_config(_regval) \
+> > > +	tegra241_cmdqv_write_config(vintf, VINTF, _regval)
+> > > +#define vcmdq_write_config(_regval) \
+> > > +	tegra241_cmdqv_write_config(vcmdq, VCMDQ, _regval)
+> > 
+> > More hidden access to stack values
+> 
+> Btw, any reason for forbidding this practice? It will break the
+> build if something goes wrong, which seems to be pretty easy to
+> catch.
+
+It is the kernel consensus not to do that. function-like-macros should
+act like functions and not reach into some other stack frame. It makes
+it very hard to follow the calling function if you can't follow where
+the references are.
+
+> > > +	/* Use SMMU CMDQ if vintfs[0] is uninitialized */
+> > > +	if (!FIELD_GET(VINTF_ENABLED, atomic_read(&vintf->status)))
+> > > +		return &smmu->cmdq;
+> > > +
+> > > +	/* Use SMMU CMDQ if vintfs[0] has error status */
+> > > +	if (FIELD_GET(VINTF_STATUS, atomic_read(&vintf->status)))
+> > > +		return &smmu->cmdq;
+> > 
+> > Why atomic_read? The unlocked interaction with
+> > tegra241_cmdqv_handle_vintf0_error() doesn't seem especially sane IMHO
+> 
+> Race between this get_cmdq() and the isr. Any alternative practice?
+
+It doesn't fix any real race, I'm not sure what this is supposed to be
+doing. The cmdq becomes broken and you get an ISR, so before the ISR
+it will still post but get stuck, during the ISR it will avoid
+posting, and after it will go back to posting?
+
+Why? Just always post to the Q and let the ISR fix it?
+
+> > > +static void tegra241_vcmdq_hw_deinit(struct tegra241_vcmdq *vcmdq)
+> > > +{
+> > > +	u32 gerrorn, gerror;
+> > > +
+> > > +	if (vcmdq_write_config(0)) {
+> > > +		vcmdq_err("GERRORN=0x%X\n", vcmdq_page0_readl_relaxed(GERRORN));
+> > > +		vcmdq_err("GERROR=0x%X\n", vcmdq_page0_readl_relaxed(GERROR));
+> > > +		vcmdq_err("CONS=0x%X\n", vcmdq_page0_readl_relaxed(CONS));
+> > 
+> > Less prints, include a unique message about why this is being
+> > printed..
+> 
+> Something must be wrong if disabling VCMDQ fails, so the prints of
+> error register values would be helpful. And "failed to disable" is
+> already printed by the vcmdq_write_config() call. I can merge them
+> into one vcmdq_err call though.
+
+Print on one line
+> > > +static void tegra241_vcmdq_free_smmu_cmdq(struct tegra241_vcmdq *vcmdq)
+> > > +{
+> > > +	struct tegra241_cmdqv *cmdqv = vcmdq->cmdqv;
+> > > +	struct arm_smmu_queue *q = &vcmdq->cmdq.q;
+> > > +	size_t nents = 1 << q->llq.max_n_shift;
+> > > +
+> > > +	dmam_free_coherent(cmdqv->smmu->dev, (nents * CMDQ_ENT_DWORDS) << 3,
+> > > +			   q->base, q->base_dma);
+> > 
+> > If we are calling dmam_free, do we really need devm at all?
+> 
+> Hmm. This is a part of SMMU's probe/device_reset().
+
+But that is a proper device driver, this isn't.
+
+> > > +	struct tegra241_cmdqv *cmdqv;
+> > > +
+> > > +	cmdqv = tegra241_cmdqv_find_resource(smmu, id);
+> > > +	if (!cmdqv)
+> > > +		return NULL;
+> > > +
+> > > +	if (tegra241_cmdqv_probe(cmdqv)) {
+> > > +		if (cmdqv->irq > 0)
+> > > +			devm_free_irq(smmu->dev, cmdqv->irq, cmdqv);
+> > > +		devm_iounmap(smmu->dev, cmdqv->base);
+> > > +		devm_kfree(smmu->dev, cmdqv);
+> > > +		return NULL;
+> > 
+> > Oh. Please don't use devm at all in this code then, it is not attached
+> > to a probed driver with the proper scope, devm isn't going to work in
+> > sensible way.
+> 
+> Mind elaborating "it is not"? This function is called by
+> arm_smmu_device_acpi_probe and arm_smmu_device_probe.
+
+Normal devm usage will unwind the devm allocations when probe fails.
+
+That doesn't happen here, you open coded the unwind above, and then
+you have open coded freeing in another place anyhow.
+
+So just don't use it. There is no value if the places where it should
+work automatically are not functioning.
+
+Jason
