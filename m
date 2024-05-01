@@ -1,121 +1,264 @@
-Received: from mail-qk1-f175.google.com (mail-qk1-f175.google.com [209.85.222.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2056.outbound.protection.outlook.com [40.107.94.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8A43175B1
-	for <iommu@lists.linux.dev>; Wed,  1 May 2024 16:50:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.175
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714582237; cv=none; b=ha1q+CAIiBugI5uFF/6wMuuvR7fCoNdaF/pwySzKeN4YTPC0uFwvpNEbMYXJ7BDxg1m3DcqJaU0s62/eMq6KDaGau8eSYs8A/2cnFroMpiDrGUxOXAo9t2G8MWMnj8vCBBllqifuMqPRP6lff8cNpQDiuSO/pX+PSZq0oiZFBuE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714582237; c=relaxed/simple;
-	bh=c7T7L26EaZ7WV7e/5lbYoLtRA5fjwDPvAyAPxWpdp0A=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Bu5AMoCY0nixTqZ2Vsi3zQ7gNXL95pyhcv8AnPj3yKPJS7JvzuNdAHxVopVE5unpIbaTQENIkiBmsklUsqdmNoVHQJyE+nCod3JC1lv7oH4t7C3yhW1csQ5XS/Mu45jReMI5okiaZP2ZbROfBoVryvGf8bZBtCM3WBizjxySlVg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=hJId3OSu; arc=none smtp.client-ip=209.85.222.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC87E14286
+	for <iommu@lists.linux.dev>; Wed,  1 May 2024 17:44:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.56
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714585460; cv=fail; b=E8TXbMhOnoxIvIE/WEhL+DI3VbulkSXTYpuAAD00E1lfmQR0KZPwDgHWZC/cg1pZA2M5QcW05tNcicwk8Ujn5PRmwmgpTRQFFchsi0R4/AT7za3pfJXYVbsdCFRA9BOuIpIu2ud+s7xz+fXAH1AfIe4ekryIY3tOfP7gM35qmEg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714585460; c=relaxed/simple;
+	bh=hGaaiqAJqESh7Mfw7HCfKn6QlN3im4teHVHZBDBS3jM=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=u1HTrdczWWJfnUBVkWcvMRjssKQCjG+gmaDxuOVeCIyF3YPNRluacrbTfiadK1fw5ILzDJGeqx6ALPg9hzRCMsT+UZgQZ7/XzFBzuEV4TN8Ue6CUhWlR8ZfcCoWKNfMMP/8T9CJwobeFTKHT+v+WtAKkF71oxM+gr0yJ0bJl4vQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ZqEWEa3k; arc=fail smtp.client-ip=40.107.94.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="hJId3OSu"
-Received: by mail-qk1-f175.google.com with SMTP id af79cd13be357-792639cf4faso115483585a.1
-        for <iommu@lists.linux.dev>; Wed, 01 May 2024 09:50:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1714582235; x=1715187035; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=XbJ+amWUmdqnBEY3P5pFxkrI6iYx8TZc072WUlpjvno=;
-        b=hJId3OSumOq3hLb0SDVtG33dX3PynnyWnAxMEnZTOoQdcWiCFjXUlPNuyMEYUX99uC
-         wXb4eCiDD++GP5OKgO+wT5mFVplx+5zvG/WzJZJXL3tkwJZOjKmgI88NgisMkCZwBSIT
-         0O51v8LQN0fzsZ7KUHk/GZ6WtYhMWpXlu3i42zrEs0aIAWChCMCss7O1T1KN25SJ/b/J
-         YC8pT34S888+TziiM8QuQGB05q1mnqJ0h4F+WzS9glPf2J8dMsqzQvDsmWslON79ObEs
-         0klGQelj1+3UjumJ4lJl9FivbjGSE7ga+gVNa6bFuBhhbNwLQoz1sh08pD3HwDLjLRpY
-         DJgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714582235; x=1715187035;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XbJ+amWUmdqnBEY3P5pFxkrI6iYx8TZc072WUlpjvno=;
-        b=sWnDfLHiSI+ddnIcV5hSj8/1q17NCGyQCvzHd3al3WpvpMPIBD87LIMDsgB1ueoWqU
-         PEQyQdLjygzKn03AOeLEWLqIsV7BK48QhoEXUUvPaK8ElVdoS46i5uNh4MYH4H0dQQQM
-         zbqIQzEfecXZYrlCSCnaE3ZEGSRy28rKYN/iOaoVZQgX5uDp3tSUjcV5H83mNkJp357M
-         fodt/JoeVjuCrE02MLnRe2CbS7KcO8IHRQE0KI+OPd4XkpON8NqPx26uxkncEvGV5Jkf
-         pReNvspR9L5C2wHtPSG1gJnF+0wDf+wjS6ZZ+2LdLKZ0u8fIBJloJuOT0MYTP/GY27Dn
-         kQ0w==
-X-Gm-Message-State: AOJu0YzGVVtvP+5JusTqOKn0qkBS6NjJbVKPypG1Hv+ecCJNqBG6gPNb
-	qb7T9b+3/69gCmZ0CcUmeNEB+WBCrMXNs/27cS+jLWVqlOrVTH/LWeDqviptR08=
-X-Google-Smtp-Source: AGHT+IGjqqJ3/loD+iZja2KV3FOqgKEvoh6dNdyC5k3af7/ZiaW9qXq24m428AYDQzhNYdPecGkpiQ==
-X-Received: by 2002:a05:620a:1990:b0:790:f7da:ce61 with SMTP id bm16-20020a05620a199000b00790f7dace61mr3973487qkb.1.1714582234848;
-        Wed, 01 May 2024 09:50:34 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id wh13-20020a05620a56cd00b007906ab7b0b5sm9966083qkn.11.2024.05.01.09.50.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 01 May 2024 09:50:34 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1s2DA9-00E6Ob-Ib;
-	Wed, 01 May 2024 13:50:33 -0300
-Date: Wed, 1 May 2024 13:50:33 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Will Deacon <will@kernel.org>
-Cc: iommu@lists.linux.dev, Joerg Roedel <joro@8bytes.org>,
-	linux-arm-kernel@lists.infradead.org,
-	Robin Murphy <robin.murphy@arm.com>, catalin.marinas@arm.com,
-	kernel-team@android.com, Eric Auger <eric.auger@redhat.com>,
-	Moritz Fischer <mdf@kernel.org>,
-	Moritz Fischer <moritzf@google.com>,
-	Michael Shavit <mshavit@google.com>,
-	Nicolin Chen <nicolinc@nvidia.com>, patches@lists.linux.dev,
-	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
-	Mostafa Saleh <smostafa@google.com>
-Subject: Re: [PATCH v9 0/9] Make the SMMUv3 CD logic match the new STE design
- (part 2a/3)
-Message-ID: <20240501165033.GH1723318@ziepe.ca>
-References: <0-v9-5040dc602008+177d7-smmuv3_newapi_p2_jgg@nvidia.com>
- <171456087391.35017.3249073955778510141.b4-ty@kernel.org>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ZqEWEa3k"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cA7v1e+OIdz3gIDwU3WUx3UaKVg4yvXMqQ7zG8WZ8ozkzk9/4+ce++/WwrsXGkqaTZo0VhFHSi0potMLi9XfeQtvmcwzZHwrHl5goUPZ72vnIH9/NadnSY69dpRWOjVua8uIcxsqwtV9Wbe88O7WJHp+3O54QJfmPjK/yUGcdl3M64iafQqWqf4Ue236EXJiMnZf3bZFlWgbApiWvqyP2jGwxm/XjuJ1KP6+giaum4yUZPXhulE+whWlzXIc/7dzv7P3IAq6aOHeiYkqkOVxk55JwM4Ue+CqQzZsPPn/WaBx4JO0SzwSdQG4o+4klLLLEs6KbVoPyg6vxMek+h7FSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=mqMBZtrpTt49/Cdtzq5Ejr1dkQMh6WnVRJNebGCi2Ok=;
+ b=gIwFmYvHoLu7/SEyerI+qnhodxNzCrMYS6m1Hzbm4pJF2JGn1wRgxNisBGeKPSl2omMiAVzB8uBIyMzqwekcgStTqt+SdnddBCqIY18f6pKZstQzYba92WiR5YJrlXBggiqvTQH/TQ1mlXAhC4IHmvchVv5NVtfzzvsVUun+6P8juAFr9M6J1ZKQsgzXqi3j7xdBaCG75dZPhjaCO8R28YCAzKjTuPB9zZ71sbuBbgl3kJAvcnx9hHUJUE8xJw+eVg6F2a3HJ99rqoxQIsSHHBs7gRwUCQCov1covnSyZ2iFgMcHLV2/BqV+89AV20x310BYnT+AJnkFZYL0uDhj7g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mqMBZtrpTt49/Cdtzq5Ejr1dkQMh6WnVRJNebGCi2Ok=;
+ b=ZqEWEa3kUmsR5fpIjbMvLLScq8Ol424AUccGctzR6YEWyNqGKqLIofCo6Wkdvu0O3NyUJYCjK3Y8F6J9NO5GFSw4Qtrh/Qrgm5dc6BnsCcIxLNIviX7yRVCvRXKs0SyuqPCoiKzf79LNUSLoeuQUKXefHHnOIMTJsGgQ4WGs4dX63l4B8J7NrwXOxqBqrD7KDo88lP7O/NKYs3YTFOmQevYM3gzUfvRYPGSSwGCN45pjdULwZDDJhrwKJ86+GkRUmv0PfMWF9CyLa0BdjtPJd/Ew7Y9QgcEKPcaZ1TekhGzdmp6SntazJG9DLZitSf7Q3DZ86i6DOv0RIFb96T3nSA==
+Received: from PH8PR07CA0014.namprd07.prod.outlook.com (2603:10b6:510:2cd::25)
+ by CY5PR12MB6252.namprd12.prod.outlook.com (2603:10b6:930:20::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.35; Wed, 1 May
+ 2024 17:44:10 +0000
+Received: from CY4PEPF0000E9DB.namprd05.prod.outlook.com
+ (2603:10b6:510:2cd:cafe::8) by PH8PR07CA0014.outlook.office365.com
+ (2603:10b6:510:2cd::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.29 via Frontend
+ Transport; Wed, 1 May 2024 17:44:09 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ CY4PEPF0000E9DB.mail.protection.outlook.com (10.167.241.74) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7544.18 via Frontend Transport; Wed, 1 May 2024 17:44:09 +0000
+Received: from rnnvmail202.nvidia.com (10.129.68.7) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 1 May 2024
+ 10:43:41 -0700
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by rnnvmail202.nvidia.com
+ (10.129.68.7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 1 May 2024
+ 10:43:41 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Wed, 1 May 2024 10:43:40 -0700
+Date: Wed, 1 May 2024 10:43:39 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH v6 5/6] iommu/arm-smmu-v3: Add in-kernel support for
+ NVIDIA Tegra241 (Grace) CMDQV
+Message-ID: <ZjJ/S1bawYkfs1I4@Asurada-Nvidia>
+References: <cover.1714451595.git.nicolinc@nvidia.com>
+ <63414546b1eafdf8032ac1b95ea514da6d206d63.1714451595.git.nicolinc@nvidia.com>
+ <20240430163545.GS941030@nvidia.com>
+ <ZjEztwhd5AN1FTCk@Asurada-Nvidia>
+ <20240501130042.GC941030@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <171456087391.35017.3249073955778510141.b4-ty@kernel.org>
+In-Reply-To: <20240501130042.GC941030@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: CY4PEPF0000E9DB:EE_|CY5PR12MB6252:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7a79739c-2540-48ef-658a-08dc6a064e14
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230031|82310400014|1800799015|376005|36860700004;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?PHLxILkMYN6OtsdgXa+Q52Pe/rjzPTnBBiAYe6LWoviFa/2gK6xO6HYovpvK?=
+ =?us-ascii?Q?bM3XdjlCAhEa/Edv3xYHNXU1CZKqxYgb/I7ilneGqY7vC23ra6raaoLV6cta?=
+ =?us-ascii?Q?MgvTSW5mq2JxF9xU0VryVH9JyPBRNZ9ZmIiPIVoFuUpXFq9S7kmBXjjB1bxv?=
+ =?us-ascii?Q?ZBLCcHr5rl76BggcQ02H2URQQRH9Ulnnr0m1yZhyaQ0tEwMg4aFU5jKiCgw9?=
+ =?us-ascii?Q?nF/eJZE0UK3j+OI1SgIepFhjENLSsXtwPuwjNMtQXa8+ld4A9LMhNvOTAH3I?=
+ =?us-ascii?Q?2dZPBB5yzLkO1KBsX0KfWYzYmR/0/98l1R4teRTXCrahau/5JkIgDsVOn1lm?=
+ =?us-ascii?Q?TBBpBiLQCGmG1AOHYSEO6dSllO5IN+pguuyy+DOg7XX6QHvZ3gxVsmFkhwg2?=
+ =?us-ascii?Q?1ORoZg3RceLFrfStPff3kafRqiZzZGkIvlgcF1KZF91asmAc7tRZJJfOVwYt?=
+ =?us-ascii?Q?QPFl73VGOH3f4nTvenY+hEyuElvMENdJXvkX8oSn8v8q/AvQlyVGFl+4E2tP?=
+ =?us-ascii?Q?5/qMVDlfytCzWqQSpVF3NFS1etbUqikqf0F4I4lTTkj295T99br78+61rfgr?=
+ =?us-ascii?Q?LmjTeESuR65FNACj/Tvd65bOjeYc3DLWgeyQd7OpBksCRkxhXVJqABBB44GG?=
+ =?us-ascii?Q?dGL4q0NzJylv60bigduNY+kjS7+UdY78JWXV0pCGKQbh+xG/o7dsnDAcW4hg?=
+ =?us-ascii?Q?O9RxlKb1f38U6l63SbeN0ZoPQtOAnEeOM7a1NIQgPXDLKqKcxKI1rAXYmg/s?=
+ =?us-ascii?Q?JGbsruoJ0o7net+dR9UjBLB3Fu0F7Eh3FLf/6tB8VbA8oOYymJP3r4TLL9HR?=
+ =?us-ascii?Q?zwRpzG3ZFoLUivBU+aILmI8SoUUzdl7U6qa7Nh6tu3/s3wnyemG1cSCmHqsA?=
+ =?us-ascii?Q?IzmdMaVIn9Jkbe5doUv+BY+5qqioZUyhAs6+/qn94wyeSLryAwCrchbwcgLZ?=
+ =?us-ascii?Q?Q4nuGCtgXgZADfK+B7UUBPBvh+Cb/dlbL1rbB6jG6D+kKf/RDecBJstLAUBw?=
+ =?us-ascii?Q?mmjwzcYmDuCv5IwxTlBMvpTUzvndvBs9U8TU0NbICL15cWAj70LSaXglHPiV?=
+ =?us-ascii?Q?YCurX93/MBkMZpkEoyAs+QhtC54t8nlKL4BGen/w1aXZcGwfJ67Yx561EmFj?=
+ =?us-ascii?Q?ZFyzbzOeBSOdlNUmOdf5i0iM5FXu+T2G5QBiUgMdBtxMN0i2wqcD+HyarRo3?=
+ =?us-ascii?Q?7KHo0c8olAPJBx4zGrnx5fR2u9xWw0F8ku/GlE9qfvb5npL2HPmNRb/9Jb9q?=
+ =?us-ascii?Q?oFKnmCmBSgAQfaMwKVpXsCMoa3ELZLWagTjiAggSnoJm2/lt6ZC0SKpxySr7?=
+ =?us-ascii?Q?MoLtBGCwEnzd5O+njADSrpDF3kkbh4f7/8MswtyomaNSoUendSZrHQy2Oo63?=
+ =?us-ascii?Q?rpLgfL66sqIZ51+xSmkLakbWLmkr?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(82310400014)(1800799015)(376005)(36860700004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 May 2024 17:44:09.0669
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7a79739c-2540-48ef-658a-08dc6a064e14
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	CY4PEPF0000E9DB.namprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6252
 
-On Wed, May 01, 2024 at 05:20:29PM +0100, Will Deacon wrote:
-> On Tue, 30 Apr 2024 14:21:32 -0300, Jason Gunthorpe wrote:
-> > This is split out from the larger part two which aimes to rework the PASID
-> > related code.
+On Wed, May 01, 2024 at 10:00:42AM -0300, Jason Gunthorpe wrote:
+> On Tue, Apr 30, 2024 at 11:08:55AM -0700, Nicolin Chen wrote:
+> > On Tue, Apr 30, 2024 at 01:35:45PM -0300, Jason Gunthorpe wrote:
+> > > On Mon, Apr 29, 2024 at 09:43:48PM -0700, Nicolin Chen wrote:
+> > > Really this all seems like alot of overkill to make a little bit of
+> > > shorthand. It is not so wordy just to type it out:
+> > > 
+> > >   readl(vintf->base + TEGRA241_VINTF_CONFIG) 
 > > 
-> > No new functionality is introduced in theses commits, it just reorganizes
-> > the CD logic to follow the same design of the new STE logic using make
-> > functions and a single programming flow without leaking details to
-> > callers.
+> > vintf_readl(vintf, CONFIG) is much shorter. Doing so reduced the
+> > line breaks at quite a lot places, so overall the driver looks a
+> > lot cleaner to me.
+> 
+> We don't have the strict 80 column limit now, it would be fine to go a
+> few extra to avoid the breaks.
+> 
+> Certainly preferred to these readability damaging macros.
+
+I think only very few folks will look up for the register macros
+that are actually damaged, and these MMIO macros still look very
+straightforward that we will always know the correct ->base and
+register offset pair will be used.
+
+There are four sets of ->base in the driver. Sometimes they can
+be so dazzling that a wrong pair might be accidentally used. Yet
+such a stupid mistake can be really difficult to catch it out --
+I had a hard time earlier to sort it out..
+
+> > I can probably change these logging helpers to inline functions.
+> 
+> Just call the normal logging functions directly.
+..
+> Just call the normal logging functions, there are so few callers
+> typing out the VCMDQ%u is not going to be so bad
+
+There're a few more in the part 2. And it's actually a bit wordy
+doing "VINTF%u: LVCDMQ%u/VCMDQ%u" at every place..
+
+> > It would be unrolled to three mostly identical inline functions:
+> > 	tegra241_cmdqv_write_config(cmdqv, regval)
+> > 	tegra241_vintf_write_config(vintf, regval)
+> > 	tegra241_vcmdq_write_config(vcmdq, regval)
+> 
+> Expand the parameters in the caller:
+> 
+> __do_write_config(owner->base, &owner->status, _CMDQV_EN, TEGRA241_CMDQ_CONFIG,
+>                   TEGRA241_CMDQ_STATUS, _CMDQ_ENABLED)
+
+Yea, I just did something like that. _CMDQV_EN and _CMDQ_ENABLED
+always equal to BIT(0), so I also move them to the common place.
+
+> > > > +#define cmdqv_write_config(_regval) \
+> > > > +	tegra241_cmdqv_write_config(cmdqv, CMDQV, _regval)
+> > > > +#define vintf_write_config(_regval) \
+> > > > +	tegra241_cmdqv_write_config(vintf, VINTF, _regval)
+> > > > +#define vcmdq_write_config(_regval) \
+> > > > +	tegra241_cmdqv_write_config(vcmdq, VCMDQ, _regval)
+> > > 
+> > > More hidden access to stack values
 > > 
-> > [...]
+> > Btw, any reason for forbidding this practice? It will break the
+> > build if something goes wrong, which seems to be pretty easy to
+> > catch.
 > 
-> Applied to will (for-joerg/arm-smmu/updates), thanks!
+> It is the kernel consensus not to do that. function-like-macros should
+> act like functions and not reach into some other stack frame. It makes
+> it very hard to follow the calling function if you can't follow where
+> the references are.
+
+I see.
+
+> > > > +	/* Use SMMU CMDQ if vintfs[0] is uninitialized */
+> > > > +	if (!FIELD_GET(VINTF_ENABLED, atomic_read(&vintf->status)))
+> > > > +		return &smmu->cmdq;
+> > > > +
+> > > > +	/* Use SMMU CMDQ if vintfs[0] has error status */
+> > > > +	if (FIELD_GET(VINTF_STATUS, atomic_read(&vintf->status)))
+> > > > +		return &smmu->cmdq;
+> > > 
+> > > Why atomic_read? The unlocked interaction with
+> > > tegra241_cmdqv_handle_vintf0_error() doesn't seem especially sane IMHO
+> > 
+> > Race between this get_cmdq() and the isr. Any alternative practice?
 > 
-> [1/9] iommu/arm-smmu-v3: Add an ops indirection to the STE code
-> 	https://git.kernel.org/will/c/de31c3555412
-> [2/9] iommu/arm-smmu-v3: Make CD programming use arm_smmu_write_entry()
-> 	https://git.kernel.org/will/c/78a5fbe8395b
-> [3/9] iommu/arm-smmu-v3: Move the CD generation for S1 domains into a function
-> 	https://git.kernel.org/will/c/e9d1e4ff74b9
-> [4/9] iommu/arm-smmu-v3: Consolidate clearing a CD table entry
-> 	https://git.kernel.org/will/c/af8f0b83ea2b
-> [5/9] iommu/arm-smmu-v3: Make arm_smmu_alloc_cd_ptr()
-> 	https://git.kernel.org/will/c/b2f4c0fcf094
-> [6/9] iommu/arm-smmu-v3: Allocate the CD table entry in advance
-> 	https://git.kernel.org/will/c/13abe4faac43
-> [7/9] iommu/arm-smmu-v3: Move the CD generation for SVA into a function
-> 	https://git.kernel.org/will/c/7b87c93c8b86
-> [8/9] iommu/arm-smmu-v3: Build the whole CD in arm_smmu_make_s1_cd()
-> 	https://git.kernel.org/will/c/04905c17f648
-> [9/9] iommu/arm-smmu-v3: Add unit tests for arm_smmu_write_entry
-> 	https://git.kernel.org/will/c/56e1a4cc2588
+> It doesn't fix any real race, I'm not sure what this is supposed to be
+> doing. The cmdq becomes broken and you get an ISR, so before the ISR
+> it will still post but get stuck, during the ISR it will avoid
+> posting, and after it will go back to posting?
+> 
+> Why? Just always post to the Q and let the ISR fix it?
 
-Thanks Will, I will repost the rebased 2b part once Joerg picks this
-up.
+Yes, we could do so. I was thinking of the worst case by giving
+the guest OS a chance to continue (though in a slower mode), if
+something unrecoverable happens to the VINTF/VCMDQ part.
 
-Jason
+> > > > +	if (tegra241_cmdqv_probe(cmdqv)) {
+> > > > +		if (cmdqv->irq > 0)
+> > > > +			devm_free_irq(smmu->dev, cmdqv->irq, cmdqv);
+> > > > +		devm_iounmap(smmu->dev, cmdqv->base);
+> > > > +		devm_kfree(smmu->dev, cmdqv);
+> > > > +		return NULL;
+> > > 
+> > > Oh. Please don't use devm at all in this code then, it is not attached
+> > > to a probed driver with the proper scope, devm isn't going to work in
+> > > sensible way.
+> > 
+> > Mind elaborating "it is not"? This function is called by
+> > arm_smmu_device_acpi_probe and arm_smmu_device_probe.
+> 
+> Normal devm usage will unwind the devm allocations when probe fails.
+> 
+> That doesn't happen here, you open coded the unwind above, and then
+> you have open coded freeing in another place anyhow.
+> 
+> So just don't use it. There is no value if the places where it should
+> work automatically are not functioning.
+
+I thought devm could work when rmmod too, not only when the probe
+fails..
+
+In that case, should we be concerned about the "rmmod arm-smmu-v3"?
+There is no callback function for that yet, so memory on the cmdqv
+side wouldn't be free-ed.
+
+Thanks
+Nicolin
