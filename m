@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E74D450285
-	for <iommu@lists.linux.dev>; Wed,  1 May 2024 09:53:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECED950285
+	for <iommu@lists.linux.dev>; Wed,  1 May 2024 10:01:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714557238; cv=none; b=ZVVmmwxTTxmrgV3L2nSjq/pC4lCmnsSf+eEiFBZzPJ11iap2bAgMzLWROYUy0qO1TzI2VdZxYT7SlYUZ9PBSLTo/2MmAz+8rgogNFQuyEynfylhn0QbHjZQkvAqaiv5mYPhO1tqebbKiCrukgNeV7ryuxKH3q8gOYwp3zL6E8tg=
+	t=1714557691; cv=none; b=ackKqIA2cf5xV+/4zKetBnyC/CGl/7mnJn07gshwQIeYrHTaHXkHAh7YYMSBLFvUaMF3MHq6IYaxM/5y5DAJGfvYhuUuU19jdpA7tFT9L55m0hJBKJI1WFZoLVabo6wrSXeEX4UCirkxdIimmZi3k62R3RFyKMzXYm/tIG0VFY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714557238; c=relaxed/simple;
-	bh=Hb846Cf7SRZX9pIUAJ1q07Z7Vsj0+r1xmkNfW29a3ZQ=;
+	s=arc-20240116; t=1714557691; c=relaxed/simple;
+	bh=Hd8WBmznF8s3GFca7bl23FfAapWO49hb4n7ZJcgVZX8=;
 	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=L34PbTuC68qB3FPuwg/iQM0xIvZ7uQQiN1cqUE+syRu+PFdLuKglMBLK/uZPem7ko6lHfh5D8DEP86Fr+rZCF1O5n7xj/ckOmLWIoPrXZyrK/GOyRqfT4Wpk6gltsC08IcN2Qi8RF9ZcyuGTxY2hx2ow2nGHpbA7a5GBX2V2p+U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZPeKcYz8; arc=none smtp.client-ip=198.175.65.10
+	 In-Reply-To:Content-Type; b=m2HOzl3LDEBNlHj7M153WNpzXm5pIoZQ4eJ7V9wqxWjRgVOMrQYFXmkgu8Kwq70AxJS3SfiHIvsnoJ/YPRKTV4JqDhXPipISJhl2fes1rQbTsEWbqB9LESiKAvytjnSCKwZi2s4M6Ihwp5DWs8Q6GxqrBkR0O0DZWLZwowoJGCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HwjclCTb; arc=none smtp.client-ip=192.198.163.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZPeKcYz8"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HwjclCTb"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714557236; x=1746093236;
+  t=1714557690; x=1746093690;
   h=message-id:date:mime-version:cc:subject:to:references:
    from:in-reply-to:content-transfer-encoding;
-  bh=Hb846Cf7SRZX9pIUAJ1q07Z7Vsj0+r1xmkNfW29a3ZQ=;
-  b=ZPeKcYz8FHnp3NVE8oSBwdDJD/oiqJw5SRSLpq2kcrSQbDW8AXdV4/Hg
-   zoQOjFWx+OsZOI8Xw5sE37cZ424HHv4DhOm/mZ6lv73AKdJk95rrMV5Hi
-   M+EPReGSBSVVOL+Ya9DWIMKgZDt6C00KTMBEmjhgZ6+PfnsL62ncj1rsK
-   vST7VK4WYfcJq/8jRwnYIhafuyi8ZLZWy10qqVAAtGHFmpCr5z039uykN
-   KVpjMzoHnLxYvk+6rk3VxR9QrfZqEOwtM69C51vsziMlGL9mEaCVy9hvv
-   MobbEvxitCYbUDd1mW9VrsJWj2nvUwDZk3kjWItHToV3DF9mDLxh+9zFG
+  bh=Hd8WBmznF8s3GFca7bl23FfAapWO49hb4n7ZJcgVZX8=;
+  b=HwjclCTb1hokX7PPnZ5NP6KaAcUaZacBc/esx8KFHRewL0cTm8wo0nLF
+   BiEYxvXlIYwla76/va4GEjQ/DUBoYV4QnoWiWITvvnzrFYoUvZQ3uqEyk
+   LTfLvKI5dT0NHhN6XlWdKw4EcpOlBVKoRzcjfDQAODzAlCyM+w+3ns/uR
+   8pC7RLdXyJxBNPljvG+nKDtYpma+6I6BE2HFfthMOP786+kGDBDCpfz87
+   5rM99nzKal7PYFmLLfB0C9VCQdbYxmsqdiO6sXwVxMJQgOS5tWJvKnn4t
+   wRS9ehsMMlPK65Qfq8Y40/S97hxcUF2Jb2BZGMxeICySJpTM3quumfrde
    A==;
-X-CSE-ConnectionGUID: GiNCSHEvTeq6gIfQuoWL2w==
-X-CSE-MsgGUID: 86/rv6WMSZGPslbGETxxKw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11060"; a="27730362"
-X-IronPort-AV: E=Sophos;i="6.07,244,1708416000"; 
-   d="scan'208";a="27730362"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2024 02:53:55 -0700
-X-CSE-ConnectionGUID: aAIcMIixT9Wtz8LRNgu3+Q==
-X-CSE-MsgGUID: rSDqELpPRceJmOjVWPQj2Q==
+X-CSE-ConnectionGUID: stbb0cO3SkGndYyCBh/Ang==
+X-CSE-MsgGUID: gYtCq1CxTqCF1iFvEBrpQw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11060"; a="10155825"
+X-IronPort-AV: E=Sophos;i="6.07,245,1708416000"; 
+   d="scan'208";a="10155825"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2024 03:01:29 -0700
+X-CSE-ConnectionGUID: udJhc1hNT0e0Cs8MdxtM1Q==
+X-CSE-MsgGUID: Hg8wu7WfTWWT6SwKQNXnkA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,244,1708416000"; 
-   d="scan'208";a="31455876"
+X-IronPort-AV: E=Sophos;i="6.07,245,1708416000"; 
+   d="scan'208";a="27230625"
 Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.124.225.176]) ([10.124.225.176])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2024 02:53:50 -0700
-Message-ID: <89cbae17-58dd-4c06-9f24-0c651209f037@linux.intel.com>
-Date: Wed, 1 May 2024 17:53:48 +0800
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 May 2024 03:01:25 -0700
+Message-ID: <57678928-4557-4975-ae23-7e11904e5302@linux.intel.com>
+Date: Wed, 1 May 2024 18:01:22 +0800
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -60,70 +60,43 @@ Cc: baolu.lu@linux.intel.com, Palmer Dabbelt <palmer@dabbelt.com>,
  <conor+dt@kernel.org>, devicetree@vger.kernel.org, iommu@lists.linux.dev,
  linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
  linux@rivosinc.com
-Subject: Re: [PATCH v3 4/7] iommu/riscv: Enable IOMMU registration and device
- probe.
+Subject: Re: [PATCH v3 3/7] iommu/riscv: Add RISC-V IOMMU PCIe device driver
 To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
  Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Paul Walmsley <paul.walmsley@sifive.com>
 References: <cover.1714494653.git.tjeznach@rivosinc.com>
- <f9c9e5dcdc1457da4af70302e85c0a7be532f650.1714494653.git.tjeznach@rivosinc.com>
+ <3a04bd180fd510cb90e8d8dba5fb60f207e5e83f.1714494653.git.tjeznach@rivosinc.com>
 Content-Language: en-US
 From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <f9c9e5dcdc1457da4af70302e85c0a7be532f650.1714494653.git.tjeznach@rivosinc.com>
+In-Reply-To: <3a04bd180fd510cb90e8d8dba5fb60f207e5e83f.1714494653.git.tjeznach@rivosinc.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
 On 2024/5/1 4:01, Tomasz Jeznach wrote:
-> Advertise IOMMU device and its core API.
-> Only minimal implementation for single identity domain type, without
-> per-group domain protection.
+> Introduce device driver for PCIe implementation
+> of RISC-V IOMMU architected hardware.
 > 
-> Signed-off-by: Tomasz Jeznach <tjeznach@rivosinc.com>
+> IOMMU hardware and system support for MSI or MSI-X is
+> required by this implementation.
+> 
+> Vendor and device identifiers used in this patch
+> matches QEMU implementation of the RISC-V IOMMU PCIe
+> device, from Rivos VID (0x1efd) range allocated by the PCI-SIG.
+> 
+> MAINTAINERS | added iommu-pci.c already covered by matching pattern.
+> 
+> Link:https://lore.kernel.org/qemu-devel/20240307160319.675044-1-dbarboza@ventanamicro.com/
+> Co-developed-by: Nick Kossifidis<mick@ics.forth.gr>
+> Signed-off-by: Nick Kossifidis<mick@ics.forth.gr>
+> Signed-off-by: Tomasz Jeznach<tjeznach@rivosinc.com>
+> ---
+>   drivers/iommu/riscv/Kconfig     |   5 ++
+>   drivers/iommu/riscv/Makefile    |   1 +
+>   drivers/iommu/riscv/iommu-pci.c | 119 ++++++++++++++++++++++++++++++++
+>   3 files changed, 125 insertions(+)
+>   create mode 100644 drivers/iommu/riscv/iommu-pci.c
 
 Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-with some nits below.
-
-> ---
->   drivers/iommu/riscv/iommu.c | 64 +++++++++++++++++++++++++++++++++++++
->   1 file changed, 64 insertions(+)
-
-[..]
-
->   static int riscv_iommu_init_check(struct riscv_iommu_device *iommu)
->   {
->   	u64 ddtp;
-> @@ -71,6 +126,7 @@ static int riscv_iommu_init_check(struct riscv_iommu_device *iommu)
->   
->   void riscv_iommu_remove(struct riscv_iommu_device *iommu)
->   {
-> +	iommu_device_unregister(&iommu->iommu);
->   	iommu_device_sysfs_remove(&iommu->iommu);
->   }
->   
-> @@ -96,8 +152,16 @@ int riscv_iommu_init(struct riscv_iommu_device *iommu)
->   		goto err_sysfs;
->   	}
->   
-> +	rc = iommu_device_register(&iommu->iommu, &riscv_iommu_ops, iommu->dev);
-> +	if (rc) {
-> +		dev_err_probe(iommu->dev, rc, "cannot register iommu interface\n");
-> +		goto err_iommu;
-> +	}
-> +
->   	return 0;
->   
-> +err_iommu:
-> +	iommu_device_sysfs_remove(&iommu->iommu);
->   err_sysfs:
->   	return rc;
->   }
-
-It's better to make the goto label indicate what is going to be handled.
-So it's more readable to make it like this:
-
-err_remove_sysfs:
-	iommu_device_sysfs_remove(&iommu->iommu);
 
 Best regards,
 baolu
