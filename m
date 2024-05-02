@@ -1,155 +1,117 @@
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 8400646521
-	for <iommu@lists.linux.dev>; Thu,  2 May 2024 15:49:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.140.110.172
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA68660BB6
+	for <iommu@lists.linux.dev>; Thu,  2 May 2024 16:02:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714664995; cv=none; b=Uhhq/N5Mi2gu+ej/Be2c+qVoTAVgpPf/xNVgRFsxWqWYyQxJvjuB6n+W+56G8rwFZXWQaJ3mpRnVR74QUnjq0VNiyvdooJJ2lTMj/Rl2QJfKJAhUzzEBZj9pEb8kPm4O6ibCVNQiBCXzh7e7fynKYsvXoJfYoPtnEp2QqFh1llE=
+	t=1714665761; cv=none; b=X7QV33hcrZhEPi/H+pzRvpoksaEAa4LOlqnN40bcJCYX1s75e7EaXrReZVqTux1v1lesAitS9GvEeiu99rDYxKMujKyXHlea75hgbTdjr1m93zW9rQZsp39spw13y5CG06WctAY3qR/EH1vcZpRsunB9OiG+6Pme2cF1Y/Eir28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714664995; c=relaxed/simple;
-	bh=lSLQE7weTxnVqPnhv28TxjpfYwfoIlf4YwWxqRNzmeg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BwdR4yj6phaQLQz2Aujrw4SBXz1tHs1YnIBHamjd9+3Rupucc8g0eK7ql+LAKPDm5q/lAxAHlZz4VsDBcMk5ZVpQF+//eBUXfX5Kz/e7idlxFI3aFIQAckAXEutb+oXW3+7jN5s+hF1qITdg3leZBMX5DIVcRtIme041n9h3x3o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com; spf=pass smtp.mailfrom=arm.com; arc=none smtp.client-ip=217.140.110.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=arm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=arm.com
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 458BD2F4;
-	Thu,  2 May 2024 08:50:17 -0700 (PDT)
-Received: from [10.1.196.40] (e121345-lin.cambridge.arm.com [10.1.196.40])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D6C993F793;
-	Thu,  2 May 2024 08:49:49 -0700 (PDT)
-Message-ID: <ac0a09f2-5f05-4317-a1cf-b7135791c639@arm.com>
-Date: Thu, 2 May 2024 16:49:48 +0100
+	s=arc-20240116; t=1714665761; c=relaxed/simple;
+	bh=4zrGVyY7oeyk5looNBSKhoeZb0nLxyxkhsaMw8NDxgQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Z+1tALNOdFUWgjd/6AyOr/4kUilPLiyN9s0qZTEt+Hj6ZLOwkjS/08hGQ65QLQhXrUUSqVM+fyVqvVHAt64uPpaAqDiVTHfTc6zyejmgCEukFbOjuCIYwR4oh0QR/IyTU/pXO3QfpC+BCM2lIWKnJAPr1PeIAyQSJtmZ3BYpnKs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=Gd2ZbfCU; arc=none smtp.client-ip=209.85.128.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="Gd2ZbfCU"
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-61bed738438so30782997b3.2
+        for <iommu@lists.linux.dev>; Thu, 02 May 2024 09:02:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1714665759; x=1715270559; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=4zrGVyY7oeyk5looNBSKhoeZb0nLxyxkhsaMw8NDxgQ=;
+        b=Gd2ZbfCUCqgfgR5yeqpY3nWJHSlIAJLqUvwN1XxvGQyXScNvMbu+Q5BlGX3NjYPOga
+         kmywz7SFClaqkOY2FNKO/ZcFMYOW3YvxoLgiWJC9OQf+GOq3b+N6zJLpyfLdeAiQpjk7
+         dbDQNdsA3anYc+/idGDp/HcTzDMT1S4YtA/oPsRYg7IcbW/gcs8w935ezSpDgyfM3TWc
+         0FWOlVSaatFX0Vi4WnUSl3F00advVUQHOPvBST1gQoz20gl2lDIaRS5ikhAFj0tuyHUp
+         4Y4BM1mlwulPiZoJQhaepSZan8UKpqZXT4H1LvTjDecWCZ+St34aSn7SeI6EIdXWbUT/
+         JWJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714665759; x=1715270559;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=4zrGVyY7oeyk5looNBSKhoeZb0nLxyxkhsaMw8NDxgQ=;
+        b=Ol7bRZLeIChDrGXqSOcx1JxkanPUGTEEfNNL6ArmMiovLD76kBb2gk9QW0S++v94gu
+         EzU8/aWyZUVMo1eP8HA35zwxZXuB3/zSw9CSWPaIQNhFUEcMLiglZxFOgT8GSmoCSzPL
+         AGUzxfn93JgGFiaoiiJ/1X8Yhkt0+boPbIaxjMCU1m/sUOSb5/kB+AsrtFODSCzs/GJt
+         nnAxYVKSnvG/iIZrbgHXvw+daSeRwytr/ZStlToWa6BUXihOQKgrZNhNMaNOaLGe4QHy
+         psaAkjTRdCeSZmQZP/Is9XF+c8ASWNp0/0En4uQ4W4v1+Jr6trB962GdhSXIChuransS
+         oLZA==
+X-Forwarded-Encrypted: i=1; AJvYcCVScHzewvfQ4HbitdUfYPTvsgRCpLnm8/rIijpztSXateH5JcoNwT2XzsV2PvFIfDdYhcdi3khdz9MaYTDBElgVsGYZNP0=
+X-Gm-Message-State: AOJu0YzCPRw7DVyFPxib3WulxN3rfg0RqCisKBvBYTbgrGQ/RKR0lK9c
+	a5F/bLbfuYG2A5jmfy+5iqihN8g6cj4JRusmo6Y1mzUcYY2mxDAB3eCT4vFV3N5qUxdjx9wLwXy
+	Z5jSOxNHWBADw7mIkLaSvaehBLBtgdWvZ5y4b
+X-Google-Smtp-Source: AGHT+IHVNHQC5SLyOth+ELmjn3kDXf0QPueuFFd/3ftxdlJ3rQVGDzpbXKZBydBreAIgG64UsDFz3vBJjSuJ+Lyf7Tk=
+X-Received: by 2002:a5b:70f:0:b0:de6:1a10:11c0 with SMTP id
+ g15-20020a5b070f000000b00de61a1011c0mr301803ybq.44.1714665755811; Thu, 02 May
+ 2024 09:02:35 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH net-next v4 6/7] page_pool: check for DMA sync shortcut
- earlier
-To: Alexander Lobakin <aleksander.lobakin@intel.com>,
- "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
- Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-Cc: Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Magnus Karlsson <magnus.karlsson@intel.com>,
- nex.sw.ncis.osdt.itp.upstreaming@intel.com, bpf@vger.kernel.org,
- netdev@vger.kernel.org, iommu@lists.linux.dev, linux-kernel@vger.kernel.org
-References: <20240423135832.2271696-1-aleksander.lobakin@intel.com>
- <20240423135832.2271696-7-aleksander.lobakin@intel.com>
- <81df4e0f-07f3-40f6-8d71-ffad791ab611@intel.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Content-Language: en-GB
-In-Reply-To: <81df4e0f-07f3-40f6-8d71-ffad791ab611@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+References: <20240501201319.586289-1-tjmercier@google.com> <ZjMfl2G377qexhi-@infradead.org>
+ <b4b11ebb-4e42-402c-8e9e-48eb57ef34d5@arm.com>
+In-Reply-To: <b4b11ebb-4e42-402c-8e9e-48eb57ef34d5@arm.com>
+From: "T.J. Mercier" <tjmercier@google.com>
+Date: Thu, 2 May 2024 09:02:23 -0700
+Message-ID: <CABdmKX1+MyJCwgbpYaZn5uLdqgfJbv_5iCX_3cmpL1UaqeggEA@mail.gmail.com>
+Subject: Re: [PATCH] iommu/dma: Respect SWIOTLB force_bounce
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Christoph Hellwig <hch@infradead.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, 
+	isaacmanjarres@google.com, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 24/04/2024 9:52 am, Alexander Lobakin wrote:
-> From: Alexander Lobakin <aleksander.lobakin@intel.com>
-> Date: Tue, 23 Apr 2024 15:58:31 +0200
-> 
->> We can save a couple more function calls in the Page Pool code if we
->> check for dma_need_sync() earlier, just when we test pp->p.dma_sync.
->> Move both these checks into an inline wrapper and call the PP wrapper
->> over the generic DMA sync function only when both are true.
->> You can't cache the result of dma_need_sync() in &page_pool, as it may
->> change anytime if an SWIOTLB buffer is allocated or mapped.
->>
->> Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
->> ---
->>   net/core/page_pool.c | 31 +++++++++++++++++--------------
->>   1 file changed, 17 insertions(+), 14 deletions(-)
->>
->> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
->> index 6cf26a68fa91..87319c6365e0 100644
->> --- a/net/core/page_pool.c
->> +++ b/net/core/page_pool.c
->> @@ -398,16 +398,24 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
->>   	return page;
->>   }
->>   
->> -static void page_pool_dma_sync_for_device(const struct page_pool *pool,
->> -					  const struct page *page,
->> -					  unsigned int dma_sync_size)
->> +static void __page_pool_dma_sync_for_device(const struct page_pool *pool,
->> +					    const struct page *page,
->> +					    u32 dma_sync_size)
->>   {
->>   	dma_addr_t dma_addr = page_pool_get_dma_addr(page);
->>   
->>   	dma_sync_size = min(dma_sync_size, pool->p.max_len);
->> -	dma_sync_single_range_for_device(pool->p.dev, dma_addr,
->> -					 pool->p.offset, dma_sync_size,
->> -					 pool->p.dma_dir);
->> +	__dma_sync_single_for_device(pool->p.dev, dma_addr + pool->p.offset,
->> +				     dma_sync_size, pool->p.dma_dir);
-> 
-> Breh, this breaks builds on !DMA_NEED_SYNC systems, as this function
-> isn't defined there, and my CI didn't catch it in time... I'll ifdef
-> this in the next spin after some reviews for this one.
+On Thu, May 2, 2024 at 5:50=E2=80=AFAM Robin Murphy <robin.murphy@arm.com> =
+wrote:
+>
+> On 02/05/2024 6:07 am, Christoph Hellwig wrote:
+> > On Wed, May 01, 2024 at 08:13:18PM +0000, T.J. Mercier wrote:
+> >> iommu_dma_map_page and iommu_dma_map_sg conditionally use SWIOTLB, but
+> >> checking if force_bounce is set for the device is not part of that
+> >> condition. Check if devices have requested to force SWIOTLB use as par=
+t
+> >> of deciding to take the existing SWIOTLB paths.
+> >
+> > This fails to explain why you'd want this somewhat surprising behavior,
+> > and why you consider it a bug fix.
+>
+> Indeed, it's rather intentional that the "swiotlb=3Dforce" argument
+> doesn't affect iommu-dma, since that's primarily for weeding out drivers
+> making dodgy assumptions about DMA addresses, and iommu-dma is
+> inherently even better at that already.
+>
+> Beyond that I think this change also seems likely to interact badly with
+> CC_ATTR_GUEST_MEM_ENCRYPT on x86, where we invoke the SWIOTLB_FORCE flag
+> for dma-direct, but expect that an IOMMU can provide a decrypted view
+> in-place, thus bouncing in that path would be unnecessarily detrimental.
+>
+> Thanks,
+> Robin.
 
-Hmm, the way things have ended up, do we even need this change? (Other
-than factoring out the pool->dma_sync check, which is clearly nice)
-
-Since __page_pool_dma_sync_for_device() is never called directly, the
-flow we always get is:
-
-page_pool_dma_sync_for_device()
-     dma_dev_need_sync()
-         __page_pool_dma_sync_for_device()
-             ... // a handful of trivial arithmetic
-             __dma_sync_single_for_device()
-
-i.e. still effectively the same order of
-"if (dma_dev_need_sync()) __dma_sync()" invocations as if we'd just used
-the standard dma_sync(), so referencing the unwrapped internals only
-spreads it out a bit more for no real benefit. As an experiment I tried
-the diff below on top, effectively undoing this problematic part, and it
-doesn't seem to make any appreciable difference in a before-and-after
-comparison of the object code, at least for my arm64 build.
+I encountered this while testing a change to DMA direct which makes
+sure that sg_dma_mark_swiotlb is called there like it is here. (Right
+now the SG_DMA_SWIOTLB flag is set only if dma_map_sgtable takes the
+IOMMU path, but not if SWIOTLB is used on the direct path.) While I
+agree IOMMU + force_bounce is an unusual config, I found it equally
+surprising that swiotlb=3Dforce wasn't doing what is advertised, or even
+giving a warning/error. Since the iommu-dma code is already set up for
+conditionally bouncing through SWIOTLB, it looked straightforward to
+give what's asked for in the case of swiotlb=3Dforce. If it's
+intentional that SWIOTLB options don't affect IOMMU code, then should
+we just warn about it here when it's ignored? The presence of a
+warning like that would also be a suggestion of, "you probably don't
+actually want what you're asking for with this configuration you've
+specified".
 
 Thanks,
-Robin.
-
------>8-----
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 27f3b6db800e..b8ab7d4ca229 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -398,24 +398,20 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
-  	return page;
-  }
-  
--static void __page_pool_dma_sync_for_device(const struct page_pool *pool,
--					    const struct page *page,
--					    u32 dma_sync_size)
--{
--	dma_addr_t dma_addr = page_pool_get_dma_addr(page);
--
--	dma_sync_size = min(dma_sync_size, pool->p.max_len);
--	__dma_sync_single_for_device(pool->p.dev, dma_addr + pool->p.offset,
--				     dma_sync_size, pool->p.dma_dir);
--}
--
-  static __always_inline void
-  page_pool_dma_sync_for_device(const struct page_pool *pool,
-  			      const struct page *page,
-  			      u32 dma_sync_size)
-  {
--	if (pool->dma_sync && dma_dev_need_sync(pool->p.dev))
--		__page_pool_dma_sync_for_device(pool, page, dma_sync_size);
-+	dma_addr_t dma_addr = page_pool_get_dma_addr(page);
-+
-+	if (!pool->dma_sync)
-+		return;
-+
-+	dma_sync_size = min(dma_sync_size, pool->p.max_len);
-+	dma_sync_single_range_for_device(pool->p.dev, dma_addr,
-+					 pool->p.offset, dma_sync_size,
-+					 pool->p.dma_dir);
-  }
-  
-  static bool page_pool_dma_map(struct page_pool *pool, struct page *page)
+T.J.
