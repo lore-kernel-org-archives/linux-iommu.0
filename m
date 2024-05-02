@@ -1,178 +1,178 @@
-Received: from mail-yb1-f172.google.com (mail-yb1-f172.google.com [209.85.219.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2063.outbound.protection.outlook.com [40.107.94.63])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD155171065
-	for <iommu@lists.linux.dev>; Thu,  2 May 2024 17:54:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714672486; cv=none; b=uCSjRB9LPJY7xMO65qH75xRxQlgZ8ANrGrMo/HJYgm+NcNVbKnj9e8xg4LfxiooKvfr4aDW5VUgz6/On89v8wqaGS9ozsQI7D2dnzGhrQs0cdZKuTUrR+s/uqimZun76RCkvecIKNw2kArF3I50jFRooithARZWITVguesAYwdg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714672486; c=relaxed/simple;
-	bh=ogZd0FRc82N0nj2WvY4uzGpHblO+NctTzdz8d8+QKmA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Z7dX3ZcG9t3vwk6kH2bwHeZ7eNn5UAxxSCKhETuWGGI/jZcRGIuLs2MzgF+aPZjqfelHk6eTHZVLur1g8mLGzmN3scpwyLb7APfjwBNAqfLievRNJ5JzwAkng0jBlgR9b9/gZd24kJY4ldiuOUPN/kmpI18Pl2vf21q3GhSCYjo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=ds07kBIa; arc=none smtp.client-ip=209.85.219.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4DF7174EC1
+	for <iommu@lists.linux.dev>; Thu,  2 May 2024 19:26:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.94.63
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714678015; cv=fail; b=InVw0bn6asiJ6tM9wZP1iR7RszI/absTcl9Mw6fI0hIgrcNRY+VFZIkxPhN5Bq4PM3O+oF97ZvyAZpu+JyMS3QxIARbwDnrKdwyyBsBnNiUWVSfDn3ldFxIXHLglcrpZ1CRa8EDZ1HwgLn0ScV1BvN/RMjmQeXIOcp+MfVjOWAA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714678015; c=relaxed/simple;
+	bh=d7iLaENmq7K5u2WNyJc9MDYPUK7gbjcAvWDcr57raGo=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IscOoiZi8+std+TXNZ6cKNLLg83efqFEbvA3Z4iDlNxLKsVq68nTD/Eq2el8JioN6ZatnFzYf89UrN7FEapI3JPsviRj/cWmIR0eGYTtF5onNqmneJ1XaVuRRrfWRoVfzI4McdWwP8ZPEVTIGr8VJUcfgCmc4E/qur7D5dyNxPE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=l3WESkyi; arc=fail smtp.client-ip=40.107.94.63
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="ds07kBIa"
-Received: by mail-yb1-f172.google.com with SMTP id 3f1490d57ef6-de604ca3cfcso4364839276.3
-        for <iommu@lists.linux.dev>; Thu, 02 May 2024 10:54:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1714672484; x=1715277284; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zP6MGByyG7+VK/zgP1Njy0ijgfu1MUzm+kYaZyW4en4=;
-        b=ds07kBIadb0/AgSLDRIsRurZCqwdIaUwpwN+Cfp5hQ7E/wJvg7aqDvU5zu10Yxvghi
-         byLJpVkdXF7Qv9XdrjcrU1uPcAyv4riDz0ufCC2PXHvg0xH5DL/fWyh4qYAKC4Kswk9/
-         scvx3F16GJJXe8IXkTiUphrNPGw7sZW4t3w+YrJOpV6o9KwqHogrVDYH8MjXtUlwMsfL
-         CQHwMiPX6PEu549/09R19JYpKg4GpPsbpAe1tiL8o55NaeMWK2+w70+x1ym0JqsRwDgB
-         MFECN+fWf/nSgXXjOaQscN4qWaLfJ4NzXZmgM3rlpERhzNw+zGF7jhM4JArj5fCY8V67
-         sATw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714672484; x=1715277284;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=zP6MGByyG7+VK/zgP1Njy0ijgfu1MUzm+kYaZyW4en4=;
-        b=EkXwJwHKToFsVaE5kaxFwECfJqw6ToKdXEG+CICADCM5SFk7raHturRGFub0csitEt
-         snAOd1fOL11YQaKOV6eapC2scph8CoT4Ysw22GP5DH3XODq8FNCXHRkuJLhxR5UI43nO
-         o9qAjUibl7TNn/Yt/Tan66TdXsg0c8WPr7FrAFWvf8JFXpTi7xDAS8kHmFZ34eq1594Z
-         nlAeptx020xnag+BffbpTCU5AbjjKA459Zygyn2BRKbakOsx1qdtsDJelrXPI3q9FGGi
-         S+K5xduTx2G35MBCUbBF5qnyeFJ2CJpQ65h+U816uPJWG+qHiEBr5uB1cUD4DKvuEcJG
-         GgeQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVDNtBMdH4SjVsZ/0MJIE/h6VjUb1Lo6BnugE3Xqsr9khDVMLB8uiudWF1x03Q1Ztok2SZBfBMIeDdn8ZTVpr2S/vzf8Fs=
-X-Gm-Message-State: AOJu0YwqKWR7ryHeO7nyTzH0JpWvNDKomGMYqWHqrdHMr3W3Sxx3XoH2
-	FFf3bc9YwWFysFp4QmfdrKOHfPn/4OR2p36sbRVa4DtL0sNLrbYXFTANOaFXj9ho2isCZrKIhSj
-	D6tU+fCBpT5OUNAYLCpFcQn/ZZYAmXi6cpxUV
-X-Google-Smtp-Source: AGHT+IGgjgZKcpfdVpikqbevhWUfXhovR7ypGe+DVObEa/V8YqXCpYObxL8972JZ7bdk6TOSG601qmJCijpY8IP/rVg=
-X-Received: by 2002:a05:6902:1828:b0:de5:9ec3:6475 with SMTP id
- cf40-20020a056902182800b00de59ec36475mr637569ybb.31.1714672483338; Thu, 02
- May 2024 10:54:43 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="l3WESkyi"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YW/g/m+/4mceI5tsmTBEYprJTgH3ednwFN/nXbI93ypCFnCiVy5EV2gQegTyCsmAO5KEBHK/HmZn0X3orQxLupRl/CK6qXrtDEz+YC5s+gqQnNRkQPdXONqLP04DSQk4TfedunapmJE655kYmG+R5Q6qwriW0lUlCFj25u2mrhT78SPXuCqk7UtUXIa6mWImkKylOjfgZBOkS2tKh95l0g1PtTCCjcwwSOgmohITskxHXQv8S7Su6hHuN42+5TMXswyMVD4HyG4Bg9Ah6JXV/Oxb/elQ63dR45HMJgqqeopqRVdWwDW2cdK/lRMjqdu5ALU3zut3eROO8cRUvJgBow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pZlAZQJW4ViXUV7ZL4h5lYMjH4eipfjBIhhWPYQ/Vc0=;
+ b=lu1cAldMaGCbjJ3xMbZTnIhnti4BH51soE3eA+f8DRdnGPbcIOIyFCvdzRhAOkZc2FDVaKbiI2UyreyCDFp5MYD+5q8nhg7qY1NpW2BucjaHEWfNw1aMoJDxTRKnAzPtfOm9qRV/D5uCa0fOzDzSp9zKptTfGWMbKDrq0YuXW2wfUTo21IHzYSAwNtvMU0XJmms8U8xkKkwIaeWVtZWmBW81qteS0wx7JGwm+eKuUzmwUDUdpmk9uqe4wQTmhGsAA5Hec8OB+lD2h09TdrQQlK+y1KP1cjM8cMHaWecbiBsL/mqBUp+lVEeiqolAWSmVKN+qOC4nn1LJHT7IHCCsUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.117.161) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pZlAZQJW4ViXUV7ZL4h5lYMjH4eipfjBIhhWPYQ/Vc0=;
+ b=l3WESkyiHe5AadCdumE2jolmidg1x0JsychYjoXisbYcAlbj4cXmx/G26DiHdR2qb7hB0GRaI52HxxQY02RfXnPZrddI6EtKTStKf8WnZ+mtn+pjpr9DCjTTT0RpUAmdlmADyL+ZRxlClrpFrqqAEvFVhb3Opijo9LKxUJNwt6NktKX37Uj5rddKbcsbV0uwkUvawBufLDEEEwTaVD2MMr8d8PNhtFUB3hNo5ECXX6j8fKHCgLY2NRZYqzjJSbiulplLqXRcG+13jAaKSxLr4J30hGQ3AiEPGgdKRPl77oYh2axp+HOgBCJse7Q2whQ/7PiyI/NUSAyBKUdusWwJLw==
+Received: from CH0P221CA0030.NAMP221.PROD.OUTLOOK.COM (2603:10b6:610:11d::18)
+ by SJ0PR12MB7007.namprd12.prod.outlook.com (2603:10b6:a03:486::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.28; Thu, 2 May
+ 2024 19:26:48 +0000
+Received: from DS3PEPF000099D7.namprd04.prod.outlook.com
+ (2603:10b6:610:11d:cafe::90) by CH0P221CA0030.outlook.office365.com
+ (2603:10b6:610:11d::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.30 via Frontend
+ Transport; Thu, 2 May 2024 19:26:47 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.117.161)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.117.161 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.117.161; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.117.161) by
+ DS3PEPF000099D7.mail.protection.outlook.com (10.167.17.8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7544.18 via Frontend Transport; Thu, 2 May 2024 19:26:47 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by mail.nvidia.com
+ (10.129.200.67) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 2 May 2024
+ 12:26:28 -0700
+Received: from rnnvmail205.nvidia.com (10.129.68.10) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Thu, 2 May 2024
+ 12:26:28 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com (10.129.68.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Thu, 2 May 2024 12:26:27 -0700
+Date: Thu, 2 May 2024 12:26:26 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+CC: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+	<thierry.reding@gmail.com>, <vdumpa@nvidia.com>, <jonathanh@nvidia.com>,
+	<linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>,
+	<linux-arm-kernel@lists.infradead.org>, <linux-tegra@vger.kernel.org>
+Subject: Re: [PATCH v6 5/6] iommu/arm-smmu-v3: Add in-kernel support for
+ NVIDIA Tegra241 (Grace) CMDQV
+Message-ID: <ZjPo4qUXOZzLsHW8@Asurada-Nvidia>
+References: <cover.1714451595.git.nicolinc@nvidia.com>
+ <63414546b1eafdf8032ac1b95ea514da6d206d63.1714451595.git.nicolinc@nvidia.com>
+ <20240430163545.GS941030@nvidia.com>
+ <ZjEztwhd5AN1FTCk@Asurada-Nvidia>
+ <20240501130042.GC941030@nvidia.com>
+ <ZjJ/S1bawYkfs1I4@Asurada-Nvidia>
+ <20240502124103.GA3341011@nvidia.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240501201319.586289-1-tjmercier@google.com> <ZjMfl2G377qexhi-@infradead.org>
- <b4b11ebb-4e42-402c-8e9e-48eb57ef34d5@arm.com> <CABdmKX1+MyJCwgbpYaZn5uLdqgfJbv_5iCX_3cmpL1UaqeggEA@mail.gmail.com>
- <ccb525ff-d0d0-44b1-a210-14c7670b80f0@arm.com>
-In-Reply-To: <ccb525ff-d0d0-44b1-a210-14c7670b80f0@arm.com>
-From: "T.J. Mercier" <tjmercier@google.com>
-Date: Thu, 2 May 2024 10:54:31 -0700
-Message-ID: <CABdmKX1HdXccWp9chz-Y_-Hh5TPry-4WRcVf4fUXKV=Og3dVTg@mail.gmail.com>
-Subject: Re: [PATCH] iommu/dma: Respect SWIOTLB force_bounce
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Christoph Hellwig <hch@infradead.org>, Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Andrew Morton <akpm@linux-foundation.org>, Catalin Marinas <catalin.marinas@arm.com>, 
-	isaacmanjarres@google.com, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240502124103.GA3341011@nvidia.com>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS3PEPF000099D7:EE_|SJ0PR12MB7007:EE_
+X-MS-Office365-Filtering-Correlation-Id: bd8995e8-eebc-4bbb-c106-08dc6addcf14
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|36860700004|1800799015|376005;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?4fOi2EdwrINQiVhBTg4XIjV5q1rsOR53MwDX6oNv5sG/9GKvPj9kEEJNb0f9?=
+ =?us-ascii?Q?Ri0PpTpvKPaC0nJ6gzN8vDzdbX9Z0gzK77rQycl5U74a5qto4qUv9yTakX4H?=
+ =?us-ascii?Q?fjwDTEnyYdLR5DAiWBXmG1YRkFYr/EUPwiJZE2EH68/vo2ezUoeCDIUY9F0z?=
+ =?us-ascii?Q?DtzzGrRr6UZZVeMh5s8bRMT+B+ACyDvQqMSN2DqrZgKaMqV/opBsl155Ncay?=
+ =?us-ascii?Q?uvv65mPzi5jnyUlQYUHqbulXCEkp8pZsXitkZj+kX/Jy78dLzHPdWJEtxb2S?=
+ =?us-ascii?Q?aOWZPm6mj4E9CxcRO1CylWzDp0EAZKuANiaKK94fsZuVX7Yqb3pDn45Omt7j?=
+ =?us-ascii?Q?VA9KYpK2TxK0pLCtcxXsMEz2x87gDrPdFp/IqeSrfpAGawFMSF7PXNEcPkYk?=
+ =?us-ascii?Q?A1ikEdlR7uVx9vf/an0n/5PrSPjR6GEoN61dd2qpMxuvP/sTyG87sXFdCvUw?=
+ =?us-ascii?Q?HD+YkKCY8Q5ummLXxP3NtjuuSml4BBb+vrvvNtN/VOBEDx0IzTA9A7rok1Fy?=
+ =?us-ascii?Q?VtNLp7KfkBUbXWQe1zcK17IbqlFCdQ/mrcY3njdzAE+hbXpr6EhCVF7t298X?=
+ =?us-ascii?Q?82abIP5IU+fVFzLhOpwnb6u/46g0qpzLuU4ORxF2UK6yL/dOQhjs/ujLAEG/?=
+ =?us-ascii?Q?/iN6eqbickN7eukntAgHJItzPDpEhsJeR/JuH1R3n/RLacjTlDW9ymt+fk1a?=
+ =?us-ascii?Q?MYpZJUkDJPNVQuTl69s5I8un74pbZY2C63oDTbLQUu8Skq9tY0qZEa/8dxGi?=
+ =?us-ascii?Q?tBM+OPj6N1TlHzxgff1jjeuuV9ELXe8sGPh/iiGTh7OcdhUf8V6yDqla0LfP?=
+ =?us-ascii?Q?sn9qW7SL/ii68lPdK5u3kt4M8Wlu9QbJFdZKThNCkTYGFnS2HMUO5PSeANt4?=
+ =?us-ascii?Q?Ej3/LzQ7zBFr0iOFo3TsRtOggs61pVWud7mrjEUF1+hnLJTspQih28sIf/uU?=
+ =?us-ascii?Q?W9dAbiejSlmWv/J/BdKlIUkYE/6h8eDDUk8MuHv8XdXA/R3pHPCv8BZiQf16?=
+ =?us-ascii?Q?xEHZbou87gtYyYaNMJCH5ov7+BHKWIjY6RL8GzZj1IE9uIi4a09hVnXreaU6?=
+ =?us-ascii?Q?QkFRuQI0XUvlnZ7yUB7Zan9mwNxVkoPaRx6GjnqaJtaHe6O31qx4sOzLXHHB?=
+ =?us-ascii?Q?gF1CGuHzvU27gweXyLQFj1eym0/HsXi0f3Lht+JuSqzG/k5e9PcytOHSNtQU?=
+ =?us-ascii?Q?2ji5Jz0crMcvqSFFhGo14Dz8+T/g0jBIY4sY86TNAAmMWHtmSa6VW/fk1eHT?=
+ =?us-ascii?Q?d1sAYsfRx4QFmV7ar4H+Lyvq6Hbgr7597ZFg0hrzDQyw5BLsYJDYgnFtJ0sj?=
+ =?us-ascii?Q?v/oFAC3JGcJZhMltNL/mLizYM3ZgCc0ealsnZAWfr/8px1i7eCwqJhaMXhfr?=
+ =?us-ascii?Q?+ISXYs0=3D?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.117.161;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc6edge2.nvidia.com;CAT:NONE;SFS:(13230031)(36860700004)(1800799015)(376005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2024 19:26:47.2453
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: bd8995e8-eebc-4bbb-c106-08dc6addcf14
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.117.161];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DS3PEPF000099D7.namprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR12MB7007
 
-On Thu, May 2, 2024 at 9:54=E2=80=AFAM Robin Murphy <robin.murphy@arm.com> =
-wrote:
->
-> On 02/05/2024 5:02 pm, T.J. Mercier wrote:
-> > On Thu, May 2, 2024 at 5:50=E2=80=AFAM Robin Murphy <robin.murphy@arm.c=
-om> wrote:
-> >>
-> >> On 02/05/2024 6:07 am, Christoph Hellwig wrote:
-> >>> On Wed, May 01, 2024 at 08:13:18PM +0000, T.J. Mercier wrote:
-> >>>> iommu_dma_map_page and iommu_dma_map_sg conditionally use SWIOTLB, b=
-ut
-> >>>> checking if force_bounce is set for the device is not part of that
-> >>>> condition. Check if devices have requested to force SWIOTLB use as p=
-art
-> >>>> of deciding to take the existing SWIOTLB paths.
-> >>>
-> >>> This fails to explain why you'd want this somewhat surprising behavio=
-r,
-> >>> and why you consider it a bug fix.
-> >>
-> >> Indeed, it's rather intentional that the "swiotlb=3Dforce" argument
-> >> doesn't affect iommu-dma, since that's primarily for weeding out drive=
-rs
-> >> making dodgy assumptions about DMA addresses, and iommu-dma is
-> >> inherently even better at that already.
-> >>
-> >> Beyond that I think this change also seems likely to interact badly wi=
-th
-> >> CC_ATTR_GUEST_MEM_ENCRYPT on x86, where we invoke the SWIOTLB_FORCE fl=
-ag
-> >> for dma-direct, but expect that an IOMMU can provide a decrypted view
-> >> in-place, thus bouncing in that path would be unnecessarily detrimenta=
-l.
-> >>
-> >> Thanks,
-> >> Robin.
-> >
-> > I encountered this while testing a change to DMA direct which makes
-> > sure that sg_dma_mark_swiotlb is called there like it is here. (Right
-> > now the SG_DMA_SWIOTLB flag is set only if dma_map_sgtable takes the
-> > IOMMU path, but not if SWIOTLB is used on the direct path.) While I
-> > agree IOMMU + force_bounce is an unusual config, I found it equally
-> > surprising that swiotlb=3Dforce wasn't doing what is advertised, or eve=
-n
-> > giving a warning/error. Since the iommu-dma code is already set up for
-> > conditionally bouncing through SWIOTLB, it looked straightforward to
-> > give what's asked for in the case of swiotlb=3Dforce. If it's
-> > intentional that SWIOTLB options don't affect IOMMU code, then should
-> > we just warn about it here when it's ignored? The presence of a
-> > warning like that would also be a suggestion of, "you probably don't
-> > actually want what you're asking for with this configuration you've
-> > specified".
->
-> Traditionally, user-facing "SWIOTLB" refers to what is now dma-direct,
-> in its context of bouncing to make DMA mappings accessible to devices
-> with memory access limitations. The fact that the IOMMU implementations
-> (originally Intel, now iommu-dma) also co-opted some of the SWIOTLB
-> machinery for the very different purpose of isolation of memory
-> *outside* non-page-aligned DMA mappings was always more of an internal
-> implementation detail.
->
-> The newest use for enforcing non-coherent cacheline alignment blurs the
-> boundary a little since its purpose is again largely orthogonal to those
-> cases, however it's also one to which "swiotlb=3Dforce" is semantically
-> kind of meaningless once you think about it (how does one forcibly align
-> a buffer which is already suitably aligned?)
->
-> If there's any issue here I'd say it's only that the description in
-> kernel-parameters.txt still hasn't been updated since "automatically
-> used by the kernel" *did* solely imply a device DMA mask limitation.
+On Thu, May 02, 2024 at 09:41:03AM -0300, Jason Gunthorpe wrote:
+> On Wed, May 01, 2024 at 10:43:39AM -0700, Nicolin Chen wrote:
+> > > It doesn't fix any real race, I'm not sure what this is supposed to be
+> > > doing. The cmdq becomes broken and you get an ISR, so before the ISR
+> > > it will still post but get stuck, during the ISR it will avoid
+> > > posting, and after it will go back to posting?
+> > > 
+> > > Why? Just always post to the Q and let the ISR fix it?
+> > 
+> > Yes, we could do so. I was thinking of the worst case by giving
+> > the guest OS a chance to continue (though in a slower mode), if
+> > something unrecoverable happens to the VINTF/VCMDQ part.
+> 
+> Does that happn? The stuck vcmdq will have stuck entries on it no
+> matter what, can we actually fully recover from that? Ie re-issue the
+> commands on another queue?
 
-Ok I think clarifying SWIOTLB as it applies to dma-direct (and not any
-of the other uses you've mentioned above) would do it. This?
+Well, the handle_vintf0_error() should fix that and recover. And
+rethinking about this, if this happens it's likely a SW bug that
+we shouldn't ignore.
 
-diff --git a/Documentation/admin-guide/kernel-parameters.txt
-b/Documentation/admin-guide/kernel-parameters.txt
-index 213d0719e2b7..84c582ac246c 100644
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -6486,6 +6486,7 @@
-                                 to a power of 2.
-                        force -- force using of bounce buffers even if they
-                                 wouldn't be automatically used by the kern=
-el
-+                                where a hardware IOMMU is not involved
-                        noforce -- Never use bounce buffers (for debugging)
+With that being said, the viommu infrastructure still needs an irq
+forwarding that is currently missing. I'd need to draft something
+likely on top of Baolu's work.
 
-        switches=3D       [HW,M68k,EARLY]
-diff --git a/Documentation/arch/x86/x86_64/boot-options.rst
-b/Documentation/arch/x86/x86_64/boot-options.rst
-index 137432d34109..066b4bc81583 100644
---- a/Documentation/arch/x86/x86_64/boot-options.rst
-+++ b/Documentation/arch/x86/x86_64/boot-options.rst
-@@ -285,7 +285,7 @@ iommu options only relevant to the AMD GART hardware IO=
-MMU:
-       Always panic when IOMMU overflows.
+> > > So just don't use it. There is no value if the places where it should
+> > > work automatically are not functioning.
+> > 
+> > I thought devm could work when rmmod too, not only when the probe
+> > fails..
+> 
+> It is limited to cases when the probing driver of the passed struct
+> device unbinds, including probe failure.
 
- iommu options only relevant to the software bounce buffering (SWIOTLB) IOM=
-MU
--implementation:
-+implementation where a hardware IOMMU is not involved:
+OK. I'll drop all devm_ and add tegra241_cmdqv_device_remove()
+instead.
 
-     swiotlb=3D<slots>[,force,noforce]
-       <slots>
+Thanks
+Nicolin
