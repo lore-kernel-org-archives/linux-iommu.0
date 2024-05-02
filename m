@@ -1,98 +1,127 @@
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DDED5FB9C
-	for <iommu@lists.linux.dev>; Thu,  2 May 2024 16:29:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.149.199.84
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1430D15E80E;
+	Thu,  2 May 2024 16:54:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714667344; cv=none; b=LyaS3M1RLE1eKGbFEeq7DdtfZU+FGeOYbHKjRw7k5/8zC9QA5bA3WwWJf5gy3vIkBk/M1lr6GWmCl0XRqCLQU18hRNF3+nhxpzmWfeL0nCtX0N2Df711Q4uhdyqkdpKh2SZMpJY14CdZRHM3gw4TizZDI1G8dYGRAD+wAFsgNMM=
+	t=1714668845; cv=none; b=lG83rJzkONZQz0/Mpykkzr2xwwaiKbsToShcHRddP1EWB1/rYPrUY8HdA9984ZNqWRIjnxexaWqkXOYCWtORBoq4i19vhPKdOvgi+9E16eyDQiKVXoRaXNPFe4kJ1XSA1bfz6wt7i8hI1bPkKqfb4PJoRwzhJl+tjWhnMEjSVew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714667344; c=relaxed/simple;
-	bh=V8KxA8VqpVmR+Zyu7dFeYSpT9k2Uk/1WVAAjXNpTZGw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Y89NMpy/hNyLyuOcVf6rbX6Vbb+DXBsFLwzaJVtgEJyMnFvMEQVlsoHQsP220th2d/5m3jB4NDP2PMjue6IgWECPcJsfAMdkPC7NC1XunkkYXWbIqa3iKo0XzBfP9SGc7dOAaUzIcPhZbLL301naokH0mxOKhjYb2phPGTrUMBs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru; spf=pass smtp.mailfrom=ispras.ru; dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b=oPsYETrx; arc=none smtp.client-ip=83.149.199.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ispras.ru
+	s=arc-20240116; t=1714668845; c=relaxed/simple;
+	bh=OLGfIPy7WzXr5vPGBKNPCXFEJl7Vq520a+RMhrYvuO8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OZFPUYsJpQIJoipIXUDHXxxjw5F8O3NmKcaBUeHk2jqP66MWQvdVOmSGYOPFloCC7Us8VAN36IbtzysfsV23HkIoM5se8RQ53EEeTLzY5FWGeOjoq0OU5gYDBuEaiwLfksCckIZHmsZQydBtgU8PMlB9Ttyfxlmx0PkdUxJAqT4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GzRLyXgc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b="oPsYETrx"
-Received: from fedor-21d0.intra.ispras.ru (unknown [10.10.165.8])
-	by mail.ispras.ru (Postfix) with ESMTPSA id DF41840762D9;
-	Thu,  2 May 2024 16:18:53 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru DF41840762D9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-	s=default; t=1714666734;
-	bh=pGaAAC7U9OSU8oqKj4HdqFvQw4E0L+KuLXciIaLFu0k=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=oPsYETrx1ZfxJcu5C//ePVQphhcDlzwZ5xiraGXybrLmid6kjpkmyKg/z9mi0STX+
-	 +XK5DIZVh+QVfgdUIQIPkWPEqnTgwrPZtJjRltIw3k7XM0Cx4Kbql4/m0CPPXx4AaM
-	 DiGSV3v9OyUcMCJm2J+UhfV/UW235QEb8aKhArxU=
-From: Fedor Pchelkin <pchelkin@ispras.ru>
-To: Xiang Chen <chenxiang66@hisilicon.com>
-Cc: Fedor Pchelkin <pchelkin@ispras.ru>,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Barry Song <song.bao.hua@hisilicon.com>,
-	iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	Alexey Khoroshilov <khoroshilov@ispras.ru>,
-	lvc-project@linuxtesting.org
-Subject: [PATCH 2/2] dma-mapping: benchmark: prevent potential kthread hang
-Date: Thu,  2 May 2024 19:18:26 +0300
-Message-ID: <20240502161827.403338-3-pchelkin@ispras.ru>
-X-Mailer: git-send-email 2.45.0
-In-Reply-To: <20240502161827.403338-1-pchelkin@ispras.ru>
-References: <20240502161827.403338-1-pchelkin@ispras.ru>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GzRLyXgc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA938C116B1;
+	Thu,  2 May 2024 16:54:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1714668844;
+	bh=OLGfIPy7WzXr5vPGBKNPCXFEJl7Vq520a+RMhrYvuO8=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=GzRLyXgcaxa8KUf1gzDxi1g9pS3L7O2CBA0GR0/B02Xd/v5fw0790sP7bma6wJej7
+	 srExDQkAByoIChhIH4GJM29CDBpoERkPNfBz4UaE8Bo+9pbgmwKb/X3vj69wHw2cAe
+	 DofeWNyOWo+u8mRHAGY9wzt9PszhIlXK0wG/vkbLqBUxzezNSiyvKckHFDyyZtVIYP
+	 lTtmLwCzvcvRLvIHj0XiCmrmi34F6kMD86sJrz4n3UYH2jvnl89TyVLylxxSdnChB+
+	 O5awecR8RqlykXDWZH7WbfxedHmfhR7hAuY65qTnMrd8ZLppBvixHWmZmU9FI7jS1/
+	 QXOJwitZWsq3w==
+Message-ID: <963a1006-a68f-448d-807f-40c9e85e1c2a@kernel.org>
+Date: Thu, 2 May 2024 19:53:57 +0300
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 2/7] iommu/arm-smmu-qcom-debug: Add support for TBUs
+Content-Language: en-US
+To: Will Deacon <will@kernel.org>, Georgi Djakov <quic_c_gdjako@quicinc.com>
+Cc: robin.murphy@arm.com, joro@8bytes.org, iommu@lists.linux.dev,
+ robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org, conor+dt@kernel.org,
+ devicetree@vger.kernel.org, andersson@kernel.org, konrad.dybcio@linaro.org,
+ robdclark@gmail.com, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ quic_cgoldswo@quicinc.com, quic_sukadev@quicinc.com, quic_pdaly@quicinc.com,
+ quic_sudaraja@quicinc.com
+References: <20240417133731.2055383-1-quic_c_gdjako@quicinc.com>
+ <20240417133731.2055383-3-quic_c_gdjako@quicinc.com>
+ <20240501143400.GA15503@willie-the-truck>
+From: Georgi Djakov <djakov@kernel.org>
+In-Reply-To: <20240501143400.GA15503@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-If some of kthreads executing map_benchmark_thread() return with an error
-code (e.g. due to a memory allocation failure), then the next kthreads in
-the array are not stopped and potentially loop for indefinite time.
+Hi Will,
 
-Call kthread_stop() for each started thread as map_benchmark_thread()
-expects that happening in order to exit.
+On 1.05.24 17:34, Will Deacon wrote:
+> Hi Georgi,
+> 
+> On Wed, Apr 17, 2024 at 06:37:26AM -0700, Georgi Djakov wrote:
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
+>> index bb89d49adf8d..eff7ca94ec8d 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.c
+> 
+> ...
+> 
+>> +static const struct of_device_id qcom_tbu_of_match[] = {
+>> +	{ .compatible = "qcom,sc7280-tbu" },
+>> +	{ .compatible = "qcom,sdm845-tbu" },
+>> +	{ }
+>> +};
+>> +
+>> +static struct platform_driver qcom_tbu_driver = {
+>> +	.driver = {
+>> +		.name           = "qcom_tbu",
+>> +		.of_match_table = qcom_tbu_of_match,
+>> +	},
+>> +	.probe = qcom_tbu_probe,
+>> +};
+>> +builtin_platform_driver(qcom_tbu_driver);
+> 
+> I just noticed that this breaks a modular build of the arm-smmu driver
+> because we now have two init functions for the module:
+> 
+>    ld.lld: error: duplicate symbol: init_module
+>    >>> defined at arm-smmu.c
+>    >>>            drivers/iommu/arm/arm-smmu/arm-smmu.o:(init_module)
+>    >>> defined at arm-smmu-qcom-debug.c
+>    >>>            drivers/iommu/arm/arm-smmu/arm-smmu-qcom-debug.o:(.init.text+0x4)
+> 
+> I think you should initialise the TBU debug feature by calling into it
+> manually from qcom_smmu_impl_init().
+> 
+> Please can you send a patch to fix that? For now, I'll bodge it so that
+> the qcom debug stuff doesn't build as a module (see below).
 
-Found by Linux Verification Center (linuxtesting.org).
+Тhanks for sorting that out and apologies for missing it. We are at rc6 now and
+i am afraid that i won't be able to validate my patch until next week (Easter
+holidays here). I'll definitely send the rework when I get back.
 
-Fixes: 65789daa8087 ("dma-mapping: add benchmark support for streaming DMA APIs")
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
----
- kernel/dma/map_benchmark.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+BR,
+Georgi
 
-diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
-index ea938bc6c7e3..7e39a4690331 100644
---- a/kernel/dma/map_benchmark.c
-+++ b/kernel/dma/map_benchmark.c
-@@ -140,13 +140,17 @@ static int do_map_benchmark(struct map_benchmark_data *map)
- 
- 	msleep_interruptible(map->bparam.seconds * 1000);
- 
--	/* wait for the completion of benchmark threads */
-+	/* wait for the completion of all started benchmark threads */
- 	for (i = 0; i < threads; i++) {
--		ret = kthread_stop(tsk[i]);
--		if (ret)
--			goto out;
-+		int kthread_ret = kthread_stop(tsk[i]);
-+
-+		if (kthread_ret)
-+			ret = kthread_ret;
- 	}
- 
-+	if (ret)
-+		goto out;
-+
- 	loops = atomic64_read(&map->loops);
- 	if (likely(loops > 0)) {
- 		u64 map_variance, unmap_variance;
--- 
-2.45.0
+> 
+> Cheers,
+> 
+> Will
+> 
+> --->8
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 032bfd681307..66325210c8c9 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -376,7 +376,7 @@ config ARM_SMMU_QCOM
+> 
+>   config ARM_SMMU_QCOM_DEBUG
+>          bool "ARM SMMU QCOM implementation defined debug support"
+> -       depends on ARM_SMMU_QCOM
+> +       depends on ARM_SMMU_QCOM=y
+>          help
+>            Support for implementation specific debug features in ARM SMMU
+>            hardware found in QTI platforms. This include support for
+> 
 
