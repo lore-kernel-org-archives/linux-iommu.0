@@ -1,46 +1,32 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A54451CD2D;
-	Thu,  2 May 2024 05:07:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 017F621105
+	for <iommu@lists.linux.dev>; Thu,  2 May 2024 05:52:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714626460; cv=none; b=t4XmXykYh1fdk64f9sqksl4SEqJwSOJauhMwIcfFMOtqZO3PIpWjMVDRM2ZM2pNIZ96umh+zPpSNHz071XM3sMtYuyMnz1YTkWGHpBJIxwQ4rRvQ8zsll7Kiin/ca962FWaHcXeJA2amkysOU+eI+qcABqwxuFS8jqINkyGPonk=
+	t=1714629131; cv=none; b=bvJXthWz3pYRZxgK9exd4WRgORR5TbHPS4uS7tzCg1s9luzRhoTuUqBjbBKItK7s/JgAPU8/+1f1/I6mW7ZRZrYKevNv9jWMp65tGP40vEHKarVswOWQ/aP9UyOSP57iB1FnWbOOEl5rchuYgMpwZumVfXaQT1DrpDhAbphO2bI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714626460; c=relaxed/simple;
-	bh=5amkvJXIOOx9Ih8Muv99+02q4fS2kw8BvMZGGjfEC+g=;
+	s=arc-20240116; t=1714629131; c=relaxed/simple;
+	bh=OTN8OKUwUtgeS/b4hDd67/FdTa7TqUbmfFwTxWPmJ5Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oDtOc49hCopIN17HIhpENpSjJckt06YrTg3ywnzdlXaQx/aVZkJL1pVwrK4Y/axIwsGO5mFrwNMlS7FxlpnU13w5dC/cDD3ATTnFsVsD0hJuDD0pgwXV/dYDLQgqH3/vCb/UspuJhWASC+meET5p92ydyb6sth0h0bH+iv9WsfM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=PAwC3HGz; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="PAwC3HGz"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description;
-	bh=5amkvJXIOOx9Ih8Muv99+02q4fS2kw8BvMZGGjfEC+g=; b=PAwC3HGzIePWCQ0yHyz8Bb+PhF
-	FqB2JAjzpMjOl51lbRLUYcHVwT+HzhbkR5zgW7jgdslvznS6S/gC1rnNBbMP6OTIjDXrFJmYYImtA
-	FU9OhWDPruICJEBrU008uW+W5j0mhCVn6O2XxRULjN1pn7+wPyQt2eenzsiSTZZ8CW4jDJhMORiwQ
-	Izq/NNYzoXIjkwU6Ut0yDfTr/n+kpFw07YmATMN4qcD+18wOkiQ8dyeams8en1F9ElCFTR8k4Tvef
-	T2umHYKSjWnHTSnHFTgQHJLNWmCWsjrpY49PeFyd36XgkJa4pfIQY+xMhRtQvzVU9zGhvpB14zvpV
-	BH6dDqXg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.97.1 #2 (Red Hat Linux))
-	id 1s2OfP-0000000BUUU-36bi;
-	Thu, 02 May 2024 05:07:35 +0000
-Date: Wed, 1 May 2024 22:07:35 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: "T.J. Mercier" <tjmercier@google.com>
-Cc: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	isaacmanjarres@google.com, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/dma: Respect SWIOTLB force_bounce
-Message-ID: <ZjMfl2G377qexhi-@infradead.org>
-References: <20240501201319.586289-1-tjmercier@google.com>
+	 Content-Type:Content-Disposition:In-Reply-To; b=GYpQ0PiJJlDjBVwIE/Ii2w/PaFU+d16UuI/qjg5R5NfmIoeQvEhubmcIVtCzI+UZsCjQecxLVcQXAI4bfQuELyt6u+NOt3hrwpBkLpwo3iVCjkg1jsQOxXzVsml96z6HlCNJCMK5jHOh/R2QtN8mBQFcEwvmBgB1q81suljaJGc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id B9EC0227A87; Thu,  2 May 2024 07:52:05 +0200 (CEST)
+Date: Thu, 2 May 2024 07:52:05 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: mhklinux@outlook.com
+Cc: robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, hch@lst.de,
+	m.szyprowski@samsung.com, corbet@lwn.net, iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+	petr@tesarici.cz, roberto.sassu@huaweicloud.com
+Subject: Re: [PATCH v4 1/1] Documentation/core-api: Add swiotlb
+ documentation
+Message-ID: <20240502055205.GA28436@lst.de>
+References: <20240501151651.2912-1-mhklinux@outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -49,15 +35,10 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240501201319.586289-1-tjmercier@google.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20240501151651.2912-1-mhklinux@outlook.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Wed, May 01, 2024 at 08:13:18PM +0000, T.J. Mercier wrote:
-> iommu_dma_map_page and iommu_dma_map_sg conditionally use SWIOTLB, but
-> checking if force_bounce is set for the device is not part of that
-> condition. Check if devices have requested to force SWIOTLB use as part
-> of deciding to take the existing SWIOTLB paths.
+Thanks,
 
-This fails to explain why you'd want this somewhat surprising behavior,
-and why you consider it a bug fix.
+applied to the dma-mapping tree for 6.10.
 
