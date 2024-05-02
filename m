@@ -1,53 +1,106 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2061629A0
-	for <iommu@lists.linux.dev>; Thu,  2 May 2024 05:59:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8AEA171AA;
+	Thu,  2 May 2024 09:37:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714629542; cv=none; b=dDTpAZTr4lVEl5ZIUh25ci+LQyLqk/5wKoooQZ6FouAdjXYJzq5UkwGFBe3xSU/7FFvlmM0v8b6MHm9Xdql/qBGIVFjurWW5qdloVwOrBgZRY4j6j+m6VfmYOL7crfCN3q7pCM8Sr5K2FOEq6IuQetWiFD2/RMc/CmZxHF8Gs5M=
+	t=1714642650; cv=none; b=QupKBFNN0BcH1vsOoq92Tkfg5y+xX9eF+BR2KSWqOTyOLQ0fjUYdiR8H9KCJzDpPy+oyeUzCASDa2XSt+x4xqkfhjvs1oxlxswXxXLwJn4dG83RtO9ZdCq2uiVxKME7b6pqRMWtjj68vhiKrpxSSUt2jrVvUL9E+BVVDVti2Wf0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714629542; c=relaxed/simple;
-	bh=uO81lYAhJsX1xz8NuGgOK/Z1HciAOq/uegd6DHWh3UI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hYLuJOqMn2BFQ4DlPpyz2gH9ix+PzFoY7wGyUY9zli/qsL13Uwfv9tvb7NeWxf4HLNfcLtmejFdt1wFPHYxC8DAqi36PDs7j7iIP+Vq0Olti1WQnHcbRK82TDZA6T2TwRWABfLUjoktAqQiwcJmpINGBefM8HTOdZn7ca6ZuQzg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 83154227A87; Thu,  2 May 2024 07:58:55 +0200 (CEST)
-Date: Thu, 2 May 2024 07:58:55 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Alexander Lobakin <aleksander.lobakin@intel.com>
-Cc: "David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+	s=arc-20240116; t=1714642650; c=relaxed/simple;
+	bh=3zvGW/fNYeFraVxsq2aoI463CmBHv/uMIxo/dy6oEV8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=oHMP6dIjeOnFtudOcBhw13Cy2hwXkfkMk96C/ItE22P+J7dWijKtubPkCfq2f+OudlsJoC+Ja9Gfo0KQtUicg6Jg1TXvEBP/FHbV8j+vZ6d3/AzPvnp8rmDszsmGw3qebtZFsqMV4zXCquneWGxpaty8Smkmx8HfdT12aUD+/A4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Fyfe5fbM; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Fyfe5fbM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F417C113CC;
+	Thu,  2 May 2024 09:37:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1714642650;
+	bh=3zvGW/fNYeFraVxsq2aoI463CmBHv/uMIxo/dy6oEV8=;
+	h=From:To:Cc:Subject:Date:From;
+	b=Fyfe5fbM19OSri66B9sGMaAwpNh+ZUkWsWPakeoxNMlTW8c5X9T/sQj6De+JKfKTH
+	 2+XzU2Erujkt0iMuR3IWRYF7gwRrnzXp/fsNumvzLglSuffCPvoBhgzjUv6z0QucXp
+	 0y1bKrCIObrtHzJz5zIR3kdb8+hUHjSDhYZCORdzbZ8bf8cSgCFaMLV1eMZHle8Da6
+	 9TFANNA9BRYTuU7N/Sx+6UmbIhc2i8+e7kNYjjacp/6QGfIr+g+621kAFR7tqm4JSB
+	 q+Bp2WP5NDi2x+5iGNfn8pzQkfX8RBNeAyYoqHOsASy7upUrubdgL9YmUJZhuuJ5Zb
+	 lZ0V4h8x9wQzg==
+From: Will Deacon <will@kernel.org>
+To: linux-kernel@vger.kernel.org
+Cc: iommu@lists.linux.dev,
+	Will Deacon <will@kernel.org>,
 	Christoph Hellwig <hch@lst.de>,
 	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Magnus Karlsson <magnus.karlsson@intel.com>,
-	nex.sw.ncis.osdt.itp.upstreaming@intel.com, bpf@vger.kernel.org,
-	netdev@vger.kernel.org, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v4 6/7] page_pool: check for DMA sync shortcut
- earlier
-Message-ID: <20240502055855.GA28572@lst.de>
-References: <20240423135832.2271696-1-aleksander.lobakin@intel.com> <20240423135832.2271696-7-aleksander.lobakin@intel.com> <81df4e0f-07f3-40f6-8d71-ffad791ab611@intel.com> <20240426050229.GA4548@lst.de>
+	Robin Murphy <robin.murphy@arm.com>,
+	=?UTF-8?q?Petr=20Tesa=C5=99=C3=ADk?= <petr@tesarici.cz>,
+	Michael Kelley <mhkelley58@gmail.com>,
+	Nikita Ioffe <ioffe@google.com>
+Subject: [PATCH] swiotlb: Initialise restricted pool list_head when SWIOTLB_DYNAMIC=y
+Date: Thu,  2 May 2024 10:37:23 +0100
+Message-Id: <20240502093723.16820-1-will@kernel.org>
+X-Mailer: git-send-email 2.20.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20240426050229.GA4548@lst.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi Alexander,
+Using restricted DMA pools (CONFIG_DMA_RESTRICTED_POOL=y) in conjunction
+with dynamic SWIOTLB (CONFIG_SWIOTLB_DYNAMIC=y) leads to the following
+crash when initialising the restricted pools at boot-time:
 
-do you have time to resend the series?  I'd love to merge it for
-6.10 if I can get the updated version ASAP.
+  | Unable to handle kernel NULL pointer dereference at virtual address 0000000000000008
+  | Internal error: Oops: 0000000096000005 [#1] PREEMPT SMP
+  | pc : rmem_swiotlb_device_init+0xfc/0x1ec
+  | lr : rmem_swiotlb_device_init+0xf0/0x1ec
+  | Call trace:
+  |  rmem_swiotlb_device_init+0xfc/0x1ec
+  |  of_reserved_mem_device_init_by_idx+0x18c/0x238
+  |  of_dma_configure_id+0x31c/0x33c
+  |  platform_dma_configure+0x34/0x80
+
+faddr2line reveals that the crash is in the list validation code:
+
+  include/linux/list.h:83
+  include/linux/rculist.h:79
+  include/linux/rculist.h:106
+  kernel/dma/swiotlb.c:306
+  kernel/dma/swiotlb.c:1695
+
+because add_mem_pool() is trying to list_add_rcu() to a NULL
+'mem->pools'.
+
+Fix the crash by initialising the 'mem->pools' list_head in
+rmem_swiotlb_device_init() before calling add_mem_pool().
+
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Petr Tesařík <petr@tesarici.cz>
+Cc: Michael Kelley <mhkelley58@gmail.com>
+Reported-by: Nikita Ioffe <ioffe@google.com>
+Tested-by: Nikita Ioffe <ioffe@google.com>
+Fixes: 1aaa736815eb ("swiotlb: allocate a new memory pool when existing pools are full")
+Signed-off-by: Will Deacon <will@kernel.org>
+---
+ kernel/dma/swiotlb.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 86fe172b5958..87dd3301dde3 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -1773,6 +1773,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+ 		mem->for_alloc = true;
+ #ifdef CONFIG_SWIOTLB_DYNAMIC
+ 		spin_lock_init(&mem->lock);
++		INIT_LIST_HEAD_RCU(&mem->pools);
+ #endif
+ 		add_mem_pool(mem, pool);
+ 
+-- 
+2.45.0.rc1.225.g2a3ae87e7f-goog
 
