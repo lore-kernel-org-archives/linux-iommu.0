@@ -1,180 +1,147 @@
-Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (mail-bn1nam02on2047.outbound.protection.outlook.com [40.107.212.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4AAA1CA82
-	for <iommu@lists.linux.dev>; Thu,  2 May 2024 04:39:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714624781; cv=none; b=U2WW4ybhSSVu27rZ9AQbaaa5s/m28OC+jGDOLLHiwyp5mQiTX4etOMw4eYN8K/I5Jy7g0l77EHBDqURo03Rccwz65Q2QzPMyn/U2RjG04pLNmesPzO5n70EuM1ukmwuAI3yGFaabnWv3n3rGleaUqdh9TOB0W45UnJ0E1Q7rEcQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714624781; c=relaxed/simple;
-	bh=NKq8vrxCem9objWV3C+MOFnpbo85KhNs4PiXk/R07Vw=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=rqRi0Lwk9yC7wxnuxxPbSyrS81T7qo9ZZACxvRNHPOpCALChhjee/84G/yN6agWgj5BskVshO9KsRtnIny936CUMBfrCVVugXAlDGVl3Xh0B5lCGvAAurboNImp+ElmpVSGLn+wvLbSbLhO7JCWvuLeNCtSp8JeVldZ59AxqH4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=CudFLu2P; arc=none smtp.client-ip=209.85.210.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73C681F947
+	for <iommu@lists.linux.dev>; Thu,  2 May 2024 04:55:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.212.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1714625749; cv=fail; b=QvW7xlmxWtbmC2+5Egn5+sHRmbNPOzOQcJxkybopYtKbMG5EAq8MGSr0lkmKJ5H9ymZE5UdMneRJpcabdD6cDqq6SmmdpOS3PTXDZ9+gaKaI5BlzQ9BI2TCbnvBZJlJCKvn/GgZEGSs8lNcxOvZyo8NS1XWfUzdF7wVPufrYpDc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1714625749; c=relaxed/simple;
+	bh=thmOD9u3UtVXsoG52VyYwIj0c1yy0aMNNCMD7W/xvXY=;
+	h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=L927snX0KM64he21fh8cxPaCygf9TWf4OQF6bg79A95MQjpb0Kmyt+q4bdQ4E8NDL+eoDFys9T2LahguPgo/71ALFrfzXniLFqVlwe/00mGOwTlyddPKBuUbb38C3de3XDHLLCWTD2MFhjoXiVU8UwTBhXTCOgU4BMDuAKUQ308=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=NBMxcgYI; arc=fail smtp.client-ip=40.107.212.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="CudFLu2P"
-Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-6f28bb6d747so6346243b3a.3
-        for <iommu@lists.linux.dev>; Wed, 01 May 2024 21:39:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1714624779; x=1715229579; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dYwMNtU5ISKi/pHw0Eotzjxo72T7kdIEeid7s5bFFZU=;
-        b=CudFLu2PuLAb62IJ/ZhSZibBQiCXZTwt6EdNaZADiMXV29rIjIFwiu9o16+mMEba0I
-         unJc/0b+bE6QPUvnNHAfE7v0Q8WWF+Id8D6jH6NLxPCVXhKc44BGMXLrrl0kgj03CAr3
-         p3tm1EmBZxuC33KW69d9vrLWS1cSiG+mbvCKpcw0dGlisE5EcUES7YDhHQnjwlI+DfI0
-         d/xsc+BsWSoxmdD9Apg7yJv22FQQPfaZPg1Acqn+BvQgmeSrYKca6bu/5vzlrJaAnsUy
-         HRsibGH6RTw7oxYT432JtlgLPqdC2COtFdjyod5EVwiMAnRjYxjdI8/65qApEc/5n5js
-         D1Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714624779; x=1715229579;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=dYwMNtU5ISKi/pHw0Eotzjxo72T7kdIEeid7s5bFFZU=;
-        b=aJLY9F7nXOh76ohdHamKvIzT5bWtz1iDJ5dgvtoTRsexULBJ5Sf6UphhFejO7oxAfK
-         X7DZFGCqjPescMpcgw3ZmCKZfG+l9AcSCbzFdPpe5PoUM85k9lve5yF7k6WIEuTU0R0c
-         C0SptjnvAwTkyi4xWfhJbi1rqs7gBz0uhdWJXybX9IdoXLjF/MzSFGZBbrKWFKBy0CcC
-         EfxzVEOgfOaCPWNp5h95Y8M0QnhyPDX3/QhvTzm6Mc7oW+NtalZPh3rxHqhD1sIBkdQl
-         TOqlgSzJie2wyLY+TB2npFDQXOOtcCOD7aXSxNReyJWmzLQ3zTrww7CyLi5TKEfOR1kx
-         AXgQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUORM+ChfTJCgwf2JmxD0+AaTQopmxRlcignxYTFvPvvZ7hSgiQlvf9P5rhHPyYRt49JqwolHubzHALBNI1Lzx1s3LyJws=
-X-Gm-Message-State: AOJu0YyBEvhcInh2TSkRNoG7/4Mlbi3EVW8SWAQsu81247lxRqsTEUmC
-	fubOwXTFW3RkwKoXJjjJ8NN/3rWl/KCW305kVRQvfp7YYyJmQpW5wCk0QdGK51JCzwxL/wroYx8
-	e1RzmqAoBgDljQWNLVQMTY0yL2XEnfNMei+DCbg==
-X-Google-Smtp-Source: AGHT+IFGOZPSbOG+7q08BpoKEAwkSMY5N4r9BG/M6xWabJ6xt9Bfuyl68UiysrvQmviAyEuWdMP6+zF6WYqEShpC7Aw=
-X-Received: by 2002:a05:6a21:150b:b0:1a9:a31a:1b67 with SMTP id
- nq11-20020a056a21150b00b001a9a31a1b67mr1221119pzb.47.1714624779299; Wed, 01
- May 2024 21:39:39 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="NBMxcgYI"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jcviUMzlGOKcDSHWPne87yOlHIXEGsC+QHxQqrbk8B119iGTsbaabbDb3JuPRXtlQ6Uc+E/9EVl6Nt6hONql6Ah1152k2g1KsVe45DyEtOQrOBgMa+KgIVfZlJcFKC7K7Tj1I+WXhntzeQ7Xl3prhrV3ueopx40oyQcxLoqdxCqu5fWCX5lvcryzCFSLjo/c7YXB6BEDmtTFDE62cWxLfMQ/3oe3Odecb0OqOL3JRN2v6Enq5KGvZoNnyU4Qg/1t+wzMYohdssh55TUHABLYJYG9VWxctVBDEtxV9B2W6THEeCd+xxMrF96m2D8ZtdbOWgGUuf+AmJwV33GU9qi9XA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2wI8JQLajZsfxj4mfP5l79Le1FGovgWO2UXQQw5nFQI=;
+ b=NKT6Wf4MifXEVV7/JFEHUoZ1Tn6nyg/hR1SlypDC8igBznR2wTbf2SNxJOzwP49i2GFRLlP8ZCS36aOppX3dpvZLeaE+Q5oILfmfEmTdltpt5beW8vwAFYk4JuPYHhApMB0Dp4NMRSNIttn9hO2sjYDRKGp+O6nUHrPYbxU4i5Xd5HH/g3ZUs++vvZIIuTig/MAd1B1idvihUzsV2PHvvwU1wGW6DXv66esVsFkbY0kHMR41wUHRVmgCB+f+jqK8DdQsXyAB48XBBpw0t124tCpzcbl9RvSwPPhNQn5wUeX/7A0PR7+D1ckjg7Prx0k/gHa05b5THkVPAe9S2bL2Iw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.118.233) smtp.rcpttodomain=linaro.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2wI8JQLajZsfxj4mfP5l79Le1FGovgWO2UXQQw5nFQI=;
+ b=NBMxcgYIidOyjo65g3ESxe6UiuPTmEQwORn7SQEc1WsPfq0cQNwPKmQfPOG84/zIbxUY7t3/NxNyYyc1hKw8u6eNwn/44CNpeD1l6Zwcr/kZ5pmtzUCInMU9T2YcUXhiikjkZAv/Dkj5wTmbcUwboOzp4lds+tju9d3nXF3HUJKjQS1ZnbHL8mK1byPN/52MXGlXbTAKzmACekLtcKQ9/95/+TeT5BWc8aRx9GXgAV6Yb1SRkXRXjtTt6+Ly7K+g2DfmpauhvZnkYEKxzfBtlG3wV4UkCdlP0rQS7oMhPAl51bTgW8cn0+NzdJ4rV9GTEBBuvdaOaw2r3RP8D8dQUA==
+Received: from SA9PR13CA0068.namprd13.prod.outlook.com (2603:10b6:806:23::13)
+ by IA0PR12MB8863.namprd12.prod.outlook.com (2603:10b6:208:488::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7519.35; Thu, 2 May
+ 2024 04:55:44 +0000
+Received: from SA2PEPF00003AE5.namprd02.prod.outlook.com
+ (2603:10b6:806:23:cafe::e4) by SA9PR13CA0068.outlook.office365.com
+ (2603:10b6:806:23::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.29 via Frontend
+ Transport; Thu, 2 May 2024 04:55:44 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.118.233)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.118.233 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.118.233; helo=mail.nvidia.com; pr=C
+Received: from mail.nvidia.com (216.228.118.233) by
+ SA2PEPF00003AE5.mail.protection.outlook.com (10.167.248.5) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.7544.18 via Frontend Transport; Thu, 2 May 2024 04:55:43 +0000
+Received: from drhqmail202.nvidia.com (10.126.190.181) by mail.nvidia.com
+ (10.127.129.6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4; Wed, 1 May 2024
+ 21:55:33 -0700
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1544.4; Wed, 1 May 2024 21:55:33 -0700
+Received: from Asurada-Nvidia (10.127.8.12) by mail.nvidia.com
+ (10.126.190.180) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.4 via Frontend
+ Transport; Wed, 1 May 2024 21:55:32 -0700
+Date: Wed, 1 May 2024 21:55:31 -0700
+From: Nicolin Chen <nicolinc@nvidia.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+CC: <will@kernel.org>, <lpieralisi@kernel.org>, <kw@linux.com>,
+	<robh@kernel.org>, <bhelgaas@google.com>, <krzk+dt@kernel.org>,
+	<conor+dt@kernel.org>, <liviu.dudau@arm.com>, <sudeep.holla@arm.com>,
+	<joro@8bytes.org>, <robin.murphy@arm.com>, <ketanp@nvidia.com>,
+	<linux-pci@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<iommu@lists.linux.dev>, <devicetree@vger.kernel.org>
+Subject: Re: [PATCH 2/3] iommu/of: Support ats-supported device-tree property
+Message-ID: <ZjMcw1AF418GljkR@Asurada-Nvidia>
+References: <20240429113938.192706-2-jean-philippe@linaro.org>
+ <20240429113938.192706-4-jean-philippe@linaro.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1714494653.git.tjeznach@rivosinc.com> <b83f81c04d1f3885d860b1eec03761fe63a33183.1714494653.git.tjeznach@rivosinc.com>
- <7c3fc511-6a3b-44d8-94fa-e4fff54f93b9@linux.intel.com>
-In-Reply-To: <7c3fc511-6a3b-44d8-94fa-e4fff54f93b9@linux.intel.com>
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Wed, 1 May 2024 21:39:28 -0700
-Message-ID: <CAH2o1u6Vh55E=jn7ytp7s6VSQaZ+BqKLY1adz2AA0=OsLm21dw@mail.gmail.com>
-Subject: Re: [PATCH v3 7/7] iommu/riscv: Paging domain support
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
-	Anup Patel <apatel@ventanamicro.com>, Sunil V L <sunilvl@ventanamicro.com>, 
-	Nick Kossifidis <mick@ics.forth.gr>, Sebastien Boeuf <seb@rivosinc.com>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux@rivosinc.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20240429113938.192706-4-jean-philippe@linaro.org>
+X-NV-OnPremToCloud: ExternallySecured
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SA2PEPF00003AE5:EE_|IA0PR12MB8863:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6dc9b31e-535f-4b05-a92c-08dc6a641fb1
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230031|1800799015|376005|7416005|36860700004;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?pmHXAZVqIvNIqbRVIIB5i7kRNctoM5L6i+f/RXpPXhtRDze86XMxPsqrUoPu?=
+ =?us-ascii?Q?ZxkPM57ONgQ+EpiJf7U1g6OQmpy8F7x2RPZgrAEcu5cNdUSmuDw5Jp4ExnL8?=
+ =?us-ascii?Q?i8yTPzacUWvfqIznVOTZIPbk6MuVmyaNBxUJxxOUUEXqbRpYV/j/KJB0gebz?=
+ =?us-ascii?Q?l2fMLiL/dl6tKvzuMlWn9tEzb6bWCUNYyNTw4FJ1cStEywtCzEy3MbsIp3gG?=
+ =?us-ascii?Q?axHfb57HSAn/Op4XvIZrN+u4iGAClIe2pYb1YU+7D9Gvy4l6tPhUlHn9XIhV?=
+ =?us-ascii?Q?h5aDbvPpfmKTZvQV6cvIDrSn0fzAWBLniFG9V9gUnyKOEOIWnxtDMipjqlB+?=
+ =?us-ascii?Q?odVspxxTvnkgMSovoHZ3thQpLsSUJuDH74SEgz5NVrioE7kl9O7pnqfyatLA?=
+ =?us-ascii?Q?pDgboAhRt4RdAmd0os4SJ0KlcsLLHnbR6rs4cTQsXU5IRMti3LSM883jRxGv?=
+ =?us-ascii?Q?3M5HFHo48E/eMeMrUNbDR4QcsrwKb+ADrrvLUR1UG7iINhtm/iSnDgYVZyru?=
+ =?us-ascii?Q?ZnPl8vgW73Xo88plMBqWE6WLf8DI2IiiepG4gN8uSoR2LIZ1C/EjW+v7LzBS?=
+ =?us-ascii?Q?/FaKsM7mLbDDRf3xc13SoduZirEFBMb6rIMHegLblJM4rvNEgz/H9xUrG297?=
+ =?us-ascii?Q?R6EhTmR2EwjESXtqJ/10jqxIMzsOf5yIk30du4MPfI0YZq3td+/JmFjdxiS2?=
+ =?us-ascii?Q?nymf+rOFvJhyawlw9AQsMuY/0aby5HkDu9WoTzY0ICv64C3D04BF5JfPZUYe?=
+ =?us-ascii?Q?mqtFeKxHjFZtTfATzHHu3IwEUYvCw0SwdXRRoS1nP+3uWPlyZFGanrE7IyLr?=
+ =?us-ascii?Q?ntiwzBiVbYdWNmRcQjuV65wng20zXQguStlRIMDCxVDYEr0TSd+M1VWAZLFr?=
+ =?us-ascii?Q?Z8QbqentA/nCOYuZXOjP/i/YfUQPi4VxU5iKtyoG+g2MTdQEc/R8VTP8Ssqm?=
+ =?us-ascii?Q?s2UxwCUmvEtcn6pJ+dotiVtschBRtprYMARIorgf2NLhWMBTgfQzVVM5/cLe?=
+ =?us-ascii?Q?5Vrsg56+9qo8yWKBWGTHCl9qWd9z22mvDLwSE5QSnWmrj78I1zDX3n0PXhkN?=
+ =?us-ascii?Q?iU4C92GQoMgfHHETmr76kANUP81xXfXxJSV5BlZQ30nRpca4vflf6686pXOa?=
+ =?us-ascii?Q?A7T9FX1aS8LB7+m9ekXTC4p+m87+qlsSmGWbfbARss9xSCUCgh2hlttJFn4g?=
+ =?us-ascii?Q?65YQNvKM4vZ2m8eOIyd6M56bqXaAFlrmIaVuvI+Y1EglbSXSZ9WnW65XNgmI?=
+ =?us-ascii?Q?8j4tS1YHStWZ1ac0QGuthHgKq3mGfSRuopg0lULoPALanjnu3ewTP+rUkQ+U?=
+ =?us-ascii?Q?/G+gtkh8AK4bwTUvmo+5p8jyrT9p57EWLTRxl5pkBuwqlUvKJ/wKu0GQPFtx?=
+ =?us-ascii?Q?W1UqW3h8XIGBuGJM28sT5gxUIRuq?=
+X-Forefront-Antispam-Report:
+	CIP:216.228.118.233;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:dc7edge2.nvidia.com;CAT:NONE;SFS:(13230031)(1800799015)(376005)(7416005)(36860700004);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2024 04:55:43.9528
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6dc9b31e-535f-4b05-a92c-08dc6a641fb1
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[216.228.118.233];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	SA2PEPF00003AE5.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA0PR12MB8863
 
-On Wed, May 1, 2024 at 8:52=E2=80=AFPM Baolu Lu <baolu.lu@linux.intel.com> =
-wrote:
->
-> On 5/1/24 4:01 AM, Tomasz Jeznach wrote:
-> > +/*
-> > + * Send IOTLB.INVAL for whole address space for ranges larger than 2MB=
-.
-> > + * This limit will be replaced with range invalidations, if supported =
-by
-> > + * the hardware, when RISC-V IOMMU architecture specification update f=
-or
-> > + * range invalidations update will be available.
-> > + */
-> > +#define RISCV_IOMMU_IOTLB_INVAL_LIMIT        (2 << 20)
-> > +
-> > +static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
-> > +                                 unsigned long start, unsigned long en=
-d)
-> > +{
-> > +     struct riscv_iommu_bond *bond;
-> > +     struct riscv_iommu_device *iommu, *prev;
-> > +     struct riscv_iommu_command cmd;
-> > +     unsigned long len =3D end - start + 1;
-> > +     unsigned long iova;
-> > +
-> > +     rcu_read_lock();
-> > +
-> > +     prev =3D NULL;
-> > +     list_for_each_entry_rcu(bond, &domain->bonds, list) {
-> > +             iommu =3D dev_to_iommu(bond->dev);
-> > +
-> > +             riscv_iommu_cmd_inval_vma(&cmd);
-> > +             riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
-> > +             if (len && len >=3D RISCV_IOMMU_IOTLB_INVAL_LIMIT) {
-> > +                     for (iova =3D start; iova < end; iova +=3D PAGE_S=
-IZE) {
-> > +                             riscv_iommu_cmd_inval_set_addr(&cmd, iova=
-);
-> > +                             riscv_iommu_cmd_send(iommu, &cmd, 0);
-> > +                     }
-> > +             } else {
-> > +                     riscv_iommu_cmd_send(iommu, &cmd, 0);
-> > +             }
-> > +
-> > +             /*
-> > +              * IOTLB invalidation request can be safely omitted if al=
-ready sent
-> > +              * to the IOMMU for the same PSCID, and with domain->bond=
-s list
-> > +              * arranged based on the device's IOMMU, it's sufficient =
-to check
-> > +              * last device the invalidation was sent to.
-> > +              */
-> > +             if (iommu =3D=3D prev)
-> > +                     continue;
-> > +
-> > +             prev =3D iommu;
-> > +             riscv_iommu_cmd_send(iommu, &cmd, 0);
-> > +     }
->
-> I don't quite follow why not moving "if (iommu =3D=3D prev)" check to the
-> top and removing the last riscv_iommu_cmd_send(). My understanding is
-> that we could make it simply like below:
->
->         prev =3D NULL;
->         list_for_each_entry_rcu(bond, &domain->bonds, list) {
->                 iommu =3D dev_to_iommu(bond->dev);
->                 if (iommu =3D=3D prev)
->                         continue;
->
->                 /*
->                  * Send an invalidation request to the request queue
->                  * without wait.
->                  */
->                 ... ...
->
->                 prev =3D iommu;
->         }
->
+On Mon, Apr 29, 2024 at 12:39:38PM +0100, Jean-Philippe Brucker wrote:
+> Device-tree declares whether a PCI root-complex supports ATS by setting
+> the "ats-supported" property. Copy this flag into device fwspec to let
+> IOMMU drivers quickly check if they can enable ATS for a device.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Tested-by: Ketan Patil <ketanp@nvidia.com>
 
-Oh. Thanks for spotting that.
-Code section reordered very likely during rebasing patches...
+Thank you for sending this!
 
-> > +
-> > +     prev =3D NULL;
-> > +     list_for_each_entry_rcu(bond, &domain->bonds, list) {
-> > +             iommu =3D dev_to_iommu(bond->dev);
-> > +             if (iommu =3D=3D prev)
-> > +                     continue;
-> > +
-> > +             prev =3D iommu;
-> > +             riscv_iommu_cmd_iofence(&cmd);
-> > +             riscv_iommu_cmd_send(iommu, &cmd, RISCV_IOMMU_QUEUE_TIMEO=
-UT);
-> > +     }
-> > +     rcu_read_unlock();
-> > +}
->
-> Best regards,
-> baolu
-
-Best regards,
-- Tomasz
+Reviewed-by: Nicolin Chen <nicolinc@nvidia.com>
