@@ -1,67 +1,67 @@
-Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com [209.85.221.170])
+Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com [209.85.222.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A695FC19
-	for <iommu@lists.linux.dev>; Fri,  3 May 2024 01:36:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77AEBDF5B
+	for <iommu@lists.linux.dev>; Fri,  3 May 2024 01:45:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714700203; cv=none; b=mJDG2NEkYY9FiTG3q7DbNBNrVFl3zTf0VlueMUpF14lzj1khu0EH1LJdOHREwnDmvYv5+ItB3NcHb9m1lWRESYS3+jdlr9Nj6a9P+4aFd0O5sqjq2vJ/DMB0YR3JiQl7fafumEpEQMduFMblsHLzsEOSzo8/HqZZlSovYvMoS44=
+	t=1714700704; cv=none; b=oWOjyDn/DVijwxBp472VKFv/xE2nkdqW3njM1uAfhI6tT5etdNGpe862Q+85LByKDptqgxcrVOSKB+5gAeCWWzfMKSFO3qpQONV5TMzY+K/CQC5VbufcIVNEGeiQXfeQi8ir4D+gmiNpRsrWRH+5d8wBhnZ5KI/0j2ThhOFp9X8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714700203; c=relaxed/simple;
-	bh=RKeSGwVWMd/kRozhUIAFCmzXmnNvyig96sBUiNLx3S0=;
+	s=arc-20240116; t=1714700704; c=relaxed/simple;
+	bh=ey+G/MUCESd2sdoi0DGUPvdRUSE5ujEB7MzNjilZVjA=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UZSH0SLNhX3ctfIY6F908IgcRiZg8wTd1PDmscyoyCoBy1vthF8WrxTG/UnCY7kEBJmT0y7AJ+kMxuMFV05NIU03n/xu7hr+nQiEXz/wLVtj+q4Jn9ukASirdDLJdZGuS2BoMaGSFeQQlnz+vY7aKfmTEdM6PPEetkB3nrrmWIE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jTaLSjx4; arc=none smtp.client-ip=209.85.221.170
+	 To:Cc:Content-Type; b=TMQEalvpJxU1rL0wtUttGVkk1mmiPylA/QUQpefJNV9Wzo8d4LghLzX/Clg3/HKS+/ru9WkCwjLo6aD1d9pxyAG5upP+SnwtVDcOy6cOTnvU/X5R5K0aTGl8KDRrrJXxUYdP/wMTQRXzaNnUznfyPaqzXqOVuirDbVYgYZPUwEA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=elnZIeBY; arc=none smtp.client-ip=209.85.222.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jTaLSjx4"
-Received: by mail-vk1-f170.google.com with SMTP id 71dfb90a1353d-4df0bf2db8fso644857e0c.1
-        for <iommu@lists.linux.dev>; Thu, 02 May 2024 18:36:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="elnZIeBY"
+Received: by mail-ua1-f51.google.com with SMTP id a1e0cc1a2514c-7f395ac5b16so1128112241.0
+        for <iommu@lists.linux.dev>; Thu, 02 May 2024 18:45:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1714700201; x=1715305001; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1714700702; x=1715305502; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=nrFyQBGNythIvg6X/90l73Utbc1IO7PWL/H9UUkOuvA=;
-        b=jTaLSjx4ThtuGOmY8Z9KWiTp0PeCoCjute/gHsN3lFZS4wWCfbrFU9ZxSTjl6E84O8
-         6clK/h9LYrA6VJwD5UD9DKHu1Hks0snFgEeLkLfOH7pi9Hrgy7wLvUp5/xh/T3nlAT3W
-         pXBfWnHvG6+jsOmae7XP6xu6dFdoPRLAjxJCFO8ZfydIV2zUolOLUERDEZYjhmRWrVWy
-         zYkBHZ4ZEBo+rZWlbs+1u5HnEUGKqPKFTKSzmjIIA9uIpCFJeZWcc2VFvnANQmu9Lp0R
-         plaRE2sxtXth0PAkAdyvYjv6jNjB6MuJjotpSVrBbcHj/dvk+DXSrUe0S9mtrzBt0ToZ
-         RTuw==
+        bh=OBpaufwW255tHTakY+OCArHInOzRj+zykzi7grRdC1U=;
+        b=elnZIeBY3cr5gt9W5ikUOUkTAvplqyhZAOPyNh55U0N17Vgoy7IcrBCt6bcYwyORXy
+         wlSY0CdBUkS26r8oBm/KAVDs7FbPpDDfBYj3XYy0U18OwUPQqFBl94fGaQ1gBoNrDkAo
+         iMtEDcBPlG5qmUX0DKOE96ThL+kFbhixdEBSl8E+34vpuo61I7M+s581+9EUskIjHAl1
+         dg1642he72q9cztUWkb/e+G+f7z8J+r1Eg7SNIfi7BkJIFYbb40TnuAdFsO4rMujX7OB
+         xA3YeTU9aHbqm47eCQsytY0efT5t2UZihqW8OgPa5lJpMAf7T2tzbdE90vD7VpgiLbqh
+         pHnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714700201; x=1715305001;
+        d=1e100.net; s=20230601; t=1714700702; x=1715305502;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=nrFyQBGNythIvg6X/90l73Utbc1IO7PWL/H9UUkOuvA=;
-        b=WEUg/hKpmxqLaUMN9Ehx2qfC8RiRycADQEgpRyedGYdI7PrhUYRcumtS0y9TFEWbCe
-         pFPGmqaK0p+Rbg71r6ocqLEkcLKok5cUzumWdHeH0ZfLnUO4oQfDkEvzM9KmUsuny/IX
-         yAshf7e5uCB7CS7SfL3gPVFuzm6KDK55wXBIOl4KA0JUo5NVA9tOYGTTyJGEcliN4XyO
-         tPDBfZPK5rJyVnxYwjHyEsy9+PixPnSsEdbWtHbhgLQKCB80dWxMNMDJ/XUdJzG5efTc
-         CxXKOb0mrxA+y7CGaHIaaRkY/JbkT9XEDN6qcZBiZfZYpgQumENy8oIy1T4xJ4GMcvVl
-         ZT7Q==
-X-Forwarded-Encrypted: i=1; AJvYcCX8/N3B2YE2NtyW5NA2bmdW5atGh47VA1sDMyGWtp556qjVTSGuNapqvkd0XpyBFouWt0fy3RNIuGrTbIzNN3qVYME1IiY=
-X-Gm-Message-State: AOJu0YxXumavtCNRKZ9vrnSont5ZdwC7pZxA13Viw3C3aI9H0sFEyLk8
-	L6BWvt/tTFzblzMNqh1gV8JpnOjbB7NbOXqWgzE6+g1w+u+eWj4biUT9dMWmkc8756qm/m0L/mF
-	Vy782kaTDrL7lhxP69VpQz4mxPgg=
-X-Google-Smtp-Source: AGHT+IHhMmjUuWPdCPTy+Ube8hlzNh3C48it5jM9NxcPeKrEiHu+1RTJ82EoLDet+hq4ITJpu4qrY8AkGZ3kbXfppNk=
-X-Received: by 2002:a05:6122:459b:b0:4d4:20fa:eb0c with SMTP id
- de27-20020a056122459b00b004d420faeb0cmr1725015vkb.5.1714700201313; Thu, 02
- May 2024 18:36:41 -0700 (PDT)
+        bh=OBpaufwW255tHTakY+OCArHInOzRj+zykzi7grRdC1U=;
+        b=SwyejrdkeNgYOP+2BF3mlq0UHJImHEYt8rFZeKSflXqrOk2UtNuEfnh15X0DcRFUfY
+         JOdPoQajXLDwTfMtoEdD2+CiuQ43VSYcyWFU/Hamic11jsBPSuCwNRbi/9XT71xelq+8
+         Uv2MTqy0aXalB+7rjU7dJ/4m4Xxak7M1FkUu/HArc5nVkCMS1WEcAiFfnOB2agxc2zQl
+         P/p9smSkuvlZHjvvOeSdaKh0M6fAoC3vaboQvOIXD0WOuqDAX4GAsO0q+xTQ86+dVbpF
+         qvlNwJJXhTN/BDLkhFuszVq3lOIjnOjB0JQbJqFxf27RGpFa8S6pIwzSvKML4rbXhQZh
+         1iDg==
+X-Forwarded-Encrypted: i=1; AJvYcCWPQR57EuC6eZFZ717HRg4uK7pjoIdEf2Hd96R7aOMZbPO9/s3fvWLR1Ek301f1MGRVWnx3JKR/JHHtvfu5qOCPSyfN8Gw=
+X-Gm-Message-State: AOJu0YyGzVc3MsTg34IYu13LYmoKxcOkiflfQi7SzV3tCdhbp68nmqSz
+	H3H+wyFGmmnFGKszU2o9BKiZTcmOFrXvD3mDNCH7gK+rgHqOwh+8TCUd/kWKyODCjvk+vrdJhaT
+	YSmuQveXgF0anJwWspJ0Vhvcph8k=
+X-Google-Smtp-Source: AGHT+IFZyWmBAJipXUPPt+Uv0QLkbPfwvtGgat1yYkY94P24DIj2C1Oirn7fshUPnUvtMM9lPCqJXhZGWJE6z4SC6r8=
+X-Received: by 2002:a67:c58e:0:b0:47b:bda4:c30d with SMTP id
+ h14-20020a67c58e000000b0047bbda4c30dmr2040619vsk.3.1714700702183; Thu, 02 May
+ 2024 18:45:02 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240502161827.403338-1-pchelkin@ispras.ru> <20240502161827.403338-2-pchelkin@ispras.ru>
-In-Reply-To: <20240502161827.403338-2-pchelkin@ispras.ru>
+References: <20240502161827.403338-1-pchelkin@ispras.ru> <20240502161827.403338-3-pchelkin@ispras.ru>
+In-Reply-To: <20240502161827.403338-3-pchelkin@ispras.ru>
 From: Barry Song <21cnbao@gmail.com>
-Date: Fri, 3 May 2024 13:36:30 +1200
-Message-ID: <CAGsJ_4yFzR2RYBsLX2oqUHZpzySfT=0rtt6F71hkbFp1iqxCAA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dma-mapping: benchmark: fix up kthread creation error handling
+Date: Fri, 3 May 2024 13:44:51 +1200
+Message-ID: <CAGsJ_4zKRSnpoepYsw8qiwVHY-ztWYixKjtD7D1SKbhYho=pUw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] dma-mapping: benchmark: prevent potential kthread hang
 To: Fedor Pchelkin <pchelkin@ispras.ru>
 Cc: Xiang Chen <chenxiang66@hisilicon.com>, Christoph Hellwig <hch@lst.de>, 
 	Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
@@ -74,11 +74,12 @@ Content-Transfer-Encoding: quoted-printable
 On Fri, May 3, 2024 at 4:29=E2=80=AFAM Fedor Pchelkin <pchelkin@ispras.ru> =
 wrote:
 >
-> If a kthread creation fails for some reason then uninitialized members of
-> the tasks array will be accessed on the error path since it is allocated
-> by kmalloc_array().
+> If some of kthreads executing map_benchmark_thread() return with an error
+> code (e.g. due to a memory allocation failure), then the next kthreads in
+> the array are not stopped and potentially loop for indefinite time.
 >
-> Limit the bound in such case.
+> Call kthread_stop() for each started thread as map_benchmark_thread()
+> expects that happening in order to exit.
 >
 > Found by Linux Verification Center (linuxtesting.org).
 >
@@ -86,25 +87,57 @@ wrote:
 A APIs")
 > Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
 > ---
-
-Reviewed-by: Barry Song <baohua@kernel.org>
-
->  kernel/dma/map_benchmark.c | 1 +
->  1 file changed, 1 insertion(+)
+>  kernel/dma/map_benchmark.c | 12 ++++++++----
+>  1 file changed, 8 insertions(+), 4 deletions(-)
 >
 > diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
-> index 02205ab53b7e..ea938bc6c7e3 100644
+> index ea938bc6c7e3..7e39a4690331 100644
 > --- a/kernel/dma/map_benchmark.c
 > +++ b/kernel/dma/map_benchmark.c
-> @@ -118,6 +118,7 @@ static int do_map_benchmark(struct map_benchmark_data=
- *map)
->                 if (IS_ERR(tsk[i])) {
->                         pr_err("create dma_map thread failed\n");
->                         ret =3D PTR_ERR(tsk[i]);
-> +                       threads =3D i;
->                         goto out;
->                 }
+> @@ -140,13 +140,17 @@ static int do_map_benchmark(struct map_benchmark_da=
+ta *map)
 >
+>         msleep_interruptible(map->bparam.seconds * 1000);
+>
+> -       /* wait for the completion of benchmark threads */
+> +       /* wait for the completion of all started benchmark threads */
+>         for (i =3D 0; i < threads; i++) {
+> -               ret =3D kthread_stop(tsk[i]);
+> -               if (ret)
+> -                       goto out;
+> +               int kthread_ret =3D kthread_stop(tsk[i]);
+> +
+> +               if (kthread_ret)
+> +                       ret =3D kthread_ret;
+>         }
+>
+> +       if (ret)
+> +               goto out;
+> +
+
+do we still need to do copy_to_user(argp, &map->bparam, sizeof(map->bparam)
+after  do_map_benchmark(map) fails?
+do we also need the below?
+diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
+index 02205ab53b7e..28ca165cb62c 100644
+--- a/kernel/dma/map_benchmark.c
++++ b/kernel/dma/map_benchmark.c
+@@ -252,6 +252,9 @@ static long map_benchmark_ioctl(struct file *file,
+unsigned int cmd,
+                 * dma_mask changed by benchmark
+                 */
+                dma_set_mask(map->dev, old_dma_mask);
++
++               if (ret)
++                       return ret;
+                break;
+        default:
+                return -EINVAL;
+
+
+>         loops =3D atomic64_read(&map->loops);
+>         if (likely(loops > 0)) {
+>                 u64 map_variance, unmap_variance;
 > --
 > 2.45.0
 >
