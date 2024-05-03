@@ -1,106 +1,196 @@
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09F26155334
-	for <iommu@lists.linux.dev>; Fri,  3 May 2024 16:24:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.149.199.84
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3982C156C5F
+	for <iommu@lists.linux.dev>; Fri,  3 May 2024 16:42:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714753446; cv=none; b=MIyXnbQg3J7oXgoUVVXWcGbBTs8nZxdh0PmPbGmXAfD1+xU0aSbuX9Xb86fONlRZM28o/QD0wZYFkVGxkSXJmd2e7jVwC+1A22kbflyadb4fZsc7j5skLhwX9NvJ1sArUW8jMcqnHRpPRuoI9DfcVrrz0pjAjZowjQ2sJxxId8o=
+	t=1714754563; cv=none; b=G1WwMN5d0XcfUkSlcMwcpdhBL63lv9RKNWBlmptqZrCn0UD01nFVALHViNljNstCtOYR1fj76wOr5kAzvKYk/7zdYlLBc05uARm64Q2PwHwtVXe4tlOt7S8lJjQu9I5e36PWSrrTlq9YGABDjdcLrF6v47SoTFlHHhGWf5ReM0g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714753446; c=relaxed/simple;
-	bh=lWHMKTA8AI5dQka1opJ8AqlNGbIDIajTwjCFEN6wnHM=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=E8UbPL65AHGx0w1N6atPFvIt+o/0nDG3TtTNBWEUp/iCupvmtG+IUxlyC4S3eZGIa1sPq2nMU8+zRuLUW83IxJ/ryheyytWnwB5no+3ok7u2C6Db1j+0J/etzVa0H15KX0dTNO37/pgmHFSwdq8hh+DcWH6rnJKCICURjpdp/yE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru; spf=pass smtp.mailfrom=ispras.ru; dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b=LBH6VMKf; arc=none smtp.client-ip=83.149.199.84
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ispras.ru
+	s=arc-20240116; t=1714754563; c=relaxed/simple;
+	bh=yC4oGgKTnqIzx0SwseiUuBVl6ikYuhNImy0LdahK+hY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Yk3YEZZwOF0wzS/prtgDSCwitnHHGT4cuLQ9AcV6F7JT1LZseBgXjDnSarHnDf+9mmxAunVU2y0qWtOqX5VetoConhqbn1eRkqxLEFjrR80zI92gt+bTzN9gbchIUIKElrFyzkSsxMRGJTQnClXU5qOcSOG7y+43HeEEgV/ThwY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Hw0jdKn3; arc=none smtp.client-ip=209.85.210.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b="LBH6VMKf"
-Received: from fedor-21d0 (unknown [5.228.116.47])
-	by mail.ispras.ru (Postfix) with ESMTPSA id 704DD4076733;
-	Fri,  3 May 2024 16:23:55 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 704DD4076733
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
-	s=default; t=1714753435;
-	bh=j0BypKPSgd111WFp/2PqwbTfAeOP3LB0h8x+mRVyzVY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=LBH6VMKfSXwCi14lfVx4WN3+o9fayl1EoQI8tugzGjdlX8Mot/ewT8cCqJcwEEczz
-	 SjGkDo0v8cgkFOuZCIgOPzCi37pZhW8CqPuq1xHMc0fu+z2O0ZvRloHwVpMhsXN6cB
-	 tCu/XwQgjRhBVLqU+2lQFxl6gN4wrKx/Yxfp3FoI=
-Date: Fri, 3 May 2024 19:23:48 +0300
-From: Fedor Pchelkin <pchelkin@ispras.ru>
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Xiang Chen <chenxiang66@hisilicon.com>, Christoph Hellwig <hch@lst.de>, 
-	Marek Szyprowski <m.szyprowski@samsung.com>, Barry Song <21cnbao@gmail.com>, iommu@lists.linux.dev, 
-	linux-kernel@vger.kernel.org, Alexey Khoroshilov <khoroshilov@ispras.ru>, 
-	lvc-project@linuxtesting.org
-Subject: Re: [PATCH 1/2] dma-mapping: benchmark: fix up kthread creation
- error handling
-Message-ID: <20240503-d09628dce22e71e600ebd907-pchelkin@ispras.ru>
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Hw0jdKn3"
+Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-6ee32bb9c8eso2920395a34.1
+        for <iommu@lists.linux.dev>; Fri, 03 May 2024 09:42:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google; t=1714754561; x=1715359361; darn=lists.linux.dev;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=9MCkvEl6vfBsR3xGXbm5ipuSQzsyNXlO2daQS9IANas=;
+        b=Hw0jdKn3Uk2Zz+kxJT68Pa7/C5ufIoOBA+zh3uGyTR7zq5J9YTmwTFRtqdIV/EPBjS
+         m9maD6sXZdpMPBlJnzeVmHkNX7We/TxslMLlfAltI+UyToZJP7GiYgSsSM7zS3SvV5YV
+         aYUzY31Mhm+gDSx1jhrc4Zyga/GKPC2KzJlGBDY0XTBxd6H19esiHGv9wuIBJog2rT5N
+         FGd2498L8zytEJpPRcpbpxGiwJzk1u719VgMTMJc8kyGIIpI60/zF0M52xMTcrnDESCX
+         o5+S6rpGUGcuxjxX83x7vCKkfnOvYO6aOHl0B3CvR737Jm0T0wFmtl+t0KocxFc8jls1
+         K6bQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714754561; x=1715359361;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9MCkvEl6vfBsR3xGXbm5ipuSQzsyNXlO2daQS9IANas=;
+        b=YbLBCSw4d7DaesJiuO/Z1ZE3ssJrcAgE9kgKUQknI06s0hTZj1Tt7F6f4fN1XHf/nH
+         limeh1+rHySd66AqOFO7Peh6OBEWWkpadLWtMYcK53Tl90gFhMxWNr3xpVOoCCNi7KD6
+         bG72HLZUPJG0ixAlvUf48FNTjR1sbPm1/v2zRzyGLL2jggBlA+J5dNW1bUgJJRnhj1uN
+         RXAfto86YBYqRhLxyKKQqPkbZZiq6S//giyMyhu6iCMC1PWZv9yP3WLfKNV6/N3zpV6s
+         v+GdL8qmRWXGpmlXpX/quDky8kGyhwEoO+BWjLA2yxIGj+0s3nLNhtQ2BQ0PDD/HPWPr
+         zumw==
+X-Forwarded-Encrypted: i=1; AJvYcCWnJsIXIwVeh+nOBWteHNnzOPZHasetSgs55yiS8e3Nak9+Zn4hoIV3z36wcZlYeIx26iLFIrhEJe/V4Ijy03NWZyCKR8E=
+X-Gm-Message-State: AOJu0Yw+8OJ1fpWRRtGosOWd67aDqorH59+JgxKDlNcKK235Crvw71Uq
+	159cq9PzMzJzbC6JHr2daA+zRUKXn+SCy5xhwyY+ywhn0kRkv76bEm2xDCqDL9k=
+X-Google-Smtp-Source: AGHT+IFVT2rAsXVdMpvr8pAPF1WuNA1CE6Xv9L67MOMLKugSh13tMbQmSyNxDuuJNWHb/QOcrYHVYQ==
+X-Received: by 2002:a05:6830:33fb:b0:6ee:1cc5:68c3 with SMTP id i27-20020a05683033fb00b006ee1cc568c3mr3499852otu.12.1714754561211;
+        Fri, 03 May 2024 09:42:41 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
+        by smtp.gmail.com with ESMTPSA id ca14-20020a056830610e00b006ee5b409f23sm701317otb.22.2024.05.03.09.42.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 03 May 2024 09:42:40 -0700 (PDT)
+Received: from jgg by wakko with local (Exim 4.95)
+	(envelope-from <jgg@ziepe.ca>)
+	id 1s2vzb-007ETb-4i;
+	Fri, 03 May 2024 13:42:39 -0300
+Date: Fri, 3 May 2024 13:42:39 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: "Zeng, Oak" <oak.zeng@intel.com>
+Cc: "leon@kernel.org" <leon@kernel.org>, Christoph Hellwig <hch@lst.de>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	"Brost, Matthew" <matthew.brost@intel.com>,
+	"Hellstrom, Thomas" <thomas.hellstrom@intel.com>,
+	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
+	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?utf-8?B?SsOpcsO0bWU=?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+	"linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"linux-nvme@lists.infradead.org" <linux-nvme@lists.infradead.org>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"linux-mm@kvack.org" <linux-mm@kvack.org>,
+	Bart Van Assche <bvanassche@acm.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Amir Goldstein <amir73il@gmail.com>,
+	"josef@toxicpanda.com" <josef@toxicpanda.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"daniel@iogearbox.net" <daniel@iogearbox.net>,
+	"Williams, Dan J" <dan.j.williams@intel.com>,
+	"jack@suse.com" <jack@suse.com>,
+	Leon Romanovsky <leonro@nvidia.com>,
+	Zhu Yanjun <zyjzyj2000@gmail.com>
+Subject: Re: [RFC RESEND 00/16] Split IOMMU DMA mapping operation to two steps
+Message-ID: <20240503164239.GB901876@ziepe.ca>
+References: <cover.1709635535.git.leon@kernel.org>
+ <SA1PR11MB6991CB2B1398948F4241E51992182@SA1PR11MB6991.namprd11.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <3c474453-fc89-42b2-9ddc-fdc3a2893064@arm.com>
+In-Reply-To: <SA1PR11MB6991CB2B1398948F4241E51992182@SA1PR11MB6991.namprd11.prod.outlook.com>
 
-Robin Murphy wrote:
-> On 2024-05-02 5:18 pm, Fedor Pchelkin wrote:
-> > If a kthread creation fails for some reason then uninitialized members of
-> > the tasks array will be accessed on the error path since it is allocated
-> > by kmalloc_array().
-> > 
-> > Limit the bound in such case.
+On Thu, May 02, 2024 at 11:32:55PM +0000, Zeng, Oak wrote:
+
+> > Instead of teaching DMA to know these specific datatypes, let's separate
+> > existing DMA mapping routine to two steps and give an option to advanced
+> > callers (subsystems) perform all calculations internally in advance and
+> > map pages later when it is needed.
 > 
-> I don't think this is right... The put_task_struct() calls on the error 
-> path are supposed to balance the get_task_struct() calls which only 
-> happen *after* all the threads are successfully created - see commit 
+> I looked into how this scheme can be applied to DRM subsystem and GPU drivers. 
+> 
+> I figured RDMA can apply this scheme because RDMA can calculate the
+> iova size. Per my limited knowledge of rdma, user can register a
+> memory region (the reg_user_mr vfunc) and memory region's sized is
+> used to pre-allocate iova space. And in the RDMA use case, it seems
+> the user registered region can be very big, e.g., 512MiB or even GiB
 
-Thanks, Robin! You're right. Now I see this..
+In RDMA the iova would be linked to the SVA granual we discussed
+previously.
 
-> d17405d52bac ("dma-mapping: benchmark: fix kernel crash when 
-> dma_map_single fails") - although I now wonder whether that might have 
-> been better done by replacing kthread_stop() with kthread_stop_put(). It 
-> doesn't look like we've ever actually tried to free any previous threads 
-> from the point of allocation failure.
+> In GPU driver, we have a few use cases where we need dma-mapping. Just name two:
+> 
+> 1) userptr: it is user malloc'ed/mmap'ed memory and registers to gpu
+> (in Intel's driver it is through a vm_bind api, similar to mmap). A
+> userptr can be of any random size, depending on user malloc
+> size. Today we use dma-map-sg for this use case. The down side of
+> our approach is, during userptr invalidation, even if user only
+> munmap partially of an userptr, we invalidate the whole userptr from
+> gpu page table, because there is no way for us to partially
+> dma-unmap the whole sg list. I think we can try your new API in this
+> case. The main benefit of the new approach is the partial munmap
+> case.
 
-It should have looked like the diff below, as you say. And it's probably
-better to merge the two patches together so that we eliminate task leaks
-in case kthread_stop_put() returns error like it is below.
-
-Will rework that in v2.
-
-diff --git a/kernel/dma/map_benchmark.c b/kernel/dma/map_benchmark.c
-index 02205ab53b7e..3b7658ce1599 100644
---- a/kernel/dma/map_benchmark.c
-+++ b/kernel/dma/map_benchmark.c
-@@ -118,6 +118,8 @@ static int do_map_benchmark(struct map_benchmark_data *map)
-                if (IS_ERR(tsk[i])) {
-                        pr_err("create dma_map thread failed\n");
-                        ret = PTR_ERR(tsk[i]);
-+                       while (--i >= 0)
-+                               kthread_stop(tsk[i]);
-                        goto out;
-                }
+Yes, this is one of the main things it will improve.
  
-@@ -141,7 +143,7 @@ static int do_map_benchmark(struct map_benchmark_data *map)
+> We will have to pre-allocate iova for each userptr, and we have many
+> userptrs of random size... So we might be not as efficient as RDMA
+> case where I assume user register a few big memory regions.
+
+You are already doing this. dma_map_sg() does exactly the same IOVA
+allocation under the covers.
  
-        /* wait for the completion of benchmark threads */
-        for (i = 0; i < threads; i++) {
--               ret = kthread_stop(tsk[i]);
-+               ret = kthread_stop_put(tsk[i]);
-                if (ret)
-                        goto out;
-        }
-@@ -170,8 +172,6 @@ static int do_map_benchmark(struct map_benchmark_data *map)
-        }
+> 2) system allocator: it is malloc'ed/mmap'ed memory be used for GPU
+> program directly, without any other extra driver API call. We call
+> this use case system allocator.
  
- out:
--       for (i = 0; i < threads; i++)
--               put_task_struct(tsk[i]);
-        put_device(map->dev);
-        kfree(tsk);
-        return ret;
+> For system allocator, driver have no knowledge of which virtual
+> address range is valid in advance. So when GPU access a
+> malloc'ed/mmap'ed address, we have a page fault. We then look up a
+> CPU vma which contains the fault address. I guess we can use the CPU
+> vma size to allocate the iova space of the same size?
+
+No. You'd follow what we discussed in the other thread.
+
+If you do a full SVA then you'd split your MM space into granuals and
+when a fault hits a granual you'd allocate the IOVA for the whole
+granual. RDMA ODP is using a 512M granual currently.
+
+If you are doing sub ranges then you'd probably allocate the IOVA for
+the well defined sub range (assuming the typical use case isn't huge)
+
+> But there will be a true difficulty to apply your scheme to this use
+> case. It is related to the STICKY flag. As I understand it, the
+> sticky flag is designed for driver to mark "this page/pfn has been
+> populated, no need to re-populate again", roughly...Unlike userptr
+> and RDMA use cases where the backing store of a buffer is always in
+> system memory, in the system allocator use case, the backing store
+> can be changing b/t system memory and GPU's device private
+> memory. Even worse, we have to assume the data migration b/t system
+> and GPU is dynamic. When data is migrated to GPU, we don't need
+> dma-map. And when migration happens to a pfn with STICKY flag, we
+> still need to repopulate this pfn. So you can see, it is not easy to
+> apply this scheme to this use case. At least I can't see an obvious
+> way.
+
+You are already doing this today, you are keeping the sg list around
+until you unmap it.
+
+Instead of keeping the sg list you'd keep a much smaller datastructure
+per-granual. The sticky bit is simply a convient way for ODP to manage
+the smaller data structure, you don't have to use it.
+
+But you do need to keep track of what pages in the granual have been
+DMA mapped - sg list was doing this before. This could be a simple
+bitmap array matching the granual size.
+
+Looking (far) forward we may be able to have a "replace" API that
+allows installing a new page unconditionally regardless of what is
+already there.
+
+Jason
