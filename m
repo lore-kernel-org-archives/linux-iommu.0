@@ -1,204 +1,122 @@
-Received: from mail-pl1-f169.google.com (mail-pl1-f169.google.com [209.85.214.169])
+Received: from mail-pl1-f202.google.com (mail-pl1-f202.google.com [209.85.214.202])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39C151586C0
-	for <iommu@lists.linux.dev>; Fri,  3 May 2024 18:11:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80F592C6AE
+	for <iommu@lists.linux.dev>; Fri,  3 May 2024 18:35:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.202
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714759863; cv=none; b=UbQ+QJCUbNq8uExRpwlIVYf+1olJH6gS86YIp6ntcmRQhT+lXMdKRgT88K/wFWah2bvCjXH6l9GuN/+McrEhZtzf7p88cKsDBedM5s0InstbM2Q1saAf3W1u2J07rJZEkDpe/cfJ0X7yNPiTaFXIl36tPiLzMVOJfNncRBwX1DM=
+	t=1714761333; cv=none; b=MIG0lCSADMNW0/sdTreFvZZw/ArQMbNLtww4NtbEboHCfm9AKalxszQbVCwDTxl3813+QhgeS+onvs8jkGe1uvPCn2VnIBPyv90LlEtzALAip1vhbZ46KX6yXjDWZ80skR6F3eWCMnBxheywEbKpi5xqV5Ie92Rgwqv2pdfKkDc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714759863; c=relaxed/simple;
-	bh=BDV4LFF0W3nkIbkwscNnSoy9CovnMcY/0BmN6MMpQpw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KDsgqcl04xcK37gwkojcNSux2Aijve8nAUV8zfPLSVRbWY5Je5rdVk1g+tBvpiE043VIjuErq5m76W7/9rWeBn/DMpIANgosZDYi4sJRyr7cXxxWbILk2rCSRxF5+e1qwYhOzkiBYBhKrERXUL1sdFgpZHm+F0l8g1IeN2E9p+A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=OckI3COm; arc=none smtp.client-ip=209.85.214.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1714761333; c=relaxed/simple;
+	bh=lctBDKKbaQ0GP8xmsQpbPsTnN5YakI/d7YGn9gn3TMU=;
+	h=Date:Mime-Version:Message-ID:Subject:From:To:Cc:Content-Type; b=OZILFjt73CM+qi6gdIhz6mWc9Weu5R25M1hp04UXM5+7BWZdG7sMtDgFW5qgFc5VmqscywdlRmlw5b9DFZ+T5CeWD9X9WoHcTkJcEYCW4gtSJanrBLshz0uU5Pu9+mLxofdFq2qrH5LAXxO7CDHN5yntjiW0aiFcSktx/goUMLA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=flex--tjmercier.bounces.google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=tzQV6Vvy; arc=none smtp.client-ip=209.85.214.202
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=flex--tjmercier.bounces.google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="OckI3COm"
-Received: by mail-pl1-f169.google.com with SMTP id d9443c01a7336-1e4c4fb6af3so22565275ad.0
-        for <iommu@lists.linux.dev>; Fri, 03 May 2024 11:11:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="tzQV6Vvy"
+Received: by mail-pl1-f202.google.com with SMTP id d9443c01a7336-1ec5efb0a33so37305985ad.3
+        for <iommu@lists.linux.dev>; Fri, 03 May 2024 11:35:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1714759861; x=1715364661; darn=lists.linux.dev;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=HP0E+W4CNjdiqYdYJTTOaBAgmGAiW3lunGcWq/PWMeo=;
-        b=OckI3COmCWg48WIafHfiTPCCqjhToHdFiph+b1XLasi8jOUhNcy6Gg5YWBdXCs+oqS
-         yQcG7ovmzGrP/qsVN5HfEaQ3L97+HE4yCNhnR6SWUh41xpZyqk8BYivPvovcI0XfA2Qe
-         Q9Sq5wh95kP9wxDkJe9isYJfFAC8Qlt0bHhZ1Ax9ClWrzzYdhy0GM3nc9EknQ3Qy82XC
-         15SaJxCVQHUEvtsXK4ngjPsr7uj3RMY/mbU/b3XsWOb2mrxHjkc9e+jrZbgPUa7Xo0Vf
-         mhLUobtIVLrCWmDh7YKYABhEBkPjInXZN4L37+Hiw2OvA5pHs1oneIpLN5hVpa5Y1/YL
-         hlZg==
+        d=google.com; s=20230601; t=1714761332; x=1715366132; darn=lists.linux.dev;
+        h=cc:to:from:subject:message-id:mime-version:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=iVQp8VZ+GT1btk34Ge4A/qMobcmdU0dr1U1FJvarTM0=;
+        b=tzQV6VvyQ8aBhQhsek16Mx3eeAOFxAH8BLC1nxph7fa+2/igd440ROuYlkZ61iuQLV
+         YOO7THZz88cqlOnyS36E4tMimMH57mXScZxYdgIcgN8i8b6EUEjGySWcHfYnPLAe84kD
+         9W7HxIOwA+YFtpyC2h3kY7ZZupLSljP8gb6Cis7awu2H3+mV73tMSdGODD42s45NJiTG
+         0lMTsiss0papHzhdCi42YI90uErJ8fTaahKM+0tvtFDyofnCAA7U26N8WJ+vHJ62t+fY
+         sWukZQsc5WiQMvb0AmS+O0qyXcp9z5ioKW3eWib8gQgksHgZV5BPzjgH9Ctmhg4QJFWu
+         YGvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714759861; x=1715364661;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HP0E+W4CNjdiqYdYJTTOaBAgmGAiW3lunGcWq/PWMeo=;
-        b=cOEiasGNx/Bx/LTVK2rA2bLl/m6o6hhnf1nZpzg6liO8KJnQSBwyz9Q9KAQhNDqHci
-         mFza741MOCymjvgO60YzaTaCIzeWLGCiFNuuMPK3JIilupZkb6rsLYPUX+h0uj+FTGfO
-         4l/oKWdL9kStv6MtPjAt41/It2YYGP8gaKA3fHu3sTVq9aSYCvc+ybF82a33PNg7GBL1
-         0qvS4nUonITAQjDjeA50zLPWg5wb/GnwxSn7vB0wsdNNFM0DIas4rnhx9JMv18gXa3Ne
-         nfRV92gVf+Ocu3aphzwcfiDAKhI+m7MR8BU/SmviNWBuYI1Um2uGCQA8nRrW6vXYraEl
-         72hw==
-X-Forwarded-Encrypted: i=1; AJvYcCX/RGYhB8bpdP1Kd302Jaj3t/T1eSkxxFxq3G2S27vux/WoDq/FEwNjd8ymcZEy5wWGeaJikraL6CNBsjn1d2x0LmlhNzI=
-X-Gm-Message-State: AOJu0YwHxcVQBAB443sk8qw4Y0nXsCoQ1v4f0XCRb28XAdodANGZ6zn3
-	WEZheTu5VJ+2jq2Mha5RkTKwb/t9cGiWUU69wp4S5l4kZTQVhJZwfX3hGSBl5IE=
-X-Google-Smtp-Source: AGHT+IHo2vpIWpxJAU/WjqREvj8GpGY4pEVGXqwcLeuMUP5qY8hdLdogyncesU12hPqCxKNhJeFqIg==
-X-Received: by 2002:a17:903:120f:b0:1e5:560d:8519 with SMTP id l15-20020a170903120f00b001e5560d8519mr5281572plh.0.1714759861404;
-        Fri, 03 May 2024 11:11:01 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id p23-20020a1709027ed700b001ec379d8167sm3590693plb.115.2024.05.03.11.11.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 03 May 2024 11:11:00 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1s2xN5-007WHT-5q;
-	Fri, 03 May 2024 15:10:59 -0300
-Date: Fri, 3 May 2024 15:10:59 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Tomasz Jeznach <tjeznach@rivosinc.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Sunil V L <sunilvl@ventanamicro.com>,
-	Nick Kossifidis <mick@ics.forth.gr>,
-	Sebastien Boeuf <seb@rivosinc.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux@rivosinc.com
-Subject: Re: [PATCH v3 7/7] iommu/riscv: Paging domain support
-Message-ID: <20240503181059.GC901876@ziepe.ca>
-References: <cover.1714494653.git.tjeznach@rivosinc.com>
- <b83f81c04d1f3885d860b1eec03761fe63a33183.1714494653.git.tjeznach@rivosinc.com>
- <20240501145621.GD1723318@ziepe.ca>
- <CAH2o1u63GjMnYrfa8W-c1hdp+TAA0R-FyxXM4dEiFF+KEGWwbA@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1714761332; x=1715366132;
+        h=cc:to:from:subject:message-id:mime-version:date:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=iVQp8VZ+GT1btk34Ge4A/qMobcmdU0dr1U1FJvarTM0=;
+        b=ZLFedTFE170yjucT0YS2kRCsPYpNXLcUxjDvuiIpN3eAkoNSvbu331HQJKS5tPXFYQ
+         BDDhCldYicB+VMUvmTHmPtxYe8bRUimBfGObN0uXTGajQpc+FB4fRKd6Itc3CFplr3hk
+         SjTKlEmido9Z5UM0oKE5hskmxUttZ9pjLfhl/s1sZCVJJ/vEDzJ3ZTxQfNELg1yAR1rS
+         fzvmSw59jSCZFOX5eSeF0DTz3vIqF0bbokqFtWxQbtDvfy2567zf1X0l8W4hfXTDJdS1
+         YoCLsiAmYFd6kdQ9AwnzlejL4sUPwU2IMVe0pMuqeYN4mlVhdj/A13YrThNko1dTxhOv
+         6GfQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXvSgBFaB/Rl7XyXub7SR5ScYyko/uqfwZ4U6dW5EnUo797HaeCqg9aYe9kA4uyPaqBXBoQx9gN8OZOkGh9MWyVE3Li+oQ=
+X-Gm-Message-State: AOJu0YxmxsKqb8zr3Az236zBRuBLpvhtHLbkVjCNRx9YcttBcW/QsfSA
+	Hb/G3IGhk18faHHslYhVrn5aGM6ErvpxF+QcRit6SR3/159aQRVeDbVahuCkFUGFA2RXFNQUPNP
+	XhSktVnhz5T5u5A==
+X-Google-Smtp-Source: AGHT+IH43Mgk2bJwNZrlwDJzmhbx9udVERtQckuEWb3sCigBB6T1dsjzWtnv29QEOO5n0WToIxr27/3AIGcP6sU=
+X-Received: from tj-virt.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5683])
+ (user=tjmercier job=sendgmr) by 2002:a17:902:f94b:b0:1e8:a7fb:c1fc with SMTP
+ id kx11-20020a170902f94b00b001e8a7fbc1fcmr7948plb.5.1714761331746; Fri, 03
+ May 2024 11:35:31 -0700 (PDT)
+Date: Fri,  3 May 2024 18:35:26 +0000
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAH2o1u63GjMnYrfa8W-c1hdp+TAA0R-FyxXM4dEiFF+KEGWwbA@mail.gmail.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.45.0.rc1.225.g2a3ae87e7f-goog
+Message-ID: <20240503183527.1548119-1-tjmercier@google.com>
+Subject: [PATCH] swiotlb: iommu/dma: Clarify swiotlb options apply only to dma-direct
+From: "T.J. Mercier" <tjmercier@google.com>
+To: tjmercier@google.com, Jonathan Corbet <corbet@lwn.net>, 
+	Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, 
+	Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
+	"H. Peter Anvin" <hpa@zytor.com>
+Cc: hch@infradead.org, robin.murphy@arm.com, joro@8bytes.org, will@kernel.org, 
+	akpm@linux-foundation.org, isaacmanjarres@google.com, iommu@lists.linux.dev, 
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, May 03, 2024 at 10:44:14AM -0700, Tomasz Jeznach wrote:
-> > > +     list_for_each_entry_rcu(bond, &domain->bonds, list) {
-> > > +             if (bond->dev == dev) {
-> > > +                     list_del_rcu(&bond->list);
-> > > +                     found = bond;
-> > > +             }
-> > > +     }
-> > > +     spin_unlock_irqrestore(&domain->lock, flags);
-> > > +
-> > > +     /* Release and wait for all read-rcu critical sections have completed. */
-> > > +     kfree_rcu(found, rcu);
-> > > +     synchronize_rcu();
-> >
-> > Please no, synchronize_rcu() on a path like this is not so
-> > reasonable.. Also you don't need kfree_rcu() if you write it like this.
-> >
-> > This still looks better to do what I said before, put the iommu not
-> > the dev in the bond struct.
-> >
-> >
-> 
-> I was trying not to duplicate data in bond struct and use whatever is
-> available to be referenced from dev pointer (eg iommu / ids / private
-> iommu dev data).
+IOMMU implementations now sometimes bounce memory through SWIOTLB to
+achieve cacheline alignment [1], or prevent DMA attacks by untrusted
+devices [2]. These uses of SWIOTLB differ conceptually from historical
+use which was a solution to the problem of device addressing
+limitations that prevent DMA to some portion of system memory
+(typically beyond 4 GiB). IOMMUs also solve the problem of device
+addressing limitations and therefore eliminate the need for SWIOTLB for
+that purpose. However as mentioned, IOMMUs can use SWIOTLB for other
+purposes.
 
-I'm not sure that is a valuable goal considering the RCU
-complexity.. But I suppose it would be a bit of a hassle to replicate
-the ids list into bond structurs. Maybe something to do when you get
-to ATS since you'll probably want to replicate the ATS RIDs. (see what
-Intel did, which I think is pretty good)
+The swiotlb kernel command line parameter does not impact IOMMU related
+use of SWIOTLB, and that is intentional. IOMMUs cannot be forced to use
+SWIOTLB for all buffers. Update the documentation for the swiotlb
+parameter to clarify that SWIOTLB use can only be forced in scenarios
+where an IOMMU is not involved.
 
-> If I'm reading core iommu code correctly, device pointer and iommu
-> pointers should be valid between _probe_device and _release_device
-> calls. I've moved synchronize_rcu out of the domain attach path to
-> _release_device, LMK if that would be ok for now.  I'll have a
-> second another to rework other patches to avoid storing dev pointers
-> at all.
+[1] https://lore.kernel.org/all/20230612153201.554742-16-catalin.marinas@arm.com
+[2] https://lore.kernel.org/all/20190906061452.30791-1-baolu.lu@linux.intel.com/
+Signed-off-by: T.J. Mercier <tjmercier@google.com>
+---
+ Documentation/admin-guide/kernel-parameters.txt | 1 +
+ Documentation/arch/x86/x86_64/boot-options.rst  | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
-Yes, that seems better.. I'm happier to see device hot-unplug be slow
-than un attach
+diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+index 213d0719e2b7..84c582ac246c 100644
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -6486,6 +6486,7 @@
+ 				 to a power of 2.
+ 			force -- force using of bounce buffers even if they
+ 			         wouldn't be automatically used by the kernel
++			         where a hardware IOMMU is not involved
+ 			noforce -- Never use bounce buffers (for debugging)
+ 
+ 	switches=	[HW,M68k,EARLY]
+diff --git a/Documentation/arch/x86/x86_64/boot-options.rst b/Documentation/arch/x86/x86_64/boot-options.rst
+index 137432d34109..066b4bc81583 100644
+--- a/Documentation/arch/x86/x86_64/boot-options.rst
++++ b/Documentation/arch/x86/x86_64/boot-options.rst
+@@ -285,7 +285,7 @@ iommu options only relevant to the AMD GART hardware IOMMU:
+       Always panic when IOMMU overflows.
+ 
+ iommu options only relevant to the software bounce buffering (SWIOTLB) IOMMU
+-implementation:
++implementation where a hardware IOMMU is not involved:
+ 
+     swiotlb=<slots>[,force,noforce]
+       <slots>
+-- 
+2.45.0.rc1.225.g2a3ae87e7f-goog
 
-There is another issue with the RCU that I haven't wrapped my head
-around..
-
-Technically we can have concurrent map/unmap/invalidation along side
-device attach/detach. Does the invalidation under RCU work correctly?
-
-For detach I think yes:
-
-   Inv CPU                                   Detach CPU
-
-  write io_pte                               Update device descriptor
-  rcu_read_lock
-    list_for_each
-      <make invalidation command>            <make description inv cmd>
-      dma_wmb()                              dma_wmb()
-      <doorbell>                             <cmd doorbell>
-  rcu_read_unlock
-                                             list_del_rcu()
-                                             <wipe ASID>
-
-In this case I think we never miss an invalidation, the list_del is
-always after the HW has been fully fenced, so I don't think we can
-have any issue. Maybe a suprious invalidation if the ASID gets
-re-used, but who cares.
-
-Attach is different..
-
-   Inv CPU                                   Attach CPU
-
-  write io_pte
-  rcu_read_lock
-    list_for_each // empty
-                                             list_add_rcu()
-                                             Update device descriptor
-                                             <make description inv cmd>
-                                             dma_wmb()
-                                             <cmd doorbell>
-  rcu_read_unlock
-
-As above shows we can "miss" an invalidation. The issue is narrow, the
-io_pte could still be sitting in write buffers in "Inv CPU" and not
-yet globally visiable. "Attach CPU" could get the device descriptor
-installed in the IOMMU and the IOMMU could walk an io_pte that is in
-the old state. Effectively this is because there is no release/acquire
-barrier passing the io_pte store from the Inv CPU to the Attach CPU to the
-IOMMU.
-
-It seems like it should be solvable somehow:
- 1) Inv CPU releases all the io ptes
- 2) Attach CPU acquires the io ptes before updating the DDT
- 3) Inv CPU acquires the RCU list in such a way that either attach
-    CPU will acquire the io_pte or inv CPU will acquire the RCU list.
- 4) Either invalidation works or we release the new iopte to the SMMU
-    and don't need it.
-
-But #3 is a really weird statement. smb_mb() on both sides may do the
-job??
-
-> > The number of radix levels is a tunable alot of iommus have that we
-> > haven't really exposed to anything else yet.
-> 
-> Makes sense. I've left an option to pick mode from MMU for cases where
-> dev/iommu is not known at allocation time (with iommu_domain_alloc()).
-> I'd guess it's reasonable to assume IOMMU supported page modes will
-> match MMU.
-
-Reasonable, but for this case you'd be best to have a global static
-that unifies the capability of all the iommu instances. Then you can
-pick the right thing from the installed iommus, and arguably, that is
-the right thing to do in all cases as we'd slightly prefer domains
-that work everywhere in that edge case.
-
-Jason
