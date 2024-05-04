@@ -1,98 +1,72 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34D03539C
-	for <iommu@lists.linux.dev>; Sat,  4 May 2024 02:06:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 277AD4C81;
+	Sat,  4 May 2024 04:30:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714788415; cv=none; b=EGyTGZuGHsyxA33M+uNSAdewzzCUEJhV088vK9diDnAy5GwNDeBfXcKk9mLyOXR3nRaHrBLCXatdDwOESS+anNmMdLV/iaxfBqOSDzvjOISWTq189atfw7I/oUi8q2wvw6QUXMUpJYv8ZbgJtXjUvqiVd81Raz2nDswnttuFN9s=
+	t=1714797015; cv=none; b=IcSY7KcElAf0i8wufbFPqj4paW8lKFHATM7gBBIBnmTVlHjGg51+U6PuFKAU5S54H1AdcPgSUv68Zsb54HTD5FhU+a2rZZK+v7HKfLsbZtBS15UtQGsNDjmD4OtNk3DIsLqK4Nh6aZWv0V53cYstl20tBwmCZSMYUhtCh4aDyW8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714788415; c=relaxed/simple;
-	bh=9/HUwWFCApOtzCHm2pdpofQL3S13z9SIlzxOPXrKgLE=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=uFC75PHgPnAmIqBA8dtc9p0/28TgfZUEzEUSkek+P22sqNiUERqdl5CIPWD7996DiEhvE+EbgMsxYsTpiTIMU/Gw/y0jLeWu8qftRBZe2VzOqfAZ54ANYKSSAt+JwONk5yNc8DAobOewwfzALEjEw/H3+YTocK99IzO0BLfnkrs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AL7P9+4f; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1714797015; c=relaxed/simple;
+	bh=jYNsz6OVqjTGoptCZiC9/xNU+xvZbLRRi5o/NDi8IqM=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=qgQZ4bXHvLigw3JvTqHVESvp2NyLmshOFAdLeWYdEi+N7Qhg32OfanbERsvd6rsI3SqwkneQEJ+9f+WnWvvQmizig3v21UOGBMGzAkqRiDBjdNxwFYFhtzerw1Xl8U5OlfCaxtw2b0sLWJddYFmqhT566prtB2J6p1gwigqwJC4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=bHNArNvF; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=bombadil.srs.infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AL7P9+4f"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714788412; x=1746324412;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=9/HUwWFCApOtzCHm2pdpofQL3S13z9SIlzxOPXrKgLE=;
-  b=AL7P9+4f0jOzNrZ01eD0aKTI0ZZt/vOGaFexEdJSDNsgF4RoDWWxvgyI
-   uoH2MtqVwrHldHYFoSPLFMoSxjtqQ1FPiPPLsDjM6o1AiBDzv9/XIGx7k
-   K2lRJIyoCIZW7w2It4/IkCQQ73nFQrlyUOJ8dmkOJlDQJbtx5ZqQ7hlwK
-   34Avc3iTUw/yO2u3/9995av1203+HDqscx3HbVFnA4VNKVSaKDRFwGt1f
-   WugVkO/Cnp/UrUI8AKKUQoJEGYUrYjhhOUumKgEqv7wp3DgnWkcwfmXMU
-   0g0LwLfZk4oNVe1t8YljRi417VwyuFU0MRWyHt3THJ3z+3mAVpqSVhM9G
-   A==;
-X-CSE-ConnectionGUID: i1DOmm7bQ9ycQjCHF+cfeQ==
-X-CSE-MsgGUID: jilpvzgrST2KTnhus+hghg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11063"; a="14395695"
-X-IronPort-AV: E=Sophos;i="6.07,252,1708416000"; 
-   d="scan'208";a="14395695"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2024 19:06:51 -0700
-X-CSE-ConnectionGUID: fbqs6S7CTPSDYfcFMS4Sgg==
-X-CSE-MsgGUID: +lc4EfxITNWBw/CbQ7Frqg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,252,1708416000"; 
-   d="scan'208";a="58818072"
-Received: from unknown (HELO [10.239.159.127]) ([10.239.159.127])
-  by fmviesa001.fm.intel.com with ESMTP; 03 May 2024 19:06:47 -0700
-Message-ID: <b17ca96a-9e0c-43ca-9815-fee5a3661ad4@linux.intel.com>
-Date: Sat, 4 May 2024 10:05:14 +0800
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="bHNArNvF"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
+	Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+	Content-Description:In-Reply-To:References;
+	bh=fnDdNrTJhZMeuBRj3dTfFT3upHV1RLKoSbXh6YT8YtY=; b=bHNArNvF/BUjcrnSqlbAM/hSiP
+	9kEgqllAmqqrbEz5JO+TW9eTY/BgRcPt8XpCEmMrD0iL3yzOarNoB8mepp61ZmUKSYPRUHGGbsMsT
+	RVzfiS3DHy3wUJhtCLO8r01GH7JC6RbclH+L5HBgLragXn9ZdWmgTDKPxoWaQraVuyIb3XBh2Rd7q
+	e03rwn47DLASxY9q/XZN+SXfxgoo7V6m/w7Gl3GvdSUrkUUaFvpzagl4UKQO6k9fi16oLcSnWxjny
+	qi9LhiXMGr24IIh+3+aEsAgqn5CW8Vhuc3fz6QcZ6X9WKEvXFngfS1MdeH/cxpMV6TnWQdMnFfnHS
+	z5eyj5Jg==;
+Received: from 2a02-8389-2341-5b80-39d3-4735-9a3c-88d8.cable.dynamic.v6.surfer.at ([2a02:8389:2341:5b80:39d3:4735:9a3c:88d8] helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.97.1 #2 (Red Hat Linux))
+	id 1s372L-00000001F3e-0qFZ;
+	Sat, 04 May 2024 04:30:13 +0000
+Date: Sat, 4 May 2024 06:30:09 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux.dev
+Subject: [GIT PULL] dma-mapping fix for Linux 6.9
+Message-ID: <ZjW50TUK_CvTAXrj@infradead.org>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com, Palmer Dabbelt <palmer@dabbelt.com>,
- Albert Ou <aou@eecs.berkeley.edu>, Anup Patel <apatel@ventanamicro.com>,
- Sunil V L <sunilvl@ventanamicro.com>, Nick Kossifidis <mick@ics.forth.gr>,
- Sebastien Boeuf <seb@rivosinc.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, devicetree@vger.kernel.org, iommu@lists.linux.dev,
- linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux@rivosinc.com
-Subject: Re: [PATCH v4 2/7] iommu/riscv: Add RISC-V IOMMU platform device
- driver
-To: Tomasz Jeznach <tjeznach@rivosinc.com>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Paul Walmsley <paul.walmsley@sifive.com>
-References: <cover.1714752293.git.tjeznach@rivosinc.com>
- <68afb8d5e45e82dfc818385e01e9ddaa659007e1.1714752293.git.tjeznach@rivosinc.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <68afb8d5e45e82dfc818385e01e9ddaa659007e1.1714752293.git.tjeznach@rivosinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 
-On 5/4/24 12:12 AM, Tomasz Jeznach wrote:
-> Introduce platform device driver for implementation of RISC-V IOMMU
-> architected hardware.
-> 
-> Hardware interface definition located in file iommu-bits.h is based on
-> ratified RISC-V IOMMU Architecture Specification version 1.0.0.
-> 
-> This patch implements platform device initialization, early check and
-> configuration of the IOMMU interfaces and enables global pass-through
-> address translation mode (iommu_mode == BARE), without registering
-> hardware instance in the IOMMU subsystem.
-> 
-> Link:https://github.com/riscv-non-isa/riscv-iommu
-> Co-developed-by: Nick Kossifidis<mick@ics.forth.gr>
-> Signed-off-by: Nick Kossifidis<mick@ics.forth.gr>
-> Co-developed-by: Sebastien Boeuf<seb@rivosinc.com>
-> Signed-off-by: Sebastien Boeuf<seb@rivosinc.com>
-> Signed-off-by: Tomasz Jeznach<tjeznach@rivosinc.com>
+The following changes since commit e67572cd2204894179d89bd7b984072f19313b03:
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+  Linux 6.9-rc6 (2024-04-28 13:47:24 -0700)
 
-Best regards,
-baolu
+are available in the Git repository at:
+
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-6.9-2024-05-04
+
+for you to fetch changes up to 75961ffb5cb3e5196f19cae7683f35cc88b50800:
+
+  swiotlb: initialise restricted pool list_head when SWIOTLB_DYNAMIC=y (2024-05-02 14:57:04 +0200)
+
+----------------------------------------------------------------
+dma-mapping fix for Linux 6.9
+
+ - fix the combination of restricted pools and dynamic swiotlb
+   (Will Deacon)
+
+----------------------------------------------------------------
+Will Deacon (1):
+      swiotlb: initialise restricted pool list_head when SWIOTLB_DYNAMIC=y
+
+ kernel/dma/swiotlb.c | 1 +
+ 1 file changed, 1 insertion(+)
