@@ -1,79 +1,80 @@
-Received: from bee.tesarici.cz (bee.tesarici.cz [37.205.15.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5ADCF513
-	for <iommu@lists.linux.dev>; Sat,  4 May 2024 09:02:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.15.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77CD81CF8D
+	for <iommu@lists.linux.dev>; Sat,  4 May 2024 11:48:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=83.149.199.84
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714813347; cv=none; b=JjWkE21KkR4fEgMI1/lN5cvXEH9jpduVzc7zuLo4aAAgk3tDb3vrXT4/pUtX144EgvaS+QaT4hZaHhboxAla2UWRqvaFU2iBFoxdFPVAiJR0q34WogMklMf1Hb0mscNTzl1XOLx6JFzA4/TDPVenboJjhQTb5PMxxNbcvjqwZxg=
+	t=1714823316; cv=none; b=gSYt85xKZZT6mTfUIjKy6tlSgiCnIMYrJe822IafyHM7rQ+DfgerPgaBlLV0uJnhRXeOm1lWTz0hdA84uWQx02lZD6SZ8Zz4nbFsq6XeqSSONOU3WlKr+dIr7PQW0YsH4xkqPEqtzOcAxs0OOcJHHWPu8o+xCrFHZybLxrL86/0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714813347; c=relaxed/simple;
-	bh=1vE6pwhHDCeA5eZS4yNcrOWki7vm3bJvBPL6o+lt1D4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VT0zlvMHx+kCxtz/eYITZ8+7cUKtYenEcQHHFuOgn/Bs9CS+iZZxVAfU3ck50vi63jU27BB4lmzr16iG5vRHjcHR1XbjsS9PGpXsJiFDS69amq9+zChBmhnVbDdnEUWlsfq+V80eTYm0JQY+iopl8LUiT6FrJdjzxzzwLB+ceLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz; spf=pass smtp.mailfrom=tesarici.cz; dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b=QcMEOHKJ; arc=none smtp.client-ip=37.205.15.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tesarici.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tesarici.cz
+	s=arc-20240116; t=1714823316; c=relaxed/simple;
+	bh=ZVhAMwTqsnOgrOxlKIXUEUseHsv7RukAzuPthcq0kjs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=oi1o4/60VJiGmwcm0XQ7fMyYbpigYvQWlQsfAz9JBHqnl8C7YeCoi1hy3LKnv7tvOZv2PpJIMOwoRInRSMp0YtppZpOhwaKsBt4yIekhqUYJ7uajs4glUNTUCVIdE27Tkwfp5gzwqUxPaHyZLRcNe225nLW8Aoq5rNZ6c4Mley0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru; spf=pass smtp.mailfrom=ispras.ru; dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b=JXBxVbdl; arc=none smtp.client-ip=83.149.199.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=ispras.ru
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ispras.ru
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tesarici.cz header.i=@tesarici.cz header.b="QcMEOHKJ"
-Received: from meshulam.tesarici.cz (dynamic-2a00-1028-83b8-1e7a-4427-cc85-6706-c595.ipv6.o2.cz [IPv6:2a00:1028:83b8:1e7a:4427:cc85:6706:c595])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by bee.tesarici.cz (Postfix) with ESMTPSA id BBC1B1BB71A;
-	Sat,  4 May 2024 11:02:23 +0200 (CEST)
-Authentication-Results: mail.tesarici.cz; dmarc=fail (p=quarantine dis=none) header.from=tesarici.cz
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tesarici.cz; s=mail;
-	t=1714813343; bh=WTiMVR4lDzki0V9uKJuS4ncHuqC5yWy3Y5R0O+ilEHQ=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=QcMEOHKJirmrZl1n0uO4HEKSY6I1E+XiaHCASjoWMSHlyqIWKWziwlzInyjhwD8AE
-	 oQCtFe7sAbp0LwSxDVo7+hTFDmXx1VdX5LiK286IzWsuCcEuh/hiMRC0IdICzEhPtI
-	 XqNnd0KMLd1xj+p5XYBlXi30hkTboQXUvio4dS3LqDCTNf8DUyWv2jU3rafTjUUcjM
-	 Xf51ovQU+Oyj1JGVPRGpw+uh40ftIb9zBod4dGvwWPQ3hudzGY2X5wf87jF1MFMX9K
-	 JuWLMkwPo39yk2/Sf1xLBniAocDwj0/GIRVGH9ib1HJjxoyVc2zKIbTywUBS8kWz0c
-	 Jyd2gvgZqdpZw==
-Date: Sat, 4 May 2024 11:02:23 +0200
-From: Petr =?UTF-8?B?VGVzYcWZw61r?= <petr@tesarici.cz>
-To: Christoph Hellwig <hch@lst.de>
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux.dev, Marek Szyprowski <m.szyprowski@samsung.com>, Robin
- Murphy <robin.murphy@arm.com>, Michael Kelley <mhkelley58@gmail.com>,
- Nikita Ioffe <ioffe@google.com>
-Subject: Re: [PATCH] swiotlb: Initialise restricted pool list_head when
- SWIOTLB_DYNAMIC=y
-Message-ID: <20240504110223.3a854f96@meshulam.tesarici.cz>
-In-Reply-To: <20240502125601.GA20723@lst.de>
-References: <20240502093723.16820-1-will@kernel.org>
-	<20240502125601.GA20723@lst.de>
-X-Mailer: Claws Mail 4.2.0 (GTK 3.24.41; x86_64-suse-linux-gnu)
+	dkim=pass (1024-bit key) header.d=ispras.ru header.i=@ispras.ru header.b="JXBxVbdl"
+Received: from localhost.localdomain (unknown [5.228.116.47])
+	by mail.ispras.ru (Postfix) with ESMTPSA id 8ACD64078516;
+	Sat,  4 May 2024 11:48:30 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.ispras.ru 8ACD64078516
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ispras.ru;
+	s=default; t=1714823310;
+	bh=fJAdS2oTmNJFXoSsqn0VZmRufTgd0FjPnnmSH7kQj5s=;
+	h=From:To:Cc:Subject:Date:From;
+	b=JXBxVbdl8C+23BYcwE8qSLmMKrwrP6t7jNKgc2kVWDpv6X+ydymVwIO6Hv78Jd/h4
+	 NJlpaqYTqQ3734HHalDdfSTm953p833OJ/jzp1ZON12+axIZV5Ded+tEC3yP5YwQoe
+	 yutaRr98lDAJIlp17gYRyNepucWpqJ5o1qCU8pCQ=
+From: Fedor Pchelkin <pchelkin@ispras.ru>
+To: Xiang Chen <chenxiang66@hisilicon.com>,
+	Barry Song <21cnbao@gmail.com>
+Cc: Fedor Pchelkin <pchelkin@ispras.ru>,
+	Christoph Hellwig <hch@lst.de>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Alexey Khoroshilov <khoroshilov@ispras.ru>,
+	lvc-project@linuxtesting.org
+Subject: [PATCH v2 0/4] dma-mapping: benchmark: fixes and error handling improvements
+Date: Sat,  4 May 2024 14:47:00 +0300
+Message-ID: <20240504114713.567164-1-pchelkin@ispras.ru>
+X-Mailer: git-send-email 2.45.0
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Thu, 2 May 2024 14:56:01 +0200
-Christoph Hellwig <hch@lst.de> wrote:
+Some of the error paths inside do_map_benchmark() do not behave well.
+There is also an insufficient node id validation and an out-of-bounds
+access in NUMA_NO_NODE case.
 
-> Thanks,
-> 
-> applied to the dma-mapping for-linus branch.
-> 
-> I plan to send it to Linus this weekend unless someone find a grave bug
-> in this pretty obvious one liner.
+Adjust these issues with the following patches.
 
-Thank you, and big thanks to Will for the fix!
+Changelog
+v2:
+ * Rework kthread-related error handling patch (thanks to Robin Murphy) and
+   merge patches 1/2 and 2/2 from v1 into a single patch - 1/4 in v2.
+ * Three additional patches:
+ * * Avoid needless copy_to_user if benchmark fails (suggested by Barry Song).
+ * * Fix node id validation (found while testing the previous ones).
+ * * Handle NUMA_NO_NODE correctly.
+v1:
+ * https://lore.kernel.org/linux-iommu/20240502161827.403338-1-pchelkin@ispras.ru/
 
-Yes, the fix is obviously correct. During development, the pool list was
-never dereferenced when mem->can_grow was false, but I forgot to add
-the initialization when I optimized away the check for can_grow.
+Fedor Pchelkin (4):
+  dma-mapping: benchmark: fix up kthread-related error handling
+  dma-mapping: benchmark: avoid needless copy_to_user if benchmark fails
+  dma-mapping: benchmark: fix node id validation
+  dma-mapping: benchmark: handle NUMA_NO_NODE correctly
 
-BTW this mem->can_grow flag is also why mem->dyn_alloc can be left
-uninitialized, but now I wonder if it should be initialized even though
-it's unused, just to make the code more robust in case of future
-changes.
+ kernel/dma/map_benchmark.c | 25 ++++++++++++++++---------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
 
-Petr T
+-- 
+2.45.0
+
