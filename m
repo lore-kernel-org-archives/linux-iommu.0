@@ -1,92 +1,108 @@
-Received: from mail-yw1-f169.google.com (mail-yw1-f169.google.com [209.85.128.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B53841097B
-	for <iommu@lists.linux.dev>; Sat,  4 May 2024 14:21:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 929D16FA8;
+	Sun,  5 May 2024 13:23:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714832487; cv=none; b=rxvOIdGovtlqpQbt/6M9nRzQnKa+RmbItxFdYh4nmGNATK+xB/PZFbNiPZIsOtJ7tuMp4blDJdxOvR7jOajMxmnJ+drcHIqVimqaYmMIpcGG6bZ8fmmlc+WsIWUJzzAtu8YvQNdxFMSX5kuuN5A7mkbQLu2Jl2LsmUhBgkmfHwE=
+	t=1714915399; cv=none; b=IqkzMk1GcN7CqAFP/yp6062Bfe7z3tEdwxR4Mj8WmQCAYFIoZT0tmkhUCqVI8D/1nKRuqhnJRg8gv30+Pc/qi2ykxBaF+Dh/CyfI3KCCLyuAYIpB3UwDmO4XM/p67AzvAvEwbTvPlF0cRXYTF5/nLji00/5uEfnM/LjMIBfM83g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714832487; c=relaxed/simple;
-	bh=tZu4VAW+NmqBXU5r4goND28T7QWYa9IZfkx6cN9W5dE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Vnglkts0PyD4xRgwtEsDmFH5Ufok+I5Yxo6U4EjXUHNw5YpuGtK0ph1Bbr7FybobPMoyh1AAhox3lH499Un16Salx+LXoOExBHodVlFF1mgVkXIixfsTLeKA4Mf2sM5YYW1G9WPduDDm0ZcceXS1h1jxYGFGVz5dd1V0VXohbyk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=qpP+AUvH; arc=none smtp.client-ip=209.85.128.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1714915399; c=relaxed/simple;
+	bh=jjLgkhsN4WjaKTyfGnNOYYnBmrIQeAxiqhWYRqvmHnw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mBO0L2ivwmNd/EFb4BmUz4MqAe7MQgGwQXE26if4JxzQrLXsRkUcpHRcSUv2zML6AUvZsBCGb5n0tqKcj8G64ms1nUs7xstn8sxio8+7WrkPRsM4icbwsobX4aISUHFVl/gwdCWeCtXGHAfJDd2uuAZALNtopQq8MEvUk605u54=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N5GHCqgu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qpP+AUvH"
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-61b2218ab6fso3320717b3.1
-        for <iommu@lists.linux.dev>; Sat, 04 May 2024 07:21:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1714832484; x=1715437284; darn=lists.linux.dev;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=+DBwwe+wkuA82m8rFDFGoJDAYtRKQ5906Wlgt6oZaBY=;
-        b=qpP+AUvH5XakqyEIqRAOZX6oBLEbatEcb4KGEBP9KflVMGDF++aoyqTzFAa6sp1uhS
-         XaMP7uoVYbO9FKpVx64428q6Ksl9Z0td2Zt8KtuGn0aiySYMGll8PDUpQpy/Yf4q27dM
-         LtsFrb+2KRpRAIcmCxt1tMQMVpWn0lYmnfLZApA7dLRKOiLnsnvJkXXYRc2CO/us1q9r
-         qUZ+EcLffC80uEXSioP3iF1K/AQGNhzCMY9A7eFL9z3AjT3EEua4HSN5W26sxXqRbElD
-         tBK8NgOuwnX9uYYZ3Q7u5CIw32dfTzgKHF688uMzAy1GmRpECnQHHnzxzRs83Z8EHR03
-         pVGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1714832484; x=1715437284;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+DBwwe+wkuA82m8rFDFGoJDAYtRKQ5906Wlgt6oZaBY=;
-        b=u49YGpVhiYUVoEv5qlgUDZH4nQn488+WVEcjaxmYJmPq2Pasj9FEeS0j4jtEiycvWZ
-         vK/oWisGnVrqRoYWTnnd0e1hFK5zcOfQcILlQg1AHKo+hBgv9w5Hwb+fFC06IygKQ9dU
-         /nFAmWOcvUAYIaGLKOIEoWNQE0ahIoLtYer5OzJhFQMW/Soj8zFJfgGPEVdJ8FEq8KF+
-         rWj2Zy/6U3ib3ImRo+JFhsrSPYd7OxRIJKCpVMcLHxJ9Xf7bl2lrKFkI1h+iYNkh5GvD
-         JZKNVJRMvG9BjngOu6VS5Cv+oWlT5e1h0Km4czZoPl05Vqcwx1BvQic6FYTT1LgqaANb
-         WucA==
-X-Forwarded-Encrypted: i=1; AJvYcCWcMnj3C6XHm9kXHAsqgG+rH58+Q1SU5MmC0IQc3cTd3yO0qjoLayMxvpTNX8rVkbAYgY4MbfPtorfrvlSkoHZphjim3AU=
-X-Gm-Message-State: AOJu0YxKu9urrBs3i1xwsrpXp1fInHCDIvSDH8MxlLD0MNfhWYs3gN2C
-	Ur+2SPTWc9hJdYkjk9OmuY7Dds6744580SoMqRdO9oL/HyqK9VPExu7GlOui/8OeemEthQGbQMH
-	an0wo1RBNf2sahOxstiD3cqbZT0b6iu+H0v30WA==
-X-Google-Smtp-Source: AGHT+IGipg9+a+iXpJEkj7L1mkHMjRUAjAegfTWpPckFuHuUyiARO8KmICQzHZAXcI6OSuYcv0DQce9NznhiDnOgw/4=
-X-Received: by 2002:a81:a18f:0:b0:61b:3356:c59f with SMTP id
- y137-20020a81a18f000000b0061b3356c59fmr5546845ywg.35.1714832484671; Sat, 04
- May 2024 07:21:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N5GHCqgu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5357AC113CC;
+	Sun,  5 May 2024 13:23:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1714915399;
+	bh=jjLgkhsN4WjaKTyfGnNOYYnBmrIQeAxiqhWYRqvmHnw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=N5GHCqguzvr4zXSvt+GZwExP+D4+ViMFS5ymKVV8WJY+Di3qvsEp58G9bzM0BAvHF
+	 stRLiuNs0tAjzhnbTK/8wL+10XQCHTZHBZmaoU+SwNNRsdc3zzqE5WaLVDQBWFhIvC
+	 raDXBTYUnDUM4UtQUw45YXqktzY6vnT/akcSLM5mL4wzzUFTgqPDcpICsM95p6XfvX
+	 O4u+h30wrlLfM0mEibSSqU02f0NAECeoPPcaFHr27oYznJKIN+ZSxxnHDgLyJZSjxm
+	 mLLAI46IamcYUju5EL6BBITjFGKFCEyP7IgsxkDT4H6bFHDEu7oWOLwbNzfk28/Nrq
+	 GrAQIMAtf2uAg==
+Date: Sun, 5 May 2024 16:23:14 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Zhu Yanjun <zyjzyj2000@gmail.com>
+Cc: Christoph Hellwig <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>,
+	Marek Szyprowski <m.szyprowski@samsung.com>,
+	Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+	Jason Gunthorpe <jgg@ziepe.ca>,
+	Chaitanya Kulkarni <chaitanyak@nvidia.com>,
+	Chaitanya Kulkarni <kch@nvidia.com>,
+	Jonathan Corbet <corbet@lwn.net>, Jens Axboe <axboe@kernel.dk>,
+	Keith Busch <kbusch@kernel.org>, Sagi Grimberg <sagi@grimberg.me>,
+	Yishai Hadas <yishaih@nvidia.com>,
+	Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+	Kevin Tian <kevin.tian@intel.com>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	=?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-block@vger.kernel.org, linux-rdma@vger.kernel.org,
+	iommu@lists.linux.dev, linux-nvme@lists.infradead.org,
+	kvm@vger.kernel.org, linux-mm@kvack.org,
+	Bart Van Assche <bvanassche@acm.org>,
+	Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+	Amir Goldstein <amir73il@gmail.com>,
+	"josef@toxicpanda.com" <josef@toxicpanda.com>,
+	"Martin K. Petersen" <martin.petersen@oracle.com>,
+	"daniel@iogearbox.net" <daniel@iogearbox.net>,
+	Dan Williams <dan.j.williams@intel.com>,
+	"jack@suse.com" <jack@suse.com>
+Subject: Re: [RFC RESEND 16/16] nvme-pci: use blk_rq_dma_map() for NVMe SGL
+Message-ID: <20240505132314.GC68202@unreal>
+References: <cover.1709635535.git.leon@kernel.org>
+ <016fc02cbfa9be3c156a6f74df38def1e09c08f1.1709635535.git.leon@kernel.org>
+ <c9f9e29e-c2e1-4f99-b359-db0babd41dec@linux.dev>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <d4cc20cbb0c45175e98dd76bf187e2ad6421296d.1714472573.git.robin.murphy@arm.com>
-In-Reply-To: <d4cc20cbb0c45175e98dd76bf187e2ad6421296d.1714472573.git.robin.murphy@arm.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Sat, 4 May 2024 17:21:12 +0300
-Message-ID: <CAA8EJpqcCpiuqeU9Bktev9vSa6Gdw1jTn+VAk+xbu9kKPTrjEg@mail.gmail.com>
-Subject: Re: [PATCH] arm64: Properly clean up iommu-dma remnants
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: joro@8bytes.org, will@kernel.org, catalin.marinas@arm.com, 
-	linux-arm-kernel@lists.infradead.org, iommu@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c9f9e29e-c2e1-4f99-b359-db0babd41dec@linux.dev>
 
-On Tue, 30 Apr 2024 at 13:23, Robin Murphy <robin.murphy@arm.com> wrote:
->
-> Thanks to the somewhat asymmetrical nature, while removing
-> iommu_setup_dma_ops() from the arch_setup_dma_ops() flow, I managed to
-> forget that arm64's teardown path was also specific to iommu-dma. Clean
-> that up to match, otherwise probe deferral will lead to the arch code
-> erroneously removing DMA ops set elsewhere.
->
-> Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Link: https://lore.kernel.org/linux-iommu/Zi_LV28TR-P-PzXi@eriador.lumag.spb.ru/
-> Fixes: b67483b3c44e ("iommu/dma: Centralise iommu_setup_dma_ops()")
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  arch/arm64/Kconfig          | 1 -
->  arch/arm64/mm/dma-mapping.c | 8 --------
->  2 files changed, 9 deletions(-)
+On Fri, May 03, 2024 at 04:41:21PM +0200, Zhu Yanjun wrote:
+> On 05.03.24 12:18, Leon Romanovsky wrote:
+> > From: Chaitanya Kulkarni <kch@nvidia.com>
 
+<...>
 
-Just wanted to ping regarding the patch. It's still not a part of
-linux-net, Is it going to be picked up for 6.10?
+> > This is an RFC to demonstrate the newly added DMA APIs can be used to
+> > map/unmap bvecs without the use of sg list, hence I've modified the pci
+> > code to only handle SGLs for now. Once we have some agreement on the
+> > structure of new DMA API I'll add support for PRPs along with all the
+> > optimization that I've removed from the code for this RFC for NVMe SGLs
+> > and PRPs.
+> > 
 
--- 
-With best wishes
-Dmitry
+<...>
+
+> > diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+> > index e6267a6aa380..140939228409 100644
+> > --- a/drivers/nvme/host/pci.c
+> > +++ b/drivers/nvme/host/pci.c
+> > @@ -236,7 +236,9 @@ struct nvme_iod {
+> >   	unsigned int dma_len;	/* length of single DMA segment mapping */
+> >   	dma_addr_t first_dma;
+> >   	dma_addr_t meta_dma;
+> > -	struct sg_table sgt;
+> > +	struct dma_iova_attrs iova;
+> > +	dma_addr_t dma_link_address[128];
+> 
+> Why the length of this array is 128? Can we increase this length of the
+> array?
+
+It is combination of two things:
+ * Good enough value for this nvme RFC to pass simple test, which Chaitanya did.
+ * Output of various NVME_CTRL_* defines
+
+Thanks
