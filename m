@@ -1,50 +1,59 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E53542ABE
-	for <iommu@lists.linux.dev>; Mon,  6 May 2024 07:42:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A7125A0E1
+	for <iommu@lists.linux.dev>; Mon,  6 May 2024 07:47:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1714981351; cv=none; b=aUbnjCOAXS2R26/RaP9YeORXkb0r5nQ3WgEAn5OjVGtP/Y4bGyITNDk3G+p8CTKrLHLf896MXIsoY5ij/2zmSstdkcab0XxX/m0R8cmAMbfumf4X8UIsSXMZHyvXH3Nod5wC+X7vSxU2lwd6yjQBk3vyb/a+DrhjKf6JY1lTjCQ=
+	t=1714981676; cv=none; b=RyXfkN5fgOAnVWPEjmYZQoknDofRHT6aXu0GxgLjYD3oa0uJtw9vNY3trmmzVFE7LKus3hHu1bwculd9CxNnF+wDTno1gqCZGjIfSoR+771VIWbMvXANsfzIKb/Oboa5Hz3uhuBRiysQEC2My8V/HIBFhuFmgctpDKdGVSe+j08=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1714981351; c=relaxed/simple;
-	bh=iHKO1qzhns2fF3u7KQYzVcb8QhFm4i6HTrDF0c5MQPk=;
-	h=Message-ID:Date:MIME-Version:Cc:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=njBd0vTQZxv5hl36bSF2ULwO3r860pO9EyAO3cgEGCfZ3ePkaaSLAPfBXmgQjrhDJkShS98rxasaz08dcwHmNocDOBMx/yKc7dZ4r0ECUBzv5VMIuw/mKKqVtKNoMszrXR8FTl7VIOrfVbZx7/kaqAooWeapeRbHxLioodfv9Oc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=none smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=atd8AKYI; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1714981676; c=relaxed/simple;
+	bh=Wio6F/YmrR4vHwWpPbIwBqoIK98HhkujpX2cSl6mgx4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WExB+nLYN6kVOx7KiCOGZRQJBfuNN//1IeJaTr6clYVhN/lObhJ83iWAkt7F+VI1hLDqI5U2dKW8bCih2zVp+2bMtdJTm2GJk7Mvj9teGzLm3+UHDgdhTptTGsNQBjQLagIMIsjyXOH11NGLPNeGbBnV+V5uIMsIctQ4TXQCQe8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BlU6GlBM; arc=none smtp.client-ip=209.85.167.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="atd8AKYI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1714981349; x=1746517349;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=iHKO1qzhns2fF3u7KQYzVcb8QhFm4i6HTrDF0c5MQPk=;
-  b=atd8AKYImLcIDSMEPdDlhmhc/o6Ynt/eanj/RSNjZP+HbvEbAJlQ2+KQ
-   H6soWEaBczKlFKH6VLbWJ1R+WIm7piyprLXMjl8WeoeQVlbipnn00TVjQ
-   pho7jLutB2u4aMGrLTDXPFNS3n0qIORge/z23hjbBdn/MlA2tc2E0Bfhv
-   yOnqfMWtmgVCxneHtdDPMBFAjY28lUfsZhXOEivEdsl9CZRJawaAv4S4p
-   tV5sE7swUiFpBlmjelRofjzZvXNy6p0pXXIpSDaj6HRznVQpSmYqnRbYU
-   KPM3GfGAKgVQTIiQCL2vxpJOOyrxA0x3Atd5j9LmJmxT55byXQL7hK77L
-   w==;
-X-CSE-ConnectionGUID: Fw/sTMRHQv+E8b1n16nmyA==
-X-CSE-MsgGUID: L/WRWaXKRn6sVZ1jArA7yA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11064"; a="11249418"
-X-IronPort-AV: E=Sophos;i="6.07,257,1708416000"; 
-   d="scan'208";a="11249418"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 00:42:27 -0700
-X-CSE-ConnectionGUID: pPqXQTQxT0iQdRXrEE8LaQ==
-X-CSE-MsgGUID: FU75hEBKQSKFvFqwFPit3w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,257,1708416000"; 
-   d="scan'208";a="32889587"
-Received: from blu2-mobl.ccr.corp.intel.com (HELO [10.125.244.72]) ([10.125.244.72])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 00:42:24 -0700
-Message-ID: <b4fe7b7c-d988-4c71-a34c-6e3806327b27@linux.intel.com>
-Date: Mon, 6 May 2024 15:42:21 +0800
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BlU6GlBM"
+Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-51f45104ef0so1673526e87.3
+        for <iommu@lists.linux.dev>; Mon, 06 May 2024 00:47:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1714981673; x=1715586473; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=I9z1KGjtSCofC1Qn668FsPqAYxwkoX9IV+hB8APKITQ=;
+        b=BlU6GlBMRPj7ejonctx8wBBoxfeUSxdp2WvEWWMYKLswvmVM9y9yg8z0D2INX46F66
+         1uHysIqhnuXn8URiJHH49EovKLvRNu6avsICGMeR6hl2tlE4j7ocm4CTAlKKAXvqCZBw
+         O1C5tz/eO8bkJsocXaMOigN9ykqIIa4OXrn56QM7+/6r4VI3q/lzgKhmuGpCed2WPFrQ
+         PdH7K3hCwt3jtReicIjRvdY1MFSun0M7x5ptjqjIkNiXjx0buTYJfyrIO1jN6FnKQMBY
+         LipNFuKKsVJBMzf4Yv8mz/M6F+FhKv76uz0Yc869B+k/REqsL2DPa1Exx9t2liiLDHEO
+         4ntA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1714981673; x=1715586473;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=I9z1KGjtSCofC1Qn668FsPqAYxwkoX9IV+hB8APKITQ=;
+        b=cfBG3mXiD0cq1sEqjUI4SaUofTMXl5xebDszfJj74wIeyH6L/rocJCa20jrGmUbCSS
+         x6VkG8Oq9E43/af9PvR4hV8I7/B4/5yQKV8yR2WgIxA0/+1oQLLb7QVLueO71eRlz2FP
+         GI5BsPAW1bSTyTOtaIS77pr7mUCQ9wK4algSxAAKFOLsOxDGVFY2ogHriJmDkoJjw9YV
+         PEvv/6n8Bjho0pItzi+mVyo2xI8e4BMw3rtJh//KjLLgQiZBoancSI45p1VwvzUV/SP0
+         UcVbKMZeo/l39tz1ntqsizyqSh53USh2ZHKrKIw+nep/3kTlBLStLNCqhoRR6rmlNIb5
+         BerA==
+X-Forwarded-Encrypted: i=1; AJvYcCVjdWU8BzcEtZ2TQ2PqYmZLqifPuqHhvpUAh3Cyd5HwdQFazq6yD0yuwyHUy/Zqxu5fQrzKu35ThXYUkYJFj0LkZNxmS0A=
+X-Gm-Message-State: AOJu0Yy/jk1AFrht9jcb173cbuQUYzLh1tC+su3ROJrsLvWFlr/AQ74x
+	ZIveVFiFFxJsfRyXaoJTF8uhl3Ki0RoIfW5FX9FBUkQxPdjuFTTV
+X-Google-Smtp-Source: AGHT+IF550fcLhXMftt3ugdZ1vjI7DRzOJDdu0OvXkiureQq0Ge5CAC5bewseI4ze1VtRp6gitVU9Q==
+X-Received: by 2002:ac2:53b3:0:b0:51a:df97:cc8e with SMTP id j19-20020ac253b3000000b0051adf97cc8emr6310268lfh.4.1714981672388;
+        Mon, 06 May 2024 00:47:52 -0700 (PDT)
+Received: from ?IPV6:2001:678:a5c:1202:2659:d6e4:5d55:b864? (soda.int.kasm.eu. [2001:678:a5c:1202:2659:d6e4:5d55:b864])
+        by smtp.gmail.com with ESMTPSA id c3-20020ac244a3000000b00515bad4cd0asm1524209lfm.155.2024.05.06.00.47.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 06 May 2024 00:47:51 -0700 (PDT)
+Message-ID: <2a0d574d-6a3b-4344-9571-840eee569ae1@gmail.com>
+Date: Mon, 6 May 2024 09:47:50 +0200
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -52,75 +61,84 @@ List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Cc: baolu.lu@linux.intel.com,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "eric.auger@redhat.com" <eric.auger@redhat.com>,
- "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
- "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
- "Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
- "Pan, Jacob jun" <jacob.jun.pan@intel.com>
-Subject: Re: [PATCH v2 12/12] iommu/vt-d: Add set_dev_pasid callback for
- nested domain
-To: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- "joro@8bytes.org" <joro@8bytes.org>, "jgg@nvidia.com" <jgg@nvidia.com>
-References: <20240412081516.31168-1-yi.l.liu@intel.com>
- <20240412081516.31168-13-yi.l.liu@intel.com>
- <BN9PR11MB5276E97AECE1A58D9714B0C38C0F2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <d466eb97-8c2b-4262-8213-b6a9987f59ea@intel.com>
-Content-Language: en-US
-From: Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <d466eb97-8c2b-4262-8213-b6a9987f59ea@intel.com>
+Subject: Re: [PATCH v8 07/15] iommu/amd: Setup GCR3 table in advance if domain
+ is SVA capable
+To: Vasant Hegde <vasant.hegde@amd.com>, iommu@lists.linux.dev,
+ joro@8bytes.org
+Cc: suravee.suthikulpanit@amd.com, wei.huang2@amd.com, jsnitsel@redhat.com,
+ jgg@ziepe.ca, Jason Gunthorpe <jgg@nvidia.com>
+References: <20240418103400.6229-1-vasant.hegde@amd.com>
+ <20240418103400.6229-8-vasant.hegde@amd.com>
+ <333e6eb6-361c-4afb-8107-2573324bf689@gmail.com>
+ <3488f733-c920-4e2a-86f7-05dc1779685e@amd.com>
+Content-Language: en-US, sv-SE
+From: Klara Modin <klarasmodin@gmail.com>
+In-Reply-To: <3488f733-c920-4e2a-86f7-05dc1779685e@amd.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2024/4/30 17:19, Yi Liu wrote:
-> On 2024/4/17 17:25, Tian, Kevin wrote:
->>> From: Liu, Yi L <yi.l.liu@intel.com>
->>> Sent: Friday, April 12, 2024 4:15 PM
->>>
->>> From: Lu Baolu <baolu.lu@linux.intel.com>
->>>
->>> This allows the upper layers to set a nested type domain to a PASID of a
->>> device if the PASID feature is supported by the IOMMU hardware.
->>>
->>> The set_dev_pasid callback for non-nested domain has already be 
->>> there, so
->>> this only needs to add it for nested domains. Note that the S2 domain 
->>> with
->>> dirty tracking capability is not supported yet as no user for now.
->>
->> S2 domain does support dirty tracking. Do you mean the specific
->> check in intel_iommu_set_dev_pasid() i.e. pasid-granular dirty
->> tracking is not supported yet?
+On 2024-05-06 09:31, Vasant Hegde wrote:
+> Hi Klara,
 > 
-> yes. We may remove this check when real usage comes. e.g. SIOV.
-> 
->>> +static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
->>> +                      struct device *dev, ioasid_t pasid,
->>> +                      struct iommu_domain *old)
->>> +{
->>> +    struct device_domain_info *info = dev_iommu_priv_get(dev);
->>> +    struct dmar_domain *dmar_domain = to_dmar_domain(domain);
->>> +    struct intel_iommu *iommu = info->iommu;
->>> +
->>> +    if (iommu->agaw < dmar_domain->s2_domain->agaw)
->>> +        return -EINVAL;
->>> +
->>
->> this check is covered by prepare_domain_attach_device() already.
-> 
-> This was added to avoid modifying the s2_domain's agaw. I'm fine to remove
-> it personally as the existing attach path also needs to update domain's
-> agaw per device attachment. @Baolu, how about your opinion?
 
-We still need something to do before we can safely remove this check.
-All the domain allocation interfaces should eventually have the device
-pointer as the input, and all domain attributions could be initialized
-during domain allocation. In the attach paths, it should return -EINVAL
-directly if the domain is not compatible with the iommu for the device.
+> Thanks for the report.
+> 
+> Looking into the attached dmesg :
+> 
+> 2024-04-29T10:35:05+02:00 soda.int.kasm.eu kernel: AMD-Vi: Using global IVHD
+> EFR:0x0, EFR2:0x0
+> 
+> --> This means BIOS didn't setup the EFR flags in ACPI IVRS table (its BIOS issue).
+> 
+> Commit 8e0179733172 (iommu/amd: Enable Guest Translation before registering
+> devices) changed GT feature enablement in control register.
+> 
+> Now it tries to enable CONTROL[GT] flag before reading IOMMU feature register
+> (late_iommu_features_init()).
+> 
+> In attach device path, it assumed GT is supported (based on IOMMU EFR register
+> value) and enabled DTE[GV]. Hence we hit ILLEGAL_DEV_TABLE_ENTRY error.
+> 
+> 
+> Can you please try below fix?
+> 
+> 
+> -Vasant
+> 
+> ---
+> 
+> 
+> diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+> index fd3e76e43699..b292181995b7 100644
+> --- a/drivers/iommu/amd/init.c
+> +++ b/drivers/iommu/amd/init.c
+> @@ -2046,6 +2046,8 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+>   			amd_iommu_max_glx_val = glxval;
+>   		else
+>   			amd_iommu_max_glx_val = min(amd_iommu_max_glx_val, glxval);
+> +
+> +		iommu_enable_gt(iommu);
+>   	}
+> 
+>   	if (check_feature(FEATURE_PPR) && amd_iommu_alloc_ppr_log(iommu))
+> @@ -2732,7 +2734,6 @@ static void early_enable_iommu(struct amd_iommu *iommu)
+>   	iommu_enable_command_buffer(iommu);
+>   	iommu_enable_event_buffer(iommu);
+>   	iommu_set_exclusion_range(iommu);
+> -	iommu_enable_gt(iommu);
+>   	iommu_enable_ga(iommu);
+>   	iommu_enable_xt(iommu);
+>   	iommu_enable_irtcachedis(iommu);
+> @@ -2789,7 +2790,6 @@ static void early_enable_iommus(void)
+>   			iommu_disable_irtcachedis(iommu);
+>   			iommu_enable_command_buffer(iommu);
+>   			iommu_enable_event_buffer(iommu);
+> -			iommu_enable_gt(iommu);
+>   			iommu_enable_ga(iommu);
+>   			iommu_enable_xt(iommu);
+>   			iommu_enable_irtcachedis(iommu);
 
-Best regards,
-baolu
+This fixes the issue for me.
+
+Thanks,
+Tested-by: Klara Modin <klarasmodin@gmail.com>
