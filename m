@@ -1,224 +1,373 @@
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2048.outbound.protection.outlook.com [40.107.237.48])
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12olkn2046.outbound.protection.outlook.com [40.92.23.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A1597C090
-	for <iommu@lists.linux.dev>; Mon,  6 May 2024 13:36:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.237.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9A27136E09
+	for <iommu@lists.linux.dev>; Mon,  6 May 2024 15:14:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.23.46
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715002617; cv=fail; b=UVl+5bxvIIqAI6o7MxhnIOkDpn8+X/PimGDboeSgsfclKG/z1exTZBwMjm+pw+nQsB4gWpHx/Je+80GMvLiaYs6RCddCn1PnjUFH+1JX1LGFswmN4YoJSAOIr08oV0PtMsUzGNDur+my9McqNC6xHSh7C30rA5VBNUmwJdXjiZY=
+	t=1715008449; cv=fail; b=Rx57A9ZLDeCXW8Cjy4iJ7TfW0zhYAIcR0v0DRasXFVeTSVkdSmKiokHCqHjWIx4asZVLJIlux4d3mid5ZKeNhW+V5gBVUK9d7cXyXFUKLZRFij2EvgR/qP4l1ubuGCSJCmG5sq8nAUbbKN9cdzJYoppRF4KWpOUkg1D2PG09ic0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715002617; c=relaxed/simple;
-	bh=EZNJ1Bi0ATlbqu8CE2sbtw5G4mKMZAfGsebBoh/igN0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=sVFwkxMwX/OtVcyyaItTNEm+fJVmTHtVPj+eWU+yyqAZeY/7+NSh5E7WMHkZt2CfCREhgXAg6VJ0rkdl90rduIDttR4kmEMqmZphWoLKl9lTbTeF3a4FbEsmeGqQw971OkE1PPvOKYeFkrq2aiM2MTYtp7PiYlp5+hU12fLawbs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=hauXzkOq; arc=fail smtp.client-ip=40.107.237.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
+	s=arc-20240116; t=1715008449; c=relaxed/simple;
+	bh=o7vljcdA0eiUFDRrMdClW0aszvvsae6wDrdM97Tg5u0=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=bmYhb6pvIGsIpvMJ4XcaUMQTALLCRfu+VwU6zEkFAzSEz8o8HE8kSpuwmU9sNaWt/OHpwloh6IpARA5XRWZA0oWQR066aNcVLsxzIo9OlUp/de0W/A3AK4ALoh3bmyptrHSib37QjVR9YK/iqYvris9w6QInRKxvotoW70MIrr0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=PM69548+; arc=fail smtp.client-ip=40.92.23.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="hauXzkOq"
+	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="PM69548+"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TrNvAjVnSb5Fu5ZdUplLs+lmjdK4/E/6ctYd+xpGkJLxl87fguMMP+kYRyU7GwqEFzYKO623WB/wTfKrD4MyuuLsK+gBhau5wXx8nRWhcoOkoO1LoHSICvsH76EI2bn848p8Qug0bj+X36WGcTsb6RxH2C7E2/aj+4F01a8m+hIqk1jJ8VFNIORZYQiIzvHdMux8HMPYSfM5FAV1X9X54dHM+Cflv0C1Zd1HCh1b1BUilbk9d1AL5WU7BhVYmTnujvY2zFPwUfYVl26t1Cez8oETXml1jpFQyLJcw1Q6hAa+ZI5zRV5aNrHiF9NqYgin2oVEBAmNS7rYLhlaUbe1DQ==
+ b=iaeiV0VKL/k2Yv4fKGGwEssr80vJINOXq6m1xDPFjQuWBb21gbLJrK68jx+KlY1G28AN2l5hRO5/YREmNhMnBTd1q/MwkNXoUws2pM2P7k/bwUs9gWPU6nfjvYq5HsMJK/fxckIiuS2spNPydiuQ+NWcmyqqVzidrlJpd560LQBGNF2at4JnYMvpun0zWjP7UJ1jwuE5yRwO0G5aEIaeZ6ZN8fo8IAB9nNn2YZHXS3fyBhX5iluwxH1YqocIDSXsBz5NBQNtzvuk5ygtboj6hejzbnrJT2lYaU2BRQBe+E3hgt6klNZk2Uka4AVv1JAOzdP9CaKbDqdJH7TpVolfAQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pFphkzHl9PWf6PedtJyM5/Ea+G5STbuZc2t769Y6mUE=;
- b=lKRWu9elx9NAnZ0oK2Dvfbkq6WFNUhrjIW3h5CNLebODfOs5fnffNh6ks1hh1t4oWZ9+KRMqOSZEHZfBcqc+vNC3FbpILBIXZi+WOxRWuXpYhd3yyuV7FnYkotFLcXhPK1Jzp+ALH4JB9z8lQ2IN/FVBH3X0ImJfl0sWGtiOOkbeQhsoByLNTyH4rm0HvYbrzppxRKmk08KA+wjtxbBIl2S+S8FgzJGu/jk7IgUMXobamDpiVuOq9jpDoZy9gKJoFQ+vHSukaTirnV+jzT1diy15TaMwof3b21ZgHL5vAtxqm5Cj1hGbv9Dt0ISQZBr6rtctKudFgYJzn8fp+SFCRg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ bh=nCIhy+mGfDg/UuUP0MtuKeUQ1yxJ3lv0/2Qdtu52IVY=;
+ b=MOGjrQgFllslAOM1oy/MySBiVEegkEnPSJFBZt/lKLBra6SiwG4DYQ66Qb7p+3Yz3GcFGokf+mME1vxckhWk8TZ7q+2z0ze7hA0GDN9KMF55NYjr2DZGZY+ZQyO5CnjM1wqSNRDKLBwPgsAK9tF8AB6S77jMWreVE68LCDtomPEwrXUwHHN9xSJY5+3L1vySf2hRDHMO/Q95Ry3JPVwOQgGAkqcb52WaKle9M2LrVT0qLb0cD0byuQzLKSAGNmt8nJ9PUkG/zUC8b8PbKosvHZiFZ9LNWyUVfZ532PA0abD0LbKmmBJRE9hcKjGX4CQvRtGqSBqOUqMGdzeDrJ0wdA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pFphkzHl9PWf6PedtJyM5/Ea+G5STbuZc2t769Y6mUE=;
- b=hauXzkOqe/IO/bSn/bU3tf4hQpDcj6cAeW4/GCPtaf0HzV30kWsXuZSR53YPdGZaUSJyWWKxPIX/22iolLKElmruItivP6jUsnBVK463ZiXhd4aShFTkcL7AkfLPXzZ2VLWPxRCWXzZN9eZCw/PJY9M7UWFcZTWH2mg/VYWRFkVnR6R5wY1bKLfQbci4n41yAGpl3WWdkGo7R3yRjWghlC32W1NCdg9vw0eHPAP1pcgyJJip7tVYtKaKuuB+d08d16Q9P/DcNngxZsCMpUK8L2RnZaXwI6h0cbQyphYtaeIYfNj5X0ZjE1a9QS0WBWZkv/5opAQlptd4oYmhn/IsHg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
- by CH3PR12MB9343.namprd12.prod.outlook.com (2603:10b6:610:1c0::10) with
+ bh=nCIhy+mGfDg/UuUP0MtuKeUQ1yxJ3lv0/2Qdtu52IVY=;
+ b=PM69548+jhjIEebdDslbKNcDze5jD6ViqihU+RTFCC+rBW3KaCGxcYaVJkVkZM9WAmjYghUI9DHm5Aqe2dhJMr6dKZaEFZjOSXXhY2SuKt15k3KFUbk+TV9K51X9bHZyZFDS7xgoBmI+OeIIv5FvfbOs2F/lUFbEaSxIOTcLLLdMOSIzxkelgf3kef3mBPagp4XTnEcLob3TX+Y3l2i5yJWR8ZvAWU1nefy0aSuiopV22hxjpWESgtTXDSfGRMLKe1tiIOabvH8/LPRWn+ZpNHCLBpHHvAPYHjO1wWvEVDxM6F/7u9+XH4jyYgGcggsNbXocCXYJdkAtou+cWWuYEw==
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
+ by CO1PR02MB8361.namprd02.prod.outlook.com (2603:10b6:303:150::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.41; Mon, 6 May
- 2024 13:36:37 +0000
-Received: from DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
- ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7544.041; Mon, 6 May 2024
- 13:36:37 +0000
-Date: Mon, 6 May 2024 10:36:35 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Baolu Lu <baolu.lu@linux.intel.com>
-Cc: Yi Liu <yi.l.liu@intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
-	"joro@8bytes.org" <joro@8bytes.org>,
-	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"eric.auger@redhat.com" <eric.auger@redhat.com>,
-	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+ 2024 15:14:05 +0000
+Received: from SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::cedd:1e64:8f61:b9df]) by SN6PR02MB4157.namprd02.prod.outlook.com
+ ([fe80::cedd:1e64:8f61:b9df%2]) with mapi id 15.20.7544.041; Mon, 6 May 2024
+ 15:14:05 +0000
+From: Michael Kelley <mhklinux@outlook.com>
+To: Michael Kelley <mhklinux@outlook.com>, "robin.murphy@arm.com"
+	<robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"will@kernel.org" <will@kernel.org>, "jgross@suse.com" <jgross@suse.com>,
+	"sstabellini@kernel.org" <sstabellini@kernel.org>,
+	"oleksandr_tyshchenko@epam.com" <oleksandr_tyshchenko@epam.com>, "hch@lst.de"
+	<hch@lst.de>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
 	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
-	"Pan, Jacob jun" <jacob.jun.pan@intel.com>
-Subject: Re: [PATCH v2 12/12] iommu/vt-d: Add set_dev_pasid callback for
- nested domain
-Message-ID: <20240506133635.GJ3341011@nvidia.com>
-References: <20240412081516.31168-1-yi.l.liu@intel.com>
- <20240412081516.31168-13-yi.l.liu@intel.com>
- <BN9PR11MB5276E97AECE1A58D9714B0C38C0F2@BN9PR11MB5276.namprd11.prod.outlook.com>
- <d466eb97-8c2b-4262-8213-b6a9987f59ea@intel.com>
- <b4fe7b7c-d988-4c71-a34c-6e3806327b27@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <b4fe7b7c-d988-4c71-a34c-6e3806327b27@linux.intel.com>
-X-ClientProxiedBy: SN6PR08CA0008.namprd08.prod.outlook.com
- (2603:10b6:805:66::21) To DM6PR12MB3849.namprd12.prod.outlook.com
- (2603:10b6:5:1c7::26)
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+CC: "petr@tesarici.cz" <petr@tesarici.cz>, "roberto.sassu@huaweicloud.com"
+	<roberto.sassu@huaweicloud.com>
+Subject: RE: [PATCH 1/2] swiotlb: Remove alloc_size argument to
+ swiotlb_tbl_map_single()
+Thread-Topic: [PATCH 1/2] swiotlb: Remove alloc_size argument to
+ swiotlb_tbl_map_single()
+Thread-Index: AQHaiWsCp8JQSGA74EyasRMxVkBb5LGKee/Q
+Date: Mon, 6 May 2024 15:14:05 +0000
+Message-ID:
+ <SN6PR02MB4157FD86DFB5E305836EF209D41C2@SN6PR02MB4157.namprd02.prod.outlook.com>
+References: <20240408041142.665563-1-mhklinux@outlook.com>
+In-Reply-To: <20240408041142.665563-1-mhklinux@outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-tmn: [NnHOC9kgMwi4lxQfxWVHoFjvRL7exwSt]
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|CO1PR02MB8361:EE_
+x-ms-office365-filtering-correlation-id: ebe81af2-bb5c-48a2-3bc8-08dc6ddf2b51
+x-microsoft-antispam:
+ BCL:0;ARA:14566002|461199019|102099023|440099019|3412199016|1710799017;
+x-microsoft-antispam-message-info:
+ hxLYDpDNf6DkpgAyLj88sO2Uif6D89H6852hmwQREl/4/4C8U8Nf0dfWEN5iw9uVUZfLkTTZKSFcswAsZxrdQvMyXEqaGmWBiIjjsoBubwYfb4lWjknf7GAOGoPPJKUwvBPImwcin9PTh3NQgovGp513X1aZFKsWK4qP0BzO2E2TfbHH3xP6nC83+bvPBjKyGF1sFdYHRoGJEFIfmSC7M1XvP5lj6qbFCA9B3m1uefMmDbinCL69wCq4ORYXNmZCdk4mthZGWlr9lKg9bCH74SBjKPLCoiIwtIR4J6UCkQiTa8HnXphlB06Xd2sn7J5bg0UtU5QBq8uc+p/BNqdkLakLftgNw8Nmh/m6AbZ87C4yNXdbJI+OMa/4R/uNhmobJOblcvCOVDAgD32ftqns7eoC39fLAAM87iSPfhDopnSOCInO4c5kRynxRHJR0Nl8/vCTC7ng5FuRGy3ISQUbOXCDRYj4HLARCQd4m0wTbbuaMqTKS8xgoHmdG2VHt4/ZkGAjCewlDukdzbt75Fx8IuQeUKabAV2AvtWWpqnXiyvxVKsJigedLLs64y3Vs/HV4NSwS+VLlYa7dXh9Xfu9YdIpIHXHw4+H/+4taNLQhq1IJ+lMrgWgu1Qsl9e9MERu
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?us-ascii?Q?rTnYaO5e7xysz7/CacTatmtlLBdAHCIx5lBVZ07nPCd0Rfj6TcHCWbCN4ziI?=
+ =?us-ascii?Q?eZONax+0FQ3TrUvo5unKQzEWtdaP+GF6YmjgkfBnEsd2SnbY403eo8kp+f7E?=
+ =?us-ascii?Q?nNxZbria8mTxDmHI/BZSialLhgYJIa5oGk8rvgJQsLEbiLgyA8uKW5aPlsgp?=
+ =?us-ascii?Q?sjSEn5KlOr/xyC3Xw/HjrD9nEo2obrlnLmkuklDlnl9kwn5TM7UHooX4QDUo?=
+ =?us-ascii?Q?WcinPJcixXTMI4wzwAkyT64PATsPeiXOQ0qXGkHcA7sCUzk7H7CMw34pR5xn?=
+ =?us-ascii?Q?KQ8OGJ2iRffQqEkuzhcnZ2gqL4WqGNenJee0WfVs1OI0xq/wYLjtUAG37p79?=
+ =?us-ascii?Q?iMDC3yDLk+evZibuZKveictDYXldVHA7rv1Zx8yvhIT4tr+tC+fifmLrowWh?=
+ =?us-ascii?Q?qTP1eOMopyl4nm1KgNUU3sgL529XEu/KoFFsKU+T4xc6fkfJT/U3XvJzqaLM?=
+ =?us-ascii?Q?wLTg1xxYZL8GGMmvpyicJIWUgyN4QNIaH7Rt7XNygcHhdAowDGmA4C3eTuVC?=
+ =?us-ascii?Q?gft5+ezqLCEIhj10DeyXTD3paSwUj3Yq1aao6Runz0PTZzvPFQMRrmVLWfcd?=
+ =?us-ascii?Q?TbdD2BlX8cDthFcUasNhA4LG0uDtuH/c57CIqPFbdVylbB47EBu2yS8lvckF?=
+ =?us-ascii?Q?E8pYo8SiO1xqKRqcfT8gWXIrKQ2MRAq1DWTdcOt7Sz16GbTImd2rvHaq5SSI?=
+ =?us-ascii?Q?Gajr+7E8NyIfgyPx39fow7ervaFfItyo2+L4R25LE8XosZEV7Yl6nUyNXV5p?=
+ =?us-ascii?Q?ld+Wwf9WFmAwbQJTp59dTQ+Ux0OH2cBOB3pVffS5NpJcKZXeoYGI9c0vUj6k?=
+ =?us-ascii?Q?5kItralhH52MHlUTp+B8N8VYs9N+ddsj/ZoPv3ox5HPYd/eYadEgYLROiYRA?=
+ =?us-ascii?Q?ZaV8FO7HsYNKhZVcAOpC3InvTtsiF9c9E8/nHel3/MN2f/A2+XpGW/4ZsI7Z?=
+ =?us-ascii?Q?Azj7+BuM7gtfAmSwZLwQz+rOGiVymOO2DdsEVvF7i7bliaZHgkrLteQVSXWK?=
+ =?us-ascii?Q?nLUaXWh4L1TTH9cmd5OuWliUH83fEqljVRNhLHcxSU2l32opuPdBSfYBH2xc?=
+ =?us-ascii?Q?keQOvE7tPT+Dd+Cy1viG+szptD4Esd0x0tqUyVsI+zjY8nc+iXbu0sHBEQaw?=
+ =?us-ascii?Q?+zv3U2xHJMcGd64m0Ll+WRXQfk/u1cNUtbFfO74YDfauyfREOQ+4Icbpwafn?=
+ =?us-ascii?Q?+tws7ciKSwtJU+bj4+7dRoLHLfFjdD/bDDh8JrDHyYJVVDEjYbXMvmzODrQ?=
+ =?us-ascii?Q?=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|CH3PR12MB9343:EE_
-X-MS-Office365-Filtering-Correlation-Id: d9ef7151-e429-486c-7638-08dc6dd18d76
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|7416005|376005|1800799015;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?ZlVTaWk3U3BtZmFDdmZHbmFHRkg0bW5hSVNNc1RVc1FrOFFkRFVXVWxYRjFU?=
- =?utf-8?B?L2lFbndaRGN4UjdjU1R4emI3WVZVVEljNlJhazJPV2h1akJKak5ET3VINWdv?=
- =?utf-8?B?a2JZNVNMZU1PR3VwbG8wYmkzN2N1d2svY2VGYTA0TitFSmhHdDFNSHFOZEl2?=
- =?utf-8?B?R2w0U3lzWG5pQStLTU1RL1hWajEyNGx1RldQRk95aWhGOEJ1dXZOVkkvamZI?=
- =?utf-8?B?MmEzVkxwVzNmQnpiNVNDQ2dRS0xyS1pLWmRQdmRINW91TDQ1bnk2UHZqS1JT?=
- =?utf-8?B?d0tadUY4MlFRNVhiaUZNRDNIYkNpMG1ZOHBBN2tJZ0RRRS9TcXUwT0lQRERC?=
- =?utf-8?B?T3BMb2J3S01GZFV4Wnk4dkozT2lPeGQ1TW9yNFMydWNlalUwOTJsMzJxcXZZ?=
- =?utf-8?B?bVlLUHFQZE14WFlYZnZaL1UrVTVVOWJmZytFYlNFV294Y09NM1BBNjV5RkMr?=
- =?utf-8?B?N3pJS1ZyWmpWMFMzWWcrSVMxaXA4VG5hUUtHbnU3Wnk3WlFYakUzdU1DTlU5?=
- =?utf-8?B?L0I2UXZHQjF3bGVIc1Q5WEJRQjFDNXhTSGUzZWV1NTkzYWlHSG9ObnAwN0cz?=
- =?utf-8?B?UGZQbDVVZFhUOXNLRjJmS08wZjEwWkpXNUN1Tms4bk1yYTM3TFhTSnhSVTZl?=
- =?utf-8?B?V3N4a1VwZHpJcXhkSWliNVRwUlFsaU1UY3V3NG53YjJObDFuUThKTEpNZXJz?=
- =?utf-8?B?QXoxeFpQWW5WWkJaNG9tRFdsVFVmcVVaZWd6aXJCclFnSVUxM3FMSW9OYXNp?=
- =?utf-8?B?K1c3cTFJeUg1S3VSWGdwZ0VGTDk2NExDcE5DNE8wd1JZMXhBeUpRNGxSMUFo?=
- =?utf-8?B?TzRySGlMYnNyZFQ1Q3RlaU9HMTdrZ2t1dUFqaktqMkVmMmJHMU1DUVFFSU9m?=
- =?utf-8?B?QWVYUDE3RGN1Z0doUWRNRU53OUx5S3E1Rm9jS1dwMkcwQUNYSHlhdHFoSmk3?=
- =?utf-8?B?eHVad3dDTnRVWEFlSUVpY01zUzRycEI3UWRwbnBaN1VGYnlydUQ5RHJiNTB3?=
- =?utf-8?B?UW1BaWljTXhyZkhCWDFHZTNpUGVXNFRzSzk3S3RmdW94SFRrbU42UVRUci94?=
- =?utf-8?B?UWg0NjBvbitSZFVVNHA5U29PcThiKy95T0RjZlZ6OE9WQVlTeVQ5cytHV2Zh?=
- =?utf-8?B?NkpXWlpUdXhDaklnWE0ya1NpbHBMSXpTblBJS3NTeG94VmxaZjNiV3pJcFBX?=
- =?utf-8?B?MjdGV1JOenVhQ0NTTjNTWnZPaTNpMzNabHZjQzZ5MGEvZ0hnMHNUalhSMlVE?=
- =?utf-8?B?TmdsNk5SMVNldHZrb3VrRWxzV2JreFpqVisxNkhqYmFHT2RWUEgwbW9ZREJG?=
- =?utf-8?B?Zmg2YjB2WlRmTXJsTXJKdU82K1ZhMjZaZFJBQUR3czFTWjNuRzZRcS8zWDE3?=
- =?utf-8?B?aVllbVBJZ05pQzFKZ1pCMkM1KzhXNm5lYktYaXBsVXBPVEgvTFlTVGkxdVUw?=
- =?utf-8?B?MkMyNnV2WTRmRER3WWl5R2hGUWl3cjcwOW96bW9oS1dMRDNXQ29zeHI2WGJO?=
- =?utf-8?B?YXd3WVRwSFFsbVB5MVJpY3RrbVZ2a1luYVRaK241RkRzdWkzMk5HT2hkdjlM?=
- =?utf-8?B?VzlKekR3di93WEV1MUNrcnhwbFFqeDhlQTg1WVNsNm1Mdm1kRlBac3VsbXNm?=
- =?utf-8?B?d0J6ZEpETGhZbDZLOUR5aDVPamtIWi81R0RMeEdjTEZDY1BqVEVYVm5sSTV2?=
- =?utf-8?B?S0RjVVF4VCsvOXNBT3F4TnV5QUFHOXhxUFVzbERQdGZ1dHQyQW1odEFnPT0=?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(7416005)(376005)(1800799015);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NFRzQlNwNUROemR3VGlxV29LNFkwRTdsdVlwaTRBdFVsbTI4Yk01TENIQzJU?=
- =?utf-8?B?V21kcE13M0oySkF1eG00R1RFVWx2OHkwQnZnL1NwTDEvWkJiUXZCbTFVR0xB?=
- =?utf-8?B?dmpYcWtWWC9EZEQwbW1ycW1zd3dBUWljT1FpQ1ROTlduUE5kaUFUOWkxZmdZ?=
- =?utf-8?B?RktwSldIZTBpOUNESWpWcEp3aDFxY0E0U0NuL2dRT3oySWEzVGlNN3EwVG5F?=
- =?utf-8?B?d3FSUnBVVnpvNTNpRmhFUHRCZFZoWmNwOW96UXVNRlZXd0tBRHpsdFJRbjcr?=
- =?utf-8?B?dllqdFhTWmc4YnVhRmc1YkpraGcwendkSlc1UUFkd2ZVR214aEhFQzhiTGFB?=
- =?utf-8?B?clFtTW5TN1dTc2F0VDFMNFZVK1BVVUI0Mk9HUkpEUDBkMkFIenF0UmtsMy95?=
- =?utf-8?B?YkRmdjhhUDZZMXN1VUZEMTE4dVE0Snd4M21GY2p3aW1vK1BIL2ZnZUJjZith?=
- =?utf-8?B?a29mT2R4REVnM0dUQWtvTkVqc0Y0U003MW5qdSs2VjBKNk1yckdxWXB2YkFl?=
- =?utf-8?B?OCtvTnJlc1o4c2pDS0hGb3ByZ2NkUmdGVktVc0ZVVmQ4bzVac0d0bGNaK2hu?=
- =?utf-8?B?dCs2MXBsOGpQMDNyUGFXYlo3UUlWU1VkS1dOYTdMSTQ4TFVnNGw1TDU1Zlo0?=
- =?utf-8?B?M0puZHNadkJsY1M5djZKaHhZZ2VTRXhCNTdGZEJVWklLSjRaZlptS2pRUkh2?=
- =?utf-8?B?c05MYjRXc1NRM29SMklMK1RwR0RybXJsMEx6dVV4WVFuWDdjb2xQYUdUeUh4?=
- =?utf-8?B?ZE01UlVuTWdBTGxoUlZSYVQ3RklLOWRub09PZ04rTkRiQWx5aXRlQlNZNnl5?=
- =?utf-8?B?WEhYNzI3K1lZSld0Nk0yWEUwSXVJMVJlL0hhaFpua3R6eGcxdjFJdDVpc0kv?=
- =?utf-8?B?RS9UNTdmR0prUkpvV201aTBZdjJ4eWFiNDhneENGZStOOTN4cE4yZzIyU2ta?=
- =?utf-8?B?U2tleWNKbUxCS1lGSWNmYUR2RmF0R09HL0JaWkxhZGhKajY1TFhPeFU1dDRZ?=
- =?utf-8?B?WDNSaWUzVFE4WnJsY3JSZ2tNdE56Vi9FTFBFQkQ4ZW5VSVBhWFJuclFaUTF3?=
- =?utf-8?B?R0U5TmdRMDVER1BjQnFYQUFyUllCaXN2bTJ2K1Z3cmJVeEhQem9UWWxwTm9R?=
- =?utf-8?B?RTVLZHk0TE83bkJEUW85Y21JazFMQmpzaHVxSkZTc09RbmorbFdHd0ZaM1Vo?=
- =?utf-8?B?QndCTUFkT1dtcnlqWmczNll0MmVqaUY2UUZxUEYwVlpqK3JoZVZOY2thVk1L?=
- =?utf-8?B?L0VYanZRVldCcHo5Mnp5RXpzTTA3KzZSZ3JhL2NkTjJwL3RWUU5iNG9KSXhC?=
- =?utf-8?B?ekRxeVl3YTU2dmRXeUxoU1dZNjA4dnBmNkRoQ3ZsaGhIaFlXMkFkWDBlSjhX?=
- =?utf-8?B?M01wN1VrNmxqQTh2TWwrQVl6RTB4ZDhVRnBJUk1MUWh2OVBFb01ta3Z4RjZU?=
- =?utf-8?B?WENOUVFrbGZ0dTl3cXRtdlhkdHJzUTRKUTNmVURTSGZpbWlEeGtDbmRVMUdU?=
- =?utf-8?B?K0JqRUlmazZ2a1B6MGVBVDgydWVtZWErTG9xakFRZXpmcEVRQ1l2Z3QxMGVW?=
- =?utf-8?B?M1RpbGxaNytJdVVISlVVU2pFMVRWcXdyNkNrTnpjTWhoTEptNFpDRlBMQTlL?=
- =?utf-8?B?VVNqYUZNQnB0bEo5TDA1TmdUTXU3VGZmejdwaEhEMnFkeUxTcDBoMlpRcTRw?=
- =?utf-8?B?UGhCakFmTlltejQ1eVd2L0RrZnBpOCswaTdEeks2b3dmZE5mU1NZd0NqcURy?=
- =?utf-8?B?ODRsK0FUc2NVYWtrSWoyK2V3eTlYQ2lMVjJuTW9hT3lSeWg2Q2FRbklhV0pG?=
- =?utf-8?B?WU9hb2h0UGorZDJIRG16MmcyR2dMTlVUb2N1YnVUTnAxUG5Zc2VyZEhPMzBa?=
- =?utf-8?B?WnNaMm0xRDk0Y3hlSFE2MS9Yc24xblVJOUNkMnk1SDFpZVZRV29pSkQ0aWR4?=
- =?utf-8?B?Z3pWcDEyQlZxZlNpVXZhT01oc0VEbFZXQ2VaUXlBNnNxMDM5SjJqc2UxUVlK?=
- =?utf-8?B?MHBLcE9ZNmZzcCtCTXFDUFdaeVJaZWs1dWt2WnNKTVdjUFhkdWtSVW5yV2xa?=
- =?utf-8?B?bmYyVXloVS9uZGdwc3NFeWdjZGphMXdERFJpSktxNEJ6OGpXejM2czNuSzdB?=
- =?utf-8?Q?tw8XSS6EX1muswsKV0RnIGyFK?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d9ef7151-e429-486c-7638-08dc6dd18d76
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-OriginatorOrg: outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2024 13:36:37.0098
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-Network-Message-Id: ebe81af2-bb5c-48a2-3bc8-08dc6ddf2b51
+X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 May 2024 15:14:05.1019
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 1Fauyz2AP45datvLPuHYxqQ3mel/bW0ZM7n5Y8uo44RD1sYlv7TY4sWlScOGImOR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH3PR12MB9343
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR02MB8361
 
-On Mon, May 06, 2024 at 03:42:21PM +0800, Baolu Lu wrote:
-> On 2024/4/30 17:19, Yi Liu wrote:
-> > On 2024/4/17 17:25, Tian, Kevin wrote:
-> > > > From: Liu, Yi L <yi.l.liu@intel.com>
-> > > > Sent: Friday, April 12, 2024 4:15 PM
-> > > > 
-> > > > From: Lu Baolu <baolu.lu@linux.intel.com>
-> > > > 
-> > > > This allows the upper layers to set a nested type domain to a PASID of a
-> > > > device if the PASID feature is supported by the IOMMU hardware.
-> > > > 
-> > > > The set_dev_pasid callback for non-nested domain has already be
-> > > > there, so
-> > > > this only needs to add it for nested domains. Note that the S2
-> > > > domain with
-> > > > dirty tracking capability is not supported yet as no user for now.
-> > > 
-> > > S2 domain does support dirty tracking. Do you mean the specific
-> > > check in intel_iommu_set_dev_pasid() i.e. pasid-granular dirty
-> > > tracking is not supported yet?
-> > 
-> > yes. We may remove this check when real usage comes. e.g. SIOV.
-> > 
-> > > > +static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
-> > > > +                      struct device *dev, ioasid_t pasid,
-> > > > +                      struct iommu_domain *old)
-> > > > +{
-> > > > +    struct device_domain_info *info = dev_iommu_priv_get(dev);
-> > > > +    struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> > > > +    struct intel_iommu *iommu = info->iommu;
-> > > > +
-> > > > +    if (iommu->agaw < dmar_domain->s2_domain->agaw)
-> > > > +        return -EINVAL;
-> > > > +
-> > > 
-> > > this check is covered by prepare_domain_attach_device() already.
-> > 
-> > This was added to avoid modifying the s2_domain's agaw. I'm fine to remove
-> > it personally as the existing attach path also needs to update domain's
-> > agaw per device attachment. @Baolu, how about your opinion?
-> 
-> We still need something to do before we can safely remove this check.
-> All the domain allocation interfaces should eventually have the device
-> pointer as the input, and all domain attributions could be initialized
-> during domain allocation. In the attach paths, it should return -EINVAL
-> directly if the domain is not compatible with the iommu for the device.
+From: mhkelley58@gmail.com <mhkelley58@gmail.com>
+>=20
 
-Yes, and this is already true for PASID.
+Gentle ping ...
 
-I feel we could reasonably insist that domanis used with PASID are
-allocated with a non-NULL dev.
+Anyone interested in reviewing this series of two patches?  It fixes
+an edge case bug in the size of the swiotlb request coming from
+dma-iommu, and plugs a hole that allows untrusted devices to see
+kernel data unrelated to the intended DMA transfer.  I think these are
+the last "known bugs" that came out of the extensive swiotlb discussion
+and patches for 6.9.
 
-If so it means we need to fixup the domain allocation in iommufd as
-part of the pasid series, and Intel will have to implement
-alloc_domain_paging().
+Michael
 
-Jason
+> Currently swiotlb_tbl_map_single() takes alloc_align_mask and
+> alloc_size arguments to specify an swiotlb allocation that is
+> larger than mapping_size. This larger allocation is used solely
+> by iommu_dma_map_single() to handle untrusted devices that should
+> not have DMA visibility to memory pages that are partially used
+> for unrelated kernel data.
+>=20
+> Having two arguments to specify the allocation is redundant. While
+> alloc_align_mask naturally specifies the alignment of the starting
+> address of the allocation, it can also implicitly specify the size
+> by rounding up the mapping_size to that alignment.
+>=20
+> Additionally, the current approach has an edge case bug.
+> iommu_dma_map_page() already does the rounding up to compute the
+> alloc_size argument. But swiotlb_tbl_map_single() then calculates
+> the alignment offset based on the DMA min_align_mask, and adds
+> that offset to alloc_size. If the offset is non-zero, the addition
+> may result in a value that is larger than the max the swiotlb can
+> allocate. If the rounding up is done _after_ the alignment offset is
+> added to the mapping_size (and the original mapping_size conforms to
+> the value returned by swiotlb_max_mapping_size), then the max that the
+> swiotlb can allocate will not be exceeded.
+>=20
+> In view of these issues, simplify the swiotlb_tbl_map_single() interface
+> by removing the alloc_size argument. Most call sites pass the same
+> value for mapping_size and alloc_size, and they pass alloc_align_mask
+> as zero. Just remove the redundant argument from these callers, as they
+> will see no functional change. For iommu_dma_map_page() also remove
+> the alloc_size argument, and have swiotlb_tbl_map_single() compute
+> the alloc_size by rounding up mapping_size after adding the offset
+> based on min_align_mask. This has the side effect of fixing the
+> edge case bug but with no other functional change.
+>=20
+> Also add a sanity test on the alloc_align_mask. While IOMMU code
+> currently ensures the granule is not larger than PAGE_SIZE, if
+> that guarantee were to be removed in the future, the downstream
+> effect on the swiotlb might go unnoticed until strange allocation
+> failures occurred.
+>=20
+> Tested on an ARM64 system with 16K page size and some kernel
+> test-only hackery to allow modifying the DMA min_align_mask and
+> the granule size that becomes the alloc_align_mask. Tested these
+> combinations with a variety of original memory addresses and
+> sizes, including those that reproduce the edge case bug:
+>=20
+> * 4K granule and 0 min_align_mask
+> * 4K granule and 0xFFF min_align_mask (4K - 1)
+> * 16K granule and 0xFFF min_align_mask
+> * 64K granule and 0xFFF min_align_mask
+> * 64K granule and 0x3FFF min_align_mask (16K - 1)
+>=20
+> With the changes, all combinations pass.
+>=20
+> Signed-off-by: Michael Kelley <mhklinux@outlook.com>
+> ---
+> I've haven't used any "Fixes:" tags. This patch really should be
+> backported only if all the other recent swiotlb fixes get backported,
+> and I'm unclear on whether that will happen.
+>=20
+> I saw the brief discussion about removing the "dir" parameter from
+> swiotlb_tbl_map_single(). That removal could easily be done as part
+> of this patch, since it's already changing the swiotlb_tbl_map_single()
+> parameters. But I think the conclusion of the discussion was to leave
+> the "dir" parameter for symmetry with the swiotlb_sync_*() functions.
+> Please correct me if that's wrong, and I'll respin this patch to do
+> the removal.
+>=20
+>  drivers/iommu/dma-iommu.c |  2 +-
+>  drivers/xen/swiotlb-xen.c |  2 +-
+>  include/linux/swiotlb.h   |  2 +-
+>  kernel/dma/swiotlb.c      | 56 +++++++++++++++++++++++++++++----------
+>  4 files changed, 45 insertions(+), 17 deletions(-)
+>=20
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 07d087eecc17..c21ef1388499 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -1165,7 +1165,7 @@ static dma_addr_t iommu_dma_map_page(struct device =
+*dev, struct page *page,
+>  		trace_swiotlb_bounced(dev, phys, size);
+>=20
+>  		aligned_size =3D iova_align(iovad, size);
+> -		phys =3D swiotlb_tbl_map_single(dev, phys, size, aligned_size,
+> +		phys =3D swiotlb_tbl_map_single(dev, phys, size,
+>  					      iova_mask(iovad), dir, attrs);
+>=20
+>  		if (phys =3D=3D DMA_MAPPING_ERROR)
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index 1c4ef5111651..6579ae3f6dac 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -216,7 +216,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device =
+*dev, struct page *page,
+>  	 */
+>  	trace_swiotlb_bounced(dev, dev_addr, size);
+>=20
+> -	map =3D swiotlb_tbl_map_single(dev, phys, size, size, 0, dir, attrs);
+> +	map =3D swiotlb_tbl_map_single(dev, phys, size, 0, dir, attrs);
+>  	if (map =3D=3D (phys_addr_t)DMA_MAPPING_ERROR)
+>  		return DMA_MAPPING_ERROR;
+>=20
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index ea23097e351f..14bc10c1bb23 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -43,7 +43,7 @@ int swiotlb_init_late(size_t size, gfp_t gfp_mask,
+>  extern void __init swiotlb_update_mem_attributes(void);
+>=20
+>  phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phy=
+s,
+> -		size_t mapping_size, size_t alloc_size,
+> +		size_t mapping_size,
+>  		unsigned int alloc_aligned_mask, enum dma_data_direction dir,
+>  		unsigned long attrs);
+>=20
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index a5e0dfc44d24..046da973a7e2 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -1340,15 +1340,40 @@ static unsigned long mem_used(struct io_tlb_mem
+> *mem)
+>=20
+>  #endif /* CONFIG_DEBUG_FS */
+>=20
+> +/**
+> + * swiotlb_tbl_map_single() - bounce buffer map a single contiguous phys=
+ical area
+> + * @dev:		Device which maps the buffer.
+> + * @orig_addr:		Original (non-bounced) physical IO buffer address
+> + * @mapping_size:	Requested size of the actual bounce buffer, excluding
+> + *			any pre- or post-padding for alignment
+> + * @alloc_align_mask:	Required start and end alignment of the allocated =
+buffer
+> + * @dir:		DMA direction
+> + * @attrs:		Optional DMA attributes for the map operation
+> + *
+> + * Find and allocate a suitable sequence of IO TLB slots for the request=
+.
+> + * The allocated space starts at an alignment specified by alloc_align_m=
+ask,
+> + * and the size of the allocated space is rounded up so that the total a=
+mount
+> + * of allocated space is a multiple of (alloc_align_mask + 1). If
+> + * alloc_align_mask is zero, the allocated space may be at any alignment=
+ and
+> + * the size is not rounded up.
+> + *
+> + * The returned address is within the allocated space and matches the bi=
+ts
+> + * of orig_addr that are specified in the DMA min_align_mask for the dev=
+ice. As
+> + * such, this returned address may be offset from the beginning of the a=
+llocated
+> + * space. The bounce buffer space starting at the returned address for
+> + * mapping_size bytes is initialized to the contents of the original IO =
+buffer
+> + * area. Any pre-padding (due to an offset) and any post-padding (due to
+> + * rounding-up the size) is not initialized.
+> + */
+>  phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_=
+addr,
+> -		size_t mapping_size, size_t alloc_size,
+> -		unsigned int alloc_align_mask, enum dma_data_direction dir,
+> -		unsigned long attrs)
+> +		size_t mapping_size, unsigned int alloc_align_mask,
+> +		enum dma_data_direction dir, unsigned long attrs)
+>  {
+>  	struct io_tlb_mem *mem =3D dev->dma_io_tlb_mem;
+>  	unsigned int offset;
+>  	struct io_tlb_pool *pool;
+>  	unsigned int i;
+> +	size_t size;
+>  	int index;
+>  	phys_addr_t tlb_addr;
+>  	unsigned short pad_slots;
+> @@ -1362,20 +1387,24 @@ phys_addr_t swiotlb_tbl_map_single(struct device =
+*dev, phys_addr_t orig_addr,
+>  	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+>  		pr_warn_once("Memory encryption is active and system is using DMA boun=
+ce buffers\n");
+>=20
+> -	if (mapping_size > alloc_size) {
+> -		dev_warn_once(dev, "Invalid sizes (mapping: %zd bytes, alloc: %zd byte=
+s)",
+> -			      mapping_size, alloc_size);
+> -		return (phys_addr_t)DMA_MAPPING_ERROR;
+> -	}
+> +	/*
+> +	 * The default swiotlb memory pool is allocated with PAGE_SIZE
+> +	 * alignment. If a mapping is requested with larger alignment,
+> +	 * the mapping may be unable to use the initial slot(s) in all
+> +	 * sets of IO_TLB_SEGSIZE slots. In such case, a mapping request
+> +	 * of or near the maximum mapping size would always fail.
+> +	 */
+> +	dev_WARN_ONCE(dev, alloc_align_mask > ~PAGE_MASK,
+> +		"Alloc alignment may prevent fulfilling requests with max mapping_size=
+\n");
+>=20
+>  	offset =3D swiotlb_align_offset(dev, alloc_align_mask, orig_addr);
+> -	index =3D swiotlb_find_slots(dev, orig_addr,
+> -				   alloc_size + offset, alloc_align_mask, &pool);
+> +	size =3D ALIGN(mapping_size + offset, alloc_align_mask + 1);
+> +	index =3D swiotlb_find_slots(dev, orig_addr, size, alloc_align_mask, &p=
+ool);
+>  	if (index =3D=3D -1) {
+>  		if (!(attrs & DMA_ATTR_NO_WARN))
+>  			dev_warn_ratelimited(dev,
+>  	"swiotlb buffer is full (sz: %zd bytes), total %lu (slots), used %lu (s=
+lots)\n",
+> -				 alloc_size, mem->nslabs, mem_used(mem));
+> +				 size, mem->nslabs, mem_used(mem));
+>  		return (phys_addr_t)DMA_MAPPING_ERROR;
+>  	}
+>=20
+> @@ -1388,7 +1417,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *d=
+ev, phys_addr_t orig_addr,
+>  	offset &=3D (IO_TLB_SIZE - 1);
+>  	index +=3D pad_slots;
+>  	pool->slots[index].pad_slots =3D pad_slots;
+> -	for (i =3D 0; i < nr_slots(alloc_size + offset); i++)
+> +	for (i =3D 0; i < (nr_slots(size) - pad_slots); i++)
+>  		pool->slots[index + i].orig_addr =3D slot_addr(orig_addr, i);
+>  	tlb_addr =3D slot_addr(pool->start, index) + offset;
+>  	/*
+> @@ -1543,8 +1572,7 @@ dma_addr_t swiotlb_map(struct device *dev, phys_add=
+r_t paddr, size_t size,
+>=20
+>  	trace_swiotlb_bounced(dev, phys_to_dma(dev, paddr), size);
+>=20
+> -	swiotlb_addr =3D swiotlb_tbl_map_single(dev, paddr, size, size, 0, dir,
+> -			attrs);
+> +	swiotlb_addr =3D swiotlb_tbl_map_single(dev, paddr, size, 0, dir, attrs=
+);
+>  	if (swiotlb_addr =3D=3D (phys_addr_t)DMA_MAPPING_ERROR)
+>  		return DMA_MAPPING_ERROR;
+>=20
+> --
+> 2.25.1
+>=20
+
