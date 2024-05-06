@@ -1,211 +1,212 @@
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam04olkn2100.outbound.protection.outlook.com [40.92.47.100])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25BBC15B103
-	for <iommu@lists.linux.dev>; Mon,  6 May 2024 19:58:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.92.47.100
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715025497; cv=fail; b=Fbbt9s9wJt2R6hnx37quyRqAtGgcDW+5hwIrPyRjh186D1Sus+Vqcl3p9XVJtjRfbyGJ9m1pG4m2pY5kLTXyPR2wTghrOpon9XbuiUxVvckHn4PHn6AjdsztVcAYznvJYCB8G2WJtoFtyJzsMnOWp2B08PLYwoJ/ls85RlgE620=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715025497; c=relaxed/simple;
-	bh=zijQrdzw60OXMvkHbMO/Au15fIKSpDq6EzxqWcL3H5g=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=sPi416mS5aH6Wibz67gzhkrWQ/O765dCzmoavcedrqrJGt5mQ00upJ6Adr9hoi8TGBn5vhsCFJC+O76ySJg6sIwW7OHft9nwyxJnIO2nUY3kZYgY+74JGynmDoA16bPXw0cn5LtKij7bZV2fdHMuknJ42c4kahK6oWVBeMsiI+Y=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com; spf=pass smtp.mailfrom=outlook.com; dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b=lFNOsuOT; arc=fail smtp.client-ip=40.92.47.100
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=outlook.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=outlook.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0299156258
+	for <iommu@lists.linux.dev>; Mon,  6 May 2024 20:16:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1715026620; cv=none; b=aG/TujrFStfWBkvrocpG2+VDVpVGgAhr+JRIt5PHkFa8fO5q/64fpQx0eTOzuCYYjIyquq+4RCusI4NHW/WiW4i8mgri9e/wqeyxXIEjrPJjr9NQ1xRwUDd6JTvwUohnCCqxX6Ao7SWYCNMhGl1zr88649MDq2pgGYtVfnNCR7g=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1715026620; c=relaxed/simple;
+	bh=O4m3D6QJkpCyIotiPkNx41gI4the4mNBM6wP0C8Edm8=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=CEWIKIoZdJmuf6FvS2SyW0OB314678loPItqXcKjo5JAKirNzeg2e1yCFchiYsBjnC3HUnj1RH1AL4UTHbIbgzOkMoM+/Nsi2wLOdwHm/ObfTxCAFBSkjeEAI/HV7KzL7p+EGQMvsbbFVrK2FIvE21oJDmAlQFg0zN9sTOnC/Y4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=t5bWwGTJ; arc=none smtp.client-ip=209.85.219.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=outlook.com header.i=@outlook.com header.b="lFNOsuOT"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l6W+QwL01Gb92IQk9nef3CHxubXIoCEFueEKJqkGv9+4Szl1T3hNKuLsb1lau0u17rLmQplPsVcV28EZ05SsusT3F0y8fZMC1oGcVFQbz+R7Z80s30RSKmUB7/nUXwPJpzhLbmK+H24XxWuBg79mvGIPzsx+1Iivxh12ARA+fMz9hU1x0fARdIxoAnJbVvuy3GHl4ZfYb3eXg9pOoA7ipnZgU+pYHogVuXJJnGDlYEwJvwcIlzD0oIcsLEUHr8TLUVnNeARoLA+7sLsvPwcO412cCn95EOMR7axU2DyqW5tRDvoFPf6Xqs0EwhAmXYJSLbPLRszvz+jeWxxW4KMe8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zijQrdzw60OXMvkHbMO/Au15fIKSpDq6EzxqWcL3H5g=;
- b=IgcGHvIC61h1WFPfD5Upk/0PVgsYg7X/TqO/YZFsDw9WTNCw5hgKiJwPfd80TI9f52GU5rABklInTWy0DzpIf4OSimPpZQsKryXsfKFkQjzH8ErKyKJWVEZrCPTMySUcbxtJxnAz1MbnD2xMeYLn6gzNr180WwBEQX/IKCghCr3jNVY9/0OlsaMper5YTL1aco/F4x+p8rkvpfS4kRecrdJy3AZEtSb0rnizRxQVnjkaGPCHg/wBtUfVn84AgkyLVYw8Gn3GYBcYH1N0ML+Mf3n3Tf+0bu8pF0edENlD5qaynhfzz1TWEytG6cTjgb3Nd+ffi0n8rewgDSiJMKbhvQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=outlook.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zijQrdzw60OXMvkHbMO/Au15fIKSpDq6EzxqWcL3H5g=;
- b=lFNOsuOT+OdjMc6C5iR7JbpGb4Ep5o3ZroagHodjpyjb1QJcmYT+sixeO7KzuVYgBmOsbRqJPHvT10GzmuTv/7VotucB7k8OqQmhDuX6eFjBtPXXlcnzaobepbO4NS7VUDFTS8muBLHh+tD6lyrNQF2awcNydJ4cHT5oYJIIAJRYiDU1Ywsa2i8q03hxqR7hlD5TRZH80IuWV0lDNwwqUSoMKZWafL0TY7hXAP1NGqUZ9X6jAPgXqTee0bkXpesxrV4VLgyJhsP3t52C1VkP0MfkURZUXEEjsk4Vkhh7GfzWlLkJkPDKlIOhiHPUb4wjhS7uluF+VOm0+IU0tYNP3g==
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com (2603:10b6:805:33::23)
- by MN2PR02MB6688.namprd02.prod.outlook.com (2603:10b6:208:15f::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.42; Mon, 6 May
- 2024 19:58:11 +0000
-Received: from SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df]) by SN6PR02MB4157.namprd02.prod.outlook.com
- ([fe80::cedd:1e64:8f61:b9df%2]) with mapi id 15.20.7544.041; Mon, 6 May 2024
- 19:58:11 +0000
-From: Michael Kelley <mhklinux@outlook.com>
-To: "T.J. Mercier" <tjmercier@google.com>, =?utf-8?B?UGV0ciBUZXNhxZnDrWs=?=
-	<petr@tesarici.cz>
-CC: Jonathan Corbet <corbet@lwn.net>, Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Dave Hansen
-	<dave.hansen@linux.intel.com>, "x86@kernel.org" <x86@kernel.org>, "H. Peter
- Anvin" <hpa@zytor.com>, "hch@infradead.org" <hch@infradead.org>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org"
-	<joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
-	"akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-	"isaacmanjarres@google.com" <isaacmanjarres@google.com>,
-	"iommu@lists.linux.dev" <iommu@lists.linux.dev>, "linux-doc@vger.kernel.org"
-	<linux-doc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] swiotlb: iommu/dma: Clarify swiotlb options apply only to
- dma-direct
-Thread-Topic: [PATCH] swiotlb: iommu/dma: Clarify swiotlb options apply only
- to dma-direct
-Thread-Index: AQHanYjIGzxHZ57Nq0awSFl6FadUXLGGu8OAgAO9NQCAACjE0A==
-Date: Mon, 6 May 2024 19:58:11 +0000
-Message-ID:
- <SN6PR02MB4157EE83332FF789FA6BEEE8D41C2@SN6PR02MB4157.namprd02.prod.outlook.com>
-References: <20240503183527.1548119-1-tjmercier@google.com>
- <20240504101651.7de5106f@meshulam.tesarici.cz>
- <CABdmKX06v23-w8PQJab8kgfPDRYLU3bQSQ4AsC3zrzxYL955gQ@mail.gmail.com>
-In-Reply-To:
- <CABdmKX06v23-w8PQJab8kgfPDRYLU3bQSQ4AsC3zrzxYL955gQ@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-tmn: [xs8KVXq8VSRW9fvuelk2V03krZAb/G8f]
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SN6PR02MB4157:EE_|MN2PR02MB6688:EE_
-x-ms-office365-filtering-correlation-id: 69f066cf-b88c-45ef-381c-08dc6e06dbad
-x-microsoft-antispam:
- BCL:0;ARA:14566002|461199019|102099023|3412199016|440099019|1602099003;
-x-microsoft-antispam-message-info:
- eLDtnjKUUCx2RjPr/50nsLVcKog1Wavz5k68G9/leDrqz8S5QOi65Nk24NaPESxPioFumdHFJ2RRu0eKogzHae6yCUxVAY7aY7wln1mmn+PcvExgIfjwj3I5x2v0MfNWfQNQbLpUbg35hfjT894FYK0k9uvd1LM9xc1e8u6/huUPTFanFSmzB0Njg79jAHjjgVZF70QdIYMXdJTOSmLnylwQ5ftWIZyrgAoD1PTu0latjmTD0nsUrXZlal82kmLMxdpJhygxVdYpczoesveoUHOKsOVBic8dyZI6BFWG+rESdrbDXbyi0X3+7Qd/ucvCIJjYHIB0O91a5qxI5F4rpeIm0PkIHpyZwCY+F4Zo8TaaGvtS0ptpwyX7K0O9/xdch5VfThuyHvfEH5DXbrg35e+89F+LCQmZLLtRZNof9++sSHCNPo0HoPAcJhxEdwt4tZ5vyA25VLh/tSM3vcrtJbfwOhHA3tZWENqPAeKd6x+rYbUGDwXV4YvTsvoCn7cJwwZnn7RaILeZtbVKGM2Tm7PxVyh5a0B2X8wliXGR73cevWmqqetlI+iDkGyk1CWwnkZMozZDkPUGVvCO094lojHKxWGWWnw6aGQpOrMeyO8drOVSv0bAcv1ROIRbfixDszI+B2wucOyoGc45+fPGE127QOwUpjO4wdKxjcNc5IM=
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?YmcxaUszMzBRTjJGYXVDdnREWXpXZTFnbWhHNUM2MDBMT1d4NUd0S2N1UmM0?=
- =?utf-8?B?MEV4eDBqeGxiM2UzNHlYZUM1b1hGQ09uU0FHU2x6NTA1bmtSQnN6M3hCTXhM?=
- =?utf-8?B?cVZhUm45OUZaZGxnUG5yaC8yWStkVDlZMzdmOGtwYlBtUDUvWDBKazZma3pr?=
- =?utf-8?B?OVk1aGhJMVFNdThzWTN3aFFaWlU2cUdMMUl1L2dLSTEyTEUya09nS2lGaXJi?=
- =?utf-8?B?eE5JNXg5a2xvV2F2UWlnSUJlWXJGa014QTBYN1ZxS0JndlhDa1RXZDlnZEVv?=
- =?utf-8?B?QnMrYTJtUGxRMDg0a3ZsMDJEYTRoQ3lVSmFOQS8xR0ZiekVyUmlVQU9uT0pt?=
- =?utf-8?B?Zis0T0s1ZlJ3Qjg3SlJ5UHN1OFQvb3dkalczd3FwaHFacVBDbGVEUllEWlIx?=
- =?utf-8?B?T0NoLys0YzZFQUhhdU9qN2NBRVdISlM4T1NPaWdzamQyWXlpUVFBeWQzUVcy?=
- =?utf-8?B?dFJ6elFBbWgxSlI5UXh1U0w2bllTb042WFgrSlJFbDY2NnFQOVlLNTMyM2FU?=
- =?utf-8?B?dmtPV3luNTA3NUpEV0krRU50K1NpOW9FR2pGRVZFeUp2ZzJZN3pUMVhnd3J2?=
- =?utf-8?B?K00wN2Mxby9wUVdXVUlWd0V0MENUS1E2ZGhKMjhYaHNwQXlGK2JnbG5iYkJu?=
- =?utf-8?B?cGxxdlpCWHQ2dG05OFJYYXBwMlNIaGh2UzlVaTVyaG5WS3EyVlBXSnZSZzJs?=
- =?utf-8?B?Y1BEVGZrOTlJbTQzNzlqN2daWmxsWkZyS09IYS82cEQvUlE3Lzd4emU3eFMv?=
- =?utf-8?B?aFBXMlpQYnliMnhDZiswVlR2RUpMY3NhRU8xeXhGZitqNExXY09sSGlLbFhJ?=
- =?utf-8?B?SGFuYXFrTWl4cm90Ymk2bVZMYm8vajFPL0l5YVZDeUhWbExCaXpCTExpV2RW?=
- =?utf-8?B?VDMvcld5UVluYzVmK0s2OGVFdTVHQlk0dHpLV1RkWEFDNll4MFB2QzhNaW5E?=
- =?utf-8?B?OGpyOXdMV2FUUGxkMk5ZOTVuWTdCY1psY0phVnBCUnVldVJJUHl0dlMrOTBE?=
- =?utf-8?B?WG5FYno0bk9CR0dvMklNa3FyUHNmQ1JlRXBoeTRTWXUxdVVGZUtkK01jQS9a?=
- =?utf-8?B?amFhaUJYSEtWbmxXNWZyL2lmNTMwUWppemo0bXpEeXd4SndBRHV5OHVaVk5N?=
- =?utf-8?B?TzZDWm1vUjMzRFVKck9URGFRT2JULzhnSnd4ajJjdUU4L3czT3d2OHhHMDlC?=
- =?utf-8?B?L2p2QXZHMnM0QTB3Mk9MWEdGVFljVDZGNzF3dGh3TVBmcGV1Sm5EV1kxUnRT?=
- =?utf-8?B?NDJ6ZEdTUjRsSUFJMU0wQzNUYkRqcDF5UzhGL0Z3eG5ocklKdHRzL21oRUpt?=
- =?utf-8?B?Y0lySm81YS9jV1pwS2JKcFVNejYzVENuL3pFdVRaRXFvd2NzWGg5RlpHTERn?=
- =?utf-8?B?VE1lRDloejlZWkdNeGxUNzU4OVNTUXRNc2JCb2lOOC96eVhESTN6YVMwUkpF?=
- =?utf-8?B?VGdmVmFKSDQ0TXZPbnViRm4zaFUwUmtLTDlnbTJJTnB4ODVPanRFcUViaElm?=
- =?utf-8?B?VjdlZ1M4a01tQ3U2clZZZ2ZsZVhkME5CSFNmOTVMNzg3Tm5vL3JuSFVST0J6?=
- =?utf-8?B?NTA3OFlYOEhjWHpmL25hdnovNmtCV0xsaklJcWRFMTdITkpRS0ZqOG1RUnRB?=
- =?utf-8?Q?jmF4BXnn3Fq7gsEwsYeZp64JaYFZWJdY3eIftCa/OMak=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="t5bWwGTJ"
+Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-dcd7c526cc0so2809490276.1
+        for <iommu@lists.linux.dev>; Mon, 06 May 2024 13:16:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20230601; t=1715026618; x=1715631418; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5fr3FvzBZJmUemTYZLBAlTUKyWusYtW7x1D9jX3o6JY=;
+        b=t5bWwGTJ7j554MjxQAetwtjVBdRP2YqkawzFeIyXz+DJm0KA70QfHgB8Mqa5g6mcCT
+         gMSAxHttriMHyVdfW3FNWrpCD0UPhamQl/qGhM1rKH5OS7vyYHk+xY2fDvfFrLrtPyvn
+         0ooDHrNWEH/XjJ5MQBuyeLAhNBrGL6riW6wnXi7DtSgR9L99p1U/w1pdyK6KoV3DsOSk
+         d0fsozoADySoEr6n62QJzi1gD5z2PW8XnEXEkUqUSdPxYR0ubAYYeaxLhMBvwIUAsNWN
+         1CsfDgv7cbEEZ7kau0t9Aj24ye3vJnChXmcOZxyXHwgDg8Dkeh3dbqO6Srwepml3KDll
+         6U5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1715026618; x=1715631418;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=5fr3FvzBZJmUemTYZLBAlTUKyWusYtW7x1D9jX3o6JY=;
+        b=v0SizOgFHofkATffBpZhMNeBvkims+UGozNtZpMgg3UUIIx4PHlW7Q0QaALSe6HZJS
+         huqrO9jxcTyORVrFTas4eGAKGD93Hp3JTnQseGlW/C0wXo2q7OL4LrhN3Cqec74jl4e7
+         ZTPHYxrv/K5ws4c7X4vDp/FENu1060crTOBEZpXWzHwkDcggVenLqE6G00q1o+lFh5Jx
+         2nI85nN24GbP16ejJc7Mlxr7nC4DcHjJuAWcp1qhOmNWGCYS0bY59snfVR2CCFREfnAM
+         kfJ4O/5K+o7e86Xar3IWj3Zet1/R7UCmxuejlo6eODHeA0JumUGzoj/1sEhNWyOIKrJj
+         YdzQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUp5EomZrIURu0FAs85SKe9Sf6ou1kat0nWiwLp/MhnFwkRyEu/1lbqbhXdfNolXQzTyiEo8a+8SDMFXsU+sRvstY72sEs=
+X-Gm-Message-State: AOJu0YyOlMCvEtLOx48dDwCcZCWt2S+kq+bb8LXE6NgPNk7CXQfsICkC
+	07gViVPjWIqOok/4l8xxo4JvhLeu/twEX7h9A/nUu7mLXwBMVribTdrcLmWX6r79W1x1mWO8hnI
+	FAycF6uGYZPnUZ7l0kc58/WrE0ry1IXDq+fFu
+X-Google-Smtp-Source: AGHT+IGtWotnhPG27Dr3QshUJCxX3ZQr+AKdbHMvm08l/sNlWD/7aGB+2kgrdBLLg3rPTCwuYNEVPaohe4FIFH8eSqw=
+X-Received: by 2002:a5b:a0d:0:b0:de5:9f30:e40c with SMTP id
+ k13-20020a5b0a0d000000b00de59f30e40cmr10782095ybq.4.1715026617408; Mon, 06
+ May 2024 13:16:57 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR02MB4157.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-Network-Message-Id: 69f066cf-b88c-45ef-381c-08dc6e06dbad
-X-MS-Exchange-CrossTenant-rms-persistedconsumerorg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 May 2024 19:58:11.3562
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR02MB6688
+References: <20240503183527.1548119-1-tjmercier@google.com>
+ <20240504101651.7de5106f@meshulam.tesarici.cz> <CABdmKX06v23-w8PQJab8kgfPDRYLU3bQSQ4AsC3zrzxYL955gQ@mail.gmail.com>
+ <SN6PR02MB4157EE83332FF789FA6BEEE8D41C2@SN6PR02MB4157.namprd02.prod.outlook.com>
+In-Reply-To: <SN6PR02MB4157EE83332FF789FA6BEEE8D41C2@SN6PR02MB4157.namprd02.prod.outlook.com>
+From: "T.J. Mercier" <tjmercier@google.com>
+Date: Mon, 6 May 2024 13:16:45 -0700
+Message-ID: <CABdmKX2q1rELreKG4oOrKCwKQk9Xswe=gV9254rkHzMNYaD3GQ@mail.gmail.com>
+Subject: Re: [PATCH] swiotlb: iommu/dma: Clarify swiotlb options apply only to dma-direct
+To: Michael Kelley <mhklinux@outlook.com>
+Cc: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>, 
+	Jonathan Corbet <corbet@lwn.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
+	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, 
+	"x86@kernel.org" <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, "hch@infradead.org" <hch@infradead.org>, 
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, 
+	"will@kernel.org" <will@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, 
+	"isaacmanjarres@google.com" <isaacmanjarres@google.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
+	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-RnJvbTogVC5KLiBNZXJjaWVyIDx0am1lcmNpZXJAZ29vZ2xlLmNvbT4gU2VudDogTW9uZGF5LCBN
-YXkgNiwgMjAyNCAxMDoyMyBBTQ0KPiANCj4gT24gU2F0LCBNYXkgNCwgMjAyNCBhdCAxOjE24oCv
-QU0gUGV0ciBUZXNhxZnDrWsgPHBldHJAdGVzYXJpY2kuY3o+IHdyb3RlOg0KPiA+DQo+ID4gT24g
-RnJpLCAgMyBNYXkgMjAyNCAxODozNToyNiArMDAwMA0KPiA+ICJULkouIE1lcmNpZXIiIDx0am1l
-cmNpZXJAZ29vZ2xlLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiA+IElPTU1VIGltcGxlbWVudGF0aW9u
-cyBub3cgc29tZXRpbWVzIGJvdW5jZSBtZW1vcnkgdGhyb3VnaCBTV0lPVExCIHRvDQo+ID4gPiBh
-Y2hpZXZlIGNhY2hlbGluZSBhbGlnbm1lbnQgWzFdLCBvciBwcmV2ZW50IERNQSBhdHRhY2tzIGJ5
-IHVudHJ1c3RlZA0KPiA+ID4gZGV2aWNlcyBbMl0uIFRoZXNlIHVzZXMgb2YgU1dJT1RMQiBkaWZm
-ZXIgY29uY2VwdHVhbGx5IGZyb20gaGlzdG9yaWNhbA0KPiA+ID4gdXNlIHdoaWNoIHdhcyBhIHNv
-bHV0aW9uIHRvIHRoZSBwcm9ibGVtIG9mIGRldmljZSBhZGRyZXNzaW5nDQo+ID4gPiBsaW1pdGF0
-aW9ucyB0aGF0IHByZXZlbnQgRE1BIHRvIHNvbWUgcG9ydGlvbiBvZiBzeXN0ZW0gbWVtb3J5DQo+
-ID4gPiAodHlwaWNhbGx5IGJleW9uZCA0IEdpQikuIElPTU1VcyBhbHNvIHNvbHZlIHRoZSBwcm9i
-bGVtIG9mIGRldmljZQ0KPiA+ID4gYWRkcmVzc2luZyBsaW1pdGF0aW9ucyBhbmQgdGhlcmVmb3Jl
-IGVsaW1pbmF0ZSB0aGUgbmVlZCBmb3IgU1dJT1RMQiBmb3INCj4gPiA+IHRoYXQgcHVycG9zZS4g
-SG93ZXZlciBhcyBtZW50aW9uZWQsIElPTU1VcyBjYW4gdXNlIFNXSU9UTEIgZm9yIG90aGVyDQo+
-ID4gPiBwdXJwb3Nlcy4NCj4gPiA+DQo+ID4gPiBUaGUgc3dpb3RsYiBrZXJuZWwgY29tbWFuZCBs
-aW5lIHBhcmFtZXRlciBkb2VzIG5vdCBpbXBhY3QgSU9NTVUgcmVsYXRlZA0KPiA+ID4gdXNlIG9m
-IFNXSU9UTEIsIGFuZCB0aGF0IGlzIGludGVudGlvbmFsLiBJT01NVXMgY2Fubm90IGJlIGZvcmNl
-ZCB0byB1c2UNCj4gPiA+IFNXSU9UTEIgZm9yIGFsbCBidWZmZXJzLiBVcGRhdGUgdGhlIGRvY3Vt
-ZW50YXRpb24gZm9yIHRoZSBzd2lvdGxiDQo+ID4gPiBwYXJhbWV0ZXIgdG8gY2xhcmlmeSB0aGF0
-IFNXSU9UTEIgdXNlIGNhbiBvbmx5IGJlIGZvcmNlZCBpbiBzY2VuYXJpb3MNCj4gPiA+IHdoZXJl
-IGFuIElPTU1VIGlzIG5vdCBpbnZvbHZlZC4NCj4gPiA+DQo+ID4gPiBbMV0gaHR0cHM6Ly9sb3Jl
-Lmtlcm5lbC5vcmcvYWxsLzIwMjMwNjEyMTUzMjAxLjU1NDc0Mi0xNi1jYXRhbGluLm1hcmluYXNA
-YXJtLmNvbS8NCj4gPiA+IFsyXSBodHRwczovL2xvcmUua2VybmVsLm9yZy9hbGwvMjAxOTA5MDYw
-NjE0NTIuMzA3OTEtMS1iYW9sdS5sdUBsaW51eC5pbnRlbC5jb20vDQo+ID4gPiBTaWduZWQtb2Zm
-LWJ5OiBULkouIE1lcmNpZXIgPHRqbWVyY2llckBnb29nbGUuY29tPg0KPiA+ID4gLS0tDQo+ID4g
-PiAgRG9jdW1lbnRhdGlvbi9hZG1pbi1ndWlkZS9rZXJuZWwtcGFyYW1ldGVycy50eHQgfCAxICsN
-Cj4gPiA+ICBEb2N1bWVudGF0aW9uL2FyY2gveDg2L3g4Nl82NC9ib290LW9wdGlvbnMucnN0ICB8
-IDIgKy0NCj4gPiA+ICAyIGZpbGVzIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlv
-bigtKQ0KPiA+ID4NCj4gPiA+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2FkbWluLWd1aWRl
-L2tlcm5lbC1wYXJhbWV0ZXJzLnR4dCBiL0RvY3VtZW50YXRpb24vYWRtaW4tZ3VpZGUva2VybmVs
-LXBhcmFtZXRlcnMudHh0DQo+ID4gPiBpbmRleCAyMTNkMDcxOWUyYjcuLjg0YzU4MmFjMjQ2YyAx
-MDA2NDQNCj4gPiA+IC0tLSBhL0RvY3VtZW50YXRpb24vYWRtaW4tZ3VpZGUva2VybmVsLXBhcmFt
-ZXRlcnMudHh0DQo+ID4gPiArKysgYi9Eb2N1bWVudGF0aW9uL2FkbWluLWd1aWRlL2tlcm5lbC1w
-YXJhbWV0ZXJzLnR4dA0KPiA+ID4gQEAgLTY0ODYsNiArNjQ4Niw3IEBADQo+ID4gPiAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgdG8gYSBwb3dlciBvZiAyLg0KPiA+ID4gICAgICAgICAg
-ICAgICAgICAgICAgIGZvcmNlIC0tIGZvcmNlIHVzaW5nIG9mIGJvdW5jZSBidWZmZXJzIGV2ZW4g
-aWYgdGhleQ0KPiA+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHdvdWxkbid0IGJl
-IGF1dG9tYXRpY2FsbHkgdXNlZCBieSB0aGUga2VybmVsDQo+ID4gPiArICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgd2hlcmUgYSBoYXJkd2FyZSBJT01NVSBpcyBub3QgaW52b2x2ZWQNCj4g
-PiA+ICAgICAgICAgICAgICAgICAgICAgICBub2ZvcmNlIC0tIE5ldmVyIHVzZSBib3VuY2UgYnVm
-ZmVycyAoZm9yIGRlYnVnZ2luZykNCj4gPiA+DQo+ID4gPiAgICAgICBzd2l0Y2hlcz0gICAgICAg
-W0hXLE02OGssRUFSTFldDQo+ID4NCj4gPiBZZXMsIHRoaXMgcGFydCBpcyBjb3JyZWN0LiBTV0lP
-VExCIGNhbm5vdCBiZSBmb3JjZWQgaWYgdGhlcmUgaXMgYW4gSU9NTVUuDQo+ID4NCj4gPiA+IGRp
-ZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2FyY2gveDg2L3g4Nl82NC9ib290LW9wdGlvbnMucnN0
-IGIvRG9jdW1lbnRhdGlvbi9hcmNoL3g4Ni94ODZfNjQvYm9vdC1vcHRpb25zLnJzdA0KPiA+ID4g
-aW5kZXggMTM3NDMyZDM0MTA5Li4wNjZiNGJjODE1ODMgMTAwNjQ0DQo+ID4gPiAtLS0gYS9Eb2N1
-bWVudGF0aW9uL2FyY2gveDg2L3g4Nl82NC9ib290LW9wdGlvbnMucnN0DQo+ID4gPiArKysgYi9E
-b2N1bWVudGF0aW9uL2FyY2gveDg2L3g4Nl82NC9ib290LW9wdGlvbnMucnN0DQo+ID4gPiBAQCAt
-Mjg1LDcgKzI4NSw3IEBAIGlvbW11IG9wdGlvbnMgb25seSByZWxldmFudCB0byB0aGUgQU1EIEdB
-UlQgaGFyZHdhcmUgSU9NTVU6DQo+ID4gPiAgICAgICAgQWx3YXlzIHBhbmljIHdoZW4gSU9NTVUg
-b3ZlcmZsb3dzLg0KPiA+ID4NCj4gPiA+ICBpb21tdSBvcHRpb25zIG9ubHkgcmVsZXZhbnQgdG8g
-dGhlIHNvZnR3YXJlIGJvdW5jZSBidWZmZXJpbmcgKFNXSU9UTEIpIElPTU1VDQo+ID4gPiAtaW1w
-bGVtZW50YXRpb246DQo+ID4gPiAraW1wbGVtZW50YXRpb24gd2hlcmUgYSBoYXJkd2FyZSBJT01N
-VSBpcyBub3QgaW52b2x2ZWQ6DQo+ID4gPg0KPiA+ID4gICAgICBzd2lvdGxiPTxzbG90cz5bLGZv
-cmNlLG5vZm9yY2VdDQo+ID4gPiAgICAgICAgPHNsb3RzPg0KPiA+DQo+ID4gQnV0IHRoaXMgcGFy
-dCBuZWVkcyBzb21lIGltcHJvdmVtZW50LiBUaGUgInN3aW90bGIiIG9wdGlvbiBpcyBub3QNCj4g
-PiBlbnRpcmVseSBpZ25vcmVkIGlmIHRoZXJlIGlzIGEgaGFyZHdhcmUgSU9NTVUuIEZvciBleGFt
-cGxlLCB0aGUgc2l6ZSBvZg0KPiA+IHRoZSBTV0lPVExCIGNhbiBiZSBhZGp1c3RlZCB1c2luZyAi
-c3dpb3RsYj08c2xvdHM+IiwgYW5kIHNpbmNlIFNXSU9UTEINCj4gPiBjYW4gYmUgdXNlZCBieSBJ
-T01NVXMgZm9yIG90aGVyIHB1cnBvc2VzIChhcyB5b3UgY29ycmVjdGx5IG5vdGUgaW4gdGhlDQo+
-ID4gY29tbWl0IG1lc3NhZ2UpLCB0aGlzIHNldHRpbmcgaXMgcmVsZXZhbnQgZXZlbiB3aGVyZSBh
-IGhhcmR3YXJlIElPTU1VDQo+ID4gaXMgaW52b2x2ZWQuDQo+ID4NCj4gPiBQZXRyIFQNCj4gDQo+
-IFRoYW5rcy4gSSB0aGluayBJIHNob3VsZCBhbHNvIHVwZGF0ZSB0aGUgY29tbWl0IG1lc3NhZ2U6
-DQo+ICJUaGUgc3dpb3RsYj1mb3JjZSBrZXJuZWwgY29tbWFuZCBsaW5lIHBhcmFtZXRlciBkb2Vz
-IG5vdCBpbXBhY3QgSU9NTVUNCj4gcmVsYXRlZCB1c2Ugb2YgU1dJT1RMQiINCj4gYW5kIHRpdGxl
-Og0KPiAiQ2xhcmlmeSBzd2lvdGxiPWZvcmNlIG9wdGlvbiBhcHBsaWVzIG9ubHkgdG8gZG1hLWRp
-cmVjdCINCj4gDQo+IEFzIGZvciBmaXhpbmcgYm9vdC1vcHRpb25zLnR4dCwgSSB0aGluayBpdCBt
-YWtlcyB0aGUgbW9zdCBzZW5zZSB0bw0KPiBleHBhbmQgb24ganVzdCB0aGUgZm9yY2Ugb3B0aW9u
-IHJhdGhlciB0aGFuIHRoZSBzZWN0aW9uIHN1bW1hcnkgbGlrZQ0KPiBhYm92ZToNCj4gICAgICAg
-IGZvcmNlDQo+ICAgICAgICAgIEZvcmNlIGFsbCBJTyB0aHJvdWdoIHRoZSBzb2Z0d2FyZSBUTEIu
-DQo+ICsgICAgICAgIEhhcmR3YXJlIElPTU1VIGltcGxlbWVudGF0aW9ucyBjYW4gdXNlIFNXSU9U
-TEIgYm91bmNlIGJ1ZmZlcmluZyBpbg0KPiArICAgICAgICBzb21lIGNpcmN1bXN0YW5jZXMsIGJ1
-dCB0aGV5IGNhbm5vdCBiZSBmb3JjZWQgdG8gYWx3YXlzIHVzZSB0aGVtLCBzbw0KPiArICAgICAg
-ICB0aGlzIG9wdGlvbiBvbmx5IGhhcyBhbiBlZmZlY3Qgd2hlbiBubyBoYXJkd2FyZSBJT01NVSBp
-cyBpbnZvbHZlZC4NCj4gICAgICAgIG5vZm9yY2UNCg0KTm90ZSBhbHNvIHRoYXQgdGhlIGRvY3Vt
-ZW50YXRpb24gZm9yIHN3aW90bGI9IGluIGJvb3Qtb3B0aW9ucy5yc3QgaXMgc29tZXdoYXQNCm91
-dC1vZi1kYXRlLiAgSXQgZG9lc24ndCBoYXZlIHRoZSBvcHRpb25hbCBzZWNvbmQgaW50ZWdlciBw
-YXJhbWV0ZXIgdG8gc3BlY2lmeQ0KdGhlIG51bWJlciBvZiAiYXJlYXMiIHRoYXQgaGF2ZSB0aGVp
-ciBvd24gbG9jay4gIFBlcmhhcHMgdGhhdCBjb3VsZCBiZSBmaXhlZA0KYXQgdGhlIHNhbWUgdGlt
-ZT8NCg0KTWljaGFlbA0K
+On Mon, May 6, 2024 at 12:58=E2=80=AFPM Michael Kelley <mhklinux@outlook.co=
+m> wrote:
+>
+> From: T.J. Mercier <tjmercier@google.com> Sent: Monday, May 6, 2024 10:23=
+ AM
+> >
+> > On Sat, May 4, 2024 at 1:16=E2=80=AFAM Petr Tesa=C5=99=C3=ADk <petr@tes=
+arici.cz> wrote:
+> > >
+> > > On Fri,  3 May 2024 18:35:26 +0000
+> > > "T.J. Mercier" <tjmercier@google.com> wrote:
+> > >
+> > > > IOMMU implementations now sometimes bounce memory through SWIOTLB t=
+o
+> > > > achieve cacheline alignment [1], or prevent DMA attacks by untruste=
+d
+> > > > devices [2]. These uses of SWIOTLB differ conceptually from histori=
+cal
+> > > > use which was a solution to the problem of device addressing
+> > > > limitations that prevent DMA to some portion of system memory
+> > > > (typically beyond 4 GiB). IOMMUs also solve the problem of device
+> > > > addressing limitations and therefore eliminate the need for SWIOTLB=
+ for
+> > > > that purpose. However as mentioned, IOMMUs can use SWIOTLB for othe=
+r
+> > > > purposes.
+> > > >
+> > > > The swiotlb kernel command line parameter does not impact IOMMU rel=
+ated
+> > > > use of SWIOTLB, and that is intentional. IOMMUs cannot be forced to=
+ use
+> > > > SWIOTLB for all buffers. Update the documentation for the swiotlb
+> > > > parameter to clarify that SWIOTLB use can only be forced in scenari=
+os
+> > > > where an IOMMU is not involved.
+> > > >
+> > > > [1] https://lore.kernel.org/all/20230612153201.554742-16-catalin.ma=
+rinas@arm.com/
+> > > > [2] https://lore.kernel.org/all/20190906061452.30791-1-baolu.lu@lin=
+ux.intel.com/
+> > > > Signed-off-by: T.J. Mercier <tjmercier@google.com>
+> > > > ---
+> > > >  Documentation/admin-guide/kernel-parameters.txt | 1 +
+> > > >  Documentation/arch/x86/x86_64/boot-options.rst  | 2 +-
+> > > >  2 files changed, 2 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Docu=
+mentation/admin-guide/kernel-parameters.txt
+> > > > index 213d0719e2b7..84c582ac246c 100644
+> > > > --- a/Documentation/admin-guide/kernel-parameters.txt
+> > > > +++ b/Documentation/admin-guide/kernel-parameters.txt
+> > > > @@ -6486,6 +6486,7 @@
+> > > >                                to a power of 2.
+> > > >                       force -- force using of bounce buffers even i=
+f they
+> > > >                                wouldn't be automatically used by th=
+e kernel
+> > > > +                              where a hardware IOMMU is not involv=
+ed
+> > > >                       noforce -- Never use bounce buffers (for debu=
+gging)
+> > > >
+> > > >       switches=3D       [HW,M68k,EARLY]
+> > >
+> > > Yes, this part is correct. SWIOTLB cannot be forced if there is an IO=
+MMU.
+> > >
+> > > > diff --git a/Documentation/arch/x86/x86_64/boot-options.rst b/Docum=
+entation/arch/x86/x86_64/boot-options.rst
+> > > > index 137432d34109..066b4bc81583 100644
+> > > > --- a/Documentation/arch/x86/x86_64/boot-options.rst
+> > > > +++ b/Documentation/arch/x86/x86_64/boot-options.rst
+> > > > @@ -285,7 +285,7 @@ iommu options only relevant to the AMD GART har=
+dware IOMMU:
+> > > >        Always panic when IOMMU overflows.
+> > > >
+> > > >  iommu options only relevant to the software bounce buffering (SWIO=
+TLB) IOMMU
+> > > > -implementation:
+> > > > +implementation where a hardware IOMMU is not involved:
+> > > >
+> > > >      swiotlb=3D<slots>[,force,noforce]
+> > > >        <slots>
+> > >
+> > > But this part needs some improvement. The "swiotlb" option is not
+> > > entirely ignored if there is a hardware IOMMU. For example, the size =
+of
+> > > the SWIOTLB can be adjusted using "swiotlb=3D<slots>", and since SWIO=
+TLB
+> > > can be used by IOMMUs for other purposes (as you correctly note in th=
+e
+> > > commit message), this setting is relevant even where a hardware IOMMU
+> > > is involved.
+> > >
+> > > Petr T
+> >
+> > Thanks. I think I should also update the commit message:
+> > "The swiotlb=3Dforce kernel command line parameter does not impact IOMM=
+U
+> > related use of SWIOTLB"
+> > and title:
+> > "Clarify swiotlb=3Dforce option applies only to dma-direct"
+> >
+> > As for fixing boot-options.txt, I think it makes the most sense to
+> > expand on just the force option rather than the section summary like
+> > above:
+> >        force
+> >          Force all IO through the software TLB.
+> > +        Hardware IOMMU implementations can use SWIOTLB bounce bufferin=
+g in
+> > +        some circumstances, but they cannot be forced to always use th=
+em, so
+> > +        this option only has an effect when no hardware IOMMU is invol=
+ved.
+> >        noforce
+>
+> Note also that the documentation for swiotlb=3D in boot-options.rst is so=
+mewhat
+> out-of-date.  It doesn't have the optional second integer parameter to sp=
+ecify
+> the number of "areas" that have their own lock.  Perhaps that could be fi=
+xed
+> at the same time?
+>
+> Michael
+
+Thanks, I could add this as a second patch.
+
+I also noticed that several of the iommu options (soft, allowed,
+nofullflush, panic) are not listed in the set of possible options at
+the top of the IOMMU section. Rebooting is the only other section that
+does that, so I'm wondering if we're better off getting rid of it to
+be like other sections.
