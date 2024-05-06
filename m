@@ -1,167 +1,118 @@
-Received: from mail-yb1-f181.google.com (mail-yb1-f181.google.com [209.85.219.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D9DA157487
-	for <iommu@lists.linux.dev>; Mon,  6 May 2024 17:23:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A46F0197;
+	Mon,  6 May 2024 18:29:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715016185; cv=none; b=nrZNoJ09VdOpLZpMDKlmbFT2ZXI0ada8/z9OUcnyOWP+pG9tED1y72jYuyQxjvKG6Bwr+j/7jupPEtCg+tnR4vryr5mAmz+1Ymu7hSBdWg63cQNl+Fp+QgHDz2PpQxbZHtO3j88Lm/QFJcqAw/0g/wsPSScnhFuik+jWoGNEVXM=
+	t=1715020173; cv=none; b=j6DNtBamxSw+QLkdpOfZnA0EBS7WhTT97XT8zdtjvX+t4QaMnRbtiK+VjGHt7z1Valsml8QmMQIejhJvZbzsBSSOfymvgmuyxhWX/i9H7frXUh0fEDcb1Om/PwisAcPfNGr8ujRZX2cDVUDpscLeVufMd8nI6YCPuwIRuHU9ugw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715016185; c=relaxed/simple;
-	bh=WZrKW9lX4tg3tPxy5c0NpUNmhHAib2hOo3+Fq/V8re4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Q7o2n2lrvR9VpUnpD1RlGVMX3xeEf+F8qHBe0kXV8H41+AuB08bXEQUU2Wc1GRLNPsoi4p+7kCXiJpza1Mo7VlWbaMvXEFAybeIqcN0WXOsS/LT4dNwweXfV1dVdRzT7BIl2i/PIpUp4fVJRhwNiAG6TWZ/M8P0rBaldSyWXOkA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=X4PKrK/s; arc=none smtp.client-ip=209.85.219.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	s=arc-20240116; t=1715020173; c=relaxed/simple;
+	bh=Jg7BOhMVd+5bqaLKq8JWxbODI0k/8tdTr8AXexb+oiw=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=QOfqrUXXDg/vowNOKyVpz7MAH//C/gB06aP2RtHrcrZHe1w7rnOjENOAqeGR5lMSORUo1W+XNPBsMJ08RNAiBTu50U5zAzpxjVxBRSbZP7I6P5/FKZaw8d4yPdZtVhXh0i8WnCx3mQqtuyrzLaJcNl4e8el02P+cokFUB7ySZI0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jYu7ZL9v; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="X4PKrK/s"
-Received: by mail-yb1-f181.google.com with SMTP id 3f1490d57ef6-de604ca3cfcso2153991276.3
-        for <iommu@lists.linux.dev>; Mon, 06 May 2024 10:23:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1715016182; x=1715620982; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PCrwSzubKtvsGNfMW8E9OfepfV+lPFMQFEMiDBoSQgk=;
-        b=X4PKrK/s2kcxzk1WGj23yqj5P0hE8ssGPUuLqKyA3NTLSDwiCOjnpy9wncorrl62s8
-         5sT9lYck7TxzcQ/FRWNLKapA9mUm7wZPeuFnOv4FT1Ih41LpPWzgpF/myXC/4XRxAzHn
-         MrH0A7JjLD/PkSwg6f6ChAL5/cmpwuvo6Gc6ap1/d/XlbLTiySi2Iqvz5pFJg7YcDnRA
-         5vLhqjCAdMBUIfFvWyI62Sn7ooCR9/r9kylJg9CbxI4n64amuecGAZzncswTl3txYRU6
-         L6XE6+N4HwipBOT3sW3LZAZbVRmkaWfggjzOrDQqzeEW5oCmYoZD6zCGdyIqnZcxt6VS
-         Kn6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715016182; x=1715620982;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=PCrwSzubKtvsGNfMW8E9OfepfV+lPFMQFEMiDBoSQgk=;
-        b=KAq4eAb02G7nKGXJB8181Jq6Kt4VJr1wAdJg2QYjp1Xpqv9/SP4jCYbuobrrTFnZJI
-         6gEL0KUkoy/+raen4lSfPrtJHg3feVLNWxlOfRXOen5x/oinA91V4tuegTRer4NReilE
-         U87lnvpzGORCOhQ5FJzA2faIAcZzOuG/fQC9NGhcTgrcnloOoEyl1QgO3lvsNAyqPavW
-         XU53jIbMUh9KNp1yuMXQfomdE8IAj7spKpfi9gxBj8lYfTizmHkwI0H1DjJA8EtNUz+e
-         BQaRB8ByZnTxDJ9o2AsaKSiMPI8rZrcn/Lc2SsDCF1/ELYgWScyKezZZ480hH1NAWnwV
-         IR4g==
-X-Forwarded-Encrypted: i=1; AJvYcCWqWf6WDyECPzmkBZ90xYPx17qSb3EaXaQQHCqRzKaLb0QS1o4Fipw17gnVd2TP18P6SlbTB6/WgPsHgZ/DXX0XMhH7nws=
-X-Gm-Message-State: AOJu0YyULcWDjlQUwtSkuOjRYwrNUkH0bFfY+LymUTIuHF5QDBTDln+b
-	Tmgr4aKyECjzNOvpChjsx/I/6uT2qQyzfaDXUelWFI3/JHo8mBth+tpgGa/nweQQCZIb3N9LLuU
-	3g7wIfXqQgXi9DYtWrfRmPaB82/rMpbF4Y19Z
-X-Google-Smtp-Source: AGHT+IFF+xrCiZxZzYs8KepraXuOLw4ukSfLThnPpCCYdtURoAqdQvuK/9ekO9RvFnQzQ2yuIw0Z6Hw7T7hUsdyFDBA=
-X-Received: by 2002:a05:6902:2747:b0:dc7:465d:c06d with SMTP id
- ea7-20020a056902274700b00dc7465dc06dmr12341901ybb.28.1715016182087; Mon, 06
- May 2024 10:23:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jYu7ZL9v"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3E36C116B1;
+	Mon,  6 May 2024 18:29:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1715020173;
+	bh=Jg7BOhMVd+5bqaLKq8JWxbODI0k/8tdTr8AXexb+oiw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=jYu7ZL9vGTyQrn0OwIuQzduS/GOT6CI0qudddB+4EZgwmkPGFp0A3jFcCdSyLGjdz
+	 VF0hA+B77oEktUP3ahcfLUq7Xmy2rW6EGajF99f7M+LXtGM1Hw/5mc9Q3jGN3Ah+Yh
+	 UCfG/JqB7h8v6JHXXqBnLFlS0YLzeyfC1dZS9RbtptdSU0o3m8ygmxqIFtE3bw8pQX
+	 G7+NZ5iQKSDf+AKdJqEV7RFJ0QcQOibl0rxQmD3B1/o2b+kRoGWObYUum8ATY9PJsn
+	 14yknCIXErJ0A3MUNyFogUJqMcDsg204cxqBbDYE1QWDx1FZIzlQOA4Nkk52GmTwJn
+	 zFD+Xvwyzbf1A==
+Date: Mon, 6 May 2024 11:29:31 -0700
+From: Jakub Kicinski <kuba@kernel.org>
+To: Alexander Lobakin <aleksander.lobakin@intel.com>
+Cc: "David S. Miller" <davem@davemloft.net>, Eric Dumazet
+ <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>, Christoph Hellwig
+ <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>, Magnus Karlsson
+ <magnus.karlsson@intel.com>, nex.sw.ncis.osdt.itp.upstreaming@intel.com,
+ bpf@vger.kernel.org, netdev@vger.kernel.org, iommu@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v5 7/7] xsk: use generic DMA sync shortcut
+ instead of a custom one
+Message-ID: <20240506112931.39614ff0@kernel.org>
+In-Reply-To: <20240506094855.12944-8-aleksander.lobakin@intel.com>
+References: <20240506094855.12944-1-aleksander.lobakin@intel.com>
+	<20240506094855.12944-8-aleksander.lobakin@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240503183527.1548119-1-tjmercier@google.com> <20240504101651.7de5106f@meshulam.tesarici.cz>
-In-Reply-To: <20240504101651.7de5106f@meshulam.tesarici.cz>
-From: "T.J. Mercier" <tjmercier@google.com>
-Date: Mon, 6 May 2024 10:22:50 -0700
-Message-ID: <CABdmKX06v23-w8PQJab8kgfPDRYLU3bQSQ4AsC3zrzxYL955gQ@mail.gmail.com>
-Subject: Re: [PATCH] swiotlb: iommu/dma: Clarify swiotlb options apply only to dma-direct
-To: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>
-Cc: Jonathan Corbet <corbet@lwn.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
-	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org, 
-	"H. Peter Anvin" <hpa@zytor.com>, hch@infradead.org, robin.murphy@arm.com, joro@8bytes.org, 
-	will@kernel.org, akpm@linux-foundation.org, isaacmanjarres@google.com, 
-	iommu@lists.linux.dev, linux-doc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, Michael Kelley <mhklinux@outlook.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sat, May 4, 2024 at 1:16=E2=80=AFAM Petr Tesa=C5=99=C3=ADk <petr@tesaric=
-i.cz> wrote:
->
-> On Fri,  3 May 2024 18:35:26 +0000
-> "T.J. Mercier" <tjmercier@google.com> wrote:
->
-> > IOMMU implementations now sometimes bounce memory through SWIOTLB to
-> > achieve cacheline alignment [1], or prevent DMA attacks by untrusted
-> > devices [2]. These uses of SWIOTLB differ conceptually from historical
-> > use which was a solution to the problem of device addressing
-> > limitations that prevent DMA to some portion of system memory
-> > (typically beyond 4 GiB). IOMMUs also solve the problem of device
-> > addressing limitations and therefore eliminate the need for SWIOTLB for
-> > that purpose. However as mentioned, IOMMUs can use SWIOTLB for other
-> > purposes.
-> >
-> > The swiotlb kernel command line parameter does not impact IOMMU related
-> > use of SWIOTLB, and that is intentional. IOMMUs cannot be forced to use
-> > SWIOTLB for all buffers. Update the documentation for the swiotlb
-> > parameter to clarify that SWIOTLB use can only be forced in scenarios
-> > where an IOMMU is not involved.
-> >
-> > [1] https://lore.kernel.org/all/20230612153201.554742-16-catalin.marina=
-s@arm.com
-> > [2] https://lore.kernel.org/all/20190906061452.30791-1-baolu.lu@linux.i=
-ntel.com/
-> > Signed-off-by: T.J. Mercier <tjmercier@google.com>
-> > ---
-> >  Documentation/admin-guide/kernel-parameters.txt | 1 +
-> >  Documentation/arch/x86/x86_64/boot-options.rst  | 2 +-
-> >  2 files changed, 2 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Document=
-ation/admin-guide/kernel-parameters.txt
-> > index 213d0719e2b7..84c582ac246c 100644
-> > --- a/Documentation/admin-guide/kernel-parameters.txt
-> > +++ b/Documentation/admin-guide/kernel-parameters.txt
-> > @@ -6486,6 +6486,7 @@
-> >                                to a power of 2.
-> >                       force -- force using of bounce buffers even if th=
-ey
-> >                                wouldn't be automatically used by the ke=
-rnel
-> > +                              where a hardware IOMMU is not involved
-> >                       noforce -- Never use bounce buffers (for debuggin=
-g)
-> >
-> >       switches=3D       [HW,M68k,EARLY]
->
-> Yes, this part is correct. SWIOTLB cannot be forced if there is an IOMMU.
->
-> > diff --git a/Documentation/arch/x86/x86_64/boot-options.rst b/Documenta=
-tion/arch/x86/x86_64/boot-options.rst
-> > index 137432d34109..066b4bc81583 100644
-> > --- a/Documentation/arch/x86/x86_64/boot-options.rst
-> > +++ b/Documentation/arch/x86/x86_64/boot-options.rst
-> > @@ -285,7 +285,7 @@ iommu options only relevant to the AMD GART hardwar=
-e IOMMU:
-> >        Always panic when IOMMU overflows.
-> >
-> >  iommu options only relevant to the software bounce buffering (SWIOTLB)=
- IOMMU
-> > -implementation:
-> > +implementation where a hardware IOMMU is not involved:
-> >
-> >      swiotlb=3D<slots>[,force,noforce]
-> >        <slots>
->
-> But this part needs some improvement. The "swiotlb" option is not
-> entirely ignored if there is a hardware IOMMU. For example, the size of
-> the SWIOTLB can be adjusted using "swiotlb=3D<slots>", and since SWIOTLB
-> can be used by IOMMUs for other purposes (as you correctly note in the
-> commit message), this setting is relevant even where a hardware IOMMU
-> is involved.
->
-> Petr T
+On Mon,  6 May 2024 11:48:55 +0200 Alexander Lobakin wrote:
+> XSk infra's been using its own DMA sync shortcut to try avoiding
+> redundant function calls. Now that there is a generic one, remove
+> the custom implementation and rely on the generic helpers.
+> xsk_buff_dma_sync_for_cpu() doesn't need the second argument anymore,
+> remove it.
 
-Thanks. I think I should also update the commit message:
-"The swiotlb=3Dforce kernel command line parameter does not impact IOMMU
-related use of SWIOTLB"
-and title:
-"Clarify swiotlb=3Dforce option applies only to dma-direct"
+I think this is crashing xsk tests:
 
-As for fixing boot-options.txt, I think it makes the most sense to
-expand on just the force option rather than the section summary like
-above:
-       force
-         Force all IO through the software TLB.
-+        Hardware IOMMU implementations can use SWIOTLB bounce buffering in
-+        some circumstances, but they cannot be forced to always use them, =
-so
-+        this option only has an effect when no hardware IOMMU is involved.
-       noforce
+  [   91.048963] BUG: kernel NULL pointer dereference, address: 0000000000000464
+  [   91.049412] #PF: supervisor read access in kernel mode
+  [   91.049739] #PF: error_code(0x0000) - not-present page
+  [   91.050057] PGD 0 P4D 0
+  [   91.050221] Oops: 0000 [#1] PREEMPT SMP NOPTI
+  [   91.050500] CPU: 1 PID: 114 Comm: new_name Tainted: G           OE      6.9.0-rc6-gad3c108348fd-dirty #372
+  [   91.051088] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+  [   91.051649] RIP: 0010:xp_alloc+0x76/0x240
+  [   91.051903] Code: 48 89 0a 48 89 00 48 89 40 08 41 c7 44 24 34 00 00 00 00 49 8b 44 24 18 48 05 00 01 00 00 49 89 04 24 49 89 44 24 10 48 8b 3b <f6> 87 64 04 00 00 20 0f 85 16 01 00 00 48 8b 44 24 08 65 48 33 04
+  [   91.053055] RSP: 0018:ffff99e7c00f0b00 EFLAGS: 00010286
+  [   91.053400] RAX: ffff99e7c0c9d100 RBX: ffff89a400901c00 RCX: 0000000000010000
+  [   91.053838] RDX: 0000000000000000 RSI: 0000000000000010 RDI: 0000000000000000
+  [   91.054277] RBP: ffff89a4026e30e0 R08: 0000000000000001 R09: 0000000000009000
+  [   91.054716] R10: 779660ad50f0d4e6 R11: 79b5ce88640fb4f7 R12: ffff89a40c31d870
+  [   91.055156] R13: 0000000000000020 R14: 0000000000000000 R15: ffff89a4068c6000
+  [   91.055596] FS:  00007f87685bef80(0000) GS:ffff89a43bd00000(0000) knlGS:0000000000000000
+  [   91.056090] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  [   91.056458] CR2: 0000000000000464 CR3: 000000010229c001 CR4: 0000000000770ef0
+  [   91.056904] PKRU: 55555554
+  [   91.057079] Call Trace:
+  [   91.057237]  <IRQ>
+  [   91.057371]  ? __die_body+0x1f/0x70
+  [   91.057595]  ? page_fault_oops+0x15a/0x460
+  [   91.057852]  ? find_held_lock+0x2b/0x80
+  [   91.058093]  ? __skb_flow_dissect+0x30f/0x1f10
+  [   91.058374]  ? lock_release+0xbd/0x280
+  [   91.058610]  ? exc_page_fault+0x67/0x1e0
+  [   91.058859]  ? asm_exc_page_fault+0x26/0x30
+  [   91.059126]  ? xp_alloc+0x76/0x240
+  [   91.059341]  __xsk_rcv+0x1f0/0x360
+  [   91.059558]  ? __skb_get_hash+0x5b/0x1f0
+  [   91.059804]  ? __skb_get_hash+0x5b/0x1f0
+  [   91.060050]  __xsk_map_redirect+0x7c/0x2c0
+  [   91.060315]  ? rcu_read_lock_held_common+0x2e/0x50
+  [   91.060622]  xdp_do_redirect+0x28f/0x4b0
+  [   91.060871]  veth_xdp_rcv_skb+0x29e/0x930
+  [   91.061126]  veth_xdp_rcv+0x184/0x290
+  [   91.061358]  ? update_load_avg+0x8c/0x8c0
+  [   91.061609]  ? select_task_rq_fair+0x1ff/0x15a0
+  [   91.061894]  ? place_entity+0x19/0x100
+  [   91.062131]  veth_poll+0x6c/0x2f0
+  [   91.062343]  ? _raw_spin_unlock_irqrestore+0x27/0x50
+  [   91.062653]  ? try_to_wake_up+0x261/0x8d0
+  [   91.062905]  ? find_held_lock+0x2b/0x80
+  [   91.063147]  __napi_poll+0x27/0x200
+  [   91.063376]  net_rx_action+0x172/0x320
+  [   91.063617]  __do_softirq+0xb6/0x3a3
+  [   91.063843]  ? __dev_direct_xmit+0x167/0x1b0
+  [   91.064114]  do_softirq.part.0+0x3b/0x70
+  [   91.064373]  </IRQ>
+  [   91.064511]  <TASK>
+  [   91.064650]  __local_bh_enable_ip+0xbd/0xe0
+  [   91.064913]  __dev_direct_xmit+0x16c/0x1b0
+  [   91.065171]  xsk_generic_xmit+0x703/0xb10
+  [   91.065425]  xsk_sendmsg+0x21f/0x2f0
