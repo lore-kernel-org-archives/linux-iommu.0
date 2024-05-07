@@ -1,252 +1,92 @@
-Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com [209.85.219.48])
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com [209.85.219.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 786292D03D
-	for <iommu@lists.linux.dev>; Tue,  7 May 2024 16:51:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD5DE21373
+	for <iommu@lists.linux.dev>; Tue,  7 May 2024 20:07:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715100719; cv=none; b=ng3vaxUct17UzC4tCTj8nX229qdmzNFp/W3RMVRfG0I0wob93v+H+Gb8ciGmQMb93dPEFhOYztmbtZ679S8LGHB87tua4h+fYhjHTpSB6qBnmtru40BeC67tuYHXJUJtSeQYtc4Z7EEVWFfh4IuQyp3mwcDJ4+pA3WcnojsDtLk=
+	t=1715112459; cv=none; b=ui47KNDHEVHSSFjaPlJybyBh5MyTaqptGjq2s3uL0NOUJYR20cCgNQuCUysF3dYIP4JExU6Zpeo5+QiNVxW678Rc6wEUGGcsXQ/Zndg2z0wxts0tfZC22AqK/8SCG5vhlRWjJg+45Nbdo8TBdzF8fTICAGqOyZB0X+CPBoZZVpo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715100719; c=relaxed/simple;
-	bh=55Yb/oJ4XpZLMHNuuMmyBkE6Goq6IUIG5KPaM2uQvnQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CX5x2LR8FVDewWcZUAoE/d0x7XNdJ2V/B09ll/Zc+xvLeAqOeBevKJlceSL1bVU6Qy/nFZKTJQ3UOMF4qlsxer3Oum+i71g1iyQlZETffNAGwXQa0KC5UjdlFZ2fjoiyeyztkgOQ0ikLuvYa+o5MncXtBKs5gXLTIAVPi3NhM1s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Yhjm2vjs; arc=none smtp.client-ip=209.85.219.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
+	s=arc-20240116; t=1715112459; c=relaxed/simple;
+	bh=n/UC63lLAcCezzowRd6HUrb0809BTC3BrdNXURqieAU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=CII9KkkH2z9haFjJtkQnEimkGa9JmApIIg1S+v3ghqYlD3WtbhtrXSBG109chGqa4UW09MCrMhNbNZ0ZYFBBuWoh69DO7TAfTBNwU/9O5mX8hIbK1AYd7LpYnjfPzWZrdxw8zS9FWhKZpv83kO+YYnPJQE158piHajeVJk5fjkI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=I1bA4FrP; arc=none smtp.client-ip=209.85.219.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Yhjm2vjs"
-Received: by mail-qv1-f48.google.com with SMTP id 6a1803df08f44-69b10ead8f5so20506106d6.0
-        for <iommu@lists.linux.dev>; Tue, 07 May 2024 09:51:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="I1bA4FrP"
+Received: by mail-yb1-f170.google.com with SMTP id 3f1490d57ef6-de8b66d1726so125187276.0
+        for <iommu@lists.linux.dev>; Tue, 07 May 2024 13:07:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1715100717; x=1715705517; darn=lists.linux.dev;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=KuJq+qc0A6IDkIfE8aXHp0ryQZcN+HRrcr1ZP0IxgmQ=;
-        b=Yhjm2vjsbZvQVuD02i1wPlzFAvOd/zgjIISEy64Wo3m/VTlWZP1fEuYVe7x4+u7EWH
-         Gyx/YVmtG2MNZfH/TRo92/fxYaksMW3y2kJI6Q4HgdfdrY1hJvx9wNW1jdTlqpZHgAxk
-         vlwpu25fPfSkYC6CKnvMnXjDW6jTn3xIwh1X81q7F4jXzmubonOdRppvOWKUD4IROUWz
-         9/QQmJ2y0Z5VAygYVIUC+9ihfBC/bicnX8Pp8I8mwlVAYMbY2OrMHfKCPTCFA9OC3xBB
-         SbviA1B/H4/lKBJ0DqRkljLUg+jhqzXSjMfIkafRVTpi4Cf71bswGAKk7YFukU7nVgWx
-         RhxA==
+        d=google.com; s=20230601; t=1715112457; x=1715717257; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=n/UC63lLAcCezzowRd6HUrb0809BTC3BrdNXURqieAU=;
+        b=I1bA4FrPY2zyvqO7PMyzuIZsDEpJ9vWNl6omoo3MeA8IMTEtxSjbUzAmeZOqtzFl7B
+         HJurzRezu7YjbOAgSwArF7jBhc/xKP2O6TE0CUbyvmjEnA7Rojt92zzJR92ngCoLnlzn
+         UPsrMZyp7x2O9hLQZPyTgSuwwIC7wyAyDC2bVfIoR6mvPCGRLQ8lfrpPR7UE3Q2m0van
+         tuweR1gQTSaVg934vr9szsclzHmh0CFzTbO+X8OhTX+TMqHSG8zTTZ+1wr/KVyMvo6gc
+         rsdkL9mg6sfUeqxUo+0SMfP5H+m1s12tcH9PMvaQsnHJZFCzSTy8MKpy/HIwxZ8YwofW
+         DeWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715100717; x=1715705517;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=KuJq+qc0A6IDkIfE8aXHp0ryQZcN+HRrcr1ZP0IxgmQ=;
-        b=Oje9oISZCWFo/jz1tikVk4WraIAvAfNm36dyztVf9pPunVyXICgE5XmxqWaGPFqlY1
-         H74glM++3NEMrckUHytGRvUIyCx7VW0RwintQSgX9jVCWU+BMq1qA7Luk9BZUsVd/z/m
-         wH8dh5FDYJDjhMkhdpwljAKS1902TSNKhkwGdVtZDXdgBWaUw8v6PFoy/RBUVX6ian8z
-         PjnVxXW9ZMY8HFVWQmuCTXPSC58YpmHyk9mZxxc7gh2S3OfMMUuuoDayb5+1xfNVfDJv
-         2Ib99Zs+aj4ePFvSxBeUXmv8GkretAi1gYv+zNE1LOgPn1H8NmhPQZWp5e5HTolrXBeC
-         5Qdw==
-X-Forwarded-Encrypted: i=1; AJvYcCWTZ5REBi4TO8mrWdSTuQtmHFnHcY0IGkjUGE0yZwb1ca/GPuy0Fg30dsaRyHT1pEbTWEgoe+ZTFRDzuTK2KZxIOZCFlS8=
-X-Gm-Message-State: AOJu0YwX9Xy1vOPyqPcurCUmtmTO9QBFsnZnbDdjoWXi4gvrFOL/2Uej
-	nd/X++wYIfNWy/dZc3ZzWy8oR1p793A04ggdclxSO03dukZrD1DxfDS+4hwq8t0=
-X-Google-Smtp-Source: AGHT+IGUuxPPlPoMaw4Pvcfo1NJlzi2vAu/Z8gBAiaUWl2Sa7wmWBFq2vG5CHblSQfs5BDPYoxJvxw==
-X-Received: by 2002:ad4:5fcf:0:b0:6a0:cd1b:9f9f with SMTP id 6a1803df08f44-6a15147db7amr4218536d6.38.1715100717431;
-        Tue, 07 May 2024 09:51:57 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id cx8-20020a056214188800b006a0fb776a77sm4824798qvb.137.2024.05.07.09.51.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 May 2024 09:51:56 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-	(envelope-from <jgg@ziepe.ca>)
-	id 1s4O2m-0001cp-EM;
-	Tue, 07 May 2024 13:51:56 -0300
-Date: Tue, 7 May 2024 13:51:56 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Tomasz Jeznach <tjeznach@rivosinc.com>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Anup Patel <apatel@ventanamicro.com>,
-	Sunil V L <sunilvl@ventanamicro.com>,
-	Nick Kossifidis <mick@ics.forth.gr>,
-	Sebastien Boeuf <seb@rivosinc.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org,
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org,
-	linux-kernel@vger.kernel.org, linux@rivosinc.com
-Subject: Re: [PATCH v3 7/7] iommu/riscv: Paging domain support
-Message-ID: <20240507165156.GH4718@ziepe.ca>
-References: <cover.1714494653.git.tjeznach@rivosinc.com>
- <b83f81c04d1f3885d860b1eec03761fe63a33183.1714494653.git.tjeznach@rivosinc.com>
- <20240501145621.GD1723318@ziepe.ca>
- <CAH2o1u63GjMnYrfa8W-c1hdp+TAA0R-FyxXM4dEiFF+KEGWwbA@mail.gmail.com>
- <20240503181059.GC901876@ziepe.ca>
- <CAH2o1u7av8zMucB2sKxBOZtd1eqEC4Qmgin=8VQ03pWbQdZUUg@mail.gmail.com>
- <20240505154639.GD901876@ziepe.ca>
- <CAH2o1u6g87nt=S7id-O43PubR=GaOLj-vmk7+OdTiY=Kw1BU5A@mail.gmail.com>
+        d=1e100.net; s=20230601; t=1715112457; x=1715717257;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=n/UC63lLAcCezzowRd6HUrb0809BTC3BrdNXURqieAU=;
+        b=K7h+BlEs1fo1S00fSIO1NbgVUPkYtnFuIWx6GDCCC6Zxzm/R7Y5/tZsiTe+ksNn0vZ
+         r52lgguaXG5lX5tdDO6CHR0y7IsA8WQx9ZgmAsd/qmhO5Z4wChpCvKsM4YUyHBw8Sgm3
+         2PfhnNM49CIwGGV49NjTHeFmkLSc7RIQx/zqB842+wNlu0O2DCaxyrdk9lR4yevnK7lg
+         wOMgCEOCMPxFsBiUVmbQlClIpH8OLbFlK3DCX7Bw5HaQpQNkrASaUXiN+q79PCJtnv3G
+         LOkXtCKm6Utr/Ua7C2+/rxsxlHkq3z1tWO8hRXAhEnAPuPXWPEl4ch+0T2Cwhbp0kXSE
+         24Yw==
+X-Forwarded-Encrypted: i=1; AJvYcCVSjoWOiApDZlbrfOh0hnUnOy+nkiArBo150MLDhOMmFcYnbz2ciIV0o4YLUp1Q8pQwVnVT7p4TuSzxVS7j+S2ypJbQC8E=
+X-Gm-Message-State: AOJu0YzLmL0fCyLmtGfhpkKVGVVMdVyaTWv8DLEX6aRMCbw6k4kX8hdK
+	rW8R7U0U0D+ZBz1LjSbLUOoqGWMxBnNoUQY8O/4b4l1OjaF9RuEXLQdROKuh2treN6XmiuWrcmy
+	2ABxi2dqXuOhMZziCR2CjM2RP88lqUxwlh3qa
+X-Google-Smtp-Source: AGHT+IEm/B5M9ij9+hhRe58Bv33yPC7ejrw1gilNago/rHkRrXGwhO7+GslzLf54b+pza6hk37izLWTtVb7zqaBYMVA=
+X-Received: by 2002:a25:7481:0:b0:de5:64db:170d with SMTP id
+ 3f1490d57ef6-deba31e004emr2783330276.7.1715112456532; Tue, 07 May 2024
+ 13:07:36 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAH2o1u6g87nt=S7id-O43PubR=GaOLj-vmk7+OdTiY=Kw1BU5A@mail.gmail.com>
+References: <20240503183713.1557480-1-tjmercier@google.com>
+ <20240506052955.GA4923@lst.de> <CABdmKX1XNTtoPTvfsJRobim8pHdDjPsKx=qVovVZDh5GEbKCfQ@mail.gmail.com>
+ <20240506160244.GA16248@lst.de> <CABdmKX1n98+bw+1kewz=wdqq2Nbpaxao_Lx-Gq8oKGNUEP4ytQ@mail.gmail.com>
+ <20240506161906.GA17237@lst.de> <CABdmKX3s_HnxciDA3XGM8Qj0kLY8OWENg+ifexrON4VYVbuLsA@mail.gmail.com>
+ <20240507054314.GA31814@lst.de>
+In-Reply-To: <20240507054314.GA31814@lst.de>
+From: "T.J. Mercier" <tjmercier@google.com>
+Date: Tue, 7 May 2024 13:07:25 -0700
+Message-ID: <CABdmKX3PgcXaRUH3L7OV+POMiMd5L6pEF4fLXYPgfmQUNu_trg@mail.gmail.com>
+Subject: Re: [PATCH] dma-direct: Set SG_DMA_SWIOTLB flag for dma-direct
+To: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy <robin.murphy@arm.com>, 
+	isaacmanjarres@google.com, Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 06, 2024 at 07:22:07PM -0700, Tomasz Jeznach wrote:
-> On Sun, May 5, 2024 at 8:46 AM Jason Gunthorpe <jgg@ziepe.ca> wrote:
+On Mon, May 6, 2024 at 10:43=E2=80=AFPM Christoph Hellwig <hch@lst.de> wrot=
+e:
+>
+> On Mon, May 06, 2024 at 09:39:53AM -0700, T.J. Mercier wrote:
+> > > You should not check, you simply must handle it by doing the proper
+> > > DMA API based ownership management.
 > >
-> > On Fri, May 03, 2024 at 12:44:09PM -0700, Tomasz Jeznach wrote:
-> > > > For detach I think yes:
-> > > >
-> > > >    Inv CPU                                   Detach CPU
-> > > >
-> > > >   write io_pte                               Update device descriptor
-> > > >   rcu_read_lock
-> > > >     list_for_each
-> > > >       <make invalidation command>            <make description inv cmd>
-> > > >       dma_wmb()                              dma_wmb()
-> > > >       <doorbell>                             <cmd doorbell>
-> > > >   rcu_read_unlock
-> > > >                                              list_del_rcu()
-> > > >                                              <wipe ASID>
-> > > >
-> > > > In this case I think we never miss an invalidation, the list_del is
-> > > > always after the HW has been fully fenced, so I don't think we can
-> > > > have any issue. Maybe a suprious invalidation if the ASID gets
-> > > > re-used, but who cares.
-> > > >
-> > > > Attach is different..
-> > > >
-> > > >    Inv CPU                                   Attach CPU
-> > > >
-> > > >   write io_pte
-> > > >   rcu_read_lock
-> > > >     list_for_each // empty
-> > > >                                              list_add_rcu()
-> > > >                                              Update device descriptor
-> > > >                                              <make description inv cmd>
-> > > >                                              dma_wmb()
-> > > >                                              <cmd doorbell>
-> > > >   rcu_read_unlock
-> > > >
-> > > > As above shows we can "miss" an invalidation. The issue is narrow, the
-> > > > io_pte could still be sitting in write buffers in "Inv CPU" and not
-> > > > yet globally visiable. "Attach CPU" could get the device descriptor
-> > > > installed in the IOMMU and the IOMMU could walk an io_pte that is in
-> > > > the old state. Effectively this is because there is no release/acquire
-> > > > barrier passing the io_pte store from the Inv CPU to the Attach CPU to the
-> > > > IOMMU.
-> > > >
-> > > > It seems like it should be solvable somehow:
-> > > >  1) Inv CPU releases all the io ptes
-> > > >  2) Attach CPU acquires the io ptes before updating the DDT
-> > > >  3) Inv CPU acquires the RCU list in such a way that either attach
-> > > >     CPU will acquire the io_pte or inv CPU will acquire the RCU list.
-> > > >  4) Either invalidation works or we release the new iopte to the SMMU
-> > > >     and don't need it.
-> > > >
-> > > > But #3 is a really weird statement. smb_mb() on both sides may do the
-> > > > job??
-> > > >
-> > >
-> > > Actual attach sequence is slightly different.
-> > >
-> > >  Inv CPU                            Attach CPU
-> > >
-> > >  write io_pte
-> > >   rcu_read_lock
-> > >     list_for_each // empty
-> > >                                     list_add_rcu()
-> > >                                     IOTLB.INVAL(PSCID)
-> > >                                     <make description inv cmd>
-> > >                                     dma_wmb()
-> > >                                     <cmd doorbell>
-> > >  rcu_read_unlock
-> > >
-> > > I've tried to cover this case with riscv_iommu_iotlb_inval() called
-> > > before the attached domain is visible to the device.
-> >
-> > That invalidation shouldn't do anything. If this is the first attach
-> > of a PSCID then the PSCID had better already be empty, it won't become
-> > non-empty until the DDT entry is installed.
-> >
-> > And if it is the second attach then the Inv CPU is already taking care
-> > of things, no need to invalidate at all.
-> >
-> > Regardless, there is still a theortical race that the IOPTEs haven't
-> > been made visible yet because there is still no synchronization with
-> > the CPU writing them.
-> >
-> > So, I don't think this solves any problem. I belive you need the
-> > appropriate kind of CPU barrier here instead of an invalidation.
-> >
-> 
-> Yes. There was a small, but still plausible race w/ IOPTEs visibility
-> to the IOMMU.
-> For v5 I'm adding two barriers to the inval/detach flow, I believe
-> should cover it.
-> 
-> 1) In riscv_iommu_iotlb_inval() unconditional dma_wmb() to make any
-> pending writes to PTEs visible to the IOMMU device. This should cover
-> the case when list_add_rcu() update is not yet visible in the
-> _iotlb_inval() sequence, for the first time the domain is attached to
-> the IOMMU.
-> 
->   Inv CPU                                    Attach CPU
->   write io_pte
->   dma_wmb (1)
->   rcu_read_lock
->     list_for_each // empty                   list_add_rcu()
->                                              smp_wmb (2)
->                                              Update device descriptor
->                                              <make description inv cmd>
->                                              // PTEs are visible to the HW (*1)
->                                              dma_wmb()
->                                              <cmd doorbell>
->   rcu_read_unlock
-> 
-> 2) In riscv_iommu_bond_link() write memory barrier to ensure list
-> update is visible before IOMMU descriptor update. If stale data has
-> been fetched by the HW, inval CPU will run iotlb-invalidation
-> sequence. There is a possibility that IOMMU will fetch correct PTEs
-> and will receive unnecessary IOTLB inval, but I don't think anyone
-> would care.
-> 
->   Inv CPU                                    Attach CPU
->   write io_pte                               list_add_rcu()
->                                              smp_wmb (2)
->                                              Update device descriptor
->                                              <make description inv cmd>
->                                              // HW might fetch stale PTEs
->                                              dma_wmb()
->                                              <cmd doorbell>
->   dma_wmb (1)
->   rcu_read_lock
->     list_for_each // non-empty (*2)
->       <make iotlb inval cmd>
->       dma_wmb()
->       <cmd doorbell>
->   rcu_read_unlock
-> 
-> 3) I've also updated riscv_iommu_bond_unlink() to wipe the PSCID cache
-> on the last domain unlink from the IOMMU.
-> 
-> Thank you for pointing this out. Let me know if that makes sense.
+> > That doesn't really work for uncached buffers.
+>
+> What uncached buffers?
 
-I'm not an expert in barriers, but I think you need the more expensive
-"mb" in both cases.
+For example these ones:
+https://android.googlesource.com/kernel/common/+/refs/heads/android-mainlin=
+e/drivers/dma-buf/heaps/system_heap.c#141
 
-The inv side is both releasing the write and acquiring the list
-read. IIRC READ_ONCE is not a full acquire?
-
-The Attach side is both releasing the list_add_rcu() and acquiring the
-iopte.
-
-rcu is still a benefit, there is no cache line sharing and there is
-only one full barrier, not two, like a spinlock.
-
-And a big fat comment in both sides explaining this :)
-
-Jason
+Vendors have their own drivers that also export uncached buffers in a
+similar way.
