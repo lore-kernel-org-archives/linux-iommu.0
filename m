@@ -1,55 +1,54 @@
-Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
+Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 706FD161313
-	for <iommu@lists.linux.dev>; Tue,  7 May 2024 14:26:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9F8816133E
+	for <iommu@lists.linux.dev>; Tue,  7 May 2024 14:26:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715091984; cv=none; b=JWS2SSKliZ2HRyTO53O7U0igtZ5iSm8HNz3xKi3/T0uqRdXcVKOEyfDhWKcOpWZTugZ3bIZbpAhcZnigDq2SRufee496sS/ZqBjGY4bp5shE0ip3VkHpCuPqFEFWjCGxP4DyneTYpwvGSAZMazN0FzfgTNCb/QPiexuQgNyDzAc=
+	t=1715091984; cv=none; b=hIsgEwSbXtq47Gz+kTCNBCHGe0Iy+MCHSfqqBjmFdYuqG0hhtfd9EmnRAll+xzuxcBjNlT0/IkebhbFQX2935+KOHDXE7BgUx/GYfZ+R4l+PHRCOY5c2BW4M3X8rqCaegvplS4fwdfQ7CISxORy9XVZekCHjQXtg+LfV4W0rTU0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1715091984; c=relaxed/simple;
-	bh=bqlipkF/qwmaFsPGQ6jvLZEhD8A7hXZuMOw8nPGleSE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=dmYs8T0QKTYcRMlnNLW58lkX4DzcIczNf2bd2nJ6FeOrUFzjhEI0ewzvRRFCraXRE58tM5Pa2PEfWtR+jq3JhW8s4mOxDC4VEOO+JGXed2kaHHNzVwIVOuNy/4y/qnQrV0WC0F2ktHRfalx9wpo5lMAlZOwCcnyig0FA/A855t4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=VFkHKTsn; arc=none smtp.client-ip=209.85.210.175
+	bh=p9LzzUVq84gigk4g1jMkvkAiSTYV+AnJqJecyq5AEds=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=aDbFYStaw1++dFcwrrJk1Fwpf3PmWjR0IYC9vVnsjFP3ZrqlCdqAopAy2/3SFnUpaUXsar/pLScAyR6sDZl917osaE64DZ0HS4DC8qKLwe/rZPPGTQo4ZlNGrgd3oXvhl4A4GQ0VqMPi+oyvYyxNmUqC99k0bCiUm4Qqt8LlbnQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=mRVQCoPS; arc=none smtp.client-ip=209.85.210.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="VFkHKTsn"
-Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-6f44e3fd382so2381121b3a.1
-        for <iommu@lists.linux.dev>; Tue, 07 May 2024 07:26:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="mRVQCoPS"
+Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-6f450f43971so2442140b3a.3
+        for <iommu@lists.linux.dev>; Tue, 07 May 2024 07:26:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1715091981; x=1715696781; darn=lists.linux.dev;
+        d=sifive.com; s=google; t=1715091982; x=1715696782; darn=lists.linux.dev;
         h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=MTOLBzQvBvlY+EmrQy97Trzu0yuGzLHkqXUAWYArG80=;
-        b=VFkHKTsnis4gSyOjVraY4YM+mzp/Fz/24Dt2PNF7UIzsORbyD9UTKwxBO+fzwg6C0n
-         0WF/KKCPpW4Lgp99ucyTNzYP07CBvG95IO6oISf2qOxWzol5WR8ktgtVImwDtiFo4Alt
-         Vg5IKuJjtSFZDKvqtnfcvYG8NWx++wSrTiv7/k3vFUIIGv8Y+5AqwOoyB8BPmVK5BEJ/
-         dR/3rXbduAIyj3yGrp+0wCJqjyUQuegZ2CBN7oQ1pHs0psZxGbDmIQDGgeAdAI5oZtPE
-         43Y5s5vLhcG6tzSedZkxw3iTXc3IdjEf5jcw+jtRp4aNIf28csgkBAwUvWTxBvb3V9iW
-         KlGA==
+        bh=QsG7aE0HnxZsvtjvosuXtYKV2huEonpRW6TKXMCUJnU=;
+        b=mRVQCoPSboUe+OzXzcql0XsWofWRP+wSIOhBua3/2ALIGpEBsUOLVgQqZI44OEuwTV
+         pqunCnWG3agFSGEY8N6hdKDylwXkkQ1zsSHp34WCf2gYgaEul9WN404xurSlNvefqNmI
+         lczpGH569JdgsIMTdiAttWj6GqtsaVGgMmyDcXgsdse1Sxln3mG+iqJBYE4eFRfpmPtB
+         BvfW0cryBXNAaJpJeA4Sh6VcdaZOx1p5DhXuvflmtWL3rE+63I2oIBW8QCuOQKJBmOIh
+         PSfTjhlsum5sHZzWg5HNErCSGdDHrqWaKqwzefQ82AAVKZB3uRbxiCtQ45JnBocqGjz4
+         LVLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715091981; x=1715696781;
+        d=1e100.net; s=20230601; t=1715091982; x=1715696782;
         h=references:in-reply-to:message-id:date:subject:cc:to:from
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=MTOLBzQvBvlY+EmrQy97Trzu0yuGzLHkqXUAWYArG80=;
-        b=SekDagOtQkbTJe5O1PChH8UJ4bAN7/ztqFvfKu08Smofu+oaggp3KbztOYIRGSYvh6
-         EDYp5UcLWVoZ347/8P34/vq9/TSa+kO1hP3LwBUy6uqbCrZwrxmZ2HA15MFUfoUf2aZM
-         u6Al9rjYOzbobxtdfujd2+A1oQG/WXZgAS0+U+leW0gzerhmSqq+FwAODDKXeiSAigzX
-         TeCS8GeC7n2uk535AToz4TooJGef3NPrCKDrB7CSuvYFx35xhEwvku62vLzQ3FrB+lOs
-         5mosxUZff1xe/F4ddfk0Uk0DiGYOT33/pNizsEX27B5m35iI/U74dAK0byQe8k4UFkol
-         tHbw==
-X-Forwarded-Encrypted: i=1; AJvYcCVFnUovF50fmoAS7K/qoFKv/bJfixMxZsuY4oT95849CHrAbe3rnc3kYsbwALick6GflZYzHC7xRAlllNmvuzQu/1sU//c=
-X-Gm-Message-State: AOJu0YwAcsXrWYxgGIvfW0tmQcw45kTD6hq2ZY/wCqFmpLLoXdB+6n9b
-	+3XXXpRRyzWLQkYR3nYlanYL/X7e/L5dTMxTr7yURD8y56Ox4YZZ24H2YILUDAfkU9wiBpcttgD
-	h
-X-Google-Smtp-Source: AGHT+IFrRpCDjD/4eOupdDn8MUYNlbPGsiI9chLNqLmFjLhbFaZkNfyNZ758Eh2Q2HfbLwdvKcrXqw==
-X-Received: by 2002:a05:6a00:1305:b0:6ed:88e5:53d4 with SMTP id j5-20020a056a00130500b006ed88e553d4mr14682261pfu.8.1715091979690;
-        Tue, 07 May 2024 07:26:19 -0700 (PDT)
+        bh=QsG7aE0HnxZsvtjvosuXtYKV2huEonpRW6TKXMCUJnU=;
+        b=gQISjbraGk8TeJCi+T23mNs+fPL26jlbzhidatrR/HlYZr1D5np32R7GLI5tTh7iAm
+         uH1PTSb+o5JaQp/7vxMKHEE6IY7CxPBqGVNIz5+WA1FhTdXPSHY0QoqPssogXyLSrfRq
+         q7Y4DwxTGJMUj0s9BoW295T47otSCDL1mVDQItuztjYUP574rjIR56xjipvg+AB0BQE5
+         vD9/T8D8RyHc5qsEFIQ+N6kn4Zsr+DwH/Mfz6hhT2sw1VR73ACuFBXzgrCHiNfk9Lcdw
+         DOHg2VEk2AK/EYqgnCIdBKN1nYZQqLXOBMwR2mkqZnvUuxj76UKjouEgASWAp78REhz8
+         W+MQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXj7+t6XKvd5QX7rmjCZxRTUTujARQ4NaYYHSu8V6cdKASJeCjYg6WjgGWICOGL/7kj41u8r2g+/UX+smUYryJR7LwXdsQ=
+X-Gm-Message-State: AOJu0YwzPf7/yJZObDWc0EnNA3bWJu5BPmoc05JqdsX2510nhxOz5L/i
+	g1rDlug6ZfWqCQZX9x8e1Xsespkpxd2QNN7q8pccJ2aH7a+iDwIh75IkVWPG3so=
+X-Google-Smtp-Source: AGHT+IESwO+1TpOehpzE3oOZnwENdjrLViV8PyyzyYTAIHr0YOeHnmv3rn25FWxqq/8kskMF3gIH5A==
+X-Received: by 2002:a05:6a00:17a7:b0:6ec:e726:b6f5 with SMTP id s39-20020a056a0017a700b006ece726b6f5mr16072960pfg.26.1715091982078;
+        Tue, 07 May 2024 07:26:22 -0700 (PDT)
 Received: from hsinchu26.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id i22-20020aa79096000000b006f44bcbe7e3sm7687554pfa.201.2024.05.07.07.26.17
+        by smtp.gmail.com with ESMTPSA id i22-20020aa79096000000b006f44bcbe7e3sm7687554pfa.201.2024.05.07.07.26.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 May 2024 07:26:19 -0700 (PDT)
+        Tue, 07 May 2024 07:26:21 -0700 (PDT)
 From: Zong Li <zong.li@sifive.com>
 To: joro@8bytes.org,
 	will@kernel.org,
@@ -64,9 +63,9 @@ To: joro@8bytes.org,
 	iommu@lists.linux.dev,
 	linux-riscv@lists.infradead.org
 Cc: Zong Li <zong.li@sifive.com>
-Subject: [PATCH RFC RESEND 5/6] iommu/riscv: support nested iommu for creating domains owned by userspace
-Date: Tue,  7 May 2024 22:25:59 +0800
-Message-Id: <20240507142600.23844-6-zong.li@sifive.com>
+Subject: [PATCH RFC RESEND 6/6] iommu/riscv: support nested iommu for flushing cache
+Date: Tue,  7 May 2024 22:26:00 +0800
+Message-Id: <20240507142600.23844-7-zong.li@sifive.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20240507142600.23844-1-zong.li@sifive.com>
 References: <20240507142600.23844-1-zong.li@sifive.com>
@@ -76,322 +75,140 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-This patch implements .domain_alloc_user operation for creating domains
-owend by userspace, e.g. through IOMMUFD. Add s2 domain for parent
-domain for second stage, s1 domain will be the first stage.
-
-Don't remove IOMMU private data of dev in blocked domain, because it
-holds the user data of device, which is used when attaching device into
-s1 domain.
+This patch implements cache_invalidate_user operation for the userspace
+to flush the hardware caches for a nested domain through iommufd.
 
 Signed-off-by: Zong Li <zong.li@sifive.com>
 ---
- drivers/iommu/riscv/iommu.c  | 227 ++++++++++++++++++++++++++++++++++-
- include/uapi/linux/iommufd.h |  17 +++
- 2 files changed, 243 insertions(+), 1 deletion(-)
+ drivers/iommu/riscv/iommu.c  | 91 ++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/iommufd.h |  9 ++++
+ 2 files changed, 100 insertions(+)
 
 diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 072251f6ad85..7eda850df475 100644
+index 7eda850df475..4dd58fe2242d 100644
 --- a/drivers/iommu/riscv/iommu.c
 +++ b/drivers/iommu/riscv/iommu.c
-@@ -827,6 +827,7 @@ static int riscv_iommu_iodir_set_mode(struct riscv_iommu_device *iommu,
- 
- /* This struct contains protection domain specific IOMMU driver data. */
- struct riscv_iommu_domain {
-+	struct riscv_iommu_domain *s2;
- 	struct iommu_domain domain;
- 	struct list_head bonds;
- 	spinlock_t lock;		/* protect bonds list updates. */
-@@ -844,6 +845,7 @@ struct riscv_iommu_domain {
- /* Private IOMMU data for managed devices, dev_iommu_priv_* */
- struct riscv_iommu_info {
- 	struct riscv_iommu_domain *domain;
-+	struct riscv_iommu_dc dc_user;
- };
- 
- /* Linkage between an iommu_domain and attached devices. */
-@@ -1454,7 +1456,6 @@ static int riscv_iommu_attach_blocking_domain(struct iommu_domain *iommu_domain,
- 
- 	riscv_iommu_iodir_update(iommu, dev, RISCV_IOMMU_FSC_BARE, 0, 0);
- 	riscv_iommu_bond_unlink(info->domain, dev);
--	info->domain = NULL;
- 
- 	return 0;
+@@ -1522,9 +1522,100 @@ static void riscv_iommu_domain_free_nested(struct iommu_domain *domain)
+ 	kfree(riscv_domain);
  }
-@@ -1486,6 +1487,229 @@ static struct iommu_domain riscv_iommu_identity_domain = {
- 	}
+ 
++static int riscv_iommu_fix_user_cmd(struct riscv_iommu_command *cmd,
++				    unsigned int pscid, unsigned int gscid)
++{
++	u32 opcode = FIELD_GET(RISCV_IOMMU_CMD_OPCODE, cmd->dword0);
++
++	switch (opcode) {
++	case RISCV_IOMMU_CMD_IOTINVAL_OPCODE:
++		u32 func = FIELD_GET(RISCV_IOMMU_CMD_FUNC, cmd->dword0);
++
++		if (func != RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA &&
++		    func != RISCV_IOMMU_CMD_IOTINVAL_FUNC_VMA) {
++			pr_warn("The IOTINVAL function: 0x%x is not supported\n",
++				func);
++			return -EOPNOTSUPP;
++		}
++
++		if (func == RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA) {
++			cmd->dword0 &= ~RISCV_IOMMU_CMD_FUNC;
++			cmd->dword0 |= FIELD_PREP(RISCV_IOMMU_CMD_FUNC,
++						  RISCV_IOMMU_CMD_IOTINVAL_FUNC_VMA);
++		}
++
++		cmd->dword0 &= ~(RISCV_IOMMU_CMD_IOTINVAL_PSCID |
++				 RISCV_IOMMU_CMD_IOTINVAL_GSCID);
++		riscv_iommu_cmd_inval_set_pscid(cmd, pscid);
++		riscv_iommu_cmd_inval_set_gscid(cmd, gscid);
++		break;
++	case RISCV_IOMMU_CMD_IODIR_OPCODE:
++		/*
++		 * Ensure the device ID is right. We expect that VMM has
++		 * transferred the device ID to host's from guest's.
++		 */
++		break;
++	default:
++		pr_warn("The user command: 0x%x is not supported\n", opcode);
++		return -EOPNOTSUPP;
++	}
++
++	return 0;
++}
++
++static int riscv_iommu_cache_invalidate_user(struct iommu_domain *domain,
++					     struct iommu_user_data_array *array)
++{
++	struct riscv_iommu_domain *riscv_domain = iommu_domain_to_riscv(domain);
++	struct riscv_iommu_device *iommu;
++	struct riscv_iommu_bond *bond;
++	struct riscv_iommu_command cmd;
++	struct iommu_hwpt_riscv_iommu_invalidate inv_info;
++	int ret, index;
++
++	if (!riscv_domain)
++		return -EINVAL;
++
++	/* Assume attached devices in the domain go through the same IOMMU device */
++	spin_lock(&riscv_domain->lock);
++	list_for_each_entry_rcu(bond, &riscv_domain->bonds, list) {
++		if (bond->dev) {
++			iommu = dev_to_iommu(bond->dev);
++			break;
++		}
++	}
++	spin_unlock(&riscv_domain->lock);
++
++	if (!iommu)
++		return -EINVAL;
++
++	for (index = 0; index < array->entry_num; index++) {
++		ret = iommu_copy_struct_from_user_array(&inv_info, array,
++							IOMMU_HWPT_DATA_RISCV_IOMMU,
++							index, cmd);
++		if (ret)
++			break;
++
++		ret = riscv_iommu_fix_user_cmd((struct riscv_iommu_command *)inv_info.cmd,
++					       riscv_domain->pscid,
++					       riscv_domain->s2->gscid);
++		if (ret == -EOPNOTSUPP)
++			continue;
++
++		riscv_iommu_cmd_send(iommu, (struct riscv_iommu_command *)inv_info.cmd, 0);
++		riscv_iommu_cmd_iofence(&cmd);
++		riscv_iommu_cmd_send(iommu, &cmd, RISCV_IOMMU_QUEUE_TIMEOUT);
++	}
++
++	array->entry_num = index;
++
++	return ret;
++}
++
+ static const struct iommu_domain_ops riscv_iommu_nested_domain_ops = {
+ 	.attach_dev	= riscv_iommu_attach_dev_nested,
+ 	.free		= riscv_iommu_domain_free_nested,
++	.cache_invalidate_user = riscv_iommu_cache_invalidate_user,
  };
  
-+/**
-+ * Nested IOMMU operations
-+ */
-+
-+static int riscv_iommu_attach_dev_nested(struct iommu_domain *domain, struct device *dev)
-+{
-+	struct riscv_iommu_domain *riscv_domain = iommu_domain_to_riscv(domain);
-+	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-+	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
-+
-+	if (riscv_domain->numa_node == NUMA_NO_NODE)
-+		riscv_domain->numa_node = dev_to_node(iommu->dev);
-+
-+	riscv_iommu_bond_unlink(info->domain, dev);
-+
-+	if (riscv_iommu_bond_link(riscv_domain, dev))
-+		return -ENOMEM;
-+
-+	riscv_iommu_iotlb_inval(riscv_domain, 0, ULONG_MAX);
-+
-+	riscv_iommu_iodir_update(iommu, dev, info->dc_user.fsc, info->dc_user.ta,
-+				 info->dc_user.iohgatp);
-+
-+	info->domain = riscv_domain;
-+
-+	return 0;
-+}
-+
-+static void riscv_iommu_domain_free_nested(struct iommu_domain *domain)
-+{
-+	struct riscv_iommu_domain *riscv_domain = iommu_domain_to_riscv(domain);
-+
-+	kfree(riscv_domain);
-+}
-+
-+static const struct iommu_domain_ops riscv_iommu_nested_domain_ops = {
-+	.attach_dev	= riscv_iommu_attach_dev_nested,
-+	.free		= riscv_iommu_domain_free_nested,
-+};
-+
-+static int
-+riscv_iommu_get_dc_user(struct device *dev, struct iommu_hwpt_riscv_iommu *user_arg)
-+{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-+	struct riscv_iommu_info *info = dev_iommu_priv_get(dev);
-+	struct riscv_iommu_dc dc;
-+	struct riscv_iommu_fq_record event;
-+	u64 dc_len = sizeof(struct riscv_iommu_dc) >> (!(iommu->caps & RISCV_IOMMU_CAP_MSI_FLAT));
-+	u64 event_len = sizeof(struct riscv_iommu_fq_record);
-+	void __user *event_user = NULL;
-+
-+	for (int i = 0; i < fwspec->num_ids; i++) {
-+		event.hdr =
-+			FIELD_PREP(RISCV_IOMMU_FQ_HDR_CAUSE, RISCV_IOMMU_FQ_CAUSE_DDT_INVALID) |
-+			FIELD_PREP(RISCV_IOMMU_FQ_HDR_DID, fwspec->ids[i]);
-+
-+		/* Sanity check DC of stage-1 from user data */
-+		if (!user_arg->out_event_uptr || user_arg->event_len != event_len)
-+			return -EINVAL;
-+
-+		event_user = u64_to_user_ptr(user_arg->out_event_uptr);
-+
-+		if (!user_arg->dc_uptr || user_arg->dc_len != dc_len)
-+			return -EINVAL;
-+
-+		if (copy_from_user(&dc, u64_to_user_ptr(user_arg->dc_uptr), dc_len))
-+			return -EFAULT;
-+
-+		if (!(dc.tc & RISCV_IOMMU_DDTE_VALID)) {
-+			dev_dbg(dev, "Invalid DDT from user data\n");
-+			if (copy_to_user(event_user, &event, event_len))
-+				return -EFAULT;
-+		}
-+
-+		if (!dc.fsc || dc.iohgatp) {
-+			dev_dbg(dev, "Wrong page table from user data\n");
-+			if (copy_to_user(event_user, &event, event_len))
-+				return -EFAULT;
-+		}
-+
-+		/* Save DC of stage-1 from user data */
-+		memcpy(&info->dc_user,
-+		       riscv_iommu_get_dc(iommu, fwspec->ids[i]),
-+		       sizeof(struct riscv_iommu_dc));
-+		info->dc_user.fsc = dc.fsc;
-+	}
-+
-+	return 0;
-+}
-+
-+static struct iommu_domain *
-+riscv_iommu_domain_alloc_nested(struct device *dev,
-+				struct iommu_domain *parent,
-+				const struct iommu_user_data *user_data)
-+{
-+	struct riscv_iommu_domain *s2_domain = iommu_domain_to_riscv(parent);
-+	struct riscv_iommu_domain *s1_domain;
-+	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-+	struct iommu_hwpt_riscv_iommu arg;
-+	int ret, va_bits;
-+
-+	if (user_data->type != IOMMU_HWPT_DATA_RISCV_IOMMU)
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	if (parent->type != IOMMU_DOMAIN_UNMANAGED)
-+		return ERR_PTR(-EINVAL);
-+
-+	ret = iommu_copy_struct_from_user(&arg,
-+					  user_data,
-+					  IOMMU_HWPT_DATA_RISCV_IOMMU,
-+					  out_event_uptr);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	s1_domain = kzalloc(sizeof(*s1_domain), GFP_KERNEL);
-+	if (!s1_domain)
-+		return ERR_PTR(-ENOMEM);
-+
-+	spin_lock_init(&s1_domain->lock);
-+	INIT_LIST_HEAD_RCU(&s1_domain->bonds);
-+
-+	s1_domain->pscid = ida_alloc_range(&riscv_iommu_pscids, 1,
-+					   RISCV_IOMMU_MAX_PSCID, GFP_KERNEL);
-+	if (s1_domain->pscid < 0) {
-+		iommu_free_page(s1_domain->pgd_root);
-+		kfree(s1_domain);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+
-+	/* Get device context of stage-1 from user*/
-+	ret = riscv_iommu_get_dc_user(dev, &arg);
-+	if (ret) {
-+		kfree(s1_domain);
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	if (!iommu) {
-+		va_bits = VA_BITS;
-+	} else if (iommu->caps & RISCV_IOMMU_CAP_S_SV57) {
-+		va_bits = 57;
-+	} else if (iommu->caps & RISCV_IOMMU_CAP_S_SV48) {
-+		va_bits = 48;
-+	} else if (iommu->caps & RISCV_IOMMU_CAP_S_SV39) {
-+		va_bits = 39;
-+	} else {
-+		dev_err(dev, "cannot find supported page table mode\n");
-+		return ERR_PTR(-ENODEV);
-+	}
-+
-+	/*
-+	 * The ops->domain_alloc_user could be directly called by the iommufd core,
-+	 * instead of iommu core. So, this function need to set the default value of
-+	 * following data member:
-+	 *  - domain->pgsize_bitmap
-+	 *  - domain->geometry
-+	 *  - domain->type
-+	 *  - domain->ops
-+	 */
-+	s1_domain->s2 = s2_domain;
-+	s1_domain->domain.type = IOMMU_DOMAIN_NESTED;
-+	s1_domain->domain.ops = &riscv_iommu_nested_domain_ops;
-+	s1_domain->domain.pgsize_bitmap = SZ_4K;
-+	s1_domain->domain.geometry.aperture_start = 0;
-+	s1_domain->domain.geometry.aperture_end = DMA_BIT_MASK(va_bits - 1);
-+	s1_domain->domain.geometry.force_aperture = true;
-+
-+	return &s1_domain->domain;
-+}
-+
-+static struct iommu_domain *
-+riscv_iommu_domain_alloc_user(struct device *dev, u32 flags,
-+			      struct iommu_domain *parent,
-+			      const struct iommu_user_data *user_data)
-+{
-+	struct iommu_domain *domain;
-+	struct riscv_iommu_domain *riscv_domain;
-+
-+	/* Allocate stage-1 domain if it has stage-2 parent domain */
-+	if (parent)
-+		return riscv_iommu_domain_alloc_nested(dev, parent, user_data);
-+
-+	if (flags & ~((IOMMU_HWPT_ALLOC_NEST_PARENT | IOMMU_HWPT_ALLOC_DIRTY_TRACKING)))
-+		return ERR_PTR(-EOPNOTSUPP);
-+
-+	if (user_data)
-+		return ERR_PTR(-EINVAL);
-+
-+	/* domain_alloc_user op needs to be fully initialized */
-+	domain = iommu_domain_alloc(dev->bus);
-+	if (!domain)
-+		return ERR_PTR(-ENOMEM);
-+
-+	/*
-+	 * We assume that nest-parent or g-stage only will come here
-+	 * TODO: Shadow page table doesn't be supported now.
-+	 *       We currently can't distinguish g-stage and shadow
-+	 *       page table here. Shadow page table shouldn't be
-+	 *       put at stage-2.
-+	 */
-+	riscv_domain = iommu_domain_to_riscv(domain);
-+
-+	/* pgd_root may be allocated in .domain_alloc_paging */
-+	if (riscv_domain->pgd_root)
-+		iommu_free_page(riscv_domain->pgd_root);
-+
-+	riscv_domain->pgd_root = iommu_alloc_pages_node(riscv_domain->numa_node,
-+							GFP_KERNEL_ACCOUNT,
-+							2);
-+	if (!riscv_domain->pgd_root)
-+		return ERR_PTR(-ENOMEM);
-+
-+	riscv_domain->gscid = ida_alloc_range(&riscv_iommu_gscids, 1,
-+					      RISCV_IOMMU_MAX_GSCID, GFP_KERNEL);
-+	if (riscv_domain->gscid < 0) {
-+		iommu_free_pages(riscv_domain->pgd_root, 2);
-+		kfree(riscv_domain);
-+		return ERR_PTR(-ENOMEM);
-+	}
-+
-+	return domain;
-+}
-+
- static void *riscv_iommu_hw_info(struct device *dev, u32 *length, u32 *type)
- {
- 	struct riscv_iommu_device *iommu = dev_to_iommu(dev);
-@@ -1587,6 +1811,7 @@ static const struct iommu_ops riscv_iommu_ops = {
- 	.blocked_domain = &riscv_iommu_blocking_domain,
- 	.release_domain = &riscv_iommu_blocking_domain,
- 	.domain_alloc_paging = riscv_iommu_alloc_paging_domain,
-+	.domain_alloc_user = riscv_iommu_domain_alloc_user,
- 	.def_domain_type = riscv_iommu_device_domain_type,
- 	.device_group = riscv_iommu_device_group,
- 	.probe_device = riscv_iommu_probe_device,
+ static int
 diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index ec9aafd7d373..e10b6e236647 100644
+index e10b6e236647..d93a8f11813d 100644
 --- a/include/uapi/linux/iommufd.h
 +++ b/include/uapi/linux/iommufd.h
-@@ -390,14 +390,31 @@ struct iommu_hwpt_vtd_s1 {
+@@ -689,6 +689,15 @@ struct iommu_hwpt_vtd_s1_invalidate {
  	__u32 __reserved;
  };
  
 +/**
-+ * struct iommu_hwpt_riscv_iommu - RISCV IOMMU stage-1 device context table
-+ *                                 info (IOMMU_HWPT_TYPE_RISCV_IOMMU)
-+ * @dc_len: Length of device context
-+ * @dc_uptr: User pointer to the address of device context
-+ * @event_len: Length of an event record
-+ * @out_event_uptr: User pointer to the address of event record
++ * struct iommu_hwpt_riscv_iommu_invalidate - RISCV IOMMU cache invalidation
++ *                                            (IOMMU_HWPT_TYPE_RISCV_IOMMU)
++ * @cmd: An array holds a command for cache invalidation
 + */
-+struct iommu_hwpt_riscv_iommu {
-+	__aligned_u64 dc_len;
-+	__aligned_u64 dc_uptr;
-+	__aligned_u64 event_len;
-+	__aligned_u64 out_event_uptr;
++struct iommu_hwpt_riscv_iommu_invalidate {
++	__aligned_u64 cmd[2];
 +};
 +
  /**
-  * enum iommu_hwpt_data_type - IOMMU HWPT Data Type
-  * @IOMMU_HWPT_DATA_NONE: no data
-  * @IOMMU_HWPT_DATA_VTD_S1: Intel VT-d stage-1 page table
-+ * @IOMMU_HWPT_DATA_RISCV_IOMMU: RISC-V IOMMU device context table
-  */
- enum iommu_hwpt_data_type {
- 	IOMMU_HWPT_DATA_NONE,
- 	IOMMU_HWPT_DATA_VTD_S1,
-+	IOMMU_HWPT_DATA_RISCV_IOMMU,
- };
- 
- /**
+  * struct iommu_hwpt_invalidate - ioctl(IOMMU_HWPT_INVALIDATE)
+  * @size: sizeof(struct iommu_hwpt_invalidate)
 -- 
 2.17.1
 
