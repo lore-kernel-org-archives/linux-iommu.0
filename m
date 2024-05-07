@@ -1,214 +1,113 @@
-Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+Received: from mail-io1-f52.google.com (mail-io1-f52.google.com [209.85.166.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9F8816133E
-	for <iommu@lists.linux.dev>; Tue,  7 May 2024 14:26:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72FF16BB2F
+	for <iommu@lists.linux.dev>; Tue,  7 May 2024 14:31:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.166.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715091984; cv=none; b=hIsgEwSbXtq47Gz+kTCNBCHGe0Iy+MCHSfqqBjmFdYuqG0hhtfd9EmnRAll+xzuxcBjNlT0/IkebhbFQX2935+KOHDXE7BgUx/GYfZ+R4l+PHRCOY5c2BW4M3X8rqCaegvplS4fwdfQ7CISxORy9XVZekCHjQXtg+LfV4W0rTU0=
+	t=1715092289; cv=none; b=XOCdX8PZCqZ95zQHe/zs/I/T8hg1BIxk5eUenrzksol1JcXhRwB5Z/8ZaAgVB5acaDk950yA5/HOBbSTgTE7U5IKXlO9DHvV4DuyEHVjK0QRX7P8ABn0/eyTFEhAimKEorXsHevszrAtBcDckUWzUcj9g1B38Lp9AEFiW2kTCDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715091984; c=relaxed/simple;
-	bh=p9LzzUVq84gigk4g1jMkvkAiSTYV+AnJqJecyq5AEds=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=aDbFYStaw1++dFcwrrJk1Fwpf3PmWjR0IYC9vVnsjFP3ZrqlCdqAopAy2/3SFnUpaUXsar/pLScAyR6sDZl917osaE64DZ0HS4DC8qKLwe/rZPPGTQo4ZlNGrgd3oXvhl4A4GQ0VqMPi+oyvYyxNmUqC99k0bCiUm4Qqt8LlbnQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=mRVQCoPS; arc=none smtp.client-ip=209.85.210.176
+	s=arc-20240116; t=1715092289; c=relaxed/simple;
+	bh=pXSdvU0OK8lYHajFVrns2qE/es0E1ZSyzQNWhrEYMKw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Content-Type; b=Biiwzsz4PQYvm9U2EYtLg9gjo3gUETkhWkOqQctA/gD2109xx2T4vhsbrmdtSdrdWWMzAnnpYbPoq/PCfAdkGSrLEByEFZvW2VdAgKWLpWVAiekmi2hStgz/TKiX3QT0XUlUrULdaPC3tjC397kgkpYtLtZbTSnCxk09EVy9KKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com; spf=pass smtp.mailfrom=sifive.com; dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b=RCQOxrsm; arc=none smtp.client-ip=209.85.166.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sifive.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sifive.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="mRVQCoPS"
-Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-6f450f43971so2442140b3a.3
-        for <iommu@lists.linux.dev>; Tue, 07 May 2024 07:26:22 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sifive.com header.i=@sifive.com header.b="RCQOxrsm"
+Received: by mail-io1-f52.google.com with SMTP id ca18e2360f4ac-7e17b4357a6so66130239f.3
+        for <iommu@lists.linux.dev>; Tue, 07 May 2024 07:31:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google; t=1715091982; x=1715696782; darn=lists.linux.dev;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=QsG7aE0HnxZsvtjvosuXtYKV2huEonpRW6TKXMCUJnU=;
-        b=mRVQCoPSboUe+OzXzcql0XsWofWRP+wSIOhBua3/2ALIGpEBsUOLVgQqZI44OEuwTV
-         pqunCnWG3agFSGEY8N6hdKDylwXkkQ1zsSHp34WCf2gYgaEul9WN404xurSlNvefqNmI
-         lczpGH569JdgsIMTdiAttWj6GqtsaVGgMmyDcXgsdse1Sxln3mG+iqJBYE4eFRfpmPtB
-         BvfW0cryBXNAaJpJeA4Sh6VcdaZOx1p5DhXuvflmtWL3rE+63I2oIBW8QCuOQKJBmOIh
-         PSfTjhlsum5sHZzWg5HNErCSGdDHrqWaKqwzefQ82AAVKZB3uRbxiCtQ45JnBocqGjz4
-         LVLA==
+        d=sifive.com; s=google; t=1715092287; x=1715697087; darn=lists.linux.dev;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=52KNTDLC+obpAk96hd5D+rzNIt3oW/ikIeIzud7iogo=;
+        b=RCQOxrsmK6ELiVl3bYg2VNYk8YDYwDVOV1EIec2oQ8iQHYAgeOdONdQ2XzQOkQH2FD
+         /yN3jrszZqglhtC86J2WyvLAS8wieUh7WR2mwMXf6oQ/mfn6QZso2xxrg+EVoPegqICV
+         mh3DnXW2yd8XkeKSz7egfVKhI0unRy108qLR3rnp25Tmy6mKcTj3lQFu8bgNszM/qzpY
+         cHn/4PyGlH7/Bv98zJx99xsg216AQbdGDkAsN79SofE2acj64+nYCFBbVPdDa2Gf/DWj
+         myJNGhfKO+Ihx+QchFyYU1crl4uz/JoBsOqsy+cJuA78extdcs0l8QfrEcOV0M92f+Q7
+         /8qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715091982; x=1715696782;
-        h=references:in-reply-to:message-id:date:subject:cc:to:from
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QsG7aE0HnxZsvtjvosuXtYKV2huEonpRW6TKXMCUJnU=;
-        b=gQISjbraGk8TeJCi+T23mNs+fPL26jlbzhidatrR/HlYZr1D5np32R7GLI5tTh7iAm
-         uH1PTSb+o5JaQp/7vxMKHEE6IY7CxPBqGVNIz5+WA1FhTdXPSHY0QoqPssogXyLSrfRq
-         q7Y4DwxTGJMUj0s9BoW295T47otSCDL1mVDQItuztjYUP574rjIR56xjipvg+AB0BQE5
-         vD9/T8D8RyHc5qsEFIQ+N6kn4Zsr+DwH/Mfz6hhT2sw1VR73ACuFBXzgrCHiNfk9Lcdw
-         DOHg2VEk2AK/EYqgnCIdBKN1nYZQqLXOBMwR2mkqZnvUuxj76UKjouEgASWAp78REhz8
-         W+MQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXj7+t6XKvd5QX7rmjCZxRTUTujARQ4NaYYHSu8V6cdKASJeCjYg6WjgGWICOGL/7kj41u8r2g+/UX+smUYryJR7LwXdsQ=
-X-Gm-Message-State: AOJu0YwzPf7/yJZObDWc0EnNA3bWJu5BPmoc05JqdsX2510nhxOz5L/i
-	g1rDlug6ZfWqCQZX9x8e1Xsespkpxd2QNN7q8pccJ2aH7a+iDwIh75IkVWPG3so=
-X-Google-Smtp-Source: AGHT+IESwO+1TpOehpzE3oOZnwENdjrLViV8PyyzyYTAIHr0YOeHnmv3rn25FWxqq/8kskMF3gIH5A==
-X-Received: by 2002:a05:6a00:17a7:b0:6ec:e726:b6f5 with SMTP id s39-20020a056a0017a700b006ece726b6f5mr16072960pfg.26.1715091982078;
-        Tue, 07 May 2024 07:26:22 -0700 (PDT)
-Received: from hsinchu26.internal.sifive.com (59-124-168-89.hinet-ip.hinet.net. [59.124.168.89])
-        by smtp.gmail.com with ESMTPSA id i22-20020aa79096000000b006f44bcbe7e3sm7687554pfa.201.2024.05.07.07.26.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 May 2024 07:26:21 -0700 (PDT)
-From: Zong Li <zong.li@sifive.com>
-To: joro@8bytes.org,
-	will@kernel.org,
-	robin.murphy@arm.com,
-	tjeznach@rivosinc.com,
-	paul.walmsley@sifive.com,
-	palmer@dabbelt.com,
-	aou@eecs.berkeley.edu,
-	jgg@ziepe.ca,
-	kevin.tian@intel.com,
-	linux-kernel@vger.kernel.org,
-	iommu@lists.linux.dev,
-	linux-riscv@lists.infradead.org
-Cc: Zong Li <zong.li@sifive.com>
-Subject: [PATCH RFC RESEND 6/6] iommu/riscv: support nested iommu for flushing cache
-Date: Tue,  7 May 2024 22:26:00 +0800
-Message-Id: <20240507142600.23844-7-zong.li@sifive.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20240507142600.23844-1-zong.li@sifive.com>
-References: <20240507142600.23844-1-zong.li@sifive.com>
+        d=1e100.net; s=20230601; t=1715092287; x=1715697087;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=52KNTDLC+obpAk96hd5D+rzNIt3oW/ikIeIzud7iogo=;
+        b=l3X67ULd5e9X8lOAfm9oevGKlK168bQdPCB0UU84N7RM5i+/KOn/UQ/5JPkuTHDYd0
+         +ubo6CAisd3mD+rRZ+hOvfYBVz/Cmu0JJGL0Auu/3brq1WPUQbiO403N9zpJFKm/4XLA
+         0/ZqWmtdMuEg8eBNgGmO3U8TAsSd0K1mm9gosEM9xioupZ655hVJn6mi5W3HQ1glr1fy
+         3Dyqfjbv117Pg6PdmLgZE78ZK9UwbHHO71HSeef8LOMaPOlJEB8QCiFcazWuvouAQzuR
+         hmM7c4ytQQsEQkfAHXGEzobpuXSuKe3s3TlcIy7PVPAdMapUD/6nSNI1Zz7mfUm5ywLC
+         Z2ZQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU6MvKc9QOjrjUVhnpW81ngc3nfH/yIYon6BDM/k0nbxM/h2ehjRETrsltxBhZQDLq0bAsB+Zn2kSFEyk/MDV6xzLeOfE8=
+X-Gm-Message-State: AOJu0YzhSUGZEFxsmEga8CJE07BseYXHT8BBh4vwtxjcvSBRyXS0SPvH
+	EHV73qcbLXooHDG1vwpcLSoC7T0HTeAyQdIilIjgkAIK8wN7Ve0VWepe0rnhscrgO95gbsLekod
+	a/TaYU2N+yOTt22A5Et8Ourb+UVrzMX1NrXloXw==
+X-Google-Smtp-Source: AGHT+IEU8/ZDsdl/a7pEUPUlhakyqhjOEDxLMywsFoH1yLJG3Zk35gTxil1EaJWuOYewmxGhIrFPsYoBYaM/+RK6ekE=
+X-Received: by 2002:a6b:ea02:0:b0:7e1:7d63:887 with SMTP id
+ m2-20020a6bea02000000b007e17d630887mr3645808ioc.18.1715092287669; Tue, 07 May
+ 2024 07:31:27 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+References: <cover.1715072254.git.zong.li@sifive.com>
+In-Reply-To: <cover.1715072254.git.zong.li@sifive.com>
+From: Zong Li <zong.li@sifive.com>
+Date: Tue, 7 May 2024 22:31:16 +0800
+Message-ID: <CANXhq0rmSpDrZji7de7iz4TSJ-6Fp6_e1ZagsGYRcHAo6n9THg@mail.gmail.com>
+Subject: Re: [RFC 0/6] RISC-V IOMMU HPM and nested IOMMU support
+To: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com, 
+	tjeznach@rivosinc.com, paul.walmsley@sifive.com, palmer@dabbelt.com, 
+	aou@eecs.berkeley.edu, jgg@ziepe.ca, kevin.tian@intel.com, 
+	linux-kernel@vger.kernel.org, iommu@lists.linux.dev, 
+	linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-This patch implements cache_invalidate_user operation for the userspace
-to flush the hardware caches for a nested domain through iommufd.
+On Tue, May 7, 2024 at 10:07=E2=80=AFPM Zong Li <zong.li@sifive.com> wrote:
+>
+> This series includes RISC-V IOMMU hardware performance monitor and
+> nested IOMMU support. It also introduces operations for the g-stage
+> table, which are required for nested IOMMU.
+>
+> This patch set is implemented on top of the RISC-V IOMMU v4 series [1],
+> and it will be submitted as an RFC until the RISC-V IOMMU has been
+> merged. Additionally, it will be updated as needed when a new version
+> of the RISC-V IOMMU series is posted.
+>
+> [1] link: https://lists.infradead.org/pipermail/linux-riscv/2024-May/0537=
+08.html
+>
+> Zong Li (6):
+>   iommu/riscv: Add RISC-V IOMMU PMU support
+>   iommu/riscv: Support HPM and interrupt handling
+>   iommu/riscv: support GSCID
+>   iommu/riscv: support nested iommu for getting iommu hardware
+>     information
+>   iommu/riscv: support nested iommu for creating domains owned by
+>     userspace
+>   iommu/riscv: support nested iommu for flushing cache
+>
+>  drivers/iommu/riscv/Makefile     |   4 +-
+>  drivers/iommu/riscv/iommu-bits.h |  22 ++
+>  drivers/iommu/riscv/iommu-pmu.c  | 477 ++++++++++++++++++++++++++++++
+>  drivers/iommu/riscv/iommu.c      | 481 +++++++++++++++++++++++++++++--
+>  drivers/iommu/riscv/iommu.h      |   8 +
+>  include/uapi/linux/iommufd.h     |  39 +++
+>  6 files changed, 1002 insertions(+), 29 deletions(-)
+>  create mode 100644 drivers/iommu/riscv/iommu-pmu.c
+>
+> --
+> 2.17.1
+>
 
-Signed-off-by: Zong Li <zong.li@sifive.com>
----
- drivers/iommu/riscv/iommu.c  | 91 ++++++++++++++++++++++++++++++++++++
- include/uapi/linux/iommufd.h |  9 ++++
- 2 files changed, 100 insertions(+)
-
-diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-index 7eda850df475..4dd58fe2242d 100644
---- a/drivers/iommu/riscv/iommu.c
-+++ b/drivers/iommu/riscv/iommu.c
-@@ -1522,9 +1522,100 @@ static void riscv_iommu_domain_free_nested(struct iommu_domain *domain)
- 	kfree(riscv_domain);
- }
- 
-+static int riscv_iommu_fix_user_cmd(struct riscv_iommu_command *cmd,
-+				    unsigned int pscid, unsigned int gscid)
-+{
-+	u32 opcode = FIELD_GET(RISCV_IOMMU_CMD_OPCODE, cmd->dword0);
-+
-+	switch (opcode) {
-+	case RISCV_IOMMU_CMD_IOTINVAL_OPCODE:
-+		u32 func = FIELD_GET(RISCV_IOMMU_CMD_FUNC, cmd->dword0);
-+
-+		if (func != RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA &&
-+		    func != RISCV_IOMMU_CMD_IOTINVAL_FUNC_VMA) {
-+			pr_warn("The IOTINVAL function: 0x%x is not supported\n",
-+				func);
-+			return -EOPNOTSUPP;
-+		}
-+
-+		if (func == RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA) {
-+			cmd->dword0 &= ~RISCV_IOMMU_CMD_FUNC;
-+			cmd->dword0 |= FIELD_PREP(RISCV_IOMMU_CMD_FUNC,
-+						  RISCV_IOMMU_CMD_IOTINVAL_FUNC_VMA);
-+		}
-+
-+		cmd->dword0 &= ~(RISCV_IOMMU_CMD_IOTINVAL_PSCID |
-+				 RISCV_IOMMU_CMD_IOTINVAL_GSCID);
-+		riscv_iommu_cmd_inval_set_pscid(cmd, pscid);
-+		riscv_iommu_cmd_inval_set_gscid(cmd, gscid);
-+		break;
-+	case RISCV_IOMMU_CMD_IODIR_OPCODE:
-+		/*
-+		 * Ensure the device ID is right. We expect that VMM has
-+		 * transferred the device ID to host's from guest's.
-+		 */
-+		break;
-+	default:
-+		pr_warn("The user command: 0x%x is not supported\n", opcode);
-+		return -EOPNOTSUPP;
-+	}
-+
-+	return 0;
-+}
-+
-+static int riscv_iommu_cache_invalidate_user(struct iommu_domain *domain,
-+					     struct iommu_user_data_array *array)
-+{
-+	struct riscv_iommu_domain *riscv_domain = iommu_domain_to_riscv(domain);
-+	struct riscv_iommu_device *iommu;
-+	struct riscv_iommu_bond *bond;
-+	struct riscv_iommu_command cmd;
-+	struct iommu_hwpt_riscv_iommu_invalidate inv_info;
-+	int ret, index;
-+
-+	if (!riscv_domain)
-+		return -EINVAL;
-+
-+	/* Assume attached devices in the domain go through the same IOMMU device */
-+	spin_lock(&riscv_domain->lock);
-+	list_for_each_entry_rcu(bond, &riscv_domain->bonds, list) {
-+		if (bond->dev) {
-+			iommu = dev_to_iommu(bond->dev);
-+			break;
-+		}
-+	}
-+	spin_unlock(&riscv_domain->lock);
-+
-+	if (!iommu)
-+		return -EINVAL;
-+
-+	for (index = 0; index < array->entry_num; index++) {
-+		ret = iommu_copy_struct_from_user_array(&inv_info, array,
-+							IOMMU_HWPT_DATA_RISCV_IOMMU,
-+							index, cmd);
-+		if (ret)
-+			break;
-+
-+		ret = riscv_iommu_fix_user_cmd((struct riscv_iommu_command *)inv_info.cmd,
-+					       riscv_domain->pscid,
-+					       riscv_domain->s2->gscid);
-+		if (ret == -EOPNOTSUPP)
-+			continue;
-+
-+		riscv_iommu_cmd_send(iommu, (struct riscv_iommu_command *)inv_info.cmd, 0);
-+		riscv_iommu_cmd_iofence(&cmd);
-+		riscv_iommu_cmd_send(iommu, &cmd, RISCV_IOMMU_QUEUE_TIMEOUT);
-+	}
-+
-+	array->entry_num = index;
-+
-+	return ret;
-+}
-+
- static const struct iommu_domain_ops riscv_iommu_nested_domain_ops = {
- 	.attach_dev	= riscv_iommu_attach_dev_nested,
- 	.free		= riscv_iommu_domain_free_nested,
-+	.cache_invalidate_user = riscv_iommu_cache_invalidate_user,
- };
- 
- static int
-diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-index e10b6e236647..d93a8f11813d 100644
---- a/include/uapi/linux/iommufd.h
-+++ b/include/uapi/linux/iommufd.h
-@@ -689,6 +689,15 @@ struct iommu_hwpt_vtd_s1_invalidate {
- 	__u32 __reserved;
- };
- 
-+/**
-+ * struct iommu_hwpt_riscv_iommu_invalidate - RISCV IOMMU cache invalidation
-+ *                                            (IOMMU_HWPT_TYPE_RISCV_IOMMU)
-+ * @cmd: An array holds a command for cache invalidation
-+ */
-+struct iommu_hwpt_riscv_iommu_invalidate {
-+	__aligned_u64 cmd[2];
-+};
-+
- /**
-  * struct iommu_hwpt_invalidate - ioctl(IOMMU_HWPT_INVALIDATE)
-  * @size: sizeof(struct iommu_hwpt_invalidate)
--- 
-2.17.1
-
+Please drop this one, I have resent this series by removing the
+'--thread=3Dshadow' option from format-patch, as it causes RFC 5322
+compliance issues, and also correct the subject of the series.
+Thanks.
