@@ -1,230 +1,271 @@
-Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C67D3A947
-	for <iommu@lists.linux.dev>; Tue,  7 May 2024 02:22:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715048541; cv=none; b=HQGs1sOOp/V6K05BIMpwk1SAPwdskfRjqRKj6Ra12P1d3xU0kWJOCSzCKk/8xQPpjTcnoA/0BY+PaKxVfpFTDQuYYJFBLtdY7eaJ61kDlpvl3V4GqFbHefb1AwrK9XuAOfJcXuuqLSOnhLgebdmXom/XedxRfaaoSal5P5rOops=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715048541; c=relaxed/simple;
-	bh=ddp4BlwG51OZx+toxw8NcKacv9yA9LPxltusnBVPZBI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pv4PyDUAqnieqlaj3y58RuyiAQmzm/NoMI1O4GR0sWxTEGhnGcWO9sFWNUqfvMKlRbOVU4MLdhQgGPqhp83ZBJmQJA3fQPM0Z8Wegkn/cdc3Kr30okamF2Bl+fh3Hew5gJOZ0i77Xd0LkgofiR/y+MaBfa7jXrL3W8xt0XKdkv8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=wW0+nBpH; arc=none smtp.client-ip=209.85.216.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1731E4C63
+	for <iommu@lists.linux.dev>; Tue,  7 May 2024 02:25:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.9
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1715048711; cv=fail; b=EpHKxImXOjUu6Lm57Rk4tFUBqPdq7sSrAKA2QgRmP+7iIAufk6sVCXivamsVYxemTbrJVMP+JdiYbxqYgdJT+CjAS++3J8qU9eOAwM5w55rRsZlKcnzRSfaod+FBVGjBIOfkPnQ3BkD8/Nmv5BF/Fasv526XAF4rEWJFZwGbdEk=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1715048711; c=relaxed/simple;
+	bh=PWSdALdgsDynjrPwrFFAmzYnnrVWrU4cQY29+z3VlQ8=;
+	h=Message-ID:Date:Subject:To:CC:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=sCnTLC7E6wqtYTrqaUZtTxUA0IHfsSH4mP2xrgBKxZew8pqJVCVdiJ5itmiRohSs+JEMfSHlQFSXiBAC+oH7UHHVjK6HJq7LaEKl+ihCqbamISNVCp/Gm1Ic6kXybAdmpz4IPOPGiy8itTfZzMGJQ7k9LBavFGbpbZjKRlgaP2s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Xf2KwNxw; arc=fail smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="wW0+nBpH"
-Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-2b43490e0e2so1731855a91.2
-        for <iommu@lists.linux.dev>; Mon, 06 May 2024 19:22:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1715048539; x=1715653339; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=VG77bwpMyBsulolMGNrr0vukCDyTTCfbCNIB+dj0SFI=;
-        b=wW0+nBpH2xBd9oKkuDDT4PnQJ4se4nYtPQ517l4leKM0fHw8uFz2X8ALwMTCRO7iPt
-         pOtTyWWcQ6oFQzKTgAE28GBHMJ4L2BXcmqaS5VB3RQzyqoIvea1cpNPINInqjgsJi2zC
-         PMd9xqKLTZdOAB/fq35ugviu8RnCANuY4Vhbak8LCkNc7xXJdI8QQQAHzPf8PY7zhC3g
-         pPQNTqax6c6fmIOhCdKxCVmNBGWJiNe1ACXbdo2uh7AMeWFPh+rwmhC97gbQFPvpwiJw
-         utmR01xJPfjn7HIXWOGahC2B/nFGc19ffU6aPwmGD9+k35Kaa51UrqBFhPBy6xxiEVVW
-         JPjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715048539; x=1715653339;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=VG77bwpMyBsulolMGNrr0vukCDyTTCfbCNIB+dj0SFI=;
-        b=V1FRkxHK2Jy6oseQQgi03XF7sT4wXY75UOkOijrki0U6nff9q3oRZOwPqfwlRnds8g
-         dT5iUkVxdB3hNriSCZphQW4ahAoq8nAM/zZkpgw2kDlMAlepBSnlMMivJW1zAXwYttit
-         ssu3xtwaeWiT5pEzfKkF6OztZnosSHBK5guyOOd1RtC9IRimUs3kDhW9WrrEbza3pxlk
-         qA48uqiOCJ4nxkDFBBCzt9WcQpDGnAqMMcMYc+sMWZuTl6sdzhnXdxFLqWl506BUehF2
-         6TJBVd0nht8eTUUnCjuHi62yotYL+gCgcKr1EpBgBuE4AtHGFSRfG/bJestOgj6mWuzH
-         5Nqw==
-X-Forwarded-Encrypted: i=1; AJvYcCXVVVq9ppmmIX2LtuBlST/zwX5hCuGGLK0Y42dcewI/VBXRTkN0H8+ehD807w0zGgW6IluYxNd70VmAbFlerCaIfk36IoE=
-X-Gm-Message-State: AOJu0YwXJvsa6CLdjpUCeWWlxf8sc0BWJc+QagBUjEBT5soX6iaszmKD
-	/m0Paqw4YUzdapci6JSEysuoDNL6J/1NZYU6o6AGL0kI7BqufJWWCAwGEktQ1qFsLUwl3ytKYGG
-	iWe4sO9x4fB+/vU19Z/fpgob/48HoJihSmb4NMw==
-X-Google-Smtp-Source: AGHT+IHsPu5AukXt1ZMu1k2ndGF0WSfcu6sZVkQkurxCeE8wBMbBgaMnamrYyYvJgB7dN4Uob8QSF+mqBfHri0qP9E4=
-X-Received: by 2002:a17:90b:34d:b0:2ae:d03b:9594 with SMTP id
- fh13-20020a17090b034d00b002aed03b9594mr9528356pjb.39.1715048539100; Mon, 06
- May 2024 19:22:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Xf2KwNxw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1715048709; x=1746584709;
+  h=message-id:date:subject:to:cc:references:from:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=PWSdALdgsDynjrPwrFFAmzYnnrVWrU4cQY29+z3VlQ8=;
+  b=Xf2KwNxwzDmtmboH8jbcq32y3q/O7lNjjzxblLR5lHfePZUdsGkgH/c6
+   HRLAZE8rKBbaxT3ULxet9HVnQxk/ZWoFde5+M9xAEd/Um+rGU08nUriah
+   J9cE073+gCdDWMICgXQbAzk7oWFs6Dvt0kbowJ8mpAQjPVXBGAJND5vHn
+   F4m2u8h+Lb9J1GD8Kf328fTx6XecCueg3Fnq2WVbWcSaRl6dDeZK7bqAq
+   5ibq7MGk1TlQSMIYEEdNMoHqYlSWYfUaZA0RrXrIvoTlYrKDv0QQ+WaWb
+   7JJJxz1cEABjGUXrdqy6/2KReWuOFQqfGawihUfKedI0cd65LCJn1ELvH
+   w==;
+X-CSE-ConnectionGUID: 6io881RcTCC+SZox6dME1A==
+X-CSE-MsgGUID: EAiYzO2lTi2OjiB68vIytg==
+X-IronPort-AV: E=McAfee;i="6600,9927,11065"; a="21495300"
+X-IronPort-AV: E=Sophos;i="6.07,260,1708416000"; 
+   d="scan'208";a="21495300"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 19:25:05 -0700
+X-CSE-ConnectionGUID: qWK3T10DQ9WwRSIQJGwCSA==
+X-CSE-MsgGUID: uXAKe+szQqSN4DEiLJbMxg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,260,1708416000"; 
+   d="scan'208";a="28757103"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by orviesa006.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 06 May 2024 19:25:03 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Mon, 6 May 2024 19:25:02 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35; Mon, 6 May 2024 19:25:02 -0700
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.35 via Frontend Transport; Mon, 6 May 2024 19:25:02 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2507.35; Mon, 6 May 2024 19:25:02 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XGgfF1xUdJgEQkZ7lU9wNWRncTLRpWuQcYqwOBqK3vU0O6+9ReoKJE6tzUcQ3L/wuP5AXQTaXAHGkhgxvrFDiBQlEmoOFa+N+niuhNIxzRgJsIBsS1NPh0WeUKchoBuweQLHcHVOx3p/XR1Pllj/rm+nGuPxReQVYa7aLDl50TUCTq8GFPdTuMwVQrjxLIV2iClOCv/XOXqFY6ZuhM1s61HvzyZGB3farLM6+tg+049p+eOyh2O/Or1wRk1Zvij4ElY9k9G+bbU1VyPMMdM8V1NBbpngkY1RVvMbn1p1vN6bXup3rYkdnkyCCL7CpVpxm9U3MDM4gUU1/X3lnyi7BA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=COneGA1zLmeDB4HOiyg9sgib2bgNXKAa5GzNwqzNaRk=;
+ b=BcYKC5W3mCf0RZWLlr+hpy216mSTHLuYoNvobcXo9u8nYtnEq49Am7iHo0+tgBmUfn1/pmWRvCRr0TGJm3JAIl1FYl/ICwq4sj+8L62TWEfaYbdzTu5JIXXH2LlDsiOgBt56rGiGDoAnI5I1DGBe3XLr+y1Qmyawk+DzTQzXrSyiL72Nl45OjWX62V0+NE8X+ioCPw5B7zrV2iQEeUtbFVppjIOdApJtygqehBcYfQ6plcYaQCWuiELeu2nwsJxM8//JqU7ITyLfdqAyfS7Jnjs7TtWJJl2mUZV+DFO1HCAeU+QG5u1+YFej/Gw7oaF8VlIYnoWiGwADdtJz21vuBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com (2603:10b6:8:141::20)
+ by SN7PR11MB6558.namprd11.prod.outlook.com (2603:10b6:806:26e::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.41; Tue, 7 May
+ 2024 02:25:01 +0000
+Received: from DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a]) by DS0PR11MB7529.namprd11.prod.outlook.com
+ ([fe80::d244:15cd:1060:941a%7]) with mapi id 15.20.7544.041; Tue, 7 May 2024
+ 02:25:00 +0000
+Message-ID: <14a7b83e-0e5b-4518-a5d5-5f4d48aa6f2b@intel.com>
+Date: Tue, 7 May 2024 10:28:34 +0800
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 12/12] iommu/vt-d: Add set_dev_pasid callback for
+ nested domain
+Content-Language: en-US
+To: Jason Gunthorpe <jgg@nvidia.com>, Baolu Lu <baolu.lu@linux.intel.com>
+CC: "Tian, Kevin" <kevin.tian@intel.com>, "joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "eric.auger@redhat.com"
+	<eric.auger@redhat.com>, "nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "chao.p.peng@linux.intel.com"
+	<chao.p.peng@linux.intel.com>, "iommu@lists.linux.dev"
+	<iommu@lists.linux.dev>, "Duan, Zhenzhong" <zhenzhong.duan@intel.com>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>
+References: <20240412081516.31168-1-yi.l.liu@intel.com>
+ <20240412081516.31168-13-yi.l.liu@intel.com>
+ <BN9PR11MB5276E97AECE1A58D9714B0C38C0F2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <d466eb97-8c2b-4262-8213-b6a9987f59ea@intel.com>
+ <b4fe7b7c-d988-4c71-a34c-6e3806327b27@linux.intel.com>
+ <20240506133635.GJ3341011@nvidia.com>
+From: Yi Liu <yi.l.liu@intel.com>
+In-Reply-To: <20240506133635.GJ3341011@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: SI2PR06CA0007.apcprd06.prod.outlook.com
+ (2603:1096:4:186::9) To DS0PR11MB7529.namprd11.prod.outlook.com
+ (2603:10b6:8:141::20)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <cover.1714494653.git.tjeznach@rivosinc.com> <b83f81c04d1f3885d860b1eec03761fe63a33183.1714494653.git.tjeznach@rivosinc.com>
- <20240501145621.GD1723318@ziepe.ca> <CAH2o1u63GjMnYrfa8W-c1hdp+TAA0R-FyxXM4dEiFF+KEGWwbA@mail.gmail.com>
- <20240503181059.GC901876@ziepe.ca> <CAH2o1u7av8zMucB2sKxBOZtd1eqEC4Qmgin=8VQ03pWbQdZUUg@mail.gmail.com>
- <20240505154639.GD901876@ziepe.ca>
-In-Reply-To: <20240505154639.GD901876@ziepe.ca>
-From: Tomasz Jeznach <tjeznach@rivosinc.com>
-Date: Mon, 6 May 2024 19:22:07 -0700
-Message-ID: <CAH2o1u6g87nt=S7id-O43PubR=GaOLj-vmk7+OdTiY=Kw1BU5A@mail.gmail.com>
-Subject: Re: [PATCH v3 7/7] iommu/riscv: Paging domain support
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
-	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
-	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
-	Anup Patel <apatel@ventanamicro.com>, Sunil V L <sunilvl@ventanamicro.com>, 
-	Nick Kossifidis <mick@ics.forth.gr>, Sebastien Boeuf <seb@rivosinc.com>, Rob Herring <robh+dt@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, 
-	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
-	linux-kernel@vger.kernel.org, linux@rivosinc.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DS0PR11MB7529:EE_|SN7PR11MB6558:EE_
+X-MS-Office365-Filtering-Correlation-Id: 59efecbb-159b-4857-b51c-08dc6e3ce565
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|7416005|376005|366007;
+X-Microsoft-Antispam-Message-Info: =?utf-8?B?NCtKZkYwMXN0STFBMTV4YlcxZWpxS2taeDR0TmdrMDhJMWlZUS9QZWR3ZXZv?=
+ =?utf-8?B?SmRDbWxTOHJ2TUVpTml2SkJ0dDZsQXRhV1RqZHVSSytBekNJRjdPendKT1Jm?=
+ =?utf-8?B?ZkllNHNXeldlUHNrMmc1aHFhZ1Q3eXVsN2RFZnVodlZ6NE5xRkFGK2dPNlNP?=
+ =?utf-8?B?UTFjZVE2QytuNlJkNWtrbldHWDFQU3RHZDFIcnRZM0pRSmgyMVp2dDZBN1h6?=
+ =?utf-8?B?S01xTDY1dmd3L3BMbkdaZmgrVUIxMnZtNUVrWEV1WlhzVlRyVDlIdDdDODIz?=
+ =?utf-8?B?eHhLNG15VnN3TW5lUjBJWDQ1ajJHcVV0UkhyNEYzTHIxTEpwOVhzL3d5RXYw?=
+ =?utf-8?B?UnlydVBVRnhxODdqRGJCc0tUcU5kQnZlTGt6RmYwUXhoSjROamxwVEJxMUhH?=
+ =?utf-8?B?OVczVlBGTSthZjZLSmVlWjhqazZ0M0w5QmFWVlNFbTNLaS9iNVZWeXJGeEpI?=
+ =?utf-8?B?S3YySTFjZFpCQWd2TUdqOTJUNVUvaEs5a3c1Z3hxRUJkdlBqQlVKWTQ5ZzUy?=
+ =?utf-8?B?Wkd6Q3VxYlV4N0JldTBqTFV1aXBUZDBsbDNyZGp3dUszakVSMU50YmZEc2xl?=
+ =?utf-8?B?V1JvM0hmQ0hvdmpKcmxoSE5LZnZxMTZBaEQ5cVhKOUJ5c0t4a0RpYnJsNEIw?=
+ =?utf-8?B?aldobnVBUkg0M3FoWkErbDEvWHFCaVc2aEhtYmFXWlhYVjY4ZlJyVmtGUmZV?=
+ =?utf-8?B?K0d2a2lzMm9Rb2p0ekNyUmpZZU5oekhZLzdhOTd6TkFKYjhVVzhERVgvNjBH?=
+ =?utf-8?B?V0N2UU1xUE5qN2VhTFBUY3N3WnRkMkk5ZHczeVdWRzdWTnFKdmtvZ1pnTkpr?=
+ =?utf-8?B?b0t0d2gwY01GbXFaTDVPTDFkR0ZvWUlHd0tOVlkzZStXdzAvdjBjd0Fza094?=
+ =?utf-8?B?QlZvNGloZytjNElGbVdKUFBZWCsvYkx2SUJaU0xtSWFjRDBpc2lvWGhRM2ta?=
+ =?utf-8?B?SGRIcVBIKzB6TnBPOTR0YmFrWFNJVzhaL1Y2WDdXWkV3MnR6SG1VbXNraHlI?=
+ =?utf-8?B?OHdrZVNRWkR3OGZrZGdCK1NzWUZWMnljYWJySFRXejFYTGNLaVRSY2ZvN1lk?=
+ =?utf-8?B?Y2VaZUsyanB4UTZ1VWdSS1JuRkZJLzB0T1lXRy9JOWVBallqMmZ3YUVCdjRp?=
+ =?utf-8?B?dEFnNmdGZWxxWUNhUVlyTHhXMGtLSDIramVxMWx6MHpTNGtNZEhEZ0QwY3lz?=
+ =?utf-8?B?aHBjQmt0T0lNYXJXYWlQVUp0ejVrWjNQbnpLZXlNcEpRY0liZzlzN3NTVlZy?=
+ =?utf-8?B?MFpRQWZHM2MzdDZJdkRTdTJSRzN1QkdSY09hYUZyZTRaZk1aRFVmeXBod3cv?=
+ =?utf-8?B?eWxpemsrd0h0ejBiRUk3Nno5NU5CdVpQRW1MbXRrTUM4RFhlUTJLdkdwS2Zz?=
+ =?utf-8?B?UnNmK3hLWEdVTmlqemVlblgzRlhWRjAyZHFkYkZWRWppQzZDdWIxUlM0VWJ1?=
+ =?utf-8?B?bGlza1FJUzI2RkZkcTV3ZDdZb2lUWElRQVZtUTNYdHVXa3RRVVJab3ZTUUow?=
+ =?utf-8?B?bjhyeFVWWGZ4QXJObE9UYUprUUJyQ0Q3bzFDY25BdE5NUzB5WFF1VkxldllI?=
+ =?utf-8?B?UXFtQ29VTm0rODVOSUx0N3hjc3VnUTJqRGQ2NkZkUjhBd1FUS3g5dDFwZU1M?=
+ =?utf-8?B?OXhYeFcwL1dvVFNxblhCM2ppYXJ1WjVKK05iU25KRDI2V2V4bG5PTll4SW5Y?=
+ =?utf-8?B?WTZWTE9ySDdyaHJETkY3eERZdyt4MkUzTWdEYUlVdmVrRUQzQkE5ejdnPT0=?=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS0PR11MB7529.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(7416005)(376005)(366007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?T1k1ZHBUR2lMTFR4cmJqWkQxMnBIRlV0dlVlc0ZkSnY3V282cWFnWnNIUXQy?=
+ =?utf-8?B?WVQwMFN2TjFuM1dIR0VjV2hVbFRTcCs0YjJqeXB5eUR4Sk5BdnNFNU12YWgz?=
+ =?utf-8?B?aUZjRVVWQXRGUXQ3OElvbHRYVmNuVlVTT2JOTGhYM1k0TDhYK0plOWJvemhp?=
+ =?utf-8?B?SytGbHl6dXl4V2dDeHlVRFpDV2xvZGVXdDNmNmFvcGY4ejZYYjVLeXduMUVq?=
+ =?utf-8?B?cTdxbzFKY3NTN3dYLzNFOUhhMDN4ZjNWeThqVXQyVUNuRWc2dDdQMnFXMG5l?=
+ =?utf-8?B?Y05yQU5OOGRjY0d0ejVSTmtLazRtVjJuaVNrNno2TEFMOHBWTWowam1VMHVM?=
+ =?utf-8?B?bENhalVPRlFkMWdUY043S1dGNXJJcU9JdnpoMWdEYTJlaWpUemwvWXB5dUZV?=
+ =?utf-8?B?K0haU05UYzZoaWcwM2p6N3NLNmJjVUwzSTZvbHQ2aFZTa1FvZXhkL0ZGbmVk?=
+ =?utf-8?B?TFRjdWZoQ0JXUlI0Zk5jc1IxSGowbEdTSExYWmZKSUlzbVovUFZJb0t2UGhw?=
+ =?utf-8?B?ZmJiS01Tb3lLYmJKSkNSM1BZeHRXSkpEelF5aHNRSGplc2c3R3BrVVBNT1lJ?=
+ =?utf-8?B?QVdRSFllNnNOS3FXdE1pS0VOMVp1cmZXemhod0Y0UERoZCs4NXhSM09XOUdW?=
+ =?utf-8?B?aFdWNkRzcUVOT3pSUFFTeXlNR0N1SXI0ZTNwblAxTXZtUTRjL2RrTWpxN0xo?=
+ =?utf-8?B?NlpSU0pHaW9HTUNsZ2FOKzYyR3F2QS8rT3FHay9Gd25SK1RJTE52ZE9aWE9B?=
+ =?utf-8?B?QnIxT3ZHdllVVHhTVDh5WTJTYjBZTkRLeFlBTWhJdWtucUZHT0sxS1lxUVJK?=
+ =?utf-8?B?RlRjZCtKRzh5OWE0QmloWVlJMlhDTTlnZjU1Qm9YbG9rcTJvZHVKK1pGNEVv?=
+ =?utf-8?B?cXZ2T3ZpZjA1UDZSei9MdmFZcHJiRVc0dWtLa0VOdU1UT2xmOHZXeHFZQWo3?=
+ =?utf-8?B?TjllL0oydzZ1WCtia3JMRFpNVGJWNHZucEVDeHpMaVpxR1JpTzFZQW9nQ05M?=
+ =?utf-8?B?b1dYRzFvdHd2MFBnQ2JIOE5WWHFzelhxQWE1NERHY2d4UUlOZlVkMU1oM2E0?=
+ =?utf-8?B?NFVNMCtJRnRrNkRIQ0VsamxkUnZESkhGcDM4SnYxd1AvM2UvYWxNemZSOGp4?=
+ =?utf-8?B?SzVwUzg5bVhubmVhY3phaHdEckUyaXpGS1hQaXRRMTN1bGlIb3A2UWRkUytq?=
+ =?utf-8?B?T1k1Z0t0YVcvMFFKaUtPUEFHSlJ5eU9UT1ZFSFlpUWdJemxVL1VhcjNPUnQz?=
+ =?utf-8?B?bHlHM3E4VE04OGFXTGV1SithZmthZ2RaYzllcjlMYkFnbm8wSFBrZVpENVRt?=
+ =?utf-8?B?VXRSMy9qMmpGdlNWQzhDcExDS29lQ1hNRCs1T3I3VXhvUU5jNytWakNyKzUv?=
+ =?utf-8?B?Tk1vcXRSL0YvdHVLdXlsclhBMzZxckZYTDRmVzV2SW1pWTlWOE5tNEV0WmFH?=
+ =?utf-8?B?cnRyNkl5b0I4b0VZTy85SGl0ZDJnakdOVEYxYklKUng1WnBWMFVHZEhNdVZl?=
+ =?utf-8?B?ZHdwcDNVSkM2QWFQQ3pRZ3FDKzg2Ym52ZUxMd1VFSmdXakF3eW1VRGpwck5o?=
+ =?utf-8?B?WkpuNVRKTHpEMVh3YXhPSjhPejlQblllRXJvNVdSekFLVGhCZkNlVmlMV04y?=
+ =?utf-8?B?aHAwUHc5eXdwcUM4NmYyRTlqbTh6SWdodzdnZGxKRVNZRW5vNUs0ZGlJY012?=
+ =?utf-8?B?ZUNjd1VTYTRNanA1ZW92ZEMzRTBVazRKTWVlWVczdnVLcTRkNnNqY1NCVzcv?=
+ =?utf-8?B?Z0RKcXdXeUxNYk42aDJDdmtHUlhNRm0rcDNpdEZ3U3UrbnlpZHljNHFUNVRY?=
+ =?utf-8?B?ZmNIRmljTW04a0VEQXZNTWxjazlPL3E5SWlNRDcwSWU5TG80dllEc0tWaHRX?=
+ =?utf-8?B?R0xLaG5vV2tQYmxKTHRvY3NEZzRRNjNkM2hGeUQ3NjlHRUw0Y05jRW1KcEo1?=
+ =?utf-8?B?UXFtL1BISnFES3UyZnBlTmc0UTNWQlRxaEZEQ3g4SmhpQjgrK1hmTGlhV0Z5?=
+ =?utf-8?B?M1Zrc25LSWlHQXRyQnEzUDNHYmxJVFQ4Q0p2MmF3MEVPUERnaGl4RTErR0JL?=
+ =?utf-8?B?clppY1NYbklnd2JXOGFQWUJvWVRGWjRmdmxEMi96WndOOEJkNHFkazFObjU0?=
+ =?utf-8?Q?hxGz5qCpXjkIad+SrVM5Oajvq?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59efecbb-159b-4857-b51c-08dc6e3ce565
+X-MS-Exchange-CrossTenant-AuthSource: DS0PR11MB7529.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 May 2024 02:25:00.8877
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: t/0vYimqKlzFmUesUlRUChv/z895iOAnxq2KUjAxF4oOs9RKsbmR7m5RvF2muA3r2+nX/CxH3agbmSDoTn4kgA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB6558
+X-OriginatorOrg: intel.com
 
-On Sun, May 5, 2024 at 8:46=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrote=
-:
->
-> On Fri, May 03, 2024 at 12:44:09PM -0700, Tomasz Jeznach wrote:
-> > > For detach I think yes:
-> > >
-> > >    Inv CPU                                   Detach CPU
-> > >
-> > >   write io_pte                               Update device descriptor
-> > >   rcu_read_lock
-> > >     list_for_each
-> > >       <make invalidation command>            <make description inv cm=
-d>
-> > >       dma_wmb()                              dma_wmb()
-> > >       <doorbell>                             <cmd doorbell>
-> > >   rcu_read_unlock
-> > >                                              list_del_rcu()
-> > >                                              <wipe ASID>
-> > >
-> > > In this case I think we never miss an invalidation, the list_del is
-> > > always after the HW has been fully fenced, so I don't think we can
-> > > have any issue. Maybe a suprious invalidation if the ASID gets
-> > > re-used, but who cares.
-> > >
-> > > Attach is different..
-> > >
-> > >    Inv CPU                                   Attach CPU
-> > >
-> > >   write io_pte
-> > >   rcu_read_lock
-> > >     list_for_each // empty
-> > >                                              list_add_rcu()
-> > >                                              Update device descriptor
-> > >                                              <make description inv cm=
-d>
-> > >                                              dma_wmb()
-> > >                                              <cmd doorbell>
-> > >   rcu_read_unlock
-> > >
-> > > As above shows we can "miss" an invalidation. The issue is narrow, th=
-e
-> > > io_pte could still be sitting in write buffers in "Inv CPU" and not
-> > > yet globally visiable. "Attach CPU" could get the device descriptor
-> > > installed in the IOMMU and the IOMMU could walk an io_pte that is in
-> > > the old state. Effectively this is because there is no release/acquir=
-e
-> > > barrier passing the io_pte store from the Inv CPU to the Attach CPU t=
-o the
-> > > IOMMU.
-> > >
-> > > It seems like it should be solvable somehow:
-> > >  1) Inv CPU releases all the io ptes
-> > >  2) Attach CPU acquires the io ptes before updating the DDT
-> > >  3) Inv CPU acquires the RCU list in such a way that either attach
-> > >     CPU will acquire the io_pte or inv CPU will acquire the RCU list.
-> > >  4) Either invalidation works or we release the new iopte to the SMMU
-> > >     and don't need it.
-> > >
-> > > But #3 is a really weird statement. smb_mb() on both sides may do the
-> > > job??
-> > >
-> >
-> > Actual attach sequence is slightly different.
-> >
-> >  Inv CPU                            Attach CPU
-> >
-> >  write io_pte
-> >   rcu_read_lock
-> >     list_for_each // empty
-> >                                     list_add_rcu()
-> >                                     IOTLB.INVAL(PSCID)
-> >                                     <make description inv cmd>
-> >                                     dma_wmb()
-> >                                     <cmd doorbell>
-> >  rcu_read_unlock
-> >
-> > I've tried to cover this case with riscv_iommu_iotlb_inval() called
-> > before the attached domain is visible to the device.
->
-> That invalidation shouldn't do anything. If this is the first attach
-> of a PSCID then the PSCID had better already be empty, it won't become
-> non-empty until the DDT entry is installed.
->
-> And if it is the second attach then the Inv CPU is already taking care
-> of things, no need to invalidate at all.
->
-> Regardless, there is still a theortical race that the IOPTEs haven't
-> been made visible yet because there is still no synchronization with
-> the CPU writing them.
->
-> So, I don't think this solves any problem. I belive you need the
-> appropriate kind of CPU barrier here instead of an invalidation.
->
+On 2024/5/6 21:36, Jason Gunthorpe wrote:
+> On Mon, May 06, 2024 at 03:42:21PM +0800, Baolu Lu wrote:
+>> On 2024/4/30 17:19, Yi Liu wrote:
+>>> On 2024/4/17 17:25, Tian, Kevin wrote:
+>>>>> From: Liu, Yi L <yi.l.liu@intel.com>
+>>>>> Sent: Friday, April 12, 2024 4:15 PM
+>>>>>
+>>>>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>>>>>
+>>>>> This allows the upper layers to set a nested type domain to a PASID of a
+>>>>> device if the PASID feature is supported by the IOMMU hardware.
+>>>>>
+>>>>> The set_dev_pasid callback for non-nested domain has already be
+>>>>> there, so
+>>>>> this only needs to add it for nested domains. Note that the S2
+>>>>> domain with
+>>>>> dirty tracking capability is not supported yet as no user for now.
+>>>>
+>>>> S2 domain does support dirty tracking. Do you mean the specific
+>>>> check in intel_iommu_set_dev_pasid() i.e. pasid-granular dirty
+>>>> tracking is not supported yet?
+>>>
+>>> yes. We may remove this check when real usage comes. e.g. SIOV.
+>>>
+>>>>> +static int intel_nested_set_dev_pasid(struct iommu_domain *domain,
+>>>>> +                      struct device *dev, ioasid_t pasid,
+>>>>> +                      struct iommu_domain *old)
+>>>>> +{
+>>>>> +    struct device_domain_info *info = dev_iommu_priv_get(dev);
+>>>>> +    struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>>>>> +    struct intel_iommu *iommu = info->iommu;
+>>>>> +
+>>>>> +    if (iommu->agaw < dmar_domain->s2_domain->agaw)
+>>>>> +        return -EINVAL;
+>>>>> +
+>>>>
+>>>> this check is covered by prepare_domain_attach_device() already.
+>>>
+>>> This was added to avoid modifying the s2_domain's agaw. I'm fine to remove
+>>> it personally as the existing attach path also needs to update domain's
+>>> agaw per device attachment. @Baolu, how about your opinion?
+>>
+>> We still need something to do before we can safely remove this check.
+>> All the domain allocation interfaces should eventually have the device
+>> pointer as the input, and all domain attributions could be initialized
+>> during domain allocation. In the attach paths, it should return -EINVAL
+>> directly if the domain is not compatible with the iommu for the device.
+> 
+> Yes, and this is already true for PASID.
 
-Yes. There was a small, but still plausible race w/ IOPTEs visibility
-to the IOMMU.
-For v5 I'm adding two barriers to the inval/detach flow, I believe
-should cover it.
+I'm not quite get why it is already true for PASID. I think Baolu's remark
+is general to domains attached to either RID or PASID.
 
-1) In riscv_iommu_iotlb_inval() unconditional dma_wmb() to make any
-pending writes to PTEs visible to the IOMMU device. This should cover
-the case when list_add_rcu() update is not yet visible in the
-_iotlb_inval() sequence, for the first time the domain is attached to
-the IOMMU.
+> I feel we could reasonably insist that domanis used with PASID are
+> allocated with a non-NULL dev.
 
-  Inv CPU                                    Attach CPU
-  write io_pte
-  dma_wmb (1)
-  rcu_read_lock
-    list_for_each // empty                   list_add_rcu()
-                                             smp_wmb (2)
-                                             Update device descriptor
-                                             <make description inv cmd>
-                                             // PTEs are visible to the HW =
-(*1)
-                                             dma_wmb()
-                                             <cmd doorbell>
-  rcu_read_unlock
+Any special reason for this disclaim?
 
-2) In riscv_iommu_bond_link() write memory barrier to ensure list
-update is visible before IOMMU descriptor update. If stale data has
-been fetched by the HW, inval CPU will run iotlb-invalidation
-sequence. There is a possibility that IOMMU will fetch correct PTEs
-and will receive unnecessary IOTLB inval, but I don't think anyone
-would care.
+> 
+> If so it means we need to fixup the domain allocation in iommufd as
+> part of the pasid series, and Intel will have to implement
+> alloc_domain_paging().
 
-  Inv CPU                                    Attach CPU
-  write io_pte                               list_add_rcu()
-                                             smp_wmb (2)
-                                             Update device descriptor
-                                             <make description inv cmd>
-                                             // HW might fetch stale PTEs
-                                             dma_wmb()
-                                             <cmd doorbell>
-  dma_wmb (1)
-  rcu_read_lock
-    list_for_each // non-empty (*2)
-      <make iotlb inval cmd>
-      dma_wmb()
-      <cmd doorbell>
-  rcu_read_unlock
+I agree implementing alloc_domain_paging() is the final solution to avoid
+such dynamic modifications to domain's caps. If it's really needed for
+PASID series now, I can add it in next version. :)
 
-3) I've also updated riscv_iommu_bond_unlink() to wipe the PSCID cache
-on the last domain unlink from the IOMMU.
-
-Thank you for pointing this out. Let me know if that makes sense.
-
-Best,
-- Tomasz
-
-> Jason
+-- 
+Regards,
+Yi Liu
