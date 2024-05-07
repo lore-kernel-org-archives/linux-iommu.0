@@ -1,46 +1,47 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 167596D1C8
-	for <iommu@lists.linux.dev>; Tue,  7 May 2024 06:19:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C108C6D1C8
+	for <iommu@lists.linux.dev>; Tue,  7 May 2024 06:20:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715062755; cv=none; b=CU4bsPOXp7z4EpdwQUaNdXGrj32RHR34H/bxpkFXpu4hTSfJTZ42VzxNg9V9zlHXBaWCFaT+Y/1UOw83701Eljk5u6vMtPxbYvgECYeIY1fkr/JXpekG3FZDyVafuUk8PL6g3TF8jy5SxajO83FG0rBNnT0l5gv75by4QMFJlhg=
+	t=1715062819; cv=none; b=tkmMvZ9IpzLlXCFAY8WcyJFcA4sYjkxRqBB7y+O/QIkOayqLxSMVhgjZR1rftpGGQEp7Yf/bt2p2z5wfY7ii92LL41ni3Mp5dKU+iuHP/7H3Ni8BB9AwuSnF7LhsO1vVXeI07xoXaYgs7S1M7LmdcKwEQxutDgT84vhRaYxt0d0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715062755; c=relaxed/simple;
-	bh=iaZ2BMDeNoeIPBrEjGkR8jv5Pwu9igYECttuPc3fJY0=;
-	h=From:To:Cc:Subject:Date:Message-Id; b=j4bgEcn+FzNOasGg3RlVWWqO066wOkutg/GWxIhwfVOQnOZKj1HrpfA4Oc+6HTCKNnk8pTFVHJ3+xDipYYm4IPFjDSYatYKwlvvbu7qVDKS4bd0y8AbRrFDiSnPjHBbtCAvynWrsuWI1XQ/8fxBK0GrJPwLbAwDsYmeSVtkMEOk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Jh+gmYi2; arc=none smtp.client-ip=198.175.65.16
+	s=arc-20240116; t=1715062819; c=relaxed/simple;
+	bh=mSaRASfGQY8AR8D1WEG7ksj0ddXO2afJXERqBKb8+K0=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=atT3/hynWliohLFUHz24bz+SYfHfCAuNCpUl8K3Gtd55ZxsdHfn944la+8slkVnIPoXRbtrqUC4berDJ6i80mZPd4J1z5y7Sk7T0VwFJ3e2TK8hhjpKXVsetuDnJ5pQ6I9jkRTtsurSybNKpySxeXf4tJIy/HWPBfPmflHB3zj8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Z1SjWqrr; arc=none smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Jh+gmYi2"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Z1SjWqrr"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715062754; x=1746598754;
-  h=from:to:cc:subject:date:message-id;
-  bh=iaZ2BMDeNoeIPBrEjGkR8jv5Pwu9igYECttuPc3fJY0=;
-  b=Jh+gmYi2oiBhFGwP8lnfCPCe5+T3LoYqmUou9qdLFy6PchgwcY/TahzE
-   gPRfet3duTJ/FSwT+5z9EIBZ0UkUXaVW6bU4IL4XMk8+QtulzNxhYxWwL
-   YUdQvF+EQTE/VWqrfxoB6V4DnSRQ5MXBiGw2/LTENRUL/iamVl27RfOpT
-   1rCWzJE6AoL/QXtpq5xH0625OjM1ckhEwVOGcuWew464Tb2qFAaEp0fAu
-   Po9QiGyHyqKbsJiaRjqMY+zZ8f4chdMFopMun+SBLc2O2Exe4mOH0Napi
-   G9Z614x4FCAyN/X6NeeGiVU0uADNPhIze4ikJMYUc1XJGJDlv/IwNp/45
-   w==;
-X-CSE-ConnectionGUID: GqGyTlMcRaWbty7CgIZb8g==
-X-CSE-MsgGUID: tNixpkxIRPiaGtJqebWgsw==
-X-IronPort-AV: E=McAfee;i="6600,9927,11065"; a="10959868"
+  t=1715062817; x=1746598817;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references;
+  bh=mSaRASfGQY8AR8D1WEG7ksj0ddXO2afJXERqBKb8+K0=;
+  b=Z1SjWqrr1/J7A/7jDUahemLkC4I9IRYgakWRj3bLTmumGcgOPXxyqUEm
+   ey8swK5yIDJhExjxFY69xIJgBl4cijsvn1qz99g++9CJ/R4MXDuDQP9rX
+   wjWAN6Qfla4D0j3l/C48ZwuPBX3mf91D2VPekONMDZ2MY24GVK5OCJnp7
+   vlgKRjUScRtCZ5FYYwyxOgR0zT/btVG0oIunu2PSUZkCULgGOEmGadcid
+   ARBcJPhfiZ6575q/yBEUqJaiWHgyz2SkttoRg7AoSz1PEyybnbsrPFG3L
+   7vneJrELgAyB0BTwtkWMjZBzQJ/GJQ+Gp8G6swqcTVv5oL9SRZsgukV4H
+   A==;
+X-CSE-ConnectionGUID: q2PTg6bUQUeBPeWoVT6rvQ==
+X-CSE-MsgGUID: r2yv5WXYTMO7O++aAdh4xA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11065"; a="10672817"
 X-IronPort-AV: E=Sophos;i="6.07,260,1708416000"; 
-   d="scan'208";a="10959868"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 23:19:07 -0700
-X-CSE-ConnectionGUID: K3mnPjYqRI2ryvq1sHWuxQ==
-X-CSE-MsgGUID: q4DDVl/dRzapz5IkroCiBg==
+   d="scan'208";a="10672817"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 23:20:17 -0700
+X-CSE-ConnectionGUID: mo9MOEQOR7OgE5r5/VzEQg==
+X-CSE-MsgGUID: 03sqDDM8Sde46PMnyPlv4w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,260,1708416000"; 
-   d="scan'208";a="28804352"
+   d="scan'208";a="33081907"
 Received: from yzhao56-desk.sh.intel.com ([10.239.159.62])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 23:19:02 -0700
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 23:20:11 -0700
 From: Yan Zhao <yan.y.zhao@intel.com>
 To: kvm@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
@@ -65,136 +66,75 @@ Cc: iommu@lists.linux.dev,
 	baolu.lu@linux.intel.com,
 	yi.l.liu@intel.com,
 	Yan Zhao <yan.y.zhao@intel.com>
-Subject: [PATCH 0/5] Enforce CPU cache flush for non-coherent device assignment
-Date: Tue,  7 May 2024 14:18:02 +0800
-Message-Id: <20240507061802.20184-1-yan.y.zhao@intel.com>
+Subject: [PATCH 1/5] x86/pat: Let pat_pfn_immune_to_uc_mtrr() check MTRR for untracked PAT range
+Date: Tue,  7 May 2024 14:19:24 +0800
+Message-Id: <20240507061924.20251-1-yan.y.zhao@intel.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20240507061802.20184-1-yan.y.zhao@intel.com>
+References: <20240507061802.20184-1-yan.y.zhao@intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-This is a follow-up series to fix the security risk for non-coherent device
-assignment raised by Jason in [1].
+Let pat_pfn_immune_to_uc_mtrr() check MTRR type for PFNs in untracked PAT
+range.
 
-When IOMMU does not enforce cache coherency, devices are allowed to perform
-non-coherent DMAs (DMAs that lack CPU cache snooping). This scenario poses
-a risk of information leakage when the device is assigned into a VM.
-Specifically, a malicious guest could potentially retrieve stale host data
-through non-coherent DMA reads of physical memory, while data initialized
-by host (e.g., zeros) still resides in the cache.
+pat_pfn_immune_to_uc_mtrr() is used by KVM to distinguish MMIO PFNs and
+give them UC memory type in the EPT page tables.
+When pat_pfn_immune_to_uc_mtrr() identifies a PFN as having a PAT type of
+UC/WC/UC-, it indicates that the PFN should be accessed using an
+uncacheable memory type. Consequently, KVM maps it with UC in the EPT to
+ensure that the guest's memory access is uncacheable.
 
-Furthermore, host kernel (e.g. a ksm thread) might encounter inconsistent
-data between the CPU cache and physical memory (left by a malicious guest)
-after a page is unpinned for DMA but before the page is recycled.
+Internally, pat_pfn_immune_to_uc_mtrr() utilizes lookup_memtype() to
+determine PAT type for a PFN. For a PFN outside untracked PAT range, the
+returned PAT type is either
+- The type set by memtype_reserve()
+  (which, in turn, calls pat_x_mtrr_type() to adjust the requested type to
+   UC- if the requested type is WB but the MTRR type does not match WB),
+- Or UC-, if memtype_reserve() has not yet been invoked for this PFN.
 
-Therefore, a mitigation in VFIO/IOMMUFD is required to flush CPU caches on
-pages involved in non-coherent DMAs prior to or following their mapping or
-unmapping to or from the IOMMU.
+However, lookup_memtype() defaults to returning WB for PFNs within the
+untracked PAT range, regardless of their actual MTRR type. This behavior
+could lead KVM to misclassify the PFN as non-MMIO, permitting cacheable
+guest access. Such access might result in MCE on certain platforms, (e.g.
+clflush on VGA range (0xA0000-0xBFFFF) triggers MCE on some platforms).
 
-The mitigation is not implemented in DMA API layer, so as to avoid slowing
-down the DMA API users. Users of the DMA API are expected to take care of
-CPU cache flushing in one of two ways: (a) by using the DMA API which is
-aware of the non-coherence and does the flushes internally or (b) be aware
-of its flushing needs and handle them on its own if they are overriding the
-platform using no-snoop. A general mitigation in DMA API layer will only
-come when non-coherent DMAs are common, which, however, is not the case
-(now only Intel GPU and some ARM devices).
+Hence, invoke pat_x_mtrr_type() for PFNs within the untracked PAT range so
+as to take MTRR type into account to mitigate potential MCEs.
 
-Also the mitigation is not implemented in IOMMU core for VMs exclusively,
-because it would make a large IOTLB flush range being split due to the
-absence of information regarding to IOVA-PFN relationship in IOMMU core.
+Fixes: b8d7044bcff7 ("x86/mm: add a function to check if a pfn is UC/UC-/WC")
+Cc: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Yan Zhao <yan.y.zhao@intel.com>
+---
+ arch/x86/mm/pat/memtype.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-Given non-coherent devices exist both on x86 and ARM, this series
-introduces an arch helper to flush CPU caches for non-coherent DMAs which
-is available for both VFIO and IOMMUFD, though current only implementation
-for x86 is provided.
-
-
-Series Layout:
-
-Patch 1 first fixes an error in pat_pfn_immune_to_uc_mtrr() which always
-        returns WB for untracked PAT ranges. This error leads to KVM
-        treating all PFNs within these untracked PAT ranges as cacheable
-        memory types, even when a PFN's MTRR type is UC. (An example is for
-        VGA range from 0xa0000-0xbffff).
-        Patch 3 will use pat_pfn_immune_to_uc_mtrr() to determine
-        uncacheable PFNs.
-
-Patch 2 is a side fix in KVM to prevent guest cacheable access to PFNs
-        mapped as UC in host.
-
-Patch 3 introduces and exports an arch helper arch_clean_nonsnoop_dma() to
-        flush CPU cachelines. It takes physical address and size as inputs
-        and provides a implementation for x86.
-        Given that executing CLFLUSH on certain MMIO ranges on x86 can be
-        problematic, potentially causing machine check exceptions on some
-        platforms, while flushing is necessary on some other MMIO ranges
-        (e.g., some MMIO ranges for PMEM), this patch determines
-        cacheability by consulting the PAT (if enabled) or MTRR type (if
-        PAT is disabled). It assesses whether a PFN is considered as
-        uncacheable by the host. For reserved pages or !pfn_valid() PFN,
-        CLFLUSH is avoided if the PFN is recognized as uncacheable on the
-        host.
-
-Patch 4/5 implement a mitigation in vfio/iommufd to flush CPU caches
-         - before a page is accessible to non-coherent DMAs,
-         - after the page is inaccessible to non-coherent DMAs, and right
-           before it's unpinned for DMAs.
-
-
-Performance data:
-
-The overhead of flushing CPU caches is measured below:
-CPU MHz:4494.377, 4 vCPU, 8G guest memory
-Pass-through GPU: 1G aperture
-
-Across each VM boot up and tear down,
-
-IOMMUFD     |     Map        |   Unmap        | Teardown 
-------------|----------------|----------------|-------------
-w/o clflush | 1167M          |   40M          |  201M
-w/  clflush | 2400M (+1233M) |  276M (+236M)  | 1160M (+959M)
-
-Map = total cycles of iommufd_ioas_map() during VM boot up
-Unmap = total cycles of iommufd_ioas_unmap() during VM boot up
-Teardown = total cycles of iommufd_hwpt_paging_destroy() at VM teardown
-
-VFIO        |     Map        |   Unmap        | Teardown 
-------------|----------------|----------------|-------------
-w/o clflush | 3058M          |  379M          |  448M
-w/  clflush | 5664M (+2606M) | 1653M (+1274M) | 1522M (+1074M)
-
-Map = total cycles of vfio_dma_do_map() during VM boot up
-Unmap = total cycles of vfio_dma_do_unmap() during VM boot up
-Teardown = total cycles of vfio_iommu_type1_detach_group() at VM teardown
-
-[1] https://lore.kernel.org/lkml/20240109002220.GA439767@nvidia.com
-
-Yan Zhao (5):
-  x86/pat: Let pat_pfn_immune_to_uc_mtrr() check MTRR for untracked PAT
-    range
-  KVM: x86/mmu: Fine-grained check of whether a invalid & RAM PFN is
-    MMIO
-  x86/mm: Introduce and export interface arch_clean_nonsnoop_dma()
-  vfio/type1: Flush CPU caches on DMA pages in non-coherent domains
-  iommufd: Flush CPU caches on DMA pages in non-coherent domains
-
- arch/x86/include/asm/cacheflush.h       |  3 +
- arch/x86/kvm/mmu/spte.c                 | 14 +++-
- arch/x86/mm/pat/memtype.c               | 12 +++-
- arch/x86/mm/pat/set_memory.c            | 88 +++++++++++++++++++++++++
- drivers/iommu/iommufd/hw_pagetable.c    | 19 +++++-
- drivers/iommu/iommufd/io_pagetable.h    |  5 ++
- drivers/iommu/iommufd/iommufd_private.h |  1 +
- drivers/iommu/iommufd/pages.c           | 44 ++++++++++++-
- drivers/vfio/vfio_iommu_type1.c         | 51 ++++++++++++++
- include/linux/cacheflush.h              |  6 ++
- 10 files changed, 237 insertions(+), 6 deletions(-)
-
-
-base-commit: e67572cd2204894179d89bd7b984072f19313b03
+diff --git a/arch/x86/mm/pat/memtype.c b/arch/x86/mm/pat/memtype.c
+index 36b603d0cdde..e85e8c5737ad 100644
+--- a/arch/x86/mm/pat/memtype.c
++++ b/arch/x86/mm/pat/memtype.c
+@@ -705,7 +705,17 @@ static enum page_cache_mode lookup_memtype(u64 paddr)
+  */
+ bool pat_pfn_immune_to_uc_mtrr(unsigned long pfn)
+ {
+-	enum page_cache_mode cm = lookup_memtype(PFN_PHYS(pfn));
++	u64 paddr = PFN_PHYS(pfn);
++	enum page_cache_mode cm;
++
++	/*
++	 * Check MTRR type for untracked pat range since lookup_memtype() always
++	 * returns WB for this range.
++	 */
++	if (x86_platform.is_untracked_pat_range(paddr, paddr + PAGE_SIZE))
++		cm = pat_x_mtrr_type(paddr, paddr + PAGE_SIZE, _PAGE_CACHE_MODE_WB);
++	else
++		cm = lookup_memtype(paddr);
+ 
+ 	return cm == _PAGE_CACHE_MODE_UC ||
+ 	       cm == _PAGE_CACHE_MODE_UC_MINUS ||
 -- 
 2.17.1
 
