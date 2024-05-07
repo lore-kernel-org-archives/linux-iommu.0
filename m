@@ -1,48 +1,48 @@
 Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 924C0158D83
-	for <iommu@lists.linux.dev>; Tue,  7 May 2024 11:21:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0898C15B979
+	for <iommu@lists.linux.dev>; Tue,  7 May 2024 11:21:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715080878; cv=none; b=IUsNfy7A/IAJAWAHOhpsd+ER90oGq5MAp08rBdxrA5XCxKMId/ozLdMxmlq/erM/Zo/hNHId6ZzzZuRVeJnzaYc0ywrfzF/avfa3aZwfoeawn2J04mLJNYCz0PaPHGci/bwFry2I03nnTgv7qQ+q1Mc2e/scpFA7LkroszK/4Ao=
+	t=1715080881; cv=none; b=V4yg1ckn+QsY1SsTIAGKf58hiw7LJiKFH1sGMfGAhoCmRa8JgidqAztWXBMiriFXxLhgLQG00ds8meXdNOW5n6KSf4LW4l0C4NZi31oVUTaSYKG3LXI3/iRiz6EssDl9V6YsauGigNey6paTl7eJkqL6kjT2JfSYxsTRF2p0P1w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715080878; c=relaxed/simple;
-	bh=OePRKKaLvX5t2WpJwy78xR51eqYohOxFjfCK1TF1x60=;
+	s=arc-20240116; t=1715080881; c=relaxed/simple;
+	bh=oRr6YJO6YzkVYsSaAlJ1Vw+FpsjgZgQfNHdpN/CxiJ0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=FHrdLyzRNYZclZJH+Jr1DWvyQARlbhemwg01oErWFhgFEEfq+wM5QYt8heG0ish/rkB350J6VlYqX3wBShdr/zDkxJVml1XU39CwP0iP+ndboJkgVGlnm0tOiQyrTZ9DsZc2v72MTT78IAChrsF5J8F/y/ytTWkYt+F/z+KGajo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=n3up3yGe; arc=none smtp.client-ip=192.198.163.11
+	 MIME-Version; b=lnNh1eb0iCYVWfu4CVs4v1atOuZl/auT7u4NHCY3/QGnnC3Kx3mGMAFQs6i5bPovEO+zAbzVNPs+x0m/cDZvot/xeL5eeE5cGgDcM0EkvLHD0FGbny3IzQm9J/jNg03JXhmnNCrMUpBk8QOb5IwwZGIbqwwLhcZw5rCmwdOdGiw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WbjKFdRa; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="n3up3yGe"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WbjKFdRa"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715080876; x=1746616876;
+  t=1715080880; x=1746616880;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=OePRKKaLvX5t2WpJwy78xR51eqYohOxFjfCK1TF1x60=;
-  b=n3up3yGezj+1S1G3UbbaX5I/YbeesreRTxwpOfNHyBqTy34TTunRD3fh
-   BRi+tYzRNcuEWmLGSrmkcT+PyYKRLx+oscqJhwMW2tARCscvZI4TVV87V
-   8KV0JZs4AsOMTa3Iov7szx3jrpc9PjE9idxlvmvUgx2hr0j5vE2WBwuqR
-   XXjLB9aLPqC6a3YiMse5bbc7h3Eff/j+eSkEYPgPStdfYZYxQnejs573B
-   Mj+Pla+GBz37DshJK1mwFlzrlywatjwBwxvpERMsKQ8TrMf9F0FVB2zGq
-   vUwuZiV4wOxHUgDQdy9mSaqD0gFENTKdyyysaNQShHQp1PEIbV4O7HvFq
-   A==;
-X-CSE-ConnectionGUID: 7sRnEZpgSOGv8w3w00oW7Q==
-X-CSE-MsgGUID: 4Aj1gSaQTNSVA57r6hqmgA==
-X-IronPort-AV: E=McAfee;i="6600,9927,11065"; a="21472625"
+  bh=oRr6YJO6YzkVYsSaAlJ1Vw+FpsjgZgQfNHdpN/CxiJ0=;
+  b=WbjKFdRau0+V3OzuA5iEx/c14//EcxzG0siSfnyJkiUoyAfgNcG+eGZg
+   lnwsKj/wehZc3Gqc61FM8Y3MJaXSId72iUwWKnd1VtDKy8dAfYODK+Zsu
+   1AoOT0188kFN4stwD4+G0SsEdNGm9BgIIS5fjpNRmu1jeE5B2kyNqdP9G
+   r22R07z4ppQcIRO8RbdaCug3jZzflc3ia9aMVy3NQEAe5pDqZMUK1ZZ6p
+   oOdmV0qGIIrpCBhAZAPWgAK1Yzgxrlv5rUuwUzG7oe9o/GCgx2angl4xg
+   JzXcqyn76ptHDSdVvGIbk14wMBLv3cala1QAPZO7kzOJW7LpL4gh972OB
+   g==;
+X-CSE-ConnectionGUID: HlFAfFcQStWfnbmoWcCMsA==
+X-CSE-MsgGUID: +QN4cobNSk22IOp+OHUNQA==
+X-IronPort-AV: E=McAfee;i="6600,9927,11065"; a="21472660"
 X-IronPort-AV: E=Sophos;i="6.08,261,1712646000"; 
-   d="scan'208";a="21472625"
+   d="scan'208";a="21472660"
 Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2024 04:21:16 -0700
-X-CSE-ConnectionGUID: hBHgRQWqRVeWx8rmmW56lA==
-X-CSE-MsgGUID: saT51NsYQPWQo6QzBJd+MA==
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2024 04:21:19 -0700
+X-CSE-ConnectionGUID: t3M2l3TqT8az4/KxNF4hHA==
+X-CSE-MsgGUID: 5Z4avV/USV+DYiUWPZTT/Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.08,261,1712646000"; 
-   d="scan'208";a="33316318"
+   d="scan'208";a="33316324"
 Received: from newjersey.igk.intel.com ([10.102.20.203])
-  by orviesa004.jf.intel.com with ESMTP; 07 May 2024 04:21:13 -0700
+  by orviesa004.jf.intel.com with ESMTP; 07 May 2024 04:21:17 -0700
 From: Alexander Lobakin <aleksander.lobakin@intel.com>
 To: Christoph Hellwig <hch@lst.de>
 Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
@@ -59,9 +59,9 @@ Cc: Alexander Lobakin <aleksander.lobakin@intel.com>,
 	netdev@vger.kernel.org,
 	iommu@lists.linux.dev,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v6 3/7] iommu/dma: avoid expensive indirect calls for sync operations
-Date: Tue,  7 May 2024 13:20:22 +0200
-Message-ID: <20240507112026.1803778-4-aleksander.lobakin@intel.com>
+Subject: [PATCH v6 4/7] page_pool: make sure frag API fields don't span between cachelines
+Date: Tue,  7 May 2024 13:20:23 +0200
+Message-ID: <20240507112026.1803778-5-aleksander.lobakin@intel.com>
 X-Mailer: git-send-email 2.45.0
 In-Reply-To: <20240507112026.1803778-1-aleksander.lobakin@intel.com>
 References: <20240507112026.1803778-1-aleksander.lobakin@intel.com>
@@ -73,81 +73,80 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-When IOMMU is on, the actual synchronization happens in the same cases
-as with the direct DMA. Advertise %DMA_F_CAN_SKIP_SYNC in IOMMU DMA to
-skip sync ops calls (indirect) for non-SWIOTLB buffers.
+After commit 5027ec19f104 ("net: page_pool: split the page_pool_params
+into fast and slow") that made &page_pool contain only "hot" params at
+the start, cacheline boundary chops frag API fields group in the middle
+again.
+To not bother with this each time fast params get expanded or shrunk,
+let's just align them to `4 * sizeof(long)`, the closest upper pow-2 to
+their actual size (2 longs + 1 int). This ensures 16-byte alignment for
+the 32-bit architectures and 32-byte alignment for the 64-bit ones,
+excluding unnecessary false-sharing.
+::page_state_hold_cnt is used quite intensively on hotpath no matter if
+frag API is used, so move it to the newly created hole in the first
+cacheline.
 
-perf profile before the patch:
-
-    18.53%  [kernel]       [k] gq_rx_skb
-    14.77%  [kernel]       [k] napi_reuse_skb
-     8.95%  [kernel]       [k] skb_release_data
-     5.42%  [kernel]       [k] dev_gro_receive
-     5.37%  [kernel]       [k] memcpy
-<*>  5.26%  [kernel]       [k] iommu_dma_sync_sg_for_cpu
-     4.78%  [kernel]       [k] tcp_gro_receive
-<*>  4.42%  [kernel]       [k] iommu_dma_sync_sg_for_device
-     4.12%  [kernel]       [k] ipv6_gro_receive
-     3.65%  [kernel]       [k] gq_pool_get
-     3.25%  [kernel]       [k] skb_gro_receive
-     2.07%  [kernel]       [k] napi_gro_frags
-     1.98%  [kernel]       [k] tcp6_gro_receive
-     1.27%  [kernel]       [k] gq_rx_prep_buffers
-     1.18%  [kernel]       [k] gq_rx_napi_handler
-     0.99%  [kernel]       [k] csum_partial
-     0.74%  [kernel]       [k] csum_ipv6_magic
-     0.72%  [kernel]       [k] free_pcp_prepare
-     0.60%  [kernel]       [k] __napi_poll
-     0.58%  [kernel]       [k] net_rx_action
-     0.56%  [kernel]       [k] read_tsc
-<*>  0.50%  [kernel]       [k] __x86_indirect_thunk_r11
-     0.45%  [kernel]       [k] memset
-
-After patch, lines with <*> no longer show up, and overall
-cpu usage looks much better (~60% instead of ~72%):
-
-    25.56%  [kernel]       [k] gq_rx_skb
-     9.90%  [kernel]       [k] napi_reuse_skb
-     7.39%  [kernel]       [k] dev_gro_receive
-     6.78%  [kernel]       [k] memcpy
-     6.53%  [kernel]       [k] skb_release_data
-     6.39%  [kernel]       [k] tcp_gro_receive
-     5.71%  [kernel]       [k] ipv6_gro_receive
-     4.35%  [kernel]       [k] napi_gro_frags
-     4.34%  [kernel]       [k] skb_gro_receive
-     3.50%  [kernel]       [k] gq_pool_get
-     3.08%  [kernel]       [k] gq_rx_napi_handler
-     2.35%  [kernel]       [k] tcp6_gro_receive
-     2.06%  [kernel]       [k] gq_rx_prep_buffers
-     1.32%  [kernel]       [k] csum_partial
-     0.93%  [kernel]       [k] csum_ipv6_magic
-     0.65%  [kernel]       [k] net_rx_action
-
-iavf yields +10% of Mpps on Rx. This also unblocks batched allocations
-of XSk buffers when IOMMU is active.
-
-Co-developed-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Acked-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Alexander Lobakin <aleksander.lobakin@intel.com>
 ---
- drivers/iommu/dma-iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ include/net/page_pool/types.h | 12 +++++++++++-
+ net/core/page_pool.c          | 10 ++++++++++
+ 2 files changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index c745196bc150..2a1dbe5867c4 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1723,7 +1723,8 @@ static size_t iommu_dma_max_mapping_size(struct device *dev)
+diff --git a/include/net/page_pool/types.h b/include/net/page_pool/types.h
+index 5e43a08d3231..5460cbab5de0 100644
+--- a/include/net/page_pool/types.h
++++ b/include/net/page_pool/types.h
+@@ -130,12 +130,22 @@ struct page_pool {
+ 	struct page_pool_params_fast p;
+ 
+ 	int cpuid;
++	u32 pages_state_hold_cnt;
+ 	bool has_init_callback;
+ 
++	/* The following block must stay within one cacheline. On 32-bit
++	 * systems, sizeof(long) == sizeof(int), so that the block size is
++	 * ``3 * sizeof(long)``. On 64-bit systems, the actual size is
++	 * ``2 * sizeof(long) + sizeof(int)``. The closest pow-2 to both of
++	 * them is ``4 * sizeof(long)``, so just use that one for simplicity.
++	 * Having it aligned to a cacheline boundary may be excessive and
++	 * doesn't bring any good.
++	 */
++	__cacheline_group_begin(frag) __aligned(4 * sizeof(long));
+ 	long frag_users;
+ 	struct page *frag_page;
+ 	unsigned int frag_offset;
+-	u32 pages_state_hold_cnt;
++	__cacheline_group_end(frag);
+ 
+ 	struct delayed_work release_dw;
+ 	void (*disconnect)(void *pool);
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index dd364d738c00..95eac12e8790 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -172,12 +172,22 @@ static void page_pool_producer_unlock(struct page_pool *pool,
+ 		spin_unlock_bh(&pool->ring.producer_lock);
  }
  
- static const struct dma_map_ops iommu_dma_ops = {
--	.flags			= DMA_F_PCI_P2PDMA_SUPPORTED,
-+	.flags			= DMA_F_PCI_P2PDMA_SUPPORTED |
-+				  DMA_F_CAN_SKIP_SYNC,
- 	.alloc			= iommu_dma_alloc,
- 	.free			= iommu_dma_free,
- 	.alloc_pages		= dma_common_alloc_pages,
++static void page_pool_struct_check(void)
++{
++	CACHELINE_ASSERT_GROUP_MEMBER(struct page_pool, frag, frag_users);
++	CACHELINE_ASSERT_GROUP_MEMBER(struct page_pool, frag, frag_page);
++	CACHELINE_ASSERT_GROUP_MEMBER(struct page_pool, frag, frag_offset);
++	CACHELINE_ASSERT_GROUP_SIZE(struct page_pool, frag, 4 * sizeof(long));
++}
++
+ static int page_pool_init(struct page_pool *pool,
+ 			  const struct page_pool_params *params,
+ 			  int cpuid)
+ {
+ 	unsigned int ring_qsize = 1024; /* Default */
+ 
++	page_pool_struct_check();
++
+ 	memcpy(&pool->p, &params->fast, sizeof(pool->p));
+ 	memcpy(&pool->slow, &params->slow, sizeof(pool->slow));
+ 
 -- 
 2.45.0
 
