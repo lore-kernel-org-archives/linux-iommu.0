@@ -1,212 +1,230 @@
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0299156258
-	for <iommu@lists.linux.dev>; Mon,  6 May 2024 20:16:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C67D3A947
+	for <iommu@lists.linux.dev>; Tue,  7 May 2024 02:22:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715026620; cv=none; b=aG/TujrFStfWBkvrocpG2+VDVpVGgAhr+JRIt5PHkFa8fO5q/64fpQx0eTOzuCYYjIyquq+4RCusI4NHW/WiW4i8mgri9e/wqeyxXIEjrPJjr9NQ1xRwUDd6JTvwUohnCCqxX6Ao7SWYCNMhGl1zr88649MDq2pgGYtVfnNCR7g=
+	t=1715048541; cv=none; b=HQGs1sOOp/V6K05BIMpwk1SAPwdskfRjqRKj6Ra12P1d3xU0kWJOCSzCKk/8xQPpjTcnoA/0BY+PaKxVfpFTDQuYYJFBLtdY7eaJ61kDlpvl3V4GqFbHefb1AwrK9XuAOfJcXuuqLSOnhLgebdmXom/XedxRfaaoSal5P5rOops=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715026620; c=relaxed/simple;
-	bh=O4m3D6QJkpCyIotiPkNx41gI4the4mNBM6wP0C8Edm8=;
+	s=arc-20240116; t=1715048541; c=relaxed/simple;
+	bh=ddp4BlwG51OZx+toxw8NcKacv9yA9LPxltusnBVPZBI=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CEWIKIoZdJmuf6FvS2SyW0OB314678loPItqXcKjo5JAKirNzeg2e1yCFchiYsBjnC3HUnj1RH1AL4UTHbIbgzOkMoM+/Nsi2wLOdwHm/ObfTxCAFBSkjeEAI/HV7KzL7p+EGQMvsbbFVrK2FIvE21oJDmAlQFg0zN9sTOnC/Y4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com; spf=pass smtp.mailfrom=google.com; dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b=t5bWwGTJ; arc=none smtp.client-ip=209.85.219.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=google.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=google.com
+	 To:Cc:Content-Type; b=pv4PyDUAqnieqlaj3y58RuyiAQmzm/NoMI1O4GR0sWxTEGhnGcWO9sFWNUqfvMKlRbOVU4MLdhQgGPqhp83ZBJmQJA3fQPM0Z8Wegkn/cdc3Kr30okamF2Bl+fh3Hew5gJOZ0i77Xd0LkgofiR/y+MaBfa7jXrL3W8xt0XKdkv8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com; spf=pass smtp.mailfrom=rivosinc.com; dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b=wW0+nBpH; arc=none smtp.client-ip=209.85.216.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=rivosinc.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rivosinc.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="t5bWwGTJ"
-Received: by mail-yb1-f169.google.com with SMTP id 3f1490d57ef6-dcd7c526cc0so2809490276.1
-        for <iommu@lists.linux.dev>; Mon, 06 May 2024 13:16:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=rivosinc-com.20230601.gappssmtp.com header.i=@rivosinc-com.20230601.gappssmtp.com header.b="wW0+nBpH"
+Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-2b43490e0e2so1731855a91.2
+        for <iommu@lists.linux.dev>; Mon, 06 May 2024 19:22:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20230601; t=1715026618; x=1715631418; darn=lists.linux.dev;
+        d=rivosinc-com.20230601.gappssmtp.com; s=20230601; t=1715048539; x=1715653339; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=5fr3FvzBZJmUemTYZLBAlTUKyWusYtW7x1D9jX3o6JY=;
-        b=t5bWwGTJ7j554MjxQAetwtjVBdRP2YqkawzFeIyXz+DJm0KA70QfHgB8Mqa5g6mcCT
-         gMSAxHttriMHyVdfW3FNWrpCD0UPhamQl/qGhM1rKH5OS7vyYHk+xY2fDvfFrLrtPyvn
-         0ooDHrNWEH/XjJ5MQBuyeLAhNBrGL6riW6wnXi7DtSgR9L99p1U/w1pdyK6KoV3DsOSk
-         d0fsozoADySoEr6n62QJzi1gD5z2PW8XnEXEkUqUSdPxYR0ubAYYeaxLhMBvwIUAsNWN
-         1CsfDgv7cbEEZ7kau0t9Aj24ye3vJnChXmcOZxyXHwgDg8Dkeh3dbqO6Srwepml3KDll
-         6U5w==
+        bh=VG77bwpMyBsulolMGNrr0vukCDyTTCfbCNIB+dj0SFI=;
+        b=wW0+nBpH2xBd9oKkuDDT4PnQJ4se4nYtPQ517l4leKM0fHw8uFz2X8ALwMTCRO7iPt
+         pOtTyWWcQ6oFQzKTgAE28GBHMJ4L2BXcmqaS5VB3RQzyqoIvea1cpNPINInqjgsJi2zC
+         PMd9xqKLTZdOAB/fq35ugviu8RnCANuY4Vhbak8LCkNc7xXJdI8QQQAHzPf8PY7zhC3g
+         pPQNTqax6c6fmIOhCdKxCVmNBGWJiNe1ACXbdo2uh7AMeWFPh+rwmhC97gbQFPvpwiJw
+         utmR01xJPfjn7HIXWOGahC2B/nFGc19ffU6aPwmGD9+k35Kaa51UrqBFhPBy6xxiEVVW
+         JPjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715026618; x=1715631418;
+        d=1e100.net; s=20230601; t=1715048539; x=1715653339;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=5fr3FvzBZJmUemTYZLBAlTUKyWusYtW7x1D9jX3o6JY=;
-        b=v0SizOgFHofkATffBpZhMNeBvkims+UGozNtZpMgg3UUIIx4PHlW7Q0QaALSe6HZJS
-         huqrO9jxcTyORVrFTas4eGAKGD93Hp3JTnQseGlW/C0wXo2q7OL4LrhN3Cqec74jl4e7
-         ZTPHYxrv/K5ws4c7X4vDp/FENu1060crTOBEZpXWzHwkDcggVenLqE6G00q1o+lFh5Jx
-         2nI85nN24GbP16ejJc7Mlxr7nC4DcHjJuAWcp1qhOmNWGCYS0bY59snfVR2CCFREfnAM
-         kfJ4O/5K+o7e86Xar3IWj3Zet1/R7UCmxuejlo6eODHeA0JumUGzoj/1sEhNWyOIKrJj
-         YdzQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUp5EomZrIURu0FAs85SKe9Sf6ou1kat0nWiwLp/MhnFwkRyEu/1lbqbhXdfNolXQzTyiEo8a+8SDMFXsU+sRvstY72sEs=
-X-Gm-Message-State: AOJu0YyOlMCvEtLOx48dDwCcZCWt2S+kq+bb8LXE6NgPNk7CXQfsICkC
-	07gViVPjWIqOok/4l8xxo4JvhLeu/twEX7h9A/nUu7mLXwBMVribTdrcLmWX6r79W1x1mWO8hnI
-	FAycF6uGYZPnUZ7l0kc58/WrE0ry1IXDq+fFu
-X-Google-Smtp-Source: AGHT+IGtWotnhPG27Dr3QshUJCxX3ZQr+AKdbHMvm08l/sNlWD/7aGB+2kgrdBLLg3rPTCwuYNEVPaohe4FIFH8eSqw=
-X-Received: by 2002:a5b:a0d:0:b0:de5:9f30:e40c with SMTP id
- k13-20020a5b0a0d000000b00de59f30e40cmr10782095ybq.4.1715026617408; Mon, 06
- May 2024 13:16:57 -0700 (PDT)
+        bh=VG77bwpMyBsulolMGNrr0vukCDyTTCfbCNIB+dj0SFI=;
+        b=V1FRkxHK2Jy6oseQQgi03XF7sT4wXY75UOkOijrki0U6nff9q3oRZOwPqfwlRnds8g
+         dT5iUkVxdB3hNriSCZphQW4ahAoq8nAM/zZkpgw2kDlMAlepBSnlMMivJW1zAXwYttit
+         ssu3xtwaeWiT5pEzfKkF6OztZnosSHBK5guyOOd1RtC9IRimUs3kDhW9WrrEbza3pxlk
+         qA48uqiOCJ4nxkDFBBCzt9WcQpDGnAqMMcMYc+sMWZuTl6sdzhnXdxFLqWl506BUehF2
+         6TJBVd0nht8eTUUnCjuHi62yotYL+gCgcKr1EpBgBuE4AtHGFSRfG/bJestOgj6mWuzH
+         5Nqw==
+X-Forwarded-Encrypted: i=1; AJvYcCXVVVq9ppmmIX2LtuBlST/zwX5hCuGGLK0Y42dcewI/VBXRTkN0H8+ehD807w0zGgW6IluYxNd70VmAbFlerCaIfk36IoE=
+X-Gm-Message-State: AOJu0YwXJvsa6CLdjpUCeWWlxf8sc0BWJc+QagBUjEBT5soX6iaszmKD
+	/m0Paqw4YUzdapci6JSEysuoDNL6J/1NZYU6o6AGL0kI7BqufJWWCAwGEktQ1qFsLUwl3ytKYGG
+	iWe4sO9x4fB+/vU19Z/fpgob/48HoJihSmb4NMw==
+X-Google-Smtp-Source: AGHT+IHsPu5AukXt1ZMu1k2ndGF0WSfcu6sZVkQkurxCeE8wBMbBgaMnamrYyYvJgB7dN4Uob8QSF+mqBfHri0qP9E4=
+X-Received: by 2002:a17:90b:34d:b0:2ae:d03b:9594 with SMTP id
+ fh13-20020a17090b034d00b002aed03b9594mr9528356pjb.39.1715048539100; Mon, 06
+ May 2024 19:22:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <20240503183527.1548119-1-tjmercier@google.com>
- <20240504101651.7de5106f@meshulam.tesarici.cz> <CABdmKX06v23-w8PQJab8kgfPDRYLU3bQSQ4AsC3zrzxYL955gQ@mail.gmail.com>
- <SN6PR02MB4157EE83332FF789FA6BEEE8D41C2@SN6PR02MB4157.namprd02.prod.outlook.com>
-In-Reply-To: <SN6PR02MB4157EE83332FF789FA6BEEE8D41C2@SN6PR02MB4157.namprd02.prod.outlook.com>
-From: "T.J. Mercier" <tjmercier@google.com>
-Date: Mon, 6 May 2024 13:16:45 -0700
-Message-ID: <CABdmKX2q1rELreKG4oOrKCwKQk9Xswe=gV9254rkHzMNYaD3GQ@mail.gmail.com>
-Subject: Re: [PATCH] swiotlb: iommu/dma: Clarify swiotlb options apply only to dma-direct
-To: Michael Kelley <mhklinux@outlook.com>
-Cc: =?UTF-8?B?UGV0ciBUZXNhxZnDrWs=?= <petr@tesarici.cz>, 
-	Jonathan Corbet <corbet@lwn.net>, Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, 
-	Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@linux.intel.com>, 
-	"x86@kernel.org" <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>, "hch@infradead.org" <hch@infradead.org>, 
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, 
-	"will@kernel.org" <will@kernel.org>, "akpm@linux-foundation.org" <akpm@linux-foundation.org>, 
-	"isaacmanjarres@google.com" <isaacmanjarres@google.com>, "iommu@lists.linux.dev" <iommu@lists.linux.dev>, 
-	"linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <cover.1714494653.git.tjeznach@rivosinc.com> <b83f81c04d1f3885d860b1eec03761fe63a33183.1714494653.git.tjeznach@rivosinc.com>
+ <20240501145621.GD1723318@ziepe.ca> <CAH2o1u63GjMnYrfa8W-c1hdp+TAA0R-FyxXM4dEiFF+KEGWwbA@mail.gmail.com>
+ <20240503181059.GC901876@ziepe.ca> <CAH2o1u7av8zMucB2sKxBOZtd1eqEC4Qmgin=8VQ03pWbQdZUUg@mail.gmail.com>
+ <20240505154639.GD901876@ziepe.ca>
+In-Reply-To: <20240505154639.GD901876@ziepe.ca>
+From: Tomasz Jeznach <tjeznach@rivosinc.com>
+Date: Mon, 6 May 2024 19:22:07 -0700
+Message-ID: <CAH2o1u6g87nt=S7id-O43PubR=GaOLj-vmk7+OdTiY=Kw1BU5A@mail.gmail.com>
+Subject: Re: [PATCH v3 7/7] iommu/riscv: Paging domain support
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+	Robin Murphy <robin.murphy@arm.com>, Paul Walmsley <paul.walmsley@sifive.com>, 
+	Palmer Dabbelt <palmer@dabbelt.com>, Albert Ou <aou@eecs.berkeley.edu>, 
+	Anup Patel <apatel@ventanamicro.com>, Sunil V L <sunilvl@ventanamicro.com>, 
+	Nick Kossifidis <mick@ics.forth.gr>, Sebastien Boeuf <seb@rivosinc.com>, Rob Herring <robh+dt@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, devicetree@vger.kernel.org, 
+	iommu@lists.linux.dev, linux-riscv@lists.infradead.org, 
+	linux-kernel@vger.kernel.org, linux@rivosinc.com
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 6, 2024 at 12:58=E2=80=AFPM Michael Kelley <mhklinux@outlook.co=
-m> wrote:
+On Sun, May 5, 2024 at 8:46=E2=80=AFAM Jason Gunthorpe <jgg@ziepe.ca> wrote=
+:
 >
-> From: T.J. Mercier <tjmercier@google.com> Sent: Monday, May 6, 2024 10:23=
- AM
-> >
-> > On Sat, May 4, 2024 at 1:16=E2=80=AFAM Petr Tesa=C5=99=C3=ADk <petr@tes=
-arici.cz> wrote:
+> On Fri, May 03, 2024 at 12:44:09PM -0700, Tomasz Jeznach wrote:
+> > > For detach I think yes:
 > > >
-> > > On Fri,  3 May 2024 18:35:26 +0000
-> > > "T.J. Mercier" <tjmercier@google.com> wrote:
+> > >    Inv CPU                                   Detach CPU
 > > >
-> > > > IOMMU implementations now sometimes bounce memory through SWIOTLB t=
-o
-> > > > achieve cacheline alignment [1], or prevent DMA attacks by untruste=
-d
-> > > > devices [2]. These uses of SWIOTLB differ conceptually from histori=
-cal
-> > > > use which was a solution to the problem of device addressing
-> > > > limitations that prevent DMA to some portion of system memory
-> > > > (typically beyond 4 GiB). IOMMUs also solve the problem of device
-> > > > addressing limitations and therefore eliminate the need for SWIOTLB=
- for
-> > > > that purpose. However as mentioned, IOMMUs can use SWIOTLB for othe=
-r
-> > > > purposes.
-> > > >
-> > > > The swiotlb kernel command line parameter does not impact IOMMU rel=
-ated
-> > > > use of SWIOTLB, and that is intentional. IOMMUs cannot be forced to=
- use
-> > > > SWIOTLB for all buffers. Update the documentation for the swiotlb
-> > > > parameter to clarify that SWIOTLB use can only be forced in scenari=
-os
-> > > > where an IOMMU is not involved.
-> > > >
-> > > > [1] https://lore.kernel.org/all/20230612153201.554742-16-catalin.ma=
-rinas@arm.com/
-> > > > [2] https://lore.kernel.org/all/20190906061452.30791-1-baolu.lu@lin=
-ux.intel.com/
-> > > > Signed-off-by: T.J. Mercier <tjmercier@google.com>
-> > > > ---
-> > > >  Documentation/admin-guide/kernel-parameters.txt | 1 +
-> > > >  Documentation/arch/x86/x86_64/boot-options.rst  | 2 +-
-> > > >  2 files changed, 2 insertions(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Docu=
-mentation/admin-guide/kernel-parameters.txt
-> > > > index 213d0719e2b7..84c582ac246c 100644
-> > > > --- a/Documentation/admin-guide/kernel-parameters.txt
-> > > > +++ b/Documentation/admin-guide/kernel-parameters.txt
-> > > > @@ -6486,6 +6486,7 @@
-> > > >                                to a power of 2.
-> > > >                       force -- force using of bounce buffers even i=
-f they
-> > > >                                wouldn't be automatically used by th=
-e kernel
-> > > > +                              where a hardware IOMMU is not involv=
-ed
-> > > >                       noforce -- Never use bounce buffers (for debu=
-gging)
-> > > >
-> > > >       switches=3D       [HW,M68k,EARLY]
+> > >   write io_pte                               Update device descriptor
+> > >   rcu_read_lock
+> > >     list_for_each
+> > >       <make invalidation command>            <make description inv cm=
+d>
+> > >       dma_wmb()                              dma_wmb()
+> > >       <doorbell>                             <cmd doorbell>
+> > >   rcu_read_unlock
+> > >                                              list_del_rcu()
+> > >                                              <wipe ASID>
 > > >
-> > > Yes, this part is correct. SWIOTLB cannot be forced if there is an IO=
-MMU.
+> > > In this case I think we never miss an invalidation, the list_del is
+> > > always after the HW has been fully fenced, so I don't think we can
+> > > have any issue. Maybe a suprious invalidation if the ASID gets
+> > > re-used, but who cares.
 > > >
-> > > > diff --git a/Documentation/arch/x86/x86_64/boot-options.rst b/Docum=
-entation/arch/x86/x86_64/boot-options.rst
-> > > > index 137432d34109..066b4bc81583 100644
-> > > > --- a/Documentation/arch/x86/x86_64/boot-options.rst
-> > > > +++ b/Documentation/arch/x86/x86_64/boot-options.rst
-> > > > @@ -285,7 +285,7 @@ iommu options only relevant to the AMD GART har=
-dware IOMMU:
-> > > >        Always panic when IOMMU overflows.
-> > > >
-> > > >  iommu options only relevant to the software bounce buffering (SWIO=
-TLB) IOMMU
-> > > > -implementation:
-> > > > +implementation where a hardware IOMMU is not involved:
-> > > >
-> > > >      swiotlb=3D<slots>[,force,noforce]
-> > > >        <slots>
+> > > Attach is different..
 > > >
-> > > But this part needs some improvement. The "swiotlb" option is not
-> > > entirely ignored if there is a hardware IOMMU. For example, the size =
-of
-> > > the SWIOTLB can be adjusted using "swiotlb=3D<slots>", and since SWIO=
-TLB
-> > > can be used by IOMMUs for other purposes (as you correctly note in th=
+> > >    Inv CPU                                   Attach CPU
+> > >
+> > >   write io_pte
+> > >   rcu_read_lock
+> > >     list_for_each // empty
+> > >                                              list_add_rcu()
+> > >                                              Update device descriptor
+> > >                                              <make description inv cm=
+d>
+> > >                                              dma_wmb()
+> > >                                              <cmd doorbell>
+> > >   rcu_read_unlock
+> > >
+> > > As above shows we can "miss" an invalidation. The issue is narrow, th=
 e
-> > > commit message), this setting is relevant even where a hardware IOMMU
-> > > is involved.
+> > > io_pte could still be sitting in write buffers in "Inv CPU" and not
+> > > yet globally visiable. "Attach CPU" could get the device descriptor
+> > > installed in the IOMMU and the IOMMU could walk an io_pte that is in
+> > > the old state. Effectively this is because there is no release/acquir=
+e
+> > > barrier passing the io_pte store from the Inv CPU to the Attach CPU t=
+o the
+> > > IOMMU.
 > > >
-> > > Petr T
+> > > It seems like it should be solvable somehow:
+> > >  1) Inv CPU releases all the io ptes
+> > >  2) Attach CPU acquires the io ptes before updating the DDT
+> > >  3) Inv CPU acquires the RCU list in such a way that either attach
+> > >     CPU will acquire the io_pte or inv CPU will acquire the RCU list.
+> > >  4) Either invalidation works or we release the new iopte to the SMMU
+> > >     and don't need it.
+> > >
+> > > But #3 is a really weird statement. smb_mb() on both sides may do the
+> > > job??
+> > >
 > >
-> > Thanks. I think I should also update the commit message:
-> > "The swiotlb=3Dforce kernel command line parameter does not impact IOMM=
-U
-> > related use of SWIOTLB"
-> > and title:
-> > "Clarify swiotlb=3Dforce option applies only to dma-direct"
+> > Actual attach sequence is slightly different.
 > >
-> > As for fixing boot-options.txt, I think it makes the most sense to
-> > expand on just the force option rather than the section summary like
-> > above:
-> >        force
-> >          Force all IO through the software TLB.
-> > +        Hardware IOMMU implementations can use SWIOTLB bounce bufferin=
-g in
-> > +        some circumstances, but they cannot be forced to always use th=
-em, so
-> > +        this option only has an effect when no hardware IOMMU is invol=
-ved.
-> >        noforce
+> >  Inv CPU                            Attach CPU
+> >
+> >  write io_pte
+> >   rcu_read_lock
+> >     list_for_each // empty
+> >                                     list_add_rcu()
+> >                                     IOTLB.INVAL(PSCID)
+> >                                     <make description inv cmd>
+> >                                     dma_wmb()
+> >                                     <cmd doorbell>
+> >  rcu_read_unlock
+> >
+> > I've tried to cover this case with riscv_iommu_iotlb_inval() called
+> > before the attached domain is visible to the device.
 >
-> Note also that the documentation for swiotlb=3D in boot-options.rst is so=
-mewhat
-> out-of-date.  It doesn't have the optional second integer parameter to sp=
-ecify
-> the number of "areas" that have their own lock.  Perhaps that could be fi=
-xed
-> at the same time?
+> That invalidation shouldn't do anything. If this is the first attach
+> of a PSCID then the PSCID had better already be empty, it won't become
+> non-empty until the DDT entry is installed.
 >
-> Michael
+> And if it is the second attach then the Inv CPU is already taking care
+> of things, no need to invalidate at all.
+>
+> Regardless, there is still a theortical race that the IOPTEs haven't
+> been made visible yet because there is still no synchronization with
+> the CPU writing them.
+>
+> So, I don't think this solves any problem. I belive you need the
+> appropriate kind of CPU barrier here instead of an invalidation.
+>
 
-Thanks, I could add this as a second patch.
+Yes. There was a small, but still plausible race w/ IOPTEs visibility
+to the IOMMU.
+For v5 I'm adding two barriers to the inval/detach flow, I believe
+should cover it.
 
-I also noticed that several of the iommu options (soft, allowed,
-nofullflush, panic) are not listed in the set of possible options at
-the top of the IOMMU section. Rebooting is the only other section that
-does that, so I'm wondering if we're better off getting rid of it to
-be like other sections.
+1) In riscv_iommu_iotlb_inval() unconditional dma_wmb() to make any
+pending writes to PTEs visible to the IOMMU device. This should cover
+the case when list_add_rcu() update is not yet visible in the
+_iotlb_inval() sequence, for the first time the domain is attached to
+the IOMMU.
+
+  Inv CPU                                    Attach CPU
+  write io_pte
+  dma_wmb (1)
+  rcu_read_lock
+    list_for_each // empty                   list_add_rcu()
+                                             smp_wmb (2)
+                                             Update device descriptor
+                                             <make description inv cmd>
+                                             // PTEs are visible to the HW =
+(*1)
+                                             dma_wmb()
+                                             <cmd doorbell>
+  rcu_read_unlock
+
+2) In riscv_iommu_bond_link() write memory barrier to ensure list
+update is visible before IOMMU descriptor update. If stale data has
+been fetched by the HW, inval CPU will run iotlb-invalidation
+sequence. There is a possibility that IOMMU will fetch correct PTEs
+and will receive unnecessary IOTLB inval, but I don't think anyone
+would care.
+
+  Inv CPU                                    Attach CPU
+  write io_pte                               list_add_rcu()
+                                             smp_wmb (2)
+                                             Update device descriptor
+                                             <make description inv cmd>
+                                             // HW might fetch stale PTEs
+                                             dma_wmb()
+                                             <cmd doorbell>
+  dma_wmb (1)
+  rcu_read_lock
+    list_for_each // non-empty (*2)
+      <make iotlb inval cmd>
+      dma_wmb()
+      <cmd doorbell>
+  rcu_read_unlock
+
+3) I've also updated riscv_iommu_bond_unlink() to wipe the PSCID cache
+on the last domain unlink from the IOMMU.
+
+Thank you for pointing this out. Let me know if that makes sense.
+
+Best,
+- Tomasz
+
+> Jason
