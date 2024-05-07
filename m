@@ -1,47 +1,47 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAF6C6FB9D
-	for <iommu@lists.linux.dev>; Tue,  7 May 2024 06:21:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5C2C6F086
+	for <iommu@lists.linux.dev>; Tue,  7 May 2024 06:22:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715062888; cv=none; b=g395b7aoIhx7Ij/Ln17NJVj/7LxT9VATfC7XURiW1zCcw5rOSOzw9PInA2ww6xTT2O/kxDVuTd7r6BX2oY7mQhwA2YYxaLb+rFoNAvK1d33S0VEehylwR1W7hY4wY2nVXB4KbvpZsGTt2ZE5Pg4Di1jQnJ/phyHRfT76v47Mbsw=
+	t=1715062942; cv=none; b=eHvA6l4Z18NlVeS6lOecoXaG/CxzbAFWXWb5VPTDSu1BqiJ7K/HbhRloBL23lsul0u19tyXs9OsAfITqPfYkiT+j5wruQh1zi88C6hH8JbdvMJr5XB348rqRJcA9oqY2WEVGI2U1Ao2Jx8JYkmIXfiaf6bN+AbDIZWraS35NILM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715062888; c=relaxed/simple;
-	bh=eqXBY8IV3KlWfbVSlPRhINiga95k0gcj6FAROJ4ib1c=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=X35Q6eVCTpBiNxddBz5jKJHisjh+mjqgU682qnYOeHe39990zkLyhRmGiMgZvGMrZqCgN/1swzyw93S8OUd83AjaWEg1cYlvUNBnhGKKX6FNZiR2HW7/yXf2ieHMB9AZbVBi5+ZEzaQ+hMbkjihUFnvCNdMo5IIDFZCHNdW9A6Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NfEaoMON; arc=none smtp.client-ip=198.175.65.21
+	s=arc-20240116; t=1715062942; c=relaxed/simple;
+	bh=VNRR4fx4YmPYaR7+Cgk91GS1CDvBbw1zKYy24fWdEs4=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References; b=XhtpR4D9urd3dspyIZhkSvUXiBt7I79WZvMj6JMuPjJU8lsF7Be3XVrN/RNDL5cSBE1nnZtjvInBowQ273rTOTn3ceKavcOTFDaPnpF0x/29Y9Bxau/a8GXruxqVq4oQ92uLyCg0VpkIH70x9L4dAsNCZeNkub0f4QOzZVvICZM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L2OxuYyO; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NfEaoMON"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L2OxuYyO"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715062887; x=1746598887;
+  t=1715062941; x=1746598941;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=eqXBY8IV3KlWfbVSlPRhINiga95k0gcj6FAROJ4ib1c=;
-  b=NfEaoMONorl2SLX/A2n++n1pZp93LhiYbwiKzA8lU+Z0wPKy6UOgQ5nL
-   EpYGPrMH8dUqqpt5k5MMqbtlAhKjcsm7Un75/tc2x4WlgSSDDz/1Db4gU
-   HZMH5Y/8vNxrDnpqEwn3N7O7oULrp+z7Ggpimw0Yb9H0rMyhMdHVC+T43
-   pfX8lmLfjQa4hoEe4b4Y80KMtxs/0pxnKB4oA4p1NRuw7UsrkuyzlmS1F
-   UivKR5pEJKCZys5nyezzE9eYVwKyVzMzYVkvd/wjTD2H5His8IWbz/KRZ
-   zWEPisxuBdUe5rZdIreIC4w40/EnckyYGTk08XWR4lIzpVy/HpkumS2d6
-   w==;
-X-CSE-ConnectionGUID: efbvH2BiRbqwW2xMrO35Rg==
-X-CSE-MsgGUID: cjCUYbgST2q/yik/ntXFbg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11065"; a="10766339"
+  bh=VNRR4fx4YmPYaR7+Cgk91GS1CDvBbw1zKYy24fWdEs4=;
+  b=L2OxuYyOcXaTDiFSUuSrWQZKDK4V/MTu/GYdJKsDexcTodtStF8f4YAj
+   QWk+X9EZeFvXbYS5bq7/3FGRjr5XVYGppUjoEGcU8HPKYl0AL86TX8qgj
+   LFRjKnjJ0KNsM55cU8vJr6c61UrrGwwoQeIvvrSVLdIsSyblyUmT3G66i
+   4cOlB3nztdc71QuKL/owitZmkl2gm0azdr84yWr0sCXDh4/U6ECt1Bhlc
+   6RNxmXnQqHkeMFMnNYjJLyj7pNVdKhoiqczG4I2VPtQkox4kTMRW81aJb
+   8iBZILaUd+deC9BDFDJUXN4QVFRgJGYcSnpfardE+Fis3C295K5yy1phR
+   Q==;
+X-CSE-ConnectionGUID: tO5798IkRiOzIhI2nZzG9g==
+X-CSE-MsgGUID: lPdAK+lOTQmq5pFf3Sr7mw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11065"; a="11376149"
 X-IronPort-AV: E=Sophos;i="6.07,260,1708416000"; 
-   d="scan'208";a="10766339"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 23:21:27 -0700
-X-CSE-ConnectionGUID: emaow2PKROCtfMXVpYkOpg==
-X-CSE-MsgGUID: kqG27CMdQ2iU743KBOFTBw==
+   d="scan'208";a="11376149"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 23:22:19 -0700
+X-CSE-ConnectionGUID: vZ4DaZevSs2y/SHiQir9dA==
+X-CSE-MsgGUID: 3vFs5M/fS6yR8m5yKpRQbA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.07,260,1708416000"; 
-   d="scan'208";a="59261388"
+   d="scan'208";a="28930445"
 Received: from yzhao56-desk.sh.intel.com ([10.239.159.62])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 23:21:21 -0700
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 23:22:14 -0700
 From: Yan Zhao <yan.y.zhao@intel.com>
 To: kvm@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
@@ -66,9 +66,9 @@ Cc: iommu@lists.linux.dev,
 	baolu.lu@linux.intel.com,
 	yi.l.liu@intel.com,
 	Yan Zhao <yan.y.zhao@intel.com>
-Subject: [PATCH 3/5] x86/mm: Introduce and export interface arch_clean_nonsnoop_dma()
-Date: Tue,  7 May 2024 14:20:44 +0800
-Message-Id: <20240507062044.20399-1-yan.y.zhao@intel.com>
+Subject: [PATCH 4/5] vfio/type1: Flush CPU caches on DMA pages in non-coherent domains
+Date: Tue,  7 May 2024 14:21:38 +0800
+Message-Id: <20240507062138.20465-1-yan.y.zhao@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20240507061802.20184-1-yan.y.zhao@intel.com>
 References: <20240507061802.20184-1-yan.y.zhao@intel.com>
@@ -78,185 +78,214 @@ List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 
-Introduce and export interface arch_clean_nonsnoop_dma() to flush CPU
-caches for memory involved in non-coherent DMAs (DMAs that lack CPU cache
-snooping).
+Flush CPU cache on DMA pages before mapping them into the first
+non-coherent domain (domain that does not enforce cache coherency, i.e. CPU
+caches are not force-snooped) and after unmapping them from the last
+domain.
 
-When IOMMU does not enforce cache coherency, devices are allowed to perform
-non-coherent DMAs. This scenario poses a risk of information leakage when
-the device is assigned into a VM. Specifically, a malicious guest could
-potentially retrieve stale host data through non-coherent DMA reads to
-physical memory, with data initialized by host (e.g., zeros) still residing
-in the cache.
+Devices attached to non-coherent domains can execute non-coherent DMAs
+(DMAs that lack CPU cache snooping) to access physical memory with CPU
+caches bypassed.
 
-Additionally, host kernel (e.g. by a ksm kthread) is possible to read
-inconsistent data from CPU cache/memory (left by a malicious guest) after
-a page is unpinned for non-coherent DMA but before it's freed.
+Such a scenario could be exploited by a malicious guest, allowing them to
+access stale host data in memory rather than the data initialized by the
+host (e.g., zeros) in the cache, thus posing a risk of information leakage
+attack.
 
-Therefore, VFIO/IOMMUFD must initiate a CPU cache flush for pages involved
-in non-coherent DMAs prior to or following their mapping or unmapping to or
-from the IOMMU.
+Furthermore, the host kernel (e.g. a ksm thread) might encounter
+inconsistent data between the CPU cache and memory (left by a malicious
+guest) after a page is unpinned for DMA but before it's recycled.
 
-Introduce and export an interface accepting a contiguous physical address
-range as input to help flush CPU caches in architecture specific way for
-VFIO/IOMMUFD. (Currently, x86 only).
+Therefore, it is required to flush the CPU cache before a page is
+accessible to non-coherent DMAs and after the page is inaccessible to
+non-coherent DMAs.
 
-Given CLFLUSH on MMIOs in x86 is generally undesired and sometimes will
-cause MCE on certain platforms (e.g. executing CLFLUSH on VGA ranges
-0xA0000-0xBFFFF causes MCE on some platforms). Meanwhile, some MMIOs are
-cacheable and demands CLFLUSH (e.g. certain MMIOs for PMEM). Hence, a
-method of checking host PAT/MTRR for uncacheable memory is adopted.
+However, the CPU cache is not flushed immediately when the page is unmapped
+from the last non-coherent domain. Instead, the flushing is performed
+lazily, right before the page is unpinned.
+Take the following example to illustrate the process. The CPU cache is
+flushed right before step 2 and step 5.
+1. A page is mapped into a coherent domain.
+2. The page is mapped into a non-coherent domain.
+3. The page is unmapped from the non-coherent domain e.g.due to hot-unplug.
+4. The page is unmapped from the coherent domain.
+5. The page is unpinned.
 
-This implementation always performs CLFLUSH on "pfn_valid() && !reserved"
-pages (since they are not possible to be MMIOs).
-For the reserved or !pfn_valid() cases, check host PAT/MTRR to bypass
-uncacheable physical ranges in host and do CFLUSH on the rest cacheable
-ranges.
+Reasons for adopting this lazily flushing design include:
+- There're several unmap paths and only one unpin path. Lazily flush before
+  unpin wipes out the inconsistency between cache and physical memory
+  before a page is globally visible and produces code that is simpler, more
+  maintainable and easier to backport.
+- Avoid dividing a large unmap range into several smaller ones or
+  allocating additional memory to hold IOVA to HPA relationship.
 
+Reported-by: Jason Gunthorpe <jgg@nvidia.com>
+Closes: https://lore.kernel.org/lkml/20240109002220.GA439767@nvidia.com
+Fixes: 73fa0d10d077 ("vfio: Type1 IOMMU implementation")
 Cc: Alex Williamson <alex.williamson@redhat.com>
 Cc: Jason Gunthorpe <jgg@nvidia.com>
 Cc: Kevin Tian <kevin.tian@intel.com>
-Suggested-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Yan Zhao <yan.y.zhao@intel.com>
 ---
- arch/x86/include/asm/cacheflush.h |  3 ++
- arch/x86/mm/pat/set_memory.c      | 88 +++++++++++++++++++++++++++++++
- include/linux/cacheflush.h        |  6 +++
- 3 files changed, 97 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 51 +++++++++++++++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
-diff --git a/arch/x86/include/asm/cacheflush.h b/arch/x86/include/asm/cacheflush.h
-index b192d917a6d0..b63607994285 100644
---- a/arch/x86/include/asm/cacheflush.h
-+++ b/arch/x86/include/asm/cacheflush.h
-@@ -10,4 +10,7 @@
+diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+index b5c15fe8f9fc..ce873f4220bf 100644
+--- a/drivers/vfio/vfio_iommu_type1.c
++++ b/drivers/vfio/vfio_iommu_type1.c
+@@ -74,6 +74,7 @@ struct vfio_iommu {
+ 	bool			v2;
+ 	bool			nesting;
+ 	bool			dirty_page_tracking;
++	bool			has_noncoherent_domain;
+ 	struct list_head	emulated_iommu_groups;
+ };
  
- void clflush_cache_range(void *addr, unsigned int size);
+@@ -99,6 +100,7 @@ struct vfio_dma {
+ 	unsigned long		*bitmap;
+ 	struct mm_struct	*mm;
+ 	size_t			locked_vm;
++	bool			cache_flush_required; /* For noncoherent domain */
+ };
  
-+void arch_clean_nonsnoop_dma(phys_addr_t phys, size_t length);
-+#define arch_clean_nonsnoop_dma arch_clean_nonsnoop_dma
+ struct vfio_batch {
+@@ -716,6 +718,9 @@ static long vfio_unpin_pages_remote(struct vfio_dma *dma, dma_addr_t iova,
+ 	long unlocked = 0, locked = 0;
+ 	long i;
+ 
++	if (dma->cache_flush_required)
++		arch_clean_nonsnoop_dma(pfn << PAGE_SHIFT, npage << PAGE_SHIFT);
 +
- #endif /* _ASM_X86_CACHEFLUSH_H */
-diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-index 80c9037ffadf..7ff08ad20369 100644
---- a/arch/x86/mm/pat/set_memory.c
-+++ b/arch/x86/mm/pat/set_memory.c
-@@ -34,6 +34,7 @@
- #include <asm/memtype.h>
- #include <asm/hyperv-tlfs.h>
- #include <asm/mshyperv.h>
-+#include <asm/mtrr.h>
+ 	for (i = 0; i < npage; i++, iova += PAGE_SIZE) {
+ 		if (put_pfn(pfn++, dma->prot)) {
+ 			unlocked++;
+@@ -1099,6 +1104,8 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+ 					    &iotlb_gather);
+ 	}
  
- #include "../mm_internal.h"
++	dma->cache_flush_required = false;
++
+ 	if (do_accounting) {
+ 		vfio_lock_acct(dma, -unlocked, true);
+ 		return 0;
+@@ -1120,6 +1127,21 @@ static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma *dma)
+ 	iommu->dma_avail++;
+ }
  
-@@ -349,6 +350,93 @@ void arch_invalidate_pmem(void *addr, size_t size)
- EXPORT_SYMBOL_GPL(arch_invalidate_pmem);
- #endif
- 
-+/*
-+ * Flush pfn_valid() and !PageReserved() page
-+ */
-+static void clflush_page(struct page *page)
++static void vfio_update_noncoherent_domain_state(struct vfio_iommu *iommu)
 +{
-+	const int size = boot_cpu_data.x86_clflush_size;
-+	unsigned int i;
-+	void *va;
++	struct vfio_domain *domain;
++	bool has_noncoherent = false;
 +
-+	va = kmap_local_page(page);
++	list_for_each_entry(domain, &iommu->domain_list, next) {
++		if (domain->enforce_cache_coherency)
++			continue;
 +
-+	/* CLFLUSHOPT is unordered and requires full memory barrier */
-+	mb();
-+	for (i = 0; i < PAGE_SIZE; i += size)
-+		clflushopt(va + i);
-+	/* CLFLUSHOPT is unordered and requires full memory barrier */
-+	mb();
-+
-+	kunmap_local(va);
-+}
-+
-+/*
-+ * Flush a reserved page or !pfn_valid() PFN.
-+ * Flush is not performed if the PFN is accessed in uncacheable type. i.e.
-+ * - PAT type is UC/UC-/WC when PAT is enabled
-+ * - MTRR type is UC/WC/WT/WP when PAT is not enabled.
-+ *   (no need to do CLFLUSH though WT/WP is cacheable).
-+ */
-+static void clflush_reserved_or_invalid_pfn(unsigned long pfn)
-+{
-+	const int size = boot_cpu_data.x86_clflush_size;
-+	unsigned int i;
-+	void *va;
-+
-+	if (!pat_enabled()) {
-+		u64 start = PFN_PHYS(pfn), end = start + PAGE_SIZE;
-+		u8 mtrr_type, uniform;
-+
-+		mtrr_type = mtrr_type_lookup(start, end, &uniform);
-+		if (mtrr_type != MTRR_TYPE_WRBACK)
-+			return;
-+	} else if (pat_pfn_immune_to_uc_mtrr(pfn)) {
-+		return;
++		has_noncoherent = true;
++		break;
 +	}
-+
-+	va = memremap(pfn << PAGE_SHIFT, PAGE_SIZE, MEMREMAP_WB);
-+	if (!va)
-+		return;
-+
-+	/* CLFLUSHOPT is unordered and requires full memory barrier */
-+	mb();
-+	for (i = 0; i < PAGE_SIZE; i += size)
-+		clflushopt(va + i);
-+	/* CLFLUSHOPT is unordered and requires full memory barrier */
-+	mb();
-+
-+	memunmap(va);
++	iommu->has_noncoherent_domain = has_noncoherent;
 +}
 +
-+static inline void clflush_pfn(unsigned long pfn)
-+{
-+	if (pfn_valid(pfn) &&
-+	    (!PageReserved(pfn_to_page(pfn)) || is_zero_pfn(pfn)))
-+		return clflush_page(pfn_to_page(pfn));
-+
-+	clflush_reserved_or_invalid_pfn(pfn);
-+}
-+
-+/**
-+ * arch_clean_nonsnoop_dma - flush a cache range for non-coherent DMAs
-+ *                           (DMAs that lack CPU cache snooping).
-+ * @phys_addr:	physical address start
-+ * @length:	number of bytes to flush
-+ */
-+void arch_clean_nonsnoop_dma(phys_addr_t phys_addr, size_t length)
-+{
-+	unsigned long nrpages, pfn;
-+	unsigned long i;
-+
-+	pfn = PHYS_PFN(phys_addr);
-+	nrpages = PAGE_ALIGN((phys_addr & ~PAGE_MASK) + length) >> PAGE_SHIFT;
-+
-+	for (i = 0; i < nrpages; i++, pfn++)
-+		clflush_pfn(pfn);
-+}
-+EXPORT_SYMBOL_GPL(arch_clean_nonsnoop_dma);
-+
- #ifdef CONFIG_ARCH_HAS_CPU_CACHE_INVALIDATE_MEMREGION
- bool cpu_cache_has_invalidate_memregion(void)
+ static void vfio_update_pgsize_bitmap(struct vfio_iommu *iommu)
  {
-diff --git a/include/linux/cacheflush.h b/include/linux/cacheflush.h
-index 55f297b2c23f..0bfc6551c6d3 100644
---- a/include/linux/cacheflush.h
-+++ b/include/linux/cacheflush.h
-@@ -26,4 +26,10 @@ static inline void flush_icache_pages(struct vm_area_struct *vma,
+ 	struct vfio_domain *domain;
+@@ -1455,6 +1477,12 @@ static int vfio_pin_map_dma(struct vfio_iommu *iommu, struct vfio_dma *dma,
  
- #define flush_icache_page(vma, page)	flush_icache_pages(vma, page, 1)
+ 	vfio_batch_init(&batch);
  
-+#ifndef arch_clean_nonsnoop_dma
-+static inline void arch_clean_nonsnoop_dma(phys_addr_t phys, size_t length)
-+{
-+}
-+#endif
++	/*
++	 * Record necessity to flush CPU cache to make sure CPU cache is flushed
++	 * for both pin & map and unmap & unpin (for unwind) paths.
++	 */
++	dma->cache_flush_required = iommu->has_noncoherent_domain;
 +
- #endif /* _LINUX_CACHEFLUSH_H */
+ 	while (size) {
+ 		/* Pin a contiguous chunk of memory */
+ 		npage = vfio_pin_pages_remote(dma, vaddr + dma->size,
+@@ -1466,6 +1494,10 @@ static int vfio_pin_map_dma(struct vfio_iommu *iommu, struct vfio_dma *dma,
+ 			break;
+ 		}
+ 
++		if (dma->cache_flush_required)
++			arch_clean_nonsnoop_dma(pfn << PAGE_SHIFT,
++						npage << PAGE_SHIFT);
++
+ 		/* Map it! */
+ 		ret = vfio_iommu_map(iommu, iova + dma->size, pfn, npage,
+ 				     dma->prot);
+@@ -1683,9 +1715,14 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 	for (; n; n = rb_next(n)) {
+ 		struct vfio_dma *dma;
+ 		dma_addr_t iova;
++		bool cache_flush_required;
+ 
+ 		dma = rb_entry(n, struct vfio_dma, node);
+ 		iova = dma->iova;
++		cache_flush_required = !domain->enforce_cache_coherency &&
++				       !dma->cache_flush_required;
++		if (cache_flush_required)
++			dma->cache_flush_required = true;
+ 
+ 		while (iova < dma->iova + dma->size) {
+ 			phys_addr_t phys;
+@@ -1737,6 +1774,9 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 				size = npage << PAGE_SHIFT;
+ 			}
+ 
++			if (cache_flush_required)
++				arch_clean_nonsnoop_dma(phys, size);
++
+ 			ret = iommu_map(domain->domain, iova, phys, size,
+ 					dma->prot | IOMMU_CACHE,
+ 					GFP_KERNEL_ACCOUNT);
+@@ -1801,6 +1841,7 @@ static int vfio_iommu_replay(struct vfio_iommu *iommu,
+ 			vfio_unpin_pages_remote(dma, iova, phys >> PAGE_SHIFT,
+ 						size >> PAGE_SHIFT, true);
+ 		}
++		dma->cache_flush_required = false;
+ 	}
+ 
+ 	vfio_batch_fini(&batch);
+@@ -1828,6 +1869,9 @@ static void vfio_test_domain_fgsp(struct vfio_domain *domain, struct list_head *
+ 	if (!pages)
+ 		return;
+ 
++	if (!domain->enforce_cache_coherency)
++		arch_clean_nonsnoop_dma(page_to_phys(pages), PAGE_SIZE * 2);
++
+ 	list_for_each_entry(region, regions, list) {
+ 		start = ALIGN(region->start, PAGE_SIZE * 2);
+ 		if (start >= region->end || (region->end - start < PAGE_SIZE * 2))
+@@ -1847,6 +1891,9 @@ static void vfio_test_domain_fgsp(struct vfio_domain *domain, struct list_head *
+ 		break;
+ 	}
+ 
++	if (!domain->enforce_cache_coherency)
++		arch_clean_nonsnoop_dma(page_to_phys(pages), PAGE_SIZE * 2);
++
+ 	__free_pages(pages, order);
+ }
+ 
+@@ -2308,6 +2355,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+ 
+ 	list_add(&domain->next, &iommu->domain_list);
+ 	vfio_update_pgsize_bitmap(iommu);
++	if (!domain->enforce_cache_coherency)
++		vfio_update_noncoherent_domain_state(iommu);
+ done:
+ 	/* Delete the old one and insert new iova list */
+ 	vfio_iommu_iova_insert_copy(iommu, &iova_copy);
+@@ -2508,6 +2557,8 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
+ 			}
+ 			iommu_domain_free(domain->domain);
+ 			list_del(&domain->next);
++			if (!domain->enforce_cache_coherency)
++				vfio_update_noncoherent_domain_state(iommu);
+ 			kfree(domain);
+ 			vfio_iommu_aper_expand(iommu, &iova_copy);
+ 			vfio_update_pgsize_bitmap(iommu);
 -- 
 2.17.1
 
