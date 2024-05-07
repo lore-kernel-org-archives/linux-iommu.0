@@ -1,48 +1,200 @@
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0E3A6BB20
-	for <iommu@lists.linux.dev>; Tue,  7 May 2024 05:43:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=213.95.11.211
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 167596D1C8
+	for <iommu@lists.linux.dev>; Tue,  7 May 2024 06:19:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715060600; cv=none; b=CqESdhuXJRio0h1pKx0HCNDaE/E0HiYRz4IeRlcR9il67kzvkWouYVfJQl9xri7g9gw6y0qVkUBgdXYoaUeWypvvRkKprw9XAs8HJfdmeDwmxuh7fVa4+4/9WiPWApoonDn9VFHzGz6khJyk4/Se6LDXKaqRk9FVHeiHhHCWQKs=
+	t=1715062755; cv=none; b=CU4bsPOXp7z4EpdwQUaNdXGrj32RHR34H/bxpkFXpu4hTSfJTZ42VzxNg9V9zlHXBaWCFaT+Y/1UOw83701Eljk5u6vMtPxbYvgECYeIY1fkr/JXpekG3FZDyVafuUk8PL6g3TF8jy5SxajO83FG0rBNnT0l5gv75by4QMFJlhg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715060600; c=relaxed/simple;
-	bh=9p/jf+BPfKTICo83+HsbBVs9XzwzG5Us6NdP+0XSQo0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ojiBSV2kcRekkjJa+fexgh75aMABjuQpVBfluT6t0lMYXV9b+teezkAvtg9+cXm1BAyloUdhSHQwmIvpSl3hAxPCPMOyjXeRTFUJESLfwpb4YmlBZ2xeOUGUvviCBQNna5IM4J01COTuaGhX0Q0ON3oaTKLK0SpFWHm3Ij8see0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de; spf=pass smtp.mailfrom=lst.de; arc=none smtp.client-ip=213.95.11.211
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lst.de
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id EBCA5227A87; Tue,  7 May 2024 07:43:14 +0200 (CEST)
-Date: Tue, 7 May 2024 07:43:14 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: "T.J. Mercier" <tjmercier@google.com>
-Cc: Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>, isaacmanjarres@google.com,
-	Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dma-direct: Set SG_DMA_SWIOTLB flag for dma-direct
-Message-ID: <20240507054314.GA31814@lst.de>
-References: <20240503183713.1557480-1-tjmercier@google.com> <20240506052955.GA4923@lst.de> <CABdmKX1XNTtoPTvfsJRobim8pHdDjPsKx=qVovVZDh5GEbKCfQ@mail.gmail.com> <20240506160244.GA16248@lst.de> <CABdmKX1n98+bw+1kewz=wdqq2Nbpaxao_Lx-Gq8oKGNUEP4ytQ@mail.gmail.com> <20240506161906.GA17237@lst.de> <CABdmKX3s_HnxciDA3XGM8Qj0kLY8OWENg+ifexrON4VYVbuLsA@mail.gmail.com>
+	s=arc-20240116; t=1715062755; c=relaxed/simple;
+	bh=iaZ2BMDeNoeIPBrEjGkR8jv5Pwu9igYECttuPc3fJY0=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=j4bgEcn+FzNOasGg3RlVWWqO066wOkutg/GWxIhwfVOQnOZKj1HrpfA4Oc+6HTCKNnk8pTFVHJ3+xDipYYm4IPFjDSYatYKwlvvbu7qVDKS4bd0y8AbRrFDiSnPjHBbtCAvynWrsuWI1XQ/8fxBK0GrJPwLbAwDsYmeSVtkMEOk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Jh+gmYi2; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Jh+gmYi2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1715062754; x=1746598754;
+  h=from:to:cc:subject:date:message-id;
+  bh=iaZ2BMDeNoeIPBrEjGkR8jv5Pwu9igYECttuPc3fJY0=;
+  b=Jh+gmYi2oiBhFGwP8lnfCPCe5+T3LoYqmUou9qdLFy6PchgwcY/TahzE
+   gPRfet3duTJ/FSwT+5z9EIBZ0UkUXaVW6bU4IL4XMk8+QtulzNxhYxWwL
+   YUdQvF+EQTE/VWqrfxoB6V4DnSRQ5MXBiGw2/LTENRUL/iamVl27RfOpT
+   1rCWzJE6AoL/QXtpq5xH0625OjM1ckhEwVOGcuWew464Tb2qFAaEp0fAu
+   Po9QiGyHyqKbsJiaRjqMY+zZ8f4chdMFopMun+SBLc2O2Exe4mOH0Napi
+   G9Z614x4FCAyN/X6NeeGiVU0uADNPhIze4ikJMYUc1XJGJDlv/IwNp/45
+   w==;
+X-CSE-ConnectionGUID: GqGyTlMcRaWbty7CgIZb8g==
+X-CSE-MsgGUID: tNixpkxIRPiaGtJqebWgsw==
+X-IronPort-AV: E=McAfee;i="6600,9927,11065"; a="10959868"
+X-IronPort-AV: E=Sophos;i="6.07,260,1708416000"; 
+   d="scan'208";a="10959868"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 23:19:07 -0700
+X-CSE-ConnectionGUID: K3mnPjYqRI2ryvq1sHWuxQ==
+X-CSE-MsgGUID: q4DDVl/dRzapz5IkroCiBg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.07,260,1708416000"; 
+   d="scan'208";a="28804352"
+Received: from yzhao56-desk.sh.intel.com ([10.239.159.62])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2024 23:19:02 -0700
+From: Yan Zhao <yan.y.zhao@intel.com>
+To: kvm@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	x86@kernel.org,
+	alex.williamson@redhat.com,
+	jgg@nvidia.com,
+	kevin.tian@intel.com
+Cc: iommu@lists.linux.dev,
+	pbonzini@redhat.com,
+	seanjc@google.com,
+	dave.hansen@linux.intel.com,
+	luto@kernel.org,
+	peterz@infradead.org,
+	tglx@linutronix.de,
+	mingo@redhat.com,
+	bp@alien8.de,
+	hpa@zytor.com,
+	corbet@lwn.net,
+	joro@8bytes.org,
+	will@kernel.org,
+	robin.murphy@arm.com,
+	baolu.lu@linux.intel.com,
+	yi.l.liu@intel.com,
+	Yan Zhao <yan.y.zhao@intel.com>
+Subject: [PATCH 0/5] Enforce CPU cache flush for non-coherent device assignment
+Date: Tue,  7 May 2024 14:18:02 +0800
+Message-Id: <20240507061802.20184-1-yan.y.zhao@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABdmKX3s_HnxciDA3XGM8Qj0kLY8OWENg+ifexrON4VYVbuLsA@mail.gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
 
-On Mon, May 06, 2024 at 09:39:53AM -0700, T.J. Mercier wrote:
-> > You should not check, you simply must handle it by doing the proper
-> > DMA API based ownership management.
-> 
-> That doesn't really work for uncached buffers.
+This is a follow-up series to fix the security risk for non-coherent device
+assignment raised by Jason in [1].
 
-What uncached buffers?
+When IOMMU does not enforce cache coherency, devices are allowed to perform
+non-coherent DMAs (DMAs that lack CPU cache snooping). This scenario poses
+a risk of information leakage when the device is assigned into a VM.
+Specifically, a malicious guest could potentially retrieve stale host data
+through non-coherent DMA reads of physical memory, while data initialized
+by host (e.g., zeros) still resides in the cache.
+
+Furthermore, host kernel (e.g. a ksm thread) might encounter inconsistent
+data between the CPU cache and physical memory (left by a malicious guest)
+after a page is unpinned for DMA but before the page is recycled.
+
+Therefore, a mitigation in VFIO/IOMMUFD is required to flush CPU caches on
+pages involved in non-coherent DMAs prior to or following their mapping or
+unmapping to or from the IOMMU.
+
+The mitigation is not implemented in DMA API layer, so as to avoid slowing
+down the DMA API users. Users of the DMA API are expected to take care of
+CPU cache flushing in one of two ways: (a) by using the DMA API which is
+aware of the non-coherence and does the flushes internally or (b) be aware
+of its flushing needs and handle them on its own if they are overriding the
+platform using no-snoop. A general mitigation in DMA API layer will only
+come when non-coherent DMAs are common, which, however, is not the case
+(now only Intel GPU and some ARM devices).
+
+Also the mitigation is not implemented in IOMMU core for VMs exclusively,
+because it would make a large IOTLB flush range being split due to the
+absence of information regarding to IOVA-PFN relationship in IOMMU core.
+
+Given non-coherent devices exist both on x86 and ARM, this series
+introduces an arch helper to flush CPU caches for non-coherent DMAs which
+is available for both VFIO and IOMMUFD, though current only implementation
+for x86 is provided.
+
+
+Series Layout:
+
+Patch 1 first fixes an error in pat_pfn_immune_to_uc_mtrr() which always
+        returns WB for untracked PAT ranges. This error leads to KVM
+        treating all PFNs within these untracked PAT ranges as cacheable
+        memory types, even when a PFN's MTRR type is UC. (An example is for
+        VGA range from 0xa0000-0xbffff).
+        Patch 3 will use pat_pfn_immune_to_uc_mtrr() to determine
+        uncacheable PFNs.
+
+Patch 2 is a side fix in KVM to prevent guest cacheable access to PFNs
+        mapped as UC in host.
+
+Patch 3 introduces and exports an arch helper arch_clean_nonsnoop_dma() to
+        flush CPU cachelines. It takes physical address and size as inputs
+        and provides a implementation for x86.
+        Given that executing CLFLUSH on certain MMIO ranges on x86 can be
+        problematic, potentially causing machine check exceptions on some
+        platforms, while flushing is necessary on some other MMIO ranges
+        (e.g., some MMIO ranges for PMEM), this patch determines
+        cacheability by consulting the PAT (if enabled) or MTRR type (if
+        PAT is disabled). It assesses whether a PFN is considered as
+        uncacheable by the host. For reserved pages or !pfn_valid() PFN,
+        CLFLUSH is avoided if the PFN is recognized as uncacheable on the
+        host.
+
+Patch 4/5 implement a mitigation in vfio/iommufd to flush CPU caches
+         - before a page is accessible to non-coherent DMAs,
+         - after the page is inaccessible to non-coherent DMAs, and right
+           before it's unpinned for DMAs.
+
+
+Performance data:
+
+The overhead of flushing CPU caches is measured below:
+CPU MHz:4494.377, 4 vCPU, 8G guest memory
+Pass-through GPU: 1G aperture
+
+Across each VM boot up and tear down,
+
+IOMMUFD     |     Map        |   Unmap        | Teardown 
+------------|----------------|----------------|-------------
+w/o clflush | 1167M          |   40M          |  201M
+w/  clflush | 2400M (+1233M) |  276M (+236M)  | 1160M (+959M)
+
+Map = total cycles of iommufd_ioas_map() during VM boot up
+Unmap = total cycles of iommufd_ioas_unmap() during VM boot up
+Teardown = total cycles of iommufd_hwpt_paging_destroy() at VM teardown
+
+VFIO        |     Map        |   Unmap        | Teardown 
+------------|----------------|----------------|-------------
+w/o clflush | 3058M          |  379M          |  448M
+w/  clflush | 5664M (+2606M) | 1653M (+1274M) | 1522M (+1074M)
+
+Map = total cycles of vfio_dma_do_map() during VM boot up
+Unmap = total cycles of vfio_dma_do_unmap() during VM boot up
+Teardown = total cycles of vfio_iommu_type1_detach_group() at VM teardown
+
+[1] https://lore.kernel.org/lkml/20240109002220.GA439767@nvidia.com
+
+Yan Zhao (5):
+  x86/pat: Let pat_pfn_immune_to_uc_mtrr() check MTRR for untracked PAT
+    range
+  KVM: x86/mmu: Fine-grained check of whether a invalid & RAM PFN is
+    MMIO
+  x86/mm: Introduce and export interface arch_clean_nonsnoop_dma()
+  vfio/type1: Flush CPU caches on DMA pages in non-coherent domains
+  iommufd: Flush CPU caches on DMA pages in non-coherent domains
+
+ arch/x86/include/asm/cacheflush.h       |  3 +
+ arch/x86/kvm/mmu/spte.c                 | 14 +++-
+ arch/x86/mm/pat/memtype.c               | 12 +++-
+ arch/x86/mm/pat/set_memory.c            | 88 +++++++++++++++++++++++++
+ drivers/iommu/iommufd/hw_pagetable.c    | 19 +++++-
+ drivers/iommu/iommufd/io_pagetable.h    |  5 ++
+ drivers/iommu/iommufd/iommufd_private.h |  1 +
+ drivers/iommu/iommufd/pages.c           | 44 ++++++++++++-
+ drivers/vfio/vfio_iommu_type1.c         | 51 ++++++++++++++
+ include/linux/cacheflush.h              |  6 ++
+ 10 files changed, 237 insertions(+), 6 deletions(-)
+
+
+base-commit: e67572cd2204894179d89bd7b984072f19313b03
+-- 
+2.17.1
 
