@@ -1,61 +1,61 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D1C61635B6
-	for <iommu@lists.linux.dev>; Tue,  7 May 2024 15:08:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B4D41635A4
+	for <iommu@lists.linux.dev>; Tue,  7 May 2024 15:15:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715094513; cv=none; b=Re0Ov4wmphHHUGQi+G+et4GWhSmoyRheZL5AWq+Vq2YoJwi4vNmAZvQZXflqBuxvJWkQSAVKPtenJT3F97m8QKQW4UwjT7vEdKqSaW+/XvJ2V6AX+uc1FAyTI0SSslFW4w6ZKrNOhc7aVb3H3PMJf5fS+ZzzpqXYwe/6iHyjm/k=
+	t=1715094920; cv=none; b=I/JSar2Z5PqXCM6zUVBV5tUiKrnrahvLU6JdhRYff2OsCu3L+vw7+wyIZOivXZzUaV9I1zi6E7AZUYUhdzbbEq41LvOMqC7NI7P1pVGZHLFyjxgO/EaW4UHEEuvR7tic38ZGVS8Wh2Qkah0sVys9t/59gvyj69xrlKmF0RjEMgA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715094513; c=relaxed/simple;
-	bh=xHoMxy7vndi4tDKntaT+2miBG1wPVvYn45ngD3ZMnRs=;
+	s=arc-20240116; t=1715094920; c=relaxed/simple;
+	bh=gF84VCMPJTVEggmFhKFaP/dcKdSzxcXmZFhnXWJW44w=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=it3IlZU5REa62OCKSrK/slpgH4LBGgdJRDWYFwc5sCuj0QPWwWb60/HEaxZGYipUABBG3mygdmV2N41WKiqJLts0qOYd4yE9tjHBMe1miWBKuMJJCFfQTeQhQow/g0CwJ2Atfoon3/xg7mktLWKgE2HMwNXuWSZIWWaD4zLDM1g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=cEffmdiU; arc=none smtp.client-ip=209.85.214.172
+	 Content-Type:Content-Disposition:In-Reply-To; b=WYzf45zdc4otoK8LO0DX2ZMNF5oDnIPb8wP2m2A0nY7CCNyq4akO883Z7HNL7mzXmFpb+9NTy8BhZRfnVGBwfc3A0gs6uEB2wRNoJuXnWffaRjmjfOR9Irpx+Pw8BwH4bWcvC5FmFOab+RhsxpRSlQMWLS4CKzWa3rcHqUakh5k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=MjO1LM9s; arc=none smtp.client-ip=209.85.160.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="cEffmdiU"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-1e83a2a4f2cso15924065ad.1
-        for <iommu@lists.linux.dev>; Tue, 07 May 2024 08:08:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="MjO1LM9s"
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-23f02e15fd6so1530651fac.1
+        for <iommu@lists.linux.dev>; Tue, 07 May 2024 08:15:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1715094511; x=1715699311; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1715094917; x=1715699717; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=fND2M9HAUkm4x+oFcQdmy96kdMgurKLsiwDF1oTNZBY=;
-        b=cEffmdiUmWbg5e/O0ZI4TxXl3pyaz0S7wrwXPTUZfklufGvKrKwFWmgiMby2VoFlgo
-         UgDH1+dbX2raH9NzFg6PmvP9NOK6iha4ZNtbHZWguD6aI+fjqWIz7+KJWPAtPit3R/lp
-         ZJNE2l+k7WqdbxSZhJF2U+26cqIC8hDFQH9ST/qx6CCNO2A2nUuFI7KYKu++MxIb4sR7
-         Io/HaulrOmVJTg85aiol74L1lgGdp4or7DhiNUdrCUmpsUA3S1Sn93dwFdIhqpNNwN5e
-         peGoIrQD0VKDCjo4auw5ktFmAG03XzThsfvPgBT3sn7C/HD2tfQVB8m8nODr22jrrKmE
-         rEKg==
+        bh=dkqGl/7x0OwO56SYs+uVQbq7OCSGKYp1K0+HP7Qmbg8=;
+        b=MjO1LM9sYLXjjBF70cT+7P5gkOdi6kRpZb/UqM+SpZ3Swkw+cLaDMA+qxCJiilU39N
+         nqYXHpSdWTb9ghACaY5ro38hXsEqBTUZTHst+/0NyOkZdJ2GfluoID1+v3CQ8q36mvUH
+         mfjXu1TrIeO+/3oW3H7YVbnHxVvqgs2dmVMaCXNdZpyHgSIPbvbNcS6RQQl0ebLxx2sp
+         YC+xkrAYDYH4+0Y8J+A3QGkfhaUxYTe9cK9nDzUu/3LCYuTXsdCKavIBSjPovdVhuwoa
+         6HekKTkh+NesXBo9bTrZr4333Sdx6MXoG9ATVCK35CQ5symW5/HGhJoMoFvSTj/q4Yr+
+         KWag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715094511; x=1715699311;
+        d=1e100.net; s=20230601; t=1715094917; x=1715699717;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=fND2M9HAUkm4x+oFcQdmy96kdMgurKLsiwDF1oTNZBY=;
-        b=uP9vrgjBJXRdPCZG8xhX+6sFhN+qJN10G10AthrX66ULTeVC5tGeVrV2YGd6A05o2j
-         ievVOZNJzrmA8kR4U95m050TXImrevjEizdUxyaiG8JBGx+IHmyqFXACX8r74zoj1twJ
-         hW5eS/05P4LKUM6VPV6hVel1PvSuX+wLqhEyexRYtHUrLrqEZSGUg19AMwJjdVi4Azmb
-         DDNoiHJ9Oy61Y8/c6b1vn5qxQXm/F2d/fQD9DVBJkeR1YpyLknTn4l3S4JHfkSB4a4RQ
-         Y787GW4M0grOCu6dHVf25fliPzcNmpId4lqjG/fhCtiJIo72jCnyLzGttgP2FbyCATkt
-         VBMA==
-X-Forwarded-Encrypted: i=1; AJvYcCWfFq+l9ou2Run5jToW+z5blhhQd5zwtVVRjfqki4q59Op2s1PNaDixfqXFeNRRsxQbNp4Q211QMKN1sLwHSCcO547LwHs=
-X-Gm-Message-State: AOJu0YxjA5tOluBTH+bs2VkQ9csGp5TESaiAGM/wV7q79P4knY6mQViR
-	STiJMZQgF6DUgyB3rdxyIfLLpNJARD3JQMQ5qqn7golDTkIq6OJA6nEWXZYiznU=
-X-Google-Smtp-Source: AGHT+IE99ykRACFWdx0o3pmeRQlEzYnavDZRoKHfVvO4jPQEJsMrakgeX588ukvMpQUEMFItCF1XdA==
-X-Received: by 2002:a17:902:e752:b0:1e5:c0ee:a7f9 with SMTP id p18-20020a170902e75200b001e5c0eea7f9mr15612425plf.14.1715094511569;
-        Tue, 07 May 2024 08:08:31 -0700 (PDT)
+        bh=dkqGl/7x0OwO56SYs+uVQbq7OCSGKYp1K0+HP7Qmbg8=;
+        b=dZ9jWAJ+RKgK64Dvz2LY7YErDW/lKnOk7dVGA1LOomZoNbXaukQZp5lWRoYfB2sr3U
+         HwwOiO/d0W4CnVRzuNF3X+gkMETswCPUOEi0Jc3WiB+QRLWhAgA2DgJJona+wgrlVh9f
+         LXrHDzfSiIi1+QvJcVk4Mm2qbbENxpmmU7ZFnFyFoohrPEIs7vfHwPv/lx9KUYa9LJ5Z
+         h7QhY/GgjAHg0Qq+cGXNRXaUTQ/BDBsitg/OjMFd8CsvlsmNOicU12RzoLtfcn//JnHO
+         DZw8sOa0Xtqf+MJtuSvvdfpJl/Hh93zi4mS/nBF13FNT3L33OFRgf4HQ6dTdkD+7fYW8
+         6kQQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWh+CVPuh+L0Yonjl/P17vGatHpwGfvkEu3ooFUOAaumiA6IuQbsUF1Qp9S9+5oJdCQXBL66TTBdCumtntQeMhKaLLygL8=
+X-Gm-Message-State: AOJu0YyjzERPTlQwAC8MM0mfGG7Nj2n8L1rauRxR1Io1QvpjHhMcfbZx
+	/a1ukEW8tUXzyva/sXjJiFuD/4O6ALVCttajZSghV6j4ZaDfey4KeJ6+pZ6nP1s=
+X-Google-Smtp-Source: AGHT+IGUoxvdjNdzspF19Ce1OuUkdsrFCLLK5IkafH8wCvTsMAF8ekXOGHUiIHhabayOnNY5P/EIZA==
+X-Received: by 2002:a05:6870:d205:b0:23f:ba88:d5ac with SMTP id g5-20020a056870d20500b0023fba88d5acmr5660623oac.53.1715094917705;
+        Tue, 07 May 2024 08:15:17 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id d12-20020a170902654c00b001ed9b384b6fsm6325649pln.23.2024.05.07.08.08.30
+        by smtp.gmail.com with ESMTPSA id pn27-20020a0568704d1b00b002397a883e7csm2552861oab.12.2024.05.07.08.15.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 May 2024 08:08:30 -0700 (PDT)
+        Tue, 07 May 2024 08:15:16 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1s4MQf-0082xt-Nq;
-	Tue, 07 May 2024 12:08:29 -0300
-Date: Tue, 7 May 2024 12:08:29 -0300
+	id 1s4MXE-0083RU-0c;
+	Tue, 07 May 2024 12:15:16 -0300
+Date: Tue, 7 May 2024 12:15:16 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Zong Li <zong.li@sifive.com>
 Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
@@ -63,11 +63,10 @@ Cc: joro@8bytes.org, will@kernel.org, robin.murphy@arm.com,
 	aou@eecs.berkeley.edu, kevin.tian@intel.com,
 	linux-kernel@vger.kernel.org, iommu@lists.linux.dev,
 	linux-riscv@lists.infradead.org
-Subject: Re: [PATCH RFC RESEND 6/6] iommu/riscv: support nested iommu for
- flushing cache
-Message-ID: <20240507150829.GJ901876@ziepe.ca>
+Subject: Re: [PATCH RFC RESEND 3/6] iommu/riscv: support GSCID
+Message-ID: <20240507151516.GK901876@ziepe.ca>
 References: <20240507142600.23844-1-zong.li@sifive.com>
- <20240507142600.23844-7-zong.li@sifive.com>
+ <20240507142600.23844-4-zong.li@sifive.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -76,80 +75,56 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240507142600.23844-7-zong.li@sifive.com>
+In-Reply-To: <20240507142600.23844-4-zong.li@sifive.com>
 
-On Tue, May 07, 2024 at 10:26:00PM +0800, Zong Li wrote:
-> This patch implements cache_invalidate_user operation for the userspace
-> to flush the hardware caches for a nested domain through iommufd.
-> 
-> Signed-off-by: Zong Li <zong.li@sifive.com>
-> ---
->  drivers/iommu/riscv/iommu.c  | 91 ++++++++++++++++++++++++++++++++++++
->  include/uapi/linux/iommufd.h |  9 ++++
->  2 files changed, 100 insertions(+)
-> 
-> diff --git a/drivers/iommu/riscv/iommu.c b/drivers/iommu/riscv/iommu.c
-> index 7eda850df475..4dd58fe2242d 100644
-> --- a/drivers/iommu/riscv/iommu.c
-> +++ b/drivers/iommu/riscv/iommu.c
-> @@ -1522,9 +1522,100 @@ static void riscv_iommu_domain_free_nested(struct iommu_domain *domain)
->  	kfree(riscv_domain);
->  }
+On Tue, May 07, 2024 at 10:25:57PM +0800, Zong Li wrote:
+> @@ -919,29 +924,43 @@ static void riscv_iommu_iotlb_inval(struct riscv_iommu_domain *domain,
+>  	rcu_read_lock();
 >  
-> +static int riscv_iommu_fix_user_cmd(struct riscv_iommu_command *cmd,
-> +				    unsigned int pscid, unsigned int gscid)
-> +{
-> +	u32 opcode = FIELD_GET(RISCV_IOMMU_CMD_OPCODE, cmd->dword0);
-> +
-> +	switch (opcode) {
-> +	case RISCV_IOMMU_CMD_IOTINVAL_OPCODE:
-> +		u32 func = FIELD_GET(RISCV_IOMMU_CMD_FUNC, cmd->dword0);
-> +
-> +		if (func != RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA &&
-> +		    func != RISCV_IOMMU_CMD_IOTINVAL_FUNC_VMA) {
-> +			pr_warn("The IOTINVAL function: 0x%x is not supported\n",
-> +				func);
-> +			return -EOPNOTSUPP;
-> +		}
-> +
-> +		if (func == RISCV_IOMMU_CMD_IOTINVAL_FUNC_GVMA) {
-> +			cmd->dword0 &= ~RISCV_IOMMU_CMD_FUNC;
-> +			cmd->dword0 |= FIELD_PREP(RISCV_IOMMU_CMD_FUNC,
-> +						  RISCV_IOMMU_CMD_IOTINVAL_FUNC_VMA);
-> +		}
-> +
-> +		cmd->dword0 &= ~(RISCV_IOMMU_CMD_IOTINVAL_PSCID |
-> +				 RISCV_IOMMU_CMD_IOTINVAL_GSCID);
-> +		riscv_iommu_cmd_inval_set_pscid(cmd, pscid);
-> +		riscv_iommu_cmd_inval_set_gscid(cmd, gscid);
-> +		break;
-> +	case RISCV_IOMMU_CMD_IODIR_OPCODE:
-> +		/*
-> +		 * Ensure the device ID is right. We expect that VMM has
-> +		 * transferred the device ID to host's from guest's.
-> +		 */
-> +		break;
-> +	default:
-> +		pr_warn("The user command: 0x%x is not supported\n", opcode);
-> +		return -EOPNOTSUPP;
+>  	prev = NULL;
+> -	list_for_each_entry_rcu(bond, &domain->bonds, list) {
+> -		iommu = dev_to_iommu(bond->dev);
+>  
+> -		/*
+> -		 * IOTLB invalidation request can be safely omitted if already sent
+> -		 * to the IOMMU for the same PSCID, and with domain->bonds list
+> -		 * arranged based on the device's IOMMU, it's sufficient to check
+> -		 * last device the invalidation was sent to.
+> -		 */
+> -		if (iommu == prev)
+> -			continue;
+> -
+> -		riscv_iommu_cmd_inval_vma(&cmd);
+> -		riscv_iommu_cmd_inval_set_pscid(&cmd, domain->pscid);
+> -		if (len && len >= RISCV_IOMMU_IOTLB_INVAL_LIMIT) {
+> -			for (iova = start; iova < end; iova += PAGE_SIZE) {
+> -				riscv_iommu_cmd_inval_set_addr(&cmd, iova);
+> +	/*
+> +	 * Host domain needs to flush entries in stage-2 for MSI mapping.
+> +	 * However, device is bound to s1 domain instead of s2 domain.
+> +	 * We need to flush mapping without looping devices of s2 domain
+> +	 */
+> +	if (domain->gscid) {
+> +		riscv_iommu_cmd_inval_gvma(&cmd);
+> +		riscv_iommu_cmd_inval_set_gscid(&cmd, domain->gscid);
+> +		riscv_iommu_cmd_send(iommu, &cmd, 0);
+> +		riscv_iommu_cmd_iofence(&cmd);
+> +		riscv_iommu_cmd_send(iommu, &cmd, RISCV_IOMMU_QUEUE_TIMEOUT);
 
-No userspace triggerable warnings.
+Is iommu null here? Where did it come from?
 
-> +static int riscv_iommu_cache_invalidate_user(struct iommu_domain *domain,
-> +					     struct iommu_user_data_array *array)
-> +{
-> +	struct riscv_iommu_domain *riscv_domain = iommu_domain_to_riscv(domain);
-> +	struct riscv_iommu_device *iommu;
-> +	struct riscv_iommu_bond *bond;
-> +	struct riscv_iommu_command cmd;
-> +	struct iommu_hwpt_riscv_iommu_invalidate inv_info;
-> +	int ret, index;
-> +
-> +	if (!riscv_domain)
-> +		return -EINVAL;
-> +
-> +	/* Assume attached devices in the domain go through the same IOMMU device */
+This looks wrong too. The "bonds" list is sort of misnamed, it is
+really a list of invalidation instructions. If you need a special
+invalidation instruction for this case then you should allocate a
+memory and add it to the bond list when the attach is done.
 
-No, you can't assume that.
+Invalidation should simply iterate over the bond list and do the
+instructions it contains, always.
+
+>  static void riscv_iommu_iodir_update(struct riscv_iommu_device *iommu,
+> -				     struct device *dev, u64 fsc, u64 ta)
+> +				     struct device *dev, u64 fsc, u64 ta, u64 iohgatp)
+
+I think you should make a struct to represent the dc entry.
 
 Jason
