@@ -1,61 +1,61 @@
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5C3AAD51
-	for <iommu@lists.linux.dev>; Wed,  8 May 2024 00:11:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13376372
+	for <iommu@lists.linux.dev>; Wed,  8 May 2024 00:18:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715127086; cv=none; b=k3ttEDoxw7N5dk6dSowAUeocFljhNgyPdBLSILH1VliQf/VQCms09m8MwdKJd0ns5fQRQlw7P2z1FuzNtcK106Ev+Hj6A325tVk1y1dIqc13PVaKb+2+AjBBmFChacpsD+5eSH7OI0vna3AgMywUTDDM6Lk+6QPZ8n8jJzJOYMw=
+	t=1715127524; cv=none; b=gY7NspRif17lqr8+XZbjSfP1qNr7Tw7WB7xClAMoapKCgRRV6KJa3FrE4ZsyTRR8LumMFCj8PY2x+qXql++zl5uKVa59G08ncPYcnobSrh5usam+18GcqDWwm9YSKYJnkSi2YRzdkz3t+n1Efy3vrRjoBcwBAX2Y2LfmUIUTFTk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715127086; c=relaxed/simple;
-	bh=uBM6JM2ZTgWImlBMh9qZnnFVCD7oJnWjagsz3xFxGHc=;
+	s=arc-20240116; t=1715127524; c=relaxed/simple;
+	bh=yYyTvuGPY9Yh5W/zUy0ZLLfIboxNn47n/XUpWdPEdkI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QNcSWRYGWV9X+p0O3jrqlyIicHuAoCxE/tYAKy9BJj0USju233PiJCZ4mkSp/LAw4u/ckIvmXt9MtgTL1GInhOIo3VQPZn9zyYV40eu89BPJamRGWSetplFbZB+AMyY3YO6v70A29tDZlt5fPo6JJHqLFMuTJUuNxZbqFdVt+r0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=VFHJyDWP; arc=none smtp.client-ip=209.85.167.178
+	 Content-Type:Content-Disposition:In-Reply-To; b=hX3MDxURXWMFnlB6hbLiNKrVojxJ4FYv6ozfQGgjOgHjhzzr+URqAL6N3Bmcof0bn9fbcyJ6IzXHqSxvK1NhPmZiolTKHQjZPb9/5DdZ5A9hTd/ZaCfV3bbaqos7DMG8D4dd5zw9EUrcxvA3XUXHz/O5XZQDkr+TsIImvQ/Gy6M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca; spf=pass smtp.mailfrom=ziepe.ca; dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b=Ky5ORiY0; arc=none smtp.client-ip=209.85.222.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ziepe.ca
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="VFHJyDWP"
-Received: by mail-oi1-f178.google.com with SMTP id 5614622812f47-3c97a485733so913795b6e.2
-        for <iommu@lists.linux.dev>; Tue, 07 May 2024 17:11:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="Ky5ORiY0"
+Received: by mail-qk1-f182.google.com with SMTP id af79cd13be357-7928ec5308cso28744185a.1
+        for <iommu@lists.linux.dev>; Tue, 07 May 2024 17:18:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google; t=1715127083; x=1715731883; darn=lists.linux.dev;
+        d=ziepe.ca; s=google; t=1715127522; x=1715732322; darn=lists.linux.dev;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=bjfjkkVg/cpW+PObSNC5kJwblm845FpifEdrDmGUGho=;
-        b=VFHJyDWP4+2+l1NLaYEX57Zn9L7iEjuf1T7tf4U7EAPNYB9RdTs7hz6Ry5+dIr7tko
-         gTL16srihhXtIwtoUTIM65Nauq7ZxR8X9kIY5UksSldq1DTf6iQ0Z77hY4ib/iZtewpl
-         ANtkdfyNjuLzzlrDe+KNJgoKbE41KW+IiivJBTve98Vqfv/efDkkKnhZYJ8p5ABSR+0y
-         +debpNV5l2rmzph3LdVn1pdBuUpCPm+xwSmwTR6QMYAVACz7W9aV7+Y7OeqC17ImMVT8
-         HU6PJHzwc8exWd2CM9Mgm5aqOJOgwU/XS26/nYMeCenc3QGHbQpMmOPcj6PyCul/qO55
-         QfOQ==
+        bh=xz9j1cB4bE9JnQUPVM/3p943nBzNMqY3vx9jMGSHBwA=;
+        b=Ky5ORiY0K9PXqM3wBKjJaI+OQmKGYWlPt3L1QeFvr5FrUa5oDe3KX3W15dMplQK7LP
+         coliArPFFpwg5V+cRvLlMoSEFJ0k3Ns+Os/j7fpZYBohbv1JB1N4AdshWm8lIc0gKsNr
+         k2YQqCpUE7M2lqg+5+hTbtSBxH8PxlJTfXupzC4MDqd1Ioi9WNch7t05CcpsiJx83wDM
+         mO4420E59yvPX3a4cl0qDH4T7vkUmfljylR4WMqLyMtfkKN9zzb+XqnBy03/F0IYQFen
+         dnXw1Vmw6CdHgYiNmICi3Z2Ta6cIAG4QNyvwhq4XsMOCPE2Ze6tUoVMejICqRH86lfd4
+         ettQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715127083; x=1715731883;
+        d=1e100.net; s=20230601; t=1715127522; x=1715732322;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bjfjkkVg/cpW+PObSNC5kJwblm845FpifEdrDmGUGho=;
-        b=OSBZe73VAI986J1z9Mg6AB3hVsD0fOFguGadUP9TQ+IL1duUf5AhH5m5jbWhgdFdM2
-         Pv/cajS/6zGpoC42RrwK1qi9dJBBUGgPA94Xnd+/f3oqeDhwTOH1ZkWnluigfOXOR1GO
-         K5I3YY6cEUX4/ba4UiQ27egGxN8aSb60hmqqKHbL8jVcy22MSUurl9tY6+uxfiWZpRjY
-         iKMPLfV6yLP5mUuyC7yKMRUmqRCl7NHiBsz6E6an+GiJ3Ze2m/grZUttkh76mByLp7xc
-         /IoofeKhjtnbM87lrEA9Q0dMpYZdDWYVEcKH/gfOBtH2lWrFBNbuB/avM5ne/T5vzJq2
-         uIMQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVWdTGu6e7dgJPWOPe2Ot1PFYN5bzX87r00GQpjW64ZJuUwlK64cRvYn37DCOJJLWOqc1bu1uyPu4YdrrkJKOV7FuJFmxA=
-X-Gm-Message-State: AOJu0Yx+G75Oug5AnPHWwsZ/Vl+dcft3QH06xf+eXx1zlabephkeGCe9
-	jyl2EKJzBWnI3qkfK9r27X61JeqOQXnDmjB8JmvF8k9S3A80Xs2hoDDNMwL/c2U=
-X-Google-Smtp-Source: AGHT+IG3+7w7f2p3irDmhGGNwkdvL9xcGar5FA005YCMCjPsSm14lX0tCqyBYbPWhopBlbU40pavfg==
-X-Received: by 2002:a05:6808:30a6:b0:3c9:7717:713a with SMTP id 5614622812f47-3c9852fa4e6mr1310067b6e.38.1715127082991;
-        Tue, 07 May 2024 17:11:22 -0700 (PDT)
+        bh=xz9j1cB4bE9JnQUPVM/3p943nBzNMqY3vx9jMGSHBwA=;
+        b=EWNnGWIgrMOwnHF5f7QXyVcihHv0GHCo8HEDsvqp7d23Hmj0gJhS3Kxgf1a7NEvL/o
+         KqH0aECnM3EzJSBqT4xhDHrOjmfB7i1zGrrTDVb5qTQ+ay6EAxJXHy/tt/58ZHsnk7hx
+         MINQxjfAUB/aUnwnv5Ghhoh46ZIMEs4++zAAvKRqbL6thXOCtiO7gjeDoYq0/lNksD5k
+         r+5eP80JFiVTZ2ypfK2RDayNo5kmV9QYCsHzwBFxJrAL42ZEGKkRCak0th9Za9eYb2pS
+         A18YgU9vwlSV2Djw3zoiw7z/qNYEN/kT/TDYoFxsIfIYocycYmMHhHOKSJniWRfjcDzY
+         ywSA==
+X-Forwarded-Encrypted: i=1; AJvYcCVq+fM4RLZYp4LcDVuHwskXIz2inWkejHxqvSfQGcYOL/gR/UK4WQhgkNzgyosPZW3TOReCp/bnPreWRdCWTLp38VvXLv8=
+X-Gm-Message-State: AOJu0Yx0BsqPe4PdpnT2d3f8w3A/6gwNDeulFqRSJn/rZ8/67I3P7ccH
+	ffPvH9mj3y/N8nvD0CitIME/78wzUHgIUAImcyeKfOpRpTav+AZxHCH/bS+6KKg=
+X-Google-Smtp-Source: AGHT+IH/oKAJDpiDkQ/SfwUCo/HBUUtNt6FLW2j+wSJ+9VeCJKucyFKqJPPS4SU5qDn89BCTBGrk9w==
+X-Received: by 2002:a05:620a:1901:b0:790:ec77:4c1a with SMTP id af79cd13be357-792a64cdb96mr636436685a.39.1715127522026;
+        Tue, 07 May 2024 17:18:42 -0700 (PDT)
 Received: from ziepe.ca (hlfxns017vw-142-68-80-239.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.68.80.239])
-        by smtp.gmail.com with ESMTPSA id f14-20020a0cf7ce000000b006a0e5626f67sm5081832qvo.50.2024.05.07.17.11.22
+        by smtp.gmail.com with ESMTPSA id y7-20020a05620a44c700b007929ca64e0fsm2160454qkp.5.2024.05.07.17.18.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 May 2024 17:11:22 -0700 (PDT)
+        Tue, 07 May 2024 17:18:41 -0700 (PDT)
 Received: from jgg by wakko with local (Exim 4.95)
 	(envelope-from <jgg@ziepe.ca>)
-	id 1s4Uu1-0004QL-RV;
-	Tue, 07 May 2024 21:11:21 -0300
-Date: Tue, 7 May 2024 21:11:21 -0300
+	id 1s4V16-0004sp-PU;
+	Tue, 07 May 2024 21:18:40 -0300
+Date: Tue, 7 May 2024 21:18:40 -0300
 From: Jason Gunthorpe <jgg@ziepe.ca>
 To: Lu Baolu <baolu.lu@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
@@ -66,10 +66,10 @@ Cc: Kevin Tian <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>,
 	Joel Granados <j.granados@samsung.com>, iommu@lists.linux.dev,
 	virtualization@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 5/9] iommufd: Add iommufd fault object
-Message-ID: <20240508001121.GN4718@ziepe.ca>
+Subject: Re: [PATCH v5 6/9] iommufd: Fault-capable hwpt attach/detach/replace
+Message-ID: <20240508001840.GO4718@ziepe.ca>
 References: <20240430145710.68112-1-baolu.lu@linux.intel.com>
- <20240430145710.68112-6-baolu.lu@linux.intel.com>
+ <20240430145710.68112-7-baolu.lu@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
@@ -78,53 +78,38 @@ List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20240430145710.68112-6-baolu.lu@linux.intel.com>
+In-Reply-To: <20240430145710.68112-7-baolu.lu@linux.intel.com>
 
-On Tue, Apr 30, 2024 at 10:57:06PM +0800, Lu Baolu wrote:
-> diff --git a/drivers/iommu/iommu-priv.h b/drivers/iommu/iommu-priv.h
-> index ae65e0b85d69..1a0450a83bd0 100644
-> --- a/drivers/iommu/iommu-priv.h
-> +++ b/drivers/iommu/iommu-priv.h
-> @@ -36,6 +36,10 @@ struct iommu_attach_handle {
->  			struct device	*dev;
->  			refcount_t	users;
->  		};
-> +		/* attach data for IOMMUFD */
-> +		struct {
-> +			void		*idev;
-> +		};
+On Tue, Apr 30, 2024 at 10:57:07PM +0800, Lu Baolu wrote:
+> diff --git a/drivers/iommu/iommufd/fault.c b/drivers/iommu/iommufd/fault.c
+> index 13125c0feecb..6357229bf3b4 100644
+> --- a/drivers/iommu/iommufd/fault.c
+> +++ b/drivers/iommu/iommufd/fault.c
+> @@ -15,6 +15,124 @@
+>  #include "../iommu-priv.h"
+>  #include "iommufd_private.h"
+>  
+> +static int iommufd_fault_iopf_enable(struct iommufd_device *idev)
+> +{
+> +	int ret;
+> +
+> +	if (idev->iopf_enabled)
+> +		return 0;
+> +
+> +	ret = iommu_dev_enable_feature(idev->dev, IOMMU_DEV_FEAT_IOPF);
+> +	if (ret)
+> +		return ret;
+> +
+> +	idev->iopf_enabled = true;
+> +
+> +	return 0;
+> +}
 
-We can use a proper type here, just forward declare it.
+I would greatly prefer we remove this from the drivers :\ I guess it
+is Ok for now
 
-But this sequence in the other patch:
-
-+       ret = iommu_attach_group(hwpt->domain, idev->igroup->group);
-+       if (ret) {
-+               iommufd_fault_iopf_disable(idev);
-+               return ret;
-+       }
-+
-+       handle = iommu_attach_handle_get(idev->igroup->group, IOMMU_NO_PASID, 0);
-+       handle->idev = idev;
-
-Is why I was imagining the caller would allocate, because now we have
-the issue that a fault capable domain was installed into the IOMMU
-before it's handle could be fully setup, so we have a race where a
-fault could come in right between those things. Then what happens?
-I suppose we can retry the fault and by the time it comes back the
-race should resolve. A bit ugly I suppose.
-
-> diff --git a/include/uapi/linux/iommufd.h b/include/uapi/linux/iommufd.h
-> index 83b45dce94a4..1819b28e9e6b 100644
-> --- a/include/uapi/linux/iommufd.h
-> +++ b/include/uapi/linux/iommufd.h
-> @@ -50,6 +50,7 @@ enum {
->  	IOMMUFD_CMD_HWPT_SET_DIRTY_TRACKING,
->  	IOMMUFD_CMD_HWPT_GET_DIRTY_BITMAP,
->  	IOMMUFD_CMD_HWPT_INVALIDATE,
-> +	IOMMUFD_CMD_FAULT_ALLOC,
->  };
-
-I think I'd call this a CMD_FAULT_QUEUE_ALLOC - does that make sense?
+Doesn't this need a counter? We can have many fault capable PASIDs?
+That will get changed in the PASID series?
 
 Jason
+
