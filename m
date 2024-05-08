@@ -1,229 +1,190 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2048.outbound.protection.outlook.com [40.107.236.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB2CD45024;
-	Wed,  8 May 2024 12:05:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715169959; cv=none; b=UtoNHioxFfQko1t0MIcVidCXcjiEhUHdML+01Kpthl0xgVEZam7NhFZowgFh1d5PsLkHS1UF8DWwuLzx/odHiypwhKXF2dp68GnakVp2NJZPIrDNQxcWSz6WNoQ4V9hr1Ybr92+Rxo8Tx+Q1i7AXQZfsdlg3X+th3omSH9o7lic=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715169959; c=relaxed/simple;
-	bh=Nyz1qBX4AhSejr40aGAqB++CiOKmtDB7Y/C9c18/WZ8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=n2og/Fi8kG6iXrU125n9a9LtvM09cyg4znz2MZLBfigUG+Ecwd0uny+kCXcw/97MtdD44/07etLiPq3zQStfHq9rpD7gEjYzTiPrViSs/XRIOYpldnQe7WyWwvkSQDSU6AMZpaKghclu7FoZ5ZcUP4DcpSlpnHpohY48H2OvyAY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h6b9ritU; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FD9881ABF
+	for <iommu@lists.linux.dev>; Wed,  8 May 2024 12:26:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.236.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1715171163; cv=fail; b=gTiaR0NJSLj5l8s/FqEMY63w9C1RJt0+MtTlQLUjBWNTkiPyYqfYUSJeXhHENgpTagVuAg9kAf82l2oKyRysabjHzT/vJtbeNMlGAvF29PmMmg9iX372GMA0H+Nsh60cU/pKZWGy88PyeUe5ZksYVOK19MCK7tXzySnIpr1keA0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1715171163; c=relaxed/simple;
+	bh=aFFRPdxutlh9M5Yoj8cQmhryi0a+k8GDXFDhrTYFXL8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
+	 Content-Disposition:In-Reply-To:MIME-Version; b=dW20bZgS0GH/DFlGULQE+d/5j2PbY0qm8UiOp/dMVD25yXxzVZQ8c5E3IYey8qGjr5x97pGHpU8UZq4hA0fnB0yE21CiV4liWd18TcEwHwVjamYafTwdfJOVGX1wY338eGNtuzrLsFHTNqqMzUnfpWZmFIEVu5GcdcW7U0JwUFc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com; spf=fail smtp.mailfrom=nvidia.com; dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b=ipr35MbN; arc=fail smtp.client-ip=40.107.236.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nvidia.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nvidia.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h6b9ritU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E81CBC113CC;
-	Wed,  8 May 2024 12:05:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1715169958;
-	bh=Nyz1qBX4AhSejr40aGAqB++CiOKmtDB7Y/C9c18/WZ8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=h6b9ritU4vQNxnTR7eE3vrl7XyG3xhiGCQ3mm6aJQRCCFjPFC/Q1hWuJjhy4l+Qax
-	 oR324+ZD/1B55q8u12dgWy3sRKPw84A6m5/lJMNbU/ZfkzUlIfv9F6M4Qsr74SZluv
-	 Ri6pDOnK4BWwAhDMhF58vTUbpuAZdeUXISMowuweeAt6zvNRRwALQPzA5fLGJ57Wbp
-	 2OEXRdD82ue1m5gsxJCTrctUxqpi5AwOZDXrAU1DFHkyJAlciUx03FDgas2YXkWL4U
-	 Ezxdp3UnYRZZhJByl5oD0Rz2BdBs3ecBvSz1FhVaxAQRSNofS2jvXx6H85WK8jvqHo
-	 58Yjy/AMTsjFA==
-Date: Wed, 8 May 2024 21:05:55 +0900
-From: Mark Brown <broonie@kernel.org>
-To: Edward Liaw <edliaw@google.com>
-Cc: shuah@kernel.org, Jaroslav Kysela <perex@perex.cz>,
-	Takashi Iwai <tiwai@suse.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Nhat Pham <nphamcs@gmail.com>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	Christian Brauner <brauner@kernel.org>,
-	Eric Biederman <ebiederm@xmission.com>,
-	Kees Cook <keescook@chromium.org>,
-	OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Darren Hart <dvhart@infradead.org>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	=?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@igalia.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Benjamin Tissoires <bentiss@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
-	Andy Lutomirski <luto@amacapital.net>,
-	Will Drewry <wad@chromium.org>, Marc Zyngier <maz@kernel.org>,
-	Oliver Upton <oliver.upton@linux.dev>,
-	James Morse <james.morse@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Zenghui Yu <yuzenghui@huawei.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Anup Patel <anup@brainfault.org>,
-	Atish Patra <atishp@atishpatra.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Janosch Frank <frankja@linux.ibm.com>,
-	Claudio Imbrenda <imbrenda@linux.ibm.com>,
-	David Hildenbrand <david@redhat.com>,
-	=?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>,
-	Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>,
-	"Serge E. Hallyn" <serge@hallyn.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Seth Forshee <sforshee@kernel.org>,
-	Bongsu Jeon <bongsu.jeon@samsung.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Steffen Klassert <steffen.klassert@secunet.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	Matthieu Baerts <matttbe@kernel.org>,
-	Mat Martineau <martineau@kernel.org>,
-	Geliang Tang <geliang@kernel.org>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Fenghua Yu <fenghua.yu@intel.com>,
-	Reinette Chatre <reinette.chatre@intel.com>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Boqun Feng <boqun.feng@gmail.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Jarkko Sakkinen <jarkko@kernel.org>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Muhammad Usama Anjum <usama.anjum@collabora.com>,
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	kernel-team@android.com, linux-sound@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org,
-	linux-input@vger.kernel.org, iommu@lists.linux.dev,
-	kvmarm@lists.linux.dev, kvm@vger.kernel.org,
-	kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-	linux-security-module@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
-	linux-actions@lists.infradead.org, mptcp@lists.linux.dev,
-	linux-rtc@vger.kernel.org, linux-sgx@vger.kernel.org,
-	bpf@vger.kernel.org, kernel test robot <oliver.sang@intel.com>
-Subject: Re: [PATCH v2 1/5] selftests: Compile kselftest headers with
- -D_GNU_SOURCE
-Message-ID: <Zjtqo6EFyGmSeREQ@finisterre.sirena.org.uk>
-Mail-Followup-To: Edward Liaw <edliaw@google.com>, shuah@kernel.org,
-	Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	Will Deacon <will@kernel.org>, Nhat Pham <nphamcs@gmail.com>,
-	Johannes Weiner <hannes@cmpxchg.org>,
-	Christian Brauner <brauner@kernel.org>,
-	Eric Biederman <ebiederm@xmission.com>,
-	Kees Cook <keescook@chromium.org>,
-	OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
-	Thomas Gleixner <tglx@linutronix.de>,
-	Ingo Molnar <mingo@redhat.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Darren Hart <dvhart@infradead.org>,
-	Davidlohr Bueso <dave@stgolabs.net>,
-	=?iso-8859-1?Q?Andr=E9?= Almeida <andrealmeid@igalia.com>,
-	Jiri Kosina <jikos@kernel.org>,
-	Benjamin Tissoires <bentiss@kernel.org>,
-	Jason Gunthorpe <jgg@ziepe.ca>, Kevin Tian <kevin.tian@intel.com>,
-	Andy Lutomirski <luto@amacapital.net>,
-	Will Drewry <wad@chromium.org>, Marc Zyngier <maz@kernel.org>,
-	Oliver Upton <oliver.upton@linux.dev>,
-	James Morse <james.morse@arm.com>,
-	Suzuki K Poulose <suzuki.poulose@arm.com>,
-	Zenghui Yu <yuzenghui@huawei.com>,
-	Paolo Bonzini <pbonzini@redhat.com>,
-	Sean Christopherson <seanjc@google.com>,
-	Anup Patel <anup@brainfault.org>,
-	Atish Patra <atishp@atishpatra.org>,
-	Paul Walmsley <paul.walmsley@sifive.com>,
-	Palmer Dabbelt <palmer@dabbelt.com>,
-	Albert Ou <aou@eecs.berkeley.edu>,
-	Christian Borntraeger <borntraeger@linux.ibm.com>,
-	Janosch Frank <frankja@linux.ibm.com>,
-	Claudio Imbrenda <imbrenda@linux.ibm.com>,
-	David Hildenbrand <david@redhat.com>,
-	=?iso-8859-1?Q?Micka=EBl_Sala=FCn?= <mic@digikod.net>,
-	Paul Moore <paul@paul-moore.com>, James Morris <jmorris@namei.org>,
-	"Serge E. Hallyn" <serge@hallyn.com>,
-	Andrew Morton <akpm@linux-foundation.org>,
-	Seth Forshee <sforshee@kernel.org>,
-	Bongsu Jeon <bongsu.jeon@samsung.com>,
-	"David S. Miller" <davem@davemloft.net>,
-	Eric Dumazet <edumazet@google.com>,
-	Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-	Steffen Klassert <steffen.klassert@secunet.com>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Andreas =?iso-8859-1?Q?F=E4rber?= <afaerber@suse.de>,
-	Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-	Matthieu Baerts <matttbe@kernel.org>,
-	Mat Martineau <martineau@kernel.org>,
-	Geliang Tang <geliang@kernel.org>,
-	Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-	Fenghua Yu <fenghua.yu@intel.com>,
-	Reinette Chatre <reinette.chatre@intel.com>,
-	Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-	"Paul E. McKenney" <paulmck@kernel.org>,
-	Boqun Feng <boqun.feng@gmail.com>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Jarkko Sakkinen <jarkko@kernel.org>,
-	Dave Hansen <dave.hansen@linux.intel.com>,
-	Muhammad Usama Anjum <usama.anjum@collabora.com>,
-	linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-	kernel-team@android.com, linux-sound@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-mm@kvack.org,
-	linux-input@vger.kernel.org, iommu@lists.linux.dev,
-	kvmarm@lists.linux.dev, kvm@vger.kernel.org,
-	kvm-riscv@lists.infradead.org, linux-riscv@lists.infradead.org,
-	linux-security-module@vger.kernel.org,
-	linux-fsdevel@vger.kernel.org, netdev@vger.kernel.org,
-	linux-actions@lists.infradead.org, mptcp@lists.linux.dev,
-	linux-rtc@vger.kernel.org, linux-sgx@vger.kernel.org,
-	bpf@vger.kernel.org, kernel test robot <oliver.sang@intel.com>
-References: <20240507214254.2787305-1-edliaw@google.com>
- <20240507214254.2787305-2-edliaw@google.com>
+	dkim=pass (2048-bit key) header.d=Nvidia.com header.i=@Nvidia.com header.b="ipr35MbN"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PosogptFVMbj5zVC7rD2bEsDvAks0vuZmy8kAt1H1pcLaNAgdWx17SH2kZZjPH0CSjpfqEzMmUHM4gGpYlq0eW9LX86Ti0A957ailMPMWEIsktdUl2Wlic1o9jcB6vonmBJ7qVY/feOdAKpKrHnTEb/olau8oEVAhGdXBpAQnwUFospeS2dr3OvqusqJEi/tkqLad3YvQqMez+YaecfFoC3Y+7hzEuxXCDN/JiUXMJzeJ3MweSDERx4y/WQOoudsNGQaAu9RoDxaW3bJWUn9AcUryiMIPAu3F25O/q8R2EhMlAUL/iC2nB4Rr4cLdNBoPRcwIuh9U48rqBv6gHiaYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=rBrAQq2YhGdeSx3ntUbXvuBkfxoIZzLkzEzUdcQ8pb0=;
+ b=l44pwTjWN+iqlUVCSNWLEQgvFu5M0SKUhybAhZhoNec06+whcR0MH/k7SXjK43as51UkuK8jvie7wRZq/0FhYDe+YzQgUHw8csI/5BCSdNHHa86a7sOke2Clc2RrIHctZgYmHmSNOsjqZOcmpG6ZRWr1Jkni+MQoCAc2UMvntd6vMPR34leY+/CytZ78K0zbdM/lcJ0FjCtsaLe6B5fCvJyZvt5lyx1L138+ZGRTvCaaw4ySxc+8DN3DPR6KVc2qV5rmlZplkDdM7GcfuS52EA9T/lBqRTSpTSDIR/YsNNNKhY+s8L7tz/3GanjPs2YQTe4eSUXjMVQ2qF96lNLR3A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rBrAQq2YhGdeSx3ntUbXvuBkfxoIZzLkzEzUdcQ8pb0=;
+ b=ipr35MbNJncq/4cEQVNcpCTL/x2dU773X1NHfxsPjJ8cWwBQX3wtlKmZKL+rpDZ3bjXOnz2SJ2n8bm35XUEJJE3UBPC2I4ngCSt2sGvNBCKPamWonLlXfhUwdSAGOu0JlTQeV4HDZ5vWjUKTZYoXNgORRfKt6VNEb35Xe1Fia9uAOXls34NGZZFDFLyQxbDx6ECESg/bwWN8L9LCF/APeHK4uV8sg2nVkrFDg6IeVbTTZn1tvMbds+RnWBd1mt4kc62fpHwPma1rSAoQ3QWAq5LXoaQkmY9L/0/HcEIiUMIPcdICNcdu1mvEhW7akz8xDCGuVmFazg9DGakH2Cp44Q==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com (2603:10b6:5:1c7::26)
+ by PH7PR12MB5688.namprd12.prod.outlook.com (2603:10b6:510:130::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.42; Wed, 8 May
+ 2024 12:25:58 +0000
+Received: from DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e]) by DM6PR12MB3849.namprd12.prod.outlook.com
+ ([fe80::c296:774b:a5fc:965e%3]) with mapi id 15.20.7544.045; Wed, 8 May 2024
+ 12:25:58 +0000
+Date: Wed, 8 May 2024 09:25:56 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Yi Liu <yi.l.liu@intel.com>
+Cc: Baolu Lu <baolu.lu@linux.intel.com>,
+	"Tian, Kevin" <kevin.tian@intel.com>,
+	"joro@8bytes.org" <joro@8bytes.org>,
+	"alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"eric.auger@redhat.com" <eric.auger@redhat.com>,
+	"nicolinc@nvidia.com" <nicolinc@nvidia.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"chao.p.peng@linux.intel.com" <chao.p.peng@linux.intel.com>,
+	"iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+	"Duan, Zhenzhong" <zhenzhong.duan@intel.com>,
+	"Pan, Jacob jun" <jacob.jun.pan@intel.com>
+Subject: Re: [PATCH v2 12/12] iommu/vt-d: Add set_dev_pasid callback for
+ nested domain
+Message-ID: <20240508122556.GF4650@nvidia.com>
+References: <20240412081516.31168-1-yi.l.liu@intel.com>
+ <20240412081516.31168-13-yi.l.liu@intel.com>
+ <BN9PR11MB5276E97AECE1A58D9714B0C38C0F2@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <d466eb97-8c2b-4262-8213-b6a9987f59ea@intel.com>
+ <b4fe7b7c-d988-4c71-a34c-6e3806327b27@linux.intel.com>
+ <20240506133635.GJ3341011@nvidia.com>
+ <14a7b83e-0e5b-4518-a5d5-5f4d48aa6f2b@intel.com>
+ <20240507151847.GQ3341011@nvidia.com>
+ <07e0547d-1ece-4848-8e59-393013b75da8@intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <07e0547d-1ece-4848-8e59-393013b75da8@intel.com>
+X-ClientProxiedBy: BL1PR13CA0376.namprd13.prod.outlook.com
+ (2603:10b6:208:2c0::21) To DM6PR12MB3849.namprd12.prod.outlook.com
+ (2603:10b6:5:1c7::26)
 Precedence: bulk
 X-Mailing-List: iommu@lists.linux.dev
 List-Id: <iommu.lists.linux.dev>
 List-Subscribe: <mailto:iommu+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:iommu+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="fwllAq8yEacRp/F5"
-Content-Disposition: inline
-In-Reply-To: <20240507214254.2787305-2-edliaw@google.com>
-X-Cookie: Accuracy, n.:
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3849:EE_|PH7PR12MB5688:EE_
+X-MS-Office365-Filtering-Correlation-Id: eeada624-36e6-4ecf-3bf4-08dc6f5a03c6
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|7416005|1800799015|366007|376005;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?GL0YMtt4ajNcw+0Dc1Rjt34vcABVLpOb0lczgUi7vw9L5rOLeHUgIbBeBkvI?=
+ =?us-ascii?Q?Y7PAA6g6YThZloezsHsHFEAXthVzywGHYYzHQKA4rX14EWJ1s+r+O6Tu5Shx?=
+ =?us-ascii?Q?ugEUE4qRywJX1F5eSoApbPpPjunMkmFWB7KluKbqS5kbkApK7D9RRLp0vRN5?=
+ =?us-ascii?Q?6BovRrYEWKkFToMa9/fqQh6zLIsPTFY2wS3QzalAM4zGl/V6AKYXeoHdjUUv?=
+ =?us-ascii?Q?t3s3w4e2TL4QC4CH0teXkE/D6sHDMJZSpcmgb/W9OZMv5p6IflrsiY2IcwWE?=
+ =?us-ascii?Q?PGm8SfZql/Md6A9k++zNk7aLmpOlc2iXd+0GtZGRhZrgNIQVDb0EUVMNHI3r?=
+ =?us-ascii?Q?WNksiZMxU06Lz5YvPUWEKt63KcTGCcdqALtbSP6zQ5rRUy9xR7RXcvgreWyR?=
+ =?us-ascii?Q?YjMzszKiYN8sJ/FsAnSt3x/G14Um6Z53nvI6duPegup6q5DAVyGpHbp3Aka0?=
+ =?us-ascii?Q?NI7eLRpXMsS23oBkAvDRamtWUKqPZcVFmHSERL1hI1EAylyM2hVQ9oTiK8LN?=
+ =?us-ascii?Q?z2jblMXs4U0UdNLnn9qYOAlEqABYftNG/u/wUqx8DIPGgeVlYP1Be4HC7bAM?=
+ =?us-ascii?Q?ZPF8yl5s14pWdbUZzXyCeDmH+NP64dyV0glNAwD8CBbt/svx1m8XZfC8iTSM?=
+ =?us-ascii?Q?BvHTgNRJaUFYET016XD0Damp9mOXNqM574RLBg3Gv6kztOJ3x4uN5uGiYRFH?=
+ =?us-ascii?Q?1shZa42CeW0qLfx8s8F4r8QXzHkb4B3jYAzvTA0U2QIwO9vURJh5rzPP/6YJ?=
+ =?us-ascii?Q?3IjZGd24SSdfN1HnRtHDqBn8Bv4IruImBePa2PKcIMJznNerM/eRHiHX3BZ3?=
+ =?us-ascii?Q?PPMgpub1sb/tAuNkjx52PH9zXBBJqXUOcPPs58C1+Ks4sPs5WIS77NhXG/6x?=
+ =?us-ascii?Q?exbTp2klVOmDPA4YuUT/FuRnzVAxHKkGIpyzzNota8wrj5brRBCPeNBOKVqd?=
+ =?us-ascii?Q?+x7aAX2lmU+sNBIn8UKttvtJqr3IcNGa0CjpBgA5TyP0DJ7B/KUx9QvBEtHn?=
+ =?us-ascii?Q?ziwW1sHPCNnWR9rJgmFdZDRjn3A3B0+JtS9JLdHG1/EIdyl84rieYVYx9FNY?=
+ =?us-ascii?Q?RB0qMFJAfKWdXjJJN2O4EmHzHLyhafZNXn3BtP89q9+aRlCQ5YuRVJaVEaTb?=
+ =?us-ascii?Q?vAwc4lLhwwDFc2coK9ztW+xi4Kz2BingczV9iXnZPH2Fvi9383Q8jnl8gfXZ?=
+ =?us-ascii?Q?YuaFDafz9Hz++3q38sQd+Ys3ZZ9CJGs95ma+jWdpOuwg/NhCHSYyrYb2Uuyy?=
+ =?us-ascii?Q?BzfMHsANkeUs+oOflxVCt9IdoKHRDQfsbXdcXFHeYQ=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3849.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(7416005)(1800799015)(366007)(376005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?VsyqScP7qaaqLr/J4AA2rQEQa+Vh+/HZUVWuyW7Nbo7FWUam165kyq1Zw5vm?=
+ =?us-ascii?Q?MvaSf9CNoI4IzvUkQ5j6lxrBVRHV1YMfoz+B//lZ8LUJK+eFcE1yABW0a0VJ?=
+ =?us-ascii?Q?jxvsRAmfm5VbrZYiwTWqYqO8EYCkZCTtN3CpJ6tW2MX2pMUqrZx1cYMaFqqc?=
+ =?us-ascii?Q?J0DtNZ7/waPNMfqG4FB6VnUsm56qs8N2aJBEj/PiV5kKsW+H1PKiBDDBJIeZ?=
+ =?us-ascii?Q?KXKGqle9LdinBHsCBo/FfaaGWqSHrdf0nSfgE18BCLsJV0v6hctuCfZUiyQI?=
+ =?us-ascii?Q?Wd4+rF6sVBY7Dnh8joV407EZLo7oE6YU/0NSxAf9q8waty4H6XNUZOI+9m9l?=
+ =?us-ascii?Q?kQU5HFjAt4sq9iBbnjWBSzaG2yDQ1WWAXpBa9EYHjR5nWrTJKtBQ4G+rzZsv?=
+ =?us-ascii?Q?/LnM1Crb3z3BmR8ji8nHz5+Ine+DxqRSRhsUop4PpqeNNSlpb3Nzx4MW/dSL?=
+ =?us-ascii?Q?vCLvIg8E2/6ik7pd2GYn3SaaBOUu3aqgNXBLxh5GMGv/Myxi5rTF4SS64j0v?=
+ =?us-ascii?Q?vgBbVEdqUQO3ibJE8QJswnrlQGtB7wGvDYe8VPrjRZ9uUl9do9r6u5Auyg8W?=
+ =?us-ascii?Q?NDpgtD5sAlZchKFZczJ519J8DUkwtSpPnlecnAVymLxSzU3G2FJXadrA6lCw?=
+ =?us-ascii?Q?1l3tAXbDPguMzxgJ4CplGAwAU1wqIU1Ij4sTYrIjvEZcNtdPjkJlmIOWJe8y?=
+ =?us-ascii?Q?CzgRQEjkH2yCykUfKtjDbrdOu5Xin8RX2oc3QUEDsZgcEilFZqwovhn/H05I?=
+ =?us-ascii?Q?zwQlLwbHsnGnaVlo2r++1jm6NdVOuugZp3otHbwO0qPwkeNA5dKShGvipC7s?=
+ =?us-ascii?Q?3xsyoCH5vhyJiIGhS283FKmbvnsjygTgU5xSBpW0RQ0jREptaWlYKu2739vS?=
+ =?us-ascii?Q?hDhUDdK2K2ESkWk/Zr5rrMJJf0ArFXxyy2NNknPXIi5ZLivJejaPasi3Bzre?=
+ =?us-ascii?Q?yb+Y2siWf/Vj3p/ntfzACFwB6UPQLMLvjQ0UKB/wdInZ5z05CN4MBfp1JZNE?=
+ =?us-ascii?Q?uqt96r7ufWwj/QVC0TjwgkAQb8i98BrcuEK7yCy5D3T8/cAoVASA3E48W/L7?=
+ =?us-ascii?Q?DjPMe8FU6jVCp3NKTnnCgDjNkUARbHh6z292SqAf5znXxT07R99zbC09DBwu?=
+ =?us-ascii?Q?lnsN6rz9yAPYag34wIt+Q7fSN7VAQP1M7H5Zo/CWxl1JLyr4cPF97W+gSR7T?=
+ =?us-ascii?Q?iotvDvM02utWjEaY4i1PQu51cExXNZ2Sp7gldU5Xi7m/X33nN0gFL56hl8it?=
+ =?us-ascii?Q?RGrO5SMh7MCnS0xCM7gq+Uv8SmI16pIcs1YWZQxOhmmeVy2ZZ+mPib6R5mYm?=
+ =?us-ascii?Q?r5hepg24twU7cktRTCgwX/T/3V639N9cUu3qBqq0OLIgpD7YDd1r09UBR4KO?=
+ =?us-ascii?Q?C89HmRpyXEFoq1Si1McSJUzbv8i1pcuiXsrw7IdEdZQm/UUNVxEm5sGfcWJA?=
+ =?us-ascii?Q?82JyjCGA9NWzaAjyrQyw9Lmd/Si77SuKtwtDj7e6O1d260ONJ51nz3IL7nYf?=
+ =?us-ascii?Q?1x2tbh2EyLnDOu+AtJssHH1pqOpxzyJrO34bO9H2dD/Aj6lGVNZdAYokdl2v?=
+ =?us-ascii?Q?3oK4mHhBgMIRJpKIhQr+u3KwWy47YhzlTtt4gKSf?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: eeada624-36e6-4ecf-3bf4-08dc6f5a03c6
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3849.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2024 12:25:58.2724
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: nIzG+6vEyCTYKNcWejQgq+lqrhxPUwA0TxIKOrLcWpiZutGsRSmgrVMq6nzuT6Uo
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5688
 
+On Wed, May 08, 2024 at 02:10:05PM +0800, Yi Liu wrote:
+> On 2024/5/7 23:18, Jason Gunthorpe wrote:
+> > On Tue, May 07, 2024 at 10:28:34AM +0800, Yi Liu wrote:
+> > > > > We still need something to do before we can safely remove this check.
+> > > > > All the domain allocation interfaces should eventually have the device
+> > > > > pointer as the input, and all domain attributions could be initialized
+> > > > > during domain allocation. In the attach paths, it should return -EINVAL
+> > > > > directly if the domain is not compatible with the iommu for the device.
+> > > > 
+> > > > Yes, and this is already true for PASID.
+> > > 
+> > > I'm not quite get why it is already true for PASID. I think Baolu's remark
+> > > is general to domains attached to either RID or PASID.
+> > > 
+> > > > I feel we could reasonably insist that domanis used with PASID are
+> > > > allocated with a non-NULL dev.
+> > > 
+> > > Any special reason for this disclaim?
+> > 
+> > If it makes the driver easier, why not?
+> 
+> yep.
+> 
+> > PASID is special since PASID is barely used, we could insist that
+> > new PASID users also use the new domian_alloc API.
+> 
+> Ok. I have one doubt on how to make it in iommufd core. Shall the iommufd
+> core call ops->domain_alloc_paging() directly or still call
+> ops->domain_alloc_user() while ops->domain_alloc_user() flows into the
+> paging domain allocation with non-null dev?
 
---fwllAq8yEacRp/F5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I mostly figured we'd need a new iommu_domain_alloc_dev() sort of
+thing? VFIO should be changed over too.
 
-On Tue, May 07, 2024 at 09:38:26PM +0000, Edward Liaw wrote:
-> Add the -D_GNU_SOURCE flag to KHDR_INCLUDES so that it is defined in a
-> central location.
->=20
-> 809216233555 ("selftests/harness: remove use of LINE_MAX") introduced
-> asprintf into kselftest_harness.h, which is a GNU extension and needs
-> _GNU_SOURCE to either be defined prior to including headers or with the
-> -D_GNU_SOURCE flag passed to the compiler.
-
-Reviewed-by: Mark Brown <broonie@kernel.org>
-
-This does mean we define _GNU_SOURCE for nolibc (and I guess any other
-libc people use like bionic) but hopefully nobody's using the same
-define with a different meaning so should be fine.
-
---fwllAq8yEacRp/F5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmY7aqIACgkQJNaLcl1U
-h9DCxAf+M+eUS9Sr8Cy7bCTOxGv4sZGiJ7AeEEoR5TzBm5SOC6mKe/M0t4SexFRB
-5nAjL3TO9i8cfMtUMh6LMvciaa5sGVNRFhpTIgljvO7ND7Dv+WKpJyiicl/1DYIK
-DEdpua8OQJ4bz9PQwOZO1kgQzC003JRxY0Gbz9kk8ie58HVAodSSWi7kgNsMc/0t
-mKOumN6X7MhAoslboc7h3A6xymN8AHvHeNga3yP+1E84M8mjiR91sc3btIn4Wa/w
-6LIqTSCun/wuxeQnkz0Rlk1LdA1F0KQPzQAriWxju8K9dqc3prqYkWuDtRVYN+Li
-LJAemrTmdlcOF/7uoi1Z7s4wZajT2A==
-=IlWr
------END PGP SIGNATURE-----
-
---fwllAq8yEacRp/F5--
+Jason
